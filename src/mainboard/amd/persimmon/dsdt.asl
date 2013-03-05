@@ -1157,6 +1157,8 @@ DefinitionBlock (
 		Device(PCI0) {
 			External (TOM1)
 			External (TOM2)
+			NAME (PSBB, 0x0000)  /* Secondary bus base variable for PCI0 */
+			NAME (PSBL, 0x00FF)  /* Secondary bus length variable for PCI0 */
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
 			Method(_BBN, 0) { /* Bus number = 0 */
@@ -1477,6 +1479,15 @@ DefinitionBlock (
 			} /* end Ac97modem */
 
 			Name(CRES, ResourceTemplate() {
+			    /* This sets the Bus number and Secondary Bus number for the PCI0 device */
+				WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
+					0x0000,			/* address granularity */
+					0x0000,         /* range minimum */
+					0x007F,         /* range maximum */
+					0x0000,         /* translation */
+					0x0080,         /* length */
+					,, PSB0)        /* ResourceSourceIndex, ResourceSource, DescriptorName */
+
 				IO(Decode16, 0x0CF8, 0x0CF8, 1,	8)
 
 				WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
@@ -1581,6 +1592,19 @@ DefinitionBlock (
 					Store(PBLN,EBML)
 				}
 #endif
+                /*
+                 * This sets up the secondary bus range for PCI0,
+                 * allowing the 'fwts klog' test to pass.
+                 */
+                CreateWordField (CRES, ^PSB0._MIN, MIN0)
+                CreateWordField (CRES, ^PSB0._MAX, MAX0)
+                CreateWordField (CRES, ^PSB0._LEN, LEN0)
+
+                Store (PSBB, MIN0)  /* Put Secondary Bus Base value into MIN0 memory */
+                Store (PSBL, LEN0)  /* Put Secondary Bus Length value into LEN0 memory */
+                Store (LEN0, Local0)  /* Copy into Local0 for doing math */
+                Add (MIN0, Decrement (Local0), MAX0)  /* Add MIN0 to Local0 and put it into MAX0 memory */
+
 				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
                                 CreateDWordField(CRES, ^MMIO._LEN, MM1L)
                                 /*

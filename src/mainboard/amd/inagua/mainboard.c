@@ -24,7 +24,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-//#include <southbridge/amd/sb800/sb800.h>
+#include <southbridge/amd/sb800/sb800.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
 void set_pcie_reset(void);
@@ -79,6 +79,15 @@ static void mainboard_enable(device_t dev)
 
 	/* Inagua mainboard specific setting */
 	set_pcie_dereset();
+
+	/*
+	 * Initialize ASF registers to an arbitrary address because someone
+	 * long ago set things up this way inside the SPD read code.  The
+	 * SPD read code has been made generic and moved out of the inagua
+	 * directory, so the ASF init is being done here.
+	 */
+	pm_iowrite(0x29, 0x80);
+	pm_iowrite(0x28, 0x61);
 }
 
 struct chip_operations mainboard_ops = {

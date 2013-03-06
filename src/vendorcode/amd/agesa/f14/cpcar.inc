@@ -97,7 +97,7 @@ CU_CFG3                 EQU 0C001102Bh  ; Combined Unit Configuration 3
     COMBINE_CR0_CD          EQU 49      ;   Combine CR0.CD for both cores of a compute unit
 
 
-CR0_PE                  EQU 1           ; Protection Enable
+CR0_PE                  EQU 0           ; Protection Enable
 CR0_NW                  EQU 29          ; Not Write-through
 CR0_CD                  EQU 30          ; Cache Disable
 CR0_PG                  EQU 31          ; Paging Enable

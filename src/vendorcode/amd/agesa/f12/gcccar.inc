@@ -100,7 +100,7 @@ CU_CFG3                  =      0x0C001102B      /* Combined Unit Configuration 
     COMBINE_CR0_CD       =      49               /*   Combine CR0.CD for both cores of a compute unit */                  
                                                                                                              
                                                                                                              
-CR0_PE                  = 1           # Protection Enable
+CR0_PE                  = 0           # Protection Enable
 CR0_NW                  = 29          # Not Write-through
 CR0_CD                  = 30          # Cache Disable
 CR0_PG                  = 31          # Paging Enable

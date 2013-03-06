@@ -51,7 +51,8 @@ static int board_wakeup_permitted(void)
 }
 #endif
 
-static void initialize_s5p_mshc(void) {
+static void initialize_s5p_mshc(void)
+{
 	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
 	if (clock_set_mshci(PERIPH_ID_SDMMC0))
 		printk(BIOS_CRIT, "Failed to set clock for SDMMC0.\n");
@@ -69,9 +70,9 @@ static void initialize_s5p_mshc(void) {
 
 static void graphics(void)
 {
-
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 }
+
 void main(void)
 {
 	struct mem_timings *mem;

@@ -32,8 +32,9 @@
 #include "i915io.h"
 
 u32
-pack_aux(u8 *src, int src_bytes)
+pack_aux(u32 *src32, int src_bytes)
 {
+	u8 *src = (u8 *)src32;
 	int	i;
 	u32 v = 0;
 
@@ -45,8 +46,10 @@ pack_aux(u8 *src, int src_bytes)
 }
 
 void
-unpack_aux(u32 src, u8 *dst, int dst_bytes)
+unpack_aux(u32 src, u32 *dst32, int dst_bytes)
 {
+	u8 *dst = (u8 *)dst32;
+
 	int i;
 	if (dst_bytes > 4)
 		dst_bytes = 4;
@@ -55,8 +58,8 @@ unpack_aux(u32 src, u8 *dst, int dst_bytes)
 }
 
 int
-intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u8 *send, int send_bytes,
-		u8 *recv, int recv_size)
+intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
+		u32 *recv, int recv_size)
 {
 	int i;
 	int recv_bytes;
@@ -93,11 +96,10 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u8 *send, int send_bytes,
 	for (try = 0; try < 5; try++) {
 		/* Load the send data into the aux channel data registers */
 		for (i = 0; i < send_bytes; i += 4)
-			io_i915_WRITE32(ch_data + i,
-				   pack_aux(send + i, send_bytes - i));
+			io_i915_WRITE32(send[i], ch_data + i);
 
 		/* Send the command and wait for it to complete */
-		io_i915_WRITE32(ch_ctl,
+		io_i915_WRITE32(
 			   DP_AUX_CH_CTL_SEND_BUSY |
 			   DP_AUX_CH_CTL_TIME_OUT_400us |
 			   (send_bytes << DP_AUX_CH_CTL_MESSAGE_SIZE_SHIFT) |
@@ -105,7 +107,7 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u8 *send, int send_bytes,
 			   (aux_clock_divider << DP_AUX_CH_CTL_BIT_CLOCK_2X_SHIFT) |
 			   DP_AUX_CH_CTL_DONE |
 			   DP_AUX_CH_CTL_TIME_OUT_ERROR |
-			   DP_AUX_CH_CTL_RECEIVE_ERROR);
+			   DP_AUX_CH_CTL_RECEIVE_ERROR, ch_ctl);
 		for (;;) {
 			status = io_i915_READ32(ch_ctl);
 			if ((status & DP_AUX_CH_CTL_SEND_BUSY) == 0)
@@ -114,11 +116,11 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u8 *send, int send_bytes,
 		}
 
 		/* Clear done status and any errors */
-		io_i915_WRITE32(ch_ctl,
+		io_i915_WRITE32(
 			   status |
 			   DP_AUX_CH_CTL_DONE |
 			   DP_AUX_CH_CTL_TIME_OUT_ERROR |
-			   DP_AUX_CH_CTL_RECEIVE_ERROR);
+			   DP_AUX_CH_CTL_RECEIVE_ERROR, ch_ctl);
 
 		if (status & (DP_AUX_CH_CTL_TIME_OUT_ERROR |
 			      DP_AUX_CH_CTL_RECEIVE_ERROR))

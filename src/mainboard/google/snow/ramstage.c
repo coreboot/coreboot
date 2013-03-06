@@ -19,6 +19,8 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <cpu/samsung/exynos5250/clk.h>
+#include <cpu/samsung/exynos5250/power.h>
 
 void hardwaremain(int boot_complete);
 void main(void)
@@ -31,6 +33,15 @@ void main(void)
 	high_tables_base = CONFIG_SYS_SDRAM_BASE +
 			((CONFIG_DRAM_SIZE_MB << 20UL) * CONFIG_NR_DRAM_BANKS) -
 			CONFIG_COREBOOT_TABLES_SIZE;
+
+	const unsigned epll_hz = 192000000;
+	const unsigned sample_rate = 48000;
+	const unsigned lr_frame_size = 256;
+	clock_epll_set_rate(epll_hz);
+	clock_select_i2s_clk_source();
+	clock_set_i2s_clk_prescaler(epll_hz, sample_rate * lr_frame_size);
+
+	power_enable_xclkout();
 
 	hardwaremain(0);
 }

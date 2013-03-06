@@ -2,8 +2,6 @@ bootblock-y += syslib.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += early_console.c
 bootblock-y += cache_v7.c
 bootblock-y += cache-cp15.c
-bootblock-y += div0.c
-bootblock-y += div64.S
 
 romstage-y += cache_v7.c
 romstage-y += cache-cp15.c

@@ -27,6 +27,8 @@
 //#include <southbridge/amd/sb800/sb800.h>
 
 //#define SMBUS_IO_BASE 0x6000
+void set_pcie_reset(void);
+void set_pcie_dereset(void);
 
 /**
  * TODO

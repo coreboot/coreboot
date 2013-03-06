@@ -19,6 +19,7 @@
 
 #include <types.h>
 #include <string.h>
+#include <stdlib.h>
 #include <device/device.h>
 #include <device/device.h>
 #include <device/pci_def.h>
@@ -62,18 +63,27 @@ extern int oprom_is_loaded;
 #define READ32(addr) io_i915_READ32(addr)
 #define WRITE32(val, addr) io_i915_WRITE32(val, addr)
 
+static char *regname(unsigned long addr)
+{
+	static char name[16];
+	sprintf(name, "0x%lx", addr);
+	return name;
+}
+
 unsigned long io_i915_READ32(unsigned long addr)
 {
-       unsigned long val;
-       outl(addr, addrport);
-       val = inl(dataport);
-       return val;
+	unsigned long val;
+	outl(addr, addrport);
+	val = inl(dataport);
+	if (verbose & vio)printk(BIOS_SPEW, "%s: Got %08lx\n", regname(addr), val);
+	return val;
 }
 
 void io_i915_WRITE32(unsigned long val, unsigned long addr)
 {
-       outl(addr, addrport);
-       outl(val, dataport);
+	if (verbose & vio)printk(BIOS_SPEW, "%s: outl %08lx\n", regname(addr), val);
+	outl(addr, addrport);
+	outl(val, dataport);
 }
 
 
@@ -101,13 +111,6 @@ setgtt(int start, int end, unsigned long base, int inc)
         }
 }
 
-static char *regname(unsigned long addr)
-{
-	static char name[16];
-	sprintf(name, "0x%lx", addr);
-	return name;
-}
-
 static unsigned long tickspermicrosecond = 1795;
 static unsigned long long globalstart;
 
@@ -125,6 +128,7 @@ static unsigned long globalmicroseconds(void)
 }
 
 extern struct iodef iodefs[];
+extern int niodefs;
 
 static int i915_init_done = 0;
 
@@ -135,10 +139,6 @@ static void palette(void)
 	unsigned long color = 0;
 
 	for(i = 0; i < 256; i++, color += 0x010101){
-	  if (verbose & vio)printk(BIOS_SPEW,
-				   "_LGC_PALETTE_A+%08x: outl %08lx\n",
-				   i<<2, color);
-
 		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
 	}
 }
@@ -169,31 +169,15 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 
 }
 
-int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-	unsigned int gfx);
+static unsigned long times[4096];
 
-int i915lightup(unsigned int pphysbase,
-	unsigned int piobase,
-	unsigned int pmmio,
-	unsigned int pgfx)
+static int run(int index)
 {
 	int i, prev = 0;
 	struct iodef *id, *lastidread = 0;
 	unsigned long u, t;
-	static unsigned long times[4096];
-	mmio = (void *)pmmio;
-	addrport = piobase;
-	dataport = addrport + 4;
-	physbase = pphysbase;
-	graphics = pgfx;
-	printk(BIOS_SPEW,
-		"i915lightup: graphics %p mmio %p"
-		"addrport %04x physbase %08x\n",
-			(void *)graphics, mmio, addrport, physbase);
-	globalstart = rdtscll();
-
 	/* state machine! */
-	for(i = 0, id = iodefs; id->op; i++, id++){
+	for(i = index, id = &iodefs[i]; id->op; i++, id++){
 		switch(id->op){
 		case M:
 			if (verbose & vmsg) printk(BIOS_SPEW, "%ld: %s\n",
@@ -204,8 +188,8 @@ int i915lightup(unsigned int pphysbase,
 			break;
 		case R:
 			u = READ32(id->addr);
-			if (verbose & vio)printk(BIOS_SPEW, "%s: Got %08lx, expect %08lx\n",
-				regname(id->addr), u, id->data);
+			if (verbose & vio)
+				printk(BIOS_SPEW, "\texpect %08lx\n", id->data);
 			/* we're looking for something. */
 			if (lastidread->addr == id->addr){
 				/* they're going to be polling.
@@ -222,14 +206,16 @@ int i915lightup(unsigned int pphysbase,
 			lastidread = id;
 			break;
 		case W:
-			if (verbose & vio)printk(BIOS_SPEW, "%s: outl %08lx\n", regname(id->addr),
-									id->data);
 			WRITE32(id->data, id->addr);
 			if (id->addr == PCH_PP_CONTROL){
+				if (verbose & vio)
+					printk(BIOS_SPEW, "PCH_PP_CONTROL\n");
 				switch(id->data & 0xf){
 					case 8: break;
 					case 7: break;
 					default: udelay(100000);
+						if (verbose & vio)
+							printk(BIOS_SPEW, "U %d\n", 100000);
 				}
 			}
 			break;
@@ -240,8 +226,11 @@ int i915lightup(unsigned int pphysbase,
 			} else {
 				verbose = prev;
 			}
+			printk(BIOS_SPEW, "Change verbosity to %d\n", verbose);
 			break;
 		case I:
+		  printk(BIOS_SPEW, "run: return %d\n", i+1);
+			return i+1;
 			break;
 		default:
 			printk(BIOS_SPEW, "BAD TABLE, opcode %d @ %d\n", id->op, i);
@@ -249,27 +238,126 @@ int i915lightup(unsigned int pphysbase,
 		}
 		if (id->udelay)
 			udelay(id->udelay);
-		times[i] = globalmicroseconds();
+		if (i < ARRAY_SIZE(times))
+			times[i] = globalmicroseconds();
 	}
-	/* optional, we don't even want to take timestamp overhead
-	 * if we can avoid it. */
-	if (0)
-	for(i = 0, id = iodefs; id->op; i++, id++){
-		switch(id->op){
-		case R:
-			printk(BIOS_SPEW, "%ld: R %08lx\n", times[i], id->addr);
-			break;
-		case W:
-			printk(BIOS_SPEW, "%ld: W %08lx %08lx\n", times[i],
-				id->addr, id->data);
-			break;
-		}
-	}
+	printk(BIOS_SPEW, "run: return %d\n", i);
+	return i+1;
+}
 
-	setgtt(0, 4520, physbase, 4096);
+int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
+	unsigned int gfx);
+
+int i915lightup(unsigned int pphysbase, unsigned int piobase,
+	unsigned int pmmio, unsigned int pgfx)
+{
+	int index;
+	u32 auxin[16], auxout[16];
+	mmio = (void *)pmmio;
+	addrport = piobase;
+	dataport = addrport + 4;
+	physbase = pphysbase;
+	graphics = pgfx;
+	printk(BIOS_SPEW,
+		"i915lightup: graphics %p mmio %p"
+		"addrport %04x physbase %08x\n",
+			(void *)graphics, mmio, addrport, physbase);
+	globalstart = rdtscll();
+
+	printk(BIOS_SPEW, "Table has %d elements\n", niodefs);
+	index = run(0);
+	printk(BIOS_SPEW, "Run returns %d\n", index);
+	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_DPCD_REV<<8|0xe;
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 14);
+	auxout[0] = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x0<<8|0x0;
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 3, auxin, 0);
+	index = run(index);
+	printk(BIOS_SPEW, "Run returns %d\n", index);
+	auxout[0] = 0<<31 /* i2c */|0<<30|0x0<<28/*W*/|0x0<<8|0x0;
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 3, auxin, 0);
+	index = run(index);
+	printk(BIOS_SPEW, "Run returns %d\n", index);
+	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_SET_POWER<<8|0x0;
+	auxout[1] = 0x01000000;
+	/* DP_SET_POWER_D0 | DP_PSR_SINK_INACTIVE |
+	 * 	(0x0<<13602104)|0x00000001*/ /* broken, fix. */
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_LINK_BW_SET<<8|0x8;
+	auxout[1] = 0x0a840000;
+	/*( DP_LINK_BW_2_7 &0xa)|0x0000840a*/
+	auxout[2] = 0x00000000;
+	auxout[3] = 0x01000000;
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 13, auxin, 0);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
+	auxout[1] = 0x21000000;
+	/* DP_TRAINING_PATTERN_1 | DP_LINK_SCRAMBLING_DISABLE |
+	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000021*/
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_LANE0_SET<<8|0x3;
+	auxout[1] = 0x00000000;
+	/* DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0 |0x00000000*/
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 8, auxin, 0);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x5;
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 5);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
+	auxout[1] = 0x22000000;
+	/* DP_TRAINING_PATTERN_2 | DP_LINK_SCRAMBLING_DISABLE |
+	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000022*/
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_LANE0_SET<<8|0x3;
+	auxout[1] = 0x00000000;
+	/* DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0 |0x00000000*/
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 8, auxin, 0);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x5;
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 5);
+	index = run(index);
+	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
+	auxout[1] = 0x00000000;
+	/* DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE |
+	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000000*/
+	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
+	index = run(index);
+
+	if (index != niodefs)
+		printk(BIOS_ERR, "Left over IO work in i915_lightup"
+				" -- this is likely a table error. "
+				"Only %d of %d were done.\n", index, niodefs);
+	printk(BIOS_SPEW, "DONE startup\n");
+	verbose = 0;
+	/* GTT is the Global Translation Table for the graphics pipeline.
+	 * It is used to translate graphics addresses to physical
+	 * memory addresses. As in the CPU, GTTs map 4K pages.
+	 * There are 32 bits per pixel, or 4 bytes,
+	 * which means 1024 pixels per page.
+	 * There are 4250 GTTs on Link:
+	 * 2650 (X) * 1700 (Y) pixels / 1024 pixels per page.
+	 * The setgtt function adds a further bit of flexibility:
+	 * it allows you to set a range (the first two parameters) to point
+	 * to a physical address (third parameter);the physical address is
+	 * incremented by a count (fourth parameter) for each GTT in the
+	 * range.
+	 * Why do it this way? For ultrafast startup,
+	 * we can point all the GTT entries to point to one page,
+	 * and set that page to 0s:
+	 * memset(physbase, 0, 4096);
+	 * setgtt(0, 4250, physbase, 0);
+	 * this takes about 2 ms, and is a win because zeroing
+	 * the page takes a up to 200 ms. We will be exploiting this
+	 * trick in a later rev of this code.
+	 * This call sets the GTT to point to a linear range of pages
+	 * starting at physbase.
+	 */
+	setgtt(0, FRAME_BUFFER_PAGES, physbase, 4096);
 	printk(BIOS_SPEW, "memset %p to 0 for %d bytes\n",
-				(void *)graphics, 4520*4096);
-	memset((void *)graphics, 0, 4520*4096);
+				(void *)graphics, FRAME_BUFFER_BYTES);
+	memset((void *)graphics, 0, FRAME_BUFFER_BYTES);
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	i915_init_done = 1;
 	oprom_is_loaded = 1;

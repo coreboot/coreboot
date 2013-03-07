@@ -87,6 +87,7 @@ static int smb_write_blk(u8 slave, u8 command, u8 length, const u8 *data)
 
 static void init(struct device *dev)
 {
+	volatile u8 *spi_base;	// base addr of Hudson's SPI host controller
 	int i;
 	printk(BIOS_DEBUG, CONFIG_MAINBOARD_PART_NUMBER " ENTER %s\n", __func__);
 
@@ -122,6 +123,10 @@ static void init(struct device *dev)
 		u16 val = sio_init_table[i];
 		outb((u8)val, SIO_RUNTIME_BASE + (val >> 8));
 	}
+
+	/* Lower SPI speed from default 66 to 22 MHz for SST 25VF032B */
+	spi_base = (u8*)(pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x14, 3)), 0xA0) & 0xFFFFFFE0);
+	spi_base[0x0D] = (spi_base[0x0D] & ~0x30) | 0x20; // NormSpeed in SPI_Cntrl1 register
 
 	/* Notify the SMC we're alive and kicking, or after a while it will
 	 * effect a power cycle and switch to the alternate BIOS chip.

@@ -182,7 +182,7 @@ static void dump_alt_gp_smi_status(u16 alt_gp_smi_sts)
 	int i;
 	printk(BIOS_DEBUG, "ALT_GP_SMI_STS: ");
 	for (i=15; i>= 0; i--) {
-		if (alt_gp_smi_sts & (1 << i)) printk(BIOS_DEBUG, "GPI%d ", (i-16));
+		if (alt_gp_smi_sts & (1 << i)) printk(BIOS_DEBUG, "GPI%d ", i);
 	}
 	printk(BIOS_DEBUG, "\n");
 }

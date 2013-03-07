@@ -22,6 +22,10 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <arch/io.h>
 
+#include <cpu/samsung/exynos5250/cpu.h>
+#include <cpu/samsung/exynos5250/gpio.h>
+#include <cpu/samsung/exynos5-common/gpio.h>
+
 #include <device/device.h>
 
 #define ACTIVE_LOW	0
@@ -30,6 +34,8 @@
 #define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0
 #define FORCE_DEVELOPER_MODE	0
+#define LID_OPEN	3
+#define POWER_BUTTON	3
 
 #include <boot/coreboot_tables.h>
 #include <arch/coreboot_tables.h>
@@ -38,33 +44,38 @@
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
+	struct exynos5_gpio_part1 *gpio_pt1;
+	struct exynos5_gpio_part2 *gpio_pt2;
 
 	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
 	gpios->count = GPIO_COUNT;
 
-	/* Write Protect: virtual GPIO active Low */
-	gpios->gpios[0].port = -1;
+	gpio_pt1 = (struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
+	gpio_pt2 = (struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE;
+
+	/* Write Protect: active Low */
+	gpios->gpios[0].port = EXYNOS5_GPD1;
 	gpios->gpios[0].polarity = ACTIVE_LOW;
-	gpios->gpios[0].value = 1;
+	gpios->gpios[0].value = s5p_gpio_get_value(&gpio_pt1->d1, WP_GPIO);
 	strncpy((char *)gpios->gpios[0].name,"write protect",
 							GPIO_MAX_NAME_LENGTH);
 
-	/* Recovery: virtual GPIO active high */
-	gpios->gpios[1].port = -1;
+	/* Recovery: active high */
+	gpios->gpios[1].port = EXYNOS5_GPY1;
 	gpios->gpios[1].polarity = ACTIVE_HIGH;
-	gpios->gpios[1].value = 0;
+	gpios->gpios[2].value = s5p_gpio_get_value(&gpio_pt1->y1, FORCE_RECOVERY_MODE);
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
 	/* Lid: the "switch" comes from the EC */
-	gpios->gpios[2].port = -1;
-	gpios->gpios[2].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = 0;
+	gpios->gpios[2].port = EXYNOS5_GPX3;
+	gpios->gpios[2].polarity = ACTIVE_LOW;
+	gpios->gpios[2].value = s5p_gpio_get_value(&gpio_pt2->x3, LID_OPEN);
 	strncpy((char *)gpios->gpios[2].name,"lid", GPIO_MAX_NAME_LENGTH);
 
-	/* Power: hardcoded as not pressed */
+	/* Power: virtual GPIO active low */
 	gpios->gpios[3].port = -1;
-	gpios->gpios[3].polarity = ACTIVE_HIGH;
-	gpios->gpios[3].value = 0;
+	gpios->gpios[3].polarity = ACTIVE_LOW;
+	gpios->gpios[3].value = 1;
 	strncpy((char *)gpios->gpios[3].name,"power", GPIO_MAX_NAME_LENGTH);
 
 	/* Developer: virtual GPIO active high */

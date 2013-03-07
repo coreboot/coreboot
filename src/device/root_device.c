@@ -136,6 +136,8 @@ static void root_dev_enable_resources(device_t dev)
  */
 static unsigned int root_dev_scan_bus(device_t root, unsigned int max)
 {
+	printk(BIOS_SPEW, "Enable mainboard %s\n", mainboard_name);
+
 	return scan_static_bus(root, max);
 }
 

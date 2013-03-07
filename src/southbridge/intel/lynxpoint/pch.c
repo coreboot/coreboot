@@ -65,6 +65,26 @@ int pch_is_lp(void)
 	return pch_silicon_type() == PCH_TYPE_LPT_LP;
 }
 
+u16 get_pmbase(void)
+{
+	static u16 pmbase;
+
+	if (!pmbase)
+		pmbase = pci_read_config16(pch_get_lpc_device(),
+					   PMBASE) & 0xfffc;
+	return pmbase;
+}
+
+u16 get_gpiobase(void)
+{
+	static u16 gpiobase;
+
+	if (!gpiobase)
+		gpiobase = pci_read_config16(pch_get_lpc_device(),
+					     GPIOBASE) & 0xfffc;
+	return gpiobase;
+}
+
 #ifndef __SMM__
 
 /* Set bit in Function Disble register to hide this device */

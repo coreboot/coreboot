@@ -130,7 +130,8 @@ void pch_config_rcba(const struct rcba_config_instruction *rcba_config);
 int pch_silicon_revision(void);
 int pch_silicon_type(void);
 int pch_is_lp(void);
-
+u16 get_pmbase(void);
+u16 get_gpiobase(void);
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
 #include <arch/acpi.h>

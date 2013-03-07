@@ -267,7 +267,7 @@ static void configure_c_states(void)
 
 	msr = rdmsr(MSR_PMG_IO_CAPTURE_BASE);
 	msr.lo &= ~0x7ffff;
-	msr.lo |= (PMB0_BASE + 4);	// LVL_2 base address
+	msr.lo |= (get_pmbase() + 4);	// LVL_2 base address
 	msr.lo |= (2 << 16);		// CST Range: C7 is max C-state
 	wrmsr(MSR_PMG_IO_CAPTURE_BASE, msr);
 

@@ -5,7 +5,6 @@
  */
 
 #include <string.h>
-#include <div64.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
 
@@ -70,20 +69,8 @@ static int number(void (*tx_byte)(unsigned char byte),
 	if (num == 0)
 		tmp[i++]='0';
 	else while (num != 0){
-		/* there are some nice optimizations in the
-		 * Macros-From-Hell that form the div64 code
-		 * *IF* you call it with a constant.
-		 * We're firmware, we only do bases
-		 * 8, 10, and 16. Let's be smart.
-		 * This greatly helps ARM, reduces the
-		 * code footprint at compile time, and does not hurt x86.
-		 */
-		if (base == 10)
-			tmp[i++] = digits[do_div(num,10)];
-		else if (base == 8)
-			tmp[i++] = digits[do_div(num,8)];
-		else /* sorry, you're out of choices */
-			tmp[i++] = digits[do_div(num,16)];
+		tmp[i++] = digits[num % base];
+		num /= base;
 	}
 	if (i > precision)
 		precision = i;

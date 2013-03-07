@@ -158,6 +158,9 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDD
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
 
 # Things that appear in every board
+ramstage-y += exception.c
+ramstage-y += exception_asm.S
+
 romstage-srcs += $(objgenerated)/crt0.s
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)

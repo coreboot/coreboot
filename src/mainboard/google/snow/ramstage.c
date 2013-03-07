@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <arch/exception.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/power.h>
 
@@ -26,8 +27,10 @@ void hardwaremain(int boot_complete);
 void main(void)
 {
 	console_init();
-	printk(BIOS_INFO, "hello from ramstage\n");
+	printk(BIOS_INFO, "hello from ramstage; now with deluxe exception handling.\n");
 
+	/* this is going to move, but we must have it now and we're not sure where */
+	exception_init();
 	/* place at top of physical memory */
 	high_tables_size = CONFIG_COREBOOT_TABLES_SIZE;
 	high_tables_base = CONFIG_SYS_SDRAM_BASE +

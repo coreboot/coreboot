@@ -211,13 +211,13 @@ int acpigen_emit_namestring(const char *namepath) {
 	int dotpos = 0;
 	int len = 0;
 
-	/* We can start with a »\«. */
+	/* We can start with a '\'. */
 	if (namepath[0] == '\\') {
 		len += acpigen_emit_byte('\\');
 		namepath++;
 	}
 
-	/* And there can be any number of »^«. */
+	/* And there can be any number of '^' */
 	while (namepath[0] == '^') {
 		len += acpigen_emit_byte('^');
 		namepath++;

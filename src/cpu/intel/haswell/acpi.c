@@ -33,6 +33,8 @@
 #include "haswell.h"
 #include "chip.h"
 
+#include <southbridge/intel/lynxpoint/pch.h>
+
 static int get_cores_per_package(void)
 {
 	struct cpuinfo_x86 c;
@@ -322,7 +324,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 void generate_cpu_entries(void)
 {
 	int len_pr;
-	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
+	int coreID, cpuID, pcontrol_blk = get_pmbase(), plen = 6;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
 	int numcpus = totalcores/cores_per_package;

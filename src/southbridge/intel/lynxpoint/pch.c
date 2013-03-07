@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
- * Copyright (C) 2012 The Chromium OS Authors.  All rights reserved.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,35 +21,51 @@
 
 #include <console/console.h>
 #include <delay.h>
+#ifdef __SMM__
+#include <arch/io.h>
+#include <arch/romcc_io.h>
+#include <device/pci_def.h>
+#else /* !__SMM__ */
 #include <device/device.h>
 #include <device/pci.h>
+#endif
 #include "pch.h"
 
-static int pch_revision_id = -1;
-static int pch_type = -1;
+static device_t pch_get_lpc_device(void)
+{
+#ifdef __SMM__
+	return PCI_DEV(0, 0x1f, 0);
+#else
+	return dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+#endif
+}
 
 int pch_silicon_revision(void)
 {
+	static int pch_revision_id = -1;
+
 	if (pch_revision_id < 0)
-		pch_revision_id = pci_read_config8(
-			dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
-			PCI_REVISION_ID);
+		pch_revision_id = pci_read_config8(pch_get_lpc_device(),
+						   PCI_REVISION_ID);
 	return pch_revision_id;
 }
 
 int pch_silicon_type(void)
 {
+	static int pch_type = -1;
+
 	if (pch_type < 0)
-		pch_type = pci_read_config8(
-			dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
-			PCI_DEVICE_ID + 1);
+		pch_type = pci_read_config8(pch_get_lpc_device(),
+					    PCI_DEVICE_ID + 1);
 	return pch_type;
 }
 
-int pch_silicon_supported(int type, int rev)
+int pch_is_lp(void)
 {
-	return 1;
+	return pch_silicon_type() == PCH_TYPE_LPT_LP;
 }
+
+#ifndef __SMM__
 
 /* Set bit in Function Disble register to hide this device */
 static void pch_hide_devfn(unsigned devfn)
@@ -444,3 +460,5 @@ struct chip_operations southbridge_intel_lynxpoint_ops = {
 	CHIP_NAME("Intel Series 8 (Lynx Point) Southbridge")
 	.enable_dev = pch_enable,
 };
+
+#endif /* __SMM__ */

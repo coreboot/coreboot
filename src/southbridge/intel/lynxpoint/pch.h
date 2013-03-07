@@ -40,9 +40,9 @@
  * Bus 0:Device 28:Function 5 PCI Express Port 6
  * Bus 0:Device 28:Function 6 PCI Express Port 7
  * Bus 0:Device 28:Function 7 PCI Express Port 8
- * Bus 0:Device 27:Function 0 Intel® High Definition Audio Controller
+ * Bus 0:Device 27:Function 0 Intel High Definition Audio Controller
  * Bus 0:Device 25:Function 0 Gigabit Ethernet Controller
- * Bus 0:Device 22:Function 0 Intel® Management Engine Interface #1
+ * Bus 0:Device 22:Function 0 Intel Management Engine Interface #1
  * Bus 0:Device 22:Function 1 Intel Management Engine Interface #2
  * Bus 0:Device 22:Function 2 IDE-R
  * Bus 0:Device 22:Function 3 KT
@@ -50,6 +50,8 @@
 */
 
 /* PCH types */
+#define PCH_TYPE_LPT		0x8c
+#define PCH_TYPE_LPT_LP		0x9c
 
 /* PCH stepping values for LPC device */
 
@@ -125,13 +127,14 @@ struct rcba_config_instruction
 
 #if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
 void pch_config_rcba(const struct rcba_config_instruction *rcba_config);
+int pch_silicon_revision(void);
+int pch_silicon_type(void);
+int pch_is_lp(void);
+
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
 #include <arch/acpi.h>
 #include "chip.h"
-int pch_silicon_revision(void);
-int pch_silicon_type(void);
-int pch_silicon_supported(int type, int rev);
 void pch_enable(device_t dev);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 #if CONFIG_ELOG

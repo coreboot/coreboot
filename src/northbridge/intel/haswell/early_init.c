@@ -56,22 +56,6 @@ static void haswell_setup_graphics(void)
 	u16 reg16;
 	u8 reg8;
 
-	reg16 = pci_read_config16(PCI_DEV(0,2,0), PCI_DEVICE_ID);
-	switch (reg16) {
-	case 0x0102: /* GT1 Desktop */
-	case 0x0106: /* GT1 Mobile */
-	case 0x010a: /* GT1 Server */
-	case 0x0112: /* GT2 Desktop */
-	case 0x0116: /* GT2 Mobile */
-	case 0x0122: /* GT2 Desktop >=1.3GHz */
-	case 0x0126: /* GT2 Mobile >=1.3GHz */
-	case 0x0166: /* IvyBridge ??? */
-		break;
-	default:
-		printk(BIOS_DEBUG, "Graphics not supported by this CPU/chipset.\n");
-		return;
-	}
-
 	printk(BIOS_DEBUG, "Initializing Graphics...\n");
 
 	/* Setup IGD memory by setting GGC[7:3] = 1 for 32MB */

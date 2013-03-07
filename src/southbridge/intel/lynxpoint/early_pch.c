@@ -90,8 +90,9 @@ static void pch_enable_lpc(void)
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(dev, LPC_IO_DEC, 0x0010);
 
-	/* Enable SuperIO + COM1 + PS/2 Keyboard/Mouse */
-	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN | KBC_LPC_EN;
+	/* Enable SuperIO + MC + COM1 + PS/2 Keyboard/Mouse */
+	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN |
+		COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
 	pci_write_config16(dev, LPC_EN, lpc_config);
 }
 

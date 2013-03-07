@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
+#include <southbridge/amd/sb800/sb800.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <delay.h>
@@ -80,6 +81,15 @@ static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 	southstation_led_init();
+
+	/*
+	 * Initialize ASF registers to an arbitrary address because someone
+	 * long ago set things up this way inside the SPD read code.  The
+	 * SPD read code has been made generic and moved out of the
+	 * south_station directory, so the ASF init is being done here.
+	 */
+	pm_iowrite(0x29, 0x80);
+	pm_iowrite(0x28, 0x61);
 }
 
 struct chip_operations mainboard_ops = {

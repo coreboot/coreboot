@@ -48,6 +48,7 @@ romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c cbmem.c
 romstage-y += compute_ip_checksum.c
 romstage-y += memmove.c
+romstage-$(CONFIG_ARCH_X86) += gcc.c
 
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
@@ -94,6 +95,7 @@ smm-y += cbfs.c memcmp.c
 smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 smm-$(CONFIG_USBDEBUG) += usbdebug.c
+smm-y += gcc.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
 

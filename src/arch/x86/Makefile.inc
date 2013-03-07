@@ -354,9 +354,9 @@ endif
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_null.ld
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(LIBGCC_FILE_NAME) --end-group -T $(objgenerated)/romstage_null.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld $(romstage-objs)
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 	$(NM) $@ | grep -q " [DdBb] "; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
@@ -366,9 +366,9 @@ endif
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_xip.ld
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(LIBGCC_FILE_NAME) --end-group -T $(objgenerated)/romstage_xip.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld $(romstage-objs)
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions

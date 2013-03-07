@@ -36,8 +36,8 @@ endif
 smm-y += smihandler.c
 smm-y += smiutil.c
 
-$(obj)/cpu/x86/smm/smm.o: $$(smm-objs)
-	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME)
+	$(CC) $(LDFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 
 $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/ldoptions
 	$(CC) $(SMM_LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o

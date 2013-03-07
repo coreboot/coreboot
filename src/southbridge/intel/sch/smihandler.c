@@ -169,7 +169,7 @@ static void dump_gpe0_status(u32 gpe0_sts)
 {
 	int i;
 	printk(BIOS_DEBUG, "GPE0_STS: ");
-	for (i=31; i<= 16; i--) {
+	for (i=31; i>= 16; i--) {
 		if (gpe0_sts & (1 << i)) printk(BIOS_DEBUG, "GPIO%d ", (i-16));
 	}
 	if (gpe0_sts & (1 << 14)) printk(BIOS_DEBUG, "USB4 ");

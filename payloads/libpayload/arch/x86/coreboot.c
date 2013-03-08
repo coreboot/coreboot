@@ -79,6 +79,14 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 }
 
 #ifdef CONFIG_CHROMEOS
+static void cb_parse_vboot_handoff(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_vboot_handoff *vbho = (struct cb_vboot_handoff *)ptr;
+
+	info->vboot_handoff = vbho->vboot_handoff_addr;
+	info->vboot_handoff_size = vbho->vboot_handoff_size;
+}
+
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_vbnv *vbnv = (struct cb_vbnv *)ptr;
@@ -257,6 +265,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_VBNV:
 			cb_parse_vbnv(ptr, info);
+			break;
+		case CB_TAG_VBOOT_HANDOFF:
+			cb_parse_vboot_handoff(ptr, info);
 			break;
 #endif
 		case CB_TAG_TIMESTAMPS:

@@ -36,6 +36,7 @@
 #endif
 #if CONFIG_CHROMEOS
 #include <arch/acpi.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
@@ -219,7 +220,27 @@ static void lb_vbnv(struct lb_header *header)
 	vbnv->vbnv_start = CONFIG_VBNV_OFFSET + 14;
 	vbnv->vbnv_size = CONFIG_VBNV_SIZE;
 }
-#endif
+
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+static void lb_vboot_handoff(struct lb_header *header)
+{
+	void *addr;
+	uint32_t size;
+	struct lb_vboot_handoff* vbho;
+
+	if (vboot_get_handoff_info(&addr, &size))
+		return;
+
+	vbho = (struct lb_vboot_handoff *)lb_new_record(header);
+	vbho->tag = LB_TAB_VBOOT_HANDOFF;
+	vbho->size = sizeof(*vbho);
+	vbho->vboot_handoff_addr = addr;
+	vbho->vboot_handoff_size = size;
+}
+#else
+static inline void lb_vboot_handoff(struct lb_header *header) {}
+#endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
+#endif /* CONFIG_CHROMEOS */
 
 static void add_cbmem_pointers(struct lb_header *header)
 {
@@ -697,6 +718,9 @@ unsigned long write_coreboot_table(
 
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);
+
+	/* pass along the vboot_handoff address. */
+	lb_vboot_handoff(head);
 #endif
 	add_cbmem_pointers(head);
 

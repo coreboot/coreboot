@@ -66,4 +66,18 @@ void *vboot_get_payload(int *len)
 
 	return (void *)fwc->address;
 }
+
+int vboot_get_handoff_info(void **addr, uint32_t *size)
+{
+	struct vboot_handoff *vboot_handoff;
+
+	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+
+	if (vboot_handoff == NULL)
+		return -1;
+
+	*addr = vboot_handoff;
+	*size = sizeof(*vboot_handoff);
+	return 0;
+}
 #endif

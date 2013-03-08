@@ -121,6 +121,12 @@ chip northbridge/amd/agesa/family15/root_complex
 			device pci 18.3 on end
 			device pci 18.4 on end
 			device pci 18.5 on end #f15
+
+			register "spdAddrLookup" = "
+			{
+				{ {0xA0, 0xA4, 0xA8}, {0xA2, 0xA6, 0xAA}, }, // socket 0
+				{ {0xA0, 0xA4, 0xA8}, {0xA2, 0xA6, 0xAA}, }, // socket 1
+			}"
 		end #chip northbridge/amd/agesa/family15 # CPU side of HT root complex
 	end #domain
 end #northbridge/amd/agesa/family15/root_complex

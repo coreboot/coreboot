@@ -49,6 +49,8 @@ void init_chromeos(int bootmode);
 struct romstage_handoff;
 void vboot_verify_firmware(struct romstage_handoff *handoff);
 void *vboot_get_payload(int *len);
+/* Returns 0 on success < 0 on error. */
+int vboot_get_handoff_info(void **addr, uint32_t *size);
 #endif
 
 #endif

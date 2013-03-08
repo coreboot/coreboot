@@ -241,6 +241,15 @@ struct lb_vbnv {
 	uint32_t vbnv_size;
 };
 
+#define LB_TAB_VBOOT_HANDOFF	0x0020
+struct lb_vboot_handoff {
+	uint32_t tag;
+	uint32_t size;
+
+	void *vboot_handoff_addr;
+	uint32_t vboot_handoff_size;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

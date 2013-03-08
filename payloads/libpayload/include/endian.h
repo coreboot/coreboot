@@ -26,12 +26,22 @@
 #include <arch/types.h>
 #include <libpayload-config.h>
 
-#define swap_bytes16(in) ((((in) & 0xFF) << 8) | (((in) & 0xFF00) >> 8))
-#define swap_bytes32(in) ((((in) & 0xFF) << 24) | (((in) & 0xFF00) << 8) | \
-			  (((in) & 0xFF0000) >> 8) | \
-			  (((in) & 0xFF000000) >> 24))
-#define swap_bytes64(in) (((uint64_t)swap_bytes32((uint32_t)(in)) << 32) | \
-			  ((uint64_t)swap_bytes32((uint32_t)((in) >> 32))))
+static inline uint16_t swap_bytes16(uint16_t in)
+{
+	return ((in & 0xFF) << 8) | ((in & 0xFF00) >> 8);
+}
+
+static inline uint32_t swap_bytes32(uint32_t in)
+{
+	return ((in & 0xFF) << 24) | ((in & 0xFF00) << 8) |
+		((in & 0xFF0000) >> 8) | ((in & 0xFF000000) >> 24);
+}
+
+static inline uint64_t swap_bytes64(uint64_t in)
+{
+	return ((uint64_t)swap_bytes32((uint32_t)in) << 32) |
+		((uint64_t)swap_bytes32((uint32_t)(in >> 32)));
+}
 
 /* Endian functions from glibc 2.9 / BSD "endian.h" */
 

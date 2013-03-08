@@ -88,6 +88,8 @@ struct sysinfo_t {
 	struct cb_mainboard *mainboard;
 
 #ifdef CONFIG_CHROMEOS
+	void	*vboot_handoff;
+	u32	vboot_handoff_size;
 	void	*vdat_addr;
 	u32	vdat_size;
 #endif

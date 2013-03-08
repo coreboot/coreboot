@@ -209,6 +209,14 @@ struct cb_vbnv {
 	uint32_t vbnv_size;
 };
 
+#define CB_TAG_VBOOT_HANDOFF	0x0020
+struct cb_vboot_handoff {
+	uint32_t tag;
+	uint32_t size;
+	void *vboot_handoff_addr;
+	uint32_t vboot_handoff_size;
+};
+
 #define CB_TAG_CMOS_OPTION_TABLE 0x00c8
 struct cb_cmos_option_table {
 	u32 tag;

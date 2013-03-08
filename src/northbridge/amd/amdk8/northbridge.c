@@ -33,6 +33,8 @@
 
 #include <cpu/amd/amdk8_sysconf.h>
 
+#include <southbridge/amd/rs690/rs690.h>
+
 struct amdk8_sysconf_t sysconf;
 
 #define MAX_FX_DEVS 8
@@ -531,6 +533,10 @@ static void amdk8_set_resources(device_t dev)
 	struct bus *bus;
 	struct resource *res;
 
+	struct resource *mem_lowest = NULL, *mem_highest = NULL;
+
+	const uint32_t topmem = (uint32_t)bsp_topmem();
+
 	/* Find the nodeid */
 	nodeid = amdk8_nodeid(dev);
 
@@ -559,6 +565,29 @@ static void amdk8_set_resources(device_t dev)
 			res->index = index;
 
 		amdk8_set_resource(dev, res, nodeid);
+
+		if (res->flags & IORESOURCE_MEM) {
+			if (!mem_lowest || (res->base > topmem &&
+						res->base < mem_lowest->base))
+				mem_lowest = res;
+			if (!mem_highest ||
+					(res->base + res->size) >
+					(mem_highest->base + mem_highest->size))
+				mem_highest = res;
+		}
+	}
+
+	if (mem_lowest && mem_lowest->base > topmem) {
+		mem_lowest->size += mem_lowest->base - topmem;
+		mem_lowest->base = topmem;
+		mem_lowest->flags &= ~IORESOURCE_STORED;
+		amdk8_set_resource(dev, mem_lowest, nodeid);
+	}
+	if (mem_highest && (mem_highest->base + mem_highest->size) <
+							EXT_CONF_BASE_ADDRESS) {
+		mem_highest->size = EXT_CONF_BASE_ADDRESS - mem_highest->base;
+		mem_highest->flags &= ~IORESOURCE_STORED;
+		amdk8_set_resource(dev, mem_highest, nodeid);
 	}
 
 	compact_resources(dev);

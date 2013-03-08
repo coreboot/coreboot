@@ -37,7 +37,7 @@ config APIC_ID_OFFSET
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "M5A88PM-V"
+	default "M5A88-V"
 
 config HW_MEM_HOLE_SIZEK
 	hex

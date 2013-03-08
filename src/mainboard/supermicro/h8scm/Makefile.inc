@@ -22,7 +22,6 @@ romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700_cfg.c
 romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += reset.c
 romstage-y += buildOpts.c
 romstage-y += agesawrapper.c
-romstage-y += dimmSpd.c
 romstage-y += BiosCallOuts.c
 romstage-y += platform_oem.c
 
@@ -31,7 +30,6 @@ ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700_cfg.c
 ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += reset.c
 ramstage-y += buildOpts.c
 ramstage-y += agesawrapper.c
-ramstage-y += dimmSpd.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += platform_oem.c
 

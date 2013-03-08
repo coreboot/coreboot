@@ -23,6 +23,7 @@
 #include "Ids.h"
 #include "OptionsIds.h"
 #include "heapManager.h"
+#include <northbridge/amd/agesa/family15/dimmSpd.h>
 
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -80,8 +81,6 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 		BiosHookBeforeExitSelfRefresh
 	},
 };
-
-extern AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PARAMS *info);
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -487,7 +486,11 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
+#ifdef __PRE_RAM__
+	Status = agesa_ReadSPD (Func, Data, ConfigPtr);
+#else
+	Status = AGESA_UNSUPPORTED;
+#endif
 
 	return Status;
 }

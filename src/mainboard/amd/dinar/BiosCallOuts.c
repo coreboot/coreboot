@@ -24,6 +24,8 @@
 #include "OptionsIds.h"
 #include "heapManager.h"
 #include "SB700.h"
+#include <northbridge/amd/agesa/family15/dimmSpd.h>
+#include "OEM.h"		/* SMBUS0_BASE_ADDRESS */
 
 #ifndef SB_GPIO_REG01
 #define SB_GPIO_REG01   1
@@ -35,6 +37,53 @@
 
 #ifndef SB_GPIO_REG27
 #define SB_GPIO_REG27   27
+#endif
+
+#ifdef __PRE_RAM__
+/* This define is used when selecting the appropriate socket for the SPD read
+ * because this is a multi-socket design.
+ */
+#define LTC4305_SMBUS_ADDR    (0x94)
+
+static void select_socket(UINT8 socket_id)
+{
+	AMD_CONFIG_PARAMS StdHeader;
+	UINT32            PciData32;
+	UINT8             PciData8;
+	PCI_ADDR          PciAddress;
+
+	/* Set SMBus MMIO. */
+	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 20, 0, 0x90);
+	PciData32 = (SMBUS0_BASE_ADDRESS & 0xFFFFFFF0) | BIT0;
+	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData32, &StdHeader);
+
+	/* Enable SMBus MMIO. */
+	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 20, 0, 0xD2);
+	LibAmdPciRead(AccessWidth8, PciAddress, &PciData8, &StdHeader); ;
+	PciData8 |= BIT0;
+	LibAmdPciWrite(AccessWidth8, PciAddress, &PciData8, &StdHeader);
+
+	switch (socket_id) {
+	case 0:
+		/* Switch onto the First CPU Socket SMBus */
+		writeSmbusByte(SMBUS0_BASE_ADDRESS, LTC4305_SMBUS_ADDR, 0x80, 0x03);
+		break;
+	case 1:
+		/* Switch onto the Second CPU Socket SMBus */
+		writeSmbusByte(SMBUS0_BASE_ADDRESS, LTC4305_SMBUS_ADDR, 0x40, 0x03);
+		break;
+	default:
+		/* Switch off two CPU Sockets SMBus */
+		writeSmbusByte(SMBUS0_BASE_ADDRESS, LTC4305_SMBUS_ADDR, 0x00, 0x03);
+		break;
+	}
+}
+
+static void restore_socket(void)
+{
+	/* Switch off two CPU Sockets SMBus */
+	writeSmbusByte(SMBUS0_BASE_ADDRESS, LTC4305_SMBUS_ADDR, 0x00, 0x03);
+}
 #endif
 
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
@@ -500,7 +549,18 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	Status = AmdMemoryReadSPD (Func, Data, (AGESA_READ_SPD_PARAMS *)ConfigPtr);
+#ifdef __PRE_RAM__
+	if (ConfigPtr == NULL)
+		return AGESA_ERROR;
+
+	select_socket(((AGESA_READ_SPD_PARAMS *)ConfigPtr)->SocketId);
+
+	Status = agesa_ReadSPD (Func, Data, ConfigPtr);
+
+	restore_socket();
+#else
+	Status = AGESA_UNSUPPORTED;
+#endif
 
 	return Status;
 }

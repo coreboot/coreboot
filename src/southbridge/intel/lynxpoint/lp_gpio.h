@@ -28,8 +28,6 @@
 #define GPIO_SER_BLINK_CS	0x20
 #define GPIO_SER_BLINK_DATA	0x24
 #define GPIO_ROUTE(set)		(0x30 + ((set) * 4))
-#define GPIO_ALT_GPI_SMI_STS	0x50
-#define GPIO_ALT_GPI_SMI_EN	0x54
 #define GPIO_RESET(set)		(0x60 + ((set) * 4))
 #define GPIO_GLOBAL_CONFIG	0x7c
 #define GPIO_IRQ_IS(set)	(0x80 + ((set) * 4))

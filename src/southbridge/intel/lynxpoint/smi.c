@@ -281,12 +281,6 @@ void southbridge_smm_init(void)
 #endif
 	smi_en |= TCO_EN;
 	smi_en |= APMC_EN;
-#if DEBUG_PERIODIC_SMIS
-	/* Set DEBUG_PERIODIC_SMIS in pch.h to debug using
-	 * periodic SMIs.
-	 */
-	smi_en |= PERIODIC_EN;
-#endif
 	smi_en |= SLP_SMI_EN;
 #if 0
 	smi_en |= BIOS_EN;

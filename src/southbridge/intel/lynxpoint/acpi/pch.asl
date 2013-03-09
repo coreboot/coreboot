@@ -23,6 +23,16 @@
 
 Scope(\)
 {
+	// Return TRUE if chipset is LynxPoint-LP
+	Method (ISLP, 0, NotSerialized)
+	{
+		If (LEqual (\_SB.PCI0.LPCB.DIDH, 0x9c)) {
+			Return (1)
+		} else {
+			Return (0)
+		}
+	}
+
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
 
 	OperationRegion(IO_T, SystemIO, 0x800, 0x10)
@@ -33,7 +43,7 @@ Scope(\)
 	}
 
 	// PCH Power Management Registers, located at PMBASE (0x1f.0 0x40.l)
-	OperationRegion(PMIO, SystemIO, DEFAULT_PMBASE, 0x80)
+	OperationRegion(PMIO, SystemIO, DEFAULT_PMBASE, 0xff)
 	Field(PMIO, ByteAcc, NoLock, Preserve)
 	{
 		Offset(0x20),	// GPE0_STS

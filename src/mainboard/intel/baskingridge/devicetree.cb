@@ -48,7 +48,7 @@ chip northbridge/intel/haswell
 			register "gpi1_routing" = "1"
 			register "gpi14_routing" = "2"
 			register "alt_gp_smi_en" = "0x0000"
-			register "gpe0_en" = "0x4000"
+			register "gpe0_en_1" = "0x4000"
 
 			register "ide_legacy_combined" = "0x0"
 			register "sata_ahci" = "0x1"

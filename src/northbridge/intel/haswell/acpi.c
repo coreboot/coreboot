@@ -182,17 +182,12 @@ int init_igd_opregion(igd_opregion_t *opregion)
 	pci_write_config16(igd, SWSCI, reg16);
 
 	/* clear dmisci status */
-	reg16 = inw(DEFAULT_PMBASE + TCO1_STS);
+	reg16 = inw(get_pmbase() + TCO1_STS);
 	reg16 |= DMISCI_STS; // reference code does an &=
-	outw(DEFAULT_PMBASE + TCO1_STS, reg16);
+	outw(get_pmbase() + TCO1_STS, reg16);
 
-	/* clear acpi tco status */
-	outl(DEFAULT_PMBASE + GPE0_STS, TCOSCI_STS);
-
-	/* enable acpi tco scis */
-	reg16 = inw(DEFAULT_PMBASE + GPE0_EN);
-	reg16 |= TCOSCI_EN;
-	outw(DEFAULT_PMBASE + GPE0_EN, reg16);
+	/* clear and enable ACPI TCO SCI */
+	enable_tco_sci();
 
 	return 0;
 }

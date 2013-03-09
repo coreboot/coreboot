@@ -630,11 +630,11 @@ static void pch_lpc_add_io_resources(device_t dev)
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	/* GPIOBASE */
-	pch_lpc_add_io_resource(dev, DEFAULT_GPIOBASE, DEFAULT_GPIOSIZE,
+	pch_lpc_add_io_resource(dev, get_gpiobase(), DEFAULT_GPIOSIZE,
 	                        GPIO_BASE);
 
 	/* PMBASE */
-	pch_lpc_add_io_resource(dev, DEFAULT_PMBASE, 128, PMBASE);
+	pch_lpc_add_io_resource(dev, get_pmbase(), 256, PMBASE);
 
 	/* LPC Generic IO Decode range. */
 	pch_lpc_add_gen_io_resources(dev, config->gen1_dec, LPC_GEN1_DEC);

@@ -106,8 +106,5 @@ static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
 	return bops;
 }
 
-unsigned mainboard_pci_subsystem_vendor_id(struct device *dev);
-unsigned mainboard_pci_subsystem_device_id(struct device *dev);
-
 #endif
 #endif /* PCI_H */

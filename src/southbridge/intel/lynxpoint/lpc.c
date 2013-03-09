@@ -307,49 +307,96 @@ static void pch_rtc_init(struct device *dev)
 	rtc_init(rtc_failed);
 }
 
-/* CougarPoint PCH Power Management init */
-#if 0
-static void cpt_pm_init(struct device *dev)
+/* LynxPoint PCH Power Management init */
+static void lpt_pm_init(struct device *dev)
 {
-	printk(BIOS_DEBUG, "CougarPoint PM init\n");
-	pci_write_config8(dev, 0xa9, 0x47);
-	RCBA32_AND_OR(0x2238, ~0UL, (1 << 6)|(1 << 0));
-	RCBA32_AND_OR(0x228c, ~0UL, (1 << 0));
-	RCBA16_AND_OR(0x1100, ~0UL, (1 << 13)|(1 << 14));
-	RCBA16_AND_OR(0x0900, ~0UL, (1 << 14));
-	RCBA32(0x2304) = 0xc0388400;
-	RCBA32_AND_OR(0x2314, ~0UL, (1 << 5)|(1 << 18));
-	RCBA32_AND_OR(0x2320, ~0UL, (1 << 15)|(1 << 1));
-	RCBA32_AND_OR(0x3314, ~0x1f, 0xf);
-	RCBA32(0x3318) = 0x050f0000;
-	RCBA32(0x3324) = 0x04000000;
-	RCBA32_AND_OR(0x3340, ~0UL, 0xfffff);
-	RCBA32_AND_OR(0x3344, ~0UL, (1 << 1));
-	RCBA32(0x3360) = 0x0001c000;
-	RCBA32(0x3368) = 0x00061100;
-	RCBA32(0x3378) = 0x7f8fdfff;
-	RCBA32(0x337c) = 0x000003fc;
-	RCBA32(0x3388) = 0x00001000;
-	RCBA32(0x3390) = 0x0001c000;
-	RCBA32(0x33a0) = 0x00000800;
-	RCBA32(0x33b0) = 0x00001000;
-	RCBA32(0x33c0) = 0x00093900;
-	RCBA32(0x33cc) = 0x24653002;
-	RCBA32(0x33d0) = 0x062108fe;
-	RCBA32_AND_OR(0x33d4, 0xf000f000, 0x00670060);
-	RCBA32(0x3a28) = 0x01010000;
-	RCBA32(0x3a2c) = 0x01010404;
-	RCBA32(0x3a80) = 0x01041041;
-	RCBA32_AND_OR(0x3a84, ~0x0000ffff, 0x00001001);
-	RCBA32_AND_OR(0x3a84, ~0UL, (1 << 24)); /* SATA 2/3 disabled */
-	RCBA32_AND_OR(0x3a88, ~0UL, (1 << 0));  /* SATA 4/5 disabled */
-	RCBA32(0x3a6c) = 0x00000001;
-	RCBA32_AND_OR(0x2344, 0x00ffff00, 0xff00000c);
-	RCBA32_AND_OR(0x80c, ~(0xff << 20), 0x11 << 20);
-	RCBA32(0x33c8) = 0;
-	RCBA32_AND_OR(0x21b0, ~0UL, 0xf);
+	printk(BIOS_DEBUG, "LynxPoint PM init\n");
 }
-#endif
+
+const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
+	RCBA_RMW_REG_32(0x232c, ~1, 0x00000000),  /* 4 */
+	RCBA_RMW_REG_32(0x1100, ~0, 0x0000c000),  /* 5 */
+	RCBA_RMW_REG_32(0x1100, ~0, 0x00000100),  /* 6 */
+	RCBA_RMW_REG_32(0x1100, ~0, 0x0000003f),  /* 7 */
+	RCBA_RMW_REG_32(0x2320, ~0x60, 0x10),     /* 8? */
+	RCBA_RMW_REG_32(0x3314,  0, 0x00012fff),  /* 9? */
+	RCBA_RMW_REG_32(0x3318,  0, 0x0dcf0400),  /* 10? */
+	RCBA_RMW_REG_32(0x3324,  0, 0x04000000),  /* 11 */
+	RCBA_RMW_REG_32(0x3368,  0, 0x00041400),  /* 12? */
+	RCBA_RMW_REG_32(0x3388,  0, 0x3f8ddbff),  /* 13? */
+	RCBA_RMW_REG_32(0x33ac,  0, 0x00007001),  /* 14? */
+	RCBA_RMW_REG_32(0x33b0,  0, 0x00181900),  /* 15? */
+	RCBA_RMW_REG_32(0x33c0,  0, 0x00060A00),  /* 16? */
+	RCBA_RMW_REG_32(0x33d0,  0, 0x06200840),  /* 17? */
+	RCBA_RMW_REG_32(0x3a28,  0, 0x01010101),  /* 19 */
+	RCBA_RMW_REG_32(0x3a2c,  0, 0x04040404),  /* 20 */
+	RCBA_RMW_REG_32(0x2b1c,  0, 0x03808033),  /* 23? */
+	RCBA_RMW_REG_32(0x2b34,  0, 0x80000008),  /* 24 */
+	RCBA_RMW_REG_32(0x3348,  0, 0x022ddfff),  /* 25? */
+	RCBA_RMW_REG_32(0x334c,  0, 0x00000001),  /* 26 */
+	RCBA_RMW_REG_32(0x3358,  0, 0x0001c000),  /* 27 */
+	RCBA_RMW_REG_32(0x3380,  0, 0x3f8ddbff),  /* 28 */
+	RCBA_RMW_REG_32(0x3384,  0, 0x0001c7e1),  /* 29 */
+	RCBA_RMW_REG_32(0x338c,  0, 0x0001c7e1),  /* ? */
+	RCBA_RMW_REG_32(0x3398,  0, 0x0001c000),  /* 30 */
+	RCBA_RMW_REG_32(0x33a8,  0, 0x00181900),  /* 31? */
+	RCBA_RMW_REG_32(0x33dc,  0, 0x00080000),  /* 32 */
+	RCBA_RMW_REG_32(0x33e0,  0, 0x00000001),  /* 33 */
+	RCBA_RMW_REG_32(0x3a20,  0, 0x00000404),  /* 34 */
+	RCBA_RMW_REG_32(0x3a24,  0, 0x01010101),  /* 35 */
+	RCBA_RMW_REG_32(0x3a30,  0, 0x01010101),  /* 36 */
+	RCBA_RMW_REG_32(0x0410, ~0, 0x00000003),  /* 42 */
+	RCBA_RMW_REG_32(0x2618, ~0, 0x08000000),  /* 43 */
+	RCBA_RMW_REG_32(0x2600, ~0, 0x00000008),  /* 44 */
+	RCBA_RMW_REG_32(0x33b4,  0, 0x00007001),  /* 46? */
+	RCBA_RMW_REG_32(0x3350,  0, 0x022ddfff),  /* 47? */
+	RCBA_RMW_REG_32(0x3354,  0, 0x00000001),  /* ? */
+	RCBA_RMW_REG_32(0x33d4, ~0, 0x08000000),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x33c8, ~0, 0x08000080),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x2b10,  0, 0x0000883c),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x2b14,  0, 0x1e0a4610),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x2b24,  0, 0x40000005),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x2b20,  0, 0x0005db01),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x3a80,  0, 0x05145005),  /* 21? */
+	RCBA_END_CONFIG
+};
+
+/* LynxPoint LP PCH Power Management init */
+static void lpt_lp_pm_init(struct device *dev)
+{
+	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
+	u32 data;
+
+	printk(BIOS_DEBUG, "LynxPoint LP PM init\n");
+
+	pci_write_config8(dev, 0xa9, 0x46);
+
+	pch_config_rcba(lpt_lp_pm_rcba);
+
+	pci_write_config32(dev, 0xac,
+		pci_read_config32(dev, 0xac) | (1 << 21));
+
+	pch_iobp_update(0xCA000000, ~0UL, 0x00000009);
+
+	/* Set RCBA CIR28 0x3A84 based on SATA port enables */
+	data = 0x00001005;
+	/* Port 3 and 2 disabled */
+	if ((config->sata_port_map & ((1 << 3)|(1 << 2))) == 0)
+		data |= (1 << 24) | (1 << 26);
+	/* Port 1 and 0 disabled */
+	if ((config->sata_port_map & ((1 << 1)|(1 << 0))) == 0)
+		data |= (1 << 20) | (1 << 18);
+	RCBA32(0x3a84) = data;
+
+	/* Lock */
+	RCBA32_OR(0x3a6c, 0x00000001);
+
+	/* Set RCBA 0x33D4 after other setup */
+	RCBA32_OR(0x33d4, 0x2fff2fb1);
+
+	/* Set RCBA 0x33C8[15]=1 as last step */
+	RCBA32_OR(0x33c8, (1 << 15));
+}
 
 static void enable_hpet(void)
 {
@@ -366,45 +413,6 @@ static void enable_hpet(void)
 
 static void enable_clock_gating(device_t dev)
 {
-#if CONFIG_INTEL_LYNXPOINT_LP
-	/* LynxPoint LP */
-	u32 reg32;
-	u16 reg16;
-
-	/* DMI */
-	RCBA32_AND_OR(0x2234, ~0UL, 0xf);
-	reg16 = pci_read_config16(dev, GEN_PMCON_1);
-	reg16 &= ~((1 << 11) | (1 << 14));
-	reg16 |= (1 << 5) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 13);
-	reg16 |= (1 << 2); // PCI CLKRUN# Enable
-	pci_write_config16(dev, GEN_PMCON_1, reg16);
-
-	reg32 = pci_read_config32(dev, 0x64);
-	reg32 |= (1 << 6);
-	pci_write_config32(dev, 0x64, reg32);
-
-	RCBA32_AND_OR(0x2614, 0x8fffffff, 0x0f006500);
-	RCBA32_OR(0x900, 0x0000031f);
-
-	reg32 = RCBA32(CG);
-	reg32 |= (1 << 31); // LPC Dynamic
-	reg32 |= (1 << 30); // LP LPC
-	reg32 |= (1 << 28); // GPIO Dynamic
-	reg32 |= (1 << 27); // HPET Dynamic
-	reg32 |= (1 << 26); // LP LPC
-	reg32 |= (1 << 22); // HDA Dynamic
-	reg32 |= (1 << 16); // PCIe Dynamic
-	RCBA32(CG) = reg32;
-
-	RCBA32_OR(0x3434, 0x7); // LP LPC
-
-	RCBA32_AND_OR(0x333c, 0xff0fffff, 0x00800000); // SATA
-
-	RCBA32_OR(0x38c0, 0x3c07); // SPI Dynamic
-
-	pch_iobp_update(0xCF000000, ~0UL, 0x00007001);
-	pch_iobp_update(0xCE00C000, ~0UL, 0x00000001);
-#else
 	/* LynxPoint Mobile */
 	u32 reg32;
 	u16 reg16;
@@ -426,7 +434,47 @@ static void enable_clock_gating(device_t dev)
 	RCBA32(CG) = reg32;
 
 	RCBA32_OR(0x38c0, 0x7); // SPI Dynamic
-#endif
+}
+
+static void enable_lp_clock_gating(device_t dev)
+{
+	/* LynxPoint LP */
+	u32 reg32;
+	u16 reg16;
+
+	/* DMI */
+	RCBA32_AND_OR(0x2234, ~0UL, 0xf);
+	reg16 = pci_read_config16(dev, GEN_PMCON_1);
+	reg16 &= ~((1 << 11) | (1 << 14));
+	reg16 |= (1 << 5) | (1 << 6) | (1 << 7) | (1 << 12) | (1 << 13);
+	reg16 |= (1 << 2); // PCI CLKRUN# Enable
+	pci_write_config16(dev, GEN_PMCON_1, reg16);
+
+	reg32 = pci_read_config32(dev, 0x64);
+	reg32 |= (1 << 6);
+	pci_write_config32(dev, 0x64, reg32);
+
+	RCBA32_AND_OR(0x2614, 0x8bffffff, 0x0a206500);
+	RCBA32_OR(0x900, 0x0000031f);
+
+	reg32 = RCBA32(CG);
+	reg32 |= (1 << 31); // LPC Dynamic
+	reg32 |= (1 << 30); // LP LPC
+	reg32 |= (1 << 28); // GPIO Dynamic
+	reg32 |= (1 << 27); // HPET Dynamic
+	reg32 |= (1 << 26); // LP LPC
+	reg32 |= (1 << 22); // HDA Dynamic
+	reg32 |= (1 << 16); // PCIe Dynamic
+	RCBA32(CG) = reg32;
+
+	RCBA32_OR(0x3434, 0x7); // LP LPC
+
+	RCBA32_AND_OR(0x333c, 0xffcfffff, 0x00c00000); // SATA
+
+	RCBA32_OR(0x38c0, 0x3c07); // SPI Dynamic
+
+	pch_iobp_update(0xCF000000, ~0UL, 0x00007001);
+	pch_iobp_update(0xCE00C000, ~0UL, 0x00000001);
 }
 
 static void pch_set_acpi_mode(void)
@@ -504,13 +552,13 @@ static void lpc_init(struct device *dev)
 	pch_power_options(dev);
 
 	/* Initialize power management */
-	switch (pch_silicon_type()) {
-	default:
-		printk(BIOS_ERR, "Unknown Chipset: 0x%04x\n", dev->device);
+	if (pch_is_lp()) {
+		lpt_lp_pm_init(dev);
+		enable_lp_clock_gating(dev);
+	} else {
+		lpt_pm_init(dev);
+		enable_clock_gating(dev);
 	}
-
-	/* Set the state of the GPIO lines. */
-	//gpio_init(dev);
 
 	/* Initialize the real time clock. */
 	pch_rtc_init(dev);
@@ -521,12 +569,8 @@ static void lpc_init(struct device *dev)
 	/* Initialize the High Precision Event Timers, if present. */
 	enable_hpet();
 
-	/* Initialize Clock Gating */
-	enable_clock_gating(dev);
-
 	setup_i8259();
 
-	/* The OS should do this? */
 	/* Interrupt 9 should be level triggered (SCI) */
 	i8259_configure_irq_trigger(9, 1);
 

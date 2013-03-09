@@ -79,7 +79,6 @@
 #define DEFAULT_RCBA		0xfed1c000
 
 #ifndef __ACPI__
-#define DEBUG_PERIODIC_SMIS 0
 
 #if defined (__SMM__) && !defined(__ASSEMBLER__)
 void intel_pch_finalize_smm(void);

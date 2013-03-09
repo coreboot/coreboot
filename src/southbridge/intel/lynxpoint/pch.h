@@ -132,6 +132,32 @@ int pch_silicon_type(void);
 int pch_is_lp(void);
 u16 get_pmbase(void);
 u16 get_gpiobase(void);
+
+/* Power Management register handling in pmutil.c */
+/* PM1_CNT */
+void enable_pm1_control(u32 mask);
+void disable_pm1_control(u32 mask);
+/* PM1 */
+u16 clear_pm1_status(void);
+void enable_pm1(u32 mask);
+u32 clear_smi_status(void);
+/* SMI */
+void enable_smi(u32 mask);
+void disable_smi(u32 mask);
+/* ALT_GP_SMI */
+u32 clear_alt_smi_status(void);
+void enable_alt_smi(u32 mask);
+/* TCO */
+u32 clear_tco_status(void);
+void enable_tco_sci(void);
+/* GPE0 */
+u32 clear_gpe_status(void);
+void clear_gpe_enable(void);
+void enable_all_gpe(u32 set1, u32 set2, u32 set3, u32 set4);
+void disable_all_gpe(void);
+void enable_gpe(u32 mask);
+void disable_gpe(u32 mask);
+
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
 #include <arch/acpi.h>
@@ -590,10 +616,12 @@ unsigned get_gpios(const int *gpio_num_array);
 #define   TCOSCI_STS	(1 << 6)
 #define   SWGPE_STS	(1 << 2)
 #define   HOT_PLUG_STS	(1 << 1)
+#define GPE0_STS_2	0x24
 #define GPE0_EN		0x28
 #define   PME_B0_EN	(1 << 13)
 #define   PME_EN	(1 << 11)
 #define   TCOSCI_EN	(1 << 6)
+#define GPE0_EN_2	0x2c
 #define SMI_EN		0x30
 #define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
 #define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
@@ -618,6 +646,18 @@ unsigned get_gpios(const int *gpio_num_array);
 #define TCO1_STS	0x64
 #define   DMISCI_STS	(1 << 9)
 #define TCO2_STS	0x66
+#define ALT_GP_SMI_EN2	0x5c
+#define ALT_GP_SMI_STS2	0x5e
+
+/* Lynxpoint LP */
+#define LP_GPE0_STS_1	0x80	/* GPIO 0-31 */
+#define LP_GPE0_STS_2	0x84	/* GPIO 32-63 */
+#define LP_GPE0_STS_3	0x88	/* GPIO 64-94 */
+#define LP_GPE0_STS_4	0x8c	/* Standard GPE */
+#define LP_GPE0_EN_1	0x90
+#define LP_GPE0_EN_2	0x94
+#define LP_GPE0_EN_3	0x98
+#define LP_GPE0_EN_4	0x9c
 
 /*
  * SPI Opcode Menu setup for SPIBAR lockdown

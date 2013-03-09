@@ -21,12 +21,12 @@
 #include <device/pci.h>
 #include <arch/acpi.h>
 #include <cpu/x86/smm.h>
+#include <southbridge/intel/lynxpoint/pch.h>
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
-	u16 pmbase = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f,0)),
-								0x40) & 0xfffe;
+	u16 pmbase = get_pmbase();
 
 	memset((void *) fadt, 0, sizeof(acpi_fadt_t));
 	memcpy(header->signature, "FACP", 4);
@@ -55,14 +55,14 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->pm1b_cnt_blk = 0x0;
 	fadt->pm2_cnt_blk = pmbase + 0x50;
 	fadt->pm_tmr_blk = pmbase + 0x8;
-	fadt->gpe0_blk = pmbase + 0x20;
+	fadt->gpe0_blk = pmbase + 0x80;
 	fadt->gpe1_blk = 0;
 
 	fadt->pm1_evt_len = 4;
 	fadt->pm1_cnt_len = 2;
 	fadt->pm2_cnt_len = 1;
 	fadt->pm_tmr_len = 4;
-	fadt->gpe0_blk_len = 16;
+	fadt->gpe0_blk_len = 32;
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
 	fadt->cst_cnt = 0;
@@ -137,11 +137,11 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->x_pm_tmr_blk.addrl = pmbase + 0x8;
 	fadt->x_pm_tmr_blk.addrh = 0x0;
 
-	fadt->x_gpe0_blk.space_id = 1;
-	fadt->x_gpe0_blk.bit_width = 64;
+	fadt->x_gpe0_blk.space_id = 0;
+	fadt->x_gpe0_blk.bit_width = 0;
 	fadt->x_gpe0_blk.bit_offset = 0;
 	fadt->x_gpe0_blk.resv = 0;
-	fadt->x_gpe0_blk.addrl = pmbase + 0x20;
+	fadt->x_gpe0_blk.addrl = 0;
 	fadt->x_gpe0_blk.addrh = 0x0;
 
 	fadt->x_gpe1_blk.space_id = 1;

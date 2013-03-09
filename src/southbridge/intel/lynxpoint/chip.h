@@ -35,7 +35,7 @@ struct southbridge_intel_lynxpoint_config {
 	uint8_t pirqh_routing;
 
 	/**
-	 * GPI Routing configuration
+	 * GPI Routing configuration for LynxPoint-H
 	 *
 	 * Only the lower two bits have a meaning:
 	 * 00: No effect
@@ -60,8 +60,11 @@ struct southbridge_intel_lynxpoint_config {
 	uint8_t gpi14_routing;
 	uint8_t gpi15_routing;
 
-	uint32_t gpe0_en;
-	uint16_t alt_gp_smi_en;
+	uint32_t gpe0_en_1;
+	uint32_t gpe0_en_2;
+	uint32_t gpe0_en_3;
+	uint32_t gpe0_en_4;
+	uint32_t alt_gp_smi_en;
 
 	/* IDE configuration */
 	uint32_t ide_legacy_combined;

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -184,12 +185,12 @@ static void pch_gpi_routing(device_t dev)
 static void pch_power_options(device_t dev)
 {
 	u8 reg8;
-	u16 reg16, pmbase;
+	u16 reg16;
 	u32 reg32;
 	const char *state;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
-
+	u16 pmbase = get_pmbase();
 	int pwr_on=CONFIG_MAINBOARD_POWER_ON_AFTER_POWER_FAIL;
 	int nmi_option;
 
@@ -257,13 +258,19 @@ static void pch_power_options(device_t dev)
 	reg16 &= ~(1 << 10);	// Disable BIOS_PCI_EXP_EN for native PME
 	pci_write_config16(dev, GEN_PMCON_1, reg16);
 
-	// Set the board's GPI routing.
-	pch_gpi_routing(dev);
+	/*
+	 * Set the board's GPI routing on LynxPoint-H.
+	 * This is done as part of GPIO configuration on LynxPoint-LP.
+	 */
+	if (pch_is_lp())
+		pch_gpi_routing(dev);
 
-	pmbase = pci_read_config16(dev, 0x40) & 0xfffe;
+	/* GPE setup based on device tree configuration */
+	enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,
+		       config->gpe0_en_3, config->gpe0_en_4);
 
-	outl(config->gpe0_en, pmbase + GPE0_EN);
-	outw(config->alt_gp_smi_en, pmbase + ALT_GP_SMI_EN);
+	/* SMI setup based on device tree configuration */
+	enable_alt_smi(config->alt_gp_smi_en);
 
 	/* Set up power management block and determine sleep mode */
 	reg32 = inl(pmbase + 0x04); // PM1_CNT

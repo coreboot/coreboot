@@ -28,6 +28,8 @@ Device (LPCB)
 	OperationRegion(LPC0, PCI_Config, 0x00, 0x100)
 	Field (LPC0, AnyAcc, NoLock, Preserve)
 	{
+		Offset (0x3),
+		DIDH,	8,	// Device ID High Byte
 		Offset (0x40),
 		PMBS,	16,	// PMBASE
 		Offset (0x60),	// Interrupt Routing Registers
@@ -181,36 +183,80 @@ Device (LPCB)
 	{
 		Name (_HID, EISAID("PNP0C02"))
 		Name (_UID, 2)
-		Name (_CRS, ResourceTemplate()
-		{
-			IO (Decode16, 0x2e, 0x2e, 0x1, 0x02)		// First SuperIO
-			IO (Decode16, 0x4e, 0x4e, 0x1, 0x02)		// Second SuperIO
-			IO (Decode16, 0x61, 0x61, 0x1, 0x01)		// NMI Status
-			IO (Decode16, 0x63, 0x63, 0x1, 0x01)		// CPU Reserved
-			IO (Decode16, 0x65, 0x65, 0x1, 0x01)		// CPU Reserved
-			IO (Decode16, 0x67, 0x67, 0x1, 0x01)		// CPU Reserved
-			IO (Decode16, 0x80, 0x80, 0x1, 0x01)		// Port 80 Post
-			IO (Decode16, 0x92, 0x92, 0x1, 0x01)		// CPU Reserved
-			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02)		// SWSMI
-			//IO (Decode16, 0x800, 0x800, 0x1, 0x10)		// ACPI I/O trap
-			IO (Decode16, DEFAULT_PMBASE, DEFAULT_PMBASE, 0x1, 0x80)	// ICH7-M ACPI
 
-#if CONFIG_INTEL_LYNXPOINT_LP
-			// LynxPoint LP GPIO is 1KB
-			IO (Decode16, DEFAULT_GPIOBASE,
-			    DEFAULT_GPIOBASE, 0x1, 0xff)
-			IO (Decode16, Add(DEFAULT_GPIOBASE, 0x100),
-			     Add(DEFAULT_GPIOBASE, 0x100), 0x1, 0xff)
-			IO (Decode16, Add(DEFAULT_GPIOBASE, 0x200),
-			    Add(DEFAULT_GPIOBASE, 0x200), 0x1, 0xff)
-			IO (Decode16, Add(DEFAULT_GPIOBASE, 0x300),
-			    Add(DEFAULT_GPIOBASE, 0x300), 0x1, 0xff)
-#else
-			// LynxPoint GPIO is 128 bytes
-			IO (Decode16, DEFAULT_GPIOBASE,
-			    DEFAULT_GPIOBASE, 0x1, DEFAULT_GPIOSIZE)
-#endif
+		Name (RBUF, ResourceTemplate()
+		{
+			IO (Decode16, 0x2e, 0x2e, 0x1, 0x02) // First SuperIO
+			IO (Decode16, 0x4e, 0x4e, 0x1, 0x02) // Second SuperIO
+			IO (Decode16, 0x61, 0x61, 0x1, 0x01) // NMI Status
+			IO (Decode16, 0x63, 0x63, 0x1, 0x01) // CPU Reserved
+			IO (Decode16, 0x65, 0x65, 0x1, 0x01) // CPU Reserved
+			IO (Decode16, 0x67, 0x67, 0x1, 0x01) // CPU Reserved
+			IO (Decode16, 0x80, 0x80, 0x1, 0x01) // Port 80 Post
+			IO (Decode16, 0x92, 0x92, 0x1, 0x01) // CPU Reserved
+			IO (Decode16, 0xb2, 0xb2, 0x1, 0x02) // SWSMI
+			IO (Decode16, DEFAULT_PMBASE, DEFAULT_PMBASE,
+			    0x1, 0xff)
+
+			// GPIO region may be 128 bytes or 4096 bytes
+			IO (Decode16, DEFAULT_GPIOBASE, DEFAULT_GPIOBASE,
+			    0x1, 0x00, GPR1)
+			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR2)
+			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR3)
+			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR4)
 		})
+
+		Method (_CRS, 0, NotSerialized)
+		{
+			CreateByteField (^RBUF, ^GPR1._LEN, R1LN)
+			CreateByteField (^RBUF, ^GPR2._LEN, R2LN)
+			CreateByteField (^RBUF, ^GPR3._LEN, R3LN)
+			CreateByteField (^RBUF, ^GPR4._LEN, R4LN)
+
+			CreateWordField (^RBUF, ^GPR1._MIN, R1MN)
+			CreateWordField (^RBUF, ^GPR2._MIN, R2MN)
+			CreateWordField (^RBUF, ^GPR3._MIN, R3MN)
+			CreateWordField (^RBUF, ^GPR4._MIN, R4MN)
+
+			CreateWordField (^RBUF, ^GPR1._MAX, R1MX)
+			CreateWordField (^RBUF, ^GPR2._MAX, R2MX)
+			CreateWordField (^RBUF, ^GPR3._MAX, R3MX)
+			CreateWordField (^RBUF, ^GPR4._MAX, R4MX)
+
+			// Update GPIO region for LynxPoint-LP
+			If (\ISLP ()) {
+				// LynxPoint-LP
+				Store (R1MN, Local0)
+
+				// Update GPIO bank 1
+				Store (Local0, R1MN)
+				Store (Local0, R1MX)
+				Store (0xff, R1LN)
+
+				// Update GPIO bank 2
+				Add (Local0, 0x100, Local0)
+				Store (Local0, R2MN)
+				Store (Local0, R2MX)
+				Store (0xff, R2LN)
+
+				// Update GPIO bank 3
+				Add (Local0, 0x100, Local0)
+				Store (Local0, R3MN)
+				Store (Local0, R3MN)
+				Store (0xff, R3LN)
+
+				// Update GPIO bank 4
+				Add (Local0, 0x100, Local0)
+				Store (Local0, R4MN)
+				Store (Local0, R4MN)
+				Store (0xff, R4LN)
+			} Else {
+				// LynxPoint-H
+				// Update GPIO region length
+				Store (DEFAULT_GPIOSIZE, R1LN)
+			}
+			Return (RBUF)
+		}
 	}
 
 	Device (RTC)	// Real Time Clock

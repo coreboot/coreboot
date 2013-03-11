@@ -37,6 +37,17 @@ void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, dev->path.pnp.port);
 }
 
+static void w83627dhg_enable_UR2(device_t dev)
+{
+	u8 reg8;
+
+	pnp_enter_ext_func_mode(dev);
+	reg8 = pnp_read_config(dev, 0x2c);
+	reg8 |= (0x3);
+	pnp_write_config(dev, 0x2c, reg8); // Set pins 78-85-> UART B
+	pnp_exit_ext_func_mode(dev);
+}
+
 static void w83627dhg_init(device_t dev)
 {
 	struct superio_winbond_w83627dhg_config *conf = dev->chip_info;
@@ -45,6 +56,9 @@ static void w83627dhg_init(device_t dev)
 		return;
 
 	switch(dev->path.pnp.device) {
+	case W83627DHG_SP2:
+		w83627dhg_enable_UR2(dev);
+		break;
 	case W83627DHG_KBC:
 		pc_keyboard_init(&conf->keyboard);
 		break;

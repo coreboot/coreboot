@@ -70,8 +70,13 @@ SB800_FWM_POSITION=$(shell printf %u $(CONFIG_SB800_FWM_POSITION))
 #assume the cbfs header is less than 128 bytes.
 ROMSIG_SIZE=16
 
-SB800_IMC_POSITION_UNALIGN=$(shell echo $(SB800_FWM_POSITION) $(ROMSIG_SIZE) 128 65535 | awk '{print $$1 + $$2 + $$3 + $$4}')
-SB800_IMC_POSITION=$(shell echo $(SB800_IMC_POSITION_UNALIGN) | awk '{print $$1 - $$1 % 65536}')
+# MAWK's limit for unsigned long is 0x7FFF_FFFF.  To work around this, remove
+# the top 0xF000_0000 (4026531840) from the calculation and add it back in the
+# printf later.
+SB800_IMC_POSITION_UNALIGN=$(shell echo $(SB800_FWM_POSITION) $(ROMSIG_SIZE) \
+		128 65535 | awk '{print $$1 - 4026531840 + $$2 + $$3 + $$4}')
+SB800_IMC_POSITION=$(shell echo $(SB800_IMC_POSITION_UNALIGN) \
+		| awk '{printf ("0xF%X", $$1 - $$1 % 65536)}')
 
 $(obj)/coreboot_SB800_romsig.bin: \
 			$(call strip_quotes, $(CONFIG_SB800_IMC_FWM_FILE)) \

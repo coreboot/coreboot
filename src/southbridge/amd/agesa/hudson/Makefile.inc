@@ -25,7 +25,8 @@ HUDSON_FWM_POSITION=$(shell printf %u $(CONFIG_HUDSON_FWM_POSITION))
 #assume the cbfs header is less than 128 bytes.
 ROMSIG_SIZE=16
 ifeq ($(CONFIG_HUDSON_XHCI_FWM), y)
-HUDSON_XHCI_POSITION=$(shell echo $(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 | awk '{print $$1 + $$2 + $$3}')
+HUDSON_XHCI_POSITION=$(shell echo $(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 \
+	| awk '{printf("%.0f", $$1 + $$2 + $$3)}')
 XHCI_FWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_HUDSON_XHCI_FWM_FILE)))
 else
 HUDSON_XHCI_POSITION=0
@@ -34,7 +35,8 @@ endif
 
 ifeq ($(CONFIG_HUDSON_GEC_FWM), y)
 HUDSON_GEC_POSITION=$(shell echo $(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 \
-		$(XHCI_FWM_SIZE) 128 | awk '{print $$1 + $$2 + $$3 + $$4 + $$5}')
+	$(XHCI_FWM_SIZE) 128 \
+	| awk '{printf("%.0f", $$1 + $$2 + $$3 + $$4 + $$5)}')
 GEC_FWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_HUDSON_GEC_FWM_FILE)))
 else
 HUDSON_GEC_POSITION=0
@@ -42,10 +44,11 @@ GEC_FWM_SIZE=0
 endif
 
 ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
-HUDSON_IMC_POSITION_UNALIGN=$(shell echo $(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 \
-		$(XHCI_FWM_SIZE) 128 \
-		$(GEC_FWM_SIZE) 128 65535 | awk '{print $$1 + $$2 + $$3 + $$4 + $$5 + $$6 + $$7 + $$8}')
-HUDSON_IMC_POSITION=$(shell echo $(HUDSON_IMC_POSITION_UNALIGN) | awk '{print $$1 - $$1 % 65536}')
+HUDSON_IMC_POSITION_UNALIGN=$(shell echo $(HUDSON_FWM_POSITION) \
+	$(ROMSIG_SIZE) 128 $(XHCI_FWM_SIZE) 128 $(GEC_FWM_SIZE) 128 65535 \
+	| awk '{printf("%.0f", $$1 + $$2 + $$3 + $$4 + $$5 + $$6 + $$7 + $$8)}')
+HUDSON_IMC_POSITION=$(shell echo $(HUDSON_IMC_POSITION_UNALIGN) \
+	| awk '{printf("%.0f", $$1 - $$1 % 65536)}')
 else
 HUDSON_IMC_POSITION=0
 endif

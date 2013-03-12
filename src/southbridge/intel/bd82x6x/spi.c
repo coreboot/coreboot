@@ -316,7 +316,8 @@ static inline int get_ich_version(uint16_t device_id)
 	if ((device_id >= PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MIN &&
 	     device_id <= PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MAX) ||
 	    (device_id >= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MIN &&
-	     device_id <= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MAX))
+	     device_id <= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MAX)
+	    || device_id == 0x3b07)
 		return 9;
 
 	return 0;
@@ -383,6 +384,13 @@ void spi_init(void)
 			ich9_spi_regs *ich9_spi =
 				(ich9_spi_regs *)(rcrb + ich9_spibar_offset);
 			ichspi_lock = readw_(&ich9_spi->hsfs) & HSFS_FLOCKDN;
+			switch (0)
+			  {
+			  case ((char *) ich9_spi->opmenu - (char *)ich9_spi == 0x98):
+			    break;
+			  case 0:
+			    break;
+			  }
 			cntlr.opmenu = ich9_spi->opmenu;
 			cntlr.menubytes = sizeof(ich9_spi->opmenu);
 			cntlr.optype = &ich9_spi->optype;

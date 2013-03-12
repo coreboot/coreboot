@@ -67,7 +67,7 @@ static inline struct cpuid_result cpuid_ext(int op, unsigned ecx)
 		  "=c" (result.ecx),
 		  "=d" (result.edx)
 		: "0" (op), "2" (ecx)
-		: "edi");
+		: "rdi");
 	return result;
 }
 

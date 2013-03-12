@@ -36,6 +36,9 @@
 #if CONFIG_CONSOLE_CBMEM
 #include <console/cbmem_console.h>
 #endif
+#if CONFIG_SPKMODEM
+#include <console/spkmodem.h>
+#endif
 
 #ifndef __PRE_RAM__
 void console_tx_flush(void);

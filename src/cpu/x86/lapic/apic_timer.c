@@ -103,3 +103,20 @@ void udelay(u32 usecs)
 		value = lapic_read(LAPIC_TMCCT);
 	} while((start - value) < ticks);
 }
+
+void ns100delay(u32 ns100secs)
+{
+	u32 start, value, ticks;
+
+	if (!timer_fsb || (lapic_read(LAPIC_LVTT) &
+		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED)) !=
+		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED))
+		init_timer();
+
+	/* Calculate the number of ticks to run, our FSB runs at timer_fsb Mhz */
+	ticks = (ns100secs * timer_fsb) / 10;
+	start = lapic_read(LAPIC_TMCCT);
+	do {
+		value = lapic_read(LAPIC_TMCCT);
+	} while((start - value) < ticks);
+}

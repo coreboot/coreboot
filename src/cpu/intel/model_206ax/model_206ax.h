@@ -23,7 +23,7 @@
 #define _CPU_INTEL_MODEL_206AX_H
 
 /* SandyBridge/IvyBridge bus clock is fixed at 100MHz */
-#define SANDYBRIDGE_BCLK		100
+#define SANDYBRIDGE_BCLK		133
 
 #define IA32_FEATURE_CONTROL		0x3a
 #define  CPUID_VMX			(1 << 5)
@@ -92,8 +92,8 @@
 #define MSR_TURBO_ACTIVATION_RATIO	0x64c
 
 /* P-state configuration */
-#define PSS_MAX_ENTRIES			8
-#define PSS_RATIO_STEP			2
+#define PSS_MAX_ENTRIES			16
+#define PSS_RATIO_STEP			1
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 

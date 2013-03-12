@@ -26,11 +26,38 @@
 #define ACPIGEN_MAXLEN 0xfff
 
 #include <string.h>
+
+#ifndef REAL
+#define REAL 1
+#endif
+
+#if !REAL
+typedef unsigned char u8;
+typedef unsigned int u32;
+#define CONFIG_GENERATE_ACPI_TABLES 1
+#endif
+
 #include <arch/acpigen.h>
+#if REAL
 #include <console/console.h>
+#endif
 #include <device/device.h>
 
+#if !REAL
+#undef ASSERT
+#define ASSERT(x)
+#include <stdio.h>
+#define printk(cnf, fmt, x...) printf (fmt, ## x)
+
+#endif
+
+#if REAL
 static char *gencurrent;
+#else
+char result[1048576];
+char *gencurrent = result;
+
+#endif
 
 char *len_stack[ACPIGEN_LENSTACK_SIZE];
 int ltop = 0;
@@ -692,6 +719,7 @@ static void acpigen_add_mainboard_rsvd_io(void *gp, struct device *dev,
 	}
 }
 
+#if REAL
 int acpigen_write_mainboard_resource_template(void)
 {
 	int len;
@@ -727,3 +755,4 @@ int acpigen_write_mainboard_resources(const char *scope, const char *name)
 	acpigen_patch_len(len - 1);
 	return len;
 }
+#endif

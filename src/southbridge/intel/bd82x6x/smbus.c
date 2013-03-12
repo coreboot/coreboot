@@ -59,7 +59,7 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 }
 
 static struct smbus_bus_operations lops_smbus_bus = {
-	.read_byte	= lsmbus_read_byte,
+	.read_byte	= lsmbus_read_byte
 };
 
 static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -100,7 +100,7 @@ static struct device_operations smbus_ops = {
 	.ops_pci		= &smbus_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0 };
+static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0x3b30, 0 };
 
 static const struct pci_driver pch_smbus __pci_driver = {
 	.ops	 = &smbus_ops,

@@ -54,51 +54,13 @@ Device (MCHC)
 		,	11,	//
 		DMBR,	24,	// DMIBAR
 
-		Offset (0x70),	// ME Base Address
-		MEBA,	 64,
 
-		// ...
+		Offset (0xa0),
+		TOM,	 16,
+		TUUD,	 16,
 
-		Offset (0x80),	// PAM0
-		,	 4,
-		PM0H,	 2,
-		,	 2,
-		Offset (0x81),	// PAM1
-		PM1L,	 2,
-		,	 2,
-		PM1H,	 2,
-		,	 2,
-		Offset (0x82),	// PAM2
-		PM2L,	 2,
-		,	 2,
-		PM2H,	 2,
-		,	 2,
-		Offset (0x83),	// PAM3
-		PM3L,	 2,
-		,	 2,
-		PM3H,	 2,
-		,	 2,
-		Offset (0x84),	// PAM4
-		PM4L,	 2,
-		,	 2,
-		PM4H,	 2,
-		,	 2,
-		Offset (0x85),	// PAM5
-		PM5L,	 2,
-		,	 2,
-		PM5H,	 2,
-		,	 2,
-		Offset (0x86),	// PAM6
-		PM6L,	 2,
-		,	 2,
-		PM6H,	 2,
-		,	 2,
-
-		Offset (0xa0),	// Top of Used Memory
-		TOM,	 64,
-
-		Offset (0xbc),	// Top of Low Used Memory
-		TLUD,	 32,
+		Offset (0xb0),	// Top of Low Used Memory
+		TLUD,	 16,
 	}
 
 	Mutex (CTCM, 1)		/* CTDP Switch Mutex (sync level 1) */
@@ -365,14 +327,17 @@ Method (_CRS, 0, Serialized)
 	// Fix up PCI memory region
 	// Start with Top of Lower Usable DRAM
 	Store (^MCHC.TLUD, Local0)
-	Store (^MCHC.MEBA, Local1)
+	ShiftRight (Local0, 4, Local0)
+	Store (^MCHC.TUUD, Local1)
 
 	// Check if ME base is equal
 	If (LEqual (Local0, Local1)) {
 		// Use Top Of Memory instead
 		Store (^MCHC.TOM, Local0)
+		ShiftRight (Local0, 6, Local0)
 	}
 
+	ShiftLeft (Local0, 20, Local0)
 	Store (Local0, PMIN)
 	Add(Subtract(PMAX, PMIN), 1, PLEN)
 

@@ -20,18 +20,121 @@
  * MA 02110-1301 USA
  */
 
+#ifndef REAL
+#define REAL 1
+#endif
+
+#if !REAL
+#define I386_STDINT_H 1
+       #include <stdint.h>
+
+/* Exact integral types */
+typedef unsigned char      uint8_t;
+typedef signed char        int8_t;
+
+typedef unsigned short     uint16_t;
+typedef signed short       int16_t;
+
+typedef unsigned int       uint32_t;
+typedef signed int         int32_t;
+
+typedef unsigned long long uint64_t;
+
+
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+typedef int8_t s8;
+typedef int16_t s16;
+typedef int32_t s32;
+
+       #include <sys/types.h>
+#endif
+#if REAL
 #include <types.h>
 #include <console/console.h>
+#endif
+
+#if !REAL
+
+#define CONFIG_GENERATE_ACPI_TABLES 1
+
+#include <stdio.h>
+#define printk(cnf, fmt, args...) printf (fmt, ##args)
+#endif
+
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/cpu.h>
+#if REAL
 #include <cpu/x86/msr.h>
+#else
+typedef struct msr_struct
+{
+	unsigned lo;
+	unsigned hi;
+} msr_t;
+
+static int fd_msr;
+#include <errno.h>
+#include <stdlib.h>
+
+       #include <sys/types.h>
+       #include <sys/stat.h>
+       #include <fcntl.h>
+
+
+msr_t rdmsr(int addr)
+{
+	uint32_t buf[2];
+	msr_t msr = { 0xffffffff, 0xffffffff };
+
+	if (lseek(fd_msr, (off_t) addr, SEEK_SET) == -1) {
+		perror("Could not lseek() to MSR");
+		close(fd_msr);
+		exit(1);
+	}
+
+	if (read(fd_msr, buf, 8) == 8) {
+		msr.lo = buf[0];
+		msr.hi = buf[1];
+		return msr;
+	}
+		// A severe error.
+	fprintf(stderr, "addr = %x", addr);
+	perror("Could not read MSR");
+		close(fd_msr);
+		exit(1);
+
+	return msr;
+}
+
+#endif
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
+#if REAL
 #include <device/device.h>
 #include <device/pci.h>
+#endif
+
 #include "model_206ax.h"
 #include "chip.h"
+
+#if !REAL
+int cpu_config_tdp_levels(void)
+{
+	msr_t platform_info;
+
+	/* Minimum CPU revision */
+	if (cpuid_eax(1) < IVB_CONFIG_TDP_MIN_CPUID)
+		return 0;
+
+	/* Bits 34:33 indicate how many levels supported */
+	platform_info = rdmsr(MSR_PLATFORM_INFO);
+	return (platform_info.hi >> 1) & 3;
+}
+#endif
 
 static int get_cores_per_package(void)
 {
@@ -45,6 +148,8 @@ static int get_cores_per_package(void)
 
 	result = cpuid_ext(0xb, 1);
 	cores = result.ebx & 0xff;
+
+	printk (BIOS_DEBUG, "0x%x cores\n", cores);
 
 	return cores;
 }
@@ -85,6 +190,7 @@ static int generate_cstate_entries(acpi_cstate_t *cstates,
 	return length;
 }
 
+#if REAL
 static int generate_C_state_entries(void)
 {
 	struct cpu_info *info;
@@ -131,7 +237,7 @@ static int generate_C_state_entries(void)
 	acpigen_patch_len(len - 1);
 	return len;
 }
-
+#endif
 static acpi_tstate_t tss_table_fine[] = {
 	{ 100, 1000, 0, 0x00, 0 },
 	{ 94, 940, 0, 0x1f, 0 },
@@ -213,7 +319,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 {
 	int len, len_pss;
 	int ratio_min, ratio_max, ratio_turbo, ratio_step;
-	int coord_type, power_max, power_unit, num_entries;
+	int coord_type, power_max, num_entries;
 	int ratio, power, clock, clock_max;
 	msr_t msr;
 
@@ -237,14 +343,20 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		/* Max Non-Turbo Ratio */
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
-	clock_max = ratio_max * SANDYBRIDGE_BCLK;
+	clock_max = ratio_max * SANDYBRIDGE_BCLK + ratio_max / 3;
 
 	/* Calculate CPU TDP in mW */
-	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
-	power_unit = 2 << ((msr.lo & 0xf) - 1);
-	msr = rdmsr(MSR_PKG_POWER_SKU);
-	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
-
+#if 0
+	{
+	  int power_unit;
+	  msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
+	  power_unit = 2 << ((msr.lo & 0xf) - 1);
+	  msr = rdmsr(MSR_PKG_POWER_SKU);
+	  power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
+	}
+#else
+	power_max = 25000;
+#endif
 	/* Write _PCT indicating use of FFixedHW */
 	len = acpigen_write_empty_PCT();
 
@@ -263,6 +375,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	while (num_entries > PSS_MAX_ENTRIES-1) {
 		ratio_step <<= 1;
 		num_entries >>= 1;
+		printk (BIOS_DEBUG, "too much\n");
 	}
 
 	/* P[T] is Turbo state if enabled */
@@ -279,8 +392,8 @@ static int generate_P_state_entries(int core, int cores_per_package)
 			power_max,		/*mW*/
 			PSS_LATENCY_TRANSITION,	/*lat1*/
 			PSS_LATENCY_BUSMASTER,	/*lat2*/
-			ratio_turbo << 8,	/*control*/
-			ratio_turbo << 8);	/*status*/
+			ratio_turbo,	/*control*/
+			ratio_turbo);	/*status*/
 	} else {
 		/* _PSS package count without Turbo */
 		len_pss = acpigen_write_package(num_entries + 1);
@@ -292,8 +405,8 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		power_max,		/*mW*/
 		PSS_LATENCY_TRANSITION,	/*lat1*/
 		PSS_LATENCY_BUSMASTER,	/*lat2*/
-		ratio_max << 8,		/*control*/
-		ratio_max << 8);	/*status*/
+		ratio_max,		/*control*/
+		ratio_max);	/*status*/
 
 	/* Generate the remaining entries */
 	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
@@ -301,15 +414,15 @@ static int generate_P_state_entries(int core, int cores_per_package)
 
 		/* Calculate power at this ratio */
 		power = calculate_power(power_max, ratio_max, ratio);
-		clock = ratio * SANDYBRIDGE_BCLK;
+		clock = ratio * SANDYBRIDGE_BCLK + ratio / 3;
 
 		len_pss += acpigen_write_PSS_package(
 			clock,			/*MHz*/
 			power,			/*mW*/
 			PSS_LATENCY_TRANSITION,	/*lat1*/
 			PSS_LATENCY_BUSMASTER,	/*lat2*/
-			ratio << 8,		/*control*/
-			ratio << 8);		/*status*/
+			ratio,		/*control*/
+			ratio);		/*status*/
 	}
 
 	/* Fix package length */
@@ -323,7 +436,11 @@ void generate_cpu_entries(void)
 {
 	int len_pr;
 	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
+#if REAL
 	int totalcores = dev_count_cpu();
+#else
+	int totalcores = 4;
+#endif
 	int cores_per_package = get_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
 
@@ -346,9 +463,10 @@ void generate_cpu_entries(void)
 			len_pr += generate_P_state_entries(
 				cpuID-1, cores_per_package);
 
+#if REAL
 			/* Generate C-state tables */
 			len_pr += generate_C_state_entries();
-
+#endif
 			/* Generate T-state tables */
 			len_pr += generate_T_state_entries(
 				cpuID-1, cores_per_package);
@@ -362,3 +480,50 @@ void generate_cpu_entries(void)
 struct chip_operations cpu_intel_model_206ax_ops = {
 	CHIP_NAME("Intel SandyBridge/IvyBridge CPU")
 };
+
+#if !REAL
+
+extern char result[1048576];
+extern char *gencurrent;
+
+u8 acpi_checksum(u8 *table, u32 length)
+{
+	u8 ret = 0;
+	while (length--) {
+		ret += *table;
+		table++;
+	}
+	return -ret;
+}
+
+int
+main (void)
+{
+  FILE *out;
+  fd_msr = open("/dev/cpu/0/msr", O_RDWR);
+
+	acpi_header_t *ssdt;
+	ssdt = gencurrent;
+	gencurrent = ssdt + 1;
+	memset((void *)ssdt, 0, sizeof(acpi_header_t));
+
+	memcpy(&ssdt->signature, "SSDT", 4);
+	ssdt->revision = 2; /* ACPI 1.0/2.0: ?, ACPI 3.0/4.0: 2 */
+	memcpy(&ssdt->oem_id, OEM_ID, 6);
+	memcpy(&ssdt->oem_table_id, "CORE       ", 8);
+	ssdt->oem_revision = 42;
+	memcpy(&ssdt->asl_compiler_id, ASLC, 4);
+	ssdt->asl_compiler_revision = 42;
+	ssdt->length = sizeof(acpi_header_t);
+
+	generate_cpu_entries();
+
+	/* (Re)calculate length and checksum. */
+	ssdt->length = gencurrent - (unsigned long)ssdt;
+	ssdt->checksum = acpi_checksum((void *)ssdt, ssdt->length);
+
+  out = fopen ("acpi.aml", "wb");
+  fwrite (result, 1, gencurrent -result, out);
+  return 0;
+}
+#endif

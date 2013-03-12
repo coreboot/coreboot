@@ -19,9 +19,35 @@
  * MA 02110-1301 USA
  */
 
+#ifndef REAL
+#define REAL 1
+#endif
+
+#if !REAL
+typedef unsigned char u8;
+typedef unsigned int u32;
+#define CONFIG_GENERATE_ACPI_TABLES 1
+#include <stdio.h>
+#define printk(cnf, fmt, args...) printf (fmt, ## args)
+
+#endif
+
+#if REAL
 #include <console/console.h>
+#endif
 #include <cpu/intel/turbo.h>
+#if REAL
 #include <cpu/x86/msr.h>
+#else
+#include <stdint.h>
+
+typedef struct msr_struct
+{
+	unsigned lo;
+	unsigned hi;
+} msr_t;
+msr_t rdmsr(int addr);
+#endif
 #include <arch/cpu.h>
 
 static int turbo_state = TURBO_UNKNOWN;
@@ -69,6 +95,7 @@ int get_turbo_state(void)
 	return turbo_state;
 }
 
+#if REAL
 /*
  * Try to enable Turbo mode.
  */
@@ -88,3 +115,4 @@ void enable_turbo(void)
 		printk(BIOS_INFO, "Turbo has been enabled\n");
 	}
 }
+#endif

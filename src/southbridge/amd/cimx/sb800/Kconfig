@@ -46,7 +46,7 @@ config IDE_COMBINED_MODE
 
 choice
 	prompt "SATA Mode"
-	default SB800_SATA_IDE
+	default SB800_SATA_AHCI
 	help
 	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
 	  The default is NATIVE.

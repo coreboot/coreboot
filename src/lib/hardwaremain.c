@@ -71,6 +71,8 @@ void hardwaremain(int boot_complete)
 	/* console_init() MUST PRECEDE ALL printk()! */
 	console_init();
 
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	post_code(POST_CONSOLE_READY);
 
 	printk(BIOS_NOTICE, "coreboot-%s%s %s %s...\n",
@@ -84,34 +86,52 @@ void hardwaremain(int boot_complete)
 		hard_reset();
 	}
 
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	timestamp_stash(TS_DEVICE_ENUMERATE);
+
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	/* Initialize chips early, they might disable unused devices. */
 	dev_initialize_chips();
 
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
 	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
+
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	timestamp_stash(TS_DEVICE_CONFIGURE);
 	/* Now compute and assign the bus resources. */
 	dev_configure();
 	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
 
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	timestamp_stash(TS_DEVICE_ENABLE);
 	/* Now actually enable devices on the bus */
 	dev_enable();
 	post_code(POST_DEVICES_ENABLED);
+
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	timestamp_stash(TS_DEVICE_INITIALIZE);
 	/* And of course initialize devices on the bus */
 	dev_initialize();
 	post_code(POST_DEVICES_INITIALIZED);
 
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	timestamp_stash(TS_DEVICE_DONE);
+
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 #if CONFIG_WRITE_HIGH_TABLES
 	cbmem_initialize();
@@ -119,12 +139,15 @@ void hardwaremain(int boot_complete)
 	cbmemc_reinit();
 #endif
 #endif
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	timestamp_sync();
 
 #if CONFIG_HAVE_ACPI_RESUME
 	suspend_resume();
 	post_code(0x8a);
 #endif
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	timestamp_add_now(TS_CBMEM_POST);
 
@@ -134,13 +157,16 @@ void hardwaremain(int boot_complete)
 #endif
 
 	timestamp_add_now(TS_WRITE_TABLES);
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
 				    CONFIG_CBFS_PREFIX "/payload");

@@ -22,8 +22,9 @@
 #define SOUTHBRIDGE_INTEL_BD82X6X_PCH_H
 
 /* PCH types */
-#define PCH_TYPE_CPT	0x1c /* CougarPoint */
-#define PCH_TYPE_PPT	0x1e /* IvyBridge */
+#define PCH_TYPE_CPT	   0x1c /* CougarPoint */
+#define PCH_TYPE_PPT	   0x1e /* IvyBridge */
+#define PCH_TYPE_MOBILE5   0x3b
 
 /* PCH stepping values for LPC device */
 #define PCH_STEP_A0	0
@@ -41,11 +42,11 @@
  * again. But handling static BARs is a generic problem that should be
  * solved in the device allocator.
  */
-#define SMBUS_IO_BASE		0x0400
+#define SMBUS_IO_BASE		0x1100
 #define SMBUS_SLAVE_ADDR	0x24
 /* TODO Make sure these don't get changed by stage2 */
-#define DEFAULT_GPIOBASE	0x0480
-#define DEFAULT_PMBASE		0x0500
+#define DEFAULT_GPIOBASE	0x1180
+#define DEFAULT_PMBASE		0x1000
 
 #define DEFAULT_RCBA		0xfed1c000
 
@@ -71,6 +72,9 @@ void pch_log_state(void);
 void enable_smbus(void);
 void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
+int smbus_write_byte(unsigned device, unsigned address, u8 data);
+int smbus_block_read(unsigned device, unsigned cmd, u8 bytes, u8 *buf);
+int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #endif
 #endif
@@ -339,6 +343,7 @@ int early_spi_read(u32 offset, u32 size, u8 *buffer);
 #define D31IP		0x3100	/* 32bit */
 #define D31IP_TTIP	24	/* Thermal Throttle Pin */
 #define D31IP_SIP2	20	/* SATA Pin 2 */
+#define D31IP_UNKIP	16
 #define D31IP_SMIP	12	/* SMBUS Pin */
 #define D31IP_SIP	8	/* SATA Pin */
 #define D30IP		0x3104	/* 32bit */

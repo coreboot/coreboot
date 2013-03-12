@@ -245,6 +245,8 @@ static unsigned int range_to_mtrr(unsigned int reg,
 {
 	unsigned long hole_startk = 0, hole_sizek = 0;
 
+	printk (BIOS_ERR, "range_to_mtrr\n");
+
 	if (!range_sizek) {
 		/* If there's no MTRR hole, this function will bail out
 		 * here when called for the hole.
@@ -261,28 +263,36 @@ static unsigned int range_to_mtrr(unsigned int reg,
 		return reg;
 	}
 
-#define MIN_ALIGN 0x10000 /* 64MB */
+	printk (BIOS_ERR, "was: %lx + %lx\n", range_startk, range_sizek);
 
-	if (above4gb == 2 && type == MTRR_TYPE_WRBACK &&
-	    range_sizek > MIN_ALIGN && range_sizek % MIN_ALIGN) {
-		/*
-		 * If this range is not divisible then instead
-		 * make a larger range and carve out an uncached hole.
-		 */
-		hole_startk = range_startk + range_sizek;
-		hole_sizek = MIN_ALIGN - (range_sizek % MIN_ALIGN);
-		range_sizek += hole_sizek;
+	if (above4gb == 2 && type == MTRR_TYPE_WRBACK) {
+	  int i;
+	  for (i = 30; i > 0; i--)
+	    if (((range_sizek >> (i - 1)) & 0xf) == 0xe)
+	      {
+		hole_sizek += (1 << i);
+		range_sizek += (1 << i);
+		printk (BIOS_ERR, "i=%d\n", i);
+	      }
+	  hole_startk = range_startk + range_sizek - hole_sizek;
 	}
+
+	printk (BIOS_ERR, "became: (%lx + %lx) - (%lx + %lx)\n", range_startk, range_sizek, hole_startk, hole_sizek);
 
 	while(range_sizek) {
 		unsigned long max_align, align;
 		unsigned long sizek;
+
+		printk (BIOS_ERR, "i=%lx\n", range_sizek);
+
 		/* Compute the maximum size I can make a range */
 		max_align = fls(range_startk);
 		align = fms(range_sizek);
 		if (align > max_align) {
 			align = max_align;
 		}
+		if (align > 21)
+		  align = 21;
 		sizek = 1 << align;
 
 		/* if range is above 4GB, MTRR is needed

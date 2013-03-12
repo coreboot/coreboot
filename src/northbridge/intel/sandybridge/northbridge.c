@@ -104,19 +104,6 @@ static void add_fixed_resources(struct device *dev, int index)
 	struct resource *resource;
 	u32 pcie_config_base, pcie_config_size;
 
-	/* Using uma_resource() here would fail as base & size cannot
-	 * be used as-is for a single MTRR. This would cause excessive
-	 * use of MTRRs.
-	 *
-	 * Use of mmio_resource() instead does not create UC holes by using
-	 * MTRRs, but making these regions uncacheable is taken care of by
-	 * making sure they do not overlap with any ram_resource().
-	 *
-	 * The resources can be changed to use separate mmio_resource()
-	 * calls after MTRR code is able to merge them wisely.
-	 */
-	mmio_resource(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
-
 	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
 		       "size=0x%x\n", pcie_config_base, pcie_config_size);
@@ -133,137 +120,72 @@ static void add_fixed_resources(struct device *dev, int index)
 	mmio_resource(dev, index++, CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
-
-	/* Required for SandyBridge sighting 3715511 */
-	bad_ram_resource(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
-	bad_ram_resource(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
+	bad_ram_resource(dev, index++, 0x1fc000000ULL >> 10, 
+			 0x004000000 >> 10);
 }
 
 static void pci_domain_set_resources(device_t dev)
 {
-	uint64_t tom, me_base, touud;
-	uint32_t tseg_base, uma_size, tolud;
-	uint16_t ggc;
-	unsigned long long tomk;
+	uint32_t tseg_base;
+	uint64_t TOUUD;
+	uint16_t reg16;
 
-	/* Total Memory 2GB example:
+	tseg_base = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)),
+				      TSEG);
+	TOUUD = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)),
+				  D0F0_TOUUD);
+
+	printk(BIOS_DEBUG, "ram_before_4g_top: 0x%x\n", tseg_base);
+	printk(BIOS_DEBUG, "TOUUD: 0x%x\n", (unsigned) TOUUD);
+ 
+ 	/* Report the memory regions */
+ 	ram_resource(dev, 3, 0, 640);
+	ram_resource(dev, 4, 768, ((tseg_base >> 10) - 768));
+
+
+
+	/* Using uma_resource() here would fail as base & size cannot
+	 * be used as-is for a single MTRR. This would cause excessive
+	 * use of MTRRs.
 	 *
-	 *  00000000  0000MB-1992MB  1992MB  RAM     (writeback)
-	 *  7c800000  1992MB-2000MB     8MB  TSEG    (SMRR)
-	 *  7d000000  2000MB-2002MB     2MB  GFX GTT (uncached)
-	 *  7d200000  2002MB-2034MB    32MB  GFX UMA (uncached)
-	 *  7f200000   2034MB TOLUD
-	 *  7f800000   2040MB MEBASE
-	 *  7f800000  2040MB-2048MB     8MB  ME UMA  (uncached)
-	 *  80000000   2048MB TOM
-	 * 100000000  4096MB-4102MB     6MB  RAM     (writeback)
+	 * Use of mmio_resource() instead does not create UC holes by using
+	 * MTRRs, but making these regions uncacheable is taken care of by
+	 * making sure they do not overlap with any ram_resource().
 	 *
-	 * Total Memory 4GB example:
-	 *
-	 *  00000000  0000MB-2768MB  2768MB  RAM     (writeback)
-	 *  ad000000  2768MB-2776MB     8MB  TSEG    (SMRR)
-	 *  ad800000  2776MB-2778MB     2MB  GFX GTT (uncached)
-	 *  ada00000  2778MB-2810MB    32MB  GFX UMA (uncached)
-	 *  afa00000   2810MB TOLUD
-	 *  ff800000   4088MB MEBASE
-	 *  ff800000  4088MB-4096MB     8MB  ME UMA  (uncached)
-	 * 100000000   4096MB TOM
-	 * 100000000  4096MB-5374MB  1278MB  RAM     (writeback)
-	 * 14fe00000   5368MB TOUUD
+	 * The resources can be changed to use separate mmio_resource()
+	 * calls after MTRR code is able to merge them wisely.
 	 */
+	mmio_resource(dev, 5, tseg_base >> 10, CONFIG_SMM_TSEG_SIZE >> 10);
 
-	/* Top of Upper Usable DRAM, including remap */
-	touud = pci_read_config32(dev, TOUUD+4);
-	touud <<= 32;
-	touud |= pci_read_config32(dev, TOUUD);
+	reg16 = pci_read_config16 (dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_GGC);
+	const int uma_sizes_gtt[16] = { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4, 42, 42, 42, 42 };
+	/* Igd memory */
+	const int uma_sizes_igd[16] = 
+	  {
+	    0, 0, 0, 0, 0, 32, 48, 64, 128, 256, 96, 160, 224, 352, 256, 512 
+	  };
+	u32 igd_base, gtt_base;
+	int uma_size_igd, uma_size_gtt;
 
-	/* Top of Lower Usable DRAM */
-	tolud = pci_read_config32(dev, TOLUD);
+	uma_size_igd = uma_sizes_igd[(reg16 >> 4) & 0xF];
+	uma_size_gtt = uma_sizes_gtt[(reg16 >> 8) & 0xF];
 
-	/* Top of Memory - does not account for any UMA */
-	tom = pci_read_config32(dev, 0xa4);
-	tom <<= 32;
-	tom |= pci_read_config32(dev, 0xa0);
+	igd_base = pci_read_config32 (dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_IGD_BASE);
+	gtt_base = pci_read_config32 (dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_GTT_BASE);
+	mmio_resource(dev, 6, gtt_base >> 10, uma_size_gtt << 10);
+	mmio_resource(dev, 7, igd_base >> 10, uma_size_igd << 10);
+ 
+	if (TOUUD > 4096 + 256)
+		ram_resource(dev, 8, (4096 << 10),
+			     ((TOUUD - 4096) << 10));
 
-	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
-	       touud, tolud, tom);
-
-	/* ME UMA needs excluding if total memory <4GB */
-	me_base = pci_read_config32(dev, 0x74);
-	me_base <<= 32;
-	me_base |= pci_read_config32(dev, 0x70);
-
-	printk(BIOS_DEBUG, "MEBASE 0x%llx\n", me_base);
-
-	tomk = tolud >> 10;
-	if (me_base == tolud) {
-		/* ME is from MEBASE-TOM */
-		uma_size = (tom - me_base) >> 10;
-		/* Increment TOLUD to account for ME as RAM */
-		tolud += uma_size << 10;
-		/* UMA starts at old TOLUD */
-		uma_memory_base = tomk * 1024ULL;
-		uma_memory_size = uma_size * 1024ULL;
-		printk(BIOS_DEBUG, "ME UMA base 0x%llx size %uM\n",
-		       me_base, uma_size >> 10);
-	}
-
-	/* Graphics memory comes next */
-	ggc = pci_read_config16(dev, GGC);
-	if (!(ggc & 2)) {
-		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
-
-		/* Graphics memory */
-		uma_size = ((ggc >> 3) & 0x1f) * 32 * 1024ULL;
-		printk(BIOS_DEBUG, "%uM UMA", uma_size >> 10);
-		tomk -= uma_size;
-		uma_memory_base = tomk * 1024ULL;
-		uma_memory_size += uma_size * 1024ULL;
-
-		/* GTT Graphics Stolen Memory Size (GGMS) */
-		uma_size = ((ggc >> 8) & 0x3) * 1024ULL;
-		tomk -= uma_size;
-		uma_memory_base = tomk * 1024ULL;
-		uma_memory_size += uma_size * 1024ULL;
-		printk(BIOS_DEBUG, " and %uM GTT\n", uma_size >> 10);
-	}
-
-	/* Calculate TSEG size from its base which must be below GTT */
-	tseg_base = pci_read_config32(dev, 0xb8);
-	uma_size = (uma_memory_base - tseg_base) >> 10;
-	tomk -= uma_size;
-	uma_memory_base = tomk * 1024ULL;
-	uma_memory_size += uma_size * 1024ULL;
-	printk(BIOS_DEBUG, "TSEG base 0x%08x size %uM\n",
-	       tseg_base, uma_size >> 10);
-
-	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
-
-	/* Report the memory regions */
-	ram_resource(dev, 3, 0, legacy_hole_base_k);
-	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-	     (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
-
-	/*
-	 * If >= 4GB installed then memory from TOLUD to 4GB
-	 * is remapped above TOM, TOUUD will account for both
-	 */
-	touud >>= 10; /* Convert to KB */
-	if (touud > 4096 * 1024) {
-		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
-		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-		       (touud >> 10) - 4096);
-	}
-
-	add_fixed_resources(dev, 6);
-
-	assign_resources(dev->link_list);
-
-#if CONFIG_WRITE_HIGH_TABLES
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
-#endif
+	add_fixed_resources(dev, 9);
+ 
+ 	assign_resources(dev->link_list);
+ 
+ 	/* Leave some space for ACPI, PIRQ and MP tables */
+	high_tables_base = tseg_base - HIGH_MEMORY_SIZE;
+ 	high_tables_size = HIGH_MEMORY_SIZE;
 }
 
 	/* TODO We could determine how many PCIe busses we need in
@@ -297,7 +219,7 @@ static void mc_read_resources(device_t dev)
 	/* We use 0xcf as an unused index for our PCIe bar so that we find it again */
 	resource = new_resource(dev, 0xcf);
 	resource->base = DEFAULT_PCIEXBAR;
-	resource->size = 64 * 1024 * 1024;	/* 64MB hard coded PCIe config space */
+	resource->size = 256 * 1024 * 1024;	/* 64MB hard coded PCIe config space */
 	resource->flags =
 	    IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED |
 	    IORESOURCE_ASSIGNED;
@@ -413,7 +335,8 @@ static void northbridge_init(struct device *dev)
 
 	/* Configure turbo power limits 1ms after reset complete bit */
 	mdelay(1);
-	set_power_limits(28);
+#ifdef DISABLED
+		set_power_limits(28);
 
 	/*
 	 * CPUs with configurable TDP also need power limits set
@@ -424,7 +347,7 @@ static void northbridge_init(struct device *dev)
 		MCHBAR32(0x59A0) = msr.lo;
 		MCHBAR32(0x59A4) = msr.hi;
 	}
-
+#endif
 	/* Set here before graphics PM init */
 	MCHBAR32(0x5500) = 0x00100001;
 }
@@ -461,6 +384,13 @@ static struct device_operations mc_ops = {
 	.enable           = northbridge_enable,
 	.scan_bus         = 0,
 	.ops_pci          = &intel_pci_ops,
+};
+
+
+static const struct pci_driver mc_driver_44 __pci_driver = {
+	.ops    = &mc_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = 0x0044, /* Sandy bridge */
 };
 
 static const struct pci_driver mc_driver_0100 __pci_driver = {

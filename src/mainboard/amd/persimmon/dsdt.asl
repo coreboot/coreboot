@@ -1157,8 +1157,20 @@ DefinitionBlock (
 		Device(PCI0) {
 			External (TOM1)
 			External (TOM2)
-			Name(_HID, EISAID("PNP0A03"))
+			Name(_HID, EISAID("PNP0A08"))	/* PCI Express Root Bridge */
+			Name(_CID, EISAID("PNP0A03"))	/* PCI Root Bridge */
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
+
+			/* Operating System Capabilities Method */
+			Method(_OSC,4)
+			{	/* Check for proper PCI/PCIe UUID */
+				If(LEqual(Arg0,ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+				{
+					/* Let OS control everything */
+					Return (Arg3)
+				}
+			}
+
 			Method(_BBN, 0) { /* Bus number = 0 */
 				Return(0)
 			}

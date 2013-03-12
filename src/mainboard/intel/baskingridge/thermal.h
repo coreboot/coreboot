@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef GRAYSREEF_THERMAL_H
-#define GRAYSREEF_THERMAL_H
+#ifndef BASKING_RIDGE_THERMAL_H
+#define BASKING_RIDGE_THERMAL_H
 
 /* Fan is OFF */
 #define FAN4_THRESHOLD_OFF	0

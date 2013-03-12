@@ -380,7 +380,7 @@ static int mkhi_end_of_post(void)
 }
 #endif
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
+#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__) && 0
 /* Get ME firmware version */
 static int mkhi_get_fw_version(void)
 {
@@ -724,7 +724,7 @@ static void intel_me_init(device_t dev)
 		if (intel_mei_setup(dev) < 0)
 			break;
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
+#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && 0
 		/* Print ME firmware version */
 		mkhi_get_fw_version();
 		/* Print ME firmware capabilities */
@@ -769,10 +769,14 @@ static struct device_operations device_ops = {
 	.ops_pci		= &pci_ops,
 };
 
+static const unsigned short pci_device_ids[] = { 0x1c3a, 0x3b64,
+						 0 };
+
+
 static const struct pci_driver intel_me __pci_driver = {
 	.ops	= &device_ops,
 	.vendor	= PCI_VENDOR_ID_INTEL,
-	.device	= 0x1c3a,
+	.devices	= pci_device_ids
 };
 
 #endif /* !__SMM__ */

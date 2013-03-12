@@ -219,7 +219,6 @@ static void dump_tco_status(u32 tco_sts)
 }
 
 
-
 /**
  * @brief Set the EOS bit
  */
@@ -362,10 +361,13 @@ static void smm_install(void)
 		       smm_base);
 		memcpy((void *)smm_base, &ied, sizeof(ied));
 	}
+	printk (BIOS_ERR, "alive "__FILE__":%d\n", __LINE__);
 	wbinvd();
 
+	printk (BIOS_ERR, "alive "__FILE__":%d\n", __LINE__);
 	/* close the SMM memory window and enable normal SMM */
 	pci_write_config8(dev, SMRAM, G_SMRAME | C_BASE_SEG);
+	printk (BIOS_ERR, "alive "__FILE__":%d\n", __LINE__);
 }
 
 void smm_init(void)
@@ -377,6 +379,8 @@ void smm_init(void)
 
 	/* Put SMM code to 0xa0000 */
 	smm_install();
+
+	printk (BIOS_ERR, "alive "__FILE__":%d\n", __LINE__);
 
 	/* Put relocation code to 0x38000 and relocate SMBASE */
 	smm_relocate();

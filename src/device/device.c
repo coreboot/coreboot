@@ -528,6 +528,12 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 		       resource->base, (resource->flags & IORESOURCE_IO)
 		       ? "io" : (resource->flags & IORESOURCE_PREFETCH)
 		       ? "prefmem" : "mem");
+		if (resource->base == 0xe0000000
+		    && 	PCI_SLOT(dev->path.pci.devfn) == 0x2)
+		  {
+		    printk (BIOS_ERR, "moving to 0xd0000000\n");
+		    resource->base = 0xd0000000;
+		  }
 	}
 
 	/*
@@ -585,19 +591,14 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	}
 }
 
-#if CONFIG_PCI_64BIT_PREF_MEM
-#define MEM_MASK (IORESOURCE_PREFETCH | IORESOURCE_MEM)
-#else
 #define MEM_MASK (IORESOURCE_MEM)
-#endif
-
 #define IO_MASK   (IORESOURCE_IO)
 #define PREF_TYPE (IORESOURCE_PREFETCH | IORESOURCE_MEM)
 #define MEM_TYPE  (IORESOURCE_MEM)
 #define IO_TYPE   (IORESOURCE_IO)
 
 struct constraints {
-	struct resource pref, io, mem;
+	struct resource io, mem;
 };
 
 static void constrain_resources(struct device *dev, struct constraints* limits)
@@ -621,9 +622,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 		}
 
 		/* PREFETCH, MEM, or I/O - skip any others. */
-		if ((res->flags & MEM_MASK) == PREF_TYPE)
-			lim = &limits->pref;
-		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+		if ((res->flags & MEM_MASK) == MEM_TYPE)
 			lim = &limits->mem;
 		else if ((res->flags & IO_MASK) == IO_TYPE)
 			lim = &limits->io;
@@ -668,11 +667,9 @@ static void avoid_fixed_resources(struct device *dev)
 	printk(BIOS_SPEW, "%s: %s\n", __func__, dev_path(dev));
 
 	/* Initialize constraints to maximum size. */
-	limits.pref.base = 0;
-	limits.pref.limit = 0xffffffffffffffffULL;
 	limits.io.base = 0;
 	limits.io.limit = 0xffffffffffffffffULL;
-	limits.mem.base = 0;
+	limits.mem.base = 0xe0000000;
 	limits.mem.limit = 0xffffffffffffffffULL;
 
 	/* Constrain the limits to dev's initial resources. */
@@ -681,9 +678,6 @@ static void avoid_fixed_resources(struct device *dev)
 			continue;
 		printk(BIOS_SPEW, "%s:@%s %02lx limit %08llx\n", __func__,
 		       dev_path(dev), res->index, res->limit);
-		if ((res->flags & MEM_MASK) == PREF_TYPE &&
-		    (res->limit < limits.pref.limit))
-			limits.pref.limit = res->limit;
 		if ((res->flags & MEM_MASK) == MEM_TYPE &&
 		    (res->limit < limits.mem.limit))
 			limits.mem.limit = res->limit;
@@ -703,9 +697,7 @@ static void avoid_fixed_resources(struct device *dev)
 			continue;
 
 		/* PREFETCH, MEM, or I/O - skip any others. */
-		if ((res->flags & MEM_MASK) == PREF_TYPE)
-			lim = &limits.pref;
-		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+		if ((res->flags & MEM_MASK) == MEM_TYPE)
 			lim = &limits.mem;
 		else if ((res->flags & IO_MASK) == IO_TYPE)
 			lim = &limits.io;
@@ -820,7 +812,9 @@ void assign_resources(struct bus *bus)
 			       dev_path(curdev));
 			continue;
 		}
+		printk (BIOS_ERR, "alive "__FILE__ ":%d, %s, %p\n", __LINE__,dev_path(curdev), curdev->ops->set_resources);
 		curdev->ops->set_resources(curdev);
+		printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 	}
 	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n",
 	       dev_path(bus->dev), bus->secondary, bus->link_num);
@@ -1017,10 +1011,14 @@ void dev_configure(void)
 		}
 	}
 
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	/* For all domains. */
 	for (child = root->link_list->children; child; child=child->sibling)
 		if (child->path.type == DEVICE_PATH_PCI_DOMAIN)
 			avoid_fixed_resources(child);
+
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	/*
 	 * Now we need to adjust the resources. MEM resources need to start at
@@ -1036,6 +1034,8 @@ void dev_configure(void)
 			res->base = resource_max(res);
 		}
 	}
+
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
 
 	/* Store the computed resource allocations into device registers ... */
 	printk(BIOS_INFO, "Setting resources...\n");
@@ -1062,6 +1062,8 @@ void dev_configure(void)
 			}
 		}
 	}
+	printk (BIOS_ERR, "alive "__FILE__ ":%d\n", __LINE__);
+
 	assign_resources(root->link_list);
 	printk(BIOS_INFO, "Done setting resources.\n");
 	print_resource_tree(root, BIOS_SPEW, "After assigning values.");

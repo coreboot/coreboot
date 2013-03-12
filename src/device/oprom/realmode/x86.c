@@ -322,6 +322,21 @@ void run_bios(struct device *dev, unsigned long addr)
 	realmode_call(addr + 0x0003, num_dev, 0xffff, 0x0000, 0xffff, 0x0, 0x0);
 	printk(BIOS_DEBUG, "... Option ROM returned.\n");
 
+	unsigned char *fb = (unsigned char *) (pci_read_config32(dev, 0x18) & ~15);
+	int i = 0;
+
+	printk (BIOS_ERR, "fb=%08x\n", (unsigned int)fb);
+
+	{
+	  unsigned short *ptr;
+	  for (ptr = (unsigned short *) fb;
+	       ptr < (unsigned short *) fb + 80 * 24 * 4; ptr += 2)
+	    *ptr = 'X' | (i++ << 8);
+	  for (ptr = (unsigned short *) 0xb8000;
+	       ptr < (unsigned short *) 0xb8000 + 80 * 24; ptr++)
+	    *ptr = 'Y' | (i++ << 8);
+	}
+
 #if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 	if ((dev->class >> 8)== PCI_CLASS_DISPLAY_VGA)
 		vbe_set_graphics();
@@ -436,7 +451,7 @@ int asmlinkage interrupt_handler(u32 intnumber,
 	cs = cs_ip >> 16;
 	flags = stackflags;
 
-#if CONFIG_REALMODE_DEBUG
+	//#if CONFIG_REALMODE_DEBUG
 	printk(BIOS_DEBUG, "oprom: INT# 0x%x\n", intnumber);
 	printk(BIOS_DEBUG, "oprom: eax: %08x ebx: %08x ecx: %08x edx: %08x\n",
 		      eax, ebx, ecx, edx);
@@ -444,7 +459,7 @@ int asmlinkage interrupt_handler(u32 intnumber,
 		     ebp, esp, edi, esi);
 	printk(BIOS_DEBUG, "oprom:  ip: %04x      cs: %04x   flags: %08x\n",
 		     ip, cs, flags);
-#endif
+	//#endif
 
 	// Fetch arguments from the stack and put them to a place
 	// suitable for the interrupt handlers

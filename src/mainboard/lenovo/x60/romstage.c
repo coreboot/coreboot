@@ -245,12 +245,6 @@ void main(unsigned long bist)
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
-		outb(0x6, 0xcf9);
-		while (1) asm("hlt");
-	}
-
 	/* Perform some early chipset initialization required
 	 * before RAM initialization can work
 	 */
@@ -313,8 +307,6 @@ void main(unsigned long bist)
 #endif
 #endif
 
-	MCHBAR16(SSKPD) = 0xCAFE;
-
 #if CONFIG_HAVE_ACPI_RESUME
 	/* Start address of high memory tables */
 	unsigned long high_ram_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
@@ -322,7 +314,7 @@ void main(unsigned long bist)
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
-	if ((boot_mode == 2) && cbmem_reinit((u64)high_ram_base)) {
+	if (s3resume && cbmem_reinit((u64)high_ram_base)) {
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
@@ -334,7 +326,14 @@ void main(unsigned long bist)
 			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, SKPAD_ACPI_S3_MAGIC);
+		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
 	}
+	else if (boot_mode == 2) {
+		/* Failed S3 resume, reset to come up cleanly */
+		outb(0xe, 0xcf9);
+		hlt();
+	} else {
+		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
+
 #endif
 }

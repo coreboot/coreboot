@@ -27,9 +27,9 @@
  * SUCH DAMAGE.
  */
 
+#include <keycodes.h>
 #include <libpayload-config.h>
 #include <libpayload.h>
-#include <curses.h>
 
 #define I8042_CMD_READ_MODE  0x20
 #define I8042_CMD_WRITE_MODE 0x60

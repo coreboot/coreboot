@@ -52,7 +52,7 @@ static void pch_enable_apic(struct device *dev)
 	pci_write_config8(dev, ACPI_CNTL, 0x80);
 
 	*ioapic_index = 0;
-	*ioapic_data = (1 << 25);
+	*ioapic_data = (2 << 24);
 
 	/* affirm full set of redirection table entries ("write once") */
 	*ioapic_index = 1;
@@ -63,7 +63,7 @@ static void pch_enable_apic(struct device *dev)
 	*ioapic_index = 0;
 	reg32 = *ioapic_data;
 	printk(BIOS_DEBUG, "Southbridge APIC ID = %x\n", (reg32 >> 24) & 0x0f);
-	if (reg32 != (1 << 25))
+	if (reg32 != (2 << 24))
 		die("APIC Error\n");
 
 	printk(BIOS_SPEW, "Dumping IOAPIC registers\n");

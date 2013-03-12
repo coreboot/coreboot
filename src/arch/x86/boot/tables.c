@@ -103,9 +103,12 @@ struct lb_memory *write_tables(void)
 
 	/* The smp table must be in 0-1K, 639K-640K, or 960K-1M */
 	rom_table_end = write_smp_table(rom_table_end);
+
 	rom_table_end = ALIGN(rom_table_end, 1024);
 
+
 	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_MPTABLE, MAX_MP_TABLE_SIZE);
+
 	if (high_table_pointer) {
 		unsigned long new_high_table_pointer;
 		new_high_table_pointer = write_smp_table(high_table_pointer);
@@ -118,6 +121,7 @@ struct lb_memory *write_tables(void)
 		printk(BIOS_DEBUG, "MP table: %ld bytes.\n",
 				new_high_table_pointer - high_table_pointer);
 	}
+
 #endif /* CONFIG_GENERATE_MP_TABLE */
 
 #if CONFIG_GENERATE_ACPI_TABLES
@@ -179,6 +183,7 @@ struct lb_memory *write_tables(void)
 	}
 
 #endif
+
 #define MAX_SMBIOS_SIZE 2048
 #if CONFIG_GENERATE_SMBIOS_TABLES
 	high_table_pointer = (unsigned long)cbmem_add(CBMEM_ID_SMBIOS, MAX_SMBIOS_SIZE);

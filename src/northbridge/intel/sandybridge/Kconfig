@@ -45,7 +45,7 @@ config MRC_CACHE_BASE
 config MRC_CACHE_LOCATION
 	hex
 	depends on !CHROMEOS
-	default 0x1ec000
+	default 0x500000
 
 config MRC_CACHE_SIZE
 	hex
@@ -66,7 +66,7 @@ if NORTHBRIDGE_INTEL_IVYBRIDGE
 
 config VGA_BIOS_ID
 	string
-	default "8086,0166"
+	default "8086,0046"
 
 config EXTERNAL_MRC_BLOB
        bool

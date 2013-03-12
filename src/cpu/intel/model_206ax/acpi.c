@@ -321,11 +321,16 @@ static int generate_P_state_entries(int core, int cores_per_package)
 
 void generate_cpu_entries(void)
 {
+#ifndef DISABLED
+	return;
+#endif
+
 	int len_pr;
 	int coreID, cpuID, pcontrol_blk = PMB0_BASE, plen = 6;
 	int totalcores = dev_count_cpu();
 	int cores_per_package = get_cores_per_package();
 	int numcpus = totalcores/cores_per_package;
+
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);

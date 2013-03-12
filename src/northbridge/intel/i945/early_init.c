@@ -147,6 +147,7 @@ static void i945_detect_chipset(void)
 
 static void i945_setup_bars(void)
 {
+#if 0
 	u8 reg8;
 
 	/* As of now, we don't have all the A0 workarounds implemented */
@@ -203,6 +204,7 @@ static void i945_setup_bars(void)
 		} while (!(reg8 & 0x80));
 	}
 	printk(BIOS_DEBUG, "ok\n");
+#endif
 }
 
 static void i945_setup_egress_port(void)

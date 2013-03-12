@@ -102,6 +102,7 @@ int main(int argc, char *argv[])
 			printf("\n%02x: ", i);
 		printf("%02x ", ec_read(i));
 	}
+	ec_write(0x3a, 0x70);
 	printf("\n\n");
 
 	if (dump_idx) {

@@ -50,6 +50,14 @@ void h8_wlan_enable(int on)
 		ec_clr_bit(0x3a, 5);
 }
 
+static void h8_3g_enable(int on)
+{
+	if (on)
+		ec_set_bit(0x3a, 6);
+	else
+		ec_clr_bit(0x3a, 6);
+}
+
 static void h8_log_ec_version(void)
 {
 	unsigned char ecfw[9], c;
@@ -142,6 +150,8 @@ static void h8_enable(device_t dev)
 	ec_write(0x1e, conf->evente_enable);
 	ec_write(0x1f, conf->eventf_enable);
 
+	ec_write(0x78, 0x3a);
+
 	ec_write(H8_FAN_CONTROL, H8_FAN_CONTROL_AUTO);
 	h8_wlan_enable(conf->wlan_enable);
 	h8_trackpoint_enable(conf->trackpoint_enable);
@@ -150,16 +160,14 @@ static void h8_enable(device_t dev)
 	if (!get_option(&val, "volume"))
 		ec_write(H8_VOLUME_CONTROL, val);
 
+	h8_bluetooth_enable(1);
+	h8_3g_enable(1);
 
-	if (!get_option(&val, "bluetooth"))
-		h8_bluetooth_enable(val);
-
-	if (!get_option(&val, "first_battery")) {
-		tmp = ec_read(H8_CONFIG3);
-		tmp &= ~(1 << 4);
-		tmp |= (val & 1)<< 4;
-		ec_write(H8_CONFIG3, tmp);
-	}
+	  val = 1;
+	  tmp = ec_read(H8_CONFIG3);
+	  tmp &= ~(1 << 4);
+	  tmp |= (val & 1)<< 4;
+	  ec_write(H8_CONFIG3, tmp);
 	h8_set_audio_mute(0);
 }
 

@@ -47,6 +47,7 @@ int print_rcba(struct pci_dev *sb)
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 	case PCI_DEVICE_ID_INTEL_NM10:
 	case PCI_DEVICE_ID_INTEL_I63XX:
+	case 0x3b07:
 		rcba_phys = pci_read_long(sb, 0xf0) & 0xfffffffe;
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH:

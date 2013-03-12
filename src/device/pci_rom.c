@@ -34,7 +34,6 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	struct rom_header *rom_header;
 	struct pci_data *rom_data;
 
-	printk (BIOS_ERR, "PCI_ROM_PROBE\n");
 	/* If it's in FLASH, then don't check device for ROM. */
 	rom_header = cbfs_load_optionrom(CBFS_DEFAULT_MEDIA, dev->vendor,
 					 dev->device, NULL);
@@ -132,8 +131,6 @@ struct rom_header *pci_rom_load(struct device *dev,
 	struct pci_data * rom_data;
 	unsigned int rom_size;
 	unsigned int image_size=0;
-
-	printk (BIOS_ERR, "PCI_ROM_LOAD\n");
 
 	do {
 		/* Get next image. */

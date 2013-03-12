@@ -534,7 +534,6 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 		lowest_common_cas = 5;
 	}
 	PRINTK_DEBUG("lowest common cas = %d\n", lowest_common_cas);
-	(void) lowest_common_cas;
 
 	for (j = max_ram_speed; j>=0; j--) {
 		int freq_cas_mask = cas_mask;
@@ -1977,7 +1976,6 @@ static void sdram_program_pll_settings(struct sys_info *sysinfo)
 	MCHBAR16(CPCTL) &= ~(1 << 11);
 
 	reg16 = MCHBAR16(CPCTL); /* Read back register to activate settings */
-	(void) reg16;
 }
 
 static void sdram_program_graphics_frequency(struct sys_info *sysinfo)

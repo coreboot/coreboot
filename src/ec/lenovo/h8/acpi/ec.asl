@@ -27,7 +27,6 @@ Device(EC)
 
 	Name (_GPE, 0x11)
 	Mutex (ECLK, 0)
-	Name (BTN, 0)
 
 	OperationRegion(ERAM, EmbeddedControl, 0x00, 0x100)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
@@ -87,7 +86,7 @@ Device(EC)
 	/* Sleep Button pressed */
 	Method(_Q13, 0, NotSerialized)
 	{
-		Notify(\_SB.PCI0.LPCB.EC.SLPB, 0x80)
+		Notify(^SLPB, 0x80)
 	}
 
 	/* Brightness up GPE */
@@ -123,12 +122,12 @@ Device(EC)
 
        Method(_Q2A, 0, NotSerialized)
        {
-               Notify(\_SB.PCI0.LPCB.EC.LID, 0x80)
+               Notify(^LID, 0x80)
        }
 
        Method(_Q2B, 0, NotSerialized)
        {
-               Notify(\_SB.PCI0.LPCB.EC.LID, 0x80)
+               Notify(^LID, 0x80)
        }
 
 
@@ -136,109 +135,159 @@ Device(EC)
 
        Method (_Q10, 0, NotSerialized)
        {
-            Store (0x1001, BTN)
+            ^HKEY.RHK (0x01)
        }
 
        Method (_Q11, 0, NotSerialized)
        {
-            Store (0x1002, BTN)
+            ^HKEY.RHK (0x02)
        }
 
        Method (_Q12, 0, NotSerialized)
        {
-            Store (0x1003, BTN)
+            ^HKEY.RHK (0x03)
        }
 
        Method (_Q64, 0, NotSerialized)
        {
-            Store (0x1005, BTN)
+            ^HKEY.RHK (0x05)
        }
 
        Method (_Q65, 0, NotSerialized)
        {
-            Store (0x1006, BTN)
+            ^HKEY.RHK (0x06)
        }
 
        Method (_Q17, 0, NotSerialized)
        {
-            Store (0x1008, BTN)
+            ^HKEY.RHK (0x08)
        }
 
        Method (_Q66, 0, NotSerialized)
        {
-            Store (0x100A, BTN)
+            ^HKEY.RHK (0x0A)
        }
 
        Method (_Q1A, 0, NotSerialized)
        {
-            Store (0x100B, BTN)
+            ^HKEY.RHK (0x0B)
        }
 
        Method (_Q1B, 0, NotSerialized)
        {
-            Store (0x100C, BTN)
+            ^HKEY.RHK (0x0C)
        }
 
        Method (_Q62, 0, NotSerialized)
        {
-            Store (0x100D, BTN)
+            ^HKEY.RHK (0x0D)
        }
 
        Method (_Q60, 0, NotSerialized)
        {
-            Store (0x100E, BTN)
+            ^HKEY.RHK (0x0E)
        }
 
        Method (_Q61, 0, NotSerialized)
        {
-            Store (0x100F, BTN)
+            ^HKEY.RHK (0x0F)
        }
 
        Method (_Q1F, 0, NotSerialized)
        {
-            Store (0x1012, BTN)
+            ^HKEY.RHK (0x12)
        }
 
        Method (_Q67, 0, NotSerialized)
        {
-            Store (0x1013, BTN)
+            ^HKEY.RHK (0x13)
        }
 
        Method (_Q63, 0, NotSerialized)
        {
-            Store (0x1014, BTN)
+            ^HKEY.RHK (0x14)
        }
 
        Method (_Q19, 0, NotSerialized)
        {
-            Store (0x1018, BTN)
+            ^HKEY.RHK (0x18)
        }
 
        Method (_Q1C, 0, NotSerialized)
        {
-            Store (0x1019, BTN)
+            ^HKEY.RHK (0x19)
        }
 
        Method (_Q1D, 0, NotSerialized)
        {
-            Store (0x101A, BTN)
+            ^HKEY.RHK (0x1A)
        }
 
        Device (HKEY)
        {
                Name (_HID, EisaId ("IBM0068"))
+  	       Name (BTN, 0)
+	       /* MASK */
+	       Name (DHKN, 0x080C)
+	       /* Effective Mask */
+	       Name (EMSK, 0)
+	       Name (EN, 0)
                Method (_STA, 0, NotSerialized)
                {
                     Return (0x0F)
                }
                Method (MHKP, 0, NotSerialized)
                {
-	            Store (^^BTN, Local0)
+	            Store (BTN, Local0)
 		    If (LEqual (Local0, Zero)) {
 		       Return (Zero)
                     }
-		    Store (Zero, ^^BTN)
+		    Store (Zero, BTN)
+		    Add (Local0, 0x1000, Local0)
 		    Return (Local0)
+               }
+	       /* Report event  */
+               Method (RHK, 1, NotSerialized) {
+                      ShiftLeft (One, Subtract (Arg0, 1), Local0)
+	              If (And (EMSK, Local0)) {
+                         Store (Arg0, BTN)
+                         Notify (HKEY, 0x80)
+                      }
+               }
+               Method (MHKC, 1, NotSerialized) {
+	                 If (Arg0) {
+		                Store (DHKN, EMSK)
+			 }
+			 Else
+			 {
+				Store (Zero, EMSK)
+			 }
+                         Store (Arg0, EN)
+               }
+               Method (MHKM, 2, NotSerialized) {
+                    If (LLessEqual (Arg0, 0x20)) {
+                                ShiftLeft (One, Subtract (Arg0, 1), Local0)
+                                If (Arg1)
+                                {
+                                    Or (DHKN, Local0, DHKN)
+                                }
+                                Else
+                                {
+                                    And (DHKN, Not (Local0), DHKN)
+                                }
+                                If (EN)
+				{
+				     Store (DHKN, EMSK)
+				}
+                    }
+               }
+               Method (MHKA, 0, NotSerialized)
+               {
+                    Return (0x07FFFFFF)
+               }
+               Method (MHKV, 0, NotSerialized)
+               {
+                    Return (0x0100)
                }
        }
 

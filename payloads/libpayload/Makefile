@@ -246,7 +246,7 @@ define create_cc_template
 # $4 additional dependencies
 ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
-$(obj)/$$(1).$(1).o: $$(1).$(2) $(obj)/config.h $(4)
+$(obj)/$$(1).$(1).o: $$(1).$(2) $(obj)/libpayload-config.h $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
 	$(CC) $(3) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
 en$(EMPTY)def

@@ -47,11 +47,6 @@ classes-$(CONFIG_LZMA) += liblzma
 libraries := $(classes-y)
 classes-y += head.o
 
-libpci-c-deps = $(obj)/libpayload-config.h
-libc-c-deps = $(obj)/libpayload-config.h
-libcurses-c-deps = $(obj)/libpayload-config.h
-head.o-S-deps = $(obj)/libpayload-config.h
-
 subdirs-y := arch/$(ARCHDIR-y)
 subdirs-y += crypto libc drivers libpci
 subdirs-$(CONFIG_CURSES) += curses

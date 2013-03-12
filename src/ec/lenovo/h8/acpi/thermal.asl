@@ -1,5 +1,7 @@
 Scope(\_TZ)
 {
+	Name (MEBT, 0)
+
 	Method(C2K, 1, NotSerialized)
 	{
 		Multiply(Arg0, 10, Local0)
@@ -20,6 +22,11 @@ Scope(\_TZ)
 			Return (C2K(127))
 		}
 		Method(_TMP) {
+		        /* Avoid tripping alarm if ME isn't booted at all yet */
+		        If (LAnd (LNot (MEBT), LEqual (\_SB.PCI0.LPCB.EC.TMP0, 128))) {
+                            Return (C2K(40))
+                        }
+			Store (1, MEBT)
 			Return (C2K(\_SB.PCI0.LPCB.EC.TMP0))
 		}
 	}

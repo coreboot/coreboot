@@ -80,7 +80,7 @@
 #define HUB_RESET_TIMEOUT	500
 
 #define DBGP_MAX_PACKET		8
-#define DBGP_LOOPS 1000
+#define DBGP_LOOPS 10000
 
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 {
@@ -133,6 +133,7 @@ retry:
 		dbgp_breath();
 
 	/* If I get a NACK reissue the transmission */
+
 	if (lpid == USB_PID_NAK) {
 		if (--loop > 0)
 			goto retry;
@@ -604,6 +605,29 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 
 	if (dbg_info->ehci_debug && dbg_info->bufidx > 0) {
 		dbgp_bulk_write_x(dbg_info, dbg_info->buf, dbg_info->bufidx);
+			
 		dbg_info->bufidx = 0;
 	}
+}
+
+unsigned char usbdebug_rx_byte(struct ehci_debug_info *dbg_info)
+{
+	if (!dbg_info) {
+		/* "Find" dbg_info structure in Cache */
+		dbg_info = (struct ehci_debug_info *)
+		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+	}
+
+	if (dbg_info->ehci_debug) {
+		unsigned char c = 0xff;
+		u32 pids;
+		usbdebug_tx_flush (dbg_info);
+		pids = read32((unsigned long)&((struct ehci_dbg_port *) dbg_info->ehci_debug)->pids);
+		while (dbgp_bulk_read_x (dbg_info, &c, 1) <= 0);
+		write32((unsigned long)&((struct ehci_dbg_port *) dbg_info->ehci_debug)->pids, pids);
+		usbdebug_tx_byte(dbg_info, c);
+		usbdebug_tx_flush (dbg_info);
+		return c;
+	}
+	return 0xff;
 }

@@ -25,8 +25,9 @@ Device(EC)
 	Name (_HID, EISAID("PNP0C09"))
 	Name (_UID, 0)
 
-	Name (_GPE, 28)
+	Name (_GPE, 0x11)
 	Mutex (ECLK, 0)
+	Name (BTN, 0)
 
 	OperationRegion(ERAM, EmbeddedControl, 0x00, 0x100)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
@@ -92,13 +93,19 @@ Device(EC)
 	/* Brightness up GPE */
 	Method(_Q14, 0, NotSerialized)
 	{
-		\DSPC.BRTU ()
+                Notify (\_SB.PCI0.GFX0.LCD0, 0x86)
 	}
 
 	/* Brightness down GPE */
 	Method(_Q15, 0, NotSerialized)
 	{
-		\DSPC.BRTD()
+                Notify (\_SB.PCI0.GFX0.LCD0, 0x87)
+	}
+
+	/* Next display GPE */
+	Method(_Q16, 0, NotSerialized)
+	{
+                Notify (\_SB.PCI0.GFX0, 0x82)
 	}
 
 	/* AC status change: present */
@@ -124,6 +131,116 @@ Device(EC)
                Notify(\_SB.PCI0.LPCB.EC.LID, 0x80)
        }
 
+
+       /* IBM proprietary buttons.  */
+
+       Method (_Q10, 0, NotSerialized)
+       {
+            Store (0x1001, BTN)
+       }
+
+       Method (_Q11, 0, NotSerialized)
+       {
+            Store (0x1002, BTN)
+       }
+
+       Method (_Q12, 0, NotSerialized)
+       {
+            Store (0x1003, BTN)
+       }
+
+       Method (_Q64, 0, NotSerialized)
+       {
+            Store (0x1005, BTN)
+       }
+
+       Method (_Q65, 0, NotSerialized)
+       {
+            Store (0x1006, BTN)
+       }
+
+       Method (_Q17, 0, NotSerialized)
+       {
+            Store (0x1008, BTN)
+       }
+
+       Method (_Q66, 0, NotSerialized)
+       {
+            Store (0x100A, BTN)
+       }
+
+       Method (_Q1A, 0, NotSerialized)
+       {
+            Store (0x100B, BTN)
+       }
+
+       Method (_Q1B, 0, NotSerialized)
+       {
+            Store (0x100C, BTN)
+       }
+
+       Method (_Q62, 0, NotSerialized)
+       {
+            Store (0x100D, BTN)
+       }
+
+       Method (_Q60, 0, NotSerialized)
+       {
+            Store (0x100E, BTN)
+       }
+
+       Method (_Q61, 0, NotSerialized)
+       {
+            Store (0x100F, BTN)
+       }
+
+       Method (_Q1F, 0, NotSerialized)
+       {
+            Store (0x1012, BTN)
+       }
+
+       Method (_Q67, 0, NotSerialized)
+       {
+            Store (0x1013, BTN)
+       }
+
+       Method (_Q63, 0, NotSerialized)
+       {
+            Store (0x1014, BTN)
+       }
+
+       Method (_Q19, 0, NotSerialized)
+       {
+            Store (0x1018, BTN)
+       }
+
+       Method (_Q1C, 0, NotSerialized)
+       {
+            Store (0x1019, BTN)
+       }
+
+       Method (_Q1D, 0, NotSerialized)
+       {
+            Store (0x101A, BTN)
+       }
+
+       Device (HKEY)
+       {
+               Name (_HID, EisaId ("IBM0068"))
+               Method (_STA, 0, NotSerialized)
+               {
+                    Return (0x0F)
+               }
+               Method (MHKP, 0, NotSerialized)
+               {
+	            Store (^^BTN, Local0)
+		    If (LEqual (Local0, Zero)) {
+		       Return (Zero)
+                    }
+		    Store (Zero, ^^BTN)
+		    Return (Local0)
+               }
+       }
 
 #include "ac.asl"
 #include "battery.asl"

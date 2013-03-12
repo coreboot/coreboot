@@ -125,7 +125,6 @@ void hardwaremain(int boot_complete)
 	suspend_resume();
 	post_code(0x8a);
 #endif
-
 	timestamp_add_now(TS_CBMEM_POST);
 
 #if CONFIG_WRITE_HIGH_TABLES
@@ -134,14 +133,11 @@ void hardwaremain(int boot_complete)
 #endif
 
 	timestamp_add_now(TS_WRITE_TABLES);
-
 	/* Now that we have collected all of our information
 	 * write our configuration tables.
 	 */
 	lb_mem = write_tables();
-
 	timestamp_add_now(TS_LOAD_PAYLOAD);
-
 	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
 				    CONFIG_CBFS_PREFIX "/payload");
 	if (! payload)

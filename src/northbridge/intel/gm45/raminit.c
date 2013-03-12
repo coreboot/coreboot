@@ -1685,18 +1685,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Check for bad warm boot. */
 	reset_on_bad_warmboot();
 
-
 	/***** From now on, program according to collected infos: *****/
-
-	/* Program DRAM type. */
-	switch (sysinfo->spd_type) {
-	case DDR2:
-		MCHBAR8(0x1434) |= (1 << 7);
-		break;
-	case DDR3:
-		MCHBAR8(0x1434) |= (3 << 0);
-		break;
-	}
 
 	/* Program system memory frequency. */
 	set_system_memory_frequency(timings);

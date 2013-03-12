@@ -40,6 +40,7 @@ static inline int get_option(void *dest, const char *name) { return -1; }
 void console_init(void)
 {
 	struct console_driver *driver;
+
 	if(get_option(&console_loglevel, "debug_level"))
 		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
@@ -119,6 +120,10 @@ void console_init(void)
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_init();
 #endif
+#if CONFIG_SPKMODEM
+	spkmodem_init();
+#endif
+
 	static const char console_test[] =
 		"\n\ncoreboot-"
 		COREBOOT_VERSION

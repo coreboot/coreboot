@@ -294,6 +294,12 @@ int print_gpios(struct pci_dev *sb)
 		size = ARRAY_SIZE(i631x_gpio_registers);
 		break;
 
+	case 0x3b07:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = i631x_gpio_registers;
+		size = ARRAY_SIZE(i631x_gpio_registers);
+		break;
+
 	case PCI_DEVICE_ID_INTEL_82371XX:
 		printf("This southbridge has GPIOs in the PM unit.\n");
 		return 1;

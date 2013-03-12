@@ -25,8 +25,17 @@
 #include <delay.h>
 #include "ec.h"
 
+#ifdef __PRE_RAM__
+
+static const int ec_cmd_reg = EC_SC;
+static const int ec_data_reg = EC_DATA;
+
+#else
+
 static int ec_cmd_reg = EC_SC;
 static int ec_data_reg = EC_DATA;
+
+#endif
 
 int send_ec_command(u8 command)
 {
@@ -132,6 +141,8 @@ void ec_clr_bit(u8 addr, u8 bit)
 	ec_write(addr, ec_read(addr) &  ~(1 << bit));
 }
 
+#ifndef __PRE_RAM__
+
 void ec_set_ports(u16 cmd_reg, u16 data_reg)
 {
 	ec_cmd_reg = cmd_reg;
@@ -141,3 +152,4 @@ void ec_set_ports(u16 cmd_reg, u16 data_reg)
 struct chip_operations ec_acpi_ops = {
 	CHIP_NAME("ACPI Embedded Controller")
 };
+#endif

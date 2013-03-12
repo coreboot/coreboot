@@ -677,6 +677,12 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		size = ARRAY_SIZE(i63xx_pm_registers);
 		break;
 
+	case 0x3b07:
+		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
+		pm_registers = i63xx_pm_registers;
+		size = ARRAY_SIZE(i63xx_pm_registers);
+		break;
+
 	case 0x1234: // Dummy for non-existent functionality
 		printf("This southbridge does not have PMBASE.\n");
 		return 1;

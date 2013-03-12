@@ -131,7 +131,10 @@ const void *intel_microcode_find(void)
 #endif
 
 	if (!microcode_updates)
-		return microcode_updates;
+		/* No need for an explicit error message since the user
+		 * already gets "file not found" from CBFS.
+		 */
+		return microcode_updates; /* NULL */
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;
@@ -201,6 +204,9 @@ void intel_update_microcode(const void *microcode_updates)
 	const struct microcode *m;
 	const char *c;
 	msr_t msr;
+
+	if (!microcode_updates)
+	  return;
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;

@@ -29,8 +29,8 @@
 
 // #define USB_DEBUG
 
+#include <keycodes.h>
 #include <usb/usb.h>
-#include <curses.h>
 
 enum { hid_subclass_none = 0, hid_subclass_boot = 1 };
 typedef enum { hid_proto_boot = 0, hid_proto_report = 1 } hid_proto;

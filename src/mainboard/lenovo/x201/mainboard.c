@@ -42,6 +42,7 @@
 #include <pc80/keyboard.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
+#include <smbios.h>
 
 static acpi_cstate_t cst_entries[] = {
 	{ 1,  1, 1000, { 0x7f, 1, 2, { 0 }, 1, 0 } },
@@ -182,6 +183,10 @@ static void rcba_config(void)
 #endif
 }
 
+const char *smbios_mainboard_version(void)
+{
+  return "Lenovo X201";
+}
 
 static void mainboard_enable(device_t dev)
 {

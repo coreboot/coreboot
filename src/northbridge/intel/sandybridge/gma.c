@@ -620,19 +620,29 @@ static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
 
+	printk (BIOS_ERR, "GMA " __FILE__ ":%d\n", __LINE__);
+
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
+	printk (BIOS_ERR, "GMA " __FILE__ ":%d\n", __LINE__);
+
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
+
+	printk (BIOS_ERR, "GMA " __FILE__ ":%d\n", __LINE__);
 
 	/* PCI Init, will run VBIOS */
 	pci_dev_init(dev);
 
+	printk (BIOS_ERR, "GMA " __FILE__ ":%d\n", __LINE__);
+
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
+
+	printk (BIOS_ERR, "GMA " __FILE__ ":%d\n", __LINE__);
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -661,7 +671,7 @@ static struct device_operations gma_func0_ops = {
 };
 
 static const unsigned short gma_ids[] = {
-	0x0102, 0x0106, 0x010a, 0x0112, 0x0116, 0x0122, 0x0126, 0x0156, 0x166,
+	0x0046, 0x0102, 0x0106, 0x010a, 0x0112, 0x0116, 0x0122, 0x0126, 0x0156, 0x166,
 	0,
 };
 static const struct pci_driver gma_gt1_desktop __pci_driver = {

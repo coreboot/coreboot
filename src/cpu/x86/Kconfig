@@ -45,7 +45,7 @@ config TSC_SYNC_MFENCE
 config XIP_ROM_SIZE
 	hex
 	default ROM_SIZE if ROMCC
-	default 0x10000
+	default 0x20000
 
 config CPU_ADDR_BITS
 	int

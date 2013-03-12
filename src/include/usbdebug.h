@@ -46,5 +46,6 @@ int early_usbdebug_init(void);
 void usbdebug_tx_byte(struct ehci_debug_info *info, unsigned char data);
 void usbdebug_tx_flush(struct ehci_debug_info *info);
 int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info);
+unsigned char usbdebug_rx_byte(struct ehci_debug_info *dbg_info);
 #endif
 #endif

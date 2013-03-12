@@ -467,6 +467,8 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 {
 	resource_t base, end;
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* Make certain the resource has actually been assigned a value. */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not "
@@ -475,21 +477,31 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		return;
 	}
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* If this resource is fixed don't worry about it. */
 	if (resource->flags & IORESOURCE_FIXED)
 		return;
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 	/* If I have already stored this resource don't worry about it. */
 	if (resource->flags & IORESOURCE_STORED)
 		return;
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* If the resource is subtractive don't worry about it. */
 	if (resource->flags & IORESOURCE_SUBTRACTIVE)
 		return;
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* Only handle PCI memory and I/O resources for now. */
 	if (!(resource->flags & (IORESOURCE_MEM | IORESOURCE_IO)))
 		return;
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 	/* Enable the resources in the command register. */
 	if (resource->size) {
@@ -501,14 +513,22 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 			dev->command |= PCI_COMMAND_MASTER;
 	}
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* Get the base address. */
 	base = resource->base;
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 	/* Get the end. */
 	end = resource_end(resource);
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* Now store the resource. */
 	resource->flags |= IORESOURCE_STORED;
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 	/*
 	 * PCI bridges have no enable bit. They are disabled if the base of
@@ -521,8 +541,11 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		resource->base = base;
 	}
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	if (!(resource->flags & IORESOURCE_PCI_BRIDGE)) {
 		unsigned long base_lo, base_hi;
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 		/*
 		 * Some chipsets allow us to set/clear the I/O bit
@@ -532,33 +555,46 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		base_hi = (base >> 32) & 0xffffffff;
 		if (resource->flags & IORESOURCE_IO)
 			base_lo |= PCI_BASE_ADDRESS_SPACE_IO;
-		pci_write_config32(dev, resource->index, base_lo);
+		//		if (PCI_SLOT(dev->path.pci.devfn) != 0x1a)
+		  pci_write_config32(dev, resource->index, base_lo);
 		if (resource->flags & IORESOURCE_PCI64)
 			pci_write_config32(dev, resource->index + 4, base_hi);
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	} else if (resource->index == PCI_IO_BASE) {
+	  printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 		/* Set the I/O ranges. */
 		pci_write_config8(dev, PCI_IO_BASE, base >> 8);
 		pci_write_config16(dev, PCI_IO_BASE_UPPER16, base >> 16);
 		pci_write_config8(dev, PCI_IO_LIMIT, end >> 8);
 		pci_write_config16(dev, PCI_IO_LIMIT_UPPER16, end >> 16);
+		printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 	} else if (resource->index == PCI_MEMORY_BASE) {
+	  printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 		/* Set the memory range. */
 		pci_write_config16(dev, PCI_MEMORY_BASE, base >> 16);
 		pci_write_config16(dev, PCI_MEMORY_LIMIT, end >> 16);
+		printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 	} else if (resource->index == PCI_PREF_MEMORY_BASE) {
+	  printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 		/* Set the prefetchable memory range. */
 		pci_write_config16(dev, PCI_PREF_MEMORY_BASE, base >> 16);
 		pci_write_config32(dev, PCI_PREF_BASE_UPPER32, base >> 32);
 		pci_write_config16(dev, PCI_PREF_MEMORY_LIMIT, end >> 16);
 		pci_write_config32(dev, PCI_PREF_LIMIT_UPPER32, end >> 32);
+		printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 	} else {
+	  printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 		/* Don't let me think I stored the resource. */
 		resource->flags &= ~IORESOURCE_STORED;
 		printk(BIOS_ERR, "ERROR: invalid resource->index %lx\n",
 		       resource->index);
+		printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 	}
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 	report_resource_stored(dev, resource, "");
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 }
 
 void pci_dev_set_resources(struct device *dev)
@@ -567,28 +603,44 @@ void pci_dev_set_resources(struct device *dev)
 	struct bus *bus;
 	u8 line;
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	for (res = dev->resource_list; res; res = res->next)
 		pci_set_resource(dev, res);
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	for (bus = dev->link_list; bus; bus = bus->next) {
+	  printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 		if (bus->children)
 			assign_resources(bus);
+		printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 	}
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 	/* Set a default latency timer. */
 	pci_write_config8(dev, PCI_LATENCY_TIMER, 0x40);
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* Set a default secondary latency timer. */
 	if ((dev->hdr_type & 0x7f) == PCI_HEADER_TYPE_BRIDGE)
 		pci_write_config8(dev, PCI_SEC_LATENCY_TIMER, 0x40);
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 	/* Zero the IRQ settings. */
 	line = pci_read_config8(dev, PCI_INTERRUPT_PIN);
 	if (line)
 		pci_write_config8(dev, PCI_INTERRUPT_LINE, 0);
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	/* Set the cache line size, so far 64 bytes is good for everyone. */
 	pci_write_config8(dev, PCI_CACHE_LINE_SIZE, 64 >> 2);
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 }
 
 void pci_dev_enable_resources(struct device *dev)
@@ -665,13 +717,19 @@ void pci_dev_init(struct device *dev)
 #if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 	struct rom_header *rom, *ram;
 
+	printk(BIOS_DEBUG, "attempting %s: %d, %x\n", dev_path(dev), __LINE__, (dev->class >> 8));
+
 	if (CONFIG_PCI_ROM_RUN != 1 && /* Only execute VGA ROMs. */
 	    ((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
 		return;
 
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
+
 	if (CONFIG_VGA_ROM_RUN != 1 && /* Only execute non-VGA ROMs. */
 	    ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
 		return;
+
+	printk(BIOS_DEBUG, "attempting %s: %d\n", dev_path(dev), __LINE__);
 
 #if CONFIG_CHROMEOS
 	/* In ChromeOS we want to boot blazingly fast. Therefore
@@ -706,6 +764,8 @@ void pci_dev_init(struct device *dev)
 	oprom_is_loaded = 1;
 	printk(BIOS_DEBUG, "VGA Option ROM has been loaded\n");
 #endif
+#else
+#error "I bug"
 #endif /* CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN */
 }
 

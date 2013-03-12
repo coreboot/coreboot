@@ -10,8 +10,9 @@ config CPU_SPECIFIC_OPTIONS
 	def_bool y
 	select SMP
 	select SSE2
-	select UDELAY_LAPIC
 	select SMM_TSEG
+	select UDELAY_LAPIC
+	select HAVE_INIT_TIMER
 	select CPU_MICROCODE_IN_CBFS
 	#select AP_IN_SIPI_WAIT
 	select TSC_SYNC_MFENCE
@@ -34,5 +35,5 @@ config ENABLE_VMX
 
 config MICROCODE_INCLUDE_PATH
 	string
-	default "src/cpu/intel/model_206ax"
+	default "3rdparty/mainboard/lenovo/x201"
 endif

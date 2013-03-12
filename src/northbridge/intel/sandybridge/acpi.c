@@ -38,13 +38,9 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar_reg;
 	int max_buses;
 
-	dev = dev_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_SB, 0);
-	if (!dev)
-		dev = dev_find_device(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_IB, 0);
-	if (!dev)
-		return current;
+	dev = dev_find_slot(0xff, PCI_DEVFN (0, 1));
 
-	pciexbar_reg=pci_read_config32(dev, PCIEXBAR);
+	pciexbar_reg=read32 (0xeff01050);
 
 	// MMCFG not supported or not enabled.
 	if (!(pciexbar_reg & (1 << 0)))

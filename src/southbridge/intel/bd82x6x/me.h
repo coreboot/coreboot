@@ -194,6 +194,7 @@ struct mei_header {
 #define MKHI_MDES_ENABLE	0x09
 
 #define MKHI_GET_FW_VERSION	0x02
+#define MKHI_SET_UMA  	        0x08
 #define MKHI_END_OF_POST	0x0c
 #define MKHI_FEATURE_OVERRIDE	0x14
 

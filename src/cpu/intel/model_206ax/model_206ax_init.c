@@ -243,6 +243,7 @@ int cpu_config_tdp_levels(void)
  */
 void set_power_limits(u8 power_limit_1_time)
 {
+#ifdef DISABLED
 	msr_t msr = rdmsr(MSR_PLATFORM_INFO);
 	msr_t limit;
 	unsigned power_unit;
@@ -301,13 +302,18 @@ void set_power_limits(u8 power_limit_1_time)
 		limit.lo = msr.lo & 0xff;
 		wrmsr(MSR_TURBO_ACTIVATION_RATIO, limit);
 	}
+#endif
 }
 
 static void configure_c_states(void)
 {
+#ifdef DISABLED
 	msr_t msr;
 
+	/* 0x00000000:0x02000403 */
 	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	printk(BIOS_ERR, "CST: %x %x\n",
+	       msr.hi, msr.lo);
 	msr.lo |= (1 << 28);	// C1 Auto Undemotion Enable
 	msr.lo |= (1 << 27);	// C3 Auto Undemotion Enable
 	msr.lo |= (1 << 26);	// C1 Auto Demotion Enable
@@ -361,6 +367,7 @@ static void configure_c_states(void)
 	else
 		msr.lo |= PP1_CURRENT_LIMIT_SNB;
 	wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
+#endif
 }
 
 static void configure_thermal_target(void)
@@ -390,20 +397,23 @@ static void configure_misc(void)
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
+
 	msr.lo |= (1 << 0);	  /* Fast String enable */
 	msr.lo |= (1 << 3); 	  /* TM1/TM2/EMTTM enable */
 	msr.lo |= (1 << 16);	  /* Enhanced SpeedStep Enable */
-	wrmsr(IA32_MISC_ENABLE, msr);
+       	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */
 	msr.lo = 0;
 	msr.hi = 0;
 	wrmsr(IA32_THERM_INTERRUPT, msr);
 
+#ifdef DISABLED
 	/* Enable package critical interrupt only */
 	msr.lo = 1 << 4;
 	msr.hi = 0;
 	wrmsr(IA32_PACKAGE_THERM_INTERRUPT, msr);
+#endif
 }
 
 static void enable_lapic_tpr(void)
@@ -417,6 +427,7 @@ static void enable_lapic_tpr(void)
 
 static void configure_dca_cap(void)
 {
+#ifdef DISABLED
 	struct cpuid_result cpuid_regs;
 	msr_t msr;
 
@@ -427,6 +438,7 @@ static void configure_dca_cap(void)
 		msr.lo |= 1;
 		wrmsr(IA32_PLATFORM_DCA_CAP, msr);
 	}
+#endif
 }
 
 static void set_max_ratio(void)
@@ -453,6 +465,7 @@ static void set_max_ratio(void)
 
 static void set_energy_perf_bias(u8 policy)
 {
+#ifdef DISABLED
 	msr_t msr;
 
 	/* Energy Policy is bits 3:0 */
@@ -463,6 +476,7 @@ static void set_energy_perf_bias(u8 policy)
 
 	printk(BIOS_DEBUG, "model_x06ax: energy policy set to %u\n",
 	       policy);
+#endif
 }
 
 static void configure_mca(void)
@@ -511,7 +525,7 @@ static void intel_cores_init(device_t cpu)
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id =
-			cpu->path.apic.apic_id + i;
+		  cpu->path.apic.apic_id + (i & 1) + ((i & 2) << 1);
 
 		/* Update APIC ID if no hyperthreading */
 		if (threads_per_core == 1)
@@ -542,6 +556,9 @@ static void model_206ax_init(device_t cpu)
 	char processor_name[49];
 	struct cpuid_result cpuid_regs;
 
+	/* Start up extra cores */
+	intel_cores_init(cpu);
+
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 
@@ -553,7 +570,7 @@ static void model_206ax_init(device_t cpu)
 	/* Print processor name */
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
-
+	printk(BIOS_INFO, "CPU:lapic=%ld, boot_cpu=%d\n", lapicid (), boot_cpu ());
 #if CONFIG_USBDEBUG
 	// Is this caution really needed?
 	if(!ehci_debug_addr)
@@ -602,8 +619,6 @@ static void model_206ax_init(device_t cpu)
 	/* Enable Turbo */
 	enable_turbo();
 
-	/* Start up extra cores */
-	intel_cores_init(cpu);
 }
 
 static struct device_operations cpu_dev_ops = {
@@ -611,6 +626,7 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
+	{ X86_VENDOR_INTEL, 0x20655 }, /* Intel Sandybridge */
 	{ X86_VENDOR_INTEL, 0x206a0 }, /* Intel Sandybridge */
 	{ X86_VENDOR_INTEL, 0x206a6 }, /* Intel Sandybridge D1 */
 	{ X86_VENDOR_INTEL, 0x206a7 }, /* Intel Sandybridge D2/J1 */

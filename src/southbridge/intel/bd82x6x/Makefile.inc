@@ -32,6 +32,7 @@ ramstage-y += usb_ehci.c
 ramstage-y += me.c
 ramstage-y += me_8.x.c
 ramstage-y += smbus.c
+ramstage-y += thermal.c
 
 ramstage-y += me_status.c
 ramstage-y += reset.c
@@ -44,12 +45,11 @@ smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c
 
-romstage-y += early_usb.c early_smbus.c early_me.c me_status.c gpio.c
+romstage-y += early_usb.c early_smbus.c early_me.c me_status.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 smm-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-y += reset.c
-romstage-y += early_spi.c
 
 bd82x6x_add_me: $(obj)/coreboot.pre $(IFDTOOL)
 	printf "    DD         Adding Intel Firmware Descriptor\n"

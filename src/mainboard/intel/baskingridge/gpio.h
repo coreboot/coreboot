@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef GRAYSREEF_GPIO_H
-#define GRAYSREEF_GPIO_H
+#ifndef BASKING_RIDGE_GPIO_H
+#define BASKING_RIDGE_GPIO_H
 
 #include "southbridge/intel/lynxpoint/gpio.h"
 
@@ -225,7 +225,7 @@ const struct pch_gpio_set3 pch_gpio_set3_level = {
 	.gpio68 = GPIO_LEVEL_HIGH,
 };
 
-const struct pch_gpio_map graysreef_gpio_map = {
+const struct pch_gpio_map mainboard_gpio_map = {
 	.set1 = {
 		.mode      = &pch_gpio_set1_mode,
 		.direction = &pch_gpio_set1_direction,

@@ -19,8 +19,8 @@ config BOARD_INTEL_TRUXTON
 	bool "EP80579 devkit (Truxton)"
 config BOARD_INTEL_XE7501DEVKIT
 	bool "XE7501devkit"
-config BOARD_INTEL_GRAYSREEF
-	bool "Grays Reef CRB"
+config BOARD_INTEL_BASKING_RIDGE
+	bool "Basking Ridge CRB"
 
 endchoice
 
@@ -28,7 +28,7 @@ source "src/mainboard/intel/d810e2cb/Kconfig"
 source "src/mainboard/intel/d945gclf/Kconfig"
 source "src/mainboard/intel/eagleheights/Kconfig"
 source "src/mainboard/intel/emeraldlake2/Kconfig"
-source "src/mainboard/intel/graysreef/Kconfig"
+source "src/mainboard/intel/baskingridge/Kconfig"
 source "src/mainboard/intel/jarrell/Kconfig"
 source "src/mainboard/intel/mtarvon/Kconfig"
 source "src/mainboard/intel/truxton/Kconfig"

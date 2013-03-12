@@ -1,4 +1,4 @@
-if BOARD_INTEL_GRAYSREEF
+if BOARD_INTEL_BASKING_RIDGE
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -20,11 +20,11 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MAINBOARD_DIR
 	string
-	default intel/graysreef
+	default intel/baskingridge
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "GRAYS REEF"
+	default "BASKING RIDGE"
 
 config MMCONF_BASE_ADDRESS
 	hex
@@ -42,4 +42,4 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0166.rom"
 
-endif # BOARD_INTEL_GRAYSREEF
+endif # BOARD_INTEL_BASKING_RIDGE

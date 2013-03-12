@@ -238,7 +238,7 @@ static void mainboard_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Compal Link ChromeBox")
+	CHIP_NAME("Intel Basking Ridge")
 	.enable_dev = mainboard_enable,
 };
 

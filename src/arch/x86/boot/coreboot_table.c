@@ -355,6 +355,9 @@ static void lb_memory_range(struct lb_memory *mem,
 
 static void lb_reserve_table_memory(struct lb_header *head)
 {
+/* Dynamic cbmem has already reserved the memory where the coreboot tables
+ * reside. Therefore, there is nothing to fix up. */
+#if !CONFIG_DYNAMIC_CBMEM
 	struct lb_record *last_rec;
 	struct lb_memory *mem;
 	uint64_t start;
@@ -383,6 +386,7 @@ static void lb_reserve_table_memory(struct lb_header *head)
 			mem->map[i].size = pack_lb64(map_end - end);
 		}
 	}
+#endif
 }
 
 static unsigned long lb_table_fini(struct lb_header *head, int fixup)
@@ -507,7 +511,7 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 	}
 }
 
-static void lb_add_memory_range(struct lb_memory *mem,
+void lb_add_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
 	lb_remove_memory_range(mem, start, size);
@@ -664,14 +668,20 @@ unsigned long write_coreboot_table(
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		low_table_start, low_table_end - low_table_start);
 
-	/* Record the pirq table, acpi tables, and maybe the mptable */
-	lb_add_memory_range(mem, LB_MEM_TABLE,
-		rom_table_start, rom_table_end-rom_table_start);
+	/* Record the pirq table, acpi tables, and maybe the mptable. However,
+	 * these only need to be added when the rom_table is sitting below
+	 * 1MiB. If it isn't that means high tables are being written.
+	 * The code below handles high tables correctly. */
+	if (rom_table_end <= (1 << 20))
+		lb_add_memory_range(mem, LB_MEM_TABLE,
+			rom_table_start, rom_table_end-rom_table_start);
 
-	printk(BIOS_DEBUG, "Adding high table area\n");
-	// should this be LB_MEM_ACPI?
+#if CONFIG_DYNAMIC_CBMEM
+	cbmem_add_lb_mem(mem);
+#else /* CONFIG_DYNAMIC_CBMEM */
 	lb_add_memory_range(mem, LB_MEM_TABLE,
 		high_tables_base, high_tables_size);
+#endif /* CONFIG_DYNAMIC_CBMEM */
 
 	/* Add reserved regions */
 	add_lb_reserved(mem);

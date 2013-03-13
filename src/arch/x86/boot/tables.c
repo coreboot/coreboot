@@ -53,6 +53,7 @@ struct lb_memory *write_tables(void)
 	 */
 	unsigned long high_table_pointer;
 
+#if !CONFIG_DYNAMIC_CBMEM
 	if (!high_tables_base) {
 		printk(BIOS_ERR, "ERROR: High Tables Base is not set.\n");
 		// Are there any boards without?
@@ -60,6 +61,7 @@ struct lb_memory *write_tables(void)
 	}
 
 	printk(BIOS_DEBUG, "High Tables Base is %llx.\n", high_tables_base);
+#endif
 
 	rom_table_start = 0xf0000;
 	rom_table_end =   0xf0000;

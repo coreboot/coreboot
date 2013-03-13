@@ -42,7 +42,6 @@ romstage-y += cbfs.c
 romstage-y += lzma.c
 #romstage-y += lzmadecode.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
-romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
@@ -76,7 +75,6 @@ ramstage-y += lzma.c
 ramstage-y += stack.c
 ramstage-$(CONFIG_ARCH_X86) += gcc.c
 ramstage-y += clog2.c
-ramstage-y += cbmem.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
@@ -86,6 +84,16 @@ ramstage-$(CONFIG_TRACE) += trace.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ramstage-$(CONFIG_COVERAGE) += libgcov.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += edid.c
+
+# The CBMEM implementations are chosen based on CONFIG_DYNAMIC_CBMEM.
+ifeq ($(CONFIG_DYNAMIC_CBMEM),y)
+ramstage-y += dynamic_cbmem.c
+romstage-y += dynamic_cbmem.c
+else
+ramstage-y += cbmem.c
+romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
+endif # CONFIG_DYNAMIC_CBMEM
+ramstage-y += cbmem_info.c
 
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 

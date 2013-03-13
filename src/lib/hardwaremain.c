@@ -94,6 +94,7 @@ void hardwaremain(int boot_complete)
 	    !cbmem_get_table_location(&high_tables_base, &high_tables_size))
 		cbmem_initialize();
 #endif
+	init_cbmem_pre_device();
 
 	timestamp_stash(TS_DEVICE_ENUMERATE);
 
@@ -121,10 +122,8 @@ void hardwaremain(int boot_complete)
 
 	timestamp_stash(TS_DEVICE_DONE);
 
-	cbmem_initialize();
-#if CONFIG_CONSOLE_CBMEM
-	cbmemc_reinit();
-#endif
+	init_cbmem_post_device();
+
 	timestamp_sync();
 
 #if CONFIG_HAVE_ACPI_RESUME

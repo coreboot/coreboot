@@ -72,13 +72,6 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 }
 
-#if CONFIG_HAVE_MAINBOARD_RESOURCES
-int add_mainboard_resources(struct lb_memory *mem)
-{
-	return 0;
-}
-#endif
-
 struct chip_operations mainboard_ops = {
 		.enable_dev = mainboard_enable,
 };

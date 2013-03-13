@@ -179,50 +179,11 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 		Method (_OSC, 4)
 		{
 			/* Check for proper GUID */
-		If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
-		{
-			/* Create DWORD-adressable field from the Capabilities Buffer */
-			CreateDWordField (Arg3, 0, CDW1)
-			CreateDWordField (Arg3, 4, CDW2)
-			CreateDWordField (Arg3, 8, CDW3)
-
-			/* Save Capabilities DWord 2 & 3 */
-			Store (CDW2, SUPP)
-			Store (CDW3, CTRL)
-
-			/* Don't care of OS capabilites */
-			/* We support nothing (maybe we should add PCIe Capability Structure Control) */
-			And (CTRL, 0x00, CTRL)
-
-			/* Query flag clear ? */
-			If (Not (And (CDW1, 1)))
+			If (LEqual (Arg0, ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
 			{
-				/* Nothing to do */
+				/* Let OS control everything */
+				Return (Arg3)
 			}
-
-			/* Unknown revision ? */
-			If (LNotEqual (Arg1, One))
-			{
-				Or (CDW1, 0x08, CDW1)
-			}
-
-			/* Capabilities bits masked ? */
-			If (LNotEqual (CDW3, CTRL))
-			{
-				Or (CDW1, 0x10, CDW1)
-			}
-
-			/* Update DWORD3 in the buffer */
-			Store (CTRL, CDW3)
-
-			Return (Arg3)
-		}
-		Else
-		{
-			/* Unrecognized UUID */
-			Or (CDW1, 4, CDW1)
-			Return (Arg3)
-		}
 		} /* End _OSC */
 
 			Method (_PRT, 0, NotSerialized)

@@ -52,6 +52,20 @@ static int board_wakeup_permitted(void)
 }
 #endif
 
+/*
+ * Set/clear program flow prediction and return the previous state.
+ */
+static int config_branch_prediction(int set_cr_z)
+{
+	unsigned int cr;
+
+	/* System Control Register: 11th bit Z Branch prediction enable */
+	cr = get_cr();
+	set_cr(set_cr_z ? cr | CR_Z : cr & ~CR_Z);
+
+	return cr & CR_Z;
+}
+
 static void initialize_s5p_mshc(void)
 {
 	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
@@ -80,6 +94,10 @@ void main(void)
 	struct arm_clk_ratios *arm_ratios;
 	int ret;
 	void *entry;
+
+	/* FIXME: if we boot from USB, we need to disable branch prediction
+	 * before copying from USB into RAM */
+	config_branch_prediction(1);
 
 	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 

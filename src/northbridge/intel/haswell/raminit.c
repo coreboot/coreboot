@@ -203,9 +203,10 @@ void sdram_initialize(struct pei_data *pei_data)
 	report_memory_config();
 }
 
-struct cbmem_entry *get_cbmem_toc(void)
+void *cbmem_top(void)
 {
-	return (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
+	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
+	return (void *)get_top_of_ram();
 }
 
 unsigned long get_top_of_ram(void)

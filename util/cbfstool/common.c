@@ -881,7 +881,6 @@ struct cbfs_file *cbfs_find_file(const char *name)
 		}
 		struct cbfs_file *thisfile =
 		    (struct cbfs_file *)phys_to_virt(current);
-		uint32_t length = ntohl(thisfile->len);
 		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
 		if (!strcmp(fname, name))
 			return thisfile;

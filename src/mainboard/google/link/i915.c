@@ -45,6 +45,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <edid.h>
 #include "i915io.h"
 
 enum {
@@ -59,6 +60,18 @@ static unsigned short addrport;
 static unsigned short dataport;
 static unsigned int physbase;
 extern int oprom_is_loaded;
+static u32 htotal, hblank, hsync, vtotal, vblank, vsync;
+
+const u32 link_edid_data[] = {
+	0xffffff00, 0x00ffffff, 0x0379e430, 0x00000000,
+	0x04011500, 0x96121ba5, 0xa2d54f02, 0x26935259,
+	0x00545017, 0x01010000, 0x01010101, 0x01010101,
+	0x01010101, 0x6f6d0101, 0xa4a0a000, 0x20306031,
+	0xb510003a, 0x19000010, 0x00000000, 0x00000000,
+	0x00000000, 0x00000000, 0x00000000, 0x4c00fe00,
+	0x69442047, 0x616c7073, 0x20200a79, 0xfe000000,
+	0x31504c00, 0x45513932, 0x50532d31, 0x24003141,
+};
 
 #define READ32(addr) io_i915_READ32(addr)
 #define WRITE32(val, addr) io_i915_WRITE32(val, addr)
@@ -90,27 +103,27 @@ void io_i915_WRITE32(unsigned long val, unsigned long addr)
 
 
 /*
-2560
-4 words per
-4 *p
-10240
-4k bytes per page
-4096/p
-2.50
-1700 lines
-1700 * p
-4250.00
-PTEs
+  2560
+  4 words per
+  4 *p
+  10240
+  4k bytes per page
+  4096/p
+  2.50
+  1700 lines
+  1700 * p
+  4250.00
+  PTEs
 */
 static void
 setgtt(int start, int end, unsigned long base, int inc)
 {
-        int i;
+	int i;
 
-	for (i = start; i < end; i++){
-                u32 word = base + i*inc;
-                WRITE32(word|1,(i*4)|1);
-        }
+	for(i = start; i < end; i++){
+		u32 word = base + i*inc;
+		WRITE32(word|1,(i*4)|1);
+	}
 }
 
 static unsigned long tickspermicrosecond = 1795;
@@ -178,12 +191,14 @@ static int run(int index)
 	int i, prev = 0;
 	struct iodef *id, *lastidread = 0;
 	unsigned long u, t;
+	if (index >= niodefs)
+		return index;
 	/* state machine! */
 	for(i = index, id = &iodefs[i]; id->op; i++, id++){
 		switch(id->op){
 		case M:
 			if (verbose & vmsg) printk(BIOS_SPEW, "%ld: %s\n",
-				globalmicroseconds(), id->msg);
+						globalmicroseconds(), id->msg);
 			break;
 		case P:
 			palette();
@@ -213,11 +228,11 @@ static int run(int index)
 				if (verbose & vio)
 					printk(BIOS_SPEW, "PCH_PP_CONTROL\n");
 				switch(id->data & 0xf){
-					case 8: break;
-					case 7: break;
-					default: udelay(100000);
-						if (verbose & vio)
-							printk(BIOS_SPEW, "U %d\n", 100000);
+				case 8: break;
+				case 7: break;
+				default: udelay(100000);
+					if (verbose & vio)
+						printk(BIOS_SPEW, "U %d\n", 100000);
 				}
 			}
 			break;
@@ -248,11 +263,13 @@ static int run(int index)
 }
 
 int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-	unsigned int gfx);
+		unsigned int gfx);
 
 int i915lightup(unsigned int pphysbase, unsigned int piobase,
-	unsigned int pmmio, unsigned int pgfx)
+		unsigned int pmmio, unsigned int pgfx)
 {
+	static struct edid edid;
+
 	int index;
 	u32 auxin[16], auxout[16];
 	mmio = (void *)pmmio;
@@ -260,13 +277,35 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	dataport = addrport + 4;
 	physbase = pphysbase;
 	graphics = pgfx;
-	printk(BIOS_SPEW,
-		"i915lightup: graphics %p mmio %p"
+	printk(BIOS_SPEW, "i915lightup: graphics %p mmio %p"
 		"addrport %04x physbase %08x\n",
-			(void *)graphics, mmio, addrport, physbase);
+		(void *)graphics, mmio, addrport, physbase);
 	globalstart = rdtscll();
 
+
+	decode_edid((unsigned char *)&link_edid_data, sizeof(link_edid_data), &edid);
+
+	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl- 1) << 16);
+	printk(BIOS_SPEW, "I915_WRITE(HTOTAL(pipe), %08x)\n", htotal);
+
+	hblank = (edid.ha  - 1) | ((edid.ha + edid.hbl- 1) << 16);
+	printk(BIOS_SPEW, "I915_WRITE(HBLANK(pipe),0x%08x)\n", hblank);
+
+	hsync = (edid.ha + edid.hso  - 1) |
+		((edid.ha + edid.hso + edid.hspw- 1) << 16);
+	printk(BIOS_SPEW, "I915_WRITE(HSYNC(pipe),0x%08x)\n", hsync);
+
+	vtotal = (edid.va - 1) | ((edid.va + edid.vbl- 1) << 16);
+	printk(BIOS_SPEW, "I915_WRITE(VTOTAL(pipe), %08x)\n", vtotal);
+
+	vblank = (edid.va  - 1) | ((edid.va + edid.vbl- 1) << 16);
+	printk(BIOS_SPEW, "I915_WRITE(VBLANK(pipe),0x%08x)\n", vblank);
+
+	vsync = (edid.va + edid.vso  - 1) |((edid.va + edid.vso + edid.vspw- 1) << 16);
+	printk(BIOS_SPEW, "I915_WRITE(VSYNC(pipe),0x%08x)\n", vsync);
+
 	printk(BIOS_SPEW, "Table has %d elements\n", niodefs);
+
 	index = run(0);
 	printk(BIOS_SPEW, "Run returns %d\n", index);
 	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_DPCD_REV<<8|0xe;
@@ -328,8 +367,8 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	if (index != niodefs)
 		printk(BIOS_ERR, "Left over IO work in i915_lightup"
-				" -- this is likely a table error. "
-				"Only %d of %d were done.\n", index, niodefs);
+			" -- this is likely a table error. "
+			"Only %d of %d were done.\n", index, niodefs);
 	printk(BIOS_SPEW, "DONE startup\n");
 	verbose = 0;
 	/* GTT is the Global Translation Table for the graphics pipeline.
@@ -357,7 +396,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	 */
 	setgtt(0, FRAME_BUFFER_PAGES, physbase, 4096);
 	printk(BIOS_SPEW, "memset %p to 0 for %d bytes\n",
-				(void *)graphics, FRAME_BUFFER_BYTES);
+		(void *)graphics, FRAME_BUFFER_BYTES);
 	memset((void *)graphics, 0, FRAME_BUFFER_BYTES);
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	i915_init_done = 1;

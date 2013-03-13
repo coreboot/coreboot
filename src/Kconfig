@@ -179,6 +179,14 @@ config EARLY_CBMEM_INIT
 	  some, for instance, execution timestamps. It needs support in
 	  romstage.c and should be enabled by the board's Kconfig.
 
+config DYNAMIC_CBMEM
+	bool "The CBMEM space is dynamically grown."
+	default n
+	help
+	  Instead of reserving a static amount of CBMEM space the CBMEM
+	  area grows dynamically.  CBMEM can be used both in romstage (after
+	  memory initialization) and ramstage.
+
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
 	depends on EARLY_CBMEM_INIT

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2009 coresystems GmbH
+ * Copyright (C) 2013 Google, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,9 +63,72 @@
 #define CBMEM_ID_ELOG		0x454c4f47
 #define CBMEM_ID_COVERAGE	0x47434f56
 #define CBMEM_ID_ROMSTAGE_INFO	0x47545352
+#define CBMEM_ID_ROMSTAGE_RAM_STACK 0x90357ac4
+#define CBMEM_ID_RAMSTAGE	0x9a357a9e
+#define CBMEM_ID_RAMSTAGE_CACHE	0x9a3ca54e
+#define CBMEM_ID_ROOT		0xff4007ff
 #define CBMEM_ID_NONE		0x00000000
 
 #ifndef __ASSEMBLER__
+#include <stdint.h>
+
+struct cbmem_entry;
+
+#if CONFIG_DYNAMIC_CBMEM
+
+/*
+ * The dynamic cbmem infrastructure allows for growing cbmem dynamically as
+ * things are added. It requires an external function, cbmem_top(), to be
+ * implemented by the board or chipset to define the upper address where
+ * cbmem lives. This address is required to be a 32-bit address. Additionally,
+ * the address needs to be consistent in both romstage and ramstage.  The
+ * dynamic cbmem infrasturue allocates new regions below the last allocated
+ * region. Regions are defined by a cbmem_entry struct that is opaque. Regions
+ * may be removed, but the last one added is the only that can be removed.
+ *
+ * Dynamic cbmem has two allocators within it. All allocators use a top down
+ * allocation scheme. However, there are 2 modes for each allocation depending
+ * on the requested size. There are large allocations and small allocations.
+ * An allocation is considered to be small when it is less than or equal to
+ * DYN_CBMEM_ALIGN_SIZE / 2. The smaller allocations are fit into a larger
+ * allocation region.
+ */
+
+#define DYN_CBMEM_ALIGN_SIZE (4096)
+
+/* Initialze cbmem to be empty. */
+void cbmem_initialize_empty(void);
+
+/* Return the top address for dynamic cbmem. The address returned needs to
+ * be consistent across romstage and ramstage, and it is required to be
+ * below 4GiB. */
+void *cbmem_top(void);
+
+/* Add a cbmem entry of a given size and id. These return NULL on failure. The
+ * add function performs a find first and do not check against the original
+ * size. */
+const struct cbmem_entry *cbmem_entry_add(u32 id, u64 size);
+
+/* Find a cbmem entry of a given id. These return NULL on failure. */
+const struct cbmem_entry *cbmem_entry_find(u32 id);
+
+/* Remove a region defined by a cbmem_entry. Returns 0 on success, < 0 on
+ * error. Note: A cbmem_entry cannot be removed unless it was the last one
+ * added. */
+int cbmem_entry_remove(const struct cbmem_entry *entry);
+
+/* cbmem_entry accessors to get pointer and size of a cbmem_entry. */
+void *cbmem_entry_start(const struct cbmem_entry *entry);
+u64 cbmem_entry_size(const struct cbmem_entry *entry);
+
+#ifndef __PRE_RAM__
+/* Add the cbmem memory used to the memory tables. */
+struct lb_memory;
+void cbmem_add_lb_mem(struct lb_memory *mem);
+#endif /* __PRE_RAM__ */
+
+#else /* !CONFIG_DYNAMIC_CBMEM */
+
 #ifndef __PRE_RAM__
 extern uint64_t high_tables_base, high_tables_size;
 #if CONFIG_EARLY_CBMEM_INIT
@@ -72,22 +136,44 @@ extern uint64_t high_tables_base, high_tables_size;
 int __attribute__((weak)) cbmem_get_table_location(uint64_t *tables_base,
                                                    uint64_t *tables_size);
 #endif
+void set_cbmem_toc(struct cbmem_entry *);
 #endif
-
-int cbmem_initialize(void);
 
 void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);
-void *cbmem_add(u32 id, u64 size);
-void *cbmem_find(u32 id);
-void cbmem_list(void);
-void cbmem_arch_init(void);
 
 extern struct cbmem_entry *get_cbmem_toc(void);
 
+#endif /* CONFIG_DYNAMIC_CBMEM */
+
+/* Common API between cbmem and dynamic cbmem. */
+
+/* By default cbmem is attempted to be recovered. Returns 0 if cbmem was
+ * recovered or 1 if cbmem had to be reinitialized. */
+int cbmem_initialize(void);
+/* Add a cbmem entry of a given size and id. These return NULL on failure. The
+ * add function performs a find first and do not check against the original
+ * size. */
+void *cbmem_add(u32 id, u64 size);
+/* Find a cbmem entry of a given id. These return NULL on failure. */
+void *cbmem_find(u32 id);
+
 #ifndef __PRE_RAM__
-void set_cbmem_toc(struct cbmem_entry *);
+/* Ramstage only functions. */
+void cbmem_list(void);
+void cbmem_arch_init(void);
 void __attribute__((weak)) cbmem_post_handling(void);
-#endif
-#endif
-#endif
+void cbmem_print_entry(int n, u32 id, u64 start, u64 size);
+/* The pre|post device cbmem initialization functions are for the
+ * ramstage main to call. When cbmem is actually initialized depends on
+ * the cbmem implementation. */
+void init_cbmem_pre_device(void);
+void init_cbmem_post_device(void);
+#else
+static inline void cbmem_arch_init(void) {}
+#endif /* __PRE_RAM__ */
+
+#endif /* __ASSEMBLER__ */
+
+
+#endif /* _CBMEM_H_ */

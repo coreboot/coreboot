@@ -232,6 +232,20 @@ int cbmem_initialize(void)
 #endif
 
 #ifndef __PRE_RAM__
+/* cbmem cannot be initialized before device drivers, but it can be initialized
+ * after the drivers have run when CONFIG_WRITE_HIGH_TABLES is enabled. */
+void init_cbmem_pre_device(void) {}
+
+void init_cbmem_post_device(void)
+{
+#if CONFIG_WRITE_HIGH_TABLES
+	cbmem_initialize();
+#if CONFIG_CONSOLE_CBMEM
+	cbmemc_reinit();
+#endif
+#endif
+}
+
 void cbmem_list(void)
 {
 	struct cbmem_entry *cbmem_toc;
@@ -245,28 +259,8 @@ void cbmem_list(void)
 
 		if (cbmem_toc[i].magic != CBMEM_MAGIC)
 			continue;
-		printk(BIOS_DEBUG, "%2d. ", i);
-		switch (cbmem_toc[i].id) {
-		case CBMEM_ID_FREESPACE: printk(BIOS_DEBUG, "FREE SPACE "); break;
-		case CBMEM_ID_GDT:	 printk(BIOS_DEBUG, "GDT        "); break;
-		case CBMEM_ID_ACPI:	 printk(BIOS_DEBUG, "ACPI       "); break;
-		case CBMEM_ID_CBTABLE:	 printk(BIOS_DEBUG, "COREBOOT   "); break;
-		case CBMEM_ID_PIRQ:	 printk(BIOS_DEBUG, "IRQ TABLE  "); break;
-		case CBMEM_ID_MPTABLE:	 printk(BIOS_DEBUG, "SMP TABLE  "); break;
-		case CBMEM_ID_RESUME:	 printk(BIOS_DEBUG, "ACPI RESUME"); break;
-		case CBMEM_ID_RESUME_SCRATCH:	 printk(BIOS_DEBUG, "ACPISCRATCH"); break;
-		case CBMEM_ID_ACPI_GNVS: printk(BIOS_DEBUG, "ACPI GNVS  "); break;
-		case CBMEM_ID_SMBIOS:    printk(BIOS_DEBUG, "SMBIOS     "); break;
-		case CBMEM_ID_TIMESTAMP: printk(BIOS_DEBUG, "TIME STAMP "); break;
-		case CBMEM_ID_MRCDATA:	 printk(BIOS_DEBUG, "MRC DATA   "); break;
-		case CBMEM_ID_CONSOLE:   printk(BIOS_DEBUG, "CONSOLE    "); break;
-		case CBMEM_ID_ELOG:      printk(BIOS_DEBUG, "ELOG       "); break;
-		case CBMEM_ID_COVERAGE:  printk(BIOS_DEBUG, "COVERAGE   "); break;
-		case CBMEM_ID_ROMSTAGE_INFO:   printk(BIOS_DEBUG, "ROMSTAGE   "); break;
-		default: printk(BIOS_DEBUG, "%08x ", cbmem_toc[i].id);
-		}
-		printk(BIOS_DEBUG, "%08llx ", cbmem_toc[i].base);
-		printk(BIOS_DEBUG, "%08llx\n", cbmem_toc[i].size);
+		cbmem_print_entry(i, cbmem_toc[i].id, cbmem_toc[i].base,
+		                  cbmem_toc[i].size);
 	}
 }
 #endif

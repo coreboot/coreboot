@@ -19,7 +19,7 @@
 #ifndef	_INTTYPES_H_
 #define	_INTTYPES_H_
 
-#include <sys/stdint.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 #define __wchar_t	wchar_t

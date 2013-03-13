@@ -58,8 +58,10 @@ subdirs-$(CONFIG_CURSES) += curses
 subdirs-$(CONFIG_CBFS) += libcbfs
 subdirs-$(CONFIG_LZMA) += liblzma
 
-INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
-CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe
+CC_INCLUDE = $(shell $(CC) -print-search-dirs | head -n 1 | cut -d' ' -f2)include
+
+INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj) -I$(CC_INCLUDE)
+CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc
 CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Wshadow -fno-builtin

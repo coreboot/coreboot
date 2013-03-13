@@ -1,13 +1,12 @@
 #include <console/console.h>
 #include <device/device.h>
 
-#define RAM_BASE ((CONFIG_SYS_SDRAM_BASE >> 10) + (CONFIG_COREBOOT_ROMSIZE_KB))
-#define RAM_SIZE (((CONFIG_DRAM_SIZE_MB << 10UL) * CONFIG_NR_DRAM_BANKS) \
-		- CONFIG_COREBOOT_ROMSIZE_KB)
+#define RAM_BASE    (CONFIG_SYS_SDRAM_BASE >> 10)
+#define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
 
 static void domain_read_resources(device_t dev)
 {
-	ram_resource(dev, 0, RAM_BASE, RAM_SIZE);
+	ram_resource(dev, 0, RAM_BASE, RAM_SIZE_KB);
 }
 
 static void domain_set_resources(device_t dev)

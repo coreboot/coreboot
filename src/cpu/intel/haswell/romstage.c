@@ -32,7 +32,6 @@
 #include <arch/stages.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
-#include <cbmem.h>
 #include <cbfs.h>
 #include <romstage_handoff.h>
 #include <reset.h>
@@ -70,13 +69,17 @@ static inline u32 *stack_push(u32 *stack, u32 value)
 	return stack;
 }
 
+/* Romstage needs quite a bit of stack for decompressing images since the lzma
+ * lib keeps its state on the stack during romstage. */
+#define ROMSTAGE_RAM_STACK_SIZE 0x5000
 static unsigned long choose_top_of_stack(void)
 {
 	unsigned long stack_top;
-#if CONFIG_RELOCATABLE_RAMSTAGE
-	stack_top = (unsigned long)cbmem_add(CBMEM_ID_RESUME_SCRATCH,
-	                                     CONFIG_HIGH_SCRATCH_MEMORY_SIZE);
-	stack_top += CONFIG_HIGH_SCRATCH_MEMORY_SIZE;
+#if CONFIG_DYNAMIC_CBMEM
+	/* cbmem_add() does a find() before add(). */
+	stack_top = (unsigned long)cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK,
+	                                     ROMSTAGE_RAM_STACK_SIZE);
+	stack_top += ROMSTAGE_RAM_STACK_SIZE;
 #else
 	stack_top = ROMSTAGE_STACK;
 #endif
@@ -197,7 +200,6 @@ void romstage_common(const struct romstage_params *params)
 {
 	int boot_mode;
 	int wake_from_s3;
-	int cbmem_was_initted;
 	struct romstage_handoff *handoff;
 
 #if CONFIG_COLLECT_TIMESTAMPS
@@ -265,23 +267,16 @@ void romstage_common(const struct romstage_params *params)
 	quick_ram_check();
 	post_code(0x3e);
 
-#if CONFIG_EARLY_CBMEM_INIT
-	cbmem_was_initted = !cbmem_initialize();
-#else
-	cbmem_was_initted = cbmem_reinit((uint64_t) (get_top_of_ram()
-						     - HIGH_MEMORY_SIZE));
-#endif
-
-	/* Save data returned from MRC on non-S3 resumes. */
-	if (!wake_from_s3)
+	if (!wake_from_s3) {
+		cbmem_initialize_empty();
+		/* Save data returned from MRC on non-S3 resumes. */
 		save_mrc_data(params->pei_data);
-
-#if CONFIG_HAVE_ACPI_RESUME
-	if (wake_from_s3 && !cbmem_was_initted) {
+	} else if (cbmem_initialize()) {
+	#if CONFIG_HAVE_ACPI_RESUME
 		/* Failed S3 resume, reset to come up cleanly */
 		reset_system();
+	#endif
 	}
-#endif
 
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
@@ -330,11 +325,16 @@ void romstage_after_car(void)
 
 #if CONFIG_RELOCATABLE_RAMSTAGE
 void cache_loaded_ramstage(struct romstage_handoff *handoff,
-                           void *ramstage_base, uint32_t ramstage_size,
+                           const struct cbmem_entry *ramstage,
                            void *entry_point)
 {
 	struct ramstage_cache *cache;
 	uint32_t total_size;
+	uint32_t ramstage_size;
+	void *ramstage_base;
+
+	ramstage_size = cbmem_entry_size(ramstage);
+	ramstage_base = cbmem_entry_start(ramstage);
 
 	/* The ramstage cache lives in the TSEG region at RESERVED_SMM_OFFSET.
 	 * The top of ram is defined to be the TSEG base address. */
@@ -358,19 +358,14 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 	/* Copy over the program. */
 	memcpy(&cache->program[0], ramstage_base, ramstage_size);
 
-	/* Do not update reserve region if the handoff structure is not
-	 * available. Perhaps the ramstage will fix things up for the resume
-	 * path. */
 	if (handoff == NULL)
 		return;
 
-	/* Update entry and reserve region. */
-	handoff->reserve_base = (uint32_t)ramstage_base;
-	handoff->reserve_size = ramstage_size;
 	handoff->ramstage_entry_point = (uint32_t)entry_point;
 }
 
-void *load_cached_ramstage(struct romstage_handoff *handoff)
+void *load_cached_ramstage(struct romstage_handoff *handoff,
+                           const struct cbmem_entry *ramstage)
 {
 	struct ramstage_cache *cache;
 

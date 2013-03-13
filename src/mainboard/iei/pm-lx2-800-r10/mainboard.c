@@ -47,6 +47,5 @@ static void mainboard_enable(struct device *dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("IEI PM-LX2-800-R10 Mainboard")
 	.enable_dev = mainboard_enable,
 };

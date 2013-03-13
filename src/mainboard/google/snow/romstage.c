@@ -30,6 +30,7 @@
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/periph.h>
+#include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
 #include <console/console.h>
 #include <arch/stages.h>
@@ -89,6 +90,12 @@ void main(void)
 	system_clock_init(mem, arm_ratios);
 
 	console_init();
+
+	/*
+	 * FIXME: Do necessary I2C init so low-level PMIC code doesn't need to.
+	 * Also, we should only call power_init() on cold boot.
+	 */
+	power_init();
 
 	if (!mem) {
 		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");

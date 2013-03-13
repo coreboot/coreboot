@@ -502,6 +502,5 @@ static void mainboard_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-	CHIP_NAME("Google Butterfly Chromebook")
 	.enable_dev = mainboard_enable,
 };

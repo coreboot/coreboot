@@ -484,7 +484,7 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 	}
 }
 
-static void lb_add_memory_range(struct lb_memory *mem,
+void lb_add_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
 	lb_remove_memory_range(mem, start, size);

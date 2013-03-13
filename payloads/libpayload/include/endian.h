@@ -32,26 +32,27 @@
 #define swap_bytes64(in) (((uint64_t)swap_bytes32((uint32_t)(in)) << 32) | \
 			  ((uint64_t)swap_bytes32((uint32_t)((in) >> 32))))
 
+/* Endian functions from glibc 2.9 / BSD "endian.h" */
 
 #if defined CONFIG_BIG_ENDIAN
 
-#define htobew(in) (in)
-#define htobel(in) (in)
-#define htobell(in) (in)
+#define htobe16(in) (in)
+#define htobe32(in) (in)
+#define htobe64(in) (in)
 
-#define htolew(in) swap_bytes16(in)
-#define htolel(in) swap_bytes32(in)
-#define htolell(in) swap_bytes64(in)
+#define htole16(in) swap_bytes16(in)
+#define htole32(in) swap_bytes32(in)
+#define htole64(in) swap_bytes64(in)
 
 #elif defined CONFIG_LITTLE_ENDIAN
 
-#define htobew(in) swap_bytes16(in)
-#define htobel(in) swap_bytes32(in)
-#define htobell(in) swap_bytes64(in)
+#define htobe16(in) swap_bytes16(in)
+#define htobe32(in) swap_bytes32(in)
+#define htobe64(in) swap_bytes64(in)
 
-#define htolew(in) (in)
-#define htolel(in) (in)
-#define htolell(in) (in)
+#define htole16(in) (in)
+#define htole32(in) (in)
+#define htole64(in) (in)
 
 #else
 
@@ -59,20 +60,34 @@
 
 #endif
 
-#define betohw(in) htobew(in)
-#define betohl(in) htobel(in)
-#define betohll(in) htobell(in)
+#define be16toh(in) htobe16(in)
+#define be32toh(in) htobe32(in)
+#define be64toh(in) htobe64(in)
 
-#define letohw(in) htolew(in)
-#define letohl(in) htolel(in)
-#define letohll(in) htolell(in)
+#define le16toh(in) htole16(in)
+#define le32toh(in) htole32(in)
+#define le64toh(in) htole64(in)
 
-#define htonw(in) htobew(in)
-#define htonl(in) htobel(in)
-#define htonll(in) htobell(in)
+#define htonw(in) htobe16(in)
+#define htonl(in) htobe32(in)
+#define htonll(in) htobe64(in)
 
-#define ntohw(in) htonw(in)
-#define ntohl(in) htonl(in)
-#define ntohll(in) htonll(in)
+#define ntohw(in) be16toh(in)
+#define ntohl(in) be32toh(in)
+#define ntohll(in) be64toh(in)
+
+/* Deprecated names (not in glibc / BSD) */
+#define htobew(in) htobe16(in)
+#define htobel(in) htobe32(in)
+#define htobell(in) htobe64(in)
+#define htolew(in) htole16(in)
+#define htolel(in) htole32(in)
+#define htolell(in) htole64(in)
+#define betohw(in) be16toh(in)
+#define betohl(in) be32toh(in)
+#define betohll(in) be64toh(in)
+#define letohw(in) le16toh(in)
+#define letohl(in) le32toh(in)
+#define letohll(in) le64toh(in)
 
 #endif

@@ -63,6 +63,19 @@ static const int legacy_hole_size_k = 384;
 
 int add_northbridge_resources(struct lb_memory *mem)
 {
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		legacy_hole_base_k * 1024, legacy_hole_size_k * 1024);
+
+#if CONFIG_CHROMEOS_RAMOOPS
+	lb_add_memory_range(mem, LB_MEM_RESERVED,
+		CONFIG_CHROMEOS_RAMOOPS_RAM_START,
+		CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE);
+#endif
+
+	/* Required for SandyBridge sighting 3715511 */
+	lb_add_memory_range(mem, LB_MEM_RESERVED, 0x20000000, 0x00200000);
+	lb_add_memory_range(mem, LB_MEM_RESERVED, 0x40000000, 0x00200000);
+
 	return 0;
 }
 
@@ -113,7 +126,7 @@ static void add_fixed_resources(struct device *dev, int index)
 
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%llx "
 	       "size=0x%llx\n", uma_memory_base, uma_memory_size);
-	resource = new_resource(dev, index++);
+	resource = new_resource(dev, index);
 	resource->base = (resource_t) uma_memory_base;
 	resource->size = (resource_t) uma_memory_size;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
@@ -126,23 +139,12 @@ static void add_fixed_resources(struct device *dev, int index)
 	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
 		       "size=0x%x\n", pcie_config_base, pcie_config_size);
-		resource = new_resource(dev, index++);
+		resource = new_resource(dev, index+1);
 		resource->base = (resource_t) pcie_config_base;
 		resource->size = (resource_t) pcie_config_size;
 		resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 	}
-
-	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
-
-#if CONFIG_CHROMEOS_RAMOOPS
-	mmio_resource(dev, index++, CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
-#endif
-
-	/* Required for SandyBridge sighting 3715511 */
-	bad_ram_resource(dev, index++, 0x20000000 >> 10, 0x00200000 >> 10);
-	bad_ram_resource(dev, index++, 0x40000000 >> 10, 0x00200000 >> 10);
 }
 
 static void pci_domain_set_resources(device_t dev)

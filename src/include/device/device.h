@@ -173,25 +173,17 @@ unsigned int scan_static_bus(device_t bus, unsigned int max);
 void fixed_mem_resource(device_t dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);
 
-
-/* It is the caller's responsibility to adjust regions such that ram_resource()
- * and mmio_resource() do not overlap.
- *
- * Current MTRR setup creates exclusive uncacheable holes for uma_resource()
- * only and these are allowed to overlap any ram_resource(). This approach
- * is used for all UMA except Intel Sandy/IvyBridge.
- */
 #define ram_resource(dev, idx, basek, sizek) \
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
 
 #define bad_ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_CACHEABLE )
 
 #define uma_resource(dev, idx, basek, sizek) \
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_UMA_FB)
 
 #define mmio_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE)
 
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);

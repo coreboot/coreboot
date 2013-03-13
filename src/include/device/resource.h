@@ -21,7 +21,6 @@
 						 */
 #define IORESOURCE_BRIDGE	0x00080000	/* The IO resource has a bus below it. */
 #define IORESOURCE_UMA_FB	0x00100000	/* UMA framebuffer */
-#define IORESOURCE_IGNORE_MTRR	0x00200000	/* The resource does not affect MTRR setup. */
 
 #define IORESOURCE_RESERVE	0x10000000	/* The resource needs to be reserved in the coreboot table */
 #define IORESOURCE_STORED	0x20000000	/* The IO resource assignment has been stored in the device */

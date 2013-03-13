@@ -361,10 +361,6 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 		return;
 	}
 
-	if (res->flags & IORESOURCE_IGNORE_MTRR) {
-		return;
-	}
-
 	if (!(res->flags & IORESOURCE_CACHEABLE))
 		return;
 

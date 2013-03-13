@@ -58,7 +58,6 @@ static void pci_init(struct device *dev)
 	pci_write_config16(dev, SECSTS, reg16);
 }
 
-#undef PCI_BRIDGE_UPDATE_COMMAND
 static void ich_pci_dev_enable_resources(struct device *dev)
 {
 	const struct pci_operations *ops;
@@ -76,16 +75,8 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 
 	command = pci_read_config16(dev, PCI_COMMAND);
 	command |= dev->command;
-#ifdef PCI_BRIDGE_UPDATE_COMMAND
-	/* If we write to PCI_COMMAND, on some systems
-	 * this will cause the ROM and APICs not being visible
-	 * anymore.
-	 */
 	printk(BIOS_DEBUG, "%s cmd <- %02x\n", dev_path(dev), command);
 	pci_write_config16(dev, PCI_COMMAND, command);
-#else
-	printk(BIOS_DEBUG, "%s cmd <- %02x (NOT WRITTEN!)\n", dev_path(dev), command);
-#endif
 }
 
 static void ich_pci_bus_enable_resources(struct device *dev)

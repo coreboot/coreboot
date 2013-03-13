@@ -40,6 +40,12 @@
 #include "lp_gpio.h"
 #endif
 
+/* These defines are here to handle the LP variant code dynamically. If these
+ * values are defined in lp_gpio.h but a non-LP board is being built, the build
+ * will fail. */
+#define GPIO_ALT_GPI_SMI_STS	0x50
+#define GPIO_ALT_GPI_SMI_EN	0x54
+
 /* Print status bits with descriptive names */
 static void print_status_bits(u32 status, const char *bit_names[])
 {

@@ -17,7 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <armv7.h>
+
 void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
 {
+	/* Enable L2 cache */
+	/* FIXME: maybe do this in romstage along with the other cache
+	 * init functions? */
+	v7_outer_cache_enable();
 }

@@ -64,6 +64,20 @@ static inline void set_cr(unsigned int val)
 	isb();
 }
 
+static inline unsigned int get_acr(void)
+{
+	unsigned int val;
+	asm("mrc p15, 0, %0, c1, c0, 1	@ get ACR" : "=r" (val) : : "cc");
+	return val;
+}
+
+static inline void set_acr(unsigned int val)
+{
+	asm volatile("mcr p15, 0, %0, c1, c0, 1	@ set ACR"
+	  : : "r" (val) : "cc");
+	isb();
+}
+
 /* options available for data cache on each page */
 enum dcache_option {
 	DCACHE_OFF,
@@ -96,6 +110,8 @@ void mmu_set_region_dcache(unsigned long start, int size,
 void mmu_page_table_flush(unsigned long start, unsigned long stop);
 
 void mmu_setup(unsigned long start, unsigned long size);
+
+void v7_inval_tlb(void);
 
 void arm_init_before_mmu(void);
 

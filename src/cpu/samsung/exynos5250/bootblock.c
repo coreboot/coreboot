@@ -17,7 +17,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <armv7.h>
+
+/*
+ * cortex_a15_cache_init - Initialize caches for Cortex-A15
+ * L1 cache features:
+ * - 32KB 2-way set associative icache, fixed 64-byte line length.
+ * - 32KB 2-way set associative dcache, fixed 64-byte line length.
+ *
+ * L2 cache features:
+ * - Unified, 16-way set associative, fixed 64-byte line length
+ * - Configurable for 512KB, 1M, 2M, or 4MB sizes (SoC-dependent)
+ *
+ * FIXME: move this elsewhere 
+ */
+static void cortex_a15_cache_init(uint32_t dram_start, uint32_t dram_size)
+{
+	/* Disable caches */
+	/* Clean and invalidate caches */
+	/* Set L1 cache parameters */
+	/* Enable L1 cache */
+	/* Set L2 cache parameters */
+	/* Enable L2 cache */
+}
+
 void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
 {
+	cortex_a15_cache_init();
+
+	/* Enable L2 cache */
+	/* FIXME: maybe do this in romstage along with the other cache
+	 * init functions? */
+//	v7_outer_cache_enable();
 }

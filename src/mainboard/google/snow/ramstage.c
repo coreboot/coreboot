@@ -23,22 +23,10 @@
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/power.h>
 
-#include <system.h>	/* FIXME: for testing cache */
-static void cp_delay(void)
-{
-	volatile int i;
-
-	/* copro seems to need some delay between reading and writing */
-	for (i = 0; i < 100; i++)
-		nop();
-	asm volatile("" : : : "memory");
-}
-
 static inline uint32_t read_clidr(void)
 {
 	uint32_t val = 0;
 	asm volatile ("mrc p15, 1, %0, c0, c0, 1" : "=r" (val));
-	isb();
 	return val;
 }
 
@@ -46,7 +34,6 @@ static inline uint32_t read_ccsidr(void)
 {
 	uint32_t val = 0;
 	asm volatile ("mrc p15, 1, %0, c0, c0, 0" : "=r" (val));
-	isb();
 	return val;
 }
 
@@ -54,7 +41,6 @@ static inline uint32_t read_csselr(void)
 {
 	uint32_t val = 0;
 	asm volatile ("mrc p15, 2, %0, c0, c0, 0" : "=r" (val));
-	isb();
 	return val;
 }
 
@@ -66,7 +52,6 @@ static inline void write_csselr(uint32_t val)
 	 * Bit 0 - 0 = data or unified cache, 1 = instruction cache
 	 */
 	asm volatile ("mcr p15, 2, %0, c0, c0, 0" : : "r" (val));
-	isb();
 }
 
 #ifndef __mask

@@ -1385,14 +1385,6 @@ DefinitionBlock (
 					offset (0x6C),
 					MMDT, 16,
 				}
-
-				Method(_INI) {
-					If(LEqual(OSTP,3)){   /* If we are running Linux */
-						Store(zero, NSEN)
-						Store(one, NSDO)
-						Store(one, NSDI)
-					}
-				}
 			} /* end AZHD */
 
 			Device(LIBR) {

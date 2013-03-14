@@ -123,8 +123,7 @@ inline void mmu_setup(unsigned long start, unsigned long size_mb)
 	int i;
 	u32 reg;
 
-	arm_init_before_mmu();
-
+//	arm_init_before_mmu();
 	/* Set up an identity-mapping for all 4GB, rw for everyone */
 	for (i = 0; i < 4096; i++)
 		set_section_dcache(i, DCACHE_OFF);

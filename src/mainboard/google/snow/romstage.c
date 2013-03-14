@@ -18,12 +18,12 @@
  */
 
 #include <types.h>
-#include <system.h>
 
-#include <cache.h>
+#include <armv7.h>
 #include <cbfs.h>
 #include <common.h>
 
+#include <arch/cache.h>
 #include <arch/gpio.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/dmc.h>
@@ -51,20 +51,6 @@ static int board_wakeup_permitted(void)
 	return !is_bad_wake;
 }
 #endif
-
-/*
- * Set/clear program flow prediction and return the previous state.
- */
-static int config_branch_prediction(int set_cr_z)
-{
-	unsigned int cr;
-
-	/* System Control Register: 11th bit Z Branch prediction enable */
-	cr = get_cr();
-	set_cr(set_cr_z ? cr | CR_Z : cr & ~CR_Z);
-
-	return cr & CR_Z;
-}
 
 static void initialize_s5p_mshc(void)
 {
@@ -95,11 +81,13 @@ void main(void)
 	int ret;
 	void *entry;
 
-	/* FIXME: if we boot from USB, we need to disable branch prediction
-	 * before copying from USB into RAM */
-	config_branch_prediction(1);
-
 	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
+
+	/*
+	 * FIXME: Do necessary I2C init so low-level PMIC code doesn't need to.
+	 * Also, we should only call power_init() on cold boot.
+	 */
+	power_init();
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
@@ -108,12 +96,6 @@ void main(void)
 	system_clock_init(mem, arm_ratios);
 
 	console_init();
-
-	/*
-	 * FIXME: Do necessary I2C init so low-level PMIC code doesn't need to.
-	 * Also, we should only call power_init() on cold boot.
-	 */
-	power_init();
 
 	if (!mem) {
 		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
@@ -132,7 +114,8 @@ void main(void)
 		while(1);
 	}
 
-	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
+	/* Set up MMU and caches */
+	mmu_setup_by_mva(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
 
 	initialize_s5p_mshc();
 

@@ -34,15 +34,11 @@ enum l2_cache_params {
 };
 
 
-/* FIXME(dhendrix): maybe move this to a romstage-specific file? */
-#ifdef __PRE_RAM__
 void enable_caches(void)
 {
-	/* Enable D-cache. I-cache is already enabled in start.S */
-	/* can't use it anyway -- it has dependencies we have to fix. */
-	//dcache_enable();
+	icache_enable(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
+	dcache_enable(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
 }
-#endif
 
 /*
  * Set L2 cache parameters

@@ -226,7 +226,7 @@ static void v7_dcache_maint_range(u32 start, u32 stop, u32 range_op)
 }
 
 /* Invalidate TLB */
-static void v7_inval_tlb(void)
+void v7_inval_tlb(void)
 {
 	/* Invalidate entire unified TLB */
 	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0));

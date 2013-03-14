@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <armv7.h>
+
 void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
 {

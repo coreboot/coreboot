@@ -20,6 +20,7 @@
 #include <types.h>
 #include <system.h>
 
+#include <armv7.h>
 #include <cache.h>
 #include <cbfs.h>
 #include <common.h>
@@ -52,20 +53,6 @@ static int board_wakeup_permitted(void)
 }
 #endif
 
-/*
- * Set/clear program flow prediction and return the previous state.
- */
-static int config_branch_prediction(int set_cr_z)
-{
-	unsigned int cr;
-
-	/* System Control Register: 11th bit Z Branch prediction enable */
-	cr = get_cr();
-	set_cr(set_cr_z ? cr | CR_Z : cr & ~CR_Z);
-
-	return cr & CR_Z;
-}
-
 static void initialize_s5p_mshc(void)
 {
 	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
@@ -88,18 +75,32 @@ static void graphics(void)
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 }
 
+static inline void dsb(void)
+{
+	asm volatile ("dsb");
+}
+
+/* FIXME: replace isb() from system.h */
+static inline void my_isb(void)
+{
+	asm volatile ("isb");
+}
+
 void main(void)
 {
 	struct mem_timings *mem;
 	struct arm_clk_ratios *arm_ratios;
 	int ret;
 	void *entry;
-
-	/* FIXME: if we boot from USB, we need to disable branch prediction
-	 * before copying from USB into RAM */
-	config_branch_prediction(1);
+	unsigned int cr;
 
 	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
+
+	/*
+	 * FIXME: Do necessary I2C init so low-level PMIC code doesn't need to.
+	 * Also, we should only call power_init() on cold boot.
+	 */
+	power_init();
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
@@ -108,12 +109,6 @@ void main(void)
 	system_clock_init(mem, arm_ratios);
 
 	console_init();
-
-	/*
-	 * FIXME: Do necessary I2C init so low-level PMIC code doesn't need to.
-	 * Also, we should only call power_init() on cold boot.
-	 */
-	power_init();
 
 	if (!mem) {
 		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
@@ -132,7 +127,18 @@ void main(void)
 		while(1);
 	}
 
+	/* Set up MMU and caches */
 	mmu_setup(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
+//	cr = get_cr();
+//	cr |= CR_C | CR_I;
+//	set_cr(cr);
+
+	/* Enable D-side prefetch */
+	cr = get_acr();
+	cr |= (1 << 2);
+	set_acr(cr);
+	dsb();
+	my_isb();
 
 	initialize_s5p_mshc();
 

@@ -14,6 +14,7 @@ ramstage-y += div0.c
 #ramstage-y += memcpy.S
 #ramstage-y += memset.S
 ramstage-y += syslib.c
+ramstage-y += cache-cp15.c
 ramstage-y += cache_v7.c
 
 #FIXME(dhendrix): should this be a config option?

@@ -21,6 +21,7 @@
 #define __ASM_ARM_IO_H
 
 #include <types.h>
+#include <arch/cache.h>		/* for dmb() */
 #include <arch/byteorder.h>
 
 static inline void sync(void)
@@ -96,7 +97,7 @@ extern inline void __raw_readsl(unsigned int addr, void *data, int longlen)
  * TODO: The kernel offers some more advanced versions of barriers, it might
  * have some advantages to use them instead of the simple one here.
  */
-#define dmb()		__asm__ __volatile__ ("" : : : "memory")
+//#define dmb()		__asm__ __volatile__ ("" : : : "memory")
 #define __iormb()	dmb()
 #define __iowmb()	dmb()
 

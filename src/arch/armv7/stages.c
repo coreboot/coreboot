@@ -33,6 +33,7 @@
 
 #include <arch/stages.h>
 #include <arch/armv7/include/common.h>
+#include <arch/cache.h>
 
 void stage_entry(void)
 {
@@ -50,10 +51,10 @@ void stage_exit(void *addr)
 	/* make sure any code we installed is written to memory. Not all ARM have
 	 * unified caches.
 	 */
-	flush_dcache_all();
+	dcache_clean_invalidate_all();
 	/* Because most stages copy code to memory, it's a safe and hygienic thing
 	 * to flush the icache here.
 	 */
-	invalidate_icache_all();
+	icache_invalidate_all();
 	doit();
 }

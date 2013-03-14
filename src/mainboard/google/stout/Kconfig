@@ -1,0 +1,53 @@
+if BOARD_GOOGLE_STOUT
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_RPGA989
+	select NORTHBRIDGE_INTEL_IVYBRIDGE
+	select SOUTHBRIDGE_INTEL_C216
+	select EC_QUANTA_IT8518
+	select BOARD_HAS_FADT
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select MMCONF_SUPPORT
+	select HAVE_SMI_HANDLER
+	select GFXUMA
+	select CHROMEOS
+	select EXTERNAL_MRC_BLOB
+
+config MAINBOARD_DIR
+	string
+	default google/stout
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Stout"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 8
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0106.rom"
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x1ae0
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0xc000
+
+endif # BOARD_GOOGLE_STOUT

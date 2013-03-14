@@ -49,7 +49,7 @@
 #ifdef LIBPAYLOAD
 # include <stdio.h>
 # define DEBUG(x...)
-# define LOG(x...) printf(x)
+# define LOG(x...)
 # define ERROR(x...) printf(x)
 #else
 # include <console/console.h>

@@ -23,51 +23,55 @@
 #ifndef _ENDIAN_H_
 #define _ENDIAN_H_
 
-#include <arch/types.h>
-#include <libpayload-config.h>
+#include <stdint.h>
 
-#define swap_bytes16(in) ((((in) & 0xFF) << 8) | (((in) & 0xFF00) >> 8))
-#define swap_bytes32(in) ((((in) & 0xFF) << 24) | (((in) & 0xFF00) << 8) | \
-			  (((in) & 0xFF0000) >> 8) | \
-			  (((in) & 0xFF000000) >> 24))
-#define swap_bytes64(in) (((uint64_t)swap_bytes32((uint32_t)(in)) << 32) | \
-			  ((uint64_t)swap_bytes32((uint32_t)((in) >> 32))))
+inline static uint16_t _be16toh(const uint8_t *in)
+{
+	return in[0] << 8 | in[1];
+}
+
+static inline uint32_t _be32toh(const uint8_t *in)
+{
+	return in[0] << 24 | in[1] << 16 | in[2] << 8 | in[3];
+}
+
+static inline uint64_t _be64toh(const uint8_t *in)
+{
+	return (uint64_t)_be32toh(in) << 32 | _be32toh(in + 4);
+}
+
+static inline uint16_t _le16toh(const uint8_t *in)
+{
+	return in[1] << 8 | in[0];
+}
+
+static inline uint32_t _le32toh(const uint8_t *in)
+{
+	return in[3] << 24 | in[2] << 16 | in[1] << 8 | in[0];
+}
+
+static inline uint64_t _le64toh(const uint8_t *in)
+{
+	return (uint64_t)_le32toh(in + 4) << 32 | _le32toh(in);
+}
 
 /* Endian functions from glibc 2.9 / BSD "endian.h" */
 
-#if defined CONFIG_BIG_ENDIAN
+#define htobe16(in) be16toh(in)
+#define htobe32(in) be32toh(in)
+#define htobe64(in) be64toh(in)
 
-#define htobe16(in) (in)
-#define htobe32(in) (in)
-#define htobe64(in) (in)
+#define htole16(in) le16toh(in)
+#define htole32(in) le32toh(in)
+#define htole64(in) le64toh(in)
 
-#define htole16(in) swap_bytes16(in)
-#define htole32(in) swap_bytes32(in)
-#define htole64(in) swap_bytes64(in)
+#define be16toh(in) _be16toh((const uint8_t *)&(in))
+#define be32toh(in) _be32toh((const uint8_t *)&(in))
+#define be64toh(in) _be64toh((const uint8_t *)&(in))
 
-#elif defined CONFIG_LITTLE_ENDIAN
-
-#define htobe16(in) swap_bytes16(in)
-#define htobe32(in) swap_bytes32(in)
-#define htobe64(in) swap_bytes64(in)
-
-#define htole16(in) (in)
-#define htole32(in) (in)
-#define htole64(in) (in)
-
-#else
-
-#error Cant tell if the CPU is little or big endian.
-
-#endif
-
-#define be16toh(in) htobe16(in)
-#define be32toh(in) htobe32(in)
-#define be64toh(in) htobe64(in)
-
-#define le16toh(in) htole16(in)
-#define le32toh(in) htole32(in)
-#define le64toh(in) htole64(in)
+#define le16toh(in) _le16toh((const uint8_t *)&(in))
+#define le32toh(in) _le32toh((const uint8_t *)&(in))
+#define le64toh(in) _le64toh((const uint8_t *)&(in))
 
 #define htonw(in) htobe16(in)
 #define htonl(in) htobe32(in)

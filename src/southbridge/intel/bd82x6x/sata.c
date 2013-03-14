@@ -135,6 +135,13 @@ static void sata_init(struct device *dev)
 		reg32 = read32(abar + 0x00);
 		reg32 |= 0x0c006000;  // set PSC+SSC+SALP+SSS
 		reg32 &= ~0x00020060; // clear SXS+EMS+PMS
+		/* Set ISS, if available */
+		if (config->sata_interface_speed_support)
+		{
+			reg32 &= ~0x00f00000;
+			reg32 |= (config->sata_interface_speed_support & 0x03)
+			  << 20;
+		}
 		write32(abar + 0x00, reg32);
 		/* PI (Ports implemented) */
 		write32(abar + 0x0c, config->sata_port_map);

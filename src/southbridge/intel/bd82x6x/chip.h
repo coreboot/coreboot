@@ -70,6 +70,17 @@ struct southbridge_intel_bd82x6x_config {
 	uint32_t sata_port0_gen3_tx;
 	uint32_t sata_port1_gen3_tx;
 
+	/**
+	 * SATA Interface Speed Support Configuration
+	 *
+	 * Only the lower two bits have a meaning:
+	 * 00 - No effect (leave as chip default)
+	 * 01 - 1.5 Gb/s maximum speed
+	 * 10 - 3.0 Gb/s maximum speed
+	 * 11 - 6.0 Gb/s maximum speed
+	 */
+	uint8_t sata_interface_speed_support;
+
 	uint32_t gen1_dec;
 	uint32_t gen2_dec;
 	uint32_t gen3_dec;

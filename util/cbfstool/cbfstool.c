@@ -50,6 +50,7 @@ static struct param {
 	uint32_t entrypoint;
 	uint32_t size;
 	uint32_t alignment;
+	uint32_t pagesize;
 	uint32_t offset;
 	uint32_t top_aligned;
 	comp_algo algo;
@@ -355,12 +356,12 @@ static int cbfs_locate(void)
 	}
 
 	address = cbfs_locate_entry(&image, param.name, buffer.size,
-				    param.alignment);
+				    param.pagesize, param.alignment);
 	buffer_delete(&buffer);
 
 	if (address == -1) {
-		ERROR("'%s' can't fit in CBFS for align 0x%x.\n",
-		      param.name, param.alignment);
+		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
+		      param.name, param.pagesize, param.alignment);
 		cbfs_image_delete(&image);
 		return 1;
 	}
@@ -421,7 +422,7 @@ static const struct command commands[] = {
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"remove", "n:vh?", cbfs_remove},
 	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
-	{"locate", "f:n:a:Tvh?", cbfs_locate},
+	{"locate", "f:n:a:P:Tvh?", cbfs_locate},
 	{"print", "vh?", cbfs_print},
 	{"extract", "n:f:vh?", cbfs_extract},
 };
@@ -437,6 +438,7 @@ static struct option long_options[] = {
 	{"size",         required_argument, 0, 's' },
 	{"bootblock",    required_argument, 0, 'B' },
 	{"alignment",    required_argument, 0, 'a' },
+	{"page-size",    required_argument, 0, 'P' },
 	{"offset",       required_argument, 0, 'o' },
 	{"file",         required_argument, 0, 'f' },
 	{"arch",         required_argument, 0, 'm' },
@@ -468,7 +470,7 @@ static void usage(char *name)
 			"Remove a component\n"
 	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]  "
 			"Create a ROM file\n"
-	     " locate -f FILE -n NAME [-a align] [-T]                      "
+	     " locate -f FILE -n NAME [-P page-size] [-a align] [-T]       "
 			"Find a place for a file of that size\n"
 	     " print                                                       "
 			"Show the contents of the ROM\n"
@@ -571,6 +573,9 @@ int main(int argc, char **argv)
 				break;
 			case 'a':
 				param.alignment = strtoul(optarg, NULL, 0);
+				break;
+			case 'P':
+				param.pagesize = strtoul(optarg, NULL, 0);
 				break;
 			case 'o':
 				param.offset = strtoul(optarg, NULL, 0);

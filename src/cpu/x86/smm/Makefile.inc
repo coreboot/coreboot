@@ -18,7 +18,6 @@
 ##
 
 ifeq ($(CONFIG_SMM_MODULES),y)
-
 smmstub-y += smm_stub.S
 smmstub-y += smm_module_header.c
 
@@ -48,8 +47,9 @@ $(obj)/cpu/x86/smm/smmstub.ramstage.o: $(obj)/cpu/x86/smm/smmstub
 
 # C-based SMM handler.
 
-$(obj)/cpu/x86/smm/smm.o: $$(smm-objs)
-	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME)
+	$(CC) $(LDFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+
 
 $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE)))
 

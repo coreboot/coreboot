@@ -76,10 +76,10 @@ int cbfs_remove_entry(struct cbfs_image *image, const char *name);
 int cbfs_create_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 			    size_t len, const char *name);
 
-/* Finds a location to put given content in same memory page.
+/* Finds a location to put given content in aligned location.
  * Returns a valid offset, or -1 on failure. */
 int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
-			  uint32_t size, uint32_t page_size);
+			  uint32_t size, uint32_t align);
 
 /* Callback function used by cbfs_walk.
  * Returns 0 on success, or non-zero to stop further iteration. */

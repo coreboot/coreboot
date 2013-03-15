@@ -773,54 +773,50 @@ int cbfs_create_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,
 	return 0;
 }
 
-/* Finds a place to hold whole stage data in same memory page.
- */
-static int is_in_same_page(uint32_t start, uint32_t size, uint32_t page) {
-	if (!page)
-		return 1;
-	return (start / page) == (start + size - 1) / page;
+/* Finds a place in given range (start, end) to hold <size> of bytes and aligned
+ * to <align> of bytes; otherwise return 0. */
+static uint32_t fit_in_range(uint32_t start, uint32_t end, uint32_t size,
+			     uint32_t align) {
+	uint32_t offset = align_up(start, align);
+
+	/* 0 is used to indicate failure so start can't be 0.  This is typically
+	 * true because we usually have a header before start address. */
+	assert(start != 0);
+
+	while (offset < start)
+		offset += align;
+
+	if (offset >= start && offset + size <= end)
+		return offset;
+
+	return 0;
 }
 
 int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
-			  uint32_t size, uint32_t page_size) {
+			  uint32_t size, uint32_t align) {
 	struct cbfs_file *entry;
 	size_t need_len;
-	uint32_t addr, addr_next, addr2, addr3, header_len;
-	assert(size < page_size);
+	uint32_t addr, addr_next, offset, header_len;
 
-	if (page_size % ntohl(image->header->align))
-		WARN("locate_entry: page does not align with CBFS image.\n");
+	if (!align)
+		align = 1;
+
+	if (align % ntohl(image->header->align))
+		WARN("%s: Alignment (%d) is smaller than CBFS image (%d).\n",
+		     __func__, align, ntohl(image->header->align));
 
 	/* TODO Old cbfstool always assume input is a stage file (and adding
 	 * sizeof(cbfs_stage) for header. We should fix that by adding "-t"
-	 * (type) param in future. For right now, follow old behavior. */
+	 * (type) param in future. For right now, we assume cbfs_stage is the
+	 * largest structure and add it into header size. */
+	assert(sizeof(struct cbfs_stage) >= sizeof(struct cbfs_payload));
 	header_len = (cbfs_calculate_file_header_size(name) +
 		      sizeof(struct cbfs_stage));
 	need_len = header_len + size;
 
-	// Merge empty entries to build get max available pages.
+	// Merge empty entries to build get max available alignment.
 	cbfs_walk(image, cbfs_merge_empty_entry, NULL);
 
-	/* Three cases of content location on memory page:
-	 * case 1.
-	 *          |  PAGE 1  |   PAGE 2  |
-	 *          |     <header><content>| Fit. Return start of content.
-	 *
-	 * case 2.
-	 *          |  PAGE 1  |   PAGE 2  |
-	 *          | <header><content>    | Fits when we shift content to align
-	 *  shift-> |  <header>|<content>  | at starting of PAGE 2.
-	 *
-	 * case 3. (large content filling whole page)
-	 *  |  PAGE 1  |   PAGE 2  | PAGE 3|
-	 *  | <header><  content > |       | Can't fit. If we shift content to
-	 *  |       {   free space .       } PAGE 2, header can't fit in free
-	 *  |  shift->     <header><content> space, so we must use PAGE 3.
-	 *
-	 * The returned address will be used to re-link stage file, and then
-	 * assigned to add-stage command (-b), which will be then re-calculated
-	 * by ELF loader and positioned by cbfs_add_entry.
-	 */
 	for (entry = cbfs_find_first_entry(image);
 	     entry && cbfs_is_valid_entry(image, entry);
 	     entry = cbfs_find_next_entry(image, entry)) {
@@ -834,24 +830,11 @@ int32_t cbfs_locate_entry(struct cbfs_image *image, const char *name,
 				image, entry));
 		if (addr_next - addr < need_len)
 			continue;
-		if (is_in_same_page(addr + header_len, size, page_size)) {
-			DEBUG("cbfs_locate_entry: FIT (PAGE1).");
-			return addr + header_len;
-		}
 
-		addr2 = align_up(addr, page_size);
-		if (addr2 < addr_next && addr_next - addr2 >= size &&
-		    addr2 - addr >= header_len) {
-			DEBUG("cbfs_locate_entry: OVERLAP (PAGE2).");
-			return addr2;
-		}
-
-		addr3 = addr2 + page_size;
-		if (addr3 < addr_next && addr_next - addr3 >= size &&
-		    addr3 - addr >= header_len) {
-			DEBUG("cbfs_locate_entry: OVERLAP+ (PAGE3).");
-			return addr3;
-		}
+		offset = fit_in_range(addr + header_len, addr_next, size,
+				      align);
+		if (offset)
+			return offset;
 	}
 	return -1;
 }

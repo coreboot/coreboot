@@ -1244,7 +1244,7 @@ typedef struct {
 /// GNB configuration info
 typedef struct {
   IN       PCIe_COMPLEX_DESCRIPTOR  *PcieComplexList;  /**< Pointer to array of structures describe PCIe topology on each processor package or NULL.
-                                                        * Last element of array must ne terminated with DESCRIPTOR_TERMINATE_LIST
+                                                        * Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST
                                                         * Example of topology definition for single socket system:
                                                         * @code
                                                         *  PCIe_PORT_DESCRIPTOR PortList [] = {

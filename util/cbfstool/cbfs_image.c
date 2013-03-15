@@ -142,6 +142,7 @@ int cbfs_image_create(struct cbfs_image *image,
 	struct cbfs_header *header;
 	struct cbfs_file *entry;
 	uint32_t cbfs_len;
+	size_t entry_header_len;
 
 	DEBUG("cbfs_image_create: bootblock=0x%x+0x%zx, "
 	      "header=0x%x+0x%zx, entries_offset=0x%x\n",
@@ -205,9 +206,10 @@ int cbfs_image_create(struct cbfs_image *image,
 		      entries_offset, align);
 		return -1;
 	}
-	if (entries_offset + sizeof(*entry) > size) {
+	entry_header_len = cbfs_calculate_file_header_size("");
+	if (entries_offset + entry_header_len > size) {
 		ERROR("Offset (0x%x+0x%zx) exceed ROM size(0x%zx)\n",
-		      entries_offset, sizeof(*entry), size);
+		      entries_offset, entry_header_len, size);
 		return -1;
 	}
 	entry = (struct cbfs_file *)(image->buffer.data + entries_offset);
@@ -218,7 +220,7 @@ int cbfs_image_create(struct cbfs_image *image,
 		cbfs_len = bootblock_offset;
 	if (header_offset > entries_offset && header_offset < cbfs_len)
 		cbfs_len = header_offset;
-	cbfs_len -= entries_offset + align;
+	cbfs_len -= entries_offset + align + entry_header_len;
 	cbfs_create_empty_entry(image, entry, cbfs_len, "");
 	LOG("Created CBFS image (capacity = %d bytes)\n", cbfs_len);
 	return 0;

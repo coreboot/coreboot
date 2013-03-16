@@ -23,11 +23,142 @@
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/power.h>
 
+#include <system.h>	/* FIXME: for testing cache */
+static void cp_delay(void)
+{
+	volatile int i;
+
+	/* copro seems to need some delay between reading and writing */
+	for (i = 0; i < 100; i++)
+		nop();
+	asm volatile("" : : : "memory");
+}
+
+static inline uint32_t read_clidr(void)
+{
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 1, %0, c0, c0, 1" : "=r" (val));
+	isb();
+	return val;
+}
+
+static inline uint32_t read_ccsidr(void)
+{
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 1, %0, c0, c0, 0" : "=r" (val));
+	isb();
+	return val;
+}
+
+static inline uint32_t read_csselr(void)
+{
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 2, %0, c0, c0, 0" : "=r" (val));
+	isb();
+	return val;
+}
+
+/* Write to Cache Size Selection Register (CSSELR) */
+static inline void write_csselr(uint32_t val)
+{
+	/*
+	 * Bits [3:1] - Cache level + 1 (0b000 = L1, 0b110 = L7, 0b111 is rsvd)
+	 * Bit 0 - 0 = data or unified cache, 1 = instruction cache
+	 */
+	asm volatile ("mcr p15, 2, %0, c0, c0, 0" : : "r" (val));
+	isb();
+}
+
+#ifndef __mask
+# define __mask(high, low) ((1UL << (high)) + \
+                            (((1UL << (high)) - 1) - ((1UL << (low)) - 1)))
+#endif
+
+static void foo(void)
+{
+	uint32_t clidr, ccselr, ccsidr;
+	int level, assoc, nsets, linesize;
+
+	/* algorithm described by B.2.2.1 in ArmV7 Arch manual */
+	clidr = read_clidr();
+	printk(BIOS_DEBUG, "%s: clidr: 0x%08x\n", __func__, clidr);
+	for (level = 0; level < 7; level++) {
+		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
+
+		ccselr = ccsidr = 0;	/* FIXME: paranoia */
+		switch(ctype) {
+		case 0x0:
+			/* no cache */
+			printk(BIOS_DEBUG, "L%d has no cache\n", level + 1);
+			break;
+		case 0x1:
+			/* icache only */
+			ccselr = (level << 1) | 1;
+			write_csselr(ccselr);
+			ccsidr = read_ccsidr();
+			printk(BIOS_DEBUG, "L%d (icache only): 0x%08x\n", level + 1, ccsidr);
+			nsets = ((ccsidr & __mask(27, 13)) >> 13) + 1;
+			assoc = ((ccsidr & __mask(12, 3)) >> 3) + 1;
+			linesize = 2 << ((ccsidr & 0x7) + 2);
+			printk(BIOS_DEBUG, "\tnsets: %d, assoc: %d, linesize: %d\n", nsets, assoc, linesize);
+			break;
+		case 0x2:
+			/* dcache only */
+			ccselr = level << 1;
+			write_csselr(ccselr);
+			ccsidr = read_ccsidr();
+			printk(BIOS_DEBUG, "L%d (dcache only): 0x%08x\n", level + 1, ccsidr);
+			nsets = ((ccsidr & __mask(27, 13)) >> 13) + 1;
+			assoc = ((ccsidr & __mask(12, 3)) >> 3) + 1;
+			linesize = (1 << ((ccsidr & 0x7) + 2)) * 4;
+			printk(BIOS_DEBUG, "\tnsets: %d, assoc: %d, linesize: %d\n", nsets, assoc, linesize);
+			break;
+		case 0x3:
+			/* separate icache and dcache */
+			ccselr = (level << 1) | 1;
+			write_csselr(ccselr);
+			ccsidr = read_ccsidr();
+			printk(BIOS_DEBUG, "L%d: icache 0x%08x, ", level + 1, ccsidr);
+			nsets = ((ccsidr & __mask(27, 13)) >> 13) + 1;
+			assoc = ((ccsidr & __mask(12, 3)) >> 3) + 1;
+			linesize = (1 << ((ccsidr & 0x7) + 2)) * 4;
+			printk(BIOS_DEBUG, "nsets: %d, assoc: %d, linesize: %d\n", nsets, assoc, linesize);
+			ccselr = ccsidr = 0;	/* FIXME: paranoia */
+			ccselr = level << 1;
+			write_csselr(ccselr);
+			ccsidr = read_ccsidr();
+			printk(BIOS_DEBUG, "L%d: dcache 0x%08x, ", level + 1, ccsidr);
+			nsets = ((ccsidr & __mask(27, 13)) >> 13) + 1;
+			assoc = ((ccsidr & __mask(12, 3)) >> 3) + 1;
+			linesize = (1 << ((ccsidr & 0x7) + 2)) * 4;
+			printk(BIOS_DEBUG, "nsets: %d, assoc: %d, linesize: %d\n", nsets, assoc, linesize);
+			break;
+		case 0x4:
+			/* unified cache */
+			ccselr = level << 1;
+			write_csselr(ccselr);
+			ccsidr = read_ccsidr();
+			printk(BIOS_DEBUG, "L%d: unified cache 0x%08x, ", level + 1, ccsidr);
+			nsets = ((ccsidr & __mask(27, 13)) >> 13) + 1;
+			assoc = ((ccsidr & __mask(12, 3)) >> 3) + 1;
+			linesize = (1 << ((ccsidr & 0x7) + 2)) * 4;
+			printk(BIOS_DEBUG, "nsets: %d, assoc: %d, linesize: %d\n", nsets, assoc, linesize);
+			break;
+		default:
+			/* reserved */
+			printk(BIOS_DEBUG, "L%d has unknown cache\n", level + 1);
+			break;
+		}
+	}
+}
+
 void hardwaremain(int boot_complete);
 void main(void)
 {
 	console_init();
 	printk(BIOS_INFO, "hello from ramstage; now with deluxe exception handling.\n");
+
+	foo();
 
 	/* this is going to move, but we must have it now and we're not sure where */
 	exception_init();

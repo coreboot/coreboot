@@ -13,6 +13,13 @@ typedef unsigned int wint_t;
 
 #define NULL ((void *)0)
 
+/* Standard units. */
+#define KiB (1<<10)
+#define MiB (1<<20)
+#define GiB (1<<30)
+/* Could we ever run into this one? I hope we get this much memory! */
+#define TiB (1<<40)
+
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 #ifdef __PRE_RAM__

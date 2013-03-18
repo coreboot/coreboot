@@ -1,2 +1,0 @@
-config EXYNOS_DISPLAYPORT
-	bool

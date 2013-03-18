@@ -22,4 +22,3 @@ ramstage-y += i2c.c
 ramstage-y += s5p-dp-reg.c
 ramstage-y += exynos-fb.c
 
-subdirs-y += displayport

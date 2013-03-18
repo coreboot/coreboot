@@ -96,4 +96,4 @@ config SYS_TEXT_BASE
 
 config COREBOOT_TABLES_SIZE
 	hex
-	default 0x100000
+	default 0x4000000

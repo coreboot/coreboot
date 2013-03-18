@@ -93,6 +93,7 @@ void i2c_set_early_reg(unsigned int base)
 	g_early_i2c_config = (struct s3c24x0_i2c *)base;
 }
 
+#include <console/console.h>
 static struct s3c24x0_i2c_bus *get_bus(int bus_idx)
 {
 	/* If an early i2c config exists we just use that */
@@ -105,7 +106,7 @@ static struct s3c24x0_i2c_bus *get_bus(int bus_idx)
 
 	if (bus_idx < i2c_busses)
 		return &i2c_bus[bus_idx];
-	debug("Undefined bus: %d\n", bus_idx);
+	printk(BIOS_ERR, "Undefined bus: %d, busses: %d\n", bus_idx, i2c_busses);
 	return NULL;
 }
 
@@ -233,6 +234,7 @@ int i2c_set_bus_num(unsigned int bus)
 	struct s3c24x0_i2c_bus *i2c;
 
 	i2c = get_bus(bus);
+	printk(BIOS_DEBUG, "%s: bus: %u, i2c: %p\n", __func__, bus, i2c);
 	if (!i2c)
 		return -1;
 	g_current_bus = bus;
@@ -522,17 +524,21 @@ int i2c_probe(unsigned char chip)
 	return ret != I2C_OK;
 }
 
+#include <console/console.h>	/* FIXME: remove this */
 int i2c_read(unsigned char chip, unsigned int addr, int alen, unsigned char *buffer, int len)
 {
 	struct s3c24x0_i2c_bus *i2c;
 	unsigned char xaddr[4];
 	int ret;
 
+	printk(BIOS_DEBUG, "%s: entered, chip: 0x%02x, addr: 0x%02x\n",
+			__func__, chip, addr);
 	if (alen > 4) {
 		debug("I2C read: addr len %d not supported\n", alen);
 		return 1;
 	}
 
+	printk(BIOS_DEBUG, "%s: checkpoint 1\n", __func__);
 	if (alen > 0) {
 		xaddr[0] = (addr >> 24) & 0xFF;
 		xaddr[1] = (addr >> 16) & 0xFF;
@@ -559,8 +565,10 @@ int i2c_read(unsigned char chip, unsigned int addr, int alen, unsigned char *buf
 	i2c = get_bus(g_current_bus);
 	if (!i2c)
 		return -1;
+	printk(BIOS_DEBUG, "%s: checkpoint 2\n", __func__);
 	ret = i2c_transfer(i2c->regs, I2C_READ, chip << 1, &xaddr[4 - alen],
 			   alen, buffer, len);
+	printk(BIOS_DEBUG, "%s: bus: %u, ret %d\n", __func__, i2c->bus_num, ret);
 	if (ret) {
 		debug("I2c read: failed %d\n", ret);
 		return 1;

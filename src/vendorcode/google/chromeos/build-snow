@@ -70,8 +70,8 @@ main() {
   create_diff_192k "$OUTPUT" "$TMP_DIFF"
   echo "OK: Generated image (with BL1) in $OUTPUT"
   if is_servod_ready; then
-    echo "servod detected - flashing into device."
-    fast_flash_image "$OUTPUT" "$TMP_DIFF"
+    echo "servod detected - NOT flashing into device."
+    echo fast_flash_image "$OUTPUT" "$TMP_DIFF"
     echo "OK: Generated and flashed 128k of image into device via servo."
   else
     echo "(servod is not running, flashing into device is skipped)"

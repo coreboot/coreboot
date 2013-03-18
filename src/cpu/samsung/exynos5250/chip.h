@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef CPU_SAMSUNG_EXYNOS5_COMMON_DISPLAYPORT_H
-#define CPU_SAMSUNG_EXYNOS5_COMMON_DISPLAYPORT_H
+#ifndef CPU_SAMSUNG_EXYNOS5250_H
+#define CPU_SAMSUNG_EXYNOS5250_H
 
-struct cpu_samsung_exynos5_common_displayport_config {
+struct cpu_samsung_exynos5250_config {
 	/* special magic numbers! */
 	int clkval_f;
 	int upper_margin;
@@ -37,4 +37,4 @@ struct cpu_samsung_exynos5_common_displayport_config {
 	u32 lcdbase;
 };
 
-#endif /* CPU_SAMSUNG_EXYNOS5-COMMON_DISPLAYPORT_H */
+#endif /* CPU_SAMSUNG_EXYNOS5250_H */

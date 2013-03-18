@@ -64,37 +64,17 @@ Scope(\_SB) {
 		Package(){0x0007FFFF, 2, INTB, 0 },
 		Package(){0x0007FFFF, 3, INTC, 0 },
 
-		Package(){0x0009FFFF, 0, INTB, 0 },
-		Package(){0x0009FFFF, 1, INTC, 0 },
-		Package(){0x0009FFFF, 2, INTD, 0 },
-		Package(){0x0009FFFF, 3, INTA, 0 },
-
-		Package(){0x000AFFFF, 0, INTC, 0 },
-		Package(){0x000AFFFF, 1, INTD, 0 },
-		Package(){0x000AFFFF, 2, INTA, 0 },
-		Package(){0x000AFFFF, 3, INTB, 0 },
-
-		Package(){0x000BFFFF, 0, INTD, 0 },
-		Package(){0x000BFFFF, 1, INTA, 0 },
-		Package(){0x000BFFFF, 2, INTB, 0 },
-		Package(){0x000BFFFF, 3, INTC, 0 },
-
-		Package(){0x000CFFFF, 0, INTA, 0 },
-		Package(){0x000CFFFF, 1, INTB, 0 },
-		Package(){0x000CFFFF, 2, INTC, 0 },
-		Package(){0x000CFFFF, 3, INTD, 0 },
-
 		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
 
+
 		/* SB devices */
-		/* Bus 0, Dev 17 - SATA controller #2 */
-		/* Bus 0, Dev 18 - SATA controller #1 */
+		/* Bus 0, Dev 17 - SATA controller */
 		Package(){0x0011FFFF, 0, INTD, 0 },
 
-		/* Bus 0, Dev 19 - USB: OHCI, dev 18,19 func 0-2, dev 20 func 5;
-		 * EHCI, dev 18, 19 func 2 */
-		Package(){0x0012FFFF, 0, INTC, 0 },
-		Package(){0x0012FFFF, 1, INTB, 0 },
+		/* OHCI, dev 18, 19, 22 func 0
+		 * EHCI, dev 18, 19, 22 func 2 */
+		Package(){0x0012FFFF, 0, INTC, 0 },	/* Dev 12, INTA, handled by INTC device, Global */
+		Package(){0x0012FFFF, 1, INTB, 0 }, /* Dev 12, INTB, handled by INTB device, Global */
 
 		Package(){0x0013FFFF, 0, INTC, 0 },
 		Package(){0x0013FFFF, 1, INTB, 0 },
@@ -102,9 +82,7 @@ Scope(\_SB) {
 		Package(){0x0016FFFF, 0, INTC, 0 },
 		Package(){0x0016FFFF, 1, INTB, 0 },
 
-		/* Package(){0x0014FFFF, 1, INTA, 0 }, */
-
-		/* Bus 0, Dev 20 - F0:SMBus/ACPI,F1:IDE;F2:HDAudio;F3:LPC;F4:PCIBridge;F5:USB */
+		/* Bus 0, Dev 20 - F0:SMBus/ACPI; F1:IDE; F2:HDAudio; F3:LPC; F4:PCIBridge; F5:USB */
 		Package(){0x0014FFFF, 0, INTA, 0 },
 		Package(){0x0014FFFF, 1, INTB, 0 },
 		Package(){0x0014FFFF, 2, INTC, 0 },
@@ -160,34 +138,19 @@ Scope(\_SB) {
 		Package(){0x0007FFFF, 2, 0, 17 },
 		Package(){0x0007FFFF, 3, 0, 18 },
 
-		/* Bus 0, Dev 9 - PCIe Bridge for network card */
-		Package(){0x0009FFFF, 0, 0, 17 },
-		Package(){0x0009FFFF, 1, 0, 16 },
-		Package(){0x0009FFFF, 2, 0, 17 },
-		Package(){0x0009FFFF, 3, 0, 18 },
-		/* Bus 0, Dev A - PCIe Bridge for network card */
-		Package(){0x000AFFFF, 0, 0, 18 },
-		Package(){0x000AFFFF, 1, 0, 16 },
-		Package(){0x000AFFFF, 2, 0, 17 },
-		Package(){0x000AFFFF, 3, 0, 18 },
 		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
 
 		/* SB devices in APIC mode */
-		/* Bus 0, Dev 17 - SATA controller #2 */
-		/* Bus 0, Dev 18 - SATA controller #1 */
+		/* Bus 0, Dev 17 - SATA controller */
 		Package(){0x0011FFFF, 0, 0, 19 },
 
-		/* Bus 0, Dev 19 - USB: OHCI, dev 18,19 func 0-2, dev 20 func 5;
-		 * EHCI, dev 18, 19 func 2 */
+		/* OHCI, dev 18, 19, 22 func 0
+		 * EHCI, dev 18, 19, 22 func 2 */
 		Package(){0x0012FFFF, 0, 0, 18 },
 		Package(){0x0012FFFF, 1, 0, 17 },
-		/* Package(){0x0012FFFF, 2, 0, 18 }, */
 
 		Package(){0x0013FFFF, 0, 0, 18 },
 		Package(){0x0013FFFF, 1, 0, 17 },
-		/* Package(){0x0013FFFF, 2, 0, 16 }, */
-
-		/* Package(){0x00140000, 0, 0, 16 }, */
 
 		Package(){0x0016FFFF, 0, 0, 18 },
 		Package(){0x0016FFFF, 1, 0, 17 },
@@ -299,36 +262,6 @@ Scope(\_SB) {
 		Package(){0x0000FFFF, 3, 0, 18 },
 	})
 
-	Name(PS9, Package(){
-		/* PCIe slot - Hooked to PCIe slot 9 */
-		Package(){0x0000FFFF, 0, INTD, 0 },
-		Package(){0x0000FFFF, 1, INTA, 0 },
-		Package(){0x0000FFFF, 2, INTB, 0 },
-		Package(){0x0000FFFF, 3, INTC, 0 },
-	})
-	Name(APS9, Package(){
-		/* PCIe slot - Hooked to PCIe slot 9 */
-		Package(){0x0000FFFF, 0, 0, 17 },
-		Package(){0x0000FFFF, 1, 0, 18 },
-		Package(){0x0000FFFF, 2, 0, 19 },
-		Package(){0x0000FFFF, 3, 0, 16 },
-	})
-
-	Name(PSa, Package(){
-		/* PCIe slot - Hooked to PCIe slot 10 */
-		Package(){0x0000FFFF, 0, INTD, 0 },
-		Package(){0x0000FFFF, 1, INTA, 0 },
-		Package(){0x0000FFFF, 2, INTB, 0 },
-		Package(){0x0000FFFF, 3, INTC, 0 },
-	})
-	Name(APSa, Package(){
-		/* PCIe slot - Hooked to PCIe slot 10 */
-		Package(){0x0000FFFF, 0, 0, 18 },
-		Package(){0x0000FFFF, 1, 0, 19 },
-		Package(){0x0000FFFF, 2, 0, 16 },
-		Package(){0x0000FFFF, 3, 0, 17 },
-	})
-
 	Name(PE0, Package(){
 		/* PCIe slot - Hooked to PCIe slot 10 */
 		Package(){0x0000FFFF, 0, INTA, 0 },
@@ -390,7 +323,7 @@ Scope(\_SB) {
 	})
 
 	Name(PCIB, Package(){
-		/* PCI slots: slot 0, slot 1, slot 2 behind Dev14, Fun4. */
+		/* PCI slots: slot 0, slot 1, slot 2 behind Dev14, Func 4. */
 		Package(){0x0003FFFF, 0, 0, 0x14 },
 		Package(){0x0003FFFF, 1, 0, 0x15 },
 		Package(){0x0003FFFF, 2, 0, 0x16 },

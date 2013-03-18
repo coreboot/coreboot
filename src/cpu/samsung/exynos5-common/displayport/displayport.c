@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h>
 #include <delay.h>
 #include <arch/io.h>
 #include <device/device.h>
@@ -83,22 +84,52 @@ static void exynos_displayport_init(void)
 #endif
 }
 
-static void exynos_displayport_noop(device_t dummy)
+static void exynos_displayport_read_resources(device_t dev)
 {
+	struct cpu_samsung_exynos5_common_displayport_config *conf = dev->chip_info;
+        struct resource *resource;
+	printk(BIOS_SPEW, "%s: dev %p\n", __func__, dev);
+	/* claim a resource for the UMA graphics.
+	 * Follow the current convention of starting at 24M
+	 * from the start.
+	 */
+	resource = new_resource(dev, 0);
+	/* this is a hardcode for now. There's some real confusion about what it
+	 * needs to be, docs are not helping, and hardware on real systems
+	 * has settings we don't understand. FIXME.
+	 */
+	resource->base = 0x20000000 + 24*MiB;
+	resource->size = conf->xres * conf->yres * 4; /* 4 bytes per pixel for RGB */
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	printk(BIOS_DEBUG, "Adding graphics at %p, size %08lx\n", (void *)resource->base, resource->size);
+}
+
+static void exynos_displayport_set_resources(device_t dev)
+{
+	printk(BIOS_SPEW, "%s: dev %p\n", __function__, dev);
+}
+
+static void exynos_displayport_enable_resources(device_t dev)
+{
+	printk(BIOS_SPEW, "%s: dev %p\n", __function__, dev);
 }
 
 static struct device_operations exynos_displayport_operations  = {
-	.read_resources   = exynos_displayport_noop,
-	.set_resources    = exynos_displayport_noop,
-	.enable_resources = exynos_displayport_noop,
+	.read_resources   = exynos_displayport_read_resources,
+	.set_resources    = exynos_displayport_set_resources,
+	.enable_resources = exynos_displayport_enable_resources,
 	.init		  = exynos_displayport_init,
 	.scan_bus	  = exynos_displayport_noop,
 };
 
 static void exynos_displayport_enable(struct device *dev)
 {
-	if (dev->link_list != NULL)
+	printk(BIOS_SPEW, "%s: ", __function__);
+	if (dev->link_list != NULL){
+		printk(BIOS_SPEW, "set ops");
 		dev->ops = &exynos_displayport_operations;
+	}
+	printk(BIOS_SPEW, "\n");
 }
 
 struct chip_operations drivers_i2c_exynos_displayport_ops = {

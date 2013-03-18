@@ -100,7 +100,7 @@ static void fimd_bypass(void)
 {
 	struct exynos5_sysreg *sysreg = samsung_get_base_sysreg();
 
-	/*setbits_le32(&sysreg->disp1blk_cfg, FIMDBYPASS_DISP1);*/
+	setbits_le32(&sysreg->disp1blk_cfg, FIMDBYPASS_DISP1);
 	sysreg->disp1blk_cfg &= ~FIMDBYPASS_DISP1;
 }
 
@@ -582,11 +582,10 @@ int lcd_ctrl_init(vidinfo_t *panel_info, struct exynos5_fimd_panel *panel_data, 
 {
 	int ret = 0;
 
-	//vi->res = panel_info->vl_col;
-	//vi->yres = panel_info->vl_row;
-
 	fimd_bypass();
+	printk(BIOS_SPEW, "fimd_bypass\n");
 	fb_init(panel_info, lcdbase, panel_data);
+	printk(BIOS_SPEW, "fb_init(%p, %p, %p\n",panel_info, lcdbase, panel_data);
 
 	/* Enable flushing after LCD writes if requested */
 	// forget it. lcd_set_flush_dcache(1);

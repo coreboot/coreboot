@@ -1,5 +1,12 @@
+#include <stdlib.h>
+#include <string.h>
+#include <stddef.h>
+#include <delay.h>
 #include <console/console.h>
+#include <arch/io.h>
 #include <device/device.h>
+#include <cbmem.h>
+#include "chip.h"
 
 #define RAM_BASE_KB (CONFIG_SYS_SDRAM_BASE >> 10)
 #define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
@@ -28,8 +35,71 @@ static struct device_operations domain_ops = {
 	.scan_bus         = domain_scan_bus,
 };
 
+/* we distinguish a display port device from a raw graphics device because there are
+ * dramatic differences in startup depending on graphics usage. To make startup fast
+ * and easier to understand and debug we explicitly name this common case. The alternate
+ * approach, involving lots of machine and callbacks, is hard to debug and verify.
+ */
+static void exynos_displayport_init(device_t dev)
+{
+	int ret;
+	struct cpu_samsung_exynos5250_config *conf = dev->chip_info;
+	/* put these on the stack. If, at some point, we want to move this code to a
+	 * pre-ram stage, it will be much easier.
+	 */
+	vidinfo_t vi;
+	struct exynos5_fimd_panel panel;
+	void *lcdbase;
+
+	memset(&vi, 0, sizeof(vi));
+	memset(&panel, 0, sizeof(panel));
+
+	panel.is_dp = 1; /* Display I/F is eDP */
+	/* while it is true that we did a memset to zero,
+	 * we leave some 'set to zero' entries here to make
+	 * it clear what's going on. Graphics is confusing.
+	 */
+	panel.is_mipi = 0;
+	panel.fixvclk = 0;
+	panel.ivclk = 0;
+	panel.clkval_f = conf->clkval_f;
+	panel.upper_margin = conf->upper_margin;
+	panel.lower_margin = conf->lower_margin;
+	panel.vsync = conf->vsync;
+	panel.left_margin = conf->left_margin;
+	panel.right_margin = conf->right_margin;
+	panel.hsync = conf->hsync;
+
+	vi.vl_col = conf->xres;
+	vi.vl_row = conf->yres;
+	vi.vl_bpix = conf->bpp;
+	/* The size is a magic number from hardware. */
+	vi.cmap = cbmem_add(CBMEM_ID_CONSOLE, 64*1024);
+
+	lcdbase = (void *)conf->lcdbase;
+	printk(BIOS_DEBUG, "Initializing exynos VGA\n");
+	ret = lcd_ctrl_init(&vi, &panel, lcdbase);
+#if 0
+	ret = board_dp_lcd_vdd(blob, &wait_ms);
+	ret = board_dp_bridge_setup(blob, &wait_ms);
+	while (tries < 5) {
+		ret = board_dp_bridge_init(blob, &wait_ms);
+		ret = board_dp_hotplug(blob, &wait_ms);
+		if (ret) {
+			ret = board_dp_bridge_reset(blob, &wait_ms);
+			continue;
+		}
+		ret = dp_controller_init(blob, &wait_ms);
+		ret = board_dp_backlight_vdd(blob, &wait_ms);
+		ret = board_dp_backlight_pwm(blob, &wait_ms);
+		ret = board_dp_backlight_en(blob, &wait_ms);
+	}
+#endif
+}
+
 static void cpu_init(device_t dev)
 {
+  exynos_displayport_init(dev);
 }
 
 static void cpu_noop(device_t dev)

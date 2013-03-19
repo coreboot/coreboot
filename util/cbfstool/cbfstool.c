@@ -356,12 +356,12 @@ static int cbfs_locate(void)
 	}
 
 	address = cbfs_locate_entry(&image, param.name, buffer.size,
-				    param.pagesize);
+				    param.pagesize, param.alignment);
 	buffer_delete(&buffer);
 
 	if (address == -1) {
-		ERROR("'%s' can't fit in CBFS for page-size %#x.\n",
-		      param.name, param.pagesize);
+		ERROR("'%s' can't fit in CBFS for page-size %#x, align %#x.\n",
+		      param.name, param.pagesize, param.alignment);
 		cbfs_image_delete(&image);
 		return 1;
 	}
@@ -422,7 +422,7 @@ static const struct command commands[] = {
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"remove", "n:vh?", cbfs_remove},
 	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
-	{"locate", "f:n:P:Tvh?", cbfs_locate},
+	{"locate", "f:n:P:a:Tvh?", cbfs_locate},
 	{"print", "vh?", cbfs_print},
 	{"extract", "n:f:vh?", cbfs_extract},
 };
@@ -470,7 +470,7 @@ static void usage(char *name)
 			"Remove a component\n"
 	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]  "
 			"Create a ROM file\n"
-	     " locate -f FILE -n NAME [-P page-size] [-T]       "
+	     " locate -f FILE -n NAME [-P page-size] [-a align] [-T]       "
 			"Find a place for a file of that size\n"
 	     " print                                                       "
 			"Show the contents of the ROM\n"

@@ -63,7 +63,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Recovery: active high */
 	gpios->gpios[1].port = EXYNOS5_GPY1;
 	gpios->gpios[1].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = s5p_gpio_get_value(&gpio_pt1->y1, FORCE_RECOVERY_MODE);
+	gpios->gpios[1].value = s5p_gpio_get_value(&gpio_pt1->y1, FORCE_RECOVERY_MODE);
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
 	/* Lid: the "switch" comes from the EC */

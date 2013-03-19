@@ -53,9 +53,11 @@ VBOOT_STUB_DEPS += $(obj)/lib/memcmp.rmodules.o
 VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memset.rmodules.o
 VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memcpy.rmodules.o
 VBOOT_STUB_DEPS += $(VB_LIB)
-# Remove the '-include' option since that will break vboot's build.
-VBOOT_CFLAGS += $(filter-out -include $(src)/include/kconfig.h, $(CFLAGS))
+# Remove the '-include' option since that will break vboot's build and ensure
+# vboot_reference can get to coreboot's include files.
+VBOOT_CFLAGS += $(patsubst -I%,-I../%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS)))
 VBOOT_CFLAGS += -DVBOOT_DEBUG
+$(warning $(VBOOT_CFLAGS))
 
 $(VBOOT_STUB_DOTO): $(VBOOT_STUB_DEPS)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^

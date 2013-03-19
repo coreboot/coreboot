@@ -37,15 +37,15 @@
 #include "chip.h"
 
 static const uint32_t microcode_updates[] = {
-	#include "microcode-2618-m441067AA07.h"
-	#include "microcode-2626-m1010677705.h"
-	#include "microcode-2498-m101067660C.h"
-	#include "microcode-2497-m041067660C.h"
-	#include "microcode-2499-m401067660C.h"
-	#include "microcode-2617-m111067AA07.h"
-	#include "microcode-2619-mA01067AA07.h"
-	#include "microcode-2623-m011067660C.h"
-	#include "microcode-2501-m801067660C.h"
+	#include "microcode-m011067660F.h"
+	#include "microcode-m041067660F.h"
+	#include "microcode-m101067660F.h"
+	#include "microcode-m101067770A.h"
+	#include "microcode-m111067AA0B.h"
+	#include "microcode-m401067660F.h"
+	#include "microcode-m441067AA0B.h"
+	#include "microcode-m801067660F.h"
+	#include "microcode-mA01067AA0B.h"
 
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,

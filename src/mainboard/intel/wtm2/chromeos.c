@@ -28,6 +28,10 @@
 #endif
 #include <southbridge/intel/lynxpoint/pch.h>
 
+/* Compile-time settings for developer and recovery mode. */
+#define DEV_MODE_SETTING 1
+#define REC_MODE_SETTING 0
+
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
 #include <arch/coreboot_tables.h>
@@ -58,8 +62,8 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 	gpio = gpios->gpios;
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "write protect", 0);
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery", 0); // force off
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer", 1); // force on
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery", REC_MODE_SETTING);
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer", DEV_MODE_SETTING);
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid", 1); // force open
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", oprom_is_loaded);
@@ -68,12 +72,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_developer_mode_switch(void)
 {
-	return 1; // force on
+	return DEV_MODE_SETTING;
 }
 
 int get_recovery_mode_switch(void)
 {
-	return 0; // force off
+	return REC_MODE_SETTING;
 }
 
 int get_write_protect_state(void)

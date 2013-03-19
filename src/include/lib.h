@@ -24,10 +24,8 @@
 #include <stdint.h>
 #ifndef __ROMCC__ /* romcc doesn't support prototypes. */
 
-#ifndef __PRE_RAM__ /* Conflicts with romcc_io.h */
-/* Defined in src/lib/clog2.c */
+/* Defined in src/lib/clog2.c (note: conflicts with romcc_io.h) */
 unsigned long log2(unsigned long x);
-#endif
 
 /* Defined in src/lib/lzma.c */
 unsigned long ulzma(unsigned char *src, unsigned char *dst);

@@ -215,6 +215,9 @@ static inline void write_sctlr(unsigned int val)
 /* dcache clean and invalidate all (on current level given by CCSELR) */
 void dcache_clean_invalidate_all(void);
 
+/* dcache clean by modified virtual address to PoC */
+void dcache_clean_by_mva(unsigned long addr, unsigned long len);
+
 /* dcache clean and invalidate by modified virtual address to PoC */
 void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
 

@@ -79,6 +79,7 @@ enum dcache_op {
 	OP_DCCISW,
 	OP_DCISW,
 	OP_DCCIMVAC,
+	OP_DCCMVAC,
 };
 
 /*
@@ -191,6 +192,11 @@ static void dcache_op_mva(unsigned long addr,
 			break;
 		}
 	}
+}
+
+void dcache_clean_by_mva(unsigned long addr, unsigned long len)
+{
+	dcache_op_mva(addr, len, OP_DCCMVAC);
 }
 
 void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)

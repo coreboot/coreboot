@@ -77,7 +77,8 @@ void icache_invalidate_all(void)
 
 enum dcache_op {
 	OP_DCCISW,
-	OP_DCISW
+	OP_DCISW,
+	OP_DCCIMVAC,
 };
 
 /*
@@ -169,13 +170,32 @@ static unsigned int line_bytes(void)
 	return size;
 }
 
-void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
+/*
+ * Do a dcache operation by modified virtual address. This is useful for
+ * maintaining coherency in drivers which do DMA transfers and only need to
+ * perform cache maintenance on a particular memory range rather than the
+ * entire cache.
+ */
+static void dcache_op_mva(unsigned long addr,
+		unsigned long len, enum dcache_op op)
 {
 	unsigned long line, i;
 
 	line = line_bytes();
-	for (i = addr & ~(line - 1); i < addr + len - 1; i += line)
-		dccimvac(addr);
+	for (i = addr & ~(line - 1); i < addr + len - 1; i += line) {
+		switch(op) {
+		case OP_DCCIMVAC:
+			dccimvac(addr);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
+{
+	dcache_op_mva(addr, len, OP_DCCIMVAC);
 }
 
 void armv7_invalidate_caches(void)

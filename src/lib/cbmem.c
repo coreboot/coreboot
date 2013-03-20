@@ -238,11 +238,9 @@ void init_cbmem_pre_device(void) {}
 
 void init_cbmem_post_device(void)
 {
-#if CONFIG_WRITE_HIGH_TABLES
 	cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
-#endif
 #endif
 }
 

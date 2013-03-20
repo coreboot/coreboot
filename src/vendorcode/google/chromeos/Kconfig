@@ -32,6 +32,7 @@ menu "ChromeOS"
 config VBNV_OFFSET
 	hex
 	default 0x26
+	depends on PC80_SYSTEM
 	help
 	  CMOS offset for VbNv data. This value must match cmos.layout
 	  in the mainboard directory, minus 14 bytes for the RTC.
@@ -39,6 +40,7 @@ config VBNV_OFFSET
 config VBNV_SIZE
 	hex
 	default 0x10
+	depends on PC80_SYSTEM
 	help
 	  CMOS storage size for VbNv data. This value must match cmos.layout
 	  in the mainboard directory.

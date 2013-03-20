@@ -1,5 +1,4 @@
 ramstage-y += boot.c
-ramstage-y += coreboot_table.c
 #ramstage-$(CONFIG_MULTIBOOT) += multiboot.c
 ramstage-y += tables.c
 #ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c

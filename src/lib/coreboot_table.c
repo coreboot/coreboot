@@ -34,7 +34,10 @@
 #include <option_table.h>
 #endif
 #if CONFIG_CHROMEOS
-//#include <arch/acpi.h>
+#if CONFIG_GENERATE_ACPI_TABLES
+#include <arch/acpi.h>
+#endif
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
@@ -73,14 +76,6 @@ static struct lb_record *lb_last_record(struct lb_header *header)
 	return rec;
 }
 
-#if 0
-static struct lb_record *lb_next_record(struct lb_record *rec)
-{
-	rec = (void *)(((char *)rec) + rec->size);
-	return rec;
-}
-#endif
-
 static struct lb_record *lb_new_record(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -95,7 +90,6 @@ static struct lb_record *lb_new_record(struct lb_header *header)
 	return rec;
 }
 
-
 static struct lb_memory *lb_memory(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -109,7 +103,18 @@ static struct lb_memory *lb_memory(struct lb_header *header)
 
 static struct lb_serial *lb_serial(struct lb_header *header)
 {
-#if CONFIG_CONSOLE_SERIAL
+#if CONFIG_CONSOLE_SERIAL8250
+	struct lb_record *rec;
+	struct lb_serial *serial;
+	rec = lb_new_record(header);
+	serial = (struct lb_serial *)rec;
+	serial->tag = LB_TAG_SERIAL;
+	serial->size = sizeof(*serial);
+	serial->type = LB_SERIAL_TYPE_IO_MAPPED;
+	serial->baseaddr = CONFIG_TTYS0_BASE;
+	serial->baud = CONFIG_TTYS0_BAUD;
+	return serial;
+#elif CONFIG_CONSOLE_SERIAL8250MEM
 	if (uartmem_getbaseaddr()) {
 		struct lb_record *rec;
 		struct lb_serial *serial;
@@ -160,7 +165,7 @@ static void lb_console(struct lb_header *header)
 
 static void lb_framebuffer(struct lb_header *header)
 {
-#if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE
+#if CONFIG_FRAMEBUFFER_KEEP_VESA_MODE || CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 	int vbe_mode_info_valid(void);
 
@@ -182,22 +187,26 @@ static void lb_gpios(struct lb_header *header)
 	struct lb_gpios *gpios;
 	gpios = (struct lb_gpios *)lb_new_record(header);
 	gpios->tag = LB_TAG_GPIO;
+	gpios->size = sizeof(*gpios);
+	gpios->count = 0;
 	fill_lb_gpios(gpios);
 }
 
-#if 0
 static void lb_vdat(struct lb_header *header)
 {
+#if CONFIG_GENERATE_ACPI_TABLES
 	struct lb_vdat* vdat;
 
 	vdat = (struct lb_vdat *)lb_new_record(header);
 	vdat->tag = LB_TAG_VDAT;
 	vdat->size = sizeof(*vdat);
 	acpi_get_vdat_info(&vdat->vdat_addr, &vdat->vdat_size);
+#endif
 }
 
 static void lb_vbnv(struct lb_header *header)
 {
+#if CONFIG_PC80_SYSTEM
 	struct lb_vbnv* vbnv;
 
 	vbnv = (struct lb_vbnv *)lb_new_record(header);
@@ -205,9 +214,29 @@ static void lb_vbnv(struct lb_header *header)
 	vbnv->size = sizeof(*vbnv);
 	vbnv->vbnv_start = CONFIG_VBNV_OFFSET + 14;
 	vbnv->vbnv_size = CONFIG_VBNV_SIZE;
+#endif
 }
-#endif
-#endif
+
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+static void lb_vboot_handoff(struct lb_header *header)
+{
+	void *addr;
+	uint32_t size;
+	struct lb_vboot_handoff* vbho;
+
+	if (vboot_get_handoff_info(&addr, &size))
+		return;
+
+	vbho = (struct lb_vboot_handoff *)lb_new_record(header);
+	vbho->tag = LB_TAB_VBOOT_HANDOFF;
+	vbho->size = sizeof(*vbho);
+	vbho->vboot_handoff_addr = addr;
+	vbho->vboot_handoff_size = size;
+}
+#else
+static inline void lb_vboot_handoff(struct lb_header *header) {}
+#endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
+#endif /* CONFIG_CHROMEOS */
 
 static void add_cbmem_pointers(struct lb_header *header)
 {
@@ -317,9 +346,19 @@ static void lb_strings(struct lb_header *header)
 
 }
 
-/* FIXME(dhendrix): used to be static void lb_memory_range(), but compiler
-   started complaining since it shares a name with a non-static struct. ugh. */
-static void new_lb_memory_range(struct lb_memory *mem,
+static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header *next_header)
+{
+	struct lb_record *rec;
+	struct lb_forward *forward;
+	rec = lb_new_record(header);
+	forward = (struct lb_forward *)rec;
+	forward->tag = LB_TAG_FORWARD;
+	forward->size = sizeof(*forward);
+	forward->forward = (uint64_t)(unsigned long)next_header;
+	return forward;
+}
+
+void lb_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
 	int entries;
@@ -332,6 +371,9 @@ static void new_lb_memory_range(struct lb_memory *mem,
 
 static void lb_reserve_table_memory(struct lb_header *head)
 {
+/* Dynamic cbmem has already reserved the memory where the coreboot tables
+ * reside. Therefore, there is nothing to fix up. */
+#if !CONFIG_DYNAMIC_CBMEM
 	struct lb_record *last_rec;
 	struct lb_memory *mem;
 	uint64_t start;
@@ -360,6 +402,7 @@ static void lb_reserve_table_memory(struct lb_header *head)
 			mem->map[i].size = pack_lb64(map_end - end);
 		}
 	}
+#endif
 }
 
 static unsigned long lb_table_fini(struct lb_header *head, int fixup)
@@ -392,7 +435,7 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 	/* Sort the lb memory ranges */
 	for(i = 0; i < entries; i++) {
 		uint64_t entry_start = unpack_lb64(mem->map[i].start);
-		for(j = i; j < entries; j++) {
+		for(j = i + 1; j < entries; j++) {
 			uint64_t temp_start = unpack_lb64(mem->map[j].start);
 			if (temp_start < entry_start) {
 				struct lb_memory_range tmp;
@@ -413,7 +456,7 @@ static void lb_cleanup_memory_ranges(struct lb_memory *mem)
 		end    = start + unpack_lb64(mem->map[i].size);
 		nstart = unpack_lb64(mem->map[i + 1].start);
 		nend   = nstart + unpack_lb64(mem->map[i + 1].size);
-		if ((start <= nstart) && (end > nstart)) {
+		if ((start <= nstart) && (end >= nstart)) {
 			if (start > nstart) {
 				start = nstart;
 			}
@@ -484,11 +527,11 @@ static void lb_remove_memory_range(struct lb_memory *mem,
 	}
 }
 
-static void lb_add_memory_range(struct lb_memory *mem,
+void lb_add_memory_range(struct lb_memory *mem,
 	uint32_t type, uint64_t start, uint64_t size)
 {
 	lb_remove_memory_range(mem, start, size);
-	new_lb_memory_range(mem, type, start, size);
+	lb_memory_range(mem, type, start, size);
 	lb_cleanup_memory_ranges(mem);
 }
 
@@ -521,7 +564,6 @@ static void lb_dump_memory_ranges(struct lb_memory *mem)
 	}
 }
 
-
 /* Routines to extract part so the coreboot table or
  * information from the coreboot table after we have written it.
  * Currently get_lb_mem relies on a global we can change the
@@ -536,7 +578,7 @@ struct lb_memory *get_lb_mem(void)
 static void build_lb_mem_range(void *gp, struct device *dev, struct resource *res)
 {
 	struct lb_memory *mem = gp;
-	new_lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
+	lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
 }
 
 static struct lb_memory *build_lb_mem(struct lb_header *head)
@@ -547,13 +589,11 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem = lb_memory(head);
 	mem_ranges = mem;
 
-	/* FIXME: implement this */
 	/* Build the raw table of memory */
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		build_lb_mem_range, mem);
-	/* FIXME: things die in cleanup_memory_ranges(), skip for now */
-//	lb_cleanup_memory_ranges(mem);
+	lb_cleanup_memory_ranges(mem);
 	return mem;
 }
 
@@ -572,23 +612,43 @@ static void add_lb_reserved(struct lb_memory *mem)
 }
 
 unsigned long write_coreboot_table(
-	unsigned long table_start, unsigned long table_end)
+	unsigned long low_table_start, unsigned long low_table_end,
+	unsigned long rom_table_start, unsigned long rom_table_end)
 {
 	struct lb_header *head;
 	struct lb_memory *mem;
-	unsigned long fini;
 
-	printk(BIOS_DEBUG, "table_start: 0x%lx, table_end: 0x%lx\n",
-			   table_start, table_end);
-	head = lb_table_init(table_start);
+	if (low_table_start || low_table_end) {
+		printk(BIOS_DEBUG, "Writing table forward entry at 0x%08lx\n",
+				low_table_end);
+		head = lb_table_init(low_table_end);
+		lb_forward(head, (struct lb_header*)rom_table_end);
 
-	table_end = (unsigned long) head + head->table_bytes;
+		low_table_end = (unsigned long) lb_table_fini(head, 0);
+		printk(BIOS_DEBUG, "Table forward entry ends at 0x%08lx.\n",
+			low_table_end);
+	}
 
-	/* FIXME(dhendrix): do we need this? */
-	printk(BIOS_DEBUG, "Adjust table_end from 0x%08lx to ", table_end);
-	table_end += 0xfff; // 4K aligned
-	table_end &= ~0xfff;
-	printk(BIOS_DEBUG, "0x%08lx \n", table_end);
+	printk(BIOS_DEBUG, "Writing coreboot table at 0x%08lx\n",
+		rom_table_end);
+
+	head = lb_table_init(rom_table_end);
+	rom_table_end = (unsigned long)head;
+	printk(BIOS_DEBUG, "rom_table_end = 0x%08lx\n", rom_table_end);
+
+	if (low_table_start || low_table_end) {
+		printk(BIOS_DEBUG, "Adjust low_table_end from 0x%08lx to ",
+			low_table_end);
+		low_table_end += 0xfff; // 4K aligned
+		low_table_end &= ~0xfff;
+		printk(BIOS_DEBUG, "0x%08lx \n", low_table_end);
+	}
+
+	/* The Linux kernel assumes this region is reserved */
+	printk(BIOS_DEBUG, "Adjust rom_table_end from 0x%08lx to ", rom_table_end);
+	rom_table_end += 0xffff; // 64K align
+	rom_table_end &= ~0xffff;
+	printk(BIOS_DEBUG, "0x%08lx \n", rom_table_end);
 
 #if CONFIG_USE_OPTION_TABLE
 	{
@@ -607,28 +667,29 @@ unsigned long write_coreboot_table(
 	}
 #endif
 	/* Record where RAM is located */
-	/* FIXME(dhendrix): add global resources */
-	printk(BIOS_DEBUG, "%s: head: 0x%p\n", __func__, head);
 	mem = build_lb_mem(head);
-	/* FIXME: we seem to get a bogus return value */
-	printk(BIOS_DEBUG, "%s: mem: 0x%p\n", __func__, mem);
-	if ((unsigned long)mem < CONFIG_RAMBASE) {
-		printk(BIOS_DEBUG, "%s: mem < CONFIG_RAMBASE\n" , __func__);
-		while (1);
+
+	if (low_table_start || low_table_end) {
+		/* Record the mptable and the the lb_table.
+		 * (This will be adjusted later)  */
+		lb_add_memory_range(mem, LB_MEM_TABLE,
+			low_table_start, low_table_end - low_table_start);
 	}
 
-	/* Record the mptable and the the lb_table (This will be adjusted later) */
-	lb_add_memory_range(mem, LB_MEM_TABLE,
-		table_start, table_end - table_start);
+	/* Record the pirq table, acpi tables, and maybe the mptable. However,
+	 * these only need to be added when the rom_table is sitting below
+	 * 1MiB. If it isn't that means high tables are being written.
+	 * The code below handles high tables correctly. */
+	if (rom_table_end <= (1 << 20))
+		lb_add_memory_range(mem, LB_MEM_TABLE,
+			rom_table_start, rom_table_end - rom_table_start);
 
-	/* Record the pirq table, acpi tables, and maybe the mptable */
+#if CONFIG_DYNAMIC_CBMEM
+	cbmem_add_lb_mem(mem);
+#else /* CONFIG_DYNAMIC_CBMEM */
 	lb_add_memory_range(mem, LB_MEM_TABLE,
-		table_start, table_end - table_start);
-
-	printk(BIOS_DEBUG, "Adding high table area\n");
-	// should this be LB_MEM_ACPI?
-	lb_add_memory_range(mem, LB_MEM_TABLE,
-			table_start, table_end - table_start);
+		high_tables_base, high_tables_size);
+#endif /* CONFIG_DYNAMIC_CBMEM */
 
 	/* Add reserved regions */
 	add_lb_reserved(mem);
@@ -637,12 +698,11 @@ unsigned long write_coreboot_table(
 
 	/* Note:
 	 * I assume that there is always memory at immediately after
-	 * the table_end.  This means that after I setup the coreboot table.
+	 * the low_table_end.  This means that after I setup the coreboot table.
 	 * I can trivially fixup the reserved memory ranges to hold the correct
 	 * size of the coreboot table.
 	 */
 
-	/* FIXME(dhendrix): Most of these do nothing at the moment */
 	/* Record our motherboard */
 	lb_mainboard(head);
 	/* Record the serial port, if present */
@@ -653,23 +713,23 @@ unsigned long write_coreboot_table(
 	lb_strings(head);
 	/* Record our framebuffer */
 	lb_framebuffer(head);
+
 #if CONFIG_CHROMEOS
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
 
-#if 0
 	/* pass along the VDAT buffer adress */
 	lb_vdat(head);
 
 	/* pass along VBNV offsets in CMOS */
 	lb_vbnv(head);
-#endif
+
+	/* pass along the vboot_handoff address. */
+	lb_vboot_handoff(head);
 #endif
 	add_cbmem_pointers(head);
 
 	/* Remember where my valid memory ranges are */
-	fini =  lb_table_fini(head, 1);
-	printk(BIOS_DEBUG, "%s: DONE: fini is 0x%lx\n", __func__, fini);
-	return fini;
+	return lb_table_fini(head, 1);
 
 }

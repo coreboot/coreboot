@@ -54,6 +54,7 @@ romstage-$(CONFIG_ARCH_X86) += gcc.c
 
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
+ramstage-y += coreboot_table.c
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 ramstage-y += memset.c
 endif

@@ -31,7 +31,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-#include <arch/coreboot_tables.h>
+#include <boot/coreboot_tables.h>
 #include <ec/smsc/mec1308/ec.h>
 #include "hda_verb.h"
 #include "ec.h"

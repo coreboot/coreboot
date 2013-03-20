@@ -37,7 +37,7 @@
 #define FLAG_DEV_MODE	2
 
 #ifndef __PRE_RAM__
-#include <arch/coreboot_tables.h>
+#include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6
 #define ACTIVE_LOW	0

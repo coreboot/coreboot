@@ -38,7 +38,6 @@
 #define POWER_BUTTON	3
 
 #include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
 
 #define GPIO_COUNT	6
 

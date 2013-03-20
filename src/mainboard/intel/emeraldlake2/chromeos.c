@@ -29,7 +29,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 
 #ifndef __PRE_RAM__
-#include <arch/coreboot_tables.h>
+#include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6
 #define ACTIVE_LOW	0

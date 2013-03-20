@@ -2,7 +2,6 @@
 #define BOOT_TABLES_H
 
 #include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
 
 struct lb_memory *write_tables(void);
 

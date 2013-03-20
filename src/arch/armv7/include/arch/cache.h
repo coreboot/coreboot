@@ -25,6 +25,8 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * cache.h: Cache maintenance API for ARMv7
  */
 
 #ifndef ARMV7_CACHE_H
@@ -128,12 +130,6 @@ static inline void dccisw(uint32_t val)
 	asm volatile ("mcr p15, 0, %0, c7, c14, 2" : : "r" (val));
 }
 
-/* data cache invalidate by set/way */
-static inline void dcisw(uint32_t val)
-{
-	asm volatile ("mcr p15, 0, %0, c7, c6, 2" : : "r" (val));
-}
-
 /* data cache clean by MVA to PoC */
 static inline void dccmvac(unsigned long mva)
 {
@@ -144,6 +140,12 @@ static inline void dccmvac(unsigned long mva)
 static inline void dcimvac(unsigned long mva)
 {
 	asm volatile ("mcr p15, 0, %0, c7, c6, 1" : : "r" (mva));
+}
+
+/* data cache invalidate by set/way */
+static inline void dcisw(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c7, c6, 2" : : "r" (val));
 }
 
 /* instruction cache invalidate all by PoU */
@@ -210,25 +212,29 @@ static inline void write_sctlr(unsigned int val)
  * Cache maintenance API
  */
 
-/* invalidate all TLBs */
-void tlb_invalidate_all(void);
-
-/* clean and invalidate entire dcache on current level (given by CCSELR) */
+/* dcache clean and invalidate all (on current level given by CCSELR) */
 void dcache_clean_invalidate_all(void);
 
-/* invalidate entire dcache on current level (given by CCSELR) */
-void dcache_invalidate_all(void);
-
-/* invalidate and clean dcache by machine virtual address to PoC */
+/* dcache clean and invalidate by modified virtual address to PoC */
 void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
 
-/* invalidate entire icache on current level (given by CSSELR) */
+/* dcache invalidate all (on current level given by CCSELR) */
+void dcache_invalidate_all(void);
+
+/* icache invalidate all (on current level given by CSSELR) */
 void icache_invalidate_all(void);
+
+/* tlb invalidate all */
+void tlb_invalidate_all(void);
+
+/*
+ * Generalized setup/init functions
+ */
 
 /* invalidate all caches on ARMv7 */
 void armv7_invalidate_caches(void);
 
-/* MMU setup by machine virtual address */
+/* MMU setup by modified virtual address */
 void mmu_setup_by_mva(unsigned long start, unsigned long size);
 
 #endif /* ARMV7_CACHE_H */

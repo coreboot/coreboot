@@ -26,7 +26,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * cache.c: Low-level cache operations for ARMv7
+ * cache.c: Cache maintenance routines for ARMv7-A and ARMv7-R
+ *
+ * Reference: ARM Architecture Reference Manual, ARMv7-A and ARMv7-R edition
  */
 
 #include <types.h>
@@ -52,8 +54,8 @@ void tlb_invalidate_all(void)
 {
 	/*
 	 * FIXME: ARMv7 Architecture Ref. Manual claims that the distinction
-	 * instruction vs. data TLBs is deprecated in ARMv7. But that doesn't
-	 * really seem true for Cortex-A15?
+	 * instruction vs. data TLBs is deprecated in ARMv7, however this does
+	 * not seem to be the case as of Cortex-A15.
 	 */
 	tlbiall();
 	dtlbiall();
@@ -64,7 +66,8 @@ void tlb_invalidate_all(void)
 
 void icache_invalidate_all(void)
 {
-	/* icache can be entirely invalidated with one operation.
+	/*
+	 * icache can be entirely invalidated with one operation.
 	 * Note: If branch predictors are architecturally-visible, ICIALLU
 	 * also performs a BPIALL operation (B2-1283 in arch manual)
 	 */
@@ -77,7 +80,12 @@ enum dcache_op {
 	OP_DCISW
 };
 
-/* do a dcache operation on entire cache by set/way */
+/*
+ * Do a dcache operation on entire cache by set/way. This is done for
+ * portability because mapping of memory address to cache location is
+ * implementation defined (See note on "Requirements for operations by
+ * set/way" in arch ref. manual).
+ */
 static void dcache_op_set_way(enum dcache_op op)
 {
 	uint32_t ccsidr;

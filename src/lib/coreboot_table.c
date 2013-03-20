@@ -22,9 +22,7 @@
 
 #include <console/console.h>
 #include <ip_checksum.h>
-#include <boot/tables.h>
 #include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
 #include <string.h>
 #include <version.h>
 #include <device/device.h>
@@ -35,7 +33,9 @@
 #include <option_table.h>
 #endif
 #if CONFIG_CHROMEOS
+#if CONFIG_GENERATE_ACPI_TABLES
 #include <arch/acpi.h>
+#endif
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
@@ -75,14 +75,6 @@ static struct lb_record *lb_last_record(struct lb_header *header)
 	return rec;
 }
 
-#if 0
-static struct lb_record *lb_next_record(struct lb_record *rec)
-{
-	rec = (void *)(((char *)rec) + rec->size);
-	return rec;
-}
-#endif
-
 static struct lb_record *lb_new_record(struct lb_header *header)
 {
 	struct lb_record *rec;
@@ -96,7 +88,6 @@ static struct lb_record *lb_new_record(struct lb_header *header)
 	rec->size = sizeof(*rec);
 	return rec;
 }
-
 
 static struct lb_memory *lb_memory(struct lb_header *header)
 {
@@ -122,7 +113,7 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 	serial->baseaddr = CONFIG_TTYS0_BASE;
 	serial->baud = CONFIG_TTYS0_BAUD;
 	return serial;
-#elif CONFIG_CONSOLE_SERIAL8250MEM
+#elif CONFIG_CONSOLE_SERIAL8250MEM || CONFIG_CONSOLE_SERIAL_UART
 	if (uartmem_getbaseaddr()) {
 		struct lb_record *rec;
 		struct lb_serial *serial;
@@ -142,8 +133,7 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 #endif
 }
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || \
-    CONFIG_CONSOLE_LOGBUF || CONFIG_USBDEBUG
+#if CONFIG_CONSOLE_SERIAL || CONFIG_CONSOLE_LOGBUF || CONFIG_USBDEBUG
 static void add_console(struct lb_header *header, u16 consoletype)
 {
 	struct lb_console *console;
@@ -160,7 +150,7 @@ static void lb_console(struct lb_header *header)
 #if CONFIG_CONSOLE_SERIAL8250
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
 #endif
-#if CONFIG_CONSOLE_SERIAL8250MEM
+#if CONFIG_CONSOLE_SERIAL8250MEM || CONFIG_CONSOLE_SERIAL_UART
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250MEM);
 #endif
 #if CONFIG_CONSOLE_LOGBUF
@@ -202,16 +192,19 @@ static void lb_gpios(struct lb_header *header)
 
 static void lb_vdat(struct lb_header *header)
 {
+#if CONFIG_GENERATE_ACPI_TABLES
 	struct lb_vdat* vdat;
 
 	vdat = (struct lb_vdat *)lb_new_record(header);
 	vdat->tag = LB_TAG_VDAT;
 	vdat->size = sizeof(*vdat);
 	acpi_get_vdat_info(&vdat->vdat_addr, &vdat->vdat_size);
+#endif
 }
 
 static void lb_vbnv(struct lb_header *header)
 {
+#if CONFIG_PC80_SYSTEM
 	struct lb_vbnv* vbnv;
 
 	vbnv = (struct lb_vbnv *)lb_new_record(header);
@@ -219,6 +212,7 @@ static void lb_vbnv(struct lb_header *header)
 	vbnv->size = sizeof(*vbnv);
 	vbnv->vbnv_start = CONFIG_VBNV_OFFSET + 14;
 	vbnv->vbnv_size = CONFIG_VBNV_SIZE;
+#endif
 }
 
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
@@ -568,13 +562,13 @@ static void lb_dump_memory_ranges(struct lb_memory *mem)
 	}
 }
 
-
 /* Routines to extract part so the coreboot table or
  * information from the coreboot table after we have written it.
  * Currently get_lb_mem relies on a global we can change the
  * implementaiton.
  */
-static struct lb_memory *mem_ranges = 0;
+static struct lb_memory *mem_ranges = NULL;
+
 struct lb_memory *get_lb_mem(void)
 {
 	return mem_ranges;
@@ -623,30 +617,27 @@ unsigned long write_coreboot_table(
 	struct lb_header *head;
 	struct lb_memory *mem;
 
-	printk(BIOS_DEBUG, "Writing high table forward entry at 0x%08lx\n",
-			low_table_end);
-	head = lb_table_init(low_table_end);
-	lb_forward(head, (struct lb_header*)rom_table_end);
+	if (low_table_start || low_table_end) {
+		printk(BIOS_DEBUG, "Writing table forward entry at 0x%08lx\n",
+				low_table_end);
+		head = lb_table_init(low_table_end);
+		lb_forward(head, (struct lb_header*)rom_table_end);
 
-	low_table_end = (unsigned long) lb_table_fini(head, 0);
-	printk(BIOS_DEBUG, "New low_table_end: 0x%08lx\n", low_table_end);
-	printk(BIOS_DEBUG, "Now going to write high coreboot table at 0x%08lx\n",
-			rom_table_end);
+		low_table_end = (unsigned long) lb_table_fini(head, 0);
+		printk(BIOS_DEBUG, "Table forward entry ends at 0x%08lx.\n",
+			low_table_end);
+		low_table_end = ALIGN(low_table_end, 4096);
+		printk(BIOS_DEBUG, "... aligned to 0x%08lx\n", low_table_end);
+	}
+
+	printk(BIOS_DEBUG, "Writing coreboot table at 0x%08lx\n",
+		rom_table_end);
 
 	head = lb_table_init(rom_table_end);
 	rom_table_end = (unsigned long)head;
 	printk(BIOS_DEBUG, "rom_table_end = 0x%08lx\n", rom_table_end);
-
-	printk(BIOS_DEBUG, "Adjust low_table_end from 0x%08lx to ", low_table_end);
-	low_table_end += 0xfff; // 4K aligned
-	low_table_end &= ~0xfff;
-	printk(BIOS_DEBUG, "0x%08lx \n", low_table_end);
-
-	/* The Linux kernel assumes this region is reserved */
-	printk(BIOS_DEBUG, "Adjust rom_table_end from 0x%08lx to ", rom_table_end);
-	rom_table_end += 0xffff; // 64K align
-	rom_table_end &= ~0xffff;
-	printk(BIOS_DEBUG, "0x%08lx \n", rom_table_end);
+	rom_table_end = ALIGN(rom_table_end, (64 * 1024));
+	printk(BIOS_DEBUG, "... aligned to 0x%08lx\n", rom_table_end);
 
 #if CONFIG_USE_OPTION_TABLE
 	{
@@ -664,12 +655,17 @@ unsigned long write_coreboot_table(
 		}
 	}
 #endif
+
+	/* The Linux kernel assumes this region is reserved */
 	/* Record where RAM is located */
 	mem = build_lb_mem(head);
 
-	/* Record the mptable and the the lb_table (This will be adjusted later) */
-	lb_add_memory_range(mem, LB_MEM_TABLE,
-		low_table_start, low_table_end - low_table_start);
+	if (low_table_start || low_table_end) {
+		/* Record the mptable and the the lb_table.
+		 * (This will be adjusted later)  */
+		lb_add_memory_range(mem, LB_MEM_TABLE,
+			low_table_start, low_table_end - low_table_start);
+	}
 
 	/* Record the pirq table, acpi tables, and maybe the mptable. However,
 	 * these only need to be added when the rom_table is sitting below
@@ -677,7 +673,7 @@ unsigned long write_coreboot_table(
 	 * The code below handles high tables correctly. */
 	if (rom_table_end <= (1 << 20))
 		lb_add_memory_range(mem, LB_MEM_TABLE,
-			rom_table_start, rom_table_end-rom_table_start);
+			rom_table_start, rom_table_end - rom_table_start);
 
 #if CONFIG_DYNAMIC_CBMEM
 	cbmem_add_lb_mem(mem);
@@ -726,5 +722,4 @@ unsigned long write_coreboot_table(
 
 	/* Remember where my valid memory ranges are */
 	return lb_table_fini(head, 1);
-
 }

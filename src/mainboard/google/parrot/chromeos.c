@@ -33,7 +33,6 @@
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
 
 #define GPIO_COUNT	6
 

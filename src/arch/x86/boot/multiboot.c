@@ -23,7 +23,6 @@
 #include <device/resource.h>
 #include <console/console.h>
 #include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
 
 struct multiboot_info *mbi = NULL;
 

@@ -30,7 +30,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-#include <arch/coreboot_tables.h>
+#include <boot/coreboot_tables.h>
 #include "hda_verb.h"
 #include "onboard.h"
 #include "ec.h"

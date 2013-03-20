@@ -34,7 +34,7 @@
 #define FLAG_DEV_MODE	2
 
 #ifndef __PRE_RAM__
-#include <arch/coreboot_tables.h>
+#include <boot/coreboot_tables.h>
 #include "ec.h"
 #include <ec/smsc/mec1308/ec.h>
 

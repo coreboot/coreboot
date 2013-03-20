@@ -23,10 +23,11 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
 #include <string.h>
 #include <cbmem.h>
 #include <lib.h>
+
+#define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
 /*
  * TODO: "High" tables are a convention used on x86. Maybe we can
@@ -41,12 +42,10 @@ void cbmem_arch_init(void)
 
 struct lb_memory *write_tables(void)
 {
-	unsigned long table_pointer;
+	unsigned long table_pointer, new_table_pointer;
 
 	if (!high_tables_base) {
-		printk(BIOS_ERR, "ERROR: coreboot_tables_base is not set.\n");
-		// Are there any boards without?
-		// Stepan thinks we should die() here!
+		printk(BIOS_ERR, "ERROR: high_tables_base is not set.\n");
 	}
 
 	printk(BIOS_DEBUG, "high_tables_base: %llx.\n", high_tables_base);
@@ -55,21 +54,25 @@ struct lb_memory *write_tables(void)
 
 	table_pointer = (unsigned long)cbmem_add(CBMEM_ID_CBTABLE,
 						MAX_COREBOOT_TABLE_SIZE);
-	if (table_pointer) {
-		unsigned long new_table_pointer;
-		new_table_pointer = write_coreboot_table(table_pointer,
-							high_tables_size);
-		if (table_pointer > (table_pointer + MAX_COREBOOT_TABLE_SIZE)) {
-			printk(BIOS_ERR, "%s: coreboot table didn't fit (%lx)\n",
-				   __func__, new_table_pointer - table_pointer);
-		}
-		printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
-			new_table_pointer - table_pointer);
+	if (!table_pointer) {
+		printk(BIOS_ERR, "Could not add CBMEM for coreboot table.\n");
+		return NULL;
 	}
+
+	new_table_pointer = write_coreboot_table(0UL, 0UL,
+				table_pointer, table_pointer);
+
+	if (new_table_pointer > (table_pointer + MAX_COREBOOT_TABLE_SIZE)) {
+		printk(BIOS_ERR, "coreboot table didn't fit (%lx/%x bytes)\n",
+			   new_table_pointer - table_pointer, MAX_COREBOOT_TABLE_SIZE);
+	}
+
+	printk(BIOS_DEBUG, "coreboot table: %ld bytes.\n",
+			new_table_pointer - table_pointer);
 
 	post_code(0x9e);
 
-	// Remove before sending upstream
+	/* Print CBMEM sections */
 	cbmem_list();
 
 	return get_lb_mem();

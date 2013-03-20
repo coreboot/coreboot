@@ -23,7 +23,6 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <boot/coreboot_tables.h>
-#include <arch/coreboot_tables.h>
 #include <arch/pirq_routing.h>
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
@@ -254,7 +253,7 @@ struct lb_memory *write_tables(void)
 	write_multiboot_info(rom_table_end);
 #endif
 
-	// Remove before sending upstream
+	/* Print CBMEM sections */
 	cbmem_list();
 
 	return get_lb_mem();

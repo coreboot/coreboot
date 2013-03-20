@@ -21,7 +21,7 @@
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 #include "vboot_handoff.h"
 #endif
-#include <arch/coreboot_tables.h>
+#include <boot/coreboot_tables.h>
 #include <cbmem.h>
 #include <console/console.h>
 

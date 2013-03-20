@@ -39,6 +39,12 @@
 #include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
 #include <arch/acpi.h>
+#if CONFIG_X86_AMD_FIXED_MTRRS
+#include <cpu/amd/mtrr.h>
+#define MTRR_FIXED_WRBACK_BITS (MTRR_READ_MEM | MTRR_WRITE_MEM)
+#else
+#define MTRR_FIXED_WRBACK_BITS 0
+#endif
 
 static unsigned int mtrr_msr[] = {
 	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
@@ -325,6 +331,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 {
 	unsigned int start_mtrr;
 	unsigned int last_mtrr;
+	const unsigned char type = MTRR_TYPE_WRBACK | MTRR_FIXED_WRBACK_BITS;
 	start_mtrr = fixed_mtrr_index(resk(res->base));
 	last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
 	if (start_mtrr >= NUM_FIXED_RANGES) {
@@ -332,7 +339,7 @@ static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resourc
 	}
 	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: WB\n",
 		start_mtrr, last_mtrr);
-	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK);
+	set_fixed_mtrrs(start_mtrr, last_mtrr, type);
 
 }
 
@@ -406,7 +413,7 @@ void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
 	state->range_sizek  = sizek;
 }
 
-void x86_setup_fixed_mtrrs(void)
+void x86_setup_fixed_mtrrs_no_enable(void)
 {
         /* Try this the simple way of incrementally adding together
          * mtrrs.  If this doesn't work out we can get smart again
@@ -425,12 +432,16 @@ void x86_setup_fixed_mtrrs(void)
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		set_fixed_mtrr_resource, NULL);
         printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
-
-        /* enable fixed MTRR */
-        printk(BIOS_SPEW, "call enable_fixed_mtrr()\n");
-        enable_fixed_mtrr();
-
 }
+
+void x86_setup_fixed_mtrrs(void)
+{
+	x86_setup_fixed_mtrrs_no_enable();
+
+	printk(BIOS_SPEW, "call enable_fixed_mtrr()\n");
+	enable_fixed_mtrr();
+}
+
 
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 /* this routine needs to know how many address bits a given processor
@@ -500,7 +511,6 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	post_code(0x6A);
 }
 
-
 void x86_setup_mtrrs(void)
 {
 	int address_size;
@@ -509,7 +519,6 @@ void x86_setup_mtrrs(void)
 	printk(BIOS_DEBUG, "CPU physical address size: %d bits\n", address_size);
 	x86_setup_var_mtrrs(address_size, 1);
 }
-
 
 int x86_mtrr_check(void)
 {

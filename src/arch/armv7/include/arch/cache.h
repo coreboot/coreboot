@@ -225,6 +225,9 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
 /* invalidate entire icache on current level (given by CSSELR) */
 void icache_invalidate_all(void);
 
+/* invalidate all caches on ARMv7 */
+void armv7_invalidate_caches(void);
+
 /* MMU setup by machine virtual address */
 void mmu_setup_by_mva(unsigned long start, unsigned long size);
 

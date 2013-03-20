@@ -28,58 +28,6 @@
 
 #include "stages.c"
 
-static void armv7_invalidate_caches(void)
-{
-	uint32_t clidr;
-	int level;
-
-	/* Invalidate branch predictor */
-	bpiall();
-
-	/* Iterate thru each cache identified in CLIDR and invalidate */
-	clidr = read_clidr();
-	for (level = 0; level < 7; level++) {
-		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
-		uint32_t csselr;
-
-		switch(ctype) {
-		case 0x0:
-			/* no cache */
-			break;
-		case 0x1:
-			/* icache only */
-			csselr = (level << 1) | 1;
-			write_csselr(csselr);
-			icache_invalidate_all();
-			break;
-		case 0x2:
-		case 0x4:
-			/* dcache only or unified cache */
-			dcache_invalidate_all();
-			break;
-		case 0x3:
-			/* separate icache and dcache */
-			csselr = (level << 1) | 1;
-			write_csselr(csselr);
-			icache_invalidate_all();
-
-			csselr = level < 1;
-			write_csselr(csselr);
-			dcache_invalidate_all();
-			break;
-		default:
-			/* reserved */
-			break;
-		}
-	}
-
-	/* Invalidate TLB */
-	/* FIXME: ARMv7 Architecture Ref. Manual claims that the distinction
-	 * instruction vs. data TLBs is deprecated in ARMv7. But that doesn't
-	 * really seem true for Cortex-A15? */
-	tlb_invalidate_all();
-}
-
 static int boot_cpu(void)
 {
 	/*

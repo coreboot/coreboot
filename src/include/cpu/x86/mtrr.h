@@ -53,6 +53,8 @@ void x86_setup_mtrrs(void);
 int x86_mtrr_check(void);
 void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res);
 void x86_setup_fixed_mtrrs(void);
+/* Set up fixed MTRRs but do not enable them. */
+void x86_setup_fixed_mtrrs_no_enable(void);
 #endif
 
 #if !defined(CONFIG_RAMTOP)

@@ -57,7 +57,7 @@ struct lb_memory *write_tables(void)
 						MAX_COREBOOT_TABLE_SIZE);
 	if (table_pointer) {
 		unsigned long new_table_pointer;
-		new_table_pointer = write_coreboot_table(table_pointer,
+		new_table_pointer = write_coreboot_table(0UL, 0UL, table_pointer,
 							high_tables_size);
 		if (table_pointer > (table_pointer + MAX_COREBOOT_TABLE_SIZE)) {
 			printk(BIOS_ERR, "%s: coreboot table didn't fit (%lx)\n",

@@ -547,13 +547,11 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem = lb_memory(head);
 	mem_ranges = mem;
 
-	/* FIXME: implement this */
 	/* Build the raw table of memory */
 	search_global_resources(
 		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
 		build_lb_mem_range, mem);
-	/* FIXME: things die in cleanup_memory_ranges(), skip for now */
-//	lb_cleanup_memory_ranges(mem);
+	lb_cleanup_memory_ranges(mem);
 	return mem;
 }
 

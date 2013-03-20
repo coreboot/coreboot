@@ -43,9 +43,6 @@
  */
 #define __asmeq(x, y)  ".ifnc " x "," y " ; .err ; .endif\n\t"
 
-/* FIXME: conflicts with new implementation in cache.c */
-//#define isb() __asm__ __volatile__ ("" : : : "memory")
-
 #define nop() __asm__ __volatile__("mov\tr0,r0\t@ nop\n\t");
 
 #define arch_align_stack(x) (x)

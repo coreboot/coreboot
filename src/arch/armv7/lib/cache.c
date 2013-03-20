@@ -170,6 +170,55 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
 		dccimvac(addr);
 }
 
+void armv7_invalidate_caches(void)
+{
+	uint32_t clidr;
+	int level;
+
+	/* Invalidate branch predictor */
+	bpiall();
+
+	/* Iterate thru each cache identified in CLIDR and invalidate */
+	clidr = read_clidr();
+	for (level = 0; level < 7; level++) {
+		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
+		uint32_t csselr;
+
+		switch(ctype) {
+		case 0x0:
+			/* no cache */
+			break;
+		case 0x1:
+			/* icache only */
+			csselr = (level << 1) | 1;
+			write_csselr(csselr);
+			icache_invalidate_all();
+			break;
+		case 0x2:
+		case 0x4:
+			/* dcache only or unified cache */
+			dcache_invalidate_all();
+			break;
+		case 0x3:
+			/* separate icache and dcache */
+			csselr = (level << 1) | 1;
+			write_csselr(csselr);
+			icache_invalidate_all();
+
+			csselr = level < 1;
+			write_csselr(csselr);
+			dcache_invalidate_all();
+			break;
+		default:
+			/* reserved */
+			break;
+		}
+	}
+
+	/* Invalidate TLB */
+	tlb_invalidate_all();
+}
+
 /* FIXME: wrapper around imported mmu_setup() for now */
 extern void mmu_setup(unsigned long start, unsigned long size);
 void mmu_setup_by_mva(unsigned long start, unsigned long size)

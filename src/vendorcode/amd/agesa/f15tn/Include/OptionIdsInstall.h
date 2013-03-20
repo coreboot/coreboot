@@ -82,7 +82,7 @@
 #if (IDSOPT_IDS_ENABLED == TRUE)
   #if (IDSOPT_CONTROL_ENABLED == TRUE)
     // Check for all families which include HT Features.
-    #if ((OPTION_FAMILY10H == TRUE) || (OPTION_FAMILY15H_OR == TRUE) || ) && (AGESA_ENTRY_INIT_POST == TRUE)
+    #if ((OPTION_FAMILY10H == TRUE) || (OPTION_FAMILY15H_OR == TRUE)) && (AGESA_ENTRY_INIT_POST == TRUE)
       #undef M_HTIDS_PORT_OVERRIDE_HOOK
       #define M_HTIDS_PORT_OVERRIDE_HOOK HtIdsGetPortOverride
     #endif

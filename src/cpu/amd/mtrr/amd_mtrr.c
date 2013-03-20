@@ -6,102 +6,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/msr.h>
 
-static unsigned long resk(uint64_t value)
-{
-	unsigned long resultk;
-	if (value < (1ULL << 42)) {
-		resultk = value >> 10;
-	}
-	else {
-		resultk = 0xffffffff;
-	}
-	return resultk;
-}
-
-static unsigned fixed_mtrr_index(unsigned long addrk)
-{
-	unsigned index;
-	index = (addrk - 0) >> 6;
-	if (index >= 8) {
-		index = ((addrk - 8*64) >> 4) + 8;
-	}
-	if (index >= 24) {
-		index = ((addrk - (8*64 + 16*16)) >> 2) + 24;
-	}
-	if (index > NUM_FIXED_RANGES) {
-		index = NUM_FIXED_RANGES;
-	}
-	return index;
-}
-
-static unsigned int mtrr_msr[] = {
-	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
-	MTRRfix4K_C0000_MSR, MTRRfix4K_C8000_MSR, MTRRfix4K_D0000_MSR, MTRRfix4K_D8000_MSR,
-	MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR, MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
-};
-
-static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char type)
-{
-	unsigned int i;
-	unsigned int fixed_msr = NUM_FIXED_RANGES >> 3;
-	msr_t msr;
-	msr.lo = msr.hi = 0; /* Shut up gcc */
-	for (i = first; i < last; i++) {
-		/* When I switch to a new msr read it in */
-		if (fixed_msr != i >> 3) {
-			/* But first write out the old msr */
-			if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
-				disable_cache();
-				wrmsr(mtrr_msr[fixed_msr], msr);
-				enable_cache();
-			}
-			fixed_msr = i>>3;
-			msr = rdmsr(mtrr_msr[fixed_msr]);
-		}
-		if ((i & 7) < 4) {
-			msr.lo &= ~(0xff << ((i&3)*8));
-			msr.lo |= type << ((i&3)*8);
-		} else {
-			msr.hi &= ~(0xff << ((i&3)*8));
-			msr.hi |= type << ((i&3)*8);
-		}
-	}
-	/* Write out the final msr */
-	if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
-		disable_cache();
-		wrmsr(mtrr_msr[fixed_msr], msr);
-		enable_cache();
-	}
-}
-
-struct mem_state {
-	unsigned long tomk, tom2k;
-};
-static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resource *res)
-{
-	struct mem_state *state = gp;
-	unsigned long topk;
-	unsigned int start_mtrr;
-	unsigned int last_mtrr;
-
-	topk = resk(res->base + res->size);
-	if (state->tom2k < topk) {
-		state->tom2k = topk;
-	}
-	if ((topk < 4*1024*1024) && (state->tomk < topk)) {
-		state->tomk = topk;
-	}
-	start_mtrr = fixed_mtrr_index(resk(res->base));
-	last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
-	if (start_mtrr >= NUM_FIXED_RANGES) {
-		return;
-	}
-	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: WB, RdMEM, WrMEM\n",
-		start_mtrr, last_mtrr);
-	set_fixed_mtrrs(start_mtrr, last_mtrr, MTRR_TYPE_WRBACK | MTRR_READ_MEM | MTRR_WRITE_MEM);
-
-}
-
 /* These will likely move to some device node or cbmem. */
 static uint64_t amd_topmem = 0;
 static uint64_t amd_topmem2 = 0;
@@ -162,7 +66,6 @@ static void setup_ap_ramtop(void)
 void amd_setup_mtrrs(void)
 {
 	unsigned long address_bits;
-	struct mem_state state;
 	unsigned long i;
 	msr_t msr, sys_cfg;
 	// Test if this CPU is a Fam 0Fh rev. F or later
@@ -182,18 +85,8 @@ void amd_setup_mtrrs(void)
 	wrmsr(SYSCFG_MSR, sys_cfg);
 	enable_cache();
 
-	printk(BIOS_DEBUG, "\n");
-	/* Initialized the fixed_mtrrs to uncached */
-	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) type: UC\n",
-		0, NUM_FIXED_RANGES);
-	set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
-
-	state.tomk = state.tom2k = 0;
-	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
-		set_fixed_mtrr_resource, &state);
-
-	printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
+	/* Setup fixed MTRRs, but do not enable them just yet. */
+	x86_setup_fixed_mtrrs_no_enable();
 
 	disable_cache();
 

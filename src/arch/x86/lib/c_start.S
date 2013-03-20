@@ -29,17 +29,6 @@ _start:
 
 	cld
 
-	/** clear bss, which unlike the stack is zero by definition */
-	leal	_bss, %edi
-	movl	$_ebss, %ecx
-	subl	%edi, %ecx
-	jz	.Lnobss
-	shrl	$2, %ecx  /* it is 32 bit aligned, right? */
-	xorl	%eax, %eax
-	rep
-	stosl
-.Lnobss:
-
 	/** poison the stack. Code should not count on the
 	 * stack being full of zeros. This stack poisoning
 	 * recently uncovered a bug in the broadcast SIPI

@@ -22,6 +22,7 @@
 #include "BiosCallOuts.h"
 #include "heapManager.h"
 #include "SB800.h"
+#include <northbridge/amd/agesa/family14/dimmSpd.h>
 
 CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -421,7 +422,11 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
   AGESA_STATUS Status;
-  Status = AmdMemoryReadSPD (Func, Data, ConfigPtr);
+#ifdef __PRE_RAM__
+  Status = agesa_ReadSPD (Func, Data, ConfigPtr);
+#else
+  Status = AGESA_UNSUPPORTED;
+#endif
 
   return Status;
 }

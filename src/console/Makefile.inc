@@ -28,3 +28,4 @@ ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 
 $(obj)/console/console.ramstage.o : $(obj)/build.h
 $(obj)/console/console.romstage.o : $(obj)/build.h
+$(obj)/console/console.bootblock.o : $(obj)/build.h

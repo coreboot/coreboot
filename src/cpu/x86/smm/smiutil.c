@@ -20,7 +20,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>

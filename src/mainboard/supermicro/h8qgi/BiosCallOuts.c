@@ -25,7 +25,6 @@
 #include "heapManager.h"
 #include <northbridge/amd/agesa/family15/dimmSpd.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 
 #ifdef __PRE_RAM__
 /* These defines are used to select the appropriate socket for the SPD read

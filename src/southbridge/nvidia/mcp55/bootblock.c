@@ -23,7 +23,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include "mcp55.h"
 
 static void mcp55_enable_rom(void)

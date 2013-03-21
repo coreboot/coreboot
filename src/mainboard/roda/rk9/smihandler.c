@@ -18,7 +18,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <southbridge/intel/i82801ix/nvs.h>

@@ -20,7 +20,7 @@
 
 /* Pre-RAM driver for the Fintek F81865F/FG Super I/O chip. */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "f81865f.h"
 
 static void pnp_enter_conf_state(device_t dev)

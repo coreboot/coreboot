@@ -18,7 +18,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <cpu/x86/tsc.h>
 #include "pch.h"
 

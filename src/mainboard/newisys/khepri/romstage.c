@@ -9,7 +9,6 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <lib.h>

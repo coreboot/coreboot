@@ -17,10 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-
+#ifndef __PRE_RAM__
+#define __PRE_RAM__ // Use simple device model for this file even in ramstage
+#endif
+#include <arch/io.h>
 #include <reset.h>
-#include <arch/io.h>		/*inb, outb*/
-#include <arch/romcc_io.h>	/*pci_read_config32, device_t, PCI_DEV*/
 
 #define HT_INIT_CONTROL		0x6C
 #define HTIC_BIOSR_Detect	(1<<5)

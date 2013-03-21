@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "w83627ehg.h"
 
 static void pnp_enter_ext_func_mode(device_t dev)

@@ -38,7 +38,6 @@ SMC8416 PIO support added by Andrew Bettison (andrewb@zip.com.au) on 4/3/02
 #include <ip_checksum.h>
 #include <console/ne2k.h>
 #include <arch/io.h>
-//#include <arch/romcc_io.h>
 
 #define MEM_SIZE MEM_32768
 #define TX_START 64
@@ -342,8 +341,6 @@ void ne2k_transmit(unsigned int eth_nic_base) {
 }
 
 #ifdef __PRE_RAM__
-
-#include <arch/romcc_io.h>
 
 static void ns8390_reset(unsigned int eth_nic_base)
 {

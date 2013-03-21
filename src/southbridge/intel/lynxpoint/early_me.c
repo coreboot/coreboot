@@ -21,7 +21,6 @@
 
 #include <arch/hlt.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <console/console.h>
 #include <delay.h>
 #include <device/pci_ids.h>

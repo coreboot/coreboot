@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include "i945.h"
 #include "pcie_config.c"

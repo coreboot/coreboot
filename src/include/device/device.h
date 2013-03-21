@@ -1,6 +1,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+#ifndef __SMM__
 #include <stdint.h>
 #include <stddef.h>
 #include <device/resource.h>
@@ -222,4 +223,7 @@ ROMSTAGE_CONST struct device * dev_find_slot (unsigned int bus,
 ROMSTAGE_CONST struct device * dev_find_slot_on_smbus (unsigned int bus,
 							unsigned int addr);
 #endif
+#else /* __SMM__ */
+#include <arch/io.h>
+#endif /* __SMM__ */
 #endif /* DEVICE_H */

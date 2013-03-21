@@ -24,7 +24,6 @@
 
 #include <types.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 
 #define I5000_MAX_BRANCH 2
 #define I5000_MAX_CHANNEL 2

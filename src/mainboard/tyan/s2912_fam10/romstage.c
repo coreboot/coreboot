@@ -28,7 +28,6 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include <device/pnp_def.h>
-#include <arch/romcc_io.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <lib.h>

@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include "sr5650.h"

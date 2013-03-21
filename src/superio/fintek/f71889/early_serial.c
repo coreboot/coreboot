@@ -19,7 +19,7 @@
  */
 
 #include <stdint.h>
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "f71889.h"
 
 static void pnp_enter_conf_state(device_t dev)

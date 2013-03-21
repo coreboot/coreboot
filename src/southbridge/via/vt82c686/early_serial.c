@@ -22,7 +22,7 @@
 /* This has been ported to the VIA VT82C686(A/B) from the SMSC FDC37M60x
  * by Corey Osgood. See vt82c686.h for more information. */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include <device/pci_ids.h>
 #include "vt82c686.h"
 

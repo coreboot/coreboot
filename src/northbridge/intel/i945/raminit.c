@@ -23,7 +23,7 @@
 #include <pc80/mc146818rtc.h>
 #include <spd.h>
 #include <string.h>
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "raminit.h"
 #include "i945.h"
 #include <cbmem.h>

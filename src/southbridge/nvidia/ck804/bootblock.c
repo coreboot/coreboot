@@ -19,7 +19,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE < CONFIG_HT_CHAIN_UNITID_BASE
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_END_UNITID_BASE

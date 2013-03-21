@@ -67,7 +67,7 @@
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
 #include <stdlib.h>
-#include "arch/romcc_io.h"
+#include <arch/io.h>
 #include <pc80/mc146818rtc.h>
 #if CONFIG_HAVE_OPTION_TABLE
 #include "option_table.h"

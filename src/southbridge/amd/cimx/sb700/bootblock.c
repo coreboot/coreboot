@@ -19,8 +19,6 @@
 
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
-
 
 #if CONFIG_CONSOLE_POST
 

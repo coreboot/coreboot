@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "pc87417.h"
 
 static void pc87417_disable_dev(device_t dev)

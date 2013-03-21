@@ -19,7 +19,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <console/post_codes.h>
 #include <northbridge/intel/sandybridge/pcie_config.c>
 #include "pch.h"

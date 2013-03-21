@@ -20,7 +20,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <console/console.h>

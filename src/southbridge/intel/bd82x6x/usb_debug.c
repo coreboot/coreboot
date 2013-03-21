@@ -25,7 +25,6 @@
 #include "pch.h"
 
 #ifdef __PRE_RAM__
-#include <arch/romcc_io.h>
 void enable_usbdebug(unsigned int port)
 {
 	u32 dbgctl;

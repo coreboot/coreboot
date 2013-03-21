@@ -141,7 +141,7 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define X86_VENDOR_UNKNOWN 0xff
 
 #if !defined(__ROMCC__)
-#if !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
 
 int cpu_phys_address_size(void);
@@ -162,7 +162,6 @@ struct device;
 struct cpu_driver *find_cpu_driver(struct device *cpu);
 #else
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #endif
 
 struct cpu_info {

@@ -19,7 +19,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include "i82801ix.h"
 
 void i82801ix_early_init(void)

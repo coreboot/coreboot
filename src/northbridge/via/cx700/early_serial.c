@@ -21,7 +21,7 @@
  * Enable the serial devices on the VIA CX700
  */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 
 static void cx700_writepnpaddr(u8 val)
 {

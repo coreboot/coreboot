@@ -18,7 +18,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pci_ids.h>
 
 static void bootblock_southbridge_init(void)

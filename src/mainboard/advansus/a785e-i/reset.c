@@ -17,9 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <reset.h>
+#ifndef __PRE_RAM__
+#define __PRE_RAM__ // Use simple device model for this file even in ramstage
+#endif
 #include <arch/io.h>
-#include <arch/romcc_io.h>
+#include <reset.h>
 
 #define HT_INIT_CONTROL		0x6C
 #define HTIC_BIOSR_Detect	(1<<5)

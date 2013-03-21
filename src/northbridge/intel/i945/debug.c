@@ -22,7 +22,6 @@
 #include <spd.h>
 #include <lib.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <console/console.h>
 #include "i945.h"

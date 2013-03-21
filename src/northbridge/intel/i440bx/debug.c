@@ -1,6 +1,5 @@
 #include <console/console.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <spd.h>
 #include "raminit.h"
 #include <spd.h>

@@ -20,7 +20,7 @@
 
 /* Pre-RAM driver for SMSC LPC47N227 Super I/O chip. */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "lpc47n227.h"
 
 static void pnp_enter_conf_state(device_t dev)

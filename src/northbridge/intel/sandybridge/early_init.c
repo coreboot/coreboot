@@ -22,7 +22,6 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <elog.h>
 #include "sandybridge.h"

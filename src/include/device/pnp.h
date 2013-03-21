@@ -5,6 +5,7 @@
 #include <device/device.h>
 #include <device/pnp_def.h>
 
+#if !defined(__PRE_RAM__) && !defined(__SMM__)
 /* Primitive PNP resource manipulation */
 void pnp_write_config(device_t dev, u8 reg, u8 value);
 u8 pnp_read_config(device_t dev, u8 reg);
@@ -50,4 +51,5 @@ struct resource *pnp_get_resource(device_t dev, unsigned index);
 void pnp_enable_devices(struct device *dev, struct device_operations *ops,
 			unsigned int functions, struct pnp_info *info);
 
+#endif
 #endif /* DEVICE_PNP_H */

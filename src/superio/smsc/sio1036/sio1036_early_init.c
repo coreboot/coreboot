@@ -19,7 +19,7 @@
 
 /* Pre-RAM driver for the SMSC KBC1100 Super I/O chip */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "sio1036.h"
 
 #ifndef CONFIG_TTYS0_BASE

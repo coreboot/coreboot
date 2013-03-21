@@ -17,18 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-
-//#include <config.h>
+#ifndef __PRE_RAM__
+#define __PRE_RAM__ // Use simple device model for this file even in ramstage
+#endif
 #include <stdint.h>
 #include <device/pci_ids.h>
-#include <arch/io.h>		/* inl, outl */
-#include <arch/romcc_io.h>	/* device_t */
+#include <arch/io.h>
 #include "SbPlatform.h"
 #include "SbEarly.h"
 #include <console/console.h>
 #include <console/loglevel.h>
 #include "smbus.h"
-
 
 /**
  * @brief Get SouthBridge device number
@@ -39,13 +38,13 @@ u32 get_sbdn(u32 bus)
 {
 	device_t dev;
 
-    printk(BIOS_INFO, "SB900 - Early.c - get_sbdn - Start.\n");
-	//dev = PCI_DEV(bus, 0x14, 0);
-	dev = pci_locate_device_on_bus(
-			PCI_ID(PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_ATI_SB900_SM),
-			bus);
+	printk(BIOS_SPEW, "SB900 - Early.c - get_sbdn - Start.\n");
 
-    printk(BIOS_INFO, "SB900 - Early.c - get_sbdn - End.\n");
+	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_AMD,
+				PCI_DEVICE_ID_ATI_SB900_SM), bus);
+
+	printk(BIOS_SPEW, "SB900 - Early.c - get_sbdn - End.\n");
+
 	return (dev >> 15) & 0x1f;
 }
 
@@ -59,7 +58,7 @@ void sb_poweron_init(void)
 	AMDSBCFG sb_early_cfg;
 	u8 data;
 
-    printk(BIOS_INFO, "SB900 - Early.c - sb_poweron_init - Start.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_poweron_init - Start.\n");
 
 	//Enable/Disable PCI Bridge Device 14 Function 4.
 	outb(0xEA, 0xCD6);
@@ -77,7 +76,7 @@ void sb_poweron_init(void)
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
 	// VerifyImage() will fail, LocateImage() take minitues to find the image.
 	sbPowerOnInit(&sb_early_cfg);
-    printk(BIOS_INFO, "SB900 - Early.c - sb_poweron_init - End.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_poweron_init - End.\n");
 }
 
 /**
@@ -88,7 +87,7 @@ void sb_before_pci_init(void)
 {
 	AMDSBCFG sb_early_cfg;
 
-    printk(BIOS_INFO, "SB900 - Early.c - sb_before_pci_init - Start.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_before_pci_init - Start.\n");
 	sb900_cimx_config(&sb_early_cfg);
 	//sb_early_cfg.StdHeader.Func = SB_POWERON_INIT;
 	//AmdSbDispatcher(&sb_early_cfg);
@@ -96,14 +95,14 @@ void sb_before_pci_init(void)
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
 	// VerifyImage() will fail, LocateImage() take minitues to find the image.
 	sbBeforePciInit(&sb_early_cfg);
-    printk(BIOS_INFO, "SB900 - Early.c - sb_before_pci_init - End.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_before_pci_init - End.\n");
 }
 
 void sb_After_Pci_Init(void)
 {
 	AMDSBCFG sb_early_cfg;
 
-    printk(BIOS_INFO, "SB900 - Early.c - sb_After_Pci_Init - Start.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_After_Pci_Init - Start.\n");
 	sb900_cimx_config(&sb_early_cfg);
 	//sb_early_cfg.StdHeader.Func = SB_POWERON_INIT;
 	//AmdSbDispatcher(&sb_early_cfg);
@@ -111,14 +110,14 @@ void sb_After_Pci_Init(void)
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
 	// VerifyImage() will fail, LocateImage() take minitues to find the image.
 	sbAfterPciInit(&sb_early_cfg);
-    printk(BIOS_INFO, "SB900 - Early.c - sb_After_Pci_Init - End.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_After_Pci_Init - End.\n");
 }
 
 void sb_Mid_Post_Init(void)
 {
 	AMDSBCFG sb_early_cfg;
 
-    printk(BIOS_INFO, "SB900 - Early.c - sb_Mid_Post_Init - Start.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_Mid_Post_Init - Start.\n");
 	sb900_cimx_config(&sb_early_cfg);
 	//sb_early_cfg.StdHeader.Func = SB_POWERON_INIT;
 	//AmdSbDispatcher(&sb_early_cfg);
@@ -126,7 +125,7 @@ void sb_Mid_Post_Init(void)
 	//AMD_IMAGE_HEADER was missing, when using AmdSbDispatcher,
 	// VerifyImage() will fail, LocateImage() take minitues to find the image.
 	sbMidPostInit(&sb_early_cfg);
-    printk(BIOS_INFO, "SB900 - Early.c - sb_Mid_Post_Init - End.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_Mid_Post_Init - End.\n");
 }
 
 void sb_Late_Post(void)
@@ -134,7 +133,7 @@ void sb_Late_Post(void)
 	AMDSBCFG sb_early_cfg;
 	u8 data;
 
-    printk(BIOS_INFO, "SB900 - Early.c - sb_Late_Post - Start.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_Late_Post - Start.\n");
 	sb900_cimx_config(&sb_early_cfg);
 	//sb_early_cfg.StdHeader.Func = SB_POWERON_INIT;
 	//AmdSbDispatcher(&sb_early_cfg);
@@ -160,7 +159,5 @@ void sb_Late_Post(void)
 		outb(data, 0x4D0);
 	}
 
-    printk(BIOS_INFO, "SB900 - Early.c - sb_Late_Post - End.\n");
+	printk(BIOS_SPEW, "SB900 - Early.c - sb_Late_Post - End.\n");
 }
-
-

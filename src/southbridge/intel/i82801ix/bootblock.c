@@ -18,7 +18,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 
 static void enable_spi_prefetch(void)
 {

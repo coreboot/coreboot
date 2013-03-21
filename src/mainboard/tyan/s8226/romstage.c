@@ -21,7 +21,6 @@
 #include <reset.h>
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <arch/stages.h>

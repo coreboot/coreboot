@@ -20,7 +20,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pci_ids.h>
 
 /* Enable 4MB ROM access at 0xFFC00000 - 0xFFFFFFFF. */

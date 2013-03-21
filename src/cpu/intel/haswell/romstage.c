@@ -30,7 +30,6 @@
 #include <timestamp.h>
 #include <arch/io.h>
 #include <arch/stages.h>
-#include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <cpu/x86/lapic.h>
 #include <cbmem.h>

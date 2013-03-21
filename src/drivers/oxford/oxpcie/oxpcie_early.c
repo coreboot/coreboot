@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <cpu/x86/car.h>
 #include <delay.h>
 #include <uart8250.h>

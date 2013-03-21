@@ -21,13 +21,8 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <arch/io.h>
-
-#ifdef __PRE_RAM__
-#include <arch/romcc_io.h>
-#else
 #include <device/device.h>
 #include <device/pci.h>
-#endif
 
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <ec/compal/ene932/ec.h>

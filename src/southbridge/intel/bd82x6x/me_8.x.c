@@ -38,7 +38,6 @@
 #include <elog.h>
 
 #ifdef __SMM__
-# include <arch/romcc_io.h>
 # include <northbridge/intel/sandybridge/pcie_config.c>
 #else
 # include <device/device.h>

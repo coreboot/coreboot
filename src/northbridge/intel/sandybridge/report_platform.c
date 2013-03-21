@@ -22,7 +22,6 @@
 #include <string.h>
 #include "southbridge/intel/bd82x6x/pch.h"
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include "sandybridge.h"
 
 static void report_cpu_info(void)

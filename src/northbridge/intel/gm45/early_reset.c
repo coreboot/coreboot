@@ -21,7 +21,6 @@
 
 #include <types.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include "gm45.h"
 
 void gm45_early_reset(void/*const timings_t *const timings*/)

@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "w83697hf.h"
 
 static void pnp_enter_ext_func_mode(device_t dev)

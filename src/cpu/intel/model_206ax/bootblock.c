@@ -23,7 +23,6 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 
 #include <cpu/intel/microcode/microcode.c>
 #include "model_206ax.h"

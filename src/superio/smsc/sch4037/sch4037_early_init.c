@@ -18,7 +18,7 @@
  */
 
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "sch4037.h"
 
 static inline void pnp_enter_conf_state(device_t dev)

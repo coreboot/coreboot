@@ -22,10 +22,10 @@
 #ifndef __PRE_RAM__
 
 #include <console/console.h>
+#include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <stdlib.h>
-#include <arch/io.h>
 #include <delay.h>
 #include <elog.h>
 #include "ec.h"

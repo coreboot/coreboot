@@ -20,12 +20,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
-#ifdef __PRE_RAM__
-#include <arch/romcc_io.h>
-#else
 #include <device/device.h>
 #include <device/pci.h>
-#endif
 
 #include "pch.h"
 #include "lp_gpio.h"

@@ -20,7 +20,7 @@
 /*
  * Enable the serial devices on the VIA
  */
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 
 /* The base address is 0x15c, 0x2e, depending on config bytes */
 

@@ -24,7 +24,7 @@
 #include <stdint.h>
 #ifndef __ROMCC__ /* romcc doesn't support prototypes. */
 
-#ifndef __PRE_RAM__ /* Conflicts with romcc_io.h */
+#ifndef __PRE_RAM__ /* Conflicts with inline function in arch/io.h */
 /* Defined in src/lib/clog2.c */
 unsigned long log2(unsigned long x);
 #endif

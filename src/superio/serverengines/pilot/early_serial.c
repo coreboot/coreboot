@@ -21,7 +21,7 @@
 
 /* PILOT Super I/O is only based on LPC observation done on factory system. */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "pilot.h"
 
 /* Pilot uses 0x5A/0xA5 pattern to actiavte deactivate config access. */

@@ -22,9 +22,7 @@
 #include <string.h>
 #include "southbridge/intel/lynxpoint/pch.h"
 #include <arch/io.h>
-#include <arch/io.h>
 #include <cpu/x86/msr.h>
-#include <arch/romcc_io.h>
 #include "haswell.h"
 
 static void report_cpu_info(void)

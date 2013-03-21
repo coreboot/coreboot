@@ -22,7 +22,7 @@
 #define NORTHBRIDGE_VIA_VX800_PCI_RAWOPS_H
 
 #include <stdint.h>
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 
 struct VIA_PCI_REG_INIT_TABLE {
 	u8 ChipRevisionStart;

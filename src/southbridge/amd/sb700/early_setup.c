@@ -23,7 +23,6 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 
@@ -32,7 +31,6 @@
 #include <cbmem.h>
 #include "sb700.h"
 #include "smbus.h"
-
 
 static void pmio_write(u8 reg, u8 value)
 {

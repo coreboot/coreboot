@@ -19,7 +19,6 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include "gm45.h"
 
 void gm45_early_init(void)

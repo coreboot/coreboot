@@ -17,18 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-
-//#include <config.h>
 #include <stdint.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>		/* inl, outl */
-#include <arch/romcc_io.h>	/* device_t */
 #include <arch/acpi.h>
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"
 #include "cfg.h"		/*sb800_cimx_config*/
 #include "cbmem.h"
-
 
 #if CONFIG_RAMINIT_SYSINFO
 /**

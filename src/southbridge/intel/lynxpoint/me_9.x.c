@@ -31,18 +31,13 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
+#include <device/device.h>
+#include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <string.h>
 #include <delay.h>
 #include <elog.h>
-
-#ifdef __SMM__
-# include <arch/romcc_io.h>
-#else
-# include <device/device.h>
-# include <device/pci.h>
-#endif
 
 #include "me.h"
 #include "pch.h"

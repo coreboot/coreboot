@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "pc87417.h"
 
 void pc87417_enable_serial(device_t dev, u16 iobase)

@@ -23,7 +23,6 @@
 #include <stddef.h>
 #include <string.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <spd.h>

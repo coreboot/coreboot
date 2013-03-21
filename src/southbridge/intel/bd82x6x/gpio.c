@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 
 #include "pch.h"
 #include "gpio.h"

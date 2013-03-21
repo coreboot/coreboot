@@ -1,4 +1,4 @@
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 
 static void mch_reset(void)
 {

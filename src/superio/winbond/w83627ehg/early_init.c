@@ -20,7 +20,7 @@
  */
 
 #include <stdint.h>
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "w83627ehg.h"
 
 void w83627ehg_disable_dev(device_t dev)

@@ -20,7 +20,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <device/pnp_def.h>
 #include <stdint.h>
 #include "w83627dhg.h"

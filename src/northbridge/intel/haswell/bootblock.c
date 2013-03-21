@@ -1,5 +1,4 @@
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 
 /* Just re-define this instead of including haswell.h. It blows up romcc. */
 #define PCIEXBAR	0x60

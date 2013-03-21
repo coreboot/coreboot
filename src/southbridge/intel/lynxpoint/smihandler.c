@@ -23,7 +23,6 @@
 #include <types.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <console/console.h>
 #include <cpu/x86/cache.h>
 #include <device/pci_def.h>

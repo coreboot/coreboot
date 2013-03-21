@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "it8661f.h"
 
 /* Perform MB PnP setup to put the SIO chip at 0x3f0. */

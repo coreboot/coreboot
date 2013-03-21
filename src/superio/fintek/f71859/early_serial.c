@@ -20,7 +20,7 @@
 
 /* Pre-RAM driver for the Fintek F71859 Super I/O chip. */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "f71859.h"
 
 static void pnp_enter_conf_state(device_t dev)

@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/romcc_io.h>
+#include <arch/io.h>
 #include "it8721f.h"
 
 /* The base address is 0x2e or 0x4e, depending on config bytes. */

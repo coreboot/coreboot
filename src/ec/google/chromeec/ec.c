@@ -21,12 +21,9 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>
-
-#ifdef __PRE_RAM__
-#include <arch/romcc_io.h>
-#else
 #include <device/device.h>
 #include <device/pnp.h>
+#ifndef __PRE_RAM__
 #include <elog.h>
 #include <stdlib.h>
 #include <string.h>

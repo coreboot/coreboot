@@ -19,7 +19,6 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
 #include <stdlib.h>
 #include "pcie_config.c"
 #include "sandybridge.h"

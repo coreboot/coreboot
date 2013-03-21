@@ -21,8 +21,7 @@
 #define  _HUDSON_EARLY_SETUP_C_
 
 #include <stdint.h>
-#include <arch/io.h>		/* inl, outl */
-#include <arch/romcc_io.h>	/* device_t */
+#include <arch/io.h>
 #include <arch/acpi.h>
 #include <console/console.h>
 #include <reset.h>

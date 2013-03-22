@@ -32,6 +32,9 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/smm.h>
 #include <elog.h>
+#include <cbmem.h>
+#include <string.h>
+#include "nvs.h"
 #include "pch.h"
 
 #define NMI_OFF	0
@@ -699,6 +702,8 @@ static void pch_lpc_add_io_resources(device_t dev)
 
 static void pch_lpc_read_resources(device_t dev)
 {
+	global_nvs_t *gnvs;
+
 	/* Get the normal PCI resources of this device. */
 	pci_dev_read_resources(dev);
 
@@ -707,6 +712,11 @@ static void pch_lpc_read_resources(device_t dev)
 
 	/* Add IO resources. */
 	pch_lpc_add_io_resources(dev);
+
+	/* Allocate ACPI NVS in CBMEM */
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
+	if (gnvs)
+		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 
 static void pch_lpc_enable_resources(device_t dev)

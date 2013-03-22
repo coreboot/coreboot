@@ -70,7 +70,6 @@ static void acpi_update_thermal_table(global_nvs_t *gnvs)
 
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	memset((void *)gnvs, 0, sizeof(*gnvs));
 	gnvs->apic = 1;
 	gnvs->mpen = 1; /* Enable Multi Processing */
 	gnvs->pcnt = dev_count_cpu();
@@ -162,6 +161,7 @@ unsigned long write_acpi_tables(unsigned long start)
 #endif
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
+	global_nvs_t *gnvs;
 
 	current = start;
 
@@ -237,22 +237,28 @@ unsigned long write_acpi_tables(unsigned long start)
 	ALIGN_CURRENT;
 	acpi_add_table(rsdp, mcfg);
 
-	/* Pack GNVS into the ACPI table area */
+	/* Update GNVS pointer into CBMEM */
+	gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		printk(BIOS_DEBUG, "ACPI: Could not find CBMEM GNVS\n");
+		gnvs = (global_nvs_t *)current;
+	}
+
 	for (i=0; i < dsdt->length; i++) {
 		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
 			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in "
-			     "DSDT at offset 0x%04x -> 0x%08lx\n", i, current);
-			*(u32*)(((u32)dsdt) + i) = current; // 0x92 bytes
-			acpi_save_gnvs(current);
+			       "DSDT at offset 0x%04x -> %p\n", i, gnvs);
+			*(u32*)(((u32)dsdt) + i) = (unsigned long)gnvs;
+			acpi_save_gnvs((unsigned long)gnvs);
 			break;
 		}
 	}
 
 	/* And fill it */
-	acpi_create_gnvs((global_nvs_t *)current);
+	acpi_create_gnvs(gnvs);
 
 	/* And tell SMI about it */
-	smm_setup_structures((void *)current, NULL, NULL);
+	smm_setup_structures(gnvs, NULL, NULL);
 
 	current += sizeof(global_nvs_t);
 	ALIGN_CURRENT;

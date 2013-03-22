@@ -630,7 +630,7 @@ void suspend_resume(void)
 	wake_vec = acpi_find_wakeup_vector();
 	if (wake_vec) {
 #if CONFIG_HAVE_SMI_HANDLER
-		u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS);
+		u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS_PTR);
 
 		/* Restore GNVS pointer in SMM if found */
 		if (gnvs_address && *gnvs_address) {
@@ -794,7 +794,7 @@ void acpi_jump_to_wakeup(void *vector)
 
 void acpi_save_gnvs(u32 gnvs_address)
 {
-	u32 *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(*gnvs));
+	u32 *gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS_PTR, sizeof(*gnvs));
 	if (gnvs)
 		*gnvs = gnvs_address;
 }

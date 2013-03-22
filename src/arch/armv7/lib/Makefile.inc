@@ -3,12 +3,8 @@
 bootblock-y += syslib.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += early_console.c
 bootblock-y += cache.c
-bootblock-y += cache_v7.c
-bootblock-y += cache-cp15.c
 
 romstage-y += cache.c
-romstage-y += cache_v7.c
-romstage-y += cache-cp15.c
 romstage-y += div0.c
 romstage-y += syslib.c
 romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
@@ -19,8 +15,7 @@ ramstage-y += div0.c
 #ramstage-y += memset.S
 ramstage-y += syslib.c
 ramstage-y += cache.c
-ramstage-y += cache_v7.c
-ramstage-y += cache-cp15.c
+ramstage-y += mmu.c
 
 #FIXME(dhendrix): should this be a config option?
 romstage-y += eabi_compat.c

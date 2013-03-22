@@ -32,6 +32,7 @@ ramstage-y += sata.c
 ramstage-y += usb_ehci.c
 ramstage-y += me_9.x.c
 ramstage-y += smbus.c
+ramstage-$(CONFIG_INTEL_LYNXPOINT_LP) += serialio.c
 
 ramstage-y += rcba.c
 ramstage-y += me_status.c

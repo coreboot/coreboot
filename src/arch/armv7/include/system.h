@@ -64,6 +64,7 @@ static inline void set_cr(unsigned int val)
 }
 
 /* options available for data cache on each page */
+#if 0
 enum dcache_option {
 	DCACHE_OFF,
 	DCACHE_WRITETHROUGH,
@@ -99,6 +100,7 @@ void mmu_setup(unsigned long start, unsigned long size);
 void v7_inval_tlb(void);
 
 void arm_init_before_mmu(void);
+#endif
 
  /*
   * FIXME: sdelay originally came from arch/arm/cpu/armv7/exynos5/setup.h in

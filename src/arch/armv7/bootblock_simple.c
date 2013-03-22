@@ -53,7 +53,9 @@ void main(void)
 	armv7_invalidate_caches();
 
 	/*
-	 * Re-enable caches and branch prediction. MMU will be set up later.
+	 * Re-enable icache and branch prediction. MMU and dcache will be
+	 * set up later.
+	 *
 	 * Note: If booting from USB, we need to disable branch prediction
 	 * before copying from USB into RAM (FIXME: why?)
 	 */

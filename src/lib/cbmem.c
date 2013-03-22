@@ -114,6 +114,19 @@ int cbmem_reinit(u64 baseaddr)
 	bss_cbmem_toc = cbmem_toc;
 #endif
 
+	printk(BIOS_DEBUG, "%s: checkpoint 2\n", __func__);
+	printk(BIOS_DEBUG, "%s: cbmem_toc: %p\n", __func__, cbmem_toc);
+#if 0
+	printk(BIOS_DEBUG, "%s: cbmem_toc[0].magic: 0x%02x%02x%02x%02x, CBMEM_MAGIC: 0x%08x\n",
+			__func__,
+			*((uint8_t *)&cbmem_toc[0] + 0),
+			*((uint8_t *)&cbmem_toc[0] + 1),
+			*((uint8_t *)&cbmem_toc[0] + 2),
+			*((uint8_t *)&cbmem_toc[0] + 3),
+			CBMEM_MAGIC);
+#endif
+	printk(BIOS_DEBUG, "%s: cbmem_toc[0].magic: 0x%08x, CBMEM_MAGIC: 0x%08x\n",
+			__func__, (uint32_t)(cbmem_toc[0].magic), CBMEM_MAGIC);
 	return (cbmem_toc[0].magic == CBMEM_MAGIC);
 }
 

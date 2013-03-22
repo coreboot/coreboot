@@ -113,9 +113,6 @@ void main(void)
 		while(1);
 	}
 
-	/* Set up MMU and caches */
-	mmu_setup_by_mva(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
-
 	initialize_s5p_mshc();
 
 	graphics();

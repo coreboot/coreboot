@@ -83,37 +83,14 @@ typedef struct {
 	u16	sste; /* 0x44 - set display state */
 	u8	ndid; /* 0x46 - number of device ids */
 	u32	did[5]; /* 0x47 - 5b device id 1..5 */
-	u8	rsvd5[0x9];
-	/* Backlight Control */
-	u8	blcs; /* 0x64 - Backlight Control possible */
-	u8	brtl;
-	u8	odds;
-	u8	rsvd6[0x7];
-	/* Ambient Light Sensors*/
-	u8	alse; /* 0x6e - ALS enable */
-	u8	alaf;
-	u8	llow;
-	u8	lhih;
-	u8	rsvd7[0x6];
-	/* Extended Mobile Access */
-	u8	emae; /* 0x78 - EMA enable */
-	u16	emap; /* 0x79 - EMA pointer */
-	u16	emal; /* 0x7a - EMA Length */
-	u8	rsvd8[0x5];
-	/* MEF */
-	u8	mefe; /* 0x82 - MEF enable */
-	u8	rsvd9[0x9];
 	/* TPM support */
-	u8	tpmp; /* 0x8c - TPM */
-	u8	tpme;
-	u8	rsvd10[8];
-	/* SATA */
-	u8	gtf0[7]; /* 0x96 - GTF task file buffer for port 0 */
-	u8	gtf1[7];
-	u8	gtf2[7];
-	u8	idem;
-	u8	idet;
-	u8	rsvd11[7];
+	u8	tpmp; /* 0x5b - TPM Present */
+	u8	tpme; /* 0x5c - TPM Enable */
+	u8	rsvd5[3];
+	/* LynxPoint Serial IO device BARs */
+	u32	s0b[8]; /* 0x60 - 0x7f - BAR0 */
+	u32	s1b[8]; /* 0x80 - 0x9f - BAR1 */
+	u8	rsvd6[20];
 	/* IGD OpRegion (not implemented yet) */
 	u32	aslb; /* 0xb4 - IGD OpRegion Base Address */
 	u8	ibtt; /* 0xb8 - IGD boot type */

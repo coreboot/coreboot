@@ -106,36 +106,31 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	DID3,	32,	// 0x4f - Device ID 3
 	DID4,	32,	// 0x53 - Device ID 4
 	DID5,	32,	// 0x57 - Device ID 5
-	/* Backlight Control */
-	Offset (0x64),
-	BLCS,	 8,	// 0x64 - Backlight control possible?
-	BRTL,	 8,	// 0x65 - Brightness Level
-	ODDS,	 8,	// 0x66
-	/* Ambient Light Sensors */
-	Offset (0x6e),
-	ALSE,	 8,	// 0x6e - ALS enable
-	ALAF,	 8,	// 0x6f - Ambient light adjustment factor
-	LLOW,	 8,	// 0x70 - LUX Low
-	LHIH,	 8,	// 0x71 - LUX High
-	/* EMA */
-	Offset (0x78),
-	EMAE,	 8,	// 0x78 - EMA enable
-	EMAP,	16,	// 0x79 - EMA pointer
-	EMAL,	16,	// 0x7b - EMA length
-	/* MEF */
-	Offset (0x82),
-	MEFE,	 8,	// 0x82 - MEF enable
+
 	/* TPM support */
-	Offset (0x8c),
-	TPMP,	 8,	// 0x8c - TPM
-	TPME,	 8,	// 0x8d - TPM enable
-	/* SATA */
-	Offset (0x96),
-	GTF0,	56,	// 0x96 - GTF task file buffer for port 0
-	GTF1,	56,	// 0x9d - GTF task file buffer for port 1
-	GTF2,	56,	// 0xa4 - GTF task file buffer for port 2
-	IDEM,	 8,	// 0xab - IDE mode (compatible / enhanced)
-	IDET,	 8,	// 0xac - IDE
+	Offset (0x5b),
+	TPMP,	 8,	// 0x5b - TPM Present
+	TPME,	 8,	// 0x5c - TPM Enable
+
+	/* LynxPoint Serial IO device BARs */
+	Offset (0x60),
+	S0B0,	32,	// 0x60 - D21:F0 Serial IO SDMA BAR0
+	S1B0,	32,	// 0x64 - D21:F1 Serial IO I2C0 BAR0
+	S2B0,	32,	// 0x68 - D21:F2 Serial IO I2C1 BAR0
+	S3B0,	32,	// 0x6c - D21:F3 Serial IO SPI0 BAR0
+	S4B0,	32,	// 0x70 - D21:F4 Serial IO SPI1 BAR0
+	S5B0,	32,	// 0x74 - D21:F5 Serial IO UAR0 BAR0
+	S6B0,	32,	// 0x78 - D21:F6 Serial IO UAR1 BAR0
+	S7B0,	32,	// 0x7c - D23:F0 Serial IO SDIO BAR0
+	S0B1,	32,	// 0x80 - D21:F0 Serial IO SDMA BAR1
+	S1B1,	32,	// 0x84 - D21:F1 Serial IO I2C0 BAR1
+	S2B1,	32,	// 0x88 - D21:F2 Serial IO I2C1 BAR1
+	S3B1,	32,	// 0x8c - D21:F3 Serial IO SPI0 BAR1
+	S4B1,	32,	// 0x90 - D21:F4 Serial IO SPI1 BAR1
+	S5B1,	32,	// 0x94 - D21:F5 Serial IO UAR0 BAR1
+	S6B1,	32,	// 0x98 - D21:F6 Serial IO UAR1 BAR1
+	S7B1,	32,	// 0x9c - D23:F0 Serial IO SDIO BAR1
+
 	/* IGD OpRegion */
 	Offset (0xb4),
 	ASLB,	32,	// 0xb4 - IGD OpRegion Base Address

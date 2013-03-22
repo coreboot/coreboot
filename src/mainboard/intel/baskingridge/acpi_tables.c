@@ -89,6 +89,9 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* CBMEM TOC */
 	gnvs->cmem = 0;
 
+	/* TPM Present */
+	gnvs->tpmp = 1;
+
 	/* IGD Displays */
 	gnvs->ndid = 3;
 	gnvs->did[0] = 0x80000100;

@@ -85,6 +85,13 @@ struct southbridge_intel_lynxpoint_config {
 
 	/* Enable linear PCIe Root Port function numbers starting at zero */
 	uint8_t pcie_port_coalesce;
+
+	/* Serial IO configuration */
+	/* Put devices into ACPI mode instead of a PCI device */
+	uint8_t sio_acpi_mode;
+	/* I2C voltage select: 0=3.3V 1=1.8V */
+	uint8_t sio_i2c0_voltage;
+	uint8_t sio_i2c1_voltage;
 };
 
 extern struct chip_operations southbridge_intel_lynxpoint_ops;

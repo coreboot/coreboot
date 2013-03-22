@@ -341,11 +341,13 @@ unsigned get_gpios(const int *gpio_num_array);
 #define SIO_IOBP_PORTCTRL6	0xcb000260	/* SPI1 D21:F4 */
 #define SIO_IOBP_PORTCTRL7	0xcb000268	/* UART0 D21:F5 */
 #define SIO_IOBP_PORTCTRL8	0xcb000270	/* UART1 D21:F6 */
+#define SIO_IOBP_PORTCTRLX(x)	(0xcb000240 + ((x) * 8))
 /* PORTCTRL 2-8 have the same layout */
 #define  SIO_IOBP_PORTCTRL_ACPI_IRQ_EN		(1 << 21)
 #define  SIO_IOBP_PORTCTRL_PCI_CONF_DIS		(1 << 20)
 #define  SIO_IOBP_PORTCTRL_SNOOP_SELECT(x)	(((x) & 3) << 18)
 #define  SIO_IOBP_PORTCTRL_INT_PIN(x)		(((x) & 0xf) << 2)
+#define  SIO_IOBP_PORTCTRL_PM_CAP_PRSNT		(1 << 1)
 #define SIO_IOBP_FUNCDIS0	0xce00aa07	/* DMA D21:F0 */
 #define SIO_IOBP_FUNCDIS1	0xce00aa47	/* I2C0 D21:F1 */
 #define SIO_IOBP_FUNCDIS2	0xce00aa87	/* I2C1 D21:F2 */
@@ -355,6 +357,34 @@ unsigned get_gpios(const int *gpio_num_array);
 #define SIO_IOBP_FUNCDIS6	0xce00ab87	/* UART1 D21:F6 */
 #define SIO_IOBP_FUNCDIS7	0xce00ae07	/* SDIO D23:F0 */
 #define  SIO_IOBP_FUNCDIS_DIS			(1 << 8)
+
+/* Serial IO Devices */
+#define SIO_ID_SDMA		0 /* D21:F0 */
+#define SIO_ID_I2C0		1 /* D21:F1 */
+#define SIO_ID_I2C1		2 /* D21:F2 */
+#define SIO_ID_SPI0		3 /* D21:F3 */
+#define SIO_ID_SPI1		4 /* D21:F4 */
+#define SIO_ID_UART0		5 /* D21:F5 */
+#define SIO_ID_UART1		6 /* D21:F6 */
+#define SIO_ID_SDIO		7 /* D23:F0 */
+
+#define SIO_REG_PPR_RST			0x804
+#define  SIO_REG_PPR_RST_ASSERT		 0x3
+#define SIO_REG_PPR_GEN			0x808
+#define  SIO_REG_PPR_GEN_LTR_MODE_MASK	 (1 << 2)
+#define  SIO_REG_PPR_GEN_VOLTAGE_MASK	 (1 << 3)
+#define  SIO_REG_PPR_GEN_VOLTAGE(x)	 ((x & 1) << 3)
+#define SIO_REG_AUTO_LTR		0x814
+
+#define SIO_REG_SDIO_PPR_GEN		0x1008
+#define SIO_REG_SDIO_PPR_SW_LTR		0x1010
+#define SIO_REG_SDIO_PPR_CMD12		0x3c
+#define  SIO_REG_SDIO_PPR_CMD12_B30	 (1 << 30)
+
+#define SIO_PIN_INTA 1 /* IRQ5 in ACPI mode */
+#define SIO_PIN_INTB 2 /* IRQ6 in ACPI mode */
+#define SIO_PIN_INTC 3 /* IRQ7 in ACPI mode */
+#define SIO_PIN_INTD 4 /* IRQ13 in ACPI mode */
 
 /* PCI Configuration Space (D31:F3): SMBus */
 #define PCH_SMBUS_DEV		PCI_DEV(0, 0x1f, 3)
@@ -534,6 +564,7 @@ unsigned get_gpios(const int *gpio_num_array);
 #define D20IR		0x3160	/* 16bit */
 #define D21IR		0x3164	/* 16bit */
 #define D19IR		0x3168	/* 16bit */
+#define ACPIIRQEN	0x31e0	/* 32bit */
 #define OIC		0x31fe	/* 16bit */
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8

@@ -53,12 +53,14 @@ void main(void)
 	armv7_invalidate_caches();
 
 	/*
-	 * Re-enable caches and branch prediction. MMU will be set up later.
+	 * Re-enable icache and branch prediction. Dcache and MMU will be
+	 * set up in romstage along with DRAM.
+	 *
 	 * Note: If booting from USB, we need to disable branch prediction
 	 * before copying from USB into RAM (FIXME: why?)
 	 */
 	sctlr = read_sctlr();
-	sctlr |= SCTLR_C | SCTLR_Z | SCTLR_I;
+	sctlr |= SCTLR_Z | SCTLR_I;
 	write_sctlr(sctlr);
 
 	if (boot_cpu()) {

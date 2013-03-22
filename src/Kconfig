@@ -217,6 +217,7 @@ config ARCH_X86
 config ARCH_ARMV7
 	bool
 	default n
+	select EARLY_CBMEM_INIT
 
 # Warning: The file is included whether or not the if is here.
 # but the if controls how the evaluation occurs.

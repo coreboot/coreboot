@@ -74,6 +74,13 @@ static void graphics(void)
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 }
 
+/* for cbmem_initialize() */
+unsigned long get_top_of_ram(void);
+unsigned long get_top_of_ram(void)
+{
+	return CONFIG_SYS_SDRAM_BASE + CONFIG_DRAM_SIZE_MB - 1UL;
+}
+
 void main(void)
 {
 	struct mem_timings *mem;
@@ -113,8 +120,9 @@ void main(void)
 		while(1);
 	}
 
-	/* Set up MMU and caches */
+	/* Set up dcache and MMU */
 	mmu_setup_by_mva(CONFIG_SYS_SDRAM_BASE, CONFIG_DRAM_SIZE_MB);
+	dcache_mmu_enable();
 
 	initialize_s5p_mshc();
 

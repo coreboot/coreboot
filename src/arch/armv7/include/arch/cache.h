@@ -108,6 +108,32 @@ static inline void tlbiall(void)
 	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0));
 }
 
+/* write data access control register (DACR) */
+static inline void write_dacr(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c3, c0, 0" : : "r" (val));
+}
+
+/* write translation table base register 0 (TTBR0) */
+static inline void write_ttbr0(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c2, c0, 0" : : "r" (val) : "memory");
+}
+
+/* read translation table base control register (TTBCR) */
+static inline uint32_t read_ttbcr(void)
+{
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 0, %0, c2, c0, 2" : "=r" (val));
+	return val;
+}
+
+/* write translation table base control register (TTBCR) */
+static inline void write_ttbcr(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c2, c0, 2" : : "r" (val) : "memory");
+}
+
 /*
  * Low-level cache maintenance operations
  */
@@ -223,6 +249,12 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
 
 /* dcache invalidate all (on current level given by CCSELR) */
 void dcache_invalidate_all(void);
+
+/* dcache and MMU disable */
+void dcache_mmu_disable(void);
+
+/* dcache and MMU enable */
+void dcache_mmu_enable(void);
 
 /* icache invalidate all (on current level given by CSSELR) */
 void icache_invalidate_all(void);

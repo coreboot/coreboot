@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
- * Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
+ * Copyright 2011 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
+#define ENABLE_TPM
 
 DefinitionBlock(
 	"dsdt.aml",

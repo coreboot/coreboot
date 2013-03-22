@@ -9,6 +9,7 @@ bootblock-y += cache-cp15.c
 romstage-y += cache.c
 romstage-y += cache_v7.c
 romstage-y += cache-cp15.c
+romstage-y += mmu.c
 romstage-y += div0.c
 romstage-y += syslib.c
 romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c

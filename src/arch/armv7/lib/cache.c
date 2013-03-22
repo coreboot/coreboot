@@ -204,6 +204,28 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
 	dcache_op_mva(addr, len, OP_DCCIMVAC);
 }
 
+
+void dcache_mmu_disable(void)
+{
+	uint32_t sctlr;
+
+	sctlr = read_sctlr();
+	dcache_clean_invalidate_all();
+	sctlr &= ~(SCTLR_C | SCTLR_M);
+	write_sctlr(sctlr);
+}
+
+
+void dcache_mmu_enable(void)
+{
+	uint32_t sctlr;
+
+	sctlr = read_sctlr();
+	dcache_clean_invalidate_all();
+	sctlr |= SCTLR_C | SCTLR_M;
+	write_sctlr(sctlr);
+}
+
 void armv7_invalidate_caches(void)
 {
 	uint32_t clidr;
@@ -251,11 +273,4 @@ void armv7_invalidate_caches(void)
 
 	/* Invalidate TLB */
 	tlb_invalidate_all();
-}
-
-/* FIXME: wrapper around imported mmu_setup() for now */
-extern void mmu_setup(unsigned long start, unsigned long size);
-void mmu_setup_by_mva(unsigned long start, unsigned long size)
-{
-	mmu_setup(start, size);
 }

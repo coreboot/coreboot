@@ -461,7 +461,10 @@ static void enable_lp_clock_gating(device_t dev)
 	RCBA32_OR(0x900, 0x0000031f);
 
 	reg32 = RCBA32(CG);
-	reg32 |= (1 << 31); // LPC Dynamic
+	if (RCBA32(0x3454) & (1 << 4))
+		reg32 &= ~(1 << 29); // LPC Dynamic
+	else
+		reg32 |= (1 << 29); // LPC Dynamic
 	reg32 |= (1 << 30); // LP LPC
 	reg32 |= (1 << 28); // GPIO Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic

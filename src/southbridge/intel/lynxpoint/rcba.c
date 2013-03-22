@@ -20,13 +20,9 @@
 
 #include <console/console.h>
 #include <device/pci_def.h>
-#ifdef __PRE_RAM__
 #include <arch/io.h>
-#include <arch/romcc_io.h>
-#else
 #include <device/device.h>
 #include <device/pci.h>
-#endif
 #include "pch.h"
 
 void pch_config_rcba(const struct rcba_config_instruction *rcba_config)

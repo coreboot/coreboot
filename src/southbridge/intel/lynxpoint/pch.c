@@ -21,14 +21,10 @@
 
 #include <console/console.h>
 #include <delay.h>
-#ifdef __SMM__
 #include <arch/io.h>
-#include <arch/romcc_io.h>
-#include <device/pci_def.h>
-#else /* !__SMM__ */
 #include <device/device.h>
 #include <device/pci.h>
-#endif
+#include <device/pci_def.h>
 #include "pch.h"
 
 static device_t pch_get_lpc_device(void)

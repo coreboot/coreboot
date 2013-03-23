@@ -41,7 +41,6 @@ VB_SOURCE := vboot_reference
 
 # Add the vboot include paths.
 VB_INCLUDES += -I$(VB_SOURCE)/firmware/include
-VB_INCLUDES += -I$(VB_SOURCE)/firmware/arch/$(VB_FIRMWARE_ARCH)/include
 INCLUDES += $(VB_INCLUDES)
 
 VBOOT_STUB_ELF = $(obj)/vendorcode/google/chromeos/vbootstub.elf
@@ -57,7 +56,6 @@ VBOOT_STUB_DEPS += $(VB_LIB)
 # vboot_reference can get to coreboot's include files.
 VBOOT_CFLAGS += $(patsubst -I%,-I../%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS)))
 VBOOT_CFLAGS += -DVBOOT_DEBUG
-$(warning $(VBOOT_CFLAGS))
 
 $(VBOOT_STUB_DOTO): $(VBOOT_STUB_DEPS)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^

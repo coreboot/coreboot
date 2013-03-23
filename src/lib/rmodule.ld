@@ -37,10 +37,16 @@ SECTIONS
 
 	.text : AT (_payload_begin_offset) {
 		/* C code of the module. */
+		*(.textfirst);
 		*(.text);
 		*(.text.*);
 		/* C read-only data. */
 		. = ALIGN(16);
+
+		__CTOR_LIST__ = .;
+		*(.ctors);
+		LONG(0);
+		__CTOR_END__ = .;
 
 		/* The driver sections are to allow linking coreboot's
 		 * ramstage with the rmodule linker. Any changes made in

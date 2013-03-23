@@ -11,7 +11,7 @@ _stack:
 .space CONFIG_MAX_CPUS*CONFIG_STACK_SIZE
 _estack:
 
-	.section ".textfirst"
+	.section ".textfirst", "ax", @progbits
 	.code32
 	.globl _start
 _start:

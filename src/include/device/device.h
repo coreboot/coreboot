@@ -207,16 +207,16 @@ void fixed_mem_resource(device_t dev, unsigned long index,
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
 
 #define reserved_ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE | IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE | IORESOURCE_RESERVE)
 
 #define bad_ram_resource(dev, idx, basek, sizek) \
 	reserved_ram_resource((dev), (idx), (basek), (sizek))
 
 #define uma_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_UMA_FB)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE)
 
 #define mmio_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE)
 
 void tolm_test(void *gp, struct device *dev, struct resource *new);
 u32 find_pci_tolm(struct bus *bus);

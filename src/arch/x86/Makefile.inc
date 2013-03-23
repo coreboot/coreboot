@@ -162,7 +162,7 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 
 ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
 
-$(eval $(call rmodule_link,$(objcbfs)/coreboot_ram.debug, $(obj)/arch/x86/boot/ramstage_module_header.ramstage.o $(objgenerated)/coreboot_ram.o, $(CONFIG_HEAP_SIZE)))
+$(eval $(call rmodule_link,$(objcbfs)/coreboot_ram.debug, $(objgenerated)/coreboot_ram.o, $(CONFIG_HEAP_SIZE)))
 
 else
 

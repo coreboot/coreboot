@@ -152,10 +152,12 @@ static struct memory_ranges *get_physical_address_space(void)
 	if (addr_space == NULL) {
 		struct memory_range *r;
 		uint32_t below4gbase;
-		const unsigned long mask = IORESOURCE_CACHEABLE;
+		unsigned long mask;
+		unsigned long match;
 
 		addr_space = &addr_space_storage;
 
+		mask = IORESOURCE_CACHEABLE;
 		/* Collect cacheable and uncacheable address ranges. The
 		 * uncacheable regions take precedence over the  cacheable
 		 * regions. */
@@ -167,6 +169,14 @@ static struct memory_ranges *get_physical_address_space(void)
 		below4gbase = RANGE_4GB - PHYS_TO_RANGE_ADDR(4096);
 		insert_memory_range(addr_space, RANGE_TO_PHYS_ADDR(below4gbase),
 		                    4096, MTRR_TYPE_UNCACHEABLE);
+
+		/* Handle any write combining resources. Only prefetchable
+		 * resources with the IORESOURCE_WRCOMB flag are appropriate
+		 * for this MTRR type. */
+		match = IORESOURCE_PREFETCH | IORESOURCE_WRCOMB;
+		mask |= match;
+		memory_ranges_add_resources(addr_space, mask, match,
+		                            MTRR_TYPE_WRCOMB);
 
 		/* Fill all holes in address space with an uncachable entry. */
 		memory_ranges_fill_holes(addr_space, MTRR_TYPE_UNCACHEABLE);

@@ -54,7 +54,7 @@ void console_tx_byte(unsigned char byte)
 #endif
 }
 
-static void console_tx_flush(void)
+void console_tx_flush(void)
 {
 #if CONFIG_CONSOLE_SERIAL8250MEM
 	uart8250_mem_tx_flush(CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000);

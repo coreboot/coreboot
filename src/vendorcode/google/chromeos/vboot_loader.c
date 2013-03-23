@@ -46,7 +46,9 @@ static void vboot_run_stub(struct vboot_context *context)
 	char *vboot_region;
 	void (*entry)(struct vboot_context *context);
 
-	stage = cbfs_find_file(CONFIG_CBFS_PREFIX "/vboot", CBFS_TYPE_STAGE);
+	stage = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+	                              CONFIG_CBFS_PREFIX "/vboot",
+	                              CBFS_TYPE_STAGE);
 
 	if (stage == NULL)
 		return;
@@ -226,8 +228,7 @@ static void vboot_load_ramstage(struct vboot_handoff *vboot_handoff,
 	if (rmodule_parse(&ramstage_region[rmodule_offset], &ramstage))
 		return;
 
-	/* The ramstage is responsible for clearing its own bss. */
-	if (rmodule_load_no_clear_bss(&ramstage_region[load_offset], &ramstage))
+	if (rmodule_load(&ramstage_region[load_offset], &ramstage))
 		return;
 
 	entry_point = rmodule_entry(&ramstage);

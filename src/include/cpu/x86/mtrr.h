@@ -26,6 +26,7 @@
 #define MTRRphysMaskValid	(1 << 11)
 
 #define NUM_FIXED_RANGES 88
+#define RANGES_PER_FIXED_MTRR 8
 #define MTRRfix64K_00000_MSR 0x250
 #define MTRRfix16K_80000_MSR 0x258
 #define MTRRfix16K_A0000_MSR 0x259
@@ -39,19 +40,10 @@
 #define MTRRfix4K_F8000_MSR 0x26f
 
 #if !defined (__ASSEMBLER__) && !defined(__PRE_RAM__)
-#include <device/device.h>
-/* You should almost NEVER use this function.
- * N.B. We worked on a lot of ways to make this continue as static,
- * but just making it available ended up being the simplest solution.
- */
-void set_var_mtrr(
-	unsigned int reg, unsigned long basek, unsigned long sizek,
-	unsigned char type, unsigned address_bits);
 void enable_fixed_mtrr(void);
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void x86_setup_mtrrs(void);
 int x86_mtrr_check(void);
-void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res);
 void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);

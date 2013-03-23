@@ -239,13 +239,13 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	ramstage = cbmem_entry_find(CBMEM_ID_RAMSTAGE);
 
 	if (ramstage == NULL)
-		return load_stage_from_cbfs(name, handoff);
+		return load_stage_from_cbfs(media, name, handoff);
 
 	/* S3 resume path. Load a cached copy of the loaded ramstage. If
 	 * return value is NULL load from cbfs. */
 	entry = load_cached_ramstage(handoff, ramstage);
 	if (entry == NULL)
-		return load_stage_from_cbfs(name, handoff);
+		return load_stage_from_cbfs(media, name, handoff);
 
 	return entry;
 }

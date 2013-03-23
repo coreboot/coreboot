@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <memrange.h>
 #if CONFIG_USE_OPTION_TABLE
 #include <option_table.h>
 #endif
@@ -356,63 +357,13 @@ static struct lb_forward *lb_forward(struct lb_header *header, struct lb_header 
 	return forward;
 }
 
-static void lb_memory_range(struct lb_memory *mem,
-	uint32_t type, uint64_t start, uint64_t size)
-{
-	int entries;
-	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	mem->map[entries].start = pack_lb64(start);
-	mem->map[entries].size = pack_lb64(size);
-	mem->map[entries].type = type;
-	mem->size += sizeof(mem->map[0]);
-}
-
-static void lb_reserve_table_memory(struct lb_header *head)
-{
-/* Dynamic cbmem has already reserved the memory where the coreboot tables
- * reside. Therefore, there is nothing to fix up. */
-#if !CONFIG_DYNAMIC_CBMEM
-	struct lb_record *last_rec;
-	struct lb_memory *mem;
-	uint64_t start;
-	uint64_t end;
-	int i, entries;
-
-	last_rec = lb_last_record(head);
-	mem = get_lb_mem();
-	start = (unsigned long)head;
-	end = (unsigned long)last_rec;
-	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-	/* Resize the right two memory areas so this table is in
-	 * a reserved area of memory.  Everything has been carefully
-	 * setup so that is all we need to do.
-	 */
-	for(i = 0; i < entries; i++ ) {
-		uint64_t map_start = unpack_lb64(mem->map[i].start);
-		uint64_t map_end = map_start + unpack_lb64(mem->map[i].size);
-		/* Does this area need to be expanded? */
-		if (map_end == start) {
-			mem->map[i].size = pack_lb64(end - map_start);
-		}
-		/* Does this area need to be contracted? */
-		else if (map_start == start) {
-			mem->map[i].start = pack_lb64(end);
-			mem->map[i].size = pack_lb64(map_end - end);
-		}
-	}
-#endif
-}
-
-static unsigned long lb_table_fini(struct lb_header *head, int fixup)
+static unsigned long lb_table_fini(struct lb_header *head)
 {
 	struct lb_record *rec, *first_rec;
 	rec = lb_last_record(head);
 	if (head->table_entries) {
 		head->table_bytes += rec->size;
 	}
-
-	if (fixup)
-		lb_reserve_table_memory(head);
 
 	first_rec = lb_first_record(head);
 	head->table_checksum = compute_ip_checksum(first_rec, head->table_bytes);
@@ -422,144 +373,6 @@ static unsigned long lb_table_fini(struct lb_header *head, int fixup)
 	       "Wrote coreboot table at: %p, 0x%x bytes, checksum %x\n",
 	       head, head->table_bytes, head->table_checksum);
 	return (unsigned long)rec + rec->size;
-}
-
-static void lb_cleanup_memory_ranges(struct lb_memory *mem)
-{
-	int entries;
-	int i, j;
-	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-
-	/* Sort the lb memory ranges */
-	for(i = 0; i < entries; i++) {
-		uint64_t entry_start = unpack_lb64(mem->map[i].start);
-		for(j = i + 1; j < entries; j++) {
-			uint64_t temp_start = unpack_lb64(mem->map[j].start);
-			if (temp_start < entry_start) {
-				struct lb_memory_range tmp;
-				tmp = mem->map[i];
-				mem->map[i] = mem->map[j];
-				mem->map[j] = tmp;
-			}
-		}
-	}
-
-	/* Merge adjacent entries */
-	for(i = 0; (i + 1) < entries; i++) {
-		uint64_t start, end, nstart, nend;
-		if (mem->map[i].type != mem->map[i + 1].type) {
-			continue;
-		}
-		start  = unpack_lb64(mem->map[i].start);
-		end    = start + unpack_lb64(mem->map[i].size);
-		nstart = unpack_lb64(mem->map[i + 1].start);
-		nend   = nstart + unpack_lb64(mem->map[i + 1].size);
-		if ((start <= nstart) && (end >= nstart)) {
-			if (start > nstart) {
-				start = nstart;
-			}
-			if (end < nend) {
-				end = nend;
-			}
-			/* Record the new region size */
-			mem->map[i].start = pack_lb64(start);
-			mem->map[i].size  = pack_lb64(end - start);
-
-			/* Delete the entry I have merged with */
-			memmove(&mem->map[i + 1], &mem->map[i + 2],
-				((entries - i - 2) * sizeof(mem->map[0])));
-			mem->size -= sizeof(mem->map[0]);
-			entries -= 1;
-			/* See if I can merge with the next entry as well */
-			i -= 1;
-		}
-	}
-}
-
-static void lb_remove_memory_range(struct lb_memory *mem,
-	uint64_t start, uint64_t size)
-{
-	uint64_t end;
-	int entries;
-	int i;
-
-	end = start + size;
-	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-
-	/* Remove a reserved area from the memory map */
-	for(i = 0; i < entries; i++) {
-		uint64_t map_start = unpack_lb64(mem->map[i].start);
-		uint64_t map_end   = map_start + unpack_lb64(mem->map[i].size);
-		if ((start <= map_start) && (end >= map_end)) {
-			/* Remove the completely covered range */
-			memmove(&mem->map[i], &mem->map[i + 1],
-				((entries - i - 1) * sizeof(mem->map[0])));
-			mem->size -= sizeof(mem->map[0]);
-			entries -= 1;
-			/* Since the index will disappear revisit what will appear here */
-			i -= 1;
-		}
-		else if ((start > map_start) && (end < map_end)) {
-			/* Split the memory range */
-			memmove(&mem->map[i + 1], &mem->map[i],
-				((entries - i) * sizeof(mem->map[0])));
-			mem->size += sizeof(mem->map[0]);
-			entries += 1;
-			/* Update the first map entry */
-			mem->map[i].size = pack_lb64(start - map_start);
-			/* Update the second map entry */
-			mem->map[i + 1].start = pack_lb64(end);
-			mem->map[i + 1].size  = pack_lb64(map_end - end);
-			/* Don't bother with this map entry again */
-			i += 1;
-		}
-		else if ((start <= map_start) && (end > map_start)) {
-			/* Shrink the start of the memory range */
-			mem->map[i].start = pack_lb64(end);
-			mem->map[i].size  = pack_lb64(map_end - end);
-		}
-		else if ((start < map_end) && (start > map_start)) {
-			/* Shrink the end of the memory range */
-			mem->map[i].size = pack_lb64(start - map_start);
-		}
-	}
-}
-
-void lb_add_memory_range(struct lb_memory *mem,
-	uint32_t type, uint64_t start, uint64_t size)
-{
-	lb_remove_memory_range(mem, start, size);
-	lb_memory_range(mem, type, start, size);
-	lb_cleanup_memory_ranges(mem);
-}
-
-static void lb_dump_memory_ranges(struct lb_memory *mem)
-{
-	int entries;
-	int i;
-	entries = (mem->size - sizeof(*mem))/sizeof(mem->map[0]);
-
-	printk(BIOS_DEBUG, "coreboot memory table:\n");
-	for(i = 0; i < entries; i++) {
-		uint64_t entry_start = unpack_lb64(mem->map[i].start);
-		uint64_t entry_size = unpack_lb64(mem->map[i].size);
-		const char *entry_type;
-
-		switch (mem->map[i].type) {
-		case LB_MEM_RAM: entry_type="RAM"; break;
-		case LB_MEM_RESERVED: entry_type="RESERVED"; break;
-		case LB_MEM_ACPI: entry_type="ACPI"; break;
-		case LB_MEM_NVS: entry_type="NVS"; break;
-		case LB_MEM_UNUSABLE: entry_type="UNUSABLE"; break;
-		case LB_MEM_VENDOR_RSVD: entry_type="VENDOR RESERVED"; break;
-		case LB_MEM_TABLE: entry_type="CONFIGURATION TABLES"; break;
-		default: entry_type="UNKNOWN!"; break;
-		}
-
-		printk(BIOS_DEBUG, "%2d. %016llx-%016llx: %s\n",
-			i, entry_start, entry_start+entry_size-1, entry_type);
-
-	}
 }
 
 /* Routines to extract part so the coreboot table or
@@ -574,11 +387,8 @@ struct lb_memory *get_lb_mem(void)
 	return mem_ranges;
 }
 
-static void build_lb_mem_range(void *gp, struct device *dev, struct resource *res)
-{
-	struct lb_memory *mem = gp;
-	lb_memory_range(mem, LB_MEM_RAM, res->base, res->size);
-}
+/* This structure keeps track of the coreboot table memory ranges. */
+static struct memranges lb_ranges;
 
 static struct lb_memory *build_lb_mem(struct lb_header *head)
 {
@@ -588,27 +398,60 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	mem = lb_memory(head);
 	mem_ranges = mem;
 
-	/* Build the raw table of memory */
-	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
-		build_lb_mem_range, mem);
-	lb_cleanup_memory_ranges(mem);
+	/* Fill the memory map out. The order of operations is important in
+	 * that each overlapping range will take over the next. Therefore,
+	 * add cacheable resources as RAM then add the reserved resources. */
+	memranges_init(&lb_ranges, IORESOURCE_CACHEABLE,
+	               IORESOURCE_CACHEABLE, LB_MEM_RAM);
+	memranges_add_resources(&lb_ranges, IORESOURCE_RESERVE,
+	                        IORESOURCE_RESERVE, LB_MEM_RESERVED);
+
 	return mem;
 }
 
-static void lb_add_rsvd_range(void *gp, struct device *dev, struct resource *res)
+static void commit_lb_memory(struct lb_memory *mem)
 {
-	struct lb_memory *mem = gp;
-	lb_add_memory_range(mem, LB_MEM_RESERVED, res->base, res->size);
+	struct range_entry *r;
+	struct lb_memory_range *lb_r;
+	int i;
+
+	lb_r = &mem->map[0];
+	i = 0;
+
+	memranges_each_entry(r, &lb_ranges) {
+		const char *entry_type;
+
+		switch (range_entry_tag(r)) {
+		case LB_MEM_RAM: entry_type="RAM"; break;
+		case LB_MEM_RESERVED: entry_type="RESERVED"; break;
+		case LB_MEM_ACPI: entry_type="ACPI"; break;
+		case LB_MEM_NVS: entry_type="NVS"; break;
+		case LB_MEM_UNUSABLE: entry_type="UNUSABLE"; break;
+		case LB_MEM_VENDOR_RSVD: entry_type="VENDOR RESERVED"; break;
+		case LB_MEM_TABLE: entry_type="CONFIGURATION TABLES"; break;
+		default: entry_type="UNKNOWN!"; break;
+		}
+
+		printk(BIOS_DEBUG, "%2d. %016llx-%016llx: %s\n",
+			i, range_entry_base(r), range_entry_end(r)-1,
+			entry_type);
+
+		lb_r->start = pack_lb64(range_entry_base(r));
+		lb_r->size = pack_lb64(range_entry_size(r));
+		lb_r->type = range_entry_tag(r);
+
+		i++;
+		lb_r++;
+		mem->size += sizeof(struct lb_memory_range);
+	}
 }
 
-static void add_lb_reserved(struct lb_memory *mem)
+void lb_add_memory_range(struct lb_memory *mem,
+	uint32_t type, uint64_t start, uint64_t size)
 {
-	/* Add reserved ranges */
-	search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_RESERVE, IORESOURCE_MEM | IORESOURCE_RESERVE,
-		lb_add_rsvd_range, mem);
+	memranges_insert(&lb_ranges, start, size, type);
 }
+
 
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
@@ -623,7 +466,7 @@ unsigned long write_coreboot_table(
 		head = lb_table_init(low_table_end);
 		lb_forward(head, (struct lb_header*)rom_table_end);
 
-		low_table_end = (unsigned long) lb_table_fini(head, 0);
+		low_table_end = (unsigned long) lb_table_fini(head);
 		printk(BIOS_DEBUG, "Table forward entry ends at 0x%08lx.\n",
 			low_table_end);
 		low_table_end = ALIGN(low_table_end, 4096);
@@ -682,17 +525,9 @@ unsigned long write_coreboot_table(
 		high_tables_base, high_tables_size);
 #endif /* CONFIG_DYNAMIC_CBMEM */
 
-	/* Add reserved regions */
-	add_lb_reserved(mem);
-
-	lb_dump_memory_ranges(mem);
-
-	/* Note:
-	 * I assume that there is always memory at immediately after
-	 * the low_table_end.  This means that after I setup the coreboot table.
-	 * I can trivially fixup the reserved memory ranges to hold the correct
-	 * size of the coreboot table.
-	 */
+	/* No other memory areas can be added after the memory table has been
+	 * committed as the entries won't show up in the serialize mem table. */
+	commit_lb_memory(mem);
 
 	/* Record our motherboard */
 	lb_mainboard(head);
@@ -721,5 +556,5 @@ unsigned long write_coreboot_table(
 	add_cbmem_pointers(head);
 
 	/* Remember where my valid memory ranges are */
-	return lb_table_fini(head, 1);
+	return lb_table_fini(head);
 }

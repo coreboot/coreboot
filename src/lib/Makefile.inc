@@ -85,6 +85,7 @@ ramstage-$(CONFIG_TRACE) += trace.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ramstage-$(CONFIG_COVERAGE) += libgcov.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += edid.c
+ramstage-y += memrange.c
 
 # The CBMEM implementations are chosen based on CONFIG_DYNAMIC_CBMEM.
 ifeq ($(CONFIG_DYNAMIC_CBMEM),y)

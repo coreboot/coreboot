@@ -53,15 +53,6 @@ int bridge_silicon_revision(void)
 	return bridge_revision_id;
 }
 
-/* Reserve everything between A segment and 1MB:
- *
- * 0xa0000 - 0xbffff: legacy VGA
- * 0xc0000 - 0xcffff: VGA OPROM (needed by kernel)
- * 0xe0000 - 0xfffff: SeaBIOS, if used, otherwise DMI
- */
-static const int legacy_hole_base_k = 0xa0000 / 1024;
-static const int legacy_hole_size_k = 384;
-
 void cbmem_post_handling(void)
 {
 	update_mrc_cache();
@@ -414,9 +405,17 @@ static void mc_add_dram_resources(device_t dev)
 	if (size_k > 0)
 		ram_resource(dev, index++, base_k, size_k);
 
-	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
+	/* Reserve everything between A segment and 1MB:
+	 *
+	 * 0xa0000 - 0xbffff: legacy VGA
+	 * 0xc0000 - 0xfffff: RAM
+	 */
+	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
+	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
+	                      (0x100000 - 0xc0000) >> 10);
 #if CONFIG_CHROMEOS_RAMOOPS
-	mmio_resource(dev, index++, CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
+	reserved_ram_resource(dev, index++,
+			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
 }

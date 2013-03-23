@@ -127,10 +127,14 @@ static void add_fixed_resources(struct device *dev, int index)
 		    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 	}
 
-	mmio_resource(dev, index++, legacy_hole_base_k, legacy_hole_size_k);
+	mmio_resource(dev, index++, legacy_hole_base_k,
+			(0xc0000 >> 10) - legacy_hole_base_k);
+	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
+			(0x100000 - 0xc0000) >> 10);
 
 #if CONFIG_CHROMEOS_RAMOOPS
-	mmio_resource(dev, index++, CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
+	reserved_ram_resource(dev, index++,
+			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
 

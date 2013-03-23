@@ -206,8 +206,11 @@ void fixed_mem_resource(device_t dev, unsigned long index,
 #define ram_resource(dev, idx, basek, sizek) \
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)
 
+#define reserved_ram_resource(dev, idx, basek, sizek) \
+	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE | IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+
 #define bad_ram_resource(dev, idx, basek, sizek) \
-	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_IGNORE_MTRR)
+	reserved_ram_resource((dev), (idx), (basek), (sizek))
 
 #define uma_resource(dev, idx, basek, sizek) \
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_RESERVE | IORESOURCE_UMA_FB)

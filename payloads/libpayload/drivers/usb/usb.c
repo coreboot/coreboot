@@ -74,12 +74,8 @@ detach_controller (hci_t *controller)
 int
 usb_exit (void)
 {
-	if (usb_hcs == 0)
-		return 0;
-	hci_t *controller = usb_hcs;
-	while (controller != NULL) {
-		controller->shutdown(controller);
-		controller = controller->next;
+	while (usb_hcs != NULL) {
+		usb_hcs->shutdown(usb_hcs);
 	}
 	return 0;
 }

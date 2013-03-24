@@ -170,6 +170,7 @@ static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)
 
 static void ehci_shutdown (hci_t *controller)
 {
+	detach_controller(controller);
 	/* Make sure periodic schedule is disabled */
 	ehci_set_periodic_schedule(EHCI_INST(controller), 0);
 	/* Free periodic frame list */

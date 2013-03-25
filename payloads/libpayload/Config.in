@@ -120,7 +120,6 @@ config TINYCURSES
 
 config PDCURSES
 	bool "PDCurses"
-	default y
 	help
 	  libpayload's PDCurses port provides a full features curses
 	  implementation, including libpanel, libmenu and libform (which

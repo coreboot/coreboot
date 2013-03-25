@@ -135,7 +135,7 @@ attr_t term_attrs(void)
            WA_RIGHT | WA_UNDERLINE;
 }
 
-char *termname(void)
+const char *termname(void)
 {
     PDC_LOG(("termname() - called\n"));
 

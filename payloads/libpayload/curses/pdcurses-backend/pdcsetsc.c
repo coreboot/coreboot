@@ -1,6 +1,7 @@
 /* Public Domain Curses */
 /* This file is BSD licensed, Copyright 2011 secunet AG */
 
+#include <libpayload.h>
 #include "lppdc.h"
 
 int PDC_curs_set(int visibility)

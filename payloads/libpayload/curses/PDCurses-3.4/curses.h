@@ -1374,4 +1374,12 @@ int     sb_refresh(void);
 }
 #endif
 
+/* Local functions not defined in normal curses */
+
+void curses_enable_vga(int);
+void curses_enable_serial(int);
+
+int curses_vga_enabled(void);
+int curses_serial_enabled(void);
+
 #endif  /* __PDCURSES__ */

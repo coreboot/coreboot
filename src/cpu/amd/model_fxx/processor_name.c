@@ -35,6 +35,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/mtrr.h>
 #include <cpu/amd/model_fxx_rev.h>
 
 /* The maximum length of CPU names is 48 bytes, including the final NULL byte.
@@ -99,17 +100,6 @@ static const char *processor_names[]={
 #define MAX_CPU_NUMBER 0x3A
 };
 #endif
-
-/* wrmsr_amd() is from yhlu's changes to model_fxx_init.c */
-
-static inline void wrmsr_amd(unsigned index, msr_t msr)
-{
-        __asm__ __volatile__ (
-                "wrmsr"
-                : /* No outputs */
-                : "c" (index), "a" (msr.lo), "d" (msr.hi), "D" (0x9c5a203a)
-                );
-}
 
 int init_processor_name(void)
 {

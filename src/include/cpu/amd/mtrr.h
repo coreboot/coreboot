@@ -40,6 +40,26 @@
 #if !defined(__PRE_RAM__) && !defined(__ASSEMBLER__)
 void amd_setup_mtrrs(void);
 
+static inline __attribute__((always_inline)) msr_t rdmsr_amd(unsigned index)
+{
+	msr_t result;
+	__asm__ __volatile__ (
+		"rdmsr"
+		: "=a" (result.lo), "=d" (result.hi)
+		: "c"(index), "D"(0x9c5a203a)
+		);
+	return result;
+}
+
+static inline __attribute__((always_inline)) void wrmsr_amd(unsigned index, msr_t msr)
+{
+	__asm__ __volatile__ (
+		"wrmsr"
+		: /* No outputs */
+		: "c" (index), "a" (msr.lo), "d" (msr.hi), "D" (0x9c5a203a)
+		);
+}
+
 /* To distribute topmem MSRs to APs. */
 void setup_bsp_ramtop(void);
 uint64_t bsp_topmem(void);

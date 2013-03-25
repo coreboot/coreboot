@@ -33,9 +33,6 @@
 #define CPU_ID_FEATURES_MSR		0xC0011004
 #define CPU_ID_EXT_FEATURES_MSR	0xC0011005
 
-msr_t rdmsr_amd(u32 index);
-void wrmsr_amd(u32 index, msr_t msr);
-
 //#if defined(__GNUC__)
 //// it can be used to get unitid and coreid it running only
 //struct node_core_id get_node_core_id(u32 nb_cfg_54);

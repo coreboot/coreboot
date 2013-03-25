@@ -80,26 +80,6 @@ int is_cpu_f0_in_bsp(int nodeid)
 
 #define MCI_STATUS 0x401
 
-static inline msr_t rdmsr_amd(u32 index)
-{
-	msr_t result;
-	__asm__ __volatile__(
-		"rdmsr"
-		:"=a"(result.lo), "=d"(result.hi)
-		:"c"(index), "D"(0x9c5a203a)
-	);
-	return result;
-}
-
-static inline void wrmsr_amd(u32 index, msr_t msr)
-{
-	__asm__ __volatile__(
-		"wrmsr"
-		:	/* No outputs */
-		:"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
-	);
-}
-
 #define MTRR_COUNT 8
 #define ZERO_CHUNK_KB 0x800UL	/* 2M */
 #define TOLM_KB 0x400000UL

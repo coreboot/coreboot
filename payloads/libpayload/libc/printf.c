@@ -552,6 +552,9 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 					qualifier = PrintfQualifierByte;
 				}
 				break;
+			case 'z':	/* size_t or ssize_t */
+				qualifier = PrintfQualifierLong;
+				break;
 			case 'l':	/* long or long long */
 				qualifier = PrintfQualifierLong;
 				if (fmt[i] == 'l') {

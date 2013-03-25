@@ -48,7 +48,7 @@ static void *ram_map(struct cbfs_media *media, size_t offset, size_t count) {
 		offset = m->size + offset;
 	}
 	if (offset + count > m->size) {
-		printf("ERROR: ram_map: request out of range (0x%x+0x%x)\n",
+		printf("ERROR: ram_map: request out of range (0x%zx+0x%zx)\n",
 		       offset, count);
 		return NULL;
 	}

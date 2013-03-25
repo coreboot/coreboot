@@ -37,26 +37,6 @@
 #include <cpu/amd/agesa/s3_resume.h>
 #endif
 
-msr_t rdmsr_amd(u32 index)
-{
-	msr_t result;
-	__asm__ __volatile__(
-		"rdmsr"
-		:"=a"(result.lo), "=d"(result.hi)
-		:"c"(index), "D"(0x9c5a203a)
-		);
-	return result;
-}
-
-void wrmsr_amd(u32 index, msr_t msr)
-{
-	__asm__ __volatile__(
-		"wrmsr"
-		: /* No outputs */
-		:"c"(index), "a"(msr.lo), "d"(msr.hi), "D"(0x9c5a203a)
-		);
-}
-
 static void model_15_init(device_t dev)
 {
 	printk(BIOS_DEBUG, "Model 15 Init.\n");

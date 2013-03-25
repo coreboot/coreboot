@@ -2,9 +2,9 @@
 #include <device/device.h>
 #include <arch/cpu.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
-#include <cpu/x86/msr.h>
 
 /* These will likely move to some device node or cbmem. */
 static uint64_t amd_topmem = 0;

@@ -33,9 +33,6 @@
 #define CPU_ID_FEATURES_MSR		0xC0011004
 #define CPU_ID_EXT_FEATURES_MSR	0xC0011005
 
-msr_t rdmsr_amd(u32 index);
-void wrmsr_amd(u32 index, msr_t msr);
-
 #if defined(__PRE_RAM__)
 void wait_all_core0_started(void);
 void wait_all_other_cores_started(u32 bsp_apicid);

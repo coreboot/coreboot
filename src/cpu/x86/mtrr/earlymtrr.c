@@ -2,8 +2,8 @@
 #define EARLYMTRR_C
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
-#include <cpu/amd/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <cpu/amd/mtrr.h>
 
 static void set_var_mtrr(
 	unsigned reg, unsigned base, unsigned size, unsigned type)

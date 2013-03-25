@@ -29,8 +29,16 @@
 
 #ifndef __STDINT_H
 #define __STDINT_H
+
 #include <arch/types.h>
+
+typedef long long int      intmax_t;
+typedef unsigned long long uintmax_t;
 
 typedef unsigned long uintptr_t;
 typedef long intptr_t;
+
+#define UINT32_MAX (4294967295U)
+#define UINT64_MAX (18446744073709551615ULL)
+
 #endif

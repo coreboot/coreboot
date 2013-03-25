@@ -53,8 +53,8 @@ typedef signed long long s64;
 typedef long time_t;
 typedef long suseconds_t;
 
-typedef unsigned int size_t;
-typedef int ssize_t;
+typedef unsigned long size_t;
+typedef long ssize_t;
 
 #ifndef NULL
 #define NULL ((void *)0)

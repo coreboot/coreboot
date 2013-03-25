@@ -29,8 +29,32 @@
 
 #ifndef __STDINT_H
 #define __STDINT_H
+
+#if defined(__GNUC__)
+#define __HAVE_LONG_LONG__ 1
+#else
+#define __HAVE_LONG_LONG__ 0
+#endif
+
 #include <arch/types.h>
+
+/* Largest integral types */
+#if __HAVE_LONG_LONG__
+typedef long long int      intmax_t;
+typedef unsigned long long uintmax_t;
+#else
+typedef long int           intmax_t;
+typedef unsigned long int  uintmax_t;
+#endif
 
 typedef unsigned long uintptr_t;
 typedef long intptr_t;
+
+#ifndef UINT32_MAX
+#define UINT32_MAX (4294967295U)
+#endif
+#ifndef UINT64_MAX
+# define UINT64_MAX (18446744073709551615ULL)
+#endif
+
 #endif

@@ -26,7 +26,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * cache.c: Low-level cache operations for ARMv7
+ * cache.c: Cache maintenance routines for ARMv7-A and ARMv7-R
+ *
+ * Reference: ARM Architecture Reference Manual, ARMv7-A and ARMv7-R edition
  */
 
 #include <inttypes.h>
@@ -52,8 +54,8 @@ void tlb_invalidate_all(void)
 {
 	/*
 	 * FIXME: ARMv7 Architecture Ref. Manual claims that the distinction
-	 * instruction vs. data TLBs is deprecated in ARMv7. But that doesn't
-	 * really seem true for Cortex-A15?
+	 * instruction vs. data TLBs is deprecated in ARMv7, however this does
+	 * not seem to be the case as of Cortex-A15.
 	 */
 	tlbiall();
 	dtlbiall();
@@ -64,7 +66,8 @@ void tlb_invalidate_all(void)
 
 void icache_invalidate_all(void)
 {
-	/* icache can be entirely invalidated with one operation.
+	/*
+	 * icache can be entirely invalidated with one operation.
 	 * Note: If branch predictors are architecturally-visible, ICIALLU
 	 * also performs a BPIALL operation (B2-1283 in arch manual)
 	 */
@@ -74,10 +77,17 @@ void icache_invalidate_all(void)
 
 enum dcache_op {
 	OP_DCCISW,
-	OP_DCISW
+	OP_DCISW,
+	OP_DCCIMVAC,
+	OP_DCCMVAC,
 };
 
-/* do a dcache operation on entire cache by set/way */
+/*
+ * Do a dcache operation on entire cache by set/way. This is done for
+ * portability because mapping of memory address to cache location is
+ * implementation defined (See note on "Requirements for operations by
+ * set/way" in arch ref. manual).
+ */
 static void dcache_op_set_way(enum dcache_op op)
 {
 	uint32_t ccsidr;
@@ -100,6 +110,8 @@ static void dcache_op_set_way(enum dcache_op op)
 	associativity = ((ccsidr & bitmask(12, 3)) >> 3) + 1;
 	/* FIXME: do we need to use CTR.DminLine here? */
 	linesize_bytes = (1 << ((ccsidr & 0x7) + 2)) * 4;
+
+	dsb();
 
 	/*
 	 * Set/way operations require an interesting bit packing. See section
@@ -134,8 +146,7 @@ static void dcache_op_set_way(enum dcache_op op)
 			}
 		}
 	}
-
-	dsb();
+	isb();
 }
 
 void dcache_clean_invalidate_all(void)
@@ -161,18 +172,116 @@ static unsigned int line_bytes(void)
 	return size;
 }
 
-void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
+/*
+ * Do a dcache operation by modified virtual address. This is useful for
+ * maintaining coherency in drivers which do DMA transfers and only need to
+ * perform cache maintenance on a particular memory range rather than the
+ * entire cache.
+ */
+static void dcache_op_mva(unsigned long addr,
+		unsigned long len, enum dcache_op op)
 {
-	unsigned long line, i;
+	unsigned long line, linesize;
 
-	line = line_bytes();
-	for (i = addr & ~(line - 1); i < addr + len - 1; i += line)
-		dccimvac(addr);
+	linesize = line_bytes();
+	line = addr & ~(linesize - 1);
+
+	dsb();
+	while (line < addr + len) {
+		switch(op) {
+		case OP_DCCIMVAC:
+			dccimvac(line);
+			break;
+		default:
+			break;
+		}
+		line += linesize;
+	}
+	isb();
 }
 
-/* FIXME: wrapper around imported mmu_setup() for now */
-extern void mmu_setup(unsigned long start, unsigned long size);
-void mmu_setup_by_mva(unsigned long start, unsigned long size)
+void dcache_clean_by_mva(unsigned long addr, unsigned long len)
 {
-	mmu_setup(start, size);
+	dcache_op_mva(addr, len, OP_DCCMVAC);
+}
+
+void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
+{
+	dcache_op_mva(addr, len, OP_DCCIMVAC);
+}
+
+void dcache_mmu_disable(void)
+{
+	uint32_t sctlr, csselr;
+
+	/* ensure L1 data/unified cache is selected */
+	csselr = read_csselr();
+	csselr &= ~0xf;
+	write_csselr(csselr);
+
+	dcache_clean_invalidate_all();
+
+	sctlr = read_sctlr();
+	sctlr &= ~(SCTLR_C | SCTLR_M);
+	write_sctlr(sctlr);
+}
+
+
+void dcache_mmu_enable(void)
+{
+	uint32_t sctlr;
+
+	sctlr = read_sctlr();
+	dcache_clean_invalidate_all();
+	sctlr |= SCTLR_C | SCTLR_M;
+	write_sctlr(sctlr);
+}
+
+void armv7_invalidate_caches(void)
+{
+	uint32_t clidr;
+	int level;
+
+	/* Invalidate branch predictor */
+	bpiall();
+
+	/* Iterate thru each cache identified in CLIDR and invalidate */
+	clidr = read_clidr();
+	for (level = 0; level < 7; level++) {
+		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
+		uint32_t csselr;
+
+		switch(ctype) {
+		case 0x0:
+			/* no cache */
+			break;
+		case 0x1:
+			/* icache only */
+			csselr = (level << 1) | 1;
+			write_csselr(csselr);
+			icache_invalidate_all();
+			break;
+		case 0x2:
+		case 0x4:
+			/* dcache only or unified cache */
+			dcache_invalidate_all();
+			break;
+		case 0x3:
+			/* separate icache and dcache */
+			csselr = (level << 1) | 1;
+			write_csselr(csselr);
+			icache_invalidate_all();
+
+			csselr = level < 1;
+			write_csselr(csselr);
+			dcache_invalidate_all();
+			break;
+		default:
+			/* reserved */
+			break;
+		}
+	}
+
+	/* Invalidate TLB */
+	tlb_invalidate_all();
 }

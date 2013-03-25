@@ -25,6 +25,8 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+ *
+ * cache.h: Cache maintenance API for ARMv7
  */
 
 #ifndef ARMV7_CACHE_H
@@ -91,7 +93,7 @@ static inline void isb(void)
 /* invalidate entire data TLB */
 static inline void dtlbiall(void)
 {
-	asm volatile ("mcr p15, 0, %0, c8, c6, 0" : : "r" (0));
+	asm volatile ("mcr p15, 0, %0, c8, c6, 0" : : "r" (0) : "memory");
 }
 
 /* invalidate entire instruction TLB */
@@ -103,7 +105,33 @@ static inline void itlbiall(void)
 /* invalidate entire unified TLB */
 static inline void tlbiall(void)
 {
-	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0));
+	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0) : "memory");
+}
+
+/* write data access control register (DACR) */
+static inline void write_dacr(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c3, c0, 0" : : "r" (val));
+}
+
+/* write translation table base register 0 (TTBR0) */
+static inline void write_ttbr0(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c2, c0, 0" : : "r" (val) : "memory");
+}
+
+/* read translation table base control register (TTBCR) */
+static inline uint32_t read_ttbcr(void)
+{
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 0, %0, c2, c0, 2" : "=r" (val));
+	return val;
+}
+
+/* write translation table base control register (TTBCR) */
+static inline void write_ttbcr(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c2, c0, 2" : : "r" (val) : "memory");
 }
 
 /*
@@ -119,31 +147,31 @@ static inline void bpiall(void)
 /* data cache clean and invalidate by MVA to PoC */
 static inline void dccimvac(unsigned long mva)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c14, 1" : : "r" (mva));
+	asm volatile ("mcr p15, 0, %0, c7, c14, 1" : : "r" (mva) : "memory");
 }
 
 /* data cache invalidate by set/way */
 static inline void dccisw(uint32_t val)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c14, 2" : : "r" (val));
-}
-
-/* data cache invalidate by set/way */
-static inline void dcisw(uint32_t val)
-{
-	asm volatile ("mcr p15, 0, %0, c7, c6, 2" : : "r" (val));
+	asm volatile ("mcr p15, 0, %0, c7, c14, 2" : : "r" (val) : "memory");
 }
 
 /* data cache clean by MVA to PoC */
 static inline void dccmvac(unsigned long mva)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c10, 1" : : "r" (mva));
+	asm volatile ("mcr p15, 0, %0, c7, c10, 1" : : "r" (mva) : "memory");
 }
 
 /* data cache invalidate by MVA to PoC */
 static inline void dcimvac(unsigned long mva)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c6, 1" : : "r" (mva));
+	asm volatile ("mcr p15, 0, %0, c7, c6, 1" : : "r" (mva) : "memory");
+}
+
+/* data cache invalidate by set/way */
+static inline void dcisw(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c7, c6, 2" : : "r" (val) : "memory");
 }
 
 /* instruction cache invalidate all by PoU */
@@ -195,12 +223,12 @@ static inline void write_csselr(uint32_t val)
 static inline unsigned int read_sctlr(void)
 {
 	unsigned int val;
-	asm volatile ("mrc p15, 0, %0, c1, c0, 0" : "=r" (val) : : "cc");
+	asm volatile ("mrc p15, 0, %0, c1, c0, 0" : "=r" (val));
 	return val;
 }
 
 /* write system control register (SCTLR) */
-static inline void write_sctlr(unsigned int val)
+static inline void write_sctlr(uint32_t val)
 {
 	asm volatile ("mcr p15, 0, %0, c1, c0, 0" : : "r" (val) : "cc");
 	isb();
@@ -210,22 +238,48 @@ static inline void write_sctlr(unsigned int val)
  * Cache maintenance API
  */
 
-/* invalidate all TLBs */
-void tlb_invalidate_all(void);
-
-/* clean and invalidate entire dcache on current level (given by CCSELR) */
+/* dcache clean and invalidate all (on current level given by CCSELR) */
 void dcache_clean_invalidate_all(void);
 
-/* invalidate entire dcache on current level (given by CCSELR) */
-void dcache_invalidate_all(void);
+/* dcache clean by modified virtual address to PoC */
+void dcache_clean_by_mva(unsigned long addr, unsigned long len);
 
-/* invalidate and clean dcache by machine virtual address to PoC */
+/* dcache clean and invalidate by modified virtual address to PoC */
 void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
 
-/* invalidate entire icache on current level (given by CSSELR) */
+/* dcache invalidate all (on current level given by CCSELR) */
+void dcache_invalidate_all(void);
+
+/* dcache and MMU disable */
+void dcache_mmu_disable(void);
+
+/* dcache and MMU enable */
+void dcache_mmu_enable(void);
+
+/* icache invalidate all (on current level given by CSSELR) */
 void icache_invalidate_all(void);
 
-/* MMU setup by machine virtual address */
-void mmu_setup_by_mva(unsigned long start, unsigned long size);
+/* tlb invalidate all */
+void tlb_invalidate_all(void);
+
+/*
+ * Generalized setup/init functions
+ */
+
+/* invalidate all caches on ARMv7 */
+void armv7_invalidate_caches(void);
+
+/* mmu initialization (set page table address, set permissions, etc) */
+void mmu_init(void);
+
+enum dcache_policy {
+	DCACHE_OFF,
+	DCACHE_WRITEBACK,
+	DCACHE_WRITETHROUGH,
+};
+
+/* mmu range configuration (set dcache policy) */
+void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
+						enum dcache_policy policy);
 
 #endif /* ARMV7_CACHE_H */

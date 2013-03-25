@@ -27,6 +27,8 @@
  * SUCH DAMAGE.
  */
 
+//#define USB_DEBUG
+
 #include <libpayload.h>
 #include "ehci.h"
 #include "ehci_private.h"
@@ -67,6 +69,7 @@ static void dump_td(u32 addr)
 	usb_debug("+---------------------------------------------------+\n");
 }
 
+#ifdef USB_DEBUG
 static void dump_qh(ehci_qh_t *cur)
 {
 	qtd_t *tmp_qtd = NULL;
@@ -112,6 +115,7 @@ static void dump_qh(ehci_qh_t *cur)
 		usb_debug("+---------------------------------------------------+\n");
 	}
 }
+#endif
 
 static void ehci_start (hci_t *controller)
 {

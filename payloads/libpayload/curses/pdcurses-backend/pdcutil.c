@@ -2,6 +2,7 @@
 /* This file is BSD licensed, Copyright 2011 secunet AG */
 
 #include "lppdc.h"
+#include <curses.h>
 #include <libpayload.h>
 
 int curses_flags = F_ENABLE_SERIAL | F_ENABLE_CONSOLE;
@@ -37,12 +38,12 @@ void curses_enable_vga(int enable)
     curses_flags = (curses_flags & ~F_ENABLE_CONSOLE) | (enable * F_ENABLE_CONSOLE);
 }
 
-int curses_serial_enabled()
+int curses_serial_enabled(void)
 {
     return !!(curses_flags & F_ENABLE_SERIAL);
 }
 
-int curses_vga_enabled()
+int curses_vga_enabled(void)
 {
     return !!(curses_flags & F_ENABLE_CONSOLE);
 }

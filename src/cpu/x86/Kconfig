@@ -56,8 +56,11 @@ config LOGICAL_CPUS
 	default y
 
 config CACHE_ROM
-	bool
+	bool "Allow for caching system ROM."
 	default n
+	help
+	 When selected a variable range MTRR is allocated for coreboot and
+	 the bootloader enable caching of the system ROM for faster access.
 
 config SMM_TSEG
 	bool

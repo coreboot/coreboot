@@ -99,6 +99,11 @@ struct sysinfo_t {
 	void	*vdat_addr;
 	u32	vdat_size;
 #endif
+
+#ifdef CONFIG_ARCH_X86
+	int x86_rom_var_mtrr_index;
+#endif
+
 	void	*tstamp_table;
 	void	*cbmem_cons;
 	void	*mrc_cache;

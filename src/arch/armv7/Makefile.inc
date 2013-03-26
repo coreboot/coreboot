@@ -193,11 +193,11 @@ endif
 ################################################################################
 # Build the final rom image
 
-$(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
+$(obj)/coreboot.pre: $(objcbfs)/romstage.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
 	$(CBFSTOOL) $@.tmp add-stage \
-		-f $(objcbfs)/romstage_null.debug \
+		-f $(objcbfs)/romstage.elf \
 		-n $(CONFIG_CBFS_PREFIX)/romstage -c none
 	mv $@.tmp $@
 
@@ -249,41 +249,19 @@ endif
 ################################################################################
 # Build the romstage
 
-$(objcbfs)/romstage_null.debug: $$(romstage-objs) $(stages_o) $(objgenerated)/romstage_null.ld
+$(objcbfs)/romstage.debug: $$(romstage-objs) $(stages_o) $(objgenerated)/romstage.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage_null.ld
+	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--start-group $(romstage-objs) $(stages_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage.ld -Wl,--start-group $(romstage-objs) $(stages_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
 
-$(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
-ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) $(stages_o) -T $(objgenerated)/romstage_xip.ld
-else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--start-group $(romstage-objs) $(stages_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
-endif
-
-$(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
+$(objgenerated)/romstage.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
 	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
-	mv $@.tmp $@
-
-$(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
-	rm -f $@
-	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(objcbfs)/base_xip.txt > $@.tmp
-	sed -e '/ROMSTAGE_BASE/d' $(objgenerated)/romstage_null.ld >> $@.tmp
-	mv $@.tmp $@
-
-$(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
-	@printf "    generating base_xip.txt\n"
-	rm -f $@
-	$(CBFSTOOL) $(obj)/coreboot.pre1 locate -f $(objcbfs)/romstage_null.bin -n $(CONFIG_CBFS_PREFIX)/romstage -P $(CONFIG_XIP_ROM_SIZE) > $@.tmp \
-	 || { echo "The romstage is larger than XIP size. Please expand the CONFIG_XIP_ROM_SIZE" ; exit 1; }
 	mv $@.tmp $@
 
 $(objgenerated)/crt0.romstage.S: $$(crt0s)

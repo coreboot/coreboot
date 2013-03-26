@@ -26,6 +26,7 @@
 #define MTRRphysMaskValid	(1 << 11)
 
 #define NUM_FIXED_RANGES 88
+#define RANGES_PER_FIXED_MTRR 8
 #define MTRRfix64K_00000_MSR 0x250
 #define MTRRfix16K_80000_MSR 0x258
 #define MTRRfix16K_A0000_MSR 0x259
@@ -39,22 +40,33 @@
 #define MTRRfix4K_F8000_MSR 0x26f
 
 #if !defined (__ASSEMBLER__) && !defined(__PRE_RAM__)
-#include <device/device.h>
-/* You should almost NEVER use this function.
- * N.B. We worked on a lot of ways to make this continue as static,
- * but just making it available ended up being the simplest solution.
+
+/*
+ * The MTRR code has some side effects that the callers should be aware for.
+ * 1. The call sequence matters. x86_setup_mtrrs() calls
+ *    x86_setup_fixed_mtrrs_no_enable() then enable_fixed_mtrrs() (equivalent
+ *    of x86_setup_fixed_mtrrs()) then x86_setup_var_mtrrs(). If the callers
+ *    want to call the components of x86_setup_mtrrs() because of other
+ *    rquirements the ordering should still preserved.
+ * 2. enable_fixed_mtrr() will enable both variable and fixed MTRRs because
+ *    of the nature of the global MTRR enable flag. Therefore, all direct
+ *    or indirect callers of enable_fixed_mtrr() should ensure that the
+ *    variable MTRR MSRs do not contain bad ranges.
  */
-void set_var_mtrr(
-	unsigned int reg, unsigned long basek, unsigned long sizek,
-	unsigned char type, unsigned address_bits);
-void enable_fixed_mtrr(void);
-void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void x86_setup_mtrrs(void);
-int x86_mtrr_check(void);
-void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res);
+/*
+ * x86_setup_var_mtrrs() parameters:
+ * address_bits - number of physical address bits supported by cpu
+ * above4gb - 2 means dynamically detect number of variable MTRRs available.
+ *            non-zero means handle memory ranges above 4GiB.
+ *            0 means ignore memory ranges above 4GiB
+ */
+void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
+void enable_fixed_mtrr(void);
 void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);
+int x86_mtrr_check(void);
 #endif
 
 #if !defined(CONFIG_RAMTOP)

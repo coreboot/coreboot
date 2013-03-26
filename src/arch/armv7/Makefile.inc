@@ -260,7 +260,6 @@ endif
 $(objgenerated)/romstage.ld: $$(ldscripts) $(obj)/ldoptions
 	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
 	rm -f $@
-	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
 	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
 	mv $@.tmp $@
 

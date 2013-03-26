@@ -217,6 +217,18 @@ struct cb_vboot_handoff {
 	uint32_t vboot_handoff_size;
 };
 
+#define CB_TAG_X86_ROM_MTRR	0x0021
+struct cb_x86_rom_mtrr {
+	uint32_t tag;
+	uint32_t size;
+	/* The variable range MTRR index covering the ROM. If one wants to
+	 * enable caching the ROM, the variable MTRR needs to be set to
+	 * write-protect. To disable the caching after enabling set the
+	 * type to uncacheable. */
+	uint32_t index;
+};
+
+
 #define CB_TAG_CMOS_OPTION_TABLE 0x00c8
 struct cb_cmos_option_table {
 	u32 tag;

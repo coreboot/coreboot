@@ -142,16 +142,26 @@ static struct memranges *get_physical_address_space(void)
 	 * time remove unacheable regions from the cacheable ones. */
 	if (addr_space == NULL) {
 		struct range_entry *r;
-		const unsigned long mask = IORESOURCE_CACHEABLE;
+		unsigned long mask;
+		unsigned long match;
 
 		addr_space = &addr_space_storage;
 
+		mask = IORESOURCE_CACHEABLE;
 		/* Collect cacheable and uncacheable address ranges. The
 		 * uncacheable regions take precedence over the  cacheable
 		 * regions. */
 		memranges_init(addr_space, mask, mask, MTRR_TYPE_WRBACK);
 		memranges_add_resources(addr_space, mask, 0,
 		                        MTRR_TYPE_UNCACHEABLE);
+
+		/* Handle any write combining resources. Only prefetchable
+		 * resources with the IORESOURCE_WRCOMB flag are appropriate
+		 * for this MTRR type. */
+		match = IORESOURCE_PREFETCH | IORESOURCE_WRCOMB;
+		mask |= match;
+		memranges_add_resources(addr_space, mask, match,
+		                        MTRR_TYPE_WRCOMB);
 
 		/* The address space below 4GiB is special. It needs to be
 		 * covered entirly by range entries so that MTRR calculations

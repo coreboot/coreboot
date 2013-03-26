@@ -349,6 +349,11 @@ void x86_setup_fixed_mtrrs(void)
 #if CONFIG_CACHE_ROM
 static long rom_cache_mtrr = -1;
 
+long x86_mtrr_rom_cache_var_index(void)
+{
+	return rom_cache_mtrr;
+}
+
 void x86_mtrr_enable_rom_caching(void)
 {
 	msr_t msr_val;

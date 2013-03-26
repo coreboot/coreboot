@@ -250,6 +250,14 @@ struct lb_vboot_handoff {
 	uint32_t vboot_handoff_size;
 };
 
+#define LB_TAG_X86_ROM_MTRR	0x0021
+struct lb_x86_rom_mtrr {
+	uint32_t tag;
+	uint32_t size;
+	/* The variable range MTRR index covering the ROM. */
+	uint32_t index;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

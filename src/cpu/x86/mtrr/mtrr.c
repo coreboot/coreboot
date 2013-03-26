@@ -4,6 +4,7 @@
  * Derived from intel_set_mtrr in intel_subr.c and mtrr.c in linux kernel
  *
  * Copyright 2000 Silicon Integrated System Corporation
+ * Copyright 2013 Google Inc.
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -23,14 +24,9 @@
  * Reference: Intel Architecture Software Developer's Manual, Volume 3: System Programming
  */
 
-/*
-        2005.1 yhlu add NC support to spare mtrrs for 64G memory above installed
-	2005.6 Eric add address bit in x86_setup_mtrrs
-	2005.6 yhlu split x86_setup_var_mtrrs and x86_setup_fixed_mtrrs,
-		for AMD, it will not use x86_setup_fixed_mtrrs
-*/
-
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <cpu/x86/msr.h>
@@ -39,18 +35,13 @@
 #include <cpu/x86/lapic.h>
 #include <arch/cpu.h>
 #include <arch/acpi.h>
+#include <memrange.h>
 #if CONFIG_X86_AMD_FIXED_MTRRS
 #include <cpu/amd/mtrr.h>
 #define MTRR_FIXED_WRBACK_BITS (MTRR_READ_MEM | MTRR_WRITE_MEM)
 #else
 #define MTRR_FIXED_WRBACK_BITS 0
 #endif
-
-static unsigned int mtrr_msr[] = {
-	MTRRfix64K_00000_MSR, MTRRfix16K_80000_MSR, MTRRfix16K_A0000_MSR,
-	MTRRfix4K_C0000_MSR, MTRRfix4K_C8000_MSR, MTRRfix4K_D0000_MSR, MTRRfix4K_D8000_MSR,
-	MTRRfix4K_E0000_MSR, MTRRfix4K_E8000_MSR, MTRRfix4K_F0000_MSR, MTRRfix4K_F8000_MSR,
-};
 
 /* 2 MTRRS are reserved for the operating system */
 #define BIOS_MTRRS 6
@@ -75,77 +66,18 @@ void enable_fixed_mtrr(void)
 	msr_t msr;
 
 	msr = rdmsr(MTRRdefType_MSR);
-	msr.lo |= 0xc00;
+	msr.lo |= MTRRdefTypeEn | MTRRdefTypeFixEn;
 	wrmsr(MTRRdefType_MSR, msr);
 }
 
-static void enable_var_mtrr(void)
+static void enable_var_mtrr(unsigned char deftype)
 {
 	msr_t msr;
 
 	msr = rdmsr(MTRRdefType_MSR);
-	msr.lo |= MTRRdefTypeEn;
+	msr.lo &= ~0xff;
+	msr.lo |= MTRRdefTypeEn | deftype;
 	wrmsr(MTRRdefType_MSR, msr);
-}
-
-/* setting variable mtrr, comes from linux kernel source */
-void set_var_mtrr(
-	unsigned int reg, unsigned long basek, unsigned long sizek,
-	unsigned char type, unsigned address_bits)
-{
-	msr_t base, mask;
-	unsigned address_mask_high;
-
-        if (reg >= total_mtrrs)
-               return;
-
-        // it is recommended that we disable and enable cache when we
-        // do this.
-        if (sizek == 0) {
-        	disable_cache();
-
-                msr_t zero;
-                zero.lo = zero.hi = 0;
-                /* The invalid bit is kept in the mask, so we simply clear the
-                   relevant mask register to disable a range. */
-                wrmsr (MTRRphysMask_MSR(reg), zero);
-
-        	enable_cache();
-		return;
-        }
-
-
-	address_mask_high = ((1u << (address_bits - 32u)) - 1u);
-
-	base.hi = basek >> 22;
-	base.lo  = basek << 10;
-
-	if (sizek < 4*1024*1024) {
-		mask.hi = address_mask_high;
-		mask.lo = ~((sizek << 10) -1);
-	}
-	else {
-		mask.hi = address_mask_high & (~((sizek >> 22) -1));
-		mask.lo = 0;
-	}
-
-	// it is recommended that we disable and enable cache when we
-	// do this.
-	disable_cache();
-
-	/* Bit 32-35 of MTRRphysMask should be set to 1 */
-	base.lo |= type;
-	mask.lo |= MTRRphysMaskValid;
-	wrmsr (MTRRphysBase_MSR(reg), base);
-	wrmsr (MTRRphysMask_MSR(reg), mask);
-
-	enable_cache();
-
-	printk(BIOS_DEBUG, "Setting variable MTRR %d, base: %4ldMB, range: %4ldMB, type %s\n",
-		reg, basek >>10, sizek >> 10,
-		(type==MTRR_TYPE_UNCACHEABLE)?"UC":
-		    ((type==MTRR_TYPE_WRBACK)?"WB":"Other")
-	);
 }
 
 /* fms: find most sigificant bit set, stolen from Linux Kernel Source. */
@@ -172,266 +104,217 @@ static inline unsigned int fls(unsigned int x)
 	return r;
 }
 
-/* setting up variable and fixed mtrr
- *
- * From Intel Vol. III Section 9.12.4, the Range Size and Base Alignment has some kind of requirement:
- *	1. The range size must be 2^N byte for N >= 12 (i.e 4KB minimum).
- *	2. The base address must be 2^N aligned, where the N here is equal to the N in previous
- *	   requirement. So a 8K range must be 8K aligned not 4K aligned.
- *
- * These requirement is meet by "decompositing" the ramsize into Sum(Cn * 2^n, n = [0..N], Cn = [0, 1]).
- * For Cm = 1, there is a WB range of 2^m size at base address Sum(Cm * 2^m, m = [N..n]).
- * A 124MB (128MB - 4MB SMA) example:
- * 	ramsize = 124MB == 64MB (at 0MB) + 32MB (at 64MB) + 16MB (at 96MB ) + 8MB (at 112MB) + 4MB (120MB).
- * But this wastes a lot of MTRR registers so we use another more "aggresive" way with Uncacheable Regions.
- *
- * In the Uncacheable Region scheme, we try to cover the whole ramsize by one WB region as possible,
- * If (an only if) this can not be done we will try to decomposite the ramesize, the mathematical formula
- * whould be ramsize = Sum(Cn * 2^n, n = [0..N], Cn = [-1, 0, 1]). For Cn = -1, a Uncachable Region is used.
- * The same 124MB example:
- * 	ramsize = 124MB == 128MB WB (at 0MB) + 4MB UC (at 124MB)
- * or a 156MB (128MB + 32MB - 4MB SMA) example:
- *	ramsize = 156MB == 128MB WB (at 0MB) + 32MB WB (at 128MB) + 4MB UC (at 156MB)
- */
+#define MTRR_VERBOSE_LEVEL BIOS_NEVER
 
-static void set_fixed_mtrrs(unsigned int first, unsigned int last, unsigned char type)
+/* MTRRs are at a 4KiB granularity. Therefore all address calculations can
+ * be done with 32-bit numbers. This allows for the MTRR code to handle
+ * up to 2^44 bytes (16 TiB) of address space. */
+#define RANGE_SHIFT 12
+#define ADDR_SHIFT_TO_RANGE_SHIFT(x) \
+	(((x) > RANGE_SHIFT) ? ((x) - RANGE_SHIFT) : RANGE_SHIFT)
+#define PHYS_TO_RANGE_ADDR(x) ((x) >> RANGE_SHIFT)
+#define RANGE_TO_PHYS_ADDR(x) (((resource_t)(x)) << RANGE_SHIFT)
+#define NUM_FIXED_MTRRS (NUM_FIXED_RANGES / RANGES_PER_FIXED_MTRR)
+
+/* The minimum alignment while handling variable MTRR ranges is 64MiB. */
+#define MTRR_MIN_ALIGN PHYS_TO_RANGE_ADDR(64 << 20)
+/* Helpful constants. */
+#define RANGE_1MB PHYS_TO_RANGE_ADDR(1 << 20)
+#define RANGE_4GB (1 << (ADDR_SHIFT_TO_RANGE_SHIFT(32)))
+
+static inline uint32_t range_entry_base_mtrr_addr(struct range_entry *r)
 {
-	unsigned int i;
-	unsigned int fixed_msr = NUM_FIXED_RANGES >> 3;
-	msr_t msr;
-	msr.lo = msr.hi = 0; /* Shut up gcc */
-	for(i = first; i < last; i++) {
-		/* When I switch to a new msr read it in */
-		if (fixed_msr != i >> 3) {
-			/* But first write out the old msr */
-			if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
-				disable_cache();
-				wrmsr(mtrr_msr[fixed_msr], msr);
-				enable_cache();
-			}
-			fixed_msr = i>>3;
-			msr = rdmsr(mtrr_msr[fixed_msr]);
-		}
-		if ((i & 7) < 4) {
-			msr.lo &= ~(0xff << ((i&3)*8));
-			msr.lo |= type << ((i&3)*8);
-		} else {
-			msr.hi &= ~(0xff << ((i&3)*8));
-			msr.hi |= type << ((i&3)*8);
-		}
-	}
-	/* Write out the final msr */
-	if (fixed_msr < (NUM_FIXED_RANGES >> 3)) {
-		disable_cache();
-		wrmsr(mtrr_msr[fixed_msr], msr);
-		enable_cache();
-	}
+	return PHYS_TO_RANGE_ADDR(range_entry_base(r));
 }
 
-static unsigned fixed_mtrr_index(unsigned long addrk)
+static inline uint32_t range_entry_end_mtrr_addr(struct range_entry *r)
 {
-	unsigned index;
-	index = (addrk - 0) >> 6;
-	if (index >= 8) {
-		index = ((addrk - 8*64) >> 4) + 8;
-	}
-	if (index >= 24) {
-		index = ((addrk - (8*64 + 16*16)) >> 2) + 24;
-	}
-	if (index > NUM_FIXED_RANGES) {
-		index = NUM_FIXED_RANGES;
-	}
-	return index;
+	return PHYS_TO_RANGE_ADDR(range_entry_end(r));
 }
 
-static unsigned int range_to_mtrr(unsigned int reg,
-	unsigned long range_startk, unsigned long range_sizek,
-	unsigned long next_range_startk, unsigned char type,
-	unsigned int address_bits, unsigned int above4gb)
+static struct memranges *get_physical_address_space(void)
 {
-	unsigned long hole_startk = 0, hole_sizek = 0;
+	static struct memranges *addr_space;
+	static struct memranges addr_space_storage;
 
-	if (!range_sizek) {
-		/* If there's no MTRR hole, this function will bail out
-		 * here when called for the hole.
-		 */
-		printk(BIOS_SPEW, "Zero-sized MTRR range @%ldKB\n", range_startk);
-		return reg;
+	/* In order to handle some chipsets not being able to pre-determine
+	 *  uncacheable ranges, such as graphics memory, at resource inseration
+	 * time remove unacheable regions from the cacheable ones. */
+	if (addr_space == NULL) {
+		struct range_entry *r;
+		const unsigned long mask = IORESOURCE_CACHEABLE;
+
+		addr_space = &addr_space_storage;
+
+		/* Collect cacheable and uncacheable address ranges. The
+		 * uncacheable regions take precedence over the  cacheable
+		 * regions. */
+		memranges_init(addr_space, mask, mask, MTRR_TYPE_WRBACK);
+		memranges_add_resources(addr_space, mask, 0,
+		                        MTRR_TYPE_UNCACHEABLE);
+
+		/* The address space below 4GiB is special. It needs to be
+		 * covered entirly by range entries so that MTRR calculations
+		 * can be properly done for the full 32-bit address space.
+		 * Therefore, ensure holes are filled up to 4GiB as
+		 * uncacheable */
+		memranges_fill_holes_up_to(addr_space,
+		                           RANGE_TO_PHYS_ADDR(RANGE_4GB),
+		                           MTRR_TYPE_UNCACHEABLE);
+
+		printk(BIOS_DEBUG, "MTRR: Physical address space:\n");
+		memranges_each_entry(r, addr_space)
+			printk(BIOS_DEBUG,
+			       "0x%016llx - 0x%016llx size 0x%08llx type %ld\n",
+			       range_entry_base(r), range_entry_end(r),
+			       range_entry_size(r), range_entry_tag(r));
 	}
 
-	if (reg >= bios_mtrrs) {
-		printk(BIOS_ERR, "Warning: Out of MTRRs for base: %4ldMB, range: %ldMB, type %s\n",
-				range_startk >>10, range_sizek >> 10,
-				(type==MTRR_TYPE_UNCACHEABLE)?"UC":
-				   ((type==MTRR_TYPE_WRBACK)?"WB":"Other") );
-		return reg;
-	}
-
-#define MIN_ALIGN 0x10000 /* 64MB */
-
-	if (above4gb == 2 && type == MTRR_TYPE_WRBACK &&
-	    range_sizek > MIN_ALIGN && range_sizek % MIN_ALIGN) {
-		/*
-		 * If this range is not divisible then instead
-		 * make a larger range and carve out an uncached hole.
-		 */
-		hole_startk = range_startk + range_sizek;
-		hole_sizek = MIN_ALIGN - (range_sizek % MIN_ALIGN);
-		range_sizek += hole_sizek;
-	}
-
-	while(range_sizek) {
-		unsigned long max_align, align;
-		unsigned long sizek;
-		/* Compute the maximum size I can make a range */
-		max_align = fls(range_startk);
-		align = fms(range_sizek);
-		if (align > max_align) {
-			align = max_align;
-		}
-		sizek = 1 << align;
-
-		/* if range is above 4GB, MTRR is needed
-		 * only if above4gb flag is set
-		 */
-		if (range_startk < 0x100000000ull / 1024 || above4gb)
-			set_var_mtrr(reg++, range_startk, sizek, type, address_bits);
-		range_startk += sizek;
-		range_sizek -= sizek;
-		if (reg >= bios_mtrrs) {
-			printk(BIOS_ERR, "Running out of variable MTRRs!\n");
-			break;
-		}
-	}
-
-	if (hole_sizek) {
-		printk(BIOS_DEBUG, "Adding hole at %ldMB-%ldMB\n",
-		       hole_startk >> 10, (hole_startk + hole_sizek) >> 10);
-		reg = range_to_mtrr(reg, hole_startk, hole_sizek,
-			      next_range_startk, MTRR_TYPE_UNCACHEABLE,
-			      address_bits, above4gb);
-	}
-
-	return reg;
+	return addr_space;
 }
 
-static unsigned long resk(uint64_t value)
-{
-	unsigned long resultk;
-	if (value < (1ULL << 42)) {
-		resultk = value >> 10;
-	}
-	else {
-		resultk = 0xffffffff;
-	}
-	return resultk;
-}
-
-static void set_fixed_mtrr_resource(void *gp, struct device *dev, struct resource *res)
-{
-	unsigned int start_mtrr;
-	unsigned int last_mtrr;
-	const unsigned char type = MTRR_TYPE_WRBACK | MTRR_FIXED_WRBACK_BITS;
-	start_mtrr = fixed_mtrr_index(resk(res->base));
-	last_mtrr  = fixed_mtrr_index(resk((res->base + res->size)));
-	if (start_mtrr >= NUM_FIXED_RANGES) {
-		return;
-	}
-	printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: WB\n",
-		start_mtrr, last_mtrr);
-	set_fixed_mtrrs(start_mtrr, last_mtrr, type);
-
-}
-
-struct var_mtrr_state {
-	unsigned long range_startk, range_sizek;
-	unsigned int reg;
-	unsigned long hole_startk, hole_sizek;
-	unsigned int address_bits;
-	unsigned int above4gb; /* Set if MTRRs are needed for DRAM above 4GB */
+/* Fixed MTRR descriptor. This structure defines the step size and begin
+ * and end (exclusive) address covered by a set of fixe MTRR MSRs.
+ * It also describes the offset in byte intervals to store the calculated MTRR
+ * type in an array. */
+struct fixed_mtrr_desc {
+	uint32_t begin;
+	uint32_t end;
+	uint32_t step;
+	int range_index;
+	int msr_index_base;
 };
 
-void set_var_mtrr_resource(void *gp, struct device *dev, struct resource *res)
+/* Shared MTRR calculations. Can be reused by APs. */
+static uint8_t fixed_mtrr_types[NUM_FIXED_RANGES];
+
+/* Fixed MTRR descriptors. */
+static const struct fixed_mtrr_desc fixed_mtrr_desc[] = {
+	{ PHYS_TO_RANGE_ADDR(0x000000), PHYS_TO_RANGE_ADDR(0x080000),
+	  PHYS_TO_RANGE_ADDR(64 * 1024), 0, MTRRfix64K_00000_MSR },
+	{ PHYS_TO_RANGE_ADDR(0x080000), PHYS_TO_RANGE_ADDR(0x0C0000),
+	  PHYS_TO_RANGE_ADDR(16 * 1024), 8, MTRRfix16K_80000_MSR },
+	{ PHYS_TO_RANGE_ADDR(0x0C0000), PHYS_TO_RANGE_ADDR(0x100000),
+	  PHYS_TO_RANGE_ADDR(4 * 1024), 24, MTRRfix4K_C0000_MSR },
+};
+
+static void calc_fixed_mtrrs(void)
 {
-	struct var_mtrr_state *state = gp;
-	unsigned long basek, sizek;
-	if (state->reg >= bios_mtrrs)
+	static int fixed_mtrr_types_initialized;
+	struct memranges *phys_addr_space;
+	struct range_entry *r;
+	const struct fixed_mtrr_desc *desc;
+	const struct fixed_mtrr_desc *last_desc;
+	uint32_t begin;
+	uint32_t end;
+	int type_index;
+
+	if (fixed_mtrr_types_initialized)
 		return;
 
-	basek = resk(res->base);
-	sizek = resk(res->size);
+	phys_addr_space = get_physical_address_space();
 
-	if (res->flags & IORESOURCE_UMA_FB) {
-		/* FIXME: could I use Write-Combining for Frame Buffer ? */
-		state->reg = range_to_mtrr(state->reg,	basek, sizek, 0,
-			MTRR_TYPE_UNCACHEABLE, state->address_bits, state->above4gb);
-		return;
-	}
+	/* Set all fixed ranges to uncacheable first. */
+	memset(&fixed_mtrr_types[0], MTRR_TYPE_UNCACHEABLE, NUM_FIXED_RANGES);
 
-	if (res->flags & IORESOURCE_IGNORE_MTRR) {
-		return;
-	}
+	desc = &fixed_mtrr_desc[0];
+	last_desc = &fixed_mtrr_desc[ARRAY_SIZE(fixed_mtrr_desc) - 1];
+	type_index = desc->range_index;
 
-	if (!(res->flags & IORESOURCE_CACHEABLE))
-		return;
+	memranges_each_entry(r, phys_addr_space) {
+		begin = range_entry_base_mtrr_addr(r);
+		end = range_entry_end_mtrr_addr(r);
 
-	/* See if I can merge with the last range
-	 * Either I am below 1M and the fixed mtrrs handle it, or
-	 * the ranges touch.
-	 */
-	if ((basek <= 1024) || (state->range_startk + state->range_sizek == basek)) {
-		unsigned long endk = basek + sizek;
-		state->range_sizek = endk - state->range_startk;
-		return;
-	}
-	/* Write the range mtrrs */
-	if (state->range_sizek != 0) {
-		if (state->hole_sizek == 0 && state->above4gb != 2) {
-			/* We need to put that on to hole */
-			unsigned long endk = basek + sizek;
-			state->hole_startk = state->range_startk + state->range_sizek;
-			state->hole_sizek  = basek - state->hole_startk;
-			state->range_sizek = endk - state->range_startk;
-			return;
+		if (begin >= last_desc->end)
+			break;
+
+		if (end > last_desc->end)
+			end = last_desc->end;
+
+		/* Get to the correct fixed mtrr descriptor. */
+		while (begin >= desc->end)
+			desc++;
+
+		type_index = desc->range_index;
+		type_index += (begin - desc->begin) / desc->step;
+
+		while (begin != end) {
+			unsigned char type;
+
+			type = range_entry_tag(r);
+			printk(MTRR_VERBOSE_LEVEL,
+			       "MTRR addr 0x%x-0x%x set to %d type @ %d\n",
+			       begin, begin + desc->step, type, type_index);
+			if (type == MTRR_TYPE_WRBACK)
+				type |= MTRR_FIXED_WRBACK_BITS;
+			fixed_mtrr_types[type_index] = type;
+			type_index++;
+			begin += desc->step;
+			if (begin == desc->end)
+				desc++;
 		}
-		state->reg = range_to_mtrr(state->reg, state->range_startk,
-			state->range_sizek, basek, MTRR_TYPE_WRBACK,
-			state->address_bits, state->above4gb);
-
-		state->reg = range_to_mtrr(state->reg, state->hole_startk,
-			state->hole_sizek, basek, MTRR_TYPE_UNCACHEABLE,
-			state->address_bits, state->above4gb);
-
-		state->range_startk = 0;
-		state->range_sizek = 0;
-		state->hole_startk = 0;
-		state->hole_sizek = 0;
 	}
-	/* Allocate an msr */
-	printk(BIOS_SPEW, " Allocate an msr - basek = %08lx, sizek = %08lx,\n", basek, sizek);
-	state->range_startk = basek;
-	state->range_sizek  = sizek;
+	fixed_mtrr_types_initialized = 1;
+}
+
+static void commit_fixed_mtrrs(void)
+{
+	int i;
+	int j;
+	int msr_num;
+	int type_index;
+	/* 8 ranges per msr. */
+	msr_t fixed_msrs[NUM_FIXED_MTRRS];
+	unsigned long msr_index[NUM_FIXED_MTRRS];
+
+	memset(&fixed_msrs, 0, sizeof(fixed_msrs));
+
+	disable_cache();
+
+	msr_num = 0;
+	type_index = 0;
+	for (i = 0; i < ARRAY_SIZE(fixed_mtrr_desc); i++) {
+		const struct fixed_mtrr_desc *desc;
+		int num_ranges;
+
+		desc = &fixed_mtrr_desc[i];
+		num_ranges = (desc->end - desc->begin) / desc->step;
+		for (j = 0; j < num_ranges; j += RANGES_PER_FIXED_MTRR) {
+			msr_index[msr_num] = desc->msr_index_base +
+				(j / RANGES_PER_FIXED_MTRR);
+			fixed_msrs[msr_num].lo |=
+				fixed_mtrr_types[type_index++] << 0;
+			fixed_msrs[msr_num].lo |=
+				fixed_mtrr_types[type_index++] << 8;
+			fixed_msrs[msr_num].lo |=
+				fixed_mtrr_types[type_index++] << 16;
+			fixed_msrs[msr_num].lo |=
+				fixed_mtrr_types[type_index++] << 24;
+			fixed_msrs[msr_num].hi |=
+				fixed_mtrr_types[type_index++] << 0;
+			fixed_msrs[msr_num].hi |=
+				fixed_mtrr_types[type_index++] << 8;
+			fixed_msrs[msr_num].hi |=
+				fixed_mtrr_types[type_index++] << 16;
+			fixed_msrs[msr_num].hi |=
+				fixed_mtrr_types[type_index++] << 24;
+			msr_num++;
+		}
+	}
+
+	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++) {
+		printk(BIOS_DEBUG, "MTRR: Fixed MSR 0x%lx 0x%08x%08x\n",
+		       msr_index[i], fixed_msrs[i].hi, fixed_msrs[i].lo);
+		wrmsr(msr_index[i], fixed_msrs[i]);
+	}
+
+	enable_cache();
 }
 
 void x86_setup_fixed_mtrrs_no_enable(void)
 {
-        /* Try this the simple way of incrementally adding together
-         * mtrrs.  If this doesn't work out we can get smart again
-         * and clear out the mtrrs.
-         */
-
-        printk(BIOS_DEBUG, "\n");
-        /* Initialized the fixed_mtrrs to uncached */
-        printk(BIOS_DEBUG, "Setting fixed MTRRs(%d-%d) Type: UC\n",
-	        0, NUM_FIXED_RANGES);
-        set_fixed_mtrrs(0, NUM_FIXED_RANGES, MTRR_TYPE_UNCACHEABLE);
-
-        /* Now see which of the fixed mtrrs cover ram.
-                 */
-        search_global_resources(
-		IORESOURCE_MEM | IORESOURCE_CACHEABLE, IORESOURCE_MEM | IORESOURCE_CACHEABLE,
-		set_fixed_mtrr_resource, NULL);
-        printk(BIOS_DEBUG, "DONE fixed MTRRs\n");
+	calc_fixed_mtrrs();
+	commit_fixed_mtrrs();
 }
 
 void x86_setup_fixed_mtrrs(void)
@@ -442,73 +325,237 @@ void x86_setup_fixed_mtrrs(void)
 	enable_fixed_mtrr();
 }
 
+struct var_mtrr_state {
+	struct memranges *addr_space;
+	int above4gb;
+	int address_bits;
+	int commit_mtrrs;
+	int mtrr_index;
+	int def_mtrr_type;
+};
 
-void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
-/* this routine needs to know how many address bits a given processor
- * supports.  CPUs get grumpy when you set too many bits in
- * their mtrr registers :(  I would generically call cpuid here
- * and find out how many physically supported but some cpus are
- * buggy, and report more bits then they actually support.
- * If above4gb flag is set, variable MTRR ranges must be used to
- * set cacheability of DRAM above 4GB. If above4gb flag is clear,
- * some other mechanism is controlling cacheability of DRAM above 4GB.
- */
+static void clear_var_mtrr(int index)
 {
-	/* Try this the simple way of incrementally adding together
-	 * mtrrs.  If this doesn't work out we can get smart again
-	 * and clear out the mtrrs.
+	msr_t msr_val;
+
+	msr_val = rdmsr(MTRRphysMask_MSR(index));
+	msr_val.lo &= ~MTRRphysMaskValid;
+	wrmsr(MTRRphysMask_MSR(index), msr_val);
+}
+
+static void write_var_mtrr(struct var_mtrr_state *var_state,
+                           uint32_t base, uint32_t size, int mtrr_type)
+{
+	msr_t msr_val;
+	unsigned long msr_index;
+	resource_t rbase;
+	resource_t rsize;
+	resource_t mask;
+
+	/* Some variable MTRRs are attempted to be saved for the OS use.
+	 * However, it's more important to try to map the full address space
+	 * properly. */
+	if (var_state->mtrr_index >= bios_mtrrs)
+		printk(BIOS_WARNING, "Taking a reserved OS MTRR.\n");
+	if (var_state->mtrr_index >= total_mtrrs) {
+		printk(BIOS_ERR, "ERROR: Not enough MTTRs available!\n");
+		return;
+	}
+
+	rbase = base;
+	rsize = size;
+
+	rbase = RANGE_TO_PHYS_ADDR(rbase);
+	rsize = RANGE_TO_PHYS_ADDR(rsize);
+	rsize = -rsize;
+
+	mask = (1ULL << var_state->address_bits) - 1;
+	rsize = rsize & mask;
+
+	printk(BIOS_DEBUG, "MTRR: %d base 0x%016llx mask 0x%016llx type %d\n",
+	       var_state->mtrr_index, rbase, rsize, mtrr_type);
+
+	msr_val.lo = rbase;
+	msr_val.lo |= mtrr_type;
+
+	msr_val.hi = rbase >> 32;
+	msr_index = MTRRphysBase_MSR(var_state->mtrr_index);
+	wrmsr(msr_index, msr_val);
+
+	msr_val.lo = rsize;
+	msr_val.lo |= MTRRphysMaskValid;
+	msr_val.hi = rsize >> 32;
+	msr_index = MTRRphysMask_MSR(var_state->mtrr_index);
+	wrmsr(msr_index, msr_val);
+}
+
+static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
+                                uint32_t base, uint32_t size, int mtrr_type)
+{
+	while (size != 0) {
+		uint32_t addr_lsb;
+		uint32_t size_msb;
+		uint32_t mtrr_size;
+
+		addr_lsb = fls(base);
+		size_msb = fms(size);
+
+		/* All MTRR entries need to have their base aligned to the mask
+		 * size. The maximum size is calculated by a function of the
+		 * min base bit set and maximum size bit set. */
+		if (addr_lsb > size_msb)
+			mtrr_size = 1 << size_msb;
+		else
+			mtrr_size = 1 << addr_lsb;
+
+		if (var_state->commit_mtrrs)
+			write_var_mtrr(var_state, base, mtrr_size, mtrr_type);
+
+		size -= mtrr_size;
+		base += mtrr_size;
+		var_state->mtrr_index++;
+	}
+}
+
+static void setup_var_mtrrs_by_state(struct var_mtrr_state *var_state)
+{
+	struct range_entry *r;
+
+	/*
+	 * For each range that meets the non-default type process it in the
+	 * following manner:
+	 * +------------------+ c2 = end
+	 * |  0 or more bytes |
+	 * +------------------+ b2 = c1 = ALIGN_DOWN(end)
+	 * |                  |
+	 * +------------------+ b1 = a2 = ALIGN_UP(begin)
+	 * |  0 or more bytes |
+	 * +------------------+ a1 = begin
+	 *
+	 * Thus, there are 3 sub-ranges to configure variable MTRRs for.
 	 */
+	memranges_each_entry(r, var_state->addr_space) {
+		uint32_t a1, a2, b1, b2, c1, c2;
+		int mtrr_type = range_entry_tag(r);
+
+		/* Skip default type. */
+		if (var_state->def_mtrr_type == mtrr_type)
+			continue;
+
+		a1 = range_entry_base_mtrr_addr(r);
+		c2 = range_entry_end_mtrr_addr(r);
+
+		/* The end address is under 1MiB. The fixed MTRRs take
+		 * precedence over the variable ones. Therefore this range
+		 * can be ignored. */
+		if (c2 < RANGE_1MB)
+			continue;
+
+		/* Again, the fixed MTRRs take precedence so the beginning
+		 * of the range can be set to 0 if it starts below 1MiB. */
+		if (a1 < RANGE_1MB)
+			a1 = 0;
+
+		/* If the range starts above 4GiB the processing is done. */
+		if (!var_state->above4gb && a1 >= RANGE_4GB)
+			break;
+
+		/* Clip the upper address to 4GiB if addresses above 4GiB
+		 * are not being processed. */
+		if (!var_state->above4gb && c2 > RANGE_4GB)
+			c2 = RANGE_4GB;
+
+		/* Don't align up or down on the range if it is smaller
+		 * than the minimum granularity. */
+		if ((c2 - a1) < MTRR_MIN_ALIGN) {
+			calc_var_mtrr_range(var_state, a1, c2 - a1, mtrr_type);
+			continue;
+		}
+
+		b1 = a2 = ALIGN_UP(a1, MTRR_MIN_ALIGN);
+		b2 = c1 = ALIGN_DOWN(c2, MTRR_MIN_ALIGN);
+
+		calc_var_mtrr_range(var_state, a1, a2 - a1, mtrr_type);
+		calc_var_mtrr_range(var_state, b1, b2 - b1, mtrr_type);
+		calc_var_mtrr_range(var_state, c1, c2 - c1, mtrr_type);
+	}
+}
+
+static int calc_var_mtrrs(struct memranges *addr_space,
+                          int above4gb, int address_bits)
+{
+	int wb_deftype_count;
+	int uc_deftype_count;
 	struct var_mtrr_state var_state;
 
-	/* Cache as many memory areas as possible */
-	/* FIXME is there an algorithm for computing the optimal set of mtrrs?
-	 * In some cases it is definitely possible to do better.
-	 */
-	var_state.range_startk = 0;
-	var_state.range_sizek = 0;
-	var_state.hole_startk = 0;
-	var_state.hole_sizek = 0;
-	var_state.reg = 0;
-	var_state.address_bits = address_bits;
+	/* The default MTRR cacheability type is determined by calculating
+	 * the number of MTTRs required for each MTTR type as if it was the
+	 * default. */
+	var_state.addr_space = addr_space;
 	var_state.above4gb = above4gb;
+	var_state.address_bits = address_bits;
+	var_state.commit_mtrrs = 0;
 
-	/* Detect number of variable MTRRs */
-	if (above4gb == 2)
-		detect_var_mtrrs();
+	var_state.mtrr_index = 0;
+	var_state.def_mtrr_type = MTRR_TYPE_WRBACK;
+	setup_var_mtrrs_by_state(&var_state);
+	wb_deftype_count = var_state.mtrr_index;
 
-	search_global_resources(IORESOURCE_MEM, IORESOURCE_MEM,
-		set_var_mtrr_resource, &var_state);
+	var_state.mtrr_index = 0;
+	var_state.def_mtrr_type = MTRR_TYPE_UNCACHEABLE;
+	setup_var_mtrrs_by_state(&var_state);
+	uc_deftype_count = var_state.mtrr_index;
 
-	/* Write the last range */
-	var_state.reg = range_to_mtrr(var_state.reg, var_state.range_startk,
-		var_state.range_sizek, 0, MTRR_TYPE_WRBACK,
-		var_state.address_bits, var_state.above4gb);
+	printk(BIOS_DEBUG, "MTRR: default type WB/UC MTRR counts: %d/%d.\n",
+	       wb_deftype_count, uc_deftype_count);
 
-	var_state.reg = range_to_mtrr(var_state.reg, var_state.hole_startk,
-		var_state.hole_sizek, 0, MTRR_TYPE_UNCACHEABLE,
-		var_state.address_bits, var_state.above4gb);
+	if (wb_deftype_count < uc_deftype_count) {
+		printk(BIOS_DEBUG, "MTRR: WB selected as default type.\n");
+		return MTRR_TYPE_WRBACK;
+	}
+	printk(BIOS_DEBUG, "MTRR: UC selected as default type.\n");
+	return MTRR_TYPE_UNCACHEABLE;
+}
 
-	printk(BIOS_DEBUG, "DONE variable MTRRs\n");
-	printk(BIOS_DEBUG, "Clear out the extra MTRR's\n");
-	/* Clear out the extra MTRR's */
-	while(var_state.reg < total_mtrrs) {
-		set_var_mtrr(var_state.reg++, 0, 0, 0, var_state.address_bits);
+static void commit_var_mtrrs(struct memranges *addr_space, int def_type,
+                             int above4gb, int address_bits)
+{
+	struct var_mtrr_state var_state;
+	int i;
+
+	var_state.addr_space = addr_space;
+	var_state.above4gb = above4gb;
+	var_state.address_bits = address_bits;
+	/* Write the MSRs. */
+	var_state.commit_mtrrs = 1;
+	var_state.mtrr_index = 0;
+	var_state.def_mtrr_type = def_type;
+	setup_var_mtrrs_by_state(&var_state);
+
+	/* Clear all remaining variable MTTRs. */
+	for (i = var_state.mtrr_index; i < total_mtrrs; i++)
+		clear_var_mtrr(i);
+}
+
+void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
+{
+	static int mtrr_default_type = -1;
+	struct memranges *addr_space;
+
+	addr_space = get_physical_address_space();
+
+	if (mtrr_default_type == -1) {
+		if (above4gb == 2)
+			detect_var_mtrrs();
+		mtrr_default_type =
+			calc_var_mtrrs(addr_space, !!above4gb, address_bits);
 	}
 
-#if CONFIG_CACHE_ROM
-	/* Enable Caching and speculative Reads for the
-	 * complete ROM now that we actually have RAM.
-	 */
-	if (boot_cpu() && (acpi_slp_type != 3)) {
-		set_var_mtrr(total_mtrrs - 1, (4096 - 8)*1024, 8 * 1024,
-			MTRR_TYPE_WRPROT, address_bits);
-	}
-#endif
-
-	printk(BIOS_SPEW, "call enable_var_mtrr()\n");
-	enable_var_mtrr();
-	printk(BIOS_SPEW, "Leave %s\n", __func__);
-	post_code(0x6A);
+	disable_cache();
+	commit_var_mtrrs(addr_space, mtrr_default_type, !!above4gb,
+	                 address_bits);
+	enable_var_mtrr(mtrr_default_type);
+	enable_cache();
 }
 
 void x86_setup_mtrrs(void)

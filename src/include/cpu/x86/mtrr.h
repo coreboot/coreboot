@@ -78,9 +78,12 @@ int x86_mtrr_check(void);
 #if CONFIG_CACHE_ROM
 void x86_mtrr_enable_rom_caching(void);
 void x86_mtrr_disable_rom_caching(void);
+/* Return the variable range MTRR index of the ROM cache. */
+long x86_mtrr_rom_cache_var_index(void);
 #else
 static inline void x86_mtrr_enable_rom_caching(void) {}
 static inline void x86_mtrr_disable_rom_caching(void) {}
+static inline long x86_mtrr_rom_cache_var_index(void) { return -1; }
 #endif /* CONFIG_CACHE_ROM */
 
 #endif

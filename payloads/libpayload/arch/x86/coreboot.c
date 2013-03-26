@@ -158,6 +158,12 @@ static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 }
 #endif
 
+static void cb_parse_x86_rom_var_mtrr(void *ptr, struct sysinfo_t *info)
+{
+	struct cb_x86_rom_mtrr *rom_mtrr = ptr;
+	info->x86_rom_var_mtrr_index = rom_mtrr->index;
+}
+
 static void cb_parse_string(unsigned char *ptr, char **info)
 {
 	*info = (char *)((struct cb_string *)ptr)->string;
@@ -281,6 +287,11 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_MRC_CACHE:
 			cb_parse_mrc_cache(ptr, info);
 			break;
+#if CONFIG_ARCH_X86
+		case CB_TAG_X86_ROM_MTRR:
+			cb_parse_x86_rom_var_mtrr(ptr, info);
+			break;
+#endif
 		}
 
 		ptr += rec->size;
@@ -294,7 +305,15 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header(phys_to_virt(0x00000000), 0x1000, info);
+	int ret;
+
+#if CONFIG_ARCH_X86
+	/* Ensure the variable range MTRR index covering the ROM is set to
+	 * an invalid value. */
+	info->x86_rom_var_mtrr_index = -1;
+#endif
+
+	ret = cb_parse_header(phys_to_virt(0x00000000), 0x1000, info);
 
 	if (ret != 1)
 		ret = cb_parse_header(phys_to_virt(0x000f0000), 0x1000, info);

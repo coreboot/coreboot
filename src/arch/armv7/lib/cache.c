@@ -183,7 +183,7 @@ static void dcache_op_mva(unsigned long addr,
 	unsigned long line, i;
 
 	line = line_bytes();
-	for (i = addr & ~(line - 1); i < addr + len - 1; i += line) {
+	for (i = addr & ~(line - 1); i < addr + len; i += line) {
 		switch(op) {
 		case OP_DCCIMVAC:
 			dccimvac(addr);
@@ -192,6 +192,8 @@ static void dcache_op_mva(unsigned long addr,
 			break;
 		}
 	}
+
+	dsb();
 }
 
 void dcache_clean_by_mva(unsigned long addr, unsigned long len)

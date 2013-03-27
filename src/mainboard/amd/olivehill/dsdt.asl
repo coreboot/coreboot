@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -922,7 +922,6 @@ DefinitionBlock (
 			Notify(\_SB.PCI0.UOH4, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PCI0.UOH5, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PCI0.UOH6, 0x02) /* NOTIFY_DEVICE_WAKE */
-			Notify(\_SB.PCI0.UEH1, 0x02) /* NOTIFY_DEVICE_WAKE */
 			Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
 		}
 
@@ -1069,12 +1068,12 @@ DefinitionBlock (
 			}
 			Method(_STA, 0) {
 				/* DBGO("\\_SB\\PCI0\\_STA\n") */
-				Return(0x0B)     /* Status is visible */
+				Return(0x0B)			/* Status is visible */
 			}
 
 			Method(_PRT,0) {
-				If(PMOD){ Return(APR0) }   /* APIC mode */
-				Return (PR0)                  /* PIC Mode */
+				If(PMOD){ Return(APR0) }		/* APIC mode */
+				Return (PR0)				/* PIC Mode */
 			} /* end _PRT */
 
 			/* Describe the Northbridge devices Dev0 ,Func0*/
@@ -1082,126 +1081,103 @@ DefinitionBlock (
 				Name(_ADR, 0x00000000)
 			} /* end AMRT */
 
-#if 1
-			/* Dev3 is also an external GFX bridge */
-			Device(PBR3) {
-				Name(_ADR, 0x00020000)
-				Name(_PRW, Package() {0x18, 4})
-				Method(_PRT,0) {
-					If(PMOD){ Return(APS3) }   /* APIC mode */
-					Return (PS3)                  /* PIC Mode */
-				} /* end _PRT */
-			} /* end PBR3 */
-#endif
-
+			/* Gpp 0 */
 			Device(PBR4) {
 				Name(_ADR, 0x00020001)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS4) }   /* APIC mode */
-					Return (PS4)                  /* PIC Mode */
+					If(PMOD){ Return(APS4) }	/* APIC mode */
+					Return (PS4)			/* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR4 */
 
+			/* Gpp 1 */
 			Device(PBR5) {
 				Name(_ADR, 0x00020002)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS5) }   /* APIC mode */
-					Return (PS5)                  /* PIC Mode */
+					If(PMOD){ Return(APS5) }	/* APIC mode */
+					Return (PS5)			/* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR5 */
 
+			/* Gpp 2 */
 			Device(PBR6) {
 				Name(_ADR, 0x00020003)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS6) }   /* APIC mode */
-					Return (PS6)                  /* PIC Mode */
+					If(PMOD){ Return(APS6) }	/* APIC mode */
+					Return (PS6)			/* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR6 */
 
-			/* The onboard EtherNet chip */
+			/* Gpp 3 */
 			Device(PBR7) {
 				Name(_ADR, 0x00020004)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS7) }   /* APIC mode */
-					Return (PS7)                  /* PIC Mode */
+					If(PMOD){ Return(APS7) }	/* APIC mode */
+					Return (PS7)			/* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR7 */
 
-			/* PCI slot 1, 2, 3 */
-			Device(PIBR) {
-				Name(_ADR, 0x00140004)
+			/* Gpp 4 */
+			Device(PBR8) {
+				Name(_ADR, 0x00020004)
 				Name(_PRW, Package() {0x18, 4})
+				Method(_PRT,0) {
+					If(PMOD){ Return(APS8) }	/* APIC mode */
+					Return (PS8)			/* PIC Mode */
+				} /* end _PRT */
+			} /* end PBR8 */
 
-				Method(_PRT, 0) {
-					Return (PCIB)
-				}
-			}
 
 			/* Describe the Southbridge devices */
-			Device(STCR) {
+			Device(STCR) {	/* 0:11.0 - SATA */
 				Name(_ADR, 0x00110000)
 				//#include "acpi/sata.asl"
 			} /* end STCR */
 
-			Device(UOH1) {
+			Device(UOH1) {	/* 0:12.0 - OHCI */
 				Name(_ADR, 0x00120000)
 				Name(_PRW, Package() {0x0B, 3})
 			} /* end UOH1 */
 
-			Device(UOH2) {
+			Device(UOH2) {	/* 0:12.2 - EHCI */
 				Name(_ADR, 0x00120002)
 				Name(_PRW, Package() {0x0B, 3})
 			} /* end UOH2 */
 
-			Device(UOH3) {
+			Device(UOH3) {	/* 0:13.0 - OHCI */
 				Name(_ADR, 0x00130000)
 				Name(_PRW, Package() {0x0B, 3})
 			} /* end UOH3 */
 
-			Device(UOH4) {
+			Device(UOH4) {	/* 0:13.2 - EHCI */
 				Name(_ADR, 0x00130002)
 				Name(_PRW, Package() {0x0B, 3})
 			} /* end UOH4 */
 
-			Device(UOH5) {
+			Device(UOH5) {	/* 0:16.0 - OHCI */
 				Name(_ADR, 0x00160000)
 				Name(_PRW, Package() {0x0B, 3})
 			} /* end UOH5 */
 
-			Device(UOH6) {
+			Device(UOH6) {	/* 0:16.2 - EHCI */
 				Name(_ADR, 0x00160002)
 				Name(_PRW, Package() {0x0B, 3})
 			} /* end UOH5 */
 
-			Device(UEH1) {
-				Name(_ADR, 0x00140005)
-				Name(_PRW, Package() {0x0B, 3})
-			} /* end UEH1 */
-
-			Device(XHC0) {
+			Device(XHC0) {	/* 0:10.0 - XHCI */
 				Name(_ADR, 0x00100000)
 				Name(_PRW, Package() {0x0B, 4})
 			} /* end XHC0 */
-			Device(XHC1) {
-				Name(_ADR, 0x00100001)
-				Name(_PRW, Package() {0x0B, 4})
-			} /* end XHC1 */
 
-			Device(SBUS) {
+			Device(SBUS) {	/* 0:14.0 - SMBUS */
 				Name(_ADR, 0x00140000)
 			} /* end SBUS */
 
-			/* Primary (and only) IDE channel */
-			Device(IDEC) {
-				Name(_ADR, 0x00140001)
-				//#include "acpi/ide.asl"
-			} /* end IDEC */
-
-			Device(AZHD) {
+			Device(AZHD) {	/* 0:14.2 - HD Audio */
 				Name(_ADR, 0x00140002)
 				OperationRegion(AZPD, PCI_Config, 0x00, 0x100)
 					Field(AZPD, AnyAcc, NoLock, Preserve) {
@@ -1236,7 +1212,7 @@ DefinitionBlock (
 				}
 			} /* end AZHD */
 
-			Device(LIBR) {
+			Device(LIBR) {	/* 0:14.3 - LPC */
 				Name(_ADR, 0x00140003)
 				/* Method(_INI) {
 				*	DBGO("\\_SB\\PCI0\\LpcIsaBr\\_INI\n")
@@ -1328,17 +1304,9 @@ DefinitionBlock (
 				} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
 			} /* end LIBR */
 
-			Device(HPBR) {
-				Name(_ADR, 0x00140004)
-			} /* end HostPciBr */
-
-			Device(ACAD) {
-				Name(_ADR, 0x00140005)
-			} /* end Ac97audio */
-
-			Device(ACMD) {
-				Name(_ADR, 0x00140006)
-			} /* end Ac97modem */
+			Device(SDCN) {	/* 0:14.7 - SD Controller */
+				Name(_ADR, 0x00140007)
+			} /* end SDCN */
 
 			Name(CRES, ResourceTemplate() {
 				IO(Decode16, 0x0CF8, 0x0CF8, 1,	8)
@@ -1368,26 +1336,26 @@ DefinitionBlock (
 
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	/* VGA memory space */
 				Memory32Fixed(READONLY, 0x000C0000, 0x00020000, EMM1)	/* Assume C0000-E0000 empty */
-                                /* memory space for PCI BARs below 4GB */
-                                Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
+				/* memory space for PCI BARs below 4GB */
+				Memory32Fixed(ReadOnly, 0x00000000, 0x00000000, MMIO)
 			}) /* End Name(_SB.PCI0.CRES) */
 
 			Method(_CRS, 0) {
 				/* DBGO("\\_SB\\PCI0\\_CRS\n") */
 				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
-                                CreateDWordField(CRES, ^MMIO._LEN, MM1L)
-                                /*
-                                 * Declare memory between TOM1 and 4GB as available
-                                 * for PCI MMIO.
-                                 * Use ShiftLeft to avoid 64bit constant (for XP).
-                                 * This will work even if the OS does 32bit arithmetic, as
-                                 * 32bit (0x00000000 - TOM1) will wrap and give the same
-                                 * result as 64bit (0x100000000 - TOM1).
-                                 */
-                                Store(TOM1, MM1B)
-                                ShiftLeft(0x10000000, 4, Local0)
-                                Subtract(Local0, TOM1, Local0)
-                                Store(Local0, MM1L)
+				CreateDWordField(CRES, ^MMIO._LEN, MM1L)
+				/*
+				 * Declare memory between TOM1 and 4GB as available
+				 * for PCI MMIO.
+				 * Use ShiftLeft to avoid 64bit constant (for XP).
+				 * This will work even if the OS does 32bit arithmetic, as
+				 * 32bit (0x00000000 - TOM1) will wrap and give the same
+				 * result as 64bit (0x100000000 - TOM1).
+				 */
+				Store(TOM1, MM1B)
+				ShiftLeft(0x10000000, 4, Local0)
+				Subtract(Local0, TOM1, Local0)
+				Store(Local0, MM1L)
 
 				Return(CRES) /* note to change the Name buffer */
 			} /* end of Method(_SB.PCI0._CRS) */

@@ -321,3 +321,9 @@ void memranges_fill_holes_up_to(struct memranges *ranges,
 	/* Merge all entries that were newly added. */
 	merge_neighbor_entries(ranges);
 }
+
+struct range_entry *memranges_next_entry(struct memranges *ranges,
+                                         const struct range_entry *r)
+{
+	return r->next;
+}

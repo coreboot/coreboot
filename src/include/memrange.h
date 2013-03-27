@@ -61,6 +61,12 @@ static inline unsigned long range_entry_tag(const struct range_entry *r)
 	return r->tag;
 }
 
+static inline void range_entry_update_tag(struct range_entry *r,
+                                          unsigned long new_tag)
+{
+	r->tag = new_tag;
+}
+
 /* Iterate over each entry in a memranges structure. Ranges cannot
  * be deleted while processing each entry as the list cannot be safely
  * traversed after such an operation.
@@ -104,4 +110,7 @@ void memranges_create_hole(struct memranges *ranges,
 void memranges_insert(struct memranges *ranges,
                       resource_t base, resource_t size, unsigned long tag);
 
+/* Returns next entry after the provided entry. NULL if r is last. */
+struct range_entry *memranges_next_entry(struct memranges *ranges,
+                                         const struct range_entry *r);
 #endif /* MEMRANGE_H_ */

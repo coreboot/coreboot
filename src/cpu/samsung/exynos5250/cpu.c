@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/device.h>
+#include <device/i2c.h>		/* FIXME: for backlight FET enable */
 #include <cbmem.h>
 #include <cpu/samsung/exynos5250/fimd.h>
 #include <cpu/samsung/exynos5-common/s5p-dp-core.h>
@@ -53,7 +54,7 @@ static void exynos_displayport_init(device_t dev)
 	vi.vl_row = conf->yres;
 	vi.vl_bpix = conf->bpp;
 	/* The size is a magic number from hardware. */
-	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, 64*KiB);
+	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, 16*MiB + 64*KiB);
 	printk(BIOS_SPEW, "lcd colormap base is %p\n", (void *)(lcdbase));
 //	mmio_resource(dev, 0, conf->lcdbase/KiB, 64);
 //	vi.cmap = (void *)conf->lcdbase;
@@ -61,14 +62,71 @@ static void exynos_displayport_init(device_t dev)
 	vi.cmap = (void *)lcdbase;
 //	lcdbase = conf->lcdbase + 64*KiB;
 
-	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, 16*MiB);
+	/* FIXME: We had to do a single cbmem_add() above due to weirdness when
+	 * the adjacent regions were being merged... */
+//	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, 16*MiB);
+	lcdbase += 64*KiB;
 	printk(BIOS_SPEW, "lcd framebuffer base is %p\n", (void *)(lcdbase));
+	printk(BIOS_SPEW, "conf->xres is: %u\n", conf->xres);	/* FIXME: remove this */
 	mmio_resource(dev, 1, lcdbase/KiB, (conf->xres*conf->yres*4 + (KiB-1))/KiB);
 	printk(BIOS_DEBUG, "Initializing exynos VGA, base %p\n",(void *)lcdbase);
 	ret = lcd_ctrl_init(&vi, &panel, (void *)lcdbase);
+
+	/* enable backlight FETs (TODO: move all the stuff below to Snow) */
+	i2c_set_bus_num(0);
+	uint8_t val;
+
+#define TPS69050_ADDR	0x48
+#define FET6_CTRL	0x14
+	printk(BIOS_DEBUG, "attempting to enable FET6\n");
+	//ret = board_dp_lcd_vdd(blob, &wait_ms);
+	i2c_read(TPS69050_ADDR, FET6_CTRL, 1, &val, sizeof(val));
+	val |= 1;
+	i2c_write(TPS69050_ADDR, FET6_CTRL, 1, &val, sizeof(val));
+
+	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
+
+	/* Setup the GPIOs */
 #if 0
-	ret = board_dp_lcd_vdd(blob, &wait_ms);
 	ret = board_dp_bridge_setup(blob, &wait_ms);
+#endif
+	enum exynos5_gpio_pin dp_pd_l = GPIO_Y25;	/* active low */
+	enum exynos5_gpio_pin dp_rst_l = GPIO_X15;	/* active low */
+	enum exynos5_gpio_pin dp_hpd = GPIO_X07;	/* active high */
+
+	/* De-assert PD (and possibly RST) to power up the bridge */
+	gpio_set_value(dp_pd_l, 1);
+	gpio_set_value(dp_rst_l, 1);
+
+	/*
+	 * We need to wait for 90ms after bringing up the bridge since there
+	 * is a phantom "high" on the HPD chip during its bootup.  The phantom
+	 * high comes within 7ms of de-asserting PD and persists for at least
+	 * 15ms.  The real high comes roughly 50ms after PD is de-asserted. The
+	 * phantom high makes it hard for us to know when the NXP chip is up.
+	 */
+	*wait_ms = 90;
+
+
+	gpio_cfg_pin(dp_pd_l, EXYNOS_GPIO_OUTPUT);
+	gpio_set_pull(dp_pd_l, EXYNOS_GPIO_PULL_NONE);
+
+#if 0
+	if (fdt_gpio_isvalid(&local.dp_rst)) {
+		fdtdec_set_gpio(&local.dp_rst, 1);
+		gpio_cfg_pin(local.dp_rst.gpio, EXYNOS_GPIO_OUTPUT);
+		gpio_set_pull(local.dp_rst.gpio, EXYNOS_GPIO_PULL_NONE);
+		udelay(10);
+		fdtdec_set_gpio(&local.dp_rst, 0);
+	}
+#endif
+	gpio_set_value(dp_rst_l, 0);
+	gpio_cfg_pin(dp_rst_l, EXYNOS_GPIO_OUTPUT);
+	gpio_set_pull(dp_rst_l, EXYNOS_GPIO_PULL_NONE);
+	udelay(10);
+	gpio_set_value(dp_rst, 1);
+
+#if 0
 	while (tries < 5) {
 		ret = board_dp_bridge_init(blob, &wait_ms);
 		ret = board_dp_hotplug(blob, &wait_ms);

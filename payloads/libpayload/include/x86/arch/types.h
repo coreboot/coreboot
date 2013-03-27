@@ -53,7 +53,13 @@ typedef signed long long s64;
 typedef long time_t;
 typedef long suseconds_t;
 
+/* Handle leaking the gcc stand headers. __SIZE_TYPE__ is used by gcc. If
+ * the gcc headers are being used make size_t the same as __SIZE_TYPE__. */
+#if defined (__SIZE_TYPE__)
+typedef __SIZE_TYPE__ size_t;
+#else
 typedef unsigned long size_t;
+#endif
 typedef long ssize_t;
 
 #ifndef NULL

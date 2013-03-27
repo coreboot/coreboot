@@ -180,19 +180,21 @@ static unsigned int line_bytes(void)
 static void dcache_op_mva(unsigned long addr,
 		unsigned long len, enum dcache_op op)
 {
-	unsigned long line, i;
+	unsigned long line, linesize;
 
-	line = line_bytes();
+	linesize = line_bytes();
+	line = addr & ~(linesize - 1);
 
 	dsb();
-	for (i = addr & ~(line - 1); i < addr + len; i += line) {
+	while (line < addr + len) {
 		switch(op) {
 		case OP_DCCIMVAC:
-			dccimvac(i);
+			dccimvac(line);
 			break;
 		default:
 			break;
 		}
+		line += linesize;
 	}
 	isb();
 }

@@ -122,6 +122,21 @@ static inline unsigned int fls(unsigned int x)
 #define RANGE_1MB PHYS_TO_RANGE_ADDR(1 << 20)
 #define RANGE_4GB (1 << (ADDR_SHIFT_TO_RANGE_SHIFT(32)))
 
+/*
+ * The default MTRR type selection uses 3 approaches for selecting the
+ * optimal number of variable MTRRs.  For each range do 3 calculations:
+ *   1. UC as default type with no holes at top of range.
+ *   2. UC as default using holes at top of range.
+ *   3. WB as default.
+ * If using holes is optimal for a range when UC is the default type the
+ * tag is updated to direct the commit routine to use a hole at the top
+ * of a range.
+ */
+#define MTRR_ALGO_SHIFT (8)
+#define MTRR_TAG_MASK ((1 << MTRR_ALGO_SHIFT) - 1)
+/* If the default type is UC use the hole carving algorithm for a range. */
+#define MTRR_RANGE_UC_USE_HOLE (1 << MTRR_ALGO_SHIFT)
+
 static inline uint32_t range_entry_base_mtrr_addr(struct range_entry *r)
 {
 	return PHYS_TO_RANGE_ADDR(range_entry_base(r));
@@ -130,6 +145,11 @@ static inline uint32_t range_entry_base_mtrr_addr(struct range_entry *r)
 static inline uint32_t range_entry_end_mtrr_addr(struct range_entry *r)
 {
 	return PHYS_TO_RANGE_ADDR(range_entry_end(r));
+}
+
+static inline int range_entry_mtrr_type(struct range_entry *r)
+{
+	return range_entry_tag(r) & MTRR_TAG_MASK;
 }
 
 static struct memranges *get_physical_address_space(void)
@@ -491,9 +511,72 @@ static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
 	}
 }
 
-static void setup_var_mtrrs_by_state(struct var_mtrr_state *var_state)
+static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
+                                      struct range_entry *r)
 {
-	struct range_entry *r;
+	uint32_t a1, a2, b1, b2;
+	int mtrr_type;
+	struct range_entry *next;
+
+	/*
+	 * Determine MTRRs based on the following algoirthm for the given entry:
+	 * +------------------+ b2 = round_up(end)
+	 * |  0 or more bytes | <-- hole is carved out between b1 and b2
+	 * +------------------+ a2 = b1 = end
+	 * |                  |
+	 * +------------------+ a1 = begin
+	 *
+	 * Thus, there are 3 sub-ranges to configure variable MTRRs for.
+	 */
+	mtrr_type = range_entry_mtrr_type(r);
+
+	a1 = range_entry_base_mtrr_addr(r);
+	a2 = range_entry_end_mtrr_addr(r);
+
+	/* The end address is under 1MiB. The fixed MTRRs take
+	 * precedence over the variable ones. Therefore this range
+	 * can be ignored. */
+	if (a2 < RANGE_1MB)
+		return;
+
+	/* Again, the fixed MTRRs take precedence so the beginning
+	 * of the range can be set to 0 if it starts below 1MiB. */
+	if (a1 < RANGE_1MB)
+		a1 = 0;
+
+	/* If the range starts above 4GiB the processing is done. */
+	if (!var_state->above4gb && a1 >= RANGE_4GB)
+		return;
+
+	/* Clip the upper address to 4GiB if addresses above 4GiB
+	 * are not being processed. */
+	if (!var_state->above4gb && a2 > RANGE_4GB)
+		a2 = RANGE_4GB;
+
+	b1 = a2;
+	b2 = round_up(a2, MTRR_MIN_ALIGN);
+
+	/* Check against the next range. If the current range_entry is the
+	 * last entry then carving a hole is no problem. If the current entry
+	 * isn't the last entry then check that the last entry covers the
+	 * entire hole range with the default mtrr type. */
+	next = memranges_next_entry(var_state->addr_space, r);
+	if (next != NULL &&
+	    (range_entry_mtrr_type(next) != var_state->def_mtrr_type ||
+	     range_entry_end_mtrr_addr(next) < b2)) {
+		calc_var_mtrr_range(var_state, a1, a2 - a1, mtrr_type);
+		return;
+	}
+
+	calc_var_mtrr_range(var_state, a1, b2 - a1, mtrr_type);
+	calc_var_mtrr_range(var_state, b1, b2 - b1, var_state->def_mtrr_type);
+}
+
+static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
+                                         struct range_entry *r)
+{
+	uint32_t a1, a2, b1, b2, c1, c2;
+	int mtrr_type;
 
 	/*
 	 * For each range that meets the non-default type process it in the
@@ -508,51 +591,44 @@ static void setup_var_mtrrs_by_state(struct var_mtrr_state *var_state)
 	 *
 	 * Thus, there are 3 sub-ranges to configure variable MTRRs for.
 	 */
-	memranges_each_entry(r, var_state->addr_space) {
-		uint32_t a1, a2, b1, b2, c1, c2;
-		int mtrr_type = range_entry_tag(r);
+	mtrr_type = range_entry_mtrr_type(r);
 
-		/* Skip default type. */
-		if (var_state->def_mtrr_type == mtrr_type)
-			continue;
+	a1 = range_entry_base_mtrr_addr(r);
+	c2 = range_entry_end_mtrr_addr(r);
 
-		a1 = range_entry_base_mtrr_addr(r);
-		c2 = range_entry_end_mtrr_addr(r);
+	/* The end address is under 1MiB. The fixed MTRRs take
+	 * precedence over the variable ones. Therefore this range
+	 * can be ignored. */
+	if (c2 < RANGE_1MB)
+		return;
 
-		/* The end address is under 1MiB. The fixed MTRRs take
-		 * precedence over the variable ones. Therefore this range
-		 * can be ignored. */
-		if (c2 < RANGE_1MB)
-			continue;
+	/* Again, the fixed MTRRs take precedence so the beginning
+	 * of the range can be set to 0 if it starts below 1MiB. */
+	if (a1 < RANGE_1MB)
+		a1 = 0;
 
-		/* Again, the fixed MTRRs take precedence so the beginning
-		 * of the range can be set to 0 if it starts below 1MiB. */
-		if (a1 < RANGE_1MB)
-			a1 = 0;
+	/* If the range starts above 4GiB the processing is done. */
+	if (!var_state->above4gb && a1 >= RANGE_4GB)
+		return;
 
-		/* If the range starts above 4GiB the processing is done. */
-		if (!var_state->above4gb && a1 >= RANGE_4GB)
-			break;
+	/* Clip the upper address to 4GiB if addresses above 4GiB
+	 * are not being processed. */
+	if (!var_state->above4gb && c2 > RANGE_4GB)
+		c2 = RANGE_4GB;
 
-		/* Clip the upper address to 4GiB if addresses above 4GiB
-		 * are not being processed. */
-		if (!var_state->above4gb && c2 > RANGE_4GB)
-			c2 = RANGE_4GB;
-
-		/* Don't align up or down on the range if it is smaller
-		 * than the minimum granularity. */
-		if ((c2 - a1) < MTRR_MIN_ALIGN) {
-			calc_var_mtrr_range(var_state, a1, c2 - a1, mtrr_type);
-			continue;
-		}
-
-		b1 = a2 = round_up(a1, MTRR_MIN_ALIGN);
-		b2 = c1 = round_down(c2, MTRR_MIN_ALIGN);
-
-		calc_var_mtrr_range(var_state, a1, a2 - a1, mtrr_type);
-		calc_var_mtrr_range(var_state, b1, b2 - b1, mtrr_type);
-		calc_var_mtrr_range(var_state, c1, c2 - c1, mtrr_type);
+	/* Don't align up or down on the range if it is smaller
+	 * than the minimum granularity. */
+	if ((c2 - a1) < MTRR_MIN_ALIGN) {
+		calc_var_mtrr_range(var_state, a1, c2 - a1, mtrr_type);
+		return;
 	}
+
+	b1 = a2 = round_up(a1, MTRR_MIN_ALIGN);
+	b2 = c1 = round_down(c2, MTRR_MIN_ALIGN);
+
+	calc_var_mtrr_range(var_state, a1, a2 - a1, mtrr_type);
+	calc_var_mtrr_range(var_state, b1, b2 - b1, mtrr_type);
+	calc_var_mtrr_range(var_state, c1, c2 - c1, mtrr_type);
 }
 
 static int calc_var_mtrrs(struct memranges *addr_space,
@@ -560,6 +636,7 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 {
 	int wb_deftype_count;
 	int uc_deftype_count;
+	struct range_entry *r;
 	struct var_mtrr_state var_state;
 
 	/* The default MTRR cacheability type is determined by calculating
@@ -570,15 +647,64 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 	var_state.address_bits = address_bits;
 	var_state.commit_mtrrs = 0;
 
-	var_state.mtrr_index = 0;
-	var_state.def_mtrr_type = MTRR_TYPE_WRBACK;
-	setup_var_mtrrs_by_state(&var_state);
-	wb_deftype_count = var_state.mtrr_index;
+	wb_deftype_count = 0;
+	uc_deftype_count = 0;
 
-	var_state.mtrr_index = 0;
-	var_state.def_mtrr_type = MTRR_TYPE_UNCACHEABLE;
-	setup_var_mtrrs_by_state(&var_state);
-	uc_deftype_count = var_state.mtrr_index;
+	/*
+	 * For each range do 3 calculations:
+	 *   1. UC as default type with no holes at top of range.
+	 *   2. UC as default using holes at top of range.
+	 *   3. WB as default.
+	 * The lowest count is then used as default after totalling all
+	 * MTRRs. Note that the optimal algoirthm for UC default is marked in
+	 * the tag of each range regardless of final decision.  UC takes
+	 * precedence in the MTRR archiecture. Therefore, only holes can be
+	 * used when the type of the region is MTRR_TYPE_WRBACK with
+	 * MTRR_TYPE_UNCACHEABLE as the default type.
+	 */
+	memranges_each_entry(r, var_state.addr_space) {
+		int mtrr_type;
+
+		mtrr_type = range_entry_mtrr_type(r);
+
+		if (mtrr_type != MTRR_TYPE_UNCACHEABLE) {
+			int uc_hole_count;
+			int uc_no_hole_count;
+
+			var_state.def_mtrr_type = MTRR_TYPE_UNCACHEABLE;
+			var_state.mtrr_index = 0;
+
+			/* No hole calculation. */
+			calc_var_mtrrs_without_hole(&var_state, r);
+			uc_no_hole_count = var_state.mtrr_index;
+
+			/* Hole calculation only if type is WB. */
+			uc_hole_count = INT_MAX;
+			if (mtrr_type == MTRR_TYPE_WRBACK) {
+				var_state.mtrr_index = 0;
+				calc_var_mtrrs_with_hole(&var_state, r);
+				uc_hole_count = var_state.mtrr_index;
+			}
+
+			/* Mark the entry with the optimal algorithm. */
+			if (uc_no_hole_count < uc_hole_count) {
+				uc_deftype_count += uc_no_hole_count;
+			} else {
+				unsigned long new_tag;
+
+				new_tag = mtrr_type | MTRR_RANGE_UC_USE_HOLE;
+				range_entry_update_tag(r, new_tag);
+				uc_deftype_count += uc_hole_count;
+			}
+		}
+
+		if (mtrr_type != MTRR_TYPE_WRBACK) {
+			var_state.mtrr_index = 0;
+			var_state.def_mtrr_type = MTRR_TYPE_WRBACK;
+			calc_var_mtrrs_without_hole(&var_state, r);
+			wb_deftype_count += var_state.mtrr_index;
+		}
+	}
 
 	printk(BIOS_DEBUG, "MTRR: default type WB/UC MTRR counts: %d/%d.\n",
 	       wb_deftype_count, uc_deftype_count);
@@ -594,6 +720,7 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 static void commit_var_mtrrs(struct memranges *addr_space, int def_type,
                              int above4gb, int address_bits)
 {
+	struct range_entry *r;
 	struct var_mtrr_state var_state;
 	int i;
 
@@ -604,7 +731,17 @@ static void commit_var_mtrrs(struct memranges *addr_space, int def_type,
 	var_state.commit_mtrrs = 1;
 	var_state.mtrr_index = 0;
 	var_state.def_mtrr_type = def_type;
-	setup_var_mtrrs_by_state(&var_state);
+
+	memranges_each_entry(r, var_state.addr_space) {
+		if (range_entry_mtrr_type(r) == def_type)
+			continue;
+
+		if (def_type == MTRR_TYPE_UNCACHEABLE &&
+		    (range_entry_tag(r) & MTRR_RANGE_UC_USE_HOLE))
+			calc_var_mtrrs_with_hole(&var_state, r);
+		else
+			calc_var_mtrrs_without_hole(&var_state, r);
+	}
 
 	/* Clear all remaining variable MTTRs. */
 	for (i = var_state.mtrr_index; i < total_mtrrs; i++)

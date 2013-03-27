@@ -111,6 +111,8 @@ static void dcache_op_set_way(enum dcache_op op)
 	/* FIXME: do we need to use CTR.DminLine here? */
 	linesize_bytes = (1 << ((ccsidr & 0x7) + 2)) * 4;
 
+	dsb();
+
 	/*
 	 * Set/way operations require an interesting bit packing. See section
 	 * B4-35 in the ARMv7 Architecture Reference Manual:
@@ -144,8 +146,7 @@ static void dcache_op_set_way(enum dcache_op op)
 			}
 		}
 	}
-
-	dsb();
+	isb();
 }
 
 void dcache_clean_invalidate_all(void)

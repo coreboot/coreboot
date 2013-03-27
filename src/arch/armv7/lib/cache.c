@@ -210,13 +210,18 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
 	dcache_op_mva(addr, len, OP_DCCIMVAC);
 }
 
-
 void dcache_mmu_disable(void)
 {
-	uint32_t sctlr;
+	uint32_t sctlr, csselr;
+
+	/* ensure L1 data/unified cache is selected */
+	csselr = read_csselr();
+	csselr &= ~0xf;
+	write_csselr(csselr);
+
+	dcache_clean_invalidate_all();
 
 	sctlr = read_sctlr();
-	dcache_clean_invalidate_all();
 	sctlr &= ~(SCTLR_C | SCTLR_M);
 	write_sctlr(sctlr);
 }

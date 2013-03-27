@@ -304,3 +304,13 @@ void memranges_fill_holes_up_to(struct memranges *ranges,
 	/* Merge all entries that were newly added. */
 	merge_neighbor_entries(ranges);
 }
+
+/* Returns next entry after the provided entry. NULL if r is last. */
+struct range_entry *memranges_next_entry(struct memranges *ranges,
+                                         const struct range_entry *r)
+{
+	if (list_is_last(&r->siblings, &ranges->list))
+		return NULL;
+
+	return list_first_entry(&r->siblings, struct range_entry, siblings);
+}

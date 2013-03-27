@@ -31,6 +31,12 @@ ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/chromeos.c
 romstage-srcs += src/mainboard/$(MAINBOARDDIR)/chromeos.c
 endif
 
+ifeq ($(MOCK_TPM),1)
+CFLAGS += -DMOCK_TPM=1
+else
+CFLAGS += -DMOCK_TPM=0
+endif
+
 ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
 romstage-y += vboot_loader.c
 rmodules-y += vboot_wrapper.c

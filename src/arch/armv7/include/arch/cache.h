@@ -93,7 +93,7 @@ static inline void isb(void)
 /* invalidate entire data TLB */
 static inline void dtlbiall(void)
 {
-	asm volatile ("mcr p15, 0, %0, c8, c6, 0" : : "r" (0));
+	asm volatile ("mcr p15, 0, %0, c8, c6, 0" : : "r" (0) : "memory");
 }
 
 /* invalidate entire instruction TLB */
@@ -105,7 +105,7 @@ static inline void itlbiall(void)
 /* invalidate entire unified TLB */
 static inline void tlbiall(void)
 {
-	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0));
+	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0) : "memory");
 }
 
 /* write data access control register (DACR) */
@@ -147,31 +147,31 @@ static inline void bpiall(void)
 /* data cache clean and invalidate by MVA to PoC */
 static inline void dccimvac(unsigned long mva)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c14, 1" : : "r" (mva));
+	asm volatile ("mcr p15, 0, %0, c7, c14, 1" : : "r" (mva) : "memory");
 }
 
 /* data cache invalidate by set/way */
 static inline void dccisw(uint32_t val)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c14, 2" : : "r" (val));
+	asm volatile ("mcr p15, 0, %0, c7, c14, 2" : : "r" (val) : "memory");
 }
 
 /* data cache clean by MVA to PoC */
 static inline void dccmvac(unsigned long mva)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c10, 1" : : "r" (mva));
+	asm volatile ("mcr p15, 0, %0, c7, c10, 1" : : "r" (mva) : "memory");
 }
 
 /* data cache invalidate by MVA to PoC */
 static inline void dcimvac(unsigned long mva)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c6, 1" : : "r" (mva));
+	asm volatile ("mcr p15, 0, %0, c7, c6, 1" : : "r" (mva) : "memory");
 }
 
 /* data cache invalidate by set/way */
 static inline void dcisw(uint32_t val)
 {
-	asm volatile ("mcr p15, 0, %0, c7, c6, 2" : : "r" (val));
+	asm volatile ("mcr p15, 0, %0, c7, c6, 2" : : "r" (val) : "memory");
 }
 
 /* instruction cache invalidate all by PoU */
@@ -223,12 +223,12 @@ static inline void write_csselr(uint32_t val)
 static inline unsigned int read_sctlr(void)
 {
 	unsigned int val;
-	asm volatile ("mrc p15, 0, %0, c1, c0, 0" : "=r" (val) : : "cc");
+	asm volatile ("mrc p15, 0, %0, c1, c0, 0" : "=r" (val));
 	return val;
 }
 
 /* write system control register (SCTLR) */
-static inline void write_sctlr(unsigned int val)
+static inline void write_sctlr(uint32_t val)
 {
 	asm volatile ("mcr p15, 0, %0, c1, c0, 0" : : "r" (val) : "cc");
 	isb();

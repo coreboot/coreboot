@@ -207,13 +207,40 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
 	dcache_op_mva(addr, len, OP_DCCIMVAC);
 }
 
-
 void dcache_mmu_disable(void)
 {
-	uint32_t sctlr;
+	uint32_t sctlr, clidr;
+	int level;
+
+	clidr = read_clidr();
+	for (level = 0; level < 7; level++) {
+		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
+		uint32_t csselr;
+
+		switch(ctype) {
+		case 0x0:
+			/* no cache */
+			break;
+		case 0x2:
+		case 0x4:
+			/* dcache only or unified cache */
+			csselr = level << 1;
+			write_csselr(csselr);
+			dcache_clean_invalidate_all();
+			break;
+		case 0x3:
+			/* separate icache and dcache */
+			csselr = level << 1;
+			write_csselr(csselr);
+			dcache_clean_invalidate_all();
+			break;
+		default:
+			/* reserved */
+			break;
+		}
+	}
 
 	sctlr = read_sctlr();
-	dcache_clean_invalidate_all();
 	sctlr &= ~(SCTLR_C | SCTLR_M);
 	write_sctlr(sctlr);
 }

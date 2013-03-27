@@ -188,7 +188,7 @@ static void dcache_op_mva(unsigned long addr,
 	for (i = addr & ~(line - 1); i < addr + len; i += line) {
 		switch(op) {
 		case OP_DCCIMVAC:
-			dccimvac(addr);
+			dccimvac(i);
 			break;
 		default:
 			break;

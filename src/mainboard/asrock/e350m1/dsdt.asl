@@ -48,6 +48,9 @@ DefinitionBlock (
 			#include <southbridge/amd/cimx/sb800/acpi/fch.asl>
 
 		}
+
+		#include <superio/winbond/w83627hf/acpi/superio.asl>
+
 	}   /* End Scope(_SB)  */
 
 	/* Contains the supported sleep states for this chipset */

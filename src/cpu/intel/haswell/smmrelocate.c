@@ -396,7 +396,8 @@ int smm_initialize(void)
 	if (cpu_smm_setup())
 		return -1;
 
-	southbridge_smm_init();
+	/* Clear the SMM state in the southbridge. */
+	southbridge_smm_clear_state();
 
 	/* Run the relocation handler. */
 	smm_initiate_relocation();
@@ -411,6 +412,10 @@ int smm_initialize(void)
 	} else {
 		release_aps_for_smm_relocation(0);
 	}
+
+	/* Now that all APs have been relocated as well as the BSP let SMIs
+	 * start flowing. */
+	southbridge_smm_enable_smi();
 
 	/* Lock down the SMRAM space. */
 	smm_lock();

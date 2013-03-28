@@ -685,14 +685,6 @@ void pci_dev_init(struct device *dev)
 	}
 #endif
 
-	rom = pci_rom_probe(dev);
-	if (rom == NULL)
-		return;
-
-	ram = pci_rom_load(dev, rom);
-	if (ram == NULL)
-		return;
-
 #if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
 	/* If S3_VGA_ROM_RUN is disabled, skip running VGA option
 	 * ROMs when coming out of an S3 resume.
@@ -701,6 +693,15 @@ void pci_dev_init(struct device *dev)
 		((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
 		return;
 #endif
+
+	rom = pci_rom_probe(dev);
+	if (rom == NULL)
+		return;
+
+	ram = pci_rom_load(dev, rom);
+	if (ram == NULL)
+		return;
+
 	run_bios(dev, (unsigned long)ram);
 #if CONFIG_CHROMEOS
 	oprom_is_loaded = 1;

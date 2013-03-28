@@ -264,7 +264,7 @@ void armv7_invalidate_caches(void)
 			write_csselr(csselr);
 			icache_invalidate_all();
 
-			csselr = level < 1;
+			csselr = level << 1;
 			write_csselr(csselr);
 			dcache_invalidate_all();
 			break;

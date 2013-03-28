@@ -274,7 +274,7 @@ static int cbfs_create(void)
 
 	// TODO Remove arch or pack into param.
 	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
-		ERROR("You need to specify -m/--machine arch\n");
+		ERROR("You need to specify -m/--machine arch.\n");
 		return 1;
 	}
 
@@ -474,7 +474,7 @@ static struct option long_options[] = {
 	{"page-size",    required_argument, 0, 'P' },
 	{"offset",       required_argument, 0, 'o' },
 	{"file",         required_argument, 0, 'f' },
-	{"arch",         required_argument, 0, 'm' },
+	{"machine",      required_argument, 0, 'm' },
 	{"empty-fits",   required_argument, 0, 'x' },
 	{"verbose",      no_argument,       0, 'v' },
 	{"help",         no_argument,       0, 'h' },

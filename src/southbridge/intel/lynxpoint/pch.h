@@ -139,7 +139,7 @@ void enable_pm1_control(u32 mask);
 void disable_pm1_control(u32 mask);
 /* PM1 */
 u16 clear_pm1_status(void);
-void enable_pm1(u32 mask);
+void enable_pm1(u16 events);
 u32 clear_smi_status(void);
 /* SMI */
 void enable_smi(u32 mask);

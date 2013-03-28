@@ -181,9 +181,6 @@ endif
 ifeq ($(CONFIG_ACPI_SSDTX_NUM),5)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/ssdt5.asl
 endif
-ifeq ($(CONFIG_BOARD_HAS_FADT),y)
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/fadt.c
-endif
 endif
 
 ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)

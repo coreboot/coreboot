@@ -49,17 +49,17 @@ choice
 	default SB800_SATA_AHCI
 	help
 	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
-	  The default is NATIVE.
+	  The default is AHCI.
 
 config SB800_SATA_IDE
 	bool "NATIVE"
 	help
-	  NATIVE is the default mode and does not require a ROM.
+	  NATIVE does not require a ROM.
 
 config SB800_SATA_AHCI
 	bool "AHCI"
 	help
-	  AHCI may work with or without AHCI ROM. It depends on the payload support.
+	  AHCI is the default and may work with or without AHCI ROM. It depends on the payload support.
 	  For example, seabios does not require the AHCI ROM.
 
 config SB800_SATA_RAID

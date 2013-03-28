@@ -792,6 +792,8 @@ DefinitionBlock (
 			} /* End Method(_SB.INTH._SRS)  */
 		} /* End Device(INTH)   */
 
+		#include <superio/winbond/w83627hf/acpi/superio.asl>
+
 	}   /* End Scope(_SB)  */
 
 

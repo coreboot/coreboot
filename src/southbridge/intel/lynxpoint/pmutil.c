@@ -29,6 +29,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <pc80/mc146818rtc.h>
 #include "pch.h"
 
 #if CONFIG_INTEL_LYNXPOINT_LP
@@ -104,6 +105,7 @@ static u16 reset_pm1_status(void)
 {
 	u16 pm1_sts = inw(get_pmbase() + PM1_STS);
 	outw(pm1_sts, get_pmbase() + PM1_STS);
+
 	return pm1_sts;
 }
 
@@ -137,12 +139,10 @@ u16 clear_pm1_status(void)
 	return print_pm1_status(reset_pm1_status());
 }
 
-/* Enable PM1 event */
-void enable_pm1(u32 mask)
+/* Set the PM1 register to events */
+void enable_pm1(u16 events)
 {
-	u32 pm1_en = inl(get_pmbase() + PM1_EN);
-	pm1_en |= mask;
-	outl(pm1_en, get_pmbase() + PM1_EN);
+	outw(events, get_pmbase() + PM1_EN);
 }
 
 

@@ -170,9 +170,13 @@ void pch_log_state(void);
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
 
 /* These helpers are for performing SMM relocation. */
-void southbridge_smm_init(void);
 void southbridge_trigger_smi(void);
 void southbridge_clear_smi_status(void);
+/* The initialization of the southbridge is split into 2 compoments. One is
+ * for clearing the state in the SMM registers. The other is for enabling
+ * SMIs. They are split so that other work between the 2 actions. */
+void southbridge_smm_clear_state(void);
+void southbridge_smm_enable_smi(void);
 #else
 void enable_smbus(void);
 void enable_usb_bar(void);

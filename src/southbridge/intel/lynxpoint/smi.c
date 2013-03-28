@@ -30,7 +30,7 @@
 #include <string.h>
 #include "pch.h"
 
-void southbridge_smm_init(void)
+void southbridge_smm_clear_state(void)
 {
 	u32 smi_en;
 
@@ -54,7 +54,11 @@ void southbridge_smm_init(void)
 	clear_pm1_status();
 	clear_tco_status();
 	clear_gpe_status();
+}
 
+void southbridge_smm_enable_smi(void)
+{
+	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
 	enable_pm1(PWRBTN_EN | GBL_EN);
 	disable_gpe(PME_B0_EN);

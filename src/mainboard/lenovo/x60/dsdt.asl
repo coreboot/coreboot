@@ -45,6 +45,16 @@ DefinitionBlock(
 		{
 			#include <northbridge/intel/i945/acpi/i945.asl>
 			#include <southbridge/intel/i82801gx/acpi/ich7.asl>
+
+			/* Operating System Capabilities Method */
+			Method(_OSC,4)
+			{	/* Check for proper PCI/PCIe UUID */
+				If(LEqual(Arg0,ToUUID("33DB4D5B-1FF7-401C-9657-7441C03DD766")))
+				{
+					/* Let OS control everything */
+					Return (Arg3)
+				}
+			}
 		}
 	}
 

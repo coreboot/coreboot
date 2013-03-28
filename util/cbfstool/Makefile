@@ -1,6 +1,5 @@
 obj ?= $(shell pwd)
 
-HOSTCXX  ?= g++
 HOSTCC   ?= gcc
 CFLAGS   ?= -g -Wall -Werror
 CFLAGS   += -D_7ZIP_ST
@@ -20,9 +19,6 @@ all: dep $(BINARY)
 $(obj)/%.o: %.c
 	$(HOSTCC) $(CFLAGS) -c -o $@ $<
 
-$(obj)/%.o: %.cc
-	$(HOSTCXX) $(CFLAGS) -c -o $@ $<
-
 clean:
 	rm -f $(COMMON) $(BINARY)
 
@@ -30,11 +26,11 @@ tags:
 	ctags *.[ch]
 
 $(obj)/cbfstool:$(COMMON)
-	$(HOSTCXX) $(CFLAGS) -o $@ $^
+	$(HOSTCC) $(CFLAGS) -o $@ $^
 
 dep:
 	@$(HOSTCC) $(CFLAGS) -MM *.c > .dependencies
-	@$(HOSTCC) $(CFLAGS) -MM lzma/*.cc >> .dependencies
+	@$(HOSTCC) $(CFLAGS) -MM lzma/*.c >> .dependencies
 	@$(HOSTCC) $(CFLAGS) -MM lzma/C/*.c >> .dependencies
 
 -include .dependencies

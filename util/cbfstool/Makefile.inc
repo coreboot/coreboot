@@ -25,15 +25,15 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/%.cc
-	printf "    HOSTCXX    $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCXX) $(CBFSTOOLFLAGS) $(HOSTCXXFLAGS) -c -o $@ $<
+$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/%.c
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
+	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/cbfstool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
-	printf "    HOSTCXX    $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCXX) $(CBFSTOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
+	$(HOSTCC) $(CBFSTOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 

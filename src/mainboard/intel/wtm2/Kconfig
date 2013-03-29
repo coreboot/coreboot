@@ -16,6 +16,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_SMI_HANDLER
 	select CHROMEOS
 	select EXTERNAL_MRC_BLOB
+	select CACHE_ROM
 
 config MAINBOARD_DIR
 	string

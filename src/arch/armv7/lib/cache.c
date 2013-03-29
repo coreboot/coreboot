@@ -148,14 +148,39 @@ static void dcache_op_set_way(enum dcache_op op)
 	dsb();
 }
 
+static void dcache_foreach(enum dcache_op op)
+{
+	uint32_t clidr;
+	int level;
+
+	clidr = read_clidr();
+	for (level = 0; level < 7; level++) {
+		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
+		uint32_t csselr;
+
+		switch(ctype) {
+		case 0x2:
+		case 0x3:
+		case 0x4:
+			csselr = level << 1;
+			write_csselr(csselr);
+			dcache_op_set_way(op);
+			break;
+		default:
+			/* no cache, icache only, or reserved */
+			break;
+		}
+	}
+}
+
 void dcache_clean_invalidate_all(void)
 {
-	dcache_op_set_way(OP_DCCISW);
+	dcache_foreach(OP_DCCISW);
 }
 
 void dcache_invalidate_all(void)
 {
-	dcache_op_set_way(OP_DCISW);
+	dcache_foreach(OP_DCISW);
 }
 
 static unsigned int line_bytes(void)

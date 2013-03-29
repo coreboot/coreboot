@@ -24,7 +24,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-//#include <southbridge/amd/sb800/sb800.h>
+#include <southbridge/amd/cimx/cimx_util.h>
 
 //#define SMBUS_IO_BASE 0x6000
 void set_pcie_reset(void);

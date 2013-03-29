@@ -646,6 +646,10 @@ void suspend_resume(void)
 #if CONFIG_COVERAGE
 		coverage_exit();
 #endif
+		/* Tear down the caching of the ROM. */
+		if (disable_cache_rom)
+			disable_cache_rom();
+
 		post_code(POST_OS_RESUME);
 		acpi_jump_to_wakeup(wake_vec);
 	}

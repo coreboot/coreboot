@@ -128,7 +128,7 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
   if ( Status!= AGESA_SUCCESS) {
     // Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
     ASSERT(FALSE);
-    return Status;
+    return;
   }
 
   BrazosPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;

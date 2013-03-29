@@ -31,7 +31,7 @@
  * Reference: ARM Architecture Reference Manual, ARMv7-A and ARMv7-R edition
  */
 
-#include <inttypes.h>
+#include <stdint.h>
 
 #include <arch/cache.h>
 
@@ -149,14 +149,39 @@ static void dcache_op_set_way(enum dcache_op op)
 	isb();
 }
 
+static void dcache_foreach(enum dcache_op op)
+{
+	uint32_t clidr;
+	int level;
+
+	clidr = read_clidr();
+	for (level = 0; level < 7; level++) {
+		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
+		uint32_t csselr;
+
+		switch(ctype) {
+		case 0x2:
+		case 0x3:
+		case 0x4:
+			csselr = level << 1;
+			write_csselr(csselr);
+			dcache_op_set_way(op);
+			break;
+		default:
+			/* no cache, icache only, or reserved */
+			break;
+		}
+	}
+}
+
 void dcache_clean_invalidate_all(void)
 {
-	dcache_op_set_way(OP_DCCISW);
+	dcache_foreach(OP_DCCISW);
 }
 
 void dcache_invalidate_all(void)
 {
-	dcache_op_set_way(OP_DCISW);
+	dcache_foreach(OP_DCISW);
 }
 
 static unsigned int line_bytes(void)
@@ -212,15 +237,9 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
 
 void dcache_mmu_disable(void)
 {
-	uint32_t sctlr, csselr;
-
-	/* ensure L1 data/unified cache is selected */
-	csselr = read_csselr();
-	csselr &= ~0xf;
-	write_csselr(csselr);
+	uint32_t sctlr;
 
 	dcache_clean_invalidate_all();
-
 	sctlr = read_sctlr();
 	sctlr &= ~(SCTLR_C | SCTLR_M);
 	write_sctlr(sctlr);
@@ -264,6 +283,8 @@ void armv7_invalidate_caches(void)
 		case 0x2:
 		case 0x4:
 			/* dcache only or unified cache */
+			csselr = level << 1;
+			write_csselr(csselr);
 			dcache_invalidate_all();
 			break;
 		case 0x3:
@@ -272,7 +293,7 @@ void armv7_invalidate_caches(void)
 			write_csselr(csselr);
 			icache_invalidate_all();
 
-			csselr = level < 1;
+			csselr = level << 1;
 			write_csselr(csselr);
 			dcache_invalidate_all();
 			break;

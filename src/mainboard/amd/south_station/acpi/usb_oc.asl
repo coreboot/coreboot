@@ -25,6 +25,19 @@ DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
 		#include "usb.asl"
 	}
 */
+
+/* USB overcurrent mapping pins.   */
+Name(UOM0, 0)
+Name(UOM1, 2)
+Name(UOM2, 0)
+Name(UOM3, 7)
+Name(UOM4, 2)
+Name(UOM5, 2)
+Name(UOM6, 6)
+Name(UOM7, 2)
+Name(UOM8, 6)
+Name(UOM9, 6)
+
 Method(UCOC, 0) {
 	Sleep(20)
     	Store(0x13,CMTI)
@@ -125,7 +138,7 @@ If (LLessEqual(UOM6,9)) {
 
 /* USB Port 7 overcurrent uses Gpm 7 */
 If (LLessEqual(UOM7,9)) {
- 	Scope (\_GPE) {
+	Scope (\_GPE) {
 		/* Method (_L1D) { */
 		Method (_L07) {
 			UCOC()

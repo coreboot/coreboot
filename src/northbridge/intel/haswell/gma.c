@@ -190,20 +190,39 @@ static void gma_pm_init_post_vbios(struct device *dev)
 static void gma_func0_init(struct device *dev)
 {
 	u32 reg32;
-
+	u32 graphics_base; //, graphics_size;
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
+
+	/* the BAR for graphics space is a well known number for
+	 * sandy and ivy. And the resource code renumbers it.
+	 * So it's almost like having two hardcodes.
+	 */
+	graphics_base = dev->resource_list[1].base;
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
 
 	/* PCI Init, will run VBIOS */
+#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	printk(BIOS_SPEW, "Run the VBIOS init\n");
 	pci_dev_init(dev);
+#endif
 
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
+	u32 iobase, mmiobase, physbase;
+	iobase = dev->resource_list[2].base;
+	mmiobase = dev->resource_list[0].base;
+	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+
+	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
+	i915lightup(physbase, iobase, mmiobase, graphics_base);
+#endif
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

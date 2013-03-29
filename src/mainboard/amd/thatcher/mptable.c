@@ -24,9 +24,9 @@
 #include <string.h>
 #include <stdint.h>
 #include <cpu/amd/amdfam15.h>
-#include "pmio.h"
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
+#include "southbridge/amd/agesa/hudson/hudson.h" /* pm_ioread() */
 
 //-#define IO_APIC_ID    CONFIG_MAX_PHYSICAL_CPUS + 1
 #define IO_APIC_ID    CONFIG_MAX_CPUS

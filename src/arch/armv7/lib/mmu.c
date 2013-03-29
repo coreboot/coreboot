@@ -88,6 +88,9 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 
 	for (i = start_mb; i < start_mb + size_mb; i++)
 		ttb_entry[i] = (i << 20) | attr;
+
+	/* TODO: add helper to invalidate TLB by MVA */
+	tlb_invalidate_all();
 }
 
 void mmu_init(void)

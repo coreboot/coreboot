@@ -118,4 +118,6 @@
 /* helper function to map mmio address to peripheral id */
 enum periph_id exynos5_get_periph_id(unsigned base_addr);
 
+void exynos5250_config_l2_cache(void);
+
 #endif	/* _EXYNOS5250_CPU_H */

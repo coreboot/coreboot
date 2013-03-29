@@ -220,9 +220,9 @@ static inline void write_csselr(uint32_t val)
 }
 
 /* read L2 control register (L2CTLR) */
-static inline unsigned int read_l2ctlr(void)
+static inline uint32_t read_l2ctlr(void)
 {
-	unsigned int val = 0;
+	uint32_t val = 0;
 	asm volatile ("mrc p15, 1, %0, c9, c0, 2" : "=r" (val));
 	return val;
 }
@@ -239,9 +239,9 @@ static inline void write_l2ctlr(uint32_t val)
 }
 
 /* read system control register (SCTLR) */
-static inline unsigned int read_sctlr(void)
+static inline uint32_t read_sctlr(void)
 {
-	unsigned int val;
+	uint32_t val;
 	asm volatile ("mrc p15, 0, %0, c1, c0, 0" : "=r" (val));
 	return val;
 }

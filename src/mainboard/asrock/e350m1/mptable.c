@@ -61,7 +61,6 @@ static void *smp_write_config_table(void *v)
 
   /* I/O APICs:   APIC ID Version State   Address */
 
-  device_t dev;
   u32 dword;
   u8 byte;
 

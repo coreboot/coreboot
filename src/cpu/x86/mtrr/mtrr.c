@@ -553,14 +553,31 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 	if (!var_state->above4gb && a2 > RANGE_4GB)
 		a2 = RANGE_4GB;
 
+	next = memranges_next_entry(var_state->addr_space, r);
+
 	b1 = a2;
+
+	/* First check if a1 is >= 4GiB and the current etnry is the last
+	 * entry. If so perform an optimization of covering a larger range
+	 * defined by the base address' alignment. */
+	if (a1 >= RANGE_4GB && next == NULL) {
+		uint32_t addr_lsb;
+
+		addr_lsb = fls(a1);
+		b2 = (1 << addr_lsb) + a1;
+		if (b2 >= a2) {
+			calc_var_mtrr_range(var_state, a1, b2 - a1, mtrr_type);
+			return;
+		}
+	}
+
+	/* Handle the min alignment roundup case. */
 	b2 = ALIGN_UP(a2, MTRR_MIN_ALIGN);
 
 	/* Check against the next range. If the current range_entry is the
 	 * last entry then carving a hole is no problem. If the current entry
 	 * isn't the last entry then check that the last entry covers the
 	 * entire hole range with the default mtrr type. */
-	next = memranges_next_entry(var_state->addr_space, r);
 	if (next != NULL &&
 	    (range_entry_mtrr_type(next) != var_state->def_mtrr_type ||
 	     range_entry_end_mtrr_addr(next) < b2)) {

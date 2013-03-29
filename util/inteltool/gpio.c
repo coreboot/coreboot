@@ -221,6 +221,42 @@ static const io_register_t i631x_gpio_registers[] = {
 	{ 0x38, 4, "GP_LVL2" },
 };
 
+static const io_register_t pch_gpio_registers[] = {
+	{ 0x00, 4, "GPIO_USE_SEL" },
+	{ 0x04, 4, "GP_IO_SEL" },
+	{ 0x08, 4, "RESERVED" },
+	{ 0x0c, 4, "GP_LVL" },
+	{ 0x10, 4, "RESERVED" },
+	{ 0x14, 4, "RESERVED" },
+	{ 0x18, 4, "GPO_BLINK" },
+	{ 0x1c, 4, "GP_SER_BLINK" },
+	{ 0x20, 4, "GP_SB_CMDSTS" },
+	{ 0x24, 4, "GP_SB_DATA" },
+	{ 0x28, 2, "GPI_NMI_EN" },
+	{ 0x2a, 2, "GPI_NMI_STS" },
+	{ 0x2c, 4, "GPI_INV" },
+	{ 0x30, 4, "GPIO_USE_SEL2" },
+	{ 0x34, 4, "GP_IO_SEL2" },
+	{ 0x38, 4, "GP_LVL2" },
+	{ 0x3c, 4, "RESERVED" },
+	{ 0x40, 4, "GPIO_USE_SEL3" },
+	{ 0x44, 4, "GPIO_SEL3" },
+	{ 0x48, 4, "GPIO_LVL3" },
+	{ 0x4c, 4, "RESERVED" },
+	{ 0x50, 4, "RESERVED" },
+	{ 0x54, 4, "RESERVED" },
+	{ 0x58, 4, "RESERVED" },
+	{ 0x5c, 4, "RESERVED" },
+	{ 0x60, 4, "GP_RST_SEL1" },
+	{ 0x64, 4, "GP_RST_SEL2" },
+	{ 0x68, 4, "GP_RST_SEL3" },
+	{ 0x6c, 4, "RESERVED" },
+	{ 0x70, 4, "RESERVED" },
+	{ 0x74, 4, "RESERVED" },
+	{ 0x78, 4, "RESERVED" },
+	{ 0x7c, 4, "RESERVED" },
+};
+
 int print_gpios(struct pci_dev *sb)
 {
 	int i, size;
@@ -230,6 +266,39 @@ int print_gpios(struct pci_dev *sb)
 	printf("\n============= GPIOS =============\n\n");
 
 	switch (sb->device_id) {
+	case PCI_DEVICE_ID_INTEL_Z68:
+	case PCI_DEVICE_ID_INTEL_P67:
+	case PCI_DEVICE_ID_INTEL_UM67:
+	case PCI_DEVICE_ID_INTEL_HM65:
+	case PCI_DEVICE_ID_INTEL_H67:
+	case PCI_DEVICE_ID_INTEL_HM67:
+	case PCI_DEVICE_ID_INTEL_Q65:
+	case PCI_DEVICE_ID_INTEL_QS67:
+	case PCI_DEVICE_ID_INTEL_Q67:
+	case PCI_DEVICE_ID_INTEL_QM67:
+	case PCI_DEVICE_ID_INTEL_B65:
+	case PCI_DEVICE_ID_INTEL_C202:
+	case PCI_DEVICE_ID_INTEL_C204:
+	case PCI_DEVICE_ID_INTEL_C206:
+	case PCI_DEVICE_ID_INTEL_H61:
+	case PCI_DEVICE_ID_INTEL_Z77:
+	case PCI_DEVICE_ID_INTEL_Z75:
+	case PCI_DEVICE_ID_INTEL_Q77:
+	case PCI_DEVICE_ID_INTEL_Q75:
+	case PCI_DEVICE_ID_INTEL_B75:
+	case PCI_DEVICE_ID_INTEL_H77:
+	case PCI_DEVICE_ID_INTEL_C216:
+	case PCI_DEVICE_ID_INTEL_QM77:
+	case PCI_DEVICE_ID_INTEL_QS77:
+	case PCI_DEVICE_ID_INTEL_HM77:
+	case PCI_DEVICE_ID_INTEL_UM77:
+	case PCI_DEVICE_ID_INTEL_HM76:
+	case PCI_DEVICE_ID_INTEL_HM75:
+	case PCI_DEVICE_ID_INTEL_HM70:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = pch_gpio_registers;
+		size = ARRAY_SIZE(pch_gpio_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = ich10_gpio_registers;

@@ -310,6 +310,8 @@ void armv7_invalidate_caches(void)
 		case 0x2:
 		case 0x4:
 			/* dcache only or unified cache */
+			csselr = level << 1;
+			write_csselr(csselr);
 			dcache_invalidate_all();
 			break;
 		case 0x3:

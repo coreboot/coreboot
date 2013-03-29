@@ -21,6 +21,7 @@
 #include <cbmem.h>
 #include <arch/exception.h>
 #include <cpu/samsung/exynos5250/clk.h>
+#include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
 
 #include <arch/cache.h>
@@ -45,6 +46,7 @@ void main(void)
 
 	/* set up dcache and MMU */
 	/* FIXME: this should happen via resource allocator */
+	exynos5250_config_l2_cache();
 	mmu_init();
 	mmu_config_range(0, DRAM_START, DCACHE_OFF);
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);

@@ -35,6 +35,8 @@
 #include <device/pci.h>
 #include <delay.h>
 
+void broadcom_init(void);
+
 #define be16(x)		cpu_to_be16(x)	//a little easier to type
 #define be(x)		cpu_to_be32(x)	//this is used a lot!
 

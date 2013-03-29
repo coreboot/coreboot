@@ -227,6 +227,45 @@
  */
 #define GEC_CONFIG			0
 
+static const CODECENTRY e350m1_codec_alc892[] = /* Realtek ALC892 */
+{
+	/*
+	 * The comments after each entry are taken from the block
+	 * diagram (figure 1) in the ALC892 datasheet
+	 * (Rev. 1.3, Track ID: JATR-2265-11) on page 5 which is available for download
+	 * on the Realtek Web site.
+	 */
+
+	/* NID, PinConfig (Verbs 71F..C) */
+	{0x11, 0x411111F0}, /* S/PDIF-OUT 2 */
+	{0x12, 0x411111F0}, /* DMIC-L/R */
+	{0x14, 0x01014010}, /* FRONT (Port-D) */
+	{0x15, 0x01011012}, /* SURR (Port-A) */
+	{0x16, 0x01016011}, /* CEN/LFE (Port-G) */
+	{0x17, 0x411111F0}, /* SIDESURR (Port-H) */
+	{0x18, 0x01A19840}, /* MIC1 (Port-B) */
+	{0x19, 0x02A19950}, /* MIC2 (Port-F) */
+	{0x1A, 0x0181304F}, /* LINE1 (Port-C) */
+	{0x1B, 0x02214120}, /* LINE2 (Port-E) */
+	{0x1C, 0x411111F0}, /* CD-IN */
+	{0x1D, 0x4005E601}, /* BEEP-IN */
+	{0x1E, 0x01452130}, /* S/PDIF-OUT */
+	{0x1F, 0x411111F0}, /* S/PDIF-IN */
+	{0xff, 0xffffffff} /* end of table */
+};
+
+static const CODECTBLLIST codec_tablelist[] =
+{
+	{0x10ec0892, (CODECENTRY*)&e350m1_codec_alc892[0]},
+	{0xFFFFFFFF, (CODECENTRY*)0xFFFFFFFFL}
+};
+
+/**
+ * @def AZALIA_OEM_VERB_TABLE
+ *  Mainboard specific codec verb table list
+ */
+#define AZALIA_OEM_VERB_TABLE		(&codec_tablelist[0])
+
 /**
  * @def SIO_HWM_BASE_ADDRESS  Super IO HWM base address
  */

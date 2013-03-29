@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <string.h>
 #include <stdint.h>
+#include <cpu/amd/amdfam14.h>
 #include <SBPLATFORM.h>
 
 extern u8 bus_sb800[2];

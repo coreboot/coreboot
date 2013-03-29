@@ -219,10 +219,29 @@ static inline void write_csselr(uint32_t val)
 	isb();	/* ISB to sync the change to CCSIDR */
 }
 
-/* read system control register (SCTLR) */
-static inline unsigned int read_sctlr(void)
+/* read L2 control register (L2CTLR) */
+static inline uint32_t read_l2ctlr(void)
 {
-	unsigned int val;
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 1, %0, c9, c0, 2" : "=r" (val));
+	return val;
+}
+
+/* write L2 control register (L2CTLR) */
+static inline void write_l2ctlr(uint32_t val)
+{
+	/*
+	 * Note: L2CTLR can only be written when the L2 memory system
+	 * is idle, ie before the MMU is enabled.
+	 */
+	asm volatile("mcr p15, 1, %0, c9, c0, 2" : : "r" (val) : "memory" );
+	isb();
+}
+
+/* read system control register (SCTLR) */
+static inline uint32_t read_sctlr(void)
+{
+	uint32_t val;
 	asm volatile ("mrc p15, 0, %0, c1, c0, 0" : "=r" (val));
 	return val;
 }

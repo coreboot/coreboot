@@ -28,7 +28,7 @@
  */
 
 #include <stdlib.h>
-#include <types.h>
+#include <stdint.h>
 
 #include <cbmem.h>
 #include <console/console.h>

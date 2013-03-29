@@ -29,6 +29,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
@@ -405,6 +406,11 @@ void x86_mtrr_disable_rom_caching(void)
 	msr_val.lo &= ~0xff;
 	wrmsr(MTRRphysBase_MSR(index), msr_val);
 	enable_cache();
+}
+
+void disable_cache_rom(void)
+{
+	x86_mtrr_disable_rom_caching();
 }
 #endif
 

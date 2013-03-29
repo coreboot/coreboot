@@ -20,6 +20,7 @@
 
 #include <arch/byteorder.h>
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <fallback.h>
 #include <boot/elf.h>
 #include <boot/elf_boot.h>
@@ -539,6 +540,10 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 #if CONFIG_COVERAGE
 	coverage_exit();
 #endif
+
+	/* Tear down the caching of the ROM. */
+	if (disable_cache_rom)
+		disable_cache_rom();
 
 	/* Before we go off to run the payload, see if
 	 * we stayed within our bounds.

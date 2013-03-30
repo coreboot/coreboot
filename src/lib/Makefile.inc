@@ -47,6 +47,8 @@ romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
+romstage-$(CONFIG_SPKMODEM) += spkmodem.c
+
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c
 romstage-y += compute_ip_checksum.c
@@ -81,6 +83,7 @@ ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 ramstage-$(CONFIG_USBDEBUG) += usbdebug.c
+ramstage-$(CONFIG_SPKMODEM) += spkmodem.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_TRACE) += trace.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

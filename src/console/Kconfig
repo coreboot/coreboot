@@ -119,6 +119,12 @@ config TTYS0_LCS
 	default 3
 	depends on CONSOLE_SERIAL8250 || CONSOLE_SERIAL8250MEM
 
+config SPKMODEM
+	bool "Spkmodem (console on speaker) console output"
+	default n
+	help
+	  Send coreboot debug output through speaker
+
 # Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
 config HAVE_USBDEBUG
 	def_bool n

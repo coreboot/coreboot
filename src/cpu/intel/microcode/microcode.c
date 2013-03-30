@@ -21,6 +21,7 @@
 /* Microcode update for Intel PIII and later CPUs */
 
 #include <stdint.h>
+#include <stddef.h>
 #if !defined(__ROMCC__)
 #include <console/console.h>
 #endif
@@ -131,7 +132,7 @@ const void *intel_microcode_find(void)
 #endif
 
 	if (!microcode_updates)
-		return microcode_updates;
+		return NULL;
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;
@@ -201,6 +202,13 @@ void intel_update_microcode(const void *microcode_updates)
 	const struct microcode *m;
 	const char *c;
 	msr_t msr;
+
+	if (!microcode_updates) {
+#if !defined(__ROMCC__)
+		printk(BIOS_WARNING, "No microcode updates found.\n");
+#endif
+		return;
+	}
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;

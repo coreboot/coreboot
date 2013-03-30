@@ -308,12 +308,21 @@ static void dump_timestamps(void)
 	unmap_memory();
 }
 
+static const char *future_ngettext (const char *sing, const char *plural,
+	unsigned long int n)
+{
+	if (n == 1)
+		return sing;
+	return plural;
+}
+
 /* dump the cbmem console */
 static void dump_console(void)
 {
 	void *console_p;
 	char *console_c;
 	uint32_t size;
+	uint32_t cursor;
 
 	if (console.tag != LB_TAG_CBMEM_CONSOLE) {
 		fprintf(stderr, "No console found in coreboot table.\n");
@@ -328,6 +337,12 @@ static void dump_console(void)
 	 * Hence we have to add 8 to get to the actual console string.
 	 */
 	size = *(uint32_t *)console_p;
+	cursor = *(uint32_t *) (console_p + 4);
+	/* Cursor continues to go on even after no more data fits in
+	 * the buffer but the data is dropped in this case.
+	 */
+	if (size > cursor)
+		size = cursor;
 	console_c = malloc(size + 1);
 	if (!console_c) {
 		fprintf(stderr, "Not enough memory for console.\n");
@@ -337,7 +352,11 @@ static void dump_console(void)
 	memcpy(console_c, console_p + 8, size);
 	console_c[size] = 0;
 
-	printf("%s", console_c);
+	printf("%s\n", console_c);
+	if (size < cursor)
+		printf(future_ngettext("one byte lost\n",
+				       "%d bytes lost\n", cursor - size),
+		       cursor - size);
 
 	free(console_c);
 

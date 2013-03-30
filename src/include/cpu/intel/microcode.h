@@ -27,7 +27,7 @@ void intel_update_microcode_from_cbfs(void);
  * NULL if none found. */
 const void *intel_microcode_find(void);
 /* It is up to the caller to determine if parallel loading is possible as
- * well as ensuring the micrcode matches the family and revision (i.e. with
+ * well as ensuring the microcode matches the family and revision (i.e. with
  * intel_microcode_find()). */
 void intel_microcode_load_unlocked(const void *microcode_patch);
 #else

@@ -328,6 +328,8 @@ static void dump_console(void)
 	 * Hence we have to add 8 to get to the actual console string.
 	 */
 	size = *(uint32_t *)console_p;
+	if (size > *(uint32_t *) (console_p + 4))
+	  size = *(uint32_t *) (console_p + 4);
 	console_c = malloc(size + 1);
 	if (!console_c) {
 		fprintf(stderr, "Not enough memory for console.\n");
@@ -337,7 +339,9 @@ static void dump_console(void)
 	memcpy(console_c, console_p + 8, size);
 	console_c[size] = 0;
 
-	printf("%s", console_c);
+	printf("%s\n", console_c);
+	if (size < *(uint32_t *) (console_p + 4))
+	  printf ("%dB lost\n", *(uint32_t *) (console_p + 4) - size);
 
 	free(console_c);
 

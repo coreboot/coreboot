@@ -202,6 +202,9 @@ void intel_update_microcode(const void *microcode_updates)
 	const char *c;
 	msr_t msr;
 
+	if (!microcode_updates)
+	  return;
+
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;
 	msr.hi = 0;

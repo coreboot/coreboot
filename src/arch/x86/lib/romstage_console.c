@@ -28,6 +28,10 @@
 #if CONFIG_CONSOLE_NE2K
 #include <console/ne2k.h>
 #endif
+#if CONFIG_SPKMODEM
+#include <console/spkmodem.h>
+#endif
+
 
 void console_tx_byte(unsigned char byte)
 {
@@ -51,6 +55,9 @@ void console_tx_byte(unsigned char byte)
 #endif
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_tx_byte(byte);
+#endif
+#if CONFIG_SPKMODEM
+	spkmodem_tx_byte(byte);
 #endif
 }
 

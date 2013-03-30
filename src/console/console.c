@@ -119,6 +119,10 @@ void console_init(void)
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_init();
 #endif
+#if CONFIG_SPKMODEM
+	spkmodem_init();
+#endif
+
 	static const char console_test[] =
 		"\n\ncoreboot-"
 		COREBOOT_VERSION

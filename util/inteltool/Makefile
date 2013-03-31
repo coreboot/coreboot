@@ -21,17 +21,17 @@
 
 PROGRAM = inteltool
 
-CC      = gcc
-INSTALL = /usr/bin/install
-PREFIX  = /usr/local
-CFLAGS  = -O2 -g -Wall -W
-LDFLAGS = -lpci -lz
+CC      ?= gcc
+INSTALL ?= /usr/bin/install
+PREFIX  ?= /usr/local
+CFLAGS  ?= -O2 -g -Wall -W
+LDFLAGS += -lpci -lz
 
 OBJS = inteltool.o cpu.o gpio.o rootcmplx.o powermgt.o memory.o pcie.o amb.o
 
 OS_ARCH	= $(shell uname)
 ifeq ($(OS_ARCH), Darwin)
-LDFLAGS = -framework DirectHW -lpci -lz
+LDFLAGS += -framework DirectHW
 endif
 ifeq ($(OS_ARCH), FreeBSD)
 CFLAGS += -I/usr/local/include

@@ -36,6 +36,17 @@ static void usb_ehci_init(struct device *dev)
 	RCBA32(0x35b0) = reg32;
 
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
+
+	if (dev->device == 0x3b34 || dev->device == 0x3b3c)
+	{
+		pci_write_config32 (dev, 0x84, 0x130c8911);
+		pci_write_config32 (dev, 0x88, 0xa0);
+		pci_write_config32 (dev, 0xf4, 0x80808588);
+		pci_write_config32 (dev, 0xf4, 0x00808588);
+		pci_write_config32 (dev, 0xf4, 0x00808588);
+		pci_write_config32 (dev, 0xfc, 0x301b1728);
+	}
+
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER;
 	//reg32 |= PCI_COMMAND_SERR;
@@ -68,22 +79,28 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 static void usb_ehci_set_resources(struct device *dev)
 {
 #if CONFIG_USBDEBUG
-	struct resource *res;
-	u32 base;
-	u32 usb_debug;
+	u32 usb_debug = 0;
 
-	usb_debug = get_ehci_debug();
-	set_ehci_debug(0);
+	if (dev->path.pci.devfn == PCI_DEVFN (CONFIG_USBDEBUG_DEV, CONFIG_USBDEBUG_FUNC))
+	{
+		usb_debug = get_ehci_debug();
+		set_ehci_debug(0);
+	}
 #endif
 	pci_dev_set_resources(dev);
 
 #if CONFIG_USBDEBUG
-	res = find_resource(dev, 0x10);
-	set_ehci_debug(usb_debug);
-	if (!res) return;
-	base = res->base;
-	set_ehci_base(base);
-	report_resource_stored(dev, res, "");
+	if (dev->path.pci.devfn == PCI_DEVFN (CONFIG_USBDEBUG_DEV, CONFIG_USBDEBUG_FUNC))
+	{
+		struct resource *res;
+		u32 base;
+		res = find_resource(dev, 0x10);
+		if (!res) return;
+		base = res->base;
+		set_ehci_debug(usb_debug);
+		set_ehci_base(base);
+		report_resource_stored(dev, res, "");
+	}
 #endif
 }
 
@@ -103,7 +120,7 @@ static struct device_operations usb_ehci_ops = {
 };
 
 static const unsigned short pci_device_ids[] = { 0x1c26, 0x1c2d, 0x1e26, 0x1e2d,
-						 0 };
+						 0x3b34, 0x3b3c, 0 };
 
 static const struct pci_driver pch_usb_ehci __pci_driver = {
 	.ops	 = &usb_ehci_ops,

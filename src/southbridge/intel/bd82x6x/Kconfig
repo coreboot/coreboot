@@ -72,4 +72,24 @@ config LOCK_MANAGEMENT_ENGINE
 
 	  If unsure, say N.
 
+config USBDEBUG_DEV
+	int
+	default 29
+
+config USBDEBUG_FUNC
+	int
+	default 7
+
+config USBDEBUG_DEFAULT_PORT
+	int
+	default 2
+
+config IO_APIC_ID
+	int
+	default 2
+
+config PMCON_RAMINIT_REVERSED
+	int
+	default 1
+
 endif

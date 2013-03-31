@@ -20,6 +20,44 @@
 #ifndef SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H
 #define SOUTHBRIDGE_INTEL_BD82X6X_CHIP_H
 
+#define   IDE_DECODE_ENABLE	(1 << 15)
+#define   IDE_SITRE		(1 << 14)
+#define   IDE_ISP_5_CLOCKS	(0 << 12)
+#define   IDE_ISP_4_CLOCKS	(1 << 12)
+#define   IDE_ISP_3_CLOCKS	(2 << 12)
+#define   IDE_RCT_4_CLOCKS	(0 <<  8)
+#define   IDE_RCT_3_CLOCKS	(1 <<  8)
+#define   IDE_RCT_2_CLOCKS	(2 <<  8)
+#define   IDE_RCT_1_CLOCKS	(3 <<  8)
+#define   IDE_DTE1		(1 <<  7)
+#define   IDE_PPE1		(1 <<  6)
+#define   IDE_IE1		(1 <<  5)
+#define   IDE_TIME1		(1 <<  4)
+#define   IDE_DTE0		(1 <<  3)
+#define   IDE_PPE0		(1 <<  2)
+#define   IDE_IE0		(1 <<  1)
+#define   IDE_TIME0		(1 <<  0)
+
+#define   SIG_MODE_SEC_NORMAL	(0 << 18)
+#define   SIG_MODE_SEC_TRISTATE	(1 << 18)
+#define   SIG_MODE_SEC_DRIVELOW	(2 << 18)
+#define   SIG_MODE_PRI_NORMAL	(0 << 16)
+#define   SIG_MODE_PRI_TRISTATE	(1 << 16)
+#define   SIG_MODE_PRI_DRIVELOW	(2 << 16)
+#define   FAST_SCB1		(1 << 15)
+#define   FAST_SCB0		(1 << 14)
+#define   FAST_PCB1		(1 << 13)
+#define   FAST_PCB0		(1 << 12)
+#define   SCB1			(1 <<  3)
+#define   SCB0			(1 <<  2)
+#define   PCB1			(1 <<  1)
+#define   PCB0			(1 <<  0)
+
+#define   IDE_SSDE1		(1 <<  3)
+#define   IDE_SSDE0		(1 <<  2)
+#define   IDE_PSDE1		(1 <<  1)
+#define   IDE_PSDE0		(1 <<  0)
+
 struct southbridge_intel_bd82x6x_config {
 	/**
 	 * Interrupt Routing configuration
@@ -69,6 +107,17 @@ struct southbridge_intel_bd82x6x_config {
 	uint8_t sata_port_map;
 	uint32_t sata_port0_gen3_tx;
 	uint32_t sata_port1_gen3_tx;
+	uint8_t sata_irq_line;
+	uint16_t ide_tim_pri;
+	uint32_t ide_config;
+	uint16_t ide_sdma_cnt;
+	uint16_t ide_sdma_tim;
+	uint32_t sir4;
+	uint32_t sir28;
+	uint32_t sir54;
+	uint32_t sir64;
+	uint32_t sir88;
+	int set98;
 
 	/**
 	 * SATA Interface Speed Support Configuration

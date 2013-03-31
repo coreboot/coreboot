@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <delay.h>
 #include "pch.h"
 
 typedef struct southbridge_intel_bd82x6x_config config_t;
@@ -96,27 +97,26 @@ static void sata_init(struct device *dev)
 			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
 	} else if(config->sata_ahci) {
 		u32 abar;
+		int i;
 
 		printk(BIOS_DEBUG, "SATA: Controller in AHCI mode.\n");
+		udelay (1000);
 
 		/* Set Interrupt Line */
 		/* Interrupt Pin is set by D31IP.PIP */
-		pci_write_config8(dev, INTR_LN, 0x0a);
+		pci_write_config8(dev, INTR_LN, config->sata_irq_line);
 
 		/* Set timings */
-		pci_write_config16(dev, IDE_TIM_PRI, IDE_DECODE_ENABLE |
-				IDE_ISP_3_CLOCKS | IDE_RCT_1_CLOCKS |
-				IDE_PPE0 | IDE_IE0 | IDE_TIME0);
+		pci_write_config16(dev, IDE_TIM_PRI, config->ide_tim_pri);
 		pci_write_config16(dev, IDE_TIM_SEC, IDE_DECODE_ENABLE |
 				IDE_ISP_5_CLOCKS | IDE_RCT_4_CLOCKS);
 
 		/* Sync DMA */
-		pci_write_config16(dev, IDE_SDMA_CNT, IDE_PSDE0);
-		pci_write_config16(dev, IDE_SDMA_TIM, 0x0001);
+		pci_write_config16(dev, IDE_SDMA_CNT, config->ide_sdma_cnt);
+		pci_write_config16(dev, IDE_SDMA_TIM, config->ide_sdma_tim);
 
 		/* Set IDE I/O Configuration */
-		reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
-		pci_write_config32(dev, IDE_CONFIG, reg32);
+		pci_write_config32(dev, IDE_CONFIG, config->ide_config);
 
 		/* for AHCI, Port Enable is managed in memory mapped space */
 		reg16 = pci_read_config16(dev, 0x92);
@@ -126,10 +126,14 @@ static void sata_init(struct device *dev)
 
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94,
-			   ((config->sata_port_map ^ 0x3f) << 24) | 0x183);
+				   ((config->sata_port_map ^ 0x3f) << 24) | 0x183 | (config->set98 << 30));
+		if (config->set98)
+			pci_write_config32(dev, 0x98, 0x00590200);
 
 		/* Initialize AHCI memory-mapped space */
 		abar = pci_read_config32(dev, PCI_BASE_ADDRESS_5);
+		udelay (1000);
+
 		printk(BIOS_DEBUG, "ABAR: %08X\n", abar);
 		/* CAP (HBA Capabilities) : enable power management */
 		reg32 = read32(abar + 0x00);
@@ -143,6 +147,16 @@ static void sata_init(struct device *dev)
 			  << 20;
 		}
 		write32(abar + 0x00, reg32);
+
+		/* AHCI enable.  */
+		for (i = 0; i < 5; i++)
+		  {
+		    write32(abar + 0x04, read32 (abar + 0x04) | 0x80000000);
+		    mdelay (1);
+		    if (read32 (abar + 0x04) & 0x80000000)
+		      break;
+		  }
+
 		/* PI (Ports implemented) */
 		write32(abar + 0x0c, config->sata_port_map);
 		(void) read32(abar + 0x0c); /* Read back 1 */
@@ -212,13 +226,14 @@ static void sata_init(struct device *dev)
 				config->sata_port1_gen3_tx);
 
 	/* Additional Programming Requirements */
-	sir_write(dev, 0x04, 0x00001600);
-	sir_write(dev, 0x28, 0xa0000033);
+	sir_write(dev, 0x04, config->sir4);
+	sir_write(dev, 0x28, config->sir28);
 	reg32 = sir_read(dev, 0x54);
 	reg32 &= 0xff000000;
-	reg32 |= 0x5555aa;
+	reg32 |= config->sir54;
+
 	sir_write(dev, 0x54, reg32);
-	sir_write(dev, 0x64, 0xcccc8484);
+	sir_write(dev, 0x64, config->sir64);
 	reg32 = sir_read(dev, 0x68);
 	reg32 &= 0xffff0000;
 	reg32 |= 0xcccc;
@@ -226,9 +241,10 @@ static void sata_init(struct device *dev)
 	reg32 = sir_read(dev, 0x78);
 	reg32 &= 0x0000ffff;
 	reg32 |= 0x88880000;
+
 	sir_write(dev, 0x78, reg32);
 	sir_write(dev, 0x84, 0x001c7000);
-	sir_write(dev, 0x88, 0x88338822);
+	sir_write(dev, 0x88, config->sir88);
 	sir_write(dev, 0xa0, 0x001c7000);
 	// a4
 	sir_write(dev, 0xc4, 0x0c0c0c0c);
@@ -287,7 +303,7 @@ static struct device_operations sata_ops = {
 
 static const unsigned short pci_device_ids[] = { 0x1c00, 0x1c01, 0x1c02, 0x1c03,
 						 0x1e00, 0x1e01, 0x1e02, 0x1e03,
-						 0 };
+						 0x3b2e, 0 };
 
 static const struct pci_driver pch_sata __pci_driver = {
 	.ops	 = &sata_ops,

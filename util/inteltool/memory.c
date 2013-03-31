@@ -64,13 +64,97 @@ static const io_register_t sandybridge_mch_registers[] = {
 	{ 0x5D10, 8, "SSKPD" }, // Sticky Scratchpad Data
 };
 
+volatile uint8_t *mchbar;
+
+static void write_mchbar32 (uint32_t addr, uint32_t val)
+{
+	* (volatile uint32_t *) (mchbar + addr) = val;
+}
+
+static uint32_t read_mchbar32 (uint32_t addr)
+{
+	return * (volatile uint32_t *) (mchbar + addr);
+}
+
+static uint8_t read_mchbar8 (uint32_t addr)
+{
+	return * (volatile uint8_t *) (mchbar + addr);
+}
+
+static u16 read_500 (int channel, u16 addr, int split)
+{
+	uint32_t val;
+	write_mchbar32 (0x500 + (channel << 10), 0);
+	while (read_mchbar32 (0x500 + (channel << 10)) & 0x800000);
+	write_mchbar32 (0x500 + (channel << 10), 0x80000000 | (((read_mchbar8 (0x246 + (channel << 10)) >> 2) & 3) + 0xb88 - addr));
+	while (read_mchbar32 (0x500 + (channel << 10)) & 0x800000);
+	val = read_mchbar32 (0x508 + (channel << 10));
+
+	return val & ((1 << split) - 1);
+}
+
+static inline u16 get_lane_offset (int slot, int rank, int lane)
+{
+	return 0x124 * lane + ((lane & 4) ? 0x23e : 0) + 11 * rank + 22 * slot - 0x452 * (lane == 8);
+}
+
+static inline u16 get_timing_register_addr (int lane, int tm, int slot, int rank)
+{
+	const u16 offs[] = { 0x1d, 0xa8, 0xe6, 0x5c };
+	return get_lane_offset (slot, rank, lane) + offs[(tm + 3) % 4];
+}
+
+static void write_1d0 (u32 val, u16 addr, int bits, int flag)
+{
+	write_mchbar32 (0x1d0, 0);
+	while (read_mchbar32 (0x1d0) & 0x800000);
+	write_mchbar32 (0x1d4, (val & ((1 << bits) - 1)) | (2 << bits) | (flag << bits));
+	write_mchbar32 (0x1d0, 0x40000000 | addr);
+	while (read_mchbar32 (0x1d0) & 0x800000);
+}
+
+static u16 read_1d0 (u16 addr, int split)
+{
+	u32 val;
+	write_mchbar32 (0x1d0, 0);
+	while (read_mchbar32 (0x1d0) & 0x800000);
+	write_mchbar32 (0x1d0, 0x80000000 | (((read_mchbar8 (0x246) >> 2) & 3) + 0x361 - addr));
+	while (read_mchbar32 (0x1d0) & 0x800000);
+	val = read_mchbar32 (0x1d8);
+	write_1d0 (0, 0x33d, 0, 0);
+	write_1d0 (0, 0x33d, 0, 0);
+	return val & ((1 << split) - 1);
+}
+
+static void dump_timings (void)
+{
+	int channel, slot, rank, lane, i;
+	printf ("Timings:\n");
+	for (channel = 0; channel < 2; channel++)
+		for (slot = 0; slot < 2; slot++)
+			for (rank = 0; rank < 2; rank++) {
+				printf ("channel %d, slot %d, rank %d\n", channel, slot, rank);
+				for (lane = 0; lane < 9; lane++) {
+					printf ("lane %d: ", lane);
+					for (i = 0; i < 4; i++) {
+						printf ("%x ", read_500 (channel,
+							get_timing_register_addr (lane, i, slot, rank), 9));
+					}
+				printf ("\n");
+				}
+			}
+
+	printf ("[178] = %x\n", read_1d0 (0x178, 7));
+	printf ("[10b] = %x\n", read_1d0 (0x10b, 6));
+}
+
+
 /*
  * (G)MCH MMIO Config Space
  */
 int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 {
 	int i, size = (16 * 1024);
-	volatile uint8_t *mchbar;
 	uint64_t mchbar_phys;
 	const io_register_t *mch_registers = NULL;
 	struct pci_dev *nb_device6; /* "overflow device" on i865 */
@@ -229,6 +313,10 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		}
 	}
 
+	if (nb->device_id == PCI_DEVICE_ID_INTEL_CORE_1ST_GEN) {
+		printf ("clock_speed_index = %x\n", read_500 (0,0x609, 6) >> 1);
+		dump_timings ();
+	}
 	unmap_physical((void *)mchbar, size);
 	return 0;
 }

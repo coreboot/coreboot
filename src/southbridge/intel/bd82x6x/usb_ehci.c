@@ -68,22 +68,28 @@ static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned devic
 static void usb_ehci_set_resources(struct device *dev)
 {
 #if CONFIG_USBDEBUG
-	struct resource *res;
-	u32 base;
-	u32 usb_debug;
+	u32 usb_debug = 0;
 
-	usb_debug = get_ehci_debug();
-	set_ehci_debug(0);
+	if (dev->path.pci.devfn == PCI_DEVFN (CONFIG_USBDEBUG_DEV, CONFIG_USBDEBUG_FUNC))
+	{
+		usb_debug = get_ehci_debug();
+		set_ehci_debug(0);
+	}
 #endif
 	pci_dev_set_resources(dev);
 
 #if CONFIG_USBDEBUG
-	res = find_resource(dev, 0x10);
-	set_ehci_debug(usb_debug);
-	if (!res) return;
-	base = res->base;
-	set_ehci_base(base);
-	report_resource_stored(dev, res, "");
+	if (dev->path.pci.devfn == PCI_DEVFN (CONFIG_USBDEBUG_DEV, CONFIG_USBDEBUG_FUNC))
+	{
+		struct resource *res;
+		u32 base;
+		res = find_resource(dev, 0x10);
+		if (!res) return;
+		base = res->base;
+		set_ehci_debug(usb_debug);
+		set_ehci_base(base);
+		report_resource_stored(dev, res, "");
+	}
 #endif
 }
 

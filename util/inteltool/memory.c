@@ -197,7 +197,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		for (i = 0; i < size; i++) {
 			switch (mch_registers[i].size) {
 				case 8:
-					printf("mchbase+0x%04x: 0x%016lx (%s)\n",
+					printf("mchbase+0x%04x: 0x%016llx (%s)\n",
 						mch_registers[i].addr,
 						*(uint64_t *)(mchbar+mch_registers[i].addr),
 						mch_registers[i].name);

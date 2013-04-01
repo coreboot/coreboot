@@ -258,6 +258,79 @@ static const io_register_t pch_gpio_registers[] = {
 	{ 0x78, 4, "RESERVED" },
 	{ 0x7c, 4, "RESERVED" },
 };
+/* Default values for Cougar Point desktop chipsets */
+static const gpio_default_t cp_pch_desktop_defaults[] = {
+	{ 0x00, 0xb96ba1ff },
+	{ 0x04, 0xf6ff6eff },
+	{ 0x0c, 0x02fe0100 },
+	{ 0x18, 0x00040000 },
+	{ 0x28, 0x00000000 },
+	{ 0x2c, 0x00000000 },
+	{ 0x30, 0x020300ff },
+	{ 0x34, 0x1f57fff4 },
+	{ 0x38, 0xa4aa0007 },
+	{ 0x40, 0x00000130 },
+	{ 0x44, 0x00000ff0 },
+	{ 0x48, 0x000000c0 },
+	{ 0x60, 0x01000000 },
+	{ 0x64, 0x00000000 },
+	{ 0x68, 0x00000000 },
+};
+/* Default values for Cougar Point mobile chipsets */
+static const gpio_default_t cp_pch_mobile_defaults[] = {
+	{ 0x00, 0xb96ba1ff },
+	{ 0x04, 0xf6ff6eff },
+	{ 0x0c, 0x02fe0100 },
+	{ 0x18, 0x00040000 },
+	{ 0x28, 0x00000000 },
+	{ 0x2c, 0x00000000 },
+	{ 0x30, 0x020300fe },
+	{ 0x34, 0x1f57fff4 },
+	{ 0x38, 0xa4aa0007 },
+	{ 0x40, 0x00000030 },
+	{ 0x44, 0x00000ff0 },
+	{ 0x48, 0x000000c0 },
+	{ 0x60, 0x01000000 },
+	{ 0x64, 0x00000000 },
+	{ 0x68, 0x00000000 },
+};
+/* Default values for Panther Point desktop chipsets */
+static const gpio_default_t pp_pch_desktop_defaults[] = {
+	{ 0x00, 0xb96ba1ff },
+	{ 0x04, 0xeeff6eff },
+	{ 0x0c, 0x02fe0100 },
+	{ 0x18, 0x00040000 },
+	{ 0x28, 0x00000000 },
+	{ 0x2c, 0x00000000 },
+	{ 0x30, 0x020300ff },
+	{ 0x34, 0x1f57fff4 },
+	{ 0x38, 0xa4aa0007 },
+	{ 0x40, 0x00000130 },
+	{ 0x44, 0x00000ff0 },
+	{ 0x48, 0x000000c0 },
+	{ 0x60, 0x01000000 },
+	{ 0x64, 0x00000000 },
+	{ 0x68, 0x00000000 },
+};
+/* Default values for Panther Point mobile chipsets */
+static const gpio_default_t pp_pch_mobile_defaults[] = {
+	{ 0x00, 0xb96ba1ff },
+	{ 0x04, 0xeeff6eff },
+	{ 0x0c, 0x02fe0100 },
+	{ 0x18, 0x00040000 },
+	{ 0x28, 0x00000000 },
+	{ 0x2c, 0x00000000 },
+	{ 0x30, 0x020300fe },
+	{ 0x34, 0x1f57fff4 },
+	{ 0x38, 0xa4aa0007 },
+	{ 0x40, 0x00000030 },
+	{ 0x44, 0x00000ff0 },
+	{ 0x48, 0x000000c0 },
+	{ 0x60, 0x01000000 },
+	{ 0x64, 0x00000000 },
+	{ 0x68, 0x00000000 },
+};
+
 static uint16_t gpiobase;
 
 static void print_reg(const io_register_t *const reg)
@@ -324,7 +397,7 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 {
 	int i, j, size, defaults_size = 0;
 	const io_register_t *gpio_registers;
-	const gpio_default_t *gpio_defaults;
+	const gpio_default_t *gpio_defaults = NULL;
 	uint32_t gpio_diff;
 
 	if (show_diffs && !show_all)
@@ -335,19 +408,31 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_Z68:
 	case PCI_DEVICE_ID_INTEL_P67:
-	case PCI_DEVICE_ID_INTEL_UM67:
-	case PCI_DEVICE_ID_INTEL_HM65:
 	case PCI_DEVICE_ID_INTEL_H67:
-	case PCI_DEVICE_ID_INTEL_HM67:
 	case PCI_DEVICE_ID_INTEL_Q65:
 	case PCI_DEVICE_ID_INTEL_QS67:
 	case PCI_DEVICE_ID_INTEL_Q67:
-	case PCI_DEVICE_ID_INTEL_QM67:
 	case PCI_DEVICE_ID_INTEL_B65:
 	case PCI_DEVICE_ID_INTEL_C202:
 	case PCI_DEVICE_ID_INTEL_C204:
 	case PCI_DEVICE_ID_INTEL_C206:
 	case PCI_DEVICE_ID_INTEL_H61:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = pch_gpio_registers;
+		size = ARRAY_SIZE(pch_gpio_registers);
+		gpio_defaults = cp_pch_desktop_defaults;
+		defaults_size = ARRAY_SIZE(cp_pch_desktop_defaults);
+		break;
+	case PCI_DEVICE_ID_INTEL_UM67:
+	case PCI_DEVICE_ID_INTEL_HM65:
+	case PCI_DEVICE_ID_INTEL_HM67:
+	case PCI_DEVICE_ID_INTEL_QM67:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = pch_gpio_registers;
+		size = ARRAY_SIZE(pch_gpio_registers);
+		gpio_defaults = cp_pch_mobile_defaults;
+		defaults_size = ARRAY_SIZE(cp_pch_mobile_defaults);
+		break;
 	case PCI_DEVICE_ID_INTEL_Z77:
 	case PCI_DEVICE_ID_INTEL_Z75:
 	case PCI_DEVICE_ID_INTEL_Q77:
@@ -355,6 +440,12 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 	case PCI_DEVICE_ID_INTEL_B75:
 	case PCI_DEVICE_ID_INTEL_H77:
 	case PCI_DEVICE_ID_INTEL_C216:
+		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
+		gpio_registers = pch_gpio_registers;
+		size = ARRAY_SIZE(pch_gpio_registers);
+		gpio_defaults = pp_pch_desktop_defaults;
+		defaults_size = ARRAY_SIZE(pp_pch_desktop_defaults);
+		break;
 	case PCI_DEVICE_ID_INTEL_QM77:
 	case PCI_DEVICE_ID_INTEL_QS77:
 	case PCI_DEVICE_ID_INTEL_HM77:
@@ -365,6 +456,8 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;
 		gpio_registers = pch_gpio_registers;
 		size = ARRAY_SIZE(pch_gpio_registers);
+		gpio_defaults = pp_pch_mobile_defaults;
+		defaults_size = ARRAY_SIZE(pp_pch_mobile_defaults);
 		break;
 	case PCI_DEVICE_ID_INTEL_ICH10R:
 		gpiobase = pci_read_word(sb, 0x48) & 0xfffc;

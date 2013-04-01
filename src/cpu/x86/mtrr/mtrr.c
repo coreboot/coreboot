@@ -792,6 +792,10 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 	commit_var_mtrrs(addr_space, mtrr_default_type, !!above4gb,
 	                 address_bits);
 	enable_var_mtrr(mtrr_default_type);
+#if CONFIG_AUTO_CACHE_ROM_BSP
+	if (boot_cpu())
+		x86_mtrr_enable_rom_caching();
+#endif
 	enable_cache();
 }
 

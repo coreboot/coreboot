@@ -62,6 +62,13 @@ config CACHE_ROM
 	 When selected a variable range MTRR is allocated for coreboot and
 	 the bootloader enables caching of the system ROM for faster access.
 
+config AUTO_CACHE_ROM_BSP
+	bool
+	default n
+	depends on CACHE_ROM
+	help
+	 Automatically enable ROM caching for the BSP.
+
 config SMM_TSEG
 	bool
 	default n

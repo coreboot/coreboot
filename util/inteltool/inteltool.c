@@ -197,11 +197,12 @@ void print_version(void)
 
 void print_usage(const char *name)
 {
-	printf("usage: %s [-vh?grpmedPMa]\n", name);
+	printf("usage: %s [-vh?gGrpmedPMa]\n", name);
 	printf("\n"
 	     "   -v | --version:                   print the version\n"
 	     "   -h | --help:                      print this help\n\n"
 	     "   -g | --gpio:                      dump soutbridge GPIO registers\n"
+	     "   -G | --gpio-diffs:                show GPIO differences from defaults\n"
 	     "   -r | --rcba:                      dump soutbridge RCBA registers\n"
 	     "   -p | --pmbase:                    dump soutbridge Power Management registers\n\n"
 	     "   -m | --mchbar:                    dump northbridge Memory Controller registers\n"
@@ -227,11 +228,13 @@ int main(int argc, char *argv[])
 	int dump_gpios = 0, dump_mchbar = 0, dump_rcba = 0;
 	int dump_pmbase = 0, dump_epbar = 0, dump_dmibar = 0;
 	int dump_pciexbar = 0, dump_coremsrs = 0, dump_ambs = 0;
+	int show_gpio_diffs = 0;
 
 	static struct option long_options[] = {
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
 		{"gpios", 0, 0, 'g'},
+		{"gpio-diffs", 0, 0, 'G'},
 		{"mchbar", 0, 0, 'm'},
 		{"rcba", 0, 0, 'r'},
 		{"pmbase", 0, 0, 'p'},
@@ -244,7 +247,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "vh?grpmedPMaA",
+	while ((opt = getopt_long(argc, argv, "vh?gGrpmedPMaA",
                                   long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'v':
@@ -253,6 +256,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'g':
 			dump_gpios = 1;
+			break;
+		case 'G':
+			show_gpio_diffs = 1;
 			break;
 		case 'm':
 			dump_mchbar = 1;
@@ -277,6 +283,7 @@ int main(int argc, char *argv[])
 			break;
 		case 'a':
 			dump_gpios = 1;
+			show_gpio_diffs = 1;
 			dump_mchbar = 1;
 			dump_rcba = 1;
 			dump_pmbase = 1;
@@ -393,7 +400,10 @@ int main(int argc, char *argv[])
 	/* Now do the deed */
 
 	if (dump_gpios) {
-		print_gpios(sb);
+		print_gpios(sb, 1, show_gpio_diffs);
+		printf("\n\n");
+	} else if (show_gpio_diffs) {
+		print_gpios(sb, 0, show_gpio_diffs);
 		printf("\n\n");
 	}
 

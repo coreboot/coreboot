@@ -145,28 +145,7 @@ void release_aps_for_smm_relocation(int do_parallel)
  * ensure the caching is disabled for tha APs before going to sleep. */
 static void cleanup_rom_caching(void)
 {
-#if CONFIG_CACHE_ROM
-	msr_t msr;
-	unsigned int last_var_mtrr;
-
-	msr = rdmsr(MTRRcap_MSR);
-	last_var_mtrr = (msr.lo & 0xff) - 1;
-
-	/* Check if the MTRR is valid. */
-	msr = rdmsr(MTRRphysMask_MSR(last_var_mtrr));
-	if ((msr.lo & MTRRphysMaskValid) == 0)
-		return;
-	msr = rdmsr(MTRRphysBase_MSR(last_var_mtrr));
-	/* Assum that if the MTRR is of write protected type, the MTRR is used
-	 * to cache the ROM. */
-	if ((msr.lo & MTRR_NUM_TYPES) == MTRR_TYPE_WRPROT) {
-		msr.lo = msr.hi = 0;
-		disable_cache();
-		wrmsr(MTRRphysMask_MSR(last_var_mtrr), msr);
-		wrmsr(MTRRphysBase_MSR(last_var_mtrr), msr);
-		enable_cache();
-	}
-#endif
+	x86_mtrr_disable_rom_caching();
 }
 
 /* By the time APs call ap_init() caching has been setup, and microcode has

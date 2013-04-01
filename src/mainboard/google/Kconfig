@@ -22,6 +22,7 @@ if VENDOR_GOOGLE
 config VENDOR_SPECIFIC_OPTIONS
 	def_bool y
 	select CACHE_ROM
+	select AUTO_CACHE_ROM_BSP
 
 choice
 	prompt "Mainboard model"

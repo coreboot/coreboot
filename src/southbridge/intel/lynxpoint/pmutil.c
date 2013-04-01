@@ -29,7 +29,6 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <console/console.h>
-#include <pc80/mc146818rtc.h>
 #include "pch.h"
 
 #if CONFIG_INTEL_LYNXPOINT_LP
@@ -105,7 +104,6 @@ static u16 reset_pm1_status(void)
 {
 	u16 pm1_sts = inw(get_pmbase() + PM1_STS);
 	outw(pm1_sts, get_pmbase() + PM1_STS);
-
 	return pm1_sts;
 }
 

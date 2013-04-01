@@ -181,8 +181,12 @@ ap_init(unsigned int cpu, void *microcode_ptr)
 	/* After SMM relocation a 2nd microcode load is required. */
 	intel_microcode_load_unlocked(microcode_ptr);
 
-	/* Cleanup ROM caching. */
-	cleanup_rom_caching();
+	/* The MTRR resources are core scoped. Therefore, there is no need
+	 * to do the same work twice. Additionally, this check keeps the
+	 * ROM cache enabled on the BSP since its hyperthread sibling won't
+	 * call cleanup_rom_caching(). */
+	if ((lapicid() & 1) == 0)
+		cleanup_rom_caching();
 
 	/* FIXME(adurbin): park CPUs properly -- preferably somewhere in a
 	 * reserved part of memory that the OS cannot get to. */

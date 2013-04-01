@@ -87,7 +87,7 @@ config CPU_MICROCODE_CBFS_GENERATE
 	  building coreboot and included in the final image as a separate CBFS
 	  file. Microcode will not be hard-coded into ramstage.
 
-	  The microcode file and may be removed from the ROM image at a later
+	  The microcode file may be removed from the ROM image at a later
 	  time with cbfstool, if desired.
 
 	  If unsure, select this option.
@@ -101,7 +101,7 @@ config CPU_MICROCODE_CBFS_EXTERNAL
 	  microcode that you have is newer than the microcode shipping with
 	  coreboot.
 
-	  The microcode file and may be removed from the ROM image at a later
+	  The microcode file may be removed from the ROM image at a later
 	  time with cbfstool, if desired.
 
 	  If unsure, select "Generate from tree"

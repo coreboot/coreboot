@@ -17,7 +17,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "inteltool.h"
@@ -28,7 +28,7 @@
 
 static uint32_t amb_read_config32(volatile void *base, int fn, int reg)
 {
-	return *(uint32_t *)(AMB_ADDR((uint64_t)base, fn, reg));
+	return *(uint32_t *)(AMB_ADDR((ptrdiff_t)base, fn, reg));
 }
 
 static void amb_printreg32(volatile void *base, int fn, int reg,
@@ -42,7 +42,7 @@ static void amb_printreg32(volatile void *base, int fn, int reg,
 
 static uint16_t amb_read_config16(volatile void *base, int fn, int reg)
 {
-	return *(uint16_t *)(AMB_ADDR((uint64_t)base, fn, reg));
+	return *(uint16_t *)(AMB_ADDR((ptrdiff_t)base, fn, reg));
 }
 
 static void amb_printreg16(volatile void *base, int fn, int reg,
@@ -57,7 +57,7 @@ static void amb_printreg16(volatile void *base, int fn, int reg,
 
 static uint8_t amb_read_config8(volatile void *base, int fn, int reg)
 {
-	return *(uint8_t *)(AMB_ADDR((uint64_t)base, fn, reg));
+	return *(uint8_t *)(AMB_ADDR((ptrdiff_t)base, fn, reg));
 }
 
 static void amb_printreg8(volatile void *base, int fn, int reg,

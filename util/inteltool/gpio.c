@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include "inteltool.h"
 
+typedef struct { uint16_t addr; uint32_t def; } gpio_default_t;
+
 static const io_register_t ich0_gpio_registers[] = {
 	{ 0x00, 4, "GPIO_USE_SEL" },
 	{ 0x04, 4, "GP_IO_SEL" },
@@ -256,14 +258,79 @@ static const io_register_t pch_gpio_registers[] = {
 	{ 0x78, 4, "RESERVED" },
 	{ 0x7c, 4, "RESERVED" },
 };
+static uint16_t gpiobase;
 
-int print_gpios(struct pci_dev *sb)
+static void print_reg(const io_register_t *const reg)
 {
-	int i, size;
-	uint16_t gpiobase;
-	const io_register_t *gpio_registers;
+	switch (reg->size) {
+	case 4:
+		printf("gpiobase+0x%04x: 0x%08x (%s)\n",
+			reg->addr, inl(gpiobase+reg->addr), reg->name);
+		break;
+	case 2:
+		printf("gpiobase+0x%04x: 0x%04x     (%s)\n",
+			reg->addr, inw(gpiobase+reg->addr), reg->name);
+		break;
+	case 1:
+		printf("gpiobase+0x%04x: 0x%02x       (%s)\n",
+			reg->addr, inb(gpiobase+reg->addr), reg->name);
+		break;
+	}
+}
 
-	printf("\n============= GPIOS =============\n\n");
+static uint32_t get_diff(const io_register_t *const reg, const uint32_t def)
+{
+	uint32_t gpio_diff = 0;
+	switch (reg->size) {
+	case 4:
+		gpio_diff = def ^ inl(gpiobase+reg->addr);
+		break;
+	case 2:
+		gpio_diff = (uint16_t)def ^ inw(gpiobase+reg->addr);
+		break;
+	case 1:
+		gpio_diff = (uint8_t)def ^ inb(gpiobase+reg->addr);
+		break;
+	}
+	return gpio_diff;
+}
+
+static void print_diff(const io_register_t *const reg,
+		       const uint32_t def, const uint32_t diff)
+{
+	switch (reg->size) {
+	case 4:
+		printf("gpiobase+0x%04x: 0x%08x (%s) DEFAULT\n",
+			reg->addr, def, reg->name);
+		printf("gpiobase+0x%04x: 0x%08x (%s) DIFF\n",
+			reg->addr, diff, reg->name);
+		break;
+	case 2:
+		printf("gpiobase+0x%04x: 0x%04x     (%s) DEFAULT\n",
+			reg->addr, def, reg->name);
+		printf("gpiobase+0x%04x: 0x%04x     (%s) DIFF\n",
+			reg->addr, diff, reg->name);
+		break;
+	case 1:
+		printf("gpiobase+0x%04x: 0x%02x       (%s) DEFAULT\n",
+			reg->addr, def, reg->name);
+		printf("gpiobase+0x%04x: 0x%02x       (%s) DIFF\n",
+			reg->addr, diff, reg->name);
+		break;
+	}
+}
+
+int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
+{
+	int i, j, size, defaults_size = 0;
+	const io_register_t *gpio_registers;
+	const gpio_default_t *gpio_defaults;
+	uint32_t gpio_diff;
+
+	if (show_diffs && !show_all)
+		printf("\n========== GPIO DIFFS ===========\n\n");
+	else
+		printf("\n============= GPIOS =============\n\n");
 
 	switch (sb->device_id) {
 	case PCI_DEVICE_ID_INTEL_Z68:
@@ -376,26 +443,25 @@ int print_gpios(struct pci_dev *sb)
 
 	printf("GPIOBASE = 0x%04x (IO)\n\n", gpiobase);
 
+	j = 0;
 	for (i = 0; i < size; i++) {
-		switch (gpio_registers[i].size) {
-		case 4:
-			printf("gpiobase+0x%04x: 0x%08x (%s)\n",
-				gpio_registers[i].addr,
-				inl(gpiobase+gpio_registers[i].addr),
-				gpio_registers[i].name);
-			break;
-		case 2:
-			printf("gpiobase+0x%04x: 0x%04x     (%s)\n",
-				gpio_registers[i].addr,
-				inw(gpiobase+gpio_registers[i].addr),
-				gpio_registers[i].name);
-			break;
-		case 1:
-			printf("gpiobase+0x%04x: 0x%02x       (%s)\n",
-				gpio_registers[i].addr,
-				inb(gpiobase+gpio_registers[i].addr),
-				gpio_registers[i].name);
-			break;
+		if (show_all)
+			print_reg(&gpio_registers[i]);
+
+		if (show_diffs &&
+		    (j < defaults_size) &&
+		    (gpio_defaults[j].addr == gpio_registers[i].addr)) {
+			gpio_diff = get_diff(&gpio_registers[i],
+					     gpio_defaults[j].def);
+			if (gpio_diff) {
+				if (!show_all)
+					print_reg(&gpio_registers[i]);
+				print_diff(&gpio_registers[i],
+					   gpio_defaults[j].def, gpio_diff);
+				if (!show_all)
+					printf("\n");
+			}
+			j++;
 		}
 	}
 

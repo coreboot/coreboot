@@ -164,7 +164,7 @@ int print_intel_core_msrs(void);
 int print_mchbar(struct pci_dev *nb, struct pci_access *pacc);
 int print_pmbase(struct pci_dev *sb, struct pci_access *pacc);
 int print_rcba(struct pci_dev *sb);
-int print_gpios(struct pci_dev *sb);
+int print_gpios(struct pci_dev *sb, int show_all, int show_diffs);
 int print_epbar(struct pci_dev *nb);
 int print_dmibar(struct pci_dev *nb);
 int print_pciexbar(struct pci_dev *nb);

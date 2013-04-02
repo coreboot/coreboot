@@ -63,29 +63,29 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 }
 
 /**
- * AMD Thatcher Platform ALC272 Verb Table
+ *  Verb Table for ALC887-VD, listed from /sys/class/sound/hwC1D0/init_pin_configs
  */
-const CODEC_ENTRY Thatcher_Alc272_VerbTbl[] = {
-	{0x11, 0x411111F0},
-	{0x12, 0x411111F0},
-	{0x13, 0x411111F0},
-	{0x14, 0x411111F0},
-	{0x15, 0x411111F0},
-	{0x16, 0x411111F0},
-	{0x17, 0x411111F0},
-	{0x18, 0x01a19840},
-	{0x19, 0x411111F0},
-	{0x1a, 0x01813030},
-	{0x1b, 0x411111F0},
-	{0x1d, 0x40130605},
-	{0x1e, 0x01441120},
-	{0x21, 0x01211010},
+const CODEC_ENTRY alc887_VerbTbl[] = {
+	{0x11, 0x99430140},
+	{0x12, 0x411111f0},
+	{0x14, 0x01014010},
+	{0x15, 0x01011012},
+	{0x16, 0x01016011},
+	{0x17, 0x01012014},
+	{0x18, 0x01a19850},
+	{0x19, 0x02a19c60},
+	{0x1a, 0x0181305f},
+	{0x1b, 0x02214c20},
+	{0x1c, 0x411111f0},
+	{0x1d, 0x4005e601},
+	{0x1e, 0x01456130},
+	{0x1f, 0x411111f0},
 	{0xff, 0xffffffff}
 };
 
-const CODEC_TBL_LIST ThatcherCodecTableList[] =
+static const CODEC_TBL_LIST CodecTableList[] =
 {
-	{0x10ec0272, (CODEC_ENTRY*)&Thatcher_Alc272_VerbTbl[0]},
+	{0x10ec0887, (CODEC_ENTRY*)&alc887_VerbTbl[0]},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
 };
 
@@ -110,7 +110,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&ThatcherCodecTableList[0]);
+		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&CodecTableList[0]);
 		/* Azalia Controller Front Panel OEM Table Pointer */
 		FchParams_env->Imc.ImcEnable = FALSE;
 		FchParams_env->Hwm.HwMonitorEnable = FALSE;

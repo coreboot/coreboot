@@ -294,15 +294,15 @@ int print_pciexbar(struct pci_dev *nb)
 
 	switch ((pciexbar_reg >> 1) & 3) {
 	case 0: // 256MB
-		pciexbar_phys = pciexbar_reg & (0xff << 28);
+		pciexbar_phys = pciexbar_reg & (0xffULL << 28);
 		max_busses = 256;
 		break;
 	case 1: // 128M
-		pciexbar_phys = pciexbar_reg & (0x1ff << 27);
+		pciexbar_phys = pciexbar_reg & (0x1ffULL << 27);
 		max_busses = 128;
 		break;
 	case 2: // 64M
-		pciexbar_phys = pciexbar_reg & (0x3ff << 26);
+		pciexbar_phys = pciexbar_reg & (0x3ffULL << 26);
 		max_busses = 64;
 		break;
 	default: // RSVD

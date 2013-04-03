@@ -1,0 +1,7 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Aaron Durbin <adurbin@google.com>
+Submitted-by: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Submitted-at: Wed, 03 Apr 2013 19:19:09 +0200
+Reviewed-on: http://review.coreboot.org/2992
+Project: coreboot
+Branch: refs/heads/master

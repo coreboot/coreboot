@@ -26,8 +26,8 @@
 #include <device/pci_def.h>
 #include <southbridge/amd/sb800/sb800.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
-// #include "broadcom.c"	/* broadcom_init() */
 
+void broadcom_init(void);
 void set_pcie_reset(void);
 void set_pcie_dereset(void);
 

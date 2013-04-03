@@ -74,7 +74,11 @@ int x86_mtrr_check(void);
 /* ROM caching can be used after variable MTRRs are set up. Beware that
  * enabling CONFIG_CACHE_ROM will eat through quite a few MTRRs based on
  * one's IO hole size and WRCOMB resources. Be sure to check the console
- * log when enabling CONFIG_CACHE_ROM or adding WRCOMB resources. */
+ * log when enabling CONFIG_CACHE_ROM or adding WRCOMB resources. Beware that
+ * on CPUs with core-scoped MTRR registers such as hyperthreaded CPUs the
+ * rom caching will be disabled if all threads run the MTRR code. Therefore,
+ * one needs to call x86_mtrr_enable_rom_caching() after all threads of the
+ * same core have run the MTRR code. */
 #if CONFIG_CACHE_ROM
 void x86_mtrr_enable_rom_caching(void);
 void x86_mtrr_disable_rom_caching(void);

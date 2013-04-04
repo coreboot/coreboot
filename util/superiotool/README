@@ -20,7 +20,7 @@ Installation
 
  $ git clone http://review.coreboot.org/p/coreboot.git
 
- $ cd util/superiotool
+ $ cd coreboot/util/superiotool
 
 Optional: Edit the Makefile and set 'CONFIG_PCI = no' if you don't want to
 support PCI-attached "Super I/Os" (which needs libpci-dev) such as the

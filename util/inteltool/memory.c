@@ -197,25 +197,25 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		for (i = 0; i < size; i++) {
 			switch (mch_registers[i].size) {
 				case 8:
-					printf("mchbase+0x%04x: 0x%016llx (%s)\n",
+					printf("mchbase+0x%04x: 0x%016"PRIx64" (%s)\n",
 						mch_registers[i].addr,
 						*(uint64_t *)(mchbar+mch_registers[i].addr),
 						mch_registers[i].name);
 					break;
 				case 4:
-					printf("mchbase+0x%04x: 0x%08x         (%s)\n",
+					printf("mchbase+0x%04x: 0x%08"PRIx32"         (%s)\n",
 						mch_registers[i].addr,
 						*(uint32_t *)(mchbar+mch_registers[i].addr),
 						mch_registers[i].name);
 					break;
 				case 2:
-					printf("mchbase+0x%04x: 0x%04x             (%s)\n",
+					printf("mchbase+0x%04x: 0x%04"PRIx16"             (%s)\n",
 						mch_registers[i].addr,
 						*(uint16_t *)(mchbar+mch_registers[i].addr),
 						mch_registers[i].name);
 					break;
 				case 1:
-					printf("mchbase+0x%04x: 0x%02x               (%s)\n",
+					printf("mchbase+0x%04x: 0x%02"PRIx8"               (%s)\n",
 						mch_registers[i].addr,
 						*(uint8_t *)(mchbar+mch_registers[i].addr),
 						mch_registers[i].name);
@@ -225,7 +225,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	} else {
 		for (i = 0; i < size; i += 4) {
 			if (*(uint32_t *)(mchbar + i))
-				printf("0x%04x: 0x%08x\n", i, *(uint32_t *)(mchbar+i));
+				printf("0x%04x: 0x%08"PRIx32"\n", i, *(uint32_t *)(mchbar+i));
 		}
 	}
 

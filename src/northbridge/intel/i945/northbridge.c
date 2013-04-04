@@ -29,7 +29,52 @@
 #include <cbmem.h>
 #include <cpu/cpu.h>
 #include <arch/acpi.h>
+#include "raminit.h"
 #include "i945.h"
+
+#if CONFIG_DYNAMIC_CBMEM
+
+unsigned long get_top_of_ram(void)
+{
+        u32 tom;
+	device_t dev0, dev2;
+
+	dev0 = dev_find_slot(0, PCI_DEVFN(0, 0));
+	dev2 = dev_find_slot(0, PCI_DEVFN(2, 0));
+
+        if (pci_read_config8(dev0, DEVEN) & ((1 << 4) | (1 << 3))) {
+                /* IGD enabled, get top of Memory from BSM register */
+                tom = pci_read_config32(dev2, 0x5c);
+        } else {
+                tom = (pci_read_config8(dev0, TOLUD) & 0xf7) << 24;
+        }
+
+        /* if TSEG enabled subtract size */
+        switch(pci_read_config8(dev0, ESMRAM)) {
+        case 0x01:
+                /* 1MB TSEG */
+                tom -= 0x10000;
+                break;
+        case 0x03:
+                /* 2MB TSEG */
+                tom -= 0x20000;
+                break;
+        case 0x05:
+                /* 8MB TSEG */
+                tom -= 0x80000;
+                break;
+        default:
+                /* TSEG either disabled or invalid */
+                break;
+        }
+        return (unsigned long) tom;
+}
+
+void *cbmem_top(void)
+{
+        return (void *)get_top_of_ram();
+}
+#endif
 
 static int get_pcie_bar(u32 *base, u32 *len)
 {
@@ -88,6 +133,8 @@ static void pci_domain_set_resources(device_t dev)
 	uint16_t reg16;
 	unsigned long long tomk, tomk_stolen;
 	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
+	extern uint64_t high_tables_base;
+	extern uint64_t high_tables_size;
 
 	/* Can we find out how much memory we can use at most
 	 * this way?

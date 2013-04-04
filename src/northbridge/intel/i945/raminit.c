@@ -28,10 +28,17 @@
 #include "i945.h"
 #include <cbmem.h>
 
+#if CONFIG_DYNAMIC_CBMEM
+void *cbmem_top(void)
+{
+        return (void *)get_top_of_ram();
+}
+#else
 struct cbmem_entry *get_cbmem_toc(void)
 {
 	return (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
 }
+#endif
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP

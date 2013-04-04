@@ -26,9 +26,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include "inteltool.h"
-#if defined(__FreeBSD__)
 #include <unistd.h>
-#endif
 
 /*
  * http://pci-ids.ucw.cz/read/PC/8086
@@ -307,9 +305,6 @@ int main(int argc, char *argv[])
 
 #if defined(__FreeBSD__)
 	int io_fd;
-#endif
-
-#if defined(__FreeBSD__)
 	if ((io_fd = open("/dev/io", O_RDWR)) < 0) {
 		perror("/dev/io");
 #else
@@ -450,5 +445,12 @@ int main(int argc, char *argv[])
 	// pci_free_dev(sb); // TODO: glibc detected "double free or corruption"
 	pci_cleanup(pacc);
 
+#if defined(__FreeBSD__)
+	close(io_fd);
+#endif
+
+#ifndef __DARWIN__
+	close(fd_mem);
+#endif
 	return 0;
 }

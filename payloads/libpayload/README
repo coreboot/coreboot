@@ -16,7 +16,7 @@ Installation
 
  $ git clone http://review.coreboot.org/p/coreboot.git
 
- $ cd payloads/libpayload
+ $ cd coreboot/payloads/libpayload
 
  $ make menuconfig
 

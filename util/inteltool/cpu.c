@@ -948,7 +948,7 @@ int print_intel_core_msrs(void)
 #ifndef __DARWIN__
 		char msrfilename[64];
 		memset(msrfilename, 0, 64);
-		sprintf(msrfilename, "/dev/cpu/%d/msr", core);
+		sprintf(msrfilename, "/dev/cpu/%u/msr", core);
 
 		fd_msr = open(msrfilename, O_RDWR);
 
@@ -959,7 +959,7 @@ int print_intel_core_msrs(void)
 			break;
 #endif
 		if (cpu->num_per_core_msrs)
-			printf("\n====================== UNIQUE MSRs  (core %d) ======================\n", core);
+			printf("\n====================== UNIQUE MSRs  (core %u) ======================\n", core);
 
 		for (i = 0; i < cpu->num_per_core_msrs; i++) {
 			msr = rdmsr(cpu->per_core_msrs[i].number);

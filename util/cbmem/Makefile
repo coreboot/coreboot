@@ -19,7 +19,7 @@
 
 PROGRAM = cbmem
 ROOT = ../../src
-CC     = $(CROSS_COMPILE)gcc
+CC     ?= $(CROSS_COMPILE)gcc
 CFLAGS ?= -O2
 CFLAGS += -Wall -Werror
 CPPFLAGS += -iquote $(ROOT)/include -iquote $(ROOT)/src/arch/x86

@@ -105,13 +105,16 @@ enum {
 /**
  * This function enables the 32KHz coprocessor clock.
  *
+ * @param bus		i2c bus
+ *
  * Return 0 if ok, else -1
  */
-int max77686_enable_32khz_cp(void);
+int max77686_enable_32khz_cp(unsigned int bus);
 
 /**
  * Set the required voltage level of pmic
  *
+ * @param bus		i2c bus
  * @param reg		register number of buck/ldo to be set
  * @param volt		voltage level to be set
  * @param enable	enable or disable bit
@@ -120,14 +123,16 @@ int max77686_enable_32khz_cp(void);
  *
  * @return		Return 0 if ok, else -1
  */
-int max77686_volsetting(enum max77686_regnum reg, unsigned int volt,
-			int enable, int volt_units);
+int max77686_volsetting(unsigned int bus, enum max77686_regnum reg,
+			unsigned int volt, int enable, int volt_units);
 
 /**
  * Disable charging of the RTC backup battery
  *
+ * @param bus		i2c bus
+ *
  * @return		Return 0 if ok, else -1
  */
-int max77686_disable_backup_batt(void);
+int max77686_disable_backup_batt(unsigned int bus);
 
 #endif /* __MAX77686_PMIC_H_ */

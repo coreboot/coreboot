@@ -23,8 +23,7 @@
 
 #include <arch/io.h>
 #include <common.h>
-//#include <smbus.h>
-#include <device/i2c-old.h>
+#include <device/i2c.h>
 
 #include "max77686.h"
 
@@ -91,10 +90,10 @@ struct max77686_para max77686_param[] = {/*{vol_addr, vol_bitpos,
  * @param val		value to be written
  *
  */
-static inline int max77686_i2c_write(unsigned char chip_addr,
+static inline int max77686_i2c_write(unsigned int bus, unsigned char chip_addr,
 					unsigned int reg, unsigned char val)
 {
-	return i2c_write(chip_addr, reg, 1, &val, 1);
+	return i2c_write(bus, chip_addr, reg, 1, &val, 1);
 }
 
 /*
@@ -105,10 +104,10 @@ static inline int max77686_i2c_write(unsigned char chip_addr,
  * @param val		value to be written
  *
  */
-static inline int max77686_i2c_read(unsigned char chip_addr,
+static inline int max77686_i2c_read(unsigned int bus, unsigned char chip_addr,
 					unsigned int reg, unsigned char *val)
 {
-	return i2c_read(chip_addr, reg, 1, val, 1);
+	return i2c_read(bus, chip_addr, reg, 1, val, 1);
 }
 
 /*
@@ -121,7 +120,7 @@ static inline int max77686_i2c_read(unsigned char chip_addr,
 			needed to set the buck/ldo enable bit OFF
  * @return		Return 0 if ok, else -1
  */
-static int max77686_enablereg(enum max77686_regnum reg, int enable)
+static int max77686_enablereg(unsigned int bus, enum max77686_regnum reg, int enable)
 {
 	struct max77686_para *pmic;
 	unsigned char read_data;
@@ -129,7 +128,7 @@ static int max77686_enablereg(enum max77686_regnum reg, int enable)
 
 	pmic = &max77686_param[reg];
 
-	ret = max77686_i2c_read(MAX77686_I2C_ADDR, pmic->reg_enaddr,
+	ret = max77686_i2c_read(bus, MAX77686_I2C_ADDR, pmic->reg_enaddr,
 				&read_data);
 	if (ret != 0) {
 		debug("max77686 i2c read failed.\n");
@@ -145,7 +144,7 @@ static int max77686_enablereg(enum max77686_regnum reg, int enable)
 				pmic->reg_enbiton << pmic->reg_enbitpos);
 	}
 
-	ret = max77686_i2c_write(MAX77686_I2C_ADDR,
+	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR,
 				 pmic->reg_enaddr, read_data);
 	if (ret != 0) {
 		debug("max77686 i2c write failed.\n");
@@ -155,8 +154,8 @@ static int max77686_enablereg(enum max77686_regnum reg, int enable)
 	return 0;
 }
 
-static int max77686_do_volsetting(enum max77686_regnum reg, unsigned int volt,
-				  int enable, int volt_units)
+int max77686_volsetting(unsigned int bus, enum max77686_regnum reg,
+			unsigned int volt, int enable, int volt_units)
 {
 	struct max77686_para *pmic;
 	unsigned char read_data;
@@ -170,7 +169,7 @@ static int max77686_do_volsetting(enum max77686_regnum reg, unsigned int volt,
 		return -1;
 	}
 
-	ret = max77686_i2c_read(MAX77686_I2C_ADDR, pmic->vol_addr, &read_data);
+	ret = max77686_i2c_read(bus, MAX77686_I2C_ADDR, pmic->vol_addr, &read_data);
 	if (ret != 0) {
 		debug("max77686 i2c read failed.\n");
 		return -1;
@@ -190,13 +189,13 @@ static int max77686_do_volsetting(enum max77686_regnum reg, unsigned int volt,
 	clrsetbits_8(&read_data, pmic->vol_bitmask << pmic->vol_bitpos,
 			vol_level << pmic->vol_bitpos);
 
-	ret = max77686_i2c_write(MAX77686_I2C_ADDR, pmic->vol_addr, read_data);
+	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR, pmic->vol_addr, read_data);
 	if (ret != 0) {
 		debug("max77686 i2c write failed.\n");
 		return -1;
 	}
 
-	ret = max77686_enablereg(reg, enable);
+	ret = max77686_enablereg(bus, reg, enable);
 	if (ret != 0) {
 		debug("Failed to enable buck/ldo.\n");
 		return -1;
@@ -204,31 +203,17 @@ static int max77686_do_volsetting(enum max77686_regnum reg, unsigned int volt,
 	return 0;
 }
 
-int max77686_volsetting(enum max77686_regnum reg, unsigned int volt,
-			int enable, int volt_units)
+int max77686_enable_32khz_cp(unsigned int bus)
 {
-	int old_bus = i2c_get_bus_num();
-	int ret;
-
-	i2c_set_bus_num(0);
-	ret = max77686_do_volsetting(reg, volt, enable, volt_units);
-	i2c_set_bus_num(old_bus);
-	return ret;
+	return max77686_enablereg(bus, PMIC_EN32KHZ_CP, REG_ENABLE);
 }
 
-int max77686_enable_32khz_cp(void)
-{
-	i2c_set_bus_num(0);
-	return max77686_enablereg(PMIC_EN32KHZ_CP, REG_ENABLE);
-}
-
-int max77686_disable_backup_batt(void)
+int max77686_disable_backup_batt(unsigned int bus)
 {
 	unsigned char val;
 	int ret;
 
-	i2c_set_bus_num(0);
-	ret = max77686_i2c_read(MAX77686_I2C_ADDR, REG_BBAT, &val);
+	ret = max77686_i2c_read(bus, MAX77686_I2C_ADDR, REG_BBAT, &val);
 	if (ret) {
 		debug("max77686 i2c read failed\n");
 		return ret;
@@ -241,7 +226,7 @@ int max77686_disable_backup_batt(void)
 
 	/* First disable charging */
 	val &= ~BBAT_BBCHOSTEN_MASK;
-	ret = max77686_i2c_write(MAX77686_I2C_ADDR, REG_BBAT, val);
+	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR, REG_BBAT, val);
 	if (ret) {
 		debug("max77686 i2c write failed\n");
 		return -1;
@@ -249,7 +234,7 @@ int max77686_disable_backup_batt(void)
 
 	/* Finally select 3.5V to minimize power consumption */
 	val |= BBAT_BBCVS_MASK;
-	ret = max77686_i2c_write(MAX77686_I2C_ADDR, REG_BBAT, val);
+	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR, REG_BBAT, val);
 	if (ret) {
 		debug("max77686 i2c write failed\n");
 		return -1;

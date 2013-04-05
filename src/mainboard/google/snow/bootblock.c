@@ -25,8 +25,6 @@
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
 
-#define I2C0_BASE	0x12c60000
-
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {

@@ -25,6 +25,7 @@
 
 #include <arch/cache.h>
 #include <arch/gpio.h>
+#include <cpu/samsung/exynos5-common/i2c.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/gpio.h>
@@ -36,10 +37,11 @@
 #include <arch/stages.h>
 
 #include <drivers/maxim/max77686/max77686.h>
-#include <device/i2c-old.h>
+#include <device/i2c.h>
 
 #include "mainboard.h"
 
+#define PMIC_BUS	0
 #define MMC0_GPIO_PIN	(58)
 
 #if 0
@@ -69,23 +71,23 @@ static int setup_pmic(void)
 	 *
 	 * Disable Coin BATT Charging
 	 */
-	error = max77686_disable_backup_batt();
+	error = max77686_disable_backup_batt(PMIC_BUS);
 
-	error |= max77686_volsetting(PMIC_BUCK2, CONFIG_VDD_ARM_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK2, CONFIG_VDD_ARM_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUCK3, CONFIG_VDD_INT_UV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK3, CONFIG_VDD_INT_UV,
 						REG_ENABLE, MAX77686_UV);
-	error |= max77686_volsetting(PMIC_BUCK1, CONFIG_VDD_MIF_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK1, CONFIG_VDD_MIF_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUCK4, CONFIG_VDD_G3D_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK4, CONFIG_VDD_G3D_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_LDO2, CONFIG_VDD_LDO2_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO2, CONFIG_VDD_LDO2_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_LDO3, CONFIG_VDD_LDO3_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO3, CONFIG_VDD_LDO3_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_LDO5, CONFIG_VDD_LDO5_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO5, CONFIG_VDD_LDO5_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_LDO10, CONFIG_VDD_LDO10_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO10, CONFIG_VDD_LDO10_MV,
 						REG_ENABLE, MAX77686_MV);
 
 	if (error)
@@ -133,10 +135,10 @@ void main(void)
 
 	console_init();
 
-	i2c_set_early_reg(0x12c60000);
-	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+	i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
 	if (power_init())
 		power_shutdown();
+	printk(BIOS_DEBUG, "%s: setting up pmic...\n", __func__);
 	if (setup_pmic())
 		power_shutdown();
 

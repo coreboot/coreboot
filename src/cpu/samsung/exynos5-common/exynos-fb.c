@@ -33,7 +33,7 @@
 #include <cpu/samsung/exynos5250/sysreg.h>
 #include <drivers/maxim/max77686/max77686.h>
 
-#include "device/i2c-old.h"
+#include "device/i2c.h"
 #include "cpu/samsung/exynos5-common/i2c.h"
 #include "cpu/samsung/exynos5250/dsim.h"
 #include "cpu/samsung/exynos5250/fimd.h"

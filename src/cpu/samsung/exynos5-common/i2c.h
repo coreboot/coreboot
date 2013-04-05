@@ -35,9 +35,11 @@ struct s3c24x0_i2c {
 };
 
 struct s3c24x0_i2c_bus {
-	int node;			/* device tree node */
-	int bus_num;			/* i2c bus number */
+	int bus_num;
 	struct s3c24x0_i2c *regs;
-	enum periph_id id;
+	enum periph_id periph_id;
 };
+
+void i2c_init(unsigned bus, int speed, int slaveadd);
+
 #endif /* _S3C24X0_I2C_H */

@@ -25,10 +25,8 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-#include "inteltool.h"
-#if defined(__FreeBSD__)
 #include <unistd.h>
-#endif
+#include "inteltool.h"
 
 /*
  * http://pci-ids.ucw.cz/read/PC/8086
@@ -306,11 +304,7 @@ int main(int argc, char *argv[])
 	}
 
 #if defined(__FreeBSD__)
-	int io_fd;
-#endif
-
-#if defined(__FreeBSD__)
-	if ((io_fd = open("/dev/io", O_RDWR)) < 0) {
+	if (open("/dev/io", O_RDWR) < 0) {
 		perror("/dev/io");
 #else
 	if (iopl(3)) {

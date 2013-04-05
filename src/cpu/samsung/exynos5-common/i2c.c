@@ -36,7 +36,7 @@
 #include "cpu/samsung/exynos5250/pinmux.h"
 
 //#include <fdtdec.h>
-#include "device/i2c.h"
+#include "device/i2c-old.h"
 #include "i2c.h"
 
 #define I2C_WRITE	0

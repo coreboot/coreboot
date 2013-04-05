@@ -24,7 +24,7 @@
 #include <arch/io.h>
 #include <common.h>
 //#include <smbus.h>
-#include <device/i2c.h>
+#include <device/i2c-old.h>
 
 #include "max77686.h"
 

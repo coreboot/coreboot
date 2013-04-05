@@ -36,7 +36,7 @@
 #include <arch/stages.h>
 
 #include <drivers/maxim/max77686/max77686.h>
-#include <device/i2c.h>
+#include <device/i2c-old.h>
 
 #include "mainboard.h"
 

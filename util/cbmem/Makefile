@@ -28,6 +28,9 @@ OBJS = $(PROGRAM).o
 
 all: $(PROGRAM)
 
+%.o: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+
 $(PROGRAM): $(OBJS)
 
 clean:

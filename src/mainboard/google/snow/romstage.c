@@ -35,6 +35,9 @@
 #include <console/console.h>
 #include <arch/stages.h>
 
+#include <drivers/maxim/max77686/max77686.h>
+#include <device/i2c.h>
+
 #include "mainboard.h"
 
 #define MMC0_GPIO_PIN	(58)
@@ -51,6 +54,45 @@ static int board_wakeup_permitted(void)
 	return !is_bad_wake;
 }
 #endif
+
+static int setup_pmic(void)
+{
+	int error = 0;
+
+	/*
+	 * We're using CR1616 coin cell battery that is non-rechargeable
+	 * battery. But, BBCHOSTEN bit of the BBAT Charger Register in
+	 * MAX77686 is enabled by default for charging coin cell.
+	 *
+	 * Also, we cannot meet the coin cell reverse current spec. in UL
+	 * standard if BBCHOSTEN bit is enabled.
+	 *
+	 * Disable Coin BATT Charging
+	 */
+	error = max77686_disable_backup_batt();
+
+	error |= max77686_volsetting(PMIC_BUCK2, CONFIG_VDD_ARM_MV,
+						REG_ENABLE, MAX77686_MV);
+	error |= max77686_volsetting(PMIC_BUCK3, CONFIG_VDD_INT_UV,
+						REG_ENABLE, MAX77686_UV);
+	error |= max77686_volsetting(PMIC_BUCK1, CONFIG_VDD_MIF_MV,
+						REG_ENABLE, MAX77686_MV);
+	error |= max77686_volsetting(PMIC_BUCK4, CONFIG_VDD_G3D_MV,
+						REG_ENABLE, MAX77686_MV);
+	error |= max77686_volsetting(PMIC_LDO2, CONFIG_VDD_LDO2_MV,
+						REG_ENABLE, MAX77686_MV);
+	error |= max77686_volsetting(PMIC_LDO3, CONFIG_VDD_LDO3_MV,
+						REG_ENABLE, MAX77686_MV);
+	error |= max77686_volsetting(PMIC_LDO5, CONFIG_VDD_LDO5_MV,
+						REG_ENABLE, MAX77686_MV);
+	error |= max77686_volsetting(PMIC_LDO10, CONFIG_VDD_LDO10_MV,
+						REG_ENABLE, MAX77686_MV);
+
+	if (error)
+		printk(BIOS_CRIT, "%s: Error during PMIC setup\n", __func__);
+
+	return error;
+}
 
 static void initialize_s5p_mshc(void)
 {
@@ -90,11 +132,13 @@ void main(void)
 	system_clock_init(mem, arm_ratios);
 
 	console_init();
-	/*
-	 * FIXME: Do necessary I2C init so low-level PMIC code doesn't need to.
-	 * Also, we should only call power_init() on cold boot.
-	 */
-	power_init();
+
+	i2c_set_early_reg(0x12c60000);
+	i2c_init(CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+	if (power_init())
+		power_shutdown();
+	if (setup_pmic())
+		power_shutdown();
 
 	if (!mem) {
 		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");

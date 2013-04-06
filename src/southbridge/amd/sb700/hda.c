@@ -24,11 +24,39 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include <delay.h>
+#include "../../../vendorcode/amd/cimx/sb700/SB700.h"
 #include "sb700.h"
+#include "hda.h"
 
 #define HDA_ICII_REG 0x68
 #define   HDA_ICII_BUSY (1 << 0)
 #define   HDA_ICII_VALID  (1 << 1)
+
+void azalia_set_config(CODECENTRY* tempAzaliaCodecEntryPtr, u32 ddChannelNum, u32 ddBAR0){
+	u8 dbtemp1,dbtemp2, i;
+	u32 ddtemp=0,ddtemp2=0;
+
+	while ((tempAzaliaCodecEntryPtr->Nid) != 0xFF){
+		dbtemp1=0x20;
+		if ((tempAzaliaCodecEntryPtr->Nid) == 0x1)
+			dbtemp1=0x24;
+		ddtemp =  tempAzaliaCodecEntryPtr->Nid;
+		ddtemp &= 0xff;
+		ddtemp <<= 20;
+		ddtemp |= ddChannelNum;
+		ddtemp |= (0x700 << 8);
+		for(i=4; i>0; i--){
+			do{
+				ddtemp2 = read32(ddBAR0 + SB_AZ_BAR_REG68);
+			} while (ddtemp2 & 0x1 /* Bit 0 */);
+			dbtemp2 = ( (tempAzaliaCodecEntryPtr->Byte40) >> ((4-i) * 8 ) ) & 0xff;
+			ddtemp =  (ddtemp & 0xFFFF0000)+ ((dbtemp1 - i) << 8) + dbtemp2;
+			write32(ddBAR0 + SB_AZ_BAR_REG60 /*, AccWidthUint32 | S3_SAVE, */, ddtemp);
+		//	delay(60);
+		}
+		++tempAzaliaCodecEntryPtr;
+	}
+}
 
 static int set_bits(u32 port, u32 mask, u32 val)
 {

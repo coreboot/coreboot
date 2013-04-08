@@ -60,6 +60,6 @@ source "src/mainboard/google/stout/Kconfig"
 
 config MAINBOARD_VENDOR
 	string "Mainboard Vendor"
-	default "Google"
+	default "GOOGLE"
 
 endif # VENDOR_GOOGLE

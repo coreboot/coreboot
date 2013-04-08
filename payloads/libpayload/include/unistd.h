@@ -32,8 +32,6 @@
 
 #include <stddef.h>
 
-typedef ptrdiff_t ssize_t;
-
 int getpagesize(void);
 
 #endif

@@ -61,7 +61,7 @@ static ISzAlloc LZMAalloc = { SzAlloc, SzFree };
 
 /* Streaming API */
 
-typedef struct vector {
+typedef struct {
 	char *p;
 	size_t pos;
 	size_t size;
@@ -147,9 +147,11 @@ void do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 	}
 
 	instream.p = in;
+	instream.pos = 0;
 	instream.size = in_len;
 
 	outstream.p = out;
+	outstream.pos = 0;
 	outstream.size = in_len;
 
 	put_64(propsEncoded + LZMA_PROPS_SIZE, in_len);

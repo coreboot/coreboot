@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <stddef.h>
 #include "chromeos.h"
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 #include "vboot_handoff.h"

@@ -25,7 +25,11 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include "southbridge/amd/sb700/sb700.h"
+#include "southbridge/amd/sb700/hda.h"
 #include "southbridge/amd/sb700/smbus.h"
+#if CONFIG_BOARD_ASUS_M4A785TM
+#include "hda.h"
+#endif
 
 #define ADT7461_ADDRESS 0x4C
 #define ARA_ADDRESS     0x0C /* Alert Response Address */
@@ -186,6 +190,30 @@ static void set_thermal_config(void)
 	 */
 }
 
+#if CONFIG_BOARD_ASUS_M4A785TM
+static void audio_setup(void)
+{
+	struct device *dev;
+	u8 dbPinRouting, dbChannelNum=0;
+	u32 bar0 = 0;
+
+	printk(BIOS_INFO, "Configuring Azalia\n");
+
+	/* find BAR 0 */
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 2));
+	bar0 = dev->resource_list[0].base;
+
+	dbPinRouting = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0x14, 0)), 0xfc /* SB_SMBUS_REGFC */ );
+	do {
+		if ( ( !(dbPinRouting & 0x1 /* BIT0 */) ) && (dbPinRouting & 0x2 /* BIT1 */ ) )
+			azalia_set_config(m4a785t_m_codec_vt1708s, dbChannelNum, bar0);
+			dbPinRouting >>= 2;
+			dbChannelNum++;
+	} while (dbChannelNum != 4);
+	printk(BIOS_INFO, "Configuring Azalia DONE...\n");
+}
+#endif
+
 /*************************************************
 * enable the dedicated function in this board.
 * This function called early than rs780_enable.
@@ -197,6 +225,9 @@ static void mainboard_enable(device_t dev)
 	set_pcie_dereset();
 	/* get_ide_dma66(); */
 	set_thermal_config();
+#if CONFIG_BOARD_ASUS_M4A785TM
+	audio_setup();
+#endif
 }
 
 struct chip_operations mainboard_ops = {

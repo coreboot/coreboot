@@ -2,10 +2,3 @@ config EC_GOOGLE_CHROMEEC
 	bool
 	help
 	  Google's Chrome EC
-
-config EC_GOOGLE_API_ROOT
-       depends on EC_GOOGLE_CHROMEEC
-       string "Path to the EC API include file"
-       default "/usr/include"
-       help
-         Path to the ec API file (ec/ec_commands.h).

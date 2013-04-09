@@ -65,7 +65,7 @@ int s5p_get_cpu_rev(void)
 
 void s5p_set_cpu_id(void)
 {
-	s5p_cpu_id = readl(EXYNOS_PRO_ID);
+	s5p_cpu_id = readl((void *)EXYNOS_PRO_ID);
 	s5p_cpu_id = (0xC000 | ((s5p_cpu_id & 0x00FFF000) >> 12));
 
 	/*

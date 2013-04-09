@@ -29,7 +29,7 @@ it with the version available from LANL.
 #include <version.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include <reset.h>
 #include <boot/tables.h>

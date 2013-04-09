@@ -21,7 +21,7 @@
 
 #include <device/device.h>
 #include <console/console.h>
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>

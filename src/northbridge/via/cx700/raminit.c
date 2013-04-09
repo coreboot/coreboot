@@ -20,7 +20,7 @@
 #include <types.h>
 #include <spd.h>
 #include <spd_ddr2.h>
-#include <delay.h>
+#include <time.h>
 #include "registers.h"
 
 /* Debugging macros. */

@@ -20,7 +20,7 @@
 #ifndef __NORTHBRIDGE_INTEL_GM45_DELAY_H__
 #define __NORTHBRIDGE_INTEL_GM45_DELAY_H__ 1
 
-#include <delay.h>
+#include <time.h>
 
 void ns100delay(u32);
 void udelay_from_reset(u32);

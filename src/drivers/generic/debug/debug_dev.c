@@ -6,7 +6,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <reset.h>
-#include <delay.h>
+#include <time.h>
 
 static void print_pci_regs(struct device *dev)
 {

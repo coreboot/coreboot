@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <delay.h>
+#include <time.h>
 #include <stdint.h>
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>

@@ -30,7 +30,7 @@
 
 #include <stdlib.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include "ec.h"
 #include "chip.h"
 

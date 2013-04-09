@@ -7,7 +7,7 @@
 #include <device/pci.h>
 #include <stdlib.h>
 #include <string.h>
-#include <delay.h>
+#include <time.h>
 #include <smbios.h>
 #include <cbmem.h>
 

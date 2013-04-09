@@ -33,7 +33,7 @@
 #include <console/console.h>
 #include <device/device.h>	//Coreboot device access
 #include <device/pci.h>
-#include <delay.h>
+#include <time.h>
 
 void broadcom_init(void);
 

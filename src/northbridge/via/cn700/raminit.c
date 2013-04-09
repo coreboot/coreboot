@@ -21,7 +21,7 @@
  */
 
 #include <spd.h>
-#include <delay.h>
+#include <time.h>
 #include "cn700.h"
 
 #if CONFIG_DEBUG_RAM_SETUP

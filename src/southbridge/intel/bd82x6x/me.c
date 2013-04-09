@@ -34,7 +34,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
 #include <string.h>
-#include <delay.h>
+#include <time.h>
 #include <elog.h>
 
 #ifdef __SMM__

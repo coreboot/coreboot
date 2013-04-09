@@ -29,7 +29,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <delay.h>
+#include <time.h>
 #include <arch/io.h>
 #include <arch/byteorder.h>
 #include <console/console.h>

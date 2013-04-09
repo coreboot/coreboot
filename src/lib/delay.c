@@ -1,4 +1,4 @@
-#include <delay.h>
+#include <time.h>
 void mdelay(unsigned msecs)
 {
 	unsigned i;

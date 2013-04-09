@@ -23,7 +23,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-#include <delay.h>
+#include <time.h>
 #if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 #include <x86emu/x86emu.h>
 #endif

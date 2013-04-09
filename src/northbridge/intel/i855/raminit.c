@@ -22,7 +22,7 @@
 #include <spd.h>
 #include <sdram_mode.h>
 #include <stdlib.h>
-#include <delay.h>
+#include <time.h>
 #include "i855.h"
 
 /*-----------------------------------------------------------------------------

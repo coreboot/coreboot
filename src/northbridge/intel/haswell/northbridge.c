@@ -22,7 +22,7 @@
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <stdint.h>
-#include <delay.h>
+#include <time.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>

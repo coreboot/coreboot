@@ -9,7 +9,7 @@
 #include <device/pcix.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/ioapic.h>
-#include <delay.h>
+#include <time.h>
 #include "pxhd.h"
 
 static void pxhd_enable(device_t dev)

@@ -1,5 +1,5 @@
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 
 void udelay(unsigned usecs)
 {

@@ -415,7 +415,7 @@ int ne2k_init(unsigned int eth_nic_base) {
 
 #else
 
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>

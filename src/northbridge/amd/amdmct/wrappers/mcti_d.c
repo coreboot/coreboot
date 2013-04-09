@@ -18,7 +18,7 @@
  */
 
 /* Call-backs */
-#include <delay.h>
+#include <time.h>
 
 static u16 mctGet_NVbits(u8 index)
 {

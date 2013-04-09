@@ -25,7 +25,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <delay.h>
+#include <time.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/acpi.h>
 #include <arch/io.h>

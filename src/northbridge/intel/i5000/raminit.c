@@ -32,7 +32,7 @@
 #include <cbmem.h>
 #include <stdlib.h>
 #include <lib.h>
-#include <delay.h>
+#include <time.h>
 
 static int i5000_for_each_channel(struct i5000_fbd_branch *branch,
 				  int (*cb)(struct i5000_fbd_channel *))

@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include "dock.h"
 #include "superio/nsc/pc87384/pc87384.h"
 #include "ec/acpi/ec.h"

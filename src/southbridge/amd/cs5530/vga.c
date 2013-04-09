@@ -39,7 +39,7 @@
 #include <device/pci_ids.h>
 #include <console/console.h>
 #include <cpu/amd/gx1def.h>
-#include <delay.h>
+#include <time.h>
 
 #if CONFIG_GX1_VIDEO
 /*

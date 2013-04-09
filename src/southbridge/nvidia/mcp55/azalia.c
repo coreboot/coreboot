@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include "mcp55.h"
 
 #define HDA_ICII_REG 0x68

@@ -28,7 +28,7 @@
 
 #include <console/console.h>
 #include <stdint.h>
-#include <delay.h>
+#include <time.h>
 #include "i915io.h"
 
 u32

@@ -11,7 +11,7 @@
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <delay.h>
+#include <time.h>
 #ifdef __SMM__
 #include <cpu/x86/smm.h>
 #endif

@@ -20,7 +20,7 @@
  */
 
 #include <console/console.h>
-#include <delay.h>
+#include <time.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>

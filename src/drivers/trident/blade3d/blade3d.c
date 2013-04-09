@@ -4,7 +4,7 @@
  *   (C) 2003 XGI Technology Inc.
  *   This code is released under GPL with permission from XGI
  */
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>

@@ -22,7 +22,7 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <delay.h>
+#include <time.h>
 #include <device/pci_ids.h>
 #include <string.h>
 #include "me.h"

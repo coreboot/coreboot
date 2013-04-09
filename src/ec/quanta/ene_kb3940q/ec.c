@@ -26,7 +26,7 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <stdlib.h>
-#include <delay.h>
+#include <time.h>
 #include <elog.h>
 #include "ec.h"
 #include "chip.h"

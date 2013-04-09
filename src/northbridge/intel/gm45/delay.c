@@ -22,7 +22,7 @@
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
-#include "delay.h"
+#include "time.h"
 
 /* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow. */
 static inline void multiply_to_tsc(tsc_t *const tsc, const u32 a, const u32 b)

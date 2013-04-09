@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <delay.h>
+#include <time.h>
 
 static void set_htic_bit(u8 i, u32 val, u8 bit)
 {

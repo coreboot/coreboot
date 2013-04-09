@@ -18,7 +18,7 @@
  */
 
 #include <spd.h>
-#include <delay.h>
+#include <time.h>
 
 #if CONFIG_DEBUG_RAM_SETUP
 #define PRINT_DEBUG_MEM(x)		print_debug(x)

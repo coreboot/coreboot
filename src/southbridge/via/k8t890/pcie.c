@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <device/pciexp.h>
 #include <device/pci_ids.h>
-#include <delay.h>
+#include <time.h>
 #include "k8t890.h"
 
 /*

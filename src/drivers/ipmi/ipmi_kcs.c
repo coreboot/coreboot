@@ -23,7 +23,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <string.h>
-#include <delay.h>
+#include <time.h>
 #include "ipmi_kcs.h"
 
 #define IPMI_KCS_STATE(_x)	((_x) >> 6)

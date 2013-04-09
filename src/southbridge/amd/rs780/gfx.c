@@ -36,7 +36,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <delay.h>
+#include <time.h>
 #include <cpu/x86/msr.h>
 #include "rs780.h"
 extern int is_dev3_present(void);

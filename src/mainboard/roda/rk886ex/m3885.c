@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 
 #include <ec/acpi/ec.h>
 #include "m3885.h"

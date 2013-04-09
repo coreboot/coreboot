@@ -1,12 +1,14 @@
 if VENDOR_LIPPERT
 
+comment "was acquired by ADLINK"
+
 choice
 	prompt "Mainboard model"
 
 config BOARD_LIPPERT_FRONTRUNNER
 	bool "Cool FrontRunner"
 config BOARD_LIPPERT_FRONTRUNNER_AF
-	bool "Cool FrontRunner-AF"
+	bool "FrontRunner-AF aka ADLINK CoreModule2-GF"
 config BOARD_LIPPERT_HURRICANE_LX
 	bool "Hurricane-LX"
 config BOARD_LIPPERT_LITERUNNER_LX
@@ -16,7 +18,7 @@ config BOARD_LIPPERT_ROADRUNNER_LX
 config BOARD_LIPPERT_SPACERUNNER_LX
 	bool "Cool SpaceRunner-LX"
 config BOARD_LIPPERT_TOUCAN_AF
-	bool "Toucan-AF (+W83627DHG SIO)"
+	bool "Toucan-AF aka cExpress-GFR (+W83627DHG SIO)"
 
 endchoice
 
@@ -30,6 +32,6 @@ source "src/mainboard/lippert/toucan-af/Kconfig"
 
 config MAINBOARD_VENDOR
 	string
-	default "Lippert"
+	default "LiPPERT"
 
 endif # VENDOR_LIPPERT

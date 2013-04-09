@@ -21,6 +21,8 @@ struct amdk8_sysconf_t {
 
 	void *mb; // pointer for mb releated struct
 
+	unsigned mmconf_start;
+	unsigned mmconf_end;
 };
 
 extern struct amdk8_sysconf_t sysconf;

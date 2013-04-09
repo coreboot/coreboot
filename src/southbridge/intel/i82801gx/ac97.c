@@ -23,7 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include "i82801gx.h"
 
 #define NAMBAR		0x10

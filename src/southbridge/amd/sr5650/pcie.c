@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <delay.h>
+#include <time.h>
 #include "sr5650.h"
 #include "cmn.h"
 

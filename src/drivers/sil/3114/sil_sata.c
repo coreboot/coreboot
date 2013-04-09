@@ -4,7 +4,7 @@
  * Copyright (C) 2010 Rudolf Marek <r.marek@assembler.cz>
  */
 
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>

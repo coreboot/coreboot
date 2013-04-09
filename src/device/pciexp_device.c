@@ -19,7 +19,7 @@
  */
 
 #include <console/console.h>
-#include <delay.h>
+#include <time.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

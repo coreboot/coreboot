@@ -3,7 +3,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <smp/spinlock.h>
-#include <delay.h>
+#include <time.h>
 
 static unsigned long clocks_per_usec;
 

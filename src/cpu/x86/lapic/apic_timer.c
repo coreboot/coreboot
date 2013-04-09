@@ -19,7 +19,7 @@
  */
 
 #include <stdint.h>
-#include <delay.h>
+#include <time.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <cpu/x86/car.h>

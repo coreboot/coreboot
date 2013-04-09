@@ -22,7 +22,7 @@
  * MA 02111-1307 USA
  */
 
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include <types.h>
 #include <system.h>

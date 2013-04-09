@@ -30,7 +30,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
-#include <delay.h>
+#include <time.h>
 #include <device/device.h>
 #include <device/path.h>
 #include <lib.h>

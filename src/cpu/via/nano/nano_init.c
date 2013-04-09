@@ -25,7 +25,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/cache.h>
-#include <delay.h>
+#include <time.h>
 
 #define MODEL_NANO		0x2
 #define MODEL_NANO_3000_B0	0x8

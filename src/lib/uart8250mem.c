@@ -27,7 +27,7 @@
 #if !defined(__SMM__) && !defined(__PRE_RAM__)
 #include <device/device.h>
 #endif
-#include <delay.h>
+#include <time.h>
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 

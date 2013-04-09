@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <device/pci_ids.h>
 #include <device/pci_def.h>
-#include <delay.h>
+#include <time.h>
 #include "pch.h"
 
 #define SPI_DELAY 10     /* 10us */

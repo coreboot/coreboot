@@ -25,7 +25,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <delay.h>
+#include <time.h>
 #include "sr5650.h"
 #include "cmn.h"
 

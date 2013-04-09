@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <console/console.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #ifndef __PRE_RAM__

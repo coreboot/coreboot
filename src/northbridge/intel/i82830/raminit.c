@@ -20,7 +20,7 @@
  */
 
 #include <spd.h>
-#include <delay.h>
+#include <time.h>
 #include "lib/debug.c"
 #include "i82830.h"
 

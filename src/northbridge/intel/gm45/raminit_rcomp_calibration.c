@@ -19,7 +19,7 @@
  */
 
 #include <stdint.h>
-#include <delay.h>
+#include <time.h>
 #include <console/console.h>
 #include "gm45.h"
 

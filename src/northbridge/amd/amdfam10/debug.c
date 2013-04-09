@@ -22,7 +22,7 @@
  */
 
 #include "pci.c"
-#include <delay.h>
+#include <time.h>
 
 static inline void print_debug_addr(const char *str, void *val)
 {

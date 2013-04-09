@@ -12,7 +12,7 @@
 #include <device/hypertransport.h>
 #include <stdlib.h>
 #include <string.h>
-#include <delay.h>
+#include <time.h>
 
 /*
  * set up basic things ...

@@ -31,7 +31,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <delay.h>
+#include <time.h>
 #if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
 #include <device/hypertransport.h>
 #endif

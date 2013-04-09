@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include "ec.h"
 
 static int ec_cmd_reg = EC_SC;

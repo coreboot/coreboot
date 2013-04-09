@@ -26,7 +26,7 @@
 #include <console/console.h>
 #include <arch/interrupt.h>
 #include <cbfs.h>
-#include <delay.h>
+#include <time.h>
 #include <pc80/i8259.h>
 #include "x86.h"
 #include "vbe.h"

@@ -33,7 +33,7 @@
 
 #include <cbfs.h>
 
-#include <delay.h>
+#include <time.h>
 #include "../../src/lib/jpeg.h"
 
 #include <vbe.h>

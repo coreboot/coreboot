@@ -20,7 +20,7 @@
  */
 
 #include <spd.h>
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include "i440lx.h"
 

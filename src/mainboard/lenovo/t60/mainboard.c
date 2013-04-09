@@ -23,7 +23,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>

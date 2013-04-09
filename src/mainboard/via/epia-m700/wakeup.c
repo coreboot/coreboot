@@ -34,7 +34,7 @@
 #include <string.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <delay.h>
+#include <time.h>
 #include "wakeup.h"
 
 int enable_a20(void);

@@ -14,7 +14,7 @@
 
 #define SMBUS_TIMEOUT (100*1000*10)
 
-#include <delay.h>
+#include <time.h>
 
 static int smbus_wait_until_ready(unsigned smbus_io_base)
 {

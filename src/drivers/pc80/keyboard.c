@@ -24,7 +24,7 @@
 #include <pc80/keyboard.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 
 #define KBD_DATA	0x60
 #define KBD_COMMAND	0x64

@@ -18,7 +18,7 @@
 */
 
 #include <string.h>
-#include <delay.h>
+#include <time.h>
 #include <uart8250.h>
 
 static int _inbyte(int msec)

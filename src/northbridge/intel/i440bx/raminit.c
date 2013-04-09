@@ -20,7 +20,7 @@
  */
 
 #include <spd.h>
-#include <delay.h>
+#include <time.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <arch/io.h>

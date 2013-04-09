@@ -26,7 +26,7 @@
  * The different address mapping is handled by the s3c24xx.h files below.
  */
 
-#include <delay.h>
+#include <time.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/i2c.h>

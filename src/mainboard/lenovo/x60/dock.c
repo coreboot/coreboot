@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include <arch/io.h>
 #include "dock.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"

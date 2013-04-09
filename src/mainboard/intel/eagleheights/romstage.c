@@ -20,7 +20,7 @@
  * MA 02110-1301 USA
  */
 
-#include <delay.h>
+#include <time.h>
 #include <stdint.h>
 #include <arch/io.h>
 #include <device/pci_def.h>

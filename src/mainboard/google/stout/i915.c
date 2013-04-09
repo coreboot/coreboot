@@ -5,7 +5,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#include <delay.h>
+#include <time.h>
 #if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL)&&CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
 #endif

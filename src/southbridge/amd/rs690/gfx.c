@@ -28,7 +28,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <delay.h>
+#include <time.h>
 #include "rs690.h"
 
 #define CLK_CNTL_INDEX	0x8

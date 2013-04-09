@@ -21,7 +21,7 @@
  */
 
 #include <cpu/x86/lapic.h>
-#include <delay.h>
+#include <time.h>
 #include <lib.h>
 #include <string.h>
 #include <console/console.h>

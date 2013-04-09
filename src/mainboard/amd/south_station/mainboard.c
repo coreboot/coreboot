@@ -25,7 +25,7 @@
 #include <southbridge/amd/sb800/sb800.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include <delay.h>
+#include <time.h>
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
 

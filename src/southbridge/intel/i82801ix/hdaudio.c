@@ -25,7 +25,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
-#include <delay.h>
+#include <time.h>
 #include "i82801ix.h"
 
 #define HDA_ICII_REG 0x68

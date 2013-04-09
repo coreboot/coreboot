@@ -10,7 +10,7 @@
  *	   move to coreboot
  * This code is distributed without warranty under the GPL v2 (see COPYING) *
  */
-#include <delay.h>
+#include <time.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>

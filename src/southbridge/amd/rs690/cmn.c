@@ -27,7 +27,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
-#include <delay.h>
+#include <time.h>
 #include "rs690.h"
 
 static u32 nb_read_index(device_t dev, u32 index_reg, u32 index)

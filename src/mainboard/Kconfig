@@ -8,8 +8,10 @@ config VENDOR_AAEON
 	bool "Aaeon"
 config VENDOR_ABIT
 	bool "Abit"
+config VENDOR_ADLINK
+	bool "ADLINK"
 config VENDOR_ADVANSUS
-        bool "Advansus"
+	bool "Advansus"
 config VENDOR_ADVANTECH
 	bool "Advantech"
 config VENDOR_AMD
@@ -83,7 +85,7 @@ config VENDOR_LANNER
 config VENDOR_LENOVO
 	bool "Lenovo"
 config VENDOR_LIPPERT
-	bool "Lippert"
+	bool "LiPPERT"
 config VENDOR_MITAC
 	bool "Mitac"
 config VENDOR_MSI
@@ -136,6 +138,7 @@ endchoice
 source "src/mainboard/a-trend/Kconfig"
 source "src/mainboard/aaeon/Kconfig"
 source "src/mainboard/abit/Kconfig"
+source "src/mainboard/adlink/Kconfig"
 source "src/mainboard/advansus/Kconfig"
 source "src/mainboard/advantech/Kconfig"
 source "src/mainboard/amd/Kconfig"

@@ -525,11 +525,47 @@ static void amdk8_create_vga_resource(device_t dev, unsigned nodeid)
 			  IORESOURCE_ASSIGNED;
 }
 
+/*
+ * Sets /start/ to the nearest resource end below /start/
+ * and /end/ to the nearest resource base above /end/.
+ */
+static void amdk8_find_wider_pcimem_limits(resource_t *const start,
+					   resource_t *const end)
+{
+	const uint32_t topmem = (uint32_t)bsp_topmem();
+	const resource_t limit_4g = 0x100000000ULL;
+
+	resource_t highest_below = topmem, lowest_above = limit_4g;
+
+	struct device *dev;
+	struct resource *res;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		for (res = dev->resource_list; res; res = res->next) {
+			if (!(res->flags & IORESOURCE_MEM) || !res->size)
+				continue;
+			const resource_t res_end = resource_end(res);
+			if (highest_below < res_end && res_end <= *start)
+				highest_below = res_end;
+			if (*end <= res->base && res->base < lowest_above)
+				lowest_above = res->base;
+		}
+	}
+	*start	= highest_below;
+	*end	= lowest_above;
+}
+
 static void amdk8_set_resources(device_t dev)
 {
 	unsigned nodeid;
 	struct bus *bus;
 	struct resource *res;
+
+	const uint32_t topmem = (uint32_t)bsp_topmem();
+	const resource_t limit_4g = 0x100000000ULL;
+
+	resource_t mem_lowest_start = limit_4g, mem_highest_end = topmem;
+	struct resource *mem_lowest = NULL, *mem_highest = NULL;
 
 	/* Find the nodeid */
 	nodeid = amdk8_nodeid(dev);
@@ -559,6 +595,34 @@ static void amdk8_set_resources(device_t dev)
 			res->index = index;
 
 		amdk8_set_resource(dev, res, nodeid);
+
+		if (IOINDEX_LINK(res->index) == 0 &&
+				res->flags & IORESOURCE_MEM) {
+			if (topmem <= res->base &&
+					res->base < mem_lowest_start) {
+				mem_lowest = res;
+				mem_lowest_start = res->base;
+			}
+			const resource_t res_end = res->base + res->size;
+			if (mem_highest_end < res_end && res_end <= limit_4g) {
+				mem_highest = res;
+				mem_highest_end = res_end;
+			}
+		}
+	}
+
+	amdk8_find_wider_pcimem_limits(&mem_lowest_start, &mem_highest_end);
+	if (mem_lowest && mem_lowest_start < mem_lowest->base) {
+		mem_lowest->size += mem_lowest->base - mem_lowest_start;
+		mem_lowest->base = mem_lowest_start;
+		mem_lowest->flags &= ~IORESOURCE_STORED;
+		amdk8_set_resource(dev, mem_lowest, nodeid);
+	}
+	if (mem_highest && (mem_highest->base + mem_highest->size)
+							< mem_highest_end) {
+		mem_highest->size = mem_highest_end - mem_highest->base;
+		mem_highest->flags &= ~IORESOURCE_STORED;
+		amdk8_set_resource(dev, mem_highest, nodeid);
 	}
 
 	compact_resources(dev);

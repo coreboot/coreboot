@@ -100,7 +100,7 @@ static void fimd_bypass(void)
 {
 	struct exynos5_sysreg *sysreg = samsung_get_base_sysreg();
 
-	/*setbits_le32(&sysreg->disp1blk_cfg, FIMDBYPASS_DISP1);*/
+	setbits_le32(&sysreg->disp1blk_cfg, FIMDBYPASS_DISP1);
 	sysreg->disp1blk_cfg &= ~FIMDBYPASS_DISP1;
 }
 
@@ -122,7 +122,8 @@ static u32 calc_fbsize(vidinfo_t *panel_info)
  * @param lcdbase	pointer to the base address of framebuffer.
  * @pd			pointer to the main panel_data structure
  */
-void fb_init(vidinfo_t *panel_info, void *lcdbase, struct exynos5_fimd_panel *pd)
+void fb_init(vidinfo_t *panel_info, void *lcdbase,
+	struct exynos5_fimd_panel *pd)
 {
 	unsigned int val;
 	u32 fbsize;
@@ -285,7 +286,7 @@ static int s5p_dp_enable_scramble(struct s5p_dp_device *dp)
 	}
 
 	if (s5p_dp_write_byte_to_dpcd(dp, DPCD_ADDR_TRAINING_PATTERN_SET,
-				      (u8)(data & ~DPCD_SCRAMBLING_DISABLED))) {
+			      (u8)(data & ~DPCD_SCRAMBLING_DISABLED))) {
 		debug("DPCD write error\n");
 		return -ERR_DPCD_WRITE_ERROR2;
 	}
@@ -436,7 +437,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	/* Set TX pre-emphasis to minimum */
 	for (lane = 0; lane < max_lane; lane++)
 		if (s5p_dp_set_lane_lane_pre_emphasis(dp,
-						      PRE_EMPHASIS_LEVEL_0, lane)) {
+					      PRE_EMPHASIS_LEVEL_0, lane)) {
 			debug("Unable to set pre emphasis level\n");
 			return -ERR_PRE_EMPHASIS_LEVELS;
 		}
@@ -578,15 +579,15 @@ int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
  * @param lcdbase	Base address of LCD frame buffer
  * @return 0 if ok, -ve error code on error
  */
-int lcd_ctrl_init(vidinfo_t *panel_info, struct exynos5_fimd_panel *panel_data, void *lcdbase)
+int lcd_ctrl_init(vidinfo_t *panel_info,
+		struct exynos5_fimd_panel *panel_data, void *lcdbase)
 {
 	int ret = 0;
 
-	//vi->res = panel_info->vl_col;
-	//vi->yres = panel_info->vl_row;
-
 	fimd_bypass();
 	fb_init(panel_info, lcdbase, panel_data);
+	printk(BIOS_SPEW,
+		"fb_init(%p, %p, %p) done\n", panel_info, lcdbase, panel_data);
 
 	/* Enable flushing after LCD writes if requested */
 	// forget it. lcd_set_flush_dcache(1);

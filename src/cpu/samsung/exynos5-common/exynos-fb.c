@@ -203,7 +203,7 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 				      video_info->ycbcr_coeff);
 
 	if (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
-		debug("PLL is not locked yet.\n");
+		printk(BIOS_DEBUG, "PLL is not locked yet.\n");
 		return -ERR_PLL_NOT_UNLOCKED;
 	}
 
@@ -216,7 +216,7 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 	} while (get_timer(start) <= STREAM_ON_TIMEOUT);
 
 	if (!timeout) {
-		debug("Video Clock Not ok\n");
+		printk(BIOS_DEBUG, "Video Clock Not ok\n");
 		return -ERR_VIDEO_CLOCK_BAD;
 	}
 
@@ -236,7 +236,7 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 	timeout = s5p_dp_is_video_stream_on(dp);
 
 	if (timeout) {
-		debug("Video Stream Not on\n");
+		printk(BIOS_DEBUG, "Video Stream Not on\n");
 		return -ERR_VIDEO_STREAM_BAD;
 	}
 
@@ -253,14 +253,14 @@ static int s5p_dp_enable_rx_to_enhanced_mode(struct s5p_dp_device *dp)
 	u8 data;
 
 	if (s5p_dp_read_byte_from_dpcd(dp, DPCD_ADDR_LANE_COUNT_SET, &data)) {
-		debug("DPCD read error\n");
+		printk(BIOS_DEBUG, "DPCD read error\n");
 		return -ERR_DPCD_READ_ERROR1;
 	}
 
 	if (s5p_dp_write_byte_to_dpcd(dp, DPCD_ADDR_LANE_COUNT_SET,
 				      DPCD_ENHANCED_FRAME_EN |
 				      (data & DPCD_LANE_COUNT_SET_MASK))) {
-		debug("DPCD write error\n");
+		printk(BIOS_DEBUG, "DPCD write error\n");
 		return -ERR_DPCD_WRITE_ERROR1;
 	}
 
@@ -281,13 +281,13 @@ static int s5p_dp_enable_scramble(struct s5p_dp_device *dp)
 
 	if (s5p_dp_read_byte_from_dpcd(dp, DPCD_ADDR_TRAINING_PATTERN_SET,
 				       &data)) {
-		debug("DPCD read error\n");
+		printk(BIOS_DEBUG, "DPCD read error\n");
 		return -ERR_DPCD_READ_ERROR2;
 	}
 
 	if (s5p_dp_write_byte_to_dpcd(dp, DPCD_ADDR_TRAINING_PATTERN_SET,
 			      (u8)(data & ~DPCD_SCRAMBLING_DISABLED))) {
-		debug("DPCD write error\n");
+		printk(BIOS_DEBUG, "DPCD write error\n");
 		return -ERR_DPCD_WRITE_ERROR2;
 	}
 
@@ -314,10 +314,10 @@ static int s5p_dp_init_dp(struct s5p_dp_device *dp)
 			break;
 
 		udelay(5000);
-		debug("LCD retry init, attempt=%d ret=%d\n", i, ret);
+		printk(BIOS_DEBUG, "LCD retry init, attempt=%d ret=%d\n", i, ret);
 	}
 	if (i == DP_INIT_TRIES) {
-		debug("LCD initialization failed, ret=%d\n", ret);
+		printk(BIOS_DEBUG, "LCD initialization failed, ret=%d\n", ret);
 		return ret;
 	}
 
@@ -356,7 +356,7 @@ static int s5p_dp_set_lane_lane_pre_emphasis(struct s5p_dp_device *dp,
 		writel(reg, &base->ln3_link_trn_ctl);
 		break;
 	default:
-		debug("%s: Invalid lane %d\n", __func__, lane);
+		printk(BIOS_DEBUG, "%s: Invalid lane %d\n", __func__, lane);
 		return -ERR_INVALID_LANE;
 	}
 	return 0;
@@ -438,7 +438,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	for (lane = 0; lane < max_lane; lane++)
 		if (s5p_dp_set_lane_lane_pre_emphasis(dp,
 					      PRE_EMPHASIS_LEVEL_0, lane)) {
-			debug("Unable to set pre emphasis level\n");
+			printk(BIOS_DEBUG, "Unable to set pre emphasis level\n");
 			return -ERR_PRE_EMPHASIS_LEVELS;
 		}
 
@@ -451,14 +451,14 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 
 	if ((dp->link_train.link_rate != LINK_RATE_1_62GBPS) &&
 	    (dp->link_train.link_rate != LINK_RATE_2_70GBPS)) {
-		debug("Rx Max Link Rate is abnormal :%x !\n",
+		printk(BIOS_DEBUG, "Rx Max Link Rate is abnormal :%x !\n",
 		      dp->link_train.link_rate);
 		/* Not Retrying */
 		return -ERR_LINK_RATE_ABNORMAL;
 	}
 
 	if (dp->link_train.lane_count == 0) {
-		debug("Rx Max Lane count is abnormal :%x !\n",
+		printk(BIOS_DEBUG, "Rx Max Lane count is abnormal :%x !\n",
 		      dp->link_train.lane_count);
 		/* Not retrying */
 		return -ERR_MAX_LANE_COUNT_ABNORMAL;
@@ -487,7 +487,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	/* Get hardware link training status */
 	data = readl(&base->dp_hw_link_training);
 	if (data != 0) {
-		debug(" H/W link training failure: 0x%x\n", data);
+		printk(BIOS_DEBUG, " H/W link training failure: 0x%x\n", data);
 		return -ERR_LINK_TRAINING_FAILURE;
 	}
 
@@ -521,14 +521,14 @@ int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
 	power_enable_dp_phy();
 	ret = s5p_dp_init_dp(dp);
 	if (ret) {
-		debug("%s: Could not initialize dp\n", __func__);
+		printk(BIOS_DEBUG, "%s: Could not initialize dp\n", __func__);
 		return ret;
 	}
 
 	ret = s5p_dp_hw_link_training(dp, dp->video_info->lane_count,
 				      dp->video_info->link_rate);
 	if (ret) {
-		debug("unable to do link train\n");
+		printk(BIOS_DEBUG, "unable to do link train\n");
 		return ret;
 	}
 	/* Minimum delay after H/w Link training */
@@ -536,13 +536,13 @@ int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
 
 	ret = s5p_dp_enable_scramble(dp);
 	if (ret) {
-		debug("unable to set scramble mode\n");
+		printk(BIOS_DEBUG, "unable to set scramble mode\n");
 		return ret;
 	}
 
 	ret = s5p_dp_enable_rx_to_enhanced_mode(dp);
 	if (ret) {
-		debug("unable to set enhanced mode\n");
+		printk(BIOS_DEBUG, "unable to set enhanced mode\n");
 		return ret;
 	}
 
@@ -557,7 +557,7 @@ int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
 	s5p_dp_init_video(dp);
 	ret = s5p_dp_config_video(dp, dp->video_info);
 	if (ret) {
-		debug("unable to config video\n");
+		printk(BIOS_DEBUG, "unable to config video\n");
 		return ret;
 	}
 

@@ -106,7 +106,7 @@ static void serial_setbrg_dev(void)
 	 */
 #if 0
 	if (s5p_uart_divslot())
-		writew(udivslot[val % 16], &uart->rest.slot);
+		writel(udivslot[val % 16], &uart->rest.slot);
 	else
 		writeb(val % 16, &uart->rest.value);
 #endif

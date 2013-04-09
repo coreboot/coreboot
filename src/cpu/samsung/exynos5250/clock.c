@@ -379,7 +379,7 @@ void set_mmc_clk(int dev_index, unsigned int div)
 {
 	struct exynos5_clock *clk =
 		samsung_get_base_clock();
-	unsigned int addr;
+	unsigned int *addr;
 	unsigned int val;
 
 	/*
@@ -389,9 +389,9 @@ void set_mmc_clk(int dev_index, unsigned int div)
 	 * MMC2_PRE_RATIO [15:8], MMC3_PRE_RATIO [31:24]
 	 */
 	if (dev_index < 2) {
-		addr = (unsigned int)&clk->div_fsys1;
+		addr = &clk->div_fsys1;
 	} else {
-		addr = (unsigned int)&clk->div_fsys2;
+		addr = &clk->div_fsys2;
 		dev_index -= 2;
 	}
 

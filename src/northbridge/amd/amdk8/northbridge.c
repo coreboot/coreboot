@@ -561,6 +561,9 @@ static void amdk8_set_resources(device_t dev)
 		amdk8_set_resource(dev, res, nodeid);
 	}
 
+	sysconf.mmconf_start = mem_lowest_start;
+	sysconf.mmconf_end = mem_highest_end;
+
 	compact_resources(dev);
 
 	for(bus = dev->link_list; bus; bus = bus->next) {

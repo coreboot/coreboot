@@ -280,6 +280,10 @@ int k8acpi_write_vars(void)
 	 */
 	lens += acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
 
+	/* MMConf area for PCI0, begin and end */
+	lens += acpigen_write_name_dword("MMCB", sysconf.mmconf_start);
+	lens += acpigen_write_name_dword("MMCE", sysconf.mmconf_end);
+
 	lens += k8acpi_write_HT();
 	//minus opcode
 	acpigen_patch_len(lens - 1);

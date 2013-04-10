@@ -202,7 +202,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 			/* 4 means 7:4 and 15:12
 			 * 3 means 7:2 and 15:10
 			 * 2 means 7:1 and 15:9
-			 * egnoring the reversal case
+			 * ignoring the reversal case
 			 */
 			lane_mask = (0xFF << (current_link_width - 2) * 2) & 0xFF;
 			reg = nbpcie_ind_read_index(nb_dev, 0x65 | gpp_sb_sel);

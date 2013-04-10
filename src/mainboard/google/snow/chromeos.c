@@ -34,7 +34,7 @@
 #define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0
 #define FORCE_DEVELOPER_MODE	0
-#define LID_OPEN	3
+#define LID_OPEN	5
 #define POWER_BUTTON	3
 
 #include <boot/coreboot_tables.h>
@@ -59,15 +59,15 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	strncpy((char *)gpios->gpios[0].name,"write protect",
 							GPIO_MAX_NAME_LENGTH);
 
-	/* Recovery: active high */
+	/* Recovery: active low */
 	gpios->gpios[1].port = EXYNOS5_GPY1;
-	gpios->gpios[1].polarity = ACTIVE_HIGH;
+	gpios->gpios[1].polarity = ACTIVE_LOW;
 	gpios->gpios[1].value = s5p_gpio_get_value(&gpio_pt1->y1, FORCE_RECOVERY_MODE);
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
 	/* Lid: the "switch" comes from the EC */
 	gpios->gpios[2].port = EXYNOS5_GPX3;
-	gpios->gpios[2].polarity = ACTIVE_LOW;
+	gpios->gpios[2].polarity = ACTIVE_HIGH;
 	gpios->gpios[2].value = s5p_gpio_get_value(&gpio_pt2->x3, LID_OPEN);
 	strncpy((char *)gpios->gpios[2].name,"lid", GPIO_MAX_NAME_LENGTH);
 

@@ -100,6 +100,25 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
+/* PCODE MMIO communications live in the MCHBAR. */
+#define BIOS_MAILBOX_INTERFACE			0x5da4
+#define  MAILBOX_RUN_BUSY			(1 << 31)
+#define  MAILBOX_BIOS_CMD_READ_PCS		1
+#define  MAILBOX_BIOS_CMD_WRITE_PCS		2
+#define  MAILBOX_BIOS_CMD_READ_CALIBRATION	0x509
+#define  MAILBOX_BIOS_CMD_FSM_MEASURE_INTVL	0x909
+/* Errors are returned back in bits 7:0. */
+#define  MAILBOX_BIOS_ERROR_NONE		0
+#define  MAILBOX_BIOS_ERROR_INVALID_COMMAND	1
+#define  MAILBOX_BIOS_ERROR_TIMEOUT		2
+#define  MAILBOX_BIOS_ERROR_ILLEGAL_DATA	3
+#define  MAILBOX_BIOS_ERROR_RESERVED		4
+#define  MAILBOX_BIOS_ERROR_ILLEGAL_VR_ID	5
+#define  MAILBOX_BIOS_ERROR_VR_INTERFACE_LOCKED	6
+#define  MAILBOX_BIOS_ERROR_VR_ERROR		7
+/* Data is passed through bits 31:0 of the data register. */
+#define BIOS_MAILBOX_DATA			0x5da0
+
 /* Region of SMM space is reserved for multipurpose use. It falls below
  * the IED region and above the SMM handler. */
 #define RESERVED_SMM_SIZE CONFIG_SMM_RESERVED_SIZE

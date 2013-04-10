@@ -255,6 +255,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 		MPEN,	8
 	}
 
+	Name (IOLM,0xe0000000)
+
 #include "acpi/platform.asl"
 
 	Scope(\_SB) {
@@ -383,8 +385,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 			External (MMIO)
 			External (TOM1)
 			External (TOM2)
-			External (MMCB) /* MMConf Begin */
-			External (MMCE) /* MMConf End */
 
 			Name(_HID, EISAID("PNP0A03"))
 			Name(_ADR, 0x00180000)	/* Dev# = BSP Dev#, Func# = 0 */
@@ -1186,9 +1186,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "SIEMENS", "SITEMP ", 0x20101005)
 				CreateDWordField(CRES, ^EMM2._MAX, EM2E)
 				CreateDWordField(CRES, ^EMM2._LEN, EM2L)
 
-				Store(MMCB, EM2B)
-				Subtract(MMCE, 1, EM2E)
-				Subtract(MMCE, MMCB, EM2L)
+				Store(TOM1, EM2B)
+				Subtract(IOLM, 1, EM2E)
+				Subtract(IOLM, TOM1, EM2L)
 
 				If(LGreater(LOMH, 0xC0000)){
 					Store(0xC0000, EM1B)	/* Hole above C0000 and below E0000 */

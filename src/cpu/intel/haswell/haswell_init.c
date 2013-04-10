@@ -34,6 +34,7 @@
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
+#include <delay.h>
 #include <pc80/mc146818rtc.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <southbridge/intel/lynxpoint/pch.h>
@@ -215,6 +216,62 @@ static int is_ult(void)
 		ult = (cpuid_eax(1) > 0x40650);
 
 	return ult;
+}
+
+/* The core 100MHz BLCK is disabled in deeper c-states. One needs to calibrate
+ * the 100MHz BCLCK against the 24MHz BLCK to restore the clocks properly
+ * when a core is woken up. */
+static int pcode_ready(void)
+{
+	int wait_count;
+	const int delay_step = 10;
+
+	wait_count = 0;
+	do {
+		if (!(MCHBAR32(BIOS_MAILBOX_INTERFACE) & MAILBOX_RUN_BUSY))
+			return 0;
+		wait_count += delay_step;
+		udelay(delay_step);
+	} while (wait_count < 1000);
+
+	return -1;
+}
+
+static void calibrate_24mhz_bclk(void)
+{
+	int err_code;
+
+	if (pcode_ready() < 0) {
+		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready.\n");
+		return;
+	}
+
+	/* A non-zero value initiates the PCODE calibration. */
+	MCHBAR32(BIOS_MAILBOX_DATA) = ~0;
+	MCHBAR32(BIOS_MAILBOX_INTERFACE) =
+		MAILBOX_RUN_BUSY | MAILBOX_BIOS_CMD_FSM_MEASURE_INTVL;
+
+	if (pcode_ready() < 0) {
+		printk(BIOS_ERR, "PCODE: mailbox timeout on completion.\n");
+		return;
+	}
+
+	err_code = MCHBAR32(BIOS_MAILBOX_INTERFACE) & 0xff;
+
+	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration response: %d\n",
+	       err_code);
+
+	/* Read the calibrated value. */
+	MCHBAR32(BIOS_MAILBOX_INTERFACE) =
+		MAILBOX_RUN_BUSY | MAILBOX_BIOS_CMD_READ_CALIBRATION;
+
+	if (pcode_ready() < 0) {
+		printk(BIOS_ERR, "PCODE: mailbox timeout on read.\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration value: 0x%08x\n",
+	       MCHBAR32(BIOS_MAILBOX_DATA));
 }
 
 int cpu_config_tdp_levels(void)
@@ -516,6 +573,9 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 	x86_setup_fixed_mtrrs();
 	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
 	x86_mtrr_check();
+
+	if (is_ult())
+		calibrate_24mhz_bclk();
 
 	/* Call through the cpu driver's initialization. */
 	cpu_initialize(0);

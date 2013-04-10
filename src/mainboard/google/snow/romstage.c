@@ -27,6 +27,7 @@
 #include <arch/gpio.h>
 #include <cpu/samsung/exynos5-common/i2c.h>
 #include <cpu/samsung/exynos5250/clk.h>
+#include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/setup.h>
@@ -118,6 +119,31 @@ static void graphics(void)
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 }
 
+static void chromeos_gpios(void)
+{
+	struct exynos5_gpio_part1 *gpio_pt1;
+	struct exynos5_gpio_part2 *gpio_pt2;
+
+	enum {
+		WP_GPIO = 6,
+		FORCE_RECOVERY_MODE = 0,
+		LID_OPEN = 5
+	};
+
+	gpio_pt1 = (struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
+	gpio_pt2 = (struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE;
+
+	s5p_gpio_direction_input(&gpio_pt1->d1, WP_GPIO);
+	s5p_gpio_set_pull(&gpio_pt1->d1, WP_GPIO, EXYNOS_GPIO_PULL_NONE);
+
+	s5p_gpio_direction_input(&gpio_pt1->y1, FORCE_RECOVERY_MODE);
+	s5p_gpio_set_pull(&gpio_pt1->y1, FORCE_RECOVERY_MODE,
+		EXYNOS_GPIO_PULL_NONE);
+
+	s5p_gpio_direction_input(&gpio_pt2->x3, LID_OPEN);
+	s5p_gpio_set_pull(&gpio_pt2->x3, LID_OPEN, EXYNOS_GPIO_PULL_NONE);
+}
+
 void main(void)
 {
 	struct mem_timings *mem;
@@ -160,6 +186,8 @@ void main(void)
 	}
 
 	initialize_s5p_mshc();
+
+	chromeos_gpios();
 
 	graphics();
 

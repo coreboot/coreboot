@@ -35,87 +35,118 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <pc80/mc146818rtc.h>
+#include <northbridge/intel/haswell/haswell.h>
+#include <southbridge/intel/lynxpoint/pch.h>
 #include "haswell.h"
 #include "chip.h"
 
+/* Intel suggested latency times in units of 1024ns. */
+#define C_STATE_LATENCY_CONTROL_0_LIMIT 0x42
+#define C_STATE_LATENCY_CONTROL_1_LIMIT 0x73
+#define C_STATE_LATENCY_CONTROL_2_LIMIT 0x91
+#define C_STATE_LATENCY_CONTROL_3_LIMIT 0xe4
+#define C_STATE_LATENCY_CONTROL_4_LIMIT 0x145
+#define C_STATE_LATENCY_CONTROL_5_LIMIT 0x1ef
+
+#define C_STATE_LATENCY_MICRO_SECONDS(limit, base) \
+	(((1 << ((base)*5)) * (limit)) / 1000)
+#define C_STATE_LATENCY_FROM_LAT_REG(reg) \
+	C_STATE_LATENCY_MICRO_SECONDS(C_STATE_LATENCY_CONTROL_ ##reg## _LIMIT, \
+	                              (IRTL_1024_NS >> 10))
+
 /*
- * List of supported C-states in this processor
- *
- * Latencies are typical worst-case package exit time in uS
- * taken from the SandyBridge BIOS specification.
+ * List of supported C-states in this processor. Only the ULT parts support C8,
+ * C9, and C10.
  */
-#if 0
-static acpi_cstate_t cstate_map[] = {
-	{	/* 0: C0 */
-	},{	/* 1: C1 */
-		.latency = 1,
-		.power = 1000,
-		.resource = {
-			.addrl = 0x00,	/* MWAIT State 0 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
-	},
-	{	/* 2: C1E */
-		.latency = 1,
-		.power = 1000,
-		.resource = {
-			.addrl = 0x01,	/* MWAIT State 0 Sub-state 1 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
-	},
-	{	/* 3: C3 */
-		.latency = 63,
-		.power = 500,
-		.resource = {
-			.addrl = 0x10,	/* MWAIT State 1 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
-	},
-	{	/* 4: C6 */
-		.latency = 87,
-		.power = 350,
-		.resource = {
-			.addrl = 0x20,	/* MWAIT State 2 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
-	},
-	{	/* 5: C7 */
-		.latency = 90,
-		.power = 200,
-		.resource = {
-			.addrl = 0x30,	/* MWAIT State 3 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
-	},
-	{	/* 6: C7S */
-		.latency = 90,
-		.power = 200,
-		.resource = {
-			.addrl = 0x31,	/* MWAIT State 3 Sub-state 1 */
-			.space_id = ACPI_ADDRESS_SPACE_FIXED,
-			.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,
-			.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,
-			.resv = ACPI_FFIXEDHW_FLAG_HW_COORD,
-		}
-	},
-	{ 0 }
+enum {
+	C_STATE_C0,             /* 0 */
+	C_STATE_C1,             /* 1 */
+	C_STATE_C1E,            /* 2 */
+	C_STATE_C3,             /* 3 */
+	C_STATE_C6_SHORT_LAT,   /* 4 */
+	C_STATE_C6_LONG_LAT,    /* 5 */
+	C_STATE_C7_SHORT_LAT,   /* 6 */
+	C_STATE_C7_LONG_LAT,    /* 7 */
+	C_STATE_C7S_SHORT_LAT,  /* 8 */
+	C_STATE_C7S_LONG_LAT,   /* 9 */
+	C_STATE_C8,             /* 10 */
+	C_STATE_C9,             /* 11 */
+	C_STATE_C10,            /* 12 */
+	NUM_C_STATES
 };
-#endif
+
+#define MWAIT_RES(state, sub_state)                         \
+	{                                                   \
+		.addrl = (((state) << 4) | (sub_state)),    \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
+		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
+		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
+		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
+	}
+
+static acpi_cstate_t cstate_map[NUM_C_STATES] = {
+	[C_STATE_C0] = { },
+	[C_STATE_C1] = {
+		.latency = 0,
+		.power = 1000,
+		.resource = MWAIT_RES(0,0),
+	},
+	[C_STATE_C1E] = {
+		.latency = 0,
+		.power = 1000,
+		.resource = MWAIT_RES(0,1),
+	},
+	[C_STATE_C3] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(0),
+		.power = 900,
+		.resource = MWAIT_RES(1, 0),
+	},
+	[C_STATE_C6_SHORT_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
+		.power = 800,
+		.resource = MWAIT_RES(2, 0),
+	},
+	[C_STATE_C6_LONG_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
+		.power = 800,
+		.resource = MWAIT_RES(2, 1),
+	},
+	[C_STATE_C7_SHORT_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
+		.power = 700,
+		.resource = MWAIT_RES(3, 0),
+	},
+	[C_STATE_C7_LONG_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
+		.power = 700,
+		.resource = MWAIT_RES(3, 1),
+	},
+	[C_STATE_C7S_SHORT_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(1),
+		.power = 700,
+		.resource = MWAIT_RES(3, 2),
+	},
+	[C_STATE_C7S_LONG_LAT] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(2),
+		.power = 700,
+		.resource = MWAIT_RES(3, 3),
+	},
+	[C_STATE_C8] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(3),
+		.power = 600,
+		.resource = MWAIT_RES(4, 0),
+	},
+	[C_STATE_C9] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(4),
+		.power = 500,
+		.resource = MWAIT_RES(5, 0),
+	},
+	[C_STATE_C10] = {
+		.latency = C_STATE_LATENCY_FROM_LAT_REG(5),
+		.power = 400,
+		.resource = MWAIT_RES(6, 0),
+	},
+};
 
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
@@ -174,6 +205,17 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x70] = 112,
 	[0x11] = 128,
 };
+
+/* Dynamically determine if the part is ULT. */
+static int is_ult(void)
+{
+	static int ult = -1;
+
+	if (ult < 0)
+		ult = (cpuid_eax(1) > 0x40650);
+
+	return ult;
+}
 
 int cpu_config_tdp_levels(void)
 {
@@ -250,24 +292,28 @@ void set_power_limits(u8 power_limit_1_time)
 	}
 }
 
-#if 0
 static void configure_c_states(void)
 {
 	msr_t msr;
 
 	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	msr.lo |= (1 << 30);	// Package c-state Undemotion Enable
+	msr.lo |= (1 << 29);	// Package c-state Demotion Enable
 	msr.lo |= (1 << 28);	// C1 Auto Undemotion Enable
 	msr.lo |= (1 << 27);	// C3 Auto Undemotion Enable
 	msr.lo |= (1 << 26);	// C1 Auto Demotion Enable
 	msr.lo |= (1 << 25);	// C3 Auto Demotion Enable
 	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
-	msr.lo |= 7;		// No package C-state limit
+	msr.lo &= ~(0xf);	// Clear deepest package c-state
+	/* FIXME: The deepest package c-state is set to C0/C1 to work around
+	 * platform instability when package C3 or deeper c-states are used. */
+	msr.lo |= 0;		// Deepeset package c-state is C0/C1.
 	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
 
 	msr = rdmsr(MSR_PMG_IO_CAPTURE_BASE);
-	msr.lo &= ~0x7ffff;
-	msr.lo |= (get_pmbase() + 4);	// LVL_2 base address
-	msr.lo |= (2 << 16);		// CST Range: C7 is max C-state
+	msr.lo &= ~0xffff;
+	msr.lo |= (get_pmbase() + 0x14);	// LVL_2 base address
+	/* The deepest package c-state defaults to factory-configured value. */
 	wrmsr(MSR_PMG_IO_CAPTURE_BASE, msr);
 
 	msr = rdmsr(MSR_MISC_PWR_MGMT);
@@ -280,37 +326,42 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 0);	// Bi-directional PROCHOT#
 	wrmsr(MSR_POWER_CTL, msr);
 
-	/* C3 Interrupt Response Time Limit */
+	/* C-state Interrupt Response Latency Control 0 - package C3 latency */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | 0x50;
-	wrmsr(MSR_PKGC3_IRTL, msr);
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_0_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_0, msr);
 
-	/* C6 Interrupt Response Time Limit */
+	/* C-state Interrupt Response Latency Control 1 */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | 0x68;
-	wrmsr(MSR_PKGC6_IRTL, msr);
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_1_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_1, msr);
 
-	/* C7 Interrupt Response Time Limit */
+	/* C-state Interrupt Response Latency Control 2 - package C6/C7 short */
 	msr.hi = 0;
-	msr.lo = IRTL_VALID | IRTL_1024_NS | 0x6D;
-	wrmsr(MSR_PKGC7_IRTL, msr);
+	msr.lo = IRTL_VALID | IRTL_1024_NS | C_STATE_LATENCY_CONTROL_2_LIMIT;
+	wrmsr(MSR_C_STATE_LATENCY_CONTROL_2, msr);
 
-	/* Primary Plane Current Limit */
-	msr = rdmsr(MSR_PP0_CURRENT_CONFIG);
-	msr.lo &= ~0x1fff;
-	msr.lo |= PP0_CURRENT_LIMIT;
-	wrmsr(MSR_PP0_CURRENT_CONFIG, msr);
+	/* Haswell ULT only supoprts the 3-5 latency response registers.*/
+	if (is_ult()) {
+		/* C-state Interrupt Response Latency Control 3 - package C8 */
+		msr.hi = 0;
+		msr.lo = IRTL_VALID | IRTL_1024_NS |
+		         C_STATE_LATENCY_CONTROL_3_LIMIT;
+		wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
 
-	/* Secondary Plane Current Limit */
-	msr = rdmsr(MSR_PP1_CURRENT_CONFIG);
-	msr.lo &= ~0x1fff;
-	if (cpuid_eax(1) >= 0x30600)
-		msr.lo |= PP1_CURRENT_LIMIT_IVB;
-	else
-		msr.lo |= PP1_CURRENT_LIMIT_SNB;
-	wrmsr(MSR_PP1_CURRENT_CONFIG, msr);
+		/* C-state Interrupt Response Latency Control 4 - package C9 */
+		msr.hi = 0;
+		msr.lo = IRTL_VALID | IRTL_1024_NS |
+		         C_STATE_LATENCY_CONTROL_4_LIMIT;
+		wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
+
+		/* C-state Interrupt Response Latency Control 5 - package C10 */
+		msr.hi = 0;
+		msr.lo = IRTL_VALID | IRTL_1024_NS |
+		         C_STATE_LATENCY_CONTROL_5_LIMIT;
+		wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
+	}
 }
-#endif
 
 static void configure_thermal_target(void)
 {
@@ -481,7 +532,7 @@ static void haswell_init(device_t cpu)
 	setup_lapic();
 
 	/* Configure C States */
-	//configure_c_states();
+	configure_c_states();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */
 	configure_misc();
@@ -555,6 +606,6 @@ static struct cpu_device_id cpu_table[] = {
 static const struct cpu_driver driver __cpu_driver = {
 	.ops      = &cpu_dev_ops,
 	.id_table = cpu_table,
-	/* .cstates  = cstate_map, */
+	.cstates  = cstate_map,
 };
 

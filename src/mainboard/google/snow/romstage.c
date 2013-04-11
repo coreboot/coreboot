@@ -36,6 +36,7 @@
 #include <cpu/samsung/exynos5250/clock_init.h>
 #include <console/console.h>
 #include <arch/stages.h>
+#include <time.h>
 
 #include <drivers/maxim/max77686/max77686.h>
 #include <device/i2c.h>

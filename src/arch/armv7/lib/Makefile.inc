@@ -1,6 +1,5 @@
 #FIXME: cache_v7 and cache-cp15 will go away eventually
 
-bootblock-y += syslib.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += early_console.c
 bootblock-y += cache.c
 
@@ -13,7 +12,6 @@ ramstage-y += div0.c
 #ramstage-y += interrupts.c
 #ramstage-y += memcpy.S
 #ramstage-y += memset.S
-ramstage-y += syslib.c
 ramstage-y += cache.c
 ramstage-y += mmu.c
 

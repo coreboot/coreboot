@@ -25,6 +25,8 @@
 
 #include <common.h>
 #include <arch/io.h>
+#include <time.h>
+#include <console/console.h>
 #include <cpu/samsung/exynos5-common/pwm.h>
 #include <cpu/samsung/exynos5-common/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
@@ -117,12 +119,17 @@ unsigned long timer_get_us(void)
 }
 
 /* delay x useconds */
-void __udelay(unsigned long usec)
+void udelay(unsigned long usec)
 {
-	unsigned long count_value;
+	unsigned long start;
 
-	count_value = timer_get_us_down();
-	while ((int)(count_value - timer_get_us_down()) < (int)usec)
+	start = timer_us();
+	if ((start + usec) < start){
+		printk(BIOS_EMERG, "udelay: %08lx is impossibly large\n",
+			usec);
+		usec = 1000000;
+	}
+	while ((timer_us() - start) < usec)
 		;
 }
 

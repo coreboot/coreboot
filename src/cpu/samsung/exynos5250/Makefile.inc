@@ -16,6 +16,7 @@ romstage-y += pinmux.c  # required by s3c24x0_i2c (exynos5-common) and uart.
 romstage-y += dmc_common.c
 romstage-y += dmc_init_ddr3.c
 romstage-y += power.c
+romstage-y += mct.c
 romstage-$(CONFIG_EARLY_CONSOLE) += soc.c
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 
@@ -27,6 +28,7 @@ ramstage-y += power.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
 ramstage-y += cpu.c
+ramstage-y += mct.c
 
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c
 

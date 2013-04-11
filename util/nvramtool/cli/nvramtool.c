@@ -162,8 +162,8 @@ int main(int argc, char *argv[])
 			exit(1);
 		}
 
-		if (fd_stat.st_size < 128) {
-			lseek(fd, 127, SEEK_SET);
+		if (fd_stat.st_size < CMOS_SIZE) {
+			lseek(fd, CMOS_SIZE - 1, SEEK_SET);
 			if (write(fd, "\0", 1) != 1) {
 				fprintf(stderr, "Unable to extended '%s' to its full size.\n",
 						nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 #endif
 		}
 
-		cmos_default = mmap(NULL, 128, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+		cmos_default = mmap(NULL, CMOS_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 		if (cmos_default == MAP_FAILED) {
 			fprintf(stderr, "Couldn't map '%s'\n", nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 			exit(1);

@@ -46,4 +46,17 @@ enum usb_charge_mode {
 };
 int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode);
 
+/* internal structure to send a command to the EC and wait for response. */
+struct chromeec_command {
+	uint8_t     cmd_code;	  /* command code in, status out */
+	uint8_t     cmd_version;  /* command version */
+	const void* cmd_data_in;  /* command data, if any */
+	void*	    cmd_data_out; /* command response, if any */
+	uint16_t    cmd_size_in;  /* size of command data */
+	uint16_t    cmd_size_out; /* expected size of command response in,
+				   * actual received size out */
+};
+
+int google_chromeec_command(struct chromeec_command *cec_command);
+
 #endif /* _EC_GOOGLE_CHROMEEC_EC_H */

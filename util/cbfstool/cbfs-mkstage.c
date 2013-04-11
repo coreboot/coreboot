@@ -167,6 +167,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	if (buffer_create(output, sizeof(*stage) + data_end - data_start,
 			  input->name) != 0) {
 		ERROR("Unable to allocate memory: %m\n");
+		free(buffer);
 		return -1;
 	}
 	memset(output->data, 0, output->size);

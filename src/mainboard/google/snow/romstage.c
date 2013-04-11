@@ -92,6 +92,8 @@ static int setup_pmic(void)
 	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO10, CONFIG_VDD_LDO10_MV,
 						REG_ENABLE, MAX77686_MV);
 
+	error |= max77686_enable_32khz_cp(PMIC_BUS);
+
 	if (error)
 		printk(BIOS_CRIT, "%s: Error during PMIC setup\n", __func__);
 

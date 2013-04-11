@@ -36,6 +36,7 @@
 #include <cpu/samsung/exynos5250/clock_init.h>
 #include <console/console.h>
 #include <arch/stages.h>
+#include <time.h>
 
 #include <drivers/maxim/max77686/max77686.h>
 #include <device/i2c.h>
@@ -150,6 +151,10 @@ void main(void)
 	struct arm_clk_ratios *arm_ratios;
 	int ret;
 	void *entry;
+	/* kick off the microsecond timer. We want to do this as early
+	 * as we can.
+	 */
+	timer_start();
 
 	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 

@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <device/device.h>
 #include <device/pnp.h>
 #ifndef __PRE_RAM__
 #include <elog.h>
@@ -34,172 +33,6 @@
 #include "ec.h"
 #include "ec_commands.h"
 #include <vendorcode/google/chromeos/chromeos.h>
-
-/* an internal API to send a command to the EC and wait for response. */
-struct chromeec_command {
-	u8	    cmd_code;	  /* command code in, status out */
-	u8          cmd_version;  /* command version */
-	const void* cmd_data_in;  /* command data, if any */
-	void*	    cmd_data_out; /* command response, if any */
-	u16	    cmd_size_in;  /* size of command data */
-	u16	    cmd_size_out; /* expected size of command response in,
-				   * actual received size out */
-};
-
-static int google_chromeec_wait_ready(u16 port)
-{
-	u8 ec_status = inb(port);
-	u32 time_count = 0;
-
-	/*
-	 * One second is more than plenty for any EC operation to complete
-	 * (and the bus accessing/code execution) overhead will make the
-	 * timeout even longer.
-	 */
-#define MAX_EC_TIMEOUT_US 1000000
-
-	while (ec_status &
-	       (EC_LPC_CMDR_PENDING | EC_LPC_CMDR_BUSY)) {
-		udelay(1);
-		if (time_count++ == MAX_EC_TIMEOUT_US)
-			return -1;
-		ec_status = inb(port);
-	}
-	return 0;
-}
-
-static int google_chromeec_cmd_args_supported(void)
-{
-	if (inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID) == 'E' &&
-	    inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID + 1) == 'C' &&
-	    (inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_HOST_CMD_FLAGS) &
-	     EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED))
-		return 1;
-
-	return 0;
-}
-
-static int google_chromeec_command_old(struct chromeec_command *cec_command)
-{
-	int i;
-
-	if (cec_command->cmd_version) {
-		printk(BIOS_ERR, "Invalid version for command protocol!\n");
-		return 1;
-	}
-
-	if (google_chromeec_wait_ready(EC_LPC_ADDR_HOST_CMD)) {
-		printk(BIOS_ERR, "Timeout waiting for EC ready!\n");
-		return 1;
-	}
-
-	/* Copy command data, if any. */
-	for (i = 0; i < cec_command->cmd_size_in; i++)
-		outb(((char*)cec_command->cmd_data_in)[i],
-		     EC_LPC_ADDR_OLD_PARAM + i);
-
-	/* Issue the command. */
-	outb(cec_command->cmd_code, EC_LPC_ADDR_HOST_CMD);
-
-	if (google_chromeec_wait_ready(EC_LPC_ADDR_HOST_CMD)) {
-		printk(BIOS_ERR, "Timeout waiting for EC process command %d!\n",
-		       cec_command->cmd_code);
-		return 1;
-	}
-
-	for (i = 0; i < cec_command->cmd_size_out; i++)
-		((char*)cec_command->cmd_data_out)[i] =
-			inb(EC_LPC_ADDR_OLD_PARAM + i);
-	cec_command->cmd_code = inb(EC_LPC_ADDR_HOST_DATA);
-	return 0;
-}
-
-static int google_chromeec_command(struct chromeec_command *cec_command)
-{
-	struct ec_lpc_host_args args;
-	const u8 *d;
-	u8 *dout;
-	u8 cmd_code = cec_command->cmd_code;
-	int csum;
-	int i;
-
-	/* Fall back to old command protocol if necessary */
-	if (!google_chromeec_cmd_args_supported())
-		return google_chromeec_command_old(cec_command);
-
-	/* Fill in args */
-	args.flags = EC_HOST_ARGS_FLAG_FROM_HOST;
-	args.command_version = cec_command->cmd_version;
-	args.data_size = cec_command->cmd_size_in;
-
-	/* Initialize checksum */
-	csum = cmd_code + args.flags + args.command_version + args.data_size;
-
-	/* Write data and update checksum */
-	for (i = 0, d = (const u8 *)cec_command->cmd_data_in;
-	     i < cec_command->cmd_size_in; i++, d++) {
-		outb(*d, EC_LPC_ADDR_HOST_PARAM + i);
-		csum += *d;
-	}
-
-	/* Finalize checksum and write args */
-	args.checksum = (u8)csum;
-	for (i = 0, d = (const u8 *)&args; i < sizeof(args); i++, d++)
-		outb(*d, EC_LPC_ADDR_HOST_ARGS + i);
-
-
-	/* Issue the command */
-	outb(cmd_code, EC_LPC_ADDR_HOST_CMD);
-
-	if (google_chromeec_wait_ready(EC_LPC_ADDR_HOST_CMD)) {
-		printk(BIOS_ERR, "Timeout waiting for EC process command %d!\n",
-		       cec_command->cmd_code);
-		return 1;
-	}
-
-	/* Check result */
-	cec_command->cmd_code = inb(EC_LPC_ADDR_HOST_DATA);
-	if (cec_command->cmd_code)
-		return 1;
-
-	/* Read back args */
-	for (i = 0, dout = (u8 *)&args; i < sizeof(args); i++, dout++)
-		*dout = inb(EC_LPC_ADDR_HOST_ARGS + i);
-
-	/*
-	 * If EC didn't modify args flags, then somehow we sent a new-style
-	 * command to an old EC, which means it would have read its params
-	 * from the wrong place.
-	 */
-	if (!(args.flags & EC_HOST_ARGS_FLAG_TO_HOST)) {
-		printk(BIOS_ERR, "EC protocol mismatch\n");
-		return 1;
-	}
-
-	if (args.data_size > cec_command->cmd_size_out) {
-		printk(BIOS_ERR, "EC returned too much data\n");
-		return 1;
-	}
-	cec_command->cmd_size_out = args.data_size;
-
-	/* Start calculating response checksum */
-	csum = cmd_code + args.flags + args.command_version + args.data_size;
-
-	/* Read data, if any */
-	for (i = 0, dout = (u8 *)cec_command->cmd_data_out;
-	     i < args.data_size; i++, dout++) {
-		*dout = inb(EC_LPC_ADDR_HOST_PARAM + i);
-		csum += *dout;
-	}
-
-	/* Verify checksum */
-	if (args.checksum != (u8)csum) {
-		printk(BIOS_ERR, "EC response has invalid checksum\n");
-		return 1;
-	}
-
-	return 0;
-}
 
 int google_chromeec_kbbacklight(int percent)
 {
@@ -342,25 +175,6 @@ void google_chromeec_log_events(u32 mask)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
 	}
 #endif
-}
-
-u8 google_chromeec_get_event(void)
-{
-	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
-		printk(BIOS_ERR, "Timeout waiting for EC ready!\n");
-		return 1;
-	}
-
-	/* Issue the ACPI query-event command */
-	outb(EC_CMD_ACPI_QUERY_EVENT, EC_LPC_ADDR_ACPI_CMD);
-
-	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {
-		printk(BIOS_ERR, "Timeout waiting for EC QUERY_EVENT!\n");
-		return 0;
-	}
-
-	/* Event (or 0 if none) is returned directly in the data byte */
-	return inb(EC_LPC_ADDR_ACPI_DATA);
 }
 
 u16 google_chromeec_get_board_version(void)

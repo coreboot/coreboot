@@ -25,6 +25,11 @@
 #include <cpu/samsung/exynos5-common/clk.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
 
+
+#define MCT_ADDRESS 0x101c0000
+
+#define MCT_HZ 24000000
+
 /*
  * Set mshci controller instances clock drivder
  *

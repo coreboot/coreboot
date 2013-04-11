@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <cbfs.h>
 #include <uart.h>
+#include <time.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
@@ -34,4 +35,8 @@ void bootblock_mainboard_init(void)
 	console_init();
 	printk(BIOS_INFO, "\n\n\n%s: UART initialized\n", __func__);
 #endif
+	/* kick off the microsecond timer. We want to do this as early
+	 * as we can.
+	 */
+	timer_start();
 }

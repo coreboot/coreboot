@@ -97,3 +97,11 @@ config SYS_TEXT_BASE
 config COREBOOT_TABLES_SIZE
 	hex
 	default 0x4000000
+
+config MCT_ADDRESS
+	hex
+	default 0x101c0000
+
+config MCT_HZ
+	int
+	default 24000000

@@ -106,7 +106,7 @@ ssize_t storage_read_blocks512(const size_t dev_num,
  * Initializes storage controllers
  *
  * This function should be called once at startup to bring up supported
- * strorage controllers.
+ * storage controllers.
  */
 void storage_initialize(void)
 {

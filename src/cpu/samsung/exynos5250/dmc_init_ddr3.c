@@ -23,12 +23,12 @@
  */
 
 #include <config.h>
+#include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
 //#include "clock.h"
 /* FIXME(dhendrix): untangle clock/clk ... */
 #include <cpu/samsung/exynos5-common/clock.h>
-#include <system.h>
 #include "clk.h"
 #include "cpu.h"
 #include "dmc.h"
@@ -44,6 +44,7 @@ static void reset_phy_ctrl(void)
 	writel(LPDDR3PHY_CTRL_PHY_RESET_OFF, &clk->lpddr3phy_ctrl);
 	writel(LPDDR3PHY_CTRL_PHY_RESET, &clk->lpddr3phy_ctrl);
 
+#if 0
 	/*
 	 * For proper memory initialization there should be a minimum delay of
 	 * 500us after the LPDDR3PHY_CTRL_PHY_RESET signal.
@@ -56,6 +57,8 @@ static void reset_phy_ctrl(void)
 	 * TODO(hatim.rv@samsung.com): Implement the delay using timer/counter
 	 */
 	sdelay(425000);
+#endif
+	udelay(500);
 }
 
 int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
@@ -236,7 +239,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 			 * TODO(waihong): Comment on how long this take to
 			 * timeout
 			 */
-			sdelay(100);
+			udelay(1);
 			i--;
 		}
 		if (!i){

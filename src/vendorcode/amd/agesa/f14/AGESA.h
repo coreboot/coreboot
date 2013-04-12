@@ -813,7 +813,7 @@ typedef enum {
 #define  PCIE_PORT_DATA_INITIALIZER(mPortPresent, mChannelType, mDevAddress, mHotplug, mMaxLinkSpeed, mMaxLinkCap, mAspm, mResetId) \
 {mPortPresent, mChannelType, mDevAddress, 0, mMaxLinkSpeed, mAspm, mHotplug, mResetId, {0, mMaxLinkCap} }
 #define  PCIE_DDI_DATA_INITIALIZER(mConnectorType, mAuxIndex, mHpdIndex ) \
-{mConnectorType, mAuxIndex, mHpdIndex, {{0}, {0}}}
+{mConnectorType, mAuxIndex, mHpdIndex, {0, 0}}
 #define  PCIE_DDI_DATA_INITIALIZER_V1(mConnectorType, mAuxIndex, mHpdIndex, mMapping0, mMapping1) \
 {mConnectorType, mAuxIndex, mHpdIndex, {mMapping0, mMapping1}}
 

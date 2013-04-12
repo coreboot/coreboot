@@ -283,7 +283,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header(phys_to_virt(0xbff00000), 0x100000, info);
+	int ret = cb_parse_header(phys_to_virt(0xbc000000), 0x4000000, info);
 
 	return (ret == 1) ? 0 : -1;
 }

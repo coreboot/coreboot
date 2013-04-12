@@ -469,7 +469,7 @@ sataInitAfterPciEnum (
   RWPCI (((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG34), AccWidthUint8 | S3_SAVE, 0, 0x70);
 
   if (((pConfig->SataClass) != NATIVE_IDE_MODE) && ((pConfig->SataClass) != LEGACY_IDE_MODE)) {
-    // RIAD or AHCI
+    // RAID or AHCI
     if ((pConfig->SATAMODE.SataMode.SataIdeCombinedMode) == SATA_IDE_COMBINE_DISABLE) {
       RWMEM ((ddBar5 + SB_SATA_BAR5_REG00), AccWidthUint8 | S3_SAVE, ~(BIT2 + BIT1 + BIT0), BIT2 + BIT0);
       RWMEM ((ddBar5 + SB_SATA_BAR5_REG0C), AccWidthUint8 | S3_SAVE, 0xC0, 0x3F);

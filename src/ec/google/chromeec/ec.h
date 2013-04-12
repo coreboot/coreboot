@@ -30,6 +30,8 @@ int google_chromeec_set_wake_mask(u32 mask);
 u8 google_chromeec_get_event(void);
 int google_ec_running_ro(void);
 u16 google_chromeec_get_board_version(void);
+int google_chromeec_set_image_type(int type);
+void google_chromeec_init(void);
 #endif
 
 u32 google_chromeec_get_events_b(void);

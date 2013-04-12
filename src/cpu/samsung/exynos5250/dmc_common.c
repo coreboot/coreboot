@@ -24,12 +24,11 @@
 
 #include <arch/io.h>
 #include <assert.h>
-#include <common.h>
+#include <delay.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
-#include <system.h>
 
 #include "clock_init.h"
 #include "setup.h"
@@ -75,7 +74,7 @@ int dmc_config_zq(struct mem_timings *mem,
 	 */
 	i = ZQ_INIT_TIMEOUT;
 	while ((readl(&phy0_ctrl->phy_con17) & ZQ_DONE) != ZQ_DONE && i > 0) {
-		sdelay(100);
+		udelay(1);
 		i--;
 	}
 	if (!i)
@@ -84,7 +83,7 @@ int dmc_config_zq(struct mem_timings *mem,
 
 	i = ZQ_INIT_TIMEOUT;
 	while ((readl(&phy1_ctrl->phy_con17) & ZQ_DONE) != ZQ_DONE && i > 0) {
-		sdelay(100);
+		udelay(1);
 		i--;
 	}
 	if (!i)
@@ -135,21 +134,27 @@ void dmc_config_mrs(struct mem_timings *mem, struct exynos5_dmc *dmc)
 			 * delays? This one and the next were not there for
 			 * DDR3.
 			 */
-			sdelay(0x10000);
+			udelay(100);
 
 			/* Sending EMRS/MRS commands */
 			for (i = 0; i < MEM_TIMINGS_MSR_COUNT; i++) {
 				writel(mem->direct_cmd_msr[i] | mask,
 				       &dmc->directcmd);
-				sdelay(0x10000);
+				udelay(100);
 			}
 
 			if (mem->send_zq_init) {
 				/* Sending ZQINIT command */
 				writel(DIRECT_CMD_ZQINIT | mask,
 				       &dmc->directcmd);
-
-				sdelay(10000);
+				/*
+				 * FIXME: This was originally sdelay(10000)
+				 * in the imported u-boot code. That may have
+				 * been meant to be sdelay(0x10000) since that
+				 * was used elsewhere in this function. Either
+				 * way seems to work, though.
+				 */
+				udelay(12);
 			}
 		}
 	}
@@ -168,7 +173,7 @@ void dmc_config_prech(struct mem_timings *mem, struct exynos5_dmc *dmc)
 
 			/* PALL (all banks precharge) CMD */
 			writel(DIRECT_CMD_PALL | mask, &dmc->directcmd);
-			sdelay(0x10000);
+			udelay(100);
 		}
 	}
 }

@@ -5,7 +5,6 @@ bootblock-y += cache.c
 
 romstage-y += cache.c
 romstage-y += div0.c
-romstage-y += syslib.c
 romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
 
 ramstage-y += div0.c

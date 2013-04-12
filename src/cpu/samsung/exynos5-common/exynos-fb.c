@@ -505,7 +505,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 /*
  * Initialize DP display
  */
-int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
+int dp_controller_init(struct s5p_dp_device *dp_device)
 {
 	int ret;
 	struct s5p_dp_device *dp = dp_device;
@@ -561,15 +561,6 @@ int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
 		return ret;
 	}
 
-	/*
-	 * This delay is T3 in the LCD timing spec (defined as >200ms). We set
-	 * this down to 60ms since that's the approximate maximum amount of time
-	 * it'll take a bridge to start outputting LVDS data. The delay of
-	 * >200ms is just a conservative value to avoid turning on the backlight
-	 * when there's random LCD data on the screen. Shaving 140ms off the
-	 * boot is an acceptable trade-off.
-	 */
-	*wait_ms = 60;
 	return 0;
 }
 

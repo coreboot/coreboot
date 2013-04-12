@@ -184,12 +184,13 @@ int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
 	while (!(reg & RPLY_RECEIV))
 		reg = readl(&base->dp_int_sta);
 
+	printk(BIOS_DEBUG, "%s: checkpoint 1, dp_int_sta: 0x%08x\n", __func__, reg);
 	/* Clear interrupt source for AUX CH command reply */
 	writel(RPLY_RECEIV, &base->dp_int_sta);
 
 	/* Clear interrupt source for AUX CH access error */
 	reg = readl(&base->dp_int_sta);
-	printk(BIOS_DEBUG, "%s: dp_int_sta: 0x%02x\n", __func__, reg);
+	printk(BIOS_DEBUG, "%s: checkpoint 2, dp_int_sta: 0x%08x\n", __func__, reg);
 	if (reg & AUX_ERR) {
 		writel(AUX_ERR, &base->dp_int_sta);
 		return -1;
@@ -203,6 +204,8 @@ int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
 		return -1;
 	}
 
+	printk(BIOS_DEBUG, "%s: done, dp_int_sta: 0x%08x, aux_ch_sta: 0x%08x\n",
+			__func__, reg, readl(&base->aux_ch_sta));
 	return 0;
 }
 
@@ -356,8 +359,10 @@ int s5p_dp_is_slave_video_stream_clock_on(struct s5p_dp_device *dp)
 
 	reg = readl(&base->sys_ctl_1);
 
-	if (!(reg & DET_STA))
+	if (!(reg & DET_STA)) {
+		printk(BIOS_DEBUG, "%s: sys_ctl_1: 0x%08x\n", __func__, reg);
 		return -1;
+	}
 
 	reg = readl(&base->sys_ctl_2);
 	writel(reg, &base->sys_ctl_2);
@@ -365,10 +370,12 @@ int s5p_dp_is_slave_video_stream_clock_on(struct s5p_dp_device *dp)
 	reg = readl(&base->sys_ctl_2);
 
 	if (reg & CHA_STA) {
+		printk(BIOS_DEBUG, "%s: sys_ctl_2: 0x%08x\n", __func__, reg);
 		printk(BIOS_DEBUG, "Input stream clk is changing\n");
 		return -1;
 	}
 
+	printk(BIOS_DEBUG, "%s: done\n", __func__);
 	return 0;
 }
 

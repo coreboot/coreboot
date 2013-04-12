@@ -98,8 +98,6 @@ static void exynos_dp_bridge_setup(void)
 	gpio_set_pull(dp_rst_l, EXYNOS_GPIO_PULL_NONE);
 	udelay(10);
 	gpio_set_value(dp_rst_l, 1);
-
-	udelay(90000);	/* FIXME: this might be unnecessary */
 }
 
 static void exynos_dp_bridge_init(void)
@@ -116,19 +114,13 @@ static void exynos_dp_bridge_init(void)
 	 * roughly 50ms after PD is de-asserted. The phantom high
 	 * makes it hard for us to know when the NXP chip is up.
 	 */
-	udelay(90000);	/* FIXME: this might be unnecessary */
+	udelay(90000);
 }
 
 static int exynos_dp_hotplug(void)
 {
-	int x = gpio_get_value(dp_hpd);
 	/* Check HPD.  If it's high, we're all good. */
-//	if (gpio_get_value(dp_hpd))
-//		return 0;
-	printk(BIOS_DEBUG, "%s: dp_hpd: 0x%02x\n", __func__, x);
-	if (x)
-		return 0;
-	return -1;
+	return gpio_get_value(dp_hpd) ? 0 : 1;
 }
 
 static void exynos_dp_reset(void)
@@ -139,6 +131,7 @@ static void exynos_dp_reset(void)
 	udelay(300 * 1000);
 }
 
+#define LCD_T3_DELAY_MS	60
 #define LCD_T5_DELAY_MS	10
 #define LCD_T6_DELAY_MS	10
 
@@ -199,7 +192,6 @@ static struct video_info snow_dp_video_info = {
 static void mainboard_init(device_t dev)
 {
 	int dp_tries;
-	unsigned int wait_ms;
 	struct s5p_dp_device dp_device = {
 		.base = (struct exynos5_dp *)EXYNOS5250_DP1_BASE,
 		.video_info = &snow_dp_video_info,
@@ -215,19 +207,27 @@ static void mainboard_init(device_t dev)
 
 	exynos_dp_bridge_setup();
 	for (dp_tries = 1; dp_tries <= SNOW_MAX_DP_TRIES; dp_tries++) {
-		if (wait_ms) {
-			udelay(wait_ms);
-			wait_ms = 0;
-		}
-
 		exynos_dp_bridge_init();
 		if (exynos_dp_hotplug()) {
 			exynos_dp_reset();
 			continue;
 		}
 
-		if (dp_controller_init(&dp_device, &wait_ms))
+		if (dp_controller_init(&dp_device))
 			continue;
+
+		printk(BIOS_INFO, "%s: DP controller init done, powering on "
+				"backlight\n", __func__);
+
+		/*
+		 * This delay is T3 in the LCD timing spec (defined as >200ms). We set
+		 * this down to 60ms since that's the approximate maximum amount of time
+		 * it'll take a bridge to start outputting LVDS data. The delay of
+		 * >200ms is just a conservative value to avoid turning on the backlight
+		 * when there's random LCD data on the screen. Shaving 140ms off the
+		 * boot is an acceptable trade-off.
+		 */
+		udelay(LCD_T3_DELAY_MS * 1000);
 
 		snow_backlight_vdd();
 		snow_backlight_pwm();

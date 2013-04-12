@@ -694,7 +694,7 @@ sataInitAfterPciEnum (
   }
 
   if (((pConfig->SataClass) != NATIVE_IDE_MODE) && ((pConfig->SataClass) != LEGACY_IDE_MODE)) {
-    // RIAD or AHCI
+    // RAID or AHCI
     if ((pConfig->SATAMODE.SataMode.SataIdeCombinedMode) == DISABLED) {
       // IDE2 Controller is enabled
       if ((pConfig->SATAMODE.SataMode.SataIdeCombMdPriSecOpt) == ENABLED) {

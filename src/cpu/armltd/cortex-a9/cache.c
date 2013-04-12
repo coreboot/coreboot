@@ -12,7 +12,6 @@
  */
 
 #include <common.h>
-#include <system.h>
 #include <armv7.h>
 
 /*

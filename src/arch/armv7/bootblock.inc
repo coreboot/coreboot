@@ -29,8 +29,6 @@
  * MA 02111-1307 USA
  */
 
-#include <system.h>
-
 .section ".bl1", "a", %progbits
 _bl1:
 	/* For now we have to live with a first stage boot loader

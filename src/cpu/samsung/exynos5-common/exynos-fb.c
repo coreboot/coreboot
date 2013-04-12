@@ -27,6 +27,7 @@
 #include <arch/io.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
@@ -207,6 +208,7 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 		return -ERR_PLL_NOT_UNLOCKED;
 	}
 
+#if 0
 	start = get_timer(0);
 	do {
 		if (s5p_dp_is_slave_video_stream_clock_on(dp) == 0) {
@@ -219,6 +221,21 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 		printk(BIOS_DEBUG, "Video Clock Not ok\n");
 		return -ERR_VIDEO_CLOCK_BAD;
 	}
+#endif
+	int not_fucked = 0;
+	start = timer_us();
+	while (timer_us() < start + (STREAM_ON_TIMEOUT * 1000)) {
+		if (s5p_dp_is_slave_video_stream_clock_on(dp) == 0) {
+			not_fucked = 1;
+			break;
+		}
+	}
+
+	if (!not_fucked) {
+		printk(BIOS_DEBUG, "Video Clock Not ok, we are still fucked.\n");
+		return -ERR_VIDEO_CLOCK_BAD;
+	}
+
 
 	/* Set to use the register calculated M/N video */
 	s5p_dp_set_video_cr_mn(dp, CALCULATED_M, 0, 0);
@@ -505,7 +522,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 /*
  * Initialize DP display
  */
-int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
+int dp_controller_init(struct s5p_dp_device *dp_device)
 {
 	int ret;
 	struct s5p_dp_device *dp = dp_device;
@@ -561,15 +578,6 @@ int dp_controller_init(struct s5p_dp_device *dp_device, unsigned *wait_ms)
 		return ret;
 	}
 
-	/*
-	 * This delay is T3 in the LCD timing spec (defined as >200ms). We set
-	 * this down to 60ms since that's the approximate maximum amount of time
-	 * it'll take a bridge to start outputting LVDS data. The delay of
-	 * >200ms is just a conservative value to avoid turning on the backlight
-	 * when there's random LCD data on the screen. Shaving 140ms off the
-	 * boot is an acceptable trade-off.
-	 */
-	*wait_ms = 60;
 	return 0;
 }
 

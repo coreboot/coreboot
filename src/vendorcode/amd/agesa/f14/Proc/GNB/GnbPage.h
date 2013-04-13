@@ -121,7 +121,7 @@
  *    {
  *      DESCRIPTOR_TERMINATE_LIST,   //Descriptor flags
  *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 32),
- *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1, 0)
+ *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1)
  *    }
  *  }
  * // Dual Link DVI on dedicated display lanes. DP0_TXP/N[0]..DP0_TXP/N[3] - master, DP1_TXP/N[0]..DP1_TXP/N[3] - slave.
@@ -129,7 +129,7 @@
  *    {
  *      DESCRIPTOR_TERMINATE_LIST,   //Descriptor flags
  *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 32, 24),
- *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1, 0)
+ *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1)
  *    }
  *  }
  * // Dual Link DVI on PCIe lanes. P_GFX_TXP/N[0]..P_GFX_TXP/N[3] - master, P_GFX_TXP/N[4]..P_GFX_TXP/N[7] - slave.
@@ -137,7 +137,7 @@
  *    {
  *      DESCRIPTOR_TERMINATE_LIST,   //Descriptor flags
  *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 15),
- *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1, 0)
+ *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1)
  *    }
  *  }
  * // Dual Link DVI on PCIe lanes. P_GFX_TXP/N[7]..P_GFX_TXP/N[4] - master, P_GFX_TXP/N[0]..P_GFX_TXP/N[3] - slave.
@@ -145,7 +145,7 @@
  *    {
  *      DESCRIPTOR_TERMINATE_LIST,   //Descriptor flags
  *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 15, 8),
- *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1, 0)
+ *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1)
  *    }
  *  }
  * // Dual Link DVI on PCIe lanes. P_GFX_TXP/N[8]..P_GFX_TXP/N[11] - master, P_GFX_TXP/N[12]..P_GFX_TXP/N[15] - slave.
@@ -153,7 +153,7 @@
  *    {
  *      DESCRIPTOR_TERMINATE_LIST,   //Descriptor flags
  *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 16, 23),
- *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1, 0)
+ *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1)
  *    }
  *  }
  * // Dual Link DVI on PCIe lanes. P_GFX_TXP/N[12]..P_GFX_TXP/N[15] - master, P_GFX_TXP/N[8]..P_GFX_TXP/N[11] - slave.
@@ -161,7 +161,7 @@
  *    {
  *      DESCRIPTOR_TERMINATE_LIST,   //Descriptor flags
  *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 23, 16),
- *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1, 0)
+ *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDualLinkDvi, Aux1, Hdp1)
  *    }
  *  }
  * @endcode

@@ -84,7 +84,7 @@ static void *map_memory(u64 physical)
 	/* Mapped memory must be aligned to page size */
 	p = physical & ~(page - 1);
 
-	debug("Mapping 1MB of physical memory at 0x%zx.\n", p);
+	debug("Mapping 1MB of physical memory at 0x%lx.\n", p);
 
 	v = mmap(NULL, MAP_BYTES, PROT_READ, MAP_SHARED, fd, p);
 

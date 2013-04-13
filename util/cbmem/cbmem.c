@@ -132,7 +132,7 @@ static int parse_cbtable(u64 address)
 	int i, found = 0;
 	void *buf;
 
-	debug("Looking for coreboot table at %lx\n", address);
+	debug("Looking for coreboot table at %llx\n", address);
 	buf = map_memory(address);
 
 	/* look at every 16 bytes within 4K of the base */

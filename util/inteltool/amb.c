@@ -438,7 +438,7 @@ int print_ambs(struct pci_dev *dev, struct pci_access *pacc)
 			return 1;
 		}
 
-		ambconfig_phys = ((u64)pci_read_long(dev16, 0x4c) << 32) |
+		ambconfig_phys = ((uint64_t)pci_read_long(dev16, 0x4c) << 32) |
 			pci_read_long(dev16, 0x48);
 
 		max_channel = pci_read_byte(dev16, 0x56)/max_branch;

@@ -18,9 +18,13 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
+
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <device/pnp.h>
+#include "chip.h"
 #include "ec.h"
 #include "ec_commands.h"
 
@@ -180,6 +184,51 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 }
 
 #ifndef __PRE_RAM__
+
+#ifndef __SMM__
+static void lpc_ec_init(device_t dev)
+{
+	struct ec_google_chromeec_config *conf = dev->chip_info;
+
+	if (!dev->enabled)
+		return;
+	pc_keyboard_init(&conf->keyboard);
+	google_chromeec_init();
+}
+
+static void lpc_ec_read_resources(device_t dev)
+{
+	/* Nothing, but this function avoids an error on serial console. */
+}
+
+static void lpc_ec_enable_resources(device_t dev)
+{
+	/* Nothing, but this function avoids an error on serial console. */
+}
+
+static struct device_operations ops = {
+	.init             = lpc_ec_init,
+	.read_resources   = lpc_ec_read_resources,
+	.enable_resources = lpc_ec_enable_resources
+};
+
+static struct pnp_info pnp_dev_info[] = {
+	{ &ops, 0, 0, { 0, 0 }, }
+};
+
+static void enable_dev(device_t dev)
+{
+	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
+			   pnp_dev_info);
+}
+
+struct chip_operations ec_google_chromeec_ops = {
+	CHIP_NAME("Google Chrome EC")
+	.enable_dev = enable_dev,
+};
+
+#endif /* __SMM__ */
+
 u8 google_chromeec_get_event(void)
 {
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_ACPI_CMD)) {

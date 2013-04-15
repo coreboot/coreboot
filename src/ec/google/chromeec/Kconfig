@@ -10,6 +10,23 @@ config EC_GOOGLE_API_ROOT
        help
          Path to the ec API file (ec/ec_commands.h).
 
+config EC_GOOGLE_CHROMEEC_I2C
+	depends on EC_GOOGLE_CHROMEEC
+	bool
+	default y if ARCH_ARMV7
+	help
+	  Google Chrome EC via I2C bus.
+
+config EC_GOOGLE_CHROMEEC_I2C_BUS
+	depends on EC_GOOGLE_CHROMEEC_I2C
+	hex
+	default 4
+
+config EC_GOOGLE_CHROMEEC_I2C_CHIP
+	depends on EC_GOOGLE_CHROMEEC_I2C
+	hex
+	default 0x1e
+
 config EC_GOOGLE_CHROMEEC_LPC
         depends on EC_GOOGLE_CHROMEEC
 	bool

@@ -130,7 +130,6 @@ OemCustomizeInitEarly (
 	VOID                 *TrinityPcieComplexListPtr;
 	VOID                 *TrinityPciePortPtr;
 	VOID                 *TrinityPcieDdiPtr;
-	UINT8                Value;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
@@ -177,13 +176,6 @@ OemCustomizeInitEarly (
 
 	LibAmdMemCopy  (TrinityPcieComplexListPtr, &Trinity, sizeof (PCIe_COMPLEX_DESCRIPTOR), &InitEarly->StdHeader);
 	LibAmdMemCopy  (TrinityPciePortPtr, &PortList[0], sizeof (PCIe_PORT_DESCRIPTOR) * 7, &InitEarly->StdHeader);
-
-	LibAmdMemRead (AccessWidth8, ACPI_MMIO_BASE + GPIO_BASE + 50, &Value, &InitEarly->StdHeader);
-	if (!(Value & 0x80))
-		DdiList[0].Ddi.ConnectorType = ConnectorTypeHDMI;
-	LibAmdMemRead (AccessWidth8, ACPI_MMIO_BASE + GPIO_BASE + 51, &Value, &InitEarly->StdHeader);
-	if (!(Value & 0x80))
-		DdiList[1].Ddi.ConnectorType = ConnectorTypeHDMI;
 	LibAmdMemCopy  (TrinityPcieDdiPtr, &DdiList[0], sizeof (PCIe_DDI_DESCRIPTOR) * 3, &InitEarly->StdHeader);
 
 	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)TrinityPciePortPtr;

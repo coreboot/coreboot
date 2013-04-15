@@ -24,7 +24,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select ARCH_ARMV7
 	select CPU_SAMSUNG_EXYNOS5
 	select HAVE_UART_MEMORY_MAPPED
-#	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_I2C
 	select BOARD_ROMSIZE_KB_4096
 	select DRIVER_MAXIM_MAX77686
 #	select HAVE_ACPI_TABLES
@@ -105,6 +106,10 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	default 0x12c30000 if CONSOLE_SERIAL_UART3
 	help
 	  Map the UART names to the respective MMIO address.
+
+config EC_GOOGLE_CHROMEEC_I2C_BUS
+	hex
+	default 4
 
 #################################################################
 #   stuff from smdk5250.h                                       #

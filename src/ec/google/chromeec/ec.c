@@ -34,6 +34,15 @@
 #include "ec_commands.h"
 #include <vendorcode/google/chromeos/chromeos.h>
 
+uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size)
+{
+	int csum;
+
+	for (csum = 0; size > 0; data++, size--)
+		csum += *data;
+	return (uint8_t)(csum & 0xff);
+}
+
 int google_chromeec_kbbacklight(int percent)
 {
 	struct chromeec_command cec_cmd;

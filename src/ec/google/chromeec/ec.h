@@ -33,6 +33,7 @@ u16 google_chromeec_get_board_version(void);
 void google_chromeec_init(void);
 #endif
 
+uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);
 u32 google_chromeec_get_events_b(void);
 int google_chromeec_kbbacklight(int percent);
 void google_chromeec_post(u8 postcode);

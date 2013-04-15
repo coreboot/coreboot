@@ -52,7 +52,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpio_pt1 = (struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
 	gpio_pt2 = (struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE;
 
-	/* Write Protect: active Low */
+	/* Write Protect: active low */
 	gpios->gpios[0].port = EXYNOS5_GPD1;
 	gpios->gpios[0].polarity = ACTIVE_LOW;
 	gpios->gpios[0].value = s5p_gpio_get_value(&gpio_pt1->d1, WP_GPIO);
@@ -65,7 +65,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[1].value = s5p_gpio_get_value(&gpio_pt1->y1, FORCE_RECOVERY_MODE);
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
-	/* Lid: the "switch" comes from the EC */
+	/* Lid: active high */
 	gpios->gpios[2].port = EXYNOS5_GPX3;
 	gpios->gpios[2].polarity = ACTIVE_HIGH;
 	gpios->gpios[2].value = s5p_gpio_get_value(&gpio_pt2->x3, LID_OPEN);

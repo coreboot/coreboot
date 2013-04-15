@@ -23,7 +23,6 @@
 #include "heapManager.h"
 #include "PlatformGnbPcieComplex.h"
 #include "Filecode.h"
-#include "Fch.h"
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
@@ -80,19 +79,19 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 PCIe_DDI_DESCRIPTOR DdiList [] = {
 	// DP0 to HDMI0/DP0
 	{
-		1,
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
 		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
 	},
 	// DP1 to HDMI1/DP1
 	{
-		1,
+		0,
 		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 28, 31),
 		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux2, Hdp2)
 	},
 	// DP2 to MINI-DDI Card
 	{
-		1,
+		DESCRIPTOR_TERMINATE_LIST,
 		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 32, 35),
 		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux3, Hdp3)
 	},
@@ -130,7 +129,6 @@ OemCustomizeInitEarly (
 	VOID                 *TrinityPcieComplexListPtr;
 	VOID                 *TrinityPciePortPtr;
 	VOID                 *TrinityPcieDdiPtr;
-	UINT8                Value;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
@@ -177,13 +175,6 @@ OemCustomizeInitEarly (
 
 	LibAmdMemCopy  (TrinityPcieComplexListPtr, &Trinity, sizeof (PCIe_COMPLEX_DESCRIPTOR), &InitEarly->StdHeader);
 	LibAmdMemCopy  (TrinityPciePortPtr, &PortList[0], sizeof (PCIe_PORT_DESCRIPTOR) * 7, &InitEarly->StdHeader);
-
-	LibAmdMemRead (AccessWidth8, ACPI_MMIO_BASE + GPIO_BASE + 50, &Value, &InitEarly->StdHeader);
-	if (!(Value & 0x80))
-		DdiList[0].Ddi.ConnectorType = ConnectorTypeHDMI;
-	LibAmdMemRead (AccessWidth8, ACPI_MMIO_BASE + GPIO_BASE + 51, &Value, &InitEarly->StdHeader);
-	if (!(Value & 0x80))
-		DdiList[1].Ddi.ConnectorType = ConnectorTypeHDMI;
 	LibAmdMemCopy  (TrinityPcieDdiPtr, &DdiList[0], sizeof (PCIe_DDI_DESCRIPTOR) * 3, &InitEarly->StdHeader);
 
 	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)TrinityPciePortPtr;

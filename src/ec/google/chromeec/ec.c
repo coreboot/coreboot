@@ -21,7 +21,6 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <device/pnp.h>
 #ifndef __PRE_RAM__
 #include <elog.h>
 #include <stdlib.h>
@@ -244,26 +243,20 @@ int google_chromeec_hello(void)
 
 static int ec_image_type; /* Cached EC image type (ro or rw). */
 
-static void google_chromeec_init(device_t dev)
+void google_chromeec_init(void)
 {
 	struct chromeec_command cec_cmd;
-	struct ec_google_chromeec_config *conf = dev->chip_info;
-	struct ec_response_get_version lpcv_cmd;
-
-	if (!dev->enabled)
-		return;
+	struct ec_response_get_version cec_resp = {{0}};
 
 	printk(BIOS_DEBUG, "Google Chrome EC: Initializing keyboard.\n");
-	pc_keyboard_init(&conf->keyboard);
 
 	google_chromeec_hello();
 
-	memset(&lpcv_cmd, 0, sizeof(lpcv_cmd));
 	cec_cmd.cmd_code = EC_CMD_GET_VERSION;
 	cec_cmd.cmd_version = 0;
-	cec_cmd.cmd_data_out = &lpcv_cmd;
+	cec_cmd.cmd_data_out = &cec_resp;
 	cec_cmd.cmd_size_in = 0;
-	cec_cmd.cmd_size_out = sizeof(lpcv_cmd);
+	cec_cmd.cmd_size_out = sizeof(cec_resp);
 	google_chromeec_command(&cec_cmd);
 
 	if (cec_cmd.cmd_code) {
@@ -271,16 +264,16 @@ static void google_chromeec_init(device_t dev)
 		       "Google Chrome EC: version command failed!\n");
 	} else {
 		printk(BIOS_DEBUG, "Google Chrome EC: version:\n");
-		printk(BIOS_DEBUG, "    ro: %s\n", lpcv_cmd.version_string_ro);
-		printk(BIOS_DEBUG, "    rw: %s\n", lpcv_cmd.version_string_rw);
+		printk(BIOS_DEBUG, "    ro: %s\n", cec_resp.version_string_ro);
+		printk(BIOS_DEBUG, "    rw: %s\n", cec_resp.version_string_rw);
 		printk(BIOS_DEBUG, "  running image: %d\n",
-		       lpcv_cmd.current_image);
-		ec_image_type = lpcv_cmd.current_image;
+		       cec_resp.current_image);
+		ec_image_type = cec_resp.current_image;
 	}
 
 	if (cec_cmd.cmd_code ||
 	    (recovery_mode_enabled() &&
-	     (lpcv_cmd.current_image != EC_IMAGE_RO))) {
+	     (cec_resp.current_image != EC_IMAGE_RO))) {
 		struct ec_params_reboot_ec reboot_ec;
 		/* Reboot the EC and make it come back in RO mode */
 		reboot_ec.cmd = EC_REBOOT_COLD;
@@ -298,37 +291,6 @@ static void google_chromeec_init(device_t dev)
 	}
 
 }
-
-static void google_chromeec_read_resources(device_t dev)
-{
-	/* Nothing, but this function avoids an error on serial console. */
-}
-
-static void google_chromeec_enable_resources(device_t dev)
-{
-	/* Nothing, but this function avoids an error on serial console. */
-}
-
-static struct device_operations ops = {
-	.init             = google_chromeec_init,
-	.read_resources   = google_chromeec_read_resources,
-	.enable_resources = google_chromeec_enable_resources
-};
-
-static struct pnp_info pnp_dev_info[] = {
-        { &ops, 0, 0, { 0, 0 }, }
-};
-
-static void enable_dev(device_t dev)
-{
-	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info),
-			   pnp_dev_info);
-}
-
-struct chip_operations ec_google_chromeec_ops = {
-	CHIP_NAME("Google Chrome EC")
-	.enable_dev = enable_dev,
-};
 
 int google_ec_running_ro(void)
 {

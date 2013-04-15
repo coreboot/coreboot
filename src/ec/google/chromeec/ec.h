@@ -30,6 +30,7 @@ int google_chromeec_set_wake_mask(u32 mask);
 u8 google_chromeec_get_event(void);
 int google_ec_running_ro(void);
 u16 google_chromeec_get_board_version(void);
+void google_chromeec_init(void);
 #endif
 
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size);

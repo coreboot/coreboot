@@ -127,8 +127,8 @@ static void chromeos_gpios(void)
 
 	enum {
 		WP_GPIO = 6,
-		FORCE_RECOVERY_MODE = 0,
-		LID_OPEN = 5
+		RECMODE_GPIO = 0,
+		LID_GPIO = 5
 	};
 
 	gpio_pt1 = (struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;

@@ -18,20 +18,20 @@
  */
 
 #include <console/console.h>
+#include <ec/google/chromeec/ec.h>
+#include <ec/google/chromeec/ec_commands.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#include <arch/io.h>
 
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5-common/gpio.h>
 
-#include <device/device.h>
-
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
 #define WP_GPIO		6
 #define DEVMODE_GPIO	54
+#define RECMODE_GPIO	0
 #define FORCE_RECOVERY_MODE	0
 #define FORCE_DEVELOPER_MODE	0
 #define LID_OPEN	5
@@ -41,16 +41,15 @@
 
 #define GPIO_COUNT	6
 
+static struct exynos5_gpio_part1 *gpio_pt1 =
+	(struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
+static struct exynos5_gpio_part2 *gpio_pt2 =
+	(struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE;
+
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	struct exynos5_gpio_part1 *gpio_pt1;
-	struct exynos5_gpio_part2 *gpio_pt2;
-
 	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
 	gpios->count = GPIO_COUNT;
-
-	gpio_pt1 = (struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
-	gpio_pt2 = (struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE;
 
 	/* Write Protect: active low */
 	gpios->gpios[0].port = EXYNOS5_GPD1;
@@ -60,9 +59,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 							GPIO_MAX_NAME_LENGTH);
 
 	/* Recovery: active low */
-	gpios->gpios[1].port = EXYNOS5_GPY1;
-	gpios->gpios[1].polarity = ACTIVE_LOW;
-	gpios->gpios[1].value = s5p_gpio_get_value(&gpio_pt1->y1, FORCE_RECOVERY_MODE);
+	gpios->gpios[1].port = -1;
+	gpios->gpios[1].polarity = ACTIVE_HIGH;
+	gpios->gpios[1].value = get_recovery_mode_switch();
 	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
 
 	/* Lid: active high */
@@ -109,9 +108,15 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	int ec_rec_mode = 0;
+	uint32_t ec_events;
 
-	return ec_rec_mode;
+	/* The GPIO is active low. */
+	if (!s5p_gpio_get_value(&gpio_pt1->y1, RECMODE_GPIO))
+		return 1;
+
+	ec_events = google_chromeec_get_events_b();
+	return !!(ec_events &
+		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
 int get_recovery_mode_from_vbnv(void)

@@ -87,14 +87,6 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 		GPIO_MAX_NAME_LENGTH);
 	count++;
 
-	/* Was VGA Option ROM loaded? */
-	gpios->gpios[count].port = -1; /* This is a pseudo GPIO */
-	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = 0;
-	strncpy((char *)gpios->gpios[count].name, "oprom",
-		GPIO_MAX_NAME_LENGTH);
-	count++;
-
 	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
 	gpios->count = count;
 

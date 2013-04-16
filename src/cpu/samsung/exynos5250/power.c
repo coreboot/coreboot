@@ -25,7 +25,7 @@
 #include <common.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
-#include <arch/hlt.h>
+#include <arch/stages.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
@@ -121,9 +121,8 @@ void power_exit_wakeup(void)
 {
 	struct exynos5_power *power =
 		samsung_get_base_power();
-	typedef void (*resume_func)(void);
-
-	((resume_func)power->inform0)();
+	ps_hold_setup();
+	stage_exit((void *)power->inform0);
 }
 
 int power_init(void)

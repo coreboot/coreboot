@@ -3,7 +3,7 @@
 # image outside of CBFS
 #INTERMEDIATE += exynos5250_add_bl1
 
-bootblock-y += pinmux.c mct.c
+bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART
 bootblock-$(CONFIG_EARLY_CONSOLE) += clock_init.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += clock.c

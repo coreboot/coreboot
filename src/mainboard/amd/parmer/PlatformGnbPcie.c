@@ -27,13 +27,13 @@
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
 PCIe_PORT_DESCRIPTOR PortList [] = {
-	/* PCIe port, Lanes 8:23, PCI Device Number 2 */
+	/* PCIe port, Lanes 8:23, PCI Device Number 2, PCIE SLOT0 x16 */
 	{
 		0, /* Descriptor flags */
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 23),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
-	/* PCIe port, Lanes 16:23, PCI Device Number 3 */
+	/* PCIe port, Lanes 16:23, PCI Device Number 3, Disabled */
 	{
 		0, /* Descriptor flags */
 		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 16, 23),
@@ -54,7 +54,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
-	/* PCIe port, Lanes 6, PCI Device Number 6, PCIE SLOT1 */
+	/* PCIe port, Lanes 6, PCI Device Number 6, PCIE SLOT1 x1 */
 	{
 		0, /* Descriptor flags */
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
@@ -68,7 +68,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
 
-	/* Initialize Port descriptor (PCIe port, Lanes ?, PCI Device Number 8, ...) */
+	/* PCIe port, Lanes 0:3, PCI Device Number 8, Bridge to FCH */
 	{
 		DESCRIPTOR_TERMINATE_LIST, /* Descriptor flags  !!!IMPORTANT!!! Terminate last element of array */
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),

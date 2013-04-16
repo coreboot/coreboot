@@ -33,7 +33,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 1.0 on  end # Internal Graphics P2P bridge 0x99XX
 				device pci 1.1 on  end # Internal Multimedia
 				device pci 2.0 on  end # PCIE SLOT0 x16
-				device pci 3.0 on  end # PCIE SLOT0 x16
+				device pci 3.0 off end
 				device pci 4.0 on  end # PCIE MINI0
 				device pci 5.0 on  end # PCIE MINI1
 				device pci 6.0 on  end # PCIE Slot1 x1

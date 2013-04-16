@@ -36,7 +36,8 @@ enum {
 enum {
 	WP_GPIO = 6,
 	RECMODE_GPIO = 0,
-	LID_GPIO = 5
+	LID_GPIO = 5,
+	POWER_GPIO = 3
 };
 
 static struct exynos5_gpio_part1 *gpio_pt1 =
@@ -72,9 +73,10 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	count++;
 
 	/* Power: virtual GPIO active low */
-	gpios->gpios[count].port = -1;
+	gpios->gpios[count].port = EXYNOS5_GPX1;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = 1;
+	gpios->gpios[count].value =
+		s5p_gpio_get_value(&gpio_pt2->x1, POWER_GPIO);
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;

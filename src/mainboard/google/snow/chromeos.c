@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <ec/google/chromeec/ec.h>
 #include <ec/google/chromeec/ec_commands.h>
@@ -27,19 +28,16 @@
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5-common/gpio.h>
 
-#define ACTIVE_LOW	0
-#define ACTIVE_HIGH	1
-#define WP_GPIO		6
-#define DEVMODE_GPIO	54
-#define RECMODE_GPIO	0
-#define FORCE_RECOVERY_MODE	0
-#define FORCE_DEVELOPER_MODE	0
-#define LID_OPEN	5
-#define POWER_BUTTON	3
+enum {
+	ACTIVE_LOW = 0,
+	ACTIVE_HIGH = 1
+};
 
-#include <boot/coreboot_tables.h>
-
-#define GPIO_COUNT	6
+enum {
+	WP_GPIO = 6,
+	RECMODE_GPIO = 0,
+	LID_GPIO = 5
+};
 
 static struct exynos5_gpio_part1 *gpio_pt1 =
 	(struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
@@ -48,62 +46,65 @@ static struct exynos5_gpio_part2 *gpio_pt2 =
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
-	gpios->size = sizeof(*gpios) + (GPIO_COUNT * sizeof(struct lb_gpio));
-	gpios->count = GPIO_COUNT;
+	int count = 0;
 
 	/* Write Protect: active low */
-	gpios->gpios[0].port = EXYNOS5_GPD1;
-	gpios->gpios[0].polarity = ACTIVE_LOW;
-	gpios->gpios[0].value = s5p_gpio_get_value(&gpio_pt1->d1, WP_GPIO);
-	strncpy((char *)gpios->gpios[0].name,"write protect",
-							GPIO_MAX_NAME_LENGTH);
+	gpios->gpios[count].port = EXYNOS5_GPD1;
+	gpios->gpios[count].polarity = ACTIVE_LOW;
+	gpios->gpios[count].value = s5p_gpio_get_value(&gpio_pt1->d1, WP_GPIO);
+	strncpy((char *)gpios->gpios[count].name, "write protect",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
 
 	/* Recovery: active low */
-	gpios->gpios[1].port = -1;
-	gpios->gpios[1].polarity = ACTIVE_HIGH;
-	gpios->gpios[1].value = get_recovery_mode_switch();
-	strncpy((char *)gpios->gpios[1].name,"recovery", GPIO_MAX_NAME_LENGTH);
+	gpios->gpios[count].port = -1;
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = get_recovery_mode_switch();
+	strncpy((char *)gpios->gpios[count].name, "recovery",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
 
 	/* Lid: active high */
-	gpios->gpios[2].port = EXYNOS5_GPX3;
-	gpios->gpios[2].polarity = ACTIVE_HIGH;
-	gpios->gpios[2].value = s5p_gpio_get_value(&gpio_pt2->x3, LID_OPEN);
-	strncpy((char *)gpios->gpios[2].name,"lid", GPIO_MAX_NAME_LENGTH);
+	gpios->gpios[count].port = EXYNOS5_GPX3;
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = s5p_gpio_get_value(&gpio_pt2->x3, LID_GPIO);
+	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
+	count++;
 
 	/* Power: virtual GPIO active low */
-	gpios->gpios[3].port = -1;
-	gpios->gpios[3].polarity = ACTIVE_LOW;
-	gpios->gpios[3].value = 1;
-	strncpy((char *)gpios->gpios[3].name,"power", GPIO_MAX_NAME_LENGTH);
+	gpios->gpios[count].port = -1;
+	gpios->gpios[count].polarity = ACTIVE_LOW;
+	gpios->gpios[count].value = 1;
+	strncpy((char *)gpios->gpios[count].name, "power",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
 
 	/* Developer: virtual GPIO active high */
-	gpios->gpios[4].port = -1;
-	gpios->gpios[4].polarity = ACTIVE_HIGH;
-	gpios->gpios[4].value = 0;
-	strncpy((char *)gpios->gpios[4].name,"developer",
-							GPIO_MAX_NAME_LENGTH);
+	gpios->gpios[count].port = -1;
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = get_developer_mode_switch();
+	strncpy((char *)gpios->gpios[count].name, "developer",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
 
 	/* Was VGA Option ROM loaded? */
-	gpios->gpios[5].port = -1; /* Indicate that this is a pseudo GPIO */
-	gpios->gpios[5].polarity = ACTIVE_HIGH;
-	gpios->gpios[5].value = 0;
-	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
+	gpios->gpios[count].port = -1; /* This is a pseudo GPIO */
+	gpios->gpios[count].polarity = ACTIVE_HIGH;
+	gpios->gpios[count].value = 0;
+	strncpy((char *)gpios->gpios[count].name, "oprom",
+		GPIO_MAX_NAME_LENGTH);
+	count++;
 
-	printk(BIOS_ERR, "Added %d GPIOS size %d\n", GPIO_COUNT, gpios->size);
+	gpios->size = sizeof(*gpios) + (count * sizeof(struct lb_gpio));
+	gpios->count = count;
+
+	printk(BIOS_ERR, "Added %d GPIOS size %d\n", count, gpios->size);
 
 }
 
 int get_developer_mode_switch(void)
 {
-	int dev_mode = 0;
-
-	printk(BIOS_DEBUG,"FORCING DEVELOPER MODE.\n");
-
-	dev_mode = 1;
-	printk(BIOS_DEBUG,"DEVELOPER MODE FROM GPIO %d: %x\n",DEVMODE_GPIO,
-								 dev_mode);
-
-	return dev_mode;
+	return 0;
 }
 
 int get_recovery_mode_switch(void)

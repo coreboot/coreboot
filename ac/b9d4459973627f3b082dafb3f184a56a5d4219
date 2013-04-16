@@ -1,0 +1,7 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: David Hendricks <dhendrix@chromium.org>
+Submitted-by: Gabe Black <gabeblack@chromium.org>
+Submitted-at: Tue, 16 Apr 2013 11:10:54 +0200
+Reviewed-on: http://review.coreboot.org/3095
+Project: coreboot
+Branch: refs/heads/master

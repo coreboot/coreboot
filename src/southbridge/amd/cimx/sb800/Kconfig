@@ -48,8 +48,11 @@ choice
 	prompt "SATA Mode"
 	default SB800_SATA_AHCI
 	help
-	  Select the mode in which SATA should be driven. NATIVE AHCI, or RAID.
-	  The default is AHCI.
+	  Select the mode in which the SATA controller should be driven: NATIVE, AHCI, or RAID.
+
+	  Note that most operating systems are going to set up the SATA controller to AHCI mode even when configured to NATIVE mode. So the only difference in user experience is going to be during the payload phase.
+
+	  The default mode is AHCI.
 
 config SB800_SATA_IDE
 	bool "NATIVE"

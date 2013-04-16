@@ -25,6 +25,8 @@
 
 #include <arch/cache.h>
 #include <arch/gpio.h>
+#include <arch/hlt.h>
+#include <cpu/samsung/exynos5-common/exynos5-common.h>
 #include <cpu/samsung/exynos5-common/i2c.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
@@ -46,9 +48,9 @@
 #define PMIC_BUS	0
 #define MMC0_GPIO_PIN	(58)
 
-#if 0
-static int board_wakeup_permitted(void)
+static int wakeup_permitted(void)
 {
+#if 0
 	const int gpio = GPIO_Y10;
 	int is_bad_wake;
 
@@ -56,8 +58,9 @@ static int board_wakeup_permitted(void)
 	is_bad_wake = ((gpio != -1) && gpio_get_value(gpio));
 
 	return !is_bad_wake;
-}
 #endif
+	return 1;
+}
 
 static int setup_pmic(void)
 {
@@ -145,53 +148,101 @@ static void chromeos_gpios(void)
 	s5p_gpio_set_pull(&gpio_pt2->x3, LID_OPEN, EXYNOS_GPIO_PULL_NONE);
 }
 
+/* Initialization steps */
+enum {
+	DO_WAKEUP	= 1 << 0,
+	DO_UART		= 1 << 1,
+	DO_CLOCKS	= 1 << 2,
+	DO_POWER	= 1 << 3,
+	DO_MEM_RESET    = 1 << 4,
+};
+
 void main(void)
 {
 	struct mem_timings *mem;
 	struct arm_clk_ratios *arm_ratios;
-	int ret;
+	int ret, actions;
 	void *entry;
+	uint32_t reset_status;
 
-	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
+	reset_status = power_read_reset_status();
+	switch (reset_status) {
+		case S5P_CHECK_SLEEP:
+			actions = DO_CLOCKS | DO_WAKEUP;
+			break;
 
-	/* Clock must be initialized before console_init, otherwise you may need
-	 * to re-initialize serial console drivers again. */
-	mem = get_mem_timings();
-	arm_ratios = get_arm_clk_ratios();
-	system_clock_init(mem, arm_ratios);
+		case S5P_CHECK_DIDLE:
+		case S5P_CHECK_LPA:
+			actions = DO_WAKEUP;
+			break;
 
-	console_init();
-
-	i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
-	if (power_init())
-		power_shutdown();
-	printk(BIOS_DEBUG, "%s: setting up pmic...\n", __func__);
-	if (setup_pmic())
-		power_shutdown();
-
-	if (!mem) {
-		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
-		while(1);
-	}
-	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: 0x%x\n",
-		mem->mem_manuf,
-		mem->mem_type,
-		mem->mpll_mdiv,
-		mem->frequency_mhz);
-
-	ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE);
-	if (ret) {
-		printk(BIOS_ERR, "Memory controller init failed, err: %x\n",
-		ret);
-		while(1);
+		default:
+			/* Normal boot (not wake from sleep). */
+			actions = DO_UART | DO_CLOCKS | DO_POWER | DO_MEM_RESET;
+			break;
 	}
 
+	if (actions & DO_CLOCKS) {
+		/* Clock must be initialized before console_init, otherwise you
+		 * may need to re-initialize serial console drivers again. */
+		mem = get_mem_timings();
+		arm_ratios = get_arm_clk_ratios();
+		system_clock_init(mem, arm_ratios);
+	}
+
+	if (actions & DO_UART) {
+		console_init();
+	}
+
+	printk(BIOS_INFO, "%s: Booting from %s mode.\n", __func__,
+	       reset_status == S5P_CHECK_SLEEP ? "sleep" :
+	       reset_status == S5P_CHECK_DIDLE ? "D-idle" :
+	       reset_status == S5P_CHECK_LPA ? "LPA" :
+	       "normal");
+
+	if (actions & DO_POWER) {
+		if (power_init())
+			power_shutdown();
+		/* Initialize I2C to program PMIC. */
+		i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
+		printk(BIOS_DEBUG, "%s: setting up pmic...\n", __func__);
+		if (setup_pmic())
+			power_shutdown();
+	}
+
+	if (actions & DO_CLOCKS) {
+		if (!mem) {
+			printk(BIOS_CRIT,
+			       "%s: Unable to auto-detect memory timings\n",
+			       __func__);
+			hlt();
+		}
+		printk(BIOS_SPEW, "mem: %#x type: %#x, div: %#x, mhz: %#x\n",
+		       mem->mem_manuf, mem->mem_type, mem->mpll_mdiv,
+		       mem->frequency_mhz);
+		ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE,
+					 actions & DO_MEM_RESET);
+		if (ret) {
+			printk(BIOS_CRIT,
+			       "%s: Memory controller init failed, err: %#x\n",
+			       __func__, ret);
+			hlt();
+		}
+	}
+
+	if (actions & DO_WAKEUP) {
+		printk(BIOS_SPEW, "%s: Try to wake up.\n", __func__);
+		if (!wakeup_permitted())
+			power_reset();
+		power_exit_wakeup();
+	}
+
+	/* Initialize peripherals. */
 	initialize_s5p_mshc();
-
 	chromeos_gpios();
-
 	graphics();
 
+	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
 

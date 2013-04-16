@@ -73,6 +73,7 @@ enum {
 	DO_UART		= 1 << 1,
 	DO_CLOCKS	= 1 << 2,
 	DO_POWER	= 1 << 3,
+	DO_MEM_RESET    = 1 << 4,
 };
 
 int lowlevel_init_subsystems(void)

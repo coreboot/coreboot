@@ -128,7 +128,8 @@ static void chromeos_gpios(void)
 	enum {
 		WP_GPIO = 6,
 		RECMODE_GPIO = 0,
-		LID_GPIO = 5
+		LID_GPIO = 5,
+		POWER_GPIO = 3
 	};
 
 	gpio_pt1 = (struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
@@ -142,6 +143,9 @@ static void chromeos_gpios(void)
 
 	s5p_gpio_direction_input(&gpio_pt2->x3, LID_GPIO);
 	s5p_gpio_set_pull(&gpio_pt2->x3, LID_GPIO, EXYNOS_GPIO_PULL_NONE);
+
+	s5p_gpio_direction_input(&gpio_pt2->x1, POWER_GPIO);
+	s5p_gpio_set_pull(&gpio_pt2->x1, POWER_GPIO, EXYNOS_GPIO_PULL_NONE);
 }
 
 void main(void)

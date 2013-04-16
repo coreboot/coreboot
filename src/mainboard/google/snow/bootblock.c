@@ -23,16 +23,28 @@
 #include <uart.h>
 #include <time.h>
 #include <console/console.h>
+#include <cpu/samsung/exynos5-common/exynos5-common.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
+#include <cpu/samsung/exynos5250/power.h>
+#include "mainboard.h"
 
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
+	int reset_status;
+
 	/* kick off the microsecond timer. We want to do this as early
 	 * as we can.
 	 */
 	timer_start();
+
+	reset_status = power_read_reset_status();
+	if (reset_status == S5P_CHECK_DIDLE ||
+	    reset_status == S5P_CHECK_LPA) {
+		if (wakeup_permitted())
+			power_exit_wakeup();
+	}
 
 	exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
 #if CONFIG_EARLY_CONSOLE

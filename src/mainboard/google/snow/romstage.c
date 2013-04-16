@@ -25,6 +25,8 @@
 
 #include <arch/cache.h>
 #include <arch/gpio.h>
+#include <arch/hlt.h>
+#include <cpu/samsung/exynos5-common/exynos5-common.h>
 #include <cpu/samsung/exynos5-common/i2c.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
@@ -45,19 +47,6 @@
 
 #define PMIC_BUS	0
 #define MMC0_GPIO_PIN	(58)
-
-#if 0
-static int board_wakeup_permitted(void)
-{
-	const int gpio = GPIO_Y10;
-	int is_bad_wake;
-
-	/* We're a bad wakeup if the gpio was defined and was high */
-	is_bad_wake = ((gpio != -1) && gpio_get_value(gpio));
-
-	return !is_bad_wake;
-}
-#endif
 
 static int setup_pmic(void)
 {
@@ -100,7 +89,22 @@ static int setup_pmic(void)
 	return error;
 }
 
-static void initialize_s5p_mshc(void)
+static int setup_memory(struct mem_timings *mem, int reset)
+{
+	int ret;
+	printk(BIOS_SPEW, "mem: %#x type: %#x, div: %#x, mhz: %#x\n",
+	       mem->mem_manuf, mem->mem_type, mem->mpll_mdiv,
+	       mem->frequency_mhz);
+	ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE, reset);
+	if (ret) {
+		printk(BIOS_CRIT,
+		       "%s: Memory controller init failed, err: %#x\n",
+		       __func__, ret);
+	}
+	return ret;
+}
+
+static void setup_mmc(void)
 {
 	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
 	if (clock_set_mshci(PERIPH_ID_SDMMC0))
@@ -117,12 +121,12 @@ static void initialize_s5p_mshc(void)
 	exynos_pinmux_config(PERIPH_ID_SDMMC2, 0);
 }
 
-static void graphics(void)
+static void setup_graphics(void)
 {
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 }
 
-static void chromeos_gpios(void)
+static void setup_chromeos_gpios(void)
 {
 	struct exynos5_gpio_part1 *gpio_pt1;
 	struct exynos5_gpio_part2 *gpio_pt2;
@@ -154,49 +158,50 @@ void main(void)
 {
 	struct mem_timings *mem;
 	struct arm_clk_ratios *arm_ratios;
-	int ret;
+	int is_resume = 0;
 	void *entry;
+	uint32_t reset_status;
 
-	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
+	reset_status = power_read_reset_status();
+	/* S5P_CHECK_DIDLE / S5P_CHECK_LPA are already handled in bootblock. */
+	if (reset_status == S5P_CHECK_SLEEP)
+		is_resume = 1;
 
-	/* Clock must be initialized before console_init, otherwise you may need
-	 * to re-initialize serial console drivers again. */
+	/* Clock must be initialized before console_init, otherwise you
+	 * may need to re-initialize serial console drivers again. */
 	mem = get_mem_timings();
+	if (!mem)
+		die("Unable to auto-detect memory timings");
 	arm_ratios = get_arm_clk_ratios();
 	system_clock_init(mem, arm_ratios);
-
 	console_init();
 
-	i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
-	if (power_init())
-		power_shutdown();
-	printk(BIOS_DEBUG, "%s: setting up pmic...\n", __func__);
-	if (setup_pmic())
-		power_shutdown();
-
-	if (!mem) {
-		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
-		while(1);
-	}
-	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: 0x%x\n",
-		mem->mem_manuf,
-		mem->mem_type,
-		mem->mpll_mdiv,
-		mem->frequency_mhz);
-
-	ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE);
-	if (ret) {
-		printk(BIOS_ERR, "Memory controller init failed, err: %x\n",
-		ret);
-		while(1);
+	power_init();
+	if (!is_resume) {
+		/* Initialize I2C to program PMIC. */
+		i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
+		printk(BIOS_SPEW, "%s: Set up PMIC.\n", __func__);
+		if (setup_pmic())
+			power_shutdown();
 	}
 
-	initialize_s5p_mshc();
+	if (setup_memory(mem, !is_resume))
+		power_shutdown();
 
-	chromeos_gpios();
+	if (is_resume) {
+		printk(BIOS_SPEW, "%s: Trying to wake up.\n", __func__);
+		if (!wakeup_permitted())
+			power_reset();
+		power_exit_wakeup();
+		/* Never returns. */
+	}
 
-	graphics();
+	/* Initialize peripherals. */
+	setup_mmc();
+	setup_chromeos_gpios();
+	setup_graphics();
 
+	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
 

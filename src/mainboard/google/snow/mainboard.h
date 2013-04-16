@@ -34,5 +34,6 @@ enum snow_board_config {
 };
 
 int board_get_config(void);
+void wakeup_system(void);
 
 #endif	/* MAINBOARD_H */

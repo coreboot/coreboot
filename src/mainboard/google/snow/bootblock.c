@@ -23,21 +23,43 @@
 #include <uart.h>
 #include <time.h>
 #include <console/console.h>
+#include <cpu/samsung/exynos5-common/exynos5-common.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
+#include <cpu/samsung/exynos5250/power.h>
+#include "mainboard.h"
 
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
-	/* kick off the microsecond timer. We want to do this as early
-	 * as we can.
-	 */
-	timer_start();
+	int reset_status, is_resume = 0;
 
-	exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
+	reset_status = power_read_reset_status();
+	switch (reset_status) {
+		case S5P_CHECK_DIDLE:
+		case S5P_CHECK_LPA:
+			wakeup_system();
+			/* Never returns. */
+			break;
+
+		case S5P_CHECK_SLEEP:
+			is_resume = 1;
+			break;
+
+		default:
+			/* Kick off the microsecond timer on normal boot.
+			 * We want to do this as early as we can.
+			 */
+			timer_start();
+			break;
+	}
+
 #if CONFIG_EARLY_CONSOLE
-	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
-	console_init();
-	printk(BIOS_INFO, "\n\n\n%s: UART initialized\n", __func__);
+	if (!is_resume) {
+		exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
+		console_init();
+		printk(BIOS_INFO, "\n\n\n%s: UART initialized\n", __func__);
+	}
 #endif
+	exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
 }

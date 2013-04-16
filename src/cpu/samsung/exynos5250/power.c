@@ -25,7 +25,6 @@
 #include <common.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
-#include <arch/hlt.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5-common/power.h>
 #include <cpu/samsung/exynos5250/cpu.h>
@@ -124,6 +123,7 @@ void power_exit_wakeup(void)
 		samsung_get_base_power();
 	typedef void (*resume_func)(void);
 
+	ps_hold_setup();
 	((resume_func)power->inform0)();
 }
 

@@ -116,5 +116,5 @@ int get_recovery_mode_switch(void)
 
 int get_recovery_mode_from_vbnv(void)
 {
-	return 1;
+	return 0;
 }

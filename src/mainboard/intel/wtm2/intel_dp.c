@@ -47,9 +47,8 @@ pack_aux(u32 *src32, int src_bytes)
 }
 
 void
-unpack_aux(u32 src, u32 *dst32, int dst_bytes)
+unpack_aux(u32 src, u8 *dst, int dst_bytes)
 {
-	u8 *dst = (u8 *)dst32;
 
 	int i;
 	if (dst_bytes > 4)
@@ -60,7 +59,7 @@ unpack_aux(u32 src, u32 *dst32, int dst_bytes)
 
 int
 intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
-		u32 *recv, int recv_size)
+		u8 *recv, int recv_size)
 {
 	int i;
 	int recv_bytes;

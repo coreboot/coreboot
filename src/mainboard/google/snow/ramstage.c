@@ -198,6 +198,16 @@ static struct video_info snow_dp_video_info = {
 #define EXYNOS5250_DP1_BASE	0x145b0000
 #define SNOW_MAX_DP_TRIES	5
 
+/*
+ * This function disables the USB3.0 PLL to save power
+ */
+static void disable_usb30_pll(void)
+{
+	enum exynos5_gpio_pin usb3_pll_l = GPIO_Y11;
+
+	gpio_direction_output(usb3_pll_l, 0);
+}
+
 /* this happens after cpu_init where exynos resources are set */
 static void mainboard_init(device_t dev)
 {
@@ -214,6 +224,9 @@ static void mainboard_init(device_t dev)
 
 	/* Clock Gating all the unused IP's to save power */
 	clock_gate();
+
+	/* Disable USB3.0 PLL to save 250mW of power */
+	disable_usb30_pll();
 
 	snow_lcd_vdd();
 	do {

@@ -28,6 +28,7 @@ ramstage-y += power.c
 ramstage-y += soc.c
 ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
 ramstage-y += cpu.c
+ramstage-y += exynos5250-tmu.c
 ramstage-y += mct.c
 
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c

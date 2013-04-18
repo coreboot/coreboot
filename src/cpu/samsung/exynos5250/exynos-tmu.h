@@ -75,8 +75,7 @@ enum tmu_status_t tmu_monitor(int *temp);
 /*
  * Initialize TMU device
  *
- * @param blob  FDT blob
  * @return	int value, 0 for success
  */
-int tmu_init(const void *blob);
+int tmu_init(void);
 #endif

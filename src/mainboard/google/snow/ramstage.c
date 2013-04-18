@@ -26,6 +26,7 @@
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <arch/gpio.h>
+#include <cpu/samsung/exynos5-common/exynos-tmu.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/gpio.h>
@@ -216,6 +217,8 @@ static void mainboard_init(device_t dev)
 
 	i2c_init(TPS69050_BUS, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 	i2c_init(7, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+
+	tmu_init(&exynos5250_tmu_info);
 
 	snow_lcd_vdd();
 	do {

@@ -51,6 +51,8 @@ static void exynos_displayport_init(device_t dev)
 	panel.left_margin = conf->left_margin;
 	panel.right_margin = conf->right_margin;
 	panel.hsync = conf->hsync;
+	panel.xres = conf->xres;
+	panel.yres = conf->yres;
 
 	vi.vl_col = conf->xres;
 	vi.vl_row = conf->yres;

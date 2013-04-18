@@ -99,8 +99,6 @@ static void exynos_dp_bridge_setup(void)
 	gpio_set_pull(dp_rst_l, EXYNOS_GPIO_PULL_NONE);
 	udelay(10);
 	gpio_set_value(dp_rst_l, 1);
-
-	udelay(90000);	/* FIXME: this might be unnecessary */
 }
 
 static void exynos_dp_bridge_init(void)
@@ -117,19 +115,13 @@ static void exynos_dp_bridge_init(void)
 	 * roughly 50ms after PD is de-asserted. The phantom high
 	 * makes it hard for us to know when the NXP chip is up.
 	 */
-	udelay(90000);	/* FIXME: this might be unnecessary */
+	udelay(90000);
 }
 
 static int exynos_dp_hotplug(void)
 {
-	int x = gpio_get_value(dp_hpd);
 	/* Check HPD.  If it's high, we're all good. */
-//	if (gpio_get_value(dp_hpd))
-//		return 0;
-	printk(BIOS_DEBUG, "%s: dp_hpd: 0x%02x\n", __func__, x);
-	if (x)
-		return 0;
-	return -1;
+	return gpio_get_value(dp_hpd) ? 0 : 1;
 }
 
 static void exynos_dp_reset(void)

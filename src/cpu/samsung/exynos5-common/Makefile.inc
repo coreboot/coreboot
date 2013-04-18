@@ -21,3 +21,4 @@ ramstage-y += gpio.c
 ramstage-y += i2c.c
 ramstage-y += s5p-dp-reg.c
 ramstage-y += exynos-fb.c
+ramstage-y += exynos-tmu.c

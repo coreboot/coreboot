@@ -120,4 +120,6 @@ enum periph_id exynos5_get_periph_id(unsigned base_addr);
 
 void exynos5250_config_l2_cache(void);
 
+extern struct tmu_info exynos5250_tmu_info;
+
 #endif	/* _EXYNOS5250_CPU_H */

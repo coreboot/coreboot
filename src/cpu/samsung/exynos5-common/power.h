@@ -39,4 +39,7 @@
 #define S5PC110_USB_PHY_CON		0xE010E80C
 #define S5PC110_INFORM0			0xE010F000
 
+/* Enable HW thermal trip with PS_HOLD_CONTROL register ENABLE_HW_TRIP bit */
+void power_enable_hw_thermal_trip(void);
+
 #endif

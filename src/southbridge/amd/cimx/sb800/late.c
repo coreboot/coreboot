@@ -368,13 +368,13 @@ static void sb800_enable(device_t dev)
 		/* the first sb800 device */
 		switch (GPP_CFGMODE) { /* config the GPP PCIe ports */
 		case GPP_CFGMODE_X2200:
-			abcfg_reg(0xc0, 0x01FF, 0x030); /* x2 Port_0, x2 Port_1 */
+			abcfg_reg(0xc0, 0x01FF, 0x032); /* x2 Port_0, x2 Port_1 */
 			break;
 		case GPP_CFGMODE_X2110:
-			abcfg_reg(0xc0, 0x01FF, 0x070); /* x2 Port_0, x1 Port_1&2 */
+			abcfg_reg(0xc0, 0x01FF, 0x073); /* x2 Port_0, x1 Port_1&2 */
 			break;
 		case GPP_CFGMODE_X1111:
-			abcfg_reg(0xc0, 0x01FF, 0x0F0); /* x1 Port_0&1&2&3 */
+			abcfg_reg(0xc0, 0x01FF, 0x0F4); /* x1 Port_0&1&2&3 */
 			break;
 		case GPP_CFGMODE_X4000:
 		default:

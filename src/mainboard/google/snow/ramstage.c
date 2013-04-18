@@ -227,6 +227,9 @@ static void mainboard_init(device_t dev)
 	i2c_init(TPS69050_BUS, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 	i2c_init(7, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
+	/* Clock Gating all the unused IP's to save power */
+	clock_gate();
+
 	/* Disable USB3.0 PLL to save 250mW of power */
 	disable_usb30_pll();
 

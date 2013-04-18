@@ -220,6 +220,9 @@ static void mainboard_init(device_t dev)
 
 	tmu_init(&exynos5250_tmu_info);
 
+	/* Clock Gating all the unused IP's to save power */
+	clock_gate();
+
 	snow_lcd_vdd();
 	do {
 		udelay(50);

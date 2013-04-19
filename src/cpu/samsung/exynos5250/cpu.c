@@ -5,6 +5,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <cbmem.h>
+#include <arch/cache.h>
 #include <cpu/samsung/exynos5250/fimd.h>
 #include <cpu/samsung/exynos5-common/s5p-dp-core.h>
 #include "chip.h"
@@ -32,7 +33,6 @@ static void exynos_displayport_init(device_t dev)
 	unsigned long int fb_size;
 	u32 lcdbase;
 
-	printk(BIOS_SPEW, "%s: dev 0x%p, conf 0x%p\n", __func__, dev, conf);
 	memset(&vi, 0, sizeof(vi));
 	memset(&panel, 0, sizeof(panel));
 
@@ -61,16 +61,35 @@ static void exynos_displayport_init(device_t dev)
 	 * The size is a magic number from hardware. Allocate enough for the
 	 * frame buffer and color map.
 	 */
-	fb_size = conf->xres * conf->yres * sizeof(unsigned long);
+	fb_size = conf->xres * conf->yres * (conf->bpp / 8);
 	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, fb_size + 64*KiB);
 	printk(BIOS_SPEW, "lcd colormap base is %p\n", (void *)(lcdbase));
 	mmio_resource(dev, 0, lcdbase/KiB, 64);
 	vi.cmap = (void *)lcdbase;
 
+	/*
+	 * We need to clean and invalidate the framebuffer region and disable
+	 * caching as well. We assume that our dcache <--> memory address
+	 * space is identity-mapped in 1MB chunks, so align accordingly.
+	 *
+	 * Note: We may want to do something clever to ensure the framebuffer
+	 * region is aligned such that we don't change dcache policy for other
+	 * stuff inadvertantly.
+	 *
+	 * FIXME: Is disabling/re-enabling the MMU entirely necessary?
+	 */
+	uint32_t lower = ALIGN_DOWN(lcdbase, MiB);
+	uint32_t upper = ALIGN_UP(lcdbase + fb_size + 64*KiB, MiB);
+	dcache_clean_invalidate_by_mva(lower, upper - lower);
+	dcache_mmu_disable();
+	mmu_config_range(lower/MiB, (upper - lower)/MiB, DCACHE_OFF);
+	dcache_mmu_enable();
+
 	lcdbase += 64*KiB;
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 	printk(BIOS_DEBUG,
-	       "Initializing exynos VGA, base %p\n",(void *)lcdbase);
+	       "Initializing exynos VGA, base %p\n", (void *)lcdbase);
+	memset((void *)lcdbase, 0, fb_size);	/* clear the framebuffer */
 	ret = lcd_ctrl_init(&vi, &panel, (void *)lcdbase);
 }
 

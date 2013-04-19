@@ -218,7 +218,7 @@ struct lb_vdat {
 	uint32_t tag;
 	uint32_t size;
 
-	void	*vdat_addr;
+	uint64_t vdat_addr;
 	uint32_t vdat_size;
 };
 
@@ -246,7 +246,7 @@ struct lb_vboot_handoff {
 	uint32_t tag;
 	uint32_t size;
 
-	void *vboot_handoff_addr;
+	uint64_t vboot_handoff_addr;
 	uint32_t vboot_handoff_size;
 };
 

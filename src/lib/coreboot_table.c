@@ -232,7 +232,7 @@ static void lb_vboot_handoff(struct lb_header *header)
 	vbho = (struct lb_vboot_handoff *)lb_new_record(header);
 	vbho->tag = LB_TAB_VBOOT_HANDOFF;
 	vbho->size = sizeof(*vbho);
-	vbho->vboot_handoff_addr = addr;
+	vbho->vboot_handoff_addr = (intptr_t)addr;
 	vbho->vboot_handoff_size = size;
 }
 #else

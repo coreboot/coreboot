@@ -64,6 +64,6 @@ typedef struct {
 extern chromeos_acpi_t *vboot_data;
 void chromeos_init_vboot(chromeos_acpi_t *chromeos);
 void chromeos_set_me_hash(u32*, int);
-void acpi_get_vdat_info(void **vdat_addr, uint32_t *vdat_size);
+void acpi_get_vdat_info(uint64_t *vdat_addr, uint32_t *vdat_size);
 
 #endif

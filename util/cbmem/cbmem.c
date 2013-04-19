@@ -127,6 +127,25 @@ static struct lb_cbmem_ref timestamps;
 static struct lb_cbmem_ref console;
 static struct lb_memory_range cbmem;
 
+/* This is a work-around for a nasty problem introduced by initially having
+ * pointer sized entries in the lb_cbmem_ref structures. This caused problems
+ * on 64bit x86 systems because coreboot is 32bit on those systems.
+ * When the problem was found, it was corrected, but there are a lot of systems
+ * out there with a firmware that does not produce the right lb_cbmem_ref structure.
+ * Hence we try to autocorrect this issue here.
+ */
+static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
+{
+	static struct lb_cbmem_ref ret;
+
+	ret = *cbmem_ref;
+
+	if (cbmem_ref->size < sizeof(*cbmem_ref))
+		ret->addr &= 0xffffffff;
+
+	return ret;
+}
+
 static int parse_cbtable(u64 address)
 {
 	int i, found = 0;
@@ -183,12 +202,12 @@ static int parse_cbtable(u64 address)
 			}
 			case LB_TAG_TIMESTAMPS: {
 				debug("    Found timestamp table.\n");
-				timestamps = *(struct lb_cbmem_ref *) lbr_p;
+				timestamps = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
 				continue;
 			}
 			case LB_TAG_CBMEM_CONSOLE: {
 				debug("    Found cbmem console.\n");
-				console = *(struct lb_cbmem_ref *) lbr_p;
+				console = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
 				continue;
 			}
 			case LB_TAG_FORWARD: {

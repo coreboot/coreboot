@@ -79,8 +79,8 @@ void chromeos_set_me_hash(u32 *hash, int len)
 		memcpy(me_hash_saved, hash, len*sizeof(u32));
 }
 
-void acpi_get_vdat_info(void **vdat_addr, uint32_t *vdat_size)
+void acpi_get_vdat_info(uint64_t *vdat_addr, uint32_t *vdat_size)
 {
-	*vdat_addr = vboot_data;
+	*vdat_addr = (intptr_t)vboot_data;
 	*vdat_size = sizeof(*vboot_data);
 }

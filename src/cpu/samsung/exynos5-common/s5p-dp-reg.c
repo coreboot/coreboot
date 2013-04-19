@@ -102,6 +102,7 @@ unsigned int s5p_dp_get_pll_lock_status(struct s5p_dp_device *dp)
 	u32 reg;
 
 	reg = readl(&dp->base->dp_debug_ctl);
+	printk(BIOS_SPEW, "%s: reg is 0x%x, PLL_LOCK is 0x%x\n", __func__, reg, PLL_LOCK);
 	if (reg & PLL_LOCK)
 		return PLL_LOCKED;
 	else
@@ -351,11 +352,13 @@ int s5p_dp_is_slave_video_stream_clock_on(struct s5p_dp_device *dp)
 	u32 reg;
 	struct exynos5_dp *base = dp->base;
 
+	printk(BIOS_SPEW, "%s: sys_ctl_1 is %p\n", __func__, &base->sys_ctl_1);
 	reg = readl(&base->sys_ctl_1);
 	writel(reg, &base->sys_ctl_1);
 
 	reg = readl(&base->sys_ctl_1);
 
+	printk(BIOS_SPEW, "%s: sys_ctl_1 is %08x, DET_STA is 0x%x\n", __func__, reg, DET_STA);
 	if (!(reg & DET_STA))
 		return -1;
 
@@ -364,6 +367,7 @@ int s5p_dp_is_slave_video_stream_clock_on(struct s5p_dp_device *dp)
 
 	reg = readl(&base->sys_ctl_2);
 
+	printk(BIOS_SPEW, "%s: sys_ctl_2 is %08x, CHA_STA is 0x%x\n", __func__, reg, CHA_STA);
 	if (reg & CHA_STA) {
 		printk(BIOS_DEBUG, "Input stream clk is changing\n");
 		return -1;
@@ -452,6 +456,7 @@ void s5p_dp_config_video_slave_mode(struct s5p_dp_device *dp,
 	u32 reg;
 	struct exynos5_dp *base = dp->base;
 
+	printk(BIOS_SPEW, "%s: Start\n", __func__);
 	reg = readl(&base->func_en_1);
 	reg &= ~(MASTER_VID_FUNC_EN_N|SLAVE_VID_FUNC_EN_N);
 	reg |= MASTER_VID_FUNC_EN_N;
@@ -474,6 +479,7 @@ void s5p_dp_config_video_slave_mode(struct s5p_dp_device *dp,
 
 	reg = AUDIO_MODE_SPDIF_MODE | VIDEO_MODE_SLAVE_MODE;
 	writel(reg, &base->soc_general_ctl);
+	printk(BIOS_SPEW, "%s: Done\n", __func__);
 }
 
 void s5p_dp_wait_hw_link_training_done(struct s5p_dp_device *dp)

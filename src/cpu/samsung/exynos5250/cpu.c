@@ -71,6 +71,7 @@ static void exynos_displayport_init(device_t dev)
 	mmio_resource(dev, 1, lcdbase/KiB, fb_size + (KiB-1)/KiB);
 	printk(BIOS_DEBUG,
 	       "Initializing exynos VGA, base %p\n",(void *)lcdbase);
+	memset((void *)lcdbase, 0x55, 0x100000);
 	ret = lcd_ctrl_init(&vi, &panel, (void *)lcdbase);
 }
 

@@ -26,7 +26,7 @@
 #include <cpu/amd/amdfam14.h>
 #include "agesawrapper.h"
 #if CONFIG_AMD_SB_CIMX
-#include "sb_cimx.h"
+#include <sb_cimx.h>
 #endif
 
 

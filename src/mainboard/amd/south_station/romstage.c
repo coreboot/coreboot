@@ -33,7 +33,7 @@
 #include "cpu/x86/bist.h"
 #include "superio/fintek/f81865f/f81865f_early_serial.c"
 #include "cpu/x86/lapic/boot_cpu.c"
-#include "sb_cimx.h"
+#include <sb_cimx.h>
 #include "SBPLATFORM.h"
 
 #define SERIAL_DEV PNP_DEV(0x4e, F81865F_SP1)

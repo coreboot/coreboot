@@ -35,7 +35,7 @@
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
 #include <cpu/x86/cache.h>
-#include "sb_cimx.h"
+#include <sb_cimx.h>
 #include "SBPLATFORM.h"
 #include "cbmem.h"
 #include "cpu/amd/mtrr.h"

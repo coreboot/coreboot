@@ -23,6 +23,7 @@
 #include <drivers/ti/tps65090/tps65090.h>
 #include <cbmem.h>
 #include <delay.h>
+#include <boot/coreboot_tables.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <arch/gpio.h>
@@ -40,6 +41,46 @@
 #define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
 #define DRAM_END	(DRAM_START + DRAM_SIZE)	/* plus one... */
+
+int vbe_mode_info_valid(void);
+int vbe_mode_info_valid(void)
+{
+	return 1;
+}
+
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+{
+	extern void *graphics;
+	printk(BIOS_SPEW, "fill_lb_framebuffer: graphics is %p\n", (void *)graphics);
+	framebuffer->physical_address = (u32) graphics;
+/*
+        register "xres" = "1366"
+	register "yres" = "768"
+	register "bpp" = "16"
+	# complex magic timing!
+	register "clkval_f" = "2"
+	register "upper_margin" = "14"
+	register "lower_margin" = "3"
+        register "vsync" = "5"
+        register "left_margin" = "80"
+        register "right_margin" = "48"
+        register "hsync" = "32"
+*/
+	framebuffer->x_resolution = 1366;
+	framebuffer->y_resolution = 768;
+	framebuffer->bytes_per_line = 1366*2;
+	framebuffer->bits_per_pixel = 16;
+	framebuffer->red_mask_pos = 11;
+	framebuffer->red_mask_size = 5;
+	framebuffer->green_mask_pos = 6;
+	framebuffer->green_mask_size = 5;
+	framebuffer->blue_mask_pos = 0;
+	framebuffer->blue_mask_size = 5;
+	framebuffer->reserved_mask_pos = 0;
+	framebuffer->reserved_mask_size = 0;
+}
+
 
 void hardwaremain(int boot_complete);
 void main(void)
@@ -221,6 +262,9 @@ static void mainboard_init(device_t dev)
 	} while (!exynos_dp_hotplug());
 
 	exynos_dp_bridge_setup();
+		snow_backlight_vdd();
+		snow_backlight_pwm();
+		snow_backlight_en();
 	for (dp_tries = 1; dp_tries <= SNOW_MAX_DP_TRIES; dp_tries++) {
 		exynos_dp_bridge_init();
 		if (exynos_dp_hotplug()) {
@@ -229,7 +273,7 @@ static void mainboard_init(device_t dev)
 		}
 
 		if (dp_controller_init(&dp_device))
-			continue;
+			break; // continue;
 
 		udelay(LCD_T3_DELAY_MS * 1000);
 

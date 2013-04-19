@@ -83,7 +83,6 @@ int lcd_line_length;
 int lcd_color_fg;
 int lcd_color_bg;
 
-void *lcd_base;		/* Start of framebuffer memory */
 void *lcd_console_address;	/* Start of console buffer */
 
 short console_col;
@@ -150,10 +149,10 @@ void fb_init(vidinfo_t *panel_info, void *lcdbase,
 		((pd->yres - 1) << LINEVAL_OFFSET);
 	writel(val, &disp_ctrl->vidtcon2);
 
-	writel((unsigned int)lcd_base, &fimd->vidw00add0b0);
+	writel((unsigned int)lcdbase, &fimd->vidw00add0b0);
 
 	fbsize = calc_fbsize(panel_info);
-	writel((unsigned int)lcd_base + fbsize, &fimd->vidw00add1b0);
+	writel((unsigned int)lcdbase + fbsize, &fimd->vidw00add1b0);
 
 	writel(pd->xres * 2, &fimd->vidw00add2);
 

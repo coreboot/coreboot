@@ -254,7 +254,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	len += acpigen_write_PPC_NVS();
 
 	/* Write PSD indicating configured coordination type */
-	len += acpigen_write_PSD_package(core, cores_per_package, coord_type);
+	len += acpigen_write_PSD_package(core, 1, coord_type);
 
 	/* Add P-state entries in _PSS table */
 	len += acpigen_write_name("_PSS");
@@ -346,7 +346,7 @@ void generate_cpu_entries(void)
 
 			/* Generate P-state tables */
 			len_pr += generate_P_state_entries(
-				cpuID-1, cores_per_package);
+				coreID-1, cores_per_package);
 
 			/* Generate C-state tables */
 			len_pr += generate_C_state_entries();

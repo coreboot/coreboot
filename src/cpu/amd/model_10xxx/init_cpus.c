@@ -905,16 +905,6 @@ static void finalize_node_setup(struct sys_info *sysinfo)
 	u8 i;
 	u8 nodes = get_nodes();
 
-#if CONFIG_RAMINIT_SYSINFO
-	u32 reg;
-	/* read Node0 F0_0x64 bit [8:10] to find out SbLink # */
-	reg = pci_read_config32(NODE_HT(0), 0x64);
-	sysinfo->sblk = (reg >> 8) & 7;
-	sysinfo->sbbusn = 0;
-	sysinfo->nodes = nodes;
-	sysinfo->sbdn = get_sbdn(sysinfo->sbbusn);
-#endif
-
 	for (i = 0; i < nodes; i++) {
 		cpuSetAMDPCI(i);
 	}

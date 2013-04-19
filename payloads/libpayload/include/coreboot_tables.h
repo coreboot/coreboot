@@ -188,7 +188,7 @@ struct cb_gpios {
 struct cb_vdat {
 	uint32_t tag;
 	uint32_t size;	/* size of the entire entry */
-	void	 *vdat_addr;
+	uint64_t vdat_addr;
 	uint32_t vdat_size;
 };
 
@@ -198,7 +198,7 @@ struct cb_vdat {
 struct cb_cbmem_tab {
 	uint32_t tag;
 	uint32_t size;
-	void   *cbmem_tab;
+	uint64_t cbmem_tab;
 };
 
 #define CB_TAG_VBNV		0x0019
@@ -213,7 +213,7 @@ struct cb_vbnv {
 struct cb_vboot_handoff {
 	uint32_t tag;
 	uint32_t size;
-	void *vboot_handoff_addr;
+	uint64_t vboot_handoff_addr;
 	uint32_t vboot_handoff_size;
 };
 

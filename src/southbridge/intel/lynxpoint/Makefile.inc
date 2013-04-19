@@ -20,8 +20,7 @@
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware
 # image outside of CBFS
-# FIXME, uncomment as soon as we have ME firmware in the blobs repo
-# INTERMEDIATE:=lynxpoint_add_me
+INTERMEDIATE:=lynxpoint_add_me
 
 ramstage-y += pch.c
 ramstage-y += azalia.c

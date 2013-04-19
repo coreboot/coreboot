@@ -217,12 +217,17 @@ static void mainboard_init(device_t dev)
 	i2c_init(TPS69050_BUS, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 	i2c_init(7, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
 
+	clock_gate();
+
 	snow_lcd_vdd();
 	do {
 		udelay(50);
 	} while (!exynos_dp_hotplug());
 
 	exynos_dp_bridge_setup();
+		snow_backlight_vdd();
+		snow_backlight_pwm();
+		snow_backlight_en();
 	for (dp_tries = 1; dp_tries <= SNOW_MAX_DP_TRIES; dp_tries++) {
 		exynos_dp_bridge_init();
 		if (exynos_dp_hotplug()) {
@@ -231,7 +236,7 @@ static void mainboard_init(device_t dev)
 		}
 
 		if (dp_controller_init(&dp_device))
-			continue;
+			break; // continue;
 
 		udelay(LCD_T3_DELAY_MS * 1000);
 

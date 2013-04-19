@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <inttypes.h>
 #include <getopt.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -127,12 +128,31 @@ static struct lb_cbmem_ref timestamps;
 static struct lb_cbmem_ref console;
 static struct lb_memory_range cbmem;
 
+/* This is a work-around for a nasty problem introduced by initially having
+ * pointer sized entries in the lb_cbmem_ref structures. This caused problems
+ * on 64bit x86 systems because coreboot is 32bit on those systems.
+ * When the problem was found, it was corrected, but there are a lot of systems
+ * out there with a firmware that does not produce the right lb_cbmem_ref structure.
+ * Hence we try to autocorrect this issue here.
+ */
+static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
+{
+	struct lb_cbmem_ref ret;
+
+	ret = *cbmem_ref;
+
+	if (cbmem_ref->size < sizeof(*cbmem_ref))
+		ret.cbmem_addr = (uint32_t)ret.cbmem_addr;
+
+	return ret;
+}
+
 static int parse_cbtable(u64 address)
 {
 	int i, found = 0;
 	void *buf;
 
-	debug("Looking for coreboot table at %llx\n", address);
+	debug("Looking for coreboot table at %" PRIx64 "\n", address);
 	buf = map_memory(address);
 
 	/* look at every 16 bytes within 4K of the base */
@@ -183,12 +203,12 @@ static int parse_cbtable(u64 address)
 			}
 			case LB_TAG_TIMESTAMPS: {
 				debug("    Found timestamp table.\n");
-				timestamps = *(struct lb_cbmem_ref *) lbr_p;
+				timestamps = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
 				continue;
 			}
 			case LB_TAG_CBMEM_CONSOLE: {
 				debug("    Found cbmem console.\n");
-				console = *(struct lb_cbmem_ref *) lbr_p;
+				console = parse_cbmem_ref((struct lb_cbmem_ref *) lbr_p);
 				continue;
 			}
 			case LB_TAG_FORWARD: {
@@ -603,7 +623,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	fd = open("/dev/mem", O_RDONLY, 0);
+	fd = open("/dev/mem", O_RDONLY | O_SYNC | O_DIRECT, 0);
 	if (fd < 0) {
 		fprintf(stderr, "Failed to gain memory access: %s\n",
 			strerror(errno));

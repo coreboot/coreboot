@@ -27,6 +27,7 @@
 #include <arch/io.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
@@ -40,6 +41,28 @@
 
 #include "cpu/samsung/exynos5250/s5p-dp.h"
 #include "s5p-dp-core.h"
+
+/*
+ * Here is the rough outline of how we bring up the display:
+ *  1. Upon power-on Sink generates a hot plug detection pulse thru HPD
+ *  2. Source determines video mode by reading DPCD receiver capability field
+ *     (DPCD 00000h to 0000Dh) including eDP CP capability register (DPCD
+ *     0000Dh).
+ *  3. Sink replies DPCD receiver capability field.
+ *  4. Source starts EDID read thru I2C-over-AUX.
+ *  5. Sink replies EDID thru I2C-over-AUX.
+ *  6. Source determines link configuration, such as MAX_LINK_RATE and
+ *     MAX_LANE_COUNT. Source also determines which type of eDP Authentication
+ *     method to use and writes DPCD link configuration field (DPCD 00100h to
+ *     0010Ah) including eDP configuration set (DPCD 0010Ah).
+ *  7. Source starts link training. Sink does clock recovery and equalization.
+ *  8. Source reads DPCD link status field (DPCD 00200h to 0020Bh).
+ *  9. Sink replies DPCD link status field. If main link is not stable, Source
+ *     repeats Step 7.
+ * 10. Source sends MSA (Main Stream Attribute) data. Sink extracts video
+ *     parameters and recovers stream clock.
+ * 11. Source sends video data.
+ */
 
 /* To help debug any init errors here, define a list of possible errors */
 enum {
@@ -126,10 +149,8 @@ void fb_init(vidinfo_t *panel_info, void *lcdbase,
 {
 	unsigned int val;
 	u32 fbsize;
-	struct exynos5_fimd *fimd =
-		samsung_get_base_fimd();
-	struct exynos5_disp_ctrl *disp_ctrl =
-		samsung_get_base_disp_ctrl();
+	struct exynos5_fimd *fimd = samsung_get_base_fimd();
+	struct exynos5_disp_ctrl *disp_ctrl = samsung_get_base_disp_ctrl();
 
 	writel(pd->ivclk | pd->fixvclk, &disp_ctrl->vidcon1);
 	val = ENVID_ON | ENVID_F_ON | (pd->clkval_f << CLKVAL_F_OFFSET);
@@ -191,7 +212,7 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 			       struct video_info *video_info)
 {
 	int timeout = 0;
-	u32 start;
+	u32 start, end;
 	struct exynos5_dp *base = dp->base;
 
 	s5p_dp_config_video_slave_mode(dp, video_info);
@@ -206,16 +227,18 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 		return -ERR_PLL_NOT_UNLOCKED;
 	}
 
-	start = get_timer(0);
+	start = timer_us();
+	end = start + STREAM_ON_TIMEOUT*1000;
 	do {
 		if (s5p_dp_is_slave_video_stream_clock_on(dp) == 0) {
 			timeout++;
 			break;
 		}
-	} while (get_timer(start) <= STREAM_ON_TIMEOUT);
+	} while (timer_us() < end);
 
 	if (!timeout) {
-		printk(BIOS_DEBUG, "Video Clock Not ok\n");
+		printk(BIOS_ERR, "Video Clock Not ok after %uus.\n",
+							timer_us() - start);
 		return -ERR_VIDEO_CLOCK_BAD;
 	}
 
@@ -255,7 +278,6 @@ static int s5p_dp_enable_rx_to_enhanced_mode(struct s5p_dp_device *dp)
 		printk(BIOS_DEBUG, "DPCD read error\n");
 		return -ERR_DPCD_READ_ERROR1;
 	}
-
 	if (s5p_dp_write_byte_to_dpcd(dp, DPCD_ADDR_LANE_COUNT_SET,
 				      DPCD_ENHANCED_FRAME_EN |
 				      (data & DPCD_LANE_COUNT_SET_MASK))) {
@@ -408,6 +430,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 				   unsigned int max_lane,
 				   unsigned int max_rate)
 {
+	int pll_is_locked = 0;
 	u32 data;
 	u32 start;
 	int lane;
@@ -417,14 +440,15 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	clrbits_le32(&base->video_ctl_1, VIDEO_EN);
 
 	start = get_timer(0);
-	while (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
+	while ((pll_is_locked = s5p_dp_get_pll_lock_status(dp)) == PLL_UNLOCKED) {
 		if (get_timer(start) > PLL_LOCK_TIMEOUT) {
 			/* Ignore this error, and try to continue */
 			printk(BIOS_ERR, "PLL is not locked yet.\n");
 			break;
 		}
 	}
-
+	printk(BIOS_SPEW, "PLL is %slocked\n",
+			pll_is_locked == PLL_LOCKED ? "": "not ");
 	/* Reset Macro */
 	setbits_le32(&base->dp_phy_test, MACRO_RST);
 
@@ -447,6 +471,9 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	/* Initialize by reading RX's DPCD */
 	s5p_dp_get_max_rx_bandwidth(dp, &dp->link_train.link_rate);
 	s5p_dp_get_max_rx_lane_count(dp, &dp->link_train.lane_count);
+
+	printk(BIOS_SPEW, "%s: rate 0x%x, lane_count %d\n", __func__,
+		dp->link_train.link_rate, dp->link_train.lane_count);
 
 	if ((dp->link_train.link_rate != LINK_RATE_1_62GBPS) &&
 	    (dp->link_train.link_rate != LINK_RATE_2_70GBPS)) {
@@ -480,13 +507,14 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	/* Start HW link training */
 	writel(HW_TRAINING_EN, &base->dp_hw_link_training);
 
-	/* Wait unitl HW link training done */
+	/* Wait until HW link training done */
 	s5p_dp_wait_hw_link_training_done(dp);
 
 	/* Get hardware link training status */
 	data = readl(&base->dp_hw_link_training);
+	printk(BIOS_SPEW, "hardware link training status: 0x%08x\n", data);
 	if (data != 0) {
-		printk(BIOS_DEBUG, " H/W link training failure: 0x%x\n", data);
+		printk(BIOS_ERR, " H/W link training failure: 0x%x\n", data);
 		return -ERR_LINK_TRAINING_FAILURE;
 	}
 
@@ -497,6 +525,8 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 
 	data = readl(&base->lane_count_set);
 	dp->link_train.lane_count = data;
+	printk(BIOS_SPEW, "Done training: Link bandwidth: 0x%x, lane_count: %d\n",
+		dp->link_train.link_rate, data);
 
 	return 0;
 }
@@ -510,24 +540,19 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
 	struct s5p_dp_device *dp = dp_device;
 	struct exynos5_dp *base;
 
-	//dp->base = (struct exynos5_dp *)addr;
-	/* yes. we're a snow. Yet somehow our config is from a development kit?
-	 * This Must Change */
-	//dp->video_info = &smdk5250_dp_config;
-
 	clock_init_dp_clock();
 
 	power_enable_dp_phy();
 	ret = s5p_dp_init_dp(dp);
 	if (ret) {
-		printk(BIOS_DEBUG, "%s: Could not initialize dp\n", __func__);
+		printk(BIOS_ERR, "%s: Could not initialize dp\n", __func__);
 		return ret;
 	}
 
 	ret = s5p_dp_hw_link_training(dp, dp->video_info->lane_count,
 				      dp->video_info->link_rate);
 	if (ret) {
-		printk(BIOS_DEBUG, "unable to do link train\n");
+		printk(BIOS_ERR, "unable to do link train\n");
 		return ret;
 	}
 	/* Minimum delay after H/w Link training */
@@ -535,13 +560,13 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
 
 	ret = s5p_dp_enable_scramble(dp);
 	if (ret) {
-		printk(BIOS_DEBUG, "unable to set scramble mode\n");
+		printk(BIOS_ERR, "unable to set scramble mode\n");
 		return ret;
 	}
 
 	ret = s5p_dp_enable_rx_to_enhanced_mode(dp);
 	if (ret) {
-		printk(BIOS_DEBUG, "unable to set enhanced mode\n");
+		printk(BIOS_ERR, "unable to set enhanced mode\n");
 		return ret;
 	}
 
@@ -556,7 +581,7 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
 	s5p_dp_init_video(dp);
 	ret = s5p_dp_config_video(dp, dp->video_info);
 	if (ret) {
-		printk(BIOS_DEBUG, "unable to config video\n");
+		printk(BIOS_ERR, "unable to config video\n");
 		return ret;
 	}
 
@@ -576,10 +601,5 @@ int lcd_ctrl_init(vidinfo_t *panel_info,
 
 	fimd_bypass();
 	fb_init(panel_info, lcdbase, panel_data);
-	printk(BIOS_SPEW,
-		"fb_init(%p, %p, %p) done\n", panel_info, lcdbase, panel_data);
-
-	/* Enable flushing after LCD writes if requested */
-	// forget it. lcd_set_flush_dcache(1);
 	return ret;
 }

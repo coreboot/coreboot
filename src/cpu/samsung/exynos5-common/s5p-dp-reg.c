@@ -129,7 +129,8 @@ int s5p_dp_init_analog_func(struct s5p_dp_device *dp)
 		start = get_timer(0);
 		while (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
 			if (get_timer(start) > PLL_LOCK_TIMEOUT) {
-				printk(BIOS_DEBUG, "%s: PLL is not locked yet\n", __func__);
+				printk(BIOS_ERR, "%s: PLL is not locked\n",
+						__func__);
 				return -1;
 			}
 		}
@@ -176,9 +177,6 @@ int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
 	/* Enable AUX CH operation */
 	setbits_le32(&base->aux_ch_ctl_2, AUX_EN);
 
-	printk(BIOS_DEBUG, "%s: base: 0x%p, &base->aux_ch_ctl_2: 0x%p, aux_ch_ctl_2: 0x%08x\n",
-			__func__, base, &base->aux_ch_ctl_2, readl(&base->aux_ch_ctl_2));
-
 	/* Is AUX CH command reply received? */
 	reg = readl(&base->dp_int_sta);
 	while (!(reg & RPLY_RECEIV))
@@ -189,8 +187,9 @@ int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
 
 	/* Clear interrupt source for AUX CH access error */
 	reg = readl(&base->dp_int_sta);
-	printk(BIOS_DEBUG, "%s: dp_int_sta: 0x%02x\n", __func__, reg);
 	if (reg & AUX_ERR) {
+		printk(BIOS_ERR, "%s: AUX_ERR encountered, dp_int_sta: "
+				"0x%02x\n", __func__, reg);
 		writel(AUX_ERR, &base->dp_int_sta);
 		return -1;
 	}
@@ -198,7 +197,7 @@ int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
 	/* Check AUX CH error access status */
 	reg = readl(&base->dp_int_sta);
 	if ((reg & AUX_STATUS_MASK) != 0) {
-		printk(BIOS_DEBUG, "AUX CH error happens: %d\n\n",
+		printk(BIOS_ERR, "AUX CH error happens: %d\n\n",
 			reg & AUX_STATUS_MASK);
 		return -1;
 	}

@@ -102,6 +102,8 @@ unsigned int s5p_dp_get_pll_lock_status(struct s5p_dp_device *dp)
 	u32 reg;
 
 	reg = readl(&dp->base->dp_debug_ctl);
+	printk(BIOS_SPEW, "%s: reg is 0x%x, PLL_LOCK is 0x%x\n",
+			__func__, reg, PLL_LOCK);
 	if (reg & PLL_LOCK)
 		return PLL_LOCKED;
 	else
@@ -129,7 +131,8 @@ int s5p_dp_init_analog_func(struct s5p_dp_device *dp)
 		start = get_timer(0);
 		while (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
 			if (get_timer(start) > PLL_LOCK_TIMEOUT) {
-				printk(BIOS_DEBUG, "%s: PLL is not locked yet\n", __func__);
+				printk(BIOS_DEBUG, "%s: PLL is not locked\n",
+						__func__);
 				return -1;
 			}
 		}
@@ -176,8 +179,9 @@ int s5p_dp_start_aux_transaction(struct s5p_dp_device *dp)
 	/* Enable AUX CH operation */
 	setbits_le32(&base->aux_ch_ctl_2, AUX_EN);
 
-	printk(BIOS_DEBUG, "%s: base: 0x%p, &base->aux_ch_ctl_2: 0x%p, aux_ch_ctl_2: 0x%08x\n",
-			__func__, base, &base->aux_ch_ctl_2, readl(&base->aux_ch_ctl_2));
+	printk(BIOS_DEBUG, "%s: base: 0x%p, &base->aux_ch_ctl_2: 0x%p, "
+		"aux_ch_ctl_2: 0x%08x\n", __func__, base, &base->aux_ch_ctl_2,
+		readl(&base->aux_ch_ctl_2));
 
 	/* Is AUX CH command reply received? */
 	reg = readl(&base->dp_int_sta);

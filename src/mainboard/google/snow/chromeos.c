@@ -98,7 +98,12 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 
 int get_developer_mode_switch(void)
 {
-	return 0;
+	/*
+	 * FIXME: This should return 0, but we hardcode it to 1 to ensure
+	 * coreboot draws the dev mode screen while we're working on this
+	 * patch.
+	 */
+	return 1;
 }
 
 int get_recovery_mode_switch(void)

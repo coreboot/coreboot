@@ -32,7 +32,6 @@ static void exynos_displayport_init(device_t dev)
 	unsigned long int fb_size;
 	u32 lcdbase;
 
-	printk(BIOS_SPEW, "%s: dev 0x%p, conf 0x%p\n", __func__, dev, conf);
 	memset(&vi, 0, sizeof(vi));
 	memset(&panel, 0, sizeof(panel));
 
@@ -71,6 +70,11 @@ static void exynos_displayport_init(device_t dev)
 	mmio_resource(dev, 1, lcdbase/KiB, fb_size + (KiB-1)/KiB);
 	printk(BIOS_DEBUG,
 	       "Initializing exynos VGA, base %p\n",(void *)lcdbase);
+	/*
+	 * FIXME: This is for testing only. It will color a the top half
+	 * of the screen blue.
+	 */
+	memset((void *)lcdbase, 0x55, 0x100000);
 	ret = lcd_ctrl_init(&vi, &panel, (void *)lcdbase);
 }
 

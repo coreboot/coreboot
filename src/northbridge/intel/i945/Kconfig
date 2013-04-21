@@ -66,4 +66,12 @@ config CHECK_SLFRCS_ON_RESUME
 	  On other boards the check always creates a false positive,
 	  effectively making it impossible to resume.
 
+config MARK_GRAPHICS_MEM_WRCOMB
+        bool "Mark graphics memory as write-combining."
+        default n
+        help
+         The graphics performance may increase if the graphics
+         memory is set as write-combining cache type. This option
+         enables marking the graphics memory as write-combining.
+
 endif

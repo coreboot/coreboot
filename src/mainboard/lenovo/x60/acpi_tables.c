@@ -35,6 +35,7 @@ extern const unsigned char AmlCode[];
 unsigned long acpi_create_slic(unsigned long current);
 #endif
 
+#if CONFIG_HAVE_SMI_HANDLER
 #include "southbridge/intel/i82801gx/nvs.h"
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
@@ -54,6 +55,7 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->did[3] = 0x80000410;
 	gnvs->did[4] = 0x00000005;
 }
+#endif
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
@@ -107,7 +109,9 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 unsigned long write_acpi_tables(unsigned long start)
 {
 	unsigned long current;
+#if CONFIG_HAVE_SMI_HANDLER
 	int i;
+#endif
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
 	acpi_xsdt_t *xsdt;
@@ -121,8 +125,9 @@ unsigned long write_acpi_tables(unsigned long start)
 #endif
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
+#if CONFIG_HAVE_SMI_HANDLER
 	void *gnvs;
-
+#endif
 	current = start;
 
 	/* Align ACPI tables to 16byte */
@@ -185,7 +190,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
 	current += dsdt->length;
 	memcpy(dsdt, &AmlCode, dsdt->length);
-
+#if CONFIG_HAVE_SMI_HANDLER
 	/* Fix up global NVS region for SMI handler. The GNVS region lives
 	 * in the (high) table area. The low memory map looks like this:
 	 *
@@ -236,6 +241,8 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt,
 		     dsdt->length);
+
+#endif
 
 #if CONFIG_HAVE_ACPI_SLIC
 	printk(BIOS_DEBUG, "ACPI:     * SLIC\n");

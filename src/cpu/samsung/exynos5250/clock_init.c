@@ -416,7 +416,12 @@ void clock_gate(void)
 					  CLK_SPI2_MASK |
 					  CLK_SPI0_MASK);
 
-	/* CLK_GATE_IP_PERIS */
+	/*
+	 * CLK_GATE_IP_PERIS
+	 * Note: Keep CHIPID_APBIF ungated to ensure reading the product ID
+	 * register (PRO_ID) works correctly when the OS kernel determines
+	 * which chip it is running on.
+	 */
 	clrbits_le32(&clk->gate_ip_peris, CLK_RTC_MASK |
 					  CLK_TZPC9_MASK |
 					  CLK_TZPC8_MASK |
@@ -427,8 +432,7 @@ void clock_gate(void)
 					  CLK_TZPC3_MASK |
 					  CLK_TZPC2_MASK |
 					  CLK_TZPC1_MASK |
-					  CLK_TZPC0_MASK |
-					  CLK_CHIPID_MASK);
+					  CLK_TZPC0_MASK);
 
 	/* CLK_GATE_BLOCK */
 	clrbits_le32(&clk->gate_block, CLK_ACP_MASK);

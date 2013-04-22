@@ -295,6 +295,7 @@ void system_clock_init(struct mem_timings *mem,
 void clock_gate(void)
 {
 	struct exynos5_clock *clk = (struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
+	uint32_t chip_id;
 
 	/* CLK_GATE_IP_SYSRGT */
 	clrbits_le32(&clk->gate_ip_sysrgt, CLK_C2C_MASK);
@@ -427,8 +428,16 @@ void clock_gate(void)
 					  CLK_TZPC3_MASK |
 					  CLK_TZPC2_MASK |
 					  CLK_TZPC1_MASK |
-					  CLK_TZPC0_MASK |
-					  CLK_CHIPID_MASK);
+					  CLK_TZPC0_MASK);
+
+	/*
+	 * Ensure the chip ID is read before gating its IP block. This causes
+	 * the value to remain persistent in memory so when other code
+	 * references the PRO_ID SFR it will identify the chip correctly.
+	 */
+	chip_id = (readl((void *)EXYNOS_PRO_ID) >> 20) & 0xf;
+	if (chip_id == 5)
+		clrbits_le32(&clk->gate_ip_peris, CLK_CHIPID_MASK);
 
 	/* CLK_GATE_BLOCK */
 	clrbits_le32(&clk->gate_block, CLK_ACP_MASK);

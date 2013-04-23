@@ -56,7 +56,7 @@ static void pch_enable_apic(struct device *dev)
 	pci_write_config8(dev, ACPI_CNTL, 0x80);
 
 	*ioapic_index = 0;
-	*ioapic_data = (1 << 25);
+	*ioapic_data = (2 << 24);
 
 	/* affirm full set of redirection table entries ("write once") */
 	*ioapic_index = 1;

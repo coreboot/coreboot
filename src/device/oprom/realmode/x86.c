@@ -29,7 +29,7 @@
 #include <delay.h>
 #include <pc80/i8259.h>
 #include "x86.h"
-#include "vbe.h"
+#include <vbe.h>
 #include <lib/jpeg.h>
 /* we use x86emu's register file representation */
 #include <x86emu/regs.h>

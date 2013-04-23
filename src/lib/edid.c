@@ -36,6 +36,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <edid.h>
+#include <boot/coreboot_tables.h>
+#include <vbe.h>
 
 static int claims_one_point_oh = 0;
 static int claims_one_point_two = 0;
@@ -67,6 +69,9 @@ static int warning_excessive_dotclock_correction = 0;
 static int warning_zero_preferred_refresh = 0;
 
 static int conformant = 1;
+
+static int vbe_valid;
+static struct lb_framebuffer edid_fb;
 
 static char *manufacturer_name(struct edid *out, unsigned char *x)
 {
@@ -1226,7 +1231,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		}
 
 		printk(BIOS_SPEW, "Checksum\n");
-		do_checksum(edid);
+		vbe_valid = do_checksum(edid);
 		for(i = 0; i < size; i += 128)
 			nonconformant_extension = parse_extension(out, &edid[i]);
 /*
@@ -1386,3 +1391,67 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
  * SPWG also says something strange about the LSB of detailed descriptor 1:
  * "LSB is set to "1" if panel is DE-timing only. H/V can be ignored."
  */
+/*
+ * Take an edid, and create a framebuffer. Set vbe_valid to 1.
+ */
+
+void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr);
+void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
+{
+	edid_fb.physical_address = fb_addr;
+	edid_fb.x_resolution = edid->ha;
+	edid_fb.y_resolution = edid->va;
+	/* In the case of (e.g.) 24bpp, the convention nowadays
+	 * seems to be to round it up to the nearest reasonable
+	 * boundary, because otherwise the byte-packing is hideous.
+	 * So, for example, in RGB with no alpha, the bytes are still
+	 * packed into 32-bit words, the so-called 32bpp-no-alpha mode.
+	 * Or, in 5:6:5 mode, the bytes are also packed into 32-bit words,
+	 * and in 4:4:4 mode, they are packed into 16-bit words.
+	 * Good call on the hardware guys part.
+	 * It's not clear we're covering all cases here, but
+	 * I'm not sure with grahpics you ever can.
+	 */
+	edid_fb.bits_per_pixel = edid->bpp;
+	switch(edid->bpp){
+	case 32:
+	case 24:
+		/* packed into 4-byte words */
+		edid_fb.bytes_per_line = edid->ha * 4;
+		edid_fb.red_mask_pos = 16;
+		edid_fb.red_mask_size = 8;
+		edid_fb.green_mask_pos = 8;
+		edid_fb.green_mask_size = 8;
+		edid_fb.blue_mask_pos = 0;
+		edid_fb.blue_mask_size = 8;
+		break;
+	case 16:
+		/* packed into 2-byte words */
+		edid_fb.bytes_per_line = edid->ha * 2;
+		edid_fb.red_mask_pos = 12;
+		edid_fb.red_mask_size = 4;
+		edid_fb.green_mask_pos = 8;
+		edid_fb.green_mask_size = 4;
+		edid_fb.blue_mask_pos = 0;
+		edid_fb.blue_mask_size = 4;
+		break;
+	default:
+		printk(BIOS_SPEW, "%s: unsupported BPP %d\n", __func__,
+		       edid->bpp);
+		return;
+	}
+
+	edid_fb.reserved_mask_pos = 0;
+	edid_fb.reserved_mask_size = 0;
+	vbe_valid = 1;
+}
+
+int vbe_mode_info_valid(void)
+{
+	return vbe_valid;
+}
+
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
+{
+	*framebuffer = edid_fb;
+}

@@ -262,5 +262,5 @@ GetGlobalCpuFeatureListAddress (
 
   AddressValue = GLOBAL_CPU_FEATURE_LIST_TEMP_ADDR;
 
-  *Address = (UINT64 *)(AddressValue);
+  *Address = (UINT64 *) (intptr_t) (AddressValue);
 }

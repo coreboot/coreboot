@@ -45,19 +45,19 @@ void setup_pch_lp_gpios(const struct pch_lp_gpio_map map[])
 	u32 irqen[3] = {0};
 	u32 reset[3] = {0};
 	u32 blink = 0;
-	int set, bit;
+	int set, bit, gpio = 0;
 
-	for (config = map; config->gpio != GPIO_LIST_END; config++) {
-		if (config->gpio > MAX_GPIO_NUMBER)
-			continue;
+	for (config = map; config->conf0 != GPIO_LIST_END; config++, gpio++) {
+		if (gpio > MAX_GPIO_NUMBER)
+			break;
 
 		/* Setup Configuration registers 1 and 2 */
-		outl(config->conf0, gpio_base + GPIO_CONFIG0(config->gpio));
-		outl(config->conf1, gpio_base + GPIO_CONFIG1(config->gpio));
+		outl(config->conf0, gpio_base + GPIO_CONFIG0(gpio));
+		outl(config->conf1, gpio_base + GPIO_CONFIG1(gpio));
 
 		/* Determine set and bit based on GPIO number */
-		set = config->gpio >> 5;
-		bit = config->gpio % 32;
+		set = gpio >> 5;
+		bit = gpio % 32;
 
 		/* Apply settings to set specific bits */
 		owner[set] |= config->owner << bit;
@@ -83,7 +83,7 @@ int get_gpio(int gpio_num)
 {
 	u16 gpio_base = get_gpio_base();
 
-	if (gpio_num < MAX_GPIO_NUMBER)
+	if (gpio_num > MAX_GPIO_NUMBER)
 		return 0;
 
 	return !!(inl(gpio_base + GPIO_CONFIG0(gpio_num)) & GPI_LEVEL);

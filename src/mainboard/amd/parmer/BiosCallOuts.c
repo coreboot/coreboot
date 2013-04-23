@@ -269,7 +269,7 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
  * Fch Oem setting callback
  *
  *  Configure platform specific Hudson device,
- *   such Azalia, SATA, GEC, IMC etc.
+ *   such Azalia, SATA, IMC etc.
  */
 AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 {

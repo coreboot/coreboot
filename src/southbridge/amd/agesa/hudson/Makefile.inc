@@ -17,7 +17,7 @@ ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+
-# |0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |
+# |0x55AA55AA |EC ROM Address |Rsvd 0x00000000 |USB3 ROM    |
 # +-----------+---------------+----------------+------------+
 # EC ROM should be 64K aligned.
 HUDSON_FWM_POSITION=$(shell printf %u $(CONFIG_HUDSON_FWM_POSITION))
@@ -33,19 +33,9 @@ HUDSON_XHCI_POSITION=0
 XHCI_FWM_SIZE=0
 endif
 
-ifeq ($(CONFIG_HUDSON_GEC_FWM), y)
-HUDSON_GEC_POSITION=$(shell echo $(HUDSON_FWM_POSITION) $(ROMSIG_SIZE) 128 \
-	$(XHCI_FWM_SIZE) 128 \
-	| awk '{printf("%.0f", $$1 + $$2 + $$3 + $$4 + $$5)}')
-GEC_FWM_SIZE=$(word 5,$(shell ls -l $(CONFIG_HUDSON_GEC_FWM_FILE)))
-else
-HUDSON_GEC_POSITION=0
-GEC_FWM_SIZE=0
-endif
-
 ifeq ($(CONFIG_HUDSON_IMC_FWM), y)
 HUDSON_IMC_POSITION_UNALIGN=$(shell echo $(HUDSON_FWM_POSITION) \
-	$(ROMSIG_SIZE) 128 $(XHCI_FWM_SIZE) 128 $(GEC_FWM_SIZE) 128 65535 \
+	$(ROMSIG_SIZE) 128 $(XHCI_FWM_SIZE) 128 0x00000000 128 65535 \
 	| awk '{printf("%.0f", $$1 + $$2 + $$3 + $$4 + $$5 + $$6 + $$7 + $$8)}')
 HUDSON_IMC_POSITION=$(shell echo $(HUDSON_IMC_POSITION_UNALIGN) \
 	| awk '{printf("%.0f", $$1 - $$1 % 65536)}')
@@ -55,12 +45,11 @@ endif
 
 $(obj)/coreboot_hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE)) \
-			$(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE)) \
 			$(obj)/config.h
 	echo "    Hudson FW  $@"
 	for fwm in 1437226410 \
 		$(HUDSON_IMC_POSITION) \
-		$(HUDSON_GEC_POSITION) \
+		0x00000000 \
 		$(HUDSON_XHCI_POSITION) ; do \
 		echo  $$fwm | LC_ALL=C awk '{printf ("%c%c%c%c", $$1 % 256, int($$1/256) % 256, int($$1/65536) % 256, int($$1/16777216));}'; \
 	done > $@
@@ -86,14 +75,6 @@ hudson/imc-file := $(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE))
 hudson/imc-position := $(HUDSON_IMC_POSITION)
 hudson/imc-type := raw
 hudson/imc-required := Hudson IMC Firmware (available in coreboot/3rdparty if enabled)
-endif
-
-ifeq ($(CONFIG_HUDSON_GEC_FWM), y)
-cbfs-files-y += hudson/gec
-hudson/gec-file := $(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE))
-hudson/gec-position := $(HUDSON_GEC_POSITION)
-hudson/gec-type := raw
-hudson/gec-required := Hudson Gigabit Ethernet Controller Firmware (Contact your AMD representative)
 endif
 
 #ifeq ($(CONFIG_HUDSON_SATA_AHCI), y)

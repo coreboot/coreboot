@@ -37,7 +37,7 @@
 #define BOOT_DISPLAY_EFP2	(1 << 6)
 #define BOOT_DISPLAY_LCD2	(1 << 7)
 
-#if CONFIG_VGA_ROM_RUN
+#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 static int int15_handler(void)
 {
 	/* This int15 handler is Intel IGD. specific. Other chipsets need other
@@ -221,7 +221,7 @@ static void verb_setup(void)
 
 static void mainboard_enable(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif

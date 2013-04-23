@@ -156,7 +156,7 @@ static void verb_setup(void)
 
 static void mainboard_enable(device_t dev)
 {
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif

@@ -52,7 +52,7 @@ static void i82801gx_enable_apic(struct device *dev)
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
 	*ioapic_index = 0;
-	*ioapic_data = (1 << 25);
+	*ioapic_data = (2 << 24);
 
 	*ioapic_index = 0;
 	reg32 = *ioapic_data;

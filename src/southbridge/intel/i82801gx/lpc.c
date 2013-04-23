@@ -60,14 +60,7 @@ static void i82801gx_enable_acpi(struct device *dev)
  */
 static void i82801gx_enable_ioapic(struct device *dev)
 {
-	int i;
-
 	set_ioapic_id(IO_APIC_ADDR, 0x02);
-
-	printk(BIOS_SPEW, "IOAPIC: Dumping registers\n");
-	for (i = 0; i < 3; i++)
-		printk(BIOS_SPEW, "  reg 0x%04x: 0x%08x\n", i,
-        	       io_apic_read(ioapic_base, i));
 
 	io_apic_write(IO_APIC_ADDR, 0x03, /* Select Boot Configuration register. */
 		      0x01); /* Use Processor System Bus to deliver interrupts. */

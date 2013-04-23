@@ -118,7 +118,7 @@ static int intXX_unknown_handler(void)
 }
 
 /* setup interrupt handlers for mainboard */
-void mainboard_interrupt_handlers(int intXX, void *intXX_func)
+void mainboard_interrupt_handlers(int intXX, int (*intXX_func)(void))
 {
 	intXX_handler[intXX] = intXX_func;
 }

@@ -42,40 +42,6 @@
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
 #define DRAM_END	(DRAM_START + DRAM_SIZE)	/* plus one... */
 
-int vbe_mode_info_valid(void);
-int vbe_mode_info_valid(void)
-{
-	return 1;
-}
-
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	/*
-	 * The address returned points at the LCD colormap base. The
-	 * 64KiB offset points at the LCD base.
-	 */
-	framebuffer->physical_address =
-		(u32)cbmem_find(CBMEM_ID_CONSOLE) + 64*KiB;
-	printk(BIOS_SPEW, "%s: framebuffer->physical address is 0x%llx\n",
-			__func__, framebuffer->physical_address);
-
-	framebuffer->x_resolution = 1366;
-	framebuffer->y_resolution = 768;
-	framebuffer->bits_per_pixel = 16;
-	framebuffer->bytes_per_line =
-		(framebuffer->x_resolution * framebuffer->bits_per_pixel) / 8;
-
-	framebuffer->red_mask_pos = 11;
-	framebuffer->red_mask_size = 5;
-	framebuffer->green_mask_pos = 6;
-	framebuffer->green_mask_size = 5;
-	framebuffer->blue_mask_pos = 0;
-	framebuffer->blue_mask_size = 5;
-	framebuffer->reserved_mask_pos = 0;
-	framebuffer->reserved_mask_size = 0;
-}
-
 
 void hardwaremain(void);
 void main(void)

@@ -10,7 +10,10 @@
  * Contributors:
  *     IBM Corporation - initial implementation
  *****************************************************************************/
+#ifndef VBE_H
+#define VBE_H
 
+#include <boot/coreboot_tables.h>
 // these structs are for input from and output to OF
 typedef struct {
 	u8 display_type;	// 0=NONE, 1= analog, 2=digital
@@ -102,16 +105,13 @@ typedef struct {
 	u8 edid_block_zero[128];
 } vbe_ddc_info_t;
 
-struct lb_framebuffer;
-
-void vbe_set_graphics(void);
-// A way to check if mode information collected by vbe_set_graphics is valid
-// and fill_lb_framebuffer will have real information to use.
-int vbe_mode_info_valid(void);
-void vbe_textmode_console(void);
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-
 #define VESA_GET_INFO		0x4f00
 #define VESA_GET_MODE_INFO	0x4f01
 #define VESA_SET_MODE		0x4f02
 
+int vbe_mode_info_valid(void);
+void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
+void vbe_set_graphics(void);
+void vbe_textmode_console(void);
+
+#endif // VBE_H

@@ -46,17 +46,10 @@ typedef struct southbridge_intel_i82801gx_config config_t;
  */
 static void i82801gx_enable_ioapic(struct device *dev)
 {
-	int i;
-
 	/* Enable ACPI I/O range decode */
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
 	set_ioapic_id(IO_APIC_ADDR, 0x02);
-
-	printk(BIOS_SPEW, "IOAPIC: Dumping registers\n");
-	for (i = 0; i < 3; i++)
-		printk(BIOS_SPEW, "  reg 0x%04x: 0x%08x\n", i,
-		       io_apic_read(ioapic_base, i));
 
 	/*
 	 * Select Boot Configuration register (0x03) and

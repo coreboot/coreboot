@@ -77,6 +77,7 @@ void clear_ioapic(u32 ioapic_base)
 void set_ioapic_id(u32 ioapic_base, u8 ioapic_id)
 {
 	u32 bsp_lapicid = lapicid();
+	int i;
 
 	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n",
 	       ioapic_base);
@@ -90,6 +91,12 @@ void set_ioapic_id(u32 ioapic_base, u8 ioapic_id)
 			(io_apic_read(ioapic_base, 0x00) & 0xf0ffffff) |
 			(ioapic_id << 24));
 	}
+
+	printk(BIOS_SPEW, "IOAPIC: Dumping registers\n");
+	for (i = 0; i < 3; i++)
+		printk(BIOS_SPEW, "  reg 0x%04x: 0x%08x\n", i,
+		       io_apic_read(ioapic_base, i));
+
 }
 
 static void load_vectors(u32 ioapic_base)

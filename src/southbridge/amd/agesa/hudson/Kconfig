@@ -56,10 +56,11 @@ config HUDSON_IMC_FWM
 	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
 
 config HUDSON_GEC_FWM
-	bool "Add gec firmware"
+	bool
 	default n
         help
-	  Add Hudson 2/3/4 GEC Firmware
+	  Add Hudson 2/3/4 GEC Firmware to support the onboard gigabit Ethernet MAC.
+	  Must be connected to a Broadcom B50610 or B50610M PHY on the motherboard.
 
 config HUDSON_XHCI_FWM_FILE
         string "XHCI firmware path and filename"

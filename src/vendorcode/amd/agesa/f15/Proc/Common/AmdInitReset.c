@@ -150,7 +150,7 @@ AmdInitReset (
     AgesaStatus = CalledAgesaStatus;
   }
 
-  IDS_EXTENDED_HOOK (IDS_INIT_RESET_BEFORE, NULL, NULL, &ResetParams->StdHeader);
+  // IDS_EXTENDED_HOOK (IDS_INIT_RESET_BEFORE, NULL, NULL, &ResetParams->StdHeader);
 
   // Init Debug Print function
   IDS_HDT_CONSOLE_INIT (&ResetParams->StdHeader);

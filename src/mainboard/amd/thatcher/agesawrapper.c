@@ -559,7 +559,6 @@ STATIC VOID s3_resume_init_data(FCH_DATA_BLOCK *FchParams)
 	FchParams->Sata.SataRaidSsid           = UserOptions.FchBldCfg->CfgSataRaidSsid;
 	FchParams->Sata.SataAhciSsid           = UserOptions.FchBldCfg->CfgSataAhciSsid;
 	FchParams->Sata.SataIdeSsid            = UserOptions.FchBldCfg->CfgSataIdeSsid;
-	FchParams->Gec.GecShadowRomBase        = UserOptions.FchBldCfg->CfgGecShadowRomBase;
 	FchParams->Spi.RomBaseAddress          = UserOptions.FchBldCfg->CfgSpiRomBaseAddress;
 	FchParams->Sd.SdSsid                   = UserOptions.FchBldCfg->CfgSdSsid;
 	FchParams->Spi.LpcSsid                 = UserOptions.FchBldCfg->CfgLpcSsid;

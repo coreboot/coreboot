@@ -193,6 +193,10 @@ int get_gpio(int gpio_num);
  * the array of gpio pin numbers to scan, terminated by -1.
  */
 unsigned get_gpios(const int *gpio_num_array);
+/*
+ * set GPIO pin value
+ */
+void set_gpio(int gpio_num, int value);
 #endif
 
 #define MAINBOARD_POWER_OFF	0

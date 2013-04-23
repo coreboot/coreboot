@@ -109,3 +109,22 @@ unsigned get_gpios(const int *gpio_num_array)
 	}
 	return vector;
 }
+
+void set_gpio(int gpio_num, int value)
+{
+	static const int gpio_reg_offsets[] = {0xc, 0x38, 0x48};
+	u16 gpio_base = get_gpio_base();
+	int index, bit;
+	u32 config;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return 0; /* Just ignore wrong gpio numbers. */
+
+	index = gpio_num / 32;
+	bit = gpio_num % 32;
+
+	config = inl(gpio_basde + gpio_reg_offsets[index]);
+	config &= ~(1 << bit);
+	config |= value << bit;
+	outl(config, gpio_base + gpio_reg_offsets[index]);
+}

@@ -107,3 +107,17 @@ unsigned get_gpios(const int *gpio_num_array)
 	}
 	return vector;
 }
+
+void set_gpio(int gpio_num, int value)
+{
+	u16 gpio_base = get_gpio_base();
+	u32 conf0;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return;
+
+	conf0 = inl(gpio_base + GPIO_CONFIG0(gpio_num));
+	conf0 &= ~GPO_LEVEL_MASK;
+	conf0 |= value << GPO_LEVEL_SHIFT;
+	outl(conf0, gpio_base + GPIO_CONFIG0(gpio_num));
+}

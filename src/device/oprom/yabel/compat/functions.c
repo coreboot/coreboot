@@ -18,7 +18,7 @@
 #include <device/device.h>
 #include "../debug.h"
 #include "../biosemu.h"
-#include "../vbe.h"
+#include <vbe.h>
 #include "../compat/time.h"
 
 #define VMEM_SIZE (1024 * 1024) /* 1 MB */

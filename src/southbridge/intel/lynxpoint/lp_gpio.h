@@ -36,7 +36,7 @@
 #define GPIO_CONFIG1(gpio)	(0x104 + ((gpio) * 8))
 
 #define MAX_GPIO_NUMBER		94 /* zero based */
-#define GPIO_LIST_END		0xff
+#define GPIO_LIST_END		0xffffffff
 
 /* conf0 */
 
@@ -54,8 +54,10 @@
 
 #define GPI_LEVEL		(1 << 30)
 
-#define GPO_LEVEL_LOW		(0 << 31)
-#define GPO_LEVEL_HIGH		(1 << 31)
+#define GPO_LEVEL_SHIFT		31
+#define GPO_LEVEL_MASK		(1 << GPO_LEVEL_SHIFT)
+#define GPO_LEVEL_LOW		(0 << GPO_LEVEL_SHIFT)
+#define GPO_LEVEL_HIGH		(1 << GPO_LEVEL_SHIFT)
 
 /* conf1 */
 
@@ -90,6 +92,51 @@
 
 #define GPIO_RESET_PWROK	0
 #define GPIO_RESET_RSMRST	1
+
+#define LP_GPIO_END \
+	{ .conf0 = GPIO_LIST_END }
+
+#define LP_GPIO_NATIVE \
+	{ .conf0 = GPIO_MODE_NATIVE }
+
+#define LP_GPIO_UNUSED \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT, \
+	  .owner = GPIO_OWNER_GPIO, \
+	  .conf1 = GPIO_SENSE_DISABLE }
+
+#define LP_GPIO_ACPI_SCI \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_INVERT, \
+	  .owner = GPIO_OWNER_ACPI, \
+	  .route = GPIO_ROUTE_SCI }
+
+#define LP_GPIO_ACPI_SMI \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT, \
+	  .owner = GPIO_OWNER_ACPI, \
+	  .route = GPIO_ROUTE_SMI }
+
+#define LP_GPIO_INPUT \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT, \
+	  .owner = GPIO_OWNER_GPIO }
+
+#define LP_GPIO_IRQ_EDGE \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_IRQ_EDGE, \
+	  .owner = GPIO_OWNER_GPIO, \
+	  .irqen = GPIO_IRQ_ENABLE }
+
+#define LP_GPIO_IRQ_LEVEL \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_IRQ_LEVEL, \
+	  .owner = GPIO_OWNER_GPIO, \
+	  .irqen = GPIO_IRQ_ENABLE }
+
+#define LP_GPIO_OUT_HIGH \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_OUTPUT | GPO_LEVEL_HIGH, \
+	  .owner = GPIO_OWNER_GPIO, \
+	  .conf1 = GPIO_SENSE_DISABLE }
+
+#define LP_GPIO_OUT_LOW \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_OUTPUT | GPO_LEVEL_LOW, \
+	  .owner = GPIO_OWNER_GPIO, \
+	  .conf1 = GPIO_SENSE_DISABLE }
 
 struct pch_lp_gpio_map {
 	u8 gpio;

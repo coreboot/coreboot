@@ -64,6 +64,9 @@ SECTIONS
 		cpu_drivers = . ;
 		*(.rodata.cpu_driver)
 		ecpu_drivers = . ;
+		_bs_init_begin = .;
+		*(.bs_init)
+		_bs_init_end = .;
 
 		*(.rodata)
 		*(.rodata.*)

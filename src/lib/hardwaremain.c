@@ -38,7 +38,6 @@
 #include <arch/acpi.h>
 #endif
 #include <cbmem.h>
-#include <coverage.h>
 #include <timestamp.h>
 
 #define BS_DEBUG_LVL BIOS_NEVER
@@ -322,10 +321,6 @@ void hardwaremain(int boot_complete)
 {
 	timestamp_stash(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);
-
-#if CONFIG_COVERAGE
-	coverage_init();
-#endif
 
 	/* console_init() MUST PRECEDE ALL printk()! */
 	console_init();

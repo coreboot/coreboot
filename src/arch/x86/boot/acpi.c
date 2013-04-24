@@ -36,7 +36,6 @@
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
-#include <coverage.h>
 
 /* FIXME: Kconfig doesn't support overridable defaults :-( */
 #ifndef CONFIG_HPET_MIN_TICKS
@@ -638,9 +637,6 @@ void acpi_resume(void *wake_vec)
 	/* Call mainboard resume handler first, if defined. */
 	if (mainboard_suspend_resume)
 		mainboard_suspend_resume();
-#if CONFIG_COVERAGE
-	coverage_exit();
-#endif
 	/* Tear down the caching of the ROM. */
 	if (disable_cache_rom)
 		disable_cache_rom();

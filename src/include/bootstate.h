@@ -158,4 +158,25 @@ int boot_state_sched_on_exit(struct boot_state_callback *bscb,
 /* Entry into the boot state machine. */
 void hardwaremain(int boot_complete);
 
+/* In order to schedule boot state callbacks at compile-time specify the
+ * entries in an array using the BOOT_STATE_INIT_ENTRIES and
+ * BOOT_STATE_INIT_ENTRY macros below. */
+struct boot_state_init_entry {
+	boot_state_t state;
+	boot_state_sequence_t when;
+	struct boot_state_callback bscb;
+};
+
+#define BOOT_STATE_INIT_ATTR  __attribute__ ((used,section (".bs_init")))
+
+#define BOOT_STATE_INIT_ENTRIES(name_) \
+	static struct boot_state_init_entry name_[] BOOT_STATE_INIT_ATTR
+
+#define BOOT_STATE_INIT_ENTRY(state_, when_, func_, arg_)	\
+	{							\
+		.state = state_,				\
+		.when = when_,					\
+		.bscb = BOOT_STATE_CALLBACK_INIT(func_, arg_),	\
+	}
+
 #endif /* BOOTSTATE_H */

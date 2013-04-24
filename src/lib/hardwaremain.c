@@ -293,6 +293,23 @@ int boot_state_sched_on_exit(struct boot_state_callback *bscb,
 	return boot_state_sched_callback(state, bscb, BS_ON_EXIT);
 }
 
+static void boot_state_schedule_static_entries(void)
+{
+	extern struct boot_state_init_entry _bs_init_begin;
+	extern struct boot_state_init_entry _bs_init_end;
+	struct boot_state_init_entry *cur;
+
+	cur = &_bs_init_begin;
+
+	while (cur != &_bs_init_end) {
+		if (cur->when == BS_ON_ENTRY)
+			boot_state_sched_on_entry(&cur->bscb, cur->state);
+		else
+			boot_state_sched_on_exit(&cur->bscb, cur->state);
+		cur++;
+	}
+}
+
 void hardwaremain(int boot_complete)
 {
 	timestamp_stash(TS_START_RAMSTAGE);
@@ -317,6 +334,9 @@ void hardwaremain(int boot_complete)
 	if (boot_complete) {
 		hard_reset();
 	}
+
+	/* Schedule the static boot state entries. */
+	boot_state_schedule_static_entries();
 
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();

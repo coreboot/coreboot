@@ -237,8 +237,6 @@ struct mrc_data_container {
 
 struct mrc_data_container *find_current_mrc_cache(void);
 #if !defined(__PRE_RAM__)
-void update_mrc_cache(void);
-
 #include "gma.h"
 int init_igd_opregion(igd_opregion_t *igd_opregion);
 #endif

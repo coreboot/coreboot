@@ -53,11 +53,6 @@ int bridge_silicon_revision(void)
 	return bridge_revision_id;
 }
 
-void cbmem_post_handling(void)
-{
-	update_mrc_cache();
-}
-
 static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 {
 	u32 pciexbar_reg;

@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <cbfs.h>
 #include <ip_checksum.h>
@@ -153,7 +154,7 @@ static struct mrc_data_container *find_next_mrc_cache
 	return mrc_cache;
 }
 
-void update_mrc_cache(void)
+static void update_mrc_cache(void *unused)
 {
 	printk(BIOS_DEBUG, "Updating MRC cache data.\n");
 	struct mrc_data_container *current = cbmem_find(CBMEM_ID_MRCDATA);
@@ -222,6 +223,11 @@ void update_mrc_cache(void)
 	flash->write(flash, to_flash_offset(cache),
 		     current->mrc_data_size + sizeof(*current), current);
 }
+
+BOOT_STATE_INIT_ENTRIES(mrc_cache_update) = {
+	BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
+	                      update_mrc_cache, NULL),
+};
 #endif
 
 struct mrc_data_container *find_current_mrc_cache(void)

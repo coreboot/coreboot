@@ -161,11 +161,6 @@ void cbmem_list(void);
 void cbmem_arch_init(void);
 void __attribute__((weak)) cbmem_post_handling(void);
 void cbmem_print_entry(int n, u32 id, u64 start, u64 size);
-/* The pre|post device cbmem initialization functions are for the
- * ramstage main to call. When cbmem is actually initialized depends on
- * the cbmem implementation. */
-void init_cbmem_pre_device(void);
-void init_cbmem_post_device(void);
 #else
 static inline void cbmem_arch_init(void) {}
 #endif /* __PRE_RAM__ */

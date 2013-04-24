@@ -18,8 +18,8 @@
  */
 
 #include <stdint.h>
+#include <bootstate.h>
 #include <cbmem.h>
-#include <coverage.h>
 
 typedef struct file {
 	uint32_t magic;
@@ -128,7 +128,7 @@ static void setbuf(FILE *stream, char *buf)
 	gcc_assert(buf == 0);
 }
 
-void coverage_init(void)
+static void coverage_init(void *unused)
 {
 	extern long __CTOR_LIST__;
 	typedef void (*func_ptr)(void) ;
@@ -142,7 +142,7 @@ void coverage_init(void)
 }
 
 void __gcov_flush(void);
-void coverage_exit(void)
+static void coverage_exit(void *unused)
 {
 #if CONFIG_DEBUG_COVERAGE
 	printk(BIOS_DEBUG, "Syncing coverage data.\n");
@@ -150,4 +150,8 @@ void coverage_exit(void)
 	__gcov_flush();
 }
 
-
+BOOT_STATE_INIT_ENTRIES(gcov_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY, coverage_init, NULL),
+	BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY, coverage_exit, NULL),
+	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT, coverage_exit, NULL),
+};

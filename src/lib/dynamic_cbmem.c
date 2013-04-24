@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <bootstate.h>
 #include <boot/tables.h>
 #include <console/console.h>
 #include <cbmem.h>
@@ -411,7 +412,7 @@ void *cbmem_entry_start(const struct cbmem_entry *entry)
 /* selected cbmem can be initialized early in ramstage. Additionally, that
  * means cbmem console can be reinitialized early as well. The post_device
  * function is empty since cbmem was initialized early in ramstage. */
-void init_cbmem_pre_device(void)
+static void init_cbmem_pre_device(void *unused)
 {
 	cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM
@@ -419,7 +420,10 @@ void init_cbmem_pre_device(void)
 #endif /* CONFIG_CONSOLE_CBMEM */
 }
 
-void init_cbmem_post_device(void) {}
+BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY,
+	                      init_cbmem_pre_device, NULL),
+};
 
 void cbmem_add_lb_mem(struct lb_memory *mem)
 {

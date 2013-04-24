@@ -621,9 +621,11 @@ static int elog_flash_area_bootstrap(void)
 static int elog_shrink(void)
 {
 	struct elog_descriptor *mem = elog_get_mem();
+	struct elog_descriptor *flash = elog_get_flash();
 	struct event_header *event;
 	u16 discard_count = 0;
 	u16 offset = 0;
+	u16 new_size = 0;
 
 	elog_debug("elog_shrink()\n");
 
@@ -645,25 +647,22 @@ static int elog_shrink(void)
 		discard_count++;
 	}
 
-	/* Erase flash area */
-	elog_flash_erase_area();
+	new_size = mem->next_event_offset - offset;
+	memmove(&mem->data[0], &mem->data[offset], new_size);
+	memset(&mem->data[new_size], ELOG_TYPE_EOL, mem->data_size - new_size);
+	elog_reinit_descriptor(mem);
+
+	elog_flash_erase(flash->backing_store, flash->total_size);
 
 	/* Ensure the area was successfully erased */
-	if (elog_get_flash()->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD) {
+	if (mem->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD) {
 		printk(BIOS_ERR, "ELOG: Flash area was not erased!\n");
 		return -1;
 	}
 
-	/* Write new flash area */
-	elog_prepare_empty(elog_get_flash(),
-			   (u8*)elog_get_event_base(mem, offset),
-			   mem->next_event_offset - offset);
-
-	/* Update memory area from flash */
-	if (elog_sync_flash_to_mem() < 0) {
-		printk(BIOS_ERR, "Unable to update memory area from flash\n");
-		return -1;
-	}
+	elog_flash_write(flash->backing_store, mem->backing_store,
+			 mem->total_size);
+	elog_reinit_descriptor(flash);
 
 	/* Add clear event */
 	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, offset);

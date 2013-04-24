@@ -66,5 +66,6 @@ struct edid {
 
 /* Defined in src/lib/edid.c */
 int decode_edid(unsigned char *edid, int size, struct edid *out);
+void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr);
 
 #endif /* EDID_H */

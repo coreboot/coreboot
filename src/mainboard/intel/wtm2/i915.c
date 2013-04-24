@@ -42,7 +42,26 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <edid.h>
-#include "i915io.h"
+#include <device/i915.h>
+
+/* how many bytes do we need for the framebuffer?
+ * Well, this gets messy. To get an exact answer, we have
+ * to ask the panel, but we'd rather zero the memory
+ * and set up the gtt while the panel powers up. So,
+ * we take a reasonable guess, secure in the knowledge that the
+ * MRC has to overestimate the number of bytes used.
+ * 8 MiB is a very safe guess. There may be a better way later, but
+ * fact is, the initial framebuffer is only very temporary. And taking
+ * a little long is ok; this is done much faster than the AUX
+ * channel is ready for IO.
+ */
+#define FRAME_BUFFER_BYTES (8*MiB)
+/* how many 4096-byte pages do we need for the framebuffer?
+ * There are hard ways to get this, and easy ways:
+ * there are FRAME_BUFFER_BYTES/4096 pages, since pages are 4096
+ * on this chip (and in fact every Intel graphics chip we've seen).
+ */
+#define FRAME_BUFFER_PAGES (FRAME_BUFFER_BYTES/(4096))
 
 static int verbose = 0;
 
@@ -138,95 +157,6 @@ static unsigned long globalmicroseconds(void)
 }
 
 static int i915_init_done = 0;
-
-/* fill the palette. This runs when the P opcode is hit. */
-static void palette(void)
-{
-	int i;
-	unsigned long color = 0;
-
-	for(i = 0; i < 256; i++, color += 0x010101){
-		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
-	}
-}
-
-static unsigned long times[4096];
-
-static int run(int index)
-{
-	int i, prev = 0;
-	struct iodef *id, *lastidread = 0;
-	unsigned long u, t;
-	if (index >= niodefs)
-		return index;
-	/* state machine! */
-	for(i = index, id = &iodefs[i]; id->op; i++, id++){
-		switch(id->op){
-		case M:
-			if (verbose & vmsg) printk(BIOS_SPEW, "%ld: %s\n",
-						   globalmicroseconds(), id->msg);
-			break;
-		case P:
-			palette();
-			break;
-		case R:
-			u = READ32(id->addr);
-			if (verbose & vio)
-				printk(BIOS_SPEW, "\texpect %08lx\n", id->data);
-			/* we're looking for something. */
-			if (lastidread->addr == id->addr){
-				/* they're going to be polling.
-				 * just do it 1000 times
-				 */
-				for(t = 0; t < 1000 && id->data != u; t++){
-					u = READ32(id->addr);
-				}
-				if (verbose & vspin) printk(BIOS_SPEW,
-							    "%s: # loops %ld got %08lx want %08lx\n",
-							    regname(id->addr),
-							    t, u, id->data);
-			}
-			lastidread = id;
-			break;
-		case W:
-			WRITE32(id->data, id->addr);
-			if (id->addr == PCH_PP_CONTROL){
-				if (verbose & vio)
-					printk(BIOS_SPEW, "PCH_PP_CONTROL\n");
-				switch(id->data & 0xf){
-				case 8: break;
-				case 7: break;
-				default: udelay(100000);
-					if (verbose & vio)
-						printk(BIOS_SPEW, "U %d\n", 100000);
-				}
-			}
-			break;
-		case V:
-			if (id->count < 8){
-				prev = verbose;
-				verbose = id->count;
-			} else {
-				verbose = prev;
-			}
-			printk(BIOS_SPEW, "Change verbosity to %d\n", verbose);
-			break;
-		case I:
-			printk(BIOS_SPEW, "run: return %d\n", i+1);
-			return i+1;
-			break;
-		default:
-			printk(BIOS_SPEW, "BAD TABLE, opcode %d @ %d\n", id->op, i);
-			return -1;
-		}
-		if (id->udelay)
-			udelay(id->udelay);
-		if (i < ARRAY_SIZE(times))
-			times[i] = globalmicroseconds();
-	}
-	printk(BIOS_SPEW, "run: return %d\n", i);
-	return i+1;
-}
 
 int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
 		unsigned int gfx);

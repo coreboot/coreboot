@@ -40,7 +40,6 @@ it with the version available from LANL.
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
-#include <cbmem.h>
 #include <timestamp.h>
 
 #define BS_DEBUG_LVL BIOS_NEVER
@@ -185,9 +184,6 @@ static boot_state_t bs_os_resume(void *wake_vector)
 
 static boot_state_t bs_write_tables(void *arg)
 {
-	if (cbmem_post_handling)
-		cbmem_post_handling();
-
 	timestamp_add_now(TS_WRITE_TABLES);
 
 	/* Now that we have collected all of our information

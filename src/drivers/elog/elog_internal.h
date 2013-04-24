@@ -47,12 +47,6 @@ struct event_header {
 /* SMBIOS Type 15 related constants */
 #define ELOG_HEADER_TYPE_OEM		0x88
 
-typedef enum elog_descriptor_type {
-	ELOG_DESCRIPTOR_UNKNOWN,
-	ELOG_DESCRIPTOR_MEMORY,
-	ELOG_DESCRIPTOR_FLASH,
-} elog_descriptor_type;
-
 typedef enum elog_area_state {
 	ELOG_AREA_UNDEFINED,		/* Initial boot strap state */
 	ELOG_AREA_EMPTY,		/* Entire area is empty */
@@ -73,7 +67,6 @@ typedef enum elog_event_buffer_state {
  * Internal handler for event log buffers
  */
 struct elog_descriptor {
-	elog_descriptor_type	type;
 	elog_area_state		area_state;
 	elog_header_state	header_state;
 	elog_event_buffer_state	event_buffer_state;

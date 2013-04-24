@@ -25,6 +25,7 @@ it with the version available from LANL.
  * C Bootstrap code for the coreboot
  */
 
+#include <bootstate.h>
 #include <console/console.h>
 #include <version.h>
 #include <device/device.h>
@@ -43,22 +44,250 @@ it with the version available from LANL.
 #include <coverage.h>
 #include <timestamp.h>
 
-/**
- * @brief Main function of the RAM part of coreboot.
- *
- * Coreboot is divided into Pre-RAM part and RAM part.
- *
- * Device Enumeration:
- *	In the dev_enumerate() phase,
- */
+#define BS_DEBUG_LVL BIOS_NEVER
 
-void hardwaremain(int boot_complete);
+static boot_state_t bs_pre_device(void *arg);
+static boot_state_t bs_dev_init_chips(void *arg);
+static boot_state_t bs_dev_enumerate(void *arg);
+static boot_state_t bs_dev_resources(void *arg);
+static boot_state_t bs_dev_eanble(void *arg);
+static boot_state_t bs_dev_init(void *arg);
+static boot_state_t bs_post_device(void *arg);
+static boot_state_t bs_os_resume(void *arg);
+static boot_state_t bs_write_tables(void *arg);
+static boot_state_t bs_payload_load(void *arg);
+static boot_state_t bs_payload_boot(void *arg);
+
+struct boot_state {
+	const char *name;
+	boot_state_t id;
+	struct boot_state_callback *seq_callbacks[2];
+	boot_state_t (*run_state)(void *arg);
+	void *arg;
+	int complete;
+};
+
+#define BS_INIT(state_, run_func_)		\
+	{					\
+		.name = #state_,		\
+		.id = state_,			\
+		.seq_callbacks = { NULL, NULL },\
+		.run_state = run_func_,		\
+		.arg = NULL,			\
+		.complete = 0			\
+	}
+#define BS_INIT_ENTRY(state_, run_func_)	\
+	[state_] = BS_INIT(state_, run_func_)
+
+static struct boot_state boot_states[] = {
+	BS_INIT_ENTRY(BS_PRE_DEVICE, bs_pre_device),
+	BS_INIT_ENTRY(BS_DEV_INIT_CHIPS, bs_dev_init_chips),
+	BS_INIT_ENTRY(BS_DEV_ENUMERATE, bs_dev_enumerate),
+	BS_INIT_ENTRY(BS_DEV_RESOURCES, bs_dev_resources),
+	BS_INIT_ENTRY(BS_DEV_ENABLE, bs_dev_eanble),
+	BS_INIT_ENTRY(BS_DEV_INIT, bs_dev_init),
+	BS_INIT_ENTRY(BS_POST_DEVICE, bs_post_device),
+	BS_INIT_ENTRY(BS_OS_RESUME, bs_os_resume),
+	BS_INIT_ENTRY(BS_WRITE_TABLES, bs_write_tables),
+	BS_INIT_ENTRY(BS_PAYLOAD_LOAD, bs_payload_load),
+	BS_INIT_ENTRY(BS_PAYLOAD_BOOT, bs_payload_boot),
+};
+
+static boot_state_t bs_pre_device(void *arg)
+{
+	init_cbmem_pre_device();
+	return BS_DEV_INIT_CHIPS;
+}
+
+static boot_state_t bs_dev_init_chips(void *arg)
+{
+	timestamp_stash(TS_DEVICE_ENUMERATE);
+
+	/* Initialize chips early, they might disable unused devices. */
+	dev_initialize_chips();
+
+	return BS_DEV_ENUMERATE;
+}
+
+static boot_state_t bs_dev_enumerate(void *arg)
+{
+	/* Find the devices we don't have hard coded knowledge about. */
+	dev_enumerate();
+	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
+
+	return BS_DEV_RESOURCES;
+}
+
+static boot_state_t bs_dev_resources(void *arg)
+{
+	timestamp_stash(TS_DEVICE_CONFIGURE);
+	/* Now compute and assign the bus resources. */
+	dev_configure();
+	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
+
+	return BS_DEV_ENABLE;
+}
+
+static boot_state_t bs_dev_eanble(void *arg)
+{
+	timestamp_stash(TS_DEVICE_ENABLE);
+	/* Now actually enable devices on the bus */
+	dev_enable();
+	post_code(POST_DEVICES_ENABLED);
+
+	return BS_DEV_INIT;
+}
+
+static boot_state_t bs_dev_init(void *arg)
+{
+	timestamp_stash(TS_DEVICE_INITIALIZE);
+	/* And of course initialize devices on the bus */
+	dev_initialize();
+	post_code(POST_DEVICES_INITIALIZED);
+
+	return BS_POST_DEVICE;
+}
+
+static boot_state_t bs_post_device(void *arg)
+{
+	timestamp_stash(TS_DEVICE_DONE);
+
+	init_cbmem_post_device();
+
+	timestamp_sync();
+
+	return BS_OS_RESUME;
+}
+
+static boot_state_t bs_os_resume(void *arg)
+{
+#if CONFIG_HAVE_ACPI_RESUME
+	suspend_resume();
+	post_code(0x8a);
+#endif
+
+	timestamp_add_now(TS_CBMEM_POST);
+
+	return BS_WRITE_TABLES;
+}
+
+static boot_state_t bs_write_tables(void *arg)
+{
+	if (cbmem_post_handling)
+		cbmem_post_handling();
+
+	timestamp_add_now(TS_WRITE_TABLES);
+
+	/* Now that we have collected all of our information
+	 * write our configuration tables.
+	 */
+	write_tables();
+
+	return BS_PAYLOAD_LOAD;
+}
+
+static boot_state_t bs_payload_load(void *arg)
+{
+	void *payload;
+
+	timestamp_add_now(TS_LOAD_PAYLOAD);
+
+	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
+				    CONFIG_CBFS_PREFIX "/payload");
+	if (! payload)
+		die("Could not find a payload\n");
+
+	/* Pass the payload to the next state. */
+	boot_states[BS_PAYLOAD_BOOT].arg = payload;
+
+	return BS_PAYLOAD_BOOT;
+}
+
+static boot_state_t bs_payload_boot(void *payload)
+{
+	selfboot(get_lb_mem(), payload);
+
+	printk(BIOS_EMERG, "Boot failed");
+	/* Returning from this state will fail because the following signals
+	 * return to a completed state. */
+	return BS_PAYLOAD_BOOT;
+}
+
+static void bs_call_callbacks(struct boot_state *state,
+                              boot_state_sequence_t seq)
+{
+	while (state->seq_callbacks[seq] != NULL) {
+		struct boot_state_callback *bscb;
+
+		/* Remove the first callback. */
+		bscb = state->seq_callbacks[seq];
+		state->seq_callbacks[seq] = bscb->next;
+		bscb->next = NULL;
+
+		bscb->callback(bscb->arg);
+	}
+}
+
+static void bs_walk_state_machine(boot_state_t current_state_id)
+{
+
+	while (1) {
+		struct boot_state *state;
+
+		state = &boot_states[current_state_id];
+
+		if (state->complete) {
+			printk(BIOS_EMERG, "BS: %s state already executed.\n",
+			       state->name);
+			break;
+		}
+
+		printk(BS_DEBUG_LVL, "BS: Entering %s state.\n", state->name);
+		bs_call_callbacks(state, BS_ON_ENTRY);
+
+		current_state_id = state->run_state(state->arg);
+
+		printk(BS_DEBUG_LVL, "BS: Exiting %s state.\n", state->name);
+		bs_call_callbacks(state, BS_ON_EXIT);
+
+		state->complete = 1;
+	}
+}
+
+static int boot_state_sched_callback(struct boot_state *state,
+                                     struct boot_state_callback *bscb,
+                                     boot_state_sequence_t seq)
+{
+	if (state->complete) {
+		printk(BIOS_WARNING,
+		       "Tried to schedule callback on completed state %s.\n",
+		       state->name);
+
+		return -1;
+	}
+
+	bscb->next = state->seq_callbacks[seq];
+	state->seq_callbacks[seq] = bscb;
+
+	return 0;
+}
+
+int boot_state_on_entry(struct boot_state_callback *bscb, boot_state_t state_id)
+{
+	struct boot_state *state = &boot_states[state_id];
+
+	return boot_state_sched_callback(state, bscb, BS_ON_ENTRY);
+}
+
+int boot_state_on_exit(struct boot_state_callback *bscb, boot_state_t state_id)
+{
+	struct boot_state *state = &boot_states[state_id];
+
+	return boot_state_sched_callback(state, bscb, BS_ON_EXIT);
+}
 
 void hardwaremain(int boot_complete)
 {
-	struct lb_memory *lb_mem;
-	void *payload;
-
 	timestamp_stash(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);
 
@@ -85,63 +314,7 @@ void hardwaremain(int boot_complete)
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
-	init_cbmem_pre_device();
-
-	timestamp_stash(TS_DEVICE_ENUMERATE);
-
-	/* Initialize chips early, they might disable unused devices. */
-	dev_initialize_chips();
-
-	/* Find the devices we don't have hard coded knowledge about. */
-	dev_enumerate();
-	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
-
-	timestamp_stash(TS_DEVICE_CONFIGURE);
-	/* Now compute and assign the bus resources. */
-	dev_configure();
-	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
-
-	timestamp_stash(TS_DEVICE_ENABLE);
-	/* Now actually enable devices on the bus */
-	dev_enable();
-	post_code(POST_DEVICES_ENABLED);
-
-	timestamp_stash(TS_DEVICE_INITIALIZE);
-	/* And of course initialize devices on the bus */
-	dev_initialize();
-	post_code(POST_DEVICES_INITIALIZED);
-
-	timestamp_stash(TS_DEVICE_DONE);
-
-	init_cbmem_post_device();
-
-	timestamp_sync();
-
-#if CONFIG_HAVE_ACPI_RESUME
-	suspend_resume();
-	post_code(0x8a);
-#endif
-
-	timestamp_add_now(TS_CBMEM_POST);
-
-	if (cbmem_post_handling)
-		cbmem_post_handling();
-
-	timestamp_add_now(TS_WRITE_TABLES);
-
-	/* Now that we have collected all of our information
-	 * write our configuration tables.
-	 */
-	lb_mem = write_tables();
-
-	timestamp_add_now(TS_LOAD_PAYLOAD);
-
-	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
-				    CONFIG_CBFS_PREFIX "/payload");
-	if (! payload)
-		die("Could not find a payload\n");
-
-	selfboot(lb_mem, payload);
-	printk(BIOS_EMERG, "Boot failed");
+	bs_walk_state_machine(BS_PRE_DEVICE);
+	die("Boot state machine failure.\n");
 }
 

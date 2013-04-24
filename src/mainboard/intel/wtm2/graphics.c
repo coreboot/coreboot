@@ -20,7 +20,7 @@
  * will be all machine generated. Avoid editing.
  */
 #include <console/console.h>
-#include "i915io.h"
+#include <device/i915.h>
 
 void graphics_register_reset(u32 aux_ctl, u32 aux_data, int verbose)
 {

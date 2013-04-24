@@ -19,6 +19,7 @@
 
 #include <types.h>
 #include <string.h>
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
@@ -232,17 +233,18 @@ int cbmem_initialize(void)
 #endif
 
 #ifndef __PRE_RAM__
-/* cbmem cannot be initialized before device drivers, but it can be initialized
- * after the drivers have run. */
-void init_cbmem_pre_device(void) {}
-
-void init_cbmem_post_device(void)
+static void init_cbmem_post_device(void *unused)
 {
 	cbmem_initialize();
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
 #endif
 }
+
+BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
+	                      init_cbmem_post_device, NULL),
+};
 
 void cbmem_list(void)
 {

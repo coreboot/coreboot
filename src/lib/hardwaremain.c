@@ -97,7 +97,6 @@ static struct boot_state boot_states[] = {
 
 static boot_state_t bs_pre_device(void *arg)
 {
-	init_cbmem_pre_device();
 	return BS_DEV_INIT_CHIPS;
 }
 
@@ -153,8 +152,6 @@ static boot_state_t bs_dev_init(void *arg)
 static boot_state_t bs_post_device(void *arg)
 {
 	timestamp_stash(TS_DEVICE_DONE);
-
-	init_cbmem_post_device();
 
 	timestamp_sync();
 

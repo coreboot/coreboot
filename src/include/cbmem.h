@@ -159,7 +159,6 @@ void *cbmem_find(u32 id);
 /* Ramstage only functions. */
 void cbmem_list(void);
 void cbmem_arch_init(void);
-void __attribute__((weak)) cbmem_post_handling(void);
 void cbmem_print_entry(int n, u32 id, u64 start, u64 size);
 #else
 static inline void cbmem_arch_init(void) {}

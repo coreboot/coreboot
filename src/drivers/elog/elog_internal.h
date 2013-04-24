@@ -77,7 +77,6 @@ struct elog_descriptor {
 	elog_area_state		area_state;
 	elog_header_state	header_state;
 	elog_event_buffer_state	event_buffer_state;
-	struct elog_header	*staging_header;
 	void			*backing_store;
 	u8			*data;
 	u32			flash_base;

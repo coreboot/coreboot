@@ -30,7 +30,7 @@
 #include <console/console.h>
 #include <stdint.h>
 #include <delay.h>
-#include "i915io.h"
+#include <device/i915.h>
 
 u32
 pack_aux(u32 *src32, int src_bytes)
@@ -79,7 +79,7 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 
 	/* Try to wait for any previous AUX channel activity */
 	for (try = 0; try < 3; try++) {
-		status = io_i915_READ32(ch_ctl);
+		status = io_i915_read32(ch_ctl);
 		if ((status & DP_AUX_CH_CTL_SEND_BUSY) == 0)
 			break;
 		udelay(1000);
@@ -87,8 +87,9 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 
 	if (try == 3) {
 	  printk(BIOS_SPEW, "[000000.0] [drm:%s], ", __func__);
-	  printk(BIOS_SPEW, "dp_aux_ch not started status 0x%08lx\n",
-		  io_i915_READ32(ch_ctl));
+	  status = io_i915_read32(ch_ctl);
+	  printk(BIOS_SPEW, "dp_aux_ch not started status 0x%08x\n",
+		 status);
 	  return -1;
 	}
 
@@ -96,10 +97,10 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 	for (try = 0; try < 5; try++) {
 		/* Load the send data into the aux channel data registers */
 		for (i = 0; i < send_bytes; i += 4)
-			io_i915_WRITE32(send[i], ch_data + i);
+			io_i915_write32(send[i], ch_data + i);
 
 		/* Send the command and wait for it to complete */
-		io_i915_WRITE32(
+		io_i915_write32(
 			   DP_AUX_CH_CTL_SEND_BUSY |
 			   DP_AUX_CH_CTL_TIME_OUT_400us |
 			   (send_bytes << DP_AUX_CH_CTL_MESSAGE_SIZE_SHIFT) |
@@ -109,14 +110,14 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 			   DP_AUX_CH_CTL_TIME_OUT_ERROR |
 			   DP_AUX_CH_CTL_RECEIVE_ERROR, ch_ctl);
 		for (;;) {
-			status = io_i915_READ32(ch_ctl);
+			status = io_i915_read32(ch_ctl);
 			if ((status & DP_AUX_CH_CTL_SEND_BUSY) == 0)
 				break;
 			udelay(100);
 		}
 
 		/* Clear done status and any errors */
-		io_i915_WRITE32(
+		io_i915_write32(
 			   status |
 			   DP_AUX_CH_CTL_DONE |
 			   DP_AUX_CH_CTL_TIME_OUT_ERROR |
@@ -159,9 +160,8 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 		recv_bytes = recv_size;
 
 	for (i = 0; i < recv_bytes; i += 4)
-		unpack_aux(io_i915_READ32(ch_data + i),
+		unpack_aux(io_i915_read32(ch_data + i),
 			   recv + i, recv_bytes - i);
 
 	return recv_bytes;
 }
-

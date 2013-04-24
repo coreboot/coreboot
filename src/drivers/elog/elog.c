@@ -376,7 +376,7 @@ static void elog_validate_and_fill(struct elog_descriptor *elog)
 	elog->area_state = ELOG_AREA_HAS_CONTENT;
 
 	/* Validate the header */
-	if (!elog_is_header_valid(elog->staging_header)) {
+	if (!elog_is_header_valid(elog_get_header(elog))) {
 		elog->header_state = ELOG_HEADER_INVALID;
 		return;
 	}
@@ -390,8 +390,7 @@ static void elog_validate_and_fill(struct elog_descriptor *elog)
  */
 static void elog_init_descriptor(struct elog_descriptor *elog,
 				 elog_descriptor_type type,
-				 u8 *buffer, u32 size,
-				 struct elog_header *header)
+				 u8 *buffer, u32 size)
 {
 	elog_debug("elog_init_descriptor(type=%u buffer=0x%p size=%u)\n",
 		   type, buffer, size);
@@ -406,10 +405,6 @@ static void elog_init_descriptor(struct elog_descriptor *elog,
 	/* Fill memory buffer by reading from SPI */
 	if (type == ELOG_DESCRIPTOR_FLASH)
 		elog_spi->read(elog_spi, elog->flash_base, size, buffer);
-
-	/* Get staging header from backing store */
-	elog->staging_header = header;
-	memcpy(header, buffer, sizeof(struct elog_header));
 
 	/* Data starts immediately after header */
 	elog->data = &buffer[sizeof(struct elog_header)];
@@ -430,7 +425,7 @@ static void elog_reinit_descriptor(struct elog_descriptor *elog)
 {
 	elog_debug("elog_reinit_descriptor()\n");
 	elog_init_descriptor(elog, elog->type, elog->backing_store,
-			     elog->total_size, elog->staging_header);
+			     elog->total_size);
 }
 
 /*
@@ -438,7 +433,6 @@ static void elog_reinit_descriptor(struct elog_descriptor *elog)
  */
 static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 {
-	struct elog_header *staging_header;
 	u8 *area;
 
 	elog_debug("elog_setup_descriptors(base=0x%08x size=%u)\n",
@@ -450,20 +444,14 @@ static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 		return -1;
 	}
 
-	staging_header = malloc(sizeof(struct elog_header));
-	if (!staging_header) {
-		printk(BIOS_ERR, "ELOG: Unable to allocate header\n");
-		return -1;
-	}
-
 	area = malloc(area_size);
 	if (!area) {
-		printk(BIOS_ERR, "ELOG: Unable to determine flash address\n");
+		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;
 	}
 	elog_get_flash()->flash_base = flash_base;
 	elog_init_descriptor(elog_get_flash(), ELOG_DESCRIPTOR_FLASH,
-			     area, area_size, staging_header);
+			     area, area_size);
 
 	/* Initialize the memory area to look like a cleared flash area */
 	area = malloc(area_size);
@@ -472,8 +460,7 @@ static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 		return -1;
 	}
 	memset(area, ELOG_TYPE_EOL, area_size);
-	elog_init_descriptor(elog_get_mem(), ELOG_DESCRIPTOR_MEMORY,
-			     area, area_size, (struct elog_header *)area);
+	elog_init_descriptor(elog_get_mem(), ELOG_DESCRIPTOR_MEMORY,area, area_size);
 
 	return 0;
 }
@@ -500,7 +487,7 @@ static void elog_prepare_empty(struct elog_descriptor *elog,
 		return;
 
 	/* Write out the header */
-	header = elog->staging_header;
+	header = elog_get_header(elog);
 	header->magic = ELOG_SIGNATURE;
 	header->version = ELOG_VERSION;
 	header->header_size = sizeof(struct elog_header);

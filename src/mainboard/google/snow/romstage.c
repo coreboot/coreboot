@@ -46,10 +46,16 @@
 #define PMIC_BUS	0
 #define MMC0_GPIO_PIN	(58)
 
-static int setup_pmic(void)
+static void snow_setup_power(void)
 {
 	int error = 0;
 
+	power_init();
+
+	/* Initialize I2C bus to configure PMIC. */
+	i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
+
+	printk(BIOS_DEBUG, "%s: Setting up PMIC...\n", __func__);
 	/*
 	 * We're using CR1616 coin cell battery that is non-rechargeable
 	 * battery. But, BBCHOSTEN bit of the BBAT Charger Register in
@@ -81,19 +87,19 @@ static int setup_pmic(void)
 
 	error |= max77686_enable_32khz_cp(PMIC_BUS);
 
-	if (error)
-		printk(BIOS_CRIT, "%s: Error during PMIC setup\n", __func__);
-
-	return error;
+	if (error) {
+		printk(BIOS_CRIT, "%s: PMIC error: %#x\n", __func__, error);
+		die("Failed to intialize PMIC.\n");
+	}
 }
 
-static void initialize_s5p_mshc(void)
+static void snow_setup_storage(void)
 {
 	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
 	if (clock_set_mshci(PERIPH_ID_SDMMC0))
-		printk(BIOS_CRIT, "Failed to set clock for SDMMC0.\n");
+		printk(BIOS_CRIT, "%s: Failed to set MMC0 clock.\n", __func__);
 	if (gpio_direction_output(MMC0_GPIO_PIN, 1)) {
-		printk(BIOS_CRIT, "Unable to power on SDMMC0.\n");
+		printk(BIOS_CRIT, "%s: Unable to power on MMC0.\n", __func__);
 	}
 	gpio_set_pull(MMC0_GPIO_PIN, EXYNOS_GPIO_PULL_NONE);
 	gpio_set_drv(MMC0_GPIO_PIN, EXYNOS_GPIO_DRV_4X);
@@ -104,12 +110,12 @@ static void initialize_s5p_mshc(void)
 	exynos_pinmux_config(PERIPH_ID_SDMMC2, 0);
 }
 
-static void graphics(void)
+static void snow_setup_graphics(void)
 {
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 }
 
-static void chromeos_gpios(void)
+static void snow_setup_gpio(void)
 {
 	struct exynos5_gpio_part1 *gpio_pt1;
 	struct exynos5_gpio_part2 *gpio_pt2;
@@ -137,53 +143,49 @@ static void chromeos_gpios(void)
 	s5p_gpio_set_pull(&gpio_pt2->x1, POWER_GPIO, EXYNOS_GPIO_PULL_NONE);
 }
 
+static void snow_setup_memory(struct mem_timings *mem, int is_resume)
+{
+	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: 0x%x\n",
+	       mem->mem_manuf,
+	       mem->mem_type,
+	       mem->mpll_mdiv,
+	       mem->frequency_mhz);
+	if (ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE, !is_resume)) {
+		die("Failed to initialize memory controller.\n");
+	}
+}
+
+static struct mem_timings *snow_setup_clock(void)
+{
+	struct mem_timings *mem = get_mem_timings();
+	struct arm_clk_ratios *arm_ratios = get_arm_clk_ratios();
+	if (!mem) {
+		die("Unable to auto-detect memory timings\n");
+	}
+	system_clock_init(mem, arm_ratios);
+	return mem;
+}
+
 void main(void)
 {
 	struct mem_timings *mem;
-	struct arm_clk_ratios *arm_ratios;
-	int ret;
 	void *entry;
-
-	clock_set_rate(PERIPH_ID_SPI1, 50000000); /* set spi clock to 50Mhz */
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
-	mem = get_mem_timings();
-	arm_ratios = get_arm_clk_ratios();
-	system_clock_init(mem, arm_ratios);
+	mem = snow_setup_clock();
 
 	console_init();
+	snow_setup_power();
 
-	i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
-	if (power_init())
-		power_shutdown();
-	printk(BIOS_DEBUG, "%s: setting up pmic...\n", __func__);
-	if (setup_pmic())
-		power_shutdown();
+	snow_setup_memory(mem, 0);
 
-	if (!mem) {
-		printk(BIOS_CRIT, "Unable to auto-detect memory timings\n");
-		while(1);
-	}
-	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: 0x%x\n",
-		mem->mem_manuf,
-		mem->mem_type,
-		mem->mpll_mdiv,
-		mem->frequency_mhz);
+	snow_setup_storage();
+	snow_setup_gpio();
+	snow_setup_graphics();
 
-	ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE, 1);
-	if (ret) {
-		printk(BIOS_ERR, "Memory controller init failed, err: %x\n",
-		ret);
-		while(1);
-	}
-
-	initialize_s5p_mshc();
-
-	chromeos_gpios();
-
-	graphics();
-
+	/* Set SPI (primary CBFS media) clock to 50MHz. */
+	clock_set_rate(PERIPH_ID_SPI1, 50000000);
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
 

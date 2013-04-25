@@ -36,14 +36,14 @@ enum snow_board_config {
 int board_get_config(void);
 
 enum {
-	BOARD_IS_NOT_WAKEUP,  // A normal boot (not suspend/resume).
-	BOARD_WAKEUP_DIRECT,  // A wake up event that can be resumed any time.
-	BOARD_WAKEUP_NEED_CLOCK_RESET,  // A wake up event that must be resumed
+	SNOW_IS_NOT_WAKEUP,  // A normal boot (not suspend/resume).
+	SNOW_WAKEUP_DIRECT,  // A wake up event that can be resumed any time.
+	SNOW_WAKEUP_NEED_CLOCK_RESET,  // A wake up event that must be resumed
 					// only after clock and memory
 					// controllers are re-initialized.
 };
 
-int board_get_wakeup_state(void);
-void board_wakeup(void);
+int snow_get_wakeup_state(void);
+void snow_wakeup(void);
 
 #endif	/* MAINBOARD_H */

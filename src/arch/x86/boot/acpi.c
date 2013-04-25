@@ -622,37 +622,31 @@ void acpi_write_hest(acpi_hest_t *hest)
 }
 
 #if CONFIG_HAVE_ACPI_RESUME
-void suspend_resume(void)
+void acpi_resume(void *wake_vec)
 {
-	void *wake_vec;
-
-	/* If we happen to be resuming find wakeup vector and jump to OS. */
-	wake_vec = acpi_find_wakeup_vector();
-	if (wake_vec) {
 #if CONFIG_HAVE_SMI_HANDLER
-		u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS_PTR);
+	u32 *gnvs_address = cbmem_find(CBMEM_ID_ACPI_GNVS_PTR);
 
-		/* Restore GNVS pointer in SMM if found */
-		if (gnvs_address && *gnvs_address) {
-			printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
-			       *gnvs_address);
-			smm_setup_structures((void *)*gnvs_address, NULL, NULL);
-		}
-#endif
-
-		/* Call mainboard resume handler first, if defined. */
-		if (mainboard_suspend_resume)
-			mainboard_suspend_resume();
-#if CONFIG_COVERAGE
-		coverage_exit();
-#endif
-		/* Tear down the caching of the ROM. */
-		if (disable_cache_rom)
-			disable_cache_rom();
-
-		post_code(POST_OS_RESUME);
-		acpi_jump_to_wakeup(wake_vec);
+	/* Restore GNVS pointer in SMM if found */
+	if (gnvs_address && *gnvs_address) {
+		printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
+		       *gnvs_address);
+		smm_setup_structures((void *)*gnvs_address, NULL, NULL);
 	}
+#endif
+
+	/* Call mainboard resume handler first, if defined. */
+	if (mainboard_suspend_resume)
+		mainboard_suspend_resume();
+#if CONFIG_COVERAGE
+	coverage_exit();
+#endif
+	/* Tear down the caching of the ROM. */
+	if (disable_cache_rom)
+		disable_cache_rom();
+
+	post_code(POST_OS_RESUME);
+	acpi_jump_to_wakeup(wake_vec);
 }
 
 /* This is to be filled by SB code - startup value what was found. */

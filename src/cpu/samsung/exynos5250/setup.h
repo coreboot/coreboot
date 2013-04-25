@@ -702,9 +702,11 @@ void mem_ctrl_init(void);
  *			which the DMC uses to decide how to split a memory
  *			chunk into smaller chunks to support concurrent
  *			accesses; may vary across boards.
+ * @param mem_reset	Reset memory during initialization.
  * @return 0 if ok, SETUP_ERR_... if there is a problem
  */
-int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size);
+int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
+		       int mem_reset);
 
 void tzpc_init(void);
 /*

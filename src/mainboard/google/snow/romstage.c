@@ -184,7 +184,7 @@ void main(void)
 		mem->mpll_mdiv,
 		mem->frequency_mhz);
 
-	ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE);
+	ret = ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE, 1);
 	if (ret) {
 		printk(BIOS_ERR, "Memory controller init failed, err: %x\n",
 		ret);

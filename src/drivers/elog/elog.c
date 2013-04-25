@@ -354,28 +354,6 @@ static void elog_update_event_buffer_state(struct elog_descriptor *elog)
 	elog->last_event_size = last_event_size;
 }
 
-static void elog_validate_and_fill(struct elog_descriptor *elog)
-{
-	elog_debug("elog_validate_and_fill()\n");
-
-	/* Check if the area is empty or not */
-	if (elog_is_area_clear(elog)) {
-		elog->area_state = ELOG_AREA_EMPTY;
-		return;
-	}
-
-	elog->area_state = ELOG_AREA_HAS_CONTENT;
-
-	/* Validate the header */
-	if (!elog_is_header_valid(elog_get_header(elog))) {
-		elog->header_state = ELOG_HEADER_INVALID;
-		return;
-	}
-
-	elog->header_state = ELOG_HEADER_VALID;
-	elog_update_event_buffer_state(elog);
-}
-
 /*
  * (Re)initialize a new ELOG descriptor
  */
@@ -396,7 +374,22 @@ static void elog_init_descriptor(struct elog_descriptor *elog)
 	elog->last_event_size = 0;
 	elog->event_count = 0;
 
-	elog_validate_and_fill(elog);
+	/* Check if the area is empty or not */
+	if (elog_is_area_clear(elog)) {
+		elog->area_state = ELOG_AREA_EMPTY;
+		return;
+	}
+
+	elog->area_state = ELOG_AREA_HAS_CONTENT;
+
+	/* Validate the header */
+	if (!elog_is_header_valid(elog_get_header(elog))) {
+		elog->header_state = ELOG_HEADER_INVALID;
+		return;
+	}
+
+	elog->header_state = ELOG_HEADER_VALID;
+	elog_update_event_buffer_state(elog);
 }
 
 /*

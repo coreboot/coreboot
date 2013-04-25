@@ -170,15 +170,22 @@ void main(void)
 {
 	struct mem_timings *mem;
 	void *entry;
+	int is_resume = (snow_get_wakeup_state() != SNOW_IS_NOT_WAKEUP);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
 	mem = snow_setup_clock();
 
-	console_init();
-	snow_setup_power();
+	if (!is_resume) {
+		console_init();
+		snow_setup_power();
+	}
 
-	snow_setup_memory(mem, 0);
+	snow_setup_memory(mem, is_resume);
+
+	if (is_resume) {
+		snow_wakeup();
+	}
 
 	snow_setup_storage();
 	snow_setup_gpio();

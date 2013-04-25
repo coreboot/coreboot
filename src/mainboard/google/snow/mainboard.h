@@ -33,7 +33,7 @@ enum snow_board_config {
 	SNOW_CONFIG_RSVD,
 };
 
-int board_get_config(void);
+enum snow_board_config get_board_config(void);
 
 enum {
 	BOARD_IS_NOT_WAKEUP,  // A normal boot (not suspend/resume).
@@ -43,7 +43,7 @@ enum {
 					// controllers are re-initialized.
 };
 
-int board_get_wakeup_state(void);
-void board_wakeup(void);
+int get_wakeup_state(void);
+void wakeup(void);
 
 #endif	/* MAINBOARD_H */

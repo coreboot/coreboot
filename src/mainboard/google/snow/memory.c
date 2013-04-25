@@ -459,7 +459,7 @@ struct mem_timings *get_mem_timings(void)
 	enum mem_manuf mem_manuf;
 	struct mem_timings *mem;
 	
-	board_config = board_get_config();
+	board_config = get_board_config();
 	switch (board_config) {
 	case SNOW_CONFIG_ELPIDA_EVT:
 	case SNOW_CONFIG_ELPIDA_DVT:

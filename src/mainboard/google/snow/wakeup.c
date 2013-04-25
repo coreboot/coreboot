@@ -33,7 +33,7 @@ static int wakeup_need_reset(void)
 	return gpio_get_value(GPIO_Y10);
 }
 
-void board_wakeup(void)
+void wakeup(void)
 {
 	if (wakeup_need_reset())
 		power_reset();
@@ -44,7 +44,7 @@ void board_wakeup(void)
 	die("Failed to wake up.\n");
 }
 
-int board_get_wakeup_state()
+int get_wakeup_state()
 {
 	uint32_t status = power_read_reset_status();
 

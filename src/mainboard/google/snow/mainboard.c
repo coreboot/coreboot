@@ -46,7 +46,7 @@ struct {
 	{ LOGIC_Z, LOGIC_1, SNOW_CONFIG_RSVD },
 };
 
-int board_get_config(void)
+enum snow_board_config get_board_config(void)
 {
 	int i;
 	int id0, id1;

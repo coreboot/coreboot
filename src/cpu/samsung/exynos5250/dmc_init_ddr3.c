@@ -61,7 +61,8 @@ static void reset_phy_ctrl(void)
 	udelay(500);
 }
 
-int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
+int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
+		       int mem_reset)
 {
 	unsigned int val;
 	struct exynos5_phy_control *phy0_ctrl, *phy1_ctrl;
@@ -71,9 +72,14 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size)
 	phy0_ctrl = (struct exynos5_phy_control *)EXYNOS5_DMC_PHY0_BASE;
 	phy1_ctrl = (struct exynos5_phy_control *)EXYNOS5_DMC_PHY1_BASE;
 	dmc = (struct exynos5_dmc *)EXYNOS5_DMC_CTRL_BASE;
-	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: reset phy: ");
-	reset_phy_ctrl();
-	printk(BIOS_SPEW, "done\n");
+
+	if (mem_reset) {
+		printk(BIOS_SPEW, "%s: reset phy: ", __func__);
+		reset_phy_ctrl();
+		printk(BIOS_SPEW, "done\n");
+	} else {
+		printk(BIOS_SPEW, "%s: skip mem_reset.\n", __func__);
+	}
 
 	/* Set Impedance Output Driver */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Set Impedance Output Driver\n");

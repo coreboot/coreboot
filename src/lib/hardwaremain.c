@@ -54,6 +54,7 @@ static boot_state_t bs_dev_resources(void *arg);
 static boot_state_t bs_dev_eanble(void *arg);
 static boot_state_t bs_dev_init(void *arg);
 static boot_state_t bs_post_device(void *arg);
+static boot_state_t bs_os_resume_check(void *arg);
 static boot_state_t bs_os_resume(void *arg);
 static boot_state_t bs_write_tables(void *arg);
 static boot_state_t bs_payload_load(void *arg);
@@ -88,6 +89,7 @@ static struct boot_state boot_states[] = {
 	BS_INIT_ENTRY(BS_DEV_ENABLE, bs_dev_eanble),
 	BS_INIT_ENTRY(BS_DEV_INIT, bs_dev_init),
 	BS_INIT_ENTRY(BS_POST_DEVICE, bs_post_device),
+	BS_INIT_ENTRY(BS_OS_RESUME_CHECK, bs_os_resume_check),
 	BS_INIT_ENTRY(BS_OS_RESUME, bs_os_resume),
 	BS_INIT_ENTRY(BS_WRITE_TABLES, bs_write_tables),
 	BS_INIT_ENTRY(BS_PAYLOAD_LOAD, bs_payload_load),
@@ -157,18 +159,32 @@ static boot_state_t bs_post_device(void *arg)
 
 	timestamp_sync();
 
-	return BS_OS_RESUME;
+	return BS_OS_RESUME_CHECK;
 }
 
-static boot_state_t bs_os_resume(void *arg)
+static boot_state_t bs_os_resume_check(void *arg)
 {
 #if CONFIG_HAVE_ACPI_RESUME
-	suspend_resume();
+	void *wake_vector;
+
+	wake_vector = acpi_find_wakeup_vector();
+
+	if (wake_vector != NULL) {
+		boot_states[BS_OS_RESUME].arg = wake_vector;
+		return BS_OS_RESUME;
+	}
 	post_code(0x8a);
 #endif
-
 	timestamp_add_now(TS_CBMEM_POST);
 
+	return BS_WRITE_TABLES;
+}
+
+static boot_state_t bs_os_resume(void *wake_vector)
+{
+#if CONFIG_HAVE_ACPI_RESUME
+	acpi_resume(wake_vector);
+#endif
 	return BS_WRITE_TABLES;
 }
 

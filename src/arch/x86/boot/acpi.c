@@ -637,9 +637,6 @@ void acpi_resume(void *wake_vec)
 	/* Call mainboard resume handler first, if defined. */
 	if (mainboard_suspend_resume)
 		mainboard_suspend_resume();
-	/* Tear down the caching of the ROM. */
-	if (disable_cache_rom)
-		disable_cache_rom();
 
 	post_code(POST_OS_RESUME);
 	acpi_jump_to_wakeup(wake_vec);

@@ -158,7 +158,8 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 			media->close(media);
 			return file_ptr;
 		} else {
-			LOG(" (unmatched file @0x%x: %s)\n", offset, file_name);
+			DEBUG(" (unmatched file @0x%x: %s)\n", offset,
+			      file_name);
 			media->unmap(media, file_name);
 		}
 

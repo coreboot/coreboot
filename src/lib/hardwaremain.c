@@ -198,6 +198,7 @@ static boot_state_t bs_write_tables(void *arg)
 static boot_state_t bs_payload_load(void *arg)
 {
 	void *payload;
+	void *entry;
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
@@ -206,15 +207,20 @@ static boot_state_t bs_payload_load(void *arg)
 	if (! payload)
 		die("Could not find a payload\n");
 
+	entry = selfload(get_lb_mem(), payload);
+
+	if (! entry)
+		die("Could not load payload\n");
+
 	/* Pass the payload to the next state. */
-	boot_states[BS_PAYLOAD_BOOT].arg = payload;
+	boot_states[BS_PAYLOAD_BOOT].arg = entry;
 
 	return BS_PAYLOAD_BOOT;
 }
 
-static boot_state_t bs_payload_boot(void *payload)
+static boot_state_t bs_payload_boot(void *entry)
 {
-	selfboot(get_lb_mem(), payload);
+	selfboot(entry);
 
 	printk(BIOS_EMERG, "Boot failed");
 	/* Returning from this state will fail because the following signals

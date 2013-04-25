@@ -25,16 +25,24 @@
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
+#include "mainboard.h"
 
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
-	/* kick off the microsecond timer. We want to do this as early
-	 * as we can.
-	 */
-	timer_start();
+	switch (snow_get_wakeup_state()) {
+		case SNOW_WAKEUP_DIRECT:
+			snow_wakeup();
+			break;
 
-	exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
+		case SNOW_IS_NOT_WAKEUP:
+			/* kick off the microsecond timer.
+			 * We want to do this as early as we can.
+			 */
+			timer_start();
+			exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
+			break;
+	}
 #if CONFIG_EARLY_CONSOLE
 	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
 	console_init();

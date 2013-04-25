@@ -377,25 +377,19 @@ static void elog_validate_and_fill(struct elog_descriptor *elog)
 }
 
 /*
- * Initialize a new ELOG descriptor
+ * (Re)initialize a new ELOG descriptor
  */
-static void elog_init_descriptor(struct elog_descriptor *elog,
-				 u8 *buffer, u32 size)
+static void elog_init_descriptor(struct elog_descriptor *elog)
 {
-	elog_debug("elog_init_descriptor(buffer=0x%p size=%u)\n", buffer, size);
+	elog_debug("elog_init_descriptor()\n");
 
 	elog->area_state = ELOG_AREA_UNDEFINED;
 	elog->header_state = ELOG_HEADER_INVALID;
 	elog->event_buffer_state = ELOG_EVENT_BUFFER_OK;
-	elog->backing_store = buffer;
-	elog->total_size = size;
 
 	/* Fill memory buffer by reading from SPI */
-	elog_spi->read(elog_spi, elog->flash_base, size, buffer);
-
-	/* Data starts immediately after header */
-	elog->data = &buffer[sizeof(struct elog_header)];
-	elog->data_size = size - sizeof(struct elog_header);
+	elog_spi->read(elog_spi, elog->flash_base, elog->total_size,
+		       elog->backing_store);
 
 	elog->next_event_offset = 0;
 	elog->last_event_offset = 0;
@@ -406,20 +400,12 @@ static void elog_init_descriptor(struct elog_descriptor *elog,
 }
 
 /*
- * Re-initialize an existing ELOG descriptor
- */
-static void elog_reinit_descriptor(struct elog_descriptor *elog)
-{
-	elog_debug("elog_reinit_descriptor()\n");
-	elog_init_descriptor(elog, elog->backing_store, elog->total_size);
-}
-
-/*
  * Create ELOG descriptor data structures for all ELOG areas.
  */
 static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 {
 	u8 *area;
+	struct elog_descriptor *flash = elog_get_flash();
 
 	elog_debug("elog_setup_descriptors(base=0x%08x size=%u)\n",
 		   flash_base, area_size);
@@ -435,8 +421,15 @@ static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;
 	}
-	elog_get_flash()->flash_base = flash_base;
-	elog_init_descriptor(elog_get_flash(), area, area_size);
+	flash->flash_base = flash_base;
+	flash->backing_store = area;
+	flash->total_size = area_size;
+
+	/* Data starts immediately after header */
+	flash->data = area + sizeof(struct elog_header);
+	flash->data_size = area_size - sizeof(struct elog_header);
+
+	elog_init_descriptor(flash);
 
 	return 0;
 }
@@ -449,7 +442,7 @@ static void elog_flash_erase_area(void)
 
 	elog_flash_erase(elog->backing_store, elog->total_size);
 	memset(elog->backing_store, ELOG_TYPE_EOL, elog->total_size);
-	elog_reinit_descriptor(elog);
+	elog_init_descriptor(elog);
 }
 
 static void elog_prepare_empty(struct elog_descriptor *elog)
@@ -470,7 +463,7 @@ static void elog_prepare_empty(struct elog_descriptor *elog)
 	header->reserved[1] = ELOG_TYPE_EOL;
 	elog_flash_write(elog->backing_store, header->header_size);
 
-	elog_reinit_descriptor(elog);
+	elog_init_descriptor(elog);
 }
 
 static int elog_sync_flash_to_mem(void)
@@ -490,7 +483,7 @@ static int elog_sync_flash_to_mem(void)
 	elog_spi->read(elog_spi, flash->flash_base + sizeof(struct elog_header),
 		       flash->next_event_offset, flash->data);
 
-	elog_reinit_descriptor(flash);
+	elog_init_descriptor(flash);
 
 	return elog_is_area_valid(flash) ? 0 : -1;
 }
@@ -569,7 +562,7 @@ static int elog_shrink(void)
 
 	elog_flash_erase(flash->backing_store, flash->total_size);
 	elog_flash_write(flash->backing_store, flash->total_size);
-	elog_reinit_descriptor(flash);
+	elog_init_descriptor(flash);
 
 	/* Ensure the area was successfully erased */
 	if (flash->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD) {

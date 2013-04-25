@@ -27,6 +27,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <cpu/cpu.h>
@@ -408,10 +409,17 @@ void x86_mtrr_disable_rom_caching(void)
 	enable_cache();
 }
 
-void disable_cache_rom(void)
+static void disable_cache_rom(void *unused)
 {
 	x86_mtrr_disable_rom_caching();
 }
+
+BOOT_STATE_INIT_ENTRIES(disable_rom_cache_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
+	                      disable_cache_rom, NULL),
+	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT,
+	                      disable_cache_rom, NULL),
+};
 #endif
 
 struct var_mtrr_state {

@@ -537,10 +537,6 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	timestamp_add_now(TS_SELFBOOT_JUMP);
 #endif
 
-	/* Tear down the caching of the ROM. */
-	if (disable_cache_rom)
-		disable_cache_rom();
-
 	/* Before we go off to run the payload, see if
 	 * we stayed within our bounds.
 	 */

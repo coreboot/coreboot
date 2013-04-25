@@ -9,9 +9,6 @@ struct bus;
 void initialize_cpus(struct bus *cpu_bus);
 void asmlinkage secondary_cpu_init(unsigned int cpu_index);
 
-/* If a ROM cache was set up disable it before jumping to the payload or OS. */
-void __attribute__((weak)) disable_cache_rom(void);
-
 #if CONFIG_HAVE_SMI_HANDLER
 void smm_init(void);
 void smm_lock(void);

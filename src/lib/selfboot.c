@@ -512,7 +512,7 @@ static int load_self_segments(
 	return 1;
 }
 
-int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
+void *selfload(struct lb_memory *mem, struct cbfs_payload *payload)
 {
 	u32 entry=0;
 	struct segment head;
@@ -527,10 +527,18 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 
 	printk(BIOS_SPEW, "Loaded segments\n");
 
+	return (void *)entry;
+
+out:
+	return NULL;
+}
+
+void selfboot(void *entry)
+{
 	/* Reset to booting from this image as late as possible */
 	boot_successful();
 
-	printk(BIOS_DEBUG, "Jumping to boot code at %x\n", entry);
+	printk(BIOS_DEBUG, "Jumping to boot code at %p\n", entry);
 	post_code(POST_ENTER_ELF_BOOT);
 
 #if CONFIG_COLLECT_TIMESTAMPS
@@ -543,9 +551,5 @@ int selfboot(struct lb_memory *mem, struct cbfs_payload *payload)
 	checkstack(_estack, 0);
 
 	/* Jump to kernel */
-	jmp_to_elf_entry((void*)entry, bounce_buffer, bounce_size);
-	return 1;
-
-out:
-	return 0;
+	jmp_to_elf_entry(entry, bounce_buffer, bounce_size);
 }

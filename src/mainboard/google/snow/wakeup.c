@@ -26,16 +26,16 @@
 
 #include "mainboard.h"
 
-static int wakeup_need_reset(void)
+static int snow_wakeup_need_reset(void)
 {
 	/* The "wake up" event is not reliable (known as "bad wakeup") and needs
 	 * reset if GPIO value is high. */
 	return gpio_get_value(GPIO_Y10);
 }
 
-void board_wakeup(void)
+void snow_wakeup(void)
 {
-	if (wakeup_need_reset())
+	if (snow_wakeup_need_reset())
 		power_reset();
 
 	power_init();  /* Ensure ps_hold_setup() for early wakeup. */
@@ -44,7 +44,7 @@ void board_wakeup(void)
 	die("Failed to wake up.\n");
 }
 
-int board_get_wakeup_state()
+int snow_get_wakeup_state()
 {
 	uint32_t status = power_read_reset_status();
 
@@ -53,10 +53,10 @@ int board_get_wakeup_state()
 	 */
 
 	if (status == S5P_CHECK_DIDLE || status == S5P_CHECK_LPA)
-		return BOARD_WAKEUP_DIRECT;
+		return SNOW_WAKEUP_DIRECT;
 
 	if (status == S5P_CHECK_SLEEP)
-		return BOARD_WAKEUP_NEED_CLOCK_RESET;
+		return SNOW_WAKEUP_NEED_CLOCK_RESET;
 
-	return BOARD_IS_NOT_WAKEUP;
+	return SNOW_IS_NOT_WAKEUP;
 }

@@ -114,15 +114,6 @@ elog_get_next_event_base(struct elog_descriptor *elog)
 }
 
 /*
- * Pointer to the last logged event
- */
-static inline struct event_header*
-elog_get_last_event_base(struct elog_descriptor *elog)
-{
-	return elog_get_event_base(elog, elog->last_event_offset);
-}
-
-/*
  * Update the checksum at the last byte
  */
 static void elog_update_checksum(struct event_header *event, u8 checksum)
@@ -308,8 +299,6 @@ static void elog_update_event_buffer_state(struct elog_descriptor *elog)
 {
 	u32 count = 0;
 	u32 offset = 0;
-	u32 last_offset = 0;
-	u32 last_event_size = 0;
 	struct event_header *event;
 
 	elog_debug("elog_update_event_buffer_state()\n");
@@ -337,8 +326,6 @@ static void elog_update_event_buffer_state(struct elog_descriptor *elog)
 
 		/* Move to the next event */
 		count++;
-		last_offset = offset;
-		last_event_size = event->length;
 		offset += event->length;
 	}
 
@@ -350,16 +337,14 @@ static void elog_update_event_buffer_state(struct elog_descriptor *elog)
 	/* Update data into elog descriptor */
 	elog->event_count = count;
 	elog->next_event_offset = offset;
-	elog->last_event_offset = last_offset;
-	elog->last_event_size = last_event_size;
 }
 
 /*
  * (Re)initialize a new ELOG descriptor
  */
-static void elog_init_descriptor(struct elog_descriptor *elog)
+static void elog_scan_flash(struct elog_descriptor *elog)
 {
-	elog_debug("elog_init_descriptor()\n");
+	elog_debug("elog_scan_flash()\n");
 
 	elog->area_state = ELOG_AREA_UNDEFINED;
 	elog->header_state = ELOG_HEADER_INVALID;
@@ -370,8 +355,6 @@ static void elog_init_descriptor(struct elog_descriptor *elog)
 		       elog->backing_store);
 
 	elog->next_event_offset = 0;
-	elog->last_event_offset = 0;
-	elog->last_event_size = 0;
 	elog->event_count = 0;
 
 	/* Check if the area is empty or not */
@@ -392,60 +375,11 @@ static void elog_init_descriptor(struct elog_descriptor *elog)
 	elog_update_event_buffer_state(elog);
 }
 
-/*
- * Create ELOG descriptor data structures for all ELOG areas.
- */
-static int elog_setup_descriptors(u32 flash_base, u32 area_size)
-{
-	u8 *area;
-	struct elog_descriptor *flash = elog_get_flash();
-
-	elog_debug("elog_setup_descriptors(base=0x%08x size=%u)\n",
-		   flash_base, area_size);
-
-	/* Prepare flash descriptors */
-	if (flash_base == 0) {
-		printk(BIOS_ERR, "ELOG: Invalid flash base\n");
-		return -1;
-	}
-
-	area = malloc(area_size);
-	if (!area) {
-		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
-		return -1;
-	}
-	flash->flash_base = flash_base;
-	flash->backing_store = area;
-	flash->total_size = area_size;
-
-	/* Data starts immediately after header */
-	flash->data = area + sizeof(struct elog_header);
-	flash->data_size = area_size - sizeof(struct elog_header);
-
-	elog_init_descriptor(flash);
-
-	return 0;
-}
-
-static void elog_flash_erase_area(void)
-{
-	struct elog_descriptor *elog = elog_get_flash();
-
-	elog_debug("elog_flash_erase_area()\n");
-
-	elog_flash_erase(elog->backing_store, elog->total_size);
-	memset(elog->backing_store, ELOG_TYPE_EOL, elog->total_size);
-	elog_init_descriptor(elog);
-}
-
 static void elog_prepare_empty(struct elog_descriptor *elog)
 {
 	struct elog_header *header;
 
 	elog_debug("elog_prepare_empty(%u bytes)\n", data_size);
-
-	if (!elog_is_area_clear(elog))
-		return;
 
 	/* Write out the header */
 	header = elog_get_header(elog);
@@ -456,64 +390,7 @@ static void elog_prepare_empty(struct elog_descriptor *elog)
 	header->reserved[1] = ELOG_TYPE_EOL;
 	elog_flash_write(elog->backing_store, header->header_size);
 
-	elog_init_descriptor(elog);
-}
-
-static int elog_sync_flash_to_mem(void)
-{
-	struct elog_descriptor *flash = elog_get_flash();
-
-	elog_debug("elog_sync_flash_to_mem()\n");
-
-	/* Fill with empty pattern first */
-	memset(flash->backing_store, ELOG_TYPE_EOL, flash->total_size);
-
-	/* Read the header from SPI to memory */
-	elog_spi->read(elog_spi, flash->flash_base,
-		       sizeof(struct elog_header), flash->backing_store);
-
-	/* Read the valid flash contents from SPI to memory */
-	elog_spi->read(elog_spi, flash->flash_base + sizeof(struct elog_header),
-		       flash->next_event_offset, flash->data);
-
-	elog_init_descriptor(flash);
-
-	return elog_is_area_valid(flash) ? 0 : -1;
-}
-
-/*
- * Called during ELOG entry handler to prepare state for flash.
- */
-static int elog_flash_area_bootstrap(void)
-{
-	struct elog_descriptor *elog = elog_get_flash();
-
-	elog_debug("elog_flash_area_bootstrap()\n");
-
-	switch (elog->area_state) {
-	case ELOG_AREA_UNDEFINED:
-		printk(BIOS_ERR, "ELOG: flash area undefined\n");
-		return -1;
-
-	case ELOG_AREA_EMPTY:
-		/* Write a new header with no data */
-		elog_prepare_empty(elog);
-		break;
-
-	case ELOG_AREA_HAS_CONTENT:
-		break;
-	}
-
-	if (elog->header_state == ELOG_HEADER_INVALID ||
-		elog->event_buffer_state == ELOG_EVENT_BUFFER_CORRUPTED) {
-		/* If the header is invalid or the events are corrupted,
-		 * no events can be salvaged so erase the entire area. */
-		printk(BIOS_ERR, "ELOG: flash area invalid\n");
-		elog_flash_erase_area();
-		elog_prepare_empty(elog);
-	}
-
-	return 0;
+	elog_scan_flash(elog);
 }
 
 /*
@@ -555,7 +432,7 @@ static int elog_shrink(void)
 
 	elog_flash_erase(flash->backing_store, flash->total_size);
 	elog_flash_write(flash->backing_store, flash->total_size);
-	elog_init_descriptor(flash);
+	elog_scan_flash(flash);
 
 	/* Ensure the area was successfully erased */
 	if (flash->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD) {
@@ -567,22 +444,6 @@ static int elog_shrink(void)
 	elog_add_event_word(ELOG_TYPE_LOG_CLEAR, offset);
 
 	return 0;
-}
-
-/*
- * Initialize the SPI bus and probe for a flash chip
- */
-static int elog_spi_init(void)
-{
-	elog_debug("elog_spi_init()\n");
-
-	/* Prepare SPI subsystem */
-	spi_init();
-
-	/* Look for flash chip */
-	elog_spi = spi_flash_probe(0, 0, 0, 0);
-
-	return elog_spi ? 0 : -1;
 }
 
 #ifndef __SMM__
@@ -642,13 +503,10 @@ int elog_clear(void)
 		return -1;
 
 	/* Erase flash area */
-	elog_flash_erase_area();
-
-	/* Prepare new empty area */
+	elog_flash_erase(flash->backing_store, flash->total_size);
 	elog_prepare_empty(flash);
 
-	/* Update memory area from flash */
-	if (elog_sync_flash_to_mem() < 0)
+	if (!elog_is_area_valid(flash))
 		return -1;
 
 	/* Log the clear event */
@@ -657,90 +515,122 @@ int elog_clear(void)
 	return 0;
 }
 
+static void elog_find_flash(u32 *base, int *size)
+{
+#if CONFIG_CHROMEOS
+	u8 *flash_base_ptr;
+#endif
+
+	elog_debug("elog_find_flash(base = %p, size = %p)\n", base, size);
+
+#if CONFIG_CHROMEOS
+	/* Find the ELOG base and size in FMAP */
+	*size = find_fmap_entry("RW_ELOG", (void **)&flash_base_ptr);
+	if (*size < 0) {
+		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP, "
+		       "using CONFIG_ELOG_FLASH_BASE instead\n");
+		*size = CONFIG_ELOG_AREA_SIZE;
+	} else {
+		*base = elog_flash_address_to_offset(flash_base_ptr);
+
+		/* Use configured size if smaller than FMAP size */
+		if (*size > CONFIG_ELOG_AREA_SIZE)
+			*size = CONFIG_ELOG_AREA_SIZE;
+	}
+#else
+	*base = CONFIG_ELOG_FLASH_BASE;
+	*size = CONFIG_ELOG_AREA_SIZE;
+#endif
+}
+
 /*
  * Event log main entry point
  */
 int elog_init(void)
 {
+	struct elog_descriptor *flash = elog_get_flash();
 	u32 flash_base = CONFIG_ELOG_FLASH_BASE;
 	int flash_size = CONFIG_ELOG_AREA_SIZE;
-#if CONFIG_CHROMEOS
-	u8 *flash_base_ptr;
-#endif
 
 	if (elog_initialized)
 		return 0;
 
 	elog_debug("elog_init()\n");
 
-	/* Find SPI flash chip for backing store */
-	if (elog_spi_init() < 0) {
+	/* Prepare SPI */
+	spi_init();
+	elog_spi = spi_flash_probe(0, 0, 0, 0);
+	if (!elog_spi) {
 		printk(BIOS_ERR, "ELOG: Unable to find SPI flash\n");
 		return -1;
 	}
 
-#if CONFIG_CHROMEOS
-	/* Find the ELOG base and size in FMAP */
-	flash_size = find_fmap_entry("RW_ELOG", (void **)&flash_base_ptr);
-	if (flash_size < 0) {
-		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP, "
-		       "using CONFIG_ELOG_FLASH_BASE instead\n");
-		flash_size = CONFIG_ELOG_AREA_SIZE;
-	} else {
-		flash_base = elog_flash_address_to_offset(flash_base_ptr);
-
-		/* Use configured size if smaller than FMAP size */
-		if (flash_size > CONFIG_ELOG_AREA_SIZE)
-			flash_size = CONFIG_ELOG_AREA_SIZE;
-	}
-#endif
-
-	/* Setup descriptors for flash and memory areas */
-	if (elog_setup_descriptors(flash_base, flash_size) < 0) {
-		printk(BIOS_ERR, "ELOG: Unable to initialize descriptors\n");
+	/* Set up the backing store */
+	elog_find_flash(&flash_base, &flash_size);
+	if (flash_base == 0) {
+		printk(BIOS_ERR, "ELOG: Invalid flash base\n");
 		return -1;
 	}
 
-	/* Bootstrap the flash area */
-	if (elog_flash_area_bootstrap() < 0) {
-		printk(BIOS_ERR, "ELOG: Unable to bootstrap flash area\n");
+	flash->backing_store = malloc(flash_size);
+	if (!flash->backing_store) {
+		printk(BIOS_ERR, "ELOG: Unable to allocate backing store\n");
 		return -1;
 	}
+	flash->flash_base = flash_base;
+	flash->total_size = flash_size;
 
-	/* Initialize the memory area */
-	if (elog_sync_flash_to_mem() < 0) {
-		printk(BIOS_ERR, "ELOG: Unable to initialize memory area\n");
+	/* Data starts immediately after header */
+	flash->data = flash->backing_store + sizeof(struct elog_header);
+	flash->data_size = flash_size - sizeof(struct elog_header);
+
+	/* Load the log from flash */
+	elog_scan_flash(flash);
+
+	/* Prepare the flash if necessary */
+	if (flash->header_state == ELOG_HEADER_INVALID ||
+		flash->event_buffer_state == ELOG_EVENT_BUFFER_CORRUPTED) {
+		/* If the header is invalid or the events are corrupted,
+		 * no events can be salvaged so erase the entire area. */
+		printk(BIOS_ERR, "ELOG: flash area invalid\n");
+		elog_flash_erase(flash->backing_store, flash->total_size);
+		elog_prepare_empty(flash);
+	}
+
+	if (flash->area_state == ELOG_AREA_EMPTY)
+		elog_prepare_empty(flash);
+
+	if (!elog_is_area_valid(flash)) {
+		printk(BIOS_ERR, "ELOG: Unable to prepare flash\n");
 		return -1;
 	}
 
 	elog_initialized = 1;
 
 	printk(BIOS_INFO, "ELOG: FLASH @0x%p [SPI 0x%08x]\n",
-	       elog_get_flash()->backing_store, elog_get_flash()->flash_base);
+	       flash->backing_store, flash->flash_base);
 
-	printk(BIOS_INFO, "ELOG: areas are %d bytes, full threshold %d,"
-	       " shrink size %d\n", CONFIG_ELOG_AREA_SIZE,
+	printk(BIOS_INFO, "ELOG: area is %d bytes, full threshold %d,"
+	       " shrink size %d\n", flash_size,
 	       CONFIG_ELOG_FULL_THRESHOLD, CONFIG_ELOG_SHRINK_SIZE);
 
 	/* Log a clear event if necessary */
-	if (elog_get_flash()->event_count == 0)
-		elog_add_event_word(ELOG_TYPE_LOG_CLEAR,
-				    elog_get_flash()->total_size);
+	if (flash->event_count == 0)
+		elog_add_event_word(ELOG_TYPE_LOG_CLEAR, flash->total_size);
 
 	/* Shrink the log if we are getting too full */
-	if (elog_get_flash()->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
+	if (flash->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
 		if (elog_shrink() < 0)
 			return -1;
 
-#if CONFIG_ELOG_BOOT_COUNT && !defined(__SMM__)
+#if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */
-	if (acpi_slp_type != 3)
+	if (CONFIG_ELOG_BOOT_COUNT && acpi_slp_type != 3)
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
-#endif
 
-#if CONFIG_CMOS_POST && !defined(__SMM__)
 	/* Check and log POST codes from previous boot */
-	cmos_post_log();
+	if (CONFIG_CMOS_POST)
+		cmos_post_log();
 #endif
 
 	return 0;
@@ -818,8 +708,6 @@ void elog_add_event_raw(u8 event_type, void *data, u8 data_size)
 
 	elog_flash_write((void *)event, event_size);
 
-	flash->last_event_offset = flash->next_event_offset;
-	flash->last_event_size = event_size;
 	flash->next_event_offset += event_size;
 
 	printk(BIOS_INFO, "ELOG: Event(%X) added with size %d\n",

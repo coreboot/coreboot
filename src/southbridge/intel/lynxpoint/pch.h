@@ -574,6 +574,8 @@ void set_gpio(int gpio_num, int value);
 #define D19IR		0x3168	/* 16bit */
 #define ACPIIRQEN	0x31e0	/* 32bit */
 #define OIC		0x31fe	/* 16bit */
+#define PMSYNC_CONFIG	0x33c4	/* 32bit */
+#define PMSYNC_CONFIG2	0x33cc	/* 32bit */
 #define SOFT_RESET_CTRL 0x38f4
 #define SOFT_RESET_DATA 0x38f8
 

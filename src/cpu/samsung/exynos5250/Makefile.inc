@@ -1,7 +1,7 @@
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware
 # image outside of CBFS
-#INTERMEDIATE += exynos5250_add_bl1
+INTERMEDIATE += exynos5250_add_bl1
 
 bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART

@@ -129,7 +129,6 @@ setgtt(int start, int end, unsigned long base, int inc)
 	printk(BIOS_INFO, "%s(%d,%d,0x%08lx,%d);\n",__func__, start, end, base, inc);
 
 	for(i = start; i < end; i++){
-		//udelay(100);
 		u32 word = base + i*inc;
 		WRITE32(word|1,(i*4)|1);
 	}
@@ -159,11 +158,7 @@ int gtt_setup(unsigned int mmiobase)
         write32(mmiobase + GFX_FLSH_CNTL, 0);
 
 	return 0;
-
-
 }
-
-
 
 
 static unsigned long tickspermicrosecond = 1795;
@@ -311,7 +306,6 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	int index;
 	unsigned long temp;
-	u32 auxin[16], auxout[16];
 	mmio = (void *)pmmio;
 	addrport = piobase;
 	dataport = addrport + 4;
@@ -348,68 +342,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	index = run(0);
 	printk(BIOS_SPEW, "Run returns %d\n", index);
-	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_DPCD_REV<<8|0xe;
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 14);
-	auxout[0] = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x0<<8|0x0;
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 3, auxin, 0);
-	index = run(index);
-	printk(BIOS_SPEW, "Run returns %d\n", index);
-	auxout[0] = 0<<31 /* i2c */|0<<30|0x0<<28/*W*/|0x0<<8|0x0;
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 3, auxin, 0);
-	index = run(index);
-	printk(BIOS_SPEW, "Run returns %d\n", index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_SET_POWER<<8|0x0;
-	auxout[1] = 0x01000000;
-	/* DP_SET_POWER_D0 | DP_PSR_SINK_INACTIVE */
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_LINK_BW_SET<<8|0x8;
-	auxout[1] = 0x0a840000;
-	/*( DP_LINK_BW_2_7 &0xa)|0x0000840a*/
-	auxout[2] = 0x00000000;
-	auxout[3] = 0x01000000;
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 13, auxin, 0);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
-	auxout[1] = 0x21000000;
-	/* DP_TRAINING_PATTERN_1 | DP_LINK_SCRAMBLING_DISABLE |
-	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000021*/
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_LANE0_SET<<8|0x3;
-	auxout[1] = 0x00000000;
-	/* DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0 |0x00000000*/
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 8, auxin, 0);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x5;
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 5);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
-	auxout[1] = 0x22000000;
-	/* DP_TRAINING_PATTERN_2 | DP_LINK_SCRAMBLING_DISABLE |
-	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000022*/
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_LANE0_SET<<8|0x3;
-	auxout[1] = 0x00000000;
-	/* DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0 |0x00000000*/
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 8, auxin, 0);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x5;
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 4, auxin, 5);
-	index = run(index);
-	auxout[0] = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0;
-	auxout[1] = 0x00000000;
-	/* DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE |
-	 * 	DP_SYMBOL_ERROR_COUNT_BOTH |0x00000000*/
-	intel_dp_aux_ch(DPA_AUX_CH_CTL, DPA_AUX_CH_DATA1, auxout, 5, auxin, 0);
-	index = run(index);
 
-	if (index != niodefs)
-		printk(BIOS_ERR, "Left over IO work in i915_lightup"
-			" -- this is likely a table error. "
-			"Only %d of %d were done.\n", index, niodefs);
-	printk(BIOS_SPEW, "DONE startup\n");
 	verbose = 0;
 	/* GTT is the Global Translation Table for the graphics pipeline.
 	 * It is used to translate graphics addresses to physical
@@ -434,7 +367,6 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	 * This call sets the GTT to point to a linear range of pages
 	 * starting at physbase.
 	 */
-	delay(1);
 
 	if ( gtt_setup(pmmio) ){
 		printk(BIOS_ERR, "ERROR: GTT Setup Failed!!!\n");
@@ -451,18 +383,10 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	else
 		printk(BIOS_ERR, "ERROR: GTT is still Disabled!!!\n");
 
-#if 1 /* the memset fails to display anything interesting*/
-	int i = 0;
-        volatile unsigned long *lp = (unsigned long *)graphics;
-        for(i = 0; i < (FRAME_BUFFER_BYTES / 4 ); i++)
-                lp[i] = 0x00ff0000; /* red */
-
-	delay(1); /* for seeing it before it's corrupt again */
-#else
-	printk(BIOS_SPEW, "memset %p to 0x00ff0000 for %d bytes\n",
+	printk(BIOS_SPEW, "memset %p to 0x00 for %d bytes\n",
 		(void *)graphics, FRAME_BUFFER_BYTES);
-	memset((void *)graphics, 0x00ff0000, FRAME_BUFFER_BYTES);
-#endif
+	memset((void *)graphics, 0x00, FRAME_BUFFER_BYTES);
+
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	i915_init_done = 1;
 	oprom_is_loaded = 1;

@@ -54,6 +54,9 @@ void intel_pch_finalize_smm(void)
 	/* GEN_PMCON Lock */
 	pci_or_config8(PCH_LPC_DEV, 0xa6, (1 << 1) | (1 << 2));
 
+	/* PMSYNC */
+	RCBA32_OR(PMSYNC_CONFIG, (1 << 31));
+
 	/* R/WO registers */
 	RCBA32(0x21a4) = RCBA32(0x21a4);
 	pci_write_config32(PCI_DEV(0, 27, 0), 0x74,

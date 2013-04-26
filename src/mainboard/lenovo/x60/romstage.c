@@ -29,6 +29,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <lib.h>
+#include <cbmem.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
@@ -210,12 +211,11 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
-#include <cbmem.h>
-
 void main(unsigned long bist)
 {
 	u32 reg32;
 	int boot_mode = 0;
+	int cbmem_was_initted;
 	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0x52, 0x51, 0x53 };
 
 	if (bist == 0)
@@ -314,14 +314,13 @@ void main(unsigned long bist)
 
 	MCHBAR16(SSKPD) = 0xCAFE;
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* Start address of high memory tables */
-	unsigned long high_ram_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
+	cbmem_was_initted = !cbmem_initialize();
 
+#if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
-	if ((boot_mode == 2) && cbmem_reinit((u64)high_ram_base)) {
+	if ((boot_mode == 2) && cbmem_was_initted) {
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
@@ -335,5 +334,10 @@ void main(unsigned long bist)
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, SKPAD_ACPI_S3_MAGIC);
 	}
+#endif
+
+#if CONFIG_CONSOLE_CBMEM
+        /* Keep this the last thing this function does. */
+        cbmemc_reinit();
 #endif
 }

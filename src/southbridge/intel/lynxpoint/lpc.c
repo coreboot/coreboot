@@ -304,7 +304,7 @@ static void lpt_pm_init(struct device *dev)
 
 const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
 	RCBA_RMW_REG_32(0x232c, ~1, 0x00000000),  /* 4 */
-	RCBA_RMW_REG_32(0x1100, ~0, 0x0000c000),  /* 5 */
+	RCBA_RMW_REG_32(0x1100, ~0xc000, 0xc000),  /* 5 */
 	RCBA_RMW_REG_32(0x1100, ~0, 0x00000100),  /* 6 */
 	RCBA_RMW_REG_32(0x1100, ~0, 0x0000003f),  /* 7 */
 	RCBA_RMW_REG_32(0x2320, ~0x60, 0x10),     /* 8? */
@@ -343,7 +343,7 @@ const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
 	RCBA_RMW_REG_32(0x33d4, ~0, 0x08000000),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x33c8, ~0, 0x08000080),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b10,  0, 0x0000883c),  /* Power Optimizer */
-	RCBA_RMW_REG_32(0x2b14,  0, 0x1e0a4610),  /* Power Optimizer */
+	RCBA_RMW_REG_32(0x2b14,  0, 0x1e0a4616),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b24,  0, 0x40000005),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b20,  0, 0x0005db01),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x3a80,  0, 0x05145005),  /* 21? */
@@ -376,6 +376,10 @@ static void lpt_lp_pm_init(struct device *dev)
 	if ((config->sata_port_map & ((1 << 1)|(1 << 0))) == 0)
 		data |= (1 << 20) | (1 << 18);
 	RCBA32(0x3a84) = data;
+
+	/* Set RCBA 0x2b1c[29]=1 if DSP disabled */
+	if (RCBA32(FD) & PCH_DISABLE_ADSPD)
+		RCBA32_OR(0x2b1c, (1 << 29));
 
 	/* Lock */
 	RCBA32_OR(0x3a6c, 0x00000001);
@@ -451,12 +455,15 @@ static void enable_lp_clock_gating(device_t dev)
 		reg32 &= ~(1 << 29); // LPC Dynamic
 	else
 		reg32 |= (1 << 29); // LPC Dynamic
-	reg32 |= (1 << 30); // LP LPC
+	reg32 |= (1 << 31); // LP LPC
+	reg32 |= (1 << 30); // LP BLA
 	reg32 |= (1 << 28); // GPIO Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic
-	reg32 |= (1 << 26); // LP LPC
+	reg32 |= (1 << 26); // Generic Platform Event Clock
+	if (RCBA32(BUC) & PCH_DISABLE_GBE)
+		reg32 |= (1 << 23); // GbE Static
 	reg32 |= (1 << 22); // HDA Dynamic
-	reg32 |= (1 << 16); // PCIe Dynamic
+	reg32 |= (1 << 16); // PCI Dynamic
 	RCBA32(CG) = reg32;
 
 	RCBA32_OR(0x3434, 0x7); // LP LPC
@@ -466,7 +473,7 @@ static void enable_lp_clock_gating(device_t dev)
 	RCBA32_OR(0x38c0, 0x3c07); // SPI Dynamic
 
 	pch_iobp_update(0xCF000000, ~0UL, 0x00007001);
-	pch_iobp_update(0xCE00C000, ~0UL, 0x00000001);
+	pch_iobp_update(0xCE00C000, ~1UL, 0x00000000); // bit0=0 in BWG 1.4.0
 }
 
 static void pch_set_acpi_mode(void)

@@ -274,6 +274,71 @@ static void calibrate_24mhz_bclk(void)
 	       MCHBAR32(BIOS_MAILBOX_DATA));
 }
 
+static u32 pcode_mailbox_read(u32 command)
+{
+	if (pcode_ready() < 0) {
+		printk(BIOS_ERR, "PCODE: mailbox timeout on wait ready.\n");
+		return 0;
+	}
+
+	/* Send command and start transaction */
+	MCHBAR32(BIOS_MAILBOX_INTERFACE) = command | MAILBOX_RUN_BUSY;
+
+	if (pcode_ready() < 0) {
+		printk(BIOS_ERR, "PCODE: mailbox timeout on completion.\n");
+		return 0;
+	}
+
+	/* Read mailbox */
+	return MCHBAR32(BIOS_MAILBOX_DATA);
+}
+
+static void configure_pch_power_sharing(void)
+{
+	u32 pch_power, pch_power_ext, pmsync, pmsync2;
+	int i;
+
+	/* Read PCH Power levels from PCODE */
+	pch_power = pcode_mailbox_read(MAILBOX_BIOS_CMD_READ_PCH_POWER);
+	pch_power_ext = pcode_mailbox_read(MAILBOX_BIOS_CMD_READ_PCH_POWER_EXT);
+
+	printk(BIOS_INFO, "PCH Power: PCODE Levels 0x%08x 0x%08x\n",
+               pch_power, pch_power_ext);
+
+	pmsync = RCBA32(PMSYNC_CONFIG);
+	pmsync2 = RCBA32(PMSYNC_CONFIG2);
+
+	/* Program PMSYNC_TPR_CONFIG PCH power limit values
+	 *  pmsync[0:4]   = mailbox[0:5]
+	 *  pmsync[8:12]  = mailbox[6:11]
+	 *  pmsync[16:20] = mailbox[12:17]
+	 */
+	for (i = 0; i < 3; i++) {
+		u32 level = pch_power & 0x3f;
+		pch_power >>= 6;
+		pmsync &= ~(0x1f << (i * 8));
+		pmsync |= (level & 0x1f) << (i * 8);
+	}
+	RCBA32(PMSYNC_CONFIG) = pmsync;
+
+	/* Program PMSYNC_TPR_CONFIG2 Extended PCH power limit values
+	 *  pmsync2[0:4]   = mailbox[23:18]
+	 *  pmsync2[8:12]  = mailbox_ext[6:11]
+	 *  pmsync2[16:20] = mailbox_ext[12:17]
+	 *  pmsync2[24:28] = mailbox_ext[18:22]
+	 */
+	pmsync2 &= ~0x1f;
+	pmsync2 |= pch_power & 0x1f;
+
+	for (i = 1; i < 4; i++) {
+		u32 level = pch_power_ext & 0x3f;
+		pch_power_ext >>= 6;
+		pmsync2 &= ~(0x1f << (i * 8));
+		pmsync2 |= (level & 0x1f) << (i * 8);
+	}
+	RCBA32(PMSYNC_CONFIG2) = pmsync2;
+}
+
 int cpu_config_tdp_levels(void)
 {
 	msr_t platform_info;
@@ -574,8 +639,10 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
 	x86_mtrr_check();
 
-	if (is_ult())
+	if (is_ult()) {
 		calibrate_24mhz_bclk();
+		configure_pch_power_sharing();
+	}
 
 	/* Call through the cpu driver's initialization. */
 	cpu_initialize(0);

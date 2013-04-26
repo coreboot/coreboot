@@ -746,6 +746,10 @@ int elog_clear(void)
 
 	elog_debug("elog_clear()\n");
 
+	/* Make sure ELOG structures are initialized */
+	if (elog_init() < 0)
+		return -1;
+
 	/* Erase flash area */
 	elog_flash_erase_area();
 

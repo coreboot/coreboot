@@ -31,6 +31,11 @@
 #include <arch/acpi.h>
 #include "i945.h"
 
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+        uint64_t graphics_ram_resource_base = 0;
+        uint64_t graphics_ram_resource_size = 0;
+#endif
+
 static int get_pcie_bar(u32 *base, u32 *len)
 {
 	device_t dev;
@@ -173,6 +178,13 @@ static void pci_domain_set_resources(device_t dev)
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk_stolen * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	graphics_ram_resource_base = ( high_tables_base - (4 * 1024 * 1024) );
+	graphics_ram_resource_size = (4 * 1024 * 1024);
+
+	reserved_ram_resource(dev, 8, graphics_ram_resource_base >> 10,
+				graphics_ram_resource_size >> 10);
+#endif
 }
 
 	/* TODO We could determine how many PCIe busses we need in

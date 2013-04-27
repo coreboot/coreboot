@@ -37,6 +37,7 @@
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
+#include <timer.h>
 #include <timestamp.h>
 
 #if BOOT_STATE_DEBUG
@@ -58,6 +59,19 @@ static boot_state_t bs_write_tables(void *arg);
 static boot_state_t bs_payload_load(void *arg);
 static boot_state_t bs_payload_boot(void *arg);
 
+/*
+ * Typically a state will take 4 time samples:
+ *   1. Before state entry callbacks
+ *   2. After state entry callbacks / Before state function.
+ *   3. After state function / Before state exit callbacks.
+ *   4. After state exit callbacks.
+ */
+#define MAX_TIME_SAMPLES 4
+struct boot_state_times {
+	int num_samples;
+	struct mono_time samples[MAX_TIME_SAMPLES];
+};
+
 struct boot_state {
 	const char *name;
 	boot_state_t id;
@@ -65,6 +79,9 @@ struct boot_state {
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
 	int complete;
+#if CONFIG_HAVE_MONOTONIC_TIMER
+	struct boot_state_times times;
+#endif
 };
 
 #define BS_INIT(state_, run_func_)		\
@@ -228,6 +245,39 @@ static boot_state_t bs_payload_boot(void *entry)
 	return BS_PAYLOAD_BOOT;
 }
 
+#if CONFIG_HAVE_MONOTONIC_TIMER
+static void bs_sample_time(struct boot_state *state)
+{
+	struct mono_time *mt;
+
+	mt = &state->times.samples[state->times.num_samples];
+	timer_monotonic_get(mt);
+	state->times.num_samples++;
+}
+
+static void bs_report_time(struct boot_state *state)
+{
+	struct rela_time entry_time;
+	struct rela_time run_time;
+	struct rela_time exit_time;
+	struct boot_state_times *times;
+
+	times = &state->times;
+	entry_time = mono_time_diff(&times->samples[0], &times->samples[1]);
+	run_time = mono_time_diff(&times->samples[1], &times->samples[2]);
+	exit_time = mono_time_diff(&times->samples[2], &times->samples[3]);
+
+	printk(BIOS_DEBUG, "BS: %s times (us): entry %ld run %ld exit %ld\n",
+	       state->name,
+	       rela_time_in_microseconds(&entry_time),
+	       rela_time_in_microseconds(&run_time),
+	       rela_time_in_microseconds(&exit_time));
+}
+#else
+static inline void bs_sample_time(struct boot_state *state) {}
+static inline void bs_report_time(struct boot_state *state) {}
+#endif
+
 static void bs_call_callbacks(struct boot_state *state,
                               boot_state_sequence_t seq)
 {
@@ -262,12 +312,24 @@ static void bs_walk_state_machine(boot_state_t current_state_id)
 		}
 
 		printk(BS_DEBUG_LVL, "BS: Entering %s state.\n", state->name);
+
+		bs_sample_time(state);
+
 		bs_call_callbacks(state, BS_ON_ENTRY);
+
+		bs_sample_time(state);
 
 		current_state_id = state->run_state(state->arg);
 
 		printk(BS_DEBUG_LVL, "BS: Exiting %s state.\n", state->name);
+
+		bs_sample_time(state);
+
 		bs_call_callbacks(state, BS_ON_EXIT);
+
+		bs_sample_time(state);
+
+		bs_report_time(state);
 
 		state->complete = 1;
 	}

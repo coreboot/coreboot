@@ -852,7 +852,7 @@ sataInitMidPost (
 {
   UINT32   ddBar5;
   sataBar5setting (pConfig, &ddBar5);
-  //If this is not S3 resume and also if SATA set to one of IDE mode, them implement drive detection workaround.
+  //If this is not S3 resume and also if SATA set to one of IDE mode, then implement drive detection workaround.
   if ( ! (pConfig->S3Resume) && ( ((pConfig->SataClass) != AHCI_MODE)  && ((pConfig->SataClass) != RAID_MODE) ) ) {
     sataDriveDetection (pConfig, &ddBar5);
   }

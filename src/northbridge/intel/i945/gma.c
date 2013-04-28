@@ -53,6 +53,8 @@ static void gma_func0_init(struct device *dev)
 	/* This should probably run before post VBIOS init. */
 	printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
 	u32 iobase, mmiobase, physbase, graphics_base;
+	u16 reg16;
+
 	iobase = dev->resource_list[1].base;
 	mmiobase = dev->resource_list[0].base;
 	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
@@ -60,6 +62,19 @@ static void gma_func0_init(struct device *dev)
 
 	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
 	i915lightup(physbase, iobase, mmiobase, graphics_base);
+
+	/* Disable interupts
+	 * Without that the i915 driver prints that(but still works):
+	 * i915: render error detected, EIR: 0x00000010
+	 * i915: page table error
+	 * i915:   PGTBL_ER: 0x00000013
+	 * [drm:i915_report_and_clear_eir] *ERROR* EIR stuck: 0x00000010, masking
+	 * i915: render error detected, EIR: 0x00000010
+	 * i915: page table error
+	 * i915:   PGTBL_ER: 0x00000013
+	 */
+	reg16 = pci_read_config16(dev,PCI_COMMAND);
+	pci_write_config16(dev,PCI_COMMAND, reg16|(1<<10));
 #endif
 
 }

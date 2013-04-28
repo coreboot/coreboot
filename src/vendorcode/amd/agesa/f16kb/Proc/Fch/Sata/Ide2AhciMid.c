@@ -68,7 +68,7 @@ FchInitMidSataIde2Ahci (
 
   SataBar5setting (LocalCfgPtr, &Bar5);
   //
-  //If this is not S3 resume and also if SATA set to one of IDE mode, them implement drive detection workaround.
+  //If this is not S3 resume and also if SATA set to one of IDE mode, then implement drive detection workaround.
   //
   if ( ! (LocalCfgPtr->Misc.S3Resume) ) {
     SataDriveDetection (LocalCfgPtr, &Bar5);

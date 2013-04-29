@@ -5,6 +5,7 @@ romstage-y += romstage.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
+ramstage-$(CONFIG_MONOTONIC_TIMER_MSR) += monotonic_timer.c
 
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 

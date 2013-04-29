@@ -35,7 +35,7 @@ SECTIONS
 	_module_link_start_addr = .;
 	_payload_begin_offset  = LOADADDR(.header) + SIZEOF(.header);
 
-	.text : AT (_payload_begin_offset) {
+	.payload : AT (_payload_begin_offset) {
 		/* C code of the module. */
 		*(.textfirst);
 		*(.text);
@@ -66,27 +66,26 @@ SECTIONS
 		*(.rodata);
 		*(.rodata.*);
 		. = ALIGN(4);
-	}
 
-	.module_params : AT (LOADADDR(.text) + SIZEOF(.text)) {
 		/* The parameters section can be used to pass parameters
 		 * to a module, however there has to be an prior agreement
 		 * on how to interpret the parameters. */
 		_module_params_begin = .;
 		*(.module_parameters);
 		_module_params_end = .;
-		. = ALIGN(4);
-	}
+		. = ALIGN(8);
 
-	.data : AT (LOADADDR(.module_params) + SIZEOF(.module_params)) {
+		/* Data section. */
 		_sdata = .;
 		*(.data);
 		. = ALIGN(4);
 		_edata = .;
+
+		. = ALIGN(8);
 	}
 
 	/* _payload_end marks the end of the module's code and data. */
-	_payload_end_offset = LOADADDR(.data) + SIZEOF(.data);
+	_payload_end_offset = LOADADDR(.payload) + SIZEOF(.payload);
 
 	.bss (NOLOAD) : {
 		/* C uninitialized data of the module. */

@@ -122,4 +122,17 @@ config ID_SECTION_OFFSET
 	hex
 	default 0x80
 
+config X86_64
+	bool "Build for an x86_64 platform"
+	depends on EXPERT
+	default n
+	help
+	  Build coreboot for 64-bit x86, not 32-bit. Pretty much
+	  all the source should be the same. This will affect early
+	  startup as we switch into long mode. On Intel platforms,
+	  which have a binary blob, this will make calls into the
+	  blob harder. On AMD platforms, and open Intel platforms,
+	  this should Just Work. Though at present, this option
+	  has no effect.
+
 endmenu

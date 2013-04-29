@@ -1,0 +1,163 @@
+chip northbridge/intel/sandybridge
+
+	device cpu_cluster 0 on
+		chip cpu/intel/socket_rPGA989
+			device lapic 0 on end
+		end
+		chip cpu/intel/model_206ax
+			# Magic APIC ID to locate this chip
+			device lapic 0xACAC off end
+
+			# Coordinate with HW_ALL
+			register "pstate_coord_type" = "0xfe" # TODO: This is never read.
+
+			register "c1_acpower" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_acpower" = "4"	# ACPI(C2) = MWAIT(C3)
+			register "c3_acpower" = "0"	# ACPI(C3) = MWAIT(C7)
+
+			register "c1_battery" = "1"	# ACPI(C1) = MWAIT(C1)
+			register "c2_battery" = "4"	# ACPI(C2) = MWAIT(C3)
+			register "c3_battery" = "0"	# ACPI(C3) = MWAIT(C7)
+		end
+	end
+
+	device domain 0 on
+		device pci 00.0 on end # host bridge
+		device pci 01.0 on end # PCIe Bridge x16
+		device pci 02.0 on end # vga controller
+
+		chip southbridge/intel/bd82x6x # Intel Series 6 Cougar Point PCH
+			register "pirqa_routing" = "0x8b"
+			register "pirqb_routing" = "0x8b"
+			register "pirqc_routing" = "0x8b"
+			register "pirqd_routing" = "0x8b"
+			register "pirqe_routing" = "0x8b"
+			register "pirqf_routing" = "0x8b"
+			register "pirqg_routing" = "0x8b"
+			register "pirqh_routing" = "0x8b"
+
+			register "ide_legacy_combined" = "0x0" # TODO: Does nothing since generations, remove from sb code?
+			register "sata_ahci" = "0x1"
+			# Enable all SATA ports 0-5
+			register "sata_port_map" = "0x3f"
+			# Set max SATA speed to 6.0 Gb/s (should be the default, anyway)
+			register "sata_interface_speed_support" = "0x3"
+
+			# TODO: Enable generic LPC decodes...
+			register "gen1_dec" = "0x001c02e1"
+			#register "gen2_dec" = "0x00000000"
+			#register "gen3_dec" = "0x00000000"
+			#register "gen4_dec" = "0x00000000"
+
+			# Disable root port coalescing
+			register "pcie_port_coalesce" = "0"
+
+			device pci 14.0 on end # USB 3.0 Controller
+			device pci 16.0 on end # Management Engine Interface 1
+			device pci 16.1 off end # Management Engine Interface 2
+			device pci 16.2 off end # Management Engine IDE-R
+			device pci 16.3 off end # Management Engine KT
+			device pci 19.0 on end # Intel Gigabit Ethernet
+			device pci 1a.0 on end # USB2 EHCI #2
+			device pci 1b.0 on end # High Definition Audio
+
+			# Disabling 1c.0 might break IRQ settings as it enables port coalescing
+			# There are two mini PCIe x1 sockets, so one PCIe port is unrouted
+			device pci 1c.0 on end # PCIe Port #1 mini PCIe x1?
+			device pci 1c.1 on end # PCIe Port #2 mini PCIe x1?
+			device pci 1c.2 on end # PCIe Port #3 second Ethernet NIC
+			device pci 1c.3 on end # PCIe Port #4 third Ethernet NIC
+			device pci 1c.4 on end # PCIe Port #5 first Ethernet PHY
+			device pci 1c.5 on end # PCIe Port #6 FireWire
+			device pci 1c.6 on end # PCIe Port #7 PCIe x1
+			device pci 1c.7 on end # PCIe Port #8 mini PCIe x1?
+
+			device pci 1d.0 on end # USB2 EHCI #1
+			device pci 1e.0 off end # PCI bridge
+			device pci 1f.0 on #LPC bridge
+				chip superio/winbond/w83627dhg
+					device pnp 2e.0 off #  Floppy
+					end
+					device pnp 2e.1 off #  Parallel Port
+					end
+					device pnp 2e.2 on #  Com1
+						io 0x60 = 0x3f8
+						irq 0x70 = 4
+					end
+					device pnp 2e.3 on #  Com2
+						io 0x60 = 0x2f8
+						irq 0x70 = 3
+					end
+					device pnp 2e.5 off #  Keyboard
+					end
+					device pnp 2e.6 off #  SPI
+					end
+					device pnp 2e.307 off #  GPIO 1
+					end
+					device pnp 2e.8 off #  WDTO#, PLED
+					end
+					device pnp 2e.009 on #  GPIO2 -- original firmware sets this on
+					end
+					device pnp 2e.109 on #  GPIO3 -- original firmware sets this on
+					end
+					device pnp 2e.209 off #  GPIO4
+					end
+					device pnp 2e.309 off #  GPIO5
+					end
+					device pnp 2e.a off #  ACPI
+					end
+					device pnp 2e.b off # HWM
+					end
+					device pnp 2e.c off # PECI, SST
+					end
+				end	#superio/winbond/w83627dhg
+				chip ec/kontron/it8516e
+					# Set CPU Fan to 50°C, System Fan to 75%
+					register "default_fan_mode" = "{ IT8516E_MODE_THERMAL, IT8516E_MODE_PWM }"
+					register "default_fan_target" = "{ 50, 75 }"
+
+					# TODO: Check status when Linux runs
+					device pnp 20e.1 on #  Com3
+						io 0x60 = 0x03e8
+						irq 0x70 = 4
+					end
+					device pnp 20e.2 on #  Com4
+						io 0x60 = 0x02e8
+						irq 0x70 = 3
+					end
+					device pnp 20e.4 off #  System Wakeup
+					end
+					device pnp 20e.5 on #  Mouse
+						irq 0x70 = 12
+					end
+					device pnp 20e.6 on #  Keyboard
+						io 0x60 = 0x0060
+						io 0x62 = 0x0064
+						irq 0x70 = 1
+					end
+					device pnp 20e.f off #  Shared Memory
+					end
+					device pnp 20e.10 off #  BRAM / RTC
+					end
+					device pnp 20e.11 on #  PM channel 1
+						io 0x60 = 0x0062
+						io 0x62 = 0x0066
+						irq 0x70 = 0
+					end
+					device pnp 20e.12 on #  PM channel 2
+						io 0x60 = 0x020c
+						io 0x62 = 0x020d
+						irq 0x70 = 0
+					end
+					device pnp 20e.17 off #  PM channel 3
+					end
+				end	#ec/kontron/it8516e
+				# TODO: TPM on 4e
+			end # LPC bridge
+			device pci 1f.2 on end # SATA Controller 1
+			device pci 1f.3 on end # SMBus
+			device pci 1f.5 off end # SATA Controller 2
+			device pci 1f.6 off end # Thermal
+		end
+	end
+end

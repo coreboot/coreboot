@@ -43,28 +43,28 @@ void setup_ich7_gpios(void)
 	printk(BIOS_DEBUG, " GPIOS...");
 
 	/* X60 GPIO:
-	    1: HDD_PRESENCE#
-	    6: Unknown (Pulled high by R215 to VCC3B)
-	    7: BDC_PRESENCE#
-	    8: H8_WAKE#
-	    9: RTC_BAT_IN#
-	   10: Unknown (Pulled high by R700 to VCC3M
-	   12: H8SCI#
-	   13: SLICE_ON_3M#
-	   14: Unknown (Pulled high by R321 to VCC3)
-	   15: Unknown (Pulled high by R258 to VCC3)
-	   19: Unknown (Pulled low  by R594)
-	   21: Unknown (Pulled high by R145 to VCC3)
-	   22: FWH_WP#
-	   25: MDC_KILL#
-	   33: HDD_PRESENCE_2#
-	   35: CLKREQ_SATA#
-	   36: PLANARID0
-	   37: PLANARID1
-	   38: PLANARID2
-	   39: PLANARID3
-	   48: FWH_TBL#
-	*/
+	 * 1: HDD_PRESENCE#
+	 * 6: Unknown (Pulled high by R215 to VCC3B)
+	 * 7: BDC_PRESENCE#
+	 * 8: H8_WAKE#
+	 * 9: RTC_BAT_IN#
+	 * 10: Unknown (Pulled high by R700 to VCC3M)
+	 * 12: H8SCI#
+	 * 13: SLICE_ON_3M#
+	 * 14: Unknown (Pulled high by R321 to VCC3)
+	 * 15: Unknown (Pulled high by R258 to VCC3)
+	 * 19: Unknown (Pulled low  by R594)
+	 * 21: Unknown (Pulled high by R145 to VCC3)
+	 * 22: FWH_WP#
+	 * 25: MDC_KILL#
+	 * 33: HDD_PRESENCE_2#
+	 * 35: CLKREQ_SATA#
+	 * 36: PLANARID0
+	 * 37: PLANARID1
+	 * 38: PLANARID2
+	 * 39: PLANARID3
+	 * 48: FWH_TBL#
+	 */
 
 	outl(0x1f40f7c2, DEFAULT_GPIOBASE + 0x00);	/* GPIO_USE_SEL */
 	outl(0xe0e8ffc3, DEFAULT_GPIOBASE + 0x04);	/* GP_IO_SEL */
@@ -107,7 +107,7 @@ static void early_superio_config(void)
 
 	pnp_write_config(dev, 0x29, 0x06);
 
-	while(!(pnp_read_config(dev, 0x29) & 0x08) && timeout--)
+	while (!(pnp_read_config(dev, 0x29) & 0x08) && timeout--)
 		udelay(1000);
 
 	/* Enable COM1 */
@@ -146,7 +146,7 @@ static void rcba_config(void)
 
 	/* Disable unused devices */
 	RCBA32(0x3418) = FD_PCIE6 | FD_PCIE5 | FD_INTLAN | FD_ACMOD | FD_ACAUD;
-	RCBA32(0x3418) |= (1 << 0); // Required.
+	RCBA32(0x3418) |= (1 << 0);	// Required.
 
 	/* Set up I/O Trap #0 for 0xfe00 (SMIC) */
 	RCBA32(0x1e84) = 0x00020001;
@@ -236,18 +236,20 @@ void main(unsigned long bist)
 	if (dock_present()) {
 		dock_connect();
 		early_superio_config();
-		/* Set up the console */
 	}
 
+	/* Set up the console */
 	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
-		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
+		printk(BIOS_DEBUG,
+		       "Soft reset detected, rebooting properly.\n");
 		outb(0x6, 0xcf9);
-		while (1) asm("hlt");
+		while (1)
+			asm("hlt");
 	}
 
 	/* Perform some early chipset initialization required
@@ -302,7 +304,7 @@ void main(unsigned long bist)
 
 	{
 		/* This will not work if TSEG is in place! */
-		u32 tom = pci_read_config32(PCI_DEV(0,2,0), 0x5c);
+		u32 tom = pci_read_config32(PCI_DEV(0, 2, 0), 0x5c);
 
 		printk(BIOS_DEBUG, "TOM: 0x%08x\n", tom);
 		ram_check(0x00000000, 0x000a0000);
@@ -329,15 +331,17 @@ void main(unsigned long bist)
 		 * day.
 		 */
 		if (resume_backup_memory)
-			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
+			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE,
+			       HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, SKPAD_ACPI_S3_MAGIC);
+		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD,
+				   SKPAD_ACPI_S3_MAGIC);
 	}
 #endif
 
 #if CONFIG_CONSOLE_CBMEM
-        /* Keep this the last thing this function does. */
-        cbmemc_reinit();
+	/* Keep this the last thing this function does. */
+	cbmemc_reinit();
 #endif
 }

@@ -50,7 +50,7 @@ int mainboard_io_trap_handler(int smif)
 	return 1;
 }
 
-void mainboard_smi_gpi(u16 gpi_sts)
+void mainboard_smi_gpi(u32 gpi_sts)
 {
 	if (gpi_sts & (1 << 1)) {
 		printk(BIOS_DEBUG, "EC/SMI\n");

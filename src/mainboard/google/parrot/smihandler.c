@@ -125,7 +125,7 @@ static u8 mainboard_smi_ec(void)
 	return src;
 }
 
-void mainboard_smi_gpi(u16 gpi_sts)
+void mainboard_smi_gpi(u32 gpi_sts)
 {
 	u32 pm1_cnt;
 

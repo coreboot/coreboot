@@ -180,7 +180,7 @@ static void mainboard_smi_hotkey(u8 hotkey)
 	printk(BIOS_DEBUG, "EC hotkey: %02x\n", hotkey);
 }
 
-void mainboard_smi_gpi(u16 gpi_sts)
+void mainboard_smi_gpi(u32 gpi_sts)
 {
 	u8 source, hotkey;
 	send_ec_oem_command(0x5c);

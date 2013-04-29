@@ -11,6 +11,13 @@ config UDELAY_LAPIC
 	bool
 	default n
 
+config LAPIC_MONOTONIC_TIMER
+	def_bool n
+	depends on UDELAY_LAPIC
+	select HAVE_MONOTONIC_TIMER
+	help
+	  Expose monotonic time using the local apic.
+
 config UDELAY_LAPIC_FIXED_FSB
 	int
 

@@ -19,6 +19,7 @@
  */
 
 #include <stdint.h>
+#include <console/console.h>
 #include <delay.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
@@ -106,3 +107,45 @@ void udelay(u32 usecs)
 		value = lapic_read(LAPIC_TMCCT);
 	} while((start - value) < ticks);
 }
+
+#if CONFIG_LAPIC_MONOTONIC_TIMER && !defined(__PRE_RAM__)
+#include <timer.h>
+
+static struct monotonic_counter {
+	int initialized;
+	struct mono_time time;
+	uint32_t last_value;
+} mono_counter;
+
+void timer_monotonic_get(struct mono_time *mt)
+{
+	uint32_t current_tick;
+	uint32_t usecs_elapsed;
+
+	if (!mono_counter.initialized) {
+		init_timer();
+		/* An FSB frequency of 200Mhz provides a 20 second polling
+		 * interval between timer_monotonic_get() calls before wrap
+		 * around occurs. */
+		if (timer_fsb > 200)
+			printk(BIOS_WARNING,
+			       "apic timer freq (%d) may be too fast.\n",
+			       timer_fsb);
+		mono_counter.last_value = lapic_read(LAPIC_TMCCT);
+		mono_counter.initialized = 1;
+	}
+
+	current_tick = lapic_read(LAPIC_TMCCT);
+	/* Note that the APIC timer counts down. */
+	usecs_elapsed = (mono_counter.last_value - current_tick) / timer_fsb;
+
+	/* Update current time and tick values only if a full tick occurred. */
+	if (usecs_elapsed) {
+		mono_time_add_usecs(&mono_counter.time, usecs_elapsed);
+		mono_counter.last_value = current_tick;
+	}
+
+	/* Save result. */
+	*mt = mono_counter.time;
+}
+#endif

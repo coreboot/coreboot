@@ -158,7 +158,7 @@ static void mainboard_smi_handle_ec_sci(void)
 	}
 }
 
-void mainboard_smi_gpi(u16 gpi)
+void mainboard_smi_gpi(u32 gpi)
 {
 	if (gpi & (1 << 12))
 		mainboard_smi_handle_ec_sci();

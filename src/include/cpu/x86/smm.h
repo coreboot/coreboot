@@ -387,7 +387,7 @@ void southbridge_smi_set_eos(void);
 void cpu_smi_handler(void);
 void northbridge_smi_handler(void);
 void southbridge_smi_handler(void);
-void mainboard_smi_gpi(u16 gpi_sts);
+void mainboard_smi_gpi(u32 gpi_sts);
 int  mainboard_smi_apmc(u8 data);
 void mainboard_smi_sleep(u8 slp_typ);
 #else
@@ -395,7 +395,7 @@ void __attribute__((weak)) cpu_smi_handler(unsigned int node, smm_state_save_are
 void __attribute__((weak)) northbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 void __attribute__((weak)) southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_save);
 
-void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts);
+void __attribute__((weak)) mainboard_smi_gpi(u32 gpi_sts);
 int __attribute__((weak)) mainboard_smi_apmc(u8 data);
 void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ);
 #endif /* CONFIG_SMM_MODULES */

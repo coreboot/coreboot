@@ -165,6 +165,6 @@ int __attribute__((weak)) mainboard_io_trap_handler(int smif) { return 0; }
 void __attribute__((weak)) cpu_smi_handler(void) {}
 void __attribute__((weak)) northbridge_smi_handler() {}
 void __attribute__((weak)) southbridge_smi_handler() {}
-void __attribute__((weak)) mainboard_smi_gpi(u16 gpi_sts) {}
+void __attribute__((weak)) mainboard_smi_gpi(u32 gpi_sts) {}
 int __attribute__((weak)) mainboard_smi_apmc(u8 data) { return 0; }
 void __attribute__((weak)) mainboard_smi_sleep(u8 slp_typ) {}

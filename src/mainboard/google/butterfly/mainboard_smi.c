@@ -52,7 +52,7 @@ int mainboard_io_trap_handler(int smif)
 	return 1;
 }
 
-void mainboard_smi_gpi(u16 gpi_sts)
+void mainboard_smi_gpi(u32 gpi_sts)
 {
 	printk(BIOS_DEBUG, "warn: unknown mainboard_smi_gpi: %x\n", gpi_sts);
 }

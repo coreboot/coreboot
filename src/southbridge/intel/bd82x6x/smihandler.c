@@ -626,7 +626,7 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 
 static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
 {
-	void (*mainboard_gpi)(u16 gpi_sts) = mainboard_smi_gpi;
+	void (*mainboard_gpi)(u32 gpi_sts) = mainboard_smi_gpi;
 	u16 reg16;
 	reg16 = inw(pmbase + ALT_GP_SMI_STS);
 	outw(reg16, pmbase + ALT_GP_SMI_STS);
@@ -638,7 +638,7 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 		mainboard_gpi(reg16);
 	} else {
 		if (reg16)
-			printk(BIOS_DEBUG, "GPI (mask %04x)\n",reg16);
+			printk(BIOS_DEBUG, "GPI (mask %04x)\n", reg16);
 	}
 
 	outw(reg16, pmbase + ALT_GP_SMI_STS);

@@ -80,7 +80,7 @@ static u8 mainboard_smi_ec(void)
 	return cmd;
 }
 
-void mainboard_smi_gpi(u16 gpi_sts)
+void mainboard_smi_gpi(u32 gpi_sts)
 {
 	if (gpi_sts & (1 << EC_SMI_GPI)) {
 		/* Process all pending events */

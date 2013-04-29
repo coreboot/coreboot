@@ -7,11 +7,14 @@ config BOARD_KONTRON_986LCD_M
 	bool "986LCD-M/mITX"
 config BOARD_KONTRON_KT690
 	bool "KT690/mITX"
+config BOARD_KONTRON_KTQM77
+	bool "KTQM77/mITX"
 
 endchoice
 
 source "src/mainboard/kontron/986lcd-m/Kconfig"
 source "src/mainboard/kontron/kt690/Kconfig"
+source "src/mainboard/kontron/ktqm77/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

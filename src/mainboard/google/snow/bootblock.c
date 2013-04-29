@@ -40,12 +40,14 @@ void bootblock_mainboard_init(void)
 			 * We want to do this as early as we can.
 			 */
 			timer_start();
-			exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
+			/* The boot device (ex, SPI1) is already initialized by
+			 * iROM (which loads the bootblock) so we don't need to
+			 * configure pinmux for it.
+			 */
 			break;
 	}
 #if CONFIG_EARLY_CONSOLE
 	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
 	console_init();
-	printk(BIOS_INFO, "\n\n\n%s: UART initialized\n", __func__);
 #endif
 }

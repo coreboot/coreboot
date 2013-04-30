@@ -313,6 +313,11 @@ config HAVE_INIT_TIMER
 	default n if UDELAY_IO
 	default y
 
+config HAVE_MONOTONIC_TIMER
+	def_bool n
+	help
+	 The board/chipset provides a monotonic timer.
+
 config HIGH_SCRATCH_MEMORY_SIZE
 	hex
 	default 0x0

@@ -40,8 +40,13 @@ void bootblock_mainboard_init(void)
 			 * We want to do this as early as we can.
 			 */
 			timer_start();
-			exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
 			break;
 	}
+
+	/* For most ARM systems, we have to initialize firmware media source
+	 * (ex, SPI, SD/MMC, or eMMC) now; but for Exynos platform, that is
+	 * already handled by iROM so there's no need to setup again.
+	 */
+
 	console_init();
 }

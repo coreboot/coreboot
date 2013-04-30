@@ -38,6 +38,17 @@ struct rela_time {
 	long microseconds;
 };
 
+/* A timeout_callback structure is used for the book keeping for scheduling
+ * work in the future. When a callback is called the structure can be
+ * re-used for scheduling as it is not being tracked by the core timer
+ * library any more. */
+struct timeout_callback {
+	void *priv;
+	void (*callback)(struct timeout_callback *tocb);
+	/* Not for public use. The timer library uses the fields below. */
+	struct mono_time expiration;
+};
+
 /* Obtain the current monotonic time. The assumption is that the time counts
  * up from the value 0 with value 0 being the point when the timer was
  * initialized.  Additionally, the timer is assumed to only be valid for the
@@ -48,6 +59,13 @@ struct rela_time {
  * is that the time between calls to timer_monotonic_get() may be on order
  * of 10 seconds. */
 void timer_monotonic_get(struct mono_time *mt);
+
+/* Returns 1 if callbacks still present in the queue. 0 if no timers left. */
+int timers_run(void);
+
+/* Schedule a callback to be ran microseconds from time of invocation.
+ * 0 returned on success, < 0 on error. */
+int timer_sched_callback(struct timeout_callback *tocb, unsigned long us);
 
 /* Add microseconds to an absoute time. */
 static inline void mono_time_add_usecs(struct mono_time *mt, long us)

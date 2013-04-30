@@ -39,6 +39,19 @@
 
 static uintptr_t ttb_addr;
 
+void mmu_disable_range(unsigned long start_mb, unsigned long size_mb)
+{
+	unsigned int i;
+	uint32_t *ttb_entry = (uint32_t *)ttb_addr;
+	printk(BIOS_DEBUG, "Disabling: 0x%08lx:0x%08lx\n",
+			start_mb << 20, ((start_mb + size_mb) << 20) - 1);
+
+	for (i = start_mb; i < start_mb + size_mb; i++) {
+		ttb_entry[i] = 0;
+		tlbimvaa(i);
+	}
+}
+
 void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 		enum dcache_policy policy)
 {

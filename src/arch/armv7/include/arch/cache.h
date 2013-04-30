@@ -303,6 +303,8 @@ enum dcache_policy {
 	DCACHE_WRITETHROUGH,
 };
 
+/* disable the mmu for a range. Primarily useful to lock out address 0. */
+void mmu_disable_range(unsigned long start_mb, unsigned long size_mb);
 /* mmu range configuration (set dcache policy) */
 void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 						enum dcache_policy policy);

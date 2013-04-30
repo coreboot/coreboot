@@ -324,6 +324,12 @@ config TIMER_QUEUE
 	help
 	  Provide a timer queue for performing time-based callbacks. 
 
+config DEV_INIT_TIMES
+	def_bool n
+	depends on HAVE_MONOTONIC_TIMER
+	help
+	  Track the times each device takes to initialize in the device tree.
+
 config HIGH_SCRATCH_MEMORY_SIZE
 	hex
 	default 0x0

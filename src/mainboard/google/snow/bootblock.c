@@ -30,17 +30,14 @@
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
-	switch (snow_get_wakeup_state()) {
-		case SNOW_WAKEUP_DIRECT:
-			snow_wakeup();
-			break;
+	/* kick off the microsecond timer.
+	 * We want to do this as early as we can.
+	 */
+	timer_start();
 
-		case SNOW_IS_NOT_WAKEUP:
-			/* kick off the microsecond timer.
-			 * We want to do this as early as we can.
-			 */
-			timer_start();
-			break;
+	if (snow_get_wakeup_state() == SNOW_WAKEUP_DIRECT) {
+		snow_wakeup();
+		/* Never returns. */
 	}
 
 	/* For most ARM systems, we have to initialize firmware media source

@@ -43,9 +43,5 @@ void bootblock_mainboard_init(void)
 			exynos_pinmux_config(PERIPH_ID_SPI1, PINMUX_FLAG_NONE);
 			break;
 	}
-#if CONFIG_EARLY_CONSOLE
-	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
 	console_init();
-	printk(BIOS_INFO, "\n\n\n%s: UART initialized\n", __func__);
-#endif
 }

@@ -25,6 +25,13 @@ config UDELAY_TSC
 	bool
 	default n
 
+config TSC_MONOTONIC_TIMER
+	def_bool n
+	depends on UDELAY_TSC
+	select HAVE_MONOTONIC_TIMER
+	help
+	  Expose monotonic time using the TSC.
+
 config UDELAY_TIMER2
 	bool
 	default n

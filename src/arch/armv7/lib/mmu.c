@@ -99,11 +99,10 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 	printk(BIOS_DEBUG, "Setting dcache policy: 0x%08lx:0x%08lx [%s]\n",
 			start_mb << 20, ((start_mb + size_mb) << 20) - 1, str);
 
-	for (i = start_mb; i < start_mb + size_mb; i++)
+	for (i = start_mb; i < start_mb + size_mb; i++) {
 		ttb_entry[i] = (i << 20) | attr;
-
-	/* TODO: add helper to invalidate TLB by MVA */
-	tlb_invalidate_all();
+		tlbimvaa(start_mb);
+	}
 }
 
 void mmu_init(void)

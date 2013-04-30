@@ -108,6 +108,12 @@ static inline void tlbiall(void)
 	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0) : "memory");
 }
 
+/* invalidate unified TLB by MVA, all ASID */
+static inline void tlbimvaa(unsigned long mva)
+{
+	asm volatile ("mcr p15, 0, %0, c8, c7, 3" : : "r" (mva) : "memory");
+}
+
 /* write data access control register (DACR) */
 static inline void write_dacr(uint32_t val)
 {

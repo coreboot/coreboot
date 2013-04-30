@@ -1,6 +1,17 @@
 # Warning: This file is included whether or not the if is here.
 # The if controls how the evaluation occurs.
 # (See also src/Kconfig)
+
+config HAVE_64BIT
+	bool
+	default n
+	help
+	  Many of the CPUs in our tree can support 64-bit addresses.
+	  Currently, we don't use this capability on any of them.
+	  This variable indicates whether it is even possible,
+	  for a given CPU, to run in 64-bit mode. For the subset of
+	  CPUs which can support 64-bit mode it can be overridden.
+
 if ARCH_ARMV7
 
 source src/cpu/armltd/Kconfig

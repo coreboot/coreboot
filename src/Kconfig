@@ -318,6 +318,12 @@ config HAVE_MONOTONIC_TIMER
 	help
 	 The board/chipset provides a monotonic timer.
 
+config TIMER_QUEUE
+	def_bool n
+	depends on HAVE_MONOTONIC_TIMER
+	help
+	  Provide a timer queue for performing time-based callbacks. 
+
 config HIGH_SCRATCH_MEMORY_SIZE
 	hex
 	default 0x0

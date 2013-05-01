@@ -25,6 +25,10 @@ config UDELAY_TSC
 	bool
 	default n
 
+config TSC_CONSTANT_RATE
+	def_bool n
+	depends on UDELAY_TSC
+
 config TSC_MONOTONIC_TIMER
 	def_bool n
 	depends on UDELAY_TSC

@@ -25,6 +25,13 @@ config UDELAY_TSC
 	bool
 	default n
 
+config TSC_CONSTANT_RATE
+	def_bool n
+	depends on UDELAY_TSC
+	help
+	  This option asserts that the TSC ticks at a known constant rate.
+	  Therefore, no TSC calibration is required.
+
 config TSC_MONOTONIC_TIMER
 	def_bool n
 	depends on UDELAY_TSC

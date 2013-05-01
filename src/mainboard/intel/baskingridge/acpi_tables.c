@@ -106,6 +106,9 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
 #endif
 
+	/* Update the mem console pointer. */
+	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
+
 	acpi_update_thermal_table(gnvs);
 }
 

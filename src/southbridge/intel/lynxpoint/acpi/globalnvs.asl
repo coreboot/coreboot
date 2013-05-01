@@ -131,6 +131,9 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	S6B1,	32,	// 0x98 - D21:F6 Serial IO UAR1 BAR1
 	S7B1,	32,	// 0x9c - D23:F0 Serial IO SDIO BAR1
 
+	Offset (0xa0),
+	CBMC, 32,	// 0xa0 - coreboot mem console pointer
+
 	/* IGD OpRegion */
 	Offset (0xb4),
 	ASLB,	32,	// 0xb4 - IGD OpRegion Base Address

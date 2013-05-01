@@ -712,12 +712,21 @@ static void intel_me_init(device_t dev)
 	if (intel_mei_setup(dev) < 0)
 		return;
 
-	if(intel_me_read_mbp(&mbp_data, dev))
+	if (intel_me_read_mbp(&mbp_data, dev))
 		return;
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	me_print_fw_version(mbp_data.fw_version_name);
 	me_print_fwcaps(mbp_data.fw_capabilities);
+
+	if (mbp_data.plat_time) {
+		printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
+		       mbp_data.plat_time->wake_event_mrst_time_ms);
+		printk(BIOS_DEBUG, "ME: ME Reset to Platform Reset:  %u ms\n",
+		       mbp_data.plat_time->mrst_pltrst_time_ms);
+		printk(BIOS_DEBUG, "ME: Platform Reset to CPU Reset: %u ms\n",
+		       mbp_data.plat_time->pltrst_cpurst_time_ms);
+	}
 #endif
 
 	/*
@@ -922,6 +931,12 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 
 		case MBP_IDENT(KERNEL, MFS_FAILURE):
 			ASSIGN_FIELD_PTR(mfsintegrity, &mbp->data[i+1]);
+
+		case MBP_IDENT(KERNEL, PLAT_TIME):
+			ASSIGN_FIELD_PTR(plat_time, &mbp->data[i+1]);
+
+		case MBP_IDENT(NFC, SUPPORT_DATA):
+			ASSIGN_FIELD_PTR(nfc_data, &mbp->data[i+1]);
 
 		default:
 			printk(BIOS_ERR, "ME MBP: unknown item 0x%x @ dw offset 0x%x\n",

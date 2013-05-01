@@ -5,8 +5,16 @@
 #include <smp/spinlock.h>
 #include <delay.h>
 
+#if !defined(__PRE_RAM__)
+
 static unsigned long clocks_per_usec;
 
+#if CONFIG_TSC_CONSTANT_RATE
+static unsigned long calibrate_tsc(void)
+{
+	return tsc_freq_mhz();
+}
+#else /* CONFIG_TSC_CONSTANT_RATE */
 #if !CONFIG_TSC_CALIBRATE_WITH_IO
 #define CLOCK_TICK_RATE	1193180U /* Underlying HZ */
 
@@ -139,6 +147,7 @@ static unsigned long long calibrate_tsc(void)
 
 
 #endif /* CONFIG_TSC_CALIBRATE_WITH_IO */
+#endif /* CONFIG_TSC_CONSTANT_RATE */
 
 void init_timer(void)
 {
@@ -148,15 +157,27 @@ void init_timer(void)
 	}
 }
 
+static inline unsigned long get_clocks_per_usec(void)
+{
+	init_timer();
+	return clocks_per_usec;
+}
+#else /* !defined(__PRE_RAM__) */
+/* romstage calls into cpu/board specific function every time. */
+static inline unsigned long get_clocks_per_usec(void)
+{
+	return tsc_freq_mhz();
+}
+#endif /* !defined(__PRE_RAM__) */
+
 void udelay(unsigned us)
 {
         unsigned long long count;
         unsigned long long stop;
         unsigned long long clocks;
 
-	init_timer();
 	clocks = us;
-	clocks *= clocks_per_usec;
+	clocks *= get_clocks_per_usec();
         count = rdtscll();
         stop = clocks + count;
         while(stop > count) {
@@ -165,7 +186,7 @@ void udelay(unsigned us)
         }
 }
 
-#if CONFIG_TSC_MONOTONIC_TIMER
+#if CONFIG_TSC_MONOTONIC_TIMER && !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <timer.h>
 
 static struct monotonic_counter {

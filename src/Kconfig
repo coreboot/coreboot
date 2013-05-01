@@ -344,10 +344,6 @@ config HIGH_SCRATCH_MEMORY_SIZE
 	hex
 	default 0x0
 
-config USE_OPTION_TABLE
-	bool
-	default n
-
 config HAVE_OPTION_TABLE
 	bool
 	default n

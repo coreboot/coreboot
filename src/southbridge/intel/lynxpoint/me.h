@@ -334,6 +334,7 @@ void intel_me8_finalize_smm(void);
 #define MBP_APPID_INTEL_AT 3
 #define MBP_APPID_HWA 4
 #define MBP_APPID_ICC 5
+#define MBP_APPID_NFC 6
 /* Kernel items: */
 #define MBP_KERNEL_FW_VER_ITEM 1
 #define MBP_KERNEL_FW_CAP_ITEM 2
@@ -341,12 +342,15 @@ void intel_me8_finalize_smm(void);
 #define MBP_KERNEL_PLAT_KEY_ITEM 4
 #define MBP_KERNEL_FW_TYPE_ITEM 5
 #define MBP_KERNEL_MFS_FAILURE_ITEM 6
+#define MBP_KERNEL_PLAT_TIME_ITEM 7
 /* Intel AT items: */
 #define MBP_INTEL_AT_STATE_ITEM 1
 /* ICC Items: */
 #define MBP_ICC_PROFILE_ITEM 1
 /* HWA Items: */
 #define MBP_HWA_REQUEST_ITEM 1
+/* NFC Items: */
+#define MBP_NFC_SUPPORT_DATA_ITEM 1
 
 #define MBP_MAKE_IDENT(appid, item) ((appid << 8) | item)
 #define MBP_IDENT(appid, item) \
@@ -453,6 +457,17 @@ typedef struct {
 }  __attribute__ ((packed)) mbp_at_state;
 
 typedef struct {
+	u32 wake_event_mrst_time_ms;
+	u32 mrst_pltrst_time_ms;
+	u32 pltrst_cpurst_time_ms;
+} __attribute__ ((packed)) mbp_plat_time;
+
+typedef struct {
+	u32 device_type : 2;
+	u32 reserved    : 30;
+} __attribute__ ((packed)) mbp_nfc_data;
+
+typedef struct {
 	mbp_fw_version_name  *fw_version_name;
 	mbp_mefwcaps         *fw_capabilities;
 	mbp_rom_bist_data    *rom_bist_data;
@@ -461,6 +476,8 @@ typedef struct {
 	mbp_icc_profile	     *icc_profile;
 	mbp_at_state         *at_state;
 	u32		     *mfsintegrity;
+	mbp_plat_time        *plat_time;
+	mbp_nfc_data         *nfc_data;
 } me_bios_payload;
 
 struct me_fwcaps {

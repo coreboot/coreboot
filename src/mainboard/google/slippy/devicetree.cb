@@ -41,6 +41,10 @@ chip northbridge/intel/haswell
 			register "pirqg_routing" = "0x80"
 			register "pirqh_routing" = "0x80"
 
+			# EC range is 0x800-0x9ff
+			register "gen1_dec" = "0x00fc0801"
+			register "gen2_dec" = "0x00fc0901"
+
 			register "alt_gp_smi_en" = "0x0000"
 			register "gpe0_en_1" = "0x00000000"
 			# EC_SCI is GPIO36

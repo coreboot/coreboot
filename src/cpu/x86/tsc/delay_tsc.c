@@ -172,18 +172,18 @@ static inline unsigned long get_clocks_per_usec(void)
 
 void udelay(unsigned us)
 {
-        unsigned long long count;
-        unsigned long long stop;
-        unsigned long long clocks;
+	unsigned long long start;
+	unsigned long long current;
+	unsigned long long clocks;
 
+	start = rdtscll();
 	clocks = us;
 	clocks *= get_clocks_per_usec();
-        count = rdtscll();
-        stop = clocks + count;
-        while(stop > count) {
+	current = rdtscll();
+	while((current - start) < clocks) {
 		cpu_relax();
-		count = rdtscll();
-        }
+		current = rdtscll();
+	}
 }
 
 #if CONFIG_TSC_MONOTONIC_TIMER && !defined(__PRE_RAM__) && !defined(__SMM__)

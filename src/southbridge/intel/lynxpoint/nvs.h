@@ -90,7 +90,8 @@ typedef struct {
 	/* LynxPoint Serial IO device BARs */
 	u32	s0b[8]; /* 0x60 - 0x7f - BAR0 */
 	u32	s1b[8]; /* 0x80 - 0x9f - BAR1 */
-	u8	rsvd6[20];
+	u32	cbmc;   /* 0xa0 - 0xa3 - coreboot memconsole */
+	u8	rsvd6[16];
 	/* IGD OpRegion (not implemented yet) */
 	u32	aslb; /* 0xb4 - IGD OpRegion Base Address */
 	u8	ibtt; /* 0xb8 - IGD boot type */

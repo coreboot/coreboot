@@ -585,6 +585,7 @@ int clock_get_mem_selection(enum ddr_mode *mem_type,
 		unsigned *frequency_mhz, unsigned *arm_freq,
 		enum mem_manuf *mem_manuf);
 
+void mct_start(void);
 uint64_t mct_raw_value(void);
 
 #endif

@@ -25,7 +25,7 @@
 
 #include <common.h>
 #include <arch/io.h>
-#include <time.h>
+#include <timer.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5-common/pwm.h>
 #include <cpu/samsung/exynos5-common/clk.h>
@@ -121,16 +121,19 @@ unsigned long timer_get_us(void)
 /* delay x useconds */
 void udelay(unsigned long usec)
 {
-	unsigned long start;
+	struct mono_time current, end;
 
-	start = timer_us();
-	if ((start + usec) < start){
-		printk(BIOS_EMERG, "udelay: %08lx is impossibly large\n",
-			usec);
-		usec = 1000000;
-	}
-	while ((timer_us() - start) < usec)
-		;
+	timer_monotonic_get(&current);
+	end = current;
+	mono_time_add_usecs(&end, usec);
+
+	if (mono_time_cmp(&current, &end) == 1)
+		printk(BIOS_WARNING, "udelay(%lu) will wraparound\n", usec);
+	while (mono_time_cmp(&current, &end) == 1)
+		timer_monotonic_get(&current);
+
+	while (mono_time_cmp(&current, &end) == -1)
+		timer_monotonic_get(&current);
 }
 
 /*

@@ -30,7 +30,6 @@
 #ifndef __EHCI_PRIVATE_H
 #define __EHCI_PRIVATE_H
 
-#include <pci.h>
 #include <usb/usb.h>
 
 #define USBBASE 0x10

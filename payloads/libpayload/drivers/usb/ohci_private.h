@@ -30,7 +30,6 @@
 #ifndef __OHCI_PRIVATE_H
 #define __OHCI_PRIVATE_H
 
-#include <pci.h>
 #include <usb/usb.h>
 
 #define MASK(startbit, lenbit) (((1<<(lenbit))-1)<<(startbit))

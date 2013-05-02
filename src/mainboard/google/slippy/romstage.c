@@ -21,6 +21,8 @@
 #include <delay.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include "cpu/intel/haswell/haswell.h"
 #include "northbridge/intel/haswell/haswell.h"
@@ -73,6 +75,33 @@ const struct rcba_config_instruction rcba_config[] = {
 	RCBA_END_CONFIG,
 };
 
+/* Copy SPD data for on-board memory */
+static void copy_spd(struct pei_data *peid)
+{
+	const int gpio_vector[] = {13, 9, 47, -1};
+	int spd_index = get_gpios(gpio_vector);
+	struct cbfs_file *spd_file;
+
+	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
+	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
+	if (!spd_file)
+		die("SPD data not found.");
+
+	if (ntohl(spd_file->len) <
+	    ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
+		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
+		spd_index = 0;
+	}
+
+	if (spd_file->len < sizeof(peid->spd_data[0]))
+		die("Missing SPD data.");
+
+	memcpy(peid->spd_data[0],
+	       ((char*)CBFS_SUBHEADER(spd_file)) +
+	       spd_index * sizeof(peid->spd_data[0]),
+	       sizeof(peid->spd_data[0]));
+}
+
 /*
  * Power Sequencing for SanDisk i100/i110 SSD
  *
@@ -124,7 +153,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		temp_mmio_base: 0xfed08000,
 		system_type: 5, /* ULT */
 		tseg_size: CONFIG_SMM_TSEG_SIZE,
-		spd_addresses: { 0xa2, 0x00, 0xa2, 0x00 },
+		spd_addresses: { 0xff, 0x00, 0xff, 0x00 },
 		ec_present: 1,
 		// 0 = leave channel enabled
 		// 1 = disable dimm 0 on channel
@@ -151,6 +180,9 @@ void mainboard_romstage_entry(unsigned long bist)
 		.rcba_config = &rcba_config[0],
 		.bist = bist,
 	};
+
+	/* Prepare SPD data */
+	copy_spd(&pei_data);
 
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(&romstage_params);

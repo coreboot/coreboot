@@ -22,6 +22,8 @@
 #ifndef _CPU_INTEL_HASWELL_H
 #define _CPU_INTEL_HASWELL_H
 
+#include <arch/cpu.h>
+
 /* Haswell bus clock is fixed at 100MHz */
 #define HASWELL_BCLK		100
 
@@ -148,7 +150,7 @@ void romstage_common(const struct romstage_params *params);
  *  +32: MTTR mask 1 63:32
  *  ...
  */
-void * __attribute__((regparm(0))) romstage_main(unsigned long bist);
+void * asmlinkage romstage_main(unsigned long bist);
 /* romstage_after_car() is the C function called after cache-as-ram has
  * been torn down. It is responsible for loading the ramstage. */
 void romstage_after_car(void);

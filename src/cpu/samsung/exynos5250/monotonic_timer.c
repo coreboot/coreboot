@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <delay.h>
 #include <timer.h>
-#include <time.h>	/* TODO: deprecate in favor of monotonic timer stuff */
 
 #include "clk.h"
 

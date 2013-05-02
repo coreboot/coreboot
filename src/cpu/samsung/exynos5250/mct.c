@@ -22,7 +22,7 @@
 
 #include <arch/io.h>
 #include <stdint.h>
-#include <time.h>
+
 #include "clk.h"
 
 struct __attribute__((packed)) mct_regs
@@ -101,16 +101,8 @@ uint64_t mct_raw_value(void)
 	return (upper << 32) | lower;
 }
 
-void timer_start(void)
+void mct_start(void)
 {
 	writel(readl(&mct->g_tcon) | (0x1 << 8), &mct->g_tcon);
 	enabled = 1;
-}
-
-u32 timer_us(void)
-{
-	uint64_t raw = mct_raw_value();
-	static uint32_t ticks_per_microsecond = MCT_HZ/1000000;
-	uint32_t usec = raw / ticks_per_microsecond;
-	return usec;
 }

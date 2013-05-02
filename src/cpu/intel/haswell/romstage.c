@@ -162,7 +162,7 @@ static void *setup_romstage_stack_after_car(void)
 	return slot;
 }
 
-void * __attribute__((regparm(0))) romstage_main(unsigned long bist)
+void * asmlinkage romstage_main(unsigned long bist)
 {
 	int i;
 	void *romstage_stack_after_car;

@@ -150,8 +150,7 @@ static void cleanup_rom_caching(void)
 
 /* By the time APs call ap_init() caching has been setup, and microcode has
  * been loaded. */
-static void __attribute__((cdecl))
-ap_init(unsigned int cpu, void *microcode_ptr)
+static void asmlinkage ap_init(unsigned int cpu, void *microcode_ptr)
 {
 	struct cpu_info *info;
 

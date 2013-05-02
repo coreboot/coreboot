@@ -326,7 +326,7 @@ config USB
 
 config USB_UHCI
 	bool "Support for USB UHCI controllers"
-	depends on USB
+	depends on USB && ARCH_X86
 	help
 	  Select this option if you are going to use USB 1.1 on an Intel based
 	  system.
@@ -335,7 +335,7 @@ config USB_OHCI
 	bool "Support for USB OHCI controllers"
 	depends on USB
 	help
-	  Select this option if you are going to use USB 1.1 on an AMD based
+	  Select this option if you are going to use USB 1.1 on a non-Intel based
 	  system.
 
 config USB_EHCI
@@ -382,6 +382,30 @@ config USB_GEN_HUB
 	bool
 	default n if (!USB_HUB && !USB_XHCI)
 	default y if (USB_HUB || USB_XHCI)
+config USB_PCI
+	bool
+	default y if ARCH_X86
+	default n
+
+config USB_MEMORY
+	bool
+	default y if ARCH_ARMV7
+	default n
+
+config USB_OHCI_BASE_ADDRESS
+	hex
+	depends on USB_MEMORY && USB_OHCI
+	default 0x12120000
+
+config USB_EHCI_BASE_ADDRESS
+	hex
+	depends on USB_MEMORY && USB_EHCI
+	default 0x12110000
+
+config USB_XHCI_BASE_ADDRESS
+	hex
+	depends on USB_MEMORY && USB_XHCI
+	default 0x12000000
 
 endmenu
 

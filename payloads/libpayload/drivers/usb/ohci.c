@@ -136,7 +136,7 @@ ohci_reinit (hci_t *controller)
 {
 }
 
-#ifdef USB_DEBUG
+#if 0 && defined(USB_DEBUG)
 /* Section 4.3.3 */
 static const char *completion_codes[] = {
 	"No error",
@@ -167,7 +167,7 @@ static const char *direction[] = {
 #endif
 
 hci_t *
-ohci_init (pcidev_t addr)
+ohci_init (void *bar)
 {
 	int i;
 
@@ -201,10 +201,7 @@ ohci_init (pcidev_t addr)
 	init_device_entry (controller, 0);
 	OHCI_INST (controller)->roothub = controller->devices[0];
 
-	controller->bus_address = addr;
-	/* regarding OHCI spec, Appendix A, BAR_OHCI register description, Table A-4
-	 * BASE ADDRESS only [31-12] bits. All other usually 0, but not all */
-	controller->reg_base = pci_read_config32 (controller->bus_address, 0x10) & 0xfffff000; // OHCI mandates MMIO, so bit 0 is clear
+	controller->reg_base = (u32)(unsigned long)bar;
 	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(controller->reg_base);
 	usb_debug("OHCI Version %x.%x\n", (OHCI_INST (controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST (controller)->opreg->HcRevision & 0xf);
 
@@ -254,6 +251,21 @@ ohci_init (pcidev_t addr)
 	controller->devices[0]->init (controller->devices[0]);
 	return controller;
 }
+
+#ifdef CONFIG_USB_PCI
+hci_t *
+ohci_pci_init (pcidev_t addr)
+{
+	u32 reg_base;
+
+	/* regarding OHCI spec, Appendix A, BAR_OHCI register description, Table A-4
+	 * BASE ADDRESS only [31-12] bits. All other usually 0, but not all.
+	 * OHCI mandates MMIO, so bit 0 is clear */
+	reg_base = pci_read_config32 (addr, 0x10) & 0xfffff000;
+
+	return ohci_init((void *)(unsigned long)reg_base);
+}
+#endif
 
 static void
 ohci_shutdown (hci_t *controller)

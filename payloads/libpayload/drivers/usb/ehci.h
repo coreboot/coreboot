@@ -33,7 +33,8 @@
 #include <pci.h>
 #include <usb/usb.h>
 
-hci_t *ehci_init (pcidev_t addr);
+hci_t *ehci_pci_init (pcidev_t addr);
+hci_t *ehci_init (void *bar);
 
 void ehci_rh_init (usbdev_t *dev);
 

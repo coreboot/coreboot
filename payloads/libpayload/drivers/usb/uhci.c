@@ -147,7 +147,7 @@ uhci_reinit (hci_t *controller)
 }
 
 hci_t *
-uhci_init (pcidev_t addr)
+uhci_pci_init (pcidev_t addr)
 {
 	int i;
 	u16 reg16;
@@ -182,16 +182,17 @@ uhci_init (pcidev_t addr)
 	init_device_entry (controller, 0);
 	UHCI_INST (controller)->roothub = controller->devices[0];
 
-	controller->bus_address = addr;
-	controller->reg_base = pci_read_config32 (controller->bus_address, 0x20) & ~1;	/* ~1 clears the register type indicator that is set to 1 for IO space */
+	/* ~1 clears the register type indicator that is set to 1
+	 * for IO space */
+	controller->reg_base = pci_read_config32 (addr, 0x20) & ~1;
 
 	/* kill legacy support handler */
 	uhci_stop (controller);
 	mdelay (1);
 	uhci_reg_write16 (controller, USBSTS, 0x3f);
-	reg16 = pci_read_config16(controller->bus_address, 0xc0);
+	reg16 = pci_read_config16(addr, 0xc0);
 	reg16 &= 0xdf80;
-	pci_write_config16 (controller->bus_address, 0xc0, reg16);
+	pci_write_config16 (addr, 0xc0, reg16);
 
 	UHCI_INST (controller)->framelistptr = memalign (0x1000, 1024 * sizeof (flistp_t));	/* 4kb aligned to 4kb */
 	if (! UHCI_INST (controller)->framelistptr)

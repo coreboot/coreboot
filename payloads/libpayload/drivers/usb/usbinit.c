@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+//#define USB_DEBUG
 #include <libpayload-config.h>
 #include <usb/usb.h>
 #include "uhci.h"
@@ -35,6 +36,7 @@
 #include "xhci.h"
 #include <usb/usbdisk.h>
 
+#ifdef CONFIG_USB_PCI
 /**
  * Initializes USB controller attached to PCI
  *
@@ -58,8 +60,6 @@ static int usb_controller_initialize(int bus, int dev, int func)
 	prog_if = (class >> 8) & 0xff;
 
 	/* enable busmaster */
-#define PCI_COMMAND 4
-#define PCI_COMMAND_MASTER 4
 	if (devclass == 0xc03) {
 		u32 pci_command;
 
@@ -73,7 +73,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 		case 0x00:
 #ifdef CONFIG_USB_UHCI
 			usb_debug("UHCI controller\n");
-			uhci_init (pci_device);
+			uhci_pci_init (pci_device);
 #else
 			usb_debug("UHCI controller (not supported)\n");
 #endif
@@ -82,7 +82,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 		case 0x10:
 #ifdef CONFIG_USB_OHCI
 			usb_debug("OHCI controller\n");
-			ohci_init(pci_device);
+			ohci_pci_init(pci_device);
 #else
 			usb_debug("OHCI controller (not supported)\n");
 #endif
@@ -91,7 +91,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 		case 0x20:
 #ifdef CONFIG_USB_EHCI
 			usb_debug("EHCI controller\n");
-			ehci_init(pci_device);
+			ehci_pci_init(pci_device);
 #else
 			usb_debug("EHCI controller (not supported)\n");
 #endif
@@ -100,7 +100,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 		case 0x30:
 #ifdef CONFIG_USB_XHCI
 			usb_debug("xHCI controller\n");
-			xhci_init(pci_device);
+			xhci_pci_init(pci_device);
 #else
 			usb_debug("xHCI controller (not supported)\n");
 #endif
@@ -154,12 +154,33 @@ static void usb_scan_pci_bus(int bus)
 		}
 	}
 }
+#endif
+
+#ifdef CONFIG_USB_MEMORY
+static void usb_scan_memory(void)
+{
+#ifdef CONFIG_USB_XHCI
+	xhci_init((void *)(unsigned long)CONFIG_USB_XHCI_BASE_ADDRESS);
+#endif
+#ifdef CONFIG_USB_EHCI
+	ehci_init((void *)(unsigned long)CONFIG_USB_EHCI_BASE_ADDRESS);
+#endif
+#ifdef CONFIG_USB_OHCI
+	ohci_init((void *)(unsigned long)CONFIG_USB_OHCI_BASE_ADDRESS);
+#endif
+}
+#endif
 
 /**
  * Initialize all USB controllers attached to PCI.
  */
 int usb_initialize(void)
 {
+#ifdef CONFIG_USB_PCI
 	usb_scan_pci_bus(0);
+#endif
+#ifdef CONFIG_USB_MEMORY
+	usb_scan_memory();
+#endif
 	return 0;
 }

@@ -143,7 +143,7 @@ xhci_wait_ready(xhci_t *const xhci)
 }
 
 hci_t *
-xhci_init (const pcidev_t addr)
+xhci_init (const void *bar)
 {
 	int i;
 
@@ -192,14 +192,7 @@ xhci_init (const pcidev_t addr)
 		goto _free_xhci;
 	}
 
-	/* Now, gather information and check for compatibility */
-
-	controller->bus_address	= addr;
-	controller->reg_base	= pci_read_config32(addr, REG_BAR0) & ~0xf;
-	if (pci_read_config32(addr, REG_BAR1) > 0) {
-		xhci_debug("We don't do 64bit addressing\n");
-		goto _free_xhci;
-	}
+	controller->reg_base	= (u32)(unsigned long)bar;
 
 	xhci->capreg	= phys_to_virt(controller->reg_base);
 	xhci->opreg	= ((void *)xhci->capreg) + xhci->capreg->caplength;
@@ -270,7 +263,6 @@ xhci_init (const pcidev_t addr)
 	}
 
 	/* Now start working on the hardware */
-
 	if (xhci_wait_ready(xhci))
 		goto _free_xhci;
 
@@ -278,8 +270,6 @@ xhci_init (const pcidev_t addr)
 
 	xhci_reset(controller);
 	xhci_reinit(controller);
-
-	xhci_switch_ppt_ports(addr);
 
 	xhci->roothub->controller = controller;
 	xhci->roothub->init = xhci_rh_init;
@@ -307,6 +297,28 @@ _free_controller:
 	free(controller);
 	return NULL;
 }
+
+#ifdef CONFIG_USB_PCI
+hci_t *
+xhci_pci_init (pcidev_t addr)
+{
+	u32 reg_addr;
+	hci_t controller;
+
+	reg_addr = (u32)phys_to_virt(pci_read_config32 (addr, 0x10) & ~0xf);
+	//controller->reg_base = pci_read_config32 (addr, 0x14) & ~0xf;
+	if (pci_read_config32 (addr, 0x14) > 0) {
+		fatal("We don't do 64bit addressing.\n");
+	}
+
+	controller = xhci_init((void *)(unsigned long)reg_addr);
+	controller->bus_address = addr;
+
+	xhci_switch_ppt_ports(addr);
+
+	return controller;
+}
+#endif
 
 static void
 xhci_reset(hci_t *const controller)

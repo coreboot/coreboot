@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+//#define USB_DEBUG
 #include <endian.h>
 #include <usb/usb.h>
 #include <usb/usbmsc.h>

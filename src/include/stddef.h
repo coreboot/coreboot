@@ -6,7 +6,13 @@ typedef long ptrdiff_t;
 #define __SIZE_TYPE__ unsigned long
 #endif
 typedef __SIZE_TYPE__ size_t;
-typedef long ssize_t;
+/* There is a GCC macro for a size_t type, but not
+ * for a ssize_t type. Below construct tricks GCC
+ * into making __SIZE_TYPE__ signed.
+ */
+#define unsigned signed
+typedef __SIZE_TYPE__ ssize_t;
+#undef unsigned
 
 typedef int wchar_t;
 typedef unsigned int wint_t;

@@ -1,0 +1,9 @@
+config EC_KONTRON_IT8516E
+	select EC_ACPI
+	bool
+	help
+	  Kontron uses an ITE IT8516E on the KTQM77. It's firmware might
+	  come from Fintek (mentioned as Finte*c* somewhere in their Linux
+	  driver).
+	  The KTQM77 is an embedded board and the IT8516E seems to be
+	  only used for fan control and GPIO.

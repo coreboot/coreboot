@@ -22,9 +22,10 @@
 #include <console/console.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
-#include "pch.h"
 
 #ifdef __PRE_RAM__
+#include "pch.h"
+
 void enable_usbdebug(unsigned int port)
 {
 	u32 dbgctl;

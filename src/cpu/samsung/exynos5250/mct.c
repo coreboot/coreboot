@@ -88,7 +88,7 @@ static int enabled = 0;
 static struct mct_regs *const mct =
 	(struct mct_regs *)MCT_ADDRESS;
 
-static uint64_t timer_raw_value(void)
+uint64_t mct_raw_value(void)
 {
 	if (!enabled) {
 		writel(readl(&mct->g_tcon) | (0x1 << 8), &mct->g_tcon);
@@ -109,9 +109,8 @@ void timer_start(void)
 
 u32 timer_us(void)
 {
-	uint64_t raw = timer_raw_value();
+	uint64_t raw = mct_raw_value();
 	static uint32_t ticks_per_microsecond = MCT_HZ/1000000;
 	uint32_t usec = raw / ticks_per_microsecond;
 	return usec;
 }
-

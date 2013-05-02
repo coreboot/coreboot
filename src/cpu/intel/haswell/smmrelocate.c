@@ -164,7 +164,7 @@ static int bsp_setup_msr_save_state(struct smm_relocation_params *relo_params)
 /* The relocation work is actually performed in SMM context, but the code
  * resides in the ramstage module. This occurs by trampolining from the default
  * SMRAM entry point to here. */
-static void __attribute__((cdecl))
+static void asmlinkage
 cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
 {
 	msr_t mtrr_cap;

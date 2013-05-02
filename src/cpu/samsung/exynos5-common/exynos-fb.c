@@ -27,7 +27,7 @@
 #include <arch/io.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <timer.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
@@ -212,9 +212,8 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 			       struct video_info *video_info)
 {
 	int timeout = 0;
-	u32 start, end;
 	struct exynos5_dp *base = dp->base;
-
+	struct mono_time start, current, end;
 	s5p_dp_config_video_slave_mode(dp, video_info);
 
 	s5p_dp_set_video_color_format(dp, video_info->color_depth,
@@ -227,18 +226,20 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 		return -ERR_PLL_NOT_UNLOCKED;
 	}
 
-	start = timer_us();
-	end = start + STREAM_ON_TIMEOUT*1000;
+	timer_monotonic_get(&start);
+	end = current = start;
+	mono_time_add_usecs(&end, STREAM_ON_TIMEOUT * USECS_PER_MSEC);
 	do {
 		if (s5p_dp_is_slave_video_stream_clock_on(dp) == 0) {
 			timeout++;
 			break;
 		}
-	} while (timer_us() < end);
+		timer_monotonic_get(&current);
+	} while (mono_time_before(&current, &end));
 
 	if (!timeout) {
-		printk(BIOS_ERR, "Video Clock Not ok after %uus.\n",
-							timer_us() - start);
+		printk(BIOS_ERR, "Video Clock Not ok after %ldus.\n",
+				mono_time_diff_microseconds(&start, &end));
 		return -ERR_VIDEO_CLOCK_BAD;
 	}
 

@@ -7,6 +7,7 @@ bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART
 bootblock-$(CONFIG_EARLY_CONSOLE) += clock_init.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += clock.c
+bootblock-$(CONFIG_EARLY_CONSOLE) += monotonic_timer.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += soc.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 
@@ -17,6 +18,7 @@ romstage-y += dmc_common.c
 romstage-y += dmc_init_ddr3.c
 romstage-y += power.c
 romstage-y += mct.c
+romstage-y += monotonic_timer.c
 romstage-$(CONFIG_EARLY_CONSOLE) += soc.c
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 
@@ -30,6 +32,7 @@ ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
 ramstage-y += cpu.c
 ramstage-y += exynos5250-tmu.c
 ramstage-y += mct.c
+ramstage-y += monotonic_timer.c
 
 #ramstage-$(CONFIG_SATA_AHCI) += sata.c
 

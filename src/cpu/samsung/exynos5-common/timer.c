@@ -25,7 +25,7 @@
 
 #include <common.h>
 #include <arch/io.h>
-#include <time.h>
+#include <timer.h>
 #include <console/console.h>
 #include <cpu/samsung/exynos5-common/pwm.h>
 #include <cpu/samsung/exynos5-common/clk.h>
@@ -121,16 +121,23 @@ unsigned long timer_get_us(void)
 /* delay x useconds */
 void udelay(unsigned long usec)
 {
-	unsigned long start;
+	struct mono_time current, end;
 
-	start = timer_us();
-	if ((start + usec) < start){
-		printk(BIOS_EMERG, "udelay: %08lx is impossibly large\n",
-			usec);
-		usec = 1000000;
+	timer_monotonic_get(&current);
+	end = current;
+	mono_time_add_usecs(&end, usec);
+
+	if (mono_time_after(&current, &end)) {
+		printk(BIOS_EMERG, "udelay: 0x%08lx is impossibly large\n",
+				usec);
+		/* There's not much we can do if usec is too big. Use a long,
+		 * paranoid delay value and hope for the best... */
+		end = current;
+		mono_time_add_usecs(&end, USECS_PER_SEC);
 	}
-	while ((timer_us() - start) < usec)
-		;
+
+	while (mono_time_before(&current, &end))
+		timer_monotonic_get(&current);
 }
 
 /*

@@ -7,6 +7,7 @@ bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART
 bootblock-$(CONFIG_EARLY_CONSOLE) += clock_init.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += clock.c
+bootblock-$(CONFIG_EARLY_CONSOLE) += monotonic_timer.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += soc.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 
@@ -17,6 +18,7 @@ romstage-y += dmc_common.c
 romstage-y += dmc_init_ddr3.c
 romstage-y += power.c
 romstage-y += mct.c
+romstage-y += monotonic_timer.c
 romstage-$(CONFIG_EARLY_CONSOLE) += soc.c
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 

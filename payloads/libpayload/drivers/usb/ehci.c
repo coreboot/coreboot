@@ -69,7 +69,7 @@ static void dump_td(u32 addr)
 	usb_debug("+---------------------------------------------------+\n");
 }
 
-#ifdef USB_DEBUG
+#if 0 && defined(USB_DEBUG)
 static void dump_qh(ehci_qh_t *cur)
 {
 	qtd_t *tmp_qtd = NULL;
@@ -724,7 +724,7 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 }
 
 hci_t *
-ehci_init (pcidev_t addr)
+ehci_init (void *bar)
 {
 	int i;
 	hci_t *controller = new_controller ();
@@ -735,15 +735,6 @@ ehci_init (pcidev_t addr)
 	controller->instance = malloc (sizeof (ehci_t));
 	if(!controller->instance)
 		fatal("Not enough memory creating USB controller instance.\n");
-
-#define PCI_COMMAND 4
-#define PCI_COMMAND_IO 1
-#define PCI_COMMAND_MEMORY 2
-#define PCI_COMMAND_MASTER 4
-
-	u32 pci_command = pci_read_config32(addr, PCI_COMMAND);
-	pci_command = (pci_command | PCI_COMMAND_MEMORY) & ~PCI_COMMAND_IO ;
-	pci_write_config32(addr, PCI_COMMAND, pci_command);
 
 	controller->type = EHCI;
 
@@ -760,8 +751,7 @@ ehci_init (pcidev_t addr)
 	controller->create_intr_queue = ehci_create_intr_queue;
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;
-	controller->bus_address = addr;
-	controller->reg_base = pci_read_config32 (controller->bus_address, USBBASE);
+	controller->reg_base = (u32)(unsigned long)bar;
 	for (i = 0; i < 128; i++) {
 		controller->devices[i] = 0;
 	}
@@ -769,9 +759,6 @@ ehci_init (pcidev_t addr)
 
 	EHCI_INST(controller)->capabilities = phys_to_virt(controller->reg_base);
 	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(controller->reg_base) + EHCI_INST(controller)->capabilities->caplength);
-
-	/* default value for frame length adjust */
-	pci_write_config8(addr, FLADJ, FLADJ_framelength(60000));
 
 	/* Set the high address word (aka segment) if controller is 64-bit */
 	if (EHCI_INST(controller)->capabilities->hccparams & 1)
@@ -818,3 +805,25 @@ ehci_init (pcidev_t addr)
 
 	return controller;
 }
+
+#ifdef CONFIG_USB_PCI
+hci_t *
+ehci_pci_init (pcidev_t addr)
+{
+	hci_t *controller;
+	u32 reg_base;
+
+	u32 pci_command = pci_read_config32(addr, PCI_COMMAND);
+	pci_command = (pci_command | PCI_COMMAND_MEMORY) & ~PCI_COMMAND_IO ;
+	pci_write_config32(addr, PCI_COMMAND, pci_command);
+
+	reg_base = pci_read_config32 (addr, USBBASE);
+
+	/* default value for frame length adjust */
+	pci_write_config8(addr, FLADJ, FLADJ_framelength(60000));
+
+	controller = ehci_init((void *)(unsigned long)reg_base);
+
+	return controller;
+}
+#endif

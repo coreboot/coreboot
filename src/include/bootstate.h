@@ -110,11 +110,27 @@ typedef enum {
 	BS_ON_EXIT
 } boot_state_sequence_t;
 
+/* The boot_state_completion sturcture is used inernally to the state machine
+ * to indicate that a call back needs to complete by the provided sequence
+ * in the boot state machine. */
+struct boot_state_completion {
+	boot_state_t state;
+	boot_state_sequence_t when;
+};
+
+/* The BS_RAMSTAGE_EXIT is a special purpose encoding of a state to indicate
+ * when a callback should be completed. The completion state of
+ * BS_RAMSTAGE_EXIT indicates that a callback needs to be completed prior
+ * to leaving ramstage. i.e. BS_OS_RESUME and BS_PAYLOAD_BOOT. */
+#define BS_RAMSTAGE_EXIT -1
+
 struct boot_state_callback {
 	void *arg;
 	void (*callback)(void *arg);
-	/* For use internal to the boot state machine. */
+	/* Everything below this comment should be considered private and
+	 * controlled by the boot state machine. */
 	struct boot_state_callback *next;
+	struct boot_state_completion deadline;
 #if BOOT_STATE_DEBUG
 	const char *location;
 #endif
@@ -130,13 +146,17 @@ struct boot_state_callback {
 #define INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)
 #endif
 
-#define BOOT_STATE_CALLBACK_INIT(func_, arg_)		\
-	{						\
-		.arg = arg_,				\
-		.callback = func_,			\
-		.next = NULL,				\
-		BOOT_STATE_CALLBACK_INIT_DEBUG		\
+#define BOOT_STATE_CALLBACK_INIT_DEADLINE(func_, arg_, state_, seq_)	\
+	{								\
+		.arg = arg_,						\
+		.callback = func_,					\
+		.next = NULL,						\
+		.deadline = { state_, seq_ },				\
+		BOOT_STATE_CALLBACK_INIT_DEBUG				\
 	}
+
+#define BOOT_STATE_CALLBACK_INIT(func_, arg_)		\
+	BOOT_STATE_CALLBACK_INIT_DEADLINE(func_, arg_, -2, -2)
 
 #define BOOT_STATE_CALLBACK(name_, func_, arg_)	\
 	struct boot_state_callback name_ = BOOT_STATE_CALLBACK_INIT(func_, arg_)
@@ -146,6 +166,32 @@ struct boot_state_callback {
 	INIT_BOOT_STATE_CALLBACK_DEBUG(bscb_)		\
 	bscb_->callback = func_;			\
 	bscb_->arg = arg_
+
+/* The boot_state_complete_by_(entry|exit) functions can be called on
+ * a boot state callback prior to being scheduled. The completion deadline
+ * is just like the start state and sequence. The boot state machine will
+ * not proceed past the state until the callback is complete. */
+static inline void
+boot_state_complete_by_entry(struct boot_state_callback *bscb,
+                             boot_state_t state)
+{
+	bscb->deadline.state = state;
+	bscb->deadline.when = BS_ON_ENTRY;
+}
+
+static inline void
+boot_state_complete_by_exit(struct boot_state_callback *bscb,
+                            boot_state_t state)
+{
+	bscb->deadline.state = state;
+	bscb->deadline.when = BS_ON_EXIT;
+}
+
+static inline void
+boot_state_complete_by_ramstage_exit(struct boot_state_callback *bscb)
+{
+	bscb->deadline.state = BS_RAMSTAGE_EXIT;
+}
 
 /* The following 2 functions schedule a callback to be called on entry/exit
  * to a given state. Note that thare are no ordering guarantees between the
@@ -173,11 +219,21 @@ struct boot_state_init_entry {
 #define BOOT_STATE_INIT_ENTRIES(name_) \
 	static struct boot_state_init_entry name_[] BOOT_STATE_INIT_ATTR
 
-#define BOOT_STATE_INIT_ENTRY(state_, when_, func_, arg_)	\
+#define BOOT_STATE_INIT_ENTRY_DEADLINE(state_, when_, func_, arg_, end_state_, end_when_)	\
 	{							\
 		.state = state_,				\
 		.when = when_,					\
-		.bscb = BOOT_STATE_CALLBACK_INIT(func_, arg_),	\
+		.bscb = BOOT_STATE_CALLBACK_INIT_DEADLINE(func_, arg_, end_state_, end_when_),	\
 	}
+
+/* By default the callback needs to run to completion at the same step the
+ * callback is called. */
+#define BOOT_STATE_INIT_ENTRY(state_, when_, func_, arg_)	\
+	BOOT_STATE_INIT_ENTRY_DEADLINE(state_, when_, func_, arg_,\
+	                               state_, when_)
+
+#define BOOT_STATE_INIT_ENTRY_RAMSTAGE_EXIT(state_, when_, func_, arg_) \
+	BOOT_STATE_INIT_ENTRY_DEADLINE(state_, when_, func_, arg_, \
+	                               BS_RAMSTAGE_EXIT, 0)
 
 #endif /* BOOTSTATE_H */

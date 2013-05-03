@@ -72,10 +72,12 @@ struct boot_state_times {
 	struct mono_time samples[MAX_TIME_SAMPLES];
 };
 
+
 struct boot_state {
 	const char *name;
 	boot_state_t id;
 	struct boot_state_callback *seq_callbacks[2];
+	int seq_blocked[2];
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
 	int complete : 1;
@@ -90,6 +92,7 @@ struct boot_state {
 		.name = #state_,				\
 		.id = state_,					\
 		.seq_callbacks = { NULL, NULL },		\
+		.seq_blocked = { 0, 0 },			\
 		.run_state = run_func_,				\
 		.arg = NULL,					\
 		.complete = 0,					\
@@ -296,22 +299,41 @@ static void bs_run_timers(int drain)
 static void bs_run_timers(int drain) {}
 #endif
 
+static void bs_call_callback(struct boot_state_callback *bscb)
+{
+	bscb->callback(bscb->arg);
+
+	if (bscb->deadline.state == BS_RAMSTAGE_EXIT) {
+		boot_states[BS_OS_RESUME].seq_blocked[BS_ON_ENTRY]--;
+		boot_states[BS_PAYLOAD_BOOT].seq_blocked[BS_ON_ENTRY]--;
+		return;
+	}
+	boot_states[bscb->deadline.state].seq_blocked[bscb->deadline.when]--;
+}
+
 static void bs_call_callbacks(struct boot_state *state,
                               boot_state_sequence_t seq)
 {
-	while (state->seq_callbacks[seq] != NULL) {
-		struct boot_state_callback *bscb;
+	while (state->seq_blocked[seq] != 0) {
+		if (state->seq_callbacks[seq] != NULL) {
+			struct boot_state_callback *bscb;
 
-		/* Remove the first callback. */
-		bscb = state->seq_callbacks[seq];
-		state->seq_callbacks[seq] = bscb->next;
-		bscb->next = NULL;
+			/* Remove the first callback. */
+			bscb = state->seq_callbacks[seq];
+			state->seq_callbacks[seq] = bscb->next;
+			bscb->next = NULL;
 
 #if BOOT_STATE_DEBUG
-		printk(BS_DEBUG_LVL, "BS: callback (%p) @ %s.\n",
-		       bscb, bscb->location);
+			printk(BS_DEBUG_LVL, "BS: callback (%p) @ %s.\n",
+			       bscb, bscb->location);
 #endif
-		bscb->callback(bscb->arg);
+			bs_call_callback(bscb);
+			continue;
+		}
+
+		/* Run the timers to make forward progress if a timeout callback
+		 * is blocking this state transition. */
+		bs_run_timers(0);
 	}
 }
 
@@ -355,6 +377,31 @@ static void bs_walk_state_machine(boot_state_t current_state_id)
 	}
 }
 
+static void boot_state_sched_completion(struct boot_state *start_state,
+                                        struct boot_state_callback *bscb,
+                                        boot_state_sequence_t seq)
+{
+	if (bscb->deadline.state == BS_RAMSTAGE_EXIT) {
+		boot_states[BS_OS_RESUME].seq_blocked[BS_ON_ENTRY]++;
+		boot_states[BS_PAYLOAD_BOOT].seq_blocked[BS_ON_ENTRY]++;
+		return;
+	}
+
+	/* Handle unitialized completion deadline or a completion deadline
+	 * for a state beforeteh current scheduled one. In both cases the
+	 * deadline is the start state and sequence. */
+	if (bscb->deadline.state < start_state->id ||
+	    (bscb->deadline.state == start_state->id &&
+	     bscb->deadline.when < seq)) {
+		bscb->deadline.state = start_state->id;
+		bscb->deadline.when = seq;
+		start_state->seq_blocked[seq]++;
+		return;
+	}
+
+	boot_states[bscb->deadline.state].seq_blocked[bscb->deadline.when]++;
+}
+
 static int boot_state_sched_callback(struct boot_state *state,
                                      struct boot_state_callback *bscb,
                                      boot_state_sequence_t seq)
@@ -369,6 +416,8 @@ static int boot_state_sched_callback(struct boot_state *state,
 
 	bscb->next = state->seq_callbacks[seq];
 	state->seq_callbacks[seq] = bscb;
+
+	boot_state_sched_completion(state, bscb, seq);
 
 	return 0;
 }

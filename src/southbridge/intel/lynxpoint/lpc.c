@@ -43,43 +43,29 @@
 
 typedef struct southbridge_intel_lynxpoint_config config_t;
 
-static void pch_enable_apic(struct device *dev)
+/**
+ * Set miscellanous static southbridge features.
+ *
+ * @param dev PCI device with I/O APIC control registers
+ */
+static void pch_enable_ioapic(struct device *dev)
 {
-	int i;
 	u32 reg32;
-	volatile u32 *ioapic_index = (volatile u32 *)(IO_APIC_ADDR);
-	volatile u32 *ioapic_data = (volatile u32 *)(IO_APIC_ADDR + 0x10);
 
-	/* Enable ACPI I/O and power management.
-	 * Set SCI IRQ to IRQ9
-	 */
-	pci_write_config8(dev, ACPI_CNTL, 0x80);
+	/* Enable ACPI I/O range decode */
+	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
-	*ioapic_index = 0;
-	*ioapic_data = (2 << 24);
+	set_ioapic_id(IO_APIC_ADDR, 0x02);
 
 	/* affirm full set of redirection table entries ("write once") */
-	*ioapic_index = 1;
-	reg32 = *ioapic_data;
-	*ioapic_index = 1;
-	*ioapic_data = reg32;
+	reg32 = io_apic_read(IO_APIC_ADDR, 0x01);
+	io_apic_write(IO_APIC_ADDR, 0x01, reg32);
 
-	*ioapic_index = 0;
-	reg32 = *ioapic_data;
-	printk(BIOS_DEBUG, "Southbridge APIC ID = %x\n", (reg32 >> 24) & 0x0f);
-	if (reg32 != (1 << 25))
-		die("APIC Error\n");
-
-	printk(BIOS_SPEW, "Dumping IOAPIC registers\n");
-	for (i=0; i<3; i++) {
-		*ioapic_index = i;
-		printk(BIOS_SPEW, "  reg 0x%04x:", i);
-		reg32 = *ioapic_data;
-		printk(BIOS_SPEW, " 0x%08x\n", reg32);
-	}
-
-	*ioapic_index = 3; /* Select Boot Configuration register. */
-	*ioapic_data = 1; /* Use Processor System Bus to deliver interrupts. */
+	/*
+	 * Select Boot Configuration register (0x03) and
+	 * use Processor System Bus (0x01) to deliver interrupts.
+	 */
+	io_apic_write(IO_APIC_ADDR, 0x03, 0x01);
 }
 
 static void pch_enable_serial_irqs(struct device *dev)
@@ -547,7 +533,7 @@ static void lpc_init(struct device *dev)
 	pci_write_config16(dev, PCI_COMMAND, 0x000f);
 
 	/* IO APIC initialization. */
-	pch_enable_apic(dev);
+	pch_enable_ioapic(dev);
 
 	pch_enable_serial_irqs(dev);
 

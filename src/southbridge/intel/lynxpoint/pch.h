@@ -237,6 +237,7 @@ unsigned get_gpios(const int *gpio_num_array);
 
 #define PMBASE			0x40
 #define ACPI_CNTL		0x44
+#define   ACPI_EN		(1 << 7)
 #define BIOS_CNTL		0xDC
 #define GPIO_BASE		0x48 /* LPC GPIO Base Address Register */
 #define GPIO_CNTL		0x4C /* LPC GPIO Control Register */

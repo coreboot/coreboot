@@ -596,8 +596,6 @@ while true ; do
 		-C|--config)    shift; configureonly=1;;
 		-l|--loglevel)  shift
 			customizing="${customizing}, loglevel $1"
-			configoptions="${configoptions}CONFIG_MAXIMUM_CONSOLE_LOGLEVEL_$1=y\n"
-			configoptions="${configoptions}CONFIG_MAXIMUM_CONSOLE_LOGLEVEL=$1\n"
 			configoptions="${configoptions}CONFIG_DEFAULT_CONSOLE_LOGLEVEL_$1=y\n"
 			configoptions="${configoptions}CONFIG_DEFAULT_CONSOLE_LOGLEVEL=$1\n"
 			shift;;

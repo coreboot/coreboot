@@ -104,20 +104,14 @@ static inline void printk(int LEVEL, const char *fmt, ...) {
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\
-		if (CONFIG_MAXIMUM_CONSOLE_LOGLEVEL >= LEVEL) {	\
-			do_printk(LEVEL, fmt, ##args);		\
-		}						\
+		do_printk(LEVEL, fmt, ##args);		\
 	} while(0)
 
 #else
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\
-		if (CONFIG_MAXIMUM_CONSOLE_LOGLEVEL >= LEVEL) {	\
-			do_printk(LEVEL, fmt, ##args);		\
-		} else {					\
-			do_printk(BIOS_NEVER, fmt, ##args);	\
-		}						\
+		do_printk(LEVEL, fmt, ##args);		\
 	} while(0)
 #endif
 

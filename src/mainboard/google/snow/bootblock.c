@@ -21,8 +21,8 @@
 #include <arch/io.h>
 #include <cbfs.h>
 #include <uart.h>
+#include <time.h>
 #include <console/console.h>
-#include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
 #include "mainboard.h"
@@ -30,10 +30,10 @@
 void bootblock_mainboard_init(void);
 void bootblock_mainboard_init(void)
 {
-	/* kick off the multi-core timer.
+	/* kick off the microsecond timer.
 	 * We want to do this as early as we can.
 	 */
-	mct_start();
+	timer_start();
 
 	if (snow_get_wakeup_state() == SNOW_WAKEUP_DIRECT) {
 		snow_wakeup();

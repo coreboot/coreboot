@@ -177,9 +177,9 @@ static void lb_framebuffer(struct lb_header *header)
 		return;
 	struct lb_framebuffer *framebuffer;
 	framebuffer = (struct lb_framebuffer *)lb_new_record(header);
+	fill_lb_framebuffer(framebuffer);
 	framebuffer->tag = LB_TAG_FRAMEBUFFER;
 	framebuffer->size = sizeof(*framebuffer);
-	fill_lb_framebuffer(framebuffer);
 #endif
 }
 

@@ -34,7 +34,7 @@ static struct device *cur_parent, *cur_bus;
 %%
 devtree: { cur_parent = cur_bus = head; } chip { postprocess_devtree(); } ;
 
-chipchildren: chipchildren device | chipchildren chip | chipchildren registers | /* empty */ ;
+chipchildren: chipchildren device | device | chipchildren chip | chipchildren registers | registers chipchildren | chip chipchildren ;
 
 devicechildren: devicechildren device | devicechildren chip | devicechildren resource | devicechildren subsystemid | devicechildren ioapic_irq | /* empty */ ;
 

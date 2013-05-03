@@ -26,6 +26,51 @@
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
+/*
+ * Lane ID Mapping (from Fam15h BKDG: Table 45: Lane Id Mapping)
+ *
+ * Lane Id
+ * 0 P_UMI_[T,R]X[P,N]0 - southbridge link, connect via dev 8
+ * 1 P_UMI_[T,R]X[P,N]1 - southbridge link, connect via dev 8
+ * 2 P_UMI_[T,R]X[P,N]2 - southbridge link, connect via dev 8
+ * 3 P_UMI_[T,R]X[P,N]3 - southbridge link, connect via dev 8
+ * 4 P_GPP_[T,R]X[P,N]0 - may connect to PCI dev 4 - 7
+ * 5 P_GPP_[T,R]X[P,N]1 - may connect to PCI dev 4 - 7
+ * 6 P_GPP_[T,R]X[P,N]2 - may connect to PCI dev 4 - 7
+ * 7 P_GPP_[T,R]X[P,N]3 - may connect to PCI dev 4 - 7
+ * 8 P_GFX_[T,R]X[P,N]0 - may be used to form GFX slot or DDI
+ * 9 P_GFX_[T,R]X[P,N]1 - may be used to form GFX slot or DDI
+ * 10 P_GFX_[T,R]X[P,N]2 - may be used to form GFX slot or DDI
+ * 11 P_GFX_[T,R]X[P,N]3 - may be used to form GFX slot or DDI
+ * 12 P_GFX_[T,R]X[P,N]4 - may be used to form GFX slot or DDI
+ * 13 P_GFX_[T,R]X[P,N]5 - may be used to form GFX slot or DDI
+ * 14 P_GFX_[T,R]X[P,N]6 - may be used to form GFX slot or DDI
+ * 15 P_GFX_[T,R]X[P,N]7 - may be used to form GFX slot or DDI
+ * 16 P_GFX_[T,R]X[P,N]8 - may be used to form GFX slot or DDI
+ * 17 P_GFX_[T,R]X[P,N]9 - may be used to form GFX slot or DDI
+ * 18 P_GFX_[T,R]X[P,N]10 - may be used to form GFX slot or DDI
+ * 19 P_GFX_[T,R]X[P,N]11 - may be used to form GFX slot or DDI
+ * 20 P_GFX_[T,R]X[P,N]12 - may be used to form GFX slot or DDI
+ * 21 P_GFX_[T,R]X[P,N]13 - may be used to form GFX slot or DDI
+ * 22 P_GFX_[T,R]X[P,N]14 - may be used to form GFX slot or DDI
+ * 23 P_GFX_[T,R]X[P,N]15 - may be used to form GFX slot or DDI
+ * 24 DP0_TX[P,N]0 - rest is just for DDI (graphics outputs)
+ * 25 DP0_TX[P,N]1
+ * 26 DP0_TX[P,N]2
+ * 27 DP0_TX[P,N]3
+ * 28 DP1_TX[P,N]0
+ * 29 DP1_TX[P,N]1
+ * 30 DP1_TX[P,N]2
+ * 31 DP1_TX[P,N]3
+ * 32 DP2_TX[P,N]0
+ * 33 DP2_TX[P,N]1
+ * 34 DP2_TX[P,N]2
+ * 35 DP2_TX[P,N]3
+ * 36 DP2_TX[P,N]4
+ * 37 DP2_TX[P,N]5
+ * 38 DP2_TX[P,N]6
+ */
+
 PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* PCIe port, Lanes 15:8, PCI Device Number 2, PCIE SLOT x8 */
 	{

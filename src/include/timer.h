@@ -155,4 +155,12 @@ static inline long rela_time_in_microseconds(const struct rela_time *rt)
 	return rt->microseconds;
 }
 
+static inline long mono_time_diff_microseconds(const struct mono_time *t1,
+					       const struct mono_time *t2)
+{
+	struct rela_time rt;
+	rt = mono_time_diff(t1, t2);
+	return rela_time_in_microseconds(&rt);
+}
+
 #endif /* TIMER_H */

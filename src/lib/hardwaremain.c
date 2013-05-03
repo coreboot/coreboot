@@ -39,6 +39,7 @@
 #endif
 #include <timer.h>
 #include <timestamp.h>
+#include <thread.h>
 
 #if BOOT_STATE_DEBUG
 #define BS_DEBUG_LVL BIOS_DEBUG
@@ -327,7 +328,8 @@ static void bs_call_callbacks(struct boot_state *state,
 			printk(BS_DEBUG_LVL, "BS: callback (%p) @ %s.\n",
 			       bscb, bscb->location);
 #endif
-			bs_call_callback(bscb);
+			if (thread_run((void *)bs_call_callback, bscb))
+				bs_call_callback(bscb);
 			continue;
 		}
 
@@ -476,13 +478,21 @@ void hardwaremain(int boot_complete)
 		hard_reset();
 	}
 
+	threads_initialize();
+
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();
 
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
-	bs_walk_state_machine(BS_PRE_DEVICE);
+	if (thread_run((void *)bs_walk_state_machine, (void *)BS_PRE_DEVICE))
+		bs_walk_state_machine(BS_PRE_DEVICE);
+
+	while (1) {
+		bs_run_timers(1);
+	}
+
 	die("Boot state machine failure.\n");
 }
 

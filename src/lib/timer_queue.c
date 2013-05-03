@@ -18,6 +18,7 @@
  */
 #include <stddef.h>
 #include <timer.h>
+#include <thread.h>
 
 #define MAX_TIMER_QUEUE_ENTRIES 64
 
@@ -191,8 +192,13 @@ int timers_run(void)
 	timer_monotonic_get(&current_time);
 	tocb = timer_queue_expired(&global_timer_queue, &current_time);
 
-	if (tocb != NULL)
-		tocb->callback(tocb);
+	if (tocb != NULL) {
+		/* If we are resuming a thread or cannot schedule a new
+		 * thread run the callback in this execution context. */
+		if (tocb_is_resume(tocb) ||
+		    thread_run((void *)tocb->callback, tocb) < 0)
+			tocb->callback(tocb);
+	}
 
 	return !timer_queue_empty(&global_timer_queue);
 }

@@ -72,57 +72,32 @@
  */
 
 PCIe_PORT_DESCRIPTOR PortList [] = {
-	/* PCIe port, Lanes 8:23, PCI Device Number 2 */
+	/* PCIe port, Lanes 8:23, PCI Device Number 2, blue x16 slot */
 	{
 		0, /* Descriptor flags */
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 23),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
-	/* PCIe port, Lanes 16:23, PCI Device Number 3 */
+	/* PCIe port, Lanes 4:7, PCI Device Number 4, black x16 slot (in fact x4) */
 	{
 		0, /* Descriptor flags */
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 16, 23),
-		PCIE_PORT_DATA_INITIALIZER (PortDisabled, ChannelTypeExt6db, 3, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
-	},
-
-	/* PCIe port, Lanes 4, PCI Device Number 4, PCIE MINI0 */
-	{
-		0, /* Descriptor flags */
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
+		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 7),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 4, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
 	},
-
-	/* PCIe port, Lanes 5, PCI Device Number 5, PCIE MINI1 */
-	{
-		0, /* Descriptor flags */
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 5, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
-	},
-
-	/* PCIe port, Lanes 6, PCI Device Number 6, PCIE SLOT1, TODO: Disabled. */
-	{
-		0, /* Descriptor flags */
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 6, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
-	},
-
-	/* PCIe port, Lanes 7, PCI Device Number 7, LAN , TODO: not the last entry.*/
-	{
-		0, /* Descriptor flags  !!!IMPORTANT!!! Terminate last element of array */
-		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
-		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 7, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 1)
-	},
-
-#if 1
-	/* Initialize Port descriptor (PCIe port, Lanes ?, PCI Device Number 8, ...) */
+	/* PCIe port, Lanes 0:3, UMI link to SB, PCI Device Number 8 */
 	{
 		DESCRIPTOR_TERMINATE_LIST, /* Descriptor flags  !!!IMPORTANT!!! Terminate last element of array */
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
 		PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 8, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, 0)
 	},
-#endif
 };
 
+/*
+ * It is not known, if the setup is complete.
+ *
+ * Tested and works: VGA/DVI
+ * Untested: HDMI
+ */
 PCIe_DDI_DESCRIPTOR DdiList [] = {
 	// DP0 to HDMI0/DP
 	{
@@ -139,29 +114,9 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 	// DP2 to HDMI1/DP
 	{
 		0,
-//    PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 32, 38),
 		PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 32, 35),
-		//PCIE_DDI_DATA_INITIALIZER (ConnectorTypeEDP, Aux3, Hdp3)
 		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux3, Hdp3)
 	},
-	// GFX Lane 15-12
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 12, 15),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux4, Hdp4)
-	},
-	// GFX Lane 11-8
-	{
-		0,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 16, 19),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux5, Hdp5)
-	},
-	// GFX Lane 7-4
-	{
-		DESCRIPTOR_TERMINATE_LIST,
-		PCIE_ENGINE_DATA_INITIALIZER (PcieUnusedEngine, 20, 23),
-		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux6, Hdp6)
-	}
 };
 
 PCIe_COMPLEX_DESCRIPTOR Trinity = {
@@ -204,9 +159,9 @@ OemCustomizeInitEarly (
 	//
 	// Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
 	//
-	AllocHeapParams.RequestedBufferSize = (sizeof (PCIe_COMPLEX_DESCRIPTOR)  +
-					       sizeof (PCIe_PORT_DESCRIPTOR) * 7 +
-					       sizeof (PCIe_DDI_DESCRIPTOR)) * 6;
+	AllocHeapParams.RequestedBufferSize = sizeof (Trinity) +
+					      sizeof (DdiList) +
+					      sizeof (PortList);
 
 	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
 	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
@@ -219,30 +174,30 @@ OemCustomizeInitEarly (
 
 	TrinityPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
-	AllocHeapParams.BufferPtr += sizeof (PCIe_COMPLEX_DESCRIPTOR);
+	AllocHeapParams.BufferPtr += sizeof (Trinity);
 	TrinityPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
 
-	AllocHeapParams.BufferPtr += sizeof (PCIe_PORT_DESCRIPTOR) * 7;
+	AllocHeapParams.BufferPtr += sizeof (PortList);
 	TrinityPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
 	LibAmdMemFill (TrinityPcieComplexListPtr,
 		       0,
-		       sizeof (PCIe_COMPLEX_DESCRIPTOR),
+		       sizeof (Trinity),
 		       &InitEarly->StdHeader);
 
 	LibAmdMemFill (TrinityPciePortPtr,
 		       0,
-		       sizeof (PCIe_PORT_DESCRIPTOR) * 7,
+		       sizeof (PortList),
 		       &InitEarly->StdHeader);
 
 	LibAmdMemFill (TrinityPcieDdiPtr,
 		       0,
-		       sizeof (PCIe_DDI_DESCRIPTOR) * 6,
+		       sizeof (DdiList),
 		       &InitEarly->StdHeader);
 
-	LibAmdMemCopy  (TrinityPcieComplexListPtr, &Trinity, sizeof (PCIe_COMPLEX_DESCRIPTOR), &InitEarly->StdHeader);
-	LibAmdMemCopy  (TrinityPciePortPtr, &PortList[0], sizeof (PCIe_PORT_DESCRIPTOR) * 7, &InitEarly->StdHeader);
-	LibAmdMemCopy  (TrinityPcieDdiPtr, &DdiList[0], sizeof (PCIe_DDI_DESCRIPTOR) * 6, &InitEarly->StdHeader);
+	LibAmdMemCopy  (TrinityPcieComplexListPtr, &Trinity, sizeof (Trinity), &InitEarly->StdHeader);
+	LibAmdMemCopy  (TrinityPciePortPtr, &PortList[0], sizeof (PortList), &InitEarly->StdHeader);
+	LibAmdMemCopy  (TrinityPcieDdiPtr, &DdiList[0], sizeof (DdiList), &InitEarly->StdHeader);
 
 	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)TrinityPciePortPtr;
 	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->DdiLinkList  =  (PCIe_DDI_DESCRIPTOR*)TrinityPcieDdiPtr;

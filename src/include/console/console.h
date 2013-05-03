@@ -86,40 +86,10 @@ static inline void printk(int LEVEL, const char *fmt, ...) {
 
 #else /* defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE */
 
-#undef WE_CLEANED_UP_ALL_SIDE_EFFECTS
-/* We saw some strange effects in the past like coreboot crashing while
- * disabling cache as ram for a maximum console log level of 6 and above while
- * it worked fine without. In order to catch such issues reliably we are
- * always doing a function call to do_printk with the full number of arguments.
- * Our favorite reason to do it this way was:
- *   disable_car();
- *   printk(BIOS_DEBUG, "CAR disabled\n"); // oops, garbage stack pointer
- *   move_stack();
- * This slightly increases the code size and some unprinted strings will end
- * up in the final coreboot binary (most of them compressed). If you want to
- * avoid this, do a
- * #define WE_CLEANED_UP_ALL_SIDE_EFFECTS
- */
-#ifdef WE_CLEANED_UP_ALL_SIDE_EFFECTS
-
 #define printk(LEVEL, fmt, args...)				\
 	do {							\
-		if (CONFIG_MAXIMUM_CONSOLE_LOGLEVEL >= LEVEL) {	\
-			do_printk(LEVEL, fmt, ##args);		\
-		}						\
+		do_printk(LEVEL, fmt, ##args);		\
 	} while(0)
-
-#else
-
-#define printk(LEVEL, fmt, args...)				\
-	do {							\
-		if (CONFIG_MAXIMUM_CONSOLE_LOGLEVEL >= LEVEL) {	\
-			do_printk(LEVEL, fmt, ##args);		\
-		} else {					\
-			do_printk(BIOS_NEVER, fmt, ##args);	\
-		}						\
-	} while(0)
-#endif
 
 #endif /* defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE */
 

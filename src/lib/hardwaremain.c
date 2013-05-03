@@ -496,3 +496,22 @@ void hardwaremain(int boot_complete)
 	die("Boot state machine failure.\n");
 }
 
+static void test_thread(void *id)
+{
+	const char *str = id;
+	int i = 10;
+
+	while (i != 0) {
+		printk(BIOS_DEBUG, "mark from %s\n", str);
+		mdelay(5);
+		i--;
+	}
+}
+
+
+BOOT_STATE_INIT_ENTRIES(tests_threads) = {
+	BOOT_STATE_INIT_ENTRY_RAMSTAGE_EXIT(BS_PRE_DEVICE, BS_ON_ENTRY,
+	                                    test_thread, (void *)"thread 0"),
+	BOOT_STATE_INIT_ENTRY_RAMSTAGE_EXIT(BS_PRE_DEVICE, BS_ON_ENTRY,
+	                                    test_thread, (void *)"thread 1"),
+};

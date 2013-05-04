@@ -65,7 +65,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 /**
  * AMD Parmer Platform ALC272 Verb Table
  */
-const CODEC_ENTRY Parmer_Alc272_VerbTbl[] = {
+static const CODEC_ENTRY Parmer_Alc272_VerbTbl[] = {
 	{0x11, 0x411111F0},
 	{0x12, 0x411111F0},
 	{0x13, 0x411111F0},
@@ -83,7 +83,7 @@ const CODEC_ENTRY Parmer_Alc272_VerbTbl[] = {
 	{0xff, 0xffffffff}
 };
 
-const CODEC_TBL_LIST ParmerCodecTableList[] =
+static const CODEC_TBL_LIST ParmerCodecTableList[] =
 {
 	{0x10ec0272, (CODEC_ENTRY*)&Parmer_Alc272_VerbTbl[0]},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}

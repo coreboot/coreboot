@@ -19,7 +19,7 @@
 
 config SOUTHBRIDGE_AMD_SB800
 	bool
-	select IOAPIC
+	select IOAPIC if !DRIVERS_GENERIC_IOAPIC
 	select HAVE_USBDEBUG
 	select HAVE_HARD_RESET
 

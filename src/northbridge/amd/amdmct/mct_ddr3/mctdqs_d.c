@@ -92,7 +92,7 @@ static void print_debug_dqs_pair(const char *str, u32 val, const char *str2, u32
 }
 
 /*Warning:  These must be located so they do not cross a logical 16-bit segment boundary!*/
-const static u32 TestPatternJD1a_D[] = {
+static const u32 TestPatternJD1a_D[] = {
 	0x00000000,0x00000000,0xFFFFFFFF,0xFFFFFFFF, /* QW0-1, ALL-EVEN */
 	0x00000000,0x00000000,0x00000000,0x00000000, /* QW2-3, ALL-EVEN */
 	0x00000000,0x00000000,0xFFFFFFFF,0xFFFFFFFF, /* QW4-5, ALL-EVEN */
@@ -130,7 +130,7 @@ const static u32 TestPatternJD1a_D[] = {
 	0x80808080,0x80808080,0x7F7F7F7F,0x7F7F7F7F, /* QW4-5, DQ7-ODD */
 	0x80808080,0x80808080,0x80808080,0x80808080  /* QW6-7, DQ7-ODD */
 };
-const static u32 TestPatternJD1b_D[] = {
+static const u32 TestPatternJD1b_D[] = {
 	0x00000000,0x00000000,0x00000000,0x00000000, /* QW0,CHA-B, ALL-EVEN */
 	0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF, /* QW1,CHA-B, ALL-EVEN */
 	0x00000000,0x00000000,0x00000000,0x00000000, /* QW2,CHA-B, ALL-EVEN */

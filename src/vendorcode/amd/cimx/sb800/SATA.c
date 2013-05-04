@@ -176,7 +176,7 @@ shutdownUnconnectedSataPortClock (
  *
  *
  */
-const static UINT32 sataIfCodeTable[] =
+static const UINT32 sataIfCodeTable[] =
 {
   0x01018F40, //sata class ID of IDE
   0x01040040, //sata class ID of RAID
@@ -192,7 +192,7 @@ const static UINT32 sataIfCodeTable[] =
  *
  *
  */
-const static UINT16 sataDeviceIDTable[] =
+static const UINT16 sataDeviceIDTable[] =
 {
   0x4390,  //sata device ID of IDE
   0x4392,  //sata device ID of RAID
@@ -208,7 +208,7 @@ const static UINT16 sataDeviceIDTable[] =
  *
  *
  */
-const static SATAPHYSETTING sataPhyTable[] =
+static const SATAPHYSETTING sataPhyTable[] =
 {
   {0x3006, 0x0056A607},
   {0x2006, 0x00061400},

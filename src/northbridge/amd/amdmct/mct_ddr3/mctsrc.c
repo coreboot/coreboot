@@ -49,19 +49,19 @@ static void mct_DisableDQSRcvEn_D(struct DCTStatStruc *pDCTstat);
 
 /* Warning:  These must be located so they do not cross a logical 16-bit
    segment boundary! */
-const static u32 TestPattern0_D[] = {
+static const u32 TestPattern0_D[] = {
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 	0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa,
 };
-const static u32 TestPattern1_D[] = {
+static const u32 TestPattern1_D[] = {
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 	0x55555555, 0x55555555, 0x55555555, 0x55555555,
 };
-const static u32 TestPattern2_D[] = {
+static const u32 TestPattern2_D[] = {
 	0x12345678, 0x87654321, 0x23456789, 0x98765432,
 	0x59385824, 0x30496724, 0x24490795, 0x99938733,
 	0x40385642, 0x38465245, 0x29432163, 0x05067894,

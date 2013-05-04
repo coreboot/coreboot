@@ -1,6 +1,6 @@
 config SOUTHBRIDGE_SIS_SIS966
 	bool
-	select IOAPIC
+	select IOAPIC if !DRIVERS_GENERIC_IOAPIC
 	select HAVE_USBDEBUG
 	select HAVE_HARD_RESET
 

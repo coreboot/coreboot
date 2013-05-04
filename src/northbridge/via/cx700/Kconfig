@@ -3,7 +3,7 @@ config NORTHBRIDGE_VIA_CX700
 	select HAVE_DEBUG_RAM_SETUP
 	select HAVE_DEBUG_SMBUS
 	select HAVE_HARD_RESET
-	select IOAPIC
+	select IOAPIC if !DRIVERS_GENERIC_IOAPIC
 	select SMP
 
 # TODO: What should be the per-chipset default value here?

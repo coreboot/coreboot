@@ -83,7 +83,7 @@ static const CODEC_ENTRY Thatcher_Alc272_VerbTbl[] = {
 	{0xff, 0xffffffff}
 };
 
-static const CODEC_TBL_LIST ThatcherCodecTableList[] =
+static const CODEC_TBL_LIST CodecTableList[] =
 {
 	{0x10ec0272, (CODEC_ENTRY*)&Thatcher_Alc272_VerbTbl[0]},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
@@ -110,7 +110,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&ThatcherCodecTableList[0]);
+		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&CodecTableList[0]);
 		/* Azalia Controller Front Panel OEM Table Pointer */
 		FchParams_env->Imc.ImcEnable = FALSE;
 		FchParams_env->Hwm.HwMonitorEnable = FALSE;

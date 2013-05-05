@@ -101,7 +101,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* set DDR3 voltage */
 		byte = CONFIG_BOARD_ASUS_F2A85_M_DDR3_VOLT_VAL;
 
-		if (!byte)
+		/* default is byte = 0x0, so no need to set it in this case */
+		if (byte)
 			do_smbus_write_byte(0xb20, 0x15, 0x3, byte);
 	}
 

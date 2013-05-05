@@ -1,3 +1,4 @@
+romstage-y += smbus.c
 ramstage-y += hudson.c
 ramstage-y += usb.c
 ramstage-y += lpc.c

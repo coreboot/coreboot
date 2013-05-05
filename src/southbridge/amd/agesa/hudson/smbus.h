@@ -20,7 +20,7 @@
 #ifndef HUDSON_SMBUS_H
 #define HUDSON_SMBUS_H
 
-//#include <stdint.h>
+#include <stdint.h>
 
 #define SMBHSTSTAT 0x0
 #define SMBSLVSTAT 0x1

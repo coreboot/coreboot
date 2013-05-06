@@ -30,9 +30,14 @@ struct cpu_driver {
 	struct cpu_device_id *id_table;
 };
 
+struct thread;
+
 struct cpu_info {
 	device_t cpu;
 	unsigned long index;
+#if CONFIG_COOP_MULTITASKING
+	struct thread *thread;
+#endif
 };
 
 struct cpuinfo_arm {

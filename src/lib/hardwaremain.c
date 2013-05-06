@@ -39,6 +39,7 @@
 #endif
 #include <timer.h>
 #include <timestamp.h>
+#include <thread.h>
 
 #if BOOT_STATE_DEBUG
 #define BS_DEBUG_LVL BIOS_DEBUG
@@ -464,6 +465,8 @@ void hardwaremain(int boot_complete)
 	if (boot_complete) {
 		hard_reset();
 	}
+
+	threads_initialize();
 
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();

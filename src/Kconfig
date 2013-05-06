@@ -324,6 +324,22 @@ config TIMER_QUEUE
 	help
 	  Provide a timer queue for performing time-based callbacks. 
 
+config COOP_MULTITASKING
+	def_bool n
+	depends on TIMER_QUEUE
+	help
+	  Cooperative multitasking allows callbacks to be multiplexed on the
+	  main thread of ramstage. With this enabled it allows for multiple
+	  execution paths to take place when they have udelay() calls within
+	  their code.
+
+config NUM_THREADS
+	int
+	default 4
+	depends on COOP_MULTITASKING
+	help
+	  How many execution threads to cooperatively multitask with.
+
 config HIGH_SCRATCH_MEMORY_SIZE
 	hex
 	default 0x0

@@ -48,9 +48,6 @@ endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
 COREBOOT_ROM_DEPENDENCIES+=filo
 endif
-ifeq ($(CONFIG_AP_CODE_IN_CAR),y)
-COREBOOT_ROM_DEPENDENCIES+=$(objcbfs)/coreboot_ap.elf
-endif
 
 extract_nth=$(word $(1), $(subst |, ,$(2)))
 
@@ -79,10 +76,6 @@ endif
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $$(VBOOT_STUB_ELF)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
-	if [ -f $(objcbfs)/coreboot_ap.elf ]; \
-	then \
-		$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ap.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ap -c $(CBFS_COMPRESS_FLAG); \
-	fi
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    none (as specified by user)\n"
@@ -186,17 +179,6 @@ ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 else
 	$(CC) $(CFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
 endif
-
-################################################################################
-# Ramstage for AP CPU (AMD K8, obsolete?)
-
-$(objcbfs)/coreboot_ap.debug: $(objgenerated)/coreboot_ap.o $(src)/arch/x86/init/ldscript_apc.lb
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/init/ldscript_apc.lb $<
-
-$(objgenerated)/coreboot_ap.o: $(src)/mainboard/$(MAINBOARDDIR)/ap_romstage.c $(OPTION_TABLE_H)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD $(CFLAGS) -I$(src) -D__PRE_RAM__ -I. -I$(obj) -c $< -o $@
 
 ################################################################################
 # done

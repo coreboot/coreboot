@@ -156,6 +156,14 @@ int boot_state_sched_on_entry(struct boot_state_callback *bscb,
 int boot_state_sched_on_exit(struct boot_state_callback *bscb,
                              boot_state_t state);
 
+/* Block/Unblock the (state, seq) pair from transitioning. Returns 0 on
+ * success < 0  when the phase of the (state,seq) has already ran. */
+int boot_state_block(boot_state_t state, boot_state_sequence_t seq);
+int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq);
+/* Block/Unblock current state phase from transitioning. */
+void boot_state_current_block(void);
+void boot_state_current_unblock(void);
+
 /* Entry into the boot state machine. */
 void hardwaremain(int boot_complete);
 

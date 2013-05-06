@@ -44,10 +44,3 @@ void asmlinkage copy_and_run(void)
 {
 	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ram");
 }
-
-#if CONFIG_AP_CODE_IN_CAR
-void asmlinkage copy_and_run_ap_code_in_car(unsigned ret_addr)
-{
-	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ap", ret_addr);
-}
-#endif

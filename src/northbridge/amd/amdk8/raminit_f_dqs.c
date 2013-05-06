@@ -2103,16 +2103,8 @@ static inline void train_ram_on_node(unsigned nodeid, unsigned coreid, struct sy
 		memcpy(sysinfo, sysinfox, sizeof(*sysinfo));
 	#endif
 		set_top_mem_ap(sysinfo->tom_k, sysinfo->tom2_k); // keep the ap's tom consistent with bsp's
-	#if !CONFIG_AP_CODE_IN_CAR
 		printk(BIOS_DEBUG, "CODE IN ROM AND RUN ON NODE: %02x\n", nodeid);
 		train_ram(nodeid, sysinfo, sysinfox);
-	#else
-		/* Can copy dqs_timing to ap cache and run from cache?
-		* we need coreboot_ap_car.rom? and treat it as coreboot_ram.rom for ap ?
-		*/
-		copy_and_run_ap_code_in_car(retcall);
-		// will go back by jump
-	#endif
 	}
 }
 #endif

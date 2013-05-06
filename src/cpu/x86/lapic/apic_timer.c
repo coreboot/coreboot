@@ -21,6 +21,7 @@
 #include <stdint.h>
 #include <console/console.h>
 #include <delay.h>
+#include <thread.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
 #include <cpu/x86/car.h>
@@ -94,6 +95,9 @@ void init_timer(void)
 void udelay(u32 usecs)
 {
 	u32 start, value, ticks;
+
+	if (!thread_yield_microseconds(usecs))
+		return;
 
 	if (!timer_fsb || (lapic_read(LAPIC_LVTT) &
 		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED)) !=

@@ -444,7 +444,7 @@ static void boot_state_schedule_static_entries(void)
 	}
 }
 
-void hardwaremain(int boot_complete)
+void hardwaremain(void)
 {
 	timestamp_stash(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);
@@ -454,16 +454,10 @@ void hardwaremain(int boot_complete)
 
 	post_code(POST_CONSOLE_READY);
 
-	printk(BIOS_NOTICE, "coreboot-%s%s %s %s...\n",
-		      coreboot_version, coreboot_extra_version, coreboot_build,
-		      (boot_complete)?"rebooting":"booting");
+	printk(BIOS_NOTICE, "coreboot-%s%s %s booting...\n",
+		      coreboot_version, coreboot_extra_version, coreboot_build);
 
 	post_code(POST_CONSOLE_BOOT_MSG);
-
-	/* If we have already booted attempt a hard reboot */
-	if (boot_complete) {
-		hard_reset();
-	}
 
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();

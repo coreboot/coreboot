@@ -49,12 +49,6 @@ _start:
 	pushl	$0
 	pushl	$0
 
-	/* push the boot_complete flag */
-	pushl	%ebp
-
-	/* Save the stack location */
-	movl	%esp, %ebp
-
 	/* Initialize the Interrupt Descriptor table */
 	leal	_idt, %edi
 	leal	vec0, %ebx
@@ -79,9 +73,6 @@ _start:
 	 *	let it do the rest.
 	 */
 	post_code(POST_PRE_HARDWAREMAIN)	/* post fe */
-
-	/* Restore the stack location */
-	movl	%ebp, %esp
 
 #if CONFIG_GDB_WAIT
 	call gdb_stub_breakpoint

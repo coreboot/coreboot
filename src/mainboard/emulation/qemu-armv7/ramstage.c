@@ -15,10 +15,8 @@
 
 #include <console/console.h>
 
-void hardwaremain(int boot_complete);
+void hardwaremain(void);
 void main(void)
 {
-	console_init();
-	printk(BIOS_INFO, "hello from ramstage\n");
-	hardwaremain(0);
+	hardwaremain();
 }

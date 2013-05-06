@@ -157,7 +157,7 @@ int boot_state_sched_on_exit(struct boot_state_callback *bscb,
                              boot_state_t state);
 
 /* Entry into the boot state machine. */
-void hardwaremain(int boot_complete);
+void hardwaremain(void);
 
 /* In order to schedule boot state callbacks at compile-time specify the
  * entries in an array using the BOOT_STATE_INIT_ENTRIES and

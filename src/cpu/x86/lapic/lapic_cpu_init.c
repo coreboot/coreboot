@@ -32,6 +32,7 @@
 #include <smp/spinlock.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/speedstep.h>
+#include <thread.h>
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 /* This is a lot more paranoid now, since Linux can NOT handle
@@ -292,6 +293,7 @@ int start_cpu(device_t cpu)
 	info = (struct cpu_info *)stack_end;
 	info->index = index;
 	info->cpu   = cpu;
+	thread_init_cpu_info_non_bsp(info);
 
 	/* Advertise the new stack and index to start_cpu */
 	secondary_stack = stack_end;

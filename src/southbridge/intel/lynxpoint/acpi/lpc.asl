@@ -199,60 +199,22 @@ Device (LPCB)
 			    0x1, 0xff)
 
 			// GPIO region may be 128 bytes or 4096 bytes
-			IO (Decode16, DEFAULT_GPIOBASE, DEFAULT_GPIOBASE,
-			    0x1, 0x00, GPR1)
-			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR2)
-			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR3)
-			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR4)
+			IO (Decode16, 0x0000, 0x0000, 0x1, 0x00, GPR1)
 		})
 
 		Method (_CRS, 0, NotSerialized)
 		{
-			CreateByteField (^RBUF, ^GPR1._LEN, R1LN)
-			CreateByteField (^RBUF, ^GPR2._LEN, R2LN)
-			CreateByteField (^RBUF, ^GPR3._LEN, R3LN)
-			CreateByteField (^RBUF, ^GPR4._LEN, R4LN)
+			// LynxPoint-LP GPIO resources are defined in the
+			// SerialIO GPIO device and LynxPoint-H GPIO resources
+			// are defined here.
+			If (LNot (\ISLP ())) {
+				CreateByteField (^RBUF, ^GPR1._LEN, R1LN)
+				CreateWordField (^RBUF, ^GPR1._MIN, R1MN)
+				CreateWordField (^RBUF, ^GPR1._MAX, R1MX)
 
-			CreateWordField (^RBUF, ^GPR1._MIN, R1MN)
-			CreateWordField (^RBUF, ^GPR2._MIN, R2MN)
-			CreateWordField (^RBUF, ^GPR3._MIN, R3MN)
-			CreateWordField (^RBUF, ^GPR4._MIN, R4MN)
-
-			CreateWordField (^RBUF, ^GPR1._MAX, R1MX)
-			CreateWordField (^RBUF, ^GPR2._MAX, R2MX)
-			CreateWordField (^RBUF, ^GPR3._MAX, R3MX)
-			CreateWordField (^RBUF, ^GPR4._MAX, R4MX)
-
-			// Update GPIO region for LynxPoint-LP
-			If (\ISLP ()) {
-				// LynxPoint-LP
-				Store (R1MN, Local0)
-
-				// Update GPIO bank 1
-				Store (Local0, R1MN)
-				Store (Local0, R1MX)
-				Store (0xff, R1LN)
-
-				// Update GPIO bank 2
-				Add (Local0, 0x100, Local0)
-				Store (Local0, R2MN)
-				Store (Local0, R2MX)
-				Store (0xff, R2LN)
-
-				// Update GPIO bank 3
-				Add (Local0, 0x100, Local0)
-				Store (Local0, R3MN)
-				Store (Local0, R3MN)
-				Store (0xff, R3LN)
-
-				// Update GPIO bank 4
-				Add (Local0, 0x100, Local0)
-				Store (Local0, R4MN)
-				Store (Local0, R4MN)
-				Store (0xff, R4LN)
-			} Else {
-				// LynxPoint-H
 				// Update GPIO region length
+				Store (DEFAULT_GPIOBASE, R1MN)
+				Store (DEFAULT_GPIOBASE, R1MX)
 				Store (DEFAULT_GPIOSIZE, R1LN)
 			}
 			Return (RBUF)

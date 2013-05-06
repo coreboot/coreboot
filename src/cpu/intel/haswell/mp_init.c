@@ -36,6 +36,7 @@
 #include <lib.h>
 #include <smp/atomic.h>
 #include <smp/spinlock.h>
+#include <thread.h>
 #include "haswell.h"
 
 /* This needs to match the layout in the .module_parametrs section. */
@@ -163,6 +164,7 @@ static void asmlinkage ap_init(unsigned int cpu, void *microcode_ptr)
 	info = cpu_info();
 	info->index = cpu;
 	info->cpu = cpu_devs[cpu];
+	thread_init_cpu_info_non_bsp(info);
 
 	apic_id_table[info->index] = lapicid();
 	info->cpu->path.apic.apic_id = apic_id_table[info->index];

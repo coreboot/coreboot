@@ -10,6 +10,11 @@
 _stack:
 .space CONFIG_MAX_CPUS*CONFIG_STACK_SIZE
 _estack:
+#if CONFIG_COOP_MULTITASKING
+.global thread_stacks
+thread_stacks:
+.space CONFIG_STACK_SIZE*CONFIG_NUM_THREADS
+#endif
 
 	.section ".textfirst", "ax", @progbits
 	.code32
@@ -45,6 +50,10 @@ _start:
 	/* set new stack */
 	movl	$_estack, %esp
 
+#if CONFIG_COOP_MULTITASKING
+	/* Push the thread pointer. */
+	pushl	$0
+#endif
 	/* Push the cpu index and struct cpu */
 	pushl	$0
 	pushl	$0

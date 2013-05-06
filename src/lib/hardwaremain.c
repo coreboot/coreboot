@@ -39,6 +39,7 @@
 #endif
 #include <timer.h>
 #include <timestamp.h>
+#include <thread.h>
 
 #if BOOT_STATE_DEBUG
 #define BS_DEBUG_LVL BIOS_DEBUG
@@ -458,6 +459,8 @@ void hardwaremain(void)
 		      coreboot_version, coreboot_extra_version, coreboot_build);
 
 	post_code(POST_CONSOLE_BOOT_MSG);
+
+	threads_initialize();
 
 	/* Schedule the static boot state entries. */
 	boot_state_schedule_static_entries();

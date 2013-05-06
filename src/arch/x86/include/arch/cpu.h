@@ -159,9 +159,14 @@ struct cpu_driver {
 
 struct cpu_driver *find_cpu_driver(struct device *cpu);
 
+struct thread;
+
 struct cpu_info {
 	device_t cpu;
 	unsigned int index;
+#if CONFIG_COOP_MULTITASKING
+	struct thread *thread;
+#endif
 };
 
 static inline struct cpu_info *cpu_info(void)

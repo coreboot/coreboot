@@ -72,10 +72,18 @@ struct boot_state_times {
 	struct mono_time samples[MAX_TIME_SAMPLES];
 };
 
+/* The prologue (BS_ON_ENTRY) and epilogue (BS_ON_EXIT) of a state can be
+ * blocked from transitioning to the next (state,seq) pair. When the blockers
+ * field is 0 a transition may occur. */
+struct boot_phase {
+	struct boot_state_callback *callbacks;
+	int blockers;
+};
+
 struct boot_state {
 	const char *name;
 	boot_state_t id;
-	struct boot_state_callback *seq_callbacks[2];
+	struct boot_phase phases[2];
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
 	int complete : 1;
@@ -89,7 +97,7 @@ struct boot_state {
 	{							\
 		.name = #state_,				\
 		.id = state_,					\
-		.seq_callbacks = { NULL, NULL },		\
+		.phases = { { NULL, 0 }, { NULL, 0 } },		\
 		.run_state = run_func_,				\
 		.arg = NULL,					\
 		.complete = 0,					\
@@ -299,29 +307,55 @@ static void bs_run_timers(int drain) {}
 static void bs_call_callbacks(struct boot_state *state,
                               boot_state_sequence_t seq)
 {
-	while (state->seq_callbacks[seq] != NULL) {
-		struct boot_state_callback *bscb;
+	struct boot_phase *phase = &state->phases[seq];
 
-		/* Remove the first callback. */
-		bscb = state->seq_callbacks[seq];
-		state->seq_callbacks[seq] = bscb->next;
-		bscb->next = NULL;
+	while (1) {
+		if (phase->callbacks != NULL) {
+			struct boot_state_callback *bscb;
+
+			/* Remove the first callback. */
+			bscb = phase->callbacks;
+			phase->callbacks = bscb->next;
+			bscb->next = NULL;
 
 #if BOOT_STATE_DEBUG
-		printk(BS_DEBUG_LVL, "BS: callback (%p) @ %s.\n",
-		       bscb, bscb->location);
+			printk(BS_DEBUG_LVL, "BS: callback (%p) @ %s.\n",
+			       bscb, bscb->location);
 #endif
-		bscb->callback(bscb->arg);
+			bscb->callback(bscb->arg);
+
+			continue;
+		}
+
+		/* All callbacks are complete and there are no blockers for
+		 * this state. Therefore, this part of the state is complete. */
+		if (!phase->blockers)
+			break;
+
+		/* Something is blocking this state from transitioning. As
+		 * there are no more callbacks a pending timer needs to be
+		 * ran to unblock the state. */
+		bs_run_timers(0);
 	}
 }
 
-static void bs_walk_state_machine(boot_state_t current_state_id)
+/* Keep track of the current state. */
+static struct state_tracker {
+	boot_state_t state_id;
+	boot_state_sequence_t seq;
+} current_phase = {
+	.state_id = BS_PRE_DEVICE,
+	.seq = BS_ON_ENTRY,
+};
+
+static void bs_walk_state_machine(void)
 {
 
 	while (1) {
 		struct boot_state *state;
+		boot_state_t next_id;
 
-		state = &boot_states[current_state_id];
+		state = &boot_states[current_phase.state_id];
 
 		if (state->complete) {
 			printk(BIOS_EMERG, "BS: %s state already executed.\n",
@@ -335,17 +369,25 @@ static void bs_walk_state_machine(boot_state_t current_state_id)
 
 		bs_sample_time(state);
 
-		bs_call_callbacks(state, BS_ON_ENTRY);
+		bs_call_callbacks(state, current_phase.seq);
+		/* Update the current sequence so that any calls to block the
+		 * current state from the run_state() function will place a
+		 * block on the correct phase. */
+		current_phase.seq = BS_ON_EXIT;
 
 		bs_sample_time(state);
 
-		current_state_id = state->run_state(state->arg);
+		next_id = state->run_state(state->arg);
 
 		printk(BS_DEBUG_LVL, "BS: Exiting %s state.\n", state->name);
 
 		bs_sample_time(state);
 
-		bs_call_callbacks(state, BS_ON_EXIT);
+		bs_call_callbacks(state, current_phase.seq);
+
+		/* Update the current phase with new state id and sequence. */
+		current_phase.state_id = next_id;
+		current_phase.seq = BS_ON_ENTRY;
 
 		bs_sample_time(state);
 
@@ -367,8 +409,8 @@ static int boot_state_sched_callback(struct boot_state *state,
 		return -1;
 	}
 
-	bscb->next = state->seq_callbacks[seq];
-	state->seq_callbacks[seq] = bscb;
+	bscb->next = state->phases[seq].callbacks;
+	state->phases[seq].callbacks = bscb;
 
 	return 0;
 }
@@ -433,7 +475,64 @@ void hardwaremain(int boot_complete)
 	/* FIXME: Is there a better way to handle this? */
 	init_timer();
 
-	bs_walk_state_machine(BS_PRE_DEVICE);
+	bs_walk_state_machine();
+
 	die("Boot state machine failure.\n");
 }
 
+
+int boot_state_block(boot_state_t state, boot_state_sequence_t seq)
+{
+	struct boot_phase *bp;
+
+	/* Blocking a previously ran state is not appropriate. */
+	if (current_phase.state_id > state ||
+	    (current_phase.state_id == state && current_phase.seq > seq) ) {
+		printk(BIOS_WARNING,
+		       "BS: Completed state (%d, %d) block attempted.\n",
+		       state, seq);
+		return -1;
+	}
+
+	bp = &boot_states[state].phases[seq];
+	bp->blockers++;
+
+	return 0;
+}
+
+int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq)
+{
+	struct boot_phase *bp;
+
+	/* Blocking a previously ran state is not appropriate. */
+	if (current_phase.state_id > state ||
+	    (current_phase.state_id == state && current_phase.seq > seq) ) {
+		printk(BIOS_WARNING,
+		       "BS: Completed state (%d, %d) unblock attempted.\n",
+		       state, seq);
+		return -1;
+	}
+
+	bp = &boot_states[state].phases[seq];
+
+	if (bp->blockers == 0) {
+		printk(BIOS_WARNING,
+		       "BS: Unblock attempted on non-blocked state (%d, %d).\n",
+		       state, seq);
+		return -1;
+	}
+
+	bp->blockers--;
+
+	return 0;
+}
+
+void boot_state_current_block(void)
+{
+	boot_state_block(current_phase.state_id, current_phase.seq);
+}
+
+void boot_state_current_unblock(void)
+{
+	boot_state_unblock(current_phase.state_id, current_phase.seq);
+}

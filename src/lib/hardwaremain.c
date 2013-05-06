@@ -87,13 +87,12 @@ struct boot_state {
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
 	int complete : 1;
-	int timers_drain : 1;
 #if CONFIG_HAVE_MONOTONIC_TIMER
 	struct boot_state_times times;
 #endif
 };
 
-#define BS_INIT(state_, run_func_, drain_timers_)		\
+#define BS_INIT(state_, run_func_)				\
 	{							\
 		.name = #state_,				\
 		.id = state_,					\
@@ -101,12 +100,9 @@ struct boot_state {
 		.run_state = run_func_,				\
 		.arg = NULL,					\
 		.complete = 0,					\
-		.timers_drain = drain_timers_,			\
 	}
 #define BS_INIT_ENTRY(state_, run_func_)	\
-	[state_] = BS_INIT(state_, run_func_, 0)
-#define BS_INIT_ENTRY_DRAIN_TIMERS(state_, run_func_)	\
-	[state_] = BS_INIT(state_, run_func_, 1)
+	[state_] = BS_INIT(state_, run_func_)
 
 static struct boot_state boot_states[] = {
 	BS_INIT_ENTRY(BS_PRE_DEVICE, bs_pre_device),
@@ -117,10 +113,10 @@ static struct boot_state boot_states[] = {
 	BS_INIT_ENTRY(BS_DEV_INIT, bs_dev_init),
 	BS_INIT_ENTRY(BS_POST_DEVICE, bs_post_device),
 	BS_INIT_ENTRY(BS_OS_RESUME_CHECK, bs_os_resume_check),
-	BS_INIT_ENTRY_DRAIN_TIMERS(BS_OS_RESUME, bs_os_resume),
-	BS_INIT_ENTRY_DRAIN_TIMERS(BS_WRITE_TABLES, bs_write_tables),
-	BS_INIT_ENTRY_DRAIN_TIMERS(BS_PAYLOAD_LOAD, bs_payload_load),
-	BS_INIT_ENTRY_DRAIN_TIMERS(BS_PAYLOAD_BOOT, bs_payload_boot),
+	BS_INIT_ENTRY(BS_OS_RESUME, bs_os_resume),
+	BS_INIT_ENTRY(BS_WRITE_TABLES, bs_write_tables),
+	BS_INIT_ENTRY(BS_PAYLOAD_LOAD, bs_payload_load),
+	BS_INIT_ENTRY(BS_PAYLOAD_BOOT, bs_payload_boot),
 };
 
 static boot_state_t bs_pre_device(void *arg)
@@ -365,7 +361,7 @@ static void bs_walk_state_machine(void)
 
 		printk(BS_DEBUG_LVL, "BS: Entering %s state.\n", state->name);
 
-		bs_run_timers(state->timers_drain);
+		bs_run_timers(0);
 
 		bs_sample_time(state);
 

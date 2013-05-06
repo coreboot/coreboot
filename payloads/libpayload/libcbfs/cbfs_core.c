@@ -123,7 +123,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 #endif
 	DEBUG("CBFS location: 0x%x~0x%x, align: %d\n", offset, romsize, align);
 
-	LOG("Looking for '%s' starting from 0x%x.\n", name, offset);
+	DEBUG("Looking for '%s' starting from 0x%x.\n", name, offset);
 	media->open(media);
 	while (offset < romsize &&
 	       media->read(media, &file, offset, sizeof(file)) == sizeof(file)) {
@@ -150,7 +150,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 		} else if (strcmp(file_name, name) == 0) {
 			int file_offset = ntohl(file.offset),
 			    file_len = ntohl(file.len);
-			LOG("Found file (offset=0x%x, len=%d).\n",
+			DEBUG("Found file (offset=0x%x, len=%d).\n",
 			    offset + file_offset, file_len);
 			media->unmap(media, file_name);
 			file_ptr = media->map(media, offset,

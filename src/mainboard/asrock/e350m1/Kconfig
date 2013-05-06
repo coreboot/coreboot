@@ -84,10 +84,6 @@ config HEAP_SIZE
         hex
         default 0xc0000
 
-config STACK_SIZE
-        hex
-        default 0x10000
-
 config RAMBASE
         hex
         default 0x200000

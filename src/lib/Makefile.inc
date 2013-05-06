@@ -90,6 +90,7 @@ ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 ramstage-$(CONFIG_COVERAGE) += libgcov.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += edid.c
 ramstage-y += memrange.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
 ramstage-$(CONFIG_TIMER_QUEUE) += timer_queue.c
 
 # The CBMEM implementations are chosen based on CONFIG_DYNAMIC_CBMEM.

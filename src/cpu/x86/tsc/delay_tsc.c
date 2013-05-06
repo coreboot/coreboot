@@ -4,6 +4,7 @@
 #include <cpu/x86/tsc.h>
 #include <smp/spinlock.h>
 #include <delay.h>
+#include <thread.h>
 
 #if !defined(__PRE_RAM__)
 
@@ -175,6 +176,9 @@ void udelay(unsigned us)
 	unsigned long long start;
 	unsigned long long current;
 	unsigned long long clocks;
+
+	if (!thread_yield_microseconds(us))
+		return;
 
 	start = rdtscll();
 	clocks = us;

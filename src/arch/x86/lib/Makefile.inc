@@ -9,6 +9,8 @@ ramstage-y += memset.c
 ramstage-y += memcpy.c
 ramstage-y += ebda.c
 ramstage-y += rom_media.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread.c
+ramstage-$(CONFIG_COOP_MULTITASKING) += thread_switch.S
 
 romstage-$(CONFIG_EARLY_CONSOLE) += romstage_console.c
 romstage-y += cbfs_and_run.c

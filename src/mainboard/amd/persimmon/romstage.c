@@ -178,7 +178,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_i8254 ();
 
 	post_code(0x50);
-	copy_and_run(0);
+	copy_and_run();
 	printk(BIOS_ERR, "Error: copy_and_run() returned!\n");
 
 	post_code(0x54);	/* Should never see this post code. */

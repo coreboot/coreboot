@@ -20,8 +20,6 @@
 static void skip_romstage(void)
 {
 	asm volatile (
-		"/* set the boot_complete flag */\n"
-		"movl	$0xffffffff, %%ebp\n"
 		"jmp	__main\n"
 	);
 }

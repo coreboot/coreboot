@@ -326,7 +326,7 @@ void romstage_after_car(void)
 #endif
 
 	/* Load the ramstage. */
-	copy_and_run(0);
+	copy_and_run();
 }
 
 

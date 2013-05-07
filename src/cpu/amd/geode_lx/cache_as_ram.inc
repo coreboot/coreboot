@@ -208,8 +208,6 @@ done_cache_as_ram_main:
         xorl             $(CR0_CD + CR0_NW), %eax        /* clear  the CD and NW bits */
         movl    %eax, %cr0
 
-	/* clear boot_complete flag */
-	xorl	%ebp, %ebp
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 
@@ -223,8 +221,6 @@ __main:
 	 * the location it is compiled to run at.
 	 * Normally this is copying from FLASH ROM to RAM.
 	 */
-	movl	%ebp, %esi
-	pushl	%esi
 	call copy_and_run
 
 .Lhlt:

@@ -136,7 +136,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_debug("done\n");
 
 	post_code(0x51);
-	copy_and_run(0);
+	copy_and_run();
 
 	/* We will not return,  Should never see this message and post code. */
 	print_debug("should not be here -\n");

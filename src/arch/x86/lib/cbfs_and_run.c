@@ -22,7 +22,7 @@
 #include <arch/stages.h>
 #include <timestamp.h>
 
-static void cbfs_and_run_core(const char *filename, unsigned ebp)
+static void cbfs_and_run_core(const char *filename)
 {
 	u8 *dst;
 
@@ -35,19 +35,14 @@ static void cbfs_and_run_core(const char *filename, unsigned ebp)
 	timestamp_add_now(TS_END_COPYRAM);
 	print_debug("Jumping to image.\n");
 	__asm__ volatile (
-		"movl %%eax, %%ebp\n"
 		"jmp  *%%edi\n"
-		:: "a"(ebp), "D"(dst)
+		:: "D"(dst)
 	);
 }
 
-void asmlinkage copy_and_run(unsigned cpu_reset)
+void asmlinkage copy_and_run(void)
 {
-	// FIXME fix input parameters instead normalizing them here.
-	if (cpu_reset == 1) cpu_reset = -1;
-	else cpu_reset = 0;
-
-	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ram", cpu_reset);
+	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ram");
 }
 
 #if CONFIG_AP_CODE_IN_CAR

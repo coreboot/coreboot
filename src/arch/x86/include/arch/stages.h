@@ -22,6 +22,5 @@
 
 #include <arch/cpu.h>
 
-void asmlinkage copy_and_run(unsigned cpu_reset);
-void asmlinkage copy_and_run_ap_code_in_car(unsigned ret_addr);
+void asmlinkage copy_and_run(void);
 #endif

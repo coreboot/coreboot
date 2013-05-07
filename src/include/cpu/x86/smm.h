@@ -33,6 +33,7 @@
 #define SMM_ENTRY_OFFSET 0x8000
 #define SMM_SAVE_STATE_BEGIN(x) (SMM_ENTRY_OFFSET + (x))
 
+#include <arch/cpu.h>
 #include <types.h>
 typedef struct {
 	u16	es_selector;
@@ -429,8 +430,8 @@ struct smm_runtime {
 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
 } __attribute__ ((packed));
 
-typedef void __attribute__((cdecl)) (*smm_handler_t)(void *arg, int cpu,
-                              const struct smm_runtime *runtime);
+typedef void asmlinkage (*smm_handler_t)(void *arg, int cpu,
+                                         const struct smm_runtime *runtime);
 
 #ifdef __SMM__
 /* SMM Runtime helpers. */

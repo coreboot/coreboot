@@ -426,10 +426,7 @@ static void configure_c_states(void)
 	msr.lo |= (1 << 26);	// C1 Auto Demotion Enable
 	msr.lo |= (1 << 25);	// C3 Auto Demotion Enable
 	msr.lo &= ~(1 << 10);	// Disable IO MWAIT redirection
-	msr.lo &= ~(0xf);	// Clear deepest package c-state
-	/* FIXME: The deepest package c-state is set to C0/C1 to work around
-	 * platform instability when package C3 or deeper c-states are used. */
-	msr.lo |= 0;		// Deepeset package c-state is C0/C1.
+	/* The deepest package c-state defaults to factory-configured value. */
 	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, msr);
 
 	msr = rdmsr(MSR_PMG_IO_CAPTURE_BASE);

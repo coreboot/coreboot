@@ -122,8 +122,6 @@
 # error "CONFIG_IED_REGION_SIZE is not a power of 2"
 #endif
 
-#ifndef __ROMCC__
-
 #if defined(__PRE_RAM__)
 struct pei_data;
 struct rcba_config_instruction;
@@ -192,7 +190,5 @@ struct ramstage_cache {
 	uint32_t size;
 	char program[0];
 } __attribute__((packed));
-
-#endif
 
 #endif

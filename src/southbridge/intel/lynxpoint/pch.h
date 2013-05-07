@@ -21,7 +21,6 @@
 #ifndef SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H
 #define SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H
 
-
 /*
  * Lynx Point PCH PCI Devices:
  *
@@ -125,7 +124,7 @@ struct rcba_config_instruction
 	u32 or_value;
 };
 
-#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
+#if !defined(__ASSEMBLER__)
 void pch_config_rcba(const struct rcba_config_instruction *rcba_config);
 int pch_silicon_revision(void);
 int pch_silicon_type(void);

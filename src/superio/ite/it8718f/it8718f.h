@@ -33,7 +33,7 @@
 #define IT8718F_GPIO 0x07 /* GPIO */
 #define IT8718F_IR   0x0a /* Consumer IR */
 
-#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 void it8718f_24mhz_clkin(void);
 void it8718f_disable_reboot(void);
 void it8718f_enable_serial(device_t dev, u16 iobase);

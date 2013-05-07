@@ -18,7 +18,7 @@
  */
 
 Name(OIPG, Package() {
-	Package() { 0x001, 0, 22, "CougarPoint" }, // recovery button
-	Package() { 0x002, 1, 57, "CougarPoint" }, // developer switch
-	Package() { 0x003, 0, 48, "CougarPoint" }, // firmware write protect
+	Package () { 0x0001, 1, 69, "LynxPoint" }, // recovery
+	Package () { 0x0002, 0, 48, "LynxPoint" }, // developer
+	Package () { 0x0003, 0, 22, "LynxPoint" }, // firmware write protect
 })

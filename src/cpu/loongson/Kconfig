@@ -1,0 +1,9 @@
+config CPU_LOONGSON_2E
+	depends on ARCH_MIPS32
+	bool
+	default n
+
+if CPU_LOONGSON_2E
+source src/cpu/loongson/loongson2e/Kconfig
+endif
+

@@ -226,6 +226,10 @@ config ARCH_ARMV7
 	bool
 	default n
 
+config ARCH_MIPS32
+	bool
+	default n
+
 # Warning: The file is included whether or not the if is here.
 # but the if controls how the evaluation occurs.
 if ARCH_X86
@@ -234,6 +238,10 @@ endif
 
 if ARCH_ARMV7
 source src/arch/armv7/Kconfig
+endif
+
+if ARCH_MIPS32
+source src/arch/mips32/Kconfig
 endif
 
 menu "Chipset"

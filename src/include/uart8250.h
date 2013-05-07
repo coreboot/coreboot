@@ -114,7 +114,6 @@
 /* Line Control Settings */
 #define UART_LCS	CONFIG_TTYS0_LCS
 
-#ifndef __ROMCC__
 #if CONFIG_CONSOLE_SERIAL8250
 unsigned char uart8250_rx_byte(unsigned base_port);
 int uart8250_can_rx_byte(unsigned base_port);
@@ -144,8 +143,6 @@ extern int oxford_oxpcie_present;
 void oxford_init(void);
 #endif
 #endif
-
-#endif /* __ROMCC__ */
 
 #endif /* CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM */
 

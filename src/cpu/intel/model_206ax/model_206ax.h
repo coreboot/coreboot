@@ -97,7 +97,6 @@
 #define PSS_LATENCY_TRANSITION		10
 #define PSS_LATENCY_BUSMASTER		10
 
-#ifndef __ROMCC__
 #ifdef __SMM__
 /* Lock MSRs */
 void intel_model_206ax_finalize_smm(void);
@@ -105,7 +104,6 @@ void intel_model_206ax_finalize_smm(void);
 /* Configure power limits for turbo mode */
 void set_power_limits(u8 power_limit_1_time);
 int cpu_config_tdp_levels(void);
-#endif
 #endif
 
 #endif

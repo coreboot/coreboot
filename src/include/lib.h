@@ -22,7 +22,6 @@
 #ifndef __LIB_H__
 #define __LIB_H__
 #include <stdint.h>
-#ifndef __ROMCC__ /* romcc doesn't support prototypes. */
 
 #ifndef __PRE_RAM__ /* Conflicts with inline function in arch/io.h */
 /* Defined in src/lib/clog2.c */
@@ -43,8 +42,10 @@ void quick_ram_check(void);
 /* Defined in src/lib/stack.c */
 int checkstack(void *top_of_stack, int core);
 
+#ifndef __PRE_RAM__ // fails in bootblock compiled with romcc
 /* currently defined by a ldscript */
 extern unsigned char _estack[];
+#endif
 
 /* Defined in romstage.c */
 #if CONFIG_CPU_AMD_GEODE_LX
@@ -53,5 +54,4 @@ void cache_as_ram_main(void);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 #endif
 
-#endif /* __ROMCC__ */
 #endif /* __LIB_H__ */

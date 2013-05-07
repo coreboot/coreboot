@@ -122,7 +122,7 @@
 # error "CONFIG_IED_REGION_SIZE is not a power of 2"
 #endif
 
-#ifndef __ROMCC__
+#if !defined(__ROMCC__) // FIXME romcc should handle below constructs
 
 #if defined(__PRE_RAM__)
 struct pei_data;

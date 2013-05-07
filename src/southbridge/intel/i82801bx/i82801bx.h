@@ -26,7 +26,7 @@
 extern void i82801bx_enable(device_t dev);
 #endif
 
-#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 void enable_smbus(void);
 int smbus_read_byte(u8 device, u8 address);
 #endif

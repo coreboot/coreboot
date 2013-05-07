@@ -165,7 +165,7 @@ static void post_cache_as_ram(void)
 	set_sysinfo_in_ram(1); // So other core0 could start to train mem
 
 	/*copy and execute coreboot_ram */
-	copy_and_run(0);
+	copy_and_run();
 	/* We will not return */
 
 	print_debug("should not be here -\n");

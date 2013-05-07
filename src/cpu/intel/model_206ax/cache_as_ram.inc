@@ -316,17 +316,12 @@ __acpi_resume_backup_done:
 
 	post_code(0x3d)
 
-	/* Clear boot_complete flag. */
-	xorl	%ebp, %ebp
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */
 
-	movl	%ebp, %esi
-
 	movl	$ROMSTAGE_STACK, %esp
 	movl	%esp, %ebp
-	pushl	%esi
 	call	copy_and_run
 
 .Lhlt:

@@ -58,7 +58,5 @@
 #define PPCB_SPKR       0x02    /* Bit 1 */
 #define PPCB_T2GATE     0x01    /* Bit 0 */
 
-#ifndef __ROMCC__
 void setup_i8254(void);
-#endif
 #endif

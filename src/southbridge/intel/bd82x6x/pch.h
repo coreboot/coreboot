@@ -56,7 +56,7 @@
 void intel_pch_finalize_smm(void);
 #endif
 
-#if !defined(__ASSEMBLER__) && !defined(__ROMCC__)
+#if !defined(__ASSEMBLER__)
 #if !defined(__PRE_RAM__)
 #if !defined(__SMM__)
 #include "chip.h"

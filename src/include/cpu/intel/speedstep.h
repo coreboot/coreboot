@@ -105,9 +105,7 @@ typedef struct {
 	int num_states;
 } sst_table_t;
 
-#ifndef __ROMCC__
 void speedstep_gen_pstates(sst_table_t *);
-#endif
 
 #define SPEEDSTEP_MAX_POWER_YONAH	31000
 #define SPEEDSTEP_MIN_POWER_YONAH	13100

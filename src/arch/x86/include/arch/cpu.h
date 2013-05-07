@@ -140,7 +140,6 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define X86_VENDOR_SIS       10
 #define X86_VENDOR_UNKNOWN 0xff
 
-#if !defined(__ROMCC__)
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/device.h>
 
@@ -158,11 +157,7 @@ struct cpu_driver {
 	struct acpi_cstate *cstates;
 };
 
-struct device;
 struct cpu_driver *find_cpu_driver(struct device *cpu);
-#else
-#include <arch/io.h>
-#endif
 
 struct cpu_info {
 	device_t cpu;
@@ -187,7 +182,11 @@ static inline unsigned long cpu_index(void)
 	ci = cpu_info();
 	return ci->index;
 }
+#else
+#include <arch/io.h>
+#endif
 
+#ifndef __ROMCC__ // romcc is segfaulting in some cases
 struct cpuinfo_x86 {
         uint8_t    x86;            /* CPU family */
         uint8_t    x86_vendor;     /* CPU vendor */
@@ -195,7 +194,7 @@ struct cpuinfo_x86 {
         uint8_t    x86_mask;
 };
 
-static void inline get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
+static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 {
         c->x86 = (tfms >> 8) & 0xf;
         c->x86_model = (tfms >> 4) & 0xf;
@@ -206,9 +205,8 @@ static void inline get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
                 c->x86_model += ((tfms >> 16) & 0xF) << 4;
 
 }
+#endif
 
 #define asmlinkage __attribute__((regparm(0)))
-
-#endif
 
 #endif /* ARCH_CPU_H */

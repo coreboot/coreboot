@@ -18,6 +18,7 @@
  */
 
 Name(OIPG, Package() {
-	// This GPIO is not available but the package cannot be empty
-	Package () { 0x0001, 0, 0, "LynxPoint" }, // recovery
+	Package () { 0x0001, 0, 0xFF, "LynxPoint" }, // recovery
+	Package () { 0x0002, 0, 0xFF, "LynxPoint" }, // developer
+	Package () { 0x0003, 0, 0xFF, "LynxPoint" }, // firmware write protect
 })

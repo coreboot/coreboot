@@ -206,6 +206,10 @@ static int parse_microcode_blob(struct cbfs_image *image,
 
 		mcu_header = rom_buffer_pointer(image, current_offset);
 
+		/* Quickly sanity check a prospective microcode update. */
+		if (mcu_header->total_size < sizeof(*mcu_header))
+			break;
+
 		/* FIXME: Should the checksum be validated? */
 		mcus[num_mcus].offset = current_offset;
 		mcus[num_mcus].size = mcu_header->total_size;
@@ -214,10 +218,6 @@ static int parse_microcode_blob(struct cbfs_image *image,
 		current_offset += mcus[num_mcus].size;
 		num_mcus++;
 		file_length -= mcus[num_mcus].size;
-
-		/* Can't determine any more entries. */
-		if (!mcu_header->total_size)
-			break;
 
 		/* Reached limit of FIT entries. */
 		if (num_mcus == *total_mcus)

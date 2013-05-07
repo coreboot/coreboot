@@ -77,7 +77,6 @@ _start:
 #if CONFIG_GDB_WAIT
 	call gdb_stub_breakpoint
 #endif
-	/* The boot_complete flag has already been pushed */
 	call	hardwaremain
 	/* NOTREACHED */
 .Lhlt:

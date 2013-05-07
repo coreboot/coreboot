@@ -21,25 +21,18 @@
 #ifndef SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 #define SOUTHBRIDGE_INTEL_I82371EB_I82371EB_H
 
-#if !defined(__ASSEMBLER__)
+#if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 #if !defined(__PRE_RAM__)
-#if !defined(__ACPI__) /* dsdt include */
-
 #include <arch/io.h>
 #include <device/device.h>
 #include "chip.h"
-
 void i82371eb_enable(device_t dev);
 void i82371eb_hard_reset(void);
-
-#endif
-#endif
-#endif
-
-#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+#else
 void enable_smbus(void);
 int smbus_read_byte(u8 device, u8 address);
 void enable_pm(void);
+#endif
 #endif
 
 /* If 'cond' is true this macro sets the bit(s) specified by 'bits' in the

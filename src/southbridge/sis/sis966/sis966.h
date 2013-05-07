@@ -35,8 +35,6 @@
 #define DEBUG_USB 0
 #define DEBUG_USB2 0
 
-#if !defined(__ROMCC__)
 void sis966_enable(device_t dev);
-#endif
 
 #endif /* SIS966_H */

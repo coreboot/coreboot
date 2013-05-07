@@ -41,7 +41,7 @@
 void init_ec(u16 base);
 #endif
 
-#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+#if defined(__PRE_RAM__)
 void it8716f_disable_dev(device_t dev);
 void it8716f_enable_dev(device_t dev, u16 iobase);
 void it8716f_enable_serial(device_t dev, u16 iobase);

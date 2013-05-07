@@ -24,9 +24,7 @@
 #if !defined(__PRE_RAM__)
 #include "chip.h"
 void i82801ax_enable(device_t dev);
-#endif
-
-#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+#else
 void enable_smbus(void);
 int smbus_read_byte(u8 device, u8 address);
 #endif

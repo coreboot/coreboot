@@ -1,8 +1,6 @@
 #ifndef DELAY_H
 #define DELAY_H
 
-#if !defined( __ROMCC__)
-
 #if CONFIG_HAVE_INIT_TIMER
 void init_timer(void);
 #else
@@ -12,6 +10,4 @@ void init_timer(void);
 void udelay(unsigned usecs);
 void mdelay(unsigned msecs);
 void delay(unsigned secs);
-
-#endif
 #endif /* DELAY_H */

@@ -25,7 +25,6 @@
 
 #define EHCI_BAR_INDEX		0x10
 
-#ifndef __ROMCC__
 /* EHCI register interface, corresponds to EHCI Revision 0.95 specification */
 
 /* Section 2.2 Host Controller Capability Registers */
@@ -200,5 +199,4 @@ struct ehci_dbg_port {
 	u32	address;
 #define DBGP_EPADDR(dev, ep)	(((dev)<<8)|(ep))
 } __attribute__ ((packed));
-#endif
 #endif

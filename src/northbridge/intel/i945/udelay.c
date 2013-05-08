@@ -24,8 +24,10 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
 
-/* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow. */
-static inline void multiply_to_tsc(tsc_t *const tsc, const u32 a, const u32 b)
+/* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow.
+ * This code is used to prevent use of libgcc's umoddi3.
+ */
+static inline void multiply_to_tsc(tsc_t * const tsc, const u32 a, const u32 b)
 {
 	tsc->lo = (a & 0xffff) * (b & 0xffff);
 	tsc->hi = ((tsc->lo >> 16)
@@ -36,7 +38,7 @@ static inline void multiply_to_tsc(tsc_t *const tsc, const u32 a, const u32 b)
 }
 
 /**
- * Intel Core(tm) cpus always run the TSC at the maximum possible CPU clock
+ * Intel Core(tm) CPUs always run the TSC at the maximum possible CPU clock
  */
 
 void udelay(u32 us)
@@ -75,7 +77,7 @@ void udelay(u32 us)
 	msr = rdmsr(0x198);
 	divisor = (msr.hi >> 8) & 0x1f;
 
-	d = (fsb * divisor) / 4; /* CPU clock is always a quarter. */
+	d = (fsb * divisor) / 4;	/* CPU clock is always a quarter. */
 
 	multiply_to_tsc(&tscd, us, d);
 
@@ -90,6 +92,5 @@ void udelay(u32 us)
 	do {
 		tsc = rdtsc();
 	} while ((tsc.hi < tsc1.hi)
-		 || ((tsc.hi == tsc1.hi) && (tsc.lo < tsc1.lo)));
-
+		 || ((tsc.hi == tsc1.hi) && (tsc.lo <= tsc1.lo)));
 }

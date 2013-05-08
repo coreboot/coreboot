@@ -121,6 +121,14 @@ struct pei_data
 	 * 2 2N
 	 */
 	int nmode;
+	/* DDR refresh rate config. JEDEC Standard No.21-C Annex K allows
+	 * for DIMM SPD data to specify whether double-rate is required for
+	 * extended operating temperature range.
+	 * 0 Enable double rate based upon temperature thresholds
+	 * 1 Normal rate
+	 * 2 Always enable double rate
+	 */
+	int ddr_refresh_rate_config;
 } __attribute__((packed));
 
 #endif

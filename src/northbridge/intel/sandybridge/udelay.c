@@ -23,7 +23,7 @@
 #include <cpu/x86/msr.h>
 
 /**
- * Intel SandyBridge/IvyBridge CPUs always run the TSC at BCLK=100MHz
+ * Intel Sandy Bridge/Ivy Bridge CPUs always run the TSC at BCLK=100MHz
  */
 
 void udelay(u32 us)
@@ -37,7 +37,7 @@ void udelay(u32 us)
 	msr = rdmsr(0xce);
 	divisor = (msr.lo >> 8) & 0xff;
 
-	d = fsb * divisor; /* On Core/Core2 this is divided by 4 */
+	d = fsb * divisor;	/* On Core/Core2 this is divided by 4 */
 	multiply_to_tsc(&tscd, us, d);
 
 	tsc1 = rdtsc();

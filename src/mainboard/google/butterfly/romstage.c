@@ -162,6 +162,7 @@ void main(unsigned long bist)
 			{ 0, 4, 0x0000 }, /* P12: Empty */
 			{ 0, 4, 0x0000 }, /* P13: Empty */
 		},
+		ddr_refresh_rate_config: 2, /* Force double refresh rate */
 	};
 
 	timestamp_init(get_initial_timestamp());

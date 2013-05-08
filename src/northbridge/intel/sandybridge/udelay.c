@@ -26,19 +26,6 @@
  * Intel SandyBridge/IvyBridge CPUs always run the TSC at BCLK=100MHz
  */
 
-/* Simple 32- to 64-bit multiplication. Uses 16-bit words to avoid overflow.
- * This code is used to prevent use of libgcc's umoddi3.
- */
-static inline void multiply_to_tsc(tsc_t *const tsc, const u32 a, const u32 b)
-{
-	tsc->lo = (a & 0xffff) * (b & 0xffff);
-	tsc->hi = ((tsc->lo >> 16)
-		+ ((a & 0xffff) * (b >> 16))
-		+ ((b & 0xffff) * (a >> 16)));
-	tsc->lo = ((tsc->hi & 0xffff) << 16) | (tsc->lo & 0xffff);
-	tsc->hi = ((a >> 16) * (b >> 16)) + (tsc->hi >> 16);
-}
-
 void udelay(u32 us)
 {
 	u32 dword;

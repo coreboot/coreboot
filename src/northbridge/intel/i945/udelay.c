@@ -24,7 +24,7 @@
 #include <cpu/intel/speedstep.h>
 
 /**
- * Intel Core(tm) cpus always run the TSC at the maximum possible CPU clock
+ * Intel Core(tm) CPUs always run the TSC at the maximum possible CPU clock
  */
 
 void udelay(u32 us)
@@ -63,7 +63,7 @@ void udelay(u32 us)
 	msr = rdmsr(0x198);
 	divisor = (msr.hi >> 8) & 0x1f;
 
-	d = (fsb * divisor) / 4; /* CPU clock is always a quarter. */
+	d = (fsb * divisor) / 4;	/* CPU clock is always a quarter. */
 
 	multiply_to_tsc(&tscd, us, d);
 
@@ -79,5 +79,4 @@ void udelay(u32 us)
 		tsc = rdtsc();
 	} while ((tsc.hi < tsc1.hi)
 		 || ((tsc.hi == tsc1.hi) && (tsc.lo < tsc1.lo)));
-
 }

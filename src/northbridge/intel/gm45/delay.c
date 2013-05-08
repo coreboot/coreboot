@@ -24,7 +24,7 @@
 #include "delay.h"
 
 /**
- * Intel Core(tm) cpus always run the TSC at the maximum possible CPU clock
+ * Intel Core(tm) CPUs always run the TSC at the maximum possible CPU clock
  */
 static void _udelay(const u32 us, const u32 numerator, const int total)
 {
@@ -62,8 +62,7 @@ static void _udelay(const u32 us, const u32 numerator, const int total)
 	msr = rdmsr(0x198);
 	divisor = (msr.hi >> 8) & 0x1f;
 
-	/* CPU clock is always a quarter. */
-	d = ((fsb * divisor) / numerator) / 4;
+	d = ((fsb * divisor) / numerator) / 4;	/* CPU clock is always a quarter. */
 
 	multiply_to_tsc(&tscd, us, d);
 

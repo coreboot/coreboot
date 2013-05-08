@@ -19,10 +19,28 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <pc80/mc146818rtc.h>
 
 static void init(struct device *dev)
 {
+	u8 defaults_loaded = 0;
+
 	printk(BIOS_DEBUG, "ALIX1.C ENTER %s\n", __func__);
+
+	if (get_option(&defaults_loaded, "cmos_defaults_loaded") < 0) {
+		printk(BIOS_INFO, "failed to get cmos_defaults_loaded");
+		defaults_loaded = 0;
+	}
+	if (!defaults_loaded) {
+		printk(BIOS_INFO, "Restoring CMOS defaults\n");
+		/* set baudrate to 115200 baud */
+		set_option("baud_rate", &(u8[]){ 0x00 });
+		/* set default debug_level (DEFAULT_CONSOLE_LOGLEVEL starts at 1) */
+		set_option("debug_level",
+				&(u8[]) { CONFIG_DEFAULT_CONSOLE_LOGLEVEL+1 });
+		set_option("cmos_defaults_loaded", &(u8[]){ 0x01 });
+	}
+
 	printk(BIOS_DEBUG, "ALIX1.C EXIT %s\n", __func__);
 }
 

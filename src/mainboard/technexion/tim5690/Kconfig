@@ -56,10 +56,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config STACK_SIZE
-	hex
-	default 0x2000
-
 config HEAP_SIZE
 	hex
 	default 0x4000

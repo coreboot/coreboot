@@ -92,8 +92,4 @@ config SERIAL_CPU_INIT
 	bool
 	default y
 
-config STACK_SIZE
-	hex
-	default 0x10000
-
 endif # BOARD_SUPERMICRO_H8QME_FAM10

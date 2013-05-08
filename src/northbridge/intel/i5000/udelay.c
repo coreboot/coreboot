@@ -22,7 +22,7 @@
 #include <cpu/x86/tsc.h>
 #include <cpu/x86/msr.h>
 #include <cpu/intel/speedstep.h>
-#include <console/console.h>
+
 /**
  * Intel Core(tm) cpus always run the TSC at the maximum possible CPU clock
  */

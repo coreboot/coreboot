@@ -87,8 +87,6 @@ void udelay(u32 us)
 	tsc1.lo = dword;
 	tsc1.hi += tscd.hi;
 
-	tsc = rdtsc();
-
 	do {
 		tsc = rdtsc();
 	} while ((tsc.hi < tsc1.hi)

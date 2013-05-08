@@ -61,10 +61,6 @@ config SMP
 	bool
 	default y
 
-config STACK_SIZE
-	hex
-	default 0x20000
-
 config HEAP_SIZE
 	hex
 	default 0x20000

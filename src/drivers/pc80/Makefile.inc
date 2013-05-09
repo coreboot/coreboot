@@ -9,11 +9,17 @@ romstage-$(CONFIG_TPM) += tpm.c
 romstage-$(CONFIG_USE_OPTION_TABLE) += mc146818rtc_early.c
 subdirs-y += vga
 
-cbfs-files-$(CONFIG_HAVE_CMOS_DEFAULT) += cmos.default
-cmos.default-file = $(CONFIG_CMOS_DEFAULT_FILE):nvramtool
+ifeq ($(CONFIG_HAVE_CMOS_DEFAULT),y)
+cbfs-files-y += cmos.default
+cmos.default-file = $(obj)/cmos.default.bin
 cmos.default-type = 0xaa
+endif
 
 smm-y += mc146818rtc.c
 
 $(obj)/drivers/pc80/mc146818rtc.ramstage.o : $(obj)/build.h
 $(obj)/drivers/pc80/mc146818rtc.smm.o : $(obj)/build.h
+
+$(obj)/cmos.default.bin: $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout $(NVRAMTOOL)
+	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
+	$(NVRAMTOOL) -y $< -D $@.tmp -p $< && mv $@.tmp $@

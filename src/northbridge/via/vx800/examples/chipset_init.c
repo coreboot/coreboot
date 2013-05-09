@@ -604,7 +604,7 @@ void init_VIA_chipset(void)
  *	In the dev_enumerate() phase,
  */
 
-void hardwaremain(void)
+void main(void)
 {
 	struct lb_memory *lb_mem;
 #if CONFIG_HAVE_ACPI_RESUME

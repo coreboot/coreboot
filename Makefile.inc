@@ -142,14 +142,6 @@ $(obj)/$(1).ramstage.o: src/$(1).asl $(obj)/config.h
 endef
 
 #######################################################################
-# Parse plaintext cmos defaults into binary format
-# arg1: source file
-# arg2: binary file name
-cbfs-files-processor-nvramtool= \
-	$(eval $(2): $(1) $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout | $(objutil)/nvramtool/nvramtool ; \
-		printf "    CREATE     $(2) (from $(1))\n"; $(objutil)/nvramtool/nvramtool -y $(src)/mainboard/$(MAINBOARDDIR)/cmos.layout -D $(2).tmp -p $(1) && mv $(2).tmp $(2))
-
-#######################################################################
 # Link VSA binary to ELF-ish stage
 # arg1: source file
 # arg2: binary file name

@@ -162,7 +162,7 @@ ramstage-y += exception.c
 ramstage-y += exception_asm.S
 
 romstage-srcs += $(objgenerated)/crt0.s
-ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
+ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/irq_tables.c
 endif

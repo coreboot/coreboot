@@ -71,7 +71,7 @@ void get_bus_conf(void)
 	 * call.  The logically correct place to call AmdInitLate is after PCI scan is done,
 	 * after the decision about S3 resume is made, and before the system tables are
 	 * written into RAM.  The routine that is responsible for writing the tables is
-	 * "write_tables", called near the end of "hardwaremain".  There is no platform
+	 * "write_tables", called near the end of "main".  There is no platform
 	 * specific entry point between the S3 resume decision point and the call to
 	 * "write_tables", and the next platform specific entry points are the calls to
 	 * the ACPI table write functions.  The first of ose would seem to be the right

@@ -36,54 +36,13 @@
 *
 ****************************************************************************/
 
-/* $XFree86: xc/extras/x86emu/include/x86emu/types.h,v 1.4 2000/09/26 15:56:44 tsi Exp $ */
-
 #ifndef __X86EMU_TYPES_H
 #define __X86EMU_TYPES_H
 
-//#ifndef IN_MODULE
-//#include <sys/types.h>
-//#endif
+#include <stdint.h>
 
-/*
- * The following kludge is an attempt to work around typedef conflicts with
- * <sys/types.h>.
- */
-#define u8   x86emuu8
-#define u16  x86emuu16
-#define u32  x86emuu32
-#define u64  x86emuu64
-#define s8   x86emus8
-#define s16  x86emus16
-#define s32  x86emus32
-#define s64  x86emus64
-#define uint x86emuuint
-#define sint x86emusint
-
-/*---------------------- Macros and type definitions ----------------------*/
-
-/* Currently only for Linux/32bit */
-#if defined(__GNUC__) && !defined(NO_LONG_LONG)
-#define __HAS_LONG_LONG__
-#endif
-
-typedef unsigned char 		u8;
-typedef unsigned short 		u16;
-typedef unsigned int 		u32;
-#ifdef __HAS_LONG_LONG__
-typedef unsigned long long 	u64;
-#endif
-
-typedef signed char 		s8;
-typedef signed short 		s16;
-typedef signed int 		s32;
-#ifdef __HAS_LONG_LONG__
-typedef signed long long 	s64;
-#endif
-
-typedef unsigned int		uint;
-typedef signed int 		sint;
-
+typedef unsigned int uint;
+typedef signed int sint;
 typedef u16 X86EMU_pioAddr;
 
 #endif	/* __X86EMU_TYPES_H */

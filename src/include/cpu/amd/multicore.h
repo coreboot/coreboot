@@ -20,20 +20,16 @@
 #ifndef CPU_AMD_QUADCORE_H
 #define CPU_AMD_QUADCORE_H
 
-#if defined(__GNUC__)
 u32 read_nb_cfg_54(void);
-#endif
 
 struct node_core_id {
 	u32 nodeid;
 	u32 coreid;
 };
 
-#if defined(__GNUC__)
 // it can be used to get unitid and coreid it running only
 struct node_core_id get_node_core_id(u32 nb_cfg_54);
 struct node_core_id get_node_core_id_x(void);
-#endif
 
 #if !defined(__PRE_RAM__)
 struct device;

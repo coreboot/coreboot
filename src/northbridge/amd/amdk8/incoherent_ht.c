@@ -699,9 +699,7 @@ static int ht_setup_chains(uint8_t ht_c_num)
 
 }
 
-#if defined (__GNUC__)
 static inline unsigned get_nodes(void);
-#endif
 
 #if CONFIG_RAMINIT_SYSINFO
 static void ht_setup_chains_x(struct sys_info *sysinfo)

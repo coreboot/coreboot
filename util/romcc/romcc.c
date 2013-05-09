@@ -3,8 +3,8 @@
 #undef RELEASE_DATE
 #undef VERSION
 #define VERSION_MAJOR "0"
-#define VERSION_MINOR "72"
-#define RELEASE_DATE "10 February 2010"
+#define VERSION_MINOR "73"
+#define RELEASE_DATE "08 May 2013"
 #define VERSION VERSION_MAJOR "." VERSION_MINOR
 
 #include <stdarg.h>
@@ -1085,6 +1085,7 @@ struct compile_state {
 	struct hash_entry *i_return;
 	struct hash_entry *i_noreturn;
 	struct hash_entry *i_unused;
+	struct hash_entry *i_packed;
 	/* Additional hash entries for predefined macros */
 	struct hash_entry *i_defined;
 	struct hash_entry *i___VA_ARGS__;
@@ -12755,6 +12756,9 @@ static unsigned int attrib(struct compile_state *state, unsigned int attributes)
 		}
 		else if (ident == state->i_unused) {
 			// attribute((unused)) does nothing (yet?)
+		}
+		else if (ident == state->i_packed) {
+			// attribute((packed)) does nothing (yet?)
 		}
 		else {
 			error(state, 0, "Unknown attribute:%s", ident->name);
@@ -24994,6 +24998,7 @@ static void compile(const char *filename,
 	state.i_always_inline = lookup(&state, "always_inline", 13);
 	state.i_noreturn      = lookup(&state, "noreturn", 8);
 	state.i_unused        = lookup(&state, "unused", 6);
+	state.i_packed        = lookup(&state, "packed", 6);
 
 	/* Process the command line macros */
 	process_cmdline_macros(&state);

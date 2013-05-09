@@ -23,13 +23,16 @@
 #include <stdlib.h>
 #include <console/console.h>
 
+#include <gpio.h>
+#include <cpu/samsung/exynos5-common/gpio.h>
+#include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
 
 #include "mainboard.h"
 
-struct mem_timings mem_timings[] = {
+const struct mem_timings mem_timings[] = {
 	{
 		.mem_manuf = MEM_MANUF_ELPIDA,
 		.mem_type = DDR_MODE_DDR3,
@@ -450,6 +453,61 @@ struct mem_timings mem_timings[] = {
 	}
 };
 
+#define SNOW_BOARD_ID0_GPIO	88	/* GPD0, pin 0 */
+#define SNOW_BOARD_ID1_GPIO	89	/* GPD0, pin 1 */
+
+enum snow_board_config {
+	SNOW_CONFIG_UNKNOWN = -1,
+	SNOW_CONFIG_SAMSUNG_EVT,
+	SNOW_CONFIG_ELPIDA_EVT,
+	SNOW_CONFIG_SAMSUNG_DVT,
+	SNOW_CONFIG_ELPIDA_DVT,
+	SNOW_CONFIG_SAMSUNG_PVT,
+	SNOW_CONFIG_ELPIDA_PVT,
+	SNOW_CONFIG_SAMSUNG_MP,
+	SNOW_CONFIG_ELPIDA_MP,
+	SNOW_CONFIG_RSVD,
+};
+
+struct {
+	enum mvl3 id0, id1;
+	enum snow_board_config config;
+} snow_id_map[] = {
+	/*  ID0      ID1         config */
+	{ LOGIC_0, LOGIC_0, SNOW_CONFIG_SAMSUNG_MP },
+	{ LOGIC_0, LOGIC_1, SNOW_CONFIG_ELPIDA_MP },
+	{ LOGIC_1, LOGIC_0, SNOW_CONFIG_SAMSUNG_DVT },
+	{ LOGIC_1, LOGIC_1, SNOW_CONFIG_ELPIDA_DVT },
+	{ LOGIC_0, LOGIC_Z, SNOW_CONFIG_SAMSUNG_PVT },
+	{ LOGIC_1, LOGIC_Z, SNOW_CONFIG_ELPIDA_PVT },
+	{ LOGIC_Z, LOGIC_0, SNOW_CONFIG_SAMSUNG_MP },
+	{ LOGIC_Z, LOGIC_Z, SNOW_CONFIG_ELPIDA_MP },
+	{ LOGIC_Z, LOGIC_1, SNOW_CONFIG_RSVD },
+};
+
+static int board_get_config(void)
+{
+	int i;
+	int id0, id1;
+	enum snow_board_config config = SNOW_CONFIG_UNKNOWN;
+
+	id0 = gpio_read_mvl3(SNOW_BOARD_ID0_GPIO);
+	id1 = gpio_read_mvl3(SNOW_BOARD_ID1_GPIO);
+	if (id0 < 0 || id1 < 0)
+		return -1;
+	printk(BIOS_DEBUG, "%s: id0: %u, id1: %u\n", __func__, id0, id1);
+
+	for (i = 0; i < ARRAY_SIZE(snow_id_map); i++) {
+		if (id0 == snow_id_map[i].id0 && id1 == snow_id_map[i].id1) {
+			config = snow_id_map[i].config;
+			break;
+		}
+	}
+
+	return config;
+}
+
+
 struct mem_timings *get_mem_timings(void)
 {
 	int i;
@@ -457,7 +515,7 @@ struct mem_timings *get_mem_timings(void)
 	enum ddr_mode mem_type;
 	unsigned int frequency_mhz;
 	enum mem_manuf mem_manuf;
-	struct mem_timings *mem;
+	const struct mem_timings *mem;
 	
 	board_config = board_get_config();
 	switch (board_config) {
@@ -487,7 +545,7 @@ struct mem_timings *get_mem_timings(void)
 		if (mem->mem_type == mem_type &&
 			mem->frequency_mhz == frequency_mhz &&
 			mem->mem_manuf == mem_manuf)
-			return mem;
+			return (struct mem_timings *)mem;
 	}
 
 	return NULL;

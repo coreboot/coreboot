@@ -19,22 +19,6 @@
 
 #ifndef MAINBOARD_H
 #define MAINBOARD_H
-
-enum snow_board_config {
-	SNOW_CONFIG_UNKNOWN = -1,
-	SNOW_CONFIG_SAMSUNG_EVT,
-	SNOW_CONFIG_ELPIDA_EVT,
-	SNOW_CONFIG_SAMSUNG_DVT,
-	SNOW_CONFIG_ELPIDA_DVT,
-	SNOW_CONFIG_SAMSUNG_PVT,
-	SNOW_CONFIG_ELPIDA_PVT,
-	SNOW_CONFIG_SAMSUNG_MP,
-	SNOW_CONFIG_ELPIDA_MP,
-	SNOW_CONFIG_RSVD,
-};
-
-int board_get_config(void);
-
 enum {
 	SNOW_IS_NOT_WAKEUP,  // A normal boot (not suspend/resume).
 	SNOW_WAKEUP_DIRECT,  // A wake up event that can be resumed any time.

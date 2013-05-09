@@ -13,8 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
-
 void hardwaremain(void);
 void main(void)
 {

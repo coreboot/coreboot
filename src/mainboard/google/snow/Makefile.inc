@@ -25,5 +25,4 @@ romstage-y += wakeup.c
 
 # ramstage-y += ec.c
 ramstage-y += mainboard.c
-ramstage-y += ramstage.c
 ramstage-y += chromeos.c

@@ -92,7 +92,7 @@ static int timestamp_entries CAR_GLOBAL = 0;
  * This is needed when time stamping before the CBMEM area
  * is initialized. The function timestamp_sync() is used to
  * write the time stamps to the CBMEM area. This is done in
- * hardwaremain()
+ * ram stage main()
  */
 
 void timestamp_stash(enum timestamp_id id)

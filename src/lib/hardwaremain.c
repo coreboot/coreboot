@@ -445,7 +445,7 @@ static void boot_state_schedule_static_entries(void)
 	}
 }
 
-void hardwaremain(void)
+void main(void)
 {
 	timestamp_stash(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);

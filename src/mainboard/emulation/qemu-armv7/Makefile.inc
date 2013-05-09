@@ -13,7 +13,6 @@
 ## GNU General Public License for more details.
 
 romstage-y += romstage.c
-ramstage-y += ramstage.c
 
 bootblock-y += media.c
 romstage-y += media.c

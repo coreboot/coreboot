@@ -86,7 +86,7 @@ _start:
 #if CONFIG_GDB_WAIT
 	call gdb_stub_breakpoint
 #endif
-	call	hardwaremain
+	call	main
 	/* NOTREACHED */
 .Lhlt:
 	post_code(POST_DEAD_CODE)	/* post ee */

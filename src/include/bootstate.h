@@ -165,7 +165,7 @@ void boot_state_current_block(void);
 void boot_state_current_unblock(void);
 
 /* Entry into the boot state machine. */
-void hardwaremain(void);
+void main(void);
 
 /* In order to schedule boot state callbacks at compile-time specify the
  * entries in an array using the BOOT_STATE_INIT_ENTRIES and

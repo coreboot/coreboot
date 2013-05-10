@@ -44,29 +44,16 @@ get_bl1() {
   fi
 }
 
-merge_bl1() {
-  local outfile="$1"
-  local bl1="${BL1_PATH}/${BL1_NAME}"
-
-  if [ ! -e "$bl1" ]; then
-    get_bl1
-  fi
-
-  # use the new BL1 which supports 30KB BL2/SPL/Coreboot
-  local size="$(stat -c "%s" "$outfile")"
-  local bl1_size="$(stat -c "%s" "$bl1")"
-
-  [ "$bl1_size" = "$((0x2000))" ] || die "Incorrect BL1 input file."
-  dd if="$bl1" of=${outfile} conv=notrunc
-}
-
 is_servod_ready() {
   ps -C servod >/dev/null 2>&1
 }
 
 main() {
+  if [ ! -e "$bl1" ]; then
+    get_bl1
+  fi
+
   make
-  merge_bl1 "$OUTPUT"
   create_diff_192k "$OUTPUT" "$TMP_DIFF"
   echo "OK: Generated image (with BL1) in $OUTPUT"
   if is_servod_ready; then

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.
+## Copyright (C) 2012 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -23,6 +23,5 @@ romstage-y += memory.c
 romstage-y += romstage.c
 romstage-y += wakeup.c
 
-# ramstage-y += ec.c
 ramstage-y += mainboard.c
 ramstage-y += chromeos.c

@@ -8,6 +8,7 @@
 #include <arch/cache.h>
 #include <cpu/samsung/exynos5250/fimd.h>
 #include <cpu/samsung/exynos5-common/s5p-dp-core.h>
+#include <cpu/samsung/exynos5-common/cpu.h>
 #include "chip.h"
 #include "cpu.h"
 
@@ -97,6 +98,8 @@ static void cpu_init(device_t dev)
 {
 	exynos_displayport_init(dev);
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB);
+
+	arch_cpu_init();
 }
 
 static void cpu_noop(device_t dev)

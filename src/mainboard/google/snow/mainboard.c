@@ -1,10 +1,11 @@
 /*
- * Copyright (C) 2012 Google Inc.
+ * This file is part of the coreboot project.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * Copyright (C) 2013 Google, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #include <console/console.h>
@@ -38,13 +38,14 @@
 #include <cpu/samsung/exynos5-common/i2c.h>
 #include <cpu/samsung/exynos5-common/s5p-dp-core.h>
 
+#include "exynos5250.h"
 
 /* convenient shorthand (in MB) */
 #define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
 #define DRAM_END	(DRAM_START + DRAM_SIZE)	/* plus one... */
 
-static struct edid snow_edid = {
+static struct edid edid = {
 	.ha = 1366,
 	.va = 768,
 	.bpp = 16,
@@ -114,14 +115,14 @@ static void exynos_dp_reset(void)
 #define LCD_T5_DELAY_MS	10
 #define LCD_T6_DELAY_MS	10
 
-static void snow_backlight_pwm(void)
+static void backlight_pwm(void)
 {
 	/*Configure backlight PWM as a simple output high (100% brightness) */
 	gpio_direction_output(GPIO_B20, 1);
 	udelay(LCD_T6_DELAY_MS * 1000);
 }
 
-static void snow_backlight_en(void)
+static void backlight_en(void)
 {
 	/* * Configure GPIO for LCD_BL_EN */
 	gpio_direction_output(GPIO_X30, 1);
@@ -132,13 +133,13 @@ static void snow_backlight_en(void)
 #define FET1_CTRL	0x0f
 #define FET6_CTRL	0x14
 
-static void snow_lcd_vdd(void)
+static void lcd_vdd(void)
 {
 	/* Enable FET6, lcd panel */
 	tps65090_fet_enable(TPS69050_BUS, FET6_CTRL);
 }
 
-static void snow_backlight_vdd(void)
+static void backlight_vdd(void)
 {
 	/* Enable FET1, backlight */
 	tps65090_fet_enable(TPS69050_BUS, FET1_CTRL);
@@ -146,7 +147,7 @@ static void snow_backlight_vdd(void)
 }
 
 //static struct video_info smdk5250_dp_config = {
-static struct video_info snow_dp_video_info = {
+static struct video_info dp_video_info = {
 	/* FIXME: fix video_info struct to use const for name */
 	.name			= (char *)"eDP-LVDS NXP PTN3460",
 
@@ -165,7 +166,7 @@ static struct video_info snow_dp_video_info = {
 
 /* FIXME: move some place more appropriate */
 #define EXYNOS5250_DP1_BASE	0x145b0000
-#define SNOW_MAX_DP_TRIES	5
+#define MAX_DP_TRIES	5
 
 /*
  * This function disables the USB3.0 PLL to save power
@@ -183,12 +184,12 @@ static void mainboard_init(device_t dev)
 	int dp_tries;
 	struct s5p_dp_device dp_device = {
 		.base = (struct exynos5_dp *)EXYNOS5250_DP1_BASE,
-		.video_info = &snow_dp_video_info,
+		.video_info = &dp_video_info,
 	};
 	void *fb_addr;
 
-	i2c_init(TPS69050_BUS, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
-	i2c_init(7, CONFIG_SYS_I2C_SPEED, CONFIG_SYS_I2C_SLAVE);
+	i2c_init(TPS69050_BUS, I2C_0_SPEED, I2C_SLAVE);
+	i2c_init(7, I2C_0_SPEED, I2C_SLAVE);
 
 	tmu_init(&exynos5250_tmu_info);
 
@@ -199,15 +200,15 @@ static void mainboard_init(device_t dev)
 	disable_usb30_pll();
 
 	fb_addr = cbmem_find(CBMEM_ID_CONSOLE);
-	set_vbe_mode_info_valid(&snow_edid, (uintptr_t)(fb_addr) + 64*KiB);
+	set_vbe_mode_info_valid(&edid, (uintptr_t)(fb_addr) + 64*KiB);
 
-	snow_lcd_vdd();
+	lcd_vdd();
 	do {
 		udelay(50);
 	} while (!exynos_dp_hotplug());
 
 	exynos_dp_bridge_setup();
-	for (dp_tries = 1; dp_tries <= SNOW_MAX_DP_TRIES; dp_tries++) {
+	for (dp_tries = 1; dp_tries <= MAX_DP_TRIES; dp_tries++) {
 		exynos_dp_bridge_init();
 		if (exynos_dp_hotplug()) {
 			exynos_dp_reset();
@@ -219,14 +220,14 @@ static void mainboard_init(device_t dev)
 
 		udelay(LCD_T3_DELAY_MS * 1000);
 
-		snow_backlight_vdd();
-		snow_backlight_pwm();
-		snow_backlight_en();
+		backlight_vdd();
+		backlight_pwm();
+		backlight_en();
 		/* if we're here, we're successful */
 		break;
 	}
 
-	if (dp_tries > SNOW_MAX_DP_TRIES)
+	if (dp_tries > MAX_DP_TRIES)
 		printk(BIOS_ERR, "%s: Failed to set up displayport\n", __func__);
 }
 
@@ -235,6 +236,7 @@ static void mainboard_enable(device_t dev)
 	dev->ops->init = &mainboard_init;
 
 	/* set up coreboot tables */
+	/* FIXME: this should happen somewhere else */
 	high_tables_size = CONFIG_COREBOOT_TABLES_SIZE;
 	high_tables_base = CONFIG_SYS_SDRAM_BASE +
 				((unsigned)CONFIG_DRAM_SIZE_MB << 20ULL) -

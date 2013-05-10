@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google, Inc.  All rights reserved.
+ * Copyright (C) 2013 Google, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/gpio.h>
-#include <arch/hlt.h>
-#include <console/console.h>
-#include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5-common/exynos5-common.h>
+/* I2C */
+#define I2C_0_SPEED 100000
+#define I2C_SLAVE 0
 
-#include <cpu/samsung/exynos5250/wakeup.h>
-
-int wakeup_need_reset(void)
-{
-	/* The "wake up" event is not reliable (known as "bad wakeup") and needs
-	 * reset if GPIO value is high. */
-	return gpio_get_value(GPIO_Y10);
-}
+/* Voltages */
+#define VDD_ARM_MV 1300		// 1.3V
+#define VDD_INT_UV 1012500	// 1.0125V
+#define VDD_MIF_MV 1000		// 1.0V
+#define VDD_G3D_MV 1200		// 1.2V
+#define VDD_LDO2_MV 1500	// 1.5V
+#define VDD_LDO3_MV 1800	// 1.8V
+#define VDD_LDO5_MV 1800	// 1.8V
+#define VDD_LDO10_MV 1800	// 1.8V
 

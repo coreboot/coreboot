@@ -34,6 +34,8 @@ struct cbmem_console {
 	u8  buffer_body[0];
 }  __attribute__ ((__packed__));
 
+static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
+
 #ifdef __PRE_RAM__
 /*
  * While running from ROM, before DRAM is initialized, some area in cache as
@@ -42,7 +44,6 @@ struct cbmem_console {
  */
 
 static struct cbmem_console car_cbmem_console CAR_CBMEM;
-#define cbmem_console_p (&car_cbmem_console)
 
 /*
  * Once DRAM is initialized and the cache as ram mode is disabled, while still
@@ -54,6 +55,7 @@ static struct cbmem_console car_cbmem_console CAR_CBMEM;
  * find out where the actual console log buffer is.
  */
 #define CBMEM_CONSOLE_REDIRECT (*((struct cbmem_console **)0x600))
+
 #else
 
 /*
@@ -63,31 +65,13 @@ static struct cbmem_console car_cbmem_console CAR_CBMEM;
  * during the ROM stage, once CBMEM becomes available at RAM stage.
  */
 static u8 static_console[40000];
-static struct cbmem_console *cbmem_console_p;
 #endif
 
-void cbmemc_init(void)
+static inline struct cbmem_console *current_console(void)
 {
-#ifdef __PRE_RAM__
-	cbmem_console_p->buffer_size = CONFIG_CONSOLE_CAR_BUFFER_SIZE -
-		sizeof(struct cbmem_console);
+#if CONFIG_CAR_MIGRATION || !defined(__PRE_RAM__)
+	return car_get_var(cbmem_console_p);
 #else
-	/*
-	 * Initializing before CBMEM is available, use static buffer to store
-	 * the log.
-	 */
-	cbmem_console_p = (struct cbmem_console *) static_console;
-	cbmem_console_p->buffer_size = sizeof(static_console) -
-		sizeof(struct cbmem_console);
-#endif
-	cbmem_console_p->buffer_cursor = 0;
-}
-
-void cbmemc_tx_byte(unsigned char data)
-{
-	struct cbmem_console *cbm_cons_p = cbmem_console_p;
-	u32 cursor;
-#ifdef __PRE_RAM__
 	/*
 	 * This check allows to tell if the cache as RAM mode has been exited
 	 * or not. If it has been exited, the real memory is being used
@@ -95,9 +79,50 @@ void cbmemc_tx_byte(unsigned char data)
 	 * DCACHE_RAM_BASE), use the redirect pointer to find out where the
 	 * actual console buffer is.
 	 */
-	if ((uintptr_t)&cursor < (uintptr_t)&car_cbmem_console)
-		cbm_cons_p = CBMEM_CONSOLE_REDIRECT;
+	if ((uintptr_t)__builtin_frame_address(0) <
+	    (uintptr_t)CONFIG_DCACHE_RAM_BASE)
+		return CBMEM_CONSOLE_REDIRECT;
+	return car_get_var(cbmem_console_p);
+#endif /* CONFIG_CAR_MIGRATION */
+}
+
+static inline void current_console_set(struct cbmem_console *new_console_p)
+{
+#if CONFIG_CAR_MIGRATION || !defined(__PRE_RAM__)
+	car_set_var(cbmem_console_p, new_console_p);
+#else
+	CBMEM_CONSOLE_REDIRECT = new_console_p;
 #endif
+}
+
+static inline void init_console_ptr(void *storage, u32 total_space)
+{
+	struct cbmem_console *cbm_cons_p = storage;
+
+	/* Initialize the cache-as-ram pointer and underlying structure. */
+	car_set_var(cbmem_console_p, cbm_cons_p);
+	cbm_cons_p->buffer_size = total_space - sizeof(struct cbmem_console);
+	cbm_cons_p->buffer_cursor = 0;
+}
+
+void cbmemc_init(void)
+{
+#ifdef __PRE_RAM__
+	init_console_ptr(&car_cbmem_console, CONFIG_CONSOLE_CAR_BUFFER_SIZE);
+#else
+	/*
+	 * Initializing before CBMEM is available, use static buffer to store
+	 * the log.
+	 */
+	init_console_ptr(static_console, sizeof(static_console));
+#endif
+}
+
+void cbmemc_tx_byte(unsigned char data)
+{
+	struct cbmem_console *cbm_cons_p = current_console();
+	u32 cursor;
+
 	if (!cbm_cons_p)
 		return;
 
@@ -119,14 +144,17 @@ static void copy_console_buffer(struct cbmem_console *new_cons_p)
 {
 	u32 copy_size;
 	u32 cursor = new_cons_p->buffer_cursor;
-	int overflow = cbmem_console_p->buffer_cursor >
-		cbmem_console_p->buffer_size;
+	struct cbmem_console *old_cons_p;
+	int overflow;
+
+	old_cons_p = current_console();
+
+	overflow = old_cons_p->buffer_cursor > old_cons_p->buffer_size;
 
 	copy_size = overflow ?
-		cbmem_console_p->buffer_size : cbmem_console_p->buffer_cursor;
+		old_cons_p->buffer_size : old_cons_p->buffer_cursor;
 
-	memcpy(new_cons_p->buffer_body + cursor,
-	       cbmem_console_p->buffer_body,
+	memcpy(new_cons_p->buffer_body + cursor, old_cons_p->buffer_body,
 	       copy_size);
 
 	cursor += copy_size;
@@ -134,7 +162,7 @@ static void copy_console_buffer(struct cbmem_console *new_cons_p)
 	if (overflow) {
 		const char loss_str1[] = "\n\n*** Log truncated, ";
 		const char loss_str2[] = " characters dropped. ***\n\n";
-		u32 dropped_chars = cbmem_console_p->buffer_cursor - copy_size;
+		u32 dropped_chars = old_cons_p->buffer_cursor - copy_size;
 
 		/*
 		 * When running from ROM sprintf is not available, a simple
@@ -173,7 +201,7 @@ void cbmemc_reinit(void)
 	cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE,
 			       CONFIG_CONSOLE_CBMEM_BUFFER_SIZE);
 	if (!cbm_cons_p) {
-		CBMEM_CONSOLE_REDIRECT = NULL;
+		current_console_set(NULL);
 		return;
 	}
 
@@ -181,18 +209,17 @@ void cbmemc_reinit(void)
 		sizeof(struct cbmem_console);
 
 	cbm_cons_p->buffer_cursor = 0;
-
-	copy_console_buffer(cbm_cons_p);
-
-	CBMEM_CONSOLE_REDIRECT = cbm_cons_p;
 #else
 	cbm_cons_p = cbmem_find(CBMEM_ID_CONSOLE);
 
 	if (!cbm_cons_p)
 		return;
 
+#endif
 	copy_console_buffer(cbm_cons_p);
 
-	cbmem_console_p = cbm_cons_p;
-#endif
+	current_console_set(cbm_cons_p);
 }
+
+/* Call cbmemc_reinit() at CAR migration time. */
+CAR_MIGRATE(cbmemc_reinit)

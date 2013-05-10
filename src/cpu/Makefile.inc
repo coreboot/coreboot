@@ -6,6 +6,7 @@ subdirs-y += armltd
 subdirs-y += intel
 subdirs-y += samsung
 subdirs-y += via
+subdirs-y += x86
 
 ################################################################################
 ## Rules for building the microcode blob in CBFS

@@ -22,6 +22,7 @@
 #include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/x86/car.h>
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 #include <arch/acpi.h>
 #endif
@@ -228,6 +229,9 @@ int cbmem_initialize(void)
 #ifndef __PRE_RAM__
 	cbmem_arch_init();
 #endif
+	/* Migrate cache-as-ram variables. */
+	car_migrate_variables();
+
 	return rv;
 }
 #endif

@@ -126,9 +126,9 @@ OemCustomizeInitEarly (
   //
   // Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
   //
-  AllocHeapParams.RequestedBufferSize = (sizeof (PCIe_COMPLEX_DESCRIPTOR)  +
-                                         sizeof (PCIe_PORT_DESCRIPTOR) * 7 +
-                                         sizeof (PCIe_DDI_DESCRIPTOR)) * 6;
+  AllocHeapParams.RequestedBufferSize = sizeof (PCIe_COMPLEX_DESCRIPTOR)  +
+                                        sizeof (PCIe_PORT_DESCRIPTOR) * 7 +
+                                        sizeof (PCIe_DDI_DESCRIPTOR) * 6;
 
   AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
   AllocHeapParams.Persist = HEAP_LOCAL_CACHE;

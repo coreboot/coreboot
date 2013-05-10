@@ -52,7 +52,7 @@ void mainboard_suspend_resume(void)
 #if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 static int int15_handler(void)
 {
-	int res=-1;
+	int res = 0;
 
 	printk(BIOS_DEBUG, "%s: INT15 function %04x!\n",
 			__func__, X86_AX);
@@ -68,7 +68,7 @@ static int int15_handler(void)
 		 */
 		X86_AX = 0x005f;
 		X86_CL = 0x00; /* Use video bios default */
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f35:
 		/*
@@ -84,7 +84,7 @@ static int int15_handler(void)
 		 */
 		X86_AX = 0x005f;
 		X86_CX = 0x0000; /* Use video bios default */
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f51:
 		/*
@@ -96,7 +96,7 @@ static int int15_handler(void)
 		 */
 		X86_AX = 0x005f;
 		X86_CX = 0x0003; /* eDP */
-		res = 0;
+		res = 1;
 		break;
 	case 0x5f70:
 		switch (X86_CH) {
@@ -104,25 +104,25 @@ static int int15_handler(void)
 			/* Get Mux */
 			X86_AX = 0x005f;
 			X86_CX = 0x0000;
-			res = 0;
+			res = 1;
 			break;
 		case 1:
 			/* Set Mux */
 			X86_AX = 0x005f;
 			X86_CX = 0x0000;
-			res = 0;
+			res = 1;
 			break;
 		case 2:
 			/* Get SG/Non-SG mode */
 			X86_AX = 0x005f;
 			X86_CX = 0x0000;
-			res = 0;
+			res = 1;
 			break;
 		default:
 			/* Interrupt was not handled */
 			printk(BIOS_DEBUG, "Unknown INT15 5f70 function: 0x%02x\n",
 				X86_CH);
-			return 0;
+			break;
 		}
 		break;
 

@@ -53,7 +53,25 @@
 #define CRC_OFFSET                  15
 
 static int vbnv_initialized CAR_GLOBAL;
-uint8_t vbnv[CONFIG_VBNV_SIZE] CAR_GLOBAL;
+static uint8_t vbnv[CONFIG_VBNV_SIZE] CAR_GLOBAL;
+
+/* Wrappers for accessing the variables marked as CAR_GLOBAL. */
+static inline int is_vbnv_initialized(void)
+{
+	return car_get_var(vbnv_initialized);
+}
+
+static inline uint8_t *vbnv_data_addr(int index)
+{
+	uint8_t *vbnv_arr = car_get_var_ptr(vbnv);
+
+	return &vbnv_arr[index];
+}
+
+static inline uint8_t vbnv_data(int index)
+{
+	return *vbnv_data_addr(index);
+}
 
 /* Return CRC-8 of the data, using x^8 + x^2 + x + 1 polynomial.  A
  * table-based algorithm would be faster, but for only 15 bytes isn't
@@ -109,20 +127,20 @@ void save_vbnv(const uint8_t *vbnv_copy)
 
 static void vbnv_setup(void)
 {
-	read_vbnv(vbnv);
-	vbnv_initialized = 1;
+	read_vbnv(vbnv_data_addr(0));
+	car_set_var(vbnv_initialized, 1);
 }
 
 int get_recovery_mode_from_vbnv(void)
 {
-	if (!vbnv_initialized)
+	if (!is_vbnv_initialized())
 		vbnv_setup();
-	return vbnv[RECOVERY_OFFSET];
+	return vbnv_data(RECOVERY_OFFSET);
 }
 
 int vboot_wants_oprom(void)
 {
-	if (!vbnv_initialized)
+	if (!is_vbnv_initialized())
 		vbnv_setup();
 
 	/* FIXME(crosbug.com/p/8789). The following commented-out line does the
@@ -130,6 +148,6 @@ int vboot_wants_oprom(void)
 	 * rebooted if it finds that it's needed but not loaded. At the moment,
 	 * it doesn't yet do that, so we must always say we want it. */
 
-	/* return (vbnv[BOOT_OFFSET] & BOOT_OPROM_NEEDED) ? 1 : 0; */
+	/* return (vbnv_data(BOOT_OFFSET) & BOOT_OPROM_NEEDED) ? 1 : 0; */
 	return 1;
 }

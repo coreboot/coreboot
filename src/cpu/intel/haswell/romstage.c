@@ -188,11 +188,6 @@ void * asmlinkage romstage_main(unsigned long bist)
 	/* Get the stack to use after cache-as-ram is torn down. */
 	romstage_stack_after_car = setup_romstage_stack_after_car();
 
-#if CONFIG_CONSOLE_CBMEM
-	/* Keep this the last thing this function does. */
-	cbmemc_reinit();
-#endif
-
 	return romstage_stack_after_car;
 }
 

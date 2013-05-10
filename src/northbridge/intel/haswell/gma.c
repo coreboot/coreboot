@@ -124,7 +124,7 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write(0x12054, 0x0000000a);
 	gtt_write(0x22054, 0x0000000a);
 
-	gtt_write(0x0a008, 0x10000000);
+	gtt_write(0x0a008, 0x80000000);
 	gtt_write(0x0a024, 0x00000b92);
 
 	/* Enable RC6 in idle */

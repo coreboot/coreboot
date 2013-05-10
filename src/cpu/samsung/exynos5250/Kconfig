@@ -97,3 +97,41 @@ config SYS_TEXT_BASE
 config COREBOOT_TABLES_SIZE
 	hex
 	default 0x4000000
+
+choice CONSOLE_SERIAL_UART_CHOICES
+	prompt "Serial Console UART"
+	default CONSOLE_SERIAL_UART3
+	depends on CONSOLE_SERIAL_UART
+
+config CONSOLE_SERIAL_UART0
+	bool "UART0"
+	help
+	  Serial console on UART0
+
+config CONSOLE_SERIAL_UART1
+	bool "UART1"
+	help
+	  Serial console on UART1
+
+config CONSOLE_SERIAL_UART2
+	bool "UART2"
+	help
+	  Serial console on UART2
+
+config CONSOLE_SERIAL_UART3
+	bool "UART3"
+	help
+	  Serial console on UART3
+
+endchoice
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_UART
+	default 0x12c00000 if CONSOLE_SERIAL_UART0
+	default 0x12c10000 if CONSOLE_SERIAL_UART1
+	default 0x12c20000 if CONSOLE_SERIAL_UART2
+	default 0x12c30000 if CONSOLE_SERIAL_UART3
+	help
+	  Map the UART names to the respective MMIO address.
+

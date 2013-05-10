@@ -28,7 +28,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select EC_GOOGLE_CHROMEEC_I2C
 	select BOARD_ROMSIZE_KB_4096
 	select DRIVER_MAXIM_MAX77686
-#	select HAVE_ACPI_TABLES
 	select EXYNOS_DISPLAYPORT
 	select CHROMEOS
 	select DRIVER_TI_TPS65090
@@ -41,132 +40,18 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "SNOW"
-
-#config MMCONF_BASE_ADDRESS
-#	hex
-#	default 0xf0000000
-
-#config IRQ_SLOT_COUNT
-#	int
-#	default 18
+	default "Snow"
 
 config MAX_CPUS
 	int
 	default 2
 
-config MAINBOARD_VENDOR
-	string
-	default "Samsung"
-
-config BOOTBLOCK_MAINBOARD_INIT
-	string
-	default "mainboard/google/snow/bootblock.c"
-
 config DRAM_SIZE_MB
 	int
 	default 2048
 
-config NR_DRAM_BANKS
-	int
-	default 1
-
-choice CONSOLE_SERIAL_UART_CHOICES
-	prompt "Serial Console UART"
-	default CONSOLE_SERIAL_UART3
-	depends on CONSOLE_SERIAL_UART
-
-config CONSOLE_SERIAL_UART0
-	bool "UART0"
-	help
-	  Serial console on UART0
-
-config CONSOLE_SERIAL_UART1
-	bool "UART1"
-	help
-	  Serial console on UART1
-
-config CONSOLE_SERIAL_UART2
-	bool "UART2"
-	help
-	  Serial console on UART2
-
-config CONSOLE_SERIAL_UART3
-	bool "UART3"
-	help
-	  Serial console on UART3
-
-endchoice
-
-config CONSOLE_SERIAL_UART_ADDRESS
-	hex
-	depends on CONSOLE_SERIAL_UART
-	default 0x12c00000 if CONSOLE_SERIAL_UART0
-	default 0x12c10000 if CONSOLE_SERIAL_UART1
-	default 0x12c20000 if CONSOLE_SERIAL_UART2
-	default 0x12c30000 if CONSOLE_SERIAL_UART3
-	help
-	  Map the UART names to the respective MMIO address.
-
 config EC_GOOGLE_CHROMEEC_I2C_BUS
 	hex
 	default 4
-
-#################################################################
-#   stuff from smdk5250.h                                       #
-#   FIXME: can we move some of these to exynos5250's Kconfig?   #
-#################################################################
-config SYS_I2C_SPEED
-	int
-	default 100000
-
-config SYS_I2C_SLAVE
-	hex
-	default 0x0
-
-config I2C_MULTI_BUS
-	bool
-	default y
-
-#config HARD_I2C
-#	bool
-#	default y
-#CMD_I2C
-#I2C_EDID
-#DRIVER_S3C24X0_I2C
-
-config VDD_ARM_MV
-	int
-	default 1300	#1.3V
-
-config VDD_INT_UV
-	int
-	default 1012500	# 1.0125v
-
-config VDD_MIF_MV
-	int
-	default 1000	# 1.0v
-
-config VDD_G3D_MV
-	int
-	default 1200	# 1.2v
-
-config VDD_LDO2_MV
-	int
-	default 1500	# 1.5v
-
-config VDD_LDO3_MV
-	int
-	default 1800	# 1.8v
-
-config VDD_LDO5_MV
-	int
-	default 1800	# 1.8v
-
-config VDD_LDO10_MV
-	int
-	default 1800	# 1.8v
-
-######### smdk5250.h ########
 
 endif # BOARD_GOOGLE_SNOW

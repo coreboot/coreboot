@@ -1,9 +1,8 @@
 /*
- * This file is part of the coreboot project. It is based off code
- * from Das U-Boot.
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Samsung Electronics
- * Copyright (C) 2013 The ChromiumOS Authors.
+ * Copyright (C) 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +28,6 @@
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/dmc.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
-
-#include "mainboard.h"
 
 const struct mem_timings mem_timings[] = {
 	{
@@ -453,10 +450,10 @@ const struct mem_timings mem_timings[] = {
 	}
 };
 
-#define SNOW_BOARD_ID0_GPIO	88	/* GPD0, pin 0 */
-#define SNOW_BOARD_ID1_GPIO	89	/* GPD0, pin 1 */
+#define BOARD_ID0_GPIO	88	/* GPD0, pin 0 */
+#define BOARD_ID1_GPIO	89	/* GPD0, pin 1 */
 
-enum snow_board_config {
+enum board_config {
 	SNOW_CONFIG_UNKNOWN = -1,
 	SNOW_CONFIG_SAMSUNG_EVT,
 	SNOW_CONFIG_ELPIDA_EVT,
@@ -471,8 +468,8 @@ enum snow_board_config {
 
 struct {
 	enum mvl3 id0, id1;
-	enum snow_board_config config;
-} snow_id_map[] = {
+	enum board_config config;
+} id_map[] = {
 	/*  ID0      ID1         config */
 	{ LOGIC_0, LOGIC_0, SNOW_CONFIG_SAMSUNG_MP },
 	{ LOGIC_0, LOGIC_1, SNOW_CONFIG_ELPIDA_MP },
@@ -489,17 +486,17 @@ static int board_get_config(void)
 {
 	int i;
 	int id0, id1;
-	enum snow_board_config config = SNOW_CONFIG_UNKNOWN;
+	enum board_config config = SNOW_CONFIG_UNKNOWN;
 
-	id0 = gpio_read_mvl3(SNOW_BOARD_ID0_GPIO);
-	id1 = gpio_read_mvl3(SNOW_BOARD_ID1_GPIO);
+	id0 = gpio_read_mvl3(BOARD_ID0_GPIO);
+	id1 = gpio_read_mvl3(BOARD_ID1_GPIO);
 	if (id0 < 0 || id1 < 0)
 		return -1;
 	printk(BIOS_DEBUG, "%s: id0: %u, id1: %u\n", __func__, id0, id1);
 
-	for (i = 0; i < ARRAY_SIZE(snow_id_map); i++) {
-		if (id0 == snow_id_map[i].id0 && id1 == snow_id_map[i].id1) {
-			config = snow_id_map[i].config;
+	for (i = 0; i < ARRAY_SIZE(id_map); i++) {
+		if (id0 == id_map[i].id0 && id1 == id_map[i].id1) {
+			config = id_map[i].config;
 			break;
 		}
 	}
@@ -507,18 +504,17 @@ static int board_get_config(void)
 	return config;
 }
 
-
 struct mem_timings *get_mem_timings(void)
 {
 	int i;
-	enum snow_board_config board_config;
+	enum board_config config;
 	enum ddr_mode mem_type;
 	unsigned int frequency_mhz;
 	enum mem_manuf mem_manuf;
 	const struct mem_timings *mem;
 	
-	board_config = board_get_config();
-	switch (board_config) {
+	config = board_get_config();
+	switch (config) {
 	case SNOW_CONFIG_ELPIDA_EVT:
 	case SNOW_CONFIG_ELPIDA_DVT:
 	case SNOW_CONFIG_ELPIDA_PVT:
@@ -536,7 +532,7 @@ struct mem_timings *get_mem_timings(void)
 		frequency_mhz = 800;
 		break;
 	default:
-		printk(BIOS_CRIT, "Unable to determine board config\n");
+		printk(BIOS_CRIT, "Unknown board configuration.\n");
 		return NULL;
 	}
 

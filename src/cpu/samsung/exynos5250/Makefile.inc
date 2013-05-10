@@ -10,6 +10,7 @@ bootblock-$(CONFIG_EARLY_CONSOLE) += clock.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += monotonic_timer.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += soc.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
+bootblock-y += wakeup.c
 
 romstage-y += clock.c
 romstage-y += clock_init.c
@@ -21,6 +22,7 @@ romstage-y += mct.c
 romstage-y += monotonic_timer.c
 romstage-$(CONFIG_EARLY_CONSOLE) += soc.c
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
+romstage-y += wakeup.c
 
 #ramstage-y += tzpc_init.c
 ramstage-y += clock.c

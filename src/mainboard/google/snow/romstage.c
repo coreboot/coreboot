@@ -34,25 +34,26 @@
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
+#include <cpu/samsung/exynos5250/wakeup.h>
 #include <console/console.h>
 #include <arch/stages.h>
 
 #include <drivers/maxim/max77686/max77686.h>
 #include <device/i2c.h>
 
-#include "mainboard.h"
+#include "exynos5250.h"
 
 #define PMIC_BUS	0
 #define MMC0_GPIO_PIN	(58)
 
-static void snow_setup_power(void)
+static void setup_power(void)
 {
 	int error = 0;
 
 	power_init();
 
 	/* Initialize I2C bus to configure PMIC. */
-	i2c_init(0, CONFIG_SYS_I2C_SPEED, 0x00);
+	i2c_init(0, I2C_0_SPEED, 0x00);
 
 	printk(BIOS_DEBUG, "%s: Setting up PMIC...\n", __func__);
 	/*
@@ -67,21 +68,21 @@ static void snow_setup_power(void)
 	 */
 	error = max77686_disable_backup_batt(PMIC_BUS);
 
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK2, CONFIG_VDD_ARM_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK2, VDD_ARM_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK3, CONFIG_VDD_INT_UV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK3, VDD_INT_UV,
 						REG_ENABLE, MAX77686_UV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK1, CONFIG_VDD_MIF_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK1, VDD_MIF_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK4, CONFIG_VDD_G3D_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK4, VDD_G3D_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO2, CONFIG_VDD_LDO2_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO2, VDD_LDO2_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO3, CONFIG_VDD_LDO3_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO3, VDD_LDO3_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO5, CONFIG_VDD_LDO5_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO5, VDD_LDO5_MV,
 						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO10, CONFIG_VDD_LDO10_MV,
+	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO10, VDD_LDO10_MV,
 						REG_ENABLE, MAX77686_MV);
 
 	error |= max77686_enable_32khz_cp(PMIC_BUS);
@@ -92,7 +93,7 @@ static void snow_setup_power(void)
 	}
 }
 
-static void snow_setup_storage(void)
+static void setup_storage(void)
 {
 	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
 	if (clock_set_mshci(PERIPH_ID_SDMMC0))
@@ -109,12 +110,12 @@ static void snow_setup_storage(void)
 	exynos_pinmux_config(PERIPH_ID_SDMMC2, 0);
 }
 
-static void snow_setup_graphics(void)
+static void setup_graphics(void)
 {
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 }
 
-static void snow_setup_gpio(void)
+static void setup_gpio(void)
 {
 	struct exynos5_gpio_part1 *gpio_pt1;
 	struct exynos5_gpio_part2 *gpio_pt2;
@@ -142,7 +143,7 @@ static void snow_setup_gpio(void)
 	s5p_gpio_set_pull(&gpio_pt2->x1, POWER_GPIO, EXYNOS_GPIO_PULL_NONE);
 }
 
-static void snow_setup_memory(struct mem_timings *mem, int is_resume)
+static void setup_memory(struct mem_timings *mem, int is_resume)
 {
 	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: 0x%x\n",
 	       mem->mem_manuf,
@@ -162,7 +163,7 @@ static void snow_setup_memory(struct mem_timings *mem, int is_resume)
 	}
 }
 
-static struct mem_timings *snow_setup_clock(void)
+static struct mem_timings *setup_clock(void)
 {
 	struct mem_timings *mem = get_mem_timings();
 	struct arm_clk_ratios *arm_ratios = get_arm_clk_ratios();
@@ -177,31 +178,30 @@ void main(void)
 {
 	struct mem_timings *mem;
 	void *entry;
-	int is_resume = (snow_get_wakeup_state() != SNOW_IS_NOT_WAKEUP);
+	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
-	mem = snow_setup_clock();
+	mem = setup_clock();
 
 	if (!is_resume) {
 		console_init();
-		snow_setup_power();
+		setup_power();
 	}
 
-	snow_setup_memory(mem, is_resume);
+	setup_memory(mem, is_resume);
 
 	if (is_resume) {
-		snow_wakeup();
+		wakeup();
 	}
 
-	snow_setup_storage();
-	snow_setup_gpio();
-	snow_setup_graphics();
+	setup_storage();
+	setup_gpio();
+	setup_graphics();
 
 	/* Set SPI (primary CBFS media) clock to 50MHz. */
 	clock_set_rate(PERIPH_ID_SPI1, 50000000);
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
-	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
 
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	stage_exit(entry);
 }

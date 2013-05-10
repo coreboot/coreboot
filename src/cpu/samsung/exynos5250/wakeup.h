@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google, Inc.  All rights reserved.
+ * Copyright (C) 2013 Google, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/gpio.h>
-#include <arch/hlt.h>
-#include <console/console.h>
-#include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5-common/exynos5-common.h>
+#ifndef WAKEUP_H
+#define WAKEUP_H
 
-#include <cpu/samsung/exynos5250/wakeup.h>
+enum {
+	// A normal boot (not suspend/resume)
+	IS_NOT_WAKEUP,
+	// A wake up event that can be resumed any time
+	WAKEUP_DIRECT,
+	// A wake up event that must be resumed only after
+	// clock and memory controllers are re-initialized
+	WAKEUP_NEED_CLOCK_RESET,
+};
 
-int wakeup_need_reset(void)
-{
-	/* The "wake up" event is not reliable (known as "bad wakeup") and needs
-	 * reset if GPIO value is high. */
-	return gpio_get_value(GPIO_Y10);
-}
+int wakeup_need_reset(void);
+int get_wakeup_state(void);
+void wakeup(void);
 
+#endif	/* WAKEUP_H */

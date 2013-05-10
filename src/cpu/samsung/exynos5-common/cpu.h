@@ -61,23 +61,6 @@
 
 
 #include <arch/io.h>
-/* CPU detection macros */
-extern unsigned int s5p_cpu_id;
-
-inline void s5p_set_cpu_id(void);
-
-#define IS_SAMSUNG_TYPE(type, id)			\
-static inline int cpu_is_##type(void)			\
-{							\
-	return s5p_cpu_id == id ? 1 : 0;		\
-}
-
-IS_SAMSUNG_TYPE(s5pc100, 0xc100)
-IS_SAMSUNG_TYPE(s5pc110, 0xc110)
-
-int s5p_get_cpu_rev(void);
-//void s5p_set_cpu_id(void);
-int s5p_get_cpu_id(void);
 
 #define DEVICE_NOT_AVAILABLE		0
 
@@ -132,14 +115,14 @@ enum boot_mode exynos_get_boot_device(void);
  */
 int board_wakeup_permitted(void);
 
-#define cpu_is_exynos4()	(s5p_get_cpu_id() == 0xc210)
-#define cpu_is_exynos5()	(s5p_get_cpu_id() == 0xc520)
-
 /**
  * Init subsystems according to the reset status
  *
  * @return 0 for a normal boot, non-zero for a resume
  */
 int lowlevel_init_subsystems(void);
+
+int arch_cpu_init(void);
+
 
 #endif	/* _EXYNOS_COMMON_CPU_H */

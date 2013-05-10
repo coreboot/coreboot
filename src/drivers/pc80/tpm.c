@@ -278,7 +278,7 @@ static u32 tis_probe(void)
 	u16 vid, did;
 	int i;
 
-	if (vendor_dev_id)
+	if (car_get_var(vendor_dev_id))
 		return 0;  /* Already probed. */
 
 	didvid = tpm_read(0, TIS_REG_DID_VID);
@@ -287,7 +287,7 @@ static u32 tis_probe(void)
 		return TPM_DRIVER_ERR;
 	}
 
-	vendor_dev_id = didvid;
+	car_set_var(vendor_dev_id, didvid);
 
 	vid = didvid & 0xffff;
 	did = (didvid >> 16) & 0xffff;

@@ -17,19 +17,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/gpio.h>
-#include <arch/hlt.h>
 #include <console/console.h>
-#include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5-common/exynos5-common.h>
 
-#include <cpu/samsung/exynos5250/wakeup.h>
+#include "wakeup.h"
 
-int wakeup_need_reset(void)
+void wakeup(void)
 {
-	/* The "wake up" event is not reliable (known as "bad wakeup") and needs
-	 * reset if GPIO value is high. */
-	return gpio_get_value(GPIO_Y10);
+	if (wakeup_need_reset())
+		power_reset();
+
+	power_init();  /* Ensure ps_hold_setup() for early wakeup. */
+	power_exit_wakeup();
+	/* Should never return. */
+	die("Failed to wake up.\n");
 }
 
+int get_wakeup_state(void)
+{
+	uint32_t status = power_read_reset_status();
+
+	/* DIDLE/LPA can be resumed without clock reset (ex, bootblock),
+	 * and SLEEP requires resetting clock (should be done in ROM stage).
+	 */
+
+	if (status == S5P_CHECK_DIDLE || status == S5P_CHECK_LPA)
+		return WAKEUP_DIRECT;
+
+	if (status == S5P_CHECK_SLEEP)
+		return WAKEUP_NEED_CLOCK_RESET;
+
+	return IS_NOT_WAKEUP;
+}

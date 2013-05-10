@@ -285,9 +285,6 @@ int	checkicache   (void);
 int	checkdcache   (void);
 void	upmconfig     (unsigned int, unsigned int *, unsigned int);
 unsigned long	get_tbclk     (void);
-#if defined (CONFIG_OF_LIBFDT) && defined (CONFIG_OF_BOARD_SETUP)
-void ft_cpu_setup(void *blob, bd_t *bd);
-#endif
 
 
 /* $(CPU)/serial.c */
@@ -412,9 +409,6 @@ int strcmp_compar(const void *, const void *);
 /* lib/time.c */
 void	udelay        (unsigned long);
 
-/* lib/strmhz.c */
-char *	strmhz(char *buf, unsigned long hz);
-
 /* Multicore arch functions */
 #ifdef CONFIG_MP
 int cpu_status(int nr);
@@ -426,13 +420,6 @@ int cpu_release(int nr, int argc, char * const argv[]);
 #endif /* __ASSEMBLER__ */
 
 /* Put only stuff here that the assembler can digest */
-
-#ifdef CONFIG_POST
-#define CONFIG_HAS_POST
-#ifndef CONFIG_POST_ALT_LIST
-#define CONFIG_POST_STD_LIST
-#endif
-#endif
 
 #define ROUND(a,b)		(((a) + (b) - 1) & ~((b) - 1))
 #define DIV_ROUND(n,d)		(((n) + ((d)/2)) / (d))

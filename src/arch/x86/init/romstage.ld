@@ -35,6 +35,10 @@ SECTIONS
 		*(.rodata.*);
 		*(.rom.data.*);
 		. = ALIGN(16);
+		_car_migrate_start = .;
+		*(.car.migrate);
+		_car_migrate_end = .;
+		. = ALIGN(16);
 		_erom = .;
 	}
 
@@ -48,8 +52,16 @@ SECTIONS
 
 	. = CONFIG_DCACHE_RAM_BASE;
 	.car.data . (NOLOAD) : {
+		_car_data_start = .;
 		*(.car.global_data);
+		/* The cbmem_console section comes last to take advantage of
+		 * a zero-sized array to hold the memconsole contents that
+		 * grows to a bound of CONFIG_CONSOLE_CAR_BUFFER_SIZE. However,
+		 * collisions within the cache-as-ram region cannot be
+		 * statically checked because the cache-as-ram region usage is
+		 * cpu/chipset dependent. */
 		*(.car.cbmem_console);
+		_car_data_end = .;
 	}
 
 	_bogus = ASSERT((SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");

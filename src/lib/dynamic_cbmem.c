@@ -23,6 +23,7 @@
 #include <cbmem.h>
 #include <string.h>
 #include <stdlib.h>
+#include <cpu/x86/car.h>
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 #include <arch/acpi.h>
 #endif
@@ -182,12 +183,17 @@ void cbmem_initialize_empty(void)
 	       root, root->max_entries);
 
 	cbmem_arch_init();
+
+	/* Migrate cache-as-ram variables. */
+	car_migrate_variables();
 }
 
 static inline int cbmem_fail_recovery(void)
 {
 	cbmem_initialize_empty();
 	cbmem_handle_acpi_resume();
+	/* Migrate cache-as-ram variables. */
+	car_migrate_variables();
 	return 1;
 }
 
@@ -255,6 +261,9 @@ int cbmem_initialize(void)
 #endif
 
 	cbmem_arch_init();
+
+	/* Migrate cache-as-ram variables. */
+	car_migrate_variables();
 
 	/* Recovery successful. */
 	return 0;

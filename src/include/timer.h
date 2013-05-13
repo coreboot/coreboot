@@ -111,7 +111,7 @@ static inline int rela_time_cmp(const struct rela_time *t1,
 	return 1;
 }
 
-/* Iniitalize a rela_time structure. */
+/* Initialize a rela_time structure. */
 static inline struct rela_time rela_time_init_usecs(long us)
 {
 	struct rela_time t;

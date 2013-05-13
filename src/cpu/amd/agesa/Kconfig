@@ -27,7 +27,6 @@ config CPU_AMD_AGESA
 	default n
 	select TSC_SYNC_LFENCE
 	select UDELAY_LAPIC
-	select LAPIC_MONOTONIC_TIMER
 
 if CPU_AMD_AGESA
 
@@ -49,6 +48,14 @@ config XIP_ROM_SIZE
 config UDELAY_LAPIC_FIXED_FSB
 	int
 	default 200
+
+config MONOTONIC_TIMER_REG
+	def_bool y
+	select HAVE_MONOTONIC_TIMER
+	help
+	  Provide a monotonic timer using the 1 MHz BIOS Timer.
+
+	  Selecting this option means that the timer is enabled, that means, the clock rate in the BIOS Timer Control indexed register (D0F0xE4_x0130_80F1) is not 00h.
 
 source src/cpu/amd/agesa/family10/Kconfig
 source src/cpu/amd/agesa/family12/Kconfig

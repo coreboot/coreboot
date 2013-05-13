@@ -188,6 +188,7 @@ static inline int log2f(int value)
         return r;
 
 }
+#endif
 
 #define PCI_ADDR(SEGBUS, DEV, FN, WHERE) ( \
         (((SEGBUS) & 0xFFF) << 20) | \
@@ -206,6 +207,7 @@ static inline int log2f(int value)
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
+#if defined(__PRE_RAM__) || defined(__SMM__)
 typedef unsigned device_t; /* pci and pci_mmio need to have different ways to have dev */
 
 /* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G,

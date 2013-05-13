@@ -24,4 +24,6 @@ subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15_TN) += family15tn
 
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += s3_resume.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += s3_resume.c
+ramstage-$(CONFIG_MONOTONIC_TIMER_REG) += monotonic_timer.c
+
 cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc

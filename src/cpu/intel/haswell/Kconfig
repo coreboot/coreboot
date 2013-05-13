@@ -61,6 +61,6 @@ config MONOTONIC_TIMER_MSR
 	depends on INTEL_LYNXPOINT_LP
 	select HAVE_MONOTONIC_TIMER
 	help
-	 Provide a monotonic timer using the 24MHz MSR counter.
+	  Provide a monotonic timer using the 24MHz MSR counter.
 
 endif

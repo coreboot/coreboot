@@ -31,7 +31,7 @@
 #define BU_CFG2_MSR			0xC001102A
 
 #define CPU_ID_FEATURES_MSR		0xC0011004
-#define CPU_ID_EXT_FEATURES_MSR	0xC0011005
+#define CPU_ID_EXT_FEATURES_MSR		0xC0011005
 
 #if defined(__PRE_RAM__)
 void wait_all_core0_started(void);

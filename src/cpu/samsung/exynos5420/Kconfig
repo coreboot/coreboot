@@ -17,13 +17,13 @@ config BL1_SIZE_KB
 # Example SRAM/iRAM map for Exynos5420 platform:
 #
 # 0x0202_0000: vendor-provided BL1
-# 0x0202_3400: bootblock, assume up to 32KB in size
+# 0x0202_4400: bootblock, assume up to 32KB in size
 # 0x0203_0000: romstage, assume up to 128KB in size.
-# 0x0207_8000: stack pointer
+# 0x0207_4000: stack pointer
 
 config BOOTBLOCK_BASE
 	hex
-	default 0x02023400
+	default 0x02024400
 
 config ROMSTAGE_BASE
 	hex
@@ -40,11 +40,11 @@ config ROMSTAGE_SIZE
 # consecutive memory locations ending just below SP
 config STACK_TOP
 	hex
-	default 0x02078000
+	default 0x02074000
 
 config STACK_BOTTOM
 	hex
-	default 0x02077000
+	default 0x02073000
 
 config STACK_SIZE
 	hex
@@ -69,13 +69,7 @@ config CBFS_CACHE_ADDRESS
 
 config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x000017000
-
-# FIXME: This is for copying SPI content into SRAM temporarily and
-# will be removed when we have the SPI streaming driver implemented.
-config SPI_IMAGE_HACK
-	hex
-	default 0x02060000
+	default 0x000013000
 
 # FIXME: other magic numbers that should probably go away
 config XIP_ROM_SIZE
@@ -84,11 +78,11 @@ config XIP_ROM_SIZE
 
 config SYS_SDRAM_BASE
 	hex
-	default 0x40000000
+	default 0x20000000
 
 config SYS_TEXT_BASE
 	hex
-	default 0x43e00000
+	default 0x23e00000
 
 config COREBOOT_TABLES_SIZE
 	hex

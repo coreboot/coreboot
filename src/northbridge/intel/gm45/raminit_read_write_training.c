@@ -341,7 +341,7 @@ typedef struct {
 	const int t_bound;
 	int p;
 } write_timing_t;
-static void normalize_write_timing(write_timing_t *const timing)
+static int normalize_write_timing(write_timing_t *const timing)
 {
 	while (timing->p >= WRITE_TIMING_P_BOUND) {
 		timing->t++;
@@ -359,16 +359,31 @@ static void normalize_write_timing(write_timing_t *const timing)
 		timing->f--;
 		timing->t += timing->t_bound;
 	}
-	if ((timing->f < 0) || (timing->f >= WRITE_TIMING_F_BOUND))
-		die("Timing under-/overflow during write training.\n");
+	if (timing->f < 0) {
+		printk(BIOS_WARNING,
+		       "Timing underflow during write training.\n");
+		timing->f = 0;
+		timing->t = 0;
+		timing->p = 0;
+		return -1;
+	} else if (timing->f >= WRITE_TIMING_F_BOUND) {
+		printk(BIOS_WARNING,
+		       "Timing overflow during write training.\n");
+		timing->f = WRITE_TIMING_F_BOUND - 1;
+		timing->t = timing->t_bound - 1;
+		timing->p = WRITE_TIMING_P_BOUND - 1;
+		return -1;
+	}
+	return 0;
 }
-static void program_write_timing(const int ch, const int group,
-				 write_timing_t *const timing, int memclk1067)
+static int program_write_timing(const int ch, const int group,
+				write_timing_t *const timing, int memclk1067)
 {
 	/* MEM_CLOCK_1067MT? X lower/upper */
 	const u32 d_bounds[2][2] = { { 1, 6 }, { 2, 9 } };
 
-	normalize_write_timing(timing);
+	if (normalize_write_timing(timing) < 0)
+		return -1;
 
 	const int f = timing->f;
 	const int t = timing->t;
@@ -384,6 +399,8 @@ static void program_write_timing(const int ch, const int group,
 	reg &= ~CxWRTy_D_MASK;
 	reg |= CxWRTy_T(t) | CxWRTy_P(p) | CxWRTy_F(f) | d;
 	MCHBAR32(CxWRTy_MCHBAR(ch, group)) = reg;
+
+	return 0;
 }
 /* Returns 1 on success, 0 on failure. */
 static int write_training_test(const address_bunch_t *const addresses,
@@ -425,45 +442,60 @@ _bad_timing_out:
 
 	return ret;
 }
-static void write_training_find_lower(const int ch, const int group,
-				      const address_bunch_t *const addresses,
-				      const u32 masks[][2], const int memclk1067,
-				      write_timing_t *const lower)
+static int write_training_find_lower(const int ch, const int group,
+				     const address_bunch_t *const addresses,
+				     const u32 masks[][2], const int memclk1067,
+				     write_timing_t *const lower)
 {
 	program_write_timing(ch, group, lower, memclk1067);
 	/* Coarse search for good t. */
 	while (!write_training_test(addresses, masks[group])) {
 		++lower->t;
-		program_write_timing(ch, group, lower, memclk1067);
+		if (program_write_timing(ch, group, lower, memclk1067) < 0)
+			return -1;
 	}
-	/* Fine search for good p. */
+	/* Step back, then fine search for good p. */
+	if ((lower->f <= 0) && (lower->t <= 0))
+		/* Can't step back, zero is good. */
+		return 0;
 	--lower->t;
 	program_write_timing(ch, group, lower, memclk1067);
 	while (!write_training_test(addresses, masks[group])) {
 		++lower->p;
-		program_write_timing(ch, group, lower, memclk1067);
+		if (program_write_timing(ch, group, lower, memclk1067) < 0)
+			return -1;
 	}
+
+	return 0;
 }
-static void write_training_find_upper(const int ch, const int group,
-				      const address_bunch_t *const addresses,
-				      const u32 masks[][2], const int memclk1067,
-				      write_timing_t *const upper)
+static int write_training_find_upper(const int ch, const int group,
+				     const address_bunch_t *const addresses,
+				     const u32 masks[][2], const int memclk1067,
+				     write_timing_t *const upper)
 {
-	program_write_timing(ch, group, upper, memclk1067);
-	if (!write_training_test(addresses, masks[group]))
-		die("Write training failed; limits too narrow.\n");
-	/* Coarse search for good t. */
+	if (program_write_timing(ch, group, upper, memclk1067) < 0)
+		return -1;
+	if (!write_training_test(addresses, masks[group])) {
+		printk(BIOS_WARNING,
+		       "Write training failure; limits too narrow.\n");
+		return -1;
+	}
+	/* Coarse search for bad t. */
 	while (write_training_test(addresses, masks[group])) {
 		++upper->t;
-		program_write_timing(ch, group, upper, memclk1067);
+		if (program_write_timing(ch, group, upper, memclk1067) < 0)
+			return -1;
 	}
-	/* Fine search for good p. */
+	/* Fine search for bad p. */
 	--upper->t;
 	program_write_timing(ch, group, upper, memclk1067);
 	while (write_training_test(addresses, masks[group])) {
 		++upper->p;
-		program_write_timing(ch, group, upper, memclk1067);
+		if (program_write_timing(ch, group, upper, memclk1067) < 0)
+			return -1;
 	}
+
+	return 0;
 }
 static void write_training_per_group(const int ch, const int group,
 				     const address_bunch_t *const addresses,
@@ -481,8 +513,9 @@ static void write_training_per_group(const int ch, const int group,
 	lower.p =  (reg >>  8) & 0x7;
 	lower.f = ((reg >>  2) & 0x3) - 1;
 
-	write_training_find_lower(ch, group, addresses,
-				  masks, memclk1067, &lower);
+	if (write_training_find_lower(ch, group, addresses,
+				      masks, memclk1067, &lower) < 0)
+		die("Write training failure: lower bound.\n");
 
 	/*** Search upper bound. ***/
 
@@ -491,8 +524,9 @@ static void write_training_per_group(const int ch, const int group,
 	upper.p = lower.p;
 	upper.f = lower.f;
 
-	write_training_find_upper(ch, group, addresses,
-				  masks, memclk1067, &upper);
+	if (write_training_find_upper(ch, group, addresses,
+				      masks, memclk1067, &upper) < 0)
+		printk(BIOS_WARNING, "Write training failure: upper bound.\n");
 
 	/*** Calculate and program mean value. ***/
 

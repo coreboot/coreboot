@@ -59,6 +59,19 @@ config HPET_MIN_TICKS
 	hex
 	default 0x80
 
+config HAVE_GBE_BIN
+	bool "Add gigabit ethernet firmware"
+	default n
+	help
+	  The integrated gigabit ethernet controller needs a firmware file.
+	  Select this if you are going to use the PCH integrated controller
+	  and have the firmware.
+
+config GBE_BIN_PATH
+	string "Path to gigabit ethernet firmware"
+	depends on HAVE_GBE_BIN
+	default "3rdparty/mainboard/$(MAINBOARDDIR)/gbe.bin"
+
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock Management Engine section"
 	default n

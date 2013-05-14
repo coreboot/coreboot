@@ -902,6 +902,15 @@ config X86EMU_DEBUG_IO
 
 	  If unsure, say N.
 
+config X86EMU_DEBUG_TIMINGS
+	bool "Output timing information"
+	default n
+	depends on X86EMU_DEBUG && UDELAY_LAPIC && HAVE_MONOTONIC_TIMER
+	help
+	  Print timing information needed by i915tool.
+
+	  If unsure, say N.
+
 config DEBUG_TPM
 	bool "Output verbose TPM debug messages"
 	default n

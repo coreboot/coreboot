@@ -12,6 +12,7 @@
  *****************************************************************************/
 
 #include <types.h>
+#include <delay.h>
 #include "compat/rtas.h"
 #include "compat/time.h"
 #include "device.h"

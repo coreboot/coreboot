@@ -25,12 +25,10 @@
 #include <common.h>
 #include <arch/io.h>
 
-#include <cpu/samsung/exynos5-common/clk.h>
-#include <cpu/samsung/exynos5-common/clock.h>
-#include <cpu/samsung/exynos5-common/cpu.h>
-
+#include <cpu/samsung/exynos5250/clk.h>
+#include <cpu/samsung/exynos5250/clock.h>
+#include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/dmc.h>
-#include <cpu/samsung/exynos5-common/cpu.h>	/* for EXYNOS_PRO_ID */
 
 /* FIXME(dhendrix): consolidate samsung ID code/#defines to a common location */
 #include <cpu/samsung/exynos5250/setup.h>	/* cpu_info_init() prototype */

@@ -23,7 +23,6 @@
 #include <console/console.h>
 
 #include <gpio.h>
-#include <cpu/samsung/exynos5-common/gpio.h>
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/dmc.h>

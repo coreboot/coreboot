@@ -27,10 +27,10 @@
 #include <arch/io.h>
 #include <timer.h>
 #include <console/console.h>
-#include <cpu/samsung/exynos5-common/pwm.h>
-#include <cpu/samsung/exynos5-common/clk.h>
+#include <cpu/samsung/exynos5250/pwm.h>
+#include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5-common/exynos5-common.h>
+#include <cpu/samsung/exynos5250/exynos5-common.h>
 
 //#include <pwm.h>
 

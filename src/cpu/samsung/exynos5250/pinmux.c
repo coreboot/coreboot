@@ -26,7 +26,7 @@
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/pinmux.h>
-#include <cpu/samsung/exynos5-common/sromc.h>
+#include <cpu/samsung/exynos5250/sromc.h>
 
 int exynos_pinmux_config(enum periph_id peripheral, int flags)
 {

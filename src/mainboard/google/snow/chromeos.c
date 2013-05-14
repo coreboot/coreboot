@@ -26,7 +26,6 @@
 
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5-common/gpio.h>
 
 enum {
 	ACTIVE_LOW = 0,

@@ -27,7 +27,6 @@
 #include <arch/io.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include <cpu/samsung/exynos5-common/power.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/sysreg.h>

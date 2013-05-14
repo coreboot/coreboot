@@ -27,8 +27,7 @@
 
 #include <console/console.h>	/* for __console definition */
 
-#include <cpu/samsung/exynos5-common/exynos5-common.h>
-#include <cpu/samsung/exynos5-common/uart.h>
+#include <cpu/samsung/exynos5250/exynos5-common.h>
 #include <cpu/samsung/exynos5250/uart.h>
 #include <cpu/samsung/exynos5250/clk.h>
 

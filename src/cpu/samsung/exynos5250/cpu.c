@@ -7,8 +7,8 @@
 #include <cbmem.h>
 #include <arch/cache.h>
 #include <cpu/samsung/exynos5250/fimd.h>
-#include <cpu/samsung/exynos5-common/s5p-dp-core.h>
-#include <cpu/samsung/exynos5-common/cpu.h>
+#include <cpu/samsung/exynos5250/s5p-dp-core.h>
+#include <cpu/samsung/exynos5250/cpu.h>
 #include "chip.h"
 #include "cpu.h"
 

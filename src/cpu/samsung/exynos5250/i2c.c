@@ -30,8 +30,8 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/i2c.h>
-#include "cpu/samsung/exynos5-common/clk.h"
-#include "cpu/samsung/exynos5-common/i2c.h"
+#include "cpu/samsung/exynos5250/clk.h"
+#include "cpu/samsung/exynos5250/i2c.h"
 #include "cpu/samsung/exynos5250/pinmux.h"
 
 #define I2C_WRITE	0

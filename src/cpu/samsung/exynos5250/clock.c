@@ -29,7 +29,6 @@
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/clock_init.h>
 #include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5-common/clk.h>
 
 /* input clock of PLL: SMDK5250 has 24MHz input clock */
 #define CONFIG_SYS_CLK_FREQ            24000000

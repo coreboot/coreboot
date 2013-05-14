@@ -12,7 +12,7 @@
 
 #include <common.h>
 #include <arch/io.h>
-#include <cpu/samsung/exynos5-common/clk.h>
+#include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/s5p-dp.h>

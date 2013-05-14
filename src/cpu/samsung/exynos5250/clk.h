@@ -22,7 +22,50 @@
 #ifndef __EXYNOS5_CLK_H__
 #define __EXYNOS5_CLK_H__
 
-#include <cpu/samsung/exynos5-common/clk.h>
+#include <types.h>
+#include <stdint.h>
+
+enum periph_id;
+
+#define APLL	0
+#define MPLL	1
+#define EPLL	2
+#define HPLL	3
+#define VPLL	4
+#define BPLL	5
+
+enum pll_src_bit {
+	SRC_MPLL = 6,
+	SRC_EPLL,
+	SRC_VPLL,
+};
+
+/* *
+ * This structure is to store the src bit, div bit and prediv bit
+ * positions of the peripheral clocks of the src and div registers
+ */
+struct clk_bit_info {
+	s8 src_bit;    /* offset in register to clock source field */
+	s8 n_src_bits; /* number of bits in 'src_bit' field */
+	s8 div_bit;
+	s8 prediv_bit;
+};
+
+unsigned long get_pll_clk(int pllreg);
+unsigned long get_arm_clk(void);
+unsigned long get_pwm_clk(void);
+unsigned long get_uart_clk(int dev_index);
+void set_mmc_clk(int dev_index, unsigned int div);
+
+/**
+ * get the clk frequency of the required peripherial
+ *
+ * @param peripherial	Peripherial id
+ *
+ * @return frequency of the peripherial clk
+ */
+unsigned long clock_get_periph_rate(enum periph_id peripheral);
+
 #include <cpu/samsung/exynos5250/pinmux.h>
 
 

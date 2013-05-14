@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5-common/exynos5-common.h>
+#include <cpu/samsung/exynos5250/exynos5-common.h>
 
 #include <cpu/samsung/exynos5250/wakeup.h>
 

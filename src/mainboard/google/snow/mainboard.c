@@ -29,14 +29,14 @@
 #include <arch/cache.h>
 #include <arch/exception.h>
 #include <arch/gpio.h>
-#include <cpu/samsung/exynos5-common/exynos-tmu.h>
+#include <cpu/samsung/exynos5250/exynos-tmu.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/power.h>
 
-#include <cpu/samsung/exynos5-common/i2c.h>
-#include <cpu/samsung/exynos5-common/s5p-dp-core.h>
+#include <cpu/samsung/exynos5250/i2c.h>
+#include <cpu/samsung/exynos5250/s5p-dp-core.h>
 
 #include "exynos5250.h"
 

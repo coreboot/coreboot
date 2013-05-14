@@ -19,8 +19,8 @@
  */
 
 #include <arch/io.h>
-#include <cpu/samsung/exynos5-common/power.h>
-#include <cpu/samsung/exynos5-common/exynos-tmu.h>
+#include <cpu/samsung/exynos5250/power.h>
+#include <cpu/samsung/exynos5250/exynos-tmu.h>
 
 #include <console/console.h>
 

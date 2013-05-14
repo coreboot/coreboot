@@ -26,9 +26,8 @@
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
-//#include "clock.h"
 /* FIXME(dhendrix): untangle clock/clk ... */
-#include <cpu/samsung/exynos5-common/clock.h>
+#include <cpu/samsung/exynos5250/clock.h>
 #include "clk.h"
 #include "cpu.h"
 #include "dmc.h"

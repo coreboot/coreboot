@@ -22,7 +22,7 @@
  * This file contains Exynos5250-specific TMU information.
  */
 
-#include <cpu/samsung/exynos5-common/exynos-tmu.h>
+#include <cpu/samsung/exynos5250/exynos-tmu.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 
 struct tmu_info exynos5250_tmu_info = {

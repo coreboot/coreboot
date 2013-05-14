@@ -251,7 +251,9 @@ void s5p_dp_wait_hw_link_training_done(struct s5p_dp_device *dp);
 
 /* startup and init */
 struct exynos5_fimd_panel;
-void fb_init(vidinfo_t *panel_info, void *lcdbase, struct exynos5_fimd_panel *pd);
+void fb_init(vidinfo_t *panel_info, void *lcdbase,
+				struct exynos5_fimd_panel *pd);
 int dp_controller_init(struct s5p_dp_device *dp_device);
-int lcd_ctrl_init(vidinfo_t *panel_info, struct exynos5_fimd_panel *panel_data, void *lcdbase);
+int lcd_ctrl_init(vidinfo_t *panel_info,
+			struct exynos5_fimd_panel *panel_data, void *lcdbase);
 #endif /* _S5P_DP_CORE_H */

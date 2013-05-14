@@ -25,7 +25,7 @@
 
 #include <arch/cache.h>
 #include <arch/gpio.h>
-#include <cpu/samsung/exynos5-common/i2c.h>
+#include <cpu/samsung/exynos5250/i2c.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/dmc.h>

@@ -25,7 +25,6 @@
 #include <gpio.h>
 #include <arch/gpio.h>
 #include <console/console.h>
-#include <cpu/samsung/exynos5-common/gpio.h>
 #include <cpu/samsung/exynos5250/gpio.h>	/* FIXME: for gpio_decode_number prototype */
 
 #define CON_MASK(x)		(0xf << ((x) << 2))

@@ -21,6 +21,25 @@
 #ifndef __EXYNOS5_POWER_H__
 #define __EXYNOS5_POWER_H__
 
+/*
+ * Power control
+ */
+#define S5PC100_OTHERS			0xE0108200
+#define S5PC100_RST_STAT		0xE0108300
+#define S5PC100_SLEEP_WAKEUP		(1 << 3)
+#define S5PC100_WAKEUP_STAT		0xE0108304
+#define S5PC100_INFORM0			0xE0108400
+
+#define S5PC110_RST_STAT		0xE010A000
+#define S5PC110_SLEEP_WAKEUP		(1 << 3)
+#define S5PC110_WAKEUP_STAT		0xE010C200
+#define S5PC110_OTHERS			0xE010E000
+#define S5PC110_USB_PHY_CON		0xE010E80C
+#define S5PC110_INFORM0			0xE010F000
+
+/* Enable HW thermal trip with PS_HOLD_CONTROL register ENABLE_HW_TRIP bit */
+void power_enable_hw_thermal_trip(void);
+
 #define MIPI_PHY1_CONTROL_ENABLE		(1 << 0)
 #define MIPI_PHY1_CONTROL_M_RESETN		(1 << 2)
 

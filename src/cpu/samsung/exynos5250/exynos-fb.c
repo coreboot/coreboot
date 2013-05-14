@@ -35,7 +35,7 @@
 #include <drivers/maxim/max77686/max77686.h>
 
 #include "device/i2c.h"
-#include "cpu/samsung/exynos5-common/i2c.h"
+#include "cpu/samsung/exynos5250/i2c.h"
 #include "cpu/samsung/exynos5250/dsim.h"
 #include "cpu/samsung/exynos5250/fimd.h"
 
@@ -85,8 +85,8 @@ enum {
 
 	ERR_NO_FDT_NODE,
 };
-/* ok, this is stupid, but we're going to leave the variables in here until we know it works.
- * one cleanup task at a time.
+/* ok, this is stupid, but we're going to leave the variables in here until we
+ * know it works. One cleanup task at a time.
  */
 enum stage_t {
 	STAGE_START = 0,

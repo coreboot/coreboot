@@ -34,7 +34,7 @@
 #define IOBASE lib_sysinfo.serial->baseaddr
 #define MEMBASE (phys_to_virt(IOBASE))
 
-static int serial_hardware_is_present = 0;
+static int serial_hardware_is_present = 1;
 static int serial_is_mem_mapped = 0;
 
 static uint8_t serial_read_reg(int offset)
@@ -105,16 +105,13 @@ void serial_init(void)
 #ifdef CONFIG_IO_ADDRESS_SPACE
 		if ((inb(IOBASE + 0x05) == 0xFF) &&
 				(inb(IOBASE + 0x06) == 0xFF)) {
-			return;
+			serial_hardware_is_present = 0;
 		}
 #else
 		printf("IO space mapped serial not supported.");
 		return;
 #endif
 	}
-
-
-	serial_hardware_is_present = 1;
 
 #ifdef CONFIG_SERIAL_SET_SPEED
 	serial_hardware_init(CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
@@ -125,9 +122,8 @@ void serial_init(void)
 
 void serial_putchar(unsigned int c)
 {
-	if (!serial_hardware_is_present)
-		return;
-	while ((serial_read_reg(0x05) & 0x20) == 0) ;
+	if (serial_hardware_is_present)
+		while ((serial_read_reg(0x05) & 0x20) == 0) ;
 	serial_write_reg(c, 0x00);
 }
 

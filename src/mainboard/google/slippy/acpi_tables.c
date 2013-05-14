@@ -31,6 +31,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <vendorcode/google/chromeos/gnvs.h>
+#include <ec/google/chromeec/ec.h>
 
 extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
@@ -88,8 +89,9 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 #if CONFIG_CHROMEOS
 	// TODO(reinauer) this could move elsewhere?
 	chromeos_init_vboot(&(gnvs->chromeos));
-	/* Emerald Lake has no EC (?) */
-	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
+
+	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
+		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
 
 	/* Update the mem console pointer. */

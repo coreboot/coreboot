@@ -1,3 +1,22 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2013 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stddef.h>
@@ -6,14 +25,34 @@
 #include <device/device.h>
 #include <cbmem.h>
 #include <arch/cache.h>
-#include <cpu/samsung/exynos5250/fimd.h>
-#include <cpu/samsung/exynos5250/s5p-dp-core.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include "chip.h"
+#include "fimd.h"
+#include "dp-core.h"
 #include "cpu.h"
+#include "clk.h"
+#include "chip.h"
 
 #define RAM_BASE_KB (CONFIG_SYS_SDRAM_BASE >> 10)
 #define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
+
+static unsigned int cpu_id;
+static unsigned int cpu_rev;
+
+static void set_cpu_id(void)
+{
+	cpu_id = readl((void *)EXYNOS_PRO_ID);
+	cpu_id = (0xC000 | ((cpu_id & 0x00FFF000) >> 12));
+
+	/*
+	 * 0xC200: EXYNOS4210 EVT0
+	 * 0xC210: EXYNOS4210 EVT1
+	 */
+	if (cpu_id == 0xC200) {
+		cpu_id |= 0x10;
+		cpu_rev = 0;
+	} else if (cpu_id == 0xC210) {
+		cpu_rev = 1;
+	}
+}
 
 /* we distinguish a display port device from a raw graphics device
  * because there are dramatic differences in startup depending on
@@ -64,7 +103,7 @@ static void exynos_displayport_init(device_t dev)
 	 */
 	fb_size = conf->xres * conf->yres * (conf->bpp / 8);
 	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, fb_size + 64*KiB);
-	printk(BIOS_SPEW, "lcd colormap base is %p\n", (void *)(lcdbase));
+	printk(BIOS_SPEW, "LCD colormap base is %p\n", (void *)(lcdbase));
 	mmio_resource(dev, 0, lcdbase/KiB, 64);
 	vi.cmap = (void *)lcdbase;
 
@@ -89,7 +128,7 @@ static void exynos_displayport_init(device_t dev)
 	lcdbase += 64*KiB;
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 	printk(BIOS_DEBUG,
-	       "Initializing exynos VGA, base %p\n", (void *)lcdbase);
+	       "Initializing Exynos VGA, base %p\n", (void *)lcdbase);
 	memset((void *)lcdbase, 0, fb_size);	/* clear the framebuffer */
 	ret = lcd_ctrl_init(&vi, &panel, (void *)lcdbase);
 }
@@ -99,7 +138,10 @@ static void cpu_init(device_t dev)
 	exynos_displayport_init(dev);
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB);
 
-	arch_cpu_init();
+	set_cpu_id();
+
+	printk(BIOS_INFO, "CPU:   S5P%X @ %ldMHz\n",
+			cpu_id, get_arm_clk() / (1024*1024));
 }
 
 static void cpu_noop(device_t dev)

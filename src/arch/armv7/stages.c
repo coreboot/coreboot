@@ -32,7 +32,6 @@
  */
 
 #include <arch/stages.h>
-#include <arch/armv7/include/common.h>
 #include <arch/cache.h>
 
 void stage_entry(void)

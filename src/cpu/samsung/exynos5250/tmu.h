@@ -1,24 +1,26 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *      http://www.samsung.com
- * Akshay Saraswat <Akshay.s@samsung.com>
- *
- * EXYNOS - Thermal Management Unit
- *
- * See file CREDITS for list of people who contributed to this
- * project.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __EXYNOS_TMU_H
-#define __EXYNOS_TMU_H
+/* EXYNOS - Thermal Management Unit */
+
+#ifndef CPU_SAMSUNG_EXYNOS5250_TMU_H
+#define CPU_SAMSUNG_EXYNOS5250_TMU_H
 
 struct tmu_reg {
 	unsigned triminfo;
@@ -129,4 +131,4 @@ enum tmu_status_t tmu_monitor(struct tmu_info *info, int *temp);
  */
 int tmu_init(struct tmu_info *info);
 
-#endif	/* EXYNOS_TMU_H */
+#endif	/* CPU_SAMSUNG_EXYNOS5250_TMU_H */

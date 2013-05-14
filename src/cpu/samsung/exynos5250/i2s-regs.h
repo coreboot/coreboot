@@ -1,16 +1,11 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (C) 2012 Samsung Electronics
- * R. Chandrasekar <rcsekar@samsung.com>
  *
- * Taken from the kernel code
- *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,12 +14,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __I2S_REGS_H__
-#define __I2S_REGS_H__
+/* Taken from the kernel code */
+
+#ifndef CPU_SAMSUNG_EXYNOS5250_I2S_REGS_H
+#define CPU_SAMSUNG_EXYNOS5250_I2S_REGS_H
 
 #define I2SCON		0x0
 #define I2SMOD		0x4
@@ -143,4 +139,4 @@
 #define I2SSIZE_TRNMSK		(0xffff)
 #define I2SSIZE_SHIFT		(16)
 
-#endif /* __I2S_REGS_H__ */
+#endif /* CPU_SAMSUNG_EXYNOS5250_I2S_REGS_H */

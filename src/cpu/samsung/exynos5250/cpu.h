@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 2010 Samsung Electronics
- * Minkyu Kang <mk7.kang@samsung.com>
+ * This file is part of the coreboot project.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Copyright (C) 2010 Samsung Electronics
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,49 +14,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
- *
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _EXYNOS5250_CPU_H
-#define _EXYNOS5250_CPU_H
-
-#define S5PC1XX_ADDR_BASE	0xE0000000
-
-/* S5PC100 */
-#define S5PC100_PRO_ID		0xE0000000
-#define S5PC100_CLOCK_BASE	0xE0100000
-#define S5PC100_GPIO_BASE	0xE0300000
-#define S5PC100_VIC0_BASE	0xE4000000
-#define S5PC100_VIC1_BASE	0xE4100000
-#define S5PC100_VIC2_BASE	0xE4200000
-#define S5PC100_DMC_BASE	0xE6000000
-#define S5PC100_SROMC_BASE	0xE7000000
-#define S5PC100_ONENAND_BASE	0xE7100000
-#define S5PC100_PWMTIMER_BASE	0xEA000000
-#define S5PC100_WATCHDOG_BASE	0xEA200000
-#define S5PC100_UART_BASE	0xEC000000
-#define S5PC100_MMC_BASE	0xED800000
-
-/* S5PC110 */
-#define S5PC110_PRO_ID		0xE0000000
-#define S5PC110_CLOCK_BASE	0xE0100000
-#define S5PC110_GPIO_BASE	0xE0200000
-#define S5PC110_PWMTIMER_BASE	0xE2500000
-#define S5PC110_WATCHDOG_BASE	0xE2700000
-#define S5PC110_UART_BASE	0xE2900000
-#define S5PC110_SROMC_BASE	0xE8000000
-#define S5PC110_MMC_BASE	0xEB000000
-#define S5PC110_DMC0_BASE	0xF0000000
-#define S5PC110_DMC1_BASE	0xF1400000
-#define S5PC110_VIC0_BASE	0xF2000000
-#define S5PC110_VIC1_BASE	0xF2100000
-#define S5PC110_VIC2_BASE	0xF2200000
-#define S5PC110_VIC3_BASE	0xF2300000
-#define S5PC110_OTG_BASE	0xEC000000
-#define S5PC110_PHY_BASE	0xEC100000
-#define S5PC110_USB_PHY_CONTROL 0xE010E80C
+#ifndef CPU_SAMSUNG_EXYNOS5250_CPU_H
+#define CPU_SAMSUNG_EXYNOS5250_CPU_H
 
 #include <arch/io.h>
 
@@ -80,48 +42,6 @@
 
 #define EXYNOS_I2C_SPACING		0x10000
 
-enum boot_mode {
-	/*
-	 * Assign the OM pin values for respective boot modes.
-	 * Exynos4 does not support spi boot and the mmc boot OM
-	 * pin values are the same across Exynos4 and Exynos5.
-	 */
-	BOOT_MODE_MMC = 4,
-	BOOT_MODE_SERIAL = 20,
-	/* Boot based on Operating Mode pin settings */
-	BOOT_MODE_OM = 32,
-	BOOT_MODE_USB,		/* Boot using USB download */
-};
-
-/**
- * Get the boot device containing BL1, BL2 (SPL) and U-boot
- *
- * @return boot device
- */
-enum boot_mode exynos_get_boot_device(void);
-
-/**
- * Check if a wakeup is permitted.
- *
- * On some boards we need to look at a special GPIO to ensure that the wakeup
- * from sleep was valid.  If the wakeup is not valid we need to go through a
- * full reset.
- *
- * The default implementation of this function allows all wakeups.
- *
- * @return 1 if wakeup is permitted; 0 otherwise
- */
-int board_wakeup_permitted(void);
-
-/**
- * Init subsystems according to the reset status
- *
- * @return 0 for a normal boot, non-zero for a resume
- */
-int lowlevel_init_subsystems(void);
-
-int arch_cpu_init(void);
-
 /* EXYNOS5 */
 #define EXYNOS5_GPIO_PART6_BASE		0x03860000	/* Z<6:0> */
 #define EXYNOS5_PRO_ID			0x10000000
@@ -144,21 +64,17 @@ int arch_cpu_init(void);
 #define EXYNOS5_USBPHY_BASE		0x12130000
 #define EXYNOS5_USBOTG_BASE		0x12140000
 
-#ifndef CONFIG_OF_CONTROL
 #define EXYNOS5_MMC_BASE		0x12200000
 #define EXYNOS5_MSHC_BASE		0x12240000
-#endif
 
 #define EXYNOS5_SROMC_BASE		0x12250000
 #define EXYNOS5_UART_BASE		0x12C00000
 
 #define EXYNOS5_SPI1_BASE		0x12D30000
-#ifndef CONFIG_OF_CONTROL
 #define EXYNOS5_I2C_BASE		0x12C60000
 #define EXYNOS5_SPI_BASE		0x12D20000
 #define EXYNOS5_PWMTIMER_BASE		0x12DD0000
 #define EXYNOS5_SPI_ISP_BASE		0x131A0000
-#endif
 #define EXYNOS5_I2S_BASE		0x12D60000
 #define EXYNOS5_GPIO_PART3_BASE		0x13400000	/* E00..H17 */
 #define EXYNOS5_FIMD_BASE		0x14400000
@@ -212,9 +128,6 @@ int arch_cpu_init(void);
 
 #define EXYNOS5_SPI_NUM_CONTROLLERS	5
 #define EXYNOS_I2C_MAX_CONTROLLERS	8
-
-/* helper function to map mmio address to peripheral id */
-enum periph_id exynos5_get_periph_id(unsigned base_addr);
 
 void exynos5250_config_l2_cache(void);
 

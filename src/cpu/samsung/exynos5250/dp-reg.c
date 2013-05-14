@@ -1,25 +1,34 @@
 /*
- * Samsung DP (Display port) register interface driver.
+ * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Samsung Electronics Co., Ltd.
- * Author: Jingoo Han <jg1.han@samsung.com>
+ * Copyright (C) 2012 Samsung Electronics
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <common.h>
-#include <arch/io.h>
-#include <cpu/samsung/exynos5250/clk.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/periph.h>
-#include <cpu/samsung/exynos5250/s5p-dp.h>
-#include "cpu/samsung/exynos5250/fimd.h"
-#include "s5p-dp-core.h"
+/* Samsung DP (Display port) register interface driver. */
 
 #include <console/console.h>
+#include <arch/io.h>
+#include <delay.h>
+#include "timer.h"
+#include "clk.h"
+#include "cpu.h"
+#include "periph.h"
+#include "dp.h"
+#include "fimd.h"
+#include "dp-core.h"
 
 void s5p_dp_reset(struct s5p_dp_device *dp)
 {

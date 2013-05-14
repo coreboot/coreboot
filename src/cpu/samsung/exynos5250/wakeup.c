@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google, Inc.  All rights reserved.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,7 @@
  */
 
 #include <console/console.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5250/exynos5-common.h>
-
+#include "power.h"
 #include "wakeup.h"
 
 void wakeup(void)

@@ -31,6 +31,10 @@
 #include <device/device.h>
 #include "compat/rtas.h"
 
+#if CONFIG_X86EMU_DEBUG_TIMINGS
+struct mono_time zero;
+#endif
+
 static X86EMU_memFuncs my_mem_funcs = {
 	my_rdb, my_rdw, my_rdl,
 	my_wrb, my_wrw, my_wrl
@@ -99,6 +103,11 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 #endif
 
 #endif
+#if CONFIG_X86EMU_DEBUG_TIMINGS
+	/* required for i915tool compatible output */
+	zero.microseconds = 0;
+#endif
+
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",
 		       biosmem_size, MIN_REQUIRED_VMEM_SIZE);

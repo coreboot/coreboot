@@ -31,6 +31,8 @@
 #include <device/device.h>
 #include "compat/rtas.h"
 
+struct mono_time zero;
+
 static X86EMU_memFuncs my_mem_funcs = {
 	my_rdb, my_rdw, my_rdl,
 	my_wrb, my_wrw, my_wrl
@@ -60,6 +62,7 @@ mainboard_interrupt_handlers(int interrupt, yabel_handleIntFunc func)
 u32
 biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_addr)
 {
+
 	u8 *rom_image;
 	int i = 0;
 #if CONFIG_X86EMU_DEBUG
@@ -99,6 +102,8 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 #endif
 
 #endif
+	zero.microseconds = 0;
+
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",
 		       biosmem_size, MIN_REQUIRED_VMEM_SIZE);

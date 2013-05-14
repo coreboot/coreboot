@@ -13,8 +13,10 @@
 #ifndef _BIOSEMU_DEBUG_H_
 #define _BIOSEMU_DEBUG_H_
 
+#include <timer.h>
 #include <types.h>
 
+extern struct mono_time zero;
 extern u32 debug_flags;
 // from x86emu...needed for debugging
 extern void x86emu_dump_xregs(void);
@@ -73,7 +75,7 @@ static inline void set_ci(void) {};
 #define DEBUG_PRINTF(_x...) printf(_x);
 // prints the CS:IP before the printout, NOTE: actually its CS:IP of the _next_ instruction
 // to be executed, since the x86emu advances CS:IP _before_ actually executing an instruction
-#define DEBUG_PRINTF_CS_IP(_x...) DEBUG_PRINTF("%x:%x ", M.x86.R_CS, M.x86.R_IP); DEBUG_PRINTF(_x);
+#define DEBUG_PRINTF_CS_IP(_x...) DEBUG_PRINTF("[%08lx]%x:%x ", (current_time_from(&zero)).microseconds, M.x86.R_CS, M.x86.R_IP); DEBUG_PRINTF(_x);
 
 #define DEBUG_PRINTF_IO(_x...) CHECK_DBG(DEBUG_IO) { DEBUG_PRINTF_CS_IP(_x) }
 #define DEBUG_PRINTF_MEM(_x...) CHECK_DBG(DEBUG_MEM) { DEBUG_PRINTF_CS_IP(_x) }

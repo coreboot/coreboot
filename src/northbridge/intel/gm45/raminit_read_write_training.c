@@ -99,6 +99,47 @@ static int read_training_test(const int channel, const int lane,
 	}
 	return 1;
 }
+static void read_training_find_lower(const int channel, const int lane,
+				     const address_bunch_t *const addresses,
+				     read_timing_t *const lower)
+{
+	/* Coarse search for good t. */
+	program_read_timing(channel, lane, lower);
+	while (!read_training_test(channel, lane, addresses)) {
+		++lower->t;
+		program_read_timing(channel, lane, lower);
+	}
+
+	/* Step back, then fine search for good p. */
+	if (lower->t > 0) {
+		--lower->t;
+		program_read_timing(channel, lane, lower);
+		while (!read_training_test(channel, lane, addresses)) {
+			++lower->p;
+			program_read_timing(channel, lane, lower);
+		}
+	}
+}
+static void read_training_find_upper(const int channel, const int lane,
+				     const address_bunch_t *const addresses,
+				     read_timing_t *const upper)
+{
+	program_read_timing(channel, lane, upper);
+	if (!read_training_test(channel, lane, addresses))
+		die("Read training failed: limits too narrow.\n");
+	/* Coarse search for bad t. */
+	do {
+		++upper->t;
+		program_read_timing(channel, lane, upper);
+	} while (read_training_test(channel, lane, addresses));
+	/* Fine search for bad p. */
+	--upper->t;
+	program_read_timing(channel, lane, upper);
+	while (read_training_test(channel, lane, addresses)) {
+		++upper->p;
+		program_read_timing(channel, lane, upper);
+	}
+}
 static void read_training_per_lane(const int channel, const int lane,
 				   const address_bunch_t *const addresses)
 {
@@ -106,43 +147,20 @@ static void read_training_per_lane(const int channel, const int lane,
 
 	MCHBAR32(CxRDTy_MCHBAR(channel, lane)) |= 3 << 25;
 
-	/* Search lower bound. */
+	/*** Search lower bound. ***/
+
+	/* Start at zero. */
 	lower.t = 0;
 	lower.p = 0;
-	program_read_timing(channel, lane, &lower);
-	/* Coarse search for good t. */
-	while (!read_training_test(channel, lane, addresses)) {
-		++lower.t;
-		program_read_timing(channel, lane, &lower);
-	}
-	/* Step back, then fine search for good p. */
-	if (lower.t > 0) {
-		--lower.t;
-		program_read_timing(channel, lane, &lower);
-		while (!read_training_test(channel, lane, addresses)) {
-			++lower.p;
-			program_read_timing(channel, lane, &lower);
-		}
-	}
+	read_training_find_lower(channel, lane, addresses, &lower);
 
-	/* Search upper bound. */
+	/*** Search upper bound. ***/
+
+	/* Start at lower + 1t. */
 	upper.t = lower.t + 1;
 	upper.p = lower.p;
-	program_read_timing(channel, lane, &upper);
-	if (!read_training_test(channel, lane, addresses))
-		die("Read training failed: limits too narrow.\n");
-	/* Coarse search for bad t. */
-	do {
-		++upper.t;
-		program_read_timing(channel, lane, &upper);
-	} while (read_training_test(channel, lane, addresses));
-	/* Fine search for bad p. */
-	--upper.t;
-	program_read_timing(channel, lane, &upper);
-	while (read_training_test(channel, lane, addresses)) {
-		++upper.p;
-		program_read_timing(channel, lane, &upper);
-	}
+
+	read_training_find_upper(channel, lane, addresses, &upper);
 
 	/* Calculate and program mean value. */
 	lower.p += lower.t << READ_TIMING_P_SHIFT;

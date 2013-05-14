@@ -1,28 +1,29 @@
 /*
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *      http://www.samsung.com
- * Akshay Saraswat <Akshay.s@samsung.com>
- * Copyright (c) 2013 Google Inc.
+ * This file is part of the coreboot project.
  *
- * EXYNOS - Thermal Management Unit
- *
- * This file was originally imported from Das U-Boot and then re-factored
- * for coreboot.
+ * Copyright (C) 2012 Samsung Electronics
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/io.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5250/exynos-tmu.h>
+/* EXYNOS - Thermal Management Unit */
 
 #include <console/console.h>
+#include <arch/io.h>
+#include "power.h"
+#include "tmu.h"
 
 #define TRIMINFO_RELOAD		1
 #define CORE_EN			1
@@ -46,6 +47,25 @@
 #define INTCLEARALL		(INTCLEAR_RISE0 | INTCLEAR_RISE1 | \
 				 INTCLEAR_RISE2 | INTCLEAR_FALL0 | \
 				 INTCLEAR_FALL1 | INTCLEAR_FALL2)
+
+struct tmu_info exynos5250_tmu_info = {
+	.tmu_base = 0x10060000,
+	.tmu_mux = 6,
+	.data = {
+		.ts = {
+			.min_val = 25,
+			.max_val = 125,
+			.start_warning = 95,
+			.start_tripping = 105,
+			.hardware_tripping = 110,
+		},
+		.efuse_min_value = 40,
+		.efuse_value = 55,
+		.efuse_max_value = 100,
+		.slope = 0x10008802,
+	},
+	.dc_value = 25,
+};
 
 /*
  * After reading temperature code from register, compensating

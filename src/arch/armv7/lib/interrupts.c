@@ -35,7 +35,6 @@
  * MA 02111-1307 USA
  */
 
-#include <common.h>
 #include <reset.h>
 
 DECLARE_GLOBAL_DATA_PTR;

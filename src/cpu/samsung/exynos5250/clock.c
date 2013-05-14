@@ -1,14 +1,11 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (C) 2010 Samsung Electronics
- * Minkyu Kang <mk7.kang@samsung.com>
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,23 +14,21 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <common.h>
 #include <console/console.h>
 #include <stdlib.h>
-//#include <fdtdec.h>
+#include <assert.h>
 #include <arch/io.h>
-#include <cpu/samsung/exynos5250/clk.h>
-#include <cpu/samsung/exynos5250/clock_init.h>
-#include <cpu/samsung/exynos5250/cpu.h>
+#include "timer.h"
+#include "clk.h"
+#include "cpu.h"
 
 /* input clock of PLL: SMDK5250 has 24MHz input clock */
 #define CONFIG_SYS_CLK_FREQ            24000000
 
-struct arm_clk_ratios arm_clk_ratios[] = {
+static struct arm_clk_ratios arm_clk_ratios[] = {
 	{
 		.arm_freq_mhz = 600,
 
@@ -438,7 +433,7 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 		shift = 16;
 		break;
 	default:
-		debug("%s: Unsupported peripheral ID %d\n", __func__,
+		printk(BIOS_DEBUG, "%s: Unsupported peripheral ID %d\n", __func__,
 		      periph_id);
 		return;
 	}
@@ -475,7 +470,7 @@ void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
 		shift = 12;
 		break;
 	default:
-		debug("%s: Unsupported peripheral ID %d\n", __func__,
+		printk(BIOS_DEBUG, "%s: Unsupported peripheral ID %d\n", __func__,
 		      periph_id);
 		return;
 	}
@@ -507,11 +502,11 @@ static int clock_calc_best_scalar(unsigned int main_scaler_bits,
 	const unsigned int cap = (1 << fine_scalar_bits) - 1;
 	const unsigned int loops = 1 << main_scaler_bits;
 
-	debug("Input Rate is %u, Target is %u, Cap is %u\n", input_rate,
+	printk(BIOS_DEBUG, "Input Rate is %u, Target is %u, Cap is %u\n", input_rate,
 			target_rate, cap);
 
-	assert(best_fine_scalar != NULL);
-	assert(main_scaler_bits <= fine_scalar_bits);
+	ASSERT(best_fine_scalar != NULL);
+	ASSERT(main_scaler_bits <= fine_scalar_bits);
 
 	*best_fine_scalar = 1;
 
@@ -528,7 +523,7 @@ static int clock_calc_best_scalar(unsigned int main_scaler_bits,
 							effective_div;
 		const int error = target_rate - effective_rate;
 
-		debug("%d|effdiv:%u, effrate:%u, error:%d\n", i, effective_div,
+		printk(BIOS_DEBUG, "%d|effdiv:%u, effrate:%u, error:%d\n", i, effective_div,
 				effective_rate, error);
 
 		if (error >= 0 && error <= best_error) {
@@ -554,7 +549,7 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 	case PERIPH_ID_SPI4:
 		main = clock_calc_best_scalar(4, 8, 400000000, rate, &fine);
 		if (main < 0) {
-			debug("%s: Cannot set clock rate for periph %d",
+			printk(BIOS_DEBUG, "%s: Cannot set clock rate for periph %d",
 					__func__, periph_id);
 			return -1;
 		}
@@ -562,7 +557,7 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 		clock_ll_set_pre_ratio(periph_id, fine - 1);
 		break;
 	default:
-		debug("%s: Unsupported peripheral ID %d\n", __func__,
+		printk(BIOS_DEBUG, "%s: Unsupported peripheral ID %d\n", __func__,
 		      periph_id);
 		return -1;
 	}
@@ -596,7 +591,7 @@ int clock_set_mshci(enum periph_id peripheral)
 		addr = &clk->div_fsys2;
 		break;
 	default:
-		debug("invalid peripheral\n");
+		printk(BIOS_DEBUG, "invalid peripheral\n");
 		return -1;
 	}
 	tmp = readl(addr) & ~0xff0f;
@@ -608,24 +603,6 @@ int clock_set_mshci(enum periph_id peripheral)
 	}
 	return 0;
 }
-
-#ifdef CONFIG_OF_CONTROL
-int clock_decode_periph_id(const void *blob, int node)
-{
-	enum periph_id id;
-
-	/*
-	 * For now the peripheral ID is directly encoded. Once we have clock
-	 * support in the fdt and properly in exynos U-Boot we may have
-	 * another way of changing the clock.
-	 */
-	id = fdtdec_get_int(blob, node, "samsung,periph-id", -1);
-	assert(id != PERIPH_ID_NONE);
-	assert(id >= 0 && id < PERIPH_ID_COUNT);
-
-	return id;
-}
-#endif
 
 int clock_epll_set_rate(unsigned long rate)
 {
@@ -697,15 +674,15 @@ int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq)
 	unsigned int div ;
 
 	if ((dst_frq == 0) || (src_frq == 0)) {
-		debug("%s: Invalid requency input for prescaler\n", __func__);
-		debug("src frq = %d des frq = %d ", src_frq, dst_frq);
+		printk(BIOS_DEBUG, "%s: Invalid requency input for prescaler\n", __func__);
+		printk(BIOS_DEBUG, "src frq = %d des frq = %d ", src_frq, dst_frq);
 		return -1;
 	}
 
 	div = (src_frq / dst_frq);
 	if (div > AUDIO_1_RATIO_MASK) {
-		debug("%s: Frequency ratio is out of range\n", __func__);
-		debug("src frq = %d des frq = %d ", src_frq, dst_frq);
+		printk(BIOS_DEBUG, "%s: Frequency ratio is out of range\n", __func__);
+		printk(BIOS_DEBUG, "src frq = %d des frq = %d ", src_frq, dst_frq);
 		return -1;
 	}
 	clrsetbits_le32(&clk->div_peric4, AUDIO_1_RATIO_MASK,

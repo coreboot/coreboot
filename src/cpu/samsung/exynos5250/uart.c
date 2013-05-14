@@ -1,14 +1,11 @@
 /*
- * (C) Copyright 2009 SAMSUNG Electronics
- * Minkyu Kang <mk7.kang@samsung.com>
- * Heungjun Kim <riverful.kim@samsung.com>
+ * This file is part of the coreboot project.
  *
- * based on drivers/serial/s3c64xx.c
+ * Copyright (C) 2009 Samsung Electronics
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,19 +14,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- *
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
+#include <console/console.h>	/* for __console definition */
 #include <uart.h>
 #include <arch/io.h>
-
-#include <console/console.h>	/* for __console definition */
-
-#include <cpu/samsung/exynos5250/exynos5-common.h>
-#include <cpu/samsung/exynos5250/uart.h>
-#include <cpu/samsung/exynos5250/clk.h>
+#include "uart.h"
+#include "clk.h"
+#include "cpu.h"
 
 #define RX_FIFO_COUNT_MASK	0xff
 #define RX_FIFO_FULL_MASK	(1 << 8)
@@ -38,24 +31,6 @@
 /* FIXME(dhendrix): exynos5 has 4 UARTs and its functions in u-boot take a
    base_port argument. However console_driver functions do not. */
 static uint32_t base_port = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
-#if 0
-/* Information about a serial port */
-struct fdt_serial {
-	u32 base_addr;	/* address of registers in physical memory */
-	u8 port_id;	/* uart port number */
-	u8 enabled;	/* 1 if enabled, 0 if disabled */
-} config = {
-	-1U
-};
-#endif
-
-#if 0
-static inline struct s5p_uart *s5p_get_base_uart(int dev_index)
-{
-	/* FIXME: there should be an assertion here if dev_index is >3 */
-	return (struct s5p_uart *)(EXYNOS5_UART0_BASE + (0x10000 * dev_index));
-}
-#endif
 
 /*
  * The coefficient, used to calculate the baudrate on S5P UARTs is
@@ -85,15 +60,13 @@ static const int udivslot[] = {
 
 static void serial_setbrg_dev(void)
 {
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 	u32 uclk;
 	u32 baudrate = CONFIG_TTYS0_BAUD;
 	u32 val;
-	enum periph_id periph;
 
-	periph = exynos5_get_periph_id(base_port);
-	uclk = clock_get_periph_rate(periph);
+	// All UARTs share the same clock.
+	uclk = clock_get_periph_rate(PERIPH_ID_UART3);
 	val = uclk / baudrate;
 
 	writel(val / 16 - 1, &uart->ubrdiv);
@@ -117,7 +90,6 @@ static void serial_setbrg_dev(void)
  */
 static void exynos5_init_dev(void)
 {
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 
 	// TODO initialize with correct peripheral id by base_port.
@@ -136,7 +108,6 @@ static void exynos5_init_dev(void)
 
 static int exynos5_uart_err_check(int op)
 {
-	//struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 	unsigned int mask;
 
@@ -162,7 +133,6 @@ static int exynos5_uart_err_check(int op)
  */
 static unsigned char exynos5_uart_rx_byte(void)
 {
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 
 	/* wait for character to arrive */
@@ -180,7 +150,6 @@ static unsigned char exynos5_uart_rx_byte(void)
  */
 static void exynos5_uart_tx_byte(unsigned char data)
 {
-//	struct s5p_uart *const uart = s5p_get_base_uart(dev_index);
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 
 	/* wait for room in the tx FIFO */
@@ -193,6 +162,7 @@ static void exynos5_uart_tx_byte(unsigned char data)
 }
 
 #if !defined(__PRE_RAM__)
+
 static const struct console_driver exynos5_uart_console __console = {
 	.init     = exynos5_init_dev,
 	.tx_byte  = exynos5_uart_tx_byte,
@@ -205,7 +175,9 @@ uint32_t uartmem_getbaseaddr(void)
 {
 	return base_port;
 }
+
 #else
+
 void uart_init(void)
 {
 	exynos5_init_dev();
@@ -221,6 +193,8 @@ void uart_tx_byte(unsigned char data)
 	exynos5_uart_tx_byte(data);
 }
 
-void uart_tx_flush(void) {
+void uart_tx_flush(void)
+{
 }
+
 #endif

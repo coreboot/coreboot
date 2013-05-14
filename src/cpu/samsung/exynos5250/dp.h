@@ -1,12 +1,12 @@
 /*
- * Copyright 2013 Google Inc.
- * (C) Copyright 2012 Samsung Electronics
- * Register map for Exynos5 DP
+ * This file is part of the coreboot project.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Copyright 2013 Google Inc.
+ * Copyright (C) 2012 Samsung Electronics
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +15,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __EXYNOS5_DP_H__
-#define __EXYNOS5_DP_H__
+/* Register map for Exynos5 DP */
+
+#ifndef CPU_SAMSUNG_EXYNOS5250_DP_H
+#define CPU_SAMSUNG_EXYNOS5250_DP_H
 
 /* DSIM register map */
 struct exynos5_dp {
@@ -493,22 +494,4 @@ struct exynos5_dp {
 /* Allow DP Gating clock and set FIMD source to 267 Mhz for DP */
 void clock_init_dp_clock(void);
 
-/**
- * Perform the next stage of the LCD init if it is time to do so.
- *
- * LCD init can be time-consuming because of the number of delays we need
- * while waiting for the backlight power supply, etc. This function can
- * be called at various times during U-Boot operation to advance the
- * initialization of the LCD to the next stage if sufficient time has
- * passed since the last stage. It keeps track of what stage it is up to
- * and the time that it is permitted to move to the next stage.
- *
- * The final call should have can_block=1 to complete the init.
- *
- * @param blob		fdt blob containing LCD information
- * @param can_block	1 to wait until all init is complete, and then return
- *			0 to return immediately, potentially doing nothing if it
- *			is not yet time for the next init.
- */
-int exynos_lcd_check_next_stage(const void *blob, int can_block);
 #endif

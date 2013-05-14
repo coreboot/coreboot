@@ -1,18 +1,27 @@
 /*
- * Header file for Samsung DP (Display Port) interface driver.
+ * This file is part of the coreboot project.
  *
  * Copyright 2013 Google Inc.
- * Copyright (C) 2012 Samsung Electronics Co., Ltd.
- * Author: Jingoo Han <jg1.han@samsung.com>
+ * Copyright (C) 2012 Samsung Electronics
  *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; either version 2 of the License, or (at your
- * option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _S5P_DP_CORE_H
-#define _S5P_DP_CORE_H
+/* Header file for Samsung DP (Display Port) interface driver. */
+
+#ifndef CPU_SAMSUNG_EXYNOS5250_DP_CORE_H
+#define CPU_SAMSUNG_EXYNOS5250_DP_CORE_H
 
 #define STREAM_ON_TIMEOUT 100
 #define PLL_LOCK_TIMEOUT 10
@@ -256,4 +265,4 @@ void fb_init(vidinfo_t *panel_info, void *lcdbase,
 int dp_controller_init(struct s5p_dp_device *dp_device);
 int lcd_ctrl_init(vidinfo_t *panel_info,
 			struct exynos5_fimd_panel *panel_data, void *lcdbase);
-#endif /* _S5P_DP_CORE_H */
+#endif /* CPU_SAMSUNG_EXYNOS5250_DP_CORE_H */

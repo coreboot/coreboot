@@ -1,13 +1,12 @@
 /*
- * (C) Copyright 2012 The ChromiumOS Authors
- * (C) Copyright 2009 Samsung Electronics
- * Minkyu Kang <mk7.kang@samsung.com>
- * Heungjun Kim <riverful.kim@samsung.com>
+ * This file is part of the coreboot project.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Copyright 2012 Google Inc.
+ * Copyright (C) 2009 Samsung Electronics
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,15 +15,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
- *
- * This file is based off of arch/arm/include/asm/arch-exynos5/uart.h
- * from u-boot.
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __EXYNOS5250_UART_H_
-#define __EXYNOS5250_UART_H_
+#ifndef CPU_SAMSUNG_EXYNOS5250_UART_H
+#define CPU_SAMSUNG_EXYNOS5250_UART_H
 
 #define EXYNOS5_UART0_BASE	0x12c00000
 #define EXYNOS5_UART1_BASE	0x12c10000
@@ -55,10 +50,5 @@ struct s5p_uart {
 	union br_rest	rest;
 	unsigned char	res3[0xffd0];
 };
-
-static inline int s5p_uart_divslot(void)
-{
-	return 0;
-}
 
 #endif

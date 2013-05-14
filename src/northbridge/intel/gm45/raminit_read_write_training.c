@@ -426,6 +426,46 @@ _bad_timing_out:
 
 	return ret;
 }
+static void write_training_find_lower(const int ch, const int group,
+				      const address_bunch_t *const addresses,
+				      const u32 masks[][2], const int memclk1067,
+				      write_timing_t *const lower)
+{
+	program_write_timing(ch, group, lower, memclk1067);
+	/* Coarse search for good t. */
+	while (!write_training_test(addresses, masks[group])) {
+		++lower->t;
+		program_write_timing(ch, group, lower, memclk1067);
+	}
+	/* Fine search for good p. */
+	--lower->t;
+	program_write_timing(ch, group, lower, memclk1067);
+	while (!write_training_test(addresses, masks[group])) {
+		++lower->p;
+		program_write_timing(ch, group, lower, memclk1067);
+	}
+}
+static void write_training_find_upper(const int ch, const int group,
+				      const address_bunch_t *const addresses,
+				      const u32 masks[][2], const int memclk1067,
+				      write_timing_t *const upper)
+{
+	program_write_timing(ch, group, upper, memclk1067);
+	if (!write_training_test(addresses, masks[group]))
+		die("Write training failed; limits too narrow.\n");
+	/* Coarse search for good t. */
+	while (write_training_test(addresses, masks[group])) {
+		++upper->t;
+		program_write_timing(ch, group, upper, memclk1067);
+	}
+	/* Fine search for good p. */
+	--upper->t;
+	program_write_timing(ch, group, upper, memclk1067);
+	while (write_training_test(addresses, masks[group])) {
+		++upper->p;
+		program_write_timing(ch, group, upper, memclk1067);
+	}
+}
 static void write_training_per_group(const int ch, const int group,
 				     const address_bunch_t *const addresses,
 				     const u32 masks[][2], const int memclk1067)
@@ -434,46 +474,29 @@ static void write_training_per_group(const int ch, const int group,
 	write_timing_t lower = { 0, 0, t_bound, 0 },
 		       upper = { 0, 0, t_bound, 0 };
 
-	/* Search lower bound. */
+	/*** Search lower bound. ***/
+
+	/* Start at -1f from current values. */
 	const u32 reg = MCHBAR32(CxWRTy_MCHBAR(ch, group));
 	lower.t =  (reg >> 12) & 0xf;
 	lower.p =  (reg >>  8) & 0x7;
 	lower.f = ((reg >>  2) & 0x3) - 1;
-	program_write_timing(ch, group, &lower, memclk1067);
-	/* Coarse search for good t. */
-	while (!write_training_test(addresses, masks[group])) {
-		++lower.t;
-		program_write_timing(ch, group, &lower, memclk1067);
-	}
-	/* Fine search for good p. */
-	--lower.t;
-	program_write_timing(ch, group, &lower, memclk1067);
-	while (!write_training_test(addresses, masks[group])) {
-		++lower.p;
-		program_write_timing(ch, group, &lower, memclk1067);
-	}
 
-	/* Search upper bound. */
+	write_training_find_lower(ch, group, addresses,
+				  masks, memclk1067, &lower);
+
+	/*** Search upper bound. ***/
+
+	/* Start at lower + 3t. */
 	upper.t = lower.t + 3;
 	upper.p = lower.p;
 	upper.f = lower.f;
-	program_write_timing(ch, group, &upper, memclk1067);
-	if (!write_training_test(addresses, masks[group]))
-		die("Write training failed; limits too narrow.\n");
-	/* Coarse search for good t. */
-	while (write_training_test(addresses, masks[group])) {
-		++upper.t;
-		program_write_timing(ch, group, &upper, memclk1067);
-	}
-	/* Fine search for good p. */
-	--upper.t;
-	program_write_timing(ch, group, &upper, memclk1067);
-	while (write_training_test(addresses, masks[group])) {
-		++upper.p;
-		program_write_timing(ch, group, &upper, memclk1067);
-	}
 
-	/* Calculate and program mean value. */
+	write_training_find_upper(ch, group, addresses,
+				  masks, memclk1067, &upper);
+
+	/*** Calculate and program mean value. ***/
+
 	lower.t += lower.f * lower.t_bound;
 	lower.p += lower.t << WRITE_TIMING_P_SHIFT;
 	upper.t += upper.f * upper.t_bound;

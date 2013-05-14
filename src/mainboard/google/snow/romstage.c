@@ -21,10 +21,8 @@
 
 #include <armv7.h>
 #include <cbfs.h>
-#include <common.h>
 
 #include <arch/cache.h>
-#include <arch/gpio.h>
 #include <cpu/samsung/exynos5250/i2c.h>
 #include <cpu/samsung/exynos5250/clk.h>
 #include <cpu/samsung/exynos5250/cpu.h>
@@ -33,7 +31,6 @@
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5250/clock_init.h>
 #include <cpu/samsung/exynos5250/wakeup.h>
 #include <console/console.h>
 #include <arch/stages.h>

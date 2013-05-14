@@ -1,14 +1,12 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (C) 2011 Samsung Electronics
- * Copyright (C) 2013 The Chromium OS Authors. All rights reserved.
+ * Copyright 2013 Google Inc.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,18 +15,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdlib.h>
-
-#include <common.h>
 #include <console/console.h>
-
-#include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5250/clk.h>
-
+#include <arch/io.h>
+#include <stdlib.h>
+#include <assert.h>
+#include "gpio.h"
+#include "clk.h"
 #include "spi.h"
 
 #define OM_STAT		(0x1f << 1)
@@ -49,7 +44,7 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 
 	// TODO In currrent implementation, every read/write must be aligned to
 	// 4 bytes, otherwise you may get timeout or other unexpected results.
-	assert(todo % 4 == 0);
+	ASSERT(todo % 4 == 0);
 
 	out_bytes = in_bytes = todo;
 	setbits_le32(&regs->ch_cfg, SPI_CH_RST);

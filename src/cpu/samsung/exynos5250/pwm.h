@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2009 Samsung Electronics
- * Kyungmin Park <kyungmin.park@samsung.com>
- * Minkyu Kang <mk7.kang@samsung.com>
+ * This file is part of the coreboot project.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Copyright (C) 2009 Samsung Electronics
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +14,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __ASM_ARM_ARCH_COMMON_PWM_H_
-#define __ASM_ARM_ARCH_COMMON_PWM_H_
+#ifndef CPU_SAMSUNG_EXYNOS5250_PWM_H
+#define CPU_SAMSUNG_EXYNOS5250_PWM_H
 
 #define PRESCALER_0		(8 - 1)		/* prescaler of timer 0, 1 */
 #define PRESCALER_1		(16 - 1)	/* prescaler of timer 2, 3, 4 */
@@ -42,7 +40,6 @@
 #define TCON_AUTO_RELOAD(x)	(1 << (TCON_OFFSET(x) + 3))
 #define TCON4_AUTO_RELOAD	(1 << 22)
 
-#ifndef __ASSEMBLER__
 struct s5p_timer {
 	unsigned int	tcfg0;
 	unsigned int	tcfg1;
@@ -69,6 +66,5 @@ int pwm_check_enabled(int pwm_id);
 void pwm_disable(int pwm_id);
 int pwm_enable(int pwm_id);
 int pwm_init(int pwm_id, int div, int invert);
-#endif	/* __ASSEMBLER__ */
 
 #endif

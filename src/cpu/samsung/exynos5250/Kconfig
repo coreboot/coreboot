@@ -10,10 +10,6 @@ config EXYNOS_ACE_SHA
 	bool
 	default n
 
-config SATA_AHCI
-	bool
-	default n
-
 config BL1_SIZE_KB
 	int
 	default 8

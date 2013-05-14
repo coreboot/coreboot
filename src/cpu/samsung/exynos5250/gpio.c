@@ -1,11 +1,11 @@
 /*
- * (C) Copyright 2009 Samsung Electronics
- * Minkyu Kang <mk7.kang@samsung.com>
+ * This file is part of the coreboot project.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Copyright (C) 2009 Samsung Electronics
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,18 +14,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* FIXME(dhendrix): fix this up so it doesn't require a bunch of #ifdefs... */
-#include <common.h>
-#include <gpio.h>
-//#include <arch/io.h>
-#include <gpio.h>
-#include <arch/gpio.h>
 #include <console/console.h>
-#include <cpu/samsung/exynos5250/gpio.h>	/* FIXME: for gpio_decode_number prototype */
+#include <string.h>
+#include <delay.h>
+#include <assert.h>
+#include "gpio.h"
+#include "cpu.h"
 
 #define CON_MASK(x)		(0xf << ((x) << 2))
 #define CON_SFR(x, v)		((v) << ((x) << 2))
@@ -46,7 +43,6 @@ struct gpio_info {
 	unsigned int max_gpio;	/* Maximum GPIO in this part */
 };
 
-#include <cpu/samsung/exynos5250/cpu.h>
 static const struct gpio_info gpio_data[EXYNOS_GPIO_NUM_PARTS] = {
 	{ EXYNOS5_GPIO_PART1_BASE, GPIO_MAX_PORT_PART_1 },
 	{ EXYNOS5_GPIO_PART2_BASE, GPIO_MAX_PORT_PART_2 },
@@ -56,12 +52,9 @@ static const struct gpio_info gpio_data[EXYNOS_GPIO_NUM_PARTS] = {
 	{ EXYNOS5_GPIO_PART6_BASE, GPIO_MAX_PORT },
 };
 
-#define HAVE_GENERIC_GPIO
-
 /* This macro gets gpio pin offset from 0..7 */
 #define GPIO_BIT(x)     ((x) & 0x7)
 
-//#ifdef HAVE_GENERIC_GPIO
 static struct s5p_gpio_bank *gpio_get_bank(unsigned int gpio)
 {
 	const struct gpio_info *data;
@@ -79,10 +72,9 @@ static struct s5p_gpio_bank *gpio_get_bank(unsigned int gpio)
 		}
 	}
 
-	assert(gpio < GPIO_MAX_PORT);	/* ...which it will not be */
+	ASSERT(gpio < GPIO_MAX_PORT);	/* ...which it will not be */
 	return NULL;
 }
-//#endif
 
 /* TODO: Deprecation this interface in favour of asm-generic/gpio.h */
 void s5p_gpio_cfg_pin(struct s5p_gpio_bank *bank, int gpio, int cfg)
@@ -192,10 +184,6 @@ void s5p_gpio_set_rate(struct s5p_gpio_bank *bank, int gpio, int mode)
 }
 
 /* Common GPIO API - only available on Exynos5 */
-/* FIXME(dhendrix): If this stuff is really only applicable to exynos5,
-   move it to a more sensible location. */
-#ifdef HAVE_GENERIC_GPIO
-
 void gpio_cfg_pin(int gpio, int cfg)
 {
 	unsigned int value;
@@ -277,16 +265,6 @@ void gpio_set_rate(int gpio, int mode)
 	writel(value, &bank->drv);
 }
 
-int gpio_request(unsigned gpio, const char *label)
-{
-	return 0;
-}
-
-int gpio_free(unsigned gpio)
-{
-	return 0;
-}
-
 int gpio_direction_input(unsigned gpio)
 {
 	gpio_cfg_pin(gpio, EXYNOS_GPIO_INPUT);
@@ -332,64 +310,6 @@ int gpio_set_value(unsigned gpio, int value)
 
 	return 0;
 }
-#else
-
-static int s5p_gpio_get_pin(unsigned gpio)
-{
-	return gpio % GPIO_PER_BANK;
-}
-
-/*
- * If we have the old-style GPIO numbering setup, use these functions
- * which don't necessary provide sequentially increasing GPIO numbers.
- */
-static struct s5p_gpio_bank *s5p_gpio_get_bank(unsigned gpio)
-{
-	int bank = gpio / GPIO_PER_BANK;
-	bank *= sizeof(struct s5p_gpio_bank);
-
-	return (struct s5p_gpio_bank *) (s5p_gpio_base(gpio) + bank);
-}
-
-int gpio_request(unsigned gpio, const char *label)
-{
-	return 0;
-}
-
-int gpio_free(unsigned gpio)
-{
-	return 0;
-}
-
-int gpio_direction_input(unsigned gpio)
-{
-	s5p_gpio_direction_input(s5p_gpio_get_bank(gpio),
-				s5p_gpio_get_pin(gpio));
-	return 0;
-}
-
-int gpio_direction_output(unsigned gpio, int value)
-{
-	s5p_gpio_direction_output(s5p_gpio_get_bank(gpio),
-				 s5p_gpio_get_pin(gpio), value);
-	return 0;
-}
-
-int gpio_get_value(unsigned gpio)
-{
-	return (int) s5p_gpio_get_value(s5p_gpio_get_bank(gpio),
-				       s5p_gpio_get_pin(gpio));
-}
-
-int gpio_set_value(unsigned gpio, int value)
-{
-	s5p_gpio_set_value(s5p_gpio_get_bank(gpio),
-			  s5p_gpio_get_pin(gpio), value);
-
-	return 0;
-}
-
-#endif /* HAVE_GENERIC_GPIO */
 
 /*
  * Add a delay here to give the lines time to settle
@@ -439,48 +359,7 @@ int gpio_read_mvl3(unsigned gpio)
 
 	return value;
 }
-
-int gpio_decode_number(unsigned gpio_list[], int count)
-{
-	int result = 0;
-	int multiplier = 1;
-	int gpio, i, value;
-	enum mvl3 mvl3;
-
-	for (i = 0; i < count; i++) {
-		gpio = gpio_list[i];
-
-		mvl3 = gpio_read_mvl3(gpio);
-		if (mvl3 == LOGIC_1)
-			value = 2;
-		else if (mvl3 == LOGIC_0)
-			value = 1;
-		else if (mvl3 == LOGIC_Z)
-			value = 0;
-		else
-			return -1;
-
-		result += value * multiplier;
-		multiplier *= 3;
-	}
-
-	return result;
-}
 #endif	/* __BOOT_BLOCK__ */
-
-static const char *get_cfg_name(int cfg)
-{
-	static char name[8];
-
-	if (cfg == EXYNOS_GPIO_INPUT)
-		return "input";
-	else if (cfg == EXYNOS_GPIO_OUTPUT)
-		return "output";
-	printk(BIOS_INFO, "func %d", cfg);
-//	sprintf(name, "func %d", cfg);
-
-	return name;
-}
 
 /*
  * Display Exynos GPIO information
@@ -492,7 +371,14 @@ void gpio_info(void)
 	for (gpio = 0; gpio < GPIO_MAX_PORT; gpio++) {
 		int cfg = gpio_get_cfg(gpio);
 
-		printk(BIOS_INFO, "GPIO_%-3d: %s", gpio, get_cfg_name(cfg));
+		printk(BIOS_INFO, "GPIO_%-3d: ", gpio);
+		if (cfg == EXYNOS_GPIO_INPUT)
+			printk(BIOS_INFO, "input");
+		else if (cfg == EXYNOS_GPIO_OUTPUT)
+			printk(BIOS_INFO, "output");
+		else
+			printk(BIOS_INFO, "func %d", cfg);
+
 		if (cfg == EXYNOS_GPIO_INPUT || cfg == EXYNOS_GPIO_OUTPUT)
 			printk(BIOS_INFO, ", value = %d", gpio_get_value(gpio));
 		printk(BIOS_INFO, "\n");

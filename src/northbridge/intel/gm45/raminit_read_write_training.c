@@ -56,7 +56,7 @@ typedef struct {
 	int t;
 	int p;
 } read_timing_t;
-static void normalize_read_timing(read_timing_t *const timing)
+static int normalize_read_timing(read_timing_t *const timing)
 {
 	while (timing->p >= READ_TIMING_P_BOUND) {
 		timing->t++;
@@ -66,18 +66,33 @@ static void normalize_read_timing(read_timing_t *const timing)
 		timing->t--;
 		timing->p += READ_TIMING_P_BOUND;
 	}
-	if ((timing->t < 0) || (timing->t >= READ_TIMING_T_BOUND))
-		die("Timing under-/overflow during read training.\n");
+	if (timing->t < 0) {
+		printk(BIOS_WARNING,
+		       "Timing underflow during read training.\n");
+		timing->t = 0;
+		timing->p = 0;
+		return -1;
+	} else if (timing->t >= READ_TIMING_T_BOUND) {
+		printk(BIOS_WARNING,
+		       "Timing overflow during read training.\n");
+		timing->t = READ_TIMING_T_BOUND - 1;
+		timing->p = READ_TIMING_P_BOUND - 1;
+		return -1;
+	}
+	return 0;
 }
-static void program_read_timing(const int ch, const int lane,
-				read_timing_t *const timing)
+static int program_read_timing(const int ch, const int lane,
+			       read_timing_t *const timing)
 {
-	normalize_read_timing(timing);
+	if (normalize_read_timing(timing) < 0)
+		return -1;
 
 	u32 reg = MCHBAR32(CxRDTy_MCHBAR(ch, lane));
 	reg &= ~(CxRDTy_T_MASK | CxRDTy_P_MASK);
 	reg |= CxRDTy_T(timing->t) | CxRDTy_P(timing->p);
 	MCHBAR32(CxRDTy_MCHBAR(ch, lane)) = reg;
+
+	return 0;
 }
 /* Returns 1 on success, 0 on failure. */
 static int read_training_test(const int channel, const int lane,
@@ -99,46 +114,59 @@ static int read_training_test(const int channel, const int lane,
 	}
 	return 1;
 }
-static void read_training_find_lower(const int channel, const int lane,
-				     const address_bunch_t *const addresses,
-				     read_timing_t *const lower)
+static int read_training_find_lower(const int channel, const int lane,
+				    const address_bunch_t *const addresses,
+				    read_timing_t *const lower)
 {
 	/* Coarse search for good t. */
 	program_read_timing(channel, lane, lower);
 	while (!read_training_test(channel, lane, addresses)) {
 		++lower->t;
-		program_read_timing(channel, lane, lower);
+		if (program_read_timing(channel, lane, lower) < 0)
+			return -1;
 	}
 
 	/* Step back, then fine search for good p. */
-	if (lower->t > 0) {
-		--lower->t;
-		program_read_timing(channel, lane, lower);
-		while (!read_training_test(channel, lane, addresses)) {
-			++lower->p;
-			program_read_timing(channel, lane, lower);
-		}
+	if (lower->t <= 0)
+		/* Can't step back, zero is good. */
+		return 0;
+	--lower->t;
+	program_read_timing(channel, lane, lower);
+	while (!read_training_test(channel, lane, addresses)) {
+		++lower->p;
+		if (program_read_timing(channel, lane, lower) < 0)
+			return -1;
 	}
+
+	return 0;
 }
-static void read_training_find_upper(const int channel, const int lane,
-				     const address_bunch_t *const addresses,
-				     read_timing_t *const upper)
+static int read_training_find_upper(const int channel, const int lane,
+				    const address_bunch_t *const addresses,
+				    read_timing_t *const upper)
 {
-	program_read_timing(channel, lane, upper);
-	if (!read_training_test(channel, lane, addresses))
-		die("Read training failed: limits too narrow.\n");
+	if (program_read_timing(channel, lane, upper) < 0)
+		return -1;
+	if (!read_training_test(channel, lane, addresses)) {
+		printk(BIOS_WARNING,
+		       "Read training failure: limits too narrow.\n");
+		return -1;
+	}
 	/* Coarse search for bad t. */
 	do {
 		++upper->t;
-		program_read_timing(channel, lane, upper);
+		if (program_read_timing(channel, lane, upper) < 0)
+			return -1;
 	} while (read_training_test(channel, lane, addresses));
 	/* Fine search for bad p. */
 	--upper->t;
 	program_read_timing(channel, lane, upper);
 	while (read_training_test(channel, lane, addresses)) {
 		++upper->p;
-		program_read_timing(channel, lane, upper);
+		if (program_read_timing(channel, lane, upper) < 0)
+			return -1;
 	}
+
+	return 0;
 }
 static void read_training_per_lane(const int channel, const int lane,
 				   const address_bunch_t *const addresses)
@@ -152,17 +180,20 @@ static void read_training_per_lane(const int channel, const int lane,
 	/* Start at zero. */
 	lower.t = 0;
 	lower.p = 0;
-	read_training_find_lower(channel, lane, addresses, &lower);
+	if (read_training_find_lower(channel, lane, addresses, &lower) < 0)
+		die("Read training failure: lower bound.\n");
 
 	/*** Search upper bound. ***/
 
 	/* Start at lower + 1t. */
 	upper.t = lower.t + 1;
 	upper.p = lower.p;
+	if (read_training_find_upper(channel, lane, addresses, &upper) < 0)
+		/* Overflow on upper edge is not fatal. */
+		printk(BIOS_WARNING, "Read training failure: upper bound.\n");
 
-	read_training_find_upper(channel, lane, addresses, &upper);
+	/*** Calculate and program mean value. ***/
 
-	/* Calculate and program mean value. */
 	lower.p += lower.t << READ_TIMING_P_SHIFT;
 	upper.p += upper.t << READ_TIMING_P_SHIFT;
 	const int mean_p = (lower.p + upper.p) >> 1;

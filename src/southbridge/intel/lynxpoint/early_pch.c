@@ -20,10 +20,12 @@
 
 #include <console/console.h>
 #include <arch/io.h>
+#include <device/device.h>
 #include <device/pci_def.h>
 #include <timestamp.h>
 #include <elog.h>
 #include "pch.h"
+#include "chip.h"
 
 #if CONFIG_INTEL_LYNXPOINT_LP
 #include "lp_gpio.h"
@@ -96,15 +98,29 @@ static int sleep_type_s3(void)
 
 static void pch_enable_lpc(void)
 {
-	device_t dev = PCH_LPC_DEV;
+	const struct device *dev = dev_find_slot(0, PCI_DEVFN(0x1f, 0));
+	const struct southbridge_intel_lynxpoint_config *config = NULL;
 
 	/* Set COM1/COM2 decode range */
-	pci_write_config16(dev, LPC_IO_DEC, 0x0010);
+	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0010);
 
 	/* Enable SuperIO + MC + COM1 + PS/2 Keyboard/Mouse */
 	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | GAMEL_LPC_EN |
 		COMA_LPC_EN | KBC_LPC_EN | MC_LPC_EN;
-	pci_write_config16(dev, LPC_EN, lpc_config);
+	pci_write_config16(PCH_LPC_DEV, LPC_EN, lpc_config);
+
+	/* Set up generic decode ranges */
+	if (!dev)
+		return;
+	if (dev->chip_info)
+		config = dev->chip_info;
+	if (!config)
+		return;
+
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, config->gen1_dec);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, config->gen2_dec);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN3_DEC, config->gen3_dec);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, config->gen4_dec);
 }
 
 int early_pch_init(const void *gpio_map,

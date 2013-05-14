@@ -63,6 +63,13 @@ bd82x6x_add_me: $(obj)/coreboot.pre $(IFDTOOL)
 		-i ME:3rdparty/mainboard/$(MAINBOARDDIR)/me.bin \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+ifeq ($(CONFIG_HAVE_GBE_BIN),y)
+	printf "    IFDTOOL    gbe.bin -> coreboot.pre\n"
+	$(objutil)/ifdtool/ifdtool \
+		-i GbE:$(CONFIG_GBE_BIN_PATH) \
+		$(obj)/coreboot.pre
+	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre

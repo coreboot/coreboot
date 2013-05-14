@@ -118,9 +118,7 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
   //
   // Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR
   //
-  AllocHeapParams.RequestedBufferSize = sizeof (PCIe_COMPLEX_DESCRIPTOR)  +
-                                        sizeof (PCIe_PORT_DESCRIPTOR) * 5 +
-                                        sizeof (PCIe_DDI_DESCRIPTOR) * 2;
+  AllocHeapParams.RequestedBufferSize = sizeof(Brazos) + sizeof(PortList) + sizeof(DdiList);
 
   AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
   AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
@@ -133,30 +131,30 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
 
   BrazosPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
-  AllocHeapParams.BufferPtr += sizeof (PCIe_COMPLEX_DESCRIPTOR);
+  AllocHeapParams.BufferPtr += sizeof(Brazos);
   BrazosPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
 
-  AllocHeapParams.BufferPtr += sizeof (PCIe_PORT_DESCRIPTOR) * 5;
+  AllocHeapParams.BufferPtr += sizeof(PortList);
   BrazosPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
   LibAmdMemFill (BrazosPcieComplexListPtr,
                    0,
-                   sizeof (PCIe_COMPLEX_DESCRIPTOR),
+                   sizeof(Brazos),
                    &InitEarly->StdHeader);
 
   LibAmdMemFill (BrazosPciePortPtr,
                    0,
-                   sizeof (PCIe_PORT_DESCRIPTOR) * 5,
+                   sizeof(PortList),
                    &InitEarly->StdHeader);
 
   LibAmdMemFill (BrazosPcieDdiPtr,
                    0,
-                   sizeof (PCIe_DDI_DESCRIPTOR) * 2,
+                   sizeof(DdiList),
                    &InitEarly->StdHeader);
 
-  LibAmdMemCopy  (BrazosPcieComplexListPtr, &Brazos, sizeof (PCIe_COMPLEX_DESCRIPTOR), &InitEarly->StdHeader);
-  LibAmdMemCopy  (BrazosPciePortPtr, &PortList[0], sizeof (PCIe_PORT_DESCRIPTOR) * 5, &InitEarly->StdHeader);
-  LibAmdMemCopy  (BrazosPcieDdiPtr, &DdiList[0], sizeof (PCIe_DDI_DESCRIPTOR) *2, &InitEarly->StdHeader);
+  LibAmdMemCopy  (BrazosPcieComplexListPtr, &Brazos, sizeof(Brazos), &InitEarly->StdHeader);
+  LibAmdMemCopy  (BrazosPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);
+  LibAmdMemCopy  (BrazosPcieDdiPtr, &DdiList[0], sizeof(DdiList), &InitEarly->StdHeader);
 
 
   ((PCIe_COMPLEX_DESCRIPTOR*)BrazosPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)BrazosPciePortPtr;

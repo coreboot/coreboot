@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include <common.h>
 #include <armv7.h>
 
 /*

@@ -1,11 +1,12 @@
 /*
- * (C) Copyright 2012 Samsung Electronics
- * Minkyu Kang <mk7.kang@samsung.com>
+ * This file is part of the coreboot project.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * Copyright 2013 Google Inc.
+ * Copyright (C) 2012 Samsung Electronics
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,15 +15,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
- *
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __EXYNOS5_CLK_H__
-#define __EXYNOS5_CLK_H__
+#ifndef CPU_SAMSUNG_EXYNOS5250_CLK_H
+#define CPU_SAMSUNG_EXYNOS5250_CLK_H
 
-#include <types.h>
 #include <stdint.h>
 
 enum periph_id;
@@ -66,7 +64,7 @@ void set_mmc_clk(int dev_index, unsigned int div);
  */
 unsigned long clock_get_periph_rate(enum periph_id peripheral);
 
-#include <cpu/samsung/exynos5250/pinmux.h>
+#include "pinmux.h"
 
 
 #define MCT_ADDRESS 0x101c0000
@@ -107,8 +105,6 @@ void clock_select_i2s_clk_source(void);
  */
 int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq);
 
-/* FIXME(dhendrix): below is stuff from arch/arm/include/asm/arch-exynos5/clock.h
-   (as opposed to the two clk.h files as they were named in u-boot... */
 struct exynos5_clock {
 	unsigned int	apll_lock;		/* base + 0 */
 	unsigned char	res1[0xfc];
@@ -585,50 +581,44 @@ void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor);
  */
 int clock_set_rate(enum periph_id periph_id, unsigned int rate);
 
-/**
- * Decode a peripheral ID from a device node.
- *
- * Drivers should always use this function since the actual means of
- * encoding this information may change in the future as fdt support for
- * exynos evolves.
- *
- * @param blob	FDT blob to read from
- * @param node	Node containing the information
- */
-int clock_decode_periph_id(const void *blob, int node);
-
 /* Clock gate unused IP */
 void clock_gate(void);
 
-enum ddr_mode;
-enum mem_manuf;
-
-const char *clock_get_mem_type_name(enum ddr_mode mem_type);
-
-const char *clock_get_mem_manuf_name(enum mem_manuf mem_manuf);
-
-/*
- * TODO(sjg@chromium.org): Remove this when we have more SPL space.
- * At present we are using 14148 of 14336 bytes. If we change this function
- * to be exported in SPL, we go over the edge.
- */
-/**
- * Get the required memory type and speed (Main U-Boot version).
- *
- * This should use the device tree. For now we cannot since this function is
- * called before the FDT is available.
- *
- * @param mem_type	Returns memory type
- * @param frequency_mhz	Returns memory speed in MHz
- * @param arm_freq	Returns ARM clock speed in MHz
- * @param mem_manuf	Return Memory Manufacturer name
- * @return 0 if all ok (if not, this function currently does not return)
- */
-int clock_get_mem_selection(enum ddr_mode *mem_type,
-		unsigned *frequency_mhz, unsigned *arm_freq,
-		enum mem_manuf *mem_manuf);
-
 void mct_start(void);
 uint64_t mct_raw_value(void);
+
+#include "dmc.h"
+
+/* These are the ratio's for configuring ARM clock */
+struct arm_clk_ratios {
+	unsigned int arm_freq_mhz;	/* Frequency of ARM core in MHz */
+
+	unsigned int apll_mdiv;
+	unsigned int apll_pdiv;
+	unsigned int apll_sdiv;
+
+	unsigned int arm2_ratio;
+	unsigned int apll_ratio;
+	unsigned int pclk_dbg_ratio;
+	unsigned int atb_ratio;
+	unsigned int periph_ratio;
+	unsigned int acp_ratio;
+	unsigned int cpud_ratio;
+	unsigned int arm_ratio;
+};
+
+/**
+ * Get the clock ratios for CPU configuration
+ *
+ * @return pointer to the clock ratios that we should use
+ */
+struct arm_clk_ratios *get_arm_clk_ratios(void);
+
+/*
+ * Initialize clock for the device
+ */
+struct mem_timings;
+void system_clock_init(struct mem_timings *mem,
+		struct arm_clk_ratios *arm_clk_ratio);
 
 #endif

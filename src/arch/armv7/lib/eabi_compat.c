@@ -9,7 +9,6 @@
  * License, or (at your option) any later version.
  */
 
-#include <common.h>
 #include <console/console.h>
 
 /* FIXME(dhendrix): prototypes added for assembler */

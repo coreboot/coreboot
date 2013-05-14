@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Samsung Electronics
- * Copyright (C) 2013 Google Inc.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,11 +22,10 @@
 #include <stdlib.h>
 #include <console/console.h>
 
-#include <gpio.h>
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/dmc.h>
-#include <cpu/samsung/exynos5250/clock_init.h>
+#include <cpu/samsung/exynos5250/clk.h>
 
 const struct mem_timings mem_timings[] = {
 	{

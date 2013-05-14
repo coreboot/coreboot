@@ -1,14 +1,12 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * (C) Copyright 2002
  * David Mueller, ELSOFT AG, d.mueller@elsoft.ch
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,22 +15,16 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* This code should work for both the S3C2400 and the S3C2410
- * as they seem to have the same I2C controller inside.
- * The different address mapping is handled by the s3c24xx.h files below.
- */
-
+#include <console/console.h>
 #include <delay.h>
 #include <arch/io.h>
-#include <console/console.h>
 #include <device/i2c.h>
-#include "cpu/samsung/exynos5250/clk.h"
-#include "cpu/samsung/exynos5250/i2c.h"
-#include "cpu/samsung/exynos5250/pinmux.h"
+#include "clk.h"
+#include "i2c.h"
+#include "pinmux.h"
 
 #define I2C_WRITE	0
 #define I2C_READ	1
@@ -61,7 +53,6 @@ enum {
 };
 
 static struct s3c24x0_i2c_bus i2c_buses[] = {
-	/* FIXME: exynos5250-specific? */
 	{
 		.bus_num = 0,
 		.regs = (struct s3c24x0_i2c *)0x12c60000,

@@ -67,7 +67,7 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 	reg16 = pci_read_config16(mch_dev, D0F0_GGC);
 	reg16 &= 0xf00f;
 	reg16 |= 0x0350;
-	if (capid & (1 << (48 - 32)))
+	if (!(capid & (1 << (48 - 32))))
 		reg16 |= 0x0800;
 	pci_write_config16(mch_dev, D0F0_GGC, reg16);
 

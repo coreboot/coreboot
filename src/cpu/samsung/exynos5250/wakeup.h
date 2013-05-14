@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google, Inc.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef WAKEUP_H
-#define WAKEUP_H
+#ifndef CPU_SAMSUNG_EXYNOS5250_WAKEUP_H
+#define CPU_SAMSUNG_EXYNOS5250_WAKEUP_H
+
+/* Power Down Modes */
+#define S5P_CHECK_SLEEP	0x00000BAD
+#define S5P_CHECK_DIDLE	0xBAD00000
+#define S5P_CHECK_LPA	0xABAD0000
 
 enum {
 	// A normal boot (not suspend/resume)
@@ -34,4 +39,4 @@ int wakeup_need_reset(void);
 int get_wakeup_state(void);
 void wakeup(void);
 
-#endif	/* WAKEUP_H */
+#endif	/* CPU_SAMSUNG_EXYNOS5250_WAKEUP_H */

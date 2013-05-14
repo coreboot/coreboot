@@ -1,46 +1,42 @@
 /*
- * LCD driver for Exynos
+ * This file is part of the coreboot project.
  *
  * Copyright 2013 Google Inc.
  * Copyright (C) 2012 Samsung Electronics
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <common.h>
+/* LCD driver for Exynos */
+
 #include <arch/io.h>
 #include <stdlib.h>
 #include <string.h>
 #include <timer.h>
+#include <delay.h>
 #include <console/console.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5250/sysreg.h>
+#include "timer.h"
+#include "cpu.h"
+#include "power.h"
+#include "sysreg.h"
 #include <drivers/maxim/max77686/max77686.h>
 
 #include "device/i2c.h"
-#include "cpu/samsung/exynos5250/i2c.h"
-#include "cpu/samsung/exynos5250/dsim.h"
-#include "cpu/samsung/exynos5250/fimd.h"
-
-#include "cpu/samsung/exynos5250/s5p-dp.h"
-#include "s5p-dp-core.h"
+#include "i2c.h"
+#include "fimd.h"
+#include "dp.h"
+#include "dp-core.h"
 
 /*
  * Here is the rough outline of how we bring up the display:
@@ -110,12 +106,6 @@ void *lcd_console_address;	/* Start of console buffer */
 
 short console_col;
 short console_row;
-
-
-#ifdef CONFIG_EXYNOS_DISPLAYPORT
-static struct s5p_dp_device dp_device;
-
-#endif
 
 /* Bypass FIMD of DISP1_BLK */
 static void fimd_bypass(void)
@@ -192,7 +182,7 @@ void fb_init(vidinfo_t *panel_info, void *lcdbase,
 	writel(1 << 1, &fimd->dpclkcon);
 }
 
-void exynos_fimd_disable(void);
+#ifdef UNUSED_CODE
 void exynos_fimd_disable(void)
 {
 	struct exynos5_fimd *fimd = samsung_get_base_fimd();
@@ -200,6 +190,7 @@ void exynos_fimd_disable(void)
 	writel(0, &fimd->wincon0);
 	clrbits_le32(&fimd->shadowcon, CHANNEL0_EN);
 }
+#endif
 
 /*
  * Configure DP in slave mode and wait for video stream.

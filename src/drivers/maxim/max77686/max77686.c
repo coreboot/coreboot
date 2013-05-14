@@ -21,8 +21,8 @@
  * MA 02111-1307 USA
  */
 
+#include <console/console.h>
 #include <arch/io.h>
-#include <common.h>
 #include <device/i2c.h>
 
 #include "max77686.h"
@@ -131,7 +131,7 @@ static int max77686_enablereg(unsigned int bus, enum max77686_regnum reg, int en
 	ret = max77686_i2c_read(bus, MAX77686_I2C_ADDR, pmic->reg_enaddr,
 				&read_data);
 	if (ret != 0) {
-		debug("max77686 i2c read failed.\n");
+		printk(BIOS_DEBUG, "max77686 i2c read failed.\n");
 		return -1;
 	}
 
@@ -147,7 +147,7 @@ static int max77686_enablereg(unsigned int bus, enum max77686_regnum reg, int en
 	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR,
 				 pmic->reg_enaddr, read_data);
 	if (ret != 0) {
-		debug("max77686 i2c write failed.\n");
+		printk(BIOS_DEBUG, "max77686 i2c write failed.\n");
 		return -1;
 	}
 
@@ -165,13 +165,13 @@ int max77686_volsetting(unsigned int bus, enum max77686_regnum reg,
 	pmic = &max77686_param[reg];
 
 	if (pmic->vol_addr == 0) {
-		debug("not a voltage register.\n");
+		printk(BIOS_DEBUG, "not a voltage register.\n");
 		return -1;
 	}
 
 	ret = max77686_i2c_read(bus, MAX77686_I2C_ADDR, pmic->vol_addr, &read_data);
 	if (ret != 0) {
-		debug("max77686 i2c read failed.\n");
+		printk(BIOS_DEBUG, "max77686 i2c read failed.\n");
 		return -1;
 	}
 
@@ -181,7 +181,7 @@ int max77686_volsetting(unsigned int bus, enum max77686_regnum reg,
 		vol_level = (volt - (u32)pmic->vol_min) * 1000;
 
 	if (vol_level < 0) {
-		debug("Not a valid voltage level to set\n");
+		printk(BIOS_DEBUG, "Not a valid voltage level to set\n");
 		return -1;
 	}
 	vol_level /= (u32)pmic->vol_div;
@@ -191,13 +191,13 @@ int max77686_volsetting(unsigned int bus, enum max77686_regnum reg,
 
 	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR, pmic->vol_addr, read_data);
 	if (ret != 0) {
-		debug("max77686 i2c write failed.\n");
+		printk(BIOS_DEBUG, "max77686 i2c write failed.\n");
 		return -1;
 	}
 
 	ret = max77686_enablereg(bus, reg, enable);
 	if (ret != 0) {
-		debug("Failed to enable buck/ldo.\n");
+		printk(BIOS_DEBUG, "Failed to enable buck/ldo.\n");
 		return -1;
 	}
 	return 0;
@@ -215,7 +215,7 @@ int max77686_disable_backup_batt(unsigned int bus)
 
 	ret = max77686_i2c_read(bus, MAX77686_I2C_ADDR, REG_BBAT, &val);
 	if (ret) {
-		debug("max77686 i2c read failed\n");
+		printk(BIOS_DEBUG, "max77686 i2c read failed\n");
 		return ret;
 	}
 
@@ -228,7 +228,7 @@ int max77686_disable_backup_batt(unsigned int bus)
 	val &= ~BBAT_BBCHOSTEN_MASK;
 	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR, REG_BBAT, val);
 	if (ret) {
-		debug("max77686 i2c write failed\n");
+		printk(BIOS_DEBUG, "max77686 i2c write failed\n");
 		return -1;
 	}
 
@@ -236,7 +236,7 @@ int max77686_disable_backup_batt(unsigned int bus)
 	val |= BBAT_BBCVS_MASK;
 	ret = max77686_i2c_write(bus, MAX77686_I2C_ADDR, REG_BBAT, val);
 	if (ret) {
-		debug("max77686 i2c write failed\n");
+		printk(BIOS_DEBUG, "max77686 i2c write failed\n");
 		return -1;
 	}
 

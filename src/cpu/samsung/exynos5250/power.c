@@ -1,15 +1,11 @@
 /*
- * Power setup code for EXYNOS5
+ * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Samsung Electronics
  *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,18 +14,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <common.h>
-#include <arch/hlt.h>
+/* Power setup code for EXYNOS5 */
+
+#include <console/console.h>
 #include <arch/io.h>
 #include <arch/hlt.h>
-#include <console/console.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5250/sysreg.h>
+#include "cpu.h"
+#include "power.h"
+#include "sysreg.h"
 
 static void ps_hold_setup(void)
 {
@@ -81,7 +76,7 @@ void power_enable_usb_phy(void)
 	/* Setting USB20PHY_CONFIG register to USB 2.0 HOST link */
 	phy_cfg = readl(&sysreg->usb20_phy_cfg);
 	if (phy_cfg & USB20_PHY_CFG_EN) {
-		debug("USB 2.0 HOST link already selected\n");
+		printk(BIOS_DEBUG, "USB 2.0 HOST link already selected\n");
 	} else {
 		phy_cfg |= USB20_PHY_CFG_EN;
 		writel(phy_cfg, &sysreg->usb20_phy_cfg);

@@ -1,32 +1,27 @@
 /*
- * Copyright (c) 2012 Samsung Electronics.
- * Abhilash Kesavan <a.kesavan@samsung.com>
+ * This file is part of the coreboot project.
  *
- * See file CREDITS for list of people who contributed to this
- * project.
+ * Copyright (C) 2012 Samsung Electronics
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <common.h>
-#include <arch/gpio.h>
-#include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/pinmux.h>
-#include <cpu/samsung/exynos5250/sromc.h>
+#include <console/console.h>
+#include <assert.h>
+#include "gpio.h"
+#include "cpu.h"
+#include "pinmux.h"
 
 int exynos_pinmux_config(enum periph_id peripheral, int flags)
 {
@@ -88,16 +83,16 @@ int exynos_pinmux_config(enum periph_id peripheral, int flags)
 			 * TODO: Need to add defintions for GPC4 before
 			 * enabling this.
 			 */
-			debug("SDMMC3 not supported yet");
+			printk(BIOS_DEBUG, "SDMMC3 not supported yet");
 			return -1;
 		}
 		if ((flags & PINMUX_FLAG_8BIT_MODE) && !start_ext) {
-			debug("SDMMC device %d does not support 8bit mode",
+			printk(BIOS_DEBUG, "SDMMC device %d does not support 8bit mode",
 					peripheral);
 			return -1;
 		}
 		if (flags & PINMUX_FLAG_8BIT_MODE) {
-			assert(peripheral == PERIPH_ID_SDMMC0);
+			ASSERT(peripheral == PERIPH_ID_SDMMC0);
 			for (i = 0; i <= 3; i++) {
 				gpio_cfg_pin(start_ext + i, pin_ext);
 				gpio_set_pull(start_ext + i,
@@ -295,7 +290,7 @@ int exynos_pinmux_config(enum periph_id peripheral, int flags)
 			gpio_cfg_pin(GPIO_B00 + i, EXYNOS_GPIO_FUNC(0x02));
 		break;
 	default:
-		debug("%s: invalid peripheral %d", __func__, peripheral);
+		printk(BIOS_DEBUG, "%s: invalid peripheral %d", __func__, peripheral);
 		return -1;
 	}
 

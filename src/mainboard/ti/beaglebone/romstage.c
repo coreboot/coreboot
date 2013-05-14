@@ -21,7 +21,6 @@
 
 #include <armv7.h>
 #include <cbfs.h>
-#include <common.h>
 
 #include <arch/stages.h>
 #include <console/console.h>

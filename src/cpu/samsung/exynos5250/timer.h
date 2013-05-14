@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 The Chromium OS Authors. All rights reserved.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,31 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/periph.h>
+#ifndef CPU_SAMSUNG_EXYNOS5250_TIMER_H
+#define CPU_SAMSUNG_EXYNOS5250_TIMER_H
 
-#include <cpu/samsung/exynos5250/uart.h>
+unsigned long get_timer(unsigned long base);
 
-enum periph_id exynos5_get_periph_id(unsigned base_addr)
-{
-	enum periph_id id = PERIPH_ID_NONE;
-
-	switch (base_addr) {
-	case EXYNOS5_UART0_BASE:
-		id = PERIPH_ID_UART0;
-		break;
-	case EXYNOS5_UART1_BASE:
-		id = PERIPH_ID_UART1;
-		break;
-	case EXYNOS5_UART2_BASE:
-		id = PERIPH_ID_UART2;
-		break;
-	case EXYNOS5_UART3_BASE:
-		id = PERIPH_ID_UART3;
-		break;
-	default:
-		break;
-	}
-
-	return id;
-}
+#endif

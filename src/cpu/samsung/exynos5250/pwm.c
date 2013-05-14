@@ -1,15 +1,11 @@
 /*
+ * This file is part of the coreboot project.
+ *
  * Copyright (C) 2011 Samsung Electronics
  *
- * Donghwa Lee <dh09.lee@samsung.com>
- *
- * See file CREDITS for list of people who contributed to this
- * project.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of
- * the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,16 +14,14 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <common.h>
 #include <arch/io.h>
-#include <cpu/samsung/exynos5250/clk.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/periph.h>
-#include <cpu/samsung/exynos5250/pwm.h>
+#include "clk.h"
+#include "cpu.h"
+#include "periph.h"
+#include "pwm.h"
 
 int pwm_enable(int pwm_id)
 {
@@ -100,11 +94,9 @@ int pwm_config(int pwm_id, int duty_ns, int period_ns)
 	 */
 	if (period_ns > NS_IN_SEC || duty_ns > NS_IN_SEC || period_ns == 0)
 		return -1;
-//		return -ERANGE;
 
 	if (duty_ns > period_ns)
 		return -1;
-//		return -EINVAL;
 
 	frequency = NS_IN_SEC / period_ns;
 

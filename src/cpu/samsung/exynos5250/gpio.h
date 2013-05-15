@@ -20,7 +20,7 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_GPIO_H
 #define CPU_SAMSUNG_EXYNOS5250_GPIO_H
 
-struct s5p_gpio_bank {
+struct gpio_bank {
 	unsigned int	con;
 	unsigned int	dat;
 	unsigned int	pull;
@@ -29,16 +29,6 @@ struct s5p_gpio_bank {
 	unsigned int	pdn_pull;
 	unsigned char	res1[8];
 };
-
-/* functions */
-void s5p_gpio_cfg_pin(struct s5p_gpio_bank *bank, int gpio, int cfg);
-void s5p_gpio_direction_output(struct s5p_gpio_bank *bank, int gpio, int en);
-void s5p_gpio_direction_input(struct s5p_gpio_bank *bank, int gpio);
-void s5p_gpio_set_value(struct s5p_gpio_bank *bank, int gpio, int en);
-unsigned int s5p_gpio_get_value(struct s5p_gpio_bank *bank, int gpio);
-void s5p_gpio_set_pull(struct s5p_gpio_bank *bank, int gpio, int mode);
-void s5p_gpio_set_drv(struct s5p_gpio_bank *bank, int gpio, int mode);
-void s5p_gpio_set_rate(struct s5p_gpio_bank *bank, int gpio, int mode);
 
 /* GPIO pins per bank  */
 #define GPIO_PER_BANK 8
@@ -52,7 +42,7 @@ void s5p_gpio_set_rate(struct s5p_gpio_bank *bank, int gpio, int mode);
 /* Pull mode */
 #define GPIO_PULL_NONE	0x0
 #define GPIO_PULL_DOWN	0x1
-#define GPIO_PULL_UP	0x2
+#define GPIO_PULL_UP	0x3
 
 /* Drive Strength level */
 #define GPIO_DRV_1X	0x0
@@ -61,28 +51,6 @@ void s5p_gpio_set_rate(struct s5p_gpio_bank *bank, int gpio, int mode);
 #define GPIO_DRV_4X	0x3
 #define GPIO_DRV_FAST	0x0
 #define GPIO_DRV_SLOW	0x1
-
-/* GPIO pins per bank  */
-#define GPIO_PER_BANK 8
-
-/* Pin configurations */
-#define EXYNOS_GPIO_INPUT	0x0
-#define EXYNOS_GPIO_OUTPUT	0x1
-#define EXYNOS_GPIO_IRQ	0xf
-#define EXYNOS_GPIO_FUNC(x)	(x)
-
-/* Pull mode */
-#define EXYNOS_GPIO_PULL_NONE	0x0
-#define EXYNOS_GPIO_PULL_DOWN	0x1
-#define EXYNOS_GPIO_PULL_UP	0x3
-
-/* Drive Strength level */
-#define EXYNOS_GPIO_DRV_1X	0x0
-#define EXYNOS_GPIO_DRV_3X	0x1
-#define EXYNOS_GPIO_DRV_2X	0x2
-#define EXYNOS_GPIO_DRV_4X	0x3
-#define EXYNOS_GPIO_DRV_FAST	0x0
-#define EXYNOS_GPIO_DRV_SLOW	0x1
 
 #define EXYNOS5_GPIO_BASE0	0x11400000
 #define EXYNOS5_GPIO_BASE1	0x13400000
@@ -149,63 +117,6 @@ enum exynos5_gpio_port {
 
 	/* base == EXYNOS_GPIO_BASE3 */
 	EXYNOS5_GPZ = EXYNOS5_GPIO_BASE3 + 0x0000,
-};
-
-struct exynos5_gpio_part1 {
-	struct s5p_gpio_bank a0;
-	struct s5p_gpio_bank a1;
-	struct s5p_gpio_bank a2;
-	struct s5p_gpio_bank b0;
-	struct s5p_gpio_bank b1;
-	struct s5p_gpio_bank b2;
-	struct s5p_gpio_bank b3;
-	struct s5p_gpio_bank c0;
-	struct s5p_gpio_bank c1;
-	struct s5p_gpio_bank c2;
-	struct s5p_gpio_bank c3;
-	struct s5p_gpio_bank d0;
-	struct s5p_gpio_bank d1;
-	struct s5p_gpio_bank y0;
-	struct s5p_gpio_bank y1;
-	struct s5p_gpio_bank y2;
-	struct s5p_gpio_bank y3;
-	struct s5p_gpio_bank y4;
-	struct s5p_gpio_bank y5;
-	struct s5p_gpio_bank y6;
-};
-
-struct exynos5_gpio_part2 {
-	struct s5p_gpio_bank x0;
-	struct s5p_gpio_bank x1;
-	struct s5p_gpio_bank x2;
-	struct s5p_gpio_bank x3;
-};
-
-struct exynos5_gpio_part3 {
-	struct s5p_gpio_bank e0;
-	struct s5p_gpio_bank e1;
-	struct s5p_gpio_bank f0;
-	struct s5p_gpio_bank f1;
-	struct s5p_gpio_bank g0;
-	struct s5p_gpio_bank g1;
-	struct s5p_gpio_bank g2;
-	struct s5p_gpio_bank h0;
-	struct s5p_gpio_bank h1;
-};
-
-struct exynos5_gpio_part4 {
-	struct s5p_gpio_bank v0;
-	struct s5p_gpio_bank v1;
-	struct s5p_gpio_bank v2;
-	struct s5p_gpio_bank v3;
-};
-
-struct exynos5_gpio_part5 {
-	struct s5p_gpio_bank v4;
-};
-
-struct exynos5_gpio_part6 {
-	struct s5p_gpio_bank z;
 };
 
 enum {
@@ -545,8 +456,6 @@ enum exynos5_gpio_pin {
 	GPIO_MAX_PORT
 };
 
-#define gpio_status		gpio_info
-
 /**
  * Set GPIO pin configuration.
  *
@@ -588,8 +497,8 @@ void gpio_set_rate(int gpio, int mode);
  */
 int gpio_read_mvl3(unsigned gpio);
 
+void gpio_info(void);
 
-///////////////////////////////
 /*
  * Generic GPIO API for U-Boot
  *
@@ -644,18 +553,6 @@ int gpio_get_value(unsigned gpio);
  */
 int gpio_set_value(unsigned gpio, int value);
 
-
-///////////////////////////////
-
-
-void gpio_info(void);
-
-enum gpio_types {
-	GPIO_IN,
-	GPIO_OUT,
-	GPIO_ALT,		/* catch-all for alternate functions */
-};
-
 /*
  * Many-value logic (3 states). This can be used for inputs whereby presence
  * of external pull-up or pull-down resistors can be added to overcome internal
@@ -678,4 +575,4 @@ enum mvl3 {
 	LOGIC_Z,		/* high impedence / tri-stated / floating */
 };
 
-#endif	/* EXYNOS5250_GPIO_H_ */
+#endif	/* CPU_SAMSUNG_EXYNOS5250_GPIO_H */

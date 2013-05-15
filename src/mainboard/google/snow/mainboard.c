@@ -59,12 +59,12 @@ static void exynos_dp_bridge_setup(void)
 	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
 
 	gpio_set_value(dp_pd_l, 1);
-	gpio_cfg_pin(dp_pd_l, EXYNOS_GPIO_OUTPUT);
-	gpio_set_pull(dp_pd_l, EXYNOS_GPIO_PULL_NONE);
+	gpio_cfg_pin(dp_pd_l, GPIO_OUTPUT);
+	gpio_set_pull(dp_pd_l, GPIO_PULL_NONE);
 
 	gpio_set_value(dp_rst_l, 0);
-	gpio_cfg_pin(dp_rst_l, EXYNOS_GPIO_OUTPUT);
-	gpio_set_pull(dp_rst_l, EXYNOS_GPIO_PULL_NONE);
+	gpio_cfg_pin(dp_rst_l, GPIO_OUTPUT);
+	gpio_set_pull(dp_rst_l, GPIO_PULL_NONE);
 	udelay(10);
 	gpio_set_value(dp_rst_l, 1);
 }
@@ -122,7 +122,7 @@ static void backlight_pwm(void)
 
 static void backlight_en(void)
 {
-	/* * Configure GPIO for LCD_BL_EN */
+	/* Configure GPIO for LCD_BL_EN */
 	gpio_direction_output(GPIO_X30, 1);
 }
 
@@ -227,6 +227,8 @@ static void mainboard_init(device_t dev)
 
 	if (dp_tries > MAX_DP_TRIES)
 		printk(BIOS_ERR, "%s: Failed to set up displayport\n", __func__);
+
+	gpio_info();
 }
 
 static void mainboard_enable(device_t dev)

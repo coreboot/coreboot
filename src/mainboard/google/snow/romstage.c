@@ -98,8 +98,8 @@ static void setup_storage(void)
 	if (gpio_direction_output(MMC0_GPIO_PIN, 1)) {
 		printk(BIOS_CRIT, "%s: Unable to power on MMC0.\n", __func__);
 	}
-	gpio_set_pull(MMC0_GPIO_PIN, EXYNOS_GPIO_PULL_NONE);
-	gpio_set_drv(MMC0_GPIO_PIN, EXYNOS_GPIO_DRV_4X);
+	gpio_set_pull(MMC0_GPIO_PIN, GPIO_PULL_NONE);
+	gpio_set_drv(MMC0_GPIO_PIN, GPIO_DRV_4X);
 	exynos_pinmux_config(PERIPH_ID_SDMMC0, PINMUX_FLAG_8BIT_MODE);
 
 	/* MMC2: Removable, 4 bit mode, no GPIO. */
@@ -114,30 +114,17 @@ static void setup_graphics(void)
 
 static void setup_gpio(void)
 {
-	struct exynos5_gpio_part1 *gpio_pt1;
-	struct exynos5_gpio_part2 *gpio_pt2;
+	gpio_direction_input(GPIO_D16); // WP_GPIO
+	gpio_set_pull(GPIO_D16, GPIO_PULL_NONE);
 
-	enum {
-		WP_GPIO = 6,
-		RECMODE_GPIO = 0,
-		LID_GPIO = 5,
-		POWER_GPIO = 3
-	};
+	gpio_direction_input(GPIO_Y10); // RECMODE_GPIO
+	gpio_set_pull(GPIO_Y10, GPIO_PULL_NONE);
 
-	gpio_pt1 = (struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE;
-	gpio_pt2 = (struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE;
+	gpio_direction_input(GPIO_X35); // LID_GPIO
+	gpio_set_pull(GPIO_X35, GPIO_PULL_NONE);
 
-	s5p_gpio_direction_input(&gpio_pt1->d1, WP_GPIO);
-	s5p_gpio_set_pull(&gpio_pt1->d1, WP_GPIO, EXYNOS_GPIO_PULL_NONE);
-
-	s5p_gpio_direction_input(&gpio_pt1->y1, RECMODE_GPIO);
-	s5p_gpio_set_pull(&gpio_pt1->y1, RECMODE_GPIO, EXYNOS_GPIO_PULL_NONE);
-
-	s5p_gpio_direction_input(&gpio_pt2->x3, LID_GPIO);
-	s5p_gpio_set_pull(&gpio_pt2->x3, LID_GPIO, EXYNOS_GPIO_PULL_NONE);
-
-	s5p_gpio_direction_input(&gpio_pt2->x1, POWER_GPIO);
-	s5p_gpio_set_pull(&gpio_pt2->x1, POWER_GPIO, EXYNOS_GPIO_PULL_NONE);
+	gpio_direction_input(GPIO_X13); // POWER_GPIO
+	gpio_set_pull(GPIO_X13, GPIO_PULL_NONE);
 }
 
 static void setup_memory(struct mem_timings *mem, int is_resume)

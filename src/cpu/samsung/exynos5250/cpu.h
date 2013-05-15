@@ -99,12 +99,6 @@
 #define samsung_get_base_dsim() ((struct exynos5_dsim *)EXYNOS5_MIPI_DSI1_BASE)
 #define samsung_get_base_disp_ctrl() ((struct exynos5_disp_ctrl *)EXYNOS5_DISP1_CTRL_BASE)
 #define samsung_get_base_fimd() ((struct exynos5_fimd *)EXYNOS5_FIMD_BASE)
-#define samsung_get_base_gpio_part1() ((struct exynos5_gpio_part1 *)EXYNOS5_GPIO_PART1_BASE)
-#define samsung_get_base_gpio_part2() ((struct exynos5_gpio_part2 *)EXYNOS5_GPIO_PART2_BASE)
-#define samsung_get_base_gpio_part3() ((struct exynos5_gpio_part3 *)EXYNOS5_GPIO_PART3_BASE)
-#define samsung_get_base_gpio_part4() ((struct exynos5_gpio_part4 *)EXYNOS5_GPIO_PART4_BASE)
-#define samsung_get_base_gpio_part5() ((struct exynos5_gpio_part5 *)EXYNOS5_GPIO_PART5_BASE)
-#define samsung_get_base_gpio_part6() ((struct exynos5_gpio_part6 *)EXYNOS5_GPIO_PART6_BASE)
 #define samsung_get_base_pro_id() ((struct exynos5_pro_id *)EXYNOS5_PRO_ID)
 
 #define samsung_get_base_mmc() ((struct exynos5_mmc *)EXYNOS5_MMC_BASE)

@@ -290,6 +290,13 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, ssdt);
 	ALIGN_CURRENT;
 
+	printk(BIOS_DEBUG, "ACPI:     * SSDT2\n");
+	ssdt = (acpi_header_t *)current;
+	acpi_create_serialio_ssdt(ssdt);
+	current += ssdt->length;
+	acpi_add_table(rsdp, ssdt);
+	ALIGN_CURRENT;
+
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;

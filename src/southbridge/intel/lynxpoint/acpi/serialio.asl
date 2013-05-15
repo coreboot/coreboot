@@ -24,6 +24,17 @@
 // Serial IO Device BAR0 and BAR1 is 4KB
 #define SIO_BAR_LEN 0x1000
 
+// This is defined in SSDT2 which is generated at boot based
+// on whether or not the device is enabled in ACPI mode.
+External(\S0EN)
+External(\S1EN)
+External(\S2EN)
+External(\S3EN)
+External(\S4EN)
+External(\S5EN)
+External(\S6EN)
+External(\S7EN)
+
 // Serial IO Resource Consumption for BAR1
 Device (SIOR)
 {
@@ -143,7 +154,7 @@ Device (SDMA)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S0B0, 0)) {
+		If (LEqual (\S0EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -194,7 +205,7 @@ Device (I2C0)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S1B0, 0)) {
+		If (LEqual (\S1EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -245,7 +256,7 @@ Device (I2C1)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S2B0, 0)) {
+		If (LEqual (\S2EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -283,7 +294,7 @@ Device (SPI0)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S3B0, 0)) {
+		If (LEqual (\S3EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -334,7 +345,7 @@ Device (SPI1)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S4B0, 0)) {
+		If (LEqual (\S4EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -385,7 +396,7 @@ Device (UAR0)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S5B0, 0)) {
+		If (LEqual (\S5EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -423,7 +434,7 @@ Device (UAR1)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S6B0, 0)) {
+		If (LEqual (\S6EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)
@@ -461,7 +472,7 @@ Device (SDIO)
 
 	Method (_STA, 0, NotSerialized)
 	{
-		If (LEqual (\S7B0, 0)) {
+		If (LEqual (\S7EN, 0)) {
 			Return (0x0)
 		} Else {
 			Return (0xF)

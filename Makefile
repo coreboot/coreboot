@@ -242,6 +242,9 @@ $(foreach class,$(classes),$(eval $(class)-srcs:=$(sort $($(class)-srcs))))
 src-to-obj=$(addsuffix .$(1).o, $(basename $(patsubst src/%, $(obj)/%, $($(1)-srcs))))
 $(foreach class,$(classes),$(eval $(class)-objs:=$(call src-to-obj,$(class))))
 
+# Save all objs before processing them (for dependency inclusion)
+originalobjs:=$(foreach var, $(addsuffix -objs,$(classes)), $($(var)))
+
 # Call post-processors if they're defined
 $(foreach class,$(classes),\
 	$(if $(value $(class)-postprocess),$(eval $(call $(class)-postprocess,$($(class)-objs)))))
@@ -273,7 +276,7 @@ $(foreach class,$(classes), \
 foreach-src=$(foreach file,$($(1)-srcs),$(eval $(call $(1)-objs_$(subst .,,$(suffix $(file)))_template,$(subst src/,,$(basename $(file))))))
 $(eval $(foreach class,$(classes),$(call foreach-src,$(class))))
 
-DEPENDENCIES = $(allobjs:.o=.d)
+DEPENDENCIES = $(originalobjs:.o=.d)
 -include $(DEPENDENCIES)
 
 printall:

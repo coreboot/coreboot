@@ -167,6 +167,7 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
 void pch_log_state(void);
 #endif
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
+void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
 /* These helpers are for performing SMM relocation. */
 void southbridge_trigger_smi(void);

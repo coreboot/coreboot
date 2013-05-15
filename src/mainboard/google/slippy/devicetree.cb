@@ -56,13 +56,13 @@ chip northbridge/intel/haswell
 			register "sata_ahci" = "0x1"
 			register "sata_port_map" = "0x1"
 
-			register "sio_acpi_mode" = "1"
+			register "sio_acpi_mode" = "0"
 			register "sio_i2c0_voltage" = "0" # 3.3V
 			register "sio_i2c1_voltage" = "0" # 3.3V
 
 			device pci 13.0 off end # Smart Sound Audio DSP
 			device pci 14.0 on end # USB3 XHCI
-			device pci 15.0 off end # Serial I/O DMA
+			device pci 15.0 on end # Serial I/O DMA
 			device pci 15.1 on end # I2C0
 			device pci 15.2 on end # I2C1
 			device pci 15.3 off end # GSPI0

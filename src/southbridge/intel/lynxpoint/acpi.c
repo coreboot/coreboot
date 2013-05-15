@@ -18,9 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/acpi.h>
+#include <arch/acpigen.h>
+#include <cbmem.h>
 #include <types.h>
 #include <string.h>
 #include "pch.h"
+#include "nvs.h"
 
 void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 {
@@ -53,3 +57,41 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
 }
 
+static int acpi_create_serialio_ssdt_entry(int id, global_nvs_t *gnvs)
+{
+	char sio_name[5] = {};
+	sprintf(sio_name, "S%1uEN", id);
+	return acpigen_write_name_byte(sio_name, gnvs->s0b[id] ? 1 : 0);
+}
+
+void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
+{
+	unsigned long current = (unsigned long)ssdt + sizeof(acpi_header_t);
+	global_nvs_t *gnvs = cbmem_find(CBMEM_ID_ACPI_GNVS);
+	int id, len = 0;
+
+	if (!gnvs)
+		return;
+
+	/* Fill the SSDT header */
+	memset((void *)ssdt, 0, sizeof(acpi_header_t));
+	memcpy(&ssdt->signature, "SSDT", 4);
+	ssdt->revision = 2;
+	memcpy(&ssdt->oem_id, OEM_ID, 6);
+	memcpy(&ssdt->oem_table_id, ACPI_TABLE_CREATOR, 8);
+	ssdt->oem_revision = 42;
+	memcpy(&ssdt->asl_compiler_id, ASLC, 4);
+	ssdt->asl_compiler_revision = 42;
+	ssdt->length = sizeof(acpi_header_t);
+	acpigen_set_current((char *) current);
+
+	/* Fill the SSDT with an entry for each SerialIO device */
+	for (id = 0; id < 8; id++)
+		len += acpi_create_serialio_ssdt_entry(id, gnvs);
+	acpigen_patch_len(len-1);
+
+	/* (Re)calculate length and checksum. */
+	current = (unsigned long)acpigen_get_current();
+	ssdt->length = current - (unsigned long)ssdt;
+	ssdt->checksum = acpi_checksum((void *)ssdt, ssdt->length);
+}

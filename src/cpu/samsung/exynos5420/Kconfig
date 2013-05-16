@@ -1,0 +1,133 @@
+config BOOTBLOCK_CPU_INIT
+	string
+	default "cpu/samsung/exynos5420/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code. This is useful if the
+	  bootblock must load microcode or copy data from ROM before
+	  searching for the bootblock.
+
+config EXYNOS_ACE_SHA
+	bool
+	default n
+
+config BL1_SIZE_KB
+	int
+	default 8
+
+# Example SRAM/iRAM map for Exynos5420 platform:
+#
+# 0x0202_0000: vendor-provided BL1
+# 0x0202_3400: bootblock, assume up to 32KB in size
+# 0x0203_0000: romstage, assume up to 128KB in size.
+# 0x0207_8000: stack pointer
+
+config BOOTBLOCK_BASE
+	hex
+	default 0x02023400
+
+config ROMSTAGE_BASE
+	hex
+	default 0x02030000
+
+config ROMSTAGE_SIZE
+	hex
+	default 0x10000
+
+# Stack may reside in either IRAM or DRAM. We will define it to live
+# at the top of IRAM for now.
+#
+# Stack grows downward, push operation stores register contents in
+# consecutive memory locations ending just below SP
+config STACK_TOP
+	hex
+	default 0x02078000
+
+config STACK_BOTTOM
+	hex
+	default 0x02077000
+
+config STACK_SIZE
+	hex
+	default 0x1000
+
+config CBFS_ROM_OFFSET
+	# Calculated by BL1 + max bootblock size.
+	hex "offset of CBFS data in ROM"
+	default 0x0A000
+
+# TODO Change this to some better address not overlapping bootblock when
+# cbfstool supports creating header in arbitrary location.
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x2040
+
+# TODO We may probably move this to board-specific implementation files instead
+# of KConfig values.
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x02060000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x000017000
+
+# FIXME: This is for copying SPI content into SRAM temporarily and
+# will be removed when we have the SPI streaming driver implemented.
+config SPI_IMAGE_HACK
+	hex
+	default 0x02060000
+
+# FIXME: other magic numbers that should probably go away
+config XIP_ROM_SIZE
+	hex
+	default ROMSTAGE_SIZE
+
+config SYS_SDRAM_BASE
+	hex
+	default 0x40000000
+
+config SYS_TEXT_BASE
+	hex
+	default 0x43e00000
+
+config COREBOOT_TABLES_SIZE
+	hex
+	default 0x4000000
+
+choice CONSOLE_SERIAL_UART_CHOICES
+	prompt "Serial Console UART"
+	default CONSOLE_SERIAL_UART3
+	depends on CONSOLE_SERIAL_UART
+
+config CONSOLE_SERIAL_UART0
+	bool "UART0"
+	help
+	  Serial console on UART0
+
+config CONSOLE_SERIAL_UART1
+	bool "UART1"
+	help
+	  Serial console on UART1
+
+config CONSOLE_SERIAL_UART2
+	bool "UART2"
+	help
+	  Serial console on UART2
+
+config CONSOLE_SERIAL_UART3
+	bool "UART3"
+	help
+	  Serial console on UART3
+
+endchoice
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_UART
+	default 0x12c00000 if CONSOLE_SERIAL_UART0
+	default 0x12c10000 if CONSOLE_SERIAL_UART1
+	default 0x12c20000 if CONSOLE_SERIAL_UART2
+	default 0x12c30000 if CONSOLE_SERIAL_UART3
+	help
+	  Map the UART names to the respective MMIO address.
+

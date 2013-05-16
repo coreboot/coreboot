@@ -930,14 +930,6 @@ config DEBUG_INTEL_ME
 	  is present on Intel 6-series chipsets.
 endif
 
-config LLSHELL
-	bool "Built-in low-level shell"
-	default n
-	help
-	  If enabled, you will have a low level shell to examine your machine.
-	  Put llshell() in your (romstage) code to start the shell.
-	  See src/arch/x86/llshell/llshell.inc for details.
-
 config TRACE
 	bool "Trace function calls"
 	default n

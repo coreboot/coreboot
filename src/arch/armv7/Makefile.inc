@@ -149,10 +149,6 @@ ldscripts += $(src)/arch/armv7/romstage.ld
 crt0s += $(cpu_incs)
 crt0s += $(cpu_incs-y)
 
-ifeq ($(CONFIG_LLSHELL),y)
-crt0s += $(src)/arch/armv7/llshell/llshell.inc
-endif
-
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@

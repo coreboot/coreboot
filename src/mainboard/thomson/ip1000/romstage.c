@@ -24,7 +24,6 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <arch/hlt.h>
-#include <arch/llshell.h>
 #include "drivers/pc80/udelay_io.c"
 #include <console/console.h>
 #include <lib.h>
@@ -117,8 +116,4 @@ void main(unsigned long bist)
 
 	/* Initialize memory */
 	sdram_initialize();
-
-#if CONFIG_LLSHELL
-	llshell();
-#endif
 }

@@ -23,7 +23,6 @@
 #include <spd.h>
 #include <arch/io.h>
 #include <arch/hlt.h>
-#include <arch/llshell.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <console/console.h>

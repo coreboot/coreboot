@@ -197,10 +197,6 @@ endif
 crt0s += $(cpu_incs)
 crt0s += $(cpu_incs-y)
 
-ifeq ($(CONFIG_LLSHELL),y)
-crt0s += $(src)/arch/x86/llshell/llshell.inc
-endif
-
 crt0s += $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc
 
 ifeq ($(CONFIG_ROMCC),y)

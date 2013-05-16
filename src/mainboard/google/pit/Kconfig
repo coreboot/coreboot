@@ -1,0 +1,56 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2013 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+if BOARD_GOOGLE_PIT
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARMV7
+	select CPU_SAMSUNG_EXYNOS5420
+	select HAVE_UART_MEMORY_MAPPED
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_I2C
+	select BOARD_ROMSIZE_KB_4096
+	select DRIVER_MAXIM_MAX77686
+	select CHROMEOS
+	select DRIVER_TI_TPS65090
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MAINBOARD_DO_NATIVE_VGA_INIT
+
+config MAINBOARD_DIR
+	string
+	default google/pit
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Pit"
+
+config MAX_CPUS
+	int
+	default 2
+
+config DRAM_SIZE_MB
+	int
+	default 2048
+
+config EC_GOOGLE_CHROMEEC_I2C_BUS
+	hex
+	default 4
+
+endif # BOARD_GOOGLE_PIT

@@ -32,6 +32,8 @@ config BOARD_GOOGLE_LINK
 	bool "Link"
 config BOARD_GOOGLE_PARROT
 	bool "Parrot"
+config BOARD_GOOGLE_PIT
+	bool "Pit"
 config BOARD_GOOGLE_SNOW
 	bool "Snow"
 config BOARD_GOOGLE_STOUT
@@ -42,6 +44,7 @@ endchoice
 source "src/mainboard/google/butterfly/Kconfig"
 source "src/mainboard/google/link/Kconfig"
 source "src/mainboard/google/parrot/Kconfig"
+source "src/mainboard/google/pit/Kconfig"
 source "src/mainboard/google/snow/Kconfig"
 source "src/mainboard/google/stout/Kconfig"
 

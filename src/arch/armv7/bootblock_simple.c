@@ -68,12 +68,12 @@ void main(void)
 		bootblock_mainboard_init();
 	}
 
+#ifdef CONFIG_EARLY_CONSOLE
 	console_init();
-	printk(BIOS_INFO, "hello from bootblock\n");
-	printk(BIOS_INFO, "bootblock main(): loading romstage\n");
+#endif
+
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);
 
-	printk(BIOS_INFO, "bootblock main(): jumping to romstage\n");
 	if (entry) stage_exit(entry);
 	hlt();
 }

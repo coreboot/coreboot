@@ -9,6 +9,10 @@ chip northbridge/intel/haswell
 	# Enable HDMI Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
 
+	# Set backlight PWM values for eDP
+	register "gpu_cpu_backlight" = "0x00000200"
+	register "gpu_pch_backlight" = "0x04000000"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_rPGA989
 			device lapic 0 on end

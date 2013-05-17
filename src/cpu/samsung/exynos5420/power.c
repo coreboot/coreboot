@@ -24,9 +24,10 @@
 #include <arch/hlt.h>
 #include "cpu.h"
 #include "power.h"
+#include "setup.h"
 #include "sysreg.h"
 
-static void ps_hold_setup(void)
+void ps_hold_setup(void)
 {
 	struct exynos5_power *power =
 		samsung_get_base_power();

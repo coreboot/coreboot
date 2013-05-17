@@ -20,6 +20,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_H
 #define CPU_SAMSUNG_EXYNOS5250_H
 
+#include "gpio.h"
+
 struct cpu_samsung_exynos5250_config {
 	/* special magic numbers! */
 	int clkval_f;
@@ -33,6 +35,9 @@ struct cpu_samsung_exynos5250_config {
 	int xres;
 	int yres;
 	int bpp;
+
+	int usb_vbus_gpio;
+	int usb_hsic_gpio;
 
 	u32 lcdbase;
 };

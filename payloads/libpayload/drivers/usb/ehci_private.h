@@ -78,10 +78,10 @@ typedef volatile struct {
 	u32 ctrldssegment;
 	u32 periodiclistbase;
 	u32 asynclistaddr;
-	u8 res1[0x3f-0x1c];
+	u8 res1[0x40-0x1c];
 	u32 configflag;
 	portsc_t portsc[0];
-} hc_op_t;
+} __attribute__ ((packed)) hc_op_t;
 
 typedef volatile struct {
 #define QTD_TERMINATE 1
@@ -130,7 +130,7 @@ typedef volatile struct {
 #define QH_PIPE_MULTIPLIER_SHIFT 30
 	volatile u32 current_td_ptr;
 	volatile qtd_t td;
-} ehci_qh_t;
+} __attribute__ ((packed)) ehci_qh_t;
 
 typedef struct ehci {
 	hc_cap_t *capabilities;

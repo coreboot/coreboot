@@ -150,11 +150,12 @@ static void setup_memory(struct mem_timings *mem, int is_resume)
 static struct mem_timings *setup_clock(void)
 {
 	struct mem_timings *mem = get_mem_timings();
-	struct arm_clk_ratios *arm_ratios = get_arm_clk_ratios();
 	if (!mem) {
 		die("Unable to auto-detect memory timings\n");
 	}
-	system_clock_init(mem, arm_ratios);
+
+	system_clock_init();
+
 	return mem;
 }
 

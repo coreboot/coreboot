@@ -176,6 +176,32 @@ static void disable_usb30_pll(void)
 	gpio_direction_output(usb3_pll_l, 0);
 }
 
+static void gpio_init(void)
+{
+	/* Set up the I2C busses. */
+	exynos_pinmux_config(PERIPH_ID_I2C0, PINMUX_FLAG_NONE);
+	exynos_pinmux_config(PERIPH_ID_I2C1, PINMUX_FLAG_NONE);
+	exynos_pinmux_config(PERIPH_ID_I2C2, PINMUX_FLAG_NONE);
+	exynos_pinmux_config(PERIPH_ID_I2C3, PINMUX_FLAG_NONE);
+	exynos_pinmux_config(PERIPH_ID_I2C4, PINMUX_FLAG_NONE);
+	exynos_pinmux_config(PERIPH_ID_I2C7, PINMUX_FLAG_NONE);
+
+	/* Set up the GPIOs used to arbitrate for I2C bus 4. */
+	gpio_set_pull(GPIO_F03, GPIO_PULL_NONE);
+	gpio_set_pull(GPIO_E04, GPIO_PULL_NONE);
+	gpio_direction_output(GPIO_F03, 1);
+	gpio_direction_input(GPIO_E04);
+
+	/* Set up the GPIO used to enable the audio codec. */
+	gpio_set_pull(GPIO_X17, GPIO_PULL_NONE);
+	gpio_set_pull(GPIO_X15, GPIO_PULL_NONE);
+	gpio_direction_output(GPIO_X17, 1);
+	gpio_direction_output(GPIO_X15, 1);
+
+	/* Set up the I2S busses. */
+	exynos_pinmux_config(PERIPH_ID_I2S1, PINMUX_FLAG_NONE);
+}
+
 /* this happens after cpu_init where exynos resources are set */
 static void mainboard_init(device_t dev)
 {
@@ -185,6 +211,8 @@ static void mainboard_init(device_t dev)
 		.video_info = &dp_video_info,
 	};
 	void *fb_addr;
+
+	gpio_init();
 
 	i2c_init(TPS69050_BUS, I2C_0_SPEED, I2C_SLAVE);
 	i2c_init(7, I2C_0_SPEED, I2C_SLAVE);

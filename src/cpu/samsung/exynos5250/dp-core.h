@@ -117,14 +117,6 @@ struct s5p_dp_device {
 	struct link_train	link_train;
 };
 
-/* this struct is used by mainboards to pass mode info to the driver */
-typedef struct vidinfo {
-	u16 vl_col;
-	u16 vl_row;
-	u8 vl_bpix;
-	u16 *cmap;
-} vidinfo_t;
-
 /* s5p_dp_reg.c */
 
 /*
@@ -260,9 +252,9 @@ void s5p_dp_wait_hw_link_training_done(struct s5p_dp_device *dp);
 
 /* startup and init */
 struct exynos5_fimd_panel;
-void fb_init(vidinfo_t *panel_info, void *lcdbase,
-				struct exynos5_fimd_panel *pd);
+void fb_init(unsigned long int fb_size, void *lcdbase,
+	     struct exynos5_fimd_panel *pd);
 int dp_controller_init(struct s5p_dp_device *dp_device);
-int lcd_ctrl_init(vidinfo_t *panel_info,
-			struct exynos5_fimd_panel *panel_data, void *lcdbase);
+int lcd_ctrl_init(unsigned long int fb_size,
+		  struct exynos5_fimd_panel *panel_data, void *lcdbase);
 #endif /* CPU_SAMSUNG_EXYNOS5250_DP_CORE_H */

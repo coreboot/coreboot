@@ -226,7 +226,7 @@ static void mainboard_init(device_t dev)
 	disable_usb30_pll();
 
 	fb_addr = cbmem_find(CBMEM_ID_CONSOLE);
-	set_vbe_mode_info_valid(&edid, (uintptr_t)(fb_addr) + 64*KiB);
+	set_vbe_mode_info_valid(&edid, (uintptr_t)fb_addr);
 
 	lcd_vdd();
 	do {

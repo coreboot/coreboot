@@ -97,6 +97,8 @@ static void exynos_displayport_init(device_t dev)
 	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, fb_size);
 	printk(BIOS_SPEW, "LCD framebuffer base is %p\n", (void *)(lcdbase));
 
+	memset((void *)lcdbase, 0, fb_size);	/* clear the framebuffer */
+
 	/*
 	 * We need to clean and invalidate the framebuffer region and disable
 	 * caching as well. We assume that our dcache <--> memory address
@@ -114,7 +116,6 @@ static void exynos_displayport_init(device_t dev)
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 	printk(BIOS_DEBUG,
 	       "Initializing Exynos VGA, base %p\n", (void *)lcdbase);
-	memset((void *)lcdbase, 0, fb_size);	/* clear the framebuffer */
 	ret = lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
 }
 

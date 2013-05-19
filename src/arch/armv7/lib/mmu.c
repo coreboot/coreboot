@@ -118,11 +118,12 @@ void mmu_init(void)
 	 * programmer's guide)
 	 *
 	 * FIXME: TLB needs to be aligned to 16KB, but cbmem_add() aligns to
-	 * 512 bytes. So add double the space in cbmem and fix-up the pointer.
+	 * 512 bytes. So allocate some extra space in cbmem and fix-up the
+	 * pointer.
 	 */
-	ttb_size = L1_TLB_ENTRIES * sizeof(unsigned long);
-	ttb_addr = (uintptr_t)cbmem_add(CBMEM_ID_GDT, ttb_size * 2);
-	ttb_addr = ALIGN(ttb_addr + ttb_size, ttb_size);
+	ttb_size = L1_TLB_ENTRIES * sizeof(uint32_t);
+	ttb_addr = (uintptr_t)cbmem_add(CBMEM_ID_GDT, ttb_size + 16*KiB);
+	ttb_addr = ALIGN(ttb_addr, 16*KiB);
 	printk(BIOS_DEBUG, "Translation table is @ 0x%08x\n", ttb_addr);
 
 	/*

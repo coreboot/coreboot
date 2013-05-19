@@ -34,6 +34,7 @@
 #include <console/console.h>
 
 #include <arch/cache.h>
+#include <arch/io.h>
 
 #define L1_TLB_ENTRIES	4096	/* 1 entry for each 1MB address space */
 
@@ -44,11 +45,14 @@ void mmu_disable_range(unsigned long start_mb, unsigned long size_mb)
 	unsigned int i;
 	uint32_t *ttb_entry = (uint32_t *)ttb_addr;
 	printk(BIOS_DEBUG, "Disabling: 0x%08lx:0x%08lx\n",
-			start_mb << 20, ((start_mb + size_mb) << 20) - 1);
+			start_mb*MiB, start_mb*MiB + size_mb*MiB - 1);
+
+	for (i = start_mb; i < start_mb + size_mb; i++)
+		writel(0, &ttb_entry[i]);
 
 	for (i = start_mb; i < start_mb + size_mb; i++) {
-		ttb_entry[i] = 0;
-		tlbimvaa(i);
+		dccmvac((uintptr_t)&ttb_entry[i]);
+		tlbimvaa(i*MiB);
 	}
 }
 
@@ -99,9 +103,14 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 	printk(BIOS_DEBUG, "Setting dcache policy: 0x%08lx:0x%08lx [%s]\n",
 			start_mb << 20, ((start_mb + size_mb) << 20) - 1, str);
 
+	/* Write out page table entries. */
+	for (i = start_mb; i < start_mb + size_mb; i++)
+		writel((i << 20) | attr, &ttb_entry[i]);
+
+	/* Flush the page table entries, and old translations from the TLB. */
 	for (i = start_mb; i < start_mb + size_mb; i++) {
-		ttb_entry[i] = (i << 20) | attr;
-		tlbimvaa(start_mb);
+		dccmvac((uintptr_t)&ttb_entry[i]);
+		tlbimvaa(i*MiB);
 	}
 }
 

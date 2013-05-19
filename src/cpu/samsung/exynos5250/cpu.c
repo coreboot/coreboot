@@ -105,15 +105,11 @@ static void exynos_displayport_init(device_t dev)
 	 * Note: We may want to do something clever to ensure the framebuffer
 	 * region is aligned such that we don't change dcache policy for other
 	 * stuff inadvertantly.
-	 *
-	 * FIXME: Is disabling/re-enabling the MMU entirely necessary?
 	 */
 	uint32_t lower = ALIGN_DOWN(lcdbase, MiB);
 	uint32_t upper = ALIGN_UP(lcdbase + fb_size, MiB);
 	dcache_clean_invalidate_by_mva(lower, upper - lower);
-	dcache_mmu_disable();
 	mmu_config_range(lower/MiB, (upper - lower)/MiB, DCACHE_OFF);
-	dcache_mmu_enable();
 
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 	printk(BIOS_DEBUG,

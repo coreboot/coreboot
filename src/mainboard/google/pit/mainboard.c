@@ -201,6 +201,8 @@ static void mainboard_init(device_t dev)
 	set_vbe_mode_info_valid(&edid, (uintptr_t)fb_addr);
 
 	lcd_vdd();
+
+	// FIXME: should timeout
 	do {
 		udelay(50);
 	} while (!exynos_dp_hotplug());
@@ -228,7 +230,8 @@ static void mainboard_init(device_t dev)
 	if (dp_tries > MAX_DP_TRIES)
 		printk(BIOS_ERR, "%s: Failed to set up displayport\n", __func__);
 
-	gpio_info();
+	// Uncomment to get excessive GPIO output:
+	// gpio_info();
 }
 
 static void mainboard_enable(device_t dev)

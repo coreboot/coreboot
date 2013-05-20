@@ -116,31 +116,20 @@ static void fimd_bypass(void)
 	sysreg->disp1blk_cfg &= ~FIMDBYPASS_DISP1;
 }
 
-/* Calculate the size of Framebuffer from the resolution */
-static u32 calc_fbsize(vidinfo_t *panel_info)
-{
-	/* They had PAGE_SIZE here instead of 4096.
-	 * but that's a totally arbitrary number -- everything nowadays
-	 * has lots of page sizes.
-	 * So keep it obvious.
-	 */
-	return ALIGN((panel_info->vl_col * panel_info->vl_row *
-		      ((1<<panel_info->vl_bpix) / 8)), 4096);
-}
-
 /*
  * Initialize display controller.
  *
  * @param lcdbase	pointer to the base address of framebuffer.
  * @pd			pointer to the main panel_data structure
  */
-void fb_init(vidinfo_t *panel_info, void *lcdbase,
-	struct exynos5_fimd_panel *pd)
+void fb_init(unsigned long int fb_size, void *lcdbase,
+	     struct exynos5_fimd_panel *pd)
 {
 	unsigned int val;
-	u32 fbsize;
 	struct exynos5_fimd *fimd = samsung_get_base_fimd();
 	struct exynos5_disp_ctrl *disp_ctrl = samsung_get_base_disp_ctrl();
+
+	fb_size = ALIGN(fb_size, 4096);
 
 	writel(pd->ivclk | pd->fixvclk, &disp_ctrl->vidcon1);
 	val = ENVID_ON | ENVID_F_ON | (pd->clkval_f << CLKVAL_F_OFFSET);
@@ -161,9 +150,7 @@ void fb_init(vidinfo_t *panel_info, void *lcdbase,
 	writel(val, &disp_ctrl->vidtcon2);
 
 	writel((unsigned int)lcdbase, &fimd->vidw00add0b0);
-
-	fbsize = calc_fbsize(panel_info);
-	writel((unsigned int)lcdbase + fbsize, &fimd->vidw00add1b0);
+	writel((unsigned int)lcdbase + fb_size, &fimd->vidw00add1b0);
 
 	writel(pd->xres * 2, &fimd->vidw00add2);
 
@@ -586,12 +573,12 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
  * @param lcdbase	Base address of LCD frame buffer
  * @return 0 if ok, -ve error code on error
  */
-int lcd_ctrl_init(vidinfo_t *panel_info,
-		struct exynos5_fimd_panel *panel_data, void *lcdbase)
+int lcd_ctrl_init(unsigned long int fb_size,
+		  struct exynos5_fimd_panel *panel_data, void *lcdbase)
 {
 	int ret = 0;
 
 	fimd_bypass();
-	fb_init(panel_info, lcdbase, panel_data);
+	fb_init(fb_size, lcdbase, panel_data);
 	return ret;
 }

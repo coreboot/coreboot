@@ -68,12 +68,10 @@ static void exynos_displayport_init(device_t dev)
 	/* put these on the stack. If, at some point, we want to move
 	 * this code to a pre-ram stage, it will be much easier.
 	 */
-	vidinfo_t vi;
 	struct exynos5_fimd_panel panel;
 	unsigned long int fb_size;
 	u32 lcdbase;
 
-	memset(&vi, 0, sizeof(vi));
 	memset(&panel, 0, sizeof(panel));
 
 	panel.is_dp = 1; /* Display I/F is eDP */
@@ -94,18 +92,10 @@ static void exynos_displayport_init(device_t dev)
 	panel.xres = conf->xres;
 	panel.yres = conf->yres;
 
-	vi.vl_col = conf->xres;
-	vi.vl_row = conf->yres;
-	vi.vl_bpix = conf->bpp;
-	/*
-	 * The size is a magic number from hardware. Allocate enough for the
-	 * frame buffer and color map.
-	 */
+	/* The size is a magic number from hardware. */
 	fb_size = conf->xres * conf->yres * (conf->bpp / 8);
-	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, fb_size + 64*KiB);
-	printk(BIOS_SPEW, "LCD colormap base is %p\n", (void *)(lcdbase));
-	mmio_resource(dev, 0, lcdbase/KiB, 64);
-	vi.cmap = (void *)lcdbase;
+	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, fb_size);
+	printk(BIOS_SPEW, "LCD framebuffer base is %p\n", (void *)(lcdbase));
 
 	/*
 	 * We need to clean and invalidate the framebuffer region and disable
@@ -119,18 +109,17 @@ static void exynos_displayport_init(device_t dev)
 	 * FIXME: Is disabling/re-enabling the MMU entirely necessary?
 	 */
 	uint32_t lower = ALIGN_DOWN(lcdbase, MiB);
-	uint32_t upper = ALIGN_UP(lcdbase + fb_size + 64*KiB, MiB);
+	uint32_t upper = ALIGN_UP(lcdbase + fb_size, MiB);
 	dcache_clean_invalidate_by_mva(lower, upper - lower);
 	dcache_mmu_disable();
 	mmu_config_range(lower/MiB, (upper - lower)/MiB, DCACHE_OFF);
 	dcache_mmu_enable();
 
-	lcdbase += 64*KiB;
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 	printk(BIOS_DEBUG,
 	       "Initializing Exynos VGA, base %p\n", (void *)lcdbase);
 	memset((void *)lcdbase, 0, fb_size);	/* clear the framebuffer */
-	ret = lcd_ctrl_init(&vi, &panel, (void *)lcdbase);
+	ret = lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
 }
 
 static void cpu_init(device_t dev)

@@ -490,7 +490,6 @@ static int board_get_config(void)
 	id1 = gpio_read_mvl3(BOARD_ID1_GPIO);
 	if (id0 < 0 || id1 < 0)
 		return -1;
-	printk(BIOS_DEBUG, "%s: id0: %u, id1: %u\n", __func__, id0, id1);
 
 	for (i = 0; i < ARRAY_SIZE(id_map); i++) {
 		if (id0 == id_map[i].id0 && id1 == id_map[i].id1) {

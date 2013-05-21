@@ -35,6 +35,7 @@
 #include <boot/coreboot_tables.h>
 #include "hda_verb.h"
 #include <southbridge/intel/lynxpoint/pch.h>
+#include "ec.h"
 
 void mainboard_suspend_resume(void)
 {
@@ -139,11 +140,17 @@ static void verb_setup(void)
 	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
 }
 
+static void mainboard_init(device_t dev)
+{
+	slippy_ec_init();
+}
+
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
 static void mainboard_enable(device_t dev)
 {
+	dev->ops->init = mainboard_init;
 #if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

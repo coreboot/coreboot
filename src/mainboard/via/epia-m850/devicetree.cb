@@ -1,0 +1,111 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2011-2013  Alexandru Gagniuc <mr.nuke.me@gmail.com>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+chip northbridge/via/vx900		# Northbridge
+	register "assign_pex_to_dp" = "0"
+	register "pcie_port1_2_lane_wide" = "1"
+	register "ext_int_route_to_pirq" = "'H'"
+
+	device cpu_cluster 0 on		# APIC cluster
+		chip cpu/via/nano		# VIA NANO
+			device lapic 0 on end	# APIC
+		end
+	end
+	device domain 0 on
+		device pci 0.0  on end		# [0410] Host controller
+		device pci 0.1  on end		# [1410] Error Reporting
+		device pci 0.2  on end		# [2410] CPU Bus Control
+		device pci 0.3  on end		# [3410] DRAM Bus Control
+		device pci 0.4  on end		# [4410] Power Management
+		device pci 0.5  on 		# [5410] APIC+Traffic Control
+			chip drivers/generic/ioapic
+				register "have_isa_interrupts" = "0"
+				register "irq_on_fsb" = "1"
+				register "enable_virtual_wire" = "1"
+				register "base" = "0xfecc0000"
+				device ioapic 2 on end
+			end
+		end
+		device pci 0.6  off end		# [6410] Scratch Registers
+		device pci 0.7  on end		# [7410] V4 Link Control
+		device pci 1.0  on		# [7122] VGA Chrome9 HD
+			ioapic_irq 2 INTA 0x28
+		end
+		device pci 1.1  on		# [9170] Audio Device
+			ioapic_irq 2 INTA 0x29
+		end
+		device pci 3.0  on end		# [a410] PEX1
+		device pci 3.1  on end		# [b410] PEX2
+		device pci 3.2  on end		# [c410] PEX3
+		device pci 3.3  on end		# [d410] PEX4
+		device pci 3.4  on end		# [e410] PCIE bridge
+		device pci b.0  on end		# [a409] USB Device
+		device pci c.0  off end		# [95d0] SDIO Host Controller
+		device pci d.0  off end		# [9530] Memory Card controller
+		device pci f.0  on		# [9001] SATA Controller
+			ioapic_irq 1 INTA 0x15
+		end
+		device pci 10.0 on end		# [3038] USB 1.1
+		device pci 10.1 on end		# [3038] USB 1.1
+		device pci 10.2 on end		# [3038] USB 1.1
+		device pci 10.3 on end		# [3038] USB 1.1
+		device pci 10.4 on end		# [3104] USB 2.0
+		device pci 11.0 on		# [8410] LPC Bus Control
+			chip drivers/generic/ioapic
+				register "have_isa_interrupts" = "1"
+				register "irq_on_fsb" = "1"
+				register "enable_virtual_wire" = "1"
+				register "base" = "0xfec00000"
+				device ioapic 1 on end
+			end
+			#chip drivers/generic/generic	# DIMM 0 channel 1
+			#	device i2c 50 on end
+			#end
+			#chip drivers/generic/generic	# DIMM 1 channel 1
+			#	device i2c 51 on end
+			#end
+			chip superio/fintek/f81865f	# Super duper IO
+				device pnp 4e.0 off end	# Floppy
+				device pnp 4e.3 off end	# Parallel Port
+				device pnp 4e.4 off end	# Hardware Monitor
+				device pnp 4e.5 off end	# Keyboard not here
+				device pnp 4e.6 off end	# GPIO
+				device pnp 4e.a off end	# PME
+				device pnp 4e.10 on	# COM1
+					io 0x60 = 0x3f8
+					irq 0x70 = 4
+				end
+				device pnp 4e.11 on	# COM2
+					io 0x60 = 0x2f8
+					irq 0x70 = 3
+				end
+				device pnp 4e.12 on	# COM3
+					io 0x60 = 0x3e8
+					irq 0x70 = 10
+				end
+				device pnp 4e.13 on	# COM4
+					io 0x60 = 0x2e8
+					irq 0x70 = 11
+				end
+			end # superio/fintek/f81865f
+		end # LPC
+		device pci 11.7 on end		# [a353] North-South control
+		device pci 14.0 on end		# [3288] Azalia HDAC
+	end
+end

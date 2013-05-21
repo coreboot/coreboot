@@ -22,7 +22,7 @@
 
 #include <ec/google/chromeec/ec_commands.h>
 
-#define EC_SCI_GPI  7   /* GPIO7 is EC_SCI# */
+#define EC_SCI_GPI  23  /* GPIO7/GPE23 is EC_SCI# */
 #define EC_SMI_GPI  8   /* GPIO8 is EC_SMI# */
 
 #define LINK_EC_SCI_EVENTS \

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2012  Alexandru Gagniuc <mr.nuke.me@gmail.com>
+## Copyright (C) 2011  Alexandru Gagniuc <mr.nuke.me@gmail.com>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,17 +17,5 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-subdirs-y += ../../x86/tsc
-subdirs-y += ../../x86/mtrr
-subdirs-y += ../../x86/lapic
-subdirs-y += ../../x86/cache
-subdirs-y += ../../x86/smm
+#romstage-y += ./../../../superio/fintek/f81865f/f81865f_early_serial.c
 
-ramstage-y += nano_init.c
-ramstage-y += update_ucode.c
-
-# We need to hear from VIA to get permission to include this file in the
-# official coreboot repository. Until then, we leave this commented out
-cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += nano_ucode_blob.c
-
-cpu_incs += $(src)/cpu/via/car/cache_as_ram.inc

@@ -223,6 +223,41 @@ int ram_check_nodie(unsigned long start, unsigned long stop)
 	return ret;
 }
 
+int ram_check_noprint_nodie(unsigned long start, unsigned long stop)
+{
+		unsigned long addr, value, value2;
+	unsigned short int idx;
+	unsigned char failed, failures;
+	uint8_t verbose = 0;
+
+	for (idx=0; idx<0x400; idx+=4) {
+		test_pattern(idx, &addr, &value);
+		write_phys(start + addr, value);
+	}
+
+	/* Make sure we don't read before we wrote */
+	phys_memory_barrier();
+
+	failures = 0;
+	for (idx=0; idx<0x400; idx+=4) {
+		test_pattern(idx, &addr, &value);
+		value2 = read_phys(start + addr);
+
+		failed = (value2 != value);
+		failures |= failed;
+		if  (failed && !verbose) {
+		}
+		if (verbose) {
+		}
+	}
+	if (failures) {
+		return 1;
+	}
+	else {
+	}
+	return 0;
+}
+
 void quick_ram_check(void)
 {
 	int fail = 0;

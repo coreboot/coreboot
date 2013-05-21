@@ -110,7 +110,7 @@
 	  .route = GPIO_ROUTE_SCI }
 
 #define LP_GPIO_ACPI_SMI \
-	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT, \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_INVERT, \
 	  .owner = GPIO_OWNER_ACPI, \
 	  .route = GPIO_ROUTE_SMI }
 

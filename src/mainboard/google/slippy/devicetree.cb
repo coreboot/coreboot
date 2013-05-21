@@ -49,7 +49,8 @@ chip northbridge/intel/haswell
 			register "gen1_dec" = "0x00fc0801"
 			register "gen2_dec" = "0x00fc0901"
 
-			register "alt_gp_smi_en" = "0x0000"
+			# EC_SMI is GPIO34
+			register "alt_gp_smi_en" = "0x0004"
 			register "gpe0_en_1" = "0x00000000"
 			# EC_SCI is GPIO36
 			register "gpe0_en_2" = "0x00000010"

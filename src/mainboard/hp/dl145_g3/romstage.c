@@ -38,6 +38,7 @@
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
+#include <spd.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
@@ -77,7 +78,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
 #include "lib/generic_sdram.c"
-#include <spd.h>
 #include "cpu/amd/dualcore/dualcore.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"

@@ -10,6 +10,7 @@
 #include <device/pnp_def.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
+#include <spd.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include "southbridge/amd/amd8111/early_smbus.c"
 #include <reset.h>
@@ -77,7 +78,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
-#include <spd.h>
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"

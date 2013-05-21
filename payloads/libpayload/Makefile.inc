@@ -54,9 +54,10 @@ subdirs-$(CONFIG_LZMA) += liblzma
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc
-CFLAGS += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
+CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer
+CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS += -Wstrict-aliasing -Wshadow -fno-builtin
+CFLAGS += -Wstrict-aliasing -Wshadow
 
 $(obj)/libpayload-config.h: $(KCONFIG_AUTOHEADER)
 	cmp $@ $< 2>/dev/null || cp $< $@

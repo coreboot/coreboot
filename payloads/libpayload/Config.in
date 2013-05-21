@@ -72,11 +72,6 @@ config ARCH_ARMV7
         help
           Support the x86 architecture
 
-config ARCH_POWERPC
-        bool "PowerPC"
-        help
-	  Support the PowerPC architecture
-
 config ARCH_X86
         bool "x86"
         help

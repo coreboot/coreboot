@@ -28,5 +28,4 @@
 ##
 
 source "arch/armv7/Config.in"
-source "arch/powerpc/Config.in"
 source "arch/x86/Config.in"

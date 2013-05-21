@@ -83,10 +83,18 @@ u16 get_gpiobase(void)
 
 #ifndef __SMM__
 
-/* Set bit in Function Disble register to hide this device */
-static void pch_hide_devfn(unsigned devfn)
+/* Put device in D3Hot Power State */
+static void pch_enable_d3hot(device_t dev)
 {
-	switch (devfn) {
+	u32 reg32 = pci_read_config32(dev, PCH_PCS);
+	reg32 |= PCH_PCS_PS_D3HOT;
+	pci_write_config32(dev, PCH_PCS, reg32);
+}
+
+/* Set bit in Function Disble register to hide this device */
+static void pch_hide_devfn(device_t dev)
+{
+	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(19, 0): /* Audio DSP */
 		RCBA32_OR(FD, PCH_DISABLE_ADSPD);
 		break;
@@ -94,24 +102,31 @@ static void pch_hide_devfn(unsigned devfn)
 		RCBA32_OR(FD, PCH_DISABLE_XHCI);
 		break;
 	case PCI_DEVFN(21, 0): /* DMA */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS0, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 1): /* I2C0 */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS1, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 2): /* I2C1 */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS2, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 3): /* SPI0 */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS3, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 4): /* SPI1 */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS4, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 5): /* UART0 */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS5, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(21, 6): /* UART1 */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS6, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(22, 0): /* MEI #1 */
@@ -127,6 +142,7 @@ static void pch_hide_devfn(unsigned devfn)
 		RCBA32_OR(FD2, PCH_DISABLE_KT);
 		break;
 	case PCI_DEVFN(23, 0): /* SDIO */
+		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS7, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
 	case PCI_DEVFN(25, 0): /* Gigabit Ethernet */
@@ -146,7 +162,7 @@ static void pch_hide_devfn(unsigned devfn)
 	case PCI_DEVFN(28, 5): /* PCI Express Root Port 6 */
 	case PCI_DEVFN(28, 6): /* PCI Express Root Port 7 */
 	case PCI_DEVFN(28, 7): /* PCI Express Root Port 8 */
-		RCBA32_OR(FD, PCH_DISABLE_PCIE(PCI_FUNC(devfn)));
+		RCBA32_OR(FD, PCH_DISABLE_PCIE(PCI_FUNC(dev->path.pci.devfn)));
 		break;
 	case PCI_DEVFN(29, 0): /* EHCI #1 */
 		RCBA32_OR(FD, PCH_DISABLE_EHCI1);
@@ -404,7 +420,7 @@ static void pch_pcie_enable(device_t dev)
 		new_rpfn |= RPFN_HIDE(PCI_FUNC(dev->path.pci.devfn));
 
 		/* Hide this device if possible */
-		pch_hide_devfn(dev->path.pci.devfn);
+		pch_hide_devfn(dev);
 	} else {
 		int fn;
 
@@ -463,7 +479,7 @@ void pch_enable(device_t dev)
 		pci_write_config32(dev, PCI_COMMAND, reg32);
 
 		/* Hide this device if possible */
-		pch_hide_devfn(dev->path.pci.devfn);
+		pch_hide_devfn(dev);
 	} else {
 		/* Enable SERR */
 		reg32 = pci_read_config32(dev, PCI_COMMAND);

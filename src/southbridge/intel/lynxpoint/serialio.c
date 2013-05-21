@@ -29,6 +29,22 @@
 #include "pch.h"
 #include "nvs.h"
 
+/* Set D3Hot Power State in ACPI mode */
+static void serialio_enable_d3hot(struct device *dev)
+{
+	u32 reg32 = pci_read_config32(dev, PCH_PCS);
+	reg32 |= PCH_PCS_PS_D3HOT;
+	pci_write_config32(dev, PCH_PCS, reg32);
+}
+
+/* Enable clock in PCI mode */
+static void serialio_enable_clock(struct resource *bar0)
+{
+	u32 reg32 = read32(bar0->base + SIO_REG_PPR_CLOCK);
+	reg32 |= SIO_REG_PPR_CLOCK_EN;
+	write32(bar0->base + SIO_REG_PPR_CLOCK, reg32);
+}
+
 /* Put Serial IO D21:F0-F6 device into desired mode. */
 static void serialio_d21_mode(int sio_index, int int_pin, int acpi_mode)
 {
@@ -143,8 +159,14 @@ static void serialio_init(struct device *dev)
 	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 	struct resource *bar0, *bar1;
 	int sio_index = -1;
+	u32 reg32;
 
 	printk(BIOS_DEBUG, "Initializing Serial IO device\n");
+
+	/* Ensure memory and bus master are enabled */
+	reg32 = pci_read_config32(dev, PCI_COMMAND);
+	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
+	pci_write_config32(dev, PCI_COMMAND, reg32);
 
 	/* Find BAR0 and BAR1 */
 	bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);
@@ -153,6 +175,11 @@ static void serialio_init(struct device *dev)
 	bar1 = find_resource(dev, PCI_BASE_ADDRESS_1);
 	if (!bar1)
 		return;
+
+	if (!config->sio_acpi_mode)
+		serialio_enable_clock(bar0);
+	else if (dev->path.pci.devfn != PCI_DEVFN(21, 0))
+		serialio_enable_d3hot(dev); /* all but SDMA */
 
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(21, 0): /* SDMA */
@@ -241,9 +268,9 @@ static struct pci_operations pci_ops = {
 };
 
 static struct device_operations device_ops = {
-	.read_resources		= pci_bus_read_resources,
+	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= pci_bus_enable_resources,
+	.enable_resources	= pci_dev_enable_resources,
 	.init			= serialio_init,
 	.ops_pci		= &pci_ops,
 };

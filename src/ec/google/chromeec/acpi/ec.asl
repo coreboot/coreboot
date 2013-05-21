@@ -27,7 +27,7 @@ Device (EC0)
 {
 	Name (_HID, EISAID ("PNP0C09"))
 	Name (_UID, 1)
-	Name (_GPE, Add(EC_SCI_GPI, 16))
+	Name (_GPE, EC_SCI_GPI)
 	Name (TOFS, EC_TEMP_SENSOR_OFFSET)
 	Name (TNOP, 0xFD)	// Thermal sensor has no power
 	Name (TBAD, 0xFE)	// Thermal sensor bad reading

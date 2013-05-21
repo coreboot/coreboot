@@ -27,6 +27,8 @@
 ## SUCH DAMAGE.
 ##
 
+CFLAGS += -ffixed-r8 -mfloat-abi=hard -marm -mabi=aapcs-linux
+
 head.o-y += head.S
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S

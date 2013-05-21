@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2005 Digital Design Corporation
  * Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,15 +109,37 @@
 
 
 /* SPD_MEMORY_TYPE values. */
-#define SPD_MEMORY_TYPE_FPM_DRAM         1
-#define SPD_MEMORY_TYPE_EDO              2
-#define SPD_MEMORY_TYPE_PIPELINED_NIBBLE 3
-#define SPD_MEMORY_TYPE_SDRAM            4
-#define SPD_MEMORY_TYPE_MULTIPLEXED_ROM  5
-#define SPD_MEMORY_TYPE_SGRAM_DDR        6
-#define SPD_MEMORY_TYPE_SDRAM_DDR        7
-#define SPD_MEMORY_TYPE_SDRAM_DDR2       8
-#define SPD_MEMORY_TYPE_SDRAM_DDR3       0xb
+enum spd_memory_type {
+	SPD_MEMORY_TYPE_UNDEFINED		= 0x00,
+	SPD_MEMORY_TYPE_FPM_DRAM		= 0x01,
+	SPD_MEMORY_TYPE_EDO			= 0x02,
+	SPD_MEMORY_TYPE_PIPELINED_NIBBLE	= 0x03,
+	SPD_MEMORY_TYPE_SDRAM			= 0x04,
+	SPD_MEMORY_TYPE_MULTIPLEXED_ROM		= 0x05,
+	SPD_MEMORY_TYPE_SGRAM_DDR		= 0x06,
+	SPD_MEMORY_TYPE_SDRAM_DDR		= 0x07,
+	SPD_MEMORY_TYPE_SDRAM_DDR2		= 0x08,
+	SPD_MEMORY_TYPE_FBDIMM_DDR2		= 0x09,
+	SPD_MEMORY_TYPE_FB_PROBE_DDR2		= 0x0a,
+	SPD_MEMORY_TYPE_SDRAM_DDR3		= 0x0b,
+};
+
+/* Module type (byte 3, bits 3:0) of SPD */
+enum spd_dimm_type {
+	SPD_DIMM_TYPE_UNDEFINED			= 0,
+	SPD_DIMM_TYPE_RDIMM			= 1,
+	SPD_DIMM_TYPE_UDIMM			= 2,
+	SPD_DIMM_TYPE_SO_DIMM			= 3,
+	SPD_DIMM_TYPE_MICRO_DIMM		= 4,
+	SPD_DIMM_TYPE_MINI_RDIMM		= 5,
+	SPD_DIMM_TYPE_MINI_UDIMM		= 6,
+	SPD_DIMM_TYPE_MINI_CDIMM		= 7,
+	SPD_DIMM_TYPE_72B_SO_UDIMM		= 8,
+	SPD_DIMM_TYPE_72B_SO_RDIMM		= 9,
+	SPD_DIMM_TYPE_72B_SO_CDIMM		= 10,
+	/* Masks to bits 3:0 to give the dimm type */
+	SPD_DIMM_TYPE_MASK			= 0x0f,
+};
 
 /* SPD_MODULE_VOLTAGE values. */
 #define SPD_VOLTAGE_TTL                  0 /* 5.0 Volt/TTL */

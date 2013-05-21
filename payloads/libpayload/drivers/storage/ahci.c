@@ -471,7 +471,8 @@ static void ahci_port_probe(hba_ctrl_t *const ctrl,
 
 #ifdef CONFIG_STORAGE_AHCI_ONLY_TESTED
 static u32 working_controllers[] = {
-	0x8086 | 0x2929 << 16,
+	0x8086 | 0x2929 << 16, /* Mobile ICH9 */
+	0x8086 | 0x1e03 << 16, /* Mobile Panther Point PCH */
 };
 #endif
 static void ahci_init_pci(pcidev_t dev)

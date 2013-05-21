@@ -30,16 +30,10 @@ typedef unsigned int u_int;
 
 /* Moved from libpayload.h */
 
-#ifdef CONFIG_ARCH_X86
+#ifdef CONFIG_LITTLE_ENDIAN
 #define BYTE_ORDER      LITTLE_ENDIAN
 #else
 #define BYTE_ORDER      BIG_ENDIAN
-#endif
-
-#if 0
-#include <sys/param.h>
-#include <string.h>
-#include <sha1.h>
 #endif
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))

@@ -218,6 +218,10 @@ void set_gpio(int gpio_num, int value);
 #define   SEE	(1 << 1)
 #define   PERE	(1 << 0)
 
+/* Power Management Control and Status */
+#define PCH_PCS			0x84
+#define  PCH_PCS_PS_D3HOT	3
+
 #define PCH_EHCI1_DEV		PCI_DEV(0, 0x1d, 0)
 #define PCH_EHCI2_DEV		PCI_DEV(0, 0x1a, 0)
 #define PCH_ME_DEV		PCI_DEV(0, 0x16, 0)
@@ -377,6 +381,8 @@ void set_gpio(int gpio_num, int value);
 #define SIO_ID_UART1		6 /* D21:F6 */
 #define SIO_ID_SDIO		7 /* D23:F0 */
 
+#define SIO_REG_PPR_CLOCK		0x800
+#define  SIO_REG_PPR_CLOCK_EN		 (1 << 0)
 #define SIO_REG_PPR_RST			0x804
 #define  SIO_REG_PPR_RST_ASSERT		 0x3
 #define SIO_REG_PPR_GEN			0x808

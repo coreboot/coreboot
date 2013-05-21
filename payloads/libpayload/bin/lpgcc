@@ -75,13 +75,6 @@ if [ "$CONFIG_ARCH_ARMV7" = "y" ]; then
   _ARCH=armv7
 fi
 
-if [ "$CONFIG_ARCH_POWERPC" = "y" ]; then
-  _ARCHINCDIR=$_INCDIR/powerpc
-  _ARCHLIBDIR=$_LIBDIR/powerpc
-  _ARCHEXTRA=""
-  _ARCH=powerpc
-fi
-
 if [ "$CONFIG_ARCH_X86" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/x86
   _ARCHLIBDIR=$_LIBDIR/x86

@@ -88,7 +88,6 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt)
 	/* Fill the SSDT with an entry for each SerialIO device */
 	for (id = 0; id < 8; id++)
 		len += acpi_create_serialio_ssdt_entry(id, gnvs);
-	acpigen_patch_len(len-1);
 
 	/* (Re)calculate length and checksum. */
 	current = (unsigned long)acpigen_get_current();

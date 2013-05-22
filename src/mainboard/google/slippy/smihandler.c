@@ -117,7 +117,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 	while (google_chromeec_get_event() != 0);
 
 	/* Enable wake events */
-	google_chromeec_set_wake_mask(SLIPPY_EC_S3_WAKE_EVENTS);
+	google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 }
 
 #define APMC_FINALIZE 0xcb
@@ -143,13 +143,13 @@ int mainboard_smi_apmc(u8 apmc)
 		google_chromeec_set_smi_mask(0);
 		/* Clear all pending events */
 		while (google_chromeec_get_event() != 0);
-		google_chromeec_set_sci_mask(SLIPPY_EC_SCI_EVENTS);
+		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
 		break;
 	case APM_CNT_ACPI_DISABLE:
 		google_chromeec_set_sci_mask(0);
 		/* Clear all pending events */
 		while (google_chromeec_get_event() != 0);
-		google_chromeec_set_smi_mask(SLIPPY_EC_SMI_EVENTS);;
+		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);;
 		break;
 	}
 	return 0;

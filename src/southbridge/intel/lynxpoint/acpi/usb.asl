@@ -23,11 +23,11 @@
 
 // EHCI Controller 0:1d.0
 
-Device (EHC1)
+Device (EHCI)
 {
 	Name(_ADR, 0x001d0000)
 
-	Name (_PRW, Package(){ 13, 4 }) // Power Resources for Wake
+	Name (_PRW, Package(){ 13, 3 }) // Power Resources for Wake
 
 	// Leave USB ports on for to allow Wake from USB
 
@@ -55,13 +55,13 @@ Device (EHC1)
 	}
 }
 
-// EHCI #2 Controller 0:1a.0
+// XHCI Controller 0:14.0
 
-Device (EHC2)
+Device (XHCI)
 {
-	Name(_ADR, 0x001a0000)
+	Name(_ADR, 0x00140000)
 
-	Name (_PRW, Package(){ 13, 4 }) // Power Resources for Wake
+	Name (_PRW, Package(){ 13, 3 }) // Power Resources for Wake
 
 	// Leave USB ports on for to allow Wake from USB
 

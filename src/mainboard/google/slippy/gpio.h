@@ -20,7 +20,7 @@
 #ifndef SLIPPY_GPIO_H
 #define SLIPPY_GPIO_H
 
-#include "southbridge/intel/lynxpoint/lp_gpio.h"
+struct pch_lp_gpio_map;
 
 const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 0: UNUSED */

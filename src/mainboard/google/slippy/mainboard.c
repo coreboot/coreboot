@@ -142,7 +142,7 @@ static void verb_setup(void)
 
 static void mainboard_init(device_t dev)
 {
-	slippy_ec_init();
+	mainboard_ec_init();
 }
 
 // mainboard_enable is executed as first thing after

@@ -28,6 +28,8 @@ choice
 
 config BOARD_GOOGLE_BUTTERFLY
 	bool "Butterfly"
+config BOARD_GOOGLE_FALCO
+	bool "Falco"
 config BOARD_GOOGLE_LINK
 	bool "Link"
 config BOARD_GOOGLE_PARROT
@@ -44,6 +46,7 @@ config BOARD_GOOGLE_STOUT
 endchoice
 
 source "src/mainboard/google/butterfly/Kconfig"
+source "src/mainboard/google/falco/Kconfig"
 source "src/mainboard/google/link/Kconfig"
 source "src/mainboard/google/parrot/Kconfig"
 source "src/mainboard/google/pit/Kconfig"

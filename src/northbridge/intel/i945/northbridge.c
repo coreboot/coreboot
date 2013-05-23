@@ -94,6 +94,9 @@ static void pci_domain_set_resources(device_t dev)
 	unsigned long long tomk, tomk_stolen;
 	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
 	unsigned long index = 3;
+#if CONFIG_SMM_TSEG
+	struct resource *resource;
+#endif
 
 	/* Can we find out how much memory we can use at most
 	 * this way?
@@ -186,8 +189,16 @@ static void pci_domain_set_resources(device_t dev)
 	reserved_ram_resource(dev, index++, graphics_ram_resource_base >> 10,
 				graphics_ram_resource_size >> 10);
 #endif
-}
+#if CONFIG_SMM_TSEG
+	resource = new_resource(dev, index++);
+	resource->base = tseg_memory_base;
+	resource->size = tseg_memory_size;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+			  IORESOURCE_STORED | IORESOURCE_RESERVE |
+			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+#endif
 
+}
 	/* TODO We could determine how many PCIe busses we need in
 	 * the bar. For now that number is hardcoded to a max of 64.
 	 * See e7525/northbridge.c for an example.

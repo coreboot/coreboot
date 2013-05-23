@@ -63,6 +63,7 @@
 #elif CONFIG_NORTHBRIDGE_INTEL_HASWELL
 #include <northbridge/intel/haswell/haswell.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
+#elif CONFIG_NORTHBRIDGE_INTEL_I945
 #else
 #error "Northbridge must define TSEG_BAR."
 #endif
@@ -82,7 +83,20 @@
  * All the bad magic is not all that bad after all.
  */
 smm_handler_start:
+#if CONFIG_NORTHBRIDGE_INTEL_I945
+	/* tolud_base = pci_read_config8(PCI_DEV(0, 0, 0), TOLUD); */
+	movl	$0x8000009c, %eax
+	movw	$0xcf8,	%dx
+	outl	%eax, %dx
+	movw	$0xcfc, %dx
+	inl	%dx, %eax
+
+	/* tseg_base = tolud - CONFIG_I915_UMA_SIZE - CONFIG_SMM_TSEG_SIZE*/
+	subl	$(CONFIG_I915_UMA_SIZE), %eax
+	subl	$(CONFIG_SMM_TSEG_SIZE), %eax
+#else
 	movl	$(TSEG_BAR), %eax	/* Get TSEG base from PCIE */
+#endif
 	addr32	movl (%eax), %edx	/* Save TSEG_BAR in %edx */
 	andl	$~1, %edx		/* Remove lock bit */
 
@@ -195,7 +209,20 @@ smm_prot_start:
 	call	smi_handler
 
 	/* Release lock */
+#if CONFIG_NORTHBRIDGE_INTEL_I945
+        /* tolud_base = pci_read_config8(PCI_DEV(0, 0, 0), TOLUD); */
+        movl    $0x8000009c, %eax
+        movw    $0xcf8, %dx
+        outl    %eax, %dx
+        movw    $0xcfc, %dx
+        inl     %dx, %eax
+
+        /* tseg_base = tolud - CONFIG_I915_UMA_SIZE - CONFIG_SMM_TSEG_SIZE*/
+        subl    $(CONFIG_I915_UMA_SIZE), %eax
+        subl    $(CONFIG_SMM_TSEG_SIZE), %eax
+#else
 	movl	$(TSEG_BAR), %eax	/* Get TSEG base from PCIE */
+#endif
 	movl	(%eax), %ebx		/* Save TSEG_BAR in %ebx */
 	andl	$~1, %ebx		/* Remove lock bit */
 	addl	$(smm_lock), %ebx

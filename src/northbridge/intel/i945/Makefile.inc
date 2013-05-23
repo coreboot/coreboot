@@ -27,3 +27,4 @@ romstage-y += errata.c
 romstage-y += debug.c
 
 smm-y += udelay.c
+smm-y += smi.c

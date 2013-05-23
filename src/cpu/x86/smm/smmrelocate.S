@@ -48,6 +48,7 @@
 #if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
+#elif CONFIG_NORTHBRIDGE_INTEL_I945
 #else
 #error "Northbridge must define TSEG_BAR."
 #endif
@@ -148,8 +149,21 @@ smm_relocate:
 	shl $10, %edx
 
 #if CONFIG_SMM_TSEG
+#if CONFIG_NORTHBRIDGE_INTEL_I945
+	/* tolud_base = pci_read_config8(PCI_DEV(0, 0, 0), TOLUD); */
+	movl    $0x8000009c, %eax
+	movw    $0xcf8, %dx
+	outl    %eax, %dx
+	movw    $0xcfc, %dx
+	inl     %dx, %eax
+
+	/* tseg_base = tolud - CONFIG_I915_UMA_SIZE - CONFIG_SMM_TSEG_SIZE*/
+	subl    $CONFIG_I915_UMA_SIZE, %eax
+	subl    $CONFIG_SMM_TSEG_SIZE, %eax
+#else
 	movl	$(TSEG_BAR), %ecx	/* Get TSEG base from PCIE */
-	addr32	movl (%ecx), %eax	/* Save TSEG_BAR in %eax */
+	addr32  movl (%ecx), %eax       /* Save TSEG_BAR in %eax */
+#endif
 	andl	$~1, %eax		/* Remove lock bit */
 #else
 	movl $0xa0000, %eax
@@ -166,8 +180,21 @@ smm_relocate:
 	jnc	skip_smrr
 
 	/* TSEG base */
+#if CONFIG_NORTHBRIDGE_INTEL_I945
+	/* tolud_base = pci_read_config8(PCI_DEV(0, 0, 0), TOLUD); */
+	movl    $0x8000009c, %eax
+	movw    $0xcf8, %dx
+	outl    %eax, %dx
+	movw    $0xcfc, %dx
+	inl     %dx, %eax
+
+	/* tseg_base = tolud - CONFIG_I915_UMA_SIZE - CONFIG_SMM_TSEG_SIZE*/
+	subl    $CONFIG_I915_UMA_SIZE, %eax
+	subl    $CONFIG_SMM_TSEG_SIZE, %eax
+#else
 	movl	$(TSEG_BAR), %ecx	/* Get TSEG base from PCIE */
-	addr32	movl (%ecx), %eax	/* Save TSEG_BAR in %eax */
+	addr32  movl (%ecx), %eax       /* Save TSEG_BAR in %eax */
+#endif
 	andl	$~1, %eax		/* Remove lock bit */
 	movl	%eax, %ebx
 

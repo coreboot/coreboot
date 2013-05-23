@@ -303,6 +303,32 @@ static int smbios_write_type32(unsigned long *current, int handle)
 	return len;
 }
 
+int smbios_write_type41(unsigned long *current, int *handle,
+			const char *name, u8 instance, u16 segment,
+			u8 bus, u8 device, u8 function)
+{
+	struct smbios_type41 *t = (struct smbios_type41 *)*current;
+	int len = sizeof(struct smbios_type41);
+
+	memset(t, 0, sizeof(struct smbios_type41));
+	t->type = SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION;
+	t->handle = *handle;
+	t->length = len - 2;
+	t->reference_designation = smbios_add_string(t->eos, name);
+	t->device_type = SMBIOS_DEVICE_TYPE_OTHER;
+	t->device_status = 1;
+	t->device_type_instance = instance;
+	t->segment_group_number = segment;
+	t->bus_number = bus;
+	t->device_number = device;
+	t->function_number = function;
+
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	*handle += 1;
+	return len;
+}
+
 static int smbios_write_type127(unsigned long *current, int handle)
 {
 	struct smbios_type127 *t = (struct smbios_type127 *)*current;

@@ -88,6 +88,9 @@ static void pci_domain_set_resources(device_t dev)
 	uint16_t reg16;
 	unsigned long long tomk, tomk_stolen;
 	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
+#if CONFIG_SMM_TSEG
+	struct resource *resource;
+#endif
 
 	/* Can we find out how much memory we can use at most
 	 * this way?
@@ -105,6 +108,29 @@ static void pci_domain_set_resources(device_t dev)
 	tomk_stolen = tomk;
 
 	/* Note: subtract IGD device and TSEG */
+	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), GGC);
+	if (!(reg16 & 2)) {
+		int uma_size = 0;
+		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
+		reg16 >>= 4;
+		reg16 &= 7;
+		switch (reg16) {
+		case 1:
+			uma_size = 1024;
+			break;
+		case 3:
+			uma_size = 8192;
+			break;
+		}
+
+		printk(BIOS_DEBUG, "%dM UMA\n", uma_size >> 10);
+		tomk_stolen -= uma_size;
+
+		/* For reserving UMA memory in the memory map */
+		uma_memory_base = tomk_stolen * 1024ULL;
+		uma_memory_size = uma_size * 1024ULL;
+	}
+
 	reg8 = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), 0x9e);
 	if (reg8 & 1) {
 		int tseg_size = 0;
@@ -131,29 +157,6 @@ static void pci_domain_set_resources(device_t dev)
 		tseg_memory_size = tseg_size * 1024ULL;
 	}
 
-	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), GGC);
-	if (!(reg16 & 2)) {
-		int uma_size = 0;
-		printk(BIOS_DEBUG, "IGD decoded, subtracting ");
-		reg16 >>= 4;
-		reg16 &= 7;
-		switch (reg16) {
-		case 1:
-			uma_size = 1024;
-			break;
-		case 3:
-			uma_size = 8192;
-			break;
-		}
-
-		printk(BIOS_DEBUG, "%dM UMA\n", uma_size >> 10);
-		tomk_stolen -= uma_size;
-
-		/* For reserving UMA memory in the memory map */
-		uma_memory_base = tomk_stolen * 1024ULL;
-		uma_memory_size = uma_size * 1024ULL;
-	}
-
 	/* The following needs to be 2 lines, otherwise the second
 	 * number is always 0
 	 */
@@ -173,8 +176,15 @@ static void pci_domain_set_resources(device_t dev)
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk_stolen * 1024) - HIGH_MEMORY_SIZE;
 	high_tables_size = HIGH_MEMORY_SIZE;
+#if CONFIG_SMM_TSEG
+	resource = new_resource(dev, 8);
+	resource->base = tseg_memory_base;
+	resource->size = tseg_memory_size;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+			  IORESOURCE_STORED | IORESOURCE_RESERVE |
+			  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+#endif
 }
-
 	/* TODO We could determine how many PCIe busses we need in
 	 * the bar. For now that number is hardcoded to a max of 64.
 	 * See e7525/northbridge.c for an example.

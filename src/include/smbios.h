@@ -8,8 +8,14 @@ unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(char *start, const char *str);
 int smbios_string_table_len(char *start);
 
+/* Used by mainboard to add an on-board device */
+int smbios_write_type41(unsigned long *current, int *handle,
+			const char *name, u8 instance, u16 segment,
+			u8 bus, u8 device, u8 function);
+
 const char *smbios_mainboard_manufacturer(void);
 const char *smbios_mainboard_product_name(void);
+
 const char *smbios_mainboard_serial_number(void);
 const char *smbios_mainboard_version(void);
 void smbios_mainboard_set_uuid(u8 *uuid);

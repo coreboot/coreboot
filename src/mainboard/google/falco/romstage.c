@@ -124,15 +124,23 @@ void mainboard_romstage_entry(unsigned long bist)
 		dimm_channel0_disabled: 2,
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1600,
-		usb_port_config: {
-			{ 1, 0, 0x0040 }, /* P0: USB3 Port A */
-			{ 1, 0, 0x0040 }, /* P1: USB3 Port B */
-			{ 1, 0, 0x0040 }, /* P2: CCD */
-			{ 1, 0, 0x0040 }, /* P3: BT */
-			{ 1, 0, 0x0040 }, /* P4: LTE */
-			{ 1, 0, 0x0040 }, /* P5: TOUCH */
-			{ 1, 0, 0x0040 }, /* P6: SD Card */
-			{ 1, 0, 0x0040 }, /* P7: USB2 Port */
+		usb2_ports: {
+			/* Length, Enable, OCn# */
+			{ 0x0040, 1, 0               }, /* P0: Port A, CN8 */
+			{ 0x0040, 1, 0               }, /* P1: Port B, CN9  */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P2: CCD */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: BT */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P4: LTE */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P5: TOUCH */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P6: SD Card */
+			{ 0x0040, 1, 3               }, /* P7: USB2 Port */
+		},
+		usb3_ports: {
+			/* Enable, OCn# */
+			{ 1, 0               }, /* P1; Port A, CN8 */
+			{ 1, 0               }, /* P2; Port B, CN9  */
+			{ 0, USB_OC_PIN_SKIP }, /* P3; */
+			{ 0, USB_OC_PIN_SKIP }, /* P4; */
 		},
 	};
 

@@ -661,6 +661,12 @@ static int elog_shrink(void)
 	/* Erase flash area */
 	elog_flash_erase_area();
 
+	/* Ensure the area was successfully erased */
+	if (elog_get_flash()->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD) {
+		printk(BIOS_ERR, "ELOG: Flash area was not erased!\n");
+		return -1;
+	}
+
 	/* Write new flash area */
 	elog_prepare_empty(elog_get_flash(),
 			   (u8*)elog_get_event_base(mem, offset),
@@ -839,7 +845,8 @@ int elog_init(void)
 
 	/* Shrink the log if we are getting too full */
 	if (elog_get_mem()->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
-		elog_shrink();
+		if (elog_shrink() < 0)
+			return -1;
 
 #if CONFIG_ELOG_BOOT_COUNT && !defined(__SMM__)
 	/* Log boot count event except in S3 resume */

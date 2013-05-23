@@ -156,48 +156,30 @@ static void mainboard_init(device_t dev)
 	parrot_ec_init();
 }
 
-static int parrot_smbios_type41(int *handle, unsigned long *current,
-			      const char *name, u8 irq, u8 addr)
-{
-	struct smbios_type41 *t = (struct smbios_type41 *)*current;
-	int len = sizeof(struct smbios_type41);
-
-	memset(t, 0, sizeof(struct smbios_type41));
-	t->type = SMBIOS_ONBOARD_DEVICES_EXTENDED_INFORMATION;
-	t->handle = *handle;
-	t->length = len - 2;
-	t->reference_designation = smbios_add_string(t->eos, name);
-	t->device_type = SMBIOS_DEVICE_TYPE_OTHER;
-	t->device_status = 1;
-	t->device_type_instance = irq;
-	t->segment_group_number = 0;
-	t->bus_number = addr;
-	t->function_number = 0;
-	t->device_number = 0;
-
-	len = t->length + smbios_string_table_len(t->eos);
-	*current += len;
-	*handle += 1;
-	return len;
-}
-
 static int parrot_onboard_smbios_data(device_t dev, int *handle,
 				     unsigned long *current)
 {
 	int len = 0;
 	u8 hardware_version = parrot_rev();
 	if (hardware_version < 0x2) {		/* DVT vs PVT */
-	len += parrot_smbios_type41(handle, current,
-				  PARROT_TRACKPAD_NAME,
-				  PARROT_TRACKPAD_IRQ_DVT,
-				  PARROT_TRACKPAD_I2C_ADDR);
+		len += smbios_write_type41(
+			current, handle,
+			PARROT_TRACKPAD_NAME,		/* name */
+			PARROT_TRACKPAD_IRQ_DVT,	/* instance */
+			0,				/* segment */
+			PARROT_TRACKPAD_I2C_ADDR,	/* bus */
+			0,				/* device */
+			0);				/* function */
 	} else {
-		len += parrot_smbios_type41(handle, current,
-				  PARROT_TRACKPAD_NAME,
-				  PARROT_TRACKPAD_IRQ_PVT,
-				  PARROT_TRACKPAD_I2C_ADDR);
+		len += smbios_write_type41(
+			current, handle,
+			PARROT_TRACKPAD_NAME,		/* name */
+			PARROT_TRACKPAD_IRQ_PVT,	/* instance */
+			0,				/* segment */
+			PARROT_TRACKPAD_I2C_ADDR,	/* bus */
+			0,				/* device */
+			0);				/* function */
 	}
-
 
 	return len;
 }

@@ -3052,6 +3052,36 @@ static void sdram_setup_processor_side(void)
 		MCHBAR32(SLPCTL) |= (1 << 8);
 }
 
+#if CONFIG_SMM_TSEG
+static void sdram_enable_tseg(void)
+{
+	u8 reg8;
+
+	reg8 = pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM);
+	reg8 |= (1 << 0); /* TSEG Enable */
+
+	switch(CONFIG_SMM_TSEG_SIZE){
+
+	case 0x100000:
+		reg8 &= ~((1<<2)|(1<<1));
+		break;
+	case 0x200000:
+		reg8 &= ~(1<<1);
+		reg8 |=  (1<<2);
+		break;
+	case 0x800000:
+		reg8 |= (1<<2)|(1<<1);
+		break;
+	default:
+		/* it should not happen because we guard
+		 * ainst that in the raminit.h header
+		 */
+		printk(BIOS_ERR, "Invalid TSEG size!\n");
+	}
+	pci_write_config8(PCI_DEV(0, 0, 0), ESMRAM, reg8);
+}
+#endif
+
 /**
  * @param boot_path: 0 = normal, 1 = reset, 2 = resume from s3
  */
@@ -3179,6 +3209,10 @@ void sdram_initialize(int boot_path, const u8 *spd_addresses)
 
 	/* Enable Periodic RCOMP */
 	sdram_enable_rcomp();
+
+#if CONFIG_SMM_TSEG
+	sdram_enable_tseg();
+#endif
 
 	/* Tell ICH7 that we're done */
 	reg8 = pci_read_config8(PCI_DEV(0,0x1f,0), 0xa2);

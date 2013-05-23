@@ -22,6 +22,7 @@
 #include <smbios.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <arch/io.h>
 
 /* overwrite a weak function to fill SMBIOS table with a custom value */
 static u8 hw_rev = 0;
@@ -51,6 +52,14 @@ static void init(struct device *dev)
 		printk(BIOS_WARNING, "eeprom not found\n");
 		return;
 	}
+
+	/* turn off all leds except led_ini */
+	outb(0x02, 0x5a); /* bit0 - led_run */
+			  /* bit1 - led_ini */
+			  /* bit2 - led_err */
+			  /* bit3-bit7 - write has no effect */
+	outb(0x00, 0x49); /* bit0-bit6 - led_7-led_1 */
+			  /* bit7 - write has no effect */
 
 	/* read the whole block and check if checksum is okay */
 	for (i = 0; i < 20; i++) {

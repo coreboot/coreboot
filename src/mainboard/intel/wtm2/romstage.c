@@ -98,21 +98,23 @@ void mainboard_romstage_entry(unsigned long bist)
 		dimm_channel0_disabled: 2,
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1600,
-		usb_port_config: {
-			{ 1, 0, 0x0040 }, /* P0: */
-			{ 1, 0, 0x0040 }, /* P1: */
-			{ 1, 0, 0x0040 }, /* P2: */
-			{ 1, 0, 0x0040 }, /* P3: */
-			{ 1, 0, 0x0040 }, /* P4: */
-			{ 1, 0, 0x0040 }, /* P5: */
-			{ 1, 0, 0x0040 }, /* P6: */
-			{ 0, 0, 0x0040 }, /* P7: Disable SDCARD due to hang */
-			{ 1, 0, 0x0040 }, /* P8: */
-			{ 1, 0, 0x0040 }, /* P9: */
-			{ 1, 0, 0x0040 }, /* P10: */
-			{ 1, 0, 0x0000 }, /* P11: */
-			{ 1, 0, 0x0040 }, /* P12: */
-			{ 1, 0, 0x0040 }, /* P13: */
+		usb2_ports: {
+			/* Length, Enable, OCn# */
+			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P0: */
+			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P1: */
+			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P2: */
+			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P3: */
+			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P4: */
+			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P5: */
+			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P6: */
+			{ 0x40, 0, USB_OC_PIN_SKIP }, /* P7: Disable SDCARD due to hang */
+		},
+		usb3_ports: {
+			/* Enable, OCn# */
+			{ 1, USB_OC_PIN_SKIP }, /* P1; */
+			{ 1, USB_OC_PIN_SKIP }, /* P2; */
+			{ 1, USB_OC_PIN_SKIP }, /* P3; */
+			{ 1, USB_OC_PIN_SKIP }, /* P4; */
 		},
 	};
 

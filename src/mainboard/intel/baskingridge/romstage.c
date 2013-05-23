@@ -93,21 +93,31 @@ void mainboard_romstage_entry(unsigned long bist)
 		dimm_channel0_disabled: 0,
 		dimm_channel1_disabled: 0,
 		max_ddr3_freq: 1600,
-		usb_port_config: {
-			{ 1, 0, 0x0040 }, /* P0: Back USB3 port  (OC0) */
-			{ 1, 0, 0x0040 }, /* P1: Back USB3 port  (OC0) */
-			{ 1, 1, 0x0040 }, /* P2: Flex Port on bottom (OC1) */
-			{ 1, 8, 0x0040 }, /* P3: Docking connector (no OC) */
-			{ 1, 8, 0x0040 }, /* P4: Mini PCIE (no OC) */
-			{ 1, 1, 0x0040 }, /* P5: USB eSATA header (OC1) */
-			{ 1, 3, 0x0040 }, /* P6: Front Header J8H2 (OC3) */
-			{ 1, 3, 0x0040 }, /* P7: Front Header J8H2 (OC3) */
-			{ 1, 4, 0x0040 }, /* P8: USB/LAN Jack (OC4) */
-			{ 1, 4, 0x0040 }, /* P9: USB/LAN Jack (OC4) */
-			{ 1, 5, 0x0040 }, /* P10: Front Header J7H3 (OC5) */
-			{ 1, 5, 0x0040 }, /* P11: Front Header J7H3 (OC5) */
-			{ 1, 6, 0x0040 }, /* P12: USB/DP Jack (OC6) */
-			{ 1, 6, 0x0040 }, /* P13: USB/DP Jack (OC6) */
+		usb2_ports: {
+			/* Length, Enable, OCn# */
+			{ 0x0040, 1, 0 }, /* P0: Back USB3 port  (OC0) */
+			{ 0x0040, 1, 0 }, /* P1: Back USB3 port  (OC0) */
+			{ 0x0040, 1, 1 }, /* P2: Flex Port on bottom (OC1) */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: Dock connector */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P4: Mini PCIE  */
+			{ 0x0040, 1, 1 }, /* P5: USB eSATA header (OC1) */
+			{ 0x0040, 1, 3 }, /* P6: Front Header J8H2 (OC3) */
+			{ 0x0040, 1, 3 }, /* P7: Front Header J8H2 (OC3) */
+			{ 0x0040, 1, 4 }, /* P8: USB/LAN Jack (OC4) */
+			{ 0x0040, 1, 4 }, /* P9: USB/LAN Jack (OC4) */
+			{ 0x0040, 1, 5 }, /* P10: Front Header J7H3 (OC5) */
+			{ 0x0040, 1, 5 }, /* P11: Front Header J7H3 (OC5) */
+			{ 0x0040, 1, 6 }, /* P12: USB/DP Jack (OC6) */
+			{ 0x0040, 1, 6 }, /* P13: USB/DP Jack (OC6) */
+		},
+		usb3_ports: {
+			/* Enable, OCn# */
+			{ 1, 0 }, /* P1; */
+			{ 1, 0 }, /* P2; */
+			{ 1, 0 }, /* P3; */
+			{ 1, 0 }, /* P4; */
+			{ 1, 0 }, /* P6; */
+			{ 1, 0 }, /* P6; */
 		},
 	};
 

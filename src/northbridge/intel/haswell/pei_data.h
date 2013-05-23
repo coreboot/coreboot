@@ -31,7 +31,22 @@
 #define PEI_DATA_H
 
 typedef void (*tx_byte_func)(unsigned char byte);
-#define PEI_VERSION 11
+#define PEI_VERSION 12
+
+#define MAX_USB2_PORTS 16
+#define MAX_USB3_PORTS 16
+#define USB_OC_PIN_SKIP 8
+
+struct usb2_port_setting {
+	uint16_t length;
+	uint8_t enable;
+	uint8_t over_current_pin;
+} __attribute__((packed));
+
+struct usb3_port_setting {
+	uint8_t enable;
+	uint8_t over_current_pin;
+} __attribute__((packed));
 
 struct pei_data
 {
@@ -67,33 +82,12 @@ struct pei_data
 	unsigned char *mrc_output;
 	unsigned int mrc_output_len;
 	/*
-	* Max frequency DDR3 could be ran at. Could be one of four values: 800,
-	* 1067, 1333, 1600
-	*/
+	 * Max frequency DDR3 could be ran at. Could be one of four values: 800,
+	 * 1067, 1333, 1600
+	 */
 	uint32_t max_ddr3_freq;
-	/*
-	 * USB Port Configuration:
-	 *  [0] = enable
-	 *  [1] = overcurrent pin
-	 *  [2] = length
-	 *
-	 * Ports 0-7 can be mapped to OC0-OC3
-	 * Ports 8-13 can be mapped to OC4-OC7
-	 *
-	 * Port Length
-	 *  MOBILE:
-	 *   < 0x050 = Setting 1 (back panel, 1-5in, lowest tx amplitude)
-	 *   < 0x140 = Setting 2 (back panel, 5-14in, highest tx amplitude)
-	 *  DESKTOP:
-	 *   < 0x080 = Setting 1 (front/back panel, <8in, lowest tx amplitude)
-	 *   < 0x130 = Setting 2 (back panel, 8-13in, higher tx amplitude)
-	 *   < 0x150 = Setting 3 (back panel, 13-15in, higest tx amplitude)
-	 */
-	uint16_t usb_port_config[16][3];
-	/* SPD data array for onboard RAM. Specify address 0xf0,
-	 * 0xf1, 0xf2, 0xf3 to index one of the 4 slots in
-	 * spd_address for a given "DIMM".
-	 */
+	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS];
+	struct usb3_port_setting usb3_ports[MAX_USB3_PORTS];
 	uint8_t spd_data[4][256];
 	tx_byte_func tx_byte;
 } __attribute__((packed));

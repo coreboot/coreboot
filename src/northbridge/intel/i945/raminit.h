@@ -75,5 +75,14 @@ void udelay(u32 us);
 
 #if CONFIG_DEBUG_RAM_SETUP
 void sdram_dump_mchbar_registers(void);
+
+#if CONFIG_SMM_TSEG
+#if ! (CONFIG_SMM_TSEG_SIZE == 0x100000 || \
+       CONFIG_SMM_TSEG_SIZE == 0x200000 || \
+       CONFIG_SMM_TSEG_SIZE == 0x800000)
+#error Invalid TSEG size
+#endif
+#endif
+
 #endif
 #endif				/* RAMINIT_H */

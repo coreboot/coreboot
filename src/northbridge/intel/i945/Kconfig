@@ -74,4 +74,8 @@ config MARK_GRAPHICS_MEM_WRCOMB
          memory is set as write-combining cache type. This option
          enables marking the graphics memory as write-combining.
 
+config I915_UMA_SIZE
+	hex
+	default 0x800000
+
 endif

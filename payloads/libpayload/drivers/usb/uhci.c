@@ -170,6 +170,9 @@ uhci_init (pcidev_t addr)
 	controller->shutdown = uhci_shutdown;
 	controller->bulk = uhci_bulk;
 	controller->control = uhci_control;
+	controller->set_address = generic_set_address;
+	controller->finish_device_config = NULL;
+	controller->destroy_device = NULL;
 	controller->create_intr_queue = uhci_create_intr_queue;
 	controller->destroy_intr_queue = uhci_destroy_intr_queue;
 	controller->poll_intr_queue = uhci_poll_intr_queue;

@@ -189,6 +189,9 @@ ohci_init (pcidev_t addr)
 	controller->shutdown = ohci_shutdown;
 	controller->bulk = ohci_bulk;
 	controller->control = ohci_control;
+	controller->set_address = generic_set_address;
+	controller->finish_device_config = NULL;
+	controller->destroy_device = NULL;
 	controller->create_intr_queue = ohci_create_intr_queue;
 	controller->destroy_intr_queue = ohci_destroy_intr_queue;
 	controller->poll_intr_queue = ohci_poll_intr_queue;

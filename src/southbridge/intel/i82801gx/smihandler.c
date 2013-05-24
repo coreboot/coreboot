@@ -333,12 +333,14 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	default: printk(BIOS_DEBUG, "SMI#: ERROR: SLP_TYP reserved\n"); break;
 	}
 
+#if !CONFIG_SMM_TSEG
 	/* Unlock the SMI semaphore. We're currently in SMM, and the semaphore
 	 * will never be unlocked because the next outl will switch off the CPU.
 	 * This might open a small race between the smi_release_lock() and the outl()
 	 * for other SMI handlers. Not sure if this could cause trouble. */
 	 if (slp_typ == 5)
 		smi_release_lock();
+#endif
 
 	/* Write back to the SLP register to cause the originally intended
 	 * event again. We need to set BIT13 (SLP_EN) though to make the

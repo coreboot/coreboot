@@ -31,7 +31,6 @@
 #include <stdlib.h>
 #include <reset.h>
 #include <boot/tables.h>
-#include <boot/elf.h>
 #include <cbfs.h>
 #include <lib.h>
 #if CONFIG_HAVE_ACPI_RESUME

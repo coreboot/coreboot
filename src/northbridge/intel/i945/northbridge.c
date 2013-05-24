@@ -93,6 +93,7 @@ static void pci_domain_set_resources(device_t dev)
 	uint16_t reg16;
 	unsigned long long tomk, tomk_stolen;
 	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
+	unsigned long index = 3;
 
 	/* Can we find out how much memory we can use at most
 	 * this way?
@@ -166,12 +167,12 @@ static void pci_domain_set_resources(device_t dev)
 	printk(BIOS_INFO, " (%dM)\n", (uint32_t)(tomk_stolen >> 10));
 
 	/* Report the memory regions */
-	ram_resource(dev, 3, 0, 640);
-	ram_resource(dev, 4, 768, (tomk - 768));
-	uma_resource(dev, 5, uma_memory_base >> 10, uma_memory_size >> 10);
-	mmio_resource(dev, 6, tseg_memory_base >> 10, tseg_memory_size >> 10);
+	ram_resource(dev, index++, 0, 640);
+	ram_resource(dev, index++, 768, (tomk - 768));
+	uma_resource(dev, index++, uma_memory_base >> 10, uma_memory_size >> 10);
+	mmio_resource(dev, index++, tseg_memory_base >> 10, tseg_memory_size >> 10);
 
-	add_fixed_resources(dev, 7);
+	add_fixed_resources(dev, index);
 
 	assign_resources(dev->link_list);
 
@@ -182,7 +183,7 @@ static void pci_domain_set_resources(device_t dev)
 	graphics_ram_resource_base = ( high_tables_base - (4 * 1024 * 1024) );
 	graphics_ram_resource_size = (4 * 1024 * 1024);
 
-	reserved_ram_resource(dev, 8, graphics_ram_resource_base >> 10,
+	reserved_ram_resource(dev, index++, graphics_ram_resource_base >> 10,
 				graphics_ram_resource_size >> 10);
 #endif
 }

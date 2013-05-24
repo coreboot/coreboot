@@ -43,6 +43,12 @@ static int ram_open(struct cbfs_media *media) {
 
 static void *ram_map(struct cbfs_media *media, size_t offset, size_t count) {
 	struct ram_media *m = (struct ram_media*)media->context;
+
+	/* Special case an absolute pointer within the region. */
+	if (offset >= (uintptr_t)m->start &&
+	    offset < ((uintptr_t)m->start + m->size))
+		return (void *)offset;
+
 	/* assume addressing from top of image in this case */
 	if (offset > 0xf0000000) {
 		offset = m->size + offset;

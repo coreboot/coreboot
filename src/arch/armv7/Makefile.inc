@@ -161,6 +161,29 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDD
 ramstage-y += exception.c
 ramstage-y += exception_asm.S
 
+bootblock-$(CONFIG_EARLY_CONSOLE) += early_console.c
+bootblock-y += cache.c
+
+romstage-y += cache.c
+romstage-y += div0.c
+romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
+
+ramstage-y += div0.c
+#ramstage-y += interrupts.c
+#ramstage-y += memcpy.S
+#ramstage-y += memset.S
+ramstage-y += cache.c
+ramstage-y += mmu.c
+
+romstage-y += eabi_compat.c
+ramstage-y += eabi_compat.c
+bootblock-y += eabi_compat.c
+
+ramstage-y += boot.c
+ramstage-y += tables.c
+
+$(obj)/arch/armv7/coreboot_table.ramstage.o : $(OPTION_TABLE_H)
+
 romstage-srcs += $(objgenerated)/crt0.s
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/mainboard.c
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
@@ -194,7 +217,7 @@ bootblock_lds = $(src)/arch/armv7/bootblock.lds
 bootblock_lds += $(chipset_bootblock_lds)
 
 bootblock_inc += $(src)/arch/armv7/bootblock.inc
-bootblock_inc += $(src)/arch/armv7/lib/id.inc
+bootblock_inc += $(src)/arch/armv7/id.inc
 bootblock_inc += $(chipset_bootblock_inc)
 bootblock_inc += $(objgenerated)/bootblock.inc
 

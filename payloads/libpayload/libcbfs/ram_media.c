@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 #include <cbfs.h>
+#include <cbfs_ram.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -71,7 +72,6 @@ static int ram_close(struct cbfs_media *media) {
 	return 0;
 }
 
-int init_cbfs_ram_media(struct cbfs_media *media, void *start, size_t size);
 int init_cbfs_ram_media(struct cbfs_media *media, void *start, size_t size) {
 	// TODO Find a way to release unused media. Maybe adding media->destroy.
 	struct ram_media *m = (struct ram_media*)malloc(sizeof(*m));
@@ -90,7 +90,6 @@ int init_cbfs_ram_media(struct cbfs_media *media, void *start, size_t size) {
 static int is_default_cbfs_media_initialized;
 static struct cbfs_media default_cbfs_media;
 
-int setup_cbfs_from_ram(void *start, uint32_t size);
 int setup_cbfs_from_ram(void *start, uint32_t size) {
 	int result = init_cbfs_ram_media(&default_cbfs_media, start, size);
 	if (result == 0)
@@ -99,7 +98,6 @@ int setup_cbfs_from_ram(void *start, uint32_t size) {
 }
 
 extern int libpayload_init_default_cbfs_media(struct cbfs_media *media);
-int setup_cbfs_from_flash(void);
 int setup_cbfs_from_flash(void) {
 	int result = libpayload_init_default_cbfs_media(&default_cbfs_media);
 	if (result == 0)

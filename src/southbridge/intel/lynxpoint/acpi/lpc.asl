@@ -32,6 +32,8 @@ Device (LPCB)
 		DIDH,	8,	// Device ID High Byte
 		Offset (0x40),
 		PMBS,	16,	// PMBASE
+		Offset (0x48),
+		GPBS,   16,	// GPIOBASE
 		Offset (0x60),	// Interrupt Routing Registers
 		PRTA,	8,
 		PRTB,	8,
@@ -46,24 +48,6 @@ Device (LPCB)
 		Offset (0x80),	// IO Decode Ranges
 		IOD0,	8,
 		IOD1,	8,
-
-		Offset (0xb8),	// GPIO Routing Control
-		GR00,	 2,
-		GR01,	 2,
-		GR02,	 2,
-		GR03,	 2,
-		GR04,	 2,
-		GR05,	 2,
-		GR06,	 2,
-		GR07,	 2,
-		GR08,	 2,
-		GR09,	 2,
-		GR10,	 2,
-		GR11,	 2,
-		GR12,	 2,
-		GR13,	 2,
-		GR14,	 2,
-		GR15,	 2,
 
 		Offset (0xf0),	// RCBA
 		RCEN,	1,

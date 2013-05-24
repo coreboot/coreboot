@@ -19,11 +19,10 @@
  */
 
 #include <arch/byteorder.h>
+#include <arch/stages.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <fallback.h>
-#include <boot/elf.h>
-#include <boot/elf_boot.h>
 #include <boot/coreboot_tables.h>
 #include <stdint.h>
 #include <stdlib.h>

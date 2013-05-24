@@ -93,6 +93,11 @@
 #define GPIO_RESET_PWROK	0
 #define GPIO_RESET_RSMRST	1
 
+/* pirq route to io-apic */
+
+#define GPIO_PIRQ_APIC_MASK	0
+#define GPIO_PIRQ_APIC_ROUTE	1
+
 #define LP_GPIO_END \
 	{ .conf0 = GPIO_LIST_END }
 
@@ -128,6 +133,11 @@
 	  .owner = GPIO_OWNER_GPIO, \
 	  .irqen = GPIO_IRQ_ENABLE }
 
+#define LP_GPIO_PIRQ \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT, \
+	  .owner = GPIO_OWNER_GPIO, \
+	  .pirq  = GPIO_PIRQ_APIC_ROUTE }
+
 #define LP_GPIO_OUT_HIGH \
 	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_OUTPUT | GPO_LEVEL_HIGH, \
 	  .owner = GPIO_OWNER_GPIO, \
@@ -147,6 +157,7 @@ struct pch_lp_gpio_map {
 	u8 irqen;
 	u8 reset;
 	u8 blink;
+	u8 pirq;
 } __attribute__ ((packed));
 
 /* Configure GPIOs with mainboard provided settings */

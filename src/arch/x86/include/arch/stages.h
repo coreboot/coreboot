@@ -23,4 +23,5 @@
 #include <arch/cpu.h>
 
 void asmlinkage copy_and_run(void);
+void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size);
 #endif

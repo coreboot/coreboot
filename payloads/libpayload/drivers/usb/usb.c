@@ -242,13 +242,11 @@ get_free_address (hci_t *controller)
 	return -1;		// no free address
 }
 
-static int
-set_address (hci_t *controller, int speed, int hubport, int hubaddr)
+int
+generic_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 {
 	int adr = get_free_address (controller);	// address to set
 	dev_req_t dr;
-	configuration_descriptor_t *cd;
-	device_descriptor_t *dd;
 
 	memset (&dr, 0, sizeof (dr));
 	dr.data_dir = host_to_device;
@@ -273,11 +271,29 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	dev->endpoints[0].direction = SETUP;
 	mdelay (50);
 	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0)) {
-		usb_debug ("set_address failed\n");
 		return -1;
 	}
 	mdelay (50);
+
+	return adr;
+}
+
+static int
+set_address (hci_t *controller, int speed, int hubport, int hubaddr)
+{
+	int adr = controller->set_address(controller, speed, hubport, hubaddr);
+	if (adr < 0 || !controller->devices[adr]) {
+		usb_debug ("set_address failed\n");
+		return -1;
+	}
+	configuration_descriptor_t *cd;
+	device_descriptor_t *dd;
+
+	usbdev_t *dev = controller->devices[adr];
 	dev->address = adr;
+	dev->hub = hubaddr;
+	dev->port = hubport;
+	dev->speed = speed;
 	dev->descriptor = get_descriptor (dev, gen_bmRequestType
 		(device_to_host, standard_type, dev_recp), 1, 0, 0);
 	dd = (device_descriptor_t *) dev->descriptor;
@@ -298,7 +314,6 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	dev->configuration = get_descriptor (dev, gen_bmRequestType
 		(device_to_host, standard_type, dev_recp), 2, 0, 0);
 	cd = (configuration_descriptor_t *) dev->configuration;
-	set_configuration (dev);
 	interface_descriptor_t *interface =
 		(interface_descriptor_t *) (((char *) cd) + cd->bLength);
 	{
@@ -365,6 +380,13 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 			current = (interface_descriptor_t *) endp;
 		}
 	}
+
+	if (controller->finish_device_config &&
+			controller->finish_device_config(dev))
+		return adr; /* Device isn't configured correctly,
+			       only control transfers may work. */
+
+	set_configuration(dev);
 
 	int class = dd->bDeviceClass;
 	if (class == 0)
@@ -475,6 +497,8 @@ usb_detach_device(hci_t *controller, int devno)
 		controller->devices[devno]->destroy (controller->devices[devno]);
 		free(controller->devices[devno]);
 		controller->devices[devno] = NULL;
+		if (controller->destroy_device)
+			controller->destroy_device(controller, devno);
 	}
 }
 

@@ -754,6 +754,9 @@ ehci_init (pcidev_t addr)
 	controller->shutdown = ehci_shutdown;
 	controller->bulk = ehci_bulk;
 	controller->control = ehci_control;
+	controller->set_address = generic_set_address;
+	controller->finish_device_config = NULL;
+	controller->destroy_device = NULL;
 	controller->create_intr_queue = ehci_create_intr_queue;
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;

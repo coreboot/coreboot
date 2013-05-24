@@ -114,7 +114,7 @@ struct usbdev {
 typedef enum { OHCI = 0, UHCI = 1, EHCI = 2, XHCI = 3} hc_type;
 
 struct usbdev_hc {
-	struct usbdev_hc *next;
+	hci_t *next;
 	pcidev_t bus_address;
 	u32 reg_base;
 	hc_type type;
@@ -142,6 +142,20 @@ struct usbdev_hc {
 	void (*destroy_intr_queue) (endpoint_t *ep, void *queue);
 	u8* (*poll_intr_queue) (void *queue);
 	void *instance;
+
+	/* set_address():		Tell the usb device its address and
+					return it. xHCI controllers want to
+					do this by themself. Also, the usbdev
+					structure has to be allocated and
+					initialized. */
+	int (*set_address) (hci_t *controller, int speed, int hubport, int hubaddr);
+	/* finish_device_config():	Another hook for xHCI,
+					returns 0 on success. */
+	int (*finish_device_config) (usbdev_t *dev);
+	/* destroy_device():		Finally, destroy all structures that
+					were allocated during set_address()
+					and finish_device_config(). */
+	void (*destroy_device) (hci_t *controller, int devaddr);
 };
 
 typedef struct {
@@ -248,6 +262,9 @@ gen_bmRequestType (dev_req_dir dir, dev_req_type type, dev_req_recp recp)
 {
 	return (dir << 7) | (type << 5) | recp;
 }
+
+/* default "set address" handler */
+int generic_set_address (hci_t *controller, int speed, int hubport, int hubaddr);
 
 void usb_detach_device(hci_t *controller, int devno);
 int usb_attach_device(hci_t *controller, int hubaddress, int port, int speed);

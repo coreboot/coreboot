@@ -1,81 +1,14 @@
 #include <console/console.h>
+#include <arch/stages.h>
 #include <ip_checksum.h>
-#include <boot/elf.h>
-#include <boot/elf_boot.h>
 #include <string.h>
 #include <cpu/x86/multiboot.h>
-
-
-#ifndef CMD_LINE
-#define CMD_LINE ""
-#endif
-
-
-
-#define UPSZ(X) ((sizeof(X) + 3) &~3)
-
-static struct {
-	Elf_Bhdr hdr;
-	Elf_Nhdr ft_hdr;
-	unsigned char ft_desc[UPSZ(FIRMWARE_TYPE)];
-	Elf_Nhdr bl_hdr;
-	unsigned char bl_desc[UPSZ(BOOTLOADER)];
-	Elf_Nhdr blv_hdr;
-	unsigned char blv_desc[UPSZ(BOOTLOADER_VERSION)];
-	Elf_Nhdr cmd_hdr;
-	unsigned char cmd_desc[UPSZ(CMD_LINE)];
-} elf_boot_notes = {
-	.hdr = {
-		.b_signature = 0x0E1FB007,
-		.b_size = sizeof(elf_boot_notes),
-		.b_checksum = 0,
-		.b_records = 4,
-	},
-	.ft_hdr = {
-		.n_namesz = 0,
-		.n_descsz = sizeof(FIRMWARE_TYPE),
-		.n_type = EBN_FIRMWARE_TYPE,
-	},
-	.ft_desc = FIRMWARE_TYPE,
-	.bl_hdr = {
-		.n_namesz = 0,
-		.n_descsz = sizeof(BOOTLOADER),
-		.n_type = EBN_BOOTLOADER_NAME,
-	},
-	.bl_desc = BOOTLOADER,
-	.blv_hdr = {
-		.n_namesz = 0,
-		.n_descsz = sizeof(BOOTLOADER_VERSION),
-		.n_type = EBN_BOOTLOADER_VERSION,
-	},
-	.blv_desc = BOOTLOADER_VERSION,
-	.cmd_hdr = {
-		.n_namesz = 0,
-		.n_descsz = sizeof(CMD_LINE),
-		.n_type = EBN_COMMAND_LINE,
-	},
-	.cmd_desc = CMD_LINE,
-};
-
-
-int elf_check_arch(Elf_ehdr *ehdr)
-{
-	return (
-		((ehdr->e_machine == EM_386) ||	(ehdr->e_machine == EM_486)) &&
-		(ehdr->e_ident[EI_CLASS] == ELFCLASS32) &&
-		(ehdr->e_ident[EI_DATA] == ELFDATA2LSB)
-		);
-
-}
 
 #if CONFIG_RELOCATABLE_RAMSTAGE
 /* When the ramstage is relocatable the elf loading ensures an elf image cannot
  * be loaded over the ramstage code. */
 void jmp_to_elf_entry(void *entry, unsigned long unused1, unsigned long unused2)
 {
-	elf_boot_notes.hdr.b_checksum =
-		compute_ip_checksum(&elf_boot_notes, sizeof(elf_boot_notes));
-
 	/* Jump to kernel */
 	__asm__ __volatile__(
 		"	cld	\n\t"
@@ -90,8 +23,6 @@ void jmp_to_elf_entry(void *entry, unsigned long unused1, unsigned long unused2)
 		"r" (entry),
 #if CONFIG_MULTIBOOT
 		"b"(mbi), "a" (MB_MAGIC2)
-#else
-		"b"(&elf_boot_notes), "a" (0x0E1FB007)
 #endif
 		);
 }
@@ -100,25 +31,14 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 {
 	extern unsigned char _ram_seg, _eram_seg;
 	unsigned long lb_start, lb_size;
-	unsigned long adjust, adjusted_boot_notes;
-
-	elf_boot_notes.hdr.b_checksum =
-		compute_ip_checksum(&elf_boot_notes, sizeof(elf_boot_notes));
 
 	lb_start = (unsigned long)&_ram_seg;
 	lb_size = (unsigned long)(&_eram_seg - &_ram_seg);
-	adjust = buffer +  size - lb_start;
-
-	adjusted_boot_notes = (unsigned long)&elf_boot_notes;
-	adjusted_boot_notes += adjust;
 
 	printk(BIOS_SPEW, "entry    = 0x%08lx\n", (unsigned long)entry);
 	printk(BIOS_SPEW, "lb_start = 0x%08lx\n", lb_start);
 	printk(BIOS_SPEW, "lb_size  = 0x%08lx\n", lb_size);
-	printk(BIOS_SPEW, "adjust   = 0x%08lx\n", adjust);
 	printk(BIOS_SPEW, "buffer   = 0x%08lx\n", buffer);
-	printk(BIOS_SPEW, "     elf_boot_notes = 0x%08lx\n", (unsigned long)&elf_boot_notes);
-	printk(BIOS_SPEW, "adjusted_boot_notes = 0x%08lx\n", adjusted_boot_notes);
 
 	/* Jump to kernel */
 	__asm__ __volatile__(
@@ -206,7 +126,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 #if CONFIG_MULTIBOOT
 		"ri"(mbi), "ri" (MB_MAGIC2)
 #else
-		"ri"(adjusted_boot_notes), "ri" (0x0E1FB007)
+		"ri"(0), "ri" (0)
 #endif
 		);
 }

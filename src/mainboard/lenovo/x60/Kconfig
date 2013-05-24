@@ -25,6 +25,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_OPTION_TABLE
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select EARLY_CBMEM_INIT
+	select SMM_TSEG
 
 config MAINBOARD_DIR
 	string
@@ -53,5 +54,9 @@ config IRQ_SLOT_COUNT
 config MAX_CPUS
 	int
 	default 2
+
+config SMM_TSEG_SIZE
+        hex
+        default 0x100000
 
 endif

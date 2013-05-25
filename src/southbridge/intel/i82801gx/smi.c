@@ -29,6 +29,9 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 #include "i82801gx.h"
+#if CONFIG_NORTHBRIDGE_INTEL_I945
+#include "../../../northbridge/intel/i945/i945.h"
+#endif
 
 extern unsigned char _binary_smm_start;
 extern unsigned char _binary_smm_size;
@@ -245,7 +248,13 @@ static void smm_relocate(void)
 
 	printk(BIOS_DEBUG, "Initializing SMM handler...");
 
+#if CONFIG_SMM_TSEG
+	pmbase = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), TOLUD);
+	pmbase -= CONFIG_I915_UMA_SIZE;
+	pmbase -= CONFIG_SMM_TSEG_SIZE;
+#else
 	pmbase = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f, 0)), 0x40) & 0xfffc;
+#endif
 	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", pmbase);
 
 	smi_en = inl(pmbase + SMI_EN);

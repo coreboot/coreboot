@@ -56,6 +56,9 @@ static struct param {
 	uint32_t top_aligned;
 	int fit_empty_entries;
 	comp_algo algo;
+	/* for linux payloads */
+	char *initrd;
+	char *cmdline;
 } param = {
 	/* All variables not listed are initialized as zero. */
 	.algo = CBFS_COMPRESS_NONE,
@@ -148,6 +151,11 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer, uint32_t *offset) {
 	/* If it's not an ELF, see if it's a UEFI FV */
 	if (ret != 0)
 		ret = parse_fv_to_payload(buffer, &output, param.algo);
+
+	/* If it's neither ELF nor UEFI Fv, try bzImage */
+	if (ret != 0)
+		ret = parse_bzImage_to_payload(buffer, &output,
+				param.initrd, param.cmdline, param.algo);
 
 	/* Not a supported payload type */
 	if (ret != 0) {
@@ -449,7 +457,7 @@ static int cbfs_update_fit(void)
 
 static const struct command commands[] = {
 	{"add", "f:n:t:b:vh?", cbfs_add},
-	{"add-payload", "f:n:t:c:b:vh?", cbfs_add_payload},
+	{"add-payload", "f:n:t:c:b:vh?C:I:", cbfs_add_payload},
 	{"add-stage", "f:n:t:c:b:vh?", cbfs_add_stage},
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
 	{"remove", "n:vh?", cbfs_remove},
@@ -476,6 +484,8 @@ static struct option long_options[] = {
 	{"file",         required_argument, 0, 'f' },
 	{"machine",      required_argument, 0, 'm' },
 	{"empty-fits",   required_argument, 0, 'x' },
+	{"initrd",       required_argument, 0, 'I' },
+	{"cmdline",      required_argument, 0, 'C' },
 	{"verbose",      no_argument,       0, 'v' },
 	{"help",         no_argument,       0, 'h' },
 	{NULL,           0,                 0,  0  }
@@ -630,6 +640,12 @@ int main(int argc, char **argv)
 				break;
 			case 'm':
 				arch = string_to_arch(optarg);
+				break;
+			case 'I':
+				param.initrd = optarg;
+				break;
+			case 'C':
+				param.cmdline = optarg;
 				break;
 			case 'h':
 			case '?':

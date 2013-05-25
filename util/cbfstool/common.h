@@ -102,6 +102,9 @@ int parse_elf_to_payload(const struct buffer *input,
 			 struct buffer *output, comp_algo algo);
 int parse_fv_to_payload(const struct buffer *input,
 			 struct buffer *output, comp_algo algo);
+int parse_bzImage_to_payload(const struct buffer *input,
+			     struct buffer *output, const char *initrd,
+			     char *cmdline, comp_algo algo);
 int parse_flat_binary_to_payload(const struct buffer *input,
 				 struct buffer *output,
 				 uint32_t loadaddress,

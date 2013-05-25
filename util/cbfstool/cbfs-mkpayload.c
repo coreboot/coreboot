@@ -28,6 +28,7 @@
 #include "elf.h"
 #include "fv.h"
 #include "coff.h"
+#include "linux.h"
 
 int parse_elf_to_payload(const struct buffer *input,
 			 struct buffer *output, comp_algo algo)
@@ -377,3 +378,155 @@ int parse_fv_to_payload(const struct buffer *input,
 	return 0;
 
 }
+
+/* TODO:
+ *   make it work
+ *   entrypoint: code + 0
+ *     0x1000 for zImage
+ *     0x10000 for bzImage
+ *     or "preferred" for newer, if present and < 4GB
+ *     or custom if "relocatable": place outside coreboot range (avoid bounce)
+ *   handle special arguments
+ *     mem= argument
+ *     vga= argument (FILO ignores this)
+ *   add runtime stub that fills in some params:
+ *     alt_mem_k, ext_mem_k
+ *     params->e820_map (if missing, linux uses *_mem_k)
+ *     framebuffer/console values
+ *     probably needs to move GDT to <1MB?
+ *
+ *  larger work:
+ *     is compress() safe to use in a size constrained buffer? ie. do(es) the
+ *     compression algorithm(s) stop once the compression result reaches input
+ *     size (ie. incompressible data)?
+ */
+int parse_bzImage_to_payload(const struct buffer *input,
+			     struct buffer *output, const char *initrd_name,
+			     char *cmdline, comp_algo algo)
+{
+	int cur_len = 0;
+	int num_segments = 2; /* setup block and real kernel */
+
+	comp_func_ptr compress = compression_function(algo);
+	if (!compress)
+		return -1;
+
+	unsigned int initrd_base = 0x8000000; /* FIXME: where? */
+	unsigned int initrd_size = 0;
+	void *initrd_data = NULL;
+	if (initrd_name != NULL) {
+		/* TODO: load initrd, set initrd_size */
+		num_segments++;
+		ERROR("initrd not supported yet!\n");
+		return -1;
+	}
+
+	unsigned int cmdline_size = 0;
+	if (cmdline != NULL) {
+		num_segments++;
+		cmdline_size = strlen(cmdline) + 1;
+	}
+
+	struct linux_header *hdr = (struct linux_header *)input->data;
+	void *setup_data = input->data;
+	unsigned int setup_size = 4 * 512;
+	if (hdr->setup_sects != 0) {
+		setup_size = (hdr->setup_sects + 1) * 512;
+	}
+	/* TODO: we actually have to build a new block of the given size:
+	 *  kernel view on the params block differs from the bootloader view
+	 */
+
+	/* TODO: patch setup block */
+
+	unsigned long kernel_base = 0x100000;
+	if ((hdr->protocol_version >= 0x200) && (!hdr->loadflags & 1)) {
+		kernel_base = 0x1000; /* zImage kernel */
+	}
+	/* kernel prefers an address, so listen */
+	if ((hdr->protocol_version >= 0x20a) && (!(hdr->pref_address >> 32))) {
+		kernel_base = hdr->pref_address;
+	}
+	if ((hdr->protocol_version >= 0x205) && (hdr->relocatable_kernel)) {
+		/* TODO: if relocatable and kernel_base is within "typical"
+		 * coreboot areas (ie. 1-2MB, right?) pick something else
+		 * to avoid the stupid bounce buffer */
+	}
+
+	void *kernel_data = input->data + setup_size;
+	unsigned int kernel_size = input->size - setup_size;
+	/* TODO: in fact, this isn't kernel_base: it must point to our
+	 * trampoline */
+	unsigned int entrypoint = kernel_base;
+
+	struct cbfs_payload_segment *segs;
+	unsigned long doffset = (num_segments + 1) * sizeof(*segs);
+
+	/* Allocate a block of memory to store the data in */
+	int isize = setup_size + kernel_size + cmdline_size + initrd_size;
+	if (buffer_create(output, doffset + isize, input->name) != 0)
+		return -1;
+	memset(output->data, 0, output->size);
+
+	segs = (struct cbfs_payload_segment *)output->data;
+
+	/* setup block */
+	segs[0].type = PAYLOAD_SEGMENT_DATA;
+	segs[0].load_addr = htonll(LINUX_PARAM_LOC);
+	segs[0].mem_len = htonl(setup_size);
+	segs[0].offset = htonl(doffset);
+
+	compress(setup_data, setup_size, output->data + doffset, &cur_len);
+	segs[0].compression = htonl(algo);
+	segs[0].len = htonl(cur_len);
+
+	doffset += cur_len;
+
+	/* code block */
+	segs[1].type = PAYLOAD_SEGMENT_CODE;
+	segs[1].load_addr = htonll(kernel_base);
+	segs[1].mem_len = htonl(kernel_size);
+	segs[1].offset = htonl(doffset);
+
+	compress(kernel_data, kernel_size, output->data + doffset, &cur_len);
+	segs[1].compression = htonl(algo);
+	segs[1].len = htonl(cur_len);
+
+	doffset += cur_len;
+
+	if (cmdline_size > 0) {
+		/* command line block */
+		segs[2].type = PAYLOAD_SEGMENT_DATA;
+		segs[2].load_addr = htonll(COMMAND_LINE_LOC);
+		segs[2].mem_len = htonl(cmdline_size);
+		segs[2].offset = htonl(doffset);
+
+		compress(cmdline, cmdline_size, output->data + doffset, &cur_len);
+		segs[2].compression = htonl(algo);
+		segs[2].len = htonl(cur_len);
+
+		doffset += cur_len;
+	}
+
+	if (initrd_size > 0) {
+		/* setup block */
+		segs[num_segments-1].type = PAYLOAD_SEGMENT_DATA;
+		segs[num_segments-1].load_addr = htonll(initrd_base);
+		segs[num_segments-1].mem_len = htonl(initrd_size);
+		segs[num_segments-1].offset = htonl(doffset);
+
+		compress(initrd_data, initrd_size, output->data + doffset, &cur_len);
+		segs[num_segments-1].compression = htonl(algo);
+		segs[num_segments-1].len = htonl(cur_len);
+
+		doffset += cur_len;
+	}
+
+	/* prepare entry point segment */
+	segs[num_segments].type = PAYLOAD_SEGMENT_ENTRY;
+	segs[num_segments].load_addr = htonll(entrypoint);
+	output->size = doffset;
+
+	return 0;
+}
+

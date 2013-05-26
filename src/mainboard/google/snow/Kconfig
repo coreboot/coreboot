@@ -72,7 +72,7 @@ config NR_DRAM_BANKS
 	int
 	default 1
 
-choice
+choice CONSOLE_SERIAL_UART_CHOICES
 	prompt "Serial Console UART"
 	default CONSOLE_SERIAL_UART3
 	depends on CONSOLE_SERIAL_UART

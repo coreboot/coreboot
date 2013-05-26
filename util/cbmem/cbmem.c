@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -132,7 +133,7 @@ static int parse_cbtable(u64 address)
 	int i, found = 0;
 	void *buf;
 
-	debug("Looking for coreboot table at %llx\n", address);
+	debug("Looking for coreboot table at %" PRIx64 "\n", address);
 	buf = map_memory(address);
 
 	/* look at every 16 bytes within 4K of the base */

@@ -448,7 +448,7 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 {
 	u16 reg16;
 	reg16 = inw(pmbase + ALT_GP_SMI_STS);
-	outl(reg16, pmbase + ALT_GP_SMI_STS);
+	outw(reg16, pmbase + ALT_GP_SMI_STS);
 
 	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
 

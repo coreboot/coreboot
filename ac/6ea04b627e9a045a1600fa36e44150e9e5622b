@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+1: Denis Carikli <GNUtoo@no-log.org>
+Code-Review+2: Nico Huber <nico.huber@secunet.com>
+Code-Review+2: Aaron Durbin <adurbin@google.com>
+Submitted-by: Nico Huber <nico.huber@secunet.com>
+Submitted-at: Sun, 26 May 2013 18:01:22 +0200
+Reviewed-on: http://review.coreboot.org/3187
+Project: coreboot
+Branch: refs/heads/master

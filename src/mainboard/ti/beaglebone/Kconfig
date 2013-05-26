@@ -1,0 +1,153 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2013 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+if BOARD_TI_BEAGLEBONE
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARMV7
+	select CPU_TI_AM335X
+	select HAVE_UART_MEMORY_MAPPED
+	# FIXME: This should be much smaller
+	select BOARD_ROMSIZE_KB_128
+
+config MAINBOARD_DIR
+	string
+	default ti/beaglebone
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Beaglebone"
+
+config MAX_CPUS
+	int
+	default 1
+
+config MAINBOARD_VENDOR
+	string
+	default "TI"
+
+config BOOTBLOCK_MAINBOARD_INIT
+	string
+	default "mainboard/ti/beaglebone/bootblock.c"
+
+config DRAM_SIZE_MB
+	int
+	default 256
+
+config NR_DRAM_BANKS
+	int
+	default 1
+
+choice CONSOLE_SERIAL_UART_CHOICES
+	prompt "Serial Console UART"
+	default CONSOLE_SERIAL_UART0
+	depends on CONSOLE_SERIAL_UART
+
+config CONSOLE_SERIAL_UART0
+	bool "UART0"
+	help
+	  Serial console on UART0
+
+config CONSOLE_SERIAL_UART1
+	bool "UART1"
+	help
+	  Serial console on UART1
+
+config CONSOLE_SERIAL_UART2
+	bool "UART2"
+	help
+	  Serial console on UART2
+
+config CONSOLE_SERIAL_UART3
+	bool "UART3"
+	help
+	  Serial console on UART3
+
+config CONSOLE_SERIAL_UART4
+	bool "UART4"
+	help
+	  Serial console on UART4
+
+config CONSOLE_SERIAL_UART5
+	bool "UART5"
+	help
+	  Serial console on UART5
+
+endchoice
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_UART
+	default 0x44e09000 if CONSOLE_SERIAL_UART0
+	default 0x48022000 if CONSOLE_SERIAL_UART1
+	default 0x48024000 if CONSOLE_SERIAL_UART2
+	default 0x481a6000 if CONSOLE_SERIAL_UART3
+	default 0x481a8000 if CONSOLE_SERIAL_UART4
+	default 0x481aa000 if CONSOLE_SERIAL_UART5
+	help
+	  Map the UART names to the respective MMIO address.
+
+#################################################################
+#   stuff from smdk5250.h                                       #
+#   FIXME: can we move some of these to exynos5250's Kconfig?   #
+#################################################################
+config SYS_I2C_SPEED
+	int
+	default 100000
+
+config I2C_MULTI_BUS
+	bool
+	default y
+
+#FIXME: get proper voltages
+
+config VDD_ARM_MV
+	int
+	default 1300	#1.3V
+
+config VDD_INT_UV
+	int
+	default 1012500	# 1.0125v
+
+config VDD_MIF_MV
+	int
+	default 1000	# 1.0v
+
+config VDD_G3D_MV
+	int
+	default 1200	# 1.2v
+
+config VDD_LDO2_MV
+	int
+	default 1500	# 1.5v
+
+config VDD_LDO3_MV
+	int
+	default 1800	# 1.8v
+
+config VDD_LDO5_MV
+	int
+	default 1800	# 1.8v
+
+config VDD_LDO10_MV
+	int
+	default 1800	# 1.8v
+
+endif # BOARD_TI_BEAGLEBONE

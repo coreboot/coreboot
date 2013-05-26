@@ -221,6 +221,15 @@ while true ; do
 	esac
 done
 
+case "$TARGETARCH" in
+	armv7a-eabi)	break;;
+	i386-elf)	break;;
+	i386*)		TARGETARCH=i386-elf;;
+	arm*)		TARGETARCH=armv7a-eabi;;
+	*)		printf "Invalid architecture\n\n"; myhelp; exit 1;;
+esac
+
+echo "Target arch is now $TARGETARCH" 
 GDB_PACKAGE="GDB"
 PYTHON_PACKAGE="PYTHON"
 EXPAT_PACKAGE="EXPAT"

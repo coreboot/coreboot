@@ -32,6 +32,17 @@
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 
+/* Display defines for the interrupt 15h handler */
+#define INT15_5F35_CL_DISPLAY_DEFAULT		0
+#define INT15_5F35_CL_DISPLAY_CRT		(1 << 0)
+#define INT15_5F35_CL_DISPLAY_TV		(1 << 1)
+#define INT15_5F35_CL_DISPLAY_EFP		(1 << 2)
+#define INT15_5F35_CL_DISPLAY_LCD		(1 << 3)
+#define INT15_5F35_CL_DISPLAY_CRT2		(1 << 4)
+#define INT15_5F35_CL_DISPLAY_TV2		(1 << 5)
+#define INT15_5F35_CL_DISPLAY_EFP2		(1 << 6)
+#define INT15_5F35_CL_DISPLAY_LCD2		(1 << 7)
+
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 
 #define EPBAR		0x40

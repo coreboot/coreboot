@@ -52,6 +52,15 @@ global_nvs_t *gnvs = (global_nvs_t *)0x0;
 void *tcg = (void *)0x0;
 void *smi1 = (void *)0x0;
 
+#if CONFIG_SMM_TSEG
+void tseg_relocate(void **ptr)
+{
+	/* Adjust pointer with TSEG base */
+	if (*ptr && *ptr < (void*)smi_get_tseg_base())
+		*ptr = (void *)(((u8*)*ptr) + smi_get_tseg_base());
+}
+#endif
+
 /**
  * @brief read and clear PM1_STS
  * @return PM1_STS register
@@ -288,7 +297,9 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	get_option(&s5pwr, "power_on_after_fail");
 	outb(tmp70, 0x70);
 	outb(tmp72, 0x72);
-
+#if CONFIG_SMM_TSEG
+	void (*mainboard_sleep)(u8 slp_typ) = mainboard_smi_sleep;
+#endif
 	/* First, disable further SMIs */
 	reg8 = inb(pmbase + SMI_EN);
 	reg8 &= ~SLP_SMI_EN;
@@ -298,7 +309,12 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 	reg32 = inl(pmbase + PM1_CNT);
 	printk(BIOS_SPEW, "SMI#: SLP = 0x%08x\n", reg32);
 	slp_typ = (reg32 >> 10) & 7;
-
+#if CONFIG_SMM_TSEG
+	/* Do any mainboard sleep handling */
+	tseg_relocate((void **)&mainboard_sleep);
+	if (mainboard_sleep)
+		mainboard_sleep(slp_typ-2);
+#endif
 	/* Next, do the deed.
 	 */
 
@@ -367,6 +383,9 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 {
 	u32 pmctrl;
 	u8 reg8;
+#if CONFIG_SMM_TSEG
+	int (*mainboard_apmc)(u8 apmc) = mainboard_smi_apmc;
+#endif
 
 	/* Emulate B2 register as the FADT / Linux expects it */
 
@@ -415,6 +434,11 @@ static void southbridge_smi_apmc(unsigned int node, smm_state_save_area_t *state
 	default:
 		printk(BIOS_DEBUG, "SMI#: Unknown function APM_CNT=%02x\n", reg8);
 	}
+#if CONFIG_SMM_TSEG
+	tseg_relocate((void **)&mainboard_apmc);
+	if (mainboard_apmc)
+		mainboard_apmc(reg8);
+#endif
 }
 
 static void southbridge_smi_pm1(unsigned int node, smm_state_save_area_t *state_save)
@@ -452,18 +476,26 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 
 static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
 {
+#if CONFIG_SMM_TSEG
+	void (*mainboard_gpi)(u16 gpi_sts) = mainboard_smi_gpi;
+#endif
 	u16 reg16;
 	reg16 = inw(pmbase + ALT_GP_SMI_STS);
 	outw(reg16, pmbase + ALT_GP_SMI_STS);
 
 	reg16 &= inw(pmbase + ALT_GP_SMI_EN);
-
+#if CONFIG_SMM_TSEG
+	tseg_relocate((void **)&mainboard_gpi);
+#endif
 	if (mainboard_smi_gpi) {
 		mainboard_smi_gpi(reg16);
 	} else {
 		if (reg16)
 			printk(BIOS_DEBUG, "GPI (mask %04x)\n",reg16);
 	}
+#if CONFIG_SMM_TSEG
+	outw(reg16, pmbase + ALT_GP_SMI_STS);
+#endif
 }
 
 static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_save)
@@ -649,9 +681,17 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	/* Call SMI sub handler for each of the status bits */
 	for (i = 0; i < 31; i++) {
 		if (smi_sts & (1 << i)) {
-			if (southbridge_smi[i])
+			if (southbridge_smi[i]) {
+#if CONFIG_SMM_TSEG
+				smi_handler_t handler = (smi_handler_t)
+					((u8*)southbridge_smi[i] +
+					 smi_get_tseg_base());
+				if (handler)
+					handler(node, state_save);
+#else
 				southbridge_smi[i](node, state_save);
-			else {
+#endif
+			} else {
 				printk(BIOS_DEBUG, "SMI_STS[%d] occured, but no "
 						"handler available.\n", i);
 				dump = 1;

@@ -32,6 +32,17 @@
 /* Everything below this line is ignored in the DSDT */
 #ifndef __ACPI__
 
+/* Display defines for the interrupt 15h handler */
+#define DISPLAY_DEFAULT	0
+#define DISPLAY_CRT		(1 << 0)
+#define DISPLAY_TV		(1 << 1)
+#define DISPLAY_EFP		(1 << 2)
+#define DISPLAY_LCD		(1 << 3)
+#define DISPLAY_CRT2		(1 << 4)
+#define DISPLAY_TV2		(1 << 5)
+#define DISPLAY_EFP2		(1 << 6)
+#define DISPLAY_LCD2		(1 << 7)
+
 /* Device 0:0.0 PCI configuration space (Host Bridge) */
 
 #define EPBAR		0x40

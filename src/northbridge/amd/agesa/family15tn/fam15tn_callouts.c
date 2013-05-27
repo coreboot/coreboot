@@ -26,6 +26,29 @@
 #include "cbfs.h"
 #include "dimmSpd.h"
 #include "fam15tn_callouts.h"
+#include <cbmem.h>
+
+#define AGESA_RUNTIME_SIZE 4096
+
+static AGESA_STATUS alloc_cbmem(AGESA_BUFFER_PARAMS *AllocParams) {
+	static unsigned int used = 0;
+	void *p = cbmem_find(CBMEM_ID_AGESA_RUNTIME);
+
+	if ((AGESA_RUNTIME_SIZE - used) < AllocParams->BufferLength) {
+		return AGESA_BOUNDS_CHK;
+	}
+
+	/* first time allocation */
+	if (!p) {
+		p = cbmem_add(CBMEM_ID_AGESA_RUNTIME, AGESA_RUNTIME_SIZE);
+		if (!p)
+			return AGESA_BOUNDS_CHK;
+	}
+
+	AllocParams->BufferPointer = p + used;
+	used += AllocParams->BufferLength;
+	return AGESA_SUCCESS;
+}
 
 AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -47,6 +70,10 @@ AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	AllocParams = ((AGESA_BUFFER_PARAMS *) ConfigPtr);
 	AllocParams->BufferPointer = NULL;
+
+	/* if the allocation is for runtime use simple CBMEM data */
+	if (Data == HEAP_CALLOUT_RUNTIME)
+		return alloc_cbmem(AllocParams);
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
 	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));

@@ -78,6 +78,7 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbIvrsLib
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbSbIommuLib
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbTable
 AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbPcieInitLibV4
+AGESA_INC += -I$(AGESA_ROOT)/Proc/GNB/Modules/GnbIommuScratch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Fch/Common
 AGESA_INC += -I$(AGESA_ROOT)/Proc/IDS/Debug

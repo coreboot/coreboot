@@ -203,6 +203,7 @@ agesa_lib_src += $(AGESA_ROOT)/Proc/GNB/Modules/GnbSbLib/GnbSbLib.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/GNB/Modules/GnbSbLib/GnbSbPcie.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/GNB/Modules/GnbSview/GnbSview.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/GNB/Modules/GnbTable/GnbTable.c
+agesa_lib_src += $(AGESA_ROOT)/Proc/GNB/Modules/GnbIommuScratch/GnbIommuScratch.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/HT/Fam15Mod1x/htNbFam15Mod1x.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/HT/Fam15Mod1x/htNbUtilitiesFam15Mod1x.c
 agesa_lib_src += $(AGESA_ROOT)/Proc/HT/htFeat.c

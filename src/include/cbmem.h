@@ -71,6 +71,7 @@
 #define CBMEM_ID_VBOOT_HANDOFF	0x780074f0
 #define CBMEM_ID_CAR_GLOBALS	0xcac4e6a3
 #define CBMEM_ID_NONE		0x00000000
+#define CBMEM_ID_AGESA_RUNTIME	0x41474553
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>

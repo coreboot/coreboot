@@ -57,6 +57,7 @@
 #include  "GnbRegistersTN.h"
 #include  "heapManager.h"
 #include  "Filecode.h"
+#include  "GnbIommuScratch.h"
 #define FILECODE PROC_GNB_MODULES_GNBIOMMUSCRATCH_GNBIOMMUSCRATCH_FILECODE
 /*----------------------------------------------------------------------------------------
  *                   D E F I N I T I O N S    A N D    M A C R O S
@@ -111,9 +112,14 @@ GnbIommuScratchMemoryRangeInterface (
     return AGESA_FATAL;
   }
 
+  /* align the address to 64 bytes boundary */
+#ifdef __x86_64__
   AddressLow = (((UINT32) ((UINT64) AllocHeapParams.BufferPtr)) + 0x3F) & D0F0x98_x27_IOMMUUrAddr_31_6__MASK;
   AddressHigh = ((UINT32) (((UINT64) AllocHeapParams.BufferPtr) >> 32)) & D0F0x98_x26_IOMMUUrAddr_39_32__MASK;
-
+#else
+  AddressLow = ((((UINT32) AllocHeapParams.BufferPtr)) + 0x3F) & D0F0x98_x27_IOMMUUrAddr_31_6__MASK;
+  AddressHigh = 0;
+#endif
   GnbHandle = GnbGetHandle (StdHeader);
   while (GnbHandle != NULL) {
     if (GnbFmCheckIommuPresent (GnbHandle, StdHeader)) {

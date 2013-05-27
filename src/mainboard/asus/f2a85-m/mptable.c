@@ -130,6 +130,12 @@ static void *smp_write_config_table(void *v)
 #define PCI_INT(bus, dev, int_sign, pin)				\
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), apicid_hudson, (pin))
 
+	/* IOMMU */
+	PCI_INT(0x0, 0x0, 0x0, 0x10);
+	PCI_INT(0x0, 0x0, 0x1, 0x11);
+	PCI_INT(0x0, 0x0, 0x2, 0x12);
+	PCI_INT(0x0, 0x0, 0x3, 0x13);
+
 	/* Internal VGA */
 	PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);
 	PCI_INT(0x0, 0x01, 0x1, intr_data[0x03]);

@@ -539,7 +539,7 @@ void chipsetinit(void)
 	sb = (struct southbridge_amd_cs5536_config *)dev->chip_info;
 
 	if (!sb) {
-		printk(BIOS_ERR, "CS5536 configuration not found.\n");
+		printk(BIOS_INFO, "CS5536 configuration not found.\n");
 		return;
 	}
 
@@ -582,7 +582,7 @@ void chipsetinit(void)
 	}
 
 	/*      Flash BAR size Setup */
-	printk(BIOS_ERR, "%sDoing ChipsetFlashSetup()\n",
+	printk(BIOS_DEBUG, "%sDoing ChipsetFlashSetup()\n",
 		   sb->enable_ide_nand_flash == 1 ? "" : "Not ");
 	if (sb->enable_ide_nand_flash == 1)
 		ChipsetFlashSetup();
@@ -610,10 +610,10 @@ static void southbridge_init(struct device *dev)
 	 * unsigned short gpiobase = MDD_GPIO;
 	 */
 
-	printk(BIOS_ERR, "cs5536: %s\n", __func__);
+	printk(BIOS_DEBUG, "cs5536: %s\n", __func__);
 
 	if (!sb) {
-		printk(BIOS_ERR, "CS5536 configuration not found.\n");
+		printk(BIOS_INFO, "CS5536 configuration not found.\n");
 		return;
 	}
 
@@ -628,7 +628,7 @@ static void southbridge_init(struct device *dev)
 			(sb->enable_gpio_int_route >> 16));
 	}
 
-	printk(BIOS_ERR, "cs5536: %s: enable_ide_nand_flash is %d\n", __func__,
+	printk(BIOS_DEBUG, "cs5536: %s: enable_ide_nand_flash is %d\n", __func__,
 		   sb->enable_ide_nand_flash);
 	if (sb->enable_ide_nand_flash == 1) {
 		enable_ide_nand_flash_header();
@@ -665,7 +665,7 @@ static void cs5536_read_resources(device_t dev)
 
 static void southbridge_enable(struct device *dev)
 {
-	printk(BIOS_ERR, "cs5536: %s: dev is %p\n", __func__, dev);
+	printk(BIOS_DEBUG, "cs5536: %s: dev is %p\n", __func__, dev);
 
 }
 

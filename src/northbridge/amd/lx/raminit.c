@@ -774,3 +774,10 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	print_info("RAM DLL lock\n");
 
 }
+
+unsigned long get_top_of_ram(void)
+{
+	msr_t msr = rdmsr(CPU_RCONF_DEFAULT);
+	uint32_t systop = (msr.lo & 0xFFFFF00) >> 7;
+	return (unsigned long)systop;
+}

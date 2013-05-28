@@ -71,6 +71,17 @@ void rtc_init(int invalid)
 	unsigned char x;
 #endif
 
+#if CONFIG_HAVE_ACPI_RESUME
+	/*
+	 * Avoid clearing pending interrupts and resetting the RTC control
+	 * register in the resume path because the Linux kernel relies on
+	 * this to know if it should restart the RTC timer queue if the wake
+	 * was due to the RTC alarm.
+	 */
+	if (acpi_slp_type == 3)
+		return;
+#endif
+
 	printk(BIOS_DEBUG, "RTC Init\n");
 
 #if CONFIG_USE_OPTION_TABLE
@@ -126,16 +137,6 @@ void rtc_init(int invalid)
 	/* Make certain we have a valid checksum */
 	rtc_set_checksum(PC_CKS_RANGE_START,
                         PC_CKS_RANGE_END,PC_CKS_LOC);
-#endif
-
-#if CONFIG_HAVE_ACPI_RESUME
-	/*
-	 * Avoid clearing pending interrupts in the resume path because
-	 * the Linux kernel relies on this to know if it should restart
-	 * the RTC timer queue if the wake was due to the RTC alarm.
-	 */
-	if (acpi_slp_type == 3)
-		return;
 #endif
 
 	/* Clear any pending interrupts */

@@ -761,7 +761,23 @@ int print_pmbase(struct pci_dev *sb, struct pci_access *pacc)
 		size = ARRAY_SIZE(i63xx_pm_registers);
 		break;
 
-	case PCI_DEVICE_ID_INTEL_MOBILE_5:
+	case PCI_DEVICE_ID_INTEL_3400_DESKTOP:
+	case PCI_DEVICE_ID_INTEL_3400_MOBILE:
+	case PCI_DEVICE_ID_INTEL_P55:
+	case PCI_DEVICE_ID_INTEL_PM55:
+	case PCI_DEVICE_ID_INTEL_H55:
+	case PCI_DEVICE_ID_INTEL_QM57:
+	case PCI_DEVICE_ID_INTEL_H57:
+	case PCI_DEVICE_ID_INTEL_HM55:
+	case PCI_DEVICE_ID_INTEL_Q57:
+	case PCI_DEVICE_ID_INTEL_HM57:
+	case PCI_DEVICE_ID_INTEL_3400_MOBILE_SFF:
+	case PCI_DEVICE_ID_INTEL_B55_A:
+	case PCI_DEVICE_ID_INTEL_QS57:
+	case PCI_DEVICE_ID_INTEL_3400:
+	case PCI_DEVICE_ID_INTEL_3420:
+	case PCI_DEVICE_ID_INTEL_3450:
+	case PCI_DEVICE_ID_INTEL_B55_B:
 		pmbase = pci_read_word(sb, 0x40) & 0xfffc;
 		pm_registers = i63xx_pm_registers;
 		size = ARRAY_SIZE(i63xx_pm_registers);

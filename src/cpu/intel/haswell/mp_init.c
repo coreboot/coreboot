@@ -80,6 +80,8 @@ static atomic_t num_aps;
 static atomic_t num_aps_relocated_smm;
 /* Barrier to stop APs from performing SMM relcoation. */
 static int smm_relocation_barrier_begin __attribute__ ((aligned (64)));
+/* Determine if hyperthreading is disabled. */
+int ht_disabled;
 
 static inline void mfence(void)
 {
@@ -197,6 +199,8 @@ static void asmlinkage ap_init(unsigned int cpu, void *microcode_ptr)
 static void setup_default_sipi_vector_params(struct sipi_params *sp)
 {
 	int i;
+	u8 apic_id;
+	u8 apic_id_inc;
 
 	sp->gdt = (u32)&gdt;
 	sp->gdtlimit = (u32)&gdt_end - (u32)&gdt - 1;
@@ -205,9 +209,15 @@ static void setup_default_sipi_vector_params(struct sipi_params *sp)
 	sp->stack_top = (u32)&_estack;
 	/* Adjust the stack top to take into account cpu_info. */
 	sp->stack_top -= sizeof(struct cpu_info);
-	/* Default to linear APIC id space. */
-	for (i = 0; i < CONFIG_MAX_CPUS; i++)
-		sp->apic_to_cpu_num[i] = i;
+
+	/* Default to linear APIC id space if HT is enabled. If it is
+	 * disabled the APIC ids increase by 2 as the odd numbered APIC
+	 * ids are not present.*/
+	apic_id_inc = (ht_disabled) ? 2 : 1;
+	for (i = 0, apic_id = 0; i < CONFIG_MAX_CPUS; i++) {
+		sp->apic_to_cpu_num[i] = apic_id;
+		apic_id += apic_id_inc;
+	}
 }
 
 #define NUM_FIXED_MTRRS 11
@@ -374,6 +384,10 @@ static int allocate_cpu_devices(struct bus *cpu_bus, int *total_hw_threads)
 		max_cpus = CONFIG_MAX_CPUS;
 	}
 
+	/* Determine if hyperthreading is enabled. If not, the APIC id space
+	 * is sparse with ids incrementing by 2 instead of 1. */
+	ht_disabled = num_threads == num_cores;
+
 	for (i = 1; i < max_cpus; i++) {
 		struct device_path cpu_path;
 		device_t new;
@@ -381,6 +395,8 @@ static int allocate_cpu_devices(struct bus *cpu_bus, int *total_hw_threads)
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id = info->cpu->path.apic.apic_id + i;
+		if (ht_disabled)
+			cpu_path.apic.apic_id = cpu_path.apic.apic_id * 2;
 
 		/* Allocate the new cpu device structure */
 		new = alloc_find_dev(cpu_bus, &cpu_path);

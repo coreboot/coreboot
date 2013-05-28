@@ -28,9 +28,12 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 SPD_BIN = $(obj)/spd.bin
 
 # Order of names in SPD_SOURCES is important!
-SPD_SOURCES  = Hynix_HMT425S6AFR6A
-SPD_SOURCES += Micron_4KTF25664HZ
-SPD_SOURCES += Elpida_EDJ4216EFBG
+SPD_SOURCES  = Micron_4KTF25664HZ     # 4GB / CH0 + CH1
+SPD_SOURCES += Hynix_HMT425S6AFR6A    # 4GB / CH0 + CH1
+SPD_SOURCES += Elpida_EDJ4216EFBG     # 4GB / CH0 + CH1
+SPD_SOURCES += Micron_4KTF25664HZ     # 2GB / CH0 only
+SPD_SOURCES += Hynix_HMT425S6AFR6A    # 2GB / CH0 only
+SPD_SOURCES += Elpida_EDJ4216EFBG     # 2GB / CH0 only
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
 

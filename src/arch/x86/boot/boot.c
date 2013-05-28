@@ -20,9 +20,9 @@ void jmp_to_elf_entry(void *entry, unsigned long unused1, unsigned long unused2)
 		"	cld	\n\t"
 
 		::
-		"r" (entry),
+		"r" (entry)
 #if CONFIG_MULTIBOOT
-		"b"(mbi), "a" (MB_MAGIC2)
+		, "b"(mbi), "a" (MB_MAGIC2)
 #endif
 		);
 }

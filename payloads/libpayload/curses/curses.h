@@ -351,7 +351,7 @@ typedef	chtype	attr_t;		/* ...must be at least as wide as chtype */
 
 #if 1
 //// #include <wchar.h>		/* ...to get mbstate_t, etc. */
-//typedef unsigned long wchar_t;	// XXX
+typedef unsigned long wchar_t;	// XXX
 typedef unsigned long wint_t;	// XXX
 #endif
 

@@ -131,16 +131,12 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write(0x0a094, 0x00040000);
 }
 
-static void gma_pm_init_post_vbios(struct device *dev)
+static void gma_setup_panel(struct device *dev)
 {
 	struct northbridge_intel_haswell_config *conf = dev->chip_info;
 	u32 reg32;
 
 	printk(BIOS_DEBUG, "GT Power Management Init (post VBIOS)\n");
-
-	/* Disable Force Wake */
-	gtt_write(0x0a188, 0x00010000);
-	gtt_poll(0x130044, 1 << 0, 0 << 0);
 
 	/* Setup Digital Port Hotplug */
 	reg32 = gtt_read(0xc4030);
@@ -187,6 +183,22 @@ static void gma_pm_init_post_vbios(struct device *dev)
 	}
 }
 
+static void gma_pm_init_post_vbios(struct device *dev)
+{
+	extern int oprom_is_loaded;
+
+	if (!oprom_is_loaded) {
+		/* Magic to force graphics into happy state for kernel */
+		gtt_write(0xc7204, 0xabcd000f); /* panel power up */
+		gtt_write(0x45400, 0x80000000); /* power well enable */
+		gtt_write(0x64000, 0x00000091); /* DDI-A enable */
+	}
+
+	/* Disable Force Wake */
+	gtt_write(0x0a188, 0x00010000);
+	gtt_poll(0x130044, 1 << 0, 0 << 0);
+}
+
 static void gma_func0_init(struct device *dev)
 {
 	int lightup_ok = 0;
@@ -203,8 +215,12 @@ static void gma_func0_init(struct device *dev)
 	 * So it's almost like having two hardcodes.
 	 */
 	graphics_base = dev->resource_list[1].base;
+
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
+
+	/* Post VBIOS init */
+	gma_setup_panel(dev);
 
 #if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");

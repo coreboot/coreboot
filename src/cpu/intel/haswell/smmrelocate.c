@@ -286,6 +286,22 @@ static void fill_in_relocation_params(device_t dev,
 	params->uncore_emrr_mask.hi = (1 << (39 - 32)) - 1;
 }
 
+static void adjust_apic_id_map(struct smm_loader_params *smm_params)
+{
+	struct smm_runtime *runtime;
+	int i;
+
+	/* Adjust the APIC id map if HT is disabled. */
+	if (!ht_disabled)
+		return;
+
+	runtime = smm_params->runtime;
+
+	/* The APIC ids increment by 2 when HT is disabled. */
+	for (i = 0; i < CONFIG_MAX_CPUS; i++)
+		runtime->apic_id_to_cpu[i] = runtime->apic_id_to_cpu[i] * 2;
+}
+
 static int install_relocation_handler(int num_cpus,
                                       struct smm_relocation_params *relo_params)
 {
@@ -305,7 +321,12 @@ static int install_relocation_handler(int num_cpus,
 		.handler_arg = (void *)relo_params,
 	};
 
-	return smm_setup_relocation_handler(&smm_params);
+	if (smm_setup_relocation_handler(&smm_params))
+		return -1;
+
+	adjust_apic_id_map(&smm_params);
+
+	return 0;
 }
 
 static void setup_ied_area(struct smm_relocation_params *params)
@@ -347,8 +368,13 @@ static int install_permanent_handler(int num_cpus,
 
 	printk(BIOS_DEBUG, "Installing SMM handler to 0x%08x\n",
 	       relo_params->smram_base);
-	return smm_load_module((void *)relo_params->smram_base,
-	                       relo_params->smram_size, &smm_params);
+	if (smm_load_module((void *)relo_params->smram_base,
+	                     relo_params->smram_size, &smm_params))
+		return -1;
+
+	adjust_apic_id_map(&smm_params);
+
+	return 0;
 }
 
 static int cpu_smm_setup(void)

@@ -175,6 +175,9 @@ int setup_ap_init(struct bus *cpu_bus, int *max_cpus,
 /* Returns 0 on success, < 0 on failure. */
 int start_aps(struct bus *cpu_bus, int max_cpus);
 void release_aps_for_smm_relocation(int do_parallel_relocation);
+/* Determine if HyperThreading is disabled. The variable is not valid until
+ * setup_ap_init() has been called. */
+extern int ht_disabled;
 #endif
 
 /* This structure is saved along with the relocated ramstage program in SMM

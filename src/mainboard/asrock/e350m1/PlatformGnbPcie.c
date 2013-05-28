@@ -109,8 +109,8 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 PCIe_COMPLEX_DESCRIPTOR Brazos = {
         DESCRIPTOR_TERMINATE_LIST,
         0,
-        &PortList[0],
-        &DdiList[0]
+        PortList,
+        DdiList
 };
 
   // GNB PCIe topology Porting
@@ -153,8 +153,8 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
                    &InitEarly->StdHeader);
 
   LibAmdMemCopy  (BrazosPcieComplexListPtr, &Brazos, sizeof(Brazos), &InitEarly->StdHeader);
-  LibAmdMemCopy  (BrazosPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);
-  LibAmdMemCopy  (BrazosPcieDdiPtr, &DdiList[0], sizeof(DdiList), &InitEarly->StdHeader);
+  LibAmdMemCopy  (BrazosPciePortPtr, PortList, sizeof(PortList), &InitEarly->StdHeader);
+  LibAmdMemCopy  (BrazosPcieDdiPtr, DdiList, sizeof(DdiList), &InitEarly->StdHeader);
 
 
   ((PCIe_COMPLEX_DESCRIPTOR*)BrazosPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)BrazosPciePortPtr;

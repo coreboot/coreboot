@@ -215,16 +215,16 @@ while true ; do
 		-G|--gdb)	shift; SKIPGDB=0;;
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
-		--)		shift; break;;
+		--)		shift;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
-		*)		break;;
+		*)		;;
 	esac
 done
 
 case "$TARGETARCH" in
-	armv7a-eabi)	break;;
-	i386-elf)	break;;
-	i386-mingw32)	break;;
+	armv7a-eabi)	;;
+	i386-elf)	;;
+	i386-mingw32)	;;
 	i386*)		TARGETARCH=i386-elf;;
 	arm*)		TARGETARCH=armv7a-eabi;;
 	*)		printf "Invalid architecture\n\n"; myhelp; exit 1;;

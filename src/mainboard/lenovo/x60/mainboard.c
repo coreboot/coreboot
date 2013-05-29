@@ -54,7 +54,6 @@ int get_cst_entries(acpi_cstate_t **entries)
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0, idedev, sdhci_dev;
-	u8 defaults_loaded = 0;
 
 	ec_clr_bit(0x03, 2);
 
@@ -91,22 +90,6 @@ static void mainboard_enable(device_t dev)
 			/* restore lock */
 			pci_write_config8(sdhci_dev, 0xf9, 0x00);
 		}
-	}
-
-	if (get_option(&defaults_loaded, "cmos_defaults_loaded") < 0) {
-		printk(BIOS_INFO, "failed to get cmos_defaults_loaded");
-		defaults_loaded = 0;
-	}
-
-	if (!defaults_loaded) {
-		printk(BIOS_INFO, "Restoring CMOS defaults\n");
-		set_option("tft_brightness", &(u8[]){ 0xff });
-		set_option("volume", &(u8[]){ 0x03 });
-		/* set baudrate to 115200 baud */
-		set_option("baud_rate", &(u8[]){ 0x00 });
-		/* set default debug_level (DEFAULT_CONSOLE_LOGLEVEL starts at 1) */
-		set_option("debug_level", &(u8[]) { CONFIG_DEFAULT_CONSOLE_LOGLEVEL+1 });
-		set_option("cmos_defaults_loaded", &(u8[]){ 0x01 });
 	}
 }
 

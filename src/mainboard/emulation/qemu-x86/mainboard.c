@@ -64,29 +64,3 @@ static const struct pci_driver nb_driver __pci_driver = {
 	.vendor = 0x8086,
 	.device = 0x1237,
 };
-
-static void qemu_init(device_t dev)
-{
-	/* The VGA OPROM already lives at 0xc0000,
-	 * force coreboot to use it.
-	 */
-	dev->on_mainboard = 1;
-
-	/* Now do the usual initialization */
-	pci_dev_init(dev);
-}
-
-static struct device_operations vga_operations = {
-	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
-	.enable_resources = pci_dev_enable_resources,
-	.init             = qemu_init,
-	.ops_pci          = 0,
-};
-
-static const struct pci_driver vga_driver __pci_driver = {
-	.ops = &vga_operations,
-	.vendor = 0x1013,
-	.device = 0x00b8,
-};
-

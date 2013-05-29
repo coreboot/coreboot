@@ -1,9 +1,5 @@
 menu "Architecture (armv7)"
 
-config EABI_COMPAT
-	bool "Toolchain is EABI compatible"
-	default n
-
 # Maximum reboot count
 # TODO: Improve description.
 config MAX_REBOOT_CNT
@@ -35,18 +31,5 @@ config UPDATE_IMAGE
 	  is created. Instead it is expected that there already
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
-
-config BOOTBLOCK_SOC_INIT
-	string
-
-# FIXME: Should cache policy be set on a per-CPU basis?
-# FIXME(dhendrix): Stefan sayz to make a smart decision and not prompt the user.
-config ARM_DCACHE_POLICY_WRITEBACK
-	bool
-	default y
-
-config ARM_DCACHE_POLICY_WRITETHROUGH
-	bool
-	default n
 
 endmenu

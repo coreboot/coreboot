@@ -224,6 +224,7 @@ void set_gpio(int gpio_num, int value);
 
 #define PCH_EHCI1_DEV		PCI_DEV(0, 0x1d, 0)
 #define PCH_EHCI2_DEV		PCI_DEV(0, 0x1a, 0)
+#define PCH_XHCI_DEV		PCI_DEV(0, 0x14, 0)
 #define PCH_ME_DEV		PCI_DEV(0, 0x16, 0)
 #define PCH_PCIE_DEV_SLOT	28
 
@@ -334,6 +335,12 @@ void set_gpio(int gpio_num, int value);
 /* SATA IOBP Registers */
 #define SATA_IOBP_SP0G3IR	0xea000151
 #define SATA_IOBP_SP1G3IR	0xea000051
+
+/* USB Registers */
+#define EHCI_PWR_CNTL_STS	0x54
+#define  EHCI_PWR_STS_MASK	0x3
+#define  EHCI_PWR_STS_SET_D0	0x0
+#define  EHCI_PWR_STS_SET_D3	0x3
 
 /* Serial IO IOBP Registers */
 #define SIO_IOBP_PORTCTRL0	0xcb000000	/* SDIO D23:F0 */

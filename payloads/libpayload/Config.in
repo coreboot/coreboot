@@ -380,7 +380,8 @@ config USB_MSC
 
 config USB_GEN_HUB
 	bool
-	default n
+	default n if (!USB_HUB)
+	default y if (USB_HUB)
 
 endmenu
 

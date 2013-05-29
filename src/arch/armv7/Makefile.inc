@@ -172,8 +172,6 @@ romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
 
 ramstage-y += div0.c
 #ramstage-y += interrupts.c
-#ramstage-y += memcpy.S
-#ramstage-y += memset.S
 ramstage-y += cache.c
 ramstage-y += mmu.c
 
@@ -183,6 +181,13 @@ bootblock-y += eabi_compat.c
 
 ramstage-y += boot.c
 ramstage-y += tables.c
+
+romstage-y += memset.S
+ramstage-y += memset.S
+bootblock-y += memset.S
+romstage-y += memcpy.S
+ramstage-y += memcpy.S
+bootblock-y += memcpy.S
 
 $(obj)/arch/armv7/coreboot_table.ramstage.o : $(OPTION_TABLE_H)
 

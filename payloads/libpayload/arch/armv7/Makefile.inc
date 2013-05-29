@@ -34,4 +34,4 @@ libc-y += virtual.c
 libc-y += memcpy.S memset.S
 libc-y += exception_asm.S exception.c
 libc-y += cache.c
-libc-y += dummy_media.c
+libcbfs-$(CONFIG_CBFS) += dummy_media.c

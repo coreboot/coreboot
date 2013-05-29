@@ -18,7 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -26,8 +25,10 @@
 #include <pc80/keyboard.h>
 #include <arch/io.h>
 
-/* not sure how these are routed in qemu */
-static const unsigned char enetIrqs[4] = { 11, 0, 0, 0 };
+static const unsigned char qemu_i440fx_irqs[] = {
+	11, 10, 10, 11,
+	11, 10, 10, 11,
+};
 
 static void qemu_nb_init(device_t dev)
 {
@@ -44,11 +45,9 @@ static void qemu_nb_init(device_t dev)
 	 */
 	pc_keyboard_init(0);
 
-	/* The PIRQ table is not working well for interrupt routing purposes.
-	 * so we'll just set the IRQ directly.
-	 */
-	printk(BIOS_INFO, "Setting up ethernet...\n");
-	pci_assign_irqs(0, 3, enetIrqs);
+	/* setup IRQ routing */
+	for (i = 0; i < 32; i++)
+		pci_assign_irqs(0, i, qemu_i440fx_irqs + (i % 4));
 }
 
 static struct device_operations nb_operations = {

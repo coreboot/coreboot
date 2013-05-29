@@ -123,6 +123,10 @@
 	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT, \
 	  .owner = GPIO_OWNER_GPIO }
 
+#define LP_GPIO_INPUT_INVERT \
+	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_INVERT, \
+	  .owner = GPIO_OWNER_GPIO }
+
 #define LP_GPIO_IRQ_EDGE \
 	{ .conf0 = GPIO_MODE_GPIO | GPIO_DIR_INPUT | GPIO_IRQ_EDGE, \
 	  .owner = GPIO_OWNER_GPIO, \

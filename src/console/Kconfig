@@ -250,6 +250,23 @@ config CONSOLE_CAR_BUFFER_SIZE
 	  in the DCACHE based RAM to keep console output before it can be
 	  saved in a CBMEM buffer. 3K bytes should be enough even for the
 	  BIOS_SPEW level.
+
+config CONSOLE_DEBUGCON
+	bool "QEMU debug console output"
+	depends on BOARD_EMULATION_QEMU_X86
+	default y
+	help
+	  Send coreboot debug output to QEMU's isa-debugcon device:
+
+	  qemu-system-x86_64 \
+	    -chardev file,id=debugcon,path=/dir/file.log \
+	    -device isa-debugcon,iobase=0x402,chardev=debugcon
+
+config CONSOLE_DEBUGCON_PORT
+	hex "QEMU debug console port"
+	depends on CONSOLE_DEBUGCON
+	default 0x402
+
 choice
 	prompt "Default console log level"
 	default DEFAULT_CONSOLE_LOGLEVEL_8

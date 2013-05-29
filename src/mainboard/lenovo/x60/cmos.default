@@ -1,0 +1,14 @@
+boot_option=Fallback
+last_boot=Fallback
+baud_rate=115200
+debug_level=Spew
+hyper_threading=Enable
+nmi=Enable
+boot_devices=''
+boot_default=0x40
+cmos_defaults_loaded=Yes
+lpt=Enable
+volume=0x3
+tft_brightness=0xff
+first_battery=Primary
+bluetooth=Enable

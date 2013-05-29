@@ -64,6 +64,7 @@ libc-$(CONFIG_USB) += usb/usbinit.c
 libc-$(CONFIG_USB) += usb/usb.c
 libc-$(CONFIG_USB) += usb/usb_dev.c
 libc-$(CONFIG_USB) += usb/quirks.c
+libc-$(CONFIG_USB_GEN_HUB) += usb/generic_hub.c
 libc-$(CONFIG_USB_HUB) += usb/usbhub.c
 libc-$(CONFIG_USB_UHCI) += usb/uhci.c
 libc-$(CONFIG_USB_UHCI) += usb/uhci_rh.c

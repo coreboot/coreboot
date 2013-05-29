@@ -28,5 +28,6 @@ struct mem_controller {
 };
 
 void sdram_initialize(int controllers, const struct mem_controller *ctrl);
+unsigned long get_top_of_ram(void);
 
 #endif

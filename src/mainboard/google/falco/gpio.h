@@ -35,7 +35,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_INPUT,         /* 9: RAM_ID1 */
 	LP_GPIO_ACPI_SCI,      /* 10: WLAN_WAKE_L_Q */
 	LP_GPIO_UNUSED,        /* 11: UNUSED */
-	LP_GPIO_INPUT,         /* 12: TRACKPAD_INT_L (WAKE) */
+	LP_GPIO_INPUT_INVERT,  /* 12: TRACKPAD_INT_L (WAKE) */
 	LP_GPIO_INPUT,         /* 13: RAM_ID0 */
 	LP_GPIO_INPUT,         /* 14: EC_IN_RW */
 	LP_GPIO_UNUSED,        /* 15: UNUSED (STRAP) */
@@ -48,7 +48,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 22: UNUSED */
 	LP_GPIO_UNUSED,        /* 23: UNUSED */
 	LP_GPIO_UNUSED,        /* 24: UNUSED */
-	LP_GPIO_INPUT,         /* 25: TOUCH_INT_L (WAKE) */
+	LP_GPIO_INPUT_INVERT,  /* 25: TOUCH_INT_L (WAKE) */
 	LP_GPIO_UNUSED,        /* 26: UNUSED */
 	LP_GPIO_UNUSED,        /* 27: UNUSED */
 	LP_GPIO_UNUSED,        /* 28: UNUSED */

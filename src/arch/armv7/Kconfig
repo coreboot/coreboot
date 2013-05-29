@@ -32,4 +32,12 @@ config UPDATE_IMAGE
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
 
+config HAVE_ARCH_MEMSET
+	bool
+	default y
+
+config HAVE_ARCH_MEMCPY
+	bool
+	default y
+
 endmenu

@@ -98,39 +98,6 @@ static void copy_spd(struct pei_data *peid)
 	       sizeof(peid->spd_data[0]));
 }
 
-/*
- * Power Sequencing for SanDisk i100/i110 SSD
- *
- * Must be sequenced in this order with specified timing.
- *
- * 1. VCC_IO    : 30us - 100ms
- * 2. VCC_FLASH : 70us - 10ms
- * 3. VCCQ      : 70us - 10ms
- * 4. VDDC      : 30us - 100ms
- *
- * There is no feedback to know if the voltage has stabilized
- * so this implementation will use the max ramp times.  That
- * means it adds significantly to the boot time.
- */
-static void issd_power_sequence(void)
-{
-	struct gpio_seq {
-		int gpio;
-		int wait_ms;
-	} issd_gpio_seq[] = {
-		{ 49, 100 },	/* VCC_IO:    GPIO 49, wait 100ms */
-		{ 44, 10 },	/* VCC_FLASH: GPIO 44, wait 10ms */
-		{ 17, 10 },	/* VCCQ:      GPIO 17, wait 10ms */
-		{ 16, 100 },	/* VDDC:      GPIO 16, wait 100ms */
-	};
-	int step;
-
-	for (step = 0; step < ARRAY_SIZE(issd_gpio_seq); step++) {
-		set_gpio(issd_gpio_seq[step].gpio, 1);
-		udelay(issd_gpio_seq[step].wait_ms * 1000);
-	}
-}
-
 void mainboard_romstage_entry(unsigned long bist)
 {
 	struct pei_data pei_data = {
@@ -161,18 +128,18 @@ void mainboard_romstage_entry(unsigned long bist)
 		usb2_ports: {
 			/* Length, Enable, OCn# */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P0: LTE */
-			{ 0x0040, 1, 0               }, /* P1: Port A, CN10 */
+			{ 0x0040, 1, 0               }, /* P1: Port A */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P2: CCD */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: BT */
-			{ 0x0040, 1, 2               }, /* P4: Port B, CN6  */
-			{ 0x0040, 0, USB_OC_PIN_SKIP }, /* P5: EMPTY */
+			{ 0x0040, 1, 2               }, /* P4: USB 2.0 Port */
+			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P5: USIM */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P6: SD Card */
 			{ 0x0040, 0, USB_OC_PIN_SKIP }, /* P7: EMPTY */
 		},
 		usb3_ports: {
 			/* Enable, OCn# */
-			{ 1, 0               }, /* P1; Port A, CN10 */
-			{ 1, 2               }, /* P2; Port B, CN6  */
+			{ 1, 0               }, /* P1; Port A, CN6 */
+			{ 0, USB_OC_PIN_SKIP }, /* P2; */
 			{ 0, USB_OC_PIN_SKIP }, /* P3; */
 			{ 0, USB_OC_PIN_SKIP }, /* P4; */
 		},
@@ -188,7 +155,4 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(&romstage_params);
-
-	/* Power sequence the iSSD module */
-	issd_power_sequence();
 }

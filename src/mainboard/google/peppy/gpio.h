@@ -39,8 +39,8 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_INPUT,         /* 13: RAM_ID0 */
 	LP_GPIO_INPUT,         /* 14: EC_IN_RW */
 	LP_GPIO_UNUSED,        /* 15: UNUSED (STRAP) */
-	LP_GPIO_OUT_LOW,       /* 16: PCH_SSD_12_EN (iSSD VDDC) */
-	LP_GPIO_OUT_LOW,       /* 17: PCH_SSD_18_EN (iSSD VCCQ) */
+	LP_GPIO_UNUSED,        /* 16: UNUSED */
+	LP_GPIO_UNUSED,        /* 17: UNUSED */
 	LP_GPIO_NATIVE,        /* 18: PCIE_CLKREQ_WLAN# */
 	LP_GPIO_UNUSED,        /* 19: UNUSED */
 	LP_GPIO_UNUSED,        /* 20: UNUSED */
@@ -56,7 +56,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSWARN_L */
 	LP_GPIO_NATIVE,        /* 31: NATIVE: ACPRESENT */
 	LP_GPIO_NATIVE,        /* 32: NATIVE: LPC_CLKRUN_L */
-	LP_GPIO_NATIVE,        /* 33: NATIVE: DEVSLP0 */
+	LP_GPIO_UNUSED,        /* 33: UNUSED */
 	LP_GPIO_ACPI_SMI,      /* 34: EC_SMI_L */
 	LP_GPIO_ACPI_SMI,      /* 35: PCH_NMI_DBG_L (route in NMI_EN) */
 	LP_GPIO_ACPI_SCI,      /* 36: EC_SCI_L */
@@ -67,12 +67,12 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 41: UNUSED */
 	LP_GPIO_NATIVE,        /* 42: NATIVE: USB_OC2# */
 	LP_GPIO_UNUSED,        /* 43: UNUSED */
-	LP_GPIO_OUT_LOW,       /* 44: PP3300_SSD_EN (iSSD VCC_FLASH) */
+	LP_GPIO_OUT_HIGH,      /* 44: PP3300_SSD_EN */
 	LP_GPIO_OUT_HIGH,      /* 45: PP3300_CODEC_EN */
 	LP_GPIO_OUT_HIGH,      /* 46: WLAN_DISABLE_L */
 	LP_GPIO_INPUT,         /* 47: RAM_ID2 */
 	LP_GPIO_UNUSED,        /* 48: UNUSED */
-	LP_GPIO_OUT_LOW,       /* 49: PP3300_SSD_IO_EN (iSSD VCC_IO) */
+	LP_GPIO_UNUSED,        /* 49: UNUSED */
 	LP_GPIO_UNUSED,        /* 50: UNUSED */
 	LP_GPIO_INPUT,         /* 51: ALS_INT_L */
 	LP_GPIO_INPUT,         /* 52: SIM_DET */
@@ -84,12 +84,12 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_INPUT,         /* 58: PCH_SPI_WP_D */
 	LP_GPIO_OUT_HIGH,      /* 59: LTE_DISABLE_L */
 	LP_GPIO_NATIVE,        /* 60: NATIVE: SML0ALERT */
-	LP_GPIO_NATIVE,        /* 61: NATIVE: PCH_SUS_STAT */
-	LP_GPIO_NATIVE,        /* 62: NATIVE: PCH_SUS_CLK */
+	LP_GPIO_UNUSED,        /* 61: UNUSED */
+	LP_GPIO_UNUSED,        /* 62: UNUSED */
 	LP_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
 	LP_GPIO_UNUSED,        /* 64: UNUSED */
 	LP_GPIO_UNUSED,        /* 65: UNUSED */
-	LP_GPIO_UNUSED,        /* 66: UNUSED */
+	LP_GPIO_UNUSED,        /* 66: UNUSED (STRAP) */
 	LP_GPIO_UNUSED,        /* 67: UNUSED */
 	LP_GPIO_UNUSED,        /* 68: UNUSED */
 	LP_GPIO_UNUSED,        /* 69: UNUSED */

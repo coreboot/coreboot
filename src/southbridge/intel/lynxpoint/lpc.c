@@ -701,7 +701,7 @@ static void pch_lpc_read_resources(device_t dev)
 
 	/* Allocate ACPI NVS in CBMEM */
 	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
-	if (gnvs)
+	if (acpi_slp_type != 3 && gnvs)
 		memset(gnvs, 0, sizeof(global_nvs_t));
 }
 

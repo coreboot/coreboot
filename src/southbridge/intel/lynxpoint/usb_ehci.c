@@ -26,20 +26,33 @@
 #include <usbdebug.h>
 #include <arch/io.h>
 
-static void usb_ehci_init(struct device *dev)
+static void usb_ehci_clock_gating(struct device *dev)
 {
 	u32 reg32;
 
-	/* Disable Wake on Disconnect in RMH */
-	reg32 = RCBA32(0x35b0);
-	reg32 |= 0x22;
-	RCBA32(0x35b0) = reg32;
+	/* IOBP 0xE5004001[7:6] = 11b */
+	pch_iobp_update(0xe5004001, ~0, (1 << 7)|(1 << 6));
 
+	/* Dx:F0:DCh[5,2,1] = 111b
+	 * Dx:F0:DCh[0] = 1b when EHCI controller is disabled */
+	reg32 = pci_read_config32(dev, 0xdc);
+	reg32 |= (1 << 5) | (1 << 2) | (1 << 1);
+	pci_write_config32(dev, 0xdc, reg32);
+
+	/* Dx:F0:78h[1:0] = 11b */
+	reg32 = pci_read_config32(dev, 0x78);
+	reg32 |= (1 << 1) | (1 << 0);
+	pci_write_config32(dev, 0x78, reg32);
+}
+
+static void usb_ehci_init(struct device *dev)
+{
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
-	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 |= PCI_COMMAND_MASTER;
-	//reg32 |= PCI_COMMAND_SERR;
-	pci_write_config32(dev, PCI_COMMAND, reg32);
+
+	usb_ehci_clock_gating(dev);
+
+	/* Disable Wake on Disconnect in RMH */
+	RCBA32_OR(0x35b0, 0x00000022);
 
 	printk(BIOS_DEBUG, "done.\n");
 }

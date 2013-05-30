@@ -112,10 +112,28 @@ static void set_flex_ratio_to_tdp_nominal(void)
 	}
 }
 
+static void check_for_clean_reset(void)
+{
+	msr_t msr;
+	msr = rdmsr(MTRRdefType_MSR);
+
+	/* Use the MTRR default type MSR as a proxy for detecting INIT#.
+	 * Reset the system if any known bits are set in that MSR. That is
+	 * an indication of the CPU not being properly reset. */
+	if (msr.lo & (MTRRdefTypeEn | MTRRdefTypeFixEn)) {
+		outb(0x0, 0xcf9);
+		outb(0x6, 0xcf9);
+		while (1) {
+			asm("hlt");
+		}
+	}
+}
+
 static void bootblock_cpu_init(void)
 {
 	/* Set flex ratio and reset if needed */
 	set_flex_ratio_to_tdp_nominal();
+	check_for_clean_reset();
 	enable_rom_caching();
 	intel_update_microcode_from_cbfs();
 }

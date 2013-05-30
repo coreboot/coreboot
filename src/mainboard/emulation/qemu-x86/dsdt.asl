@@ -17,14 +17,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-ACPI_EXTRACT_ALL_CODE AmlCode
-
 DefinitionBlock (
-    "acpi-dsdt.aml",    // Output Filename
+    "dsdt.aml",         // Output Filename
     "DSDT",             // Signature
     0x01,               // DSDT Compliance Revision
-    "BXPC",             // OEMID
-    "BXDSDT",           // TABLE ID
+    "CORE",             // OEMID
+    "COREBOOT",         // TABLE ID
     0x1                 // OEM Revision
     )
 {
@@ -293,7 +291,9 @@ DefinitionBlock (
         }
     }
 
+#if 0
 #include "acpi-dsdt-cpu-hotplug.dsl"
+#endif
 
 
 /****************************************************************
@@ -306,12 +306,16 @@ DefinitionBlock (
         Method(_L00) {
         }
         Method(_E01) {
+#if 0
             // PCI hotplug event
             \_SB.PCI0.PCNF()
+#endif
         }
         Method(_E02) {
+#if 0
             // CPU hotplug event
             \_SB.PRSC()
+#endif
         }
         Method(_L03) {
         }

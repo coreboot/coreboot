@@ -73,7 +73,6 @@ unsigned long acpi_fill_srat(unsigned long current)
 #define ALIGN_CURRENT current = (ALIGN(current, 16))
 unsigned long write_acpi_tables(unsigned long start)
 {
-#ifdef ACPI
 	unsigned long current;
 	acpi_rsdp_t *rsdp;
 	acpi_rsdt_t *rsdt;
@@ -187,7 +186,4 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "current = %lx\n", current);
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
-#else
-	return start;
-#endif
 }

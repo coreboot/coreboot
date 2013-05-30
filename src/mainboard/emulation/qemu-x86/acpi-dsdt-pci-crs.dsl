@@ -56,6 +56,7 @@ Scope(\_SB.PCI0) {
     })
 
     Method(_CRS, 0) {
+#if 0
         /* Fields provided by dynamically created ssdt */
         External(P0S, IntObj)
         External(P0E, IntObj)
@@ -86,5 +87,8 @@ Scope(\_SB.PCI0) {
         /* add window and return result */
         ConcatenateResTemplate(CRES, CR64, Local0)
         Return (Local0)
+#else
+        Return (CRES)
+#endif
     }
 }

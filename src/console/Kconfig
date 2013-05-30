@@ -251,7 +251,7 @@ config CONSOLE_CAR_BUFFER_SIZE
 	  saved in a CBMEM buffer. 3K bytes should be enough even for the
 	  BIOS_SPEW level.
 
-config CONSOLE_DEBUGCON
+config CONSOLE_QEMU_DEBUGCON
 	bool "QEMU debug console output"
 	depends on BOARD_EMULATION_QEMU_X86
 	default y
@@ -262,9 +262,9 @@ config CONSOLE_DEBUGCON
 	    -chardev file,id=debugcon,path=/dir/file.log \
 	    -device isa-debugcon,iobase=0x402,chardev=debugcon
 
-config CONSOLE_DEBUGCON_PORT
+config CONSOLE_QEMU_DEBUGCON_PORT
 	hex "QEMU debug console port"
-	depends on CONSOLE_DEBUGCON
+	depends on CONSOLE_QEMU_DEBUGCON
 	default 0x402
 
 choice

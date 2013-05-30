@@ -25,7 +25,7 @@ ramstage-$(CONFIG_USBDEBUG) += usbdebug_console.c
 ramstage-$(CONFIG_CONSOLE_LOGBUF) += logbuf_console.c
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
-ramstage-$(CONFIG_CONSOLE_DEBUGCON) += debugcon_console.c
+ramstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon_console.c
 
 
 $(obj)/console/console.ramstage.o : $(obj)/build.h

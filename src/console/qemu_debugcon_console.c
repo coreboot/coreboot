@@ -27,7 +27,7 @@ static void debugcon_init(void)
 
 static void debugcon_tx_byte(unsigned char data)
 {
-	outb(data, CONFIG_CONSOLE_DEBUGCON_PORT);
+	outb(data, CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
 }
 
 static void debugcon_tx_flush(void)

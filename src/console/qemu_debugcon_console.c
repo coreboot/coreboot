@@ -21,13 +21,18 @@
 #include <console/console.h>
 #include <arch/io.h>
 
+static unsigned char readback;
+
 static void debugcon_init(void)
 {
+	readback = inb(CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
 }
 
 static void debugcon_tx_byte(unsigned char data)
 {
-	outb(data, CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
+	if (readback == 0xe9) {
+		outb(data, CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
+	}
 }
 
 static void debugcon_tx_flush(void)

@@ -223,6 +223,8 @@ struct cpu_driver *find_cpu_driver(struct device *cpu)
 			{
 				return driver;
 			}
+			if (X86_VENDOR_ANY == id->vendor)
+				return driver;
 		}
 	}
 	return NULL;

@@ -100,6 +100,36 @@ u8 pm2_ioread(u8 reg)
 void hudson_enable(device_t dev)
 {
 	printk(BIOS_DEBUG, "hudson_enable()\n");
+	switch (dev->path.pci.devfn) {
+	case (0x14 << 3) | 7: /* 0:14.7  SD */
+		if (dev->enabled == 0) {
+			// read the VENDEV ID
+			device_t sd_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 7));
+			u32 sd_device_id = pci_read_config32( sd_dev, 0) >> 16;
+			/* turn off the SDHC controller in the PM reg */
+			u8 sd_tmp;
+			if (sd_device_id == PCI_DEVICE_ID_AMD_HUDSON_SD) {
+				outb(0xE7, PM_INDEX);
+				sd_tmp = inb(PM_DATA);
+				sd_tmp &= ~(1 << 0);
+				outb(sd_tmp, PM_DATA);
+			}
+			else if (sd_device_id == PCI_DEVICE_ID_AMD_YANGTZE_SD) {
+				outb(0xE8, PM_INDEX);
+				sd_tmp = inb(PM_DATA);
+				sd_tmp &= ~(1 << 0);
+				outb(sd_tmp, PM_DATA);
+			}
+			/* remove device 0:14.7 from PCI space */
+			outb(0xD3, PM_INDEX);
+			sd_tmp = inb(PM_DATA);
+			sd_tmp &= ~(1 << 6);
+			outb(sd_tmp, PM_DATA);
+		}
+		break;
+	default:
+		break;
+	}
 }
 
 struct cbmem_entry *get_cbmem_toc(void)

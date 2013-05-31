@@ -8,6 +8,8 @@ ramstage-y += sata.c
 ramstage-y += hda.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
+ramstage-y += sd.c
+
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c

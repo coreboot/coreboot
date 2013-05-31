@@ -1,4 +1,5 @@
 #include <console/console.h>
+#include <cpu/cpu.h>
 #include <cpu/x86/lapic_def.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
@@ -10,6 +11,8 @@
 #include <delay.h>
 #include <smbios.h>
 #include <cbmem.h>
+
+#include "fw_cfg.h"
 
 #include "memory.c"
 
@@ -130,12 +133,55 @@ static struct device_operations pci_domain_ops = {
 #endif
 };
 
+static void cpu_bus_init(device_t dev)
+{
+	initialize_cpus(dev->link_list);
+}
+
+static unsigned int cpu_bus_scan(device_t bus, unsigned int max)
+{
+	int max_cpus = fw_cfg_max_cpus();
+	device_t cpu;
+	int i;
+
+	if (max_cpus < 0)
+		return 0;
+
+	/*
+	 * TODO: This only handles the simple "qemu -smp $nr" case
+	 * correctly.  qemu also allows to also specify number of
+	 * cores, threads & sockets.
+	 */
+	printk(BIOS_INFO, "QEMU: max_cpus is %d\n", max_cpus);
+	for (i = 0; i < max_cpus; i++) {
+		cpu = add_cpu_device(bus->link_list, i, 1);
+		if (cpu)
+			set_cpu_topology(cpu, 1, 0, i, 0);
+	}
+	return max_cpus;
+}
+
+static void cpu_bus_noop(device_t dev)
+{
+}
+
+static struct device_operations cpu_bus_ops = {
+	.read_resources   = cpu_bus_noop,
+	.set_resources    = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init             = cpu_bus_init,
+	.scan_bus         = cpu_bus_scan,
+};
+
 static void northbridge_enable(struct device *dev)
 {
 	/* Set the operations if it is a special bus type */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
 		pci_set_method(dev);
+	}
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
 	}
 }
 

@@ -1,10 +1,10 @@
 chip mainboard/emulation/qemu-x86
 	device domain 0 on
-		device pci 0.0 on end
-
+		device pci 0.0 on end		# northbridge (i440fx)
 		chip southbridge/intel/i82371eb # southbridge
-			device pci 01.0 on end
-			device pci 01.1 on end
+			device pci 01.0 on end	# ISA bridge
+			device pci 01.1 on end	# IDE
+			device pci 01.3 on end	# ACPI
 			register "ide0_enable" = "1"
 			register "ide1_enable" = "1"
 			register "gpo" = "0x7fffbbff"

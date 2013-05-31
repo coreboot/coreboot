@@ -82,14 +82,6 @@ config DCACHE_RAM_ROMSTAGE_STACK_SIZE
 	  The amount of anticipated stack usage from the data cache
 	  during pre-ram rom stage execution.
 
-config MARK_GRAPHICS_MEM_WRCOMB
-	bool "Mark graphics memory as write-combining."
-	default n
-	help
-	 The graphics performance may increase if the graphics
-	 memory is set as write-combining cache type. This option
-	 enables marking the graphics memory as write-combining.
-
 config HAVE_MRC
 	bool "Add a System Agent binary"
 	help

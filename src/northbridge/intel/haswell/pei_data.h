@@ -31,16 +31,31 @@
 #define PEI_DATA_H
 
 typedef void (*tx_byte_func)(unsigned char byte);
-#define PEI_VERSION 12
+#define PEI_VERSION 13
 
 #define MAX_USB2_PORTS 16
 #define MAX_USB3_PORTS 16
 #define USB_OC_PIN_SKIP 8
 
+enum usb2_port_location {
+	USB_PORT_BACK_PANEL = 0,
+	USB_PORT_FRONT_PANEL,
+	USB_PORT_DOCK,
+	USB_PORT_MINI_PCIE,
+	USB_PORT_FLEX,
+	USB_PORT_INTERNAL,
+	USB_PORT_SKIP
+};
+
+/* Usb Port Length:
+ * [16:4] = length in inches in octal format
+ * [3:0]  = decimal point
+ */
 struct usb2_port_setting {
 	uint16_t length;
 	uint8_t enable;
 	uint8_t over_current_pin;
+	uint8_t location;
 } __attribute__((packed));
 
 struct usb3_port_setting {
@@ -75,6 +90,8 @@ struct pei_data
 	// 3 = disable dimm 0+1 on channel
 	int dimm_channel0_disabled;
 	int dimm_channel1_disabled;
+	/* Enable 2x Refresh Mode */
+	int ddr_refresh_2x;
 	/* Data read from flash and passed into MRC */
 	unsigned char *mrc_input;
 	unsigned int mrc_input_len;

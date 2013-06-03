@@ -129,17 +129,27 @@ void mainboard_romstage_entry(unsigned long bist)
 		// 3 = disable dimm 0+1 on channel
 		dimm_channel0_disabled: 2,
 		dimm_channel1_disabled: 2,
+		// Enable 2x refresh mode
+		ddr_refresh_2x: 1,
 		max_ddr3_freq: 1600,
 		usb2_ports: {
-			/* Length, Enable, OCn# */
-			{ 0x0040, 1, 0               }, /* P0: Port A, CN8 */
-			{ 0x0040, 1, 0               }, /* P1: Port B, CN9  */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P2: CCD */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: BT */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P4: LTE */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P5: TOUCH */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P6: SD Card */
-			{ 0x0040, 1, 3               }, /* P7: USB2 Port */
+			/* Length, Enable, OCn#, Location */
+			{ 0x0040, 1, 0,               /* P0: Port A, CN8 */
+			  USB_PORT_BACK_PANEL },
+			{ 0x0040, 1, 0,               /* P1: Port B, CN9  */
+			  USB_PORT_BACK_PANEL },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P2: CCD */
+			  USB_PORT_INTERNAL },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: BT */
+			  USB_PORT_MINI_PCIE },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: LTE */
+			  USB_PORT_MINI_PCIE },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P5: TOUCH */
+			  USB_PORT_FLEX },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P6: SD Card */
+			  USB_PORT_FLEX },
+			{ 0x0040, 1, 3,               /* P7: USB2 Port */
+			  USB_PORT_FRONT_PANEL },
 		},
 		usb3_ports: {
 			/* Enable, OCn# */

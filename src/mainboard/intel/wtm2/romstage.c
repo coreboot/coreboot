@@ -101,14 +101,22 @@ void mainboard_romstage_entry(unsigned long bist)
 		max_ddr3_freq: 1600,
 		usb2_ports: {
 			/* Length, Enable, OCn# */
-			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P0: */
-			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P1: */
-			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P2: */
-			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P3: */
-			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P4: */
-			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P5: */
-			{ 0x40, 1, USB_OC_PIN_SKIP }, /* P6: */
-			{ 0x40, 0, USB_OC_PIN_SKIP }, /* P7: Disable SDCARD due to hang */
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P0: */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P1: */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P2: */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P3: */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P4: */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P5: */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P6: */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x40, 1, USB_OC_PIN_SKIP, /* P7: */
+			  USB_PORT_FRONT_PANEL },
 		},
 		usb3_ports: {
 			/* Enable, OCn# */

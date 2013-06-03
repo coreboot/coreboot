@@ -250,4 +250,8 @@ extern const struct msrdef intel_pentium4_later_msrs[];
 extern int intel_nehalem_probe(const struct targetdef *t, const struct cpuid_t *id);
 extern const struct msrdef intel_nehalem_msrs[];
 
+/* intel_atom.c */
+extern int intel_atom_probe(const struct targetdef *t, const struct cpuid_t *id);
+extern const struct msrdef intel_atom_msrs[];
+
 #endif /* MSRTOOL_H */

@@ -50,52 +50,6 @@ static int google_chromeec_wait_ready(u16 port)
 	return 0;
 }
 
-static int google_chromeec_cmd_args_supported(void)
-{
-	if (inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID) == 'E' &&
-	    inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_ID + 1) == 'C' &&
-	    (inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_HOST_CMD_FLAGS) &
-	     EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED))
-		return 1;
-
-	return 0;
-}
-
-static int google_chromeec_command_old(struct chromeec_command *cec_command)
-{
-	int i;
-
-	if (cec_command->cmd_version) {
-		printk(BIOS_ERR, "Invalid version for command protocol!\n");
-		return 1;
-	}
-
-	if (google_chromeec_wait_ready(EC_LPC_ADDR_HOST_CMD)) {
-		printk(BIOS_ERR, "Timeout waiting for EC ready!\n");
-		return 1;
-	}
-
-	/* Copy command data, if any. */
-	for (i = 0; i < cec_command->cmd_size_in; i++)
-		outb(((char*)cec_command->cmd_data_in)[i],
-		     EC_LPC_ADDR_OLD_PARAM + i);
-
-	/* Issue the command. */
-	outb(cec_command->cmd_code, EC_LPC_ADDR_HOST_CMD);
-
-	if (google_chromeec_wait_ready(EC_LPC_ADDR_HOST_CMD)) {
-		printk(BIOS_ERR, "Timeout waiting for EC process command %d!\n",
-		       cec_command->cmd_code);
-		return 1;
-	}
-
-	for (i = 0; i < cec_command->cmd_size_out; i++)
-		((char*)cec_command->cmd_data_out)[i] =
-			inb(EC_LPC_ADDR_OLD_PARAM + i);
-	cec_command->cmd_code = inb(EC_LPC_ADDR_HOST_DATA);
-	return 0;
-}
-
 int google_chromeec_command(struct chromeec_command *cec_command)
 {
 	struct ec_lpc_host_args args;
@@ -104,10 +58,6 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	u8 cmd_code = cec_command->cmd_code;
 	int csum;
 	int i;
-
-	/* Fall back to old command protocol if necessary */
-	if (!google_chromeec_cmd_args_supported())
-		return google_chromeec_command_old(cec_command);
 
 	/* Fill in args */
 	args.flags = EC_HOST_ARGS_FLAG_FROM_HOST;

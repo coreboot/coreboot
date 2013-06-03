@@ -24,6 +24,7 @@
 #include "clk.h"
 #include "cpu.h"
 #include "dp.h"
+#include "dmc.h"
 #include "setup.h"
 
 void system_clock_init(void)

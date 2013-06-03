@@ -23,10 +23,9 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>
-#include "setup.h"
 #include "dmc.h"
-#include "clk.h"
 #include "setup.h"
+#include "clk.h"
 
 #define ZQ_INIT_TIMEOUT	10000
 
@@ -171,13 +170,5 @@ void dmc_config_prech(struct mem_timings *mem, struct exynos5_dmc *dmc)
 			udelay(100);
 		}
 	}
-}
-
-void dmc_config_memory(struct mem_timings *mem, struct exynos5_dmc *dmc)
-{
-	writel(mem->memconfig, &dmc->memconfig0);
-	writel(mem->memconfig, &dmc->memconfig1);
-	writel(DMC_MEMBASECONFIG0_VAL, &dmc->membaseconfig0);
-	writel(DMC_MEMBASECONFIG1_VAL, &dmc->membaseconfig1);
 }
 

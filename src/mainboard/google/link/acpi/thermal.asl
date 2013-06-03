@@ -48,6 +48,11 @@ Scope (\_TZ)
 			// Get CPU Temperature from TIN9/PECI via EC
 			Store (\_SB.PCI0.LPCB.EC0.TIN9, Local0)
 
+			// Check for sensor not calibrated
+			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNCA)) {
+				Return (CTOK(0))
+			}
+
 			// Check for sensor not present
 			If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNPR)) {
 				Return (CTOK(0))

@@ -126,15 +126,23 @@ void mainboard_romstage_entry(unsigned long bist)
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1600,
 		usb2_ports: {
-			/* Length, Enable, OCn# */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P0: LTE */
-			{ 0x0040, 1, 0               }, /* P1: Port A */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P2: CCD */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: BT */
-			{ 0x0040, 1, 2               }, /* P4: USB 2.0 Port */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P5: USIM */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P6: SD Card */
-			{ 0x0040, 0, USB_OC_PIN_SKIP }, /* P7: EMPTY */
+			/* Length, Enable, OCn#, Location */
+			{ 0x0150, 1, USB_OC_PIN_SKIP, /* P0: LTE */
+			  USB_PORT_MINI_PCIE },
+			{ 0x0040, 1, 0,               /* P1: Port A, CN10 */
+			  USB_PORT_BACK_PANEL },
+			{ 0x0080, 1, USB_OC_PIN_SKIP, /* P2: CCD */
+			  USB_PORT_INTERNAL },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: BT */
+			  USB_PORT_MINI_PCIE },
+			{ 0x0040, 1, 2,               /* P4: Port B, CN6  */
+			  USB_PORT_BACK_PANEL },
+			{ 0x0000, 0, USB_OC_PIN_SKIP, /* P5: EMPTY */
+			  USB_PORT_SKIP },
+			{ 0x0150, 1, USB_OC_PIN_SKIP, /* P6: SD Card */
+			  USB_PORT_FLEX },
+			{ 0x0000, 0, USB_OC_PIN_SKIP, /* P7: EMPTY */
+			  USB_PORT_SKIP },
 		},
 		usb3_ports: {
 			/* Enable, OCn# */

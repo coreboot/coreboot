@@ -107,8 +107,7 @@ int get_recovery_mode_switch(void)
 	u32 ec_events;
 
 	/* If a switch is set, we don't need to look at events. */
-	if (ec_switches & (EC_SWITCH_KEYBOARD_RECOVERY |
-			   EC_SWITCH_DEDICATED_RECOVERY))
+	if (ec_switches & (EC_SWITCH_DEDICATED_RECOVERY))
 		return 1;
 
 	/* Else check if the EC has posted the keyboard recovery event. */

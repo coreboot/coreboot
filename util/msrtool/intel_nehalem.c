@@ -311,7 +311,7 @@ const struct msrdef intel_nehalem_msrs[] = {
 			 * Trusted Execution Technology.
 			 */
 			{ MSR1(0), "VMX inside of SMX operation disabled" },
-			{ MSR1(1), "VMX outside of SMX operation enabled" },
+			{ MSR1(1), "VMX inside of SMX operation enabled" },
 			{ BITVAL_EOT }
 		}},
 		/* if CPUID.01H: ECX[5 or 6] = 1 */

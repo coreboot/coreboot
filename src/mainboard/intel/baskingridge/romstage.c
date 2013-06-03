@@ -95,21 +95,35 @@ void mainboard_romstage_entry(unsigned long bist)
 		dimm_channel1_disabled: 0,
 		max_ddr3_freq: 1600,
 		usb2_ports: {
-			/* Length, Enable, OCn# */
-			{ 0x0040, 1, 0 }, /* P0: Back USB3 port  (OC0) */
-			{ 0x0040, 1, 0 }, /* P1: Back USB3 port  (OC0) */
-			{ 0x0040, 1, 1 }, /* P2: Flex Port on bottom (OC1) */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: Dock connector */
-			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P4: Mini PCIE  */
-			{ 0x0040, 1, 1 }, /* P5: USB eSATA header (OC1) */
-			{ 0x0040, 1, 3 }, /* P6: Front Header J8H2 (OC3) */
-			{ 0x0040, 1, 3 }, /* P7: Front Header J8H2 (OC3) */
-			{ 0x0040, 1, 4 }, /* P8: USB/LAN Jack (OC4) */
-			{ 0x0040, 1, 4 }, /* P9: USB/LAN Jack (OC4) */
-			{ 0x0040, 1, 5 }, /* P10: Front Header J7H3 (OC5) */
-			{ 0x0040, 1, 5 }, /* P11: Front Header J7H3 (OC5) */
-			{ 0x0040, 1, 6 }, /* P12: USB/DP Jack (OC6) */
-			{ 0x0040, 1, 6 }, /* P13: USB/DP Jack (OC6) */
+			/* Length, Enable, OCn#, Location */
+			{ 0x0040, 1, 0, /* P0: Back USB3 port  (OC0) */
+			  USB_PORT_BACK_PANEL },
+			{ 0x0040, 1, 0, /* P1: Back USB3 port  (OC0) */
+			  USB_PORT_BACK_PANEL },
+			{ 0x0040, 1, 1, /* P2: Flex Port on bottom (OC1) */
+			  USB_PORT_FLEX },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: Dock connector */
+			  USB_PORT_DOCK },
+			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: Mini PCIE  */
+			  USB_PORT_MINI_PCIE },
+			{ 0x0040, 1, 1, /* P5: USB eSATA header (OC1) */
+			  USB_PORT_FLEX },
+			{ 0x0040, 1, 3, /* P6: Front Header J8H2 (OC3) */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x0040, 1, 3, /* P7: Front Header J8H2 (OC3) */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x0040, 1, 4, /* P8: USB/LAN Jack (OC4) */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x0040, 1, 4, /* P9: USB/LAN Jack (OC4) */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x0040, 1, 5, /* P10: Front Header J7H3 (OC5) */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x0040, 1, 5, /* P11: Front Header J7H3 (OC5) */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x0040, 1, 6, /* P12: USB/DP Jack (OC6) */
+			  USB_PORT_FRONT_PANEL },
+			{ 0x0040, 1, 6, /* P13: USB/DP Jack (OC6) */
+			  USB_PORT_FRONT_PANEL },
 		},
 		usb3_ports: {
 			/* Enable, OCn# */

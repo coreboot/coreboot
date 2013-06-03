@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <arch/hlt.h>
 #include "cpu.h"
+#include "dmc.h"
 #include "power.h"
 #include "setup.h"
 #include "sysreg.h"

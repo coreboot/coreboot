@@ -312,6 +312,7 @@ static void mc_report_map_entries(device_t dev, uint64_t *values)
 static void mc_add_dram_resources(device_t dev)
 {
 	unsigned long base_k, size_k;
+	unsigned long touud_k;
 	unsigned long index;
 	struct resource *resource;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
@@ -396,8 +397,9 @@ static void mc_add_dram_resources(device_t dev)
 
 	/* 4GiB -> TOUUD */
 	base_k = 4096 * 1024; /* 4GiB */
-	size_k = (unsigned long)(mc_values[TOUUD_REG] >> 10) - base_k;
-	if (size_k > 0)
+	touud_k = mc_values[TOUUD_REG] >> 10;
+	size_k = touud_k - base_k;
+	if (touud_k > base_k)
 		ram_resource(dev, index++, base_k, size_k);
 
 	/* Reserve everything between A segment and 1MB:

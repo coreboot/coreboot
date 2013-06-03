@@ -29,8 +29,8 @@
  * SIO_EC_HOST_ENABLE       : Enable EC host command interface resources
  * EC_LPC_ADDR_HOST_DATA    : EC host command interface data port
  * EC_LPC_ADDR_HOST_CMD     : EC host command interface command port
- * EC_LPC_ADDR_OLD_PARAM    : EC host command parameter range base (old)
- * EC_OLD_PARAM_SIZE        : Parameter buffer size (old)
+ * EC_LPC_ADDR_HOST_ARGS    : EC host command arguments
+ * EC_LPC_ADDR_HOST_PARAM   : EC host command parameter buffer
  */
 
 // Scope is \_SB.PCI0.LPCB
@@ -75,8 +75,9 @@ Device (SIO) {
 		{
 			FixedIO (EC_LPC_ADDR_HOST_DATA, 1)
 			FixedIO (EC_LPC_ADDR_HOST_CMD, 1)
-			FixedIO (EC_LPC_ADDR_OLD_PARAM,
-				 EC_OLD_PARAM_SIZE)
+			FixedIO (EC_LPC_ADDR_HOST_ARGS, 4)
+			FixedIO (EC_LPC_ADDR_HOST_PARAM,
+				 EC_HOST_PARAM_SIZE)
 		})
 
 		Name (_PRS, ResourceTemplate ()
@@ -84,8 +85,9 @@ Device (SIO) {
 			StartDependentFn (0, 0) {
 				FixedIO (EC_LPC_ADDR_HOST_DATA, 1)
 				FixedIO (EC_LPC_ADDR_HOST_CMD, 1)
-				FixedIO (EC_LPC_ADDR_OLD_PARAM,
-					 EC_OLD_PARAM_SIZE)
+				FixedIO (EC_LPC_ADDR_HOST_ARGS, 4)
+				FixedIO (EC_LPC_ADDR_HOST_PARAM,
+					 EC_HOST_PARAM_SIZE)
 			}
 			EndDependentFn ()
 		})

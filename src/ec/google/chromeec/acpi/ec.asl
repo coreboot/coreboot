@@ -29,9 +29,10 @@ Device (EC0)
 	Name (_UID, 1)
 	Name (_GPE, EC_SCI_GPI)
 	Name (TOFS, EC_TEMP_SENSOR_OFFSET)
-	Name (TNOP, 0xFD)	// Thermal sensor has no power
-	Name (TBAD, 0xFE)	// Thermal sensor bad reading
-	Name (TNPR, 0xFF)	// Thermal sensor not present
+	Name (TNCA, EC_TEMP_SENSOR_NOT_CALIBRATED)
+	Name (TNOP, EC_TEMP_SENSOR_NOT_POWERED)
+	Name (TBAD, EC_TEMP_SENSOR_ERROR)
+	Name (TNPR, EC_TEMP_SENSOR_NOT_PRESENT)
 	Name (DWRN, 15)		// Battery capacity warning at 15%
 	Name (DLOW, 10)		// Battery capacity low at 10%
 

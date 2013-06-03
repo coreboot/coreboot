@@ -1,4 +1,4 @@
-/*
+ /*
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Samsung Electronics
@@ -27,6 +27,11 @@ enum ddr_mode;
 struct exynos5_phy_control;
 
 #define NOT_AVAILABLE		0
+#define DATA_MASK		0xFFFFF
+
+#define ENABLE_BIT		0x1
+#define DISABLE_BIT		0x0
+#define CA_SWAP_EN		(1 << 0)
 
 /* TZPC : Register Offsets */
 #define TZPC0_BASE		0x10100000
@@ -122,6 +127,7 @@ struct exynos5_phy_control;
 
 /* MEMCONFIG0 register bit fields */
 #define DMC_MEMCONFIGx_CHIP_MAP_INTERLEAVED     (1 << 12)
+#define DMC_MEMCONFIG_CHIP_MAP_SPLIT		(2 << 12)
 #define DMC_MEMCONFIGx_CHIP_COL_10              (3 << 8)
 #define DMC_MEMCONFIGx_CHIP_ROW_14              (2 << 4)
 #define DMC_MEMCONFIGx_CHIP_ROW_15              (3 << 4)
@@ -201,6 +207,10 @@ struct exynos5_phy_control;
 
 /* CLK_SRC_CDREX */
 #define CLK_SRC_CDREX_VAL       0x00000001
+#define MUX_MCLK_CDR_MSPLL	(1 << 4)
+#define MUX_BPLL_SEL_FOUTBPLL   (1 << 0)
+#define BPLL_SEL_MASK   0x7
+#define FOUTBPLL        2
 
 /* CLK_DIV_CDREX */
 #define CLK_DIV_CDREX0_VAL	0x30010100
@@ -620,39 +630,177 @@ struct exynos5_phy_control;
 #define CTRL_SHGATE		(1 << 8)
 
 #define PHY_CON1_RESET_VAL	0x09210100
+#define RDLVL_PASS_ADJ_VAL	0x6
+#define RDLVL_PASS_ADJ_OFFSET	16
 #define CTRL_GATEDURADJ_MASK	(0xf << 20)
+#define READ_LEVELLING_DDR3	0x0100
 
 #define PHY_CON2_RESET_VAL	0x00010004
 #define INIT_DESKEW_EN		(1 << 6)
+#define DLL_DESKEW_EN		(1 << 12)
 #define RDLVL_GATE_EN		(1 << 24)
+#define RDLVL_EN		(1 << 25)
+#define RDLVL_INCR_ADJ		(0x1 << 16)
+
+/* DREX_PAUSE */
+#define DREX_PAUSE_EN	(1 << 0)
+
+#define BYPASS_EN	(1 << 22)
+
+/********-----MEMMORY VAL----------***/
+#define PHY_CON0_VAL	0x17021A00
+
+#define PHY_CON12_RESET_VAL	0x10100070
+#define PHY_CON12_VAL		0x10107F50
+#define CTRL_START		(1 << 6)
+#define CTRL_DLL_ON		(1 << 5)
+#define CTRL_FORCE_MASK		(0x7F << 8)
+#define CTRL_LOCK_COARSE_MASK	(0x7F << 10)
+
+
+#define CTRL_OFFSETD_RESET_VAL	0x8
+#define CTRL_OFFSETD_VAL	0x7F
+
+#define CTRL_OFFSETR0		0x7F
+#define CTRL_OFFSETR1		0x7F
+#define CTRL_OFFSETR2		0x7F
+#define CTRL_OFFSETR3		0x7F
+#define PHY_CON4_VAL	(CTRL_OFFSETR0 << 0 | \
+				CTRL_OFFSETR1 << 8 | \
+				CTRL_OFFSETR2 << 16 | \
+				CTRL_OFFSETR3 << 24)
+#define PHY_CON4_RESET_VAL	0x08080808
+
+#define CTRL_OFFSETW0		0x7F
+#define CTRL_OFFSETW1		0x7F
+#define CTRL_OFFSETW2		0x7F
+#define CTRL_OFFSETW3		0x7F
+#define PHY_CON6_VAL	(CTRL_OFFSETW0 << 0 | \
+				CTRL_OFFSETW1 << 8 | \
+				CTRL_OFFSETW2 << 16 | \
+				CTRL_OFFSETW3 << 24)
+#define PHY_CON6_RESET_VAL	0x08080808
+
+#define PHY_CON14_RESET_VAL	0x001F0000
+#define CTRL_PULLD_DQS		0xF
+#define CTRL_PULLD_DQS_OFFSET	0
 
 /*ZQ Configurations */
 #define PHY_CON16_RESET_VAL	0x08000304
 
+#define ZQ_CLK_EN		(1 << 27)
 #define ZQ_CLK_DIV_EN		(1 << 18)
+#define ZQ_MANUAL_MODE_OFFSET	2
+#define ZQ_LONG_CALIBRATION	0x1
 #define ZQ_MANUAL_STR		(1 << 1)
 #define ZQ_DONE			(1 << 0)
+#define ZQ_MODE_DDS_OFFSET	24
+
+#define LONG_CALIBRATION	(ZQ_LONG_CALIBRATION << ZQ_MANUAL_MODE_OFFSET)
 
 #define CTRL_RDLVL_GATE_ENABLE	1
-#define CTRL_RDLVL_GATE_DISABLE	1
+#define CTRL_RDLVL_GATE_DISABLE	0
 
+#define CTRL_RDLVL_DATA_ENABLE	(1 << 1)
 /* Direct Command */
 #define DIRECT_CMD_NOP			0x07000000
 #define DIRECT_CMD_PALL			0x01000000
 #define DIRECT_CMD_ZQINIT		0x0a000000
 #define DIRECT_CMD_CHANNEL_SHIFT	28
 #define DIRECT_CMD_CHIP_SHIFT		20
+#define DIRECT_CMD_REFA		(5 << 24)
+#define DIRECT_CMD_MRS1		0x71C00
+#define DIRECT_CMD_MRS2		0x10BFC
+#define DIRECT_CMD_MRS3		0x0050C
+#define DIRECT_CMD_MRS4		0x00868
+#define DIRECT_CMD_MRS5		0x00C04
+
+/* Drive Strength */
+#define IMPEDANCE_48_OHM	4
+#define IMPEDANCE_40_OHM	5
+#define IMPEDANCE_34_OHM	6
+#define IMPEDANCE_30_OHM	7
+#define PHY_CON39_VAL_48_OHM	0x09240924
+#define PHY_CON39_VAL_40_OHM	0x0B6D0B6D
+#define PHY_CON39_VAL_34_OHM	0x0DB60DB6
+#define PHY_CON39_VAL_30_OHM	0x0FFF0FFF
+
+
+#define CTRL_BSTLEN_OFFSET	8
+#define CTRL_RDLAT_OFFSET	0
+
+#define CMD_DEFAULT_LPDDR3	0xF
+#define CMD_DEFUALT_OFFSET	0
+#define T_WRDATA_EN		0x7
+#define T_WRDATA_EN_DDR3	0x8
+#define T_WRDATA_EN_OFFSET	16
+#define T_WRDATA_EN_MASK	0x1f
+
+#define PHY_CON31_VAL	0x0C183060
+#define PHY_CON32_VAL	0x60C18306
+#define PHY_CON33_VAL	0x00000030
+
+#define PHY_CON31_RESET_VAL	0x0
+#define PHY_CON32_RESET_VAL	0x0
+#define PHY_CON33_RESET_VAL	0x0
+
+#define SL_DLL_DYN_CON_EN	(1 << 1)
+#define FP_RESYNC	(1 << 3)
+#define CTRL_START	(1 << 6)
+
+#define DMC_AREF_EN		(1 << 5)
+#define DMC_CONCONTROL_EMPTY	(1 << 8)
+#define DFI_INIT_START		(1 << 28)
+
+#define DMC_MEMCONTROL_VAL	0x00312700
+#define CLK_STOP_EN		(1 << 0)
+#define DPWRDN_EN		(1 << 1)
+#define DSREF_EN		(1 << 5)
+
+/* As we use channel interleaving, therefore value of the base address
+ * register must be set as half of the bus base address
+ * RAM start addess is 0x2000_0000 which means chip_base is 0x20, so
+ * we need to set half 0x10 to the membaseconfigx registers
+ * see exynos5420 UM section 17.17.3.21 for more
+ */
+#define DMC_CHIP_BASE_0 0x10
+#define DMC_CHIP_BASE_1 0x50
+#define DMC_CHIP_MASK	0x7C0
+
+#define MEMBASECONFIG_CHIP_MASK_VAL	0x7E0
+#define MEMBASECONFIG_CHIP_MASK_OFFSET	0
+#define MEMBASECONFIG0_CHIP_BASE_VAL	0x20
+#define MEMBASECONFIG1_CHIP_BASE_VAL	0x40
+#define CHIP_BASE_OFFSET		16
+
+#define MEMCONFIG_VAL	0x1323
+#define PRECHCONFIG_DEFAULT_VAL	0xFF000000
+#define PWRDNCONFIG_DEFAULT_VAL	0xFFFF00FF
+
+#define TIMINGAREF_VAL	0x5d
+#define TIMINGROW_VAL	0x345A8692
+#define TIMINGDATA_VAL	0x3630065C
+#define TIMINGPOWER_VAL	0x50380336
+#define DFI_INIT_COMPLETE	(1 << 3)
+
+#define BRBRSVCONTROL_VAL	0x00000033
+#define BRBRSVCONFIG_VAL	0x88778877
 
 /* DMC PHY Control0 register */
 #define PHY_CONTROL0_RESET_VAL	0x0
 #define MEM_TERM_EN	(1 << 31)	/* Termination enable for memory */
 #define PHY_TERM_EN	(1 << 30)	/* Termination enable for PHY */
 #define DMC_CTRL_SHGATE	(1 << 29)	/* Duration of DQS gating signal */
+#define CTRL_ATGATE		(1 << 6)
 #define FP_RSYNC	(1 << 3)	/* Force DLL resyncronization */
 
 /* Driver strength for CK, CKE, CS & CA */
 #define IMP_OUTPUT_DRV_40_OHM	0x5
 #define IMP_OUTPUT_DRV_30_OHM	0x7
+#define DA_3_DS_OFFSET		25
+#define DA_2_DS_OFFSET		22
+#define DA_1_DS_OFFSET		19
+#define DA_0_DS_OFFSET		16
 #define CA_CK_DRVR_DS_OFFSET	9
 #define CA_CKE_DRVR_DS_OFFSET	6
 #define CA_CS_DRVR_DS_OFFSET	3
@@ -687,8 +835,10 @@ void mem_ctrl_init(void);
  * @param mem_reset	Reset memory during initialization.
  * @return 0 if ok, SETUP_ERR_... if there is a problem
  */
-int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
-		       int mem_reset);
+int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset);
+
+/* Memory variant specific initialization code for LPDDR3 */
+int lpddr3_mem_ctrl_init(int reset);
 
 /*
  * Configure ZQ I/O interface

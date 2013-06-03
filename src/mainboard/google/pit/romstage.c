@@ -130,7 +130,7 @@ static void setup_gpio(void)
 
 static void setup_memory(struct mem_timings *mem, int is_resume)
 {
-	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: %d\n",
+	printk(BIOS_SPEW, "manufacturer: 0x%x type: 0x%x, div: 0x%x, mhz: %d\n",
 	       mem->mem_manuf,
 	       mem->mem_type,
 	       mem->mpll_mdiv,
@@ -148,27 +148,97 @@ static void setup_memory(struct mem_timings *mem, int is_resume)
 	}
 }
 
-static struct mem_timings *setup_clock(void)
+#define PRIMITIVE_MEM_TEST 0
+#if PRIMITIVE_MEM_TEST
+static unsigned long primitive_mem_test(void)
 {
-	struct mem_timings *mem = get_mem_timings();
-	if (!mem) {
-		die("Unable to auto-detect memory timings\n");
+	unsigned long *l = (void *)0x40000000;
+	int bad = 0;
+	unsigned long i;
+	for(i = 0; i < 256*1048576; i++){
+		if (! (i%1048576))
+			printk(BIOS_SPEW, "%lu ...", i);
+		l[i] = 0xffffffff - i;
 	}
 
-	system_clock_init();
+	for(i = 0; i < 256*1048576; i++){
+		if (! (i%1048576))
+			printk(BIOS_SPEW, "%lu ...", i);
+		if (l[i] != (0xffffffff - i)){
+			printk(BIOS_SPEW, "%p: want %08lx got %08lx\n", l, l[i], 0xffffffff - i);
+			bad++;
+		}
+	}
 
-	return mem;
+	printk(BIOS_SPEW, "%d errors\n", bad);
+
+	return bad;
 }
+#else
+#define primitive_mem_test()
+#endif
+
+#define SIMPLE_SPI_TEST 0
+#if SIMPLE_SPI_TEST
+/* here is a simple SPI debug test, known to fid trouble */
+static void simple_spi_test(void)
+{
+	struct cbfs_media default_media, *media;
+	int i, amt = 4 * MiB, errors = 0;
+	//u32 *data = (void *)0x40000000;
+	u32 data[1024];
+	u32 in;
+
+	amt = sizeof(data);
+	media = &default_media;
+	if (init_default_cbfs_media(media) != 0) {
+		printk(BIOS_SPEW, "Failed to initialize default media.\n");
+		return;
+	}
+
+
+	media->open(media);
+	if (media->read(media, data, (size_t) 0, amt) < amt){
+		printk(BIOS_SPEW, "simple_spi_test fails\n");
+		return;
+	}
+
+
+	for(i = 0; i < amt; i += 4){
+		if (media->read(media, &in, (size_t) i, 4) < 1){
+			printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
+			return;
+		}
+		if (data[i/4] != in){
+		  errors++;
+			printk(BIOS_SPEW, "BAD at %d(%p):\nRAM %08lx\nSPI %08lx\n",
+			       i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
+			/* reread it to see which is wrong. */
+			if (media->read(media, &in, (size_t) i, 4) < 1){
+				printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
+				return;
+			}
+			printk(BIOS_SPEW, "RTRY at %d(%p):\nRAM %08lx\nSPI %08lx\n",
+			       i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
+		}
+
+	}
+	printk(BIOS_SPEW, "%d errors\n", errors);
+}
+#else
+#define simple_spi_test()
+#endif
 
 void main(void)
 {
-	struct mem_timings *mem;
+
+	extern struct mem_timings mem_timings;
 	void *entry;
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
-	mem = setup_clock();
+	system_clock_init();
 
 	console_init();
 
@@ -176,7 +246,9 @@ void main(void)
 		setup_power();
 	}
 
-	setup_memory(mem, is_resume);
+	setup_memory(&mem_timings, is_resume);
+
+	primitive_mem_test();
 
 	if (is_resume) {
 		wakeup();
@@ -186,9 +258,12 @@ void main(void)
 	setup_gpio();
 	setup_graphics();
 
+	simple_spi_test();
 	/* Set SPI (primary CBFS media) clock to 50MHz. */
+	/* if this is uncommented SPI will not work correctly. */
 	clock_set_rate(PERIPH_ID_SPI1, 50000000);
-
+	simple_spi_test();
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
+	simple_spi_test();
 	stage_exit(entry);
 }

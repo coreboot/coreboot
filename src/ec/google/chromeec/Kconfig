@@ -1,5 +1,6 @@
 config EC_GOOGLE_CHROMEEC
 	bool
+	select SERIRQ_CONTINUOUS_MODE
 	help
 	  Google's Chrome EC
 

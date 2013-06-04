@@ -21,12 +21,12 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <arch/hlt.h>
+#include <reset.h>
 #ifndef __PRE_RAM__
 #include <elog.h>
 #include <stdlib.h>
 #include <string.h>
-#include <reset.h>
-#include <arch/hlt.h>
 #include "chip.h"
 #endif
 #include "ec.h"
@@ -98,6 +98,41 @@ u32 google_chromeec_get_events_b(void)
 {
 	return google_chromeec_get_mask(EC_CMD_HOST_EVENT_GET_B);
 }
+
+#ifndef __SMM__
+/* Check for recovery mode and ensure EC is in RO */
+void google_chromeec_early_init(void)
+{
+	struct chromeec_command cec_cmd;
+	struct ec_response_get_version cec_resp = {{0}};
+
+	cec_cmd.cmd_code = EC_CMD_GET_VERSION;
+	cec_cmd.cmd_version = 0;
+	cec_cmd.cmd_data_out = &cec_resp;
+	cec_cmd.cmd_size_in = 0;
+	cec_cmd.cmd_size_out = sizeof(cec_resp);
+	google_chromeec_command(&cec_cmd);
+
+	if (cec_cmd.cmd_code ||
+	    (recovery_mode_enabled() &&
+	     (cec_resp.current_image != EC_IMAGE_RO))) {
+		struct ec_params_reboot_ec reboot_ec;
+		/* Reboot the EC and make it come back in RO mode */
+		reboot_ec.cmd = EC_REBOOT_COLD;
+		reboot_ec.flags = 0;
+		cec_cmd.cmd_code = EC_CMD_REBOOT_EC;
+		cec_cmd.cmd_version = 0;
+		cec_cmd.cmd_data_in = &reboot_ec;
+		cec_cmd.cmd_size_in = sizeof(reboot_ec);
+		cec_cmd.cmd_size_out = 0; /* ignore response, if any */
+		printk(BIOS_DEBUG, "Rebooting with EC in RO mode:\n");
+		google_chromeec_command(&cec_cmd);
+		udelay(1000);
+		hard_reset();
+		hlt();
+	}
+}
+#endif /* ! __SMM__ */
 
 #ifndef __PRE_RAM__
 

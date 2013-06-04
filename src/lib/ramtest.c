@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <lib.h> /* Prototypes */
 #include <console/console.h>
+#include <arch/io.h>
 
 static void write_phys(unsigned long addr, u32 value)
 {
@@ -176,6 +177,22 @@ static int ram_bitset_nodie(unsigned long start)
 
 void ram_check(unsigned long start, unsigned long stop)
 {
+  unsigned long i;
+  int ok = 1;
+  printk(BIOS_ERR, "Testing DRAM %lx-%lx\n", start, stop);
+  for (i = start & ~3; i < stop; i+=4)
+    write32 (i, i);
+  for (i = start & ~3; i < stop; i+=4)
+    {
+      u32 v = read32 (i);
+      if (v != i)
+	{
+	  ok = 0;
+	  printk(BIOS_ERR, "Fail at %lx: %lx vs %lx\n", i, i, (unsigned long)v);
+	}
+    }
+  printk(BIOS_ERR, "Tested DRAM %lx-%lx: %s\n", start, stop, ok ? "OK" : "FAIL");
+#if 0
 	/*
 	 * This is much more of a "Is my DRAM properly configured?"
 	 * test than a "Is my DRAM faulty?" test.  Not all bits
@@ -189,11 +206,14 @@ void ram_check(unsigned long start, unsigned long stop)
 	print_debug("\n");
 #endif
 	if (ram_bitset_nodie(start))
-		die("DRAM ERROR");
+	  printk(BIOS_ERR, "DRAM ERROR");
+	else
+	  printk(BIOS_ERR, "DRAM OK");
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Done.\n");
 #else
 	print_debug("Done.\n");
+#endif
 #endif
 }
 

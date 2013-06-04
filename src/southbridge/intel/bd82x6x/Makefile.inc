@@ -27,12 +27,15 @@ ramstage-y += azalia.c
 ramstage-y += lpc.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
-ramstage-y += sata.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_BD82X6X) += sata.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_C216) += sata.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_CALPELLA) += sata_calpella.c
 ramstage-y += usb_ehci.c
 ramstage-y += usb_xhci.c
 ramstage-y += me.c
 ramstage-y += me_8.x.c
 ramstage-y += smbus.c
+ramstage-$(CONFIG_SOUTHBRIDGE_INTEL_CALPELLA) += thermal.c
 
 ramstage-y += me_status.c
 ramstage-y += reset.c
@@ -52,7 +55,8 @@ romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
 smm-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-y += reset.c
-romstage-y += early_spi.c
+romstage-$(CONFIG_SOUTHBRIDGE_INTEL_BD82X6X) += early_spi.c
+romstage-$(CONFIG_SOUTHBRIDGE_INTEL_C216) += early_spi.c
 
 bd82x6x_add_me: $(obj)/coreboot.pre $(IFDTOOL)
 	printf "    DD         Adding Intel Firmware Descriptor\n"

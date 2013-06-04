@@ -38,7 +38,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	/* Only DIMM0 is available. */
 	if (device != DIMM0)

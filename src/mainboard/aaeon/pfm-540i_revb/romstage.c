@@ -40,7 +40,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	if (device != DIMM0)
 		return 0xFF;	/* No DIMM1, don't even try. */

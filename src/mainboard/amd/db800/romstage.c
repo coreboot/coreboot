@@ -37,7 +37,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }

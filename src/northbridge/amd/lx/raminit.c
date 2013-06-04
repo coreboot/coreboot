@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <spd.h>
 #include "southbridge/amd/cs5536/cs5536.h"
+#include "raminit.h"
 
 static const unsigned char NumColAddr[] = {
 	0x00, 0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x07,
@@ -513,7 +514,7 @@ static void EnableMTest(void)
 }
 #endif
 
-static void sdram_set_registers(const struct mem_controller *ctrl)
+void sdram_set_registers(const struct mem_controller *ctrl)
 {
 	msr_t msr;
 	uint32_t msrnum;
@@ -543,7 +544,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	   wrmsr(msrnum, msr); */
 }
 
-static void sdram_set_spd_registers(const struct mem_controller *ctrl)
+void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
 	uint8_t spd_byte;
 
@@ -601,7 +602,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 
 /* Section 6.1.3, LX processor databooks, BIOS Initialization Sequence
  * Section 4.1.4, GX/CS5535 GeodeROM Porting guide */
-static void sdram_enable(int controllers, const struct mem_controller *ctrl)
+void sdram_enable(int controllers, const struct mem_controller *ctrl)
 {
 	uint32_t i, msrnum;
 	msr_t msr;

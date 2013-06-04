@@ -27,6 +27,10 @@ struct mem_controller {
 	uint16_t channel0[DIMM_SOCKETS];
 };
 
+void sdram_set_registers(const struct mem_controller *ctrl);
+void sdram_set_spd_registers(const struct mem_controller *ctrl);
+void sdram_enable(int controllers, const struct mem_controller *ctrl);
+
 void sdram_initialize(int controllers, const struct mem_controller *ctrl);
 
 #endif

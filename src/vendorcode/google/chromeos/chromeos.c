@@ -26,9 +26,28 @@
 #include <cbmem.h>
 #include <console/console.h>
 
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+static int vboot_enable_developer(void)
+{
+	struct vboot_handoff *vbho;
+
+	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+
+	if (vbho == NULL) {
+		printk(BIOS_ERR, "%s: Couldn't find vboot_handoff structure!\n",
+		        __func__);
+		return 0;
+	}
+
+	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_DEVELOPER);
+}
+#else
+static inline int vboot_enable_developer(void) { return 0; }
+#endif
+
 int developer_mode_enabled(void)
 {
-	return get_developer_mode_switch();
+	return get_developer_mode_switch() || vboot_enable_developer();
 }
 
 int recovery_mode_enabled(void)

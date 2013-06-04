@@ -50,12 +50,15 @@ unsigned get_ehci_debug(void)
 
 static void dbgp_init(void)
 {
+	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+
 	usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, &dbg_info);
 }
 
 static void dbgp_tx_byte(unsigned char data)
 {
-	usbdebug_tx_byte(&dbg_info, data);
+	if (dbg_info.ehci_debug)
+	  usbdebug_tx_byte(&dbg_info, data);
 }
 
 static unsigned char dbgp_rx_byte(void)
@@ -70,7 +73,8 @@ static unsigned char dbgp_rx_byte(void)
 
 static void dbgp_tx_flush(void)
 {
-	usbdebug_tx_flush(&dbg_info);
+	if (dbg_info.ehci_debug)
+	  usbdebug_tx_flush(&dbg_info);
 }
 
 static int dbgp_tst_byte(void)

@@ -51,8 +51,11 @@ static void pch_enable_ioapic(struct device *dev)
 	/* Enable ACPI I/O range decode */
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 	set_ioapic_id(IO_APIC_ADDR, 0x02);
-
+#else
+	set_ioapic_id(IO_APIC_ADDR, 0x01);
+#endif
 	/* affirm full set of redirection table entries ("write once") */
 	reg32 = io_apic_read(IO_APIC_ADDR, 0x01);
 	io_apic_write(IO_APIC_ADDR, 0x01, reg32);
@@ -377,6 +380,354 @@ static void ppt_pm_init(struct device *dev)
 	RCBA32_AND_OR(0x21b0, ~0UL, 0xf);
 }
 
+static void mobile5_pm_init(struct device *dev)
+{
+	printk(BIOS_DEBUG, "Mobile 5 PM init\n");
+	pci_write_config8(dev, 0xa9, 0x47);
+	RCBA32 (0x1d44) = 0x00000000;
+	(void) RCBA32 (0x1d44);
+	RCBA32 (0x1d48) = 0x00030000;
+	(void) RCBA32 (0x1d48);
+	RCBA32 (0x1e80) = 0x000c0801;
+	(void) RCBA32 (0x1e80);
+	RCBA32 (0x1e84) = 0x000200f0;
+	(void) RCBA32 (0x1e84);
+	RCBA32 (0x2010) = 0x00188200;
+	(void) RCBA32 (0x2010);
+	RCBA32 (0x2014) = 0x14000016;
+	(void) RCBA32 (0x2014);
+	RCBA32 (0x2018) = 0xbc4abcb5;
+	(void) RCBA32 (0x2018);
+	RCBA32 (0x201c) = 0x00000000;
+	(void) RCBA32 (0x201c);
+	RCBA32 (0x2020) = 0xf0c9605b;
+	(void) RCBA32 (0x2020);
+	RCBA32 (0x2024) = 0x13683040;
+	(void) RCBA32 (0x2024);
+	RCBA32 (0x2028) = 0x04c8f16e;
+	(void) RCBA32 (0x2028);
+	RCBA32 (0x202c) = 0x09e90170;
+	(void) RCBA32 (0x202c);
+	RCBA32 (0x2100) = 0x00000000;
+	(void) RCBA32 (0x2100);
+	RCBA32 (0x2104) = 0x00000757;
+	(void) RCBA32 (0x2104);
+	RCBA32 (0x2108) = 0x00170001;
+	(void) RCBA32 (0x2108);
+	RCBA32 (0x211c) = 0x00000000;
+	(void) RCBA32 (0x211c);
+	RCBA32 (0x2120) = 0x00010000;
+	(void) RCBA32 (0x2120);
+	RCBA32 (0x21fc) = 0x00000000;
+	(void) RCBA32 (0x21fc);
+	RCBA32 (0x2200) = 0x20000044;
+	(void) RCBA32 (0x2200);
+	RCBA32 (0x2204) = 0x00000001;
+	(void) RCBA32 (0x2204);
+	RCBA32 (0x2208) = 0x00003457;
+	(void) RCBA32 (0x2208);
+	RCBA32 (0x2210) = 0x00000000;
+	(void) RCBA32 (0x2210);
+	RCBA32 (0x2214) = 0x00000001;
+	(void) RCBA32 (0x2214);
+	RCBA32 (0x2218) = 0xa0fff210;
+	(void) RCBA32 (0x2218);
+	RCBA32 (0x221c) = 0x0000df00;
+	(void) RCBA32 (0x221c);
+	RCBA32 (0x2220) = 0x00e30880;
+	(void) RCBA32 (0x2220);
+	RCBA32 (0x2224) = 0x00000070;
+	(void) RCBA32 (0x2224);
+	RCBA32 (0x2228) = 0x00004000;
+	(void) RCBA32 (0x2228);
+	RCBA32 (0x222c) = 0x00000000;
+	(void) RCBA32 (0x222c);
+	RCBA32 (0x2230) = 0x00e30880;
+	(void) RCBA32 (0x2230);
+	RCBA32 (0x2234) = 0x00000070;
+	(void) RCBA32 (0x2234);
+	RCBA32 (0x2238) = 0x00004000;
+	(void) RCBA32 (0x2238);
+	RCBA32 (0x223c) = 0x00000000;
+	(void) RCBA32 (0x223c);
+	RCBA32 (0x2240) = 0x00002301;
+	(void) RCBA32 (0x2240);
+	RCBA32 (0x2244) = 0x36000000;
+	(void) RCBA32 (0x2244);
+	RCBA32 (0x2248) = 0x00010107;
+	(void) RCBA32 (0x2248);
+	RCBA32 (0x224c) = 0x00160000;
+	(void) RCBA32 (0x224c);
+	RCBA32 (0x2250) = 0x00001b01;
+	(void) RCBA32 (0x2250);
+	RCBA32 (0x2254) = 0x36000000;
+	(void) RCBA32 (0x2254);
+	RCBA32 (0x2258) = 0x00010107;
+	(void) RCBA32 (0x2258);
+	RCBA32 (0x225c) = 0x00160000;
+	(void) RCBA32 (0x225c);
+	RCBA32 (0x2260) = 0x00000601;
+	(void) RCBA32 (0x2260);
+	RCBA32 (0x2264) = 0x16000000;
+	(void) RCBA32 (0x2264);
+	RCBA32 (0x2268) = 0x00010107;
+	(void) RCBA32 (0x2268);
+	RCBA32 (0x226c) = 0x00160000;
+	(void) RCBA32 (0x226c);
+	RCBA32 (0x2270) = 0x00001c01;
+	(void) RCBA32 (0x2270);
+	RCBA32 (0x2274) = 0x16000000;
+	(void) RCBA32 (0x2274);
+	RCBA32 (0x2278) = 0x00010107;
+	(void) RCBA32 (0x2278);
+	RCBA32 (0x227c) = 0x00160000;
+	(void) RCBA32 (0x227c);
+	RCBA32 (0x2300) = 0x00000000;
+	(void) RCBA32 (0x2300);
+	RCBA32 (0x2304) = 0x40000000;
+	(void) RCBA32 (0x2304);
+	RCBA32 (0x2308) = 0x4646827b;
+	(void) RCBA32 (0x2308);
+	RCBA32 (0x230c) = 0x6e803131;
+	(void) RCBA32 (0x230c);
+	RCBA32 (0x2310) = 0x32c77887;
+	(void) RCBA32 (0x2310);
+	RCBA32 (0x2314) = 0x00077733;
+	(void) RCBA32 (0x2314);
+	RCBA32 (0x2318) = 0x00007447;
+	(void) RCBA32 (0x2318);
+	RCBA32 (0x231c) = 0x00000040;
+	(void) RCBA32 (0x231c);
+	RCBA32 (0x2320) = 0xcccc0cfc;
+	(void) RCBA32 (0x2320);
+	RCBA32 (0x2324) = 0x0fbb0fff;
+	(void) RCBA32 (0x2324);
+	RCBA32 (0x30fc) = 0x00000000;
+	(void) RCBA32 (0x30fc);
+	RCBA32 (0x3100) = 0x04341200;
+	(void) RCBA32 (0x3100);
+	RCBA32 (0x3104) = 0x00000000;
+	(void) RCBA32 (0x3104);
+	RCBA32 (0x3108) = 0x40043214;
+	(void) RCBA32 (0x3108);
+	RCBA32 (0x310c) = 0x00014321;
+	(void) RCBA32 (0x310c);
+	RCBA32 (0x3110) = 0x00000002;
+	(void) RCBA32 (0x3110);
+	RCBA32 (0x3114) = 0x30003214;
+	(void) RCBA32 (0x3114);
+	RCBA32 (0x311c) = 0x00000002;
+	(void) RCBA32 (0x311c);
+	RCBA32 (0x3120) = 0x00000000;
+	(void) RCBA32 (0x3120);
+	RCBA32 (0x3124) = 0x00002321;
+	(void) RCBA32 (0x3124);
+	RCBA32 (0x313c) = 0x00000000;
+	(void) RCBA32 (0x313c);
+	RCBA32 (0x3140) = 0x00003107;
+	(void) RCBA32 (0x3140);
+	RCBA32 (0x3144) = 0x76543210;
+	(void) RCBA32 (0x3144);
+	RCBA32 (0x3148) = 0x00000010;
+	(void) RCBA32 (0x3148);
+	RCBA32 (0x314c) = 0x00007654;
+	(void) RCBA32 (0x314c);
+	RCBA32 (0x3150) = 0x00000004;
+	(void) RCBA32 (0x3150);
+	RCBA32 (0x3158) = 0x00000000;
+	(void) RCBA32 (0x3158);
+	RCBA32 (0x315c) = 0x00003210;
+	(void) RCBA32 (0x315c);
+	RCBA32 (0x31fc) = 0x03000000;
+	(void) RCBA32 (0x31fc);
+	RCBA32 (0x330c) = 0x00000000;
+	(void) RCBA32 (0x330c);
+	RCBA32 (0x3310) = 0x02060100;
+	(void) RCBA32 (0x3310);
+	RCBA32 (0x3314) = 0x0000000f;
+	(void) RCBA32 (0x3314);
+	RCBA32 (0x3318) = 0x01020000;
+	(void) RCBA32 (0x3318);
+	RCBA32 (0x331c) = 0x80000000;
+	(void) RCBA32 (0x331c);
+	RCBA32 (0x3324) = 0x04000000;
+	(void) RCBA32 (0x3324);
+	RCBA32 (0x3340) = 0x000fffff;
+	(void) RCBA32 (0x3340);
+	RCBA32 (0x3378) = 0x7f8fdfff;
+	(void) RCBA32 (0x3378);
+	RCBA32 (0x33a0) = 0x00003900;
+	(void) RCBA32 (0x33a0);
+	RCBA32 (0x33c0) = 0x00010000;
+	(void) RCBA32 (0x33c0);
+	RCBA32 (0x33cc) = 0x0001004b;
+	(void) RCBA32 (0x33cc);
+	RCBA32 (0x33d0) = 0x06000008;
+	(void) RCBA32 (0x33d0);
+	RCBA32 (0x33d4) = 0x00010000;
+	(void) RCBA32 (0x33d4);
+	RCBA32 (0x33fc) = 0x00000000;
+	(void) RCBA32 (0x33fc);
+	RCBA32 (0x3400) = 0x0000001c;
+	(void) RCBA32 (0x3400);
+	RCBA32 (0x3404) = 0x00000080;
+	(void) RCBA32 (0x3404);
+	RCBA32 (0x340c) = 0x00000000;
+	(void) RCBA32 (0x340c);
+	RCBA32 (0x3410) = 0x00000c61;
+	(void) RCBA32 (0x3410);
+	RCBA32 (0x3414) = 0x00000000;
+	(void) RCBA32 (0x3414);
+	RCBA32 (0x3418) = 0x16e61fe1;
+	(void) RCBA32 (0x3418);
+	RCBA32 (0x341c) = 0xbf4f001f;
+	(void) RCBA32 (0x341c);
+	RCBA32 (0x3420) = 0x00000000;
+	(void) RCBA32 (0x3420);
+	RCBA32 (0x3424) = 0x00060010;
+	(void) RCBA32 (0x3424);
+	RCBA32 (0x3428) = 0x0000001d;
+	(void) RCBA32 (0x3428);
+	RCBA32 (0x343c) = 0x00000000;
+	(void) RCBA32 (0x343c);
+	RCBA32 (0x3440) = 0xdeaddeed;
+	(void) RCBA32 (0x3440);
+	RCBA32 (0x34fc) = 0x00000000;
+	(void) RCBA32 (0x34fc);
+	RCBA32 (0x3500) = 0x20000557;
+	(void) RCBA32 (0x3500);
+	RCBA32 (0x3504) = 0x2000055f;
+	(void) RCBA32 (0x3504);
+	RCBA32 (0x3508) = 0x2000074b;
+	(void) RCBA32 (0x3508);
+	RCBA32 (0x350c) = 0x2000074b;
+	(void) RCBA32 (0x350c);
+	RCBA32 (0x3510) = 0x20000557;
+	(void) RCBA32 (0x3510);
+	RCBA32 (0x3514) = 0x2000014b;
+	(void) RCBA32 (0x3514);
+	RCBA32 (0x3518) = 0x2000074b;
+	(void) RCBA32 (0x3518);
+	RCBA32 (0x351c) = 0x2000074b;
+	(void) RCBA32 (0x351c);
+	RCBA32 (0x3520) = 0x2000074b;
+	(void) RCBA32 (0x3520);
+	RCBA32 (0x3524) = 0x2000074b;
+	(void) RCBA32 (0x3524);
+	RCBA32 (0x3528) = 0x2000055f;
+	(void) RCBA32 (0x3528);
+	RCBA32 (0x352c) = 0x2000055f;
+	(void) RCBA32 (0x352c);
+	RCBA32 (0x3530) = 0x20000557;
+	(void) RCBA32 (0x3530);
+	RCBA32 (0x3534) = 0x2000055f;
+	(void) RCBA32 (0x3534);
+	RCBA32 (0x355c) = 0x00000000;
+	(void) RCBA32 (0x355c);
+	RCBA32 (0x3560) = 0x00000001;
+	(void) RCBA32 (0x3560);
+	RCBA32 (0x3564) = 0x000026a3;
+	(void) RCBA32 (0x3564);
+	RCBA32 (0x3568) = 0x00040002;
+	(void) RCBA32 (0x3568);
+	RCBA32 (0x356c) = 0x01000052;
+	(void) RCBA32 (0x356c);
+	RCBA32 (0x3570) = 0x02000772;
+	(void) RCBA32 (0x3570);
+	RCBA32 (0x3574) = 0x16000f8f;
+	(void) RCBA32 (0x3574);
+	RCBA32 (0x3578) = 0x1800ff4f;
+	(void) RCBA32 (0x3578);
+	RCBA32 (0x357c) = 0x0001d630;
+	(void) RCBA32 (0x357c);
+	RCBA32 (0x359c) = 0x00000000;
+	(void) RCBA32 (0x359c);
+	RCBA32 (0x35a0) = 0xfc000201;
+	(void) RCBA32 (0x35a0);
+	RCBA32 (0x35a4) = 0x3c000201;
+	(void) RCBA32 (0x35a4);
+	RCBA32 (0x35fc) = 0x00000000;
+	(void) RCBA32 (0x35fc);
+	RCBA32 (0x3600) = 0x0a001f00;
+	(void) RCBA32 (0x3600);
+	RCBA32 (0x3608) = 0x00000000;
+	(void) RCBA32 (0x3608);
+	RCBA32 (0x360c) = 0x00000001;
+	(void) RCBA32 (0x360c);
+	RCBA32 (0x3610) = 0x00010000;
+	(void) RCBA32 (0x3610);
+	RCBA32 (0x36d0) = 0x00000000;
+	(void) RCBA32 (0x36d0);
+	RCBA32 (0x36d4) = 0x089c0018;
+	(void) RCBA32 (0x36d4);
+	RCBA32 (0x36dc) = 0x00000000;
+	(void) RCBA32 (0x36dc);
+	RCBA32 (0x36e0) = 0x11111111;
+	(void) RCBA32 (0x36e0);
+	RCBA32 (0x3720) = 0x00000000;
+	(void) RCBA32 (0x3720);
+	RCBA32 (0x3724) = 0x4e564d49;
+	(void) RCBA32 (0x3724);
+	RCBA32 (0x37fc) = 0x00000000;
+	(void) RCBA32 (0x37fc);
+	RCBA32 (0x3800) = 0x07ff0500;
+	(void) RCBA32 (0x3800);
+	RCBA32 (0x3804) = 0x3f04e008;
+	(void) RCBA32 (0x3804);
+	RCBA32 (0x3808) = 0x0058efc0;
+	(void) RCBA32 (0x3808);
+	RCBA32 (0x380c) = 0x00000000;
+	(void) RCBA32 (0x380c);
+	RCBA32 (0x384c) = 0x92000000;
+	(void) RCBA32 (0x384c);
+	RCBA32 (0x3850) = 0x00000a0b;
+	(void) RCBA32 (0x3850);
+	RCBA32 (0x3854) = 0x00000000;
+	(void) RCBA32 (0x3854);
+	RCBA32 (0x3858) = 0x07ff0500;
+	(void) RCBA32 (0x3858);
+	RCBA32 (0x385c) = 0x04ff0003;
+	(void) RCBA32 (0x385c);
+	RCBA32 (0x3860) = 0x00020001;
+	(void) RCBA32 (0x3860);
+	RCBA32 (0x3864) = 0x00000fff;
+	(void) RCBA32 (0x3864);
+	RCBA32 (0x3870) = 0x00000000;
+	(void) RCBA32 (0x3870);
+	RCBA32 (0x3874) = 0x9fff07d0;
+	(void) RCBA32 (0x3874);
+	RCBA32 (0x388c) = 0x00000000;
+	(void) RCBA32 (0x388c);
+	RCBA32 (0x3890) = 0xf8400000;
+	(void) RCBA32 (0x3890);
+	RCBA32 (0x3894) = 0x143b5006;
+	(void) RCBA32 (0x3894);
+	RCBA32 (0x3898) = 0x05200302;
+	(void) RCBA32 (0x3898);
+	RCBA32 (0x389c) = 0x0601209f;
+	(void) RCBA32 (0x389c);
+	RCBA32 (0x38ac) = 0x00000000;
+	(void) RCBA32 (0x38ac);
+	RCBA32 (0x38b0) = 0x00000004;
+	(void) RCBA32 (0x38b0);
+	RCBA32 (0x38b4) = 0x03040002;
+	(void) RCBA32 (0x38b4);
+	RCBA32 (0x38c0) = 0x00000007;
+	(void) RCBA32 (0x38c0);
+	RCBA32 (0x38c4) = 0x00802005;
+	(void) RCBA32 (0x38c4);
+	RCBA32 (0x38c8) = 0x00002005;
+	(void) RCBA32 (0x38c8);
+	RCBA32 (0x3dfc) = 0x00000000;
+	(void) RCBA32 (0x3dfc);
+	RCBA32 (0x3e7c) = 0xffffffff;
+	(void) RCBA32 (0x3e7c);
+	RCBA32 (0x3efc) = 0x00000000;
+	(void) RCBA32 (0x3efc);
+	RCBA32 (0x3f00) = 0x0000010b;
+	(void) RCBA32 (0x3f00);
+}
+
 static void enable_hpet(void)
 {
 	u32 reg32;
@@ -489,12 +840,14 @@ static void pch_disable_smm_only_flashing(struct device *dev)
 
 static void pch_fixups(struct device *dev)
 {
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 	u8 gen_pmcon_2;
 
 	/* Indicate DRAM init done for MRC S3 to know it can resume */
 	gen_pmcon_2 = pci_read_config8(dev, GEN_PMCON_2);
 	gen_pmcon_2 |= (1 << 7);
 	pci_write_config8(dev, GEN_PMCON_2, gen_pmcon_2);
+#endif
 
 	/*
 	 * Enable DMI ASPM in the PCH
@@ -541,6 +894,9 @@ static void lpc_init(struct device *dev)
 		break;
 	case PCH_TYPE_PPT: /* PantherPoint */
 		ppt_pm_init(dev);
+		break;
+	case PCH_TYPE_MOBILE5:
+		mobile5_pm_init (dev);
 		break;
 	default:
 		printk(BIOS_ERR, "Unknown Chipset: 0x%04x\n", dev->device);
@@ -686,7 +1042,7 @@ static const unsigned short pci_device_ids[] = { 0x1c46, 0x1c47, 0x1c49, 0x1c4a,
 						 0x1c4b, 0x1c4c, 0x1c4d, 0x1c4e,
 						 0x1c4f, 0x1c50, 0x1c52, 0x1c54,
 						 0x1e55, 0x1c56, 0x1e57, 0x1c5c,
-						 0x1e5d, 0x1e5e, 0x1e5f,
+						 0x1e5d, 0x1e5e, 0x1e5f, 0x3b07,
 						 0 };
 
 static const struct pci_driver pch_lpc __pci_driver = {

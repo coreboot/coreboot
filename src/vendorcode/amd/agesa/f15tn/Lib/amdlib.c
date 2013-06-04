@@ -111,8 +111,8 @@ VOID
 STATIC
 LibAmdGetDataFromPtr (
   IN       ACCESS_WIDTH AccessWidth,
-  IN       VOID         *Data,
-  IN       VOID         *DataMask,
+  IN       CONST VOID   *Data,
+  IN       CONST VOID   *DataMask,
      OUT   UINT32       *TemData,
      OUT   UINT32       *TempDataMask
   );
@@ -549,7 +549,7 @@ VOID
 LibAmdIoWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT16 IoAddress,
-  IN       VOID *Value,
+  IN       CONST VOID *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -587,8 +587,8 @@ VOID
 LibAmdIoRMW (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT16 IoAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -619,8 +619,8 @@ VOID
 LibAmdIoPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT16 IoAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN       UINT64 Delay,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
@@ -686,7 +686,7 @@ VOID
 LibAmdMemWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
-  IN       VOID *Value,
+  IN       CONST VOID *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -724,8 +724,8 @@ VOID
 LibAmdMemRMW (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -756,8 +756,8 @@ VOID
 LibAmdMemPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       UINT64 MemAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN       UINT64 Delay,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
@@ -837,7 +837,7 @@ VOID
 LibAmdPciWrite (
   IN       ACCESS_WIDTH AccessWidth,
   IN       PCI_ADDR PciAddress,
-  IN       VOID *Value,
+  IN       CONST VOID *Value,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -893,8 +893,8 @@ VOID
 LibAmdPciRMW (
   IN       ACCESS_WIDTH AccessWidth,
   IN       PCI_ADDR PciAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -925,8 +925,8 @@ VOID
 LibAmdPciPoll (
   IN       ACCESS_WIDTH AccessWidth,
   IN       PCI_ADDR PciAddress,
-  IN       VOID *Data,
-  IN       VOID *DataMask,
+  IN       CONST VOID *Data,
+  IN       CONST VOID *DataMask,
   IN       UINT64 Delay,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
@@ -1025,7 +1025,7 @@ LibAmdPciWriteBits (
   IN       PCI_ADDR Address,
   IN       UINT8 Highbit,
   IN       UINT8 Lowbit,
-  IN       UINT32 *Value,
+  IN       CONST UINT32 *Value,
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
@@ -1161,13 +1161,13 @@ LibAmdMemFill (
 VOID
 LibAmdMemCopy (
   IN       VOID *Destination,
-  IN       VOID *Source,
+  IN       CONST VOID *Source,
   IN       UINTN CopyLength,
   IN OUT   AMD_CONFIG_PARAMS *StdHeader
   )
 {
   UINT8 *Dest;
-  UINT8 *SourcePtr;
+  CONST UINT8 *SourcePtr;
   ASSERT (StdHeader != NULL);
   Dest = Destination;
   SourcePtr = Source;
@@ -1187,7 +1187,7 @@ LibAmdMemCopy (
  */
 BOOLEAN
 LibAmdVerifyImageChecksum (
-  IN       VOID *ImagePtr
+  IN       CONST VOID *ImagePtr
   )
 {
   // Assume ImagePtr points to the binary start ($AMD)
@@ -1224,19 +1224,19 @@ LibAmdVerifyImageChecksum (
  * @retval     NULL  if image not found
  * @retval     pointer to image header
  */
-VOID *
+CONST VOID *
 LibAmdLocateImage (
-  IN       VOID *StartAddress,
-  IN       VOID *EndAddress,
+  IN       CONST VOID *StartAddress,
+  IN       CONST VOID *EndAddress,
   IN       UINT32 Alignment,
-  IN       CHAR8 ModuleSignature[8]
+  IN       CONST CHAR8 ModuleSignature[8]
   )
 
 {
-  UINT8 *CurrentPtr;
+  CONST UINT8 *CurrentPtr;
   AMD_MODULE_HEADER *ModuleHeaderPtr;
-  UINT64 *SearchStr;
-  UINT64 *InputStr;
+  CONST UINT64 *SearchStr;
+  CONST UINT64 *InputStr;
 
   CurrentPtr = StartAddress;
   InputStr = (UINT64 *)ModuleSignature;
@@ -1300,8 +1300,8 @@ VOID
 STATIC
 LibAmdGetDataFromPtr (
   IN       ACCESS_WIDTH AccessWidth,
-  IN       VOID         *Data,
-  IN       VOID         *DataMask,
+  IN       CONST VOID   *Data,
+  IN       CONST VOID   *DataMask,
      OUT   UINT32       *TemData,
      OUT   UINT32       *TempDataMask
   )

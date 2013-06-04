@@ -113,7 +113,7 @@
  */
 UINTN
 PcieInputParserGetNumberOfComplexes (
-  IN      PCIe_COMPLEX_DESCRIPTOR       *ComplexList
+  IN      CONST PCIe_COMPLEX_DESCRIPTOR       *ComplexList
   )
 {
   UINTN                Result;
@@ -136,11 +136,11 @@ PcieInputParserGetNumberOfComplexes (
  */
 UINTN
 PcieInputParserGetLengthOfPcieEnginesList (
-  IN      PCIe_COMPLEX_DESCRIPTOR       *Complex
+  IN      CONST PCIe_COMPLEX_DESCRIPTOR       *Complex
   )
 {
   UINTN                 Result;
-  PCIe_PORT_DESCRIPTOR  *PciePortList;
+  CONST PCIe_PORT_DESCRIPTOR  *PciePortList;
   Result = 0;
   PciePortList = Complex->PciePortList;
   while (PciePortList != NULL) {
@@ -161,11 +161,11 @@ PcieInputParserGetLengthOfPcieEnginesList (
  */
 STATIC UINTN
 PcieInputParserGetLengthOfDdiEnginesList (
-  IN      PCIe_COMPLEX_DESCRIPTOR       *Complex
+  IN      CONST PCIe_COMPLEX_DESCRIPTOR       *Complex
   )
 {
   UINTN                 Result;
-  PCIe_DDI_DESCRIPTOR  *DdiLinkList;
+  CONST PCIe_DDI_DESCRIPTOR  *DdiLinkList;
   Result = 0;
   DdiLinkList = Complex->DdiLinkList;
   while (DdiLinkList != NULL) {
@@ -187,7 +187,7 @@ PcieInputParserGetLengthOfDdiEnginesList (
  */
 UINTN
 PcieInputParserGetNumberOfEngines (
-  IN      PCIe_COMPLEX_DESCRIPTOR         *Complex
+  IN      CONST PCIe_COMPLEX_DESCRIPTOR         *Complex
   )
 {
   UINTN                     Result;

@@ -93,6 +93,7 @@ typedef struct {
 	endpoint_type type;
 } endpoint_t;
 
+enum { FULL_SPEED = 0, LOW_SPEED = 1, HIGH_SPEED = 2, SUPER_SPEED = 3 };
 
 struct usbdev {
 	hci_t *controller;

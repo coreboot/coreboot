@@ -25,11 +25,14 @@
 #include <arch/io.h>
 
 #include <cpu/intel/microcode/microcode.c>
-#include "model_206ax.h"
 
 #if CONFIG_SOUTHBRIDGE_INTEL_BD82X6X || CONFIG_SOUTHBRIDGE_INTEL_C216
 /* Needed for RCBA access to set Soft Reset Data register */
 #include <southbridge/intel/bd82x6x/pch.h>
+#include "model_206ax.h"
+#elif CONFIG_SOUTHBRIDGE_INTEL_CALPELLA
+#include <southbridge/intel/bd82x6x/pch.h>
+#include "../model_2065x/model_2065x.h"
 #else
 #error "CPU must be paired with Intel BD82X6X or C216 southbridge"
 #endif

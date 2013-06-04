@@ -28,6 +28,7 @@ ramstage-y += lpc.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += sata.c
+ramstage-y += sata.c
 ramstage-y += usb_ehci.c
 ramstage-y += usb_xhci.c
 ramstage-y += me.c

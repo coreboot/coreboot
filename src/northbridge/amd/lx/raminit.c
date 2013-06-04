@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <console/console.h>
+#include <cpu/x86/msr.h>
 #include <cpu/amd/lxdef.h>
 #include <arch/io.h>
 #include <spd.h>

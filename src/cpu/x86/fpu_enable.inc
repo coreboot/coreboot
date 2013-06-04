@@ -33,7 +33,12 @@ __fpu_start:
 	 */
 	movl	%cr0, %eax
 	andl	$~(1 << 2), %eax
+	orl	$(1 << 1), %eax
 	movl	%eax, %cr0
+
+	movl	%cr4, %eax
+	orl	$(3 << 9), %eax
+	movl	%eax, %cr4
 
 	/* Restore BIST. */
 	movl	%ebp, %eax

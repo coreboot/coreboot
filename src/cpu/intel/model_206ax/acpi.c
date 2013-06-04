@@ -213,7 +213,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 {
 	int len, len_pss;
 	int ratio_min, ratio_max, ratio_turbo, ratio_step;
-	int coord_type, power_max, power_unit, num_entries;
+	int coord_type, power_max, num_entries;
 	int ratio, power, clock, clock_max;
 	msr_t msr;
 
@@ -237,14 +237,20 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		/* Max Non-Turbo Ratio */
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
-	clock_max = ratio_max * SANDYBRIDGE_BCLK;
+	clock_max = ratio_max * SANDYBRIDGE_BCLK + ratio_max / 3;
 
 	/* Calculate CPU TDP in mW */
-	msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
-	power_unit = 2 << ((msr.lo & 0xf) - 1);
-	msr = rdmsr(MSR_PKG_POWER_SKU);
-	power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
-
+#if 0
+	{
+	  int power_unit;
+	  msr = rdmsr(MSR_PKG_POWER_SKU_UNIT);
+	  power_unit = 2 << ((msr.lo & 0xf) - 1);
+	  msr = rdmsr(MSR_PKG_POWER_SKU);
+	  power_max = ((msr.lo & 0x7fff) / power_unit) * 1000;
+	}
+#else
+	power_max = 25000;
+#endif
 	/* Write _PCT indicating use of FFixedHW */
 	len = acpigen_write_empty_PCT();
 
@@ -279,8 +285,8 @@ static int generate_P_state_entries(int core, int cores_per_package)
 			power_max,		/*mW*/
 			PSS_LATENCY_TRANSITION,	/*lat1*/
 			PSS_LATENCY_BUSMASTER,	/*lat2*/
-			ratio_turbo << 8,	/*control*/
-			ratio_turbo << 8);	/*status*/
+			ratio_turbo,	/*control*/
+			ratio_turbo);	/*status*/
 	} else {
 		/* _PSS package count without Turbo */
 		len_pss = acpigen_write_package(num_entries + 1);
@@ -292,8 +298,8 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		power_max,		/*mW*/
 		PSS_LATENCY_TRANSITION,	/*lat1*/
 		PSS_LATENCY_BUSMASTER,	/*lat2*/
-		ratio_max << 8,		/*control*/
-		ratio_max << 8);	/*status*/
+		ratio_max,		/*control*/
+		ratio_max);	/*status*/
 
 	/* Generate the remaining entries */
 	for (ratio = ratio_min + ((num_entries - 1) * ratio_step);
@@ -301,15 +307,15 @@ static int generate_P_state_entries(int core, int cores_per_package)
 
 		/* Calculate power at this ratio */
 		power = calculate_power(power_max, ratio_max, ratio);
-		clock = ratio * SANDYBRIDGE_BCLK;
+		clock = ratio * SANDYBRIDGE_BCLK + ratio / 3;
 
 		len_pss += acpigen_write_PSS_package(
 			clock,			/*MHz*/
 			power,			/*mW*/
 			PSS_LATENCY_TRANSITION,	/*lat1*/
 			PSS_LATENCY_BUSMASTER,	/*lat2*/
-			ratio << 8,		/*control*/
-			ratio << 8);		/*status*/
+			ratio,		/*control*/
+			ratio);		/*status*/
 	}
 
 	/* Fix package length */

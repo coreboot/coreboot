@@ -312,11 +312,17 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 				printf("0x%04x: 0x%08"PRIx32"\n", i, *(uint32_t *)(mchbar+i));
 		}
 	}
+<<<<<<< HEAD
+	
+	printf ("clock_speed_index = %x\n", read_500 (0,0x609, 6) >> 1);
+	dump_timings ();
+=======
 
 	if (nb->device_id == PCI_DEVICE_ID_INTEL_CORE_1ST_GEN) {
 		printf ("clock_speed_index = %x\n", read_500 (0,0x609, 6) >> 1);
 		dump_timings ();
 	}
+>>>>>>> origin/master
 	unmap_physical((void *)mchbar, size);
 	return 0;
 }

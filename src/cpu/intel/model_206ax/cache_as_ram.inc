@@ -167,7 +167,7 @@ clear_mtrrs:
 
 	/* Set up the stack pointer below MRC variable space. */
 	movl	$(CACHE_AS_RAM_SIZE + CACHE_AS_RAM_BASE - \
-		  CONFIG_DCACHE_RAM_MRC_VAR_SIZE - 4), %eax
+		  CONFIG_DCACHE_RAM_MRC_VAR_SIZE - 4 - 4096), %eax
 	movl	%eax, %esp
 
 	/* Restore the BIST result. */
@@ -330,16 +330,18 @@ __main:
 	jmp	.Lhlt
 
 mtrr_table:
+	.word 0x02FF
+
 	/* Fixed MTRRs */
 	.word 0x250, 0x258, 0x259
 	.word 0x268, 0x269, 0x26A
 	.word 0x26B, 0x26C, 0x26D
 	.word 0x26E, 0x26F
+
 	/* Variable MTRRs */
 	.word 0x200, 0x201, 0x202, 0x203
 	.word 0x204, 0x205, 0x206, 0x207
 	.word 0x208, 0x209, 0x20A, 0x20B
 	.word 0x20C, 0x20D, 0x20E, 0x20F
-	.word 0x210, 0x211, 0x212, 0x213
 mtrr_table_end:
 

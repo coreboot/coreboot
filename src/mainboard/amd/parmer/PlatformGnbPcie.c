@@ -71,7 +71,7 @@
  * 38 DP2_TX[P,N]6
  */
 
-PCIe_PORT_DESCRIPTOR PortList [] = {
+static const PCIe_PORT_DESCRIPTOR PortList [] = {
 	/* PCIe port, Lanes 8:23, PCI Device Number 2, PCIE SLOT0 x16 */
 	{
 		0, /* Descriptor flags */
@@ -121,7 +121,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 	},
 };
 
-PCIe_DDI_DESCRIPTOR DdiList [] = {
+static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 	/* DP0 to HDMI0/DP */
 	{
 		0,
@@ -141,13 +141,6 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 		/* PCIE_DDI_DATA_INITIALIZER (ConnectorTypeEDP, Aux3, Hdp3) */
 		PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux3, Hdp3)
 	},
-};
-
-PCIe_COMPLEX_DESCRIPTOR Trinity = {
-        DESCRIPTOR_TERMINATE_LIST,
-        0,
-        &PortList[0],
-        &DdiList[0]
 };
 
 /*---------------------------------------------------------------------------------------*/
@@ -171,10 +164,8 @@ OemCustomizeInitEarly (
 	IN  OUT AMD_EARLY_PARAMS    *InitEarly
 	)
 {
-	AGESA_STATUS         Status;
-	VOID                 *TrinityPcieComplexListPtr;
-	VOID                 *TrinityPciePortPtr;
-	VOID                 *TrinityPcieDdiPtr;
+	AGESA_STATUS            Status;
+	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
@@ -183,46 +174,28 @@ OemCustomizeInitEarly (
 	/*  */
 	/* Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR */
 	/*  */
-	AllocHeapParams.RequestedBufferSize = sizeof(Trinity) + sizeof(PortList) + sizeof(DdiList);
+	AllocHeapParams.RequestedBufferSize = sizeof(PCIe_COMPLEX_DESCRIPTOR);
 
 	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
 	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
 	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
 	if ( Status!= AGESA_SUCCESS) {
-		/* Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR */
+		/* Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR */
 		ASSERT(FALSE);
 		return;
 	}
 
-	TrinityPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
+	PcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
-	AllocHeapParams.BufferPtr += sizeof(Trinity);
-	TrinityPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
-
-	AllocHeapParams.BufferPtr += sizeof(PortList);
-	TrinityPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	LibAmdMemFill (TrinityPcieComplexListPtr,
+	LibAmdMemFill (PcieComplexListPtr,
 		       0,
-		       sizeof(Trinity),
+		       sizeof(PCIe_COMPLEX_DESCRIPTOR),
 		       &InitEarly->StdHeader);
 
-	LibAmdMemFill (TrinityPciePortPtr,
-		       0,
-		       sizeof(PortList),
-		       &InitEarly->StdHeader);
+	PcieComplexListPtr->Flags        = DESCRIPTOR_TERMINATE_LIST;
+	PcieComplexListPtr->SocketId     = 0;
+	PcieComplexListPtr->PciePortList = PortList;
+	PcieComplexListPtr->DdiLinkList  = DdiList;
 
-	LibAmdMemFill (TrinityPcieDdiPtr,
-		       0,
-		       sizeof(DdiList),
-		       &InitEarly->StdHeader);
-
-	LibAmdMemCopy  (TrinityPcieComplexListPtr, &Trinity, sizeof(Trinity), &InitEarly->StdHeader);
-	LibAmdMemCopy  (TrinityPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);
-	LibAmdMemCopy  (TrinityPcieDdiPtr, &DdiList[0], sizeof(DdiList), &InitEarly->StdHeader);
-
-	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)TrinityPciePortPtr;
-	((PCIe_COMPLEX_DESCRIPTOR*)TrinityPcieComplexListPtr)->DdiLinkList  =  (PCIe_DDI_DESCRIPTOR*)TrinityPcieDdiPtr;
-
-	InitEarly->GnbConfig.PcieComplexList = TrinityPcieComplexListPtr;
+	InitEarly->GnbConfig.PcieComplexList = PcieComplexListPtr;
 }

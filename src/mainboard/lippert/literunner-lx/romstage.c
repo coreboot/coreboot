@@ -75,7 +75,7 @@ static const unsigned char spdbytes[] = {	// 4x Promos V58C2512164SA-J5I
 	[SPD_tRFC]			= 70	// SDRAM Device Minimum Auto Refresh to Active/Auto Refresh [70 ns]
 };
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	if (device != DIMM0)
 		return 0xFF;	/* No DIMM1, don't even try. */

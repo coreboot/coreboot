@@ -34,7 +34,7 @@
 #include "southbridge/amd/cs5536/early_setup.c"
 #include "northbridge/amd/lx/raminit.h"
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	return smbus_read_byte(device, address);
 }

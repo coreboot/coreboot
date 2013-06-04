@@ -41,7 +41,7 @@
 /* Bit0 enables Spread Spectrum. */
 #define SMC_CONFIG	0x01
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	if (device != DIMM0)
 		return 0xFF;	/* No DIMM1, don't even try. */

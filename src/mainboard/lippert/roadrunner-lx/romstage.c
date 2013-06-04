@@ -38,7 +38,7 @@
 #include "superio/ite/it8712f/early_serial.c"
 #include "northbridge/amd/lx/raminit.h"
 
-static inline int spd_read_byte(unsigned int device, unsigned int address)
+int spd_read_byte(unsigned int device, unsigned int address)
 {
 	if (device != DIMM0)
 		return 0xFF;	/* No DIMM1, don't even try. */

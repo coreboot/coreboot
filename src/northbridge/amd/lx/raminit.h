@@ -33,4 +33,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl);
 
 void sdram_initialize(int controllers, const struct mem_controller *ctrl);
 
+/* mainboard specific */
+int spd_read_byte(unsigned device, unsigned address);
+
 #endif

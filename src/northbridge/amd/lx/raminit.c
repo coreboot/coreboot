@@ -24,6 +24,7 @@
 #include <spd.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include "raminit.h"
+#include "northbridge.h"
 
 static const unsigned char NumColAddr[] = {
 	0x00, 0x10, 0x11, 0x00, 0x00, 0x00, 0x00, 0x07,

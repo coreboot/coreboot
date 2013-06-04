@@ -20,7 +20,12 @@
 
 #include <arch/io.h>
 #include <console/post_codes.h>
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 #include <northbridge/intel/sandybridge/pcie_config.c>
+#endif
+#if CONFIG_NORTHBRIDGE_INTEL_CALPELLA
+#include <northbridge/intel/calpella/pcie_config.c>
+#endif
 #include "pch.h"
 #include <spi-generic.h>
 

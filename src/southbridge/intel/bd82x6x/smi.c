@@ -34,6 +34,10 @@
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #endif
 
+#if CONFIG_NORTHBRIDGE_INTEL_CALPELLA
+#include "northbridge/intel/calpella/calpella.h"
+#endif
+
 extern unsigned char _binary_smm_start;
 extern unsigned char _binary_smm_end;
 

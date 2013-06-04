@@ -26,8 +26,8 @@ subdirs-y += ../../x86/smm
 ramstage-y += nano_init.c
 ramstage-y += update_ucode.c
 
-# We need to hear from VIA to get permission to include this file in the
-# official coreboot repository. Until then, we leave this commented out
-# cpu-microcode-y += nano_ucode_blob.c
+# This microcode is included as a separate CBFS file. It is never linked in to
+# the rest of coreboot.
+cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += nano_ucode_blob.c
 
 cpu_incs += $(src)/cpu/via/car/cache_as_ram.inc

@@ -75,12 +75,12 @@
 
 UINTN
 PcieInputParserGetNumberOfComplexes (
-  IN      PCIe_COMPLEX_DESCRIPTOR       *ComplexList
+  IN      CONST PCIe_COMPLEX_DESCRIPTOR       *ComplexList
  );
 
 UINTN
 PcieInputParserGetNumberOfEngines (
-  IN      PCIe_COMPLEX_DESCRIPTOR       *Complex
+  IN      CONST PCIe_COMPLEX_DESCRIPTOR       *Complex
  );
 
 
@@ -104,7 +104,7 @@ PcieInputParserGetComplexDescriptorOfSocket (
 
 UINTN
 PcieInputParserGetLengthOfPcieEnginesList (
-  IN      PCIe_COMPLEX_DESCRIPTOR       *Complex
+  IN      CONST PCIe_COMPLEX_DESCRIPTOR       *Complex
   );
 #endif
 

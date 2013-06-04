@@ -36,6 +36,7 @@
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
 #include "superio/ite/it8712f/early_serial.c"
+#include "northbridge/amd/lx/raminit.h"
 
 /* Bit0 enables Spread Spectrum. */
 #define SMC_CONFIG	0x01
@@ -69,7 +70,6 @@ static int smc_send_config(unsigned char config_data)
 }
 #endif
 
-#include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
 #include "lib/generic_sdram.c"

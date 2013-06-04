@@ -30,6 +30,7 @@
 #include "cpu/x86/msr.h"
 #include <cpu/amd/lxdef.h>
 #include "southbridge/amd/cs5536/cs5536.h"
+#include "northbridge/amd/lx/raminit.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
@@ -97,7 +98,6 @@ static u8 spd_read_byte(u8 device, u8 address)
 	return spdbytes[address];
 }
 
-#include "northbridge/amd/lx/raminit.h"
 #include "northbridge/amd/lx/pll_reset.c"
 #include "northbridge/amd/lx/raminit.c"
 #include "lib/generic_sdram.c"

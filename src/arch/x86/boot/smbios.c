@@ -133,9 +133,9 @@ static int smbios_write_type0(unsigned long *current, int handle)
 	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
 
 	if (strlen(CONFIG_LOCALVERSION))
-		t->bios_version = smbios_add_string(t->eos, CONFIG_LOCALVERSION);
+		t->bios_version = smbios_add_string(t->eos, "CBET4000 " CONFIG_LOCALVERSION);
 	else
-		t->bios_version = smbios_add_string(t->eos, COREBOOT_VERSION);
+		t->bios_version = smbios_add_string(t->eos, "CBET4000 " COREBOOT_VERSION);
 #else
 #define SPACES \
 	"                                                                  "

@@ -34,6 +34,7 @@
 #include <southbridge/amd/cs5536/early_smbus.c>
 #include <southbridge/amd/cs5536/early_setup.c>
 #include <superio/smsc/smscsuperio/early_serial.c>
+#include <northbridge/amd/lx/raminit.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
@@ -46,7 +47,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#include <northbridge/amd/lx/raminit.h>
 #include <northbridge/amd/lx/pll_reset.c>
 #include <northbridge/amd/lx/raminit.c>
 #include <lib/generic_sdram.c>

@@ -382,7 +382,7 @@ static void pci_domain_set_resources(device_t dev)
 
 	mc_dev = dev->link_list->children;
 	if (mc_dev) {
-		tomk = get_systop() / 1024;
+		tomk = get_top_of_ram() / 1024;
 		/* Report the memory regions
 		   All memory up to systop except 0xa0000-0xbffff */
 		idx = 10;

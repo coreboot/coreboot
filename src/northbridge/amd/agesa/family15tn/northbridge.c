@@ -811,8 +811,9 @@ static void domain_set_resources(device_t dev)
 				sizek = 0;
 			}
 			else {
+				uint64_t topmem2 = bsp_topmem2();
 				basek = 4*1024*1024;
-				sizek -= (4*1024*1024 - mmio_basek);
+				sizek = topmem2/1024 - basek;
 			}
 		}
 

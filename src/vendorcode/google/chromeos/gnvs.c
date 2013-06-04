@@ -49,15 +49,9 @@ void chromeos_init_vboot(chromeos_acpi_t *chromeos)
 
 	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
 
-	if (vboot_handoff != NULL) {
-		vboot_handoff->init_params.flags |= VB_INIT_FLAG_OPROM_MATTERS;
-		if (oprom_is_loaded)
-			vboot_handoff->init_params.flags |=
-				VB_INIT_FLAG_OPROM_LOADED;
-
+	if (vboot_handoff != NULL)
 		memcpy(&chromeos->vdat[0], &vboot_handoff->shared_data[0],
 		       ARRAY_SIZE(chromeos->vdat));
-	}
 #endif
 
 #if CONFIG_ELOG

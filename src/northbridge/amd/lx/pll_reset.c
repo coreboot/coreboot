@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "northbridge.h"
+
 static void pll_reset(void)
 {
 	msr_t msrGlcpSysRstpll;
@@ -82,7 +84,7 @@ static unsigned int CPUSpeed(void)
 }
 #endif
 
-static unsigned int GeodeLinkSpeed(void)
+unsigned int GeodeLinkSpeed(void)
 {
 	unsigned int speed;
 	msr_t msr;

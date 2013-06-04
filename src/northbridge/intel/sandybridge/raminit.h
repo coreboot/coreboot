@@ -20,16 +20,9 @@
 #ifndef RAMINIT_H
 #define RAMINIT_H
 
-#include "pei_data.h"
+#include "sandybridge.h"
 
-struct sys_info {
-	u8 boot_path;
-#define BOOT_PATH_NORMAL	0
-#define BOOT_PATH_RESET		1
-#define BOOT_PATH_RESUME	2
-} __attribute__ ((packed));
-
-void sdram_initialize(struct pei_data *pei_data);
+void raminit(int s3resume);
 unsigned long get_top_of_ram(void);
 int fixup_sandybridge_errata(void);
 

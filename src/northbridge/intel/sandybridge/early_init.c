@@ -51,17 +51,19 @@ static void sandybridge_setup_bars(void)
 	pci_write_config32(PCI_DEV(0, 0x00, 0), MCHBAR + 4, (0LL+DEFAULT_MCHBAR) >> 32);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), PCIEXBAR, DEFAULT_PCIEXBAR | 5); /* 64MB - busses 0-63 */
 	pci_write_config32(PCI_DEV(0, 0x00, 0), PCIEXBAR + 4, (0LL+DEFAULT_PCIEXBAR) >> 32);
+	pci_write_config32(PCI_DEV(0xff, 0x00, 1), 0x50, DEFAULT_PCIEXBAR | 1);
+
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR, DEFAULT_DMIBAR | 1);
 	pci_write_config32(PCI_DEV(0, 0x00, 0), DMIBAR + 4, (0LL+DEFAULT_DMIBAR) >> 32);
 
 	/* Set C0000-FFFFF to access RAM on both reads and writes */
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM0, 0x30);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM1, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM2, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM3, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM4, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM5, 0x33);
-	pci_write_config8(PCI_DEV(0, 0x00, 0), PAM6, 0x33);
+	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(0), 0x30);
+	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(1), 0x33);
+	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(2), 0x33);
+	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(3), 0x33);
+	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(4), 0x33);
+	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(5), 0x33);
+	pci_write_config8(PCI_DEV(0xff, 0x00, 1), QPD0F1_PAM(6), 0x33);
 
 #if CONFIG_ELOG_BOOT_COUNT
 	/* Increment Boot Counter for non-S3 resume */
@@ -104,10 +106,12 @@ static void sandybridge_setup_graphics(void)
 		return;
 	}
 
+	return;
+
 	printk(BIOS_DEBUG, "Initializing Graphics...\n");
 
 	/* Setup IGD memory by setting GGC[7:3] = 1 for 32MB */
-	reg16 = pci_read_config16(PCI_DEV(0,0,0), GGC);
+	reg16 = pci_read_config16(PCI_DEV(0,0,0), D0F0_GGC);
 	reg16 &= ~0x00f8;
 	reg16 |= 1 << 3;
 	/* Program GTT memory by setting GGC[9:8] = 2MB */
@@ -115,7 +119,7 @@ static void sandybridge_setup_graphics(void)
 	reg16 |= 2 << 8;
 	/* Enable VGA decode */
 	reg16 &= ~0x0002;
-	pci_write_config16(PCI_DEV(0,0,0), GGC, reg16);
+	pci_write_config16(PCI_DEV(0,0,0), D0F0_GGC, reg16);
 
 	/* Enable 256MB aperture */
 	reg8 = pci_read_config8(PCI_DEV(0, 2, 0), MSAC);
@@ -168,7 +172,7 @@ void sandybridge_early_initialization(int chipset_type)
 	sandybridge_setup_bars();
 
 	/* Device Enable */
-	pci_write_config32(PCI_DEV(0, 0, 0), DEVEN, DEVEN_HOST | DEVEN_IGD);
+	pci_write_config32(PCI_DEV(0, 0, 0), D0F0_DEVEN, 9);
 
 	sandybridge_setup_graphics();
 }

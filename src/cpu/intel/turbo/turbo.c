@@ -19,6 +19,7 @@
  * MA 02110-1301 USA
  */
 
+
 #include <console/console.h>
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/msr.h>

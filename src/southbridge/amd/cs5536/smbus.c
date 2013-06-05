@@ -22,9 +22,6 @@
 #include "cs5536.h"
 #include "smbus.h"
 
-#define SMBUS_ERROR -1
-#define SMBUS_WAIT_UNTIL_READY_TIMEOUT -2
-#define SMBUS_WAIT_UNTIL_DONE_TIMEOUT  -3
 #define SMBUS_TIMEOUT (1000)
 
 static void smbus_delay(void)

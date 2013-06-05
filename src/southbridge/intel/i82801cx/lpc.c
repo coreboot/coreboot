@@ -42,6 +42,12 @@ static void i82801cx_enable_ioapic(struct device *dev)
 	printk(BIOS_DEBUG, "IOAPIC Southbridge enabled %x\n", reg32);
 
 	set_ioapic_id(IO_APIC_ADDR, 0x02);
+
+	/*
+	 * Select Boot Configuration register (0x03) and
+	 * use Processor System Bus (0x01) to deliver interrupts.
+	 */
+	io_apic_write(IO_APIC_ADDR, 0x03, 0x01);
 }
 
 // This is how interrupts are received from the Super I/O chip

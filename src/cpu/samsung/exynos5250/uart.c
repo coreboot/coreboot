@@ -162,12 +162,19 @@ static void exynos5_uart_tx_byte(unsigned char data)
 	writeb(data, &uart->utxh);
 }
 
+static void exynos5_uart_tx_flush(void)
+{
+	struct s5p_uart *uart = (struct s5p_uart *)base_port;
+
+	while (readl(&uart->ufstat) & 0x1ff0000);
+}
+
 #if !defined(__PRE_RAM__)
 
 static const struct console_driver exynos5_uart_console __console = {
 	.init     = exynos5_init_dev,
 	.tx_byte  = exynos5_uart_tx_byte,
-//	.tx_flush = exynos5_uart_tx_flush,
+	.tx_flush = exynos5_uart_tx_flush,
 	.rx_byte  = exynos5_uart_rx_byte,
 //	.tst_byte = exynos5_uart_tst_byte,
 };
@@ -196,6 +203,7 @@ void uart_tx_byte(unsigned char data)
 
 void uart_tx_flush(void)
 {
+	exynos5_uart_tx_flush();
 }
 
 #endif

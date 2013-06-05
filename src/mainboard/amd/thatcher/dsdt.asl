@@ -202,6 +202,14 @@ DefinitionBlock (
 	/* PM1 Event Block
 	* First word is PM1_Status, Second word is PM1_Enable
 	*/
+
+	/* AcpiGpe0Blk */
+	OperationRegion(GP0B, SystemMemory, 0xfed80814, 0x04)
+		Field(GP0B, ByteAcc, NoLock, Preserve) {
+		, 11,
+		USBS, 1,
+	}
+
 	Scope(\_SB) {
 		/* PCIe Configuration Space for CONFIG_MMCONF_BUS_NUMBER busses */
 		OperationRegion(PCFG, SystemMemory, PCBA, PCLN)
@@ -844,6 +852,8 @@ DefinitionBlock (
 		*	Store(Arg0, Index(WKST,1))
 		* }
 		*/
+		/* clear USB wake up signal */
+		Store(1, USBS)
 		Return(WKST)
 	} /* End Method(\_WAK) */
 

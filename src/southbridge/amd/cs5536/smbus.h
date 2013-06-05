@@ -20,6 +20,8 @@
 #ifndef _CS5536_SMBUS_H
 #define _CS5536_SMBUS_H
 
+#include <device/smbus_def.h>
+
 int smbus_start_condition(unsigned smbus_io_base);
 int smbus_stop_condition(unsigned smbus_io_base);
 int smbus_check_stop_condition(unsigned smbus_io_base);

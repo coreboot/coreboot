@@ -147,6 +147,7 @@ extern int niodefs;
 static int i915_init_done = 0;
 
 /* fill the palette. This runs when the P opcode is hit. */
+/* and, yes, it's needed for even 32 bits per pixel */
 static void palette(void)
 {
 	int i;
@@ -155,32 +156,6 @@ static void palette(void)
 	for(i = 0; i < 256; i++, color += 0x010101){
 		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
 	}
-}
-
-int vbe_mode_info_valid(void);
-int vbe_mode_info_valid(void)
-{
-	return i915_init_done;
-}
-
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	printk(BIOS_SPEW, "fill_lb_framebuffer: graphics is %p\n", (void *)graphics);
-	framebuffer->physical_address = graphics;
-	framebuffer->x_resolution = 2560;
-	framebuffer->y_resolution = 1700;
-	framebuffer->bytes_per_line = 10240;
-	framebuffer->bits_per_pixel = 32;
-	framebuffer->red_mask_pos = 16;
-	framebuffer->red_mask_size = 8;
-	framebuffer->green_mask_pos = 8;
-	framebuffer->green_mask_size = 8;
-	framebuffer->blue_mask_pos = 0;
-	framebuffer->blue_mask_size = 8;
-	framebuffer->reserved_mask_pos = 0;
-	framebuffer->reserved_mask_size = 0;
-
 }
 
 static unsigned long times[4096];
@@ -268,6 +243,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 		unsigned int pmmio, unsigned int pgfx)
 {
 	static struct edid edid;
+	int edid_ok;
 
 	int index;
 	u32 auxin[16], auxout[16];
@@ -282,7 +258,10 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	globalstart = rdtscll();
 
 
-	decode_edid((unsigned char *)&link_edid_data, sizeof(link_edid_data), &edid);
+	edid_ok = decode_edid((unsigned char *)&link_edid_data,
+			      sizeof(link_edid_data), &edid);
+	printk(BIOS_SPEW, "decode edid returns %d\n", edid_ok);
+	edid.bpp = 32;
 
 	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl- 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HTOTAL(pipe), %08x)\n", htotal);
@@ -398,6 +377,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 		(void *)graphics, FRAME_BUFFER_BYTES);
 	memset((void *)graphics, 0, FRAME_BUFFER_BYTES);
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
+	set_vbe_mode_info_valid(&edid, graphics);
 	i915_init_done = 1;
 	oprom_is_loaded = 1;
 	return 0;

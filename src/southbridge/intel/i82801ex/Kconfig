@@ -2,4 +2,16 @@ config SOUTHBRIDGE_INTEL_I82801EX
 	bool
 	select IOAPIC
 	select HAVE_HARD_RESET
+	select HAVE_USBDEBUG
 
+if SOUTHBRIDGE_INTEL_I82801EX
+
+config EHCI_BAR
+	hex
+	default 0xfef00000
+
+config EHCI_DEBUG_OFFSET
+	hex
+	default 0xa0
+
+endif

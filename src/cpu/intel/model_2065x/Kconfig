@@ -1,0 +1,42 @@
+config CPU_INTEL_MODEL_2065X
+	bool
+
+if CPU_INTEL_MODEL_2065X
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select SMP
+	select SSE
+	select SSE2
+	select UDELAY_LAPIC
+	select SMM_TSEG
+	select HAVE_INIT_TIMER
+	select CPU_MICROCODE_IN_CBFS
+	#select AP_IN_SIPI_WAIT
+	select TSC_SYNC_MFENCE
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "cpu/intel/model_2065x/bootblock.c"
+
+config SERIAL_CPU_INIT
+	bool
+	default n
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config ENABLE_VMX
+	bool "Enable VMX for virtualization"
+	default n
+
+config MICROCODE_INCLUDE_PATH
+	string
+	default "3rdparty/mainboard/lenovo/x201"
+
+config XIP_ROM_SIZE
+	hex
+	default 0x20000
+
+endif

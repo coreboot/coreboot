@@ -20,10 +20,19 @@ config BOARD_LENOVO_T60
 
 	    Thinkpad T60p (Model 2007)
 
+config BOARD_LENOVO_X201
+	bool "ThinkPad X201"
+	help
+	  The following T60 series ThinkPad machines have been verified to
+          work correctly:
+
+	    Thinkpad x201
+
 endchoice
 
 source "src/mainboard/lenovo/x60/Kconfig"
 source "src/mainboard/lenovo/t60/Kconfig"
+source "src/mainboard/lenovo/x201/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

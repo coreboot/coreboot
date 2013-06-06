@@ -57,18 +57,11 @@ struct ehci_debug_info {
 	struct dbgp_pipe ep_pipe[DBGP_MAX_ENDPOINTS];
 };
 
-/* Set this to 1 to debug the start-up of EHCI debug port hardware. You need
- * to modify console_init() to initialise some other console before usbdebug
- * to receive the printk lines from here.
- * There will be no real usbdebug console output while DBGP_DEBUG is set.
- */
-#define DBGP_DEBUG 0
-#if DBGP_DEBUG
+#if CONFIG_DEBUG_USBDEBUG
 # define dbgp_printk(fmt_arg...) printk(BIOS_DEBUG, fmt_arg)
 #else
-#define dbgp_printk(fmt_arg...)   do {} while(0)
+# define dbgp_printk(fmt_arg...)   do {} while(0)
 #endif
-
 
 #define USB_DEBUG_DEVNUM 127
 

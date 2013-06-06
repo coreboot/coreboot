@@ -50,6 +50,9 @@ unsigned get_ehci_debug(void)
 
 static void dbgp_init(void)
 {
+#if !CONFIG_EARLY_CONSOLE
+	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+#endif
 	usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, &dbg_info);
 }
 

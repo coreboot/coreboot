@@ -32,7 +32,7 @@
  * to receive the printk lines from here.
  * There will be no real usbdebug console output while DBGP_DEBUG is set.
  */
-#define DBGP_DEBUG 0
+#define DBGP_DEBUG 1
 #if DBGP_DEBUG
 # define dbgp_printk(fmt_arg...) printk(BIOS_DEBUG, fmt_arg)
 #else

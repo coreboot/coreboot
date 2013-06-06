@@ -1,5 +1,15 @@
 menu "Console"
 
+config DEFAULT_BOOTBLOCK_CONSOLE
+	bool
+	default n
+
+config BOOTBLOCK_CONSOLE
+	bool "Enable early (bootblock) console output."
+	default DEFAULT_BOOTBLOCK_CONSOLE
+	help
+	  Use console during the bootblock if supported
+
 config DEFAULT_EARLY_CONSOLE
 	bool
 	default n

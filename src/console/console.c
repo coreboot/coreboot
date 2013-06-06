@@ -101,7 +101,8 @@ int console_tst_byte(void)
 
 void console_init(void)
 {
-#if CONFIG_EARLY_CONSOLE
+#if defined(__BOOT_BLOCK__) && CONFIG_BOOTBLOCK_CONSOLE || \
+    !defined(__BOOT_BLOCK__) && CONFIG_EARLY_CONSOLE
 
 #if CONFIG_USBDEBUG
 	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);

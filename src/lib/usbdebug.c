@@ -27,7 +27,11 @@
 #include <ehci.h>
 #include <usbdebug.h>
 
-// Does not work if we want early printk to do usb debug, too..
+/* Set this to 1 to debug the start-up of EHCI debug port hardware. You need
+ * to modify console_init() to initialise some other console before usbdebug
+ * to receive the printk lines from here.
+ * There will be no real usbdebug console output while DBGP_DEBUG is set.
+ */
 #define DBGP_DEBUG 0
 #if DBGP_DEBUG
 # define dbgp_printk(fmt_arg...) printk(BIOS_DEBUG, fmt_arg)
@@ -578,7 +582,7 @@ int early_usbdebug_init(void)
 
 void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
 {
-
+#if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
 		dbg_info = (struct ehci_debug_info *)
@@ -592,10 +596,12 @@ void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
 			dbg_info->bufidx = 0;
 		}
 	}
+#endif
 }
 
 void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 {
+#if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
 		dbg_info = (struct ehci_debug_info *)
@@ -606,4 +612,5 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 		dbgp_bulk_write_x(dbg_info, dbg_info->buf, dbg_info->bufidx);
 		dbg_info->bufidx = 0;
 	}
+#endif
 }

@@ -278,6 +278,48 @@ generic_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	return adr;
 }
 
+/* Normalize bInterval to log2 of microframes */
+static int
+usb_decode_interval(const int speed, const endpoint_type type, const unsigned char bInterval)
+{
+#define LOG2(a) ((sizeof(unsigned) << 3) - __builtin_clz(a) - 1)
+	switch (speed) {
+	case LOW_SPEED:
+		switch (type) {
+		case ISOCHRONOUS: case INTERRUPT:
+			return LOG2(bInterval) + 3;
+		default:
+			return 0;
+		}
+	case FULL_SPEED:
+		switch (type) {
+		case ISOCHRONOUS:
+			return (bInterval - 1) + 3;
+		case INTERRUPT:
+			return LOG2(bInterval) + 3;
+		default:
+			return 0;
+		}
+	case HIGH_SPEED:
+		switch (type) {
+		case ISOCHRONOUS: case INTERRUPT:
+			return bInterval - 1;
+		default:
+			return LOG2(bInterval);
+		}
+	case SUPER_SPEED:
+		switch (type) {
+		case ISOCHRONOUS: case INTERRUPT:
+			return bInterval - 1;
+		default:
+			return 0;
+		}
+	default:
+		return 0;
+	}
+#undef LOG2
+}
+
 static int
 set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 {
@@ -357,6 +399,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 			dev->endpoints[0].maxpacketsize = dd->bMaxPacketSize0;
 			dev->endpoints[0].direction = SETUP;
 			dev->endpoints[0].type = CONTROL;
+			dev->endpoints[0].interval = usb_decode_interval(dev->speed, CONTROL, endp->bInterval);
 			for (j = 1; j <= current->bNumEndpoints; j++) {
 #ifdef USB_DEBUG
 				static const char *transfertypes[4] = {
@@ -374,6 +417,7 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 					((endp->bEndpointAddress & 0x80) ==
 					 0) ? OUT : IN;
 				ep->type = endp->bmAttributes;
+				ep->interval = usb_decode_interval(dev->speed, ep->type, endp->bInterval);
 				endp = (endpoint_descriptor_t
 					*) (((char *) endp) + endp->bLength);
 			}

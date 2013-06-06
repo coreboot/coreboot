@@ -91,6 +91,8 @@ typedef struct {
 	int toggle;
 	int maxpacketsize;
 	endpoint_type type;
+	int interval; /* expressed as binary logarithm of the number
+			 of microframes (i.e. t = 125us * 2^interval) */
 } endpoint_t;
 
 enum { FULL_SPEED = 0, LOW_SPEED = 1, HIGH_SPEED = 2, SUPER_SPEED = 3 };

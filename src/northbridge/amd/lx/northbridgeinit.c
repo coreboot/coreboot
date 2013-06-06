@@ -716,25 +716,13 @@ static void setup_lx_cache(void)
 
 unsigned long get_top_of_ram(void)
 {
-	struct gliutable *gl = 0;
 	uint32_t systop;
 	msr_t msr;
-	int i;
 
-	for (i = 0; gliu0table[i].desc_name != GL_END; i++) {
-		if (gliu0table[i].desc_type == R_SYSMEM) {
-			gl = &gliu0table[i];
-			break;
-		}
-	}
-	if (gl) {
-		msr = rdmsr(gl->desc_name);
-		systop = ((msr.hi & 0xFF) << 24) | ((msr.lo & 0xFFF00000) >> 8);
-		systop += 0x1000;	/* 4K */
-	} else {
-		systop =
-		    ((sizeram() - CONFIG_VIDEO_MB) * 1024) - SMM_SIZE - 1024;
-	}
+	msr = rdmsr(MSR_GLIU0_SYSMEM);
+	systop = ((msr.hi & 0xFF) << 24) | ((msr.lo & 0xFFF00000) >> 8);
+	systop += 0x1000;	/* 4K */
+
 	return systop;
 }
 

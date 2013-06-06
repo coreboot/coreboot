@@ -35,9 +35,13 @@ enum periph_id;
 #define SPLL	7
 
 enum pll_src_bit {
-	EXYNOS_SRC_MPLL = 6,
-	EXYNOS_SRC_EPLL,
-	EXYNOS_SRC_VPLL,
+	EXYNOS_SRC_CPLL = 1,
+	EXYNOS_SRC_DPLL = 2,
+	EXYNOS_SRC_MPLL = 3,
+	EXYNOS_SRC_SPLL = 4,
+	EXYNOS_SRC_IPLL = 5,
+	EXYNOS_SRC_EPLL = 6,
+	EXYNOS_SRC_RPLL = 7,
 };
 
 /* *
@@ -46,7 +50,6 @@ enum pll_src_bit {
  */
 struct clk_bit_info {
 	s8 src_bit;    /* offset in register to clock source field */
-	s8 n_src_bits; /* number of bits in 'src_bit' field */
 	s8 div_bit;
 	s8 prediv_bit;
 };

@@ -33,3 +33,6 @@ ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 romstage-y += early_smbus.c
+romstage-$(CONFIG_USBDEBUG) += ../common/usb_debug.c
+ramstage-$(CONFIG_USBDEBUG) += ../common/usb_debug.c
+smm-$(CONFIG_USBDEBUG) += ../common/usb_debug.c

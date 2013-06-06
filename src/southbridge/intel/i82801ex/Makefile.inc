@@ -9,3 +9,6 @@ ramstage-y += pci.c
 ramstage-y += ac97.c
 ramstage-y += watchdog.c
 ramstage-y += reset.c
+
+romstage-$(CONFIG_USBDEBUG) += ../common/usb_debug.c
+ramstage-$(CONFIG_USBDEBUG) += ../common/usb_debug.c

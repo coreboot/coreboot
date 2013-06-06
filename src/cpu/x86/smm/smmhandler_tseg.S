@@ -60,6 +60,9 @@
 #if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
+#elif CONFIG_NORTHBRIDGE_INTEL_NEHALEM
+#include <northbridge/intel/nehalem/nehalem.h>
+#define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
 #elif CONFIG_NORTHBRIDGE_INTEL_HASWELL
 #include <northbridge/intel/haswell/haswell.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)

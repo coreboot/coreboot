@@ -123,6 +123,8 @@ enum {
 
 static int
 request_sense (usbdev_t *dev);
+static int
+request_sense_no_media (usbdev_t *dev);
 
 static int
 reset_transport (usbdev_t *dev)
@@ -256,6 +258,11 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 		if (cb[0] == 0x03)
 			/* requesting sense failed, that's bad */
 			return MSC_COMMAND_FAIL;
+		else if (cb[0] == 0)
+			/* If command was TEST UNIT READY determine if the
+			 * device is of removable type indicating no media
+			 * found. */
+			return request_sense_no_media (dev);
 		/* error "check condition" or reserved error */
 		ret = request_sense (dev);
 		/* return fail or the status of request_sense if it's worse */
@@ -348,6 +355,34 @@ request_sense (usbdev_t *dev)
 
 	return execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
 				sizeof (cb), buf, 19, 1);
+}
+
+static int request_sense_no_media(usbdev_t *dev)
+{
+	u8 buf[19];
+	int ret;
+	cmdblock6_t cb;
+	memset (&cb, 0, sizeof (cb));
+	cb.command = 0x3;
+
+	ret = execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
+				sizeof (cb), buf, 19, 1);
+
+	if (ret)
+		return ret;
+
+	/* Check if sense key is set to NOT READY. */
+	if ((buf[2] & 0xf) != 2)
+		return MSC_COMMAND_FAIL;
+
+	/* Check if additional sense code is 0x3a. */
+	if (buf[12] != 0x3a)
+		return MSC_COMMAND_FAIL;
+
+	/* No media is present. Return MSC_COMMAND_DETACHED so as not to use
+	 * this device any longer. */
+	usb_debug("Empty media found.\n");
+	return MSC_COMMAND_DETACHED;
 }
 
 static int

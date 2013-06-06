@@ -104,9 +104,6 @@ void console_init(void)
 #if defined(__BOOT_BLOCK__) && CONFIG_BOOTBLOCK_CONSOLE || \
     !defined(__BOOT_BLOCK__) && CONFIG_EARLY_CONSOLE
 
-#if CONFIG_USBDEBUG
-	usbdebug_init();
-#endif
 #if CONFIG_CONSOLE_SERIAL
 	uart_init();
 #endif
@@ -121,6 +118,9 @@ void console_init(void)
 #endif
 #if CONFIG_SPKMODEM
 	spkmodem_init();
+#endif
+#if CONFIG_USBDEBUG
+	usbdebug_init();
 #endif
 
 	static const char console_test[] =

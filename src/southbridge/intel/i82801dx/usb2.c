@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <usbdebug.h>
 #include "i82801dx.h"
 
 static void usb2_init(struct device *dev)
@@ -39,7 +40,7 @@ static void usb2_init(struct device *dev)
 
 static struct device_operations usb2_ops = {
 	.read_resources = pci_dev_read_resources,
-	.set_resources = pci_dev_set_resources,
+	.set_resources    = usb_ehci_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = usb2_init,
 	.scan_bus = 0,

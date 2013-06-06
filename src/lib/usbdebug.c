@@ -374,7 +374,7 @@ int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *in
 	u32 cmd, ctrl, status, portsc, hcs_params;
 	u32 debug_port, new_debug_port = 0, n_ports;
 	u32 devnum;
-	int ret, i;
+	int ret, i, configured;
 	int loop;
 	int port_map_tried;
 	int playtimes = 3;
@@ -477,10 +477,12 @@ try_next_port:
 	}
 	dbgp_printk("EHCI debug port enabled.\n");
 
+#if 0
 	/* Completely transfer the debug device to the debug controller */
 	portsc = read32((unsigned long)&ehci_regs->port_status[debug_port - 1]);
 	portsc &= ~PORT_PE;
 	write32((unsigned long)&ehci_regs->port_status[debug_port - 1], portsc);
+#endif
 
 	dbgp_mdelay(100);
 
@@ -533,8 +535,21 @@ try_next_port:
 	dbgp_printk("EHCI debug interface enabled.\n");
 
 	/* Perform a small write to get the even/odd data state in sync */
+	configured = 0;
+small_write:
 	ret = dbgp_bulk_write(ehci_debug, USB_DEBUG_DEVNUM, dbgp_endpoint_out, "USB\r\n",5);
 	if (ret < 0) {
+		if (!configured) {
+			/* Send Set Configure request to device. This is required for FX2
+			   (CY7C68013) to transfer from USB state Addressed to Configured,
+			   only then endpoints other than 0 are enabled. */
+			if (dbgp_control_msg(ehci_debug, USB_DEBUG_DEVNUM,
+				USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+				USB_REQ_SET_CONFIGURATION, 1, 0, NULL, 0) >= 0) {
+				configured = 1;
+				goto small_write;
+			}
+		}
 		dbgp_printk("dbgp_bulk_write failed: %d\n", ret);
 		ret = -9;
 		goto err;

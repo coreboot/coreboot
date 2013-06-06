@@ -14,7 +14,7 @@ romstage-y += console.c
 romstage-y += post.c
 romstage-y += die.c
 
-bootblock-$(CONFIG_EARLY_CONSOLE) += vtxprintf.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c
 bootblock-y += console.c
 bootblock-y += die.c
 

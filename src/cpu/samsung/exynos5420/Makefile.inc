@@ -6,14 +6,14 @@ INTERMEDIATE += exynos5420_add_bl1
 bootblock-y += spi.c
 bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART
-bootblock-$(CONFIG_EARLY_CONSOLE) += clock_init.c
-bootblock-$(CONFIG_EARLY_CONSOLE) += clock.c
-bootblock-$(CONFIG_EARLY_CONSOLE) += monotonic_timer.c
-bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock_init.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += monotonic_timer.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 bootblock-y += wakeup.c
 bootblock-y += gpio.c
-bootblock-$(CONFIG_EARLY_CONSOLE) += pwm.c
-bootblock-$(CONFIG_EARLY_CONSOLE) += timer.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += pwm.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += timer.c
 
 romstage-y += spi.c
 romstage-y += clock.c

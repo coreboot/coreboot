@@ -41,7 +41,6 @@ void enable_usbdebug(unsigned int port)
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 
 	/* Force ownership of the Debug Port to the EHCI controller. */
-	printk(BIOS_DEBUG, "Enabling OWNER_CNT\n");
 	dbgctl = read32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET);
 	dbgctl |= (1 << 30);
 	write32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET, dbgctl);

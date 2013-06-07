@@ -67,21 +67,60 @@ static const char *msc_protocol_strings[0x51] = {
 	"Bulk-Only Transport"
 };
 
+static inline void
+usb_msc_mark_ready (usbdev_t *dev)
+{
+	MSC_INST (dev)->ready = USB_MSC_READY;
+}
+
+static inline void
+usb_msc_mark_not_ready (usbdev_t *dev)
+{
+	MSC_INST (dev)->ready = USB_MSC_NOT_READY;
+}
+
+static inline void
+usb_msc_mark_detached (usbdev_t *dev)
+{
+	MSC_INST (dev)->ready = USB_MSC_DETACHED;
+}
+
+static inline int
+usb_msc_is_detached (usbdev_t *dev)
+{
+	return MSC_INST (dev)->ready == USB_MSC_DETACHED;
+}
+
+static inline int
+usb_msc_is_ready (usbdev_t *dev)
+{
+	return MSC_INST (dev)->ready == USB_MSC_READY;
+}
+
+static void
+usb_msc_create_disk (usbdev_t *dev)
+{
+	if (usbdisk_create) {
+		usbdisk_create (dev);
+		MSC_INST (dev)->usbdisk_created = 1;
+	}
+}
+
+static void
+usb_msc_remove_disk (usbdev_t *dev)
+{
+	if (MSC_INST (dev)->usbdisk_created && usbdisk_remove)
+		usbdisk_remove (dev);
+}
 
 static void
 usb_msc_destroy (usbdev_t *dev)
 {
 	if (dev->data) {
-		if (MSC_INST (dev)->usbdisk_created && usbdisk_remove)
-			usbdisk_remove (dev);
+		usb_msc_remove_disk (dev);
 		free (dev->data);
 	}
 	dev->data = 0;
-}
-
-static void
-usb_msc_poll (usbdev_t *dev)
-{
 }
 
 const int DEV_RESET = 0xff;
@@ -125,6 +164,8 @@ static int
 request_sense (usbdev_t *dev);
 static int
 request_sense_no_media (usbdev_t *dev);
+static void
+usb_msc_poll (usbdev_t *dev);
 
 static int
 reset_transport (usbdev_t *dev)
@@ -357,7 +398,7 @@ request_sense (usbdev_t *dev)
 				sizeof (cb), buf, 19, 1);
 }
 
-static int request_sense_no_media(usbdev_t *dev)
+static int request_sense_no_media (usbdev_t *dev)
 {
 	u8 buf[19];
 	int ret;
@@ -379,10 +420,11 @@ static int request_sense_no_media(usbdev_t *dev)
 	if (buf[12] != 0x3a)
 		return MSC_COMMAND_FAIL;
 
-	/* No media is present. Return MSC_COMMAND_DETACHED so as not to use
-	 * this device any longer. */
-	usb_debug("Empty media found.\n");
-	return MSC_COMMAND_DETACHED;
+	/* No media is present. Return MSC_COMMAND_OK while marking the disk
+	 * not ready. */
+	usb_debug ("Empty media found.\n");
+	usb_msc_mark_not_ready (dev);
+	return MSC_COMMAND_OK;
 }
 
 static int
@@ -446,10 +488,74 @@ read_capacity (usbdev_t *dev)
 	return MSC_COMMAND_OK;
 }
 
+static void
+usb_msc_test_unit_ready (usbdev_t *dev)
+{
+	int i;
+	/* SCSI/ATA specs say we have to wait up to 30s. Ugh */
+	const int timeout = 30 * 10;
+
+	usb_debug ("  Waiting for device to become ready...");
+
+	/* Initially mark the device ready. */
+	usb_msc_mark_ready (dev);
+
+	for (i = 0; i < timeout; i++) {
+		switch (test_unit_ready (dev)) {
+		case MSC_COMMAND_OK:
+			break;
+		case MSC_COMMAND_FAIL:
+			mdelay (100);
+			if (!(timeout % 10))
+				usb_debug (".");
+			continue;
+		default:
+			usb_debug ("detached. Device not ready.\n");
+			usb_msc_mark_detached (dev);
+			return;
+		}
+		break;
+	}
+	if (i >= timeout) {
+		usb_debug ("timeout. Device not ready.\n");
+		usb_msc_mark_not_ready (dev);
+	}
+
+	/* Don't bother spinning up the stroage device if the device is not
+	 * ready. This can happen when empty card readers are present.
+	 * Polling will pick it back up if readiness changes. */
+	if (!usb_msc_is_ready (dev))
+		return;
+
+	usb_debug ("ok.\n");
+
+	usb_debug ("  spin up");
+	for (i = 0; i < 30; i++) {
+		usb_debug (".");
+		switch (spin_up (dev)) {
+		case MSC_COMMAND_OK:
+			usb_debug (" OK.");
+			break;
+		case MSC_COMMAND_FAIL:
+			mdelay (100);
+			continue;
+		default:
+			/* Device is no longer ready. */
+			usb_msc_mark_detached (dev);
+			return;
+		}
+		break;
+	}
+	usb_debug ("\n");
+
+	if (read_capacity (dev) != MSC_COMMAND_OK)
+		usb_msc_mark_not_ready (dev);
+}
+
 void
 usb_msc_init (usbdev_t *dev)
 {
-	int i, timeout;
+	int i;
 
 	/* init .data before setting .destroy */
 	dev->data = NULL;
@@ -489,6 +595,7 @@ usb_msc_init (usbdev_t *dev)
 	MSC_INST (dev)->bulk_in = 0;
 	MSC_INST (dev)->bulk_out = 0;
 	MSC_INST (dev)->usbdisk_created = 0;
+	usb_msc_mark_ready (dev);
 
 	for (i = 1; i <= dev->num_endp; i++) {
 		if (dev->endpoints[i].endpoint == 0)
@@ -517,47 +624,36 @@ usb_msc_init (usbdev_t *dev)
 
 	usb_debug ("  has %d luns\n", get_max_luns (dev) + 1);
 
-	usb_debug ("  Waiting for device to become ready...");
-	timeout = 30 * 10; /* SCSI/ATA specs say we have to wait up to 30s. Ugh */
-	while (timeout--) {
-		switch (test_unit_ready (dev)) {
-		case MSC_COMMAND_OK:
-			break;
-		case MSC_COMMAND_FAIL:
-			mdelay (100);
-			if (!(timeout % 10))
-				usb_debug (".");
-			continue;
-		default: /* if it's worse return */
-			return;
-		}
-		break;
-	}
-	if (timeout < 0) {
-		usb_debug ("timeout. Device not ready. Still trying...\n");
-	} else {
-		usb_debug ("ok.\n");
-	}
+	/* Test if unit is ready. */
+	usb_msc_test_unit_ready (dev);
 
-	usb_debug ("  spin up");
-	for (i = 0; i < 30; i++) {
-		usb_debug (".");
-		switch (spin_up (dev)) {
-		case MSC_COMMAND_OK:
-			usb_debug (" OK.");
-			break;
-		case MSC_COMMAND_FAIL:
-			mdelay (100);
-			continue;
-		default: /* if it's worse return */
-			return;
-		}
-		break;
-	}
-	usb_debug ("\n");
+	/* Nothing to do if device is not ready. */
+	if (!usb_msc_is_ready (dev))
+		return;
 
-	if ((read_capacity (dev) == MSC_COMMAND_OK) && usbdisk_create) {
-		usbdisk_create (dev);
-		MSC_INST (dev)->usbdisk_created = 1;
+	/* Create the disk. */
+	usb_msc_create_disk (dev);
+}
+
+static void
+usb_msc_poll (usbdev_t *dev)
+{
+	int prev_ready;
+
+	/* Nothing to do if device is detached. */
+	if (usb_msc_is_detached (dev))
+		return;
+
+	/* Handle ready transitions by keeping track of previous state . */
+	prev_ready = usb_msc_is_ready (dev);
+
+	usb_msc_test_unit_ready (dev);
+
+	if (!prev_ready && usb_msc_is_ready (dev)) {
+		usb_debug ("usb msc: not ready -> ready\n");
+		usb_msc_create_disk (dev);
+	} else if (prev_ready && !usb_msc_is_ready (dev)) {
+		usb_debug ("usb msc: ready -> not ready\n");
+		usb_msc_remove_disk (dev);
 	}
 }

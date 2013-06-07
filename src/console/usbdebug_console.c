@@ -48,6 +48,25 @@ unsigned get_ehci_debug(void)
 	return (unsigned)dbg_info.ehci_debug;
 }
 
+void usb_ehci_set_resources(struct device *dev)
+{
+	struct resource *res;
+	u32 base;
+	u32 usb_debug;
+
+	usb_debug = get_ehci_debug();
+	set_ehci_debug(0);
+
+	pci_dev_set_resources(dev);
+
+	res = find_resource(dev, EHCI_BAR_INDEX);
+	set_ehci_debug(usb_debug);
+	if (!res) return;
+	base = res->base;
+	set_ehci_base(base);
+	report_resource_stored(dev, res, "");
+}
+
 static void dbgp_init(void)
 {
 #if !CONFIG_EARLY_CONSOLE

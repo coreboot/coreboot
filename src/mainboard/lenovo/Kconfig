@@ -29,4 +29,8 @@ config MAINBOARD_VENDOR
 	string
 	default "Lenovo"
 
+config VENDOR_VERSION
+	string
+	default "CBET4000 "
+
 endif # VENDOR_LENOVO

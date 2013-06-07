@@ -36,8 +36,16 @@ typedef struct {
 	endpoint_t *bulk_in;
 	endpoint_t *bulk_out;
 	int usbdisk_created;
+	int ready;
 	void *data; /* For use by consumers of libpayload. */
 } usbmsc_inst_t;
+
+/* Possible values for ready field. */
+enum {
+	USB_MSC_DETACHED = -1, /* Disk detached or out to lunch. */
+	USB_MSC_NOT_READY = 0, /* Disk not ready yet -- empty card reader */
+	USB_MSC_READY = 1,     /* Disk ready to communicate. */
+};
 
 #define MSC_INST(dev) ((usbmsc_inst_t*)(dev)->data)
 

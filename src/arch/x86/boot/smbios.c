@@ -118,6 +118,14 @@ static int smbios_processor_name(char *start)
 	return smbios_add_string(start, tmp);
 }
 
+const char *__attribute__((weak)) smbios_mainboard_bios_version(void)
+{
+	if (strlen(CONFIG_LOCALVERSION))
+		return CONFIG_LOCALVERSION;
+	else
+		return COREBOOT_VERSION;
+}
+
 static int smbios_write_type0(unsigned long *current, int handle)
 {
 	struct smbios_type0 *t = (struct smbios_type0 *)*current;
@@ -130,12 +138,12 @@ static int smbios_write_type0(unsigned long *current, int handle)
 
 	t->vendor = smbios_add_string(t->eos, "coreboot");
 #if !CONFIG_CHROMEOS
+#ifndef CONFIG_VENDOR_VERSION
+#define CONFIG_VENDOR_VERSION ""
+#endif
 	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
 
-	if (strlen(CONFIG_LOCALVERSION))
-		t->bios_version = smbios_add_string(t->eos, CONFIG_LOCALVERSION);
-	else
-		t->bios_version = smbios_add_string(t->eos, COREBOOT_VERSION);
+	t->bios_version = smbios_add_string(t->eos, smbios_mainboard_bios_version());
 #else
 #define SPACES \
 	"                                                                  "

@@ -19,6 +19,7 @@ const char *smbios_mainboard_product_name(void);
 const char *smbios_mainboard_serial_number(void);
 const char *smbios_mainboard_version(void);
 void smbios_mainboard_set_uuid(u8 *uuid);
+const char *smbios_mainboard_bios_version(void);
 
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED  (1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD  (1 << 8)

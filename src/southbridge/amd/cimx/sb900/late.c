@@ -174,31 +174,6 @@ static const struct pci_driver sata_driver __pci_driver = {
 #endif
 };
 
-
-#if CONFIG_USBDEBUG
-static void usb_set_resources(struct device *dev)
-{
-	struct resource *res;
-	u32 base;
-	u32 old_debug;
-
-	printk(BIOS_DEBUG, "SB900 - Late.c - usb_set_resources - Start.\n");
-	old_debug = get_ehci_debug();
-	set_ehci_debug(0);
-
-	pci_dev_set_resources(dev);
-
-	res = find_resource(dev, 0x10);
-	set_ehci_debug(old_debug);
-	if (!res)
-		return;
-	base = res->base;
-	set_ehci_base(base);
-	report_resource_stored(dev, res, "");
-	printk(BIOS_DEBUG, "SB900 - Late.c - usb_set_resources - End.\n");
-}
-#endif
-
 static void usb_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "SB900 - Late.c - usb_init - Start.\n");
@@ -209,11 +184,7 @@ static void usb_init(struct device *dev)
 
 static struct device_operations usb_ops = {
 	.read_resources = pci_dev_read_resources,
-#if CONFIG_USBDEBUG
-	.set_resources = usb_set_resources,
-#else
-	.set_resources = pci_dev_set_resources,
-#endif
+	.set_resources = usb_ehci_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = usb_init,
 	.scan_bus = 0,

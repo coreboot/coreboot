@@ -24,6 +24,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <arch/io.h>
@@ -33,6 +34,8 @@
 #include <northbridge/intel/i945/i945.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
+#include <smbios.h>
+#include <build.h>
 
 static acpi_cstate_t cst_entries[] = {
 	{ 1,  1, 1000, { 0x7f, 1, 2, { 0 }, 1, 0 } },
@@ -44,6 +47,15 @@ int get_cst_entries(acpi_cstate_t **entries)
 {
 	*entries = cst_entries;
 	return ARRAY_SIZE(cst_entries);
+}
+
+const char *smbios_mainboard_bios_version(void)
+{
+	/* Satisfy thinkpad_acpi.  */
+	if (strlen(CONFIG_LOCALVERSION))
+		return "CBET4000 " CONFIG_LOCALVERSION;
+	else
+		return "CBET4000 " COREBOOT_VERSION;
 }
 
 static void mainboard_enable(device_t dev)

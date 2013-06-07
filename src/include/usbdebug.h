@@ -21,7 +21,24 @@
 #ifndef USBDEBUG_H
 #define USBDEBUG_H
 
-#include <ehci.h>
+#define EHCI_BAR_INDEX		0x10
+
+#ifndef __PRE_RAM__
+#if !CONFIG_USBDEBUG
+#define pci_ehci_read_resources pci_dev_read_resources
+#else
+/* Relocation of EHCI Debug Port BAR
+ * 
+ * PCI EHCI controller with Debug Port capability shall replace
+ * pci_dev_read_resources() with pci_ehci_read_resources() in its
+ * declaration of device_operations for .read_resources.
+ * This installs a hook to reconfigure usbdebug when resource allocator
+ * assigns a new BAR for the device.
+ */
+struct device;
+void pci_ehci_read_resources(struct device *dev);
+#endif
+#endif
 
 struct ehci_debug_info {
         void *ehci_caps;

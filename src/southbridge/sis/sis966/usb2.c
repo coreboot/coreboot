@@ -112,28 +112,6 @@ static void usb2_init(struct device *dev)
         print_debug("USB 2.0 INIT:<----------\n");
 }
 
-static void usb2_set_resources(struct device *dev)
-{
-#if CONFIG_USBDEBUG
-	struct resource *res;
-	unsigned base;
-	unsigned old_debug;
-
-	old_debug = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-	pci_dev_set_resources(dev);
-
-#if CONFIG_USBDEBUG
-	res = find_resource(dev, 0x10);
-	set_ehci_debug(old_debug);
-	if (!res) return;
-	base = res->base;
-	set_ehci_base(base);
-	report_resource_stored(dev, res, "");
-#endif
-}
-
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
 	pci_write_config32(dev, 0x40,
@@ -145,8 +123,8 @@ static struct pci_operations lops_pci = {
 };
 
 static struct device_operations usb2_ops  = {
-	.read_resources	= pci_dev_read_resources,
-	.set_resources	= usb2_set_resources,
+	.read_resources	= pci_ehci_read_resources,
+	.set_resources	= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init		= usb2_init,
 //	.enable		= sis966_enable,

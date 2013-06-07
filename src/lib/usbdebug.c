@@ -607,3 +607,23 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 		dbg_info->bufidx = 0;
 	}
 }
+
+unsigned char usbdebug_rx_byte(struct ehci_debug_info *dbg_info)
+{
+	if (!dbg_info) {
+		/* "Find" dbg_info structure in Cache */
+		dbg_info = (struct ehci_debug_info *)
+		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+	}
+
+	if (dbg_info->ehci_debug) {
+		unsigned char c = 0xff;
+		u32 pids;
+		usbdebug_tx_flush (dbg_info);
+		pids = read32((unsigned long)&((struct ehci_dbg_port *) dbg_info->ehci_debug)->pids);
+		while (dbgp_bulk_read_x (dbg_info, &c, 1) <= 0);
+		write32((unsigned long)&((struct ehci_dbg_port *) dbg_info->ehci_debug)->pids, pids);
+		return c;
+	}
+	return 0xff;
+}

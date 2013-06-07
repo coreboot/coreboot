@@ -63,12 +63,7 @@ static void dbgp_tx_byte(unsigned char data)
 
 static unsigned char dbgp_rx_byte(void)
 {
-	unsigned char data = 0xff;
-
-	if (dbg_info.ehci_debug)
-		dbgp_bulk_read_x(&dbg_info, &data, 1);
-
-	return data;
+	return usbdebug_rx_byte(&dbg_info);
 }
 
 static void dbgp_tx_flush(void)

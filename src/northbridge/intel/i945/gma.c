@@ -57,6 +57,11 @@ static void gma_func0_init(struct device *dev)
 	mmiobase = dev->resource_list[0].base;
 	graphics_base = dev->resource_list[2].base + 0x20000;
 
+	printk(BIOS_SPEW, "GMADR=0x%08x GTTADR=0x%08x\n",
+		pci_read_config32(dev, 0x18),
+		pci_read_config32(dev, 0x1c)
+	);
+
 	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
 	i915lightup(uma_memory_base, iobase, mmiobase, graphics_base);
 #endif

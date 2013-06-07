@@ -1,0 +1,41 @@
+chip mainboard/emulation/qemu-q35
+	device cpu_cluster 0 on
+		chip cpu/qemu-x86
+			device lapic 0 on end
+		end
+	end
+	device domain 0 on
+		device pci 0.0 on end		# northbridge (q35)
+		chip southbridge/intel/i82801ix
+			register "sata_ahci" = "1"
+
+			# present unconditionally
+			device pci 1f.0 on end	# LPC
+			device pci 1f.2 on end	# SATA
+			device pci 1f.3 on end	# SMBus
+
+			# presence depends in qemu config
+			# (see docs/q35-chipset.cfg in qemu src tree)
+			device pci 1a.0 on end	# UHCI #4
+			device pci 1a.1 on end	# UHCI #5
+			device pci 1a.2 on end	# UHCI #6
+			device pci 1a.7 on end	# EHCI #2
+			device pci 1b.0 on end	# HD Audio
+			device pci 1c.0 on end	# PCIe Port #1
+			device pci 1c.1 on end	# PCIe Port #2
+			device pci 1c.2 on end	# PCIe Port #3
+			device pci 1c.3 on end	# PCIe Port #4
+			device pci 1c.4 on end	# PCIe Port #5
+			device pci 1c.5 on end	# PCIe Port #6
+			device pci 1d.0 on end	# UHCI #1
+			device pci 1d.1 on end	# UHCI #2
+			device pci 1d.2 on end	# UHCI #3
+			device pci 1d.7 on end	# EHCI #1
+
+			# not present (not emulated by qemu)
+			device pci 19.0 off end
+			device pci 1f.5 off end
+			device pci 1f.6 off end
+		end
+	end
+end

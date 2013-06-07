@@ -147,6 +147,18 @@ void move_stack_high_mem(void)
 		      :);
 }
 
+#ifndef __PRE_RAM__
+void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx)
+{
+	msr_t  msr_data;
+	msr_data = rdmsr(idx);
+	flash->write(flash, *p_nvram_pos, 4, &msr_data.lo);
+	*p_nvram_pos += 4;
+	flash->write(flash, *p_nvram_pos, 4, &msr_data.hi);
+	*p_nvram_pos += 4;
+}
+#endif
+
 void OemAgesaSaveMtrr(void)
 {
 #ifndef __PRE_RAM__
@@ -174,32 +186,12 @@ void OemAgesaSaveMtrr(void)
 	wrmsr(SYS_CFG, msr_data);
 
 	/* Fixed MTRRs */
-	msr_data = rdmsr(0x250);
+	write_mtrr(flash, &nvram_pos, 0x250);
+	write_mtrr(flash, &nvram_pos, 0x258);
+	write_mtrr(flash, &nvram_pos, 0x259);
 
-	flash->write(flash, nvram_pos, 4, &msr_data.lo);
-	nvram_pos += 4;
-	flash->write(flash, nvram_pos, 4, &msr_data.hi);
-	nvram_pos += 4;
-
-	msr_data = rdmsr(0x258);
-	flash->write(flash, nvram_pos, 4, &msr_data.lo);
-	nvram_pos += 4;
-	flash->write(flash, nvram_pos, 4, &msr_data.hi);
-	nvram_pos += 4;
-
-	msr_data = rdmsr(0x259);
-	flash->write(flash, nvram_pos, 4, &msr_data.lo);
-	nvram_pos += 4;
-	flash->write(flash, nvram_pos, 4, &msr_data.hi);
-	nvram_pos += 4;
-
-	for (i = 0x268; i < 0x270; i++) {
-		msr_data = rdmsr(i);
-		flash->write(flash, nvram_pos, 4, &msr_data.lo);
-		nvram_pos += 4;
-		flash->write(flash, nvram_pos, 4, &msr_data.hi);
-		nvram_pos += 4;
-	}
+	for (i = 0x268; i < 0x270; i++)
+		write_mtrr(flash, &nvram_pos, i);
 
 	/* Disable access to AMD RdDram and WrDram extension bits */
 	msr_data = rdmsr(SYS_CFG);
@@ -207,34 +199,15 @@ void OemAgesaSaveMtrr(void)
 	wrmsr(SYS_CFG, msr_data);
 
 	/* Variable MTRRs */
-	for (i = 0x200; i < 0x210; i++) {
-		msr_data = rdmsr(i);
-		flash->write(flash, nvram_pos, 4, &msr_data.lo);
-		nvram_pos += 4;
-		flash->write(flash, nvram_pos, 4, &msr_data.hi);
-		nvram_pos += 4;
-	}
+	for (i = 0x200; i < 0x210; i++)
+		write_mtrr(flash, &nvram_pos, i);
 
 	/* SYS_CFG */
-	msr_data = rdmsr(0xC0010010);
-	flash->write(flash, nvram_pos, 4, &msr_data.lo);
-	nvram_pos += 4;
-	flash->write(flash, nvram_pos, 4, &msr_data.hi);
-	nvram_pos += 4;
-
+	write_mtrr(flash, &nvram_pos, 0xC0010010);
 	/* TOM */
-	msr_data = rdmsr(0xC001001A);
-	flash->write(flash, nvram_pos, 4, &msr_data.lo);
-	nvram_pos += 4;
-	flash->write(flash, nvram_pos, 4, &msr_data.hi);
-	nvram_pos += 4;
-
+	write_mtrr(flash, &nvram_pos, 0xC001001A);
 	/* TOM2 */
-	msr_data = rdmsr(0xC001001D);
-	flash->write(flash, nvram_pos, 4, &msr_data.lo);
-	nvram_pos += 4;
-	flash->write(flash, nvram_pos, 4, &msr_data.hi);
-	nvram_pos += 4;
+	write_mtrr(flash, &nvram_pos, 0xC001001D);
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);

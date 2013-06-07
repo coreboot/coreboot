@@ -147,33 +147,9 @@ static void usb_init2(struct device *dev)
 #endif
 }
 
-static void usb_set_resources(struct device *dev)
-{
-#if CONFIG_USBDEBUG
-	struct resource *res;
-	u32 base;
-	u32 old_debug;
-
-	old_debug = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-	pci_dev_set_resources(dev);
-
-#if CONFIG_USBDEBUG
-	res = find_resource(dev, 0x10);
-	set_ehci_debug(old_debug);
-	if (!res)
-		return;
-	base = res->base;
-	set_ehci_base(base);
-	report_resource_stored(dev, res, "");
-#endif
-
-}
-
 static struct device_operations usb_ops = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = usb_set_resources, /* pci_dev_set_resources, */
+	.read_resources = pci_ehci_read_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = usb_init,
 	.scan_bus = 0,
@@ -212,8 +188,8 @@ static const struct pci_driver usb_4_driver __pci_driver = {
 };
 
 static struct device_operations usb_ops2 = {
-	.read_resources = pci_dev_read_resources,
-	.set_resources = usb_set_resources, /* pci_dev_set_resources, */
+	.read_resources = pci_ehci_read_resources,
+	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = usb_init2,
 	.scan_bus = 0,

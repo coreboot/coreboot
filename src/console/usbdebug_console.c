@@ -21,9 +21,12 @@
 #include <string.h>
 #include <console/console.h>
 #include <usbdebug.h>
+#include <device/pci.h>
 #include <pc80/mc146818rtc.h>
 
 static struct ehci_debug_info dbg_info;
+static struct device_operations *ehci_drv_ops;
+static struct device_operations ehci_dbg_ops;
 
 void set_ehci_base(unsigned ehci_base)
 {
@@ -46,6 +49,43 @@ void set_ehci_debug(unsigned ehci_debug)
 unsigned get_ehci_debug(void)
 {
 	return (unsigned)dbg_info.ehci_debug;
+}
+
+static void pci_ehci_set_resources(struct device *dev)
+{
+	struct resource *res;
+	u32 base;
+	u32 usb_debug;
+
+	printk(BIOS_DEBUG, "%s EHCI Debug Port hook triggered\n", dev_path(dev));
+	usb_debug = get_ehci_debug();
+	set_ehci_debug(0);
+
+	if (ehci_drv_ops->set_resources)
+		ehci_drv_ops->set_resources(dev);
+
+	res = find_resource(dev, EHCI_BAR_INDEX);
+	set_ehci_debug(usb_debug);
+	if (!res) return;
+	base = res->base;
+	set_ehci_base(base);
+	report_resource_stored(dev, res, "");
+	printk(BIOS_DEBUG, "%s EHCI Debug Port relocated\n", dev_path(dev));
+}
+
+void pci_ehci_read_resources(struct device *dev)
+{
+	printk(BIOS_DEBUG, "%s EHCI controller\n", dev_path(dev));
+
+	if (!ehci_drv_ops) {
+		memcpy(&ehci_dbg_ops, dev->ops, sizeof(ehci_dbg_ops));
+		ehci_drv_ops = dev->ops;
+		ehci_dbg_ops.set_resources = pci_ehci_set_resources;
+		dev->ops = &ehci_dbg_ops;
+		printk(BIOS_DEBUG, "%s EHCI BAR hook registered\n", dev_path(dev));
+	}
+
+	pci_dev_read_resources(dev);
 }
 
 static void dbgp_init(void)

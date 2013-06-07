@@ -23,6 +23,15 @@
 
 #include <ehci.h>
 
+#ifndef __PRE_RAM__
+#if !CONFIG_USBDEBUG
+#define usb_ehci_set_resources pci_dev_set_resources
+#else
+#include <device/pci.h>
+void usb_ehci_set_resources(struct device *dev);
+#endif
+#endif
+
 struct ehci_debug_info {
         void *ehci_caps;
         void *ehci_regs;

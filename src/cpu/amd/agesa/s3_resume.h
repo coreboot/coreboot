@@ -49,6 +49,11 @@ u32 OemAgesaSaveS3Info (S3_DATA_TYPE S3DataType, u32 DataSize, void *Data);
 void OemAgesaGetS3Info (S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data);
 void OemAgesaSaveMtrr (void);
 
+#ifndef __PRE_RAM__
+#include <spi_flash.h>
+void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx);
+#endif
+
 #endif
 
 #endif

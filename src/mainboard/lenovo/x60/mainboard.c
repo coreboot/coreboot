@@ -24,6 +24,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
@@ -37,6 +38,7 @@
 #include "dock.h"
 #include <arch/x86/include/arch/acpigen.h>
 #include <smbios.h>
+#include <build.h>
 #include <x86emu/x86emu.h>
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
@@ -146,6 +148,15 @@ static int mainboard_smbios_data(device_t dev, int *handle, unsigned long *curre
 	len = smbios_write_type11(current, (*handle)++, oem_strings, ARRAY_SIZE(oem_strings));
 
 	return len;
+}
+
+const char *smbios_mainboard_bios_version(void)
+{
+	/* Satisfy thinkpad_acpi.  */
+	if (strlen(CONFIG_LOCALVERSION))
+		return "CBET4000 " CONFIG_LOCALVERSION;
+	else
+		return "CBET4000 " COREBOOT_VERSION;
 }
 
 static void mainboard_enable(device_t dev)

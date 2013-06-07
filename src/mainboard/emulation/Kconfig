@@ -6,6 +6,9 @@ choice
 config BOARD_EMULATION_QEMU_X86_I440FX
 	bool "QEMU x86 i440fx/piix4 (aka qemu -M pc)"
 
+config BOARD_EMULATION_QEMU_X86_Q35
+	bool "QEMU x86 q35/ich9 (aka qemu -M q35, since v1.4)"
+
 config BOARD_EMULATION_QEMU_ARMV7
 	bool "QEMU armv7 (vexpress-a9)"
 
@@ -14,9 +17,10 @@ endchoice
 config BOARD_EMULATION_QEMU_X86
 	bool
 	default y
-	depends on BOARD_EMULATION_QEMU_X86_I440FX
+	depends on BOARD_EMULATION_QEMU_X86_I440FX || BOARD_EMULATION_QEMU_X86_Q35
 
 source "src/mainboard/emulation/qemu-i440fx/Kconfig"
+source "src/mainboard/emulation/qemu-q35/Kconfig"
 source "src/mainboard/emulation/qemu-armv7/Kconfig"
 
 config MAINBOARD_VENDOR

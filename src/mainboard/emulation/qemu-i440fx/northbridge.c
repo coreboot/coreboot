@@ -195,3 +195,8 @@ struct chip_operations mainboard_emulation_qemu_i440fx_ops = {
 	CHIP_NAME("QEMU Northbridge i440fx")
 	.enable_dev = northbridge_enable,
 };
+
+struct chip_operations mainboard_emulation_qemu_q35_ops = {
+	CHIP_NAME("QEMU Northbridge q35")
+	.enable_dev = northbridge_enable,
+};

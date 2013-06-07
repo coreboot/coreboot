@@ -27,7 +27,7 @@ DefinitionBlock (
     )
 {
 
-#include "acpi/dbug.asl"
+#include "../qemu-x86/acpi/dbug.asl"
 
 
 /****************************************************************
@@ -42,8 +42,8 @@ DefinitionBlock (
         }
     }
 
-#include "acpi/pci-crs.asl"
-#include "acpi/hpet.asl"
+#include "../qemu-x86/acpi/pci-crs.asl"
+#include "../qemu-x86/acpi/hpet.asl"
 
 
 /****************************************************************
@@ -112,7 +112,7 @@ DefinitionBlock (
         }
     }
 
-#include "acpi/isa.asl"
+#include "../qemu-x86/acpi/isa.asl"
 
 
 /****************************************************************
@@ -292,7 +292,7 @@ DefinitionBlock (
     }
 
 #if 0
-#include "acpi/cpu-hotplug.asl"
+#include "../qemu-x86/acpi/cpu-hotplug.asl"
 #endif
 
 

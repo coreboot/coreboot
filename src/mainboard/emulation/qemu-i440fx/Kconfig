@@ -1,4 +1,4 @@
-if BOARD_EMULATION_QEMU_X86
+if BOARD_EMULATION_QEMU_X86_I440FX
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -15,11 +15,11 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MAINBOARD_DIR
 	string
-	default emulation/qemu-x86
+	default emulation/qemu-i440fx
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "QEMU x86"
+	default "QEMU x86 i440fx/piix4"
 
 config IRQ_SLOT_COUNT
 	int

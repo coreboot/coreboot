@@ -31,7 +31,7 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic/boot_cpu.c"
 
-#include "memory.c"
+#include "../qemu-x86/memory.c"
 
 void main(unsigned long bist)
 {

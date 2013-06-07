@@ -25,6 +25,7 @@
 #include <device/smbus.h>       /* smbus_bus_operations */
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>    /* printk */
+#include <usbdebug.h>
 #include "lpc.h"                /* lpc_read_resources */
 #include "Platform.h"   /* Platfrom Specific Definitions */
 #include "sb_cimx.h"
@@ -120,38 +121,9 @@ static const struct pci_driver sata_driver __pci_driver = {
 	.device = PCI_DEVICE_ID_ATI_SB700_SATA, //SATA IDE Mode 4390
 };
 
-#if CONFIG_USBDEBUG
-static void usb_set_resources(struct device *dev)
-{
-	struct resource *res;
-	u32 base;
-	u32 old_debug;
-
-	printk(BIOS_SPEW, "SB700 - Late.c - %s - Start.\n", __func__);
-	old_debug = get_ehci_debug();
-	set_ehci_debug(0);
-
-	pci_dev_set_resources(dev);
-
-	res = find_resource(dev, 0x10);
-	set_ehci_debug(old_debug);
-	if (!res)
-		return;
-	base = res->base;
-	set_ehci_base(base);
-	report_resource_stored(dev, res, "");
-	printk(BIOS_SPEW, "SB700 - Late.c - %s - End.\n", __func__);
-}
-#endif
-
-
 static struct device_operations usb_ops = {
-	.read_resources = pci_dev_read_resources,
-#if CONFIG_USBDEBUG
-	.set_resources = usb_set_resources,
-#else
+	.read_resources = pci_ehci_read_resources,
 	.set_resources = pci_dev_set_resources,
-#endif
 	.enable_resources = pci_dev_enable_resources,
 	.init = 0,
 	.scan_bus = 0,

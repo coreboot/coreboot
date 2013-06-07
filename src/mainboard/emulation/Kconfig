@@ -3,15 +3,20 @@ if VENDOR_EMULATION
 choice
 	prompt "Mainboard model"
 
-config BOARD_EMULATION_QEMU_X86
-	bool "QEMU x86"
+config BOARD_EMULATION_QEMU_X86_I440FX
+	bool "QEMU x86 i440fx/piix4 (aka qemu -M pc)"
 
 config BOARD_EMULATION_QEMU_ARMV7
 	bool "QEMU armv7 (vexpress-a9)"
 
 endchoice
 
-source "src/mainboard/emulation/qemu-x86/Kconfig"
+config BOARD_EMULATION_QEMU_X86
+	bool
+	default y
+	depends on BOARD_EMULATION_QEMU_X86_I440FX
+
+source "src/mainboard/emulation/qemu-i440fx/Kconfig"
 source "src/mainboard/emulation/qemu-armv7/Kconfig"
 
 config MAINBOARD_VENDOR

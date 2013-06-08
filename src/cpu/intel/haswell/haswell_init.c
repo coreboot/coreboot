@@ -438,10 +438,6 @@ static void configure_mca(void)
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
 }
 
-#if CONFIG_USBDEBUG
-static unsigned ehci_debug_addr;
-#endif
-
 static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 {
 	struct device_path cpu_path;
@@ -466,21 +462,10 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 	if (info->index != 0)
 		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);
 
-#if CONFIG_USBDEBUG
-	// Is this caution really needed?
-	if(!ehci_debug_addr)
-		ehci_debug_addr = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-
 	/* Setup MTRRs based on physical address size. */
 	x86_setup_fixed_mtrrs();
 	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
 	x86_mtrr_check();
-
-#if CONFIG_USBDEBUG
-	set_ehci_debug(ehci_debug_addr);
-#endif
 
 	/* Call through the cpu driver's initialization. */
 	cpu_initialize(0);

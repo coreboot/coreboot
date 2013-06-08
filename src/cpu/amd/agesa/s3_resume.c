@@ -152,10 +152,22 @@ void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx)
 {
 	msr_t  msr_data;
 	msr_data = rdmsr(idx);
+
+#ifdef SB_SPI_TX_LEN
+#define SPI_SIZE_MTRR SB_SPI_TX_LEN
+#else
+#define SPI_SIZE_MTRR 4
+#endif
+
+#if SPI_SIZE_MTRR >= 8
+	flash->write(flash, *p_nvram_pos, 8, &msr_data);
+	*p_nvram_pos += 8;
+#else
 	flash->write(flash, *p_nvram_pos, 4, &msr_data.lo);
 	*p_nvram_pos += 4;
 	flash->write(flash, *p_nvram_pos, 4, &msr_data.hi);
 	*p_nvram_pos += 4;
+#endif
 }
 #endif
 
@@ -264,10 +276,16 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 	nvram_pos = 0;
 	flash->write(flash, nvram_pos + pos, sizeof(DataSize), &DataSize);
 
-	for (nvram_pos = 0; nvram_pos < DataSize; nvram_pos += 4) {
+#ifdef SB_SPI_TX_LEN
+#define SPI_DATA_PACKET_SIZE SB_SPI_TX_LEN
+#else
+#define SPI_DATA_PACKET_SIZE 4
+#endif
+	for (nvram_pos = 0; nvram_pos < DataSize - SPI_DATA_PACKET_SIZE; nvram_pos += SPI_DATA_PACKET_SIZE) {
 		data = *(u32 *) (Data + nvram_pos);
-		flash->write(flash, nvram_pos + pos + 4, sizeof(u32), (u32 *)(Data + nvram_pos));
+		flash->write(flash, nvram_pos + pos + 4, SPI_DATA_PACKET_SIZE, (u8 *)(Data + nvram_pos));
 	}
+	flash->write(flash, nvram_pos + pos + 4, DataSize % SPI_DATA_PACKET_SIZE, (u8 *)(Data + nvram_pos));
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);

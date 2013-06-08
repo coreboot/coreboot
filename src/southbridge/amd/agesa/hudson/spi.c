@@ -31,6 +31,14 @@
 static int bus_claimed = 0;
 #endif
 
+/*
+ * SB_SPI_TX_LEN is the biggest data size which south bridge can transfer.
+ * This size does not include SPI command.
+ */
+#ifndef SB_SPI_TX_LEN
+#define SB_SPI_TX_LEN 4
+#endif
+
 static u32 spibar;
 
 static void reset_internal_fifo_pointer(void)

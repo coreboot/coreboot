@@ -190,10 +190,6 @@ static void configure_pic_thermal_sensors(void)
 	wrmsr(PIC_SENS_CFG, msr);
 }
 
-#if CONFIG_USBDEBUG
-static unsigned ehci_debug_addr;
-#endif
-
 static void model_6fx_init(device_t cpu)
 {
 	char processor_name[49];
@@ -208,23 +204,12 @@ static void model_6fx_init(device_t cpu)
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
-#if CONFIG_USBDEBUG
-	// Is this caution really needed?
-	if(!ehci_debug_addr)
-		ehci_debug_addr = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-
 	/* Setup MTRRs */
 	x86_setup_mtrrs();
 	x86_mtrr_check();
 
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
-
-#if CONFIG_USBDEBUG
-	set_ehci_debug(ehci_debug_addr);
-#endif
 
 	/* Enable the local cpu apics */
 	setup_lapic();

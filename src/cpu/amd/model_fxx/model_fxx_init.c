@@ -456,30 +456,16 @@ static inline void k8_errata(void)
 
 }
 
-#if CONFIG_USBDEBUG
-static unsigned ehci_debug_addr;
-#endif
-
 static void model_fxx_init(device_t dev)
 {
 	unsigned long i;
 	msr_t msr;
 	struct node_core_id id;
 
-#if CONFIG_USBDEBUG
-	if (!ehci_debug_addr)
-		ehci_debug_addr = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-
 	/* Turn on caching if we haven't already */
 	x86_enable_cache();
 	amd_setup_mtrrs();
 	x86_mtrr_check();
-
-#if CONFIG_USBDEBUG
-	set_ehci_debug(ehci_debug_addr);
-#endif
 
 	/* Update the microcode */
 	model_fxx_update_microcode(dev->device);

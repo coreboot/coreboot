@@ -476,10 +476,6 @@ static void configure_mca(void)
 		wrmsr(IA32_MC0_STATUS + (i * 4), msr);
 }
 
-#if CONFIG_USBDEBUG
-static unsigned ehci_debug_addr;
-#endif
-
 /*
  * Initialize any extra cores/threads in this package.
  */
@@ -554,13 +550,6 @@ static void model_206ax_init(device_t cpu)
 	fill_processor_name(processor_name);
 	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
 
-#if CONFIG_USBDEBUG
-	// Is this caution really needed?
-	if(!ehci_debug_addr)
-		ehci_debug_addr = get_ehci_debug();
-	set_ehci_debug(0);
-#endif
-
 	/* Setup MTRRs based on physical address size */
 	cpuid_regs = cpuid(0x80000008);
 	x86_setup_fixed_mtrrs();
@@ -569,10 +558,6 @@ static void model_206ax_init(device_t cpu)
 
 	/* Setup Page Attribute Tables (PAT) */
 	// TODO set up PAT
-
-#if CONFIG_USBDEBUG
-	set_ehci_debug(ehci_debug_addr);
-#endif
 
 	/* Enable the local cpu apics */
 	enable_lapic_tpr();

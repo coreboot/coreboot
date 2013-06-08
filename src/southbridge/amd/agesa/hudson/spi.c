@@ -31,6 +31,10 @@
 static int bus_claimed = 0;
 #endif
 
+#ifndef SB_SPI_TX_LEN
+#define SB_SPI_TX_LEN 0x4
+#endif
+
 static u32 spibar;
 
 static void reset_internal_fifo_pointer(void)

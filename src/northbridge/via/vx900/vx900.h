@@ -33,8 +33,8 @@
 #define VX900_MAX_DIMM_SLOTS 2
 #define VX900_MAX_MEM_RANKS 4
 
-#define min(a,b) a<b?a:b
-#define max(a,b) a>b?a:b
+#define min(a,b) (a<b?a:b)
+#define max(a,b) (a>b?a:b)
 
 #include <arch/io.h>
 #include <device/pci.h>

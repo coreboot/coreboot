@@ -152,10 +152,16 @@ void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx)
 {
 	msr_t  msr_data;
 	msr_data = rdmsr(idx);
+
+#if CONFIG_AMD_SB_SPI_TX_LEN >= 8
+	flash->write(flash, *p_nvram_pos, 8, &msr_data);
+	*p_nvram_pos += 8;
+#else
 	flash->write(flash, *p_nvram_pos, 4, &msr_data.lo);
 	*p_nvram_pos += 4;
 	flash->write(flash, *p_nvram_pos, 4, &msr_data.hi);
 	*p_nvram_pos += 4;
+#endif
 }
 #endif
 
@@ -264,10 +270,11 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 	nvram_pos = 0;
 	flash->write(flash, nvram_pos + pos, sizeof(DataSize), &DataSize);
 
-	for (nvram_pos = 0; nvram_pos < DataSize; nvram_pos += 4) {
+	for (nvram_pos = 0; nvram_pos < DataSize - CONFIG_AMD_SB_SPI_TX_LEN; nvram_pos += CONFIG_AMD_SB_SPI_TX_LEN) {
 		data = *(u32 *) (Data + nvram_pos);
-		flash->write(flash, nvram_pos + pos + 4, sizeof(u32), (u32 *)(Data + nvram_pos));
+		flash->write(flash, nvram_pos + pos + 4, CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
 	}
+	flash->write(flash, nvram_pos + pos + 4, DataSize % CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);

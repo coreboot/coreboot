@@ -31,6 +31,18 @@ romstage-y += ./../../../southbridge/via/common/early_smbus_wait_until_ready.c
 romstage-y += ./../../../drivers/pc80/udelay_io.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += ./../../../lib/cbmem.c
 
+ramstage-y += pci_util.c
+ramstage-y += pcie.c
+ramstage-y += northbridge.c
+ramstage-y += chrome9hd.c
+ramstage-y += traf_ctrl.c
+ramstage-y += sata.c
+ramstage-y += lpc.c
+
+# The buildsystem only includes this file if CONFIG_VGA is selected.
+# We need to do some VGA I/O before the VGA can be initialized. We can make good
+# use of some of the functions there, so include them unconditionally
+ramstage-y += ./../../../drivers/pc80/vga/vga_io.c
 
 
 chipset_bootblock_inc += $(src)/northbridge/via/vx900/romstrap.inc

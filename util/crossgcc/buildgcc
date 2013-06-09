@@ -215,9 +215,9 @@ while true ; do
 		-G|--gdb)	shift; SKIPGDB=0;;
 		-S|--scripting) shift; SKIPPYTHON=0;;
 		-y|--ccache)	shift; USECCACHE=1;;
-		--)		shift;;
+		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
-		*)		;;
+		*)		break;;
 	esac
 done
 

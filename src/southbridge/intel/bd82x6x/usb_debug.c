@@ -24,7 +24,6 @@
 #include <device/pci_def.h>
 
 #ifdef __PRE_RAM__
-#include "pch.h"
 
 void enable_usbdebug(unsigned int port)
 {

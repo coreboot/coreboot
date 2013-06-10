@@ -22,7 +22,6 @@
 #include <console/console.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
-#include "pch.h"
 
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)

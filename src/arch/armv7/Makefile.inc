@@ -46,16 +46,20 @@ prebuild-files = \
 prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
 
 # TODO Change -b to Kconfig variable.
-$(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL)
+$(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $(objcbfs)/romstage.elf $$(prebuilt-files) $(CBFSTOOL)
 	$(CBFSTOOL) $@.tmp create -m armv7 -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
 		-B $(objcbfs)/bootblock.bin -a 64 -b 0x0000 \
 		-H $(CONFIG_CBFS_HEADER_ROM_OFFSET) \
 		-o $(CONFIG_CBFS_ROM_OFFSET)
+	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	$(CBFSTOOL) $@.tmp add-stage \
+		-f $(objcbfs)/romstage.elf -b 0 \
+		-n $(CONFIG_CBFS_PREFIX)/romstage -c none
 	$(prebuild-files) true
 	mv $@.tmp $@
 else
-.PHONY: $(obj)/coreboot.pre1
-$(obj)/coreboot.pre1: $(CBFSTOOL)
+.PHONY: $(obj)/coreboot.pre
+$(obj)/coreboot.pre: $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@
 endif
 
@@ -182,17 +186,6 @@ endif
 ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
-
-################################################################################
-# Build the final rom image
-
-$(obj)/coreboot.pre: $(objcbfs)/romstage.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
-	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
-	cp $(obj)/coreboot.pre1 $@.tmp
-	$(CBFSTOOL) $@.tmp add-stage \
-		-f $(objcbfs)/romstage.elf \
-		-n $(CONFIG_CBFS_PREFIX)/romstage -c none
-	mv $@.tmp $@
 
 ################################################################################
 # Build the bootblock

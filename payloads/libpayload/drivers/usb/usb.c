@@ -332,8 +332,10 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 			endpoint_descriptor_t *endp =
 				(endpoint_descriptor_t *) (((char *) current)
 							   + current->bLength);
-			if (interface->bInterfaceClass == 0x3)
-				endp = (endpoint_descriptor_t *) (((char *) endp) + ((char *) endp)[0]);	// ignore HID descriptor
+			/* Skip any non-endpoint descriptor */
+			if (endp->bDescriptorType != 0x05)
+				endp = (endpoint_descriptor_t *)(((char *)endp) + ((char *)endp)[0]);
+
 			memset (dev->endpoints, 0, sizeof (dev->endpoints));
 			dev->num_endp = 1;	// 0 always exists
 			dev->endpoints[0].dev = dev;

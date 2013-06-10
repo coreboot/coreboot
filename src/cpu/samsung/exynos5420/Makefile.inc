@@ -51,5 +51,5 @@ ramstage-y += fb.c
 
 exynos5420_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5420 BL1\n"
-	dd if=3rdparty/cpu/samsung/exynos5420/E5420.nbl1.bin \
+	dd if=3rdparty/cpu/samsung/exynos5420/bl1.bin \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1

@@ -24,6 +24,7 @@
 
 #include <bootstate.h>
 #include <console/console.h>
+#include <console/post_codes.h>
 #include <version.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -83,6 +84,7 @@ struct boot_phase {
 struct boot_state {
 	const char *name;
 	boot_state_t id;
+	u8 post_code;
 	struct boot_phase phases[2];
 	boot_state_t (*run_state)(void *arg);
 	void *arg;
@@ -96,6 +98,7 @@ struct boot_state {
 	{							\
 		.name = #state_,				\
 		.id = state_,					\
+		.post_code = POST_ ## state_,			\
 		.phases = { { NULL, 0 }, { NULL, 0 } },		\
 		.run_state = run_func_,				\
 		.arg = NULL,					\
@@ -138,7 +141,6 @@ static boot_state_t bs_dev_enumerate(void *arg)
 {
 	/* Find the devices we don't have hard coded knowledge about. */
 	dev_enumerate();
-	post_code(POST_DEVICE_ENUMERATION_COMPLETE);
 
 	return BS_DEV_RESOURCES;
 }
@@ -146,9 +148,9 @@ static boot_state_t bs_dev_enumerate(void *arg)
 static boot_state_t bs_dev_resources(void *arg)
 {
 	timestamp_add_now(TS_DEVICE_CONFIGURE);
+
 	/* Now compute and assign the bus resources. */
 	dev_configure();
-	post_code(POST_DEVICE_CONFIGURATION_COMPLETE);
 
 	return BS_DEV_ENABLE;
 }
@@ -156,9 +158,9 @@ static boot_state_t bs_dev_resources(void *arg)
 static boot_state_t bs_dev_enable(void *arg)
 {
 	timestamp_add_now(TS_DEVICE_ENABLE);
+
 	/* Now actually enable devices on the bus */
 	dev_enable();
-	post_code(POST_DEVICES_ENABLED);
 
 	return BS_DEV_INIT;
 }
@@ -166,9 +168,9 @@ static boot_state_t bs_dev_enable(void *arg)
 static boot_state_t bs_dev_init(void *arg)
 {
 	timestamp_add_now(TS_DEVICE_INITIALIZE);
+
 	/* And of course initialize devices on the bus */
 	dev_initialize();
-	post_code(POST_DEVICES_INITIALIZED);
 
 	return BS_POST_DEVICE;
 }
@@ -194,7 +196,6 @@ static boot_state_t bs_os_resume_check(void *arg)
 		boot_states[BS_OS_RESUME].arg = wake_vector;
 		return BS_OS_RESUME;
 	}
-	post_code(0x8a);
 #endif
 	timestamp_add_now(TS_CBMEM_POST);
 
@@ -375,6 +376,8 @@ static void bs_walk_state_machine(void)
 		current_phase.seq = BS_ON_EXIT;
 
 		bs_sample_time(state);
+
+		post_code(state->post_code);
 
 		next_id = state->run_state(state->arg);
 

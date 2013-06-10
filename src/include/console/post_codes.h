@@ -120,32 +120,88 @@
 #define POST_ENABLING_CACHE			0x60
 
 /**
- * \brief Devices have been enumerated
+ * \brief Before Device Probe
  *
- * Bus scan, and device enumeration has completed.
+ * Boot State Machine: bs_pre_device()
  */
-#define POST_DEVICE_ENUMERATION_COMPLETE	0x66
+#define POST_BS_PRE_DEVICE			0x70
 
 /**
- * \brief Devices have been configured
+ * \brief Initializing Chips
  *
- * Device configuration has completed.
+ * Boot State Machine: bs_dev_init_chips()
  */
-#define POST_DEVICE_CONFIGURATION_COMPLETE	0x88
+#define POST_BS_DEV_INIT_CHIPS			0x71
 
 /**
- * \brief Devices have been enabled
+ * \brief Starting Device Enumeration
  *
- * Devices have been enabled.
+ * Boot State Machine: bs_dev_enumerate()
  */
-#define POST_DEVICES_ENABLED			0x89
+#define POST_BS_DEV_ENUMERATE			0x72
 
 /**
- * \brief Devices have been initialized
+ * \brief Device Resource Allocatio
  *
- * Devices have been initialized.
+ * Boot State Machine: bs_dev_resources()
  */
-#define POST_DEVICES_INITIALIZED		0x8a
+#define POST_BS_DEV_RESOURCES			0x73
+
+/**
+ * \brief Device Enable
+ *
+ * Boot State Machine: bs_dev_enable()
+ */
+#define POST_BS_DEV_ENABLE			0x74
+
+/**
+ * \brief Device Initialization
+ *
+ * Boot State Machine: bs_dev_init()
+ */
+#define POST_BS_DEV_INIT			0x75
+
+/**
+ * \brief After Device Probe
+ *
+ * Boot State Machine: bs_post_device()
+ */
+#define POST_BS_POST_DEVICE			0x76
+
+/**
+ * \brief OS Resume Check
+ *
+ * Boot State Machine: bs_os_resume_check()
+ */
+#define POST_BS_OS_RESUME_CHECK			0x77
+
+/**
+ * \brief OS Resume
+ *
+ * Boot State Machine: bs_os_resume()
+ */
+#define POST_BS_OS_RESUME			0x78
+
+/**
+ * \brief Write Tables
+ *
+ * Boot State Machine: bs_write_tables()
+ */
+#define POST_BS_WRITE_TABLES			0x79
+
+/**
+ * \brief Load Payload
+ *
+ * Boot State Machine: bs_payload_load()
+ */
+#define POST_BS_PAYLOAD_LOAD			0x7a
+
+/**
+ * \brief Boot Payload
+ *
+ * Boot State Machine: bs_payload_boot()
+ */
+#define POST_BS_PAYLOAD_BOOT			0x7b
 
 /**
  * \brief Entry into elf boot

@@ -33,7 +33,6 @@ ramstage-y += reset.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
-romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 
 # We don't ship that, but booting without it is bound to fail
 cbfs-files-$(CONFIG_HAVE_CMC) += cmc.bin

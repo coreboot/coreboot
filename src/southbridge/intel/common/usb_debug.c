@@ -17,12 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef __PRE_RAM__
+#define __PRE_RAM__ // Use simple device model for this file even in ramstage
+#endif
 #include <stdint.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
-#include "pch.h"
 
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
@@ -46,4 +48,3 @@ void enable_usbdebug(unsigned int port)
 	dbgctl |= (1 << 30);
 	write32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET, dbgctl);
 }
-

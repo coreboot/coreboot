@@ -23,6 +23,7 @@
 #include <console/console.h>
 #if CONFIG_CMOS_POST
 #include <pc80/mc146818rtc.h>
+#include <smp/spinlock.h>
 #endif
 #include <elog.h>
 
@@ -44,10 +45,14 @@ void __attribute__((weak)) mainboard_post(uint8_t value)
 
 #if CONFIG_CMOS_POST
 
+DECLARE_SPIN_LOCK(cmos_post_lock)
+
 #if !defined(__PRE_RAM__)
 void cmos_post_log(void)
 {
-	u8 code;
+	u8 code = 0;
+
+	spin_lock(&cmos_post_lock);
 
 	/* Get post code from other bank */
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
@@ -57,9 +62,9 @@ void cmos_post_log(void)
 	case CMOS_POST_BANK_1_MAGIC:
 		code = cmos_read(CMOS_POST_BANK_0_OFFSET);
 		break;
-	default:
-		return;
 	}
+
+	spin_unlock(&cmos_post_lock);
 
 	/* Check last post code in previous boot against normal list */
 	switch (code) {
@@ -80,6 +85,8 @@ void cmos_post_log(void)
 
 static void cmos_post_code(u8 value)
 {
+	spin_lock(&cmos_post_lock);
+
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
 	case CMOS_POST_BANK_0_MAGIC:
 		cmos_write(value, CMOS_POST_BANK_0_OFFSET);
@@ -88,6 +95,8 @@ static void cmos_post_code(u8 value)
 		cmos_write(value, CMOS_POST_BANK_1_OFFSET);
 		break;
 	}
+
+	spin_unlock(&cmos_post_lock);
 }
 #endif /* CONFIG_CMOS_POST */
 

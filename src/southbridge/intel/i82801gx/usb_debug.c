@@ -20,12 +20,12 @@
 #ifndef __PRE_RAM__
 #define __PRE_RAM__ // Use simple device model for this file even in ramstage
 #endif
+
 #include <stdint.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <usbdebug.h>
 #include <device/pci_def.h>
-#include "i82801gx.h"
 
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)

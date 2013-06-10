@@ -40,6 +40,9 @@ struct omap_image_headers {
 	struct gp_device_header image_header;
 };
 
+// A symbol which defines how much of the image the iROM should load.
+extern char header_load_size;
+
 struct omap_image_headers headers __attribute__((section(".header"))) = {
 	.config_headers = {
 		.toc_chsettings = {
@@ -66,7 +69,7 @@ struct omap_image_headers headers __attribute__((section(".header"))) = {
 		}
 	},
 	.image_header = {
-		.size = CONFIG_ROM_SIZE,
+		.size = (uintptr_t)&header_load_size,
 		.destination = CONFIG_BOOTBLOCK_BASE
 	}
 };

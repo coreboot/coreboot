@@ -13,6 +13,7 @@ typedef struct device * device_t;
 struct pci_operations;
 struct pci_bus_operations;
 struct smbus_bus_operations;
+struct pnp_mode_ops;
 
 /* Chip operations */
 struct chip_operations {
@@ -42,6 +43,7 @@ struct device_operations {
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;
 	const struct pci_bus_operations *ops_pci_bus;
+	const struct pnp_mode_ops *ops_pnp_mode;
 };
 #endif
 

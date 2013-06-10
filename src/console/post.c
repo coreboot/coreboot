@@ -25,6 +25,9 @@
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
 #endif
+#if CONFIG_CMOS_POST_EXTRA
+#include <device/device.h>
+#endif
 #include <elog.h>
 
 /* Write POST information */
@@ -51,6 +54,9 @@ DECLARE_SPIN_LOCK(cmos_post_lock)
 void cmos_post_log(void)
 {
 	u8 code = 0;
+#if CONFIG_CMOS_POST_EXTRA
+	u32 extra = 0;
+#endif
 
 	spin_lock(&cmos_post_lock);
 
@@ -58,9 +64,15 @@ void cmos_post_log(void)
 	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
 	case CMOS_POST_BANK_0_MAGIC:
 		code = cmos_read(CMOS_POST_BANK_1_OFFSET);
+#if CONFIG_CMOS_POST_EXTRA
+		extra = cmos_read32(CMOS_POST_BANK_1_EXTRA);
+#endif
 		break;
 	case CMOS_POST_BANK_1_MAGIC:
 		code = cmos_read(CMOS_POST_BANK_0_OFFSET);
+#if CONFIG_CMOS_POST_EXTRA
+		extra = cmos_read32(CMOS_POST_BANK_0_EXTRA);
+#endif
 		break;
 	}
 
@@ -78,9 +90,31 @@ void cmos_post_log(void)
 		       "in previous boot: 0x%02x\n", code);
 #if CONFIG_ELOG
 		elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
+#if CONFIG_CMOS_POST_EXTRA
+		if (extra)
+			elog_add_event_dword(ELOG_TYPE_POST_EXTRA, extra);
+#endif
 #endif
 	}
 }
+
+#if CONFIG_CMOS_POST_EXTRA
+void post_log_extra(u32 value)
+{
+	spin_lock(&cmos_post_lock);
+
+	switch (cmos_read(CMOS_POST_BANK_OFFSET)) {
+	case CMOS_POST_BANK_0_MAGIC:
+		cmos_write32(CMOS_POST_BANK_0_EXTRA, value);
+		break;
+	case CMOS_POST_BANK_1_MAGIC:
+		cmos_write32(CMOS_POST_BANK_1_EXTRA, value);
+		break;
+	}
+
+	spin_unlock(&cmos_post_lock);
+}
+#endif /* CONFIG_CMOS_POST_EXTRA */
 #endif /* !__PRE_RAM__ */
 
 static void cmos_post_code(u8 value)

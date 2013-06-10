@@ -69,8 +69,7 @@ static void f81865f_pnp_enable_resources(device_t dev)
 static void f81865f_pnp_enable(device_t dev)
 {
 	pnp_enter_conf_state(dev);
-	pnp_set_logical_device(dev);
-	(dev->enabled) ? pnp_set_enable(dev, 1) : pnp_set_enable(dev, 0);
+	pnp_alt_enable(dev);
 	pnp_exit_conf_state(dev);
 }
 

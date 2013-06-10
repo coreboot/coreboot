@@ -1,6 +1,8 @@
 #ifndef ARCH_SMP_SPINLOCK_H
 #define ARCH_SMP_SPINLOCK_H
 
+#ifndef __PRE_RAM__
+
 /*
  * Your basic SMP spinlocks, allowing only a single CPU anywhere
  */
@@ -60,5 +62,17 @@ static inline __attribute__((always_inline)) void cpu_relax(void)
 {
 	__asm__ __volatile__("rep;nop": : :"memory");
 }
+
+#else /* !__PRE_RAM__ */
+
+#define DECLARE_SPIN_LOCK(x)
+#define barrier()		do {} while(0)
+#define spin_is_locked(lock)	0
+#define spin_unlock_wait(lock)	do {} while(0)
+#define spin_lock(lock)		do {} while(0)
+#define spin_unlock(lock)	do {} while(0)
+#define cpu_relax()		do {} while(0)
+
+#endif /* !__PRE_RAM__ */
 
 #endif /* ARCH_SMP_SPINLOCK_H */

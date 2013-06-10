@@ -197,11 +197,20 @@ static inline int get_option(void *dest __attribute__((unused)),
 # endif
 #endif
 
+/*
+ *    0 = Bank Select Magic
+ *    1 = Bank 0 POST
+ *    2 = Bank 1 POST
+ *  3-6 = BANK 0 Extra log
+ * 7-10 = BANK 1 Extra log
+ */
 #define CMOS_POST_BANK_OFFSET     (CMOS_POST_OFFSET)
 #define CMOS_POST_BANK_0_MAGIC    0x80
 #define CMOS_POST_BANK_0_OFFSET   (CMOS_POST_OFFSET + 1)
+#define CMOS_POST_BANK_0_EXTRA    (CMOS_POST_OFFSET + 3)
 #define CMOS_POST_BANK_1_MAGIC    0x81
 #define CMOS_POST_BANK_1_OFFSET   (CMOS_POST_OFFSET + 2)
+#define CMOS_POST_BANK_1_EXTRA    (CMOS_POST_OFFSET + 7)
 
 void cmos_post_log(void);
 #endif /* CONFIG_CMOS_POST */

@@ -65,6 +65,10 @@ static void cmos_post_init(void)
 		/* Initialize to zero */
 		cmos_write(0, CMOS_POST_BANK_0_OFFSET);
 		cmos_write(0, CMOS_POST_BANK_1_OFFSET);
+#if CONFIG_CMOS_POST_EXTRA
+		cmos_write32(CMOS_POST_BANK_0_EXTRA, 0);
+		cmos_write32(CMOS_POST_BANK_1_EXTRA, 0);
+#endif
 	}
 
 	cmos_write(magic, CMOS_POST_BANK_OFFSET);

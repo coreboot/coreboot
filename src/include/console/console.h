@@ -72,6 +72,11 @@ void console_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 void post_code(u8 value);
+#if CONFIG_CMOS_POST_EXTRA
+void post_log_extra(u32 value);
+#else
+#define post_log_extra(x) do {} while (0)
+#endif
 /* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
 void __attribute__ ((noreturn)) die(const char *msg);

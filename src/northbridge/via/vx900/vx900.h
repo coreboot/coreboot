@@ -33,9 +33,6 @@
 #define VX900_MAX_DIMM_SLOTS 2
 #define VX900_MAX_MEM_RANKS 4
 
-#define min(a,b) (a<b?a:b)
-#define max(a,b) (a>b?a:b)
-
 #include <arch/io.h>
 #include <device/pci.h>
 
@@ -54,4 +51,4 @@ void pci_mod_config16(device_t dev, unsigned int where,
 void pci_mod_config32(device_t dev, unsigned int where,
 		      uint32_t clr_mask, uint32_t set_mask);
 
-#endif /* __VX900_H */
+#endif				/* __VX900_H */

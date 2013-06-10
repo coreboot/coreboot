@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <pc80/vga_io.h>
+#include <stdlib.h>
 
 #include "vx900.h"
 
@@ -79,7 +80,7 @@ u32 chrome9hd_fb_size(void)
 	size_mb = 512;
 
 	/* The minimum framebuffer size is 8MB. */
-	size_mb = max(size_mb, CHROME_9_HD_MIN_FB_SIZE);
+	size_mb = MAX(size_mb, CHROME_9_HD_MIN_FB_SIZE);
 
 	const device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
 					     PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
@@ -203,6 +204,7 @@ u8 vx900_int15_get_5f18_bl(void)
 
 	return ret;
 }
+
 /** @} */
 
 static void chrome9hd_set_sid_vid(u16 vendor, u16 device)

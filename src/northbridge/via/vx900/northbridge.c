@@ -191,7 +191,7 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 	}
 
 	/* The "remap to where?" register */
-	reg32 = ((max(tor, RAM_4GB) >> 26) & 0x3ff) << 2;
+	reg32 = ((MAX(tor, RAM_4GB) >> 26) & 0x3ff) << 2;
 	/* The "remap until where?" register */
 	reg32 |= ((newtor >> 26) & 0x3ff) << 14;
 	/* Now enable the goodies */
@@ -238,7 +238,7 @@ static void vx900_set_resources(device_t dev)
 	vx900_tolm = (pci_read_config16(mcu, 0x84) & 0xfff0) >> 4;
 	full_tolmk = vx900_tolm << (20 - 10);
 	/* Remap above 4G if needed */
-	full_tolmk = min(full_tolmk, pci_tolm >> 10);
+	full_tolmk = MIN(full_tolmk, pci_tolm >> 10);
 	printk(BIOS_SPEW, "Found top of low memory at  %dMB\n",
 	       full_tolmk >> 10);
 
@@ -247,7 +247,7 @@ static void vx900_set_resources(device_t dev)
 	printk(BIOS_SPEW, "Integrated graphics buffer: %dMB\n", fbufk >> 10);
 
 	/* Can't use the framebuffer as system RAM, sorry */
-	tolmk = min(full_tolmk, tomk);
+	tolmk = MIN(full_tolmk, tomk);
 	tolmk -= fbufk;
 	ram_resource(dev, idx++, 0, 640);
 	printk(BIOS_SPEW, "System ram left:            %dMB\n", tolmk >> 10);

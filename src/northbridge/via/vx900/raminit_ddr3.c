@@ -378,18 +378,18 @@ static void dram_find_common_params(const dimm_info * dimms,
 		ctrl->cas_supported &= dimm->cas_supported;
 
 		/* Find the smallest common latencies supported by all DIMMs */
-		ctrl->tCK = max(ctrl->tCK, dimm->tCK);
-		ctrl->tAA = max(ctrl->tAA, dimm->tAA);
-		ctrl->tWR = max(ctrl->tWR, dimm->tWR);
-		ctrl->tRCD = max(ctrl->tRCD, dimm->tRCD);
-		ctrl->tRRD = max(ctrl->tRRD, dimm->tRRD);
-		ctrl->tRP = max(ctrl->tRP, dimm->tRP);
-		ctrl->tRAS = max(ctrl->tRAS, dimm->tRAS);
-		ctrl->tRC = max(ctrl->tRC, dimm->tRC);
-		ctrl->tRFC = max(ctrl->tRFC, dimm->tRFC);
-		ctrl->tWTR = max(ctrl->tWTR, dimm->tWTR);
-		ctrl->tRTP = max(ctrl->tRTP, dimm->tRTP);
-		ctrl->tFAW = max(ctrl->tFAW, dimm->tFAW);
+		ctrl->tCK = MAX(ctrl->tCK, dimm->tCK);
+		ctrl->tAA = MAX(ctrl->tAA, dimm->tAA);
+		ctrl->tWR = MAX(ctrl->tWR, dimm->tWR);
+		ctrl->tRCD = MAX(ctrl->tRCD, dimm->tRCD);
+		ctrl->tRRD = MAX(ctrl->tRRD, dimm->tRRD);
+		ctrl->tRP = MAX(ctrl->tRP, dimm->tRP);
+		ctrl->tRAS = MAX(ctrl->tRAS, dimm->tRAS);
+		ctrl->tRC = MAX(ctrl->tRC, dimm->tRC);
+		ctrl->tRFC = MAX(ctrl->tRFC, dimm->tRFC);
+		ctrl->tWTR = MAX(ctrl->tWTR, dimm->tWTR);
+		ctrl->tRTP = MAX(ctrl->tRTP, dimm->tRTP);
+		ctrl->tFAW = MAX(ctrl->tFAW, dimm->tFAW);
 
 	}
 
@@ -1048,10 +1048,10 @@ static void vx900_dram_find_avg_delays(vx900_delay_calib * delays)
 	delay_range *tx_dqs_b = &(delays->tx_dqs[1]);
 
 	for (i = 0; i < 8; i++) {
-		dq_low = max(tx_dq_a->low[i], tx_dq_b->low[i]);
-		dq_high = min(tx_dq_a->high[i], tx_dq_b->high[i]);
-		dqs_low = max(tx_dqs_a->low[i], tx_dqs_b->low[i]);
-		dqs_high = min(tx_dqs_a->high[i], tx_dqs_b->high[i]);
+		dq_low = MAX(tx_dq_a->low[i], tx_dq_b->low[i]);
+		dq_high = MIN(tx_dq_a->high[i], tx_dq_b->high[i]);
+		dqs_low = MAX(tx_dqs_a->low[i], tx_dqs_b->low[i]);
+		dqs_high = MIN(tx_dqs_a->high[i], tx_dqs_b->high[i]);
 
 		/* Find the average */
 		dq_final = ((dq_low + dq_high) / 2);
@@ -1540,7 +1540,7 @@ static void vx900_dram_range(ramctr_timing * ctrl, rank_layout * ranks)
 	/* Limit the Top of Low memory at 3.5G
 	 * Not to worry, we'll set tolm in ramstage, once we have initialized
 	 * all devices and know pci_tolm. */
-	tolm_mb = min(ramsize_mb, TOLM_3_5G >> 20);
+	tolm_mb = MIN(ramsize_mb, TOLM_3_5G >> 20);
 	u16 reg_tolm = (tolm_mb << 4) & 0xfff0;
 	pci_mod_config16(MCU, 0x84, 0xfff0, reg_tolm);
 
@@ -1587,7 +1587,7 @@ static void vx900_dram_map_row_col_bank(dimm_info * dimms)
 		reg8 |= (rcb_val << ((i * 3) + 2));
 
 		/* */
-		max_row_bits = max(max_row_bits, dimms->dimm[i].row_bits);
+		max_row_bits = MAX(max_row_bits, dimms->dimm[i].row_bits);
 	}
 
 	printram("RCBA map (rx50) <- %.2x\n", reg8);

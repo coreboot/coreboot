@@ -55,8 +55,7 @@ static void nct5104d_pnp_enable_resources(device_t dev)
 static void nct5104d_pnp_enable(device_t dev)
 {
 	pnp_enter_exteded_mode(dev);
-	pnp_set_logical_device(dev);
-	(dev->enabled) ? pnp_set_enable(dev,1) : pnp_set_enable(dev,0);
+	pnp_alt_enable(dev);
 	pnp_exit_extended_mode(dev);
 }
 

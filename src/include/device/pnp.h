@@ -21,6 +21,7 @@ void pnp_read_resources(device_t dev);
 void pnp_set_resources(device_t dev);
 void pnp_enable_resources(device_t dev);
 void pnp_enable(device_t dev);
+void pnp_alt_enable(device_t dev);
 
 extern struct device_operations pnp_ops;
 

@@ -155,6 +155,12 @@ void pnp_enable(device_t dev)
 	}
 }
 
+void pnp_alt_enable(device_t dev)
+{
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, !!dev->enabled);
+}
+
 struct device_operations pnp_ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,

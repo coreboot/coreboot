@@ -158,6 +158,61 @@ struct device *dev_find_class(unsigned int class, struct device *from)
 	return from;
 }
 
+/**
+ * Encode the device path into 3 bytes for logging to CMOS.
+ *
+ * @param dev The device path to encode.
+ * @return Device path encoded into lower 3 bytes of dword.
+ */
+u32 dev_path_encode(device_t dev)
+{
+	u32 ret;
+
+	if (!dev)
+		return 0;
+
+	/* Store the device type in 3rd byte. */
+	ret = dev->path.type << 16;
+
+	/* Encode the device specific path in the low word. */
+	switch (dev->path.type) {
+	case DEVICE_PATH_ROOT:
+		break;
+	case DEVICE_PATH_PCI:
+		ret |= dev->bus->secondary << 8 | dev->path.pci.devfn;
+		break;
+	case DEVICE_PATH_PNP:
+		ret |= dev->path.pnp.port << 8 | dev->path.pnp.device;
+		break;
+	case DEVICE_PATH_I2C:
+		ret |= dev->bus->secondary << 8 | dev->path.pnp.device;
+		break;
+	case DEVICE_PATH_APIC:
+		ret |= dev->path.apic.apic_id;
+		break;
+	case DEVICE_PATH_DOMAIN:
+		ret |= dev->path.domain.domain;
+		break;
+	case DEVICE_PATH_CPU_CLUSTER:
+		ret |= dev->path.cpu_cluster.cluster;
+		break;
+	case DEVICE_PATH_CPU:
+		ret |= dev->path.cpu.id;
+		break;
+	case DEVICE_PATH_CPU_BUS:
+		ret |= dev->path.cpu_bus.id;
+		break;
+	case DEVICE_PATH_IOAPIC:
+		ret |= dev->path.ioapic.ioapic_id;
+		break;
+	case DEVICE_PATH_NONE:
+	default:
+		break;
+	}
+
+	return ret;
+}
+
 /*
  * Warning: This function uses a static buffer. Don't call it more than once
  * from the same print statement!

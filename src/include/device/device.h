@@ -154,6 +154,7 @@ void enumerate_static_device(void);
 void enumerate_static_devices(void);
 const char *dev_name(device_t dev);
 const char *dev_path(device_t dev);
+u32 dev_path_encode(device_t dev);
 const char *bus_path(struct bus *bus);
 void dev_set_enabled(device_t dev, int enable);
 void disable_children(struct bus *bus);

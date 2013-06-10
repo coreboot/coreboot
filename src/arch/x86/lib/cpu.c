@@ -256,6 +256,8 @@ void cpu_initialize(unsigned int index)
 		die("CPU: missing cpu device structure");
 	}
 
+	post_log_path(cpu);
+
 	/* Find what type of cpu we are dealing with */
 	identify_cpu(cpu);
 	printk(BIOS_DEBUG, "CPU: vendor %s device %x\n",
@@ -285,6 +287,7 @@ void cpu_initialize(unsigned int index)
 		cpu->initialized = 1;
 		cpu->ops->init(cpu);
 	}
+	post_log_clear();
 
 	printk(BIOS_INFO, "CPU #%d initialized\n", index);
 

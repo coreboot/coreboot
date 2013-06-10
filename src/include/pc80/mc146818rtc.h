@@ -217,6 +217,8 @@ static inline enum cb_err get_option(void *dest __attribute__((unused)),
 #define CMOS_POST_BANK_1_OFFSET   (CMOS_POST_OFFSET + 2)
 #define CMOS_POST_BANK_1_EXTRA    (CMOS_POST_OFFSET + 7)
 
+#define CMOS_POST_EXTRA_DEV_PATH  0x01
+
 void cmos_post_log(void);
 #endif /* CONFIG_CMOS_POST */
 

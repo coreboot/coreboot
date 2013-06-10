@@ -51,6 +51,8 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += pmutil.c
 
 romstage-y += early_usb.c early_smbus.c early_me.c me_status.c early_pch.c
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
+ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
+smm-$(CONFIG_USBDEBUG) += usb_debug.c
 romstage-y += reset.c early_spi.c rcba.c
 
 ifeq ($(CONFIG_INTEL_LYNXPOINT_LP),y)

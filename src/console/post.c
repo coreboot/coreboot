@@ -114,6 +114,22 @@ void post_log_extra(u32 value)
 
 	spin_unlock(&cmos_post_lock);
 }
+
+void post_log_path(struct device *dev)
+{
+	if (dev) {
+		/* Encode path into lower 3 bytes */
+		u32 path = dev_path_encode(dev);
+		/* Upper byte contains the log type */
+		path |= CMOS_POST_EXTRA_DEV_PATH << 24;
+		post_log_extra(path);
+	}
+}
+
+void post_log_clear(void)
+{
+	post_log_extra(0);
+}
 #endif /* CONFIG_CMOS_POST_EXTRA */
 #endif /* !__PRE_RAM__ */
 

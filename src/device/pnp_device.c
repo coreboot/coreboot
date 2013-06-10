@@ -6,6 +6,7 @@
  * Copyright (C) 2004 Li-Ta Lo <ollie@lanl.gov>
  * Copyright (C) 2005 Tyan
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
+ * Copyright (C) 2013 Nico Huber <nico.h@gmx.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +29,20 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
+
+/* PNP config mode wrappers */
+
+void pnp_enter_conf_mode(device_t dev)
+{
+	if (dev->ops->ops_pnp_mode)
+		dev->ops->ops_pnp_mode->enter_conf_mode(dev);
+}
+
+void pnp_exit_conf_mode(device_t dev)
+{
+	if (dev->ops->ops_pnp_mode)
+		dev->ops->ops_pnp_mode->exit_conf_mode(dev);
+}
 
 /* PNP fundamental operations */
 
@@ -133,32 +148,42 @@ void pnp_set_resources(device_t dev)
 {
 	struct resource *res;
 
+	pnp_enter_conf_mode(dev);
+
 	/* Select the logical device (LDN). */
 	pnp_set_logical_device(dev);
 
 	/* Paranoia says I should disable the device here... */
 	for (res = dev->resource_list; res; res = res->next)
 		pnp_set_resource(dev, res);
+
+	pnp_exit_conf_mode(dev);
 }
 
 void pnp_enable_resources(device_t dev)
 {
+	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 1);
+	pnp_exit_conf_mode(dev);
 }
 
 void pnp_enable(device_t dev)
 {
 	if (!dev->enabled) {
+		pnp_enter_conf_mode(dev);
 		pnp_set_logical_device(dev);
 		pnp_set_enable(dev, 0);
+		pnp_exit_conf_mode(dev);
 	}
 }
 
 void pnp_alt_enable(device_t dev)
 {
+	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, !!dev->enabled);
+	pnp_exit_conf_mode(dev);
 }
 
 struct device_operations pnp_ops = {

@@ -52,5 +52,12 @@ struct resource *pnp_get_resource(device_t dev, unsigned index);
 void pnp_enable_devices(struct device *dev, struct device_operations *ops,
 			unsigned int functions, struct pnp_info *info);
 
+struct pnp_mode_ops {
+	void (*enter_conf_mode)(device_t dev);
+	void (*exit_conf_mode)(device_t dev);
+};
+void pnp_enter_conf_mode(device_t dev);
+void pnp_exit_conf_mode(device_t dev);
+
 #endif
 #endif /* DEVICE_PNP_H */

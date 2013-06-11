@@ -23,7 +23,6 @@ config NORTHBRIDGE_AMD_AMDFAM10
 	select HAVE_DEBUG_SMBUS
 	select HAVE_DEBUG_CAR
 	select HYPERTRANSPORT_PLUGIN_SUPPORT
-	select NORTHBRIDGE_AMD_AMDFAM10_ROOT_COMPLEX
 	select MMCONF_SUPPORT
 
 if NORTHBRIDGE_AMD_AMDFAM10
@@ -119,5 +118,3 @@ config SVI_HIGH_FREQ
           at 3.4 MHz in SVI mode. Ignored unless the AMD CPU is rev C3.
 
 endif # NORTHBRIDGE_AMD_AMDFAM10
-
-source src/northbridge/amd/amdfam10/root_complex/Kconfig

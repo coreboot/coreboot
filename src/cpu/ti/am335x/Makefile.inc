@@ -17,7 +17,10 @@ real-target: $(obj)/MLO
 
 header_ld = $(src)/cpu/ti/am335x/header.ld
 
-get_header_size=$(shell $(CBFSTOOL) $(1) print | grep $(2) | awk '{print $$2 + $$4}')
+get_header_size= \
+	$(eval omap_header_info=$(shell $(CBFSTOOL) $(1) print | grep $(2))) \
+	$(shell echo $$(($(word 2,$(omap_header_info)) + \
+			 $(word 4,$(omap_header_info)))))
 
 $(obj)/omap-header.bin: $$(omap-header-objs) $$(header_ld) $(obj)/coreboot.rom
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

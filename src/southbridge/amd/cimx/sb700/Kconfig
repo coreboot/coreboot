@@ -20,6 +20,7 @@
 config SOUTHBRIDGE_AMD_CIMX_SB700
 	bool
 	select IOAPIC
+	select HAVE_USBDEBUG
 	select AMD_SB_CIMX
 	select HAVE_HARD_RESET
 

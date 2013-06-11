@@ -23,6 +23,10 @@
 
 /* TODO: Check whether this actually works (might be copy-paste leftover). */
 
+#ifndef __PRE_RAM__
+#define __PRE_RAM__
+#endif
+
 #include <stdint.h>
 #include <arch/io.h>
 #include <usbdebug.h>

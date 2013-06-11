@@ -16,6 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
+#ifndef __PRE_RAM__
+#define __PRE_RAM__
+#endif
+
 #include <stdint.h>
 #include <arch/io.h>
 #include <usbdebug.h>

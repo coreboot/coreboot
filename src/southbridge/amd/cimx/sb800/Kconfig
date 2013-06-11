@@ -21,6 +21,7 @@ config SOUTHBRIDGE_AMD_CIMX_SB800
 	bool
 	default n
 	select IOAPIC
+	select HAVE_USBDEBUG
 	select AMD_SB_CIMX
 
 if SOUTHBRIDGE_AMD_CIMX_SB800

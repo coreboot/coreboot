@@ -168,9 +168,14 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 	char *chip_h = malloc(strlen(path)+18);
 	sprintf(chip_h, "src/%s", path);
 	if ((stat(chip_h, &st) == -1) && (errno == ENOENT)) {
-		fprintf(stderr, "ERROR: Chip component %s does not exist.\n",
+		if (strstr(path, "/root_complex")) {
+			fprintf(stderr, "WARNING: Use of deprecated chip component %s\n",
 				path);
-		exit(1);
+		} else {
+			fprintf(stderr, "ERROR: Chip component %s does not exist.\n",
+				path);
+			exit(1);
+		}
 	}
 
 	if (scan_mode == STATIC_MODE)

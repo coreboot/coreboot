@@ -23,6 +23,9 @@
 
 /* TODO: Check whether this actually works (might be copy-paste leftover). */
 
+// Use simple device model for this file even in ramstage
+#define __SIMPLE_DEVICE__
+
 #include <stdint.h>
 #include <arch/io.h>
 #include <usbdebug.h>

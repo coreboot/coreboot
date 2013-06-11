@@ -21,10 +21,11 @@ config NORTHBRIDGE_AMD_GX2
 	bool
 	select GEODE_VSA
 
+if NORTHBRIDGE_AMD_GX2
+
 choice
 	prompt "Framebuffer size"
 	default GX2_VIDEO_MB_8MB
-	depends on NORTHBRIDGE_AMD_GX2
 
 config GX2_VIDEO_MB_4MB
 	bool "4MB"
@@ -55,7 +56,6 @@ config VIDEO_MB
 	default 128 if GX2_VIDEO_MB_128MB
 	default 256 if GX2_VIDEO_MB_256MB
 	default -1  if GX2_VIDEO_MB_CMOS
-	depends on NORTHBRIDGE_AMD_GX2
 
 # The GX2_PROCESSOR_MHZ options let you chose the correct GX2 processor
 # speed in the mainboard's Kconfig file.
@@ -73,3 +73,4 @@ config GX2_PROCESSOR_MHZ
 	default 366 if GX2_PROCESSOR_MHZ_366
 	default 400 if GX2_PROCESSOR_MHZ_400
 
+endif # NORTHBRIDGE_AMD_GX2

@@ -22,6 +22,10 @@
 #define USBDEBUG_H
 
 #define EHCI_BAR_INDEX		0x10
+#define PCI_EHCI_CLASSCODE 	0x0c0320	/* USB2.0 with EHCI controller */
+
+unsigned int pci_ehci_dbg_dev(unsigned hcd_idx);
+#define pci_ehci_dbg_devfn(idx) PCI_DEV2DEVFN(pci_ehci_dbg_dev(idx))
 
 #ifndef __PRE_RAM__
 #if !CONFIG_USBDEBUG
@@ -43,7 +47,7 @@ struct ehci_debug_info {
         u8 bufidx;
 };
 
-void enable_usbdebug(unsigned int port);
+void enable_usbdebug(unsigned int hcd_idx, unsigned int port);
 int dbgp_bulk_write_x(struct ehci_debug_info *dbg_info, const char *bytes, int size);
 int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size);
 void set_ehci_base(unsigned ehci_base);

@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <usbdebug.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <pc80/mc146818rtc.h>
 
 static struct ehci_debug_info dbg_info;
@@ -75,7 +76,7 @@ static void pci_ehci_set_resources(struct device *dev)
 
 void pci_ehci_read_resources(struct device *dev)
 {
-	if (!ehci_drv_ops) {
+	if (!ehci_drv_ops && dev->path.pci.devfn == pci_ehci_dbg_devfn(CONFIG_USBDEBUG_HCD_INDEX)) {
 		memcpy(&ehci_dbg_ops, dev->ops, sizeof(ehci_dbg_ops));
 		ehci_drv_ops = dev->ops;
 		ehci_dbg_ops.set_resources = pci_ehci_set_resources;
@@ -91,7 +92,7 @@ void pci_ehci_read_resources(struct device *dev)
 static void dbgp_init(void)
 {
 #if !CONFIG_EARLY_CONSOLE
-	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+	enable_usbdebug(CONFIG_USBDEBUG_HCD_INDEX, CONFIG_USBDEBUG_DEFAULT_PORT);
 #endif
 	usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, &dbg_info);
 }

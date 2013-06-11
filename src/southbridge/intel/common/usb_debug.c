@@ -26,16 +26,21 @@
 #include <usbdebug.h>
 #include <device/pci_def.h>
 
+simple_device_t pci_ehci_dbg_dev(unsigned int hcd_idx)
+{
+	return PCI_DEV(0, 0x1d, 7);
+}
+
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
 {
 	/* Not needed, the ICH* southbridges hardcode physical USB port 1. */
 }
 
-void enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int hcd_idx, unsigned int port)
 {
 	u32 dbgctl;
-	device_t dev = PCI_DEV(0, 0x1d, 7); /* USB EHCI, D29:F7 */
+	simple_device_t dev = pci_ehci_dbg_dev(hcd_idx);
 
 	/* Set the EHCI BAR address. */
 	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);

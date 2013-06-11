@@ -29,6 +29,11 @@
 #define EHCI_EOR		(CONFIG_EHCI_BAR + 0x20)
 #define DEBUGPORT_MISC_CONTROL	(EHCI_EOR + 0x80)
 
+simple_device_t pci_ehci_dbg_dev(unsigned int hcd_idx)
+{
+	return PCI_DEV(0, SB800_DEVN_BASE + 0x12, 2);
+}
+
 void set_debug_port(unsigned int port)
 {
 	u32 reg32;
@@ -42,15 +47,15 @@ void set_debug_port(unsigned int port)
 }
 
 
-void enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int hcd_idx, unsigned int port)
 {
+	simple_device_t dev = pci_ehci_dbg_dev(hcd_idx);
+
 	/* Enable all of the USB controllers */
 	outb(0xEF, PM_INDEX);
 	outb(0x7F, PM_DATA);
 
-	pci_write_config32(PCI_DEV(0, SB800_DEVN_BASE + 0x12, 2),
-			   EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
-	pci_write_config8(PCI_DEV(0, SB800_DEVN_BASE + 0x12, 2),
-				PCI_COMMAND, PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
+	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 	set_debug_port(port);
 }

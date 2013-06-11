@@ -127,9 +127,13 @@ config SPKMODEM
 
 # Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
 config HAVE_USBDEBUG
-	def_bool n
+	bool
+	default y if HAVE_USBDEBUG_OPTIONS
+	default n
 
-config USBDEBUG
+# Use "select HAVE_USBDEBUG_OPTIONS" on southbridges with multiple
+# EHCI controllers having Debug Port capability
+config HAVE_USBDEBUG_OPTIONS
 	def_bool n
 
 config USBDEBUG
@@ -153,13 +157,24 @@ config USBDEBUG
 
 	  If unsure, say N.
 
-# Note: This option doesn't make sense on Intel ICH / AMD SB600 southbridges
-# as those hardcode the physical USB port to be used as Debug Port to 1.
-# It cannot be changed by coreboot.
+config USBDEBUG_HCD_INDEX
+	int "Index for EHCI controller to use with usbdebug"
+	default 0
+	depends on USBDEBUG && HAVE_USBDEBUG_OPTIONS
+	help
+	   Some boards have multiple EHCI controllers with possibly only
+	   one having the Debug Port capability on an external USB port.
+
+	   Mapping of this index to PCI device functions is southbridge
+	   specific and mainboard level Kconfig should already provide
+	   a working default value here.
+
+	   If unsure, do not change.
+
 config USBDEBUG_DEFAULT_PORT
 	int "Default USB port to use as Debug Port"
 	default 1
-	depends on USBDEBUG && !SOUTHBRIDGE_INTEL_I82801GX && !SOUTHBRIDGE_AMD_SB600
+	depends on USBDEBUG && HAVE_USBDEBUG_OPTIONS
 	help
 	  This option selects which physical USB port coreboot will try to
 	  use as EHCI Debug Port first (valid values are: 1-15).
@@ -173,6 +188,8 @@ config USBDEBUG_DEFAULT_PORT
 	  actual port on your mainboard (potentially also USB pin headers
 	  on your mainboard) is highly board-specific, and you'll likely
 	  have to find out by trial-and-error.
+
+	  If unsure, do not change.
 
 # TODO: Deps?
 # TODO: Improve description.

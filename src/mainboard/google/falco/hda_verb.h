@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,81 +19,77 @@
 
 static const u32 mainboard_cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10134210,	// Codec Vendor / Device ID: Cirrus Logic CS4210
-	0x10134210,	// Subsystem ID
-	0x00000007,	// Number of jacks
+	0x10ec0283,	// Codec Vendor / Device ID: Realtek ALC283
+	0x10ec0283,	// Subsystem ID
+	0x0000000b,	// Number of jacks (NID entries)
 
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10134210 */
-	0x00172010,
-	0x00172142,
-	0x00172213,
+	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10ec0283 */
+	0x00172083,
+	0x00172102,
+	0x001722ec,
 	0x00172310,
 
 	/* Pin Widget Verb Table */
 
-	/* Pin Complex (NID 0x05)     1/8   Gray  HP Out at Ext Front */
-	0x00571cf0,
-	0x00571d20,
-	0x00571e21,
-	0x00571f02,
+	/* Pin Complex (NID 0x12) DMIC - interior mobile lid */
+	0x00571c10,
+	0x00571d10,
+	0x00571ea6,
+	0x00571fb7,
 
-	/* Pin Complex (NID 0x06)  Analog Unknown  Speaker at Int N/A */
-	0x00671c10,
-	0x00671d00,
-	0x00671e17,
-	0x00671f90,
+	/* Pin Complex (NID 0x14) SPKR-OUT PORTD */
+	0x01471c10, // group 1, front left/right
+	0x01471d01, // no connector, no jack detect
+	0x01471e17, // speaker out, analog
+	0x01471f90, // fixed function, internal
 
-	/* Pin Complex (NID 0x07)     1/8    Grey  Line In at Ext Front */
-	0x00771cf0,
-	0x00771d20,
-	0x00771ea1,
-	0x00771f02,
+	/* Pin Complex (NID 0x17)  */
+	0x01771cf0,
+	0x01771d11,
+	0x01771e11,
+	0x01771f41,
 
-	/* Pin Complex (NID 0x08)  Analog Unknown  Mic at Oth Mobile-In */
-	0x00871c37,
-	0x00871d00,
-	0x00871ea7,
-	0x00871f77,
+	/* Pin Complex (NID 0x18)  MIC1 PORTB */
+	0x01971c11, // group 1, cap 1
+	0x01971d10, // black, jack detect
+	0x01971ea7, // mic in, analog
+	0x01971f03, // connector, left panel
 
-	/* Pin Complex (NID 0x09) Digital Unknown  Mic at Oth Mobile-In */
-	0x00971c3e,
-	0x00971d00,
-	0x00971ea6,
-	0x00971f77,
+	/* Pin Complex (NID 0x19)  MIC2 PORTF */
+	0x01871cf0,
+	0x01871d11,
+	0x01871e11,
+	0x01871f41,
 
-	/* Pin Complex (NID 0x0a) Optical   Black  SPDIF Out at Ext N/A */
-	0x00a71cf0,
-	0x00a71d10,
-	0x00a71e45,
-	0x00a71f43,
+	/* Pin Complex (NID 0x1A)  LINE1 PORTC */
+	0x01a71cf0,
+	0x01a71d11,
+	0x01a71e11,
+	0x01a71f41,
 
-	/* coreboot specific header */
-	0x80862805,	// Codec Vendor / Device ID: Intel CougarPoint HDMI
-	0x80860101,	// Subsystem ID
-	0x00000004,	// Number of jacks
+	/* Pin Complex (NID 0x1B)  LINE2 PORTE */
+	0x01a71cf0,
+	0x01a71d11,
+	0x01a71e11,
+	0x01a71f41,
 
-	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x80860101 */
-	0x00172001,
-	0x00172101,
-	0x00172286,
-	0x00172380,
+	/* Pin Complex (NID 0x1d)  PCBeep */
+	0x01d71c2d, // eapd low on ex-amp, laptop, custom enable
+	0x01d71d81, // mute spkr on hpout
+	0x01d71e15, // pcbeep en able, checksum
+	0x01d71f40, // no physical, internal
 
-	/* Pin Complex (NID 0x05) Digital Out at Int HDMI */
-	0x30571c10,
-	0x30571d00,
-	0x30571e56,
-	0x30571f18,
+	/* Pin Complex (NID 0x1E)  SPDIF-OUT */
+	0x01e71cf0,
+	0x01e71d11,
+	0x01e71e11,
+	0x01e71f41,
 
-	/* Pin Complex (NID 0x06) Digital Out at Int HDMI */
-	0x30671c20,
-	0x30671d00,
-	0x30671e56,
-	0x30671f18,
+	/* Pin Complex (NID 0x21) HPOUT PORT-I */
+	0x02171c1f, // group1,
+	0x02171d10, // black, jack detect
+	0x02171e21, // HPOut, 1/8 stereo
+	0x02171f03, // connector, left panel
 
-	/* Pin Complex (NID 0x07) Digital Out at Int HDMI */
-	0x30771c30,
-	0x30771d00,
-	0x30771e56,
-	0x30771f18
 };
 

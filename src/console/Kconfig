@@ -127,9 +127,13 @@ config SPKMODEM
 
 # Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
 config HAVE_USBDEBUG
-	def_bool n
+	bool
+	default y if HAVE_USBDEBUG_OPTIONS
+	default n
 
-config USBDEBUG
+# Use "select HAVE_USBDEBUG_OPTIONS" on southbridges with multiple
+# EHCI controllers having Debug Port capability
+config HAVE_USBDEBUG_OPTIONS
 	def_bool n
 
 config USBDEBUG

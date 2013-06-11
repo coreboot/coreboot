@@ -29,7 +29,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	def_bool y
 	select IOAPIC
 	select HAVE_HARD_RESET
-	select HAVE_USBDEBUG
+	select HAVE_USBDEBUG_OPTIONS
 	select HAVE_SMI_HANDLER
 	select USE_WATCHDOG_ON_BOOT
 	select PCIEXP_ASPM
@@ -84,5 +84,13 @@ config LOCK_MANAGEMENT_ENGINE
 	  that the ME firmware is no longer going to change.
 
 	  If unsure, say N.
+
+config USBDEBUG_DEV
+	int
+	default 29
+
+config USBDEBUG_FUNC
+	int
+	default 7
 
 endif

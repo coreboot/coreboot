@@ -26,7 +26,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	def_bool y
 	select IOAPIC
 	select HAVE_HARD_RESET
-	select HAVE_USBDEBUG
+	select HAVE_USBDEBUG_OPTIONS
 	select USE_WATCHDOG_ON_BOOT
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
@@ -57,5 +57,13 @@ config SERIRQ_CONTINUOUS_MODE
 	help
 	  If you set this option to y, the serial IRQ machine will be
 	  operated in continuous mode.
+
+config USBDEBUG_DEV
+	int
+	default 29
+
+config USBDEBUG_FUNC
+	int
+	default 7
 
 endif

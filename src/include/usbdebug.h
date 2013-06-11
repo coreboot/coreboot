@@ -22,6 +22,9 @@
 #define USBDEBUG_H
 
 #define EHCI_BAR_INDEX		0x10
+#define PCI_EHCI_CLASSCODE 	0x0c0320	/* USB2.0 with EHCI controller */
+
+extern const unsigned ehci_dbg_devfn;
 
 #ifndef __PRE_RAM__
 #if !CONFIG_USBDEBUG

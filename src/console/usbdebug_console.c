@@ -77,7 +77,7 @@ void pci_ehci_read_resources(struct device *dev)
 {
 	printk(BIOS_DEBUG, "%s EHCI controller\n", dev_path(dev));
 
-	if (!ehci_drv_ops) {
+	if (!ehci_drv_ops && dev->path.pci.devfn == ehci_dbg_devfn) {
 		memcpy(&ehci_dbg_ops, dev->ops, sizeof(ehci_dbg_ops));
 		ehci_drv_ops = dev->ops;
 		ehci_dbg_ops.set_resources = pci_ehci_set_resources;

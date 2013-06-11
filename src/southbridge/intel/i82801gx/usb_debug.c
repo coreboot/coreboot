@@ -27,16 +27,34 @@
 #include <usbdebug.h>
 #include <device/pci_def.h>
 
+#if CONFIG_HAVE_USBDEBUG_OPTIONS
+const unsigned ehci_dbg_devfn = PCI_DEVFN(CONFIG_USBDEBUG_DEV, CONFIG_USBDEBUG_FUNC);
+#else
+const unsigned ehci_dbg_devfn = PCI_DEVFN(0x1d, 7);
+#endif
+
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
 {
 	/* Not needed, the ICH* southbridges hardcode physical USB port 1. */
 }
-
 void enable_usbdebug(unsigned int port)
 {
-	u32 dbgctl;
-	device_t dev = PCI_DEV(0, 0x1d, 7); /* USB EHCI, D29:F7 */
+	u32 dbgctl, class;
+	device_t dev = PCI_DEVFN2DEV(ehci_dbg_devfn);
+
+	class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
+	if (class != PCI_EHCI_CLASSCODE) {
+		/* If we enter here before RCBA programming, EHCI function may
+		 * appear with the highest function number instead.
+		 */
+		dev |= PCI_DEV(0, 0, 7);
+		class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
+	}
+
+	/* Bail out. No console to complain in. */
+	if (class != PCI_EHCI_CLASSCODE)
+		return;
 
 	/* Set the EHCI BAR address. */
 	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);

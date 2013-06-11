@@ -31,6 +31,13 @@
 #define EHCI_EOR		(CONFIG_EHCI_BAR + 0x20)
 #define DEBUGPORT_MISC_CONTROL	(EHCI_EOR + 0x80)
 
+/*
+ * Note: The SB700 has two EHCI devices, D18:F2 and D19:F2.
+ * This code currently only supports the first one, i.e., USB Debug devices
+ * attached to physical USB ports belonging to the first EHCI device.
+ */
+const unsigned ehci_dbg_devfn = PCI_DEVFN(0x12, 2);
+
 void set_debug_port(unsigned int port)
 {
 	u32 reg32;
@@ -43,14 +50,9 @@ void set_debug_port(unsigned int port)
 	write32(DEBUGPORT_MISC_CONTROL, reg32);
 }
 
-/*
- * Note: The SB700 has two EHCI devices, D18:F2 and D19:F2.
- * This code currently only supports the first one, i.e., USB Debug devices
- * attached to physical USB ports belonging to the first EHCI device.
- */
 void enable_usbdebug(unsigned int port)
 {
-	device_t dev = PCI_DEV(0, 0x12, 2); /* USB EHCI, D18:F2 */
+	device_t dev = PCI_DEVFN2DEV(ehci_dbg_devfn);
 
 	/* Set the EHCI BAR address. */
 	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);

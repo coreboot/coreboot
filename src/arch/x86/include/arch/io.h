@@ -203,6 +203,8 @@ static inline int log2f(int value)
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
 
+/* Translation from devicetree path.pci.devfn to PCI_DEV(). */
+#define PCI_DEVFN2DEV(devfn)	((devfn&0xff)<<12)
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 

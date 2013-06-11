@@ -23,20 +23,22 @@ config SOUTHBRIDGE_AMD_SB800
 	select HAVE_USBDEBUG
 	select HAVE_HARD_RESET
 
+if SOUTHBRIDGE_AMD_SB800
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/amd/sb800/bootblock.c"
-	depends on SOUTHBRIDGE_AMD_SB800
 
 config SOUTHBRIDGE_AMD_SB800_SKIP_ISA_DMA_INIT
 	bool
 	default n
-	depends on SOUTHBRIDGE_AMD_SB800
 
 config EHCI_BAR
 	hex
-	default 0xfef00000 if SOUTHBRIDGE_AMD_SB800
+	default 0xfef00000
 
 config EHCI_DEBUG_OFFSET
 	hex
-	default 0xe0 if SOUTHBRIDGE_AMD_SB800
+	default 0xe0
+
+endif # SOUTHBRIDGE_AMD_SB800

@@ -23,15 +23,20 @@
 #include <device/pci_def.h>
 #include "sb600.h"
 
+simple_device_t pci_ehci_dbg_dev(unsigned int hcd_idx)
+{
+	return  PCI_DEV(0, 0x13, 5); /* USB EHCI, D19:F5 */
+}
+
 /* Required for successful build, but currently empty. */
 void set_debug_port(unsigned int port)
 {
 	/* TODO: Allow changing the physical USB port used as Debug Port. */
 }
 
-void enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int hcd_idx, unsigned int port)
 {
-	device_t dev = PCI_DEV(0, 0x13, 5); /* USB EHCI, D19:F5 */
+	simple_device_t dev = pci_ehci_dbg_dev(hcd_idx);
 
 	/* Select the requested physical USB port (1-15) as the Debug Port. */
 	set_debug_port(port);

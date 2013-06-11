@@ -474,4 +474,7 @@
 #define PCI_FUNC(devfn)		((devfn) & 0x07)
 #define PCI_BDF(bus,dev,func)	((bus) << 16 | (dev) << 11 | (func) << 8)
 
+/* Translation from PCI_DEV() to devicetree path.pci.devfn. */
+#define PCI_DEV2DEVFN(dev)	((dev>>12)&0xff)
+
 #endif /* PCI_DEF_H */

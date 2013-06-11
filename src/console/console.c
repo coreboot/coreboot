@@ -104,7 +104,7 @@ void console_init(void)
 #if CONFIG_EARLY_CONSOLE
 
 #if CONFIG_USBDEBUG
-	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+	enable_usbdebug(CONFIG_USBDEBUG_HCD_INDEX, CONFIG_USBDEBUG_DEFAULT_PORT);
 	early_usbdebug_init();
 #endif
 #if CONFIG_CONSOLE_SERIAL

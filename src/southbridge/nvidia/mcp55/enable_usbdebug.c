@@ -27,10 +27,15 @@
 #include <device/pci_def.h>
 #include "mcp55.h"
 
+simple_device_t pci_ehci_dbg_dev(unsigned int hcd_idx)
+{
+	return PCI_DEV(0, MCP55_DEVN_BASE + 2, 1); /* USB EHCI */
+}
+
 void set_debug_port(unsigned int port)
 {
 	u32 dword;
-	device_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 2, 1); /* USB EHCI */
+	simple_device_t dev = pci_ehci_dbg_dev(hcd_idx);
 
 	/* Write the port number to 0x74[15:12]. */
 	dword = pci_read_config32(dev, 0x74);
@@ -39,9 +44,9 @@ void set_debug_port(unsigned int port)
 	pci_write_config32(dev, 0x74, dword);
 }
 
-void enable_usbdebug(unsigned int port)
+void enable_usbdebug(unsigned int hcd_idx, unsigned int port)
 {
-	device_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 2, 1); /* USB EHCI */
+	simple_device_t dev = pci_ehci_dbg_dev(hcd_idx);
 
 	/* Mark the requested physical USB port (1-15) as the Debug Port. */
 	set_debug_port(port);

@@ -29,41 +29,41 @@
 
 static inline uint8_t read8(const void *addr)
 {
-	uint8_t v = *(volatile uint8_t *)addr;
 	dmb();
-	return v;
+	return *(volatile uint8_t *)addr;
 }
 
 static inline uint16_t read16(const void *addr)
 {
-	uint16_t v = *(volatile uint16_t *)addr;
 	dmb();
-	return v;
+	return *(volatile uint16_t *)addr;
 }
 
 static inline uint32_t read32(const void *addr)
 {
-	uint32_t v = *(volatile uint32_t *)addr;
 	dmb();
-	return v;
+	return *(volatile uint32_t *)addr;
 }
 
 static inline void write8(uint8_t val, const void *addr)
 {
 	dmb();
 	*(volatile uint8_t *)addr = val;
+	dmb();
 }
 
 static inline void write16(uint16_t val, const void *addr)
 {
 	dmb();
 	*(volatile uint16_t *)addr = val;
+	dmb();
 }
 
 static inline void write32(uint32_t val, const void *addr)
 {
 	dmb();
 	*(volatile uint32_t *)addr = val;
+	dmb();
 }
 
 /*

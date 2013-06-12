@@ -47,4 +47,12 @@ config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 	bool
 	default n
 
+config USBDEBUG_DEV
+	int
+	default 29
+
+config USBDEBUG_FUNC
+	int
+	default 0
+
 endif # BOARD_SAMSUNG_LUMPY

@@ -16,6 +16,7 @@
  */
 
 #include <string.h>
+#include <swab.h>
 #include <console/console.h>
 #include <arch/io.h>
 
@@ -26,6 +27,7 @@
 #define FW_CFG_PORT_DATA      0x0511
 
 static unsigned char fw_cfg_detected = 0xff;
+static FWCfgFiles *fw_files;
 
 static int fw_cfg_present(void)
 {
@@ -53,6 +55,63 @@ void fw_cfg_get(int entry, void *dst, int dstlen)
 		d++; dstlen--;
 	}
 #endif
+}
+
+static void fw_cfg_init_file(void)
+{
+	u32 i, size, count = 0;
+
+	if (fw_files != NULL)
+		return;
+
+	fw_cfg_get(FW_CFG_FILE_DIR, &count, sizeof(count));
+	count = swab32(count);
+	size = count * sizeof(FWCfgFile) + sizeof(count);
+	printk(BIOS_DEBUG, "QEMU: %d files in fw_cfg\n", count);
+	fw_files = malloc(size);
+	fw_cfg_get(FW_CFG_FILE_DIR, fw_files, size);
+	fw_files->count = swab32(fw_files->count);
+	for (i = 0; i < count; i++) {
+		fw_files->f[i].size   = swab32(fw_files->f[i].size);
+		fw_files->f[i].select = swab16(fw_files->f[i].select);
+		printk(BIOS_DEBUG, "QEMU:     %s [size=%d]\n",
+		       fw_files->f[i].name, fw_files->f[i].size);
+	}
+}
+
+static FWCfgFile *fw_cfg_find_file(const char *name)
+{
+	int i;
+
+	fw_cfg_init_file();
+	for (i = 0; i < fw_files->count; i++)
+		if (strcmp(fw_files->f[i].name, name) == 0)
+			return fw_files->f + i;
+	return NULL;
+}
+
+int fw_cfg_check_file(const char *name)
+{
+	FWCfgFile *file;
+
+	if (!fw_cfg_present())
+		return -1;
+	file = fw_cfg_find_file(name);
+	if (!file)
+		return -1;
+	return file->size;
+}
+
+void fw_cfg_load_file(const char *name, void *dst)
+{
+	FWCfgFile *file;
+
+	if (!fw_cfg_present())
+		return;
+	file = fw_cfg_find_file(name);
+	if (!file)
+		return;
+	fw_cfg_get(file->select, dst, file->size);
 }
 
 int fw_cfg_max_cpus(void)

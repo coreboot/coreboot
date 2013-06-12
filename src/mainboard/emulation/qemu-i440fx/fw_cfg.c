@@ -44,7 +44,15 @@ static int fw_cfg_present(void)
 void fw_cfg_get(int entry, void *dst, int dstlen)
 {
 	outw(entry, FW_CFG_PORT_CTL);
+#if 0
 	insb(FW_CFG_PORT_DATA, dst, dstlen);
+#else
+	u8 *d = dst;
+	while (dstlen) {
+		*d = inb(FW_CFG_PORT_DATA);
+		d++; dstlen--;
+	}
+#endif
 }
 
 int fw_cfg_max_cpus(void)

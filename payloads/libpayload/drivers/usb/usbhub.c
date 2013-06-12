@@ -35,15 +35,39 @@
 /* assume that host_to_device is overwritten if necessary */
 #define DR_PORT gen_bmRequestType(host_to_device, class_type, other_recp)
 /* status (and status change) bits */
-#define PORT_CONNECTION 0x1
-#define PORT_ENABLE 0x2
-#define PORT_RESET 0x10
+#define PORT_CONNECTION		0x01
+#define PORT_ENABLE		0x02
+#define PORT_SUSPEND		0x04
+#define PORT_OVER_CURRENT	0x08
+#define PORT_RESET		0x10
+#define BH_PORT_RESET		0x20
+#define PORT_LINK_STATE		0x40
+#define PORT_CONFIG_ERROR	0x80
 /* feature selectors (for setting / clearing features) */
-#define SEL_PORT_RESET 0x4
-#define SEL_PORT_POWER 0x8
-#define SEL_C_PORT_CONNECTION 0x10
+#define SEL_PORT_RESET		0x04
+#define SEL_PORT_POWER		0x08
+#define SEL_C_PORT_CONNECTION	0x10
+#define SEL_C_PORT_ENABLE	0x11
+#define SEL_C_PORT_SUSPEND	0x12
+#define SEL_C_PORT_OVER_CURRENT	0x13
+#define SEL_C_PORT_RESET	0x14
+#define SEL_C_PORT_LINK_STATE	0x19
+#define SEL_C_PORT_CONFIG_ERROR	0x1a
+#define SEL_C_BH_PORT_RESET	0x1d
 /* request type (USB 3.0 hubs only) */
-#define SET_HUB_DEPTH 12
+#define SET_HUB_DEPTH		12
+
+static endpoint_t *
+usb_hub_interrupt_ep(usbdev_t *const dev)
+{
+	int i;
+	for (i = 0; i < dev->num_endp; ++i) {
+		if (dev->endpoints[i].type == INTERRUPT &&
+				dev->endpoints[i].direction == IN)
+			return &dev->endpoints[i];
+	}
+	return NULL;
+}
 
 static int
 usb_hub_port_status_changed(usbdev_t *const dev, const int port)
@@ -169,13 +193,99 @@ usb_hub_port_initialize(usbdev_t *const dev, const int port)
 		return;
 	if (buf[1] & PORT_CONNECTION)
 		clear_feature(dev, port, SEL_C_PORT_CONNECTION, DR_PORT);
-	if (buf[0] & PORT_CONNECTION)
+	if (buf[0] & PORT_CONNECTION) {
+		usb_debug("usbhub: Port coldplug at %d\n", port);
 		generic_hub_scanport(dev, port);
+	}
+}
+
+static int
+usb_hub_handle_port_change(usbdev_t *const dev, const int port)
+{
+	static const struct {
+		unsigned short change_bit;
+		unsigned short clear_sel;
+	} change_bits[] = {
+		{ PORT_CONNECTION,	SEL_C_PORT_CONNECTION	},
+		{ PORT_ENABLE,		SEL_C_PORT_ENABLE	},
+		{ PORT_SUSPEND,		SEL_C_PORT_SUSPEND	},
+		{ PORT_OVER_CURRENT,	SEL_C_PORT_OVER_CURRENT	},
+		{ PORT_RESET,		SEL_C_PORT_RESET	},
+		{ BH_PORT_RESET,	SEL_C_BH_PORT_RESET	},
+		{ PORT_LINK_STATE,	SEL_C_PORT_LINK_STATE	},
+		{ PORT_CONFIG_ERROR,	SEL_C_PORT_CONFIG_ERROR	},
+	};
+	int ret = 0;
+	unsigned int i;
+	unsigned short checked_bits = 0;
+	unsigned short buf[2] = { 0, 0 };
+
+	ret = get_status(dev, port, DR_PORT, sizeof(buf), buf);
+	if (ret < 0)
+		return ret;
+
+	/*
+	 * Second word holds the change bits. The interrupt transfer shows
+	 * a logical or of these bits, so we have to clear them all.
+	 */
+	for (i = 0; i < ARRAY_SIZE(change_bits); ++i) {
+		if (buf[1] & change_bits[i].change_bit)
+			clear_feature(dev, port, change_bits[i].clear_sel, DR_PORT);
+		checked_bits |= change_bits[i].change_bit;
+	}
+	if (buf[1] & ~checked_bits)
+		usb_debug("usbhub: Spurious change bit at port %d\n", port);
+
+	/* Now, handle connection changes. */
+	if (buf[1] & PORT_CONNECTION) {
+		usb_debug("usbhub: Port change at %d\n", port);
+		ret = generic_hub_scanport(dev, port);
+	}
+	return ret;
+}
+
+static void
+usb_hub_poll(usbdev_t *const dev)
+{
+	unsigned int port, i;
+	u8 buf[32] = { 0 };
+	const u8 *ibuf;
+
+	/* First, gather all change bits from finished interrupt transfers. */
+	const size_t port_bytes = MIN(ARRAY_SIZE(buf),
+			div_round_up(GEN_HUB(dev)->num_ports + 1, 8));
+	while ((ibuf = dev->controller->poll_intr_queue(GEN_HUB(dev)->data))) {
+		for (i = 0; i < port_bytes; ++i)
+			buf[i] |= ibuf[i];
+	}
+
+	for (port = 1; port <= GEN_HUB(dev)->num_ports; ++port) {
+		/* ports start at bit1; bit0 is hub status change */
+		if (buf[port / 8] & (1 << (port % 8))) {
+			if (usb_hub_handle_port_change(dev, port) < 0)
+				return;
+		}
+	}
+}
+
+static void
+usb_hub_destroy(usbdev_t *const dev)
+{
+	endpoint_t *const intr_ep = usb_hub_interrupt_ep(dev);
+	dev->controller->destroy_intr_queue(intr_ep, GEN_HUB(dev)->data);
+	generic_hub_destroy(dev);
 }
 
 void
 usb_hub_init(usbdev_t *const dev)
 {
+	endpoint_t *const intr_ep = usb_hub_interrupt_ep(dev);
+	if (!intr_ep) {
+		usb_debug("usbhub: ERROR: No interrupt-in endpoint found\n");
+		return;
+	}
+
+	/* Get number of ports from hub decriptor */
 	int type = is_usb_speed_ss(dev->speed) ? 0x2a : 0x29; /* similar enough */
 	hub_descriptor_t desc;	/* won't fit the whole thing, we don't care */
 	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,
@@ -187,10 +297,38 @@ usb_hub_init(usbdev_t *const dev)
 
 	if (is_usb_speed_ss(dev->speed))
 		usb_hub_set_hub_depth(dev);
-	if (generic_hub_init(dev, desc.bNbrPorts, &usb_hub_ops) < 0)
+
+	/*
+	 * Register interrupt transfer:
+	 *   one bit per port + one bit for the hub,
+	 *   20 transfers in the queue, like our HID driver,
+	 *   one transfer per 256ms
+	 */
+	void *const intrq = dev->controller->create_intr_queue(
+			intr_ep, intr_ep->maxpacketsize, 20, 256);
+	if (!intrq) {
+		usb_detach_device(dev->controller, dev->address);
 		return;
+	}
+
+	/*
+	 * Limit the number of ports by the max packet size of
+	 * the interrupt endpoint. This shouldn't be necessary
+	 * but prevents a potential overflow in usb_hub_poll().
+	 */
+	const unsigned int num_ports =
+		MIN(desc.bNbrPorts, intr_ep->maxpacketsize * 8 - 1);
+	if (generic_hub_init(dev, num_ports, &usb_hub_ops)) {
+		dev->controller->destroy_intr_queue(intr_ep, intrq);
+		usb_detach_device(dev->controller, dev->address);
+		return;
+	}
 
 	int port;
-	for (port = 1; port <= GEN_HUB(dev)->num_ports; ++port)
+	for (port = 1; port <= num_ports; ++port)
 		usb_hub_port_initialize(dev, port);
+
+	GEN_HUB(dev)->data = intrq;
+	dev->poll = usb_hub_poll;
+	dev->destroy = usb_hub_destroy;
 }

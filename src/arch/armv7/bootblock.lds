@@ -25,12 +25,11 @@ OUTPUT_ARCH(arm)
 TARGET(binary)
 SECTIONS
 {
-	ROMLOC = CONFIG_BOOTBLOCK_BASE - (CONFIG_BL1_SIZE_KB * 1024);
+	ROMLOC = CONFIG_BOOTBLOCK_BASE;
 
 	/* This section might be better named .setup */
 	.rom ROMLOC : {
 		_rom = .;
-		*(.bl1);
 		*(.start);
 		*(.id);
 		*(.text);

@@ -81,6 +81,10 @@ config ROMSTAGE_SIZE
 	hex
 	default 0x20000
 
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x0
+
 config CBFS_HEADER_ROM_OFFSET
 	hex
 	default 0x0100000

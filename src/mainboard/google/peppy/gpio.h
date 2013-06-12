@@ -35,7 +35,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_INPUT,         /* 9: RAM_ID1 */
 	LP_GPIO_ACPI_SCI,      /* 10: WLAN_WAKE_L_Q */
 	LP_GPIO_UNUSED,        /* 11: UNUSED */
-	LP_GPIO_IRQ_EDGE,      /* 12: TRACKPAD_INT_L */
+	LP_GPIO_INPUT_INVERT,  /* 12: TRACKPAD_INT_L (WAKE) */
 	LP_GPIO_INPUT,         /* 13: RAM_ID0 */
 	LP_GPIO_INPUT,         /* 14: EC_IN_RW */
 	LP_GPIO_UNUSED,        /* 15: UNUSED (STRAP) */
@@ -48,7 +48,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 22: UNUSED */
 	LP_GPIO_UNUSED,        /* 23: UNUSED */
 	LP_GPIO_UNUSED,        /* 24: UNUSED */
-	LP_GPIO_IRQ_EDGE,      /* 25: TOUCH_INT_L */
+	LP_GPIO_INPUT_INVERT,  /* 25: TOUCH_INT_L (WAKE) */
 	LP_GPIO_UNUSED,        /* 26: UNUSED */
 	LP_GPIO_UNUSED,        /* 27: UNUSED */
 	LP_GPIO_UNUSED,        /* 28: UNUSED */
@@ -74,10 +74,10 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 48: UNUSED */
 	LP_GPIO_UNUSED,        /* 49: UNUSED */
 	LP_GPIO_UNUSED,        /* 50: UNUSED */
-	LP_GPIO_IRQ_EDGE,      /* 51: ALS_INT_L */
-	LP_GPIO_IRQ_EDGE,      /* 52: SIM_DET */
-	LP_GPIO_ACPI_SCI,      /* 53: TRACKPAD_INT_DX (WAKE) */
-	LP_GPIO_ACPI_SCI,      /* 54: TOUCH_INT_L_DX (WAKE) */
+	LP_GPIO_INPUT,         /* 51: ALS_INT_L */
+	LP_GPIO_INPUT,         /* 52: SIM_DET */
+	LP_GPIO_PIRQ,          /* 53: TRACKPAD_INT_DX */
+	LP_GPIO_PIRQ,          /* 54: TOUCH_INT_L_DX */
 	LP_GPIO_UNUSED,        /* 55: UNUSED */
 	LP_GPIO_UNUSED,        /* 56: UNUSED */
 	LP_GPIO_OUT_HIGH,      /* 57: PP3300_CCD_EN */

@@ -29,14 +29,6 @@
  * MA 02111-1307 USA
  */
 
-.section ".bl1", "a", %progbits
-_bl1:
-	/* For now we have to live with a first stage boot loader
-	 * on ARM, which is 8KB in size and it is prepended to the
-	 * reset vector
-	 */
-	.skip (CONFIG_BL1_SIZE_KB * 1024)
-
 .section ".start", "a", %progbits
 .globl _start
 _start: b	reset

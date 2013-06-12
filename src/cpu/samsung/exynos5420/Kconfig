@@ -10,20 +10,39 @@ config EXYNOS_ACE_SHA
 	bool
 	default n
 
-config BL1_SIZE_KB
-	int
-	default 8
+# ROM image layout.
+#
+# 0x0000: vendor-provided BL1 (8k).
+# 0x2000: variable length bootblock checksum header
+# 0x2010: bootblock
+#  0x2020-0x20A0: reserved for CBFS master header.
+# 0xA000: Free for CBFS data.
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x2010
+
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x2020
+
+config CBFS_ROM_OFFSET
+	# Calculated by BOOTBLOCK_ROM_OFFSET + max bootblock size.
+	hex "offset of CBFS data in ROM"
+	default 0x0A000
+
 
 # Example SRAM/iRAM map for Exynos5420 platform:
 #
 # 0x0202_0000: vendor-provided BL1
-# 0x0202_4400: bootblock, assume up to 32KB in size
+# 0x0202_4400: variable length bootblock checksum header.
+# 0x0202_4410: bootblock, assume up to 32KB in size
 # 0x0203_0000: romstage, assume up to 128KB in size.
 # 0x0207_4000: stack pointer
 
 config BOOTBLOCK_BASE
 	hex
-	default 0x02024400
+	default 0x02024410
 
 config ROMSTAGE_BASE
 	hex
@@ -49,17 +68,6 @@ config STACK_BOTTOM
 config STACK_SIZE
 	hex
 	default 0x1000
-
-config CBFS_ROM_OFFSET
-	# Calculated by BL1 + max bootblock size.
-	hex "offset of CBFS data in ROM"
-	default 0x0A000
-
-# TODO Change this to some better address not overlapping bootblock when
-# cbfstool supports creating header in arbitrary location.
-config CBFS_HEADER_ROM_OFFSET
-	hex "offset of master CBFS header in ROM"
-	default 0x2040
 
 # TODO We may probably move this to board-specific implementation files instead
 # of KConfig values.

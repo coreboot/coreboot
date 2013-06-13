@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (C) 2010 Patrick Georgi
+ * Copyright (C) 2013 secunet Security Networks AG
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,105 +29,111 @@
 
 #define USB_DEBUG
 
-#include <libpayload.h>
+#include <usb/usb.h>
+#include "generic_hub.h"
 #include "xhci_private.h"
 #include "xhci.h"
 
-typedef struct {
-	int numports;
-	int *port;
-} rh_inst_t;
-
-#define RH_INST(dev) ((rh_inst_t*)(dev)->data)
-
-static void
-xhci_rh_enable_port (usbdev_t *dev, int port)
+static int
+xhci_rh_hub_status_changed(usbdev_t *const dev)
 {
-	// FIXME: check power situation?
-	// enable slot
-	// attach device context to slot
-	// address device
-}
-
-/* disable root hub */
-static void
-xhci_rh_disable_port (usbdev_t *dev, int port)
-{
-}
-
-static void
-xhci_rh_scanport (usbdev_t *dev, int port)
-{
-	// clear CSC
-	int val = XHCI_INST (dev->controller)->opreg->prs[port].portsc;
-	val &= PORTSC_RW_MASK;
-	val |= PORTSC_CSC;
-	XHCI_INST (dev->controller)->opreg->prs[port].portsc = val;
-
-	usb_debug("device attach status on port %x: %x\n", port, XHCI_INST (dev->controller)->opreg->prs[port].portsc & PORTSC_CCS);
+	xhci_t *const xhci = XHCI_INST(dev->controller);
+	const int changed = !!(xhci->opreg->usbsts & USBSTS_PCD);
+	if (changed)
+		xhci->opreg->usbsts =
+			(xhci->opreg->usbsts & USBSTS_PRSRV_MASK) | USBSTS_PCD;
+	return changed;
 }
 
 static int
-xhci_rh_report_port_changes (usbdev_t *dev)
+xhci_rh_port_status_changed(usbdev_t *const dev, const int port)
 {
-	int i;
-	// no change
-	if (!(XHCI_INST (dev->controller)->opreg->usbsts & USBSTS_PCD))
+	xhci_t *const xhci = XHCI_INST(dev->controller);
+	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
+
+	const int changed = !!(*portsc & PORTSC_CSC);
+	/* always clear all the status change bits */
+	*portsc = (*portsc & PORTSC_RW_MASK) | 0x00ef0000;
+	return changed;
+}
+
+static int
+xhci_rh_port_connected(usbdev_t *const dev, const int port)
+{
+	xhci_t *const xhci = XHCI_INST(dev->controller);
+	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
+
+	return *portsc & PORTSC_CCS;
+}
+
+static int
+xhci_rh_port_in_reset(usbdev_t *const dev, const int port)
+{
+	xhci_t *const xhci = XHCI_INST(dev->controller);
+	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
+
+	return !!(*portsc & PORTSC_PR);
+}
+
+static int
+xhci_rh_port_enabled(usbdev_t *const dev, const int port)
+{
+	xhci_t *const xhci = XHCI_INST(dev->controller);
+	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
+
+	return !!(*portsc & PORTSC_PED);
+}
+
+static int
+xhci_rh_port_speed(usbdev_t *const dev, const int port)
+{
+	xhci_t *const xhci = XHCI_INST(dev->controller);
+	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
+
+	if (*portsc & PORTSC_PED) {
+		return ((*portsc & PORTSC_PORT_SPEED_MASK)
+				>> PORTSC_PORT_SPEED_START)
+			- 1;
+	} else {
 		return -1;
-
-	for (i = 0; i < RH_INST (dev)->numports; i++) {
-		if (XHCI_INST (dev->controller)->opreg->prs[i].portsc & PORTSC_CSC) {
-			usb_debug("found connect status change on port %d\n", i);
-			return i;
-		}
 	}
-
-	return -1; // shouldn't ever happen
 }
 
-static void
-xhci_rh_destroy (usbdev_t *dev)
+static int
+xhci_rh_start_port_reset(usbdev_t *const dev, const int port)
 {
-	int i;
-	for (i = 0; i < RH_INST (dev)->numports; i++)
-		xhci_rh_disable_port (dev, i);
-	free (RH_INST (dev));
+	xhci_t *const xhci = XHCI_INST(dev->controller);
+	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
+
+	*portsc = (*portsc & PORTSC_RW_MASK) | PORTSC_PR;
+	return 0;
 }
 
-static void
-xhci_rh_poll (usbdev_t *dev)
-{
-	int port;
-	while ((port = xhci_rh_report_port_changes (dev)) != -1)
-		xhci_rh_scanport (dev, port);
-}
+static const generic_hub_ops_t xhci_rh_ops = {
+	.hub_status_changed	= xhci_rh_hub_status_changed,
+	.port_status_changed	= xhci_rh_port_status_changed,
+	.port_connected		= xhci_rh_port_connected,
+	.port_in_reset		= xhci_rh_port_in_reset,
+	.port_enabled		= xhci_rh_port_enabled,
+	.port_speed		= xhci_rh_port_speed,
+	.enable_port		= NULL,
+	.disable_port		= NULL,
+	.start_port_reset	= xhci_rh_start_port_reset,
+	.reset_port		= generic_hub_rh_resetport,
+};
 
 void
 xhci_rh_init (usbdev_t *dev)
 {
-	int i;
-
-	dev->destroy = xhci_rh_destroy;
-	dev->poll = xhci_rh_poll;
-
-	dev->data = malloc (sizeof (rh_inst_t));
-	if (!dev->data)
-		fatal("Not enough memory for XHCI RH.\n");
-
-	RH_INST (dev)->numports = XHCI_INST (dev->controller)->capreg->MaxPorts;
-	RH_INST (dev)->port = malloc(sizeof(int) * RH_INST (dev)->numports);
-	usb_debug("%d ports registered\n", RH_INST (dev)->numports);
-
-	for (i = 0; i < RH_INST (dev)->numports; i++) {
-		xhci_rh_enable_port (dev, i);
-		RH_INST (dev)->port[i] = -1;
-	}
-
 	/* we can set them here because a root hub _really_ shouldn't
 	   appear elsewhere */
 	dev->address = 0;
 	dev->hub = -1;
 	dev->port = -1;
 
-	usb_debug("rh init done\n");
+	const int num_ports = /* TODO: maybe we need to read extended caps */
+		(XHCI_INST(dev->controller)->capreg->hcsparams1 >> 24) & 0xff;
+	generic_hub_init(dev, num_ports, &xhci_rh_ops);
+
+	usb_debug("xHCI: root hub init done\n");
 }

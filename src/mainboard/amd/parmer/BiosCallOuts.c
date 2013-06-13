@@ -293,6 +293,13 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		/* Fan Control */
 		oem_fan_control(FchParams_env);
 
+		/* XHCI configuration */
+#if CONFIG_HUDSON_XHCI_ENABLE
+		FchParams_env->Usb.Xhci0Enable = TRUE;
+#else
+		FchParams_env->Usb.Xhci0Enable = FALSE;
+#endif
+
 		/* sata configuration */
 	}
 	printk(BIOS_DEBUG, "Done\n");

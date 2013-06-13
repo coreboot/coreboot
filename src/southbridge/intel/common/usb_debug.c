@@ -28,7 +28,14 @@
 
 unsigned int pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
+#if CONFIG_HAVE_USBDEBUG_OPTIONS
+	if (hcd_idx==0)
+		return PCI_DEV(0, 0x1a, 0);
+	else
+		return PCI_DEV(0, 0x1d, 0);
+#else
 	return PCI_DEV(0, 0x1d, 7);
+#endif
 }
 
 /* Required for successful build, but currently empty. */
@@ -39,8 +46,21 @@ void set_debug_port(unsigned int port)
 
 void enable_usbdebug(unsigned int ehci_idx, unsigned int port)
 {
-	u32 dbgctl;
+	u32 dbgctl, class;
 	device_t dev = pci_ehci_dbg_dev(ehci_idx);
+
+	class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
+	if (class != PCI_EHCI_CLASSCODE) {
+		/* If we enter here before RCBA programming, EHCI function may
+		 * appear with the highest function number instead.
+		 */
+		dev |= PCI_DEV(0, 0, 7);
+		class = pci_read_config32(dev, PCI_CLASS_REVISION) >> 8;
+	}
+
+	/* Bail out. No console to complain in. */
+	if (class != PCI_EHCI_CLASSCODE)
+		return;
 
 	/* Set the EHCI BAR address. */
 	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);

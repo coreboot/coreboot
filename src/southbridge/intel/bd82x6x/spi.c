@@ -30,11 +30,17 @@
 #include <device/pci_ids.h>
 
 #include <spi-generic.h>
+#include <kconfig.h>
 
 #define min(a, b) ((a)<(b)?(a):(b))
 
 #ifdef __SMM__
+#if config_enabled (CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) || config_enabled (CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE)
 #include <northbridge/intel/sandybridge/pcie_config.c>
+#endif
+#if config_enabled (CONFIG_NORTHBRIDGE_INTEL_NEHALEM)
+#include <northbridge/intel/nehalem/pcie_config.c>
+#endif
 #define pci_read_config_byte(dev, reg, targ)\
 	*(targ) = pcie_read_config8(dev, reg)
 #define pci_read_config_word(dev, reg, targ)\
@@ -315,7 +321,8 @@ static inline int get_ich_version(uint16_t device_id)
 	if ((device_id >= PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MIN &&
 	     device_id <= PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MAX) ||
 	    (device_id >= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MIN &&
-	     device_id <= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MAX))
+	     device_id <= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MAX)
+	    || device_id == 0x3b07)
 		return 9;
 
 	return 0;

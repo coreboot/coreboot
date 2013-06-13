@@ -60,3 +60,18 @@ int smbus_read_byte(unsigned device, unsigned address)
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
 
+int smbus_write_byte(unsigned device, unsigned address, u8 data)
+{
+  return do_smbus_write_byte(SMBUS_IO_BASE, device, address, data);
+}
+
+int smbus_block_read(unsigned device, unsigned cmd, u8 bytes, u8 *buf)
+{
+	return do_smbus_block_read(SMBUS_IO_BASE, device, cmd, bytes, buf);
+}
+
+int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf)
+{
+	return do_smbus_block_write(SMBUS_IO_BASE, device, cmd, bytes, buf);
+}
+

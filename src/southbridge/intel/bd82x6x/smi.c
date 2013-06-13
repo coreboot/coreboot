@@ -30,8 +30,12 @@
 #include <string.h>
 #include "pch.h"
 
-#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
+#if config_enabled (CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) || config_enabled (CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE)
 #include "northbridge/intel/sandybridge/sandybridge.h"
+#endif
+
+#if config_enabled (CONFIG_NORTHBRIDGE_INTEL_NEHALEM)
+#include "northbridge/intel/nehalem/nehalem.h"
 #endif
 
 extern unsigned char _binary_smm_start;

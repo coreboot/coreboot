@@ -51,8 +51,11 @@ static void pch_enable_ioapic(struct device *dev)
 	/* Enable ACPI I/O range decode */
 	pci_write_config8(dev, ACPI_CNTL, ACPI_EN);
 
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 	set_ioapic_id(IO_APIC_ADDR, 0x02);
-
+#else
+	set_ioapic_id(IO_APIC_ADDR, 0x01);
+#endif
 	/* affirm full set of redirection table entries ("write once") */
 	reg32 = io_apic_read(IO_APIC_ADDR, 0x01);
 	io_apic_write(IO_APIC_ADDR, 0x01, reg32);
@@ -377,6 +380,96 @@ static void ppt_pm_init(struct device *dev)
 	RCBA32_AND_OR(0x21b0, ~0UL, 0xf);
 }
 
+static void mobile5_pm_init(struct device *dev)
+{
+	int i;
+
+	printk(BIOS_DEBUG, "Mobile 5 PM init\n");
+	pci_write_config8(dev, 0xa9, 0x47);
+
+	RCBA32 (0x1d44) = 0x00000000;
+	(void) RCBA32 (0x1d44);
+	RCBA32 (0x1d48) = 0x00030000;
+	(void) RCBA32 (0x1d48);
+	RCBA32 (0x1e80) = 0x000c0801;
+	(void) RCBA32 (0x1e80);
+	RCBA32 (0x1e84) = 0x000200f0;
+	(void) RCBA32 (0x1e84);
+
+	const u32 rcba2010[] =
+		{
+			/* 2010: */ 0x00188200, 0x14000016, 0xbc4abcb5, 0x00000000,
+			/* 2020: */ 0xf0c9605b, 0x13683040, 0x04c8f16e, 0x09e90170
+		};
+	for (i = 0; i < sizeof (rcba2010) / sizeof (rcba2010[0]); i++)
+	{
+		RCBA32 (0x2010 + 4 * i) = rcba2010[i];
+		RCBA32 (0x2010 + 4 * i);
+	}
+
+	RCBA32 (0x2100) = 0x00000000;
+	(void) RCBA32 (0x2100);
+	RCBA32 (0x2104) = 0x00000757;
+	(void) RCBA32 (0x2104);
+	RCBA32 (0x2108) = 0x00170001;
+	(void) RCBA32 (0x2108);
+
+	RCBA32 (0x211c) = 0x00000000;
+	(void) RCBA32 (0x211c);
+	RCBA32 (0x2120) = 0x00010000;
+	(void) RCBA32 (0x2120);
+
+	RCBA32 (0x21fc) = 0x00000000;
+	(void) RCBA32 (0x21fc);
+	RCBA32 (0x2200) = 0x20000044;
+	(void) RCBA32 (0x2200);
+	RCBA32 (0x2204) = 0x00000001;
+	(void) RCBA32 (0x2204);
+	RCBA32 (0x2208) = 0x00003457;
+	(void) RCBA32 (0x2208);
+
+	const u32 rcba2210[] =
+		{
+			/* 2210 */ 0x00000000, 0x00000001, 0xa0fff210, 0x0000df00,
+			/* 2220 */ 0x00e30880, 0x00000070, 0x00004000, 0x00000000,
+			/* 2230 */ 0x00e30880, 0x00000070, 0x00004000, 0x00000000,
+			/* 2240 */ 0x00002301, 0x36000000, 0x00010107, 0x00160000,
+			/* 2250 */ 0x00001b01, 0x36000000, 0x00010107, 0x00160000,
+			/* 2260 */ 0x00000601, 0x16000000, 0x00010107, 0x00160000,
+			/* 2270 */ 0x00001c01, 0x16000000, 0x00010107, 0x00160000
+		};
+
+	for (i = 0; i < sizeof (rcba2210) / sizeof (rcba2210[0]); i++)
+	{
+		RCBA32 (0x2210 + 4 * i) = rcba2210[i];
+		RCBA32 (0x2210 + 4 * i);
+	}
+
+	const u32 rcba2300[] =
+		{
+			/* 2300: */ 0x00000000, 0x40000000, 0x4646827b, 0x6e803131,
+			/* 2310: */ 0x32c77887, 0x00077733, 0x00007447, 0x00000040,
+			/* 2320: */ 0xcccc0cfc, 0x0fbb0fff
+		};
+
+	for (i = 0; i < sizeof (rcba2300) / sizeof (rcba2300[0]); i++)
+	{
+		RCBA32 (0x2300 + 4 * i) = rcba2300[i];
+		RCBA32 (0x2300 + 4 * i);
+	}
+
+	RCBA32 (0x37fc) = 0x00000000;
+	(void) RCBA32 (0x37fc);
+	RCBA32 (0x3dfc) = 0x00000000;
+	(void) RCBA32 (0x3dfc);
+	RCBA32 (0x3e7c) = 0xffffffff;
+	(void) RCBA32 (0x3e7c);
+	RCBA32 (0x3efc) = 0x00000000;
+	(void) RCBA32 (0x3efc);
+	RCBA32 (0x3f00) = 0x0000010b;
+	(void) RCBA32 (0x3f00);
+}
+
 static void enable_hpet(void)
 {
 	u32 reg32;
@@ -386,6 +479,10 @@ static void enable_hpet(void)
 	reg32 |= (1 << 7); // HPET Address Enable
 	reg32 &= ~(3 << 0);
 	RCBA32(HPTC) = reg32;
+
+#if config_enabled (CONFIG_NORTHBRIDGE_INTEL_NEHALEM)
+	write32(0xfed00010, read32(0xfed00010) | 1);
+#endif
 }
 
 static void enable_clock_gating(device_t dev)
@@ -489,12 +586,14 @@ static void pch_disable_smm_only_flashing(struct device *dev)
 
 static void pch_fixups(struct device *dev)
 {
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 	u8 gen_pmcon_2;
 
 	/* Indicate DRAM init done for MRC S3 to know it can resume */
 	gen_pmcon_2 = pci_read_config8(dev, GEN_PMCON_2);
 	gen_pmcon_2 |= (1 << 7);
 	pci_write_config8(dev, GEN_PMCON_2, gen_pmcon_2);
+#endif
 
 	/*
 	 * Enable DMI ASPM in the PCH
@@ -541,6 +640,9 @@ static void lpc_init(struct device *dev)
 		break;
 	case PCH_TYPE_PPT: /* PantherPoint */
 		ppt_pm_init(dev);
+		break;
+	case PCH_TYPE_MOBILE5:
+		mobile5_pm_init (dev);
 		break;
 	default:
 		printk(BIOS_ERR, "Unknown Chipset: 0x%04x\n", dev->device);
@@ -686,7 +788,7 @@ static const unsigned short pci_device_ids[] = { 0x1c46, 0x1c47, 0x1c49, 0x1c4a,
 						 0x1c4b, 0x1c4c, 0x1c4d, 0x1c4e,
 						 0x1c4f, 0x1c50, 0x1c52, 0x1c54,
 						 0x1e55, 0x1c56, 0x1e57, 0x1c5c,
-						 0x1e5d, 0x1e5e, 0x1e5f,
+						 0x1e5d, 0x1e5e, 0x1e5f, 0x3b07,
 						 0 };
 
 static const struct pci_driver pch_lpc __pci_driver = {

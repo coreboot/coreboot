@@ -36,8 +36,15 @@
  *  1. the chipset can do it
  *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
  */
-#include <northbridge/intel/sandybridge/sandybridge.h>
+#if config_enabled (CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) || config_enabled (CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE)
+#include "northbridge/intel/sandybridge/sandybridge.h"
 #include <northbridge/intel/sandybridge/pcie_config.c>
+#endif
+
+#if config_enabled (CONFIG_NORTHBRIDGE_INTEL_NEHALEM)
+#include "northbridge/intel/nehalem/nehalem.h"
+#include <northbridge/intel/nehalem/pcie_config.c>
+#endif
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value

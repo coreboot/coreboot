@@ -12,4 +12,5 @@ source src/southbridge/intel/i82870/Kconfig
 source src/southbridge/intel/pxhd/Kconfig
 source src/southbridge/intel/sch/Kconfig
 source src/southbridge/intel/bd82x6x/Kconfig
+source src/southbridge/intel/ibexpeak/Kconfig
 source src/southbridge/intel/lynxpoint/Kconfig

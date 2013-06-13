@@ -38,7 +38,12 @@
 #include <elog.h>
 
 #ifdef __SMM__
-# include <northbridge/intel/sandybridge/pcie_config.c>
+#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
+#include <northbridge/intel/sandybridge/pcie_config.c>
+#endif
+#if CONFIG_NORTHBRIDGE_INTEL_CALPELLA
+#include <northbridge/intel/calpella/pcie_config.c>
+#endif
 #else
 # include <device/device.h>
 # include <device/pci.h>

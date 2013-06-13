@@ -27,7 +27,7 @@
 #include <cpu/intel/microcode/microcode.c>
 
 #if CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK
-#include <southbridge/intel/ibexpeak/pch.h>
+#include <southbridge/intel/model_2065x/pch.h>
 #include "model_2065x.h"
 #else
 #error "CPU must be paired with Intel BD82X6X or C216 southbridge"

@@ -72,6 +72,14 @@ config GBE_BIN_PATH
 	depends on HAVE_GBE_BIN
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/gbe.bin"
 
+config ME_BIN_PATH
+	string "Path to management engine firmware"
+	default "3rdparty/mainboard/$(MAINBOARDDIR)/me.bin"
+
+config IFD_BIN_PATH
+	string "Path to intel firmware descriptor"
+	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock Management Engine section"
 	default n

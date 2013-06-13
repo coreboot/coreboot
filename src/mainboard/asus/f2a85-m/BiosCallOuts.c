@@ -117,8 +117,13 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		FchParams_env->Hwm.HwmFchtsiAutoPoll = FALSE;/* 1 enable, 0 disable TSI Auto Polling */
 
 		/* XHCI configuration */
+#if CONFIG_HUDSON_XHCI_ENABLE
 		FchParams_env->Usb.Xhci0Enable = TRUE;
 		FchParams_env->Usb.Xhci1Enable = TRUE;
+#else
+		FchParams_env->Usb.Xhci0Enable = FALSE;
+		FchParams_env->Usb.Xhci1Enable = FALSE;
+#endif
 	}
 	printk(BIOS_DEBUG, "Done\n");
 

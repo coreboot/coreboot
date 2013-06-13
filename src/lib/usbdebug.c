@@ -22,6 +22,9 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/byteorder.h>
+#include <cpu/x86/car.h>
+#include <cbmem.h>
+#include <string.h>
 
 #include <usb_ch9.h>
 #include <ehci.h>
@@ -85,6 +88,8 @@
 
 #define DBGP_MAX_PACKET		8
 #define DBGP_LOOPS 1000
+
+static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
 
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 {
@@ -574,8 +579,7 @@ next_debug_port:
 
 int early_usbdebug_init(void)
 {
-	struct ehci_debug_info *dbg_info = (struct ehci_debug_info *)
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+	struct ehci_debug_info *dbg_info = car_get_var_ptr(&glob_dbg_info);
 
 	return usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }
@@ -585,8 +589,7 @@ void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
 #if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
-		dbg_info = (struct ehci_debug_info *)
-		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+		dbg_info = car_get_var_ptr(&glob_dbg_info);
 	}
 
 	if (dbg_info->ehci_debug) {
@@ -604,8 +607,7 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 #if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
-		dbg_info = (struct ehci_debug_info *)
-		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+		dbg_info = car_get_var_ptr(&glob_dbg_info);
 	}
 
 	if (dbg_info->ehci_debug && dbg_info->bufidx > 0) {
@@ -614,3 +616,21 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 	}
 #endif
 }
+
+#if CONFIG_CAR_MIGRATION && defined(__PRE_RAM__)
+static void migrate_ehci_debug(void)
+{
+	struct ehci_debug_info *dbg_info;
+	struct ehci_debug_info *dbg_info_cbmem;
+
+	dbg_info = car_get_var_ptr(&glob_dbg_info);
+
+	dbg_info_cbmem = cbmem_add(CBMEM_ID_EHCI_DEBUG, sizeof(*dbg_info));
+
+	if (dbg_info_cbmem == NULL)
+		return;
+
+	memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
+}
+CAR_MIGRATE(migrate_ehci_debug);
+#endif

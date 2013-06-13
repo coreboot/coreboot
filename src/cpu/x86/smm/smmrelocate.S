@@ -37,6 +37,8 @@
 #include "../../../southbridge/intel/sch/sch.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_BD82X6X || CONFIG_SOUTHBRIDGE_INTEL_C216
 #include "../../../southbridge/intel/bd82x6x/pch.h"
+#elif CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK
+#include "../../../southbridge/intel/ibexpeak/pch.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_I82801IX
 #include "../../../southbridge/intel/i82801ix/i82801ix.h"
 #else

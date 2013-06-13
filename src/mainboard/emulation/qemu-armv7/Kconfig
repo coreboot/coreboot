@@ -45,10 +45,6 @@ config MAINBOARD_VENDOR
 	string
 	default "ARM Ltd."
 
-config BOOTBLOCK_MAINBOARD_INIT
-	string
-	default "mainboard/emulation/qemu-armv7/bootblock.c"
-
 config DRAM_SIZE_MB
 	int
 	default 1024

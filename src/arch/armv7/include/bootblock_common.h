@@ -7,8 +7,5 @@
 #else
 static void bootblock_mainboard_init(void)
 {
-#ifdef CONFIG_BOOTBLOCK_CPU_INIT
-	bootblock_cpu_init();
-#endif
 }
 #endif

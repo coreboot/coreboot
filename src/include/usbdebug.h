@@ -24,9 +24,9 @@
 #include <ehci.h>
 
 struct ehci_debug_info {
-        void *ehci_caps;
-        void *ehci_regs;
-        void *ehci_debug;
+        u32 ehci_caps;
+        u32 ehci_regs;
+        u32 ehci_debug;
         u32 devnum;
         u32 endpoint_out;
         u32 endpoint_in;

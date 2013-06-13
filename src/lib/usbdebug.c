@@ -22,6 +22,9 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/byteorder.h>
+#include <cpu/x86/car.h>
+#include <cbmem.h>
+#include <string.h>
 
 #include <usb_ch9.h>
 #include <ehci.h>
@@ -85,6 +88,8 @@
 
 #define DBGP_MAX_PACKET		8
 #define DBGP_LOOPS 1000
+
+static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
 
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 {
@@ -204,7 +209,7 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
 
 int dbgp_bulk_write_x(struct ehci_debug_info *dbg_info, const char *bytes, int size)
 {
-	return dbgp_bulk_write(dbg_info->ehci_debug, dbg_info->devnum,
+	return dbgp_bulk_write((struct ehci_dbg_port *) dbg_info->ehci_debug, dbg_info->devnum,
 			dbg_info->endpoint_out, bytes, size);
 }
 
@@ -241,7 +246,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 
 int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size)
 {
-	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum,
+	return dbgp_bulk_read((struct ehci_dbg_port *) dbg_info->ehci_debug, dbg_info->devnum,
 			dbg_info->endpoint_in, data, size, DBGP_LOOPS);
 }
 
@@ -383,7 +388,7 @@ int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *in
 	ehci_regs  = (struct ehci_regs *)(ehci_bar +
 			HC_LENGTH(read32((unsigned long)&ehci_caps->hc_capbase)));
 	ehci_debug = (struct ehci_dbg_port *)(ehci_bar + offset);
-	info->ehci_debug = (void *)0;
+	info->ehci_debug = 0;
 	info->bufidx = 0;
 try_next_time:
 	port_map_tried = 0;
@@ -541,9 +546,9 @@ try_next_port:
 	}
 	dbgp_printk("Test write done\n");
 
-	info->ehci_caps = ehci_caps;
-	info->ehci_regs = ehci_regs;
-	info->ehci_debug = ehci_debug;
+	info->ehci_caps = (u32) ehci_caps;
+	info->ehci_regs = (u32) ehci_regs;
+	info->ehci_debug = (u32) ehci_debug;
 	info->devnum = devnum;
 	info->endpoint_out = dbgp_endpoint_out;
 	info->endpoint_in = dbgp_endpoint_in;
@@ -574,8 +579,7 @@ next_debug_port:
 
 int early_usbdebug_init(void)
 {
-	struct ehci_debug_info *dbg_info = (struct ehci_debug_info *)
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+	struct ehci_debug_info *dbg_info = car_get_var_ptr(&glob_dbg_info);
 
 	return usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }
@@ -585,8 +589,7 @@ void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
 #if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
-		dbg_info = (struct ehci_debug_info *)
-		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+		dbg_info = car_get_var_ptr(&glob_dbg_info);
 	}
 
 	if (dbg_info->ehci_debug) {
@@ -604,8 +607,7 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 #if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
-		dbg_info = (struct ehci_debug_info *)
-		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+		dbg_info = car_get_var_ptr(&glob_dbg_info);
 	}
 
 	if (dbg_info->ehci_debug && dbg_info->bufidx > 0) {
@@ -614,3 +616,21 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 	}
 #endif
 }
+
+#if CONFIG_CAR_MIGRATION && defined(__PRE_RAM__)
+static void migrate_ehci_debug(void)
+{
+	struct ehci_debug_info *dbg_info;
+	struct ehci_debug_info *dbg_info_cbmem;
+
+	dbg_info = car_get_var_ptr(&glob_dbg_info);
+
+	dbg_info_cbmem = cbmem_add(CBMEM_ID_EHCI_DEBUG, sizeof(*dbg_info));
+
+	if (dbg_info_cbmem == NULL)
+		return;
+
+	memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
+}
+CAR_MIGRATE(migrate_ehci_debug);
+#endif

@@ -32,20 +32,20 @@ void set_ehci_base(unsigned ehci_base)
 	if (!dbg_info.ehci_debug)
 		return;
 
-	diff = (unsigned)dbg_info.ehci_caps - ehci_base;
+	diff = dbg_info.ehci_caps - ehci_base;
 	dbg_info.ehci_regs -= diff;
 	dbg_info.ehci_debug -= diff;
-	dbg_info.ehci_caps = (void*)ehci_base;
+	dbg_info.ehci_caps = ehci_base;
 }
 
 void set_ehci_debug(unsigned ehci_debug)
 {
-	dbg_info.ehci_debug = (void*)ehci_debug;
+	dbg_info.ehci_debug = ehci_debug;
 }
 
 unsigned get_ehci_debug(void)
 {
-	return (unsigned)dbg_info.ehci_debug;
+	return dbg_info.ehci_debug;
 }
 
 static void dbgp_init(void)

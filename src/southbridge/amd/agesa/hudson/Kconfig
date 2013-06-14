@@ -40,11 +40,21 @@ config EHCI_DEBUG_OFFSET
 	hex
 	default 0xe0
 
+config HUDSON_XHCI_ENABLE
+	bool "Enable Hudson XHCI Controller"
+	default y
+	help
+	  The XHCI controller must be enabled and the XHCI firmware
+	  must be added in order to have USB 3.0 support configured
+	  by coreboot. The OS will be responsible for enabling the XHCI
+	  controller if the the XHCI firmware is available but the
+	  XHCI controller is not enabled by coreboot. 
+
 config HUDSON_XHCI_FWM
 	bool "Add xhci firmware"
 	default y
-        help
-	  Add Hudson 2/3/4 XHCI Firmware to support the onboard usb3.0
+	help
+	  Add Hudson 2/3/4 XHCI Firmware to support the onboard USB 3.0
 
 config HUDSON_IMC_FWM
 	bool "Add imc firmware"

@@ -40,11 +40,19 @@ config EHCI_DEBUG_OFFSET
 	hex
 	default 0xe0
 
-config HUDSON_XHCI_FWM
-	bool "Add xhci firmware"
+config HUDSON_XHCI_ENABLE
+	bool "Enable Hudson XHCI Controller"
 	default y
-        help
-	  Add Hudson 2/3/4 XHCI Firmware to support the onboard usb3.0
+	help
+	  The XHCI controller must be enabled and the XHCI firmware
+	  must be added for USB 3.0 support.
+
+config HUDSON_XHCI_FWM
+	bool "Add xhci.bin firmware"
+	depends on HUDSON_XHCI_ENABLE
+	default y
+	help
+	  Add Hudson 2/3/4 XHCI Firmware to support the onboard USB 3.0
 
 config HUDSON_IMC_FWM
 	bool "Add imc firmware"

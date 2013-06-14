@@ -25,6 +25,11 @@ config: checkout
 	echo "CONFIG_COREBOOT=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_DEBUG_SERIAL=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_DEBUG_SERIAL_PORT=0x3f8" >> $(OUT)/seabios/.config
+ifneq (,$(filter y,$(CONFIG_PCI_ROM_RUN) $(CONFIG_VGA_ROM_RUN)))
+	echo "CONFIG_OPTIONROMS_DEPLOYED=y" >> $(OUT)/seabios/.config
+else
+	echo "# CONFIG_OPTIONROMS_DEPLOYED is not set" >> $(OUT)/seabios/.config
+endif
 	echo "CONFIG_COREBOOT_FLASH=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_LZMA=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_FLASH_FLOPPY=y" >> $(OUT)/seabios/.config

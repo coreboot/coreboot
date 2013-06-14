@@ -31,6 +31,10 @@ config CPU_AMD_AGESA
 
 if CPU_AMD_AGESA
 
+config NUM_IPI_STARTS
+	int
+	default 1
+
 config UDELAY_IO
 	bool
 	default n

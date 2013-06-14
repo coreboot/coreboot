@@ -389,9 +389,20 @@ set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 			endpoint_descriptor_t *endp =
 				(endpoint_descriptor_t *) (((char *) current)
 							   + current->bLength);
-			/* Skip any non-endpoint descriptor */
-			if (endp->bDescriptorType != 0x05)
-				endp = (endpoint_descriptor_t *)(((char *)endp) + ((char *)endp)[0]);
+			/* Search only if endpoints exist */
+			if (current->bNumEndPoints != 0) {
+				/* Skip any non-endpoint descriptor */
+				while ((endp->bDescriptorType != 0x05) && (endp->bDescriptorType != 0x04) && (endp->bLength !=0)) {
+					endp = (endpoint_descriptor_t *)((char *)endp + endp->bLength); 
+				}
+				if (endp->bDescriptorType != 0x05) {
+					controller->devices[adr]->destroy(controller->devices[adr]);
+					free(controller->devices[adr]);
+					controller->devices[adr] = NULL;
+					return -1;
+				}
+
+			}
 
 			memset (dev->endpoints, 0, sizeof (dev->endpoints));
 			dev->num_endp = 1;	// 0 always exists

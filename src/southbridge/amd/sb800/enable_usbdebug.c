@@ -50,6 +50,7 @@ void enable_usbdebug(unsigned int port)
 
 	pci_write_config32(PCI_DEV(0, SB800_DEVN_BASE + 0x12, 2),
 			   EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
-	pci_write_config8(PCI_DEV(0, SB800_DEVN_BASE + 0x12, 2), 0x04, 0x6);	/* mem space enabe */
+	pci_write_config8(PCI_DEV(0, SB800_DEVN_BASE + 0x12, 2),
+				PCI_COMMAND, PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 	set_debug_port(port);
 }

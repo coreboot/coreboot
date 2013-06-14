@@ -1,0 +1,61 @@
+if BOARD_LENOVO_X201
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_MODEL_2065X
+	select NORTHBRIDGE_INTEL_NEHALEM
+	select SOUTHBRIDGE_INTEL_IBEXPEAK
+	select SOUTHBRIDGE_RICOH_RL5C476
+	select SUPERIO_NSC_PC87382
+	select SUPERIO_NSC_PC87392
+	select EC_LENOVO_PMH7
+	select EC_LENOVO_H8
+	select DRIVERS_ICS_954309
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select MMCONF_SUPPORT
+	select GFXUMA
+	select BOARD_ROMSIZE_KB_8192
+	select CHANNEL_XOR_RANDOMIZATION
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select UDELAY_TSC
+	select EARLY_CBMEM_INIT
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MAINBOARD_DO_NATIVE_VGA_INIT
+
+config MAINBOARD_DIR
+	string
+	default lenovo/x201
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "3626EN1"
+
+config MAINBOARD_VERSION
+	string
+	default "ThinkPad X201"
+
+config MAINBOARD_VENDOR
+	string
+	default "LENOVO"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 4
+
+config CPU_ADDR_BITS
+	int
+	default 36
+
+endif

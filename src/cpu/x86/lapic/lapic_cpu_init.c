@@ -141,7 +141,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		}
 		return 0;
 	}
-#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_INTEL_MODEL_206AX && !CONFIG_CPU_INTEL_MODEL_2065X
+#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_AMD_AGESA && !CONFIG_CPU_INTEL_MODEL_206AX && !CONFIG_CPU_INTEL_MODEL_2065X
 	mdelay(10);
 #endif
 

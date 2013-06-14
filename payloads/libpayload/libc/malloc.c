@@ -51,11 +51,12 @@ static void *hstart = (void *)&_heap;
 static void *hend = (void *)&_eheap;
 
 typedef unsigned int hdrtype_t;
+#define HDRSIZE (sizeof(hdrtype_t))
 
-#define MAGIC     (0x2a << 26)
-#define FLAG_FREE (1 << 25)
-#define SIZE_BITS 25
-#define MAX_SIZE  ((1 << SIZE_BITS) - 1)
+#define SIZE_BITS ((HDRSIZE << 3) - 7)
+#define MAGIC     (((hdrtype_t)0x2a) << (SIZE_BITS + 1))
+#define FLAG_FREE (((hdrtype_t)0x01) << (SIZE_BITS + 0))
+#define MAX_SIZE  ((((hdrtype_t)0x01) << SIZE_BITS) - 1)
 
 #define SIZE(_h) ((_h) & MAX_SIZE)
 
@@ -63,8 +64,6 @@ typedef unsigned int hdrtype_t;
 
 #define FREE_BLOCK(_s) _HEADER(_s, FLAG_FREE)
 #define USED_BLOCK(_s) _HEADER(_s, 0)
-
-#define HDRSIZE (sizeof(hdrtype_t))
 
 #define IS_FREE(_h) (((_h) & (MAGIC | FLAG_FREE)) == (MAGIC | FLAG_FREE))
 #define HAS_MAGIC(_h) (((_h) & MAGIC) == MAGIC)
@@ -93,7 +92,7 @@ static void *alloc(int len)
 	hdrtype_t volatile *ptr = (hdrtype_t volatile *) hstart;
 
 	/* Align the size. */
-	len = (len + 3) & ~3;
+	len = (len + HDRSIZE - 1) & ~(HDRSIZE - 1);
 
 	if (!len || len > MAX_SIZE)
 		return (void *)NULL;

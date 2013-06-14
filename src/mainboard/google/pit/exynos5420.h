@@ -19,6 +19,7 @@
 
 /* I2C */
 #define I2C_0_SPEED 100000
+#define I2C_4_SPEED 100000
 #define I2C_SLAVE 0
 
 /* Voltages */

@@ -33,7 +33,7 @@ config ENABLE_VMX
 
 config MICROCODE_INCLUDE_PATH
 	string
-	default "3rdparty/mainboard/lenovo/x201"
+	default "src/cpu/intel/model_2065x"
 
 config XIP_ROM_SIZE
 	hex

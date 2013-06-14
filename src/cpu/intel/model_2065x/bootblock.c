@@ -30,7 +30,7 @@
 #include <southbridge/intel/ibexpeak/pch.h>
 #include "model_2065x.h"
 #else
-#error "CPU must be paired with Intel BD82X6X or C216 southbridge"
+#error "CPU must be paired with Intel Ibex Peak southbridge"
 #endif
 
 static void set_var_mtrr(

@@ -165,10 +165,8 @@ void mainboard_romstage_entry(unsigned long bist)
 		.gpio_map = &mainboard_gpio_map,
 		.rcba_config = &rcba_config[0],
 		.bist = bist,
+		.copy_spd = copy_spd,
 	};
-
-	/* Prepare SPD data */
-	copy_spd(&pei_data);
 
 	/* Call into the real romstage main with this board's attributes. */
 	romstage_common(&romstage_params);

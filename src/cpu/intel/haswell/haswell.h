@@ -151,6 +151,7 @@ struct romstage_params {
 	const void *gpio_map;
 	const struct rcba_config_instruction *rcba_config;
 	unsigned long bist;
+	void (*copy_spd)(struct pei_data *);
 };
 void mainboard_romstage_entry(unsigned long bist);
 void romstage_common(const struct romstage_params *params);

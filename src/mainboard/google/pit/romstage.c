@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.
+ * Copyright 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  */
 
 #include <types.h>
+#include <stdlib.h>
 
 #include <armv7.h>
 #include <cbfs.h>
@@ -35,60 +36,73 @@
 #include <console/console.h>
 #include <arch/stages.h>
 
-#include <drivers/maxim/max77686/max77686.h>
+#include <drivers/maxim/max77802/max77802.h>
 #include <device/i2c.h>
 
 #include "exynos5420.h"
 
-#define PMIC_BUS	0
 #define MMC0_GPIO_PIN	(58)
+
+struct pmic_write
+{
+	int or_orig; // Whether to or in the original value.
+	uint8_t reg; // Register to write.
+	uint8_t val; // Value to write.
+};
+
+/*
+ * Use read-modify-write for MAX77802 control registers and clobber the
+ * output voltage setting (BUCK?DVS?) registers.
+ */
+struct pmic_write pmic_writes[] =
+{
+	{ 1, MAX77802_REG_PMIC_32KHZ, MAX77802_32KHCP_EN },
+	{ 0, MAX77802_REG_PMIC_BUCK1DVS1, MAX77802_BUCK1DVS1_1V },
+	{ 1, MAX77802_REG_PMIC_BUCK1CTRL, MAX77802_BUCK_TYPE1_ON |
+					  MAX77802_BUCK_TYPE1_IGNORE_PWRREQ },
+	{ 0, MAX77802_REG_PMIC_BUCK2DVS1, MAX77802_BUCK2DVS1_1V },
+	{ 1, MAX77802_REG_PMIC_BUCK2CTRL1, MAX77802_BUCK_TYPE2_ON |
+					   MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
+	{ 0, MAX77802_REG_PMIC_BUCK3DVS1, MAX77802_BUCK3DVS1_1V },
+	{ 1, MAX77802_REG_PMIC_BUCK3CTRL1, MAX77802_BUCK_TYPE2_ON |
+					   MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
+	{ 0, MAX77802_REG_PMIC_BUCK4DVS1, MAX77802_BUCK4DVS1_1V },
+	{ 1, MAX77802_REG_PMIC_BUCK4CTRL1, MAX77802_BUCK_TYPE2_ON |
+					   MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
+	{ 0, MAX77802_REG_PMIC_BUCK6DVS1, MAX77802_BUCK6DVS1_1V },
+	{ 1, MAX77802_REG_PMIC_BUCK6CTRL, MAX77802_BUCK_TYPE1_ON |
+					  MAX77802_BUCK_TYPE1_IGNORE_PWRREQ }
+};
 
 static void setup_power(void)
 {
 	int error = 0;
+	int i;
 
 	power_init();
 
 	/* Initialize I2C bus to configure PMIC. */
-	exynos_pinmux_i2c0();
-	i2c_init(0, I2C_0_SPEED, 0x00);
+	exynos_pinmux_i2c4();
+	i2c_init(4, I2C_4_SPEED, 0x00);
 
 	printk(BIOS_DEBUG, "%s: Setting up PMIC...\n", __func__);
-	/*
-	 * We're using CR1616 coin cell battery that is non-rechargeable
-	 * battery. But, BBCHOSTEN bit of the BBAT Charger Register in
-	 * MAX77686 is enabled by default for charging coin cell.
-	 *
-	 * Also, we cannot meet the coin cell reverse current spec. in UL
-	 * standard if BBCHOSTEN bit is enabled.
-	 *
-	 * Disable Coin BATT Charging
-	 */
-	error = max77686_disable_backup_batt(PMIC_BUS);
 
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK2, VDD_ARM_MV,
-						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK3, VDD_INT_UV,
-						REG_ENABLE, MAX77686_UV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK1, VDD_MIF_MV,
-						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_BUCK4, VDD_G3D_MV,
-						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO2, VDD_LDO2_MV,
-						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO3, VDD_LDO3_MV,
-						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO5, VDD_LDO5_MV,
-						REG_ENABLE, MAX77686_MV);
-	error |= max77686_volsetting(PMIC_BUS, PMIC_LDO10, VDD_LDO10_MV,
-						REG_ENABLE, MAX77686_MV);
+	for (i = 0; i < ARRAY_SIZE(pmic_writes); i++) {
+		uint8_t data = 0;
+		uint8_t reg = pmic_writes[i].reg;
 
-	error |= max77686_enable_32khz_cp(PMIC_BUS);
-
-	if (error) {
-		printk(BIOS_CRIT, "%s: PMIC error: %#x\n", __func__, error);
-		die("Failed to intialize PMIC.\n");
+		if (pmic_writes[i].or_orig)
+			error |= i2c_read(4, MAX77802_I2C_ADDR,
+					  reg, sizeof(reg),
+					  &data, sizeof(data));
+		data |= pmic_writes[i].val;
+		error |= i2c_write(4, MAX77802_I2C_ADDR,
+				   reg, sizeof(reg),
+				   &data, sizeof(data));
 	}
+
+	if (error)
+		die("Failed to intialize PMIC.\n");
 }
 
 static void setup_storage(void)

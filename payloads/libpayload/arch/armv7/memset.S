@@ -27,6 +27,7 @@
  * memset again.
  */
 
+.type memset, function
 .globl memset
 memset:
 	ands	r3, r0, #3		@ 1 unaligned?

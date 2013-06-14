@@ -102,8 +102,7 @@ static struct device_operations usb_ehci_ops = {
 	.ops_pci		= &lops_pci,
 };
 
-static const unsigned short pci_device_ids[] = { 0x1c26, 0x1c2d, 0x1e26, 0x1e2d,
-						 0 };
+static const unsigned short pci_device_ids[] = { 0x9c26, 0x8c26, 0x8c2d, 0 };
 
 static const struct pci_driver pch_usb_ehci __pci_driver = {
 	.ops	 = &usb_ehci_ops,

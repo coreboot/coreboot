@@ -167,7 +167,7 @@ static int lapic_start_cpu(unsigned long apicid)
 		return 0;
 	}
 
-#if !CONFIG_CPU_AMD_MODEL_10XXX
+#if !CONFIG_CPU_AMD_MODEL_10XXX && !CONFIG_CPU_AMD_AGESA
 	num_starts = 2;
 #else
 	num_starts = 1;

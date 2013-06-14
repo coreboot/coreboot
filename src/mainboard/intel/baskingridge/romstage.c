@@ -19,6 +19,7 @@
  */
 
 #include <stdint.h>
+#include <stddef.h>
 #include <console/console.h>
 #include "cpu/intel/haswell/haswell.h"
 #include "northbridge/intel/haswell/haswell.h"
@@ -126,6 +127,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		.gpio_map = &mainboard_gpio_map,
 		.rcba_config = &rcba_config[0],
 		.bist = bist,
+		.copy_spd = NULL,
 	};
 
 	/* Call into the real romstage main with this board's attributes. */

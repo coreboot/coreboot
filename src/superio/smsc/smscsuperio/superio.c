@@ -37,6 +37,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <superio/conf_mode.h>
 #include <console/console.h>
 #include <uart8250.h>
 #include <pc80/keyboard.h>
@@ -144,32 +145,6 @@ static const struct logical_devices {
 };
 
 /**
- * Enter the configuration state by writing 0x55 to the config port.
- *
- * The Super I/O configuration registers can only be modified when the chip
- * is in the configuration state. Thus, to program the registers you have
- * to a) enter config mode, b) program the registers, c) exit config mode.
- *
- * @param dev The device to use.
- */
-static void smsc_pnp_enter_conf_state(device_t dev)
-{
-	outb(0x55, dev->path.pnp.port);
-}
-
-/**
- * Exit the configuration state by writing 0xaa to the config port.
- *
- * This puts the chip into the 'run' state again.
- *
- * @param dev The device to use.
- */
-static void smsc_pnp_exit_conf_state(device_t dev)
-{
-	outb(0xaa, dev->path.pnp.port);
-}
-
-/**
  * Initialize those logical devices which need a special init.
  *
  * @param dev The device to use.
@@ -199,11 +174,6 @@ static void smsc_init(device_t dev)
 	}
 }
 
-static const struct pnp_mode_ops pnp_conf_mode_ops = {
-	.enter_conf_mode  = smsc_pnp_enter_conf_state,
-	.exit_conf_mode   = smsc_pnp_exit_conf_state,
-};
-
 /** Standard device operations. */
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
@@ -211,7 +181,7 @@ static struct device_operations ops = {
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_alt_enable,
 	.init             = smsc_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
 };
 
 /**

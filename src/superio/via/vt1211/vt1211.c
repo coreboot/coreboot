@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <superio/conf_mode.h>
 #include <uart8250.h>
 #include <stdlib.h>
 #include "vt1211.h"
@@ -43,17 +44,6 @@ static u8 hwm_io_regs[] = {
 	0x4c,0x00, 0x4d,0x00, 0x4e,0x0f, 0x5d,0x77,
 	0x5c,0x00, 0x5f,0x33, 0x40,0x01,
 };
-
-static void pnp_enter_ext_func_mode(device_t dev)
-{
-	outb(0x87, dev->path.pnp.port);
-	outb(0x87, dev->path.pnp.port);
-}
-
-static void pnp_exit_ext_func_mode(device_t dev)
-{
-	outb(0xaa, dev->path.pnp.port);
-}
 
 static void vt1211_set_iobase(device_t dev, u8 index, u16 iobase)
 {
@@ -172,18 +162,13 @@ static void vt1211_pnp_set_resources(struct device *dev)
 	pnp_exit_conf_mode(dev);
 }
 
-static const struct pnp_mode_ops pnp_conf_mode_ops = {
-	.enter_conf_mode  = pnp_enter_ext_func_mode,
-	.exit_conf_mode   = pnp_exit_ext_func_mode,
-};
-
 struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = vt1211_pnp_set_resources,
 	.enable_resources = vt1211_pnp_enable_resources,
 	.enable           = pnp_alt_enable,
 	.init             = vt1211_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
 };
 
 /* TODO: Check if 0x07f8 is correct for FDC/PP/SP1/SP2, the rest is correct. */

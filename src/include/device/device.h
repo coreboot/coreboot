@@ -10,6 +10,7 @@
 struct device;
 #ifndef __PRE_RAM__
 typedef struct device * device_t;
+typedef unsigned int simple_device_t;
 struct pci_operations;
 struct pci_bus_operations;
 struct smbus_bus_operations;

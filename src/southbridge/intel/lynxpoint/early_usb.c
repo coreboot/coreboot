@@ -37,7 +37,9 @@
 void enable_usb_bar(void)
 {
 	device_t usb0 = PCH_EHCI1_DEV;
+#if !CONFIG_INTEL_LYNXPOINT_LP
 	device_t usb1 = PCH_EHCI2_DEV;
+#endif
 	u32 cmd;
 
 	/* USB Controller 1 */
@@ -47,10 +49,12 @@ void enable_usb_bar(void)
 	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config32(usb0, PCI_COMMAND, cmd);
 
-	/* USB Controller 1 */
+	/* USB Controller 2 */
+#if !CONFIG_INTEL_LYNXPOINT_LP
 	pci_write_config32(usb1, PCI_BASE_ADDRESS_0,
-			   PCH_EHCI1_TEMP_BAR0);
+			   PCH_EHCI2_TEMP_BAR0);
 	cmd = pci_read_config32(usb1, PCI_COMMAND);
 	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config32(usb1, PCI_COMMAND, cmd);
+#endif
 }

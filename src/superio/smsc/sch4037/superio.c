@@ -33,9 +33,6 @@
 
 /* Forward declarations */
 static void enable_dev(device_t dev);
-static void sch4037_pnp_set_resources(device_t dev);
-static void sch4037_pnp_enable_resources(device_t dev);
-static void sch4037_pnp_enable(device_t dev);
 static void sch4037_init(device_t dev);
 
 static void pnp_enter_conf_state(device_t dev);
@@ -53,9 +50,9 @@ static const struct pnp_mode_ops pnp_conf_mode_ops = {
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = sch4037_pnp_set_resources,
-	.enable_resources = sch4037_pnp_enable_resources,
-	.enable           = sch4037_pnp_enable,
+	.set_resources    = pnp_set_resources,
+	.enable_resources = pnp_enable_resources,
+	.enable           = pnp_alt_enable,
 	.init             = sch4037_init,
 	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };
@@ -68,21 +65,6 @@ static void enable_dev(device_t dev)
 {
 	printk(BIOS_SPEW, "file '%s',line %d, %s()\n", __FILE__, __LINE__, __func__);
 	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
-}
-
-static void sch4037_pnp_set_resources(device_t dev)
-{
-	pnp_set_resources(dev);
-}
-
-static void sch4037_pnp_enable_resources(device_t dev)
-{
-	pnp_enable_resources(dev);
-}
-
-static void sch4037_pnp_enable(device_t dev)
-{
-	pnp_alt_enable(dev);
 }
 
 static void sch4037_init(device_t dev)

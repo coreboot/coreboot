@@ -172,11 +172,6 @@ static void vt1211_pnp_set_resources(struct device *dev)
 	pnp_exit_conf_mode(dev);
 }
 
-static void vt1211_pnp_enable(device_t dev)
-{
-	pnp_alt_enable(dev);
-}
-
 static const struct pnp_mode_ops pnp_conf_mode_ops = {
 	.enter_conf_mode  = pnp_enter_ext_func_mode,
 	.exit_conf_mode   = pnp_exit_ext_func_mode,
@@ -186,7 +181,7 @@ struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = vt1211_pnp_set_resources,
 	.enable_resources = vt1211_pnp_enable_resources,
-	.enable           = vt1211_pnp_enable,
+	.enable           = pnp_alt_enable,
 	.init             = vt1211_init,
 	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };

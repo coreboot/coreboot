@@ -169,29 +169,6 @@ static void smsc_pnp_exit_conf_state(device_t dev)
 	outb(0xaa, dev->path.pnp.port);
 }
 
-/** Wrapper for pnp_set_resources(). */
-static void smsc_pnp_set_resources(device_t dev)
-{
-	pnp_set_resources(dev);
-}
-
-/** Wrapper for pnp_enable_resources(). */
-static void smsc_pnp_enable_resources(device_t dev)
-{
-	pnp_enable_resources(dev);
-}
-
-/**
- * If so configured, enable the specified device, otherwise
- * explicitly disable it.
- *
- * @param dev The device to use.
- */
-static void smsc_pnp_enable(device_t dev)
-{
-	pnp_alt_enable(dev);
-}
-
 /**
  * Initialize those logical devices which need a special init.
  *
@@ -230,9 +207,9 @@ static const struct pnp_mode_ops pnp_conf_mode_ops = {
 /** Standard device operations. */
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = smsc_pnp_set_resources,
-	.enable_resources = smsc_pnp_enable_resources,
-	.enable           = smsc_pnp_enable,
+	.set_resources    = pnp_set_resources,
+	.enable_resources = pnp_enable_resources,
+	.enable           = pnp_alt_enable,
 	.init             = smsc_init,
 	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };

@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <superio/conf_mode.h>
 #include <console/console.h>
 #include <device/smbus.h>
 #include <string.h>
@@ -32,16 +33,6 @@
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
-
-static void pnp_enter_conf_state(device_t dev)
-{
-	outb(0x55, dev->path.pnp.port);
-}
-
-static void pnp_exit_conf_state(device_t dev)
-{
-	outb(0xaa, dev->path.pnp.port);
-}
 
 static void mec1308_init(device_t dev)
 {
@@ -61,18 +52,13 @@ static void mec1308_init(device_t dev)
 	}
 }
 
-static const struct pnp_mode_ops pnp_conf_mode_ops = {
-	.enter_conf_mode  = pnp_enter_conf_state,
-	.exit_conf_mode   = pnp_exit_conf_state,
-};
-
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_alt_enable,
 	.init             = mec1308_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {

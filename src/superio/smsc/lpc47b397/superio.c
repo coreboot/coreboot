@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <superio/conf_mode.h>
 #include <console/console.h>
 #include <device/smbus.h>
 #include <string.h>
@@ -31,16 +32,6 @@
 #include <stdlib.h>
 #include "chip.h"
 #include "lpc47b397.h"
-
-static void pnp_enter_conf_state(device_t dev)
-{
-	outb(0x55, dev->path.pnp.port);
-}
-
-static void pnp_exit_conf_state(device_t dev)
-{
-	outb(0xaa, dev->path.pnp.port);
-}
 
 static void pnp_write_index(u16 port, u8 reg, u8 value)
 {
@@ -94,18 +85,13 @@ static void lpc47b397_pnp_enable_resources(device_t dev)
 	pnp_exit_conf_mode(dev);
 }
 
-static const struct pnp_mode_ops pnp_conf_mode_ops = {
-	.enter_conf_mode  = pnp_enter_conf_state,
-	.exit_conf_mode   = pnp_exit_conf_state,
-};
-
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,
 	.enable_resources = lpc47b397_pnp_enable_resources,
 	.enable           = pnp_alt_enable,
 	.init             = lpc47b397_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
 };
 
 #define HWM_INDEX 0
@@ -165,7 +151,7 @@ static struct device_operations ops_hwm = {
 	.init             = lpc47b397_init,
 	.scan_bus         = scan_static_bus,
 	.ops_smbus_bus    = &lops_smbus_bus,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {

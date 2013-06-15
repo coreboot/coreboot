@@ -28,3 +28,4 @@ subdirs-y += smsc
 subdirs-y += via
 subdirs-y += winbond
 
+ramstage-$(CONFIG_ARCH_X86) += common/conf_mode.c

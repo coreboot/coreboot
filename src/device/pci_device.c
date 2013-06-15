@@ -1054,6 +1054,18 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 }
 
 /**
+ * Test for match between romstage and ramstage device instance.
+ *
+ * @param dev Pointer to the device structure.
+ * @param sdev Simple device model identifier, created with PCI_DEV().
+ * @return Non-zero if bus:dev.fn of device matches.
+ */
+unsigned int pci_match_simple_dev(device_t dev, simple_device_t sdev)
+{
+	return dev->path.pci.devfn == PCI_DEV2DEVFN(sdev);
+}
+
+/**
  * Scan a PCI bus.
  *
  * Determine the existence of devices and bridges on a PCI bus. If there are

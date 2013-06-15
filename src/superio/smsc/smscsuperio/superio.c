@@ -172,17 +172,13 @@ static void smsc_pnp_exit_conf_state(device_t dev)
 /** Wrapper for pnp_set_resources(). */
 static void smsc_pnp_set_resources(device_t dev)
 {
-	smsc_pnp_enter_conf_state(dev);
 	pnp_set_resources(dev);
-	smsc_pnp_exit_conf_state(dev);
 }
 
 /** Wrapper for pnp_enable_resources(). */
 static void smsc_pnp_enable_resources(device_t dev)
 {
-	smsc_pnp_enter_conf_state(dev);
 	pnp_enable_resources(dev);
-	smsc_pnp_exit_conf_state(dev);
 }
 
 /**
@@ -193,9 +189,7 @@ static void smsc_pnp_enable_resources(device_t dev)
  */
 static void smsc_pnp_enable(device_t dev)
 {
-	smsc_pnp_enter_conf_state(dev);
 	pnp_alt_enable(dev);
-	smsc_pnp_exit_conf_state(dev);
 }
 
 /**
@@ -228,6 +222,11 @@ static void smsc_init(device_t dev)
 	}
 }
 
+static const struct pnp_mode_ops pnp_conf_mode_ops = {
+	.enter_conf_mode  = smsc_pnp_enter_conf_state,
+	.exit_conf_mode   = smsc_pnp_exit_conf_state,
+};
+
 /** Standard device operations. */
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
@@ -235,6 +234,7 @@ static struct device_operations ops = {
 	.enable_resources = smsc_pnp_enable_resources,
 	.enable           = smsc_pnp_enable,
 	.init             = smsc_init,
+	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };
 
 /**
@@ -288,10 +288,10 @@ static void enable_dev(device_t dev)
 
 	if (first_time) {
 		/* Read the device ID and revision of the Super I/O chip. */
-		smsc_pnp_enter_conf_state(dev);
+		pnp_enter_conf_mode(dev);
 		superio_id = pnp_read_config(dev, DEVICE_ID_REG);
 		superio_rev = pnp_read_config(dev, DEVICE_REV_REG);
-		smsc_pnp_exit_conf_state(dev);
+		pnp_exit_conf_mode(dev);
 
 		/* TODO: Error handling? */
 

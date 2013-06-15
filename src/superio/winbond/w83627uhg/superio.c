@@ -60,13 +60,13 @@ static void set_uart_clock_source(device_t dev, u8 uart_clock)
 {
 	u8 value;
 
-	w83627uhg_enter_ext_func_mode(dev);
+	pnp_enter_conf_mode(dev);
 	pnp_set_logical_device(dev);
 	value = pnp_read_config(dev, 0xf0);
 	value &= ~0x03;
 	value |= (uart_clock & 0x03);
 	pnp_write_config(dev, 0xf0, value);
-	w83627uhg_exit_ext_func_mode(dev);
+	pnp_exit_conf_mode(dev);
 }
 
 static void w83627uhg_init(device_t dev)
@@ -103,24 +103,23 @@ static void w83627uhg_init(device_t dev)
 
 static void w83627uhg_set_resources(device_t dev)
 {
-	w83627uhg_enter_ext_func_mode(dev);
 	pnp_set_resources(dev);
-	w83627uhg_exit_ext_func_mode(dev);
 }
 
 static void w83627uhg_enable_resources(device_t dev)
 {
-	w83627uhg_enter_ext_func_mode(dev);
 	pnp_enable_resources(dev);
-	w83627uhg_exit_ext_func_mode(dev);
 }
 
 static void w83627uhg_enable(device_t dev)
 {
-	w83627uhg_enter_ext_func_mode(dev);
 	pnp_enable(dev);
-	w83627uhg_exit_ext_func_mode(dev);
 }
+
+static const struct pnp_mode_ops pnp_conf_mode_ops = {
+	.enter_conf_mode  = w83627uhg_enter_ext_func_mode,
+	.exit_conf_mode   = w83627uhg_exit_ext_func_mode,
+};
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
@@ -128,6 +127,7 @@ static struct device_operations ops = {
 	.enable_resources = w83627uhg_enable_resources,
 	.enable           = w83627uhg_enable,
 	.init             = w83627uhg_init,
+	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };
 
 static struct pnp_info pnp_dev_info[] = {

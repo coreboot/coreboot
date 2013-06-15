@@ -54,24 +54,23 @@ static void f81865f_init(device_t dev)
 
 static void f81865f_pnp_set_resources(device_t dev)
 {
-	pnp_enter_conf_state(dev);
 	pnp_set_resources(dev);
-	pnp_exit_conf_state(dev);
 }
 
 static void f81865f_pnp_enable_resources(device_t dev)
 {
-	pnp_enter_conf_state(dev);
 	pnp_enable_resources(dev);
-	pnp_exit_conf_state(dev);
 }
 
 static void f81865f_pnp_enable(device_t dev)
 {
-	pnp_enter_conf_state(dev);
 	pnp_alt_enable(dev);
-	pnp_exit_conf_state(dev);
 }
+
+static const struct pnp_mode_ops pnp_conf_mode_ops = {
+	.enter_conf_mode  = pnp_enter_conf_state,
+	.exit_conf_mode   = pnp_exit_conf_state,
+};
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
@@ -79,6 +78,7 @@ static struct device_operations ops = {
 	.enable_resources = f81865f_pnp_enable_resources,
 	.enable           = f81865f_pnp_enable,
 	.init             = f81865f_init,
+	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };
 
 static struct pnp_info pnp_dev_info[] = {

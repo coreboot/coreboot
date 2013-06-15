@@ -58,24 +58,23 @@ static void w83977tf_init(device_t dev)
 
 static void w83977tf_set_resources(device_t dev)
 {
-	w83977tf_enter_ext_func_mode(dev);
 	pnp_set_resources(dev);
-	w83977tf_exit_ext_func_mode(dev);
 }
 
 static void w83977tf_enable_resources(device_t dev)
 {
-	w83977tf_enter_ext_func_mode(dev);
 	pnp_enable_resources(dev);
-	w83977tf_exit_ext_func_mode(dev);
 }
 
 static void w83977tf_enable(device_t dev)
 {
-	w83977tf_enter_ext_func_mode(dev);
 	pnp_enable(dev);
-	w83977tf_exit_ext_func_mode(dev);
 }
+
+static const struct pnp_mode_ops pnp_conf_mode_ops = {
+	.enter_conf_mode  = w83977tf_enter_ext_func_mode,
+	.exit_conf_mode   = w83977tf_exit_ext_func_mode,
+};
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
@@ -83,6 +82,7 @@ static struct device_operations ops = {
 	.enable_resources = w83977tf_enable_resources,
 	.enable           = w83977tf_enable,
 	.init             = w83977tf_init,
+	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };
 
 static struct pnp_info pnp_dev_info[] = {

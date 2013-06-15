@@ -46,12 +46,18 @@ struct chip_operations superio_smsc_kbc1100_ops = {
   .enable_dev = enable_dev
 };
 
+static const struct pnp_mode_ops pnp_conf_mode_ops = {
+	.enter_conf_mode  = pnp_enter_conf_state,
+	.exit_conf_mode   = pnp_exit_conf_state,
+};
+
 static struct device_operations ops = {
   .read_resources   = pnp_read_resources,
   .set_resources    = kbc1100_pnp_set_resources,
   .enable_resources = kbc1100_pnp_enable_resources,
   .enable           = kbc1100_pnp_enable,
   .init             = kbc1100_init,
+  .ops_pnp_mode     = &pnp_conf_mode_ops,
 };
 
 static struct pnp_info pnp_dev_info[] = {
@@ -65,23 +71,17 @@ static void enable_dev(device_t dev)
 
 static void kbc1100_pnp_set_resources(device_t dev)
 {
-  pnp_enter_conf_state(dev);
   pnp_set_resources(dev);
-  pnp_exit_conf_state(dev);
 }
 
 static void kbc1100_pnp_enable_resources(device_t dev)
 {
-  pnp_enter_conf_state(dev);
   pnp_enable_resources(dev);
-  pnp_exit_conf_state(dev);
 }
 
 static void kbc1100_pnp_enable(device_t dev)
 {
-  pnp_enter_conf_state(dev);
   pnp_alt_enable(dev);
-  pnp_exit_conf_state(dev);
 }
 
 static void kbc1100_init(device_t dev)

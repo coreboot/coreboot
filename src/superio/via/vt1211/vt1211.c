@@ -121,9 +121,7 @@ static void vt1211_init(struct device *dev)
 static void vt1211_pnp_enable_resources(device_t dev)
 {
 	printk(BIOS_DEBUG, "%s - enabling\n", dev_path(dev));
-	pnp_enter_ext_func_mode(dev);
 	pnp_enable_resources(dev);
-	pnp_exit_ext_func_mode(dev);
 }
 
 static void vt1211_pnp_set_resources(struct device *dev)
@@ -141,7 +139,7 @@ static void vt1211_pnp_set_resources(struct device *dev)
 	}
 #endif
 
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_conf_mode(dev);
 
 	pnp_set_logical_device(dev);
 
@@ -171,15 +169,18 @@ static void vt1211_pnp_set_resources(struct device *dev)
 		report_resource_stored(dev, res, "");
 	}
 
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_conf_mode(dev);
 }
 
 static void vt1211_pnp_enable(device_t dev)
 {
-	pnp_enter_ext_func_mode(dev);
 	pnp_alt_enable(dev);
-	pnp_exit_ext_func_mode(dev);
 }
+
+static const struct pnp_mode_ops pnp_conf_mode_ops = {
+	.enter_conf_mode  = pnp_enter_ext_func_mode,
+	.exit_conf_mode   = pnp_exit_ext_func_mode,
+};
 
 struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
@@ -187,6 +188,7 @@ struct device_operations ops = {
 	.enable_resources = vt1211_pnp_enable_resources,
 	.enable           = vt1211_pnp_enable,
 	.init             = vt1211_init,
+	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };
 
 /* TODO: Check if 0x07f8 is correct for FDC/PP/SP1/SP2, the rest is correct. */

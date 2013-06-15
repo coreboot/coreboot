@@ -41,11 +41,11 @@ static void w83627dhg_enable_UR2(device_t dev)
 {
 	u8 reg8;
 
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_conf_mode(dev);
 	reg8 = pnp_read_config(dev, 0x2c);
 	reg8 |= (0x3);
 	pnp_write_config(dev, 0x2c, reg8); // Set pins 78-85-> UART B
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_conf_mode(dev);
 }
 
 static void w83627dhg_init(device_t dev)
@@ -67,24 +67,23 @@ static void w83627dhg_init(device_t dev)
 
 static void w83627dhg_pnp_set_resources(device_t dev)
 {
-	pnp_enter_ext_func_mode(dev);
 	pnp_set_resources(dev);
-	pnp_exit_ext_func_mode(dev);
 }
 
 static void w83627dhg_pnp_enable_resources(device_t dev)
 {
-	pnp_enter_ext_func_mode(dev);
 	pnp_enable_resources(dev);
-	pnp_exit_ext_func_mode(dev);
 }
 
 static void w83627dhg_pnp_enable(device_t dev)
 {
-	pnp_enter_ext_func_mode(dev);
 	pnp_alt_enable(dev);
-	pnp_exit_ext_func_mode(dev);
 }
+
+static const struct pnp_mode_ops pnp_conf_mode_ops = {
+	.enter_conf_mode  = pnp_enter_ext_func_mode,
+	.exit_conf_mode   = pnp_exit_ext_func_mode,
+};
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
@@ -92,6 +91,7 @@ static struct device_operations ops = {
 	.enable_resources = w83627dhg_pnp_enable_resources,
 	.enable           = w83627dhg_pnp_enable,
 	.init             = w83627dhg_init,
+	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };
 
 static struct pnp_info pnp_dev_info[] = {

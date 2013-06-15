@@ -76,11 +76,11 @@ static void w83977f_enable(device_t dev)
 }
 
 static struct device_operations ops = {
-	.read_resources		= pnp_read_resources,
-	.set_resources		= w83977f_set_resources,
-	.enable_resources	= w83977f_enable_resources,
-	.enable			= w83977f_enable,
-	.init			= w83977f_init,
+	.read_resources   = pnp_read_resources,
+	.set_resources    = w83977f_set_resources,
+	.enable_resources = w83977f_enable_resources,
+	.enable           = w83977f_enable,
+	.init             = w83977f_init,
 };
 
 static struct pnp_info pnp_dev_info[] = {

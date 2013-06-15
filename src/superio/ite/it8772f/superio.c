@@ -211,11 +211,11 @@ static void it8772f_pnp_enable(device_t dev)
 }
 
 static struct device_operations ops = {
-	.read_resources		= pnp_read_resources,
-	.set_resources		= it8772f_pnp_set_resources,
-	.enable_resources	= it8772f_pnp_enable_resources,
-	.enable			= it8772f_pnp_enable,
-	.init			= it8772f_init,
+	.read_resources   = pnp_read_resources,
+	.set_resources    = it8772f_pnp_set_resources,
+	.enable_resources = it8772f_pnp_enable_resources,
+	.enable           = it8772f_pnp_enable,
+	.init             = it8772f_init,
 };
 
 static struct pnp_info pnp_dev_info[] = {

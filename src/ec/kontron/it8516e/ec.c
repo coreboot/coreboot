@@ -143,11 +143,11 @@ static void it8516e_pm2_init(const device_t dev)
 }
 
 static struct device_operations it8516e_pm2_ops = {
-	.read_resources		= pnp_read_resources,
-	.set_resources		= pnp_set_resources,
-	.enable_resources	= pnp_enable_resources,
-	.enable			= pnp_enable,
-	.init			= it8516e_pm2_init
+	.read_resources   = pnp_read_resources,
+	.set_resources    = pnp_set_resources,
+	.enable_resources = pnp_enable_resources,
+	.enable           = pnp_enable,
+	.init             = it8516e_pm2_init
 };
 
 static struct pnp_info it8516e_dev_infos[] = {

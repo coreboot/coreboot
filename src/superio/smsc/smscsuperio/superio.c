@@ -231,11 +231,11 @@ static void smsc_init(device_t dev)
 
 /** Standard device operations. */
 static struct device_operations ops = {
-	.read_resources		= pnp_read_resources,
-	.set_resources		= smsc_pnp_set_resources,
-	.enable_resources	= smsc_pnp_enable_resources,
-	.enable			= smsc_pnp_enable,
-	.init			= smsc_init,
+	.read_resources   = pnp_read_resources,
+	.set_resources    = smsc_pnp_set_resources,
+	.enable_resources = smsc_pnp_enable_resources,
+	.enable           = smsc_pnp_enable,
+	.init             = smsc_init,
 };
 
 /**

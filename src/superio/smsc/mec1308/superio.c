@@ -43,21 +43,6 @@ static void pnp_exit_conf_state(device_t dev)
 	outb(0xaa, dev->path.pnp.port);
 }
 
-static void mec1308_pnp_set_resources(device_t dev)
-{
-	pnp_set_resources(dev);
-}
-
-static void mec1308_pnp_enable_resources(device_t dev)
-{
-	pnp_enable_resources(dev);
-}
-
-static void mec1308_pnp_enable(device_t dev)
-{
-	pnp_alt_enable(dev);
-}
-
 static void mec1308_init(device_t dev)
 {
 	struct superio_smsc_mec1308_config *conf = dev->chip_info;
@@ -83,9 +68,9 @@ static const struct pnp_mode_ops pnp_conf_mode_ops = {
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = mec1308_pnp_set_resources,
-	.enable_resources = mec1308_pnp_enable_resources,
-	.enable           = mec1308_pnp_enable,
+	.set_resources    = pnp_set_resources,
+	.enable_resources = pnp_enable_resources,
+	.enable           = pnp_alt_enable,
 	.init             = mec1308_init,
 	.ops_pnp_mode     = &pnp_conf_mode_ops,
 };

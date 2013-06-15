@@ -207,6 +207,7 @@ static inline int log2f(int value)
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
 typedef unsigned device_t; /* pci and pci_mmio need to have different ways to have dev */
+typedef device_t simple_device_t;
 
 /* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G,
  * We don't need to set %fs, and %gs anymore

@@ -374,6 +374,14 @@ agesawrapper_amdinitmid (
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 
+	typedef enum {
+		INTERNAL_GRAPHICS = 0,
+		EXTERNAL_GRAPHICS = 1,
+	} GRAPHICS_SOURCE;
+
+	const GRAPHICS_SOURCE graphics_source =
+			IS_ENABLED(ONBOARD_VGA_IS_PRIMARY) ? INTERNAL_GRAPHICS : EXTERNAL_GRAPHICS;
+
 	/* Enable MMIO on AMD CPU Address Map Controller */
 	agesawrapper_amdinitcpuio ();
 
@@ -391,7 +399,7 @@ agesawrapper_amdinitmid (
 
 	AmdCreateStruct (&AmdParamStruct);
 
-	((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr)->GnbMidConfiguration.iGpuVgaMode = 0;/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
+	((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr)->GnbMidConfiguration.iGpuVgaMode = graphics_source;/* 0 iGpuVgaAdapter, 1 iGpuVgaNonAdapter; */
 	status = AmdInitMid ((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);

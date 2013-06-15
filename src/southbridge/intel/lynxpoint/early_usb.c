@@ -34,23 +34,19 @@
  * The BAR will be re-assigned during device
  * enumeration so these are only temporary.
  */
+static void enable_usb_bar_on_device(device_t dev, u32 bar)
+{
+	u32 cmd;
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, bar);
+	cmd = pci_read_config32(dev, PCI_COMMAND);
+	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
+	pci_write_config32(dev, PCI_COMMAND, cmd);
+}
+
 void enable_usb_bar(void)
 {
-	device_t usb0 = PCH_EHCI1_DEV;
-	device_t usb1 = PCH_EHCI2_DEV;
-	u32 cmd;
-
-	/* USB Controller 1 */
-	pci_write_config32(usb0, PCI_BASE_ADDRESS_0,
-			   PCH_EHCI1_TEMP_BAR0);
-	cmd = pci_read_config32(usb0, PCI_COMMAND);
-	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config32(usb0, PCI_COMMAND, cmd);
-
-	/* USB Controller 1 */
-	pci_write_config32(usb1, PCI_BASE_ADDRESS_0,
-			   PCH_EHCI1_TEMP_BAR0);
-	cmd = pci_read_config32(usb1, PCI_COMMAND);
-	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config32(usb1, PCI_COMMAND, cmd);
+	enable_usb_bar_on_device(PCH_EHCI1_DEV, PCH_EHCI1_TEMP_BAR0);
+#if !CONFIG_INTEL_LYNXPOINT_LP
+	enable_usb_bar_on_device(PCH_EHCI2_DEV, PCH_EHCI2_TEMP_BAR0);
+#endif
 }

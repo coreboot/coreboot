@@ -366,6 +366,33 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 	return -1; //-ENOTCONN;
 }
 
+#if !defined(__PRE_RAM__) && !defined(__SMM__)
+static int get_usbdebug_from_cbmem(struct ehci_debug_info *info)
+{
+	struct ehci_debug_info *dbg_info_cbmem;
+
+	dbg_info_cbmem = cbmem_find(CBMEM_ID_EHCI_DEBUG);
+
+	if (dbg_info_cbmem == NULL)
+		return -1;
+
+	printk(BIOS_DEBUG, "EHCI debug port found in cbmem.\n");
+
+	info->ehci_caps = dbg_info_cbmem->ehci_caps;
+	info->ehci_regs = dbg_info_cbmem->ehci_regs;
+	info->ehci_debug = dbg_info_cbmem->ehci_debug;
+	info->devnum = dbg_info_cbmem->devnum;
+	info->endpoint_out = dbg_info_cbmem->endpoint_out;
+	info->endpoint_in = dbg_info_cbmem->endpoint_in;
+
+	return 0;
+}
+#else
+static int get_usbdebug_from_cbmem(struct ehci_debug_info *info)
+{
+	return -1;
+}
+#endif
 
 int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
@@ -383,6 +410,9 @@ int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *in
 	int loop;
 	int port_map_tried;
 	int playtimes = 3;
+
+	if (!get_usbdebug_from_cbmem(info))
+		return 0;
 
 	ehci_caps  = (struct ehci_caps *)ehci_bar;
 	ehci_regs  = (struct ehci_regs *)(ehci_bar +

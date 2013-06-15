@@ -77,6 +77,7 @@ unsigned pci_find_capability(device_t dev, unsigned cap);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
 void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device);
 void pci_dev_init(struct device *dev);
+unsigned int pci_match_simple_dev(device_t dev, simple_device_t sdev);
 
 void pci_assign_irqs(unsigned bus, unsigned slot,
 		     const unsigned char pIntAtoD[4]);

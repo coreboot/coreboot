@@ -50,6 +50,8 @@ config VENDOR_COMPAQ
 	bool "Compaq"
 config VENDOR_DIGITALLOGIC
 	bool "DIGITAL-LOGIC"
+config VENDOR_DMP
+	bool "DMP"
 config VENDOR_EAGLELION
 	bool "EagleLion"
 config VENDOR_ECS
@@ -160,6 +162,7 @@ source "src/mainboard/biostar/Kconfig"
 source "src/mainboard/broadcom/Kconfig"
 source "src/mainboard/compaq/Kconfig"
 source "src/mainboard/digitallogic/Kconfig"
+source "src/mainboard/dmp/Kconfig"
 source "src/mainboard/eaglelion/Kconfig"
 source "src/mainboard/ecs/Kconfig"
 source "src/mainboard/emulation/Kconfig"

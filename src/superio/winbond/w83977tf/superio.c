@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <superio/conf_mode.h>
 #include <console/console.h>
 #include <string.h>
 #include <uart8250.h>
@@ -30,17 +31,6 @@
 #include <stdlib.h>
 #include "chip.h"
 #include "w83977tf.h"
-
-static void w83977tf_enter_ext_func_mode(device_t dev)
-{
-	outb(0x87, dev->path.pnp.port);
-	outb(0x87, dev->path.pnp.port);
-}
-
-static void w83977tf_exit_ext_func_mode(device_t dev)
-{
-	outb(0xaa, dev->path.pnp.port);
-}
 
 static void w83977tf_init(device_t dev)
 {
@@ -56,18 +46,13 @@ static void w83977tf_init(device_t dev)
 	}
 }
 
-static const struct pnp_mode_ops pnp_conf_mode_ops = {
-	.enter_conf_mode  = w83977tf_enter_ext_func_mode,
-	.exit_conf_mode   = w83977tf_exit_ext_func_mode,
-};
-
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
 	.set_resources    = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_enable,
 	.init             = w83977tf_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {

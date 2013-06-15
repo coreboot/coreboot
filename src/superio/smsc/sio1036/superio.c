@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pnp.h>
+#include <superio/conf_mode.h>
 #include <console/console.h>
 #include <device/smbus.h>
 #include <string.h>
@@ -35,17 +36,9 @@
 static void enable_dev(device_t dev);
 static void sio1036_init(device_t dev);
 
-static void pnp_enter_conf_state(device_t dev);
-static void pnp_exit_conf_state(device_t dev);
-
 struct chip_operations superio_smsc_sio1036_ops = {
 	CHIP_NAME("SMSC SIO1036 Super I/O")
 		.enable_dev = enable_dev
-};
-
-static const struct pnp_mode_ops pnp_conf_mode_ops = {
-	.enter_conf_mode  = pnp_enter_conf_state,
-	.exit_conf_mode   = pnp_exit_conf_state,
 };
 
 static struct device_operations ops = {
@@ -54,7 +47,7 @@ static struct device_operations ops = {
 	.enable_resources = pnp_enable_resources,
 	.enable           = pnp_alt_enable,
 	.init             = sio1036_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {
@@ -82,15 +75,5 @@ static void sio1036_init(device_t dev)
 		default:
 			break;
 	}
-}
-
-static void pnp_enter_conf_state(device_t dev)
-{
-	outb(0x55, dev->path.pnp.port);
-}
-
-static void pnp_exit_conf_state(device_t dev)
-{
-	outb(0xaa, dev->path.pnp.port);
 }
 

@@ -168,7 +168,6 @@ config CONSOLE_POST
 config SATA_CONTROLLER_MODE
 	hex
 	default 0x0
-	depends on SOUTHBRIDGE_AMD_CIMX_SB900
 
 config ONBOARD_LAN
 	bool

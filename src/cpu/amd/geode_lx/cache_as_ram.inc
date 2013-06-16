@@ -46,7 +46,7 @@ DCacheSetup:
 	wrmsr
 
 	/* in LX DCDIS is set after POR which disables the cache..., clear this bit */
-	movl	CPU_DM_CONFIG0,%ecx
+	movl	$CPU_DM_CONFIG0,%ecx
 	rdmsr
 	andl	$(~(DM_CONFIG0_LOWER_DCDIS_SET)), %eax	/* TODO: make consistent with i$ init,	either whole reg = 0,  or just this bit... */
 	wrmsr

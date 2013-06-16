@@ -20,36 +20,34 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_PINMUX_H
 #define CPU_SAMSUNG_EXYNOS5420_PINMUX_H
 
-#include "periph.h"
+void exynos_pinmux_uart0(void);
+void exynos_pinmux_uart1(void);
+void exynos_pinmux_uart2(void);
+void exynos_pinmux_uart3(void);
 
-enum {
-	PINMUX_FLAG_NONE	= 0x00000000,
+void exynos_pinmux_sdmmc0(void);
+void exynos_pinmux_sdmmc1(void);
+void exynos_pinmux_sdmmc2(void);
+void exynos_pinmux_sdmmc3(void);
 
-	/* Flags for eMMC */
-	PINMUX_FLAG_8BIT_MODE	= 1 << 0,	/* SDMMC 8-bit mode */
+void exynos_pinmux_spi0(void);
+void exynos_pinmux_spi1(void);
+void exynos_pinmux_spi2(void);
+void exynos_pinmux_spi3(void);
+void exynos_pinmux_spi4(void);
 
-	/*
-	 * Flags for SPI.
-	 */
-	PINMUX_FLAG_SLAVE_MODE	= 1 << 0,	/* Slave mode */
+void exynos_pinmux_i2c0(void);
+void exynos_pinmux_i2c1(void);
+void exynos_pinmux_i2c2(void);
+void exynos_pinmux_i2c3(void);
+void exynos_pinmux_i2c4(void);
+void exynos_pinmux_i2c5(void);
+void exynos_pinmux_i2c6(void);
+void exynos_pinmux_i2c7(void);
+void exynos_pinmux_i2c8(void);
+void exynos_pinmux_i2c9(void);
+void exynos_pinmux_i2c10(void);
 
-	/* Flags for SROM controller */
-	PINMUX_FLAG_BANK	= 3 << 0,	/* bank number (0-3) */
-	PINMUX_FLAG_16BIT	= 1 << 2,	/* 16-bit width */
-};
-
-/**
- * Configures the pinmux for a particular peripheral.
- *
- * Each gpio can be configured in many different ways (4 bits on exynos)
- * such as "input", "output", "special function", "external interrupt"
- * etc. This function will configure the peripheral pinmux along with
- * pull-up/down and drive strength.
- *
- * @param peripheral	peripheral to be configured
- * @param flags		configure flags
- * @return 0 if ok, -1 on error (e.g. unsupported peripheral)
- */
-int exynos_pinmux_config(enum periph_id peripheral, int flags);
+void exynos_pinmux_dphpd(void);
 
 #endif

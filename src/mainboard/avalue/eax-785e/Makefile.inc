@@ -1,6 +1,4 @@
-#romstage-y += reset.c #FIXME romstage have include test_rest.c
 
-ramstage-y += reset.c
 
 #SB800 CIMx share AGESA V5 lib code
 ifneq ($(CONFIG_CPU_AMD_AGESA),y)

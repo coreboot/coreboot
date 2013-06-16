@@ -1,4 +1,3 @@
-ramstage-y += reset.c
 
 #SB800 CIMx share AGESA V5 lib code
 ifneq ($(CONFIG_CPU_AMD_AGESA),y)

@@ -56,7 +56,7 @@ static enum exynos5_gpio_pin dp_hpd = GPIO_X07;		/* active high */
 
 static void exynos_dp_bridge_setup(void)
 {
-	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
+	exynos_pinmux_dphpd();
 
 	gpio_set_value(dp_pd_l, 1);
 	gpio_cfg_pin(dp_pd_l, GPIO_OUTPUT);
@@ -179,12 +179,12 @@ static void disable_usb30_pll(void)
 static void gpio_init(void)
 {
 	/* Set up the I2C busses. */
-	exynos_pinmux_config(PERIPH_ID_I2C0, PINMUX_FLAG_NONE);
-	exynos_pinmux_config(PERIPH_ID_I2C1, PINMUX_FLAG_NONE);
-	exynos_pinmux_config(PERIPH_ID_I2C2, PINMUX_FLAG_NONE);
-	exynos_pinmux_config(PERIPH_ID_I2C3, PINMUX_FLAG_NONE);
-	exynos_pinmux_config(PERIPH_ID_I2C4, PINMUX_FLAG_NONE);
-	exynos_pinmux_config(PERIPH_ID_I2C7, PINMUX_FLAG_NONE);
+	exynos_pinmux_i2c0();
+	exynos_pinmux_i2c1();
+	exynos_pinmux_i2c2();
+	exynos_pinmux_i2c3();
+	exynos_pinmux_i2c4();
+	exynos_pinmux_i2c7();
 
 	/* Set up the GPIOs used to arbitrate for I2C bus 4. */
 	gpio_set_pull(GPIO_F03, GPIO_PULL_NONE);
@@ -199,7 +199,7 @@ static void gpio_init(void)
 	gpio_direction_output(GPIO_X15, 1);
 
 	/* Set up the I2S busses. */
-	exynos_pinmux_config(PERIPH_ID_I2S1, PINMUX_FLAG_NONE);
+	exynos_pinmux_i2s1();
 }
 
 /* this happens after cpu_init where exynos resources are set */

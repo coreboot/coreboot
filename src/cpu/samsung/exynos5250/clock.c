@@ -24,6 +24,7 @@
 #include "timer.h"
 #include "clk.h"
 #include "cpu.h"
+#include "periph.h"
 
 /* input clock of PLL: SMDK5250 has 24MHz input clock */
 #define CONFIG_SYS_CLK_FREQ            24000000

@@ -157,7 +157,6 @@ static void i2c_ch_init(struct s3c24x0_i2c_bus *bus, int speed, int slaveadd)
  */
 static void i2c_bus_init(struct s3c24x0_i2c_bus *bus, int speed, int slaveadd)
 {
-	exynos_pinmux_config(bus->periph_id, 0);
 	i2c_ch_init(bus, speed, slaveadd);
 }
 

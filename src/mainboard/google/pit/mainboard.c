@@ -56,7 +56,7 @@ static enum exynos5_gpio_pin dp_hpd = GPIO_X07;		/* active high */
 
 static void exynos_dp_bridge_setup(void)
 {
-	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
+	exynos_pinmux_dphpd();
 
 	gpio_set_value(dp_pd_l, 1);
 	gpio_cfg_pin(dp_pd_l, GPIO_OUTPUT);

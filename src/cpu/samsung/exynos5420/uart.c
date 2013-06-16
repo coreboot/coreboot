@@ -23,6 +23,7 @@
 #include "uart.h"
 #include "clk.h"
 #include "cpu.h"
+#include "periph.h"
 
 #define RX_FIFO_COUNT_MASK	0xff
 #define RX_FIFO_FULL_MASK	(1 << 8)
@@ -93,7 +94,7 @@ static void exynos5_init_dev(void)
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 
 	// TODO initialize with correct peripheral id by base_port.
-	exynos_pinmux_config(PERIPH_ID_UART3, PINMUX_FLAG_NONE);
+	exynos_pinmux_uart3();
 
 	/* enable FIFOs */
 	writel(0x1, &uart->ufcon);

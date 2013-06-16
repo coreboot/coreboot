@@ -17,17 +17,17 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-romstage-$(CONFIG_NORTHBRIDGE_AMD_CIMX_RD890) += rd890_cfg.c
-romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700_cfg.c
-romstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += reset.c
+romstage-y += rd890_cfg.c
+romstage-y += sb700_cfg.c
+romstage-y += reset.c
 romstage-y += buildOpts.c
 romstage-y += agesawrapper.c
 romstage-y += BiosCallOuts.c
 romstage-y += platform_oem.c
 
-ramstage-$(CONFIG_NORTHBRIDGE_AMD_CIMX_RD890) += rd890_cfg.c
-ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += sb700_cfg.c
-ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += reset.c
+ramstage-y += rd890_cfg.c
+ramstage-y += sb700_cfg.c
+ramstage-y += reset.c
 ramstage-y += buildOpts.c
 ramstage-y += agesawrapper.c
 ramstage-y += BiosCallOuts.c

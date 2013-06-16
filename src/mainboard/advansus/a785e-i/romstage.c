@@ -72,14 +72,7 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 #include "spd.h"
-
 #include <reset.h>
-void soft_reset(void)
-{
-	set_bios_reset();
-	/* link reset */
-	outb(0x06, 0x0cf9);
-}
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

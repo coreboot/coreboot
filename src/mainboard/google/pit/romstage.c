@@ -50,6 +50,7 @@ static void setup_power(void)
 	power_init();
 
 	/* Initialize I2C bus to configure PMIC. */
+	exynos_pinmux_i2c0();
 	i2c_init(0, I2C_0_SPEED, 0x00);
 
 	printk(BIOS_DEBUG, "%s: Setting up PMIC...\n", __func__);
@@ -100,16 +101,16 @@ static void setup_storage(void)
 	}
 	gpio_set_pull(MMC0_GPIO_PIN, GPIO_PULL_NONE);
 	gpio_set_drv(MMC0_GPIO_PIN, GPIO_DRV_4X);
-	exynos_pinmux_config(PERIPH_ID_SDMMC0, PINMUX_FLAG_8BIT_MODE);
+	exynos_pinmux_sdmmc0();
 
 	/* MMC2: Removable, 4 bit mode, no GPIO. */
 	clock_set_mshci(PERIPH_ID_SDMMC2);
-	exynos_pinmux_config(PERIPH_ID_SDMMC2, 0);
+	exynos_pinmux_sdmmc2();
 }
 
 static void setup_graphics(void)
 {
-	exynos_pinmux_config(PERIPH_ID_DPHPD, 0);
+	exynos_pinmux_dphpd();
 }
 
 static void setup_gpio(void)

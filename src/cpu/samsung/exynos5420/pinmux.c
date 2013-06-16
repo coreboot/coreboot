@@ -23,276 +23,180 @@
 #include "cpu.h"
 #include "pinmux.h"
 
-int exynos_pinmux_config(enum periph_id peripheral, int flags)
+static void exynos_pinmux_uart(int start, int count)
 {
-	int i, start, count, start_ext, pin_ext, pin, drv;
+	int i;
 
-	switch (peripheral) {
-	case PERIPH_ID_UART0:
-	case PERIPH_ID_UART1:
-	case PERIPH_ID_UART2:
-	case PERIPH_ID_UART3:
-		switch (peripheral) {
-		default:
-		case PERIPH_ID_UART0:
-			start = GPIO_A00; count = 4;
-			break;
-		case PERIPH_ID_UART1:
-			start = GPIO_A04; count = 4;
-			break;
-		case PERIPH_ID_UART2:
-			start = GPIO_A10; count = 4;
-			break;
-		case PERIPH_ID_UART3:
-			start = GPIO_A14; count = 2;
-			break;
-		}
-		for (i = start; i < start + count; i++) {
-			gpio_set_pull(i, GPIO_PULL_NONE);
+	for (i = start; i < start + count; i++) {
+		gpio_set_pull(i, GPIO_PULL_NONE);
+		gpio_cfg_pin(i, GPIO_FUNC(0x2));
+	}
+}
+
+void exynos_pinmux_uart0(void)
+{
+	exynos_pinmux_uart(GPIO_A00, 4);
+}
+
+void exynos_pinmux_uart1(void)
+{
+	exynos_pinmux_uart(GPIO_A04, 4);
+}
+
+void exynos_pinmux_uart2(void)
+{
+	exynos_pinmux_uart(GPIO_A10, 4);
+}
+
+void exynos_pinmux_uart3(void)
+{
+	exynos_pinmux_uart(GPIO_A14, 2);
+}
+
+static void exynos_pinmux_sdmmc(int start, int start_ext)
+{
+	int i;
+
+	if (start_ext) {
+		for (i = start_ext; i <= (start_ext + 3); i++) {
 			gpio_cfg_pin(i, GPIO_FUNC(0x2));
+			gpio_set_pull(i, GPIO_PULL_UP);
+			gpio_set_drv(i, GPIO_DRV_4X);
 		}
-		break;
-	case PERIPH_ID_SDMMC0:
-	case PERIPH_ID_SDMMC1:
-	case PERIPH_ID_SDMMC2:
-	case PERIPH_ID_SDMMC3:
-		pin = GPIO_FUNC(0x2);
-		pin_ext = GPIO_FUNC(0x2);
-		drv = GPIO_DRV_4X;
-		switch (peripheral) {
-		default:
-		case PERIPH_ID_SDMMC0:
-			start = GPIO_C00;
-			start_ext = GPIO_C10;
-			break;
-		case PERIPH_ID_SDMMC1:
-			start = GPIO_C20;
-			start_ext = 0;
-			break;
-		case PERIPH_ID_SDMMC2:
-			start = GPIO_C30;
-			/*
-			 * TODO: (alim.akhtar@samsung.com)
-			 * add support for 8 bit mode (needs to be a per-board
-			 * option, so in the FDT).
-			 */
-			start_ext = 0;
-			break;
-		case PERIPH_ID_SDMMC3:
-			/*
-			 * TODO: Need to add defintions for GPC4 before
-			 * enabling this.
-			 */
-			printk(BIOS_DEBUG, "SDMMC3 not supported yet");
-			return -1;
-		}
-		if ((flags & PINMUX_FLAG_8BIT_MODE) && !start_ext) {
-			printk(BIOS_DEBUG, "SDMMC device %d does not support 8bit mode",
-					peripheral);
-			return -1;
-		}
-		if (flags & PINMUX_FLAG_8BIT_MODE) {
-			ASSERT(peripheral == PERIPH_ID_SDMMC0);
-			for (i = 0; i <= 3; i++) {
-				gpio_cfg_pin(start_ext + i, pin_ext);
-				gpio_set_pull(start_ext + i,
-					      GPIO_PULL_UP);
-				gpio_set_drv(start_ext + i, drv);
-			}
-		}
-		for (i = 0; i < 2; i++) {
-			gpio_cfg_pin(start + i, pin);
-			gpio_set_pull(start + i, GPIO_PULL_NONE);
-			gpio_set_drv(start + i, drv);
-		}
-		for (i = 2; i <= 6; i++) {
-			gpio_cfg_pin(start + i, pin);
-			gpio_set_pull(start + i, GPIO_PULL_UP);
-			gpio_set_drv(start + i, drv);
-		}
-		break;
-	case PERIPH_ID_SROMC:
-		/*
-		 * SROM:CS1 and EBI
-		 *
-		 * GPY0[0]	SROM_CSn[0]
-		 * GPY0[1]	SROM_CSn[1](2)
-		 * GPY0[2]	SROM_CSn[2]
-		 * GPY0[3]	SROM_CSn[3]
-		 * GPY0[4]	EBI_OEn(2)
-		 * GPY0[5]	EBI_EEn(2)
-		 *
-		 * GPY1[0]	EBI_BEn[0](2)
-		 * GPY1[1]	EBI_BEn[1](2)
-		 * GPY1[2]	SROM_WAIT(2)
-		 * GPY1[3]	EBI_DATA_RDn(2)
-		 */
-		gpio_cfg_pin(GPIO_Y00 + (flags & PINMUX_FLAG_BANK),
-				GPIO_FUNC(2));
-		gpio_cfg_pin(GPIO_Y04, GPIO_FUNC(2));
-		gpio_cfg_pin(GPIO_Y05, GPIO_FUNC(2));
-
-		for (i = 2; i < 4; i++)
-			gpio_cfg_pin(GPIO_Y10 + i, GPIO_FUNC(2));
-
-		/*
-		 * EBI: 8 Addrss Lines
-		 *
-		 * GPY3[0]	EBI_ADDR[0](2)
-		 * GPY3[1]	EBI_ADDR[1](2)
-		 * GPY3[2]	EBI_ADDR[2](2)
-		 * GPY3[3]	EBI_ADDR[3](2)
-		 * GPY3[4]	EBI_ADDR[4](2)
-		 * GPY3[5]	EBI_ADDR[5](2)
-		 * GPY3[6]	EBI_ADDR[6](2)
-		 * GPY3[7]	EBI_ADDR[7](2)
-		 *
-		 * EBI: 16 Data Lines
-		 *
-		 * GPY5[0]	EBI_DATA[0](2)
-		 * GPY5[1]	EBI_DATA[1](2)
-		 * GPY5[2]	EBI_DATA[2](2)
-		 * GPY5[3]	EBI_DATA[3](2)
-		 * GPY5[4]	EBI_DATA[4](2)
-		 * GPY5[5]	EBI_DATA[5](2)
-		 * GPY5[6]	EBI_DATA[6](2)
-		 * GPY5[7]	EBI_DATA[7](2)
-		 *
-		 * GPY6[0]	EBI_DATA[8](2)
-		 * GPY6[1]	EBI_DATA[9](2)
-		 * GPY6[2]	EBI_DATA[10](2)
-		 * GPY6[3]	EBI_DATA[11](2)
-		 * GPY6[4]	EBI_DATA[12](2)
-		 * GPY6[5]	EBI_DATA[13](2)
-		 * GPY6[6]	EBI_DATA[14](2)
-		 * GPY6[7]	EBI_DATA[15](2)
-		 */
-		for (i = 0; i < 8; i++) {
-			gpio_cfg_pin(GPIO_Y30 + i, GPIO_FUNC(2));
-			gpio_set_pull(GPIO_Y30 + i, GPIO_PULL_UP);
-
-			gpio_cfg_pin(GPIO_Y50 + i, GPIO_FUNC(2));
-			gpio_set_pull(GPIO_Y50 + i, GPIO_PULL_UP);
-
-			if (flags & PINMUX_FLAG_16BIT) {
-				gpio_cfg_pin(GPIO_Y60 + i, GPIO_FUNC(2));
-				gpio_set_pull(GPIO_Y60 + i,
-					      GPIO_PULL_UP);
-			}
-		}
-		break;
-	case PERIPH_ID_SPI0:
-	case PERIPH_ID_SPI1:
-	case PERIPH_ID_SPI2:
-	case PERIPH_ID_SPI3: {
-		int cfg;
-
-		switch (peripheral) {
-		default:
-		case PERIPH_ID_SPI0:
-			start = GPIO_A20;
-			cfg = 0x2;
-			break;
-		case PERIPH_ID_SPI1:
-			start = GPIO_A24;
-			cfg = 0x2;
-			break;
-		case PERIPH_ID_SPI2:
-			start = GPIO_B11;
-			cfg = 0x5;
-			break;
-		case PERIPH_ID_SPI3:
-			start = GPIO_E00;
-			cfg = 0x2;
-			break;
-		}
-
-		for (i = 0; i < 4; i++)
-			gpio_cfg_pin(start + i, GPIO_FUNC(cfg));
-		break;
-	}
-	case PERIPH_ID_SPI4:
-		for (i = 0; i < 2; i++)
-			gpio_cfg_pin(GPIO_F02 + i, GPIO_FUNC(0x4));
-		for (i = 2; i < 4; i++)
-			gpio_cfg_pin(GPIO_E02 + i, GPIO_FUNC(0x4));
-		break;
-	case PERIPH_ID_BACKLIGHT:
-		gpio_cfg_pin(GPIO_B20, GPIO_OUTPUT);
-		gpio_set_value(GPIO_B20, 1);
-		break;
-	case PERIPH_ID_LCD:
-		gpio_cfg_pin(GPIO_Y25, GPIO_OUTPUT);
-		gpio_set_value(GPIO_Y25, 1);
-		gpio_cfg_pin(GPIO_X15, GPIO_OUTPUT);
-		gpio_set_value(GPIO_X15, 1);
-		gpio_cfg_pin(GPIO_X30, GPIO_OUTPUT);
-		gpio_set_value(GPIO_X30, 1);
-		break;
-	case PERIPH_ID_I2C0:
-		gpio_cfg_pin(GPIO_B30, GPIO_FUNC(0x2));
-		gpio_cfg_pin(GPIO_B31, GPIO_FUNC(0x2));
-		gpio_set_pull(GPIO_B30, GPIO_PULL_NONE);
-		gpio_set_pull(GPIO_B31, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_I2C1:
-		gpio_cfg_pin(GPIO_B32, GPIO_FUNC(0x2));
-		gpio_cfg_pin(GPIO_B33, GPIO_FUNC(0x2));
-		gpio_set_pull(GPIO_B32, GPIO_PULL_NONE);
-		gpio_set_pull(GPIO_B33, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_I2C2:
-		gpio_cfg_pin(GPIO_A06, GPIO_FUNC(0x3));
-		gpio_cfg_pin(GPIO_A07, GPIO_FUNC(0x3));
-		gpio_set_pull(GPIO_A06, GPIO_PULL_NONE);
-		gpio_set_pull(GPIO_A07, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_I2C3:
-		gpio_cfg_pin(GPIO_A12, GPIO_FUNC(0x3));
-		gpio_cfg_pin(GPIO_A13, GPIO_FUNC(0x3));
-		gpio_set_pull(GPIO_A12, GPIO_PULL_NONE);
-		gpio_set_pull(GPIO_A13, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_I2C4:
-		gpio_cfg_pin(GPIO_A20, GPIO_FUNC(0x3));
-		gpio_cfg_pin(GPIO_A21, GPIO_FUNC(0x3));
-		gpio_set_pull(GPIO_A20, GPIO_PULL_NONE);
-		gpio_set_pull(GPIO_A21, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_I2C5:
-		gpio_cfg_pin(GPIO_A22, GPIO_FUNC(0x3));
-		gpio_cfg_pin(GPIO_A23, GPIO_FUNC(0x3));
-		gpio_set_pull(GPIO_A22, GPIO_PULL_NONE);
-		gpio_set_pull(GPIO_A23, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_I2C6:
-		gpio_cfg_pin(GPIO_B13, GPIO_FUNC(0x4));
-		gpio_cfg_pin(GPIO_B14, GPIO_FUNC(0x4));
-		break;
-	case PERIPH_ID_I2C7:
-		gpio_cfg_pin(GPIO_B22, GPIO_FUNC(0x3));
-		gpio_cfg_pin(GPIO_B23, GPIO_FUNC(0x3));
-		gpio_set_pull(GPIO_B22, GPIO_PULL_NONE);
-		gpio_set_pull(GPIO_B23, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_DPHPD:
-		/* Set Hotplug detect for DP */
-		gpio_cfg_pin(GPIO_X07, GPIO_FUNC(0x3));
-
-		/*
-		 * Hotplug detect should have an external pullup; disable the
-		 * internal pulldown so they don't fight.
-		 */
-		gpio_set_pull(GPIO_X07, GPIO_PULL_NONE);
-		break;
-	case PERIPH_ID_I2S1:
-		for (i = 0; i < 5; i++)
-			gpio_cfg_pin(GPIO_B00 + i, GPIO_FUNC(0x02));
-		break;
-	default:
-		printk(BIOS_DEBUG, "%s: invalid peripheral %d", __func__, peripheral);
-		return -1;
 	}
 
-	return 0;
+	for (i = 0; i < 3; i++) {
+		gpio_cfg_pin(start + i, GPIO_FUNC(0x2));
+		gpio_set_pull(start + i, GPIO_PULL_NONE);
+		gpio_set_drv(start + i, GPIO_DRV_4X);
+	}
+
+	for (i = 3; i <= 6; i++) {
+		gpio_cfg_pin(start +  i, GPIO_FUNC(0x2));
+		gpio_set_pull(start + i, GPIO_PULL_UP);
+		gpio_set_drv(start + i, GPIO_DRV_4X);
+	}
+}
+
+void exynos_pinmux_sdmmc0(void)
+{
+	gpio_set_pull(GPIO_C02, GPIO_PULL_UP);
+	exynos_pinmux_sdmmc(GPIO_C00, GPIO_C30);
+}
+
+void exynos_pinmux_sdmmc1(void)
+{
+	exynos_pinmux_sdmmc(GPIO_C10, GPIO_D14);
+}
+
+void exynos_pinmux_sdmmc2(void)
+{
+	exynos_pinmux_sdmmc(GPIO_C20, 0);
+}
+
+static void exynos_pinmux_spi(int start, int cfg)
+{
+	int i;
+
+	for (i = start; i < start + 4; i++)
+		gpio_cfg_pin(i, cfg);
+}
+
+void exynos_pinmux_spi0(void)
+{
+	exynos_pinmux_spi(GPIO_A20, 0x2);
+}
+
+void exynos_pinmux_spi1(void)
+{
+	exynos_pinmux_spi(GPIO_A24, 0x2);
+}
+
+void exynos_pinmux_spi2(void)
+{
+	exynos_pinmux_spi(GPIO_B11, 0x5);
+}
+
+void exynos_pinmux_spi3(void)
+{
+	exynos_pinmux_spi(GPIO_F10, 0x2);
+}
+
+void exynos_pinmux_spi4(void)
+{
+	int i;
+
+	for (i = 0; i < 2; i++) {
+		gpio_cfg_pin(GPIO_F02 + i, GPIO_FUNC(0x4));
+		gpio_cfg_pin(GPIO_E04 + i, GPIO_FUNC(0x4));
+	}
+}
+
+static void exynos_pinmux_i2c(int start, int func)
+{
+	gpio_cfg_pin(start, GPIO_FUNC(func));
+	gpio_cfg_pin(start + 1, GPIO_FUNC(func));
+	gpio_set_pull(start, GPIO_PULL_NONE);
+	gpio_set_pull(start + 1, GPIO_PULL_NONE);
+}
+
+void exynos_pinmux_i2c0(void)
+{
+	exynos_pinmux_i2c(GPIO_B30, 0x2);
+}
+
+void exynos_pinmux_i2c1(void)
+{
+	exynos_pinmux_i2c(GPIO_B32, 0x2);
+}
+
+void exynos_pinmux_i2c2(void)
+{
+	exynos_pinmux_i2c(GPIO_A06, 0x3);
+}
+
+void exynos_pinmux_i2c3(void)
+{
+	exynos_pinmux_i2c(GPIO_A12, 0x3);
+}
+
+void exynos_pinmux_i2c4(void)
+{
+	exynos_pinmux_i2c(GPIO_A20, 0x3);
+}
+
+void exynos_pinmux_i2c5(void)
+{
+	exynos_pinmux_i2c(GPIO_A22, 0x3);
+}
+
+void exynos_pinmux_i2c6(void)
+{
+	exynos_pinmux_i2c(GPIO_B13, 0x4);
+}
+
+void exynos_pinmux_i2c7(void)
+{
+	exynos_pinmux_i2c(GPIO_B22, 0x3);
+}
+
+void exynos_pinmux_i2c8(void)
+{
+	exynos_pinmux_i2c(GPIO_B34, 0x2);
+}
+
+void exynos_pinmux_i2c9(void)
+{
+	exynos_pinmux_i2c(GPIO_B36, 0x2);
+}
+
+void exynos_pinmux_i2c10(void)
+{
+	exynos_pinmux_i2c(GPIO_B40, 0x2);
+}
+
+void exynos_pinmux_dphpd(void)
+{
+	gpio_cfg_pin(GPIO_X07, GPIO_FUNC(0x3));
+	gpio_set_pull(GPIO_X07, GPIO_PULL_NONE);
 }

@@ -37,7 +37,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	# erases 28 KB and writes 10 KB register dumps to SPI flash on every
 	# boot, wasting 3 s and causing wear!  Therefore disable S3 for now.
 	#select HAVE_ACPI_RESUME
-	select HAVE_HARD_RESET
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select LIFT_BSP_APIC_ID
 	select SERIAL_CPU_INIT

@@ -22,8 +22,10 @@
 
 romstage-y += early.c
 romstage-y += smbus.c
+romstage-y += reset.c
 
 ramstage-y += late.c
+ramstage-y += reset.c
 
 ramstage-y   += smbus.c
 ramstage-y   += lpc.c

@@ -47,14 +47,7 @@ static struct clk_bit_info clk_bit_info[PERIPH_ID_COUNT] = {
 	{4,	12,	16},
 	{-1,	-1,	-1},
 	{-1,	-1,	-1},
-	{-1,	24,	0},
-	{-1,	24,	0},
-	{-1,	24,	0},
-	{-1,	24,	0},
-	{-1,	24,	0},
-	{-1,	24,	0},
-	{-1,	24,	0},
-	{-1,	24,	0},
+	[PERIPH_ID_DPHPD]
 	{24,	0,	-1},
 	{24,	0,	-1},
 	{24,	0,	-1},
@@ -200,9 +193,12 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 	case PERIPH_ID_I2C5:
 	case PERIPH_ID_I2C6:
 	case PERIPH_ID_I2C7:
+	case PERIPH_ID_I2C8:
+	case PERIPH_ID_I2C9:
+	case PERIPH_ID_I2C10:
 		sclk = get_pll_clk(MPLL);
-		sub_div = ((readl(&clk->div_top1) >> bit_info->div_bit) & 0x7) + 1;
-		div = ((readl(&clk->div_top0) >> bit_info->prediv_bit) & 0x7) + 1;
+		sub_div = ((readl(&clk->div_top1) >> 24) & 0x7) + 1;
+		div = (readl(&clk->div_top0) & 0x7) + 1;
 		return (sclk / sub_div) / div;
 	default:
 		printk(BIOS_DEBUG, "%s: invalid peripheral %d", __func__, peripheral);

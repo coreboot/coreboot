@@ -34,5 +34,4 @@ ramstage-y += agesawrapper.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
 
-ramstage-y += reset.c
 

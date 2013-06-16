@@ -23,9 +23,11 @@
 romstage-y += cfg.c
 romstage-y += early.c
 romstage-y += smbus.c
+romstage-y += reset.c
 
 ramstage-y += cfg.c
 ramstage-y += late.c
+ramstage-y += reset.c
 
 ramstage-$(CONFIG_SB800_MANUAL_FAN_CONTROL) += fan.c
 ramstage-$(CONFIG_SB800_IMC_FAN_CONTROL) += fan.c

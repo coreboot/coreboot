@@ -21,8 +21,13 @@
 
 #define CMOS_ADDR_PORT 0x70
 #define CMOS_DATA_PORT 0x71
+
 #define HIGH_RAM_ADDR 0x35
 #define LOW_RAM_ADDR 0x34
+
+#define HIGH_HIGHRAM_ADDR 0x5d
+#define MID_HIGHRAM_ADDR 0x5c
+#define LOW_HIGHRAM_ADDR 0x5b
 
 static unsigned long qemu_get_memory_size(void)
 {

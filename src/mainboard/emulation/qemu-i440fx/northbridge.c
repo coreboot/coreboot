@@ -16,6 +16,18 @@
 
 #include "memory.c"
 
+static unsigned long qemu_get_high_memory_size(void)
+{
+	unsigned long high;
+	outb (HIGH_HIGHRAM_ADDR, CMOS_ADDR_PORT);
+	high = ((unsigned long) inb(CMOS_DATA_PORT)) << 22;
+	outb (MID_HIGHRAM_ADDR, CMOS_ADDR_PORT);
+	high |= ((unsigned long) inb(CMOS_DATA_PORT)) << 14;
+	outb (LOW_HIGHRAM_ADDR, CMOS_ADDR_PORT);
+	high |= ((unsigned long) inb(CMOS_DATA_PORT)) << 6;
+	return high;
+}
+
 static void cpu_pci_domain_set_resources(device_t dev)
 {
 	assign_resources(dev->link_list);
@@ -24,18 +36,22 @@ static void cpu_pci_domain_set_resources(device_t dev)
 static void cpu_pci_domain_read_resources(struct device *dev)
 {
 	struct resource *res;
-	unsigned long tomk = 0;
+	unsigned long tomk = 0, high;
 	int idx = 10;
 
 	pci_domain_read_resources(dev);
 
 	tomk = qemu_get_memory_size();
-	printk(BIOS_DEBUG, "Detected %lu MiB RAM.\n", tomk / 1024);
+	high = qemu_get_high_memory_size();
+	printk(BIOS_DEBUG, "Detected %lu MiB RAM below 4G.\n", tomk / 1024);
+	printk(BIOS_DEBUG, "Detected %lu MiB RAM above 4G.\n", high / 1024);
 
 	/* Report the memory regions. */
 	idx = 10;
 	ram_resource(dev, idx++, 0, 640);
 	ram_resource(dev, idx++, 768, tomk - 768);
+	if (high)
+		ram_resource(dev, idx++, 4 * 1024 * 1024, high);
 
 	/* Leave some space for ACPI, PIRQ and MP tables */
 	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;

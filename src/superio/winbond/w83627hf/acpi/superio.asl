@@ -529,6 +529,7 @@ Device(SIO) {
 
 		Name (_PRS, ResourceTemplate ()
 		{
+			/* Traditional configurations (SPP mode) */
 			StartDependentFn (0,1)
 			{
 				IO (Decode16, 0x0378, 0x0378, 0x04, 0x08)
@@ -544,6 +545,7 @@ Device(SIO) {
 				IO (Decode16, 0x03BC, 0x03BC, 0x04, 0x04)
 				IRQNoFlags () {3,4,5,7,9,10,11,12}
 			}
+			/* Traditional configurations (EPP mode) */
 			StartDependentFn (0,0)
 			{
 				IO (Decode16, 0x0378, 0x0378, 0x08, 0x08)
@@ -554,11 +556,13 @@ Device(SIO) {
 				IO (Decode16, 0x0278, 0x0278, 0x08, 0x08)
 				IRQNoFlags () {3,4,5,7,9,10,11,12}
 			}
+			/* Any configurable address (EPP mode) */
 			StartDependentFn (2,0)
 			{
 				IO (Decode16, 0x0100, 0x0FFC, 0x08, 0x08)
 				IRQNoFlags () {3,4,5,7,9,10,11,12}
 			}
+			/* Any configurable address (No EPP mode) */
 			StartDependentFn (2,1)
 			{
 				IO (Decode16, 0x0100, 0x0FFC, 0x04, 0x08)

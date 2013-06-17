@@ -73,7 +73,7 @@ static inline int ahci_port_is_active(const hba_port_t *const port)
 
 static int ahci_cmdengine_start(hba_port_t *const port)
 {
-	/* Wait for the controller to clear CR.
+	/* CR has to be clear before starting the command engine.
 	   This shouldn't take too long, but we should time out nevertheless. */
 	int timeout = 1000; /* Time out after 1000 * 1us == 1ms. */
 	while ((port->cmd_stat & HBA_PxCMD_CR) && timeout--)
@@ -92,10 +92,10 @@ static int ahci_cmdengine_stop(hba_port_t *const port)
 {
 	port->cmd_stat &= ~HBA_PxCMD_ST;
 
-	/* Wait for the controller to clear FR and CR.
+	/* Wait for the controller to clear CR.
 	   This shouldn't take too long, but we should time out nevertheless. */
 	int timeout = 1000; /* Time out after 1000 * 1us == 1ms. */
-	while ((port->cmd_stat & (HBA_PxCMD_FR | HBA_PxCMD_CR)) && timeout--)
+	while ((port->cmd_stat & HBA_PxCMD_CR) && timeout--)
 		udelay(1);
 	if (timeout < 0) {
 		printf("ahci: Timeout during stopping of command engine.\n");
@@ -103,6 +103,17 @@ static int ahci_cmdengine_stop(hba_port_t *const port)
 	}
 
 	port->cmd_stat &= ~HBA_PxCMD_FRE;
+
+	/* Wait for the controller to clear FR.
+	   This shouldn't take too long, but we should time out nevertheless. */
+	timeout = 1000; /* Time out after 1000 * 1us == 1ms. */
+	while ((port->cmd_stat & HBA_PxCMD_FR) && timeout--)
+		udelay(1);
+	if (timeout < 0) {
+		printf("ahci: Timeout during stopping of command engine.\n");
+		return 1;
+	}
+
 	return 0;
 }
 

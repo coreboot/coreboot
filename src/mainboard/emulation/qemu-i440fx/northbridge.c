@@ -18,38 +18,28 @@
 
 static void cpu_pci_domain_set_resources(device_t dev)
 {
-	u32 pci_tolm = find_pci_tolm(dev->link_list);
-	unsigned long tomk = 0, tolmk;
-	int idx;
-
-	tomk = qemu_get_memory_size();
-	printk(BIOS_DEBUG, "Detected %lu Kbytes (%lu MiB) RAM.\n",
-	       tomk, tomk / 1024);
-
-	/* Compute the top of Low memory */
-	tolmk = pci_tolm >> 10;
-	if (tolmk >= tomk) {
-		/* The PCI hole does not overlap the memory. */
-		tolmk = tomk;
-	}
-
-	/* Report the memory regions. */
-	idx = 10;
-	ram_resource(dev, idx++, 0, 640);
-	ram_resource(dev, idx++, 768, tolmk - 768);
-
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
-
 	assign_resources(dev->link_list);
 }
 
 static void cpu_pci_domain_read_resources(struct device *dev)
 {
 	struct resource *res;
+	unsigned long tomk = 0;
+	int idx = 10;
 
 	pci_domain_read_resources(dev);
+
+	tomk = qemu_get_memory_size();
+	printk(BIOS_DEBUG, "Detected %lu MiB RAM.\n", tomk / 1024);
+
+	/* Report the memory regions. */
+	idx = 10;
+	ram_resource(dev, idx++, 0, 640);
+	ram_resource(dev, idx++, 768, tomk - 768);
+
+	/* Leave some space for ACPI, PIRQ and MP tables */
+	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
+	high_tables_size = HIGH_MEMORY_SIZE;
 
 	/* Reserve space for the IOAPIC.  This should be in the Southbridge,
 	 * but I couldn't tell which device to put it in. */

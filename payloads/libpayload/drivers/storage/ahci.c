@@ -396,9 +396,12 @@ static int ahci_dev_init(hba_ctrl_t *const ctrl,
 	dev->rcvd_fis = rcvd_fis;
 
 	/* Wait for D2H Register FIS with device' signature. */
-	int timeout = 200; /* Time out after 200 * 10ms == 2s. */
+	int timeout = 500; /* Time out after 500 * 10ms == 5s. */
 	while ((port->taskfile_data & HBA_PxTFD_BSY) && timeout--)
 		mdelay(10);
+
+	if (port->taskfile_data & HBA_PxTFD_BSY)
+		printf("ahci: Timed out waiting for device' signature.\n");
 
 	/* Initialize device or fall through to clean up. */
 	switch (port->signature) {

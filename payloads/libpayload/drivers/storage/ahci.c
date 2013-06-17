@@ -406,10 +406,18 @@ static int ahci_dev_init(hba_ctrl_t *const ctrl,
 	dev->cmdtable = cmdtable;
 	dev->rcvd_fis = rcvd_fis;
 
-	/* Wait for D2H Register FIS with device' signature. */
-	int timeout = 200; /* Time out after 200 * 10ms == 2s. */
+	/*
+	 * Wait for D2H Register FIS with device' signature.
+	 * The drive has to spin up here, so wait up to 30s.
+	 */
+	const int timeout_s = 30; /* Time out after 30s. */
+	int timeout = timeout_s * 100;
 	while ((port->taskfile_data & HBA_PxTFD_BSY) && timeout--)
 		mdelay(10);
+
+	if (port->taskfile_data & HBA_PxTFD_BSY)
+		printf("ahci: Timed out after %d seconds "
+		       "of waiting for device to spin up.\n", timeout_s);
 
 	/* Initialize device or fall through to clean up. */
 	switch (port->signature) {

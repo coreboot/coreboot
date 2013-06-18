@@ -43,4 +43,14 @@ mrc.bin-position := 0xfffe0000
 endif
 mrc.bin-type := 0xab
 
+$(obj)/mrc.cache:
+	dd if=/dev/zero count=1 \
+	bs=$(shell echo $(CONFIG_MRC_CACHE_SIZE) | awk '{ printf "%d", $$0;}') | \
+	tr '\000' '\377' > $@
+
+cbfs-files-$(CONFIG_HAVE_MRC) += mrc.cache
+mrc.cache-file := $(obj)/mrc.cache
+mrc.cache-position := 0xfff80000
+mrc.cache-type := 0xac
+
 $(obj)/northbridge/intel/sandybridge/acpi.ramstage.o : $(obj)/build.h

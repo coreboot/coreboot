@@ -58,7 +58,7 @@ source "src/mainboard/google/snow/Kconfig"
 source "src/mainboard/google/stout/Kconfig"
 
 config MAINBOARD_VENDOR
-	string
+	string "Mainboard Vendor"
 	default "Google"
 
 endif # VENDOR_GOOGLE

@@ -71,8 +71,8 @@ static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 	region_size =  find_fmap_entry("RW_MRC_CACHE", (void **)mrc_region_ptr);
 #else
 	region_size = CONFIG_MRC_CACHE_SIZE;
-	*mrc_region_ptr = (struct mrc_data_container *)
-		(CONFIG_MRC_CACHE_BASE + CONFIG_MRC_CACHE_LOCATION);
+	*mrc_region_ptr = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+			"mrc.cache", 0xac);
 #endif
 
 	return region_size;

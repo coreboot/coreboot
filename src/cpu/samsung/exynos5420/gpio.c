@@ -170,13 +170,13 @@ int gpio_direction_output(unsigned gpio, int value)
 	unsigned int val;
 	struct gpio_bank *bank = gpio_get_bank(gpio);
 
-	gpio_cfg_pin(gpio, GPIO_OUTPUT);
-
 	val = readl(&bank->dat);
 	val &= ~DAT_MASK(GPIO_BIT(gpio));
 	if (value)
 		val |= DAT_SET(GPIO_BIT(gpio));
 	writel(val, &bank->dat);
+
+	gpio_cfg_pin(gpio, GPIO_OUTPUT);
 
 	return 0;
 }

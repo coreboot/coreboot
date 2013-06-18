@@ -1,1 +1,1 @@
-ramstage-$(CONFIG_DRIVERS_EMULATION_QEMU) += init.c
+ramstage-$(CONFIG_DRIVERS_EMULATION_QEMU_BOCHS) += bochs.c

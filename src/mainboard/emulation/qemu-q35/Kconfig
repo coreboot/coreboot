@@ -27,13 +27,13 @@ config MAINBOARD_PART_NUMBER
 #	int
 #	default 6
 
-#config DCACHE_RAM_BASE
-#	hex
-#	default 0xd0000
+config DCACHE_RAM_BASE
+	hex
+	default 0xd0000
 
-#config DCACHE_RAM_SIZE
-#	hex
-#	default 0x10000
+config DCACHE_RAM_SIZE
+	hex
+	default 0x10000
 
 
 endif # BOARD_EMULATION_QEMU_X86

@@ -1,2 +1,21 @@
-config DRIVERS_EMULATION_QEMU
-	bool
+config DRIVERS_EMULATION_QEMU_BOCHS
+	bool "bochs dispi interface vga driver"
+	default y
+	depends on BOARD_EMULATION_QEMU_X86
+	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	help
+	   VGA driver for qemu emulated vga cards supporting
+	   the bochs dispi interface.  This includes
+	   standard vga, vmware svga and qxl.  The default
+	   vga (cirrus) is *not* supported, so you have to
+	   pick another one explicitly via 'qemu -vga $card'.
+
+config DRIVERS_EMULATION_QEMU_BOCHS_XRES
+	int "bochs vga xres"
+	default 800
+	depends on DRIVERS_EMULATION_QEMU_BOCHS
+
+config DRIVERS_EMULATION_QEMU_BOCHS_YRES
+	int "bochs vga yres"
+	default 600
+	depends on DRIVERS_EMULATION_QEMU_BOCHS

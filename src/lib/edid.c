@@ -1174,7 +1174,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		printk(BIOS_SPEW, "Standard timings supported:\n");
 		for (i = 0; i < 8; i++) {
 			uint8_t b1 = edid[0x26 + i * 2], b2 = edid[0x26 + i * 2 + 1];
-			unsigned int x, y, refresh;
+			unsigned int x, y = 0, refresh;
 
 			if (b1 == 0x01 && b2 == 0x01)
 				continue;

@@ -170,7 +170,7 @@
 #define PAD_RETENTION_DRAM_COREBLK_VAL	0x10000000
 
 #define samsung_get_base_adc() ((struct exynos5_adc *)EXYNOS5_ADC_BASE)
-#define samsung_get_base_clock() ((struct exynos5_clock *)EXYNOS5_CLOCK_BASE)
+#define samsung_get_base_clock() ((struct exynos5420_clock *)EXYNOS5_CLOCK_BASE)
 #define samsung_get_base_ace_sfr() ((struct exynos5_ace_sfr *)EXYNOS5_ACE_SFR_BASE)
 #define samsung_get_base_dsim() ((struct exynos5_dsim *)EXYNOS5_MIPI_DSI1_BASE)
 #define samsung_get_base_disp_ctrl() ((struct exynos5_disp_ctrl *)EXYNOS5_DISP1_CTRL_BASE)

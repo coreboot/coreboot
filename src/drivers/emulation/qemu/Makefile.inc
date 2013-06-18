@@ -1,1 +1,1 @@
-ramstage-$(CONFIG_DRIVERS_EMULATION_QEMU) += init.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += bochs.c

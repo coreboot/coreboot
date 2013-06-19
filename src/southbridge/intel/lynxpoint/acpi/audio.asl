@@ -27,10 +27,15 @@ Device (HDEF)
 {
 	Name (_ADR, 0x001b0000)
 
-	// Power Resources for Wake
-	Name (_PRW, Package(){
-		13,  // Bit 13 of GPE
-		 4   // Can wake from S4 state.
-	})
+	Name (PRWH, Package(){ 0x0d, 3 }) // LPT-H
+	Name (PRWL, Package(){ 0x6d, 3 }) // LPT-LP
+
+	Method (_PRW, 0) { // Power Resources for Wake
+		If (\ISLP ()) {
+			Return (PRWL)
+		} Else {
+			Return (PRWH)
+		}
+	}
 }
 

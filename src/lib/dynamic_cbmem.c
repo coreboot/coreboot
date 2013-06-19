@@ -23,7 +23,7 @@
 #include <cbmem.h>
 #include <string.h>
 #include <stdlib.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 #include <arch/acpi.h>
 #endif

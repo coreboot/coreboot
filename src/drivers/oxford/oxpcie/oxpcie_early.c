@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 #include <delay.h>
 #include <uart8250.h>
 #include <device/pci_def.h>

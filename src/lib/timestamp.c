@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <timestamp.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 #include <cpu/x86/lapic.h>
 
 #define MAX_TIMESTAMPS 30

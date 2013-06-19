@@ -34,7 +34,7 @@
 #include <arch/byteorder.h>
 #include <console/console.h>
 #include <pc80/tpm.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 
 #define PREFIX "lpc_tpm: "
 

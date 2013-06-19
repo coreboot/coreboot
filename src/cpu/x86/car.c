@@ -21,7 +21,7 @@
 #include <stddef.h>
 #include <console/console.h>
 #include <cbmem.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 
 typedef void (* const car_migration_func_t)(void);
 

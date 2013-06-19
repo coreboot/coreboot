@@ -39,7 +39,7 @@
 #endif
 
 
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 struct sys_info sysinfo_car CAR_GLOBAL;
 
 #if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0

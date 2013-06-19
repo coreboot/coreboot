@@ -120,7 +120,7 @@ static  void print_t(const char *strval)
 
 #endif	/* DDR2 */
 
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 struct sys_info sysinfo_car CAR_GLOBAL;
 
 int mctRead_SPD(u32 smaddr, u32 reg)

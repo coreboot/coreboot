@@ -24,7 +24,7 @@
 #include <thread.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/speedstep.h>

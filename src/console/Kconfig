@@ -1,22 +1,15 @@
 menu "Console"
 
-config DEFAULT_BOOTBLOCK_CONSOLE
-	bool
-	default n
-
 config BOOTBLOCK_CONSOLE
 	bool "Enable early (bootblock) console output."
-	default DEFAULT_BOOTBLOCK_CONSOLE
+	depends on ARCH_ARMV7
+	default n
 	help
 	  Use console during the bootblock if supported
 
-config DEFAULT_EARLY_CONSOLE
-	bool
-	default n
-
 config EARLY_CONSOLE
 	bool "Enable early (pre-RAM) console output."
-	default DEFAULT_EARLY_CONSOLE
+	default n
 	help
 	  Use console during early (pre-RAM) boot stages
 

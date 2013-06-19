@@ -212,7 +212,8 @@ CFLAGS += -Werror
 endif
 CFLAGS += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
-additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool $(objutil)/options
+additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
+		   $(objutil)/ifdfake $(objutil)/options
 
 #######################################################################
 # generate build support files
@@ -272,6 +273,11 @@ $(ROMCC): $(top)/util/romcc/romcc.c
 
 IFDTOOL:=$(objutil)/ifdtool/ifdtool
 $(IFDTOOL): $(top)/util/ifdtool/ifdtool.c
+	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
+	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
+
+IFDFAKE:=$(objutil)/ifdfake/ifdfake
+$(IFDFAKE): $(top)/util/ifdfake/ifdfake.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 

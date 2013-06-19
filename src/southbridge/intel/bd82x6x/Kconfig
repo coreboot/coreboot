@@ -59,6 +59,52 @@ config HPET_MIN_TICKS
 	hex
 	default 0x80
 
+config HAVE_IFD_BIN
+	bool
+	default y
+
+config BUILD_WITH_FAKE_IFD
+	bool "Build with a fake IFD"
+	default y if !HAVE_IFD_BIN
+	help
+	  If you don't have an Intel Firmware Descriptor (ifd.bin) for your
+	  board, you can select this option and coreboot will build without it.
+	  Though, the resulting coreboot.rom will not contain all parts required
+	  to get coreboot running on your board. You can however write only the
+	  BIOS section to your board's flash ROM and keep the other sections
+	  untouched. Unfortunately the current version of flashrom doesn't
+	  support this yet. But there is a patch pending [1].
+
+	  WARNING: Never write a complete coreboot.rom to your flash ROM if it
+		   was built with a fake IFD. It just won't work.
+
+          [1] http://www.flashrom.org/pipermail/flashrom/2013-June/011083.html
+
+config IFD_BIOS_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+config IFD_ME_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+config IFD_GBE_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+config IFD_PLATFORM_SECTION
+	depends on BUILD_WITH_FAKE_IFD
+	string
+	default ""
+
+config IFD_BIN_PATH
+	string "Path to intel firmware descriptor"
+	depends on !BUILD_WITH_FAKE_IFD
+	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+
 config HAVE_GBE_BIN
 	bool "Add gigabit ethernet firmware"
 	default n
@@ -76,12 +122,9 @@ config ME_BIN_PATH
 	string "Path to management engine firmware"
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/me.bin"
 
-config IFD_BIN_PATH
-	string "Path to intel firmware descriptor"
-	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
-
 config LOCK_MANAGEMENT_ENGINE
 	bool "Lock Management Engine section"
+	depends on !BUILD_WITH_FAKE_IFD
 	default n
 	help
 	  The Intel Management Engine supports preventing write accesses

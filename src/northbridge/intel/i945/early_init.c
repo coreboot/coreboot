@@ -23,7 +23,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include "i945.h"
-#include "pcie_config.c"
+#include <arch/pcie_config.h>
 
 int i945_silicon_revision(void)
 {

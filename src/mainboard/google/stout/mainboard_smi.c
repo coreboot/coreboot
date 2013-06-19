@@ -24,7 +24,7 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <southbridge/intel/bd82x6x/me.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <northbridge/intel/sandybridge/pcie_config.c>
+#include <arch/pcie_config.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
 /* Include romstage serial for SIO helper functions */

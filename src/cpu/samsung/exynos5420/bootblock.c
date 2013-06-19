@@ -19,10 +19,28 @@
 
 #include "clk.h"
 #include "wakeup.h"
+#include "cpu.h"
 
 void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
 {
+	u32 ret;
+	/*
+	 * During Suspend-Resume & S/W-Reset, as soon as PMU releases
+	 * pad retention, CKE goes high. This causes memory contents
+	 * not to be retained during DRAM initialization. Therfore,
+	 * there is a new control register(0x100431e8[28]) which lets us
+	 * release pad retention and retain the memory content until the
+	 * initialization is complete.
+	 */
+	if (read32(((void *)INF_REG_BASE + INF_REG1_OFFSET)) == S5P_CHECK_SLEEP) {
+		write32(PAD_RETENTION_DRAM_COREBLK_VAL,
+			(void *)PAD_RETENTION_DRAM_COREBLK_OPTION);
+		do {
+			ret = read32((void *)PAD_RETENTION_DRAM_STATUS);
+		} while (ret != 0x1);
+	}
+
 	/* kick off the multi-core timer.
 	 * We want to do this as early as we can.
 	 */

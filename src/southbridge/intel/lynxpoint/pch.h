@@ -162,6 +162,7 @@ void disable_gpe(u32 mask);
 #include <arch/acpi.h>
 #include "chip.h"
 void pch_enable(device_t dev);
+void pch_disable_devfn(device_t dev);
 u32 pch_iobp_read(u32 address);
 void pch_iobp_write(u32 address, u32 data);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);

@@ -395,6 +395,8 @@ static inline __attribute__((always_inline)) void pci_write_config32(device_t de
 #endif
 }
 
+#include <arch/pci_mmio_cfg.h>
+
 static inline __attribute__((always_inline)) void pci_or_config8(device_t dev, unsigned where, uint8_t value)
 {
 	pci_write_config8(dev, where, pci_read_config8(dev, where) | value);

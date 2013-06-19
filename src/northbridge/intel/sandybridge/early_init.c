@@ -25,7 +25,6 @@
 #include <device/pci_def.h>
 #include <elog.h>
 #include "sandybridge.h"
-#include "pcie_config.c"
 
 static void sandybridge_setup_bars(void)
 {

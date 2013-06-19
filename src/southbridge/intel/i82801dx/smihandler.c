@@ -207,12 +207,6 @@ static void dump_tco_status(u32 tco_sts)
 	printk(BIOS_DEBUG, "\n");
 }
 
-/* We are using PCIe accesses for now
- *  1. the chipset can do it
- *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
- */
-// #include "../../../northbridge/intel/i945/pcie_config.c"
-
 int southbridge_io_trap_handler(int smif)
 {
 	switch (smif) {

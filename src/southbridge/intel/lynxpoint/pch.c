@@ -92,7 +92,7 @@ static void pch_enable_d3hot(device_t dev)
 }
 
 /* Set bit in Function Disble register to hide this device */
-static void pch_hide_devfn(device_t dev)
+void pch_disable_devfn(device_t dev)
 {
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(19, 0): /* Audio DSP */
@@ -432,8 +432,8 @@ static void pch_pcie_enable(device_t dev)
 		/* Do not claim downstream transactions for PCIe ports */
 		new_rpfn |= RPFN_HIDE(PCI_FUNC(dev->path.pci.devfn));
 
-		/* Hide this device if possible */
-		pch_hide_devfn(dev);
+		/* Disable this device if possible */
+		pch_disable_devfn(dev);
 	} else {
 		int fn;
 
@@ -491,8 +491,8 @@ void pch_enable(device_t dev)
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		pci_write_config32(dev, PCI_COMMAND, reg32);
 
-		/* Hide this device if possible */
-		pch_hide_devfn(dev);
+		/* Disable this device if possible */
+		pch_disable_devfn(dev);
 	} else {
 		/* Enable SERR */
 		reg32 = pci_read_config32(dev, PCI_COMMAND);

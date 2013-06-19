@@ -49,9 +49,11 @@ static struct edid edid = {
 };
 
 /* TODO: transplanted DP stuff, clean up once we have something that works */
-static enum exynos5_gpio_pin dp_pd_l = GPIO_Y25;	/* active low */
-static enum exynos5_gpio_pin dp_rst_l = GPIO_X15;	/* active low */
-static enum exynos5_gpio_pin dp_hpd = GPIO_X07;		/* active high */
+static enum exynos5_gpio_pin dp_pd_l = GPIO_X35;	/* active low */
+static enum exynos5_gpio_pin dp_rst_l = GPIO_Y77;	/* active low */
+static enum exynos5_gpio_pin dp_hpd = GPIO_X26;		/* active high */
+static enum exynos5_gpio_pin bl_pwm = GPIO_B20;		/* active high */
+static enum exynos5_gpio_pin bl_en = GPIO_X22;		/* active high */
 
 static void exynos_dp_bridge_setup(void)
 {
@@ -115,14 +117,14 @@ static void exynos_dp_reset(void)
 static void backlight_pwm(void)
 {
 	/*Configure backlight PWM as a simple output high (100% brightness) */
-	gpio_direction_output(GPIO_B20, 1);
+	gpio_direction_output(bl_pwm, 1);
 	udelay(LCD_T6_DELAY_MS * 1000);
 }
 
 static void backlight_en(void)
 {
 	/* Configure GPIO for LCD_BL_EN */
-	gpio_direction_output(GPIO_X30, 1);
+	gpio_direction_output(bl_en, 1);
 }
 
 //static struct video_info smdk5420_dp_config = {

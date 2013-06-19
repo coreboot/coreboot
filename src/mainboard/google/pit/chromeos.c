@@ -36,9 +36,9 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	int count = 0;
 
 	/* Write Protect: active low */
-	gpios->gpios[count].port = EXYNOS5_GPD1;
+	gpios->gpios[count].port = EXYNOS5_GPX3;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
-	gpios->gpios[count].value = gpio_get_value(GPIO_D16); // WP_GPIO
+	gpios->gpios[count].value = gpio_get_value(GPIO_X30); // WP_GPIO
 	strncpy((char *)gpios->gpios[count].name, "write protect",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -54,7 +54,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Lid: active high */
 	gpios->gpios[count].port = EXYNOS5_GPX3;
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = gpio_get_value(GPIO_X35); // LID_GPIO
+	gpios->gpios[count].value = gpio_get_value(GPIO_X34); // LID_GPIO
 	strncpy((char *)gpios->gpios[count].name, "lid", GPIO_MAX_NAME_LENGTH);
 	count++;
 
@@ -62,7 +62,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->gpios[count].port = EXYNOS5_GPX1;
 	gpios->gpios[count].polarity = ACTIVE_LOW;
 	gpios->gpios[count].value =
-		gpio_get_value(GPIO_X13); // POWER_GPIO
+		gpio_get_value(GPIO_X12); // POWER_GPIO
 	strncpy((char *)gpios->gpios[count].name, "power",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -91,7 +91,7 @@ int get_recovery_mode_switch(void)
 	uint32_t ec_events;
 
 	/* The GPIO is active low. */
-	if (!gpio_get_value(GPIO_Y10)) // RECMODE_GPIO
+	if (!gpio_get_value(GPIO_X07)) // RECMODE_GPIO
 		return 1;
 
 	ec_events = google_chromeec_get_events_b();

@@ -129,17 +129,17 @@ static void setup_graphics(void)
 
 static void setup_gpio(void)
 {
-	gpio_direction_input(GPIO_D16); // WP_GPIO
-	gpio_set_pull(GPIO_D16, GPIO_PULL_NONE);
+	gpio_direction_input(GPIO_X30); // WP_GPIO
+	gpio_set_pull(GPIO_X30, GPIO_PULL_NONE);
 
-	gpio_direction_input(GPIO_Y10); // RECMODE_GPIO
-	gpio_set_pull(GPIO_Y10, GPIO_PULL_NONE);
+	gpio_direction_input(GPIO_X07); // RECMODE_GPIO
+	gpio_set_pull(GPIO_X07, GPIO_PULL_NONE);
 
-	gpio_direction_input(GPIO_X35); // LID_GPIO
-	gpio_set_pull(GPIO_X35, GPIO_PULL_NONE);
+	gpio_direction_input(GPIO_X34); // LID_GPIO
+	gpio_set_pull(GPIO_X34, GPIO_PULL_NONE);
 
-	gpio_direction_input(GPIO_X13); // POWER_GPIO
-	gpio_set_pull(GPIO_X13, GPIO_PULL_NONE);
+	gpio_direction_input(GPIO_X12); // POWER_GPIO
+	gpio_set_pull(GPIO_X12, GPIO_PULL_NONE);
 }
 
 static void setup_memory(struct mem_timings *mem, int is_resume)

@@ -27,7 +27,16 @@ Device (EHCI)
 {
 	Name(_ADR, 0x001d0000)
 
-	Name (_PRW, Package(){ 13, 3 }) // Power Resources for Wake
+	Name (PRWH, Package(){ 0x0d, 3 }) // LPT-H
+	Name (PRWL, Package(){ 0x6d, 3 }) // LPT-LP
+
+	Method (_PRW, 0) { // Power Resources for Wake
+		If (\ISLP ()) {
+			Return (PRWL)
+		} Else {
+			Return (PRWH)
+		}
+	}
 
 	// Leave USB ports on for to allow Wake from USB
 
@@ -61,7 +70,16 @@ Device (XHCI)
 {
 	Name(_ADR, 0x00140000)
 
-	Name (_PRW, Package(){ 13, 3 }) // Power Resources for Wake
+	Name (PRWH, Package(){ 0x0d, 3 }) // LPT-H
+	Name (PRWL, Package(){ 0x6d, 3 }) // LPT-LP
+
+	Method (_PRW, 0) { // Power Resources for Wake
+		If (\ISLP ()) {
+			Return (PRWL)
+		} Else {
+			Return (PRWH)
+		}
+	}
 
 	// Leave USB ports on for to allow Wake from USB
 

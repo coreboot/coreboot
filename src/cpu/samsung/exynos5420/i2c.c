@@ -46,6 +46,14 @@
 #define HSI2C_TXCHON			(1u << 7)	/* Read/Receive */
 #define HSI2C_SW_RST			(1u << 31)
 
+/* I2C_FIFO_STAT Register bits */
+#define HSI2C_TX_FIFO_LEVEL		(0x7f << 0)
+#define HSI2C_TX_FIFO_FULL		(1u << 7)
+#define HSI2C_TX_FIFO_EMPTY		(1u << 8)
+#define HSI2C_RX_FIFO_LEVEL		(0x7f << 16)
+#define HSI2C_RX_FIFO_FULL		(1u << 23)
+#define HSI2C_RX_FIFO_EMPTY		(1u << 24)
+
 /* I2C_FIFO_CTL Register bits */
 #define HSI2C_RXFIFO_EN			(1u << 0)
 #define HSI2C_TXFIFO_EN			(1u << 1)
@@ -77,11 +85,11 @@
 /* I2C_TRANS_STATUS register bits */
 #define HSI2C_MASTER_BUSY		(1u << 17)
 #define HSI2C_SLAVE_BUSY		(1u << 16)
+#define HSI2C_TIMEOUT_AUTO		(1u << 4)
 #define HSI2C_NO_DEV			(1u << 3)
 #define HSI2C_NO_DEV_ACK		(1u << 2)
 #define HSI2C_TRANS_ABORT		(1u << 1)
 #define HSI2C_TRANS_DONE		(1u << 0)
-#define HSI2C_TIMEOUT_AUTO		(0u << 0)
 
 #define HSI2C_SLV_ADDR_MAS(x)		((x & 0x3ff) << 10)
 
@@ -205,46 +213,9 @@ static int WaitForXfer(struct s3c24x0_i2c *i2c)
 	return I2C_NOK_TOUT;
 }
 
-static int hsi2c_wait_for_irq(struct exynos5_hsi2c *i2c)
-{
-	struct mono_time current, end;
-	int ret = I2C_NOK_TOUT;
-
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_usecs(&end, HSI2C_TIMEOUT * 1000 * 10);
-
-	while (mono_time_before(&current, &end)) {
-		udelay(20);
-		if (read32(&i2c->usi_int_stat) &
-		    (HSI2C_INT_I2C_EN | HSI2C_INT_TX_ALMOSTEMPTY_EN)) {
-			ret = I2C_OK;
-			break;
-		}
-		/* wait for a while and retry */
-		timer_monotonic_get(&current);
-	}
-
-	if (ret == I2C_NOK_TOUT)
-		printk(BIOS_ERR, "%s timed out\n", __func__);
-	return ret;
-}
-
-static int hsi2c_isack(struct exynos5_hsi2c *i2c)
-{
-	return read32(&i2c->usi_trans_status) &
-			(HSI2C_NO_DEV | HSI2C_NO_DEV_ACK);
-}
-
 static void ReadWriteByte(struct s3c24x0_i2c *i2c)
 {
 	writel(read32(&i2c->iiccon) & ~I2CCON_IRPND, &i2c->iiccon);
-}
-
-static void hsi2c_clear_irqpd(struct exynos5_hsi2c *i2c)
-{
-	u32 stat = read32(&i2c->usi_int_stat);
-	write32(stat, &i2c->usi_int_stat);
 }
 
 static void i2c_ch_init(struct s3c24x0_i2c_bus *bus, int speed, int slaveadd)
@@ -346,6 +317,12 @@ static void hsi2c_ch_init(struct s3c24x0_i2c_bus *i2c_bus)
 	write32(i2c_timing_s2, &hsregs->usi_timing_fs2);
 	write32(i2c_timing_s3, &hsregs->usi_timing_fs3);
 	write32(i2c_timing_sla, &hsregs->usi_timing_sla);
+
+	/* Enable TXFIFO and RXFIFO */
+	write32(HSI2C_RXFIFO_EN | HSI2C_TXFIFO_EN, &hsregs->usi_fifo_ctl);
+
+	/* i2c_conf configure */
+	write32(readl(&hsregs->usi_conf) | HSI2C_AUTO_MODE, &hsregs->usi_conf);
 }
 
 /* SW reset for the high speed bus */
@@ -386,34 +363,61 @@ void i2c_init(unsigned bus_num, int speed, int slaveadd)
 }
 
 /*
- * Send a STOP event and wait for it to have completed
- *
- * @param mode	If it is a master transmitter or receiver
- * @return I2C_OK if the line became idle before timeout I2C_NOK_TOUT otherwise
+ * Check whether the transfer is complete.
  */
-static int hsi2c_send_stop(struct exynos5_hsi2c *i2c, int result)
+static int hsi2c_check_transfer(struct exynos5_hsi2c *i2c)
 {
-	int ret = I2C_NOK_TOUT;
+	uint32_t status = read32(&i2c->usi_trans_status);
+	if (status & HSI2C_TRANS_ABORT)
+		printk(BIOS_ERR, "%s: Transaction aborted.\n", __func__);
+	if (status & HSI2C_NO_DEV_ACK)
+		printk(BIOS_ERR, "%s: No ack from device.\n", __func__);
+	if (status & HSI2C_NO_DEV)
+		printk(BIOS_ERR, "%s: No response from device.\n", __func__);
+	if (status & HSI2C_TIMEOUT_AUTO)
+		printk(BIOS_ERR, "%s: Transaction time out.\n", __func__);
+	return !!(status & HSI2C_MASTER_BUSY);
+}
+
+/*
+ * Wait for the transfer to finish.
+ */
+static int hsi2c_wait_for_transfer(struct exynos5_hsi2c *i2c)
+{
 	struct mono_time current, end;
 
 	timer_monotonic_get(&current);
 	end = current;
 	mono_time_add_usecs(&end, HSI2C_TIMEOUT * 1000);
 	while (mono_time_before(&current, &end)) {
-		if (!(read32(&i2c->usi_trans_status) & HSI2C_MASTER_BUSY)) {
-			ret = I2C_OK;
-			break;
-		}
+		if (!hsi2c_check_transfer(i2c))
+			return 0;
 		udelay(5);
 		timer_monotonic_get(&current);
 	}
-	if (ret)
-		printk(BIOS_ERR, "%s timed out\n", __func__);
-	/* Setting the STOP event to fire */
-	write32(HSI2C_FUNC_MODE_I2C, &i2c->usi_ctl);
-	write32(0x0, &i2c->usi_int_en);
+	return 1;
+}
 
-	return (result == I2C_OK) ? ret : result;
+static int hsi2c_senddata(struct exynos5_hsi2c *i2c, uint8_t *data, int len)
+{
+	while (hsi2c_check_transfer(i2c) && len) {
+		if (!(read32(&i2c->usi_fifo_stat) & HSI2C_TX_FIFO_FULL)) {
+			write32(*data++, &i2c->usi_txdata);
+			len--;
+		}
+	}
+	return len ? -1 : 0;
+}
+
+static int hsi2c_recvdata(struct exynos5_hsi2c *i2c, uint8_t *data, int len)
+{
+	while (hsi2c_check_transfer(i2c) && len) {
+		if (!(read32(&i2c->usi_fifo_stat) & HSI2C_RX_FIFO_EMPTY)) {
+			*data++ = read32(&i2c->usi_rxdata);
+			len--;
+		}
+	}
+	return len ? -1 : 0;
 }
 
 static int hsi2c_write(struct exynos5_hsi2c *i2c,
@@ -423,83 +427,33 @@ static int hsi2c_write(struct exynos5_hsi2c *i2c,
 			unsigned char data[],
 			unsigned short len)
 {
-	int i = 0, result = I2C_OK;
-	u32 i2c_auto_conf;
-	u32 stat;
-	struct mono_time current, end;
+	uint32_t i2c_auto_conf;
 
-	/* Check I2C bus idle */
-	i = HSI2C_TIMEOUT * 20;
-	timer_monotonic_get(&current);
-	end = current;
-	mono_time_add_usecs(&end, HSI2C_TIMEOUT * 1000 * 20);
-	while (mono_time_before(&current, &end)) {
-		if (!(read32(&i2c->usi_trans_status) & HSI2C_MASTER_BUSY))
-			break;
-		udelay(50);
-		timer_monotonic_get(&current);
-	}
-
-	stat = read32(&i2c->usi_trans_status);
-
-	if (stat & HSI2C_MASTER_BUSY) {
-		printk(BIOS_ERR, "%s: bus busy, timing out\n", __func__);
-		return I2C_NOK_TOUT;
-	}
-	/* Disable TXFIFO and RXFIFO */
-	write32(0, &i2c->usi_fifo_ctl);
+	if (hsi2c_wait_for_transfer(i2c))
+		return -1;
 
 	/* chip address */
 	write32(HSI2C_SLV_ADDR_MAS(chip), &i2c->i2c_addr);
-
-	/* Enable interrupts */
-	write32((HSI2C_INT_I2C_EN | HSI2C_INT_TX_ALMOSTEMPTY_EN),
-						&i2c->usi_int_en);
 
 	/* usi_ctl enable i2c func, master write configure */
 	write32((HSI2C_TXCHON | HSI2C_FUNC_MODE_I2C | HSI2C_MASTER),
 							&i2c->usi_ctl);
 
-	/* i2c_conf configure */
-	write32(readl(&i2c->usi_conf) | HSI2C_AUTO_MODE, &i2c->usi_conf);
-
 	/* auto_conf for write length and stop configure */
 	i2c_auto_conf = ((len + alen) | HSI2C_STOP_AFTER_TRANS);
 	i2c_auto_conf &= ~HSI2C_READ_WRITE;
+	/* Master run, start xfer */
+	i2c_auto_conf |= HSI2C_MASTER_RUN;
 	write32(i2c_auto_conf, &i2c->usi_auto_conf);
 
-	/* Master run, start xfer */
-	write32(read32(&i2c->usi_auto_conf) | HSI2C_MASTER_RUN,
-						&i2c->usi_auto_conf);
-
-	result = hsi2c_wait_for_irq(i2c);
-	if ((result == I2C_OK) && hsi2c_isack(i2c)) {
-		printk(BIOS_ERR, "%s: NAK from device %04x\n", __func__,
-			HSI2C_SLV_ADDR_MAS(chip));
-		result = I2C_NACK;
-		goto out;
+	if (hsi2c_senddata(i2c, addr, alen) ||
+	    hsi2c_senddata(i2c, data, len) ||
+	    hsi2c_wait_for_transfer(i2c)) {
+		return -1;
 	}
 
-	for (i = 0; i < alen && (result == I2C_OK); i++) {
-		write32(addr[i], &i2c->usi_txdata);
-		result = hsi2c_wait_for_irq(i2c);
-		hsi2c_clear_irqpd(i2c);
-		if (result)
-			printk(BIOS_ERR, "%s: timeout on sending address\n",
-					__func__);
-	}
-
-	for (i = 0; i < len && (result == I2C_OK); i++) {
-		write32(data[i], &i2c->usi_txdata);
-		result = hsi2c_wait_for_irq(i2c);
-		hsi2c_clear_irqpd(i2c);
-		if (result)
-			printk(BIOS_ERR, "%s: timeout on sending data\n",
-				__func__);
-	}
-out:
-	hsi2c_clear_irqpd(i2c);
-	return hsi2c_send_stop(i2c, result);
+	write32(HSI2C_FUNC_MODE_I2C, &i2c->usi_ctl);
+	return 0;
 }
 
 static int hsi2c_read(struct exynos5_hsi2c *i2c,
@@ -510,60 +464,45 @@ static int hsi2c_read(struct exynos5_hsi2c *i2c,
 			unsigned short len,
 			int check)
 {
-	int i, result;
-	u32 i2c_auto_conf;
-
-	if (!check) {
-		result = hsi2c_write(i2c, chip, addr, alen, data, 0);
-		if (result != I2C_OK) {
-			printk(BIOS_ERR, "write failed Result: %d\n", result);
-			return result;
-		}
-	}
+	uint32_t i2c_auto_conf;
 
 	/* start read */
-	/* Disable TXFIFO and RXFIFO */
-	write32(0, &i2c->usi_fifo_ctl);
+	if (hsi2c_wait_for_transfer(i2c))
+		return -1;
 
 	/* chip address */
 	write32(HSI2C_SLV_ADDR_MAS(chip), &i2c->i2c_addr);
 
-	/* Enable interrupts */
-	write32(HSI2C_INT_I2C_EN, &i2c->usi_int_en);
+	/* usi_ctl enable i2c func, master write configure */
+	write32((HSI2C_TXCHON | HSI2C_FUNC_MODE_I2C | HSI2C_MASTER),
+							&i2c->usi_ctl);
 
-	/* i2c_conf configure */
-	write32(read32(&i2c->usi_conf) | HSI2C_AUTO_MODE, &i2c->usi_conf);
+	/* auto_conf */
+	write32(alen | HSI2C_MASTER_RUN | HSI2C_STOP_AFTER_TRANS,
+		&i2c->usi_auto_conf);
 
-	/* auto_conf, length and stop configure */
-	i2c_auto_conf = (len | HSI2C_STOP_AFTER_TRANS | HSI2C_READ_WRITE);
-	write32(i2c_auto_conf, &i2c->usi_auto_conf);
+	if (hsi2c_senddata(i2c, addr, alen) ||
+	    hsi2c_wait_for_transfer(i2c)) {
+		return -1;
+	}
 
 	/* usi_ctl enable i2c func, master WRITE configure */
 	write32((HSI2C_RXCHON | HSI2C_FUNC_MODE_I2C | HSI2C_MASTER),
 							&i2c->usi_ctl);
 
+	/* auto_conf, length and stop configure */
+	i2c_auto_conf = (len | HSI2C_STOP_AFTER_TRANS | HSI2C_READ_WRITE);
+	i2c_auto_conf |= HSI2C_MASTER_RUN;
 	/* Master run, start xfer */
-	write32(readl(&i2c->usi_auto_conf) | HSI2C_MASTER_RUN,
-						&i2c->usi_auto_conf);
+	write32(i2c_auto_conf, &i2c->usi_auto_conf);
 
-	result = hsi2c_wait_for_irq(i2c);
-	if ((result == I2C_OK) && hsi2c_isack(i2c)) {
-		result = I2C_NACK;
-		goto out;
+	if (hsi2c_recvdata(i2c, data, len) ||
+	    hsi2c_wait_for_transfer(i2c)) {
+		return -1;
 	}
 
-	for (i = 0; i < len && (result == I2C_OK); i++) {
-		result = hsi2c_wait_for_irq(i2c);
-		data[i] = read32(&i2c->usi_rxdata);
-		udelay(100);
-	}
-	/*for(i = 0; i < len; i++)
-		printk(BIOS_SPEW, " %02x", data[i]);
-	printk(BIOS_SPEW, "\n");*/
-out:
-	/* Stop and quit */
-	hsi2c_clear_irqpd(i2c);
-	return hsi2c_send_stop(i2c, result);
+	write32(HSI2C_FUNC_MODE_I2C, &i2c->usi_ctl);
+	return 0;
 }
 
 /*

@@ -193,7 +193,7 @@ static void copy_console_buffer(struct cbmem_console *new_cons_p)
 	new_cons_p->buffer_cursor = cursor;
 }
 
-void cbmemc_reinit(void)
+static void cbmemc_reinit_(void)
 {
 	struct cbmem_console *cbm_cons_p;
 
@@ -221,5 +221,12 @@ void cbmemc_reinit(void)
 	current_console_set(cbm_cons_p);
 }
 
-/* Call cbmemc_reinit() at CAR migration time. */
-CAR_MIGRATE(cbmemc_reinit)
+void cbmemc_reinit(void)
+{
+#if !CONFIG_CAR_MIGRATION || !defined(__PRE_RAM__)
+	cbmemc_reinit_();
+#endif
+}
+
+/* Call cbmemc_reinit_() at CAR migration time. */
+CAR_MIGRATE(cbmemc_reinit_)

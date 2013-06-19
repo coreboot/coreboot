@@ -16,6 +16,11 @@
 
 #include "memory.c"
 
+#if CONFIG_DYNAMIC_CBMEM
+extern uint64_t high_tables_base;
+extern uint64_t high_tables_size;
+#endif
+
 static unsigned long qemu_get_high_memory_size(void)
 {
 	unsigned long high;

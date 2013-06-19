@@ -45,8 +45,18 @@ unsigned long get_top_of_ram(void)
 {
 	return qemu_get_memory_size() * 1024;
 }
-
+#if CONFIG_DYNAMIC_CBMEM
+struct cbmem_entry *get_cbmem_toc(void);
+#endif
 struct cbmem_entry *get_cbmem_toc(void)
 {
 	return (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
 }
+
+#if CONFIG_DYNAMIC_CBMEM
+void *cbmem_top(void)
+{
+	/* Top of cbmem is at lowest usable DRAM address below 4GiB. */
+	return (void *)get_top_of_ram();
+}
+#endif

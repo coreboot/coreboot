@@ -20,7 +20,7 @@
 
 #include <arch/io.h>
 #include <console/post_codes.h>
-#include <northbridge/intel/sandybridge/pcie_config.c>
+#include <arch/pcie_config.h>
 #include "pch.h"
 #include <spi-generic.h>
 

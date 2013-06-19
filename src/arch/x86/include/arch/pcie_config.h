@@ -17,7 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "i945.h"
+#define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
 
 static inline __attribute__ ((always_inline))
 u8 pcie_read_config8(device_t dev, unsigned int where)
@@ -65,4 +65,25 @@ void pcie_write_config32(device_t dev, unsigned int where, u32 value)
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
 	write32(addr, value);
+}
+
+static inline __attribute__ ((always_inline))
+void pcie_or_config8(device_t dev, unsigned int where, u8 ormask)
+{
+	u8 value = pcie_read_config8(dev, where);
+	pcie_write_config8(dev, where, value | ormask);
+}
+
+static inline __attribute__ ((always_inline))
+void pcie_or_config16(device_t dev, unsigned int where, u16 ormask)
+{
+	u16 value = pcie_read_config16(dev, where);
+	pcie_write_config16(dev, where, value | ormask);
+}
+
+static inline __attribute__ ((always_inline))
+void pcie_or_config32(device_t dev, unsigned int where, u32 ormask)
+{
+	u32 value = pcie_read_config32(dev, where);
+	pcie_write_config32(dev, where, value | ormask);
 }

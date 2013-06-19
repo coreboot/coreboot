@@ -17,12 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#ifndef CPU_X86_CAR_H
-#define CPU_X86_CAR_H
+#ifndef ARCH_EARLY_VARIABLES_H
+#define ARCH_EARLY_VARIABLES_H
 
 #ifdef __PRE_RAM__
-#define CAR_GLOBAL __attribute__((section(".car.global_data,\"w\",@nobits#")))
-#define CAR_CBMEM __attribute__((section(".car.cbmem_console,\"w\",@nobits#")))
+#define CAR_GLOBAL __attribute__((section(".car.global_data,\"w\",%nobits@")))
+#define CAR_CBMEM __attribute__((section(".car.cbmem_console,\"w\",%nobits@")))
 #else
 #define CAR_GLOBAL
 #define CAR_CBMEM
@@ -55,6 +55,5 @@ static inline void *car_get_var_ptr(void *var) { return var; }
 #define car_set_var(var, val) do { (var) = (val); } while (0)
 static inline void car_migrate_variables(void) { }
 #endif
-
 
 #endif

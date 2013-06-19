@@ -24,7 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 #include <arch/byteorder.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 #include <string.h>
 #include <cbmem.h>
 

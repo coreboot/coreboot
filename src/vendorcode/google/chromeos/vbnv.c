@@ -21,7 +21,7 @@
 #include <string.h>
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
-#include <cpu/x86/car.h>
+#include <arch/early_variables.h>
 #include "chromeos.h"
 
 #define VBNV_BLOCK_SIZE 16	/* Size of NV storage block in bytes */

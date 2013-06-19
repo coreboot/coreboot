@@ -26,6 +26,7 @@
 #include <getopt.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -81,7 +82,7 @@ static void *map_memory(u64 physical)
 {
 	void *v;
 	off_t p;
-	int page = getpagesize();
+	u64 page = getpagesize();
 
 	/* Mapped memory must be aligned to page size */
 	p = physical & ~(page - 1);
@@ -569,9 +570,6 @@ static void print_usage(const char *name)
 
 int main(int argc, char** argv)
 {
-	int j;
-	static const int possible_base_addresses[] = { 0, 0xf0000 };
-
 	int print_defaults = 1;
 	int print_console = 0;
 	int print_coverage = 0;
@@ -631,11 +629,36 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
+#ifdef __arm__
+	int dt_fd;
+	uint32_t cbtable_base;
+
+	dt_fd = open("/proc/device-tree/firmware/coreboot/coreboot-table",
+			O_RDONLY, 0);
+	if (dt_fd < 0) {
+		fprintf(stderr, "Failed to open device tree node: %s\n",
+			strerror(errno));
+		return 1;
+	}
+
+	if (read(dt_fd, &cbtable_base, 4) != 4) {
+		fprintf(stderr, "Failed to read device tree node: %s\n",
+			strerror(errno));
+		return 1;
+	}
+	close(dt_fd);
+
+	parse_cbtable(ntohl(cbtable_base));
+#else
+	int j;
+	static const int possible_base_addresses[] = { 0, 0xf0000 };
+
 	/* Find and parse coreboot table */
 	for (j = 0; j < ARRAY_SIZE(possible_base_addresses); j++) {
 		if (parse_cbtable(possible_base_addresses[j]))
 			break;
 	}
+#endif
 
 	if (print_console)
 		dump_console();

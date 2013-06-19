@@ -21,6 +21,7 @@
 
 #include <armv7.h>
 #include <cbfs.h>
+#include <cbmem.h>
 
 #include <arch/cache.h>
 #include <cpu/samsung/exynos5250/i2c.h>
@@ -188,6 +189,8 @@ void main(void)
 
 	/* Set SPI (primary CBFS media) clock to 50MHz. */
 	clock_set_rate(PERIPH_ID_SPI1, 50000000);
+
+	cbmem_initialize_empty();
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	stage_exit(entry);

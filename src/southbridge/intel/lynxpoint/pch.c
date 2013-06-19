@@ -201,7 +201,7 @@ static inline int iobp_poll(void)
 	return 0;
 }
 
-static u32 pch_iobp_read(u32 address)
+u32 pch_iobp_read(u32 address)
 {
 	u16 status;
 
@@ -239,10 +239,15 @@ static u32 pch_iobp_read(u32 address)
 	return RCBA32(IOBPD);
 }
 
-void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
+void pch_iobp_write(u32 address, u32 data)
 {
 	u16 status;
-	u32 data = pch_iobp_read(address);
+
+	if (!iobp_poll())
+		return;
+
+	/* Set the address */
+	RCBA32(IOBPIRI) = address;
 
 	/* WRITE OPCODE */
 	status = RCBA16(IOBPS);
@@ -250,9 +255,6 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 	status |= IOBPS_WRITE;
 	RCBA16(IOBPS) = status;
 
-	/* Update the data */
-	data &= andvalue;
-	data |= orvalue;
 	RCBA32(IOBPD) = data;
 
 	/* Undocumented magic */
@@ -274,6 +276,17 @@ void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
 	}
 
 	printk(BIOS_INFO, "IOBP: set 0x%08x to 0x%08x\n", address, data);
+}
+
+void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue)
+{
+	u32 data = pch_iobp_read(address);
+
+	/* Update the data */
+	data &= andvalue;
+	data |= orvalue;
+
+	pch_iobp_write(address, data);
 }
 
 /* Check if any port in set X to X+3 is enabled */

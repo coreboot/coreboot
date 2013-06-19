@@ -118,8 +118,20 @@ config GBE_BIN_PATH
 	depends on HAVE_GBE_BIN
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/gbe.bin"
 
+config HAVE_ME_BIN
+	bool "Add Intel Management Engine firmware"
+	default y
+	help
+	  The Intel processor in the selected system requires a special firmware
+	  for an integrated controller called Management Engine (ME). The ME
+	  firmware might be provided in coreboot's 3rdparty repository. If
+	  not and if you don't have the firmware elsewhere, you can still
+	  build coreboot without it. In this case however, you'll have to make
+	  sure that you don't overwrite your ME firmware on your flash ROM.
+
 config ME_BIN_PATH
 	string "Path to management engine firmware"
+	depends on HAVE_ME_BIN
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/me.bin"
 
 config LOCK_MANAGEMENT_ENGINE

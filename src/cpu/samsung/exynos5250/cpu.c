@@ -32,9 +32,6 @@
 #include "usb.h"
 #include "chip.h"
 
-#define RAM_BASE_KB (CONFIG_SYS_SDRAM_BASE >> 10)
-#define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
-
 static unsigned int cpu_id;
 static unsigned int cpu_rev;
 
@@ -62,7 +59,8 @@ static void set_cpu_id(void)
  * involving lots of machine and callbacks, is hard to debug and
  * verify.
  */
-static void exynos_displayport_init(device_t dev)
+static void exynos_displayport_init(device_t dev, u32 lcdbase,
+		unsigned long fb_size)
 {
 	int ret;
 	struct cpu_samsung_exynos5250_config *conf = dev->chip_info;
@@ -70,9 +68,6 @@ static void exynos_displayport_init(device_t dev)
 	 * this code to a pre-ram stage, it will be much easier.
 	 */
 	struct exynos5_fimd_panel panel;
-	unsigned long int fb_size;
-	u32 lcdbase;
-
 	memset(&panel, 0, sizeof(panel));
 
 	panel.is_dp = 1; /* Display I/F is eDP */
@@ -93,11 +88,7 @@ static void exynos_displayport_init(device_t dev)
 	panel.xres = conf->xres;
 	panel.yres = conf->yres;
 
-	/* The size is a magic number from hardware. */
-	fb_size = conf->xres * conf->yres * (conf->bpp / 8);
-	lcdbase = (uintptr_t)cbmem_add(CBMEM_ID_CONSOLE, fb_size);
-	printk(BIOS_SPEW, "LCD framebuffer base is %p\n", (void *)(lcdbase));
-
+	printk(BIOS_SPEW, "LCD framebuffer @%p\n", (void *)(lcdbase));
 	memset((void *)lcdbase, 0, fb_size);	/* clear the framebuffer */
 
 	/*
@@ -111,23 +102,26 @@ static void exynos_displayport_init(device_t dev)
 	 */
 	uint32_t lower = ALIGN_DOWN(lcdbase, MiB);
 	uint32_t upper = ALIGN_UP(lcdbase + fb_size, MiB);
-	dcache_clean_invalidate_by_mva(lower, upper - lower);
-	mmu_config_range(lower/MiB, (upper - lower)/MiB, DCACHE_OFF);
 
-	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
-	printk(BIOS_DEBUG,
-	       "Initializing Exynos VGA, base %p\n", (void *)lcdbase);
+	dcache_clean_invalidate_by_mva(lower, upper - lower);
+	mmu_config_range(lower / MiB, (upper - lower) / MiB, DCACHE_OFF);
+
+	printk(BIOS_DEBUG, "Initializing Exynos LCD.\n");
+
 	ret = lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
 }
 
 static void cpu_enable(device_t dev)
 {
-	exynos_displayport_init(dev);
+	unsigned long fb_size = FB_SIZE_KB * KiB;
+	u32 lcdbase = get_fb_base_kb() * KiB;
 
-	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB);
+	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
+	mmio_resource(dev, 1, lcdbase / KiB, (fb_size + KiB - 1) / KiB);
+
+	exynos_displayport_init(dev, lcdbase, fb_size);
 
 	set_cpu_id();
-
 }
 
 static void cpu_init(device_t dev)

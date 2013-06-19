@@ -31,12 +31,46 @@
 #ifndef _ARCH_IO_H
 #define _ARCH_IO_H
 
-#define readb(_a) (*(volatile unsigned char *) (_a))
-#define readw(_a) (*(volatile unsigned short *) (_a))
-#define readl(_a) (*(volatile unsigned int *) (_a))
+#include <stdint.h>
+#include <arch/cache.h>
 
-#define writeb(_v, _a) (*(volatile unsigned char *) (_a) = (_v))
-#define writew(_v, _a) (*(volatile unsigned short *) (_a) = (_v))
-#define writel(_v, _a) (*(volatile unsigned int *) (_a) = (_v))
+static inline uint8_t readb(volatile void *_a)
+{
+	dmb();
+	return *(volatile uint8_t *)_a;
+}
+
+static inline uint16_t readw(volatile void *_a)
+{
+	dmb();
+	return *(volatile uint16_t *)_a;
+}
+
+static inline uint32_t readl(volatile void *_a)
+{
+	dmb();
+	return *(volatile uint32_t *)_a;
+}
+
+static inline void writeb(uint8_t _v, volatile void *_a)
+{
+	dmb();
+	*(volatile uint8_t *)_a = _v;
+	dmb();
+}
+
+static inline void writew(uint16_t _v, volatile void *_a)
+{
+	dmb();
+	*(volatile uint16_t *)_a = _v;
+	dmb();
+}
+
+static inline void writel(uint32_t _v, volatile void *_a)
+{
+	dmb();
+	*(volatile uint32_t *)_a = _v;
+	dmb();
+}
 
 #endif

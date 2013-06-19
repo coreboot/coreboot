@@ -20,7 +20,6 @@
 
 #include <arch/io.h>
 #include <stdlib.h>
-#include "pcie_config.c"
 #include "sandybridge.h"
 
 #define PCI_DEV_SNB PCI_DEV(0, 0, 0)

@@ -38,7 +38,7 @@
 #include <elog.h>
 
 #ifdef __SMM__
-# include <northbridge/intel/sandybridge/pcie_config.c>
+#include <arch/pci_mmio_cfg.h>
 #else
 # include <device/device.h>
 # include <device/pci.h>

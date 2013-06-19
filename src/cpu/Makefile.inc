@@ -2,6 +2,7 @@
 ## Subdirectories
 ################################################################################
 subdirs-y += amd
+subdirs-y += dmp
 subdirs-y += armltd
 subdirs-y += intel
 subdirs-y += samsung

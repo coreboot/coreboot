@@ -1,24 +1,2 @@
-config CPU_SAMSUNG_EXYNOS5250
-	depends on ARCH_ARMV7
-	select HAVE_MONOTONIC_TIMER
-	select HAVE_UART_SPECIAL
-	select DEFAULT_BOOTBLOCK_CONSOLE
-	select DEFAULT_EARLY_CONSOLE
-	bool
-	default n
-
-config CPU_SAMSUNG_EXYNOS5420
-	depends on ARCH_ARMV7
-	select HAVE_MONOTONIC_TIMER
-	select HAVE_UART_SPECIAL
-	select DEFAULT_EARLY_CONSOLE
-	bool
-	default n
-
-if CPU_SAMSUNG_EXYNOS5250
 source src/cpu/samsung/exynos5250/Kconfig
-endif
-
-if CPU_SAMSUNG_EXYNOS5420
 source src/cpu/samsung/exynos5420/Kconfig
-endif

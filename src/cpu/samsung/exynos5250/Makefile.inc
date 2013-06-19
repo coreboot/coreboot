@@ -9,7 +9,9 @@ bootblock-y += pinmux.c mct.c power.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock_init.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += monotonic_timer.c
+ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
+endif
 bootblock-y += wakeup.c
 bootblock-y += gpio.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += pwm.c
@@ -24,7 +26,9 @@ romstage-y += dmc_init_ddr3.c
 romstage-y += power.c
 romstage-y += mct.c
 romstage-y += monotonic_timer.c
+ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
+endif
 romstage-y += wakeup.c
 romstage-y += pwm.c	# needed by timer.c
 romstage-y += gpio.c

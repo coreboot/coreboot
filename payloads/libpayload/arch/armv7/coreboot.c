@@ -250,6 +250,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 #endif
 		case CB_TAG_MAINBOARD:
 			info->mainboard = (struct cb_mainboard *)ptr;
+			break;
 #ifdef CONFIG_CHROMEOS
 		case CB_TAG_GPIO:
 			cb_parse_gpios(ptr, info);

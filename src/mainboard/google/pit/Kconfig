@@ -40,10 +40,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Pit"
 
-config MAX_CPUS
-	int
-	default 2
-
 config DRAM_SIZE_MB
 	int
 	default 2048

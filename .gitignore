@@ -62,6 +62,7 @@ util/dumpmmcr/dumpmmcr
 util/ectool/ectool
 util/getpir/getpir
 util/ifdtool/ifdtool
+util/ifdfake/ifdfake
 util/inteltool/.dependencies
 util/inteltool/inteltool
 util/k8resdump/k8resdump

@@ -117,7 +117,7 @@ void console_init(void)
 #if CONFIG_CONSOLE_NE2K
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
-#if CONFIG_CONSOLE_CBMEM
+#if CONFIG_CONSOLE_CBMEM && !defined(__BOOT_BLOCK__)
 	cbmemc_init();
 #endif
 #if CONFIG_SPKMODEM

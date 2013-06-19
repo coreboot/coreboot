@@ -33,4 +33,12 @@ config ARCH_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select LITTLE_ENDIAN
 
+config COREBOOT_INFO_RANGE_BASE
+	hex "Base of the range to search for the coreboot tables"
+
+config COREBOOT_INFO_RANGE_SIZE
+	hex "Size of the range to search for the coreboot tables"
+	default 0x4000000
+
+
 endif

@@ -284,7 +284,8 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header(phys_to_virt(0xbc000000), 0x4000000, info);
+	int ret = cb_parse_header(phys_to_virt(CONFIG_COREBOOT_INFO_RANGE_BASE),
+				  CONFIG_COREBOOT_INFO_RANGE_SIZE, info);
 
 	return (ret == 1) ? 0 : -1;
 }

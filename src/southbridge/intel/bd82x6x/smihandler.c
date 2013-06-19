@@ -37,7 +37,7 @@
  *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
  */
 #include <northbridge/intel/sandybridge/sandybridge.h>
-#include <northbridge/intel/sandybridge/pcie_config.c>
+#include <arch/pci_mmio_cfg.h>
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value

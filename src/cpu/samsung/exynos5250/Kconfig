@@ -1,3 +1,14 @@
+config CPU_SAMSUNG_EXYNOS5250
+	depends on ARCH_ARMV7
+	select HAVE_MONOTONIC_TIMER
+	select HAVE_UART_SPECIAL
+	select DEFAULT_BOOTBLOCK_CONSOLE
+	select DEFAULT_EARLY_CONSOLE
+	bool
+	default n
+
+if CPU_SAMSUNG_EXYNOS5250
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/samsung/exynos5250/bootblock.c"
@@ -5,10 +16,6 @@ config BOOTBLOCK_CPU_INIT
 	  CPU/SoC-specific bootblock code. This is useful if the
 	  bootblock must load microcode or copy data from ROM before
 	  searching for the bootblock.
-
-config EXYNOS_ACE_SHA
-	bool
-	default n
 
 # ROM image layout.
 #
@@ -77,17 +84,6 @@ config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
 	default 0x000017000
 
-# FIXME: This is for copying SPI content into SRAM temporarily and
-# will be removed when we have the SPI streaming driver implemented.
-config SPI_IMAGE_HACK
-	hex
-	default 0x02060000
-
-# FIXME: other magic numbers that should probably go away
-config XIP_ROM_SIZE
-	hex
-	default ROMSTAGE_SIZE
-
 config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
@@ -137,3 +133,4 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	help
 	  Map the UART names to the respective MMIO address.
 
+endif

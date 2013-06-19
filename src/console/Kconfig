@@ -377,10 +377,6 @@ config DEFAULT_CONSOLE_LOGLEVEL
 	help
 	  Map the log level config names to an integer.
 
-config CONSOLE_LOGBUF
-	bool
-	default n
-
 config NO_POST
 	bool "Don't show any POST codes"
 	default n

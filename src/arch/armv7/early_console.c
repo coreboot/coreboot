@@ -41,7 +41,7 @@ void console_tx_byte(unsigned char byte)
 #if CONFIG_USBDEBUG
 	usbdebug_tx_byte(0, byte);
 #endif
-#if CONFIG_CONSOLE_CBMEM
+#if CONFIG_CONSOLE_CBMEM && !defined(__BOOT_BLOCK__)
 	cbmemc_tx_byte(byte);
 #endif
 }

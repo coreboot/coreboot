@@ -38,7 +38,7 @@ void sch_port_access_write_ram_cmd(int cmd, int port, int reg, int data);
 
 #define DEFAULT_RCBABASE                      0xfed1c000
 
-#define DEFAULT_PCIEXBAR	0xe0000000	/* 4 KB per PCIe device */
+#define DEFAULT_PCIEXBAR		CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
 
 /* IGD */
 #define GGC	0x52

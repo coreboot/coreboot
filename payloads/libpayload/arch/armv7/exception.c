@@ -143,9 +143,8 @@ void exception_init(void)
 	sctlr &= ~sctlr_te;
 	/* Set V=0 in SCTLR so VBAR points to the exception vector table. */
 	sctlr &= ~sctlr_v;
-	/* Enforce alignment. */
-	sctlr |= sctlr_a;
-	set_sctlr(sctlr);
+	/* Enforce alignment temporarily. */
+	set_sctlr(sctlr | sctlr_a);
 
 	extern uint32_t exception_table[];
 	set_vbar((uintptr_t)exception_table);
@@ -153,4 +152,7 @@ void exception_init(void)
 	test_abort = 1;
 	exception_test();
 	test_abort = 0;
+
+	/* Restore alignment settings. */
+	set_sctlr(sctlr);
 }

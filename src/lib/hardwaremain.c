@@ -51,7 +51,7 @@ static boot_state_t bs_pre_device(void *arg);
 static boot_state_t bs_dev_init_chips(void *arg);
 static boot_state_t bs_dev_enumerate(void *arg);
 static boot_state_t bs_dev_resources(void *arg);
-static boot_state_t bs_dev_eanble(void *arg);
+static boot_state_t bs_dev_enable(void *arg);
 static boot_state_t bs_dev_init(void *arg);
 static boot_state_t bs_post_device(void *arg);
 static boot_state_t bs_os_resume_check(void *arg);
@@ -110,7 +110,7 @@ static struct boot_state boot_states[] = {
 	BS_INIT_ENTRY(BS_DEV_INIT_CHIPS, bs_dev_init_chips),
 	BS_INIT_ENTRY(BS_DEV_ENUMERATE, bs_dev_enumerate),
 	BS_INIT_ENTRY(BS_DEV_RESOURCES, bs_dev_resources),
-	BS_INIT_ENTRY(BS_DEV_ENABLE, bs_dev_eanble),
+	BS_INIT_ENTRY(BS_DEV_ENABLE, bs_dev_enable),
 	BS_INIT_ENTRY(BS_DEV_INIT, bs_dev_init),
 	BS_INIT_ENTRY(BS_POST_DEVICE, bs_post_device),
 	BS_INIT_ENTRY(BS_OS_RESUME_CHECK, bs_os_resume_check),
@@ -154,7 +154,7 @@ static boot_state_t bs_dev_resources(void *arg)
 	return BS_DEV_ENABLE;
 }
 
-static boot_state_t bs_dev_eanble(void *arg)
+static boot_state_t bs_dev_enable(void *arg)
 {
 	timestamp_stash(TS_DEVICE_ENABLE);
 	/* Now actually enable devices on the bus */

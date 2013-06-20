@@ -50,7 +50,11 @@ romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 romstage-$(CONFIG_SPKMODEM) += spkmodem.c
 
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+
+ifneq ($(CONFIG_DYNAMIC_CBMEM),y)
 romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c
+endif
+
 romstage-y += compute_ip_checksum.c
 romstage-y += memmove.c
 romstage-$(CONFIG_ARCH_X86) += gcc.c

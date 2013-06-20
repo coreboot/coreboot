@@ -214,6 +214,7 @@ static inline int log2f(int value)
 typedef u32 device_t;
 
 typedef u32 pci_devfn_t;
+typedef u32 pnp_devfn_t;
 
 /* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G,
  * We don't need to set %fs, and %gs anymore
@@ -284,53 +285,60 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus
 }
 
 /* Generic functions for pnp devices */
-static inline __attribute__((always_inline)) void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
+static inline __attribute__((always_inline)) void pnp_write_config(pnp_devfn_t dev, uint8_t reg, uint8_t value)
 {
 	unsigned port = dev >> 8;
 	outb(reg, port );
 	outb(value, port +1);
 }
 
-static inline __attribute__((always_inline)) uint8_t pnp_read_config(device_t dev, uint8_t reg)
+static inline __attribute__((always_inline)) uint8_t pnp_read_config(pnp_devfn_t dev, uint8_t reg)
 {
 	unsigned port = dev >> 8;
 	outb(reg, port);
 	return inb(port +1);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_logical_device(device_t dev)
+static inline __attribute__((always_inline))
+void pnp_set_logical_device(pnp_devfn_t dev)
 {
 	unsigned device = dev & 0xff;
 	pnp_write_config(dev, 0x07, device);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_enable(device_t dev, int enable)
+static inline __attribute__((always_inline))
+void pnp_set_enable(pnp_devfn_t dev, int enable)
 {
 	pnp_write_config(dev, 0x30, enable?0x1:0x0);
 }
 
-static inline __attribute__((always_inline)) int pnp_read_enable(device_t dev)
+static inline __attribute__((always_inline))
+int pnp_read_enable(pnp_devfn_t dev)
 {
 	return !!pnp_read_config(dev, 0x30);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
+static inline __attribute__((always_inline))
+void pnp_set_iobase(pnp_devfn_t dev, unsigned index, unsigned iobase)
 {
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
-static inline __attribute__((always_inline)) uint16_t pnp_read_iobase(device_t dev, unsigned index)
+static inline __attribute__((always_inline))
+uint16_t pnp_read_iobase(pnp_devfn_t dev, unsigned index)
 {
 	return ((uint16_t)(pnp_read_config(dev, index)) << 8) | pnp_read_config(dev, index + 1);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
+static inline __attribute__((always_inline))
+void pnp_set_irq(pnp_devfn_t dev, unsigned index, unsigned irq)
 {
 	pnp_write_config(dev, index, irq);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
+static inline __attribute__((always_inline))
+void pnp_set_drq(pnp_devfn_t dev, unsigned index, unsigned drq)
 {
 	pnp_write_config(dev, index, drq & 0xff);
 }

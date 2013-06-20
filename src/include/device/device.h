@@ -12,6 +12,7 @@ struct device;
 #ifndef __SIMPLE_DEVICE__
 typedef struct device * device_t;
 typedef u32 pci_devfn_t;
+typedef u32 pnp_devfn_t;
 struct pci_operations;
 struct pci_bus_operations;
 struct smbus_bus_operations;

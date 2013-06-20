@@ -293,9 +293,9 @@ void pch_enable(device_t dev)
 {
 	u32 reg32;
 
-	/* PCH PCIe Root Ports get special handling */
+	/* PCH PCIe Root Ports are handled in PCIe driver. */
 	if (PCI_SLOT(dev->path.pci.devfn) == PCH_PCIE_DEV_SLOT)
-		return pch_pcie_enable_dev(dev);
+		return;
 
 	if (!dev->enabled) {
 		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));

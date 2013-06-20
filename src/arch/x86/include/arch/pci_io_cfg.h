@@ -21,7 +21,7 @@
 #include <arch/io.h>
 
 static inline __attribute__((always_inline))
-uint8_t pci_io_read_config8(device_t dev, unsigned where)
+uint8_t pci_io_read_config8(pci_devfn_t dev, unsigned where)
 {
 	unsigned addr;
 #if !CONFIG_PCI_IO_CFG_EXT
@@ -34,7 +34,7 @@ uint8_t pci_io_read_config8(device_t dev, unsigned where)
 }
 
 static inline __attribute__((always_inline))
-uint16_t pci_io_read_config16(device_t dev, unsigned where)
+uint16_t pci_io_read_config16(pci_devfn_t dev, unsigned where)
 {
 	unsigned addr;
 #if !CONFIG_PCI_IO_CFG_EXT
@@ -47,7 +47,7 @@ uint16_t pci_io_read_config16(device_t dev, unsigned where)
 }
 
 static inline __attribute__((always_inline))
-uint32_t pci_io_read_config32(device_t dev, unsigned where)
+uint32_t pci_io_read_config32(pci_devfn_t dev, unsigned where)
 {
 	unsigned addr;
 #if !CONFIG_PCI_IO_CFG_EXT
@@ -60,7 +60,7 @@ uint32_t pci_io_read_config32(device_t dev, unsigned where)
 }
 
 static inline __attribute__((always_inline))
-void pci_io_write_config8(device_t dev, unsigned where, uint8_t value)
+void pci_io_write_config8(pci_devfn_t dev, unsigned where, uint8_t value)
 {
 	unsigned addr;
 #if !CONFIG_PCI_IO_CFG_EXT
@@ -73,7 +73,7 @@ void pci_io_write_config8(device_t dev, unsigned where, uint8_t value)
 }
 
 static inline __attribute__((always_inline))
-void pci_io_write_config16(device_t dev, unsigned where, uint16_t value)
+void pci_io_write_config16(pci_devfn_t dev, unsigned where, uint16_t value)
 {
         unsigned addr;
 #if !CONFIG_PCI_IO_CFG_EXT
@@ -86,7 +86,7 @@ void pci_io_write_config16(device_t dev, unsigned where, uint16_t value)
 }
 
 static inline __attribute__((always_inline))
-void pci_io_write_config32(device_t dev, unsigned where, uint32_t value)
+void pci_io_write_config32(pci_devfn_t dev, unsigned where, uint32_t value)
 {
 	unsigned addr;
 #if !CONFIG_PCI_IO_CFG_EXT

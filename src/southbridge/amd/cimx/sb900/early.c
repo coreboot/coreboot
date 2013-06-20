@@ -36,7 +36,7 @@
  */
 u32 get_sbdn(u32 bus)
 {
-	device_t dev;
+	pci_devfn_t dev;
 
 	printk(BIOS_SPEW, "SB900 - Early.c - get_sbdn - Start.\n");
 

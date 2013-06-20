@@ -52,6 +52,7 @@ ramstage-y += gpio.c
 ramstage-y += i2c.c
 ramstage-y += dp-reg.c
 ramstage-y += fb.c
+ramstage-y += usb.c
 
 exynos5420_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5420 BL1\n"

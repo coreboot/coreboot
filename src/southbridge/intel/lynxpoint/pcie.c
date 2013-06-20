@@ -25,139 +25,177 @@
 #include <device/pci_ids.h>
 #include "pch.h"
 
-/* Check if any port in set X to X+3 is enabled */
-static int pch_pcie_check_set_enabled(device_t dev)
+/* LynxPoint-LP has 6 root ports while non-LP has 8. */
+#define MAX_NUM_ROOT_PORTS 8
+#define H_NUM_ROOT_PORTS MAX_NUM_ROOT_PORTS
+#define LP_NUM_ROOT_PORTS (MAX_NUM_ROOT_PORTS - 2)
+
+struct root_port_config {
+	/* RPFN is a write-once register so keep a copy until it is written */
+	u32 orig_rpfn;
+	u32 new_rpfn;
+	u32 pin_ownership;
+	u32 strpfusecfg1;
+	u32 strpfusecfg2;
+	u32 strpfusecfg3;
+	int coalesce;
+	int gbe_port;
+	int num_ports;
+	device_t ports[MAX_NUM_ROOT_PORTS];
+};
+
+static struct root_port_config rpc;
+
+static inline int max_root_ports(void)
 {
-	device_t port;
-	int port_func;
-	int dev_func = PCI_FUNC(dev->path.pci.devfn);
-
-	printk(BIOS_DEBUG, "%s: check set enabled\n", dev_path(dev));
-
-	/* Go through static device tree list of devices
-	 * because enumeration is still in progress */
-	for (port = all_devices; port; port = port->next) {
-		/* Only care about PCIe root ports */
-		if (PCI_SLOT(port->path.pci.devfn) !=
-		    PCI_SLOT(dev->path.pci.devfn))
-			continue;
-
-		/* Check if port is in range and enabled */
-		port_func = PCI_FUNC(port->path.pci.devfn);
-		if (port_func >= dev_func &&
-		    port_func < (dev_func + 4) &&
-		    port->enabled)
-			return 1;
-	}
-
-	/* None of the ports in this set are enabled */
-	return 0;
+	if (pch_is_lp())
+		return LP_NUM_ROOT_PORTS;
+	else
+		return H_NUM_ROOT_PORTS;
 }
 
-/* RPFN is a write-once register so keep a copy until it is written */
-static u32 new_rpfn;
-
-/* Swap function numbers assigned to two PCIe Root Ports */
-static void pch_pcie_function_swap(u8 old_fn, u8 new_fn)
+static inline int root_port_is_first(device_t dev)
 {
-	u32 old_rpfn = new_rpfn;
+	return PCI_FUNC(dev->path.pci.devfn) == 0;
+}
 
-	printk(BIOS_DEBUG, "PCH: Remap PCIe function %d to %d\n",
-	       old_fn, new_fn);
+static inline int root_port_is_last(device_t dev)
+{
+	return PCI_FUNC(dev->path.pci.devfn) == (rpc.num_ports - 1);
+}
 
-	new_rpfn &= ~(RPFN_FNMASK(old_fn) | RPFN_FNMASK(new_fn));
+/* Root ports are numbered 1..N in the documentation. */
+static inline int root_port_number(device_t dev)
+{
+	return PCI_FUNC(dev->path.pci.devfn) + 1;
+}
 
-	/* Old function set to new function and disabled */
-	new_rpfn |= RPFN_FNSET(old_fn, RPFN_FNGET(old_rpfn, new_fn));
-	new_rpfn |= RPFN_FNSET(new_fn, RPFN_FNGET(old_rpfn, old_fn));
+static void root_port_config_update_gbe_port(void)
+{
+	/* Is the Gbe Port enabled? */
+	if (!((rpc.strpfusecfg1 >> 19) & 1))
+		return;
+
+	if (pch_is_lp()) {
+		switch ((rpc.strpfusecfg1 >> 16) & 0x7) {
+		case 0:
+			rpc.gbe_port = 3;
+			break;
+		case 1:
+			rpc.gbe_port = 4;
+			break;
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			/* Lanes 0-4 of Root Port 5. */
+			rpc.gbe_port = 5;
+			break;
+		default:
+			printk(BIOS_DEBUG, "Invalid GbE Port Selection.\n");
+		}
+	} else {
+		/* Non-LP has 1:1 mapping with root ports. */
+		rpc.gbe_port = ((rpc.strpfusecfg1 >> 16) & 0x7) + 1;
+	}
+}
+
+static void root_port_init_config(device_t dev)
+{
+	int rp;
+
+	if (root_port_is_first(dev)) {
+		rpc.orig_rpfn = RCBA32(RPFN);
+		rpc.new_rpfn = rpc.orig_rpfn;
+		rpc.num_ports = max_root_ports();
+		rpc.gbe_port = -1;
+
+		rpc.pin_ownership = pci_read_config32(dev, 0x410);
+		root_port_config_update_gbe_port();
+
+		if (dev->chip_info != NULL) {
+			struct southbridge_intel_lynxpoint_config *config;
+
+			config = dev->chip_info;
+			rpc.coalesce = config->pcie_port_coalesce;
+		}
+	}
+
+	rp = root_port_number(dev);
+	if (rp > rpc.num_ports) {
+		printk(BIOS_ERR, "Found Root Port %d, expecting %d\n",
+		       rp, rpc.num_ports);
+		return;
+	}
+
+	/* Read the fuse configuration and pin ownership. */
+	switch (rp) {
+	case 1:
+		rpc.strpfusecfg1 = pci_read_config32(dev, 0xfc);
+		break;
+	case 5:
+		rpc.strpfusecfg2 = pci_read_config32(dev, 0xfc);
+		break;
+	case 6:
+		rpc.strpfusecfg3 = pci_read_config32(dev, 0xfc);
+		break;
+	default:
+		break;
+	}
+
+	/* Cache pci device. */
+	rpc.ports[rp - 1] = dev;
 }
 
 /* Update devicetree with new Root Port function number assignment */
-static void pch_pcie_devicetree_update(void)
+static void pch_pcie_device_set_func(int index, int pci_func)
 {
 	device_t dev;
+	unsigned new_devfn;
 
-	/* Update the function numbers in the static devicetree */
-	for (dev = all_devices; dev; dev = dev->next) {
-		u8 new_devfn;
+	dev = rpc.ports[index];
 
-		/* Only care about PCH PCIe root ports */
-		if (PCI_SLOT(dev->path.pci.devfn) !=
-		    PCH_PCIE_DEV_SLOT)
-			continue;
+	/* Set the new PCI function field for this Root Port. */
+	rpc.new_rpfn &= ~RPFN_FNMASK(index);
+	rpc.new_rpfn |= RPFN_FNSET(index, pci_func);
 
-		/* Determine the new devfn for this port */
-		new_devfn = PCI_DEVFN(PCH_PCIE_DEV_SLOT,
-			      RPFN_FNGET(new_rpfn,
-				 PCI_FUNC(dev->path.pci.devfn)));
+	/* Determine the new devfn for this port */
+	new_devfn = PCI_DEVFN(PCH_PCIE_DEV_SLOT, pci_func);
 
-		if (dev->path.pci.devfn != new_devfn) {
-			printk(BIOS_DEBUG,
-			       "PCH: PCIe map %02x.%1x -> %02x.%1x\n",
-			       PCI_SLOT(dev->path.pci.devfn),
-			       PCI_FUNC(dev->path.pci.devfn),
-			       PCI_SLOT(new_devfn), PCI_FUNC(new_devfn));
+	if (dev->path.pci.devfn != new_devfn) {
+		printk(BIOS_DEBUG,
+		       "PCH: PCIe map %02x.%1x -> %02x.%1x\n",
+		       PCI_SLOT(dev->path.pci.devfn),
+		       PCI_FUNC(dev->path.pci.devfn),
+		       PCI_SLOT(new_devfn), PCI_FUNC(new_devfn));
 
-			dev->path.pci.devfn = new_devfn;
-		}
+		dev->path.pci.devfn = new_devfn;
 	}
 }
 
-/* Special handling for PCIe Root Port devices */
-void pch_pcie_enable_dev(device_t dev)
+static void root_port_commit_config(void)
 {
-	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
-	u32 reg32;
+	int i;
 
-	/*
-	 * Save a copy of the Root Port Function Number map when
-	 * starting to walk the list of PCIe Root Ports so it can
-	 * be updated locally and written out when the last port
-	 * has been processed.
-	 */
-	if (PCI_FUNC(dev->path.pci.devfn) == 0) {
-		new_rpfn = RCBA32(RPFN);
+	/* If the first root port is disabled the coalesce ports. */
+	if (!rpc.ports[0]->enabled)
+		rpc.coalesce = 1;
 
-		/*
-		 * Enable Root Port coalescing if the first port is disabled
-		 * or the other devices will not be enumerated by the OS.
-		 */
-		if (!dev->enabled)
-			config->pcie_port_coalesce = 1;
+	for (i = 0; i < rpc.num_ports; i++) {
+		device_t dev;
+		u32 reg32;
 
-		if (config->pcie_port_coalesce)
-			printk(BIOS_INFO,
-			       "PCH: PCIe Root Port coalescing is enabled\n");
-	}
+		dev = rpc.ports[i];
 
-	if (!dev->enabled) {
-		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
-
-		/*
-		 * PCIE Power Savings for PantherPoint and CougarPoint/B1+
-		 *
-		 * If PCIe 0-3 disabled set Function 0 0xE2[0] = 1
-		 * If PCIe 4-7 disabled set Function 4 0xE2[0] = 1
-		 *
-		 * This check is done here instead of pcie driver
-		 * because the pcie driver enable() handler is not
-		 * called unless the device is enabled.
-		 */
-		if ((PCI_FUNC(dev->path.pci.devfn) == 0 ||
-		     PCI_FUNC(dev->path.pci.devfn) == 4)) {
-			/* Handle workaround for PPT and CPT/B1+ */
-			if (!pch_pcie_check_set_enabled(dev)) {
-				u8 reg8 = pci_read_config8(dev, 0xe2);
-				reg8 |= 1;
-				pci_write_config8(dev, 0xe2, reg8);
-			}
-
-			/*
-			 * Enable Clock Gating for shared PCIe resources
-			 * before disabling this particular port.
-			 */
-			pci_write_config8(dev, 0xe1, 0x3c);
+		if (dev == NULL) {
+			printk(BIOS_ERR, "Root Port %d device is NULL?\n", i+1);
+			continue;
 		}
+
+		if (dev->enabled)
+			continue;
+
+		printk(BIOS_DEBUG, "%s: Disabling device\n",  dev_path(dev));
 
 		/* Ensure memory, io, and bus master are all disabled */
 		reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -165,48 +203,165 @@ void pch_pcie_enable_dev(device_t dev)
 			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 		pci_write_config32(dev, PCI_COMMAND, reg32);
 
-		/* Do not claim downstream transactions for PCIe ports */
-		new_rpfn |= RPFN_HIDE(PCI_FUNC(dev->path.pci.devfn));
-
 		/* Disable this device if possible */
 		pch_disable_devfn(dev);
-	} else {
-		int fn;
-
-		/*
-		 * Check if there is a lower disabled port to swap with this
-		 * port in order to maintain linear order starting at zero.
-		 */
-		if (config->pcie_port_coalesce) {
-			for (fn=0; fn < PCI_FUNC(dev->path.pci.devfn); fn++) {
-				if (!(new_rpfn & RPFN_HIDE(fn)))
-					continue;
-
-				/* Swap places with this function */
-				pch_pcie_function_swap(
-					PCI_FUNC(dev->path.pci.devfn), fn);
-				break;
-			}
-		}
-
-		/* Enable SERR */
-		reg32 = pci_read_config32(dev, PCI_COMMAND);
-		reg32 |= PCI_COMMAND_SERR;
-		pci_write_config32(dev, PCI_COMMAND, reg32);
 	}
 
-	/*
-	 * When processing the last PCIe root port we can now
-	 * update the Root Port Function Number and Hide register.
-	 */
-	if (PCI_FUNC(dev->path.pci.devfn) == 7) {
-		printk(BIOS_SPEW, "PCH: RPFN 0x%08x -> 0x%08x\n",
-		       RCBA32(RPFN), new_rpfn);
-		RCBA32(RPFN) = new_rpfn;
+	if (rpc.coalesce) {
+		int current_func;
 
-		/* Update static devictree with new function numbers */
-		if (config->pcie_port_coalesce)
-			pch_pcie_devicetree_update();
+		/* For all Root Ports N enabled ports get assigned the lower
+		 * PCI function number. The disabled ones get upper PCI
+		 * function numbers. */
+		current_func = 0;
+		for (i = 0; i < rpc.num_ports; i++) {
+			if (!rpc.ports[i]->enabled)
+				continue;
+			pch_pcie_device_set_func(i, current_func);
+			current_func++;
+		}
+
+		/* Allocate the disabled devices' PCI function number. */
+		for (i = 0; i < rpc.num_ports; i++) {
+			if (rpc.ports[i]->enabled)
+				continue;
+			pch_pcie_device_set_func(i, current_func);
+			current_func++;
+		}
+	}
+
+	printk(BIOS_SPEW, "PCH: RPFN 0x%08x -> 0x%08x\n",
+	       rpc.orig_rpfn, rpc.new_rpfn);
+	RCBA32(RPFN) = rpc.new_rpfn;
+}
+
+static void root_port_mark_disable(device_t dev)
+{
+	/* Mark device as disabled. */
+	dev->enabled = 0;
+	/* Mark device to be hidden. */
+	rpc.new_rpfn |= RPFN_HIDE(PCI_FUNC(dev->path.pci.devfn));
+}
+
+static void root_port_check_disable(device_t dev)
+{
+	int rp;
+	int is_lp;
+
+	/* Device already disabled. */
+	if (!dev->enabled) {
+		root_port_mark_disable(dev);
+		return;
+	}
+
+	rp = root_port_number(dev);
+
+	/* Is the GbE port mapped to this Root Port? */
+	if (rp == rpc.gbe_port) {
+		root_port_mark_disable(dev);
+		return;
+	}
+
+	is_lp = pch_is_lp();
+
+	/* Check Root Port Configuration. */
+	switch (rp) {
+		case 2:
+			/* Root Port 2 is disabled for all lane configurations
+			 * but config 00b (4x1 links). */
+			if ((rpc.strpfusecfg1 >> 14) & 0x3) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 3:
+			/* Root Port 3 is disabled in config 11b (1x4 links). */
+			if (((rpc.strpfusecfg1 >> 14) & 0x3) == 0x3) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 4:
+			/* Root Port 4 is disabled in configs 11b (1x4 links)
+			 * and 10b (2x2 links). */
+			if ((rpc.strpfusecfg1 >> 14) & 0x2) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 6:
+			if (is_lp)
+				break;
+			/* Root Port 6 is disabled for all lane configurations
+			 * but config 00b (4x1 links). */
+			if ((rpc.strpfusecfg2 >> 14) & 0x3) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 7:
+			if (is_lp)
+				break;
+			/* Root Port 3 is disabled in config 11b (1x4 links). */
+			if (((rpc.strpfusecfg2 >> 14) & 0x3) == 0x3) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 8:
+			if (is_lp)
+				break;
+			/* Root Port 8 is disabled in configs 11b (1x4 links)
+			 * and 10b (2x2 links). */
+			if ((rpc.strpfusecfg2 >> 14) & 0x2) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+	}
+
+	/* Check Pin Ownership. */
+	if (is_lp) {
+		switch (rp) {
+		case 1:
+			/* Bit 0 is Root Port 1 ownership. */
+			if ((rpc.pin_ownership & 0x1) == 0) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 2:
+			/* Bit 2 is Root Port 2 ownership. */
+			if ((rpc.pin_ownership & 0x4) == 0) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 6:
+			/* Bits 7:4 are Root Port 6 pin-lane ownership. */
+			if ((rpc.pin_ownership & 0xf0) == 0) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		}
+	} else {
+		switch (rp) {
+		case 1:
+			/* Bits 4 and 0 are Root Port 1 ownership. */
+			if ((rpc.pin_ownership & 0x11) == 0) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		case 2:
+			/* Bits 5 and 2 are Root Port 2 ownership. */
+			if ((rpc.pin_ownership & 0x24) == 0) {
+				root_port_mark_disable(dev);
+				return;
+			}
+			break;
+		}
 	}
 }
 
@@ -374,6 +529,11 @@ static void pci_init(struct device *dev)
 
 	printk(BIOS_DEBUG, "Initializing PCH PCIe bridge.\n");
 
+	/* Enable SERR */
+	reg32 = pci_read_config32(dev, PCI_COMMAND);
+	reg32 |= PCI_COMMAND_SERR;
+	pci_write_config32(dev, PCI_COMMAND, reg32);
+
 	/* Enable Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER;
@@ -415,8 +575,22 @@ static void pci_init(struct device *dev)
 
 static void pch_pcie_enable(device_t dev)
 {
+	/* Add this device to the root port config structure. */
+	root_port_init_config(dev);
+
+	/* Check to see if this Root Port should be disabled. */
+	root_port_check_disable(dev);
+
 	/* Power Management init before enumeration */
-	pch_pcie_pm_early(dev);
+	if (dev->enabled)
+		pch_pcie_pm_early(dev);
+
+	/*
+	 * When processing the last PCIe root port we can now
+	 * update the Root Port Function Number and Hide register.
+	 */
+	if (root_port_is_last(dev))
+		root_port_commit_config();
 }
 
 static void pcie_set_subsystem(device_t dev, unsigned vendor, unsigned device)

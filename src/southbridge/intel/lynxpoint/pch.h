@@ -166,7 +166,6 @@ void pch_disable_devfn(device_t dev);
 u32 pch_iobp_read(u32 address);
 void pch_iobp_write(u32 address, u32 data);
 void pch_iobp_update(u32 address, u32 andvalue, u32 orvalue);
-void pch_pcie_enable_dev(device_t dev);
 #if CONFIG_ELOG
 void pch_log_state(void);
 #endif
@@ -493,6 +492,7 @@ void set_gpio(int gpio_num, int value);
 #define RP6D		0x0180	/* 32bit */
 #define RP6BA		0x0188	/* 64bit */
 
+#define RPC		0x0400	/* 32bit */
 #define RPFN		0x0404	/* 32bit */
 
 /* Root Port configuratinon space hide */

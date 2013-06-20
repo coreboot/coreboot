@@ -83,7 +83,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 /* The dev-switch is virtual */
 int get_developer_mode_switch(void)
 {
-	return 1;
+	return 0;
 }
 
 /* There are actually two recovery switches. One is the magic keyboard chord,

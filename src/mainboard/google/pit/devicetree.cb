@@ -30,4 +30,6 @@ chip cpu/samsung/exynos5420
 	register "left_margin" = "80"
 	register "right_margin" = "48"
 	register "hsync" = "32"
+	register "usb_vbus_gpio" = "GPIO_X11"
+	register "usb_hsic_gpio" = "GPIO_E10"
 end

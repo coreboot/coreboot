@@ -33,6 +33,7 @@ ramstage-y += usb_ehci.c
 ramstage-y += usb_xhci.c
 ramstage-y += me_9.x.c
 ramstage-y += smbus.c
+ramstage-y += hda_verb.c
 ramstage-$(CONFIG_INTEL_LYNXPOINT_LP) += serialio.c
 
 ramstage-y += rcba.c

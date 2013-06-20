@@ -26,6 +26,8 @@ Method(_PRT)
 		Return (Package() {
 			// Onboard graphics (IGD)	0:2.0
 			Package() { 0x0002ffff, 0, 0, 16 },
+			// Mini-HD Audio		0:3.0
+			Package() { 0x0003ffff, 0, 0, 16 },
 			// High Definition Audio	0:1b.0
 			Package() { 0x001bffff, 0, 0, 22 },
 			// PCIe Root Ports		0:1c.x
@@ -54,6 +56,8 @@ Method(_PRT)
 		Return (Package() {
 			// Onboard graphics (IGD)	0:2.0
 			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			// Mini-HD Audio		0:3.0
+			Package() { 0x0003ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 },
 			// High Definition Audio	0:1b.0
 			Package() { 0x001bffff, 0, \_SB.PCI0.LPCB.LNKG, 0 },
 			// PCIe Root Ports		0:1c.x

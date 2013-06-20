@@ -246,7 +246,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		mchbar_phys = pci_read_long(nb, 0x48);
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		mchbar_phys &= 0x0000000fffffc000UL; /* 35:14 */
-		mch_registers = NULL; /* No public documentation */
+		mch_registers = NULL; /* TODO: 322812 */
 		break;
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN:
 		mch_registers = sandybridge_mch_registers;

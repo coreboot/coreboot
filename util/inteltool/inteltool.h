@@ -151,6 +151,7 @@
 #define PCI_DEVICE_ID_INTEL_82371XX		0x7110
 
 /* Intel starts counting these generations with the integration of the DRAM controller */
+#define PCI_DEVICE_ID_INTEL_CORE_0TH_GEN	0xd132 /* Nehalem */
 #define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN	0x0044 /* Westmere */
 #define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN	0x0104 /* Sandy Bridge */
 #define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN	0x0154 /* Ivy Bridge */

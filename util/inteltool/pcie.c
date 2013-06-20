@@ -23,6 +23,49 @@
 #include <inttypes.h>
 #include "inteltool.h"
 
+/* 320766 */
+static const io_register_t nehalem_dmi_registers[] = {
+	{ 0x00, 4, "DMIVCH" },		// DMI Virtual Channel Capability Header
+	{ 0x04, 4, "DMIVCCAP1" },	// DMI Port VC Capability Register 1
+	{ 0x08, 4, "DMIVCCAP2" },	// DMI Port VC Capability Register 2
+	{ 0x0C, 4, "DMIVCCTL" },	// DMI Port VC Control
+	{ 0x10, 4, "DMIVC0RCAP" },	// DMI VC0 Resource Capability
+	{ 0x14, 4, "DMIVC0RCTL" },	// DMI VC0 Resource Control
+/*	{ 0x18, 2, "RSVD" }, // Reserved */
+	{ 0x1A, 2, "DMIVC0RSTS" },	// DMI VC0 Resource Status
+	{ 0x1C, 4, "DMIVC1RCAP" },	// DMI VC1 Resource Capability
+	{ 0x20, 4, "DMIVC1RCTL" },	// DMI VC1 Resource Control
+/*	{ 0x24, 2, "RSVD" }, // Reserved */
+	{ 0x26, 2, "DMIVC1RSTS" },	// DMI VC1 Resource Status
+/*	... - Reserved */
+	{ 0x84, 4, "DMILCAP" },		// DMI Link Capabilities
+	{ 0x88, 2, "DMILCTL" },		// DMI Link Control
+	{ 0x8A, 2, "DMILSTS" },		// DMI Link Status
+/*	... - Reserved */
+};
+
+/* 322812 */
+static const io_register_t westmere_dmi_registers[] = {
+	{ 0x00, 4, "DMIVCECH" },	// DMI Virtual Channel Enhanced Capability
+	{ 0x04, 4, "DMIPVCCAP1" },	// DMI Port VC Capability Register 1
+	{ 0x08, 4, "DMIPVCCAP2" },	// DMI Port VC Capability Register 2
+	{ 0x0C, 2, "DMIPVCCTL" },	// DMI Port VC Control
+/*	{ 0x0E, 2, "RSVD" }, // Reserved */
+	{ 0x10, 4, "DMIVC0RCAP" },	// DMI VC0 Resource Capability
+	{ 0x14, 4, "DMIVC0RCTL" },	// DMI VC0 Resource Control
+/*	{ 0x18, 2, "RSVD" }, // Reserved */
+	{ 0x1A, 2, "DMIVC0RSTS" },	// DMI VC0 Resource Status
+	{ 0x1C, 4, "DMIVC1RCAP" },	// DMI VC1 Resource Capability
+	{ 0x20, 4, "DMIVC1RCTL1" },	// DMI VC1 Resource Control
+/*	{ 0x24, 2, "RSVD" },	// Reserved */
+	{ 0x26, 2, "DMIC1RSTS" },	// DMI VC1 Resource Status
+/*	... - Reserved */
+	{ 0x84, 4, "DMILCAP" },		// DMI Link Capabilities
+	{ 0x88, 2, "DMILCTL" },		// DMI Link Control
+	{ 0x8A, 2, "DMILSTS" },		// DMI Link Status
+/*	... - Reserved */
+};
+
 static const io_register_t sandybridge_dmi_registers[] = {
 	{ 0x00, 4, "DMI VCECH" }, // DMI Virtual Channel Enhanced Capability
 	{ 0x04, 4, "DMI PVCCAP1" }, // DMI Port VC Capability Register 1
@@ -180,11 +223,18 @@ int print_dmibar(struct pci_dev *nb)
 	case PCI_DEVICE_ID_INTEL_82X58:
 		dmibar_phys = pci_read_long(nb, 0x50) & 0xfffff000;
 		break;
+	case PCI_DEVICE_ID_INTEL_CORE_0TH_GEN:
+		/* DMIBAR is called DMIRCBAR in Nehalem */
+		dmibar_phys = pci_read_long(nb, 0x50) & 0xfffff000; /* 31:12 */
+		dmi_registers = nehalem_dmi_registers;
+		size = ARRAY_SIZE(nehalem_dmi_registers);
+		break;
 	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
 		dmibar_phys = pci_read_long(nb, 0x68);
 		dmibar_phys |= ((uint64_t)pci_read_long(nb, 0x6c)) << 32;
 		dmibar_phys &= 0x0000000ffffff000UL; /* 35:12 */
-		dmi_registers = NULL; /* No public documentation */
+		dmi_registers = westmere_dmi_registers;
+		size = ARRAY_SIZE(westmere_dmi_registers);
 		break;
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN:
 		dmi_registers = sandybridge_dmi_registers;

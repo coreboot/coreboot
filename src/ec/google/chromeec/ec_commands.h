@@ -28,6 +28,7 @@
  */
 
 /* Current version of this protocol */
+/* TODO: This is effectively useless; protocol is determined in other ways */
 #define EC_PROTO_VERSION          0x00000002
 
 /* Command version mask */
@@ -44,7 +45,9 @@
 /* I/O addresses for host command args and params */
 #define EC_LPC_ADDR_HOST_ARGS  0x800    /* and 0x801, 0x802, 0x803 */
 #define EC_LPC_ADDR_HOST_PARAM 0x804
-#define EC_HOST_PARAM_SIZE     0x0fc  /* Size of param area in bytes */
+#define EC_HOST_PARAM_SIZE     0x0fc   /* Size of param area in bytes */
+#define EC_LPC_ADDR_HOST_PACKET 0x800  /* Offset of version 3 packet */
+#define EC_HOST_PACKET_SIZE     0x100  /* Max size of version 3 packet */
 
 /* The actual block is 0x800-0x8ff, but some BIOSes think it's 0x880-0x8ff
  * and they tell the kernel that so we have to think of it as two parts. */
@@ -134,6 +137,8 @@
 /* Host command interface flags */
 /* Host command interface supports LPC args (LPC interface only) */
 #define EC_HOST_CMD_FLAG_LPC_ARGS_SUPPORTED  0x01
+/* Host command interface supports version 3 protocol */
+#define EC_HOST_CMD_FLAG_VERSION_3   0x02
 
 /* Wireless switch flags */
 #define EC_WIRELESS_SWITCH_WLAN      0x01
@@ -194,6 +199,9 @@ enum ec_status {
 	EC_RES_UNAVAILABLE = 9,		/* No response available */
 	EC_RES_TIMEOUT = 10,		/* We got a timeout */
 	EC_RES_OVERFLOW = 11,		/* Table / data overflow */
+	EC_RES_INVALID_HEADER = 12,     /* Header contains invalid data */
+	EC_RES_REQUEST_TRUNCATED = 13,  /* Didn't get the entire request */
+	EC_RES_RESPONSE_TOO_BIG = 14    /* Response was too big to handle */
 };
 
 /*
@@ -275,6 +283,68 @@ struct ec_lpc_host_args {
  */
 #define EC_HOST_ARGS_FLAG_TO_HOST   0x02
 
+/*****************************************************************************/
+
+/*
+ * Value written to legacy command port / prefix byte to indicate protocol
+ * 3+ structs are being used.  Usage is bus-dependent.
+ */
+#define EC_COMMAND_PROTOCOL_3 0xda
+
+#define EC_HOST_REQUEST_VERSION 3
+
+/* Version 3 request from host */
+struct ec_host_request {
+	/* Struct version (=3)
+	 *
+	 * EC will return EC_RES_INVALID_HEADER if it receives a header with a
+	 * version it doesn't know how to parse.
+	 */
+	uint8_t struct_version;
+
+	/*
+	 * Checksum of request and data; sum of all bytes including checksum
+	 * should total to 0.
+	 */
+	uint8_t checksum;
+
+	/* Command code */
+	uint16_t command;
+
+	/* Command version */
+	uint8_t command_version;
+
+	/* Unused byte in current protocol version; set to 0 */
+	uint8_t reserved;
+
+	/* Length of data which follows this header */
+	uint16_t data_len;
+} __packed;
+
+#define EC_HOST_RESPONSE_VERSION 3
+
+/* Version 3 response from EC */
+struct ec_host_response {
+	/* Struct version (=3) */
+	uint8_t struct_version;
+
+	/*
+	 * Checksum of response and data; sum of all bytes including checksum
+	 * should total to 0.
+	 */
+	uint8_t checksum;
+
+	/* Result code (EC_RES_*) */
+	uint16_t result;
+
+	/* Length of data which follows this header */
+	uint16_t data_len;
+
+	/* Unused bytes in current protocol version; set to 0 */
+	uint16_t reserved;
+} __packed;
+
+/*****************************************************************************/
 /*
  * Notes on commands:
  *

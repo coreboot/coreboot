@@ -39,7 +39,7 @@ SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.
 
 # Include spd rom data
 $(SPD_BIN): $(SPD_DEPS)
-	for f in $^; \
+	for f in $+; \
 	  do for c in $$(cat $$f | grep -v ^#); \
 	    do echo -e -n "\\x$$c"; \
 	  done; \

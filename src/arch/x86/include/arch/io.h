@@ -206,7 +206,11 @@ static inline int log2f(int value)
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
-typedef unsigned device_t; /* pci and pci_mmio need to have different ways to have dev */
+typedef unsigned int simple_pcidev_t;
+typedef unsigned int simple_pnpdev_t;
+
+/* FIXME: Sources for devices need still use device_t. */ 
+typedef unsigned int device_t;
 
 /* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G,
  * We don't need to set %fs, and %gs anymore
@@ -216,25 +220,26 @@ typedef unsigned device_t; /* pci and pci_mmio need to have different ways to ha
 #include <arch/pci_io_cfg.h>
 #include <arch/pci_mmio_cfg.h>
 
-#include <arch/pci_mmio_cfg.h>
-
-static inline __attribute__((always_inline)) void pci_or_config8(device_t dev, unsigned where, uint8_t value)
+static inline __attribute__((always_inline))
+void pci_or_config8(simple_pcidev_t dev, unsigned where, uint8_t value)
 {
 	pci_write_config8(dev, where, pci_read_config8(dev, where) | value);
 }
 
-static inline __attribute__((always_inline)) void pci_or_config16(device_t dev, unsigned where, uint16_t value)
+static inline __attribute__((always_inline))
+void pci_or_config16(simple_pcidev_t dev, unsigned where, uint16_t value)
 {
 	pci_write_config16(dev, where, pci_read_config16(dev, where) | value);
 }
 
-static inline __attribute__((always_inline)) void pci_or_config32(device_t dev, unsigned where, uint32_t value)
+static inline __attribute__((always_inline))
+void pci_or_config32(simple_pcidev_t dev, unsigned where, uint32_t value)
 {
 	pci_write_config32(dev, where, pci_read_config32(dev, where) | value);
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
-static inline device_t pci_io_locate_device(unsigned pci_id, device_t dev)
+static inline simple_pcidev_t pci_io_locate_device(unsigned pci_id, simple_pcidev_t dev)
 {
         for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
                 unsigned int id;
@@ -246,7 +251,7 @@ static inline device_t pci_io_locate_device(unsigned pci_id, device_t dev)
         return PCI_DEV_INVALID;
 }
 
-static inline device_t pci_locate_device(unsigned pci_id, device_t dev)
+static inline simple_pcidev_t pci_locate_device(unsigned pci_id, simple_pcidev_t dev)
 {
 	for(; dev <= PCI_DEV(255|(((1<<CONFIG_PCI_BUS_SEGN_BITS)-1)<<8), 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
@@ -258,9 +263,9 @@ static inline device_t pci_locate_device(unsigned pci_id, device_t dev)
 	return PCI_DEV_INVALID;
 }
 
-static inline device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
+static inline simple_pcidev_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 {
-	device_t dev, last;
+	simple_pcidev_t dev, last;
 
         dev = PCI_DEV(bus, 0, 0);
         last = PCI_DEV(bus, 31, 7);
@@ -276,53 +281,60 @@ static inline device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 }
 
 /* Generic functions for pnp devices */
-static inline __attribute__((always_inline)) void pnp_write_config(device_t dev, uint8_t reg, uint8_t value)
+static inline __attribute__((always_inline)) void pnp_write_config(simple_pnpdev_t dev, uint8_t reg, uint8_t value)
 {
 	unsigned port = dev >> 8;
 	outb(reg, port );
 	outb(value, port +1);
 }
 
-static inline __attribute__((always_inline)) uint8_t pnp_read_config(device_t dev, uint8_t reg)
+static inline __attribute__((always_inline)) uint8_t pnp_read_config(simple_pnpdev_t dev, uint8_t reg)
 {
 	unsigned port = dev >> 8;
 	outb(reg, port);
 	return inb(port +1);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_logical_device(device_t dev)
+static inline __attribute__((always_inline))
+void pnp_set_logical_device(simple_pnpdev_t dev)
 {
 	unsigned device = dev & 0xff;
 	pnp_write_config(dev, 0x07, device);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_enable(device_t dev, int enable)
+static inline __attribute__((always_inline))
+void pnp_set_enable(simple_pnpdev_t dev, int enable)
 {
 	pnp_write_config(dev, 0x30, enable?0x1:0x0);
 }
 
-static inline __attribute__((always_inline)) int pnp_read_enable(device_t dev)
+static inline __attribute__((always_inline))
+int pnp_read_enable(simple_pnpdev_t dev)
 {
 	return !!pnp_read_config(dev, 0x30);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_iobase(device_t dev, unsigned index, unsigned iobase)
+static inline __attribute__((always_inline))
+void pnp_set_iobase(simple_pnpdev_t dev, unsigned index, unsigned iobase)
 {
 	pnp_write_config(dev, index + 0, (iobase >> 8) & 0xff);
 	pnp_write_config(dev, index + 1, iobase & 0xff);
 }
 
-static inline __attribute__((always_inline)) uint16_t pnp_read_iobase(device_t dev, unsigned index)
+static inline __attribute__((always_inline))
+uint16_t pnp_read_iobase(simple_pnpdev_t dev, unsigned index)
 {
 	return ((uint16_t)(pnp_read_config(dev, index)) << 8) | pnp_read_config(dev, index + 1);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_irq(device_t dev, unsigned index, unsigned irq)
+static inline __attribute__((always_inline))
+void pnp_set_irq(simple_pnpdev_t dev, unsigned index, unsigned irq)
 {
 	pnp_write_config(dev, index, irq);
 }
 
-static inline __attribute__((always_inline)) void pnp_set_drq(device_t dev, unsigned index, unsigned drq)
+static inline __attribute__((always_inline))
+void pnp_set_drq(simple_pnpdev_t dev, unsigned index, unsigned drq)
 {
 	pnp_write_config(dev, index, drq & 0xff);
 }

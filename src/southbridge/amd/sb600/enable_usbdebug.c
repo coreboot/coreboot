@@ -34,7 +34,7 @@ void set_debug_port(unsigned int port)
 
 void enable_usbdebug(unsigned int port)
 {
-	device_t dev = PCI_DEV(0, 0x13, 5); /* USB EHCI, D19:F5 */
+	pci_devfn_t dev = PCI_DEV(0, 0x13, 5); /* USB EHCI, D19:F5 */
 
 	/* Select the requested physical USB port (1-15) as the Debug Port. */
 	set_debug_port(port);

@@ -36,7 +36,7 @@ static inline void set_bios_reset(void)
 {
 	u32 nodes;
 	u32 htic;
-	device_t dev;
+	pci_devfn_t dev;
 	int i;
 
 	nodes = ((pci_read_config32(PCI_DEV(CONFIG_CBB, CONFIG_CDB, 0), 0x60) >> 4) & 7) + 1;

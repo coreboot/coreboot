@@ -35,7 +35,7 @@ void set_debug_port(unsigned int port)
 void enable_usbdebug(unsigned int port)
 {
 	u32 dbgctl;
-	device_t dev = PCI_DEV(0, 0x1d, 7); /* USB EHCI, D29:F7 */
+	pci_devfn_t dev = PCI_DEV(0, 0x1d, 7); /* USB EHCI, D29:F7 */
 
 	/* Set the EHCI BAR address. */
 	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);

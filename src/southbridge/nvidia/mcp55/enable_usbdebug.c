@@ -33,7 +33,7 @@
 void set_debug_port(unsigned int port)
 {
 	u32 dword;
-	device_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 2, 1); /* USB EHCI */
+	pci_devfn_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 2, 1); /* USB EHCI */
 
 	/* Write the port number to 0x74[15:12]. */
 	dword = pci_read_config32(dev, 0x74);
@@ -44,7 +44,7 @@ void set_debug_port(unsigned int port)
 
 void enable_usbdebug(unsigned int port)
 {
-	device_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 2, 1); /* USB EHCI */
+	pci_devfn_t dev = PCI_DEV(0, MCP55_DEVN_BASE + 2, 1); /* USB EHCI */
 
 	/* Mark the requested physical USB port (1-15) as the Debug Port. */
 	set_debug_port(port);

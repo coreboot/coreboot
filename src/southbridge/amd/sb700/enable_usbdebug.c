@@ -49,7 +49,7 @@ void set_debug_port(unsigned int port)
  */
 void enable_usbdebug(unsigned int port)
 {
-	device_t dev = PCI_DEV(0, 0x12, 2); /* USB EHCI, D18:F2 */
+	pci_devfn_t dev = PCI_DEV(0, 0x12, 2); /* USB EHCI, D18:F2 */
 
 	/* Set the EHCI BAR address. */
 	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);

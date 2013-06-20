@@ -26,7 +26,7 @@
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
 
 static inline __attribute__ ((always_inline))
-u8 pcie_read_config8(device_t dev, unsigned int where)
+u8 pcie_read_config8(pci_devfn_t dev, unsigned int where)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
@@ -34,7 +34,7 @@ u8 pcie_read_config8(device_t dev, unsigned int where)
 }
 
 static inline __attribute__ ((always_inline))
-u16 pcie_read_config16(device_t dev, unsigned int where)
+u16 pcie_read_config16(pci_devfn_t dev, unsigned int where)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | (where & ~1);
@@ -42,7 +42,7 @@ u16 pcie_read_config16(device_t dev, unsigned int where)
 }
 
 static inline __attribute__ ((always_inline))
-u32 pcie_read_config32(device_t dev, unsigned int where)
+u32 pcie_read_config32(pci_devfn_t dev, unsigned int where)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | (where & ~3);
@@ -50,7 +50,7 @@ u32 pcie_read_config32(device_t dev, unsigned int where)
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config8(device_t dev, unsigned int where, u8 value)
+void pcie_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | where;
@@ -58,7 +58,7 @@ void pcie_write_config8(device_t dev, unsigned int where, u8 value)
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config16(device_t dev, unsigned int where, u16 value)
+void pcie_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | (where & ~1);
@@ -66,7 +66,7 @@ void pcie_write_config16(device_t dev, unsigned int where, u16 value)
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config32(device_t dev, unsigned int where, u32 value)
+void pcie_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
 {
 	unsigned long addr;
 	addr = DEFAULT_PCIEXBAR | dev | (where & ~3);
@@ -74,21 +74,21 @@ void pcie_write_config32(device_t dev, unsigned int where, u32 value)
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_or_config8(device_t dev, unsigned int where, u8 ormask)
+void pcie_or_config8(pci_devfn_t dev, unsigned int where, u8 ormask)
 {
 	u8 value = pcie_read_config8(dev, where);
 	pcie_write_config8(dev, where, value | ormask);
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_or_config16(device_t dev, unsigned int where, u16 ormask)
+void pcie_or_config16(pci_devfn_t dev, unsigned int where, u16 ormask)
 {
 	u16 value = pcie_read_config16(dev, where);
 	pcie_write_config16(dev, where, value | ormask);
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_or_config32(device_t dev, unsigned int where, u32 ormask)
+void pcie_or_config32(pci_devfn_t dev, unsigned int where, u32 ormask)
 {
 	u32 value = pcie_read_config32(dev, where);
 	pcie_write_config32(dev, where, value | ormask);

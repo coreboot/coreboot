@@ -210,7 +210,10 @@ static inline int log2f(int value)
 
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
-typedef unsigned device_t; /* pci and pci_mmio need to have different ways to have dev */
+/* FIXME: Sources for romstage still use device_t. */
+typedef u32 device_t;
+
+typedef u32 pci_devfn_t;
 
 /* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G,
  * We don't need to set %fs, and %gs anymore
@@ -220,23 +223,26 @@ typedef unsigned device_t; /* pci and pci_mmio need to have different ways to ha
 #include <arch/pci_io_cfg.h>
 #include <arch/pci_mmio_cfg.h>
 
-static inline __attribute__((always_inline)) void pci_or_config8(device_t dev, unsigned where, uint8_t value)
+static inline __attribute__((always_inline))
+void pci_or_config8(pci_devfn_t dev, unsigned where, uint8_t value)
 {
 	pci_write_config8(dev, where, pci_read_config8(dev, where) | value);
 }
 
-static inline __attribute__((always_inline)) void pci_or_config16(device_t dev, unsigned where, uint16_t value)
+static inline __attribute__((always_inline))
+void pci_or_config16(pci_devfn_t dev, unsigned where, uint16_t value)
 {
 	pci_write_config16(dev, where, pci_read_config16(dev, where) | value);
 }
 
-static inline __attribute__((always_inline)) void pci_or_config32(device_t dev, unsigned where, uint32_t value)
+static inline __attribute__((always_inline))
+void pci_or_config32(pci_devfn_t dev, unsigned where, uint32_t value)
 {
 	pci_write_config32(dev, where, pci_read_config32(dev, where) | value);
 }
 
 #define PCI_DEV_INVALID (0xffffffffU)
-static inline device_t pci_io_locate_device(unsigned pci_id, device_t dev)
+static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
         for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
                 unsigned int id;
@@ -248,7 +254,7 @@ static inline device_t pci_io_locate_device(unsigned pci_id, device_t dev)
         return PCI_DEV_INVALID;
 }
 
-static inline device_t pci_locate_device(unsigned pci_id, device_t dev)
+static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
 	for(; dev <= PCI_DEV(255|(((1<<CONFIG_PCI_BUS_SEGN_BITS)-1)<<8), 31, 7); dev += PCI_DEV(0,0,1)) {
 		unsigned int id;
@@ -260,9 +266,9 @@ static inline device_t pci_locate_device(unsigned pci_id, device_t dev)
 	return PCI_DEV_INVALID;
 }
 
-static inline device_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
+static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus)
 {
-	device_t dev, last;
+	pci_devfn_t dev, last;
 
         dev = PCI_DEV(bus, 0, 0);
         last = PCI_DEV(bus, 31, 7);

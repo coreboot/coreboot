@@ -29,6 +29,7 @@
 #include "dp-core.h"
 #include "cpu.h"
 #include "clk.h"
+#include "usb.h"
 #include "chip.h"
 
 #define RAM_BASE_KB (CONFIG_SYS_SDRAM_BASE >> 10)
@@ -119,15 +120,22 @@ static void exynos_displayport_init(device_t dev)
 	ret = lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
 }
 
-static void cpu_init(device_t dev)
+static void cpu_enable(device_t dev)
 {
 	exynos_displayport_init(dev);
+
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB);
 
 	set_cpu_id();
 
+}
+
+static void cpu_init(device_t dev)
+{
 	printk(BIOS_INFO, "CPU:   S5P%X @ %ldMHz\n",
 			cpu_id, get_arm_clk() / (1024*1024));
+
+	usb_init(dev);
 }
 
 static void cpu_noop(device_t dev)
@@ -137,8 +145,8 @@ static void cpu_noop(device_t dev)
 static struct device_operations cpu_ops = {
 	.read_resources   = cpu_noop,
 	.set_resources    = cpu_noop,
-	.enable_resources = cpu_init,
-	.init             = cpu_noop,
+	.enable_resources = cpu_enable,
+	.init             = cpu_init,
 	.scan_bus         = 0,
 };
 

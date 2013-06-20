@@ -71,6 +71,7 @@ static const struct {
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ATOM_DXXX, "Atom D400/500 Series" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ATOM_NXXX, "Atom N400 Series" },
 	/* Host bridges /DRAM controllers integrated in CPUs */
+	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_0TH_GEN, "0th generation (Nehalem family) Core Processor" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_1ST_GEN, "1st generation (Westmere family) Core Processor" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_2ND_GEN, "2nd generation (Sandy Bridge family) Core Processor" },
 	{ PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_CORE_3RD_GEN, "3rd generation (Ivy Bridge family) Core Processor" },

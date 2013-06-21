@@ -49,6 +49,39 @@ static inline int last_boot_normal(void)
 	return (byte & (1 << 1));
 }
 
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+static inline int do_normal_boot(void)
+{
+	unsigned char byte;
+
+	if (cmos_error() || !cmos_chksum_valid()) {
+		/* There are no impossible values, no checksums so just
+		 * trust whatever value we have in the the cmos,
+		 * but clear the fallback bit.
+		 */
+		byte = cmos_read(RTC_BOOT_BYTE);
+		byte &= 0x0c;
+		cmos_write(byte, RTC_BOOT_BYTE);
+	}
+
+	byte = cmos_read(RTC_BOOT_BYTE);
+
+	/* Copy boot_option to last_boot */
+	if (byte & (1<<0))
+		byte |= (1<<1);
+	else
+		byte &= ~(1<<1);
+
+	/* Reset boot_option to Fallback */
+	byte &= ~(1<<0);
+
+	/* Write back the modified content to the nvram */
+	cmos_write(byte, RTC_BOOT_BYTE);
+
+	/* Return the saved boot_option */
+	return (byte & (1<<1));
+}
+#else
 static inline int do_normal_boot(void)
 {
 	unsigned char byte;
@@ -91,6 +124,7 @@ static inline int do_normal_boot(void)
 
 	return (byte & (1<<1));
 }
+#endif
 
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
 {

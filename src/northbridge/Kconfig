@@ -1,4 +1,5 @@
 source src/northbridge/amd/Kconfig
+source src/northbridge/dmp/Kconfig
 source src/northbridge/intel/Kconfig
 source src/northbridge/rdc/Kconfig
 source src/northbridge/via/Kconfig

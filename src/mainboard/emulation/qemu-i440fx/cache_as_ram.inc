@@ -31,6 +31,11 @@
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	#warning "CONFIG_X86_BOOTBLOCK_FAILBOOT is used, the build may fail"
+	movl	%ebx, %esp
+#endif
 
 cache_as_ram:
 	post_code(0x20)
@@ -49,6 +54,11 @@ cache_as_ram:
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	#warning "CONFIG_X86_BOOTBLOCK_FAILBOOT is used, the build may fail"
+	movl	%esp, %ebx
+#endif
 	movl	%esp, %ebp
 	pushl	%eax
 

@@ -36,6 +36,10 @@ _start:
 	cli
 	/* Save the BIST result */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	movl	%ebx, %esp
+#endif
 
 	post_code(POST_RESET_VECTOR_CORRECT)
 
@@ -114,6 +118,10 @@ _start:
 
 	/* Restore BIST to %eax */
 	movl	%ebp, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	movl	%esp, %ebx
+#endif
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
 	data32	ljmp	$ROM_CODE_SEG, $__protected_start

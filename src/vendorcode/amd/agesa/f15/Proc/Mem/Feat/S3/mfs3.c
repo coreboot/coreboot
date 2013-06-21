@@ -263,30 +263,30 @@ MemFS3GetDeviceList (
   (*DeviceBlockHdrPtr)->RelativeOrMaskOffset = (UINT16) AllocHeapParams.RequestedBufferSize;
 
   // Copy device list on the stack to the heap.
-  BufferOffset = sizeof (DEVICE_BLOCK_HEADER) + (UINT64) AllocHeapParams.BufferPtr;
+  BufferOffset = sizeof (DEVICE_BLOCK_HEADER) + (UINT64) (UINTN) AllocHeapParams.BufferPtr;
   for (Die = 0; Die < DieCount; Die ++) {
     for (i = PRESELFREF; i <= POSTSELFREF; i ++) {
       // Copy PCI device descriptor to the heap if it exists.
       if (DeviceDescript[Die].PCIDevice[i].RegisterListID != 0xFFFFFFFF) {
-        LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Die].PCIDevice[i]), sizeof (PCI_DEVICE_DESCRIPTOR), StdHeader);
+        LibAmdMemCopy ((VOID *) (UINTN) BufferOffset, &(DeviceDescript[Die].PCIDevice[i]), sizeof (PCI_DEVICE_DESCRIPTOR), StdHeader);
         (*DeviceBlockHdrPtr)->NumDevices ++;
         BufferOffset += sizeof (PCI_DEVICE_DESCRIPTOR);
       }
       // Copy conditional PCI device descriptor to the heap if it exists.
       if (DeviceDescript[Die].CPCIDevice[i].RegisterListID != 0xFFFFFFFF) {
-        LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Die].CPCIDevice[i]), sizeof (CONDITIONAL_PCI_DEVICE_DESCRIPTOR), StdHeader);
+        LibAmdMemCopy ((VOID *) (UINTN) BufferOffset, &(DeviceDescript[Die].CPCIDevice[i]), sizeof (CONDITIONAL_PCI_DEVICE_DESCRIPTOR), StdHeader);
         (*DeviceBlockHdrPtr)->NumDevices ++;
         BufferOffset += sizeof (CONDITIONAL_PCI_DEVICE_DESCRIPTOR);
       }
       // Copy MSR device descriptor to the heap if it exists.
       if (DeviceDescript[Die].MSRDevice[i].RegisterListID != 0xFFFFFFFF) {
-        LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Die].MSRDevice[i]), sizeof (MSR_DEVICE_DESCRIPTOR), StdHeader);
+        LibAmdMemCopy ((VOID *) (UINTN) BufferOffset, &(DeviceDescript[Die].MSRDevice[i]), sizeof (MSR_DEVICE_DESCRIPTOR), StdHeader);
         (*DeviceBlockHdrPtr)->NumDevices ++;
         BufferOffset += sizeof (MSR_DEVICE_DESCRIPTOR);
       }
       // Copy conditional MSR device descriptor to the heap if it exists.
       if (DeviceDescript[Die].CMSRDevice[i].RegisterListID != 0xFFFFFFFF) {
-        LibAmdMemCopy ((VOID *) BufferOffset, &(DeviceDescript[Die].PCIDevice[i]), sizeof (CONDITIONAL_MSR_DEVICE_DESCRIPTOR), StdHeader);
+        LibAmdMemCopy ((VOID *) (UINTN) BufferOffset, &(DeviceDescript[Die].PCIDevice[i]), sizeof (CONDITIONAL_MSR_DEVICE_DESCRIPTOR), StdHeader);
         (*DeviceBlockHdrPtr)->NumDevices ++;
         BufferOffset += sizeof (CONDITIONAL_MSR_DEVICE_DESCRIPTOR);
       }

@@ -35,6 +35,11 @@
 /**
 /***************************************************************************/
 DCacheSetup:
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	#error "CONFIG_X86_BOOTBLOCK_FAILBOOT Fixme: Not enough registers available for Geode LX"
+	//movl	%ebx, %???
+#endif
 	/* Save the BIST result */
 	movl    %eax, %ebx
 
@@ -180,6 +185,12 @@ DCacheSetupGood:
 
 	/* Restore the BIST result */
 	movl	%ebx, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	#error "CONFIG_X86_BOOTBLOCK_FAILBOOT Fixme: Not enough registers available for Geode LX"
+	//movl  ??? , %ebx ???
+#endif
+
 	movl	%esp, %ebp
 	pushl	%eax
 

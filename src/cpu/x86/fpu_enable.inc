@@ -20,7 +20,10 @@
 __fpu_start:
 	/* Preserve BIST. */
 	movl	%eax, %ebp
-
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	movl	%ebx, %esp
+#endif
 	/*
 	 * Clear the CR0[2] bit (the "Emulation" flag, EM).
 	 *
@@ -37,3 +40,7 @@ __fpu_start:
 
 	/* Restore BIST. */
 	movl	%ebp, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	movl	%esp, %ebx
+#endif

@@ -35,6 +35,12 @@
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	#error "CONFIG_X86_BOOTBLOCK_FAILBOOT Fixme: Not enough registers available in src/cpu/intel/car/cache_as_ram_ht.inc"
+	//movl	%ebx, %??? /* %esp and %ebx are used later... */
+#endif
+
 
 cache_as_ram:
 	post_code(0x20)
@@ -343,6 +349,12 @@ no_msr_11e:
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	#error "CONFIG_X86_BOOTBLOCK_FAILBOOT Fixme: Not enough registers for Geode src/cpu/intel/car/cache_as_ram_ht.inc"
+	//movl  ??? , %ebx ???
+#endif
+
 	movl	%esp, %ebp
 	pushl	%eax
 

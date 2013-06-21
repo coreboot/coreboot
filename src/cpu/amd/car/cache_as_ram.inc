@@ -45,6 +45,10 @@
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	movl	%ebx, %esp
+#endif
 
 	/*
 	 * For normal part %ebx already contain cpu_init_detected
@@ -408,7 +412,10 @@ CAR_FAM10_ap_out:
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
-
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	movl	%esp, %ebx
+#endif
 	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
 	pushl	%ebx		/* Init detected. */

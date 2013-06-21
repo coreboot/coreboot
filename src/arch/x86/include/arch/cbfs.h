@@ -45,4 +45,12 @@ static inline void call(unsigned long addr, unsigned long bist)
 {
 	asm volatile ("jmp *%0\n\t" : : "r" (addr), "a" (bist));
 }
+
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+static inline void call_cmos_stage(unsigned long addr, unsigned long bist, int normal)
+{
+	asm volatile ("jmp *%0\n\t" : : "r" (addr), "a" (bist),"b" (normal));
+}
+#endif
+
 #endif

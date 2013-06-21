@@ -19,6 +19,10 @@
 
 	/* Preserve BIST. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	movl	%ebx, %esp
+#endif
 
 	/* Enable SSE instructions. */
 	movl	%cr4, %eax
@@ -27,4 +31,7 @@
 
 	/* Restore BIST. */
 	movl	%ebp, %eax
-
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	movl	%esp, %ebx
+#endif

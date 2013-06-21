@@ -32,6 +32,10 @@
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	movl	%ebx, %ebp
+#endif
 
 CacheAsRam:
 	/* Check whether the processor has HT capability. */
@@ -319,10 +323,15 @@ clear_fixed_var_mtrr_out:
 lout:
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	movl	%esp, %ebx
+#endif
 
 	/* We need to set EBP? No need. */
 	movl	%esp, %ebp
 	pushl	%eax  /* BIST */
+	//	pushl	%ebx  /* nvram's boot_option */ ??? No ebp used after that...
 	call	main
 
 	/* We don't need CAR from now on. */

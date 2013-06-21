@@ -35,6 +35,10 @@
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	movl	%ebx, %esp
+#endif
 
 CacheAsRam:
 
@@ -204,6 +208,10 @@ testok:
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	movl	%esp, %ebx
+#endif
 
 	/* We need to set EBP? No need. */
 	movl	%esp, %ebp

@@ -54,12 +54,25 @@ config X86_BOOTBLOCK_SIMPLE
 config X86_BOOTBLOCK_NORMAL
 	bool "Switch to normal if CMOS says so"
 
+config X86_BOOTBLOCK_FAILBOOT
+	bool "Switch to Fallback if it fails to boot"
+	help
+	  Switch to Fallback after failling to boot.
+	  Coreboot will reset boot_option to Fallback
+	  as early as possible, If the user has
+	  a Fallback and a Normal image in cbfs,
+	  and wants to boot on the Normal image,
+	  he must reset the boot_option to Normal
+	  after successfully booting(like trough the OS
+	  boot scripts that would run something like:
+	  "nvramtool -w boot_option=Normal".
 endchoice
 
 config BOOTBLOCK_SOURCE
 	string
 	default "bootblock_simple.c" if X86_BOOTBLOCK_SIMPLE
 	default "bootblock_normal.c" if X86_BOOTBLOCK_NORMAL
+	default "bootblock_failboot.c" if X86_BOOTBLOCK_FAILBOOT
 
 config UPDATE_IMAGE
 	bool "Update existing coreboot.rom image"

@@ -30,6 +30,11 @@
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	/* Nothing to do, since %esp is used and %ebx not */
+	/* Do not clobber %ebx */
+#endif
 
 cache_as_ram:
 	post_code(0x20)
@@ -138,6 +143,10 @@ clear_mtrrs:
 	movl	%ebp, %eax
 	movl	%esp, %ebp
 	pushl	%eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	/* should I push %ebx in the stack? */
+#endif
 
 	post_code(0x23)
 

@@ -49,6 +49,17 @@ static inline int last_boot_normal(void)
 	return (byte & (1 << 1));
 }
 
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+static inline void set_boot_fallback(void)
+{
+	unsigned char byte;
+	byte = cmos_read(RTC_BOOT_BYTE);
+	/* set it back to Fallback */
+	byte &= ~(1<<0);
+	cmos_write(byte, RTC_BOOT_BYTE);
+}
+#endif
+
 static inline int do_normal_boot(void)
 {
 	unsigned char byte;

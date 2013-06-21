@@ -1,6 +1,11 @@
 	/* Save BIST result */
 
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	/* Nothing to do, since %ebx is not used */
+	/* Do not clobber %ebx */
+#endif
 
 	/* check if SPAD0 is cleared. If yes, it means this was a hard reset */
 	movl	$0x800080d0, %eax
@@ -56,3 +61,7 @@ loop:	hlt
 
 	/* Restore BIST */
 	mov	%ebp, %eax
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	/* Nothing to do, since %ebx is not used */
+#endif

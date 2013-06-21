@@ -43,6 +43,11 @@
 
 	/* Save the BIST result. */
 	movl	%eax, %ebp
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	#error "CONFIG_X86_BOOTBLOCK_FAILBOOT Fixme: Not enough registers available for haswell"
+	//movl  %ebx, ??? /* %esp and %ebx are used later... */
+#endif
 
 cache_as_ram:
 	post_code(0x20)
@@ -169,6 +174,12 @@ clear_mtrrs:
 	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
+
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	#error "CONFIG_X86_BOOTBLOCK_FAILBOOT Fixme: Not enough registers available for haswell"
+	//movl  ??? , %ebx ???
+#endif
 
 	/* Setup the stack. */
 	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax

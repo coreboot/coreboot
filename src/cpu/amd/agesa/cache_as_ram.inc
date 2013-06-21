@@ -57,7 +57,10 @@ cache_as_ram_setup:
 
   /* Save the BIST result */
   cvtsi2sd  %ebp, %xmm0
-
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+  /* Preserve the nvram's boot_option parameter */
+  #error "CONFIG_X86_BOOTBLOCK_FAILBOOT Not implemented for AGESA"
+#endif
   /* for normal part %ebx already contain cpu_init_detected from fallback call */
 
   /* Save the cpu_init_detected */
@@ -70,6 +73,10 @@ cache_as_ram_setup:
 
   /* Restore the BIST result */
   cvtsd2si  %xmm0, %edx
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+  /* Restore nvram's saved boot_option parameter */
+  #error "CONFIG_X86_BOOTBLOCK_FAILBOOT Not implemented for AGESA"
+#endif
 
   /* Restore the  cpu_init_detected */
   cvtsd2si  %xmm1, %ebx

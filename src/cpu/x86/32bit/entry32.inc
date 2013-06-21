@@ -51,7 +51,10 @@ protected_start:
 __protected_start:
 	/* Save the BIST value */
 	movl	%eax, %ebp
-
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Preserve the nvram's boot_option parameter */
+	movl	%ebx, %esp
+#endif
 	post_code(POST_ENTER_PROTECTED_MODE)
 
 	movw	$ROM_DATA_SEG, %ax
@@ -63,4 +66,7 @@ __protected_start:
 
 	/* Restore the BIST value to %eax */
 	movl	%ebp, %eax
-
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+	/* Restore nvram's saved boot_option parameter */
+	movl	%esp, %ebx
+#endif

@@ -21,6 +21,8 @@
 
 #ifndef _EC_GOOGLE_CHROMEEC_EC_H
 #define _EC_GOOGLE_CHROMEEC_EC_H
+#include <stddef.h>
+#include <stdint.h>
 
 #ifndef __PRE_RAM__
 u32 google_chromeec_get_wake_mask(void);
@@ -59,6 +61,13 @@ struct chromeec_command {
 	uint16_t    cmd_size_out; /* expected size of command response in,
 				   * actual received size out */
 };
+
+/* internal standard implementation for EC command protocols. */
+typedef int (*crosec_io_t)(uint8_t *write_bytes, size_t write_size,
+			   uint8_t *read_bytes, size_t read_size,
+			   void *context);
+int crosec_command_proto(struct chromeec_command *cec_command,
+			 crosec_io_t crosec_io, void *context);
 
 int google_chromeec_command(struct chromeec_command *cec_command);
 

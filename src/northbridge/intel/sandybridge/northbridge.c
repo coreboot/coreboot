@@ -51,6 +51,21 @@ int bridge_silicon_revision(void)
 	return bridge_revision_id;
 }
 
+static unsigned long get_top_of_ram(void)
+{
+	/* Base of TSEG is top of usable DRAM */
+	u32 tom = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0,0)), TSEG);
+	return (unsigned long) tom;
+}
+
+struct cbmem_entry *get_cbmem_toc(void)
+{
+	static struct cbmem_entry *toc = NULL;
+	if (!toc)
+		toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
+	return toc;
+}
+
 /* Reserve everything between A segment and 1MB:
  *
  * 0xa0000 - 0xbffff: legacy VGA

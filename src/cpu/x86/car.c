@@ -80,6 +80,10 @@ void car_migrate_variables(void)
 	car_migration_func_t *migrate_func;
 	size_t car_data_size = &_car_data_end[0] - &_car_data_start[0];
 
+	/* Check if already migrated. */
+	if (car_migrated)
+		return;
+
 	migrated_base = cbmem_add(CBMEM_ID_CAR_GLOBALS, car_data_size);
 
 	if (migrated_base == NULL) {

@@ -254,7 +254,7 @@ static void sb700_enable(device_t dev)
 				/* I/O APIC IDs are normally limited to 4-bits. Enforce this limit. */
 #if (CONFIG_APIC_ID_OFFSET == 0 && CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS >= 1)
 				/* Assign the ioapic ID the next available number after the processor core local APIC IDs */
-				setup_ioapic(ioapic_base, CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS);
+				setup_ioapic(ioapic_base, (UINT8) (CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS));
 #elif (CONFIG_APIC_ID_OFFSET > 0)
 				/* Assign the ioapic ID the value 0. Processor APIC IDs follow. */
 				setup_ioapic(ioapic_base, 0);

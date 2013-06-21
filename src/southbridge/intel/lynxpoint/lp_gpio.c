@@ -159,3 +159,10 @@ void set_gpio(int gpio_num, int value)
 	conf0 |= value << GPO_LEVEL_SHIFT;
 	outl(conf0, gpio_base + GPIO_CONFIG0(gpio_num));
 }
+
+int gpio_is_native(int gpio_num)
+{
+	u16 gpio_base = get_gpio_base();
+
+	return !(inl(gpio_base + GPIO_CONFIG0(gpio_num)) & 1);
+}

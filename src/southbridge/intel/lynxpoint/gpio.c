@@ -128,3 +128,22 @@ void set_gpio(int gpio_num, int value)
 	config |= value << bit;
 	outl(config, gpio_base + gpio_reg_offsets[index]);
 }
+
+int gpio_is_native(int gpio_num)
+{
+	static const int gpio_reg_offsets[] = {
+		GPIO_USE_SEL, GPIO_USE_SEL2, GPIO_USE_SEL3
+	};
+	u16 gpio_base = get_gpio_base();
+	int index, bit;
+	u32 config;
+
+	if (gpio_num > MAX_GPIO_NUMBER)
+		return 0; /* Just ignore wrong gpio numbers. */
+
+	index = gpio_num / 32;
+	bit = gpio_num % 32;
+
+	config = inl(gpio_base + gpio_reg_offsets[index]);
+	return !(config & (1 << bit));
+}

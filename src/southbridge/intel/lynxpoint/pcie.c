@@ -25,6 +25,9 @@
 #include <device/pci_ids.h>
 #include "pch.h"
 
+static void pcie_update_cfg8(device_t dev, int reg, u8 mask, u8 or);
+static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or);
+
 /* LynxPoint-LP has 6 root ports while non-LP has 8. */
 #define MAX_NUM_ROOT_PORTS 8
 #define H_NUM_ROOT_PORTS MAX_NUM_ROOT_PORTS
@@ -179,6 +182,90 @@ static void pch_pcie_device_set_func(int index, int pci_func)
 	}
 }
 
+static void pcie_enable_clock_gating(void)
+{
+	int i;
+	int is_lp;
+	int enabled_ports;
+
+	is_lp = pch_is_lp();
+	enabled_ports = 0;
+
+	for (i = 0; i < rpc.num_ports; i++) {
+		device_t dev;
+		int rp;
+
+		dev = rpc.ports[i];
+		rp = root_port_number(dev);
+
+		if (!dev->enabled) {
+			/* Configure shared resource clock gating. */
+			if (rp == 1 || rp == 5 || (rp == 6 && is_lp))
+				pcie_update_cfg8(dev, 0xe1, 0xc3, 0x3c);
+
+			if (!is_lp) {
+				if (rp == 1 && !rpc.ports[1]->enabled &&
+				    !rpc.ports[2]->enabled &&
+				    !rpc.ports[3]->enabled) {
+					pcie_update_cfg8(dev, 0xe2, ~1, 1);
+					pcie_update_cfg8(dev, 0xe1, 0x7f, 0x80);
+				}
+				if (rp == 5 && !rpc.ports[5]->enabled &&
+				    !rpc.ports[6]->enabled &&
+				    !rpc.ports[7]->enabled) {
+					pcie_update_cfg8(dev, 0xe2, ~1, 1);
+					pcie_update_cfg8(dev, 0xe1, 0x7f, 0x80);
+				}
+				continue;
+			}
+
+			pcie_update_cfg8(dev, 0xe2, ~(3 << 4), (3 << 4));
+			pcie_update_cfg(dev, 0x420, ~(1 << 31), (1 << 31));
+
+			/* Per-Port CLKREQ# handling. */
+			if (is_lp && gpio_is_native(18 + rp - 1))
+				pcie_update_cfg(dev, 0x420, ~0, (3 << 29));
+
+			/* Enable static clock gating. */
+			if (rp == 1 && !rpc.ports[1]->enabled &&
+			    !rpc.ports[2]->enabled && !rpc.ports[3]->enabled) {
+				pcie_update_cfg8(dev, 0xe2, ~1, 1);
+				pcie_update_cfg8(dev, 0xe1, 0x7f, 0x80);
+			} else if (rp == 5 || rp == 6) {
+				pcie_update_cfg8(dev, 0xe2, ~1, 1);
+				pcie_update_cfg8(dev, 0xe1, 0x7f, 0x80);
+			}
+			continue;
+		}
+
+		enabled_ports++;
+
+		/* Enable dynamic clock gating. */
+		pcie_update_cfg8(dev, 0xe1, 0xfc, 0x03);
+
+		if (is_lp) {
+			pcie_update_cfg8(dev, 0xe2, ~(1 << 6), (1 << 6));
+			pcie_update_cfg8(dev, 0xe8, ~(3 << 2), (2 << 2));
+		}
+
+		/* Update PECR1 register. */
+		pcie_update_cfg8(dev, 0xe8, ~0, 1);
+
+		pcie_update_cfg8(dev, 0x324, ~(1 << 5), (1 < 5));
+
+		/* Per-Port CLKREQ# handling. */
+		if (is_lp && gpio_is_native(18 + rp - 1))
+			pcie_update_cfg(dev, 0x420, ~0, (3 << 29));
+
+		/* Configure shared resource clock gating. */
+		if (rp == 1 || rp == 5 || (rp == 6 && is_lp))
+			pcie_update_cfg8(dev, 0xe1, 0xc3, 0x3c);
+	}
+
+	if (!enabled_ports && is_lp)
+		pcie_update_cfg8(rpc.ports[0], 0xe1, ~(1 << 6), (1 << 6));
+}
+
 static void root_port_commit_config(void)
 {
 	int i;
@@ -186,6 +273,9 @@ static void root_port_commit_config(void)
 	/* If the first root port is disabled the coalesce ports. */
 	if (!rpc.ports[0]->enabled)
 		rpc.coalesce = 1;
+
+	/* Perform clock gating configuration. */
+	pcie_enable_clock_gating();
 
 	for (i = 0; i < rpc.num_ports; i++) {
 		device_t dev;

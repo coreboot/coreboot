@@ -42,13 +42,49 @@ static int cmos_chksum_valid(void)
 }
 
 
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+static inline int last_boot_normal(void)
+{
+	unsigned char byte;
+	byte = cmos_read(RTC_BOOT_BYTE);
+	return (byte & (1 << 0));
+}
+#else
 static inline int last_boot_normal(void)
 {
 	unsigned char byte;
 	byte = cmos_read(RTC_BOOT_BYTE);
 	return (byte & (1 << 1));
 }
+#endif
 
+#if CONFIG_X86_BOOTBLOCK_FAILBOOT
+static inline int do_normal_boot(void)
+{
+	unsigned char old_byte, write_byte;
+
+	if (cmos_error() || !cmos_chksum_valid()) {
+		/* There are no impossible values, no checksums so just
+		 * trust whatever value we have in the the cmos,
+		 * but clear the fallback bit.
+		 */
+		write_byte = cmos_read(RTC_BOOT_BYTE);
+		write_byte &= 0x0c;
+		cmos_write(write_byte, RTC_BOOT_BYTE);
+	}
+
+	/* The RTC_BOOT_BYTE is now o.k. see where to go. */
+	write_byte = old_byte = cmos_read(RTC_BOOT_BYTE);
+
+	/* Reset boot_option to Fallback */
+	write_byte &= ~(1<<0);
+
+	/* Save the boot byte */
+	cmos_write(write_byte, RTC_BOOT_BYTE);
+
+	return (old_byte & (1<<0));
+}
+#else
 static inline int do_normal_boot(void)
 {
 	unsigned char byte;
@@ -91,6 +127,7 @@ static inline int do_normal_boot(void)
 
 	return (byte & (1<<1));
 }
+#endif
 
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
 {

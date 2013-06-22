@@ -83,7 +83,7 @@ Scope(\_SB) {
 
 		/* Bus 0, Dev 1 - PCI Bridge for Internal Graphics */
 		/* Package(){0x0001FFFF, 0, 0, 18 }, */
-		/* package(){0x0001FFFF, 1, 0, 19 }, */
+		/* Package(){0x0001FFFF, 1, 0, 19 }, */
 
 		/* Bus 0, Dev 2 - PCIe Bridge for x8 PCIe Slot (GFX0) */
 		Package(){0x0002FFFF, 0, 0, 18 },

@@ -36,6 +36,13 @@
 uint64_t high_tables_base = 0;
 uint64_t high_tables_size;
 
+void __attribute__((weak)) get_cbmem_table(uint64_t *base, uint64_t *size)
+{
+	printk(BIOS_WARNING, "WARNING: you need to define get_cbmem_table for your board\n");
+	*base = 0;
+	*size = 0;
+}
+
 void cbmem_arch_init(void)
 {
 }

@@ -80,7 +80,8 @@ void set_cbmem_table(uint64_t base, uint64_t size)
  *  - suspend/resume backup memory
  */
 
-void cbmem_init(u64 baseaddr, u64 size)
+#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
+static void cbmem_init(u64 baseaddr, u64 size)
 {
 	struct cbmem_entry *cbmem_toc;
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
@@ -102,6 +103,7 @@ void cbmem_init(u64 baseaddr, u64 size)
 		.size	= size - CBMEM_TOC_RESERVED
 	};
 }
+#endif
 
 int cbmem_reinit(u64 baseaddr)
 {

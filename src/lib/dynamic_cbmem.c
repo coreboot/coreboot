@@ -227,6 +227,11 @@ static int validate_entries(struct cbmem_root *root)
 	return 0;
 }
 
+int cbmem_base_check(void)
+{
+	return 1;
+}
+
 int cbmem_initialize(void)
 {
 	struct cbmem_root *root;

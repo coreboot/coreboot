@@ -42,26 +42,73 @@ struct cbmem_entry {
 } __attribute__((packed));
 
 #ifndef __PRE_RAM__
-static struct cbmem_entry *bss_cbmem_toc;
+static uint64_t cbmem_base = 0;
+static uint64_t cbmem_size = 0;
+#endif
 
-struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
+extern unsigned long get_top_of_ram(void);
+
+unsigned long __attribute__((weak)) get_top_of_ram(void)
 {
-	return bss_cbmem_toc;
+	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
+	return 0;
 }
 
+void __attribute__((weak)) get_high_table(uint64_t *base, uint64_t *size)
+{
+	uint64_t top_of_ram = get_top_of_ram();
+	if (top_of_ram >= HIGH_MEMORY_SIZE) {
+		*base = top_of_ram - HIGH_MEMORY_SIZE;
+		*size = HIGH_MEMORY_SIZE;
+	} else {
+		*base = 0;
+		*size = 0;
+	}
+}
+
+#ifndef __PRE_RAM__
 void __attribute__((weak)) set_cbmem_toc(struct cbmem_entry * x)
 {
 	/* do nothing, this should be called by chipset to save TOC in NVRAM */
 }
-#else
+
+void set_top_of_ram(uint64_t ramtop)
+{
+	cbmem_base = ramtop - HIGH_MEMORY_SIZE;
+	cbmem_size = HIGH_MEMORY_SIZE;
+}
+
+void set_top_of_ram_once(uint64_t ramtop)
+{
+	if (!cbmem_base)
+		set_top_of_ram(ramtop);
+}
+#endif
 
 struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
 {
-	printk(BIOS_WARNING, "WARNING: you need to define get_cbmem_toc() for your chipset\n");
-	return NULL;
+#ifdef __PRE_RAM__
+	uint64_t cbmem_base, cbmem_size;
+	get_high_table(&cbmem_base, &cbmem_size);
+#else
+	if (!cbmem_base)
+		get_high_table(&cbmem_base, &cbmem_size);
+#endif
+	return (struct cbmem_entry *) (unsigned)cbmem_base;
 }
 
+void get_cbmem_table(uint64_t *base, uint64_t *size)
+{
+#ifdef __PRE_RAM__
+	get_high_table(base, size);
+#else
+	if (!cbmem_base)
+		get_high_table(&cbmem_base, &cbmem_size);
+
+	*base = cbmem_base;
+	*size = cbmem_size;
 #endif
+}
 
 /**
  * cbmem is a simple mechanism to do some kind of book keeping of the coreboot
@@ -73,13 +120,14 @@ struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
  *  - suspend/resume backup memory
  */
 
-void cbmem_init(u64 baseaddr, u64 size)
+static void cbmem_init(u64 baseaddr, u64 size)
 {
 	struct cbmem_entry *cbmem_toc;
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
 #ifndef __PRE_RAM__
-	bss_cbmem_toc = cbmem_toc;
+	cbmem_base = baseaddr;
+	cbmem_size = size;
 #endif
 
 	printk(BIOS_DEBUG, "Initializing CBMEM area to 0x%llx (%lld bytes)\n",
@@ -113,10 +161,25 @@ int cbmem_reinit(u64 baseaddr)
 	       (unsigned long)baseaddr);
 
 #ifndef __PRE_RAM__
-	bss_cbmem_toc = cbmem_toc;
+	cbmem_base = baseaddr;
 #endif
 
 	return (cbmem_toc[0].magic == CBMEM_MAGIC);
+}
+
+int cbmem_base_check(void)
+{
+	uint64_t base, size;
+
+	get_cbmem_table(&base, &size);
+	if (!base) {
+		printk(BIOS_ERR, "ERROR: cbmem_base is not set.\n");
+		// Are there any boards without?
+		// Stepan thinks we should die() here!
+	}
+	printk(BIOS_DEBUG, "cbmem_base: %llx.\n", base);
+
+	return !!base;
 }
 
 void *cbmem_add(u32 id, u64 size)
@@ -205,25 +268,23 @@ void *cbmem_find(u32 id)
 }
 
 #if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
+
 /* Returns True if it was not intialized before. */
 int cbmem_initialize(void)
 {
+	uint64_t base = 0, size = 0;
 	int rv = 0;
 
-#ifdef __PRE_RAM__
-	extern unsigned long get_top_of_ram(void);
-	uint64_t high_tables_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
-	uint64_t high_tables_size = HIGH_MEMORY_SIZE;
-#endif
+	get_cbmem_table(&base, &size);
 
 	/* We expect the romstage to always initialize it. */
-	if (!cbmem_reinit(high_tables_base)) {
+	if (!cbmem_reinit(base)) {
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 		/* Something went wrong, our high memory area got wiped */
 		if (acpi_slp_type == 3 || acpi_slp_type == 2)
 			acpi_slp_type = 0;
 #endif
-		cbmem_init(high_tables_base, high_tables_size);
+		cbmem_init(base, size);
 		rv = 1;
 	}
 #ifndef __PRE_RAM__

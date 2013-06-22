@@ -313,8 +313,7 @@ void main(unsigned long bist)
 #if CONFIG_EARLY_CBMEM_INIT
 	cbmem_was_initted = !cbmem_initialize();
 #else
-	cbmem_was_initted = cbmem_reinit((uint64_t) (get_top_of_ram()
-						     - HIGH_MEMORY_SIZE));
+	cbmem_was_initted = cbmem_reinit(high_tables_base());
 #endif
 
 #if CONFIG_HAVE_ACPI_RESUME

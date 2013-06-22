@@ -54,9 +54,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 		ram_resource(dev, idx++, 4 * 1024 * 1024, high);
 
 #if !CONFIG_DYNAMIC_CBMEM
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
+	set_top_of_ram(tomk * 1024);
 #endif
 
 	/* Reserve space for the IOAPIC.  This should be in the Southbridge,

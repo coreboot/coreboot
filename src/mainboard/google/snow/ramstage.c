@@ -76,6 +76,13 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	framebuffer->reserved_mask_size = 0;
 }
 
+void get_high_table(uint64_t *base, uint64_t *size)
+{
+	*base = CONFIG_SYS_SDRAM_BASE +
+				((unsigned)CONFIG_DRAM_SIZE_MB << 20ULL) -
+				CONFIG_COREBOOT_TABLES_SIZE;
+	*size = CONFIG_COREBOOT_TABLES_SIZE;
+}
 
 void hardwaremain(void);
 void main(void)
@@ -83,11 +90,7 @@ void main(void)
 	/* FIXME this should be moved elsewhere. We don't want ramstage.c */
 
 	/* set up coreboot tables */
-	high_tables_size = CONFIG_COREBOOT_TABLES_SIZE;
-	high_tables_base = CONFIG_SYS_SDRAM_BASE +
-				((unsigned)CONFIG_DRAM_SIZE_MB << 20ULL) -
-				CONFIG_COREBOOT_TABLES_SIZE;
-	cbmem_init(high_tables_base, high_tables_size);
+	cbmem_initialize();
 
 	/* set up dcache and MMU */
 	/* FIXME: this should happen via resource allocator */

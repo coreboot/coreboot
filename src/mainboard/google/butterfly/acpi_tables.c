@@ -65,7 +65,7 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u1 = 0;
 
 	/* CBMEM TOC */
-	gnvs->cmem = (u32)get_cbmem_toc();
+	gnvs->cmem = high_tables_base32();
 
 	/* IGD Displays */
 	gnvs->ndid = 3;

@@ -133,14 +133,20 @@ void cbmem_add_lb_mem(struct lb_memory *mem);
 #else /* !CONFIG_DYNAMIC_CBMEM */
 
 #ifndef __PRE_RAM__
-extern uint64_t high_tables_base, high_tables_size;
+void set_top_of_ram(uint64_t ramtop);
+void set_top_of_ram_once(uint64_t ramtop);
 void set_cbmem_toc(struct cbmem_entry *);
 #endif
 
-void cbmem_init(u64 baseaddr, u64 size);
+void get_high_table(uint64_t *base, uint64_t *size);
+void get_cbmem_table(uint64_t *base, uint64_t *size);
+
 int cbmem_reinit(u64 baseaddr);
 
 extern struct cbmem_entry *get_cbmem_toc(void);
+
+#define high_tables_base(x) ((uint64_t)get_cbmem_toc())
+#define high_tables_base32(x) ((uint32_t)get_cbmem_toc())
 
 #endif /* CONFIG_DYNAMIC_CBMEM */
 
@@ -155,6 +161,8 @@ int cbmem_initialize(void);
 void *cbmem_add(u32 id, u64 size);
 /* Find a cbmem entry of a given id. These return NULL on failure. */
 void *cbmem_find(u32 id);
+
+int cbmem_base_check(void);
 
 #ifndef __PRE_RAM__
 /* Ramstage only functions. */

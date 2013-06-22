@@ -713,7 +713,7 @@ static void setup_lx_cache(void)
 	wbinvd();
 }
 
-uint32_t get_top_of_ram(void)
+unsigned long get_top_of_ram(void)
 {
 	struct gliutable *gl = 0;
 	uint32_t systop;

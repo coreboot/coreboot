@@ -109,18 +109,9 @@ void restore_mtrr(void)
 
 inline void *backup_resume(void)
 {
-	unsigned long high_ram_base;
 	void *resume_backup_memory;
 
-	/* Start address of high memory tables */
-	high_ram_base = (u32) get_cbmem_toc();
-
-	/*
-	 * printk(BIOS_DEBUG, "CBMEM TOC is at: %x\n", (u32_t)high_ram_base);
-	 * printk(BIOS_DEBUG, "CBMEM TOC 0-size:%x\n ",(u32_t)(high_ram_base + HIGH_MEMORY_SIZE + 4096));
-	 */
-
-	cbmem_reinit((u64) high_ram_base);
+	cbmem_reinit();
 
 	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 	if (((u32) resume_backup_memory == 0)

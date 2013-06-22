@@ -83,7 +83,7 @@ u32 decode_igd_gtt_size(const u32 gsm)
 	}
 }
 
-u32 get_top_of_ram(void)
+unsigned long get_top_of_ram(void)
 {
 	const device_t dev = PCI_DEV(0, 0, 0);
 

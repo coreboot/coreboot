@@ -24,7 +24,6 @@
  */
 
 #include <stdlib.h>
-#include <cbmem.h>
 #include <arch/io.h>
 #include "k8x8xx.h"
 
@@ -183,6 +182,6 @@ static inline int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-struct cbmem_entry *get_cbmem_toc(void) {
-	return (struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
+uint64_t restore_top_of_ram(void) {
+	return (uint64_t) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
 }

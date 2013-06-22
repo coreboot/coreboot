@@ -32,8 +32,6 @@
 #include <lib.h>
 #include <smbios.h>
 
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size;
 
 void cbmem_arch_init(void)
 {
@@ -45,6 +43,7 @@ struct lb_memory *write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
+	u64 high_tables_base = 0;
 
 	/* Even if high tables are configured, some tables are copied both to
 	 * the low and the high area, so payloads and OSes don't need to know
@@ -53,13 +52,8 @@ struct lb_memory *write_tables(void)
 	unsigned long high_table_pointer;
 
 #if !CONFIG_DYNAMIC_CBMEM
-	if (!high_tables_base) {
-		printk(BIOS_ERR, "ERROR: High Tables Base is not set.\n");
-		// Are there any boards without?
-		// Stepan thinks we should die() here!
-	}
-
-	printk(BIOS_DEBUG, "High Tables Base is %llx.\n", high_tables_base);
+	cbmem_base_check();
+	high_tables_base = (u32)get_cbmem_toc();
 #endif
 
 	rom_table_start = 0xf0000;

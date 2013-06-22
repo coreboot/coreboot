@@ -27,7 +27,6 @@
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
 #include <arch/ioapic.h>
-#include <cbmem.h>
 #include "sb700.h"
 
 static void lpc_init(device_t dev)
@@ -84,9 +83,9 @@ static void lpc_init(device_t dev)
 	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
 }
 
-void set_cbmem_toc(struct cbmem_entry *toc)
+void backup_top_of_ram(uint64_t ramtop)
 {
-	u32 dword = (u32) toc;
+	u32 dword = (u32) ramtop;
 	int nvram_pos = 0xfc, i;
 	for (i = 0; i<4; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);

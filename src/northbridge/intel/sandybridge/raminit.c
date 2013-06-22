@@ -305,11 +305,6 @@ void sdram_initialize(struct pei_data *pei_data)
 		save_mrc_data(pei_data);
 }
 
-struct cbmem_entry *get_cbmem_toc(void)
-{
-	return (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
-}
-
 unsigned long get_top_of_ram(void)
 {
 	/* Base of TSEG is top of usable DRAM */

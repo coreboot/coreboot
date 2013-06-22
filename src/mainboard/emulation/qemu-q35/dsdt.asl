@@ -200,7 +200,7 @@ DefinitionBlock (
 #define prt_slot_lnkG(nr) prt_slot_lnk(nr, LNKG, LNKH, LNKE, LNKF)
 #define prt_slot_lnkH(nr) prt_slot_lnk(nr, LNKH, LNKE, LNKF, LNKG)
 
-            Name(PRTP, package() {
+            Name(PRTP, Package() {
                 prt_slot_lnkE(0x0000),
                 prt_slot_lnkF(0x0001),
                 prt_slot_lnkG(0x0002),
@@ -257,7 +257,7 @@ DefinitionBlock (
 #define prt_slot_gsiG(nr) prt_slot_gsi(nr, GSIG, GSIH, GSIE, GSIF)
 #define prt_slot_gsiH(nr) prt_slot_gsi(nr, GSIH, GSIE, GSIF, GSIG)
 
-            Name(PRTA, package() {
+            Name(PRTA, Package() {
                 prt_slot_gsiE(0x0000),
                 prt_slot_gsiF(0x0001),
                 prt_slot_gsiG(0x0002),

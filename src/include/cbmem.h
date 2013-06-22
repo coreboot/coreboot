@@ -133,7 +133,6 @@ extern uint64_t high_tables_base, high_tables_size;
 int cbmem_base_check(void);
 #endif
 
-void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);
 
 struct cbmem_entry *get_cbmem_toc(void);

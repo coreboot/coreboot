@@ -23,7 +23,6 @@
 #include <arch/ioapic.h>
 #include "lpc.h"
 #include <arch/io.h>
-#include <cbmem.h>
 
 void lpc_read_resources(device_t dev)
 {

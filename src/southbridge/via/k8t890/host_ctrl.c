@@ -23,7 +23,6 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-#include <cbmem.h>
 #include <arch/io.h>
 #include "k8x8xx.h"
 
@@ -114,12 +113,12 @@ static void host_ctrl_enable_k8m8xx(struct device *dev) {
 
 }
 #if 0
-struct cbmem_entry *get_cbmem_toc(void) {
-		return (struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
+uint64_t restore_top_of_ram(void) {
+		return (uint64_t) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
 }
 #endif
-void set_cbmem_toc(struct cbmem_entry *toc) {
-		outl((u32) toc, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
+void backup_top_of_ram(uint64_t ramtop) {
+		outl((u32) ramtop, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
 }
 
 static struct pci_operations lops_pci = {

@@ -24,7 +24,6 @@
 #include "SBPLATFORM.h"
 #include "sb_cimx.h"
 #include "cfg.h"		/*sb800_cimx_config*/
-#include "cbmem.h"
 
 #if CONFIG_RAMINIT_SYSINFO
 /**

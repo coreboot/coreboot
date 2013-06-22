@@ -716,19 +716,12 @@ static void domain_set_resources(device_t dev)
 						     pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-					if (high_tables_base == 0) {
-						/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA
-						high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
+					set_top_of_ram_once(uma_memory_base);
 #else
-						high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
+					set_top_of_ram_once(mmio_basek * 1024);
 #endif
-						high_tables_size = HIGH_MEMORY_SIZE;
-						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n",
-							 (u32)(high_tables_size / 1024), high_tables_base);
-					}
 				}
-
 				basek = mmio_basek;
 			}
 			if ((basek + sizek) <= 4 * 1024 * 1024) {
@@ -744,20 +737,13 @@ static void domain_set_resources(device_t dev)
 		printk(BIOS_DEBUG,
 			"%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", 0,
 			 mmio_basek, basek, limitk);
-		if (high_tables_base == 0) {
-			/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA
-			high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
-			printk(BIOS_DEBUG, "  adsr - uma_memory_base = %llx.\n", uma_memory_base);
+		set_top_of_ram_once(uma_memory_base);
 #else
-			high_tables_base = (limitk * 1024) - HIGH_MEMORY_SIZE;
+		set_top_of_ram_once(limitk * 1024);
 #endif
-			high_tables_size = HIGH_MEMORY_SIZE;
-		}
 	}
 	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
-	printk(BIOS_DEBUG, "  adsr - high_tables_size = %llx.\n",
-		high_tables_size);
 
 #if CONFIG_GFXUMA
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);

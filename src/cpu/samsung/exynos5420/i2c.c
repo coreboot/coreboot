@@ -93,11 +93,6 @@
 
 #define HSI2C_SLV_ADDR_MAS(x)		((x & 0x3ff) << 10)
 
-/* Controller operating frequency, timing values for operation
- * are calculated against this frequency
- */
-#define HSI2C_FS_TX_CLOCK		1000000
-
 /* S3C I2C Controller bits */
 #define I2CSTAT_BSY	0x20	/* Busy bit */
 #define I2CSTAT_NACK	0x01	/* Nack bit */
@@ -244,11 +239,11 @@ static void i2c_ch_init(struct s3c24x0_i2c_bus *bus, int speed, int slaveadd)
 	write32(I2C_MODE_MT | I2C_TXRX_ENA, &bus->regs->iicstat);
 }
 
-static int hsi2c_get_clk_details(struct s3c24x0_i2c_bus *i2c_bus)
+static int hsi2c_get_clk_details(struct s3c24x0_i2c_bus *i2c_bus,
+		unsigned int bus_freq_hz)
 {
 	struct exynos5_hsi2c *hsregs = i2c_bus->hsregs;
 	unsigned long clkin = clock_get_periph_rate(i2c_bus->periph_id);
-	unsigned int op_clk = HSI2C_FS_TX_CLOCK;
 	unsigned int i = 0, utemp0 = 0, utemp1 = 0;
 	unsigned int t_ftl_cycle;
 
@@ -259,7 +254,7 @@ static int hsi2c_get_clk_details(struct s3c24x0_i2c_bus *i2c_bus)
 	 * uTemp2 = TSCLK_L + TSCLK_H
 	 */
 	t_ftl_cycle = (read32(&hsregs->usi_conf) >> 16) & 0x7;
-	utemp0 = (clkin / op_clk) - 8 - 2 * t_ftl_cycle;
+	utemp0 = (clkin / bus_freq_hz) - 8 - 2 * t_ftl_cycle;
 
 	/* CLK_DIV max is 256 */
 	for (i = 0; i < 256; i++) {
@@ -274,7 +269,8 @@ static int hsi2c_get_clk_details(struct s3c24x0_i2c_bus *i2c_bus)
 	return -1;
 }
 
-static void hsi2c_ch_init(struct s3c24x0_i2c_bus *i2c_bus)
+static void hsi2c_ch_init(struct s3c24x0_i2c_bus *i2c_bus,
+				unsigned int bus_freq_hz)
 {
 	struct exynos5_hsi2c *hsregs = i2c_bus->hsregs;
 	unsigned int t_sr_release;
@@ -288,7 +284,7 @@ static void hsi2c_ch_init(struct s3c24x0_i2c_bus *i2c_bus)
 	u32 i2c_timing_s3;
 	u32 i2c_timing_sla;
 
-	hsi2c_get_clk_details(i2c_bus);
+	hsi2c_get_clk_details(i2c_bus, bus_freq_hz);
 
 	n_clkdiv = i2c_bus->clk_div;
 	t_scl_l = i2c_bus->clk_cycle / 2;
@@ -341,7 +337,8 @@ static void i2c_reset(struct s3c24x0_i2c_bus *i2c_bus)
 	write32(i2c_ctl, &i2c->usi_ctl);
 
 	/* Initialize the configure registers */
-	hsi2c_ch_init(i2c_bus);
+	/* FIXME: This just assumes 100KHz as a default bus freq */
+	hsi2c_ch_init(i2c_bus, 100000);
 }
 
 void i2c_init(unsigned bus_num, int speed, int slaveadd)
@@ -352,12 +349,8 @@ void i2c_init(unsigned bus_num, int speed, int slaveadd)
 
 	i2c_reset(i2c);
 
-	/* FIXME(dhendrix): hsi2c_ch_init doesn't take a speed or slaveadd
-	 * parameter, so we should split it out and call it directly from
-	 * romstage without the unneeded parameters.
-	 */
 	if (i2c->is_highspeed)
-		hsi2c_ch_init(i2c);
+		hsi2c_ch_init(i2c, speed);
 	else
 		i2c_ch_init(i2c, speed, slaveadd);
 }

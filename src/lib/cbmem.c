@@ -43,8 +43,8 @@ struct cbmem_entry {
 } __attribute__((packed));
 
 #ifndef __PRE_RAM__
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size = 0;
+static uint64_t cbmem_base = 0;
+static uint64_t cbmem_size = 0;
 #endif
 
 static void cbmem_trace_location(uint64_t base, uint64_t size, const char *s)
@@ -60,12 +60,12 @@ static void cbmem_locate_table(uint64_t *base, uint64_t *size)
 #ifdef __PRE_RAM__
 	get_cbmem_table(base, size);
 #else
-	if (!(high_tables_base && high_tables_size)) {
-		get_cbmem_table(&high_tables_base, &high_tables_size);
-		cbmem_trace_location(high_tables_base, high_tables_size, __FUNCTION__);
+	if (!(cbmem_base && cbmem_size)) {
+		get_cbmem_table(&cbmem_base, &cbmem_size);
+		cbmem_trace_location(cbmem_base, cbmem_size, __FUNCTION__);
 	}
-	*base = high_tables_base;
-	*size = high_tables_size;
+	*base = cbmem_base;
+	*size = cbmem_size;
 #endif
 }
 
@@ -80,8 +80,8 @@ struct cbmem_entry *get_cbmem_toc(void)
 void cbmem_late_set_table(uint64_t base, uint64_t size)
 {
 	cbmem_trace_location(base, size, __FUNCTION__);
-	high_tables_base = base;
-	high_tables_size = size;
+	cbmem_base = base;
+	cbmem_size = size;
 }
 #endif
 
@@ -262,18 +262,18 @@ BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 
 int cbmem_base_check(void)
 {
-	if (!high_tables_base) {
+	if (!cbmem_base) {
 		printk(BIOS_ERR, "ERROR: CBMEM Base is not set.\n");
 		// Are there any boards without?
 		// Stepan thinks we should die() here!
 	}
-	printk(BIOS_DEBUG, "CBMEM Base is %llx.\n", high_tables_base);
-	return !!high_tables_base;
+	printk(BIOS_DEBUG, "CBMEM Base is %llx.\n", cbmem_base);
+	return !!cbmem_base;
 }
 
 void cbmem_add_lb_mem(struct lb_memory *mem)
 {
-	lb_add_memory_range(mem, LB_MEM_TABLE, high_tables_base, high_tables_size);
+	lb_add_memory_range(mem, LB_MEM_TABLE, cbmem_base, cbmem_size);
 }
 
 void cbmem_list(void)

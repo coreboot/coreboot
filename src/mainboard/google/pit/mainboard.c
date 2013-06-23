@@ -159,6 +159,17 @@ static void disable_usb30_pll(void)
 	gpio_direction_output(usb3_pll_l, 0);
 }
 
+static void gpio_init(void)
+{
+	/* Set up the I2C busses. */
+	exynos_pinmux_i2c2();
+	exynos_pinmux_i2c4();
+	exynos_pinmux_i2c7();
+	exynos_pinmux_i2c8();
+	exynos_pinmux_i2c9();
+	exynos_pinmux_i2c10();
+}
+
 /* this happens after cpu_init where exynos resources are set */
 static void mainboard_init(device_t dev)
 {
@@ -168,6 +179,8 @@ static void mainboard_init(device_t dev)
 		.video_info = &dp_video_info,
 	};
 	void *fb_addr;
+
+	gpio_init();
 
 	tmu_init(&exynos5420_tmu_info);
 

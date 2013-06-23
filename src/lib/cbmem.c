@@ -43,8 +43,8 @@ struct cbmem_entry {
 } __attribute__((packed));
 
 #ifndef __PRE_RAM__
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size = 0;
+static uint64_t bss_cbmem_base = 0;
+static uint64_t bss_cbmem_size = 0;
 #endif
 
 static unsigned long cbmem_base(void)
@@ -54,7 +54,9 @@ static unsigned long cbmem_base(void)
 	get_cbmem_table(&base, &size);
 	return (unsigned long)base;
 #else
-	return (unsigned long)high_tables_base;
+	if (!(bss_cbmem_base && bss_cbmem_size))
+		get_cbmem_table(&bss_cbmem_base, &bss_cbmem_size);
+	return (unsigned long)bss_cbmem_base;
 #endif
 }
 
@@ -65,22 +67,24 @@ static unsigned long cbmem_size(void)
 	get_cbmem_table(&base, &size);
 	return (unsigned long)size;
 #else
-	return (unsigned long)high_tables_size;
+	if (!(bss_cbmem_base && bss_cbmem_size))
+		get_cbmem_table(&bss_cbmem_base, &bss_cbmem_size);
+	return (unsigned long)bss_cbmem_size;
 #endif
 }
 
 #if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
 void set_cbmem_table(uint64_t base, uint64_t size, int force)
 {
-	if (base == high_tables_base && size == high_tables_size)
+	if (base == bss_cbmem_base && size == bss_cbmem_size)
 		return;
 
-	if (!force && high_tables_base) {
+	if (!force && bss_cbmem_base) {
 		printk(BIOS_ERR, "CBMEM region %llx-%llx (not moved)\n", base, base+size-1);
 	} else {
 		printk(BIOS_DEBUG, "CBMEM region %llx-%llx\n", base, base+size-1);
-		high_tables_base = base;
-		high_tables_size = size;
+		bss_cbmem_base = base;
+		bss_cbmem_size = size;
 	}
 }
 #endif

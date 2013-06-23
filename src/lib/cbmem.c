@@ -43,8 +43,8 @@ struct cbmem_entry {
 } __attribute__((packed));
 
 #ifndef __PRE_RAM__
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size = 0;
+static uint64_t bss_cbmem_base = 0;
+static uint64_t bss_cbmem_size = 0;
 #endif
 
 static void cbmem_locate_table(uint64_t *base, uint64_t *size)
@@ -52,8 +52,10 @@ static void cbmem_locate_table(uint64_t *base, uint64_t *size)
 #ifdef __PRE_RAM__
 	get_cbmem_table(base, size);
 #else
-	*base = high_tables_base;
-	*size = high_tables_size;
+	if (!(bss_cbmem_base && bss_cbmem_size))
+		get_cbmem_table(&bss_cbmem_base, &bss_cbmem_size);
+	*base = bss_cbmem_base;
+	*size = bss_cbmem_size;
 #endif
 }
 
@@ -67,12 +69,12 @@ struct cbmem_entry *get_cbmem_toc(void)
 #if !defined(__PRE_RAM__)
 void set_cbmem_table(uint64_t base, uint64_t size)
 {
-	if (base == high_tables_base && size == high_tables_size)
+	if (base == bss_cbmem_base && size == bss_cbmem_size)
 		return;
 
 	printk(BIOS_DEBUG, "CBMEM region %llx-%llx\n", base, base+size-1);
-	high_tables_base = base;
-	high_tables_size = size;
+	bss_cbmem_base = base;
+	bss_cbmem_size = size;
 }
 #endif
 

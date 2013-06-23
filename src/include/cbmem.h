@@ -132,7 +132,7 @@ u64 cbmem_entry_size(const struct cbmem_entry *entry);
 int cbmem_base_check(void);
 #endif
 
-int cbmem_reinit(u64 baseaddr);
+int cbmem_reinit(void);
 
 struct cbmem_entry *get_cbmem_toc(void);
 void get_cbmem_table(uint64_t *base, uint64_t *size);

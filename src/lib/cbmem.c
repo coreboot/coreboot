@@ -129,13 +129,14 @@ static void cbmem_init(u64 baseaddr, u64 size)
 }
 #endif
 
-int cbmem_reinit(u64 baseaddr)
+int cbmem_reinit(void)
 {
+	unsigned long baseaddr = (unsigned long) get_cbmem_toc();
 	struct cbmem_entry *cbmem_toc;
-	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
+	cbmem_toc = (struct cbmem_entry *)baseaddr;
 
 	printk(BIOS_DEBUG, "Re-Initializing CBMEM area to 0x%lx\n",
-	       (unsigned long)baseaddr);
+	       baseaddr);
 
 	return (cbmem_toc[0].magic == CBMEM_MAGIC);
 }
@@ -241,7 +242,7 @@ int cbmem_initialize(void)
 #endif
 
 	/* We expect the romstage to always initialize it. */
-	if (!cbmem_reinit(base)) {
+	if (!cbmem_reinit()) {
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 		/* Something went wrong, our high memory area got wiped */
 		if (acpi_slp_type == 3 || acpi_slp_type == 2)

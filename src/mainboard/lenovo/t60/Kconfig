@@ -23,6 +23,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_TABLES
 	select HAVE_ACPI_RESUME
 	select EARLY_CBMEM_INIT
+	select HAVE_CMOS_DEFAULT
 config MAINBOARD_DIR
 	string
 	default lenovo/t60

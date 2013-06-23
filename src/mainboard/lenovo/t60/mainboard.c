@@ -50,7 +50,6 @@ static void mainboard_enable(device_t dev)
 {
 	struct southbridge_intel_i82801gx_config *config;
 	device_t dev0, idedev;
-	u8 defaults_loaded = 0;
 
 	/* If we're resuming from suspend, blink suspend LED */
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
@@ -77,22 +76,6 @@ static void mainboard_enable(device_t dev)
 	/* set dock status led */
 	ec_write(0x0c, 0x08);
 	ec_write(0x0c, inb(0x164c) & 8 ? 0x89 : 0x09);
-
-	if (get_option(&defaults_loaded, "cmos_defaults_loaded") < 0) {
-		printk(BIOS_INFO, "failed to get cmos_defaults_loaded");
-		defaults_loaded = 0;
-	}
-
-	if (!defaults_loaded) {
-		printk(BIOS_INFO, "Restoring CMOS defaults\n");
-		set_option("tft_brightness", &(u8[]){ 0xff });
-		set_option("volume", &(u8[]){ 0x03 });
-		/* set baudrate to 115200 baud */
-		set_option("baud_rate", &(u8[]){ 0x00 });
-		/* set default debug_level (DEFAULT_CONSOLE_LOGLEVEL starts at 1) */
-		set_option("debug_level", &(u8[]) { CONFIG_DEFAULT_CONSOLE_LOGLEVEL+1 });
-		set_option("cmos_defaults_loaded", &(u8[]){ 0x01 });
-	}
 }
 
 struct chip_operations mainboard_ops = {

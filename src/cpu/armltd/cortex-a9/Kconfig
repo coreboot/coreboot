@@ -1,5 +1,12 @@
+config CPU_ARMLTD_CORTEX_A9
+	bool
+
+if CPU_ARMLTD_CORTEX_A9
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/armltd/cortex-a9/bootblock.c"
 	help
 	  CPU/SoC-specific bootblock code.
+
+endif # CPU_ARMLTD_CORTEX_A9

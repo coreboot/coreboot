@@ -1,11 +1,1 @@
-config CPU_TI_AM335X
-	depends on ARCH_ARMV7
-	select HAVE_MONOTONIC_TIMER
-	select HAVE_UART_SPECIAL
-	select DEFAULT_EARLY_CONSOLE
-	bool
-	default n
-
-if CPU_TI_AM335X
 source src/cpu/ti/am335x/Kconfig
-endif

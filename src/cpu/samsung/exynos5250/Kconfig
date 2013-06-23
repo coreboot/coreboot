@@ -1,3 +1,12 @@
+config CPU_SAMSUNG_EXYNOS5250
+	bool
+
+if CPU_SAMSUNG_EXYNOS5250
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_SAMSUNG_EXYNOS5
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/samsung/exynos5250/bootblock.c"
@@ -97,3 +106,5 @@ config SYS_TEXT_BASE
 config COREBOOT_TABLES_SIZE
 	hex
 	default 0x4000000
+
+endif # CPU_SAMSUNG_EXYNOS5250

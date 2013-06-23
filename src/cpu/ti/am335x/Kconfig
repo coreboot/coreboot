@@ -1,3 +1,14 @@
+config CPU_TI_AM335X
+	bool
+
+if CPU_TI_AM335X
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select HAVE_MONOTONIC_TIMER
+	select HAVE_UART_SPECIAL
+	select DEFAULT_EARLY_CONSOLE
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/ti/am335x/bootblock.c"
@@ -46,3 +57,5 @@ config SYS_SDRAM_BASE
 config COREBOOT_TABLES_SIZE
 	hex
 	default 0x800
+
+endif # CPU_TI_AM335X

@@ -196,9 +196,8 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 	case PERIPH_ID_I2C9:
 	case PERIPH_ID_I2C10:
 		sclk = get_pll_clk(MPLL);
-		sub_div = ((readl(&clk->clk_div_top1) >> 24) & 0x7) + 1;
-		div = (readl(&clk->clk_div_top0) & 0x7) + 1;
-		return (sclk / sub_div) / div;
+		div = ((readl(&clk->clk_div_top1) >> 8) & 0x3f) + 1;
+		return sclk / div;
 	default:
 		printk(BIOS_DEBUG, "%s: invalid peripheral %d", __func__, peripheral);
 		return -1;

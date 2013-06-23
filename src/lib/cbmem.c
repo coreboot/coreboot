@@ -47,7 +47,6 @@ uint64_t high_tables_base = 0;
 uint64_t high_tables_size = 0;
 #endif
 
-#if !defined(__PRE_RAM__)
 static void cbmem_trace_location(uint64_t base, uint64_t size, const char *s)
 {
 	if (base && size && s) {
@@ -55,7 +54,6 @@ static void cbmem_trace_location(uint64_t base, uint64_t size, const char *s)
 			base, base + size - 1, s);
 	}
 }
-#endif
 
 static void cbmem_locate_table(uint64_t *base, uint64_t *size)
 {
@@ -120,13 +118,15 @@ void cbmem_init(u64 baseaddr, u64 size)
 	};
 }
 
-int cbmem_reinit(u64 baseaddr)
+int cbmem_reinit(void)
 {
+	uint64_t baseaddr, size;
 	struct cbmem_entry *cbmem_toc;
-	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
-	printk(BIOS_DEBUG, "Re-Initializing CBMEM area to 0x%lx\n",
-	       (unsigned long)baseaddr);
+	cbmem_locate_table(&baseaddr, &size);
+	cbmem_trace_location(baseaddr, size, __FUNCTION__);
+
+	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
 	return (cbmem_toc[0].magic == CBMEM_MAGIC);
 }
@@ -226,7 +226,7 @@ int cbmem_initialize(void)
 	cbmem_locate_table(&base, &size);
 
 	/* We expect the romstage to always initialize it. */
-	if (!cbmem_reinit(base)) {
+	if (!cbmem_reinit()) {
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 		/* Something went wrong, our high memory area got wiped */
 		if (acpi_slp_type == 3 || acpi_slp_type == 2)

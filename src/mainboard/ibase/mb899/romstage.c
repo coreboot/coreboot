@@ -312,13 +312,10 @@ void main(unsigned long bist)
 	MCHBAR16(SSKPD) = 0xCAFE;
 
 #if CONFIG_HAVE_ACPI_RESUME
-	/* Start address of high memory tables */
-	unsigned long high_ram_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
-
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
-	if ((boot_mode == 2) && cbmem_reinit((u64)high_ram_base)) {
+	if ((boot_mode == 2) && cbmem_reinit()) {
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption

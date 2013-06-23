@@ -102,7 +102,6 @@ int exynos_spi_open(struct exynos_spi *regs)
 
 	/* now set rx and tx channel ON */
 	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON | SPI_CH_HS_EN);
-	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
 	return 0;
 }
 
@@ -110,6 +109,8 @@ int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
 {
 	int upto, todo;
 	int i;
+	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
+
 	/* Send read instruction (0x3h) followed by a 24 bit addr */
 	writel((SF_READ_DATA_CMD << 24) | off, &regs->tx_data);
 
@@ -123,6 +124,11 @@ int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
 
 	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);/* make the CS high */
 
+	return len;
+}
+
+int exynos_spi_close(struct exynos_spi *regs)
+{
 	/*
 	 * Let put controller mode to BYTE as
 	 * SPI driver does not support WORD mode yet
@@ -131,11 +137,6 @@ int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
 		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
 	writel(0, &regs->swap_cfg);
 
-	return len;
-}
-
-int exynos_spi_close(struct exynos_spi *regs)
-{
 	/*
 	 * Flush spi tx, rx fifos and reset the SPI controller
 	 * and clear rx/tx channel

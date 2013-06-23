@@ -135,7 +135,7 @@ void set_cbmem_table(uint64_t base, uint64_t size);
 int cbmem_base_check(void);
 #endif
 
-int cbmem_reinit(u64 baseaddr);
+int cbmem_reinit(void);
 
 unsigned long get_top_of_ram(void);
 struct cbmem_entry *get_cbmem_toc(void);

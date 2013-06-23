@@ -227,7 +227,7 @@ struct exynos5_phy_control;
 #define CLK_SRC_TOP2_VAL	0x11101000
 #define CLK_SRC_TOP3_VAL	0x11111111
 #define CLK_SRC_TOP4_VAL	0x11110111
-#define CLK_SRC_TOP5_VAL	0x11111100
+#define CLK_SRC_TOP5_VAL	0x11111110
 #define CLK_SRC_TOP7_VAL	0x00022200
 
 /* CLK_DIV_TOP */
@@ -332,10 +332,11 @@ struct exynos5_phy_control;
 				| (UART0_SEL << 4))
 
 /* CLK_SRC_PERIC1 */
+/* SRC_CLOCK = SCLK_MPLL */
+#define SPI0_SEL		3
+#define SPI1_SEL		3
+#define SPI2_SEL		3
 /* SRC_CLOCK = SCLK_EPLL */
-#define SPI0_SEL		6
-#define SPI1_SEL		6
-#define SPI2_SEL		6
 #define AUDIO0_SEL		6
 #define AUDIO1_SEL		6
 #define AUDIO2_SEL		6
@@ -395,9 +396,9 @@ struct exynos5_phy_control;
 				| (AUDIO0_RATIO << 20))
 
 /* CLK_DIV_PERIC4 */
-#define SPI2_PRE_RATIO		0x2
-#define SPI1_PRE_RATIO		0x2
-#define SPI0_PRE_RATIO		0x2
+#define SPI2_PRE_RATIO		0x3
+#define SPI1_PRE_RATIO		0x3
+#define SPI0_PRE_RATIO		0x3
 #define CLK_DIV_PERIC4_VAL	((SPI2_PRE_RATIO << 24)	\
 				| (SPI1_PRE_RATIO << 16) \
 				| (SPI0_PRE_RATIO << 8))

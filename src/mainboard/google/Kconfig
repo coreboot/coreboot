@@ -26,6 +26,8 @@ config VENDOR_SPECIFIC_OPTIONS
 choice
 	prompt "Mainboard model"
 
+config BOARD_GOOGLE_BOLT
+	bool "Bolt"
 config BOARD_GOOGLE_BUTTERFLY
 	bool "Butterfly"
 config BOARD_GOOGLE_FALCO
@@ -47,6 +49,7 @@ config BOARD_GOOGLE_STOUT
 
 endchoice
 
+source "src/mainboard/google/bolt/Kconfig"
 source "src/mainboard/google/butterfly/Kconfig"
 source "src/mainboard/google/falco/Kconfig"
 source "src/mainboard/google/link/Kconfig"

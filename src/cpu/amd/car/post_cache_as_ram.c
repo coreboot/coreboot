@@ -32,20 +32,11 @@ static void inline __attribute__((always_inline))  memcopy(void *dest, const voi
 #if CONFIG_HAVE_ACPI_RESUME
 
 static inline void *backup_resume(void) {
-	unsigned long high_ram_base;
 	void *resume_backup_memory;
 	int suspend = acpi_is_wakeup_early();
 
 	if (!suspend)
 		return NULL;
-
-	/* Start address of high memory tables */
-	high_ram_base = (u32) get_cbmem_toc();
-
-	print_debug_pcar("CBMEM TOC is at: ", (uint32_t)high_ram_base);
-	print_debug_pcar("CBMEM TOC 0-size: ",(uint32_t)(high_ram_base + HIGH_MEMORY_SIZE + 4096));
-
-	cbmem_reinit((u64)high_ram_base);
 
 	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 

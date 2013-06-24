@@ -26,7 +26,6 @@
 
 #define PCH_EHCI1_TEMP_BAR0 0xe8000000
 #define PCH_EHCI2_TEMP_BAR0 0xe8000400
-#define PCH_XHCI_TEMP_BAR0  0xe8001000
 
 /*
  * Setup USB controller MMIO BAR to prevent the
@@ -39,7 +38,6 @@ void enable_usb_bar(void)
 {
 	device_t usb0 = PCH_EHCI1_DEV;
 	device_t usb1 = PCH_EHCI2_DEV;
-	device_t usb3 = PCH_XHCI_DEV;
 	u32 cmd;
 
 	/* USB Controller 1 */
@@ -55,11 +53,4 @@ void enable_usb_bar(void)
 	cmd = pci_read_config32(usb1, PCI_COMMAND);
 	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
 	pci_write_config32(usb1, PCI_COMMAND, cmd);
-
-	/* USB3 Controller */
-	pci_write_config32(usb3, PCI_BASE_ADDRESS_0,
-			   PCH_XHCI_TEMP_BAR0);
-	cmd = pci_read_config32(usb3, PCI_COMMAND);
-	cmd |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY;
-	pci_write_config32(usb3, PCI_COMMAND, cmd);
 }

@@ -60,6 +60,7 @@ static unsigned long cbmem_base(void)
 #endif
 }
 
+#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
 static unsigned long cbmem_size(void)
 {
 #ifdef __PRE_RAM__
@@ -72,6 +73,7 @@ static unsigned long cbmem_size(void)
 	return (unsigned long)bss_cbmem_size;
 #endif
 }
+#endif
 
 #if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
 void set_cbmem_table(uint64_t base, uint64_t size, int force)
@@ -105,10 +107,11 @@ struct cbmem_entry *get_cbmem_toc(void)
  */
 
 #if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
-static void cbmem_init(u64 baseaddr, u64 size)
+static void cbmem_init(void)
 {
+	unsigned long long baseaddr = cbmem_base();
+	unsigned long long size = cbmem_size();
 	struct cbmem_entry *cbmem_toc;
-	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
 	printk(BIOS_DEBUG, "Initializing CBMEM area to 0x%llx (%lld bytes)\n",
 	       baseaddr, size);
@@ -118,6 +121,7 @@ static void cbmem_init(u64 baseaddr, u64 size)
 		for (;;) ;
 	}
 
+	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 	memset(cbmem_toc, 0, CBMEM_TOC_RESERVED);
 
 	cbmem_toc[0] = (struct cbmem_entry) {
@@ -227,19 +231,10 @@ void *cbmem_find(u32 id)
 }
 
 #if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
-
 /* Returns True if it was not intialized before. */
 int cbmem_initialize(void)
 {
-	uint64_t base = 0, size = 0;
 	int rv = 0;
-
-#ifdef __PRE_RAM__
-	get_cbmem_table(&base, &size);
-#else
-	base = cbmem_base();
-	size = cbmem_size();
-#endif
 
 	/* We expect the romstage to always initialize it. */
 	if (!cbmem_reinit()) {
@@ -248,7 +243,7 @@ int cbmem_initialize(void)
 		if (acpi_slp_type == 3 || acpi_slp_type == 2)
 			acpi_slp_type = 0;
 #endif
-		cbmem_init(base, size);
+		cbmem_init();
 		rv = 1;
 	}
 #ifndef __PRE_RAM__

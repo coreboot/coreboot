@@ -21,7 +21,6 @@
 #include "SBPLATFORM.h"
 #include "cfg.h"
 #include "OEM.h"
-#include <cbmem.h>
 
 #include <arch/io.h>
 #include <arch/acpi.h>
@@ -37,9 +36,9 @@ int acpi_get_sleep_type(void)
 #endif
 
 #ifndef __PRE_RAM__
-void set_cbmem_toc(struct cbmem_entry *toc)
+void backup_top_of_ram(uint64_t ramtop)
 {
-	u32 dword = (u32) toc;
+	u32 dword = (u32) ramtop;
 	int nvram_pos = 0xf8, i; /* temp */
 	printk(BIOS_DEBUG, "dword=%x\n", dword);
 	for (i = 0; i<4; i++) {
@@ -51,7 +50,7 @@ void set_cbmem_toc(struct cbmem_entry *toc)
 }
 #endif
 
-struct cbmem_entry *get_cbmem_toc(void)
+uint64_t restore_top_of_ram(void)
 {
 	u32 xdata = 0;
 	int xnvram_pos = 0xf8, xi;
@@ -61,7 +60,7 @@ struct cbmem_entry *get_cbmem_toc(void)
 		xdata |= inb(BIOSRAM_DATA) << (xi *8);
 		xnvram_pos++;
 	}
-	return (struct cbmem_entry *) xdata;
+	return (uint64_t) xdata;
 }
 
 /**

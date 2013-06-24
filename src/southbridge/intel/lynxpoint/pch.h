@@ -53,6 +53,13 @@
 #define PCH_TYPE_LPT_LP		0x9c
 
 /* PCH stepping values for LPC device */
+#define LPT_H_STEP_B0		0x02
+#define LPT_H_STEP_C0		0x03
+#define LPT_H_STEP_C1		0x04
+#define LPT_H_STEP_C2		0x05
+#define LPT_LP_STEP_B0		0x02
+#define LPT_LP_STEP_B1		0x03
+#define LPT_LP_STEP_B2		0x04
 
 /*
  * It does not matter where we put the SMBus I/O base, as long as we

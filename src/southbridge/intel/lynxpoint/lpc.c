@@ -308,50 +308,51 @@ static void lpt_pm_init(struct device *dev)
 }
 
 const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
-	RCBA_RMW_REG_32(0x232c, ~1, 0x00000000),  /* 4 */
-	RCBA_RMW_REG_32(0x1100, ~0xc000, 0xc000),  /* 5 */
-	RCBA_RMW_REG_32(0x1100, ~0, 0x00000100),  /* 6 */
-	RCBA_RMW_REG_32(0x1100, ~0, 0x0000003f),  /* 7 */
-	RCBA_RMW_REG_32(0x2320, ~0x60, 0x10),     /* 8? */
-	RCBA_RMW_REG_32(0x3314,  0, 0x00012fff),  /* 9? */
-	RCBA_RMW_REG_32(0x3318,  0, 0x0dcf0400),  /* 10? */
-	RCBA_RMW_REG_32(0x3324,  0, 0x04000000),  /* 11 */
-	RCBA_RMW_REG_32(0x3368,  0, 0x00041400),  /* 12? */
-	RCBA_RMW_REG_32(0x3388,  0, 0x3f8ddbff),  /* 13? */
-	RCBA_RMW_REG_32(0x33ac,  0, 0x00007001),  /* 14? */
-	RCBA_RMW_REG_32(0x33b0,  0, 0x00181900),  /* 15? */
-	RCBA_RMW_REG_32(0x33c0,  0, 0x00060A00),  /* 16? */
-	RCBA_RMW_REG_32(0x33d0,  0, 0x06200840),  /* 17? */
-	RCBA_RMW_REG_32(0x3a28,  0, 0x01010101),  /* 19 */
-	RCBA_RMW_REG_32(0x3a2c,  0, 0x04040404),  /* 20 */
-	RCBA_RMW_REG_32(0x2b1c,  0, 0x03808033),  /* 23? */
-	RCBA_RMW_REG_32(0x2b34,  0, 0x80000008),  /* 24 */
-	RCBA_RMW_REG_32(0x3348,  0, 0x022ddfff),  /* 25? */
-	RCBA_RMW_REG_32(0x334c,  0, 0x00000001),  /* 26 */
-	RCBA_RMW_REG_32(0x3358,  0, 0x0001c000),  /* 27 */
-	RCBA_RMW_REG_32(0x3380,  0, 0x3f8ddbff),  /* 28 */
-	RCBA_RMW_REG_32(0x3384,  0, 0x0001c7e1),  /* 29 */
-	RCBA_RMW_REG_32(0x338c,  0, 0x0001c7e1),  /* ? */
-	RCBA_RMW_REG_32(0x3398,  0, 0x0001c000),  /* 30 */
-	RCBA_RMW_REG_32(0x33a8,  0, 0x00181900),  /* 31? */
-	RCBA_RMW_REG_32(0x33dc,  0, 0x00080000),  /* 32 */
-	RCBA_RMW_REG_32(0x33e0,  0, 0x00000001),  /* 33 */
-	RCBA_RMW_REG_32(0x3a20,  0, 0x00000404),  /* 34 */
-	RCBA_RMW_REG_32(0x3a24,  0, 0x01010101),  /* 35 */
-	RCBA_RMW_REG_32(0x3a30,  0, 0x01010101),  /* 36 */
-	RCBA_RMW_REG_32(0x0410, ~0, 0x00000003),  /* 42 */
-	RCBA_RMW_REG_32(0x2618, ~0, 0x08000000),  /* 43 */
-	RCBA_RMW_REG_32(0x2600, ~0, 0x00000008),  /* 44 */
-	RCBA_RMW_REG_32(0x33b4,  0, 0x00007001),  /* 46? */
-	RCBA_RMW_REG_32(0x3350,  0, 0x022ddfff),  /* 47? */
-	RCBA_RMW_REG_32(0x3354,  0, 0x00000001),  /* ? */
+	RCBA_RMW_REG_32(0x232c, ~1, 0x00000000),
+	RCBA_RMW_REG_32(0x1100, ~0xc000, 0xc000),
+	RCBA_RMW_REG_32(0x1100, ~0, 0x00000100),
+	RCBA_RMW_REG_32(0x1100, ~0, 0x0000003f),
+	RCBA_RMW_REG_32(0x2320, ~0x60, 0x10),
+	RCBA_RMW_REG_32(0x3314,  0, 0x00012fff),
+	RCBA_RMW_REG_32(0x3318,  0, 0x0dcf0400),
+	RCBA_RMW_REG_32(0x3324,  0, 0x04000000),
+	RCBA_RMW_REG_32(0x3368,  0, 0x00041400),
+	RCBA_RMW_REG_32(0x3388,  0, 0x3f8ddbff),
+	RCBA_RMW_REG_32(0x33ac,  0, 0x00007001),
+	RCBA_RMW_REG_32(0x33b0,  0, 0x00181900),
+	RCBA_RMW_REG_32(0x33c0,  0, 0x00060A00),
+	RCBA_RMW_REG_32(0x33d0,  0, 0x06200840),
+	RCBA_RMW_REG_32(0x3a28,  0, 0x01010101),
+	RCBA_RMW_REG_32(0x3a2c,  0, 0x04040404),
+	RCBA_RMW_REG_32(0x2b1c,  0, 0x03808033),
+	RCBA_RMW_REG_32(0x2b34,  0, 0x80000009),
+	RCBA_RMW_REG_32(0x3348,  0, 0x022ddfff),
+	RCBA_RMW_REG_32(0x334c,  0, 0x00000001),
+	RCBA_RMW_REG_32(0x3358,  0, 0x0001c000),
+	RCBA_RMW_REG_32(0x3380,  0, 0x3f8ddbff),
+	RCBA_RMW_REG_32(0x3384,  0, 0x0001c7e1),
+	RCBA_RMW_REG_32(0x338c,  0, 0x0001c7e1),
+	RCBA_RMW_REG_32(0x3398,  0, 0x0001c000),
+	RCBA_RMW_REG_32(0x33a8,  0, 0x00181900),
+	RCBA_RMW_REG_32(0x33dc,  0, 0x00080000),
+	RCBA_RMW_REG_32(0x33e0,  0, 0x00000001),
+	RCBA_RMW_REG_32(0x3a20,  0, 0x00000404),
+	RCBA_RMW_REG_32(0x3a24,  0, 0x01010101),
+	RCBA_RMW_REG_32(0x3a30,  0, 0x01010101),
+	RCBA_RMW_REG_32(0x0410, ~0, 0x00000003),
+	RCBA_RMW_REG_32(0x2618, ~0, 0x08000000),
+	RCBA_RMW_REG_32(0x2300, ~0, 0x00000002),
+	RCBA_RMW_REG_32(0x2600, ~0, 0x00000008),
+	RCBA_RMW_REG_32(0x33b4,  0, 0x00007001),
+	RCBA_RMW_REG_32(0x3350,  0, 0x022ddfff),
+	RCBA_RMW_REG_32(0x3354,  0, 0x00000001),
 	RCBA_RMW_REG_32(0x33d4, ~0, 0x08000000),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x33c8, ~0, 0x08000080),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b10,  0, 0x0000883c),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b14,  0, 0x1e0a4616),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b24,  0, 0x40000005),  /* Power Optimizer */
 	RCBA_RMW_REG_32(0x2b20,  0, 0x0005db01),  /* Power Optimizer */
-	RCBA_RMW_REG_32(0x3a80,  0, 0x05145005),  /* 21? */
+	RCBA_RMW_REG_32(0x3a80,  0, 0x05145005),
 	RCBA_END_CONFIG
 };
 
@@ -370,6 +371,9 @@ static void lpt_lp_pm_init(struct device *dev)
 	pci_write_config32(dev, 0xac,
 		pci_read_config32(dev, 0xac) | (1 << 21));
 
+	pch_iobp_update(0xED00015C, ~(1<<11), 0x00003700);
+	pch_iobp_update(0xED000118, ~0UL, 0x00c00000);
+	pch_iobp_update(0xED000120, ~0UL, 0x00240000);
 	pch_iobp_update(0xCA000000, ~0UL, 0x00000009);
 
 	/* Set RCBA CIR28 0x3A84 based on SATA port enables */
@@ -452,7 +456,19 @@ static void enable_lp_clock_gating(device_t dev)
 	reg32 |= (1 << 6);
 	pci_write_config32(dev, 0x64, reg32);
 
+	/*
+	 * RCBA + 0x2614[27:25,14:13,10,8] = 101,11,1,1
+	 * RCBA + 0x2614[23:16] = 0x20
+	 * RCBA + 0x2614[30:28] = 0x0
+	 * RCBA + 0x2614[26] = 1 (IF B2 STEP && 0:31.0@0xFA > 4)
+	 */
 	RCBA32_AND_OR(0x2614, 0x8bffffff, 0x0a206500);
+
+	/* Check for LPT-LP B2 stepping and 0:31.0@0xFA > 4 */
+	if (pch_silicon_revision() >= LPT_LP_STEP_B2 &&
+	    pci_read_config8(dev, 0xfa) > 4)
+		RCBA32_OR(0x2614, (1<<26));
+
 	RCBA32_OR(0x900, 0x0000031f);
 
 	reg32 = RCBA32(CG);

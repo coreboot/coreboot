@@ -357,23 +357,39 @@ void i2c_init(unsigned bus_num, int speed, int slaveadd)
 
 /*
  * Check whether the transfer is complete.
+ * Return values:
+ * 0  - transfer not done
+ * 1  - transfer finished successfully
+ * -1 - transfer failed
  */
 static int hsi2c_check_transfer(struct exynos5_hsi2c *i2c)
 {
 	uint32_t status = read32(&i2c->usi_trans_status);
-	if (status & HSI2C_TRANS_ABORT)
-		printk(BIOS_ERR, "%s: Transaction aborted.\n", __func__);
-	if (status & HSI2C_NO_DEV_ACK)
-		printk(BIOS_ERR, "%s: No ack from device.\n", __func__);
-	if (status & HSI2C_NO_DEV)
-		printk(BIOS_ERR, "%s: No response from device.\n", __func__);
-	if (status & HSI2C_TIMEOUT_AUTO)
-		printk(BIOS_ERR, "%s: Transaction time out.\n", __func__);
-	return !!(status & HSI2C_MASTER_BUSY);
+	if (status & (HSI2C_TRANS_ABORT | HSI2C_NO_DEV_ACK |
+		      HSI2C_NO_DEV | HSI2C_TIMEOUT_AUTO)) {
+		if (status & HSI2C_TRANS_ABORT)
+			printk(BIOS_ERR,
+			       "%s: Transaction aborted.\n", __func__);
+		if (status & HSI2C_NO_DEV_ACK)
+			printk(BIOS_ERR,
+			       "%s: No ack from device.\n", __func__);
+		if (status & HSI2C_NO_DEV)
+			printk(BIOS_ERR,
+			       "%s: No response from device.\n", __func__);
+		if (status & HSI2C_TIMEOUT_AUTO)
+			printk(BIOS_ERR,
+			       "%s: Transaction time out.\n", __func__);
+		return -1;
+	}
+	return !(status & HSI2C_MASTER_BUSY);
 }
 
 /*
  * Wait for the transfer to finish.
+ * Return values:
+ * 0  - transfer not done
+ * 1  - transfer finished successfully
+ * -1 - transfer failed
  */
 static int hsi2c_wait_for_transfer(struct exynos5_hsi2c *i2c)
 {
@@ -383,17 +399,18 @@ static int hsi2c_wait_for_transfer(struct exynos5_hsi2c *i2c)
 	end = current;
 	mono_time_add_usecs(&end, HSI2C_TIMEOUT * 1000);
 	while (mono_time_before(&current, &end)) {
-		if (!hsi2c_check_transfer(i2c))
-			return 0;
+		int ret = hsi2c_check_transfer(i2c);
+		if (ret)
+			return ret;
 		udelay(5);
 		timer_monotonic_get(&current);
 	}
-	return 1;
+	return 0;
 }
 
 static int hsi2c_senddata(struct exynos5_hsi2c *i2c, uint8_t *data, int len)
 {
-	while (hsi2c_check_transfer(i2c) && len) {
+	while (!hsi2c_check_transfer(i2c) && len) {
 		if (!(read32(&i2c->usi_fifo_stat) & HSI2C_TX_FIFO_FULL)) {
 			write32(*data++, &i2c->usi_txdata);
 			len--;
@@ -404,7 +421,7 @@ static int hsi2c_senddata(struct exynos5_hsi2c *i2c, uint8_t *data, int len)
 
 static int hsi2c_recvdata(struct exynos5_hsi2c *i2c, uint8_t *data, int len)
 {
-	while (hsi2c_check_transfer(i2c) && len) {
+	while (!hsi2c_check_transfer(i2c) && len) {
 		if (!(read32(&i2c->usi_fifo_stat) & HSI2C_RX_FIFO_EMPTY)) {
 			*data++ = read32(&i2c->usi_rxdata);
 			len--;
@@ -422,7 +439,7 @@ static int hsi2c_write(struct exynos5_hsi2c *i2c,
 {
 	uint32_t i2c_auto_conf;
 
-	if (hsi2c_wait_for_transfer(i2c))
+	if (hsi2c_wait_for_transfer(i2c) != 1)
 		return -1;
 
 	/* chip address */
@@ -441,7 +458,7 @@ static int hsi2c_write(struct exynos5_hsi2c *i2c,
 
 	if (hsi2c_senddata(i2c, addr, alen) ||
 	    hsi2c_senddata(i2c, data, len) ||
-	    hsi2c_wait_for_transfer(i2c)) {
+	    hsi2c_wait_for_transfer(i2c) != 1) {
 		return -1;
 	}
 
@@ -460,7 +477,7 @@ static int hsi2c_read(struct exynos5_hsi2c *i2c,
 	uint32_t i2c_auto_conf;
 
 	/* start read */
-	if (hsi2c_wait_for_transfer(i2c))
+	if (hsi2c_wait_for_transfer(i2c) != 1)
 		return -1;
 
 	/* chip address */
@@ -475,7 +492,7 @@ static int hsi2c_read(struct exynos5_hsi2c *i2c,
 		&i2c->usi_auto_conf);
 
 	if (hsi2c_senddata(i2c, addr, alen) ||
-	    hsi2c_wait_for_transfer(i2c)) {
+	    hsi2c_wait_for_transfer(i2c) != 1) {
 		return -1;
 	}
 
@@ -490,7 +507,7 @@ static int hsi2c_read(struct exynos5_hsi2c *i2c,
 	write32(i2c_auto_conf, &i2c->usi_auto_conf);
 
 	if (hsi2c_recvdata(i2c, data, len) ||
-	    hsi2c_wait_for_transfer(i2c)) {
+	    hsi2c_wait_for_transfer(i2c) != 1) {
 		return -1;
 	}
 

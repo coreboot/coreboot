@@ -122,6 +122,14 @@ static void setup_storage(void)
 	exynos_pinmux_sdmmc2();
 }
 
+static void setup_ec(void)
+{
+	/* SPI2 (EC) is slower and needs to work in half-duplex mode with
+	 * single byte bus width. */
+	clock_set_rate(PERIPH_ID_SPI2, 500000);
+	exynos_pinmux_spi2();
+}
+
 static void setup_graphics(void)
 {
 	exynos_pinmux_dphpd();
@@ -271,6 +279,7 @@ void main(void)
 	setup_storage();
 	setup_gpio();
 	setup_graphics();
+	setup_ec();
 
 	simple_spi_test();
 	/* Set SPI (primary CBFS media) clock to 50MHz. */

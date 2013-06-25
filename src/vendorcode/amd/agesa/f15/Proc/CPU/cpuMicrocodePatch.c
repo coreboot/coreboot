@@ -80,6 +80,7 @@ typedef union {
  *----------------------------------------------------------------------------------------
  */
 BOOLEAN
+STATIC
 LoadMicrocode (
   IN       MICROCODE_PATCH    *MicrocodePatchPtr,
   IN OUT   AMD_CONFIG_PARAMS  *StdHeader
@@ -174,6 +175,7 @@ LoadMicrocodePatch (
  *
  */
 BOOLEAN
+STATIC
 LoadMicrocode (
   IN       MICROCODE_PATCH    *MicrocodePatchPtr,
   IN OUT   AMD_CONFIG_PARAMS  *StdHeader
@@ -183,7 +185,7 @@ LoadMicrocode (
   PATCH_LOADER PatchLoaderMsr;
 
   // Load microcode patch into CPU
-  PatchLoaderMsr.RawData = (UINT64) MicrocodePatchPtr;
+  PatchLoaderMsr.RawData = (UINT64) (UINTN) MicrocodePatchPtr;
   PatchLoaderMsr.BitFields.SBZ = 0;
   LibAmdMsrWrite (MSR_PATCH_LOADER, &PatchLoaderMsr.RawData, StdHeader);
 

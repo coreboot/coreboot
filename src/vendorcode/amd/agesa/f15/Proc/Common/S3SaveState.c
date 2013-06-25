@@ -269,7 +269,7 @@ S3SaveStateSaveWriteOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), (intptr_t) Address);
     S3SaveDebugPrintHexArray (StdHeader, Buffer, Count, Width);
     IDS_HDT_CONSOLE (S3_TRACE, "\n");
     );
@@ -334,7 +334,7 @@ S3SaveStateSaveReadWriteOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), (intptr_t) Address);
     S3SaveDebugPrintHexArray (StdHeader, Data, 1, Width);
     IDS_HDT_CONSOLE (S3_TRACE, " Mask: ");
     S3SaveDebugPrintHexArray (StdHeader, DataMask, 1, Width);
@@ -410,7 +410,7 @@ S3SaveStateSavePollOp (
     }
   }
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), Address);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: %s Address: 0x%08x Data: ", S3SaveDebugOpcodeString (StdHeader, OpCode), (intptr_t) Address);
     S3SaveDebugPrintHexArray (StdHeader, Data, 1, Width);
     IDS_HDT_CONSOLE (S3_TRACE, " Mask: ");
     S3SaveDebugPrintHexArray (StdHeader, DataMask, 1, Width);
@@ -482,7 +482,7 @@ S3SaveStateSaveInfoOp (
   SaveOffsetPtr->OpCode = OpCode;
   SaveOffsetPtr->Length = InformationLength;
   S3_SCRIPT_DEBUG_CODE (
-    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: Info: %s \n", Information);
+    IDS_HDT_CONSOLE (S3_TRACE, "  S3 Save: Info: %s \n", (CHAR8 *)Information);
     );
   LibAmdMemCopy (
     (UINT8 *) SaveOffsetPtr + sizeof (S3_INFO_OP_HEADER),
@@ -598,6 +598,7 @@ S3SaveDebugOpcodeString (
     return (CHAR8*)"DISPATCH";
   default:
     IDS_ERROR_TRAP;
+    break;
   }
   return (CHAR8*)"!!! Unrecognize opcode !!!";
 }
@@ -640,10 +641,11 @@ S3SaveDebugPrintHexArray (
       break;
     case AccessWidth64:
     case AccessS3SaveWidth64:
-      IDS_HDT_CONSOLE (S3_TRACE, "0x%08x%08x", ((UINT32*) ((UINT64*)Array + Index)[1], ((UINT32*) ((UINT64*)Array + Index))[0]));
+      IDS_HDT_CONSOLE (S3_TRACE, "0x%08x%08x", ((UINT32*) ((UINT64*)Array + Index))[1], ((UINT32*)((UINT64*)Array + Index))[0]);
       break;
     default:
       IDS_ERROR_TRAP;
+      break;
     }
     if (Index < (Count - 1)) {
       IDS_HDT_CONSOLE (S3_TRACE, ", ");

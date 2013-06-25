@@ -105,7 +105,7 @@ AmdAgesaDispatcher (
 
   // 2. Try next dispatcher if possible, and we have not already got status back
   if ((mCpuModuleID.NextBlock != NULL) && (Status == AGESA_UNSUPPORTED)) {
-    ModuleEntry = (MODULE_ENTRY) (UINT64) mCpuModuleID.NextBlock->ModuleDispatcher;
+    ModuleEntry = (MODULE_ENTRY) (mCpuModuleID.NextBlock->ModuleDispatcher);
     if (ModuleEntry != NULL) {
       Status = (*ModuleEntry) (ConfigPtr);
     }
@@ -117,10 +117,10 @@ AmdAgesaDispatcher (
       ImageStart = ((AMD_CONFIG_PARAMS *)ConfigPtr)->AltImageBasePtr;
       ImageEnd = ImageStart + 4;
       // Locate/test image base that matches this component
-      AltImagePtr = LibAmdLocateImage ((VOID *) (UINT64)ImageStart, (VOID *) (UINT64)ImageEnd, 4096, (CHAR8 *) AGESA_ID);
+      AltImagePtr = LibAmdLocateImage ((VOID *) /* (UINT64) */ImageStart, (VOID *) /* (UINT64) */ImageEnd, 4096, (CHAR8 *) AGESA_ID);
       if (AltImagePtr != NULL) {
         //Invoke alternative Image
-        ImageEntry = (IMAGE_ENTRY) ((UINT64) AltImagePtr + AltImagePtr->EntryPointAddress);
+        ImageEntry = (IMAGE_ENTRY) (/* (UINT64) */ AltImagePtr + AltImagePtr->EntryPointAddress);
         Status = (*ImageEntry) (ConfigPtr);
       }
     }

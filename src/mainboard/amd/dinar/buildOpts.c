@@ -36,13 +36,39 @@
 #include  "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
+//#define OPTION_HW_DQS_REC_EN_TRAINING TRUE
+/* AGESA will check the OEM configuration during preprocessing stage,
+ * coreboot enable -Wundef option, so we should make sure we have all contanstand defined
+ */
+/* MEMORY_BUS_SPEED */
+#define  DDR400_FREQUENCY		200	///< DDR 400
+#define  DDR533_FREQUENCY		266	///< DDR 533
+#define  DDR667_FREQUENCY		333	///< DDR 667
+#define  DDR800_FREQUENCY		400	///< DDR 800
+#define  DDR1066_FREQUENCY		533	///< DDR 1066
+#define  DDR1333_FREQUENCY		667	///< DDR 1333
+#define  DDR1600_FREQUENCY		800	///< DDR 1600
+#define  DDR1866_FREQUENCY		933	///< DDR 1866
+#define  UNSUPPORTED_DDR_FREQUENCY	934	///< Highest limit of DDR frequency
 
+/* QUANDRANK_TYPE */
+#define QUADRANK_REGISTERED		0	///< Quadrank registered DIMM
+#define QUADRANK_UNBUFFERED		1	///< Quadrank unbuffered DIMM
+
+/* USER_MEMORY_TIMING_MODE */
+#define TIMING_MODE_AUTO		0	///< Use best rate possible
+#define TIMING_MODE_LIMITED		1	///< Set user top limit
+#define TIMING_MODE_SPECIFIC		2	///< Set user specified speed
+
+/* POWER_DOWN_MODE */
+#define POWER_DOWN_BY_CHANNEL		0	///< Channel power down mode
+#define POWER_DOWN_BY_CHIP_SELECT	1	///< Chip select power down mode
 
 /*  Select the cpu family.  */
 
 
 /*  Select the cpu socket type.  */
-#define INSTALL_G34_SOCKET_SUPPORT  TURE
+#define INSTALL_G34_SOCKET_SUPPORT  TRUE
 #define INSTALL_C32_SOCKET_SUPPORT  FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE
 #define INSTALL_S1G4_SOCKET_SUPPORT FALSE
@@ -211,17 +237,41 @@
  */
 CONST MANUAL_BUID_SWAP_LIST ROMDATA MaranelloManualBuidSwapList[2] =
 {
-	HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY,
-	0, 0,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF
+	{
+		/* On the reference platform, there is only one nc chain, so socket & link are 'don't care' */
+		HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY,
+
+		{ //BUID Swap List
+			{ //BUID Swaps
+				/* Each Non-coherent chain may have a list of device swaps,
+				 * Each item specify a device will be swap from its current id to a new one
+				 */
+				/* FromID 0x00 is the chain with the southbridge */
+				/* 'Move' device zero to device zero, All others are non applicable */
+				{0x00, 0x00}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+				{0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+				{0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+				{0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+				{0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+				{0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+				{0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+				{0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF}, {0xFF, 0xFF},
+			},
+
+			{ //The ordered final BUIDs
+				/* Specify the final BUID to be zero, All others are non applicable */
+				0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+				0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+				0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+				0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+			}
+		}
+	},
+
+	/* The 2nd element in the array merely terminates the list */
+	{
+		HT_LIST_TERMINAL,
+	}
 };
 
 #define BLDCFG_BUID_SWAP_LIST &MaranelloManualBuidSwapList
@@ -236,20 +286,32 @@ CONST MANUAL_BUID_SWAP_LIST ROMDATA MaranelloManualBuidSwapList[2] =
 
 CONST CPU_TO_CPU_PCB_LIMITS ROMDATA MaranelloCpuToCpuLimitList[] =
 {
-	HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY,
-	HT_WIDTH_16_BITS, HT_WIDTH_16_BITS, HT_FREQUENCY_LIMIT_2600M,
-	HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK, HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK,
-	HT_WIDTH_16_BITS, HT_WIDTH_16_BITS, HT_FREQUENCY_LIMIT_2600M,
-	HT_LIST_TERMINAL
+	{
+		/* On the reference platform, these settings apply to all coherent links */
+		HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY,
+
+		/* Set incoming and outgoing links to 16 bit widths, and 3.2GHz frequencies */
+		HT_WIDTH_16_BITS, HT_WIDTH_16_BITS, HT_FREQUENCY_LIMIT_2600M,
+	},
+
+	{
+		HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK, HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK,
+		HT_WIDTH_16_BITS, HT_WIDTH_16_BITS, HT_FREQUENCY_LIMIT_2600M,
+	},
+
+	/* The 2nd element in the array merely terminates the list */
+	{
+		HT_LIST_TERMINAL,
+	}
 };
 
 #define BLDCFG_HTFABRIC_LIMITS_LIST &MaranelloCpuToCpuLimitList
 
 // A performance-per-watt optimization.
 CONST SKIP_REGANG ROMDATA PerfPerWatt[] = {
-	HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, POWERED_OFF,
-	HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK, HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK, POWERED_OFF,
-	HT_LIST_TERMINAL,
+	{ HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, POWERED_OFF },
+	{ HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK, HT_LIST_MATCH_ANY, HT_LIST_MATCH_INTERNAL_LINK, POWERED_OFF },
+	{ HT_LIST_TERMINAL }
 };
 
 // uncomment the line below to make Perf-per-watt enabled by default.
@@ -258,8 +320,18 @@ CONST SKIP_REGANG ROMDATA PerfPerWatt[] = {
 
 CONST IO_PCB_LIMITS ROMDATA MaranelloIoLimitList[2] =
 {
-	HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_WIDTH_16_BITS, HT_WIDTH_16_BITS, HT_FREQUENCY_LIMIT_2600M,
-	HT_LIST_TERMINAL
+	{
+		/* On the reference platform, there is only one nc chain, so socket & link are 'don't care' */
+		HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY,
+
+		/* Set upstream and downstream links to 16 bit widths, and limit frequencies to 3.2GHz */
+		HT_WIDTH_16_BITS, HT_WIDTH_16_BITS, HT_FREQUENCY_LIMIT_2600M, //Actually IO hub only support 2600M MAX
+	},
+
+	/* The 2nd element in the array merely terminates the list */
+	{
+		HT_LIST_TERMINAL,
+	}
 };
 
 #define BLDCFG_HTCHAIN_LIMITS_LIST &MaranelloIoLimitList
@@ -283,9 +355,9 @@ CONST SYSTEM_PHYSICAL_SOCKET_MAP ROMDATA DinarPhysicalSocketMap[] =
 CONST OVERRIDE_BUS_NUMBERS ROMDATA MaranelloOverrideBusNumbers[5] =
 {
 	// Socket, Link, SecBus, SubBus
-	0, 2, 0x00, 0xBF,		// RD890 of Dinar
-	1, 0, 0xC0, 0xFF,		// HTX
-	HT_LIST_TERMINAL
+	{ 0, 2, 0x00, 0xBF },		// RD890 of Dinar
+	{ 1, 0, 0xC0, 0xFF },		// HTX
+	{ (HT_LIST_TERMINAL) }
 };
 
 #define BLDCFG_BUS_NUMBERS_LIST &MaranelloOverrideBusNumbers
@@ -295,7 +367,7 @@ CONST CPU_HT_DEEMPHASIS_LEVEL ROMDATA DinarDeemphasisList[] =
 	{ HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_FREQUENCY_200M, HT_FREQUENCY_1800M, DeemphasisLevelNone, DcvLevelNone},
 	{ HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_FREQUENCY_2000M, HT_FREQUENCY_2600M, DeemphasisLevelMinus3, DcvLevelMinus3},
 	{ HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_FREQUENCY_2800M, HT_FREQUENCY_MAX, DeemphasisLevelMinus6, DcvLevelMinus6},
-	0xFF
+	{ (0xFF) }
 };
 
 #define BLDCFG_PLATFORM_DEEMPHASIS_LIST DinarDeemphasisList
@@ -314,9 +386,9 @@ CONST CPU_HT_DEEMPHASIS_LEVEL ROMDATA DinarDeemphasisList[] =
  */
 CONST DEVICE_CAP_OVERRIDE ROMDATA MaranelloOverrideDevCap[2] =
 {
-	HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY,
-	0, 0, HT_LIST_MATCH_ANY, {0, 0, 0, 0, 0, 1, 0}, 0, 0, 0, 0, {0},
-	HT_LIST_TERMINAL
+	{ HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY, HT_LIST_MATCH_ANY,
+	0, 0, HT_LIST_MATCH_ANY, {0, 0, 0, 0, 0, 1, 0}, 0, 0, 0, 0, 0 },
+	{ (HT_LIST_TERMINAL) }
 };
 
 #define BLDCFG_HTDEVICE_CAPABILITIES_OVERRIDE_LIST &MaranelloOverrideDevCap

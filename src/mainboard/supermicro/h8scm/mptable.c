@@ -49,7 +49,9 @@ static void *smp_write_config_table(void *v)
 
 	smp_write_processors(mc);
 	get_bus_conf();
-	mptable_write_buses(mc, NULL, &bus_isa);
+	dword = bus_isa;
+	mptable_write_buses(mc, NULL, (int*)&dword);
+	bus_isa = dword;
 
 	/*
 	 * AGESA v5 Apply apic enumeration rules

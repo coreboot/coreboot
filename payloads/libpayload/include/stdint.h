@@ -38,7 +38,20 @@ typedef unsigned long long uintmax_t;
 typedef unsigned long uintptr_t;
 typedef long intptr_t;
 
-#define UINT32_MAX (4294967295U)
-#define UINT64_MAX (18446744073709551615ULL)
+
+#define INT8_MAX	(127)
+#define INT16_MAX	(32767)
+#define INT32_MAX	(2147483647)
+#define INT64_MAX	(9223372036854775807LL)
+
+#define INT8_MIN	(-INT8_MAX - 1)
+#define INT16_MIN	(-INT16_MIN - 1)
+#define INT32_MIN	(-INT32_MIN - 1)
+#define INT64_MIN	(-INT64_MIN - 1)
+
+#define UINT8_MAX	(255)
+#define UINT16_MAX	(65535)
+#define UINT32_MAX	(4294967295U)
+#define UINT64_MAX	(18446744073709551615ULL)
 
 #endif

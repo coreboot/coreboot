@@ -47,13 +47,19 @@ CC=""
 fi
 fi
 
+BASE=`dirname "$0"`
+BASE=`eval "cd \"${BASE}\" && pwd"`
+
+# this will find xgcc when we are executed in-tree
+crossgcc="${BASE}/../../../util/crossgcc/xgcc/bin/i386-elf-gcc"
+
 if [ "$CC" != "" ]; then
 DEFAULT_CC=$CC
+elif [ -x ${crossgcc} ]; then
+DEFAULT_CC=${crossgcc}
 else
 DEFAULT_CC=gcc
 fi
-
-BASE=`dirname $0`
 
 # This will set the _LIBDIR and _INCDIR variables used below
 . $BASE/lp.functions

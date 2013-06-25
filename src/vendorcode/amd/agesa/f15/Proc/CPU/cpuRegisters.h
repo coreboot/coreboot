@@ -129,10 +129,10 @@
 #define BIT63       0x8000000000000000ull
 
 /// CPUID related registers
-#define AMD_CPUID_FMF               0x80000001  // Family Model Features information
-#define AMD_CPUID_APICID_LPC_BID    0x00000001  // Local APIC ID, Logical Processor Count, Brand ID
-#define AMD_CPUID_TLB_L1Cache       0x80000005
-#define AMD_CPUID_L2L3Cache_L2TLB   0x80000006
+#define AMD_CPUID_FMF               0x80000001ul  // Family Model Features information
+#define AMD_CPUID_APICID_LPC_BID    0x00000001ul  // Local APIC ID, Logical Processor Count, Brand ID
+#define AMD_CPUID_TLB_L1Cache       0x80000005ul
+#define AMD_CPUID_L2L3Cache_L2TLB   0x80000006ul
 #define CPUID_ASSOCIATIVITY_2_WAY   0x02
 #define CPUID_ASSOCIATIVITY_4_WAY   0x04
 #define CPUID_ASSOCIATIVITY_8_WAY   0x06
@@ -142,10 +142,10 @@
 #define CPUID_ASSOCIATIVITY_64_WAY  0x0C
 #define CPUID_ASSOCIATIVITY_96_WAY  0x0D
 #define CPUID_ASSOCIATIVITY_128_WAY 0x0E
-#define AMD_CPUID_APM               0x80000007
+#define AMD_CPUID_APM               0x80000007ul
 #define LOCAL_APIC_ID               24
 #define LOGICAL_PROCESSOR_COUNT     16
-#define AMD_CPUID_ASIZE_PCCOUNT     0x80000008  // Address Size, Physical Core Count
+#define AMD_CPUID_ASIZE_PCCOUNT     0x80000008ul  // Address Size, Physical Core Count
 
 /// CPU Logical ID Transfer
 typedef struct {
@@ -161,20 +161,20 @@ typedef struct {
 
 // MSRs
 // ------------------------
-#define MCG_CTL_P                   0x00000100              // bit 8  for MCG_CTL_P under MSRR
-#define MSR_MCG_CAP                 0x00000179
-#define MSR_MC0_CTL                 0x00000400
+#define MCG_CTL_P                   0x00000100ul              // bit 8  for MCG_CTL_P under MSRR
+#define MSR_MCG_CAP                 0x00000179ul
+#define MSR_MC0_CTL                 0x00000400ul
 
-#define MSR_APIC_BAR                0x0000001B
-#define MSR_PATCH_LEVEL             0x0000008B
+#define MSR_APIC_BAR                0x0000001Bul
+#define MSR_PATCH_LEVEL             0x0000008Bul
 
-#define CPUID_LONG_MODE_ADDR        0x80000008
-#define AMD_CPUID_FMF               0x80000001
+#define CPUID_LONG_MODE_ADDR        0x80000008ul
+#define AMD_CPUID_FMF               0x80000001ul
 
-#define MSR_EXTENDED_FEATURE_EN     0xC0000080
-#define MSR_MC_MISC_LINK_THRESHOLD  0xC0000408
-#define MSR_MC_MISC_L3_THRESHOLD    0xC0000409
-#define MSR_PATCH_LOADER            0xC0010020
+#define MSR_EXTENDED_FEATURE_EN     0xC0000080ul
+#define MSR_MC_MISC_LINK_THRESHOLD  0xC0000408ul
+#define MSR_MC_MISC_L3_THRESHOLD    0xC0000409ul
+#define MSR_PATCH_LOADER            0xC0010020ul
 
 /// Patch Loader Register
 typedef struct {
@@ -182,49 +182,49 @@ typedef struct {
   UINT64 SBZ:32;                      ///< Should be zero
 } PATCH_LOADER_MSR;
 
-#define MSR_SYS_CFG                 0xC0010010      // SYSCFG - F15 Shared
-#define MSR_TOM2                    0xC001001D      // TOP_MEM2 - F15 Shared
-#define MSR_MC0_CTL_MASK            0xC0010044      // MC0 Control Mask
-#define MSR_MC1_CTL_MASK            0xC0010045      // MC1 Control Mask
-#define MSR_MC2_CTL_MASK            0xC0010046      // MC2 Control Mask
-#define MSR_MC4_CTL_MASK            0xC0010048      // MC4 Control Mask
+#define MSR_SYS_CFG                 0xC0010010ul    // SYSCFG - F15 Shared
+#define MSR_TOM2                    0xC001001Dul    // TOP_MEM2 - F15 Shared
+#define MSR_MC0_CTL_MASK            0xC0010044ul    // MC0 Control Mask
+#define MSR_MC1_CTL_MASK            0xC0010045ul    // MC1 Control Mask
+#define MSR_MC2_CTL_MASK            0xC0010046ul    // MC2 Control Mask
+#define MSR_MC4_CTL_MASK            0xC0010048ul    // MC4 Control Mask
 
-#define MSR_CPUID_FEATS             0xC0011004      // CPUID Features
-#define MSR_CPUID_EXT_FEATS         0xC0011005      // CPUID Extended Features
-#define MSR_HWCR                    0xC0010015
-#define MSR_NB_CFG                  0xC001001F      // NB Config
-#define ENABLE_CF8_EXT_CFG          0x00004000      // [46]
-#define INIT_APIC_CPUID_LO          0x00400000      // [54]
-#define MSR_LS_CFG                  0xC0011020
-#define MSR_IC_CFG                  0xC0011021      // ICache Config - F15 Shared
-#define MSR_DC_CFG                  0xC0011022
-#define MSR_ME_CFG                  0xC0011029
-#define MSR_BU_CFG                  0xC0011023
-#define MSR_CU_CFG                  0xC0011023      // F15 Shared
-#define MSR_DE_CFG                  0xC0011029      // F15 Shared
-#define MSR_BU_CFG2                 0xC001102A
-#define MSR_CU_CFG2                 0xC001102A      // F15 Shared
-#define MSR_BU_CFG3                 0xC001102B
-#define MSR_CU_CFG3                 0xC001102B      // F15 Shared
-#define MSR_LS_CFG2                 0xC001102D
-#define MSR_IBS_OP_DATA3            0xC0011037
-#define MSR_C001_1070               0xC0011070      // F15 Shared
+#define MSR_CPUID_FEATS             0xC0011004ul    // CPUID Features
+#define MSR_CPUID_EXT_FEATS         0xC0011005ul    // CPUID Extended Features
+#define MSR_HWCR                    0xC0010015ul
+#define MSR_NB_CFG                  0xC001001Ful    // NB Config
+#define ENABLE_CF8_EXT_CFG          0x00004000ul    // [46]
+#define INIT_APIC_CPUID_LO          0x00400000ul    // [54]
+#define MSR_LS_CFG                  0xC0011020ul
+#define MSR_IC_CFG                  0xC0011021ul    // ICache Config - F15 Shared
+#define MSR_DC_CFG                  0xC0011022ul
+#define MSR_ME_CFG                  0xC0011029ul
+#define MSR_BU_CFG                  0xC0011023ul
+#define MSR_CU_CFG                  0xC0011023ul    // F15 Shared
+#define MSR_DE_CFG                  0xC0011029ul    // F15 Shared
+#define MSR_BU_CFG2                 0xC001102Aul
+#define MSR_CU_CFG2                 0xC001102Aul    // F15 Shared
+#define MSR_BU_CFG3                 0xC001102Bul
+#define MSR_CU_CFG3                 0xC001102Bul    // F15 Shared
+#define MSR_LS_CFG2                 0xC001102Dul
+#define MSR_IBS_OP_DATA3            0xC0011037ul
+#define MSR_C001_1070               0xC0011070ul    // F15 Shared
 
 
-#define MSR_CPUID_NAME_STRING0      0xC0010030      // First CPUID namestring register
-#define MSR_CPUID_NAME_STRING1      0xC0010031
-#define MSR_CPUID_NAME_STRING2      0XC0010032
-#define MSR_CPUID_NAME_STRING3      0xC0010033
-#define MSR_CPUID_NAME_STRING4      0xC0010034
-#define MSR_CPUID_NAME_STRING5      0xC0010035      // Last CPUID namestring register
-#define MSR_MMIO_Cfg_Base           0xC0010058      // MMIO Configuration Base Address Register
-#define MSR_BIST                    0xC0010060      // BIST Results register
-#define MSR_OSVW_ID_Length          0xC0010140
-#define MSR_OSVW_Status             0xC0010141
-#define MSR_PERF_CONTROL3           0xC0010003      // Perfromance control register number 3
-#define MSR_PERF_COUNTER3           0xC0010007      // Performance counter register number 3
-#define PERF_RESERVE_BIT_MASK       0x030FFFDFFFFF  // Mask of the Performance control Reserve bits
-#define PERF_CAR_CORRUPTION_EVENT   0x040040F0E2    // Configure the controller to capture the
+#define MSR_CPUID_NAME_STRING0      0xC0010030ul    // First CPUID namestring register
+#define MSR_CPUID_NAME_STRING1      0xC0010031ul
+#define MSR_CPUID_NAME_STRING2      0XC0010032ul
+#define MSR_CPUID_NAME_STRING3      0xC0010033ul
+#define MSR_CPUID_NAME_STRING4      0xC0010034ul
+#define MSR_CPUID_NAME_STRING5      0xC0010035ul    // Last CPUID namestring register
+#define MSR_MMIO_Cfg_Base           0xC0010058ul    // MMIO Configuration Base Address Register
+#define MSR_BIST                    0xC0010060ul    // BIST Results register
+#define MSR_OSVW_ID_Length          0xC0010140ul
+#define MSR_OSVW_Status             0xC0010141ul
+#define MSR_PERF_CONTROL3           0xC0010003ul    // Perfromance control register number 3
+#define MSR_PERF_COUNTER3           0xC0010007ul    // Performance counter register number 3
+#define PERF_RESERVE_BIT_MASK       0x030FFFDFFFFFull  // Mask of the Performance control Reserve bits
+#define PERF_CAR_CORRUPTION_EVENT   0x040040F0E2ull // Configure the controller to capture the
                                                     // CAR Corruption
 // FUNC_0 registers
 // ----------------
@@ -243,26 +243,26 @@ typedef struct {
 #define HT_INIT_BIOS_RST_DET_2      BIT10
 #define HT_INIT_BIOS_RST_DET        BIT9 | BIT10
 #define HT_TRANS_CTRL               0x68
-#define HT_TRANS_CTRL_CPU1_EN       0x00000020  // [5] = CPU1 Enable
+#define HT_TRANS_CTRL_CPU1_EN       0x00000020ul  // [5] = CPU1 Enable
 #define HT_LINK_CONTROL_0           0x84
 #define HT_LINK_FREQ_0              0x88        // Link HT Frequency
 #define EXTENDED_NODE_ID            0x160
 #define ECS_HT_TRANS_CTRL           0x168
-#define ECS_HT_TRANS_CTRL_CPU2_EN   0x00000001  // [0] = CPU2 Enable
-#define ECS_HT_TRANS_CTRL_CPU3_EN   0x00000002  // [1] = CPU3 Enable
-#define ECS_HT_TRANS_CTRL_CPU4_EN   0x00000004  // [2] = CPU4 Enable
-#define ECS_HT_TRANS_CTRL_CPU5_EN   0x00000008  // [3] = CPU5 Enable
+#define ECS_HT_TRANS_CTRL_CPU2_EN   0x00000001ul  // [0] = CPU2 Enable
+#define ECS_HT_TRANS_CTRL_CPU3_EN   0x00000002ul  // [1] = CPU3 Enable
+#define ECS_HT_TRANS_CTRL_CPU4_EN   0x00000004ul  // [2] = CPU4 Enable
+#define ECS_HT_TRANS_CTRL_CPU5_EN   0x00000008ul  // [3] = CPU5 Enable
 
 #define CORE_CTRL                   0x1DC
-#define CORE_CTRL_CORE1_EN          0x00000002
-#define CORE_CTRL_CORE2_EN          0x00000004
-#define CORE_CTRL_CORE3_EN          0x00000008
-#define CORE_CTRL_CORE4_EN          0x00000010
-#define CORE_CTRL_CORE5_EN          0x00000020
-#define CORE_CTRL_CORE6_EN          0x00000040
-#define CORE_CTRL_CORE7_EN          0x00000080
-#define CORE_CTRL_CORE8_EN          0x00000100
-#define CORE_CTRL_CORE9_EN          0x00000200
+#define CORE_CTRL_CORE1_EN          0x00000002ul
+#define CORE_CTRL_CORE2_EN          0x00000004ul
+#define CORE_CTRL_CORE3_EN          0x00000008ul
+#define CORE_CTRL_CORE4_EN          0x00000010ul
+#define CORE_CTRL_CORE5_EN          0x00000020ul
+#define CORE_CTRL_CORE6_EN          0x00000040ul
+#define CORE_CTRL_CORE7_EN          0x00000080ul
+#define CORE_CTRL_CORE8_EN          0x00000100ul
+#define CORE_CTRL_CORE9_EN          0x00000200ul
 
 // FUNC_3 registers
 // ----------------
@@ -284,11 +284,11 @@ typedef struct {
 #define REG_HT4_PHY_OFFSET_BASE_4X180    0x180
 #define REG_HT4_PHY_DATA_PORT_BASE_4X184 0x184
 
-#define HTPHY_OFFSET_MASK         0xE00001FF
-#define HTPHY_WRITE_CMD           0x40000000
-#define HTPHY_IS_COMPLETE_MASK    0x80000000
-#define HTPHY_DIRECT_MAP          0x20000000
-#define HTPHY_DIRECT_OFFSET_MASK  0x6000FFFF
+#define HTPHY_OFFSET_MASK         0xE00001FFul
+#define HTPHY_WRITE_CMD           0x40000000ul
+#define HTPHY_IS_COMPLETE_MASK    0x80000000ul
+#define HTPHY_DIRECT_MAP          0x20000000ul
+#define HTPHY_DIRECT_OFFSET_MASK  0x6000FFFFul
 
 // FUNC_5 registers
 // ----------------
@@ -338,10 +338,12 @@ typedef struct {
 #define KM_SOCKET_C2012     5
 #define SOCKET_IGNORE       0xF
 
-#define LAPIC_BASE_ADDR_MASK    0x0000FFFFFFFFF000
-#define APIC_EXT_BRDCST_MASK    0x000E0000
-#define APIC_ENABLE_BIT         0x00000800
-#define LOCAL_APIC_ADDR         0xFEE00000
+#define LAPIC_BASE_ADDR_MASK    0x0000FFFFFFFFF000ull
+#define APIC_EXT_BRDCST_MASK    0x000E0000ul
+#define APIC_ENABLE_BIT         0x00000800ul
+#ifndef LOCAL_APIC_ADDR
+#define LOCAL_APIC_ADDR         0xFEE00000ul
+#endif
 #define INT_CMD_REG_LO          0x300
 #define INT_CMD_REG_HI          0x310
 #define REMOTE_MSG_REG          0x380
@@ -357,20 +359,20 @@ typedef struct {
  * Default definitions
  *-------------------------
  */
-#define DOWNCORE_MASK_SINGLE    0xFFFFFFFE
-#define DOWNCORE_MASK_DUAL      0xFFFFFFFC
-#define DOWNCORE_MASK_TRI       0xFFFFFFF8
-#define DOWNCORE_MASK_FOUR      0xFFFFFFF0
-#define DOWNCORE_MASK_FIVE      0xFFFFFFE0
-#define DOWNCORE_MASK_SIX       0xFFFFFFC0
-#define DOWNCORE_MASK_DUAL_COMPUTE_UNIT  0xFFFFFFFA
-#define DOWNCORE_MASK_TRI_COMPUTE_UNIT   0xFFFFFFEA
-#define DOWNCORE_MASK_FOUR_COMPUTE_UNIT  0xFFFFFFAA
+#define DOWNCORE_MASK_SINGLE    0xFFFFFFFEul
+#define DOWNCORE_MASK_DUAL      0xFFFFFFFCul
+#define DOWNCORE_MASK_TRI       0xFFFFFFF8ul
+#define DOWNCORE_MASK_FOUR      0xFFFFFFF0ul
+#define DOWNCORE_MASK_FIVE      0xFFFFFFE0ul
+#define DOWNCORE_MASK_SIX       0xFFFFFFC0ul
+#define DOWNCORE_MASK_DUAL_COMPUTE_UNIT  0xFFFFFFFAul
+#define DOWNCORE_MASK_TRI_COMPUTE_UNIT   0xFFFFFFEAul
+#define DOWNCORE_MASK_FOUR_COMPUTE_UNIT  0xFFFFFFAAul
 
 #define DELIVERY_STATUS             BIT13
-#define REMOTE_READ_STAT_MASK       0x00030000
-#define REMOTE_DELIVERY_PENDING     0x00010000
-#define REMOTE_DELIVERY_DONE        0x00020000
+#define REMOTE_READ_STAT_MASK       0x00030000ul
+#define REMOTE_DELIVERY_PENDING     0x00010000ul
+#define REMOTE_DELIVERY_DONE        0x00020000ul
 
 /*
  * --------------------------------------------------------------------------------------

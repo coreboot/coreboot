@@ -383,32 +383,32 @@ char *strsep(char **stringp, const char *delim)
 
 static int _valid(char ch, int base)
 {
-        char end = (base > 9) ? '9' : '0' + (base - 1);
+	char end = (base > 9) ? '9' : '0' + (base - 1);
 
-        /* all bases will be some subset of the 0-9 range */
+	/* all bases will be some subset of the 0-9 range */
 
-        if (ch >= '0' && ch <= end)
-                return 1;
+	if (ch >= '0' && ch <= end)
+		return 1;
 
-        /* Bases > 11 will also have to match in the a-z range */
+	/* Bases > 11 will also have to match in the a-z range */
 
-        if (base > 11) {
-                if (tolower(ch) >= 'a' &&
-                    tolower(ch) <= 'a' + (base - 11))
-                        return 1;
-        }
+	if (base > 11) {
+		if (tolower(ch) >= 'a' &&
+		    tolower(ch) <= 'a' + (base - 11))
+			return 1;
+	}
 
-        return 0;
+	return 0;
 }
 
 /* Return the "value" of the character in the given base */
 
 static int _offset(char ch, int base)
 {
-        if (ch >= '0' && ch <= '9')
-                return ch - '0';
-        else
-                return 10 + tolower(ch) - 'a';
+	if (ch >= '0' && ch <= '9')
+		return ch - '0';
+	else
+		return 10 + tolower(ch) - 'a';
 }
 
 /**
@@ -421,27 +421,27 @@ static int _offset(char ch, int base)
 
 long int strtol(const char *ptr, char **endptr, int base)
 {
-        int ret = 0;
+	int ret = 0;
 	int negative = 1;
 
 	if (endptr != NULL)
 		*endptr = (char *) ptr;
 
-        /* Purge whitespace */
+	/* Purge whitespace */
 
-        for( ; *ptr && isspace(*ptr); ptr++);
+	for( ; *ptr && isspace(*ptr); ptr++);
 
 	if (ptr[0] == '-') {
 		negative = -1;
 		ptr++;
 	}
 
-        if (!*ptr)
-                return 0;
+	if (!*ptr)
+		return 0;
 
-        /* Determine the base */
+	/* Determine the base */
 
-        if (base == 0) {
+	if (base == 0) {
 		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
 			base = 16;
 		else if (ptr[0] == '0') {
@@ -450,7 +450,7 @@ long int strtol(const char *ptr, char **endptr, int base)
 		}
 		else
 			base = 10;
-        }
+	}
 
 	/* Base 16 allows the 0x on front - so skip over it */
 
@@ -460,18 +460,18 @@ long int strtol(const char *ptr, char **endptr, int base)
 	}
 
 	/* If the first character isn't valid, then don't
-         * bother */
+	 * bother */
 
-        if (!*ptr || !_valid(*ptr, base))
-                return 0;
+	if (!*ptr || !_valid(*ptr, base))
+		return 0;
 
-        for( ; *ptr && _valid(*ptr, base); ptr++)
-                ret = (ret * base) + _offset(*ptr, base);
+	for( ; *ptr && _valid(*ptr, base); ptr++)
+		ret = (ret * base) + _offset(*ptr, base);
 
 	if (endptr != NULL)
 		*endptr = (char *) ptr;
 
-        return ret * negative;
+	return ret * negative;
 }
 
 long atol(const char *nptr)
@@ -489,21 +489,21 @@ long atol(const char *nptr)
 
 unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 {
-        unsigned long long int ret = 0;
+	unsigned long long int ret = 0;
 
 	if (endptr != NULL)
 		*endptr = (char *) ptr;
 
-        /* Purge whitespace */
+	/* Purge whitespace */
 
-        for( ; *ptr && isspace(*ptr); ptr++);
+	for( ; *ptr && isspace(*ptr); ptr++);
 
-        if (!*ptr)
-                return 0;
+	if (!*ptr)
+		return 0;
 
-        /* Determine the base */
+	/* Determine the base */
 
-        if (base == 0) {
+	if (base == 0) {
 		if (ptr[0] == '0' && (ptr[1] == 'x' || ptr[1] == 'X'))
 			base = 16;
 		else if (ptr[0] == '0') {
@@ -512,7 +512,7 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 		}
 		else
 			base = 10;
-        }
+	}
 
 	/* Base 16 allows the 0x on front - so skip over it */
 
@@ -522,18 +522,18 @@ unsigned long long int strtoull(const char *ptr, char **endptr, int base)
 	}
 
 	/* If the first character isn't valid, then don't
-         * bother */
+	 * bother */
 
-        if (!*ptr || !_valid(*ptr, base))
-                return 0;
+	if (!*ptr || !_valid(*ptr, base))
+		return 0;
 
-        for( ; *ptr && _valid(*ptr, base); ptr++)
-                ret = (ret * base) + _offset(*ptr, base);
+	for( ; *ptr && _valid(*ptr, base); ptr++)
+		ret = (ret * base) + _offset(*ptr, base);
 
 	if (endptr != NULL)
 		*endptr = (char *) ptr;
 
-        return ret;
+	return ret;
 }
 
 unsigned long int strtoul(const char *ptr, char **endptr, int base)
@@ -550,7 +550,6 @@ unsigned long int strtoul(const char *ptr, char **endptr, int base)
  * @param a A pointer to an array of characters that match the prefix
  * @return The number of matching characters
  */
-
 size_t strspn(const char *s, const char *a)
 {
 	int i, j;
@@ -575,7 +574,6 @@ size_t strspn(const char *s, const char *a)
  * @param a A pointer to an array of characters that do not match the prefix
  * @return The number of not matching characters
  */
-
 size_t strcspn(const char *s, const char *a)
 {
 	int i, j;
@@ -602,7 +600,6 @@ size_t strcspn(const char *s, const char *a)
  * @param ptr A pointer to a string pointer to keep state of the tokenizer
  * @return Pointer to token
  */
-
 char* strtok_r(char *str, const char *delim, char **ptr)
 {
 	/* start new tokenizing job or continue existing one? */
@@ -629,7 +626,6 @@ static char **strtok_global;
  * @param delim A pointer to an array of characters that delimit the token
  * @return Pointer to token
  */
-
 char* strtok(char *str, const char *delim)
 {
 	return strtok_r(str, delim, strtok_global);

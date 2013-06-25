@@ -47,7 +47,7 @@ static __inline void	 swapfunc(char *, char *, size_t, int);
 		TYPE	t = *pi;			\
 		*pi++ = *pj;				\
 		*pj++ = t;				\
-        } while (--i > 0);				\
+	} while (--i > 0);				\
 }
 
 #define SWAPINIT(a, es) swaptype = ((char *)a - (char *)0) % sizeof(long) || \

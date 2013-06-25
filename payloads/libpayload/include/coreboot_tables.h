@@ -155,7 +155,7 @@ struct cb_framebuffer {
 	u32 y_resolution;
 	u32 bytes_per_line;
 	u8 bits_per_pixel;
-        u8 red_mask_pos;
+	u8 red_mask_pos;
 	u8 red_mask_size;
 	u8 green_mask_pos;
 	u8 green_mask_size;

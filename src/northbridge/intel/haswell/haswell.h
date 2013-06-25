@@ -123,7 +123,6 @@
 #define MCHBAR32(x) *((volatile u32 *)(DEFAULT_MCHBAR + x))
 #define MCHBAR32_OR(x, or) MCHBAR32(x) = (MCHBAR32(x) | (or))
 
-#define SSKPD		0x5d14	/* 16bit (scratchpad) */
 #define BIOS_RESET_CPL	0x5da8	/* 8bit */
 
 /*

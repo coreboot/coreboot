@@ -300,8 +300,6 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		FchParams_env->Usb.Xhci0Enable = FALSE;
 #endif
 		FchParams_env->Usb.Xhci1Enable = FALSE;
-
-		/* sata configuration */
 	}
 	printk(BIOS_DEBUG, "Done\n");
 

@@ -736,9 +736,9 @@ static void agesa_warning(EVENT_PARAMS *event)
 
 		case HT_EVENT_OPT_REQUIRED_CAP_RETRY:
 			printk(BIOS_DEBUG, "HT_EVENT_OPT_REQUIRED_CAP_RETRY, Socket %x Link %x Depth %x\n",
-				event->DataParam1,
-				event->DataParam2,
-				event->DataParam3);
+					(unsigned int)event->DataParam1,
+					(unsigned int)event->DataParam2,
+					(unsigned int)event->DataParam3);
 			break;
 
 		case HT_EVENT_OPT_REQUIRED_CAP_GEN3:

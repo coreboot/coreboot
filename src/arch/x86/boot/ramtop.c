@@ -25,6 +25,11 @@ unsigned long __attribute__((weak)) get_top_of_ram(void)
 	return 0;
 }
 
+void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
+{
+	/* do nothing, this should be called by chipset to save TOC in NVRAM */
+}
+
 #if !CONFIG_DYNAMIC_CBMEM
 void get_cbmem_table(uint64_t *base, uint64_t *size)
 {
@@ -43,11 +48,13 @@ void get_cbmem_table(uint64_t *base, uint64_t *size)
 #if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
 void set_top_of_ram(uint64_t ramtop)
 {
+	backup_top_of_ram(ramtop);
 	set_cbmem_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE, 1);
 }
 
 void set_top_of_ram_once(uint64_t ramtop)
 {
+	backup_top_of_ram(ramtop);
 	set_cbmem_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE, 0);
 }
 #endif

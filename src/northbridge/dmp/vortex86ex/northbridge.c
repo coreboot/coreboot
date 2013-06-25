@@ -47,12 +47,6 @@ static struct device_operations northbridge_operations = {
 	.init             = northbridge_init
 };
 
-static const struct pci_driver northbridge_driver_6021 __pci_driver = {
-	.ops = &northbridge_operations,
-	.vendor = PCI_VENDOR_ID_RDC,
-	.device = 0x6021,	/* DX CPU N/B ID */
-};
-
 static const struct pci_driver northbridge_driver_6025 __pci_driver = {
 	.ops = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_RDC,

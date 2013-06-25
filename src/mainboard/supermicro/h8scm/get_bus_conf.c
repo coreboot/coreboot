@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <cpu/amd/amdfam15.h>
 #include "agesawrapper.h"
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>

@@ -126,7 +126,10 @@ void sb700_cimx_config(AMDSBCFG *sb_config)
 	/* Azalia HDA */
 	sb_config->AzaliaController = AZALIA_CONTROLLER;
 	sb_config->AzaliaPinCfg = AZALIA_PIN_CONFIG;
-	sb_config->AzaliaSdin0 = AZALIA_SDIN_PIN;
+	sb_config->AzaliaSdin0 = AZALIA_SDIN_PIN_0;
+	sb_config->AzaliaSdin1 = AZALIA_SDIN_PIN_1;
+	sb_config->AzaliaSdin2 = AZALIA_SDIN_PIN_2;
+	sb_config->AzaliaSdin3 = AZALIA_SDIN_PIN_3;
 	sb_config->pAzaliaOemCodecTablePtr = NULL;
 
 #ifndef __PRE_RAM__

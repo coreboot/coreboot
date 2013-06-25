@@ -17,12 +17,14 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <arch/rules.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
 #include <device/pci_ops.h>
 #include <device/pci_rom.h>
+
+#ifndef __SIMPLE_DEVICE__
 
 /* Common pci operations without a standard interface */
 struct pci_operations {
@@ -94,5 +96,5 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 	return pops;
 }
 
-#endif
+#endif /* ! __SIMPLE_DEVICE__ */
 #endif /* PCI_H */

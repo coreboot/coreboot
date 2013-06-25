@@ -1,11 +1,11 @@
 #ifndef PCI_OPS_H
 #define PCI_OPS_H
 
-#ifndef __SMM__
 #include <stdint.h>
 #include <device/device.h>
 #include <arch/pci_ops.h>
 
+#ifndef __SIMPLE_DEVICE__
 u8 pci_read_config8(device_t dev, unsigned int where);
 u16 pci_read_config16(device_t dev, unsigned int where);
 u32 pci_read_config32(device_t dev, unsigned int where);

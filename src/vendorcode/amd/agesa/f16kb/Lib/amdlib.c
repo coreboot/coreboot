@@ -297,6 +297,7 @@ LibAmdReadCpuReg (
       break;
     default:
       *Value = -1;
+      break;
   }
 }
 VOID
@@ -325,7 +326,7 @@ LibAmdWriteCpuReg (
       __writedr (7, Value);
       break;
     default:
-      ;
+      break;
   }
 }
 VOID
@@ -504,6 +505,7 @@ LibAmdIoRead (
     break;
   default:
     ASSERT (FALSE);
+    break;
   }
 }
 
@@ -541,6 +543,7 @@ LibAmdIoWrite (
     break;
   default:
     ASSERT (FALSE);
+    break;
   }
 }
 
@@ -641,6 +644,7 @@ LibAmdMemRead (
     break;
   default:
     ASSERT (FALSE);
+    break;
   }
 }
 
@@ -679,6 +683,7 @@ LibAmdMemWrite (
     break;
   default:
     ASSERT (FALSE);
+    break;
   }
 }
 /*---------------------------------------------------------------------------------------*/
@@ -1297,6 +1302,7 @@ LibAmdGetDataFromPtr (
     break;
   default:
     IDS_ERROR_TRAP;
+    break;
   }
 }
 
@@ -1336,6 +1342,7 @@ LibAmdAccessWidth (
   default:
     Width = 0;
     IDS_ERROR_TRAP;
+    break;
   }
   return Width;
 }

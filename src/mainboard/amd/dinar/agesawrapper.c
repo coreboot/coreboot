@@ -75,6 +75,8 @@ VOID *AcpiAlib    = NULL;
  *                          L O C A L    F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
+extern VOID OemCustomizeInitEarly(IN  OUT AMD_EARLY_PARAMS *InitEarly);
+extern VOID OemCustomizeInitPost(IN  AMD_POST_PARAMS *InitPost);
 
 /*Get the Bus Number from CONFIG_MMCONF_BUS_NUMBER, Please reference AMD BIOS BKDG docuemt about it*/
 /*
@@ -88,6 +90,7 @@ Bits    Buses  Bits    Buses
 3h      8       8h      256
 4h      16      Fh-9h   Reserved
 */
+STATIC
 UINT8
 GetEndBusNum (
 		VOID
@@ -283,9 +286,12 @@ agesawrapper_amdinitreset (
 		)
 {
 	AGESA_STATUS status;
+#if (defined AGESA_ENTRY_INIT_RESET) && (AGESA_ENTRY_INIT_RESET == TRUE)
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_RESET_PARAMS AmdResetParams;
+#endif
 
+#if (defined AGESA_ENTRY_INIT_RESET) && (AGESA_ENTRY_INIT_RESET == TRUE)
 	LibAmdMemFill (&AmdParamStruct,
 			0,
 			sizeof (AMD_INTERFACE_PARAMS),
@@ -307,12 +313,13 @@ agesawrapper_amdinitreset (
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct (&AmdParamStruct);
 	AmdResetParams.HtConfig.Depth = 0;
-#if (defined AGESA_ENTRY_INIT_RESET) && (AGESA_ENTRY_INIT_RESET == TRUE)
 	status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
-#endif
-
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
+#else
+	status = AGESA_SUCCESS;
+#endif
+
 	return (UINT32)status;
 }
 
@@ -432,8 +439,6 @@ agesawrapper_amdinitenv (
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
-	PCI_ADDR             PciAddress;
-	UINT32               PciValue;
 
 	LibAmdMemFill (&AmdParamStruct,
 			0,
@@ -574,11 +579,11 @@ agesawrapper_amdlaterunaptask (
 		)
 {
 	AGESA_STATUS Status;
-	AMD_LATE_PARAMS AmdLateParams;
+	AP_EXE_PARAMS AmdLateParams;
 
 	LibAmdMemFill (&AmdLateParams,
 			0,
-			sizeof (AMD_LATE_PARAMS),
+			sizeof (AP_EXE_PARAMS),
 			&(AmdLateParams.StdHeader));
 
 	AmdLateParams.StdHeader.AltImageBasePtr = 0;

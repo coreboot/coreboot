@@ -68,11 +68,11 @@ RDATA_GROUP (G2_PEI)
  *----------------------------------------------------------------------------------------
  */
 /* ApFlags bits */
-#define AP_TASK_HAS_INPUT    0x00000001
-#define AP_TASK_HAS_OUTPUT   0x00000002
-#define AP_RETURN_PARAMS     0x00000004
-#define AP_END_AT_HLT        0x00000008
-#define AP_PASS_EARLY_PARAMS 0x00000010
+#define AP_TASK_HAS_INPUT    0x00000001ul
+#define AP_TASK_HAS_OUTPUT   0x00000002ul
+#define AP_RETURN_PARAMS     0x00000004ul
+#define AP_END_AT_HLT        0x00000008ul
+#define AP_PASS_EARLY_PARAMS 0x00000010ul
 
 #define XFER_ELEMENT_SIZE    sizeof (UINT32)
 

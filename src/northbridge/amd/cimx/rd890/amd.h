@@ -32,10 +32,7 @@
 // AGESA Types and Definitions
 //
 //
-#ifndef NULL
-  #define NULL 0
-#endif
-
+#include <stddef.h>
 
 #define LAST_ENTRY 0xFFFFFFFF
 #define IOCF8 0xCF8

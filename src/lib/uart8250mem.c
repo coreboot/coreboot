@@ -24,7 +24,7 @@
 #if CONFIG_USE_OPTION_TABLE
 #include "option_table.h"
 #endif
-#if !defined(__SMM__) && !defined(__PRE_RAM__)
+#if !defined(__SIMPLE_DEVICE__)
 #include <device/device.h>
 #endif
 #include <delay.h>
@@ -129,7 +129,7 @@ u32 uart_mem_init(void)
 	/* Now find the UART base address and calculate the divisor */
 #if CONFIG_DRIVERS_OXFORD_OXPCIE
 
-#if defined(MORE_TESTING) && !defined(__SMM__) && !defined(__PRE_RAM__)
+#if defined(MORE_TESTING) && !defined(__SIMPLE_DEVICE__)
 	device_t dev = dev_find_device(0x1415, 0xc158, NULL);
 	if (!dev)
 		dev = dev_find_device(0x1415, 0xc11b, NULL);

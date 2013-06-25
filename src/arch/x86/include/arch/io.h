@@ -2,6 +2,7 @@
 #define _ASM_IO_H
 
 #include <stdint.h>
+#include <arch/rules.h>
 
 /*
  * This file contains the definitions for the x86 IO instructions
@@ -188,6 +189,9 @@ static inline int log2f(int value)
         return r;
 
 }
+#endif
+
+#ifdef __SIMPLE_DEVICE__
 
 #define PCI_ADDR(SEGBUS, DEV, FN, WHERE) ( \
         (((SEGBUS) & 0xFFF) << 20) | \
@@ -339,7 +343,7 @@ void pnp_set_drq(simple_pnpdev_t dev, unsigned index, unsigned drq)
 	pnp_write_config(dev, index, drq & 0xff);
 }
 
-#endif /* __PRE_RAM__ */
+#endif /* __SIMPLE_DEVICE__ */
 
 #endif
 

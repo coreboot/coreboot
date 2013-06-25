@@ -2,6 +2,7 @@
 #define ARCH_CPU_H
 
 #include <stdint.h>
+#include <arch/rules.h>
 
 /*
  * EFLAGS bits
@@ -141,11 +142,13 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define X86_VENDOR_ANY     0xfe
 #define X86_VENDOR_UNKNOWN 0xff
 
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
-#include <device/device.h>
+#include <arch/io.h>
 
 int cpu_phys_address_size(void);
 int cpu_have_cpuid(void);
+
+#ifndef __SIMPLE_DEVICE__
+#include <device/device.h>
 
 struct cpu_device_id {
 	unsigned vendor;
@@ -188,8 +191,6 @@ static inline unsigned long cpu_index(void)
 	ci = cpu_info();
 	return ci->index;
 }
-#else
-#include <arch/io.h>
 #endif
 
 #ifndef __ROMCC__ // romcc is segfaulting in some cases

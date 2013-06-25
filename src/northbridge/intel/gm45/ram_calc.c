@@ -19,9 +19,9 @@
  * MA 02110-1301 USA
  */
 
-#ifndef __PRE_RAM__
-#define __PRE_RAM__ // Use simple device model for this file even in ramstage
-#endif
+// Use simple device model for this file even in ramstage
+#define __SIMPLE_DEVICE__
+
 #include <stdint.h>
 #include <arch/io.h>
 #include <device/pci_def.h>

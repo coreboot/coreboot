@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +16,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-// Use simple device model for this file even in ramstage
+#ifndef _ARCH_RULES_H
+#define _ARCH_RULES_H
+
+/* For romstage and ramstage always build with simple device model, ie.
+ * PCI, PNP and CPU functions operate without use of devicetree.
+ * 
+ * For ramstage individual source file may define __SIMPLE_DEVICE__
+ * before including any header files to force that particular source
+ * be built with simple device model.
+ */
+ 
+#if defined(__SIMPLE_DEVICE__) || defined(__PRE_RAM__) || defined(__SMM__)
+#undef __SIMPLE_DEVICE__
 #define __SIMPLE_DEVICE__
+#endif
 
+#if defined(__PRE_RAM__) || defined(__SMM__)
 #include <arch/io.h>
-#include <reset.h>
+#endif
 
-#include <northbridge/amd/amdk8/reset_test.c>
-
-void hard_reset(void)
-{
-	set_bios_reset();
-	/* Try rebooting through port 0xcf9 */
-	/* Actually it is not a real hard_reset --- it only reset coherent link table, but not reset link freq and width */
-	outb((0 << 3) | (0 << 2) | (1 << 1), 0xcf9);
-	outb((0 << 3) | (1 << 2) | (1 << 1), 0xcf9);
-}
+#endif /* _ARCH_RULES_H */

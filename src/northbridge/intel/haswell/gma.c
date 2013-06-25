@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <drivers/intel/gma/i915_reg.h>
 
 #include "chip.h"
 #include "haswell.h"
@@ -88,6 +89,12 @@ static int gtt_poll(u32 reg, u32 mask, u32 value)
 	return 0;
 }
 
+static void power_well_enable(void)
+{
+	gtt_write(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_ENABLE);
+	gtt_poll(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_STATE, HSW_PWR_WELL_STATE);
+}
+
 static void gma_pm_init_pre_vbios(struct device *dev)
 {
 	printk(BIOS_DEBUG, "GT Power Management Init\n");
@@ -95,6 +102,8 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_res = find_resource(dev, PCI_BASE_ADDRESS_0);
 	if (!gtt_res || !gtt_res->base)
 		return;
+
+	power_well_enable();
 
 	/*
 	 * Enable RC6
@@ -181,19 +190,85 @@ static void gma_setup_panel(struct device *dev)
 		gtt_write(0xc8250, (1 << 31));
 		gtt_write(0xc8254, conf->gpu_pch_backlight);
 	}
+
+	/* Get display,pipeline,and DDI registers into a basic sane state */
+	/* not all these have documented names. */
+	gtt_write(0x45400, 0x80000000);
+	gtt_poll( 0x00045400, 0xc0000000, 0xc0000000);
+	gtt_write(_CURACNTR, 0x00000000);
+	gtt_write(_DSPACNTR, (/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000);
+	gtt_write(_DSPBCNTR, 0x00000000);
+	gtt_write(CPU_VGACNTRL, 0x8000298e);
+	gtt_write(_DSPASIZE+0xc, 0x00000000);
+	gtt_write(_DSPBSURF, 0x00000000);
+	gtt_write(0x4f008, 0x00000000);
+	gtt_write(0x4f008, 0x00000000);
+	gtt_write(0x4f008, 0x00000000);
+	gtt_write(0x4f040, 0x01000001);
+	gtt_write(0x4f044, 0x00000000);
+	gtt_write(0x4f048, 0x00000000);
+	gtt_write(0x4f04c, 0x03030000);
+	gtt_write(0x4f050, 0x00000000);
+	gtt_write(0x4f054, 0x00000001);
+	gtt_write(0x4f058, 0x00000000);
+	gtt_write(0x4f04c, 0x03450000);
+	gtt_write(0x4f04c, 0x45450000);
+	gtt_write(0x4f000, 0x03000400);
+	gtt_write(DP_A, 0x00000091); /* DDI-A enable */
+	gtt_write(_FDI_RXA_MISC, 0x00200090);
+	gtt_write(_FDI_RXA_MISC, 0x0a000000);
+	gtt_write(0x46408, 0x00000070);
+	gtt_write(0x42090, 0x04000000);
+	gtt_write(0x4f050, 0xc0000000);
+	gtt_write(0x9840, 0x00000000);
+	gtt_write(0x42090, 0xa4000000);
+	gtt_write(SOUTH_DSPCLK_GATE_D, 0x00001000);
+	gtt_write(0x42080, 0x00004000);
+	gtt_write(0x64f80, 0x00ffffff);
+	gtt_write(0x64f84, 0x0007000e);
+	gtt_write(0x64f88, 0x00d75fff);
+	gtt_write(0x64f8c, 0x000f000a);
+	gtt_write(0x64f90, 0x00c30fff);
+	gtt_write(0x64f94, 0x00060006);
+	gtt_write(0x64f98, 0x00aaafff);
+	gtt_write(0x64f9c, 0x001e0000);
+	gtt_write(0x64fa0, 0x00ffffff);
+	gtt_write(0x64fa4, 0x000f000a);
+	gtt_write(0x64fa8, 0x00d75fff);
+	gtt_write(0x64fac, 0x00160004);
+	gtt_write(0x64fb0, 0x00c30fff);
+	gtt_write(0x64fb4, 0x001e0000);
+	gtt_write(0x64fb8, 0x00ffffff);
+	gtt_write(0x64fbc, 0x00060006);
+	gtt_write(0x64fc0, 0x00d75fff);
+	gtt_write(0x64fc4, 0x001e0000);
+	gtt_write(DDI_BUF_TRANS_A, 0x00ffffff);
+	gtt_write(DDI_BUF_TRANS_A+0x4, 0x0006000e);
+	gtt_write(DDI_BUF_TRANS_A+0x8, 0x00d75fff);
+	gtt_write(DDI_BUF_TRANS_A+0xc, 0x0005000a);
+	gtt_write(DDI_BUF_TRANS_A+0x10, 0x00c30fff);
+	gtt_write(DDI_BUF_TRANS_A+0x14, 0x00040006);
+	gtt_write(DDI_BUF_TRANS_A+0x18, 0x80aaafff);
+	gtt_write(DDI_BUF_TRANS_A+0x1c, 0x000b0000);
+	gtt_write(DDI_BUF_TRANS_A+0x20, 0x00ffffff);
+	gtt_write(DDI_BUF_TRANS_A+0x24, 0x0005000a);
+	gtt_write(DDI_BUF_TRANS_A+0x28, 0x00d75fff);
+	gtt_write(DDI_BUF_TRANS_A+0x2c, 0x000c0004);
+	gtt_write(DDI_BUF_TRANS_A+0x30, 0x80c30fff);
+	gtt_write(DDI_BUF_TRANS_A+0x34, 0x000b0000);
+	gtt_write(DDI_BUF_TRANS_A+0x38, 0x00ffffff);
+	gtt_write(DDI_BUF_TRANS_A+0x3c, 0x00040006);
+	gtt_write(DDI_BUF_TRANS_A+0x40, 0x80d75fff);
+	gtt_write(DDI_BUF_TRANS_A+0x44, 0x000b0000);
+	gtt_write(DIGITAL_PORT_HOTPLUG_CNTRL,
+		DIGITAL_PORTA_HOTPLUG_ENABLE |0x00000010);
+	gtt_write(SDEISR+0x30,
+		PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010);
+	gtt_write(PCH_PP_DIVISOR, 0x0004af06);
 }
 
 static void gma_pm_init_post_vbios(struct device *dev)
 {
-	extern int oprom_is_loaded;
-
-	if (!oprom_is_loaded) {
-		/* Magic to force graphics into happy state for kernel */
-		gtt_write(0xc7204, 0xabcd000f); /* panel power up */
-		gtt_write(0x45400, 0x80000000); /* power well enable */
-		gtt_write(0x64000, 0x00000091); /* DDI-A enable */
-	}
-
 	/* Disable Force Wake */
 	gtt_write(0x0a188, 0x00010000);
 	gtt_poll(0x130044, 1 << 0, 0 << 0);

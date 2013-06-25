@@ -175,15 +175,15 @@ static int curses_getchar(int _delay)
 		}
 #endif
 
-		if (_delay == 0)
+		if (_delay == 0) {
 			break;
-
-		if (_delay > 0) {
-			mdelay(1);
-			_delay--;
+		} else if (_delay >= 10) {
+			mdelay(10);
+			_delay -= 10;
+		} else if (_delay > 0) {
+			mdelay(_delay);
+			_delay = 0;
 		}
-
-
 	} while (1);
 
 	return ERR;

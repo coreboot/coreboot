@@ -806,7 +806,7 @@ F15OrEarlySamplesLoadMicrocode (
 
   // Load microcode patch into CPU
   GetLogicalIdOfCurrentCore (&LogicalId, StdHeader);
-  PatchLoaderMsr.RawData = (UINT64) MicrocodePatchPtr;
+  PatchLoaderMsr.RawData = (UINT64)(intptr_t) MicrocodePatchPtr;
   PatchLoaderMsr.BitFields.SBZ = 0;
   // Check if this CPU is OR-B0, expected fix in OR-B1
   if ((LogicalId.Revision & AMD_F15_OR_B0) != 0) {

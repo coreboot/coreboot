@@ -156,13 +156,13 @@ HeapManagerInit (
 
   GetCpuServicesOfCurrentCore ((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
   FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (CONST VOID **) &CacheInfoPtr, &Ignored, StdHeader);
-  HeapBufferPtr = (UINT8 *) StdHeader->HeapBasePtr;
+  HeapBufferPtr = (UINT8 *)(UINT32) StdHeader->HeapBasePtr;
 
   // Check whether the heap manager is already initialized
   LibAmdMsrRead (AMD_MTRR_VARIABLE_HEAP_MASK, &MsrData, StdHeader);
   if (MsrData == (CacheInfoPtr->VariableMtrrMask & AMD_HEAP_MTRR_MASK)) {
     LibAmdMsrRead (AMD_MTRR_VARIABLE_HEAP_BASE, &MsrData, StdHeader);
-    if ((MsrData & CacheInfoPtr->HeapBaseMask) == ((UINT64) HeapBufferPtr & CacheInfoPtr->HeapBaseMask)) {
+    if ((MsrData & CacheInfoPtr->HeapBaseMask) == ((UINT64) (UINTN) HeapBufferPtr & CacheInfoPtr->HeapBaseMask)) {
       if (((HEAP_MANAGER *) HeapBufferPtr)->Signature == HEAP_SIGNATURE_VALID) {
         // This is not a bug, there are multiple premem basic entry points,
         // and each will call heap init to make sure create struct will succeed.
@@ -178,7 +178,7 @@ HeapManagerInit (
   }
 
   // Set variable MTRR base and mask
-  MsrData = ((UINT64) HeapBufferPtr & CacheInfoPtr->HeapBaseMask);
+  MsrData = ((UINT64) (UINTN) HeapBufferPtr & CacheInfoPtr->HeapBaseMask);
   MsrMask = CacheInfoPtr->VariableMtrrHeapMask & AMD_HEAP_MTRR_MASK;
 
   MsrData |= 0x06;
@@ -320,20 +320,20 @@ HeapAllocateBuffer (
   AllocateHeapParams->RequestedBufferSize += NUM_OF_SENTINEL * SIZE_OF_SENTINEL;
 
   // Get base address
-  BaseAddress = (UINT8 *) StdHeader->HeapBasePtr;
+  BaseAddress = (UINT8 *) (UINTN) StdHeader->HeapBasePtr;
   HeapManager = (HEAP_MANAGER *) BaseAddress;
 
   // Check Heap database is valid
   if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
     // The base address in StdHeader is incorrect, get base address by itself
-    BaseAddress = (UINT8 *) HeapGetBaseAddress (StdHeader);
+    BaseAddress = (UINT8 *)(UINT32) HeapGetBaseAddress (StdHeader);
     HeapManager = (HEAP_MANAGER *) BaseAddress;
     if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
       // Heap is not available, ASSERT here
       ASSERT (FALSE);
       return AGESA_ERROR;
     }
-    StdHeader->HeapBasePtr = (UINT64) BaseAddress;
+    StdHeader->HeapBasePtr = (UINT64)(UINT32) BaseAddress;
   }
 
   // Allocate
@@ -465,20 +465,20 @@ HeapDeallocateBuffer (
   ASSERT (StdHeader != NULL);
 
   HeapLocateFlag = TRUE;
-  BaseAddress = (UINT8 *) StdHeader->HeapBasePtr;
+  BaseAddress = (UINT8 *) (UINTN) StdHeader->HeapBasePtr;
   HeapManager = (HEAP_MANAGER *) BaseAddress;
 
   // Check Heap database is valid
   if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
     // The base address in StdHeader is incorrect, get base address by itself
-    BaseAddress = (UINT8 *) HeapGetBaseAddress (StdHeader);
+    BaseAddress = (UINT8 *)(UINT32) HeapGetBaseAddress (StdHeader);
     HeapManager = (HEAP_MANAGER *) BaseAddress;
     if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
       // Heap is not available, ASSERT here
       ASSERT (FALSE);
       return AGESA_ERROR;
     }
-    StdHeader->HeapBasePtr = (UINT64) BaseAddress;
+    StdHeader->HeapBasePtr = (UINT64)(UINT32) BaseAddress;
   }
 
   OffsetOfPreviousNode = AMD_HEAP_INVALID_HEAP_OFFSET;
@@ -594,20 +594,20 @@ HeapLocateBuffer (
   ASSERT (StdHeader != NULL);
 
   HeapLocateFlag = TRUE;
-  BaseAddress = (UINT8 *) StdHeader->HeapBasePtr;
+  BaseAddress = (UINT8 *) (UINTN) StdHeader->HeapBasePtr;
   HeapManager = (HEAP_MANAGER *) BaseAddress;
 
   // Check Heap database is valid
   if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
     // The base address in StdHeader is incorrect, get base address by itself
-    BaseAddress = (UINT8 *) HeapGetBaseAddress (StdHeader);
+    BaseAddress = (UINT8 *)(UINT32) HeapGetBaseAddress (StdHeader);
     HeapManager = (HEAP_MANAGER *) BaseAddress;
     if ((BaseAddress == NULL) || (HeapManager->Signature != HEAP_SIGNATURE_VALID)) {
       // Heap is not available, ASSERT here
       ASSERT (FALSE);
       return AGESA_ERROR;
     }
-    StdHeader->HeapBasePtr = (UINT64) BaseAddress;
+    StdHeader->HeapBasePtr = (UINT64)(UINT32) BaseAddress;
   }
   OffsetOfCurrentNode =  HeapManager->FirstActiveBufferOffset;
   CurrentNode = (BUFFER_NODE *) (BaseAddress + OffsetOfCurrentNode);
@@ -698,29 +698,29 @@ HeapGetBaseAddress (
 
   // Firstly, we try to see if heap is in cache
   BaseAddress = HeapGetCurrentBase (StdHeader);
-  HeapManager = (HEAP_MANAGER *) BaseAddress;
+  HeapManager = (HEAP_MANAGER *) (UINTN) BaseAddress;
 
   if ((HeapManager->Signature != HEAP_SIGNATURE_VALID) &&
       (StdHeader->HeapStatus != HEAP_DO_NOT_EXIST_YET) &&
       (StdHeader->HeapStatus != HEAP_LOCAL_CACHE)) {
     // Secondly, we try to see if heap is in temp memory
     BaseAddress = UserOptions.CfgHeapDramAddress;
-    HeapManager = (HEAP_MANAGER *) BaseAddress;
+    HeapManager = (HEAP_MANAGER *) (UINTN) BaseAddress;
     if (HeapManager->Signature != HEAP_SIGNATURE_VALID) {
       // Thirdly, we try to see if heap in main memory
       // by locating with external buffer manager (IBV)
       AgesaBuffer.StdHeader = *StdHeader;
       AgesaBuffer.BufferHandle = AMD_HEAP_IN_MAIN_MEMORY_HANDLE;
       if (AgesaLocateBuffer (0, &AgesaBuffer) == AGESA_SUCCESS) {
-        BaseAddress = (UINT64) AgesaBuffer.BufferPointer;
-        HeapManager = (HEAP_MANAGER *) BaseAddress;
+        BaseAddress = (UINT64) (UINTN) AgesaBuffer.BufferPointer;
+        HeapManager = (HEAP_MANAGER *) (UINTN) BaseAddress;
         if (HeapManager->Signature != HEAP_SIGNATURE_VALID) {
           // No valid heap signature ever found, return a NULL pointer
-          BaseAddress = 0;
+          BaseAddress = (UINT64) (UINTN) NULL;
         }
       } else {
         // No heap buffer is allocated by external manager (IBV), return a NULL pointer
-        BaseAddress = 0;
+        BaseAddress = (UINT64) (UINTN) NULL;
       }
     }
   }
@@ -762,7 +762,7 @@ DeleteFreeSpaceNode (
   BUFFER_NODE *PreviousFreeSpaceNode;
 
 
-  BaseAddress = (UINT8 *) StdHeader->HeapBasePtr;
+  BaseAddress = (UINT8 *) (UINTN) StdHeader->HeapBasePtr;
   HeapManager = (HEAP_MANAGER *) BaseAddress;
 
   OffsetOfPreviousNode = AMD_HEAP_INVALID_HEAP_OFFSET;
@@ -821,7 +821,7 @@ InsertFreeSpaceNode (
   BUFFER_NODE *PreviousFreeSpaceNode;
   BUFFER_NODE *InsertedFreeSpaceNode;
 
-  BaseAddress = (UINT8 *) StdHeader->HeapBasePtr;
+  BaseAddress = (UINT8 *) (UINTN) StdHeader->HeapBasePtr;
   HeapManager = (HEAP_MANAGER *) BaseAddress;
 
   OffsetOfPreviousNode = AMD_HEAP_INVALID_HEAP_OFFSET;

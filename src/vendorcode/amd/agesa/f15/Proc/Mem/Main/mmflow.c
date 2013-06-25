@@ -378,7 +378,7 @@ MemSPDDataProcess (
           AGESA_TESTPOINT (TpProcMemAfterAgesaReadSpd, &MemPtr->StdHeader);
           if (AgesaStatus == AGESA_SUCCESS) {
             DimmSPDPtr->DimmPresent = TRUE;
-            IDS_HDT_CONSOLE (MEM_FLOW, "SPD Socket %d Channel %d Dimm %d: %08x\n", Socket, Channel, Dimm, SpdParam.Buffer);
+            IDS_HDT_CONSOLE (MEM_FLOW, "SPD Socket %d Channel %d Dimm %d: %08x\n", Socket, Channel, Dimm, (intptr_t)SpdParam.Buffer);
           } else {
             DimmSPDPtr->DimmPresent = FALSE;
           }

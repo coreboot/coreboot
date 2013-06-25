@@ -584,7 +584,6 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	UINT32            GpioMmioAddr;
 	UINT8             Data8;
 	UINT16            Data16;
-	UINT8             TempData8;
 
 	FcnData = Data;
 	MemData = ConfigPtr;

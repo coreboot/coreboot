@@ -17,10 +17,12 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <arch/rules.h>
 #include <device/pci_def.h>
-#include <device/resource.h>
 #include <device/device.h>
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
+
+#ifndef __SIMPLE_DEVICE__
+#include <device/resource.h>
 #include <device/pci_ops.h>
 #include <device/pci_rom.h>
 
@@ -107,5 +109,5 @@ static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
 	return bops;
 }
 
-#endif
+#endif /* ! __SIMPLE_DEVICE__ */
 #endif /* PCI_H */

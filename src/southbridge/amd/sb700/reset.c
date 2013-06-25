@@ -18,7 +18,8 @@
  */
 
 #ifndef __PRE_RAM__
-#define __PRE_RAM__ // Use simple device model for this file even in ramstage
+#define __SIMPLE_DEVICE__
+// Use simple device model for this file even in ramstage
 #endif
 #include <arch/io.h>
 #include <reset.h>

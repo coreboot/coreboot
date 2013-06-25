@@ -192,7 +192,11 @@
  */
 #ifndef AZALIA_SDIN_PIN
 //#define AZALIA_SDIN_PIN             0xAA
-#define AZALIA_SDIN_PIN               0x2A
+#define AZALIA_SDIN_PIN
+#define AZALIA_SDIN_PIN_0             0x2
+#define AZALIA_SDIN_PIN_1             0x2
+#define AZALIA_SDIN_PIN_2             0x2
+#define AZALIA_SDIN_PIN_3             0x0
 #endif
 
 /**

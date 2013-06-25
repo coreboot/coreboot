@@ -209,12 +209,12 @@ CopyHeapToTempRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInTempMem = 0;
-    BaseAddressInCache = (UINT8 *) StdHeader->HeapBasePtr;
+    BaseAddressInCache = (UINT8 *) (UINT32)StdHeader->HeapBasePtr;
     HeapManagerInCache = (HEAP_MANAGER *) BaseAddressInCache;
     HeapInCacheOffset = HeapManagerInCache->FirstActiveBufferOffset;
     HeapInCache = (BUFFER_NODE *) (BaseAddressInCache + HeapInCacheOffset);
 
-    BaseAddressInTempMem = (UINT8 *) UserOptions.CfgHeapDramAddress;
+    BaseAddressInTempMem = (UINT8 *) (UINTN) UserOptions.CfgHeapDramAddress;
     HeapManagerInTempMem = (HEAP_MANAGER *) BaseAddressInTempMem;
     HeapInTempMem = (BUFFER_NODE *) (BaseAddressInTempMem + TotalSize);
 
@@ -308,8 +308,8 @@ CopyHeapToMainRamAtPost (
     TotalSize = sizeof (HEAP_MANAGER);
     SizeOfNodeData = 0;
     AlignTo16ByteInMainMem = 0;
-    BaseAddressInTempMem = (UINT8 *) StdHeader->HeapBasePtr;
-    HeapManagerInTempMem = (HEAP_MANAGER *) StdHeader->HeapBasePtr;
+    BaseAddressInTempMem = (UINT8 *)(UINT32) StdHeader->HeapBasePtr;
+    HeapManagerInTempMem = (HEAP_MANAGER *)(UINT32) StdHeader->HeapBasePtr;
     HeapInTempMemOffset = HeapManagerInTempMem->FirstActiveBufferOffset;
     HeapInTempMem = (BUFFER_NODE *) (BaseAddressInTempMem + HeapInTempMemOffset);
 
@@ -367,7 +367,7 @@ CopyHeapToMainRamAtPost (
     HeapInMainMem->OffsetOfNextNode = AMD_HEAP_INVALID_HEAP_OFFSET;
   }
   // if address of heap in temp memory is above 1M, then we must used one variable MTRR.
-  if (StdHeader->HeapBasePtr >= 0x100000) {
+  if ( (UINTN) StdHeader->HeapBasePtr >= 0x100000) {
     // Find out which variable MTRR was used in CopyHeapToTempRamAtPost.
     GetCpuServicesOfCurrentCore ((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
     FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (CONST VOID **) &CacheInfoPtr, &Ignored, StdHeader);
@@ -376,7 +376,7 @@ CopyHeapToMainRamAtPost (
          HeapRamVariableMtrr--) {
       LibAmdMsrRead (HeapRamVariableMtrr, &VariableMtrrBase, StdHeader);
       LibAmdMsrRead ((HeapRamVariableMtrr + 1), &VariableMtrrMask, StdHeader);
-      if ((VariableMtrrBase == (UINT64) (StdHeader->HeapBasePtr & CacheInfoPtr->HeapBaseMask)) &&
+      if ((VariableMtrrBase == (UINT64) (UINTN) (StdHeader->HeapBasePtr & CacheInfoPtr->HeapBaseMask)) &&
           (VariableMtrrMask == (UINT64) (CacheInfoPtr->VariableMtrrHeapMask & AMD_HEAP_MTRR_MASK))) {
         break;
       }

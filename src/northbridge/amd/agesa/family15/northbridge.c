@@ -1060,7 +1060,6 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				dev_path(cdb_dev), 0x0f + family, core_max, core_nums, siblings);
 
 		for (j = 0; j <= siblings; j++ ) {
-			extern CONST OPTIONS_CONFIG_TOPOLOGY ROMDATA TopologyConfiguration;
 			u32 lapicid_start = 0;
 
 			/*

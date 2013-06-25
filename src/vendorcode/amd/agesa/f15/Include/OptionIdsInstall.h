@@ -74,9 +74,9 @@ CONST PF_HtIdsGetPortOverride ROMDATA pf_HtIdsGetPortOverride = M_HTIDS_PORT_OVE
   #if (AGESA_ENTRY_INIT_POST == TRUE)
     #include <mu.h>
     CONST SCRIPT_FUNCTION ROMDATA ScriptFuncList[] = {
-      { (UINT32) (UINT64) MemUWriteCachelines, "WriteCl(PhyAddrLo,BufferAddr,ClCnt)"},
-      { (UINT32) (UINT64) MemUReadCachelines,  "ReadCl(BufferAddr,PhyAddrLo,ClCnt)"},
-      { (UINT32) (UINT64) MemUFlushPattern,    "FlushCl(PhyAddrLo,ClCnt)"}
+      { (UINT32) /*(UINT64)*/ MemUWriteCachelines, "WriteCl(PhyAddrLo,BufferAddr,ClCnt)"},
+      { (UINT32) /*(UINT64)*/ MemUReadCachelines,  "ReadCl(BufferAddr,PhyAddrLo,ClCnt)"},
+      { (UINT32) /*(UINT64)*/ MemUFlushPattern,    "FlushCl(PhyAddrLo,ClCnt)"}
     };
   #elif (AGESA_ENTRY_INIT_RECOVERY == TRUE)
     #include <mru.h>
@@ -94,9 +94,9 @@ CONST PF_HtIdsGetPortOverride ROMDATA pf_HtIdsGetPortOverride = M_HTIDS_PORT_OVE
   #endif
 #else
   CONST SCRIPT_FUNCTION ROMDATA ScriptFuncList[] = {
-    { (UINT32) (UINT64) CommonReturnFalse, "DefRet()"},
-    { (UINT32) (UINT64) CommonReturnFalse,  "DefRet()"},
-    { (UINT32) (UINT64) CommonReturnFalse,    "DefRet()"}
+    { (UINT32) /*(UINT64)*/ CommonReturnFalse, "DefRet()"},
+    { (UINT32) /*(UINT64)*/ CommonReturnFalse,  "DefRet()"},
+    { (UINT32) /*(UINT64)*/ CommonReturnFalse,    "DefRet()"}
   };
 #endif
 

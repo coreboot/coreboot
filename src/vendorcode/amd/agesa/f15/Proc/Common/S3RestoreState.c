@@ -166,7 +166,7 @@ S3RestoreStateFromTable (
   PCI_ADDR              PciAddress;
   UINTN                 Index;
   S3SaveTableRecordPtr = (UINT8 *) S3SaveTablePtr + sizeof (S3_SAVE_TABLE_HEADER);
-  IDS_HDT_CONSOLE (S3_TRACE, "Start S3 restore\n", ((S3_WRITE_OP_HEADER *) S3SaveTableRecordPtr)->Address);
+  IDS_HDT_CONSOLE (S3_TRACE, "Start S3 restore: Address: 0x%08x\n", (intptr_t)((S3_WRITE_OP_HEADER *) S3SaveTableRecordPtr)->Address);
   while ((UINT8 *) S3SaveTableRecordPtr < ((UINT8 *) S3SaveTablePtr + S3SaveTablePtr->SaveOffset)) {
     switch  (*(UINT16 *) S3SaveTableRecordPtr) {
     case  SAVE_STATE_IO_WRITE_OPCODE:

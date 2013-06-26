@@ -33,7 +33,7 @@ extern u8 bus_sp5100[2];
 extern u32 bus_type[256];
 extern u32 sbdn_sr5650;
 extern u32 sbdn_sp5100;
-extern u8 bus_isa;
+extern int bus_isa;
 
 
 static void *smp_write_config_table(void *v)

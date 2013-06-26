@@ -102,6 +102,26 @@ void spi_cs_deactivate(struct spi_slave *slave)
 	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
 }
 
+static inline void exynos_spi_soft_reset(struct exynos_spi *regs)
+{
+	/* The soft reset clears only FIFO and status register.
+	 * All special function registers are not changed. */
+	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
+}
+
+static inline void exynos_spi_flush_fifo(struct exynos_spi *regs)
+{
+	/*
+	 * Flush spi tx, rx fifos and reset the SPI controller
+	 * and clear rx/tx channel
+	 */
+	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+	clrbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
+	exynos_spi_soft_reset(regs);
+	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+}
+
 static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 			     void *dinp, void const *doutp, int i)
 {
@@ -114,8 +134,7 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 	ASSERT(todo % 4 == 0);
 
 	out_bytes = in_bytes = todo;
-	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	exynos_spi_soft_reset(regs);
 	writel(((todo * 8) / 32) | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
 
 	while (in_bytes) {
@@ -143,35 +162,27 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 	}
 }
 
-/* set up SPI channel */
 int spi_claim_bus(struct spi_slave *slave)
 {
 	struct exynos_spi_slave *espi = to_exynos_spi(slave);
 	struct exynos_spi *regs = espi->regs;
 
-	/* set the spi1 GPIO */
+	exynos_spi_flush_fifo(regs);
 
-	/* set pktcnt and enable it */
-	writel(4 | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
-	/* set FB_CLK_SEL */
+	// Select Active High Clock, Format A (SCP 30.2.1.8).
+	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L | SPI_CH_CPHA_B);
+
+	// Set FeedBack Clock Selection.
 	writel(SPI_FB_DELAY_180, &regs->fb_clk);
-	/* set CH_WIDTH and BUS_WIDTH as word */
-	setbits_le32(&regs->mode_cfg,
-		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L); /* CPOL: active high */
 
-	/* clear rx and tx channel if set priveously */
-	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
-
-	setbits_le32(&regs->swap_cfg,
-		     SPI_RX_SWAP_EN | SPI_RX_BYTE_SWAP | SPI_RX_HWORD_SWAP);
-
-	/* do a soft reset */
-	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
-
-	/* now set rx and tx channel ON */
-	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON | SPI_CH_HS_EN);
+	// HIGH speed is required for Tx/Rx to work in 50MHz (SCP 30.2.1.6).
+	if (espi->half_duplex) {
+		clrbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
+		printk(BIOS_DEBUG, "%s: LOW speed.\n", __func__);
+	} else {
+		setbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
+		printk(BIOS_DEBUG, "%s: HIGH speed.\n", __func__);
+	}
 	return 0;
 }
 
@@ -209,21 +220,12 @@ static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
 void spi_release_bus(struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
-	/*
-	 * Let put controller mode to BYTE as
-	 * SPI driver does not support WORD mode yet
-	 */
-	clrbits_le32(&regs->mode_cfg,
-		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
+	/* Reset swap mode to make sure no one relying on default values (Ex,
+	 * payload or kernel) will go wrong. */
+	clrbits_le32(&regs->mode_cfg, (SPI_MODE_CH_WIDTH_WORD |
+				       SPI_MODE_BUS_WIDTH_WORD));
 	writel(0, &regs->swap_cfg);
-
-	/*
-	 * Flush spi tx, rx fifos and reset the SPI controller
-	 * and clear rx/tx channel
-	 */
-	clrsetbits_le32(&regs->ch_cfg, SPI_CH_HS_EN, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_TX_CH_ON | SPI_RX_CH_ON);
+	exynos_spi_flush_fifo(regs);
 }
 
 // SPI as CBFS media.

@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "agesawrapper.h"
+#include <cpu/amd/amdfam10_sysconf.h>
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif

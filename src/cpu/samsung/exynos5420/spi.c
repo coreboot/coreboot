@@ -41,6 +41,32 @@ struct exynos_spi_slave {
 	uint8_t frame_header;  /* header byte to detect in half-duplex mode. */
 };
 
+/* TODO(hungte) Move the SPI param list to per-board configuration, probably
+ * Kconfig or mainboard.c */
+static struct exynos_spi_slave exynos_spi_slaves[3] = {
+	// SPI 0
+	{
+		.slave = { .bus = 0, },
+		.regs = samsung_get_base_spi0(),
+	},
+	// SPI 1
+	{
+		.slave = { .bus = 1, .rw = SPI_READ_FLAG, },
+		.regs = samsung_get_base_spi1(),
+		.fifo_size = 64,
+		.half_duplex = 0,
+	},
+	// SPI 2
+	{
+		.slave = { .bus = 2,
+			   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG, },
+		.regs = samsung_get_base_spi2(),
+		.fifo_size = 64,
+		.half_duplex = 1,
+		.frame_header = 0xec,
+	},
+};
+
 static inline struct exynos_spi_slave *to_exynos_spi(struct spi_slave *slave)
 {
 	return container_of(slave, struct exynos_spi_slave, slave);
@@ -54,14 +80,13 @@ void spi_init(void)
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 				  unsigned int max_hz, unsigned int mode)
 {
-	// TODO(hungte) Provide Exynos SPI device setup.
-	return NULL;
+	ASSERT(bus >= 0 && bus < 3);
+	return &(exynos_spi_slaves[bus].slave);
 }
 
 int spi_cs_is_valid(unsigned int bus, unsigned int cs)
 {
-	// TODO(hungte) Detect and check if BUS/CS is valid.
-	return 0;
+	return bus > 0 && bus < 3;
 }
 
 void spi_cs_activate(struct spi_slave *slave)

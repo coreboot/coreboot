@@ -86,11 +86,6 @@ struct exynos_spi {
 #define SPI_RX_BYTE_SWAP	(1 << 6)
 #define SPI_RX_HWORD_SWAP	(1 << 7)
 
-/* API */
-int exynos_spi_open(struct exynos_spi *regs);
-int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off);
-int exynos_spi_close(struct exynos_spi *regs);
-
 /* Serve as CBFS media source */
 int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
 				     void *buffer_address,

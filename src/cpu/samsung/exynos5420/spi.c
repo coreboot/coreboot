@@ -22,16 +22,60 @@
 #include <arch/io.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <spi_flash.h>
 
+#include "cpu.h"
 #include "spi.h"
-
-#define EXYNOS_BASE_SPI1 ((void *)0x12d30000)
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI
 # define DEBUG_SPI(x,...)	printk(BIOS_DEBUG, "EXYNOS_SPI: " x)
 #else
 # define DEBUG_SPI(x,...)
 #endif
+
+struct exynos_spi_slave {
+	struct spi_slave slave;
+	struct exynos_spi *regs;
+	unsigned int fifo_size;
+	uint8_t half_duplex;
+	uint8_t frame_header;  /* header byte to detect in half-duplex mode. */
+};
+
+static inline struct exynos_spi_slave *to_exynos_spi(struct spi_slave *slave)
+{
+	return container_of(slave, struct exynos_spi_slave, slave);
+}
+
+void spi_init(void)
+{
+	printk(BIOS_INFO, "Exynos SPI driver initiated.\n");
+}
+
+struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
+				  unsigned int max_hz, unsigned int mode)
+{
+	// TODO(hungte) Provide Exynos SPI device setup.
+	return NULL;
+}
+
+int spi_cs_is_valid(unsigned int bus, unsigned int cs)
+{
+	// TODO(hungte) Detect and check if BUS/CS is valid.
+	return 0;
+}
+
+void spi_cs_activate(struct spi_slave *slave)
+{
+	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
+	// TODO(hungte) Add some delay if too many transactions happen at once.
+	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
+}
+
+void spi_cs_deactivate(struct spi_slave *slave)
+{
+	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
+	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
+}
 
 static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 			     void *dinp, void const *doutp, int i)
@@ -75,8 +119,11 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 }
 
 /* set up SPI channel */
-int exynos_spi_open(struct exynos_spi *regs)
+int spi_claim_bus(struct spi_slave *slave)
 {
+	struct exynos_spi_slave *espi = to_exynos_spi(slave);
+	struct exynos_spi *regs = espi->regs;
+
 	/* set the spi1 GPIO */
 
 	/* set pktcnt and enable it */
@@ -103,8 +150,17 @@ int exynos_spi_open(struct exynos_spi *regs)
 	return 0;
 }
 
-int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
+int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bitsout,
+	     void *din, unsigned int bitsin)
 {
+	// TODO(hungte) Invoke exynos_spi_rx_tx to transfer data.
+	return -1;
+}
+
+static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
+			   uint32_t off)
+{
+	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	int upto, todo;
 	int i;
 	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
@@ -125,8 +181,9 @@ int exynos_spi_read(struct exynos_spi *regs, void *dest, u32 len, u32 off)
 	return len;
 }
 
-int exynos_spi_close(struct exynos_spi *regs)
+void spi_release_bus(struct spi_slave *slave)
 {
+	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	/*
 	 * Let put controller mode to BYTE as
 	 * SPI driver does not support WORD mode yet
@@ -142,25 +199,25 @@ int exynos_spi_close(struct exynos_spi *regs)
 	clrsetbits_le32(&regs->ch_cfg, SPI_CH_HS_EN, SPI_CH_RST);
 	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
 	clrbits_le32(&regs->ch_cfg, SPI_TX_CH_ON | SPI_RX_CH_ON);
-	return 0;
 }
 
 // SPI as CBFS media.
 struct exynos_spi_media {
-	struct exynos_spi *regs;
+	struct spi_slave *slave;
 	struct cbfs_simple_buffer buffer;
 };
 
 static int exynos_spi_cbfs_open(struct cbfs_media *media) {
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_open\n");
-	return exynos_spi_open(spi->regs);
+	return spi_claim_bus(spi->slave);
 }
 
 static int exynos_spi_cbfs_close(struct cbfs_media *media) {
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_close\n");
-	return exynos_spi_close(spi->regs);
+	spi_release_bus(spi->slave);
+	return 0;
 }
 
 static size_t exynos_spi_cbfs_read(struct cbfs_media *media, void *dest,
@@ -168,10 +225,10 @@ static size_t exynos_spi_cbfs_read(struct cbfs_media *media, void *dest,
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	int bytes;
 	DEBUG_SPI("exynos_spi_cbfs_read(%u)\n", count);
-	bytes = exynos_spi_read(spi->regs, dest, count, offset);
+	bytes = exynos_spi_read(spi->slave, dest, count, offset);
 	// Flush and re-open the device.
-	exynos_spi_close(spi->regs);
-	exynos_spi_open(spi->regs);
+	spi_release_bus(spi->slave);
+	spi_claim_bus(spi->slave);
 	return bytes;
 }
 
@@ -197,9 +254,15 @@ int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
 				     size_t buffer_size) {
 	// TODO Replace static variable to support multiple streams.
 	static struct exynos_spi_media context;
+	static struct exynos_spi_slave eslave = {
+		.slave = { .bus = 1, .rw = SPI_READ_FLAG, },
+		.regs = samsung_get_base_spi1(),
+		.fifo_size = 64,
+		.half_duplex = 0,
+	};
 	DEBUG_SPI("initialize_exynos_spi_cbfs_media\n");
 
-	context.regs = EXYNOS_BASE_SPI1;
+	context.slave = &eslave.slave;
 	context.buffer.allocated = context.buffer.last_allocate = 0;
 	context.buffer.buffer = buffer_address;
 	context.buffer.size = buffer_size;

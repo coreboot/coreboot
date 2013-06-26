@@ -27,6 +27,8 @@
 #include "cpu.h"
 #include "spi.h"
 
+#define EXYNOS_SPI_MAX_TRANSFER_BYTES (65535)
+
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI
 # define DEBUG_SPI(x,...)	printk(BIOS_DEBUG, "EXYNOS_SPI: " x)
 #else
@@ -120,6 +122,119 @@ static inline void exynos_spi_flush_fifo(struct exynos_spi *regs)
 	clrbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
 	exynos_spi_soft_reset(regs);
 	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+}
+
+static void exynos_spi_request_bytes(struct exynos_spi *regs, int count,
+				     int width)
+{
+	uint32_t mode_word = SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD,
+		 swap_word = (SPI_TX_SWAP_EN | SPI_RX_SWAP_EN |
+			      SPI_TX_BYTE_SWAP | SPI_RX_BYTE_SWAP |
+			      SPI_TX_HWORD_SWAP | SPI_RX_HWORD_SWAP);
+
+	/* For word address we need to swap bytes */
+	if (width == sizeof(uint32_t)) {
+		setbits_le32(&regs->mode_cfg, mode_word);
+		setbits_le32(&regs->swap_cfg, swap_word);
+		count /= width;
+	} else {
+		/* Select byte access and clear the swap configuration */
+		clrbits_le32(&regs->mode_cfg, mode_word);
+		writel(0, &regs->swap_cfg);
+	}
+
+	exynos_spi_soft_reset(regs);
+
+	if (count) {
+		ASSERT(count < (1 << 16));
+		writel(count | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
+	} else {
+		writel(0, &regs->pkt_cnt);
+	}
+}
+
+int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
+	      const uint8_t *txp, int tx_bytes);
+int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
+	      const uint8_t *txp, int tx_bytes)
+{
+	struct exynos_spi_slave *espi = to_exynos_spi(slave);
+	struct exynos_spi *regs = espi->regs;
+
+	int step;
+	int todo = MAX(rx_bytes, tx_bytes);
+	int wait_for_frame_header = espi->half_duplex;
+
+	ASSERT(todo < EXYNOS_SPI_MAX_TRANSFER_BYTES);
+
+	/* Select transfer mode. */
+	if (espi->half_duplex) {
+		step = 1;
+	} else if ((rx_bytes | tx_bytes | (uintptr_t)rxp |(uintptr_t)txp) & 3) {
+		printk(BIOS_CRIT, "%s: WARNING: tranfer mode decreased to 1B\n",
+		       __func__);
+		step = 1;
+	} else {
+		step = sizeof(uint32_t);
+	}
+
+	exynos_spi_request_bytes(regs, espi->half_duplex ? 0 : todo, step);
+
+	/* Note: Some device, like ChromeOS EC, tries to work in half-duplex
+	 * mode and sends a large amount of data (larger than FIFO size).
+	 * Printing lots of debug messages or doing extra delay in the loop
+	 * below may cause rx buffer to overflow and getting unexpected data
+	 * error.
+	 */
+	while (rx_bytes || tx_bytes) {
+		int temp;
+		uint32_t spi_sts = readl(&regs->spi_sts);
+		int rx_lvl = (spi_sts >> SPI_RX_LVL_OFFSET) & SPI_FIFO_LVL_MASK,
+		    tx_lvl = (spi_sts >> SPI_TX_LVL_OFFSET) & SPI_FIFO_LVL_MASK;
+		int min_tx = ((tx_bytes || !espi->half_duplex) ?
+			      (espi->fifo_size / 2) : 1);
+
+		// TODO(hungte) Abort if timeout happens in half-duplex mode.
+
+		/*
+		 * Don't completely fill the txfifo, since we don't want our
+		 * rxfifo to overflow, and it may already contain data.
+		 */
+		while (tx_lvl < min_tx) {
+			if (tx_bytes) {
+				if (step == sizeof(uint32_t)) {
+					temp = *((uint32_t *)txp);
+					txp += sizeof(uint32_t);
+				} else {
+					temp = *txp++;
+				}
+				tx_bytes -= step;
+			} else {
+				temp = -1;
+			}
+			writel(temp, &regs->tx_data);
+			tx_lvl += step;
+		}
+
+		while ((rx_lvl >= step) && rx_bytes) {
+			temp = readl(&regs->rx_data);
+			rx_lvl -= step;
+			if (wait_for_frame_header) {
+				if ((temp & 0xff) == espi->frame_header) {
+					wait_for_frame_header = 0;
+				}
+				break;  /* Restart the outer loop. */
+			}
+			if (step == sizeof(uint32_t)) {
+				*((uint32_t *)rxp) = temp;
+				rxp += sizeof(uint32_t);
+			} else {
+				*rxp++ = temp;
+			}
+			rx_bytes -= step;
+		}
+	}
+	return 0;
 }
 
 static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,

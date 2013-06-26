@@ -158,13 +158,6 @@ static void setup_memory(struct mem_timings *mem, int is_resume)
 	       mem->mpll_mdiv,
 	       mem->frequency_mhz);
 
-	/* FIXME Currently memory initialization with mem_reset on normal boot
-	 * will cause resume to fail (even if we don't do mem_reset on resume),
-	 * and the workaround is to temporarily always enable "is_resume".
-	 * This should be removed when the root cause of resume issue is found.
-	 */
-	is_resume = 1;
-
 	if (ddr3_mem_ctrl_init(mem, DMC_INTERLEAVE_SIZE, !is_resume)) {
 		die("Failed to initialize memory controller.\n");
 	}

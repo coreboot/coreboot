@@ -210,7 +210,7 @@ static int elog_is_header_valid(struct elog_header *header)
 		return 0;
 	}
 	if (header->header_size != sizeof(*header)) {
-		printk(BIOS_ERR, "ELOG: header size mismatch %u != %u\n",
+		printk(BIOS_ERR, "ELOG: header size mismatch %u != %lu\n",
 		       header->header_size, sizeof(*header));
 		return 0;
 	}

@@ -66,9 +66,10 @@
 #define EXYNOS5_SROMC_BASE		0x12250000
 #define EXYNOS5_UART_BASE		0x12C00000
 
+#define EXYNOS5_SPI0_BASE		0x12D20000
 #define EXYNOS5_SPI1_BASE		0x12D30000
+#define EXYNOS5_SPI2_BASE		0x12D40000
 #define EXYNOS5_I2C_BASE		0x12C60000
-#define EXYNOS5_SPI_BASE		0x12D20000
 #define EXYNOS5_PWMTIMER_BASE		0x12DD0000
 #define EXYNOS5_SPI_ISP_BASE		0x131A0000
 #define EXYNOS5_I2S_BASE		0x12D60000
@@ -191,9 +192,10 @@
 #define samsung_get_base_watchdog() ((struct exynos5_watchdog *)EXYNOS5_WATCHDOG_BASE)
 #define samsung_get_base_power() ((struct exynos5_power *)EXYNOS5_POWER_BASE)
 #define samsung_get_base_i2s() ((struct exynos5_i2s *)EXYNOS5_I2S_BASE)
-#define samsung_get_base_spi1() ((struct exynos5_spi1 *)EXYNOS5_SPI1_BASE)
+#define samsung_get_base_spi0() ((struct exynos_spi *)EXYNOS5_SPI0_BASE)
+#define samsung_get_base_spi1() ((struct exynos_spi *)EXYNOS5_SPI1_BASE)
+#define samsung_get_base_spi2() ((struct exynos_spi *)EXYNOS5_SPI2_BASE)
 #define samsung_get_base_i2c() ((struct exynos5_i2c *)EXYNOS5_I2C_BASE)
-#define samsung_get_base_spi() ((struct exynos5_spi *)EXYNOS5_SPI_BASE)
 #define samsung_get_base_spi_isp() ((struct exynos5_spi_isp *)EXYNOS5_SPI_ISP_BASE)
 
 #define EXYNOS5_SPI_NUM_CONTROLLERS	5

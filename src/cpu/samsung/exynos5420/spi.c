@@ -22,11 +22,9 @@
 #include <arch/io.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "gpio.h"
-#include "clk.h"
+
 #include "spi.h"
 
-#define OM_STAT		(0x1f << 1)
 #define EXYNOS_BASE_SPI1 ((void *)0x12d30000)
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI

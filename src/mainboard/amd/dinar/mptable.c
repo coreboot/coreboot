@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/amdfam15.h>
 
 extern u8 bus_rd890[14];
 extern u8 bus_sb700[2];

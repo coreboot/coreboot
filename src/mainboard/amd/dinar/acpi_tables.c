@@ -29,6 +29,7 @@
 #include <cpu/amd/mtrr.h>
 
 #include "agesawrapper.h"
+#include <cpu/amd/amdfam15.h>
 
 #define DUMP_ACPI_TABLES 0
 

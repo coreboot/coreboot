@@ -37,6 +37,7 @@
 #ifdef CONFIG_ARCH_X86
 #include <arch/rdtsc.h>
 #endif
+#include <timeout.h>
 
 extern u32 cpu_khz;
 
@@ -188,4 +189,20 @@ void mdelay(unsigned int m)
 void delay(unsigned int s)
 {
 	_delay((uint64_t)s * timer_hz());
+}
+
+/**
+ * Delay until a specified point in time but break at a deadline
+ *
+ * @param delay_end point in time to delay until
+ * @param dl deadline to satisfy
+ * @return -1 if dl has already expired, 0 if not
+ */
+int delay_until(deadline_t delay_end, deadline_t dl)
+{
+	if (timed_out(dl))
+		return -1;
+	deadline_t de = MIN(delay_end, dl);
+	while (timer_raw_value() < de) ;
+	return 0;
 }

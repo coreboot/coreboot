@@ -364,9 +364,6 @@ static size_t exynos_spi_cbfs_read(struct cbfs_media *media, void *dest,
 	int bytes;
 	DEBUG_SPI("exynos_spi_cbfs_read(%u)\n", count);
 	bytes = exynos_spi_read(spi->slave, dest, count, offset);
-	// Flush and re-open the device.
-	spi_release_bus(spi->slave);
-	spi_claim_bus(spi->slave);
 	return bytes;
 }
 

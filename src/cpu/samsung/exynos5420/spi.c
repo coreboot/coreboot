@@ -153,10 +153,8 @@ static void exynos_spi_request_bytes(struct exynos_spi *regs, int count,
 	}
 }
 
-int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
-	      const uint8_t *txp, int tx_bytes);
-int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
-	      const uint8_t *txp, int tx_bytes)
+static int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
+		     const uint8_t *txp, int tx_bytes)
 {
 	struct exynos_spi_slave *espi = to_exynos_spi(slave);
 	struct exynos_spi *regs = espi->regs;
@@ -237,46 +235,6 @@ int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
 	return 0;
 }
 
-static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
-			     void *dinp, void const *doutp, int i)
-{
-	int rx_lvl, tx_lvl;
-	unsigned int *rxp = (unsigned int *)(dinp + (i * (32 * 1024)));
-	unsigned int out_bytes, in_bytes;
-
-	// TODO In currrent implementation, every read/write must be aligned to
-	// 4 bytes, otherwise you may get timeout or other unexpected results.
-	ASSERT(todo % 4 == 0);
-
-	out_bytes = in_bytes = todo;
-	exynos_spi_soft_reset(regs);
-	writel(((todo * 8) / 32) | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
-
-	while (in_bytes) {
-		uint32_t spi_sts;
-		int temp;
-
-		spi_sts = readl(&regs->spi_sts);
-		rx_lvl = ((spi_sts >> 15) & 0x7f);
-		tx_lvl = ((spi_sts >> 6) & 0x7f);
-		while (tx_lvl < 32 && out_bytes) {
-			// TODO The "writing" (tx) is not supported now; that's
-			// why we write garbage to keep driving FIFO clock.
-			temp = 0xffffffff;
-			writel(temp, &regs->tx_data);
-			out_bytes -= 4;
-			tx_lvl += 4;
-		}
-		while (rx_lvl >= 4 && in_bytes) {
-			temp = readl(&regs->rx_data);
-			if (rxp)
-				*rxp++ = temp;
-			in_bytes -= 4;
-			rx_lvl -= 4;
-		}
-	}
-}
-
 int spi_claim_bus(struct spi_slave *slave)
 {
 	struct exynos_spi_slave *espi = to_exynos_spi(slave);
@@ -304,32 +262,70 @@ int spi_claim_bus(struct spi_slave *slave)
 int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bitsout,
 	     void *din, unsigned int bitsin)
 {
-	// TODO(hungte) Invoke exynos_spi_rx_tx to transfer data.
-	return -1;
+	unsigned int out_bytes = bitsout / 8, in_bytes = bitsin / 8;
+	uint8_t *out_ptr = (uint8_t *)dout, *in_ptr = (uint8_t *)din;
+	int offset, todo, len;
+	int ret = 0;
+
+	ASSERT(bitsout % 8 == 0 && bitsin % 8 == 0);
+	len = MAX(out_bytes, in_bytes);
+
+	/*
+	 * Exynos SPI limits each transfer to (2^16-1=65535) bytes. To keep
+	 * things simple (especially for word-width transfer mode), allow a
+	 * maximum of (2^16-4=65532) bytes. We could allow more in word mode,
+	 * but the performance difference is small.
+	 */
+	spi_cs_activate(slave);
+	for (offset = 0; !ret && (offset < len); offset += todo) {
+		todo = min(len - offset, (1 << 16) - 4);
+		ret = spi_rx_tx(slave, in_ptr, MIN(in_bytes, todo), out_ptr,
+				MIN(out_bytes, todo));
+		// Adjust remaining bytes and pointers.
+		if (in_bytes >= todo) {
+			in_bytes -= todo;
+			in_ptr += todo;
+		} else {
+			in_bytes = 0;
+			in_ptr = NULL;
+		}
+		if (out_bytes >= todo) {
+			out_bytes -= todo;
+			out_ptr += todo;
+		} else {
+			out_bytes = 0;
+			out_ptr = NULL;
+		}
+	}
+	spi_cs_deactivate(slave);
+
+	return ret;
 }
 
 static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
 			   uint32_t off)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
-	int upto, todo;
-	int i;
-	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT); /* CS low */
+	int rv;
 
-	/* Send read instruction (0x3h) followed by a 24 bit addr */
-	writel((SF_READ_DATA_CMD << 24) | off, &regs->tx_data);
+	// TODO(hungte) Merge the "read address" command into spi_xfer calls
+	// (full-duplex mode).
 
-	/* waiting for TX done */
-	while (!(readl(&regs->spi_sts) & SPI_ST_TX_DONE));
+	spi_cs_activate(slave);
 
-	for (upto = 0, i = 0; upto < len; upto += todo, i++) {
-		todo = MIN(len - upto, (1 << 15));
-		exynos_spi_rx_tx(regs, todo, dest, (void *)(off), i);
+	// Specify read address (in word-width mode).
+	ASSERT(off < (1 << 24));
+	exynos_spi_request_bytes(regs, sizeof(off), sizeof(off));
+	writel(htonl((SF_READ_DATA_CMD << 24) | off), &regs->tx_data);
+	while (!(readl(&regs->spi_sts) & SPI_ST_TX_DONE)) {
+		/* Wait for TX done */
 	}
 
-	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);/* make the CS high */
+	// Now, safe to transfer.
+	rv = spi_xfer(slave, NULL, 0, dest, len * 8);
+	spi_cs_deactivate(slave);
 
-	return len;
+	return (rv == 0) ? len : -1;
 }
 
 void spi_release_bus(struct spi_slave *slave)
@@ -378,7 +374,8 @@ static void *exynos_spi_cbfs_map(struct cbfs_media *media, size_t offset,
 				 size_t count) {
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_map\n");
-	// See exynos_spi_rx_tx for I/O alignment limitation.
+	// exynos: spi_rx_tx may work in 4 byte-width-transmission mode and
+	// requires buffer memory address to be aligned.
 	if (count % 4)
 		count += 4 - (count % 4);
 	return cbfs_simple_buffer_map(&spi->buffer, media, offset, count);

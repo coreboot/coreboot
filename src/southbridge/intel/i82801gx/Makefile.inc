@@ -33,6 +33,8 @@ ramstage-y += usb_ehci.c
 ramstage-y += reset.c
 ramstage-y += watchdog.c
 
+ramstage-y += ../bd82x6x/spi.c
+
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 

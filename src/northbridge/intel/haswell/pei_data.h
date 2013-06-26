@@ -31,7 +31,7 @@
 #define PEI_DATA_H
 
 typedef void (*tx_byte_func)(unsigned char byte);
-#define PEI_VERSION 11
+#define PEI_VERSION 10
 
 struct pei_data
 {
@@ -53,7 +53,6 @@ struct pei_data
 	uint8_t spd_addresses[4];
 	int boot_mode;
 	int ec_present;
-	int gbe_enable;
 	// 0 = leave channel enabled
 	// 1 = disable dimm 0 on channel
 	// 2 = disable dimm 1 on channel

@@ -22,7 +22,21 @@ config EC_GOOGLE_CHROMEEC_I2C_CHIP
 
 config EC_GOOGLE_CHROMEEC_LPC
         depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
-	bool
-	default y
+	def_bool y
 	help
 	  Google Chrome EC via LPC bus.
+
+config EC_GOOGLE_CHROMEEC_SPI
+	depends on EC_GOOGLE_CHROMEEC
+	def_bool n
+	help
+	  Google's Chrome EC via SPI bus.
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	depends on EC_GOOGLE_CHROMEEC_SPI
+	hex "SPI bus for Google's Chrome EC"
+
+config EC_GOOGLE_CHROMEEC_SPI_CHIP
+	depends on EC_GOOGLE_CHROMEEC_SPI
+	hex
+	default 0

@@ -23,8 +23,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <arch/pirq_routing.h>
-
-
+#include <cpu/amd/amdfam15.h>
 
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 		u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,

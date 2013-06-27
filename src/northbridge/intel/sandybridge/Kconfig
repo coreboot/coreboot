@@ -118,8 +118,7 @@ config HAVE_MRC
 config MRC_FILE
 	string "Intel System Agent path and filename"
 	depends on HAVE_MRC
-	default "systemagent-ivybridge.bin" if NORTHBRIDGE_INTEL_IVYBRIDGE
-	default "systemagent-sandybridge.bin" if NORTHBRIDGE_INTEL_SANDYBRIDGE
+	default "systemagent-r6.bin"
 	help
 	  The path and filename of the file to use as System Agent
 	  binary.

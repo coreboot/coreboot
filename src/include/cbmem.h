@@ -136,6 +136,7 @@ void cbmem_add_lb_mem(struct lb_memory *mem);
 
 #ifndef __PRE_RAM__
 extern uint64_t high_tables_base, high_tables_size;
+void set_top_of_ram_once(uint64_t ramtop);
 void set_cbmem_toc(struct cbmem_entry *);
 #endif
 

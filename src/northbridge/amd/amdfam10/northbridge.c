@@ -1038,17 +1038,11 @@ static void amdfam10_domain_set_resources(device_t dev)
 					idx += 0x10;
 					sizek -= pre_sizek;
 
-					if (high_tables_base==0) {
-					/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA
-						high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
+					set_top_of_ram_once(uma_memory_base);
 #else
-						high_tables_base = (mmio_basek * 1024) - HIGH_MEMORY_SIZE;
+					set_top_of_ram_once(mmio_basek * 1024);
 #endif
-						high_tables_size = HIGH_MEMORY_SIZE;
-						printk(BIOS_DEBUG, " split: %dK table at =%08llx\n",
-							HIGH_MEMORY_SIZE / 1024, high_tables_base);
-					}
 				}
 				#if !CONFIG_AMDMCT
 				#if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -1076,15 +1070,11 @@ static void amdfam10_domain_set_resources(device_t dev)
 		idx += 0x10;
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			     i, mmio_basek, basek, limitk);
-		if (high_tables_base==0) {
-		/* Leave some space for ACPI, PIRQ and MP tables */
 #if CONFIG_GFXUMA
-			high_tables_base = uma_memory_base - HIGH_MEMORY_SIZE;
+		set_top_of_ram_once(uma_memory_base);
 #else
-			high_tables_base = (limitk * 1024) - HIGH_MEMORY_SIZE;
+		set_top_of_ram_once(limitk * 1024);
 #endif
-			high_tables_size = HIGH_MEMORY_SIZE;
-		}
 	}
 
 #if CONFIG_GFXUMA

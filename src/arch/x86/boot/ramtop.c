@@ -39,3 +39,15 @@ void get_cbmem_table(uint64_t *base, uint64_t *size)
 	}
 }
 #endif
+
+#if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
+void set_top_of_ram(uint64_t ramtop)
+{
+	set_cbmem_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE, 1);
+}
+
+void set_top_of_ram_once(uint64_t ramtop)
+{
+	set_cbmem_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE, 0);
+}
+#endif

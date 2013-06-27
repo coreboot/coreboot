@@ -129,7 +129,6 @@ u64 cbmem_entry_size(const struct cbmem_entry *entry);
 #else /* !CONFIG_DYNAMIC_CBMEM */
 
 #ifndef __PRE_RAM__
-extern uint64_t high_tables_base, high_tables_size;
 int cbmem_base_check(void);
 #endif
 

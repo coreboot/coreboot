@@ -513,6 +513,11 @@ static inline __attribute__((always_inline)) void pnp_set_drq(device_t dev, unsi
 unsigned long get_top_of_ram(void);
 void backup_top_of_ram(uint64_t ramtop);
 uint64_t restore_top_of_ram(void);
+
+#ifndef __PRE_RAM__
+void set_top_of_ram(uint64_t ramtop);
+void set_top_of_ram_once(uint64_t ramtop);
+#endif
 #endif
 
 #endif

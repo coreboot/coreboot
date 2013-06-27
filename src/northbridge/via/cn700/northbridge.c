@@ -134,10 +134,7 @@ static void pci_domain_set_resources(device_t dev)
 			tolmk = tomk;
 		}
 
-		high_tables_base = ((tolmk - CONFIG_VIDEO_MB * 1024) * 1024) - HIGH_MEMORY_SIZE;
-		high_tables_size = HIGH_MEMORY_SIZE;
-		printk(BIOS_DEBUG, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n",
-						tomk*1024, high_tables_base, high_tables_size);
+		set_top_of_ram((tolmk - CONFIG_VIDEO_MB * 1024) * 1024);
 
 		/* Report the memory regions. */
 		idx = 10;

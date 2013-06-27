@@ -63,8 +63,9 @@ char *strstr(const char *h, const char *n);
 char *strsep(char **stringp, const char *delim);
 size_t strspn(const char *s, const char *a);
 size_t strcspn(const char *s, const char *a);
-char* strtok(char *str, const char *delim);
-char* strtok_r(char *str, const char *delim, char **ptr);
+char *strtok(char *str, const char *delim);
+char *strtok_r(char *str, const char *delim, char **ptr);
+char *strerror(int errnum);
 /** @} */
 
 /**

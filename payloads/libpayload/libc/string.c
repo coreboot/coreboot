@@ -639,3 +639,17 @@ void perror(const char *s)
 {
 	printf("%s: %d\n", s?s:"(none)", errno);
 }
+
+/**
+ * Get a message string describing the given error number.
+ *
+ * @param errnum The error number to be interpreted
+ * @return A pointer to a string describing the given error number
+ */
+char *strerror(int errnum)
+{
+	/* Reserve enough space for the string below + INT64_MIN in decimal + \0 */
+	static char errstr[35];
+	snprintf(errstr, sizeof(errstr), "Unknown error %d", errnum);
+	return errstr;
+}

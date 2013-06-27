@@ -92,10 +92,9 @@ static void copy_spd(struct pei_data *peid)
 	if (spd_file->len < sizeof(peid->spd_data[0]))
 		die("Missing SPD data.");
 
-	/* Index 0 is 2GB config with CH0 only. This is suject to change.
-	 * TODO(shawnn): Check the decoding before next build.
-	 */
-	if (spd_index == 0)
+	/* Index 0-2 are 4GB config with both CH0 and CH1
+	 * Index 4-6 are 2GB config with CH0 only */
+	if (spd_index > 3)
 		peid->dimm_channel1_disabled = 3;
 
 	memcpy(peid->spd_data[0],

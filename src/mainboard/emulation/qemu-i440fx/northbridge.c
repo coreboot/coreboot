@@ -86,9 +86,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	}
 
 #if !CONFIG_DYNAMIC_CBMEM
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk * 1024) - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
+	set_top_of_ram(tomk * 1024);
 #endif
 
 	if (i440fx) {

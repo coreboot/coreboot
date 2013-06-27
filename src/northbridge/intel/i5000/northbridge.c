@@ -111,10 +111,7 @@ static void mc_read_resources(device_t dev)
 	resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
 	    IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = tolm - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
-	printk(BIOS_DEBUG, "high_tables_base: %08llx, size %lld\n", high_tables_base, high_tables_size);
+	set_top_of_ram(tolm);
 }
 
 static struct pci_operations intel_pci_ops = {

@@ -41,23 +41,48 @@ struct cbmem_entry {
 	u64 size;
 } __attribute__((packed));
 
-#ifndef __PRE_RAM__
-static struct cbmem_entry *bss_cbmem_toc;
-
-struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
+static unsigned long cbmem_base(void)
 {
-	return bss_cbmem_toc;
-}
-
+#ifdef __PRE_RAM__
+	u64 base, size;
+	get_cbmem_table(&base, &size);
+	return (unsigned long)base;
 #else
-
-struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
-{
-	printk(BIOS_WARNING, "WARNING: you need to define get_cbmem_toc() for your chipset\n");
-	return NULL;
+	return (unsigned long)high_tables_base;
+#endif
 }
 
+static unsigned long cbmem_size(void)
+{
+#ifdef __PRE_RAM__
+	u64 base, size;
+	get_cbmem_table(&base, &size);
+	return (unsigned long)size;
+#else
+	return (unsigned long)high_tables_size;
 #endif
+}
+
+#if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
+void set_cbmem_table(uint64_t base, uint64_t size, int force)
+{
+	if (base == high_tables_base && size == high_tables_size)
+		return;
+
+	if (!force && high_tables_base) {
+		printk(BIOS_ERR, "CBMEM region %llx-%llx (not moved)\n", base, base+size-1);
+	} else {
+		printk(BIOS_DEBUG, "CBMEM region %llx-%llx\n", base, base+size-1);
+		high_tables_base = base;
+		high_tables_size = size;
+	}
+}
+#endif
+
+struct cbmem_entry *get_cbmem_toc(void)
+{
+	return (struct cbmem_entry *)cbmem_base();
+}
 
 /**
  * cbmem is a simple mechanism to do some kind of book keeping of the coreboot
@@ -73,10 +98,6 @@ void cbmem_init(u64 baseaddr, u64 size)
 {
 	struct cbmem_entry *cbmem_toc;
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
-
-#ifndef __PRE_RAM__
-	bss_cbmem_toc = cbmem_toc;
-#endif
 
 	printk(BIOS_DEBUG, "Initializing CBMEM area to 0x%llx (%lld bytes)\n",
 	       baseaddr, size);
@@ -103,10 +124,6 @@ int cbmem_reinit(u64 baseaddr)
 
 	printk(BIOS_DEBUG, "Re-Initializing CBMEM area to 0x%lx\n",
 	       (unsigned long)baseaddr);
-
-#ifndef __PRE_RAM__
-	bss_cbmem_toc = cbmem_toc;
-#endif
 
 	return (cbmem_toc[0].magic == CBMEM_MAGIC);
 }
@@ -197,25 +214,28 @@ void *cbmem_find(u32 id)
 }
 
 #if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
+
 /* Returns True if it was not intialized before. */
 int cbmem_initialize(void)
 {
+	uint64_t base = 0, size = 0;
 	int rv = 0;
 
 #ifdef __PRE_RAM__
-	extern unsigned long get_top_of_ram(void);
-	uint64_t high_tables_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
-	uint64_t high_tables_size = HIGH_MEMORY_SIZE;
+	get_cbmem_table(&base, &size);
+#else
+	base = cbmem_base();
+	size = cbmem_size();
 #endif
 
 	/* We expect the romstage to always initialize it. */
-	if (!cbmem_reinit(high_tables_base)) {
+	if (!cbmem_reinit(base)) {
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
 		/* Something went wrong, our high memory area got wiped */
 		if (acpi_slp_type == 3 || acpi_slp_type == 2)
 			acpi_slp_type = 0;
 #endif
-		cbmem_init(high_tables_base, high_tables_size);
+		cbmem_init(base, size);
 		rv = 1;
 	}
 #ifndef __PRE_RAM__

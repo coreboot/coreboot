@@ -61,7 +61,6 @@
 #define RAMINIT_USE_HW_RXCR_CALIB	0
 #define RAMINIT_USE_HW_MRS_SEQ		0
 
-unsigned long get_top_of_ram(void);
 
 void enable_smbus(void);
 void dump_spd_data(spd_raw_data spd);

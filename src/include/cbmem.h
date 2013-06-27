@@ -140,7 +140,9 @@ extern uint64_t high_tables_base, high_tables_size;
 void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);
 
-extern struct cbmem_entry *get_cbmem_toc(void);
+struct cbmem_entry *get_cbmem_toc(void);
+void get_cbmem_table(uint64_t *base, uint64_t *size);
+void set_cbmem_table(uint64_t base, uint64_t size, int force);
 
 #endif /* CONFIG_DYNAMIC_CBMEM */
 

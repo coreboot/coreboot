@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Advanced Micro Devices, Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -14,21 +12,30 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#ifndef NORTHBRIDGE_AMD_LX_H
-#define NORTHBRIDGE_AMD_LX_H
+#include <console/console.h>
+#include <arch/io.h>
+#include <cbmem.h>
 
-#include <cpu/amd/lxdef.h>
+unsigned long __attribute__((weak)) get_top_of_ram(void)
+{
+	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
+	return 0;
+}
 
-/* northbridge.c */
-unsigned int lx_scan_root_bus(device_t root, unsigned int max);
-int sizeram(void);
+#if !CONFIG_DYNAMIC_CBMEM
+void get_cbmem_table(uint64_t *base, uint64_t *size)
+{
+	uint64_t top_of_ram = get_top_of_ram();
 
-/* northbridgeinit.c */
-void northbridge_init_early(void);
-
-/* pll_reset.c */
-unsigned int GeodeLinkSpeed(void);
+	if (top_of_ram >= HIGH_MEMORY_SIZE) {
+		*base = top_of_ram - HIGH_MEMORY_SIZE;
+		*size = HIGH_MEMORY_SIZE;
+	} else {
+		*base = 0;
+		*size = 0;
+	}
+}
 #endif

@@ -266,11 +266,7 @@ static void vx900_set_resources(device_t dev)
 	u64 tor = vx900_remap_above_4g(mcu, pci_tolm);
 	ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);
 
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tolmk << 10) - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
-	printk(BIOS_DEBUG, "high_tables_base: %08llx, size %lld\n",
-	       high_tables_base, high_tables_size);
+	set_top_of_ram(tolmk << 10);
 
 	print_debug("======================================================\n");
 	assign_resources(dev->link_list);

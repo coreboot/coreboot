@@ -2,6 +2,7 @@ ramstage-y += boot.c
 ramstage-$(CONFIG_MULTIBOOT) += multiboot.c
 ramstage-y += gdt.c
 ramstage-y += tables.c
+ramstage-y += ramtop.c
 ramstage-$(CONFIG_GENERATE_MP_TABLE) += mpspec.c
 ramstage-$(CONFIG_GENERATE_PIRQ_TABLE) += pirq_routing.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c

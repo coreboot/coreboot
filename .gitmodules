@@ -2,4 +2,4 @@
 	path = 3rdparty
 	url = ../blobs.git
 	update = none
-	ignore = all
+	ignore = dirty

@@ -183,6 +183,7 @@ void main(unsigned long bist)
 	};
 #endif
 	struct pei_data pei_data = {
+		pei_version: PEI_VERSION,
 		mchbar: DEFAULT_MCHBAR,
 		dmibar: DEFAULT_DMIBAR,
 		epbar: DEFAULT_EPBAR,

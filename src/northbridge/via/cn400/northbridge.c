@@ -204,10 +204,7 @@ static void cn400_domain_set_resources(device_t dev)
 		}
 
 		/* Locate the High Tables at the Top of Low Memory below the Video RAM */
-		high_tables_base = ((tolmk - (CONFIG_VIDEO_MB *1024)) * 1024) - HIGH_MEMORY_SIZE;
-		high_tables_size = HIGH_MEMORY_SIZE;
-		printk(BIOS_SPEW, "tom: %lx, high_tables_base: %llx, high_tables_size: %llx\n",
-						tomk*1024, high_tables_base, high_tables_size);
+		set_top_of_ram((tolmk - (CONFIG_VIDEO_MB *1024)) * 1024);
 
 		/* Report the memory regions. */
 		idx = 10;

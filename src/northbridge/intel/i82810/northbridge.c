@@ -121,9 +121,7 @@ static void pci_domain_set_resources(device_t dev)
 	ram_resource(dev, idx++, 768, tomk - 768);
 	uma_resource(dev, idx++, uma_memory_base >> 10, uma_memory_size >> 10);
 
-	/* Leave some space for ACPI, PIRQ and MP tables */
-	high_tables_base = (tomk_stolen * 1024) - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
+	set_top_of_ram(tomk_stolen * 1024);
 
 	assign_resources(dev->link_list);
 }

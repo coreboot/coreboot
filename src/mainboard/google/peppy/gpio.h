@@ -56,7 +56,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSWARN_L */
 	LP_GPIO_NATIVE,        /* 31: NATIVE: ACPRESENT */
 	LP_GPIO_NATIVE,        /* 32: NATIVE: LPC_CLKRUN_L */
-	LP_GPIO_UNUSED,        /* 33: UNUSED */
+	LP_GPIO_NATIVE,        /* 33: NATIVE: DEVSLP0 */
 	LP_GPIO_ACPI_SMI,      /* 34: EC_SMI_L */
 	LP_GPIO_ACPI_SMI,      /* 35: PCH_NMI_DBG_L (route in NMI_EN) */
 	LP_GPIO_ACPI_SCI,      /* 36: EC_SCI_L */

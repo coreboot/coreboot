@@ -361,7 +361,7 @@ void set_power_limits(u8 power_limit_1_time)
 	u8 power_limit_1_val;
 
 	if (power_limit_1_time > ARRAY_SIZE(power_limit_time_sec_to_msr))
-		return;
+		power_limit_1_time = 28;
 
 	if (!(msr.lo & PLATFORM_INFO_SET_TDP))
 		return;
@@ -401,9 +401,18 @@ void set_power_limits(u8 power_limit_1_time)
 	limit.hi = 0;
 	limit.hi |= ((tdp * 125) / 100) & PKG_POWER_LIMIT_MASK;
 	limit.hi |= PKG_POWER_LIMIT_EN;
-	/* Power limit 2 time is only programmable on SNB EP/EX */
+	/* Power limit 2 time is only programmable on server SKU */
 
 	wrmsr(MSR_PKG_POWER_LIMIT, limit);
+
+	/* Set power limit values in MCHBAR as well */
+	MCHBAR32(MCH_PKG_POWER_LIMIT_LO) = limit.lo;
+	MCHBAR32(MCH_PKG_POWER_LIMIT_HI) = limit.hi;
+
+	/* Set DDR RAPL power limit by copying from MMIO to MSR */
+	msr.lo = MCHBAR32(MCH_DDR_POWER_LIMIT_LO);
+	msr.hi = MCHBAR32(MCH_DDR_POWER_LIMIT_HI);
+	wrmsr(MSR_DDR_RAPL_LIMIT, msr);
 
 	/* Use nominal TDP values for CPUs with configurable TDP */
 	if (cpu_config_tdp_levels()) {

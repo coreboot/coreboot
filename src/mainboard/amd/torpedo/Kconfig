@@ -154,10 +154,6 @@ config DRIVERS_PS2_KEYBOARD
 	bool
 	default y
 
-config WARNINGS_ARE_ERRORS
-	bool
-	default n
-
 config CONSOLE_POST
 	bool
 	depends on !NO_POST

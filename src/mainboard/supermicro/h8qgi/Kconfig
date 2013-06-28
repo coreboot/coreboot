@@ -93,10 +93,6 @@ config DRIVERS_PS2_KEYBOARD
 	bool
 	default y
 
-config WARNINGS_ARE_ERRORS
-	bool
-	default n
-
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y

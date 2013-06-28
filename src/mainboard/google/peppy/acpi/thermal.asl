@@ -126,12 +126,18 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				Store (0, \FLVL)
-				\_SB.PCI0.MCHC.STND ()
+
+				/* Enable Power Limit */
+				\_SB.PCI0.MCHC.CTLE (\F0PW)
+
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
 				Store (1, \FLVL)
-				\_SB.PCI0.MCHC.STDN ()
+
+				/* Disable Power Limit */
+				\_SB.PCI0.MCHC.CTLD ()
+
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}

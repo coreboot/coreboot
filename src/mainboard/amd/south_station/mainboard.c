@@ -26,7 +26,6 @@
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <delay.h>
-#include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 
 
 void set_pcie_reset(void);

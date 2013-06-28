@@ -127,6 +127,12 @@
 
 #define BIOS_RESET_CPL	0x5da8	/* 8bit */
 
+/* Some power MSRs are also represented in MCHBAR */
+#define MCH_PKG_POWER_LIMIT_LO	0x59a0
+#define MCH_PKG_POWER_LIMIT_HI	0x59a4
+#define MCH_DDR_POWER_LIMIT_LO	0x58e0
+#define MCH_DDR_POWER_LIMIT_HI	0x58e4
+
 /*
  * EPBAR - Egress Port Root Complex Register Block
  */

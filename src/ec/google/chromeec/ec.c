@@ -136,6 +136,94 @@ void google_chromeec_early_init(void)
 
 #ifndef __PRE_RAM__
 
+int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
+			     uint8_t *buffer, int len, int is_read)
+{
+	union {
+		struct ec_params_i2c_passthru p;
+		uint8_t outbuf[EC_HOST_PARAM_SIZE];
+	} params;
+	union {
+		struct ec_response_i2c_passthru r;
+		uint8_t inbuf[EC_HOST_PARAM_SIZE];
+	} response;
+	struct ec_params_i2c_passthru *p = &params.p;
+	struct ec_response_i2c_passthru *r = &response.r;
+	struct ec_params_i2c_passthru_msg *msg = p->msg;
+	struct chromeec_command cmd;
+	uint8_t *pdata;
+	int read_len, write_len;
+	int size;
+	int rv;
+
+	p->port = 0;
+
+	if (alen != 1) {
+		printk(BIOS_ERR, "Unsupported address length %d\n", alen);
+		return -1;
+	}
+	if (is_read) {
+		read_len = len;
+		write_len = alen;
+		p->num_msgs = 2;
+	} else {
+		read_len = 0;
+		write_len = alen + len;
+		p->num_msgs = 1;
+	}
+
+	size = sizeof(*p) + p->num_msgs * sizeof(*msg);
+	if (size + write_len > sizeof(params)) {
+		printk(BIOS_ERR, "Params too large for buffer\n");
+		return -1;
+	}
+	if (sizeof(*r) + read_len > sizeof(response)) {
+		printk(BIOS_ERR, "Read length too big for buffer\n");
+		return -1;
+	}
+
+	/* Create a message to write the register address and optional data */
+	pdata = (uint8_t *)p + size;
+	msg->addr_flags = chip;
+	msg->len = write_len;
+	pdata[0] = addr;
+	if (!is_read)
+		memcpy(pdata + 1, buffer, len);
+	msg++;
+
+	if (read_len) {
+		msg->addr_flags = chip | EC_I2C_FLAG_READ;
+		msg->len = read_len;
+	}
+
+	cmd.cmd_code = EC_CMD_I2C_PASSTHRU;
+	cmd.cmd_version = 0;
+	cmd.cmd_data_in = p;
+	cmd.cmd_size_in = size + write_len;
+	cmd.cmd_data_out = r;
+	cmd.cmd_size_out = sizeof(*r) + read_len;
+	rv = google_chromeec_command(&cmd);
+	if (rv != 0)
+		return rv;
+
+	/* Parse response */
+	if (r->i2c_status & EC_I2C_STATUS_ERROR) {
+		printk(BIOS_ERR, "Transfer failed with status=0x%x\n",
+		       r->i2c_status);
+		return -1;
+	}
+
+	if (cmd.cmd_size_out < sizeof(*r) + read_len) {
+		printk(BIOS_ERR, "Truncated read response\n");
+		return -1;
+	}
+
+	if (read_len)
+		memcpy(buffer, r->data, read_len);
+
+	return 0;
+}
+
 static int google_chromeec_set_mask(u8 type, u32 mask)
 {
 	struct ec_params_host_event_mask req;

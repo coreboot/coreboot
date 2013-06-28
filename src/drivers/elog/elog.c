@@ -72,14 +72,33 @@ static u16 event_count;
 static int elog_initialized;
 static struct spi_flash *elog_spi;
 
+
+static inline u32 get_rom_size(void)
+{
+	u32 rom_size;
+
+	/* Assume the used space of the ROM image starts from 0. The
+	 * physical size of the device may not be completely used. */
+	rom_size = elog_spi->size;
+	if (rom_size > CONFIG_ROM_SIZE)
+		rom_size = CONFIG_ROM_SIZE;
+
+	return rom_size;
+}
+
 /*
  * Convert a memory mapped flash address into a flash offset
  */
 static inline u32 elog_flash_address_to_offset(u8 *address)
 {
+	u32 rom_size;
+
 	if (!elog_spi)
 		return 0;
-	return (u32)address - ((u32)~0UL - elog_spi->size + 1);
+
+	rom_size = get_rom_size();
+
+	return (u32)address - ((u32)~0UL - rom_size + 1);
 }
 
 /*
@@ -87,9 +106,14 @@ static inline u32 elog_flash_address_to_offset(u8 *address)
  */
 static inline u8* elog_flash_offset_to_address(u32 offset)
 {
+	u32 rom_size;
+
 	if (!elog_spi)
 		return NULL;
-	return (u8*)((u32)~0UL - elog_spi->size + 1 + offset);
+
+	rom_size = get_rom_size();
+
+	return (u8*)((u32)~0UL - rom_size + 1 + offset);
 }
 
 /*

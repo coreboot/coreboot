@@ -22,6 +22,7 @@ subdirs-y += dec
 subdirs-y += emulation
 subdirs-y += generic
 subdirs-y += i2c
+subdirs-y += intel
 subdirs-y += maxim
 subdirs-y += oxford
 subdirs-y += parade

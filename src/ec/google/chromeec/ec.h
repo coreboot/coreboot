@@ -25,6 +25,8 @@
 #include <stdint.h>
 
 #ifndef __PRE_RAM__
+int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
+			     uint8_t *buffer, int len, int is_read);
 u32 google_chromeec_get_wake_mask(void);
 int google_chromeec_set_sci_mask(u32 mask);
 int google_chromeec_set_smi_mask(u32 mask);

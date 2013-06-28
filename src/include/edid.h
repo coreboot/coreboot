@@ -55,6 +55,14 @@ struct edid {
 	unsigned int vso;
 	unsigned int vspw;
 	unsigned int vborder;
+	/* 3 variables needed for coreboot framebuffer.
+	 * In most cases, they are the same as the ha
+	 * and va variables, but not always, as in the
+	 * case of a 1366 wide display.
+	 */
+	u32 x_resolution;
+	u32 y_resolution;
+	u32 bytes_per_line;
 	/* it is unlikely we need these things. */
 	/* if one of these is non-zero, use that one. */
 	unsigned int aspect_landscape;

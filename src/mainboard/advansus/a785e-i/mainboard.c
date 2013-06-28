@@ -24,7 +24,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
-#include "SBPLATFORM.h"
+#include "SB800.h"
 
 
 u8 is_dev3_present(void);

@@ -44,13 +44,16 @@ unsigned long acpi_create_slic(unsigned long current);
 
 static void acpi_update_thermal_table(global_nvs_t *gnvs)
 {
-	gnvs->tmps = CTDP_SENSOR_ID;
+	gnvs->tmps = CTL_TDP_SENSOR_ID;
 
-	gnvs->f1of = CTDP_NOMINAL_THRESHOLD_OFF;
-	gnvs->f1on = CTDP_NOMINAL_THRESHOLD_ON;
+	/* Normal TDP */
+	gnvs->f1of = 0;
+	gnvs->f1on = 0;
 
-	gnvs->f0of = CTDP_DOWN_THRESHOLD_OFF;
-	gnvs->f0on = CTDP_DOWN_THRESHOLD_ON;
+	/* Limited TDP */
+	gnvs->f0of = CTL_TDP_THRESHOLD_OFF;
+	gnvs->f0on = CTL_TDP_THRESHOLD_ON;
+	gnvs->f0pw = CTL_TDP_POWER_LIMIT;
 
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;

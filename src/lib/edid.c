@@ -457,6 +457,23 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 		out->vso = ((x[10] >> 4) + ((x[11] & 0x0C) << 2));
 		out->vspw = ((x[10] & 0x0F) + ((x[11] & 0x03) << 4));
 		out->vborder = x[16];
+		/* set up some reasonable defaults for payloads.
+		 * We observe that most modern chipsets we work with
+		 * tend to support rgb888 without regard to the
+		 * panel bits per color or other settings. The rgb888
+		 * is a convenient layout for software because
+		 * it avoids the messy bit stuffing of rgb565 or rgb444.
+		 * It makes a reasonable trade of memory for speed.
+		 * So, set up the default for
+		 * 32 bits per pixel
+		 * rgb888 (i.e. no alpha, but pixels on 32-bit boundaries)
+		 * The mainboard can modify these if needed, though
+		 * we have yet to see a case where that will happen.
+		 */
+		out->bpp = 32;
+		out->x_resolution = ALIGN(out->ha * ((out->bpp + 7) / 8),64) / (out->bpp/8);
+		out->y_resolution = out->va;
+		out->bytes_per_line = ALIGN(out->ha * ((out->bpp + 7) / 8),64);
 		printk(BIOS_SPEW, "Did detailed timing\n");
 	}
 	did_detailed_timing = 1;
@@ -1398,8 +1415,9 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 {
 	edid_fb.physical_address = fb_addr;
-	edid_fb.x_resolution = edid->ha;
-	edid_fb.y_resolution = edid->va;
+	edid_fb.x_resolution = edid->x_resolution;
+	edid_fb.y_resolution = edid->y_resolution;
+	edid_fb.bytes_per_line = edid->bytes_per_line;
 	/* In the case of (e.g.) 24bpp, the convention nowadays
 	 * seems to be to round it up to the nearest reasonable
 	 * boundary, because otherwise the byte-packing is hideous.
@@ -1416,7 +1434,6 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 	case 32:
 	case 24:
 		/* packed into 4-byte words */
-		edid_fb.bytes_per_line = edid->ha * 4;
 		edid_fb.red_mask_pos = 16;
 		edid_fb.red_mask_size = 8;
 		edid_fb.green_mask_pos = 8;
@@ -1426,7 +1443,6 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 		break;
 	case 16:
 		/* packed into 2-byte words */
-		edid_fb.bytes_per_line = edid->ha * 2;
 		edid_fb.red_mask_pos = 12;
 		edid_fb.red_mask_size = 4;
 		edid_fb.green_mask_pos = 8;

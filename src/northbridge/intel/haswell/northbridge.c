@@ -436,100 +436,28 @@ static void intel_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static void northbridge_dmi_init(struct device *dev)
-{
-	u32 reg32;
-
-	/* Clear error status bits */
-	DMIBAR32(0x1c4) = 0xffffffff;
-	DMIBAR32(0x1d0) = 0xffffffff;
-
-	/* Steps prior to DMI ASPM */
-	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
-		reg32 = DMIBAR32(0x250);
-		reg32 &= ~((1 << 22)|(1 << 20));
-		reg32 |= (1 << 21);
-		DMIBAR32(0x250) = reg32;
-	}
-
-	reg32 = DMIBAR32(0x238);
-	reg32 |= (1 << 29);
-	DMIBAR32(0x238) = reg32;
-
-	if (bridge_silicon_revision() >= SNB_STEP_D0) {
-		reg32 = DMIBAR32(0x1f8);
-		reg32 |= (1 << 16);
-		DMIBAR32(0x1f8) = reg32;
-	} else if (bridge_silicon_revision() >= SNB_STEP_D1) {
-		reg32 = DMIBAR32(0x1f8);
-		reg32 &= ~(1 << 26);
-		reg32 |= (1 << 16);
-		DMIBAR32(0x1f8) = reg32;
-
-		reg32 = DMIBAR32(0x1fc);
-		reg32 |= (1 << 12) | (1 << 23);
-		DMIBAR32(0x1fc) = reg32;
-	}
-
-	/* Enable ASPM on SNB link, should happen before PCH link */
-	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_SNB) {
-		reg32 = DMIBAR32(0xd04);
-		reg32 |= (1 << 4);
-		DMIBAR32(0xd04) = reg32;
-	}
-
-	reg32 = DMIBAR32(0x88);
-	reg32 |= (1 << 1) | (1 << 0);
-	DMIBAR32(0x88) = reg32;
-}
-
 static void northbridge_init(struct device *dev)
 {
-	u8 bios_reset_cpl;
-	u32 bridge_type;
+	u8 bios_reset_cpl, pair;
 
-	northbridge_dmi_init(dev);
-
-	bridge_type = MCHBAR32(0x5f10);
-	bridge_type &= ~0xff;
-
-	if ((bridge_silicon_revision() & BASE_REV_MASK) == BASE_REV_IVB) {
-		/* Enable Power Aware Interrupt Routing */
-		u8 pair = MCHBAR8(0x5418);
-		pair &= ~0xf;	/* Clear 3:0 */
-		pair |= 0x4;	/* Fixed Priority */
-		MCHBAR8(0x5418) = pair;
-
-		/* 30h for IvyBridge */
-		bridge_type |= 0x30;
-	} else {
-		/* 20h for Sandybridge */
-		bridge_type |= 0x20;
-	}
-	MCHBAR32(0x5f10) = bridge_type;
+	/* Enable Power Aware Interrupt Routing */
+	pair = MCHBAR8(0x5418);
+	pair &= ~0x7;	/* Clear 2:0 */
+	pair |= 0x4;	/* Fixed Priority */
+	MCHBAR8(0x5418) = pair;
 
 	/*
-	 * Set bit 0 of BIOS_RESET_CPL to indicate to the CPU
+	 * Set bits 0+1 of BIOS_RESET_CPL to indicate to the CPU
 	 * that BIOS has initialized memory and power management
 	 */
 	bios_reset_cpl = MCHBAR8(BIOS_RESET_CPL);
-	bios_reset_cpl |= 1;
+	bios_reset_cpl |= 3;
 	MCHBAR8(BIOS_RESET_CPL) = bios_reset_cpl;
 	printk(BIOS_DEBUG, "Set BIOS_RESET_CPL\n");
 
 	/* Configure turbo power limits 1ms after reset complete bit */
 	mdelay(1);
 	set_power_limits(28);
-
-	/*
-	 * CPUs with configurable TDP also need power limits set
-	 * in MCHBAR.  Use same values from MSR_PKG_POWER_LIMIT.
-	 */
-	if (cpu_config_tdp_levels()) {
-		msr_t msr = rdmsr(MSR_PKG_POWER_LIMIT);
-		MCHBAR32(0x59A0) = msr.lo;
-		MCHBAR32(0x59A4) = msr.hi;
-	}
 
 	/* Set here before graphics PM init */
 	MCHBAR32(0x5500) = 0x00100001;

@@ -29,7 +29,7 @@
 #include "BiosCallOuts.h"
 #include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/amd/mtrr.h>
-#include "SBPLATFORM.h"
+#include "SB800.h"
 #include "OEM.h" /* SMBUS0_BASE_ADDRESS */
 
 /* Init SIO GPIOs. */

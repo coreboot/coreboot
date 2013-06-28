@@ -25,7 +25,7 @@
 #include <device/pci_def.h>
 #include <southbridge/amd/sb800/sb800.h>
 #include <cpu/amd/mtrr.h>
-#include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
+#include "SB800.h"	/* Platfrom Specific Definitions */
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);

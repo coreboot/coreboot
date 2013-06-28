@@ -43,11 +43,15 @@
 #define PMIC_BUS	0
 #define MMC0_GPIO_PIN	(58)
 
-static void setup_power(void)
+static void setup_power(int is_resume)
 {
 	int error = 0;
 
 	power_init();
+
+	if (is_resume) {
+		return;
+	}
 
 	/* Initialize I2C bus to configure PMIC. */
 	exynos_pinmux_i2c0();
@@ -171,10 +175,7 @@ void main(void)
 
 	console_init();
 
-	if (!is_resume) {
-		setup_power();
-	}
-
+	setup_power(is_resume);
 	setup_memory(mem, is_resume);
 
 	if (is_resume) {

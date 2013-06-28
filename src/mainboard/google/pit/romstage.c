@@ -74,12 +74,16 @@ struct pmic_write pmic_writes[] =
 					  MAX77802_BUCK_TYPE1_IGNORE_PWRREQ }
 };
 
-static void setup_power(void)
+static void setup_power(int is_resume)
 {
 	int error = 0;
 	int i;
 
 	power_init();
+
+	if (is_resume) {
+		return;
+	}
 
 	/* Initialize I2C bus to configure PMIC. */
 	exynos_pinmux_i2c4();
@@ -264,10 +268,7 @@ void main(void)
 
 	console_init();
 
-	if (!is_resume) {
-		setup_power();
-	}
-
+	setup_power(is_resume);
 	setup_memory(&mem_timings, is_resume);
 
 	primitive_mem_test();

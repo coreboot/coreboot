@@ -20,16 +20,11 @@
 #ifndef THERMAL_H
 #define THERMAL_H
 
-/* Config TDP Sensor ID */
-#define CTDP_SENSOR_ID			1 /* PECI */
-
-/* Config TDP Nominal */
-#define CTDP_NOMINAL_THRESHOLD_OFF	0
-#define CTDP_NOMINAL_THRESHOLD_ON	0
-
-/* Config TDP Down */
-#define CTDP_DOWN_THRESHOLD_OFF		80
-#define CTDP_DOWN_THRESHOLD_ON		90
+/* Control TDP Settings */
+#define CTL_TDP_SENSOR_ID		1	/* PECI */
+#define CTL_TDP_POWER_LIMIT		12	/* 12W */
+#define CTL_TDP_THRESHOLD_OFF		68	/* Normal at 68C */
+#define CTL_TDP_THRESHOLD_ON		73	/* Limited at 73C */
 
 /* Temperature which OS will shutdown at */
 #define CRITICAL_TEMPERATURE		104

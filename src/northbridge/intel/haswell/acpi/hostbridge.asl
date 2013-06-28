@@ -106,35 +106,45 @@ Device (MCHC)
 	Name (CTCN, 0)		/* CTDP Nominal Select */
 	Name (CTCD, 1)		/* CTDP Down Select */
 	Name (CTCU, 2)		/* CTDP Up Select */
+	Name (SPL1, 0)		/* Saved PL1 value */
 
-	OperationRegion (MCHB, SystemMemory, DEFAULT_MCHBAR, 0x8000)
+	OperationRegion (MCHB, SystemMemory, Add(DEFAULT_MCHBAR,0x5000), 0x1000)
 	Field (MCHB, DWordAcc, Lock, Preserve)
 	{
-		Offset (0x5930),
+		Offset (0x930), /* PACKAGE_POWER_SKU */
 		CTDN, 15,	/* CTDP Nominal PL1 */
-		Offset (0x59a0),
+		Offset (0x938), /* PACKAGE_POWER_SKU_UNIT */
+		PUNI, 4,	/* Power Units */
+		,     4,
+		EUNI, 5,	/* Energy Units */
+		,     3,
+		TUNI, 4,	/* Time Units */
+		Offset (0x958), /* PLATFORM_INFO */
+		,     40,
+		LFM_, 8,	/* Maximum Efficiency Ratio (LFM) */
+		Offset (0x9a0), /* TURBO_POWER_LIMIT1 */
 		PL1V, 15,	/* Power Limit 1 Value */
 		PL1E, 1,	/* Power Limit 1 Enable */
 		PL1C, 1,	/* Power Limit 1 Clamp */
 		PL1T, 7,	/* Power Limit 1 Time */
-		Offset (0x59a4),
+		Offset (0x9a4), /* TURBO_POWER_LIMIT2 */
 		PL2V, 15,	/* Power Limit 2 Value */
 		PL2E, 1,	/* Power Limit 2 Enable */
 		PL2C, 1,	/* Power Limit 2 Clamp */
 		PL2T, 7,	/* Power Limit 2 Time */
-		Offset (0x5f3c),
+		Offset (0xf3c), /* CONFIG_TDP_NOMINAL */
 		TARN, 8,	/* CTDP Nominal Turbo Activation Ratio */
-		Offset (0x5f40),
+		Offset (0xf40), /* CONFIG_TDP_LEVEL1 */
 		CTDD, 15,	/* CTDP Down PL1 */
-		, 1,
+		,     1,
 		TARD, 8,	/* CTDP Down Turbo Activation Ratio */
-		Offset (0x5f48),
+		Offset (0xf48), /* MSR_CONFIG_TDP_LEVEL2 */
 		CTDU, 15,	/* CTDP Up PL1 */
-		, 1,
+		,     1,
 		TARU, 8,	/* CTDP Up Turbo Activation Ratio */
-		Offset (0x5f50),
+		Offset (0xf50), /* CONFIG_TDP_CONTROL */
 		CTCS, 2,	/* CTDP Select */
-		Offset (0x5f54),
+		Offset (0xf54), /* TURBO_ACTIVATION_RATIO */
 		TARS, 8,	/* Turbo Activation Ratio Select */
 	}
 
@@ -166,7 +176,19 @@ Device (MCHC)
 		Return (0)
 	}
 
-	/* Set TDP Down */
+	/* Calculate PL2 based on chip type */
+	Method (CPL2, 1, NotSerialized)
+	{
+		If (\ISLP ()) {
+			/* Haswell ULT PL2 = 25W */
+			Return (Multiply (25, 8))
+		} Else {
+			/* Haswell Mobile PL2 = 1.25 * PL1 */
+			Return (Divide (Multiply (Arg0, 125), 100))
+		}
+	}
+
+	/* Set Config TDP Down */
 	Method (STND, 0, Serialized)
 	{
 		If (Acquire (CTCM, 100)) {
@@ -189,8 +211,8 @@ Device (MCHC)
 		Store (PSSS (TARD), PPCM)
 		PPCN ()
 
-		/* Set PL2 to 1.25 * PL1 */
-		Divide (Multiply (CTDD, 125), 100, Local0, PL2V)
+		/* Set PL2 */
+		Store (CPL2 (CTDD), PL2V)
 
 		/* Set PL1 */
 		Store (CTDD, PL1V)
@@ -202,7 +224,7 @@ Device (MCHC)
 		Return (1)
 	}
 
-	/* Set TDP Nominal from Down */
+	/* Set Config TDP Nominal from Down */
 	Method (STDN, 0, Serialized)
 	{
 		If (Acquire (CTCM, 100)) {
@@ -218,8 +240,8 @@ Device (MCHC)
 		/* Set PL1 */
 		Store (CTDN, PL1V)
 
-		/* Set PL2 to 1.25 * PL1 */
-		Divide (Multiply (CTDN, 125), 100, Local0, PL2V)
+		/* Set PL2 */
+		Store (CPL2 (CTDN), PL2V)
 
 		/* Set PPC limit and notify OS */
 		Store (PSSS (TARN), PPCM)
@@ -233,6 +255,66 @@ Device (MCHC)
 
 		/* Store the new TDP Nominal setting */
 		Store (CTCN, CTCC)
+
+		Release (CTCM)
+		Return (1)
+	}
+
+	/* Calculate PL1 value based on requested TDP */
+	Method (TDPP, 1, NotSerialized)
+	{
+		Return (Multiply (ShiftLeft (Subtract (PUNI, 1), 2), Arg0))
+	}
+
+	/* Enable Controllable TDP to limit PL1 to requested value */
+	Method (CTLE, 1, Serialized)
+	{
+		If (Acquire (CTCM, 100)) {
+			Return (0)
+		}
+
+		Store ("Enable PL1 Limit", Debug)
+
+		/* Set _PPC to LFM */
+		Store (PSSS (LFM_), Local0)
+		Add (Local0, 1, PPCM)
+		\PPCN ()
+
+		/* Set TAR to LFM-1 */
+		Subtract (LFM_, 1, TARS)
+
+		/* Set PL1 to desired value */
+		Store (PL1V, SPL1)
+		Store (TDPP (Arg0), PL1V)
+
+		/* Set PL1 CLAMP bit */
+		Store (One, PL1C)
+
+		Release (CTCM)
+		Return (1)
+	}
+
+	/* Disable Controllable TDP */
+	Method (CTLD, 0, Serialized)
+	{
+		If (Acquire (CTCM, 100)) {
+			Return (0)
+		}
+
+		Store ("Disable PL1 Limit", Debug)
+
+		/* Clear PL1 CLAMP bit */
+		Store (Zero, PL1C)
+
+		/* Set PL1 to normal value */
+		Store (SPL1, PL1V)
+
+		/* Set TAR to 0 */
+		Store (Zero, TARS)
+
+		/* Set _PPC to 0 */
+		Store (Zero, PPCM)
+		\PPCN ()
 
 		Release (CTCM)
 		Return (1)

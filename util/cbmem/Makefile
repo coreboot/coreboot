@@ -37,7 +37,7 @@ distclean: clean
 	rm -f .dependencies
 
 .dependencies:
-	@$(CC) $(CFLAGS) -MM *.c > .dependencies
+	@$(CC) $(CFLAGS) $(CPPFLAGS) -MM *.c > .dependencies
 
 .PHONY: all clean distclean
 

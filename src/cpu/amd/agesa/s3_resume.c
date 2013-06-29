@@ -240,7 +240,6 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 {
 
 	u32 pos = S3_DATA_VOLATILE_POS;
-	u32 data;
 	u32 nvram_pos;
 	struct spi_flash *flash;
 
@@ -270,11 +269,10 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 	nvram_pos = 0;
 	flash->write(flash, nvram_pos + pos, sizeof(DataSize), &DataSize);
 
-	for (nvram_pos = 0; nvram_pos < DataSize - CONFIG_AMD_SB_SPI_TX_LEN; nvram_pos += CONFIG_AMD_SB_SPI_TX_LEN) {
-		data = *(u32 *) (Data + nvram_pos);
-		flash->write(flash, nvram_pos + pos + 4, CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
-	}
-	flash->write(flash, nvram_pos + pos + 4, DataSize % CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
+	for (nvram_pos = 0; nvram_pos < DataSize - CONFIG_AMD_SB_SPI_TX_LEN; nvram_pos += CONFIG_AMD_SB_SPI_TX_LEN)
+		flash->write(flash, nvram_pos + pos + sizeof(DataSize), CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
+
+	flash->write(flash, nvram_pos + pos + sizeof(DataSize), DataSize % CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);

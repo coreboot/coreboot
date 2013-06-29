@@ -589,7 +589,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	}
 
 	/*
-	 * Check if this is a write command atempting to transfer more bytes
+	 * Check if this is a write command attempting to transfer more bytes
 	 * than the controller can handle. Iterations for writes are not
 	 * supported here because each SPI write command needs to be preceded
 	 * and followed by other SPI commands, and this sequence is controlled

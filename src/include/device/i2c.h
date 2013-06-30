@@ -20,10 +20,12 @@
 #ifndef _DEVICE_I2C_H_
 #define _DEVICE_I2C_H_
 
+#include <stdint.h>
+
 /* note: chip is the 7-bit I2C address */
 int i2c_read(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, unsigned char *buf, unsigned len);
+		unsigned alen, uint8_t *buf, unsigned len);
 int i2c_write(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, unsigned char *buf, unsigned len);
+		unsigned alen, const uint8_t *buf, unsigned len);
 
 #endif	/* _DEVICE_I2C_H_ */

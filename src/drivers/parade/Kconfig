@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2010 coresystems GmbH
+## Copyright (C) 2013 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,20 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-subdirs-y += ati
-subdirs-y += dec
-subdirs-y += emulation
-subdirs-y += generic
-subdirs-y += i2c
-subdirs-y += maxim
-subdirs-y += oxford
-subdirs-y += parade
-subdirs-y += realtek
-subdirs-y += sil
-subdirs-y += trident
-subdirs-y += ics
-subdirs-y += spi
-subdirs-y += ti 
-subdirs-y += ipmi
-subdirs-y += elog
-subdirs-$(CONFIG_ARCH_X86) += pc80
+source src/drivers/parade/ps8625/Kconfig

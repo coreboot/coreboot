@@ -347,7 +347,7 @@ static int i2c_transfer(struct s3c24x0_i2c *i2c,
 }
 
 int i2c_read(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, unsigned char *buf, unsigned len)
+		unsigned alen, uint8_t *buf, unsigned len)
 {
 	struct s3c24x0_i2c_bus *i2c;
 	unsigned char xaddr[4];
@@ -376,7 +376,7 @@ int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 }
 
 int i2c_write(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, unsigned char *buf, unsigned len)
+		unsigned alen, const uint8_t *buf, unsigned len)
 {
 	struct s3c24x0_i2c_bus *i2c;
 	unsigned char xaddr[4];
@@ -397,7 +397,7 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 
 	i2c = &i2c_buses[bus];
 	ret = i2c_transfer(i2c->regs, I2C_WRITE, chip << 1, &xaddr[4 - alen],
-			   alen, buf, len);
+			   alen, (void *)buf, len);
 
 	return ret != 0;
 }

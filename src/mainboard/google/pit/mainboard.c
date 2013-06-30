@@ -34,7 +34,9 @@
 #include <cpu/samsung/exynos5420/power.h>
 #include <cpu/samsung/exynos5420/i2c.h>
 #include <cpu/samsung/exynos5420/dp-core.h>
+#include <drivers/parade/ps8625/ps8625.h>
 #include <ec/google/chromeec/ec.h>
+#include <stdlib.h>
 
 #include "exynos5420.h"
 
@@ -56,7 +58,7 @@ static enum exynos5_gpio_pin dp_hpd = GPIO_X26;		/* active high */
 static enum exynos5_gpio_pin bl_pwm = GPIO_B20;		/* active high */
 static enum exynos5_gpio_pin bl_en = GPIO_X22;		/* active high */
 
-static void exynos_dp_bridge_setup(void)
+static void parade_dp_bridge_setup(void)
 {
 	gpio_set_value(dp_pd_l, 1);
 	gpio_cfg_pin(dp_pd_l, GPIO_OUTPUT);
@@ -69,37 +71,19 @@ static void exynos_dp_bridge_setup(void)
 	gpio_set_value(dp_rst_l, 1);
 
 	gpio_cfg_pin(dp_hpd, GPIO_INPUT);
-}
 
-static void exynos_dp_bridge_init(void)
-{
-	/* De-assert PD (and possibly RST) to power up the bridge */
+	/* De-assert PD (and possibly RST) to power up the bridge. */
 	gpio_set_value(dp_pd_l, 1);
 	gpio_set_value(dp_rst_l, 1);
 
-	/*
-	 * We need to wait for 90ms after bringing up the bridge since
-	 * there is a phantom "high" on the HPD chip during its
-	 * bootup.  The phantom high comes within 7ms of de-asserting
-	 * PD and persists for at least 15ms.  The real high comes
-	 * roughly 50ms after PD is de-asserted. The phantom high
-	 * makes it hard for us to know when the NXP chip is up.
-	 */
-	udelay(90000);
-}
+	/* Hang around for the bridge to come up. */
+	mdelay(40);
 
-static int exynos_dp_hotplug(void)
-{
-	/* Check HPD.  If it's high, we're all good. */
-	return gpio_get_value(dp_hpd) ? 0 : 1;
-}
+	/* Configure the bridge chip. */
+	exynos_pinmux_i2c7();
+	i2c_init(7, 100000, 0x00);
 
-static void exynos_dp_reset(void)
-{
-	gpio_set_value(dp_pd_l, 0);
-	gpio_set_value(dp_rst_l, 0);
-	/* paranoid delay period (300ms) */
-	udelay(300 * 1000);
+	parade_ps8625_bridge_setup(7, 0x48);
 }
 
 /*
@@ -203,7 +187,6 @@ static void backlight_vdd(void)
 /* this happens after cpu_init where exynos resources are set */
 static void mainboard_init(device_t dev)
 {
-	int dp_tries;
 	struct s5p_dp_device dp_device = {
 		.base = (struct exynos5_dp *)EXYNOS5420_DP1_BASE,
 		.video_info = &dp_video_info,
@@ -225,34 +208,14 @@ static void mainboard_init(device_t dev)
 
 	lcd_vdd();
 
-	// FIXME: should timeout
-	do {
-		udelay(50);
-	} while (!exynos_dp_hotplug());
+	parade_dp_bridge_setup();
+	dp_controller_init(&dp_device);
 
-	exynos_dp_bridge_setup();
-	for (dp_tries = 1; dp_tries <= MAX_DP_TRIES; dp_tries++) {
-		exynos_dp_bridge_init();
-		if (exynos_dp_hotplug()) {
-			printk(BIOS_ERR, "Hotplug detect failed.\n");
-			exynos_dp_reset();
-			continue;
-		}
+	udelay(LCD_T3_DELAY_MS * 1000);
 
-		if (dp_controller_init(&dp_device))
-			continue;
-
-		udelay(LCD_T3_DELAY_MS * 1000);
-
-		backlight_vdd();
-		backlight_pwm();
-		backlight_en();
-		/* if we're here, we're successful */
-		break;
-	}
-
-	if (dp_tries > MAX_DP_TRIES)
-		printk(BIOS_ERR, "%s: Failed to set up displayport\n", __func__);
+	backlight_vdd();
+	backlight_pwm();
+	backlight_en();
 
 	// Uncomment to get excessive GPIO output:
 	// gpio_info();

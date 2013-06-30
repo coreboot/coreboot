@@ -54,7 +54,7 @@ void am335x_pinmux_mii1(void);
 
 void am335x_pinmux_nand(void);
 
-#define AM335X_PINMUX_REG_ADDR 0x44e10000
+#define AM335X_PINMUX_REG_ADDR 0x44e10800
 
 struct am335x_pinmux_regs {
 	uint32_t gpmc_ad0;

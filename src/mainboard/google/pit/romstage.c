@@ -135,11 +135,6 @@ static void setup_ec(void)
 	exynos_pinmux_spi2();
 }
 
-static void setup_graphics(void)
-{
-	exynos_pinmux_dphpd();
-}
-
 static void setup_gpio(void)
 {
 	gpio_direction_input(GPIO_X30); // WP_GPIO
@@ -280,7 +275,6 @@ void main(void)
 
 	setup_storage();
 	setup_gpio();
-	setup_graphics();
 	setup_ec();
 
 	simple_spi_test();

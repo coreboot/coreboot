@@ -27,6 +27,7 @@ source src/drivers/ics/Kconfig
 source src/drivers/ipmi/Kconfig
 source src/drivers/maxim/Kconfig
 source src/drivers/oxford/Kconfig
+source src/drivers/parade/Kconfig
 if PC80_SYSTEM
 source src/drivers/pc80/Kconfig
 endif

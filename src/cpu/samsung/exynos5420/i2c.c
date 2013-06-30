@@ -408,7 +408,8 @@ static int hsi2c_wait_for_transfer(struct exynos5_hsi2c *i2c)
 	return 0;
 }
 
-static int hsi2c_senddata(struct exynos5_hsi2c *i2c, uint8_t *data, int len)
+static int hsi2c_senddata(struct exynos5_hsi2c *i2c, const uint8_t *data,
+			  int len)
 {
 	while (!hsi2c_check_transfer(i2c) && len) {
 		if (!(read32(&i2c->usi_fifo_stat) & HSI2C_TX_FIFO_FULL)) {
@@ -434,7 +435,7 @@ static int hsi2c_write(struct exynos5_hsi2c *i2c,
 			unsigned char chip,
 			unsigned char addr[],
 			unsigned char alen,
-			unsigned char data[],
+			const uint8_t data[],
 			unsigned short len)
 {
 	uint32_t i2c_auto_conf;
@@ -470,7 +471,7 @@ static int hsi2c_read(struct exynos5_hsi2c *i2c,
 			unsigned char chip,
 			unsigned char addr[],
 			unsigned char alen,
-			unsigned char data[],
+			uint8_t data[],
 			unsigned short len,
 			int check)
 {
@@ -632,7 +633,7 @@ bailout:
 }
 
 int i2c_read(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, unsigned char *buf, unsigned len)
+		unsigned alen, uint8_t *buf, unsigned len)
 {
 	struct s3c24x0_i2c_bus *i2c;
 	unsigned char xaddr[4];
@@ -667,7 +668,7 @@ int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 }
 
 int i2c_write(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, unsigned char *buf, unsigned len)
+		unsigned alen, const uint8_t *buf, unsigned len)
 {
 	struct s3c24x0_i2c_bus *i2c;
 	unsigned char xaddr[4];
@@ -692,7 +693,7 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 					alen, buf, len);
 	else
 		ret = i2c_transfer(i2c->regs, I2C_WRITE, chip << 1,
-				&xaddr[4 - alen], alen, buf, len);
+				&xaddr[4 - alen], alen, (void *)buf, len);
 
 
 	if (ret != 0) {

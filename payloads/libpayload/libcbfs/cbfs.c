@@ -120,7 +120,7 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	if (! dest)
 		return src;
 
-	if (cbfs_decompress(ntohl(orom->compression),
+	if (!cbfs_decompress(ntohl(orom->compression),
 			     src,
 			     dest,
 			     ntohl(orom->len)))
@@ -146,7 +146,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 			stage->entry);
 	memset((void *) (uint32_t) stage->load, 0, stage->memlen);
 
-	if (cbfs_decompress(stage->compression,
+	if (!cbfs_decompress(stage->compression,
 			     ((unsigned char *) stage) +
 			     sizeof(struct cbfs_stage),
 			     (void *) (uint32_t) stage->load,

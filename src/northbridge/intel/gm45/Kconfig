@@ -29,4 +29,8 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select MMCONF_SUPPORT_DEFAULT
 	select IOMMU
 
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/intel/gm45/bootblock.c"
+
 endif

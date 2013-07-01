@@ -82,7 +82,10 @@ HOSTCXXFLAGS := -g
 DOXYGEN := doxygen
 DOXYGEN_OUTPUT_DIR := doxygen
 
-all: real-all
+all: clean-config real-all
+
+clean-config:
+	rm -f $(obj)/config.h
 
 # This include must come _before_ the pattern rules below!
 # Order _does_ matter for pattern rules.

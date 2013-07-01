@@ -19,7 +19,7 @@
 
 #if CONFIG_INTEL_LYNXPOINT_LP
 #include "microcode-M7240650_ffff000a.h"
-#include "microcode-M7240651_00000010.h"
+#include "microcode-M7240651_00000014.h"
 #else
 #include "microcode-M32306c1_ffff000d.h"
 #include "microcode-M32306c2_ffff0003.h"

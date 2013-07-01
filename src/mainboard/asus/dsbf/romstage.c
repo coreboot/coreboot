@@ -129,10 +129,6 @@ void main(unsigned long bist)
 
 	enable_smbus();
 
-	/* setup PCIe MMCONF base address */
-	pci_write_config32(PCI_DEV(0, 16, 0), 0x64,
-			   CONFIG_MMCONF_BASE_ADDRESS >> 16);
-
         smbus_write_byte(0x6f, 0x00, 0x63);
         smbus_write_byte(0x6f, 0x01, 0x04);
         smbus_write_byte(0x6f, 0x02, 0x53);

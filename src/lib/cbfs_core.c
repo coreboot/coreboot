@@ -196,19 +196,16 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 	switch (algo) {
 		case CBFS_COMPRESS_NONE:
 			memmove(dst, src, len);
-			return 0;
+			return len;
 #ifdef CBFS_CORE_WITH_LZMA
 		case CBFS_COMPRESS_LZMA:
-			if (ulzma(src, dst) != 0) {
-				return 0;
-			}
-			return -1;
+			return ulzma(src, dst);
 #endif
 		default:
 			ERROR("tried to decompress %d bytes with algorithm #%x,"
 			      "but that algorithm id is unsupported.\n", len,
 			      algo);
-			return -1;
+			return 0;
 	}
 }
 

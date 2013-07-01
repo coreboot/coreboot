@@ -30,6 +30,7 @@ config NORTHBRIDGE_VIA_VX900
 
 config MAX_PIRQ_LINKS
 	int
+	depends on NORTHBRIDGE_VIA_VX900
 	default 8
 
 config MMCONF_BASE_ADDRESS

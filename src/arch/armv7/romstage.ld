@@ -30,6 +30,11 @@ OUTPUT_ARCH(arm)
 
 ENTRY(stage_entry)
 
+PHDRS
+{
+	to_load PT_LOAD;
+}
+
 SECTIONS
 {
 	/* TODO make this a configurable option (per chipset). */
@@ -41,7 +46,7 @@ SECTIONS
 		*(.text.stage_entry.armv7);
 		*(.text.startup);
 		*(.text);
-	}
+	} : to_load
 
 	.romdata . : {
 		*(.rodata);

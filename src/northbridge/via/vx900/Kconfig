@@ -28,6 +28,8 @@ config NORTHBRIDGE_VIA_VX900
 	select MMCONF_SUPPORT_DEFAULT
 	select GFXUMA
 
+if NORTHBRIDGE_VIA_VX900
+
 config MAX_PIRQ_LINKS
 	int
 	default 8
@@ -39,3 +41,5 @@ config MMCONF_BASE_ADDRESS
 config VGA_BIOS_ID
 	string
 	default "1106,7122"
+
+endif

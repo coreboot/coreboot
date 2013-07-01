@@ -268,8 +268,6 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 			name,
 			(uint32_t) stage->load, stage->memlen,
 			stage->entry);
-	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *) (uint32_t) stage->load, 0, stage->memlen);
 
 	final_size = cbfs_decompress(stage->compression,
 				     ((unsigned char *) stage) +
@@ -278,6 +276,10 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 				     stage->len);
 	if (!final_size)
 		return (void *) -1;
+
+	/* Stages rely the below clearing so that the bss is initialized. */
+	memset((void *)((uintptr_t)stage->load + final_size), 0,
+	       stage->memlen - final_size);
 
 	DEBUG("stage loaded.\n");
 

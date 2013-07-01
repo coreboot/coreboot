@@ -26,6 +26,7 @@ ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 bootblock-y += memcpy.c
 endif
 bootblock-y += memcmp.c
+bootblock-y += memmove.c
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 romstage-y += memset.c

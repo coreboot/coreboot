@@ -26,6 +26,7 @@ ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 bootblock-y += memcpy.c
 endif
 bootblock-y += memcmp.c
+bootblock-y += memmove.c
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 romstage-y += memset.c
@@ -115,7 +116,7 @@ endif
 ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 smm-y += memcpy.c
 endif
-smm-y += cbfs.c memcmp.c
+smm-y += cbfs.c memcmp.c memmove.c
 smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 smm-$(CONFIG_USBDEBUG) += usbdebug.c

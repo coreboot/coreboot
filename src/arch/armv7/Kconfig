@@ -49,4 +49,12 @@ config ARM_DCACHE_POLICY_WRITETHROUGH
 	bool
 	default n
 
+config HAVE_ARCH_MEMSET
+	bool
+	default n
+
+config HAVE_ARCH_MEMCPY
+	bool
+	default n
+
 endmenu

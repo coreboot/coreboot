@@ -32,7 +32,9 @@
  *                      name (DDN) of this uart (e.g. "COM1", optional)
  * SUPERIO_UART_PM_REG	Identifier of a 1-bit register to power down
  *			the UART (optional)
- * SUPERIO_UART_PM_LDN  The logical device number to access the PM_REG
+ * SUPERIO_UART_PM_VAL	The value for SUPERIO_UART_PM_REG to power the logical
+ *			device down (required if SUPERIO_UART_PM_REG is defined)
+ * SUPERIO_UART_PM_LDN	The logical device number to access the PM_REG
  *			bit (required if SUPERIO_UART_PM_REG is defined)
  */
 
@@ -65,15 +67,15 @@ Device (SUPERIO_ID(SER, SUPERIO_UART_LDN)) {
 
 #ifdef SUPERIO_UART_PM_REG
 	Method (_PSC) {
-		PNP_GENERIC_PSC(SUPERIO_UART_PM_REG, SUPERIO_UART_PM_LDN)
+		PNP_GENERIC_PSC(SUPERIO_UART_PM_REG, SUPERIO_UART_PM_VAL, SUPERIO_UART_PM_LDN)
 	}
 
 	Method (_PS0) {
-		PNP_GENERIC_PS0(SUPERIO_UART_PM_REG, SUPERIO_UART_PM_LDN)
+		PNP_GENERIC_PS0(SUPERIO_UART_PM_REG, SUPERIO_UART_PM_VAL, SUPERIO_UART_PM_LDN)
 	}
 
 	Method (_PS1) {
-		PNP_GENERIC_PS1(SUPERIO_UART_PM_REG, SUPERIO_UART_PM_LDN)
+		PNP_GENERIC_PS1(SUPERIO_UART_PM_REG, SUPERIO_UART_PM_VAL, SUPERIO_UART_PM_LDN)
 	}
 #else
 	Method (_PSC) {

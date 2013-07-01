@@ -26,6 +26,14 @@
 
 void intel_pch_finalize_smm(void)
 {
+#if CONFIG_LOCK_SPI_ON_RESUME
+	/* Copy flash regions from FREG0-4 to PR0-4
+	   and enable write protection bit31 */
+	int i;
+	for (i = 0; i < 20; i += 4)
+		RCBA32(0x3874 + i) = RCBA32(0x3854 + i) | (1 << 31);
+#endif
+
 	/* Set SPI opcode menu */
 	RCBA16(0x3894) = SPI_OPPREFIX;
 	RCBA16(0x3896) = SPI_OPTYPE;

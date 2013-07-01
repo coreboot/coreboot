@@ -195,7 +195,7 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 {
 	switch (algo) {
 		case CBFS_COMPRESS_NONE:
-			memcpy(dst, src, len);
+			memmove(dst, src, len);
 			return 0;
 #ifdef CBFS_CORE_WITH_LZMA
 		case CBFS_COMPRESS_LZMA:

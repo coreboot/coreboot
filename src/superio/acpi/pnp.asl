@@ -90,25 +90,25 @@
  * PM_LDN	The logical device number to access the PM_REG
  *		bit
  */
-#define PNP_GENERIC_PSC(PM_REG, PM_LDN) \
+#define PNP_GENERIC_PSC(PM_REG, PM_VAL, PM_LDN) \
 	Store(^^_PSC (), Local0)\
 	If (Local0) { Return (Local0) }\
 	ENTER_CONFIG_MODE (PM_LDN)\
 	  Store (PM_REG, Local0)\
 	EXIT_CONFIG_MODE ()\
-	If (Local0) { Return (1) }\
+	If (LEqual(Local0, PM_VAL)) { Return (1) }\
 	Else { Return (0) }\
 
 /* Disable power saving mode */
-#define PNP_GENERIC_PS0(PM_REG, PM_LDN) \
+#define PNP_GENERIC_PS0(PM_REG, PM_VAL, PM_LDN) \
 	ENTER_CONFIG_MODE (PM_LDN)\
-	  Store (Zero, PM_REG)\
+	  Store (Not(PM_VAL), PM_REG)\
 	EXIT_CONFIG_MODE ()
 
 /* Enable power saving mode */
-#define PNP_GENERIC_PS1(PM_REG, PM_LDN) \
+#define PNP_GENERIC_PS1(PM_REG, PM_VAL, PM_LDN) \
 	ENTER_CONFIG_MODE (PM_LDN)\
-	  Store (One, PM_REG)\
+	  Store (PM_VAL, PM_REG)\
 	EXIT_CONFIG_MODE ()
 
 

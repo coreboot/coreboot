@@ -147,9 +147,11 @@ Device(SUPERIO_DEV) {
 	#undef SUPERIO_UART_LDN
 	#undef SUPERIO_UART_DDN
 	#undef SUPERIO_UART_PM_REG
+	#undef SUPERIO_UART_PM_VAL
 	#undef SUPERIO_UART_PM_LDN
 	#define SUPERIO_UART_LDN 2
 	#define SUPERIO_UART_PM_REG UAPW
+	#define SUPERIO_UART_PM_VAL 0
 	#define SUPERIO_UART_PM_LDN PNP_NO_LDN_CHANGE
 	#include <superio/acpi/pnp_uart.asl>
 #endif
@@ -158,9 +160,11 @@ Device(SUPERIO_DEV) {
 	#undef SUPERIO_UART_LDN
 	#undef SUPERIO_UART_DDN
 	#undef SUPERIO_UART_PM_REG
+	#undef SUPERIO_UART_PM_VAL
 	#undef SUPERIO_UART_PM_LDN
 	#define SUPERIO_UART_LDN 3
 	#define SUPERIO_UART_PM_REG UBPW
+	#define SUPERIO_UART_PM_VAL 0
 	#define SUPERIO_UART_PM_LDN PNP_NO_LDN_CHANGE
 	#include <superio/acpi/pnp_uart.asl>
 #endif
@@ -180,6 +184,7 @@ Device(SUPERIO_DEV) {
 	#undef SUPERIO_PNP_LDN
 	#undef SUPERIO_PNP_DDN
 	#undef SUPERIO_PNP_PM_REG
+	#undef SUPERIO_PNP_PM_VAL
 	#undef SUPERIO_PNP_PM_LDN
 	#undef SUPERIO_PNP_IO0
 	#undef SUPERIO_PNP_IO1
@@ -188,6 +193,7 @@ Device(SUPERIO_DEV) {
 	#undef SUPERIO_PNP_DMA
 	#define SUPERIO_PNP_LDN		11
 	#define SUPERIO_PNP_PM_REG	HWPW
+	#define SUPERIO_PNP_PM_VAL	0
 	#define SUPERIO_PNP_PM_LDN	PNP_NO_LDN_CHANGE
 	#define SUPERIO_PNP_IO0		0x08, 0x08
 	#define SUPERIO_PNP_IRQ0	1

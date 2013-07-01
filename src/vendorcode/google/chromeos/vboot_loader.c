@@ -66,8 +66,8 @@ static void vboot_run_stub(struct vboot_context *context)
 
 	vboot_region = cbmem_entry_start(vboot_entry);
 
-	if (cbfs_decompress(stage->compression, &stage[1],
-	                    &vboot_region[rmodule_offset], stage->len)) {
+	if (!cbfs_decompress(stage->compression, &stage[1],
+	                     &vboot_region[rmodule_offset], stage->len)) {
 		printk(BIOS_DEBUG, "Couldn't decompress vboot stub.\n");
 		goto out;
 	}
@@ -221,8 +221,8 @@ static void vboot_load_ramstage(struct vboot_handoff *vboot_handoff,
 	printk(BIOS_DEBUG, "Decompressing ramstage @ 0x%p (%d bytes)\n",
 	       &ramstage_region[rmodule_offset], stage->memlen);
 
-	if (cbfs_decompress(stage->compression, &stage[1],
-	                    &ramstage_region[rmodule_offset], stage->len))
+	if (!cbfs_decompress(stage->compression, &stage[1],
+	                     &ramstage_region[rmodule_offset], stage->len))
 		return;
 
 	if (rmodule_parse(&ramstage_region[rmodule_offset], &ramstage))

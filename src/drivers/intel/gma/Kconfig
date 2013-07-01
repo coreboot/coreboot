@@ -22,3 +22,9 @@ config INTEL_DP
 	default n
 	help
 	  helper functions for intel display port operations
+
+config INTEL_DDI
+	bool
+	default n
+	help
+	  helper functions for intel DDI operations

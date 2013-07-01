@@ -148,4 +148,14 @@ config LOCK_MANAGEMENT_ENGINE
 
 	  If unsure, say N.
 
+config LOCK_SPI_ON_RESUME
+	bool "Lock all flash ROM sections on S3 resume"
+	default n
+	help
+	  If the flash ROM shall be protected against write accesses from the
+	  operating system (OS), the locking procedure has to be repeated after
+	  each resume from S3. Select this if you never want to update the flash
+	  ROM from within your OS. Notice: Even with this option, the write lock
+	  has still to be enabled on the normal boot path (e.g. by the payload).
+
 endif

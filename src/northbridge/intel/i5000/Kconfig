@@ -20,9 +20,17 @@
 config NORTHBRIDGE_INTEL_I5000
 	bool
 	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
 	select HAVE_DEBUG_RAM_SETUP
+
+if NORTHBRIDGE_INTEL_I5000
 
 config NORTHBRIDGE_INTEL_I5000_RAM_CHECK
 	bool
 	prompt "Run ramcheck after RAM initialization"
-	depends on NORTHBRIDGE_INTEL_I5000
+
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/intel/i5000/bootblock.c"
+
+endif

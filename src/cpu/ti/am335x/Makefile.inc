@@ -1,5 +1,5 @@
 bootblock-y	+= dmtimer.c
-bootblock-y	+= nand.c
+bootblock-y	+= bootblock_media.c
 bootblock-y	+= pinmux.c
 bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 

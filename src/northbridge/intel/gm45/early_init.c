@@ -25,11 +25,6 @@ void gm45_early_init(void)
 {
 	const device_t d0f0 = PCI_DEV(0, 0, 0);
 
-	/* Setup PCIEXBAR. */
-	pci_io_write_config32(d0f0, D0F0_PCIEXBAR_LO,
-					/*    64MB, enable */
-			DEFAULT_PCIEXBAR | (2 << 1) | 1);
-
 	/* Setup MCHBAR. */
 	pci_write_config32(d0f0, D0F0_MCHBAR_LO, DEFAULT_MCHBAR | 1);
 

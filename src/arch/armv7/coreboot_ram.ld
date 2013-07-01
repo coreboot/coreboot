@@ -24,6 +24,11 @@ INCLUDE ldoptions
 
 ENTRY(stage_entry)
 
+PHDRS
+{
+	to_load PT_LOAD;
+}
+
 SECTIONS
 {
 	. = CONFIG_SYS_SDRAM_BASE;
@@ -38,7 +43,7 @@ SECTIONS
 		*(.text.*);
 		. = ALIGN(16);
 		_etext = .;
-	}
+	} : to_load
 
 	.ctors : {
 		. = ALIGN(0x100);

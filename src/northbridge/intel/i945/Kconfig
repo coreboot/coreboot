@@ -24,6 +24,8 @@ if NORTHBRIDGE_INTEL_I945
 
 config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	def_bool y
+	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
 	select HAVE_DEBUG_RAM_SETUP
 	select LAPIC_MONOTONIC_TIMER
 
@@ -31,6 +33,10 @@ config NORTHBRIDGE_INTEL_SUBTYPE_I945GC
 	def_bool n
 config NORTHBRIDGE_INTEL_SUBTYPE_I945GM
 	def_bool n
+
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "northbridge/intel/i945/bootblock.c"
 
 config VGA_BIOS_ID
 	string

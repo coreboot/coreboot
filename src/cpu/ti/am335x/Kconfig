@@ -10,6 +10,17 @@ config BOOTBLOCK_BASE
 	hex
 	default 0x402f0400
 
+config CBFS_ROM_OFFSET
+	# Calculated by BL1 + max bootblock size.
+	default 0x2800
+
+# We need to leave a gap between the bootblock and the ROM stage so that when
+# it is "loaded" to a slightly different place in on chip memory, it doesn't
+# clobber the metadata needed to actually enter it.
+config ROMSTAGE_BASE
+	hex
+	default 0x402f2d00
+
 # Stack may reside in either IRAM or DRAM. We will define it to live
 # at the top of IRAM for now.
 #
@@ -26,11 +37,6 @@ config STACK_BOTTOM
 config STACK_SIZE
 	hex
 	default 0x1000
-
-config CBFS_ROM_OFFSET
-	# Calculated by BL1 + max bootblock size.
-	hex "offset of CBFS data in ROM"
-	default 0x2800
 
 ## TODO Change this to some better address not overlapping bootblock when
 ## cbfstool supports creating header in arbitrary location.

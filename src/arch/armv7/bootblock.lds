@@ -22,6 +22,11 @@
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 
+PHDRS
+{
+	to_load PT_LOAD;
+}
+
 TARGET(binary)
 SECTIONS
 {
@@ -39,7 +44,7 @@ SECTIONS
 		*(.rom.data.*);
 		*(.rodata.*);
 		_erom = .;
-	} = 0xff
+	} : to_load = 0xff
 
 	/DISCARD/ : {
 		*(.comment)

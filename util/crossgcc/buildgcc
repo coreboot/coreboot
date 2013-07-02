@@ -227,10 +227,24 @@ case "$TARGETARCH" in
 	i386-mingw32)	;;
 	i386*)		TARGETARCH=i386-elf;;
 	arm*)		TARGETARCH=armv7a-eabi;;
+	aarch64)	TARGETARCH=aarch64;;
 	*)		printf "Invalid architecture\n\n"; myhelp; exit 1;;
 esac
 
 echo "Target arch is now $TARGETARCH"
+
+# we're not building from source yet. 
+if [ $TARGETARCH = "aarch64" ]; then
+	mkdir -p xgcc/bin
+	cd xgcc/bin
+	wget -O - http://releases.linaro.org/12.10/components/toolchain/gcc-linaro/aarch64/rc3/gcc-linaro-aarch64-linux-gnu-4.7+bzr115029-20121015+bzr2506_linux.tar.bz2 | tar xjf -
+	for i in gcc-linaro-aarch64-linux-gnu-4.7+bzr115029-20121015+bzr2506_linux/aarch64-linux-gnu/bin/*; do
+		file=`basename $i`
+		ln -s $i aarch64-elf-$file
+	done
+	exit
+fi
+
 GDB_PACKAGE="GDB"
 PYTHON_PACKAGE="PYTHON"
 EXPAT_PACKAGE="EXPAT"

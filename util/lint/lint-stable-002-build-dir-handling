@@ -53,9 +53,13 @@ if [ "$MAKE" = "" ]; then
 fi
 
 # prepare a config to use
+TMPOBJ=`mktemp .tmpobj.XXXXXX`
+rm $TMPOBJ
+TMPOBJ=${TMPOBJ}
+mkdir -p ${TMPOBJ}
 TMPCONFIG=`mktemp .tmpconfig.XXXXXX`
 rm -f $TMPCONFIG
-$MAKE DOTCONFIG=$TMPCONFIG allyesconfig >/dev/null
+$MAKE obj=$TMPOBJ DOTCONFIG=$TMPCONFIG allyesconfig >/dev/null
 
 # look up parent directory
 CURRENTDIR=`pwd -P`
@@ -66,5 +70,5 @@ compare_output "`run_printall ../obj`" "$PARENTDIR/obj/.../static.c $PARENTDIR/o
 compare_output "`run_printall /tmp`" "/tmp/.../static.c /tmp/.../static.c /tmp/.../static.romstage.o"
 compare_output "`run_printall /../tmp`" "/tmp/.../static.c /tmp/.../static.c /tmp/.../static.romstage.o"
 
-rm -f $TMPCONFIG
+rm -rf $TMPCONFIG $TMPOBJ
 

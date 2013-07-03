@@ -86,6 +86,15 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral);
 int clock_set_mshci(enum periph_id peripheral);
 
 /*
+ * Set dwmci controller instances clock drivder
+ *
+ * @param enum periph_id instance of the dwmci controller
+ *
+ * Return	0 if ok else -1
+ */
+int clock_set_dwmci(enum periph_id peripheral);
+
+/*
  * Sets the epll clockrate
  *
  * @param rate	Required clock rate to the presacaler in Hz

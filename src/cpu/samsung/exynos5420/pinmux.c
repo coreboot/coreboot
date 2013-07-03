@@ -80,8 +80,8 @@ static void exynos_pinmux_sdmmc(int start, int start_ext)
 
 void exynos_pinmux_sdmmc0(void)
 {
-	gpio_set_pull(GPIO_C02, GPIO_PULL_UP);
 	exynos_pinmux_sdmmc(GPIO_C00, GPIO_C30);
+	gpio_set_pull(GPIO_C02, GPIO_PULL_UP);
 }
 
 void exynos_pinmux_sdmmc1(void)

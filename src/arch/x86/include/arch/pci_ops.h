@@ -22,8 +22,4 @@ static inline const struct pci_bus_operations *pci_config_default(void)
 #endif
 }
 
-static inline void pci_set_method(device_t dev)
-{
-	dev->ops->ops_pci_bus = pci_config_default();
-}
 #endif /* ARCH_I386_PCI_OPS_H */

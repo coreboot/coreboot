@@ -236,6 +236,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = cn400_domain_scan_bus,
+	.ops_pci_bus      = pci_bus_default_ops,
 };
 
 static void cpu_bus_init(device_t dev)
@@ -262,7 +263,6 @@ static void enable_dev(struct device *dev)
 	/* Set the operations if it is a special bus type. */
 	if (dev->path.type == DEVICE_PATH_DOMAIN) {
 		dev->ops = &pci_domain_ops;
-		pci_set_method(dev);
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}

@@ -27,7 +27,6 @@
 #include <console/console.h>
 
 #define Q35_PAM0            0x90
-#define Q35_PCIEXBAR_ADDR   0xb0000000
 
 static const unsigned char qemu_q35_irqs[] = {
 	10, 10, 11, 11,
@@ -59,9 +58,6 @@ static void qemu_nb_init(device_t dev)
 	/* setup IRQ routing southbridge devices */
 	for (i = 25; i < 32; i++)
 		pci_assign_irqs(0, i, qemu_q35_irqs);
-
-	/* setup mmconfig */
-	pci_write_config32(dev, 0x60, Q35_PCIEXBAR_ADDR | 1);
 }
 
 static void qemu_nb_read_resources(struct device *dev)
@@ -69,7 +65,7 @@ static void qemu_nb_read_resources(struct device *dev)
 	pci_dev_read_resources(dev);
 
 	/* reserve mmconfig */
-	fixed_mem_resource(dev, 2, Q35_PCIEXBAR_ADDR >> 10, 0x10000000 >> 10,
+	fixed_mem_resource(dev, 2, CONFIG_MMCONF_BASE_ADDRESS >> 10, 0x10000000 >> 10,
 			   IORESOURCE_RESERVE);
 }
 

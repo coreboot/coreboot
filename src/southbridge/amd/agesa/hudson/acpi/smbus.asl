@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012, 2013 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,5 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* simple name description */
-
-/*
-Scope (_SB) {
-	Device(PCI0) {
-		Device(SATA) {
-			Name(_ADR, 0x00110000)
-			#include "sata.asl"
-		}
-	}
-}
-*/
-
+/* SMBUS Support */
 

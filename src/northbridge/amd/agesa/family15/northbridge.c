@@ -863,12 +863,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = domain_enable_resources,
 	.init		  = NULL,
 	.scan_bus	  = f15_pci_domain_scan_bus,
-
-#if CONFIG_MMCONF_SUPPORT_DEFAULT
-	.ops_pci_bus	  = &pci_ops_mmconf,
-#else
-	.ops_pci_bus	  = &pci_cf8_conf1,
-#endif
+	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
 

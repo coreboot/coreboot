@@ -113,6 +113,7 @@ Device(SIO) {
 		LCKC,   1,     /* Lock Configuration Registers */
 		Offset (0x29),
 		IO3S,   8,     /* GPIO3 pin selection register */
+		Offset (0x30),
 		ACTR,   1,     /* Logical device activation */
 		ACT1,   1,     /* Logical part activation 1 (mostly unused) */
 		ACT2,   1,     /* Logical part activation 2 (mostly unused) */

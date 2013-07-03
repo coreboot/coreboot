@@ -121,7 +121,7 @@ static struct device_operations pci_domain_ops = {
 	.enable_resources = NULL,
 	.init             = NULL,
 	.scan_bus         = e7520_domain_scan_bus,
-	.ops_pci_bus      = &pci_cf8_conf1, /* Do we want to use the memory mapped space here? */
+	.ops_pci_bus      = pci_bus_default_ops,
 };
 
 static void mc_read_resources(device_t dev)

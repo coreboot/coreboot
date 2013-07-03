@@ -161,6 +161,7 @@ static struct device_operations pci_domain_ops = {
         .enable_resources = 0, //enable_resources,
         .init             = 0,
         .scan_bus         = pci_domain_scan_bus,
+        .ops_pci_bus      = pci_bus_default_ops,
 };
 
 #if 0
@@ -188,7 +189,6 @@ static void enable_dev(struct device *dev)
         /* Set the operations if it is a special bus type */
         if (dev->path.type == DEVICE_PATH_DOMAIN) {
                 dev->ops = &pci_domain_ops;
-		pci_set_method(dev);
         }
 #if 0
 	/* This is never hit as none of the sc520 boards have

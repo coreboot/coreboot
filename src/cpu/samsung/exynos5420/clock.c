@@ -66,6 +66,11 @@ static struct st_epll_con_val epll_div[] = {
 	{ 180633600, 0, 45, 3, 1, 10381 }
 };
 
+static inline unsigned long div_round_up(unsigned int n, unsigned int d)
+{
+	return (n + d - 1) / d;
+}
+
 /* exynos5: return pll clock frequency */
 unsigned long get_pll_clk(int pllreg)
 {
@@ -177,13 +182,6 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 		src = readl(&clk->clk_src_isp);
 		div = readl(&clk->clk_div_isp1);
 		break;
-	case PERIPH_ID_SDMMC0:
-	case PERIPH_ID_SDMMC1:
-	case PERIPH_ID_SDMMC2:
-	case PERIPH_ID_SDMMC3:
-		src = readl(&clk->clk_src_fsys);
-		div = readl(&clk->clk_div_fsys1);
-		break;
 	case PERIPH_ID_I2C0:
 	case PERIPH_ID_I2C1:
 	case PERIPH_ID_I2C2:
@@ -250,6 +248,35 @@ unsigned long get_arm_clk(void)
 	return armclk;
 }
 
+/* exynos5: get the mmc clock */
+static unsigned long get_mmc_clk(int dev_index)
+{
+	struct exynos5420_clock *clk = samsung_get_base_clock();
+	unsigned long uclk, sclk;
+	unsigned int sel, ratio;
+	int shift = 0;
+
+	sel = readl(&clk->clk_src_fsys);
+	sel = (sel >> ((dev_index * 4) + 8)) & 0x7;
+
+	if (sel == 0x3)
+		sclk = get_pll_clk(MPLL);
+	else if (sel == 0x6)
+		sclk = get_pll_clk(EPLL);
+	else
+		return 0;
+
+	ratio = readl(&clk->clk_div_fsys1);
+
+	shift = dev_index * 10;
+
+	ratio = (ratio >> shift) & 0x3ff;
+	uclk = (sclk / (ratio + 1));
+	printk(BIOS_DEBUG, "%s(%d): %lu\n", __func__, dev_index, uclk);
+
+	return uclk;
+}
+
 /* exynos5: set the mmc clock */
 void set_mmc_clk(int dev_index, unsigned int div)
 {
@@ -264,6 +291,24 @@ void set_mmc_clk(int dev_index, unsigned int div)
 	val &= ~(0x3ff << shift);
 	val |= (div & 0x3ff) << shift;
 	writel(val, addr);
+}
+
+/* Set DW MMC Controller clock */
+int clock_set_dwmci(enum periph_id peripheral)
+{
+	/* Request MMC clock value to 52MHz. */
+	const unsigned long freq = 52000000;
+	unsigned long sclk, div;
+	int device_index = (int)peripheral - (int)PERIPH_ID_SDMMC0;
+
+	ASSERT(device_index >= 0 && device_index < 4);
+	sclk = get_mmc_clk(device_index);
+	if (!sclk) {
+		return -1;
+	}
+	div = div_round_up(sclk, freq);
+	set_mmc_clk(device_index, div);
+	return 0;
 }
 
 void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)

@@ -293,6 +293,57 @@ static u32 pcode_mailbox_read(u32 command)
 	return MCHBAR32(BIOS_MAILBOX_DATA);
 }
 
+static void initialize_vr_config(void)
+{
+	msr_t msr;
+
+	printk(BIOS_DEBUG, "Initializing VR config.\n");
+
+	/*  Configure VR_CURRENT_CONFIG. */
+	msr = rdmsr(MSR_VR_CURRENT_CONFIG);
+	/* Preserve bits 63 and 62. Bit 62 is PSI4 enable, but it is only valid
+	 * on ULT systems. */
+	msr.hi &= 0xc0000000;
+	msr.hi |= (0x01 << (52 - 32)); /* PSI3 threshold -  1A. */
+	msr.hi |= (0x05 << (42 - 32)); /* PSI2 threshold -  5A. */
+	msr.hi |= (0x0f << (32 - 32)); /* PSI1 threshold - 15A. */
+
+	if (is_ult())
+		msr.hi |= (1 <<  (62 - 32)); /* Enable PSI4 */
+	/* Leave the max instantaneous current limit (12:0) to default. */
+	wrmsr(MSR_VR_CURRENT_CONFIG, msr);
+
+	/*  Configure VR_MISC_CONFIG MSR. */
+	msr = rdmsr(MSR_VR_MISC_CONFIG);
+	/* Set the IOUT_SLOPE scalar applied to dIout in U10.1.9 format. */
+	msr.hi &= ~(0x3ff << (40 - 32));
+	msr.hi |= (0x200 << (40 - 32)); /* 1.0 */
+	/* Set IOUT_OFFSET to 0. */
+	msr.hi &= ~0xff;
+	/* Set exit ramp rate to fast. */
+	msr.hi |= (1 << (50 - 32));
+	/* Set entry ramp rate to slow. */
+	msr.hi &= ~(1 << (51 - 32));
+	/* Enable decay mode on C-state entry. */
+	msr.hi |= (1 << (52 - 32));
+	/* Set the slow ramp rate to be fast ramp rate / 4 */
+	msr.hi &= ~(0x3 << (53 - 32));
+	msr.hi |= (0x01 << (53 - 32));
+	/* Set MIN_VID (31:24) to allow CPU to have full control. */
+	msr.lo &= ~0xff000000;
+	wrmsr(MSR_VR_MISC_CONFIG, msr);
+
+	/*  Configure VR_MISC_CONFIG2 MSR. */
+	if (is_ult()) {
+		msr = rdmsr(MSR_VR_MISC_CONFIG2);
+		msr.lo &= ~0xffff;
+		/* Allow CPU to control minimum voltage completely (15:8) and
+		 * set the fast ramp voltage to 1110mV (0x6f in 10mV steps). */
+		msr.lo |= 0x006f;
+		wrmsr(MSR_VR_MISC_CONFIG2, msr);
+	}
+}
+
 static void configure_pch_power_sharing(void)
 {
 	u32 pch_power, pch_power_ext, pmsync, pmsync2;
@@ -644,6 +695,8 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 	x86_setup_fixed_mtrrs();
 	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
 	x86_mtrr_check();
+
+	initialize_vr_config();
 
 	if (is_ult()) {
 		calibrate_24mhz_bclk();

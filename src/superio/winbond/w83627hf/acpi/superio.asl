@@ -242,13 +242,13 @@ Device(SIO) {
 		/* Disable power saving mode */
 		Method (_PS0) {
 			ENCM (0xFF)
-			Store (Zero, FDPW)
+			Store (One, FDPW)
 			EXCM ()
 		}
 		/* Enable power saving mode */
 		Method (_PS1) {
 			ENCM (0xFF)
-			Store (One, FDPW)
+			Store (Zero, FDPW)
 			EXCM ()
 		}
 
@@ -467,13 +467,13 @@ Device(SIO) {
 		}
 		Method (_PS1) {
 			ENCM (0xFF)
-			Store (One, PRPW)
+			Store (Zero, PRPW)
 			EXCM ()
 		}
 
 		Method (_DIS) {
 			ENCM (1)
-			Store (Zero, ACTR)
+			Store (One, ACTR)
 			EXCM ()
 		}
 
@@ -639,12 +639,12 @@ Device(SIO) {
 		}
 		Method (_PS0) {
 			ENCM (0xFF)
-			Store (Zero, UAPW)
+			Store (One, UAPW)
 			EXCM ()
 		}
 		Method (_PS1) {
 			ENCM (0xFF)
-			Store (One, UAPW)
+			Store (Zero, UAPW)
 			EXCM ()
 		}
 
@@ -764,12 +764,12 @@ Device(SIO) {
 		}
 		Method (_PS0) {
 			ENCM (0xFF)
-			Store (Zero, UBPW)
+			Store (One, UBPW)
 			EXCM ()
 		}
 		Method (_PS1) {
 			ENCM (0xFF)
-			Store (One, UBPW)
+			Store (Zero, UBPW)
 			EXCM ()
 		}
 
@@ -889,12 +889,12 @@ Device(SIO) {
 		}
 		Method (_PS0) {
 			ENCM (0xFF)
-			Store (Zero, UBPW)
+			Store (One, UBPW)
 			EXCM ()
 		}
 		Method (_PS1) {
 			ENCM (0xFF)
-			Store (One, UBPW)
+			Store (Zero, UBPW)
 			EXCM ()
 		}
 
@@ -1414,14 +1414,14 @@ Device(SIO) {
 		Method (_PS0)
 		{
 			ENCM (0xFF)
-			Store (Zero, HWPW)
+			Store (One, HWPW)
 			EXCM ()
 		}
 
 		Method (_PS1)
 		{
 			ENCM (0xFF)
-			Store (One, HWPW)
+			Store (Zero, HWPW)
 			EXCM ()
 		}
 

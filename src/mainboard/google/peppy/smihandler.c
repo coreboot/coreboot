@@ -32,6 +32,9 @@
 #include <ec/google/chromeec/ec.h>
 #include "ec.h"
 
+/* Codec enable: GPIO45 */
+#define GPIO_PP3300_CODEC_EN 45
+
 int mainboard_io_trap_handler(int smif)
 {
 	switch (smif) {
@@ -98,6 +101,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 		if (smm_get_gnvs()->s3u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+
+		set_gpio(GPIO_PP3300_CODEC_EN, 0);
 		break;
 	case 5:
 		if (smm_get_gnvs()->s5u0 == 0)
@@ -106,6 +111,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 		if (smm_get_gnvs()->s5u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+
+		set_gpio(GPIO_PP3300_CODEC_EN, 0);
 		break;
 	}
 

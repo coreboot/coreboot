@@ -211,24 +211,6 @@ Device(SIO) {
 		Name (_STR, Unicode ("W83627HF Floppy Disk Controller"))
 		Name (_UID, "w83627hf-fdc")
 
-		#ifndef NO_W83627HF_FDC_ENUM
-		/* Initialization method: Should be run once on boot
-		   If FDC is active, enumerate all connected devices */
-		Method (_INI) {
-			ENCM (0)
-			Store (ACTR, Local0)
-			Store (IO1H, Local1)
-			Store (IO1L, Local2)
-			EXCM ()
-			ShiftLeft(Local1, 8, Local1)
-			Or(Local1, Local2, Local1)
-			If (Local0) {
-				/* Try probing drives and save result in _FDE */
-				PROB(Local1)
-			}
-		}
-		#endif
-
 		Method (_STA)
 		{
 			Store (0x00, Local0)
@@ -316,18 +298,33 @@ Device(SIO) {
 		}
 
 		#ifndef NO_W83627HF_FDC_ENUM
-		Name(_FDE, Buffer(){0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
-		#endif
-
-		Method (PROB, 1) {
-			#ifndef NO_W83627HF_FDC_ENUM
-			/* Try probing drives and save result in _FDE
+		Method (_FDE, 0) {
+			/* Try probing drives.
 			   Probing is done through selecting and activating a drive
 			   and reading 0x03F7 aka the "shared IDE and floppy register"
 			   as any value there besides zero seems to indicate a
 			   connected drive.
 			*/
-			OperationRegion (FIO1, SystemIO, Arg0, 0x06)
+			// Create template
+			Name(FDE, Buffer(){0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
+			CreateByteField (FDE, 1, FD1)
+			CreateByteField (FDE, 4, FD2)
+			CreateByteField (FDE, 8, FD3)
+			CreateByteField (FDE, 12, FD4)
+
+			// Get resources from logical device
+			ENCM (0)
+			Store (ACTR, Local0)
+			Store (IO1H, Local1)
+			Store (IO1L, Local2)
+			EXCM ()
+			ShiftLeft(Local1, 8, Local1)
+			Or(Local1, Local2, Local1)
+			If (LNot(Local0)) {
+				Return (FDE)
+			}
+
+			OperationRegion (FIO1, SystemIO, Local1, 0x06)
 			Field (FIO1, ByteAcc, NoLock, Preserve)
 			{
 				Offset(0x02),
@@ -355,11 +352,6 @@ Device(SIO) {
 				SIFR, 8
 			}
 
-			CreateByteField (_FDE, 1, FD1)
-			CreateByteField (_FDE, 4, FD2)
-			CreateByteField (_FDE, 8, FD3)
-			CreateByteField (_FDE, 12, FD4)
-
 			Store(One, ACT1)
 			Store(0, SELE)
 			Sleep(0x64)
@@ -384,8 +376,10 @@ Device(SIO) {
 			If (SIFR) { Store (One, FD4) }
 			Store(Zero, ACT4)
 			Store(Zero, SELE)
-			#endif
+
+			Return (FDE)
 		}
+		#endif
 
 
 		Method (_SRS, 1, Serialized)
@@ -406,9 +400,6 @@ Device(SIO) {
 			Store (Local1, IO1H)
 			Store (One, ACTR)
 			EXCM ()
-
-			/* Try probing drives and save result in _FDE */
-			PROB(IOA0)
 		}
 	}
 	#endif

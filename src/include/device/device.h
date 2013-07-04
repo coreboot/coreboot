@@ -42,7 +42,7 @@ struct device_operations {
 #endif
 	const struct pci_operations *ops_pci;
 	const struct smbus_bus_operations *ops_smbus_bus;
-	const struct pci_bus_operations *ops_pci_bus;
+	const struct pci_bus_operations * (*ops_pci_bus)(device_t dev);
 	const struct pnp_mode_ops *ops_pnp_mode;
 };
 #endif

@@ -94,17 +94,5 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 	return pops;
 }
 
-static inline const struct pci_bus_operations *ops_pci_bus(struct bus *bus)
-{
-	const struct pci_bus_operations *bops;
-	bops = 0;
-	if (bus && bus->dev && bus->dev->ops) {
-		bops = bus->dev->ops->ops_pci_bus;
-	}
-	if (!bops)
-		bops = pci_config_default();
-	return bops;
-}
-
 #endif
 #endif /* PCI_H */

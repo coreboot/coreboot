@@ -350,6 +350,10 @@ Device(SIO) {
 				DATA,  8,
 			}
 			OperationRegion (FIO2, SystemIO, 0x3F7, 0x01)
+			Field (FIO2, ByteAcc, NoLock, Preserve)
+			{
+				SIFR, 8
+			}
 
 			CreateByteField (_FDE, 3, FD1)
 			CreateByteField (_FDE, 7, FD2)
@@ -359,25 +363,25 @@ Device(SIO) {
 			Store(One, ACT1)
 			Store(0, SELE)
 			Sleep(0x64)
-			If (FIO2) { Store (One, FD1) }
+			If (SIFR) { Store (One, FD1) }
 
 			Store(Zero, ACT1)
 			Store(One, ACT2)
 			Store(1, SELE)
 			Sleep(0x64)
-			If (FIO2) { Store (One, FD2) }
+			If (SIFR) { Store (One, FD2) }
 
 			Store(Zero, ACT2)
 			Store(One, ACT3)
 			Store(2, SELE)
 			Sleep(0x64)
-			If (FIO2) { Store (One, FD3) }
+			If (SIFR) { Store (One, FD3) }
 
 			Store(Zero, ACT3)
 			Store(One, ACT4)
 			Store(3, SELE)
 			Sleep(0x64)
-			If (FIO2) { Store (One, FD4) }
+			If (SIFR) { Store (One, FD4) }
 			Store(Zero, ACT4)
 			Store(Zero, SELE)
 			#endif

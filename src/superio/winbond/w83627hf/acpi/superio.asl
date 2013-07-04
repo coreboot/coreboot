@@ -351,10 +351,10 @@ Device(SIO) {
 			}
 			OperationRegion (FIO2, SystemIO, 0x3F7, 0x01)
 
-			CreateByteField (_FDE, 3, FD1)
-			CreateByteField (_FDE, 7, FD2)
-			CreateByteField (_FDE, 11, FD3)
-			CreateByteField (_FDE, 15, FD4)
+			CreateByteField (_FDE, 1, FD1)
+			CreateByteField (_FDE, 4, FD2)
+			CreateByteField (_FDE, 8, FD3)
+			CreateByteField (_FDE, 12, FD4)
 
 			Store(One, ACT1)
 			Store(0, SELE)

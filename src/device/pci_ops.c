@@ -25,9 +25,30 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
+const struct pci_bus_operations *pci_bus_default_ops(device_t dev)
+{
+#if CONFIG_MMCONF_SUPPORT_DEFAULT
+	return &pci_ops_mmconf;
+#else
+	return &pci_cf8_conf1;
+#endif
+}
+
+static const struct pci_bus_operations *pci_bus_ops(struct bus *bus, device_t dev)
+{
+	const struct pci_bus_operations *bops;
+	bops = 0;
+	if (bus && bus->dev && bus->dev->ops && bus->dev->ops->ops_pci_bus) {
+		bops = bus->dev->ops->ops_pci_bus(dev);
+	}
+	if (!bops)
+		bops = pci_bus_default_ops(dev);
+	return bops;
+}
+
 /*
- * The only consumer of the return value of get_pbus() is ops_pci_bus().
- * ops_pci_bus() can handle being passed NULL and auto-picks working ops.
+ * The only consumer of the return value of get_pbus() is pci_bus_ops().
+ * pci_bus_ops() can handle being passed NULL and auto-picks working ops.
  */
 static struct bus *get_pbus(device_t dev)
 {
@@ -38,10 +59,10 @@ static struct bus *get_pbus(device_t dev)
 	else
 		pbus = dev->bus;
 
-	while (pbus && pbus->dev && !ops_pci_bus(pbus)) {
+	while (pbus && pbus->dev && !pci_bus_ops(pbus, dev)) {
 		if (pbus == pbus->dev->bus) {
 			printk(BIOS_ALERT, "%s in endless loop looking for a "
-			       "parent bus with ops_pci_bus for %s, breaking "
+			       "parent bus with pci_bus_ops for %s, breaking "
 			       "out.\n", __func__, dev_path(dev));
 			break;
 		}
@@ -64,42 +85,42 @@ static struct bus *get_pbus(device_t dev)
 u8 pci_read_config8(device_t dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read8(pbus, dev->bus->secondary,
+	return pci_bus_ops(pbus, dev)->read8(pbus, dev->bus->secondary,
 					dev->path.pci.devfn, where);
 }
 
 u16 pci_read_config16(device_t dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read16(pbus, dev->bus->secondary,
+	return pci_bus_ops(pbus, dev)->read16(pbus, dev->bus->secondary,
 					 dev->path.pci.devfn, where);
 }
 
 u32 pci_read_config32(device_t dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
-	return ops_pci_bus(pbus)->read32(pbus, dev->bus->secondary,
+	return pci_bus_ops(pbus, dev)->read32(pbus, dev->bus->secondary,
 					 dev->path.pci.devfn, where);
 }
 
 void pci_write_config8(device_t dev, unsigned int where, u8 val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write8(pbus, dev->bus->secondary,
+	pci_bus_ops(pbus, dev)->write8(pbus, dev->bus->secondary,
 				  dev->path.pci.devfn, where, val);
 }
 
 void pci_write_config16(device_t dev, unsigned int where, u16 val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write16(pbus, dev->bus->secondary,
+	pci_bus_ops(pbus, dev)->write16(pbus, dev->bus->secondary,
 				   dev->path.pci.devfn, where, val);
 }
 
 void pci_write_config32(device_t dev, unsigned int where, u32 val)
 {
 	struct bus *pbus = get_pbus(dev);
-	ops_pci_bus(pbus)->write32(pbus, dev->bus->secondary,
+	pci_bus_ops(pbus, dev)->write32(pbus, dev->bus->secondary,
 				   dev->path.pci.devfn, where, val);
 }
 

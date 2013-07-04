@@ -28,7 +28,7 @@
 
 static u16 get_gpio_base(void)
 {
-#ifdef __PRE_RAM__
+#if defined(__PRE_RAM__) || defined(__SMM__)
 	return pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
 #else
 	return pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),

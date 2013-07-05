@@ -44,6 +44,8 @@ struct ehci_debug_info {
         void *ehci_caps;
         void *ehci_regs;
         void *ehci_debug;
+
+        void *ehci_info;
         u32 devnum;
         u32 endpoint_out;
         u32 endpoint_in;
@@ -54,9 +56,6 @@ struct ehci_debug_info {
 void enable_usbdebug(unsigned int port);
 int dbgp_bulk_write_x(struct ehci_debug_info *dbg_info, const char *bytes, int size);
 int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size);
-void set_ehci_base(unsigned ehci_base);
-void set_ehci_debug(unsigned ehci_debug);
-unsigned get_ehci_debug(void);
 void set_debug_port(unsigned port);
 int early_usbdebug_init(void);
 void usbdebug_tx_byte(struct ehci_debug_info *info, unsigned char data);

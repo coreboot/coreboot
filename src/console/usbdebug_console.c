@@ -28,7 +28,7 @@ static struct ehci_debug_info dbg_info;
 static struct device_operations *ehci_drv_ops;
 static struct device_operations ehci_dbg_ops;
 
-void set_ehci_base(unsigned ehci_base)
+static void usbdebug_re_enable(unsigned ehci_base)
 {
 	unsigned diff;
 
@@ -39,36 +39,28 @@ void set_ehci_base(unsigned ehci_base)
 	dbg_info.ehci_regs -= diff;
 	dbg_info.ehci_debug -= diff;
 	dbg_info.ehci_caps = (void*)ehci_base;
+	dbg_info.ehci_info = &dbg_info;
 }
 
-void set_ehci_debug(unsigned ehci_debug)
+static void usbdebug_disable(void)
 {
-	dbg_info.ehci_debug = (void*)ehci_debug;
-}
-
-unsigned get_ehci_debug(void)
-{
-	return (unsigned)dbg_info.ehci_debug;
+	dbg_info.ehci_info = NULL;
 }
 
 static void pci_ehci_set_resources(struct device *dev)
 {
 	struct resource *res;
-	u32 base;
-	u32 usb_debug;
 
 	printk(BIOS_DEBUG, "%s EHCI Debug Port hook triggered\n", dev_path(dev));
-	usb_debug = get_ehci_debug();
-	set_ehci_debug(0);
+	usbdebug_disable();
 
 	if (ehci_drv_ops->set_resources)
 		ehci_drv_ops->set_resources(dev);
-
 	res = find_resource(dev, EHCI_BAR_INDEX);
-	set_ehci_debug(usb_debug);
-	if (!res) return;
-	base = res->base;
-	set_ehci_base(base);
+	if (!res)
+		return;
+
+	usbdebug_re_enable((u32)res->base);
 	report_resource_stored(dev, res, "");
 	printk(BIOS_DEBUG, "%s EHCI Debug Port relocated\n", dev_path(dev));
 }
@@ -105,7 +97,7 @@ static unsigned char dbgp_rx_byte(void)
 {
 	unsigned char data = 0xff;
 
-	if (dbg_info.ehci_debug)
+	if (dbg_info.ehci_info)
 		dbgp_bulk_read_x(&dbg_info, &data, 1);
 
 	return data;
@@ -118,7 +110,7 @@ static void dbgp_tx_flush(void)
 
 static int dbgp_tst_byte(void)
 {
-	return (int)dbg_info.ehci_debug;
+	return (int)dbg_info.ehci_info;
 }
 
 static const struct console_driver usbdebug_direct_console __console = {

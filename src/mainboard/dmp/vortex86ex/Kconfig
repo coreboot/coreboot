@@ -1,0 +1,1661 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013 DMP Electronics Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+if BOARD_DMP_EX
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_DMP_VORTEX86EX
+	select NORTHBRIDGE_DMP_VORTEX86EX
+	select SOUTHBRIDGE_DMP_VORTEX86EX
+	select HAVE_PIRQ_TABLE
+	select BOARD_ROMSIZE_KB_256
+	select ROMCC
+	select DEFAULT_EARLY_CONSOLE
+	select HAVE_DEBUG_RAM_SETUP
+
+config MAINBOARD_DIR
+	string
+	default dmp/vortex86ex
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Vortex86EX"
+
+config IRQ_SLOT_COUNT
+	int
+	default 12
+
+config ID_SECTION_OFFSET
+	# Vortex86 ROM fixed data areas used too big range, we need
+	# to move ID from default address to another place.
+	# 18K below top of ROM should be ok.
+	hex
+	default 0x4800
+
+# ROM Strap PLL config setting :
+
+choice
+	prompt "ROM Strap PLL config"
+	default PLL_300_300_33
+
+config PLL_200_200_33
+	bool "CPU=200Mhz/DRAM=200Mhz/PCI=33Mhz"
+
+config PLL_300_300_33
+	bool "CPU=300Mhz/DRAM=300Mhz/PCI=33Mhz"
+
+config PLL_300_300_100
+	bool "CPU=300Mhz/DRAM=300Mhz/PCI=100Mhz"
+
+config PLL_400_200_33
+	bool "CPU=400Mhz/DRAM=200Mhz/PCI=33Mhz"
+
+config PLL_400_200_100
+	bool "CPU=400Mhz/DRAM=200Mhz/PCI=100Mhz"
+
+config PLL_400_400_33
+	bool "CPU=400Mhz/DRAM=400Mhz/PCI=33Mhz"
+
+config PLL_500_250_33
+	bool "CPU=500Mhz/DRAM=250Mhz/PCI=33Mhz"
+
+config PLL_500_500_33
+	bool "CPU=500Mhz/DRAM=500Mhz/PCI=33Mhz"
+
+config PLL_400_300_33
+	bool "CPU=400Mhz/DRAM=300Mhz/PCI=33Mhz"
+
+config PLL_400_300_100
+	bool "CPU=400Mhz/DRAM=300Mhz/PCI=100Mhz"
+
+config PLL_444_333_33
+	bool "CPU=444Mhz/DRAM=333Mhz/PCI=33Mhz"
+
+config PLL_466_350_33
+	bool "CPU=466Mhz/DRAM=350Mhz/PCI=33Mhz"
+
+config PLL_500_375_33
+	bool "CPU=500Mhz/DRAM=375Mhz/PCI=33Mhz"
+
+endchoice
+
+menu "On-Chip Device Power Down Control"
+
+	config TEMP_POWERDOWN
+	bool "Temperature sensor power-down"
+
+	config SATA_POWERDOWN
+	bool "SATA power-down"
+
+	config ADC_POWERDOWN
+	bool "ADC power-down"
+
+	config PCIE0_POWERDOWN
+	bool "PCIE0 power-down"
+
+	config MAC_POWERDOWN
+	bool "MAC power-down"
+
+	config USB1_POWERDOWN
+	bool "USB2.0 Host Controller 1 power-down"
+
+	config IDE_POWERDOWN
+	bool "IDE power-down"
+
+endmenu
+
+menu "Watchdog Timer setting"
+
+config WDT1_INITIALIZE
+	bool "Initialize WDT1"
+	default n
+
+config WDT1_ENABLE
+	depends on WDT1_INITIALIZE
+	bool "Enable WDT1"
+	default n
+
+choice
+	depends on WDT1_INITIALIZE
+	prompt "WDT1 Signal Select"
+	default WDT1_SIGNAL_RESET
+
+config WDT1_SINGAL_NMI
+	bool "NMI"
+config WDT1_SIGNAL_RESET
+	bool "Reset"
+config WDT1_SIGNAL_SMI
+	bool "SMI"
+
+endchoice
+
+endmenu
+
+menu "IDE controller setting"
+
+choice
+	prompt "Operation Mode"
+	default IDE_NATIVE_MODE
+
+config IDE_NATIVE_MODE
+	bool "Native Mode"
+config IDE_LEGACY_MODE
+	bool "Legacy Mode"
+
+endchoice
+
+config IDE1_ENABLE
+	bool "IDE Primary channel Enable"
+	default y
+
+config IDE2_ENABLE
+	bool "IDE Secondary channel Enable"
+	default y
+
+config IDE_STANDARD_COMPATIBLE
+	bool "Standard IDE Compatible"
+	default n
+	help
+	  Built-in IDE controller PCI vendor/device ID is 17F3:1012, which
+	  is not recognized by some OSes.
+
+	  This option can change IDE controller PCI vendor/device ID to
+	  other value for software compatibility.
+
+config IDE_COMPATIBLE_SELECTION
+	depends on IDE_STANDARD_COMPATIBLE
+	hex "IDE Compatible Selection"
+	default 0x808624db
+        help
+	  IDE controller PCI vendor/device ID value setting.
+
+	  Higher 16-bit is vendor ID, lower 16-bit is device ID.
+
+endmenu
+
+# GPIO setting :
+menu "GPIO setting"
+
+# Begin of GPIO0
+config GPIO_P0_ENABLE
+	bool "GPIO port 0 Enable"
+	default n
+
+config GPIO_P0_DATA_ADDR
+	hex "GPIO port 0 data address"
+	depends on GPIO_P0_ENABLE
+
+config GPIO_P0_DIR_ADDR
+	hex "GPIO port 0 direction address"
+	depends on GPIO_P0_ENABLE
+
+config GPIO_P0_INIT_DIR
+	hex "GPIO port 0 initial direction"
+	default 0x00
+	depends on GPIO_P0_ENABLE
+
+config GPIO_P0_INIT_DATA
+	hex "GPIO port 0 initial data"
+	depends on GPIO_P0_ENABLE
+# end of GPIO0
+
+# Begin of GPIO1
+config GPIO_P1_ENABLE
+	bool "GPIO port 1 Enable"
+	default n
+
+config GPIO_P1_DATA_ADDR
+	hex "GPIO port 1 data address"
+	depends on GPIO_P1_ENABLE
+
+config GPIO_P1_DIR_ADDR
+	hex "GPIO port 1 direction address"
+	depends on GPIO_P1_ENABLE
+
+config GPIO_P1_INIT_DIR
+	hex "GPIO port 1 initial direction"
+	default 0x00
+	depends on GPIO_P1_ENABLE
+
+config GPIO_P1_INIT_DATA
+	hex "GPIO port 1 initial data"
+	depends on GPIO_P1_ENABLE
+# end of GPIO1
+
+# Begin of GPIO2
+config GPIO_P2_ENABLE
+	bool "GPIO port 2 Enable"
+	default n
+
+config GPIO_P2_DATA_ADDR
+	hex "GPIO port 2 data address"
+	depends on GPIO_P2_ENABLE
+
+config GPIO_P2_DIR_ADDR
+	hex "GPIO port 2 direction address"
+	depends on GPIO_P2_ENABLE
+
+config GPIO_P2_INIT_DIR
+	hex "GPIO port 2 initial direction"
+	default 0x00
+	depends on GPIO_P2_ENABLE
+
+config GPIO_P2_INIT_DATA
+	hex "GPIO port 2 initial data"
+	depends on GPIO_P2_ENABLE
+# end of GPIO2
+
+# Begin of GPIO3
+config GPIO_P3_ENABLE
+	bool "GPIO port 3 Enable"
+	default n
+
+config GPIO_P3_DATA_ADDR
+	hex "GPIO port 3 data address"
+	depends on GPIO_P3_ENABLE
+
+config GPIO_P3_DIR_ADDR
+	hex "GPIO port 3 direction address"
+	depends on GPIO_P3_ENABLE
+
+config GPIO_P3_INIT_DIR
+	hex "GPIO port 3 initial direction"
+	default 0x00
+	depends on GPIO_P3_ENABLE
+
+config GPIO_P3_INIT_DATA
+	hex "GPIO port 3 initial data"
+	depends on GPIO_P3_ENABLE
+# end of GPIO3
+
+# Begin of GPIO4
+config GPIO_P4_ENABLE
+	bool "GPIO port 4 Enable"
+	default n
+
+config GPIO_P4_DATA_ADDR
+	hex "GPIO port 4 data address"
+	depends on GPIO_P4_ENABLE
+
+config GPIO_P4_DIR_ADDR
+	hex "GPIO port 4 direction address"
+	depends on GPIO_P4_ENABLE
+
+config GPIO_P4_INIT_DIR
+	hex "GPIO port 4 initial direction"
+	default 0x00
+	depends on GPIO_P4_ENABLE
+
+config GPIO_P4_INIT_DATA
+	hex "GPIO port 4 initial data"
+	depends on GPIO_P4_ENABLE
+# end of GPIO4
+
+# Begin of GPIO5
+config GPIO_P5_ENABLE
+	bool "GPIO port 5 Enable"
+	default n
+
+config GPIO_P5_DATA_ADDR
+	hex "GPIO port 5 data address"
+	depends on GPIO_P5_ENABLE
+
+config GPIO_P5_DIR_ADDR
+	hex "GPIO port 5 direction address"
+	depends on GPIO_P5_ENABLE
+
+config GPIO_P5_INIT_DIR
+	hex "GPIO port 5 initial direction"
+	default 0x00
+	depends on GPIO_P5_ENABLE
+
+config GPIO_P5_INIT_DATA
+	hex "GPIO port 5 initial data"
+	depends on GPIO_P5_ENABLE
+# end of GPIO5
+
+# Begin of GPIO6
+config GPIO_P6_ENABLE
+	bool "GPIO port 6 Enable"
+	default n
+
+config GPIO_P6_DATA_ADDR
+	hex "GPIO port 6 data address"
+	depends on GPIO_P6_ENABLE
+
+config GPIO_P6_DIR_ADDR
+	hex "GPIO port 6 direction address"
+	depends on GPIO_P6_ENABLE
+
+config GPIO_P6_INIT_DIR
+	hex "GPIO port 6 initial direction"
+	default 0x00
+	depends on GPIO_P6_ENABLE
+
+config GPIO_P6_INIT_DATA
+	hex "GPIO port 6 initial data"
+	depends on GPIO_P6_ENABLE
+# end of GPIO6
+
+# Begin of GPIO7
+config GPIO_P7_ENABLE
+	bool "GPIO port 7 Enable"
+	default n
+
+config GPIO_P7_DATA_ADDR
+	hex "GPIO port 7 data address"
+	depends on GPIO_P7_ENABLE
+
+config GPIO_P7_DIR_ADDR
+	hex "GPIO port 7 direction address"
+	depends on GPIO_P7_ENABLE
+
+config GPIO_P7_INIT_DIR
+	hex "GPIO port 7 initial direction"
+	default 0x00
+	depends on GPIO_P7_ENABLE
+
+config GPIO_P7_INIT_DATA
+	hex "GPIO port 7 initial data"
+	depends on GPIO_P7_ENABLE
+# end of GPIO7
+
+# Begin of GPIO8
+config GPIO_P8_ENABLE
+	bool "GPIO port 8 Enable"
+	default n
+
+config GPIO_P8_DATA_ADDR
+	hex "GPIO port 8 data address"
+	depends on GPIO_P8_ENABLE
+
+config GPIO_P8_DIR_ADDR
+	hex "GPIO port 8 direction address"
+	depends on GPIO_P8_ENABLE
+
+config GPIO_P8_INIT_DIR
+	hex "GPIO port 8 initial direction"
+	default 0x00
+	depends on GPIO_P8_ENABLE
+
+config GPIO_P8_INIT_DATA
+	hex "GPIO port 8 initial data"
+	depends on GPIO_P8_ENABLE
+# end of GPIO8
+
+# Begin of GPIO9
+config GPIO_P9_ENABLE
+	bool "GPIO port 9 Enable"
+	default n
+
+config GPIO_P9_DATA_ADDR
+	hex "GPIO port 9 data address"
+	depends on GPIO_P9_ENABLE
+
+config GPIO_P9_DIR_ADDR
+	hex "GPIO port 9 direction address"
+	depends on GPIO_P9_ENABLE
+
+config GPIO_P9_INIT_DIR
+	hex "GPIO port 9 initial direction"
+	default 0x00
+	depends on GPIO_P9_ENABLE
+
+config GPIO_P9_INIT_DATA
+	hex "GPIO port 9 initial data"
+	depends on GPIO_P9_ENABLE
+# end of GPIO9
+
+endmenu
+
+# UART setting :
+menu "UART setting"
+
+# Begin of UART1
+config UART1_ENABLE
+	bool "UART1 Enable"
+	default y
+
+choice
+	prompt "UART1 I/O port"
+	default UART1_IO_PORT_3F8
+	depends on UART1_ENABLE
+
+config UART1_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART1_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART1_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART1_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART1_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART1_IO_PORT_OTHER_INPUT
+	hex "UART1 I/O port"
+	depends on UART1_ENABLE && UART1_IO_PORT_OTHER
+
+config UART1_IO
+	hex
+	depends on UART1_ENABLE
+	default 0x3f8 if UART1_IO_PORT_3F8
+	default 0x2f8 if UART1_IO_PORT_2F8
+	default 0x3e8 if UART1_IO_PORT_3E8
+	default 0x2e8 if UART1_IO_PORT_2E8
+	default UART1_IO_PORT_OTHER_INPUT if UART1_IO_PORT_OTHER
+
+choice
+	prompt "UART1 IRQ"
+	default UART1_IRQ4
+	depends on UART1_ENABLE
+
+config UART1_IRQ_DISABLE
+	bool "Disable"
+config UART1_IRQ3
+	bool "IRQ3, COM2"
+config UART1_IRQ4
+	bool "IRQ4, COM1"
+config UART1_IRQ5
+	bool "IRQ5"
+config UART1_IRQ6
+	bool "IRQ6"
+config UART1_IRQ7
+	bool "IRQ7"
+config UART1_IRQ9
+	bool "IRQ9"
+config UART1_IRQ10
+	bool "IRQ10, COM3"
+config UART1_IRQ11
+	bool "IRQ11, COM4"
+config UART1_IRQ12
+	bool "IRQ12"
+config UART1_IRQ14
+	bool "IRQ14"
+config UART1_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART1_IRQ
+	int
+	depends on UART1_ENABLE
+	default 0 if UART1_IRQ_DISABLE
+	default 3 if UART1_IRQ3
+	default 4 if UART1_IRQ4
+	default 5 if UART1_IRQ5
+	default 6 if UART1_IRQ6
+	default 7 if UART1_IRQ7
+	default 9 if UART1_IRQ9
+	default 10 if UART1_IRQ10
+	default 11 if UART1_IRQ11
+	default 12 if UART1_IRQ12
+	default 14 if UART1_IRQ14
+	default 15 if UART1_IRQ15
+
+choice
+	prompt "UART1 Baud rate"
+	default UART1_BAUD_115200
+	depends on UART1_ENABLE
+
+config UART1_BAUD_115200
+	bool "115200"
+config UART1_BAUD_57600
+	bool "57600"
+config UART1_BAUD_38400
+	bool "38400"
+config UART1_BAUD_19200
+	bool "19200"
+config UART1_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART1_BAUD
+	int
+	depends on UART1_ENABLE
+	default 115200 if UART1_BAUD_115200
+	default 57600 if UART1_BAUD_57600
+	default 38400 if UART1_BAUD_38400
+	default 19200 if UART1_BAUD_19200
+	default 9600 if UART1_BAUD_9600
+# end of UART1
+
+# Begin of UART2
+config UART2_ENABLE
+	bool "UART2 Enable"
+	default y
+
+choice
+	prompt "UART2 I/O port"
+	default UART2_IO_PORT_2F8
+	depends on UART2_ENABLE
+
+config UART2_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART2_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART2_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART2_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART2_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART2_IO_PORT_OTHER_INPUT
+	hex "UART2 I/O port"
+	depends on UART2_ENABLE && UART2_IO_PORT_OTHER
+
+config UART2_IO
+	hex
+	depends on UART2_ENABLE
+	default 0x3f8 if UART2_IO_PORT_3F8
+	default 0x2f8 if UART2_IO_PORT_2F8
+	default 0x3e8 if UART2_IO_PORT_3E8
+	default 0x2e8 if UART2_IO_PORT_2E8
+	default UART2_IO_PORT_OTHER_INPUT if UART2_IO_PORT_OTHER
+
+choice
+	prompt "UART2 IRQ"
+	default UART2_IRQ3
+	depends on UART2_ENABLE
+
+config UART2_IRQ_DISABLE
+	bool "Disable"
+config UART2_IRQ3
+	bool "IRQ3, COM2"
+config UART2_IRQ4
+	bool "IRQ4, COM1"
+config UART2_IRQ5
+	bool "IRQ5"
+config UART2_IRQ6
+	bool "IRQ6"
+config UART2_IRQ7
+	bool "IRQ7"
+config UART2_IRQ9
+	bool "IRQ9"
+config UART2_IRQ10
+	bool "IRQ10, COM3"
+config UART2_IRQ11
+	bool "IRQ11, COM4"
+config UART2_IRQ12
+	bool "IRQ12"
+config UART2_IRQ14
+	bool "IRQ14"
+config UART2_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART2_IRQ
+	int
+	depends on UART2_ENABLE
+	default 0 if UART2_IRQ_DISABLE
+	default 3 if UART2_IRQ3
+	default 4 if UART2_IRQ4
+	default 5 if UART2_IRQ5
+	default 6 if UART2_IRQ6
+	default 7 if UART2_IRQ7
+	default 9 if UART2_IRQ9
+	default 10 if UART2_IRQ10
+	default 11 if UART2_IRQ11
+	default 12 if UART2_IRQ12
+	default 14 if UART2_IRQ14
+	default 15 if UART2_IRQ15
+
+choice
+	prompt "UART2 Baud rate"
+	default UART2_BAUD_115200
+	depends on UART2_ENABLE
+
+config UART2_BAUD_115200
+	bool "115200"
+config UART2_BAUD_57600
+	bool "57600"
+config UART2_BAUD_38400
+	bool "38400"
+config UART2_BAUD_19200
+	bool "19200"
+config UART2_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART2_BAUD
+	int
+	depends on UART2_ENABLE
+	default 115200 if UART2_BAUD_115200
+	default 57600 if UART2_BAUD_57600
+	default 38400 if UART2_BAUD_38400
+	default 19200 if UART2_BAUD_19200
+	default 9600 if UART2_BAUD_9600
+# end of UART2
+
+# Begin of UART3
+config UART3_ENABLE
+	bool "UART3 Enable"
+	default y
+
+choice
+	prompt "UART3 I/O port"
+	default UART3_IO_PORT_3E8
+	depends on UART3_ENABLE
+
+config UART3_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART3_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART3_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART3_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART3_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART3_IO_PORT_OTHER_INPUT
+	hex "UART3 I/O port"
+	depends on UART3_ENABLE && UART3_IO_PORT_OTHER
+
+config UART3_IO
+	hex
+	depends on UART3_ENABLE
+	default 0x3f8 if UART3_IO_PORT_3F8
+	default 0x2f8 if UART3_IO_PORT_2F8
+	default 0x3e8 if UART3_IO_PORT_3E8
+	default 0x2e8 if UART3_IO_PORT_2E8
+	default UART3_IO_PORT_OTHER_INPUT if UART3_IO_PORT_OTHER
+
+choice
+	prompt "UART3 IRQ"
+	default UART3_IRQ10
+	depends on UART3_ENABLE
+
+config UART3_IRQ_DISABLE
+	bool "Disable"
+config UART3_IRQ3
+	bool "IRQ3, COM2"
+config UART3_IRQ4
+	bool "IRQ4, COM1"
+config UART3_IRQ5
+	bool "IRQ5"
+config UART3_IRQ6
+	bool "IRQ6"
+config UART3_IRQ7
+	bool "IRQ7"
+config UART3_IRQ9
+	bool "IRQ9"
+config UART3_IRQ10
+	bool "IRQ10, COM3"
+config UART3_IRQ11
+	bool "IRQ11, COM4"
+config UART3_IRQ12
+	bool "IRQ12"
+config UART3_IRQ14
+	bool "IRQ14"
+config UART3_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART3_IRQ
+	int
+	depends on UART3_ENABLE
+	default 0 if UART3_IRQ_DISABLE
+	default 3 if UART3_IRQ3
+	default 4 if UART3_IRQ4
+	default 5 if UART3_IRQ5
+	default 6 if UART3_IRQ6
+	default 7 if UART3_IRQ7
+	default 9 if UART3_IRQ9
+	default 10 if UART3_IRQ10
+	default 11 if UART3_IRQ11
+	default 12 if UART3_IRQ12
+	default 14 if UART3_IRQ14
+	default 15 if UART3_IRQ15
+
+choice
+	prompt "UART3 Baud rate"
+	default UART3_BAUD_115200
+	depends on UART3_ENABLE
+
+config UART3_BAUD_115200
+	bool "115200"
+config UART3_BAUD_57600
+	bool "57600"
+config UART3_BAUD_38400
+	bool "38400"
+config UART3_BAUD_19200
+	bool "19200"
+config UART3_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART3_BAUD
+	int
+	depends on UART3_ENABLE
+	default 115200 if UART3_BAUD_115200
+	default 57600 if UART3_BAUD_57600
+	default 38400 if UART3_BAUD_38400
+	default 19200 if UART3_BAUD_19200
+	default 9600 if UART3_BAUD_9600
+# end of UART3
+
+# Begin of UART4
+config UART4_ENABLE
+	bool "UART4 Enable"
+	default y
+
+choice
+	prompt "UART4 I/O port"
+	default UART4_IO_PORT_2E8
+	depends on UART4_ENABLE
+
+config UART4_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART4_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART4_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART4_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART4_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART4_IO_PORT_OTHER_INPUT
+	hex "UART4 I/O port"
+	depends on UART4_ENABLE && UART4_IO_PORT_OTHER
+
+config UART4_IO
+	hex
+	depends on UART4_ENABLE
+	default 0x3f8 if UART4_IO_PORT_3F8
+	default 0x2f8 if UART4_IO_PORT_2F8
+	default 0x3e8 if UART4_IO_PORT_3E8
+	default 0x2e8 if UART4_IO_PORT_2E8
+	default UART4_IO_PORT_OTHER_INPUT if UART4_IO_PORT_OTHER
+
+choice
+	prompt "UART4 IRQ"
+	default UART4_IRQ11
+	depends on UART4_ENABLE
+
+config UART4_IRQ_DISABLE
+	bool "Disable"
+config UART4_IRQ3
+	bool "IRQ3, COM2"
+config UART4_IRQ4
+	bool "IRQ4, COM1"
+config UART4_IRQ5
+	bool "IRQ5"
+config UART4_IRQ6
+	bool "IRQ6"
+config UART4_IRQ7
+	bool "IRQ7"
+config UART4_IRQ9
+	bool "IRQ9"
+config UART4_IRQ10
+	bool "IRQ10, COM3"
+config UART4_IRQ11
+	bool "IRQ11, COM4"
+config UART4_IRQ12
+	bool "IRQ12"
+config UART4_IRQ14
+	bool "IRQ14"
+config UART4_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART4_IRQ
+	int
+	depends on UART4_ENABLE
+	default 0 if UART4_IRQ_DISABLE
+	default 3 if UART4_IRQ3
+	default 4 if UART4_IRQ4
+	default 5 if UART4_IRQ5
+	default 6 if UART4_IRQ6
+	default 7 if UART4_IRQ7
+	default 9 if UART4_IRQ9
+	default 10 if UART4_IRQ10
+	default 11 if UART4_IRQ11
+	default 12 if UART4_IRQ12
+	default 14 if UART4_IRQ14
+	default 15 if UART4_IRQ15
+
+choice
+	prompt "UART4 Baud rate"
+	default UART4_BAUD_115200
+	depends on UART4_ENABLE
+
+config UART4_BAUD_115200
+	bool "115200"
+config UART4_BAUD_57600
+	bool "57600"
+config UART4_BAUD_38400
+	bool "38400"
+config UART4_BAUD_19200
+	bool "19200"
+config UART4_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART4_BAUD
+	int
+	depends on UART4_ENABLE
+	default 115200 if UART4_BAUD_115200
+	default 57600 if UART4_BAUD_57600
+	default 38400 if UART4_BAUD_38400
+	default 19200 if UART4_BAUD_19200
+	default 9600 if UART4_BAUD_9600
+# end of UART4
+
+# Begin of UART5
+config UART5_ENABLE
+	bool "UART5 Enable"
+	default n
+
+choice
+	prompt "UART5 I/O port"
+	default UART5_IO_PORT_OTHER
+	depends on UART5_ENABLE
+
+config UART5_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART5_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART5_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART5_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART5_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART5_IO_PORT_OTHER_INPUT
+	hex "UART5 I/O port"
+	depends on UART5_ENABLE && UART5_IO_PORT_OTHER
+
+config UART5_IO
+	hex
+	depends on UART5_ENABLE
+	default 0x3f8 if UART5_IO_PORT_3F8
+	default 0x2f8 if UART5_IO_PORT_2F8
+	default 0x3e8 if UART5_IO_PORT_3E8
+	default 0x2e8 if UART5_IO_PORT_2E8
+	default UART5_IO_PORT_OTHER_INPUT if UART5_IO_PORT_OTHER
+
+choice
+	prompt "UART5 IRQ"
+	default UART5_IRQ_DISABLE
+	depends on UART5_ENABLE
+
+config UART5_IRQ_DISABLE
+	bool "Disable"
+config UART5_IRQ3
+	bool "IRQ3, COM2"
+config UART5_IRQ4
+	bool "IRQ4, COM1"
+config UART5_IRQ5
+	bool "IRQ5"
+config UART5_IRQ6
+	bool "IRQ6"
+config UART5_IRQ7
+	bool "IRQ7"
+config UART5_IRQ9
+	bool "IRQ9"
+config UART5_IRQ10
+	bool "IRQ10, COM3"
+config UART5_IRQ11
+	bool "IRQ11, COM4"
+config UART5_IRQ12
+	bool "IRQ12"
+config UART5_IRQ14
+	bool "IRQ14"
+config UART5_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART5_IRQ
+	int
+	depends on UART5_ENABLE
+	default 0 if UART5_IRQ_DISABLE
+	default 3 if UART5_IRQ3
+	default 4 if UART5_IRQ4
+	default 5 if UART5_IRQ5
+	default 6 if UART5_IRQ6
+	default 7 if UART5_IRQ7
+	default 9 if UART5_IRQ9
+	default 10 if UART5_IRQ10
+	default 11 if UART5_IRQ11
+	default 12 if UART5_IRQ12
+	default 14 if UART5_IRQ14
+	default 15 if UART5_IRQ15
+
+choice
+	prompt "UART5 Baud rate"
+	default UART5_BAUD_115200
+	depends on UART5_ENABLE
+
+config UART5_BAUD_115200
+	bool "115200"
+config UART5_BAUD_57600
+	bool "57600"
+config UART5_BAUD_38400
+	bool "38400"
+config UART5_BAUD_19200
+	bool "19200"
+config UART5_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART5_BAUD
+	int
+	depends on UART5_ENABLE
+	default 115200 if UART5_BAUD_115200
+	default 57600 if UART5_BAUD_57600
+	default 38400 if UART5_BAUD_38400
+	default 19200 if UART5_BAUD_19200
+	default 9600 if UART5_BAUD_9600
+# end of UART5
+
+# Begin of UART6
+config UART6_ENABLE
+	bool "UART6 Enable"
+	default n
+
+choice
+	prompt "UART6 I/O port"
+	default UART6_IO_PORT_OTHER
+	depends on UART6_ENABLE
+
+config UART6_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART6_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART6_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART6_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART6_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART6_IO_PORT_OTHER_INPUT
+	hex "UART6 I/O port"
+	depends on UART6_ENABLE && UART6_IO_PORT_OTHER
+
+config UART6_IO
+	hex
+	depends on UART6_ENABLE
+	default 0x3f8 if UART6_IO_PORT_3F8
+	default 0x2f8 if UART6_IO_PORT_2F8
+	default 0x3e8 if UART6_IO_PORT_3E8
+	default 0x2e8 if UART6_IO_PORT_2E8
+	default UART6_IO_PORT_OTHER_INPUT if UART6_IO_PORT_OTHER
+
+choice
+	prompt "UART6 IRQ"
+	default UART6_IRQ_DISABLE
+	depends on UART6_ENABLE
+
+config UART6_IRQ_DISABLE
+	bool "Disable"
+config UART6_IRQ3
+	bool "IRQ3, COM2"
+config UART6_IRQ4
+	bool "IRQ4, COM1"
+config UART6_IRQ5
+	bool "IRQ5"
+config UART6_IRQ6
+	bool "IRQ6"
+config UART6_IRQ7
+	bool "IRQ7"
+config UART6_IRQ9
+	bool "IRQ9"
+config UART6_IRQ10
+	bool "IRQ10, COM3"
+config UART6_IRQ11
+	bool "IRQ11, COM4"
+config UART6_IRQ12
+	bool "IRQ12"
+config UART6_IRQ14
+	bool "IRQ14"
+config UART6_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART6_IRQ
+	int
+	depends on UART6_ENABLE
+	default 0 if UART6_IRQ_DISABLE
+	default 3 if UART6_IRQ3
+	default 4 if UART6_IRQ4
+	default 5 if UART6_IRQ5
+	default 6 if UART6_IRQ6
+	default 7 if UART6_IRQ7
+	default 9 if UART6_IRQ9
+	default 10 if UART6_IRQ10
+	default 11 if UART6_IRQ11
+	default 12 if UART6_IRQ12
+	default 14 if UART6_IRQ14
+	default 15 if UART6_IRQ15
+
+choice
+	prompt "UART6 Baud rate"
+	default UART6_BAUD_115200
+	depends on UART6_ENABLE
+
+config UART6_BAUD_115200
+	bool "115200"
+config UART6_BAUD_57600
+	bool "57600"
+config UART6_BAUD_38400
+	bool "38400"
+config UART6_BAUD_19200
+	bool "19200"
+config UART6_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART6_BAUD
+	int
+	depends on UART6_ENABLE
+	default 115200 if UART6_BAUD_115200
+	default 57600 if UART6_BAUD_57600
+	default 38400 if UART6_BAUD_38400
+	default 19200 if UART6_BAUD_19200
+	default 9600 if UART6_BAUD_9600
+# end of UART6
+
+# Begin of UART7
+config UART7_ENABLE
+	bool "UART7 Enable"
+	default n
+
+choice
+	prompt "UART7 I/O port"
+	default UART7_IO_PORT_OTHER
+	depends on UART7_ENABLE
+
+config UART7_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART7_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART7_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART7_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART7_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART7_IO_PORT_OTHER_INPUT
+	hex "UART7 I/O port"
+	depends on UART7_ENABLE && UART7_IO_PORT_OTHER
+
+config UART7_IO
+	hex
+	depends on UART7_ENABLE
+	default 0x3f8 if UART7_IO_PORT_3F8
+	default 0x2f8 if UART7_IO_PORT_2F8
+	default 0x3e8 if UART7_IO_PORT_3E8
+	default 0x2e8 if UART7_IO_PORT_2E8
+	default UART7_IO_PORT_OTHER_INPUT if UART7_IO_PORT_OTHER
+
+choice
+	prompt "UART7 IRQ"
+	default UART7_IRQ_DISABLE
+	depends on UART7_ENABLE
+
+config UART7_IRQ_DISABLE
+	bool "Disable"
+config UART7_IRQ3
+	bool "IRQ3, COM2"
+config UART7_IRQ4
+	bool "IRQ4, COM1"
+config UART7_IRQ5
+	bool "IRQ5"
+config UART7_IRQ6
+	bool "IRQ6"
+config UART7_IRQ7
+	bool "IRQ7"
+config UART7_IRQ9
+	bool "IRQ9"
+config UART7_IRQ10
+	bool "IRQ10, COM3"
+config UART7_IRQ11
+	bool "IRQ11, COM4"
+config UART7_IRQ12
+	bool "IRQ12"
+config UART7_IRQ14
+	bool "IRQ14"
+config UART7_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART7_IRQ
+	int
+	depends on UART7_ENABLE
+	default 0 if UART7_IRQ_DISABLE
+	default 3 if UART7_IRQ3
+	default 4 if UART7_IRQ4
+	default 5 if UART7_IRQ5
+	default 6 if UART7_IRQ6
+	default 7 if UART7_IRQ7
+	default 9 if UART7_IRQ9
+	default 10 if UART7_IRQ10
+	default 11 if UART7_IRQ11
+	default 12 if UART7_IRQ12
+	default 14 if UART7_IRQ14
+	default 15 if UART7_IRQ15
+
+choice
+	prompt "UART7 Baud rate"
+	default UART7_BAUD_115200
+	depends on UART7_ENABLE
+
+config UART7_BAUD_115200
+	bool "115200"
+config UART7_BAUD_57600
+	bool "57600"
+config UART7_BAUD_38400
+	bool "38400"
+config UART7_BAUD_19200
+	bool "19200"
+config UART7_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART7_BAUD
+	int
+	depends on UART7_ENABLE
+	default 115200 if UART7_BAUD_115200
+	default 57600 if UART7_BAUD_57600
+	default 38400 if UART7_BAUD_38400
+	default 19200 if UART7_BAUD_19200
+	default 9600 if UART7_BAUD_9600
+# end of UART7
+
+# Begin of UART8
+config UART8_ENABLE
+	bool "UART8 Enable"
+	default n
+
+choice
+	prompt "UART8 I/O port"
+	default UART8_IO_PORT_OTHER
+	depends on UART8_ENABLE
+
+config UART8_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART8_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART8_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART8_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART8_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART8_IO_PORT_OTHER_INPUT
+	hex "UART8 I/O port"
+	depends on UART8_ENABLE && UART8_IO_PORT_OTHER
+
+config UART8_IO
+	hex
+	depends on UART8_ENABLE
+	default 0x3f8 if UART8_IO_PORT_3F8
+	default 0x2f8 if UART8_IO_PORT_2F8
+	default 0x3e8 if UART8_IO_PORT_3E8
+	default 0x2e8 if UART8_IO_PORT_2E8
+	default UART8_IO_PORT_OTHER_INPUT if UART8_IO_PORT_OTHER
+
+choice
+	prompt "UART8 IRQ"
+	default UART8_IRQ_DISABLE
+	depends on UART8_ENABLE
+
+config UART8_IRQ_DISABLE
+	bool "Disable"
+config UART8_IRQ3
+	bool "IRQ3, COM2"
+config UART8_IRQ4
+	bool "IRQ4, COM1"
+config UART8_IRQ5
+	bool "IRQ5"
+config UART8_IRQ6
+	bool "IRQ6"
+config UART8_IRQ7
+	bool "IRQ7"
+config UART8_IRQ9
+	bool "IRQ9"
+config UART8_IRQ10
+	bool "IRQ10, COM3"
+config UART8_IRQ11
+	bool "IRQ11, COM4"
+config UART8_IRQ12
+	bool "IRQ12"
+config UART8_IRQ14
+	bool "IRQ14"
+config UART8_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART8_IRQ
+	int
+	depends on UART8_ENABLE
+	default 0 if UART8_IRQ_DISABLE
+	default 3 if UART8_IRQ3
+	default 4 if UART8_IRQ4
+	default 5 if UART8_IRQ5
+	default 6 if UART8_IRQ6
+	default 7 if UART8_IRQ7
+	default 9 if UART8_IRQ9
+	default 10 if UART8_IRQ10
+	default 11 if UART8_IRQ11
+	default 12 if UART8_IRQ12
+	default 14 if UART8_IRQ14
+	default 15 if UART8_IRQ15
+
+choice
+	prompt "UART8 Baud rate"
+	default UART8_BAUD_115200
+	depends on UART8_ENABLE
+
+config UART8_BAUD_115200
+	bool "115200"
+config UART8_BAUD_57600
+	bool "57600"
+config UART8_BAUD_38400
+	bool "38400"
+config UART8_BAUD_19200
+	bool "19200"
+config UART8_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART8_BAUD
+	int
+	depends on UART8_ENABLE
+	default 115200 if UART8_BAUD_115200
+	default 57600 if UART8_BAUD_57600
+	default 38400 if UART8_BAUD_38400
+	default 19200 if UART8_BAUD_19200
+	default 9600 if UART8_BAUD_9600
+# end of UART8
+
+# Begin of UART9
+config UART9_ENABLE
+	bool "UART9 Enable"
+	default n
+
+choice
+	prompt "UART9 I/O port"
+	default UART9_IO_PORT_OTHER
+	depends on UART9_ENABLE
+
+config UART9_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART9_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART9_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART9_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART9_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART9_IO_PORT_OTHER_INPUT
+	hex "UART9 I/O port"
+	depends on UART9_ENABLE && UART9_IO_PORT_OTHER
+
+config UART9_IO
+	hex
+	depends on UART9_ENABLE
+	default 0x3f8 if UART9_IO_PORT_3F8
+	default 0x2f8 if UART9_IO_PORT_2F8
+	default 0x3e8 if UART9_IO_PORT_3E8
+	default 0x2e8 if UART9_IO_PORT_2E8
+	default UART9_IO_PORT_OTHER_INPUT if UART9_IO_PORT_OTHER
+
+choice
+	prompt "UART9 IRQ"
+	default UART9_IRQ_DISABLE
+	depends on UART9_ENABLE
+
+config UART9_IRQ_DISABLE
+	bool "Disable"
+config UART9_IRQ3
+	bool "IRQ3, COM2"
+config UART9_IRQ4
+	bool "IRQ4, COM1"
+config UART9_IRQ5
+	bool "IRQ5"
+config UART9_IRQ6
+	bool "IRQ6"
+config UART9_IRQ7
+	bool "IRQ7"
+config UART9_IRQ9
+	bool "IRQ9"
+config UART9_IRQ10
+	bool "IRQ10, COM3"
+config UART9_IRQ11
+	bool "IRQ11, COM4"
+config UART9_IRQ12
+	bool "IRQ12"
+config UART9_IRQ14
+	bool "IRQ14"
+config UART9_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART9_IRQ
+	int
+	depends on UART9_ENABLE
+	default 0 if UART9_IRQ_DISABLE
+	default 3 if UART9_IRQ3
+	default 4 if UART9_IRQ4
+	default 5 if UART9_IRQ5
+	default 6 if UART9_IRQ6
+	default 7 if UART9_IRQ7
+	default 9 if UART9_IRQ9
+	default 10 if UART9_IRQ10
+	default 11 if UART9_IRQ11
+	default 12 if UART9_IRQ12
+	default 14 if UART9_IRQ14
+	default 15 if UART9_IRQ15
+
+choice
+	prompt "UART9 Baud rate"
+	default UART9_BAUD_115200
+	depends on UART9_ENABLE
+
+config UART9_BAUD_115200
+	bool "115200"
+config UART9_BAUD_57600
+	bool "57600"
+config UART9_BAUD_38400
+	bool "38400"
+config UART9_BAUD_19200
+	bool "19200"
+config UART9_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART9_BAUD
+	int
+	depends on UART9_ENABLE
+	default 115200 if UART9_BAUD_115200
+	default 57600 if UART9_BAUD_57600
+	default 38400 if UART9_BAUD_38400
+	default 19200 if UART9_BAUD_19200
+	default 9600 if UART9_BAUD_9600
+# end of UART9
+
+# Begin of UART10
+config UART10_ENABLE
+	bool "UART10 Enable"
+	default n
+
+choice
+	prompt "UART10 I/O port"
+	default UART10_IO_PORT_OTHER
+	depends on UART10_ENABLE
+
+config UART10_IO_PORT_3F8
+	bool "0x3f8, COM1"
+config UART10_IO_PORT_2F8
+	bool "0x2f8, COM2"
+config UART10_IO_PORT_3E8
+	bool "0x3e8, COM3"
+config UART10_IO_PORT_2E8
+	bool "0x2e8, COM4"
+config UART10_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config UART10_IO_PORT_OTHER_INPUT
+	hex "UART10 I/O port"
+	depends on UART10_ENABLE && UART10_IO_PORT_OTHER
+
+config UART10_IO
+	hex
+	depends on UART10_ENABLE
+	default 0x3f8 if UART10_IO_PORT_3F8
+	default 0x2f8 if UART10_IO_PORT_2F8
+	default 0x3e8 if UART10_IO_PORT_3E8
+	default 0x2e8 if UART10_IO_PORT_2E8
+	default UART10_IO_PORT_OTHER_INPUT if UART10_IO_PORT_OTHER
+
+choice
+	prompt "UART10 IRQ"
+	default UART10_IRQ_DISABLE
+	depends on UART10_ENABLE
+
+config UART10_IRQ_DISABLE
+	bool "Disable"
+config UART10_IRQ3
+	bool "IRQ3, COM2"
+config UART10_IRQ4
+	bool "IRQ4, COM1"
+config UART10_IRQ5
+	bool "IRQ5"
+config UART10_IRQ6
+	bool "IRQ6"
+config UART10_IRQ7
+	bool "IRQ7"
+config UART10_IRQ9
+	bool "IRQ9"
+config UART10_IRQ10
+	bool "IRQ10, COM3"
+config UART10_IRQ11
+	bool "IRQ11, COM4"
+config UART10_IRQ12
+	bool "IRQ12"
+config UART10_IRQ14
+	bool "IRQ14"
+config UART10_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config UART10_IRQ
+	int
+	depends on UART10_ENABLE
+	default 0 if UART10_IRQ_DISABLE
+	default 3 if UART10_IRQ3
+	default 4 if UART10_IRQ4
+	default 5 if UART10_IRQ5
+	default 6 if UART10_IRQ6
+	default 7 if UART10_IRQ7
+	default 9 if UART10_IRQ9
+	default 10 if UART10_IRQ10
+	default 11 if UART10_IRQ11
+	default 12 if UART10_IRQ12
+	default 14 if UART10_IRQ14
+	default 15 if UART10_IRQ15
+
+choice
+	prompt "UART10 Baud rate"
+	default UART10_BAUD_115200
+	depends on UART10_ENABLE
+
+config UART10_BAUD_115200
+	bool "115200"
+config UART10_BAUD_57600
+	bool "57600"
+config UART10_BAUD_38400
+	bool "38400"
+config UART10_BAUD_19200
+	bool "19200"
+config UART10_BAUD_9600
+	bool "9600"
+
+endchoice
+
+config UART10_BAUD
+	int
+	depends on UART10_ENABLE
+	default 115200 if UART10_BAUD_115200
+	default 57600 if UART10_BAUD_57600
+	default 38400 if UART10_BAUD_38400
+	default 19200 if UART10_BAUD_19200
+	default 9600 if UART10_BAUD_9600
+# end of UART10
+
+endmenu
+
+# LPT setting :
+menu "LPT setting"
+
+# Begin of LPT
+config LPT_ENABLE
+	bool "LPT Enable"
+	default n
+
+choice
+	prompt "LPT I/O port"
+	default LPT_IO_PORT_278
+	depends on LPT_ENABLE
+
+config LPT_IO_PORT_378
+	bool "0x378, LPT1"
+config LPT_IO_PORT_278
+	bool "0x278, LPT2"
+config LPT_IO_PORT_OTHER
+	bool "Other"
+
+endchoice
+
+config LPT_IO_PORT_OTHER_INPUT
+	hex "LPT I/O port"
+	depends on LPT_ENABLE && LPT_IO_PORT_OTHER
+
+config LPT_IO
+	hex
+	depends on LPT_ENABLE
+	default 0x378 if LPT_IO_PORT_378
+	default 0x278 if LPT_IO_PORT_278
+	default LPT_IO_PORT_OTHER_INPUT if LPT_IO_PORT_OTHER
+
+choice
+	prompt "LPT IRQ"
+	default LPT_IRQ_DISABLE
+	depends on LPT_ENABLE
+
+config LPT_IRQ_DISABLE
+	bool "Disable"
+config LPT_IRQ3
+	bool "IRQ3"
+config LPT_IRQ4
+	bool "IRQ4"
+config LPT_IRQ5
+	bool "IRQ5"
+config LPT_IRQ6
+	bool "IRQ6"
+config LPT_IRQ7
+	bool "IRQ7"
+config LPT_IRQ9
+	bool "IRQ9"
+config LPT_IRQ10
+	bool "IRQ10"
+config LPT_IRQ11
+	bool "IRQ11"
+config LPT_IRQ12
+	bool "IRQ12"
+config LPT_IRQ14
+	bool "IRQ14"
+config LPT_IRQ15
+	bool "IRQ15"
+
+endchoice
+
+config LPT_IRQ
+	int
+	depends on LPT_ENABLE
+	default 0 if LPT_IRQ_DISABLE
+	default 3 if LPT_IRQ3
+	default 4 if LPT_IRQ4
+	default 5 if LPT_IRQ5
+	default 6 if LPT_IRQ6
+	default 7 if LPT_IRQ7
+	default 9 if LPT_IRQ9
+	default 10 if LPT_IRQ10
+	default 11 if LPT_IRQ11
+	default 12 if LPT_IRQ12
+	default 14 if LPT_IRQ14
+	default 15 if LPT_IRQ15
+
+choice
+	prompt "LPT Mode Setting"
+	default LPT_MODE_SPP
+	depends on LPT_ENABLE
+
+config LPT_MODE_BPP
+	bool "BPP mode"
+config LPT_MODE_EPP_19_AND_SPP
+	bool "EPP 1.9 and SPP mode"
+config LPT_MODE_ECP
+	bool "ECP Mode"
+config LPT_MODE_ECP_AND_EPP_19
+	bool "ECP and EPP 1.9 mode"
+config LPT_MODE_SPP
+	bool "SPP Mode"
+config LPT_MODE_EPP_17_AND_SPP
+	bool "EPP 1.7 and SPP mode"
+config LPT_MODE_ECP_AND_EPP_17
+	bool "ECP and EPP 1.7 mode"
+
+endchoice
+
+# end of LPT
+
+endmenu
+
+endif # BOARD_DMP_EX

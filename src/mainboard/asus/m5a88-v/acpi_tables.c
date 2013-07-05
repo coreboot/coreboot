@@ -20,14 +20,17 @@
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
+#include <arch/acpigen.h>
 #include <arch/ioapic.h>
+#include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-#include "mb_sysconf.h"
+#include "agesawrapper.h"
+
 
 #define DUMP_ACPI_TABLES 0
 
@@ -48,14 +51,29 @@ static void dump_mem(u32 start, u32 end)
 #endif
 
 extern const unsigned char AmlCode[];
-extern const unsigned char AmlCode_ssdt[];
 
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-extern const unsigned char AmlCode_ssdt2[];
-extern const unsigned char AmlCode_ssdt3[];
-extern const unsigned char AmlCode_ssdt4[];
-extern const unsigned char AmlCode_ssdt5[];
-#endif
+unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
+{
+	int lens;
+	msr_t msr;
+	char pscope[] = "\\_SB.PCI0";
+
+	lens = acpigen_write_scope(pscope);
+	msr = rdmsr(TOP_MEM);
+	lens += acpigen_write_name_dword("TOM1", msr.lo);
+	msr = rdmsr(TOP_MEM2);
+	/*
+	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
+	 * here.
+	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
+	 * slide 22ff.
+	 * Shift value right by 20 bit to make it fit into 32bit,
+	 * giving us 1MB granularity and a limit of almost 4Exabyte of memory.
+	 */
+	lens += acpigen_write_name_dword("TOM2", (msr.hi << 12) | msr.lo >> 20);
+	acpigen_patch_len(lens - 1);
+	return (unsigned long) (acpigen_get_current());
+}
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -65,26 +83,88 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	/* create all subtables for processors */
+	 device_t dev;
+     u32 dword;
+	 u32 gsi_base = 0;
+     u32 apicid_rs780;
+     u32 apicid_sb800;
+     /*
+	 * AGESA v5 Apply apic enumeration rules
+	 * For systems with >= 16 APICs, put the IO-APICs at 0..n and
+	 * put the local-APICs at m..z
+	 * For systems with < 16 APICs, put the Local-APICs at 0..n and
+	 * put the IO-APICs at (n + 1)..z
+	 */
+#if CONFIG_MAX_CPUS >= 16
+	apicid_sb800 = 0x0;
+#else
+	apicid_sb800 = CONFIG_MAX_CPUS + 1;
+#endif  
+
+    apicid_rs780 = apicid_sb800 + 1;
+
+    /* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
 
 	/* Write SB800 IOAPIC, only one */
-	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2,
-					   IO_APIC_ADDR, 0);
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
+            apicid_sb800, IO_APIC_ADDR, 0);
+	
+    /* IOAPIC on rs780 */
+	gsi_base += IO_APIC_INTERRUPTS;  /* SB800 has 24 IOAPIC entries. */
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	if (dev) {
+		pci_write_config32(dev, 0xF8, 0x1);
+		dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
+		current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
+				apicid_rs780,
+				dword,
+				gsi_base
+				);
+	}
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);
-	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
-						current, 0, 9, 9, 0xF);
 	/* 0: mean bus 0--->ISA */
 	/* 0: PIC 0 */
 	/* 2: APIC 2 */
 	/* 5 mean: 0101 --> Edige-triggered, Active high */
 
 	/* create all subtables for processors */
-	/* current = acpi_create_madt_lapic_nmis(current, 5, 1); */
+	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 0, 5, 1);
+	current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)current, 1, 5, 1);
 	/* 1: LINT1 connect to NMI */
 
+	return current;
+}
+
+unsigned long acpi_fill_hest(acpi_hest_t *hest)
+{
+	void *addr, *current;
+
+	/* Skip the HEST header. */
+	current = (void *)(hest + 1);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
+	if (addr != NULL)
+		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+
+	return (unsigned long)current;
+}
+
+unsigned long acpi_fill_slit(unsigned long current)
+{
+	// Not implemented
+	return current;
+}
+
+unsigned long acpi_fill_srat(unsigned long current)
+{
+	/* No NUMA, no SRAT */
 	return current;
 }
 
@@ -101,13 +181,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_facs_t *facs;
 	acpi_header_t *dsdt;
 	acpi_header_t *ssdt;
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-	acpi_header_t *ssdtx;
-	void *p;
-	int i;
-#endif
+	acpi_header_t *ssdt2;
+	acpi_header_t *alib;
+	acpi_hest_t *hest;
 
-	get_bus_conf();	/* it will get sblk, pci1234, hcdn, and sbdn */
+	get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
 
 	/* Align ACPI tables to 16 bytes */
 	start = ALIGN(start, 16);
@@ -127,11 +205,36 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_write_rsdp(rsdp, rsdt, NULL);
 	acpi_write_rsdt(rsdt);
 
+	/* DSDT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:  * DSDT at %lx\n", current);
+	dsdt = (acpi_header_t *)current;
+	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
+	current += dsdt->length;
+	memcpy(dsdt, &AmlCode, dsdt->length);
+	printk(BIOS_DEBUG, "ACPI:  * DSDT @ %p Length %x\n",dsdt,dsdt->length);
+
+	/* FACS */ // it needs 64 bit alignment
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:  * FACS at %lx\n", current);
+	facs = (acpi_facs_t *) current;
+	current += sizeof(acpi_facs_t);
+	acpi_create_facs(facs);
+
+	/* FADT */
+	current = ALIGN(current, 8);
+	printk(BIOS_DEBUG, "ACPI:  * FADT at %lx\n", current);
+	fadt = (acpi_fadt_t *) current;
+	current += sizeof(acpi_fadt_t);
+
+	acpi_create_fadt(fadt, facs, dsdt);
+	acpi_add_table(rsdp, fadt);
+
 	/*
 	 * We explicitly add these tables later on:
 	 */
 	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * HPET at %lx\n", current);
+	printk(BIOS_DEBUG, "ACPI:  * HPET at %lx\n", current);
 	hpet = (acpi_hpet_t *) current;
 	current += sizeof(acpi_hpet_t);
 	acpi_create_hpet(hpet);
@@ -139,110 +242,80 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	/* If we want to use HPET Timers Linux wants an MADT */
 	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * MADT at %lx\n",current);
+	printk(BIOS_DEBUG, "ACPI:  * MADT at %lx\n",current);
 	madt = (acpi_madt_t *) current;
 	acpi_create_madt(madt);
 	current += madt->header.length;
 	acpi_add_table(rsdp, madt);
 
+	/* HEST */
+	current = ALIGN(current, 8);
+	hest = (acpi_hest_t *)current;
+	acpi_write_hest((void *)current);
+	acpi_add_table(rsdp, (void *)current);
+	current += ((acpi_header_t *)current)->length;
+
 	/* SRAT */
 	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * SRAT at %lx\n", current);
-	srat = (acpi_srat_t *) current;
-	acpi_create_srat(srat);
-	current += srat->header.length;
-	acpi_add_table(rsdp, srat);
+	printk(BIOS_DEBUG, "ACPI:  * SRAT at %lx\n", current);
+	srat = (acpi_srat_t *) agesawrapper_getlateinitptr (PICK_SRAT);
+	if (srat != NULL) {
+		memcpy((void *)current, srat, srat->header.length);
+		srat = (acpi_srat_t *) current;
+		current += srat->header.length;
+		acpi_add_table(rsdp, srat);
+	}
+	else {
+		printk(BIOS_DEBUG, "  AGESA SRAT table NULL. Skipping.\n");
+	}
 
 	/* SLIT */
 	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:   * SLIT at %lx\n", current);
-	slit = (acpi_slit_t *) current;
-	acpi_create_slit(slit);
-	current += slit->header.length;
-	acpi_add_table(rsdp, slit);
+	printk(BIOS_DEBUG, "ACPI:  * SLIT at %lx\n", current);
+	slit = (acpi_slit_t *) agesawrapper_getlateinitptr (PICK_SLIT);
+	if (slit != NULL) {
+		memcpy((void *)current, slit, slit->header.length);
+		slit = (acpi_slit_t *) current;
+		current += slit->header.length;
+		acpi_add_table(rsdp, slit);
+	}
+	else {
+		printk(BIOS_DEBUG, "  AGESA SLIT table NULL. Skipping.\n");
+	}
 
 	/* SSDT */
 	current = ALIGN(current, 16);
-	printk(BIOS_DEBUG, "ACPI:    * SSDT at %lx\n", current);
-	ssdt = (acpi_header_t *)current;
-	memcpy(ssdt, &AmlCode_ssdt, sizeof(acpi_header_t));
-	current += ssdt->length;
-	memcpy(ssdt, &AmlCode_ssdt, ssdt->length);
-	//Here you need to set value in pci1234, sblk and sbdn in get_bus_conf.c
-	update_ssdt((void*)ssdt);
-	/* recalculate checksum */
-	ssdt->checksum = 0;
-	ssdt->checksum = acpi_checksum((unsigned char *)ssdt,ssdt->length);
-	acpi_add_table(rsdp,ssdt);
-
-	printk(BIOS_DEBUG, "ACPI:    * SSDT for PState at %lx\n", current);
-	current = acpi_add_ssdt_pstates(rsdp, current);
-
-#if CONFIG_ACPI_SSDTX_NUM >= 1
-
-	/* same htio, but different position? We may have to copy,
-	change HCIN, and recalculate the checknum and add_table */
-
-	for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
-		if((sysconf.pci1234[i] & 1) != 1 ) continue;
-		u8 c;
-		if (i < 7) {
-			c = (u8) ('4' + i - 1);
-		} else {
-			c = (u8) ('A' + i - 1 - 6);
-		}
-		current = ALIGN(current, 8);
-		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c at %lx\n", c, current); //pci0 and pci1 are in dsdt
-		ssdtx = (acpi_header_t *)current;
-		switch (sysconf.hcid[i]) {
-		case 1:
-			p = &AmlCode_ssdt2;
-			break;
-		case 2:
-			p = &AmlCode_ssdt3;
-			break;
-		case 3:	/* 8131 */
-			p = &AmlCode_ssdt4;
-			break;
-		default:
-			/* HTX no io apic */
-			p = &AmlCode_ssdt5;
-			break;
-		}
-		memcpy(ssdtx, p, sizeof(acpi_header_t));
-		current += ssdtx->length;
-		memcpy(ssdtx, p, ssdtx->length);
-		update_ssdtx((void *)ssdtx, i);
-		ssdtx->checksum = 0;
-		ssdtx->checksum = acpi_checksum((u8 *)ssdtx, ssdtx->length);
-		acpi_add_table(rsdp, ssdtx);
+	printk(BIOS_DEBUG, "ACPI:  * AGESA ALIB SSDT at %lx\n", current);
+	alib = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_ALIB);
+	if (alib != NULL) {
+		memcpy((void *)current, alib, alib->length);
+		alib = (acpi_header_t *) current;
+		current += alib->length;
+		acpi_add_table(rsdp, (void *)alib);
+	} else {
+		printk(BIOS_DEBUG, "	AGESA ALIB SSDT table NULL. Skipping.\n");
 	}
-#endif
 
-	/* DSDT */
-	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * DSDT at %lx\n", current);
-	dsdt = (acpi_header_t *)current; // it will used by fadt
-	memcpy(dsdt, &AmlCode, sizeof(acpi_header_t));
-	current += dsdt->length;
-	memcpy(dsdt, &AmlCode, dsdt->length);
-	printk(BIOS_DEBUG, "ACPI:    * DSDT @ %p Length %x\n",dsdt,dsdt->length);
+	/* The DSDT needs additional work for the AGESA SSDT Pstate table */
+	/* Keep the comment for a while. */
+	current = ALIGN(current, 16);
+	printk(BIOS_DEBUG, "ACPI:  * AGESA SSDT Pstate at %lx\n", current);
+	ssdt = (acpi_header_t *)agesawrapper_getlateinitptr (PICK_PSTATE);
+	if (ssdt != NULL) {
+		memcpy((void *)current, ssdt, ssdt->length);
+		ssdt = (acpi_header_t *) current;
+		current += ssdt->length;
+		acpi_add_table(rsdp,ssdt);
+	} else {
+		printk(BIOS_DEBUG, "  AGESA SSDT Pstate table NULL. Skipping.\n");
+	}
 
-	/* FACS */ // it needs 64 bit alignment
-	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:	* FACS at %lx\n", current);
-	facs = (acpi_facs_t *) current; // it will be used by fadt
-	current += sizeof(acpi_facs_t);
-	acpi_create_facs(facs);
-
-	/* FADT */
-	current = ALIGN(current, 8);
-	printk(BIOS_DEBUG, "ACPI:    * FADT at %lx\n", current);
-	fadt = (acpi_fadt_t *) current;
-	current += sizeof(acpi_fadt_t);
-
-	acpi_create_fadt(fadt, facs, dsdt);
-	acpi_add_table(rsdp, fadt);
+	current = ALIGN(current, 16);
+	printk(BIOS_DEBUG, "ACPI:  * coreboot TOM SSDT2 at %lx\n", current);
+	ssdt2 = (acpi_header_t *) current;
+	acpi_create_ssdt_generator(ssdt2, ACPI_TABLE_CREATOR);
+	current += ssdt2->length;
+	acpi_add_table(rsdp,ssdt2);
 
 #if DUMP_ACPI_TABLES == 1
 	printk(BIOS_DEBUG, "rsdp\n");
@@ -263,8 +336,14 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "ssdt\n");
 	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);
 
+	printk(BIOS_DEBUG, "ssdt2\n");
+	dump_mem(ssdt2, ((void *)ssdt2) + ssdt2->length);
+
 	printk(BIOS_DEBUG, "fadt\n");
 	dump_mem(fadt, ((void *)fadt) + fadt->header.length);
+
+	printk(BIOS_DEBUG, "hest\n");
+	dump_mem(hest, ((void *)hest) + hest->header.length);
 #endif
 
 	printk(BIOS_INFO, "ACPI: done.\n");

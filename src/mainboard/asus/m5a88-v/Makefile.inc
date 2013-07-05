@@ -1,15 +1,36 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2011 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+#
 
-#SB800 CIMx share AGESA V5 lib code
-ifneq ($(CONFIG_CPU_AMD_AGESA),y)
- AGESA_ROOT ?= src/vendorcode/amd/agesa/f14
- romstage-y += ../../../../$(AGESA_ROOT)/Lib/amdlib.c
- ramstage-y += ../../../../$(AGESA_ROOT)/Lib/amdlib.c
+AGESA_PREFIX ?= $(src)/vendorcode/amd/agesa
+CIMX_PREFIX ?= $(src)/vendorcode/amd/cimx
+AGESA_ROOT ?= $(AGESA_PREFIX)/f15
+SB_CIMX_ROOT ?= $(CIMX_PREFIX)/sb800
 
- AGESA_INC := -I$(AGESA_ROOT)/ \
-	      -I$(AGESA_ROOT)/Include \
-	      -I$(AGESA_ROOT)/Proc/IDS/ \
-	      -I$(AGESA_ROOT)/Proc/CPU/ \
-	      -I$(AGESA_ROOT)/Proc/CPU/Family
+subdirs-y += ../../../../$(AGESA_ROOT)
 
- CFLAGS += $(AGESA_INC)
-endif
+romstage-y += buildOpts.c
+romstage-y += agesawrapper.c
+romstage-y += BiosCallOuts.c
+romstage-y += PlatformGnbPcie.c
+
+ramstage-y += buildOpts.c
+ramstage-y += agesawrapper.c
+ramstage-y += BiosCallOuts.c
+ramstage-y += PlatformGnbPcie.c
+

@@ -1,13 +1,14 @@
 # sample config for advansus/A785E-I
-chip northbridge/amd/amdfam10/root_complex
+chip northbridge/amd/agesa/family15/root_complex
 	device cpu_cluster 0 on
-		chip cpu/amd/socket_AM3  #L1 and DDR3
-			 device lapic 0 on end
+		chip cpu/amd/agesa/family15
+			#device lapic 0x20 on end #f15
+			device lapic 0x10 on end #f10
 		end
 	end
 	device domain 0 on
 		subsystemid 0x1043 0x843e inherit #TODO: Set the correctly subsystem id.
-		chip northbridge/amd/amdfam10
+	    chip northbridge/amd/agesa/family15 # CPU side of HT root complex
 			device pci 18.0 on #  northbridge
 				chip southbridge/amd/rs780
 					device pci 0.0 on end # HT  	0x9600
@@ -91,7 +92,7 @@ chip northbridge/amd/amdfam10/root_complex
                                                         end
                                                         device pnp 2e.8 off end #  WDTO_PLED
                                                         device pnp 2e.9 off end #  GPIO_SUSLED
-                                                        device pnp 2e.a off end #  ACPI
+                                                        device pnp 2e.a on end #  ACPI
                                                         device pnp 2e.b on #  HW Monitor
                                                                 io 0x60 = 0x290
                                                                 irq 0x70 = 5
@@ -119,6 +120,12 @@ chip northbridge/amd/amdfam10/root_complex
 			device pci 18.2 on end
 			device pci 18.3 on end
 			device pci 18.4 on end
+            device pci 18.5 on end #f15
+			register "spdAddrLookup" = "
+			{
+				{ {0xA4, 0xA6}, {0xA0, 0xA2}, }, // socket 0 - Channel 0 & 1 - 8-bit SPD addresses
+				{ {0x00, 0x00}, {0x00, 0x00}, }, // socket 1 - Channel 0 & 1 - 8-bit SPD addresses
+			}"
 		end
 	end #domain
 end

@@ -385,6 +385,7 @@ int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *in
 	ehci_debug = (struct ehci_dbg_port *)(ehci_bar + offset);
 	info->ehci_debug = (void *)0;
 	info->bufidx = 0;
+	info->status = 0;
 try_next_time:
 	port_map_tried = 0;
 
@@ -547,6 +548,7 @@ try_next_port:
 	info->devnum = devnum;
 	info->endpoint_out = dbgp_endpoint_out;
 	info->endpoint_in = dbgp_endpoint_in;
+	info->status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 
 	return 0;
 err:
@@ -582,35 +584,36 @@ int early_usbdebug_init(void)
 
 void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
 {
-#if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
 		dbg_info = (struct ehci_debug_info *)
 		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
 	}
 
-	if (dbg_info->ehci_debug) {
+	if (dbgp_is_ep_active(dbg_info)) {
 		dbg_info->buf[dbg_info->bufidx++] = data;
 		if (dbg_info->bufidx >= 8) {
 			dbgp_bulk_write_x(dbg_info, dbg_info->buf, dbg_info->bufidx);
 			dbg_info->bufidx = 0;
 		}
 	}
-#endif
 }
 
 void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 {
-#if DBGP_DEBUG == 0
 	if (!dbg_info) {
 		/* "Find" dbg_info structure in Cache */
 		dbg_info = (struct ehci_debug_info *)
 		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
 	}
 
-	if (dbg_info->ehci_debug && dbg_info->bufidx > 0) {
+	if (dbgp_is_ep_active(dbg_info) && dbg_info->bufidx > 0) {
 		dbgp_bulk_write_x(dbg_info, dbg_info->buf, dbg_info->bufidx);
 		dbg_info->bufidx = 0;
 	}
-#endif
+}
+
+int dbgp_ep_is_active(struct ehci_debug_info *dbg_info)
+{
+	return (dbg_info->status & DBGP_EP_STATMASK) == (DBGP_EP_VALID | DBGP_EP_ENABLED);
 }

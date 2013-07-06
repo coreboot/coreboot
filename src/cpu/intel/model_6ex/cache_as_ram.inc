@@ -126,12 +126,7 @@ clear_mtrrs:
 	movl	%eax, %cr0
 
 	/* Set up the stack pointer. */
-#if CONFIG_USBDEBUG
-	/* Leave some space for the struct ehci_debug_info. */
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %eax
-#else
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %eax
-#endif
 	movl	%eax, %esp
 
 	/* Restore the BIST result. */

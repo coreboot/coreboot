@@ -27,6 +27,7 @@ void h8_usb_power_enable(int on);
 void h8_enable_event(int event);
 void h8_disable_event(int event);
 int h8_ultrabay_device_present(void);
+u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len);
 
 /* EC registers */
 #define H8_CONFIG0 0x00

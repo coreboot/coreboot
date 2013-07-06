@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <arch/byteorder.h>
+#include <cpu/x86/car.h>
 
 #include <usb_ch9.h>
 #include <ehci.h>
@@ -87,8 +88,8 @@
 #define DBGP_MAX_PACKET		8
 #define DBGP_LOOPS 1000
 
+static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
-static struct ehci_debug_info glob_dbg_info;
 static struct device_operations *ehci_drv_ops;
 static struct device_operations ehci_dbg_ops;
 #endif
@@ -658,13 +659,7 @@ void pci_ehci_read_resources(struct device *dev)
 
 struct ehci_debug_info *dbgp_ehci_info(void)
 {
-#if __PRE_RAM__
-	/* "Find" dbg_info structure in Cache */
-	return (struct ehci_debug_info *)
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
-#else
-	return &glob_dbg_info;
-#endif
+	return car_get_var_ptr(&glob_dbg_info);
 }
 
 int usbdebug_init(void)

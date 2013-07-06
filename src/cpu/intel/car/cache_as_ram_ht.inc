@@ -334,12 +334,7 @@ no_msr_11e:
 	post_code(0x2e)
 
 	/* Set up the stack pointer. */
-#if CONFIG_USBDEBUG
-	/* Leave some space for the struct ehci_debug_info. */
-	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4 - 128), %esp
-#else
 	movl	$(CACHE_AS_RAM_BASE + CACHE_AS_RAM_SIZE - 4), %esp
-#endif
 
 	/* Restore the BIST result. */
 	movl	%ebp, %eax

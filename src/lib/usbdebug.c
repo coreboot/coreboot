@@ -24,6 +24,8 @@
 #include <device/pci.h>
 #include <arch/byteorder.h>
 #include <cpu/x86/car.h>
+#include <cbmem.h>
+#include <string.h>
 
 #include <usb_ch9.h>
 #include <ehci.h>
@@ -655,6 +657,47 @@ void pci_ehci_read_resources(struct device *dev)
 
 	pci_dev_read_resources(dev);
 }
+
+#if CONFIG_CAR_MIGRATION
+static int get_usbdebug_from_cbmem(struct ehci_debug_info *info)
+{
+	struct ehci_debug_info *dbg_info_cbmem;
+
+	dbg_info_cbmem = cbmem_find(CBMEM_ID_EHCI_DEBUG);
+
+	if (dbg_info_cbmem == NULL)
+		return -1;
+
+	info->ehci_caps = dbg_info_cbmem->ehci_caps;
+	info->ehci_regs = dbg_info_cbmem->ehci_regs;
+	info->ehci_debug = dbg_info_cbmem->ehci_debug;
+	info->devnum = dbg_info_cbmem->devnum;
+	info->endpoint_out = dbg_info_cbmem->endpoint_out;
+	info->endpoint_in = dbg_info_cbmem->endpoint_in;
+	info->ehci_info = info;
+
+	printk(BIOS_DEBUG, "EHCI debug port found in CBMEM.\n");
+
+	return 0;
+}
+#endif
+#endif
+
+#if CONFIG_CAR_MIGRATION && defined(__PRE_RAM__)
+static void migrate_ehci_debug(void)
+{
+	struct ehci_debug_info *dbg_info;
+	struct ehci_debug_info *dbg_info_cbmem;
+
+	dbg_info = car_get_var_ptr(&glob_dbg_info);
+
+	dbg_info_cbmem = cbmem_add(CBMEM_ID_EHCI_DEBUG, sizeof(*dbg_info));
+	if (dbg_info_cbmem == NULL)
+		return;
+
+	memcpy(dbg_info_cbmem, dbg_info, sizeof(*dbg_info));
+}
+CAR_MIGRATE(migrate_ehci_debug);
 #endif
 
 struct ehci_debug_info *dbgp_ehci_info(void)
@@ -665,6 +708,11 @@ struct ehci_debug_info *dbgp_ehci_info(void)
 int usbdebug_init(void)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+
+#if CONFIG_CAR_MIGRATION && !defined(__PRE_RAM__) && !defined(__SMM__)
+	if (!get_usbdebug_from_cbmem(dbg_info))
+		return 0;
+#endif
 #if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
 	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 #endif

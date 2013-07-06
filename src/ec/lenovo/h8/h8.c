@@ -26,6 +26,7 @@
 #include "h8.h"
 #include "chip.h"
 #include <pc80/mc146818rtc.h>
+#include <string.h>
 
 static void h8_bluetooth_enable(int on)
 {
@@ -52,17 +53,12 @@ void h8_wlan_enable(int on)
 
 static void h8_log_ec_version(void)
 {
-	unsigned char ecfw[9], c;
+	char ecfw[17];
+	u8 len;
 	u16 fwvh, fwvl;
-	int i;
 
-	for(i = 0; i < 8; i++) {
-		c = ec_read(0xf0 + i);
-		if (c < 0x20 || c > 0x7f)
-			break;
-		ecfw[i] = c;
-	}
-	ecfw[i] = '\0';
+	len = h8_build_id_and_function_spec_version(ecfw, sizeof ecfw);
+	ecfw[len] = 0;
 
 	fwvh = ec_read(0xe9);
 	fwvl = ec_read(0xe8);
@@ -107,6 +103,30 @@ void h8_usb_power_enable(int onoff)
 int h8_ultrabay_device_present(void)
 {
 	return ec_read(H8_STATUS1) & 0x5 ? 0 : 1;
+}
+
+u8 h8_build_id_and_function_spec_version(char *buf, u8 buf_len)
+{
+	u8 i, c;
+	char str[16 + 1]; /* 16 ASCII chars + \0 */
+
+	/* Build ID */
+	for (i = 0; i < 8; i++) {
+		c = ec_read(0xf0 + i);
+		if (c < 0x20 || c > 0x7f) {
+			i = sprintf(str, "*INVALID");
+			break;
+		}
+		str[i] = c;
+	}
+
+	/* EC firmware function specification version */
+	i += sprintf(str + i, "-%u.%u", ec_read(0xef), ec_read(0xeb));
+
+	i = MIN(buf_len, i);
+	memcpy(buf, str, i);
+
+	return i;
 }
 
 static void h8_enable(device_t dev)

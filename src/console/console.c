@@ -105,8 +105,7 @@ void console_init(void)
     !defined(__BOOT_BLOCK__) && CONFIG_EARLY_CONSOLE
 
 #if CONFIG_USBDEBUG
-	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
-	early_usbdebug_init();
+	usbdebug_init();
 #endif
 #if CONFIG_CONSOLE_SERIAL
 	uart_init();

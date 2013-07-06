@@ -85,7 +85,7 @@ int get_cst_entries(acpi_cstate_t **entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_init(device_t dev)
 {
 	device_t dev0, idedev, sdhci_dev;
 
@@ -131,6 +131,11 @@ static void mainboard_enable(device_t dev)
 			pci_write_config8(sdhci_dev, 0xf9, 0x00);
 		}
 	}
+}
+
+static void mainboard_enable(device_t dev)
+{
+	dev->ops->init = mainboard_init;
 }
 
 struct chip_operations mainboard_ops = {

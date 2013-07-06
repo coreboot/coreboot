@@ -86,6 +86,10 @@
 #define DBGP_MAX_PACKET		8
 #define DBGP_LOOPS 1000
 
+#if !defined(__PRE_RAM__) && !defined(__SMM__)
+static struct ehci_debug_info glob_dbg_info;
+#endif
+
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 {
 	u32 ctrl;
@@ -361,8 +365,7 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 	return -1; //-ENOTCONN;
 }
 
-
-int usbdebug_init(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
+static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
@@ -575,22 +578,8 @@ next_debug_port:
 	return -10;
 }
 
-int early_usbdebug_init(void)
-{
-	struct ehci_debug_info *dbg_info = (struct ehci_debug_info *)
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
-
-	return usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
-}
-
 void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
 {
-	if (!dbg_info) {
-		/* "Find" dbg_info structure in Cache */
-		dbg_info = (struct ehci_debug_info *)
-		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
-	}
-
 	if (dbg_info->ehci_info) {
 		dbg_info->buf[dbg_info->bufidx++] = data;
 		if (dbg_info->bufidx >= 8) {
@@ -602,14 +591,28 @@ void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
 
 void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 {
-	if (!dbg_info) {
-		/* "Find" dbg_info structure in Cache */
-		dbg_info = (struct ehci_debug_info *)
-		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
-	}
-
 	if (dbg_info->ehci_info && dbg_info->bufidx > 0) {
 		dbgp_bulk_write_x(dbg_info, dbg_info->buf, dbg_info->bufidx);
 		dbg_info->bufidx = 0;
 	}
+}
+
+struct ehci_debug_info *dbgp_ehci_info(void)
+{
+#if __PRE_RAM__
+	/* "Find" dbg_info structure in Cache */
+	return (struct ehci_debug_info *)
+	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+#else
+	return &glob_dbg_info;
+#endif
+}
+
+int usbdebug_init(void)
+{
+	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+#if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
+	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+#endif
+	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }

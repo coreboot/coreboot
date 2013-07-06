@@ -24,27 +24,28 @@
 #include <device/pci.h>
 #include <pc80/mc146818rtc.h>
 
-static struct ehci_debug_info dbg_info;
 static struct device_operations *ehci_drv_ops;
 static struct device_operations ehci_dbg_ops;
 
 static void usbdebug_re_enable(unsigned ehci_base)
 {
+	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	unsigned diff;
 
-	if (!dbg_info.ehci_debug)
+	if (!dbg_info->ehci_debug)
 		return;
 
-	diff = (unsigned)dbg_info.ehci_caps - ehci_base;
-	dbg_info.ehci_regs -= diff;
-	dbg_info.ehci_debug -= diff;
-	dbg_info.ehci_caps = (void*)ehci_base;
-	dbg_info.status |= DBGP_EP_ENABLED;
+	diff = (unsigned)dbg_info->ehci_caps - ehci_base;
+	dbg_info->ehci_regs -= diff;
+	dbg_info->ehci_debug -= diff;
+	dbg_info->ehci_caps = (void*)ehci_base;
+	dbg_info->status |= DBGP_EP_ENABLED;
 }
 
 static void usbdebug_disable(void)
 {
-	dbg_info.status &= ~DBGP_EP_ENABLED;
+	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+	dbg_info->status &= ~DBGP_EP_ENABLED;
 }
 
 static void pci_ehci_set_resources(struct device *dev)
@@ -82,35 +83,32 @@ void pci_ehci_read_resources(struct device *dev)
 
 static void dbgp_init(void)
 {
-#if !CONFIG_EARLY_CONSOLE
-	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
-#endif
-	usbdebug_init(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, &dbg_info);
+	usbdebug_init();
 }
 
 static void dbgp_tx_byte(unsigned char data)
 {
-	usbdebug_tx_byte(&dbg_info, data);
+	usbdebug_tx_byte(dbgp_console_output(), data);
 }
 
 static unsigned char dbgp_rx_byte(void)
 {
 	unsigned char data = 0xff;
 
-	if (dbgp_ep_is_active(&dbg_info))
-		dbgp_bulk_read_x(&dbg_info, &data, 1);
+	if (dbgp_ep_is_active(dbgp_console_input()))
+		dbgp_bulk_read_x(dbgp_console_input(), &data, 1);
 
 	return data;
 }
 
 static void dbgp_tx_flush(void)
 {
-	usbdebug_tx_flush(&dbg_info);
+	usbdebug_tx_flush(dbgp_console_output());
 }
 
 static int dbgp_tst_byte(void)
 {
-	return dbgp_ep_is_active(&dbgp_info);
+	return dbgp_ep_is_active(dbgp_console_input());
 }
 
 static const struct console_driver usbdebug_direct_console __console = {

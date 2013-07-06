@@ -36,6 +36,7 @@
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
 #include <arch/x86/include/arch/acpigen.h>
+#include <smbios.h>
 #include <x86emu/x86emu.h>
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
@@ -133,9 +134,28 @@ static void mainboard_init(device_t dev)
 	}
 }
 
+static int mainboard_smbios_data(device_t dev, int *handle, unsigned long *current)
+{
+	int len;
+#define SERIALBEGIN	"IBM ThinkPad Embedded Controller -["
+#define SERIAL		"01234567890123456"
+#define SERIALEND	"]-"
+	char tpec[] = SERIALBEGIN SERIAL SERIALEND;
+
+	const char *oem_strings[] = {
+		tpec,
+	};
+
+	h8_build_id_and_function_spec_version(tpec + sizeof(SERIALBEGIN), sizeof(SERIAL));
+	len = smbios_write_type11(current, (*handle)++, oem_strings, ARRAY_SIZE(oem_strings));
+
+	return len;
+}
+
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->get_smbios_data = mainboard_smbios_data;
 }
 
 struct chip_operations mainboard_ops = {

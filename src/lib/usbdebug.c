@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <device/pci.h>
 #include <arch/byteorder.h>
+#include <cpu/x86/car.h>
 
 #include <usb_ch9.h>
 #include <ehci.h>
@@ -87,8 +88,8 @@
 #define DBGP_MAX_PACKET		8
 #define DBGP_LOOPS 1000
 
+static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
-static struct ehci_debug_info glob_dbg_info;
 static struct device_operations *ehci_drv_ops;
 static struct device_operations ehci_dbg_ops;
 #endif
@@ -602,7 +603,7 @@ void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 static void usbdebug_re_enable(unsigned ehci_base)
 {
-	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+	struct ehci_debug_info *dbg_info = car_get_var_ptr(&glob_dbg_info);
 	unsigned diff;
 
 	if (!dbg_info->ehci_debug)
@@ -617,7 +618,7 @@ static void usbdebug_re_enable(unsigned ehci_base)
 
 static void usbdebug_disable(void)
 {
-	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+	struct ehci_debug_info *dbg_info = car_get_var_ptr(&glob_dbg_info);
 	dbg_info->status &= ~DBGP_EP_ENABLED;
 }
 
@@ -662,18 +663,13 @@ int dbgp_ep_is_active(struct ehci_debug_info *dbg_info)
 
 struct ehci_debug_info *dbgp_ehci_info(void)
 {
-#if __PRE_RAM__
-	/* "Find" dbg_info structure in Cache */
-	return (struct ehci_debug_info *)
-	    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
-#else
-	return &glob_dbg_info;
-#endif
+	return car_get_var_ptr(&glob_dbg_info);
 }
 
 int usbdebug_init(void)
 {
-	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+	struct ehci_debug_info *dbg_info = car_get_var_ptr(&glob_dbg_info);
+
 #if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
 	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
 #endif

@@ -182,15 +182,6 @@ before_romstage:
 
 	post_code(0x2f)
 
-	/* Copy global variable space (for USBDEBUG) to memory */
-#if CONFIG_USBDEBUG
-	cld
-	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - 24), %esi
-	movl	$(CONFIG_RAMTOP - 24), %edi
-	movl	$24, %ecx
-	rep	movsb
-#endif
-
 	post_code(0x30)
 
 	/* Disable cache. */

@@ -256,6 +256,24 @@ static int smbios_write_type4(unsigned long *current, int handle)
 	return len;
 }
 
+int smbios_write_type11(unsigned long *current, int handle, const char **oem_strings, int count)
+{
+	struct smbios_type11 *t = (struct smbios_type11 *)*current;
+	int i, len;
+
+	memset(t, 0, sizeof *t);
+	t->type = SMBIOS_OEM_STRINGS;
+	t->handle = handle;
+	t->length = len = sizeof *t - 2;
+
+	for (i = 0; i < count; i++)
+		t->count = smbios_add_string(t->eos, oem_strings[i]);
+
+	len += smbios_string_table_len(t->eos);
+	*current += len;
+	return len;
+}
+
 static int smbios_write_type32(unsigned long *current, int handle)
 {
 	struct smbios_type32 *t = (struct smbios_type32 *)*current;

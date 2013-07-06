@@ -3,6 +3,7 @@
 
 #include <types.h>
 
+int smbios_write_type11(unsigned long *current, int handle, const char **oem_strings, int count);
 unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(char *start, const char *str);
 int smbios_string_table_len(char *start);
@@ -31,6 +32,7 @@ typedef enum {
 	SMBIOS_PROCESSOR_INFORMATION=4,
 	SMBIOS_CACHE_INFORMATION=7,
 	SMBIOS_SYSTEM_SLOTS=9,
+	SMBIOS_OEM_STRINGS=11,
 	SMBIOS_EVENT_LOG=15,
 	SMBIOS_PHYS_MEMORY_ARRAY=16,
 	SMBIOS_MEMORY_DEVICE=17,
@@ -139,6 +141,14 @@ struct smbios_type4 {
 	u8 thread_count;
 	u16 processor_characteristics;
 	u16 processor_family2;
+	char eos[2];
+} __attribute__((packed));
+
+struct smbios_type11 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u8 count;
 	char eos[2];
 } __attribute__((packed));
 

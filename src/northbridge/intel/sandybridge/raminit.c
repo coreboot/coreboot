@@ -278,7 +278,7 @@ void sdram_initialize(struct pei_data *pei_data)
 
 #if CONFIG_USBDEBUG
 	/* mrc.bin reconfigures USB, so reinit it to have debug */
-	early_usbdebug_init();
+	usbdebug_init();
 #endif
 
 	/* For reference print the System Agent version

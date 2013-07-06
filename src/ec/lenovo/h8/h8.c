@@ -27,10 +27,6 @@
 #include "chip.h"
 #include <pc80/mc146818rtc.h>
 
-#if defined (CONFIG_BOARD_LENOVO_X201) && CONFIG_BOARD_LENOVO_X201
-#include "mainboard/lenovo/x201/dock.h"
-#endif
-
 static void h8_bluetooth_enable(int on)
 {
 	if (on)
@@ -41,7 +37,8 @@ static void h8_bluetooth_enable(int on)
 
 void h8_trackpoint_enable(int on)
 {
-	ec_write(H8_TRACKPOINT_CTRL, on ? H8_TRACKPOINT_ON : H8_TRACKPOINT_OFF);
+	ec_write(H8_TRACKPOINT_CTRL,
+		 on ? H8_TRACKPOINT_ON : H8_TRACKPOINT_OFF);
 
 }
 
@@ -51,14 +48,6 @@ void h8_wlan_enable(int on)
 		ec_set_bit(0x3a, 5);
 	else
 		ec_clr_bit(0x3a, 5);
-}
-
-static void h8_3g_enable(int on)
-{
-	if (on)
-		ec_set_bit(0x3a, 6);
-	else
-		ec_clr_bit(0x3a, 6);
 }
 
 static void h8_log_ec_version(void)
@@ -161,31 +150,17 @@ static void h8_enable(device_t dev)
 	if (!get_option(&val, "volume"))
 		ec_write(H8_VOLUME_CONTROL, val);
 
-	if (get_option(&val, "bluetooth"))
-		val = 1;
-	h8_bluetooth_enable(val);
 
-	if (get_option(&val, "umts"))
-		val = 1;
+	if (!get_option(&val, "bluetooth"))
+		h8_bluetooth_enable(val);
 
-	h8_3g_enable(val);
-
-	if (get_option(&val, "first_battery"))
-		val = 1;
-
-	tmp = ec_read(H8_CONFIG3);
-	tmp &= ~(1 << 4);
-	tmp |= (val & 1) << 4;
-	ec_write(H8_CONFIG3, tmp);
+	if (!get_option(&val, "first_battery")) {
+		tmp = ec_read(H8_CONFIG3);
+		tmp &= ~(1 << 4);
+		tmp |= (val & 1)<< 4;
+		ec_write(H8_CONFIG3, tmp);
+	}
 	h8_set_audio_mute(0);
-
-#if defined (CONFIG_BOARD_LENOVO_X201) && CONFIG_BOARD_LENOVO_X201
-	if (dock_present()) {
-		printk(BIOS_DEBUG, "dock is connected\n");
-		dock_connect();
-	} else
-		printk(BIOS_DEBUG, "dock is not connected\n");
-#endif
 }
 
 struct chip_operations ec_lenovo_h8_ops = {

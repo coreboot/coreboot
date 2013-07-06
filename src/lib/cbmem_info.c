@@ -48,6 +48,7 @@ static struct cbmem_id_to_name {
 	{ CBMEM_ID_VBOOT_HANDOFF,	"VBOOT      " },
 	{ CBMEM_ID_CAR_GLOBALS,		"CAR GLOBALS" },
 	{ CBMEM_ID_AGESA_RUNTIME,	"AGESA RSVD " },
+	{ CBMEM_ID_EHCI_DEBUG,	"USBDEBUG   " },
 };
 
 void cbmem_print_entry(int n, u32 id, u64 base, u64 size)

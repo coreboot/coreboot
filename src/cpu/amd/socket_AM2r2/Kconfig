@@ -6,32 +6,30 @@ config CPU_AMD_SOCKET_AM2R2
 	select CACHE_AS_RAM
 	select X86_AMD_FIXED_MTRRS
 
+if CPU_AMD_SOCKET_AM2R2
+
 config CPU_SOCKET_TYPE
 	hex
 	default 0x11
-	depends on CPU_AMD_SOCKET_AM2R2
 
 config EXT_RT_TBL_SUPPORT
 	bool
 	default n
-	depends on CPU_AMD_SOCKET_AM2R2
 
 config EXT_CONF_SUPPORT
 	bool
 	default n
-	depends on CPU_AMD_SOCKET_AM2R2
 
 config CBB
 	hex
 	default 0x0
-	depends on CPU_AMD_SOCKET_AM2R2
 
 config CDB
 	hex
 	default 0x18
-	depends on CPU_AMD_SOCKET_AM2R2
 
 config XIP_ROM_SIZE
 	hex
 	default 0x80000
-	depends on CPU_AMD_SOCKET_AM2R2
+
+endif

@@ -236,6 +236,14 @@ if ARCH_ARMV7
 source src/arch/armv7/Kconfig
 endif
 
+config HAVE_ARCH_MEMSET
+	bool
+	default n
+
+config HAVE_ARCH_MEMCPY
+	bool
+	default n
+
 menu "Chipset"
 
 comment "CPU"

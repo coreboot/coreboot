@@ -1,5 +1,12 @@
 menu "Architecture (armv7)"
 
+
+config ARM_ARCH_OPTIONS
+	bool
+	default y
+	select HAVE_ARCH_MEMSET
+	select HAVE_ARCH_MEMCPY
+
 # Maximum reboot count
 # TODO: Improve description.
 config MAX_REBOOT_CNT
@@ -31,13 +38,5 @@ config UPDATE_IMAGE
 	  is created. Instead it is expected that there already
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
-
-config HAVE_ARCH_MEMSET
-	bool
-	default y
-
-config HAVE_ARCH_MEMCPY
-	bool
-	default y
 
 endmenu

@@ -6,6 +6,7 @@ config ARM_ARCH_OPTIONS
 	default y
 	select HAVE_ARCH_MEMSET
 	select HAVE_ARCH_MEMCPY
+	select HAVE_ARCH_MEMMOVE
 
 # Maximum reboot count
 # TODO: Improve description.

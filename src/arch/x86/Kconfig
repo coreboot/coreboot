@@ -1,5 +1,11 @@
 menu "Architecture (x86)"
 
+config X86_ARCH_OPTIONS
+	bool
+	default y
+	select HAVE_ARCH_MEMSET
+	select HAVE_ARCH_MEMCPY
+
 config MARK_GRAPHICS_MEM_WRCOMB
 	bool "Mark graphics memory as write-combining."
 	default n
@@ -94,14 +100,6 @@ config CMOS_DEFAULT_FILE
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
-
-config HAVE_ARCH_MEMSET
-	bool
-	default y
-
-config HAVE_ARCH_MEMCPY
-	bool
-	default y
 
 config IOAPIC_INTERRUPTS_ON_FSB
 	bool

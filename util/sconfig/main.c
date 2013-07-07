@@ -634,7 +634,7 @@ int main(int argc, char** argv) {
 	if (scan_mode == STATIC_MODE) {
 
 		fprintf(autogen, "#include <device/device.h>\n");
-		fprintf(autogen, "#include <device/pci.h>\n");
+		fprintf(autogen, "#if CONFIG_PCI\n#include <device/pci.h>\n#endif\n");
 		h = &headers;
 		while (h->next) {
 			h = h->next;

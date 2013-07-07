@@ -5,6 +5,7 @@ config X86_ARCH_OPTIONS
 	default y
 	select HAVE_ARCH_MEMSET
 	select HAVE_ARCH_MEMCPY
+	select HAVE_ARCH_MEMMOVE
 
 config MARK_GRAPHICS_MEM_WRCOMB
 	bool "Mark graphics memory as write-combining."

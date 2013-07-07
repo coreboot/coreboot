@@ -31,6 +31,7 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 #include <coreboot_tables.h>
+#include <stdint.h>
 
 /*
  * Some of this is x86 specific, and the rest of it is generic. Right now,
@@ -83,7 +84,7 @@ static void cb_parse_vboot_handoff(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_vboot_handoff *vbho = (struct cb_vboot_handoff *)ptr;
 
-	info->vboot_handoff = vbho->vboot_handoff_addr;
+	info->vboot_handoff = (void *)(uintptr_t)vbho->vboot_handoff_addr;
 	info->vboot_handoff_size = vbho->vboot_handoff_size;
 }
 

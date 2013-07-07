@@ -30,11 +30,11 @@
 
 //-#define IO_APIC_ID    CONFIG_MAX_PHYSICAL_CPUS + 1
 #define IO_APIC_ID    CONFIG_MAX_CPUS
-extern u8 bus_sb800[3];
+extern u8 bus_yangtze[3];
 
 extern u32 bus_type[256];
-extern u32 sbdn_sb800;
-extern u32 apicid_sb800;
+extern u32 sbdn_yangtze;
+extern u32 apicid_yangtze;
 
 u8 picr_data[0x54] = {
 	0x03,0x04,0x05,0x07,0x0B,0x0A,0x1F,0x1F,0xFA,0xF1,0x00,0x00,0x1F,0x1F,0x1F,0x1F,
@@ -103,10 +103,10 @@ static void *smp_write_config_table(void *v)
 	/* Set IO APIC ID onto IO_APIC_ID */
 	write32 (dword, 0x00);
 	write32 (dword + 0x10, IO_APIC_ID << 24);
-	apicid_sb800 = IO_APIC_ID;
-	smp_write_ioapic(mc, apicid_sb800, 0x21, dword);
+	apicid_yangtze = IO_APIC_ID;
+	smp_write_ioapic(mc, apicid_yangtze, 0x21, dword);
 
-	smp_write_ioapic(mc, apicid_sb800+1, 0x21, 0xFEC20000);
+	smp_write_ioapic(mc, apicid_yangtze+1, 0x21, 0xFEC20000);
 	/* PIC IRQ routine */
 	for (byte = 0x0; byte < sizeof(picr_data); byte ++) {
 		outb(byte, 0xC00);
@@ -160,13 +160,13 @@ static void *smp_write_config_table(void *v)
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin)				\
 	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
-	mptable_add_isa_interrupts(mc, bus_isa, apicid_sb800, 0);
+	mptable_add_isa_interrupts(mc, bus_isa, apicid_yangtze, 0);
 
 	/* PCI interrupts are level triggered, and are
 	 * associated with a specific bus/device/function tuple.
 	 */
 #define PCI_INT(bus, dev, int_sign, pin)				\
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), apicid_sb800, (pin))
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), apicid_yangtze, (pin))
 
 	/* Internal VGA */
 	PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);
@@ -195,26 +195,26 @@ static void *smp_write_config_table(void *v)
 
 	/* PCI slots */
 	/* PCI_SLOT 0. */
-	PCI_INT(bus_sb800[1], 0x5, 0x0, 0x14);
-	PCI_INT(bus_sb800[1], 0x5, 0x1, 0x15);
-	PCI_INT(bus_sb800[1], 0x5, 0x2, 0x16);
-	PCI_INT(bus_sb800[1], 0x5, 0x3, 0x17);
+	PCI_INT(bus_yangtze[1], 0x5, 0x0, 0x14);
+	PCI_INT(bus_yangtze[1], 0x5, 0x1, 0x15);
+	PCI_INT(bus_yangtze[1], 0x5, 0x2, 0x16);
+	PCI_INT(bus_yangtze[1], 0x5, 0x3, 0x17);
 
 	/* PCI_SLOT 1. */
-	PCI_INT(bus_sb800[1], 0x6, 0x0, 0x15);
-	PCI_INT(bus_sb800[1], 0x6, 0x1, 0x16);
-	PCI_INT(bus_sb800[1], 0x6, 0x2, 0x17);
-	PCI_INT(bus_sb800[1], 0x6, 0x3, 0x14);
+	PCI_INT(bus_yangtze[1], 0x6, 0x0, 0x15);
+	PCI_INT(bus_yangtze[1], 0x6, 0x1, 0x16);
+	PCI_INT(bus_yangtze[1], 0x6, 0x2, 0x17);
+	PCI_INT(bus_yangtze[1], 0x6, 0x3, 0x14);
 
 	/* PCI_SLOT 2. */
-	PCI_INT(bus_sb800[1], 0x7, 0x0, 0x16);
-	PCI_INT(bus_sb800[1], 0x7, 0x1, 0x17);
-	PCI_INT(bus_sb800[1], 0x7, 0x2, 0x14);
-	PCI_INT(bus_sb800[1], 0x7, 0x3, 0x15);
+	PCI_INT(bus_yangtze[1], 0x7, 0x0, 0x16);
+	PCI_INT(bus_yangtze[1], 0x7, 0x1, 0x17);
+	PCI_INT(bus_yangtze[1], 0x7, 0x2, 0x14);
+	PCI_INT(bus_yangtze[1], 0x7, 0x3, 0x15);
 
-	PCI_INT(bus_sb800[2], 0x0, 0x0, 0x12);
-	PCI_INT(bus_sb800[2], 0x0, 0x1, 0x13);
-	PCI_INT(bus_sb800[2], 0x0, 0x2, 0x14);
+	PCI_INT(bus_yangtze[2], 0x0, 0x0, 0x12);
+	PCI_INT(bus_yangtze[2], 0x0, 0x1, 0x13);
+	PCI_INT(bus_yangtze[2], 0x0, 0x2, 0x14);
 
 	/* PCIe Lan*/
 	PCI_INT(0x0, 0x06, 0x0, 0x13);

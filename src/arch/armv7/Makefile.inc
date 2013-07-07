@@ -188,6 +188,9 @@ bootblock-y += memset.S
 romstage-y += memcpy.S
 ramstage-y += memcpy.S
 bootblock-y += memcpy.S
+romstage-y += memmove.S
+ramstage-y += memmove.S
+bootblock-y += memmove.S
 
 $(obj)/arch/armv7/coreboot_table.ramstage.o : $(OPTION_TABLE_H)
 

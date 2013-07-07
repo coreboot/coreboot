@@ -26,6 +26,9 @@ ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 bootblock-y += memcpy.c
 endif
 bootblock-y += memcmp.c
+ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
+bootblock-y += memmove.c
+endif
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 romstage-y += memset.c
@@ -56,7 +59,9 @@ romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c
 endif
 
 romstage-y += compute_ip_checksum.c
+ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
 romstage-y += memmove.c
+endif
 romstage-$(CONFIG_ARCH_X86) += gcc.c
 
 ramstage-y += hardwaremain.c
@@ -70,7 +75,9 @@ ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
 ramstage-y += memcpy.c
 endif
 ramstage-y += memcmp.c
+ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
 ramstage-y += memmove.c
+endif
 ramstage-y += malloc.c
 smm-$(CONFIG_SMM_TSEG) += malloc.c
 ramstage-y += delay.c

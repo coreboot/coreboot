@@ -1149,3 +1149,35 @@ struct chip_operations northbridge_amd_agesa_family16kb_root_complex_ops = {
 	CHIP_NAME("AMD FAM16 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
+
+/*********************************************************************
+ * Change the vendor / device IDs to match the generic VBIOS header. *
+ *********************************************************************/
+u32 map_oprom_vendev(u32 vendev)
+{
+	u32 new_vendev=vendev;
+
+	switch(vendev) {
+	case 0x10029830:
+	case 0x10029831:
+	case 0x10029832:
+	case 0x10029833:
+	case 0x10029834:
+	case 0x10029835:
+	case 0x10029836:
+	case 0x10029837:
+	case 0x10029838:
+	case 0x10029839:
+	case 0x1002983A:
+	case 0x1002983D:
+		new_vendev = 0x10029830;  // This is the default value in AMD-generated VBIOS
+		break;
+	default:
+		break;
+	}
+
+	if (vendev != new_vendev)
+		printk(BIOS_NOTICE, "Mapping PCI device %8x to %8x\n",vendev, new_vendev);
+
+	return new_vendev;
+}

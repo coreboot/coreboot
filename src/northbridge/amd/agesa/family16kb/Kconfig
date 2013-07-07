@@ -38,4 +38,11 @@ config MMCONF_BUS_NUMBER
 	int
 	default 256
 
+config VGA_BIOS_ID
+	string
+	default "1002,9830"
+	help
+	  The default VGA BIOS PCI vendor/device ID should be set to the
+	  result of the map_oprom_vendev() function in northbridge.c.
+
 endif

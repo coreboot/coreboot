@@ -30,8 +30,8 @@
  * and acpi_tables busnum is default.
  */
 u8 bus_isa;
-u8 bus_sb800[3];
-u32 apicid_sb800;
+u8 bus_yangtze[3];
+u32 apicid_yangtze;
 
 /*
  * Here you only need to set value in pci1234 for HT-IO that could be installed or not
@@ -43,7 +43,7 @@ u32 pci1234x[] = {
 };
 
 u32 bus_type[256];
-u32 sbdn_sb800;
+u32 sbdn_yangtze;
 
 static u32 get_bus_conf_done = 0;
 
@@ -98,10 +98,10 @@ void get_bus_conf(void)
 	pci_write_config32(dev, 0xF8, 0);
 	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
 
-	sbdn_sb800 = 0;
+	sbdn_yangtze = 0;
 
 	for (i = 0; i < 3; i++) {
-		bus_sb800[i] = 0;
+		bus_yangtze[i] = 0;
 	}
 
 	for (i = 0; i < 256; i++) {
@@ -110,34 +110,34 @@ void get_bus_conf(void)
 
 	bus_type[0] = 1;  /* pci */
 
-	//  bus_sb800[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-	bus_sb800[0] = (pci1234x[0] >> 16) & 0xff;
+	//  bus_yangtze[0] = (sysconf.pci1234[0] >> 16) & 0xff;
+	bus_yangtze[0] = (pci1234x[0] >> 16) & 0xff;
 
-	/* sb800 */
-	dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, 4));
+	/* yangtze */
+	dev = dev_find_slot(bus_yangtze[0], PCI_DEVFN(sbdn_yangtze + 0x14, 4));
 
 	if (dev) {
-		bus_sb800[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		bus_yangtze[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 
 		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
-		for (j = bus_sb800[1]; j < bus_isa; j++)
+		for (j = bus_yangtze[1]; j < bus_isa; j++)
 			bus_type[j] = 1;
 	}
 
 	for (i = 0; i < 4; i++) {
-		dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, i));
+		dev = dev_find_slot(bus_yangtze[0], PCI_DEVFN(sbdn_yangtze + 0x14, i));
 		if (dev) {
-			bus_sb800[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+			bus_yangtze[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 			bus_isa++;
 		}
 	}
-	for (j = bus_sb800[2]; j < bus_isa; j++)
+	for (j = bus_yangtze[2]; j < bus_isa; j++)
 		bus_type[j] = 1;
 
 	/* I/O APICs:   APIC ID Version State   Address */
 	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
-	apicid_sb800 = apicid_base;
+	apicid_yangtze = apicid_base;
 }

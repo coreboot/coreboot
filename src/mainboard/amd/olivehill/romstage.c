@@ -103,7 +103,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x38);
-	printk(BIOS_DEBUG, "Got past sb800_early_setup\n");
+	printk(BIOS_DEBUG, "Got past yangtze_early_setup\n");
 
 	post_code(0x39);
 

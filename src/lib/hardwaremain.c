@@ -26,7 +26,6 @@
 #include <console/console.h>
 #include <version.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <delay.h>
 #include <stdlib.h>
 #include <reset.h>

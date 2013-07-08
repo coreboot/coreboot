@@ -29,6 +29,27 @@
 #include <ehci.h>
 #include <usbdebug.h>
 
+#define DBGP_MAX_ENDPOINTS	4
+#define DBGP_CONSOLE_EPOUT	0
+#define DBGP_CONSOLE_EPIN	1
+
+struct ehci_debug_info {
+	u8 devnum;
+	u8 endpoint[DBGP_MAX_ENDPOINTS];
+	u8 ep_status[DBGP_MAX_ENDPOINTS];
+
+	void *ehci_caps;
+	void *ehci_regs;
+	void *ehci_debug;
+
+	struct dbgp_pipe ep_pipe[DBGP_MAX_ENDPOINTS];
+};
+
+#define DBGP_EP_VALID		(1<<0)
+#define DBGP_EP_ENABLED		(1<<1)
+#define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
+
+
 /* Set this to 1 to debug the start-up of EHCI debug port hardware. You need
  * to modify console_init() to initialise some other console before usbdebug
  * to receive the printk lines from here.
@@ -215,10 +236,11 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
 	return ret;
 }
 
-int dbgp_bulk_write_x(struct ehci_debug_info *dbg_info, const char *bytes, int size)
+int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size)
 {
+	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	return dbgp_bulk_write(dbg_info->ehci_debug, dbg_info->devnum,
-			dbg_info->endpoint_out, bytes, size);
+			dbg_info->endpoint[pipe->ep_index], bytes, size);
 }
 
 static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
@@ -252,10 +274,11 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 	return ret;
 }
 
-int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size)
+int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size)
 {
+	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum,
-			dbg_info->endpoint_in, data, size, DBGP_LOOPS);
+			dbg_info->endpoint[pipe->ep_index], data, size, DBGP_LOOPS);
 }
 
 static void dbgp_mdelay(int ms)
@@ -379,8 +402,6 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 	struct ehci_caps *ehci_caps;
 	struct ehci_regs *ehci_regs;
 	struct ehci_dbg_port *ehci_debug;
-	unsigned dbgp_endpoint_out;
-	unsigned dbgp_endpoint_in;
 
 	struct usb_debug_descriptor dbgp_desc;
 	u32 cmd, ctrl, status, portsc, hcs_params;
@@ -396,8 +417,12 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 			HC_LENGTH(read32((unsigned long)&ehci_caps->hc_capbase)));
 	ehci_debug = (struct ehci_dbg_port *)(ehci_bar + offset);
 	info->ehci_debug = (void *)0;
-	info->bufidx = 0;
-	info->status = 0;
+
+	memset(&info->ep_pipe, 0, sizeof (info->ep_pipe));
+	for (i=0; i<DBGP_MAX_ENDPOINTS; i++) {
+		info->ep_status[i] = 0;
+		info->ep_pipe[i].ep_index = i;
+	}
 try_next_time:
 	port_map_tried = 0;
 
@@ -516,8 +541,6 @@ try_next_port:
 		ret = -6;
 		goto err;
 	}
-	dbgp_endpoint_out = dbgp_desc.bDebugOutEndpoint;
-	dbgp_endpoint_in = dbgp_desc.bDebugInEndpoint;
 
 	/* Move the device to 127 if it isn't already there */
 	if (devnum != USB_DEBUG_DEVNUM) {
@@ -546,7 +569,7 @@ try_next_port:
 	dbgp_printk("EHCI debug interface enabled.\n");
 
 	/* Perform a small write to get the even/odd data state in sync */
-	ret = dbgp_bulk_write(ehci_debug, USB_DEBUG_DEVNUM, dbgp_endpoint_out, "USB\r\n",5);
+	ret = dbgp_bulk_write(ehci_debug, USB_DEBUG_DEVNUM, dbgp_desc.bDebugOutEndpoint, "USB\r\n",5);
 	if (ret < 0) {
 		dbgp_printk("dbgp_bulk_write failed: %d\n", ret);
 		ret = -9;
@@ -558,10 +581,11 @@ try_next_port:
 	info->ehci_regs = ehci_regs;
 	info->ehci_debug = ehci_debug;
 	info->devnum = devnum;
-	info->endpoint_out = dbgp_endpoint_out;
-	info->endpoint_in = dbgp_endpoint_in;
-	info->status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 
+	info->endpoint[DBGP_CONSOLE_EPOUT] = dbgp_desc.bDebugOutEndpoint;
+	info->endpoint[DBGP_CONSOLE_EPIN] = dbgp_desc.bDebugInEndpoint;
+	info->ep_status[DBGP_CONSOLE_EPOUT] |= DBGP_EP_ENABLED | DBGP_EP_VALID;
+	info->ep_status[DBGP_CONSOLE_EPIN] |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	return 0;
 err:
 	/* Things didn't work so remove my claim */
@@ -586,22 +610,22 @@ next_debug_port:
 	return -10;
 }
 
-void usbdebug_tx_byte(struct ehci_debug_info *dbg_info, unsigned char data)
+void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data)
 {
-	if (dbgp_is_ep_active(dbg_info)) {
-		dbg_info->buf[dbg_info->bufidx++] = data;
-		if (dbg_info->bufidx >= 8) {
-			dbgp_bulk_write_x(dbg_info, dbg_info->buf, dbg_info->bufidx);
-			dbg_info->bufidx = 0;
+	if (dbgp_ep_is_active(pipe)) {
+		pipe->buf[pipe->bufidx++] = data;
+		if (pipe->bufidx >= 8) {
+			dbgp_bulk_write_x(pipe, pipe->buf, pipe->bufidx);
+			pipe->bufidx = 0;
 		}
 	}
 }
 
-void usbdebug_tx_flush(struct ehci_debug_info *dbg_info)
+void usbdebug_tx_flush(struct dbgp_pipe *pipe)
 {
-	if (dbgp_is_ep_active(dbg_info) && dbg_info->bufidx > 0) {
-		dbgp_bulk_write_x(dbg_info, dbg_info->buf, dbg_info->bufidx);
-		dbg_info->bufidx = 0;
+	if (dbgp_ep_is_active(pipe) && pipe->bufidx > 0) {
+		dbgp_bulk_write_x(pipe, pipe->buf, pipe->bufidx);
+		pipe->bufidx = 0;
 	}
 }
 
@@ -610,6 +634,7 @@ static void usbdebug_re_enable(unsigned ehci_base)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	unsigned diff;
+	int i;
 
 	if (!dbg_info->ehci_debug)
 		return;
@@ -618,13 +643,17 @@ static void usbdebug_re_enable(unsigned ehci_base)
 	dbg_info->ehci_regs -= diff;
 	dbg_info->ehci_debug -= diff;
 	dbg_info->ehci_caps = (void*)ehci_base;
-	dbg_info->status |= DBGP_EP_ENABLED;
+
+	for (i=0; i<DBGP_MAX_ENDPOINTS; i++)
+		dbg_info->ep_status[i] |= DBGP_EP_ENABLED;
 }
 
 static void usbdebug_disable(void)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
-	dbg_info->status &= ~DBGP_EP_ENABLED;
+	int i;
+	for (i=0; i<DBGP_MAX_ENDPOINTS; i++)
+		dbg_info->ep_status[i] &= ~DBGP_EP_ENABLED;
 }
 
 static void pci_ehci_set_resources(struct device *dev)
@@ -661,19 +690,20 @@ void pci_ehci_read_resources(struct device *dev)
 }
 #endif
 
-int dbgp_ep_is_active(struct ehci_debug_info *dbg_info)
+int dbgp_ep_is_active(struct dbgp_pipe *pipe)
 {
-	return (dbg_info->status & DBGP_EP_STATMASK) == (DBGP_EP_VALID | DBGP_EP_ENABLED);
+	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+	return (dbg_info->ep_status[pipe->ep_index] & DBGP_EP_STATMASK) == (DBGP_EP_VALID | DBGP_EP_ENABLED);
 }
 
-struct ehci_debug_info *dbgp_console_input(void)
+struct dbgp_pipe *dbgp_console_output(void)
 {
-	return dbgp_ehci_info();
+	return &dbgp_ehci_info()->ep_pipe[DBGP_CONSOLE_EPOUT];
 }
 
-struct ehci_debug_info *dbgp_console_input(void)
+struct dbgp_pipe *dbgp_console_input(void)
 {
-	return dbgp_ehci_info();
+	return &dbgp_ehci_info()->ep_pipe[DBGP_CONSOLE_EPIN];
 }
 
 int usbdebug_init(void)

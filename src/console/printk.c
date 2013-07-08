@@ -1,5 +1,5 @@
 /*
- *  blantantly copied from linux/kernel/printk.c
+ *  blatantly copied from linux/kernel/printk.c
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
  *

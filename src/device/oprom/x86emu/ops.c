@@ -39,7 +39,7 @@
 * to the 256 byte-"opcodes" found on the 8086.  The table which
 * dispatches this is found in the files optab.[ch].
 *
-* Each opcode proc has a comment preceeding it which gives it's table
+* Each opcode proc has a comment preceding it which gives it's table
 * address.  Several opcodes are missing (undefined) in the table.
 *
 * Each proc includes information for decoding (DECODE_PRINTF and
@@ -2530,7 +2530,7 @@ static void x86emuOp_movs_byte(u8 X86EMU_UNUSED(op1))
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* move them until (E)CX is ZERO. */
         count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
         M.x86.R_CX = 0;
@@ -2577,7 +2577,7 @@ static void x86emuOp_movs_word(u8 X86EMU_UNUSED(op1))
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* move them until (E)CX is ZERO. */
         count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
         M.x86.R_CX = 0;
@@ -2773,7 +2773,7 @@ static void x86emuOp_stos_byte(u8 X86EMU_UNUSED(op1))
         inc = 1;
     TRACE_AND_STEP();
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* move them until (E)CX is ZERO. */
         while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
             store_data_byte_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_AL);
@@ -2820,7 +2820,7 @@ static void x86emuOp_stos_word(u8 X86EMU_UNUSED(op1))
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* move them until (E)CX is ZERO. */
         count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
         M.x86.R_CX = 0;
@@ -2858,7 +2858,7 @@ static void x86emuOp_lods_byte(u8 X86EMU_UNUSED(op1))
     else
         inc = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* move them until (E)CX is ZERO. */
         while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
             M.x86.R_AL = fetch_data_byte(M.x86.R_SI);
@@ -2905,7 +2905,7 @@ static void x86emuOp_lods_word(u8 X86EMU_UNUSED(op1))
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* move them until (E)CX is ZERO. */
         count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
         M.x86.R_CX = 0;
@@ -4075,7 +4075,7 @@ static void x86emuOp_xlat(u8 X86EMU_UNUSED(op1))
     END_OF_INSTR();
 }
 
-/* instuctions  D8 .. DF are in i87_ops.c */
+/* Instructions  D8 .. DF are in i87_ops.c */
 
 /****************************************************************************
 REMARKS:

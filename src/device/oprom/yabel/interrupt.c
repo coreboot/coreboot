@@ -243,7 +243,7 @@ handleInt16(void)
 	// since we currently always read the char from the FW buffer,
 	// we misuse the ring buffer, we use it as pointer to a u64 that stores
 	// multi-byte keys (e.g. special keys in VT100 terminal)
-	// and as long as a key is available (not 0) we dont read further keys
+	// and as long as a key is available (not 0) we don't read further keys
 	u64 *keycode = (u64 *) (M.mem_base + 0x41e);
 	s8 c;
 	// function number in AH
@@ -538,7 +538,7 @@ handleInterrupt(int intNum)
 	DEBUG_PRINTF_INTR("%s(%x)\n", __func__, intNum);
 #endif
 
-	/* check wether this interrupt has a function pointer set in yabel_intFuncArray and run that */
+	/* check whether this interrupt has a function pointer set in yabel_intFuncArray and run that */
 	if (yabel_intFuncArray[intNum]) {
 		DEBUG_PRINTF_INTR("%s(%x) intHandler overridden, calling it...\n", __func__, intNum);
 		int_handled = (*yabel_intFuncArray[intNum])();

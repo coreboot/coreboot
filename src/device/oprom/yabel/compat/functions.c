@@ -10,7 +10,7 @@
  ****************************************************************************/
 
 /* this file contains functions provided by SLOF, that the current biosemu implementation needs
- * they should go away  inthe future...
+ * they should go away  in the future...
  */
 
 #include <types.h>

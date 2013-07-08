@@ -219,7 +219,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	my_wrb(0x000ffe6e, 0xcf);
 
 	// setup BIOS Data Area (0000:04xx, or 0040:00xx)
-	// we currently 0 this area, meaning "we dont have
+	// we currently 0 this area, meaning "we don't have
 	// any hardware" :-) no serial/parallel ports, floppys, ...
 	memset(biosmem + 0x400, 0x0, 0x100);
 
@@ -388,7 +388,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	 */
 	if ((pop_word() == 0xf4f4) && (M.x86.R_SS == STACK_SEGMENT)
 	    && (M.x86.R_SP == STACK_START_OFFSET)) {
-		DEBUG_PRINTF("Stack is clean, initialization successfull!\n");
+		DEBUG_PRINTF("Stack is clean, initialization successful!\n");
 	} else {
 		printf("Stack unclean, initialization probably NOT COMPLETE!\n");
 		DEBUG_PRINTF("SS:SP = %04x:%04x, expected: %04x:%04x\n",

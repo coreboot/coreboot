@@ -285,7 +285,7 @@ int path_eq(struct device_path *path1, struct device_path *path2)
 		equal = (path1->cpu_bus.id == path2->cpu_bus.id);
 		break;
 	default:
-		printk(BIOS_ERR, "Uknown device type: %d\n", path1->type);
+		printk(BIOS_ERR, "Unknown device type: %d\n", path1->type);
 		break;
 	}
 
@@ -544,7 +544,7 @@ const char *resource_type(struct resource *resource)
 /**
  * Print the resource that was just stored.
  *
- * @param dev The device the stored resorce lives on.
+ * @param dev The device the stored resource lives on.
  * @param resource The resource that was just stored.
  * @param comment TODO
  */

@@ -134,7 +134,7 @@ static u32 x86emu_parity_tab[8] =
 
 /****************************************************************************
 REMARKS:
-implements side efects for byte operations that don't overflow
+implements side effects for byte operations that don't overflow
 ****************************************************************************/
 
 static void set_parity_flag(u32 res)
@@ -790,7 +790,7 @@ u8 rcl_byte(u8 d, u8 s)
         /* OVERFLOW is set *IFF* cnt==1, then it is the
            xor of CF and the most significant bit.  Blecck. */
         /* parenthesized this expression since it appears to
-           be causing OF to be misset */
+           be causing OF to be missed */
         CONDITIONAL_SET_FLAG(cnt == 1 && XOR2(cf + ((res >> 6) & 0x2)),
                              F_OF);
 
@@ -1800,7 +1800,7 @@ void test_byte(u8 d, u8 s)
 
     CLEAR_FLAG(F_OF);
     set_szp_flags_8((u8)res);
-    /* AF == dont care */
+    /* AF == don't care */
     CLEAR_FLAG(F_CF);
 }
 
@@ -1816,7 +1816,7 @@ void test_word(u16 d, u16 s)
 
     CLEAR_FLAG(F_OF);
     set_szp_flags_16((u16)res);
-    /* AF == dont care */
+    /* AF == don't care */
     CLEAR_FLAG(F_CF);
 }
 
@@ -1832,7 +1832,7 @@ void test_long(u32 d, u32 s)
 
     CLEAR_FLAG(F_OF);
     set_szp_flags_32(res);
-    /* AF == dont care */
+    /* AF == don't care */
     CLEAR_FLAG(F_CF);
 }
 
@@ -2311,7 +2311,7 @@ void ins(int size)
         inc = -size;
     }
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* in until (E)CX is ZERO. */
         u32 count = ((M.x86.mode & SYSMODE_32BIT_REP) ?
                      M.x86.R_ECX : M.x86.R_CX);
@@ -2353,7 +2353,7 @@ void outs(int size)
         inc = -size;
     }
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* dont care whether REPE or REPNE */
+        /* don't care whether REPE or REPNE */
         /* out until (E)CX is ZERO. */
         u32 count = ((M.x86.mode & SYSMODE_32BIT_REP) ?
                      M.x86.R_ECX : M.x86.R_CX);

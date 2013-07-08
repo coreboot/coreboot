@@ -33,7 +33,7 @@
 * Developer:    Kendall Bennett
 *
 * Description:  Header file for system specific functions. These functions
-*				are always compiled and linked in the OS depedent libraries,
+*				are always compiled and linked in the OS dependent libraries,
 *				and never in a binary portable driver.
 *
 ****************************************************************************/

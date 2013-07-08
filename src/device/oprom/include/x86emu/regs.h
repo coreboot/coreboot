@@ -231,8 +231,8 @@ struct i386_segment_regs {
 #define SYSMODE_PREFIX_REPNE    0x00000100
 #define SYSMODE_PREFIX_DATA     0x00000200
 #define SYSMODE_PREFIX_ADDR     0x00000400
-//phueper: for REP(E|NE) Instructions, we need to decide wether it should be using
-//the 32bit ECX register as or the 16bit CX register as count register
+//phueper: for REP(E|NE) Instructions, we need to decide whether it should be
+//using the 32bit ECX register as or the 16bit CX register as count register
 #define SYSMODE_32BIT_REP       0x00000800
 #define SYSMODE_INTR_PENDING    0x10000000
 #define SYSMODE_EXTRN_INTR      0x20000000

@@ -83,7 +83,7 @@ uint64_t uma_memory_size = 0;
 /**
  * Allocate a new device structure.
  *
- * Allocte a new device structure and attach it to the device tree as a
+ * Allocate a new device structure and attach it to the device tree as a
  * child of the parent bus.
  *
  * @param parent Parent bus the newly created device should be attached to.
@@ -415,7 +415,7 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 	 * A PCI bridge resource does not need to be a power of two size, but
 	 * it does have a minimum granularity. Round the size up to that
 	 * minimum granularity so we know not to place something else at an
-	 * address postitively decoded by the bridge.
+	 * address positively decoded by the bridge.
 	 */
 	bridge->size = round(base, bridge->gran) -
 		       round(bridge->base, bridge->align);
@@ -730,7 +730,7 @@ device_t vga_pri = 0;
 static void set_vga_bridge_bits(void)
 {
 	/*
-	 * FIXME: Modify set_vga_bridge() so it is less PCI centric!
+	 * FIXME: Modify set_vga_bridge() so it is less PCI-centric!
 	 * This function knows too much about PCI stuff, it should be just
 	 * an iterator/visitor.
 	 */
@@ -835,7 +835,7 @@ void assign_resources(struct bus *bus)
  *
  * The parent's resources should be enabled first to avoid having enabling
  * order problem. This is done by calling the parent's enable_resources()
- * method before its childrens' enable_resources() methods.
+ * method before its children's enable_resources() methods.
  *
  * @param link The link whose devices' resources are to be enabled.
  */
@@ -959,7 +959,7 @@ void dev_enumerate(void)
  *
  * Starting at the root of the device tree, travel it recursively in two
  * passes. In the first pass, we compute and allocate resources (ranges)
- * requried by each device. In the second pass, the resources ranges are
+ * required by each device. In the second pass, the resources ranges are
  * relocated to their final position and stored to the hardware.
  *
  * I/O resources grow upward. MEM resources grow downward.
@@ -1025,7 +1025,7 @@ void dev_configure(void)
 
 	/*
 	 * Now we need to adjust the resources. MEM resources need to start at
-	 * the highest address managable.
+	 * the highest address manageable.
 	 */
 	for (child = root->link_list->children; child; child = child->sibling) {
 		if (child->path.type != DEVICE_PATH_DOMAIN)
@@ -1093,7 +1093,7 @@ void dev_enable(void)
  * Initialize a specific device.
  *
  * The parent should be initialized first to avoid having an ordering problem.
- * This is done by calling the parent's init() method before its childrens'
+ * This is done by calling the parent's init() method before its children's
  * init() methods.
  *
  * @param dev The device to be initialized.

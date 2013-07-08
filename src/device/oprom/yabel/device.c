@@ -60,7 +60,7 @@ biosemu_dev_get_addr_info(void)
 		    r->index;
 		translate_address_array[taa_index].address = r->base;
 		translate_address_array[taa_index].size = r->size;
-		/* dont translate addresses... all addresses are 1:1 */
+		/* don't translate addresses... all addresses are 1:1 */
 		translate_address_array[taa_index].address_offset = 0;
 		taa_index++;
 	}
@@ -71,7 +71,7 @@ biosemu_dev_get_addr_info(void)
 	translate_address_array[taa_index].cfg_space_offset = 0x30;
 	translate_address_array[taa_index].address = bios_device.img_addr;
 	translate_address_array[taa_index].size = 0; /* TODO: do we need the size? */
-	/* dont translate addresses... all addresses are 1:1 */
+	/* don't translate addresses... all addresses are 1:1 */
 	translate_address_array[taa_index].address_offset = 0;
 	taa_index++;
 	/* legacy ranges if its a VGA card... */
@@ -84,7 +84,7 @@ biosemu_dev_get_addr_info(void)
 		translate_address_array[taa_index].cfg_space_offset = 0;
 		translate_address_array[taa_index].address = 0x3b0;
 		translate_address_array[taa_index].size = 0xc;
-		/* dont translate addresses... all addresses are 1:1 */
+		/* don't translate addresses... all addresses are 1:1 */
 		translate_address_array[taa_index].address_offset = 0;
 		taa_index++;
 		/* I/O 0x3C0-0x3DF */
@@ -94,7 +94,7 @@ biosemu_dev_get_addr_info(void)
 		translate_address_array[taa_index].cfg_space_offset = 0;
 		translate_address_array[taa_index].address = 0x3c0;
 		translate_address_array[taa_index].size = 0x20;
-		/* dont translate addresses... all addresses are 1:1 */
+		/* don't translate addresses... all addresses are 1:1 */
 		translate_address_array[taa_index].address_offset = 0;
 		taa_index++;
 		/* Mem 0xA0000-0xBFFFF */
@@ -104,7 +104,7 @@ biosemu_dev_get_addr_info(void)
 		translate_address_array[taa_index].cfg_space_offset = 0;
 		translate_address_array[taa_index].address = 0xa0000;
 		translate_address_array[taa_index].size = 0x20000;
-		/* dont translate addresses... all addresses are 1:1 */
+		/* don't translate addresses... all addresses are 1:1 */
 		translate_address_array[taa_index].address_offset = 0;
 		taa_index++;
 	}
@@ -130,7 +130,7 @@ void translate_address_dev(u64 *, phandle_t);
 u64 get_puid(phandle_t node);
 
 
-// scan all adresses assigned to the device ("assigned-addresses" and "reg")
+// scan all addresses assigned to the device ("assigned-addresses" and "reg")
 // store in translate_address_array for faster translation using dev_translate_address
 void
 biosemu_dev_get_addr_info(void)
@@ -171,7 +171,7 @@ biosemu_dev_get_addr_info(void)
 	len = of_getprop(bios_device.phandle, "reg", buf, sizeof(buf));
 	for (i = 0; i < (len / sizeof(assigned_address_t)); i++) {
 		if ((buf[i].size == 0) || (buf[i].cfg_space_offset != 0)) {
-			// we dont care for ranges with size 0 and
+			// we don't care for ranges with size 0 and
 			// BARs and Expansion ROM must be in assigned-addresses... so in reg
 			// we only look for those without config space offset set...
 			// i.e. the legacy ranges
@@ -211,7 +211,7 @@ biosemu_dev_get_addr_info(void)
 
 // "special memory" is a hack to make some parts of memory fall through to real memory
 // (ie. no translation). Necessary if option ROMs attempt DMA there, map registers or
-// do similarily crazy things.
+// do similarly crazy things.
 void
 biosemu_add_special_memory(u32 start, u32 size)
 {
@@ -222,7 +222,7 @@ biosemu_add_special_memory(u32 start, u32 size)
 	translate_address_array[taa_index].cfg_space_offset = 0;
 	translate_address_array[taa_index].address = start;
 	translate_address_array[taa_index].size = size;
-	/* dont translate addresses... all addresses are 1:1 */
+	/* don't translate addresses... all addresses are 1:1 */
 	translate_address_array[taa_index].address_offset = 0;
 }
 
@@ -443,7 +443,7 @@ biosemu_dev_translate_address(int type, unsigned long * addr)
 	int i = 0;
 	translate_address_t ta;
 #if !CONFIG_PCI_OPTION_ROM_RUN_YABEL
-	/* we dont need this hack for coreboot... we can access legacy areas */
+	/* we don't need this hack for coreboot... we can access legacy areas */
 	//check if it is an access to legacy VGA Mem... if it is, map the address
 	//to the vmem BAR and then translate it...
 	// (translation info provided by Ben Herrenschmidt)

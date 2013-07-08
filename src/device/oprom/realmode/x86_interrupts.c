@@ -123,7 +123,7 @@ int int1a_handler(void)
 	unsigned short func = (unsigned short)X86_EAX;
 	int retval = 1;
 	unsigned short devid, vendorid, devfn;
-	/* Use short to get rid of gabage in upper half of 32-bit register */
+	/* Use short to get rid of garbage in upper half of 32-bit register */
 	short devindex;
 	unsigned char bus;
 	struct device *dev;
@@ -137,7 +137,7 @@ int int1a_handler(void)
 		X86_EAX &= 0xffff0000; /* Clear AH / AL */
 		X86_EAX |= PCI_CONFIG_SPACE_TYPE1 | PCI_SPECIAL_CYCLE_TYPE1;
 		// last bus in the system. Hard code to 255 for now.
-		// dev_enumerate() does not seem to tell us (publically)
+		// dev_enumerate() does not seem to tell us (publicly)
 		X86_ECX = 0xff;
 		X86_EDI = 0x00000000;	/* protected mode entry */
 		retval = 1;

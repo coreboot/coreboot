@@ -24,7 +24,7 @@
 #define VBE_SEGMENT 0x3000
 
 #define PMM_CONV_SEGMENT 0x4000	// 4000:xxxx is PMM conventional memory area, extended memory area
-				// will be anything beyound MIN_REQUIRED_MEMORY_SIZE
+				// will be anything beyond MIN_REQUIRED_MEMORY_SIZE
 #define PNP_DATA_SEGMENT 0x5000
 
 #define OPTION_ROM_CODE_SEGMENT 0xc000
@@ -38,9 +38,9 @@
 				// Address, there will only be a call to this INT and a RETF
 #define PNP_INT_NUM 0xFD
 
-/* array of funtion pointers to override generic interrupt handlers
+/* array of function pointers to override generic interrupt handlers
  * a YABEL caller can add functions to this array before calling YABEL
- * if a interrupt occurs, YABEL checks wether a function is set in
+ * if a interrupt occurs, YABEL checks whether a function is set in
  * this array and only runs the generic interrupt handler code, if
  * the function pointer is NULL */
 typedef int (* yabel_handleIntFunc)(void);

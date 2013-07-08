@@ -222,7 +222,7 @@ void pmm_handleInt()
 		DEBUG_PRINTF_PMM("%s: pmmDeallocate: PMM segment offset: %x\n",
 				 __func__, buffer);
 		i = 0;
-		/* rval = 0 means we deallocated the buffer, so set it to 1 in case we dont find it and
+		/* rval = 0 means we deallocated the buffer, so set it to 1 in case we don't find it and
 		 * thus cannot deallocate
 		 */
 		rval = 1;

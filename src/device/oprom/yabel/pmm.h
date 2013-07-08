@@ -24,9 +24,9 @@ typedef struct {
 	u8 checksum;
 	u32 entry_point_offset;
 	u8 reserved[5];
-	/* Code is not part of the speced PMM struct, however, since I cannot
-	 * put the handling of PMM in the virtual memory (I dont want to hack it
-	 * together in x86 assembly ;-)) this code array is pointed to by
+	/* Code is not part of the specced PMM struct, however, since I cannot
+	 * put the handling of PMM in the virtual memory (I don't want to hack
+	 * it together in x86 assembly ;-)) this code array is pointed to by
 	 * entry_point_offset, in code there is only a INT call and a RETF,
 	 * thus every PMM call will issue a PMM INT (only defined in YABEL,
 	 * see interrupt.c) and the INT Handler will do the actual PMM work.

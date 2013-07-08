@@ -248,7 +248,7 @@ void acpi_create_mcfg(acpi_mcfg_t *mcfg)
 }
 
 /*
- * This can be overriden by platform ACPI setup code, if it calls
+ * This can be overridden by platform ACPI setup code, if it calls
  * acpi_create_ssdt_generator().
  */
 unsigned long __attribute__((weak)) acpi_fill_ssdt_generator(
@@ -763,7 +763,7 @@ void acpi_jump_to_wakeup(void *vector)
 #endif
 
 #if CONFIG_SMP
-	// FIXME: This should go into the ACPI backup memory, too. No pork saussages.
+	// FIXME: This should go into the ACPI backup memory, too. No pork sausages.
 	/*
 	 * Just restore the SMP trampoline and continue with wakeup on
 	 * assembly level.

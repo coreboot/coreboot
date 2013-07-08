@@ -59,7 +59,7 @@
 /*
  * CP15 Barrier instructions
  * Please note that we have separate barrier instructions in ARMv7
- * However, we use the CP15 based instructtions because we use
+ * However, we use the CP15 based instructions because we use
  * -march=armv5 in U-Boot
  */
 #define CP15ISB	asm volatile ("mcr     p15, 0, %0, c7, c5, 4" : : "r" (0))

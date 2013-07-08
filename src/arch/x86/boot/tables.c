@@ -66,7 +66,7 @@ struct lb_memory *write_tables(void)
 	rom_table_end =   0xf0000;
 
 	/* Start low addr at 0x500, so we don't run into conflicts with the BDA
-	 * in case our data structures grow beyound 0x400. Only multiboot, GDT
+	 * in case our data structures grow beyond 0x400. Only multiboot, GDT
 	 * and the coreboot table use low_tables.
 	 */
 	low_table_start = 0;

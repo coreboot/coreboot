@@ -217,6 +217,9 @@ static void dcache_op_mva(unsigned long addr,
 		case OP_DCCIMVAC:
 			dccimvac(line);
 			break;
+		case OP_DCCMVAC:
+			dccmvac(line);
+			break;
 		default:
 			break;
 		}

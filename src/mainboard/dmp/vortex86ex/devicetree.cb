@@ -21,13 +21,13 @@ chip northbridge/dmp/vortex86ex			# North Bridge
 	device domain 0 on
 		device pci 0.0 on end		# Host Bridge
 		chip southbridge/dmp/vortex86ex	# South Bridge
-		device pci 7.0 on end		# ISA Bridge
-		device pci 8.0 on end		# Ethernet
-		device pci a.0 on end		# USB 1.1
-		device pci a.1 on end		# USB 2.0
-		device pci b.0 on end		# USB 1.1
-		device pci b.1 on end		# USB 2.0
-		device pci c.0 on end		# IDE
+			device pci 7.0 on end		# ISA Bridge
+			device pci 8.0 on end		# Ethernet
+			device pci a.0 on end		# USB 1.1
+			device pci a.1 on end		# USB 2.0
+			device pci b.0 on end		# USB 1.1
+			device pci b.1 on end		# USB 2.0
+			device pci c.0 on end		# IDE
 		end
 	end # pci domain 0
 	chip cpu/dmp/vortex86ex end	# CPU

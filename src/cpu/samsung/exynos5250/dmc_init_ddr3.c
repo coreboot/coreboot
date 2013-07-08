@@ -139,9 +139,9 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 	writel(mem->concontrol | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT),
 		&dmc->concontrol);
 
-	/* Memory Channel Inteleaving Size */
+	/* Memory Channel Interleaving Size */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
-	       "Memory Channel Inteleaving Size\n");
+	       "Memory Channel Interleaving Size\n");
 	writel(mem->iv_size, &dmc->ivcontrol);
 
 	/* Set DMC MEMCONTROL register */
@@ -161,7 +161,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 
 	/* Power Down mode Configuration */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
-	       "Power Down mode Configuraation\n");
+	       "Power Down mode Configuration\n");
 	writel(mem->dpwrdn_cyc << PWRDNCONFIG_DPWRDN_CYC_SHIFT |
 		mem->dsref_cyc << PWRDNCONFIG_DSREF_CYC_SHIFT,
 		&dmc->pwrdnconfig);

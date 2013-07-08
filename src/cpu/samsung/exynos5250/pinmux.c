@@ -94,7 +94,7 @@ void exynos_pinmux_sdmmc2(void)
 void exynos_pinmux_sdmmc3(void)
 {
 	/*
-	 * TODO: Need to add defintions for GPC4 before
+	 * TODO: Need to add definitions for GPC4 before
 	 * enabling this.
 	 */
 	printk(BIOS_DEBUG, "SDMMC3 not supported yet");

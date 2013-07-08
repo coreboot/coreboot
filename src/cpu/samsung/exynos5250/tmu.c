@@ -69,8 +69,8 @@ struct tmu_info exynos5250_tmu_info = {
 
 /*
  * After reading temperature code from register, compensating
- * its value and calculating celsius temperatue,
- * get current temperatue.
+ * its value and calculating celsius temperature,
+ * get current temperature.
  *
  * @return	current temperature of the chip as sensed by TMU
  */

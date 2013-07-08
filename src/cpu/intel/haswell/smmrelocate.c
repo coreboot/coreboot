@@ -348,7 +348,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 	memset(ied_base + (1 << 20), 0, (32 << 10));
 
 	/* According to the BWG MP init section 2MiB of memory at IEDBASE +
-	 * 2MiB should be zeroed as well. However, I suspect what is inteneded
+	 * 2MiB should be zeroed as well. However, I suspect what is intended
 	 * is to clear the memory covered by EMRR. TODO(adurbin): figure out if 	 * this is really required. */
 	//memset(ied_base + (2 << 20), 0, (2 << 20));
 }

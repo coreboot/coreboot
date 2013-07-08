@@ -147,7 +147,7 @@ static void am335x_uart_init_dev(void)
 
 /*
  * Read a single byte from the serial port. Returns 1 on success, 0
- * otherwise. When the function is succesfull, the character read is
+ * otherwise. When the function is successful, the character read is
  * written into its argument c.
  */
 static unsigned char am335x_uart_rx_byte(void)

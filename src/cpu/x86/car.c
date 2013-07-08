@@ -33,7 +33,7 @@ extern char _car_data_end[];
 
 /*
  * The car_migrated global variable determines if the cache-as-ram space has
- * been migrated to real RAM. It does this by asumming the following things:
+ * been migrated to real RAM. It does this by assuming the following things:
  *   1. cache-as-ram space is zero'd out once it is set up.
  *   2. Either the cache-as-ram space is memory-backed after getting torn down
  *      or the space returns 0xff's for each byte read.

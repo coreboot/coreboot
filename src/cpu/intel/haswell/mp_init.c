@@ -78,7 +78,7 @@ static device_t cpu_devs[CONFIG_MAX_CPUS];
 static atomic_t num_aps;
 /* Number of APs that have relocated their SMM handler. */
 static atomic_t num_aps_relocated_smm;
-/* Barrier to stop APs from performing SMM relcoation. */
+/* Barrier to stop APs from performing SMM relocation. */
 static int smm_relocation_barrier_begin __attribute__ ((aligned (64)));
 /* Determine if hyperthreading is disabled. */
 int ht_disabled;
@@ -145,7 +145,7 @@ void release_aps_for_smm_relocation(int do_parallel)
 
 /* The mtrr code sets up ROM caching on the BSP, but not the others. However,
  * the boot loader payload disables this. In order for Linux not to complain
- * ensure the caching is disabled for tha APs before going to sleep. */
+ * ensure the caching is disabled for the APs before going to sleep. */
 static void cleanup_rom_caching(void)
 {
 	x86_mtrr_disable_rom_caching();
@@ -178,7 +178,7 @@ static void asmlinkage ap_init(unsigned int cpu, void *microcode_ptr)
 
 	ap_initiate_smm_relocation();
 
-	/* Indicate that SMM relocation has occured on this thread. */
+	/* Indicate that SMM relocation has occurred on this thread. */
 	atomic_inc(&num_aps_relocated_smm);
 
 	/* After SMM relocation a 2nd microcode load is required. */
@@ -401,7 +401,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, int *total_hw_threads)
 		/* Allocate the new cpu device structure */
 		new = alloc_find_dev(cpu_bus, &cpu_path);
 		if (new == NULL) {
-			printk(BIOS_CRIT, "Could not allocte cpu device\n");
+			printk(BIOS_CRIT, "Could not allocate cpu device\n");
 			max_cpus--;
 		}
 		cpu_devs[i] = new;

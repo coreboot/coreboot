@@ -95,10 +95,10 @@ u32 get_apicid_base(u32 ioapic_num)
 	nb_cfg_54 = read_nb_cfg_54();
 
 
-	//contruct apicid_base
+	//Construct apicid_base
 
 	if((!disable_siblings) && (siblings>0) ) {
-		/* for 8 way dual core, we will used up apicid 16:16, actualy
+		/* for 8 way dual core, we will used up apicid 16:16, actually
 		   16 is not allowed by current kernel and the kernel will try
 		   to get one that is small than 16 to make io apic work. I don't
 		   know when the kernel can support 256 apic id.

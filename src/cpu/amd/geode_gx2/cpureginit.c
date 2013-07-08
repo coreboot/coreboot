@@ -15,7 +15,7 @@ void cpuRegInit (void)
 		/* Set up GLCP to grab BTM data. */
 		msrnum = GLCP_DBGOUT;		/* GLCP_DBGOUT MSR */
 		msr.hi =  0x0;
-		msr.lo =  0x08;			/* reset value (SCOPE_SEL = 0) causes FIFO toshift out, */
+		msr.lo =  0x08;			/* reset value (SCOPE_SEL = 0) causes FIFO to shift out, */
 		wrmsr(msrnum, msr);		/* exchange it to anything else to prevent this */
 
 		/* Turn off debug clock */
@@ -119,7 +119,7 @@ void cpuRegInit (void)
 		wrmsr(msrnum, msr);
 	}
 
-/* FPU impercise exceptions bit */
+/* FPU imprecise exceptions bit */
 	{
 		msrnum = CPU_FPU_MSR_MODE;
 		msr = rdmsr(msrnum);

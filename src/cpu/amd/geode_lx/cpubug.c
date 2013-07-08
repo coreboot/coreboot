@@ -67,7 +67,7 @@ static void pcideadlock(void)
 /***/
 /**	PBZ 3659:*/
 /**	 The MC reordered transactions incorrectly and breaks coherency.*/
-/**	 Disable reording and take a potential performance hit.*/
+/**	 Disable reordering and take a potential performance hit.*/
 /**	 This is safe to do here and not in MC init since there is nothing*/
 /**	 to maintain coherency with and the cache is not enabled yet.*/
 /***/

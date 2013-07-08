@@ -509,7 +509,7 @@ static void model_fxx_init(device_t dev)
 
 	id = get_node_core_id(read_nb_cfg_54());	// pre e0 nb_cfg_54 can not be set
 
-	/* Is this a bad location?  In particular can another node prefecth
+	/* Is this a bad location?  In particular can another node prefetch
 	 * data from this node before we have initialized it?
 	 */
 	if (id.coreid == 0)

@@ -266,6 +266,9 @@ void dcache_clean_by_mva(unsigned long addr, unsigned long len);
 /* dcache clean and invalidate by modified virtual address to PoC */
 void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
 
+/* dcache invalidate by modified virtual address to PoC */
+void dcache_invalidate_by_mva(unsigned long addr, unsigned long len);
+
 /* dcache invalidate all (on current level given by CCSELR) */
 void dcache_invalidate_all(void);
 

@@ -178,3 +178,8 @@ u8 drm_dp_get_adjust_request_pre_emphasis(u8 link_status[DP_LINK_STATUS_SIZE],
 					  int lane);
 
 
+void intel_dp_wait_reg(unsigned long addr,
+		       unsigned long val);
+
+void intel_dp_wait_panel_power_control(unsigned long val);
+

@@ -105,3 +105,55 @@ void intel_prepare_ddi_buffers(int port, int use_fdi_mode)
 	}
 }
 
+static void intel_wait_ddi_buf_idle(int port)
+{
+	uint32_t reg = DDI_BUF_CTL(port);
+	int i;
+
+	for (i = 0; i < 8; i++) {
+		udelay(1);
+		if (io_i915_read32(reg) & DDI_BUF_IS_IDLE){
+			printk(BIOS_SPEW, "%s: buf is idle (success)\n", __func__);
+			return;
+		}
+	}
+	printk(BIOS_ERR, "Timeout waiting for DDI BUF %d idle bit\n", port);
+}
+
+
+void intel_ddi_prepare_link_retrain(struct intel_dp *intel_dp, int port)
+{
+	int wait;
+	uint32_t val;
+
+	if (io_i915_read32(DP_TP_CTL(port)) & DP_TP_CTL_ENABLE) {
+		val = io_i915_read32(DDI_BUF_CTL(port));
+		if (val & DDI_BUF_CTL_ENABLE) {
+			val &= ~DDI_BUF_CTL_ENABLE;
+			io_i915_write32(DDI_BUF_CTL(port), val);
+			wait = 1;
+		}
+
+		val = io_i915_read32(DP_TP_CTL(port));
+		val &= ~(DP_TP_CTL_ENABLE | DP_TP_CTL_LINK_TRAIN_MASK);
+		val |= DP_TP_CTL_LINK_TRAIN_PAT1;
+		io_i915_write32(DP_TP_CTL(port), val);
+		//POSTING_READ(DP_TP_CTL(port));
+
+		if (wait)
+			intel_wait_ddi_buf_idle(port);
+	}
+
+	val = DP_TP_CTL_ENABLE | DP_TP_CTL_MODE_SST |
+	      DP_TP_CTL_LINK_TRAIN_PAT1 | DP_TP_CTL_SCRAMBLE_DISABLE;
+	if (intel_dp->link_configuration[1] & DP_LANE_COUNT_ENHANCED_FRAME_EN)
+		val |= DP_TP_CTL_ENHANCED_FRAME_ENABLE;
+	io_i915_write32(DP_TP_CTL(port), val);
+	//POSTING_READ(DP_TP_CTL(port));
+
+	intel_dp->DP |= DDI_BUF_CTL_ENABLE;
+	io_i915_write32(DDI_BUF_CTL(port), intel_dp->DP);
+	//POSTING_READ(DDI_BUF_CTL(port));
+
+	udelay(600);
+}

@@ -621,6 +621,26 @@ static void ironlake_wait_panel_power_cycle(struct intel_dp *intel_dp)
 	ironlake_wait_panel_status(intel_dp, IDLE_CYCLE_MASK, IDLE_CYCLE_VALUE);
 }
 
+void intel_dp_wait_reg(unsigned long addr,
+		       unsigned long val)
+{
+	unsigned long newval;
+	int tries = 0;
+
+	while ((newval = io_i915_read32(addr)) != val) {
+		udelay(1);
+		if (tries++ > 1000) {
+			printk(BIOS_ERR, "%s: Waiting on %08lx to be %08lx, got %08lx\n",
+			       __func__, addr, val, newval);
+			break;
+		}
+	}
+}
+
+void intel_dp_wait_panel_power_control(unsigned long val)
+{
+	intel_dp_wait_reg(PCH_PP_CONTROL, val);
+}
 
 /* Read the current pp_control value, unlocking the register if it
  * is locked

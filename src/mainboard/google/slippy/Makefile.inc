@@ -21,6 +21,7 @@ ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += gma.c i915io.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 

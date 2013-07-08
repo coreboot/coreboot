@@ -271,7 +271,6 @@ int main(int argc, char *argv[]) {
 	int ret = 1;
 	const struct sysdef *s;
 	const struct targetdef *t;
-	const struct cpuid_t *id = cpuid();
 	uint8_t tn, listmsrs = 0, listknown = 0, input = 0;
 	uint32_t addr = 0;
 	const char *streamfn = NULL, *difffn = NULL;
@@ -333,6 +332,9 @@ int main(int argc, char *argv[]) {
 		default:
 			break;
 		}
+
+	/** cpuid is called after reading argv so that verbose is set */
+	const struct cpuid_t *id = cpuid();
 
 	printf_quiet("msrtool %s\n", VERSION);
 

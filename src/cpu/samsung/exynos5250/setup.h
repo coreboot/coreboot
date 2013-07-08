@@ -624,8 +624,8 @@ struct exynos5_phy_control;
  */
 #define DECPROTXSET		0xFF
 
-#define LPDDR3PHY_CTRL_PHY_RESET	(1 << 0)
-#define LPDDR3PHY_CTRL_PHY_RESET_OFF	(0 << 0)
+#define LPDDR3PHY_CTRL_PHY_RESET_DISABLE	(1 << 0)
+#define LPDDR3PHY_CTRL_PHY_RESET_ENABLE		(0 << 0	)
 
 #define PHY_CON0_RESET_VAL	0x17020a40
 #define P0_CMD_EN		(1 << 14)

@@ -31,7 +31,7 @@
 #define MCT_HZ 24000000
 
 /*
- * Set mshci controller instances clock drivder
+ * Set mshci controller instances clock divider
  *
  * @param enum periph_id instance of the mshci controller
  *
@@ -482,7 +482,7 @@ struct exynos5_mct_regs {
 };
 
 #define EXYNOS5_EPLLCON0_LOCKED_SHIFT	29  /* EPLL Locked bit position*/
-#define EPLL_SRC_CLOCK			24000000  /*24 MHz Cristal Input */
+#define EPLL_SRC_CLOCK			24000000  /*24 MHz Crystal Input */
 #define TIMEOUT_EPLL_LOCK		1000
 
 #define AUDIO_0_RATIO_MASK		0x0f

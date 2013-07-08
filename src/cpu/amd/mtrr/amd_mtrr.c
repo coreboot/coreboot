@@ -128,10 +128,10 @@ void amd_setup_mtrrs(void)
 	}
 
 	/* Now that I have mapped what is memory and what is not
-	 * Setup the mtrrs so we can cache the memory.
+	 * Set up the mtrrs so we can cache the memory.
 	 */
 
-	// Rev. F K8 supports has SYSCFG_MSR_TOM2WB and dont need
+	// Rev. F K8 supports has SYSCFG_MSR_TOM2WB and doesn't need
 	// variable MTRR to span memory above 4GB
 	// Lower revisions K8 need variable MTRR over 4GB
 	x86_setup_var_mtrrs(address_bits, has_tom2wb ? 0 : 1);

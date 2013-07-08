@@ -47,7 +47,7 @@ static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
 	unsigned int *rxp = (unsigned int *)(dinp + (i * (32 * 1024)));
 	unsigned int out_bytes, in_bytes;
 
-	// TODO In currrent implementation, every read/write must be aligned to
+	// TODO In current implementation, every read/write must be aligned to
 	// 4 bytes, otherwise you may get timeout or other unexpected results.
 	assert(todo % 4 == 0);
 
@@ -95,7 +95,7 @@ int exynos_spi_open(struct exynos_spi *regs)
 		     SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD);
 	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L); /* CPOL: active high */
 
-	/* clear rx and tx channel if set priveously */
+	/* clear rx and tx channel if set previously */
 	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
 
 	setbits_le32(&regs->swap_cfg,

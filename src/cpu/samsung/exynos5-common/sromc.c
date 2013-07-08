@@ -29,7 +29,7 @@
  * s5p_config_sromc() - select the proper SROMC Bank and configure the
  * band width control and bank control registers
  * srom_bank	- SROM
- * srom_bw_conf  - SMC Band witdh reg configuration value
+ * srom_bw_conf  - SMC Bandwidth reg configuration value
  * srom_bc_conf  - SMC Bank Control reg configuration value
  */
 void s5p_config_sromc(u32 srom_bank, u32 srom_bw_conf, u32 srom_bc_conf)

@@ -34,7 +34,7 @@
  */
 
 /* This code is ported from coreboot v1.
- * The L2 cache initalization sequence here only apply to SECC/SECC2 P6 family
+ * The L2 cache initialization sequence here only apply to SECC/SECC2 P6 family
  * CPUs with Klamath (63x), Deschutes (65x) and Katmai (67x) cores.
  * It is not required for Coppermine (68x) and Tualatin (6bx) cores.
  * It is currently not known if Celerons with Mendocino (66x) core require the
@@ -295,7 +295,7 @@ int write_l2(u32 address, u32 data)
 		// data1   = ffffffff
 		// data2   = 000000dc
 		// address = 00aaaaaa
-		// Final address signalled:
+		// Final address signaled:
 		// 000fffff fff000c0 000dcaaa aaa00000
 		data1 = data & 0xff;
 		data1 = data1 << 21;
@@ -343,7 +343,7 @@ int test_l2_address_alias(u32 address1, u32 address2,
 
 /* Calculates the L2 cache size.
  *
- * Reference: Intel(R) 64 and IA-32 Architectures Software Developer’s Manual
+ * Reference: Intel(R) 64 and IA-32 Architectures Software Developerï¿½s Manual
  *            Volume 3B: System Programming Guide, Part 2, Intel pub. 253669, pg. B-172.
  *
  */

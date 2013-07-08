@@ -424,7 +424,7 @@ static void start_node(u8 node)
 /**
  * static void setup_remote_node(u32 node)
  *
- * Copy the BSP Adress Map to each AP.
+ * Copy the BSP Address Map to each AP.
  */
 static void setup_remote_node(u8 node)
 {

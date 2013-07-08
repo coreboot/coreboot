@@ -82,7 +82,7 @@ void s5p_dp_reset(struct s5p_dp_device *dp)
 	/* Set interrupt pin assertion polarity as high */
 	writel(INT_POL0 | INT_POL1, &base->int_ctl);
 
-	/* Clear pending regisers */
+	/* Clear pending registers */
 	writel(0xff, &base->common_int_sta_1);
 	writel(0x4f, &base->common_int_sta_2);
 	writel(0xe0, &base->common_int_sta_3);
@@ -147,7 +147,7 @@ void s5p_dp_init_aux(struct s5p_dp_device *dp)
 	u32 reg;
 	struct exynos5_dp *base = dp->base;
 
-	/* Clear inerrupts related to AUX channel */
+	/* Clear interrupts related to AUX channel */
 	reg = RPLY_RECEIV | AUX_ERR;
 	writel(reg, &base->dp_int_sta);
 

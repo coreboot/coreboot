@@ -664,7 +664,7 @@ struct exynos5_phy_control;
 #define MEM_TERM_EN	(1 << 31)	/* Termination enable for memory */
 #define PHY_TERM_EN	(1 << 30)	/* Termination enable for PHY */
 #define DMC_CTRL_SHGATE	(1 << 29)	/* Duration of DQS gating signal */
-#define FP_RSYNC	(1 << 3)	/* Force DLL resyncronization */
+#define FP_RSYNC	(1 << 3)	/* Force DLL resynchronization */
 
 /* Driver strength for CK, CKE, CS & CA */
 #define IMP_OUTPUT_DRV_40_OHM	0x5
@@ -679,7 +679,7 @@ struct exynos5_phy_control;
 
 struct mem_timings;
 
-/* Errors that we can encourter in low-level setup */
+/* Errors that we can encounter in low-level setup */
 enum {
 	SETUP_ERR_OK,
 	SETUP_ERR_RDLV_COMPLETE_TIMEOUT = -1,

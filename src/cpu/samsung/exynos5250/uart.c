@@ -62,7 +62,7 @@ static inline struct s5p_uart *s5p_get_base_uart(int dev_index)
  * The coefficient, used to calculate the baudrate on S5P UARTs is
  * calculated as
  * C = UBRDIV * 16 + number_of_set_bits_in_UDIVSLOT
- * however, section 31.6.11 of the datasheet doesn't recomment using 1 for 1,
+ * however, section 31.6.11 of the datasheet doesn't recommend using 1 for 1,
  * 3 for 2, ... (2^n - 1) for n, instead, they suggest using these constants:
  */
 static const int udivslot[] = {
@@ -158,7 +158,7 @@ static int exynos5_uart_err_check(int op)
 
 /*
  * Read a single byte from the serial port. Returns 1 on success, 0
- * otherwise. When the function is succesfull, the character read is
+ * otherwise. When the function is successful, the character read is
  * written into its argument c.
  */
 static unsigned char exynos5_uart_rx_byte(void)

@@ -40,7 +40,7 @@
 #include "chip.h"
 
 /*
- * List of suported C-states in this processor
+ * List of supported C-states in this processor
  *
  * Latencies are typical worst-case package exit time in uS
  * taken from the SandyBridge BIOS specification.
@@ -325,7 +325,7 @@ static void configure_thermal_target(void)
 		return;
 	conf = lapic->chip_info;
 
-	/* Set TCC activaiton offset if supported */
+	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
 	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
 		msr = rdmsr(MSR_TEMPERATURE_TARGET);
@@ -509,8 +509,8 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 	int num_aps;
 	const void *microcode_patch;
 
-	/* Perform any necesarry BSP initialization before APs are brought up.
-	 * This call alos allows the BSP to prepare for any secondary effects
+	/* Perform any necessary BSP initialization before APs are brought up.
+	 * This call also allows the BSP to prepare for any secondary effects
 	 * from calling cpu_initialize() such as smm_init(). */
 	bsp_init_before_ap_bringup(cpu_bus);
 
@@ -530,7 +530,7 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 	}
 
 	if (smm_initialize()) {
-		printk(BIOS_CRIT, "SMM Initialiazation failed...\n");
+		printk(BIOS_CRIT, "SMM Initialization failed...\n");
 		return;
 	}
 

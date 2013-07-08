@@ -20,7 +20,7 @@
 #define MAX_CR_LOOP 5
 #define MAX_EQ_LOOP 4
 
-/* Link tare type */
+/* Link rate type */
 enum link_rate {
 	LINK_RATE_1_62GBPS = 0x06,
 	LINK_RATE_2_70GBPS = 0x0a
@@ -125,7 +125,7 @@ typedef struct vidinfo {
  */
 void s5p_dp_reset(struct s5p_dp_device *dp);
 /*
- * Initialize DP to recieve video stream
+ * Initialize DP to receive video stream
  *
  * param dp	pointer to main s5p-dp structure
  */
@@ -213,8 +213,8 @@ int s5p_dp_is_slave_video_stream_clock_on(struct s5p_dp_device *dp);
  *
  * param dp		pointer to main s5p-dp structure
  * param type		clock_recovery_m_value_type
- * param m_value	to caluculate m_vid value
- * param n_value	to caluculate n_vid value
+ * param m_value	to calculate m_vid value
+ * param n_value	to calculate n_vid value
  */
 void s5p_dp_set_video_cr_mn(struct s5p_dp_device *dp,
 			enum clock_recovery_m_value_type type,

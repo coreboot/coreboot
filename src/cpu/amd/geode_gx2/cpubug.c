@@ -163,7 +163,7 @@ static void eng2900(void)
 		 * clocks when CPU is snooped.  Because setting XSTATE to 0
 		 * overrides any other XSTATE action, the code will always
 		 * stall for 4 GeodeLink clocks after a snoop request goes
-		 * away even if it occured a clock or two later than a
+		 * away even if it occurred a clock or two later than a
 		 * different snoop; the stall signal will never 'glitch high'
 		 * for only one or two CPU clocks with this code.
 		 */
@@ -201,7 +201,7 @@ static void eng2900(void)
 		msr.lo = 0x30000;
 		wrmsr(MSR_GLCP + 0x0073, msr);
 
-		/* Writing action number 5: STALL_CPU_PIPE when exitting idle
+		/* Writing action number 5: STALL_CPU_PIPE when exiting idle
 		   state or not in idle state */
 		msr.hi = 0;
 		msr.lo = 0x00430000;
@@ -293,7 +293,7 @@ static void bug118339(void)
  *
  * PBZ 3659:
  * The MC reordered transactions incorrectly and breaks coherency.
- * Disable reording and take a potential performance hit.
+ * Disable reordering and take a potential performance hit.
  * This is safe to do here and not in MC init since there is nothing
  * to maintain coherency with and the cache is not enabled yet.
  */

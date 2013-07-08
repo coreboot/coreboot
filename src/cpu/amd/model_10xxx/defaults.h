@@ -54,7 +54,7 @@ static const struct {
 
 	{ DC_CFG, AMD_DR_Bx, AMD_PTYPE_SVR,
 	  0x00000000, 0x00000000,
-	  0x00000000, 0x00000C00 },	/* Errata 326 */
+	  0x00000000, 0x00000C00 },	/* Erratum 326 */
 
 	{ NB_CFG, AMD_FAM10_ALL, AMD_PTYPE_DC | AMD_PTYPE_MC,
 	  0x00000000, 1 << 22,

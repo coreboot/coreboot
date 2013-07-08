@@ -37,7 +37,7 @@ static ucode_update_status nano_apply_ucode(const nano_ucode_header *ucode)
 	msr.hi = 0;
 	wrmsr(MSR_IA32_BIOS_UPDT_TRIG, msr);
 
-	/* Let's see if we updated succesfully */
+	/* Let's see if we updated successfully */
 	msr = rdmsr(MSR_UCODE_UPDATE_STATUS);
 
 	return msr.lo & 0x07;
@@ -80,7 +80,7 @@ static void nano_print_ucode_status(ucode_update_status stat)
 	switch(stat)
 	{
 	case UCODE_UPDATE_SUCCESS:
-		printk(BIOS_INFO, "Microcode update succesful.\n");
+		printk(BIOS_INFO, "Microcode update successful.\n");
 		break;
 	case UCODE_UPDATE_FAIL:
 		printk(BIOS_ALERT, "Microcode update failed, bad environment."

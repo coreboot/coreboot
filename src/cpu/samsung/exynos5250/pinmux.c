@@ -85,7 +85,7 @@ int exynos_pinmux_config(enum periph_id peripheral, int flags)
 			break;
 		case PERIPH_ID_SDMMC3:
 			/*
-			 * TODO: Need to add defintions for GPC4 before
+			 * TODO: Need to add definitions for GPC4 before
 			 * enabling this.
 			 */
 			debug("SDMMC3 not supported yet");
@@ -141,7 +141,7 @@ int exynos_pinmux_config(enum periph_id peripheral, int flags)
 			gpio_cfg_pin(GPIO_Y10 + i, EXYNOS_GPIO_FUNC(2));
 
 		/*
-		 * EBI: 8 Addrss Lines
+		 * EBI: 8 Address Lines
 		 *
 		 * GPY3[0]	EBI_ADDR[0](2)
 		 * GPY3[1]	EBI_ADDR[1](2)

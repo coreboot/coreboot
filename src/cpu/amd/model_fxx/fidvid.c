@@ -496,7 +496,7 @@ static void init_fidvid_bsp_stage2(unsigned ap_apicid, void *gp)
 			continue;
 		if ((readback & 0xff) == 2) {
 			timeout = 0;
-			break;	/* target ap is stage 2, it's FID has beed set */
+			break;	/* target ap is stage 2, its FID has been set */
 		}
 	}
 
@@ -603,7 +603,7 @@ static void init_fidvid_bsp(unsigned bsp_apicid)
 
 	/* For all APs ( We know the APIC ID of all AP even the APIC ID is lifted)
 	 *  send signal to the AP it could change it's fid/vid */
-	/* remote read singnal from AP that AP is done */
+	/* remote read signal from AP that AP is done */
 
 	fv.common_fidvid &= 0xffff00;
 

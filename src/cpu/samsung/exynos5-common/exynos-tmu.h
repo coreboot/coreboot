@@ -63,7 +63,7 @@ enum tmu_status_t {
 	TMU_STATUS_TRIPPED,
 };
 
-/* Tmeperature threshold values for various thermal events */
+/* Temperature threshold values for various thermal events */
 struct temperature_params {
 	/* minimum value in temperature code range */
 	unsigned int min_val;

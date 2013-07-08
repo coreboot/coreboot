@@ -59,11 +59,11 @@ unsigned long get_uart_clk(int dev_index);
 void set_mmc_clk(int dev_index, unsigned int div);
 
 /**
- * get the clk frequency of the required peripherial
+ * get the clk frequency of the required peripheral
  *
- * @param peripherial	Peripherial id
+ * @param peripheral	Peripheral id
  *
- * @return frequency of the peripherial clk
+ * @return frequency of the peripheral clk
  */
 unsigned long clock_get_periph_rate(enum periph_id peripheral);
 

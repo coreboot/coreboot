@@ -132,6 +132,23 @@ void google_chromeec_early_init(void)
 		hlt();
 	}
 }
+
+u16 google_chromeec_get_board_version(void)
+{
+	struct chromeec_command cmd;
+	struct ec_response_board_version board_v;
+
+	cmd.cmd_code = EC_CMD_GET_BOARD_VERSION;
+	cmd.cmd_version = 0;
+	cmd.cmd_size_in = 0;
+	cmd.cmd_size_out = sizeof(board_v);
+	cmd.cmd_data_out = &board_v;
+
+	if (google_chromeec_command(&cmd) != 0)
+		return 0;
+
+	return board_v.board_version;
+}
 #endif /* ! __SMM__ */
 
 #ifndef __PRE_RAM__
@@ -306,23 +323,6 @@ void google_chromeec_log_events(u32 mask)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT, event);
 	}
 #endif
-}
-
-u16 google_chromeec_get_board_version(void)
-{
-	struct chromeec_command cmd;
-	struct ec_response_board_version board_v;
-
-	cmd.cmd_code = EC_CMD_GET_BOARD_VERSION;
-	cmd.cmd_version = 0;
-	cmd.cmd_size_in = 0;
-	cmd.cmd_size_out = sizeof(board_v);
-	cmd.cmd_data_out = &board_v;
-
-	if (google_chromeec_command(&cmd) != 0)
-		return 0;
-
-	return board_v.board_version;
 }
 
 int google_chromeec_set_usb_charge_mode(u8 port_id, enum usb_charge_mode mode)

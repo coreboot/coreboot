@@ -40,31 +40,18 @@ void pci_ehci_read_resources(struct device *dev);
 #endif
 #endif
 
-struct ehci_debug_info {
-        void *ehci_caps;
-        void *ehci_regs;
-        void *ehci_debug;
-        u32 devnum;
-        u32 endpoint_out;
-        u32 endpoint_in;
-        char buf[8];
-        u8 bufidx;
-        u8 status;
-};
-
-#define DBGP_EP_VALID		(1<<0)
-#define DBGP_EP_ENABLED		(1<<1)
-#define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
+struct dbgp_pipe;
 
 void enable_usbdebug(unsigned int port);
-int dbgp_bulk_write_x(struct ehci_debug_info *dbg_info, const char *bytes, int size);
-int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size);
 void set_debug_port(unsigned port);
 
 int usbdebug_init(void);
-struct ehci_debug_info *dbgp_console_output(void);
-struct ehci_debug_info *dbgp_console_input(void);
-int dbgp_ep_is_active(struct ehci_debug_info *dbg_info);
-void usbdebug_tx_byte(struct ehci_debug_info *info, unsigned char data);
-void usbdebug_tx_flush(struct ehci_debug_info *info);
+
+struct dbgp_pipe *dbgp_console_output(void);
+struct dbgp_pipe *dbgp_console_input(void);
+int dbgp_ep_is_active(struct dbgp_pipe *pipe);
+int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size);
+int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size);
+void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data);
+void usbdebug_tx_flush(struct dbgp_pipe *pipe);
 #endif

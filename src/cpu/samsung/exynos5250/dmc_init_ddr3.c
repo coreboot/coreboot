@@ -33,8 +33,8 @@ static void reset_phy_ctrl(void)
 {
 	struct exynos5_clock *clk = (struct exynos5_clock *)EXYNOS5_CLOCK_BASE;
 
-	writel(LPDDR3PHY_CTRL_PHY_RESET_OFF, &clk->lpddr3phy_ctrl);
-	writel(LPDDR3PHY_CTRL_PHY_RESET, &clk->lpddr3phy_ctrl);
+	writel(LPDDR3PHY_CTRL_PHY_RESET_ENABLE, &clk->lpddr3phy_ctrl);
+	writel(LPDDR3PHY_CTRL_PHY_RESET_DISABLE, &clk->lpddr3phy_ctrl);
 
 #if 0
 	/*

@@ -1,0 +1,74 @@
+pci_device.c:	res->limit = 0xffffUL;
+pci_device.c:	res->flags = IORESOURCE_IO | IORESOURCE_SUBTRACTIVE |
+pci_device.c:	res->limit = 0xffffffffULL;
+pci_device.c:	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
+pci_device.c:	for (res = dev->resource_list; res; res = res->next)
+device_util.c:		prev->next = res->next;
+device_util.c:		dev->resource_list = res->next;
+device_util.c:	res->next = free_resources;
+device_util.c:		next = res->next;
+device_util.c:		if (!res->flags)
+device_util.c:	for (res = dev->resource_list; res; res = res->next) {
+device_util.c:		if (res->index == index)
+device_util.c:		for (res = curdev->resource_list; res; res = res->next) {
+device_util.c:			if ((res->flags & type_mask) != type)
+device_util.c:			if (res->flags & IORESOURCE_SUBTRACTIVE) {
+device_util.c:					== IOINDEX_SUBTRACTIVE_LINK(res->index))
+device_util.c:		for (res = curdev->resource_list; res; res = res->next) {
+device_util.c:			if ((res->flags & type_mask) != type)
+device_util.c:			if (res->flags & IORESOURCE_SUBTRACTIVE)
+device_util.c:	for (res = root->resource_list; res; res = res->next) {
+device_util.c:			  indent, dev_path(root), res->base, res->size,
+device_util.c:			  res->align, res->gran, res->limit, res->flags,
+device_util.c:			  res->index);
+device_util.c:		for (res = dev->resource_list; res; res = res->next)
+pnp_device.c:	for (res = dev->resource_list; res; res = res->next)
+device.c:	for (res = dev->resource_list; res; res = res->next) {
+device.c:		if (!(res->flags & IORESOURCE_FIXED))
+device.c:		if (!res->size) {
+device.c:			       "size=0!\n", dev_path(dev), res->index);
+device.c:		if ((res->flags & MEM_MASK) == PREF_TYPE)
+device.c:		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+device.c:		else if ((res->flags & IO_MASK) == IO_TYPE)
+device.c:		if (((res->base + res->size -1) < lim->base)
+device.c:		    || (res->base > lim->limit))
+device.c:		if ((signed long long)(lim->limit - (res->base + res->size -1))
+device.c:		    > (signed long long)(res->base - lim->base))
+device.c:			lim->base = res->base + res->size;
+device.c:			lim->limit = res->base -1;
+device.c:	for (res = dev->resource_list; res; res = res->next) {
+device.c:		if ((res->flags & IORESOURCE_FIXED))
+device.c:		       dev_path(dev), res->index, res->limit);
+device.c:		if ((res->flags & MEM_MASK) == PREF_TYPE &&
+device.c:		    (res->limit < limits.pref.limit))
+device.c:			limits.pref.limit = res->limit;
+device.c:		if ((res->flags & MEM_MASK) == MEM_TYPE &&
+device.c:		    (res->limit < limits.mem.limit))
+device.c:			limits.mem.limit = res->limit;
+device.c:		if ((res->flags & IO_MASK) == IO_TYPE &&
+device.c:		    (res->limit < limits.io.limit))
+device.c:			limits.io.limit = res->limit;
+device.c:	for (res = dev->resource_list; res; res = res->next) {
+device.c:		if ((res->flags & IORESOURCE_FIXED))
+device.c:		if ((res->flags & MEM_MASK) == PREF_TYPE)
+device.c:		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+device.c:		else if ((res->flags & IO_MASK) == IO_TYPE)
+device.c:			     dev_path(dev), res->index, res->limit);
+device.c:		if (lim->base > res->base)
+device.c:			res->base = lim->base;
+device.c:		if (res->limit > lim->limit)
+device.c:			res->limit = lim->limit;
+device.c:		for (res = child->resource_list; res; res = res->next) {
+device.c:			if (res->flags & IORESOURCE_FIXED)
+device.c:			if (res->flags & IORESOURCE_PREFETCH) {
+device.c:			if (res->flags & IORESOURCE_MEM) {
+device.c:			if (res->flags & IORESOURCE_IO) {
+device.c:		for (res = child->resource_list; res; res = res->next) {
+device.c:			if (!(res->flags & IORESOURCE_MEM) ||
+device.c:			    res->flags & IORESOURCE_FIXED)
+device.c:			res->base = resource_max(res);
+device.c:		for (res = child->resource_list; res; res = res->next) {
+device.c:			if (res->flags & IORESOURCE_FIXED)
+device.c:			if (res->flags & IORESOURCE_PREFETCH) {
+device.c:			if (res->flags & IORESOURCE_MEM) {
+device.c:			if (res->flags & IORESOURCE_IO) {

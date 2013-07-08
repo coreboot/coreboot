@@ -55,7 +55,7 @@ int dimm_is_registered(enum spd_dimm_type type)
  * @ref dimm_attr structure. The SPD data must first be read in a contiguous
  * array, and passed to this function.
  *
- * @param dimm pointer to @ref dimm_attr stucture where the decoded data is to
+ * @param dimm pointer to @ref dimm_attr structure where the decoded data is to
  * 	       be stored
  * @param spd array of raw data previously read from the SPD.
  *
@@ -309,7 +309,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 
 	if (spd[63] & 0x01) {
 		dimm->flags.pins_mirrored = 1;
-		printram("  DIMM Rank1 Address bits mirrorred!!!\n");
+		printram("  DIMM Rank1 Address bits mirrored!!!\n");
 	}
 
 	return ret;
@@ -336,7 +336,7 @@ static void print_ns(const char *msg, u32 val)
 * Print info about the DIMM. Useful to use when CONFIG_DEBUG_RAM_SETUP is
 * selected, or for a purely informative output.
 *
-* @param dimm pointer to already decoded @ref dimm_attr stucture
+* @param dimm pointer to already decoded @ref dimm_attr structure
 */
 void dram_print_spd_ddr3(const dimm_attr * dimm)
 {

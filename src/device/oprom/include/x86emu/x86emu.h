@@ -59,11 +59,11 @@
 
 /****************************************************************************
 REMARKS:
-Data structure containing ponters to programmed I/O functions used by the
+Data structure containing pointers to programmed I/O functions used by the
 emulator. This is used so that the user program can hook all programmed
 I/O for the emulator to handled as necessary by the user program. By
 default the emulator contains simple functions that do not do access the
-hardware in any way. To allow the emualtor access the hardware, you will
+hardware in any way. To allow the emulator access the hardware, you will
 need to override the programmed I/O functions using the X86EMU_setupPioFuncs
 function.
 
@@ -89,11 +89,11 @@ typedef struct {
 
 /****************************************************************************
 REMARKS:
-Data structure containing ponters to memory access functions used by the
+Data structure containing pointers to memory access functions used by the
 emulator. This is used so that the user program can hook all memory
 access functions as necessary for the emulator. By default the emulator
 contains simple functions that only access the internal memory of the
-emulator. If you need specialised functions to handle access to different
+emulator. If you need specialized functions to handle access to different
 types of memory (ie: hardware framebuffer accesses and BIOS memory access
 etc), you will need to override this using the X86EMU_setupMemFuncs
 function.

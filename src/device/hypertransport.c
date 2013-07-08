@@ -106,7 +106,7 @@ static unsigned ht_read_freq_cap(device_t dev, unsigned pos)
 #if CONFIG_K8_HT_FREQ_1G_SUPPORT
 
 #if !CONFIG_K8_REV_F_SUPPORT
-		/* Only e0 later suupport 1GHz HT. */
+		/* Only e0 later support 1GHz HT. */
 		if (is_cpu_pre_e0())
 			freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 #endif
@@ -176,7 +176,7 @@ static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 	upstream_width_cap =
 		pci_read_config8(prev->dev, prev->pos + prev->config_off);
 
-	/* Calculate the highest useable frequency. */
+	/* Calculate the highest usable frequency. */
 	freq = log2(present_freq_cap & upstream_freq_cap);
 
 	/* Calculate the highest width. */
@@ -436,7 +436,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 	device_t real_last_dev = NULL;
 #endif
 
-	/* Restore the hypertransport chain to it's unitialized state. */
+	/* Restore the hypertransport chain to it's uninitialized state. */
 	ht_collapse_early_enumeration(bus, offset_unitid);
 
 	/* See which static device nodes I have. */
@@ -571,7 +571,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 		if (next_unitid > max_unitid)
 			max_unitid = next_unitid;
 
-		/* Setup the hypetransport link. */
+		/* Setup the hypertransport link. */
 		bus->reset_needed |= ht_setup_link(&prev, dev, pos);
 
 		printk(BIOS_DEBUG, "%s [%04x/%04x] %s next_unitid: %04x\n",
@@ -658,7 +658,7 @@ end_of_chain:
  * @param bus TODO
  * @param min_devfn TODO
  * @param max_devfn TODO
- * @param max The highest bus number assgined up to now.
+ * @param max The highest bus number assigned up to now.
  * @return The maximum bus number found, after scanning all subordinate busses.
  */
 static unsigned int hypertransport_scan_chain_x(struct bus *bus,

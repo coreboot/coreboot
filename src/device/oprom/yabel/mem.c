@@ -177,7 +177,7 @@ static inline void DEBUG_CHECK_VMEM_WRITE(u32 _addr, u32 _val) {};
 static void
 update_time(u32 cur_val)
 {
-	//for convenience, we let the start of timebase be at midnight, we currently dont support
+	//for convenience, we let the start of timebase be at midnight, we currently don't support
 	//real daytime anyway...
 	u64 ticks_per_day = tb_freq * 60 * 24;
 	// at 18Hz a period is ~55ms, converted to ticks (tb_freq is ticks/second)
@@ -202,7 +202,7 @@ my_rdb(u32 addr)
 	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	u8 rval;
 	if (translated != 0) {
-		//translation successfull, access VGA Memory (BAR or Legacy...)
+		//translation successful, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%08x): access to VGA Memory\n",
 				 __func__, addr);
 		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
@@ -234,7 +234,7 @@ my_rdw(u32 addr)
 	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	u16 rval;
 	if (translated != 0) {
-		//translation successfull, access VGA Memory (BAR or Legacy...)
+		//translation successful, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%08x): access to VGA Memory\n",
 				 __func__, addr);
 		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);
@@ -285,7 +285,7 @@ my_rdl(u32 addr)
 	u8 translated = biosemu_dev_translate_address(IORESOURCE_MEM, &translated_addr);
 	u32 rval;
 	if (translated != 0) {
-		//translation successfull, access VGA Memory (BAR or Legacy...)
+		//translation successful, access VGA Memory (BAR or Legacy...)
 		DEBUG_PRINTF_MEM("%s(%x): access to VGA Memory\n",
 				 __func__, addr);
 		//DEBUG_PRINTF_MEM("%s(%08x): translated_addr: %llx\n", __func__, addr, translated_addr);

@@ -103,7 +103,7 @@ vbe_info(vbe_info_t * info)
 	// offset 4: 16bit le containing VbeVersion
 	info->version = in16le(vbe_info_buffer + 4);
 
-	// offset 6: 32bit le containg segment:offset of OEM String in virtual Mem.
+	// offset 6: 32bit le containing segment:offset of OEM String in virtual Mem.
 	info->oem_string_ptr =
 	    biosmem + ((in16le(vbe_info_buffer + 8) << 4) +
 		       in16le(vbe_info_buffer + 6));
@@ -457,7 +457,7 @@ vbe_get_info(void)
 	// as input, it must contain a screen_info_input_t with the following content:
 	// byte[0:3] = "DDC\0" (zero-terminated signature header)
 	// byte[4:5] = reserved space for the return struct... just in case we ever change
-	//             the struct and dont have reserved enough memory (and let's hope the struct
+	//             the struct and don't have reserved enough memory (and let's hope the struct
 	//             never gets larger than 64KB)
 	// byte[6] = monitor port number for DDC requests ("only" one byte... so lets hope we never have more than 255 monitors...
 	// byte[7:8] = max. screen width (OF may want to limit this)

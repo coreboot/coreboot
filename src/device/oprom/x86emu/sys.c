@@ -35,7 +35,7 @@
 * Description:  This file includes subroutines which are related to
 *				programmed I/O and memory access. Included in this module
 *				are default functions with limited usefulness. For real
-*				uses these functions will most likely be overriden by the
+*				uses these functions will most likely be overridden by the
 *				user library.
 *
 ****************************************************************************/
@@ -381,7 +381,7 @@ PARAMETERS:
 int	- New software interrupt to prepare for
 
 REMARKS:
-This function is used to set up the emulator state to exceute a software
+This function is used to set up the emulator state to execute a software
 interrupt. This can be used by the user application code to allow an
 interrupt to be hooked, examined and then reflected back to the emulator
 so that the code in the emulator will continue processing the software

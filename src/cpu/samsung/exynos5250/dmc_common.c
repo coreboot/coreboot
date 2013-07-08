@@ -64,7 +64,7 @@ int dmc_config_zq(struct mem_timings *mem,
 	val &= ~ZQ_MANUAL_STR;
 
 	/*
-	 * Since we are manaully calibrating the ZQ values,
+	 * Since we are manually calibrating the ZQ values,
 	 * we are looping for the ZQ_init to complete.
 	 */
 	i = ZQ_INIT_TIMEOUT;
@@ -97,12 +97,12 @@ void update_reset_dll(struct exynos5_dmc *dmc, enum ddr_mode mode)
 		writel(val, &dmc->phycontrol0);
 	}
 
-	/* Update DLL Information: Force DLL Resyncronization */
+	/* Update DLL Information: Force DLL Resynchronization */
 	val = readl(&dmc->phycontrol0);
 	val |= FP_RSYNC;
 	writel(val, &dmc->phycontrol0);
 
-	/* Reset Force DLL Resyncronization */
+	/* Reset Force DLL Resynchronization */
 	val = readl(&dmc->phycontrol0);
 	val &= ~FP_RSYNC;
 	writel(val, &dmc->phycontrol0);

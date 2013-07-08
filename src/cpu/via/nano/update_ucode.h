@@ -56,11 +56,11 @@ typedef struct {
 	u32 applicable_fms;     /* Fam/model/stepping to which ucode applies */
 	u32 checksum;           /* Two's complement checksum of ucode+header */
 	u32 loader_revision;    /* Revision of hardware ucode update loader*/
-	u32 rfu_1;              /* Reservod for future use */
+	u32 rfu_1;              /* Reserved for future use */
 	u32 payload_size;       /* Size of the ucode payload only */
 	u32 total_size;         /* Size of the ucode, including header */
 	char name[8];           /* ASCII string of ucode filename */
-	u32 rfu_2;              /* Reservod for future use */
+	u32 rfu_2;              /* Reserved for future use */
 	/* First double-word of the ucode payload
 	 * Its address represents the beginning of the ucode update we need to
 	 * send to the CPU */

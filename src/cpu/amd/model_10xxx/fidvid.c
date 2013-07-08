@@ -68,7 +68,7 @@ Fam10 Bios and Kernel Development Guide #31116, rev 3.48, April 22, 2010
 
 9.- TODO Requires information on current delivery capability
     (depends on mainboard and maybe power supply ?). One might use a config
-    option with the maximum number of Ampers that the board can deliver to CPU.
+    option with the maximum number of Amperes that the board can deliver to CPU.
 
 10.- [Multiprocessor] TODO 2.4.2.12
      [Uniprocessor] FIXME ? We call setPStateMaxVal() in init_fidvid_stage2,
@@ -79,7 +79,7 @@ Fam10 Bios and Kernel Development Guide #31116, rev 3.48, April 22, 2010
 11.- finalPstateChange() from init_fidvid_Stage2 (BKDG says just "may", anyway)
 
 12.- generate ACPI for p-states. FIXME
-     Needs more assesment. There's some kind of fixed support that
+     Needs more assessment. There's some kind of fixed support that
      does not seem to depend on CPU revision or actual MSRC001_00[68:64]
      as BKDG apparently requires.
      http://www.coreboot.org/ACPI#CPU_Power_Management
@@ -935,7 +935,7 @@ static void fixPsNbVidAfterWR(u32 newNbVid, u8 NbVidUpdatedAll,u8 pviMode)
 
 static void finalPstateChange(void)
 {
-	/* Enble P0 on all cores for best performance.
+	/* Enable P0 on all cores for best performance.
 	 * Linux can slow them down later if need be.
 	 * It is safe since they will be in C1 halt
 	 * most of the time anyway.

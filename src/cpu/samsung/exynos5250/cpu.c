@@ -107,7 +107,7 @@ static void exynos_displayport_init(device_t dev)
 	 *
 	 * Note: We may want to do something clever to ensure the framebuffer
 	 * region is aligned such that we don't change dcache policy for other
-	 * stuff inadvertantly.
+	 * stuff inadvertently.
 	 */
 	uint32_t lower = ALIGN_DOWN(lcdbase, MiB);
 	uint32_t upper = ALIGN_UP(lcdbase + fb_size, MiB);

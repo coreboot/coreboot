@@ -40,7 +40,7 @@
  * will return 0, meaning no CPU.
  *
  * We actually handling that case by noting which cpus startup
- * and not telling anyone about the ones that dont.
+ * and not telling anyone about the ones that don't.
  */
 
 /* Start-UP IPI vector must be 4kB aligned and below 1MB. */

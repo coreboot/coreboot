@@ -39,7 +39,7 @@
 #include "chip.h"
 
 /*
- * List of suported C-states in this processor
+ * List of supported C-states in this processor
  *
  * Latencies are typical worst-case package exit time in uS
  * taken from the SandyBridge BIOS specification.
@@ -249,7 +249,7 @@ static void configure_thermal_target(void)
 		return;
 	conf = lapic->chip_info;
 
-	/* Set TCC activaiton offset if supported */
+	/* Set TCC activation offset if supported */
 	msr = rdmsr(MSR_PLATFORM_INFO);
 	if ((msr.lo & (1 << 30)) && conf->tcc_offset) {
 		msr = rdmsr(MSR_TEMPERATURE_TARGET);

@@ -130,7 +130,7 @@ struct am335x_uart {
 	uint8_t rsvd_0x36[2];
 	uint16_t blr;			/* BOF control */
 	uint8_t rsvd_0x3a[2];
-	uint16_t acreg;			/* auxilliary control */
+	uint16_t acreg;			/* auxiliary control */
 	uint8_t rsvd_0x3e[2];
 
 	/* 0x40 */
@@ -139,7 +139,7 @@ struct am335x_uart {
 	uint16_t ssr;			/* supplementary status */
 	uint8_t rsvd_0x46[2];
 
-	uint16_t eblr;			/* BOF length (operatoinal mode only) */
+	uint16_t eblr;			/* BOF length (operational mode only) */
 	uint8_t rsvd_0x4a[6];
 
 	/* 0x50 */

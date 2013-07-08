@@ -75,7 +75,7 @@ static int write_pstates_for_core(u8 pstate_num, u16 *pstate_feq, u8 *pstate_vid
 
 #if CONFIG_K8_REV_F_SUPPORT
 /*
-* Details about this algorithm , refert to BDKG 10.5.1
+* Details about this algorithm , refer to BDKG 10.5.1
 * Two parts are included, the another is the DSDT reconstruction process
 */
 
@@ -202,7 +202,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		goto write_pstates;
 	}
 
-	/* Get the multipier of the fid frequency */
+	/* Get the multiplier of the fid frequency */
 	/*
 	 * Fid multiplier is always 100 revF and revG.
 	 */
@@ -316,7 +316,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		Pstate_num++;
 	}
 
-	/* Constuct P[Min] State */
+	/* Construct P[Min] State */
 	if (Max_fid == 0x2A && Max_vid != 0x0) {
 		Pstate_fid[Pstate_num] = 0x2;
 		Pstate_feq[Pstate_num] =

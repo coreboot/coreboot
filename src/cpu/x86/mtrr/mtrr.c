@@ -94,7 +94,7 @@ static inline unsigned int fms(unsigned int x)
 	return r;
 }
 
-/* fls: find least sigificant bit set */
+/* fls: find least significant bit set */
 static inline unsigned int fls(unsigned int x)
 {
 	int r;
@@ -160,8 +160,8 @@ static struct memranges *get_physical_address_space(void)
 	static struct memranges addr_space_storage;
 
 	/* In order to handle some chipsets not being able to pre-determine
-	 *  uncacheable ranges, such as graphics memory, at resource inseration
-	 * time remove unacheable regions from the cacheable ones. */
+	 *  uncacheable ranges, such as graphics memory, at resource insertion
+	 * time remove uncacheable regions from the cacheable ones. */
 	if (addr_space == NULL) {
 		struct range_entry *r;
 		unsigned long mask;
@@ -216,7 +216,7 @@ static struct memranges *get_physical_address_space(void)
 }
 
 /* Fixed MTRR descriptor. This structure defines the step size and begin
- * and end (exclusive) address covered by a set of fixe MTRR MSRs.
+ * and end (exclusive) address covered by a set of fixed MTRR MSRs.
  * It also describes the offset in byte intervals to store the calculated MTRR
  * type in an array. */
 struct fixed_mtrr_desc {
@@ -533,7 +533,7 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 	struct range_entry *next;
 
 	/*
-	 * Determine MTRRs based on the following algoirthm for the given entry:
+	 * Determine MTRRs based on the following algorithm for the given entry:
 	 * +------------------+ b2 = ALIGN_UP(end)
 	 * |  0 or more bytes | <-- hole is carved out between b1 and b2
 	 * +------------------+ a2 = b1 = end
@@ -571,7 +571,7 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 
 	b1 = a2;
 
-	/* First check if a1 is >= 4GiB and the current etnry is the last
+	/* First check if a1 is >= 4GiB and the current entry is the last
 	 * entry. If so perform an optimization of covering a larger range
 	 * defined by the base address' alignment. */
 	if (a1 >= RANGE_4GB && next == NULL) {
@@ -686,10 +686,10 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 	 *   1. UC as default type with no holes at top of range.
 	 *   2. UC as default using holes at top of range.
 	 *   3. WB as default.
-	 * The lowest count is then used as default after totalling all
-	 * MTRRs. Note that the optimal algoirthm for UC default is marked in
+	 * The lowest count is then used as default after totaling all
+	 * MTRRs. Note that the optimal algorithm for UC default is marked in
 	 * the tag of each range regardless of final decision.  UC takes
-	 * precedence in the MTRR archiecture. Therefore, only holes can be
+	 * precedence in the MTRR architecture. Therefore, only holes can be
 	 * used when the type of the region is MTRR_TYPE_WRBACK with
 	 * MTRR_TYPE_UNCACHEABLE as the default type.
 	 */

@@ -160,7 +160,7 @@ static struct clk_bit_info clk_bit_info[PERIPH_ID_COUNT] = {
 	{24,	1,	20,	-1}, /* PERIPH_ID_SATA */
 };
 
-/* Epll Clock division values to achive different frequency output */
+/* Epll Clock division values to achieve different frequency output */
 static struct st_epll_con_val epll_div[] = {
 	{ 192000000, 0, 48, 3, 1, 0 },
 	{ 180000000, 0, 45, 3, 1, 0 },
@@ -405,7 +405,7 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 	u32 *reg;
 
 	/*
-	 * For now we only handle a very small subset of peipherals here.
+	 * For now we only handle a very small subset of peripherals here.
 	 * Others will need to (and do) mangle the clock registers
 	 * themselves, At some point it is hoped that this function can work
 	 * from a table or calculated register offset / mask. For now this
@@ -636,7 +636,7 @@ int clock_epll_set_rate(unsigned long rate)
 	epll_con |= epll_div[i].s_div << EPLL_CON0_SDIV_SHIFT;
 
 	/*
-	 * Required period ( in cycles) to genarate a stable clock output.
+	 * Required period ( in cycles) to generate a stable clock output.
 	 * The maximum clock time can be up to 3000 * PDIV cycles of PLLs
 	 * frequency input (as per spec)
 	 */
@@ -675,7 +675,7 @@ int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq)
 	unsigned int div ;
 
 	if ((dst_frq == 0) || (src_frq == 0)) {
-		printk(BIOS_DEBUG, "%s: Invalid requency input for prescaler\n", __func__);
+		printk(BIOS_DEBUG, "%s: Invalid frequency input for prescaler\n", __func__);
 		printk(BIOS_DEBUG, "src frq = %d des frq = %d ", src_frq, dst_frq);
 		return -1;
 	}

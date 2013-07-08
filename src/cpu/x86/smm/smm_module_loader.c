@@ -24,16 +24,16 @@
 #include <console/console.h>
 
 /*
- * Compoments that make up the SMRAM:
+ * Components that make up the SMRAM:
  * 1. Save state - the total save state memory used
  * 2. Stack - stacks for the CPUs in the SMM handler
  * 3. Stub - SMM stub code for calling into handler
  * 4. Handler - C-based SMM handler.
  *
- * The compoents are assumed to consist of one consecutive region.
+ * The components are assumed to consist of one consecutive region.
  */
 
-/* These paramters are used by the SMM stub code. A pointer to the params
+/* These parameters are used by the SMM stub code. A pointer to the params
  * is also passed to the C-base handler. */
 struct smm_stub_params {
 	u32 stack_size;
@@ -80,7 +80,7 @@ static void smm_place_jmp_instructions(void *entry_start, int stride, int num,
 
 	/* Each entry point has an IP value of 0x8000. The SMBASE for each
 	 * cpu is different so the effective address of the entry instruction
-	 * is different. Therefore, the relative displacment for each entry
+	 * is different. Therefore, the relative displacement for each entry
 	 * instruction needs to be updated to reflect the current effective
 	 * IP. Additionally, the IP result from the jmp instruction is
 	 * calculated using the next instruction's address so the size of
@@ -140,7 +140,7 @@ static void smm_stub_place_staggered_entry_points(char *base,
 	stub_entry_offset = rmodule_entry_offset(smm_stub);
 
 	/* If there are staggered entry points or the stub is not located
-	 * at the SMM entry point then jmp instructionss need to be placed. */
+	 * at the SMM entry point then jmp instructions need to be placed. */
 	if (params->num_concurrent_save_states > 1 || stub_entry_offset != 0) {
 		int num_entries;
 
@@ -297,7 +297,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
 		return -1;
 
 	/* Since the relocation handler always uses stack, adjust the number
-	 * of conccurent stack users to be CONFIG_MAX_CPUS. */
+	 * of concurrent stack users to be CONFIG_MAX_CPUS. */
 	if (params->num_concurrent_stacks == 0)
 		params->num_concurrent_stacks = CONFIG_MAX_CPUS;
 
@@ -318,7 +318,7 @@ int smm_setup_relocation_handler(struct smm_loader_params *params)
  *
  * It should be noted that this algorithm will not work for
  * SMM_DEFAULT_SIZE SMRAM regions such as the A segment. This algorithm
- * expectes a region large enough to encompass the handler and stacks
+ * expects a region large enough to encompass the handler and stacks
  * as well as the SMM_DEFAULT_SIZE.
  */
 int smm_load_module(void *smram, int size, struct smm_loader_params *params)

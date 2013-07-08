@@ -25,11 +25,13 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include "cpu/intel/haswell/haswell.h"
+#include "ec/google/chromeec/ec.h"
 #include "northbridge/intel/haswell/haswell.h"
 #include "northbridge/intel/haswell/raminit.h"
 #include "southbridge/intel/lynxpoint/pch.h"
 #include "southbridge/intel/lynxpoint/lp_gpio.h"
 #include "gpio.h"
+#include "onboard.h"
 
 const struct rcba_config_instruction rcba_config[] = {
 
@@ -83,6 +85,25 @@ static void copy_spd(struct pei_data *peid)
 	if (!spd_file)
 		die("SPD data not found.");
 
+	switch (google_chromeec_get_board_version()) {
+	case PEPPY_BOARD_VERSION_PROTO:
+		/* Index 0 is 2GB config with CH0 only. */
+		if (spd_index == 0)
+			peid->dimm_channel1_disabled = 3;
+		break;
+
+	case PEPPY_BOARD_VERSION_EVT:
+	default:
+		/* Index 0-2 are 4GB config with both CH0 and CH1.
+		 * Index 4-6 are 2GB config with CH0 only. */
+		if (spd_index > 3)
+		{
+			peid->dimm_channel1_disabled = 3;
+			spd_index &= 0x03;
+		}
+		break;
+	}
+
 	if (ntohl(spd_file->len) <
 	    ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
@@ -91,11 +112,6 @@ static void copy_spd(struct pei_data *peid)
 
 	if (spd_file->len < sizeof(peid->spd_data[0]))
 		die("Missing SPD data.");
-
-	/* Index 0-2 are 4GB config with both CH0 and CH1
-	 * Index 4-6 are 2GB config with CH0 only */
-	if (spd_index > 3)
-		peid->dimm_channel1_disabled = 3;
 
 	memcpy(peid->spd_data[0],
 	       ((char*)CBFS_SUBHEADER(spd_file)) +

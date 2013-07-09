@@ -1135,27 +1135,41 @@ u32 map_oprom_vendev(u32 vendev)
 	u32 new_vendev=vendev;
 
 	switch(vendev) {
-	//case 0x10029900: //FS1r2
-	case 0x10029901: //FM2
-	case 0x10029903: //FS1r2
-	case 0x10029904: //FM2
-	case 0x10029906: //FM2
-	case 0x10029907: //FP2
-	case 0x10029908: //FP2
-	case 0x1002990A: //FP2
-	case 0x10029910: //FS1r2
-	case 0x10029913: //FS1r2
-	case 0x10029917: //FP2
-	case 0x10029918: //FP2
-	case 0x10029919: //FP2
-	case 0x10029990: //FS1r2
-	case 0x10029991: //FM2
-	case 0x10029992: //FS1r2
-	case 0x10029993: //FM2
-	case 0x10029994: //FP2
-	case 0x100299A0: //FS1r2
-	case 0x100299A2: //FS1r2
-	case 0x100299A4: //FP2
+	case 0x10029900:
+	case 0x10029901:
+	case 0x10029902:
+	case 0x10029903:
+	case 0x10029904:
+	case 0x10029906:
+	case 0x10029907:
+	case 0x10029908:
+	case 0x1002990A:
+	case 0x1002990B:
+	case 0x1002990C:
+	case 0x1002990D:
+	case 0x1002990E:
+	case 0x1002990F:
+	case 0x10029910:
+	case 0x10029913:
+	case 0x10029917:
+	case 0x10029918:
+	case 0x10029919:
+	case 0x1002991C:
+	case 0x10029990:
+	case 0x10029991:
+	case 0x10029992:
+	case 0x10029993:
+	case 0x10029994:
+	case 0x10029995:
+	case 0x10029996:
+	case 0x10029997:
+	case 0x10029998:
+	case 0x10029999:
+	case 0x1002999A:
+	case 0x1002999B:
+	case 0x100299A0:
+	case 0x100299A2:
+	case 0x100299A4:
 		new_vendev=0x10029900;
 		break;
 	}

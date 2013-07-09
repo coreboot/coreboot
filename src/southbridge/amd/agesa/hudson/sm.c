@@ -82,6 +82,7 @@
 
 static void sm_init(device_t dev)
 {
+	setup_ioapic(IO_APIC_ADDR, CONFIG_MAX_CPUS);
 }
 
 static int lsmbus_recv_byte(device_t dev)

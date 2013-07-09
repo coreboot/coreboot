@@ -17,3 +17,4 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) += hudson
+subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE) += hudson

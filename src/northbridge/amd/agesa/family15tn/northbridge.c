@@ -1135,27 +1135,40 @@ u32 map_oprom_vendev(u32 vendev)
 	u32 new_vendev=vendev;
 
 	switch(vendev) {
-	//case 0x10029900: //FS1r2
-	case 0x10029901: //FM2
-	case 0x10029903: //FS1r2
-	case 0x10029904: //FM2
-	case 0x10029906: //FM2
-	case 0x10029907: //FP2
-	case 0x10029908: //FP2
-	case 0x1002990A: //FP2
-	case 0x10029910: //FS1r2
-	case 0x10029913: //FS1r2
-	case 0x10029917: //FP2
-	case 0x10029918: //FP2
-	case 0x10029919: //FP2
-	case 0x10029990: //FS1r2
-	case 0x10029991: //FM2
-	case 0x10029992: //FS1r2
-	case 0x10029993: //FM2
-	case 0x10029994: //FP2
-	case 0x100299A0: //FS1r2
-	case 0x100299A2: //FS1r2
-	case 0x100299A4: //FP2
+	case 0x10029900:	/* AMD Radeon HD 7660G (Trinity)  */
+	case 0x10029901:	/* AMD Radeon HD 7660D (Trinity)  */
+	case 0x10029903:	/* AMD Radeon HD 7640G (Trinity)  */
+	case 0x10029904:	/* AMD Radeon HD 7560D (Trinity)  */
+	case 0x10029907:	/* AMD Radeon HD 7620G (Trinity)  */
+	case 0x10029908:	/* AMD Radeon HD 7600G (Trinity)  */
+	case 0x1002990A:	/* AMD Radeon HD 7500G (Trinity)  */
+	case 0x1002990B:	/* AMD Radeon HD 8650G (Richland) */
+	case 0x1002990C:	/* AMD Radeon HD 8670D (Richland) */
+	case 0x1002990D:	/* AMD Radeon HD 8550G (Richland) */
+	case 0x1002990E:	/* AMD Radeon HD 8570D (Richland) */
+	case 0x1002990F:	/* AMD Radeon HD 8610G (Richland) */
+	case 0x10029910:	/* AMD Radeon HD 7660G (Trinity)  */
+	case 0x10029913:	/* AMD Radeon HD 7640G (Trinity)  */
+	case 0x10029917:	/* AMD Radeon HD 7620G (Trinity)  */
+	case 0x10029918:	/* AMD Radeon HD 7600G (Trinity)  */
+	case 0x10029919:	/* AMD Radeon HD 7500G (Trinity)  */
+	case 0x10029990:	/* AMD Radeon HD 7520G (Trinity)  */
+	case 0x10029991:	/* AMD Radeon HD 7540D (Trinity)  */
+	case 0x10029992:	/* AMD Radeon HD 7420G (Trinity)  */
+	case 0x10029993:	/* AMD Radeon HD 7480D (Trinity)  */
+	case 0x10029994:	/* AMD Radeon HD 7400G (Trinity)  */
+	case 0x10029995:	/* AMD Radeon HD 8450G (Richland) */
+	case 0x10029996:	/* AMD Radeon HD 8470D (Richland) */
+	case 0x10029997:	/* AMD Radeon HD 8350G (Richland) */
+	case 0x10029998:	/* AMD Radeon HD 8370D (Richland) */
+	case 0x10029999:	/* AMD Radeon HD 8510G (Richland) */
+	case 0x1002999A:	/* AMD Radeon HD 8410G (Richland) */
+	case 0x1002999B:	/* AMD Radeon HD 8310G (Richland) */
+	case 0x1002999C:	/* AMD Radeon HD 8650D (Richland) */
+	case 0x1002999D:	/* AMD Radeon HD 8550D (Richland) */
+	case 0x100299A0:	/* AMD Radeon HD 7520G (Trinity)  */
+	case 0x100299A2:	/* AMD Radeon HD 7420G (Trinity)  */
+	case 0x100299A4:	/* AMD Radeon HD 7400G (Trinity)  */
 		new_vendev=0x10029900;
 		break;
 	}

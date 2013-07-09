@@ -41,6 +41,8 @@ config BOARD_AMD_PARMER
 	bool "Parmer"
 config BOARD_AMD_THATCHER
 	bool "Thatcher"
+config BOARD_AMD_OLIVEHILL
+	bool "Olive Hill"
 endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
@@ -62,6 +64,7 @@ source "src/mainboard/amd/torpedo/Kconfig"
 source "src/mainboard/amd/union_station/Kconfig"
 source "src/mainboard/amd/parmer/Kconfig"
 source "src/mainboard/amd/thatcher/Kconfig"
+source "src/mainboard/amd/olivehill/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

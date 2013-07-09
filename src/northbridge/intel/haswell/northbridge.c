@@ -39,20 +39,6 @@
 #include "chip.h"
 #include "haswell.h"
 
-static int bridge_revision_id = -1;
-
-int bridge_silicon_revision(void)
-{
-	if (bridge_revision_id < 0) {
-		uint8_t stepping = cpuid_eax(1) & 0xf;
-		uint8_t bridge_id = pci_read_config16(
-			dev_find_slot(0, PCI_DEVFN(0, 0)),
-			PCI_DEVICE_ID) & 0xf0;
-		bridge_revision_id = bridge_id | stepping;
-	}
-	return bridge_revision_id;
-}
-
 static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 {
 	u32 pciexbar_reg;

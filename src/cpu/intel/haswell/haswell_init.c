@@ -207,13 +207,23 @@ static const u8 power_limit_time_msr_to_sec[] = {
 	[0x11] = 128,
 };
 
+int haswell_family_model(void)
+{
+	return cpuid_eax(1) & 0x0fff0ff0;
+}
+
+int haswell_stepping(void)
+{
+	return cpuid_eax(1) & 0xf;
+}
+
 /* Dynamically determine if the part is ULT. */
-static int is_ult(void)
+int haswell_is_ult(void)
 {
 	static int ult = -1;
 
 	if (ult < 0)
-		ult = (cpuid_eax(1) > 0x40650);
+		ult = !!(haswell_family_model() == HASWELL_FAMILY_ULT);
 
 	return ult;
 }
@@ -308,7 +318,7 @@ static void initialize_vr_config(void)
 	msr.hi |= (0x05 << (42 - 32)); /* PSI2 threshold -  5A. */
 	msr.hi |= (0x0f << (32 - 32)); /* PSI1 threshold - 15A. */
 
-	if (is_ult())
+	if (haswell_is_ult())
 		msr.hi |= (1 <<  (62 - 32)); /* Enable PSI4 */
 	/* Leave the max instantaneous current limit (12:0) to default. */
 	wrmsr(MSR_VR_CURRENT_CONFIG, msr);
@@ -334,7 +344,7 @@ static void initialize_vr_config(void)
 	wrmsr(MSR_VR_MISC_CONFIG, msr);
 
 	/*  Configure VR_MISC_CONFIG2 MSR. */
-	if (is_ult()) {
+	if (haswell_is_ult()) {
 		msr = rdmsr(MSR_VR_MISC_CONFIG2);
 		msr.lo &= ~0xffff;
 		/* Allow CPU to control minimum voltage completely (15:8) and
@@ -521,7 +531,7 @@ static void configure_c_states(void)
 	wrmsr(MSR_C_STATE_LATENCY_CONTROL_2, msr);
 
 	/* Haswell ULT only supoprts the 3-5 latency response registers.*/
-	if (is_ult()) {
+	if (haswell_is_ult()) {
 		/* C-state Interrupt Response Latency Control 3 - package C8 */
 		msr.hi = 0;
 		msr.lo = IRTL_VALID | IRTL_1024_NS |
@@ -698,7 +708,7 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 
 	initialize_vr_config();
 
-	if (is_ult()) {
+	if (haswell_is_ult()) {
 		calibrate_24mhz_bclk();
 		configure_pch_power_sharing();
 	}

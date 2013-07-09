@@ -24,9 +24,68 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <cpu/intel/haswell/haswell.h>
 
 #include "chip.h"
 #include "haswell.h"
+
+struct gt_reg {
+	u32 reg;
+	u32 andmask;
+	u32 ormask;
+};
+
+static const struct gt_reg haswell_gt_setup[] = {
+	/* Enable Counters */
+	{ 0x0a248, 0x00000000, 0x00000016 },
+	{ 0x0a000, 0x00000000, 0x00070020 },
+	{ 0x0a180, 0xff3fffff, 0x15000000 },
+	/* Enable DOP Clock Gating */
+	{ 0x09424, 0x00000000, 0x000003fd },
+	/* Enable Unit Level Clock Gating */
+	{ 0x09400, 0x00000000, 0x00000080 },
+	{ 0x09404, 0x00000000, 0x40401000 },
+	{ 0x09408, 0x00000000, 0x00000000 },
+	{ 0x0940c, 0x00000000, 0x02000001 },
+	{ 0x0a008, 0x00000000, 0x08000000 },
+	/* Wake Rate Limits */
+	{ 0x0a090, 0xffffffff, 0x00000000 },
+	{ 0x0a098, 0xffffffff, 0x03e80000 },
+	{ 0x0a09c, 0xffffffff, 0x00280000 },
+	{ 0x0a0a8, 0xffffffff, 0x0001e848 },
+	{ 0x0a0ac, 0xffffffff, 0x00000019 },
+	/* Render/Video/Blitter Idle Max Count */
+	{ 0x02054, 0x00000000, 0x0000000a },
+	{ 0x12054, 0x00000000, 0x0000000a },
+	{ 0x22054, 0x00000000, 0x0000000a },
+	/* RC Sleep / RCx Thresholds */
+	{ 0x0a0b0, 0xffffffff, 0x00000000 },
+	{ 0x0a0b4, 0xffffffff, 0x000003e8 },
+	{ 0x0a0b8, 0xffffffff, 0x0000c350 },
+	/* RP Settings */
+	{ 0x0a010, 0xffffffff, 0x000f4240 },
+	{ 0x0a014, 0xffffffff, 0x12060000 },
+	{ 0x0a02c, 0xffffffff, 0x0000e808 },
+	{ 0x0a030, 0xffffffff, 0x0003bd08 },
+	{ 0x0a068, 0xffffffff, 0x000101d0 },
+	{ 0x0a06c, 0xffffffff, 0x00055730 },
+	{ 0x0a070, 0xffffffff, 0x0000000a },
+	/* RP Control */
+	{ 0x0a024, 0x00000000, 0x00000b92 },
+	/* HW RC6 Control */
+	{ 0x0a090, 0x00000000, 0x88040000 },
+	/* Video Frequency Request */
+	{ 0x0a00c, 0x00000000, 0x08000000 },
+	{ 0 },
+};
+
+static const struct gt_reg haswell_gt_lock[] = {
+	{ 0x0a248, 0xffffffff, 0x80000000 },
+	{ 0x0a004, 0xffffffff, 0x00000010 },
+	{ 0x0a080, 0xffffffff, 0x00000004 },
+	{ 0x0a180, 0xffffffff, 0x80000000 },
+	{ 0 },
+};
 
 /* some vga option roms are used for several chipsets but they only have one
  * PCI ID in their header. If we encounter such an option rom, we need to do
@@ -72,6 +131,24 @@ static inline void gtt_write(u32 reg, u32 data)
 	write32(gtt_res->base + reg, data);
 }
 
+static inline void gtt_rmw(u32 reg, u32 andmask, u32 ormask)
+{
+	u32 val = gtt_read(reg);
+	val &= andmask;
+	val |= ormask;
+	gtt_write(reg, val);
+}
+
+static inline void gtt_write_regs(const struct gt_reg *gt)
+{
+	for (; gt && gt->reg; gt++) {
+		if (gt->andmask)
+			gtt_rmw(gt->reg, gt->andmask, gt->ormask);
+		else
+			gtt_write(gt->reg, gt->ormask);
+	}
+}
+
 #define GTT_RETRY 1000
 static int gtt_poll(u32 reg, u32 mask, u32 value)
 {
@@ -114,30 +191,26 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write(0x0a188, 0x00010001);
 	gtt_poll(0x130044, 1 << 0, 1 << 0);
 
-	/* Enable counters and lock */
-	gtt_write(0x0a248, 0x80000016);
-	gtt_write(0x0a000, 0x00070020);
-	gtt_write(0x0a180, 0xc5000020);
+	/* GT Settings */
+	gtt_write_regs(haswell_gt_setup);
 
-	/* Enable DOP clock gating */
-	gtt_write(0x09424, 0x00000001);
+	/* Wait for Mailbox Ready */
+	gtt_poll(0x138124, (1 << 31), (0 << 31));
+	/* Mailbox Data - RC6 VIDS */
+	gtt_write(0x138128, 0x00000000);
+	/* Mailbox Command */
+	gtt_write(0x138124, 0x80000004);
+	/* Wait for Mailbox Ready */
+	gtt_poll(0x138124, (1 << 31), (0 << 31));
 
-	/* Enable unit level clock gating */
-	gtt_write(0x09400, 0x00000080);
-	gtt_write(0x09404, 0x40401000);
-	gtt_write(0x09408, 0x00000000);
-	gtt_write(0x0940c, 0x02000001);
-
-	/* Configure max ilde count */
-	gtt_write(0x02054, 0x0000000a);
-	gtt_write(0x12054, 0x0000000a);
-	gtt_write(0x22054, 0x0000000a);
-
-	gtt_write(0x0a008, 0x80000000);
-	gtt_write(0x0a024, 0x00000b92);
+	/* Enable PM Interrupts */
+	gtt_write(0x4402c, 0x03000076);
 
 	/* Enable RC6 in idle */
 	gtt_write(0x0a094, 0x00040000);
+
+	/* PM Lock Settings */
+	gtt_write_regs(haswell_gt_lock);
 }
 
 static void gma_setup_panel(struct device *dev)
@@ -269,9 +342,47 @@ static void gma_setup_panel(struct device *dev)
 
 static void gma_pm_init_post_vbios(struct device *dev)
 {
+	int cdclk = 0;
+	int devid = pci_read_config16(dev, PCI_DEVICE_ID);
+	int gpu_is_ulx = 0;
+
+	if (devid == 0x0a0e || devid == 0x0a1e)
+		gpu_is_ulx = 1;
+
+	/* CD Frequency */
+	if (gtt_read(0x42014) & 0x1000000) {
+		cdclk = 0; /* only 450mhz */
+	} else {
+		cdclk = 2; /* 337.5mhz, 450mhz, or 540mhz */
+		if (gpu_is_ulx)
+			cdclk = 0; /* only 337.5mhz */
+
+		/* TODO: this check does not seem right... */
+		if (haswell_is_ult() &&
+		    haswell_stepping() < HASWELL_STEPPING_MOBILE_D0)
+			cdclk = 0; /* only 450mhz */
+		else
+			cdclk = 1; /* 337.5mhz and 450mhz */
+	}
+	if (gpu_is_ulx || cdclk != 0)
+		gtt_rmw(0x130040, 0xf7ffffff, 0x04000000);
+	else
+		gtt_rmw(0x130040, 0xf3ffffff, 0x00000000);
+
+	/* More magic */
+	if (haswell_is_ult() || gpu_is_ulx) {
+		if (cdclk == 1 && gpu_is_ulx == 0)
+			gtt_write(0x138128, 0x00000000);
+		else
+			gtt_write(0x138128, 0x00000001);
+		gtt_write(0x13812c, 0x00000000);
+		gtt_write(0x138124, 0x80000017);
+	}
+
 	/* Disable Force Wake */
 	gtt_write(0x0a188, 0x00010000);
 	gtt_poll(0x130044, 1 << 0, 0 << 0);
+	gtt_write(0x0a188, 0x00000001);
 }
 
 static void gma_func0_init(struct device *dev)

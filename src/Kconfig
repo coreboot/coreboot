@@ -572,6 +572,15 @@ config SEABIOS_MASTER
 	  Newest SeaBIOS version
 endchoice
 
+config SEABIOS_PS2_TIMEOUT
+	prompt "PS/2 keyboard controller initialization timeout (milliseconds)" if PAYLOAD_SEABIOS
+	depends on EXPERT
+	int
+	help
+	  Some PS/2 keyboard controllers don't respond to commands immediately
+	  after powering on. This specifies how long SeaBIOS will wait for the
+	  keyboard controller to become ready before giving up.
+
 choice
 	prompt "FILO version"
 	default FILO_STABLE

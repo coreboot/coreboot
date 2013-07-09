@@ -36,5 +36,6 @@ source src/northbridge/amd/agesa/family12/Kconfig
 source src/northbridge/amd/agesa/family14/Kconfig
 source src/northbridge/amd/agesa/family15/Kconfig
 source src/northbridge/amd/agesa/family15tn/Kconfig
+source src/northbridge/amd/agesa/family16kb/Kconfig
 
 endif # NORTHBRIDGE_AMD_AGESA

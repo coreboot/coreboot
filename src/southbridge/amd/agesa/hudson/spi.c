@@ -61,7 +61,9 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	/* First byte is cmd which can not being sent through FIFO. */
 	u8 cmd = *(u8 *)dout++;
 	u8 readoffby1;
+#if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	u8 readwrite;
+#endif
 	u8 bytesout, bytesin;
 	u8 count;
 
@@ -71,8 +73,15 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 
 	readoffby1 = bytesout ? 0 : 1;
 
+#if CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	write8(spibar + 0x1E, 5);
+	write8(spibar + 0x1F, bytesout); /* SpiExtRegIndx [5] - TxByteCount */
+	write8(spibar + 0x1E, 6);
+	write8(spibar + 0x1F, bytesin);	/* SpiExtRegIndx [6] - RxByteCount */
+#else
 	readwrite = (bytesin + readoffby1) << 4 | bytesout;
 	write8(spibar + 1, readwrite);
+#endif
 	write8(spibar + 0, cmd);
 
 	reset_internal_fifo_pointer();

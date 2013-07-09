@@ -49,3 +49,9 @@ static const struct pci_driver sata0_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_ATI_SB900_SATA,
 };
+
+static const struct pci_driver sata0_driver_ahci __pci_driver = {
+	.ops = &sata_ops,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = PCI_DEVICE_ID_ATI_SB900_SATA_AHCI,
+};

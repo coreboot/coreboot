@@ -23,7 +23,13 @@ config SOUTHBRIDGE_AMD_AGESA_HUDSON
 	select HAVE_USBDEBUG
 	select HAVE_HARD_RESET
 
-if SOUTHBRIDGE_AMD_AGESA_HUDSON
+config SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	bool
+	select IOAPIC
+	select HAVE_USBDEBUG
+	select HAVE_HARD_RESET
+
+if SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
@@ -72,17 +78,20 @@ config HUDSON_GEC_FWM
 
 config HUDSON_XHCI_FWM_FILE
         string "XHCI firmware path and filename"
-        default "3rdparty/southbridge/amd/hudson/xhci.bin"
+        default "3rdparty/southbridge/amd/hudson/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
+        default "3rdparty/southbridge/amd/yangtze/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
         string "IMC firmware path and filename"
-        default "3rdparty/southbridge/amd/hudson/imc.bin"
+        default "3rdparty/southbridge/amd/hudson/imc.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
+        default "3rdparty/southbridge/amd/yangtze/imc.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
         string "GEC firmware path and filename"
-        default "3rdparty/southbridge/amd/hudson/gec.bin"
+        default "3rdparty/southbridge/amd/hudson/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_HUDSON
+        default "3rdparty/southbridge/amd/yangtze/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_GEC_FWM
 
 config HUDSON_FWM
@@ -232,4 +241,10 @@ config HUDSON_LEGACY_FREE
 	  Select y if there is no keyboard controller in the system.
 	  This sets variables in AGESA and ACPI.
 
-endif # SOUTHBRIDGE_AMD_AGESA_HUDSON
+endif # SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
+
+if SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	config AMD_SB_SPI_TX_LEN
+		int
+		default 64
+endif

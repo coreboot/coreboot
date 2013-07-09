@@ -335,18 +335,18 @@ config ENABLE_POWER_BUTTON
 	def_bool n if !POWER_BUTTON_IS_OPTIONAL && POWER_BUTTON_FORCE_DISABLE
 
 config MAINBOARD_SERIAL_NUMBER
-	string "Serial number"
+	string "SMBIOS Serial number"
 	depends on GENERATE_SMBIOS_TABLES
 	default "123456789"
         help
-	  Define the used serial number which will be used by SMBIOS tables.
+	  The Serial Number to store in SMBIOS structures.
 
 config MAINBOARD_VERSION
-	string "Version number"
+	string "SMBIOS Version number"
 	depends on GENERATE_SMBIOS_TABLES
 	default "1.0"
 	help
-	  Define the used version number which will be used by SMBIOS tables.
+	  The Version Number to store in SMBIOS structures.
 
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string "SMBIOS Manufacturer"

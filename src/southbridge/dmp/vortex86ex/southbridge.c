@@ -46,17 +46,30 @@ static const unsigned char irq_to_int_routing[16] = {
 #define RT0_IRQ_SHIFT 0
 
 /* S/B Extend PCI Interrupt routing table reg(0xb4) field bit shift. */
+#define CAN_IRQ_SHIFT 28
+#define HDA_IRQ_SHIFT 20
 #define USBD_IRQ_SHIFT 16
 #define SIDE_IRQ_SHIFT 12
 #define PIDE_IRQ_SHIFT 8
+
+/* S/B function 1 Extend PCI Interrupt routing table reg 2(0xb4)
+ * field bit shift.
+ */
+#define SPI1_IRQ_SHIFT 8
+#define MOTOR_IRQ_SHIFT 0
 
 /* in-chip PCI device IRQs(0 for disabled). */
 #define EHCII_IRQ 5
 #define OHCII_IRQ 5
 #define MAC_IRQ 6
 
-#define USBD_IRQ 0
+#define CAN_IRQ 10
+#define HDA_IRQ 7
+#define USBD_IRQ 6
 #define PIDE_IRQ 5
+
+#define SPI1_IRQ 10
+#define MOTOR_IRQ 11
 
 /* RT0-3 IRQs. */
 #define RT3_IRQ 3
@@ -179,9 +192,11 @@ static void pci_routing_fixup(struct device *dev)
 	int_routing |= irq_to_int_routing[EHCII_IRQ] << EHCIH_IRQ_SHIFT;
 	int_routing |= irq_to_int_routing[OHCII_IRQ] << OHCII_IRQ_SHIFT;
 	int_routing |= irq_to_int_routing[MAC_IRQ] << MAC_IRQ_SHIFT;
-	pci_write_config32(dev, SB_REG_PIRQ_X_ROUT, int_routing);
+	pci_write_config32(dev, SB_REG_PIRQ_ROUTE, int_routing);
 
 	/* Setup S/B PCI Extend Interrupt routing table reg(0xb4). */
+	ext_int_routing |= irq_to_int_routing[CAN_IRQ] << CAN_IRQ_SHIFT;
+	ext_int_routing |= irq_to_int_routing[HDA_IRQ] << HDA_IRQ_SHIFT;
 	ext_int_routing |= irq_to_int_routing[USBD_IRQ] << USBD_IRQ_SHIFT;
 #if CONFIG_IDE_NATIVE_MODE
 	/* IDE in native mode, only uses one IRQ. */
@@ -192,7 +207,7 @@ static void pci_routing_fixup(struct device *dev)
 	ext_int_routing |= irq_to_int_routing[IDE2_LEGACY_IRQ] << SIDE_IRQ_SHIFT;
 	ext_int_routing |= irq_to_int_routing[IDE1_LEGACY_IRQ] << PIDE_IRQ_SHIFT;
 #endif
-	pci_write_config32(dev, SB_REG_PIRQ_X_ROUT2, ext_int_routing);
+	pci_write_config32(dev, SB_REG_EXT_PIRQ_ROUTE, ext_int_routing);
 
 	/* Assign in-chip PCI device IRQs. */
 	if (MAC_IRQ) {
@@ -207,6 +222,14 @@ static void pci_routing_fixup(struct device *dev)
 		/* IDE in native mode, setup PCI IRQ. */
 		unsigned char irqs[4] = { PIDE_IRQ, 0, 0, 0 };
 		pci_assign_irqs(0, 0xc, irqs);
+	}
+	if (CAN_IRQ) {
+		unsigned char irqs[4] = { CAN_IRQ, 0, 0, 0 };
+		pci_assign_irqs(0, 0x11, irqs);
+	}
+	if (HDA_IRQ) {
+		unsigned char irqs[4] = { HDA_IRQ, 0, 0, 0 };
+		pci_assign_irqs(0, 0xe, irqs);
 	}
 	if (USBD_IRQ) {
 		unsigned char irqs[4] = { USBD_IRQ, 0, 0, 0 };
@@ -514,14 +537,28 @@ static void vortex86_sb_read_resources(device_t dev)
 	vortex86_sb_set_spi_flash_size(dev, flash_size);
 }
 
+static void southbridge_init_func1(struct device *dev)
+{
+	/* Handle S/B function 1 PCI IRQ routing. (SPI1/MOTOR) */
+	u32 ext_int_routing2 = 0;
+	/* Setup S/B function 1 PCI Extend Interrupt routing table reg 2(0xb4). */
+	ext_int_routing2 |= irq_to_int_routing[SPI1_IRQ] << SPI1_IRQ_SHIFT;
+	ext_int_routing2 |= irq_to_int_routing[MOTOR_IRQ] << MOTOR_IRQ_SHIFT;
+	pci_write_config32(dev, SB1_REG_EXT_PIRQ_ROUTE2, ext_int_routing2);
+
+	/* Assign in-chip PCI device IRQs. */
+	if (SPI1_IRQ || MOTOR_IRQ) {
+		unsigned char irqs[4] = { MOTOR_IRQ, SPI1_IRQ, 0, 0 };
+		pci_assign_irqs(0, 0x10, irqs);
+	}
+}
+
 static void southbridge_init(struct device *dev)
 {
-	if (dev->device == 0x6011) {
-		/* It is EX CPU southbridge */
-		if (get_pci_dev_func(dev) != 0) {
-			/* only for function 0, skip function 1 */
-			return;
-		}
+	/* Check it is function 0 or 1. (Same Vendor/Device ID) */
+	if (get_pci_dev_func(dev) != 0) {
+		southbridge_init_func1(dev);
+		return;
 	}
 	upload_dmp_keyboard_firmware(dev);
 	vortex_sb_init(dev);

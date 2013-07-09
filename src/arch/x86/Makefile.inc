@@ -88,6 +88,12 @@ endif
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
 	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),)
+ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
+	@printf "    SeaBIOS    Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
+	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
+endif
+endif
 endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
 	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"

@@ -58,4 +58,8 @@ config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "LENOVO"
 
+config SEABIOS_PS2_TIMEOUT
+	int
+	default 3000
+
 endif

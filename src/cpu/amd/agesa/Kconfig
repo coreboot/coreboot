@@ -18,13 +18,14 @@
 #
 
 config CPU_AMD_AGESA
-	bool
-	default y if CPU_AMD_AGESA_FAMILY10
-	default y if CPU_AMD_AGESA_FAMILY12
-	default y if CPU_AMD_AGESA_FAMILY14
-	default y if CPU_AMD_AGESA_FAMILY15
-	default y if CPU_AMD_AGESA_FAMILY15_TN
-	default n
+        bool
+        default y if CPU_AMD_AGESA_FAMILY10
+        default y if CPU_AMD_AGESA_FAMILY12
+        default y if CPU_AMD_AGESA_FAMILY14
+        default y if CPU_AMD_AGESA_FAMILY15
+        default y if CPU_AMD_AGESA_FAMILY15_TN
+        default y if CPU_AMD_AGESA_FAMILY16_KB
+        default n
 	select TSC_SYNC_LFENCE
 	select UDELAY_LAPIC
 	select LAPIC_MONOTONIC_TIMER
@@ -55,5 +56,6 @@ source src/cpu/amd/agesa/family12/Kconfig
 source src/cpu/amd/agesa/family14/Kconfig
 source src/cpu/amd/agesa/family15/Kconfig
 source src/cpu/amd/agesa/family15tn/Kconfig
+source src/cpu/amd/agesa/family16kb/Kconfig
 
 endif # CPU_AMD_AGESA

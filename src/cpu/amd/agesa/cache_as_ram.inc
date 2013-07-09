@@ -92,8 +92,6 @@ disable_cache_as_ram:
   orl	$CR0_CacheDisable, %eax
   movl	%eax, %cr0
 
-  invd
-
   AMD_DISABLE_STACK
 
   /* enable cache */

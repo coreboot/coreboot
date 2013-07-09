@@ -21,7 +21,9 @@ subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += family12
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += family14
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15) += family15
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY15_TN) += family15tn
+subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY16_KB) += family16kb
 
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += s3_resume.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += s3_resume.c
+
 cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc

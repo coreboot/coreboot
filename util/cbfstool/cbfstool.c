@@ -42,6 +42,7 @@ static struct param {
 	char *name;
 	char *filename;
 	char *bootblock;
+	uint64_t u64val;
 	uint32_t type;
 	uint32_t baseaddress;
 	uint32_t baseaddress_assigned;
@@ -62,6 +63,50 @@ static struct param {
 };
 
 typedef int (*convert_buffer_t)(struct buffer *buffer, uint32_t *offset);
+
+static int cbfs_add_integer_component(const char *cbfs_name,
+			      const char *name,
+			      uint64_t u64val,
+			      uint32_t offset) {
+	struct cbfs_image image;
+	struct buffer buffer;
+	int i, ret = 1;
+
+	if (!name) {
+		ERROR("You need to specify -n/--name.\n");
+		return 1;
+	}
+
+	if (buffer_create(&buffer, 8, name) != 0)
+		return 1;
+
+	for (i = 0; i < 8; i++)
+		buffer.data[i] = (u64val >> i*8) & 0xff;
+
+	if (cbfs_image_from_file(&image, cbfs_name) != 0) {
+		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
+		buffer_delete(&buffer);
+		return 1;
+	}
+
+	if (cbfs_get_entry(&image, name)) {
+		ERROR("'%s' already in ROM image.\n", name);
+		goto done;
+	}
+
+	if (cbfs_add_entry(&image, &buffer, name, CBFS_COMPONENT_RAW, param.baseaddress) != 0) {
+		ERROR("Failed to add %llu into ROM image as '%s'.\n", (long long unsigned)u64val, name);
+		goto done;
+	}
+
+	if (cbfs_image_write_file(&image, cbfs_name) == 0)
+		ret = 0;
+
+done:
+	buffer_delete(&buffer);
+	cbfs_image_delete(&image);
+	return ret;
+}
 
 static int cbfs_add_component(const char *cbfs_name,
 			      const char *filename,
@@ -225,6 +270,14 @@ static int cbfs_add_flat_binary(void)
 				  CBFS_COMPONENT_PAYLOAD,
 				  param.baseaddress,
 				  cbfstool_convert_mkflatpayload);
+}
+
+static int cbfs_add_integer(void)
+{
+	return cbfs_add_integer_component(param.cbfs_name,
+				  param.name,
+				  param.u64val,
+				  param.baseaddress);
 }
 
 static int cbfs_remove(void)
@@ -452,6 +505,7 @@ static const struct command commands[] = {
 	{"add-payload", "f:n:t:c:b:vh?", cbfs_add_payload},
 	{"add-stage", "f:n:t:c:b:vh?", cbfs_add_stage},
 	{"add-flat-binary", "f:n:l:e:c:b:vh?", cbfs_add_flat_binary},
+	{"add-int", "i:n:b:vh?", cbfs_add_integer},
 	{"remove", "n:vh?", cbfs_remove},
 	{"create", "s:B:b:H:a:o:m:vh?", cbfs_create},
 	{"locate", "f:n:P:a:Tvh?", cbfs_locate},
@@ -474,6 +528,7 @@ static struct option long_options[] = {
 	{"page-size",    required_argument, 0, 'P' },
 	{"offset",       required_argument, 0, 'o' },
 	{"file",         required_argument, 0, 'f' },
+	{"int",          required_argument, 0, 'i' },
 	{"machine",      required_argument, 0, 'm' },
 	{"empty-fits",   required_argument, 0, 'x' },
 	{"verbose",      no_argument,       0, 'v' },
@@ -500,6 +555,8 @@ static void usage(char *name)
 	     " add-flat-binary -f FILE -n NAME -l load-address \\\n"
 	     "        -e entry-point [-c compression] [-b base]            "
 			"Add a 32bit flat mode binary\n"
+	     " add-int -i INTEGER -n NAME [-b base]                        "
+			"Add a raw 64-bit integer value\n"
 	     " remove -n NAME                                              "
 			"Remove a component\n"
 	     " create -s size -B bootblock -m ARCH [-a align] [-o offset]  "
@@ -618,6 +675,9 @@ int main(int argc, char **argv)
 				break;
 			case 'f':
 				param.filename = optarg;
+				break;
+			case 'i':
+				param.u64val = strtoull(optarg, NULL, 0);
 				break;
 			case 'T':
 				param.top_aligned = 1;

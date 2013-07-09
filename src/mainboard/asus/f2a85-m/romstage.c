@@ -74,12 +74,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 
-		/* enable SIO decode */
-		dev = PCI_DEV(0, 0x14, 3);
-		byte = pci_read_config8(dev, 0x48);
-		byte |= 3;		/* 2e, 2f */
-		pci_write_config8(dev, 0x48, byte);
-
 		post_code(0x30);
 
                 /* enable SB MMIO space */

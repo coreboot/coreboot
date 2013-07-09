@@ -26,23 +26,6 @@
 #define HASWELL_DESKTOP	1
 #define HASWELL_SERVER	2
 
-/* Device ID for SandyBridge and IvyBridge */
-#define BASE_REV_SNB	0x00
-#define BASE_REV_IVB	0x50
-#define BASE_REV_MASK	0x50
-
-/* SandyBridge CPU stepping */
-#define SNB_STEP_D0	(BASE_REV_SNB + 5) /* Also J0 */
-#define SNB_STEP_D1	(BASE_REV_SNB + 6)
-#define SNB_STEP_D2	(BASE_REV_SNB + 7) /* Also J1/Q0 */
-
-/* IvyBridge CPU stepping */
-#define IVB_STEP_A0	(BASE_REV_IVB + 0)
-#define IVB_STEP_B0	(BASE_REV_IVB + 2)
-#define IVB_STEP_C0	(BASE_REV_IVB + 4)
-#define IVB_STEP_K0	(BASE_REV_IVB + 5)
-#define IVB_STEP_D0	(BASE_REV_IVB + 6)
-
 /* Intel Enhanced Debug region */
 #define IED_SIZE	CONFIG_IED_REGION_SIZE
 
@@ -215,7 +198,6 @@ struct ied_header {
 #ifdef __SMM__
 void intel_northbridge_haswell_finalize_smm(void);
 #else /* !__SMM__ */
-int bridge_silicon_revision(void);
 void haswell_early_initialization(int chipset_type);
 void haswell_late_initialization(void);
 

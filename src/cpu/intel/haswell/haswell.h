@@ -24,8 +24,20 @@
 
 #include <arch/cpu.h>
 
+/* Haswell CPU types */
+#define HASWELL_FAMILY_MOBILE		0x306c0
+#define HASWELL_FAMILY_ULT		0x40650
+
+/* Haswell CPU steppings */
+#define HASWELL_STEPPING_MOBILE_A0	1
+#define HASWELL_STEPPING_MOBILE_B0	2
+#define HASWELL_STEPPING_MOBILE_C0	3
+#define HASWELL_STEPPING_MOBILE_D0	4
+#define HASWELL_STEPPING_ULT_B0		0
+#define HASWELL_STEPPING_ULT_C0		1
+
 /* Haswell bus clock is fixed at 100MHz */
-#define HASWELL_BCLK		100
+#define HASWELL_BCLK			100
 
 #define CORE_THREAD_COUNT_MSR		0x35
 #define IA32_FEATURE_CONTROL		0x3a
@@ -218,6 +230,11 @@ struct ramstage_cache {
 	uint32_t size;
 	char program[0];
 } __attribute__((packed));
+
+/* CPU identification */
+int haswell_family_model(void);
+int haswell_stepping(void);
+int haswell_is_ult(void);
 
 #endif
 

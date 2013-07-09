@@ -66,20 +66,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
 	u8 byte;
-	device_t dev;
 #if CONFIG_HAVE_ACPI_RESUME
 	void *resume_backup_memory;
 #endif
 	val = agesawrapper_amdinitmmio();
 
+
 	if (!cpu_init_detectedx && boot_cpu()) {
-
-		/* enable SIO decode */
-		dev = PCI_DEV(0, 0x14, 3);
-		byte = pci_read_config8(dev, 0x48);
-		byte |= 3;		/* 2e, 2f */
-		pci_write_config8(dev, 0x48, byte);
-
+		hudson_lpc_port80();
 		post_code(0x30);
 
                 /* enable SB MMIO space */

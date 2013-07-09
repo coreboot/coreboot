@@ -134,22 +134,22 @@ void mainboard_romstage_entry(unsigned long bist)
 		max_ddr3_freq: 1600,
 		usb2_ports: {
 			/* Length, Enable, OCn#, Location */
-			{ 0x0040, 1, 0,               /* P0: Port A, CN8 */
+			{ 0x0064, 1, 0,               /* P0: Port A, CN8 */
 			  USB_PORT_BACK_PANEL },
-			{ 0x0040, 1, 0,               /* P1: Port B, CN9  */
+			{ 0x0052, 1, 0,               /* P1: Port B, CN9  */
 			  USB_PORT_BACK_PANEL },
 			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P2: CCD */
 			  USB_PORT_INTERNAL },
 			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P3: BT */
-			  USB_PORT_MINI_PCIE },
+			  USB_PORT_INTERNAL },
 			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P4: LTE */
-			  USB_PORT_MINI_PCIE },
+			  USB_PORT_INTERNAL },
 			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P5: TOUCH */
-			  USB_PORT_FLEX },
+			  USB_PORT_INTERNAL },
 			{ 0x0040, 1, USB_OC_PIN_SKIP, /* P6: SD Card */
-			  USB_PORT_FLEX },
-			{ 0x0040, 1, 3,               /* P7: USB2 Port */
-			  USB_PORT_FRONT_PANEL },
+			  USB_PORT_INTERNAL },
+			{ 0x0123, 1, 3,               /* P7: USB2 Port */
+			  USB_PORT_INTERNAL },
 		},
 		usb3_ports: {
 			/* Enable, OCn# */

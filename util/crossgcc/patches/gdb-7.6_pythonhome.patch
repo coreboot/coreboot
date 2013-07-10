@@ -1,6 +1,6 @@
-diff -ur gdb-7.5/gdb/python/python.c gdb-7.5.patched/gdb/python/python.c
---- gdb-7.5/gdb/python/python.c	2012-06-25 18:53:20.000000000 +0200
-+++ gdb-7.5.patched/gdb/python/python.c	2012-10-24 15:28:37.422047559 +0200
+diff -ur gdb-7.6/gdb/python/python.c gdb-7.6.patched/gdb/python/python.c
+--- gdb-7.6/gdb/python/python.c	2012-06-25 18:53:20.000000000 +0200
++++ gdb-7.6.patched/gdb/python/python.c	2012-10-24 15:28:37.422047.69 +0200
 @@ -1227,6 +1227,15 @@
  			     SLASH_STRING, "python", NULL));
  #endif

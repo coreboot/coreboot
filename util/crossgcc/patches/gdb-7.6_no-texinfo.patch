@@ -1,0 +1,14 @@
+diff -ur gdb-7.6.orig/missing gdb-7.6/missing
+--- gdb-7.6.orig/missing	2009-08-22 04:48:33.000000000 -0700
++++ gdb-7.6/missing	2013-07-10 13:10:32.940902728 -0700
+@@ -314,8 +314,8 @@
+     fi
+     # If the file does not exist, the user really needs makeinfo;
+     # let's fail without touching anything.
+-    test -f $file || exit 1
+-    touch $file
++    #test -f $file || exit 1
++    #touch $file
+     ;;
+ 
+   tar*)

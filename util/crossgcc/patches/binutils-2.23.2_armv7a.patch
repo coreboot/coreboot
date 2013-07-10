@@ -1,6 +1,6 @@
-diff -u binutils-2.23/config.sub binutils-2.23/config.sub
---- binutils-2.23/config.sub	2012-04-25 08:53:25.000000000 -0700
-+++ binutils-2.23/config.sub	2012-12-04 14:58:16.050136773 -0800
+diff -u binutils-2.23.2/config.sub binutils-2.23.2/config.sub
+--- binutils-2.23.2/config.sub	2012-04-25 08:53:25.000000000 -0700
++++ binutils-2.23.2/config.sub	2012-12-04 14:58:16.050136773 -0800
 @@ -259,7 +259,7 @@
  	| alpha | alphaev[4-8] | alphaev56 | alphaev6[78] | alphapca5[67] \
  	| alpha64 | alpha64ev[4-8] | alpha64ev56 | alpha64ev6[78] | alpha64pca5[67] \

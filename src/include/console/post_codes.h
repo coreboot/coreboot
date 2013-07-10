@@ -24,7 +24,7 @@
  * This aims to be a central point for POST codes used throughout coreboot.
  * All POST codes should be declared here as macros, and post_code() should
  * be used with the macros instead of hardcoded values. This allows us to
- * quicly reference POST codes when nothing is working
+ * quickly reference POST codes when nothing is working
  *
  * The format for a POST code macro is
  * #define POST_WHAT_WE_COMMUNICATE_IS_HAPPENING_WHEN_THIS_CODE_IS_POSTED
@@ -92,8 +92,8 @@
 /**
  * \brief Entry into coreboot in ram stage main()
  *
- * This is the first call in ram stage main(). If this code is POSTed, then
- * ramstage has succesfully loaded and started executing.
+ * This is the first call in hardwaremain.c. If this code is POSTed, then
+ * ramstage has successfully loaded and started executing.
  */
 #define POST_ENTRY_RAMSTAGE			0x80
 
@@ -107,7 +107,7 @@
 /**
  * \brief Console boot message succeeded
  *
- * First console message has been succesfully sent through the console backend
+ * First console message has been successfully sent through the console backend
  * driver.
  */
 #define POST_CONSOLE_BOOT_MSG			0x40
@@ -129,7 +129,7 @@
 /**
  * \brief Devices have been configured
  *
- * Device confgration has completed.
+ * Device configuration has completed.
  */
 #define POST_DEVICE_CONFIGURATION_COMPLETE	0x88
 
@@ -207,7 +207,7 @@
 /*
  * The following POST codes are taken from src/include/cpu/amd/geode_post_code.h
  * They overlap with previous codes, and most are not even used
- * Some maiboards still require them, but they are deprecated. We want to consolidate
+ * Some mainboards still require them, but they are deprecated. We want to consolidate
  * our own POST code structure with the codes above.
  *
  * standard AMD post definitions for the AMD Geode

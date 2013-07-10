@@ -423,7 +423,7 @@ struct smm_runtime {
 	u32 save_state_size;
 	/* The apic_id_to_cpu provides a mapping from APIC id to cpu number.
 	 * The cpu number is indicated by the index into the array by matching
-	 * the deafult APIC id and value at the index. The stub loader
+	 * the default APIC id and value at the index. The stub loader
 	 * initializes this array with a 1:1 mapping. If the APIC ids are not
 	 * contiguous like the 1:1 mapping it is up to the caller of the stub
 	 * loader to adjust this mapping. */
@@ -446,7 +446,7 @@ void *smm_get_save_state(int cpu);
 #else
 /* SMM Module Loading API */
 
-/* Ths smm_loader_params structure provides direction to the SMM loader:
+/* The smm_loader_params structure provides direction to the SMM loader:
  * - stack_top - optional external stack provided to loader. It must be at
  *               least per_cpu_stack_size * num_concurrent_stacks in size.
  * - per_cpu_stack_size - stack size per cpu for smm modules.

@@ -148,7 +148,7 @@ struct boot_state_callback {
 	bscb_->arg = arg_
 
 /* The following 2 functions schedule a callback to be called on entry/exit
- * to a given state. Note that thare are no ordering guarantees between the
+ * to a given state. Note that there are no ordering guarantees between the
  * individual callbacks on a given state. 0 is returned on success < 0 on
  * error. */
 int boot_state_sched_on_entry(struct boot_state_callback *bscb,

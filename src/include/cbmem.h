@@ -86,7 +86,7 @@ struct cbmem_entry;
  * implemented by the board or chipset to define the upper address where
  * cbmem lives. This address is required to be a 32-bit address. Additionally,
  * the address needs to be consistent in both romstage and ramstage.  The
- * dynamic cbmem infrasturue allocates new regions below the last allocated
+ * dynamic cbmem infrastructure allocates new regions below the last allocated
  * region. Regions are defined by a cbmem_entry struct that is opaque. Regions
  * may be removed, but the last one added is the only that can be removed.
  *
@@ -100,7 +100,7 @@ struct cbmem_entry;
 
 #define DYN_CBMEM_ALIGN_SIZE (4096)
 
-/* Initialze cbmem to be empty. */
+/* Initialize cbmem to be empty. */
 void cbmem_initialize_empty(void);
 
 /* Return the top address for dynamic cbmem. The address returned needs to

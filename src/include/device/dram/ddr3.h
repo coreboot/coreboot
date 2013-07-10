@@ -63,7 +63,7 @@
 
 /*
  * Module type (byte 3, bits 3:0) of SPD
- * This definition is specific to DDR3. DDR2 SPDs have a diferent structure.
+ * This definition is specific to DDR3. DDR2 SPDs have a different structure.
  */
 enum spd_dimm_type {
 	SPD_DIMM_TYPE_UNDEFINED			= 0x00,

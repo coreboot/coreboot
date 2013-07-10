@@ -47,14 +47,14 @@
  *    x86_setup_fixed_mtrrs_no_enable() then enable_fixed_mtrrs() (equivalent
  *    of x86_setup_fixed_mtrrs()) then x86_setup_var_mtrrs(). If the callers
  *    want to call the components of x86_setup_mtrrs() because of other
- *    rquirements the ordering should still preserved.
+ *    requirements the ordering should still preserved.
  * 2. enable_fixed_mtrr() will enable both variable and fixed MTRRs because
  *    of the nature of the global MTRR enable flag. Therefore, all direct
  *    or indirect callers of enable_fixed_mtrr() should ensure that the
  *    variable MTRR MSRs do not contain bad ranges.
  * 3. If CONFIG_CACHE_ROM is selected an MTRR is allocated for enabling
  *    the caching of the ROM. However, it is set to uncacheable (UC). It
- *    is the responsiblity of the caller to enable it by calling
+ *    is the responsibility of the caller to enable it by calling
  *    x86_mtrr_enable_rom_caching().
  */
 void x86_setup_mtrrs(void);

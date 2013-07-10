@@ -177,7 +177,7 @@
 #define  PCI_CAP_ID_AGP		0x02	/* Accelerated Graphics Port */
 #define  PCI_CAP_ID_VPD		0x03	/* Vital Product Data */
 #define  PCI_CAP_ID_SLOTID	0x04	/* Slot Identification */
-#define  PCI_CAP_ID_MSI		0x05	/* Message Signalled Interrupts */
+#define  PCI_CAP_ID_MSI		0x05	/* Message Signaled Interrupts */
 #define  PCI_CAP_ID_CHSWP	0x06	/* CompactPCI HotSwap */
 #define  PCI_CAP_ID_PCIX	0x07	/* PCIX  */
 #define  PCI_CAP_ID_HT          0x08	/* Hypertransport */
@@ -208,7 +208,7 @@
 #define PCI_PM_PMC              2       /* PM Capabilities Register */
 #define  PCI_PM_CAP_VER_MASK	0x0007	/* Version */
 #define  PCI_PM_CAP_PME_CLOCK	0x0008	/* PME clock required */
-#define  PCI_PM_CAP_AUX_POWER	0x0010	/* Auxilliary power support */
+#define  PCI_PM_CAP_AUX_POWER	0x0010	/* Auxiliary power support */
 #define  PCI_PM_CAP_DSI		0x0020	/* Device specific initialization */
 #define  PCI_PM_CAP_D1		0x0200	/* D1 power state support */
 #define  PCI_PM_CAP_D2		0x0400	/* D2 power state support */
@@ -255,7 +255,7 @@
 #define  PCI_SID_ESR_FIC	0x20	/* First In Chassis Flag */
 #define PCI_SID_CHASSIS_NR	3	/* Chassis Number */
 
-/* Message Signalled Interrupts registers */
+/* Message Signaled Interrupts registers */
 
 #define PCI_MSI_FLAGS		2	/* Various flags */
 #define  PCI_MSI_FLAGS_64BIT	0x80	/* 64-bit addresses allowed */

@@ -232,7 +232,7 @@ int rmodule_load_alignment(const struct rmodule *module)
 	/* The load alignment is the start of the program's linked address.
 	 * The base address where the program is loaded needs to be a multiple
 	 * of the program's starting link address. That way all data alignment
-	 * in the program is presered. */
+	 * in the program is preserved. */
 	return module->header->module_link_start_address;
 }
 

@@ -183,7 +183,7 @@ static void merge_add_memranges(struct memranges *ranges,
 	remove_memranges(ranges, begin, end, -1);
 
 	/* Find the entry to place the new entry after. Since
-	 * remove_memranges() was called above there is a guranteed
+	 * remove_memranges() was called above there is a guaranteed
 	 * spot for this new entry. */
 	for (cur = ranges->entries; cur != NULL; cur = cur->next) {
 		/* Found insertion spot before current entry. */
@@ -292,7 +292,7 @@ void memranges_fill_holes_up_to(struct memranges *ranges,
 			continue;
 		}
 
-		/* If the previous entry does not directly preceed the current
+		/* If the previous entry does not directly precede the current
 		 * entry then add a new entry just after the previous one. */
 		if (range_entry_end(prev) != cur->begin) {
 			resource_t end;

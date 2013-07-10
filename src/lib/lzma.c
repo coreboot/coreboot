@@ -34,8 +34,8 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);
 	/* The outSize in LZMA stream is a 64bit integer stored in little-endian
 	 * (ref: lzma.cc@LZMACompress: put_64). To prevent accessing by
-	 * unaligned memory address and to load in correct endianess, read each
-	 * byte and re-costruct. */
+	 * unaligned memory address and to load in correct endianness, read each
+	 * byte and re-construct. */
 	cp = src + LZMA_PROPERTIES_SIZE;
 	outSize = cp[3] << 24 | cp[2] << 16 | cp[1] << 8 | cp[0];
 	if (LzmaDecodeProperties(&state.Properties, properties, LZMA_PROPERTIES_SIZE) != LZMA_RESULT_OK) {

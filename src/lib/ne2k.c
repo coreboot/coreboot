@@ -132,7 +132,7 @@ static unsigned char eth_pio_read_byte(unsigned int src,
 }
 
 
-/* varition of compute_ip_checksum which works on SRAM */
+/* Variation of compute_ip_checksum which works on SRAM */
 unsigned long compute_ip_checksum_from_sram(unsigned short offset, unsigned short length,
 					unsigned int eth_nic_base)
 {

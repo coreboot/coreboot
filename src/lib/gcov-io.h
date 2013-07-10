@@ -174,7 +174,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #define BITS_PER_UNIT 8
 #define LONG_LONG_TYPE_SIZE 64
 
-/* There are many gcc_assertions. Set the vaule to 1 if we want a warning
+/* There are many gcc_assertions. Set the value to 1 if we want a warning
    message if the assertion fails.  */
 #ifndef ENABLE_ASSERT_CHECKING
 #define ENABLE_ASSERT_CHECKING 1
@@ -335,7 +335,7 @@ typedef HOST_WIDEST_INT gcov_type;
 /* Counters that are collected.  */
 #define GCOV_COUNTER_ARCS 	0  /* Arc transitions.  */
 #define GCOV_COUNTERS_SUMMABLE	1  /* Counters which can be
-				      summaried.  */
+				      summed.  */
 #define GCOV_FIRST_VALUE_COUNTER 1 /* The first of counters used for value
 				      profiling.  They must form a consecutive
 				      interval and their order must match
@@ -426,7 +426,7 @@ struct gcov_summary
   struct gcov_ctr_summary ctrs[GCOV_COUNTERS_SUMMABLE];
 };
 
-/* Structures embedded in coveraged program.  The structures generated
+/* Structures embedded in coverage program.  The structures generated
    by write_profile must match these.  */
 
 #if IN_LIBGCOV

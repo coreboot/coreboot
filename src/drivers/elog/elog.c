@@ -629,7 +629,7 @@ static int elog_flash_area_bootstrap(void)
 
 /*
  * Shrink the log, deleting old entries and moving the
- * remining ones to the front of the log.
+ * remaining ones to the front of the log.
  */
 static int elog_shrink(void)
 {

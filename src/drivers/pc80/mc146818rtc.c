@@ -132,7 +132,7 @@ void rtc_init(int invalid)
 	/*
 	 * Avoid clearing pending interrupts in the resume path because
 	 * the Linux kernel relies on this to know if it should restart
-	 * the RTC timerqueue if the wake was due to the RTC alarm.
+	 * the RTC timer queue if the wake was due to the RTC alarm.
 	 */
 	if (acpi_slp_type == 3)
 		return;

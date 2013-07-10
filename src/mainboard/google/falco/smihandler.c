@@ -32,6 +32,9 @@
 #include <ec/google/chromeec/ec.h>
 #include "ec.h"
 
+/* GPIO46 controls the WLAN_DISABLE_L signal. */
+#define GPIO_WLAN_DISABLE_L 46
+
 int mainboard_io_trap_handler(int smif)
 {
 	switch (smif) {
@@ -98,6 +101,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 		if (smm_get_gnvs()->s3u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+
+		/* Prevent leak from standby rail to WLAN rail in S3. */
+		set_gpio(GPIO_WLAN_DISABLE_L, 0);
 		break;
 	case 5:
 		if (smm_get_gnvs()->s5u0 == 0)
@@ -106,6 +112,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 		if (smm_get_gnvs()->s5u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+
+		/* Prevent leak from standby rail to WLAN rail in S5. */
+		set_gpio(GPIO_WLAN_DISABLE_L, 0);
 		break;
 	}
 

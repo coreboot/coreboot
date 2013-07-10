@@ -80,14 +80,14 @@ int kbc_cleanup_buffers(void)
 }
 
 
-/* The ENE 60/64 EC registers are the same comand/status IB/OB KBC pair.
+/* The ENE 60/64 EC registers are the same command/status IB/OB KBC pair.
  * Check status from 64 port before each command.
  *
  *  Ex. Get panel ID command C43/D77
  *  Check IBF empty. Then Write 0x43(CMD) to 0x64 Port
  *  Check IBF empty. Then Write 0x77(DATA) to 0x60 Port
  *  Check OBF set. Then Get Data(0x03:panel ID) from 0x60
- * Different commands return may or maynot respond and may have multiple
+ * Different commands return may or may not respond and may have multiple
  * bytes. Keep it simple for nor
  */
 

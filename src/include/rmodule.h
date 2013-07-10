@@ -95,18 +95,18 @@ struct rmodule_header {
 	u32 relocations_begin_offset;
 	u32 relocations_end_offset;
 	/* The starting address of the linked program. This address is vital
-	 * for determining relocation offsets as the reloction info and other
+	 * for determining relocation offsets as the relocation info and other
 	 * symbols (bss, entry point) need this value as a basis to calculate
 	 * the offsets.
 	 */
 	u32 module_link_start_address;
 	/* The module_program_size is the size of memory used while running
-	 * the program. The program is assumed to consume a contiguos amount
+	 * the program. The program is assumed to consume a contiguous amount
 	 * of memory. */
 	u32 module_program_size;
 	/* This is program's execution entry point. */
 	u32 module_entry_point;
-	/* Optional paramter structure that can be used to pass data into
+	/* Optional parameter structure that can be used to pass data into
 	 * the module. */
 	u32 parameters_begin;
 	u32 parameters_end;

@@ -22,7 +22,7 @@
 
 /* update-in-progress  - set to "1" 244 microsecs before RTC goes off the bus,
  * reset after update (may take 1.984ms @ 32768Hz RefClock) is complete,
- * totalling to a max high interval of 2.228 ms.
+ * totaling to a max high interval of 2.228 ms.
  */
 # define RTC_UIP		0x80
 # define RTC_DIV_CTL		0x70

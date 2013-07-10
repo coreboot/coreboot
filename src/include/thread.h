@@ -43,7 +43,7 @@ void threads_initialize(void);
  * current state in the boot state machine until it is complete. */
 int thread_run(void (*func)(void *), void *arg);
 /* thread_run_until is the same as thread_run() except that it blocks state
- * transitions from occuring in the (state, seq) pair of the boot state
+ * transitions from occurring in the (state, seq) pair of the boot state
  * machine. */
 int thread_run_until(void (*func)(void *), void *arg,
                      boot_state_t state, boot_state_sequence_t seq);
@@ -52,7 +52,7 @@ int thread_run_until(void (*func)(void *), void *arg,
 int thread_yield_microseconds(unsigned microsecs);
 
 /* Allow and prevent thread cooperation on current running thread. By default
- * all threads are marked to be cooperative. That means a thread can yeild
+ * all threads are marked to be cooperative. That means a thread can yield
  * to another thread at a pre-determined switch point. Current there is
  * only a single place where switching may occur: a call to udelay(). */
 void thread_cooperate(void);

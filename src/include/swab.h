@@ -10,7 +10,7 @@
  *    separated swab functions from cpu_to_XX,
  *    to clean up support for bizarre-endian architectures.
  *
- * See asm-i386/byteorder.h and suches for examples of how to provide
+ * See asm-i386/byteorder.h and such for examples of how to provide
  * architecture-dependent optimized versions
  *
  */

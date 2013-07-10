@@ -63,7 +63,7 @@
 #define   UART_LCR_WLS_7	0x02 /* 7 bit character length */
 #define   UART_LCR_WLS_8	0x03 /* 8 bit character length */
 #define   UART_LCR_STB		0x04 /* Number of stop Bits, off = 1, on = 1.5 or 2) */
-#define   UART_LCR_PEN		0x08 /* Parity eneble */
+#define   UART_LCR_PEN		0x08 /* Parity enable */
 #define   UART_LCR_EPS		0x10 /* Even Parity Select */
 #define   UART_LCR_STKP		0x20 /* Stick Parity */
 #define   UART_LCR_SBRK		0x40 /* Set Break */

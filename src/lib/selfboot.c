@@ -361,7 +361,7 @@ static int build_self_segment_list(
 			       (void *)(intptr_t)ntohll(segment->load_addr));
 			*entry =  ntohll(segment->load_addr);
 			/* Per definition, a payload always has the entry point
-			 * as last segment. Thus, we use the occurence of the
+			 * as last segment. Thus, we use the occurrence of the
 			 * entry point as break condition for the loop.
 			 * Can we actually just look at the number of section?
 			 */

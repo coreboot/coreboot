@@ -24,7 +24,7 @@
 
 /*
  * Structure describing console buffer. It is overlaid on a flat memory area,
- * whith buffer_body covering the extent of the memory. Once the buffer is
+ * with buffer_body covering the extent of the memory. Once the buffer is
  * full, the cursor keeps going but the data is dropped on the floor. This
  * allows to tell how much data was lost in the process.
  */
@@ -138,7 +138,7 @@ void cbmemc_tx_byte(unsigned char data)
  * the CBMEM console buffer contents.
  *
  * If there is overflow - add to the destination area a string, reporting the
- * overflow and the number of dropped charactes.
+ * overflow and the number of dropped characters.
  */
 static void copy_console_buffer(struct cbmem_console *new_cons_p)
 {

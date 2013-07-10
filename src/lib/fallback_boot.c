@@ -8,7 +8,7 @@
 
 static void set_boot_successful(void)
 {
-	/* Remember I succesfully booted by setting
+	/* Remember I successfully booted by setting
 	 * the initial boot direction
 	 * to the direction that I booted.
 	 */

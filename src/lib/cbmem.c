@@ -90,7 +90,7 @@ void cbmem_init(u64 baseaddr, u64 size)
 		for (;;) ;
 	}
 
-	/* we don't need to call this in romstage, usefull only from ramstage */
+	/* we don't need to call this in romstage, useful only from ramstage */
 #ifndef __PRE_RAM__
 	set_cbmem_toc((struct cbmem_entry *)(unsigned long)baseaddr);
 #endif
@@ -205,7 +205,7 @@ void *cbmem_find(u32 id)
 }
 
 #if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
-/* Returns True if it was not intialized before. */
+/* Returns True if it was not initialized before. */
 int cbmem_initialize(void)
 {
 	int rv = 0;

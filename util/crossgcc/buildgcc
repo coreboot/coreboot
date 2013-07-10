@@ -20,8 +20,8 @@
 # Foundation, Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA
 #
 
-CROSSGCC_DATE="April 19th, 2013"
-CROSSGCC_VERSION="1.21"
+CROSSGCC_DATE="July 9th, 2013"
+CROSSGCC_VERSION="1.22"
 
 # default settings
 TARGETDIR=`pwd`/xgcc
@@ -29,16 +29,16 @@ TARGETARCH=i386-elf
 DESTDIR=
 
 # version numbers
-GMP_VERSION=5.0.5
-MPFR_VERSION=3.1.1
+GMP_VERSION=5.1.2
+MPFR_VERSION=3.1.2
 MPC_VERSION=1.0.1
 LIBELF_VERSION=0.8.13
-GCC_VERSION=4.7.3
-GCC_AUTOCONF_VERSION=2.64
-BINUTILS_VERSION=2.23
-GDB_VERSION=7.5
-IASL_VERSION=20121114
-PYTHON_VERSION=2.7.3
+GCC_VERSION=4.8.1
+GCC_AUTOCONF_VERSION=2.69
+BINUTILS_VERSION=2.23.2
+GDB_VERSION=7.6
+IASL_VERSION=20130626
+PYTHON_VERSION=3.3.2
 EXPAT_VERSION=2.1.0
 
 # archive locations
@@ -47,7 +47,7 @@ MPFR_ARCHIVE="http://ftpmirror.gnu.org/mpfr/mpfr-${MPFR_VERSION}.tar.bz2"
 MPC_ARCHIVE="http://ftpmirror.gnu.org/mpc/mpc-${MPC_VERSION}.tar.gz"
 LIBELF_ARCHIVE="http://www.mr511.de/software/libelf-${LIBELF_VERSION}.tar.gz"
 GCC_ARCHIVE="http://ftpmirror.gnu.org/gcc/gcc-${GCC_VERSION}/gcc-${GCC_VERSION}.tar.bz2"
-BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.gz"
+BINUTILS_ARCHIVE="http://ftpmirror.gnu.org/binutils/binutils-${BINUTILS_VERSION}.tar.bz2"
 GDB_ARCHIVE="http://ftpmirror.gnu.org/gdb/gdb-${GDB_VERSION}.tar.bz2"
 IASL_ARCHIVE="http://www.acpica.org/sites/acpica/files/acpica-unix-${IASL_VERSION}.tar.gz"
 PYTHON_ARCHIVE="http://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tar.bz2"
@@ -78,6 +78,8 @@ cyan='\033[0;36m'
 CYAN='\033[1;36m'
 NC='\033[0m' # No Color
 
+UNAME=`uname`
+
 normalize_dirs()
 {
 	mkdir -p $DESTDIR$TARGETDIR/lib
@@ -104,7 +106,7 @@ searchgnu()
 		fi
 	done
 	# A workaround for XxxBSD, whose nongnu patch and tar also work.
-	if [ `uname` = "FreeBSD" -o `uname` = "NetBSD" ]; then
+	if [ $UNAME = "FreeBSD" -o $UNAME = "NetBSD" ]; then
 		if [ $1 != "make" ]; then
 			if test -x "`which $1 2>/dev/null`"; then
 				echo $1
@@ -227,7 +229,8 @@ case "$TARGETARCH" in
 	i386-mingw32)	;;
 	i386*)		TARGETARCH=i386-elf;;
 	arm*)		TARGETARCH=armv7a-eabi;;
-	*)		printf "Invalid architecture\n\n"; myhelp; exit 1;;
+	aarch64*)	TARGETARCH=aarch64-elf;;
+	*)		printf "${red}WARNING: Unsupported architecture $TARGETARCH.${NC}\n\n"; ;;
 esac
 
 echo "Target arch is now $TARGETARCH"
@@ -302,7 +305,7 @@ printf "Unpacked and patched ... "
 printf "${green}ok${NC}\n"
 
 CC=cc
-if [ `uname` = "Darwin" ]; then
+if [ $UNAME = "Darwin" ]; then
 	#GCC_OPTIONS="$GCC_OPTIONS --enable-threads=posix"
 
 	# generally the OS X compiler can create x64 binaries.
@@ -368,7 +371,7 @@ if [ -f build-mpfr/.success ]; then
 else
 printf "Building MPFR ${MPFR_VERSION} ... "
 (
-	test `uname` = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
+	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
 	cd build-mpfr
 	rm -f .failed
 	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
@@ -594,7 +597,11 @@ printf "Building IASL ${IASL_VERSION} ... "
 	cd $IASL_DIR/generate/unix
 	rm -f .failed
 	CFLAGS="$HOSTCFLAGS"
-	$MAKE CC="$CC" iasl || touch .failed
+	HOST="_LINUX"
+	test $UNAME = "Darwin" && HOST="_APPLE"
+	test $UNAME = "FreeBSD" && HOST="_FreeBSD"
+	test $UNAME = "Cygwin" && HOST="_CYGWIN"
+	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2" CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch .failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
 	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi
 	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi

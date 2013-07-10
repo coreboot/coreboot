@@ -1,6 +1,6 @@
-diff -ur binutils-2.23/bfd/Makefile.in binutils-2.23.patched/bfd/Makefile.in
---- binutils-2.23/bfd/Makefile.in	2012-10-22 14:33:51.000000000 +0200
-+++ binutils-2.23.patched/bfd/Makefile.in	2012-10-24 15:33:04.442080163 +0200
+diff -ur binutils-2.23.2/bfd/Makefile.in binutils-2.23.2.patched/bfd/Makefile.in
+--- binutils-2.23.2/bfd/Makefile.in	2012-10-22 14:33:51.000000000 +0200
++++ binutils-2.23.2.patched/bfd/Makefile.in	2012-10-24 15:33:04.442080163 +0200
 @@ -323,7 +323,7 @@
  RELEASE = y
  INCDIR = $(srcdir)/../include

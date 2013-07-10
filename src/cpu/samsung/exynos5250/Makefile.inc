@@ -59,5 +59,5 @@ ramstage-y += exynos-tmu.c
 
 exynos5250_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5250 BL1\n"
-	dd if=3rdparty/cpu/samsung/exynos5250/E5250.nbl1.bin \
+	dd if=3rdparty/cpu/samsung/exynos5250/bl1.bin \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1

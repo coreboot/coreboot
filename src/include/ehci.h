@@ -161,7 +161,7 @@ struct ehci_regs {
 #define USBMODE_CM_IDLE	(0<<0)		/* idle state */
 
 /* Moorestown has some non-standard registers, partially due to the fact that
- * its EHCI controller has both TT and LPM support. HOSTPCx are extentions to
+ * its EHCI controller has both TT and LPM support. HOSTPCx are extensions to
  * PORTSCx
  */
 #define HOSTPC0		0x84		/* HOSTPC extension */

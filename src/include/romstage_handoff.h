@@ -23,12 +23,12 @@
 #include <string.h>
 #include <cbmem.h>
 
-/* It is the chipset's responsbility for maintaining the integrity of this
+/* It is the chipset's responsibility for maintaining the integrity of this
  * structure in CBMEM. For instance, if chipset code adds this structure
  * using the CBMEM_ID_ROMSTAGE_INFO id it needs to ensure it doesn't clobber
  * fields it doesn't own. */
 struct romstage_handoff {
-	/* Inidicate if the current boot is an S3 resume. If
+	/* Indicate if the current boot is an S3 resume. If
 	 * CONFIG_RELOCTABLE_RAMSTAGE is enabled the chipset code is
 	 * responsible for initializing this variable. Otherwise, ramstage
 	 * will be re-loaded from cbfs (which can be slower since it lives
@@ -42,7 +42,7 @@ struct romstage_handoff {
 
 #if defined(__PRE_RAM__)
 /* The romstage_handoff_find_or_add() function provides the necessary logic
- * for initializng the romstage_handoff structure in cbmem. Different components
+ * for initializing the romstage_handoff structure in cbmem. Different components
  * of the romstage may be responsible for setting up different fields. Therefore
  * that same logic flow should be used for allocating and initializing the
  * structure. A newly allocated structure will be memset to 0. */

@@ -533,12 +533,12 @@
 #define SC			5	/*  Swiss 0xCeese - maps a 256K region in to 16K 0xcunks. Set W/R*/
 #define BMIO			6	/*  Base Mask IO*/
 #define SCIO			7	/*  Swiss 0xCeese IO*/
-#define SC_SHADOW	8	/*  Special marker for Shadow SC descriptors so setShadow proc is independant of CPU*/
-#define R_SYSMEM		9	/*  Special marker for SYSMEM R descriptors so GLIUInit proc is independant of CPU*/
-#define BMO_SMM		10	/*  Specail marker for SMM*/
-#define BM_SMM		11	/*  Specail marker for SMM*/
-#define BMO_DMM		12	/*  Specail marker for DMM*/
-#define BM_DMM		13	/*  Specail marker for DMM*/
+#define SC_SHADOW	8	/*  Special marker for Shadow SC descriptors so setShadow proc is independent of CPU*/
+#define R_SYSMEM		9	/*  Special marker for SYSMEM R descriptors so GLIUInit proc is independent of CPU*/
+#define BMO_SMM		10	/*  Special marker for SMM*/
+#define BM_SMM		11	/*  Special marker for SMM*/
+#define BMO_DMM		12	/*  Special marker for DMM*/
+#define BM_DMM		13	/*  Special marker for DMM*/
 #define RO_FB			14	/*  special for Frame buffer.*/
 #define R_FB			15	/*  special for FB.*/
 #define OTHER			0x0FE /*  Special marker for other*/

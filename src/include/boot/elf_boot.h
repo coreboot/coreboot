@@ -10,7 +10,7 @@
  *
  * All of the information must be Position Independent Data.
  * That is it must be safe to relocate the whole ELF boot parameter
- * block without changing the meaning or correctnes of the data.
+ * block without changing the meaning or correctness of the data.
  * Additionally it must be safe to permute the order of the ELF notes
  * to any possible permutation without changing the meaning or correctness
  * of the data.
@@ -51,7 +51,7 @@ typedef struct
 #define EBN_BOOTLOADER_NAME	0x00000002
 /* This specifies just the name of the bootloader for easy comparison */
 #define EBN_BOOTLOADER_VERSION	0x00000003
-/* This specifies the version of the bootlader */
+/* This specifies the version of the bootloader */
 #define EBN_COMMAND_LINE	0x00000004
 /* This specifies a command line that can be set by user interaction,
  * and is provided as a free form string to the loaded image.

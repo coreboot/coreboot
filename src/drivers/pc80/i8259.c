@@ -94,7 +94,7 @@ void setup_i8259(void)
 	/* Now clear the interrupts through OCW1.
 	 * First we mask off all interrupts on the slave interrupt controller
 	 * then we mask off all interrupts but interrupt 2 on the master
-	 * controller. This way the cascading stays alife.
+	 * controller. This way the cascading stays alive.
 	 */
 	outb(ALL_IRQS, SLAVE_PIC_OCW1);
 	outb(ALL_IRQS & ~IRQ2, MASTER_PIC_OCW1);

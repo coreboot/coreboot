@@ -396,7 +396,7 @@ gcov_exit (void)
 #endif
     prefix_length = 0;
 
-  /* If no prefix was specified and a prefix stip, then we assume
+  /* If no prefix was specified and a prefix strip, then we assume
      relative.  */
   if (gcov_prefix_strip != 0 && prefix_length == 0)
     {

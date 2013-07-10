@@ -399,7 +399,7 @@ static unsigned long lb_table_fini(struct lb_header *head)
 /* Routines to extract part so the coreboot table or
  * information from the coreboot table after we have written it.
  * Currently get_lb_mem relies on a global we can change the
- * implementaiton.
+ * implementation.
  */
 static struct lb_memory *mem_ranges = NULL;
 
@@ -567,7 +567,7 @@ unsigned long write_coreboot_table(
 	/* Record our GPIO settings (ChromeOS specific) */
 	lb_gpios(head);
 
-	/* pass along the VDAT buffer adress */
+	/* pass along the VDAT buffer address */
 	lb_vdat(head);
 
 	/* pass along VBNV offsets in CMOS */

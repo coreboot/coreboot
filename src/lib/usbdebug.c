@@ -333,7 +333,7 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 		if (!(portsc & PORT_CONNECT))
 			return -1; //-ENOTCONN;
 
-		/* bomb out completely if something weird happend */
+		/* bomb out completely if something weird happened */
 		if ((portsc & PORT_CSC))
 			return -2; //-EINVAL;
 

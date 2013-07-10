@@ -67,13 +67,13 @@ int timers_run(void);
  * 0 returned on success, < 0 on error. */
 int timer_sched_callback(struct timeout_callback *tocb, unsigned long us);
 
-/* Add microseconds to an absoute time. */
+/* Add microseconds to an absolute time. */
 static inline void mono_time_add_usecs(struct mono_time *mt, long us)
 {
 	mt->microseconds += us;
 }
 
-/* Add milliseconds to an absoute time. */
+/* Add milliseconds to an absolute time. */
 static inline void mono_time_add_msecs(struct mono_time *mt, long ms)
 {
 	mono_time_add_usecs(mt, ms * USECS_PER_MSEC);
@@ -85,7 +85,7 @@ static inline void mono_time_add_rela_time(struct mono_time *mt,
 	mono_time_add_usecs(mt, t->microseconds);
 }
 
-/* Compare two absoluted times: Return -1, 0, or 1 if t1 is <, =, or > t2,
+/* Compare two absolute times: Return -1, 0, or 1 if t1 is <, =, or > t2,
  * respectively. */
 static inline int mono_time_cmp(const struct mono_time *t1,
                                 const struct mono_time *t2)

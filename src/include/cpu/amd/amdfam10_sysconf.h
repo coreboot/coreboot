@@ -64,7 +64,7 @@ struct amdfam10_sysconf_t {
 	unsigned lift_bsp_apicid;
 	int apicid_offset;
 
-	void *mb; // pointer for mb releated struct
+	void *mb; // pointer for mb related struct
 
 };
 

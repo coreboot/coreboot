@@ -96,7 +96,7 @@ u32 gsmi_exec(u8 command, u32 *param)
 		break;
 
 	case GSMI_CMD_CLEAR_EVENT_LOG:
-		/* Get paramter buffer even though we don't use it */
+		/* Get parameter buffer even though we don't use it */
 		cel = (struct gsmi_clear_eventlog_param *)(*param);
 		if (!cel)
 			break;

@@ -1045,7 +1045,7 @@
 #define SCISSOR_TOP_FLAG	0x40
 #define SCISSOR_BOTTOM_FLAG	0x80
 
-/* ATI VGA Extended Regsiters */
+/* ATI VGA Extended Registers */
 #define sioATIEXT		0x1ce
 #define bioATIEXT		0x3ce
 
@@ -1057,7 +1057,7 @@
 #define VGAGRA			0x3ce
 #define GRA06			0x06
 
-/* VGA Seququencer Registers */
+/* VGA Sequencer Registers */
 #define VGASEQ			0x3c4
 #define SEQ02			0x02
 #define SEQ04			0x04

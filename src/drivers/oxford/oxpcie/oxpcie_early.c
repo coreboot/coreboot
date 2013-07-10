@@ -64,7 +64,7 @@ void oxford_init(void)
 			CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE);
 
 	/* Memory window for the OXPCIe952 card */
-	// XXX is the calculation of base and limit corect?
+	// XXX is the calculation of base and limit correct?
 	pci_write_config32(PCIE_BRIDGE, PCI_MEMORY_BASE,
 			((CONFIG_OXFORD_OXPCIE_BASE_ADDRESS & 0xffff0000) |
 			((CONFIG_OXFORD_OXPCIE_BASE_ADDRESS >> 16) & 0xff00)));

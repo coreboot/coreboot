@@ -77,7 +77,7 @@ static void w83795_dts_enable(u8 dts_src)
 	/* store bank3 regs first before enable DTS */
 
 	/*
-	 * TD/TR1-4 termal diode by default
+	 * TD/TR1-4 thermal diode by default
 	 *  0x00 Disable
 	 *  0x01 thermistors on motherboard
 	 *  0x10 different mode voltage
@@ -169,7 +169,7 @@ static void w83795_set_fan(w83795_fan_mode_t mode)
 		//SFIV TODO
 	}
 
-	/* Set Hystersis of Temperature (HT) */
+	/* Set Hysteresis of Temperature (HT) */
 	//TODO
 }
 

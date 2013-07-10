@@ -38,9 +38,9 @@
 #define DTS_SRC_AMD_SBTSI		(1 << 0)
 
 #define W83795_REG_TSS(n)		(0x209 + (n)) /* Temperature Source Selection Register */
-#define W83795_REG_TTTI(n)		(0x260 + (n)) /* tarrget temperature W83795G/ADG will try to tune the fan output to keep */
+#define W83795_REG_TTTI(n)		(0x260 + (n)) /* Target temperature W83795G/ADG will try to tune the fan output to keep */
 #define W83795_REG_CTFS(n)		(0x268 + (n)) /* Critical Temperature to Full Speed all fan */
-#define W83795_REG_HT(n)		(0x270 + (n)) /* Hystersis of Temperature */
+#define W83795_REG_HT(n)		(0x270 + (n)) /* Hysteresis of Temperature */
 #define W83795_REG_DTSC			0x301 /* Digital Temperature Sensor Configuration */
 
 #define W83795_REG_DTSE			0x302 /* Digital Temperature Sensor Enable */

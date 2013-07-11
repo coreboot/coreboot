@@ -62,9 +62,8 @@ int dbgp_bulk_read_x(struct ehci_debug_info *dbg_info, void *data, int size);
 void set_debug_port(unsigned port);
 
 int usbdebug_init(void);
-struct ehci_debug_info *dbgp_ehci_info(void);
-#define dbgp_console_output dbgp_ehci_info
-#define dbgp_console_input dbgp_ehci_info
+struct ehci_debug_info *dbgp_console_output(void);
+struct ehci_debug_info *dbgp_console_input(void);
 int dbgp_ep_is_active(struct ehci_debug_info *dbg_info);
 void usbdebug_tx_byte(struct ehci_debug_info *info, unsigned char data);
 void usbdebug_tx_flush(struct ehci_debug_info *info);

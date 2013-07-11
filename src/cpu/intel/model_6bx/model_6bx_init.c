@@ -31,7 +31,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
-#include <usbdebug.h>
 
 static const uint32_t microcode_updates[] = {
 	#include "microcode-737-MU16b11c.h"

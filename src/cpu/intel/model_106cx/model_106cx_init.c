@@ -30,7 +30,6 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
-#include <usbdebug.h>
 
 static const uint32_t microcode_updates[] = {
 	#include "microcode-M01106C2217.h"

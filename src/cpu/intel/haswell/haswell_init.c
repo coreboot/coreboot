@@ -35,7 +35,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 #include <pc80/mc146818rtc.h>
-#include <usbdebug.h>
 #include "haswell.h"
 #include "chip.h"
 

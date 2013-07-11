@@ -32,7 +32,6 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
-#include <usbdebug.h>
 
 static const uint32_t microcode_updates[] = {
 	#include "microcode-1624-m206e839.h"

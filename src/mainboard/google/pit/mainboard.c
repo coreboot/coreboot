@@ -146,13 +146,8 @@ static const struct parade_write parade_writes[] = {
 	{ 0x01, 0xca, 0x01 },
 	 /* DPCD40B, Initial Code minor revision '05' */
 	{ 0x01, 0xcb, 0x05 },
-	 /* DPCD720, Select internal PWM */
-	{ 0x01, 0xa5, 0xa0 },
-	 /*
-	  * FFh for 100% PWM of brightness, 0h for 0%
-	  * brightness
-	  */
-	{ 0x01, 0xa7, 0xff },
+	 /* DPCD720, Select external PWM */
+	{ 0x01, 0xa5, 0x80 },
 	 /*
 	  * Set LVDS output as 6bit-VESA mapping,
 	  * single LVDS channel

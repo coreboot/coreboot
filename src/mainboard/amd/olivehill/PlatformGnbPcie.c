@@ -26,7 +26,7 @@
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 
-PCIe_PORT_DESCRIPTOR PortList [] = {
+static PCIe_PORT_DESCRIPTOR PortList [] = {
 	{
 		0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
 		PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 3, 3),
@@ -78,7 +78,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 	}
 };
 
-PCIe_DDI_DESCRIPTOR DdiList [] = {
+static PCIe_DDI_DESCRIPTOR DdiList [] = {
 	/* DP0 to HDMI0/DP */
 	{
 		0,
@@ -99,11 +99,11 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 	},
 };
 
-PCIe_COMPLEX_DESCRIPTOR Kabini = {
-        DESCRIPTOR_TERMINATE_LIST,
-        0,
-        PortList,
-        DdiList
+static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
+		DESCRIPTOR_TERMINATE_LIST,
+		0,
+		PortList,
+		DdiList
 };
 
 /*---------------------------------------------------------------------------------------*/
@@ -127,10 +127,8 @@ OemCustomizeInitEarly (
 	IN  OUT AMD_EARLY_PARAMS    *InitEarly
 	)
 {
-	AGESA_STATUS         Status;
-	VOID                 *KabiniPcieComplexListPtr;
-	VOID                 *KabiniPciePortPtr;
-	VOID                 *KabiniPcieDdiPtr;
+	AGESA_STATUS            Status;
+	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
@@ -139,46 +137,18 @@ OemCustomizeInitEarly (
 	/*  */
 	/* Allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR */
 	/*  */
-	AllocHeapParams.RequestedBufferSize = sizeof(Kabini) + sizeof(PortList) + sizeof(DdiList);
+	AllocHeapParams.RequestedBufferSize = sizeof(PcieComplex);
 
 	AllocHeapParams.BufferHandle = AMD_MEM_MISC_HANDLES_START;
 	AllocHeapParams.Persist = HEAP_LOCAL_CACHE;
 	Status = HeapAllocateBuffer (&AllocHeapParams, &InitEarly->StdHeader);
 	if ( Status!= AGESA_SUCCESS) {
-		/* Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR , PCIe_PORT_DESCRIPTOR and PCIe_DDI_DESCRIPTOR */
+		/* Could not allocate buffer for PCIe_COMPLEX_DESCRIPTOR */
 		ASSERT(FALSE);
 		return;
 	}
 
-	KabiniPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	AllocHeapParams.BufferPtr += sizeof(Kabini);
-	KabiniPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
-
-	AllocHeapParams.BufferPtr += sizeof(PortList);
-	KabiniPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
-
-	LibAmdMemFill (KabiniPcieComplexListPtr,
-		       0,
-		       sizeof (Kabini),
-		       &InitEarly->StdHeader);
-
-	LibAmdMemFill (KabiniPciePortPtr,
-		       0,
-		       sizeof (PortList),
-		       &InitEarly->StdHeader);
-
-	LibAmdMemFill (KabiniPcieDdiPtr,
-		       0,
-		       sizeof (DdiList),
-		       &InitEarly->StdHeader);
-
-	LibAmdMemCopy  (KabiniPcieComplexListPtr, &Kabini, sizeof (Kabini), &InitEarly->StdHeader);
-	LibAmdMemCopy  (KabiniPciePortPtr, &PortList[0], sizeof (PortList), &InitEarly->StdHeader);
-	LibAmdMemCopy  (KabiniPcieDdiPtr, &DdiList[0], sizeof (DdiList), &InitEarly->StdHeader);
-
-	((PCIe_COMPLEX_DESCRIPTOR*)KabiniPcieComplexListPtr)->PciePortList =  (PCIe_PORT_DESCRIPTOR*)KabiniPciePortPtr;
-	((PCIe_COMPLEX_DESCRIPTOR*)KabiniPcieComplexListPtr)->DdiLinkList  =  (PCIe_DDI_DESCRIPTOR*)KabiniPcieDdiPtr;
-
-	InitEarly->GnbConfig.PcieComplexList = KabiniPcieComplexListPtr;
+	PcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
+	LibAmdMemCopy  (PcieComplexListPtr, &PcieComplex, sizeof(PcieComplex), &InitEarly->StdHeader);
+	InitEarly->GnbConfig.PcieComplexList = PcieComplexListPtr;
 }

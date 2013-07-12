@@ -49,7 +49,7 @@ Scope (\_SB)
 
 		Name (_CRS, ResourceTemplate()
 		{
-			Interrupt (ResourceConsumer, Level, ActiveLow)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
 			{
 				BOARD_TRACKPAD_IRQ
 			}
@@ -84,7 +84,7 @@ Scope (\_SB)
 
 		Name (_CRS, ResourceTemplate()
 		{
-			Interrupt (ResourceConsumer, Level, ActiveLow)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
 			{
 				BOARD_TOUCHSCREEN_IRQ
 			}

@@ -26,10 +26,14 @@
 
 struct ec_kontron_it8516e_config {
 	/*
-	 * Per fan settings
-	 * Can be overwritten by fan1_mode, fan2_mode, fan1_target
-	 * and fan2_target options
+	 * Fan settings (fan1: CPU; fan2: System)
+	 * Can be overwritten by
+	 *   systemp_type,
+	 *   fan1_mode, fan2_mode,
+	 *   fan1_target, and fan2_target
+	 * nvram options.
 	 */
+	enum it8516e_systemp_types default_systemp;
 	enum it8516e_fan_modes default_fan_mode[2];
 	u16 default_fan_target[2]; /* PWM: % / Speed: RPM / Thermal: °C */
 };

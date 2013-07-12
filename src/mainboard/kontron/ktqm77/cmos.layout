@@ -87,6 +87,13 @@ entries
 409          2       e       7        power_on_after_fail
 #411          5       r       0        unused
 
+# coreboot config options: additional mainboard options
+416          4       e      10        systemp_type
+420          7       h       0        fan1_min
+427          7       h       0        fan1_max
+434          7       h       0        fan2_min
+441          7       h       0        fan2_max
+
 # coreboot config options: bootloader
 448         64       r       0        write_protected_by_bios
 512        328       s       0        boot_devices
@@ -148,6 +155,11 @@ enumerations
 8     3     Thermal
 9     0     No
 9     1     Yes
+10    0     None
+10    1     AMD
+10    2     LM75@90
+10    3     GPIO16
+10    4     LM75@9e
 # -----------------------------------------------------------------
 checksums
 

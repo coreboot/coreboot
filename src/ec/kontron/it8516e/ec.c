@@ -118,7 +118,7 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 		       "Setting it8516e fan%d "
 		       "control to %d%% PWM.\n",
 		       fan_idx + 1, fan_target);
-		it8516e_set_fan_pwm(fan_idx, fan_target);
+		it8516e_set_fan_pwm(fan_idx, (fan_target * 255) / 100);
 		break;
 	case IT8516E_MODE_SPEED:
 		printk(BIOS_DEBUG,

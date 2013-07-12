@@ -40,6 +40,7 @@ enum { /* EC commands */
 	IT8516E_CMD_SET_FAN_SPEED	= 0x15,
 	IT8516E_CMD_GET_FAN_TEMP	= 0x16,
 	IT8516E_CMD_SET_FAN_TEMP	= 0x17,
+	IT8516E_CMD_SET_FAN_LIMITS	= 0x1a,
 };
 
 static void it8516e_set_systemp_type(const u8 type)
@@ -89,14 +90,29 @@ static void it8516e_set_fan_temperature(const u8 idx, const u8 temp)
 	send_ec_data(((temp << 6) >> 8) & 0xff);
 }
 
+static void it8516e_set_fan_limits(const u8 idx, const u8 min, const u8 max)
+{
+	if (send_ec_command(IT8516E_CMD_SET_FAN_LIMITS))
+		return;
+	if (send_ec_data(idx))
+		return;
+	if (send_ec_data(min))
+		return;
+	send_ec_data(max);
+}
+
 static void it8516e_set_fan_from_options(const config_t *const config,
 					 const u8 fan_idx)
 {
 	static char fanX_mode[]		= "fanX_mode";
 	static char fanX_target[]	= "fanX_target";
+	static char fanX_min[]		= "fanX_min";
+	static char fanX_max[]		= "fanX_max";
 
-	u8 fan_mode = config->default_fan_mode[fan_idx];
-	u16 fan_target = config->default_fan_target[fan_idx];
+	u8 fan_mode	= config->default_fan_mode[fan_idx];
+	u16 fan_target	= config->default_fan_target[fan_idx];
+	u8 fan_min	= config->default_fan_min[fan_idx];
+	u8 fan_max	= config->default_fan_max[fan_idx];
 
 	fanX_mode[3] = '1' + fan_idx;
 	get_option(&fan_mode, fanX_mode);
@@ -129,11 +145,28 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 		break;
 	case IT8516E_MODE_THERMAL:
 		printk(BIOS_DEBUG,
-		       "Setting it8516e fan%d "
-		       "control to %d°C.\n",
+		       "Setting it8516e fan%d control to %d C.\n",
 		       fan_idx + 1, fan_target);
-		it8516e_set_fan_temperature(
-			fan_idx, fan_target);
+		it8516e_set_fan_temperature(fan_idx, fan_target);
+
+		fanX_min[3] = '1' + fan_idx;
+		fanX_max[3] = '1' + fan_idx;
+		get_option(&fan_min, fanX_min);
+		get_option(&fan_max, fanX_max);
+
+		if (!fan_max || fan_max > 100)	/* Constrain fan_max to 100% */
+			fan_max = 100;
+		if (fan_min >= 100)		/* Constrain fan_min to  99% */
+			fan_min = 99;
+		if (fan_max <= fan_min)	/* If fan_min is the higher of the two,
+					   it's safer for the hardware to keep
+					   its value. Therefore, update fan_max. */
+			fan_max = fan_min + 1;
+
+		printk(BIOS_DEBUG,
+		       "Setting it8516e fan%d limits to %d%% - %d%% PWM.\n",
+		       fan_idx + 1, fan_min, fan_max);
+		it8516e_set_fan_limits(fan_idx, fan_min, fan_max);
 		break;
 	}
 }

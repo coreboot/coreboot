@@ -40,4 +40,12 @@ enum it8516e_fan_modes { /* Possible modes of fan control */
 	IT8516E_MODE_THERMAL	= 0x03,
 };
 
+enum it8516e_systemp_types { /* Possible sources of system temperature */
+	IT8516E_SYSTEMP_NONE	= 0x00,
+	IT8516E_SYSTEMP_AMD	= 0x01,
+	IT8516E_SYSTEMP_LM75_90	= 0x02,
+	IT8516E_SYSTEMP_GPIO16	= 0x03,
+	IT8516E_SYSTEMP_LM75_9e	= 0x04,
+};
+
 #endif

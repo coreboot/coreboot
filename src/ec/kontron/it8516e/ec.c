@@ -30,6 +30,8 @@
 typedef struct ec_kontron_it8516e_config config_t;
 
 enum { /* EC commands */
+	IT8516E_CMD_SET_SYSTEMP_TYPE	= 0x06,
+	IT8516E_CMD_GET_SYSTEMP_TYPE	= 0x07,
 	IT8516E_CMD_GET_FAN_MODE	= 0x10,
 	IT8516E_CMD_SET_FAN_MODE	= 0x11,
 	IT8516E_CMD_GET_FAN_PWM		= 0x12,
@@ -39,6 +41,13 @@ enum { /* EC commands */
 	IT8516E_CMD_GET_FAN_TEMP	= 0x16,
 	IT8516E_CMD_SET_FAN_TEMP	= 0x17,
 };
+
+static void it8516e_set_systemp_type(const u8 type)
+{
+	if (send_ec_command(IT8516E_CMD_SET_SYSTEMP_TYPE))
+		return;
+	send_ec_data(type);
+}
 
 static void it8516e_set_fan_mode(const u8 idx, const u8 mode)
 {
@@ -137,6 +146,12 @@ static void it8516e_pm2_init(const device_t dev)
 
 	ec_set_ports(find_resource(dev, PNP_IDX_IO1)->base,
 		     find_resource(dev, PNP_IDX_IO0)->base);
+
+	u8 systemp_type = config->default_systemp;
+	get_option(&systemp_type, "systemp_type");
+	if (systemp_type > 4)
+		systemp_type = IT8516E_SYSTEMP_NONE;
+	it8516e_set_systemp_type(systemp_type);
 
 	it8516e_set_fan_from_options(config, 0);
 	it8516e_set_fan_from_options(config, 1);

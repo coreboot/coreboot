@@ -1685,7 +1685,7 @@ DefinitionBlock (
 			DAT1,   8,  /* SMBUS data1 */
 			BLKD,   8,  /* SMBUS block data */
 			SCNT,   8,  /* SMBUS slave control */
-			SCMD,   8,  /* SMBUS shaow cmd */
+			SCMD,   8,  /* SMBUS shadow cmd */
 			SEVT,   8,  /* SMBUS slave event */
 			SDAT,   8  /* SMBUS slave data */
 	}

@@ -60,6 +60,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 
 		post_code(0x31);
+		agesawrapper_amdinitmmio();
+
+		post_code(0x32);
 		w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
@@ -72,14 +75,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
-
-	post_code(0x35);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitmmio ");
-	val = agesawrapper_amdinitmmio();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
 
 	post_code(0x37);
 	printk(BIOS_DEBUG, "agesawrapper_amdinitreset ");

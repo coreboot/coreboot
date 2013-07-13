@@ -101,7 +101,7 @@ static void log_msg(const char *fmt, va_list args)
 
 static void fatal_error(void)
 {
-	printk(BIOS_ERR, "vboot encountered fatal error. Reseting.\n");
+	printk(BIOS_ERR, "vboot encountered fatal error. Resetting.\n");
 	hard_reset();
 }
 

@@ -395,7 +395,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 				cbfs_print_entry_info(image, entry, stderr);
 
 			// setup new entry
-			DEBUG("Seting new empty entry.\n");
+			DEBUG("Setting new empty entry.\n");
 			entry = cbfs_find_next_entry(image, entry);
 			new_size = (cbfs_get_entry_addr(image, next) -
 				    cbfs_get_entry_addr(image, entry));

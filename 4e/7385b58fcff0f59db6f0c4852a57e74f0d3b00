@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Peter Stuge <peter@stuge.se>
+Code-Review+2: Christian Gmeiner <christian.gmeiner@gmail.com>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Submitted-by: Peter Stuge <peter@stuge.se>
+Submitted-at: Sun, 14 Jul 2013 23:44:10 +0200
+Reviewed-on: http://review.coreboot.org/1556
+Project: coreboot
+Branch: refs/heads/master

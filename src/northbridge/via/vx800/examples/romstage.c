@@ -431,7 +431,7 @@ g)      Rx73h = 32h
 	if (boot_mode == 3) {
 		/*   some idea of Libo.Feng at amd.com in  http://www.coreboot.org/pipermail/coreboot/2008-December/043111.html
 		   I want move the 1M data, I have to set some MTRRs myself. */
-		/* seting mtrr before back memoy save s3 resume time about 0.14 seconds */
+		/* setting mtrr before back memoy save s3 resume time about 0.14 seconds */
 		/*because CAR stack use cache, and here to use cache , must be careful,
 		   1 during these mtrr code, must no function call, (after this mtrr, I think it should be ok to use function)
 		   2 before stack switch, no use variable that have value set before this

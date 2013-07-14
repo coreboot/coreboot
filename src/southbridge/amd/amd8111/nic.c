@@ -52,7 +52,7 @@ static void nic_init(struct device *dev)
 	mmio = resource->base;
 
 	/* Hard Reset PHY */
-	printk(BIOS_DEBUG, "Reseting PHY... ");
+	printk(BIOS_DEBUG, "Resetting PHY... ");
 	if (conf->phy_lowreset) {
 		write32((mmio + CMD3), VAL0 | PHY_RST_POL | RESET_PHY);
 	} else {

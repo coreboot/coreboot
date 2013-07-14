@@ -396,7 +396,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 
 			// setup new entry
 			DEBUG("Setting new empty entry.\n");
-			entry = cbfs_find_next_entry(image, entry);
+			next = cbfs_find_next_entry(image, entry);
 			new_size = (cbfs_get_entry_addr(image, next) -
 				    cbfs_get_entry_addr(image, entry));
 			new_size -= cbfs_calculate_file_header_size("");

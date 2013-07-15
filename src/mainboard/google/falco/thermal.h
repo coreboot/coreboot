@@ -20,6 +20,8 @@
 #ifndef THERMAL_H
 #define THERMAL_H
 
+#define TEMPERATURE_SENSOR_ID		0	/* PECI */
+
 /* Temperature which OS will shutdown at */
 #define CRITICAL_TEMPERATURE		104
 

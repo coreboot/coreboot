@@ -53,13 +53,74 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 
 	device = dev->path.i2c.device;
 	pbus = get_pbus_smbus(dev);
-	res = find_resource(pbus->dev, 0x20);
+	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
 
 	return do_smbus_read_byte(res->base, device, address);
 }
 
+static int do_smbus_write_byte(unsigned smbus_base, unsigned device,
+			       unsigned address, unsigned data)
+{
+	unsigned char global_status_register;
+
+	if (smbus_wait_until_ready(smbus_base) < 0)
+		return SMBUS_WAIT_UNTIL_READY_TIMEOUT;
+
+	/* Setup transaction */
+	/* Disable interrupts */
+	outb(inb(smbus_base + SMBHSTCTL) & (~1), smbus_base + SMBHSTCTL);
+	/* Set the device I'm talking too */
+	outb(((device & 0x7f) << 1) & ~0x01, smbus_base + SMBXMITADD);
+	/* Set the command/address... */
+	outb(address & 0xff, smbus_base + SMBHSTCMD);
+	/* Set up for a byte data read */
+	outb((inb(smbus_base + SMBHSTCTL) & 0xe3) | (0x2 << 2),
+	     (smbus_base + SMBHSTCTL));
+	/* Clear any lingering errors, so the transaction will run */
+	outb(inb(smbus_base + SMBHSTSTAT), smbus_base + SMBHSTSTAT);
+
+	/* Clear the data byte... */
+	outb(data, smbus_base + SMBHSTDAT0);
+
+	/* Start the command */
+	outb((inb(smbus_base + SMBHSTCTL) | 0x40),
+	     smbus_base + SMBHSTCTL);
+
+	/* Poll for transaction completion */
+	if (smbus_wait_until_done(smbus_base) < 0) {
+		printk(BIOS_ERR, "SMBUS transaction timeout\n");
+		return SMBUS_WAIT_UNTIL_DONE_TIMEOUT;
+	}
+
+	global_status_register = inb(smbus_base + SMBHSTSTAT);
+
+	/* Ignore the "In Use" status... */
+	global_status_register &= ~(3 << 5);
+
+	/* Read results of transaction */
+	if (global_status_register != (1 << 1)) {
+		printk(BIOS_ERR, "SMBUS transaction error\n");
+		return SMBUS_ERROR;
+	}
+
+	return 0;
+}
+
+static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, PCI_BASE_ADDRESS_4);
+	return do_smbus_write_byte(res->base, device, address, data);
+}
+
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
+	.write_byte	= lsmbus_write_byte,
 };
 
 static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -100,7 +161,7 @@ static struct device_operations smbus_ops = {
 	.ops_pci		= &smbus_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0 };
+static const unsigned short pci_device_ids[] = { 0x1c22, 0x1e22, 0x9c22, 0 };
 
 static const struct pci_driver pch_smbus __pci_driver = {
 	.ops	 = &smbus_ops,

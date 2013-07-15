@@ -44,6 +44,7 @@ unsigned long acpi_create_slic(unsigned long current);
 
 static void acpi_update_thermal_table(global_nvs_t *gnvs)
 {
+	gnvs->tmps = TEMPERATURE_SENSOR_ID;
 	gnvs->tcrt = CRITICAL_TEMPERATURE;
 	gnvs->tpsv = PASSIVE_TEMPERATURE;
 	gnvs->tmax = MAX_TEMPERATURE;

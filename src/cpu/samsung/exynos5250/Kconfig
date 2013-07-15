@@ -87,10 +87,6 @@ config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
 
-config SYS_TEXT_BASE
-	hex
-	default 0x43e00000
-
 config COREBOOT_TABLES_SIZE
 	hex
 	default 0x4000000

@@ -1,0 +1,5 @@
+config DRIVERS_I2C_RTD2132
+	bool
+	default n
+	help
+	  Enable support for Realtek RTD2132 DisplayPort to LVDS bridge chip.

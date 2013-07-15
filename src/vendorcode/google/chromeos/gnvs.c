@@ -29,6 +29,7 @@
 #include "gnvs.h"
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 #include "vboot_handoff.h"
+#include <vboot_struct.h>
 #endif
 
 chromeos_acpi_t *vboot_data = NULL;
@@ -60,6 +61,13 @@ void chromeos_init_vboot(chromeos_acpi_t *chromeos)
 		elog_add_event(ELOG_TYPE_CROS_DEVELOPER_MODE);
 	if (recovery_mode_enabled()) {
 		int reason = get_recovery_mode_from_vbnv();
+#if CONFIG_VBOOT_VERIFY_FIRMWARE
+		if (vboot_handoff && !reason) {
+			VbSharedDataHeader *sd = (VbSharedDataHeader *)
+				vboot_handoff->shared_data;
+			reason = sd->recovery_reason;
+		}
+#endif
 		elog_add_event_byte(ELOG_TYPE_CROS_RECOVERY_MODE,
 			    reason ? reason : ELOG_CROS_RECOVERY_MODE_BUTTON);
 	}

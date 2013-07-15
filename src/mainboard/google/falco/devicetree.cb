@@ -108,7 +108,13 @@ chip northbridge/intel/haswell
 				end
 			end # LPC bridge
 			device pci 1f.2 on end # SATA Controller
-			device pci 1f.3 on end # SMBus
+			device pci 1f.3 on # SMBus
+				chip drivers/i2c/rtd2132
+					# Enable Spread Sprectrum at 1.0%
+					register "sscg_percent" = "0x10"
+					device i2c 35 on end
+				end
+			end
 			device pci 1f.6 on end # Thermal
 		end
 	end

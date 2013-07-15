@@ -62,10 +62,6 @@ config CBFS_HEADER_ROM_OFFSET
 	hex
 	default 0x10
 
-config CBFS_ROM_OFFSET
-	hex
-	default 0x5000
-
 choice CONSOLE_SERIAL_UART_CHOICES
 	prompt "Serial Console UART"
 	default CONSOLE_SERIAL_UART0

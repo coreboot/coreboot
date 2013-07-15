@@ -4,5 +4,6 @@ source src/drivers/i2c/adt7463/Kconfig
 source src/drivers/i2c/i2cmux/Kconfig
 source src/drivers/i2c/i2cmux2/Kconfig
 source src/drivers/i2c/lm63/Kconfig
+source src/drivers/i2c/rtd2132/Kconfig
 source src/drivers/i2c/w83795/Kconfig
 source src/drivers/i2c/w83793/Kconfig

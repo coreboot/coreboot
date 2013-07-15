@@ -21,7 +21,7 @@
 #define THERMAL_H
 
 /* Config TDP Sensor ID */
-#define CTDP_SENSOR_ID			1 /* PECI */
+#define CTDP_SENSOR_ID			0 /* PECI */
 
 /* Config TDP Nominal */
 #define CTDP_NOMINAL_THRESHOLD_OFF	0

@@ -460,13 +460,12 @@ static void enable_lp_clock_gating(device_t dev)
 	 * RCBA + 0x2614[27:25,14:13,10,8] = 101,11,1,1
 	 * RCBA + 0x2614[23:16] = 0x20
 	 * RCBA + 0x2614[30:28] = 0x0
-	 * RCBA + 0x2614[26] = 1 (IF B2 STEP && 0:31.0@0xFA > 4)
+	 * RCBA + 0x2614[26] = 1 (IF 0:2.0@0x08 >= 0x0b)
 	 */
 	RCBA32_AND_OR(0x2614, 0x8bffffff, 0x0a206500);
 
 	/* Check for LPT-LP B2 stepping and 0:31.0@0xFA > 4 */
-	if (pch_silicon_revision() >= LPT_LP_STEP_B2 &&
-	    pci_read_config8(dev, 0xfa) > 4)
+	if (pci_read_config8(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x8) >= 0x0b)
 		RCBA32_OR(0x2614, (1<<26));
 
 	RCBA32_OR(0x900, 0x0000031f);

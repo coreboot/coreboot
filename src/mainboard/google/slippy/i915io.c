@@ -40,28 +40,6 @@ void runio(struct intel_dp *dp)
 {
 	intel_dp_wait_panel_power_control(0xabcd0008);
 
-	/* replace with function to write to i2c; in this case, we're still
-	 * unsure of what these i2c sequences do
-	 */
-
-	auxout = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x50<<8|0x0|0x40005000;
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x00000000;
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	auxout = 0<<31 /* i2c */|0<<30|0x1<<28/*R*/|0x50<<8|0x3|0x10005003;
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 3);
-	intel_dp_wait_panel_power_control(0xabcd0008);
-	auxout = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x50<<8|0x0|0x40005000;
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x04000000;
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-	auxout = 0<<31 /* i2c */|0<<30|0x1<<28/*R*/|0x50<<8|0x3|0x10005003;
-	unpack_aux(auxout, &msg[0], 4);
-
 	/* vbios spins at this point. Some haswell weirdness? */
 	intel_dp_wait_panel_power_control(0xabcd0008);
 

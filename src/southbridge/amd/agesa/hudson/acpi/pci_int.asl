@@ -17,16 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-	/* PCIe Configuration Space for 16 busses */
+	/* PCIe Configuration Space for CONFIG_MMCONF_BUS_NUMBER busses */
 	OperationRegion(PCFG, SystemMemory, PCBA, PCLN) /* Each bus consumes 1MB */
 		Field(PCFG, ByteAcc, NoLock, Preserve) {
 		/* Byte offsets are computed using the following technique:
 		 * ((bus number + 1) * ((device number * 8) * 4096)) + register offset
 		 * The 8 comes from 8 functions per device, and 4096 bytes per function config space
 		*/
-		Offset(0x00088024),	/* SATA reg 24h Bus 0, Device 17, Function 0 */
+		Offset(0x00088024),	/* Byte offset to SATA register 24h - Bus 0, Device 17, Function 0 */
 		STB5, 32,
-		Offset(0x00098042),	/* OHCI0 reg 42h - Bus 0, Device 19, Function 0 */
+		Offset(0x00098042),	/* Byte offset to OHCI0 register 42h - Bus 0, Device 19, Function 0 */
 		PT0D, 1,
 		PT1D, 1,
 		PT2D, 1,
@@ -37,14 +37,14 @@
 		PT7D, 1,
 		PT8D, 1,
 		PT9D, 1,
-		Offset(0x000A0004),	/* SMBUS reg 4h - Bus 0, Device 20, Function 0 */
+		Offset(0x000A0004),	/* Byte offset to SMBUS register 4h - Bus 0, Device 20, Function 0 */
 		SBIE, 1,
 		SBME, 1,
-		Offset(0x000A0008),	/* SMBUS reg 8h - Bus 0, Device 20, Function 0 */
+		Offset(0x000A0008),	/* Byte offset to SMBUS register 8h - Bus 0, Device 20, Function 0 */
 		SBRI, 8,
-		Offset(0x000A0014),	/* SMBUS reg 14h - Bus 0, Device 20, Function 0 */
+		Offset(0x000A0014),	/* Byte offset to SMBUS register 14h - Bus 0, Device 20, Function 0 */
 		SBB1, 32,
-		Offset(0x000A0078),	/* SMBUS reg 78h - Bus 0, Device 20, Function 0 */
+		Offset(0x000A0078),	/* Byte offset to SMBUS register 78h - Bus 0, Device 20, Function 0 */
 		,14,
 		P92E, 1,		/* Port92 decode enable */
 	}
@@ -181,6 +181,7 @@
 			if (Local0) {
 				Decrement(Local0)
 			}
+			Store(Local0, PIRA)
 		} /* End Method(_SB.INTA._SRS) */
 	} /* End Device(INTA) */
 
@@ -467,5 +468,6 @@
 			if (Local0) {
 				Decrement(Local0)
 			}
+			Store(Local0, PIRH)
 		} /* End Method(_SB.INTH._SRS)  */
 	} /* End Device(INTH)   */

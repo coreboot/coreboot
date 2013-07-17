@@ -325,6 +325,15 @@ static void mainboard_init(device_t dev)
 
 	set_vbe_mode_info_valid(&edid, (uintptr_t)fb_addr);
 
+	/*
+	 * The reset value for FIMD SYSMMU register MMU_CTRL:0x14640000
+	 * should be 0 according to the datasheet, but has experimentally
+	 * been found to come up as 3. This means FIMD SYSMMU is on by
+	 * default on Exynos5420. For now we are disabling FIMD SYSMMU.
+	 */
+	writel(0x0, (void *)0x14640000);
+	writel(0x0, (void *)0x14680000);
+
 	lcd_vdd();
 
 	parade_dp_bridge_setup();

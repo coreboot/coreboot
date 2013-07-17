@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.
+ * Copyright 2012 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include <getopt.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <ctype.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -45,7 +46,7 @@ typedef uint64_t u64;
 #include "cbmem.h"
 #include "timestamp.h"
 
-#define CBMEM_VERSION "1.0"
+#define CBMEM_VERSION "1.1"
 
 /* verbose output? */
 static int verbose = 0;
@@ -83,6 +84,7 @@ static void *map_memory(u64 physical)
 	void *v;
 	off_t p;
 	u64 page = getpagesize();
+	int padding;
 
 	/* Mapped memory must be aligned to page size */
 	p = physical & ~(page - 1);
@@ -101,7 +103,11 @@ static void *map_memory(u64 physical)
 	mapped_virtual = v;
 
 	/* ... but return address to the physical memory that was requested */
-	v += physical & (page-1);
+	padding = physical & (page-1);
+	if (padding)
+		debug("  ... padding virtual address with 0x%x bytes.\n",
+			padding);
+	v += padding;
 
 	return v;
 }
@@ -145,6 +151,8 @@ static struct lb_cbmem_ref parse_cbmem_ref(struct lb_cbmem_ref *cbmem_ref)
 
 	if (cbmem_ref->size < sizeof(*cbmem_ref))
 		ret.cbmem_addr = (uint32_t)ret.cbmem_addr;
+
+	debug("      cbmem_addr = %" PRIx64 "\n", ret.cbmem_addr);
 
 	return ret;
 }
@@ -376,6 +384,83 @@ static void dump_console(void)
 	unmap_memory();
 }
 
+static void hexdump(unsigned long memory, int length)
+{
+	int i;
+	uint8_t *m;
+	int all_zero = 0;
+
+	m = map_memory((intptr_t)memory);
+
+	if (length > MAP_BYTES) {
+		printf("Truncating hex dump from %d to %d bytes\n\n",
+			length, MAP_BYTES);
+		length = MAP_BYTES;
+	}
+
+	for (i = 0; i < length; i += 16) {
+		int j;
+
+		all_zero++;
+		for (j = 0; j < 16; j++) {
+			if(m[i+j] != 0) {
+				all_zero = 0;
+				break;
+			}
+		}
+
+		if (all_zero < 2) {
+			printf("%08lx:", memory + i);
+			for (j = 0; j < 16; j++)
+				printf(" %02x", m[i+j]);
+			printf("  ");
+			for (j = 0; j < 16; j++)
+				printf("%c", isprint(m[i+j]) ? m[i+j] : '.');
+			printf("\n");
+		} else if (all_zero == 2) {
+			printf("...\n");
+		}
+	}
+
+	unmap_memory();
+}
+
+static void dump_cbmem_hex(void)
+{
+	if (cbmem.type != LB_MEM_TABLE) {
+		fprintf(stderr, "No coreboot CBMEM area found!\n");
+		return;
+	}
+
+	hexdump(unpack_lb64(cbmem.start), unpack_lb64(cbmem.size));
+}
+
+/* The root region is at least DYN_CBMEM_ALIGN_SIZE . */
+#define DYN_CBMEM_ALIGN_SIZE (4096)
+#define ROOT_MIN_SIZE DYN_CBMEM_ALIGN_SIZE
+#define CBMEM_POINTER_MAGIC 0xc0389479
+#define CBMEM_ENTRY_MAGIC ~(CBMEM_POINTER_MAGIC)
+
+struct cbmem_root_pointer {
+	uint32_t magic;
+	uint32_t root;
+} __attribute__((packed));
+
+struct dynamic_cbmem_entry {
+	uint32_t magic;
+	uint32_t start;
+	uint32_t size;
+	uint32_t id;
+} __attribute__((packed));
+
+struct cbmem_root {
+	uint32_t max_entries;
+	uint32_t num_entries;
+	uint32_t locked;
+	uint32_t size;
+	struct dynamic_cbmem_entry entries[0];
+} __attribute__((packed));
+
 #define CBMEM_MAGIC 0x434f5245
 #define MAX_CBMEM_ENTRIES 16
 
@@ -384,52 +469,132 @@ struct cbmem_entry {
 	uint32_t id;
 	uint64_t base;
 	uint64_t size;
+} __attribute__((packed));
+
+static const struct cbmem_id_to_name {
+	u32 id;
+	const char *name;
+} cbmem_ids[] = {
+	{ CBMEM_ID_FREESPACE,		"FREE SPACE " },
+	{ CBMEM_ID_GDT,			"GDT        " },
+	{ CBMEM_ID_ACPI,		"ACPI       " },
+	{ CBMEM_ID_CBTABLE,		"COREBOOT   " },
+	{ CBMEM_ID_PIRQ,		"IRQ TABLE  " },
+	{ CBMEM_ID_MPTABLE,		"SMP TABLE  " },
+	{ CBMEM_ID_RESUME,		"ACPI RESUME" },
+	{ CBMEM_ID_RESUME_SCRATCH,	"ACPISCRATCH" },
+	{ CBMEM_ID_ACPI_GNVS,		"ACPI GNVS  " },
+	{ CBMEM_ID_ACPI_GNVS_PTR,	"GNVS PTR   " },
+	{ CBMEM_ID_SMBIOS,		"SMBIOS     " },
+	{ CBMEM_ID_TIMESTAMP,		"TIME STAMP " },
+	{ CBMEM_ID_MRCDATA,		"MRC DATA   " },
+	{ CBMEM_ID_CONSOLE,		"CONSOLE    " },
+	{ CBMEM_ID_ELOG,		"ELOG       " },
+	{ CBMEM_ID_COVERAGE,		"COVERAGE   " },
+	{ CBMEM_ID_ROMSTAGE_INFO,	"ROMSTAGE   " },
+	{ CBMEM_ID_ROMSTAGE_RAM_STACK,	"ROMSTG STCK" },
+	{ CBMEM_ID_RAMSTAGE,		"RAMSTAGE   " },
+	{ CBMEM_ID_RAMSTAGE_CACHE,	"RAMSTAGE $ " },
+	{ CBMEM_ID_ROOT,		"CBMEM ROOT " },
+	{ CBMEM_ID_VBOOT_HANDOFF,	"VBOOT      " },
+	{ CBMEM_ID_CAR_GLOBALS,		"CAR GLOBALS" },
 };
+
+void cbmem_print_entry(int n, uint32_t id, uint64_t base, uint64_t size)
+{
+	int i;
+	const char *name;
+
+	name = NULL;
+	for (i = 0; i < ARRAY_SIZE(cbmem_ids); i++) {
+		if (cbmem_ids[i].id == id) {
+			name = cbmem_ids[i].name;
+			break;
+		}
+	}
+
+	printf("%2d. ", n);
+	if (name == NULL)
+		printf("%08x ", id);
+	else
+		printf("%s", name);
+	printf("  %08" PRIx64 " ", base);
+	printf("  %08" PRIx64 "\n", size);
+}
+
+static void dump_static_cbmem_toc(struct cbmem_entry *entries)
+{
+	int i;
+
+	printf("CBMEM table of contents:\n");
+	printf("    ID           START      LENGTH\n");
+
+	for (i=0; i<MAX_CBMEM_ENTRIES; i++) {
+		if (entries[i].magic != CBMEM_MAGIC)
+			break;
+		cbmem_print_entry(i, entries[i].id,
+				entries[i].base, entries[i].size);
+	}
+}
+
+static void dump_dynamic_cbmem_toc(struct cbmem_root *root)
+{
+	int i;
+	debug("CBMEM: max_entries=%d num_entries=%d locked=0x%x, size=%d\n\n",
+		root->max_entries, root->num_entries, root->locked, root->size);
+
+	printf("CBMEM table of contents:\n");
+	printf("    ID           START      LENGTH\n");
+
+	for (i = 0; i < root->num_entries; i++) {
+		if(root->entries[i].magic != CBMEM_ENTRY_MAGIC)
+			break;
+		cbmem_print_entry(i, root->entries[i].id,
+			root->entries[i].start, root->entries[i].size);
+	}
+}
 
 static void dump_cbmem_toc(void)
 {
-	int i;
 	uint64_t start;
+	void *cbmem_area;
 	struct cbmem_entry *entries;
 
 	if (cbmem.type != LB_MEM_TABLE) {
-		fprintf(stderr, "No coreboot table area found!\n");
+		fprintf(stderr, "No coreboot CBMEM area found!\n");
 		return;
 	}
 
 	start = unpack_lb64(cbmem.start);
 
-	entries = (struct cbmem_entry *)map_memory(start);
+	cbmem_area = map_memory(start);
+	entries = (struct cbmem_entry *)cbmem_area;
 
-	printf("CBMEM table of contents:\n");
-	printf("    ID           START      LENGTH\n");
-	for (i=0; i<MAX_CBMEM_ENTRIES; i++) {
-		if (entries[i].magic != CBMEM_MAGIC)
-			break;
+	if (entries[0].magic == CBMEM_MAGIC) {
+		dump_static_cbmem_toc(entries);
+	} else {
+		uint64_t rootptr;
 
-		printf("%2d. ", i);
-		switch (entries[i].id) {
-		case CBMEM_ID_FREESPACE: printf("FREE SPACE  "); break;
-		case CBMEM_ID_GDT:       printf("GDT         "); break;
-		case CBMEM_ID_ACPI:      printf("ACPI        "); break;
-		case CBMEM_ID_ACPI_GNVS: printf("ACPI GNVS   "); break;
-		case CBMEM_ID_CBTABLE:   printf("COREBOOT    "); break;
-		case CBMEM_ID_PIRQ:      printf("IRQ TABLE   "); break;
-		case CBMEM_ID_MPTABLE:   printf("SMP TABLE   "); break;
-		case CBMEM_ID_RESUME:    printf("ACPI RESUME "); break;
-		case CBMEM_ID_RESUME_SCRATCH: printf("ACPI SCRATCH"); break;
-		case CBMEM_ID_SMBIOS:    printf("SMBIOS      "); break;
-		case CBMEM_ID_TIMESTAMP: printf("TIME STAMP  "); break;
-		case CBMEM_ID_MRCDATA:   printf("MRC DATA    "); break;
-		case CBMEM_ID_CONSOLE:   printf("CONSOLE     "); break;
-		case CBMEM_ID_ELOG:      printf("ELOG        "); break;
-		case CBMEM_ID_COVERAGE:  printf("COVERAGE    "); break;
-		default:                 printf("%08x    ",
-						entries[i].id); break;
-		}
-		printf(" 0x%08jx 0x%08jx\n", (uintmax_t)entries[i].base,
-			 (uintmax_t)entries[i].size);
+		rootptr = unpack_lb64(cbmem.start) + unpack_lb64(cbmem.size);
+		rootptr &= ~(DYN_CBMEM_ALIGN_SIZE - 1);
+		rootptr -= sizeof(struct cbmem_root_pointer);
+		unmap_memory();
+		struct cbmem_root_pointer *r =
+			(struct cbmem_root_pointer *)map_memory(rootptr);
+		if (r->magic == CBMEM_POINTER_MAGIC) {
+			struct cbmem_root *root;
+			uint64_t rootaddr = r->root;
+			unmap_memory();
+			/* Note that this only works because our default mmap
+			 * size is 1MiB which happens to be larger than the
+			 * root entry size which is default to be 4KiB.
+			 */
+			root = (struct cbmem_root *)map_memory(rootaddr);
+			dump_dynamic_cbmem_toc(root);
+		} else
+			fprintf(stderr, "No valid coreboot CBMEM root pointer found.\n");
 	}
+
 	unmap_memory();
 }
 
@@ -555,11 +720,12 @@ static void print_version(void)
 
 static void print_usage(const char *name)
 {
-	printf("usage: %s [-cCltVvh?]\n", name);
+	printf("usage: %s [-cCltxVvh?]\n", name);
 	printf("\n"
 	     "   -c | --console:                   print cbmem console\n"
 	     "   -C | --coverage:                  dump coverage information\n"
 	     "   -l | --list:                      print cbmem table of contents\n"
+	     "   -x | --hexdump:                   print hexdump of cbmem area\n"
 	     "   -t | --timestamps:                print timestamp information\n"
 	     "   -V | --verbose:                   verbose (debugging) output\n"
 	     "   -v | --version:                   print the version\n"
@@ -574,6 +740,7 @@ int main(int argc, char** argv)
 	int print_console = 0;
 	int print_coverage = 0;
 	int print_list = 0;
+	int print_hexdump = 0;
 	int print_timestamps = 0;
 
 	int opt, option_index = 0;
@@ -582,12 +749,13 @@ int main(int argc, char** argv)
 		{"coverage", 0, 0, 'C'},
 		{"list", 0, 0, 'l'},
 		{"timestamps", 0, 0, 't'},
+		{"hexdump", 0, 0, 'x'},
 		{"verbose", 0, 0, 'V'},
 		{"version", 0, 0, 'v'},
 		{"help", 0, 0, 'h'},
 		{0, 0, 0, 0}
 	};
-	while ((opt = getopt_long(argc, argv, "cCltVvh?",
+	while ((opt = getopt_long(argc, argv, "cCltxVvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'c':
@@ -600,6 +768,10 @@ int main(int argc, char** argv)
 			break;
 		case 'l':
 			print_list = 1;
+			print_defaults = 0;
+			break;
+		case 'x':
+			print_hexdump = 1;
 			print_defaults = 0;
 			break;
 		case 't':
@@ -668,6 +840,9 @@ int main(int argc, char** argv)
 
 	if (print_list)
 		dump_cbmem_toc();
+
+	if (print_hexdump)
+		dump_cbmem_hex();
 
 	if (print_defaults || print_timestamps)
 		dump_timestamps();

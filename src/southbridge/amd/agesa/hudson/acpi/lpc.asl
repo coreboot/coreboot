@@ -17,37 +17,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+/* 0:14.3 - LPC */
 Device(LIBR) {
 	Name(_ADR, 0x00140003)
 	/* Method(_INI) {
 	*	DBGO("\\_SB\\PCI0\\LpcIsaBr\\_INI\n")
 	} */ /* End Method(_SB.SBRDG._INI) */
 
-    OperationRegion(CFG,PCI_Config,0x0,0x100) // Map PCI Configuration Space
+	OperationRegion(CFG,PCI_Config,0x0,0x100) // Map PCI Configuration Space
 	Field(CFG,DWordAcc,NoLock,Preserve){
 		Offset(0xA0),
 		BAR,32}		// SPI Controller Base Address Register (Index 0xA0)
 
 	Device(LDRC)	// LPC device: Resource consumption
 	{
-			Name (_HID, EISAID("PNP0C02"))  // ID for Motherboard resources
-			Name (CRS, ResourceTemplate ()  // Current Motherboard resources
-			{
-				Memory32Fixed(ReadWrite,    // Setup for fixed resource location for SPI base address
-				0x00000000,					// Address Base
-				0x00000000,					// Address Length
-				BAR0						// Descriptor Name
-				)
-			})
+		Name (_HID, EISAID("PNP0C02"))  // ID for Motherboard resources
+		Name (CRS, ResourceTemplate ()  // Current Motherboard resources
+		{
+			Memory32Fixed(ReadWrite,	// Setup for fixed resource location for SPI base address
+			0x00000000,					// Address Base
+			0x00000000,					// Address Length
+			BAR0						// Descriptor Name
+			)
+		})
 
-			Method(_CRS,0,NotSerialized)
-			{
-				CreateDwordField(^CRS,^BAR0._BAS,SPIB)  // Field to hold SPI base address
-				CreateDwordField(^CRS,^BAR0._LEN,SPIL)  // Field to hold SPI address length
-				Store(BAR,SPIB)		// SPI base address mapped
-				Store(0x1000,SPIL)	// 4k space mapped
-				Return(CRS)
-			}
+		Method(_CRS,0,NotSerialized)
+		{
+			CreateDwordField(^CRS,^BAR0._BAS,SPIB)	// Field to hold SPI base address
+			CreateDwordField(^CRS,^BAR0._LEN,SPIL)	// Field to hold SPI address length
+			Store(BAR,SPIB)		// SPI base address mapped
+			Store(0x1000,SPIL)	// 4k space mapped
+			Return(CRS)
+		}
 	}
 
 	/* Real Time Clock Device */

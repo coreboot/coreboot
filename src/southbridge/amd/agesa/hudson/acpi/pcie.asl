@@ -46,13 +46,13 @@
 	/* Client Management index/data registers */
 	OperationRegion(CMT, SystemIO, 0x00000C50, 0x00000002)
 		Field(CMT, ByteAcc, NoLock, Preserve) {
-		CMTI,      8,
+		CMTI,	8,
 		/* Client Management Data register */
-		G64E,   1,
-		G64O,      1,
-		G32O,      2,
-		,       2,
-		GPSL,     2,
+		G64E,	1,
+		G64O,	1,
+		G32O,	2,
+		,		2,
+		GPSL,	2,
 	}
 
 	/* GPM Port register */

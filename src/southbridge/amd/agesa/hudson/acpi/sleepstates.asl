@@ -24,8 +24,8 @@ Name(\_S0, Package () {0x00, 0x00, 0x00, 0x00} )	/* (S0) - working state */
 If (LAnd(SSFG, 0x01)) {
 	Name(\_S1, Package () {0x01, 0x01, 0x00, 0x00} )	/* (S1) - sleeping w/CPU context */
 }
-If (LAnd (SSFG, 0x02)) {
-	Name (_S2, Package () {0x02, 0x02, Zero, Zero} )	/* (S2) - "light" Suspend to RAM */
+If (LAnd(SSFG, 0x02)) {
+	Name(\_S2, Package () {0x02, 0x02, 0x00, 0x00} )	/* (S2) - "light" Suspend to RAM */
 }
 If (LAnd(SSFG, 0x04)) {
 	Name(\_S3, Package () {0x03, 0x03, 0x00, 0x00} )	/* (S3) - Suspend to RAM */
@@ -36,5 +36,5 @@ If (LAnd(SSFG, 0x08)) {
 
 Name(\_S5, Package () {0x05, 0x05, 0x00, 0x00} )	/* (S5) - Soft Off */
 
-Name(\_SB.CSPS ,0)				/* Current Sleep State (S0, S1, S2, S3, S4, S5) */
-Name(CSMS, 0)			/* Current System State */
+Name(\_SB.CSPS ,0)	/* Current Sleep State (S0, S1, S2, S3, S4, S5) */
+Name(CSMS, 0)		/* Current System State */

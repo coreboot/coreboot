@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2012-2013 Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +14,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* simple name description */
+/* No SATA functionality */
 
+#if 0
 /*
 Scope (_SB) {
 	Device(PCI0) {
@@ -146,3 +147,4 @@ Scope(\_GPE) {
 		}
 	}
 }
+#endif

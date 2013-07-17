@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-Device(AZHD) {
+Device(AZHD) {	/* 0:14.2 - HD Audio */
 	Name(_ADR, 0x00140002)
 	OperationRegion(AZPD, PCI_Config, 0x00, 0x100)
 		Field(AZPD, AnyAcc, NoLock, Preserve) {
@@ -44,6 +44,7 @@ Device(AZHD) {
 		offset (0x6C),
 		MMDT, 16,
 	}
+
 	Method (_INI, 0, NotSerialized)
 	{
 		If (LEqual (OSTP, 0x03))

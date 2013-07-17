@@ -374,8 +374,8 @@ int main(int argc, char *argv[])
 	 * left-shifted "Extended Model" fields.
 	 * http://download.intel.com/design/processor/applnots/24161832.pdf
 	 */
-	printf("CPU: Processor Type: %x, Family %x, Model %x, Stepping %x\n",
-			(id >> 12) & 0x3, ((id >> 8) & 0xf) + ((id >> 20) & 0xff),
+	printf("CPU: ID 0x%x, Processor Type %x, Family %x, Model %x, Stepping %x\n",
+			id, (id >> 12) & 0x3, ((id >> 8) & 0xf) + ((id >> 20) & 0xff),
 			((id >> 12) & 0xf0) + ((id >> 4) & 0xf), (id & 0xf));
 
 	/* Determine names */

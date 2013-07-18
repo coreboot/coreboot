@@ -113,6 +113,9 @@ romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
 endif # CONFIG_DYNAMIC_CBMEM
 ramstage-y += cbmem_info.c
 
+ramstage-y += hexdump.c
+romstage-y += hexdump.c
+
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)

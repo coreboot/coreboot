@@ -71,6 +71,22 @@ Device(ACMD) {
 #endif
 
 Name(CRES, ResourceTemplate() {
+	/* Set the Bus number and Secondary Bus number for the PCI0 device
+	 * The Secondary bus range for PCI0 lets the system
+	 * know what bus values are allowed on the downstream
+	 * side of this PCI bus if there is a PCI-PCI bridge.
+	 * PCI busses can have 256 secondary busses which
+	 * range from [0-0xFF] but they do not need to be
+	 * sequential.
+	 */
+	WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
+		0x0000,		/* address granularity */
+		0x0000,		/* range minimum */
+		0x00FF,		/* range maximum */
+		0x0000,		/* translation */
+		0x0100,		/* length */
+		,, PSB0)		/* ResourceSourceIndex, ResourceSource, DescriptorName */
+
 	IO(Decode16, 0x0CF8, 0x0CF8, 1,	8)
 
 	WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,

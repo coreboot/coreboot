@@ -170,6 +170,8 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 		       "Setting it8516e fan%d "
 		       "control to %d%% PWM.\n",
 		       fan_idx + 1, fan_target);
+		if (fan_target > 100)		/* Constrain to 100% */
+			fan_target = 100;
 		it8516e_set_fan_pwm(fan_idx, (fan_target * 255) / 100);
 		break;
 	case IT8516E_MODE_SPEED:
@@ -183,6 +185,8 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 		printk(BIOS_DEBUG,
 		       "Setting it8516e fan%d control to %d C.\n",
 		       fan_idx + 1, fan_target);
+		if (fan_target > 1024)		/* Constrain to 1K */
+			fan_target = 1024;
 		it8516e_set_fan_temperature(fan_idx, fan_target * 64);
 
 		fanX_min[3] = '1' + fan_idx;

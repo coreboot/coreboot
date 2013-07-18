@@ -43,6 +43,11 @@ enum { /* EC commands */
 	IT8516E_CMD_SET_FAN_LIMITS	= 0x1a,
 };
 
+/**
+ * Sets the type of the external temperature sensor used
+ *
+ * @param type Type of sensor to set
+ */
 static void it8516e_set_systemp_type(const u8 type)
 {
 	if (send_ec_command(IT8516E_CMD_SET_SYSTEMP_TYPE))
@@ -50,6 +55,12 @@ static void it8516e_set_systemp_type(const u8 type)
 	send_ec_data(type);
 }
 
+/**
+ * Sets the operating mode of a fan
+ *
+ * @param idx Selects the fan; 0: CPU, 1: System
+ * @param mode Mode to set
+ */
 static void it8516e_set_fan_mode(const u8 idx, const u8 mode)
 {
 	if (send_ec_command(IT8516E_CMD_SET_FAN_MODE))
@@ -59,6 +70,12 @@ static void it8516e_set_fan_mode(const u8 idx, const u8 mode)
 	send_ec_data(mode);
 }
 
+/**
+ * Sets the PWM rate of a fan in IT8516E_MODE_PWM
+ *
+ * @param idx Selects the fan; 0: CPU, 1: System
+ * @param pwm PWM rate measured in 255ths
+ */
 static void it8516e_set_fan_pwm(const u8 idx, const u8 pwm)
 {
 	if (send_ec_command(IT8516E_CMD_SET_FAN_PWM))
@@ -68,6 +85,12 @@ static void it8516e_set_fan_pwm(const u8 idx, const u8 pwm)
 	send_ec_data(pwm);
 }
 
+/**
+ * Sets the target speed in RPM for a fan in IT8516E_MODE_SPEED
+ *
+ * @param idx Selects the fan; 0: CPU, 1: System
+ * @param speed Speed in RPM
+ */
 static void it8516e_set_fan_speed(const u8 idx, const u16 speed)
 {
 	if (send_ec_command(IT8516E_CMD_SET_FAN_SPEED))
@@ -79,6 +102,12 @@ static void it8516e_set_fan_speed(const u8 idx, const u16 speed)
 	send_ec_data(speed >> 8);
 }
 
+/**
+ * Sets the target temperature for a fan in IT8516E_MODE_THERMAL
+ *
+ * @param idx Selects the fan; 0: CPU, 1: System
+ * @param temp Temperature in 64ths degree C
+ */
 static void it8516e_set_fan_temperature(const u8 idx, const u16 temp)
 {
 	if (send_ec_command(IT8516E_CMD_SET_FAN_TEMP))
@@ -90,6 +119,13 @@ static void it8516e_set_fan_temperature(const u8 idx, const u16 temp)
 	send_ec_data(temp >> 8);
 }
 
+/**
+ * Sets the minimum and maximum PWM rate of a fan in IT8516E_MODE_THERMAL
+ *
+ * @param idx Selects the fan; 0: CPU, 1: System
+ * @param min Minimum PWM rate in %
+ * @param max Maximum PWM rate in %
+ */
 static void it8516e_set_fan_limits(const u8 idx, const u8 min, const u8 max)
 {
 	if (send_ec_command(IT8516E_CMD_SET_FAN_LIMITS))

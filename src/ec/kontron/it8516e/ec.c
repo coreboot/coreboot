@@ -79,15 +79,15 @@ static void it8516e_set_fan_speed(const u8 idx, const u16 speed)
 	send_ec_data(speed >> 8);
 }
 
-static void it8516e_set_fan_temperature(const u8 idx, const u8 temp)
+static void it8516e_set_fan_temperature(const u8 idx, const u16 temp)
 {
 	if (send_ec_command(IT8516E_CMD_SET_FAN_TEMP))
 		return;
 	if (send_ec_data(idx))
 		return;
-	if (send_ec_data((temp << 6) & 0xff))
+	if (send_ec_data(temp & 0xff))
 		return;
-	send_ec_data(((temp << 6) >> 8) & 0xff);
+	send_ec_data(temp >> 8);
 }
 
 static void it8516e_set_fan_limits(const u8 idx, const u8 min, const u8 max)
@@ -147,7 +147,7 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 		printk(BIOS_DEBUG,
 		       "Setting it8516e fan%d control to %d C.\n",
 		       fan_idx + 1, fan_target);
-		it8516e_set_fan_temperature(fan_idx, fan_target);
+		it8516e_set_fan_temperature(fan_idx, fan_target * 64);
 
 		fanX_min[3] = '1' + fan_idx;
 		fanX_max[3] = '1' + fan_idx;

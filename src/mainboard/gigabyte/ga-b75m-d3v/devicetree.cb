@@ -10,8 +10,7 @@ chip northbridge/intel/sandybridge
 		end
 		chip cpu/intel/model_206ax
 			# Magic APIC ID to locate this chip
-			#device lapic 0xACAC off end
-			device lapic 0x0002 off end
+			device lapic 0xACAC off end
 
 			register "c1_battery" = "2"	# ACPI(C1) = MWAIT(C2)
 			register "c2_battery" = "1"	# ACPI(C2) = MWAIT(C1)

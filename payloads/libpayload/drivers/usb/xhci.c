@@ -110,6 +110,19 @@ xhci_switch_ppt_ports(pcidev_t addr)
 	}
 }
 
+/* On Panther Point: switch all ports back to EHCI */
+static void
+xhci_switchback_ppt_ports(pcidev_t addr)
+{
+	if (pci_read_config32(addr, 0x00) == 0x1e318086) {
+		u32 reg32 = pci_read_config32(addr, 0xd0) & 0xf;
+		xhci_debug("Switching ports back:   0x%"PRIx32"\n", reg32);
+		pci_write_config32(addr, 0xd0, 0x00000000);
+		reg32 = pci_read_config32(addr, 0xd0) & 0xf;
+		xhci_debug("Still switched to xHCI: 0x%"PRIx32"\n", reg32);
+	}
+}
+
 static long
 xhci_handshake(volatile u32 *const reg, u32 mask, u32 wait_for, long timeout_us)
 {
@@ -388,6 +401,8 @@ xhci_shutdown(hci_t *const controller)
 	usb_detach_device(controller, 0);
 
 	xhci_stop(controller);
+
+	xhci_switchback_ppt_ports(controller->bus_address);
 
 	if (xhci->sp_ptrs) {
 		const size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs;

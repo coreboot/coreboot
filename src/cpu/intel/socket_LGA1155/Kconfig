@@ -1,0 +1,17 @@
+config CPU_INTEL_SOCKET_LGA1155
+	bool
+
+if CPU_INTEL_SOCKET_LGA1155
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_INTEL_MODEL_206AX
+	select CPU_INTEL_MODEL_306AX
+	select MMX
+	select SSE
+
+config CACHE_MRC_BIN
+	bool
+	default n
+
+endif # CPU_INTEL_SOCKET_LGA1155

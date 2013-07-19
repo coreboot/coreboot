@@ -31,6 +31,7 @@ source src/cpu/intel/socket_mPGA603/Kconfig
 source src/cpu/intel/socket_mPGA604/Kconfig
 source src/cpu/intel/socket_PGA370/Kconfig
 source src/cpu/intel/socket_441/Kconfig
+source src/cpu/intel/socket_LGA1155/Kconfig
 source src/cpu/intel/socket_LGA771/Kconfig
 source src/cpu/intel/socket_LGA775/Kconfig
 source src/cpu/intel/socket_rPGA989/Kconfig

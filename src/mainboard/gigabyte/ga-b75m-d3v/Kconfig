@@ -1,0 +1,57 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2009 Uwe Hermann <uwe@hermann-uwe.de>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+if BOARD_GIGABYTE_GA_B75M_D3V
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_LGA1155
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE # G860 CPU
+	select SOUTHBRIDGE_INTEL_C216 # Panther Point
+	select SUPERIO_ITE_IT8728F
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	#select HAVE_ACPI_RESUME
+	select GFXUMA
+	select EXTERNAL_MRC_BLOB
+	select BOARD_ROMSIZE_KB_8192
+	#select HAVE_PIRQ_TABLE
+
+config MAINBOARD_DIR
+	string
+	default gigabyte/ga-b75m-d3v
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "GA-B75M-D3V"
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 8
+
+# No need to override the chipset VGA_BIOS_ID.
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0102.rom"
+
+endif # BOARD_GIGABYTE_GA_B75M_D3V

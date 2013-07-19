@@ -27,6 +27,8 @@ config BOARD_GIGABYTE_GA_6BXC
 	bool "GA-6BXC"
 config BOARD_GIGABYTE_GA_6BXE
 	bool "GA-6BXE"
+config BOARD_GIGABYTE_GA_B75M_D3V
+	bool "GA-B75M-D3V"
 config BOARD_GIGABYTE_M57SLI
 	bool "GA-M57SLI-S4"
 config BOARD_GIGABYTE_MA785GMT
@@ -41,6 +43,7 @@ endchoice
 source "src/mainboard/gigabyte/ga_2761gxdk/Kconfig"
 source "src/mainboard/gigabyte/ga-6bxc/Kconfig"
 source "src/mainboard/gigabyte/ga-6bxe/Kconfig"
+source "src/mainboard/gigabyte/ga-b75m-d3v/Kconfig"
 source "src/mainboard/gigabyte/m57sli/Kconfig"
 source "src/mainboard/gigabyte/ma785gmt/Kconfig"
 source "src/mainboard/gigabyte/ma785gm/Kconfig"

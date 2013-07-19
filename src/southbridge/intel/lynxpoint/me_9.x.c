@@ -62,6 +62,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev);
 
 /* MMIO base address for MEI interface */
 static u32 mei_base_address;
+void intel_me_mbp_clear(device_t dev);
 
 #if CONFIG_DEBUG_INTEL_ME
 static void mei_dump(void *ptr, int dword, int offset, const char *type)
@@ -116,14 +117,12 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
-#ifndef __SMM__
 static inline void pci_read_dword_ptr(device_t dev, void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(dev, offset);
 	memcpy(ptr, &dword, sizeof(dword));
 	mei_dump(ptr, dword, offset, "PCI READ");
 }
-#endif
 
 static inline void read_host_csr(struct mei_csr *csr)
 {
@@ -351,6 +350,47 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
+/*
+ * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
+ * state machine on the BIOS end doesn't match the ME's state machine.
+ */
+static void intel_me_mbp_give_up(device_t dev)
+{
+	struct mei_csr csr;
+
+	pci_write_config32(dev, PCI_ME_H_GS2, PCI_ME_MBP_GIVE_UP);
+
+	read_host_csr(&csr);
+	csr.reset = 1;
+	csr.interrupt_generate = 1;
+	write_host_csr(&csr);
+}
+
+/*
+ * mbp clear routine. This will wait for the ME to indicate that
+ * the MBP has been read and cleared.
+ */
+void intel_me_mbp_clear(device_t dev)
+{
+	int count;
+	struct me_hfs2 hfs2;
+
+	/* Wait for the mbp_cleared indicator */
+	for (count = ME_RETRY; count > 0; --count) {
+		pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
+		if (hfs2.mbp_cleared)
+			break;
+		udelay(ME_DELAY);
+	}
+
+	if (count == 0) {
+		printk(BIOS_WARNING, "ME: Timeout waiting for mbp_cleared\n");
+		intel_me_mbp_give_up(dev);
+	} else {
+		printk(BIOS_INFO, "ME: MBP cleared\n");
+	}
+}
+
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
 static inline void print_cap(const char *name, int state)
 {
@@ -496,6 +536,11 @@ void intel_me_finalize_smm(void)
 	/* S3 path will have hidden this device already */
 	if (!mei_base_address || mei_base_address == 0xfffffff0)
 		return;
+
+#if CONFIG_ME_MBP_CLEAR_LATE
+	/* Wait for ME MBP Cleared indicator */
+	intel_me_mbp_clear(PCH_ME_DEV);
+#endif
 
 	/* Make sure ME is in a mode that expects EOP */
 	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
@@ -798,23 +843,6 @@ static u32 host_to_me_words_room(void)
 }
 #endif
 
-/*
- * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
- * state machine on the BIOS end doesn't match the ME's state machine.
- */
-static void intel_me_mbp_give_up(device_t dev)
-{
-	u32 reg32;
-	struct mei_csr csr;
-
-	reg32 = PCI_ME_MBP_GIVE_UP;
-	pci_write_config32(dev, PCI_ME_H_GS2, reg32);
-	read_host_csr(&csr);
-	csr.reset = 1;
-	csr.interrupt_generate = 1;
-	write_host_csr(&csr);
-}
-
 struct mbp_payload {
 	mbp_header header;
 	u32 data[0];
@@ -830,7 +858,6 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	u32 me2host_pending;
 	struct mei_csr host;
 	struct me_hfs2 hfs2;
-	int count;
 	struct mbp_payload *mbp;
 	int i;
 
@@ -876,18 +903,10 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	host.interrupt_generate = 1;
 	write_host_csr(&host);
 
+#if !CONFIG_ME_MBP_CLEAR_LATE
 	/* Wait for the mbp_cleared indicator. */
-	for (count = ME_RETRY; count > 0; --count) {
-		pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
-		if (hfs2.mbp_cleared)
-			break;
-		udelay(ME_DELAY);
-	}
-
-	if (count == 0) {
-		printk(BIOS_WARNING, "ME: Timeout waiting for mbp_cleared\n");
-		intel_me_mbp_give_up(dev);
-	}
+	intel_me_mbp_clear(dev);
+#endif
 
 	/* Dump out the MBP contents. */
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)

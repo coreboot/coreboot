@@ -23,6 +23,7 @@ subdirs-$(CONFIG_CPU_INTEL_SLOT_2) += slot_2
 subdirs-$(CONFIG_CPU_INTEL_SLOT_1) += slot_1
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA771) += socket_LGA771
 subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA775) += socket_LGA775
+subdirs-$(CONFIG_CPU_INTEL_SOCKET_LGA1155) += socket_LGA1155
 
 #socket_mPGA604_533Mhz
 #socket_mPGA604_800Mhz

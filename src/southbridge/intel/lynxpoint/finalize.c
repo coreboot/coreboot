@@ -21,10 +21,14 @@
 #include <arch/io.h>
 #include <console/post_codes.h>
 #include <spi-generic.h>
+#include "me.h"
 #include "pch.h"
 
 void intel_pch_finalize_smm(void)
 {
+	/* Lock down Management Engine */
+	intel_me_finalize_smm();
+
 	/* Set SPI opcode menu */
 	RCBA16(0x3894) = SPI_OPPREFIX;
 	RCBA16(0x3896) = SPI_OPTYPE;

@@ -47,6 +47,7 @@
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
 
+#ifndef __SMM__
 /* Path that the BIOS should take based on ME state */
 static const char *me_bios_path_values[] = {
 	[ME_NORMAL_BIOS_PATH]		= "Normal",
@@ -57,6 +58,7 @@ static const char *me_bios_path_values[] = {
 	[ME_FIRMWARE_UPDATE_BIOS_PATH]	= "Firmware Update",
 };
 static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev);
+#endif
 
 /* MMIO base address for MEI interface */
 static u32 mei_base_address;
@@ -114,12 +116,14 @@ static inline void mei_write_dword_ptr(void *ptr, int offset)
 	mei_dump(ptr, dword, offset, "WRITE");
 }
 
+#ifndef __SMM__
 static inline void pci_read_dword_ptr(device_t dev, void *ptr, int offset)
 {
 	u32 dword = pci_read_config32(dev, offset);
 	memcpy(ptr, &dword, sizeof(dword));
 	mei_dump(ptr, dword, offset, "PCI READ");
 }
+#endif
 
 static inline void read_host_csr(struct mei_csr *csr)
 {
@@ -347,7 +351,7 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
+#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
@@ -452,6 +456,8 @@ static int mkhi_global_reset(void)
 }
 #endif
 
+#ifdef __SMM__
+
 /* Send END OF POST message to the ME */
 static int mkhi_end_of_post(void)
 {
@@ -478,6 +484,43 @@ static int mkhi_end_of_post(void)
 	printk(BIOS_INFO, "ME: END OF POST message successful (%d)\n", eop_ack);
 	return 0;
 }
+
+void intel_me_finalize_smm(void)
+{
+	struct me_hfs hfs;
+	u32 reg32;
+
+	mei_base_address =
+		pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf;
+
+	/* S3 path will have hidden this device already */
+	if (!mei_base_address || mei_base_address == 0xfffffff0)
+		return;
+
+	/* Make sure ME is in a mode that expects EOP */
+	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
+	memcpy(&hfs, &reg32, sizeof(u32));
+
+	/* Abort and leave device alone if not normal mode */
+	if (hfs.fpt_bad ||
+	    hfs.working_state != ME_HFS_CWS_NORMAL ||
+	    hfs.operation_mode != ME_HFS_MODE_NORMAL)
+		return;
+
+	/* Try to send EOP command so ME stops accepting other commands */
+	mkhi_end_of_post();
+
+	/* Make sure IO is disabled */
+	reg32 = pci_read_config32(PCH_ME_DEV, PCI_COMMAND);
+	reg32 &= ~(PCI_COMMAND_MASTER |
+		   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+	pci_write_config32(PCH_ME_DEV, PCI_COMMAND, reg32);
+
+	/* Hide the PCI device */
+	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
+}
+
+#else /* !__SMM__ */
 
 /* Determine the path that we should take based on ME status */
 static me_bios_path intel_me_path(device_t dev)
@@ -636,12 +679,6 @@ static int intel_me_extend_valid(device_t dev)
 /* Hide the ME virtual PCI devices */
 static void intel_me_hide(device_t dev)
 {
-	/* Make sure IO is disabled */
-	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
-	reg32 &= ~(PCI_COMMAND_MASTER |
-		   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-	pci_write_config32(dev, PCI_COMMAND, reg32);
-
 	dev->enabled = 0;
 	pch_enable(dev);
 }
@@ -692,9 +729,9 @@ static void intel_me_init(device_t dev)
 	}
 #endif
 
-	/* Lock down and hide Management Engine */
-	mkhi_end_of_post();
-	intel_me_hide(dev);
+	/*
+	 * Leave the ME unlocked. It will be locked via SMI command later.
+	 */
 }
 
 static void set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -916,3 +953,5 @@ mbp_failure:
 	intel_me_mbp_give_up(dev);
 	return -1;
 }
+
+#endif /* !__SMM__ */

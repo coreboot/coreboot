@@ -84,7 +84,6 @@ int mainboard_smi_apmc(u8 apmc)
 			return 0;
 		}
 
-		intel_me_finalize_smm();
 		intel_pch_finalize_smm();
 		intel_northbridge_haswell_finalize_smm();
 		intel_cpu_haswell_finalize_smm();

@@ -1,0 +1,22 @@
+config CPU_INTEL_SOCKET_LGA1155
+	bool
+
+if CPU_INTEL_SOCKET_LGA1155
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_INTEL_MODEL_206AX
+	select CPU_INTEL_MODEL_306AX
+	select MMX
+	select SSE
+	select SIPI_VECTOR_IN_ROM
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x20000 # 128kiB total (ivy bigger than sandy)
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xff700000 # (4GiB - FLASH_SIZE - 0x100000) & 0xfff00000
+
+endif # CPU_INTEL_SOCKET_LGA1155

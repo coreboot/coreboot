@@ -23,11 +23,17 @@ ramstage-y += gma.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-y += mrccache.c
 
+ramstage-y += udelay.c
+
 romstage-y += raminit.c
 romstage-y += mrccache.c
+
+romstage-y += udelay.c
+
 romstage-y += early_init.c
 romstage-y += report_platform.c
 romstage-y += ../../../arch/x86/lib/walkcbfs.S
+
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c

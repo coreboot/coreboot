@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,28 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 
-config SUPERIO_ITE_IT8661F
-	bool
-config SUPERIO_ITE_IT8671F
-	bool
-config SUPERIO_ITE_IT8673F
-	bool
-config SUPERIO_ITE_IT8705F
-	bool
-config SUPERIO_ITE_IT8712F
-	bool
-config SUPERIO_ITE_IT8716F
-	bool
-config SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
-	bool
-	depends on SUPERIO_ITE_IT8716F
-	default n
-config SUPERIO_ITE_IT8718F
-	bool
-config SUPERIO_ITE_IT8721F
-	bool
-config SUPERIO_ITE_IT8772F
-	bool
-config SUPERIO_ITE_IT8728F
-	bool
+SRC_ROOT = $(src)/mainboard/gigabyte/ga-b75m-d3v

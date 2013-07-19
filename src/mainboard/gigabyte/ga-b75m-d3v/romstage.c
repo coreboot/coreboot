@@ -30,8 +30,9 @@
 #include <pc80/mc146818rtc.h>
 #include <cbmem.h>
 #include <console/console.h>
-
 #include <delay.h>
+
+#include "superio/ite/it8728f/early_serial.c"
 
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit.h"
@@ -200,13 +201,17 @@ void main(unsigned long bist)
 
 	pch_enable_lpc();
 
+	/* Initialize SuperIO */
+	it8728f_enable_serial(0, CONFIG_TTYS0_BASE);
+	it8728f_disable_reboot();
+
+	/* Initialize console device(s) */
+	console_init();
+
 	/* Enable GPIOs */
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE|1);
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
 	setup_pch_gpios(&b75md3v_gpio_map);
-
-	/* Initialize console device(s) */
-	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);

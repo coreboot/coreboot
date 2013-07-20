@@ -49,6 +49,16 @@ Device(AMRT) {
 	Name(_ADR, 0x00000000)
 } /* end AMRT */
 
+/* Dev2 is also an external GFX bridge */
+Device(PBR2) {
+	Name(_ADR, 0x00020000)
+	Name(_PRW, Package() {0x18, 4})
+	Method(_PRT,0) {
+		If(PMOD){ Return(APS2) }   /* APIC mode */
+		Return (PS2)                  /* PIC Mode */
+	} /* end _PRT */
+} /* end PBR2 */
+
 /* Dev4 GPP0 Root Port Bridge */
 Device(PBR4) {
 	Name(_ADR, 0x00040000)

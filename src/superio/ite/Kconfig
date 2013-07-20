@@ -40,3 +40,5 @@ config SUPERIO_ITE_IT8721F
 	bool
 config SUPERIO_ITE_IT8772F
 	bool
+config SUPERIO_ITE_IT8728F
+	bool

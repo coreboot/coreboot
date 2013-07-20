@@ -76,6 +76,14 @@ Name(CRES, ResourceTemplate() {
 	 * sequential.
 	 */
 
+	WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
+		0x0000,		/* address granularity */
+		0x0000,		/* range minimum */
+		0x00FF,		/* range maximum */
+		0x0000,		/* translation */
+		0x0100,		/* length */
+		,, PSB0)	/* ResourceSourceIndex, ResourceSource, DescriptorName */
+
 	IO(Decode16, 0x0CF8, 0x0CF8, 1,	8)
 
 	WORDIO(ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,

@@ -17,4 +17,4 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* No SATA functionality */
+/* No Super I/O device or functionality yet */

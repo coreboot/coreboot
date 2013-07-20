@@ -1,11 +1,12 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2013 Damien Zammit <damien@zamaudio.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; version 2 of the License.
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,28 +18,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-
-config SUPERIO_ITE_IT8661F
-	bool
-config SUPERIO_ITE_IT8671F
-	bool
-config SUPERIO_ITE_IT8673F
-	bool
-config SUPERIO_ITE_IT8705F
-	bool
-config SUPERIO_ITE_IT8712F
-	bool
-config SUPERIO_ITE_IT8716F
-	bool
-config SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
-	bool
-	depends on SUPERIO_ITE_IT8716F
-	default n
-config SUPERIO_ITE_IT8718F
-	bool
-config SUPERIO_ITE_IT8721F
-	bool
-config SUPERIO_ITE_IT8728F
-	bool
-config SUPERIO_ITE_IT8772F
-	bool
+romstage-$(CONFIG_SUPERIO_ITE_IT8728F) += early_serial.c

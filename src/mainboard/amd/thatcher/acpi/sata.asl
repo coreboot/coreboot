@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +19,6 @@
  */
 
 /* simple name description */
-
-/*
-Scope (_SB) {
-	Device(PCI0) {
-		Device(SATA) {
-			Name(_ADR, 0x00110000)
-			#include "sata.asl"
-		}
-	}
-}
-*/
 
 Name(STTM, Buffer(20) {
 	0x78, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00,

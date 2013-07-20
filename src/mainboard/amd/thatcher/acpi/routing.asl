@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*
-DefinitionBlock ("DSDT.AML","DSDT",0x01,"XXXXXX","XXXXXXXX",0x00010001
-		)
-	{
-		#include "routing.asl"
-	}
-*/
-
-/* Routing is in System Bus scope */
-Scope(\_SB) {
+	/* Routing is in System Bus scope */
 	Name(PR0, Package(){
 		/* NB devices */
 		/* Bus 0, Dev 0 - F15 Host Controller */
@@ -70,17 +62,17 @@ Scope(\_SB) {
 		Package(){0x0007FFFF, 2, INTB, 0 },
 		Package(){0x0007FFFF, 3, INTC, 0 },
 
-		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
+		/* Bus 0, Dev 8 - Southbridge port (normally hidden) */
 
-		/* SB devices */
 		/* Bus 0, Dev 20 - F0:SMBus/ACPI,F1:IDE;F2:HDAudio;F3:LPC;F4:PCIBridge;F5:USB */
 		Package(){0x0014FFFF, 0, INTA, 0 },
 		Package(){0x0014FFFF, 1, INTB, 0 },
 		Package(){0x0014FFFF, 2, INTC, 0 },
 		Package(){0x0014FFFF, 3, INTD, 0 },
 
-		/* Bus 0, Dev 19 - USB: OHCI, dev 18,19 func 0-2, dev 20 func 5;
-		 * EHCI, dev 18, 19 func 2 */
+		/* SB devices */
+		/* Bus 0, Dev 18,19,22 - USB: OHCI @ func 0
+		 *                            EHCI @ func 2 */
 		Package(){0x0012FFFF, 0, INTC, 0 },
 		Package(){0x0012FFFF, 1, INTB, 0 },
 
@@ -90,7 +82,7 @@ Scope(\_SB) {
 		Package(){0x0016FFFF, 0, INTC, 0 },
 		Package(){0x0016FFFF, 1, INTB, 0 },
 
-		/* Bus 0, Dev 10 - USB: XHCI func 0, 1 */
+		/* Bus 0, Dev 16 - USB: XHCI func 0, 1 */
 		Package(){0x0010FFFF, 0, INTC, 0 },
 		Package(){0x0010FFFF, 1, INTB, 0 },
 
@@ -148,17 +140,17 @@ Scope(\_SB) {
 		Package(){0x0007FFFF, 2, 0, 17 },
 		Package(){0x0007FFFF, 3, 0, 18 },
 
-		/* Bus 0, Funct 8 - Southbridge port (normally hidden) */
+		/* Bus 0, Dev 8 - Southbridge port (normally hidden) */
 
-		/* SB devices in APIC mode */
 		/* Bus 0, Dev 20 - F0:SMBus/ACPI, F1:IDE; F2:HDAudio; F3:LPC; F4:PCIBridge; F5:USB */
 		Package(){0x0014FFFF, 0, 0, 16 },
 		Package(){0x0014FFFF, 1, 0, 17 },
 		Package(){0x0014FFFF, 2, 0, 18 },
 		Package(){0x0014FFFF, 3, 0, 19 },
 
-		/* Bus 0, Dev 19 - USB: OHCI, dev 18,19 func 0-2, dev 20 func 5;
-		 * EHCI, dev 18, 19 func 2 */
+		/* SB devices in APIC mode */
+		/* Bus 0, Dev 18,19,22 - USB: OHCI @ func 0
+		 *                            EHCI @ func 2 */
 		Package(){0x0012FFFF, 0, 0, 18 },
 		Package(){0x0012FFFF, 1, 0, 17 },
 
@@ -168,7 +160,7 @@ Scope(\_SB) {
 		Package(){0x0016FFFF, 0, 0, 18 },
 		Package(){0x0016FFFF, 1, 0, 17 },
 
-		/* Bus 0, Dev 10 - USB: XHCI func 0, 1 */
+		/* Bus 0, Dev 16 - USB: XHCI func 0, 1 */
 		Package(){0x0010FFFF, 0, 0, 0x12},
 		Package(){0x0010FFFF, 1, 0, 0x11},
 
@@ -196,23 +188,6 @@ Scope(\_SB) {
 		Package(){0x0000FFFF, 2, 0, 16 },
 		Package(){0x0000FFFF, 3, 0, 17 },
 	})
-
-#if 0 //parmer not use
-	Name(PS3, Package(){
-		/* The external GFX - Hooked to PCIe slot 3 */
-		Package(){0x0000FFFF, 0, INTD, 0 },
-		Package(){0x0000FFFF, 1, INTA, 0 },
-		Package(){0x0000FFFF, 2, INTB, 0 },
-		Package(){0x0000FFFF, 3, INTC, 0 },
-	})
-	Name(APS3, Package(){
-		/* The external GFX - Hooked to PCIe slot 3 */
-		Package(){0x0000FFFF, 0, 0, 19 },
-		Package(){0x0000FFFF, 1, 0, 16 },
-		Package(){0x0000FFFF, 2, 0, 17 },
-		Package(){0x0000FFFF, 3, 0, 18 },
-	})
-#endif
 
 	Name(PS4, Package(){
 		/* PCIe slot - Hooked to PCIe slot 4 */
@@ -346,11 +321,4 @@ Scope(\_SB) {
 		Package(){0x0006FFFF, 1, 0, 0x16 },
 		Package(){0x0006FFFF, 2, 0, 0x17 },
 		Package(){0x0006FFFF, 3, 0, 0x14 },
-/*
-		Package(){0x0007FFFF, 0, 0, 0x16 },
-		Package(){0x0007FFFF, 1, 0, 0x17 },
-		Package(){0x0007FFFF, 2, 0, 0x14 },
-		Package(){0x0007FFFF, 3, 0, 0x15 },
-*/
 	})
-}

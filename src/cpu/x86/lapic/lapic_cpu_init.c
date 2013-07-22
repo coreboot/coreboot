@@ -101,7 +101,7 @@ static int lapic_start_cpu(unsigned long apicid)
 {
 	int timeout;
 	unsigned long send_status, accept_status;
-	int j, num_starts, maxlvt;
+	int j, maxlvt;
 
 	/*
 	 * Starting actual IPI sequence...
@@ -167,20 +167,14 @@ static int lapic_start_cpu(unsigned long apicid)
 		return 0;
 	}
 
-#if !CONFIG_CPU_AMD_MODEL_10XXX
-	num_starts = 2;
-#else
-	num_starts = 1;
-#endif
-
 	/*
 	 * Run STARTUP IPI loop.
 	 */
-	printk(BIOS_SPEW, "#startup loops: %d.\n", num_starts);
+	printk(BIOS_SPEW, "#startup loops: %d.\n", CONFIG_NUM_IPI_STARTS);
 
 	maxlvt = 4;
 
-	for (j = 1; j <= num_starts; j++) {
+	for (j = 1; j <= CONFIG_NUM_IPI_STARTS; j++) {
 		printk(BIOS_SPEW, "Sending STARTUP #%d to %lu.\n", j, apicid);
 		lapic_read_around(LAPIC_SPIV);
 		lapic_write(LAPIC_ESR, 0);

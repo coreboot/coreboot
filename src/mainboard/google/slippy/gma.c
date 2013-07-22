@@ -288,6 +288,12 @@ void dp_init_dim_regs(struct intel_dp *dp)
 
 	dp->pfa_sz = (edid->ha << 16) | (edid->va);
 
+	intel_dp_compute_m_n(dp->bpp,
+			     dp->lane_count,
+			     dp->edid.pixel_clock,
+			     dp->edid.link_clock,
+			     &dp->m_n);
+
 	printk(BIOS_SPEW, "dp->stride  = 0x%08x\n",dp->stride);
 	printk(BIOS_SPEW, "dp->htotal  = 0x%08x\n", dp->htotal);
 	printk(BIOS_SPEW, "dp->hblank  = 0x%08x\n", dp->hblank);
@@ -299,6 +305,26 @@ void dp_init_dim_regs(struct intel_dp *dp)
 	printk(BIOS_SPEW, "dp->pfa_pos = 0x%08x\n", dp->pfa_pos);
 	printk(BIOS_SPEW, "dp->pfa_ctl = 0x%08x\n", dp->pfa_ctl);
 	printk(BIOS_SPEW, "dp->pfa_sz  = 0x%08x\n", dp->pfa_sz);
+	printk(BIOS_SPEW, "dp->link_m  = 0x%08x\n", dp->m_n.link_m);
+	printk(BIOS_SPEW, "dp->link_n  = 0x%08x\n", dp->m_n.link_n);
+	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n", TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m);
+	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n", dp->m_n.gmch_m);
+	printk(BIOS_SPEW, "0x6f034     = 0x%08x\n", dp->m_n.gmch_n);
+}
+
+int intel_dp_bw_code_to_link_rate(u8 link_bw);
+
+int intel_dp_bw_code_to_link_rate(u8 link_bw)
+{
+	switch (link_bw) {
+        case DP_LINK_BW_1_62:
+        default:
+		return 162000;
+        case DP_LINK_BW_2_7:
+		return 270000;
+        case DP_LINK_BW_5_4:
+                return 540000;
+	}
 }
 
 int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
@@ -365,6 +391,10 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	edid_ok = decode_edid(dp->rawedid, dp->edidlen, &dp->edid);
 	printk(BIOS_SPEW, "decode edid returns %d\n", edid_ok);
+
+	dp->edid.link_clock = intel_dp_bw_code_to_link_rate(dp->link_bw);
+
+	printk(BIOS_SPEW, "pixel_clock is %i, link_clock is %i\n",dp->edid.pixel_clock, dp->edid.link_clock);
 
 	dp_init_dim_regs(dp);
 

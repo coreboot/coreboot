@@ -447,6 +447,8 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 	}
 
 	if (! did_detailed_timing){
+		/* Edid contains pixel clock in terms of 10KHz */
+		out->pixel_clock = (x[0] + (x[1] << 8)) * 10;
 		out->ha = (x[2] + ((x[4] & 0xF0) << 4));
 		out->hbl = (x[3] + ((x[4] & 0x0F) << 8));
 		out->hso = (x[8] + ((x[11] & 0xC0) << 2));
@@ -517,11 +519,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 		break;
 	}
 
-	printk(BIOS_SPEW, "Detailed mode (IN HEX): Clock %d0 KHz, %x mm x %x mm\n"
+	printk(BIOS_SPEW, "Detailed mode (IN HEX): Clock %d KHz, %x mm x %x mm\n"
 	       "               %04x %04x %04x %04x hborder %x\n"
 	       "               %04x %04x %04x %04x vborder %x\n"
 	       "               %chsync %cvsync%s%s %s\n",
-	       (x[0] + (x[1] << 8)),
+	       out->pixel_clock,
 	       (x[12] + ((x[14] & 0xF0) << 4)),
 	       (x[13] + ((x[14] & 0x0F) << 8)),
 	       out->ha, out->ha + out->hso, out->ha + out->hso + out->hspw,

@@ -393,37 +393,51 @@ intel_dp_i2c_init(struct intel_dp *intel_dp)
 	return ret;
 }
 
-struct intel_dp_m_n {
-	uint32_t	tu;
-	uint32_t	gmch_m;
-	uint32_t	gmch_n;
-	uint32_t	link_m;
-	uint32_t	link_n;
-};
-
 static void
-intel_reduce_ratio(uint32_t *num, uint32_t *den)
+intel_reduce_m_n_ratio(uint32_t *num, uint32_t *den)
 {
-	while (*num > 0xffffff || *den > 0xffffff) {
+	while (*num > DATA_LINK_M_N_MASK || *den > DATA_LINK_M_N_MASK) {
 		*num >>= 1;
 		*den >>= 1;
 	}
 }
 
-static void
-intel_dp_compute_m_n(int bpp,
-		     int nlanes,
-		     int pixel_clock,
-		     int link_clock,
-		     struct intel_dp_m_n *m_n)
+unsigned int roundup_power_of_two(unsigned int n);
+
+unsigned int roundup_power_of_two(unsigned int n)
+{
+	n--;
+	n |= n >> 1;
+	n |= n >> 2;
+	n |= n >> 4;
+	n |= n >> 8;
+	n |= n >> 16;
+	n++;
+	return n;
+}
+
+static void compute_m_n(unsigned int m, unsigned int n,
+			unsigned int *ret_m, unsigned int *ret_n)
+{
+	*ret_n = MIN(roundup_power_of_two(n), DATA_LINK_N_MAX);
+	*ret_m = ( (unsigned long long)m * *ret_n) / n;
+	intel_reduce_m_n_ratio(ret_m, ret_n);
+}
+
+void intel_dp_compute_m_n(unsigned int bits_per_pixel,
+			  unsigned int nlanes,
+			  unsigned int pixel_clock,
+			  unsigned int link_clock,
+			  struct intel_dp_m_n *m_n)
 {
 	m_n->tu = 64;
-	m_n->gmch_m = (pixel_clock * bpp) >> 3;
-	m_n->gmch_n = link_clock * nlanes;
-	intel_reduce_ratio(&m_n->gmch_m, &m_n->gmch_n);
-	m_n->link_m = pixel_clock;
-	m_n->link_n = link_clock;
-	intel_reduce_ratio(&m_n->link_m, &m_n->link_n);
+
+	compute_m_n(bits_per_pixel * pixel_clock,
+		    link_clock * nlanes * 8,
+		    &m_n->gmch_m, &m_n->gmch_n);
+
+	compute_m_n(pixel_clock, link_clock,
+		    &m_n->link_m, &m_n->link_n);
 }
 
 /* not sure. */

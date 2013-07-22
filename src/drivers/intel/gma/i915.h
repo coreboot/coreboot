@@ -65,6 +65,14 @@ void io_i915_write32(unsigned long val, unsigned long addr);
 
 #define DP_LINK_CONFIGURATION_SIZE	9
 
+struct intel_dp_m_n {
+	uint32_t	tu;
+	uint32_t	gmch_m;
+	uint32_t	gmch_n;
+	uint32_t	link_m;
+	uint32_t	link_n;
+};
+
 struct intel_dp {
 	int gen; // 6 for link, 7 for wtm2
 	int has_pch_split; // 1 for link and wtm2
@@ -134,6 +142,7 @@ struct intel_dp {
 	u32 pfa_ctl;
 	u32 pipesrc;
 	u32 stride;
+	struct intel_dp_m_n m_n;
 };
 
 /* we may yet need these. */
@@ -183,3 +192,8 @@ void intel_dp_wait_reg(unsigned long addr,
 
 void intel_dp_wait_panel_power_control(unsigned long val);
 
+void intel_dp_compute_m_n(unsigned int bits_per_pixel,
+                          unsigned int nlanes,
+                          unsigned int pixel_clock,
+                          unsigned int link_clock,
+                          struct intel_dp_m_n *m_n);

@@ -574,13 +574,6 @@ static me_bios_path intel_me_path(device_t dev)
 	struct me_hfs hfs;
 	struct me_hfs2 hfs2;
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* S3 wake skips all MKHI messages */
-	if (acpi_slp_type == 3) {
-		return ME_S3WAKE_BIOS_PATH;
-	}
-#endif
-
 	pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
 	pci_read_dword_ptr(dev, &hfs2, PCI_ME_HFS2);
 
@@ -721,13 +714,6 @@ static int intel_me_extend_valid(device_t dev)
 	return 0;
 }
 
-/* Hide the ME virtual PCI devices */
-static void intel_me_hide(device_t dev)
-{
-	dev->enabled = 0;
-	pch_enable(dev);
-}
-
 /* Check whether ME is present and do basic init */
 static void intel_me_init(device_t dev)
 {
@@ -737,10 +723,7 @@ static void intel_me_init(device_t dev)
 	/* Do initial setup and determine the BIOS path */
 	printk(BIOS_NOTICE, "ME: BIOS path: %s\n", me_bios_path_values[path]);
 
-	if (path == ME_S3WAKE_BIOS_PATH) {
-		intel_me_hide(dev);
-		return;
-	} else if (path == ME_NORMAL_BIOS_PATH) {
+	if (path == ME_NORMAL_BIOS_PATH) {
 		/* Validate the extend register */
 		/* FIXME: force recovery mode on failure. */
 		intel_me_extend_valid(dev);
@@ -794,12 +777,23 @@ static struct pci_operations pci_ops = {
 	.set_subsystem = set_subsystem,
 };
 
+static void intel_me_enable(device_t dev)
+{
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Avoid talking to the device in S3 path */
+	if (acpi_slp_type == 3) {
+		dev->enabled = 0;
+		pch_disable_devfn(dev);
+	}
+#endif
+}
+
 static struct device_operations device_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
+	.enable			= intel_me_enable,
 	.init			= intel_me_init,
-	.scan_bus		= scan_static_bus,
 	.ops_pci		= &pci_ops,
 };
 

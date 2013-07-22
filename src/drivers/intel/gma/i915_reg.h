@@ -3321,6 +3321,10 @@
 #define _PIPEA_DATA_M1           0x60030
 #define  TU_SIZE(x)             (((x)-1) << 25) /* default size 64 */
 #define  TU_SIZE_MASK           0x7e000000
+
+#define  DATA_LINK_M_N_MASK     (0xffffff)
+#define  DATA_LINK_N_MAX        (0x800000)
+
 #define  PIPE_DATA_M1_OFFSET    0
 #define _PIPEA_DATA_N1           0x60034
 #define  PIPE_DATA_N1_OFFSET    0

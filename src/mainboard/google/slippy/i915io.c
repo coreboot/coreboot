@@ -117,9 +117,14 @@ printk(BIOS_SPEW, "DP_MAX_DOWNSPREAD");
 
 	/* undocumented. */
 	io_i915_write32(0x7e4a0000,0x6f030);
-	io_i915_write32(0x00800000,0x6f034);
-	io_i915_write32(0x00021000,0x6f040);
-	io_i915_write32(0x00080000,0x6f044);
+	/* io_i915_write32(0x00800000,0x6f034); */
+	/* Write to 0x6f030 has to be 0x7e4ayyyy -- First four hex digits are important.
+	   However, with our formula we always see values 0x7e43yyyy (1366 panel) and
+	   0x7e42yyy (1280 panel) */
+	/* io_i915_write32(TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m,0x6f030); */
+	io_i915_write32(dp->m_n.gmch_n,0x6f034);
+	io_i915_write32(dp->m_n.link_m,0x6f040);
+	io_i915_write32(dp->m_n.link_n,0x6f044);
 
 	/* leave as is for now. */
 	io_i915_write32(dp->htotal,0x6f000);

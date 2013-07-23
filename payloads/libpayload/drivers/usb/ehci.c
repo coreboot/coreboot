@@ -279,12 +279,12 @@ static int wait_for_tds(qtd_t *head)
 		/* how long to wait?
 		 * tested with some USB2.0 flash sticks:
 		 * TUR turn around took
-		 *   about 2s for the slowest (14cd:121c)
+		 *   about 2.2s for the slowest (13fe:3800)
 		 *   max. 250ms for the others
 		 * slowest non-TUR turn around took about 1.3s
-		 * try 2s for now as a failed TUR is not fatal
+		 * set to 3s to be safe as a failed TUR can be fatal
 		 */
-		int timeout = 40000; /* time out after 40000 * 50us == 2s */
+		int timeout = 60000; /* time out after 60000 * 50us == 3s */
 		while ((cur->token & QTD_ACTIVE) && !(cur->token & QTD_HALTED)
 				&& timeout--)
 			udelay(50);

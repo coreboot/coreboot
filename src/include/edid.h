@@ -45,6 +45,8 @@ struct edid {
 	/* used to compute timing for graphics chips. */
 	unsigned char phsync;
 	unsigned char pvsync;
+	unsigned int x_mm;
+	unsigned int y_mm;
 	unsigned int pixel_clock;
 	unsigned int link_clock;
 	unsigned int ha;

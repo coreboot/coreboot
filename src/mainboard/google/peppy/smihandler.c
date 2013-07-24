@@ -34,6 +34,8 @@
 
 /* Codec enable: GPIO45 */
 #define GPIO_PP3300_CODEC_EN 45
+/* WLAN / BT enable: GPIO46 */
+#define GPIO_WLAN_DISABLE_L  46
 
 int mainboard_io_trap_handler(int smif)
 {
@@ -103,6 +105,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 				1, USB_CHARGE_MODE_DISABLED);
 
 		set_gpio(GPIO_PP3300_CODEC_EN, 0);
+		set_gpio(GPIO_WLAN_DISABLE_L, 0);
 		break;
 	case 5:
 		if (smm_get_gnvs()->s5u0 == 0)
@@ -113,6 +116,7 @@ void mainboard_smi_sleep(u8 slp_typ)
 				1, USB_CHARGE_MODE_DISABLED);
 
 		set_gpio(GPIO_PP3300_CODEC_EN, 0);
+		set_gpio(GPIO_WLAN_DISABLE_L, 0);
 		break;
 	}
 

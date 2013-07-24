@@ -359,7 +359,7 @@ void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
 {
 	struct exynos5420_clock *clk = samsung_get_base_clock();
 	unsigned shift;
-	unsigned mask = 0xff;
+	unsigned mask = 0xf;
 	u32 *reg;
 
 	switch (periph_id) {

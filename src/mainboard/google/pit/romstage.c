@@ -126,7 +126,7 @@ static void setup_ec(void)
 {
 	/* SPI2 (EC) is slower and needs to work in half-duplex mode with
 	 * single byte bus width. */
-	clock_set_rate(PERIPH_ID_SPI2, 500000);
+	clock_set_rate(PERIPH_ID_SPI2, 5000000);
 	exynos_pinmux_spi2();
 }
 

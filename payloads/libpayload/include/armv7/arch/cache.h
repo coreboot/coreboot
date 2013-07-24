@@ -32,6 +32,8 @@
 #ifndef ARMV7_CACHE_H
 #define ARMV7_CACHE_H
 
+#include <stdint.h>
+
 /* SCTLR bits */
 #define SCTLR_M		(1 << 0)	/* MMU enable			*/
 #define SCTLR_A		(1 << 1)	/* Alignment check enable	*/

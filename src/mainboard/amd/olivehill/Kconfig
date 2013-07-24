@@ -97,8 +97,4 @@ config HUDSON_LEGACY_FREE
 	bool
 	default y
 
-config WARNINGS_ARE_ERRORS
-	bool
-	default n
-
 endif # BOARD_AMD_OLIVEHILL

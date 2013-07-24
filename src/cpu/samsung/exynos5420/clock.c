@@ -41,9 +41,9 @@ static struct clk_bit_info clk_bit_info[PERIPH_ID_COUNT] = {
 	{12,	16,	24},
 	{-1,	-1,	-1},
 	{16,	0,	8}, /* PERIPH_ID_SROMC */
-	{20,	16,	24},
-	{24,	0,	8},
-	{0,	0,	4},
+	{20,	20,	24},
+	{24,	24,	8},
+	{28,	28,	4},
 	{4,	12,	16},
 	{-1,	-1,	-1},
 	{-1,	-1,	-1},
@@ -170,12 +170,9 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 		break;
 	case PERIPH_ID_SPI0:
 	case PERIPH_ID_SPI1:
-		src = readl(&clk->clk_src_peric1);
-		div = readl(&clk->clk_div_peric1);
-		break;
 	case PERIPH_ID_SPI2:
 		src = readl(&clk->clk_src_peric1);
-		div = readl(&clk->clk_div_peric2);
+		div = readl(&clk->clk_div_peric1);
 		break;
 	case PERIPH_ID_SPI3:
 	case PERIPH_ID_SPI4:

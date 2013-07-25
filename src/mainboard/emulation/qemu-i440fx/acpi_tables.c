@@ -29,6 +29,8 @@
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 
+#include "fw_cfg.h"
+
 extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
@@ -87,6 +89,10 @@ unsigned long write_acpi_tables(unsigned long start)
 #endif
 	acpi_header_t *ssdt;
 	acpi_header_t *dsdt;
+
+	current = fw_cfg_acpi_tables(start);
+	if (current)
+		return current;
 
 	current = start;
 

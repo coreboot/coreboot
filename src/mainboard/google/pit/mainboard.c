@@ -49,6 +49,9 @@ static struct edid edid = {
 	.ha = 1366,
 	.va = 768,
 	.bpp = 16,
+	.x_resolution = 1366,
+	.y_resolution = 768,
+	.bytes_per_line = 2 * 1366
 };
 
 static const struct parade_write parade_writes[] = {

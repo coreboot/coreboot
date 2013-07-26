@@ -246,24 +246,6 @@ typedef u32 device_t;
 #include <arch/pci_io_cfg.h>
 #include <arch/pci_mmio_cfg.h>
 
-static inline __attribute__((always_inline))
-void pci_or_config8(pci_devfn_t dev, unsigned where, uint8_t value)
-{
-	pci_write_config8(dev, where, pci_read_config8(dev, where) | value);
-}
-
-static inline __attribute__((always_inline))
-void pci_or_config16(pci_devfn_t dev, unsigned where, uint16_t value)
-{
-	pci_write_config16(dev, where, pci_read_config16(dev, where) | value);
-}
-
-static inline __attribute__((always_inline))
-void pci_or_config32(pci_devfn_t dev, unsigned where, uint32_t value)
-{
-	pci_write_config32(dev, where, pci_read_config32(dev, where) | value);
-}
-
 #define PCI_DEV_INVALID (0xffffffffU)
 static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
@@ -366,5 +348,30 @@ void pnp_set_drq(pnp_devfn_t dev, unsigned index, unsigned drq)
 }
 
 #endif /* __SIMPLE_DEVICE__ */
+
+#ifndef __SIMPLE_DEVICE__
+#include <device/pci_ops.h>
+#endif
+
+static inline __attribute__ ((always_inline))
+void pci_or_config8(device_t dev, unsigned int where, u8 ormask)
+{
+	u8 value = pci_read_config8(dev, where);
+	pci_write_config8(dev, where, value | ormask);
+}
+
+static inline __attribute__ ((always_inline))
+void pci_or_config16(device_t dev, unsigned int where, u16 ormask)
+{
+	u16 value = pci_read_config16(dev, where);
+	pci_write_config16(dev, where, value | ormask);
+}
+
+static inline __attribute__ ((always_inline))
+void pci_or_config32(device_t dev, unsigned int where, u32 ormask)
+{
+	u32 value = pci_read_config32(dev, where);
+	pci_write_config32(dev, where, value | ormask);
+}
 
 #endif

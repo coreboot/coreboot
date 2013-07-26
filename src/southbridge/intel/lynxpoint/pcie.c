@@ -141,30 +141,30 @@ static void pch_pcie_pm_late(struct device *dev)
 	u32 reg32;
 
 	/* Set 0x314 = 0x743a361b */
-	pci_mmio_write_config32(dev, 0x314, 0x743a361b);
+	pci_write_config32(dev, 0x314, 0x743a361b);
 
 	/* Set 0x318[31:16] = 0x1414 */
-	reg32 = pci_mmio_read_config32(dev, 0x318);
+	reg32 = pci_read_config32(dev, 0x318);
 	reg32 &= 0x0000ffff;
 	reg32 |= 0x14140000;
-	pci_mmio_write_config32(dev, 0x318, reg32);
+	pci_write_config32(dev, 0x318, reg32);
 
 	/* Set 0x324[5] = 1 */
-	reg32 = pci_mmio_read_config32(dev, 0x324);
+	reg32 = pci_read_config32(dev, 0x324);
 	reg32 |= (1 << 5);
-	pci_mmio_write_config32(dev, 0x324, reg32);
+	pci_write_config32(dev, 0x324, reg32);
 
 	/* Set 0x330[7:0] = 0x40 */
-	reg32 = pci_mmio_read_config32(dev, 0x330);
+	reg32 = pci_read_config32(dev, 0x330);
 	reg32 &= ~(0xff);
 	reg32 |= 0x40;
-	pci_mmio_write_config32(dev, 0x330, reg32);
+	pci_write_config32(dev, 0x330, reg32);
 
 	/* Set 0x33C[24:0] = 0x854c74 */
-	reg32 = pci_mmio_read_config32(dev, 0x33c);
+	reg32 = pci_read_config32(dev, 0x33c);
 	reg32 &= 0xff000000;
 	reg32 |= 0x00854c74;
-	pci_mmio_write_config32(dev, 0x33c, reg32);
+	pci_write_config32(dev, 0x33c, reg32);
 
 	/* No IO-APIC, Disable EOI forwarding */
 	reg32 = pci_read_config32(dev, 0xd4);

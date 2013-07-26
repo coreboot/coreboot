@@ -22,17 +22,17 @@
 
 void intel_nehalem_finalize_smm(void)
 {
-	pcie_or_config16(PCI_DEV_SNB, 0x50, 1 << 0);	/* GGC */
-	pcie_or_config32(PCI_DEV_SNB, 0x5c, 1 << 0);	/* DPR */
-	pcie_or_config32(PCI_DEV_SNB, 0x78, 1 << 10);	/* ME */
-	pcie_or_config32(PCI_DEV_SNB, 0x90, 1 << 0);	/* REMAPBASE */
-	pcie_or_config32(PCI_DEV_SNB, 0x98, 1 << 0);	/* REMAPLIMIT */
-	pcie_or_config32(PCI_DEV_SNB, 0xa0, 1 << 0);	/* TOM */
-	pcie_or_config32(PCI_DEV_SNB, 0xa8, 1 << 0);	/* TOUUD */
-	pcie_or_config32(PCI_DEV_SNB, 0xb0, 1 << 0);	/* BDSM */
-	pcie_or_config32(PCI_DEV_SNB, 0xb4, 1 << 0);	/* BGSM */
-	pcie_or_config32(PCI_DEV_SNB, 0xb8, 1 << 0);	/* TSEGMB */
-	pcie_or_config32(PCI_DEV_SNB, 0xbc, 1 << 0);	/* TOLUD */
+	pci_or_config16(PCI_DEV_SNB, 0x50, 1 << 0);	/* GGC */
+	pci_or_config32(PCI_DEV_SNB, 0x5c, 1 << 0);	/* DPR */
+	pci_or_config32(PCI_DEV_SNB, 0x78, 1 << 10);	/* ME */
+	pci_or_config32(PCI_DEV_SNB, 0x90, 1 << 0);	/* REMAPBASE */
+	pci_or_config32(PCI_DEV_SNB, 0x98, 1 << 0);	/* REMAPLIMIT */
+	pci_or_config32(PCI_DEV_SNB, 0xa0, 1 << 0);	/* TOM */
+	pci_or_config32(PCI_DEV_SNB, 0xa8, 1 << 0);	/* TOUUD */
+	pci_or_config32(PCI_DEV_SNB, 0xb0, 1 << 0);	/* BDSM */
+	pci_or_config32(PCI_DEV_SNB, 0xb4, 1 << 0);	/* BGSM */
+	pci_or_config32(PCI_DEV_SNB, 0xb8, 1 << 0);	/* TSEGMB */
+	pci_or_config32(PCI_DEV_SNB, 0xbc, 1 << 0);	/* TOLUD */
 
 	MCHBAR32_OR(0x5500, 1 << 0);	/* PAVP */
 	MCHBAR32_OR(0x5f00, 1 << 31);	/* SA PM */

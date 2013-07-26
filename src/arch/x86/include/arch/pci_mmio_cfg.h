@@ -69,27 +69,6 @@ void pcie_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
 	write32(addr, value);
 }
 
-static inline __attribute__ ((always_inline))
-void pcie_or_config8(pci_devfn_t dev, unsigned int where, u8 ormask)
-{
-	u8 value = pcie_read_config8(dev, where);
-	pcie_write_config8(dev, where, value | ormask);
-}
-
-static inline __attribute__ ((always_inline))
-void pcie_or_config16(pci_devfn_t dev, unsigned int where, u16 ormask)
-{
-	u16 value = pcie_read_config16(dev, where);
-	pcie_write_config16(dev, where, value | ormask);
-}
-
-static inline __attribute__ ((always_inline))
-void pcie_or_config32(pci_devfn_t dev, unsigned int where, u32 ormask)
-{
-	u32 value = pcie_read_config32(dev, where);
-	pcie_write_config32(dev, where, value | ormask);
-}
-
 #define pci_mmio_read_config8 	pcie_read_config8
 #define pci_mmio_read_config16	pcie_read_config16
 #define pci_mmio_read_config32	pcie_read_config32

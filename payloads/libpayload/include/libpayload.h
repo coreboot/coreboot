@@ -150,6 +150,7 @@ int add_reset_handler(void (*new_handler)(void));
  * @{
  */
 void keyboard_init(void);
+void keyboard_disconnect(void);
 int keyboard_havechar(void);
 unsigned char keyboard_get_scancode(void);
 int keyboard_getchar(void);

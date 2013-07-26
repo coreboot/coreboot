@@ -224,39 +224,35 @@ static void azalia_init(struct device *dev)
 	u8 reg8;
 	u32 reg32;
 
-#if CONFIG_MMCONF_SUPPORT
 	// ESD
-	reg32 = pci_mmio_read_config32(dev, 0x134);
+	reg32 = pci_read_config32(dev, 0x134);
 	reg32 &= 0xff00ffff;
 	reg32 |= (2 << 16);
-	pci_mmio_write_config32(dev, 0x134, reg32);
+	pci_write_config32(dev, 0x134, reg32);
 
 	// Link1 description
-	reg32 = pci_mmio_read_config32(dev, 0x140);
+	reg32 = pci_read_config32(dev, 0x140);
 	reg32 &= 0xff00ffff;
 	reg32 |= (2 << 16);
-	pci_mmio_write_config32(dev, 0x140, reg32);
+	pci_write_config32(dev, 0x140, reg32);
 
 	// Port VC0 Resource Control Register
-	reg32 = pci_mmio_read_config32(dev, 0x114);
+	reg32 = pci_read_config32(dev, 0x114);
 	reg32 &= 0xffffff00;
 	reg32 |= 1;
-	pci_mmio_write_config32(dev, 0x114, reg32);
+	pci_write_config32(dev, 0x114, reg32);
 
 	// VCi traffic class
-	reg8 = pci_mmio_read_config8(dev, 0x44);
+	reg8 = pci_read_config8(dev, 0x44);
 	reg8 |= (7 << 0); // TC7
-	pci_mmio_write_config8(dev, 0x44, reg8);
+	pci_write_config8(dev, 0x44, reg8);
 
 	// VCi Resource Control
-	reg32 = pci_mmio_read_config32(dev, 0x120);
+	reg32 = pci_read_config32(dev, 0x120);
 	reg32 |= (1 << 31);
 	reg32 |= (1 << 24); // VCi ID
 	reg32 |= (0x80 << 0); // VCi map
-	pci_mmio_write_config32(dev, 0x120, reg32);
-#else
-#error ICH7 Azalia required CONFIG_MMCONF_SUPPORT
-#endif
+	pci_write_config32(dev, 0x120, reg32);
 
 	/* Set Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);

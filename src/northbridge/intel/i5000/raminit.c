@@ -121,26 +121,26 @@ static void i5000_clear_fbd_errors(void)
 	dev16_1 = PCI_ADDR(0, 16, 1, 0);
 	dev16_2 = PCI_ADDR(0, 16, 2, 0);
 
-	pci_mmio_write_config32(dev16_1, I5000_EMASK_FBD,
-				pci_mmio_read_config32(dev16_1, I5000_EMASK_FBD));
+	pci_write_config32(dev16_1, I5000_EMASK_FBD,
+				pci_read_config32(dev16_1, I5000_EMASK_FBD));
 
-	pci_mmio_write_config32(dev16_1, I5000_NERR_FAT_FBD,
-				pci_mmio_read_config32(dev16_1, I5000_NERR_FAT_FBD));
+	pci_write_config32(dev16_1, I5000_NERR_FAT_FBD,
+				pci_read_config32(dev16_1, I5000_NERR_FAT_FBD));
 
-	pci_mmio_write_config32(dev16_1, I5000_FERR_FAT_FBD,
-				pci_mmio_read_config32(dev16_1, I5000_FERR_FAT_FBD));
+	pci_write_config32(dev16_1, I5000_FERR_FAT_FBD,
+				pci_read_config32(dev16_1, I5000_FERR_FAT_FBD));
 
-	pci_mmio_write_config32(dev16_1, I5000_NERR_NF_FBD,
-				pci_mmio_read_config32(dev16_1, I5000_NERR_NF_FBD));
+	pci_write_config32(dev16_1, I5000_NERR_NF_FBD,
+				pci_read_config32(dev16_1, I5000_NERR_NF_FBD));
 
-	pci_mmio_write_config32(dev16_1, I5000_FERR_NF_FBD,
-				pci_mmio_read_config32(dev16_1, I5000_FERR_NF_FBD));
+	pci_write_config32(dev16_1, I5000_FERR_NF_FBD,
+				pci_read_config32(dev16_1, I5000_FERR_NF_FBD));
 
-	pci_mmio_write_config32(dev16_2, I5000_FERR_GLOBAL,
-				pci_mmio_read_config32(dev16_2, I5000_FERR_GLOBAL));
+	pci_write_config32(dev16_2, I5000_FERR_GLOBAL,
+				pci_read_config32(dev16_2, I5000_FERR_GLOBAL));
 
-	pci_mmio_write_config32(dev16_2, I5000_NERR_GLOBAL,
-				pci_mmio_read_config32(dev16_2, I5000_NERR_GLOBAL));
+	pci_write_config32(dev16_2, I5000_NERR_GLOBAL,
+				pci_read_config32(dev16_2, I5000_NERR_GLOBAL));
 }
 
 static int i5000_branch_reset(struct i5000_fbd_branch *b)
@@ -654,7 +654,7 @@ static int i5000_amb_preinit(struct i5000_fbdimm *d)
 		d->device = id >> 16;
 	}
 
-	pci_mmio_write_config8(d->branch->branchdev,
+	pci_write_config8(d->branch->branchdev,
 			       d->channel->num ? I5000_FBDSBTXCFG1 : I5000_FBDSBTXCFG0, 0x04);
 	return 0;
 }
@@ -666,11 +666,11 @@ static void i5000_fbd_next_state(struct i5000_fbd_branch *b, int state)
 
 	printk(BIOS_DEBUG, "  FBD state branch %d: %02x,", b->num, state);
 
-	pci_mmio_write_config8(dev, I5000_FBDHPC, state);
+	pci_write_config8(dev, I5000_FBDHPC, state);
 
 	printk(BIOS_DEBUG, "waiting for new state...");
 
-	while(pci_mmio_read_config8(dev, I5000_FBDST) != state && timeout--)
+	while(pci_read_config8(dev, I5000_FBDST) != state && timeout--)
 		udelay(10);
 
 	if (timeout) {
@@ -689,12 +689,12 @@ static int i5000_wait_pattern_recognized(struct i5000_fbd_channel *c)
 				c->num ? I5000_FBDISTS1 : I5000_FBDISTS0);
 
 	printk(BIOS_DEBUG, "      waiting for pattern recognition...");
-	while(pci_mmio_read_config16(dev, 0) != 0x1fff && --i > 0)
+	while(pci_read_config16(dev, 0) != 0x1fff && --i > 0)
 		udelay(5000);
 
 	printk(BIOS_DEBUG, i ?  "done\n" : "failed\n");
 	printk(BIOS_DEBUG, "%d/%d Round trip latency: %d\n", c->branch->num, c->num,
-	       pci_mmio_read_config8(c->branch->branchdev, c->num ? I5000_FBDLVL1 : I5000_FBDLVL0) & 0x3f);
+	       pci_read_config8(c->branch->branchdev, c->num ? I5000_FBDLVL1 : I5000_FBDLVL0) & 0x3f);
 	return !i;
 }
 
@@ -713,7 +713,7 @@ static int i5000_drive_pattern(struct i5000_fbd_channel *c, int pattern, int wai
 	printk(BIOS_DEBUG, "    %d/%d  driving pattern %s to AMB%d (%02x)\n",
 	       c->branch->num, c->num,
 	       pattern_names[(pattern >> 4) & 0xf], pattern & 3, pattern);
-	pci_mmio_write_config8(dev, 0, pattern);
+	pci_write_config8(dev, 0, pattern);
 
 	if (!wait)
 		return 0;
@@ -749,14 +749,14 @@ static int i5000_drive_test_patterns(struct i5000_fbd_channel *c, int highest_am
 	u32 portctl;
 	int i, cnt = 1000;
 
-	portctl = pci_mmio_read_config32(branchdev, I5000_FBD0IBPORTCTL + off);
+	portctl = pci_read_config32(branchdev, I5000_FBD0IBPORTCTL + off);
 	portctl &= ~0x01000020;
 	if (mchpad)
 		portctl |= 0x00800000;
 	else
 		portctl &= ~0x00800000;
 	portctl &= ~0x01000020;
-	pci_mmio_write_config32(branchdev, I5000_FBD0IBPORTCTL + off, portctl);
+	pci_write_config32(branchdev, I5000_FBD0IBPORTCTL + off, portctl);
 
 	/* drive calibration patterns */
 	if (i5000_drive_pattern(c, I5000_FBDICMD_TS0 | highest_amb, 1))
@@ -765,7 +765,7 @@ static int i5000_drive_test_patterns(struct i5000_fbd_channel *c, int highest_am
 	if (i5000_drive_pattern(c, I5000_FBDICMD_TS1 | highest_amb, 1))
 		return -1;
 
-	while (!(pci_mmio_read_config32(branchdev, I5000_FBD0IBPORTCTL + off) & 4) && cnt--)
+	while (!(pci_read_config32(branchdev, I5000_FBD0IBPORTCTL + off) & 4) && cnt--)
 		udelay(10);
 
 	if (!cnt) {
@@ -808,7 +808,7 @@ static int i5000_train_channel_idle(struct i5000_fbd_channel *c)
 		return -1;
 	}
 
-	pci_mmio_write_config8(c->branch->branchdev,
+	pci_write_config8(c->branch->branchdev,
 			       c->num ? I5000_FBDSBTXCFG1 : I5000_FBDSBTXCFG0, 0x05);
 
 	for(i = 0; i < 4; i++) {
@@ -841,20 +841,20 @@ static int i5000_setup_channel(struct i5000_fbd_channel *c)
 	int off = c->branch->num ? 0x100 : 0;
 	u32 val;
 
-	pci_mmio_write_config32(branchdev, I5000_FBD0IBTXPAT2EN + off, 0);
-	pci_mmio_write_config32(branchdev, I5000_FBD0IBTXPAT2EN + off, 0);
-	pci_mmio_write_config32(branchdev, I5000_FBD0IBTXMSK + off, 0x3ff);
-	pci_mmio_write_config32(branchdev, I5000_FBD0IBRXMSK + off, 0x1fff);
+	pci_write_config32(branchdev, I5000_FBD0IBTXPAT2EN + off, 0);
+	pci_write_config32(branchdev, I5000_FBD0IBTXPAT2EN + off, 0);
+	pci_write_config32(branchdev, I5000_FBD0IBTXMSK + off, 0x3ff);
+	pci_write_config32(branchdev, I5000_FBD0IBRXMSK + off, 0x1fff);
 
-	pci_mmio_write_config16(branchdev, off + 0x0162, c->used ? 0x20db : 0x18db);
+	pci_write_config16(branchdev, off + 0x0162, c->used ? 0x20db : 0x18db);
 
 	/* unknown */
-	val = pci_mmio_read_config32(branchdev, off + 0x0164);
+	val = pci_read_config32(branchdev, off + 0x0164);
 	val &= 0xfffbcffc;
 	val |= 0x4004;
-	pci_mmio_write_config32(branchdev, off + 0x164, val);
+	pci_write_config32(branchdev, off + 0x164, val);
 
-	pci_mmio_write_config32(branchdev, off + 0x15c, 0xff);
+	pci_write_config32(branchdev, off + 0x15c, 0xff);
 	i5000_drive_pattern(c, I5000_FBDICMD_ALL_ONES, 0);
 	return 0;
 }
@@ -863,7 +863,7 @@ static int i5000_link_training0(struct i5000_fbd_branch *b)
 {
 	device_t branchdev = b->branchdev;
 
-	pci_mmio_write_config8(branchdev, I5000_FBDPLLCTRL, b->used ? 0 : 1);
+	pci_write_config8(branchdev, I5000_FBDPLLCTRL, b->used ? 0 : 1);
 
 	if (i5000_for_each_channel(b, i5000_setup_channel))
 		return -1;
@@ -1137,7 +1137,7 @@ static void i5000_program_mtr(struct i5000_fbd_channel *c, int mtr)
 		       (1 << 7) | /* Electrical Throttling enabled */
 		       (1 << 8)); /* DIMM present and compatible */
 		printk(BIOS_DEBUG, "MTR0: %04x\n", val);
-		pci_mmio_write_config16(c->branch->branchdev, mtr, val);
+		pci_write_config16(c->branch->branchdev, mtr, val);
 	}
 
 	if (c->dimm[2].present || c->dimm[3].present) {
@@ -1149,7 +1149,7 @@ static void i5000_program_mtr(struct i5000_fbd_channel *c, int mtr)
 		       (1 << 7) | /* Electrical Throttling enabled */
 		       (1 << 8)); /* DIMM present and compatible */
 		printk(BIOS_DEBUG, "MTR1: %04x\n", val);
-		pci_mmio_write_config16(c->branch->branchdev, mtr+2, val);
+		pci_write_config16(c->branch->branchdev, mtr+2, val);
 	}
 }
 
@@ -1240,14 +1240,14 @@ static int i5000_setup_dmir(struct i5000_fbd_branch *b)
 
 		printk(BIOS_DEBUG, "DMIR%d: %08x\n", (dmir - I5000_DMIR0) >> 2,
 		       dmirval);
-		pci_mmio_write_config32(dev, dmir, dmirval);
+		pci_write_config32(dev, dmir, dmirval);
 		dmir += 4;
 	}
 
 	for(; dmir <= I5000_DMIR4; dmir += 4) {
 		printk(BIOS_DEBUG, "DMIR%d: %08x\n", (dmir - I5000_DMIR0) >> 2,
 		       dmirval);
-		pci_mmio_write_config32(dev, dmir, dmirval);
+		pci_write_config32(dev, dmir, dmirval);
 	}
 	return rankoffset;
 }
@@ -1286,9 +1286,9 @@ static void i5000_setup_interleave(struct i5000_fbd_setup *setup)
 	printk(BIOS_DEBUG, "MIR1: %04x\n", mir1);;
 	printk(BIOS_DEBUG, "MIR2: %04x\n", mir2);;
 
-	pci_mmio_write_config16(dev16, I5000_MIR0, mir0);
-	pci_mmio_write_config16(dev16, I5000_MIR1, mir1);
-	pci_mmio_write_config16(dev16, I5000_MIR2, mir2);
+	pci_write_config16(dev16, I5000_MIR0, mir0);
+	pci_write_config16(dev16, I5000_MIR1, mir1);
+	pci_write_config16(dev16, I5000_MIR2, mir2);
 }
 
 static int i5000_dram_timing_init(struct i5000_fbd_setup *setup)
@@ -1326,11 +1326,11 @@ static int i5000_dram_timing_init(struct i5000_fbd_setup *setup)
 		(1 << 5); /* enable northbound error detection */
 
 	printk(BIOS_DEBUG, "DRTA: 0x%08x DRTB: 0x%08x MC: 0x%08x\n", drta, drtb, mc);
-	pci_mmio_write_config32(dev16, I5000_DRTA, drta);
-	pci_mmio_write_config32(dev16, I5000_DRTB, drtb);
-	pci_mmio_write_config32(dev16, I5000_MC, mc);
+	pci_write_config32(dev16, I5000_DRTA, drta);
+	pci_write_config32(dev16, I5000_DRTB, drtb);
+	pci_write_config32(dev16, I5000_MC, mc);
 
-	mca = pci_mmio_read_config32(dev16, I5000_MCA);
+	mca = pci_read_config32(dev16, I5000_MCA);
 
 	mca |= (7 << 28);
 	if (setup->single_channel)
@@ -1338,9 +1338,9 @@ static int i5000_dram_timing_init(struct i5000_fbd_setup *setup)
 	else
 		mca &= ~(1 << 14);
 	printk(BIOS_DEBUG, "MCA: 0x%08x\n", mca);
-	pci_mmio_write_config32(dev16, I5000_MCA, mca);
+	pci_write_config32(dev16, I5000_MCA, mca);
 
-	pci_mmio_write_config32(dev16, I5000_ERRPERR, 0xffffffff);
+	pci_write_config32(dev16, I5000_ERRPERR, 0xffffffff);
 
 	i5000_program_mtr(&setup->branch[0].channel[0], I5000_MTR0);
 	i5000_program_mtr(&setup->branch[0].channel[1], I5000_MTR1);
@@ -1354,7 +1354,7 @@ static int i5000_dram_timing_init(struct i5000_fbd_setup *setup)
 
 	tolm <<= 4;
 	printk(BIOS_DEBUG, "TOLM: 0x%04x\n", tolm);
-	pci_mmio_write_config16(dev16, I5000_TOLM, tolm);
+	pci_write_config16(dev16, I5000_TOLM, tolm);
 	return 0;
 }
 
@@ -1398,62 +1398,62 @@ static void i5000_init_setup(struct i5000_fbd_setup *setup)
 static void i5000_reserved_register_init(struct i5000_fbd_setup *setup)
 {
 	/* register write captured from vendor BIOS, but undocument by Intel */
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 0, 0), I5000_PROCENABLE, 0x487f7c);
+	pci_write_config32(PCI_ADDR(0, 16, 0, 0), I5000_PROCENABLE, 0x487f7c);
 
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 0, 0), 0xf4, 0x1588106);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 0, 0), 0xfc, 0x80);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), 0x5c, 0x08);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 0, 0), 0x70, 0xfe2c08d);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 0, 0), 0x78, 0xfe2c08d);
+	pci_write_config32(PCI_ADDR(0, 16, 0, 0), 0xf4, 0x1588106);
+	pci_write_config32(PCI_ADDR(0, 16, 0, 0), 0xfc, 0x80);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), 0x5c, 0x08);
+	pci_write_config32(PCI_ADDR(0, 16, 0, 0), 0x70, 0xfe2c08d);
+	pci_write_config32(PCI_ADDR(0, 16, 0, 0), 0x78, 0xfe2c08d);
 
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 0, 0), 0x140, 0x18000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 0, 0), 0x440, 0x18000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x18c, 0x18000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), 0x180, 0x18000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x180, 0x87ffffff);
+	pci_write_config32(PCI_ADDR(0, 16, 0, 0), 0x140, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 16, 0, 0), 0x440, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x18c, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), 0x180, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x180, 0x87ffffff);
 
-	pci_mmio_write_config32(PCI_ADDR(0, 0, 0, 0), 0x200, 0x18000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 4, 0, 0), 0x200, 0x18000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 0, 0, 0), 0x208, 0x18000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 4, 0, 0), 0x208, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 0, 0, 0), 0x200, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 4, 0, 0), 0x200, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 0, 0, 0), 0x208, 0x18000000);
+	pci_write_config32(PCI_ADDR(0, 4, 0, 0), 0x208, 0x18000000);
 
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x184, 0x01249249);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x154, 0x00000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x158, 0x02492492);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x15c, 0x00000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x160, 0x00000000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x184, 0x01249249);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x154, 0x00000000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x158, 0x02492492);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x15c, 0x00000000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x160, 0x00000000);
 
-	pci_mmio_write_config16(PCI_ADDR(0, 19, 0, 0), 0x0090, 0x00000007);
-	pci_mmio_write_config16(PCI_ADDR(0, 19, 0, 0), 0x0092, 0x0000000f);
+	pci_write_config16(PCI_ADDR(0, 19, 0, 0), 0x0090, 0x00000007);
+	pci_write_config16(PCI_ADDR(0, 19, 0, 0), 0x0092, 0x0000000f);
 
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x0154, 0x10);
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x0454, 0x10);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x0154, 0x10);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x0454, 0x10);
 
-	pci_mmio_write_config32(PCI_ADDR(0, 19, 0, 0), 0x007C, 0x00000001);
-	pci_mmio_write_config32(PCI_ADDR(0, 19, 0, 0), 0x007C, 0x00000000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0108, 0x000003F0);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x010C, 0x00000042);
-	pci_mmio_write_config16(PCI_ADDR(0, 17, 0, 0), 0x0112, 0x0000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0114, 0x00A0494C);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0118, 0x0002134C);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x013C, 0x0C008000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0140, 0x0C008000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0144, 0x00008000);
-	pci_mmio_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0148, 0x00008000);
-	pci_mmio_write_config32(PCI_ADDR(0, 19, 0, 0), 0x007C, 0x00000002);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), 0x01F4, 0x00000800);
+	pci_write_config32(PCI_ADDR(0, 19, 0, 0), 0x007C, 0x00000001);
+	pci_write_config32(PCI_ADDR(0, 19, 0, 0), 0x007C, 0x00000000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0108, 0x000003F0);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x010C, 0x00000042);
+	pci_write_config16(PCI_ADDR(0, 17, 0, 0), 0x0112, 0x0000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0114, 0x00A0494C);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0118, 0x0002134C);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x013C, 0x0C008000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0140, 0x0C008000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0144, 0x00008000);
+	pci_write_config32(PCI_ADDR(0, 17, 0, 0), 0x0148, 0x00008000);
+	pci_write_config32(PCI_ADDR(0, 19, 0, 0), 0x007C, 0x00000002);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), 0x01F4, 0x00000800);
 
 	if (setup->branch[0].channel[0].used)
-		pci_mmio_write_config32(PCI_ADDR(0, 21, 0, 0), 0x010C, 0x004C0C10);
+		pci_write_config32(PCI_ADDR(0, 21, 0, 0), 0x010C, 0x004C0C10);
 
 	if (setup->branch[0].channel[1].used)
-		pci_mmio_write_config32(PCI_ADDR(0, 21, 0, 0), 0x020C, 0x004C0C10);
+		pci_write_config32(PCI_ADDR(0, 21, 0, 0), 0x020C, 0x004C0C10);
 
 	if (setup->branch[1].channel[0].used)
-		pci_mmio_write_config32(PCI_ADDR(0, 22, 0, 0), 0x010C, 0x004C0C10);
+		pci_write_config32(PCI_ADDR(0, 22, 0, 0), 0x010C, 0x004C0C10);
 
 	if (setup->branch[1].channel[1].used)
-		pci_mmio_write_config32(PCI_ADDR(0, 22, 0, 0), 0x020C, 0x004C0C10);
+		pci_write_config32(PCI_ADDR(0, 22, 0, 0), 0x020C, 0x004C0C10);
 }
 static void i5000_dump_error_registers(void)
 {
@@ -1467,22 +1467,22 @@ static void i5000_dump_error_registers(void)
 	       "ERR1_FBD:     0x%08x\n"
 	       "ERR2_FBD:     0x%08x\n"
 	       "MC_ERR_FBD:   0x%08x\n",
-	       pci_mmio_read_config32(dev, I5000_FERR_FAT_FBD),
-	       pci_mmio_read_config32(dev, I5000_NERR_FAT_FBD),
-	       pci_mmio_read_config32(dev, I5000_FERR_NF_FBD),
-	       pci_mmio_read_config32(dev, I5000_NERR_NF_FBD),
-	       pci_mmio_read_config32(dev, I5000_EMASK_FBD),
-	       pci_mmio_read_config32(dev, I5000_ERR0_FBD),
-	       pci_mmio_read_config32(dev, I5000_ERR1_FBD),
-	       pci_mmio_read_config32(dev, I5000_ERR2_FBD),
-	       pci_mmio_read_config32(dev, I5000_MCERR_FBD));
+	       pci_read_config32(dev, I5000_FERR_FAT_FBD),
+	       pci_read_config32(dev, I5000_NERR_FAT_FBD),
+	       pci_read_config32(dev, I5000_FERR_NF_FBD),
+	       pci_read_config32(dev, I5000_NERR_NF_FBD),
+	       pci_read_config32(dev, I5000_EMASK_FBD),
+	       pci_read_config32(dev, I5000_ERR0_FBD),
+	       pci_read_config32(dev, I5000_ERR1_FBD),
+	       pci_read_config32(dev, I5000_ERR2_FBD),
+	       pci_read_config32(dev, I5000_MCERR_FBD));
 
 	printk(BIOS_ERR, "Non recoverable error registers:\n"
 	       "NRECMEMA:     0x%08x NRECMEMB:    0x%08x\n"
 	       "NRECFGLOG:    0x%08x\n",
-	       pci_mmio_read_config32(dev, I5000_NRECMEMA),
-	       pci_mmio_read_config32(dev, I5000_NRECMEMB),
-	       pci_mmio_read_config32(dev, I5000_NRECFGLOG));
+	       pci_read_config32(dev, I5000_NRECMEMA),
+	       pci_read_config32(dev, I5000_NRECMEMB),
+	       pci_read_config32(dev, I5000_NRECFGLOG));
 
 	printk(BIOS_ERR, "Packet data:\n"
 	       "NRECFBDA: 0x%08x\n"
@@ -1490,18 +1490,18 @@ static void i5000_dump_error_registers(void)
 	       "NRECFBDC: 0x%08x\n"
 	       "NRECFBDD: 0x%08x\n"
 	       "NRECFBDE: 0x%08x\n",
-	       pci_mmio_read_config32(dev, I5000_NRECFBDA),
-	       pci_mmio_read_config32(dev, I5000_NRECFBDB),
-	       pci_mmio_read_config32(dev, I5000_NRECFBDC),
-	       pci_mmio_read_config32(dev, I5000_NRECFBDD),
-	       pci_mmio_read_config32(dev, I5000_NRECFBDE));
+	       pci_read_config32(dev, I5000_NRECFBDA),
+	       pci_read_config32(dev, I5000_NRECFBDB),
+	       pci_read_config32(dev, I5000_NRECFBDC),
+	       pci_read_config32(dev, I5000_NRECFBDD),
+	       pci_read_config32(dev, I5000_NRECFBDE));
 
 	printk(BIOS_ERR, "recoverable error registers:\n"
 	       "RECMEMA:     0x%08x RECMEMB:    0x%08x\n"
 	       "RECFGLOG:    0x%08x\n",
-	       pci_mmio_read_config32(dev, I5000_RECMEMA),
-	       pci_mmio_read_config32(dev, I5000_RECMEMB),
-	       pci_mmio_read_config32(dev, I5000_RECFGLOG));
+	       pci_read_config32(dev, I5000_RECMEMA),
+	       pci_read_config32(dev, I5000_RECMEMB),
+	       pci_read_config32(dev, I5000_RECFGLOG));
 
 	printk(BIOS_ERR, "Packet data:\n"
 	       "RECFBDA: 0x%08x\n"
@@ -1509,11 +1509,11 @@ static void i5000_dump_error_registers(void)
 	       "RECFBDC: 0x%08x\n"
 	       "RECFBDD: 0x%08x\n"
 	       "RECFBDE: 0x%08x\n",
-	       pci_mmio_read_config32(dev, I5000_RECFBDA),
-	       pci_mmio_read_config32(dev, I5000_RECFBDB),
-	       pci_mmio_read_config32(dev, I5000_RECFBDC),
-	       pci_mmio_read_config32(dev, I5000_RECFBDD),
-	       pci_mmio_read_config32(dev, I5000_RECFBDE));
+	       pci_read_config32(dev, I5000_RECFBDA),
+	       pci_read_config32(dev, I5000_RECFBDB),
+	       pci_read_config32(dev, I5000_RECFBDC),
+	       pci_read_config32(dev, I5000_RECFBDD),
+	       pci_read_config32(dev, I5000_RECFBDE));
 
 }
 
@@ -1527,13 +1527,13 @@ static void i5000_try_restart(const char *msg)
 
 static void i5000_pam_setup(void)
 {
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x59, 0x30);
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5a, 0x33);
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5b, 0x33);
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5c, 0x33);
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5d, 0x33);
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5e, 0x33);
-	pci_mmio_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5f, 0x33);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x59, 0x30);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5a, 0x33);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5b, 0x33);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5c, 0x33);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5d, 0x33);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5e, 0x33);
+	pci_write_config8(PCI_ADDR(0, 16, 0, 0), 0x5f, 0x33);
 }
 
 static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
@@ -1575,7 +1575,7 @@ static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
 	}
 
 
-	ddrfrq = pci_mmio_read_config8(PCI_ADDR(0, 16, 1, 0), 0x56);
+	ddrfrq = pci_read_config8(PCI_ADDR(0, 16, 1, 0), 0x56);
 	ddrfrqnow = ddrfrq;
 	ddrfrq &= ~0x3;
 
@@ -1586,32 +1586,32 @@ static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
 
 	switch((ddrfrq >> 4) & 3) {
 	case 0: /* 1:1 mapping */
-		pci_mmio_write_config32(dev, I5000_FBDTOHOSTGRCFG0, 0xffffffff);
-		pci_mmio_write_config32(dev, I5000_FBDTOHOSTGRCFG1, 0x00000000);
-		pci_mmio_write_config32(dev, I5000_HOSTTOFBDGRCFG, 0xffffffff);
-		pci_mmio_write_config8(dev, I5000_GRFBDLVLDCFG, 0x00);
-		pci_mmio_write_config8(dev, I5000_GRHOSTFULLCFG, 0x00);
-		pci_mmio_write_config8(dev, I5000_GRBUBBLECFG, 0x00);
-		pci_mmio_write_config8(dev, I5000_GRFBDTOHOSTDBLCFG, 0x00);
+		pci_write_config32(dev, I5000_FBDTOHOSTGRCFG0, 0xffffffff);
+		pci_write_config32(dev, I5000_FBDTOHOSTGRCFG1, 0x00000000);
+		pci_write_config32(dev, I5000_HOSTTOFBDGRCFG, 0xffffffff);
+		pci_write_config8(dev, I5000_GRFBDLVLDCFG, 0x00);
+		pci_write_config8(dev, I5000_GRHOSTFULLCFG, 0x00);
+		pci_write_config8(dev, I5000_GRBUBBLECFG, 0x00);
+		pci_write_config8(dev, I5000_GRFBDTOHOSTDBLCFG, 0x00);
 		break;
 	case 2: /* 4:5 mapping */
-		pci_mmio_write_config32(dev, I5000_FBDTOHOSTGRCFG0, 0x00002323);
-		pci_mmio_write_config32(dev, I5000_FBDTOHOSTGRCFG1, 0x00000400);
-		pci_mmio_write_config32(dev, I5000_HOSTTOFBDGRCFG, 0x23023);
-		pci_mmio_write_config8(dev, I5000_GRFBDLVLDCFG, 0x04);
-		pci_mmio_write_config8(dev, I5000_GRHOSTFULLCFG, 0x08);
-		pci_mmio_write_config8(dev, I5000_GRBUBBLECFG, 0x00);
-		pci_mmio_write_config8(dev, I5000_GRFBDTOHOSTDBLCFG, 0x04);
+		pci_write_config32(dev, I5000_FBDTOHOSTGRCFG0, 0x00002323);
+		pci_write_config32(dev, I5000_FBDTOHOSTGRCFG1, 0x00000400);
+		pci_write_config32(dev, I5000_HOSTTOFBDGRCFG, 0x23023);
+		pci_write_config8(dev, I5000_GRFBDLVLDCFG, 0x04);
+		pci_write_config8(dev, I5000_GRHOSTFULLCFG, 0x08);
+		pci_write_config8(dev, I5000_GRBUBBLECFG, 0x00);
+		pci_write_config8(dev, I5000_GRFBDTOHOSTDBLCFG, 0x04);
 		break;
 	case 3:
 		/* 5:4 mapping */
-		pci_mmio_write_config32(dev, I5000_FBDTOHOSTGRCFG0, 0x00023230);
-		pci_mmio_write_config32(dev, I5000_FBDTOHOSTGRCFG1, 0x00000000);
-		pci_mmio_write_config32(dev, I5000_HOSTTOFBDGRCFG, 0x4323);
-		pci_mmio_write_config8(dev, I5000_GRFBDLVLDCFG, 0x00);
-		pci_mmio_write_config8(dev, I5000_GRHOSTFULLCFG, 0x02);
-		pci_mmio_write_config8(dev, I5000_GRBUBBLECFG, 0x10);
-		pci_mmio_write_config8(dev, I5000_GRFBDTOHOSTDBLCFG, 0x00);
+		pci_write_config32(dev, I5000_FBDTOHOSTGRCFG0, 0x00023230);
+		pci_write_config32(dev, I5000_FBDTOHOSTGRCFG1, 0x00000000);
+		pci_write_config32(dev, I5000_HOSTTOFBDGRCFG, 0x4323);
+		pci_write_config8(dev, I5000_GRFBDLVLDCFG, 0x00);
+		pci_write_config8(dev, I5000_GRHOSTFULLCFG, 0x02);
+		pci_write_config8(dev, I5000_GRBUBBLECFG, 0x10);
+		pci_write_config8(dev, I5000_GRFBDTOHOSTDBLCFG, 0x00);
 		break;
 	default:
 		printk(BIOS_DEBUG, "invalid DDRFRQ: %02x\n", ddrfrq);
@@ -1621,7 +1621,7 @@ static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
 	if (ddrfrq != ddrfrqnow) {
 		printk(BIOS_DEBUG, "old DDRFRQ: 0x%02x new DDRFRQ: 0x%02x\n",
 		       ddrfrqnow, ddrfrq);
-		pci_mmio_write_config8(PCI_ADDR(0, 16, 1, 0), 0x56, ddrfrq);
+		pci_write_config8(PCI_ADDR(0, 16, 1, 0), 0x56, ddrfrq);
 		/* FSB:FBD mapping changed, needs hard reset */
 		outb(0x06, 0xcf9);
 		for(;;) asm volatile("hlt");
@@ -1636,12 +1636,12 @@ void i5000_fbdimm_init(void)
 
 	memset(&setup, 0, sizeof(setup));
 
-	pci_mmio_write_config16(PCI_ADDR(0, 0, 0, 0), 0x4, 0x144);
+	pci_write_config16(PCI_ADDR(0, 0, 0, 0), 0x4, 0x144);
 
 	i5000_init_setup(&setup);
 
 	pci_write_config32(PCI_DEV(0, 16, 0), 0xf0,
-			   pci_mmio_read_config32(PCI_ADDR(0, 16, 0, 0), 0xf0) | 0x8000);
+			   pci_read_config32(PCI_ADDR(0, 16, 0, 0), 0xf0) | 0x8000);
 
 	i5000_clear_fbd_errors();
 
@@ -1671,16 +1671,16 @@ void i5000_fbdimm_init(void)
 				  setup.branch[1].channel[0].used ||
 				  setup.branch[1].channel[1].used));
 
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), 0x019C, 0x8010c);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), 0x01F4, 0);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), 0x019C, 0x8010c);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), 0x01F4, 0);
 
 	/* enable or disable single channel mode */
-	mca = pci_mmio_read_config32(PCI_ADDR(0, 16, 1, 0), I5000_MCA);
+	mca = pci_read_config32(PCI_ADDR(0, 16, 1, 0), I5000_MCA);
 	if (setup.single_channel)
 		mca |= (1 << 14);
 	else
 		mca &= ~(1 << 14);
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), I5000_MCA, mca);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), I5000_MCA, mca);
 
 	/*
 	 * i5000 supports burst length 8 only in single channel mode
@@ -1693,9 +1693,9 @@ void i5000_fbdimm_init(void)
 	if (!setup.bl)
 		die("No supported burst length found\n");
 
-	mc = pci_mmio_read_config32(PCI_ADDR(0, 16, 1, 0), I5000_MC);
+	mc = pci_read_config32(PCI_ADDR(0, 16, 1, 0), I5000_MC);
 	/* disable error checking for training */
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), I5000_MC, mc & ~0x20);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), I5000_MC, mc & ~0x20);
 
 	printk(BIOS_INFO, "performing fbd link initialization...");
 	if (i5000_for_each_branch(&setup, i5000_branch_reset) ||
@@ -1740,7 +1740,7 @@ void i5000_fbdimm_init(void)
 	i5000_clear_fbd_errors();
 
 	/* enable error checking */
-	pci_mmio_write_config32(PCI_ADDR(0, 16, 1, 0), I5000_MC, mc | 0x20);
+	pci_write_config32(PCI_ADDR(0, 16, 1, 0), I5000_MC, mc | 0x20);
 
 	i5000_dram_timing_init(&setup);
 

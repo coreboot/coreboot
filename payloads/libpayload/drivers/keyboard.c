@@ -31,6 +31,8 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 
+#define I8042_CMD_DIS_KB     0xad
+
 struct layout_maps {
 	const char *country;
 	const unsigned short map[4][0x57];
@@ -300,3 +302,22 @@ void keyboard_init(void)
 	console_add_input_driver(&cons);
 }
 
+void keyboard_disconnect(void)
+{
+	/* If 0x64 returns 0xff, then we have no keyboard
+	 * controller */
+	if (inb(0x64) == 0xFF)
+		return;
+
+	/* Empty keyboard buffer */
+	while (keyboard_havechar())
+		keyboard_getchar();
+
+	/* Send keyboard disconnect command */
+	outb(I8042_CMD_DIS_KB, 0x64);
+	keyboard_wait_write();
+
+	/* Hand off with empty buffer */
+	while (keyboard_havechar())
+		keyboard_getchar();
+}

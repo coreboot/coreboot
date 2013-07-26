@@ -344,7 +344,7 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 	if (tco_sts & (1 << 8)) { // BIOSWR
 		u8 bios_cntl;
 
-		bios_cntl = pci_mmio_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
+		bios_cntl = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
 
 		if (bios_cntl & 1) {
 			/* BWE is RW, so the SMI was caused by a
@@ -358,7 +358,7 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 			 * box.
 			 */
 			printk(BIOS_DEBUG, "Switching back to RO\n");
-			pci_mmio_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
+			pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
 		} /* No else for now? */
 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
 		/* Handle TCO timeout */
@@ -501,7 +501,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	u32 smi_sts;
 
 	/* Update global variable pmbase */
-	pmbase = pci_mmio_read_config16(PCI_DEV(0, 0x1f, 0), D31F0_PMBASE) & 0xfffc;
+	pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), D31F0_PMBASE) & 0xfffc;
 
 	/* We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.

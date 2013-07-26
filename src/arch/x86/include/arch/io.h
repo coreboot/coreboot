@@ -374,4 +374,37 @@ void pci_or_config32(device_t dev, unsigned int where, u32 ormask)
 	pci_write_config32(dev, where, value | ormask);
 }
 
+static inline __attribute__ ((always_inline))
+void pci_update_config8(device_t dev, int reg, u8 mask, u8 or)
+{
+	u8 reg8;
+
+	reg8 = pci_read_config8(dev, reg);
+	reg8 &= mask;
+	reg8 |= or;
+	pci_write_config8(dev, reg, reg8);
+}
+
+static inline __attribute__ ((always_inline))
+void pci_update_config16(device_t dev, int reg, u16 mask, u16 or)
+{
+	u16 reg16;
+
+	reg16 = pci_read_config16(dev, reg);
+	reg16 &= mask;
+	reg16 |= or;
+	pci_write_config16(dev, reg, reg16);
+}
+
+static inline __attribute__ ((always_inline))
+void pci_update_config32(device_t dev, int reg, u32 mask, u32 or)
+{
+	u32 reg32;
+
+	reg32 = pci_read_config32(dev, reg);
+	reg32 &= mask;
+	reg32 |= or;
+	pci_write_config32(dev, reg, reg32);
+}
+
 #endif

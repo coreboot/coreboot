@@ -122,16 +122,6 @@ static void pciexp_enable_clock_power_pm(device_t endp, unsigned endp_cap)
 	pci_write_config16(endp, endp_cap + PCI_EXP_LNKCTL, lnkctl);
 }
 
-static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or)
-{
-	u32 reg32;
-
-	reg32 = pci_read_config32(dev, reg);
-	reg32 &= mask;
-	reg32 |= or;
-	pci_write_config32(dev, reg, reg32);
-}
-
 static void pciexp_config_max_latency(device_t root, device_t dev)
 {
 	unsigned int cap;
@@ -150,7 +140,7 @@ static void pciexp_enable_ltr(device_t dev)
 			dev_path(dev));
 		return;
 	}
-	pcie_update_cfg(dev, cap + 0x28, ~(1 << 10), 1 << 10);
+	pci_update_config32(dev, cap + 0x28, ~(1 << 10), 1 << 10);
 }
 
 static unsigned char pciexp_L1_substate_cal(device_t dev, unsigned int endp_cap,
@@ -226,26 +216,26 @@ static void pciexp_L1_substate_commit(device_t root, device_t dev,
 
 	pciexp_enable_ltr(root);
 
-	pcie_update_cfg(root, root_cap + 0x08, ~0xff00,
+	pci_update_config32(root, root_cap + 0x08, ~0xff00,
 		(comm_mode_rst_time << 8));
 
-	pcie_update_cfg(root, root_cap + 0x0c , 0xffffff04,
+	pci_update_config32(root, root_cap + 0x0c , 0xffffff04,
 		(endp_power_on_value << 3) | (power_on_scale));
 
-	pcie_update_cfg(root, root_cap + 0x08, ~0xe3ff0000,
+	pci_update_config32(root, root_cap + 0x08, ~0xe3ff0000,
 		(1 << 21) | (1 << 23) | (1 << 30));
 
-	pcie_update_cfg(root, root_cap + 0x08, ~0x1f,
+	pci_update_config32(root, root_cap + 0x08, ~0x1f,
 		L1SubStateSupport);
 
 	for (dev_t = dev; dev_t; dev_t = dev_t->sibling) {
-		pcie_update_cfg(dev_t, end_cap + 0x0c , 0xffffff04,
+		pci_update_config32(dev_t, end_cap + 0x0c , 0xffffff04,
 			(endp_power_on_value << 3) | (power_on_scale));
 
-		pcie_update_cfg(dev_t, end_cap + 0x08, ~0xe3ff0000,
+		pci_update_config32(dev_t, end_cap + 0x08, ~0xe3ff0000,
 			(1 << 21) | (1 << 23) | (1 << 30));
 
-		pcie_update_cfg(dev_t, end_cap + 0x08, ~0x1f,
+		pci_update_config32(dev_t, end_cap + 0x08, ~0x1f,
 			L1SubStateSupport);
 
 		pciexp_enable_ltr(dev_t);

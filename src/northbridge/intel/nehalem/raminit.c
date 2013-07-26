@@ -1446,9 +1446,9 @@ static void program_board_delay(struct raminfo *info)
 	write_mchbar16(0x612, read_mchbar16(0x612) | 0x100);
 	write_mchbar16(0x214, read_mchbar16(0x214) | 0x3E00);
 	for (i = 0; i < 8; i++) {
-		pcie_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0x80 + 4 * i,
+		pci_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0x80 + 4 * i,
 			       (info->total_memory_mb - 64) | !i | 2);
-		pcie_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0xc0 + 4 * i, 0);
+		pci_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0xc0 + 4 * i, 0);
 	}
 }
 
@@ -1492,7 +1492,7 @@ static void program_total_memory_map(struct raminfo *info)
 
 #if REAL
 	if (info->uma_enabled) {
-		u16 t = pcie_read_config16(NORTHBRIDGE, D0F0_GGC);
+		u16 t = pci_read_config16(NORTHBRIDGE, D0F0_GGC);
 		gav(t);
 		const int uma_sizes_gtt[16] =
 		    { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4, 42, 42, 42, 42 };
@@ -1528,7 +1528,7 @@ static void program_total_memory_map(struct raminfo *info)
 	{
 		u32 t;
 
-		gav(t = pcie_read_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 0x68));
+		gav(t = pci_read_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 0x68));
 		if (t & 0x800)
 			quickpath_reserved =
 			    (1 << find_lowest_bit_set32(t >> 20));
@@ -1538,7 +1538,7 @@ static void program_total_memory_map(struct raminfo *info)
 
 #if !REAL
 	if (info->uma_enabled) {
-		u16 t = pcie_read_config16(NORTHBRIDGE, D0F0_GGC);
+		u16 t = pci_read_config16(NORTHBRIDGE, D0F0_GGC);
 		gav(t);
 		const int uma_sizes_gtt[16] =
 		    { 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 3, 4, 42, 42, 42, 42 };
@@ -1560,29 +1560,29 @@ static void program_total_memory_map(struct raminfo *info)
 		tseg_base -= quickpath_reserved;
 	tseg_base = ALIGN_DOWN(tseg_base, 8);
 
-	pcie_write_config16(NORTHBRIDGE, D0F0_TOLUD, TOLUD << 4);
-	pcie_write_config16(NORTHBRIDGE, D0F0_TOM, TOM >> 6);
+	pci_write_config16(NORTHBRIDGE, D0F0_TOLUD, TOLUD << 4);
+	pci_write_config16(NORTHBRIDGE, D0F0_TOM, TOM >> 6);
 	if (memory_remap) {
-		pcie_write_config16(NORTHBRIDGE, D0F0_REMAPBASE, REMAPbase >> 6);
-		pcie_write_config16(NORTHBRIDGE, D0F0_REMAPLIMIT, (TOUUD - 64) >> 6);
+		pci_write_config16(NORTHBRIDGE, D0F0_REMAPBASE, REMAPbase >> 6);
+		pci_write_config16(NORTHBRIDGE, D0F0_REMAPLIMIT, (TOUUD - 64) >> 6);
 	}
-	pcie_write_config16(NORTHBRIDGE, D0F0_TOUUD, TOUUD);
+	pci_write_config16(NORTHBRIDGE, D0F0_TOUUD, TOUUD);
 
 	if (info->uma_enabled) {
-		pcie_write_config32(NORTHBRIDGE, D0F0_IGD_BASE, uma_base_igd << 20);
-		pcie_write_config32(NORTHBRIDGE, D0F0_GTT_BASE, uma_base_gtt << 20);
+		pci_write_config32(NORTHBRIDGE, D0F0_IGD_BASE, uma_base_igd << 20);
+		pci_write_config32(NORTHBRIDGE, D0F0_GTT_BASE, uma_base_gtt << 20);
 	}
-	pcie_write_config32(NORTHBRIDGE, TSEG, tseg_base << 20);
+	pci_write_config32(NORTHBRIDGE, TSEG, tseg_base << 20);
 
 	current_limit = 0;
 	memory_map[0] = ALIGN_DOWN(uma_base_gtt, 64) | 1;
 	memory_map[1] = 4096;
 	for (i = 0; i < ARRAY_SIZE(memory_map); i++) {
 		current_limit = max(current_limit, memory_map[i] & ~1);
-		pcie_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0x80,
+		pci_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0x80,
 			       (memory_map[i] & 1) | ALIGN_DOWN(current_limit -
 								1, 64) | 2);
-		pcie_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0xc0, 0);
+		pci_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0xc0, 0);
 	}
 }
 
@@ -1597,7 +1597,7 @@ static void collect_system_info(struct raminfo *info)
 
 	if (!info->heci_bar)
 		gav(info->heci_bar =
-		    pcie_read_config32(HECIDEV, HECIBAR) & 0xFFFFFFF8);
+		    pci_read_config32(HECIDEV, HECIBAR) & 0xFFFFFFF8);
 	if (!info->memory_reserved_for_heci_mb) {
 		/* Wait for ME to be ready */
 		intel_early_me_init();
@@ -1606,15 +1606,15 @@ static void collect_system_info(struct raminfo *info)
 
 	for (i = 0; i < 3; i++)
 		gav(capid0[i] =
-		    pcie_read_config32(NORTHBRIDGE, D0F0_CAPID0 | (i << 2)));
-	gav(info->revision = pcie_read_config8(NORTHBRIDGE, PCI_REVISION_ID));
+		    pci_read_config32(NORTHBRIDGE, D0F0_CAPID0 | (i << 2)));
+	gav(info->revision = pci_read_config8(NORTHBRIDGE, PCI_REVISION_ID));
 	info->max_supported_clock_speed_index = (~capid0[1] & 7);
 
 	if ((capid0[1] >> 11) & 1)
 		info->uma_enabled = 0;
 	else
 		gav(info->uma_enabled =
-		    pcie_read_config8(NORTHBRIDGE, D0F0_DEVEN) & 8);
+		    pci_read_config8(NORTHBRIDGE, D0F0_DEVEN) & 8);
 	/* Unrecognised: [0000:fffd3d2d] 37f81.37f82 ! CPUID: eax: 00000001; ecx: 00000e00 => 00020655.00010800.029ae3ff.bfebfbff */
 	info->silicon_revision = 0;
 
@@ -1641,7 +1641,7 @@ static void collect_system_info(struct raminfo *info)
 			info->silicon_revision = 2;
 			break;
 		}
-		switch (pcie_read_config16(NORTHBRIDGE, PCI_DEVICE_ID)) {
+		switch (pci_read_config16(NORTHBRIDGE, PCI_DEVICE_ID)) {
 		case 0x40:
 			info->silicon_revision = 0;
 			break;
@@ -1936,20 +1936,20 @@ static void setup_heci_uma(struct raminfo *info)
 {
 	u32 reg44;
 
-	reg44 = pcie_read_config32(HECIDEV, 0x44);	// = 0x80010020
+	reg44 = pci_read_config32(HECIDEV, 0x44);	// = 0x80010020
 	info->memory_reserved_for_heci_mb = 0;
 	info->heci_uma_addr = 0;
-	if (!((reg44 & 0x10000) && !(pcie_read_config32(HECIDEV, 0x40) & 0x20)))
+	if (!((reg44 & 0x10000) && !(pci_read_config32(HECIDEV, 0x40) & 0x20)))
 		return;
 
-	info->heci_bar = pcie_read_config32(HECIDEV, 0x10) & 0xFFFFFFF0;
+	info->heci_bar = pci_read_config32(HECIDEV, 0x10) & 0xFFFFFFF0;
 	info->memory_reserved_for_heci_mb = reg44 & 0x3f;
 	info->heci_uma_addr =
 	    ((u64)
-	     ((((u64) pcie_read_config16(NORTHBRIDGE, D0F0_TOM)) << 6) -
+	     ((((u64) pci_read_config16(NORTHBRIDGE, D0F0_TOM)) << 6) -
 	      info->memory_reserved_for_heci_mb)) << 20;
 
-	pcie_read_config32(NORTHBRIDGE, DMIBAR);
+	pci_read_config32(NORTHBRIDGE, DMIBAR);
 	if (info->memory_reserved_for_heci_mb) {
 		write32(DEFAULT_DMIBAR + 0x14,
 			read32(DEFAULT_DMIBAR + 0x14) & ~0x80);
@@ -1978,8 +1978,8 @@ static void setup_heci_uma(struct raminfo *info)
 
 	send_heci_uma_message(info);
 
-	pcie_write_config32(HECIDEV, 0x10, 0x0);
-	pcie_write_config8(HECIDEV, 0x4, 0x0);
+	pci_write_config32(HECIDEV, 0x10, 0x0);
+	pci_write_config8(HECIDEV, 0x4, 0x0);
 
 }
 
@@ -2094,7 +2094,7 @@ static void flush_cache(u32 start, u32 size)
 
 static void clear_errors(void)
 {
-	pcie_write_config8(NORTHBRIDGE, 0xc0, 0x01);
+	pci_write_config8(NORTHBRIDGE, 0xc0, 0x01);
 }
 
 static void write_testing(struct raminfo *info, int totalrank, int flip)
@@ -2989,7 +2989,7 @@ static int try_cached_training(struct raminfo *info)
 	write_mchbar8(0x243, saved_243[0] | 2);
 	write_mchbar8(0x643, saved_243[1] | 2);
 	set_ecc(0);
-	pcie_write_config16(NORTHBRIDGE, 0xc8, 3);
+	pci_write_config16(NORTHBRIDGE, 0xc8, 3);
 	if (read_1d0(0x10b, 6) & 1)
 		set_10b(info, 0);
 	for (tm = 0; tm < 2; tm++) {
@@ -3155,7 +3155,7 @@ static void do_ram_training(struct raminfo *info)
 			write_testing_type2(info, totalrank, 2, i, 0);
 			write_testing_type2(info, totalrank, 3, i, 1);
 		}
-		pcie_write_config8(NORTHBRIDGE, 0xc0, 0x01);
+		pci_write_config8(NORTHBRIDGE, 0xc0, 0x01);
 		totalrank++;
 	}
 
@@ -3838,20 +3838,20 @@ void chipset_init(const int s3resume)
 
 	ggc = 0xb00 | ((gfxsize + 5) << 4);
 
-	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, ggc | 2);
+	pci_write_config16(NORTHBRIDGE, D0F0_GGC, ggc | 2);
 
 	u16 deven;
-	deven = pcie_read_config16(NORTHBRIDGE, D0F0_DEVEN);	// = 0x3
+	deven = pci_read_config16(NORTHBRIDGE, D0F0_DEVEN);	// = 0x3
 
 	if (deven & 8) {
 		write_mchbar8(0x2c30, 0x20);
-		pcie_read_config8(NORTHBRIDGE, 0x8);	// = 0x18
+		pci_read_config8(NORTHBRIDGE, 0x8);	// = 0x18
 		write_mchbar16(0x2c30, read_mchbar16(0x2c30) | 0x200);
 		write_mchbar16(0x2c32, 0x434);
 		read_mchbar32(0x2c44);
 		write_mchbar32(0x2c44, 0x1053687);
-		pcie_read_config8(GMA, 0x62);	// = 0x2
-		pcie_write_config8(GMA, 0x62, 0x2);
+		pci_read_config8(GMA, 0x62);	// = 0x2
+		pci_write_config8(GMA, 0x62, 0x2);
 		read8(DEFAULT_RCBA + 0x2318);
 		write8(DEFAULT_RCBA + 0x2318, 0x47);
 		read8(DEFAULT_RCBA + 0x2320);
@@ -3861,7 +3861,7 @@ void chipset_init(const int s3resume)
 	read_mchbar32(0x30);
 	write_mchbar32(0x30, 0x40);
 
-	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, ggc);
+	pci_write_config16(NORTHBRIDGE, D0F0_GGC, ggc);
 	gav(read32(DEFAULT_RCBA + 0x3428));
 	write32(DEFAULT_RCBA + 0x3428, 0x1d);
 }
@@ -3876,7 +3876,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	int cbmem_wasnot_inited;
 
 	x2ca8 = read_mchbar8(0x2ca8);
-	deven = pcie_read_config16(NORTHBRIDGE, D0F0_DEVEN);
+	deven = pci_read_config16(NORTHBRIDGE, D0F0_DEVEN);
 
 	memset(&info, 0x5a, sizeof(info));
 
@@ -3904,7 +3904,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	timestamp_add_now(101);
 
 	if (!s3resume || REAL) {
-		pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2);	// = 0x80
+		pci_read_config8(SOUTHBRIDGE, GEN_PMCON_2);	// = 0x80
 
 		collect_system_info(&info);
 
@@ -4009,7 +4009,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 		gav(0x55);
 
-		gav(pcie_read_config32(NORTHBRIDGE, D0F0_CAPID0 + 4));
+		gav(pci_read_config32(NORTHBRIDGE, D0F0_CAPID0 + 4));
 	}
 
 	/* after SPD  */
@@ -4024,11 +4024,11 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	calculate_timings(&info);
 
 #if !REAL
-	pcie_write_config8(NORTHBRIDGE, 0xdf, 0x82);
+	pci_write_config8(NORTHBRIDGE, 0xdf, 0x82);
 #endif
 
 	if (!s3resume) {
-		u8 reg8 = pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2);
+		u8 reg8 = pci_read_config8(SOUTHBRIDGE, GEN_PMCON_2);
 		if (x2ca8 == 0 && (reg8 & 0x80)) {
 			/* Don't enable S4-assertion stretch. Makes trouble on roda/rk9.
 			   reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa4);
@@ -4053,8 +4053,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 #endif
 
 	if (!s3resume && x2ca8 == 0)
-		pcie_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
-			      pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) | 0x80);
+		pci_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
+			      pci_read_config8(SOUTHBRIDGE, GEN_PMCON_2) | 0x80);
 
 	compute_derived_timings(&info);
 
@@ -4068,8 +4068,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar32(0x1890, read_mchbar32(0x1890) | 0x2000000);	/* OK */
 	write_mchbar32(0x18b4, read_mchbar32(0x18b4) | 0x8000);
 
-	gav(pcie_read_config32(PCI_DEV(0xff, 2, 1), 0x50));	// !!!!
-	pcie_write_config8(PCI_DEV(0xff, 2, 1), 0x54, 0x12);
+	gav(pci_read_config32(PCI_DEV(0xff, 2, 1), 0x50));	// !!!!
+	pci_write_config8(PCI_DEV(0xff, 2, 1), 0x54, 0x12);
 
 	gav(read_mchbar16(0x2c10));	// !!!!
 	write_mchbar16(0x2c10, 0x412);
@@ -4080,8 +4080,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar32(0x1804,
 		       (read_mchbar32(0x1804) & 0xfffffffc) | 0x8400080);
 
-	pcie_read_config32(PCI_DEV(0xff, 2, 1), 0x6c);	// !!!!
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0x6c, 0x40a0a0);
+	pci_read_config32(PCI_DEV(0xff, 2, 1), 0x6c);	// !!!!
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0x6c, 0x40a0a0);
 	gav(read_mchbar32(0x1c04));	// !!!!
 	gav(read_mchbar32(0x1804));	// !!!!
 
@@ -4091,16 +4091,16 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 
 	write_mchbar32(0x18d8, 0x120000);
 	write_mchbar32(0x18dc, 0x30a484a);
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x0);
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x9444a);
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x0);
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x9444a);
 	write_mchbar32(0x18d8, 0x40000);
 	write_mchbar32(0x18dc, 0xb000000);
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x60000);
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x0);
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x60000);
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x0);
 	write_mchbar32(0x18d8, 0x180000);
 	write_mchbar32(0x18dc, 0xc0000142);
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x20000);
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x142);
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xe0, 0x20000);
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xf4, 0x142);
 	write_mchbar32(0x18d8, 0x1e0000);
 
 	gav(read_mchbar32(0x18dc));	// !!!!
@@ -4112,7 +4112,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 
 	write_mchbar32(0x188c, 0x20bc09);
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0xd0, 0x40b0c09);
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0xd0, 0x40b0c09);
 	write_mchbar32(0x1a10, 0x4200010e);
 	write_mchbar32(0x18b8, read_mchbar32(0x18b8) | 0x200);
 	gav(read_mchbar32(0x1918));	// !!!!
@@ -4122,8 +4122,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar32(0x18b8, 0xe00);
 	gav(read_mchbar32(0x182c));	// !!!!
 	write_mchbar32(0x182c, 0x10202);
-	gav(pcie_read_config32(PCI_DEV(0xff, 2, 1), 0x94));	// !!!!
-	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0x94, 0x10202);
+	gav(pci_read_config32(PCI_DEV(0xff, 2, 1), 0x94));	// !!!!
+	pci_write_config32(PCI_DEV(0xff, 2, 1), 0x94, 0x10202);
 	write_mchbar32(0x1a1c, read_mchbar32(0x1a1c) & 0x8fffffff);
 	write_mchbar32(0x1a70, read_mchbar32(0x1a70) | 0x100000);
 
@@ -4137,13 +4137,13 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		write_mchbar8(0x2ca8, read_mchbar8(0x2ca8) | 1);	// guess
 	}
 
-	pcie_read_config32(PCI_DEV(0xff, 2, 0), 0x048);	// !!!!
-	pcie_write_config32(PCI_DEV(0xff, 2, 0), 0x048, 0x140000);
-	pcie_read_config32(PCI_DEV(0xff, 2, 0), 0x058);	// !!!!
-	pcie_write_config32(PCI_DEV(0xff, 2, 0), 0x058, 0x64555);
-	pcie_read_config32(PCI_DEV(0xff, 2, 0), 0x058);	// !!!!
-	pcie_read_config32(PCI_DEV (0xff, 0, 0), 0xd0);	// !!!!
-	pcie_write_config32(PCI_DEV (0xff, 0, 0), 0xd0, 0x180);
+	pci_read_config32(PCI_DEV(0xff, 2, 0), 0x048);	// !!!!
+	pci_write_config32(PCI_DEV(0xff, 2, 0), 0x048, 0x140000);
+	pci_read_config32(PCI_DEV(0xff, 2, 0), 0x058);	// !!!!
+	pci_write_config32(PCI_DEV(0xff, 2, 0), 0x058, 0x64555);
+	pci_read_config32(PCI_DEV(0xff, 2, 0), 0x058);	// !!!!
+	pci_read_config32(PCI_DEV (0xff, 0, 0), 0xd0);	// !!!!
+	pci_write_config32(PCI_DEV (0xff, 0, 0), 0xd0, 0x180);
 	gav(read_mchbar32(0x1af0));	// !!!!
 	gav(read_mchbar32(0x1af0));	// !!!!
 	write_mchbar32(0x1af0, 0x1f020003);
@@ -4198,9 +4198,9 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 			write_mchbar32(0xff8, 0x1800 | read_mchbar32(0xff8));
 			read_mchbar32(0x2cb0);
 			write_mchbar32(0x2cb0, 0x00);
-			pcie_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
-			pcie_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
-			pcie_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4e);
+			pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
+			pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4c);
+			pci_read_config8(PCI_DEV (0, 0x2, 0x0), 0x4e);
 
 			read_mchbar8(0x1150);
 			read_mchbar8(0x1151);
@@ -4418,7 +4418,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar8(0x2ca8, read_mchbar8(0x2ca8));
 	read_mchbar32(0x2c80);	// !!!!
 	write_mchbar32(0x2c80, 0x53688);
-	pcie_write_config32(PCI_DEV (0xff, 0, 0), 0x60, 0x20220);
+	pci_write_config32(PCI_DEV (0xff, 0, 0), 0x60, 0x20220);
 	read_mchbar16(0x2c20);	// !!!!
 	read_mchbar16(0x2c10);	// !!!!
 	read_mchbar16(0x2c00);	// !!!!
@@ -4743,7 +4743,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	}
 
 	/* was == 1 but is common */
-	pcie_write_config16(NORTHBRIDGE, 0xc8, 3);
+	pci_write_config16(NORTHBRIDGE, 0xc8, 3);
 	write_26c(0, 0x820);
 	write_26c(1, 0x820);
 	write_mchbar32(0x130, read_mchbar32(0x130) | 2);
@@ -4876,12 +4876,12 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		write_mchbar32(0x290 + (channel << 10), 0x282091c | ((info.max_slots_used_in_channel - 1) << 0x16));	// OK
 	}
 	u32 reg1c;
-	pcie_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
+	pci_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
 	reg1c = read32p(DEFAULT_EPBAR | 0x01c);	// = 0x8001 // OK
-	pcie_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
+	pci_read_config32(NORTHBRIDGE, 0x40);	// = DEFAULT_EPBAR | 0x001 // OK
 	write32p(DEFAULT_EPBAR | 0x01c, reg1c);	// OK
 	read_mchbar8(0xe08);	// = 0x0
-	pcie_read_config32(NORTHBRIDGE, 0xe4);	// = 0x316126
+	pci_read_config32(NORTHBRIDGE, 0xe4);	// = 0x316126
 	write_mchbar8(0x1210, read_mchbar8(0x1210) | 2);	// OK
 	write_mchbar32(0x1200, 0x8800440);	// OK
 	write_mchbar32(0x1204, 0x53ff0453);	// OK
@@ -4963,8 +4963,8 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		write_mchbar16(0x1190, read_mchbar16(0x1190) & ~0x4000);	// OK
 	}
 
-	pcie_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
-		      pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) & ~0x80);
+	pci_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
+		      pci_read_config8(SOUTHBRIDGE, GEN_PMCON_2) & ~0x80);
 	udelay(10000);
 	write_mchbar16(0x2ca8, 0x8);
 

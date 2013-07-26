@@ -66,7 +66,7 @@ early_usb_init (const struct southbridge_usb_port *portmap)
 	for (i = 0; i < 22; i++)
 		write32 (DEFAULT_RCBABASE + (0x35a8 + 4 * i), 0);
 
-	pcie_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
+	pci_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
 
 	/* Relock registers.  */
 	outw (0x0000, DEFAULT_PMBASE | 0x003c);

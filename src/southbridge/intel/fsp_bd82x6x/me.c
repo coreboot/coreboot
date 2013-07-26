@@ -496,14 +496,14 @@ static void intel_me7_finalize_smm(void)
 	u32 reg32;
 
 	mei_base_address = (u32 *)
-		(pcie_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
+		(pci_read_config32(PCH_ME_DEV, PCI_BASE_ADDRESS_0) & ~0xf);
 
 	/* S3 path will have hidden this device already */
 	if (!mei_base_address || mei_base_address == (u32 *)0xfffffff0)
 		return;
 
 	/* Make sure ME is in a mode that expects EOP */
-	reg32 = pcie_read_config32(PCH_ME_DEV, PCI_ME_HFS);
+	reg32 = pci_read_config32(PCH_ME_DEV, PCI_ME_HFS);
 	memcpy(&hfs, &reg32, sizeof(u32));
 
 	/* Abort and leave device alone if not normal mode */
@@ -516,10 +516,10 @@ static void intel_me7_finalize_smm(void)
 	mkhi_end_of_post();
 
 	/* Make sure IO is disabled */
-	reg32 = pcie_read_config32(PCH_ME_DEV, PCI_COMMAND);
+	reg32 = pci_read_config32(PCH_ME_DEV, PCI_COMMAND);
 	reg32 &= ~(PCI_COMMAND_MASTER |
 		   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
-	pcie_write_config32(PCH_ME_DEV, PCI_COMMAND, reg32);
+	pci_write_config32(PCH_ME_DEV, PCI_COMMAND, reg32);
 
 	/* Hide the PCI device */
 	RCBA32_OR(FD2, PCH_DISABLE_MEI1);
@@ -527,7 +527,7 @@ static void intel_me7_finalize_smm(void)
 
 void intel_me_finalize_smm(void)
 {
-	u32 did = pcie_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
+	u32 did = pci_read_config32(PCH_ME_DEV, PCI_VENDOR_ID);
 	switch (did) {
 	case 0x1c3a8086:
 		intel_me7_finalize_smm();

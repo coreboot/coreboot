@@ -95,7 +95,7 @@ void rcba_config(void)
 	RCBA32(0x35a0) = 0xc0300c03;
 	RCBA32(0x35a4) = 0x00241803;
 
-	pcie_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
+	pci_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
 
 	outw (0x0000, DEFAULT_PMBASE | 0x003c);
 

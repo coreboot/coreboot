@@ -10,5 +10,5 @@
 
 void northbridge_write_smram(u8 smram)
 {
-	pcie_write_config8(PCI_DEV(QUICKPATH_BUS, 0, 1), QPD0F1_SMRAM, smram);
+	pci_write_config8(PCI_DEV(QUICKPATH_BUS, 0, 1), QPD0F1_SMRAM, smram);
 }

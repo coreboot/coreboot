@@ -285,8 +285,8 @@ init_dmi (void)
 void
 early_pch_init_native (void)
 {
-	pcie_write_config8 (SOUTHBRIDGE, 0xa6,
-			    pcie_read_config8 (SOUTHBRIDGE, 0xa6) | 2);
+	pci_write_config8 (SOUTHBRIDGE, 0xa6,
+			    pci_read_config8 (SOUTHBRIDGE, 0xa6) | 2);
 
 	write32 (DEFAULT_RCBA + 0x2088, 0x00109000);
 	read32 (DEFAULT_RCBA + 0x20ac);	// !!! = 0x00000000

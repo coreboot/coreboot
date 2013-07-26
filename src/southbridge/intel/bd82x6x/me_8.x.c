@@ -33,7 +33,7 @@
 #include <halt.h>
 
 #ifdef __SMM__
-#include <arch/pci_mmio_cfg.h>
+#include <arch/io.h>
 #else
 # include <device/device.h>
 # include <device/pci.h>

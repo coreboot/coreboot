@@ -212,7 +212,6 @@ static u32 reset_tco_status(void)
 	return reg32;
 }
 
-
 static void dump_tco_status(u32 tco_sts)
 {
 	printk(BIOS_DEBUG, "TCO_STS: ");
@@ -231,12 +230,6 @@ static void dump_tco_status(u32 tco_sts)
 	if (tco_sts & (1 <<  0)) printk(BIOS_DEBUG, "NMI2SMI ");
 	printk(BIOS_DEBUG, "\n");
 }
-
-/* We are using PCIe accesses for now
- *  1. the chipset can do it
- *  2. we don't need to worry about how we leave 0xcf8/0xcfc behind
- */
-#include <arch/pci_mmio_cfg.h>
 
 int southbridge_io_trap_handler(int smif)
 {

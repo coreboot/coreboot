@@ -35,7 +35,7 @@
 
 
 #ifdef __SMM__
-#include <arch/pci_mmio_cfg.h>
+#include <arch/io.h>
 #define pci_read_config_byte(dev, reg, targ)\
 	*(targ) = pci_read_config8(dev, reg)
 #define pci_read_config_word(dev, reg, targ)\

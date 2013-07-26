@@ -33,7 +33,7 @@
  */
 #include "northbridge/intel/nehalem/nehalem.h"
 #include <southbridge/intel/common/gpio.h>
-#include <arch/pci_mmio_cfg.h>
+#include <arch/io.h>
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value

@@ -36,17 +36,17 @@
 #ifdef __SMM__
 #include <arch/pci_mmio_cfg.h>
 #define pci_read_config_byte(dev, reg, targ)\
-	*(targ) = pcie_read_config8(dev, reg)
+	*(targ) = pci_read_config8(dev, reg)
 #define pci_read_config_word(dev, reg, targ)\
-	*(targ) = pcie_read_config16(dev, reg)
+	*(targ) = pci_read_config16(dev, reg)
 #define pci_read_config_dword(dev, reg, targ)\
-	*(targ) = pcie_read_config32(dev, reg)
+	*(targ) = pci_read_config32(dev, reg)
 #define pci_write_config_byte(dev, reg, val)\
-	pcie_write_config8(dev, reg, val)
+	pci_write_config8(dev, reg, val)
 #define pci_write_config_word(dev, reg, val)\
-	pcie_write_config16(dev, reg, val)
+	pci_write_config16(dev, reg, val)
 #define pci_write_config_dword(dev, reg, val)\
-	pcie_write_config32(dev, reg, val)
+	pci_write_config32(dev, reg, val)
 #else /* !__SMM__ */
 #include <device/device.h>
 #include <device/pci.h>

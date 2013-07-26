@@ -64,7 +64,7 @@ static u32 tseg_base = 0;
 u32 smi_get_tseg_base(void)
 {
 	if (!tseg_base)
-		tseg_base = pcie_read_config32(PCI_DEV(0, 0, 0), TSEG) & ~1;
+		tseg_base = pci_read_config32(PCI_DEV(0, 0, 0), TSEG) & ~1;
 	return tseg_base;
 }
 void tseg_relocate(void **ptr)
@@ -301,7 +301,7 @@ static void southbridge_gate_memory_reset(void)
 	u32 reg32;
 	u16 gpiobase;
 
-	gpiobase = pcie_read_config16(PCI_DEV(0, 0x1f, 0), GPIOBASE) & 0xfffc;
+	gpiobase = pci_read_config16(PCI_DEV(0, 0x1f, 0), GPIOBASE) & 0xfffc;
 	if (!gpiobase)
 		return;
 
@@ -333,15 +333,15 @@ static void xhci_sleep(u8 slp_typ)
 	switch (slp_typ) {
 	case SLP_TYP_S3:
 	case SLP_TYP_S4:
-		reg16 = pcie_read_config16(PCH_XHCI_DEV, 0x74);
+		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
 		reg16 &= ~0x03UL;
-		pcie_write_config32(PCH_XHCI_DEV, 0x74, reg16);
+		pci_write_config32(PCH_XHCI_DEV, 0x74, reg16);
 
-		reg32 = pcie_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
+		reg32 = pci_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
 		reg32 |= (PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		pcie_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
+		pci_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
 
-		xhci_bar = pcie_read_config32(PCH_XHCI_DEV,
+		xhci_bar = pci_read_config32(PCH_XHCI_DEV,
 				              PCI_BASE_ADDRESS_0) & ~0xFUL;
 
 		if ((xhci_bar + 0x4C0) & 1)
@@ -353,19 +353,19 @@ static void xhci_sleep(u8 slp_typ)
 		if ((xhci_bar + 0x4F0) & 1)
 			pch_iobp_update(0xEC000382, ~0UL, (3 << 2));
 
-		reg32 = pcie_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
+		reg32 = pci_read_config32(PCH_XHCI_DEV, PCI_COMMAND);
 		reg32 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		pcie_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
+		pci_write_config32(PCH_XHCI_DEV, PCI_COMMAND, reg32);
 
-		reg16 = pcie_read_config16(PCH_XHCI_DEV, 0x74);
+		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
 		reg16 |= 0x03;
-		pcie_write_config16(PCH_XHCI_DEV, 0x74, reg16);
+		pci_write_config16(PCH_XHCI_DEV, 0x74, reg16);
 		break;
 
 	case SLP_TYP_S5:
-		reg16 = pcie_read_config16(PCH_XHCI_DEV, 0x74);
+		reg16 = pci_read_config16(PCH_XHCI_DEV, 0x74);
 		reg16 |= ((1 << 8) | 0x03);
-		pcie_write_config16(PCH_XHCI_DEV, 0x74, reg16);
+		pci_write_config16(PCH_XHCI_DEV, 0x74, reg16);
 		break;
 	}
 }
@@ -436,13 +436,13 @@ static void southbridge_smi_sleep(unsigned int node, smm_state_save_area_t *stat
 		/* Always set the flag in case CMOS was changed on runtime. For
 		 * "KEEP", switch to "OFF" - KEEP is software emulated
 		 */
-		reg8 = pcie_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
+		reg8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3);
 		if (s5pwr == MAINBOARD_POWER_ON) {
 			reg8 &= ~1;
 		} else {
 			reg8 |= 1;
 		}
-		pcie_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
+		pci_write_config8(PCI_DEV(0, 0x1f, 0), GEN_PMCON_3, reg8);
 
 		/* also iterates over all bridges on bus 0 */
 		busmaster_disable_on_bus(0);
@@ -672,7 +672,7 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 	if (tco_sts & (1 << 8)) { // BIOSWR
 		u8 bios_cntl;
 
-		bios_cntl = pcie_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
+		bios_cntl = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
 
 		if (bios_cntl & 1) {
 			/* BWE is RW, so the SMI was caused by a
@@ -686,7 +686,7 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 			 * box.
 			 */
 			printk(BIOS_DEBUG, "Switching back to RO\n");
-			pcie_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
+			pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
 		} /* No else for now? */
 	} else if (tco_sts & (1 << 3)) { /* TIMEOUT */
 		/* Handle TCO timeout */
@@ -813,7 +813,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	u32 smi_sts;
 
 	/* Update global variable pmbase */
-	pmbase = pcie_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
+	pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
 
 	/* We need to clear the SMI status registers, or we won't see what's
 	 * happening in the following calls.

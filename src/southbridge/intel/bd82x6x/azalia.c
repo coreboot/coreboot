@@ -250,26 +250,26 @@ static void azalia_init(struct device *dev)
 	printk(BIOS_DEBUG, "Azalia: base = %08x\n", (u32)base);
 
 	if (RCBA32(0x2030) & (1 << 31)) {
-		reg32 = pci_mmio_read_config32(dev, 0x120);
+		reg32 = pci_read_config32(dev, 0x120);
 		reg32 &= 0xf8ffff01;
 		reg32 |= (1 << 24); // 2 << 24 for server
 		reg32 |= RCBA32(0x2030) & 0xfe;
-		pci_mmio_write_config32(dev, 0x120, reg32);
+		pci_write_config32(dev, 0x120, reg32);
 
-		reg16 = pci_mmio_read_config16(dev, 0x78);
+		reg16 = pci_read_config16(dev, 0x78);
 		reg16 |= (1 << 11);
-		pci_mmio_write_config16(dev, 0x78, reg16);
+		pci_write_config16(dev, 0x78, reg16);
 	} else
 		printk(BIOS_DEBUG, "Azalia: V1CTL disabled.\n");
 
-	reg32 = pci_mmio_read_config32(dev, 0x114);
+	reg32 = pci_read_config32(dev, 0x114);
 	reg32 &= ~0xfe;
-	pci_mmio_write_config32(dev, 0x114, reg32);
+	pci_write_config32(dev, 0x114, reg32);
 
 	// Set VCi enable bit
-	reg32 = pci_mmio_read_config32(dev, 0x120);
+	reg32 = pci_read_config32(dev, 0x120);
 	reg32 |= (1 << 31);
-	pci_mmio_write_config32(dev, 0x120, reg32);
+	pci_write_config32(dev, 0x120, reg32);
 
 	// Enable HDMI codec:
 	reg32 = pci_read_config32(dev, 0xc4);

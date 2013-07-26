@@ -275,7 +275,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 	u16 pm1_sts;
 	u32 smi_sts, gpe0_sts, tco_sts;
 
-	pmbase = pcie_read_config16(PCI_DEV(0, 0x1f, 0), 0x48) & 0xfffc;
+	pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x48) & 0xfffc;
 	printk(BIOS_SPEW, "SMI#: pmbase = 0x%04x\n", pmbase);
 
 	/* We need to clear the SMI status registers, or we won't see what's
@@ -325,7 +325,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 
 		if (tco_sts & (1 << 8)) { // BIOSWR
 			u8 bios_cntl;
-			bios_cntl = pcie_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
+			bios_cntl = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0xdc);
 			if (bios_cntl & 1) {
 				/* BWE is RW, so the SMI was caused by a
 				 * write to BWE, not by a write to the BIOS
@@ -338,7 +338,7 @@ void southbridge_smi_handler(unsigned int node, smm_state_save_area_t *state_sav
 				 * box.
 				 */
 				printk(BIOS_DEBUG, "Switching back to RO\n");
-				pcie_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
+				pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xdc, (bios_cntl & ~1));
 			} /* No else for now? */
 		}
 	}

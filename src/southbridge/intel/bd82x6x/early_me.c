@@ -168,8 +168,8 @@ int intel_early_me_init_done(u8 status)
 	} else if ((me_fws2 & 0x100) == 0x100) {
 		if ((me_fws2 & 0x80) == 0x80) {
 			printk(BIOS_NOTICE, "CPU was replaced & warm reset required...\n");
-			reg16 = pcie_read_config16(PCI_DEV(0, 31, 0), 0xa2) & ~0x80;
-			pcie_write_config16(PCI_DEV(0, 31, 0), 0xa2, reg16);
+			reg16 = pci_read_config16(PCI_DEV(0, 31, 0), 0xa2) & ~0x80;
+			pci_write_config16(PCI_DEV(0, 31, 0), 0xa2, reg16);
 			set_global_reset(0);
 			outb(0x6, 0xcf9);
 			halt();

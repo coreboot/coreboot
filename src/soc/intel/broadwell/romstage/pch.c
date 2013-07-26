@@ -131,16 +131,6 @@ static void pch_enable_lpc(void)
 	pci_write_config32(PCH_DEV_LPC, LPC_GEN4_DEC, config->gen4_dec);
 }
 
-static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or)
-{
-	u32 reg32;
-
-	reg32 = pci_read_config32(dev, reg);
-	reg32 &= mask;
-	reg32 |= or;
-	pci_write_config32(dev, reg, reg32);
-}
-
 void pch_early_init(void)
 {
 	reg_script_run_on_dev(PCH_DEV_LPC, pch_early_init_script);
@@ -151,7 +141,7 @@ void pch_early_init(void)
 	enable_smbus();
 
 	/* 8.14 Additional PCI Express Programming Steps, step #1 */
-	pcie_update_cfg(_PCH_DEV(PCIE, 0), 0xf4, ~0x60, 0);
-	pcie_update_cfg(_PCH_DEV(PCIE, 0), 0xf4, ~0x80, 0x80);
-	pcie_update_cfg(_PCH_DEV(PCIE, 0), 0xe2, ~0x30, 0x30);
+	pci_update_config32(_PCH_DEV(PCIE, 0), 0xf4, ~0x60, 0);
+	pci_update_config32(_PCH_DEV(PCIE, 0), 0xf4, ~0x80, 0x80);
+	pci_update_config32(_PCH_DEV(PCIE, 0), 0xe2, ~0x30, 0x30);
 }

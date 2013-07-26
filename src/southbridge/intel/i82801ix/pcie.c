@@ -56,23 +56,19 @@ static void pci_init(struct device *dev)
 	reg32 |= (1 << 3) | (1 << 2) | (1 << 1) | (1 << 0);
 	pci_write_config32(dev, 0xe1, reg32);
 
-#if CONFIG_MMCONF_SUPPORT
 	/* Set VC0 transaction class */
-	reg32 = pci_mmio_read_config32(dev, 0x114);
+	reg32 = pci_read_config32(dev, 0x114);
 	reg32 &= 0xffffff00;
 	reg32 |= 1;
-	pci_mmio_write_config32(dev, 0x114, reg32);
+	pci_write_config32(dev, 0x114, reg32);
 
 	/* Mask completion timeouts */
-	reg32 = pci_mmio_read_config32(dev, 0x148);
+	reg32 = pci_read_config32(dev, 0x148);
 	reg32 |= (1 << 14);
-	pci_mmio_write_config32(dev, 0x148, reg32);
+	pci_write_config32(dev, 0x148, reg32);
 
 	/* Lock R/WO Correctable Error Mask. */
-	pci_mmio_write_config32(dev, 0x154, pci_mmio_read_config32(dev, 0x154));
-#else
-#error "MMIO needed for ICH9 PCIe"
-#endif
+	pci_write_config32(dev, 0x154, pci_read_config32(dev, 0x154));
 
 	/* Clear errors in status registers */
 	reg16 = pci_read_config16(dev, 0x06);

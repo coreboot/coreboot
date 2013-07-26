@@ -27,6 +27,10 @@
 #include <console/console.h>
 #include "i82801ix.h"
 
+#if !CONFIG_MMCONF_SUPPORT_DEFAULT
+#error ICH9 requires CONFIG_MMCONF_SUPPORT_DEFAULT
+#endif
+
 typedef struct southbridge_intel_i82801ix_config config_t;
 
 static void i82801ix_enable_device(device_t dev)
@@ -66,13 +70,9 @@ static void i82801ix_pcie_init(const config_t *const info)
 			printk(BIOS_EMERG, "PCIe port 00:1c.%x", i);
 			die(" is not listed in devicetree.\n");
 		}
-#if CONFIG_MMCONF_SUPPORT
-		reg32 = pci_mmio_read_config32(pciePort[i], 0x300);
-		pci_mmio_write_config32(pciePort[i], 0x300, reg32 | (1 << 21));
-		pci_mmio_write_config8(pciePort[i], 0x324, 0x40);
-#else
-#error "MMIO needed for ICH9 PCIe"
-#endif
+		reg32 = pci_read_config32(pciePort[i], 0x300);
+		pci_write_config32(pciePort[i], 0x300, reg32 | (1 << 21));
+		pci_write_config8(pciePort[i], 0x324, 0x40);
 	}
 
 	if (LPC_IS_MOBILE(dev_find_slot(0, PCI_DEVFN(0x1f, 0)))) {
@@ -87,13 +87,9 @@ static void i82801ix_pcie_init(const config_t *const info)
 
 	for (i = 5; (i >= 0) && !pciePort[i]->enabled; --i) {
 		/* Only for the top disabled ports. */
-#if CONFIG_MMCONF_SUPPORT
-		reg32 = pci_mmio_read_config32(pciePort[i], 0x300);
+		reg32 = pci_read_config32(pciePort[i], 0x300);
 		reg32 |= 0x3 << 16;
-		pci_mmio_write_config32(pciePort[i], 0x300, reg32);
-#else
-#error "MMIO needed for ICH9 PCIe"
-#endif
+		pci_write_config32(pciePort[i], 0x300, reg32);
 	}
 
 	/* Set slot implemented, slot number and slot power limits. */

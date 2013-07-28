@@ -108,7 +108,7 @@
 #include "FchCommonCfg.h"
 #include "AcpiLib.h"
 #include "FchDef.h"
-#include "Oem.h"
+#include "OEM.h"
 #include "FchBiosRamUsage.h"
 #include "AmdFch.h"
 

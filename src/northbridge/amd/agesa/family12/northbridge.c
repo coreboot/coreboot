@@ -34,7 +34,7 @@
 #include <cpu/amd/mtrr.h>
 
 #include "northbridge.h"
-#include "SbEarly.h"
+#include "sb_cimx.h"
 #include "agesawrapper.h"
 
 //#define FX_DEVS NODE_NUMS

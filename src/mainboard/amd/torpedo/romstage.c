@@ -33,7 +33,7 @@
 #include "cpu/x86/lapic.h"
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
-#include "SbEarly.h"
+#include "sb_cimx.h"
 #include "SbPlatform.h"
 #include <arch/cpu.h>
 #include "platform_cfg.h"

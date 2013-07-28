@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu/amd/amdfam12.h>
-#include "SbEarly.h"
+#include "sb_cimx.h"
 #include "agesawrapper.h"
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable

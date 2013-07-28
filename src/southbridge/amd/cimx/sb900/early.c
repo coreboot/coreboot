@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <arch/io.h>
 #include "SbPlatform.h"
-#include "SbEarly.h"
+#include "sb_cimx.h"
 #include <console/console.h>
 #include <console/loglevel.h>
 #include "smbus.h"

@@ -20,6 +20,7 @@
 
 #include <console/console.h>
 #include <string.h>
+#include <device/device.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/lapic.h>

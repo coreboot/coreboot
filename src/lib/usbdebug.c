@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <arch/byteorder.h>
 #include <cpu/x86/car.h>
+#include <string.h>
 
 #include <usb_ch9.h>
 #include <ehci.h>

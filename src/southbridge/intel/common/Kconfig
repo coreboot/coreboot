@@ -1,0 +1,2 @@
+config SOUTHBRIDGE_INTEL_COMMON
+	def_bool n

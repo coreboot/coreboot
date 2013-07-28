@@ -1,3 +1,4 @@
+source src/southbridge/intel/common/Kconfig
 source src/southbridge/intel/esb6300/Kconfig
 source src/southbridge/intel/i3100/Kconfig
 source src/southbridge/intel/i82371eb/Kconfig

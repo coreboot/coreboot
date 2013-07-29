@@ -51,6 +51,18 @@ config UDELAY_LAPIC_FIXED_FSB
 	int
 	default 200
 
+# TODO: Sync these with definitions in AGESA vendorcode.
+# DCACHE_RAM_BASE must equal BSP_STACK_BASE_ADDR.
+# DCACHE_RAM_SIZE must equal BSP_STACK_SIZE.
+
+config DCACHE_RAM_BASE
+	hex
+	default 0x30000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x10000
+
 source src/cpu/amd/agesa/family10/Kconfig
 source src/cpu/amd/agesa/family12/Kconfig
 source src/cpu/amd/agesa/family14/Kconfig

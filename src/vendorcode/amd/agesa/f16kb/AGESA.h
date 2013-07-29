@@ -948,8 +948,8 @@ typedef struct {
                                                            * @li @b Bit31 - last descriptor in topology
                                                            */
   IN       UINT32               SocketId;                 ///< Socket Id
-  IN       PCIe_PORT_DESCRIPTOR *PciePortList;            ///< Pointer to array of PCIe port descriptors or NULL (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
-  IN       PCIe_DDI_DESCRIPTOR  *DdiLinkList;             ///< Pointer to array DDI link descriptors (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
+  IN       CONST PCIe_PORT_DESCRIPTOR *PciePortList;      ///< Pointer to array of PCIe port descriptors or NULL (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
+  IN       CONST PCIe_DDI_DESCRIPTOR  *DdiLinkList;       ///< Pointer to array DDI link descriptors (Last element of array must be terminated with DESCRIPTOR_TERMINATE_LIST).
   IN       VOID                 *Reserved;                ///< Reserved for future use
 } PCIe_COMPLEX_DESCRIPTOR;
 

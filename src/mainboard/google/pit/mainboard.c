@@ -311,7 +311,7 @@ static void mainboard_init(device_t dev)
 		.base = (struct exynos5_dp *)EXYNOS5420_DP1_BASE,
 		.video_info = &dp_video_info,
 	};
-	void *fb_addr;
+	void *fb_addr = (void *)(get_fb_base_kb() * KiB);
 
 	gpio_init();
 
@@ -323,7 +323,6 @@ static void mainboard_init(device_t dev)
 	/* Disable USB3.0 PLL to save 250mW of power */
 	disable_usb30_pll();
 
-	fb_addr = cbmem_find(CBMEM_ID_CONSOLE);
 	set_vbe_mode_info_valid(&edid, (uintptr_t)fb_addr);
 
 	lcd_vdd();
@@ -353,8 +352,10 @@ static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = &mainboard_init;
 
+#if !CONFIG_DYNAMIC_CBMEM
 	/* set up coreboot tables */
 	cbmem_initialize();
+#endif
 
 	/* set up dcache and MMU */
 	/* FIXME: this should happen via resource allocator */

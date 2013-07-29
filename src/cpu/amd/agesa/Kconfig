@@ -50,6 +50,17 @@ config UDELAY_LAPIC_FIXED_FSB
 	int
 	default 200
 
+# DCACHE_RAM_BASE and DCACHE_RAM_SIZE here need to match with the
+# implementation of BSP_STACK under AGESA vendorcode.
+
+config DCACHE_RAM_BASE
+	hex
+	default 0x30000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x10000
+
 source src/cpu/amd/agesa/family10/Kconfig
 source src/cpu/amd/agesa/family12/Kconfig
 source src/cpu/amd/agesa/family14/Kconfig

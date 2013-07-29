@@ -198,7 +198,7 @@ void main(unsigned long bist)
 		thermalbase: 0xfed08000,
 		system_type: 0, // 0 Mobile, 1 Desktop/Server
 		tseg_size: CONFIG_SMM_TSEG_SIZE,
-		spd_addresses: { 0x50, 0x00,0x52,0x00 },
+		spd_addresses: { 0xa0, 0x00,0xa4,0x00 },
 		ts_addresses: { 0x00, 0x00, 0x00, 0x00 },
 		ec_present: 0,
 		// 0 = leave channel enabled
@@ -207,6 +207,7 @@ void main(unsigned long bist)
 		// 3 = disable dimm 0+1 on channel
 		dimm_channel0_disabled: 2,
 		dimm_channel1_disabled: 2,
+		max_ddr3_freq: 1333,
 		usb_port_config: {
 			{ 1, 0, 0x0080 }, /* P0: Front port  (OC0) */
 			{ 1, 1, 0x0040 }, /* P1: Back port   (OC1) */

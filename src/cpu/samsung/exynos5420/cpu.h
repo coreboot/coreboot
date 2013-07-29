@@ -205,4 +205,14 @@ void exynos5420_config_l2_cache(void);
 
 extern struct tmu_info exynos5420_tmu_info;
 
+/* TODO clean up defines. */
+#define FB_SIZE_KB  4096
+#define RAM_BASE_KB (CONFIG_SYS_SDRAM_BASE >> 10)
+#define RAM_SIZE_KB (CONFIG_DRAM_SIZE_MB << 10UL)
+
+static inline u32 get_fb_base_kb(void)
+{
+	return RAM_BASE_KB + RAM_SIZE_KB - FB_SIZE_KB;
+}
+
 #endif	/* _EXYNOS5420_CPU_H */

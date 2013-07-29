@@ -35,10 +35,6 @@ config VGA_BIOS_ID
 	string
 	default "8086,0166"
 
-config EXTERNAL_MRC_BLOB
-       bool
-       default n
-
 config CACHE_MRC_SIZE_KB
 	int
 	default 512

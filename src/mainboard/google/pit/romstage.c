@@ -22,6 +22,7 @@
 
 #include <armv7.h>
 #include <cbfs.h>
+#include <cbmem.h>
 
 #include <arch/cache.h>
 #include <cpu/samsung/exynos5420/i2c.h>
@@ -270,6 +271,9 @@ void main(void)
 	/* if this is uncommented SPI will not work correctly. */
 	clock_set_rate(PERIPH_ID_SPI1, 50000000);
 	simple_spi_test();
+
+	cbmem_initialize_empty();
+
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
 	simple_spi_test();
 	stage_exit(entry);

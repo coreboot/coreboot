@@ -31,46 +31,11 @@ config NORTHBRIDGE_INTEL_IVYBRIDGE
 	select MMCONF_SUPPORT_DEFAULT
 	select CPU_INTEL_MODEL_306AX
 
-if NORTHBRIDGE_INTEL_SANDYBRIDGE
+if NORTHBRIDGE_INTEL_SANDYBRIDGE || NORTHBRIDGE_INTEL_IVYBRIDGE
 
 config VGA_BIOS_ID
 	string
 	default "8086,0106"
-
-config CACHE_MRC_SIZE_KB
-	int
-	default 256
-
-# FIXME: build from rom size
-config MRC_CACHE_BASE
-	hex
-	default 0xff800000
-
-config MRC_CACHE_LOCATION
-	hex
-	depends on !CHROMEOS
-	default 0x1ec000
-
-config MRC_CACHE_SIZE
-	hex
-	depends on !CHROMEOS
-	default 0x10000
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xff7f0000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x10000
-
-endif
-
-if NORTHBRIDGE_INTEL_IVYBRIDGE
-
-config VGA_BIOS_ID
-	string
-	default "8086,0166"
 
 config CACHE_MRC_SIZE_KB
 	int
@@ -99,10 +64,6 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x20000
 
-endif
-
-if NORTHBRIDGE_INTEL_SANDYBRIDGE || NORTHBRIDGE_INTEL_IVYBRIDGE
-
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/sandybridge/bootblock.c"
@@ -122,7 +83,7 @@ config HAVE_MRC
 config MRC_FILE
 	string "Intel System Agent path and filename"
 	depends on HAVE_MRC
-	default "systemagent-r6.bin"
+	default "3rdparty/northbridge/intel/sandybridge/systemagent-r6.bin"
 	help
 	  The path and filename of the file to use as System Agent
 	  binary.

@@ -33,6 +33,7 @@ romstage-y += gpio.c
 romstage-y += timer.c
 romstage-y += i2c.c
 #romstage-y += wdt.c
+romstage-y += cbmem.c
 
 ramstage-y += spi.c
 ramstage-y += clock.c
@@ -50,6 +51,7 @@ ramstage-y += i2c.c
 ramstage-y += dp-reg.c
 ramstage-y += fb.c
 ramstage-y += usb.c
+ramstage-y += cbmem.c
 
 exynos5420_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5420 BL1\n"

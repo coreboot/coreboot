@@ -57,6 +57,7 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 #define SPIROM_BASE_ADDRESS_REGISTER    0xA0
 
 #ifdef __PRE_RAM__
+void hudson_lpc_superio(void);
 void hudson_lpc_port80(void);
 void hudson_pci_port80(void);
 void hudson_clk_output_48Mhz(void);

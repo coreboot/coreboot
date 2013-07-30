@@ -29,17 +29,36 @@
 #include <cbmem.h>
 #include "hudson.h"
 
-void hudson_lpc_port80(void)
+static device_t hudson_lpc_enable(void)
 {
-	u8 byte;
 	device_t dev;
 
 	/* Enable LPC controller */
-	outb(0xEC, 0xCD6);
-	byte = inb(0xCD7);
-	byte |= 1;
-	outb(0xEC, 0xCD6);
-	outb(byte, 0xCD7);
+	outb(0xEC, PM_INDEX);
+	outb(inb(PM_DATA) | 1, PM_DATA);
+
+	/* 	Locate the LPC controller (0x1002, 0x439D) */
+	dev = PCI_DEV(0, 0x14, 3);
+
+	return dev;
+}
+
+
+void hudson_lpc_superio(void)
+{
+	device_t dev = hudson_lpc_enable();
+	u8 byte;
+
+	/* Enable Super I/O configuration in pci function 3 configuration space. */
+	byte = pci_read_config8(dev, 0x48);
+	byte |= 3 << 0;		/* enable Super I/O port 2E/2F, 4E/4F */
+	pci_write_config8(dev, 0x48, byte);
+}
+
+void hudson_lpc_port80(void)
+{
+	device_t dev = hudson_lpc_enable();
+	u8 byte;
 
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
 	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);

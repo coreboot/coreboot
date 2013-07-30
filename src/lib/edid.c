@@ -475,6 +475,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 		 * we have yet to see a case where that will happen.
 		 */
 		out->bpp = 32;
+
 		out->x_resolution = ALIGN(out->ha * ((out->bpp + 7) / 8),64) / (out->bpp/8);
 		out->y_resolution = out->va;
 		out->bytes_per_line = ALIGN(out->ha * ((out->bpp + 7) / 8),64);

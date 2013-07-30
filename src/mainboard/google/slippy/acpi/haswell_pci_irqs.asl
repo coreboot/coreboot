@@ -40,7 +40,7 @@ Method(_PRT)
 			// XHCI	  			0:14.0
 			Package() { 0x0014ffff, 0, 0, 18 },
 			// LPC devices			0:1f.0
-			Package() { 0x001fffff, 0, 0, 21 },
+			Package() { 0x001fffff, 0, 0, 22 },
 			Package() { 0x001fffff, 1, 0, 18 },
 			Package() { 0x001fffff, 2, 0, 17 },
 			Package() { 0x001fffff, 3, 0, 16 },

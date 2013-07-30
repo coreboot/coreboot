@@ -53,6 +53,38 @@ void set_cbmem_toc(struct cbmem_entry *toc)
 	}
 }
 
+//inline static void pmio_write_index(u16 port_base, u8 reg, u8 value)
+//{
+//	outb(reg, port_base);
+//	outb(value, port_base + 1);
+//}
+//
+//inline static u8 pmio_read_index(u16 port_base, u8 reg)
+//{
+//	outb(reg, port_base);
+//	return inb(port_base + 1);
+//}
+//
+//void pm_iowrite(u8 reg, u8 value)
+//{
+//	pmio_write_index(PM_INDEX, reg, value);
+//}
+//
+//u8 pm_ioread(u8 reg)
+//{
+//	return pmio_read_index(PM_INDEX, reg);
+//}
+//
+//void pm2_iowrite(u8 reg, u8 value)
+//{
+//	pmio_write_index(PM2_INDEX, reg, value);
+//}
+//
+//u8 pm2_ioread(u8 reg)
+//{
+//	return pmio_read_index(PM2_INDEX, reg);
+//}
+//
 void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val)
 {
 	u32 reg_old, reg;
@@ -63,39 +95,6 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val)
 		pci_write_config32(sm_dev, reg_pos, reg);
 	}
 }
-
-static void pmio_write_index(u16 port_base, u8 reg, u8 value)
-{
-	outb(reg, port_base);
-	outb(value, port_base + 1);
-}
-
-static u8 pmio_read_index(u16 port_base, u8 reg)
-{
-	outb(reg, port_base);
-	return inb(port_base + 1);
-}
-
-void pm_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM_INDEX, reg, value);
-}
-
-u8 pm_ioread(u8 reg)
-{
-	return pmio_read_index(PM_INDEX, reg);
-}
-
-void pm2_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM2_INDEX, reg, value);
-}
-
-u8 pm2_ioread(u8 reg)
-{
-	return pmio_read_index(PM2_INDEX, reg);
-}
-
 
 void hudson_enable(device_t dev)
 {

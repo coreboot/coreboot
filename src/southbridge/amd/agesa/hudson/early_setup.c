@@ -29,20 +29,46 @@
 #include <cbmem.h>
 #include "hudson.h"
 
-void hudson_lpc_port80(void)
+static device_t hudson_lpc_enable(void)
 {
-	u8 byte;
+	#define PMxEC_LPC_GATING_REG   0xEC
+	#define PMxEC_LPC_ENABLE_VALUE (1 << 0)
+	#define LPC_BUS_NUMBER         0
+	#define LPC_DEVICE_NUMBER      0x14
+	#define LPC_FUNCTION_NUMBER    3
+
 	device_t dev;
 
 	/* Enable LPC controller */
-	outb(0xEC, 0xCD6);
-	byte = inb(0xCD7);
-	byte |= 1;
-	outb(0xEC, 0xCD6);
-	outb(byte, 0xCD7);
+	pm_iowrite(
+			PMxEC_LPC_GATING_REG,
+			pm_ioread(PMxEC_LPC_GATING_REG) | PMxEC_LPC_ENABLE_VALUE
+		);
 
-	/* Enable port 80 LPC decode in pci function 3 configuration space. */
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
+	/* 	Locate the LPC controller (0x1022, 0x780E) */
+	dev = PCI_DEV(LPC_BUS_NUMBER, LPC_DEVICE_NUMBER, LPC_FUNCTION_NUMBER);
+
+	return dev;
+}
+
+
+void hudson_lpc_superio(void)
+{
+	const device_t dev = hudson_lpc_enable();
+	u8 byte;
+
+	/* Enable Super I/O configuration in LPC configuration space. */
+	byte = pci_read_config8(dev, 0x48);
+	byte |= 3 << 0;		/* enable Super I/O port 2E/2F, 4E/4F */
+	pci_write_config8(dev, 0x48, byte);
+}
+
+void hudson_lpc_port80(void)
+{
+	const device_t dev = hudson_lpc_enable();
+	u8 byte;
+
+	/* Enable port 80 LPC decode in LPC configuration space. */
 	byte = pci_read_config8(dev, 0x4a);
 	byte |= 1 << 5;		/* enable port 80 */
 	pci_write_config8(dev, 0x4a, byte);

@@ -106,97 +106,6 @@ static void busmaster_disable_on_bus(int bus)
         }
 }
 
-/* Handler for EHCI controller on entry to S3/S4/S5 */
-static void ehci_sleep_prepare(device_t dev, u8 slp_typ)
-{
-	u32 reg32;
-	u32 bar0_base;
-	u16 pwr_state;
-	u16 pci_cmd;
-
-	/* Check if the controller is disabled or not present */
-	bar0_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
-	if (bar0_base == 0 || bar0_base == 0xffffffff)
-		return;
-	pci_cmd = pci_read_config32(dev, PCI_COMMAND);
-
-	switch (slp_typ) {
-	case SLP_TYP_S4:
-	case SLP_TYP_S5:
-		/* Check if controller is in D3 power state */
-		pwr_state = pci_read_config16(dev, EHCI_PWR_CNTL_STS);
-		if ((pwr_state & EHCI_PWR_STS_MASK) == EHCI_PWR_STS_SET_D3) {
-			/* Put in D0 */
-			pwr_state &= ~EHCI_PWR_STS_MASK;
-			pwr_state |= EHCI_PWR_STS_SET_D0;
-			pci_write_config16(dev, EHCI_PWR_CNTL_STS, pwr_state);
-
-			/* Make sure memory bar is set */
-			pci_write_config32(dev, PCI_BASE_ADDRESS_0, bar0_base);
-
-			/* Make sure memory space is enabled */
-			pci_write_config16(dev, PCI_COMMAND, pci_cmd |
-				   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
-		}
-
-		/*
-		 * If Run/Stop (bit0) is clear in USB2.0_CMD:
-		 * - Clear Async Schedule Enable (bit5) and
-		 * - Clear Periodic Schedule Enable (bit4) and
-		 * - Set Run/Stop (bit0)
-		 */
-		reg32 = read32(bar0_base + 0x20);
-		if (reg32 & (1 << 0)) {
-			reg32 &= ~((1 << 5) | (1 << 4));
-			reg32 |= (1 << 0);
-			write32(bar0_base + 0x20, reg32);
-		}
-
-		/* Check for Port Enabled in PORTSC */
-		reg32 = read32(bar0_base + 0x64);
-		if (reg32 & (1 << 2)) {
-			/* Set suspend bit in PORTSC if not already set */
-			if (!(reg32 & (1 << 7))) {
-				reg32 |= (1 << 7);
-				write32(bar0_base + 0x64, reg32);
-			}
-
-			/* Delay 25ms !! */
-			udelay(25 * 1000);
-
-			/* Clear Run/Stop bit */
-			reg32 = read32(bar0_base + 0x20);
-			reg32 &= (1 << 0);
-			write32(bar0_base + 0x20, reg32);
-		}
-
-		pwr_state = pci_read_config16(dev, EHCI_PWR_CNTL_STS);
-		if ((pwr_state & EHCI_PWR_STS_MASK) == EHCI_PWR_STS_SET_D3) {
-			/* Restore pci command reg */
-			pci_write_config16(dev, PCI_COMMAND, pci_cmd);
-
-			/* Enable D3 */
-			pwr_state |= EHCI_PWR_STS_SET_D3;
-			pci_write_config16(dev, EHCI_PWR_CNTL_STS, pwr_state);
-		}
-	}
-}
-
-/* Handler for XHCI controller on entry to S3/S4/S5 */
-static void xhci_sleep_prepare(device_t dev, u8 slp_typ)
-{
-	u16 reg16;
-
-	switch (slp_typ) {
-	case SLP_TYP_S3:
-	case SLP_TYP_S4:
-	case SLP_TYP_S5:
-		/* Set D3Hot state and PME enable bit */
-		reg16 = pci_read_config16(dev, 0x74);
-		reg16 |= (1 << 8) | (1 << 1) | (1 << 0);
-		pci_write_config16(dev, 0x74, reg16);
-	}
-}
 
 static void southbridge_smi_sleep(void)
 {
@@ -226,9 +135,9 @@ static void southbridge_smi_sleep(void)
 	mainboard_smi_sleep(slp_typ-2);
 
 	/* USB sleep preparations */
-	ehci_sleep_prepare(PCH_EHCI1_DEV, slp_typ);
-	ehci_sleep_prepare(PCH_EHCI2_DEV, slp_typ);
-	xhci_sleep_prepare(PCH_XHCI_DEV, slp_typ);
+	usb_ehci_sleep_prepare(PCH_EHCI1_DEV, slp_typ);
+	usb_ehci_sleep_prepare(PCH_EHCI2_DEV, slp_typ);
+	usb_xhci_sleep_prepare(PCH_XHCI_DEV, slp_typ);
 
 #if CONFIG_ELOG_GSMI
 	/* Log S3, S4, and S5 entry */

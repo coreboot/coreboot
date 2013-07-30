@@ -238,6 +238,11 @@ Device (XHCI)
 		LPCL ()
 	}
 
+	Method (_PSC, 0, NotSerialized)
+	{
+		Return (^D0D3)
+	}
+
 	Method (_PS0, 0, Serialized)
 	{
 		If (LEqual (^DVID, 0xFFFF)) {
@@ -375,12 +380,12 @@ Device (XHCI)
 
 	Method(_S3D,0)	// Highest D State in S3 State
 	{
-		Return (2)
+		Return (3)
 	}
 
 	Method(_S4D,0)	// Highest D State in S4 State
 	{
-		Return (2)
+		Return (3)
 	}
 
 	Device (HUB7)

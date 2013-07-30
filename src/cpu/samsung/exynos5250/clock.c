@@ -610,9 +610,8 @@ int clock_epll_set_rate(unsigned long rate)
 	unsigned int epll_con, epll_con_k;
 	unsigned int i;
 	unsigned int lockcnt;
-	unsigned int start;
-	struct exynos5_clock *clk =
-		samsung_get_base_clock();
+	struct mono_time current, end;
+	struct exynos5_clock *clk = samsung_get_base_clock();
 
 	epll_con = readl(&clk->epll_con0);
 	epll_con &= ~((EPLL_CON0_LOCK_DET_EN_MASK <<
@@ -646,14 +645,19 @@ int clock_epll_set_rate(unsigned long rate)
 	writel(epll_con, &clk->epll_con0);
 	writel(epll_con_k, &clk->epll_con1);
 
-	start = get_timer(0);
+	timer_monotonic_get(&current);
+	end = current;
+	mono_time_add_msecs(&end, TIMEOUT_EPLL_LOCK);
 
 	 while (!(readl(&clk->epll_con0) &
 			(0x1 << EXYNOS5_EPLLCON0_LOCKED_SHIFT))) {
-		if (get_timer(start) > TIMEOUT_EPLL_LOCK) {
-			printk(BIOS_DEBUG, "%s: Timeout waiting for EPLL lock\n", __func__);
+		if (mono_time_after(&current, &end)) {
+			printk(BIOS_DEBUG,
+				"%s: Timeout waiting for EPLL lock\n",
+				__func__);
 			return -1;
 		}
+		timer_monotonic_get(&current);
 	}
 
 	return 0;

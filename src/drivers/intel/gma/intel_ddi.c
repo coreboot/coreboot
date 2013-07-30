@@ -157,3 +157,69 @@ void intel_ddi_prepare_link_retrain(struct intel_dp *intel_dp, int port)
 
 	udelay(600);
 }
+
+u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
+				    enum port port,
+				    enum pipe pipe,
+				    int type,
+				    int lane_count,
+				    int pf_sz)
+{
+	u32 temp;
+
+	temp = TRANS_DDI_FUNC_ENABLE;
+	temp |= TRANS_DDI_SELECT_PORT(port);
+
+	switch (pipe_bpp) {
+	case 18:
+		temp |= TRANS_DDI_BPC_6;
+		break;
+	case 24:
+		temp |= TRANS_DDI_BPC_8;
+		break;
+	case 30:
+		temp |= TRANS_DDI_BPC_10;
+		break;
+	case 36:
+		temp |= TRANS_DDI_BPC_12;
+		break;
+	default:
+		printk(BIOS_ERR, "Invalid pipe_bpp: %d, *** Initialization will not succeed *** \n", pipe_bpp);
+	}
+
+	if (port == PORT_A) {
+		switch (pipe) {
+		case PIPE_A:
+			if (pf_sz)
+				temp |= TRANS_DDI_EDP_INPUT_A_ONOFF;
+			else
+				temp |= TRANS_DDI_EDP_INPUT_A_ON;
+			break;
+		case PIPE_B:
+			temp |= TRANS_DDI_EDP_INPUT_B_ONOFF;
+			break;
+		case PIPE_C:
+			temp |= TRANS_DDI_EDP_INPUT_C_ONOFF;
+			break;
+		default:
+			printk(BIOS_ERR, "Invalid pipe %d\n", pipe);
+		}
+	}
+
+	/* We need to check for TRANS_DDI_PVSYNC and TRANS_DDI_PHSYNC -- How? */
+
+	if (type == INTEL_OUTPUT_HDMI) {
+		/* Need to understand when to set TRANS_DDI_MODE_SELECT_HDMI / TRANS_DDI_MODE_SELECT_DVI */
+	} else if (type == INTEL_OUTPUT_ANALOG) {
+		/* Set TRANS_DDI_MODE_SELECT_FDI with lane_count */
+	} else if (type == INTEL_OUTPUT_DISPLAYPORT ||
+		   type == INTEL_OUTPUT_EDP) {
+		temp |= TRANS_DDI_MODE_SELECT_DP_SST;
+
+		temp |= DDI_PORT_WIDTH(lane_count);
+	} else {
+		printk(BIOS_ERR, "Invalid type %d for pipe\n", type);
+	}
+
+	return temp;
+}

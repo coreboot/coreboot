@@ -151,7 +151,7 @@ printk(BIOS_SPEW, "DP_MAX_DOWNSPREAD");
 
 	io_i915_write32(0x00230000,TRANS_DDI_FUNC_CTL_EDP);
 	io_i915_write32(0x00000010,0x7f008);
-	io_i915_write32(0x82234000,TRANS_DDI_FUNC_CTL_EDP);
+	io_i915_write32(dp->flags,TRANS_DDI_FUNC_CTL_EDP);
 	io_i915_write32(0x80000010,0x7f008);
 
 	intel_dp_wait_panel_power_control(0xabcd000a);

@@ -235,6 +235,7 @@ void usb_xhci_route_all(void)
 static void usb_xhci_clock_gating(device_t dev)
 {
 	u32 reg32;
+	u16 reg16;
 
 	/* IOBP 0xE5004001[7:6] = 11b */
 	pch_iobp_update(0xe5004001, ~0, (1 << 7)|(1 << 6));
@@ -258,9 +259,9 @@ static void usb_xhci_clock_gating(device_t dev)
 	pci_write_config8(dev, 0x40 + 2, (u8)((reg32 >> 16) & 0xff));
 
 	/* D20:F0:44h[9,7,3] = 111b */
-	reg32 = pci_read_config32(dev, 0x44);
-	reg32 |= (1 << 9) | (1 << 7) | (1 << 3);
-	pci_write_config32(dev, 0x44, reg32);
+	reg16 = pci_read_config16(dev, 0x44);
+	reg16 |= (1 << 9) | (1 << 7) | (1 << 3);
+	pci_write_config16(dev, 0x44, reg16);
 
 	reg32 = pci_read_config32(dev, 0xa0);
 	if (pch_is_lp()) {
@@ -323,21 +324,20 @@ static void usb_xhci_enable_ports_usb3(device_t dev)
 
 static void usb_xhci_init(device_t dev)
 {
-	struct resource *bar0 = find_resource(dev, PCI_BASE_ADDRESS_0);
 	u32 reg32;
+	u16 reg16;
+	u32 mem_base = usb_xhci_mem_base(dev);
 
-	if (!bar0 || bar0->base == 0 || bar0->base == 0xffffffff)
-		return;
+	/* D20:F0:74h[1:0] = 00b (set D0 state) */
+	reg16 = pci_read_config16(dev, XHCI_PWR_CTL_STS);
+	reg16 &= ~PWR_CTL_SET_MASK;
+	reg16 |= PWR_CTL_SET_D0;
+	pci_write_config16(dev, XHCI_PWR_CTL_STS, reg16);
 
 	/* Enable clock gating first */
 	usb_xhci_clock_gating(dev);
 
-	/* D20:F0:74h[1:0] = 11b (set D3Hot state) */
-	reg32 = pci_read_config16(dev, 0x74);
-	reg32 |= (1 << 1) | (1 << 0);
-	pci_write_config16(dev, 0x74, reg32);
-
-	reg32 = read32(bar0->base + 0x8144);
+	reg32 = read32(mem_base + 0x8144);
 	if (pch_is_lp()) {
 		/* XHCIBAR + 8144h[8,7,6] = 111b */
 		reg32 |= (1 << 8) | (1 << 7) | (1 << 6);
@@ -346,25 +346,20 @@ static void usb_xhci_init(device_t dev)
 		reg32 &= ~((1 << 7) | (1 << 6));
 		reg32 |= (1 << 8);
 	}
-	write32(bar0->base + 0x8144, reg32);
+	write32(mem_base + 0x8144, reg32);
 
 	if (pch_is_lp()) {
 		/* XHCIBAR + 816Ch[19:0] = 000f0038h */
-		reg32 = read32(bar0->base + 0x816c);
+		reg32 = read32(mem_base + 0x816c);
 		reg32 &= ~0x000fffff;
 		reg32 |= 0x000f0038;
-		write32(bar0->base + 0x816c, reg32);
+		write32(mem_base + 0x816c, reg32);
 
 		/* D20:F0:B0h[17,14,13] = 100b */
 		reg32 = pci_read_config32(dev, 0xb0);
 		reg32 &= ~((1 << 14) | (1 << 13));
 		reg32 |= (1 << 17);
 		pci_write_config32(dev, 0xb0, reg32);
-
-		/* XHCIBAR + 818Ch[7:0] = FFh */
-		reg32 = read32(bar0->base + 0x818c);
-		reg32 |= 0xff;
-		write32(bar0->base + 0x818c, reg32);
 	}
 
 	reg32 = pci_read_config32(dev, 0x50);
@@ -380,9 +375,9 @@ static void usb_xhci_init(device_t dev)
 	pci_write_config32(dev, 0x50, reg32);
 
 	/* D20:F0:44h[31] = 1 (Access Control Bit) */
-	reg32 = pci_read_config32(dev, 0x40);
+	reg32 = pci_read_config32(dev, 0x44);
 	reg32 |= (1 << 31);
-	pci_write_config32(dev, 0x40, reg32);
+	pci_write_config32(dev, 0x44, reg32);
 
 	/* D20:F0:40h[31,23] = 10b (OC Configuration Done) */
 	reg32 = pci_read_config32(dev, 0x40);

@@ -158,6 +158,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		dimm_channel0_disabled: 2,
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1600,
+		usb_xhci_on_resume: 1,
 		usb2_ports: {
 			/* Length, Enable, OCn#, Location */
 			{ 0x0150, 1, USB_OC_PIN_SKIP, /* P0: LTE */

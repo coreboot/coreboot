@@ -37,7 +37,6 @@ void timer_monotonic_get(struct mono_time *mt)
 	uint64_t usecs_elapsed;
 
 	if (!mono_counter.initialized) {
-		init_timer();
 		mono_counter.last_value = mct_raw_value();
 		mono_counter.initialized = 1;
 	}

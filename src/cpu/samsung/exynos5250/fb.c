@@ -26,7 +26,6 @@
 #include <timer.h>
 #include <delay.h>
 #include <console/console.h>
-#include "timer.h"
 #include "cpu.h"
 #include "power.h"
 #include "sysreg.h"
@@ -411,20 +410,24 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 {
 	int pll_is_locked = 0;
 	u32 data;
-	u32 start;
 	int lane;
+	struct mono_time current, end;
 	struct exynos5_dp *base = dp->base;
 
 	/* Stop Video */
 	clrbits_le32(&base->video_ctl_1, VIDEO_EN);
 
-	start = get_timer(0);
+	timer_monotonic_get(&current);
+	end = current;
+	mono_time_add_msecs(&end, PLL_LOCK_TIMEOUT);
+
 	while ((pll_is_locked = s5p_dp_get_pll_lock_status(dp)) == PLL_UNLOCKED) {
-		if (get_timer(start) > PLL_LOCK_TIMEOUT) {
+		if (mono_time_after(&current, &end)) {
 			/* Ignore this error, and try to continue */
 			printk(BIOS_ERR, "PLL is not locked yet.\n");
 			break;
 		}
+		timer_monotonic_get(&current);
 	}
 	printk(BIOS_SPEW, "PLL is %slocked\n",
 			pll_is_locked == PLL_LOCKED ? "": "not ");

@@ -20,6 +20,8 @@
 #ifndef HUDSON_H
 #define HUDSON_H
 
+#include <config.h>
+#include <arch/io.h>
 #include <device/pci_ids.h>
 #include <device/device.h>
 #include "chip.h"
@@ -40,10 +42,10 @@
 #define ACPI_GPE0_BLK		(HUDSON_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(HUDSON_ACPI_IO_BASE + 0x08) /* 6 bytes */
 
-void pm_iowrite(u8 reg, u8 value);
-u8 pm_ioread(u8 reg);
-void pm2_iowrite(u8 reg, u8 value);
-u8 pm2_ioread(u8 reg);
+//void pm_iowrite(u8 reg, u8 value);
+//u8 pm_ioread(u8 reg);
+//void pm2_iowrite(u8 reg, u8 value);
+//u8 pm2_ioread(u8 reg);
 void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 #define REV_HUDSON_A11	0x11
@@ -58,6 +60,7 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 #define SPIROM_BASE_ADDRESS_REGISTER    0xA0
 
 #ifdef __PRE_RAM__
+void hudson_lpc_superio(void);
 void hudson_lpc_port80(void);
 void hudson_pci_port80(void);
 void hudson_clk_output_48Mhz(void);
@@ -73,5 +76,49 @@ void __attribute__((weak)) hudson_setup_sata_phys(struct device *dev);
 void s3_resume_init_data(void *FchParams);
 
 #endif
+
+#if IS_ENABLED(CONFIG_DEFAULT_CONSOLE_LOGLEVEL_7) || IS_ENABLED(CONFIG_DEFAULT_CONSOLE_LOGLEVEL_8)
+#define PMIO_OPTIMIZATION_PREFIX __attribute__((optimize("O0")))
+#define PMIO_STORAGE_PREFIX volatile
+#else
+#define PMIO_OPTIMIZATION_PREFIX
+#define PMIO_STORAGE_PREFIX register
+#endif
+
+static inline void PMIO_OPTIMIZATION_PREFIX pmio_write_index(u16 port_base, u8 reg, u8 value)
+{
+	outb(reg, port_base);
+	outb(value, port_base + 1);
+}
+
+static inline u8 PMIO_OPTIMIZATION_PREFIX pmio_read_index(u16 port_base, u8 reg)
+{
+	PMIO_STORAGE_PREFIX u8 value;
+	outb(reg, port_base);
+	value = inb(port_base + 1);
+	return value;
+}
+
+static inline void PMIO_OPTIMIZATION_PREFIX pm_iowrite(u8 reg, u8 value)
+{
+	pmio_write_index(PM_INDEX, reg, value);
+}
+
+static inline u8 PMIO_OPTIMIZATION_PREFIX pm_ioread(u8 reg)
+{
+	PMIO_STORAGE_PREFIX const u8 value = pmio_read_index(PM_INDEX, reg);
+	return value;
+}
+
+static inline void PMIO_OPTIMIZATION_PREFIX pm2_iowrite(u8 reg, u8 value)
+{
+	pmio_write_index(PM2_INDEX, reg, value);
+}
+
+static inline u8 PMIO_OPTIMIZATION_PREFIX pm2_ioread(u8 reg)
+{
+	PMIO_STORAGE_PREFIX const u8 value = pmio_read_index(PM2_INDEX, reg);
+	return value;
+}
 
 #endif /* HUDSON_H */

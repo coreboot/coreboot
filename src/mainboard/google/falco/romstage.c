@@ -132,6 +132,7 @@ void mainboard_romstage_entry(unsigned long bist)
 		// Enable 2x refresh mode
 		ddr_refresh_2x: 1,
 		max_ddr3_freq: 1600,
+		usb_xhci_on_resume: 1,
 		usb2_ports: {
 			/* Length, Enable, OCn#, Location */
 			{ 0x0064, 1, 0,               /* P0: Port A, CN8 */

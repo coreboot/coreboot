@@ -1305,13 +1305,13 @@ typedef struct {
                                                         *    {
                                                         *      0,   //Descriptor flags
                                                         *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
-                                                        *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1, 0)
+                                                        *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeDP, Aux1, Hdp1)
                                                         *    },
                                                         *    // Initialize Ddi descriptor (DDI interface Lanes 28:31, HDMI, ...)
                                                         *    {
                                                         *      DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
                                                         *      PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 28, 31),
-                                                        *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux2, Hdp2, 0)
+                                                        *      PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux2, Hdp2)
                                                         *    }
                                                         *  };
                                                         * PCIe_COMPLEX_DESCRIPTOR PlatformTopology = {

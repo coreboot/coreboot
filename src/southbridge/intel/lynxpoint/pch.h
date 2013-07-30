@@ -92,6 +92,7 @@ void intel_pch_finalize_smm(void);
 void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ);
 void usb_ehci_disable(device_t dev);
 void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ);
+void usb_xhci_route_all(void);
 #endif
 
 

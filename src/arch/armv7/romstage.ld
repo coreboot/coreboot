@@ -73,9 +73,6 @@ SECTIONS
 		_car_data_end = .;
 	}
 
-
-	__image_copy_end = .;
-
 	/* bss does not contain data, it is just a space that should be zero
 	 * initialized on startup. (typically uninitialized global variables)
 	 * crt0.S fills between _bss and _ebss with zeroes.

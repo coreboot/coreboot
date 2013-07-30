@@ -73,7 +73,6 @@
 #define EXYNOS5_SPI1_BASE		0x12D30000
 #define EXYNOS5_I2C_BASE		0x12C60000
 #define EXYNOS5_SPI_BASE		0x12D20000
-#define EXYNOS5_PWMTIMER_BASE		0x12DD0000
 #define EXYNOS5_SPI_ISP_BASE		0x131A0000
 #define EXYNOS5_I2S_BASE		0x12D60000
 #define EXYNOS5_GPIO_PART3_BASE		0x13400000	/* E00..H17 */
@@ -108,7 +107,6 @@
 #define samsung_get_base_sromc() ((struct exynos5_sromc *)EXYNOS5_SROMC_BASE)
 #define samsung_get_base_swreset() ((struct exynos5_swreset *)EXYNOS5_SWRESET)
 #define samsung_get_base_sysreg() ((struct exynos5_sysreg *)EXYNOS5_SYSREG_BASE)
-#define samsung_get_base_timer() ((struct s5p_timer *)EXYNOS5_PWMTIMER_BASE)
 #define samsung_get_base_uart() ((struct exynos5_uart *)EXYNOS5_UART_BASE)
 #define samsung_get_base_usb_phy() ((struct exynos5_usb_phy *)EXYNOS5_USBPHY_BASE)
 #define samsung_get_base_usb_otg() ((struct exynos5_usb_otg *)EXYNOS5_USBOTG_BASE)

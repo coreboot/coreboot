@@ -54,7 +54,6 @@ static void enable_usb_bar_on_device(device_t dev, u32 bar)
 void enable_usb_bar(void)
 {
 	enable_usb_bar_on_device(PCH_EHCI1_DEV, PCH_EHCI1_TEMP_BAR0);
-#if !CONFIG_INTEL_LYNXPOINT_LP
-	enable_usb_bar_on_device(PCH_EHCI2_DEV, PCH_EHCI2_TEMP_BAR0);
-#endif
+	if (!pch_is_lp())
+		enable_usb_bar_on_device(PCH_EHCI2_DEV, PCH_EHCI2_TEMP_BAR0);
 }

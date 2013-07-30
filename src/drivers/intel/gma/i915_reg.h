@@ -4554,6 +4554,7 @@
 #define  DDI_BUF_EMP_MASK			(0xf<<24)
 #define  DDI_BUF_IS_IDLE			(1<<7)
 #define  DDI_A_4_LANES				(1<<4)
+#define  DDI_PORT_WIDTH(width)                  (((width) - 1) << 1)
 #define  DDI_PORT_WIDTH_X1			(0<<1)
 #define  DDI_PORT_WIDTH_X2			(1<<1)
 #define  DDI_PORT_WIDTH_X4			(3<<1)

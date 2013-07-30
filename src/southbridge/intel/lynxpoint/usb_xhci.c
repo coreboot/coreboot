@@ -189,6 +189,47 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 	pci_or_config16(dev, XHCI_PWR_CTL_STS, PWR_CTL_ENABLE_PME);
 }
 
+/* Route all ports to XHCI controller */
+void usb_xhci_route_all(void)
+{
+	u32 port_mask, route;
+	u16 reg16;
+
+	/* Skip if EHCI is already disabled */
+	if (RCBA32(FD) & PCH_DISABLE_EHCI1)
+		return;
+
+	/* Set D0 state */
+	reg16 = pci_read_config16(PCH_XHCI_DEV, XHCI_PWR_CTL_STS);
+	reg16 &= ~PWR_CTL_SET_MASK;
+	reg16 |= PWR_CTL_SET_D0;
+	pci_write_config16(PCH_XHCI_DEV, XHCI_PWR_CTL_STS, reg16);
+
+	/* Set USB3 superspeed enable */
+	port_mask = pci_read_config32(PCH_XHCI_DEV, XHCI_USB3PRM);
+	route = pci_read_config32(PCH_XHCI_DEV, XHCI_USB3PR);
+	route &= ~XHCI_USB3PR_SSEN;
+	route |= XHCI_USB3PR_SSEN & port_mask;
+	pci_write_config32(PCH_XHCI_DEV, XHCI_USB3PR, route);
+
+	/* Route USB2 ports to XHCI controller */
+	port_mask = pci_read_config32(PCH_XHCI_DEV, XHCI_USB2PRM);
+	route = pci_read_config32(PCH_XHCI_DEV, XHCI_USB2PR);
+	route &= ~XHCI_USB2PR_HCSEL;
+	route |= XHCI_USB2PR_HCSEL & port_mask;
+	pci_write_config32(PCH_XHCI_DEV, XHCI_USB2PR, route);
+
+	/* Disable EHCI controller */
+	usb_ehci_disable(PCH_EHCI1_DEV);
+
+	/* LynxPoint-H has a second EHCI controller */
+	if (!pch_is_lp())
+		usb_ehci_disable(PCH_EHCI2_DEV);
+
+	/* Reset and clear port change status */
+	usb_xhci_reset_usb3(PCH_XHCI_DEV, 1);
+}
+
 #else /* !__SMM__ */
 
 static void usb_xhci_clock_gating(device_t dev)
@@ -235,6 +276,49 @@ static void usb_xhci_clock_gating(device_t dev)
 	reg32 = pci_read_config32(dev, 0xa4);
 	reg32 &= ~(1 << 13);
 	pci_write_config32(dev, 0xa4, reg32);
+}
+
+/* Re-enable ports that are disabled */
+static void usb_xhci_enable_ports_usb3(device_t dev)
+{
+#if CONFIG_FINALIZE_USB_ROUTE_XHCI
+	int port;
+	u32 portsc, status, disabled;
+	u32 mem_base = usb_xhci_mem_base(dev);
+	int port_count = usb_xhci_port_count_usb3(dev);
+
+	if (!mem_base || !port_count)
+		return;
+
+	/* Get port disable override map */
+	disabled = pci_read_config32(dev, XHCI_USB3PDO);
+
+	for (port = 0; port < port_count; port++) {
+		/* Skip overridden ports */
+		if (disabled & (1 << port))
+			continue;
+		portsc = mem_base + XHCI_USB3_PORTSC(port);
+		status = read32(portsc) & XHCI_USB3_PORTSC_PLS;
+
+		switch (status) {
+		case XHCI_PLSR_RXDETECT:
+			/* Clear change status */
+			printk(BIOS_DEBUG, "usb_xhci reset port %d\n", port);
+			usb_xhci_reset_status_usb3(mem_base, port);
+			break;
+		case XHCI_PLSR_DISABLED:
+		default:
+			/* Transition to enabled */
+			printk(BIOS_DEBUG, "usb_xhci enable port %d\n", port);
+			usb_xhci_reset_port_usb3(mem_base, port);
+			status = read32(portsc);
+			status &= ~XHCI_USB3_PORTSC_PLS;
+			status |= XHCI_PLSW_ENABLE | XHCI_USB3_PORTSC_LWS;
+			write32(portsc, status);
+			break;
+		}
+	}
+#endif
 }
 
 static void usb_xhci_init(device_t dev)
@@ -305,6 +389,12 @@ static void usb_xhci_init(device_t dev)
 	reg32 &= ~(1 << 23); /* unsupported request */
 	reg32 |= (1 << 31);
 	pci_write_config32(dev, 0x40, reg32);
+
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Enable ports that are disabled before returning to OS */
+	if (acpi_slp_type == 3)
+		usb_xhci_enable_ports_usb3(dev);
+#endif
 }
 
 static void usb_xhci_set_subsystem(device_t dev, unsigned vendor,

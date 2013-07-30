@@ -40,6 +40,22 @@
 #define PRB0_START	0x02038
 #define PRB0_CTL	0x0203c
 
+enum port {
+	PORT_A = 0,
+	PORT_B,
+	PORT_C,
+	PORT_D,
+	PORT_E,
+	I915_NUM_PORTS
+};
+
+enum pipe {
+	PIPE_A = 0,
+	PIPE_B,
+	PIPE_C,
+	I915_NUM_PIPES
+};
+
 /* debug enums. These are for printks that, due to their place in the
  * middle of graphics device IO, might change timing.  Use with care
  * or not at all.
@@ -143,6 +159,7 @@ struct intel_dp {
 	u32 pipesrc;
 	u32 stride;
 	struct intel_dp_m_n m_n;
+	u32 flags;
 };
 
 /* we may yet need these. */
@@ -197,3 +214,10 @@ void intel_dp_compute_m_n(unsigned int bits_per_pixel,
                           unsigned int pixel_clock,
                           unsigned int link_clock,
                           struct intel_dp_m_n *m_n);
+
+u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
+				    enum port port,
+				    enum pipe pipe,
+				    int type,
+				    int lane_count,
+				    int pf_sz);

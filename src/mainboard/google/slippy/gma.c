@@ -288,6 +288,13 @@ void dp_init_dim_regs(struct intel_dp *dp)
 
 	dp->pfa_sz = (edid->ha << 16) | (edid->va);
 
+	dp->flags = intel_ddi_calc_transcoder_flags(3 * 6,  /* bits per color is 6 */
+						    dp->port,
+						    dp->pipe,
+						    dp->type,
+						    dp->lane_count,
+						    dp->pfa_sz);
+
 	intel_dp_compute_m_n(dp->bpp,
 			     dp->lane_count,
 			     dp->edid.pixel_clock,
@@ -310,6 +317,7 @@ void dp_init_dim_regs(struct intel_dp *dp)
 	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n", TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m);
 	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n", dp->m_n.gmch_m);
 	printk(BIOS_SPEW, "0x6f034     = 0x%08x\n", dp->m_n.gmch_n);
+	printk(BIOS_SPEW, "dp->flags   = 0x%08x\n", dp->flags);
 }
 
 int intel_dp_bw_code_to_link_rate(u8 link_bw);
@@ -363,8 +371,8 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	dp->panel_power_down_delay = 600;
 	dp->panel_power_up_delay = 200;
 	dp->panel_power_cycle_delay = 600;
-	dp->pipe = 0;
-	dp->port = 0;
+	dp->pipe = PIPE_A;
+	dp->port = PORT_A;
 	dp->clock = 160000;
 	dp->bpp = 32;
 	dp->type = INTEL_OUTPUT_EDP;

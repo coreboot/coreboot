@@ -89,6 +89,9 @@
 
 #if defined (__SMM__) && !defined(__ASSEMBLER__)
 void intel_pch_finalize_smm(void);
+void usb_ehci_sleep_prepare(device_t dev, u8 slp_typ);
+void usb_ehci_disable(device_t dev);
+void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ);
 #endif
 
 
@@ -348,11 +351,49 @@ int early_pch_init(const void *gpio_map,
 #define SATA_IOBP_SP0G3IR	0xea000151
 #define SATA_IOBP_SP1G3IR	0xea000051
 
-/* USB Registers */
-#define EHCI_PWR_CNTL_STS	0x54
-#define  EHCI_PWR_STS_MASK	0x3
-#define  EHCI_PWR_STS_SET_D0	0x0
-#define  EHCI_PWR_STS_SET_D3	0x3
+/* EHCI PCI Registers */
+#define EHCI_PWR_CTL_STS	0x54
+#define  PWR_CTL_SET_MASK	0x3
+#define  PWR_CTL_SET_D0		0x0
+#define  PWR_CTL_SET_D3		0x3
+#define  PWR_CTL_ENABLE_PME	(1 << 8)
+
+/* EHCI Memory Registers */
+#define EHCI_USB_CMD		0x20
+#define  EHCI_USB_CMD_RUN	(1 << 0)
+#define  EHCI_USB_CMD_PSE	(1 << 4)
+#define  EHCI_USB_CMD_ASE	(1 << 5)
+#define EHCI_PORTSC(port)	(0x64 + (port * 4))
+#define  EHCI_PORTSC_ENABLED	(1 << 2)
+#define  EHCI_PORTSC_SUSPEND	(1 << 7)
+
+/* XHCI PCI Registers */
+#define XHCI_PWR_CTL_STS	0x74
+#define XHCI_USB2PR		0xd0
+#define XHCI_USB2PRM		0xd4
+#define  XHCI_USB2PR_HCSEL	0x7fff
+#define XHCI_USB3PR		0xd8
+#define  XHCI_USB3PR_SSEN	0x3f
+#define XHCI_USB3PRM		0xdc
+#define XHCI_USB3FUS		0xe0
+#define  XHCI_USB3FUS_SS_MASK	3
+#define  XHCI_USB3FUS_SS_SHIFT	3
+#define XHCI_USB3PDO		0xe8
+
+/* XHCI Memory Registers */
+#define XHCI_USB3_PORTSC(port)	((pch_is_lp() ? 0x510 : 0x570) + (port * 0x10))
+#define  XHCI_USB3_PORTSC_CHST	(0x7f << 17)
+#define  XHCI_USB3_PORTSC_WCE	(1 << 25)	/* Wake on Connect */
+#define  XHCI_USB3_PORTSC_WDE	(1 << 26)	/* Wake on Disconnect */
+#define  XHCI_USB3_PORTSC_WOE	(1 << 27)	/* Wake on Overcurrent */
+#define  XHCI_USB3_PORTSC_WRC	(1 << 19)	/* Warm Reset Complete */
+#define  XHCI_USB3_PORTSC_LWS  	(1 << 16)	/* Link Write Strobe */
+#define  XHCI_USB3_PORTSC_WPR	(1 << 31)	/* Warm Port Reset */
+#define  XHCI_USB3_PORTSC_PLS	(0xf << 5)	/* Port Link State */
+#define   XHCI_PLSR_DISABLED	(4 << 5)	/* Port is disabled */
+#define   XHCI_PLSR_RXDETECT	(5 << 5)	/* Port is disconnected */
+#define   XHCI_PLSR_POLLING	(7 << 5)	/* Port is polling */
+#define   XHCI_PLSW_ENABLE	(5 << 5)	/* Transition from disabled */
 
 /* Serial IO IOBP Registers */
 #define SIO_IOBP_PORTCTRL0	0xcb000000	/* SDIO D23:F0 */

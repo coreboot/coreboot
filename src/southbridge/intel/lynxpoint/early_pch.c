@@ -42,6 +42,12 @@ const struct rcba_config_instruction pch_early_config[] = {
 	RCBA_END_CONFIG,
 };
 
+int pch_is_lp(void)
+{
+	u8 id = pci_read_config8(PCH_LPC_DEV, PCI_DEVICE_ID + 1);
+	return id == PCH_TYPE_LPT_LP;
+}
+
 static void pch_enable_bars(void)
 {
 	/* Setting up Southbridge. In the northbridge code. */

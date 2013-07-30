@@ -76,4 +76,11 @@ config ME_MBP_CLEAR_LATE
 	  finalize step.  This can speed up boot time if the ME takes
 	  a long time to indicate this status.
 
+config FINALIZE_USB_ROUTE_XHCI
+	bool "Route all ports to XHCI controller in finalize step"
+	default y
+	help
+	  If you set this option to y, the USB ports will be routed
+	  to the XHCI controller during the finalize SMM callback.
+
 endif

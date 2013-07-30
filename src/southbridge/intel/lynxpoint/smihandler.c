@@ -135,8 +135,10 @@ static void southbridge_smi_sleep(void)
 	mainboard_smi_sleep(slp_typ-2);
 
 	/* USB sleep preparations */
+#if !CONFIG_FINALIZE_USB_ROUTE_XHCI
 	usb_ehci_sleep_prepare(PCH_EHCI1_DEV, slp_typ);
 	usb_ehci_sleep_prepare(PCH_EHCI2_DEV, slp_typ);
+#endif
 	usb_xhci_sleep_prepare(PCH_XHCI_DEV, slp_typ);
 
 #if CONFIG_ELOG_GSMI
@@ -313,6 +315,11 @@ static void southbridge_smi_apmc(void)
 			smm_initialized = 1;
 			printk(BIOS_DEBUG, "SMI#: Setting GNVS to %p\n", gnvs);
 		}
+		break;
+	case APM_CNT_FINALIZE:
+#if CONFIG_FINALIZE_USB_ROUTE_XHCI
+		usb_xhci_route_all();
+#endif
 		break;
 #if CONFIG_ELOG_GSMI
 	case ELOG_GSMI_APM_CNT:

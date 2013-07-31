@@ -133,7 +133,7 @@ GfxMidInterfaceKB (
         Status = GfxGmcInitKB (Gfx);
         AGESA_STATUS_UPDATE (Status, AgesaStatus);
 
-        //Status = GfxSamuInit (Gfx);
+        Status = GfxSamuInit (Gfx);
         AGESA_STATUS_UPDATE (Status, AgesaStatus);
 
         Status = GfxInitSsid (Gfx);

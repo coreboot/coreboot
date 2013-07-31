@@ -165,13 +165,22 @@ FchInitMidProgramSataRegs (
     FchSataMsiCapability = 0;
   }
   //
+  // Disable SATA FLR Capability
+  //
+  RwPci (((SATA_BUS_DEV_FUN << 16) + 0x070 + 1), AccessWidth8, 0, 0, StdHeader);
+  //
   // Enabled SATA MSI capability
   // SATA MSI and D3 Power State Capability MMC 0x2
   //
-  if ( !FchSataMsiCapability ) {
-    RwPci (((SATA_BUS_DEV_FUN << 16) + 0x70 + 1), AccessWidth8, 0, 0, StdHeader);
+  if ( FchSataMsiCapability ) {
+    RwPci (((SATA_BUS_DEV_FUN << 16) + 0x060 + 1), AccessWidth8, 0, 0x70, StdHeader);
+    RwPci (((SATA_BUS_DEV_FUN << 16) + 0x070 + 1), AccessWidth8, 0, 0x50, StdHeader);
+    RwPci (((SATA_BUS_DEV_FUN << 16) + 0x050 + 2), AccessWidth8, 0xF1, 0x06, StdHeader);
+  } else {
+    RwPci (((SATA_BUS_DEV_FUN << 16) + 0x060 + 1), AccessWidth8, 0, 0x70, StdHeader);
+    RwPci (((SATA_BUS_DEV_FUN << 16) + 0x070 + 1), AccessWidth8, 0, 0x00, StdHeader);
+    RwPci (((SATA_BUS_DEV_FUN << 16) + 0x050 + 2), AccessWidth8, 0xF1, 0x00, StdHeader);
   }
-
   //
   // Sata Target Support 8 devices function
   //
@@ -286,8 +295,8 @@ FchInitLateProgramSataRegs (
     RwMem ((Bar5 + 0x110 + (PortNumByte * 0x80)), AccessWidth32, 0xFFFFFFFF, 0x00);
   }
   if ( LocalCfgPtr->Sata.SataDevSlpPort0 ) {
-    RwMem (ACPI_MMIO_BASE + GPIO_BASE + FCH_GPIO_REG55, AccessWidth8, 0, 0x3E);
-    RwMem (ACPI_MMIO_BASE + IOMUX_BASE + FCH_GPIO_REG55, AccessWidth8, 0, 0x01);
+    RwMem (ACPI_MMIO_BASE + GPIO_BASE + FCH_GPIO_REG55, AccessWidth8, 0, 0x0E);
+    RwMem (ACPI_MMIO_BASE + IOMUX_BASE + FCH_GPIO_REG55, AccessWidth8, 0, 0x02);
     RwMem ((Bar5 + 0x0F4), AccessWidth32, 0xFFFFFEEF, BIT4 + BIT8);
   } else {
     RwMem (ACPI_MMIO_BASE + IOMUX_BASE + FCH_GPIO_REG55, AccessWidth8, 0, 0x00);
@@ -297,8 +306,8 @@ FchInitLateProgramSataRegs (
     }
   }
   if ( LocalCfgPtr->Sata.SataDevSlpPort1 ) {
-    RwMem (ACPI_MMIO_BASE + GPIO_BASE + FCH_GPIO_REG59, AccessWidth8, 0, 0x3E);
-    RwMem (ACPI_MMIO_BASE + IOMUX_BASE + FCH_GPIO_REG59, AccessWidth8, 0, 0x01);
+    RwMem (ACPI_MMIO_BASE + GPIO_BASE + FCH_GPIO_REG59, AccessWidth8, 0, 0x0E);
+    RwMem (ACPI_MMIO_BASE + IOMUX_BASE + FCH_GPIO_REG59, AccessWidth8, 0, 0x02);
     RwMem ((Bar5 + 0x0F4), AccessWidth32, 0xFFFFFDEF, BIT4 + BIT9);
   } else {
     RwMem (ACPI_MMIO_BASE + IOMUX_BASE + FCH_GPIO_REG59, AccessWidth8, 0, 0x00);

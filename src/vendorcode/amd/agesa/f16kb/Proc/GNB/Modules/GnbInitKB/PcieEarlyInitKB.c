@@ -244,7 +244,7 @@ PciePhyIsolationKB (
     );
 
   PhyRxIsoDis = GnbBuildOptions.CfgPciePhyIsolationEnable ? 0 : 3;
-  ActiveLaneBitmap = PcieUtilGetWrapperLaneBitMap (LANE_TYPE_PCIE_PHY_NATIVE_ALLOC_ACTIVE, 0, Wrapper);
+  ActiveLaneBitmap = PcieUtilGetWrapperLaneBitMap (LANE_TYPE_PCIE_PHY_NATIVE, 0, Wrapper);
   if ((ActiveLaneBitmap & 0xF0) != 0) {
     PhyRxIsoDis = 3;
   }
@@ -256,7 +256,7 @@ PciePhyIsolationKB (
                               WRAP_SPACE (Wrapper->WrapId, D0F0xE4_WRAP_8013_ADDRESS),
                               Pcie
                               );
-  D0F0xE4_WRAP_8013.Field.PhyRxIsoDis = 3;
+  D0F0xE4_WRAP_8013.Field.PhyRxIsoDis = PhyRxIsoDis;
   PcieRegisterWrite (
     Wrapper,
     WRAP_SPACE (Wrapper->WrapId, D0F0xE4_WRAP_8013_ADDRESS),
@@ -264,7 +264,7 @@ PciePhyIsolationKB (
     FALSE,
     Pcie
     );
-
+  IDS_HDT_CONSOLE (GNB_TRACE, "    ActiveLaneBitmap = 0x%x, PhyRxIsoDis = %d\n", ActiveLaneBitmap, PhyRxIsoDis);
   IDS_HDT_CONSOLE (GNB_TRACE, "PciePhyIsolationKB Exit\n");
 }
 

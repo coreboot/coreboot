@@ -340,6 +340,31 @@ int intel_dp_bw_code_to_link_rate(u8 link_bw)
 	}
 }
 
+void mainboard_train_link(struct intel_dp *intel_dp);
+void mainboard_train_link(struct intel_dp *intel_dp)
+{
+	u8 read_val;
+	u8 link_status[DP_LINK_STATUS_SIZE];
+
+	io_i915_write32(0x80040000,DP_TP_CTL_A);
+	io_i915_write32( DP_PORT_EN | DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SYNC_VS_HIGH |0x80000011,DP_A);
+
+	intel_dp_get_training_pattern(intel_dp, &read_val);
+	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_1 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
+	intel_dp_get_lane_count(intel_dp, &read_val);
+	intel_dp_set_training_lane0(intel_dp, DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0);
+	intel_dp_get_link_status(intel_dp, link_status);
+
+	io_i915_write32(0x80040100,DP_TP_CTL_A);
+
+	intel_dp_get_training_pattern(intel_dp, &read_val);
+	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_2 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
+	intel_dp_get_link_status(intel_dp, link_status);
+	intel_dp_get_lane_align_status(intel_dp, &read_val);
+	intel_dp_get_training_pattern(intel_dp, &read_val);
+	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
+}
+
 int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
 		unsigned int gfx);
 

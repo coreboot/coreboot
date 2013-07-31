@@ -250,6 +250,40 @@ intel_dp_aux_native_write_1(struct intel_dp *intel_dp,
 	return intel_dp_aux_native_write(intel_dp, address, &byte, 1);
 }
 
+int intel_dp_set_bw(struct intel_dp *intel_dp)
+{
+	printk(BIOS_SPEW, "DP_LINK_BW_SET");
+	return intel_dp_aux_native_write_1(intel_dp,
+					   DP_LINK_BW_SET,
+					   intel_dp->link_bw);
+}
+
+int intel_dp_set_lane_count(struct intel_dp *intel_dp)
+{
+	printk(BIOS_SPEW, "DP_LANE_COUNT_SET");
+	return intel_dp_aux_native_write_1(intel_dp,
+					   DP_LANE_COUNT_SET,
+					   intel_dp->lane_count);
+}
+
+int intel_dp_set_training_pattern(struct intel_dp *intel_dp,
+				  u8 pat)
+{
+	printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
+	return intel_dp_aux_native_write_1(intel_dp,
+					   DP_TRAINING_PATTERN_SET,
+					   pat);
+}
+
+int intel_dp_set_training_lane0(struct intel_dp *intel_dp,
+				u8 val)
+{
+	printk(BIOS_SPEW, "DP_TRAINING_LANE0_SET");
+	return intel_dp_aux_native_write_1(intel_dp,
+					   DP_TRAINING_LANE0_SET,
+					   val);
+}
+
 /* read bytes from a native aux channel */
 static int
 intel_dp_aux_native_read(struct intel_dp *intel_dp,
@@ -379,6 +413,24 @@ intel_dp_i2c_aux_ch(struct intel_dp *intel_dp,
 
 	printk(BIOS_ERR, "too many retries, giving up\n");
 	return -1;
+}
+
+int intel_dp_i2c_write(struct intel_dp *intel_dp,
+		       u8 val)
+{
+	return intel_dp_i2c_aux_ch(intel_dp,
+				   MODE_I2C_WRITE,
+				   val,
+				   NULL);
+}
+
+int intel_dp_i2c_read(struct intel_dp *intel_dp,
+		      u8 *val)
+{
+	return intel_dp_i2c_aux_ch(intel_dp,
+				   MODE_I2C_READ,
+				   0,
+				   val);
 }
 
 int
@@ -990,7 +1042,7 @@ intel_dp_aux_native_read_retry(struct intel_dp *intel_dp, uint16_t address,
  * Fetch AUX CH registers 0x202 - 0x207 which contain
  * link status information
  */
-static int
+int
 intel_dp_get_link_status(struct intel_dp *intel_dp,
 			 uint8_t link_status[DP_LINK_STATUS_SIZE])
 {
@@ -1728,7 +1780,7 @@ int
 intel_dp_get_max_downspread(struct intel_dp *intel_dp, u8 *max_downspread)
 {
 	int got, want = 1;
-	got = intel_dp_aux_native_read_retry(intel_dp, 0x000, max_downspread,
+	got = intel_dp_aux_native_read_retry(intel_dp, DP_MAX_DOWNSPREAD, max_downspread,
 					     want);
 	if (got < want) {
 		printk(BIOS_SPEW, "%s: got %d, wanted %d\n", __func__, got, want);
@@ -1760,4 +1812,31 @@ void intel_dp_set_resolution(struct intel_dp *intel_dp)
         io_i915_write32(intel_dp->vtotal, VTOTAL(intel_dp->transcoder));
         io_i915_write32(intel_dp->vblank, VBLANK(intel_dp->transcoder));
         io_i915_write32(intel_dp->vsync,  VSYNC(intel_dp->transcoder));
+}
+
+int intel_dp_get_training_pattern(struct intel_dp *intel_dp,
+				  u8 *recv)
+{
+	return intel_dp_aux_native_read_retry(intel_dp,
+					      DP_TRAINING_PATTERN_SET,
+					      recv,
+					      0);
+}
+
+int intel_dp_get_lane_count(struct intel_dp *intel_dp,
+			    u8 *recv)
+{
+	return intel_dp_aux_native_read_retry(intel_dp,
+					      DP_LANE_COUNT_SET,
+					      recv,
+					      0);
+}
+
+int intel_dp_get_lane_align_status(struct intel_dp *intel_dp,
+				   u8 *recv)
+{
+	return intel_dp_aux_native_read_retry(intel_dp,
+					      DP_LANE_ALIGN_STATUS_UPDATED,
+					      recv,
+					      0);
 }

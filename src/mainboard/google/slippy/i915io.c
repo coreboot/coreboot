@@ -115,27 +115,12 @@ printk(BIOS_SPEW, "DP_MAX_DOWNSPREAD");
 	unpack_aux(auxout, &msg[0], 4);
 	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
 
-	/* undocumented. */
-	io_i915_write32(0x7e4a0000,0x6f030);
-	/* io_i915_write32(0x00800000,0x6f034); */
-	/* Write to 0x6f030 has to be 0x7e4ayyyy -- First four hex digits are important.
-	   However, with our formula we always see values 0x7e43yyyy (1366 panel) and
-	   0x7e42yyy (1280 panel) */
-	/* io_i915_write32(TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m,0x6f030); */
-	io_i915_write32(dp->m_n.gmch_n,0x6f034);
-	io_i915_write32(dp->m_n.link_m,0x6f040);
-	io_i915_write32(dp->m_n.link_n,0x6f044);
+	intel_dp_set_m_n_regs(dp);
 
-	/* leave as is for now. */
-	io_i915_write32(dp->htotal,0x6f000);
-	io_i915_write32(dp->hblank,0x6f004);
-	io_i915_write32(dp->hsync,0x6f008);
-	io_i915_write32(dp->vtotal,0x6f00c);
-	io_i915_write32(dp->vblank,0x6f010);
-	io_i915_write32(dp->vsync,0x6f014);
-	io_i915_write32(dp->pipesrc,_PIPEASRC);
-	io_i915_write32(0x00000000,0x7f008);
-	io_i915_write32(0x00000000,_TRANSACONF);
+	intel_dp_set_resolution(dp);
+	io_i915_write32(dp->pipesrc,PIPESRC(dp->pipe));
+	io_i915_write32(0x00000000, PIPECONF(dp->transcoder));
+	io_i915_write32(0x00000000, PCH_TRANSCONF(dp->pipe));
 
 	io_i915_write32(0x20000000,PORT_CLK_SEL_A);
 	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x14000000,_DSPACNTR);

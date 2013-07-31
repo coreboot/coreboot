@@ -56,6 +56,13 @@ enum pipe {
 	I915_NUM_PIPES
 };
 
+enum transcoder {
+        TRANSCODER_A = 0,
+        TRANSCODER_B,
+        TRANSCODER_C,
+        TRANSCODER_EDP = 0xF,
+};
+
 /* debug enums. These are for printks that, due to their place in the
  * middle of graphics device IO, might change timing.  Use with care
  * or not at all.
@@ -160,6 +167,7 @@ struct intel_dp {
 	u32 stride;
 	struct intel_dp_m_n m_n;
 	u32 flags;
+	u32 transcoder;
 };
 
 /* we may yet need these. */
@@ -221,3 +229,9 @@ u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
 				    int type,
 				    int lane_count,
 				    int pf_sz);
+
+enum transcoder intel_ddi_get_transcoder(enum port port,
+					 enum pipe pipe);
+
+void intel_dp_set_m_n_regs(struct intel_dp *intel_dp);
+void intel_dp_set_resolution(struct intel_dp *intel_dp);

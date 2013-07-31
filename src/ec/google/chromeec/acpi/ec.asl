@@ -23,6 +23,9 @@
  * re-evaluate their _PPC and _CST tables.
  */
 
+// Mainboard specific throttle handler
+External (\_TZ.THRT, MethodObj)
+
 Device (EC0)
 {
 	Name (_HID, EISAID ("PNP0C09"))
@@ -224,6 +227,24 @@ Device (EC0)
 	Method (_Q0D, 0, NotSerialized)
 	{
 		Store ("EC: KEY PRESSED", Debug)
+	}
+
+	// Throttle Start
+	Method (_Q12, 0, NotSerialized)
+	{
+		Store ("EC: THROTTLE START", Debug)
+		If (CondRefOf (\_TZ.THRT, Local0)) {
+			\_TZ.THRT (1)
+		}
+	}
+
+	// Throttle Stop
+	Method (_Q13, 0, NotSerialized)
+	{
+		Store ("EC: THROTTLE STOP", Debug)
+		If (CondRefOf (\_TZ.THRT, Local0)) {
+			\_TZ.THRT (0)
+		}
 	}
 
 	#include "ac.asl"

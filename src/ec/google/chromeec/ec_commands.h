@@ -239,6 +239,11 @@ enum host_event_code {
 	/* Shutdown due to battery level too low */
 	EC_HOST_EVENT_BATTERY_SHUTDOWN = 17,
 
+        /* Suggest that the AP throttle itself */
+        EC_HOST_EVENT_THROTTLE_START = 18,
+        /* Suggest that the AP resume normal speed */
+        EC_HOST_EVENT_THROTTLE_STOP = 19,
+
 	/*
 	 * The high bit of the event mask is not used as a host event code.  If
 	 * it reads back as set, then the entire event mask should be

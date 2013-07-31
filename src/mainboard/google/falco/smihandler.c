@@ -34,6 +34,7 @@
 
 /* GPIO46 controls the WLAN_DISABLE_L signal. */
 #define GPIO_WLAN_DISABLE_L 46
+#define GPIO_LTE_DISABLE_L  59
 
 int mainboard_io_trap_handler(int smif)
 {
@@ -104,6 +105,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 		/* Prevent leak from standby rail to WLAN rail in S3. */
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+		/* Disable LTE */
+		set_gpio(GPIO_LTE_DISABLE_L, 0);
 		break;
 	case 5:
 		if (smm_get_gnvs()->s5u0 == 0)
@@ -115,6 +118,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 		/* Prevent leak from standby rail to WLAN rail in S5. */
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+		/* Disable LTE */
+		set_gpio(GPIO_LTE_DISABLE_L, 0);
 		break;
 	}
 

@@ -1263,16 +1263,34 @@ BOOLEAN MemFS3DefConstructorRet (
       #define PSC_TBL_KB_ODT_TRI_FT3 &KBSODdr3ODTTriEntFT3,
       extern PSC_TBL_ENTRY KBSODdr3CSTriEntFT3;
       #define PSC_TBL_KB_CS_TRI_FT3 &KBSODdr3CSTriEntFT3,
+      #undef PSC_TBL_KB_UDIMM3_S2D_FT3
+      #ifndef extern_S2DTblEntUFT3
+      #define extern_S2DTblEntUFT3
+        extern PSC_TBL_ENTRY S2DTblEntUFT3;
+      #endif
+      #define PSC_TBL_KB_UDIMM3_S2D_FT3  &S2DTblEntUFT3,
     #endif
     #if OPTION_UDIMMS
-      extern PSC_TBL_ENTRY KBMaxFreqTblEntU;
-      #define PSC_TBL_KB_UDIMM3_MAX_FREQ  &KBMaxFreqTblEntU,
-      extern PSC_TBL_ENTRY KBDramTermTblEntU;
-      #define PSC_TBL_KB_UDIMM3_DRAM_TERM  &KBDramTermTblEntU,
-      extern PSC_TBL_ENTRY KBSAOTblEntU3;
-      #define PSC_TBL_KB_UDIMM3_SAO  &KBSAOTblEntU3,
+      #if (OPTION_MICROSERVER == TRUE)
+        extern PSC_TBL_ENTRY KBMaxFreqTblEntMicroSrvU6L;
+        #define PSC_TBL_KB_UDIMM3_MAX_FREQ_6L  &KBMaxFreqTblEntMicroSrvU6L,
+      #else
+        extern PSC_TBL_ENTRY KBMaxFreqTblEntU6L;
+        #define PSC_TBL_KB_UDIMM3_MAX_FREQ_6L  &KBMaxFreqTblEntU6L,
+      #endif
+      extern PSC_TBL_ENTRY KBMaxFreqTblEntU4L;
+      #define PSC_TBL_KB_UDIMM3_MAX_FREQ_4L  &KBMaxFreqTblEntU4L,
+      #if OPTION_FT3_SOCKET_SUPPORT
+        extern PSC_TBL_ENTRY KBDramTermTblEntUFT3;
+        #define PSC_TBL_KB_UDIMM3_DRAM_TERM_FT3  &KBDramTermTblEntUFT3,
+        extern PSC_TBL_ENTRY KBSAOTblEntU3FT3;
+        #define PSC_TBL_KB_UDIMM3_SAO_FT3  &KBSAOTblEntU3FT3,
+      #endif
       #undef PSC_TBL_KB_UDIMM3_S2D_FT3
-      extern PSC_TBL_ENTRY S2DTblEntUFT3;
+      #ifndef extern_S2DTblEntUFT3
+      #define extern_S2DTblEntUFT3
+        extern PSC_TBL_ENTRY S2DTblEntUFT3;
+      #endif
       #define PSC_TBL_KB_UDIMM3_S2D_FT3  &S2DTblEntUFT3,
     #endif
     #if OPTION_SODIMMS
@@ -1299,10 +1317,6 @@ BOOLEAN MemFS3DefConstructorRet (
         #define PSC_TBL_KB_SODWN_PLUS_SODIMM3_MAX_FREQ_4L  &KBMaxFreqTblEntSoDwnPlusSODIMM6L,
         extern PSC_TBL_ENTRY KBMaxFreqTblEntSoDwn;
         #define PSC_TBL_KB_SODWN_MAX_FREQ  &KBMaxFreqTblEntSoDwn,
-        extern PSC_TBL_ENTRY KBMaxFreqTblEntU6L;
-        #define PSC_TBL_KB_UDIMM3_MAX_FREQ_6L  &KBMaxFreqTblEntU6L,
-        extern PSC_TBL_ENTRY KBMaxFreqTblEntU4L;
-        #define PSC_TBL_KB_UDIMM3_MAX_FREQ_4L  &KBMaxFreqTblEntU4L,
         #undef PSC_TBL_KB_SODIMM3_S2D_FT3
         #define PSC_TBL_KB_SODIMM3_S2D_FT3
       #endif
@@ -1334,8 +1348,8 @@ BOOLEAN MemFS3DefConstructorRet (
     #ifndef PSC_TBL_KB_UDIMM3_MAX_FREQ_4L
       #define PSC_TBL_KB_UDIMM3_MAX_FREQ_4L
     #endif
-    #ifndef PSC_TBL_KB_UDIMM3_DRAM_TERM
-      #define PSC_TBL_KB_UDIMM3_DRAM_TERM
+    #ifndef PSC_TBL_KB_UDIMM3_DRAM_TERM_FT3
+      #define PSC_TBL_KB_UDIMM3_DRAM_TERM_FT3
     #endif
     #ifndef PSC_TBL_KB_SODIMM3_DRAM_TERM
       #define PSC_TBL_KB_SODIMM3_DRAM_TERM
@@ -1355,8 +1369,8 @@ BOOLEAN MemFS3DefConstructorRet (
     #ifndef PSC_TBL_KB_SODWN_SAO
       #define PSC_TBL_KB_SODWN_SAO
     #endif
-    #ifndef PSC_TBL_KB_UDIMM3_SAO
-      #define PSC_TBL_KB_UDIMM3_SAO
+    #ifndef PSC_TBL_KB_UDIMM3_SAO_FT3
+      #define PSC_TBL_KB_UDIMM3_SAO_FT3
     #endif
     #ifndef PSC_TBL_KB_CLK_DIS_FT3
       #define PSC_TBL_KB_CLK_DIS_FT3
@@ -1384,7 +1398,7 @@ BOOLEAN MemFS3DefConstructorRet (
     };
 
     PSC_TBL_ENTRY* memPSCTblDramTermArrayKB[] = {
-      PSC_TBL_KB_UDIMM3_DRAM_TERM
+      PSC_TBL_KB_UDIMM3_DRAM_TERM_FT3
       PSC_TBL_KB_SODIMM3_DRAM_TERM
       PSC_TBL_KB_SODWN_PLUS_SODIMM3_DRAM_TERM
       PSC_TBL_KB_SODWN_DRAM_TERM
@@ -1401,7 +1415,7 @@ BOOLEAN MemFS3DefConstructorRet (
       PSC_TBL_KB_SODIMM3_SAO
       PSC_TBL_KB_SODWN_PLUS_SODIMM3_SAO
       PSC_TBL_KB_SODWN_SAO
-      PSC_TBL_KB_UDIMM3_SAO
+      PSC_TBL_KB_UDIMM3_SAO_FT3
       PSC_TBL_END
     };
 

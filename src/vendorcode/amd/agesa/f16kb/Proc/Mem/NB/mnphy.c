@@ -1152,6 +1152,8 @@ MemNPhyPowerSavingMPstateUnb (
   UINT8 MaxTxStggrDly;
   UINT8 Tcwl;
   UINT8 i;
+  UINT16 MemClkSpeed;
+  MemClkSpeed = ( (NBPtr->MemPstate == MEMORY_PSTATE0) ? NBPtr->DCTPtr->Timings.Speed : MemNGetMemClkFreqUnb (NBPtr, (UINT8) MemNGetBitFieldNb (NBPtr, BFM1MemClkFreq)) );
 
   IDS_HDT_CONSOLE (MEM_FLOW, "Start Phy power saving setting for memory Pstate %d\n", NBPtr->MemPstate);
   // 4. Program D18F2x9C_x0D0F_0[F,8:0]13_dct[1:0][DllDisEarlyU] = 1b.
@@ -1172,11 +1174,11 @@ MemNPhyPowerSavingMPstateUnb (
   }
   // 10. Program D18F2x9C_x0D0F_0[F,7:0][50,10]_dct[1:0][EnRxPadStandby] = IF
   // (D18F2x94_dct[1:0][MemClkFreq] <= 800 MHz) THEN 1 ELSE 0 ENDIF.
-  MemNSetBitFieldNb (NBPtr, BFEnRxPadStandby, (NBPtr->DCTPtr->Timings.Speed <= DDR1600_FREQUENCY) ? 0x1000 : 0);
+  MemNSetBitFieldNb (NBPtr, BFEnRxPadStandby, (MemClkSpeed <= DDR1600_FREQUENCY) ? 0x1000 : 0);
   // 11. Program D18F2x9C_x0000_000D_dct[1:0]_mp[1:0] as follows:
   // If (DDR rate < = 1600) TxMaxDurDllNoLock = RxMaxDurDllNoLock = 8h
   // else TxMaxDurDllNoLock = RxMaxDurDllNoLock = 7h.
-  if (NBPtr->DCTPtr->Timings.Speed <= DDR1600_FREQUENCY) {
+  if (MemClkSpeed <= DDR1600_FREQUENCY) {
     MemNSetBitFieldNb (NBPtr, BFTxMaxDurDllNoLock, 8);
     MemNSetBitFieldNb (NBPtr, BFRxMaxDurDllNoLock, 8);
   } else {
@@ -1199,7 +1201,7 @@ MemNPhyPowerSavingMPstateUnb (
       DllPower[i] = 0x8080;
     }
     // If (DDR rate > = 1866) DllWakeTime = 1, Else DllWakeTime = 0.
-    DllWakeTime = (NBPtr->DCTPtr->Timings.Speed >= DDR1866_FREQUENCY) ? 1 : 0;
+    DllWakeTime = (MemClkSpeed >= DDR1866_FREQUENCY) ? 1 : 0;
     // Let MaxRxStggrDly = (Tcl*2) + MIN(DqsRcvEnGrossDelay for all byte lanes (see D18F2x9C_x0000_00[2A:10]_dct[1:0]_mp[1:0])) - 4.
     MinRcvEnGrossDly = NBPtr->TechPtr->GetMinMaxGrossDly (NBPtr->TechPtr, AccessRcvEnDly, FALSE);
     ASSERT ((NBPtr->DCTPtr->Timings.CasL * 2 + MinRcvEnGrossDly) >= 4);
@@ -1342,4 +1344,36 @@ MemN2DRdDQSEyeRimSearchUnb (
   )
 {
   return MemT2DRdDQSEyeRimSearch (NBPtr->TechPtr);
+}
+
+/*-----------------------------------------------------------------------------
+ *
+ *
+ *     Hook for some families which need an intermediate Mem Clk Frequency Valid
+ *       before changing to the initial startup training frequency.
+ *
+ *
+ *     @param[in,out]  *NBPtr     - Pointer to the MEM_NB_BLOCK
+ *     @param[in,out]  *OptParam   - Optional parameter
+ *
+ *     @return  TRUE - always
+ * ----------------------------------------------------------------------------
+ */
+BOOLEAN
+MemNIntermediateMemclkFreqValUnb (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *OptParam
+  )
+{
+  // 1. Program MemClkFreq = 200MHz
+  MemNSetBitFieldNb (NBPtr, BFMemClkFreq, MemNGetMemClkFreqIdUnb (NBPtr, DDR400_FREQUENCY));
+  // 2. MemClkFreqVal = 1;
+  MemNSetBitFieldNb (NBPtr, BFMemClkFreqVal, 1);
+  // 3. Wait for FreqChgInPrg == 0
+  MemNPollBitFieldNb (NBPtr, BFFreqChgInProg, 0, PCI_ACCESS_TIMEOUT, FALSE);
+  // 4. Program MemClkFreqVal = 0
+  MemNSetBitFieldNb (NBPtr, BFMemClkFreqVal, 0);
+  // 5. Retore MemClkFreq to startup value.
+  MemNSetBitFieldNb (NBPtr, BFMemClkFreq, MemNGetMemClkFreqIdUnb (NBPtr, NBPtr->DCTPtr->Timings.Speed));
+  return TRUE;
 }

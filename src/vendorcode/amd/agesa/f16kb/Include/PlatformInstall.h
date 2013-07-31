@@ -360,6 +360,9 @@ VOLATILE  AMD_MODULE_HEADER mCpuModuleID = {
     #define OPTION_MEM_RESTORE  TRUE
     #undef OPTION_DIMM_EXCLUDE
     #define OPTION_DIMM_EXCLUDE  TRUE
+    #ifndef OPTION_MICROSERVER
+      #define OPTION_MICROSERVER  FALSE
+    #endif
   #endif
 #endif
 
@@ -1811,7 +1814,8 @@ FCH_PLATFORM_POLICY  FchUserOptions = {
   CFG_FCH_SD_CLOCK_CONTROL,             // CfgFchSdClockControl
   CFG_FCH_SCI_MAP_LIST,                 // *CfgFchSciMapControl
   CFG_FCH_SATA_PHY_LIST,                // *CfgFchSataPhyControl
-  CFG_FCH_GPIO_CONTROL_LIST             // *CfgFchGpioControl
+  CFG_FCH_GPIO_CONTROL_LIST,            // *CfgFchGpioControl
+  CFG_FCH_RTC_WORKAROUND                // CfgFchRtcWorkaround
 };
 
 BUILD_OPT_CFG UserOptions = {

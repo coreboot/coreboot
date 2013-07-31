@@ -938,6 +938,8 @@ MemNPhyPowerSavingMPstateKB (
   UINT8 WrDqDqsEarly;
   UINT8 i;
   UINT8 j;
+  UINT16 MemClkSpeed;
+  MemClkSpeed = ( (NBPtr->MemPstate == MEMORY_PSTATE0) ? NBPtr->DCTPtr->Timings.Speed : MemNGetMemClkFreqUnb (NBPtr, (UINT8) MemNGetBitFieldNb (NBPtr, BFM1MemClkFreq)) );
 
   // 3. Program D18F2x9C_x0D0F_0[F,8:0]30_dct[0][PwrDn] to disable the ECC lane if
   // D18F2x90_dct[0][DimmEccEn]==0.
@@ -966,11 +968,11 @@ MemNPhyPowerSavingMPstateKB (
   }
   // 11. Program D18F2x9C_x0D0F_0[F,7:0][50,10]_dct[1:0][EnRxPadStandby] = IF
   // (D18F2x94_dct[1:0][MemClkFreq] <= 800 MHz) THEN 1 ELSE 0 ENDIF.
-  MemNSetBitFieldNb (NBPtr, BFEnRxPadStandby, (NBPtr->DCTPtr->Timings.Speed <= DDR1600_FREQUENCY) ? 0x1000 : 0);
+  MemNSetBitFieldNb (NBPtr, BFEnRxPadStandby, (MemClkSpeed <= DDR1600_FREQUENCY) ? 0x1000 : 0);
   // 12. Program D18F2x9C_x0000_000D_dct[1:0]_mp[1:0] as follows:
   // If (DDR rate < = 1600) TxMaxDurDllNoLock = RxMaxDurDllNoLock = 8h
   // else TxMaxDurDllNoLock = RxMaxDurDllNoLock = 7h.
-  if (NBPtr->DCTPtr->Timings.Speed <= DDR1600_FREQUENCY) {
+  if (MemClkSpeed <= DDR1600_FREQUENCY) {
     MemNSetBitFieldNb (NBPtr, BFRxMaxDurDllNoLock, 8);
     MemNSetBitFieldNb (NBPtr, BFTxMaxDurDllNoLock, 8);
   } else {
@@ -994,7 +996,7 @@ MemNPhyPowerSavingMPstateKB (
       DllPower[i] = 0x8080;
     }
     // 13. If (DDR rate > = 1866) DllWakeTime = 1, Else DllWakeTime = 0.
-    DllWakeTime = (NBPtr->DCTPtr->Timings.Speed >= DDR1866_FREQUENCY) ? 1 : 0;
+    DllWakeTime = (MemClkSpeed >= DDR1866_FREQUENCY) ? 1 : 0;
     // Let MaxRxStggrDly = ((Tcl-1)*2) + MIN(DqsRcvEnGrossDelay for all byte lanes (see D18F2x9C_x0000_00[2A:10]_dct[1:0]_mp[1:0])) - 6.
     MinRcvEnGrossDly = NBPtr->TechPtr->GetMinMaxGrossDly (NBPtr->TechPtr, AccessRcvEnDly, FALSE);
     Tcl = (UINT8) MemNGetBitFieldNb (NBPtr, BFTcl);

@@ -344,7 +344,7 @@ DmiF16KbGetExtClock (
   IN       AMD_CONFIG_PARAMS  *StdHeader
   )
 {
-  return (EXTERNAL_CLOCK_DFLT);
+  return (EXTERNAL_CLOCK_100MHZ);
 }
 
 /* -----------------------------------------------------------------------------*/

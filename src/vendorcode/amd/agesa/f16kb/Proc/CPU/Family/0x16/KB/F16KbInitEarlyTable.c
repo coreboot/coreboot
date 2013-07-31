@@ -52,6 +52,7 @@
 #include "cpuFamilyTranslation.h"
 #include "Filecode.h"
 #include "cpuEarlyInit.h"
+#include "cpuFeatures.h"
 CODE_GROUP (G2_PEI)
 RDATA_GROUP (G2_PEI)
 #define FILECODE PROC_CPU_FAMILY_0X16_KB_F16KBINITEARLYTABLE_FILECODE
@@ -87,6 +88,13 @@ GetF16KbEarlyInitAfterApLaunchOnCoreTable (
      OUT   CONST S_PERFORM_EARLY_INIT_ON_CORE   **Table,
   IN       AMD_CPU_EARLY_PARAMS                 *EarlyParams,
   IN       AMD_CONFIG_PARAMS                    *StdHeader
+  );
+
+VOID
+F16KbLoadMicrocodePatchAtEarly (
+  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
   );
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
@@ -141,3 +149,27 @@ GetF16KbEarlyInitAfterApLaunchOnCoreTable (
   *Table = F16KbEarlyInitAfterApLaunchOnCoreTable;
 }
 
+/*---------------------------------------------------------------------------------------*/
+/**
+ * Update microcode patch in current processor for Family16h KB.
+ *
+ * This function acts as a wrapper for calling the LoadMicrocodePatch
+ * routine at AmdInitEarly.
+ *
+ *  @param[in]   FamilyServices      The current Family Specific Services.
+ *  @param[in]   EarlyParams         Service parameters.
+ *  @param[in]   StdHeader           Config handle for library and services.
+ *
+ */
+VOID
+F16KbLoadMicrocodePatchAtEarly (
+  IN       CPU_SPECIFIC_SERVICES  *FamilyServices,
+  IN       AMD_CPU_EARLY_PARAMS   *EarlyParams,
+  IN       AMD_CONFIG_PARAMS      *StdHeader
+  )
+{
+  if (!IsFeatureEnabled (C6Cstate, &EarlyParams->PlatformConfig, StdHeader)) {
+    AGESA_TESTPOINT (TpProcCpuLoadUcode, StdHeader);
+    LoadMicrocodePatch (StdHeader);
+  }
+}

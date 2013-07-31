@@ -370,11 +370,15 @@ typedef struct _SATA_ST {
                                                         ///   @li <b>0</b> - disable
                                                         ///   @li <b>1</b> - enable
                                                         ///
-  BOOLEAN               IdeEnable;                      ///< IdeEnable - Ide Controller Mode
+  BOOLEAN               IdeEnable;                      ///< IdeEnable - Hidden IDE
                                                         ///  @par
-                                                        /// Sata IDE Controller set to Combined Mode
-                                                        ///  @li <b>0</b> - disable
-                                                        ///  @li <b>1</b> - enable
+                                                        /// Sata IDE Controller Combined Mode
+                                                        ///   Enable -  SATA controller has control over Port0 through Port3,
+                                                        ///     IDE controller has control over Port4 and Port7.
+                                                        ///   Disable - SATA controller has full control of all 8 Ports
+                                                        ///     when operating in non-IDE mode.
+                                                        ///  @li <b>0</b> - enable
+                                                        ///  @li <b>1</b> - disable
                                                         ///
   UINT8                 SataClkMode;                    /// SataClkMode - Reserved
 } SATA_ST;
@@ -843,6 +847,7 @@ typedef struct {
   TIMER_SMI             LongTimer;                      ///< Long Timer SMI
   TIMER_SMI             ShortTimer;                     ///< Short Timer SMI
   UINT32                FchCpuId;                       ///< Saving CpuId for FCH Module.
+  BOOLEAN               NoneSioKbcSupport;              ///< NoneSioKbcSupport - No KBC/SIO controller ( Turn on Inchip KBC emulation function )
 } FCH_MISC;
 
 

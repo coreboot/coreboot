@@ -461,10 +461,7 @@ GfxIntInfoTableInitKB (
     SystemInfoTableV3.sIntegratedSysInfo.ulDDR_DLL_PowerUpTime = 4940;
     SystemInfoTableV3.sIntegratedSysInfo.ulDDR_PLL_PowerUpTime = 2000;
 
-    SystemInfoTableV3.sIntegratedSysInfo.ulGPUCapInfo =
-      GPUCAPINFO_TMDS_HDMI_USE_SINGLE_PLL_MODE |
-      GPUCAPINFO_DP_USE_SINGLE_PLL_MODE |
-      GPUCAPINFO_DFS_BYPASS_DISABLE;
+    SystemInfoTableV3.sIntegratedSysInfo.ulGPUCapInfo = GPUCAPINFO_DFS_BYPASS_DISABLE;
 
     // GPUCAPINFO_DFS_BYPASS_ENABLE should be enabled by default for MOBILE systems
     if ((Gfx->AmdPlatformType & AMD_PLATFORM_MOBILE) != 0) {

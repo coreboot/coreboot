@@ -392,8 +392,8 @@ MemFDMISupport3 (
           FormFactor = (UINT8) SpdDataStructure->Data[3];
           if (((FormFactor & 0x0F) == 0x01) || ((FormFactor & 0x0F) == 0x02) || ((FormFactor & 0x0F) == 0x0B)) {
             DmiPhysicalDimmInfoTable->FormFactor = 0x09;         // RDIMM or UDIMM or LRDIMM
-          } else if ((FormFactor & 0x0F) == 0x03) {
-            DmiPhysicalDimmInfoTable->FormFactor = 0x0D;         // SO-DIMM
+          } else if (((FormFactor & 0x0F) == 0x03) || ((FormFactor & 0x0F) == 0x08) || ((FormFactor & 0x0F) == 0x09) || ((FormFactor & 0x0F) == 0x0A)) {
+            DmiPhysicalDimmInfoTable->FormFactor = 0x0D;         // SO-DIMM, SO-UDIMM, SO-RDIMM and SO-CDIMM
           } else {
             DmiPhysicalDimmInfoTable->FormFactor = 0x02;         // UNKNOWN
           }

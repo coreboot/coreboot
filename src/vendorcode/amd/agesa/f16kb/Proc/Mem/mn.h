@@ -364,6 +364,8 @@ typedef struct _MEM_PS_BLOCK {
   UINT8  NumOfDimmSlots; ///< See enum type NOD_SUPPORTED
   UINT8  DimmType;       ///< See enum type DIMM_TYPE
   UINT16 RankType;       ///< Rank type of all populated DIMMs. See MemPGetPsRankType.
+  UINT8  MotherboardLayer; ///< See enum type MB_LAYER_TYPE
+  UINT8  MotherboardPower; ///< See enum type MB_POWER_TYPE
 } MEM_PS_BLOCK;
 
 /// Structure parameters needed in frequency change of client NB.
@@ -445,7 +447,8 @@ typedef enum {
   AMPIsEnabled,                    ///< Check to detemine if AMP is exactly enabled.
   ScrubberEn,                      ///< Check to determine if DRAM scrubber is already enabled
   SwitchRdDqsDlyForMaxRdLatency,   ///< Use the different RdDqsDly value for MaxRdLatency calculation before/after DQS training
-
+  SelectMotherboardLayer,          ///< Check to determine if multiple motherboard layer design applies
+  SelectMotherboardPower,          ///< Check to determine if multiple motherboard power design applies
   EnumSize                         ///< Size of list
 } NB_SUPPORTED;
 
@@ -548,6 +551,7 @@ typedef enum {
   DisableMemHoleMapping,           ///< Disable Memory Hole Settings
   RestoreMemHoleMapping,           ///< Enable Memory Hole Settings
   PhyInitVref,                     ///< Program VrefSel during phy init
+  IntermediateMemclkFreqVal,       ///< Workaround for some families needing intermediate frequency valid
   NumberOfHooks                    ///< Size of list
 } FAMILY_SPECIFIC_FUNC_INDEX;
 
@@ -629,6 +633,7 @@ typedef struct _MEM_NB_BLOCK {
   BOOLEAN OrigDisAutoRefreshState; ///< Original state of Dis Auto Refresh
   BOOLEAN Execute1dMaxRdLatTraining;    ///< Indicates if 1D training should be executed
   BOOLEAN Override2DTraining;                  ///< 2D training has been overriden
+  UINT8 PmuFirmwareImage;                      ///< PMU firmware image to be use.
 
   MEM_DCT_CACHE DctCache[MAX_CHANNELS_PER_SOCKET]; ///< Allocate space for MCT_DCT_CACHE.
   MEM_DCT_CACHE *DctCachePtr;    ///< pointer to current Node's Node struct
@@ -1574,6 +1579,18 @@ MemNAdjustRdDqsDlyForMaxRdLatUnb (
 VOID
 MemNSetEccExclusionRangeUnb (
   IN OUT   MEM_NB_BLOCK *NBPtr
+  );
+
+UINT32
+MemNGetNbClkFreqByPstateUnb (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN       UINT32 NBPstate
+  );
+
+BOOLEAN
+MemNIntermediateMemclkFreqValUnb (
+  IN OUT   MEM_NB_BLOCK *NBPtr,
+  IN OUT   VOID *OptParam
   );
 #endif  /* _MN_H_ */
 

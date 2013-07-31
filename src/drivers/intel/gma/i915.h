@@ -237,3 +237,30 @@ enum transcoder intel_ddi_get_transcoder(enum port port,
 
 void intel_dp_set_m_n_regs(struct intel_dp *intel_dp);
 void intel_dp_set_resolution(struct intel_dp *intel_dp);
+
+int intel_dp_i2c_write(struct intel_dp *intel_dp,
+		       u8 val);
+
+int intel_dp_i2c_read(struct intel_dp *intel_dp,
+		      u8 *val);
+
+int intel_dp_set_bw(struct intel_dp *intel_dp);
+int intel_dp_set_lane_count(struct intel_dp *intel_dp);
+int intel_dp_set_training_lane0(struct intel_dp *intel_dp,
+				u8 val);
+int intel_dp_set_training_pattern(struct intel_dp *intel_dp,
+				  u8 pat);
+
+int intel_dp_get_link_status(struct intel_dp *intel_dp,
+			     uint8_t link_status[DP_LINK_STATUS_SIZE]);
+
+int intel_dp_get_training_pattern(struct intel_dp *intel_dp,
+				  u8 *recv);
+
+int intel_dp_get_lane_count(struct intel_dp *intel_dp,
+			    u8 *recv);
+
+int intel_dp_get_lane_align_status(struct intel_dp *intel_dp,
+				   u8 *recv);
+
+

@@ -47,7 +47,35 @@
 // Declaration of local functions
 //
 
+#define PRODUCT_INFO_REG1           0x1FC     // Product Information Register 1
+#define AMD_CPU_DEV_FUN             ((0x18 << 3) + 3)
 
+
+/**
+ * FchUsbCommonPhyCalibration - Config USB Common PHY
+ * Calibration
+ *
+ *
+ *
+ * @param[in] FchDataPtr Fch configuration structure pointer.
+ *
+ */
+UINT8
+FchUsbCommonPhyCalibration (
+  IN  FCH_DATA_BLOCK     *FchDataPtr
+  )
+{
+  UINT8                 RetEfuseValue;
+  FCH_DATA_BLOCK        *LocalCfgPtr;
+  AMD_CONFIG_PARAMS     *StdHeader;
+
+  LocalCfgPtr = (FCH_DATA_BLOCK *)FchDataPtr;
+  StdHeader = LocalCfgPtr->StdHeader;
+
+  ReadPci ((AMD_CPU_DEV_FUN << 16) + PRODUCT_INFO_REG1, AccessWidth8, &RetEfuseValue, StdHeader);
+  RetEfuseValue = ((RetEfuseValue & 0x1E) >> 1);
+  return RetEfuseValue;
+}
 /**
  * FchXhciUsbPhyCalibrated - Config XHCI Phy
  *
@@ -133,10 +161,14 @@ FchXhciInitIndirectReg (
   UINT32                RegValue;
   FCH_DATA_BLOCK        *LocalCfgPtr;
   AMD_CONFIG_PARAMS     *StdHeader;
+  UINT8                 RetEfuseValue;
+  UINT32                UsbFuseCommonCalibrationValue;
 
   LocalCfgPtr = (FCH_DATA_BLOCK *)FchDataPtr;
   StdHeader = LocalCfgPtr->StdHeader;
   DrivingStrength = 0;
+
+  FchXhciUsbPhyCalibrated (LocalCfgPtr);
 
   RwXhci0IndReg ( FCH_XHCI_IND_REG94, 0xFFFFFC00, 0x00000021, StdHeader);
   RwXhci0IndReg ( FCH_XHCI_IND_REGD4, 0xFFFFFC00, 0x00000021, StdHeader);
@@ -150,10 +182,16 @@ FchXhciInitIndirectReg (
   }
 
 
-  RwXhci0IndReg ( FCH_XHCI_IND60_REG50, ~ ((UINT32) (0x0f)), ((UINT32) (0x07)), StdHeader);
+  RwXhci0IndReg ( FCH_XHCI_IND60_REG50, ~ ((UINT32) (0x0f)), ((UINT32) (0x06)), StdHeader);
   RwXhci0IndReg ( FCH_XHCI_IND60_REG0C, ~ ((UINT32) (0x0f << 4)), ((UINT32) (0x02 << 4)), StdHeader);
   RwXhci0IndReg ( FCH_XHCI_IND60_REG0C, ~ ((UINT32) (0x0f << 8)), ((UINT32) (0x02 << 8)), StdHeader);
-  RwXhci0IndReg ( FCH_XHCI_IND60_REG08, 0x80FC00FF, 0, StdHeader); // For BTS
+  RetEfuseValue = FchUsbCommonPhyCalibration ( FchDataPtr );
+  if ( RetEfuseValue == 0) {
+    RwXhci0IndReg ( FCH_XHCI_IND60_REG08, 0x80FD00FF, (UINT32) BIT16 , StdHeader);
+  } else {
+    UsbFuseCommonCalibrationValue = RetEfuseValue << 11;
+    RwXhci0IndReg ( FCH_XHCI_IND60_REG08, 0x80FC00FF, UsbFuseCommonCalibrationValue , StdHeader);
+  }
 
   for (Port = 0; Port < 2; Port ++) {
     DrivingStrength = 0x1E4;

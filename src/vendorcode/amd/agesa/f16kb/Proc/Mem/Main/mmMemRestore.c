@@ -59,6 +59,7 @@
 #include "S3.h"
 #include "mfs3.h"
 #include "heapManager.h"
+#include "cpuFeatures.h"
 #include "cpuRegisters.h"
 #include "cpuPostInit.h"
 #include "cpuApicUtilities.h"
@@ -489,6 +490,14 @@ MemMContextRestore (
             if (Node == MemMainPtr->DieCount) {
               AGESA_TESTPOINT (TpProcMemMemClr, &(MemMainPtr->MemPtr->StdHeader));
               MemFeatMain.MemClr (MemMainPtr);
+            }
+          }
+          // Set LockDramCfg, which must be done after Memory Clear
+          for (Node = 0; Node < MemMainPtr->DieCount; Node ++) {
+            if (IsFeatureEnabled (C6Cstate, MemMainPtr->MemPtr->PlatFormConfig, &(MemMainPtr->MemPtr->StdHeader))) {
+              IDS_SKIP_HOOK (IDS_LOCK_DRAM_CFG, &NBArray[Node], &MemMainPtr->MemPtr->StdHeader) {
+                NBArray[Node].SetBitField (&NBArray[Node], BFLockDramCfg, 1);
+              }
             }
           }
         } else {

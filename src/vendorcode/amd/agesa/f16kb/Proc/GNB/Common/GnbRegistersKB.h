@@ -3269,9 +3269,21 @@ typedef union {
 #define DxFxxE4_xA0_LcL1ImmediateAck_OFFSET                     23
 #define DxFxxE4_xA0_LcL1ImmediateAck_WIDTH                      1
 #define DxFxxE4_xA0_LcL1ImmediateAck_MASK                       0x800000
-#define DxFxxE4_xA0_Reserved_31_24_OFFSET                       24
-#define DxFxxE4_xA0_Reserved_31_24_WIDTH                        8
-#define DxFxxE4_xA0_Reserved_31_24_MASK                         0xFF000000
+#define DxFxxE4_xA0_Reserved_24_24_OFFSET                       24
+#define DxFxxE4_xA0_Reserved_24_24_WIDTH                        1
+#define DxFxxE4_xA0_Reserved_24_24_MASK                         0x01000000
+#define DxFxxE4_xA0_Reserved_26_25_OFFSET                       25
+#define DxFxxE4_xA0_Reserved_26_25_WIDTH                        2
+#define DxFxxE4_xA0_Reserved_26_25_MASK                         0x06000000
+#define DxFxxE4_xA0_Reserved_27_27_OFFSET                       27
+#define DxFxxE4_xA0_Reserved_27_27_WIDTH                        1
+#define DxFxxE4_xA0_Reserved_27_27_MASK                         0x08000000
+#define DxFxxE4_xA0_Reserved_28_28_OFFSET                       28
+#define DxFxxE4_xA0_Reserved_28_28_WIDTH                        1
+#define DxFxxE4_xA0_Reserved_28_28_MASK                         0x10000000
+#define DxFxxE4_xA0_Reserved_31_29_OFFSET                       29
+#define DxFxxE4_xA0_Reserved_31_29_WIDTH                        3
+#define DxFxxE4_xA0_Reserved_31_29_MASK                         0xE0000000
 
 /// DxFxxE4_xA0
 typedef union {
@@ -3282,7 +3294,11 @@ typedef union {
     UINT32                                          LcL1Inactivity:4; ///<
     UINT32                                          Reserved_22_16:7; ///<
     UINT32                                        LcL1ImmediateAck:1; ///<
-    UINT32                                          Reserved_31_24:8; ///<
+    UINT32                                          Reserved_24_24:1; ///<
+    UINT32                                          Reserved_26_25:2; ///<
+    UINT32                                          Reserved_27_27:1; ///<
+    UINT32                                          Reserved_28_28:1; ///<
+    UINT32                                          Reserved_31_29:3; ///<
 
   } Field;
 

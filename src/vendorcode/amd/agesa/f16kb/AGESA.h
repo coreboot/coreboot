@@ -2882,6 +2882,7 @@ typedef struct {
   IN SCI_MAP_CONTROL  *CfgFchSciMapControl;       ///< FCH SCI Mapping Control
   IN SATA_PHY_CONTROL *CfgFchSataPhyControl;      ///< FCH SATA PHY Control
   IN GPIO_CONTROL     *CfgFchGpioControl;         ///< FCH GPIO Control
+  IN BOOLEAN           CfgFchRtcWorkAround;       ///< FCH RTC Workaround
 } FCH_PLATFORM_POLICY;
 
 

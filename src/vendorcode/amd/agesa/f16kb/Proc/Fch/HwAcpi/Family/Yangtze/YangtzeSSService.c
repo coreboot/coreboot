@@ -116,6 +116,7 @@ ProgramFchHwAcpiResetP (
   LocalCfgPtr = (FCH_RESET_DATA_BLOCK *) FchDataPtr;
   StdHeader = &((AMD_RESET_PARAMS *)FchDataPtr)->StdHeader;
 
+  RwPmio (FCH_PMIOA_REGC8, AccessWidth8, 0xEF, 0x0, StdHeader);
   RwPmio (FCH_PMIOA_REGD3, AccessWidth8, (UINT32)~BIT4, 0, StdHeader);
   RwPmio (FCH_PMIOA_REGD3, AccessWidth8, (UINT32)~BIT4, BIT4, StdHeader);
   RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REGC8 + 3, AccessWidth8, 0x7F, BIT7, StdHeader);

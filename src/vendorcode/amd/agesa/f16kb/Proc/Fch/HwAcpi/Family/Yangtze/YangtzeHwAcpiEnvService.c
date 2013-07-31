@@ -77,21 +77,19 @@ ACPI_REG_WRITE FchYangtzeInitEnvHwAcpiMmioTable[] =
   //
   // HPET workaround
   //
-  {PMIO_BASE >> 8,  FCH_PMIOA_REG54 + 2, 0x7F, BIT7},
-  {PMIO_BASE >> 8,  FCH_PMIOA_REG54 + 2, 0x7F, 0x00},
+  {PMIO_BASE >> 8, FCH_PMIOA_REG54 + 2, 0x7F, BIT7},
+  {PMIO_BASE >> 8, FCH_PMIOA_REG54 + 2, 0x7F, 0x00},
   {PMIO_BASE >> 8, FCH_PMIOA_REGC4, (UINT8)~BIT2, BIT2},
   {PMIO_BASE >> 8, FCH_PMIOA_REGC0, 0, 0x3D},
   {PMIO_BASE >> 8, FCH_PMIOA_REGC0 + 1, 0x0, 0x04},
   {PMIO_BASE >> 8, FCH_PMIOA_REGC2, 0x20, 0x58},
   {PMIO_BASE >> 8, FCH_PMIOA_REGC2 + 1, 0, 0x40},
   {PMIO_BASE >> 8, FCH_PMIOA_REGC2, (UINT8)~(BIT4), BIT4},
-  {PMIO_BASE >> 8, FCH_PMIOA_REGCC, 0xF8, 0x07},
+  {PMIO_BASE >> 8, FCH_PMIOA_REGCC, 0xF8, 0x03},
   {PMIO_BASE >> 8, FCH_PMIOA_REG74, 0x00, BIT0 + BIT1 + BIT2 + BIT4},
   {PMIO_BASE >> 8, 0x74 + 3, (UINT8)~BIT5, 0},
   {PMIO_BASE >> 8, FCH_PMIOA_REGBA, (UINT8)~BIT3, BIT3},
-  {PMIO_BASE >> 8, FCH_PMIOA_REGBA + 1, (UINT8)~BIT6, BIT6},
   {PMIO_BASE >> 8, FCH_PMIOA_REGBC, (UINT8)~BIT1, BIT1},
-  {PMIO_BASE >> 8, FCH_PMIOA_REGED, (UINT8)~(BIT0 + BIT1), 0},
   {PMIO_BASE >> 8, 0xDC, 0x7C, BIT1},
 
   {SMI_BASE >> 8, FCH_SMI_Gevent1, 0, 1},
@@ -189,6 +187,11 @@ ProgramFchEnvHwAcpiPciReg (
 
   if ( LocalCfgPtr->Smbus.SmbusSsid != 0 ) {
     RwPci ((SMBUS_BUS_DEV_FUN << 16) + FCH_CFG_REG2C, AccessWidth32, 0x00, LocalCfgPtr->Smbus.SmbusSsid, StdHeader);
+  }
+  if ( LocalCfgPtr->Misc.NoneSioKbcSupport ) {
+    RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGED, AccessWidth8, ~(UINT32) ( BIT2 + BIT1), BIT2 + BIT1);
+  } else {
+    RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGED, AccessWidth8, ~(UINT32) ( BIT2 + BIT1), BIT2);
   }
   ProgramPcieNativeMode (FchDataPtr);
 }

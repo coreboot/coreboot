@@ -475,7 +475,7 @@ GNB_TABLE ROMDATA GnbMidInitTableKB [] = {
     0x7 |
     0x8 |
     0xfff0,
-    ( 5 << 0) |
+    ( 4 << 0) |
     ( 0 << 3) |
     ( 0xF << 4)
     ),

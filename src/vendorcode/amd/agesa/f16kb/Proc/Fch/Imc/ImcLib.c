@@ -176,6 +176,43 @@ ImcSleep (
   WaitForEcLDN9MailboxCmdAck (StdHeader);
 }
 
+/**
+ * SoftwareDisableImc - Software disable IMC strap
+ *
+ *
+ * @param[in] FchDataPtr Fch configuration structure pointer.
+ *
+ */
+VOID
+SoftwareDisableImc (
+  IN  VOID     *FchDataPtr
+  )
+{
+  UINT8    ValueByte;
+  UINT8    PortStatusByte;
+  UINT32   AbValue;
+  UINT32   ABStrapOverrideReg;
+  AMD_CONFIG_PARAMS     *StdHeader;
+
+  StdHeader = ((FCH_DATA_BLOCK *) FchDataPtr)->StdHeader;
+  GetChipSysMode (&PortStatusByte, StdHeader);
+
+  RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REGC8 + 3, AccessWidth8, 0x7F, BIT7, StdHeader);
+  ReadPmio (0xBF, AccessWidth8, &ValueByte, StdHeader);
+
+  ReadMem ((ACPI_MMIO_BASE + MISC_BASE + FCH_MISC_REG80), AccessWidth32, &AbValue);
+  ABStrapOverrideReg = AbValue;
+  ABStrapOverrideReg &= ~BIT2;                           // bit2=0 EcEnableStrap
+  WriteMem ((ACPI_MMIO_BASE + MISC_BASE + 0x84), AccessWidth32, &ABStrapOverrideReg);
+
+  ReadPmio (FCH_PMIOA_REGD7, AccessWidth8, &ValueByte, StdHeader);
+  ValueByte |= BIT1;
+  WritePmio (FCH_PMIOA_REGD7, AccessWidth8, &ValueByte, StdHeader);
+
+  ValueByte = 06;
+  LibAmdIoWrite (AccessWidth8, 0xcf9, &ValueByte, StdHeader);
+  FchStall (0xffffffff, StdHeader);
+}
 
 /**
  * ImcEnableSurebootTimer - IMC Enable Sureboot Timer.

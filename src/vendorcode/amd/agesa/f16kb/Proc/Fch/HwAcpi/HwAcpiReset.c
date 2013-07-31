@@ -135,7 +135,18 @@ FchInitResetHwAcpi (
   if (UserOptions.FchBldCfg->CfgFchSataPhyControl != NULL) {
     ProgramFchSataPhyTbl ((UserOptions.FchBldCfg->CfgFchSataPhyControl), LocalCfgPtr);
   }
-
+  //
+  // RTC Workaround for Daylight saving time enable bit
+  //
+  RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REG5E, AccessWidth8, 0, 0);
+  RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REG5F, AccessWidth8, 0xFE, BIT0 );   // Enable DltSavEnable
+  Value = 0x0B;
+  LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REG70, &Value, StdHeader);
+  LibAmdIoRead (AccessWidth8, FCH_IOMAP_REG71, &Value, StdHeader);
+  Value &= 0xFE;
+  LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REG71, &Value, StdHeader);
+  RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REG5E, AccessWidth8, 0, 0);
+  RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REG5F, AccessWidth8, 0xFE, 0 );      // Disable DltSavEnable
   //
   // Prevent RTC error
   //
@@ -148,6 +159,7 @@ FchInitResetHwAcpi (
   Value = 0x08;
   LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REGC00, &Value, StdHeader);
   LibAmdIoRead (AccessWidth8, FCH_IOMAP_REGC01, &Value, StdHeader);
+
   if ( !LocalCfgPtr->EcKbd ) {
     //
     // Route SIO IRQ1/IRQ12 to USB IRQ1/IRQ12 input
@@ -155,6 +167,23 @@ FchInitResetHwAcpi (
     Value = Value | 0x0A;
   }
   LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REGC01, &Value, StdHeader);
+
+  if ( UserOptions.FchBldCfg->CfgFchRtcWorkAround ) {
+    Value = RTC_WORKAROUND_SECOND;
+    LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REG70, &Value, StdHeader);
+    LibAmdIoRead (AccessWidth8, FCH_IOMAP_REG71, &Value, StdHeader);
+    if ( Value > RTC_VALID_SECOND_VALUE ) {
+      Value = RTC_SECOND_RESET_VALUE;
+      LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REG71, &Value, StdHeader);
+    }
+    LibAmdIoRead (AccessWidth8, FCH_IOMAP_REG71, &Value, StdHeader);
+    Value &= RTC_SECOND_LOWER_NIBBLE;
+    if ( Value > RTC_VALID_SECOND_VALUE_LN ) {
+      LibAmdIoRead (AccessWidth8, FCH_IOMAP_REG71, &Value, StdHeader);
+      Value = RTC_SECOND_RESET_VALUE;
+      LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REG71, &Value, StdHeader);
+    }
+  }
 
   Value = 0x09;
   LibAmdIoWrite (AccessWidth8, FCH_IOMAP_REGC00, &Value, StdHeader);
@@ -189,14 +218,14 @@ FchInitResetHwAcpi (
   //
   // PciExpWakeStatus workaround
   //
+  ReadMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REG60, AccessWidth16, &AsfPort);
+  AsfPort++;
   ReadMem (ACPI_MMIO_BASE + SMI_BASE + FCH_SMI_REG04, AccessWidth32, &GeventEnableBits);
   ReadMem (ACPI_MMIO_BASE + SMI_BASE + FCH_SMI_REG00, AccessWidth32, &GeventValue);
   if ( (GeventValue & GeventEnableBits) != 0 ) {
     Value = 0x40;
     LibAmdIoWrite (AccessWidth8, AsfPort, &Value, StdHeader);
   }
-  ReadMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REG60, AccessWidth16, &AsfPort);
-  AsfPort++;
   LibAmdIoRead (AccessWidth8, AsfPort, &Value, StdHeader);
   if ((Value & (BIT2 + BIT0)) != 0) {
     Value = 0x40;

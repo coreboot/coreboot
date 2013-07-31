@@ -40,8 +40,6 @@
 #include <drivers/maxim/max77802/max77802.h>
 #include <device/i2c.h>
 
-#include "exynos5420.h"
-
 #define MMC0_GPIO_PIN	(58)
 
 struct pmic_write
@@ -89,7 +87,7 @@ static void setup_power(int is_resume)
 
 	/* Initialize I2C bus to configure PMIC. */
 	exynos_pinmux_i2c4();
-	i2c_init(4, I2C_4_SPEED, 0x00);
+	i2c_init(4, 1000000, 0x00); /* 1MHz */
 
 	printk(BIOS_DEBUG, "%s: Setting up PMIC...\n", __func__);
 

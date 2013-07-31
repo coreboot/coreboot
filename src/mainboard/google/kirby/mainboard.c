@@ -172,7 +172,6 @@ static enum exynos5_gpio_pin dp_pd_l = GPIO_X35;	/* active low */
 static enum exynos5_gpio_pin dp_rst_l = GPIO_Y77;	/* active low */
 static enum exynos5_gpio_pin dp_hpd = GPIO_X26;		/* active high */
 static enum exynos5_gpio_pin bl_pwm = GPIO_B20;		/* active high */
-static enum exynos5_gpio_pin bl_en = GPIO_X22;		/* active high */
 
 static void parade_dp_bridge_setup(void)
 {
@@ -224,12 +223,6 @@ static void backlight_pwm(void)
 	udelay(LCD_T6_DELAY_MS * 1000);
 }
 
-static void backlight_en(void)
-{
-	/* Configure GPIO for LCD_BL_EN */
-	gpio_direction_output(bl_en, 1);
-}
-
 //static struct video_info smdk5420_dp_config = {
 static struct video_info dp_video_info = {
 	/* FIXME: fix video_info struct to use const for name */
@@ -273,33 +266,12 @@ static void gpio_init(void)
 	exynos_pinmux_i2c10();
 }
 
-enum {
-	FET_CTRL_WAIT = 3 << 2,
-	FET_CTRL_ADENFET = 1 << 1,
-	FET_CTRL_ENFET = 1 << 0
-};
-
-static void tps65090_thru_ec_fet_set(int index)
-{
-	uint8_t value = FET_CTRL_ADENFET | FET_CTRL_WAIT | FET_CTRL_ENFET;
-
-	if (google_chromeec_i2c_xfer(0x48, 0xe + index, 1, &value, 1, 0)) {
-		printk(BIOS_ERR,
-		       "Error sending i2c pass through command to EC.\n");
-		return;
-	}
-}
-
 static void lcd_vdd(void)
 {
-	/* Enable FET6, lcd panel */
-	tps65090_thru_ec_fet_set(6);
 }
 
 static void backlight_vdd(void)
 {
-	/* Enable FET1, backlight */
-	tps65090_thru_ec_fet_set(1);
 }
 
 /* this happens after cpu_init where exynos resources are set */
@@ -332,7 +304,6 @@ static void mainboard_init(device_t dev)
 
 	backlight_vdd();
 	backlight_pwm();
-	backlight_en();
 
 	// Uncomment to get excessive GPIO output:
 	// gpio_info();
@@ -372,11 +343,9 @@ static void mainboard_enable(device_t dev)
 	clock_epll_set_rate(epll_hz);
 	clock_select_i2s_clk_source();
 	clock_set_i2s_clk_prescaler(epll_hz, sample_rate * lr_frame_size);
-
-	power_enable_xclkout();
 }
 
 struct chip_operations mainboard_ops = {
-	.name	= "Samsung/Google ARM Chromebook",
+	.name	= "Google ARM Chromebook",
 	.enable_dev = mainboard_enable,
 };

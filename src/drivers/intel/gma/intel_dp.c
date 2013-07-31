@@ -1739,3 +1739,25 @@ intel_dp_get_max_downspread(struct intel_dp *intel_dp, u8 *max_downspread)
 	return 1;
 }
 
+void intel_dp_set_m_n_regs(struct intel_dp *intel_dp)
+{
+        io_i915_write32(0x7e4a0000, PIPE_DATA_M1(intel_dp->transcoder));
+        /* io_i915_write32(0x00800000,0x6f034); */
+        /* Write to 0x6f030 has to be 0x7e4ayyyy -- First four hex digits are important.
+           However, with our formula we always see values 0x7e43yyyy (1366 panel) and
+           0x7e42yyy (1280 panel) */
+        /* io_i915_write32(TU_SIZE(intel_dp->m_n.tu) | intel_dp->m_n.gmch_m,PIPE_DATA_M1(intel_dp->transcoder)); */
+        io_i915_write32(intel_dp->m_n.gmch_n, PIPE_DATA_N1(intel_dp->transcoder));
+        io_i915_write32(intel_dp->m_n.link_m, PIPE_LINK_M1(intel_dp->transcoder));
+        io_i915_write32(intel_dp->m_n.link_n, PIPE_LINK_N1(intel_dp->transcoder));
+}
+
+void intel_dp_set_resolution(struct intel_dp *intel_dp)
+{
+        io_i915_write32(intel_dp->htotal, HTOTAL(intel_dp->transcoder));
+        io_i915_write32(intel_dp->hblank, HBLANK(intel_dp->transcoder));
+        io_i915_write32(intel_dp->hsync,  HSYNC(intel_dp->transcoder));
+        io_i915_write32(intel_dp->vtotal, VTOTAL(intel_dp->transcoder));
+        io_i915_write32(intel_dp->vblank, VBLANK(intel_dp->transcoder));
+        io_i915_write32(intel_dp->vsync,  VSYNC(intel_dp->transcoder));
+}

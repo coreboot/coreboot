@@ -22,6 +22,9 @@
 
 #define TEMPERATURE_SENSOR_ID		0	/* PECI */
 
+/* Power level to set when EC requests throttle */
+#define EC_THROTTLE_POWER_LIMIT		12	/* 12W */
+
 /* Temperature which OS will shutdown at */
 #define CRITICAL_TEMPERATURE		104
 

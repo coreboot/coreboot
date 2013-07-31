@@ -245,6 +245,7 @@ VOID    ImcWakeup                  (IN VOID  *FchDataPtr);
 VOID    ImcIdle                    (IN VOID  *FchDataPtr);
 BOOLEAN ValidateImcFirmware        (IN VOID  *FchDataPtr);
 VOID    SoftwareToggleImcStrapping (IN VOID  *FchDataPtr);
+VOID    SoftwareDisableImc         (IN VOID  *FchDataPtr);
 
 
 ///
@@ -355,7 +356,7 @@ VOID  FchXhciInitBeforePciInit   (IN FCH_DATA_BLOCK* FchDataPtr);
 VOID  FchXhciInitIndirectReg     (IN FCH_DATA_BLOCK* FchDataPtr);
 VOID  FchInitLateUsbXhciProgram  (IN VOID  *FchDataPtr);
 VOID  FchXhciUsbPhyCalibrated    (IN FCH_DATA_BLOCK* FchDataPtr);
-
+UINT8 FchUsbCommonPhyCalibration (IN FCH_DATA_BLOCK* FchDataPtr);
 
 ///
 /// Fch Sd Routines

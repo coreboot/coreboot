@@ -471,7 +471,7 @@ FchInitResetSpi (
 
   SpiModeByte = LocalCfgPtr->Mode;
   if (LocalCfgPtr->Mode) {
-    if ((SpiModeByte == FCH_SPI_MODE_QUAL_114) || (SpiModeByte == FCH_SPI_MODE_QUAL_144)) {
+    if ((SpiModeByte == FCH_SPI_MODE_QUAL_114) || (SpiModeByte == FCH_SPI_MODE_QUAL_144) || (SpiModeByte == FCH_SPI_MODE_QUAL_112) || (SpiModeByte == FCH_SPI_MODE_QUAL_122) || (SpiModeByte == FCH_SPI_MODE_FAST)) {
       if (FchPlatformSpiQe (FchDataPtr)) {
         FchSetQualMode (SpiModeByte, StdHeader);
       }
@@ -671,6 +671,7 @@ FchConfigureSpiDeviceDummyCycle (
 {
   UINT16     Mode16;
   UINT16     Value16;
+  UINT8      Value8;
   UINT16     DummyValue16;
   UINT16     CurrentDummyValue16;
   UINT16     CurrentMode16;
@@ -681,7 +682,8 @@ FchConfigureSpiDeviceDummyCycle (
   DummyValue16 = 8;
 
   switch (DeviceID) {
-  case 0x17BA20:
+  case 0x17BA20://N25Q064
+  case 0x16BA20://N25Q032
 
     FchSpiTransfer (
       0, //IN       UINT8    PrefixCode,
@@ -740,8 +742,34 @@ FchConfigureSpiDeviceDummyCycle (
         TRUE,//IN       BOOLEAN  DataFlag,
         TRUE //IN       BOOLEAN  FinishedFlag
       );
-      FchStall (1000, StdHeader);
-      WriteIo8 ((UINT16) (0xCF9), 0x0E);
+
+      FchSpiTransfer (
+        0, //IN       UINT8    PrefixCode,
+        0x85,//IN       UINT8    Opcode,
+        (UINT8 *)(&Value8),//IN  OUT   UINT8    *DataPtr,
+        NULL,//IN       UINT8    *AddressPtr,
+        0,//IN       UINT8    Length,
+        FALSE,//IN       BOOLEAN  WriteFlag,
+        FALSE,//IN       BOOLEAN  AddressFlag,
+        TRUE,//IN       BOOLEAN  DataFlag,
+        FALSE //IN       BOOLEAN  FinishedFlag
+      );
+
+      Value8 &= ~ (0xf << 4);
+      Value8 |= (UINT8) (DummyValue16 << 4);
+      FchSpiTransfer (
+        0x06, //IN       UINT8    PrefixCode,
+        0x81,//IN       UINT8    Opcode,
+        (UINT8 *)(&Value8),//IN  OUT   UINT8    *DataPtr,
+        NULL,//IN       UINT8    *AddressPtr,
+        0,//IN       UINT8    Length,
+        TRUE,//IN       BOOLEAN  WriteFlag,
+        FALSE,//IN       BOOLEAN  AddressFlag,
+        TRUE,//IN       BOOLEAN  DataFlag,
+        TRUE //IN       BOOLEAN  FinishedFlag
+      );
+      //      FchStall (1000, StdHeader);
+//      WriteIo8 ((UINT16) (0xCF9), 0x0E);
     }
     return TRUE;
   default:

@@ -21,6 +21,20 @@
 
 Scope (\_TZ)
 {
+	// Handler for throttle requests on this platform
+	//  0 = Stop throttling
+	//  1 = Start throttling
+	Method (THRT, 1, Serialized)
+	{
+		If (LEqual (Arg0, 0)) {
+			/* Disable Power Limit */
+			\_SB.PCI0.MCHC.CTLD ()
+		} Else {
+			/* Enable Power Limit */
+			\_SB.PCI0.MCHC.CTLE (\F0PW)
+		}
+	}
+
 	ThermalZone (THRM)
 	{
 		Name (_TC1, 0x02)

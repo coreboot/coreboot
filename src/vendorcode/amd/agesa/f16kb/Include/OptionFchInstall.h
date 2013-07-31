@@ -241,6 +241,7 @@
     #define FCH_NO_GPP_SUPPORT        TRUE
     #define FCH_NO_PCIB_SUPPORT       TRUE
     #define FCH_NO_PCIE_SUPPORT       TRUE
+    #define BLDOPT_RTC_WORKAROUND     TRUE
   #else
     #error FCH_SUPPORT: No chip type selected.
   #endif
@@ -929,6 +930,7 @@
         InstallFchInitLatePcie,
         InstallFchInitLatePcib,
         InstallFchInitLateSpi,
+        InstallFchInitMidUsbEhci,
         InstallFchInitLateUsb,
         InstallFchInitLateUsbEhci,
         InstallFchInitLateUsbOhci,
@@ -1011,6 +1013,14 @@
 
 #endif
 
+#define DFLT_RTC_WORKAROUND         FALSE
+#ifdef BLDOPT_RTC_WORKAROUND
+  #undef  CFG_FCH_RTC_WORKAROUND
+  #define CFG_FCH_RTC_WORKAROUND      BLDOPT_RTC_WORKAROUND
+#else
+  #undef  CFG_FCH_RTC_WORKAROUND
+  #define CFG_FCH_RTC_WORKAROUND      DFLT_RTC_WORKAROUND
+#endif
 
 CONST BLDOPT_FCH_FUNCTION ROMDATA BldoptFchFunction = {
   FP_FCH_INIT_RESET,

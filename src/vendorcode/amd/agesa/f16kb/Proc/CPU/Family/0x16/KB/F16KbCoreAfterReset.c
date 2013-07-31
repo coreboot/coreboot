@@ -139,13 +139,13 @@ F16KbPmCoreAfterReset (
   LibAmdPciRead (AccessWidth32, PciAddress, &HwPsMaxVal, StdHeader);
   HwPsMaxVal = ((CLK_PWR_TIMING_CTRL2_REGISTER *) &HwPsMaxVal)->HwPstateMaxVal;
 
-  // Launch each local core to perform steps 1 through 3.
+  // Launch each local core to perform steps 1 through 4.
   TaskPtr.FuncAddress.PfApTask = F16KbPmCoreAfterResetPhase1OnCore;
   TaskPtr.DataTransfer.DataSizeInDwords = 0;
   TaskPtr.ExeFlags = WAIT_FOR_CORE;
   ApUtilRunCodeOnAllLocalCoresAtEarly (&TaskPtr, StdHeader, CpuEarlyParamsPtr);
 
-  // Launch each local core to perform steps 4 through 6.
+  // Launch each local core to perform steps 5 through 7.
   TaskPtr.FuncAddress.PfApTaskI = F16KbPmCoreAfterResetPhase2OnCore;
   TaskPtr.DataTransfer.DataSizeInDwords = 1;
   TaskPtr.DataTransfer.DataPtr = &HwPsMaxVal;
@@ -176,25 +176,36 @@ F16KbPmCoreAfterResetPhase1OnCore (
   IN       AMD_CONFIG_PARAMS *StdHeader
   )
 {
-  UINT64 CofvidSts;
-  UINT64 LocalMsrRegister;
-  UINT64 PstateCtrl;
+  BOOLEAN SkipStep3;
+  UINT64  CofvidSts;
+  UINT64  LocalMsrRegister;
+  UINT64  PstateCtrl;
 
   IDS_HDT_CONSOLE (CPU_TRACE, "  F16KbPmCoreAfterResetPhase1OnCore\n");
 
-  // 1. Write 0 to MSRC001_0062[PstateCmd] on all cores in the processor.
+  // 1. If MSRC001_0071[CurPstate] = MSRC001_0071[CurPstateLimit], then skip step 3 for that core
+  LibAmdMsrRead (MSR_COFVID_STS, &CofvidSts, StdHeader);
+  if (((COFVID_STS_MSR *) &CofvidSts)->CurPstate == ((COFVID_STS_MSR *) &CofvidSts)->CurPstateLimit) {
+    SkipStep3 = TRUE;
+  } else {
+    SkipStep3 = FALSE;
+  }
+
+  // 2. Write 0 to MSRC001_0062[PstateCmd] on all cores in the processor.
   PstateCtrl = 0;
   LibAmdMsrWrite (MSR_PSTATE_CTL, &PstateCtrl, StdHeader);
 
-  // 2. Wait for MSRC001_0071[CurCpuFid, CurCpuDid] = [CpuFid, CpuDid] from
+  // 3. Wait for MSRC001_0071[CurCpuFid, CurCpuDid] = [CpuFid, CpuDid] from
   //    MSRC001_00[6B:64] indexed by MSRC001_0071[CurPstateLimit].
-  do {
-    LibAmdMsrRead (MSR_COFVID_STS, &CofvidSts, StdHeader);
-    LibAmdMsrRead ((UINT32) (MSR_PSTATE_0 + (UINT32) (((COFVID_STS_MSR *) &CofvidSts)->CurPstateLimit)), &LocalMsrRegister, StdHeader);
-  } while ((((COFVID_STS_MSR *) &CofvidSts)->CurCpuFid != ((PSTATE_MSR *) &LocalMsrRegister)->CpuFid) ||
-           (((COFVID_STS_MSR *) &CofvidSts)->CurCpuDid != ((PSTATE_MSR *) &LocalMsrRegister)->CpuDid));
+  if (!SkipStep3) {
+    do {
+      LibAmdMsrRead (MSR_COFVID_STS, &CofvidSts, StdHeader);
+      LibAmdMsrRead ((UINT32) (MSR_PSTATE_0 + (UINT32) (((COFVID_STS_MSR *) &CofvidSts)->CurPstateLimit)), &LocalMsrRegister, StdHeader);
+    } while ((((COFVID_STS_MSR *) &CofvidSts)->CurCpuFid != ((PSTATE_MSR *) &LocalMsrRegister)->CpuFid) ||
+             (((COFVID_STS_MSR *) &CofvidSts)->CurCpuDid != ((PSTATE_MSR *) &LocalMsrRegister)->CpuDid));
+  }
 
-  // 3. Write MSRC001_0061[PstateMaxVal] to MSRC001_0062[PstateCmd] on all
+  // 4. Write MSRC001_0061[PstateMaxVal] to MSRC001_0062[PstateCmd] on all
   //    cores in the processor.
   LibAmdMsrRead (MSR_PSTATE_CURRENT_LIMIT, &LocalMsrRegister, StdHeader);
   ((PSTATE_CTRL_MSR *) &PstateCtrl)->PstateCmd = ((PSTATE_CURLIM_MSR *) &LocalMsrRegister)->PstateMaxVal;

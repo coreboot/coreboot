@@ -210,12 +210,12 @@ FchProgramSataPhy (
   SquelchValue[0] = (0x07 << 9);
   SquelchValue[1] = (0x07 << 9);
   for (PortNum = 0; PortNum < 2; PortNum ++) {
-    RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0x00, ( 0x130 + PortNum), StdHeader);
+    RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0x00, ( 0x30 + PortNum), StdHeader);
     RwPci ((SATA_BUS_DEV_FUN << 16) + 0x09C, AccessWidth32, (UINT32) (~(0x7 << 9)), SquelchValue[PortNum], StdHeader);
     RwPci ((SATA_BUS_DEV_FUN << 16) + 0x09C, AccessWidth32, (UINT32) (~(0x7 << 13)), (UINT32) (0x0 << 13), StdHeader);
-    RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0x00, ( 0x120 + PortNum), StdHeader);
+    RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0x00, ( 0x20 + PortNum), StdHeader);
     RwPci ((SATA_BUS_DEV_FUN << 16) + 0x09C, AccessWidth32, (UINT32) (~(0x7 << 9)), SquelchValue[PortNum], StdHeader);
-    RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0x00, ( 0x110 + PortNum), StdHeader);
+    RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0x00, ( 0x10 + PortNum), StdHeader);
     RwPci ((SATA_BUS_DEV_FUN << 16) + 0x09C, AccessWidth32, (UINT32) (~(0x7 << 9)), SquelchValue[PortNum], StdHeader);
     RwPci ((SATA_BUS_DEV_FUN << 16) + 0x080, AccessWidth16, 0x00, 0x010, StdHeader);
   }

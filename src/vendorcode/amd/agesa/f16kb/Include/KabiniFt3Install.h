@@ -2,7 +2,7 @@
 /**
  * @file
  *
- * Install of build options for a Kerala platform solution
+ * Install of build options for a Kabini platform solution
  *
  * This file generates the defaults tables for the "Kerala" platform solution
  * set of processors. The documented build options are imported from a user
@@ -68,16 +68,16 @@
  * version string as appropriate for the release. The trunk copy of this file
  * should also be updated/incremented for the next expected version, + trailing 'X'
  ****************************************************************************/
-                  // This is the delivery package title, "KabiniPI "
-                  // This string MUST be exactly 8 characters long
-#define AGESA_PACKAGE_STRING  {'K', 'a', 'b', 'i', 'n', 'i', 'P', 'I'}
+                  // This is the delivery package title, "KabiniPI        "
+                  // This string MUST be exactly 16 characters long
+#define AGESA_PACKAGE_STRING  {'K', 'a', 'b', 'i', 'n', 'i', 'P', 'I', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '}
 
                   // This is the release version number of the AGESA component
                   // This string MUST be exactly 12 characters long
-#define AGESA_VERSION_STRING  {'V', '0', '.', '0', '.', '1', '.', '0', ' ', ' ', ' ', ' '}
+#define AGESA_VERSION_STRING  {'V', '1', '.', '0', '.', '0', '.', '7', ' ', ' ', ' ', ' '}
 
 
-// The Kerala solution is defined to be family 0x16 models 0x00 - 0x0F in the FT3 sockets.
+// The Kabini FT3 solution is defined to be family 0x16 models 0x00 - 0x0F in the FT3 sockets.
 #define INSTALL_FT3_SOCKET_SUPPORT           TRUE
 #define INSTALL_FAMILY_16_MODEL_0x_SUPPORT   TRUE
 
@@ -138,6 +138,7 @@
 #define DFLT_FCH_GPP_PORT1_HOTPLUG          FALSE
 #define DFLT_FCH_GPP_PORT2_HOTPLUG          FALSE
 #define DFLT_FCH_GPP_PORT3_HOTPLUG          FALSE
+#define OPTION_MICROSERVER                  TRUE
 // Instantiate all solution relevant data.
 #include "PlatformInstall.h"
 

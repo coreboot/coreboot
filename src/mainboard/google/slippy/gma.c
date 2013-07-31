@@ -295,6 +295,9 @@ void dp_init_dim_regs(struct intel_dp *dp)
 						    dp->lane_count,
 						    dp->pfa_sz);
 
+	dp->transcoder = intel_ddi_get_transcoder(dp->port,
+						  dp->pipe);
+
 	intel_dp_compute_m_n(dp->bpp,
 			     dp->lane_count,
 			     dp->edid.pixel_clock,

@@ -223,3 +223,11 @@ u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
 
 	return temp;
 }
+
+enum transcoder intel_ddi_get_transcoder(enum port port,
+					 enum pipe pipe)
+{
+	if (port == PORT_A)
+		return TRANSCODER_EDP;
+	return (enum transcoder)pipe;
+}

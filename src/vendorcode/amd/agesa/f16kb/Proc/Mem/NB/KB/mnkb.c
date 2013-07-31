@@ -451,6 +451,7 @@ MemNInitNBDataKB (
   NBPtr->FamilySpecificHook[DisableMemHoleMapping] = MemNDisableMemHoleMappingKB;
   NBPtr->FamilySpecificHook[RestoreMemHoleMapping] = MemNRestoreMemHoleMappingKB;
   NBPtr->FamilySpecificHook[PhyInitVref] = MemNPhyInitVrefKB;
+  NBPtr->FamilySpecificHook[IntermediateMemclkFreqVal] = MemNIntermediateMemclkFreqValUnb;
 
   IEM_INSERT_CODE (IEM_NBBLOCK_INIT, IemInitNBDataOverrideKB, (NBPtr));
 }

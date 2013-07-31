@@ -367,6 +367,7 @@ MemNStartupDCTUnb (
     for (Dct = 0; Dct < NBPtr->DctCount; Dct++) {
       MemNSwitchDCTNb (NBPtr, Dct);
       if ((NBPtr->DCTPtr->Timings.DctMemSize != 0)) {
+        NBPtr->FamilySpecificHook[IntermediateMemclkFreqVal] (NBPtr, NULL);
         MemNSetBitFieldNb (NBPtr, BFMemClkFreqVal, 1);
         MemNPollBitFieldNb (NBPtr, BFFreqChgInProg, 0, PCI_ACCESS_TIMEOUT, FALSE);
       }

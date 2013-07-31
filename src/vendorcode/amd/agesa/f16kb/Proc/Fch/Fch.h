@@ -1617,8 +1617,13 @@ FCH_MISC_REGF0                   EQU     0F0h
 #define KABINI_OSC_OUT_CLOCK_SEL_48MHz  0x02
 #define KABINI_OSC_OUT_CLOCK_SEL_25MHz  0x01
 
+#define RTC_WORKAROUND_SECOND           0x00
+#define RTC_VALID_SECOND_VALUE          0x59
+#define RTC_SECOND_RESET_VALUE          0x30
+#define RTC_SECOND_LOWER_NIBBLE         0x0F
+#define RTC_VALID_SECOND_VALUE_LN       0x09
+
 #ifndef FCH_DEADLOOP
   #define FCH_DEADLOOP()    { volatile UINTN __i; __i = 1; while (__i); }
 #endif
-
 

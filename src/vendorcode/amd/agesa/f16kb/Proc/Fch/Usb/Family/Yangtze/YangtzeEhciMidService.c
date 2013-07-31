@@ -66,6 +66,8 @@ FchEhciInitAfterPciInit (
   AMD_CONFIG_PARAMS      *StdHeader;
   UINT32                 PortNum;
   UINT32                 DrivingStrength;
+  UINT8                  RetEfuseValue;
+  UINT32                 UsbFuseCommonCalibrationValue;
 
   LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
   StdHeader = LocalCfgPtr->StdHeader;
@@ -122,8 +124,13 @@ FchEhciInitAfterPciInit (
     RwMem (BarAddress + FCH_EHCI_BAR_REGD4, AccessWidth32, ~((UINT32) (0x02)), (UINT32) (0x02));
     FchStall (400, StdHeader);
     RwMem (BarAddress + FCH_EHCI_BAR_REGD4, AccessWidth32, ~((UINT32) (0x02)), (UINT32) (0x0));
-    RwMem (BarAddress + FCH_EHCI_BAR_REGC0, AccessWidth32, (UINT32) (~ 0x00010000), BIT16);
-
+    RetEfuseValue = FchUsbCommonPhyCalibration ( FchDataPtr );
+    if ( RetEfuseValue == 0 ) {
+      RwMem (BarAddress + FCH_EHCI_BAR_REGC0, AccessWidth32, (UINT32) (~ 0x00030000), BIT16);
+    } else {
+      UsbFuseCommonCalibrationValue = RetEfuseValue << 11;
+      RwMem (BarAddress + FCH_EHCI_BAR_REGC0, AccessWidth32, (UINT32) (~ 0x0003FF00), UsbFuseCommonCalibrationValue);
+    }
     RwPci ((UINT32) Value + 0x50, AccessWidth32, ~ ((UINT32) (0x01 << 6)), (UINT32) (0x01 << 6), StdHeader);
     RwPci ((UINT32) Value + 0x50, AccessWidth32, ~ ((UINT32) (0x0F << 8)), (UINT32) (0x01 << 8), StdHeader);
     RwPci ((UINT32) Value + 0x50, AccessWidth32, ~ ((UINT32) (0x0F << 12)), (UINT32) (0x01 << 12), StdHeader);
@@ -170,12 +177,6 @@ FchEhciInitAfterPciInit (
       RwMem (BarAddress + FCH_EHCI_BAR_REGB4, AccessWidth32, ~((UINT32) (1 << 12)), 0);
       RwMem (BarAddress + FCH_EHCI_BAR_REGB4, AccessWidth32, ~((UINT32) (1 << 12)), (UINT32) (0x1 << 12));
     }
-  } else {
-    BarAddress = FCH_FAKE_USB_BAR_ADDRESS;
-    WritePci ((UINT32) Value + FCH_EHCI_REG10, AccessWidth32, &BarAddress, StdHeader);
-    RwPci ((UINT32) Value + FCH_EHCI_REG04, AccessWidth8, 0, BIT1, StdHeader);
-    RwMem (BarAddress + FCH_EHCI_BAR_REGBC, AccessWidth32, (UINT32)~( BIT12 + BIT14), BIT12 + BIT14);
-    RwPci ((UINT32) Value + FCH_EHCI_REG04, AccessWidth8, 0, 0, StdHeader);
   }
 
   ReadPmio (FCH_PMIOA_REGF0, AccessWidth8, &UsbS3WakeResumeOnlyDisable, StdHeader);

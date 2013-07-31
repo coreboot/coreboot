@@ -71,6 +71,7 @@ FchInitEnvSdProgram (
   // SD Configuration
   //
   if ( LocalCfgPtr->Sd.SdConfig != SdDisable) {
+    RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGD3, AccessWidth8, 0xBF, 0x40);
     RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGE8, AccessWidth8, 0xFE, BIT0);
     Sd30Control = 0;
     SdData32 = 0x30FE00B2;
@@ -83,8 +84,7 @@ FchInitEnvSdProgram (
     } else if ( LocalCfgPtr->Sd.SdConfig == SdPio) {
       SdData32 &=  ~(BIT20 + BIT22 + BIT19);       ///PIO
     }
-    SdData32 |= (LocalCfgPtr->Sd.SdSpeed << 21) + (LocalCfgPtr->Sd.SdBitWidth << 28);
-    SdData32 |= BIT24;
+    SdData32 |= BIT24 + BIT21;
     if ( LocalCfgPtr->Sd.SdHostControllerVersion == 1) {
       SdData32 |= 0x3200;
       if ( (ApuStepping & 0x0F) == 0) {
@@ -109,12 +109,13 @@ FchInitEnvSdProgram (
       Sd30Control |= (BIT16 + BIT17);
     }
     Sd30Control &= ~(BIT0 + BIT1);
-    Sd30Control |= LocalCfgPtr->Sd.SdrCapabilities;
+    // Sd30Control |= LocalCfgPtr->Sd.SdrCapabilities;
     Sd30Control |= LocalCfgPtr->Sd.SdReTuningMode << 14;
     if ( LocalCfgPtr->Sd.SdHostControllerVersion == 2) {
       Sd30Control &= 0xFFFF00FF;
-      Sd30Control |= ( BIT4 + BIT5 + BIT6 + BIT8 + BIT10 + BIT13 );
+      Sd30Control |= ( BIT0 + BIT1 + BIT8 + BIT10 + BIT13 );
     }
+    Sd30Control |= ( BIT4 + BIT5 + BIT6 );
     RwPci ((SD_BUS_DEV_FUN << 16) + SD_PCI_REGD0 + 1, AccessWidth8, 0xFD, BIT1, StdHeader);
     RwPci ((SD_BUS_DEV_FUN << 16) + SD_PCI_REGA8, AccessWidth32, 0x3FFC, Sd30Control, StdHeader);
     RwPci ((SD_BUS_DEV_FUN << 16) + SD_PCI_REGB0 + 3, AccessWidth8, 0, LocalCfgPtr->Sd.SdHostControllerVersion, StdHeader);
@@ -124,6 +125,7 @@ FchInitEnvSdProgram (
     RwPci ((SD_BUS_DEV_FUN << 16) + SD_PCI_REGF8, AccessWidth32, 0, 0x00010002, StdHeader);
     RwPci ((SD_BUS_DEV_FUN << 16) + SD_PCI_REGFC, AccessWidth32, 0, 0x00014000, StdHeader);
   } else {
-    RwMem (ACPI_MMIO_BASE + PMIO_BASE +  FCH_PMIOA_REGD3, AccessWidth8, 0xBF, 0x00);
+    RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGD3, AccessWidth8, 0xBF, 0x00);
+    RwMem (ACPI_MMIO_BASE + PMIO_BASE + FCH_PMIOA_REGE8, AccessWidth8, 0xFE, 0x00);
   }
 }

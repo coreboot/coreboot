@@ -110,21 +110,77 @@ PcieMidPortInitCallbackKB (
   PciePortProgramRegisterTable (PortInitMidTableKB.Table, PortInitMidTableKB.Length, Engine, TRUE, Pcie);
   if (PcieConfigCheckPortStatus (Engine, INIT_STATUS_PCIE_TRAINING_SUCCESS) || Engine->Type.Port.PortData.LinkHotplug != HotplugDisabled) {
     PcieEnableSlotPowerLimitV5 (Engine, Pcie);
+
+    // If StartLane == 4/7 and EndLane == 7/4, this is GFX port
+    if (!(((Engine->EngineData.StartLane == 4) && (Engine->EngineData.EndLane == 7)) ||
+          ((Engine->EngineData.StartLane == 7) && (Engine->EngineData.EndLane == 4)))) {
+      // Only count active Gpp ports
+      *(UINT8 *)Buffer += 1;
+    }
   }
+}
+
+/*----------------------------------------------------------------------------------------*/
+/**
+ * Callback to init ASPM on all active ports
+ *
+ *
+ *
+ *
+ * @param[in]       Engine          Pointer to engine config descriptor
+ * @param[in, out]  Buffer          PortCount
+ * @param[in]       Pcie            Pointer to global PCIe configuration
+ *
+ */
+
+VOID
+STATIC
+PcieMidAspmInitCallbackKB (
+  IN       PCIe_ENGINE_CONFIG    *Engine,
+  IN OUT   VOID                  *Buffer,
+  IN       PCIe_PLATFORM_CONFIG  *Pcie
+  )
+{
+
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieMidAspmInitCallbackKB Enter\n");
+
+  IDS_HDT_CONSOLE (GNB_TRACE, "  PortCount = %02x\n", *(UINT8 *)Buffer);
+
   // If StartLane == 4/7 and EndLane == 7/4, this is GFX port
   if (!(((Engine->EngineData.StartLane == 4) && (Engine->EngineData.EndLane == 7)) ||
         ((Engine->EngineData.StartLane == 7) && (Engine->EngineData.EndLane == 4)))) {
-    // For GPP ports only set STRAP_MED_yTSx_COUNT=2
-    PciePortRegisterRMW (
-      Engine,
-      0xC0,
-      0x30,
-      0x2 << 4,
-      TRUE,
-      Pcie
-      );
+    // For GPP ports only set STRAP_MED_yTSx_COUNT=2, but only if active ports is > 2
+    switch (*(UINT8 *)Buffer) {
+    case 0:
+    case 1:
+      break;
+    case 2:
+      PciePortRegisterRMW (
+        Engine,
+        DxFxxE4_xA0_ADDRESS,
+        DxFxxE4_xA0_Reserved_26_25_MASK |
+        DxFxxE4_xA0_Reserved_28_28_MASK,
+        (0 << DxFxxE4_xA0_Reserved_26_25_OFFSET) |
+        (1 << DxFxxE4_xA0_Reserved_28_28_OFFSET),
+        TRUE,
+        Pcie
+        );
+      break;
+    default:
+      PciePortRegisterRMW (
+        Engine,
+        0xC0,
+        0x30,
+        0x2 << 4,
+        TRUE,
+        Pcie
+        );
+      break;
+    }
   }
   PcieEnableAspm (Engine,  Pcie);
+
+  IDS_HDT_CONSOLE (GNB_TRACE, "PcieMidAspmInitCallbackKB Exit\n");
 }
 
 /*----------------------------------------------------------------------------------------*/
@@ -147,12 +203,22 @@ PcieMidPortInitKB (
 {
   AGESA_STATUS         Status;
   PCIE_LINK_SPEED_CAP  GlobalSpeedCap;
+  UINT8 PortCount;
+
   Status = AGESA_SUCCESS;
+  PortCount = 0;
 
   PcieConfigRunProcForAllEngines (
     DESCRIPTOR_ALLOCATED | DESCRIPTOR_PCIE_ENGINE,
     PcieMidPortInitCallbackKB,
-    NULL,
+    &PortCount,
+    Pcie
+    );
+
+  PcieConfigRunProcForAllEngines (
+    DESCRIPTOR_ALLOCATED | DESCRIPTOR_PCIE_ENGINE,
+    PcieMidAspmInitCallbackKB,
+    &PortCount,
     Pcie
     );
 

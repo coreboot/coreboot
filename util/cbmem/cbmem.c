@@ -243,6 +243,7 @@ static int parse_cbtable(u64 address)
 	return found;
 }
 
+#if defined(__i386__) || defined(__x86_64__)
 /*
  * read CPU frequency from a sysfs file, return an frequency in Kilohertz as
  * an int or exit on any error.
@@ -282,6 +283,32 @@ static u64 get_cpu_freq_KHz(void)
 	exit(1);
 }
 
+/* On x86 platforms timestamps are stored
+ * in CPU cycles (from rdtsc). Hence the
+ * timestamp divider is the CPU frequency
+ * in MHz.
+ */
+u64 arch_convert_raw_ts_entry(u64 ts)
+{
+	static u64 cpu_freq_mhz = 0;
+
+	if (!cpu_freq_mhz)
+		cpu_freq_mhz = get_cpu_freq_KHz() / 1000;
+
+	return ts / cpu_freq_mhz;
+}
+
+#else
+
+/* On non-x86 platforms the timestamp entries
+ * are not in clock cycles but in usecs
+ */
+u64 arch_convert_raw_ts_entry(u64 ts)
+{
+	return ts;
+}
+#endif
+
 /*
  * Print an integer in 'normalized' form - with commas separating every three
  * decimal orders. The 'comma' parameter indicates if a comma is needed after
@@ -308,7 +335,6 @@ static void print_norm(u64 v, int comma)
 static void dump_timestamps(void)
 {
 	int i;
-	u64 cpu_freq_MHz = get_cpu_freq_KHz() / 1000;
 	struct timestamp_table *tst_p;
 
 	if (timestamps.tag != LB_TAG_TIMESTAMPS) {
@@ -324,12 +350,11 @@ static void dump_timestamps(void)
 		const struct timestamp_entry *tse_p = tst_p->entries + i;
 
 		printf("%4d:", tse_p->entry_id);
-		print_norm(tse_p->entry_stamp / cpu_freq_MHz, 0);
+		print_norm(arch_convert_raw_ts_entry(tse_p->entry_stamp), 0);
 		if (i) {
 			printf(" (");
-			print_norm((tse_p->entry_stamp -
-				    tse_p[-1].entry_stamp) /
-				   cpu_freq_MHz, 0);
+			print_norm(arch_convert_raw_ts_entry(tse_p->entry_stamp
+					- tse_p[-1].entry_stamp), 0);
 			printf(")");
 		}
 		printf("\n");

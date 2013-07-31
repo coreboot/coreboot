@@ -60,19 +60,6 @@ SECTIONS
 		_erom = .;
 	}
 
-	.car.data . (NOLOAD) : {
-		_car_data_start = .;
-		*(.car.global_data);
-		/* The cbmem_console section comes last to take advantage of
-		 * a zero-sized array to hold the memconsole contents that
-		 * grows to a bound of CONFIG_CONSOLE_CAR_BUFFER_SIZE. However,
-		 * collisions within the cache-as-ram region cannot be
-		 * statically checked because the cache-as-ram region usage is
-		 * cpu/chipset dependent. */
-		*(.car.cbmem_console);
-		_car_data_end = .;
-	}
-
 	/* bss does not contain data, it is just a space that should be zero
 	 * initialized on startup. (typically uninitialized global variables)
 	 * crt0.S fills between _bss and _ebss with zeroes.
@@ -84,8 +71,34 @@ SECTIONS
 		*(.sbss)
 		*(COMMON)
 	}
+
 	_ebss = .;
+
+	.car.data . (NOLOAD) : {
+		. = ALIGN(8);
+		_car_data_start = .;
+		*(.car.global_data);
+		. = ALIGN(8);
+		/* The cbmem_console section comes last to take advantage of
+		 * a zero-sized array to hold the memconsole contents that
+		 * grows to a bound of CONFIG_CONSOLE_CAR_BUFFER_SIZE. However,
+		 * collisions within the cache-as-ram region cannot be
+		 * statically checked because the cache-as-ram region usage is
+		 * cpu/chipset dependent. */
+		*(.car.cbmem_console);
+		_car_data_end = .;
+	}
+
 	_end = .;
+
+	/* TODO: check if we are running out of SRAM. Below check is not good
+	 * enough though because SRAM has different size on different CPUs
+	 * and not all SRAM is available to the romstage. On Exynos, some is
+	 * used for BL1, the bootblock and the stack.
+	 *
+	 * _bogus = ASSERT((_end - _start + EXPECTED_CBMEM_CONSOLE_SIZE <= \
+	 * 				0x54000), "SRAM area is too full");
+	 */
 
 	/* Discard the sections we don't need/want */
 	/DISCARD/ : {

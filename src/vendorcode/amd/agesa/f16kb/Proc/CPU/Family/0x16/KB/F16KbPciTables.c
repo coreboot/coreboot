@@ -710,23 +710,6 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F16KbPciRegistersAfterApLaunch[] =
       0x08000000,                           // RegMask
     }}
   },
-// D18F3x200 - Performance Mode Control Register
-// bits[3]       EnMcqPrbPickThrottle = 0x1
-// bits[2]       EnDctOddToNcLnkDatXfr = 0x1
-// bits[1]       EnDctEvnToNcLnkDatXfr = 0x1
-  {
-    PciRegister,
-    {
-      AMD_FAMILY_16,                        // CpuFamily
-      AMD_F16_KB_ALL                        // CpuRevision
-    },
-    {AMD_PF_ALL},                           // PlatformFeatures
-    {{
-      MAKE_SBDFO (0, 0, 24, FUNC_3, 0x200), // Address
-      0x0000000E,                           // RegData
-      0x0000000E,                           // RegMask
-    }}
-  },
 // D18F4x118 - C-state Control 1
 // bits[23:21]   ClkDivisorCstAct1   = 0x0
 // bits[19:18]   CacheFlushTmrSelCstAct1 = 0x2
@@ -828,7 +811,7 @@ STATIC CONST TABLE_ENTRY_FIELDS ROMDATA F16KbPciRegistersAfterApLaunch[] =
     }}
   },
 // D18F5x8C
-// bits[15]                          = 0x1
+// bits[15]      EnSrqAllocGt31      = 0x1
   {
     PciRegister,
     {

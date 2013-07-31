@@ -2453,6 +2453,7 @@ FCH_PLATFORM_POLICY     STRUCT
   CfgFchSciMapControl           POINTER ?       ; FCH SCI Mapping Control
   CfgFchSataPhyControl          POINTER ?       ; FCH SATA PHY Control
   CfgFchGpioControl             POINTER ?       ; FCH GPIO Control
+  CfgFchRtcWorkaround           BOOLEAN ?       ; FCH RTC Workaround
 FCH_PLATFORM_POLICY     ENDS
 
 

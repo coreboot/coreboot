@@ -127,6 +127,7 @@
     extern F_PERFORM_EARLY_INIT_ON_CORE F16SetBrandIdRegistersAtEarly;
     extern F_PERFORM_EARLY_INIT_ON_CORE LocalApicInitializationAtEarly;
     extern F_PERFORM_EARLY_INIT_ON_CORE LoadMicrocodePatchAtEarly;
+    extern F_PERFORM_EARLY_INIT_ON_CORE F16KbLoadMicrocodePatchAtEarly;
 
     CONST S_PERFORM_EARLY_INIT_ON_CORE ROMDATA F16KbEarlyInitBeforeApLaunchOnCoreTable[] =
     {
@@ -143,7 +144,7 @@
       {SetRegistersFromTablesAfterApLaunch, PERFORM_EARLY_ANY_CONDITION},
       {F16SetBrandIdRegistersAtEarly, PERFORM_EARLY_ANY_CONDITION},
       #if OPTION_EARLY_SAMPLES == FALSE
-        {LoadMicrocodePatchAtEarly, PERFORM_EARLY_ANY_CONDITION},
+        {F16KbLoadMicrocodePatchAtEarly, PERFORM_EARLY_ANY_CONDITION},
       #endif
       {NULL, 0}
     };
@@ -208,25 +209,24 @@
     #endif
 
     #if (AGESA_ENTRY_INIT_RECOVERY == TRUE) || (AGESA_ENTRY_INIT_EARLY == TRUE)
-      #define F16_KB_UCODE_002A
-      #define F16_KB_UCODE_0106
+      #define F16_KB_UCODE_7000
+      #define F16_KB_UCODE_7001
 
       #if AGESA_ENTRY_INIT_EARLY == TRUE
         #if OPTION_EARLY_SAMPLES == TRUE
+          extern  CONST UINT8 ROMDATA  CpuF16KbId7000MicrocodePatch[];
+          #undef F16_KB_UCODE_7000
+          #define F16_KB_UCODE_7000 CpuF16KbId7000MicrocodePatch,
         #endif
-        extern  CONST UINT8 ROMDATA  arr1[];
-        #undef F16_KB_UCODE_002A
-        #define F16_KB_UCODE_002A arr1,
-
-        extern  CONST UINT8 ROMDATA  arr2[];
-        #undef F16_KB_UCODE_0106
-        #define F16_KB_UCODE_0106 arr2,
+        extern  CONST UINT8 ROMDATA  CpuF16KbId7001MicrocodePatch[];
+        #undef F16_KB_UCODE_7001
+        #define F16_KB_UCODE_7001 CpuF16KbId7001MicrocodePatch,
       #endif
 
       CONST UINT8 ROMDATA *CpuF16KbMicroCodePatchArray[] =
       {
-        F16_KB_UCODE_0106
-        F16_KB_UCODE_002A
+        F16_KB_UCODE_7001
+        F16_KB_UCODE_7000
         NULL
       };
 

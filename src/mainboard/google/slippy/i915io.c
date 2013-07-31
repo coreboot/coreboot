@@ -33,11 +33,15 @@ u32 auxout;
 u8 auxin[20];
 u8 msg[32];
 
+extern void mainboard_train_link(struct intel_dp *intel_dp);
+
 /* this function will either be renamed or subsumed into ./gma.c:i915_lightup */
 void runio(struct intel_dp *dp);
 
 void runio(struct intel_dp *dp)
 {
+	u8 read_val;
+
 	intel_dp_wait_panel_power_control(0xabcd0008);
 
 	/* vbios spins at this point. Some haswell weirdness? */
@@ -109,11 +113,8 @@ void runio(struct intel_dp *dp)
 
 	io_i915_write32(0x00000001,0x4f008);
 	io_i915_write32(0x00000012,0x4f014);
-	/* replace with a function: unsigned int intel_dp_get_max_downspread(dp); */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_MAX_DOWNSPREAD<<8|0x0|0x90000300;
-printk(BIOS_SPEW, "DP_MAX_DOWNSPREAD");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
+
+	intel_dp_get_max_downspread(dp, &read_val);
 
 	intel_dp_set_m_n_regs(dp);
 
@@ -142,38 +143,12 @@ printk(BIOS_SPEW, "DP_MAX_DOWNSPREAD");
 	intel_dp_wait_panel_power_control(0xabcd000a);
 
 	/* what is this doing? Not sure yet. */
-	/* each block here needs to be a call to a function */
-	auxout = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x50<<8|0x0|0x40005000;
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x00000000;
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	auxout = 0<<31 /* i2c */|0<<30|0x1<<28/*R*/|0x50<<8|0x3|0x10005003;
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 3);
-
-	auxout = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x50<<8|0x0|0x40005000;
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x04000000;
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	auxout = 0<<31 /* i2c */|0<<30|0x1<<28/*R*/|0x50<<8|0x3|0x10005003;
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 3);
-
-
-	auxout = 0<<31 /* i2c */|1<<30|0x0<<28/*W*/|0x50<<8|0x0|0x40005000;
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x7e000000;
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-
-	auxout = 0<<31 /* i2c */|0<<30|0x1<<28/*R*/|0x50<<8|0x0|0x10005000;
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
+	intel_dp_i2c_write(dp, 0x0);
+	intel_dp_i2c_read(dp, &read_val);
+	intel_dp_i2c_write(dp, 0x04);
+	intel_dp_i2c_read(dp, &read_val);
+	intel_dp_i2c_write(dp, 0x7e);
+	intel_dp_i2c_read(dp, &read_val);
 
 	/* this needs to be a call to a function */
 	io_i915_write32( DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SCRAMBLING_DISABLE_IRONLAKE | DP_SYNC_VS_HIGH |0x00000091,DP_A);
@@ -185,115 +160,10 @@ printk(BIOS_SPEW, "DP_MAX_DOWNSPREAD");
 	io_i915_write32( PANEL_PORT_SELECT_LVDS |(/* PANEL_POWER_UP_DELAY_MASK */0x1<<16)|(/* PANEL_LIGHT_ON_DELAY_MASK */0xa<<0)|0x0001000a,PCH_PP_ON_DELAYS);
 	io_i915_write32( PANEL_PORT_SELECT_LVDS |(/* PANEL_POWER_UP_DELAY_MASK */0x7d0<<16)|(/* PANEL_LIGHT_ON_DELAY_MASK */0xa<<0)|0x07d0000a,PCH_PP_ON_DELAYS);
 
+	intel_dp_set_bw(dp);
+	intel_dp_set_lane_count(dp);
 
-	/* create function: intel_dp_set_bw(dp, u8 bw); */
-	auxout = 1<<31 /* dp */|0x0<<28/*W*/|DP_LINK_BW_SET<<8|0x0|0x80010000;
-	printk(BIOS_SPEW, "DP_LINK_BW_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x0a000480;
-	/*( DP_LINK_BW_2_7 &0xa)|0xffffffff8004000a*/
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	/* this info whould have been goten in intel_dp_get_dpcd. So that function should
-	 * set dp->lane_count but does not yet.
-	 */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_MAX_LANE_COUNT<<8|0x0|0x90000200;
-printk(BIOS_SPEW, "DP_MAX_LANE_COUNT");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
-
-	/* create a function: intel_dp_set_lane_count(dp); gets lane count from dp->lane_count */
-	auxout = 1<<31 /* dp */|0x0<<28/*W*/|DP_LANE_COUNT_SET<<8|0x0|0x80010100;
-printk(BIOS_SPEW, "DP_LANE_COUNT_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x81000000;
-	/*0x00000081*/
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	io_i915_write32(0x80040000,DP_TP_CTL_A);
-	io_i915_write32( DP_PORT_EN | DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SYNC_VS_HIGH |0x80000011,DP_A);
-
-	/* find or create: intel_dp_set_training_pattern(dp, pattern); */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_TRAINING_PATTERN_SET<<8|0x0|0x90010200;
-printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
-
-	/* why did they do it twice? */
-	auxout = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0|0x80010200;
-printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x01000000;
-	/* DP_TRAINING_PATTERN_1 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH |0x00000001*/
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE_COUNT_SET<<8|0x0|0x90010100;
-printk(BIOS_SPEW, "DP_LANE_COUNT_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_LANE0_SET<<8|0x0|0x80010300;
-printk(BIOS_SPEW, "DP_TRAINING_LANE0_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x00000000;
-	/* DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0 |0x00000000*/
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x1|0x90020201;
-printk(BIOS_SPEW, "DP_LANE0_1_STATUS");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 1);
-
-	io_i915_write32(0x80040100,DP_TP_CTL_A);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_TRAINING_PATTERN_SET<<8|0x0|0x90010200;
-printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0|0x80010200;
-printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x02000000;
-	/* DP_TRAINING_PATTERN_2 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH |0x00000002*/
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE0_1_STATUS<<8|0x1|0x90020201;
-printk(BIOS_SPEW, "DP_LANE0_1_STATUS");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 1);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_LANE_ALIGN_STATUS_UPDATED<<8|0x0|0x90020400;
-printk(BIOS_SPEW, "DP_LANE_ALIGN_STATUS_UPDATED");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x1<<28/*R*/|DP_TRAINING_PATTERN_SET<<8|0x0|0x90010200;
-printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	intel_dp_aux_ch(dp, msg, 4, auxin, 0);
-
-	/* create a function */
-	auxout = 1<<31 /* dp */|0x0<<28/*W*/|DP_TRAINING_PATTERN_SET<<8|0x0|0x80010200;
-printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
-	unpack_aux(auxout, &msg[0], 4);
-	auxout = 0x00000000;
-	/* DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH |0x00000000*/
-	unpack_aux(auxout, &msg[4], 4);
-	intel_dp_aux_ch(dp, msg, 5, auxin, 0);
+	mainboard_train_link(dp);
 
 	/* need a function: intel_ddi_set_tp or similar */
 	io_i915_write32(0x80040200,DP_TP_CTL_A);
@@ -302,10 +172,8 @@ printk(BIOS_SPEW, "DP_TRAINING_PATTERN_SET");
 	io_i915_write32(0x03a903a9,BLC_PWM_PCH_CTL2);
 	io_i915_write32(0x80000000,BLC_PWM_PCH_CTL1);
 
-
 	io_i915_write32(0x00000400,0x4f044);
 	io_i915_write32(0x00000000,0x4f044);
-
 
 	/* some of this is not needed. */
 	io_i915_write32( PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010,SDEISR+0x30);

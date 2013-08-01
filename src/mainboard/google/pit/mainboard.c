@@ -38,8 +38,6 @@
 #include <ec/google/chromeec/ec.h>
 #include <stdlib.h>
 
-#include "exynos5420.h"
-
 /* convenient shorthand (in MB) */
 #define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB

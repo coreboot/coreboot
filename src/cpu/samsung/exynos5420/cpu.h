@@ -197,6 +197,7 @@
 #define samsung_get_base_clock() ((struct exynos5420_clock *)EXYNOS5_CLOCK_BASE)
 #define samsung_get_base_ace_sfr() ((struct exynos5_ace_sfr *)EXYNOS5_ACE_SFR_BASE)
 #define samsung_get_base_dsim() ((struct exynos5_dsim *)EXYNOS5_MIPI_DSI1_BASE)
+#define samsung_get_base_dp() ((struct exynos_dp *)EXYNOS5420_DP_BASE)
 #define samsung_get_base_disp_ctrl() ((struct exynos5_disp_ctrl *)EXYNOS5_DISP1_CTRL_BASE)
 #define samsung_get_base_fimd() ((struct exynos5_fimd *)EXYNOS5_FIMD_BASE)
 #define samsung_get_base_pro_id() ((struct exynos5_pro_id *)EXYNOS5_PRO_ID)

@@ -1448,12 +1448,12 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 		break;
 	case 16:
 		/* packed into 2-byte words */
-		edid_fb.red_mask_pos = 12;
-		edid_fb.red_mask_size = 4;
-		edid_fb.green_mask_pos = 8;
-		edid_fb.green_mask_size = 4;
+		edid_fb.red_mask_pos = 11;
+		edid_fb.red_mask_size = 5;
+		edid_fb.green_mask_pos = 5;
+		edid_fb.green_mask_size = 6;
 		edid_fb.blue_mask_pos = 0;
-		edid_fb.blue_mask_size = 4;
+		edid_fb.blue_mask_size = 5;
 		break;
 	default:
 		printk(BIOS_SPEW, "%s: unsupported BPP %d\n", __func__,

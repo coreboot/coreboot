@@ -19,9 +19,9 @@
 
 #include <console/console.h>
 #include <stdlib.h>
+#include <timer.h>
 #include <assert.h>
 #include <arch/io.h>
-#include "timer.h"
 #include "clk.h"
 #include "cpu.h"
 #include "periph.h"
@@ -522,7 +522,7 @@ int clock_epll_set_rate(unsigned long rate)
 	unsigned int epll_con, epll_con_k;
 	unsigned int i;
 	unsigned int lockcnt;
-	unsigned int start;
+	struct mono_time current, end;
 	struct exynos5420_clock *clk = samsung_get_base_clock();
 
 	epll_con = readl(&clk->epll_con0);
@@ -557,14 +557,17 @@ int clock_epll_set_rate(unsigned long rate)
 	writel(epll_con, &clk->epll_con0);
 	writel(epll_con_k, &clk->epll_con1);
 
-	start = get_timer(0);
+	timer_monotonic_get(&current);
+	end = current;
+	mono_time_add_msecs(&end, TIMEOUT_EPLL_LOCK);
 
-	 while (!(readl(&clk->epll_con0) &
+	while (!(readl(&clk->epll_con0) &
 			(0x1 << EXYNOS5_EPLLCON0_LOCKED_SHIFT))) {
-		if (get_timer(start) > TIMEOUT_EPLL_LOCK) {
+		if (mono_time_after(&current, &end)) {
 			printk(BIOS_DEBUG, "%s: Timeout waiting for EPLL lock\n", __func__);
 			return -1;
 		}
+		timer_monotonic_get(&current);
 	}
 
 	return 0;

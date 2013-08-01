@@ -22,6 +22,8 @@
 
 int wakeup_need_reset(void)
 {
-	return 0;
+	/* The "wake up" event is not reliable (known as "bad wakeup") and needs
+	 * reset if the TPM reset mask GPIO value is high. */
+	return gpio_get_value(GPIO_X06);
 }
 

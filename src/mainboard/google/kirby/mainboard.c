@@ -33,7 +33,7 @@
 #include <cpu/samsung/exynos5420/gpio.h>
 #include <cpu/samsung/exynos5420/power.h>
 #include <cpu/samsung/exynos5420/i2c.h>
-#include <cpu/samsung/exynos5420/dp-core.h>
+#include <cpu/samsung/exynos5420/dp.h>
 #include <drivers/parade/ps8625/ps8625.h>
 #include <ec/google/chromeec/ec.h>
 #include <stdlib.h>

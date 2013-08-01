@@ -32,7 +32,7 @@ void power_enable_hw_thermal_trip(void);
 #define POWER_PS_HOLD_CONTROL_DATA_HIGH		(1 << 8)
 #define POWER_ENABLE_HW_TRIP			(1UL << 31)
 
-#define DPTX_PHY_ENABLE		(1 << 0)
+#define EXYNOS_DP_PHY_ENABLE	(1 << 0)
 
 /* PMU_DEBUG bits [12:8] = 0x1000 selects XXTI clock source */
 #define PMU_DEBUG_XXTI                          0x1000

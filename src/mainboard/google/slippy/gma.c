@@ -293,7 +293,9 @@ void dp_init_dim_regs(struct intel_dp *dp)
 						    dp->pipe,
 						    dp->type,
 						    dp->lane_count,
-						    dp->pfa_sz);
+						    dp->pfa_sz,
+						    dp->edid.phsync == '+'?1:0,
+						    dp->edid.pvsync == '+'?1:0);
 
 	dp->transcoder = intel_ddi_get_transcoder(dp->port,
 						  dp->pipe);

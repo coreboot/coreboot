@@ -452,7 +452,7 @@ static void boot_state_schedule_static_entries(void)
 void main(void)
 {
 	/* Record current time, try to locate timestamps in CBMEM. */
-	timestamp_init(rdtsc());
+	timestamp_init(timestamp_get());
 
 	timestamp_add_now(TS_START_RAMSTAGE);
 	post_code(POST_ENTRY_RAMSTAGE);

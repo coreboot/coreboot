@@ -20,6 +20,8 @@
 #ifndef __TIMESTAMP_H__
 #define __TIMESTAMP_H__
 
+#include <stdint.h>
+
 struct timestamp_entry {
 	uint32_t	entry_id;
 	uint64_t	entry_stamp;
@@ -59,17 +61,19 @@ enum timestamp_id {
 };
 
 #if CONFIG_COLLECT_TIMESTAMPS && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
-#include <cpu/x86/tsc.h>
-void timestamp_init(tsc_t base);
-void timestamp_add(enum timestamp_id id, tsc_t ts_time);
+void timestamp_init(uint64_t base);
+void timestamp_add(enum timestamp_id id, uint64_t ts_time);
 void timestamp_add_now(enum timestamp_id id);
 void timestamp_reinit(void);
-tsc_t get_initial_timestamp(void);
 #else
 #define timestamp_init(base)
 #define timestamp_add(id, time)
 #define timestamp_add_now(id)
 #define timestamp_reinit()
 #endif
+
+/* Implemented by the architecture code */
+uint64_t timestamp_get(void);
+uint64_t get_initial_timestamp(void);
 
 #endif

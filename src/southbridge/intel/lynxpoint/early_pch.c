@@ -23,6 +23,7 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <timestamp.h>
+#include <cpu/x86/tsc.h>
 #include <elog.h>
 #include "pch.h"
 #include "chip.h"
@@ -71,16 +72,14 @@ static void pch_generic_setup(void)
 	printk(BIOS_DEBUG, " done.\n");
 }
 
-#if CONFIG_COLLECT_TIMESTAMPS
-tsc_t get_initial_timestamp(void)
+uint64_t get_initial_timestamp(void)
 {
 	tsc_t base_time = {
 		.lo = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xdc),
 		.hi = pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0)
 	};
-	return base_time;
+	return tsc_to_uint64(base_time);
 }
-#endif
 
 static int sleep_type_s3(void)
 {

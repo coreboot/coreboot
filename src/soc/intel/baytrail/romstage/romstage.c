@@ -44,20 +44,6 @@
 #include <baytrail/smm.h>
 #include <baytrail/spi.h>
 
-static inline uint64_t timestamp_get(void)
-{
-	return rdtscll();
-}
-
-static inline tsc_t ts64_to_tsc(uint64_t ts)
-{
-	tsc_t tsc = {
-		.lo = ts,
-		.hi = ts >> 32,
-	};
-	return tsc;
-}
-
 /* The cache-as-ram assembly file calls romstage_main() after setting up
  * cache-as-ram.  romstage_main() will then call the mainboards's
  * mainboard_romstage_entry() function. That function then calls
@@ -274,10 +260,10 @@ void romstage_common(struct romstage_params *params)
 	chromeos_init(prev_sleep_state);
 
 	/* Save timestamp information. */
-	timestamp_init(ts64_to_tsc(params->ts.times[0]));
-	timestamp_add(TS_START_ROMSTAGE, ts64_to_tsc(params->ts.times[1]));
-	timestamp_add(TS_BEFORE_INITRAM, ts64_to_tsc(params->ts.times[2]));
-	timestamp_add(TS_AFTER_INITRAM, ts64_to_tsc(params->ts.times[3]));
+	timestamp_init(params->ts.times[0]);
+	timestamp_add(TS_START_ROMSTAGE, params->ts.times[1]);
+	timestamp_add(TS_BEFORE_INITRAM, params->ts.times[2]);
+	timestamp_add(TS_AFTER_INITRAM, params->ts.times[3]);
 }
 
 void asmlinkage romstage_after_car(void)

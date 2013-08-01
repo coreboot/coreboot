@@ -183,14 +183,9 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 	post_code(0x40);
 
 #if CONFIG_COLLECT_TIMESTAMPS
-	tsc_t start_romstage_time;
-	tsc_t before_initram_time;
-
-	start_romstage_time = rdtsc();
-
+	uint32_t start_romstage_time = (uint32_t) (timestamp_get() >> 4);
 	/* since this mainboard doesn't use audio, we can stuff the TSC values in there */
-	pci_write_config32(PCI_DEV(0, 27, 0), 0x2c,  start_romstage_time.lo >> 4 |
-			start_romstage_time.lo << 28);
+	pci_write_config32(PCI_DEV(0, 27, 0), 0x2c,  start_romstage_time);
 #endif
 
 	pch_enable_lpc();
@@ -240,11 +235,9 @@ void main(FSP_INFO_HEADER *fsp_info_header)
 	post_code(0x48);
 
 #if CONFIG_COLLECT_TIMESTAMPS
-	before_initram_time= rdtsc();
+	uint32_t before_initram_time = (uint32_t) (timestamp_get() >> 4);
 	/* since this mainboard doesn't use audio, we can stuff the TSC values in there */
-	pci_write_config32(PCI_DEV(0, 27, 0), 0x14, before_initram_time.lo >> 4 |
-			before_initram_time.lo << 28);
-
+	pci_write_config32(PCI_DEV(0, 27, 0), 0x14, before_initram_time);
 #endif
 
   /*
@@ -267,20 +260,9 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	void *cbmem_hob_ptr;
 
 #if CONFIG_COLLECT_TIMESTAMPS
-	tsc_t start_romstage_time;
-	tsc_t base_time;
-	tsc_t before_initram_time;
-	tsc_t after_initram_time = rdtsc();
-	u32 timebase = pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0);
-	u32 time_romstage_start = pci_read_config32(PCI_DEV(0, 27, 0), 0x2c);
-	u32 time_before_initram = pci_read_config32(PCI_DEV(0, 27, 0), 0x14);
-
-	base_time.lo = timebase << 4;
-	base_time.hi = timebase >> 28;
-	start_romstage_time.lo = time_romstage_start << 4;
-	start_romstage_time.hi = time_romstage_start >> 28;
-	before_initram_time.lo = time_before_initram << 4;
-	before_initram_time.hi = time_before_initram >> 28;
+	uint64_t after_initram_time = timestamp_get();
+	uint64_t start_romstage_time = (uint64_t) pci_read_config32(PCI_DEV(0, 27, 0), 0x2c) << 4;
+	uint64_t before_initram_time = (uint64_t) pci_read_config32(PCI_DEV(0, 27, 0), 0x14) << 4;
 #endif
 
 	/*
@@ -335,13 +317,11 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	*(u32*)cbmem_hob_ptr = (u32)HobListPtr;
 	post_code(0x4f);
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamp_init(base_time);
+	timestamp_init(get_initial_timestamp());
 	timestamp_add(TS_START_ROMSTAGE, start_romstage_time );
 	timestamp_add(TS_BEFORE_INITRAM, before_initram_time );
 	timestamp_add(TS_AFTER_INITRAM, after_initram_time);
 	timestamp_add_now(TS_END_ROMSTAGE);
-#endif
 
 	/* Load the ramstage. */
 	copy_and_run();
@@ -352,4 +332,9 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 {
 	/* No overrides needed */
 	return;
+}
+
+uint64_t get_initial_timestamp(void)
+{
+	return (uint64_t) pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0) << 4;
 }

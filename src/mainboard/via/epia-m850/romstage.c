@@ -46,7 +46,7 @@ void main(unsigned long bist)
 {
 	u32 tolm;
 
-	timestamp_init(rdtsc());
+	timestamp_init(timestamp_get());
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* First thing we need to do on the VX900, before anything else */

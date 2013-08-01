@@ -34,7 +34,7 @@ static void store_initial_timestamp(void)
 	 * only storing the low nibble of the high dword of the tsc.  Even this
 	 * is probably 0 by the time we get here, so storing 64 bits is overkill.S
 	 */
-		pci_write_config32(PCI_DEV(0, 0x1f, 2), 0xd0, tsc.lo >> 4 | tsc.hi << 28);
+	pci_write_config32(PCI_DEV(0, 0x1f, 2), 0xd0, tsc.lo >> 4 | tsc.hi << 28);
 }
 
 /*

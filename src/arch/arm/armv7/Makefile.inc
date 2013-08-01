@@ -57,6 +57,7 @@ romstage-y += cpu.S
 romstage-y += exception.c
 romstage-y += exception_asm.S
 romstage-y += mmu.c
+romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 romstage-c-ccopts += $(armv7_flags)
 romstage-S-ccopts += $(armv7_asm_flags)
@@ -74,6 +75,7 @@ ramstage-y += cpu.S
 ramstage-y += exception.c
 ramstage-y += exception_asm.S
 ramstage-y += mmu.c
+ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 ramstage-c-ccopts += $(armv7_flags)
 ramstage-S-ccopts += $(armv7_asm_flags)

@@ -175,7 +175,7 @@ void main(unsigned long bist)
 	int s3resume = 0;
 	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
 
-	timestamp_init(rdtsc ());
+	timestamp_init(timestamp_get());
 
 	/* SERR pin is confused on reset. Clear NMI.  */
 	outb(4, 0x61);

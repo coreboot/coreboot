@@ -52,7 +52,7 @@ void main(unsigned long bist)
 
 	cbmem_was_initted = !cbmem_recovery(0);
 
-	timestamp_init(rdtsc());
+	timestamp_init(timestamp_get());
 	timestamp_add_now(TS_START_ROMSTAGE);
 
 }

@@ -28,16 +28,11 @@
 #define MAX_TIMESTAMPS 30
 
 static struct timestamp_table* ts_table_p CAR_GLOBAL = NULL;
-static tsc_t ts_basetime CAR_GLOBAL = { .lo = 0, .hi =0 };
+static uint64_t ts_basetime CAR_GLOBAL = 0;
 
-static void timestamp_stash(enum timestamp_id id, tsc_t ts_time);
+static void timestamp_stash(enum timestamp_id id, uint64_t ts_time);
 
-static uint64_t tsc_to_uint64(tsc_t tstamp)
-{
-	return (((uint64_t)tstamp.hi) << 32) + tstamp.lo;
-}
-
-static void timestamp_real_init(tsc_t base)
+static void timestamp_real_init(uint64_t base)
 {
 	struct timestamp_table* tst;
 
@@ -50,14 +45,14 @@ static void timestamp_real_init(tsc_t base)
 		return;
 	}
 
-	tst->base_time = tsc_to_uint64(base);
+	tst->base_time = base;
 	tst->max_entries = MAX_TIMESTAMPS;
 	tst->num_entries = 0;
 
 	car_set_var(ts_table_p, tst);
 }
 
-void timestamp_add(enum timestamp_id id, tsc_t ts_time)
+void timestamp_add(enum timestamp_id id, uint64_t ts_time)
 {
 	struct timestamp_entry *tse;
 	struct timestamp_table *ts_table = NULL;
@@ -75,18 +70,18 @@ void timestamp_add(enum timestamp_id id, tsc_t ts_time)
 
 	tse = &ts_table->entries[ts_table->num_entries++];
 	tse->entry_id = id;
-	tse->entry_stamp = tsc_to_uint64(ts_time) - ts_table->base_time;
+	tse->entry_stamp = ts_time - ts_table->base_time;
 }
 
 void timestamp_add_now(enum timestamp_id id)
 {
-	timestamp_add(id, rdtsc());
+	timestamp_add(id, timestamp_get());
 }
 
 #define MAX_TIMESTAMP_CACHE 8
 struct timestamp_cache {
 	enum timestamp_id id;
-	tsc_t time;
+	uint64_t time;
 } timestamp_cache[MAX_TIMESTAMP_CACHE] CAR_GLOBAL;
 
 static int timestamp_entries CAR_GLOBAL = 0;
@@ -99,7 +94,7 @@ static int timestamp_entries CAR_GLOBAL = 0;
  * part of CAR migration for romstage, and in ramstage main().
  */
 
-static void timestamp_stash(enum timestamp_id id, tsc_t ts_time)
+static void timestamp_stash(enum timestamp_id id, uint64_t ts_time)
 {
 	struct timestamp_cache *ts_cache = car_get_var(timestamp_cache);
 	int ts_entries = car_get_var(timestamp_entries);
@@ -124,7 +119,7 @@ static void timestamp_do_sync(void)
 	car_set_var(timestamp_entries, 0);
 }
 
-void timestamp_init(tsc_t base)
+void timestamp_init(uint64_t base)
 {
 	if (!boot_cpu())
 		return;

@@ -221,10 +221,7 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	struct romstage_handoff *handoff;
 
 #if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	tsc_t after_initram_time = rdtsc();
-	tsc_t base_time;
-	base_time.hi = 0;
-	base_time.lo = 0;
+	uint64_t after_initram_time = timestamp_get();
 #endif
 
 	post_code(0x4a);
@@ -244,9 +241,6 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 
 	report_platform_info();
 
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	after_initram_time = rdtsc();
-#endif
 	post_code(0x4b);
 
 	late_mainboard_romstage_entry();
@@ -271,17 +265,18 @@ void romstage_main_continue(EFI_STATUS status, void *hob_list_ptr) {
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
-
-#if IS_ENABLED(CONFIG_COLLECT_TIMESTAMPS)
-	timestamp_init(base_time);
-	timestamp_reinit();
+	timestamp_init(get_initial_timestamp());
 	timestamp_add(TS_AFTER_INITRAM, after_initram_time);
 	timestamp_add_now(TS_END_ROMSTAGE);
-#endif
 
 	post_code(0x4f);
 
 	/* Load the ramstage. */
 	copy_and_run();
 	while (1);
+}
+
+uint64_t get_initial_timestamp(void)
+{
+	return 0;
 }

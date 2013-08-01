@@ -53,6 +53,11 @@ static inline unsigned long long rdtscll(void)
 	);
 	return val;
 }
+
+static inline uint64_t tsc_to_uint64(tsc_t tstamp)
+{
+       return (((uint64_t)tstamp.hi) << 32) + tstamp.lo;
+}
 #endif
 
 #if CONFIG_TSC_CONSTANT_RATE

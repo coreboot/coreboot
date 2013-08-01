@@ -26,8 +26,8 @@
 #include <device/device.h>
 #include <cbmem.h>
 #include <arch/cache.h>
+#include "dp.h"
 #include "fimd.h"
-#include "dp-core.h"
 #include "cpu.h"
 #include "clk.h"
 #include "usb.h"
@@ -138,9 +138,7 @@ static void exynos_displayport_init(device_t dev, u32 lcdbase,
 	dcache_clean_invalidate_by_mva(lower, upper - lower);
 	mmu_config_range(lower / MiB, (upper - lower) / MiB, DCACHE_OFF);
 
-	printk(BIOS_DEBUG, "Initializing Exynos LCD.\n");
-
-	lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
+	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 }
 
 static void cpu_enable(device_t dev)

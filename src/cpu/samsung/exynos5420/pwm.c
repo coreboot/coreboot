@@ -25,8 +25,7 @@
 
 int pwm_enable(int pwm_id)
 {
-	const struct s5p_timer *pwm =
-			samsung_get_base_timer();
+	struct s5p_timer *const pwm = samsung_get_base_timer();
 	unsigned long tcon;
 
 	tcon = readl(&pwm->tcon);
@@ -39,8 +38,7 @@ int pwm_enable(int pwm_id)
 
 int pwm_check_enabled(int pwm_id)
 {
-	const struct s5p_timer *pwm =
-			samsung_get_base_timer();
+	const struct s5p_timer *const pwm = samsung_get_base_timer();
 	const unsigned long tcon = readl(&pwm->tcon);
 
 	return tcon & TCON_START(pwm_id);
@@ -48,8 +46,7 @@ int pwm_check_enabled(int pwm_id)
 
 void pwm_disable(int pwm_id)
 {
-	const struct s5p_timer *pwm =
-			samsung_get_base_timer();
+	struct s5p_timer *const pwm = samsung_get_base_timer();
 	unsigned long tcon;
 
 	tcon = readl(&pwm->tcon);
@@ -77,8 +74,7 @@ static unsigned long pwm_calc_tin(int pwm_id, unsigned long freq)
 
 int pwm_config(int pwm_id, int duty_ns, int period_ns)
 {
-	const struct s5p_timer *pwm =
-			samsung_get_base_timer();
+	struct s5p_timer *const pwm = samsung_get_base_timer();
 	unsigned int offset;
 	unsigned long tin_rate;
 	unsigned long tin_ns;
@@ -134,8 +130,7 @@ int pwm_config(int pwm_id, int duty_ns, int period_ns)
 int pwm_init(int pwm_id, int div, int invert)
 {
 	u32 val;
-	const struct s5p_timer *pwm =
-			samsung_get_base_timer();
+	struct s5p_timer *const pwm = samsung_get_base_timer();
 	unsigned long ticks_per_period;
 	unsigned int offset, prescaler;
 

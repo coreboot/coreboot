@@ -14,7 +14,6 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 endif
 bootblock-y += wakeup.c
 bootblock-y += gpio.c
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += pwm.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += timer.c
 
 romstage-y += spi.c
@@ -30,7 +29,6 @@ ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 endif
 romstage-y += wakeup.c
-romstage-y += pwm.c	# needed by timer.c
 romstage-y += gpio.c
 romstage-y += timer.c
 romstage-y += i2c.c
@@ -47,7 +45,6 @@ ramstage-y += cpu.c
 ramstage-y += tmu.c
 ramstage-y += mct.c
 ramstage-y += monotonic_timer.c
-ramstage-y += pwm.c	# needed by timer.c
 ramstage-y += timer.c
 ramstage-y += gpio.c
 ramstage-y += i2c.c

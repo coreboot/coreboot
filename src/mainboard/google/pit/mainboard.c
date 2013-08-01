@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <string.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/i2c.h>
@@ -33,7 +34,8 @@
 #include <cpu/samsung/exynos5420/gpio.h>
 #include <cpu/samsung/exynos5420/power.h>
 #include <cpu/samsung/exynos5420/i2c.h>
-#include <cpu/samsung/exynos5420/dp-core.h>
+#include <cpu/samsung/exynos5420/dp.h>
+#include <cpu/samsung/exynos5420/fimd.h>
 #include <drivers/parade/ps8625/ps8625.h>
 #include <ec/google/chromeec/ec.h>
 #include <stdlib.h>
@@ -50,6 +52,64 @@ static struct edid edid = {
 	.x_resolution = 1366,
 	.y_resolution = 768,
 	.bytes_per_line = 2 * 1366
+};
+
+/* from the fdt */
+static struct vidinfo vidinfo = {
+	.vl_freq = 60,
+	.vl_col = 1366,
+	.vl_row = 768,
+	.vl_width = 1366,
+	.vl_height = 768,
+	.vl_clkp = 1,
+	.vl_dp = 1,
+	.vl_bpix = 4,
+	.vl_hspw = 32,
+	.vl_hbpd = 40,
+	.vl_hfpd = 40,
+	.vl_vspw = 6,
+	.vl_vbpd = 10,
+	.vl_vfpd = 12,
+	.vl_cmd_allow_len = 0xf,
+	.win_id = 3,
+	.dp_enabled = 1,
+	.dual_lcd_enabled = 0,
+	.interface_mode = FIMD_RGB_INTERFACE,
+};
+
+static unsigned char panel_edid[] = {
+	0x00,0xff,0xff,0xff,0xff,0xff,0xff,0x00,
+	0x06,0xaf,0x5c,0x31,0x00,0x00,0x00,0x00,
+	0x00,0x16,0x01,0x03,0x80,0x1a,0x0e,0x78,
+	0x0a,0x99,0x85,0x95,0x55,0x56,0x92,0x28,
+	0x22,0x50,0x54,0x00,0x00,0x00,0x01,0x01,
+	0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,
+	0x01,0x01,0x01,0x01,0x01,0x01,0xa3,0x1b,
+	0x56,0x7e,0x50,0x00,0x16,0x30,0x30,0x20,
+	0x36,0x00,0x00,0x90,0x10,0x00,0x00,0x18,
+	0x6d,0x12,0x56,0x7e,0x50,0x00,0x16,0x30,
+	0x30,0x20,0x36,0x00,0x00,0x90,0x10,0x00,
+	0x00,0x18,0x00,0x00,0x00,0xfe,0x00,0x41,
+	0x55,0x4f,0x0a,0x20,0x20,0x20,0x20,0x20,
+	0x20,0x20,0x20,0x20,0x00,0x00,0x00,0xfe,
+	0x00,0x42,0x31,0x31,0x36,0x58,0x57,0x30,
+	0x33,0x20,0x56,0x31,0x20,0x0a,0x00,0x3d,
+	0x00,0xc0,0x00,0x00,0x27,0xfd,0x00,0x20,
+	0x02,0x59,0x07,0x00,0x64,0x3e,0x07,0x02,
+	0x00,0x00,0xcd,0x12,0x59,0xff,0x10,0x03,
+	0x00,0x00,0x00,0x00,0x64,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x18,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x05,0x00,0x00,0x00,
+	0x9c,0x3f,0x07,0x02,0x31,0xf9,0x00,0x20,
+	0x59,0xff,0x10,0x03,0x00,0x00,0x00,0x00,
+	0xbc,0x3e,0x07,0x02,0xc0,0x9b,0x01,0x20,
+	0x00,0x00,0x00,0x00,0xdb,0xf8,0x00,0x20,
+	0x98,0x3e,0x07,0x02,0x8b,0xaf,0x00,0x20,
+	0x04,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0xe5,0xcd,0x16,0x00,0xe9,0xcd,0x16,0x00,
+	0xe8,0x03,0x00,0x00,0x6c,0x55,0x01,0x20,
+	0x2c,0x01,0x00,0x00,0x85,0xbb,0x00,0x20,
+	0xe8,0x03,0x00,0x00,0xe9,0xcd,0x16,0x00,
 };
 
 static const struct parade_write parade_writes[] = {
@@ -176,6 +236,8 @@ static enum exynos5_gpio_pin bl_en = GPIO_X22;		/* active high */
 
 static void parade_dp_bridge_setup(void)
 {
+	int i;
+
 	gpio_set_value(dp_pd_l, 1);
 	gpio_cfg_pin(dp_pd_l, GPIO_OUTPUT);
 	gpio_set_pull(dp_pd_l, GPIO_PULL_NONE);
@@ -186,6 +248,8 @@ static void parade_dp_bridge_setup(void)
 	udelay(10);
 	gpio_set_value(dp_rst_l, 1);
 
+
+	gpio_set_pull(dp_hpd, GPIO_PULL_NONE);
 	gpio_cfg_pin(dp_hpd, GPIO_INPUT);
 
 	/* De-assert PD (and possibly RST) to power up the bridge. */
@@ -199,9 +263,19 @@ static void parade_dp_bridge_setup(void)
 	exynos_pinmux_i2c7();
 	i2c_init(7, 100000, 0x00);
 
-	parade_ps8625_bridge_setup(7, 0x48,
-				   parade_writes,
+	parade_ps8625_bridge_setup(7, 0x48, parade_writes,
 				   ARRAY_SIZE(parade_writes));
+	/* Spin until the display is ready.
+	 * It's quite important to try really hard to get the display up,
+	 * so be generous. It will typically be ready in only 5 ms. and
+	 * we're out of here.
+	 * If it's not ready after a second, then we're in big trouble.
+	 */
+	for(i = 0; i < 1000; i++){
+		if (gpio_get_value(dp_hpd))
+			break;
+		mdelay(1);
+	}
 }
 
 /*
@@ -230,22 +304,17 @@ static void backlight_en(void)
 	gpio_direction_output(bl_en, 1);
 }
 
-//static struct video_info smdk5420_dp_config = {
-static struct video_info dp_video_info = {
-	/* FIXME: fix video_info struct to use const for name */
-	.name			= (char *)"eDP-LVDS NXP PTN3460",
 
+
+static struct edp_video_info dp_video_info = {
+	.master_mode = 0,
 	.h_sync_polarity	= 0,
 	.v_sync_polarity	= 0,
 	.interlaced		= 0,
-
 	.color_space		= COLOR_RGB,
 	.dynamic_range		= VESA,
 	.ycbcr_coeff		= COLOR_YCBCR601,
 	.color_depth		= COLOR_8,
-
-	.link_rate		= LINK_RATE_2_70GBPS,
-	.lane_count		= LANE_COUNT2,
 };
 
 /* FIXME: move some place more appropriate */
@@ -305,14 +374,13 @@ static void backlight_vdd(void)
 /* this happens after cpu_init where exynos resources are set */
 static void mainboard_init(device_t dev)
 {
-	struct s5p_dp_device dp_device = {
-		.base = (struct exynos5_dp *)EXYNOS5420_DP1_BASE,
-		.video_info = &dp_video_info,
-	};
+	/* we'll stick with the crummy u-boot struct for now.*/
+	/* doing this as an auto since the struct has to be writeable */
+	struct edp_device_info device_info;
+
 	void *fb_addr = (void *)(get_fb_base_kb() * KiB);
 
 	gpio_init();
-
 	tmu_init(&exynos5420_tmu_info);
 
 	/* Clock Gating all the unused IP's to save power */
@@ -334,17 +402,30 @@ static void mainboard_init(device_t dev)
 
 	lcd_vdd();
 
+	/* Start the fimd running before you do the phy and lcd setup.
+	 * why do fimd before training etc?
+	 * because we need a data stream from
+	 * the fimd or the clock recovery step fails.
+	 */
+	vidinfo.screen_base = fb_addr;
+	exynos_fimd_lcd_init(&vidinfo);
+
 	parade_dp_bridge_setup();
-	dp_controller_init(&dp_device);
+
+	/* this might get more dynamic in future ... */
+	memset(&device_info, 0, sizeof(device_info));
+	device_info.disp_info.name = (char *)"Pit display";
+	device_info.disp_info.h_total = 1366;
+	device_info.disp_info.v_total = 768;
+	device_info.video_info = dp_video_info;
+	device_info.raw_edid = panel_edid;
+	exynos_init_dp(&device_info);
 
 	udelay(LCD_T3_DELAY_MS * 1000);
 
 	backlight_vdd();
 	backlight_pwm();
 	backlight_en();
-
-	// Uncomment to get excessive GPIO output:
-	// gpio_info();
 }
 
 void get_cbmem_table(uint64_t *base, uint64_t *size)

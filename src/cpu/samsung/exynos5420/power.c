@@ -64,7 +64,7 @@ void power_enable_dp_phy(void)
 	struct exynos5_power *power =
 		samsung_get_base_power();
 
-	setbits_le32(&power->dptx_phy_control, DPTX_PHY_ENABLE);
+	setbits_le32(&power->dptx_phy_control, EXYNOS_DP_PHY_ENABLE);
 }
 
 void power_enable_usb_phy(void)

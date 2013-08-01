@@ -48,8 +48,7 @@ ramstage-y += monotonic_timer.c
 ramstage-y += timer.c
 ramstage-y += gpio.c
 ramstage-y += i2c.c
-ramstage-y += dp-reg.c
-ramstage-y += fb.c
+ramstage-y += dp.c dp_lowlevel.c fimd.c
 ramstage-y += usb.c
 ramstage-y += cbmem.c
 

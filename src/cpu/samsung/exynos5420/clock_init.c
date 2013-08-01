@@ -30,7 +30,7 @@
 void system_clock_init(void)
 {
 	struct exynos5420_clock *clk =
-		(struct exynos5420_clock *)EXYNOS5_CLOCK_BASE;
+		(struct exynos5420_clock *)EXYNOS5420_CLOCK_BASE;
 	struct exynos5_mct_regs *mct_regs =
 		(struct exynos5_mct_regs *)EXYNOS5_MULTI_CORE_TIMER_BASE;
 	u32 val;
@@ -49,6 +49,7 @@ void system_clock_init(void)
 	writel(IPLL_LOCK_VAL, &clk->ipll_lock);
 	writel(SPLL_LOCK_VAL, &clk->spll_lock);
 	writel(KPLL_LOCK_VAL, &clk->kpll_lock);
+        writel(RPLL_LOCK_VAL, &clk->rpll_lock);
 
 	setbits_le32(&clk->clk_src_cpu, MUX_HPM_SEL_MASK);
 
@@ -85,7 +86,7 @@ void system_clock_init(void)
 
 	/* Set DPLL */
 	writel(DPLL_CON1_VAL, &clk->dpll_con1);
-	val = set_pll(0xc8, 0x2, 0x2);
+	val = set_pll(0x190, 0x4, 0x2);
 	writel(val, &clk->dpll_con0);
 	while ((readl(&clk->dpll_con0) & PLL_LOCKED) == 0)
 		;
@@ -131,6 +132,22 @@ void system_clock_init(void)
 	val = set_pll(0xc8, 0x2, 0x3);
 	writel(val, &clk->spll_con0);
 	while ((readl(&clk->spll_con0) & PLL_LOCKED) == 0)
+		;
+
+        /* We use RPLL as the source for FIMD video stream clock */
+	writel(RPLL_CON1_VAL, &clk->rpll_con1);
+	writel(RPLL_CON2_VAL, &clk->rpll_con2);
+	/* computed by gabe from first principles; u-boot is probably
+	 * wrong again
+	 */
+	val = set_pll(0xa0, 0x3, 0x2);
+	writel(val, &clk->rpll_con0);
+	/* note: this is a meaningless exercise. The hardware lock
+	 * detection does not work. So this just spins for some
+	 * time and is done. NO indication of success should attach
+	 * to this or any other spin on a con0 value.
+	 */
+	while ((readl(&clk->rpll_con0) & PLL_LOCKED) == 0)
 		;
 
 	writel(CLK_DIV_CDREX0_VAL, &clk->clk_div_cdrex0);
@@ -191,11 +208,6 @@ void system_clock_init(void)
 }
 
 void clock_gate(void)
-{
-	/* Not implemented for now. */
-}
-
-void clock_init_dp_clock(void)
 {
 	/* Not implemented for now. */
 }

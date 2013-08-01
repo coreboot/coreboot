@@ -228,7 +228,9 @@ u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
 				    enum pipe pipe,
 				    int type,
 				    int lane_count,
-				    int pf_sz);
+				    int pf_sz,
+				    u8 phsync,
+				    u8 pvsync);
 
 enum transcoder intel_ddi_get_transcoder(enum port port,
 					 enum pipe pipe);

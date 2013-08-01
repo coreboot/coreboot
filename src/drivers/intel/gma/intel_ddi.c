@@ -163,7 +163,9 @@ u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
 				    enum pipe pipe,
 				    int type,
 				    int lane_count,
-				    int pf_sz)
+				    int pf_sz,
+				    u8 phsync,
+				    u8 pvsync)
 {
 	u32 temp;
 
@@ -206,7 +208,11 @@ u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
 		}
 	}
 
-	/* We need to check for TRANS_DDI_PVSYNC and TRANS_DDI_PHSYNC -- How? */
+	if (phsync)
+		temp |= TRANS_DDI_PHSYNC;
+
+	if (pvsync)
+		temp |= TRANS_DDI_PVSYNC;
 
 	if (type == INTEL_OUTPUT_HDMI) {
 		/* Need to understand when to set TRANS_DDI_MODE_SELECT_HDMI / TRANS_DDI_MODE_SELECT_DVI */

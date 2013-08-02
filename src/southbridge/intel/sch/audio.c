@@ -187,7 +187,7 @@ static int wait_for_valid(u32 base)
 		udelay(1);
 	}
 
-	return 1;
+	return -1;
 }
 
 static void codec_init(struct device *dev, u32 base, int addr)

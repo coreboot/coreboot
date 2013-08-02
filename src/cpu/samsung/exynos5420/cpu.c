@@ -37,18 +37,30 @@ static unsigned int cpu_rev;
 
 static void set_cpu_id(void)
 {
-	cpu_id = readl((void *)EXYNOS_PRO_ID);
-	cpu_id = (0xC000 | ((cpu_id & 0x00FFF000) >> 12));
+	u32 pro_id = (read32((void *)EXYNOS_PRO_ID) & 0x00FFF000) >> 12;
 
-	/*
-	 * 0xC200: EXYNOS4210 EVT0
-	 * 0xC210: EXYNOS4210 EVT1
-	 */
-	if (cpu_id == 0xC200) {
-		cpu_id |= 0x10;
+	switch (pro_id) {
+	case 0x200:
+		/* Exynos4210 EVT0 */
+		cpu_id = 0x4210;
 		cpu_rev = 0;
-	} else if (cpu_id == 0xC210) {
-		cpu_rev = 1;
+		break;
+	case 0x210:
+		/* Exynos4210 EVT1 */
+		cpu_id = 0x4210;
+		break;
+	case 0x412:
+		/* Exynos4412 */
+		cpu_id = 0x4412;
+		break;
+	case 0x520:
+		/* Exynos5250 */
+		cpu_id = 0x5250;
+		break;
+	case 0x420:
+		/* Exynos5420 */
+		cpu_id = 0x5420;
+		break;
 	}
 }
 

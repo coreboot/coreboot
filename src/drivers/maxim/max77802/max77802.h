@@ -196,15 +196,17 @@ enum {
 };
 
 /* Buck1 1.0 volt value (P1.0V_AP_MIF) */
-#define MAX77802_BUCK1DVS1_1V	0x3E
+#define MAX77802_BUCK1DVS1_1V		0x3E
 /* Buck2 1.0 volt value (P1.0V_VDD_ARM) */
-#define MAX77802_BUCK2DVS1_1V	0x40
+#define MAX77802_BUCK2DVS1_1V		0x40
+/* Buck2 1.2625 volt value (P1.2625V_VDD_ARM) */
+#define MAX77802_BUCK2DVS1_1_2625V	0x6A
 /* Buck3 1.0 volt value (P1.0V_VDD_INT) */
-#define MAX77802_BUCK3DVS1_1V	0x40
+#define MAX77802_BUCK3DVS1_1V		0x40
 /* Buck4 1.0 volt value (P1.0V_VDD_G3D) */
-#define MAX77802_BUCK4DVS1_1V	0x40
+#define MAX77802_BUCK4DVS1_1V		0x40
 /* Buck6 1.0 volt value (P1.0V_AP_KFC) */
-#define MAX77802_BUCK6DVS1_1V	0x3E
+#define MAX77802_BUCK6DVS1_1V		0x3E
 
 /*
  * Different Bucks use different bits to control power. There are two types,
@@ -221,6 +223,9 @@ enum {
 /* LDO35 1.2 volt value for bridge ic */
 #define MAX77802_LDO35CTRL1_1_2V (1 << 4)
 #define MAX77802_LOD35CTRL1_ON	 (1 << 6)
+
+/* Disable Boost Mode*/
+#define MAX77802_BOOSTCTRL_OFF	0x09
 
 /*
  * MAX77802_REG_PMIC_32KHZ set to 32KH CP

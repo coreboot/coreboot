@@ -33,6 +33,8 @@
 #include "usb.h"
 #include "chip.h"
 
+#include <ec/google/chromeec/ec.h>
+
 static unsigned int cpu_id;
 static unsigned int cpu_rev;
 
@@ -141,6 +143,17 @@ static void exynos_displayport_init(device_t dev, u32 lcdbase,
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 }
 
+static void tps65090_thru_ec_fet_disable(int index)
+{
+	uint8_t value = 0;
+
+	if (google_chromeec_i2c_xfer(0x48, 0xe + index, 1, &value, 1, 0)) {
+		printk(BIOS_ERR,
+		       "Error sending i2c pass through command to EC.\n");
+		return;
+	}
+}
+
 static void cpu_enable(device_t dev)
 {
 	unsigned long fb_size = FB_SIZE_KB * KiB;
@@ -148,6 +161,14 @@ static void cpu_enable(device_t dev)
 
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
 	mmio_resource(dev, 1, lcdbase / KiB, (fb_size + KiB - 1) / KiB);
+
+	/*
+	 * Disable LCD FETs before we do anything with the display.
+	 * FIXME(dhendrix): This is a gross hack and should be done
+	 * elsewhere (romstage?).
+	 */
+	tps65090_thru_ec_fet_disable(1);
+	tps65090_thru_ec_fet_disable(6);
 
 	exynos_displayport_init(dev, lcdbase, fb_size);
 

@@ -27,8 +27,8 @@
 #include <delay.h>
 
 #define HDA_ICII_REG 0x68
-#define   HDA_ICII_BUSY (1 << 0)
-#define   HDA_ICII_VALID  (1 << 1)
+#define HDA_ICII_BUSY (1 << 0)
+#define HDA_ICII_VALID (1 << 1)
 
 typedef struct southbridge_intel_sch_config config_t;
 

@@ -129,7 +129,7 @@ static void backlight_en(void)
 	gpio_direction_output(GPIO_X30, 1);
 }
 
-#define TPS69050_BUS	4	/* Snow-specific */
+#define TPS65090_BUS	4	/* Snow-specific */
 
 #define FET1_CTRL	0x0f
 #define FET6_CTRL	0x14
@@ -137,13 +137,13 @@ static void backlight_en(void)
 static void lcd_vdd(void)
 {
 	/* Enable FET6, lcd panel */
-	tps65090_fet_enable(TPS69050_BUS, FET6_CTRL);
+	tps65090_fet_enable(TPS65090_BUS, FET6_CTRL);
 }
 
 static void backlight_vdd(void)
 {
 	/* Enable FET1, backlight */
-	tps65090_fet_enable(TPS69050_BUS, FET1_CTRL);
+	tps65090_fet_enable(TPS65090_BUS, FET1_CTRL);
 	udelay(LCD_T5_DELAY_MS * 1000);
 }
 
@@ -217,7 +217,7 @@ static void mainboard_init(device_t dev)
 
 	gpio_init();
 
-	i2c_init(TPS69050_BUS, I2C_0_SPEED, I2C_SLAVE);
+	i2c_init(TPS65090_BUS, I2C_0_SPEED, I2C_SLAVE);
 	i2c_init(7, I2C_0_SPEED, I2C_SLAVE);
 
 	tmu_init(&exynos5250_tmu_info);

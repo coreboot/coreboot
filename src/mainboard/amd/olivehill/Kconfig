@@ -93,6 +93,10 @@ config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y
 
+config HUDSON_LEGACY_FREE
+	bool
+	default y
+
 config WARNINGS_ARE_ERRORS
 	bool
 	default n

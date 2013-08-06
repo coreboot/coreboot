@@ -60,6 +60,9 @@ void system_clock_init(void)
 	writel(HPM_RATIO,  &clk->clk_div_cpu1);
 	writel(CLK_DIV_CPU0_VAL, &clk->clk_div_cpu0);
 
+	/* switch A15 clock source to OSC clock before changing APLL */
+	clrbits_le32(&clk->clk_src_cpu, APLL_FOUT);
+
 	/* Set APLL */
 	writel(APLL_CON1_VAL, &clk->apll_con1);
 	val = set_pll(0xc8, 0x3, 0x1);
@@ -67,8 +70,14 @@ void system_clock_init(void)
 	while ((readl(&clk->apll_con0) & PLL_LOCKED) == 0)
 		;
 
+	/* now it is safe to switch to APLL */
+	setbits_le32(&clk->clk_src_cpu, APLL_FOUT);
+
 	writel(SRC_KFC_HPM_SEL, &clk->clk_src_kfc);
 	writel(CLK_DIV_KFC_VAL, &clk->clk_div_kfc0);
+
+	/* switch A7 clock source to OSC clock before changing KPLL */
+	clrbits_le32(&clk->clk_src_kfc, KPLL_FOUT);
 
 	/* Set KPLL*/
 	writel(KPLL_CON1_VAL, &clk->kpll_con1);
@@ -76,6 +85,9 @@ void system_clock_init(void)
 	writel(val, &clk->kpll_con0);
 	while ((readl(&clk->kpll_con0) & PLL_LOCKED) == 0)
 		;
+
+	/* now it is safe to switch to KPLL */
+	setbits_le32(&clk->clk_src_kfc, KPLL_FOUT);
 
 	/* Set MPLL */
 	writel(MPLL_CON1_VAL, &clk->mpll_con1);

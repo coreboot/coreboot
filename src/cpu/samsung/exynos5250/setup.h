@@ -38,6 +38,8 @@ struct exynos5_phy_control;
 #define TZPC8_BASE		0x10180000
 #define TZPC9_BASE		0x10190000
 
+#define APLL_FOUT	(1 << 0)
+
 /* APLL_CON1	*/
 #define APLL_CON1_VAL	(0x00203800)
 

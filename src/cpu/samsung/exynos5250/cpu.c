@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright 2013 Google Inc.
+ * Copyright (C) 2012 Samsung Electronics
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +35,28 @@
 
 static unsigned int cpu_id;
 static unsigned int cpu_rev;
+
+/* Setting TZPC[TrustZone Protection Controller] */
+static void tzpc_init(void)
+{
+	struct exynos_tzpc *tzpc;
+	unsigned int addr;
+
+	for (addr = TZPC0_BASE; addr <= TZPC9_BASE; addr += TZPC_BASE_OFFSET) {
+		tzpc = (struct exynos_tzpc *)addr;
+
+		if (addr == TZPC0_BASE)
+			writel(R0SIZE, &tzpc->r0size);
+
+		writel(DECPROTXSET, &tzpc->decprot0set);
+		writel(DECPROTXSET, &tzpc->decprot1set);
+
+		if (addr != TZPC9_BASE) {
+			writel(DECPROTXSET, &tzpc->decprot2set);
+			writel(DECPROTXSET, &tzpc->decprot3set);
+		}
+	}
+}
 
 static void set_cpu_id(void)
 {
@@ -122,6 +145,8 @@ static void cpu_enable(device_t dev)
 	exynos_displayport_init(dev, lcdbase, fb_size);
 
 	set_cpu_id();
+
+	tzpc_init();
 }
 
 static void cpu_init(device_t dev)

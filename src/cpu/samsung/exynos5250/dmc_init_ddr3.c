@@ -158,8 +158,14 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 	/* Send PALL command */
 	dmc_config_prech(mem, dmc);
 
-	/* Send NOP, MRS and ZQINIT commands */
-	dmc_config_mrs(mem, dmc);
+	if (mem_reset) {
+		/* Send NOP, MRS and ZQINIT commands.
+		 * Sending MRS command will reset the DRAM. We should not be
+		 * reseting the DRAM after resume, this will lead to memory
+		 * corruption as DRAM content is lost after DRAM reset
+		 */
+		dmc_config_mrs(mem, dmc);
+	}
 
 	if (mem->gate_leveling_enable) {
 		val = PHY_CON0_RESET_VAL;

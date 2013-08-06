@@ -28,6 +28,23 @@ static unsigned long qemu_get_high_memory_size(void)
 	return high;
 }
 
+static void qemu_reserve_ports(struct device *dev, unsigned int idx,
+			       unsigned int base, unsigned int size,
+			       const char *name)
+{
+	unsigned int end = base + size -1;
+	struct resource *res;
+
+	printk(BIOS_DEBUG, "QEMU: reserve ioports 0x%04x-0x%04x [%s]\n",
+	       base, end, name);
+	res = new_resource(dev, idx);
+	res->base = base;
+	res->size = size;
+	res->limit = 0xffff;
+	res->flags = IORESOURCE_IO | IORESOURCE_FIXED | IORESOURCE_STORED |
+		IORESOURCE_ASSIGNED;
+}
+
 static void cpu_pci_domain_set_resources(device_t dev)
 {
 	assign_resources(dev->link_list);
@@ -52,6 +69,19 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 	ram_resource(dev, idx++, 768, tomk - 768);
 	if (high)
 		ram_resource(dev, idx++, 4 * 1024 * 1024, high);
+
+	/* Reserve I/O ports used by QEMU */
+	qemu_reserve_ports(dev, idx++, 0x0510, 0x02, "firmware-config");
+	qemu_reserve_ports(dev, idx++, 0x5658, 0x01, "vmware-port");
+	if (i440fx) {
+		qemu_reserve_ports(dev, idx++, 0xae00, 0x10, "pci-hotplug");
+		qemu_reserve_ports(dev, idx++, 0xaf00, 0x20, "cpu-hotplug");
+		qemu_reserve_ports(dev, idx++, 0xafe0, 0x04, "piix4-gpe0");
+	}
+	if (inb(CONFIG_CONSOLE_QEMU_DEBUGCON_PORT) == 0xe9) {
+		qemu_reserve_ports(dev, idx++, CONFIG_CONSOLE_QEMU_DEBUGCON_PORT, 1,
+				   "debugcon");
+	}
 
 #if !CONFIG_DYNAMIC_CBMEM
 	/* Leave some space for ACPI, PIRQ and MP tables */

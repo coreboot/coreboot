@@ -42,6 +42,8 @@
 
 #define MMC0_GPIO_PIN	(58)
 
+#define PMIC_I2C_BUS	4
+
 struct pmic_write
 {
 	int or_orig; // Whether to or in the original value.
@@ -75,7 +77,7 @@ struct pmic_write pmic_writes[] =
 	{ 0, MAX77802_REG_PMIC_BOOSTCTRL, MAX77802_BOOSTCTRL_OFF},
 };
 
-static void setup_power(int is_resume)
+static int setup_power(int is_resume)
 {
 	int error = 0;
 	int i;
@@ -83,14 +85,12 @@ static void setup_power(int is_resume)
 	power_init();
 
 	if (is_resume) {
-		return;
+		return 0;
 	}
 
 	/* Initialize I2C bus to configure PMIC. */
 	exynos_pinmux_i2c4();
-	i2c_init(4, 1000000, 0x00); /* 1MHz */
-
-	printk(BIOS_DEBUG, "%s: Setting up PMIC...\n", __func__);
+	i2c_init(PMIC_I2C_BUS, 1000000, 0x00); /* 1MHz */
 
 	for (i = 0; i < ARRAY_SIZE(pmic_writes); i++) {
 		uint8_t data = 0;
@@ -106,8 +106,7 @@ static void setup_power(int is_resume)
 				   &data, sizeof(data));
 	}
 
-	if (error)
-		die("Failed to intialize PMIC.\n");
+	return error;
 }
 
 static void setup_storage(void)
@@ -245,6 +244,9 @@ void main(void)
 	extern struct mem_timings mem_timings;
 	void *entry;
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
+	int power_init_failed;
+
+	power_init_failed = setup_power(is_resume);
 
 	/* Clock must be initialized before console_init, otherwise you may need
 	 * to re-initialize serial console drivers again. */
@@ -253,7 +255,12 @@ void main(void)
 	exynos_pinmux_uart3();
 	console_init();
 
-	setup_power(is_resume);
+	if (power_init_failed)
+		die("Failed to intialize power.\n");
+
+	/* re-initialize PMIC I2C channel after (re-)setting system clocks */
+	i2c_init(PMIC_I2C_BUS, 1000000, 0x00); /* 1MHz */
+
 	setup_memory(&mem_timings, is_resume);
 
 	primitive_mem_test();

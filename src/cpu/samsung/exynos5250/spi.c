@@ -214,10 +214,3 @@ int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
 
 	return 0;
 }
-
-int init_default_cbfs_media(struct cbfs_media *media) {
-	return initialize_exynos_spi_cbfs_media(
-			media,
-			(void*)CONFIG_CBFS_CACHE_ADDRESS,
-			CONFIG_CBFS_CACHE_SIZE);
-}

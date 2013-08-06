@@ -55,9 +55,6 @@ void main(void)
 	/*
 	 * Re-enable icache and branch prediction. MMU and dcache will be
 	 * set up later.
-	 *
-	 * Note: If booting from USB, we need to disable branch prediction
-	 * before copying from USB into RAM (FIXME: why?)
 	 */
 	sctlr = read_sctlr();
 	sctlr |= SCTLR_Z | SCTLR_I;

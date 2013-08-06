@@ -52,6 +52,7 @@ void exynos_pinmux_i2c7(void);
 
 void exynos_pinmux_dphpd(void);
 
+void exynos_pinmux_i2s0(void);
 void exynos_pinmux_i2s1(void);
 
 #endif

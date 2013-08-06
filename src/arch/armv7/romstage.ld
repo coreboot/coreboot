@@ -74,7 +74,7 @@ SECTIONS
 
 	_ebss = .;
 
-	.car.data . (NOLOAD) : {
+	.car.data . : {
 		. = ALIGN(8);
 		_car_data_start = .;
 		*(.car.global_data);

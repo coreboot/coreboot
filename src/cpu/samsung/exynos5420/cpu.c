@@ -159,7 +159,7 @@ static void cpu_enable(device_t dev)
 static void cpu_init(device_t dev)
 {
 	printk(BIOS_INFO, "CPU:   S5P%X @ %ldMHz\n",
-			cpu_id, get_arm_clk() / (1024*1024));
+			cpu_id, get_arm_clk() / 1000000);
 
 	usb_init(dev);
 }

@@ -180,7 +180,8 @@ void main(void)
 	setup_gpio();
 	setup_graphics();
 
-	/* Set SPI (primary CBFS media) clock to 50MHz. */
+	/* Set SPI (primary CBFS media) clock to 50MHz and configure pinmux. */
+	exynos_pinmux_spi1();
 	clock_set_rate(PERIPH_ID_SPI1, 50000000);
 
 	cbmem_initialize_empty();

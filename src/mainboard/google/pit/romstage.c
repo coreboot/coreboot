@@ -246,6 +246,7 @@ void main(void)
 	int is_resume = (get_wakeup_state() != IS_NOT_WAKEUP);
 	int power_init_failed;
 
+	exynos5420_config_smp();
 	power_init_failed = setup_power(is_resume);
 
 	/* Clock must be initialized before console_init, otherwise you may need

@@ -224,8 +224,6 @@
 #define EXYNOS5_SPI_NUM_CONTROLLERS	5
 #define EXYNOS_I2C_MAX_CONTROLLERS	8
 
-void exynos5420_config_l2_cache(void);
-
 extern struct tmu_info exynos5420_tmu_info;
 
 /* TODO clean up defines. */
@@ -263,5 +261,9 @@ static inline u32 get_fb_base_kb(void)
 {
 	return RAM_BASE_KB + RAM_SIZE_KB - FB_SIZE_KB;
 }
+
+/* Procedures to setup Exynos5420 CPU */
+void exynos5420_config_l2_cache(void);
+void exynos5420_config_smp(void);
 
 #endif	/* _EXYNOS5420_CPU_H */

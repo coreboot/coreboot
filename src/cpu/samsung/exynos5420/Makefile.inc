@@ -17,6 +17,7 @@ bootblock-y += gpio.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += timer.c
 
 romstage-y += spi.c
+romstage-y += smp.c
 romstage-y += clock.c
 romstage-y += clock_init.c
 romstage-y += pinmux.c  # required by s3c24x0_i2c and uart.

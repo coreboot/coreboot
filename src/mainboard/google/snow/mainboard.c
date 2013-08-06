@@ -202,6 +202,7 @@ static void gpio_init(void)
 	gpio_direction_output(GPIO_X15, 1);
 
 	/* Set up the I2S busses. */
+	exynos_pinmux_i2s0();
 	exynos_pinmux_i2s1();
 }
 

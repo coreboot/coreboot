@@ -244,6 +244,16 @@ void exynos_pinmux_dphpd(void)
 	gpio_set_pull(GPIO_X07, GPIO_PULL_NONE);
 }
 
+void exynos_pinmux_i2s0(void)
+{
+	int i;
+
+	for (i = 0; i < 5; i++) {
+		gpio_cfg_pin(GPIO_Z0 + i, GPIO_FUNC(0x02));
+		gpio_set_pull(GPIO_Z0 + i, GPIO_PULL_NONE);
+	}
+}
+
 void exynos_pinmux_i2s1(void)
 {
 	int i;

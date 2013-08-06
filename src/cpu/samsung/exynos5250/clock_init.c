@@ -102,6 +102,9 @@ void system_clock_init(struct mem_timings *mem,
 		val = readl(&clk->div_stat_cpu1);
 	} while (0 != val);
 
+	/* switch A15 clock source to OSC clock before changing APLL */
+	clrbits_le32(&clk->src_cpu, APLL_FOUT);
+
 	/* Set APLL */
 	writel(APLL_CON1_VAL, &clk->apll_con1);
 	val = set_pll(arm_clk_ratio->apll_mdiv, arm_clk_ratio->apll_pdiv,
@@ -109,6 +112,9 @@ void system_clock_init(struct mem_timings *mem,
 	writel(val, &clk->apll_con0);
 	while ((readl(&clk->apll_con0) & APLL_CON0_LOCKED) == 0)
 		;
+
+	/* now it is safe to switch to APLL */
+	setbits_le32(&clk->src_cpu, APLL_FOUT);
 
 	/* Set MPLL */
 	writel(MPLL_CON1_VAL, &clk->mpll_con1);

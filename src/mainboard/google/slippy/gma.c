@@ -43,6 +43,7 @@
 #include <cpu/x86/msr.h>
 #include <edid.h>
 #include <drivers/intel/gma/i915.h>
+#include "mainboard.h"
 
 /*
  * Here is the rough outline of how we bring up the display:
@@ -228,7 +229,6 @@ int intel_dp_bw_code_to_link_rate(u8 link_bw)
 	}
 }
 
-void mainboard_train_link(struct intel_dp *intel_dp);
 void mainboard_train_link(struct intel_dp *intel_dp)
 {
 	u8 read_val;
@@ -280,6 +280,29 @@ static void test_gfx(struct intel_dp *dp)
 #else
 static void test_gfx(struct intel_dp *dp) {}
 #endif
+
+
+void mainboard_set_port_clk_dp(struct intel_dp *intel_dp)
+{
+	u32 ddi_pll_sel = 0;
+
+	switch (intel_dp->link_bw) {
+	case DP_LINK_BW_1_62:
+		ddi_pll_sel = PORT_CLK_SEL_LCPLL_810;
+		break;
+	case DP_LINK_BW_2_7:
+		ddi_pll_sel = PORT_CLK_SEL_LCPLL_1350;
+		break;
+	case DP_LINK_BW_5_4:
+		ddi_pll_sel = PORT_CLK_SEL_LCPLL_2700;
+		break;
+	default:
+		printk(BIOS_ERR, "invalid link bw %d\n", intel_dp->link_bw);
+		return;
+	}
+
+	gtt_write(PORT_CLK_SEL(intel_dp->port), ddi_pll_sel);
+}
 
 int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 		unsigned int pgfx, unsigned int init_fb)

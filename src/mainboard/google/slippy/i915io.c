@@ -26,14 +26,13 @@
 #include <delay.h>
 #include <drivers/intel/gma/i915.h>
 #include <arch/io.h>
+#include "mainboard.h"
 
 /* these variables will be removed when the proper support is finished in src/drivers/intel/gma/intel_dp.c */
 int index;
 u32 auxout;
 u8 auxin[20];
 u8 msg[32];
-
-extern void mainboard_train_link(struct intel_dp *intel_dp);
 
 /* this function will either be renamed or subsumed into ./gma.c:i915_lightup */
 void runio(struct intel_dp *dp);
@@ -71,7 +70,7 @@ void runio(struct intel_dp *dp)
 	gtt_write(PIPECONF(dp->transcoder),0x00000000);
 	gtt_write(PCH_TRANSCONF(dp->pipe),0x00000000);
 
-	gtt_write(PORT_CLK_SEL(dp->port),PORT_CLK_SEL_LCPLL_1350);
+	mainboard_set_port_clk_dp(dp);
 	gtt_write(DSPSTRIDE(dp->plane),dp->stride);
 	gtt_write(DSPCNTR(dp->plane),DISPLAY_PLANE_ENABLE|DISPPLANE_RGBX888);
 	gtt_write(DEIIR,0x00000080);

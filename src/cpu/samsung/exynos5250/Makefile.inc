@@ -3,7 +3,7 @@
 # image outside of CBFS
 INTERMEDIATE += exynos5250_add_bl1
 
-bootblock-y += spi.c
+bootblock-y += spi.c alternate_cbfs.c
 bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock_init.c
@@ -16,7 +16,7 @@ bootblock-y += wakeup.c
 bootblock-y += gpio.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += timer.c
 
-romstage-y += spi.c
+romstage-y += spi.c alternate_cbfs.c
 romstage-y += clock.c
 romstage-y += clock_init.c
 romstage-y += pinmux.c  # required by s3c24x0_i2c and uart.
@@ -35,7 +35,7 @@ romstage-y += i2c.c
 #romstage-y += wdt.c
 romstage-y += cbmem.c
 
-ramstage-y += spi.c
+ramstage-y += spi.c alternate_cbfs.c
 ramstage-y += clock.c
 ramstage-y += clock_init.c
 ramstage-y += pinmux.c

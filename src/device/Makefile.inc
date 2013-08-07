@@ -8,6 +8,7 @@ ramstage-$(CONFIG_PCIX_PLUGIN_SUPPORT) += pcix_device.c
 ramstage-$(CONFIG_PCIEXP_PLUGIN_SUPPORT) += pciexp_device.c
 ramstage-$(CONFIG_AGP_PLUGIN_SUPPORT) += agp_device.c
 ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += cardbus_device.c
+ramstage-$(CONFIG_AZALIA_PLUGIN_SUPPORT) += azalia_device.c
 ramstage-$(CONFIG_ARCH_X86) += pnp_device.c
 ramstage-$(CONFIG_PCI) += pci_ops.c
 ramstage-y += smbus_ops.c

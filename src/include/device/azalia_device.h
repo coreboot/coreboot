@@ -17,26 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
+#ifndef DEVICE_AZALIA_H
+#define DEVICE_AZALIA_H
+
 #include <device/device.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <boot/tables.h>
-#include <device/pci_def.h>
-#include "hda_verb.h"
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-}
+void azalia_audio_init(struct device *dev);
+extern struct device_operations default_azalia_audio_ops;
 
-static void mainboard_enable(device_t dev)
-{
-	verb_setup();
-}
-
-struct chip_operations mainboard_ops = {
-	CHIP_NAME("DMP VORTEX86EX Mainboard")
-	.enable_dev = mainboard_enable,
-};
+#endif /* DEVICE_AZALIA_H */

@@ -226,6 +226,11 @@ config CARDBUS_PLUGIN_SUPPORT
 	depends on PCI
 	default y
 
+config AZALIA_PLUGIN_SUPPORT
+	bool
+	depends on PCI
+	default n
+
 config PCIEXP_COMMON_CLOCK
 	prompt "Enable PCIe Common Clock"
 	bool

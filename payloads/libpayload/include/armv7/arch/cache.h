@@ -240,6 +240,21 @@ static inline void write_l2ctlr(uint32_t val)
 	isb();
 }
 
+/* read L2 Auxiliary Control Register (L2ACTLR) */
+static inline uint32_t read_l2actlr(void)
+{
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 1, %0, c15, c0, 0" : "=r" (val));
+	return val;
+}
+
+/* write L2 Auxiliary Control Register (L2ACTLR) */
+static inline void write_l2actlr(uint32_t val)
+{
+	asm volatile ("mcr p15, 1, %0, c15, c0, 0" : : "r" (val) : "memory" );
+	isb();
+}
+
 /* read system control register (SCTLR) */
 static inline uint32_t read_sctlr(void)
 {

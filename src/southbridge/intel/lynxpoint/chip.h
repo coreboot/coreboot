@@ -92,6 +92,13 @@ struct southbridge_intel_lynxpoint_config {
 	/* I2C voltage select: 0=3.3V 1=1.8V */
 	uint8_t sio_i2c0_voltage;
 	uint8_t sio_i2c1_voltage;
+
+	/*
+	 * Clock Disable Map:
+	 * [21:16] = CLKOUT_PCIE# 5-0
+	 *    [24] = CLKOUT_ITPXDP
+	 */
+	uint32_t icc_clock_disable;
 };
 
 extern struct chip_operations southbridge_intel_lynxpoint_ops;

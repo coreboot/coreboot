@@ -496,6 +496,7 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 	       vers_name->hotfix_version, vers_name->build_version);
 }
 
+#if CONFIG_DEBUG_INTEL_ME
 /* Get ME Firmware Capabilities */
 static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 {
@@ -542,6 +543,7 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("TLS", cap->tls);
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
+#endif
 #endif
 
 #if CONFIG_CHROMEOS && 0 /* DISABLED */
@@ -836,7 +838,9 @@ static void intel_me_init(device_t dev)
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	me_print_fw_version(mbp_data.fw_version_name);
+#if CONFIG_DEBUG_INTEL_ME
 	me_print_fwcaps(mbp_data.fw_capabilities);
+#endif
 
 	if (mbp_data.plat_time) {
 		printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
@@ -1001,9 +1005,11 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
 	       mbp->header.num_entries, mbp->header.mbp_size);
+#if CONFIG_DEBUG_INTEL_ME
 	for (i = 0; i < mbp->header.mbp_size - 1; i++) {
 		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
 	}
+#endif
 #endif
 
 	#define ASSIGN_FIELD_PTR(field_,val_) \
@@ -1047,8 +1053,8 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 			ASSIGN_FIELD_PTR(nfc_data, &mbp->data[i+1]);
 
 		default:
-			printk(BIOS_ERR, "ME MBP: unknown item 0x%x @ dw offset 0x%x\n",
-			       mbp->data[i], i);
+			printk(BIOS_ERR, "ME MBP: unknown item 0x%x @ "
+			       "dw offset 0x%x\n", mbp->data[i], i);
 			break;
 		}
 		i += item->length;

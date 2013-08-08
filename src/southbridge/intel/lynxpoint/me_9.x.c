@@ -412,6 +412,30 @@ static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
 	return 0;
 }
 
+static inline int mei_sendrecv_icc(struct icc_header *icc,
+				   void *req_data, int req_bytes,
+				   void *rsp_data, int rsp_bytes)
+{
+	struct icc_header icc_rsp;
+
+	/* Send header */
+	if (mei_send_header(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
+			    icc, sizeof(*icc), req_bytes ? 0 : 1) < 0)
+		return -1;
+
+	/* Send data if available */
+	if (req_bytes && mei_send_data(MEI_ADDRESS_ICC, MEI_HOST_ADDRESS,
+				       req_data, req_bytes) < 0)
+		return -1;
+
+	/* Read header and data, if needed */
+	if (rsp_bytes && mei_recv_msg(&icc_rsp, sizeof(icc_rsp),
+				      rsp_data, rsp_bytes) < 0)
+		return -1;
+
+	return 0;
+}
+
 /*
  * mbp give up routine. This path is taken if hfs.mpb_rdy is 0 or the read
  * state machine on the BIOS end doesn't match the ME's state machine.
@@ -610,6 +634,30 @@ void intel_me_finalize_smm(void)
 
 #else /* !__SMM__ */
 
+static int me_icc_set_clock_enables(u32 mask)
+{
+	struct icc_clock_enables_msg clk = {
+		.clock_enables	= 0, /* Turn off specified clocks */
+		.clock_mask	= mask,
+		.no_response	= 1, /* Do not expect response */
+	};
+	struct icc_header icc = {
+		.api_version	= ICC_API_VERSION_LYNXPOINT,
+		.icc_command	= ICC_SET_CLOCK_ENABLES,
+		.length		= sizeof(clk),
+	};
+
+	/* Send request and wait for response */
+	if (mei_sendrecv_icc(&icc, &clk, sizeof(clk), NULL, 0) < 0) {
+		printk(BIOS_ERR, "ME: ICC SET CLOCK ENABLES message failed\n");
+		return -1;
+        } else {
+		printk(BIOS_INFO, "ME: ICC SET CLOCK ENABLES 0x%08x\n", mask);
+	}
+
+	return 0;
+}
+
 /* Determine the path that we should take based on ME status */
 static me_bios_path intel_me_path(device_t dev)
 {
@@ -760,6 +808,7 @@ static int intel_me_extend_valid(device_t dev)
 /* Check whether ME is present and do basic init */
 static void intel_me_init(device_t dev)
 {
+	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 	me_bios_path path = intel_me_path(dev);
 	me_bios_payload mbp_data;
 
@@ -768,7 +817,6 @@ static void intel_me_init(device_t dev)
 
 	if (path == ME_NORMAL_BIOS_PATH) {
 		/* Validate the extend register */
-		/* FIXME: force recovery mode on failure. */
 		intel_me_extend_valid(dev);
 	}
 
@@ -799,6 +847,10 @@ static void intel_me_init(device_t dev)
 		       mbp_data.plat_time->pltrst_cpurst_time_ms);
 	}
 #endif
+
+	/* Set clock enables according to devicetree */
+	if (config && config->icc_clock_disable)
+		me_icc_set_clock_enables(config->icc_clock_disable);
 
 	/*
 	 * Leave the ME unlocked. It will be locked via SMI command later.

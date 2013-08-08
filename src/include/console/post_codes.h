@@ -229,6 +229,14 @@
 #define POST_DEAD_CODE				0xee
 
 /**
+ * \brief Resume from suspend failed
+ *
+ * This post code is sent when the firmware is expected to resume it is
+ * unable to do so.
+ */
+#define POST_RESUME_FAILURE			0xef
+
+/**
  * \brief Final code before OS resumes
  *
  * Called right before jumping to the OS resume vector.

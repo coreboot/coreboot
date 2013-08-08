@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "gpio.h"
 #include "cpu.h"
 #include "pinmux.h"
@@ -53,52 +54,85 @@ void exynos_pinmux_uart3(void)
 	exynos_pinmux_uart(GPIO_A14, 2);
 }
 
-static void exynos_pinmux_sdmmc(int start, int start_ext)
+struct gpio {
+	enum exynos5_gpio_pin pin;
+	unsigned int func;
+	unsigned int pull;
+	unsigned int drv;
+};
+
+static void exynos_pinmux_sdmmc(struct gpio *gpios, int num_gpios)
 {
 	int i;
 
-	if (start_ext) {
-		for (i = start_ext; i <= (start_ext + 3); i++) {
-			gpio_cfg_pin(i, GPIO_FUNC(0x2));
-			gpio_set_pull(i, GPIO_PULL_UP);
-			gpio_set_drv(i, GPIO_DRV_4X);
-		}
-	}
-
-	for (i = 0; i < 3; i++) {
-		gpio_cfg_pin(start + i, GPIO_FUNC(0x2));
-		gpio_set_pull(start + i, GPIO_PULL_NONE);
-		gpio_set_drv(start + i, GPIO_DRV_4X);
-	}
-
-	for (i = 3; i <= 6; i++) {
-		gpio_cfg_pin(start +  i, GPIO_FUNC(0x2));
-		gpio_set_pull(start + i, GPIO_PULL_UP);
-		gpio_set_drv(start + i, GPIO_DRV_4X);
+	for (i = 0; i < num_gpios; i++) {
+		gpio_set_drv(gpios[i].pin, gpios[i].drv);
+		gpio_set_pull(gpios[i].pin, gpios[i].pull);
+		gpio_cfg_pin(gpios[i].pin, GPIO_FUNC(gpios[i].func));
 	}
 }
 
 void exynos_pinmux_sdmmc0(void)
 {
-	exynos_pinmux_sdmmc(GPIO_C00, GPIO_C30);
-	/*
-	 * MMC0 is intended to be used for eMMC. The card detect pin is used
-	 * as a VDDEN signal to power on the eMMC. The 5420 iROM makes this
-	 * same assumption.
-	 */
-	gpio_set_pull(GPIO_C02, GPIO_PULL_NONE);
-	gpio_cfg_pin(GPIO_C02, GPIO_OUTPUT);
+	struct gpio gpios[] = {
+		{ GPIO_C00, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CLK */
+		{ GPIO_C01, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CMD */
+		/*
+		 * MMC0 is intended to be used for eMMC. The card detect
+		 * pin is used as a VDDEN signal to power on the eMMC. The
+		 * 5420 iROM makes this same assumption.
+		 */
+		{ GPIO_C02, GPIO_OUTPUT, GPIO_PULL_NONE, GPIO_DRV_4X },
+		{ GPIO_C03, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[0] */
+		{ GPIO_C04, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[1] */
+		{ GPIO_C05, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[2] */
+		{ GPIO_C06, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[3] */
+
+		{ GPIO_C30, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[4] */
+		{ GPIO_C31, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[5] */
+		{ GPIO_C32, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[6] */
+		{ GPIO_C33, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[7] */
+	};
+
+	exynos_pinmux_sdmmc(&gpios[0], ARRAY_SIZE(gpios));
+
+	/* set VDDEN */
 	gpio_set_value(GPIO_C02, 1);
 }
 
 void exynos_pinmux_sdmmc1(void)
 {
-	exynos_pinmux_sdmmc(GPIO_C10, GPIO_D14);
+	struct gpio gpios[] = {
+		{ GPIO_C10, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CLK */
+		{ GPIO_C11, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CMD */
+		{ GPIO_C12, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CDn */
+		{ GPIO_C13, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[0] */
+		{ GPIO_C14, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[1] */
+		{ GPIO_C15, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[2] */
+		{ GPIO_C16, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[3] */
+
+		{ GPIO_D14, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[4] */
+		{ GPIO_D15, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[5] */
+		{ GPIO_D16, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[6] */
+		{ GPIO_D17, 0x2, GPIO_PULL_UP, GPIO_DRV_4X },	/* DATA[7] */
+	};
+
+	exynos_pinmux_sdmmc(&gpios[0], ARRAY_SIZE(gpios));
 }
 
 void exynos_pinmux_sdmmc2(void)
 {
-	exynos_pinmux_sdmmc(GPIO_C20, 0);
+	struct gpio gpios[] = {
+		{ GPIO_C20, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CLK */
+		{ GPIO_C21, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CMD */
+		{ GPIO_C22, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* CDn */
+		{ GPIO_C23, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[0] */
+		{ GPIO_C24, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[1] */
+		{ GPIO_C25, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[2] */
+		{ GPIO_C26, 0x2, GPIO_PULL_NONE, GPIO_DRV_4X },	/* DATA[3] */
+	};
+
+	exynos_pinmux_sdmmc(&gpios[0], ARRAY_SIZE(gpios));
 }
 
 static void exynos_pinmux_spi(int start, int cfg)

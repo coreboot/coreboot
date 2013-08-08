@@ -193,21 +193,20 @@ static void mei_reset(void)
 	write_host_csr(&host);
 }
 
-static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
-			void *req_data)
+static int mei_send_packet(struct mei_header *mei, void *req_data)
 {
 	struct mei_csr host;
 	unsigned ndata, n;
 	u32 *data;
 
-	/* Number of dwords to write, ignoring MKHI */
+	/* Number of dwords to write */
 	ndata = mei->length >> 2;
 
 	/* Pad non-dword aligned request message length */
 	if (mei->length & 3)
 		ndata++;
 	if (!ndata) {
-		printk(BIOS_DEBUG, "ME: request does not include MKHI\n");
+		printk(BIOS_DEBUG, "ME: request has no data\n");
 		return -1;
 	}
 	ndata++; /* Add MEI header */
@@ -223,11 +222,7 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 		read_host_csr(&host);
 	}
 
-	/*
-	 * This implementation does not handle splitting large messages
-	 * across multiple transactions.  Ensure the requested length
-	 * will fit in the available circular buffer depth.
-	 */
+	/* Ensure the requested length will fit in the circular buffer. */
 	if ((host.buffer_depth - host.buffer_write_ptr) < ndata) {
 		printk(BIOS_ERR, "ME: message (%u) too large for buffer (%u)\n",
 		       ndata + 2, host.buffer_depth);
@@ -236,10 +231,6 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 
 	/* Write MEI header */
 	mei_write_dword_ptr(mei, MEI_H_CB_WW);
-	ndata--;
-
-	/* Write MKHI header */
-	mei_write_dword_ptr(mkhi, MEI_H_CB_WW);
 	ndata--;
 
 	/* Write message data */
@@ -256,20 +247,70 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	return mei_wait_for_me_ready();
 }
 
-static int mei_recv_msg(struct mkhi_header *mkhi,
+static int mei_send_data(u8 me_address, u8 host_address,
+			 void *req_data, int req_bytes)
+{
+	struct mei_header header = {
+		.client_address = me_address,
+		.host_address = host_address,
+	};
+	struct mei_csr host;
+	int current = 0;
+	u8 *req_ptr = req_data;
+
+	while (!header.is_complete) {
+		int remain = req_bytes - current;
+		int buf_len;
+
+		read_host_csr(&host);
+		buf_len = host.buffer_depth - host.buffer_write_ptr;
+
+		if (buf_len > remain) {
+			/* Send all remaining data as final message */
+			header.length = req_bytes - current;
+			header.is_complete = 1;
+		} else {
+			/* Send as much data as the buffer can hold */
+			header.length = buf_len;
+		}
+
+		mei_send_packet(&header, req_ptr);
+
+		req_ptr += header.length;
+		current += header.length;
+	}
+
+	return 0;
+}
+
+static int mei_send_header(u8 me_address, u8 host_address,
+			   void *header, int header_len, int complete)
+{
+	struct mei_header mei = {
+		.client_address = me_address,
+		.host_address   = host_address,
+		.length         = header_len,
+		.is_complete    = complete,
+	};
+	return mei_send_packet(&mei, header);
+}
+
+static int mei_recv_msg(void *header, int header_bytes,
 			void *rsp_data, int rsp_bytes)
 {
 	struct mei_header mei_rsp;
-	struct mkhi_header mkhi_rsp;
 	struct mei_csr me, host;
-	unsigned ndata, n/*, me_data_len*/;
+	unsigned ndata, n;
 	unsigned expected;
 	u32 *data;
 
 	/* Total number of dwords to read from circular buffer */
-	expected = (rsp_bytes + sizeof(mei_rsp) + sizeof(mkhi_rsp)) >> 2;
+	expected = (rsp_bytes + sizeof(mei_rsp) + header_bytes) >> 2;
 	if (rsp_bytes & 3)
 		expected++;
+
+	if (mei_wait_for_me_ready() < 0)
+		return -1;
 
 	/*
 	 * The interrupt status bit does not appear to indicate that the
@@ -296,7 +337,7 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 		return -1;
 	}
 
-	/* Handle non-dword responses and expect at least MKHI header */
+	/* Handle non-dword responses and expect at least the header */
 	ndata = mei_rsp.length >> 2;
 	if (mei_rsp.length & 3)
 		ndata++;
@@ -306,18 +347,11 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 		return -1;
 	}
 
-	/* Read and verify MKHI response header from the ME */
-	mei_read_dword_ptr(&mkhi_rsp, MEI_ME_CB_RW);
-	if (!mkhi_rsp.is_response ||
-	    mkhi->group_id != mkhi_rsp.group_id ||
-	    mkhi->command != mkhi_rsp.command) {
-		printk(BIOS_ERR, "ME: invalid response, group %u ?= %u,"
-		       "command %u ?= %u, is_response %u\n", mkhi->group_id,
-		       mkhi_rsp.group_id, mkhi->command, mkhi_rsp.command,
-		       mkhi_rsp.is_response);
-		return -1;
-	}
-	ndata--; /* MKHI header has been read */
+	/* Read response header from the ME */
+	data = header;
+	for (n = 0; n < (header_bytes >> 2); ++n)
+		*data++ = read_cb();
+	ndata -= header_bytes >> 2;
 
 	/* Make sure caller passed a buffer with enough space */
 	if (ndata != (rsp_bytes >> 2)) {
@@ -340,13 +374,41 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 	return mei_wait_for_me_ready();
 }
 
-static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
-			       void *req_data, void *rsp_data, int rsp_bytes)
+static inline int mei_sendrecv_mkhi(struct mkhi_header *mkhi,
+				    void *req_data, int req_bytes,
+				    void *rsp_data, int rsp_bytes)
 {
-	if (mei_send_msg(mei, mkhi, req_data) < 0)
+	struct mkhi_header mkhi_rsp;
+
+	/* Send header */
+	if (mei_send_header(MEI_ADDRESS_MKHI, MEI_HOST_ADDRESS,
+			    mkhi, sizeof(*mkhi), req_bytes ? 0 : 1) < 0)
 		return -1;
-	if (mei_recv_msg(mkhi, rsp_data, rsp_bytes) < 0)
+
+	/* Send data if available */
+	if (req_bytes && mei_send_data(MEI_ADDRESS_MKHI, MEI_HOST_ADDRESS,
+				     req_data, req_bytes) < 0)
 		return -1;
+
+	/* Return now if no response expected */
+	if (!rsp_bytes)
+		return 0;
+
+	/* Read header and data */
+	if (mei_recv_msg(&mkhi_rsp, sizeof(mkhi_rsp),
+			 rsp_data, rsp_bytes) < 0)
+		return -1;
+
+	if (!mkhi_rsp.is_response ||
+	    mkhi->group_id != mkhi_rsp.group_id ||
+	    mkhi->command != mkhi_rsp.command) {
+		printk(BIOS_ERR, "ME: invalid response, group %u ?= %u,"
+		       "command %u ?= %u, is_response %u\n", mkhi->group_id,
+		       mkhi_rsp.group_id, mkhi->command, mkhi_rsp.command,
+		       mkhi_rsp.is_response);
+		return -1;
+	}
+
 	return 0;
 }
 
@@ -419,16 +481,10 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 		.group_id       = MKHI_GROUP_ID_FWCAPS,
 		.command        = MKHI_FWCAPS_GET_RULE,
 	};
-	struct mei_header mei = {
-		.is_complete    = 1,
-		.host_address   = MEI_HOST_ADDRESS,
-		.client_address = MEI_ADDRESS_MKHI,
-		.length         = sizeof(mkhi) + sizeof(rule_id),
-	};
 
 	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg))
-	    < 0) {
+	if (mei_sendrecv_mkhi(&mkhi, &rule_id, sizeof(u32),
+			      &cap_msg, sizeof(cap_msg)) < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
 		return -1;
         }
@@ -476,16 +532,10 @@ static int mkhi_global_reset(void)
 		.group_id	= MKHI_GROUP_ID_CBM,
 		.command	= MKHI_GLOBAL_RESET,
 	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.length		= sizeof(mkhi) + sizeof(reset),
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-	};
 
 	/* Send request and wait for response */
 	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
-	if (mei_sendrecv(&mei, &mkhi, &reset, NULL, 0) < 0) {
+	if (mei_sendrecv_mkhi(&mkhi, &reset, sizeof(reset), NULL, 0) < 0) {
 		/* No response means reset will happen shortly... */
 		hlt();
 	}
@@ -505,18 +555,11 @@ static int mkhi_end_of_post(void)
 		.group_id	= MKHI_GROUP_ID_GEN,
 		.command	= MKHI_END_OF_POST,
 	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-		.length		= sizeof(mkhi),
-	};
-
 	u32 eop_ack;
 
 	/* Send request and wait for response */
 	printk(BIOS_NOTICE, "ME: %s\n", __FUNCTION__);
-	if (mei_sendrecv(&mei, &mkhi, NULL, &eop_ack, sizeof(eop_ack)) < 0) {
+	if (mei_sendrecv_mkhi(&mkhi, NULL, 0, &eop_ack, sizeof(eop_ack)) < 0) {
 		printk(BIOS_ERR, "ME: END OF POST message failed\n");
 		return -1;
 	}

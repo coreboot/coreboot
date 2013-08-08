@@ -81,7 +81,14 @@ static void exynos_pinmux_sdmmc(int start, int start_ext)
 void exynos_pinmux_sdmmc0(void)
 {
 	exynos_pinmux_sdmmc(GPIO_C00, GPIO_C30);
-	gpio_set_pull(GPIO_C02, GPIO_PULL_UP);
+	/*
+	 * MMC0 is intended to be used for eMMC. The card detect pin is used
+	 * as a VDDEN signal to power on the eMMC. The 5420 iROM makes this
+	 * same assumption.
+	 */
+	gpio_set_pull(GPIO_C02, GPIO_PULL_NONE);
+	gpio_cfg_pin(GPIO_C02, GPIO_OUTPUT);
+	gpio_set_value(GPIO_C02, 1);
 }
 
 void exynos_pinmux_sdmmc1(void)

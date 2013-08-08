@@ -66,6 +66,20 @@ inline static uint32_t read_mpidr(void)
 	return value;
 }
 
+/* read Auxiliary Control Register (ACTLR) */
+inline static uint32_t read_actlr(void)
+{
+	uint32_t val = 0;
+	asm volatile ("mrc p15, 0, %0, c1, c0, 1" : "=r"(val));
+	return val;
+}
+
+/* write Auxiliary Control Register (ACTLR) */
+inline static void write_actlr(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c1, c0, 1" : : "r" (val));
+}
+
 /* wait for interrupt. */
 inline static void wfi(void)
 {

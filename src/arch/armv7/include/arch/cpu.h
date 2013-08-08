@@ -48,4 +48,40 @@ struct cpuinfo_arm {
 
 #endif
 
+/* Primitives for CPU and MP cores. */
+
+/* read Main Id register (MIDR) */
+inline static uint32_t read_midr(void)
+{
+	uint32_t value;
+	asm volatile ("mrc p15, 0, %0, c0, c0, 0" : "=r"(value));
+	return value;
+}
+
+/* read Multiprocessor Affinity Register (MPIDR) */
+inline static uint32_t read_mpidr(void)
+{
+	uint32_t value;
+	asm volatile ("mrc p15, 0, %0, c0, c0, 5" : "=r"(value));
+	return value;
+}
+
+/* wait for interrupt. */
+inline static void wfi(void)
+{
+	asm volatile ("wfi" : : : "memory");
+}
+
+/* wait for event. */
+inline static void wfe(void)
+{
+	asm volatile ("wfe");
+}
+
+/* set event (to bring up cores in WFE state). */
+inline static void sev(void)
+{
+	asm volatile ("sev");
+}
+
 #endif /* __ARCH_CPU_H__ */

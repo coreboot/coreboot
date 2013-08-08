@@ -113,7 +113,7 @@ void system_clock_init(void)
 
 	/* Set CPLL */
 	writel(CPLL_CON1_VAL, &clk->cpll_con1);
-	val = set_pll(0x6f, 0x2, 0x1);
+	val = set_pll(0xde, 0x4, 0x1);
 	writel(val, &clk->cpll_con0);
 	while ((readl(&clk->cpll_con0) & PLL_LOCKED) == 0)
 		;

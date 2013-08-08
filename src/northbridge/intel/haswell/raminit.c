@@ -156,7 +156,9 @@ void sdram_initialize(struct pei_data *pei_data)
 
 	/* If MRC data is not found we cannot continue S3 resume. */
 	if (pei_data->boot_mode == 2 && !pei_data->mrc_input) {
-		printk(BIOS_DEBUG, "Giving up in sdram_initialize: No MRC data\n");
+		post_code(POST_RESUME_FAILURE);
+		printk(BIOS_DEBUG, "Giving up in sdram_initialize: "
+		       "No MRC data\n");
 		outb(0x6, 0xcf9);
 		while(1) {
 			hlt();

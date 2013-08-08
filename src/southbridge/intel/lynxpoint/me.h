@@ -286,6 +286,24 @@ struct me_fw_version {
 	u16 recovery_hot_fix;
 } __attribute__ ((packed));
 
+/* ICC Messages */
+#define ICC_SET_CLOCK_ENABLES		0x3
+#define ICC_API_VERSION_LYNXPOINT	0x00030000
+
+struct icc_header {
+	u32 api_version;
+	u32 icc_command;
+	u32 icc_status;
+	u32 length;
+	u32 reserved;
+} __attribute__ ((packed));
+
+struct icc_clock_enables_msg {
+	u32 clock_enables;
+	u32 clock_mask;
+	u32 no_response: 1;
+	u32 reserved: 31;
+} __attribute__ ((packed));
 
 #define HECI_EOP_STATUS_SUCCESS       0x0
 #define HECI_EOP_PERFORM_GLOBAL_RESET 0x1

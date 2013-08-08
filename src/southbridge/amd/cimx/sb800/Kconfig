@@ -205,6 +205,14 @@ config SB800_FWM_POSITION
 
 endif  #SB800_IMC_FWM
 
+config EHCI_BAR
+	hex
+	default 0xfef00000
+
+config EHCI_DEBUG_OFFSET
+	hex
+	default 0xe0
+
 choice
 	prompt "Fan Control"
 	default SB800_NO_FAN_CONTROL

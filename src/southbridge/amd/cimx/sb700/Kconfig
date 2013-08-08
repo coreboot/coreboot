@@ -49,6 +49,15 @@ config ACPI_SCI_IRQ
 	default 0x9
 	help
 		Set SCI IRQ to 9.
+
+config EHCI_BAR
+	hex
+	default 0xfef00000
+
+config EHCI_DEBUG_OFFSET
+	hex
+	default 0xe0
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/amd/cimx/sb700/bootblock.c"

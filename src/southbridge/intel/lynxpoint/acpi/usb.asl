@@ -309,11 +309,6 @@ Device (XHCI)
 			Store (1, AX15)
 		}
 
-		// Put device in D3 if it was there originally
-		If (LEqual (Local0, 3)) {
-			Store (3, ^D0D3)
-		}
-
 		Return ()
 	}
 
@@ -371,9 +366,7 @@ Device (XHCI)
 		}
 
 		// Put device in D3
-		If (LEqual (Local0, 3)) {
-			Store (3, ^D0D3)
-		}
+		Store (3, ^D0D3)
 
 		Return ()
 	}

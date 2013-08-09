@@ -87,20 +87,7 @@ disable_cache_as_ram:
   /* Save return stack */
   movd %esp, %xmm0
 
-  /* Disable cache */
-  movl	%cr0, %eax
-  orl	$CR0_CacheDisable, %eax
-  movl	%eax, %cr0
-
-  invd
-
   AMD_DISABLE_STACK
-
-  /* enable cache */
-  movl %cr0, %eax
-  andl $0x9fffffff, %eax
-  movl %eax, %cr0
-  xorl %eax, %eax
 
   /* Restore the return stack */
   movd %xmm0, %esp

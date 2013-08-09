@@ -151,6 +151,50 @@ unsigned long get_pll_clk(int pllreg)
 	return fout;
 }
 
+enum peripheral_clock_select {
+	PERIPH_SRC_CPLL = 1,
+	PERIPH_SRC_DPLL = 2,
+	PERIPH_SRC_MPLL = 3,
+	PERIPH_SRC_SPLL = 4,
+	PERIPH_SRC_IPLL = 5,
+	PERIPH_SRC_EPLL = 6,
+	PERIPH_SRC_RPLL = 7,
+};
+
+static int clock_select_to_pll(enum peripheral_clock_select sel)
+{
+	int pll;
+
+	switch (sel) {
+	case PERIPH_SRC_CPLL:
+		pll = CPLL;
+		break;
+	case PERIPH_SRC_DPLL:
+		pll = DPLL;
+		break;
+	case PERIPH_SRC_MPLL:
+		pll = MPLL;
+		break;
+	case PERIPH_SRC_SPLL:
+		pll = SPLL;
+		break;
+	case PERIPH_SRC_IPLL:
+		pll = IPLL;
+		break;
+	case PERIPH_SRC_EPLL:
+		pll = EPLL;
+		break;
+	case PERIPH_SRC_RPLL:
+		pll = RPLL;
+		break;
+	default:
+		pll = -1;
+		break;
+	}
+
+	return pll;
+}
+
 unsigned long clock_get_periph_rate(enum periph_id peripheral)
 {
 	struct clk_bit_info *bit_info = &clk_bit_info[peripheral];
@@ -206,16 +250,13 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 
 	src = (src >> bit_info->src_bit) & 0xf;
 
-	switch (src) {
-	case EXYNOS_SRC_MPLL:
-		sclk = get_pll_clk(MPLL);
-		break;
-	case EXYNOS_SRC_EPLL:
-		sclk = get_pll_clk(EPLL);
-		break;
-	default:
-		return 0;
+	src = clock_select_to_pll(src);
+	if (src < 0) {
+		printk(BIOS_DEBUG, "%s: cannot determine source PLL", __func__);
+		return -1;
 	}
+
+	sclk = get_pll_clk(src);
 
 	/* Ratio clock division for this peripheral */
 	sub_div = (div >> bit_info->div_bit) & 0xf;

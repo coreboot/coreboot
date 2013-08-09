@@ -60,7 +60,7 @@ distclean: clean
 	rm -f .dependencies
 
 dep:
-	@$(CC) -MM *.c > .dependencies
+	@$(CC) -MM -MG *.c > .dependencies
 
 install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin

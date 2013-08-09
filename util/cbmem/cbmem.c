@@ -331,6 +331,82 @@ static void print_norm(u64 v, int comma)
 		printf(",");
 }
 
+enum additional_timestamp_id {
+	// Depthcharge entry IDs start at 1000.
+	TS_DC_START = 1000,
+
+	TS_RO_PARAMS_INIT = 1001,
+	TS_RO_VB_INIT = 1002,
+	TS_RO_VB_SELECT_FIRMWARE = 1003,
+	TS_RO_VB_SELECT_AND_LOAD_KERNEL = 1004,
+
+	TS_RW_VB_SELECT_AND_LOAD_KERNEL = 1010,
+
+	TS_VB_SELECT_AND_LOAD_KERNEL = 1020,
+
+	TS_CROSSYSTEM_DATA = 1100,
+	TS_START_KERNEL = 1101
+};
+
+static const struct timestamp_id_to_name {
+	u32 id;
+	const char *name;
+} timestamp_ids[] = {
+	{ TS_START_ROMSTAGE,	"start of rom stage" },
+	{ TS_BEFORE_INITRAM,	"before ram initialization" },
+	{ TS_AFTER_INITRAM,	"after ram initialization" },
+	{ TS_END_ROMSTAGE,	"end of romstage" },
+	{ TS_START_VBOOT,	"start of verified boot" },
+	{ TS_END_VBOOT,		"end of verified boot" },
+	{ TS_START_COPYRAM,	"start of copying ram stage" },
+	{ TS_END_COPYRAM,	"end of copying ram stage" },
+	{ TS_START_RAMSTAGE,	"start of ramstage" },
+	{ TS_DEVICE_ENUMERATE,	"device enumeration" },
+	{ TS_DEVICE_CONFIGURE,	"device configuration" },
+	{ TS_DEVICE_ENABLE,	"device enable" },
+	{ TS_DEVICE_INITIALIZE,	"device initialization" },
+	{ TS_DEVICE_DONE,	"device setup done" },
+	{ TS_CBMEM_POST,	"cbmem post" },
+	{ TS_WRITE_TABLES,	"write tables" },
+	{ TS_LOAD_PAYLOAD,	"load payload" },
+	{ TS_ACPI_WAKE_JUMP,	"ACPI wake jump" },
+	{ TS_SELFBOOT_JUMP,	"selfboot jump" },
+	{ TS_DC_START,		"depthcharge start" },
+	{ TS_RO_PARAMS_INIT,	"RO parameter init" },
+	{ TS_RO_VB_INIT,	"RO vboot init" },
+	{ TS_RO_VB_SELECT_FIRMWARE,		"RO vboot select firmware" },
+	{ TS_RO_VB_SELECT_AND_LOAD_KERNEL,	"RO vboot select&load kernel" },
+	{ TS_RW_VB_SELECT_AND_LOAD_KERNEL,	"RW vboot select&load kernel" },
+	{ TS_VB_SELECT_AND_LOAD_KERNEL,		"vboot select&load kernel" },
+	{ TS_CROSSYSTEM_DATA,	"crossystem data" },
+	{ TS_START_KERNEL,	"start kernel" }
+};
+
+void timestamp_print_entry(uint32_t id, uint64_t stamp, uint64_t prev_stamp)
+{
+	int i;
+	const char *name;
+
+	name = "<unknown>";
+	for (i = 0; i < ARRAY_SIZE(timestamp_ids); i++) {
+		if (timestamp_ids[i].id == id) {
+			name = timestamp_ids[i].name;
+			break;
+		}
+	}
+
+	printf("%4d:", id);
+	printf("%-30s", name);
+	print_norm(arch_convert_raw_ts_entry(stamp), 0);
+	if (prev_stamp) {
+		printf(" (");
+		print_norm(arch_convert_raw_ts_entry(stamp
+				- prev_stamp), 0);
+		printf(")");
+	}
+	printf("\n");
+}
+
 /* dump the timestamp table */
 static void dump_timestamps(void)
 {
@@ -348,16 +424,8 @@ static void dump_timestamps(void)
 	printf("%d entries total:\n\n", tst_p->num_entries);
 	for (i = 0; i < tst_p->num_entries; i++) {
 		const struct timestamp_entry *tse_p = tst_p->entries + i;
-
-		printf("%4d:", tse_p->entry_id);
-		print_norm(arch_convert_raw_ts_entry(tse_p->entry_stamp), 0);
-		if (i) {
-			printf(" (");
-			print_norm(arch_convert_raw_ts_entry(tse_p->entry_stamp
-					- tse_p[-1].entry_stamp), 0);
-			printf(")");
-		}
-		printf("\n");
+		timestamp_print_entry(tse_p->entry_id, tse_p->entry_stamp,
+			i ? tse_p[-1].entry_stamp : 0);
 	}
 
 	unmap_memory();

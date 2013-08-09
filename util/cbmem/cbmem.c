@@ -472,8 +472,8 @@ static void dump_console(void)
 	 *  char console[size]
 	 * Hence we have to add 8 to get to the actual console string.
 	 */
-	size = *(uint32_t *)console_p;
-	cursor = *(uint32_t *) (console_p + 4);
+	size = ((uint32_t *)console_p)[0];
+	cursor = ((uint32_t *)console_p)[1];
 	/* Cursor continues to go on even after no more data fits in
 	 * the buffer but the data is dropped in this case.
 	 */
@@ -489,6 +489,7 @@ static void dump_console(void)
 	                            size + sizeof(size) + sizeof(cursor));
 	memcpy(console_c, console_p + 8, size);
 	console_c[size] = 0;
+	console_c[cursor] = 0;
 
 	printf("%s\n", console_c);
 	if (size < cursor)

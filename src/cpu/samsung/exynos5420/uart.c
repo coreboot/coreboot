@@ -93,9 +93,6 @@ static void exynos5_init_dev(void)
 {
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 
-	// TODO initialize with correct peripheral id by base_port.
-	exynos_pinmux_uart3();
-
 	/* enable FIFOs */
 	writel(0x1, &uart->ufcon);
 	writel(0, &uart->umcon);

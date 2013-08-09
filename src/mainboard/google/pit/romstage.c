@@ -250,6 +250,7 @@ void main(void)
 	 * to re-initialize serial console drivers again. */
 	system_clock_init();
 
+	exynos_pinmux_uart3();
 	console_init();
 
 	setup_power(is_resume);

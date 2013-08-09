@@ -67,6 +67,18 @@ int timers_run(void);
  * 0 returned on success, < 0 on error. */
 int timer_sched_callback(struct timeout_callback *tocb, unsigned long us);
 
+/* Set an absolute time to a number of microseconds. */
+static inline void mono_time_set_usecs(struct mono_time *mt, long us)
+{
+	mt->microseconds = us;
+}
+
+/* Set an absolute time to a number of milliseconds. */
+static inline void mono_time_set_msecs(struct mono_time *mt, long ms)
+{
+	mt->microseconds = ms * USECS_PER_MSEC;
+}
+
 /* Add microseconds to an absolute time. */
 static inline void mono_time_add_usecs(struct mono_time *mt, long us)
 {

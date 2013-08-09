@@ -38,16 +38,6 @@ enum periph_id;
 #define DPLL	9
 #define IPLL	10
 
-/* *
- * This structure is to store the src bit, div bit and prediv bit
- * positions of the peripheral clocks of the src and div registers
- */
-struct clk_bit_info {
-	s8 src_bit;    /* offset in register to clock source field */
-	s8 div_bit;
-	s8 prediv_bit;
-};
-
 unsigned long get_pll_clk(int pllreg);
 unsigned long get_arm_clk(void);
 unsigned long get_pwm_clk(void);

@@ -29,32 +29,6 @@
 /* input clock of PLL: SMDK5420 has 24MHz input clock */
 #define CONFIG_SYS_CLK_FREQ            24000000
 
-/* src_bit div_bit prediv_bit */
-static struct clk_bit_info clk_bit_info[PERIPH_ID_COUNT] = {
-	{0,	0,	-1},
-	{4,	4,	-1},
-	{8,	8,	-1},
-	{12,	12,	-1},
-	{0,	0,	8},
-	{4,	16,	24},
-	{8,	0,	8},
-	{12,	16,	24},
-	{-1,	-1,	-1},
-	{16,	0,	8}, /* PERIPH_ID_SROMC */
-	{20,	20,	24},
-	{24,	24,	8},
-	{28,	28,	4},
-	{4,	12,	16},
-	{-1,	-1,	-1},
-	{-1,	-1,	-1},
-	[PERIPH_ID_DPHPD]
-	{24,	0,	-1},
-	{24,	0,	-1},
-	{24,	0,	-1},
-	{24,	0,	-1},
-	{24,	0,	-1},
-};
-
 /* Epll Clock division values to achive different frequency output */
 static struct st_epll_con_val epll_div[] = {
 	{ 192000000, 0, 48, 3, 1, 0 },
@@ -197,37 +171,54 @@ static int clock_select_to_pll(enum peripheral_clock_select sel)
 
 unsigned long clock_get_periph_rate(enum periph_id peripheral)
 {
-	struct clk_bit_info *bit_info = &clk_bit_info[peripheral];
-	unsigned long sclk, sub_clk;
-	unsigned int src, div, sub_div;
+	unsigned long sclk;
+	unsigned int src, div;
 	struct exynos5420_clock *clk = samsung_get_base_clock();
 
 	switch (peripheral) {
 	case PERIPH_ID_UART0:
+		src = (readl(&clk->clk_src_peric0) >> 4) & 0x7;
+		div = (readl(&clk->clk_div_peric0) >> 8) & 0xf;
+		break;
 	case PERIPH_ID_UART1:
+		src = (readl(&clk->clk_src_peric0) >> 8) & 0x7;
+		div = (readl(&clk->clk_div_peric0) >> 12) & 0xf;
+		break;
 	case PERIPH_ID_UART2:
+		src = (readl(&clk->clk_src_peric0) >> 12) & 0x7;
+		div = (readl(&clk->clk_div_peric0) >> 16) & 0xf;
+		break;
 	case PERIPH_ID_UART3:
-		src = readl(&clk->clk_src_peric0);
-		div = readl(&clk->clk_div_peric0);
+		src = (readl(&clk->clk_src_peric0) >> 16) & 0x7;
+		div = (readl(&clk->clk_div_peric0) >> 20) & 0xf;
 		break;
 	case PERIPH_ID_PWM0:
 	case PERIPH_ID_PWM1:
 	case PERIPH_ID_PWM2:
 	case PERIPH_ID_PWM3:
 	case PERIPH_ID_PWM4:
-		src = readl(&clk->clk_src_peric0);
-		div = readl(&clk->clk_div_peric3);
+		src = (readl(&clk->clk_src_peric0) >> 24) & 0x7;
+		div = (readl(&clk->clk_div_peric0) >> 28) & 0x7;
 		break;
 	case PERIPH_ID_SPI0:
-	case PERIPH_ID_SPI1:
-	case PERIPH_ID_SPI2:
-		src = readl(&clk->clk_src_peric1);
-		div = readl(&clk->clk_div_peric1);
+		src = (readl(&clk->clk_src_peric1) >> 20) & 0x7;
+		div = (readl(&clk->clk_div_peric1) >> 20) & 0xf;
 		break;
-	case PERIPH_ID_SPI3:
-	case PERIPH_ID_SPI4:
-		src = readl(&clk->clk_src_isp);
-		div = readl(&clk->clk_div_isp1);
+	case PERIPH_ID_SPI1:
+		src = (readl(&clk->clk_src_peric1) >> 24) & 0x7;
+		div = (readl(&clk->clk_div_peric1) >> 24) & 0xf;
+		break;
+	case PERIPH_ID_SPI2:
+		src = (readl(&clk->clk_src_peric1) >> 28) & 0x7;
+		div = (readl(&clk->clk_div_peric1) >> 28) & 0xf;
+		break;
+	case PERIPH_ID_SPI3:	/* aka SPI0_ISP */
+		src = (readl(&clk->clk_src_isp) >> 16) & 0x7;
+		div = (readl(&clk->clk_div_isp0) >> 0) & 0x7;
+		break;
+	case PERIPH_ID_SPI4:	/* aka SPI1_ISP */
+		src = (readl(&clk->clk_src_isp) >> 12) & 0x7;
+		div = (readl(&clk->clk_div_isp1) >> 4) & 0x7;
 		break;
 	case PERIPH_ID_I2C0:
 	case PERIPH_ID_I2C1:
@@ -244,11 +235,10 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 		div = ((readl(&clk->clk_div_top1) >> 8) & 0x3f) + 1;
 		return sclk / div;
 	default:
-		printk(BIOS_DEBUG, "%s: invalid peripheral %d", __func__, peripheral);
+		printk(BIOS_DEBUG, "%s: invalid peripheral %d",
+				__func__, peripheral);
 		return -1;
 	};
-
-	src = (src >> bit_info->src_bit) & 0xf;
 
 	src = clock_select_to_pll(src);
 	if (src < 0) {
@@ -258,17 +248,7 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 
 	sclk = get_pll_clk(src);
 
-	/* Ratio clock division for this peripheral */
-	sub_div = (div >> bit_info->div_bit) & 0xf;
-	sub_clk = sclk / (sub_div + 1);
-
-	/* Pre-ratio clock division for SDMMC0 and 2 */
-	if (peripheral == PERIPH_ID_SDMMC0 || peripheral == PERIPH_ID_SDMMC2) {
-		div = (div >> bit_info->prediv_bit) & 0xff;
-		return sub_clk / (div + 1);
-	}
-
-	return sub_clk;
+	return sclk / (div + 1);
 }
 
 /* exynos5: return ARM clock frequency */

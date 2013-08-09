@@ -98,6 +98,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 		if (smm_get_gnvs()->s3u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+		/* Enable wake events */
+		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		break;
 	case 5:
 		if (smm_get_gnvs()->s5u0 == 0)
@@ -106,6 +108,8 @@ void mainboard_smi_sleep(u8 slp_typ)
 		if (smm_get_gnvs()->s5u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+		/* Enable wake events */
+		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 		break;
 	}
 
@@ -115,9 +119,6 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 	/* Clear pending events that may trigger immediate wake */
 	while (google_chromeec_get_event() != 0);
-
-	/* Enable wake events */
-	google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 }
 
 #define APMC_FINALIZE 0xcb

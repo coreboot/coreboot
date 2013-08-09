@@ -85,6 +85,8 @@ struct southbridge_intel_lynxpoint_config {
 
 	/* Enable linear PCIe Root Port function numbers starting at zero */
 	uint8_t pcie_port_coalesce;
+	/* Force root port ASPM configuration with port bitmap */
+	uint8_t pcie_port_force_aspm;
 
 	/* Serial IO configuration */
 	/* Put devices into ACPI mode instead of a PCI device */

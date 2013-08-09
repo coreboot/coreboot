@@ -503,3 +503,19 @@ config PXE_ROM_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 endmenu
+
+config SUBSYSTEM_VENDOR_ID
+	hex "Override PCI Subsystem Vendor ID"
+	depends on PCI
+	default "0x0000"
+	help
+	  This config option will override the devicetree settings for
+	  PCI Subsystem Vendor ID.
+
+config SUBSYSTEM_DEVICE_ID
+	hex "Override PCI Subsystem Device ID"
+	depends on PCI
+	default "0x0000"
+	help
+	  This config option will override the devicetree settings for
+	  PCI Subsystem Device ID.

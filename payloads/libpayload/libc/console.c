@@ -49,16 +49,16 @@ void console_add_input_driver(struct console_input_driver *in)
 
 void console_init(void)
 {
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 	video_console_init();
 #endif
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 	serial_init();
 #endif
-#ifdef CONFIG_PC_KEYBOARD
+#ifdef CONFIG_LP_PC_KEYBOARD
 	keyboard_init();
 #endif
-#ifdef CONFIG_CBMEM_CONSOLE
+#ifdef CONFIG_LP_CBMEM_CONSOLE
 	cbmem_console_init();
 #endif
 }
@@ -94,7 +94,7 @@ int puts(const char *s)
 
 int havekey(void)
 {
-#ifdef CONFIG_USB
+#ifdef CONFIG_LP_USB
 	usb_poll();
 #endif
 	struct console_input_driver *in;
@@ -111,7 +111,7 @@ int havekey(void)
 int getchar(void)
 {
 	while (1) {
-#ifdef CONFIG_USB
+#ifdef CONFIG_LP_USB
 		usb_poll();
 #endif
 		struct console_input_driver *in;

@@ -5,7 +5,7 @@
 
 unsigned long pdc_key_modifiers = 0L;
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 /* We treat serial like a vt100 terminal.  For now we
    do the cooking in here, but we should probably eventually
    pass it to dedicated vt100 code */
@@ -108,7 +108,7 @@ void PDC_set_keyboard_binary(bool on)
 
 bool PDC_check_key(void)
 {
-#ifdef CONFIG_USB_HID
+#ifdef CONFIG_LP_USB_HID
     usb_poll();
     if ((curses_flags & F_ENABLE_CONSOLE) &&
         usbhid_havechar()) {
@@ -116,14 +116,14 @@ bool PDC_check_key(void)
     }
 #endif
 
-#ifdef CONFIG_PC_KEYBOARD
+#ifdef CONFIG_LP_PC_KEYBOARD
     if ((curses_flags & F_ENABLE_CONSOLE) &&
         keyboard_havechar()) {
         return TRUE;
     }
 #endif
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
     if ((curses_flags & F_ENABLE_SERIAL) &&
         serial_havechar()) {
         return TRUE;
@@ -139,7 +139,7 @@ int PDC_get_key(void)
 {
     int c = 0;
 
-#ifdef CONFIG_USB_HID
+#ifdef CONFIG_LP_USB_HID
     usb_poll();
     if ((curses_flags & F_ENABLE_CONSOLE) &&
         usbhid_havechar()) {
@@ -147,14 +147,14 @@ int PDC_get_key(void)
     }
 #endif
 
-#ifdef CONFIG_PC_KEYBOARD
+#ifdef CONFIG_LP_PC_KEYBOARD
     if ((curses_flags & F_ENABLE_CONSOLE) &&
         keyboard_havechar() && (c==0)) {
         c = keyboard_getchar();
     }
 #endif
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
     if ((curses_flags & F_ENABLE_SERIAL) &&
         serial_havechar() && (c==0)) {
         c = cook_serial(serial_getchar());

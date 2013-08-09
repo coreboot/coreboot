@@ -66,8 +66,8 @@ chtype fallback_acs_map[128] =
 	'|',	'<',	'>',	'*',	'!',	'f',	'o',	' ',
 	};
 
-#ifdef CONFIG_SERIAL_CONSOLE
-#ifdef CONFIG_SERIAL_ACS_FALLBACK
+#ifdef CONFIG_LP_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_ACS_FALLBACK
 chtype serial_acs_map[128];
 #else
 /* See acsc of vt100. */
@@ -93,7 +93,7 @@ chtype serial_acs_map[128] =
 #endif
 #endif
 
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 /* See acsc of linux. */
 chtype console_acs_map[128] =
 	{
@@ -122,10 +122,10 @@ void PDC_gotoyx(int row, int col)
 {
     PDC_LOG(("PDC_gotoyx() - called: row %d col %d\n", row, col));
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
     serial_set_cursor(col, row);
 #endif
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
     video_console_set_cursor(col, row);
 #endif
 }
@@ -139,7 +139,7 @@ void PDC_transform_line(int lineno, int x, int len, const chtype *srcp)
 
     PDC_LOG(("PDC_transform_line() - called: line %d, len %d, curses_flags %d\n", lineno, len, curses_flags));
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
     int serial_is_bold = 0;
     int serial_is_reverse = 0;
     int serial_is_altcharset = 0;
@@ -157,7 +157,7 @@ void PDC_transform_line(int lineno, int x, int len, const chtype *srcp)
     {
 	ch = srcp[j];
 	attr = ch;
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 	if (curses_flags & F_ENABLE_SERIAL) {
 		if (attr & A_BOLD) {
 			if (!serial_is_bold) {
@@ -222,7 +222,7 @@ void PDC_transform_line(int lineno, int x, int len, const chtype *srcp)
 
 	}
 #endif
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 	unsigned char c = pdc_atrtab[srcp[j] >> PDC_ATTR_SHIFT];
 
 	if (curses_flags & F_ENABLE_CONSOLE) {

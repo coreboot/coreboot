@@ -111,8 +111,8 @@ chtype fallback_acs_map[128] =
 	'|',	'<',	'>',	'*',	'!',	'f',	'o',	' ',
 	};
 
-#ifdef CONFIG_SERIAL_CONSOLE
-#ifdef CONFIG_SERIAL_ACS_FALLBACK
+#ifdef CONFIG_LP_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_ACS_FALLBACK
 chtype serial_acs_map[128];
 #else
 /* See acsc of vt100. */
@@ -138,7 +138,7 @@ chtype serial_acs_map[128] =
 #endif
 #endif
 
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 /* See acsc of linux. */
 chtype console_acs_map[128] =
 	{
@@ -191,7 +191,7 @@ NCURSES_CH_T _nc_render(WINDOW *win, NCURSES_CH_T ch)
 int beep(void)
 {
 	/* TODO: Flash the screen if beeping fails? */
-#ifdef CONFIG_SPEAKER
+#ifdef CONFIG_LP_SPEAKER
 	speaker_tone(1760, 500);	/* 1760 == note A6 */
 #endif
 	return OK;
@@ -202,12 +202,12 @@ int cbreak(void) { /* TODO */ return 0; }
 // int color_content(short color, short *r, short *g, short *b) {}
 int curs_set(int on)
 {
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 	if (curses_flags & F_ENABLE_SERIAL) {
 		serial_cursor_enable(on);
 	}
 #endif
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 	if (curses_flags & F_ENABLE_CONSOLE) {
 		video_console_cursor_enable(on);
 	}
@@ -315,12 +315,12 @@ WINDOW *initscr(void)
 
 	for (i = 0; i < 128; i++)
 	  acs_map[i] = (chtype) i | A_ALTCHARSET;
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 	if (curses_flags & F_ENABLE_SERIAL) {
 		serial_clear();
 	}
 #endif
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 	if (curses_flags & F_ENABLE_CONSOLE) {
 		/* Clear the screen and kill the cursor */
 
@@ -719,7 +719,7 @@ int whline(WINDOW *win, chtype ch, int n)
 	(((c) & 0x4400) >> 2) | ((c) & 0xAA00) | (((c) & 0x1100) << 2)
 int wnoutrefresh(WINDOW *win)
 {
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 	// FIXME.
 	int serial_is_bold = 0;
 	int serial_is_reverse = 0;
@@ -732,7 +732,7 @@ int wnoutrefresh(WINDOW *win)
 	int x, y;
 	chtype ch;
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 	serial_end_bold();
 	serial_end_altcharset();
 #endif
@@ -744,7 +744,7 @@ int wnoutrefresh(WINDOW *win)
 
 		/* Position the serial cursor */
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 		if (curses_flags & F_ENABLE_SERIAL)
 			serial_set_cursor(win->_begy + y, win->_begx +
 					win->_line[y].firstchar);
@@ -753,7 +753,7 @@ int wnoutrefresh(WINDOW *win)
 		for (x = win->_line[y].firstchar; x <= win->_line[y].lastchar; x++) {
 			attr_t attr = win->_line[y].text[x].attr;
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 			if (curses_flags & F_ENABLE_SERIAL) {
 				ch = win->_line[y].text[x].chars[0];
 
@@ -819,7 +819,7 @@ int wnoutrefresh(WINDOW *win)
 
 			}
 #endif
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 			unsigned int c =
 				((int)color_pairs[PAIR_NUMBER(attr)]) << 8;
 
@@ -860,12 +860,12 @@ int wnoutrefresh(WINDOW *win)
 		win->_line[y].lastchar = _NOCHANGE;
 	}
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
 	if (curses_flags & F_ENABLE_SERIAL)
 		serial_set_cursor(win->_begy + win->_cury, win->_begx + win->_curx);
 #endif
 
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
 	if (curses_flags & F_ENABLE_CONSOLE)
 		video_console_set_cursor(win->_begx + win->_curx, win->_begy + win->_cury);
 #endif

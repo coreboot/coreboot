@@ -68,14 +68,14 @@ else
 	exit 1
 fi
 
-if [ "$CONFIG_ARCH_ARMV7" = "y" ]; then
+if [ "$CONFIG_LP_ARCH_ARMV7" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/armv7
   _ARCHLIBDIR=$_LIBDIR/armv7
   _ARCHEXTRA=""
   _ARCH=armv7
 fi
 
-if [ "$CONFIG_ARCH_X86" = "y" ]; then
+if [ "$CONFIG_LP_ARCH_X86" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/x86
   _ARCHLIBDIR=$_LIBDIR/x86
   _ARCHEXTRA="-m32 "
@@ -135,11 +135,11 @@ done
 
 _CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$BASE/../build -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
 
-if [ "$CONFIG_PDCURSES" = y ]; then
+if [ "$CONFIG_LP_PDCURSES" = y ]; then
   _CFLAGS="$_CFLAGS -I$BASE/../curses/PDCurses-3.4"
 fi
 
-if [ "$CONFIG_TINYCURSES" = y ]; then
+if [ "$CONFIG_LP_TINYCURSES" = y ]; then
   _CFLAGS="$_CFLAGS -I$BASE/../curses"
 fi
 

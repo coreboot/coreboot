@@ -27,6 +27,6 @@
 ## SUCH DAMAGE.
 ##
 
-libcbfs-$(CONFIG_CBFS) += cbfs.c
-libcbfs-$(CONFIG_CBFS) += ram_media.c
+libcbfs-$(CONFIG_LP_CBFS) += cbfs.c
+libcbfs-$(CONFIG_LP_CBFS) += ram_media.c
 

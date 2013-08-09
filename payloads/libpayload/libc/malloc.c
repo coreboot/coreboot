@@ -68,7 +68,7 @@ typedef u64 hdrtype_t;
 static int free_aligned(void* addr);
 void print_malloc_map(void);
 
-#ifdef CONFIG_DEBUG_MALLOC
+#ifdef CONFIG_LP_DEBUG_MALLOC
 static int heap_initialized = 0;
 static int minimal_free = 0;
 #endif
@@ -77,7 +77,7 @@ static void setup(hdrtype_t volatile *start, int size)
 {
 	*start = FREE_BLOCK(size);
 
-#ifdef CONFIG_DEBUG_MALLOC
+#ifdef CONFIG_LP_DEBUG_MALLOC
 	heap_initialized = 1;
 	minimal_free  = size;
 #endif
@@ -282,7 +282,7 @@ static struct align_region_t* align_regions = 0;
 static struct align_region_t *allocate_region(int alignment, int num_elements)
 {
 	struct align_region_t *new_region;
-#ifdef CONFIG_DEBUG_MALLOC
+#ifdef CONFIG_LP_DEBUG_MALLOC
 	printf("%s(old align_regions=%p, alignment=%u, num_elements=%u)\n",
 			__func__, align_regions, alignment, num_elements);
 #endif
@@ -344,7 +344,7 @@ look_further:
 	{
 		if ((reg->alignment == align) && (reg->free >= (size + align - 1)/align))
 		{
-#ifdef CONFIG_DEBUG_MALLOC
+#ifdef CONFIG_LP_DEBUG_MALLOC
 			printf("  found memalign region. %x free, %x required\n", reg->free, (size + align - 1)/align);
 #endif
 			break;
@@ -353,12 +353,12 @@ look_further:
 	}
 	if (reg == 0)
 	{
-#ifdef CONFIG_DEBUG_MALLOC
+#ifdef CONFIG_LP_DEBUG_MALLOC
 		printf("  need to allocate a new memalign region\n");
 #endif
 		/* get align regions */
 		reg = allocate_region(align, (size<1024)?(1024/align):(((size-1)/align)+1));
-#ifdef CONFIG_DEBUG_MALLOC
+#ifdef CONFIG_LP_DEBUG_MALLOC
 		printf("  ... returned %p\n", align_regions);
 #endif
 	}
@@ -394,7 +394,7 @@ look_further:
 }
 
 /* This is for debugging purposes. */
-#ifdef CONFIG_DEBUG_MALLOC
+#ifdef CONFIG_LP_DEBUG_MALLOC
 void print_malloc_map(void)
 {
 	void *ptr = hstart;

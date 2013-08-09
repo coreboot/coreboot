@@ -38,8 +38,8 @@
  */
 struct sysinfo_t lib_sysinfo = {
 	.cpu_khz = 200,
-#ifdef CONFIG_SERIAL_CONSOLE
-	.ser_ioport = CONFIG_SERIAL_IOBASE,
+#ifdef CONFIG_LP_SERIAL_CONSOLE
+	.ser_ioport = CONFIG_LP_SERIAL_IOBASE,
 #else
 	.ser_ioport = 0x3f8,
 #endif
@@ -52,7 +52,7 @@ int lib_get_sysinfo(void)
 	/* Get the CPU speed (for delays). */
 	lib_sysinfo.cpu_khz = get_cpu_speed();
 
-#ifdef CONFIG_MULTIBOOT
+#ifdef CONFIG_LP_MULTIBOOT
 	/* Get the information from the multiboot tables,
 	 * if they exist */
 	get_multiboot_info(&lib_sysinfo);

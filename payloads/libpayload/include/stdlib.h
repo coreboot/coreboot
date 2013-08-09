@@ -36,7 +36,7 @@
  * @defgroup malloc Memory allocation functions
  * @{
  */
-#if defined(CONFIG_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
+#if defined(CONFIG_LP_DEBUG_MALLOC) && !defined(IN_MALLOC_C)
 #define free(p)	\
 	({ \
 	 extern void print_malloc_map(void); \

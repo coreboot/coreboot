@@ -27,5 +27,5 @@
 ## SUCH DAMAGE.
 ##
 
-liblzma-$(CONFIG_LZMA) += lzma.c
+liblzma-$(CONFIG_LP_LZMA) += lzma.c
 

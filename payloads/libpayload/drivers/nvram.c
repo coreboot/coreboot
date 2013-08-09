@@ -60,7 +60,7 @@
  * doesn't try to do this on its own.
  */
 #define RTC_PORT_STANDARD      0x70
-#ifdef CONFIG_RTC_PORT_EXTENDED_VIA
+#ifdef CONFIG_LP_RTC_PORT_EXTENDED_VIA
 #define RTC_PORT_EXTENDED      0x74
 #else
 #define RTC_PORT_EXTENDED      0x72

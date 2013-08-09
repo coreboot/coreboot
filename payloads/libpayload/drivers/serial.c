@@ -39,7 +39,7 @@ static int serial_is_mem_mapped = 0;
 
 static uint8_t serial_read_reg(int offset)
 {
-#ifdef CONFIG_IO_ADDRESS_SPACE
+#ifdef CONFIG_LP_IO_ADDRESS_SPACE
 	if (!serial_is_mem_mapped)
 		return inb(IOBASE + offset);
 	else
@@ -49,7 +49,7 @@ static uint8_t serial_read_reg(int offset)
 
 static void serial_write_reg(uint8_t val, int offset)
 {
-#ifdef CONFIG_IO_ADDRESS_SPACE
+#ifdef CONFIG_LP_IO_ADDRESS_SPACE
 	if (!serial_is_mem_mapped)
 		outb(val, IOBASE + offset);
 	else
@@ -57,7 +57,7 @@ static void serial_write_reg(uint8_t val, int offset)
 		writeb(val, MEMBASE + offset);
 }
 
-#ifdef CONFIG_SERIAL_SET_SPEED
+#ifdef CONFIG_LP_SERIAL_SET_SPEED
 static void serial_hardware_init(int speed, int word_bits,
 				 int parity, int stop_bits)
 {
@@ -102,7 +102,7 @@ void serial_init(void)
 		(lib_sysinfo.serial->type == CB_SERIAL_TYPE_MEMORY_MAPPED);
 
 	if (!serial_is_mem_mapped) {
-#ifdef CONFIG_IO_ADDRESS_SPACE
+#ifdef CONFIG_LP_IO_ADDRESS_SPACE
 		if ((inb(IOBASE + 0x05) == 0xFF) &&
 				(inb(IOBASE + 0x06) == 0xFF)) {
 			printf("IO space mapped serial not present.");
@@ -114,8 +114,8 @@ void serial_init(void)
 #endif
 	}
 
-#ifdef CONFIG_SERIAL_SET_SPEED
-	serial_hardware_init(CONFIG_SERIAL_BAUD_RATE, 8, 0, 1);
+#ifdef CONFIG_LP_SERIAL_SET_SPEED
+	serial_hardware_init(CONFIG_LP_SERIAL_BAUD_RATE, 8, 0, 1);
 #endif
 	console_add_input_driver(&consin);
 	console_add_output_driver(&consout);

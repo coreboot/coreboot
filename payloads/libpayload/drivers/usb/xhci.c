@@ -297,7 +297,7 @@ _free_controller:
 	return NULL;
 }
 
-#ifdef CONFIG_USB_PCI
+#ifdef CONFIG_LP_USB_PCI
 hci_t *
 xhci_pci_init (pcidev_t addr)
 {
@@ -344,8 +344,8 @@ xhci_reinit (hci_t *controller)
 		return;
 
 	/* Enable all available slots */
-	xhci->opreg->config = xhci->capreg->MaxSlots & CONFIG_MASK_MaxSlotsEn;
-	xhci->max_slots_en = xhci->capreg->MaxSlots & CONFIG_MASK_MaxSlotsEn;
+	xhci->opreg->config = xhci->capreg->MaxSlots & CONFIG_LP_MASK_MaxSlotsEn;
+	xhci->max_slots_en = xhci->capreg->MaxSlots & CONFIG_LP_MASK_MaxSlotsEn;
 
 	/* Set DCBAA */
 	xhci->opreg->dcbaap_lo = virt_to_phys(xhci->dcbaa);

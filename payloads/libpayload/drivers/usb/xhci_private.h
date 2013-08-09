@@ -389,7 +389,7 @@ typedef struct xhci {
 		u32 dcbaap_lo;
 		u32 dcbaap_hi;
 		u32 config;
-#define CONFIG_MASK_MaxSlotsEn 0xff
+#define CONFIG_LP_MASK_MaxSlotsEn 0xff
 		u8 res3[0x3ff-0x3c+1];
 		struct {
 			u32 portsc;

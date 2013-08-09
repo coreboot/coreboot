@@ -13,12 +13,12 @@ int PDC_curs_set(int visibility)
     ret_vis = SP->visibility;
     SP->visibility = visibility;
 
-#ifdef CONFIG_SERIAL_CONSOLE
+#ifdef CONFIG_LP_SERIAL_CONSOLE
     if (curses_flags & F_ENABLE_SERIAL) {
         serial_cursor_enable(visibility);
     }
 #endif
-#ifdef CONFIG_VIDEO_CONSOLE
+#ifdef CONFIG_LP_VIDEO_CONSOLE
     if (curses_flags & F_ENABLE_CONSOLE) {
         video_console_cursor_enable(visibility);
     }

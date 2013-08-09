@@ -56,7 +56,7 @@ static void cb_parse_memory(void *ptr, struct sysinfo_t *info)
 	for (i = 0; i < count; i++) {
 		struct cb_memory_range *range = MEM_RANGE_PTR(mem, i);
 
-#ifdef CONFIG_MEMMAP_RAM_ONLY
+#ifdef CONFIG_LP_MEMMAP_RAM_ONLY
 		if (range->type != CB_MEM_RAM)
 			continue;
 #endif
@@ -78,7 +78,7 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 	info->serial = ((struct cb_serial *)ptr);
 }
 
-#ifdef CONFIG_CHROMEOS
+#ifdef CONFIG_LP_CHROMEOS
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_vbnv *vbnv = (struct cb_vbnv *)ptr;
@@ -126,7 +126,7 @@ static void cb_parse_mrc_cache(unsigned char *ptr, struct sysinfo_t *info)
 	info->mrc_cache = phys_to_virt(cbmem->cbmem_tab);
 }
 
-#ifdef CONFIG_NVRAM
+#ifdef CONFIG_LP_NVRAM
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
 	/* ptr points to a coreboot table entry and is already virtual */
@@ -142,7 +142,7 @@ static void cb_parse_checksum(void *ptr, struct sysinfo_t *info)
 }
 #endif
 
-#ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
+#ifdef CONFIG_LP_COREBOOT_VIDEO_CONSOLE
 static void cb_parse_framebuffer(void *ptr, struct sysinfo_t *info)
 {
 	/* ptr points to a coreboot table entry and is already virtual */
@@ -233,7 +233,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_ASSEMBLER:
 			cb_parse_string(ptr, &info->assembler);
 			break;
-#ifdef CONFIG_NVRAM
+#ifdef CONFIG_LP_NVRAM
 		case CB_TAG_CMOS_OPTION_TABLE:
 			cb_parse_optiontable(ptr, info);
 			break;
@@ -241,7 +241,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			cb_parse_checksum(ptr, info);
 			break;
 #endif
-#ifdef CONFIG_COREBOOT_VIDEO_CONSOLE
+#ifdef CONFIG_LP_COREBOOT_VIDEO_CONSOLE
 		// FIXME we should warn on serial if coreboot set up a
 		// framebuffer buf the payload does not know about it.
 		case CB_TAG_FRAMEBUFFER:
@@ -251,7 +251,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		case CB_TAG_MAINBOARD:
 			info->mainboard = (struct cb_mainboard *)ptr;
 			break;
-#ifdef CONFIG_CHROMEOS
+#ifdef CONFIG_LP_CHROMEOS
 		case CB_TAG_GPIO:
 			cb_parse_gpios(ptr, info);
 			break;
@@ -284,8 +284,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header(phys_to_virt(CONFIG_COREBOOT_INFO_RANGE_BASE),
-				  CONFIG_COREBOOT_INFO_RANGE_SIZE, info);
+	int ret = cb_parse_header(
+		phys_to_virt(CONFIG_LP_COREBOOT_INFO_RANGE_BASE),
+		CONFIG_LP_COREBOOT_INFO_RANGE_SIZE, info);
 
 	return (ret == 1) ? 0 : -1;
 }

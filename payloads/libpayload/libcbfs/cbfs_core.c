@@ -69,7 +69,7 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 
 	media->open(media);
 	DEBUG("CBFS_HEADER_ROM_ADDRESS: 0x%x/0x%x\n", CBFS_HEADER_ROM_ADDRESS,
-	      CONFIG_ROM_SIZE);
+	      CONFIG_LP_ROM_SIZE);
 	header = media->map(media, CBFS_HEADER_ROM_ADDRESS, sizeof(*header));
 	media->close(media);
 
@@ -118,7 +118,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 
 	// TODO Add a "size" in CBFS header for a platform independent way to
 	// determine the end of CBFS data.
-#if defined(CONFIG_ARCH_X86) && CONFIG_ARCH_X86
+#if defined(CONFIG_LP_ARCH_X86) && CONFIG_LP_ARCH_X86
 	romsize -= htonl(header->bootblocksize);
 #endif
 	DEBUG("CBFS location: 0x%x~0x%x, align: %d\n", offset, romsize, align);

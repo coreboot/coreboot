@@ -56,7 +56,7 @@
 #include <arch/virtual.h>
 #include <sysinfo.h>
 #include <pci.h>
-#ifdef CONFIG_LAR
+#ifdef CONFIG_LP_LAR
 #include <lar.h>
 #endif
 
@@ -339,7 +339,7 @@ struct timeval {
 int gettimeofday(struct timeval *tv, void *tz);
 /** @} */
 
-#ifdef CONFIG_LAR
+#ifdef CONFIG_LP_LAR
 /**
  * @defgroup lar LAR functions
  * @{

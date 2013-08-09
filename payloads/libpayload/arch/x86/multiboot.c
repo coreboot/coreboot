@@ -45,7 +45,7 @@ static void mb_parse_mmap(struct multiboot_header *table,
 	while(ptr < (start + table->mmap_length)) {
 		struct multiboot_mmap *mmap = (struct multiboot_mmap *) ptr;
 
-#ifdef CONFIG_MEMMAP_RAM_ONLY
+#ifdef CONFIG_LP_MEMMAP_RAM_ONLY
 		/* 1 == normal RAM.  Ignore everything else for now */
 
 		if (mmap->type == 1) {
@@ -56,7 +56,7 @@ static void mb_parse_mmap(struct multiboot_header *table,
 
 			if (++info->n_memranges == SYSINFO_MAX_MEM_RANGES)
 				return;
-#ifdef CONFIG_MEMMAP_RAM_ONLY
+#ifdef CONFIG_LP_MEMMAP_RAM_ONLY
 		}
 #endif
 

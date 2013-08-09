@@ -33,7 +33,7 @@ libc-y += timer.c coreboot.c util.S
 libc-y += exec.S virtual.c
 libc-y += string.c
 
-libcbfs-$(CONFIG_CBFS) += rom_media.c
+libcbfs-$(CONFIG_LP_CBFS) += rom_media.c
 
 # Multiboot support is configurable
-libc-$(CONFIG_MULTIBOOT) += multiboot.c
+libc-$(CONFIG_LP_MULTIBOOT) += multiboot.c

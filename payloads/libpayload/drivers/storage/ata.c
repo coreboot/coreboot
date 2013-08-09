@@ -212,7 +212,7 @@ int ata_attach_device(ata_dev_t *const dev, const storage_port_t port_type)
 	ata_strncpy(model, id + 27, sizeof(model));
 	printf("ata: Identified %s [%s]\n", model, fw);
 
-#ifdef CONFIG_STORAGE_64BIT_LBA
+#ifdef CONFIG_LP_STORAGE_64BIT_LBA
 	if (id[ATA_CMDS_AND_FEATURE_SETS + 1] & (1 << 10)) {
 		printf("ata: Support for LBA-48 enabled.\n");
 		dev->read_cmd = ATA_READ_DMA_EXT;

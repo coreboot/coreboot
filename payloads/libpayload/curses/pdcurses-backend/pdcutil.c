@@ -11,7 +11,7 @@ void PDC_beep(void)
 {
     PDC_LOG(("PDC_beep() - called\n"));
 
-#ifdef CONFIG_SPEAKER
+#ifdef CONFIG_LP_SPEAKER
     speaker_tone(1760, 500); /* 1760 == note A6 */
 #endif
 }

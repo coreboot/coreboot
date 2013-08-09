@@ -30,7 +30,7 @@
 #include <libpayload-config.h>
 #include <libpayload.h>
 
-#ifdef CONFIG_ARCH_X86
+#ifdef CONFIG_LP_ARCH_X86
 extern void i386_do_exec(long addr, int argc, char **argv, int *ret);
 #endif
 
@@ -46,7 +46,7 @@ int exec(long addr, int argc, char **argv)
 {
 	int val = -1;
 
-#ifdef CONFIG_ARCH_X86
+#ifdef CONFIG_LP_ARCH_X86
 	i386_do_exec(addr, argc, argv, &val);
 #endif
 	return val;

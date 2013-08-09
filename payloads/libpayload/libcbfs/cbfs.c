@@ -31,7 +31,7 @@
 
 #ifdef LIBPAYLOAD
 # include <libpayload-config.h>
-# ifdef CONFIG_LZMA
+# ifdef CONFIG_LP_LZMA
 #  include <lzma.h>
 #  define CBFS_CORE_WITH_LZMA
 # endif
@@ -55,15 +55,15 @@
 # include <console/console.h>
 # define ERROR(x...) printk(BIOS_ERR, "CBFS: " x)
 # define LOG(x...) printk(BIOS_INFO, "CBFS: " x)
-# if CONFIG_DEBUG_CBFS
+# if CONFIG_LP_DEBUG_CBFS
 #  define DEBUG(x...) printk(BIOS_SPEW, "CBFS: " x)
 # else
 #  define DEBUG(x...)
 # endif
 #endif
 
-#if defined(CONFIG_CBFS_HEADER_ROM_OFFSET) && (CONFIG_CBFS_HEADER_ROM_OFFSET)
-# define CBFS_HEADER_ROM_ADDRESS (CONFIG_CBFS_HEADER_ROM_OFFSET)
+#if defined(CONFIG_LP_CBFS_HEADER_ROM_OFFSET) && (CONFIG_LP_CBFS_HEADER_ROM_OFFSET)
+# define CBFS_HEADER_ROM_ADDRESS (CONFIG_LP_CBFS_HEADER_ROM_OFFSET)
 #else
 /* ugly hack: this assumes that "media" exists
               in the scope where the macro is used. */

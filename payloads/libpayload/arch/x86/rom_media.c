@@ -83,19 +83,19 @@ int init_x86rom_cbfs_media(struct cbfs_media *media) {
 	struct cbfs_header *header = (struct cbfs_header*)
 			*(uint32_t*)(0xfffffffc);
 	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
-#if defined(CONFIG_ROM_SIZE)
+#if defined(CONFIG_LP_ROM_SIZE)
 		printk(BIOS_ERR, "Invalid CBFS master header at %p\n", header);
-		media->context = (void*)CONFIG_ROM_SIZE;
+		media->context = (void*)CONFIG_LP_ROM_SIZE;
 #else
 		return -1;
 #endif
 	} else {
 		uint32_t romsize = ntohl(header->romsize);
 		media->context = (void*)romsize;
-#if defined(CONFIG_ROM_SIZE)
-		if (CONFIG_ROM_SIZE != romsize)
+#if defined(CONFIG_LP_ROM_SIZE)
+		if (CONFIG_LP_ROM_SIZE != romsize)
 			printk(BIOS_INFO, "Warning: rom size unmatch (%d/%d)\n",
-			       CONFIG_ROM_SIZE, romsize);
+			       CONFIG_LP_ROM_SIZE, romsize);
 #endif
 	}
 	media->open = x86_rom_open;

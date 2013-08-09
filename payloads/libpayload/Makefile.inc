@@ -31,26 +31,26 @@
 
 export KERNELVERSION      := 0.2.0
 
-ARCHDIR-$(CONFIG_ARCH_ARMV7)   := armv7
-ARCHDIR-$(CONFIG_ARCH_X86)     := x86
+ARCHDIR-$(CONFIG_LP_ARCH_ARMV7)   := armv7
+ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
 DESTDIR ?= install
 
 real-target: lib
 
-classes-$(CONFIG_PCI) += libpci
-classes-$(CONFIG_LIBC) += libc
-classes-$(CONFIG_CURSES) += libcurses
-classes-$(CONFIG_PDCURSES) += libmenu libform libpanel
-classes-$(CONFIG_CBFS) += libcbfs
-classes-$(CONFIG_LZMA) += liblzma
+classes-$(CONFIG_LP_PCI) += libpci
+classes-$(CONFIG_LP_LIBC) += libc
+classes-$(CONFIG_LP_CURSES) += libcurses
+classes-$(CONFIG_LP_PDCURSES) += libmenu libform libpanel
+classes-$(CONFIG_LP_CBFS) += libcbfs
+classes-$(CONFIG_LP_LZMA) += liblzma
 libraries := $(classes-y)
 classes-y += head.o
 
 subdirs-y := arch/$(ARCHDIR-y)
 subdirs-y += crypto libc drivers libpci
-subdirs-$(CONFIG_CURSES) += curses
-subdirs-$(CONFIG_CBFS) += libcbfs
-subdirs-$(CONFIG_LZMA) += liblzma
+subdirs-$(CONFIG_LP_CURSES) += curses
+subdirs-$(CONFIG_LP_CBFS) += libcbfs
+subdirs-$(CONFIG_LP_LZMA) += liblzma
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
 CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc

@@ -28,14 +28,14 @@
 ## SUCH DAMAGE.
 ##
 
-libc-$(CONFIG_LIBC) += malloc.c printf.c console.c string.c
-libc-$(CONFIG_LIBC) += memory.c ctype.c ipchecksum.c lib.c
-libc-$(CONFIG_LIBC) += rand.c time.c exec.c
-libc-$(CONFIG_LIBC) += readline.c getopt_long.c sysinfo.c
-libc-$(CONFIG_LIBC) += args.c strings.c
-libc-$(CONFIG_LIBC) += strlcpy.c
-libc-$(CONFIG_LIBC) += qsort.c
-libc-$(CONFIG_LIBC) += hexdump.c
+libc-$(CONFIG_LP_LIBC) += malloc.c printf.c console.c string.c
+libc-$(CONFIG_LP_LIBC) += memory.c ctype.c ipchecksum.c lib.c
+libc-$(CONFIG_LP_LIBC) += rand.c time.c exec.c
+libc-$(CONFIG_LP_LIBC) += readline.c getopt_long.c sysinfo.c
+libc-$(CONFIG_LP_LIBC) += args.c strings.c
+libc-$(CONFIG_LP_LIBC) += strlcpy.c
+libc-$(CONFIG_LP_LIBC) += qsort.c
+libc-$(CONFIG_LP_LIBC) += hexdump.c
 
 # should be moved to coreboot directory
-libc-$(CONFIG_LAR) += lar.c
+libc-$(CONFIG_LP_LAR) += lar.c

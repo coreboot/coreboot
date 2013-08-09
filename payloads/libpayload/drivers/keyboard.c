@@ -41,7 +41,7 @@ struct layout_maps {
 static struct layout_maps *map;
 
 static struct layout_maps keyboard_layouts[] = {
-#ifdef CONFIG_PC_KEYBOARD_LAYOUT_US
+#ifdef CONFIG_LP_PC_KEYBOARD_LAYOUT_US
 { .country = "us", .map = {
 	{ /* No modifier */
 	 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
@@ -97,7 +97,7 @@ static struct layout_maps keyboard_layouts[] = {
 	 }
 }},
 #endif
-#ifdef CONFIG_PC_KEYBOARD_LAYOUT_DE
+#ifdef CONFIG_LP_PC_KEYBOARD_LAYOUT_DE
 { .country = "de", .map = {
 	{ /* No modifier */
 	 0x00, 0x1B, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,

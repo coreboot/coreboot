@@ -36,7 +36,7 @@
 #include "xhci.h"
 #include <usb/usbdisk.h>
 
-#ifdef CONFIG_USB_PCI
+#ifdef CONFIG_LP_USB_PCI
 /**
  * Initializes USB controller attached to PCI
  *
@@ -71,7 +71,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			pciid >> 16, pciid & 0xFFFF, func);
 		switch (prog_if) {
 		case 0x00:
-#ifdef CONFIG_USB_UHCI
+#ifdef CONFIG_LP_USB_UHCI
 			usb_debug("UHCI controller\n");
 			uhci_pci_init (pci_device);
 #else
@@ -80,7 +80,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			break;
 
 		case 0x10:
-#ifdef CONFIG_USB_OHCI
+#ifdef CONFIG_LP_USB_OHCI
 			usb_debug("OHCI controller\n");
 			ohci_pci_init(pci_device);
 #else
@@ -89,7 +89,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			break;
 
 		case 0x20:
-#ifdef CONFIG_USB_EHCI
+#ifdef CONFIG_LP_USB_EHCI
 			usb_debug("EHCI controller\n");
 			ehci_pci_init(pci_device);
 #else
@@ -98,7 +98,7 @@ static int usb_controller_initialize(int bus, int dev, int func)
 			break;
 
 		case 0x30:
-#ifdef CONFIG_USB_XHCI
+#ifdef CONFIG_LP_USB_XHCI
 			usb_debug("xHCI controller\n");
 			xhci_pci_init(pci_device);
 #else
@@ -156,17 +156,17 @@ static void usb_scan_pci_bus(int bus)
 }
 #endif
 
-#ifdef CONFIG_USB_MEMORY
+#ifdef CONFIG_LP_USB_MEMORY
 static void usb_scan_memory(void)
 {
-#ifdef CONFIG_USB_XHCI
-	xhci_init(CONFIG_USB_XHCI_BASE_ADDRESS);
+#ifdef CONFIG_LP_USB_XHCI
+	xhci_init(CONFIG_LP_USB_XHCI_BASE_ADDRESS);
 #endif
-#ifdef CONFIG_USB_EHCI
-	ehci_init(CONFIG_USB_EHCI_BASE_ADDRESS);
+#ifdef CONFIG_LP_USB_EHCI
+	ehci_init(CONFIG_LP_USB_EHCI_BASE_ADDRESS);
 #endif
-#ifdef CONFIG_USB_OHCI
-	ohci_init(CONFIG_USB_OHCI_BASE_ADDRESS);
+#ifdef CONFIG_LP_USB_OHCI
+	ohci_init(CONFIG_LP_USB_OHCI_BASE_ADDRESS);
 #endif
 }
 #endif
@@ -176,10 +176,10 @@ static void usb_scan_memory(void)
  */
 int usb_initialize(void)
 {
-#ifdef CONFIG_USB_PCI
+#ifdef CONFIG_LP_USB_PCI
 	usb_scan_pci_bus(0);
 #endif
-#ifdef CONFIG_USB_MEMORY
+#ifdef CONFIG_LP_USB_MEMORY
 	usb_scan_memory();
 #endif
 	return 0;

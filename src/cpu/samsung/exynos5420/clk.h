@@ -25,6 +25,7 @@
 
 enum periph_id;
 
+/* This master list of PLLs is ordered arbitrarily. */
 #define APLL	0
 #define MPLL	1
 #define EPLL	2
@@ -35,16 +36,7 @@ enum periph_id;
 #define SPLL	7
 #define CPLL	8
 #define DPLL	9
-
-enum pll_src_bit {
-	EXYNOS_SRC_CPLL = 1,
-	EXYNOS_SRC_DPLL = 2,
-	EXYNOS_SRC_MPLL = 3,
-	EXYNOS_SRC_SPLL = 4,
-	EXYNOS_SRC_IPLL = 5,
-	EXYNOS_SRC_EPLL = 6,
-	EXYNOS_SRC_RPLL = 7,
-};
+#define IPLL	10
 
 /* *
  * This structure is to store the src bit, div bit and prediv bit

@@ -106,6 +106,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 		set_gpio(GPIO_PP3300_CODEC_EN, 0);
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+
+		/* Enable wake events */
+		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		break;
 	case 5:
 		if (smm_get_gnvs()->s5u0 == 0)
@@ -117,6 +120,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 		set_gpio(GPIO_PP3300_CODEC_EN, 0);
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
+
+		/* Enable wake events */
+		google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
 		break;
 	}
 
@@ -126,9 +132,6 @@ void mainboard_smi_sleep(u8 slp_typ)
 
 	/* Clear pending events that may trigger immediate wake */
 	while (google_chromeec_get_event() != 0);
-
-	/* Enable wake events */
-	google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 }
 
 #define APMC_FINALIZE 0xcb

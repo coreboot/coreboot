@@ -495,6 +495,7 @@ static void pch_pcie_early(struct device *dev)
 	int rp;
 	int do_aspm;
 	int is_lp;
+	struct southbridge_intel_lynxpoint_config *config = dev->chip_info;
 
 	rp = root_port_number(dev);
 	do_aspm = 0;
@@ -541,6 +542,13 @@ static void pch_pcie_early(struct device *dev)
 			break;
 		}
 	}
+
+	/* Allow ASPM to be forced on in devicetree */
+	if (config && (config->pcie_port_force_aspm & (1 << (rp - 1))))
+		do_aspm = 1;
+
+	printk(BIOS_DEBUG, "PCIe Root Port %d ASPM is %sabled\n",
+	       rp, do_aspm ? "en" : "dis");
 
 	if (do_aspm) {
 		/* Set ASPM bits in MPC2 register. */

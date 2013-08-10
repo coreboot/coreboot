@@ -141,7 +141,7 @@ void system_clock_init(void)
 
 	/* Set SPLL */
 	writel(SPLL_CON1_VAL, &clk->spll_con1);
-	val = set_pll(0xc8, 0x2, 0x3);
+	val = set_pll(200, 0x3, 0x2);	/* 400MHz */
 	writel(val, &clk->spll_con0);
 	while ((readl(&clk->spll_con0) & PLL_LOCKED) == 0)
 		;

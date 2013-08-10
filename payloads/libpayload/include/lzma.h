@@ -30,10 +30,18 @@
 #ifndef _LZMA_H
 #define _LZMA_H
 
-/* decompresses the data stream at src to dst, determining its length from
+/* Decompresses the data stream at src to dst. The sizes of the source and
+ * destination buffers are in srcn and dstn.
+ *
+ * Returns the decompressed size, or 0 on error
+ */
+unsigned long ulzman(const unsigned char *src, unsigned long srcn,
+		     unsigned char *dst, unsigned long dstn);
+
+/* Decompresses the data stream at src to dst, determining its length from
  * the data stream itself.
  *
- * returns the decompressed size, or 0 on error
+ * Returns the decompressed size, or 0 on error
  */
 unsigned long ulzma(const unsigned char *src, unsigned char *dst);
 

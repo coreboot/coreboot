@@ -39,6 +39,7 @@
 
 struct dbgp_pipe
 {
+	u8 devnum;
 	u8 endpoint;
 	u8 status;
 	u8 bufidx;
@@ -51,8 +52,6 @@ struct dbgp_pipe
 #define DBGP_CONSOLE_EPIN	2
 
 struct ehci_debug_info {
-	u8 devnum;
-
 	void *ehci_caps;
 	void *ehci_regs;
 	void *ehci_debug;
@@ -152,7 +151,8 @@ static void dbgp_breath(void)
 	/* Sleep to give the debug port a chance to breathe */
 }
 
-static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, unsigned ctrl, int loop)
+static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
+	unsigned ctrl, int loop)
 {
 	u32 pids, lpid;
 	int ret;
@@ -213,8 +213,8 @@ static void dbgp_get_data(struct ehci_dbg_port *ehci_debug, void *buf, int size)
 		bytes[i] = (hi >> (8*(i - 4))) & 0xff;
 }
 
-static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
-		unsigned devnum, unsigned endpoint, const char *bytes, int size)
+static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
+	const char *bytes, int size)
 {
 	u32 pids, addr, ctrl;
 	int ret;
@@ -222,7 +222,7 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
 	if (size > DBGP_MAX_PACKET)
 		return -1;
 
-	addr = DBGP_EPADDR(devnum, endpoint);
+	addr = DBGP_EPADDR(pipe->devnum, pipe->endpoint);
 
 	pids = read32((unsigned long)&ehci_debug->pids);
 	pids = DBGP_PID_UPDATE(pids, USB_PID_OUT);
@@ -236,7 +236,7 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
 
-	ret = dbgp_wait_until_done(ehci_debug, ctrl, DBGP_LOOPS);
+	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, DBGP_LOOPS);
 
 	return ret;
 }
@@ -244,12 +244,11 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug,
 int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
-	return dbgp_bulk_write(dbg_info->ehci_debug, dbg_info->devnum,
-			pipe->endpoint, bytes, size);
+	return dbgp_bulk_write(dbg_info->ehci_debug, pipe, bytes, size);
 }
 
-static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
-		unsigned endpoint, void *data, int size, int loops)
+static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
+	void *data, int size, int loops)
 {
 	u32 pids, addr, ctrl;
 	int ret;
@@ -257,7 +256,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 	if (size > DBGP_MAX_PACKET)
 		return -1;
 
-	addr = DBGP_EPADDR(devnum, endpoint);
+	addr = DBGP_EPADDR(pipe->devnum, pipe->endpoint);
 
 	pids = read32((unsigned long)&ehci_debug->pids);
 	pids = DBGP_PID_UPDATE(pids, USB_PID_IN);
@@ -269,7 +268,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
-	ret = dbgp_wait_until_done(ehci_debug, ctrl, loops);
+	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, loops);
 	if (ret < 0)
 		return ret;
 
@@ -282,8 +281,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, unsigned devnum,
 int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
-	return dbgp_bulk_read(dbg_info->ehci_debug, dbg_info->devnum,
-			pipe->endpoint, data, size, DBGP_LOOPS);
+	return dbgp_bulk_read(dbg_info->ehci_debug, pipe, data, size, DBGP_LOOPS);
 }
 
 static void dbgp_mdelay(int ms)
@@ -299,6 +297,8 @@ static void dbgp_mdelay(int ms)
 static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, int requesttype,
 		int request, int value, int index, void *data, int size)
 {
+	struct ehci_debug_info *info = dbgp_ehci_info();
+	struct dbgp_pipe *pipe = &info->ep_pipe[DBGP_SETUP_EP0];
 	u32 pids, addr, ctrl;
 	struct usb_ctrlrequest req;
 	int read;
@@ -315,8 +315,10 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	req.wIndex = cpu_to_le16(index);
 	req.wLength = cpu_to_le16(size);
 
+	pipe->devnum = devnum;
+	pipe->endpoint = 0;
+	addr = DBGP_EPADDR(pipe->devnum, pipe->endpoint);
 	pids = DBGP_PID_SET(USB_PID_DATA0, USB_PID_SETUP);
-	addr = DBGP_EPADDR(devnum, 0);
 
 	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, sizeof(req));
@@ -327,13 +329,12 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	dbgp_set_data(ehci_debug, &req, sizeof(req));
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
-	ret = dbgp_wait_until_done(ehci_debug, ctrl, DBGP_LOOPS);
+	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, DBGP_LOOPS);
 	if (ret < 0)
 		return ret;
 
-
 	/* Read the result */
-	ret = dbgp_bulk_read(ehci_debug, devnum, 0, data, size, DBGP_LOOPS);
+	ret = dbgp_bulk_read(ehci_debug, pipe, data, size, DBGP_LOOPS);
 	return ret;
 }
 
@@ -609,10 +610,17 @@ debug_dev_found:
 	}
 	dprintk(BIOS_INFO, "EHCI debug interface enabled.\n");
 
-	/* Perform a small write to get the even/odd data state in sync */
+	/* Prepare endpoint pipes. */
+	for (i=1; i<DBGP_MAX_ENDPOINTS; i++) {
+		info->ep_pipe[i].devnum = USB_DEBUG_DEVNUM;
+	}
+	info->ep_pipe[DBGP_CONSOLE_EPOUT].endpoint = dbgp_desc.bDebugOutEndpoint;
+	info->ep_pipe[DBGP_CONSOLE_EPIN].endpoint = dbgp_desc.bDebugInEndpoint;
+
+	/* Perform a small write. */
 	configured = 0;
 small_write:
-	ret = dbgp_bulk_write(ehci_debug, USB_DEBUG_DEVNUM, dbgp_desc.bDebugOutEndpoint, "USB\r\n",5);
+	ret = dbgp_bulk_write(ehci_debug, &info->ep_pipe[DBGP_CONSOLE_EPOUT], "USB\r\n",5);
 	if (ret < 0) {
 		dprintk(BIOS_INFO, "dbgp_bulk_write failed: %d\n", ret);
 		if (!configured) {
@@ -634,10 +642,7 @@ small_write:
 	info->ehci_caps = ehci_caps;
 	info->ehci_regs = ehci_regs;
 	info->ehci_debug = ehci_debug;
-	info->devnum = devnum;
 
-	info->ep_pipe[DBGP_CONSOLE_EPOUT].endpoint = dbgp_desc.bDebugOutEndpoint;
-	info->ep_pipe[DBGP_CONSOLE_EPIN].endpoint = dbgp_desc.bDebugInEndpoint;
 	info->ep_pipe[DBGP_SETUP_EP0].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	info->ep_pipe[DBGP_CONSOLE_EPOUT].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	info->ep_pipe[DBGP_CONSOLE_EPIN].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;

@@ -41,6 +41,7 @@ struct dbgp_pipe
 {
 	u8 devnum;
 	u8 endpoint;
+	u8 pid;
 	u8 status;
 	u8 bufidx;
 	char buf[8];
@@ -68,10 +69,6 @@ static int dbgp_enabled(void);
 #endif
 
 #define USB_DEBUG_DEVNUM 127
-
-#define DBGP_DATA_TOGGLE	0x8800
-#define DBGP_PID_UPDATE(x, tok) \
-	((((x) ^ DBGP_DATA_TOGGLE) & 0xffff00) | ((tok) & 0xff))
 
 #define DBGP_LEN_UPDATE(x, len) (((x) & ~0x0f) | ((len) & 0x0f))
 /*
@@ -154,14 +151,15 @@ static void dbgp_breath(void)
 static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
 	unsigned ctrl, int loop)
 {
-	u32 pids, lpid;
+	u32 rd_ctrl, rd_pids;
+	u8 lpid;
 	int ret;
 
 retry:
 	write32((unsigned long)&ehci_debug->control, ctrl | DBGP_GO);
 	ret = dbgp_wait_until_complete(ehci_debug);
-	pids = read32((unsigned long)&ehci_debug->pids);
-	lpid = DBGP_PID_GET(pids);
+	rd_ctrl = read32((unsigned long)&ehci_debug->control);
+	rd_pids = read32((unsigned long)&ehci_debug->pids);
 
 	if (ret < 0) {
 		if (ret == -DBGP_ERR_BAD && --loop > 0)
@@ -169,16 +167,29 @@ retry:
 		return ret;
 	}
 
+	lpid = DBGP_PID_GET(rd_pids);
+
+	/* If I get an ACK or in-sync DATA PID, we are done. */
+	if ((lpid == USB_PID_ACK) || (lpid == pipe->pid)) {
+		if (DBGP_LEN(rd_ctrl))
+			pipe->pid ^= USB_PID_DATA_TOGGLE;
+	}
+
 	/* If the port is getting full or it has dropped data
 	 * start pacing ourselves, not necessary but it's friendly.
 	 */
-	if ((lpid == USB_PID_NAK) || (lpid == USB_PID_NYET))
+	else if (lpid == USB_PID_NYET) {
 		dbgp_breath();
-
-	/* If I get a NACK reissue the transmission */
-	if (lpid == USB_PID_NAK) {
 		if (--loop > 0)
 			goto retry;
+		ret = -DBGP_ERR_BAD;
+	}
+
+	/* If I get a NACK or out-of-sync DATA PID, reissue the transmission. */
+	else if ((lpid == USB_PID_NAK) || (lpid == (pipe->pid ^ USB_PID_DATA_TOGGLE))) {
+		if (--loop > 0)
+			goto retry;
+		ret = -DBGP_ERR_BAD;
 	}
 
 	return ret;
@@ -223,14 +234,11 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *p
 		return -1;
 
 	addr = DBGP_EPADDR(pipe->devnum, pipe->endpoint);
-
-	pids = read32((unsigned long)&ehci_debug->pids);
-	pids = DBGP_PID_UPDATE(pids, USB_PID_OUT);
+	pids = DBGP_PID_SET(pipe->pid, USB_PID_OUT);
 
 	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, size);
 	ctrl |= DBGP_OUT;
-	ctrl |= DBGP_GO;
 
 	dbgp_set_data(ehci_debug, bytes, size);
 	write32((unsigned long)&ehci_debug->address, addr);
@@ -257,14 +265,11 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pi
 		return -1;
 
 	addr = DBGP_EPADDR(pipe->devnum, pipe->endpoint);
-
-	pids = read32((unsigned long)&ehci_debug->pids);
-	pids = DBGP_PID_UPDATE(pids, USB_PID_IN);
+	pids = DBGP_PID_SET(pipe->pid, USB_PID_IN);
 
 	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, size);
 	ctrl &= ~DBGP_OUT;
-	ctrl |= DBGP_GO;
 
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
@@ -317,8 +322,9 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 
 	pipe->devnum = devnum;
 	pipe->endpoint = 0;
+	pipe->pid = USB_PID_DATA0;
 	addr = DBGP_EPADDR(pipe->devnum, pipe->endpoint);
-	pids = DBGP_PID_SET(USB_PID_DATA0, USB_PID_SETUP);
+	pids = DBGP_PID_SET(pipe->pid, USB_PID_SETUP);
 
 	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, sizeof(req));
@@ -586,6 +592,7 @@ try_next_port:
 	/* Prepare endpoint pipes. */
 	for (i=1; i<DBGP_MAX_ENDPOINTS; i++) {
 		info->ep_pipe[i].devnum = USB_DEBUG_DEVNUM;
+		info->ep_pipe[i].pid = USB_PID_DATA0;
 	}
 	info->ep_pipe[DBGP_CONSOLE_EPOUT].endpoint = dbgp_desc.bDebugOutEndpoint;
 	info->ep_pipe[DBGP_CONSOLE_EPIN].endpoint = dbgp_desc.bDebugInEndpoint;

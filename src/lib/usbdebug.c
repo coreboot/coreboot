@@ -61,10 +61,12 @@ struct ehci_debug_info {
 };
 
 #if CONFIG_DEBUG_USBDEBUG
+static void dbgp_print_data(struct ehci_dbg_port *ehci_debug);
 static int dbgp_enabled(void);
 # define dprintk(LEVEL, args...) \
 	do { if (!dbgp_enabled()) printk(LEVEL, ##args); } while (0)
 #else
+# define dbgp_print_data(x)	do {} while(0)
 # define dprintk(LEVEL, args...)   do {} while(0)
 #endif
 
@@ -133,6 +135,9 @@ static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 			break;
 	} while (--loop > 0);
 
+	dprintk(BIOS_SPEW, "dbgp: godone (%d @ %4d) ctrl=%08x\n",
+		loop ? 0 : -1, 1000000-loop, ctrl);
+
 	if (!loop)
 		return -1;
 
@@ -152,14 +157,23 @@ static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, struct dbgp_pi
 	unsigned ctrl, int loop)
 {
 	u32 rd_ctrl, rd_pids;
+	u32 ctrl_prev = 0, pids_prev = 0;
 	u8 lpid;
 	int ret;
 
+	dprintk(BIOS_SPEW, "dbgp:  start (0 @ %4d) ctrl=%08x\n", loop, ctrl | DBGP_GO);
 retry:
 	write32((unsigned long)&ehci_debug->control, ctrl | DBGP_GO);
 	ret = dbgp_wait_until_complete(ehci_debug);
 	rd_ctrl = read32((unsigned long)&ehci_debug->control);
 	rd_pids = read32((unsigned long)&ehci_debug->pids);
+
+	if (rd_ctrl != ctrl_prev || rd_pids != pids_prev) {
+		ctrl_prev = rd_ctrl;
+		pids_prev = rd_pids;
+		dprintk(BIOS_SPEW, "dbgp: status (%d @ %4d) ctrl=%08x pids=%08x\n",
+			ret, loop, rd_ctrl, rd_pids);
+	}
 
 	if (ret < 0) {
 		if (ret == -DBGP_ERR_BAD && --loop > 0)
@@ -192,6 +206,8 @@ retry:
 		ret = -DBGP_ERR_BAD;
 	}
 
+	dbgp_print_data(ehci_debug);
+
 	return ret;
 }
 
@@ -223,6 +239,25 @@ static void dbgp_get_data(struct ehci_dbg_port *ehci_debug, void *buf, int size)
 	for (; i < 8 && i < size; i++)
 		bytes[i] = (hi >> (8*(i - 4))) & 0xff;
 }
+
+#if CONFIG_DEBUG_USBDEBUG
+static void dbgp_print_data(struct ehci_dbg_port *ehci_debug)
+{
+	u32 ctrl = read32((unsigned long)&ehci_debug->control);
+	u32	lo = read32((unsigned long)&ehci_debug->data03);
+	u32	hi = read32((unsigned long)&ehci_debug->data47);
+	int len = DBGP_LEN(ctrl);
+	if (len) {
+		int i;
+		dprintk(BIOS_SPEW, "dbgp:    buf:");
+		for (i = 0; i < 4 && i < len; i++)
+			dprintk(BIOS_SPEW, " %02x", (lo >> (8*i)) & 0xff);
+		for (; i < 8 && i < len; i++)
+			dprintk(BIOS_SPEW, " %02x", (hi >> (8*(i - 4))) & 0xff);
+		dprintk(BIOS_SPEW, "\n");
+	}
+}
+#endif
 
 static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
 	const char *bytes, int size)

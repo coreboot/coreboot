@@ -192,6 +192,11 @@ retry:
 		ret = -DBGP_ERR_BAD;
 	}
 
+	/* Abort on STALL handshake for endpoint 0.*/
+	else if ((lpid == USB_PID_STALL) && (pipe->endpoint == 0x0)) {
+		ret = -DBGP_ERR_BAD;
+	}
+
 	return ret;
 }
 
@@ -307,10 +312,10 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	u32 pids, addr, ctrl;
 	struct usb_ctrlrequest req;
 	int read;
-	int ret;
+	int ret, ret2;
 
 	read = (requesttype & USB_DIR_IN) != 0;
-	if (size > (read ? DBGP_MAX_PACKET:0))
+	if (size > DBGP_MAX_PACKET)
 		return -1;
 
 	/* Compute the control message */
@@ -329,9 +334,8 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	ctrl = read32((unsigned long)&ehci_debug->control);
 	ctrl = DBGP_LEN_UPDATE(ctrl, sizeof(req));
 	ctrl |= DBGP_OUT;
-	ctrl |= DBGP_GO;
 
-	/* Send the setup message */
+	/* Setup stage */
 	dbgp_set_data(ehci_debug, &req, sizeof(req));
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
@@ -339,8 +343,29 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	if (ret < 0)
 		return ret;
 
-	/* Read the result */
-	ret = dbgp_bulk_read(ehci_debug, pipe, data, size, DBGP_LOOPS);
+	/* Data stage (optional) */
+	if (read && size)
+		ret = dbgp_bulk_read(ehci_debug, pipe, data, size, DBGP_LOOPS);
+	else if (!read && size)
+		ret = dbgp_bulk_write(ehci_debug, pipe, data, size);
+
+	/* Status stage in opposite direction */
+	pipe->pid = USB_PID_DATA1;
+	ctrl = read32((unsigned long)&ehci_debug->control);
+	ctrl = DBGP_LEN_UPDATE(ctrl, 0);
+	if (read) {
+		pids = DBGP_PID_SET(pipe->pid, USB_PID_OUT);
+		ctrl |= DBGP_OUT;
+	} else {
+		pids = DBGP_PID_SET(pipe->pid, USB_PID_IN);
+		ctrl &= ~DBGP_OUT;
+	}
+
+	write32((unsigned long)&ehci_debug->pids, pids);
+	ret2 = dbgp_wait_until_done(ehci_debug, pipe, ctrl, DBGP_LOOPS);
+	if (ret2 < 0)
+		return ret2;
+
 	return ret;
 }
 

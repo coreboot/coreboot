@@ -81,7 +81,7 @@ void system_clock_init(void)
 
 	/* Set KPLL*/
 	writel(KPLL_CON1_VAL, &clk->kpll_con1);
-	val = set_pll(0xc8, 0x2, 0x2);
+	val = set_pll(0x190, 0x4, 0x2);
 	writel(val, &clk->kpll_con0);
 	while ((readl(&clk->kpll_con0) & PLL_LOCKED) == 0)
 		;

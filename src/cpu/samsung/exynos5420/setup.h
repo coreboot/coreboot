@@ -791,6 +791,14 @@ struct exynos5_phy_control;
 #define BRBRSVCONTROL_VAL	0x00000033
 #define BRBRSVCONFIG_VAL	0x88778877
 
+/* Clock Gating Control (CGCONTROL) register */
+#define MEMIF_CG_EN	(1 << 3) /* Memory interface clock gating */
+#define SCG_CG_EN	(1 << 2) /* Scheduler clock gating */
+#define BUSIF_WR_CG_EN	(1 << 1) /* Bus interface write channel clock gating */
+#define BUSIF_RD_CG_EN	(1 << 0) /* Bus interface read channel clock gating */
+#define DMC_INTERNAL_CG	(MEMIF_CG_EN | SCG_CG_EN | \
+				 BUSIF_WR_CG_EN | BUSIF_RD_CG_EN)
+
 /* DMC PHY Control0 register */
 #define PHY_CONTROL0_RESET_VAL	0x0
 #define MEM_TERM_EN	(1 << 31)	/* Termination enable for memory */

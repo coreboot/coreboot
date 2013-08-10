@@ -69,21 +69,21 @@ config STACK_TOP
 
 config STACK_BOTTOM
 	hex
-	default 0x02077000
+	default 0x02074000
 
 config STACK_SIZE
 	hex
-	default 0x1000
+	default 0x4000
 
 # TODO We may probably move this to board-specific implementation files instead
 # of KConfig values.
 config CBFS_CACHE_ADDRESS
 	hex "memory address to put CBFS cache data"
-	default 0x02060000
+	default 0x0205c000
 
 config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x000017000
+	default 0x00018000
 
 config SYS_SDRAM_BASE
 	hex

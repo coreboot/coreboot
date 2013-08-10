@@ -206,33 +206,3 @@ struct chip_operations cpu_samsung_exynos5420_ops = {
 	CHIP_NAME("CPU Samsung Exynos 5420")
 	.enable_dev = enable_exynos5420_dev,
 };
-
-void exynos5420_config_l2_cache(void)
-{
-	uint32_t val;
-
-	/*
-	 * Bit    9 - L2 tag RAM setup (1 cycle)
-	 * Bits 8:6 - L2 tag RAM latency (3 cycles)
-	 * Bit    5 - L2 data RAM setup (1 cycle)
-	 * Bits 2:0 - L2 data RAM latency (3 cycles)
-	 */
-	val = (1 << 9) | (0x2 << 6) | (1 << 5) | (0x2);
-	write_l2ctlr(val);
-
-	val = read_l2actlr();
-
-	/* L2ACTLR[3]: Disable clean/evict push to external */
-	val |= (1 << 3);
-
-	/* L2ACTLR[7]: Enable hazard detect timeout for A15 */
-	val |= (1 << 7);
-
-	/* L2ACTLR[27]: Prevents stopping the L2 logic clock */
-	val |= (1 << 27);
-
-	write_l2actlr(val);
-
-	/* Read the l2 control register to force things to take effect? */
-	val = read_l2ctlr();
-}

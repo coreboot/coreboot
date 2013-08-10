@@ -206,10 +206,10 @@ int gpio_set_value(unsigned gpio, int value)
 
 /*
  * Add a delay here to give the lines time to settle
- * TODO(sjg): 1us does not always work, 2 is stable, so use 5 to be safe
+ * TODO(dianders): 5us does not always work, 10 is stable, so use 15 to be safe
  * Come back to this and sort out what the datasheet says
  */
-#define GPIO_DELAY_US 5
+#define GPIO_DELAY_US	15
 
 #ifndef __BOOT_BLOCK__
 /*

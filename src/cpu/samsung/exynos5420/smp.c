@@ -271,7 +271,10 @@ static void power_down_core(void)
 /* Configures the CPU states shard memory page and then shutdown all cores. */
 static void configure_secondary_cores(void)
 {
-	configure_l2ctlr();
+	if (get_bits(read_midr(), 4, 12) == PART_NUMBER_CORTEX_A15) {
+		configure_l2ctlr();
+		configure_l2actlr();
+	}
 
 	/* Currently we use power_down_core as callback for each core to
 	 * shutdown itself, but it is also ok to directly set ARM_CORE*_CONFIG

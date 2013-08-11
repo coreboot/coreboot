@@ -523,21 +523,27 @@ try_next_port:
 	dbgp_mdelay(100);
 
 	/* Find the debug device and make it device number 127 */
-	for (devnum = 0; devnum <= 127; devnum++) {
+	devnum = 0;
+	do {
+		memset(&dbgp_desc, 0, sizeof(dbgp_desc));
 		ret = dbgp_control_msg(ehci_debug, devnum,
 			USB_DIR_IN | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
 			USB_REQ_GET_DESCRIPTOR, (USB_DT_DEBUG << 8), 0,
 			&dbgp_desc, sizeof(dbgp_desc));
 		if (ret > 0)
 			break;
-	}
-	if (devnum > 127) {
+		if (devnum == 0)
+			devnum = USB_DEBUG_DEVNUM;
+		else
+			break;
+	} while (1);
+	if (ret < 0) {
 		dprintk(BIOS_INFO, "Could not find attached debug device.\n");
 		ret = -5;
 		goto err;
 	}
-	if (ret < 0) {
-		dprintk(BIOS_INFO, "Attached device is not a debug device.\n");
+	if (ret != sizeof(dbgp_desc)) {
+		dprintk(BIOS_INFO, "Invalid debug device descriptor.\n");
 		ret = -6;
 		goto err;
 	}

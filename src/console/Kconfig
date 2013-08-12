@@ -14,6 +14,18 @@ config EARLY_CONSOLE
 	help
 	  Use console during early (pre-RAM) boot stages
 
+config SQUELCH_EARLY_SMP
+	bool "Squelch AP CPUs from early console."
+	default y
+	depends on EARLY_CONSOLE
+	help
+	  When selected only the BSP CPU will output to early console.
+
+	  Console drivers have unpredictable behaviour if multiple threads
+	  attempt to share the same resources without a spinlock.
+
+	  If unsure, say Y.
+
 config CONSOLE_SERIAL
 	bool "Serial port console output"
 	default y

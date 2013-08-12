@@ -115,7 +115,7 @@ void mainboard_romstage_entry(unsigned long bist)
 			  USB_PORT_FRONT_PANEL },
 			{ 0x40, 1, USB_OC_PIN_SKIP, /* P6: */
 			  USB_PORT_FRONT_PANEL },
-			{ 0x40, 1, USB_OC_PIN_SKIP, /* P7: */
+			{ 0x40, 0, USB_OC_PIN_SKIP, /* P7: */
 			  USB_PORT_FRONT_PANEL },
 		},
 		usb3_ports: {

@@ -340,7 +340,6 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 {
 	u32 portsc;
-	u32 delay_time, delay_ms;
 	int loop;
 
 	/* Reset the usb debug port */
@@ -349,39 +348,30 @@ static int ehci_reset_port(struct ehci_regs *ehci_regs, int port)
 	portsc |= PORT_RESET;
 	write32((unsigned long)&ehci_regs->port_status[port - 1], portsc);
 
-	delay_ms = HUB_ROOT_RESET_TIME;
-	for (delay_time = 0; delay_time < HUB_RESET_TIMEOUT;
-	     delay_time += delay_ms) {
-		dbgp_mdelay(delay_ms);
+	dbgp_mdelay(HUB_ROOT_RESET_TIME);
 
+	portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
+	write32((unsigned long)&ehci_regs->port_status[port - 1],
+			portsc & ~(PORT_RWC_BITS | PORT_RESET));
+
+	loop = 100;
+	do {
+		dbgp_mdelay(1);
 		portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
-		if (portsc & PORT_RESET) {
-			/* force reset to complete */
-			loop = 2;
-			write32((unsigned long)&ehci_regs->port_status[port - 1],
-					portsc & ~(PORT_RWC_BITS | PORT_RESET));
-			do {
-				dbgp_mdelay(delay_ms);
-				portsc = read32((unsigned long)&ehci_regs->port_status[port - 1]);
-				delay_time += delay_ms;
-			} while ((portsc & PORT_RESET) && (--loop > 0));
-			if (!loop) {
-				printk(BIOS_DEBUG, "ehci_reset_port forced done");
-			}
-		}
+	} while ((portsc & PORT_RESET) && (--loop > 0));
 
-		/* Device went away? */
-		if (!(portsc & PORT_CONNECT))
-			return -1; //-ENOTCONN;
+	/* Device went away? */
+	if (!(portsc & PORT_CONNECT))
+		return -1; //-ENOTCONN;
 
-		/* bomb out completely if something weird happened */
-		if ((portsc & PORT_CSC))
-			return -2; //-EINVAL;
+	/* bomb out completely if something weird happened */
+	if ((portsc & PORT_CSC))
+		return -2; //-EINVAL;
 
-		/* If we've finished resetting, then break out of the loop */
-		if (!(portsc & PORT_RESET) && (portsc & PORT_PE))
-			return 0;
-	}
+	/* If we've finished resetting, then break out of the loop */
+	if (!(portsc & PORT_RESET) && (portsc & PORT_PE))
+		return 0;
+
 	return -3; //-EBUSY;
 }
 

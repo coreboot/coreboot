@@ -30,7 +30,7 @@
 #include "cpu/x86/bist.h"
 #include "superio/smsc/sch4037/sch4037_early_init.c"
 #include "superio/smsc/sio1036/sio1036_early_init.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
 #include "nb_cimx.h"

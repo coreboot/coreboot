@@ -37,7 +37,7 @@
 #include "northbridge/amd/amdfam10/raminit.h"
 #include "northbridge/amd/amdfam10/amdfam10.h"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include "superio/winbond/w83627ehg/early_serial.c"
 #include "cpu/x86/bist.h"

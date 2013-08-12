@@ -30,7 +30,7 @@
 #include <timestamp.h>
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 
 #include "../qemu-i440fx/memory.c"
 

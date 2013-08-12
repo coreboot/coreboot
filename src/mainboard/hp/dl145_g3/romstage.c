@@ -42,7 +42,7 @@
 #include "southbridge/broadcom/bcm5785/early_smbus.c"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/serverengines/pilot/early_serial.c"
 #include "superio/serverengines/pilot/early_init.c"

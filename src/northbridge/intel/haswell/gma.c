@@ -350,20 +350,11 @@ static void gma_pm_init_post_vbios(struct device *dev)
 		gpu_is_ulx = 1;
 
 	/* CD Frequency */
-	if (gtt_read(0x42014) & 0x1000000) {
-		cdclk = 0; /* only 450mhz */
-	} else {
-		cdclk = 2; /* 337.5mhz, 450mhz, or 540mhz */
-		if (gpu_is_ulx)
-			cdclk = 0; /* only 337.5mhz */
+	if ((gtt_read(0x42014) & 0x1000000) || gpu_is_ulx || haswell_is_ult())
+		cdclk = 0; /* fixed frequency */
+	else
+		cdclk = 2; /* variable frequency */
 
-		/* TODO: this check does not seem right... */
-		if (haswell_is_ult() &&
-		    haswell_stepping() < HASWELL_STEPPING_MOBILE_D0)
-			cdclk = 0; /* only 450mhz */
-		else
-			cdclk = 1; /* 337.5mhz and 450mhz */
-	}
 	if (gpu_is_ulx || cdclk != 0)
 		gtt_rmw(0x130040, 0xf7ffffff, 0x04000000);
 	else
@@ -371,7 +362,7 @@ static void gma_pm_init_post_vbios(struct device *dev)
 
 	/* More magic */
 	if (haswell_is_ult() || gpu_is_ulx) {
-		if (cdclk == 1 && gpu_is_ulx == 0)
+		if (!gpu_is_ulx)
 			gtt_write(0x138128, 0x00000000);
 		else
 			gtt_write(0x138128, 0x00000001);

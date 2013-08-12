@@ -649,9 +649,6 @@ static void pch_pcie_early(struct device *dev)
 
 	pcie_update_cfg(dev, 0x33c, ~0x00ffffff, 0x854c74);
 
-	/* Set undocumented bits in MPC2 register. */
-	pcie_update_cfg(dev, 0xd4, ~0, (1 << 12) | (1 << 6));
-
 	/* Set Invalid Recieve Range Check Enable in MPC register. */
 	pcie_update_cfg(dev, 0xd8, ~0, (1 << 25));
 

@@ -33,6 +33,7 @@
 
 #define DBGP_EP_VALID		(1<<0)
 #define DBGP_EP_ENABLED		(1<<1)
+#define DBGP_EP_BUSY		(1<<2)
 #define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
 
 struct dbgp_pipe
@@ -44,8 +45,9 @@ struct dbgp_pipe
 };
 
 #define DBGP_MAX_ENDPOINTS	4
-#define DBGP_CONSOLE_EPOUT	0
-#define DBGP_CONSOLE_EPIN	1
+#define DBGP_SETUP_EP0		0	/* Compulsory endpoint 0. */
+#define DBGP_CONSOLE_EPOUT	1
+#define DBGP_CONSOLE_EPIN	2
 
 struct ehci_debug_info {
 	u8 devnum;
@@ -58,7 +60,9 @@ struct ehci_debug_info {
 };
 
 #if CONFIG_DEBUG_USBDEBUG
-# define dprintk(LEVEL, args...) printk(LEVEL, args)
+static int dbgp_enabled(void);
+# define dprintk(LEVEL, args...) \
+	do { if (!dbgp_enabled()) printk(LEVEL, ##args); } while (0)
 #else
 # define dprintk(LEVEL, args...)   do {} while(0)
 #endif
@@ -580,6 +584,7 @@ try_next_port:
 
 	info->ep_pipe[DBGP_CONSOLE_EPOUT].endpoint = dbgp_desc.bDebugOutEndpoint;
 	info->ep_pipe[DBGP_CONSOLE_EPIN].endpoint = dbgp_desc.bDebugInEndpoint;
+	info->ep_pipe[DBGP_SETUP_EP0].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	info->ep_pipe[DBGP_CONSOLE_EPOUT].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	info->ep_pipe[DBGP_CONSOLE_EPIN].status |= DBGP_EP_ENABLED | DBGP_EP_VALID;
 	return 0;
@@ -606,23 +611,52 @@ next_debug_port:
 	return -10;
 }
 
+#if CONFIG_DEBUG_USBDEBUG
+static int dbgp_enabled(void)
+{
+	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
+	return (globals->status & DBGP_EP_ENABLED);
+}
+#endif
+
+static int dbgp_try_get(struct dbgp_pipe *pipe)
+{
+	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
+	if (!dbgp_ep_is_active(pipe) || (globals->status & DBGP_EP_BUSY))
+		return 0;
+	globals->status |= DBGP_EP_BUSY;
+	pipe->status |= DBGP_EP_BUSY;
+	return 1;
+}
+
+static void dbgp_put(struct dbgp_pipe *pipe)
+{
+	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
+	globals->status &= ~DBGP_EP_BUSY;
+	pipe->status &= ~DBGP_EP_BUSY;
+}
+
 void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data)
 {
-	if (dbgp_ep_is_active(pipe)) {
-		pipe->buf[pipe->bufidx++] = data;
-		if (pipe->bufidx >= 8) {
-			dbgp_bulk_write_x(pipe, pipe->buf, pipe->bufidx);
-			pipe->bufidx = 0;
-		}
+	if (!dbgp_try_get(pipe))
+		return;
+	pipe->buf[pipe->bufidx++] = data;
+	if (pipe->bufidx >= 8) {
+		dbgp_bulk_write_x(pipe, pipe->buf, pipe->bufidx);
+		pipe->bufidx = 0;
 	}
+	dbgp_put(pipe);
 }
 
 void usbdebug_tx_flush(struct dbgp_pipe *pipe)
 {
-	if (dbgp_ep_is_active(pipe) && pipe->bufidx > 0) {
+	if (!dbgp_try_get(pipe))
+		return;
+	if (pipe->bufidx > 0) {
 		dbgp_bulk_write_x(pipe, pipe->buf, pipe->bufidx);
 		pipe->bufidx = 0;
 	}
+	dbgp_put(pipe);
 }
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)

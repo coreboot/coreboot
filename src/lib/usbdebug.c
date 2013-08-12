@@ -448,6 +448,23 @@ try_next_port:
 		return -1;
 	}
 
+	/* Wait until the controller is halted */
+	status = read32((unsigned long)&ehci_regs->status);
+	if (!(status & STS_HALT)) {
+		cmd = read32((unsigned long)&ehci_regs->command);
+		cmd &= ~CMD_RUN;
+		write32((unsigned long)&ehci_regs->command, cmd);
+		loop = 100;
+		do {
+			dbgp_mdelay(10);
+			status = read32((unsigned long)&ehci_regs->status);
+		} while (!(status & STS_HALT) && (--loop > 0));
+		if (status & STS_HALT)
+			dprintk(BIOS_INFO, "EHCI controller halted successfully.\n");
+		else
+			dprintk(BIOS_INFO, "EHCI controller is not halted. Reset may fail.\n");
+	}
+
 	loop = 100;
 	/* Reset the EHCI controller */
 	cmd = read32((unsigned long)&ehci_regs->command);

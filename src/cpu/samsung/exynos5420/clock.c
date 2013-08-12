@@ -231,7 +231,23 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 	case PERIPH_ID_I2C8:
 	case PERIPH_ID_I2C9:
 	case PERIPH_ID_I2C10:
-		sclk = get_pll_clk(MPLL);
+		/*
+		 * I2C block parent clock selection is different from other
+		 * peripherals, so we handle it all here.
+		 * TODO: Add a helper function like with the peripheral clock
+		 * select fields?
+		 */
+		src = (readl(&clk->clk_src_top1) >> 8) & 0x3;
+		if (src == 0x0)
+			src = CPLL;
+		else if (src == 0x1)
+			src = DPLL;
+		else if (src == 0x2)
+			src = MPLL;
+		else
+			return -1;
+
+		sclk = get_pll_clk(src);
 		div = ((readl(&clk->clk_div_top1) >> 8) & 0x3f) + 1;
 		return sclk / div;
 	default:

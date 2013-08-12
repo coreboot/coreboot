@@ -13,7 +13,7 @@
 #include "southbridge/nvidia/ck804/early_smbus.h"
 #include "northbridge/amd/amdk8/raminit.h"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/smsc/lpc47b397/early_serial.c"

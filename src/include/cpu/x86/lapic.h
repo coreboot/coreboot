@@ -153,6 +153,10 @@ int start_cpu(struct device *cpu);
 
 #endif /* !__PRE_RAM__ */
 
+#if CONFIG_SMP
 int boot_cpu(void);
+#else
+#define boot_cpu(x) 1
+#endif
 
 #endif /* CPU_X86_LAPIC_H */

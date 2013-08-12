@@ -44,7 +44,7 @@
 #include <lib.h>
 #include <spd.h>
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include "superio/serverengines/pilot/early_serial.c"
 #include "superio/serverengines/pilot/early_init.c"

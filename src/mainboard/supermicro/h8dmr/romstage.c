@@ -38,7 +38,7 @@
 #include "southbridge/nvidia/mcp55/early_smbus.c" // for enable the FAN
 #include "northbridge/amd/amdk8/raminit.h"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627hf/early_serial.c"
 #include "superio/winbond/w83627hf/early_init.c"

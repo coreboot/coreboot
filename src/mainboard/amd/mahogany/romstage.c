@@ -34,7 +34,7 @@
 #include <cpu/amd/model_fxx_rev.h>
 #include "northbridge/amd/amdk8/raminit.h"
 #include "lib/delay.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8718f/early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"

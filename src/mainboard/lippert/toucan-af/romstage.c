@@ -31,7 +31,7 @@
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/winbond/w83627dhg/w83627dhg.h"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
 #include <cpu/x86/cache.h>

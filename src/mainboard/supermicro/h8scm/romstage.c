@@ -25,7 +25,7 @@
 #include <console/console.h>
 #include <arch/stages.h>
 #include "cpu/x86/bist.h"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "agesawrapper.h"
 #include "northbridge/amd/agesa/family10/reset_test.h"
 #include <nb_cimx.h>

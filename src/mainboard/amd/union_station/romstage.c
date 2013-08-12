@@ -31,7 +31,7 @@
 #include <console/loglevel.h>
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
 

@@ -31,7 +31,7 @@
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/winbond/w83627hf/early_serial.c"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
 #include <sb_cimx.h>

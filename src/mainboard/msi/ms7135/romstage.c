@@ -29,7 +29,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/winbond/w83627thg/early_serial.c"
 #include <cpu/amd/model_fxx_rev.h>

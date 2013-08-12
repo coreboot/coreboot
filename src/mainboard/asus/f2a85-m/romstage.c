@@ -31,7 +31,7 @@
 #include <console/loglevel.h>
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "cpu/x86/lapic/boot_cpu.c"
+#include "cpu/x86/lapic.h"
 #include "southbridge/amd/agesa/hudson/hudson.h"
 #include "southbridge/amd/agesa/hudson/smbus.h"
 #include "superio/ite/it8712f/early_serial.c"

@@ -58,9 +58,4 @@ void enable_usbdebug(unsigned int port)
 	/* Enable access to the EHCI memory space registers. */
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
 
-	/*
-	* Select the requested physical USB port (1-15) as the Debug Port.
-	* Must be called after the EHCI BAR has been set up (see above).
-	*/
-	set_debug_port(port);
 }

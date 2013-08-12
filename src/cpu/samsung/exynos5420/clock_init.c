@@ -214,7 +214,7 @@ void system_clock_init(void)
 	writel(CLK_DIV_G2D, &clk->clk_div_g2d);
 
 	writel(CLK_SRC_CPU_VAL, &clk->clk_src_cpu);
-	writel(CLK_SRC_TOP3_VAL, &clk->clk_src_top6);
+	writel(CLK_SRC_TOP6_VAL, &clk->clk_src_top6);
 	writel(CLK_SRC_CDREX_VAL, &clk->clk_src_cdrex);
 	writel(CLK_SRC_KFC_VAL, &clk->clk_src_kfc);
 }

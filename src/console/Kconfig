@@ -134,9 +134,6 @@ config HAVE_USBDEBUG
 	def_bool n
 
 config USBDEBUG
-	def_bool n
-
-config USBDEBUG
 	bool "USB 2.0 EHCI debug dongle support"
 	default n
 	depends on HAVE_USBDEBUG
@@ -157,25 +154,21 @@ config USBDEBUG
 
 	  If unsure, say N.
 
-# Note: This option doesn't make sense on Intel ICH / AMD SB600 southbridges
-# as those hardcode the physical USB port to be used as Debug Port to 1.
-# It cannot be changed by coreboot.
 config USBDEBUG_DEFAULT_PORT
 	int "Default USB port to use as Debug Port"
-	default 1
-	depends on USBDEBUG && !SOUTHBRIDGE_INTEL_I82801GX && !SOUTHBRIDGE_AMD_SB600
+	default 0
+	depends on USBDEBUG
 	help
-	  This option selects which physical USB port coreboot will try to
-	  use as EHCI Debug Port first (valid values are: 1-15).
+	  Selects which physical USB port usbdebug dongle is connected to.
+	  Setting of 0 means to scan possible ports starting from 1.
 
-	  If coreboot doesn't detect an EHCI Debug Port dongle on this port,
-	  it will try all the other ports one after the other. This will take
-	  a few seconds of time though, and thus slow down the booting process.
+	  Intel platforms have hardwired the debug port location and this
+	  setting makes no difference there.
 
 	  Hence, if you select the correct port here, you can speed up
-	  your boot time. Which USB port number (1-15) refers to which
-	  actual port on your mainboard (potentially also USB pin headers
-	  on your mainboard) is highly board-specific, and you'll likely
+	  your boot time. Which USB port number refers to which actual
+	  port on your mainboard (potentially also USB pin headers on
+	  your mainboard) is highly board-specific, and you'll likely
 	  have to find out by trial-and-error.
 
 # TODO: Deps?

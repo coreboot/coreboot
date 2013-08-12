@@ -417,8 +417,13 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 			HC_LENGTH(read32((unsigned long)&ehci_caps->hc_capbase)));
 	ehci_debug = (struct ehci_dbg_port *)(ehci_bar + offset);
 	info->ehci_debug = (void *)0;
-
 	memset(&info->ep_pipe, 0, sizeof (info->ep_pipe));
+
+	if (CONFIG_USBDEBUG_DEFAULT_PORT > 0)
+		set_debug_port(CONFIG_USBDEBUG_DEFAULT_PORT);
+	else
+		set_debug_port(1);
+
 try_next_time:
 	port_map_tried = 0;
 
@@ -591,6 +596,7 @@ err:
 	//return ret;
 
 next_debug_port:
+#if CONFIG_USBDEBUG_DEFAULT_PORT==0
 	port_map_tried |= (1 << (debug_port - 1));
 	new_debug_port = ((debug_port-1 + 1) % n_ports) + 1;
 	if (port_map_tried != ((1 << n_ports) - 1)) {
@@ -598,10 +604,15 @@ next_debug_port:
 		goto try_next_port;
 	}
 	if (--playtimes) {
-		//set_debug_port(new_debug_port);
-		set_debug_port(debug_port);
+		set_debug_port(new_debug_port);
 		goto try_next_time;
 	}
+#else
+	if (0)
+		goto try_next_port;
+	if (--playtimes)
+		goto try_next_time;
+#endif
 
 	return -10;
 }
@@ -706,7 +717,7 @@ int usbdebug_init(void)
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 
 #if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
-	enable_usbdebug(CONFIG_USBDEBUG_DEFAULT_PORT);
+	enable_usbdebug(0);
 #endif
 	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }

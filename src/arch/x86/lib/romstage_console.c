@@ -31,7 +31,9 @@
 #if CONFIG_SPKMODEM
 #include <console/spkmodem.h>
 #endif
-
+#if CONFIG_SQUELCH_EARLY_SMP
+#include <cpu/x86/lapic.h>
+#endif
 
 void console_tx_byte(unsigned char byte)
 {
@@ -85,6 +87,11 @@ int do_printk(int msg_level, const char *fmt, ...)
 	if (msg_level > console_loglevel) {
 		return 0;
 	}
+
+#if CONFIG_SQUELCH_EARLY_SMP
+	if (!boot_cpu())
+		return 0;
+#endif
 
 	va_start(args, fmt);
 	i = vtxprintf(console_tx_byte, fmt, args);

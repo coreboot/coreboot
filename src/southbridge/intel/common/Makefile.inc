@@ -19,4 +19,3 @@
 
 romstage-$(CONFIG_USBDEBUG) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
-smm-$(CONFIG_USBDEBUG) += usb_debug.c

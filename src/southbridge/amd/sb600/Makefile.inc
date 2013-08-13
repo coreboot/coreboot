@@ -10,4 +10,3 @@ ramstage-y += pci.c
 ramstage-y += reset.c
 romstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
-smm-$(CONFIG_USBDEBUG) += enable_usbdebug.c

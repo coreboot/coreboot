@@ -233,6 +233,31 @@ static void sata_init(struct device *dev)
 		pch_iobp_update(SATA_IOBP_SP1G3IR, 0,
 				config->sata_port1_gen3_tx);
 
+	/* Set Gen3 DTLE DATA / EDGE registers if needed */
+	if (config->sata_port0_gen3_dtle) {
+		pch_iobp_update(SATA_IOBP_SP0DTLE_DATA,
+				~(SATA_DTLE_MASK << SATA_DTLE_DATA_SHIFT),
+				(config->sata_port0_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_DATA_SHIFT);
+
+		pch_iobp_update(SATA_IOBP_SP0DTLE_EDGE,
+				~(SATA_DTLE_MASK << SATA_DTLE_EDGE_SHIFT),
+				(config->sata_port0_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_EDGE_SHIFT);
+	}
+
+	if (config->sata_port1_gen3_dtle) {
+		pch_iobp_update(SATA_IOBP_SP1DTLE_DATA,
+				~(SATA_DTLE_MASK << SATA_DTLE_DATA_SHIFT),
+				(config->sata_port1_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_DATA_SHIFT);
+
+		pch_iobp_update(SATA_IOBP_SP1DTLE_EDGE,
+				~(SATA_DTLE_MASK << SATA_DTLE_EDGE_SHIFT),
+				(config->sata_port1_gen3_dtle & SATA_DTLE_MASK)
+				<< SATA_DTLE_EDGE_SHIFT);
+	}
+
 	/* Additional Programming Requirements */
 	/* Power Optimizer */
 

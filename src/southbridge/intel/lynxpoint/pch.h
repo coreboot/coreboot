@@ -351,6 +351,14 @@ int early_pch_init(const void *gpio_map,
 /* SATA IOBP Registers */
 #define SATA_IOBP_SP0G3IR	0xea000151
 #define SATA_IOBP_SP1G3IR	0xea000051
+#define SATA_IOBP_SP0DTLE_DATA	0xea002550
+#define SATA_IOBP_SP0DTLE_EDGE	0xea002554
+#define SATA_IOBP_SP1DTLE_DATA	0xea002750
+#define SATA_IOBP_SP1DTLE_EDGE	0xea002754
+
+#define SATA_DTLE_MASK		0xF
+#define SATA_DTLE_DATA_SHIFT	24
+#define SATA_DTLE_EDGE_SHIFT	16
 
 /* EHCI PCI Registers */
 #define EHCI_PWR_CTL_STS	0x54

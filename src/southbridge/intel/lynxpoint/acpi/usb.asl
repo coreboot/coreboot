@@ -106,23 +106,36 @@ Device (XHCI)
 		Field (XREG, DWordAcc, Lock, Preserve)
 		{
 			Offset (0x510), // PORTSCNUSB3[0]
-			, 17,
-			CLR1, 7,	// Status Change bits 23:17
+			PSC0, 32,
 			Offset (0x520), // PORTSCNUSB3[1]
-			, 17,
-			CLR2, 7,	// Status Change Bits 23:17
+			PSC1, 32,
 			Offset (0x530), // PORTSCNUSB3[2]
-			, 17,
-			CLR3, 7,	// Status Change Bits 23:17
+			PSC2, 32,
 			Offset (0x540), // PORTSCNUSB3[3]
-			, 17,
-			CLR4, 7,	// Status Change Bits 23:17
+			PSC3, 32,
 		}
 
-		Store (0x7f, CLR1)
-		Store (0x7f, CLR2)
-		Store (0x7f, CLR3)
-		Store (0x7f, CLR4)
+		// Port Enabled/Disabled (Bit 1)
+		Name (PEDB, ShiftLeft (1, 1))
+
+		// Change Status (Bits 23:17)
+		Name (CHST, ShiftLeft (0x7f, 17))
+
+		// Port 0
+		And (PSC0, Not (PEDB), Local0)
+		Or (Local0, CHST, PSC0)
+
+		// Port 1
+		And (PSC1, Not (PEDB), Local0)
+		Or (Local0, CHST, PSC1)
+
+		// Port 2
+		And (PSC2, Not (PEDB), Local0)
+		Or (Local0, CHST, PSC2)
+
+		// Port 3
+		And (PSC3, Not (PEDB), Local0)
+		Or (Local0, CHST, PSC3)
 	}
 
 	Method (LPS0, 0, Serialized)

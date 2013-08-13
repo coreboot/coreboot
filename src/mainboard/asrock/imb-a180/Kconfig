@@ -1,0 +1,108 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+
+if BOARD_ASROCK_IMB_A180
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_AMD_AGESA_FAMILY16_KB
+	select NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
+	select SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_RESUME
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select LIFT_BSP_APIC_ID
+	select SERIAL_CPU_INIT
+	select AMDMCT
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_4096
+	select GFXUMA
+
+config MAINBOARD_DIR
+	string
+	default asrock/imb-a180
+
+config APIC_ID_OFFSET
+	hex
+	default 0x0
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "IMB-A180"
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x200000
+
+config MAX_CPUS
+	int
+	default 4
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+
+config MEM_TRAIN_SEQ
+	int
+	default 2
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config RAMTOP
+	hex
+	default 0x1000000
+
+config HEAP_SIZE
+	hex
+	default 0xc0000
+
+config ACPI_SSDTX_NUM
+	int
+	default 0
+
+config RAMBASE
+	hex
+	default 0x200000
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config HUDSON_LEGACY_FREE
+	bool
+	default y
+
+# bit 1,0 - pin 0
+# bit 3,2 - pin 1
+# bit 5,4 - pin 2
+# bit 7,6 - pin 3
+config AZ_PIN
+	hex
+	default 0x2
+
+endif # BOARD_ASROCK_IMB_A180

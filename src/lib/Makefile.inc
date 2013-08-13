@@ -128,7 +128,6 @@ endif
 smm-y += cbfs.c memcmp.c
 smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
-smm-$(CONFIG_USBDEBUG) += usbdebug.c
 smm-y += gcc.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h

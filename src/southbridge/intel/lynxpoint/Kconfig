@@ -27,7 +27,7 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select SOUTHBRIDGE_INTEL_COMMON
 	select IOAPIC
 	select HAVE_HARD_RESET
-	select HAVE_USBDEBUG
+	select HAVE_USBDEBUG_OPTIONS
 	select USE_WATCHDOG_ON_BOOT
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
@@ -42,7 +42,7 @@ config INTEL_LYNXPOINT_LP
 
 config EHCI_BAR
 	hex
-	default 0xfef00000
+	default 0xe8000000
 
 config EHCI_DEBUG_OFFSET
 	hex

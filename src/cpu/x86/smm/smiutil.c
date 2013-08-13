@@ -31,9 +31,6 @@ static u32 serial8250mem_base_address = 0;
 
 void console_tx_flush(void)
 {
-#if CONFIG_USBDEBUG
-	usbdebug_tx_flush(0);
-#endif
 }
 
 void console_tx_byte(unsigned char byte)
@@ -47,9 +44,6 @@ void console_tx_byte(unsigned char byte)
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
 	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
-#endif
-#if CONFIG_USBDEBUG
-	usbdebug_tx_byte(0, byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_append_data(&byte, 1, CONFIG_CONSOLE_NE2K_IO_PORT);

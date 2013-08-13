@@ -70,6 +70,10 @@ chip northbridge/intel/haswell
 			register "sata_ahci" = "0x1"
 			register "sata_port_map" = "0x1"
 
+			# DTLE DATA / EDGE values
+			register "sata_port0_gen3_dtle" = "0x5"
+			register "sata_port1_gen3_dtle" = "0x5"
+
 			register "sio_acpi_mode" = "0"
 			register "sio_i2c0_voltage" = "0" # 3.3V
 			register "sio_i2c1_voltage" = "0" # 3.3V

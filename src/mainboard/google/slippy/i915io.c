@@ -54,35 +54,13 @@ void runio(struct intel_dp *dp)
 	io_i915_write32(0x00ffffff,0x64ea8);
 	io_i915_write32(0x00040006,0x64eac);
 	io_i915_write32( PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010,SDEISR+0x30);
-	io_i915_write32(0x0000020c,0x4f054);
-	intel_dp_wait_reg(0x0004f054, 0x0000020c);
-	io_i915_write32(0x00000000,0x4f008);
-	io_i915_write32(0x0000020c,0x4f054);
-	intel_dp_wait_reg(0x0004f054, 0x0000020c);
-	io_i915_write32(0x00000000,0x4f044);
-	intel_dp_wait_reg(0x0004f044, 0x00000000);
-	io_i915_write32(0x00000400,0x4f044);
-	intel_dp_wait_reg(0x0004f044, 0x00000400);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x01000008,0x4f040);
-	io_i915_write32(0x00000008,0x4f05c);
-	io_i915_write32(0x00000008,0x4f060);
 	io_i915_write32(0x80000000,0x45400);
 	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x00000400,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x45450000,0x4f04c);
-	io_i915_write32(0x45450000,0x4f04c);
-	io_i915_write32(0x03000400,0x4f000);
 	io_i915_write32(0x8000298e,CPU_VGACNTRL);
-	io_i915_write32(0x00000000,0x4f044);
 	io_i915_write32(0x00000000,_CURACNTR);
 	io_i915_write32(0x00000000,_CURABASE);
 	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000,_DSPACNTR);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000400,0x4f044);
 	io_i915_write32(0x00000000,_CURBCNTR_IVB);
 	io_i915_write32(0x00000000,_CURBBASE_IVB);
 	io_i915_write32(0x00000000,_DSPBCNTR);
@@ -93,26 +71,12 @@ void runio(struct intel_dp *dp)
 	io_i915_write32(0x00000000,_DVSASURF);
 	io_i915_write32(0x00008000,DEIIR);
 	intel_dp_wait_reg(0x00044008, 0x00000000);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x00000400,0x4f044);
-	io_i915_write32(0x00000600,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x01000008,0x4f040);
-	io_i915_write32(0x00000008,0x4f05c);
-	io_i915_write32(0x00000008,0x4f060);
 	io_i915_write32(0x8020298e,CPU_VGACNTRL);
-	io_i915_write32(0x00000000,0x4f044);
-	intel_dp_wait_reg(0x0004f044, 0x00000000);
 	io_i915_write32(/*0x00000800*/dp->stride,_DSPASTRIDE);
 	io_i915_write32(0x00000000,_DSPAADDR);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000000,0x4f044);
 
 	intel_dp_sink_dpms(dp, 0);
-
-	io_i915_write32(0x00000001,0x4f008);
-	io_i915_write32(0x00000012,0x4f014);
 
 	intel_dp_get_max_downspread(dp, &read_val);
 
@@ -133,7 +97,6 @@ void runio(struct intel_dp *dp)
 	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x94000000,_DSPACNTR);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);
 	io_i915_write32(0x00000080,DEIIR);
-	intel_dp_wait_reg(0x00044008, 0x00000000);
 
 	io_i915_write32(0x00230000,TRANS_DDI_FUNC_CTL_EDP);
 	io_i915_write32(0x00000010,0x7f008);
@@ -172,9 +135,6 @@ void runio(struct intel_dp *dp)
 	io_i915_write32(0x03a903a9,BLC_PWM_PCH_CTL2);
 	io_i915_write32(0x80000000,BLC_PWM_PCH_CTL1);
 
-	io_i915_write32(0x00000400,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-
 	/* some of this is not needed. */
 	io_i915_write32( PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010,SDEISR+0x30);
 	io_i915_write32( DIGITAL_PORTA_HOTPLUG_ENABLE |0x00000010,DIGITAL_PORT_HOTPLUG_CNTRL);
@@ -183,29 +143,16 @@ void runio(struct intel_dp *dp)
 	io_i915_write32(0x00000000,DEIIR);
 	io_i915_write32(0x80000000,0x45400);
 	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	io_i915_write32(0x03200500,0x4f000);
-	/* io_i915_write32(0x03000556,0x4f000); */
-	io_i915_write32(0x03000400,0x4f000);
 	io_i915_write32(0x80000000,0x45400);
 	intel_dp_wait_reg(0x00045400, 0xc0000000);
 	printk(BIOS_SPEW, "pci dev(0x0,0x2,0x0,0x6)");
-	io_i915_write32(0x03000400,0x4f000);
 	io_i915_write32(0x80000000,0x45400);
 	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x00000400,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x45430000,0x4f04c);
-	io_i915_write32(0x43430000,0x4f04c);
-	io_i915_write32(0x02580320,0x4f000);
 	io_i915_write32(0x8000298e,CPU_VGACNTRL);
-	io_i915_write32(0x00000000,0x4f044);
 	io_i915_write32(0x00000000,_CURACNTR);
 	io_i915_write32(0x00000000,_CURABASE);
 	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000,_DSPACNTR);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000400,0x4f044);
 	io_i915_write32(0x00000000,_CURBCNTR_IVB);
 	io_i915_write32(0x00000000,_CURBBASE_IVB);
 	io_i915_write32(0x00000000,_DSPBCNTR);
@@ -216,23 +163,12 @@ void runio(struct intel_dp *dp)
 	io_i915_write32(0x00000000,_DVSASURF);
 	io_i915_write32(0x00008000,DEIIR);
 	intel_dp_wait_reg(0x00044008, 0x00000000);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
 
 	/* we just turned vdd off. We're not going to wait. The panel is up. */
-	io_i915_write32(0x00000400,0x4f044);
-	io_i915_write32(0x00000600,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
-	io_i915_write32(0x01000008,0x4f040);
-	io_i915_write32(0x00000008,0x4f05c);
-	io_i915_write32(0x00000008,0x4f060);
 	io_i915_write32(0x8020298e,CPU_VGACNTRL);
-	io_i915_write32(0x00000000,0x4f044);
-	intel_dp_wait_reg(0x0004f044, 0x00000000);
 	io_i915_write32(/*0x00000640*/dp->stride,_DSPASTRIDE);
 	io_i915_write32(0x00000000,_DSPAADDR);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000000,0x4f044);
 	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000,_DSPACNTR);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);
 	/* io_i915_write32(dp->pfa_pos,_PFA_WIN_POS); */
@@ -250,8 +186,6 @@ void runio(struct intel_dp *dp)
 	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x94000000,_DSPACNTR);
 	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x98000000,_DSPACNTR);
 	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000400,0x4f044);
-	io_i915_write32(0x00000000,0x4f044);
 
 	io_i915_write32( EDP_BLC_ENABLE | PANEL_POWER_RESET | PANEL_POWER_ON |0x00000007,PCH_PP_CONTROL);
 
@@ -260,5 +194,4 @@ void runio(struct intel_dp *dp)
 	io_i915_write32(0x00000000,SDEIIR);
 	io_i915_write32(0x00000000,SDEIIR);
 	io_i915_write32(0x00000000,DEIIR);
-	io_i915_write32(0x00001800,0x4f044);
 }

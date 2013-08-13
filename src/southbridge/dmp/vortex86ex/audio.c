@@ -17,26 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/device.h>
+#include <device/azalia_device.h>
 #include <device/pci.h>
-#include <arch/io.h>
-#include <boot/tables.h>
-#include <device/pci_def.h>
-#include "hda_verb.h"
+#include <device/pci_ids.h>
 
-static void verb_setup(void)
-{
-	cim_verb_data = mainboard_cim_verb_data;
-	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
-}
-
-static void mainboard_enable(device_t dev)
-{
-	verb_setup();
-}
-
-struct chip_operations mainboard_ops = {
-	CHIP_NAME("DMP VORTEX86EX Mainboard")
-	.enable_dev = mainboard_enable,
+/* RDC HD audio controller */
+static const struct pci_driver rdc_audio __pci_driver = {
+	.ops	= &default_azalia_audio_ops,
+	.vendor	= PCI_VENDOR_ID_RDC,
+	.device	= 0x3010,
 };

@@ -61,7 +61,12 @@ static int usb_xhci_port_count_usb3(device_t dev)
 static void usb_xhci_reset_status_usb3(u32 mem_base, int port)
 {
 	u32 portsc = mem_base + XHCI_USB3_PORTSC(port);
-	write32(portsc, read32(portsc) | XHCI_USB3_PORTSC_CHST);
+	u32 status = read32(portsc);
+	/* Do not set Port Enabled/Disabled field */
+	status &= ~XHCI_USB3_PORTSC_PED;
+	/* Clear all change status bits */
+	status |= XHCI_USB3_PORTSC_CHST;
+	write32(portsc, status);
 }
 
 static void usb_xhci_reset_port_usb3(u32 mem_base, int port)
@@ -178,6 +183,9 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 		reg32 &= ~((1 << 14) | (1 << 2));
 		write32(mem_base + 0x816c, reg32);
 
+		/* Reset disconnected USB3 ports */
+		usb_xhci_reset_usb3(dev, 0);
+
 		/* Set MMIO 0x80e0[15] */
 		reg32 = read32(mem_base + 0x80e0);
 		reg32 |= (1 << 15);
@@ -186,6 +194,7 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 
 	/* Set D3Hot state and enable PME */
 	pci_or_config16(dev, XHCI_PWR_CTL_STS, PWR_CTL_SET_D3);
+	pci_or_config16(dev, XHCI_PWR_CTL_STS, PWR_CTL_STATUS_PME);
 	pci_or_config16(dev, XHCI_PWR_CTL_STS, PWR_CTL_ENABLE_PME);
 }
 

@@ -31,7 +31,7 @@
 #define PEI_DATA_H
 
 typedef void (*tx_byte_func)(unsigned char byte);
-#define PEI_VERSION 14
+#define PEI_VERSION 15
 
 #define MAX_USB2_PORTS 16
 #define MAX_USB3_PORTS 16
@@ -92,6 +92,7 @@ struct pei_data
 	int dimm_channel1_disabled;
 	/* Enable 2x Refresh Mode */
 	int ddr_refresh_2x;
+	int dq_pins_interleaved;
 	/* Data read from flash and passed into MRC */
 	unsigned char *mrc_input;
 	unsigned int mrc_input_len;

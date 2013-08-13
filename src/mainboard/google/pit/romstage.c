@@ -278,6 +278,7 @@ void main(void)
 	/* Set SPI (primary CBFS media) clock to 50MHz. */
 	/* if this is uncommented SPI will not work correctly. */
 	clock_set_rate(PERIPH_ID_SPI1, 50000000);
+	exynos_pinmux_spi1();
 	simple_spi_test();
 
 	cbmem_initialize_empty();

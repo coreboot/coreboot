@@ -139,8 +139,11 @@ static void exynos_pinmux_spi(int start, int cfg)
 {
 	int i;
 
-	for (i = start; i < start + 4; i++)
+	for (i = start; i < start + 4; i++) {
 		gpio_cfg_pin(i, cfg);
+		gpio_set_pull(i, GPIO_PULL_NONE);
+		gpio_set_drv(i, GPIO_DRV_3X);
+	}
 }
 
 void exynos_pinmux_spi0(void)

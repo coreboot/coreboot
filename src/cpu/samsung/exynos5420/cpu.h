@@ -26,22 +26,6 @@
 
 #define EXYNOS_PRO_ID			0x10000000
 
-/* Address of address of function that copys data from SD or MMC */
-#define EXYNOS_COPY_MMC_FNPTR_ADDR	0x02020030
-
-/* Address of address of function that copys data from SPI */
-#define EXYNOS_COPY_SPI_FNPTR_ADDR	0x02020058
-
-/* Address of address of function that copys data through USB */
-#define EXYNOS_COPY_USB_FNPTR_ADDR	0x02020070
-
-/* Boot mode values */
-#define EXYNOS_USB_SECONDARY_BOOT	0xfeed0002
-
-#define EXYNOS_IRAM_SECONDARY_BASE	0x02020018
-
-#define EXYNOS_I2C_SPACING		0x10000
-
 /* EXYNOS5 */
 #define EXYNOS5_GPIO_PART6_BASE		0x03860000	/* Z<6:0> */
 #define EXYNOS5_PRO_ID			0x10000000

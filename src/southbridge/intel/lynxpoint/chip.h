@@ -72,6 +72,9 @@ struct southbridge_intel_lynxpoint_config {
 	uint8_t sata_port_map;
 	uint32_t sata_port0_gen3_tx;
 	uint32_t sata_port1_gen3_tx;
+	uint32_t sata_port0_gen3_dtle;
+	uint32_t sata_port1_gen3_dtle;
+
 	/* SATA DEVSLP Mux
 	 * 0 = port 0 DEVSLP on DEVSLP0/GPIO33
 	 * 1 = port 3 DEVSLP on DEVSLP0/GPIO33

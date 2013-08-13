@@ -24,8 +24,14 @@
 #include <device/pci_def.h>
 #include "pch.h"
 
-#define PCH_EHCI1_TEMP_BAR0 0xe8000000
-#define PCH_EHCI2_TEMP_BAR0 0xe8000400
+
+#if CONFIG_USBDEBUG_HCD_INDEX != 2
+#define PCH_EHCI1_TEMP_BAR0 CONFIG_EHCI_BAR
+#define PCH_EHCI2_TEMP_BAR0 (PCH_EHCI1_TEMP_BAR0 + 0x400)
+#else
+#define PCH_EHCI2_TEMP_BAR0 CONFIG_EHCI_BAR
+#define PCH_EHCI1_TEMP_BAR0 (PCH_EHCI2_TEMP_BAR0 + 0x400)
+#endif
 
 /*
  * Setup USB controller MMIO BAR to prevent the

@@ -20,3 +20,4 @@
 ramstage-y += southbridge.c
 ramstage-y += hard_reset.c
 ramstage-y += ide_sd_sata.c
+ramstage-y += audio.c

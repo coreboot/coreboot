@@ -119,11 +119,22 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	// TODO Add a "size" in CBFS header for a platform independent way to
 	// determine the end of CBFS data.
 #if defined(CONFIG_ARCH_X86) && CONFIG_ARCH_X86
-	romsize -= htonl(header->bootblocksize);
-#endif
-	DEBUG("CBFS location: 0x%x~0x%x, align: %d\n", offset, romsize, align);
+	// resolve actual length of ROM used for CBFS components
+	// the bootblock size was not taken into account
+	romsize -= ntohl(header->bootblocksize);
 
+	// fine tune the length to handle alignment positioning.
+	// using (bootblock size) % align, to derive the
+	// number of bytes the bootblock is off from the alignment size.
+	if ((ntohl(header->bootblocksize) % align))
+		romsize -= (align - (ntohl(header->bootblocksize) % align));
+	else
+		romsize -= 1;
+#endif
+
+	DEBUG("CBFS location: 0x%x~0x%x, align: %d\n", offset, romsize, align);
 	DEBUG("Looking for '%s' starting from 0x%x.\n", name, offset);
+
 	media->open(media);
 	while (offset < romsize &&
 	       media->read(media, &file, offset, sizeof(file)) == sizeof(file)) {

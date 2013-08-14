@@ -116,6 +116,27 @@ chip northbridge/intel/haswell
 			device pci 1f.2 on end # SATA Controller
 			device pci 1f.3 on # SMBus
 				chip drivers/i2c/rtd2132
+					# Panel Power Timings (1 ms units)
+					# Note: the panel Tx timings are very
+					# different from the LVDS bridge
+					# Tx timing settings. Below is a mapping
+					# for RTD2132 -> Panel timings.
+					# T1 = T2
+					# T2 = T8 + T10 + T12
+					# T3 = T14
+					# T4 = T15
+					# T5 = T9 + T11 + T13
+					# T6 = T3
+					# T7 = T4
+					register "t1" = "20"
+					register "t2" = "16"
+					register "t3" = "1"
+					register "t4" = "1"
+					register "t5" = "16"
+					register "t6" = "20"
+					register "t7" = "500"
+					# LVDS Swap settings are normal.
+					register "lvds_swap" = "0"
 					# Enable Spread Sprectrum at 1.0%
 					register "sscg_percent" = "0x10"
 					device i2c 35 on end

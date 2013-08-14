@@ -56,6 +56,7 @@ bootblock-y += eabi_compat.c
 bootblock-y += memset.S
 bootblock-y += memcpy.S
 bootblock-y += memmove.S
+bootblock-y += mmu.c
 
 bootblock_lds = $(src)/arch/armv7/bootblock.lds
 bootblock_lds += $(chipset_bootblock_lds)

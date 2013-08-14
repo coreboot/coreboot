@@ -17,9 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
+
 #include "clk.h"
 #include "wakeup.h"
 #include "cpu.h"
+
+/* convenient shorthand (in MB) */
+#define SRAM_START	(0x02020000 >> 20)
+#define SRAM_SIZE	1
+#define SRAM_END	(SRAM_START + SRAM_SIZE)	/* plus one... */
 
 void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
@@ -50,6 +57,14 @@ void bootblock_cpu_init(void)
 		wakeup();
 		/* Never returns. */
 	}
+
+	/* set up dcache and MMU */
+	mmu_init();
+	mmu_config_range(0, SRAM_START, DCACHE_OFF);
+	mmu_config_range(SRAM_START, SRAM_SIZE, DCACHE_WRITEBACK);
+	mmu_config_range(SRAM_END, 4096 - SRAM_END, DCACHE_OFF);
+	dcache_invalidate_all();
+	dcache_mmu_enable();
 
 	/* For most ARM systems, we have to initialize firmware media source
 	 * (ex, SPI, SD/MMC, or eMMC) now; but for Exynos platform, that is

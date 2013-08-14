@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -36,14 +37,12 @@
 #include <arch/cache.h>
 #include <arch/io.h>
 
-#define L1_TLB_ENTRIES	4096	/* 1 entry for each 1MB address space */
-
-static uintptr_t ttb_addr;
+static void *const ttb_buff = (void *)CONFIG_TTB_BUFFER;
 
 void mmu_disable_range(unsigned long start_mb, unsigned long size_mb)
 {
 	unsigned int i;
-	uint32_t *ttb_entry = (uint32_t *)ttb_addr;
+	uint32_t *ttb_entry = ttb_buff;
 	printk(BIOS_DEBUG, "Disabling: 0x%08lx:0x%08lx\n",
 			start_mb*MiB, start_mb*MiB + size_mb*MiB - 1);
 
@@ -61,7 +60,7 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 {
 	unsigned int i;
 	uint32_t attr;
-	uint32_t *ttb_entry = (uint32_t *)ttb_addr;
+	uint32_t *ttb_entry = ttb_buff;
 	const char *str = NULL;
 
 	/*
@@ -116,24 +115,14 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 
 void mmu_init(void)
 {
-	unsigned int ttb_size;
-	uint32_t ttbcr;
-
 	/*
 	 * For coreboot's purposes, we will create a simple L1 page table
 	 * in RAM with 1MB section translation entries over the 4GB address
 	 * space.
 	 * (ref: section 10.2 and example 15-4 in Cortex-A series
 	 * programmer's guide)
-	 *
-	 * FIXME: TLB needs to be aligned to 16KB, but cbmem_add() aligns to
-	 * 512 bytes. So allocate some extra space in cbmem and fix-up the
-	 * pointer.
-	 */
-	ttb_size = L1_TLB_ENTRIES * sizeof(uint32_t);
-	ttb_addr = (uintptr_t)cbmem_add(CBMEM_ID_GDT, ttb_size + 16*KiB);
-	ttb_addr = ALIGN(ttb_addr, 16*KiB);
-	printk(BIOS_DEBUG, "Translation table is @ 0x%08x\n", ttb_addr);
+         */
+	printk(BIOS_DEBUG, "Translation table is @ %p\n", ttb_buff);
 
 	/*
 	 * Disable TTBR1 by setting TTBCR.N to 0b000, which means the TTBR0
@@ -141,16 +130,14 @@ void mmu_init(void)
 	 *
 	 * ref: Arch Ref. Manual for ARMv7-A, B3.5.4,
 	 */
-	ttbcr = read_ttbcr();
-	ttbcr &= ~(0x3);
-	write_ttbcr(ttbcr);
+	write_ttbcr(read_ttbcr() & ~0x3);
 
 	/*
 	 * Translation table base 0 address is in bits 31:14-N, where N is given
 	 * by bits 2:0 in TTBCR (which we set to 0). All lower bits in this
 	 * register should be zero for coreboot.
 	 */
-	write_ttbr0(ttb_addr);
+	write_ttbr0((uintptr_t)ttb_buff);
 
 	/* disable domain-level checking of permissions */
 	write_dacr(~0);

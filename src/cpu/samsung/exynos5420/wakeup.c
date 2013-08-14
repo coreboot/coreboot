@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cache.h>
 #include <console/console.h>
 #include "power.h"
 #include "wakeup.h"
@@ -27,6 +28,8 @@ void wakeup(void)
 		power_reset();
 
 	power_init();  /* Ensure ps_hold_setup() for early wakeup. */
+	dcache_mmu_disable();
+	icache_invalidate_all();
 	power_exit_wakeup();
 	/* Should never return. */
 	die("Failed to wake up.\n");

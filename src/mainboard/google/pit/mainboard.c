@@ -43,7 +43,6 @@
 /* convenient shorthand (in MB) */
 #define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
-#define DRAM_END	(DRAM_START + DRAM_SIZE)	/* plus one... */
 
 static struct edid edid = {
 	.ha = 1366,
@@ -432,14 +431,9 @@ static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = &mainboard_init;
 
-	/* set up dcache and MMU */
-	/* FIXME: this should happen via resource allocator */
-	mmu_init();
-	mmu_config_range(0, DRAM_START, DCACHE_OFF);
+	/* set up caching for the DRAM */
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
-	mmu_config_range(DRAM_END, 4096 - DRAM_END, DCACHE_OFF);
-	dcache_invalidate_all();
-	dcache_mmu_enable();
+	tlb_invalidate_all();
 
 	/* this is going to move, but we must have it now and we're
 	 * not sure where */

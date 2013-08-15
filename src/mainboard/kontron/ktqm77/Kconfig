@@ -20,7 +20,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MRC_FILE
 	string
-	default "3rdparty/northbridge/intel/sandybridge/systemagent-ivybridge.bin"
+	default "3rdparty/northbridge/intel/sandybridge/systemagent-r6.bin"
 
 config MAINBOARD_DIR
 	string

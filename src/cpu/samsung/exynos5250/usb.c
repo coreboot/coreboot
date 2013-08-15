@@ -88,10 +88,11 @@ static void setup_usb_phy(struct usb_phy *usb, int hsic_gpio)
 	udelay(10);
 	clrbits_le32(&usb->hsicphyctrl1, HOST_CTRL0_PHYSWRST);
 
-	/* PHY clock and power setup time */
-	// FIXME If this happens more than 50ms before executing the payload,
-	// we might not need this delay.
-	mdelay(50);
+	/* At this point we need to wait for 50ms before talking to
+	 * the USB controller (PHY clock and power setup time)
+	 * By the time we are actually in the payload, these 50ms
+	 * will have passed.
+	 */
 }
 
 void usb_init(device_t dev)

@@ -43,6 +43,7 @@
 #include <cpu/x86/msr.h>
 #include <edid.h>
 #include <drivers/intel/gma/i915.h>
+
 /*
  * Here is the rough outline of how we bring up the display:
  *  1. Upon power-on Sink generates a hot plug detection pulse thru HPD
@@ -160,87 +161,6 @@ static void palette(void)
 	}
 }
 
-/* this is code known to be needed for FUI, and useful
- * but not essential otherwise. At some point, we hope,
- * it's always going to be on. It gets the chip
- * into a known good state
- * -- including turning on the power well --
- * which we're not sure is being done correctly.
- * Does it belong here? It belongs somewhere in the
- * northbridge, that we know.
- */
-static void gma_fui_init(int noisy)
-{
-	printk(BIOS_SPEW, "pci dev(0x0,0x2,0x0,0x8)");
-	printk(BIOS_SPEW, "pci dev(0x0,0x1f,0x0,0x10)");
-	printk(BIOS_SPEW, "pci dev(0x0,0x2,0x0,0x0)");
-	printk(BIOS_SPEW, "pci dev(0x0,0x2,0x0,0x2)");
-	printk(BIOS_SPEW, "pci dev(0x0,0x1f,0x0,0x0)");
-	printk(BIOS_SPEW, "pci dev(0x0,0x1f,0x0,0x2)");
-	io_i915_write32(0x80000000,0x45400);
-	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	printk(BIOS_SPEW, "pci dev(0x0,0x0,0x0,0x14)");
-	printk(BIOS_SPEW, "pci dev(0x0,0x2,0x0,0x17)");
-	printk(BIOS_SPEW, "pci dev(0x0,0x2,0x0,0x18)");
-	io_i915_write32(0x00000000,_CURACNTR);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000,_DSPACNTR);
-	io_i915_write32(0x00000000,_DSPBCNTR);
-	io_i915_write32(0x8000298e,CPU_VGACNTRL);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000000,_DSPBSURF);
-	io_i915_write32( DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SCRAMBLING_DISABLE_IRONLAKE | DP_SYNC_VS_HIGH |0x00000091,DP_A);
-	io_i915_write32(0x00200090,_FDI_RXA_MISC);
-	io_i915_write32(0x0a000000,_FDI_RXA_MISC);
-	io_i915_write32(0x00000070,0x46408);
-	io_i915_write32(0x04000000,0x42090);
-	io_i915_write32(0x00000000,0x9840);
-	io_i915_write32(0xa4000000,0x42090);
-	io_i915_write32(0x00001000,SOUTH_DSPCLK_GATE_D);
-	io_i915_write32(0x00004000,0x42080);
-	io_i915_write32(0x00ffffff,0x64f80);
-	io_i915_write32(0x0007000e,0x64f84);
-	io_i915_write32(0x00d75fff,0x64f88);
-	io_i915_write32(0x000f000a,0x64f8c);
-	io_i915_write32(0x00c30fff,0x64f90);
-	io_i915_write32(0x00060006,0x64f94);
-	io_i915_write32(0x00aaafff,0x64f98);
-	io_i915_write32(0x001e0000,0x64f9c);
-	io_i915_write32(0x00ffffff,0x64fa0);
-	io_i915_write32(0x000f000a,0x64fa4);
-	io_i915_write32(0x00d75fff,0x64fa8);
-	io_i915_write32(0x00160004,0x64fac);
-	io_i915_write32(0x00c30fff,0x64fb0);
-	io_i915_write32(0x001e0000,0x64fb4);
-	io_i915_write32(0x00ffffff,0x64fb8);
-	io_i915_write32(0x00060006,0x64fbc);
-	io_i915_write32(0x00d75fff,0x64fc0);
-	io_i915_write32(0x001e0000,0x64fc4);
-	io_i915_write32(0x00ffffff,DDI_BUF_TRANS_A);
-	io_i915_write32(0x0006000e,DDI_BUF_TRANS_A+0x4);
-	io_i915_write32(0x00d75fff,DDI_BUF_TRANS_A+0x8);
-	io_i915_write32(0x0005000a,DDI_BUF_TRANS_A+0xc);
-	io_i915_write32(0x00c30fff,DDI_BUF_TRANS_A+0x10);
-	io_i915_write32(0x00040006,DDI_BUF_TRANS_A+0x14);
-	io_i915_write32(0x80aaafff,DDI_BUF_TRANS_A+0x18);
-	io_i915_write32(0x000b0000,DDI_BUF_TRANS_A+0x1c);
-	io_i915_write32(0x00ffffff,DDI_BUF_TRANS_A+0x20);
-	io_i915_write32(0x0005000a,DDI_BUF_TRANS_A+0x24);
-	io_i915_write32(0x00d75fff,DDI_BUF_TRANS_A+0x28);
-	io_i915_write32(0x000c0004,DDI_BUF_TRANS_A+0x2c);
-	io_i915_write32(0x80c30fff,DDI_BUF_TRANS_A+0x30);
-	io_i915_write32(0x000b0000,DDI_BUF_TRANS_A+0x34);
-	io_i915_write32(0x00ffffff,DDI_BUF_TRANS_A+0x38);
-	io_i915_write32(0x00040006,DDI_BUF_TRANS_A+0x3c);
-	io_i915_write32(0x80d75fff,DDI_BUF_TRANS_A+0x40);
-	io_i915_write32(0x000b0000,DDI_BUF_TRANS_A+0x44);
-	io_i915_write32( DIGITAL_PORTA_HOTPLUG_ENABLE |0x00000010,DIGITAL_PORT_HOTPLUG_CNTRL);
-	io_i915_write32( PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010,SDEISR+0x30);
-	io_i915_write32((PCH_PP_UNLOCK&0xabcd0000)| EDP_FORCE_VDD |0xabcd0008,PCH_PP_CONTROL);
-	mdelay(200);
-	io_i915_write32(0x0004af06,PCH_PP_DIVISOR);
-	/* we may need more but let's see. */
-}
-
 void dp_init_dim_regs(struct intel_dp *dp);
 void dp_init_dim_regs(struct intel_dp *dp)
 {
@@ -351,10 +271,9 @@ void mainboard_train_link(struct intel_dp *intel_dp)
 }
 
 int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-		unsigned int gfx);
-
+		unsigned int gfx, unsigned int init_fb);
 int i915lightup(unsigned int pphysbase, unsigned int piobase,
-		unsigned int pmmio, unsigned int pgfx)
+		unsigned int pmmio, unsigned int pgfx, unsigned int init_fb)
 {
 	int must_cycle_power = 0;
 	struct intel_dp adp, *dp = &adp;
@@ -377,6 +296,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	void runio(struct intel_dp *dp);
 	void runlinux(struct intel_dp *dp);
+
 	dp->gen = 8; // ??
 	dp->is_haswell = 1;
 	dp->DP = 0x2;
@@ -396,7 +316,17 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	dp->aux_clock_divider = 0xe1;
 	dp->precharge = 3;
 
-	gma_fui_init(0);
+	/* 1. Normal mode: Set the first page to zero and make
+	   all GTT entries point to the same page
+	   2. Developer/Recovery mode: We do not zero out all
+	   the pages pointed to by GTT in order to avoid wasting time */
+        if (init_fb)
+                setgtt(0, FRAME_BUFFER_PAGES, physbase, 4096);
+        else {
+                setgtt(0, FRAME_BUFFER_PAGES, physbase, 0);
+                memset((void*)graphics, 0, 4096);
+        }
+
 	//intel_prepare_ddi_buffers(0, 0);
 	//ironlake_edp_panel_vdd_on(dp);
 	dp->address = 0x50;
@@ -426,9 +356,8 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	io_i915_write32(0x00000021,0x6f410);
 
 	runio(dp);
-	palette();
 
-	setgtt(0, FRAME_BUFFER_PAGES, physbase, 4096);
+	palette();
 
 	pixels = dp->edid.ha * (dp->edid.va-4) * 4;
 	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.ha, dp->edid.va);

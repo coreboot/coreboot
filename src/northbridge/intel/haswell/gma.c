@@ -30,6 +30,10 @@
 #include "chip.h"
 #include "haswell.h"
 
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/chromeos.h>
+#endif
+
 struct gt_reg {
 	u32 reg;
 	u32 andmask;
@@ -403,12 +407,18 @@ static void gma_func0_init(struct device *dev)
 #if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
 	u32 iobase, mmiobase, physbase;
+	/* Default set to 1 since it might be required for
+	   stuff like seabios */
+	unsigned int init_fb = 1;
 	iobase = dev->resource_list[2].base;
 	mmiobase = dev->resource_list[0].base;
 	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-
-	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
-	lightup_ok = i915lightup(physbase, iobase, mmiobase, graphics_base);
+#ifdef CONFIG_CHROMEOS
+	init_fb = developer_mode_enabled() || recovery_mode_enabled();
+#endif
+	int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
+			unsigned int gfx, unsigned int init_fb);
+	lightup_ok = i915lightup(physbase, iobase, mmiobase, graphics_base, init_fb);
 	if (lightup_ok)
 		gfx_set_init_done(1);
 #endif

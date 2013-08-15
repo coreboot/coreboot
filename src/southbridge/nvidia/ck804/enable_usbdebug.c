@@ -36,10 +36,14 @@
 #define CK804_DEVN_BASE CONFIG_HT_CHAIN_UNITID_BASE
 #endif
 
-void set_debug_port(unsigned int port)
+pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
+{
+	return PCI_DEV(0, CK804_DEVN_BASE + 2, 1); /* USB EHCI */
+}
+
+void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 {
 	u32 dword;
-	pci_devfn_t dev = PCI_DEV(0, CK804_DEVN_BASE + 2, 1); /* USB EHCI */
 
 	/* Write the port number to 0x74[15:12]. */
 	dword = pci_read_config32(dev, 0x74);
@@ -48,12 +52,10 @@ void set_debug_port(unsigned int port)
 	pci_write_config32(dev, 0x74, dword);
 }
 
-void enable_usbdebug(unsigned int port)
+void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
 {
-	pci_devfn_t dev = PCI_DEV(0, CK804_DEVN_BASE + 2, 1); /* USB EHCI */
-
 	/* Set the EHCI BAR address. */
-	pci_write_config32(dev, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
+	pci_write_config32(dev, EHCI_BAR_INDEX, base);
 
 	/* Enable access to the EHCI memory space registers. */
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);

@@ -131,6 +131,13 @@ config SPKMODEM
 
 # Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
 config HAVE_USBDEBUG
+	bool
+	default y if HAVE_USBDEBUG_OPTIONS
+	default n
+
+# Use "select HAVE_USBDEBUG_OPTIONS" on southbridges with multiple
+# EHCI controllers or multiple ports with Debug Port capability
+config HAVE_USBDEBUG_OPTIONS
 	def_bool n
 
 config USBDEBUG
@@ -153,6 +160,18 @@ config USBDEBUG
 	  of supported controllers.
 
 	  If unsure, say N.
+
+config USBDEBUG_HCD_INDEX
+	int "Index for EHCI controller to use with usbdebug"
+	default 0
+	depends on USBDEBUG
+	help
+	   Some boards have multiple EHCI controllers with possibly only
+	   one having the Debug Port capability on an external USB port.
+
+	   Mapping of this index to PCI device functions is southbridge
+	   specific and mainboard level Kconfig should already provide
+	   a working default value here.
 
 config USBDEBUG_DEFAULT_PORT
 	int "Default USB port to use as Debug Port"

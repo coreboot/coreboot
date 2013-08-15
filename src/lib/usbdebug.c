@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <arch/byteorder.h>
 #include <cpu/x86/car.h>
 #include <string.h>
@@ -397,6 +398,20 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 	return -1; //-ENOTCONN;
 }
 
+#if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
+static void enable_usbdebug(void)
+{
+	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
+	pci_ehci_dbg_enable(dbg_dev, CONFIG_EHCI_BAR);
+}
+#endif
+
+static void set_debug_port(unsigned int port)
+{
+	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
+	pci_ehci_dbg_set_port(dbg_dev, port);
+}
+
 static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
 	struct ehci_caps *ehci_caps;
@@ -683,7 +698,9 @@ static void pci_ehci_set_resources(struct device *dev)
 
 void pci_ehci_read_resources(struct device *dev)
 {
-	if (!ehci_drv_ops) {
+	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
+
+	if (!ehci_drv_ops && pci_match_simple_dev(dev, dbg_dev)) {
 		memcpy(&ehci_dbg_ops, dev->ops, sizeof(ehci_dbg_ops));
 		ehci_drv_ops = dev->ops;
 		ehci_dbg_ops.set_resources = pci_ehci_set_resources;
@@ -717,7 +734,7 @@ int usbdebug_init(void)
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 
 #if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
-	enable_usbdebug(0);
+	enable_usbdebug();
 #endif
 	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }

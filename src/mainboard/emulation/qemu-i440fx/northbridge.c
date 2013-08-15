@@ -54,7 +54,6 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 {
 	u16 nbid   = pci_read_config16(dev_find_slot(0, 0), PCI_DEVICE_ID);
 	int i440fx = (nbid == 0x1237);
-//	int q35    = (nbid == 0x29c0);
 	struct resource *res;
 	unsigned long tomk = 0, high;
 	int idx = 10;
@@ -94,7 +93,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 
 	if (i440fx) {
 		/* Reserve space for the IOAPIC.  This should be in
-		 * the Southbridge, but I couldn't tell which device
+		 * the southbridge, but I couldn't tell which device
 		 * to put it in. */
 		res = new_resource(dev, 2);
 		res->base = IO_APIC_ADDR;

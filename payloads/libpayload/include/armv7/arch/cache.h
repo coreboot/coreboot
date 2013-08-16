@@ -110,6 +110,12 @@ static inline void tlbiall(void)
 	asm volatile ("mcr p15, 0, %0, c8, c7, 0" : : "r" (0) : "memory");
 }
 
+/* invalidate unified TLB by MVA, all ASID */
+static inline void tlbimvaa(unsigned long mva)
+{
+	asm volatile ("mcr p15, 0, %0, c8, c7, 3" : : "r" (mva) : "memory");
+}
+
 /* write data access control register (DACR) */
 static inline void write_dacr(uint32_t val)
 {
@@ -162,6 +168,12 @@ static inline void dccisw(uint32_t val)
 static inline void dccmvac(unsigned long mva)
 {
 	asm volatile ("mcr p15, 0, %0, c7, c10, 1" : : "r" (mva) : "memory");
+}
+
+/* data cache clean by set/way */
+static inline void dccsw(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c7, c10, 2" : : "r" (val) : "memory");
 }
 
 /* data cache invalidate by MVA to PoC */
@@ -286,6 +298,8 @@ void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
 /* dcache invalidate by modified virtual address to PoC */
 void dcache_invalidate_by_mva(unsigned long addr, unsigned long len);
 
+void dcache_clean_all(void);
+
 /* dcache invalidate all (on current level given by CCSELR) */
 void dcache_invalidate_all(void);
 
@@ -317,6 +331,8 @@ enum dcache_policy {
 	DCACHE_WRITETHROUGH,
 };
 
+/* disable the mmu for a range. Primarily useful to lock out address 0. */
+void mmu_disable_range(unsigned long start_mb, unsigned long size_mb);
 /* mmu range configuration (set dcache policy) */
 void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 						enum dcache_policy policy);

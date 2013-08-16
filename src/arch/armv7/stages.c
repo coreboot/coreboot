@@ -52,7 +52,7 @@ void stage_exit(void *addr)
 	/* make sure any code we installed is written to memory. Not all ARM have
 	 * unified caches.
 	 */
-	dcache_clean_invalidate_all();
+	dcache_clean_all();
 	/* Because most stages copy code to memory, it's a safe and hygienic thing
 	 * to flush the icache here.
 	 */

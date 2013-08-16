@@ -170,6 +170,12 @@ static inline void dccmvac(unsigned long mva)
 	asm volatile ("mcr p15, 0, %0, c7, c10, 1" : : "r" (mva) : "memory");
 }
 
+/* data cache clean by set/way */
+static inline void dccsw(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c7, c10, 2" : : "r" (val) : "memory");
+}
+
 /* data cache invalidate by MVA to PoC */
 static inline void dcimvac(unsigned long mva)
 {
@@ -288,6 +294,11 @@ void dcache_clean_by_mva(unsigned long addr, unsigned long len);
 
 /* dcache clean and invalidate by modified virtual address to PoC */
 void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
+
+/* dcache invalidate by modified virtual address to PoC */
+void dcache_invalidate_by_mva(unsigned long addr, unsigned long len);
+
+void dcache_clean_all(void);
 
 /* dcache invalidate all (on current level given by CCSELR) */
 void dcache_invalidate_all(void);

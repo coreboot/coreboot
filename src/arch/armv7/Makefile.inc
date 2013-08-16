@@ -170,6 +170,7 @@ ramstage-y += exception_asm.S
 ramstage-y += div0.c
 #ramstage-y += interrupts.c
 ramstage-y += cache.c
+ramstage-y += cpu.c
 ramstage-y += mmu.c
 ramstage-y += eabi_compat.c
 ramstage-y += boot.c

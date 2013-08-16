@@ -104,4 +104,5 @@ inline static void set_svc32_mode(void)
 	asm volatile("msr cpsr_c, %0" :: "r"(0x13 | 0xc0));
 }
 
+struct cpu_info *cpu_info(void);
 #endif /* __ARCH_CPU_H__ */

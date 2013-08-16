@@ -69,7 +69,17 @@ config ROMSTAGE_SIZE
 # at the top of IRAM for now.
 #
 # Stack grows downward, push operation stores register contents in
-# consecutive memory locations ending just below SP
+# consecutive memory locations ending just below SP.
+# The setup in the exynos 5420 is a new one for coreboot. We have got
+# the bootblock, romstage, and ramstage sharing the same stack space.
+# The SRAM is always there and having a known-good stack memory
+# makes for a more reliable setup.
+# Thus, in this case:
+# STACK_TOP: highest stack address in SRAM
+# STACK_BOTTOM: lowest stack address in SRAM
+# STACK_SIZE: as in standard coreboot usage, size of thread stacks in ramstage
+# ROMSTAGE_STACK_SIZE: size of the single stack in romstage
+
 config STACK_TOP
 	hex
 	default 0x02073000
@@ -78,9 +88,17 @@ config STACK_BOTTOM
 	hex
 	default 0x0206f000
 
-config STACK_SIZE
+# The romstage stack must be large enough to contain the lzma buffer
+config ROMSTAGE_STACK_SIZE
 	hex
 	default 0x4000
+
+# STACK_SIZE is for the ramstage core and thread stacks.
+# It must be a power of 2, to make the cpu_info computation work,
+# and cpu_info needs to work to make SMP startup and threads work.
+config STACK_SIZE
+	hex
+	default 0x0800
 
 # TODO We may probably move this to board-specific implementation files instead
 # of KConfig values.

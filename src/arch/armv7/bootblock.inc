@@ -82,8 +82,15 @@ init_stack_loop:
 /* Set stackpointer in internal RAM to call board_init_f */
 call_bootblock:
 	ldr	sp, .Stack /* Set up stack pointer */
-	bic	sp, sp, #7 /* 8-byte alignment for ABI compliance */
 	ldr	r0,=0x00000000
+	 /*
+	  * The current design of cpu_info places the
+	  * struct at the top of the stack. The number of
+	  * words pushed must be at least as large as that
+	  * struct.
+	  */
+	push	{r0-r2}
+	bic	sp, sp, #7 /* 8-byte alignment for ABI compliance */
 	/*
 	 * Use "bl" instead of "b" even though we do not intend to return.
 	 * "bl" gets compiled to "blx" if we're transitioning from ARM to
@@ -104,5 +111,6 @@ wait_for_interrupt:
 .Stack:
 	.word CONFIG_STACK_TOP
 .align 2
+/* create this size the same way we do in coreboot_ram.ld: top-bottom */
 .Stack_size:
-	.word CONFIG_STACK_SIZE
+	.word CONFIG_STACK_TOP - CONFIG_STACK_BOTTOM

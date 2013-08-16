@@ -18,89 +18,76 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <delay.h>
+#include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/io.h>
-#include <delay.h>
+#include "cpu.h"
 #include "gpio.h"
 #include "power.h"
-#include "cpu.h"
+#include "sysreg.h"
 #include "usb.h"
-#include "chip.h"
 
-/* Enable VBUS */
-static int usb_vbus_init(int vbus_gpio)
-{
-	/* Enable VBUS power switch */
-	gpio_direction_output(GPIO_X11, 1);
-	/* VBUS turn ON time */
-	mdelay(3);
-
-	return 0;
-}
-
-/* Setup the EHCI host controller. */
-
-static void setup_usb_phy(struct usb_phy *usb, int hsic_gpio)
+void setup_usb_host_phy(int hsic_gpio)
 {
 	unsigned int hostphy_ctrl0;
+	struct exynos5_sysreg *sysreg = samsung_get_base_sysreg();
+	struct exynos5_power *power = samsung_get_base_power();
+	struct exynos5_usb_host_phy *phy = samsung_get_base_usb_host_phy();
 
-	power_enable_usb_phy();
+	setbits_le32(&sysreg->usb20_phy_cfg, USB20_PHY_CFG_EN);
+	setbits_le32(&power->usb_host_phy_ctrl, POWER_USB_HOST_PHY_CTRL_EN);
 
-	/* Setting up host and device simultaneously */
-	hostphy_ctrl0 = readl(&usb->usbphyctrl0);
-	hostphy_ctrl0 &= ~(HOST_CTRL0_FSEL_MASK | HOST_CTRL0_COMMONON_N |
+	printk(BIOS_DEBUG, "Powering up USB HOST PHY (%s HSIC)\n",
+			hsic_gpio ? "with" : "without");
+
+	hostphy_ctrl0 = readl(&phy->usbphyctrl0);
+	hostphy_ctrl0 &= ~(HOST_CTRL0_FSEL_MASK |
+			   HOST_CTRL0_COMMONON_N |
 			   /* HOST Phy setting */
 			   HOST_CTRL0_PHYSWRST |
 			   HOST_CTRL0_PHYSWRSTALL |
 			   HOST_CTRL0_SIDDQ |
 			   HOST_CTRL0_FORCESUSPEND |
 			   HOST_CTRL0_FORCESLEEP);
-	hostphy_ctrl0 |= (	/* Setting up the ref freq */
-				 CLK_24MHZ << 16 |
-				 /* HOST Phy setting */
-				 HOST_CTRL0_LINKSWRST |
-				 HOST_CTRL0_UTMISWRST);
-	writel(hostphy_ctrl0, &usb->usbphyctrl0);
+	hostphy_ctrl0 |= (/* Setting up the ref freq */
+			  CLK_24MHZ << 16 |
+			  /* HOST Phy setting */
+			  HOST_CTRL0_LINKSWRST |
+			  HOST_CTRL0_UTMISWRST);
+	writel(hostphy_ctrl0, &phy->usbphyctrl0);
 	udelay(10);
-	clrbits_le32(&usb->usbphyctrl0,
-		     HOST_CTRL0_LINKSWRST | HOST_CTRL0_UTMISWRST);
+	clrbits_le32(&phy->usbphyctrl0,
+		     HOST_CTRL0_LINKSWRST |
+		     HOST_CTRL0_UTMISWRST);
 	udelay(20);
 
 	/* EHCI Ctrl setting */
-	setbits_le32(&usb->ehcictrl,
+	setbits_le32(&phy->ehcictrl,
 		     EHCICTRL_ENAINCRXALIGN |
 		     EHCICTRL_ENAINCR4 |
-		     EHCICTRL_ENAINCR8 | EHCICTRL_ENAINCR16);
+		     EHCICTRL_ENAINCR8 |
+		     EHCICTRL_ENAINCR16);
 
 	/* HSIC USB Hub initialization. */
-	// FIXME board specific?
-	gpio_direction_output(hsic_gpio, 0);
-	udelay(100);
-	gpio_direction_output(hsic_gpio, 1);
-	udelay(5000);
+	if (hsic_gpio) {
+		gpio_direction_output(hsic_gpio, 0);
+		udelay(100);
+		gpio_direction_output(hsic_gpio, 1);
+		udelay(5000);
 
-	clrbits_le32(&usb->hsicphyctrl1,
-		     HOST_CTRL0_SIDDQ |
-		     HOST_CTRL0_FORCESLEEP |
-		     HOST_CTRL0_FORCESUSPEND);
-	setbits_le32(&usb->hsicphyctrl1, HOST_CTRL0_PHYSWRST);
-	udelay(10);
-	clrbits_le32(&usb->hsicphyctrl1, HOST_CTRL0_PHYSWRST);
+		clrbits_le32(&phy->hsicphyctrl1,
+			     HOST_CTRL0_SIDDQ |
+			     HOST_CTRL0_FORCESLEEP |
+			     HOST_CTRL0_FORCESUSPEND);
+		setbits_le32(&phy->hsicphyctrl1, HOST_CTRL0_PHYSWRST);
+		udelay(10);
+		clrbits_le32(&phy->hsicphyctrl1, HOST_CTRL0_PHYSWRST);
+	}
 
 	/* At this point we need to wait for 50ms before talking to
 	 * the USB controller (PHY clock and power setup time)
 	 * By the time we are actually in the payload, these 50ms
 	 * will have passed.
 	 */
-}
-
-void usb_init(device_t dev)
-{
-	struct usb_phy *usb;
-	struct cpu_samsung_exynos5420_config *conf = dev->chip_info;
-
-	usb_vbus_init(conf->usb_vbus_gpio);
-	usb = (struct usb_phy *) samsung_get_base_usb_phy();
-	setup_usb_phy(usb, conf->usb_hsic_gpio);
 }

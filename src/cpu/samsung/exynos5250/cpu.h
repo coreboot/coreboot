@@ -44,9 +44,10 @@
 #define EXYNOS5_DMC_CTRL_BASE		0x10DD0000
 #define EXYNOS5_GPIO_PART1_BASE		0x11400000	/* A00..Y67 */
 #define EXYNOS5_GPIO_PART2_BASE		0x11400c00	/* X00..X37 */
+#define EXYNOS5_USB_DRD_XHCI_BASE	0x12000000
+#define EXYNOS5_USB_DRD_PHY_BASE	0x12100000
 #define EXYNOS5_USB_HOST_EHCI_BASE	0x12110000
-#define EXYNOS5_USBPHY_BASE		0x12130000
-#define EXYNOS5_USBOTG_BASE		0x12140000
+#define EXYNOS5_USB_HOST_PHY_BASE	0x12130000
 
 #define EXYNOS5_MMC_BASE		0x12200000
 #define EXYNOS5_MSHC_BASE		0x12240000
@@ -117,8 +118,9 @@
 #define samsung_get_base_swreset() ((struct exynos5_swreset *)EXYNOS5_SWRESET)
 #define samsung_get_base_sysreg() ((struct exynos5_sysreg *)EXYNOS5_SYSREG_BASE)
 #define samsung_get_base_uart() ((struct exynos5_uart *)EXYNOS5_UART_BASE)
-#define samsung_get_base_usb_phy() ((struct exynos5_usb_phy *)EXYNOS5_USBPHY_BASE)
-#define samsung_get_base_usb_otg() ((struct exynos5_usb_otg *)EXYNOS5_USBOTG_BASE)
+#define samsung_get_base_usb_drd_phy() ((struct exynos5_usb_drd_phy *)EXYNOS5_USB_DRD_PHY_BASE)
+#define samsung_get_base_usb_host_phy() ((struct exynos5_usb_host_phy *)EXYNOS5_USB_HOST_PHY_BASE)
+#define samsung_get_base_usb_host_otg() ((struct exynos5_usb_host_otg *)EXYNOS5_USB_HOST_OTG_BASE)
 #define samsung_get_base_watchdog() ((struct exynos5_watchdog *)EXYNOS5_WATCHDOG_BASE)
 #define samsung_get_base_power() ((struct exynos5_power *)EXYNOS5_POWER_BASE)
 #define samsung_get_base_i2s() ((struct exynos5_i2s *)EXYNOS5_I2S_BASE)

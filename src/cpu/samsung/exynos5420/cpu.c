@@ -30,7 +30,6 @@
 #include "fimd.h"
 #include "cpu.h"
 #include "clk.h"
-#include "usb.h"
 #include "chip.h"
 
 #include <ec/google/chromeec/ec.h>
@@ -181,8 +180,6 @@ static void cpu_init(device_t dev)
 {
 	printk(BIOS_INFO, "CPU:   S5P%X @ %ldMHz\n",
 			cpu_id, get_arm_clk() / 1000000);
-
-	usb_init(dev);
 }
 
 static void cpu_noop(device_t dev)

@@ -118,11 +118,14 @@
 #define EXYNOS5420_DMC_DREXI_1		0x10C30000
 #define EXYNOS5420_DMC_TZASC_0		0x10D40000
 #define EXYNOS5420_DMC_TZASC_1		0x10D50000
-#define EXYNOS5420_USB_HOST_XHCI_BASE	0x12000000
-#define EXYNOS5420_USB3PHY_BASE		0x12100000
+#define EXYNOS5420_USB_DRD0_XHCI_BASE	0x12000000
+#define EXYNOS5420_USB_DRD0_PHY_BASE	0x12100000
 #define EXYNOS5420_USB_HOST_EHCI_BASE	0x12110000
+#define EXYNOS5420_USB_HOST_PHY_BASE	0x12130000
 #define EXYNOS5420_MMC_BASE		0x12200000
 #define EXYNOS5420_SROMC_BASE		0x12250000
+#define EXYNOS5420_USB_DRD1_XHCI_BASE	0x12400000
+#define EXYNOS5420_USB_DRD1_PHY_BASE	0x12500000
 #define EXYNOS5420_UART_BASE		0x12C00000
 #define EXYNOS5420_I2C_BASE		0x12C60000
 #define EXYNOS5420_I2C_8910_BASE	0x12E00000
@@ -138,8 +141,7 @@
 #define EXYNOS5420_DP_BASE		0x145B0000
 #define EXYNOS5420_INF_REG_BASE		0x10040800
 
-#define EXYNOS5420_USBPHY_BASE		DEVICE_NOT_AVAILABLE
-#define EXYNOS5420_USBOTG_BASE		DEVICE_NOT_AVAILABLE
+
 #define EXYNOS5420_FIMD_BASE		DEVICE_NOT_AVAILABLE
 #define EXYNOS5420_ADC_BASE		DEVICE_NOT_AVAILABLE
 #define EXYNOS5420_MODEM_BASE		DEVICE_NOT_AVAILABLE
@@ -194,8 +196,8 @@
 #define samsung_get_base_swreset() ((struct exynos5_swreset *)EXYNOS5_SWRESET)
 #define samsung_get_base_sysreg() ((struct exynos5_sysreg *)EXYNOS5_SYSREG_BASE)
 #define samsung_get_base_uart() ((struct exynos5_uart *)EXYNOS5_UART_BASE)
-#define samsung_get_base_usb_phy() ((struct exynos5_usb_phy *)EXYNOS5_USBPHY_BASE)
-#define samsung_get_base_usb_otg() ((struct exynos5_usb_otg *)EXYNOS5_USBOTG_BASE)
+#define samsung_get_base_usb_host_phy() ((struct exynos5_usb_host_phy *)EXYNOS5420_USB_HOST_PHY_BASE)
+#define samsung_get_base_usb_host_otg() ((struct exynos5_usb_host_otg *)EXYNOS5420_USB_HOST_OTG_BASE)
 #define samsung_get_base_watchdog() ((struct exynos5_watchdog *)EXYNOS5_WATCHDOG_BASE)
 #define samsung_get_base_power() ((struct exynos5_power *)EXYNOS5_POWER_BASE)
 #define samsung_get_base_i2s() ((struct exynos5_i2s *)EXYNOS5_I2S_BASE)

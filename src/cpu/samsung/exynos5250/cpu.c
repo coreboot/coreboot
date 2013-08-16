@@ -30,7 +30,6 @@
 #include "dp-core.h"
 #include "cpu.h"
 #include "clk.h"
-#include "usb.h"
 #include "chip.h"
 
 static unsigned int cpu_id;
@@ -153,8 +152,6 @@ static void cpu_init(device_t dev)
 {
 	printk(BIOS_INFO, "CPU:   S5P%X @ %ldMHz\n",
 			cpu_id, get_arm_clk() / (1024*1024));
-
-	usb_init(dev);
 }
 
 static void cpu_noop(device_t dev)

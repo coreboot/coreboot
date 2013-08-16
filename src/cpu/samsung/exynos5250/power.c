@@ -24,7 +24,6 @@
 #include <arch/hlt.h>
 #include "cpu.h"
 #include "power.h"
-#include "sysreg.h"
 
 static void ps_hold_setup(void)
 {
@@ -63,36 +62,6 @@ void power_enable_dp_phy(void)
 		samsung_get_base_power();
 
 	setbits_le32(&power->dptx_phy_control, DPTX_PHY_ENABLE);
-}
-
-void power_enable_usb_phy(void)
-{
-	struct exynos5_sysreg *sysreg =
-		samsung_get_base_sysreg();
-	struct exynos5_power *power =
-		samsung_get_base_power();
-	unsigned int phy_cfg;
-
-	/* Setting USB20PHY_CONFIG register to USB 2.0 HOST link */
-	phy_cfg = readl(&sysreg->usb20_phy_cfg);
-	if (phy_cfg & USB20_PHY_CFG_EN) {
-		printk(BIOS_DEBUG, "USB 2.0 HOST link already selected\n");
-	} else {
-		phy_cfg |= USB20_PHY_CFG_EN;
-		writel(phy_cfg, &sysreg->usb20_phy_cfg);
-	}
-
-	/* Enabling USBHOST_PHY */
-	setbits_le32(&power->usb_host_phy_ctrl, POWER_USB_HOST_PHY_CTRL_EN);
-}
-
-void power_disable_usb_phy(void)
-{
-	struct exynos5_power *power =
-		samsung_get_base_power();
-
-	/* Disabling USBHost_PHY */
-	clrbits_le32(&power->usb_host_phy_ctrl, POWER_USB_HOST_PHY_CTRL_EN);
 }
 
 void power_enable_hw_thermal_trip(void)

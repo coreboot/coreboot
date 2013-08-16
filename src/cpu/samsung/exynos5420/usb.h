@@ -40,7 +40,7 @@
 #define EHCICTRL_ENAINCR16                      (1 << 26)
 
 /* Register map for PHY control */
-struct usb_phy {
+struct exynos5_usb_host_phy {
         uint32_t usbphyctrl0;
         uint32_t usbphytune0;
         uint32_t reserved1[2];
@@ -57,6 +57,7 @@ struct usb_phy {
         uint32_t usbotgtune;
 };
 
-void usb_init(device_t dev);
+/* Leave hsic_gpio at 0 to not enable HSIC. */
+void setup_usb_host_phy(int hsic_gpio);
 
 #endif

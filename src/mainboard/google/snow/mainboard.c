@@ -35,6 +35,7 @@
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/i2c.h>
 #include <cpu/samsung/exynos5250/dp-core.h>
+#include <cpu/samsung/exynos5250/usb.h>
 
 #include "exynos5250.h"
 
@@ -156,6 +157,19 @@ static void sdmmc_vdd(void)
 	tps65090_fet_enable(TPS65090_BUS, FET4_CTRL);
 }
 
+static enum exynos5_gpio_pin usb_host_vbus = GPIO_X11;
+static enum exynos5_gpio_pin usb_drd_vbus = GPIO_X27;
+/* static enum exynos5_gpio_pin hsic_reset_l = GPIO_E10; */
+
+static void setup_usb(void)
+{
+	/* HSIC not needed in firmware on this board */
+	setup_usb_host_phy(0);
+
+	gpio_direction_output(usb_host_vbus, 1);
+	gpio_direction_output(usb_drd_vbus, 1);
+}
+
 //static struct video_info smdk5250_dp_config = {
 static struct video_info dp_video_info = {
 	/* FIXME: fix video_info struct to use const for name */
@@ -256,6 +270,7 @@ static void mainboard_init(device_t dev)
 
 	/* Disable USB3.0 PLL to save 250mW of power */
 	disable_usb30_pll();
+	setup_usb();
 
 	sdmmc_vdd();
 

@@ -36,6 +36,7 @@
 #include <cpu/samsung/exynos5420/i2c.h>
 #include <cpu/samsung/exynos5420/dp.h>
 #include <cpu/samsung/exynos5420/fimd.h>
+#include <cpu/samsung/exynos5420/usb.h>
 #include <drivers/parade/ps8625/ps8625.h>
 #include <ec/google/chromeec/ec.h>
 #include <stdlib.h>
@@ -303,7 +304,16 @@ static void backlight_en(void)
 	gpio_direction_output(bl_en, 1);
 }
 
+static enum exynos5_gpio_pin usb_drd0_vbus = GPIO_H00;
+static enum exynos5_gpio_pin usb_drd1_vbus = GPIO_H01;
+/* static enum exynos5_gpio_pin hsic_reset_l = GPIO_X24; */
 
+static void setup_usb(void)
+{
+	/* HSIC and USB HOST port not needed in firmware on this board */
+	gpio_direction_output(usb_drd0_vbus, 1);
+	gpio_direction_output(usb_drd1_vbus, 1);
+}
 
 static struct edp_video_info dp_video_info = {
 	.master_mode = 0,
@@ -319,16 +329,6 @@ static struct edp_video_info dp_video_info = {
 /* FIXME: move some place more appropriate */
 #define EXYNOS5420_DP1_BASE	0x145b0000
 #define MAX_DP_TRIES	5
-
-/*
- * This function disables the USB3.0 PLL to save power
- */
-static void disable_usb30_pll(void)
-{
-	enum exynos5_gpio_pin usb3_pll_l = GPIO_Y11;
-
-	gpio_direction_output(usb3_pll_l, 0);
-}
 
 static void setup_storage(void)
 {
@@ -405,8 +405,7 @@ static void mainboard_init(device_t dev)
 	/* Clock Gating all the unused IP's to save power */
 	clock_gate();
 
-	/* Disable USB3.0 PLL to save 250mW of power */
-	disable_usb30_pll();
+	setup_usb();
 
 	sdmmc_vdd();
 

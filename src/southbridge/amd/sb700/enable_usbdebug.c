@@ -27,19 +27,20 @@
 #include <device/pci_def.h>
 #include "sb700.h"
 
-#define EHCI_EOR		(CONFIG_EHCI_BAR + 0x20)
-#define DEBUGPORT_MISC_CONTROL	(EHCI_EOR + 0x80)
+#define EHCI_EOR				0x20
+#define DEBUGPORT_MISC_CONTROL		0x80
 
 void set_debug_port(unsigned int port)
 {
+	u32 base_regs = CONFIG_EHCI_BAR + EHCI_EOR;
 	u32 reg32;
 
 	/* Write the port number to DEBUGPORT_MISC_CONTROL[31:28]. */
-	reg32 = read32(DEBUGPORT_MISC_CONTROL);
+	reg32 = read32(base_regs + DEBUGPORT_MISC_CONTROL);
 	reg32 &= ~(0xf << 28);
 	reg32 |= (port << 28);
 	reg32 |= (1 << 27); /* Enable Debug Port port number remapping. */
-	write32(DEBUGPORT_MISC_CONTROL, reg32);
+	write32(base_regs + DEBUGPORT_MISC_CONTROL, reg32);
 }
 
 /*

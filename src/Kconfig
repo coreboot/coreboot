@@ -586,6 +586,7 @@ endchoice
 
 config SEABIOS_PS2_TIMEOUT
 	prompt "PS/2 keyboard controller initialization timeout (milliseconds)" if PAYLOAD_SEABIOS
+	default 0
 	depends on EXPERT
 	int
 	help

@@ -18,10 +18,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select ENABLE_VMX
 	select HAVE_MRC
 
-config MRC_FILE
-	string
-	default "3rdparty/northbridge/intel/sandybridge/systemagent-r6.bin"
-
 config MAINBOARD_DIR
 	string
 	default kontron/ktqm77

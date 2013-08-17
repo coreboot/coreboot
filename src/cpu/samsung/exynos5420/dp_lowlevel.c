@@ -452,7 +452,7 @@ unsigned int exynos_dp_detect_hpd(void)
 	while (exynos_dp_get_plug_in_status() != 0) {
 		if (timeout_loop == 0)
 			return -1;
-		mdelay(10);
+		mdelay(1);
 		timeout_loop--;
 	}
 
@@ -865,7 +865,7 @@ void exynos_dp_reset_macro(void)
 	lwrite32(reg, &dp_regs->phy_test);
 
 	/* 10 us is the minimum Macro reset time. */
-	mdelay(1);
+	udelay(50);
 
 	reg &= ~MACRO_RST;
 	lwrite32(reg, &dp_regs->phy_test);

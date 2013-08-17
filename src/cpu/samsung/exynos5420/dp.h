@@ -1187,7 +1187,7 @@ static inline u32 exynos_fimd_get_base_offset(void)
 #define EXYNOS_DP_CLK_ENABLE				(1 << 1)
 #define EXYNOS_MIE_CLK_ENABLE				(3 << 0)
 
-#define DP_TIMEOUT_LOOP_COUNT		100
+#define DP_TIMEOUT_LOOP_COUNT		1000
 #define MAX_CR_LOOP			5
 #define MAX_EQ_LOOP			4
 

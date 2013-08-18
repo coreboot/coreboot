@@ -136,7 +136,6 @@ static int stmicro_write(struct spi_flash *flash,
 			 u32 offset, size_t len, const void *buf)
 {
 	struct stmicro_spi_flash *stm = to_stmicro_spi_flash(flash);
-	unsigned long page_addr;
 	unsigned long byte_addr;
 	unsigned long page_size;
 	size_t chunk_len;
@@ -144,8 +143,7 @@ static int stmicro_write(struct spi_flash *flash,
 	int ret;
 	u8 cmd[4];
 
-	page_size = stm->params->page_size;
-	page_addr = offset / page_size;
+	page_size = min(stm->params->page_size, CONTROLLER_PAGE_LIMIT);
 	byte_addr = offset % page_size;
 
 	flash->spi->rw = SPI_WRITE_FLAG;
@@ -155,15 +153,13 @@ static int stmicro_write(struct spi_flash *flash,
 		return ret;
 	}
 
-	ret = 0;
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
 
 		cmd[0] = CMD_M25PXX_PP;
-		cmd[1] = page_addr >> 8;
-		cmd[2] = page_addr;
-		cmd[3] = byte_addr;
-
+		cmd[1] = (offset >> 16) & 0xff;
+		cmd[2] = (offset >> 8) & 0xff;
+		cmd[3] = offset & 0xff;
 #if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
@@ -173,29 +169,31 @@ static int stmicro_write(struct spi_flash *flash,
 		ret = spi_flash_cmd(flash->spi, CMD_M25PXX_WREN, NULL, 0);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: Enabling Write failed\n");
-			break;
+			goto out;
 		}
 
 		ret = spi_flash_cmd_write(flash->spi, cmd, 4,
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: STMicro Page Program failed\n");
-			break;
+			goto out;
 		}
 
 		ret = spi_flash_cmd_wait_ready(flash, SPI_FLASH_PROG_TIMEOUT);
 		if (ret)
-			break;
+			goto out;
 
-		page_addr++;
+		offset += chunk_len;
 		byte_addr = 0;
 	}
 
 #if CONFIG_DEBUG_SPI_FLASH
-	printk(BIOS_SPEW, "SF: STMicro: Successfully programmed %zu bytes @ 0x%x\n",
-	      len, offset);
+	printk(BIOS_SPEW, "SF: STMicro: Successfully programmed %zu bytes @"
+			" 0x%lx\n", len, (unsigned long)(offset - len));
 #endif
+	ret = 0;
 
+out:
 	spi_release_bus(flash->spi);
 	return ret;
 }

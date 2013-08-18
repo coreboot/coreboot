@@ -30,7 +30,9 @@
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
 #include <ec/acpi/ec.h>
+#if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/gnvs.h>
+#endif
 
 extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
@@ -98,9 +100,10 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->did[3] = 0x80000410;
 	gnvs->did[4] = 0x00000005;
 
+#if CONFIG_CHROMEOS
 	// TODO(reinauer) this could move elsewhere?
 	chromeos_init_vboot(&(gnvs->chromeos));
-
+#endif
 	acpi_update_thermal_table(gnvs);
 
 	gnvs->chromeos.vbt2 = ec_read(0xcb) ? ACTIVE_ECFW_RW : ACTIVE_ECFW_RO;

@@ -20,7 +20,7 @@
 #include <console/console.h>
 #include <timer.h>
 #include <delay.h>
-
+#include <thread.h>
 #include "clk.h"
 
 void init_timer(void)
@@ -32,6 +32,9 @@ void init_timer(void)
 void udelay(unsigned usec)
 {
 	struct mono_time current, end;
+
+	if (!thread_yield_microseconds(usec))
+		return;
 
 	timer_monotonic_get(&current);
 	end = current;

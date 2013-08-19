@@ -42,7 +42,7 @@ endif
 romstage-y += memcmp.c
 rmodules-y += memcmp.c
 romstage-y += cbfs.c
-romstage-y += lzma.c
+romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c
 #romstage-y += lzmadecode.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c

@@ -43,6 +43,8 @@ struct dbgp_pipe
 	u8 endpoint;
 	u8 pid;
 	u8 status;
+	int timeout;
+
 	u8 bufidx;
 	char buf[8];
 };
@@ -110,7 +112,6 @@ static int dbgp_enabled(void);
 #define DBGP_MICROFRAME_TIMEOUT_LOOPS	1000
 #define DBGP_MICROFRAME_RETRIES		10
 #define DBGP_MAX_PACKET		8
-#define DBGP_LOOPS 1000
 
 static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
@@ -151,14 +152,19 @@ static void dbgp_breath(void)
 }
 
 static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
-	unsigned ctrl, int loop)
+	unsigned ctrl, const int timeout)
 {
 	u32 rd_ctrl, rd_pids;
 	u8 lpid;
 	int ret, host_retries;
+	int loop;
 
-retry:
+	loop = 0;
+device_retry:
 	host_retries = 0;
+	if (loop++ >= timeout)
+		return -DBGP_ERR_BAD;
+
 host_retry:
 	if (host_retries++ >= DBGP_MICROFRAME_RETRIES)
 		return -DBGP_ERR_BAD;
@@ -189,16 +195,12 @@ host_retry:
 	 */
 	else if (lpid == USB_PID_NYET) {
 		dbgp_breath();
-		if (--loop > 0)
-			goto retry;
-		ret = -DBGP_ERR_BAD;
+		goto device_retry;
 	}
 
 	/* If I get a NACK or out-of-sync DATA PID, reissue the transmission. */
 	else if ((lpid == USB_PID_NAK) || (lpid == (pipe->pid ^ USB_PID_DATA_TOGGLE))) {
-		if (--loop > 0)
-			goto retry;
-		ret = -DBGP_ERR_BAD;
+		goto device_retry;
 	}
 
 	/* Abort on STALL handshake for endpoint 0.*/
@@ -258,7 +260,7 @@ static int dbgp_bulk_write(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *p
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
 
-	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, DBGP_LOOPS);
+	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, pipe->timeout);
 
 	return ret;
 }
@@ -270,7 +272,7 @@ int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size)
 }
 
 static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe,
-	void *data, int size, int loops)
+	void *data, int size)
 {
 	u32 pids, addr, ctrl;
 	int ret;
@@ -287,7 +289,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pi
 
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
-	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, loops);
+	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, pipe->timeout);
 	if (ret < 0)
 		return ret;
 
@@ -300,7 +302,7 @@ static int dbgp_bulk_read(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pi
 int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
-	return dbgp_bulk_read(dbg_info->ehci_debug, pipe, data, size, DBGP_LOOPS);
+	return dbgp_bulk_read(dbg_info->ehci_debug, pipe, data, size);
 }
 
 static void dbgp_mdelay(int ms)
@@ -337,6 +339,7 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	pipe->devnum = devnum;
 	pipe->endpoint = 0;
 	pipe->pid = USB_PID_DATA0;
+	pipe->timeout = 1000;
 	addr = DBGP_EPADDR(pipe->devnum, pipe->endpoint);
 	pids = DBGP_PID_SET(pipe->pid, USB_PID_SETUP);
 
@@ -348,13 +351,13 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	dbgp_set_data(ehci_debug, &req, sizeof(req));
 	write32((unsigned long)&ehci_debug->address, addr);
 	write32((unsigned long)&ehci_debug->pids, pids);
-	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, DBGP_LOOPS);
+	ret = dbgp_wait_until_done(ehci_debug, pipe, ctrl, 1);
 	if (ret < 0)
 		return ret;
 
 	/* Data stage (optional) */
 	if (read && size)
-		ret = dbgp_bulk_read(ehci_debug, pipe, data, size, DBGP_LOOPS);
+		ret = dbgp_bulk_read(ehci_debug, pipe, data, size);
 	else if (!read && size)
 		ret = dbgp_bulk_write(ehci_debug, pipe, data, size);
 
@@ -371,7 +374,7 @@ static int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum, i
 	}
 
 	write32((unsigned long)&ehci_debug->pids, pids);
-	ret2 = dbgp_wait_until_done(ehci_debug, pipe, ctrl, DBGP_LOOPS);
+	ret2 = dbgp_wait_until_done(ehci_debug, pipe, ctrl, pipe->timeout);
 	if (ret2 < 0)
 		return ret2;
 
@@ -654,6 +657,7 @@ debug_dev_found:
 	for (i=1; i<DBGP_MAX_ENDPOINTS; i++) {
 		info->ep_pipe[i].devnum = USB_DEBUG_DEVNUM;
 		info->ep_pipe[i].pid = USB_PID_DATA0;
+		info->ep_pipe[i].timeout = 1000;
 	}
 	info->ep_pipe[DBGP_CONSOLE_EPOUT].endpoint = dbgp_desc.bDebugOutEndpoint;
 	info->ep_pipe[DBGP_CONSOLE_EPIN].endpoint = dbgp_desc.bDebugInEndpoint;

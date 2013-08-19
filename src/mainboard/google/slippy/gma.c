@@ -87,32 +87,12 @@
 
 static unsigned int *mmio;
 static unsigned int graphics;
-static unsigned short addrport;
-static unsigned short dataport;
 static unsigned int physbase;
-
-static int ioread = 0, iowrite = 0;
 
 void ug1(int);
 void ug2(int);
 void ug22(int);
 void ug3(int);
-
-unsigned long io_i915_read32(unsigned long addr)
-{
-	unsigned long val;
-	outl(addr, addrport);
-	val = inl(dataport);
-	ioread += 2;
-	return val;
-}
-
-void io_i915_write32(unsigned long val, unsigned long addr)
-{
-	outl(addr, addrport);
-	outl(val, dataport);
-	iowrite += 2;
-}
 
 /* GTT is the Global Translation Table for the graphics pipeline.
  * It is used to translate graphics addresses to physical
@@ -133,6 +113,8 @@ void io_i915_write32(unsigned long val, unsigned long addr)
  * starting at physbase.
  */
 
+#define GTT_PTE_BASE (2 << 20)
+
 static void
 setgtt(int start, int end, unsigned long base, int inc)
 {
@@ -144,7 +126,8 @@ setgtt(int start, int end, unsigned long base, int inc)
 		 * the values that mrc does no
 		 * useful setup before we run this.
 		 */
-		io_i915_write32(word|1,(i*4)|1);
+		gtt_write(GTT_PTE_BASE + i * 4, word|1);
+		gtt_read(GTT_PTE_BASE + i * 4);
 	}
 }
 
@@ -157,7 +140,7 @@ static void palette(void)
 	unsigned long color = 0;
 
 	for(i = 0; i < 256; i++, color += 0x010101){
-		io_i915_write32(color, _LGC_PALETTE_A + (i<<2));
+		gtt_write(_LGC_PALETTE_A + (i<<2),color);
 	}
 }
 
@@ -251,8 +234,8 @@ void mainboard_train_link(struct intel_dp *intel_dp)
 	u8 read_val;
 	u8 link_status[DP_LINK_STATUS_SIZE];
 
-	io_i915_write32(0x80040000,DP_TP_CTL_A);
-	io_i915_write32( DP_PORT_EN | DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SYNC_VS_HIGH |0x80000011,DP_A);
+	gtt_write(DP_TP_CTL(intel_dp->port),DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE);
+	gtt_write(DP_A, DP_PORT_EN | DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SYNC_VS_HIGH |0x80000011);
 
 	intel_dp_get_training_pattern(intel_dp, &read_val);
 	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_1 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
@@ -260,7 +243,7 @@ void mainboard_train_link(struct intel_dp *intel_dp)
 	intel_dp_set_training_lane0(intel_dp, DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0);
 	intel_dp_get_link_status(intel_dp, link_status);
 
-	io_i915_write32(0x80040100,DP_TP_CTL_A);
+	gtt_write(DP_TP_CTL(intel_dp->port),DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE | DP_TP_CTL_LINK_TRAIN_PAT2);
 
 	intel_dp_get_training_pattern(intel_dp, &read_val);
 	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_2 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
@@ -270,34 +253,54 @@ void mainboard_train_link(struct intel_dp *intel_dp)
 	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
 }
 
-int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-		unsigned int gfx, unsigned int init_fb);
-int i915lightup(unsigned int pphysbase, unsigned int piobase,
-		unsigned int pmmio, unsigned int pgfx, unsigned int init_fb)
+#define TEST_GFX 0
+
+#if TEST_GFX
+static void test_gfx(struct intel_dp *dp)
+{
+	int i;
+
+	/* This is a sanity test code which fills the screen with two bands --
+	   green and blue. It is very useful to ensure all the initializations
+	   are made right. Thus, to be used only for testing, not otherwise
+	*/
+	for (i = 0; i < (dp->edid.va - 4); i++) {
+		u32 *l;
+		int j;
+		u32 tcolor = 0x0ff;
+		for (j = 0; j < (dp->edid.ha-4); j++) {
+			if (j == (dp->edid.ha/2)) {
+				tcolor = 0xff00;
+			}
+			l = (u32*)(graphics + i * dp->stride + j * sizeof(tcolor));
+			memcpy(l,&tcolor,sizeof(tcolor));
+		}
+	}
+}
+#else
+static void test_gfx(struct intel_dp *dp) {}
+#endif
+
+int i915lightup(unsigned int pphysbase, unsigned int pmmio,
+		unsigned int pgfx, unsigned int init_fb)
 {
 	int must_cycle_power = 0;
 	struct intel_dp adp, *dp = &adp;
-	/* frame buffer pointer */
-	/* u32 *l; */
 	int i;
 	int edid_ok;
-	/* u32 tcolor = 0xff; */
 	int pixels = FRAME_BUFFER_BYTES/64;
 
 	mmio = (void *)pmmio;
-	addrport = piobase;
-	dataport = addrport + 4;
 	physbase = pphysbase;
 	graphics = pgfx;
 	printk(BIOS_SPEW,
 	       "i915lightup: graphics %p mmio %p"
-	       "addrport %04x physbase %08x\n",
-	       (void *)graphics, mmio, addrport, physbase);
+	       "physbase %08x\n",
+	       (void *)graphics, mmio, physbase);
 
 	void runio(struct intel_dp *dp);
 	void runlinux(struct intel_dp *dp);
-
-	dp->gen = 8; // ??
+	dp->gen = 8; // This is gen 8 which we believe is Haswell
 	dp->is_haswell = 1;
 	dp->DP = 0x2;
 	/* These values are used for training the link */
@@ -308,6 +311,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	dp->panel_power_cycle_delay = 600;
 	dp->pipe = PIPE_A;
 	dp->port = PORT_A;
+	dp->plane = PLANE_A;
 	dp->clock = 160000;
 	dp->bpp = 32;
 	dp->type = INTEL_OUTPUT_EDP;
@@ -327,8 +331,6 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
                 memset((void*)graphics, 0, 4096);
         }
 
-	//intel_prepare_ddi_buffers(0, 0);
-	//ironlake_edp_panel_vdd_on(dp);
 	dp->address = 0x50;
 
 	if ( !intel_dp_get_dpcd(dp) )
@@ -351,9 +353,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	dp_init_dim_regs(dp);
 
-	/* more undocumented stuff. */
-	/* possibly not even needed. */
-	io_i915_write32(0x00000021,0x6f410);
+	intel_ddi_set_pipe_settings(dp);
 
 	runio(dp);
 
@@ -362,31 +362,19 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	pixels = dp->edid.ha * (dp->edid.va-4) * 4;
 	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.ha, dp->edid.va);
 
-	/* for (i = 0; i < (dp->edid.va - 4); i++) { */
-	/* 	int j; */
-	/* 	tcolor = 0x0ff; */
-	/* 	for (j = 0; j < (dp->edid.ha-4); j++) { */
-	/* 		if (j == (dp->edid.ha/2)) { */
-	/* 			tcolor = 0xff00; */
-	/* 		} */
-	/* 		l = (u32*)(graphics + i * dp->stride + j * sizeof(tcolor)); */
-	/* 		memcpy(l,&tcolor,sizeof(tcolor)); */
-	/* 	} */
-	/* }	 */
+	test_gfx(dp);
 
 	set_vbe_mode_info_valid(&dp->edid, graphics);
 	i915_init_done = 1;
-	//io_i915_write32( 0x80000000,BLC_PWM_CPU_CTL2);
-	//io_i915_write32( 0x80000000,BLC_PWM_PCH_CTL1);
 	return i915_init_done;
 
 fail:
 	printk(BIOS_SPEW, "Graphics could not be started;");
 	if (0 && must_cycle_power){
 		printk(BIOS_SPEW, "Turn off power and wait ...");
-		io_i915_write32(0xabcd0000, PCH_PP_CONTROL);
+		gtt_write(PCH_PP_CONTROL,0xabcd0000);
 		udelay(600000);
-		io_i915_write32(0xabcd000f, PCH_PP_CONTROL);
+		gtt_write(PCH_PP_CONTROL,0xabcd000f);
 	}
 	printk(BIOS_SPEW, "Returning.\n");
 	return 0;

@@ -272,12 +272,12 @@ u32 map_oprom_vendev(u32 vendev)
 
 static struct resource *gtt_res = NULL;
 
-static inline u32 gtt_read(u32 reg)
+u32 gtt_read(u32 reg)
 {
 	return read32(gtt_res->base + reg);
 }
 
-static inline void gtt_write(u32 reg, u32 data)
+void gtt_write(u32 reg, u32 data)
 {
 	write32(gtt_res->base + reg, data);
 }

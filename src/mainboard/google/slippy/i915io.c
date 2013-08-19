@@ -47,34 +47,17 @@ void runio(struct intel_dp *dp)
 	/* vbios spins at this point. Some haswell weirdness? */
 	intel_dp_wait_panel_power_control(0xabcd0008);
 
-	/* This is stuff we don't totally understand yet. */
-	io_i915_write32(0x03a903a9,BLC_PWM_CPU_CTL);
-	io_i915_write32(0x03a903a9,BLC_PWM_PCH_CTL2);
-	io_i915_write32(0x80000000,BLC_PWM_PCH_CTL1);
-	io_i915_write32(0x00ffffff,0x64ea8);
-	io_i915_write32(0x00040006,0x64eac);
-	io_i915_write32( PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010,SDEISR+0x30);
-	io_i915_write32(0x80000000,0x45400);
-	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	io_i915_write32(0x8000298e,CPU_VGACNTRL);
-	io_i915_write32(0x00000000,_CURACNTR);
-	io_i915_write32(0x00000000,_CURABASE);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000,_DSPACNTR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000000,_CURBCNTR_IVB);
-	io_i915_write32(0x00000000,_CURBBASE_IVB);
-	io_i915_write32(0x00000000,_DSPBCNTR);
-	io_i915_write32(0x00000000,_DSPBSURF);
-	io_i915_write32(0x00000000,0x72080);
-	io_i915_write32(0x00000000,0x72084);
-	io_i915_write32(0x00000000,_DVSACNTR);
-	io_i915_write32(0x00000000,_DVSASURF);
-	io_i915_write32(0x00008000,DEIIR);
-	intel_dp_wait_reg(0x00044008, 0x00000000);
-	io_i915_write32(0x8020298e,CPU_VGACNTRL);
-	io_i915_write32(/*0x00000800*/dp->stride,_DSPASTRIDE);
-	io_i915_write32(0x00000000,_DSPAADDR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
+	/* This should be a function like intel_panel_enable_backlight
+	   However, we are not sure how the value 0x3a9 comes up.
+	   It has to do something with PWM frequency */
+	gtt_write(BLC_PWM_CPU_CTL,0x03a903a9);
+	gtt_write(BLC_PWM_PCH_CTL2,0x03a903a9);
+	gtt_write(BLC_PWM_PCH_CTL1,BLM_PCH_PWM_ENABLE);
+
+	gtt_write(DEIIR,0x00008000);
+	intel_dp_wait_reg(DEIIR, 0x00000000);
+
+	gtt_write(DSPSTRIDE(dp->plane),dp->stride);
 
 	intel_dp_sink_dpms(dp, 0);
 
@@ -83,25 +66,18 @@ void runio(struct intel_dp *dp)
 	intel_dp_set_m_n_regs(dp);
 
 	intel_dp_set_resolution(dp);
-	io_i915_write32(dp->pipesrc,PIPESRC(dp->pipe));
-	io_i915_write32(0x00000000, PIPECONF(dp->transcoder));
-	io_i915_write32(0x00000000, PCH_TRANSCONF(dp->pipe));
 
-	io_i915_write32(0x20000000,PORT_CLK_SEL_A);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x14000000,_DSPACNTR);
-	io_i915_write32(dp->stride,_DSPASTRIDE);
+	gtt_write(PIPESRC(dp->pipe),dp->pipesrc);
+	gtt_write(PIPECONF(dp->transcoder),0x00000000);
+	gtt_write(PCH_TRANSCONF(dp->pipe),0x00000000);
 
-	io_i915_write32(0x00000000,_DSPAADDR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x94000000,_DSPACNTR);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x94000000,_DSPACNTR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000080,DEIIR);
+	gtt_write(PORT_CLK_SEL(dp->port),PORT_CLK_SEL_LCPLL_1350);
+	gtt_write(DSPSTRIDE(dp->plane),dp->stride);
+	gtt_write(DSPCNTR(dp->plane),DISPLAY_PLANE_ENABLE|DISPPLANE_RGBX888);
+	gtt_write(DEIIR,0x00000080);
 
-	io_i915_write32(0x00230000,TRANS_DDI_FUNC_CTL_EDP);
-	io_i915_write32(0x00000010,0x7f008);
-	io_i915_write32(dp->flags,TRANS_DDI_FUNC_CTL_EDP);
-	io_i915_write32(0x80000010,0x7f008);
+	gtt_write(TRANS_DDI_FUNC_CTL_EDP,dp->flags);
+	gtt_write(PIPECONF(dp->transcoder),PIPECONF_ENABLE|PIPECONF_DITHER_EN);
 
 	intel_dp_wait_panel_power_control(0xabcd000a);
 
@@ -114,14 +90,13 @@ void runio(struct intel_dp *dp)
 	intel_dp_i2c_read(dp, &read_val);
 
 	/* this needs to be a call to a function */
-	io_i915_write32( DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SCRAMBLING_DISABLE_IRONLAKE | DP_SYNC_VS_HIGH |0x00000091,DP_A);
-	io_i915_write32(0x00000001,TRANS_DDI_FUNC_CTL_EDP+0x10);
-	io_i915_write32(0x80040011,DP_TP_CTL_A);
-	io_i915_write32( DP_PORT_EN | DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_ENHANCED_FRAMING | DP_PLL_FREQ_270MHZ | DP_SCRAMBLING_DISABLE_IRONLAKE | DP_SYNC_VS_HIGH |0x80040091,DP_A);
+	gtt_write(DP_A, DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SCRAMBLING_DISABLE_IRONLAKE | DP_SYNC_VS_HIGH |0x00000091);
+	gtt_write(DP_TP_CTL(dp->port),DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE);
+	gtt_write(DP_A, DP_PORT_EN | DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_ENHANCED_FRAMING | DP_PLL_FREQ_270MHZ | DP_SCRAMBLING_DISABLE_IRONLAKE | DP_SYNC_VS_HIGH |0x80040091);
 
 	/* we may need to move these *after* power well power up and *before* PCH_PP_CONTROL in gma.c */
-	io_i915_write32( PANEL_PORT_SELECT_LVDS |(/* PANEL_POWER_UP_DELAY_MASK */0x1<<16)|(/* PANEL_LIGHT_ON_DELAY_MASK */0xa<<0)|0x0001000a,PCH_PP_ON_DELAYS);
-	io_i915_write32( PANEL_PORT_SELECT_LVDS |(/* PANEL_POWER_UP_DELAY_MASK */0x7d0<<16)|(/* PANEL_LIGHT_ON_DELAY_MASK */0xa<<0)|0x07d0000a,PCH_PP_ON_DELAYS);
+	gtt_write(PCH_PP_ON_DELAYS, PANEL_PORT_SELECT_LVDS |(/* PANEL_POWER_UP_DELAY_MASK */0x1<<16)|(/* PANEL_LIGHT_ON_DELAY_MASK */0xa<<0)|0x0001000a);
+	gtt_write(PCH_PP_ON_DELAYS, PANEL_PORT_SELECT_LVDS |(/* PANEL_POWER_UP_DELAY_MASK */0x7d0<<16)|(/* PANEL_LIGHT_ON_DELAY_MASK */0xa<<0)|0x07d0000a);
 
 	intel_dp_set_bw(dp);
 	intel_dp_set_lane_count(dp);
@@ -129,69 +104,33 @@ void runio(struct intel_dp *dp)
 	mainboard_train_link(dp);
 
 	/* need a function: intel_ddi_set_tp or similar */
-	io_i915_write32(0x80040200,DP_TP_CTL_A);
-	io_i915_write32(0x80040300,DP_TP_CTL_A);
-	io_i915_write32(0x03a903a9,BLC_PWM_CPU_CTL);
-	io_i915_write32(0x03a903a9,BLC_PWM_PCH_CTL2);
-	io_i915_write32(0x80000000,BLC_PWM_PCH_CTL1);
+	gtt_write(DP_TP_CTL(dp->port),DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE | DP_TP_CTL_LINK_TRAIN_IDLE);
+	gtt_write(DP_TP_CTL(dp->port),DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE | DP_TP_CTL_LINK_TRAIN_NORMAL);
+
+	gtt_write(BLC_PWM_CPU_CTL,0x03a903a9);
+	gtt_write(BLC_PWM_PCH_CTL2,0x03a903a9);
+	gtt_write(BLC_PWM_PCH_CTL1,0x80000000);
 
 	/* some of this is not needed. */
-	io_i915_write32( PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010,SDEISR+0x30);
-	io_i915_write32( DIGITAL_PORTA_HOTPLUG_ENABLE |0x00000010,DIGITAL_PORT_HOTPLUG_CNTRL);
-	io_i915_write32(0x00000000,SDEIIR);
-	io_i915_write32(0x00000000,SDEIIR);
-	io_i915_write32(0x00000000,DEIIR);
-	io_i915_write32(0x80000000,0x45400);
-	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	io_i915_write32(0x80000000,0x45400);
-	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	printk(BIOS_SPEW, "pci dev(0x0,0x2,0x0,0x6)");
-	io_i915_write32(0x80000000,0x45400);
-	intel_dp_wait_reg(0x00045400, 0xc0000000);
-	io_i915_write32(0x8000298e,CPU_VGACNTRL);
-	io_i915_write32(0x00000000,_CURACNTR);
-	io_i915_write32(0x00000000,_CURABASE);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000,_DSPACNTR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32(0x00000000,_CURBCNTR_IVB);
-	io_i915_write32(0x00000000,_CURBBASE_IVB);
-	io_i915_write32(0x00000000,_DSPBCNTR);
-	io_i915_write32(0x00000000,_DSPBSURF);
-	io_i915_write32(0x00000000,0x72080);
-	io_i915_write32(0x00000000,0x72084);
-	io_i915_write32(0x00000000,_DVSACNTR);
-	io_i915_write32(0x00000000,_DVSASURF);
-	io_i915_write32(0x00008000,DEIIR);
-	intel_dp_wait_reg(0x00044008, 0x00000000);
+	gtt_write(DIGITAL_PORT_HOTPLUG_CNTRL, DIGITAL_PORTA_HOTPLUG_ENABLE );
 
-	/* we just turned vdd off. We're not going to wait. The panel is up. */
-	io_i915_write32(0x8020298e,CPU_VGACNTRL);
-	io_i915_write32(/*0x00000640*/dp->stride,_DSPASTRIDE);
-	io_i915_write32(0x00000000,_DSPAADDR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000,_DSPACNTR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	/* io_i915_write32(dp->pfa_pos,_PFA_WIN_POS); */
-	/* io_i915_write32(0x00000000,_PFA_WIN_SZ); */
-	io_i915_write32(dp->pipesrc,_PIPEASRC);
-	/* io_i915_write32(dp->pfa_pos,_PFA_WIN_POS); */
-	/* io_i915_write32(dp->pfa_ctl,_PFA_CTL_1); */
-	/* io_i915_write32(dp->pfa_sz,_PFA_WIN_SZ); */
-	io_i915_write32(0x00000080,DEIIR);
-	intel_dp_wait_reg(0x00044008, 0x00000000);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x14000000,_DSPACNTR);
-	io_i915_write32(/*0x00000640*/dp->stride,_DSPASTRIDE);
-	io_i915_write32(0x00000000,_DSPAADDR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x94000000,_DSPACNTR);
-	io_i915_write32((/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x98000000,_DSPACNTR);
-	io_i915_write32(0x00000000,_DSPASIZE+0xc);
+	gtt_write(SDEIIR,0x00000000);
+	gtt_write(DEIIR,0x00000000);
+	gtt_write(DEIIR,0x00008000);
+	intel_dp_wait_reg(DEIIR, 0x00000000);
 
-	io_i915_write32( EDP_BLC_ENABLE | PANEL_POWER_RESET | PANEL_POWER_ON |0x00000007,PCH_PP_CONTROL);
+	gtt_write(DSPSTRIDE(dp->plane),dp->stride);
+	gtt_write(PIPESRC(dp->pipe),dp->pipesrc);
 
-	io_i915_write32( PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010,SDEISR+0x30);
-	io_i915_write32( DIGITAL_PORTA_HOTPLUG_ENABLE |0x00000010,DIGITAL_PORT_HOTPLUG_CNTRL);
-	io_i915_write32(0x00000000,SDEIIR);
-	io_i915_write32(0x00000000,SDEIIR);
-	io_i915_write32(0x00000000,DEIIR);
+	gtt_write(DEIIR,0x00000080);
+	intel_dp_wait_reg(DEIIR, 0x00000000);
+
+	gtt_write(DSPSTRIDE(dp->plane),dp->stride);
+	gtt_write(DSPCNTR(dp->plane),DISPLAY_PLANE_ENABLE | DISPPLANE_RGBX888);
+
+	gtt_write(PCH_PP_CONTROL,EDP_BLC_ENABLE | PANEL_POWER_RESET | PANEL_POWER_ON);
+
+	gtt_write(SDEIIR,0x00000000);
+	gtt_write(SDEIIR,0x00000000);
+	gtt_write(DEIIR,0x00000000);
 }

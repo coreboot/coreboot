@@ -63,6 +63,12 @@ enum transcoder {
         TRANSCODER_EDP = 0xF,
 };
 
+enum plane {
+	PLANE_A = 0,
+	PLANE_B,
+	PLANE_C,
+};
+
 /* debug enums. These are for printks that, due to their place in the
  * middle of graphics device IO, might change timing.  Use with care
  * or not at all.
@@ -132,6 +138,7 @@ struct intel_dp {
 	u32 clock;
 	int port;
 	int pipe;
+	int plane;
 	int bpp;
 	/* i2c on aux is ... interesting.
 	 * Before you do an i2c cycle, you need to set the address.
@@ -193,7 +200,6 @@ int intel_dp_get_max_downspread(struct intel_dp *intel_dp, u8 *max_downspread);
 void ironlake_edp_panel_on(struct intel_dp *intel_dp);
 void ironlake_edp_backlight_on(struct intel_dp *intel_dp);
 /* needed only on haswell. */
-void intel_prepare_ddi_buffers(int port, int use_fdi_mode);
 void intel_ddi_prepare_link_retrain(struct intel_dp *intel_dp, int port);
 int intel_dp_aux_ch(struct intel_dp *intel_dp,
 		    uint8_t *send, int send_bytes,
@@ -262,3 +268,12 @@ int intel_dp_get_lane_count(struct intel_dp *intel_dp,
 
 int intel_dp_get_lane_align_status(struct intel_dp *intel_dp,
 				   u8 *recv);
+
+void intel_prepare_ddi(void);
+void intel_ddi_set_pipe_settings(struct intel_dp *intel_dp);
+
+void gtt_write(u32 reg, u32 data);
+u32 gtt_read(u32 reg);
+
+int i915lightup(unsigned int physbase, unsigned int mmio,
+		unsigned int gfx, unsigned int init_fb);

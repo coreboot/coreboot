@@ -1672,6 +1672,7 @@
 /* New registers for PCH-split platforms. Safe where new bits show up, the
  * register layout machtes with gen4 BLC_PWM_CTL[12]. */
 #define BLC_PWM_CPU_CTL2	0x48250
+#define  BLC_PWM2_ENABLE        (1<<31)
 #define BLC_PWM_CPU_CTL		0x48254
 
 #define BLM_HIST_CTL			0x48260
@@ -2978,6 +2979,7 @@
 /* Ironlake */
 
 #define CPU_VGACNTRL	0x41000
+#define  CPU_VGA_DISABLE     (1<<31)
 
 #define DIGITAL_PORT_HOTPLUG_CNTRL      0x44030
 #define  DIGITAL_PORTA_HOTPLUG_ENABLE           (1 << 4)
@@ -4390,5 +4392,9 @@
 #define  WM_DBG_DISALLOW_MULTIPLE_LP	(1<<0)
 #define  WM_DBG_DISALLOW_MAXFIFO	(1<<1)
 #define  WM_DBG_DISALLOW_SPRITE		(1<<2)
+
+/* North Display Engine Reset Warn Options */
+#define NDE_RSTWRN_OPT                  0x46408
+#define  RST_PCH_HNDSHK_EN              (1<<4)
 
 #endif /* _I915_REG_H_ */

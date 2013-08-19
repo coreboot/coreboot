@@ -87,7 +87,7 @@ static  u32 hsw_ddi_translations_fdi[] = {
  * in either FDI or DP modes only, as HDMI connections will work with both
  * of those.
  */
-void intel_prepare_ddi_buffers(int port, int use_fdi_mode)
+static void intel_prepare_ddi_buffers(int port, int use_fdi_mode)
 {
 	u32 reg;
 	int i;
@@ -100,9 +100,20 @@ void intel_prepare_ddi_buffers(int port, int use_fdi_mode)
 	       use_fdi_mode ? "FDI" : "DP");
 
 	for (i=0,reg=DDI_BUF_TRANS(port);i < ARRAY_SIZE(hsw_ddi_translations_fdi);i++) {
-		io_i915_write32(ddi_translations[i], reg);
+		gtt_write(reg,ddi_translations[i]);
 		reg += 4;
 	}
+}
+
+void intel_prepare_ddi(void)
+{
+	int port;
+	u32 use_fdi = 1;
+
+	for (port = PORT_A; port < PORT_E; port++)
+		intel_prepare_ddi_buffers(port, !use_fdi);
+
+	intel_prepare_ddi_buffers(PORT_E, use_fdi);
 }
 
 static void intel_wait_ddi_buf_idle(int port)
@@ -112,7 +123,7 @@ static void intel_wait_ddi_buf_idle(int port)
 
 	for (i = 0; i < 8; i++) {
 		udelay(1);
-		if (io_i915_read32(reg) & DDI_BUF_IS_IDLE){
+		if (gtt_read(reg) & DDI_BUF_IS_IDLE){
 			printk(BIOS_SPEW, "%s: buf is idle (success)\n", __func__);
 			return;
 		}
@@ -126,18 +137,18 @@ void intel_ddi_prepare_link_retrain(struct intel_dp *intel_dp, int port)
 	int wait = 0;
 	uint32_t val;
 
-	if (io_i915_read32(DP_TP_CTL(port)) & DP_TP_CTL_ENABLE) {
-		val = io_i915_read32(DDI_BUF_CTL(port));
+	if (gtt_read(DP_TP_CTL(port)) & DP_TP_CTL_ENABLE) {
+		val = gtt_read(DDI_BUF_CTL(port));
 		if (val & DDI_BUF_CTL_ENABLE) {
 			val &= ~DDI_BUF_CTL_ENABLE;
-			io_i915_write32(DDI_BUF_CTL(port), val);
+			gtt_write(val,DDI_BUF_CTL(port));
 			wait = 1;
 		}
 
-		val = io_i915_read32(DP_TP_CTL(port));
+		val = gtt_read(DP_TP_CTL(port));
 		val &= ~(DP_TP_CTL_ENABLE | DP_TP_CTL_LINK_TRAIN_MASK);
 		val |= DP_TP_CTL_LINK_TRAIN_PAT1;
-		io_i915_write32(DP_TP_CTL(port), val);
+		gtt_write(val,DP_TP_CTL(port));
 		//POSTING_READ(DP_TP_CTL(port));
 
 		if (wait)
@@ -148,11 +159,11 @@ void intel_ddi_prepare_link_retrain(struct intel_dp *intel_dp, int port)
 	      DP_TP_CTL_LINK_TRAIN_PAT1 | DP_TP_CTL_SCRAMBLE_DISABLE;
 	if (intel_dp->link_configuration[1] & DP_LANE_COUNT_ENHANCED_FRAME_EN)
 		val |= DP_TP_CTL_ENHANCED_FRAME_ENABLE;
-	io_i915_write32(DP_TP_CTL(port), val);
+	gtt_write(val,DP_TP_CTL(port));
 	//POSTING_READ(DP_TP_CTL(port));
 
 	intel_dp->DP |= DDI_BUF_CTL_ENABLE;
-	io_i915_write32(DDI_BUF_CTL(port), intel_dp->DP);
+	gtt_write(intel_dp->DP,DDI_BUF_CTL(port));
 	//POSTING_READ(DDI_BUF_CTL(port));
 
 	udelay(600);
@@ -236,4 +247,27 @@ enum transcoder intel_ddi_get_transcoder(enum port port,
 	if (port == PORT_A)
 		return TRANSCODER_EDP;
 	return (enum transcoder)pipe;
+}
+
+void intel_ddi_set_pipe_settings(struct intel_dp *intel_dp)
+{
+	u32 val = TRANS_MSA_SYNC_CLK;
+
+	switch (intel_dp->bpp) {
+	case 18:
+		val |= TRANS_MSA_6_BPC;
+		break;
+	case 24:
+		val |= TRANS_MSA_8_BPC;
+		break;
+	case 30:
+		val |= TRANS_MSA_10_BPC;
+		break;
+	case 36:
+		val |= TRANS_MSA_12_BPC;
+		break;
+	default:
+		printk(BIOS_ERR, "Invalid bpp settings %d\n", intel_dp->bpp);
+	}
+	gtt_write(TRANS_MSA_MISC(intel_dp->transcoder),val);
 }

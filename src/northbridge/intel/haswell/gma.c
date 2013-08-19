@@ -25,7 +25,9 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <drivers/intel/gma/i915_reg.h>
+#include <drivers/intel/gma/i915.h>
 #include <cpu/intel/haswell/haswell.h>
+#include <stdlib.h>
 
 #include "chip.h"
 #include "haswell.h"
@@ -126,12 +128,12 @@ u32 map_oprom_vendev(u32 vendev)
 
 static struct resource *gtt_res = NULL;
 
-static inline u32 gtt_read(u32 reg)
+u32 gtt_read(u32 reg)
 {
 	return read32(gtt_res->base + reg);
 }
 
-static inline void gtt_write(u32 reg, u32 data)
+void gtt_write(u32 reg, u32 data)
 {
 	write32(gtt_res->base + reg, data);
 }
@@ -209,13 +211,36 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_poll(0x138124, (1 << 31), (0 << 31));
 
 	/* Enable PM Interrupts */
-	gtt_write(0x4402c, 0x03000076);
+	gtt_write(GEN6_PMIER, GEN6_PM_MBOX_EVENT | GEN6_PM_THERMAL_EVENT |
+		  GEN6_PM_RP_DOWN_TIMEOUT | GEN6_PM_RP_UP_THRESHOLD |
+		  GEN6_PM_RP_DOWN_THRESHOLD | GEN6_PM_RP_UP_EI_EXPIRED |
+		  GEN6_PM_RP_DOWN_EI_EXPIRED);
 
 	/* Enable RC6 in idle */
 	gtt_write(0x0a094, 0x00040000);
 
 	/* PM Lock Settings */
 	gtt_write_regs(haswell_gt_lock);
+}
+
+static void init_display_planes(void)
+{
+	int pipe, plane;
+
+	/* Disable cursor mode */
+	for (pipe = PIPE_A; pipe <= PIPE_C; pipe++) {
+		gtt_write(CURCNTR_IVB(pipe), CURSOR_MODE_DISABLE);
+		gtt_write(CURBASE_IVB(pipe), 0x00000000);
+	}
+
+	/* Disable primary plane and set surface base address*/
+	for (plane = PLANE_A; plane <= PLANE_C; plane++) {
+		gtt_write(DSPCNTR(plane), DISPLAY_PLANE_DISABLE);
+		gtt_write(DSPSURF(plane), 0x00000000);
+	}
+
+	/* Disable VGA display */
+	gtt_write(CPU_VGACNTRL, CPU_VGA_DISABLE);
 }
 
 static void gma_setup_panel(struct device *dev)
@@ -226,122 +251,90 @@ static void gma_setup_panel(struct device *dev)
 	printk(BIOS_DEBUG, "GT Power Management Init (post VBIOS)\n");
 
 	/* Setup Digital Port Hotplug */
-	reg32 = gtt_read(0xc4030);
+	reg32 = gtt_read(PCH_PORT_HOTPLUG);
 	if (!reg32) {
 		reg32 = (conf->gpu_dp_b_hotplug & 0x7) << 2;
 		reg32 |= (conf->gpu_dp_c_hotplug & 0x7) << 10;
 		reg32 |= (conf->gpu_dp_d_hotplug & 0x7) << 18;
-		gtt_write(0xc4030, reg32);
+		gtt_write(PCH_PORT_HOTPLUG, reg32);
 	}
 
 	/* Setup Panel Power On Delays */
-	reg32 = gtt_read(0xc7208);
+	reg32 = gtt_read(PCH_PP_ON_DELAYS);
 	if (!reg32) {
 		reg32 = (conf->gpu_panel_port_select & 0x3) << 30;
 		reg32 |= (conf->gpu_panel_power_up_delay & 0x1fff) << 16;
 		reg32 |= (conf->gpu_panel_power_backlight_on_delay & 0x1fff);
-		gtt_write(0xc7208, reg32);
+		gtt_write(PCH_PP_ON_DELAYS, reg32);
 	}
 
 	/* Setup Panel Power Off Delays */
-	reg32 = gtt_read(0xc720c);
+	reg32 = gtt_read(PCH_PP_OFF_DELAYS);
 	if (!reg32) {
 		reg32 = (conf->gpu_panel_power_down_delay & 0x1fff) << 16;
 		reg32 |= (conf->gpu_panel_power_backlight_off_delay & 0x1fff);
-		gtt_write(0xc720c, reg32);
+		gtt_write(PCH_PP_OFF_DELAYS, reg32);
 	}
 
 	/* Setup Panel Power Cycle Delay */
 	if (conf->gpu_panel_power_cycle_delay) {
-		reg32 = gtt_read(0xc7210);
+		reg32 = gtt_read(PCH_PP_DIVISOR);
 		reg32 &= ~0xff;
 		reg32 |= conf->gpu_panel_power_cycle_delay & 0xff;
-		gtt_write(0xc7210, reg32);
+		gtt_write(PCH_PP_DIVISOR, reg32);
 	}
 
 	/* Enable Backlight if needed */
 	if (conf->gpu_cpu_backlight) {
-		gtt_write(0x48250, (1 << 31));
-		gtt_write(0x48254, conf->gpu_cpu_backlight);
+		gtt_write(BLC_PWM_CPU_CTL2, BLC_PWM2_ENABLE);
+		gtt_write(BLC_PWM_CPU_CTL, conf->gpu_cpu_backlight);
 	}
 	if (conf->gpu_pch_backlight) {
-		gtt_write(0xc8250, (1 << 31));
-		gtt_write(0xc8254, conf->gpu_pch_backlight);
+		gtt_write(BLC_PWM_PCH_CTL1, BLM_PCH_PWM_ENABLE);
+		gtt_write(BLC_PWM_PCH_CTL2, conf->gpu_pch_backlight);
 	}
 
 	/* Get display,pipeline,and DDI registers into a basic sane state */
-	/* not all these have documented names. */
-	gtt_write(0x45400, 0x80000000);
-	gtt_poll( 0x00045400, 0xc0000000, 0xc0000000);
-	gtt_write(_CURACNTR, 0x00000000);
-	gtt_write(_DSPACNTR, (/* DISPPLANE_SEL_PIPE(0=A,1=B) */0x0<<24)|0x00000000);
-	gtt_write(_DSPBCNTR, 0x00000000);
-	gtt_write(CPU_VGACNTRL, 0x8000298e);
-	gtt_write(_DSPASIZE+0xc, 0x00000000);
-	gtt_write(_DSPBSURF, 0x00000000);
-	gtt_write(0x4f008, 0x00000000);
-	gtt_write(0x4f008, 0x00000000);
-	gtt_write(0x4f008, 0x00000000);
-	gtt_write(0x4f040, 0x01000001);
-	gtt_write(0x4f044, 0x00000000);
-	gtt_write(0x4f048, 0x00000000);
-	gtt_write(0x4f04c, 0x03030000);
-	gtt_write(0x4f050, 0x00000000);
-	gtt_write(0x4f054, 0x00000001);
-	gtt_write(0x4f058, 0x00000000);
-	gtt_write(0x4f04c, 0x03450000);
-	gtt_write(0x4f04c, 0x45450000);
-	gtt_write(0x4f000, 0x03000400);
-	gtt_write(DP_A, 0x00000091); /* DDI-A enable */
+	power_well_enable();
+
+	init_display_planes();
+
+	/* DDI-A params set:
+	   bit 0: Display detected (RO)
+	   bit 4: DDI A supports 4 lanes and DDI E is not used
+	   bit 7: DDI buffer is idle
+	*/
+	gtt_write(DDI_BUF_CTL_A, DDI_BUF_IS_IDLE | DDI_A_4_LANES | DDI_INIT_DISPLAY_DETECTED);
+
+	/* Set FDI registers - is this required? */
 	gtt_write(_FDI_RXA_MISC, 0x00200090);
 	gtt_write(_FDI_RXA_MISC, 0x0a000000);
-	gtt_write(0x46408, 0x00000070);
+
+	/* Enable the handshake with PCH display when processing reset */
+	gtt_write(NDE_RSTWRN_OPT, RST_PCH_HNDSHK_EN);
+
+	/* undocumented */
 	gtt_write(0x42090, 0x04000000);
-	gtt_write(0x4f050, 0xc0000000);
 	gtt_write(0x9840, 0x00000000);
 	gtt_write(0x42090, 0xa4000000);
-	gtt_write(SOUTH_DSPCLK_GATE_D, 0x00001000);
+
+	gtt_write(SOUTH_DSPCLK_GATE_D, PCH_LP_PARTITION_LEVEL_DISABLE);
+
+	/* undocumented */
 	gtt_write(0x42080, 0x00004000);
-	gtt_write(0x64f80, 0x00ffffff);
-	gtt_write(0x64f84, 0x0007000e);
-	gtt_write(0x64f88, 0x00d75fff);
-	gtt_write(0x64f8c, 0x000f000a);
-	gtt_write(0x64f90, 0x00c30fff);
-	gtt_write(0x64f94, 0x00060006);
-	gtt_write(0x64f98, 0x00aaafff);
-	gtt_write(0x64f9c, 0x001e0000);
-	gtt_write(0x64fa0, 0x00ffffff);
-	gtt_write(0x64fa4, 0x000f000a);
-	gtt_write(0x64fa8, 0x00d75fff);
-	gtt_write(0x64fac, 0x00160004);
-	gtt_write(0x64fb0, 0x00c30fff);
-	gtt_write(0x64fb4, 0x001e0000);
-	gtt_write(0x64fb8, 0x00ffffff);
-	gtt_write(0x64fbc, 0x00060006);
-	gtt_write(0x64fc0, 0x00d75fff);
-	gtt_write(0x64fc4, 0x001e0000);
-	gtt_write(DDI_BUF_TRANS_A, 0x00ffffff);
-	gtt_write(DDI_BUF_TRANS_A+0x4, 0x0006000e);
-	gtt_write(DDI_BUF_TRANS_A+0x8, 0x00d75fff);
-	gtt_write(DDI_BUF_TRANS_A+0xc, 0x0005000a);
-	gtt_write(DDI_BUF_TRANS_A+0x10, 0x00c30fff);
-	gtt_write(DDI_BUF_TRANS_A+0x14, 0x00040006);
-	gtt_write(DDI_BUF_TRANS_A+0x18, 0x80aaafff);
-	gtt_write(DDI_BUF_TRANS_A+0x1c, 0x000b0000);
-	gtt_write(DDI_BUF_TRANS_A+0x20, 0x00ffffff);
-	gtt_write(DDI_BUF_TRANS_A+0x24, 0x0005000a);
-	gtt_write(DDI_BUF_TRANS_A+0x28, 0x00d75fff);
-	gtt_write(DDI_BUF_TRANS_A+0x2c, 0x000c0004);
-	gtt_write(DDI_BUF_TRANS_A+0x30, 0x80c30fff);
-	gtt_write(DDI_BUF_TRANS_A+0x34, 0x000b0000);
-	gtt_write(DDI_BUF_TRANS_A+0x38, 0x00ffffff);
-	gtt_write(DDI_BUF_TRANS_A+0x3c, 0x00040006);
-	gtt_write(DDI_BUF_TRANS_A+0x40, 0x80d75fff);
-	gtt_write(DDI_BUF_TRANS_A+0x44, 0x000b0000);
-	gtt_write(DIGITAL_PORT_HOTPLUG_CNTRL,
-		DIGITAL_PORTA_HOTPLUG_ENABLE |0x00000010);
-	gtt_write(SDEISR+0x30,
-		PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE |0x10100010);
+
+	/* Prepare DDI buffers for DP and FDI */
+	intel_prepare_ddi();
+
+	/* Hot plug detect buffer enabled for port A */
+	gtt_write(DIGITAL_PORT_HOTPLUG_CNTRL, DIGITAL_PORTA_HOTPLUG_ENABLE);
+
+	/* Enable HPD buffer for digital port D and B */
+	gtt_write(PCH_PORT_HOTPLUG, PORTD_HOTPLUG_ENABLE | PORTB_HOTPLUG_ENABLE);
+
+	/* Bits 4:0 - Power cycle delay (default 0x6 --> 500ms)
+	   Bits 31:8 - Reference divider (0x0004af ----> 24MHz)
+	*/
 	gtt_write(PCH_PP_DIVISOR, 0x0004af06);
 }
 
@@ -406,19 +399,16 @@ static void gma_func0_init(struct device *dev)
 
 #if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
-	u32 iobase, mmiobase, physbase;
+	u32 mmiobase, physbase;
 	/* Default set to 1 since it might be required for
 	   stuff like seabios */
 	unsigned int init_fb = 1;
-	iobase = dev->resource_list[2].base;
 	mmiobase = dev->resource_list[0].base;
 	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 #ifdef CONFIG_CHROMEOS
 	init_fb = developer_mode_enabled() || recovery_mode_enabled();
 #endif
-	int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-			unsigned int gfx, unsigned int init_fb);
-	lightup_ok = i915lightup(physbase, iobase, mmiobase, graphics_base, init_fb);
+	lightup_ok = i915lightup(physbase, mmiobase, graphics_base, init_fb);
 	if (lightup_ok)
 		gfx_set_init_done(1);
 #endif

@@ -107,6 +107,8 @@ static int dbgp_enabled(void);
 #define HUB_LONG_RESET_TIME	200
 #define HUB_RESET_TIMEOUT	500
 
+#define DBGP_MICROFRAME_TIMEOUT_LOOPS	1000
+#define DBGP_MICROFRAME_RETRIES		10
 #define DBGP_MAX_PACKET		8
 #define DBGP_LOOPS 1000
 
@@ -124,17 +126,17 @@ static inline struct ehci_debug_info *dbgp_ehci_info(void)
 static int dbgp_wait_until_complete(struct ehci_dbg_port *ehci_debug)
 {
 	u32 ctrl;
-	int loop = 0x100000;
+	int loop = 0;
 
 	do {
 		ctrl = read32((unsigned long)&ehci_debug->control);
 		/* Stop when the transaction is finished */
 		if (ctrl & DBGP_DONE)
 			break;
-	} while (--loop > 0);
+	} while (++loop < DBGP_MICROFRAME_TIMEOUT_LOOPS);
 
-	if (!loop)
-		return -1;
+	if (! (ctrl & DBGP_DONE))
+		return -DBGP_ERR_SIGNAL;
 
 	/* Now that we have observed the completed transaction,
 	 * clear the done bit.
@@ -153,18 +155,25 @@ static int dbgp_wait_until_done(struct ehci_dbg_port *ehci_debug, struct dbgp_pi
 {
 	u32 rd_ctrl, rd_pids;
 	u8 lpid;
-	int ret;
+	int ret, host_retries;
 
 retry:
+	host_retries = 0;
+host_retry:
+	if (host_retries++ >= DBGP_MICROFRAME_RETRIES)
+		return -DBGP_ERR_BAD;
 	write32((unsigned long)&ehci_debug->control, ctrl | DBGP_GO);
 	ret = dbgp_wait_until_complete(ehci_debug);
 	rd_ctrl = read32((unsigned long)&ehci_debug->control);
 	rd_pids = read32((unsigned long)&ehci_debug->pids);
 
-	if (ret < 0) {
-		if (ret == -DBGP_ERR_BAD && --loop > 0)
-			goto retry;
+	/* Controller hardware failure. */
+	if (ret == -DBGP_ERR_SIGNAL) {
 		return ret;
+
+	/* Bus failure (corrupted microframe). */
+	} else if (ret == -DBGP_ERR_BAD) {
+		goto host_retry;
 	}
 
 	lpid = DBGP_PID_GET(rd_pids);

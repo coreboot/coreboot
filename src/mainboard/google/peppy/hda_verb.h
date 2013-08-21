@@ -21,7 +21,7 @@ static const u32 mainboard_cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0283,	// Codec Vendor / Device ID: Realtek ALC283
 	0x10ec0283,	// Subsystem ID
-	0x0000000b,	// Number of jacks (NID entries)
+	0x0000000c,	// Number of jacks (NID entries)
 
 	/* Bits 31:28 - Codec Address */
 	/* Bits 27:20 - NID */
@@ -96,4 +96,22 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x02171e21, // HPOut, 3.5mm Jack
 	0x02171f03, // connector, left panel
 
+	/* Undocumented settings from Realtek (needed for beep_gen) */
+	/* Widget node 0x20 */
+	0x02050010,
+	0x02040c20,
+	0x0205001b,
+	0x0204081b,
 };
+
+static const u32 mainboard_pc_beep_verbs[] = {
+	0x00170500,	/* power up everything (codec, dac, adc, mixers)  */
+	0x01470740,	/* enable speaker out */
+	0x01470c02,	/* set speaker EAPD pin */
+	0x0143b01f,	/* unmute speaker */
+	0x00c37100,	/* unmute mixer nid 0xc input 1 */
+	0x00b37410,	/* unmute mixer nid 0xb beep input and set volume */
+};
+
+static const u32 mainboard_pc_beep_verbs_size =
+	sizeof(mainboard_pc_beep_verbs) / sizeof(mainboard_pc_beep_verbs[0]);

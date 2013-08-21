@@ -135,11 +135,16 @@ static int int15_handler(void)
 
 extern const u32 * cim_verb_data;
 extern u32 cim_verb_data_size;
+extern const u32 * pc_beep_verbs;
+extern u32 pc_beep_verbs_size;
 
 static void verb_setup(void)
 {
 	cim_verb_data = mainboard_cim_verb_data;
 	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
+	pc_beep_verbs = mainboard_pc_beep_verbs;
+	pc_beep_verbs_size = mainboard_pc_beep_verbs_size;
+
 }
 
 static void mainboard_init(device_t dev)

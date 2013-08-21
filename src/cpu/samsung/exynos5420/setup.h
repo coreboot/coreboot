@@ -715,6 +715,7 @@ struct exynos5_phy_control;
 #define DIRECT_CMD_ZQINIT		0x0a000000
 #define DIRECT_CMD_CHANNEL_SHIFT	28
 #define DIRECT_CMD_CHIP_SHIFT		20
+#define DIRECT_CMD_BANK_SHIFT		16
 #define DIRECT_CMD_REFA		(5 << 24)
 #define DIRECT_CMD_MRS1		0x71C00
 #define DIRECT_CMD_MRS2		0x10BFC

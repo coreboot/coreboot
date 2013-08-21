@@ -184,14 +184,43 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	writel(mem->timing_power, &drex0->timingpower);
 	writel(mem->timing_power, &drex1->timingpower);
 
-	/* Send NOP, MRS and ZQINIT commands.
-	 * Sending MRS command will reset the DRAM. We should not be
-	 * reseting the DRAM after resume, this will lead to memory
-	 * corruption as DRAM content is lost after DRAM reset.
-	 */
 	if (reset) {
+		/* Send NOP, MRS and ZQINIT commands.
+		 * Sending MRS command will reset the DRAM. We should not be
+		 * reseting the DRAM after resume, this will lead to memory
+		 * corruption as DRAM content is lost after DRAM reset.
+		 */
 		dmc_config_mrs(mem, drex0);
 		dmc_config_mrs(mem, drex1);
+	} else {
+		u32 ret;
+
+		/*
+		 * During Suspend-Resume & S/W-Reset, as soon as PMU releases
+		 * pad retention, CKE goes high. This causes memory contents
+		 * not to be retained during DRAM initialization. Therfore,
+		 * there is a new control register(0x100431e8[28]) which lets us
+		 * release pad retention and retain the memory content until the
+		 * initialization is complete.
+		 */
+		write32(PAD_RETENTION_DRAM_COREBLK_VAL,
+			(void *)PAD_RETENTION_DRAM_COREBLK_OPTION);
+		do {
+			ret = read32((void *)PAD_RETENTION_DRAM_STATUS);
+		} while (ret != 0x1);
+
+		/*
+		 * CKE PAD retention disables DRAM self-refresh mode.
+		 * Send auto refresh command for DRAM refresh.
+		 */
+		for (i = 0; i < 128; i++) {
+			writel(DIRECT_CMD_REFA, &drex0->directcmd);
+			writel(DIRECT_CMD_REFA | (0x1 << DIRECT_CMD_CHIP_SHIFT),
+				&drex0->directcmd);
+			writel(DIRECT_CMD_REFA, &drex1->directcmd);
+			writel(DIRECT_CMD_REFA | (0x1 << DIRECT_CMD_CHIP_SHIFT),
+				&drex1->directcmd);
+		}
 	}
 
 	if (mem->gate_leveling_enable) {

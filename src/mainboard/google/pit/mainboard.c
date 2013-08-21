@@ -420,8 +420,6 @@ static void mainboard_init(device_t dev)
 	device_info.raw_edid = panel_edid;
 	exynos_init_dp(&device_info);
 
-	udelay(LCD_T3_DELAY_MS * 1000);
-
 	backlight_vdd();
 	backlight_pwm();
 	backlight_en();

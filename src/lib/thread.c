@@ -28,7 +28,6 @@ static void idle_thread_init(void);
 
 /* There needs to be at least one thread to run the ramstate state machine. */
 #define TOTAL_NUM_THREADS (CONFIG_NUM_THREADS + 1)
-extern char thread_stacks[CONFIG_NUM_THREADS*CONFIG_STACK_SIZE];
 
 /* Storage space for the thread structs .*/
 static struct thread all_threads[TOTAL_NUM_THREADS];
@@ -259,8 +258,11 @@ void threads_initialize(void)
 {
 	int i;
 	struct thread *t;
-	char *stack_top;
+	u8 *stack_top;
 	struct cpu_info *ci;
+	u8 *thread_stacks;
+
+	thread_stacks = arch_get_thread_stackbase();
 
 	/* Initialize the BSP thread first. The cpu_info structure is assumed
 	 * to be just under the top of the stack. */

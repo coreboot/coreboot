@@ -266,10 +266,10 @@ FCH_DATA_BLOCK   InitEnvCfgDefault = {
     0,                       // AzaliaSnoop
     0,                       // AzaliaDummy
     {                        // AZALIA_PIN
-      2,                     // AzaliaSdin0
-      2,                     // AzaliaSdin1
-      2,                     // AzaliaSdin2
-      2,                     // AzaliaSdin3
+      CONFIG_AZ_PIN & 0x3,                     // AzaliaSdin0
+      (CONFIG_AZ_PIN & 0xc) >> 2,                     // AzaliaSdin1
+      (CONFIG_AZ_PIN & 0x30) >> 4,                     // AzaliaSdin2
+      (CONFIG_AZ_PIN & 0xc0) >> 6,                     // AzaliaSdin3
     },
     NULL,                    // *AzaliaOemCodecTablePtr
     NULL,                    // *AzaliaOemFpCodecTablePtr

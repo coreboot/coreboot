@@ -247,4 +247,13 @@ if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	config AMD_SB_SPI_TX_LEN
 		int
 		default 64
+
+	config AZ_PIN
+		hex
+		default 0xaa
+		help
+		  bit 1,0 - pin 0
+		  bit 3,2 - pin 1
+		  bit 5,4 - pin 2
+		  bit 7,6 - pin 3
 endif

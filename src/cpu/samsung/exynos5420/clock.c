@@ -333,16 +333,29 @@ int clock_set_dwmci(enum periph_id peripheral)
 {
 	/* Request MMC clock value to 52MHz. */
 	const unsigned long freq = 52000000;
-	unsigned long sclk, div;
+	unsigned long sdclkin, cclkin;
 	int device_index = (int)peripheral - (int)PERIPH_ID_SDMMC0;
 
 	ASSERT(device_index >= 0 && device_index < 4);
-	sclk = get_mmc_clk(device_index);
-	if (!sclk) {
+	sdclkin = get_mmc_clk(device_index);
+	if (!sdclkin) {
 		return -1;
 	}
-	div = CEIL_DIV(sclk, freq);
-	set_mmc_clk(device_index, div);
+
+	/* The SDCLKIN is divided insided controller by the DIVRATIO field in
+	 * CLKSEL register, so we must calculate clock value as
+	 *   cclk_in = SDCLKIN / (DIVRATIO + 1)
+	 * Currently the RIVRATIO must be 3 for MMC0 and MMC2 on Exynos5420
+	 * (and must be configured in payload).
+	 */
+	if (device_index == 0 || device_index == 2){
+		int divratio = 3;
+		sdclkin /= (divratio + 1);
+	}
+	printk(BIOS_DEBUG, "%s(%d): sdclkin: %ld\n", __func__, device_index, sdclkin);
+
+	cclkin = CEIL_DIV(sdclkin, freq);
+	set_mmc_clk(device_index, cclkin);
 	return 0;
 }
 

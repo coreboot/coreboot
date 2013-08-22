@@ -48,6 +48,8 @@ struct exynos5_phy_control;
 #define APLL_FOUT	(1 << 0)
 #define KPLL_FOUT	(1 << 0)
 
+#define CLK_DIV_CPERI1_VAL	0x3f3f0000
+
 /* APLL_CON1	*/
 #define APLL_CON1_VAL	(0x0020f300)
 

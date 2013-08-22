@@ -209,6 +209,8 @@ void system_clock_init(void)
 	writel(CLK_DIV_PERIC3_VAL, &clk->clk_div_peric3);
 	writel(CLK_DIV_PERIC4_VAL, &clk->clk_div_peric4);
 
+	writel(CLK_DIV_CPERI1_VAL, &clk->clk_div_cperi1);
+
 	writel(CLK_DIV2_RATIO, &clk->clkdiv2_ratio);
 	writel(CLK_DIV4_RATIO, &clk->clkdiv4_ratio);
 	writel(CLK_DIV_G2D, &clk->clk_div_g2d);

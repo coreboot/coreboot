@@ -63,7 +63,6 @@ void bootblock_cpu_init(void)
 	mmu_config_range(0, SRAM_START, DCACHE_OFF);
 	mmu_config_range(SRAM_START, SRAM_SIZE, DCACHE_WRITEBACK);
 	mmu_config_range(SRAM_END, 4096 - SRAM_END, DCACHE_OFF);
-	dcache_invalidate_all();
 	dcache_mmu_enable();
 
 	/* For most ARM systems, we have to initialize firmware media source

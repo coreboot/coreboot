@@ -40,8 +40,6 @@
 #include <drivers/maxim/max77802/max77802.h>
 #include <device/i2c.h>
 
-#define MMC0_GPIO_PIN	(58)
-
 #define PMIC_I2C_BUS	4
 
 struct pmic_write
@@ -107,18 +105,6 @@ static int setup_power(int is_resume)
 	}
 
 	return error;
-}
-
-static void setup_storage(void)
-{
-	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
-	if (clock_set_dwmci(PERIPH_ID_SDMMC0))
-		printk(BIOS_CRIT, "%s: Failed to set MMC0 clock.\n", __func__);
-	exynos_pinmux_sdmmc0();
-
-	/* MMC2: Removable, 4 bit mode, no GPIO. */
-	clock_set_dwmci(PERIPH_ID_SDMMC2);
-	exynos_pinmux_sdmmc2();
 }
 
 static void setup_ec(void)
@@ -270,7 +256,6 @@ void main(void)
 		wakeup();
 	}
 
-	setup_storage();
 	setup_gpio();
 	setup_ec();
 

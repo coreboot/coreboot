@@ -42,7 +42,6 @@
 #include "exynos5250.h"
 
 #define PMIC_BUS	0
-#define MMC0_GPIO_PIN	(58)
 
 static void setup_power(int is_resume)
 {
@@ -94,23 +93,6 @@ static void setup_power(int is_resume)
 		printk(BIOS_CRIT, "%s: PMIC error: %#x\n", __func__, error);
 		die("Failed to intialize PMIC.\n");
 	}
-}
-
-static void setup_storage(void)
-{
-	/* MMC0: Fixed, 8 bit mode, connected with GPIO. */
-	if (clock_set_mshci(PERIPH_ID_SDMMC0))
-		printk(BIOS_CRIT, "%s: Failed to set MMC0 clock.\n", __func__);
-	if (gpio_direction_output(MMC0_GPIO_PIN, 1)) {
-		printk(BIOS_CRIT, "%s: Unable to power on MMC0.\n", __func__);
-	}
-	gpio_set_pull(MMC0_GPIO_PIN, GPIO_PULL_NONE);
-	gpio_set_drv(MMC0_GPIO_PIN, GPIO_DRV_4X);
-	exynos_pinmux_sdmmc0();
-
-	/* MMC2: Removable, 4 bit mode, no GPIO. */
-	clock_set_mshci(PERIPH_ID_SDMMC2);
-	exynos_pinmux_sdmmc2();
 }
 
 static void setup_graphics(void)
@@ -176,7 +158,6 @@ void main(void)
 		wakeup();
 	}
 
-	setup_storage();
 	setup_gpio();
 	setup_graphics();
 

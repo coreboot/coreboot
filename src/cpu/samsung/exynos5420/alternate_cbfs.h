@@ -30,6 +30,12 @@ void * * const irom_load_image_from_usb_ptr = (void * *)0x02020070;
 #define SECONDARY_BASE_BOOT_USB 0xfeed0002
 u32 * const iram_secondary_base = (u32 *)0x02020018;
 
+/* Values pulled from U-Boot, I think the manual is wrong here (for SPI) */
+#define OM_STAT_SDMMC 0x4
+#define OM_STAT_EMMC  0x8
+#define OM_STAT_SPI  0x14
+#define OM_STAT_MASK 0x7f
+
 #if defined(__BOOT_BLOCK__)
 	/* A small space in IRAM to hold the romstage-only image */
 	void * const alternate_cbfs_buffer = (void *)CONFIG_CBFS_CACHE_ADDRESS;

@@ -42,7 +42,8 @@ void power_enable_hw_thermal_trip(void);
 /* Power Management Unit register map */
 struct exynos5_power {
 	/* Add registers as and when required */
-	uint8_t		reserved1[0x0400];
+	uint32_t	om_stat;		/* 0x0000 */
+	uint8_t		reserved1[0x03fc];
 	uint32_t	sw_reset;		/* 0x0400 */
 	uint8_t		reserved2[0x0304];
 	uint32_t	usb_host_phy_ctrl;	/* 0x0708 */

@@ -136,4 +136,17 @@ config FINALIZE_USB_ROUTE_XHCI
 	  If you set this option to y, the USB ports will be routed
 	  to the XHCI controller during the finalize SMM callback.
 
+config LOCK_MANAGEMENT_ENGINE
+	bool "Lock Management Engine section"
+	default n
+	help
+	  The Intel Management Engine supports preventing write accesses
+	  from the host to the Management Engine section in the firmware
+	  descriptor. If the ME section is locked, it can only be overwritten
+	  with an external SPI flash programmer. You will want this if you
+	  want to increase security of your ROM image once you are sure
+	  that the ME firmware is no longer going to change.
+
+	  If unsure, say N.
+
 endif

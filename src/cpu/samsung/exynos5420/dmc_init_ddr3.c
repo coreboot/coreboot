@@ -323,67 +323,6 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		writel(val, &drex1->directcmd);
 		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
 
-		/* Set Read DQ Calibration */
-		val = (0x3 << DIRECT_CMD_BANK_SHIFT) | 0x4;
-		writel(val, &drex0->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
-		writel(val, &drex1->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
-
-
-		val = readl(&phy0_ctrl->phy_con1);
-		val |= READ_LEVELLING_DDR3;
-		writel(val, &phy0_ctrl->phy_con1);
-		val = readl(&phy1_ctrl->phy_con1);
-		val |= READ_LEVELLING_DDR3;
-		writel(val, &phy1_ctrl->phy_con1);
-
-		val = readl(&phy0_ctrl->phy_con2);
-		val |= (RDLVL_EN | RDLVL_INCR_ADJ);
-		writel(val, &phy0_ctrl->phy_con2);
-		val = readl(&phy1_ctrl->phy_con2);
-		val |= (RDLVL_EN | RDLVL_INCR_ADJ);
-		writel(val, &phy1_ctrl->phy_con2);
-
-		setbits_le32(&drex0->rdlvl_config, CTRL_RDLVL_DATA_ENABLE);
-		i = TIMEOUT;
-		while (((readl(&drex0->phystatus) & RDLVL_COMPLETE_CHO) !=
-			RDLVL_COMPLETE_CHO) && (i > 0)) {
-			/*
-			 * TODO(waihong): Comment on how long this take to
-			 * timeout
-			 */
-			udelay(1);
-			i--;
-		}
-		if (!i)
-			return SETUP_ERR_RDLV_COMPLETE_TIMEOUT;
-		clrbits_le32(&drex0->rdlvl_config, CTRL_RDLVL_DATA_ENABLE);
-
-		setbits_le32(&drex1->rdlvl_config, CTRL_RDLVL_DATA_ENABLE);
-		i = TIMEOUT;
-		while (((readl(&drex1->phystatus) & RDLVL_COMPLETE_CHO) !=
-			RDLVL_COMPLETE_CHO) && (i > 0)) {
-			/*
-			 * TODO(waihong): Comment on how long this take to
-			 * timeout
-			 */
-			udelay(1);
-			i--;
-		}
-		if (!i)
-			return SETUP_ERR_RDLV_COMPLETE_TIMEOUT;
-		clrbits_le32(&drex1->rdlvl_config, CTRL_RDLVL_DATA_ENABLE);
-
-		val = (0x3 << DIRECT_CMD_BANK_SHIFT);
-		writel(val, &drex0->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
-		writel(val, &drex1->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
-
-		update_reset_dll(drex0, DDR_MODE_DDR3);
-		update_reset_dll(drex1, DDR_MODE_DDR3);
-
 		/* Common Settings for Leveling */
 		val = PHY_CON12_RESET_VAL;
 		writel((val + nLockW_phy0), &phy0_ctrl->phy_con12);
@@ -391,9 +330,6 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 
 		setbits_le32(&phy0_ctrl->phy_con2, DLL_DESKEW_EN);
 		setbits_le32(&phy1_ctrl->phy_con2, DLL_DESKEW_EN);
-
-		update_reset_dll(drex0, DDR_MODE_DDR3);
-		update_reset_dll(drex1, DDR_MODE_DDR3);
 	}
 
 	/* Send PALL command */

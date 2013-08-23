@@ -264,10 +264,11 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		nLockR |= nLockW_phy1;
 		writel(nLockR, &phy1_ctrl->phy_con12);
 
-		writel(0x00030004, &drex0->directcmd);
-		writel(0x00130004, &drex0->directcmd);
-		writel(0x00030004, &drex1->directcmd);
-		writel(0x00130004, &drex1->directcmd);
+		val = (0x3 << DIRECT_CMD_BANK_SHIFT) | 0x4;
+		writel(val, &drex0->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
+		writel(val, &drex1->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
 
 		setbits_le32(&phy0_ctrl->phy_con2, RDLVL_GATE_EN);
 		setbits_le32(&phy1_ctrl->phy_con2, RDLVL_GATE_EN);
@@ -316,16 +317,19 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		writel(0, &phy0_ctrl->phy_con14);
 		writel(0, &phy1_ctrl->phy_con14);
 
-		writel(0x00030000, &drex0->directcmd);
-		writel(0x00130000, &drex0->directcmd);
-		writel(0x00030000, &drex1->directcmd);
-		writel(0x00130000, &drex1->directcmd);
+		val = (0x3 << DIRECT_CMD_BANK_SHIFT);
+		writel(val, &drex0->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
+		writel(val, &drex1->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
 
 		/* Set Read DQ Calibration */
-		writel(0x00030004, &drex0->directcmd);
-		writel(0x00130004, &drex0->directcmd);
-		writel(0x00030004, &drex1->directcmd);
-		writel(0x00130004, &drex1->directcmd);
+		val = (0x3 << DIRECT_CMD_BANK_SHIFT) | 0x4;
+		writel(val, &drex0->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
+		writel(val, &drex1->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
+
 
 		val = readl(&phy0_ctrl->phy_con1);
 		val |= READ_LEVELLING_DDR3;
@@ -371,10 +375,11 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 			return SETUP_ERR_RDLV_COMPLETE_TIMEOUT;
 		clrbits_le32(&drex1->rdlvl_config, CTRL_RDLVL_DATA_ENABLE);
 
-		writel(0x00030000, &drex0->directcmd);
-		writel(0x00130000, &drex0->directcmd);
-		writel(0x00030000, &drex1->directcmd);
-		writel(0x00130000, &drex1->directcmd);
+		val = (0x3 << DIRECT_CMD_BANK_SHIFT);
+		writel(val, &drex0->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
+		writel(val, &drex1->directcmd);
+		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
 
 		update_reset_dll(drex0, DDR_MODE_DDR3);
 		update_reset_dll(drex1, DDR_MODE_DDR3);

@@ -44,7 +44,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	struct exynos5_dmc *drex0, *drex1;
 	struct exynos5_tzasc *tzasc0, *tzasc1;
 	u32 val, nLockR, nLockW_phy0, nLockW_phy1;
-	int i;
+	int i, chip;
 
 	phy0_ctrl = (struct exynos5_phy_control *)EXYNOS5_DMC_PHY0_BASE;
 	phy1_ctrl = (struct exynos5_phy_control *)EXYNOS5_DMC_PHY1_BASE;
@@ -218,12 +218,14 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		 * Send auto refresh command for DRAM refresh.
 		 */
 		for (i = 0; i < 128; i++) {
-			writel(DIRECT_CMD_REFA, &drex0->directcmd);
-			writel(DIRECT_CMD_REFA | (0x1 << DIRECT_CMD_CHIP_SHIFT),
-				&drex0->directcmd);
-			writel(DIRECT_CMD_REFA, &drex1->directcmd);
-			writel(DIRECT_CMD_REFA | (0x1 << DIRECT_CMD_CHIP_SHIFT),
-				&drex1->directcmd);
+			for (chip = 0; chip < mem->chips_to_configure; chip++) {
+				writel(DIRECT_CMD_REFA |
+					(chip << DIRECT_CMD_CHIP_SHIFT),
+					&drex0->directcmd);
+				writel(DIRECT_CMD_REFA |
+					(chip << DIRECT_CMD_CHIP_SHIFT),
+					&drex1->directcmd);
+			}
 		}
 	}
 
@@ -263,10 +265,12 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		writel(nLockR, &phy1_ctrl->phy_con12);
 
 		val = (0x3 << DIRECT_CMD_BANK_SHIFT) | 0x4;
-		writel(val, &drex0->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
-		writel(val, &drex1->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
+		for (chip = 0; chip < mem->chips_to_configure; chip++) {
+			writel(val | (chip << DIRECT_CMD_CHIP_SHIFT),
+				&drex0->directcmd);
+			writel(val | (chip << DIRECT_CMD_CHIP_SHIFT),
+				&drex1->directcmd);
+		}
 
 		setbits_le32(&phy0_ctrl->phy_con2, RDLVL_GATE_EN);
 		setbits_le32(&phy1_ctrl->phy_con2, RDLVL_GATE_EN);
@@ -316,10 +320,12 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 		writel(0, &phy1_ctrl->phy_con14);
 
 		val = (0x3 << DIRECT_CMD_BANK_SHIFT);
-		writel(val, &drex0->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex0->directcmd);
-		writel(val, &drex1->directcmd);
-		writel(val | (0x1 << DIRECT_CMD_CHIP_SHIFT), &drex1->directcmd);
+		for (chip = 0; chip < mem->chips_to_configure; chip++) {
+			writel(val | (chip << DIRECT_CMD_CHIP_SHIFT),
+				&drex0->directcmd);
+			writel(val | (chip << DIRECT_CMD_CHIP_SHIFT),
+				&drex1->directcmd);
+		}
 
 		/* Common Settings for Leveling */
 		val = PHY_CON12_RESET_VAL;

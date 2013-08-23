@@ -86,7 +86,7 @@ const struct mem_timings mem_timings = {
 			DMC_MEMCONTROL_ADD_LAT_PALL_CYCLE(0) |
 			DMC_MEMCONTROL_MEM_TYPE_DDR3 |
 			DMC_MEMCONTROL_MEM_WIDTH_32BIT |
-			DMC_MEMCONTROL_NUM_CHIP_2 |
+			DMC_MEMCONTROL_NUM_CHIP_1 |
 			DMC_MEMCONTROL_BL_8 |
 			DMC_MEMCONTROL_PZQ_DISABLE |
 			DMC_MEMCONTROL_MRR_BYTE_7_0,
@@ -104,8 +104,8 @@ const struct mem_timings mem_timings = {
 			DMC_CONCONTROL_AREF_EN_DISABLE |
 			DMC_CONCONTROL_IO_PD_CON_DISABLE,
 		.dmc_channels = 1,
-		.chips_per_channel = 2,
-		.chips_to_configure = 2,
+		.chips_per_channel = 1,
+		.chips_to_configure = 1,
 		.send_zq_init = 1,
 		.gate_leveling_enable = 1,
 };

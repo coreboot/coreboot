@@ -173,10 +173,11 @@ config USBDEBUG
 
 	  If unsure, say N.
 
+if USBDEBUG
+
 config USBDEBUG_HCD_INDEX
 	int "Index for EHCI controller to use with usbdebug"
 	default 0
-	depends on USBDEBUG
 	help
 	   Some boards have multiple EHCI controllers with possibly only
 	   one having the Debug Port capability on an external USB port.
@@ -188,7 +189,6 @@ config USBDEBUG_HCD_INDEX
 config USBDEBUG_DEFAULT_PORT
 	int "Default USB port to use as Debug Port"
 	default 0
-	depends on USBDEBUG
 	help
 	  Selects which physical USB port usbdebug dongle is connected to.
 	  Setting of 0 means to scan possible ports starting from 1.
@@ -201,6 +201,27 @@ config USBDEBUG_DEFAULT_PORT
 	  port on your mainboard (potentially also USB pin headers on
 	  your mainboard) is highly board-specific, and you'll likely
 	  have to find out by trial-and-error.
+
+choice
+	prompt "Type of dongle"
+	default USBDEBUG_DONGLE_STD
+
+config USBDEBUG_DONGLE_STD
+	bool "Net20DC or compatible"
+
+config USBDEBUG_DONGLE_BEAGLEBONE
+	bool "BeagleBone"
+	help
+	  Use this to configure the USB hub on BeagleBone board.
+
+endchoice
+
+config USBDEBUG_OPTIONAL_HUB_PORT
+	int
+	default 2 if USBDEBUG_DONGLE_BEAGLEBONE
+	default 0
+
+endif # USBDEBUG
 
 # TODO: Deps?
 # TODO: Improve description.

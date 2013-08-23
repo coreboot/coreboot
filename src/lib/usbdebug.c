@@ -483,6 +483,102 @@ static int ehci_wait_for_port(struct ehci_regs *ehci_regs, int port)
 	return -1; //-ENOTCONN;
 }
 
+#define USB_HUB_PORT_CONNECTION		0
+#define USB_HUB_PORT_ENABLED		1
+#define USB_HUB_PORT_RESET			4
+#define USB_HUB_PORT_POWER			8
+#define USB_HUB_C_PORT_CONNECTION	16
+#define USB_HUB_C_PORT_RESET		20
+
+#if CONFIG_USBDEBUG_OPTIONAL_HUB_PORT
+
+static int hub_port_status(const char * buf, int feature)
+{
+	return !!(buf[feature>>3] & (1<<(feature&0x7)));
+}
+
+static int dbgp_hub_enable(struct ehci_dbg_port *ehci_debug, unsigned int port)
+{
+	const u8 hub_addr = USB_DEBUG_DEVNUM-1;
+	char status[8];
+	int ret, loop;
+
+	/* Move hub to address 126. */
+	ret = dbgp_control_msg(ehci_debug, 0,
+		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+		USB_REQ_SET_ADDRESS, hub_addr, 0, NULL, 0);
+	if (ret < 0)
+		goto err;
+
+	/* Enter configured state on hub. */
+	ret = dbgp_control_msg(ehci_debug, hub_addr,
+		USB_DIR_OUT | USB_TYPE_STANDARD | USB_RECIP_DEVICE,
+		USB_REQ_SET_CONFIGURATION, 1, 0, NULL, 0);
+	if (ret < 0)
+		goto err;
+
+	/* Set PORT_POWER, poll for PORT_CONNECTION. */
+	ret = dbgp_control_msg(ehci_debug, hub_addr,
+		USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_OTHER,
+		USB_REQ_SET_FEATURE, USB_HUB_PORT_POWER, port, NULL, 0);
+	if (ret < 0)
+		goto err;
+
+	loop = 100;
+	do {
+		dbgp_mdelay(10);
+		ret	= dbgp_control_msg(ehci_debug, hub_addr,
+			USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_OTHER,
+			USB_REQ_GET_STATUS, 0, port, status, 4);
+		if (ret < 0)
+			goto err;
+		if (hub_port_status(status, USB_HUB_PORT_CONNECTION))
+			break;
+	} while (--loop);
+	if (! loop)
+		goto err;
+
+	ret = dbgp_control_msg(ehci_debug, hub_addr,
+		USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_OTHER,
+		USB_REQ_CLEAR_FEATURE, USB_HUB_C_PORT_CONNECTION, port, NULL, 0);
+	if (ret < 0)
+		goto err;
+
+
+	/* Set PORT_RESET, poll for C_PORT_RESET. */
+	ret = dbgp_control_msg(ehci_debug, hub_addr,
+		USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_OTHER,
+		USB_REQ_SET_FEATURE, USB_HUB_PORT_RESET, port, NULL, 0);
+	if (ret < 0)
+		goto err;
+
+	loop = 100;
+	do {
+		dbgp_mdelay(10);
+		ret	= dbgp_control_msg(ehci_debug, hub_addr,
+			USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_OTHER,
+			USB_REQ_GET_STATUS, 0, port, status, 4);
+		if (ret < 0)
+			goto err;
+		if (hub_port_status(status, USB_HUB_C_PORT_RESET))
+			break;
+	} while (--loop);
+	if (! loop)
+		goto err;
+
+	ret = dbgp_control_msg(ehci_debug, hub_addr,
+		USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_OTHER,
+		USB_REQ_CLEAR_FEATURE, USB_HUB_C_PORT_RESET, port, NULL, 0);
+	if (ret < 0)
+		goto err;
+
+	if (hub_port_status(status, USB_HUB_PORT_ENABLED))
+		return 0;
+err:
+	return -1;
+}
+#endif /* CONFIG_USBDEBUG_OPTIONAL_HUB_PORT */
+
 #if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
 static void enable_usbdebug(void)
 {
@@ -639,6 +735,15 @@ try_next_port:
 	write32((unsigned long)&ehci_regs->port_status[debug_port - 1], portsc);
 
 	dbgp_mdelay(100);
+
+#if CONFIG_USBDEBUG_OPTIONAL_HUB_PORT
+	ret = dbgp_hub_enable(ehci_debug, CONFIG_USBDEBUG_OPTIONAL_HUB_PORT);
+	if (ret < 0) {
+		dprintk(BIOS_INFO, "Could not enable USB hub on debug port.\n");
+		ret = -6;
+		goto err;
+	}
+#endif
 
 	/* Find the debug device and make it device number 127 */
 	devnum = 0;

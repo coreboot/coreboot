@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <device/azalia.h>
 #include "agesawrapper.h"
 #include "amdlib.h"
 #include "BiosCallOuts.h"
@@ -63,15 +64,75 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 }
 
 /**
- * AMD imb_a180 Platform ALC272 Verb Table
+ * CODEC Initialization Table for Azalia HD Audio using Realtek ALC662 chip
  */
-static const CODEC_ENTRY imb_a180_Alc662_VerbTbl[] = {
-	{0xFF, 0xFFFFFFFF}
+static const CODEC_ENTRY Alc662_VerbTbl[] =
+{
+	{ 0x14, /*01014010*/                /* Port D - green headphone jack    */
+			(AZALIA_PINCFG_PORT_JACK << 30)
+			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
+			| (AZALIA_PINCFG_DEVICE_LINEOUT << 20)
+			| (AZALIA_PINCFG_CONN_MINI_HEADPHONE_JACK << 16)
+			| (AZALIA_PINCFG_COLOR_GREEN << 12)
+			| (1 << 4)
+			| (0 << 0)
+	},
+	{ 0x15, /*0x90170120*/              /* Port A - white speaker header    */
+			(AZALIA_PINCFG_PORT_FIXED << 30)
+			| (AZALIA_PINCFG_LOCATION_INTERNAL << 24)
+			| (AZALIA_PINCFG_DEVICE_SPEAKER << 20)
+			| (AZALIA_PINCFG_CONN_OTHER_ANALOG << 16)
+			| (AZALIA_PINCFG_COLOR_WHITE << 12)
+			| (AZALIA_PINCFG_MISC_IGNORE_PRESENCE << 8)
+			| (2 << 4)
+			| (0 << 0)
+	},
+	{ 0x16, 0x411111F0 },               /* Port G - not connected           */
+	{ 0x18, /*0x01A19040*/              /* Port B - pink headphone jack     */
+			(AZALIA_PINCFG_PORT_JACK << 30)
+			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
+			| (AZALIA_PINCFG_DEVICE_MICROPHONE << 20)
+			| (AZALIA_PINCFG_CONN_MINI_HEADPHONE_JACK << 16)
+			| (AZALIA_PINCFG_COLOR_PINK << 12)
+			| (4 << 4)
+			| (0 << 0)
+	},
+	{ 0x19, /*0x02A19050*/              /* Port F - front panel header mic  */
+			(AZALIA_PINCFG_PORT_NC << 30)
+			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_FRONT) << 24)
+			| (AZALIA_PINCFG_DEVICE_MICROPHONE << 20)
+			| (AZALIA_PINCFG_CONN_MINI_HEADPHONE_JACK << 16)
+			| (AZALIA_PINCFG_COLOR_PINK << 12)
+			| (5 << 4)
+			| (0 << 0)
+	},
+	{ 0x1A, /*0x0181304F*/              /* Port C - NL blue headphone jack  */
+			(AZALIA_PINCFG_PORT_NC << 30)
+			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
+			| (AZALIA_PINCFG_DEVICE_LINEIN << 20)
+			| (AZALIA_PINCFG_CONN_MINI_HEADPHONE_JACK << 16)
+			| (AZALIA_PINCFG_COLOR_BLUE << 12)
+			| (4 << 4)
+			| (0xF << 0)
+	},
+	{ 0x1B, /*0x02214030*/              /* Port E - front panel line-out     */
+			(AZALIA_PINCFG_PORT_NC << 30)
+			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_FRONT) << 24)
+			| (AZALIA_PINCFG_DEVICE_HP_OUT << 20)
+			| (AZALIA_PINCFG_CONN_MINI_HEADPHONE_JACK << 16)
+			| (AZALIA_PINCFG_COLOR_GREEN << 12)
+			| (3 << 4)
+			| (0 << 0)
+	},
+	{ 0x1C, 0x411111F0 },               /* CD-in - Not Connected            */
+	{ 0x1D, 0x411111F0 },               /* PC Beep - Not Connected          */
+	{ 0x1E, 0x411111F0 },               /* S/PDIF - Not connected           */
+	{ 0xFF, 0xFFFFFFFF },
 };
 
-static const CODEC_TBL_LIST imb_a180CodecTableList[] =
+static const CODEC_TBL_LIST CodecTableList[] =
 {
-	{0x10ec0662, (CODEC_ENTRY*)&imb_a180_Alc662_VerbTbl[0]},
+	{0x10ec0662, (CODEC_ENTRY*)Alc662_VerbTbl},
 	{(UINT32)0x0FFFFFFFF, (CODEC_ENTRY*)0x0FFFFFFFFUL}
 };
 
@@ -272,7 +333,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 
 		/* Azalia Controller OEM Codec Table Pointer */
-		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST *)(&imb_a180CodecTableList[0]);
+		FchParams_env->Azalia.AzaliaOemCodecTablePtr = (CODEC_TBL_LIST*)CodecTableList;
 		/* Azalia Controller Front Panel OEM Table Pointer */
 
 		/* Fan Control */

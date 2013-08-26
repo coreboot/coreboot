@@ -291,7 +291,7 @@ enum mem_manuf {
 };
 
 enum {
-	MEM_TIMINGS_MSR_COUNT	= 4,
+	MEM_TIMINGS_MSR_COUNT	= 5,
 };
 
 

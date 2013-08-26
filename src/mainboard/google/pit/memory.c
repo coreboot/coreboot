@@ -32,7 +32,8 @@ const struct mem_timings mem_timings = {
 		.mem_type = DDR_MODE_DDR3,
 		.frequency_mhz = 800,
 		.direct_cmd_msr = {
-			0x00020018, 0x00030000, 0x00010002, 0x00000d70
+			0x00020018, 0x00030000, 0x00010046, 0x00000d70,
+			0x00000c70
 		},
 		.timing_ref = 0x000000bb,
 		.timing_row = 0x6836650f,
@@ -65,7 +66,7 @@ const struct mem_timings mem_timings = {
 
 		.rd_fetch = 0x3,
 
-		.zq_mode_dds = 0x6,
+		.zq_mode_dds = 0x7,
 		.zq_mode_term = 0x1,
 		.zq_mode_noterm = 1,
 

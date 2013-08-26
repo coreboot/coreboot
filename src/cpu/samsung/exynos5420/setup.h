@@ -181,6 +181,8 @@ struct exynos5_phy_control;
 #define CLK_DIV_FSYS1_VAL	       0x04f13c4f
 #define CLK_DIV_FSYS2_VAL	       0x041d0000
 
+#define DMC_CONCONTROL_IO_PD_CON(x)	(x << 6)
+
 /* CLK_DIV_CPU1	*/
 #define HPM_RATIO               0x2
 #define COPY_RATIO              0x0

@@ -603,8 +603,7 @@ printf "Building IASL ${IASL_VERSION} ... "
 	test $UNAME = "Cygwin" && HOST="_CYGWIN"
 	HOST="$HOST" OPT_CFLAGS="-O -D_FORTIFY_SOURCE=2" CFLAGS="$CFLAGS" $MAKE CC="$CC" iasl || touch .failed
 	rm -f $DESTDIR$TARGETDIR/bin/iasl || touch .failed
-	if [ -d bin32 ]; then cp bin32/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi
-	if [ -d bin64 ]; then cp bin64/iasl $DESTDIR$TARGETDIR/bin || touch .failed ; fi
+	cp bin/iasl $DESTDIR$TARGETDIR/bin || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
 ) > $IASL_DIR/source/compiler/crossgcc-build.log 2>&1
 test -r $IASL_DIR/generate/unix/.failed && printf "${RED}failed${NC}\n" || \

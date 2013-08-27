@@ -11,6 +11,8 @@ cbfsobj += lzma.o
 cbfsobj += LzFind.o
 cbfsobj += LzmaDec.o
 cbfsobj += LzmaEnc.o
+# linux as payload
+cbfsobj += linux_trampoline.o
 
 CBFSTOOLFLAGS=-D_7ZIP_ST -g
 
@@ -21,7 +23,7 @@ endif
 $(objutil)/cbfstool:
 	mkdir -p $@
 
-$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/%.c
+$(objutil)/cbfstool/%.o: $(top)/util/cbfstool/%.[cS]
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 

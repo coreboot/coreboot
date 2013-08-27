@@ -108,6 +108,12 @@ static void cb_parse_vdat(unsigned char *ptr, struct sysinfo_t *info)
 }
 #endif
 
+static void cb_parse_dma(unsigned char *ptr)
+{
+	struct cb_range *dma = (struct cb_range *)ptr;
+	init_dma_memory(phys_to_virt(dma->range_start), dma->range_size);
+}
+
 static void cb_parse_tstamp(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
@@ -262,6 +268,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			cb_parse_vbnv(ptr, info);
 			break;
 #endif
+		case CB_TAG_DMA:
+			cb_parse_dma(ptr);
+			break;
 		case CB_TAG_TIMESTAMPS:
 			cb_parse_tstamp(ptr, info);
 			break;

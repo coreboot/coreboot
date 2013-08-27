@@ -112,6 +112,9 @@ void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
 void *memalign(size_t align, size_t size);
 #endif
+void init_dma_memory(void *start, u32 size);
+void *dma_malloc(size_t size);
+void *dma_memalign(size_t align, size_t size);
 /** @} */
 
 /**

@@ -45,6 +45,10 @@
 #define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
 #define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
 
+/* Arbitrary range of DMA memory for depthcharge's drivers */
+#define DMA_START	(0x77300000)
+#define DMA_SIZE	(0x00100000)
+
 static struct edid edid = {
 	.ha = 1366,
 	.va = 768,
@@ -452,6 +456,7 @@ static void mainboard_enable(device_t dev)
 
 	/* set up caching for the DRAM */
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
+	mmu_config_range(DMA_START >> 20, DMA_SIZE >> 20, DCACHE_OFF);
 	tlb_invalidate_all();
 
 	/* this is going to move, but we must have it now and we're
@@ -472,3 +477,14 @@ struct chip_operations mainboard_ops = {
 	.name	= "Samsung/Google ARM Chromebook",
 	.enable_dev = mainboard_enable,
 };
+
+void lb_board(struct lb_header *header)
+{
+	struct lb_range *dma;
+
+	dma = (struct lb_range *)lb_new_record(header);
+	dma->tag = LB_TAB_DMA;
+	dma->size = sizeof(*dma);
+	dma->range_start = (intptr_t)DMA_START;
+	dma->range_size = DMA_SIZE;
+}

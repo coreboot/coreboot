@@ -11,6 +11,8 @@ cbfsobj += lzma.o
 cbfsobj += LzFind.o
 cbfsobj += LzmaDec.o
 cbfsobj += LzmaEnc.o
+# linux as payload
+cbfsobj += linux_trampoline.o
 
 CBFSTOOLFLAGS=-D_7ZIP_ST -g
 

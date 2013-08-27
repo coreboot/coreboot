@@ -12,6 +12,8 @@ COMMON+=cbfs-mkstage.o cbfs-mkpayload.o
 COMMON+=lzma/lzma.o
 COMMON+=lzma/C/LzFind.o  lzma/C/LzmaDec.o  lzma/C/LzmaEnc.o
 
+COMMON+=linux_trampoline.o
+
 COMMON:=$(addprefix $(obj)/,$(COMMON))
 
 all: dep $(BINARY)

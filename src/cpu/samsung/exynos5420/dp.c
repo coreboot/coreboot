@@ -241,10 +241,15 @@ static unsigned int exynos_dp_handle_edid(struct edp_device_info *edp_info)
 		return -1;
 	}
 
-	ret = exynos_dp_read_edid();
-	if (ret != EXYNOS_DP_SUCCESS) {
-		printk(BIOS_ERR, "DP exynos_dp_read_edid() failed\n");
-		return -1;
+	if (edp_info->raw_edid){
+		ret = EXYNOS_DP_SUCCESS;
+		printk(BIOS_SPEW, "EDID compiled in, skipping read\n");
+	} else {
+		ret = exynos_dp_read_edid();
+		if (ret != EXYNOS_DP_SUCCESS) {
+			printk(BIOS_ERR, "DP exynos_dp_read_edid() failed\n");
+			return -1;
+		}
 	}
 
 	return ret;

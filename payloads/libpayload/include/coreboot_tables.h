@@ -184,12 +184,14 @@ struct cb_gpios {
 	struct cb_gpio gpios[0];
 };
 
-#define CB_TAG_VDAT	0x0015
-struct cb_vdat {
+#define CB_TAG_VDAT		0x0015
+#define CB_TAG_VBNV		0x0019
+#define CB_TAG_VBOOT_HANDOFF	0x0020
+struct lb_range {
 	uint32_t tag;
-	uint32_t size;	/* size of the entire entry */
-	uint64_t vdat_addr;
-	uint32_t vdat_size;
+	uint32_t size;
+	uint64_t range_start;
+	uint32_t range_size;
 };
 
 #define CB_TAG_TIMESTAMPS	0x0016
@@ -200,22 +202,6 @@ struct cb_cbmem_tab {
 	uint32_t tag;
 	uint32_t size;
 	uint64_t cbmem_tab;
-};
-
-#define CB_TAG_VBNV		0x0019
-struct cb_vbnv {
-	uint32_t tag;
-	uint32_t size;
-	uint32_t vbnv_start;
-	uint32_t vbnv_size;
-};
-
-#define CB_TAG_VBOOT_HANDOFF	0x0020
-struct cb_vboot_handoff {
-	uint32_t tag;
-	uint32_t size;
-	uint64_t vboot_handoff_addr;
-	uint32_t vboot_handoff_size;
 };
 
 #define CB_TAG_X86_ROM_MTRR	0x0021

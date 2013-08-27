@@ -215,13 +215,15 @@ struct lb_gpios {
 	struct lb_gpio gpios[0];
 };
 
-#define LB_TAG_VDAT	0x0015
-struct lb_vdat {
+#define LB_TAG_VDAT		0x0015
+#define LB_TAG_VBNV		0x0019
+#define LB_TAB_VBOOT_HANDOFF	0x0020
+struct lb_range {
 	uint32_t tag;
 	uint32_t size;
 
-	uint64_t vdat_addr;
-	uint32_t vdat_size;
+	uint64_t range_start;
+	uint32_t range_size;
 };
 
 #define LB_TAG_TIMESTAMPS	0x0016
@@ -233,24 +235,6 @@ struct lb_cbmem_ref {
 	uint32_t size;
 
 	uint64_t cbmem_addr;
-};
-
-#define LB_TAG_VBNV		0x0019
-struct lb_vbnv {
-	uint32_t tag;
-	uint32_t size;
-
-	uint32_t vbnv_start;
-	uint32_t vbnv_size;
-};
-
-#define LB_TAB_VBOOT_HANDOFF	0x0020
-struct lb_vboot_handoff {
-	uint32_t tag;
-	uint32_t size;
-
-	uint64_t vboot_handoff_addr;
-	uint32_t vboot_handoff_size;
 };
 
 #define LB_TAG_X86_ROM_MTRR	0x0021

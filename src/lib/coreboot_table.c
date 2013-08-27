@@ -169,25 +169,25 @@ static void lb_gpios(struct lb_header *header)
 static void lb_vdat(struct lb_header *header)
 {
 #if CONFIG_GENERATE_ACPI_TABLES
-	struct lb_vdat* vdat;
+	struct lb_range *vdat;
 
-	vdat = (struct lb_vdat *)lb_new_record(header);
+	vdat = (struct lb_range *)lb_new_record(header);
 	vdat->tag = LB_TAG_VDAT;
 	vdat->size = sizeof(*vdat);
-	acpi_get_vdat_info(&vdat->vdat_addr, &vdat->vdat_size);
+	acpi_get_vdat_info(&vdat->range_start, &vdat->range_size);
 #endif
 }
 
 static void lb_vbnv(struct lb_header *header)
 {
 #if CONFIG_PC80_SYSTEM
-	struct lb_vbnv* vbnv;
+	struct lb_range *vbnv;
 
-	vbnv = (struct lb_vbnv *)lb_new_record(header);
+	vbnv = (struct lb_range *)lb_new_record(header);
 	vbnv->tag = LB_TAG_VBNV;
 	vbnv->size = sizeof(*vbnv);
-	vbnv->vbnv_start = CONFIG_VBNV_OFFSET + 14;
-	vbnv->vbnv_size = CONFIG_VBNV_SIZE;
+	vbnv->range_start = CONFIG_VBNV_OFFSET + 14;
+	vbnv->range_size = CONFIG_VBNV_SIZE;
 #endif
 }
 
@@ -196,16 +196,16 @@ static void lb_vboot_handoff(struct lb_header *header)
 {
 	void *addr;
 	uint32_t size;
-	struct lb_vboot_handoff* vbho;
+	struct lb_range *vbho;
 
 	if (vboot_get_handoff_info(&addr, &size))
 		return;
 
-	vbho = (struct lb_vboot_handoff *)lb_new_record(header);
+	vbho = (struct lb_range *)lb_new_record(header);
 	vbho->tag = LB_TAB_VBOOT_HANDOFF;
 	vbho->size = sizeof(*vbho);
-	vbho->vboot_handoff_addr = (intptr_t)addr;
-	vbho->vboot_handoff_size = size;
+	vbho->range_start = (intptr_t)addr;
+	vbho->range_size = size;
 }
 #else
 static inline void lb_vboot_handoff(struct lb_header *header) {}

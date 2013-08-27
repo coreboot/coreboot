@@ -81,10 +81,10 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 #ifdef CONFIG_LP_CHROMEOS
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_vbnv *vbnv = (struct cb_vbnv *)ptr;
+	struct lb_range *vbnv = (struct lb_range *)ptr;
 
-	info->vbnv_start = vbnv->vbnv_start;
-	info->vbnv_size = vbnv->vbnv_size;
+	info->vbnv_start = vbnv->range_start;
+	info->vbnv_size = vbnv->range_size;
 }
 
 static void cb_parse_gpios(unsigned char *ptr, struct sysinfo_t *info)
@@ -101,10 +101,10 @@ static void cb_parse_gpios(unsigned char *ptr, struct sysinfo_t *info)
 
 static void cb_parse_vdat(unsigned char *ptr, struct sysinfo_t *info)
 {
-	struct cb_vdat *vdat = (struct cb_vdat *) ptr;
+	struct lb_range *vdat = (struct lb_range *)ptr;
 
-	info->vdat_addr = phys_to_virt(vdat->vdat_addr);
-	info->vdat_size = vdat->vdat_size;
+	info->vdat_addr = phys_to_virt(vdat->range_start);
+	info->vdat_size = vdat->range_size;
 }
 #endif
 

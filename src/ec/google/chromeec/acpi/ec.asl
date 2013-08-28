@@ -263,6 +263,20 @@ Device (EC0)
 		Store ("EC: KEY PRESSED", Debug)
 	}
 
+	// Thermal Shutdown Imminent
+	Method (_Q10, 0, NotSerialized)
+	{
+		Store ("EC: THERMAL SHUTDOWN", Debug)
+		Notify (\_TZ, 0x80)
+	}
+
+	// Battery Shutdown Imminent
+	Method (_Q11, 0, NotSerialized)
+	{
+		Store ("EC: BATTERY SHUTDOWN", Debug)
+		Notify (BAT0, 0x80)
+	}
+
 	// Throttle Start
 	Method (_Q12, 0, NotSerialized)
 	{

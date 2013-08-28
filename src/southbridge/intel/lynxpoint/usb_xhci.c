@@ -358,10 +358,10 @@ static void usb_xhci_init(device_t dev)
 	write32(mem_base + 0x8144, reg32);
 
 	if (pch_is_lp()) {
-		/* XHCIBAR + 816Ch[19:0] = 000f0038h */
+		/* XHCIBAR + 816Ch[19:0] = 000e0038h */
 		reg32 = read32(mem_base + 0x816c);
 		reg32 &= ~0x000fffff;
-		reg32 |= 0x000f0038;
+		reg32 |= 0x000e0038;
 		write32(mem_base + 0x816c, reg32);
 
 		/* D20:F0:B0h[17,14,13] = 100b */

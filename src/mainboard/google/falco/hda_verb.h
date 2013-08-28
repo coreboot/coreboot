@@ -21,7 +21,12 @@ static const u32 mainboard_cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0283,	// Codec Vendor / Device ID: Realtek ALC283
 	0x10ec0283,	// Subsystem ID
-	0x0000000c,	// Number of jacks (NID entries)
+	0x0000000d,	// Number of jacks (NID entries)
+
+	0x0017ff00,	// Function Reset
+	0x0017ff00,	// Double Function Reset
+	0x000F0000,	// Pad - get vendor id
+	0x000F0002,	// Pad - get revision id
 
 	/* NID 0x01, HDA Codec Subsystem ID Verb Table: 0x10ec0283 */
 	0x00172083,

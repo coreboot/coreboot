@@ -213,16 +213,15 @@ static unsigned int line_bytes(void)
  * perform cache maintenance on a particular memory range rather than the
  * entire cache.
  */
-static void dcache_op_mva(unsigned long addr,
-		unsigned long len, enum dcache_op op)
+static void dcache_op_mva(void const *addr, size_t len, enum dcache_op op)
 {
 	unsigned long line, linesize;
 
 	linesize = line_bytes();
-	line = addr & ~(linesize - 1);
+	line = (uint32_t)addr & ~(linesize - 1);
 
 	dsb();
-	while (line < addr + len) {
+	while ((void *)line < addr + len) {
 		switch(op) {
 		case OP_DCCIMVAC:
 			dccimvac(line);
@@ -241,17 +240,17 @@ static void dcache_op_mva(unsigned long addr,
 	isb();
 }
 
-void dcache_clean_by_mva(unsigned long addr, unsigned long len)
+void dcache_clean_by_mva(void const *addr, size_t len)
 {
 	dcache_op_mva(addr, len, OP_DCCMVAC);
 }
 
-void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
+void dcache_clean_invalidate_by_mva(void const *addr, size_t len)
 {
 	dcache_op_mva(addr, len, OP_DCCIMVAC);
 }
 
-void dcache_invalidate_by_mva(unsigned long addr, unsigned long len)
+void dcache_invalidate_by_mva(void const *addr, size_t len)
 {
 	dcache_op_mva(addr, len, OP_DCIMVAC);
 }

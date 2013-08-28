@@ -32,6 +32,7 @@
 #ifndef ARMV7_CACHE_H
 #define ARMV7_CACHE_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 /* SCTLR bits */
@@ -290,13 +291,13 @@ static inline void write_sctlr(uint32_t val)
 void dcache_clean_invalidate_all(void);
 
 /* dcache clean by modified virtual address to PoC */
-void dcache_clean_by_mva(unsigned long addr, unsigned long len);
+void dcache_clean_by_mva(void const *addr, size_t len);
 
 /* dcache clean and invalidate by modified virtual address to PoC */
-void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len);
+void dcache_clean_invalidate_by_mva(void const *addr, size_t len);
 
 /* dcache invalidate by modified virtual address to PoC */
-void dcache_invalidate_by_mva(unsigned long addr, unsigned long len);
+void dcache_invalidate_by_mva(void const *addr, size_t len);
 
 void dcache_clean_all(void);
 

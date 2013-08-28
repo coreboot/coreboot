@@ -103,7 +103,7 @@ static void exynos_displayport_init(device_t dev, u32 lcdbase,
 	uint32_t lower = ALIGN_DOWN(lcdbase, MiB);
 	uint32_t upper = ALIGN_UP(lcdbase + fb_size, MiB);
 
-	dcache_clean_invalidate_by_mva(lower, upper - lower);
+	dcache_clean_invalidate_by_mva((void *)lower, upper - lower);
 	mmu_config_range(lower / MiB, (upper - lower) / MiB, DCACHE_OFF);
 
 	printk(BIOS_DEBUG, "Initializing Exynos LCD.\n");

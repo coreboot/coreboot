@@ -34,6 +34,7 @@
 #include <stdint.h>
 
 #include <arch/cache.h>
+#include <arch/virtual.h>
 
 #define bitmask(high, low) ((1UL << (high)) + \
 			((1UL << (high)) - 1) - ((1UL << (low)) - 1))
@@ -213,16 +214,16 @@ static unsigned int line_bytes(void)
  * perform cache maintenance on a particular memory range rather than the
  * entire cache.
  */
-static void dcache_op_mva(unsigned long addr,
-		unsigned long len, enum dcache_op op)
+static void dcache_op_mva(void const *vaddr, size_t len, enum dcache_op op)
 {
 	unsigned long line, linesize;
+	unsigned long paddr = virt_to_phys(vaddr);
 
 	linesize = line_bytes();
-	line = addr & ~(linesize - 1);
+	line = paddr & ~(linesize - 1);
 
 	dsb();
-	while (line < addr + len) {
+	while (line < paddr + len) {
 		switch(op) {
 		case OP_DCCIMVAC:
 			dccimvac(line);
@@ -241,17 +242,17 @@ static void dcache_op_mva(unsigned long addr,
 	isb();
 }
 
-void dcache_clean_by_mva(unsigned long addr, unsigned long len)
+void dcache_clean_by_mva(void const *addr, size_t len)
 {
 	dcache_op_mva(addr, len, OP_DCCMVAC);
 }
 
-void dcache_clean_invalidate_by_mva(unsigned long addr, unsigned long len)
+void dcache_clean_invalidate_by_mva(void const *addr, size_t len)
 {
 	dcache_op_mva(addr, len, OP_DCCIMVAC);
 }
 
-void dcache_invalidate_by_mva(unsigned long addr, unsigned long len)
+void dcache_invalidate_by_mva(void const *addr, size_t len)
 {
 	dcache_op_mva(addr, len, OP_DCIMVAC);
 }

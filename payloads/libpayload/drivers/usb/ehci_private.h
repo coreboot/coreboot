@@ -135,12 +135,13 @@ typedef struct ehci {
 	hc_cap_t *capabilities;
 	hc_op_t *operation;
 	ehci_qh_t *dummy_qh;
+#define DMA_SIZE (64 * 1024)
+	void *dma_buffer;
 } ehci_t;
 
 #define PS_TERMINATE 1
 #define PS_TYPE_QH 1 << 1
 #define PS_PTR_MASK ~0x1f
-
 
 #define EHCI_INST(controller) ((ehci_t*)((controller)->instance))
 

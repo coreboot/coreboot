@@ -83,7 +83,7 @@ static int minimal_free = 0;
 void init_dma_memory(void *start, u32 size)
 {
 #ifdef CONFIG_LP_DEBUG_MALLOC
-	if (dma != heap) {
+	if (dma_initialized()) {
 		printf("WARNING: %s called twice!\n");
 		return;
 	}
@@ -95,6 +95,17 @@ void init_dma_memory(void *start, u32 size)
 	dma->start = start;
 	dma->end = start + size;
 	dma->align_regions = NULL;
+}
+
+int dma_initialized()
+{
+	return dma != heap;
+}
+
+/* For boards that don't initialize DMA we assume all locations are coherent */
+int dma_coherent(void *ptr)
+{
+	return !dma_initialized() || (dma->start <= ptr && dma->end > ptr);
 }
 
 static void setup(hdrtype_t volatile *start, int size)
@@ -120,7 +131,7 @@ static void *alloc(int len, struct memory_type *type)
 
 	/* Make sure the region is setup correctly. */
 	if (!HAS_MAGIC(*ptr))
-		setup(ptr, (int)((&_eheap - &_heap) - HDRSIZE));
+		setup(ptr, (int)((type->end - type->start) - HDRSIZE));
 
 	/* Find some free space. */
 	do {
@@ -470,6 +481,6 @@ void print_malloc_map(void)
 	if (free_memory && (minimal_free > free_memory))
 		minimal_free = free_memory;
 	printf("Maximum memory consumption: %d bytes\n",
-		(unsigned int)(&_eheap - &_heap) - HDRSIZE - minimal_free);
+		(unsigned int)(heap->end - heap->start) - HDRSIZE - minimal_free);
 }
 #endif

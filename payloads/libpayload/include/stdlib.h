@@ -115,6 +115,8 @@ void *memalign(size_t align, size_t size);
 void init_dma_memory(void *start, u32 size);
 void *dma_malloc(size_t size);
 void *dma_memalign(size_t align, size_t size);
+int dma_initialized(void);
+int dma_coherent(void *ptr);
 /** @} */
 
 /**

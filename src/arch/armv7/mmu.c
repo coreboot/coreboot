@@ -91,7 +91,7 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 		str = "writeback";
 		break;
 	case DCACHE_WRITETHROUGH:
-		attr =  (0x3 << 10) | (1 << 3) | (1 << 2) | 0x2;
+		attr =  (0x3 << 10) | (1 << 3) | 0x2;
 		str = "writethrough";
 		break;
 	default:

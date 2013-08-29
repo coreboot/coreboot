@@ -17,9 +17,12 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vbnv.c
-ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += vbnv.c
+romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vbnv_cmos.c
+ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += vbnv_cmos.c
+romstage-$(CONFIG_ARCH_ROMSTAGE_ARMV7) += vbnv_ec.c
+ramstage-$(CONFIG_ARCH_RAMSTAGE_ARMV7) += vbnv_ec.c
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vboot.c
+
 ramstage-y += gnvs.c
 romstage-y += fmap.c
 ramstage-y += fmap.c

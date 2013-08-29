@@ -18,6 +18,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include <console/console.h>
 #include <bootmode.h>
 #include <arch/io.h>
@@ -26,7 +27,6 @@
 #include <reset.h>
 #include <elog.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "chip.h"
 #include "ec.h"
@@ -154,6 +154,38 @@ u16 google_chromeec_get_board_version(void)
 
 	return board_v.board_version;
 }
+
+int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
+{
+	struct chromeec_command cec_cmd;
+	struct ec_params_vbnvcontext cmd_vbnvcontext;
+	struct ec_response_vbnvcontext rsp_vbnvcontext;
+
+	if (len != EC_VBNV_BLOCK_SIZE)
+		return -1;
+
+
+	cec_cmd.cmd_code = EC_CMD_VBNV_CONTEXT;
+	cec_cmd.cmd_version = EC_VER_VBNV_CONTEXT;
+	cec_cmd.cmd_data_in = &cmd_vbnvcontext;
+	cec_cmd.cmd_data_out = &rsp_vbnvcontext;
+	cec_cmd.cmd_size_in = sizeof(cmd_vbnvcontext);
+	cec_cmd.cmd_size_out = sizeof(rsp_vbnvcontext);
+
+	cmd_vbnvcontext.op = is_read ? EC_VBNV_CONTEXT_OP_READ :
+					EC_VBNV_CONTEXT_OP_WRITE;
+
+	if (!is_read)
+		memcpy(&cmd_vbnvcontext.block, data, EC_VBNV_BLOCK_SIZE);
+
+	google_chromeec_command(&cec_cmd);
+
+	if (is_read)
+		memcpy(data, &rsp_vbnvcontext.block, EC_VBNV_BLOCK_SIZE);
+
+	return cec_cmd.cmd_code;
+}
+
 #endif /* ! __SMM__ */
 
 #ifndef __PRE_RAM__

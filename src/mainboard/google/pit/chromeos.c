@@ -95,7 +95,7 @@ int get_recovery_mode_switch(void)
 		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
-int get_recovery_mode_from_vbnv(void)
+int get_write_protect_state(void)
 {
-	return 0;
+	return 0; // FIXME what GPIO? // WP hard coded to disabled
 }

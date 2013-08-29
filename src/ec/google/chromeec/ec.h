@@ -46,6 +46,7 @@ u32 google_chromeec_get_events_b(void);
 int google_chromeec_kbbacklight(int percent);
 void google_chromeec_post(u8 postcode);
 void google_chromeec_log_events(u32 mask);
+int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len);
 
 enum usb_charge_mode {
 	USB_CHARGE_MODE_DISABLED,

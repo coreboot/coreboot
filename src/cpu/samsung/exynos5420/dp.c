@@ -845,7 +845,7 @@ static unsigned int exynos_dp_config_video(struct edp_device_info *edp_info)
 	exynos_dp_start_video();
 
 	if (edp_info->video_info.master_mode == 0) {
-		retry_cnt = 100;
+		retry_cnt = 500;
 		while (retry_cnt) {
 			ret = exynos_dp_is_video_stream_on();
 			if (ret != EXYNOS_DP_SUCCESS) {
@@ -857,7 +857,10 @@ static unsigned int exynos_dp_config_video(struct edp_device_info *edp_info)
 				printk(BIOS_DEBUG, "DP video stream is on\n");
 				break;
 			}
-			mdelay(5);
+			/* this is a cheap operation, involving some register
+			 * reads, and no AUX channel IO. A ms. delay is fine.
+			 */
+			mdelay(1);
 		}
 	}
 

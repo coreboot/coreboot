@@ -23,6 +23,8 @@
 
 #include <stdint.h>
 
+#include "cpu.h"
+
 enum periph_id;
 
 #define APLL	0
@@ -66,8 +68,6 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral);
 
 #include "pinmux.h"
 
-
-#define MCT_ADDRESS 0x101c0000
 
 #define MCT_HZ 24000000
 
@@ -462,7 +462,9 @@ struct exynos5_clock {
 	unsigned char	res109b[0xf5e4];
 };
 
-struct exynos5_mct_regs {
+static struct exynos5_clock * const exynos_clock = (void *)EXYNOS5_CLOCK_BASE;
+
+struct exynos5_mct {
 	uint32_t	mct_cfg;
 	uint8_t		reserved0[0xfc];
 	uint32_t	g_cnt_l;
@@ -519,6 +521,9 @@ struct exynos5_mct_regs {
 	uint8_t		reserved14[0x8];
 	uint32_t	l1_wstat;
 };
+
+static struct exynos5_mct * const exynos_mct =
+		(void *)EXYNOS5_MULTI_CORE_TIMER_BASE;
 
 #define EXYNOS5_EPLLCON0_LOCKED_SHIFT	29  /* EPLL Locked bit position*/
 #define EPLL_SRC_CLOCK			24000000  /*24 MHz Crystal Input */

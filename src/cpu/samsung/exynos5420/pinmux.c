@@ -21,7 +21,6 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "gpio.h"
-#include "cpu.h"
 #include "pinmux.h"
 
 static void exynos_pinmux_uart(int start, int count)

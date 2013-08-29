@@ -24,7 +24,6 @@
 #include <string.h>
 #include <console/console.h>
 #include "alternate_cbfs.h"
-#include "cpu.h"
 #include "power.h"
 #include "spi.h"
 
@@ -162,7 +161,7 @@ int init_default_cbfs_media(struct cbfs_media *media)
 	if (*iram_secondary_base == SECONDARY_BASE_BOOT_USB)
 		return initialize_exynos_usb_cbfs_media(media);
 
-	switch (samsung_get_base_power()->om_stat & OM_STAT_MASK) {
+	switch (exynos_power->om_stat & OM_STAT_MASK) {
 	case OM_STAT_SDMMC:
 		return initialize_exynos_sdmmc_cbfs_media(media);
 	case OM_STAT_SPI:
@@ -171,7 +170,7 @@ int init_default_cbfs_media(struct cbfs_media *media)
 			CONFIG_CBFS_CACHE_SIZE);
 	default:
 		printk(BIOS_EMERG, "Exynos OM_STAT value 0x%x not supported!\n",
-			samsung_get_base_power()->om_stat);
+			exynos_power->om_stat);
 		return 0;
 	}
 }

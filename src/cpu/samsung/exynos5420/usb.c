@@ -22,7 +22,6 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
-#include "cpu.h"
 #include "gpio.h"
 #include "power.h"
 #include "sysreg.h"
@@ -31,17 +30,15 @@
 void setup_usb_host_phy(int hsic_gpio)
 {
 	unsigned int hostphy_ctrl0;
-	struct exynos5_sysreg *sysreg = samsung_get_base_sysreg();
-	struct exynos5_power *power = samsung_get_base_power();
-	struct exynos5_usb_host_phy *phy = samsung_get_base_usb_host_phy();
 
-	setbits_le32(&sysreg->usb20_phy_cfg, USB20_PHY_CFG_EN);
-	setbits_le32(&power->usb_host_phy_ctrl, POWER_USB_HOST_PHY_CTRL_EN);
+	setbits_le32(&exynos_sysreg->usb20_phy_cfg, USB20_PHY_CFG_EN);
+	setbits_le32(&exynos_power->usb_host_phy_ctrl,
+		     POWER_USB_HOST_PHY_CTRL_EN);
 
 	printk(BIOS_DEBUG, "Powering up USB HOST PHY (%s HSIC)\n",
 			hsic_gpio ? "with" : "without");
 
-	hostphy_ctrl0 = readl(&phy->usbphyctrl0);
+	hostphy_ctrl0 = readl(&exynos_usb_host_phy->usbphyctrl0);
 	hostphy_ctrl0 &= ~(HOST_CTRL0_FSEL_MASK |
 			   HOST_CTRL0_COMMONON_N |
 			   /* HOST Phy setting */
@@ -55,15 +52,15 @@ void setup_usb_host_phy(int hsic_gpio)
 			  /* HOST Phy setting */
 			  HOST_CTRL0_LINKSWRST |
 			  HOST_CTRL0_UTMISWRST);
-	writel(hostphy_ctrl0, &phy->usbphyctrl0);
+	writel(hostphy_ctrl0, &exynos_usb_host_phy->usbphyctrl0);
 	udelay(10);
-	clrbits_le32(&phy->usbphyctrl0,
+	clrbits_le32(&exynos_usb_host_phy->usbphyctrl0,
 		     HOST_CTRL0_LINKSWRST |
 		     HOST_CTRL0_UTMISWRST);
 	udelay(20);
 
 	/* EHCI Ctrl setting */
-	setbits_le32(&phy->ehcictrl,
+	setbits_le32(&exynos_usb_host_phy->ehcictrl,
 		     EHCICTRL_ENAINCRXALIGN |
 		     EHCICTRL_ENAINCR4 |
 		     EHCICTRL_ENAINCR8 |
@@ -76,13 +73,15 @@ void setup_usb_host_phy(int hsic_gpio)
 		gpio_direction_output(hsic_gpio, 1);
 		udelay(5000);
 
-		clrbits_le32(&phy->hsicphyctrl1,
+		clrbits_le32(&exynos_usb_host_phy->hsicphyctrl1,
 			     HOST_CTRL0_SIDDQ |
 			     HOST_CTRL0_FORCESLEEP |
 			     HOST_CTRL0_FORCESUSPEND);
-		setbits_le32(&phy->hsicphyctrl1, HOST_CTRL0_PHYSWRST);
+		setbits_le32(&exynos_usb_host_phy->hsicphyctrl1,
+			     HOST_CTRL0_PHYSWRST);
 		udelay(10);
-		clrbits_le32(&phy->hsicphyctrl1, HOST_CTRL0_PHYSWRST);
+		clrbits_le32(&exynos_usb_host_phy->hsicphyctrl1,
+			     HOST_CTRL0_PHYSWRST);
 	}
 
 	/* At this point we need to wait for 50ms before talking to

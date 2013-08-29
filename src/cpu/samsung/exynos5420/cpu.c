@@ -59,7 +59,7 @@ static void tzpc_init(void)
 
 static void set_cpu_id(void)
 {
-	u32 pro_id = (read32((void *)EXYNOS_PRO_ID) & 0x00FFF000) >> 12;
+	u32 pro_id = (read32((void *)EXYNOS5_PRO_ID) & 0x00FFF000) >> 12;
 
 	switch (pro_id) {
 	case 0x200:

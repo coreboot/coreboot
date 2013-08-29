@@ -30,11 +30,11 @@
 #include <arch/exception.h>
 #include <cpu/samsung/exynos5250/tmu.h>
 #include <cpu/samsung/exynos5250/clk.h>
-#include <cpu/samsung/exynos5250/cpu.h>
 #include <cpu/samsung/exynos5250/gpio.h>
 #include <cpu/samsung/exynos5250/power.h>
 #include <cpu/samsung/exynos5250/i2c.h>
 #include <cpu/samsung/exynos5250/dp-core.h>
+#include <cpu/samsung/exynos5250/dp.h>
 #include <cpu/samsung/exynos5250/usb.h>
 
 #include "exynos5250.h"
@@ -193,7 +193,6 @@ static struct video_info dp_video_info = {
 };
 
 /* FIXME: move some place more appropriate */
-#define EXYNOS5250_DP1_BASE	0x145b0000
 #define MAX_DP_TRIES	5
 
 /*
@@ -256,7 +255,7 @@ static void mainboard_init(device_t dev)
 {
 	int dp_tries;
 	struct s5p_dp_device dp_device = {
-		.base = (struct exynos5_dp *)EXYNOS5250_DP1_BASE,
+		.base = exynos_dp1,
 		.video_info = &dp_video_info,
 	};
 	void *fb_addr = (void *)(get_fb_base_kb() * KiB);

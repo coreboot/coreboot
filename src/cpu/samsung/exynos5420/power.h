@@ -22,6 +22,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_POWER_H
 #define CPU_SAMSUNG_EXYNOS5420_POWER_H
 
+#include "cpu.h"
+
 /* Enable HW thermal trip with PS_HOLD_CONTROL register ENABLE_HW_TRIP bit */
 void power_enable_hw_thermal_trip(void);
 
@@ -54,11 +56,25 @@ struct exynos5_power {
 	uint8_t		reserved5[0xdc];
 	uint32_t	inform0;		/* 0x0800 */
 	uint32_t	inform1;		/* 0x0804 */
-	uint8_t		reserved6[0x1f8];
-	uint32_t	pmu_debug;		/* 0x0A00*/
-	uint8_t         reserved7[0x2908];
+	uint8_t		reserved6[0x0f8];
+	uint32_t	spare0;			/* 0x0900 */
+	uint8_t		reserved7[0x0fc];
+	uint32_t	pmu_debug;		/* 0x0a00 */
+	uint8_t         reserved8[0x15fc];
+	struct {				/* 0x2000 */
+		uint32_t	config;		/*   0x00 */
+		uint32_t	status;		/*   0x04 */
+		uint8_t		reserved[0x78];
+	} arm_core[4];
+	uint8_t		reserved9[0xe04];
+	uint32_t	padret_dram_status;	/* 0x3004 */
+	uint8_t         reservedA[0x1e0];
+	uint32_t	padret_dram_cblk_opt;	/* 0x31e8 */
+	uint8_t         reservedB[0x120];
 	uint32_t	ps_hold_ctrl;		/* 0x330c */
 } __attribute__ ((__packed__));
+
+static struct exynos5_power * const exynos_power = (void*)EXYNOS5_POWER_BASE;
 
 /**
  * Perform a software reset.

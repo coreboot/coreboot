@@ -18,16 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <arch/io.h>
-#include <stdlib.h>
 #include <assert.h>
-#include "gpio.h"
+#include <stdlib.h>
+#include <arch/io.h>
+#include <console/console.h>
 #include "clk.h"
+#include "gpio.h"
 #include "spi.h"
-
-#define OM_STAT		(0x1f << 1)
-#define EXYNOS_BASE_SPI1 ((void *)0x12d30000)
 
 #if defined(CONFIG_DEBUG_SPI) && CONFIG_DEBUG_SPI
 # define DEBUG_SPI(x,...)	printk(BIOS_DEBUG, "EXYNOS_SPI: " x)
@@ -201,7 +198,7 @@ int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
 	static struct exynos_spi_media context;
 	DEBUG_SPI("initialize_exynos_spi_cbfs_media\n");
 
-	context.regs = EXYNOS_BASE_SPI1;
+	context.regs = (void*)EXYNOS5_SPI1_BASE;
 	context.buffer.allocated = context.buffer.last_allocate = 0;
 	context.buffer.buffer = buffer_address;
 	context.buffer.size = buffer_size;

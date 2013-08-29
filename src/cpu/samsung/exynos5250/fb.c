@@ -20,22 +20,19 @@
 
 /* LCD driver for Exynos */
 
-#include <arch/io.h>
+#include <delay.h>
 #include <stdlib.h>
 #include <string.h>
 #include <timer.h>
-#include <delay.h>
+#include <arch/io.h>
 #include <console/console.h>
-#include "cpu.h"
 #include "power.h"
 #include "sysreg.h"
-#include <drivers/maxim/max77686/max77686.h>
 
-#include "device/i2c.h"
-#include "i2c.h"
-#include "fimd.h"
 #include "dp.h"
 #include "dp-core.h"
+#include "fimd.h"
+#include "i2c.h"
 
 /*
  * Here is the rough outline of how we bring up the display:
@@ -109,10 +106,8 @@ short console_row;
 /* Bypass FIMD of DISP1_BLK */
 static void fimd_bypass(void)
 {
-	struct exynos5_sysreg *sysreg = samsung_get_base_sysreg();
-
-	setbits_le32(&sysreg->disp1blk_cfg, FIMDBYPASS_DISP1);
-	sysreg->disp1blk_cfg &= ~FIMDBYPASS_DISP1;
+	setbits_le32(&exynos_sysreg->disp1blk_cfg, FIMDBYPASS_DISP1);
+	exynos_sysreg->disp1blk_cfg &= ~FIMDBYPASS_DISP1;
 }
 
 /*
@@ -125,56 +120,52 @@ void fb_init(unsigned long int fb_size, void *lcdbase,
 	     struct exynos5_fimd_panel *pd)
 {
 	unsigned int val;
-	struct exynos5_fimd *fimd = samsung_get_base_fimd();
-	struct exynos5_disp_ctrl *disp_ctrl = samsung_get_base_disp_ctrl();
 
 	fb_size = ALIGN(fb_size, 4096);
 
-	writel(pd->ivclk | pd->fixvclk, &disp_ctrl->vidcon1);
+	writel(pd->ivclk | pd->fixvclk, &exynos_disp_ctrl->vidcon1);
 	val = ENVID_ON | ENVID_F_ON | (pd->clkval_f << CLKVAL_F_OFFSET);
-	writel(val, &fimd->vidcon0);
+	writel(val, &exynos_fimd->vidcon0);
 
 	val = (pd->vsync << VSYNC_PULSE_WIDTH_OFFSET) |
 		(pd->lower_margin << V_FRONT_PORCH_OFFSET) |
 		(pd->upper_margin << V_BACK_PORCH_OFFSET);
-	writel(val, &disp_ctrl->vidtcon0);
+	writel(val, &exynos_disp_ctrl->vidtcon0);
 
 	val = (pd->hsync << HSYNC_PULSE_WIDTH_OFFSET) |
 		(pd->right_margin << H_FRONT_PORCH_OFFSET) |
 		(pd->left_margin << H_BACK_PORCH_OFFSET);
-	writel(val, &disp_ctrl->vidtcon1);
+	writel(val, &exynos_disp_ctrl->vidtcon1);
 
 	val = ((pd->xres - 1) << HOZVAL_OFFSET) |
 		((pd->yres - 1) << LINEVAL_OFFSET);
-	writel(val, &disp_ctrl->vidtcon2);
+	writel(val, &exynos_disp_ctrl->vidtcon2);
 
-	writel((unsigned int)lcdbase, &fimd->vidw00add0b0);
-	writel((unsigned int)lcdbase + fb_size, &fimd->vidw00add1b0);
+	writel((unsigned int)lcdbase, &exynos_fimd->vidw00add0b0);
+	writel((unsigned int)lcdbase + fb_size, &exynos_fimd->vidw00add1b0);
 
-	writel(pd->xres * 2, &fimd->vidw00add2);
+	writel(pd->xres * 2, &exynos_fimd->vidw00add2);
 
 	val = ((pd->xres - 1) << OSD_RIGHTBOTX_F_OFFSET);
 	val |= ((pd->yres - 1) << OSD_RIGHTBOTY_F_OFFSET);
-	writel(val, &fimd->vidosd0b);
-	writel(pd->xres * pd->yres, &fimd->vidosd0c);
+	writel(val, &exynos_fimd->vidosd0b);
+	writel(pd->xres * pd->yres, &exynos_fimd->vidosd0c);
 
-	setbits_le32(&fimd->shadowcon, CHANNEL0_EN);
+	setbits_le32(&exynos_fimd->shadowcon, CHANNEL0_EN);
 
 	val = BPPMODE_F_RGB_16BIT_565 << BPPMODE_F_OFFSET;
 	val |= ENWIN_F_ENABLE | HALF_WORD_SWAP_EN;
-	writel(val, &fimd->wincon0);
+	writel(val, &exynos_fimd->wincon0);
 
 	/* DPCLKCON_ENABLE */
-	writel(1 << 1, &fimd->dpclkcon);
+	writel(1 << 1, &exynos_fimd->dpclkcon);
 }
 
 #ifdef UNUSED_CODE
 void exynos_fimd_disable(void)
 {
-	struct exynos5_fimd *fimd = samsung_get_base_fimd();
-
-	writel(0, &fimd->wincon0);
-	clrbits_le32(&fimd->shadowcon, CHANNEL0_EN);
+	writel(0, &exynos_fimd->wincon0);
+	clrbits_le32(&exynos_fimd->shadowcon, CHANNEL0_EN);
 }
 #endif
 

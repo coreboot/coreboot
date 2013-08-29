@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <types.h>
 #include <console/uart.h>
 #include <arch/io.h>
 #include <boot/coreboot_tables.h>
@@ -24,6 +25,7 @@
 #include "clk.h"
 #include "cpu.h"
 #include "periph.h"
+#include "uart.h"
 
 #define RX_FIFO_COUNT_MASK	0xff
 #define RX_FIFO_FULL_MASK	(1 << 8)

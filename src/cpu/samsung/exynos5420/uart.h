@@ -21,12 +21,6 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_UART_H
 #define CPU_SAMSUNG_EXYNOS5420_UART_H
 
-#define EXYNOS5_UART0_BASE	0x12c00000
-#define EXYNOS5_UART1_BASE	0x12c10000
-#define EXYNOS5_UART2_BASE	0x12c20000
-#define EXYNOS5_UART3_BASE	0x12c30000
-#define EXYNOS5_ISP_UART_BASE	0x13190000
-
 /* baudrate rest value */
 union br_rest {
 	unsigned short	slot;		/* udivslot */

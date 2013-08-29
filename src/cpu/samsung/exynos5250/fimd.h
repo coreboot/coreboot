@@ -22,6 +22,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_FIMD_H
 #define CPU_SAMSUNG_EXYNOS5250_FIMD_H
 
+#include "cpu.h"
+
 /* FIMD register map */
 struct exynos5_fimd {
 	/* This is an incomplete list. Add registers as and when required */
@@ -59,6 +61,8 @@ struct exynos5_fimd {
 	unsigned char res9[0x18];
 	unsigned int dpclkcon;
 };
+
+static struct exynos5_fimd * const exynos_fimd = (void *)EXYNOS5_FIMD_BASE;
 
 #define W0_SHADOW_PROTECT	(0x1 << 10)
 #define COMPKEY_F		0xffffff
@@ -105,6 +109,9 @@ struct exynos5_disp_ctrl {
 	unsigned char res2[0x184];
 	unsigned int trigcon;
 };
+
+static struct exynos5_disp_ctrl * const exynos_disp_ctrl =
+		(void *)EXYNOS5_DISP1_CTRL_BASE;
 
 #define VCLK_RISING_EDGE		(1 << 7)
 #define VCLK_RUNNING			(1 << 9)

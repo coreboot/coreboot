@@ -18,14 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <stdlib.h>
+#include <string.h>
 #include <types.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
-#include <stdlib.h>
-#include <string.h>
 
-#include <cpu/samsung/exynos5420/cpu.h>
-#include <cpu/samsung/exynos5420/power.h>
+#include "cpu.h"
+#include "power.h"
 
 /* ACTLR, L2CTLR L2ACTLR constants used in SMP core power up. */
 
@@ -153,7 +153,7 @@ static void enable_smp(void)
 	actlr |= ACTLR_SMP;
 
 	/* Dummy read to assure L2 access */
-	val = readl((void*)INF_REG_BASE);
+	val = readl(&exynos_power->inform0);
 	val &= 0;
 	actlr |= val;
 
@@ -166,7 +166,6 @@ static void enable_smp(void)
 static void core_start_execution(void)
 {
 	u32 cpu_id, cpu_state;
-	struct exynos5_power *power = samsung_get_base_power();
 
 	enable_smp();
 	set_system_mode();
@@ -180,9 +179,9 @@ static void core_start_execution(void)
 	}
 
 	/* Standard Exynos suspend/resume. */
-	if (power->inform1) {
-		power->inform1 = 0;
-		jump_bx((void*)power->inform0);
+	if (exynos_power->inform1) {
+		exynos_power->inform1 = 0;
+		jump_bx((void*)exynos_power->inform0);
 		/* never returns. */
 	}
 
@@ -202,7 +201,7 @@ static void low_power_start(void)
 	/* On warm reset, because iRAM is not cleared, all cores will enter
 	 * low_power_start, not the initial address. So we need to check reset
 	 * status again, and jump to 0x0 in that case. */
-	reg_val = readl((void*)RST_FLAG_REG);
+	reg_val = readl(&exynos_power->spare0);
 	if (reg_val != RST_FLAG_VAL) {
 		writel(0x0, VECTOR_LOW_POWER_FLAG);
 		jump_bx(CORE_RESET_INIT_ADDRESS);
@@ -260,7 +259,7 @@ static void power_down_core(void)
 	 * S5E5420A User Manual, 8.8.1.202, ARM_CORE0_CONFIGURATION, two bits to
 	 * control power state in each power down level.
 	 */
-	writel(0x0, (void*)(ARM_CORE0_CONFIG + core_id * CORE_CONFIG_OFFSET));
+	writel(0x0, &exynos_power->arm_core[core_id].config);
 
 	/* S5E5420A User Manual, 8.4.2.5, after ARM_CORE*_CONFIGURATION has been
 	 * set to zero, PMU will detect and wait for WFI then run power-down
@@ -288,7 +287,7 @@ static void configure_secondary_cores(void)
 	/* set low_power flag and address */
 	writel((intptr_t)low_power_start, VECTOR_LOW_POWER_ADDRESS);
 	writel(RST_FLAG_VAL, VECTOR_LOW_POWER_FLAG);
-	writel(RST_FLAG_VAL, (void*)RST_FLAG_REG);
+	writel(RST_FLAG_VAL, &exynos_power->spare0);
 
 	/* On next SEV, shutdown all cores. */
 	writel((intptr_t)power_down_core, VECTOR_CORE_SEV_HANDLER);

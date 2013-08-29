@@ -20,6 +20,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_USB_H
 #define CPU_SAMSUNG_EXYNOS5250_USB_H
 
+#include "cpu.h"
+
 #define CLK_24MHZ               5
 
 #define HOST_CTRL0_PHYSWRSTALL                  (1 << 31)
@@ -56,6 +58,9 @@ struct exynos5_usb_host_phy {
         uint32_t reserved4;
         uint32_t usbotgtune;
 };
+
+static struct exynos5_usb_host_phy * const exynos_usb_host_phy =
+		(void *)EXYNOS5_USB_HOST_PHY_BASE;
 
 /* Leave hsic_gpio at 0 to not enable HSIC. */
 void setup_usb_host_phy(int hsic_gpio);

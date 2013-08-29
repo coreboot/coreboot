@@ -22,6 +22,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_SYSREG_H
 #define CPU_SAMSUNG_EXYNOS5250_SYSREG_H
 
+#include "cpu.h"
+
 /* sysreg map */
 struct exynos5_sysreg {
 	/* Add registers as and when required */
@@ -30,6 +32,9 @@ struct exynos5_sysreg {
 	unsigned char	res2[0x18];
 	unsigned int	usb20_phy_cfg;
 };
+
+static struct exynos5_sysreg * const exynos_sysreg =
+		(void *)EXYNOS5_SYSREG_BASE;
 
 #define FIMDBYPASS_DISP1	(1 << 15)
 #define USB20_PHY_CFG_EN	(1 << 0)

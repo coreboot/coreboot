@@ -23,6 +23,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_DP_H
 #define CPU_SAMSUNG_EXYNOS5420_DP_H
 
+#include "cpu.h"
+
 /* DSIM register map */
 struct exynos_dp {
 	u8	res1[0x10];
@@ -208,6 +210,9 @@ struct exynos_dp {
 	u32	test_pattern_gen_en;
 	u32	test_pattern_gen_ctrl;
 };
+
+static struct exynos_dp * const exynos_dp0 = (void *)EXYNOS5_DP0_BASE;
+static struct exynos_dp * const exynos_dp1 = (void *)EXYNOS5_DP1_BASE;
 
 /* For DP VIDEO CTL 1 */
 #define VIDEO_EN_MASK				(0x01 << 7)

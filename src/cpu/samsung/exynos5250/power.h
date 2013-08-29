@@ -22,6 +22,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_POWER_H
 #define CPU_SAMSUNG_EXYNOS5250_POWER_H
 
+#include "cpu.h"
+
 /* Enable HW thermal trip with PS_HOLD_CONTROL register ENABLE_HW_TRIP bit */
 void power_enable_hw_thermal_trip(void);
 
@@ -59,6 +61,8 @@ struct exynos5_power {
 	uint8_t         reserved7[0x2908];
 	uint32_t	ps_hold_ctrl;		/* 0x330c */
 } __attribute__ ((__packed__));
+
+static struct exynos5_power * const exynos_power = (void*)EXYNOS5_POWER_BASE;
 
 /**
  * Perform a software reset.

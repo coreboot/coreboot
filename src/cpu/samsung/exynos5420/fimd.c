@@ -20,31 +20,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <arch/io.h>
 #include <delay.h>
-#include "timer.h"
+#include <arch/io.h>
+#include <console/console.h>
 #include "clk.h"
-#include "cpu.h"
-#include "periph.h"
 #include "dp.h"
 #include "fimd.h"
+#include "periph.h"
 #include "sysreg.h"
-
-/* left here because it's a counterexample of good style.  u-boot
- * likes to call a function to get a base address. To get that they
- * walk the device tree several times. It's costly. So they turn a
- * known-at-build-time constant into a bunch of function calls. What
- * to do about this inefficiency? Fix the inefficiency? No, scarf
- * variables away in global memory of course, and remove all hope of
- * optimization. Bad idea.
- *
- * the u-boot sources that define fimd base are ... bizarre. I'm going
- * with a hardcoded hack until we get this working. FIXME.
- *
- * static struct exynos_fb *fimd_ctrl * =
- * (void *)0x14400000; //samsung_get_base_fimd();
- */
+#include "timer.h"
 
 /* fairly useful debugging stuff. */
 #if 0
@@ -70,7 +54,6 @@ static inline unsigned long fradl(void *v) {
 /* not sure where we want this so ... */
 static unsigned long get_lcd_clk(void)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	u32 pclk, sclk;
 	unsigned int sel;
 	unsigned int ratio;
@@ -81,7 +64,7 @@ static unsigned long get_lcd_clk(void)
 	 * 0: SCLK_RPLL
 	 * 1: SCLK_SPLL
 	 */
-	sel = lreadl(&clk->clk_src_disp10);
+	sel = lreadl(&exynos_clock->clk_src_disp10);
 	sel &= (1 << 4);
 
 	if (sel){
@@ -94,7 +77,7 @@ static unsigned long get_lcd_clk(void)
 	 * CLK_DIV_DISP10
 	 * FIMD1_RATIO [3:0]
 	 */
-	ratio = lreadl(&clk->clk_div_disp10);
+	ratio = lreadl(&exynos_clock->clk_div_disp10);
 	ratio = ratio & 0xf;
 
 	pclk = sclk / (ratio + 1);
@@ -325,7 +308,6 @@ void exynos_fimd_window_off(unsigned int win_id)
 
 static void exynos5_set_system_display(void)
 {
-        struct exynos5_sysreg *sysreg = samsung_get_base_sysreg();
         unsigned int cfg = 0;
 
         /*
@@ -333,9 +315,9 @@ static void exynos5_set_system_display(void)
          * 0: MIE/MDNIE
          * 1: FIMD Bypass
          */
-        cfg = lreadl(&sysreg->disp1blk_cfg);
+        cfg = lreadl(&exynos_sysreg->disp1blk_cfg);
         cfg |= (1 << 15);
-        lwritel(cfg, &sysreg->disp1blk_cfg);
+        lwritel(cfg, &exynos_sysreg->disp1blk_cfg);
 }
 
 void exynos_fimd_lcd_init(vidinfo_t *vid)

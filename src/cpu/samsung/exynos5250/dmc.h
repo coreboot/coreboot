@@ -19,6 +19,9 @@
 #define CPU_SAMSUNG_EXYNOS5250_DMC_H
 
 #ifndef __ASSEMBLER__
+
+#include "cpu.h"
+
 struct exynos5_dmc {
 	unsigned int concontrol;
 	unsigned int memcontrol;
@@ -113,6 +116,8 @@ struct exynos5_dmc {
 	unsigned int pmcnt3_ppc_a;
 };
 
+static struct exynos5_dmc * const exynos_dmc = (void *)EXYNOS5_DMC_CTRL_BASE;
+
 struct exynos5_phy_control {
 	unsigned int phy_con0;
 	unsigned int phy_con1;
@@ -159,6 +164,11 @@ struct exynos5_phy_control {
 	unsigned int phy_con41;
 	unsigned int phy_con42;
 };
+
+static struct exynos5_phy_control * const exynos_phy0_control =
+		(void *)EXYNOS5_DMC_PHY0_BASE;
+static struct exynos5_phy_control * const exynos_phy1_control =
+		(void *)EXYNOS5_DMC_PHY1_BASE;
 
 enum ddr_mode {
 	DDR_MODE_DDR2,

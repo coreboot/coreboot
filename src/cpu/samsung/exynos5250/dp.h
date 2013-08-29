@@ -163,6 +163,10 @@ struct exynos5_dp {
 	u8	res21[0x3c];
 	u32	soc_general_ctl;
 };
+
+static struct exynos5_dp * const exynos_dp0 = (void *)EXYNOS5_DP0_BASE;
+static struct exynos5_dp * const exynos_dp1 = (void *)EXYNOS5_DP1_BASE;
+
 /* DP_TX_SW_RESET */
 #define RESET_DP_TX				(1 << 0)
 

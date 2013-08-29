@@ -22,6 +22,8 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_FIMD_H
 #define CPU_SAMSUNG_EXYNOS5420_FIMD_H
 
+#include "cpu.h"
+
 /* FIMD register map */
 struct exynos5_fimd {
 	/* This is an incomplete list. Add registers as and when required */

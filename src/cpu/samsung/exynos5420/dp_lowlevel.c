@@ -19,27 +19,21 @@
  * MA 02111-1307 USA
  */
 
-#include <arch/io.h>
+#include <delay.h>
 #include <stdlib.h>
 #include <string.h>
 #include <timer.h>
-#include <delay.h>
+#include <arch/io.h>
 #include <console/console.h>
-#include "timer.h"
-#include "cpu.h"
+#include "dp.h"
+#include "fimd.h"
+#include "i2c.h"
 #include "power.h"
 #include "sysreg.h"
-#include <drivers/maxim/max77686/max77686.h>
+#include "timer.h"
 
-#include "device/i2c.h"
-#include "i2c.h"
-#include "fimd.h"
-#include "dp.h"
-
-/* in u-boot, there's a function you call to set a pointer
- * to a constant. Klever!
- */
-struct exynos_dp *dp_regs = samsung_get_base_dp();
+/* FIXME: I think the DP controller shouldn't be hardcoded here... */
+static struct exynos_dp * const dp_regs = (void *)EXYNOS5_DP1_BASE;
 
 /* for debugging, it's nice to get control on a per-file basis.
  * I had a bit of a discussion with myself (boring!) about
@@ -1188,12 +1182,11 @@ unsigned int exynos_dp_is_video_stream_on(void)
 void dp_phy_control(unsigned int enable)
 {
 	u32 cfg;
-	struct exynos5_power *power = samsung_get_base_power();
 
-	cfg = lread32(&power->dptx_phy_control);
+	cfg = lread32(&exynos_power->dptx_phy_control);
 	if (enable)
 		cfg |= EXYNOS_DP_PHY_ENABLE;
 	else
 		cfg &= ~EXYNOS_DP_PHY_ENABLE;
-	lwrite32(cfg, &power->dptx_phy_control);
+	lwrite32(cfg, &exynos_power->dptx_phy_control);
 }

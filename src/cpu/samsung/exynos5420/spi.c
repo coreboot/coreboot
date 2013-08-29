@@ -49,12 +49,12 @@ static struct exynos_spi_slave exynos_spi_slaves[3] = {
 	// SPI 0
 	{
 		.slave = { .bus = 0, },
-		.regs = samsung_get_base_spi0(),
+		.regs = (void *)EXYNOS5_SPI0_BASE,
 	},
 	// SPI 1
 	{
 		.slave = { .bus = 1, .rw = SPI_READ_FLAG, },
-		.regs = samsung_get_base_spi1(),
+		.regs = (void *)EXYNOS5_SPI1_BASE,
 		.fifo_size = 64,
 		.half_duplex = 0,
 	},
@@ -62,7 +62,7 @@ static struct exynos_spi_slave exynos_spi_slaves[3] = {
 	{
 		.slave = { .bus = 2,
 			   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG, },
-		.regs = samsung_get_base_spi2(),
+		.regs = (void *)EXYNOS5_SPI2_BASE,
 		.fifo_size = 64,
 		.half_duplex = 1,
 		.frame_header = 0xec,

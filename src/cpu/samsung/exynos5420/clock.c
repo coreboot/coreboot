@@ -17,13 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
+#include <assert.h>
 #include <stdlib.h>
 #include <timer.h>
-#include <assert.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include "clk.h"
-#include "cpu.h"
 #include "periph.h"
 
 /* input clock of PLL: SMDK5420 has 24MHz input clock */
@@ -43,40 +42,39 @@ static struct st_epll_con_val epll_div[] = {
 /* exynos5: return pll clock frequency */
 unsigned long get_pll_clk(int pllreg)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	unsigned long r, m, p, s, k = 0, mask, fout;
 	unsigned int freq;
 
 	switch (pllreg) {
 	case APLL:
-		r = readl(&clk->apll_con0);
+		r = readl(&exynos_clock->apll_con0);
 		break;
 	case MPLL:
-		r = readl(&clk->mpll_con0);
+		r = readl(&exynos_clock->mpll_con0);
 		break;
 	case EPLL:
-		r = readl(&clk->epll_con0);
-		k = readl(&clk->epll_con1);
+		r = readl(&exynos_clock->epll_con0);
+		k = readl(&exynos_clock->epll_con1);
 		break;
 	case VPLL:
-		r = readl(&clk->vpll_con0);
-		k = readl(&clk->vpll_con1);
+		r = readl(&exynos_clock->vpll_con0);
+		k = readl(&exynos_clock->vpll_con1);
 		break;
 	case BPLL:
-		r = readl(&clk->bpll_con0);
+		r = readl(&exynos_clock->bpll_con0);
 		break;
 	case RPLL:
-		r = readl(&clk->rpll_con0);
-		k = readl(&clk->rpll_con1);
+		r = readl(&exynos_clock->rpll_con0);
+		k = readl(&exynos_clock->rpll_con1);
 		break;
 	case SPLL:
-		r = readl(&clk->spll_con0);
+		r = readl(&exynos_clock->spll_con0);
 		break;
 	case CPLL:
-		r = readl(&clk->cpll_con0);
+		r = readl(&exynos_clock->cpll_con0);
 		break;
 	case DPLL:
-		r = readl(&clk->dpll_con0);
+		r = readl(&exynos_clock->dpll_con0);
 		break;
 	default:
 		printk(BIOS_DEBUG, "Unsupported PLL (%d)\n", pllreg);
@@ -168,52 +166,51 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 {
 	unsigned long sclk;
 	unsigned int src, div;
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 
 	switch (peripheral) {
 	case PERIPH_ID_UART0:
-		src = (readl(&clk->clk_src_peric0) >> 4) & 0x7;
-		div = (readl(&clk->clk_div_peric0) >> 8) & 0xf;
+		src = (readl(&exynos_clock->clk_src_peric0) >> 4) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric0) >> 8) & 0xf;
 		break;
 	case PERIPH_ID_UART1:
-		src = (readl(&clk->clk_src_peric0) >> 8) & 0x7;
-		div = (readl(&clk->clk_div_peric0) >> 12) & 0xf;
+		src = (readl(&exynos_clock->clk_src_peric0) >> 8) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric0) >> 12) & 0xf;
 		break;
 	case PERIPH_ID_UART2:
-		src = (readl(&clk->clk_src_peric0) >> 12) & 0x7;
-		div = (readl(&clk->clk_div_peric0) >> 16) & 0xf;
+		src = (readl(&exynos_clock->clk_src_peric0) >> 12) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric0) >> 16) & 0xf;
 		break;
 	case PERIPH_ID_UART3:
-		src = (readl(&clk->clk_src_peric0) >> 16) & 0x7;
-		div = (readl(&clk->clk_div_peric0) >> 20) & 0xf;
+		src = (readl(&exynos_clock->clk_src_peric0) >> 16) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric0) >> 20) & 0xf;
 		break;
 	case PERIPH_ID_PWM0:
 	case PERIPH_ID_PWM1:
 	case PERIPH_ID_PWM2:
 	case PERIPH_ID_PWM3:
 	case PERIPH_ID_PWM4:
-		src = (readl(&clk->clk_src_peric0) >> 24) & 0x7;
-		div = (readl(&clk->clk_div_peric0) >> 28) & 0x7;
+		src = (readl(&exynos_clock->clk_src_peric0) >> 24) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric0) >> 28) & 0x7;
 		break;
 	case PERIPH_ID_SPI0:
-		src = (readl(&clk->clk_src_peric1) >> 20) & 0x7;
-		div = (readl(&clk->clk_div_peric1) >> 20) & 0xf;
+		src = (readl(&exynos_clock->clk_src_peric1) >> 20) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric1) >> 20) & 0xf;
 		break;
 	case PERIPH_ID_SPI1:
-		src = (readl(&clk->clk_src_peric1) >> 24) & 0x7;
-		div = (readl(&clk->clk_div_peric1) >> 24) & 0xf;
+		src = (readl(&exynos_clock->clk_src_peric1) >> 24) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric1) >> 24) & 0xf;
 		break;
 	case PERIPH_ID_SPI2:
-		src = (readl(&clk->clk_src_peric1) >> 28) & 0x7;
-		div = (readl(&clk->clk_div_peric1) >> 28) & 0xf;
+		src = (readl(&exynos_clock->clk_src_peric1) >> 28) & 0x7;
+		div = (readl(&exynos_clock->clk_div_peric1) >> 28) & 0xf;
 		break;
 	case PERIPH_ID_SPI3:	/* aka SPI0_ISP */
-		src = (readl(&clk->clk_src_isp) >> 16) & 0x7;
-		div = (readl(&clk->clk_div_isp0) >> 0) & 0x7;
+		src = (readl(&exynos_clock->clk_src_isp) >> 16) & 0x7;
+		div = (readl(&exynos_clock->clk_div_isp0) >> 0) & 0x7;
 		break;
 	case PERIPH_ID_SPI4:	/* aka SPI1_ISP */
-		src = (readl(&clk->clk_src_isp) >> 12) & 0x7;
-		div = (readl(&clk->clk_div_isp1) >> 4) & 0x7;
+		src = (readl(&exynos_clock->clk_src_isp) >> 12) & 0x7;
+		div = (readl(&exynos_clock->clk_div_isp1) >> 4) & 0x7;
 		break;
 	case PERIPH_ID_I2C0:
 	case PERIPH_ID_I2C1:
@@ -232,7 +229,7 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 		 * TODO: Add a helper function like with the peripheral clock
 		 * select fields?
 		 */
-		src = (readl(&clk->clk_src_top1) >> 8) & 0x3;
+		src = (readl(&exynos_clock->clk_src_top1) >> 8) & 0x3;
 		if (src == 0x0)
 			src = CPLL;
 		else if (src == 0x1)
@@ -243,7 +240,7 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 			return -1;
 
 		sclk = get_pll_clk(src);
-		div = ((readl(&clk->clk_div_top1) >> 8) & 0x3f) + 1;
+		div = ((readl(&exynos_clock->clk_div_top1) >> 8) & 0x3f) + 1;
 		return sclk / div;
 	default:
 		printk(BIOS_DEBUG, "%s: invalid peripheral %d",
@@ -265,13 +262,12 @@ unsigned long clock_get_periph_rate(enum periph_id peripheral)
 /* exynos5: return ARM clock frequency */
 unsigned long get_arm_clk(void)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	unsigned long div;
 	unsigned long armclk;
 	unsigned int arm_ratio;
 	unsigned int arm2_ratio;
 
-	div = readl(&clk->clk_div_cpu0);
+	div = readl(&exynos_clock->clk_div_cpu0);
 
 	/* ARM_RATIO: [2:0], ARM2_RATIO: [30:28] */
 	arm_ratio = (div >> 0) & 0x7;
@@ -286,12 +282,11 @@ unsigned long get_arm_clk(void)
 /* exynos5: get the mmc clock */
 static unsigned long get_mmc_clk(int dev_index)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	unsigned long uclk, sclk;
 	unsigned int sel, ratio;
 	int shift = 0;
 
-	sel = readl(&clk->clk_src_fsys);
+	sel = readl(&exynos_clock->clk_src_fsys);
 	sel = (sel >> ((dev_index * 4) + 8)) & 0x7;
 
 	if (sel == 0x3)
@@ -301,7 +296,7 @@ static unsigned long get_mmc_clk(int dev_index)
 	else
 		return 0;
 
-	ratio = readl(&clk->clk_div_fsys1);
+	ratio = readl(&exynos_clock->clk_div_fsys1);
 
 	shift = dev_index * 10;
 
@@ -315,11 +310,10 @@ static unsigned long get_mmc_clk(int dev_index)
 /* exynos5: set the mmc clock */
 void set_mmc_clk(int dev_index, unsigned int div)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	void *addr;
 	unsigned int val, shift;
 
-	addr = &clk->clk_div_fsys1;
+	addr = &exynos_clock->clk_div_fsys1;
 	shift = dev_index * 10;
 
 	val = readl(addr);
@@ -361,7 +355,6 @@ int clock_set_dwmci(enum periph_id peripheral)
 
 void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	unsigned shift;
 	unsigned mask = 0xff;
 	u32 *reg;
@@ -376,23 +369,23 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 	 */
 	switch (periph_id) {
 	case PERIPH_ID_SPI0:
-		reg = &clk->clk_div_peric4;
+		reg = &exynos_clock->clk_div_peric4;
 		shift = 8;
 		break;
 	case PERIPH_ID_SPI1:
-		reg = &clk->clk_div_peric4;
+		reg = &exynos_clock->clk_div_peric4;
 		shift = 16;
 		break;
 	case PERIPH_ID_SPI2:
-		reg = &clk->clk_div_peric4;
+		reg = &exynos_clock->clk_div_peric4;
 		shift = 24;
 		break;
 	case PERIPH_ID_SPI3:
-		reg = &clk->clk_div_isp1;
+		reg = &exynos_clock->clk_div_isp1;
 		shift = 0;
 		break;
 	case PERIPH_ID_SPI4:
-		reg = &clk->clk_div_isp1;
+		reg = &exynos_clock->clk_div_isp1;
 		shift = 8;
 		break;
 	default:
@@ -405,30 +398,29 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 
 void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	unsigned shift;
 	unsigned mask = 0xf;
 	u32 *reg;
 
 	switch (periph_id) {
 	case PERIPH_ID_SPI0:
-		reg = &clk->clk_div_peric1;
+		reg = &exynos_clock->clk_div_peric1;
 		shift = 20;
 		break;
 	case PERIPH_ID_SPI1:
-		reg = &clk->clk_div_peric1;
+		reg = &exynos_clock->clk_div_peric1;
 		shift = 24;
 		break;
 	case PERIPH_ID_SPI2:
-		reg = &clk->clk_div_peric1;
+		reg = &exynos_clock->clk_div_peric1;
 		shift = 28;
 		break;
 	case PERIPH_ID_SPI3:
-		reg = &clk->clk_div_isp1;
+		reg = &exynos_clock->clk_div_isp1;
 		shift = 16;
 		break;
 	case PERIPH_ID_SPI4:
-		reg = &clk->clk_div_isp1;
+		reg = &exynos_clock->clk_div_isp1;
 		shift = 20;
 		break;
 	default:
@@ -529,7 +521,6 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 
 int clock_set_mshci(enum periph_id peripheral)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	u32 *addr;
 	unsigned int clock;
 	unsigned int tmp;
@@ -546,10 +537,10 @@ int clock_set_mshci(enum periph_id peripheral)
 	 */
 	switch (peripheral) {
 	case PERIPH_ID_SDMMC0:
-		addr = &clk->clk_div_fsys1;
+		addr = &exynos_clock->clk_div_fsys1;
 		break;
 	case PERIPH_ID_SDMMC2:
-		addr = &clk->clk_div_fsys2;
+		addr = &exynos_clock->clk_div_fsys2;
 		break;
 	default:
 		printk(BIOS_DEBUG, "invalid peripheral\n");
@@ -571,9 +562,8 @@ int clock_epll_set_rate(unsigned long rate)
 	unsigned int i;
 	unsigned int lockcnt;
 	struct mono_time current, end;
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 
-	epll_con = readl(&clk->epll_con0);
+	epll_con = readl(&exynos_clock->epll_con0);
 	epll_con &= ~((EPLL_CON0_LOCK_DET_EN_MASK <<
 			EPLL_CON0_LOCK_DET_EN_SHIFT) |
 		EPLL_CON0_MDIV_MASK << EPLL_CON0_MDIV_SHIFT |
@@ -601,15 +591,15 @@ int clock_epll_set_rate(unsigned long rate)
 	 */
 	lockcnt = 3000 * epll_div[i].p_div;
 
-	writel(lockcnt, &clk->epll_lock);
-	writel(epll_con, &clk->epll_con0);
-	writel(epll_con_k, &clk->epll_con1);
+	writel(lockcnt, &exynos_clock->epll_lock);
+	writel(epll_con, &exynos_clock->epll_con0);
+	writel(epll_con_k, &exynos_clock->epll_con1);
 
 	timer_monotonic_get(&current);
 	end = current;
 	mono_time_add_msecs(&end, TIMEOUT_EPLL_LOCK);
 
-	while (!(readl(&clk->epll_con0) &
+	while (!(readl(&exynos_clock->epll_con0) &
 			(0x1 << EXYNOS5_EPLLCON0_LOCKED_SHIFT))) {
 		if (mono_time_after(&current, &end)) {
 			printk(BIOS_DEBUG, "%s: Timeout waiting for EPLL lock\n", __func__);
@@ -623,15 +613,12 @@ int clock_epll_set_rate(unsigned long rate)
 
 void clock_select_i2s_clk_source(void)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
-
-	clrsetbits_le32(&clk->clk_src_peric1, AUDIO1_SEL_MASK,
+	clrsetbits_le32(&exynos_clock->clk_src_peric1, AUDIO1_SEL_MASK,
 			(CLK_SRC_SCLK_EPLL));
 }
 
 int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq)
 {
-	struct exynos5420_clock *clk = samsung_get_base_clock();
 	unsigned int div ;
 
 	if ((dst_frq == 0) || (src_frq == 0)) {
@@ -646,7 +633,7 @@ int clock_set_i2s_clk_prescaler(unsigned int src_frq, unsigned int dst_frq)
 		printk(BIOS_DEBUG, "src frq = %d des frq = %d ", src_frq, dst_frq);
 		return -1;
 	}
-	clrsetbits_le32(&clk->clk_div_peric4, AUDIO_1_RATIO_MASK,
+	clrsetbits_le32(&exynos_clock->clk_div_peric4, AUDIO_1_RATIO_MASK,
 				(div & AUDIO_1_RATIO_MASK));
 	return 0;
 }

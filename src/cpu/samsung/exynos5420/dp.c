@@ -27,15 +27,12 @@
 #include <console/console.h>
 #include <lib.h>
 #include "timer.h"
-#include "cpu.h"
 #include "power.h"
 #include "sysreg.h"
-#include <drivers/maxim/max77686/max77686.h>
 
-#include "device/i2c.h"
-#include "i2c.h"
-#include "fimd.h"
 #include "dp.h"
+#include "fimd.h"
+#include "i2c.h"
 
 /*
  * Here is the rough outline of how we bring up the display:

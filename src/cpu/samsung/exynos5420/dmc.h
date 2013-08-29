@@ -20,6 +20,8 @@
 
 #define DMC_INTERLEAVE_SIZE		0x1f
 
+#define PAD_RETENTION_DRAM_COREBLK_VAL	0x10000000
+
 /* CONCONTROL register fields */
 #define CONCONTROL_DFI_INIT_START_SHIFT	28
 #define CONCONTROL_RD_FETCH_SHIFT	12
@@ -69,6 +71,9 @@
 #define PHY_CON42_CTRL_RDLAT_MASK	(0x1f << PHY_CON42_CTRL_RDLAT_SHIFT)
 
 #ifndef __ASSEMBLER__
+
+#include "cpu.h"
+
 struct exynos5_dmc {
 	uint32_t concontrol;
 	uint32_t memcontrol;
@@ -202,6 +207,9 @@ struct exynos5_dmc {
 	uint32_t pmcnt3_ppc;	/* 0xe140 */
 } __attribute__((packed));
 
+static struct exynos5_dmc * const exynos_drex0 = (void *)EXYNOS5420_DMC_DREXI_0;
+static struct exynos5_dmc * const exynos_drex1 = (void *)EXYNOS5420_DMC_DREXI_1;
+
 struct exynos5_phy_control {
 	uint32_t phy_con0;
 	uint32_t phy_con1;
@@ -249,6 +257,11 @@ struct exynos5_phy_control {
 	uint32_t phy_con42;
 } __attribute__((packed));
 
+static struct exynos5_phy_control * const exynos_phy0_control =
+		(void *)EXYNOS5_DMC_PHY0_BASE;
+static struct exynos5_phy_control * const exynos_phy1_control =
+		(void *)EXYNOS5_DMC_PHY1_BASE;
+
 struct exynos5_tzasc {
 	uint8_t res1[0xf00];
 	uint32_t membaseconfig0;
@@ -257,6 +270,11 @@ struct exynos5_tzasc {
 	uint32_t memconfig0;
 	uint32_t memconfig1;
 } __attribute__((packed));
+
+static struct exynos5_tzasc * const exynos_tzasc0 =
+		(void *)EXYNOS5420_DMC_TZASC_0;
+static struct exynos5_tzasc * const exynos_tzasc1 =
+		(void *)EXYNOS5420_DMC_TZASC_1;
 
 enum ddr_mode {
 	/* This is in order of ctrl_ddr_mode values. Do not change. */

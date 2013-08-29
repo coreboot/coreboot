@@ -331,7 +331,6 @@ static struct edp_video_info dp_video_info = {
 };
 
 /* FIXME: move some place more appropriate */
-#define EXYNOS5420_DP1_BASE	0x145b0000
 #define MAX_DP_TRIES	5
 
 static void setup_storage(void)

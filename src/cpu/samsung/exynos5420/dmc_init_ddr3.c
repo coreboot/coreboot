@@ -70,12 +70,12 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	/* Specify the DDR memory type as DDR3 */
 	val = readl(&phy0_ctrl->phy_con0);
 	val &= ~(PHY_CON0_CTRL_DDR_MODE_MASK << PHY_CON0_CTRL_DDR_MODE_SHIFT);
-	val |= (DDR_MODE_DDR3 << PHY_CON0_CTRL_DDR_MODE_SHIFT);
+	val |= (mem->mem_type << PHY_CON0_CTRL_DDR_MODE_SHIFT);
 	writel(val, &phy0_ctrl->phy_con0);
 
 	val = readl(&phy1_ctrl->phy_con0);
 	val &= ~(PHY_CON0_CTRL_DDR_MODE_MASK << PHY_CON0_CTRL_DDR_MODE_SHIFT);
-	val |= (DDR_MODE_DDR3 << PHY_CON0_CTRL_DDR_MODE_SHIFT);
+	val |= (mem->mem_type << PHY_CON0_CTRL_DDR_MODE_SHIFT);
 	writel(val, &phy1_ctrl->phy_con0);
 
 	/* Set Read Latency and Burst Length for PHY0 and PHY1 */
@@ -142,8 +142,8 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	clrbits_le32(&drex0->concontrol, DFI_INIT_START);
 	clrbits_le32(&drex1->concontrol, DFI_INIT_START);
 
-	update_reset_dll(drex0, DDR_MODE_DDR3);
-	update_reset_dll(drex1, DDR_MODE_DDR3);
+	update_reset_dll(drex0, mem->mem_type);
+	update_reset_dll(drex1, mem->mem_type);
 
 	/* MEMBASECONFIG0 (CS0) */
 	writel(mem->membaseconfig0, &tzasc0->membaseconfig0);

@@ -106,7 +106,6 @@ struct exynos5_phy_control;
 #define DMC_MEMCONTROL_CLK_STOP_DISABLE	(0 << 0)
 #define DMC_MEMCONTROL_DPWRDN_DISABLE	(0 << 1)
 #define DMC_MEMCONTROL_DPWRDN_ACTIVE_PRECHARGE	(0 << 2)
-#define DMC_MEMCONTROL_TP_DISABLE	(0 << 4)
 #define DMC_MEMCONTROL_DSREF_DISABLE	(0 << 5)
 #define DMC_MEMCONTROL_DSREF_ENABLE	(1 << 5)
 #define DMC_MEMCONTROL_ADD_LAT_PALL_CYCLE(x)    (x << 6)
@@ -139,13 +138,6 @@ struct exynos5_phy_control;
 #define DMC_MEMCONFIGx_CHIP_ROW_16              (4 << 4)
 #define DMC_MEMCONFIGx_CHIP_BANK_8              (3 << 0)
 
-#define DMC_MEMBASECONFIGx_CHIP_BASE(x)         (x << 16)
-#define DMC_MEMBASECONFIGx_CHIP_MASK(x)         (x << 0)
-#define DMC_MEMBASECONFIG_VAL(x)        (       \
-	DMC_MEMBASECONFIGx_CHIP_BASE(x) |       \
-	DMC_MEMBASECONFIGx_CHIP_MASK(0x780)     \
-)
-
 #define DMC_MEMBASECONFIG0_VAL  DMC_MEMBASECONFIG_VAL(0x40)
 #define DMC_MEMBASECONFIG1_VAL  DMC_MEMBASECONFIG_VAL(0x80)
 
@@ -170,8 +162,6 @@ struct exynos5_phy_control;
 /* COJCONTROL register bit fields */
 #define DMC_CONCONTROL_IO_PD_CON_DISABLE	(0 << 3)
 #define DMC_CONCONTROL_AREF_EN_DISABLE		(0 << 5)
-#define DMC_CONCONTROL_EMPTY_DISABLE		(0 << 8)
-#define DMC_CONCONTROL_EMPTY_ENABLE		(1 << 8)
 #define DMC_CONCONTROL_RD_FETCH_DISABLE		(0x0 << 12)
 #define DMC_CONCONTROL_TIMEOUT_LEVEL0		(0xFFF << 16)
 #define DMC_CONCONTROL_DFI_INIT_START_DISABLE	(0 << 28)
@@ -634,6 +624,8 @@ struct exynos5_phy_control;
 #define LPDDR3PHY_CTRL_PHY_RESET	(1 << 0)
 #define LPDDR3PHY_CTRL_PHY_RESET_OFF	(0 << 0)
 
+/* FIXME(dhendrix): misleading name. The reset value is 0x17021a40, bits 12:11
++   default to 0x3 which indicates LPDDR3. We want DDR3, so we use 0x1. */
 #define PHY_CON0_RESET_VAL	0x17020a40
 #define P0_CMD_EN		(1 << 14)
 #define BYTE_RDLVL_EN		(1 << 13)
@@ -743,7 +735,7 @@ struct exynos5_phy_control;
 #define CMD_DEFAULT_LPDDR3	0xF
 #define CMD_DEFUALT_OFFSET	0
 #define T_WRDATA_EN		0x7
-#define T_WRDATA_EN_DDR3	0x8
+#define T_WRDATA_EN_DDR3	0x8	/* FIXME(dhendrix): 6 for DDR3? see T_wrdata_en */
 #define T_WRDATA_EN_OFFSET	16
 #define T_WRDATA_EN_MASK	0x1f
 
@@ -775,20 +767,10 @@ struct exynos5_phy_control;
 #define DMC_CHIP_MASK_2GB	0x780
 #define DMC_CHIP_MASK_4GB	0x700
 
-#define MEMBASECONFIG_CHIP_MASK_VAL	0x7E0
-#define MEMBASECONFIG_CHIP_MASK_OFFSET	0
-#define MEMBASECONFIG0_CHIP_BASE_VAL	0x20
-#define MEMBASECONFIG1_CHIP_BASE_VAL	0x40
-#define CHIP_BASE_OFFSET		16
-
 #define MEMCONFIG_VAL	0x1323
 #define PRECHCONFIG_DEFAULT_VAL	0xFF000000
 #define PWRDNCONFIG_DEFAULT_VAL	0xFFFF00FF
 
-#define TIMINGAREF_VAL	0x5d
-#define TIMINGROW_VAL	0x345A8692
-#define TIMINGDATA_VAL	0x3630065C
-#define TIMINGPOWER_VAL	0x50380336
 #define DFI_INIT_COMPLETE	(1 << 3)
 
 #define BRBRSVCONTROL_VAL	0x00000033

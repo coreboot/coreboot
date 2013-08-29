@@ -259,10 +259,11 @@ struct exynos5_tzasc {
 } __attribute__((packed));
 
 enum ddr_mode {
-	DDR_MODE_DDR2,
-	DDR_MODE_DDR3,
-	DDR_MODE_LPDDR2,
-	DDR_MODE_LPDDR3,
+	/* This is in order of ctrl_ddr_mode values. Do not change. */
+	DDR_MODE_DDR2	= 0x0,
+	DDR_MODE_DDR3	= 0x1,
+	DDR_MODE_LPDDR2	= 0x2,
+	DDR_MODE_LPDDR3	= 0x3,
 
 	DDR_MODE_COUNT,
 };

@@ -90,6 +90,13 @@ const struct mem_timings mem_timings = {
 			DMC_MEMCONTROL_BL_8 |
 			DMC_MEMCONTROL_PZQ_DISABLE |
 			DMC_MEMCONTROL_MRR_BYTE_7_0,
+		/*
+		 * For channel interleaving, the chip_base needs to be set to
+		 * half the bus address. So for a base address of 0x2000_0000,
+		 * the chip_base value is 0x20 without interleaving and 0x10
+		 * with channel interleaving. See note in section 17.14.
+		 */
+		.membaseconfig0 = (0x10 << 16) | DMC_CHIP_MASK_1GB,
 		.memconfig = DMC_MEMCONFIG_CHIP_MAP_SPLIT |
 			DMC_MEMCONFIGx_CHIP_COL_10 |
 			DMC_MEMCONFIGx_CHIP_ROW_15 |

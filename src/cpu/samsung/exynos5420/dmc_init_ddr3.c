@@ -145,21 +145,15 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, int interleave_size, int reset)
 	update_reset_dll(drex0, DDR_MODE_DDR3);
 	update_reset_dll(drex1, DDR_MODE_DDR3);
 
-	/* Set Base Address:
-	 * 0x2000_0000 ~ 0x5FFF_FFFF
-	 * 0x6000_0000 ~ 0x9FFF_FFFF
-	 */
-	/* MEMBASECONFIG0 */
-	val = DMC_MEMBASECONFIGx_CHIP_BASE(DMC_CHIP_BASE_0) |
-		DMC_MEMBASECONFIGx_CHIP_MASK(DMC_CHIP_MASK);
-	writel(val, &tzasc0->membaseconfig0);
-	writel(val, &tzasc1->membaseconfig0);
+	/* MEMBASECONFIG0 (CS0) */
+	writel(mem->membaseconfig0, &tzasc0->membaseconfig0);
+	writel(mem->membaseconfig0, &tzasc1->membaseconfig0);
 
-	/* MEMBASECONFIG1 */
-	val = DMC_MEMBASECONFIGx_CHIP_BASE(DMC_CHIP_BASE_1) |
-		DMC_MEMBASECONFIGx_CHIP_MASK(DMC_CHIP_MASK);
-	writel(val, &tzasc0->membaseconfig1);
-	writel(val, &tzasc1->membaseconfig1);
+	/* MEMBASECONFIG1 (CS1) */
+	if (mem->chips_per_channel == 2) {
+		writel(mem->membaseconfig1, &tzasc0->membaseconfig1);
+		writel(mem->membaseconfig1, &tzasc1->membaseconfig1);
+	}
 
 	/* Memory Channel Inteleaving Size
 	 * Exynos5420 Channel interleaving = 128 bytes

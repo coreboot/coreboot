@@ -15,7 +15,7 @@ config DRIVERS_PS2_KEYBOARD
 	  this option, then you can say N here to speed up boot time.
 	  Otherwise say Y.
 
-config TPM
+config LPC_TPM
 	bool
 	default n
 	help

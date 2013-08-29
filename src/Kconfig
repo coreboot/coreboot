@@ -269,6 +269,16 @@ menu "Generic Drivers"
 source src/drivers/Kconfig
 endmenu
 
+config TPM
+	bool
+	default n
+	select LPC_TPM if ARCH_X86
+	select I2C_TPM if ARCH_ARMV7
+	help
+	  Enable this option to enable TPM support in coreboot.
+
+	  If unsure, say N.
+
 config HEAP_SIZE
 	hex
 	default 0x4000

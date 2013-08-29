@@ -8,7 +8,7 @@ ramstage-y += keyboard.c
 ramstage-$(CONFIG_SPKMODEM) += spkmodem.c
 
 romstage-$(CONFIG_USE_OPTION_TABLE) += mc146818rtc_early.c
-romstage-$(CONFIG_TPM) += tpm.c
+romstage-$(CONFIG_LPC_TPM) += tpm.c
 romstage-$(CONFIG_SPKMODEM) += spkmodem.c
 
 subdirs-y += vga

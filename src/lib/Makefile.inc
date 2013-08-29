@@ -27,6 +27,7 @@ romstage-y += memcmp.c
 $(foreach arch,$(ARCH_SUPPORTED),\
 	    $(eval rmodules_$(arch)-y += memcmp.c))
 
+romstage-$(CONFIG_I2C_TPM) += delay.c
 romstage-y += cbfs.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c
 #romstage-y += lzmadecode.c

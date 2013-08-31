@@ -308,8 +308,8 @@ struct cbfs_stage {
 
 'compression' is an integer defining how the data is compressed.  There
 are three compression types defined by this version of the standard:
-none (0x0), lzma (0x1), and nrv2b (0x02), though additional types may be
-added assuming that coreboot understands how to handle the scheme.
+none (0x0), lzma (0x1), and nrv2b (0x02, deprecated), though additional
+types may be added assuming that coreboot understands how to handle the scheme.
 
 'entry' is a 64 bit value indicating the location where  the program
 counter should jump following the loading of the stage.  This should be
@@ -388,9 +388,9 @@ PAYLOAD_SEGMENT_ENTRY  0x52544E45   The segment contains the entry point
 
 'compression' is the compression scheme for the segment.  Each segment can
 be independently compressed. There are three compression types defined by
-this version of the standard: none (0x0), lzma (0x1), and nrv2b (0x02),
-though additional types may be added assuming that coreboot understands
-how to handle the scheme.
+this version of the standard: none (0x0), lzma (0x1), and nrv2b
+(0x02, deprecated), though additional types may be added assuming that
+coreboot understands how to handle the scheme.
 
 'offset' is the address of the data within the component, starting from
 the component header.

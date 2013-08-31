@@ -640,10 +640,6 @@ config COMPRESSED_PAYLOAD_LZMA
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.
 
-config COMPRESSED_PAYLOAD_NRV2B
-	bool
-	default n
-
 endmenu
 
 menu "Debugging"

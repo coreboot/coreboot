@@ -454,15 +454,6 @@ static int load_self_segments(
 						return 0;
 					break;
 				}
-#if CONFIG_COMPRESSED_PAYLOAD_NRV2B
-				case CBFS_COMPRESS_NRV2B: {
-					printk(BIOS_DEBUG, "using NRV2B\n");
-					unsigned long unrv2b(u8 *src, u8 *dst, unsigned long *ilen_p);
-					unsigned long tmp;
-					len = unrv2b(src, dest, &tmp);
-					break;
-				}
-#endif
 				case CBFS_COMPRESS_NONE: {
 					printk(BIOS_DEBUG, "it's not compressed!\n");
 					memcpy(dest, src, len);

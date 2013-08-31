@@ -71,7 +71,6 @@ util/mptable/mptable
 util/msrtool/Makefile
 util/msrtool/Makefile.deps
 util/msrtool/msrtool
-util/nrv2b/nrv2b
 util/nvramtool/.dependencies
 util/nvramtool/nvramtool
 util/optionlist/Options.wiki

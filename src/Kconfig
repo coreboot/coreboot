@@ -539,6 +539,16 @@ config PAYLOAD_ELF
 	  You will be able to specify the location and file name of the
 	  payload image later.
 
+config PAYLOAD_LINUX
+	bool "A Linux payload"
+	help
+	  Select this option if you have a Linux bzImage which coreboot
+	  should run as soon as the basic hardware initialization
+	  is completed.
+
+	  You will be able to specify the location and file name of the
+	  payload image later.
+
 config PAYLOAD_SEABIOS
 	bool "SeaBIOS"
 	depends on ARCH_X86
@@ -617,6 +627,13 @@ config PAYLOAD_FILE
 	  The path and filename of the ELF executable file to use as payload.
 
 config PAYLOAD_FILE
+	string "Linux path and filename"
+	depends on PAYLOAD_LINUX
+	default "bzImage"
+	help
+	  The path and filename of the bzImage kernel to use as payload.
+
+config PAYLOAD_FILE
 	depends on PAYLOAD_SEABIOS
 	default "$(obj)/seabios/out/bios.bin.elf"
 
@@ -639,6 +656,20 @@ config COMPRESSED_PAYLOAD_LZMA
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.
+
+config LINUX_COMMAND_LINE
+	string "Linux command line"
+	depends on PAYLOAD_LINUX
+	default ""
+	help
+	  A command line to add to the Linux kernel.
+
+config LINUX_INITRD
+	string "Linux initrd"
+	depends on PAYLOAD_LINUX
+	default ""
+	help
+	  An initrd image to add to the Linux kernel.
 
 endmenu
 

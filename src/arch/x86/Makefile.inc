@@ -74,6 +74,16 @@ $(obj)/coreboot.pre1: $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@
 endif
 
+ifeq ($(CONFIG_PAYLOAD_LINUX),y)
+LINUX_ADDITIONAL_CONFIG:=
+ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_COMMAND_LINE))),)
+  LINUX_ADDITIONAL_CONFIG+=-C $(CONFIG_LINUX_COMMAND_LINE)
+endif
+ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD))),)
+  LINUX_ADDITIONAL_CONFIG+=-I $(CONFIG_LINUX_INITRD)
+endif
+endif
+
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $$(VBOOT_STUB_ELF)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
@@ -84,6 +94,10 @@ endif
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
 	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_PAYLOAD_LINUX),y)
+	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG) $(LINUX_ADDITIONAL_CONFIG)
 endif
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
 	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"

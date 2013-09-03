@@ -30,7 +30,6 @@ struct sys_info {
 } __attribute__ ((packed));
 
 void sdram_initialize(struct pei_data *pei_data);
-unsigned long get_top_of_ram(void);
 int fixup_sandybridge_errata(void);
 
 #endif				/* RAMINIT_H */

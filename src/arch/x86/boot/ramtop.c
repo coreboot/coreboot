@@ -18,7 +18,13 @@
 #include <console/console.h>
 #include <cbmem.h>
 
-#if !CONFIG_DYNAMIC_CBMEM
+unsigned long __attribute__((weak)) get_top_of_ram(void)
+{
+	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
+	return 0;
+}
+
+#if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
 void set_top_of_ram(uint64_t ramtop)
 {
 	set_cbmem_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);

@@ -143,11 +143,13 @@ void set_cbmem_toc(struct cbmem_entry *);
 void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);
 
-extern struct cbmem_entry *get_cbmem_toc(void);
+struct cbmem_entry *get_cbmem_toc(void);
 
 #endif /* CONFIG_DYNAMIC_CBMEM */
 
 /* Common API between cbmem and dynamic cbmem. */
+
+unsigned long get_top_of_ram(void);
 
 /* By default cbmem is attempted to be recovered. Returns 0 if cbmem was
  * recovered or 1 if cbmem had to be reinitialized. */

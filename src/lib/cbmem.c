@@ -222,7 +222,6 @@ int cbmem_initialize(void)
 	int rv = 0;
 
 #ifdef __PRE_RAM__
-	extern unsigned long get_top_of_ram(void);
 	uint64_t high_tables_base = get_top_of_ram() - HIGH_MEMORY_SIZE;
 	uint64_t high_tables_size = HIGH_MEMORY_SIZE;
 #endif

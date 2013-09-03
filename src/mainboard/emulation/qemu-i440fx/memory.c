@@ -40,7 +40,6 @@ static unsigned long qemu_get_memory_size(void)
 	return tomk;
 }
 
-unsigned long get_top_of_ram(void);
 unsigned long get_top_of_ram(void)
 {
 	return qemu_get_memory_size() * 1024;

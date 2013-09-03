@@ -19,12 +19,10 @@
 #include <cbmem.h>
 
 #if !CONFIG_DYNAMIC_CBMEM
-void set_top_of_ram_once(uint64_t ramtop)
+void set_top_of_ram(uint64_t ramtop)
 {
-	if (high_tables_base == 0) {
-		high_tables_base = ramtop - HIGH_MEMORY_SIZE;
-		high_tables_size = HIGH_MEMORY_SIZE;
-	}
+	high_tables_base = ramtop - HIGH_MEMORY_SIZE;
+	high_tables_size = HIGH_MEMORY_SIZE;
 	printk(BIOS_DEBUG, "high_tables_base: %08llx, size %lld\n",
 		high_tables_base, high_tables_size);
 }

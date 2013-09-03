@@ -575,6 +575,7 @@ static void domain_set_resources(device_t dev)
 #endif
 	unsigned long mmio_basek;
 	u32 pci_tolm;
+	u64 ramtop = 0;
 	int idx;
 	struct bus *link;
 #if CONFIG_HW_MEM_HOLE_SIZEK != 0
@@ -716,11 +717,8 @@ static void domain_set_resources(device_t dev)
 						     pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
-#if CONFIG_GFXUMA
-					set_top_of_ram_once(uma_memory_base);
-#else
-					set_top_of_ram_once(mmio_basek * 1024);
-#endif
+					if (!ramtop)
+						ramtop = mmio_basek * 1024;
 				}
 				basek = mmio_basek;
 			}
@@ -737,16 +735,16 @@ static void domain_set_resources(device_t dev)
 		printk(BIOS_DEBUG,
 			"%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n", 0,
 			 mmio_basek, basek, limitk);
-#if CONFIG_GFXUMA
-		set_top_of_ram_once(uma_memory_base);
-#else
-		set_top_of_ram_once(limitk * 1024);
-#endif
+		if (!ramtop)
+			ramtop = limitk * 1024;
 	}
 	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
 
 #if CONFIG_GFXUMA
+	set_top_of_ram(uma_memory_base);
 	uma_resource(dev, 7, uma_memory_base >> 10, uma_memory_size >> 10);
+#else
+	set_top_of_ram(ramtop);
 #endif
 
 	for (link = dev->link_list; link; link = link->next) {

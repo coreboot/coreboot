@@ -126,6 +126,7 @@ ARCH-$(CONFIG_ARCH_X86)     := i386
 ifneq ($(INNER_SCANBUILD),y)
 CC := $(CC_$(ARCH-y))
 endif
+CPP := $(CPP_$(ARCH-y))
 AS := $(AS_$(ARCH-y))
 LD := $(LD_$(ARCH-y))
 NM := $(NM_$(ARCH-y))

@@ -48,7 +48,8 @@ usb_hub_port_status_changed(usbdev_t *const dev, const int port)
 {
 	unsigned short buf[2] = { 0, 0 };
 	get_status (dev, port, DR_PORT, 4, buf);
-	clear_feature (dev, port, SEL_C_PORT_CONNECTION, DR_PORT);
+	if (buf[1] & PORT_CONNECTION)
+		clear_feature (dev, port, SEL_C_PORT_CONNECTION, DR_PORT);
 	return buf[1] & PORT_CONNECTION;
 }
 

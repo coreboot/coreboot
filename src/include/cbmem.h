@@ -143,7 +143,8 @@ void set_cbmem_toc(struct cbmem_entry *);
 void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);
 
-extern struct cbmem_entry *get_cbmem_toc(void);
+unsigned long get_top_of_ram(void);
+struct cbmem_entry *get_cbmem_toc(void);
 
 #endif /* CONFIG_DYNAMIC_CBMEM */
 

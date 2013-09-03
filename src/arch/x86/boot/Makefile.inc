@@ -1,3 +1,5 @@
+romstage-y += ramtop.c
+
 ramstage-y += boot.c
 ramstage-$(CONFIG_MULTIBOOT) += multiboot.c
 ramstage-y += gdt.c

@@ -422,7 +422,6 @@ void gm45_late_init(stepping_t);
 
 u32 decode_igd_memory_size(u32 gms);
 u32 decode_igd_gtt_size(u32 gsm);
-u32 get_top_of_ram(void);
 
 void init_iommu(void);
 #endif

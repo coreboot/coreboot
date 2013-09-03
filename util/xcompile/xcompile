@@ -117,6 +117,7 @@ report_arch_toolchain() {
 	cat <<EOF
 # elf${TWIDTH}-${TBFDARCH} toolchain (${GCCPREFIX}gcc)
 CC_${TARCH}:=${GCCPREFIX}gcc ${CFLAGS}
+CPP_${TARCH}:=${GCCPREFIX}cpp
 AS_${TARCH}:=${GCCPREFIX}as ${ASFLAGS}
 LD_${TARCH}:=${GCCPREFIX}ld${LINKER_SUFFIX} ${LDFLAGS}
 NM_${TARCH}:=${GCCPREFIX}nm

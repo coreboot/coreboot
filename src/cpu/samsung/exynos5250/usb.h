@@ -45,24 +45,93 @@
 struct exynos5_usb_host_phy {
         uint32_t usbphyctrl0;
         uint32_t usbphytune0;
-        uint32_t reserved1[2];
+        uint8_t reserved1[8];
         uint32_t hsicphyctrl1;
         uint32_t hsicphytune1;
-        uint32_t reserved2[2];
+        uint8_t reserved2[8];
         uint32_t hsicphyctrl2;
         uint32_t hsicphytune2;
-        uint32_t reserved3[2];
+        uint8_t reserved3[8];
         uint32_t ehcictrl;
         uint32_t ohcictrl;
         uint32_t usbotgsys;
-        uint32_t reserved4;
+        uint8_t reserved4[4];
         uint32_t usbotgtune;
 };
 
 static struct exynos5_usb_host_phy * const exynos_usb_host_phy =
 		(void *)EXYNOS5_USB_HOST_PHY_BASE;
 
+struct exynos5_usb_drd_phy {
+	uint8_t reserved1[4];
+	uint32_t linksystem;
+	uint32_t utmi;
+	uint32_t pipe;
+	uint32_t clkrst;
+	uint32_t reg0;
+	uint32_t reg1;
+	uint32_t param0;
+	uint32_t param1;
+	uint32_t term;
+	uint32_t test;
+	uint32_t adp;
+	uint32_t utmiclksel;
+	uint32_t resume;
+	uint8_t reserved2[8];
+	uint32_t linkhcbelt;
+	uint32_t linkport;
+};
+
+static struct exynos5_usb_drd_phy * const exynos_usb_drd_phy =
+		(void *)EXYNOS5_USB_DRD_PHY_BASE;
+
+struct exynos5_usb_drd_dwc3 {
+	uint32_t sbuscfg0;
+	uint32_t sbuscfg1;
+	uint32_t txthrcfg;
+	uint32_t rxthrcfg;
+	uint32_t ctl;
+	uint32_t evten;
+	uint32_t sts;
+	uint8_t reserved0[4];
+	uint32_t snpsid;
+	uint32_t gpio;
+	uint32_t uid;
+	uint32_t uctl;
+	uint64_t buserraddr;
+	uint64_t prtbimap;
+	uint8_t reserved1[32];
+	uint32_t dbgfifospace;
+	uint32_t dbgltssm;
+	uint32_t dbglnmcc;
+	uint32_t dbgbmu;
+	uint32_t dbglspmux;
+	uint32_t dbglsp;
+	uint32_t dbgepinfo0;
+	uint32_t dbgepinfo1;
+	uint64_t prtbimap_hs;
+	uint64_t prtbimap_fs;
+	uint8_t reserved2[112];
+	uint32_t usb2phycfg;
+	uint8_t reserved3[60];
+	uint32_t usb2i2cctl;
+	uint8_t reserved4[60];
+	uint32_t usb2phyacc;
+	uint8_t reserved5[60];
+	uint32_t usb3pipectl;
+	uint8_t reserved6[60];
+};
+
+static struct exynos5_usb_drd_dwc3 * const exynos_usb_drd_dwc3 =
+		(void *)EXYNOS5_USB_DRD_DWC3_BASE;
+
 /* Leave hsic_gpio at 0 to not enable HSIC. */
 void setup_usb_host_phy(int hsic_gpio);
+
+void setup_usb_drd_phy(void);
+
+/* Call reset_ before setup_, ensure at least 100ms pass in between. */
+void reset_usb_drd_dwc3(void);
+void setup_usb_drd_dwc3(void);
 
 #endif

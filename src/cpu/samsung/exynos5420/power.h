@@ -30,7 +30,7 @@ void power_enable_hw_thermal_trip(void);
 #define MIPI_PHY1_CONTROL_ENABLE		(1 << 0)
 #define MIPI_PHY1_CONTROL_M_RESETN		(1 << 2)
 
-#define POWER_USB_HOST_PHY_CTRL_EN		(1 << 0)
+#define POWER_USB_PHY_CTRL_EN			(1 << 0)
 #define POWER_PS_HOLD_CONTROL_DATA_HIGH		(1 << 8)
 #define POWER_ENABLE_HW_TRIP			(1UL << 31)
 
@@ -47,9 +47,11 @@ struct exynos5_power {
 	uint32_t	om_stat;		/* 0x0000 */
 	uint8_t		reserved1[0x03fc];
 	uint32_t	sw_reset;		/* 0x0400 */
-	uint8_t		reserved2[0x0304];
-	uint32_t	usb_host_phy_ctrl;	/* 0x0708 */
-	uint8_t		reserved3[0x8];
+	uint8_t		reserved2[0x0300];
+	uint32_t	usb_drd0_phy_ctrl;	/* 0x0704 */
+	uint32_t	usb_drd1_phy_ctrl;	/* 0x0708 */
+	uint32_t	usb_host_phy_ctrl;	/* 0x070c */
+	uint8_t		reserved3[0x4];
 	uint32_t	mipi_phy1_control;	/* 0x0714 */
 	uint8_t		reserved4[0x8];
 	uint32_t	dptx_phy_control;	/* 0x0720 */

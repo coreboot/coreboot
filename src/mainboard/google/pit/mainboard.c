@@ -312,9 +312,22 @@ static enum exynos5_gpio_pin usb_drd0_vbus = GPIO_H00;
 static enum exynos5_gpio_pin usb_drd1_vbus = GPIO_H01;
 /* static enum exynos5_gpio_pin hsic_reset_l = GPIO_X24; */
 
+static void prepare_usb(void)
+{
+	/* Kick these resets off early so they get at least 100ms to settle */
+	reset_usb_drd0_dwc3();
+	reset_usb_drd1_dwc3();
+}
+
 static void setup_usb(void)
 {
 	/* HSIC and USB HOST port not needed in firmware on this board */
+	setup_usb_drd0_phy();
+	setup_usb_drd1_phy();
+
+	setup_usb_drd0_dwc3();
+	setup_usb_drd1_dwc3();
+
 	gpio_direction_output(usb_drd0_vbus, 1);
 	gpio_direction_output(usb_drd1_vbus, 1);
 }
@@ -401,14 +414,13 @@ static void mainboard_init(device_t dev)
 
 	void *fb_addr = (void *)(get_fb_base_kb() * KiB);
 
+	prepare_usb();
 	gpio_init();
 	setup_storage();
 	tmu_init(&exynos5420_tmu_info);
 
 	/* Clock Gating all the unused IP's to save power */
 	clock_gate();
-
-	setup_usb();
 
 	sdmmc_vdd();
 
@@ -447,6 +459,8 @@ static void mainboard_init(device_t dev)
 	backlight_vdd();
 	backlight_pwm();
 	backlight_en();
+
+	setup_usb();
 }
 
 static void mainboard_enable(device_t dev)

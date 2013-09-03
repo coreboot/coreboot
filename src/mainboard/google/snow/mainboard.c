@@ -165,9 +165,17 @@ static enum exynos5_gpio_pin usb_host_vbus = GPIO_X11;
 static enum exynos5_gpio_pin usb_drd_vbus = GPIO_X27;
 /* static enum exynos5_gpio_pin hsic_reset_l = GPIO_E10; */
 
+static void prepare_usb(void)
+{
+	/* Kick this reset off early so it gets at least 100ms to settle */
+	reset_usb_drd_dwc3();
+}
+
 static void setup_usb(void)
 {
 	/* HSIC not needed in firmware on this board */
+	setup_usb_drd_phy();
+	setup_usb_drd_dwc3();
 	setup_usb_host_phy(0);
 
 	gpio_direction_output(usb_host_vbus, 1);
@@ -260,6 +268,7 @@ static void mainboard_init(device_t dev)
 	};
 	void *fb_addr = (void *)(get_fb_base_kb() * KiB);
 
+	prepare_usb();
 	gpio_init();
 	setup_storage();
 
@@ -273,7 +282,6 @@ static void mainboard_init(device_t dev)
 
 	/* Disable USB3.0 PLL to save 250mW of power */
 	disable_usb30_pll();
-	setup_usb();
 
 	sdmmc_vdd();
 
@@ -308,6 +316,8 @@ static void mainboard_init(device_t dev)
 
 	if (dp_tries > MAX_DP_TRIES)
 		printk(BIOS_ERR, "%s: Failed to set up displayport\n", __func__);
+
+	setup_usb();
 
 	// Uncomment to get excessive GPIO output:
 	// gpio_info();

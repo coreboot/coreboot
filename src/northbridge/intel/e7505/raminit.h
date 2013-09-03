@@ -20,7 +20,6 @@ void e7505_mch_scrub_ecc(unsigned long ret_addr);
 void e7505_mch_done(const struct mem_controller *memctrl);
 int e7505_mch_is_ready(void);
 
-unsigned long get_top_of_ram(void);
 
 /* Mainboard exports this. */
 int spd_read_byte(unsigned device, unsigned address);

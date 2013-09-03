@@ -146,6 +146,8 @@ extern struct cbmem_entry *get_cbmem_toc(void);
 
 /* Common API between cbmem and dynamic cbmem. */
 
+unsigned long get_top_of_ram(void);
+
 /* By default cbmem is attempted to be recovered. Returns 0 if cbmem was
  * recovered or 1 if cbmem had to be reinitialized. */
 int cbmem_initialize(void);

@@ -51,7 +51,7 @@ int bridge_silicon_revision(void)
 	return bridge_revision_id;
 }
 
-static unsigned long get_top_of_ram(void)
+unsigned long get_top_of_ram(void)
 {
 	/* Base of TSEG is top of usable DRAM */
 	u32 tom = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0,0)), TSEG);

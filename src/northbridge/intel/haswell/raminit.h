@@ -23,7 +23,6 @@
 #include "pei_data.h"
 
 void sdram_initialize(struct pei_data *pei_data);
-unsigned long get_top_of_ram(void);
 int fixup_haswell_errata(void);
 /* save_mrc_data() must be called after cbmem has been initialized. */
 void save_mrc_data(struct pei_data *pei_data);

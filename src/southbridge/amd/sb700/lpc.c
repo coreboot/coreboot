@@ -102,7 +102,11 @@ static void sb700_lpc_read_resources(device_t dev)
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);	/* We got one for APIC, or one more for TRAP */
 
-	pci_get_resource(dev, 0xA0); /* SPI ROM base address */
+	res = new_resource(dev, 0xA0); /* SPI ROM base address */
+	res->base = 0;
+	res->size = 0x20;
+	res->flags = IORESOURCE_MEM;
+	res->limit = 0xffffffe0 | (res->size - 1);
 
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));

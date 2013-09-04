@@ -89,11 +89,12 @@ void set_cbmem_table(uint64_t base, uint64_t size)
  */
 
 #if !defined(__PRE_RAM__)
-static void cbmem_init(u64 baseaddr, u64 size)
+static void cbmem_init(void)
 {
+	uint64_t baseaddr, size;
 	struct cbmem_entry *cbmem_toc;
-	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
+	cbmem_locate_table(&baseaddr, &size);
 	printk(BIOS_DEBUG, "Initializing CBMEM area to 0x%llx (%lld bytes)\n",
 	       baseaddr, size);
 
@@ -102,6 +103,7 @@ static void cbmem_init(u64 baseaddr, u64 size)
 		for (;;) ;
 	}
 
+	cbmem_toc = get_cbmem_toc();
 	memset(cbmem_toc, 0, CBMEM_TOC_RESERVED);
 
 	cbmem_toc[0] = (struct cbmem_entry) {
@@ -212,10 +214,7 @@ void *cbmem_find(u32 id)
 /* Returns True if it was not initialized before. */
 int cbmem_initialize(void)
 {
-	uint64_t base = 0, size = 0;
 	int rv = 0;
-
-	cbmem_locate_table(&base, &size);
 
 	/* We expect the romstage to always initialize it. */
 	if (!cbmem_reinit()) {
@@ -224,7 +223,7 @@ int cbmem_initialize(void)
 		if (acpi_slp_type == 3 || acpi_slp_type == 2)
 			acpi_slp_type = 0;
 #endif
-		cbmem_init(base, size);
+		cbmem_init();
 		rv = 1;
 	}
 #ifndef __PRE_RAM__

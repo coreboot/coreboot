@@ -729,19 +729,21 @@ int acpi_is_wakeup_early(void)
 	printk(BIOS_DEBUG, "IN TEST WAKEUP %x\n", tmp);
 	return (((tmp & (7 << 10)) >> 10) == 3);
 }
-#endif
 
-struct cbmem_entry *get_cbmem_toc(void)
+unsigned long get_top_of_ram(void)
 {
 	uint32_t xdata = 0;
 	int xnvram_pos = 0xfc, xi;
+	if (!acpi_is_wakeup_early())
+		return 0;
 	for (xi = 0; xi<4; xi++) {
 		outb(xnvram_pos, BIOSRAM_INDEX);
 		xdata &= ~(0xff << (xi * 8));
 		xdata |= inb(BIOSRAM_DATA) << (xi *8);
 		xnvram_pos++;
 	}
-	return (struct cbmem_entry *) xdata;
+	return (unsigned long) xdata;
 }
+#endif
 
 #endif

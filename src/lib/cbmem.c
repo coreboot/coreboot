@@ -45,12 +45,9 @@ struct cbmem_entry {
 #ifndef __PRE_RAM__
 uint64_t high_tables_base = 0;
 uint64_t high_tables_size = 0;
+#endif
 
-void __attribute__((weak)) set_cbmem_toc(struct cbmem_entry * x)
-{
-	/* do nothing, this should be called by chipset to save TOC in NVRAM */
-}
-
+#if !defined(__PRE_RAM__)
 static void cbmem_trace_location(uint64_t base, uint64_t size, const char *s)
 {
 	if (base && size && s) {
@@ -113,10 +110,6 @@ void cbmem_init(u64 baseaddr, u64 size)
 		for (;;) ;
 	}
 
-	/* we don't need to call this in romstage, useful only from ramstage */
-#ifndef __PRE_RAM__
-	set_cbmem_toc((struct cbmem_entry *)(unsigned long)baseaddr);
-#endif
 	memset(cbmem_toc, 0, CBMEM_TOC_RESERVED);
 
 	cbmem_toc[0] = (struct cbmem_entry) {

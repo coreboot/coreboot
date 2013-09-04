@@ -113,13 +113,8 @@ static void host_ctrl_enable_k8m8xx(struct device *dev) {
 	pci_write_config8(dev, 0xa6, 0x83);
 
 }
-#if 0
-struct cbmem_entry *get_cbmem_toc(void) {
-		return (struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
-}
-#endif
-void set_cbmem_toc(struct cbmem_entry *toc) {
-		outl((u32) toc, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
+void backup_top_of_ram(uint64_t ramtop) {
+		outl((u32) ramtop, K8T890_NVRAM_IO_BASE+K8T890_NVRAM_TOP_OF_RAM);
 }
 
 static struct pci_operations lops_pci = {

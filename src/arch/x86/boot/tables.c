@@ -32,8 +32,6 @@
 #include <lib.h>
 #include <smbios.h>
 
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size;
 
 void cbmem_arch_init(void)
 {

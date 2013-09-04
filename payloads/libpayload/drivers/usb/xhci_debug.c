@@ -40,18 +40,18 @@ xhci_dump_slotctx(const slotctx_t *const sc)
 	usb_debug(" FIELD2\t0x%08"PRIx32"\n", sc->f2);
 	usb_debug(" FIELD3\t0x%08"PRIx32"\n", sc->f3);
 	usb_debug(" FIELD4\t0x%08"PRIx32"\n", sc->f4);
-	SC_DUMP(ROUTE,  *sc);
-	SC_DUMP(SPEED,  *sc);
-	SC_DUMP(MTT,    *sc);
-	SC_DUMP(HUB,    *sc);
-	SC_DUMP(CTXENT, *sc);
-	SC_DUMP(RHPORT, *sc);
-	SC_DUMP(NPORTS, *sc);
-	SC_DUMP(TTID,   *sc);
-	SC_DUMP(TTPORT, *sc);
-	SC_DUMP(TTT,    *sc);
-	SC_DUMP(UADDR,  *sc);
-	SC_DUMP(STATE,  *sc);
+	SC_DUMP(ROUTE,  sc);
+	SC_DUMP(SPEED,  sc);
+	SC_DUMP(MTT,    sc);
+	SC_DUMP(HUB,    sc);
+	SC_DUMP(CTXENT, sc);
+	SC_DUMP(RHPORT, sc);
+	SC_DUMP(NPORTS, sc);
+	SC_DUMP(TTID,   sc);
+	SC_DUMP(TTPORT, sc);
+	SC_DUMP(TTT,    sc);
+	SC_DUMP(UADDR,  sc);
+	SC_DUMP(STATE,  sc);
 }
 
 void
@@ -63,15 +63,15 @@ xhci_dump_epctx(const epctx_t *const ec)
 	usb_debug(" TRDQ_L\t0x%08"PRIx32"\n", ec->tr_dq_low);
 	usb_debug(" TRDQ_H\t0x%08"PRIx32"\n", ec->tr_dq_high);
 	usb_debug(" FIELD5\t0x%08"PRIx32"\n", ec->f5);
-	EC_DUMP(STATE,  *ec);
-	EC_DUMP(INTVAL, *ec);
-	EC_DUMP(CERR,   *ec);
-	EC_DUMP(TYPE,   *ec);
-	EC_DUMP(MBS,    *ec);
-	EC_DUMP(MPS,    *ec);
-	EC_DUMP(DCS,    *ec);
-	EC_DUMP(AVRTRB, *ec);
-	EC_DUMP(MXESIT, *ec);
+	EC_DUMP(STATE,  ec);
+	EC_DUMP(INTVAL, ec);
+	EC_DUMP(CERR,   ec);
+	EC_DUMP(TYPE,   ec);
+	EC_DUMP(MBS,    ec);
+	EC_DUMP(MPS,    ec);
+	EC_DUMP(DCS,    ec);
+	EC_DUMP(AVRTRB, ec);
+	EC_DUMP(MXESIT, ec);
 }
 
 void
@@ -79,19 +79,19 @@ xhci_dump_devctx(const devctx_t *const dc, const u32 ctx_mask)
 {
 	int i;
 	if (ctx_mask & 1)
-		xhci_dump_slotctx(&dc->slot);
+		xhci_dump_slotctx(dc->slot);
 	for (i = 0; i < SC_GET(CTXENT, dc->slot); ++i) {
 		if (ctx_mask & (2 << i))
-			xhci_dump_epctx(&dc->all_eps[i]);
+			xhci_dump_epctx(dc->ep[i]);
 	}
 }
 
 void
 xhci_dump_inputctx(const inputctx_t *const ic)
 {
-	xhci_debug("Input Control  add: 0x%08"PRIx32"\n", ic->control.add);
-	xhci_debug("Input Control drop: 0x%08"PRIx32"\n", ic->control.drop);
-	xhci_dump_devctx(&ic->dev, ic->control.add);
+	xhci_debug("Input Control  add: 0x%08"PRIx32"\n", *ic->add);
+	xhci_debug("Input Control drop: 0x%08"PRIx32"\n", *ic->drop);
+	xhci_dump_devctx(&ic->dev, *ic->add);
 }
 
 void

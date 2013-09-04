@@ -62,7 +62,7 @@ xhci_align(const size_t min_align, const size_t size)
 	if (align < min_align)
 		align = min_align;
 	xhci_spew("Aligning %zu to %zu\n", size, align);
-	return memalign(align, size);
+	return dma_memalign(align, size);
 }
 
 void
@@ -210,12 +210,7 @@ xhci_init (unsigned long physical_bar)
 		goto _free_xhci;
 	}
 
-	xhci_debug("context size: %dB\n", xhci->capreg->csz ? 64 : 32);
-	if (xhci->capreg->csz) {
-		xhci_debug("Only 32B contexts are supported\n");
-		goto _free_xhci;
-	}
-
+	xhci_debug("context size: %dB\n", CTXSIZE(xhci));
 	xhci_debug("maxslots: 0x%02lx\n", xhci->capreg->MaxSlots);
 	xhci_debug("maxports: 0x%02lx\n", xhci->capreg->MaxPorts);
 	const unsigned pagesize = xhci->opreg->pagesize << 12;
@@ -226,13 +221,15 @@ xhci_init (unsigned long physical_bar)
 	 * structures at first and can still chicken out easily if we run out
 	 * of memory.
 	 */
-	const size_t dcbaa_size = (xhci->capreg->MaxSlots + 1) * sizeof(u64);
-	xhci->dcbaa = xhci_align(64, dcbaa_size);
-	if (!xhci->dcbaa) {
+	xhci->max_slots_en = xhci->capreg->MaxSlots & CONFIG_LP_MASK_MaxSlotsEn;
+	xhci->dcbaa = xhci_align(64, (xhci->max_slots_en + 1) * sizeof(u64));
+	xhci->dev = malloc((xhci->max_slots_en + 1) * sizeof(*xhci->dev));
+	if (!xhci->dcbaa || !xhci->dev) {
 		xhci_debug("Out of memory\n");
 		goto _free_xhci;
 	}
-	memset((void*)xhci->dcbaa, 0x00, dcbaa_size);
+	memset(xhci->dcbaa, 0x00, (xhci->max_slots_en + 1) * sizeof(u64));
+	memset(xhci->dev, 0x00, (xhci->max_slots_en + 1) * sizeof(*xhci->dev));
 
 	/*
 	 * Let dcbaa[0] point to another array of pointers, sp_ptrs.
@@ -261,9 +258,17 @@ xhci_init (unsigned long physical_bar)
 		xhci->dcbaa[0] = virt_to_phys(xhci->sp_ptrs);
 	}
 
+	if (dma_initialized()) {
+		xhci->dma_buffer = dma_memalign(64 * 1024, DMA_SIZE);
+		if (!xhci->dma_buffer) {
+			xhci_debug("Not enough memory for DMA bounce buffer\n");
+			goto _free_xhci_structs;
+		}
+	}
+
 	/* Now start working on the hardware */
 	if (xhci_wait_ready(xhci))
-		goto _free_xhci;
+		goto _free_xhci_structs;
 
 	/* TODO: Check if BIOS claims ownership (and hand over) */
 
@@ -290,6 +295,7 @@ _free_xhci:
 	free((void *)xhci->er.ring);
 	free((void *)xhci->cr.ring);
 	free(xhci->roothub);
+	free(xhci->dev);
 	free(xhci);
 _free_controller:
 	detach_controller(controller);
@@ -344,8 +350,7 @@ xhci_reinit (hci_t *controller)
 		return;
 
 	/* Enable all available slots */
-	xhci->opreg->config = xhci->capreg->MaxSlots & CONFIG_LP_MASK_MaxSlotsEn;
-	xhci->max_slots_en = xhci->capreg->MaxSlots & CONFIG_LP_MASK_MaxSlotsEn;
+	xhci->opreg->config = xhci->max_slots_en;
 
 	/* Set DCBAA */
 	xhci->opreg->dcbaap_lo = virt_to_phys(xhci->dcbaa);
@@ -426,6 +431,7 @@ xhci_shutdown(hci_t *const controller)
 	}
 	free(xhci->sp_ptrs);
 	free(xhci->dcbaa);
+	free(xhci->dev);
 	free((void *)xhci->ev_ring_table);
 	free((void *)xhci->er.ring);
 	free((void *)xhci->cr.ring);
@@ -459,15 +465,15 @@ xhci_reset_endpoint(usbdev_t *const dev, endpoint_t *const ep,
 		    const int clear_halt)
 {
 	xhci_t *const xhci = XHCI_INST(dev->controller);
-	devinfo_t *const di = DEVINFO_FROM_XHCI(xhci, dev->address);
 	const int slot_id = dev->address;
 	const int ep_id = ep ? xhci_ep_id(ep) : 1;
+	epctx_t *const epctx = xhci->dev[slot_id].ctx.ep[ep_id];
 
 	xhci_debug("Resetting ID %d EP %d (ep state: %d)\n",
-		   slot_id, ep_id, EC_GET(STATE, di->devctx.eps[ep_id]));
+		   slot_id, ep_id, EC_GET(STATE, epctx));
 
 	/* Run Reset Endpoint Command if the EP is in Halted state */
-	if (EC_GET(STATE, di->devctx.eps[ep_id]) == 2) {
+	if (EC_GET(STATE, epctx) == 2) {
 		const int cc = xhci_cmd_reset_endpoint(xhci, slot_id, ep_id);
 		if (cc != CC_SUCCESS) {
 			xhci_debug("Reset Endpoint Command failed: %d\n", cc);
@@ -486,9 +492,10 @@ xhci_reset_endpoint(usbdev_t *const dev, endpoint_t *const ep,
 		clear_stall(ep);
 
 	/* Reset transfer ring if the endpoint is in the right state */
-	const unsigned ep_state = EC_GET(STATE, di->devctx.eps[ep_id]);
+	const unsigned ep_state = EC_GET(STATE, epctx);
 	if (ep_state == 3 || ep_state == 4) {
-		transfer_ring_t *const tr = di->transfer_rings[ep_id];
+		transfer_ring_t *const tr =
+				xhci->dev[slot_id].transfer_rings[ep_id];
 		const int cc = xhci_cmd_set_tr_dq(xhci, slot_id, ep_id,
 						  tr->ring, 1);
 		if (cc != CC_SUCCESS) {
@@ -499,7 +506,7 @@ xhci_reset_endpoint(usbdev_t *const dev, endpoint_t *const ep,
 	}
 
 	xhci_debug("Finished resetting ID %d EP %d (ep state: %d)\n",
-		   slot_id, ep_id, EC_GET(STATE, di->devctx.eps[ep_id]));
+		   slot_id, ep_id, EC_GET(STATE, epctx));
 
 	return 0;
 }
@@ -579,11 +586,12 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 static int
 xhci_control(usbdev_t *const dev, const direction_t dir,
 	     const int drlen, void *const devreq,
-	     const int dalen, unsigned char *const data)
+	     const int dalen, unsigned char *const src)
 {
+	unsigned char *data = src;
 	xhci_t *const xhci = XHCI_INST(dev->controller);
-	devinfo_t *const di = DEVINFO_FROM_XHCI(xhci, dev->address);
-	transfer_ring_t *const tr = di->transfer_rings[1];
+	epctx_t *const epctx = xhci->dev[dev->address].ctx.ep0;
+	transfer_ring_t *const tr = xhci->dev[dev->address].transfer_rings[1];
 
 	const size_t off = (size_t)data & 0xffff;
 	if ((off + dalen) > ((TRANSFER_RING_SIZE - 4) << 16)) {
@@ -592,10 +600,20 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 	}
 
 	/* Reset endpoint if it's halted */
-	const unsigned ep_state = EC_GET(STATE, di->devctx.ep0);
+	const unsigned ep_state = EC_GET(STATE, epctx);
 	if (ep_state == 2 || ep_state == 4) {
 		if (xhci_reset_endpoint(dev, NULL, 0))
 			return -1;
+	}
+
+	if (dalen && !dma_coherent(src)) {
+		data = xhci->dma_buffer;
+		if (dalen > DMA_SIZE) {
+			xhci_debug("Control transfer too large: %d\n", dalen);
+			return -1;
+		}
+		if (dir == OUT)
+			memcpy(data, src, dalen);
 	}
 
 	/* Fill and enqueue setup TRB */
@@ -614,7 +632,7 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 
 	/* Fill and enqueue data TRBs (if any) */
 	if (dalen) {
-		const unsigned mps = EC_GET(MPS, di->devctx.ep0);
+		const unsigned mps = EC_GET(MPS, epctx);
 		const unsigned dt_dir = (dir == OUT) ? TRB_DIR_OUT : TRB_DIR_IN;
 		xhci_enqueue_td(tr, 1, mps, dalen, data, dt_dir);
 	}
@@ -650,28 +668,31 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 				   "  usbsts:     0x%08"PRIx32"\n",
 				   i, n_stages, ret,
 				   tr->ring, setup, status,
-				   ep_state, EC_GET(STATE, di->devctx.ep0),
+				   ep_state, EC_GET(STATE, epctx),
 				   xhci->opreg->usbsts);
 			return ret;
 		}
 	}
 
+	if (dir == IN && data != src)
+		memcpy(src, data, transferred);
 	return transferred;
 }
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
 static int
-xhci_bulk(endpoint_t *const ep,
-	  const int size, u8 *const data,
+xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
 	  const int finalize)
 {
 	/* finalize: Hopefully the xHCI controller always does this.
 		     We have no control over the packets. */
 
+	u8 *data = src;
 	xhci_t *const xhci = XHCI_INST(ep->dev->controller);
+	const int slot_id = ep->dev->address;
 	const int ep_id = xhci_ep_id(ep);
-	devinfo_t *const di = DEVINFO_FROM_XHCI(xhci, ep->dev->address);
-	transfer_ring_t *const tr = di->transfer_rings[ep_id];
+	epctx_t *const epctx = xhci->dev[slot_id].ctx.ep[ep_id];
+	transfer_ring_t *const tr = xhci->dev[slot_id].transfer_rings[ep_id];
 
 	const size_t off = (size_t)data & 0xffff;
 	if ((off + size) > ((TRANSFER_RING_SIZE - 2) << 16)) {
@@ -679,15 +700,25 @@ xhci_bulk(endpoint_t *const ep,
 		return -1;
 	}
 
+	if (!dma_coherent(src)) {
+		data = xhci->dma_buffer;
+		if (size > DMA_SIZE) {
+			xhci_debug("Bulk transfer too large: %d\n", size);
+			return -1;
+		}
+		if (ep->direction == OUT)
+			memcpy(data, src, size);
+	}
+
 	/* Reset endpoint if it's halted */
-	const unsigned ep_state = EC_GET(STATE, di->devctx.eps[ep_id]);
+	const unsigned ep_state = EC_GET(STATE, epctx);
 	if (ep_state == 2 || ep_state == 4) {
 		if (xhci_reset_endpoint(ep->dev, ep, 0))
 			return -1;
 	}
 
 	/* Enqueue transfer and ring doorbell */
-	const unsigned mps = EC_GET(MPS, di->devctx.eps[ep_id]);
+	const unsigned mps = EC_GET(MPS, epctx);
 	const unsigned dir = (ep->direction == OUT) ? TRB_DIR_OUT : TRB_DIR_IN;
 	xhci_enqueue_td(tr, ep_id, mps, size, data, dir);
 	xhci->dbreg[ep->dev->address] = ep_id;
@@ -706,11 +737,13 @@ xhci_bulk(endpoint_t *const ep,
 			   "  ep state: %d -> %d\n"
 			   "  usbsts:   0x%08"PRIx32"\n",
 			   ret, ep_state,
-			   EC_GET(STATE, di->devctx.eps[ep_id]),
+			   EC_GET(STATE, epctx),
 			   xhci->opreg->usbsts);
 		return ret;
 	}
 
+	if (ep->direction == IN && data != src)
+		memcpy(src, data, ret);
 	return ret;
 }
 
@@ -736,9 +769,9 @@ xhci_create_intr_queue(endpoint_t *const ep,
 		      endpoint descriptor configured earlier. */
 
 	xhci_t *const xhci = XHCI_INST(ep->dev->controller);
+	const int slot_id = ep->dev->address;
 	const int ep_id = xhci_ep_id(ep);
-	devinfo_t *const di = DEVINFO_FROM_XHCI(xhci, ep->dev->address);
-	transfer_ring_t *const tr = di->transfer_rings[ep_id];
+	transfer_ring_t *const tr = xhci->dev[slot_id].transfer_rings[ep_id];
 
 	if (reqcount > (TRANSFER_RING_SIZE - 2)) {
 		xhci_debug("reqcount is too high, at most %d supported\n",
@@ -749,7 +782,7 @@ xhci_create_intr_queue(endpoint_t *const ep,
 		xhci_debug("reqsize is too large, at most 64KiB supported\n");
 		return NULL;
 	}
-	if (di->interrupt_queues[ep_id]) {
+	if (xhci->dev[slot_id].interrupt_queues[ep_id]) {
 		xhci_debug("Only one interrupt queue per endpoint supported\n");
 		return NULL;
 	}
@@ -791,13 +824,13 @@ xhci_create_intr_queue(endpoint_t *const ep,
 	intrq->next	= tr->cur;
 	intrq->ready	= NULL;
 	intrq->ep	= ep;
-	di->interrupt_queues[ep_id] = intrq;
+	xhci->dev[slot_id].interrupt_queues[ep_id] = intrq;
 
 	/* Now enqueue all the prepared TRBs but the last
 	   and ring the doorbell. */
 	for (i = 0; i < (reqcount - 1); ++i)
 		xhci_enqueue_trb(tr);
-	xhci->dbreg[ep->dev->address] = ep_id;
+	xhci->dbreg[slot_id] = ep_id;
 
 	return intrq;
 
@@ -816,16 +849,15 @@ static void
 xhci_destroy_intr_queue(endpoint_t *const ep, void *const q)
 {
 	xhci_t *const xhci = XHCI_INST(ep->dev->controller);
+	const int slot_id = ep->dev->address;
 	const int ep_id = xhci_ep_id(ep);
-	devinfo_t *const di = DEVINFO_FROM_XHCI(xhci, ep->dev->address);
-	transfer_ring_t *const tr = di->transfer_rings[ep_id];
+	transfer_ring_t *const tr = xhci->dev[slot_id].transfer_rings[ep_id];
 
 	intrq_t *const intrq = (intrq_t *)q;
 
 	/* Make sure the endpoint is stopped */
-	if (EC_GET(STATE, di->devctx.eps[ep_id]) == 1) {
-		const int cc = xhci_cmd_stop_endpoint(
-				xhci, ep->dev->address, ep_id);
+	if (EC_GET(STATE, xhci->dev[slot_id].ctx.ep[ep_id]) == 1) {
+		const int cc = xhci_cmd_stop_endpoint(xhci, slot_id, ep_id);
 		if (cc != CC_SUCCESS)
 			xhci_debug("Warning: Failed to stop endpoint\n");
 	}
@@ -839,11 +871,11 @@ xhci_destroy_intr_queue(endpoint_t *const ep, void *const q)
 		free(phys_to_virt(intrq->next->ptr_low));
 		intrq->next = xhci_next_trb(intrq->next, NULL);
 	}
-	di->interrupt_queues[ep_id] = NULL;
+	xhci->dev[slot_id].interrupt_queues[ep_id] = NULL;
 	free((void *)intrq);
 
 	/* Reset the controller's dequeue pointer and reinitialize the ring */
-	xhci_cmd_set_tr_dq(xhci, ep->dev->address, ep_id, tr->ring, 1);
+	xhci_cmd_set_tr_dq(xhci, slot_id, ep_id, tr->ring, 1);
 	xhci_init_cycle_ring(tr, TRANSFER_RING_SIZE);
 }
 
@@ -868,8 +900,8 @@ xhci_poll_intr_queue(void *const q)
 	u8 *reqdata = NULL;
 	while (!reqdata && intrq->ready) {
 		const int ep_id = xhci_ep_id(ep);
-		devinfo_t *const di = DEVINFO_FROM_XHCI(xhci, ep->dev->address);
-		transfer_ring_t *const tr = di->transfer_rings[ep_id];
+		transfer_ring_t *const tr =
+			xhci->dev[ep->dev->address].transfer_rings[ep_id];
 
 		/* Fetch the request's buffer */
 		reqdata = phys_to_virt(intrq->next->ptr_low);

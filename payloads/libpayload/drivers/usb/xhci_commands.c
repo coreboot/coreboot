@@ -128,7 +128,7 @@ xhci_cmd_address_device(xhci_t *const xhci,
 	trb_t *const cmd = xhci_next_command_trb(xhci);
 	TRB_SET(TT, cmd, TRB_CMD_ADDRESS_DEV);
 	TRB_SET(ID, cmd, slot_id);
-	cmd->ptr_low = virt_to_phys(ic);
+	cmd->ptr_low = virt_to_phys(ic->raw);
 	xhci_post_command(xhci);
 
 	return xhci_wait_for_command(xhci, cmd, 1);
@@ -143,7 +143,7 @@ xhci_cmd_configure_endpoint(xhci_t *const xhci,
 	trb_t *const cmd = xhci_next_command_trb(xhci);
 	TRB_SET(TT, cmd, TRB_CMD_CONFIGURE_EP);
 	TRB_SET(ID, cmd, slot_id);
-	cmd->ptr_low = virt_to_phys(ic);
+	cmd->ptr_low = virt_to_phys(ic->raw);
 	if (config_id == 0)
 		TRB_SET(DC, cmd, 1);
 	xhci_post_command(xhci);
@@ -159,7 +159,7 @@ xhci_cmd_evaluate_context(xhci_t *const xhci,
 	trb_t *const cmd = xhci_next_command_trb(xhci);
 	TRB_SET(TT, cmd, TRB_CMD_EVAL_CTX);
 	TRB_SET(ID, cmd, slot_id);
-	cmd->ptr_low = virt_to_phys(ic);
+	cmd->ptr_low = virt_to_phys(ic->raw);
 	xhci_post_command(xhci);
 
 	return xhci_wait_for_command(xhci, cmd, 1);

@@ -198,13 +198,13 @@ typedef transfer_ring_t command_ring_t;
 #define SC_STATE_START		27
 #define SC_STATE_LEN		8
 #define SC_MASK(tok)		MASK(SC_##tok##_START, SC_##tok##_LEN)
-#define SC_GET(tok, sc)		(((sc).SC_##tok##_FIELD & SC_MASK(tok)) \
+#define SC_GET(tok, sc)		(((sc)->SC_##tok##_FIELD & SC_MASK(tok)) \
 				 >> SC_##tok##_START)
-#define SC_SET(tok, sc, to)	(sc).SC_##tok##_FIELD = \
-				(((sc).SC_##tok##_FIELD & ~SC_MASK(tok)) | \
+#define SC_SET(tok, sc, to)	(sc)->SC_##tok##_FIELD = \
+				(((sc)->SC_##tok##_FIELD & ~SC_MASK(tok)) | \
 				 (((to) << SC_##tok##_START) & SC_MASK(tok)))
 #define SC_DUMP(tok, sc)	usb_debug(" "#tok"\t0x%04"PRIx32"\n", SC_GET(tok, sc))
-typedef struct slotctx {
+typedef volatile struct slotctx {
 	u32 f1;
 	u32 f2;
 	u32 f3;
@@ -240,15 +240,15 @@ typedef struct slotctx {
 #define EC_MXESIT_START		16
 #define EC_MXESIT_LEN		16
 #define EC_MASK(tok)		MASK(EC_##tok##_START, EC_##tok##_LEN)
-#define EC_GET(tok, ec)		(((ec).EC_##tok##_FIELD & EC_MASK(tok)) \
+#define EC_GET(tok, ec)		(((ec)->EC_##tok##_FIELD & EC_MASK(tok)) \
 				 >> EC_##tok##_START)
-#define EC_SET(tok, ec, to)	(ec).EC_##tok##_FIELD = \
-				(((ec).EC_##tok##_FIELD & ~EC_MASK(tok)) | \
+#define EC_SET(tok, ec, to)	(ec)->EC_##tok##_FIELD = \
+				(((ec)->EC_##tok##_FIELD & ~EC_MASK(tok)) | \
 				 (((to) << EC_##tok##_START) & EC_MASK(tok)))
 #define EC_DUMP(tok, ec)	usb_debug(" "#tok"\t0x%04"PRIx32"\n", EC_GET(tok, ec))
 enum { EP_ISOC_OUT = 1, EP_BULK_OUT = 2, EP_INTR_OUT = 3,
 	EP_CONTROL = 4, EP_ISOC_IN = 5, EP_BULK_IN = 6, EP_INTR_IN = 7 };
-typedef struct epctx {
+typedef volatile struct epctx {
 	u32 f1;
 	u32 f2;
 	u32 tr_dq_low;
@@ -257,23 +257,30 @@ typedef struct epctx {
 	u32 rsvd[3];
 } epctx_t;
 
+#define NUM_EPS 32
+#define CTXSIZE(xhci) ((xhci)->capreg->csz ? 64 : 32)
+
 typedef union devctx {
+	/* set of pointers, so we can dynamically adjust Slot/EP context size */
 	struct {
-		slotctx_t slot;
-		epctx_t ep0;
-		epctx_t eps1_30[30];
+		union {
+			slotctx_t *slot;
+			void *raw;	/* Pointer to the whole dev context. */
+		};
+		epctx_t *ep0;
+		epctx_t *eps1_30[NUM_EPS - 2];
 	};
-	epctx_t eps[32]; /* At index 0 it's actually the slotctx,
-			    we have it like that so we can use
-			    the ep_id directly as index. */
+	epctx_t *ep[NUM_EPS];	/* At index 0 it's actually the slotctx,
+					we have it like that so we can use
+					the ep_id directly as index. */
 } devctx_t;
 
 typedef struct inputctx {
-	struct {
-		u32 drop;
-		u32 add;
-		u32 reserved[6];
-	} control;
+	union {		    /* The drop flags are located at the start of the */
+		u32 *drop;  /* structure, so a pointer to them is equivalent */
+		void *raw;  /* to a pointer to the whole (raw) input context. */
+	};
+	u32 *add;
 	devctx_t dev;
 } inputctx_t;
 
@@ -286,14 +293,10 @@ typedef struct intrq {
 } intrq_t;
 
 typedef struct devinfo {
-	volatile devctx_t devctx;
-	transfer_ring_t *transfer_rings[32];
+	devctx_t ctx;
+	transfer_ring_t *transfer_rings[NUM_EPS];
 	intrq_t *interrupt_queues[32];
 } devinfo_t;
-#define DEVINFO_FROM_XHCI(xhci, slot_id) \
-	(((xhci)->dcbaa[slot_id]) \
-	 ? phys_to_virt((xhci)->dcbaa[slot_id] - offsetof(devinfo_t, devctx)) \
-	 : NULL)
 
 typedef struct erst_entry {
 	u32 seg_base_lo;
@@ -459,6 +462,10 @@ typedef struct xhci {
 	usbdev_t *roothub;
 
 	u8 max_slots_en;
+	devinfo_t *dev;	/* array of devinfos by slot_id */
+
+#define DMA_SIZE (64 * 1024)
+	void *dma_buffer;
 } xhci_t;
 
 #define XHCI_INST(controller) ((xhci_t*)((controller)->instance))

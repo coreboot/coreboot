@@ -86,12 +86,10 @@ xhci_handle_transfer_event(xhci_t *const xhci)
 	const int id = TRB_GET(ID, ev);
 	const int ep = TRB_GET(EP, ev);
 
-	devinfo_t *di;
 	intrq_t *intrq;
 
 	if (id && id <= xhci->max_slots_en &&
-			(di = DEVINFO_FROM_XHCI(xhci, id)) &&
-			(intrq = di->interrupt_queues[ep])) {
+			(intrq = xhci->dev[id].interrupt_queues[ep])) {
 		/* It's a running interrupt endpoint */
 		intrq->ready = phys_to_virt(ev->ptr_low);
 		if (cc == CC_SUCCESS || cc == CC_SHORT_PACKET) {

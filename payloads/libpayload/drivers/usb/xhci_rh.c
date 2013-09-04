@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#define USB_DEBUG
+//#define USB_DEBUG
 
 #include <usb/usb.h>
 #include "generic_hub.h"

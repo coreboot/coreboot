@@ -37,9 +37,7 @@ xhci_gen_route(xhci_t *const xhci, const int hubport, const int hubaddr)
 {
 	if (!hubaddr)
 		return 0;
-	volatile const devctx_t *const devctx =
-		phys_to_virt(xhci->dcbaa[hubaddr]);
-	u32 route_string = SC_GET(ROUTE, devctx->slot);
+	u32 route_string = SC_GET(ROUTE, xhci->dev[hubaddr].ctx.slot);
 	int i;
 	for (i = 0; i < 20; i += 4) {
 		if (!(route_string & (0xf << i))) {
@@ -55,9 +53,7 @@ xhci_get_rh_port(xhci_t *const xhci, const int hubport, const int hubaddr)
 {
 	if (!hubaddr)
 		return hubport;
-	volatile const devctx_t *const devctx =
-		phys_to_virt(xhci->dcbaa[hubaddr]);
-	return SC_GET(RHPORT, devctx->slot);
+	return SC_GET(RHPORT, xhci->dev[hubaddr].ctx.slot);
 }
 
 static int
@@ -67,12 +63,11 @@ xhci_get_tt(xhci_t *const xhci, const int xhci_speed,
 {
 	if (!hubaddr)
 		return 0;
-	volatile const devctx_t *const devctx =
-		phys_to_virt(xhci->dcbaa[hubaddr]);
-	if ((*tt = SC_GET(TTID, devctx->slot))) {
-		*tt_port = SC_GET(TTPORT, devctx->slot);
+	const slotctx_t *const slot = xhci->dev[hubaddr].ctx.slot;
+	if ((*tt = SC_GET(TTID, slot))) {
+		*tt_port = SC_GET(TTPORT, slot);
 	} else if (xhci_speed < XHCI_HIGH_SPEED &&
-			SC_GET(SPEED, devctx->slot) == XHCI_HIGH_SPEED) {
+			SC_GET(SPEED, slot) == XHCI_HIGH_SPEED) {
 		*tt = hubaddr;
 		*tt_port = hubport;
 	}
@@ -130,20 +125,45 @@ xhci_get_mps0(usbdev_t *const dev, const int xhci_speed)
 	}
 }
 
+static inputctx_t *
+xhci_make_inputctx(const size_t ctxsize)
+{
+	int i;
+	const size_t size = (1 + NUM_EPS) * ctxsize;
+	inputctx_t *const ic = malloc(sizeof(*ic));
+	void *dma_buffer = dma_memalign(64, size);
+
+	if (!ic || !dma_buffer) {
+		free(ic);
+		free(dma_buffer);
+		return NULL;
+	}
+
+	memset(dma_buffer, 0, size);
+	ic->drop = dma_buffer + 0;
+	ic->add = dma_buffer + 4;
+	dma_buffer += ctxsize;
+	for (i = 0; i < NUM_EPS; i++, dma_buffer += ctxsize)
+		ic->dev.ep[i] = dma_buffer;
+
+	return ic;
+}
+
 int
 xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 {
 	xhci_t *const xhci = XHCI_INST(controller);
 	const int xhci_speed = speed + 1;
+	const size_t ctxsize = CTXSIZE(xhci);
+	devinfo_t *di = NULL;
 
-	int ret = -1;
+	int i, ret = -1;
 
-	inputctx_t *const ic = xhci_align(64, sizeof(*ic));
-	devinfo_t *const di = memalign(sizeof(di->devctx), sizeof(*di));
+	inputctx_t *const ic = xhci_make_inputctx(ctxsize);
 	transfer_ring_t *const tr = malloc(sizeof(*tr));
 	if (tr)
 		tr->ring = xhci_align(16, TRANSFER_RING_SIZE * sizeof(trb_t));
-	if (!ic || !di || !tr || !tr->ring) {
+	if (!ic || !tr || !tr->ring) {
 		xhci_debug("Out of memory\n");
 		goto _free_return;
 	}
@@ -157,9 +177,15 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		xhci_debug("Enabled slot %d\n", slot_id);
 	}
 
-	memset(ic, 0x00, sizeof(*ic));
-	ic->control.add = (1 << 0) /* Slot Context */ |
-			  (1 << 1) /* EP0 Context */ ;
+	di = &xhci->dev[slot_id];
+	void *dma_buffer = dma_memalign(64, NUM_EPS * ctxsize);
+	if (!dma_buffer)
+		goto _free_return;
+	memset(dma_buffer, 0, NUM_EPS * ctxsize);
+	for (i = 0; i < NUM_EPS; i++, dma_buffer += ctxsize)
+		di->ctx.ep[i] = dma_buffer;
+
+	*ic->add = (1 << 0) /* Slot Context */ | (1 << 1) /* EP0 Context */ ;
 
 	SC_SET(ROUTE,	ic->dev.slot, xhci_gen_route(xhci, hubport, hubaddr));
 	SC_SET(SPEED,	ic->dev.slot, xhci_speed);
@@ -169,27 +195,23 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	int tt, tt_port;
 	if (xhci_get_tt(xhci, xhci_speed, hubport, hubaddr, &tt, &tt_port)) {
 		xhci_debug("TT for %d: %d[%d]\n", slot_id, tt, tt_port);
-		volatile const devctx_t *const ttctx =
-			phys_to_virt(xhci->dcbaa[tt]);
-		SC_SET(MTT, ic->dev.slot, SC_GET(MTT, ttctx->slot));
+		SC_SET(MTT, ic->dev.slot, SC_GET(MTT, xhci->dev[tt].ctx.slot));
 		SC_SET(TTID, ic->dev.slot, tt);
 		SC_SET(TTPORT, ic->dev.slot, tt_port);
 	}
 
-	memset(di, 0x00, sizeof(*di));
 	di->transfer_rings[1] = tr;
 	xhci_init_cycle_ring(tr, TRANSFER_RING_SIZE);
 
-	ic->dev.ep0.tr_dq_low	= virt_to_phys(tr->ring);
-	ic->dev.ep0.tr_dq_high	= 0;
+	ic->dev.ep0->tr_dq_low	= virt_to_phys(tr->ring);
+	ic->dev.ep0->tr_dq_high	= 0;
 	EC_SET(TYPE,	ic->dev.ep0, EP_CONTROL);
 	EC_SET(AVRTRB,	ic->dev.ep0, 8);
 	EC_SET(MPS,	ic->dev.ep0, 8);
 	EC_SET(CERR,	ic->dev.ep0, 3);
 	EC_SET(DCS,	ic->dev.ep0, 1);
 
-	volatile devctx_t *const oc = &di->devctx;
-	xhci->dcbaa[slot_id] = virt_to_phys(oc);
+	xhci->dcbaa[slot_id] = virt_to_phys(di->ctx.raw);
 
 	cc = xhci_cmd_address_device(xhci, slot_id, ic);
 	if (cc != CC_SUCCESS) {
@@ -197,7 +219,7 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		goto _disable_return;
 	} else {
 		xhci_debug("Addressed device %d (USB: %d)\n",
-			  slot_id, SC_GET(UADDR, oc->slot));
+			  slot_id, SC_GET(UADDR, di->ctx.slot));
 	}
 	mdelay(2); /* SetAddress() recovery interval (usb20 spec 9.2.6.3) */
 
@@ -209,9 +231,8 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	if (mps0 < 0) {
 		goto _disable_return;
 	} else if (mps0 != 8) {
-		memset(&ic->control, 0x00, sizeof(ic->control));
-		memset(&ic->dev.ep0, 0x00, sizeof(ic->dev.ep0));
-		ic->control.add = (1 << 1); /* EP0 Context */
+		memset((void *)ic->dev.ep0, 0x00, ctxsize);
+		*ic->add = (1 << 1); /* EP0 Context */
 		EC_SET(MPS, ic->dev.ep0, mps0);
 		cc = xhci_cmd_evaluate_context(xhci, slot_id, ic);
 		if (cc != CC_SUCCESS) {
@@ -232,8 +253,12 @@ _free_return:
 	if (tr)
 		free((void *)tr->ring);
 	free(tr);
+	if (di)
+		free(di->ctx.raw);
 	free((void *)di);
 _free_ic_return:
+	if (ic)
+		free(ic->raw);
 	free(ic);
 	return ret;
 }
@@ -291,8 +316,6 @@ static int
 xhci_finish_ep_config(const endpoint_t *const ep, inputctx_t *const ic)
 {
 	xhci_t *const xhci = XHCI_INST(ep->dev->controller);
-	devinfo_t *const di = phys_to_virt(xhci->dcbaa[ep->dev->address]
-					   - offsetof(devinfo_t, devctx));
 	const int ep_id = xhci_ep_id(ep);
 	xhci_debug("ep_id: %d\n", ep_id);
 	if (ep_id <= 1 || 32 <= ep_id)
@@ -306,30 +329,30 @@ xhci_finish_ep_config(const endpoint_t *const ep, inputctx_t *const ic)
 		xhci_debug("Out of memory\n");
 		return OUT_OF_MEMORY;
 	}
-	di->transfer_rings[ep_id] = tr;
+	xhci->dev[ep->dev->address].transfer_rings[ep_id] = tr;
 	xhci_init_cycle_ring(tr, TRANSFER_RING_SIZE);
 
-	ic->control.add |= (1 << ep_id);
+	*ic->add |= (1 << ep_id);
 	if (SC_GET(CTXENT, ic->dev.slot) < ep_id)
 		SC_SET(CTXENT, ic->dev.slot, ep_id);
 
-	epctx_t *const epctx = &ic->dev.eps[ep_id];
+	epctx_t *const epctx = ic->dev.ep[ep_id];
 	xhci_debug("Filling epctx (@%p)\n", epctx);
 	epctx->tr_dq_low	= virt_to_phys(tr->ring);
 	epctx->tr_dq_high	= 0;
-	EC_SET(INTVAL,	*epctx, xhci_bound_interval(ep));
-	EC_SET(CERR,	*epctx, 3);
-	EC_SET(TYPE,	*epctx, ep->type | ((ep->direction != OUT) << 2));
-	EC_SET(MPS,	*epctx, ep->maxpacketsize);
-	EC_SET(DCS,	*epctx, 1);
+	EC_SET(INTVAL,	epctx, xhci_bound_interval(ep));
+	EC_SET(CERR,	epctx, 3);
+	EC_SET(TYPE,	epctx, ep->type | ((ep->direction != OUT) << 2));
+	EC_SET(MPS,	epctx, ep->maxpacketsize);
+	EC_SET(DCS,	epctx, 1);
 	size_t avrtrb;
 	switch (ep->type) {
 		case BULK: case ISOCHRONOUS:	avrtrb = 3 * 1024; break;
 		case INTERRUPT:			avrtrb =     1024; break;
 		default:			avrtrb =        8; break;
 	}
-	EC_SET(AVRTRB,	*epctx, avrtrb);
-	EC_SET(MXESIT,  *epctx, EC_GET(MPS, *epctx) * EC_GET(MBS, *epctx));
+	EC_SET(AVRTRB,	epctx, avrtrb);
+	EC_SET(MXESIT,  epctx, EC_GET(MPS, epctx) * EC_GET(MBS, epctx));
 
 	return 0;
 }
@@ -338,24 +361,22 @@ int
 xhci_finish_device_config(usbdev_t *const dev)
 {
 	xhci_t *const xhci = XHCI_INST(dev->controller);
-	devinfo_t *const di = phys_to_virt(xhci->dcbaa[dev->address]
-					   - offsetof(devinfo_t, devctx));
+	devinfo_t *const di = &xhci->dev[dev->address];
 
 	int i, ret = 0;
 
-	inputctx_t *const ic = xhci_align(64, sizeof(*ic));
+	inputctx_t *const ic = xhci_make_inputctx(CTXSIZE(xhci));
 	if (!ic) {
 		xhci_debug("Out of memory\n");
 		return OUT_OF_MEMORY;
 	}
-	memset(ic, 0x00, sizeof(*ic));
 
-	ic->control.add = (1 << 0); /* Slot Context */
+	*ic->add = (1 << 0); /* Slot Context */
 
-	xhci_dump_slotctx((const slotctx_t *)&di->devctx.slot);
-	ic->dev.slot.f1 = di->devctx.slot.f1;
-	ic->dev.slot.f2 = di->devctx.slot.f2;
-	ic->dev.slot.f3 = di->devctx.slot.f3;
+	xhci_dump_slotctx(di->ctx.slot);
+	ic->dev.slot->f1 = di->ctx.slot->f1;
+	ic->dev.slot->f2 = di->ctx.slot->f2;
+	ic->dev.slot->f3 = di->ctx.slot->f3;
 
 	if (((device_descriptor_t *)dev->descriptor)->bDeviceClass == 0x09) {
 		ret = xhci_finish_hub_config(dev, ic);
@@ -394,6 +415,7 @@ _free_ep_ctx_return:
 		di->transfer_rings[i] = NULL;
 	}
 _free_return:
+	free(ic->raw);
 	free(ic);
 	return ret;
 }
@@ -412,7 +434,7 @@ xhci_destroy_dev(hci_t *const controller, const int slot_id)
 	if (cc != CC_SUCCESS)
 		xhci_debug("Failed to disable slot %d: %d\n", slot_id, cc);
 
-	devinfo_t *const di = DEVINFO_FROM_XHCI(xhci, slot_id);
+	devinfo_t *const di = &xhci->dev[slot_id];
 	for (i = 1; i < 31; ++i) {
 		if (di->transfer_rings[i])
 			free((void *)di->transfer_rings[i]->ring);
@@ -420,6 +442,5 @@ xhci_destroy_dev(hci_t *const controller, const int slot_id)
 
 		free(di->interrupt_queues[i]);
 	}
-	free(di);
 	xhci->dcbaa[slot_id] = 0;
 }

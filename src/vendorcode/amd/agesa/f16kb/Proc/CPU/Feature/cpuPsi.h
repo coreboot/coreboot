@@ -114,12 +114,12 @@ typedef F_PSI_INIT *PF_PSI_INIT;
  * Each supported Family must provide an implementation for all methods in this interface, even if the
  * implementation is a CommonReturn().
  */
-typedef struct _PSI_FAMILY_SERVICES {
+struct _PSI_FAMILY_SERVICES {
   UINT16          Revision;                                             ///< Interface version
   // Public Methods.
   PF_PSI_IS_SUPPORTED IsPsiSupported;                                   ///< Method: Family specific call to check if PSI is supported.
   PF_PSI_INIT         EnablePsiOnSocket;                                ///< Method: Family specific call to enable PSI.
-} PSI_FAMILY_SERVICES;
+};
 
 
 /*----------------------------------------------------------------------------------------

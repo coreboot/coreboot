@@ -114,12 +114,12 @@ typedef F_HTC_INIT *PF_HTC_INIT;
  * Each supported Family must provide an implementation for all methods in this interface, even if the
  * implementation is a CommonReturn().
  */
-typedef struct _HTC_FAMILY_SERVICES {
+struct _HTC_FAMILY_SERVICES {
   UINT16          Revision;                                             ///< Interface version
   // Public Methods.
   PF_HTC_IS_SUPPORTED IsHtcSupported;                                   ///< Method: Family specific call to check if HTC is supported.
   PF_HTC_INIT         EnableHtcOnSocket;                                ///< Method: Family specific call to enable HTC.
-} HTC_FAMILY_SERVICES;
+};
 
 
 /*----------------------------------------------------------------------------------------

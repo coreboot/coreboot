@@ -95,7 +95,7 @@ int acpi_is_wakeup_early(void)
 }
 #endif
 
-struct cbmem_entry *get_cbmem_toc(void)
+unsigned long get_top_of_ram(void)
 {
 	uint32_t xdata = 0;
 	int xnvram_pos = 0xf8, xi;
@@ -105,7 +105,7 @@ struct cbmem_entry *get_cbmem_toc(void)
 		xdata |= inb(BIOSRAM_DATA) << (xi *8);
 		xnvram_pos++;
 	}
-	return (struct cbmem_entry *) xdata;
+	return (unsigned long) xdata;
 }
 
 #endif

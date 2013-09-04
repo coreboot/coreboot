@@ -27,9 +27,9 @@
 #define BIOSRAM_INDEX   0xcd4
 #define BIOSRAM_DATA    0xcd5
 
-void set_cbmem_toc(struct cbmem_entry *toc)
+void backup_top_of_ram(uint64_t ramtop)
 {
-	u32 dword = (u32) toc;
+	u32 dword = (u32) ramtop;
 	int nvram_pos = 0xfc, i;
 	for (i = 0; i<4; i++) {
 		outb(nvram_pos, BIOSRAM_INDEX);

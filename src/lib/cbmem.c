@@ -49,10 +49,6 @@ struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
 	return bss_cbmem_toc;
 }
 
-void __attribute__((weak)) set_cbmem_toc(struct cbmem_entry * x)
-{
-	/* do nothing, this should be called by chipset to save TOC in NVRAM */
-}
 #else
 
 struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
@@ -101,10 +97,6 @@ void cbmem_init(u64 baseaddr, u64 size)
 		for (;;) ;
 	}
 
-	/* we don't need to call this in romstage, useful only from ramstage */
-#ifndef __PRE_RAM__
-	set_cbmem_toc((struct cbmem_entry *)(unsigned long)baseaddr);
-#endif
 	memset(cbmem_toc, 0, CBMEM_TOC_RESERVED);
 
 	cbmem_toc[0] = (struct cbmem_entry) {

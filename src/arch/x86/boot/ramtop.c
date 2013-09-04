@@ -24,6 +24,21 @@ unsigned long __attribute__((weak)) get_top_of_ram(void)
 	return 0;
 }
 
+#if !CONFIG_DYNAMIC_CBMEM
+void get_cbmem_table(uint64_t *base, uint64_t *size)
+{
+	uint64_t top_of_ram = get_top_of_ram();
+
+	if (top_of_ram >= HIGH_MEMORY_SIZE) {
+		*base = top_of_ram - HIGH_MEMORY_SIZE;
+		*size = HIGH_MEMORY_SIZE;
+	} else {
+		*base = 0;
+		*size = 0;
+	}
+}
+#endif
+
 #if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
 void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 {

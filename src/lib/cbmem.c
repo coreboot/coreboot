@@ -95,13 +95,16 @@ void cbmem_late_set_table(uint64_t base, uint64_t size)
  *  - suspend/resume backup memory
  */
 
-void cbmem_init(u64 baseaddr, u64 size)
+#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
+static void cbmem_init(void)
 {
+	uint64_t baseaddr, size;
 	struct cbmem_entry *cbmem_toc;
-	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
-	printk(BIOS_DEBUG, "Initializing CBMEM area to 0x%llx (%lld bytes)\n",
-	       baseaddr, size);
+	cbmem_locate_table(&baseaddr, &size);
+	cbmem_trace_location(baseaddr, size, __FUNCTION__);
+
+	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
 
 	if (size < (64 * 1024)) {
 		printk(BIOS_DEBUG, "Increase CBMEM size!\n");
@@ -117,6 +120,7 @@ void cbmem_init(u64 baseaddr, u64 size)
 		.size	= size - CBMEM_TOC_RESERVED
 	};
 }
+#endif
 
 int cbmem_reinit(void)
 {
@@ -220,10 +224,7 @@ void *cbmem_find(u32 id)
 /* Returns True if it was not initialized before. */
 int cbmem_initialize(void)
 {
-	uint64_t base = 0, size = 0;
 	int rv = 0;
-
-	cbmem_locate_table(&base, &size);
 
 	/* We expect the romstage to always initialize it. */
 	if (!cbmem_reinit()) {
@@ -232,7 +233,7 @@ int cbmem_initialize(void)
 		if (acpi_slp_type == 3 || acpi_slp_type == 2)
 			acpi_slp_type = 0;
 #endif
-		cbmem_init(base, size);
+		cbmem_init();
 		rv = 1;
 	}
 #ifndef __PRE_RAM__

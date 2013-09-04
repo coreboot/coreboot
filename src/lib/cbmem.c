@@ -21,6 +21,7 @@
 #include <string.h>
 #include <bootstate.h>
 #include <cbmem.h>
+#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <cpu/x86/car.h>
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
@@ -40,6 +41,11 @@ struct cbmem_entry {
 	u64 base;
 	u64 size;
 } __attribute__((packed));
+
+#ifndef __PRE_RAM__
+uint64_t high_tables_base = 0;
+uint64_t high_tables_size = 0;
+#endif
 
 static void cbmem_locate_table(uint64_t *base, uint64_t *size)
 {
@@ -243,6 +249,26 @@ BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 	BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
 	                      init_cbmem_post_device, NULL),
 };
+
+int cbmem_base_check(void)
+{
+	uint64_t base, size;
+	cbmem_locate_table(&base, &size);
+	if (!base) {
+		printk(BIOS_ERR, "ERROR: CBMEM Base is not set.\n");
+		// Are there any boards without?
+		// Stepan thinks we should die() here!
+	}
+	printk(BIOS_DEBUG, "CBMEM Base is %llx.\n", base);
+	return !!base;
+}
+
+void cbmem_add_lb_mem(struct lb_memory *mem)
+{
+	uint64_t base, size;
+	cbmem_locate_table(&base, &size);
+	lb_add_memory_range(mem, LB_MEM_TABLE, base, size);
+}
 
 void cbmem_list(void)
 {

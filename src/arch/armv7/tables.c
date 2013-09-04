@@ -29,13 +29,6 @@
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
-/*
- * TODO: "High" tables are a convention used on x86. Maybe we can
- * clean up that naming at some point.
- */
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size;
-
 void __attribute__((weak)) get_cbmem_table(uint64_t *base, uint64_t *size)
 {
 	printk(BIOS_WARNING, "WARNING: you need to define get_cbmem_table for your board\n");
@@ -51,11 +44,7 @@ struct lb_memory *write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;
 
-	if (!high_tables_base) {
-		printk(BIOS_ERR, "ERROR: high_tables_base is not set.\n");
-	}
-
-	printk(BIOS_DEBUG, "high_tables_base: %llx.\n", high_tables_base);
+	cbmem_base_check();
 
 	post_code(0x9d);
 

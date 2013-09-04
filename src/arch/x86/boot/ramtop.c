@@ -25,8 +25,14 @@ unsigned long __attribute__((weak)) get_top_of_ram(void)
 }
 
 #if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
+void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
+{
+	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM. */
+}
+
 void set_top_of_ram(uint64_t ramtop)
 {
+	backup_top_of_ram(ramtop);
 	set_cbmem_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
 }
 #endif

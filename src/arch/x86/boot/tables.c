@@ -51,13 +51,7 @@ struct lb_memory *write_tables(void)
 	unsigned long high_table_pointer;
 
 #if !CONFIG_DYNAMIC_CBMEM
-	if (!high_tables_base) {
-		printk(BIOS_ERR, "ERROR: High Tables Base is not set.\n");
-		// Are there any boards without?
-		// Stepan thinks we should die() here!
-	}
-
-	printk(BIOS_DEBUG, "High Tables Base is %llx.\n", high_tables_base);
+	cbmem_base_check();
 #endif
 
 	rom_table_start = 0xf0000;
@@ -225,9 +219,18 @@ struct lb_memory *write_tables(void)
 	if (high_table_pointer) {
 		unsigned long new_high_table_pointer;
 
+		/* FIXME: The high_table_base parameter is not reference when tables are high,
+		 * or high_table_pointer >1 MB.
+		 */
+#if !CONFIG_DYNAMIC_CBMEM
+		u64 high_table_base = (u32)get_cbmem_toc();
+#else
+		u64 high_table_base = 0;
+#endif
+
 		/* Also put a forwarder entry into 0-4K */
 		new_high_table_pointer = write_coreboot_table(low_table_start, low_table_end,
-				high_tables_base, high_table_pointer);
+				high_table_base, high_table_pointer);
 
 		if (new_high_table_pointer > (high_table_pointer +
 					MAX_COREBOOT_TABLE_SIZE))

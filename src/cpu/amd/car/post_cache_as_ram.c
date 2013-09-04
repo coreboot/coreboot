@@ -45,7 +45,8 @@ static inline void *backup_resume(void) {
 	print_debug_pcar("CBMEM TOC is at: ", (uint32_t)high_ram_base);
 	print_debug_pcar("CBMEM TOC 0-size: ",(uint32_t)(high_ram_base + HIGH_MEMORY_SIZE + 4096));
 
-	cbmem_reinit((u64)high_ram_base);
+	if (!cbmem_reinit((u64)high_ram_base))
+		return NULL;
 
 	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 

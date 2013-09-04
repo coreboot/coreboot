@@ -183,6 +183,11 @@ static inline int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 	return nvram_pos;
 }
 
-struct cbmem_entry *get_cbmem_toc(void) {
-	return (struct cbmem_entry *) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_CBMEM_TOC);
+#if CONFIG_HAVE_ACPI_RESUME
+unsigned long get_top_of_ram(void)
+{
+	if (!acpi_is_wakeup_early())
+		return 0;
+	return (unsigned long) inl(K8T890_NVRAM_IO_BASE+K8T890_NVRAM_TOP_OF_RAM);
 }
+#endif

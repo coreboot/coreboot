@@ -40,12 +40,18 @@ void get_cbmem_table(uint64_t *base, uint64_t *size)
 #endif
 
 #if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
+void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
+{
+	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM. */
+}
+
 /* This is for compatibility with old boards only. Any new chipset and board
  * must implement get_top_of_ram() for both romstage and ramstage to support
  * features like CAR_MIGRATION and CBMEM_CONSOLE.
  */
 void set_top_of_ram(uint64_t ramtop)
 {
+	backup_top_of_ram(ramtop);
 	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
 }
 #endif

@@ -132,8 +132,8 @@ u64 cbmem_entry_size(const struct cbmem_entry *entry);
 #ifndef __PRE_RAM__
 extern uint64_t high_tables_base, high_tables_size;
 void set_top_of_ram(uint64_t ramtop);
+void backup_top_of_ram(uint64_t ramtop);
 void cbmem_late_set_table(uint64_t base, uint64_t size);
-void set_cbmem_toc(struct cbmem_entry *);
 int cbmem_base_check(void);
 #endif
 

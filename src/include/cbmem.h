@@ -137,7 +137,6 @@ void cbmem_late_set_table(uint64_t base, uint64_t size);
 int cbmem_base_check(void);
 #endif
 
-void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(void);
 
 void get_cbmem_table(uint64_t *base, uint64_t *size);

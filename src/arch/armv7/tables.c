@@ -29,13 +29,6 @@
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
-/*
- * TODO: "High" tables are a convention used on x86. Maybe we can
- * clean up that naming at some point.
- */
-uint64_t high_tables_base = 0;
-uint64_t high_tables_size;
-
 void cbmem_arch_init(void)
 {
 }

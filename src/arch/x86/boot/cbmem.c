@@ -25,9 +25,6 @@
  */
 void set_top_of_ram(uint64_t ramtop)
 {
-	high_tables_base = ramtop - HIGH_MEMORY_SIZE;
-	high_tables_size = HIGH_MEMORY_SIZE;
-	printk(BIOS_DEBUG, "high_tables_base: %08llx, size %lld\n",
-		high_tables_base, high_tables_size);
+	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
 }
 #endif

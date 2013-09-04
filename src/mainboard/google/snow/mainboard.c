@@ -262,17 +262,22 @@ static void mainboard_init(device_t dev)
 	// gpio_info();
 }
 
+static void setup_cbmem(void)
+{
+	u64 size = CONFIG_COREBOOT_TABLES_SIZE;
+	u64 base = CONFIG_SYS_SDRAM_BASE +
+				((unsigned)CONFIG_DRAM_SIZE_MB << 20ULL) -
+				CONFIG_COREBOOT_TABLES_SIZE;
+	cbmem_late_set_table(base, size);
+	cbmem_init(base, size);
+}
+
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = &mainboard_init;
 
 	/* set up coreboot tables */
-	/* FIXME: this should happen somewhere else */
-	high_tables_size = CONFIG_COREBOOT_TABLES_SIZE;
-	high_tables_base = CONFIG_SYS_SDRAM_BASE +
-				((unsigned)CONFIG_DRAM_SIZE_MB << 20ULL) -
-				CONFIG_COREBOOT_TABLES_SIZE;
-	cbmem_init(high_tables_base, high_tables_size);
+	setup_cbmem();
 
 	/* set up dcache and MMU */
 	/* FIXME: this should happen via resource allocator */

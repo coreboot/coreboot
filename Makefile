@@ -137,6 +137,11 @@ AR := $(AR_$(ARCH-y))
 
 CFLAGS += $(CFLAGS_$(ARCH-y))
 
+ifeq ($(CC),)
+$(shell rm .xcompile)
+$(error no suitable GCC for $(ARCH-y))
+endif
+
 LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && \
 		      $(CC) -print-libgcc-file-name)
 

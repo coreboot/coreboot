@@ -60,7 +60,18 @@ struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
 	printk(BIOS_WARNING, "WARNING: you need to define get_cbmem_toc() for your chipset\n");
 	return NULL;
 }
+#endif
 
+#if !defined(__PRE_RAM__)
+void set_cbmem_table(uint64_t base, uint64_t size)
+{
+	if (base == high_tables_base && size == high_tables_size)
+		return;
+
+	printk(BIOS_DEBUG, "CBMEM region %llx-%llx\n", base, base+size-1);
+	high_tables_base = base;
+	high_tables_size = size;
+}
 #endif
 
 /**

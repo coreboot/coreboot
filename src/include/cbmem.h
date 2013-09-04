@@ -126,11 +126,6 @@ int cbmem_entry_remove(const struct cbmem_entry *entry);
 void *cbmem_entry_start(const struct cbmem_entry *entry);
 u64 cbmem_entry_size(const struct cbmem_entry *entry);
 
-#ifndef __PRE_RAM__
-/* Add the cbmem memory used to the memory tables. */
-struct lb_memory;
-void cbmem_add_lb_mem(struct lb_memory *mem);
-#endif /* __PRE_RAM__ */
 
 #else /* !CONFIG_DYNAMIC_CBMEM */
 
@@ -139,6 +134,7 @@ extern uint64_t high_tables_base, high_tables_size;
 void set_top_of_ram(uint64_t ramtop);
 void cbmem_late_set_table(uint64_t base, uint64_t size);
 void set_cbmem_toc(struct cbmem_entry *);
+int cbmem_base_check(void);
 #endif
 
 void cbmem_init(u64 baseaddr, u64 size);
@@ -162,6 +158,9 @@ void *cbmem_find(u32 id);
 
 #ifndef __PRE_RAM__
 /* Ramstage only functions. */
+/* Add the cbmem memory used to the memory tables. */
+struct lb_memory;
+void cbmem_add_lb_mem(struct lb_memory *mem);
 void cbmem_list(void);
 void cbmem_arch_init(void);
 void cbmem_print_entry(int n, u32 id, u64 start, u64 size);

@@ -37,11 +37,7 @@ struct lb_memory *write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;
 
-	if (!high_tables_base) {
-		printk(BIOS_ERR, "ERROR: high_tables_base is not set.\n");
-	}
-
-	printk(BIOS_DEBUG, "high_tables_base: %llx.\n", high_tables_base);
+	cbmem_base_check();
 
 	post_code(0x9d);
 

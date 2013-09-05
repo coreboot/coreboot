@@ -240,6 +240,7 @@ typedef struct {
 	unsigned short wReportDescriptorLength;
 } __attribute__ ((packed)) hid_descriptor_t;
 
+hci_t *usb_add_mmio_hc(hc_type type, void *bar);
 hci_t *new_controller (void);
 void detach_controller (hci_t *controller);
 void usb_poll (void);

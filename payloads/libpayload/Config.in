@@ -378,29 +378,10 @@ config USB_GEN_HUB
 	default n if (!USB_HUB && !USB_XHCI)
 	default y if (USB_HUB || USB_XHCI)
 config USB_PCI
-	bool
+	bool "Auto-scan PCI bus for USB host controllers"
+	depends on USB
 	default y if ARCH_X86
 	default n
-
-config USB_MEMORY
-	bool
-	default y if ARCH_ARMV7
-	default n
-
-config USB_OHCI_BASE_ADDRESS
-	hex
-	depends on USB_MEMORY && USB_OHCI
-	default 0x12120000
-
-config USB_EHCI_BASE_ADDRESS
-	hex
-	depends on USB_MEMORY && USB_EHCI
-	default 0x12110000
-
-config USB_XHCI_BASE_ADDRESS
-	hex
-	depends on USB_MEMORY && USB_XHCI
-	default 0x12000000
 
 endmenu
 

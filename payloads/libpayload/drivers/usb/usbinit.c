@@ -156,21 +156,6 @@ static void usb_scan_pci_bus(int bus)
 }
 #endif
 
-#ifdef CONFIG_LP_USB_MEMORY
-static void usb_scan_memory(void)
-{
-#ifdef CONFIG_LP_USB_XHCI
-	xhci_init(CONFIG_LP_USB_XHCI_BASE_ADDRESS);
-#endif
-#ifdef CONFIG_LP_USB_EHCI
-	ehci_init(CONFIG_LP_USB_EHCI_BASE_ADDRESS);
-#endif
-#ifdef CONFIG_LP_USB_OHCI
-	ohci_init(CONFIG_LP_USB_OHCI_BASE_ADDRESS);
-#endif
-}
-#endif
-
 /**
  * Initialize all USB controllers attached to PCI.
  */
@@ -179,8 +164,26 @@ int usb_initialize(void)
 #ifdef CONFIG_LP_USB_PCI
 	usb_scan_pci_bus(0);
 #endif
-#ifdef CONFIG_LP_USB_MEMORY
-	usb_scan_memory();
-#endif
 	return 0;
+}
+
+hci_t *usb_add_mmio_hc(hc_type type, void *bar)
+{
+	switch (type) {
+#ifdef CONFIG_LP_USB_OHCI
+	case OHCI:
+		return ohci_init(bar);
+#endif
+#ifdef CONFIG_LP_USB_EHCI
+	case EHCI:
+		return ehci_init(bar);
+#endif
+#ifdef CONFIG_LP_USB_XHCI
+	case XHCI:
+		return xhci_init(bar);
+#endif
+	default:
+		usb_debug("HC type %d (at %p) is not supported!\n", type, bar);
+		return NULL;
+	}
 }

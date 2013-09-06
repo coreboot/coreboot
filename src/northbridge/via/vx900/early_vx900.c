@@ -27,11 +27,6 @@ unsigned long get_top_of_ram(void)
 	return (((unsigned long)reg_tom) << 24) - (256 << 20);
 }
 
-struct cbmem_entry *get_cbmem_toc(void)
-{
-	return (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
-}
-
 /**
  * \brief Enable accessing of PCI configuration space for all devices.
  *

@@ -141,7 +141,7 @@ void cbmem_init(u64 baseaddr, u64 size);
 int cbmem_reinit(u64 baseaddr);
 
 void get_cbmem_table(uint64_t *base, uint64_t *size);
-extern struct cbmem_entry *get_cbmem_toc(void);
+struct cbmem_entry *get_cbmem_toc(void);
 
 #endif /* CONFIG_DYNAMIC_CBMEM */
 

@@ -71,7 +71,7 @@ static void cbmem_locate_table(uint64_t *base, uint64_t *size)
 #endif
 }
 
-struct cbmem_entry *__attribute__((weak)) get_cbmem_toc(void)
+struct cbmem_entry *get_cbmem_toc(void)
 {
 	uint64_t base, size;
 	cbmem_locate_table(&base, &size);

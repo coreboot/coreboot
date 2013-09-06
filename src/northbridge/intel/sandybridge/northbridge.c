@@ -58,14 +58,6 @@ unsigned long get_top_of_ram(void)
 	return (unsigned long) tom;
 }
 
-struct cbmem_entry *get_cbmem_toc(void)
-{
-	static struct cbmem_entry *toc = NULL;
-	if (!toc)
-		toc = (struct cbmem_entry *)(get_top_of_ram() - HIGH_MEMORY_SIZE);
-	return toc;
-}
-
 /* Reserve everything between A segment and 1MB:
  *
  * 0xa0000 - 0xbffff: legacy VGA

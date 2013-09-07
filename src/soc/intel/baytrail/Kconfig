@@ -1,0 +1,186 @@
+
+config SOC_INTEL_BAYTRAIL
+	bool
+	help
+	  Bay Trail M/D part support.
+
+if SOC_INTEL_BAYTRAIL
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select SMP
+	select SSE2
+	select UDELAY_TSC
+	select TSC_CONSTANT_RATE
+	select SMM_TSEG
+	select SMM_MODULES
+	select RELOCATABLE_MODULES
+	select DYNAMIC_CBMEM
+	select SUPPORT_CPU_UCODE_IN_CBFS
+	select TSC_SYNC_MFENCE
+	select CAR_MIGRATION
+	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
+	select HAVE_SMI_HANDLER
+	select CACHE_MRC_SETTINGS
+	select CACHE_ROM
+	select SPI_FLASH
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "soc/intel/baytrail/bootblock/bootblock.c"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xe0000000
+
+config MAX_CPUS
+	int
+	default 4
+
+config CPU_ADDR_BITS
+	int
+	default 36
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x800000
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
+
+config HAVE_MRC
+	bool "Add a Memory Reference Code binary"
+	default y
+	help
+	  Select this option to add a blob containing
+	  memory reference code.
+	  Note: Without this binary coreboot will not work
+
+if HAVE_MRC
+
+config MRC_FILE
+	string "Intel memory refeference code path and filename"
+	default "3rdparty/soc/intel/baytrail/mrc.bin"
+	help
+	  The path and filename of the file to use as System Agent
+	  binary.
+
+config MRC_BIN_ADDRESS
+	hex
+	default 0xfffa0000
+
+config CACHE_MRC_SETTINGS
+	bool "Save cached MRC settings"
+	default n
+
+if CACHE_MRC_SETTINGS
+
+config MRC_SETTINGS_CACHE_BASE
+	hex
+	default 0xffb00000
+
+config MRC_SETTINGS_CACHE_SIZE
+	hex
+	default 0x10000
+
+endif # CACHE_MRC_SETTINGS
+
+endif # HAVE_MRC
+
+config CAR_TILE_SIZE
+	hex
+	default 0x8000
+	help
+	 The tile size is the limit that can be assigned to cache-as-ram
+	 region as well as the amount of code cache used during cache-as-ram.
+	 Also note that (DCACHE_RAM_BASE ^ MRC_BIN_ADDRESS) & CAR_TILE_SIZE ==
+	 CAR_TILE_SIZE.
+
+# Cache As RAM region layout:
+#
+# +-------------+ DCACHE_RAM_BASE + DCACHE_RAM_SIZE + DCACHE_RAM_MRC_VAR_SIZE
+# | MRC usage   |
+# |             |
+# +-------------+ DCACHE_RAM_BASE + DCACHE_RAM_SIZE
+# |  Stack      |\
+# |    |        | * DCACHE_RAM_ROMSTAGE_STACK_SIZE
+# |    v        |/
+# +-------------+
+# |    ^        |
+# |    |        |
+# | CAR Globals |
+# +-------------+ DCACHE_RAM_BASE
+#
+# Note that the MRC binary is linked to assume the region marked as "MRC usage"
+# starts at DCACHE_RAM_BASE + DCACHE_RAM_SIZE. If those values change then
+# a new MRC binary needs to be produced with the updated start and size
+# information.
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xff7f8000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x1000
+	help
+	  The size of the cache-as-ram region required during bootblock
+	  and/or romstage. Note DCACHE_RAM_SIZE and DCACHE_RAM_MRC_VAR_SIZE
+	  must add up to a power of 2.
+
+config DCACHE_RAM_MRC_VAR_SIZE
+	hex
+	default 0x7000
+	help
+	  The amount of cache-as-ram region required by the reference code.
+
+config DCACHE_RAM_ROMSTAGE_STACK_SIZE
+	hex
+	default 0x800
+	help
+	  The amount of anticipated stack usage from the data cache
+	  during pre-ram rom stage execution.
+
+config RESET_ON_INVALID_RAMSTAGE_CACHE
+	bool "Reset the system on S3 wake when ramstage cache invalid."
+	default n
+	depends on RELOCATABLE_RAMSTAGE
+	help
+	  The baytrail romstage code caches the loaded ramstage program
+	  in SMM space. On S3 wake the romstage will copy over a fresh
+	  ramstage that was cached in the SMM space. This option determines
+	  the action to take when the ramstage cache is invalid. If selected
+	  the system will reset otherwise the ramstage will be reloaded from
+	  cbfs.
+
+config CBFS_SIZE
+	hex "Size of CBFS filesystem in ROM"
+	default 0x100000
+	help
+	  On Bay Trail systems the firmware image has to store a lot more
+	  than just coreboot, including:
+	   - a firmware descriptor
+	   - Intel Management Engine firmware
+	   - MRC cache information
+	  This option allows to limit the size of the CBFS portion in the
+	  firmware image.
+
+config ENABLE_BUILTIN_COM1
+	bool "Enable builtin COM1 Serial Port"
+	default n
+	help
+	  The PMC has a legacy COM1 serial port. Choose this option to
+	  configure the pads and enable it. This serial port can be used for
+	  the debug console.
+
+config ME_BIN_PATH
+	string "Path to management engine firmware"
+	default "3rdparty/mainboard/$(MAINBOARDDIR)/me.bin"
+
+config IFD_BIN_PATH
+	string "Path to intel firmware descriptor"
+	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
+
+endif

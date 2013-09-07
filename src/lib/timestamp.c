@@ -114,7 +114,10 @@ static void timestamp_do_sync(void)
 
 void timestamp_init(tsc_t base)
 {
-#ifndef __PRE_RAM__
+#ifdef __PRE_RAM__
+	/* Copy of basetime, it is too early for CBMEM. */
+	ts_basetime = base;
+#else
 	struct timestamp_table* tst;
 
 	/* Locate and use an already existing table. */
@@ -123,19 +126,21 @@ void timestamp_init(tsc_t base)
 		ts_table = tst;
 		return;
 	}
-#endif
 
+	/* Copy of basetime, may be too early for CBMEM. */
+	ts_basetime = base;
 	timestamp_real_init(base);
-	if (ts_table)
-		timestamp_do_sync();
-	else
-		ts_basetime = base;
+#endif
 }
 
-#ifndef __PRE_RAM__
 void timestamp_sync(void)
 {
+#ifdef __PRE_RAM__
+	timestamp_real_init(ts_basetime);
+#else
 	if (!ts_table)
 		timestamp_init(ts_basetime);
-}
 #endif
+	if (ts_table)
+		timestamp_do_sync();
+}

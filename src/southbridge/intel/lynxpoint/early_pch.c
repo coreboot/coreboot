@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
+#include <timestamp.h>
 #include <elog.h>
 #include "pch.h"
 
@@ -61,6 +62,17 @@ static void pch_generic_setup(void)
 	outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
 	printk(BIOS_DEBUG, " done.\n");
 }
+
+#if CONFIG_COLLECT_TIMESTAMPS
+tsc_t get_initial_timestamp(void)
+{
+	tsc_t base_time = {
+		.lo = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xdc),
+		.hi = pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0)
+	};
+	return base_time;
+}
+#endif
 
 static int sleep_type_s3(void)
 {

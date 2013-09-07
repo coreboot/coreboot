@@ -47,7 +47,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c pch.c
 
 romstage-y += early_usb.c early_smbus.c early_me.c me_status.c gpio.c
 romstage-y += reset.c
-romstage-y += early_spi.c
+romstage-y += early_spi.c early_pch.c
 
 ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 IFD_BIN_PATH := $(objgenerated)/ifdfake.bin

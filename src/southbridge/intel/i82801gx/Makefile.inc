@@ -36,5 +36,4 @@ ramstage-y += watchdog.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
-romstage-y += early_smbus.c
-
+romstage-y += early_smbus.c early_lpc.c

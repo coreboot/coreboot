@@ -160,10 +160,7 @@ void main(unsigned long bist)
 	tsc_t start_romstage_time;
 	tsc_t before_dram_time;
 	tsc_t after_dram_time;
-	tsc_t base_time = {
-		.lo = pci_read_config32(PCI_DEV(0, 0x00, 0), 0xdc),
-		.hi = pci_read_config32(PCI_DEV(0, 0x1f, 2), 0xd0)
-	};
+	tsc_t base_time = get_initial_timestamp();
 #endif
 	struct pei_data pei_data = {
 		pei_version: PEI_VERSION,

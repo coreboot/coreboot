@@ -20,8 +20,6 @@
 /*
  * Inspired from the EPIA-M700
  */
-#undef CONFIG_COLLECT_TIMESTAMPS
-#define CONFIG_COLLECT_TIMESTAMPS 1
 #include <stdint.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
@@ -61,7 +59,7 @@ void main(unsigned long bist)
 {
 	u32 tolm;
 	u64 start, end;
-	tsc_t tsc_at_romstage_start = rdtsc();
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	/* First thing we need to do on the VX900, before anything else */
 	vx900_enable_pci_config_space();
@@ -83,13 +81,13 @@ void main(unsigned long bist)
 	/* Oh, almighty, give us the SMBUS */
 	enable_smbus();
 
-	tsc_t tsc_before_raminit = rdtsc();
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	/* Now we can worry about raminit.
 	 * This board only has DDR3, so no need to worry about which DRAM type
 	 * to use */
 	dimm_layout dimms = { {0x50, 0x51, SPD_END_LIST} };
 	vx900_init_dram_ddr3(&dimms);
-	tsc_t tsc_after_raminit = rdtsc();
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* TODO: All these ram_checks are here to ensure we test most of the RAM
 	 * below 4G. They should not be needed once VX900 raminit is stable */
@@ -106,15 +104,11 @@ void main(unsigned long bist)
 		ram_check(2048 << 20, 0x80);
 
 	print_debug("We passed RAM verify\n");
-#ifdef GONFIG_EARLY_CBMEM_INIT
+
 	/* We got RAM working, now we can write the timestamps to RAM */
 	cbmem_initialize();
-	timestamp_init(tsc_at_romstage_start);
-	timestamp_add(TS_START_ROMSTAGE, tsc_at_romstage_start);
-	timestamp_add(TS_BEFORE_INITRAM, tsc_before_raminit);
-	timestamp_add(TS_AFTER_INITRAM, tsc_after_raminit);
+	timestamp_sync();
 	timestamp_add_now(TS_END_ROMSTAGE);
-#endif
 	/* FIXME: See if this is needed or take this out please */
 	/* Disable Memcard and SDIO */
 	pci_mod_config8(LPC, 0x51, 0, (1 << 7) | (1 << 4));

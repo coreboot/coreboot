@@ -212,16 +212,9 @@ void main(unsigned long bist)
 	int cbmem_was_initted;
 	const u8 spd_addrmap[2 * DIMM_SOCKETS] = { 0x50, 0x52, 0x51, 0x53 };
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	tsc_t start_romstage_time;
-	tsc_t before_dram_time;
-	tsc_t after_dram_time;
-	tsc_t base_time = get_initial_timestamp();
-#endif
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	start_romstage_time = rdtsc();
-#endif
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
 
 	if (bist == 0)
 		enable_lapic();
@@ -291,13 +284,9 @@ void main(unsigned long bist)
 	dump_spd_registers();
 #endif
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	before_dram_time = rdtsc();
-#endif
+	timestamp_add_now(TS_BEFORE_INITRAM);
 	sdram_initialize(boot_mode, spd_addrmap);
-#if CONFIG_COLLECT_TIMESTAMPS
-	after_dram_time = rdtsc();
-#endif
+	timestamp_add_now(TS_AFTER_INITRAM);
 
 	/* Perform some initialization that must run before stage2 */
 	early_ich7_init();
@@ -354,13 +343,8 @@ void main(unsigned long bist)
 	}
 #endif
 
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamp_init(base_time);
-	timestamp_add(TS_START_ROMSTAGE, start_romstage_time );
-	timestamp_add(TS_BEFORE_INITRAM, before_dram_time );
-	timestamp_add(TS_AFTER_INITRAM, after_dram_time );
+	timestamp_sync();
 	timestamp_add_now(TS_END_ROMSTAGE);
-#endif
 
 #if CONFIG_CONSOLE_CBMEM
 	/* Keep this the last thing this function does. */

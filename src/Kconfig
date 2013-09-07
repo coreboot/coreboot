@@ -261,6 +261,8 @@ comment "Super I/O"
 source src/superio/Kconfig
 comment "Embedded Controllers"
 source src/ec/Kconfig
+comment "SoC"
+source src/soc/Kconfig
 
 endmenu
 

@@ -23,6 +23,7 @@
 #include <cbmem.h>
 #include <timestamp.h>
 #include <cpu/x86/car.h>
+#include <cpu/x86/lapic.h>
 
 #define MAX_TIMESTAMPS 30
 
@@ -59,6 +60,9 @@ static void timestamp_real_init(tsc_t base)
 void timestamp_add(enum timestamp_id id, tsc_t ts_time)
 {
 	struct timestamp_entry *tse;
+
+	if (!boot_cpu())
+		return;
 
 	if (!ts_table) {
 		timestamp_stash(id, ts_time);
@@ -114,6 +118,9 @@ static void timestamp_do_sync(void)
 
 void timestamp_init(tsc_t base)
 {
+	if (!boot_cpu())
+		return;
+
 #ifdef __PRE_RAM__
 	/* Copy of basetime, it is too early for CBMEM. */
 	ts_basetime = base;
@@ -135,6 +142,9 @@ void timestamp_init(tsc_t base)
 
 void timestamp_sync(void)
 {
+	if (!boot_cpu())
+		return;
+
 #ifdef __PRE_RAM__
 	timestamp_real_init(ts_basetime);
 #else

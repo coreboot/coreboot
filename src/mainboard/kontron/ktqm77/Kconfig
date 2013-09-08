@@ -14,7 +14,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_RESUME
 	select HAVE_SMI_HANDLER
 	select GFXUMA
-	select EARLY_CBMEM_INIT
 	select ENABLE_VMX
 	select HAVE_MRC
 

@@ -94,9 +94,7 @@ void main(unsigned long bist)
 	print_debug("We passed RAM verify\n");
 
 	/* We got RAM working, now we can write the timestamps to RAM */
-#if CONFIG_EARLY_CBMEM_INIT
 	cbmem_initialize();
-#endif
 	timestamp_sync();
 	timestamp_add_now(TS_END_ROMSTAGE);
 	/* FIXME: See if this is needed or take this out please */

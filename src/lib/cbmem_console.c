@@ -195,27 +195,27 @@ static void copy_console_buffer(struct cbmem_console *new_cons_p)
 
 static void cbmemc_reinit_(void)
 {
-	struct cbmem_console *cbm_cons_p;
+	struct cbmem_console *cbm_cons_p = NULL;
 
-#ifdef __PRE_RAM__
-	cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE,
-			       CONFIG_CONSOLE_CBMEM_BUFFER_SIZE);
+#ifndef __PRE_RAM__
+	cbm_cons_p = cbmem_find(CBMEM_ID_CONSOLE);
+#endif
+
 	if (!cbm_cons_p) {
-		current_console_set(NULL);
-		return;
+		cbm_cons_p = cbmem_add(CBMEM_ID_CONSOLE,	
+							CONFIG_CONSOLE_CBMEM_BUFFER_SIZE);
+
+		if (!cbm_cons_p) {
+			current_console_set(NULL);
+			return;
+		}
+
+		cbm_cons_p->buffer_size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE -
+			sizeof(struct cbmem_console);
+
+		cbm_cons_p->buffer_cursor = 0;
 	}
 
-	cbm_cons_p->buffer_size = CONFIG_CONSOLE_CBMEM_BUFFER_SIZE -
-		sizeof(struct cbmem_console);
-
-	cbm_cons_p->buffer_cursor = 0;
-#else
-	cbm_cons_p = cbmem_find(CBMEM_ID_CONSOLE);
-
-	if (!cbm_cons_p)
-		return;
-
-#endif
 	copy_console_buffer(cbm_cons_p);
 
 	current_console_set(cbm_cons_p);

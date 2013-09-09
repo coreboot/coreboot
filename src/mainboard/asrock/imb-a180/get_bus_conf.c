@@ -30,7 +30,7 @@
  * and acpi_tables busnum is default.
  */
 u8 bus_isa;
-u8 bus_yangtze[3];
+u8 bus_yangtze[6];
 u32 apicid_yangtze;
 
 /*
@@ -100,9 +100,7 @@ void get_bus_conf(void)
 
 	sbdn_yangtze = 0;
 
-	for (i = 0; i < 3; i++) {
-		bus_yangtze[i] = 0;
-	}
+	memset(bus_yangtze, 0, sizeof(bus_yangtze));
 
 	for (i = 0; i < 256; i++) {
 		bus_type[i] = 0; /* default ISA bus. */

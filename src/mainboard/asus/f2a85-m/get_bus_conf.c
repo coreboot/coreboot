@@ -30,7 +30,7 @@
  * and acpi_tables busnum is default.
  */
 u8 bus_isa;
-u8 bus_hudson[3];
+u8 bus_hudson[6];
 u32 apicid_hudson;
 
 /*
@@ -97,9 +97,7 @@ void get_bus_conf(void)
 
 	sbdn_hudson = 0;
 
-	for (i = 0; i < 3; i++) {
-		bus_hudson[i] = 0;
-	}
+	memset(bus_hudson, 0, sizeof(bus_hudson));
 
 	for (i = 0; i < 256; i++) {
 		bus_type[i] = 0; /* default ISA bus. */

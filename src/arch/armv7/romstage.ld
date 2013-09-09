@@ -1,7 +1,7 @@
 /*
  *	Memory map:
  *
- *	CONFIG_RAMBASE		: text segment
+ *	CONFIG_ROMSTAGE_BASE	: text segment
  *				: rodata segment
  *				: data segment
  *				: bss segment

@@ -33,7 +33,7 @@ config MAINBOARD_DIR
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "QEMU ARMV7"
+	default "QEMU ARMv7"
 
 config MAX_CPUS
 	int
@@ -42,6 +42,10 @@ config MAX_CPUS
 config MAINBOARD_VENDOR
 	string
 	default "ARM Ltd."
+
+config SYS_SDRAM_BASE
+	hex "SDRAM base address"
+	default 0x01000000
 
 config DRAM_SIZE_MB
 	int
@@ -62,17 +66,13 @@ config BOOTBLOCK_BASE
 	hex
 	default 0x00010000
 
-config ID_SECTION_BASE
-	hex
-	default 0x0001f000
-
 config ROMSTAGE_BASE
 	hex
 	default 0x00020000
 
-config ROMSTAGE_SIZE
+config RAMSTAGE_BASE
 	hex
-	default 0x20000
+	default SYS_SDRAM_BASE
 
 config BOOTBLOCK_ROM_OFFSET
 	hex
@@ -97,9 +97,5 @@ config STACK_BOTTOM
 config STACK_SIZE
 	hex
 	default 0x0003ff00
-
-config SYS_SDRAM_BASE
-	hex "SDRAM base address"
-	default 0x01000000
 
 endif #  BOARD_EMULATION_QEMU_ARMV7

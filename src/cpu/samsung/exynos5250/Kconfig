@@ -38,6 +38,9 @@ config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
 	default 0x0A000
 
+config SYS_SDRAM_BASE
+	hex
+	default 0x40000000
 
 # Example SRAM/iRAM map for Exynos5250 platform:
 #
@@ -54,9 +57,9 @@ config ROMSTAGE_BASE
 	hex
 	default 0x02030000
 
-config ROMSTAGE_SIZE
+config RAMSTAGE_BASE
 	hex
-	default 0x10000
+	default SYS_SDRAM_BASE
 
 # Stack may reside in either IRAM or DRAM. We will define it to live
 # at the top of IRAM for now.
@@ -89,13 +92,5 @@ config CBFS_CACHE_SIZE
 config TTB_BUFFER
 	hex "memory address of the TTB buffer"
 	default 0x02058000
-
-config TTB_SIZE
-	hex "size of the TTB buffer"
-	default 0x4000
-
-config SYS_SDRAM_BASE
-	hex
-	default 0x40000000
 
 endif

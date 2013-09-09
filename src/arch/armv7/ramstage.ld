@@ -1,7 +1,7 @@
 /*
  *	Memory map:
  *
- *	CONFIG_RAMBASE		: text segment
+ *	CONFIG_RAMSTAGE_BASE	: text segment
  *				: rodata segment
  *				: data segment
  *				: bss segment
@@ -31,7 +31,7 @@ PHDRS
 
 SECTIONS
 {
-	. = CONFIG_SYS_SDRAM_BASE;
+	. = CONFIG_RAMSTAGE_BASE;
 	/* First we place the code and read only data (typically const declared).
 	 * This could theoretically be placed in rom.
 	 */
@@ -111,15 +111,18 @@ SECTIONS
         }
         _eheap = .;
 
-	_stack = CONFIG_STACK_BOTTOM;
-	_estack = CONFIG_STACK_TOP;
-
 	/* The ram segment. This includes all memory used by the memory
 	 * resident copy of coreboot, except the tables that are produced on
 	 * the fly, but including stack and heap.
 	 */
 	_ram_seg = _text;
 	_eram_seg = _eheap;
+
+	/* The stack lives in SRAM in a different location, so keep
+	 * it out of ram_seg
+	 */
+	_stack = CONFIG_STACK_BOTTOM;
+	_estack = CONFIG_STACK_TOP;
 
 	/* Discard the sections we don't need/want */
 

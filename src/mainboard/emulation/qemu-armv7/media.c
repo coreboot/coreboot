@@ -18,32 +18,39 @@
 
 /* Simple memory-mapped ROM emulation. */
 
-static int emu_rom_open(struct cbfs_media *media) {
+static int emu_rom_open(struct cbfs_media *media)
+{
 	return 0;
 }
 
-static void *emu_rom_map(struct cbfs_media *media, size_t offset, size_t count) {
+static void *emu_rom_map(struct cbfs_media *media, size_t offset, size_t count)
+{
         return (void*)(offset + CONFIG_BOOTBLOCK_BASE);
 }
 
-static void *emu_rom_unmap(struct cbfs_media *media, const void *address) {
+static void *emu_rom_unmap(struct cbfs_media *media, const void *address)
+{
 	return NULL;
 }
 
 static size_t emu_rom_read(struct cbfs_media *media, void *dest, size_t offset,
-			   size_t count) {
+			   size_t count)
+{
 	void *ptr = emu_rom_map(media, offset, count);
 	memcpy(dest, ptr, count);
 	emu_rom_unmap(media, ptr);
 	return count;
 }
 
-static int emu_rom_close(struct cbfs_media *media) {
+static int emu_rom_close(struct cbfs_media *media)
+{
 	return 0;
 }
 
 int init_emu_rom_cbfs_media(struct cbfs_media *media);
-int init_emu_rom_cbfs_media(struct cbfs_media *media) {
+
+int init_emu_rom_cbfs_media(struct cbfs_media *media)
+{
 	media->open = emu_rom_open;
 	media->close = emu_rom_close;
 	media->map = emu_rom_map;
@@ -52,6 +59,7 @@ int init_emu_rom_cbfs_media(struct cbfs_media *media) {
 	return 0;
 }
 
-int init_default_cbfs_media(struct cbfs_media *media) {
+int init_default_cbfs_media(struct cbfs_media *media)
+{
 	return init_emu_rom_cbfs_media(media);
 }

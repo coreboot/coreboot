@@ -30,7 +30,7 @@
 
 //-#define IO_APIC_ID    CONFIG_MAX_PHYSICAL_CPUS + 1
 #define IO_APIC_ID    CONFIG_MAX_CPUS
-extern u8 bus_yangtze[3];
+extern u8 bus_yangtze[6];
 
 extern u32 bus_type[256];
 extern u32 sbdn_yangtze;

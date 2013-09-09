@@ -53,7 +53,13 @@ static struct cbmem_console car_cbmem_console CAR_CBMEM;
  * to be concatenated with the CBMEM console buffer contents accumulated
  * during the ROM stage, once CBMEM becomes available at RAM stage.
  */
-static u8 static_console[40000];
+
+#if CONFIG_DYNAMIC_CBMEM
+#define STATIC_CONSOLE_SIZE 1024
+#else
+#define STATIC_CONSOLE_SIZE 40000
+#endif
+static u8 static_console[STATIC_CONSOLE_SIZE];
 #endif
 
 static inline struct cbmem_console *current_console(void)

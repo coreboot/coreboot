@@ -51,11 +51,6 @@ void main(unsigned long bist)
 	cbmem_was_initted = !cbmem_initialize();
 
 	timestamp_init(rdtsc());
-	timestamp_sync();
 	timestamp_add_now(TS_START_ROMSTAGE);
-#if CONFIG_CONSOLE_CBMEM
-	/* Keep this the last thing this function does. */
-	cbmemc_reinit();
-#endif
 
 }

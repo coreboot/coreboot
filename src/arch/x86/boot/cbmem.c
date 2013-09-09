@@ -47,7 +47,7 @@ void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 
 /* This is for compatibility with old boards only. Any new chipset and board
  * must implement get_top_of_ram() for both romstage and ramstage to support
- * features like CAR_MIGRATION and CBMEM_CONSOLE.
+ * early features like COLLECT_TIMESTAMPS and CBMEM_CONSOLE.
  */
 void set_top_of_ram(uint64_t ramtop)
 {

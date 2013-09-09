@@ -115,12 +115,3 @@ config X86_AMD_FIXED_MTRRS
 	help
 	  This option informs the MTRR code to use the RdMem and WrMem fields
 	  in the fixed MTRR MSRs.
-
-config CAR_MIGRATION
-	def_bool n
-	depends on DYNAMIC_CBMEM || EARLY_CBMEM_INIT
-	help
-	  Migrate the cache-as-ram variables to CBMEM once CBMEM is set up
-	  in romstage. This option is only needed if one will be doing more
-	  work in romstage after the cache-as-ram is torn down aside from
-	  loading ramstage.

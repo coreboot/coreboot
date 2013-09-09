@@ -177,7 +177,7 @@ static boot_state_t bs_post_device(void *arg)
 {
 	timestamp_add_now(TS_DEVICE_DONE);
 
-	timestamp_sync();
+	timestamp_reinit();
 
 	return BS_OS_RESUME_CHECK;
 }

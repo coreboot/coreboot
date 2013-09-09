@@ -28,7 +28,7 @@
 #define CAR_CBMEM
 #endif
 
-#if CONFIG_CAR_MIGRATION && defined(__PRE_RAM__)
+#if defined(__PRE_RAM__)
 #define CAR_MIGRATE_ATTR __attribute__ ((used,section (".car.migrate")))
 
 /* Call migrate_fn_() when CAR globals are migrated. */

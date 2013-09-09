@@ -351,8 +351,4 @@ void main(unsigned long bist)
 	timestamp_add(TS_AFTER_INITRAM, after_dram_time );
 	timestamp_add_now(TS_END_ROMSTAGE);
 #endif
-#if CONFIG_CONSOLE_CBMEM
-	/* Keep this the last thing this function does. */
-	cbmemc_reinit();
-#endif
 }

@@ -322,10 +322,5 @@ void main(unsigned long bist)
 	}
 #endif
 	post_code(0x3f);
-	timestamp_sync();
 	timestamp_add_now(TS_END_ROMSTAGE);
-#if CONFIG_CONSOLE_CBMEM
-	/* Keep this the last thing this function does. */
-	cbmemc_reinit();
-#endif
 }

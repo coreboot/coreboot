@@ -140,7 +140,7 @@ void timestamp_init(tsc_t base)
 #endif
 }
 
-void timestamp_sync(void)
+void timestamp_reinit(void)
 {
 	if (!boot_cpu())
 		return;
@@ -154,3 +154,6 @@ void timestamp_sync(void)
 	if (ts_table)
 		timestamp_do_sync();
 }
+
+/* Call timestamp_reinit at CAR migration time. */
+CAR_MIGRATE(timestamp_reinit)

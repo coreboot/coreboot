@@ -31,7 +31,7 @@
 * and acpi_tables busnum is default.
 */
 u8 bus_isa;
-u8 bus_sb900[3];
+u8 bus_sb900[6];
 
 /*
 * Here you only need to set value in pci1234 for HT-IO that could be installed or not
@@ -94,9 +94,7 @@ void get_bus_conf(void)
 
 	sbdn_sb900 = 0;
 
-	for (i = 0; i < 3; i++) {
-		bus_sb900[i] = 0;
-	}
+	memset(bus_sb900, 0, sizeof(bus_sb900));
 
 	for (i = 0; i < 256; i++) {
 		bus_type[i] = 0;	/* default ISA bus. */

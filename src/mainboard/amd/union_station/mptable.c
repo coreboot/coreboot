@@ -27,7 +27,7 @@
 #include <cpu/amd/amdfam14.h>
 #include <SBPLATFORM.h>
 
-extern u8 bus_sb800[2];
+extern u8 bus_sb800[6];
 
 extern u32 apicid_sb800;
 

@@ -278,7 +278,6 @@ void romstage_common(const struct romstage_params *params)
 #if CONFIG_CHROMEOS
 	init_chromeos(boot_mode);
 #endif
-	timestamp_sync();
 	timestamp_add_now(TS_END_ROMSTAGE);
 }
 

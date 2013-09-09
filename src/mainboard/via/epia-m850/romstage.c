@@ -95,7 +95,6 @@ void main(unsigned long bist)
 
 	/* We got RAM working, now we can write the timestamps to RAM */
 	cbmem_initialize();
-	timestamp_sync();
 	timestamp_add_now(TS_END_ROMSTAGE);
 	/* FIXME: See if this is needed or take this out please */
 	/* Disable Memcard and SDIO */

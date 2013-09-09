@@ -974,7 +974,6 @@ void pci_ehci_read_resources(struct device *dev)
 }
 #endif
 
-#if CONFIG_CAR_MIGRATION
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 static int get_usbdebug_from_cbmem(struct ehci_debug_info *info)
 {
@@ -1004,7 +1003,6 @@ static void migrate_ehci_debug(void)
 }
 CAR_MIGRATE(migrate_ehci_debug);
 #endif
-#endif /* CONFIG_CAR_MIGRATION */
 
 unsigned long pci_ehci_base_regs(pci_devfn_t sdev)
 {
@@ -1036,7 +1034,7 @@ int usbdebug_init(void)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 
-#if CONFIG_CAR_MIGRATION && !defined(__PRE_RAM__) && !defined(__SMM__)
+#if !defined(__PRE_RAM__) && !defined(__SMM__)
 	if (!get_usbdebug_from_cbmem(dbg_info))
 		return 0;
 #endif

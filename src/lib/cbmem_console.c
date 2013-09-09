@@ -45,17 +45,6 @@ static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 
 static struct cbmem_console car_cbmem_console CAR_CBMEM;
 
-/*
- * Once DRAM is initialized and the cache as ram mode is disabled, while still
- * running from ROM, the console buffer in the cache as RAM area becomes
- * unavailable.
- *
- * By this time the console log buffer is already available in
- * CBMEM. The location at 0x600 is used as the redirect pointer allowing to
- * find out where the actual console log buffer is.
- */
-#define CBMEM_CONSOLE_REDIRECT (*((struct cbmem_console **)0x600))
-
 #else
 
 /*
@@ -69,30 +58,12 @@ static u8 static_console[40000];
 
 static inline struct cbmem_console *current_console(void)
 {
-#if CONFIG_CAR_MIGRATION || !defined(__PRE_RAM__)
 	return car_get_var(cbmem_console_p);
-#else
-	/*
-	 * This check allows to tell if the cache as RAM mode has been exited
-	 * or not. If it has been exited, the real memory is being used
-	 * (resulting in the variable on the stack located below
-	 * DCACHE_RAM_BASE), use the redirect pointer to find out where the
-	 * actual console buffer is.
-	 */
-	if ((uintptr_t)__builtin_frame_address(0) <
-	    (uintptr_t)CONFIG_DCACHE_RAM_BASE)
-		return CBMEM_CONSOLE_REDIRECT;
-	return car_get_var(cbmem_console_p);
-#endif /* CONFIG_CAR_MIGRATION */
 }
 
 static inline void current_console_set(struct cbmem_console *new_console_p)
 {
-#if CONFIG_CAR_MIGRATION || !defined(__PRE_RAM__)
 	car_set_var(cbmem_console_p, new_console_p);
-#else
-	CBMEM_CONSOLE_REDIRECT = new_console_p;
-#endif
 }
 
 static inline void init_console_ptr(void *storage, u32 total_space)
@@ -193,7 +164,7 @@ static void copy_console_buffer(struct cbmem_console *new_cons_p)
 	new_cons_p->buffer_cursor = cursor;
 }
 
-static void cbmemc_reinit_(void)
+void cbmemc_reinit(void)
 {
 	struct cbmem_console *cbm_cons_p = NULL;
 
@@ -221,12 +192,5 @@ static void cbmemc_reinit_(void)
 	current_console_set(cbm_cons_p);
 }
 
-void cbmemc_reinit(void)
-{
-#if !CONFIG_CAR_MIGRATION || !defined(__PRE_RAM__)
-	cbmemc_reinit_();
-#endif
-}
-
-/* Call cbmemc_reinit_() at CAR migration time. */
-CAR_MIGRATE(cbmemc_reinit_)
+/* Call cbmemc_reinit() at CAR migration time. */
+CAR_MIGRATE(cbmemc_reinit)

@@ -28,8 +28,8 @@ void wakeup(void)
 
 	power_init();  /* Ensure ps_hold_setup() for early wakeup. */
 	power_exit_wakeup();
-	/* Should never return. */
-	die("Failed to wake up.\n");
+	/* Should never return. If we do, reset. */
+	power_reset();
 }
 
 int get_wakeup_state(void)

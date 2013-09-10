@@ -13,7 +13,7 @@ romstage-y += die.c
 
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c printk.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += init.c console.c
-bootblock-y += die.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += die.c
 
 $(obj)/console/init.smm.o : $(obj)/build.h
 $(obj)/console/init.ramstage.o : $(obj)/build.h

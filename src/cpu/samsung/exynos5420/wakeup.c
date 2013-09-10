@@ -31,8 +31,8 @@ void wakeup(void)
 	dcache_mmu_disable();
 	icache_invalidate_all();
 	power_exit_wakeup();
-	/* Should never return. */
-	die("Failed to wake up.\n");
+	/* Should never return. If we do, reset. */
+	power_reset();
 }
 
 int get_wakeup_state(void)

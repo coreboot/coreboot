@@ -46,9 +46,6 @@ static void __console_tx_byte(unsigned char byte)
 #if CONFIG_CONSOLE_NE2K
 	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
-#if CONFIG_CONSOLE_CBMEM
-	cbmemc_tx_byte(byte);
-#endif
 }
 
 static void __console_tx_nibble(unsigned nibble)

@@ -119,7 +119,7 @@ void console_init(void)
 #if CONFIG_SPKMODEM
 	spkmodem_init();
 #endif
-#if CONFIG_USBDEBUG
+#if CONFIG_USBDEBUG && !defined(__BOOT_BLOCK__)
 	usbdebug_init();
 #endif
 

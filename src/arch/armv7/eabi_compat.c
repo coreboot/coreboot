@@ -12,7 +12,7 @@
 #include <console/console.h>
 
 /* FIXME(dhendrix): prototypes added for assembler */
-int raise (int signum);
+int raise (int signum) __attribute__((used));
 int raise (int signum)
 {
 	printk(BIOS_CRIT, "raise: Signal # %d caught\n", signum);
@@ -20,12 +20,12 @@ int raise (int signum)
 }
 
 /* Dummy function to avoid linker complaints */
-void __aeabi_unwind_cpp_pr0(void);
+void __aeabi_unwind_cpp_pr0(void) __attribute__((used));
 void __aeabi_unwind_cpp_pr0(void)
 {
 };
 
-void __aeabi_unwind_cpp_pr1(void);
+void __aeabi_unwind_cpp_pr1(void) __attribute__((used));
 void __aeabi_unwind_cpp_pr1(void)
 {
 };

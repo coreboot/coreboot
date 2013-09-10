@@ -47,12 +47,14 @@ romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
-romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
-romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 romstage-$(CONFIG_SPKMODEM) += spkmodem.c
 
+ifeq ($(CONFIG_CACHE_AS_RAM),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
+romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
+romstage-$(CONFIG_USBDEBUG) += usbdebug.c
+endif
 
 ifneq ($(CONFIG_DYNAMIC_CBMEM),y)
 romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c

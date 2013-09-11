@@ -119,12 +119,6 @@ romstage-srcs += $(objgenerated)/crt0.s
 ldscripts =
 ldscripts += $(src)/arch/armv7/romstage.ld
 
-#crt0s += $(src)/cpu/arm/fpu_enable.inc
-# FIXME: CONFIG_NEON or something similar for ARM?
-#ifeq ($(CONFIG_SSE),y)
-#crt0s += $(src)/cpu/arm/sse_enable.inc
-#endif
-
 crt0s += $(cpu_incs)
 crt0s += $(cpu_incs-y)
 

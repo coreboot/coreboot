@@ -22,16 +22,13 @@
 
 #include "clk.h"
 
-static int initialized;
-
 static const uint32_t clocks_per_usec = MCT_HZ/1000000;
 
 void timer_monotonic_get(struct mono_time *mt)
 {
-	if (!initialized) {
-		mct_start();
-		initialized = 1;
-	}
+	/* We don't have to call mct_start() here
+	 * because it was already called in the bootblock
+	 */
 
 	mono_time_set_usecs(mt, mct_raw_value() / clocks_per_usec);
 }

@@ -25,7 +25,9 @@
 
 void init_timer(void)
 {
-	mct_start();
+	/* Nothing to do because we manually
+	 * call mct_start() in the bootblock
+	 */
 }
 
 /* delay x useconds */

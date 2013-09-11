@@ -21,16 +21,8 @@
 #include <arch/io.h>
 #include "clk.h"
 
-static int enabled = 0;
-
 uint64_t mct_raw_value(void)
 {
-	if (!enabled) {
-		writel(readl(&exynos_mct->g_tcon) | (0x1 << 8),
-			&exynos_mct->g_tcon);
-		enabled = 1;
-	}
-
 	uint64_t upper = readl(&exynos_mct->g_cnt_u);
 	uint64_t lower = readl(&exynos_mct->g_cnt_l);
 
@@ -41,5 +33,4 @@ void mct_start(void)
 {
 	writel(readl(&exynos_mct->g_tcon) | (0x1 << 8),
 		&exynos_mct->g_tcon);
-	enabled = 1;
 }

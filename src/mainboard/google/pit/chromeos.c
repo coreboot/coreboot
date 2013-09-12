@@ -97,5 +97,5 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
-	return 0; // FIXME what GPIO? // WP hard coded to disabled
+	return !gpio_get_value(GPIO_X30);
 }

@@ -125,6 +125,9 @@ usb_msc_destroy (usbdev_t *dev)
 
 const int DEV_RESET = 0xff;
 const int GET_MAX_LUN = 0xfe;
+/* Many USB3 devices do not work with large transfer requests.
+ * Limit the request size to 64KB chunks to ensure maximum compatibility. */
+const int MAX_CHUNK_BYTES = 1024 * 64;
 
 const unsigned int cbw_signature = 0x43425355;
 const unsigned int csw_signature = 0x53425355;
@@ -363,7 +366,7 @@ readwrite_blocks_512 (usbdev_t *dev, int start, int n,
  * @return 0 on success, 1 on failure
  */
 int
-readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
+readwrite_chunk (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 {
 	cmdblock_t cb;
 	memset (&cb, 0, sizeof (cb));
@@ -380,6 +383,49 @@ readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 	return execute_command (dev, dir, (u8 *) &cb, sizeof (cb), buf,
 				n * MSC_INST(dev)->blocksize, 0)
 		!= MSC_COMMAND_OK ? 1 : 0;
+}
+
+/**
+ * Reads or writes a number of sequential blocks on a USB storage device
+ * that is split into MAX_CHUNK_BYTES size requests.
+ *
+ * As it uses the READ(10) SCSI-2 command, it's limited to storage devices
+ * of at most 2TB. It assumes sectors of 512 bytes.
+ *
+ * @param dev device to access
+ * @param start first sector to access
+ * @param n number of sectors to access
+ * @param dir direction of access: cbw_direction_data_in == read,
+ *                                 cbw_direction_data_out == write
+ * @param buf buffer to read into or write from.
+ *            Must be at least n*sectorsize bytes
+ * @return 0 on success, 1 on failure
+ */
+int
+readwrite_blocks (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
+{
+	int chunk_size = MAX_CHUNK_BYTES / MSC_INST(dev)->blocksize;
+	int chunk;
+
+	/* Read as many full chunks as needed. */
+	for (chunk = 0; chunk < (n / chunk_size); chunk++) {
+		if (readwrite_chunk (dev, start + (chunk * chunk_size),
+				     chunk_size, dir,
+				     buf + (chunk * MAX_CHUNK_BYTES))
+		    != MSC_COMMAND_OK)
+			return 1;
+	}
+
+	/* Read any remaining partial chunk at the end. */
+	if (n % chunk_size) {
+		if (readwrite_chunk (dev, start + (chunk * chunk_size),
+				     n % chunk_size, dir,
+				     buf + (chunk * MAX_CHUNK_BYTES))
+		    != MSC_COMMAND_OK)
+			return 1;
+	}
+
+	return 0;
 }
 
 /* Only request it, we don't interpret it.

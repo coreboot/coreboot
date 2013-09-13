@@ -6,7 +6,7 @@ identifier d;
 @@
 - intel_limit_t d = {...};
 @@
-@@ 
+@@
 - intel_connector_attach_encoder(...){...}
 @@
 @@

@@ -375,7 +375,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	setgtt(0, 800 , physbase, 4096);
 
-	temp = READ32(PGETLB_CTL); 
+	temp = READ32(PGETLB_CTL);
         printk(BIOS_INFO, "GTT PGETLB_CTL register: 0x%lx\n", temp);
 
 	if (temp & 1)

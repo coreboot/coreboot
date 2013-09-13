@@ -509,7 +509,7 @@ struct mem_timings *get_mem_timings(void)
 	unsigned int frequency_mhz;
 	enum mem_manuf mem_manuf;
 	const struct mem_timings *mem;
-	
+
 	config = board_get_config();
 	switch (config) {
 	case SNOW_CONFIG_ELPIDA_EVT:

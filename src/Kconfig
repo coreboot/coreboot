@@ -334,7 +334,7 @@ config TIMER_QUEUE
 	def_bool n
 	depends on HAVE_MONOTONIC_TIMER
 	help
-	  Provide a timer queue for performing time-based callbacks. 
+	  Provide a timer queue for performing time-based callbacks.
 
 config COOP_MULTITASKING
 	def_bool n

@@ -20,7 +20,7 @@
 
 LC_ALL=C export LC_ALL
 find src util -name .svn -type d -prune -o \
-	-perm +111 -prune -o \
+	-type f -perm /111 -prune -o \
 	-name .git -type d -prune -o \
 	-name README -prune -o \
 	-name LICENSE -prune -o \

@@ -537,22 +537,26 @@ static void
 usb_msc_test_unit_ready (usbdev_t *dev)
 {
 	int i;
+	time_t start_time_secs;
+	struct timeval tv;
 	/* SCSI/ATA specs say we have to wait up to 30s. Ugh */
-	const int timeout = 30 * 10;
+	const int timeout_secs = 30;
 
 	usb_debug ("  Waiting for device to become ready...");
 
 	/* Initially mark the device ready. */
 	usb_msc_mark_ready (dev);
+	gettimeofday (&tv, NULL);
+	start_time_secs = tv.tv_sec;
 
-	for (i = 0; i < timeout; i++) {
+	while (tv.tv_sec - start_time_secs < timeout_secs) {
 		switch (test_unit_ready (dev)) {
 		case MSC_COMMAND_OK:
 			break;
 		case MSC_COMMAND_FAIL:
 			mdelay (100);
-			if (!(timeout % 10))
-				usb_debug (".");
+			usb_debug (".");
+			gettimeofday (&tv, NULL);
 			continue;
 		default:
 			usb_debug ("detached. Device not ready.\n");
@@ -561,7 +565,7 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 		}
 		break;
 	}
-	if (i >= timeout) {
+	if (!(tv.tv_sec - start_time_secs < timeout_secs)) {
 		usb_debug ("timeout. Device not ready.\n");
 		usb_msc_mark_not_ready (dev);
 	}

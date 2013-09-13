@@ -29,7 +29,7 @@ DefinitionBlock (
 	)
 {	/* Start of ASL file */
 	/* #include <arch/x86/acpi/debug.asl> */	/* Include global debug methods if needed */
-	
+
 	/* Globals for the platform */
 	#include "acpi/mainboard.asl"
 

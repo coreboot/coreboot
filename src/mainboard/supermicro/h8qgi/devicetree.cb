@@ -111,7 +111,7 @@ chip northbridge/amd/agesa/family15/root_complex
 							end
 						end #drivers/i2c/w83795
 					end # LPC
-					device pci 14.4 on 
+					device pci 14.4 on
 						device pci 4.0 on end # onboard VGA
 					end # PCI 0x4384
 					device pci 14.5 on end # USB 3

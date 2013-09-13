@@ -334,7 +334,7 @@ gcov_exit (void)
     {
       crc32 = crc32_unsigned (crc32, gi_ptr->stamp);
       crc32 = crc32_unsigned (crc32, gi_ptr->n_functions);
- 
+
       for (f_ix = 0; (unsigned)f_ix != gi_ptr->n_functions; f_ix++)
 	{
 	  gfi_ptr = gi_ptr->functions[f_ix];

@@ -46,7 +46,7 @@ type T;
 @@
 T f(...){<...
 -DRM_DEBUG_KMS(
-+fprintf(stderr, 
++fprintf(stderr,
 ...);
 ...>}
 @@
@@ -55,7 +55,7 @@ type T;
 @@
 T f(...){<...
 -DRM_ERROR(
-+fprintf(stderr, 
++fprintf(stderr,
 ...);
 ...>}
 @@
@@ -64,7 +64,7 @@ type T;
 @@
 T f(...){<...
 -DRM_DEBUG(
-+fprintf(stderr, 
++fprintf(stderr,
 ...);
 ...>}
 @@
@@ -73,7 +73,7 @@ type T;
 @@
 T f(...){<...
 -DRM_DEBUG_DRIVER(
-+fprintf(stderr, 
++fprintf(stderr,
 ...);
 ...>}
 @@
@@ -104,7 +104,7 @@ expression E1, E2;
 @@
 identifier d;
 @@
--static 
+-static
 const struct pci_device_id d[] = {...};
 @@
 expression E1;
@@ -113,7 +113,7 @@ expression E1;
 +if (
 E1
 -,
-+) fprintf(stderr, 
++) fprintf(stderr,
 ...);
 @@
 expression E1;

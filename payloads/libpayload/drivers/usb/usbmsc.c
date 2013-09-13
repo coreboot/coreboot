@@ -539,8 +539,10 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 	int i;
 	time_t start_time_secs;
 	struct timeval tv;
-	/* SCSI/ATA specs say we have to wait up to 30s. Ugh */
-	const int timeout_secs = 30;
+	/* SCSI/ATA specs say we have to wait up to 30s, but most devices
+	 * are ready much sooner. Use a 5 sec timeout to better accomodate
+	 * devices which fail to respond. */
+	const int timeout_secs = 5;
 
 	usb_debug ("  Waiting for device to become ready...");
 

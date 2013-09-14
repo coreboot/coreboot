@@ -46,11 +46,21 @@ struct memory_type {
 	void *start;
 	void *end;
 	struct align_region_t* align_regions;
+#ifdef CONFIG_LP_DEBUG_MALLOC
+	int magic_initialized;
+	size_t minimal_free;
+	const char *name;
+#endif
 };
 
 extern char _heap, _eheap;	/* Defined in the ldscript. */
 
-static struct memory_type default_type = { (void *)&_heap, (void *)&_eheap, NULL };
+static struct memory_type default_type =
+	{ (void *)&_heap, (void *)&_eheap, NULL
+#ifdef CONFIG_LP_DEBUG_MALLOC
+	, 0, 0, "HEAP"
+#endif
+	};
 static struct memory_type *const heap = &default_type;
 static struct memory_type *dma = &default_type;
 
@@ -75,26 +85,31 @@ typedef u64 hdrtype_t;
 static int free_aligned(void* addr, struct memory_type *type);
 void print_malloc_map(void);
 
-#ifdef CONFIG_LP_DEBUG_MALLOC
-static int heap_initialized = 0;
-static int minimal_free = 0;
-#endif
-
 void init_dma_memory(void *start, u32 size)
 {
-#ifdef CONFIG_LP_DEBUG_MALLOC
 	if (dma_initialized()) {
-		printf("WARNING: %s called twice!\n");
+		printf("ERROR: %s called twice!\n", __func__);
 		return;
 	}
 
-	printf("Initializing cache-coherent DMA memory at [%p:%p]\n", start, start + size);
-#endif
+	/*
+	 * DMA memory might not be zeroed by Coreboot on stage loading, so make
+	 * sure we clear the magic cookie from last boot.
+	 */
+	*(hdrtype_t *)start = 0;
 
 	dma = malloc(sizeof(*dma));
 	dma->start = start;
 	dma->end = start + size;
 	dma->align_regions = NULL;
+
+#ifdef CONFIG_LP_DEBUG_MALLOC
+	dma->minimal_free = 0;
+	dma->magic_initialized = 0;
+	dma->name = "DMA";
+
+	printf("Initialized cache-coherent DMA memory at [%p:%p]\n", start, start + size);
+#endif
 }
 
 int dma_initialized()
@@ -106,16 +121,6 @@ int dma_initialized()
 int dma_coherent(void *ptr)
 {
 	return !dma_initialized() || (dma->start <= ptr && dma->end > ptr);
-}
-
-static void setup(hdrtype_t volatile *start, int size)
-{
-	*start = FREE_BLOCK(size);
-
-#ifdef CONFIG_LP_DEBUG_MALLOC
-	heap_initialized = 1;
-	minimal_free  = size;
-#endif
 }
 
 static void *alloc(int len, struct memory_type *type)
@@ -130,8 +135,14 @@ static void *alloc(int len, struct memory_type *type)
 		return (void *)NULL;
 
 	/* Make sure the region is setup correctly. */
-	if (!HAS_MAGIC(*ptr))
-		setup(ptr, (int)((type->end - type->start) - HDRSIZE));
+	if (!HAS_MAGIC(*ptr)) {
+		size_t size = (type->end - type->start) - HDRSIZE;
+		*ptr = FREE_BLOCK(size);
+#ifdef CONFIG_LP_DEBUG_MALLOC
+		type->magic_initialized = 1;
+		type->minimal_free = size;
+#endif
+	}
 
 	/* Find some free space. */
 	do {
@@ -452,24 +463,29 @@ void *dma_memalign(size_t align, size_t size)
 #ifdef CONFIG_LP_DEBUG_MALLOC
 void print_malloc_map(void)
 {
-	void *ptr = heap->start;
-	int free_memory = 0;
+	struct memory_type *type = heap;
+	void *ptr;
+	int free_memory;
 
-	while (ptr < heap->end) {
+again:
+	ptr = type->start;
+	free_memory = 0;
+
+	while (ptr < type->end) {
 		hdrtype_t hdr = *((hdrtype_t *) ptr);
 
 		if (!HAS_MAGIC(hdr)) {
-			if (heap_initialized)
-				printf("Poisoned magic - we're toast\n");
+			if (type->magic_initialized)
+				printf("%s: Poisoned magic - we're toast\n", type->name);
 			else
-				printf("No magic yet - going to initialize\n");
+				printf("%s: No magic yet - going to initialize\n", type->name);
 			break;
 		}
 
 		/* FIXME: Verify the size of the block. */
 
-		printf("%x: %s (%x bytes)\n",
-		       (unsigned int)(ptr - heap->start),
+		printf("%s %x: %s (%x bytes)\n", type->name,
+		       (unsigned int)(ptr - type->start),
 		       hdr & FLAG_FREE ? "FREE" : "USED", SIZE(hdr));
 
 		if (hdr & FLAG_FREE)
@@ -478,9 +494,14 @@ void print_malloc_map(void)
 		ptr += HDRSIZE + SIZE(hdr);
 	}
 
-	if (free_memory && (minimal_free > free_memory))
-		minimal_free = free_memory;
-	printf("Maximum memory consumption: %d bytes\n",
-		(unsigned int)(heap->end - heap->start) - HDRSIZE - minimal_free);
+	if (free_memory && (type->minimal_free > free_memory))
+		type->minimal_free = free_memory;
+	printf("%s: Maximum memory consumption: %u bytes\n", type->name,
+		(type->end - type->start) - HDRSIZE - type->minimal_free);
+
+	if (type != dma) {
+		type = dma;
+		goto again;
+	}
 }
 #endif

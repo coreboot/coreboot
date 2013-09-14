@@ -101,7 +101,35 @@
 	 printf("PRE memalign\n"); \
 	 print_malloc_map(); \
 	 ptr = memalign(a,s); \
-	 printf("POST realloc (ptr = %p)\n", ptr); \
+	 printf("POST memalign (ptr = %p)\n", ptr); \
+	 print_malloc_map(); \
+	 ptr; \
+	 })
+#define dma_malloc(s) \
+	({ \
+	 extern void print_malloc_map(void); \
+	 extern void *dma_malloc(size_t); \
+	 void *ptr; \
+	 printf("dma_malloc(%u) called from %s:%s:%d...\n", s, __FILE__, \
+	        __func__, __LINE__);\
+	 printf("PRE dma_malloc\n"); \
+	 print_malloc_map(); \
+	 ptr = dma_malloc(s); \
+	 printf("POST dma_malloc (ptr = %p)\n", ptr); \
+	 print_malloc_map(); \
+	 ptr; \
+	 })
+#define dma_memalign(a,s) \
+	({ \
+	 extern void print_malloc_map(void); \
+	 extern void *dma_memalign(size_t, size_t); \
+	 void *ptr; \
+	 printf("dma_memalign(%u, %u) called from %s:%s:%d...\n", a, s, \
+	        __FILE__, __func__, __LINE__);\
+	 printf("PRE dma_memalign\n"); \
+	 print_malloc_map(); \
+	 ptr = dma_memalign(a,s); \
+	 printf("POST dma_memalign (ptr = %p)\n", ptr); \
 	 print_malloc_map(); \
 	 ptr; \
 	 })
@@ -111,10 +139,10 @@ void *malloc(size_t size);
 void *calloc(size_t nmemb, size_t size);
 void *realloc(void *ptr, size_t size);
 void *memalign(size_t align, size_t size);
-#endif
-void init_dma_memory(void *start, u32 size);
 void *dma_malloc(size_t size);
 void *dma_memalign(size_t align, size_t size);
+#endif
+void init_dma_memory(void *start, u32 size);
 int dma_initialized(void);
 int dma_coherent(void *ptr);
 /** @} */

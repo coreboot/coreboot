@@ -210,8 +210,8 @@ Device (BAT0)
 			// https://bugzilla.kernel.org/show_bug.cgi?id=12632
 			Store (BTDF, Local2)
 
-			// See if within ~3% of full
-			ShiftRight (Local2, 5, Local3)
+			// See if within ~6% of full
+			ShiftRight (Local2, 4, Local3)
 			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
 			          LLess (Local1, Add (Local2, Local3))))
 			{

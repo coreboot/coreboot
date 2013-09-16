@@ -66,6 +66,4 @@ void bootblock_mainboard_init(void)
 
 	/* Start monotonic timer */
 	//rtc_start();
-
-	console_init();
 }

@@ -75,10 +75,10 @@ static void usb_xhci_reset_port_usb3(u32 mem_base, int port)
 	write32(portsc, read32(portsc) | XHCI_USB3_PORTSC_WPR);
 }
 
-#ifdef __SMM__
-
 #define XHCI_RESET_DELAY_US	1000 /* 1ms */
 #define XHCI_RESET_TIMEOUT	100  /* 100ms */
+
+#ifdef __SMM__
 
 /*
  * 1) Wait until port is done polling
@@ -87,7 +87,7 @@ static void usb_xhci_reset_port_usb3(u32 mem_base, int port)
  *  b) Poll for warm reset complete
  *  c) Write 1 to port change status bits
  */
-static void usb_xhci_reset_usb3(device_t dev, int all)
+static void usb_xhci_reset_usb3(device_t dev)
 {
 	u32 status, port_disabled;
 	int timeout, port;
@@ -127,10 +127,7 @@ static void usb_xhci_reset_usb3(device_t dev, int all)
 			continue;
 		status = read32(portsc) & XHCI_USB3_PORTSC_PLS;
 		/* Reset all or only disconnected ports */
-		if (all || status == XHCI_PLSR_RXDETECT)
-			usb_xhci_reset_port_usb3(mem_base, port);
-		else
-			port_disabled |= 1 << port; /* No reset */
+		usb_xhci_reset_port_usb3(mem_base, port);
 	}
 
 	/* Wait for warm reset complete on all reset ports */
@@ -184,7 +181,7 @@ void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
 		write32(mem_base + 0x816c, reg32);
 
 		/* Reset disconnected USB3 ports */
-		usb_xhci_reset_usb3(dev, 0);
+		usb_xhci_reset_usb3(dev);
 
 		/* Set MMIO 0x80e0[15] */
 		reg32 = read32(mem_base + 0x80e0);
@@ -236,7 +233,7 @@ void usb_xhci_route_all(void)
 		usb_ehci_disable(PCH_EHCI2_DEV);
 
 	/* Reset and clear port change status */
-	usb_xhci_reset_usb3(PCH_XHCI_DEV, 1);
+	usb_xhci_reset_usb3(PCH_XHCI_DEV);
 }
 
 #else /* !__SMM__ */
@@ -296,6 +293,8 @@ static void usb_xhci_enable_ports_usb3(device_t dev)
 	u32 portsc, status, disabled;
 	u32 mem_base = usb_xhci_mem_base(dev);
 	int port_count = usb_xhci_port_count_usb3(dev);
+	u8 port_reset = 0;
+	int timeout;
 
 	if (!mem_base || !port_count)
 		return;
@@ -309,24 +308,54 @@ static void usb_xhci_enable_ports_usb3(device_t dev)
 			continue;
 		portsc = mem_base + XHCI_USB3_PORTSC(port);
 		status = read32(portsc) & XHCI_USB3_PORTSC_PLS;
-
 		switch (status) {
 		case XHCI_PLSR_RXDETECT:
 			/* Clear change status */
-			printk(BIOS_DEBUG, "usb_xhci reset port %d\n", port);
+			printk(BIOS_DEBUG, "usb_xhci reset status %d\n", port);
 			usb_xhci_reset_status_usb3(mem_base, port);
 			break;
 		case XHCI_PLSR_DISABLED:
 		default:
-			/* Transition to enabled */
-			printk(BIOS_DEBUG, "usb_xhci enable port %d\n", port);
+			/* Reset port */
+			printk(BIOS_DEBUG, "usb_xhci reset port %d\n", port);
 			usb_xhci_reset_port_usb3(mem_base, port);
-			status = read32(portsc);
-			status &= ~XHCI_USB3_PORTSC_PLS;
-			status |= XHCI_PLSW_ENABLE | XHCI_USB3_PORTSC_LWS;
-			write32(portsc, status);
+			port_reset |= 1 << port;
 			break;
 		}
+	}
+
+	if (!port_reset)
+		return;
+
+	/* Wait for warm reset complete on all reset ports */
+	for (timeout = XHCI_RESET_TIMEOUT; timeout; timeout--) {
+		int complete = 1;
+		for (port = 0; port < port_count; port++) {
+			/* Only check ports that were reset */
+			if (!(port_reset & (1 << port)))
+				continue;
+			/* Check if warm reset is complete */
+			status = read32(mem_base + XHCI_USB3_PORTSC(port));
+			if (!(status & XHCI_USB3_PORTSC_WRC))
+				complete = 0;
+		}
+		/* Check for warm reset complete in any port */
+		if (complete)
+			break;
+		udelay(XHCI_RESET_DELAY_US);
+	}
+
+	/* Enable ports that were reset */
+	for (port = 0; port < port_count; port++) {
+		/* Only check ports that were reset */
+		if (!(port_reset & (1 << port)))
+			continue;
+		/* Transition to enabled */
+		portsc = mem_base + XHCI_USB3_PORTSC(port);
+		status = read32(portsc);
+		status &= ~(XHCI_USB3_PORTSC_PLS | XHCI_USB3_PORTSC_PED);
+		status |= XHCI_PLSW_ENABLE | XHCI_USB3_PORTSC_LWS;
+		write32(portsc, status);
 	}
 #endif
 }

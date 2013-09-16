@@ -2,7 +2,8 @@ config CPU_TI_AM335X
 	depends on ARCH_ARMV7
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
-	select DEFAULT_EARLY_CONSOLE
+	select BOOTBLOCK_CONSOLE
+	select EARLY_CONSOLE
 	bool
 	default n
 

@@ -75,6 +75,18 @@ typedef int8_t s8;
 typedef int16_t s16;
 typedef int32_t s32;
 
+#ifndef UINT32_MAX
+#define UINT32_MAX (4294967295U)
+#endif
+#ifndef UINT64_MAX
+# define UINT64_MAX (18446744073709551615ULL)
+#endif
+#ifndef UINT64_C
+#define UINT64_C(c) c ## ULL
+#endif
+#ifndef PRIu64
+#define PRIu64 "llu"
+#endif
 
 #undef __HAVE_LONG_LONG__
 

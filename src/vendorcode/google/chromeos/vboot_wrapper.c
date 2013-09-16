@@ -17,7 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 #include <console/vtxprintf.h>
+#if CONFIG_ARCH_X86
 #include <cpu/x86/tsc.h>
+#else
+#include <timer.h>
+#endif
 #include <rmodule.h>
 #include <stdlib.h>
 #include <string.h>
@@ -123,7 +127,13 @@ void VbExDebug(const char *format, ...)
 
 uint64_t VbExGetTimer(void)
 {
+#if CONFIG_ARCH_X86
 	return rdtscll();
+#else
+	struct mono_time mt;
+	timer_monotonic_get(&mt);
+	return mt.microseconds;
+#endif
 }
 
 VbError_t VbExNvStorageRead(uint8_t *buf)

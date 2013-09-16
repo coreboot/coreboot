@@ -111,7 +111,7 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 stages_c = $(src)/arch/armv7/stages.c
 stages_o = $(obj)/arch/armv7/stages.o
 
-$(stages_o): $(stages_c)
+$(stages_o): $(stages_c) $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) -I. $(INCLUDES) -c -o $@ $< -marm
 
@@ -250,14 +250,14 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC) $(bootblock-S-ccopts) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
-$(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H)
+$(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H) $(obj)/config.h
 	@printf "    CC      $(subst $(obj)/,,$(@))\n"
 	$(CC) $(bootblock-c-ccopts) $(INCLUDES) -MM \
 		-MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
 	$(CC) $(bootblock-c-ccopts) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
 
-$(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld $$(bootblock-objs) $(stages)
+$(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld $$(bootblock-objs) $(stages) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m armelf_linux_eabi -include $(obj)/config.h -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld

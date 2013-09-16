@@ -29,14 +29,12 @@
 
 #define DEBUGPORT_MISC_CONTROL		0x80
 
-/*
- * Note: The SB700 has two EHCI devices, D18:F2 and D19:F2.
- * This code currently only supports the first one, i.e., USB Debug devices
- * attached to physical USB ports belonging to the first EHCI device.
- */
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
-	return PCI_DEV(0, 0x12, 2);
+	if (hcd_idx==2)
+		return PCI_DEV(0, 0x13, 2);
+	else
+		return PCI_DEV(0, 0x12, 2);
 }
 
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)

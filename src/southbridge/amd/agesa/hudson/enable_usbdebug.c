@@ -26,15 +26,16 @@
 #include <device/pci_def.h>
 #include "hudson.h"
 
-#ifndef HUDSON_DEVN_BASE
-#define HUDSON_DEVN_BASE 0
-#endif
-
 #define DEBUGPORT_MISC_CONTROL		0x80
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)
 {
-	return PCI_DEV(0, HUDSON_DEVN_BASE + 0x12, 2);
+	if (hcd_idx==3)
+		return PCI_DEV(0, 0x16, 2);
+	else if (hcd_idx==2)
+		return PCI_DEV(0, 0x13, 2);
+	else
+		return PCI_DEV(0, 0x12, 2);
 }
 
 void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)

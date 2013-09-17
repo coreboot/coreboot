@@ -21,6 +21,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <console/console.h>
+#include <cbfs.h>
 #include "fmap.h"
 
 /* Find FMAP data structure in ROM.
@@ -36,9 +37,19 @@ const struct fmap *fmap_find(void)
 	 * and possibly cros_bundle_firmware.
 	 */
 
+#if CONFIG_ARCH_X86
 	/* wrapping around 0x100000000 */
 	const struct fmap *fmap = (void *)
 		(CONFIG_FLASHMAP_OFFSET - CONFIG_ROM_SIZE);
+#elif CONFIG_ARCH_ARMV7
+	struct cbfs_media default_media, *media;
+	media = &default_media;
+	init_default_cbfs_media(media);
+	media->open(media);
+	const struct fmap *fmap = (void *)
+		media->map(media, CONFIG_FLASHMAP_OFFSET, 4096); // FIXME size
+	media->close(media);
+#endif
 
 	if (memcmp(fmap, FMAP_SIGNATURE, sizeof(FMAP_SIGNATURE)-1)) {
 		printk(BIOS_DEBUG, "No FMAP found at %p.\n", fmap);
@@ -104,9 +115,11 @@ int find_fmap_entry(const char name[], void **pointer)
 		base = (void *)(unsigned long)fmap->base;
 		printk(BIOS_DEBUG, "FMAP: %s base at %p\n", name, base);
 	} else {
+#if CONFIG_ARCH_X86
 		base = (void *)(0 - CONFIG_ROM_SIZE);
 		printk(BIOS_WARNING, "FMAP: No valid base address, using"
 				" 0x%p\n", base);
+#endif
 	}
 
 	*pointer = (void*) ((u32)base + area->offset);

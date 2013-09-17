@@ -133,7 +133,7 @@ fi
 cleanup()
 {
 	printf "Cleaning up temporary files... "
-	rm -rf build-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-*
+	rm -rf ${BUILDDIRPREFIX}-* combined gcc-* gmp-* mpfr-* mpc-* libelf-* binutils-*
 	rm -rf gdb-* acpica-* python-* expat-*
 	printf "${green}ok${NC}\n"
 }
@@ -234,6 +234,8 @@ case "$TARGETARCH" in
 esac
 
 echo "Target arch is now $TARGETARCH"
+BUILDDIRPREFIX=build-${TARGETARCH}
+
 GDB_PACKAGE="GDB"
 PYTHON_PACKAGE="PYTHON"
 EXPAT_PACKAGE="EXPAT"
@@ -331,21 +333,21 @@ if [ "$USECCACHE" = 1 ]; then
 	CC="ccache $CC"
 fi
 
-mkdir -p build-gmp build-mpfr build-mpc build-libelf build-binutils \
-		build-gcc build-python build-expat
+mkdir -p ${BUILDDIRPREFIX}-gmp ${BUILDDIRPREFIX}-mpfr ${BUILDDIRPREFIX}-mpc ${BUILDDIRPREFIX}-libelf ${BUILDDIRPREFIX}-binutils \
+		${BUILDDIRPREFIX}-gcc ${BUILDDIRPREFIX}-python ${BUILDDIRPREFIX}-expat
 
 mkdir -p $DESTDIR$TARGETDIR/bin
 export PATH=$DESTDIR$TARGETDIR/bin:$PATH
 
 if [ $SKIPGDB -eq 0 ]; then
-	mkdir -p build-gdb
+	mkdir -p ${BUILDDIRPREFIX}-gdb
 fi
-if [ -f build-gmp/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-gmp/.success ]; then
 	printf "Skipping GMP as it is already built\n"
 else
 printf "Building GMP ${GMP_VERSION} ... "
 (
-	cd build-gmp
+	cd ${BUILDDIRPREFIX}-gmp
 	rm -f .failed
 	CC="$CC" ../${GMP_DIR}/configure --disable-shared --prefix=$TARGETDIR $OPTIONS \
 		|| touch .failed
@@ -355,10 +357,10 @@ printf "Building GMP ${GMP_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-gmp/crossgcc-build.log 2>&1
-test -r build-gmp/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-gmp/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-gmp/.failed && printf "${RED}failed${NC}\n" || \
 	printf "${green}ok${NC}\n"
-test -r build-gmp/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-gmp/.failed && exit 1
 fi
 
 # Now set CFLAGS to match GMP CFLAGS but strip out -pedantic
@@ -366,13 +368,13 @@ fi
 HOSTCFLAGS=`grep __GMP_CFLAGS $DESTDIR$TARGETDIR/include/gmp.h |cut -d\" -f2 |\
 	    sed s,-pedantic,,`
 
-if [ -f build-mpfr/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-mpfr/.success ]; then
 	printf "Skipping MPFR as it is already built\n"
 else
 printf "Building MPFR ${MPFR_VERSION} ... "
 (
 	test $UNAME = "Darwin" && CFLAGS="$CFLAGS -force_cpusubtype_ALL"
-	cd build-mpfr
+	cd ${BUILDDIRPREFIX}-mpfr
 	rm -f .failed
 	CC="$CC" ../${MPFR_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info \
@@ -389,18 +391,18 @@ printf "Building MPFR ${MPFR_VERSION} ... "
 	fi
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-mpfr/crossgcc-build.log 2>&1
-test -r build-mpfr/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-mpfr/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-mpfr/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-mpfr/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-mpfr/.failed && exit 1
 fi
 
-if [ -f build-mpc/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-mpc/.success ]; then
 	printf "Skipping MPC as it is already built\n"
 else
 printf "Building MPC ${MPC_VERSION} ... "
 (
-	cd build-mpc
+	cd ${BUILDDIRPREFIX}-mpc
 	rm -f .failed
 	CC="$CC" ../${MPC_DIR}/configure --disable-shared --prefix=$TARGETDIR \
 		--infodir=$TARGETDIR/info --with-mpfr=$DESTDIR$TARGETDIR \
@@ -412,18 +414,18 @@ printf "Building MPC ${MPC_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-mpc/crossgcc-build.log 2>&1
-test -r build-mpc/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-mpc/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-mpc/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-mpc/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-mpc/.failed && exit 1
 fi
 
-if [ -f build-libelf/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-libelf/.success ]; then
 	printf "Skipping libelf as it is already built\n"
 else
 printf "Building libelf ${LIBELF_VERSION} ... "
 (
-	cd build-libelf
+	cd ${BUILDDIRPREFIX}-libelf
 	rm -f .failed
 	echo "$HOSTCFLAGS"
 	CC="$CC" CFLAGS="$HOSTCFLAGS" libelf_cv_elf_h_works=no \
@@ -435,13 +437,13 @@ printf "Building libelf ${LIBELF_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-libelf/crossgcc-build.log 2>&1
-test -r build-libelf/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-libelf/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-libelf/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-libelf/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-libelf/.failed && exit 1
 fi
 
-if [ -f build-binutils/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-binutils/.success ]; then
 	printf "Skipping binutils as it is already built\n"
 else
 printf "Building binutils ${BINUTILS_VERSION} ... "
@@ -452,7 +454,7 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	autoconf
 	cd ..
 	# Now build binutils
-	cd build-binutils
+	cd ${BUILDDIRPREFIX}-binutils
 	rm -f .failed
 	CC="$CC" ../binutils-${BINUTILS_VERSION}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} --disable-werror --disable-nls \
@@ -460,13 +462,13 @@ printf "Building binutils ${BINUTILS_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-binutils/crossgcc-build.log 2>&1
-test -r build-binutils/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-binutils/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-binutils/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-binutils/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-binutils/.failed && exit 1
 fi
 
-if [ -f build-gcc/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-gcc/.success ]; then
 	printf "Skipping GCC as it is already built\n"
 else
 printf "Building GCC ${GCC_VERSION} ... "
@@ -484,7 +486,7 @@ printf "Building GCC ${GCC_VERSION} ... "
 	autoconf
 	cd ..
 	# Now, finally, we can build gcc:
-	cd build-gcc
+	cd ${BUILDDIRPREFIX}-gcc
 	rm -f .failed
 	# GCC does not honour HOSTCFLAGS at all. CFLAGS are used for
 	# both target and host object files. This is pretty misdesigned.
@@ -511,20 +513,20 @@ printf "Building GCC ${GCC_VERSION} ... "
 	fi
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-gcc/crossgcc-build.log 2>&1
-test -r build-gcc/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-gcc/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-gcc/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-gcc/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-gcc/.failed && exit 1
 fi
 
-if [ -f build-expat/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-expat/.success ]; then
 	printf "Skipping Expat as it is already built\n"
 elif [ $SKIPPYTHON -eq 1 ]; then
 	printf "Skipping Expat (Python scripting not enabled)\n"
 else
 printf "Building Expat ${EXPAT_VERSION} ... "
 (
-	cd build-expat
+	cd ${BUILDDIRPREFIX}-expat
 	rm -f .failed
 	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${EXPAT_DIR}/configure --disable-shared \
 		--prefix=$TARGETDIR --target=${TARGETARCH} || touch .failed
@@ -534,21 +536,21 @@ printf "Building Expat ${EXPAT_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-expat/crossgcc-build.log 2>&1
-test -r build-expat/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-expat/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-expat/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-expat/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-expat/.failed && exit 1
 fi
 
 
-if [ -f build-python/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-python/.success ]; then
 	printf "Skipping Python as it is already built\n"
 elif [ $SKIPPYTHON -eq 1 ]; then
 	printf "Skipping Python (Python scripting not enabled)\n"
 else
 printf "Building Python ${PYTHON_VERSION} ... "
 (
-	cd build-python
+	cd ${BUILDDIRPREFIX}-python
 	rm -f .failed
 	CC="$CC" CFLAGS="$HOSTCFLAGS" ../${PYTHON_DIR}/configure --prefix=$TARGETDIR \
 		--target=${TARGETARCH} || touch .failed
@@ -558,21 +560,21 @@ printf "Building Python ${PYTHON_VERSION} ... "
 	normalize_dirs
 
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-python/crossgcc-build.log 2>&1
-test -r build-python/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-python/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-python/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-python/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-python/.failed && exit 1
 fi
 
 
-if [ -f build-gdb/.success ]; then
+if [ -f ${BUILDDIRPREFIX}-gdb/.success ]; then
 	printf "Skipping GDB as it is already built\n"
 elif [ $SKIPGDB -eq 1 ]; then
 	printf "Skipping GDB (GDB support not enabled)\n"
 else
 printf "Building GDB ${GDB_VERSION} ... "
 (
-	cd build-gdb
+	cd ${BUILDDIRPREFIX}-gdb
 	export PYTHONHOME=$DESTDIR$TARGETDIR
 	rm -f .failed
 	LDFLAGS="-Wl,-rpath,\$\$ORIGIN/../lib/ -L$DESTDIR$TARGETDIR/lib \
@@ -583,10 +585,10 @@ printf "Building GDB ${GDB_VERSION} ... "
 	$MAKE $JOBS || touch .failed
 	$MAKE install DESTDIR=$DESTDIR || touch .failed
 	if [ ! -f .failed ]; then touch .success; fi
-) > build-gdb/crossgcc-build.log 2>&1
-test -r build-gdb/.failed && printf "${RED}failed${NC}\n" || \
+) > ${BUILDDIRPREFIX}-gdb/crossgcc-build.log 2>&1
+test -r ${BUILDDIRPREFIX}-gdb/.failed && printf "${RED}failed${NC}\n" || \
 	     printf "${green}ok${NC}\n"
-test -r build-gdb/.failed && exit 1
+test -r ${BUILDDIRPREFIX}-gdb/.failed && exit 1
 fi
 
 if [ -f $IASL_DIR/source/compiler/.success ]; then
@@ -616,15 +618,15 @@ cp $0 $DESTDIR$TARGETDIR/"$0.commit.`git describe`"
 
 if [ $SAVETEMPS -eq 0 ]; then
 	printf "Cleaning up... "
-	rm -rf ${GMP_DIR} build-gmp
-	rm -rf ${MPFR_DIR} build-mpfr
-	rm -rf ${MPC_DIR} build-mpc
-	rm -rf ${LIBELF_DIR} build-libelf
-	rm -rf ${BINUTILS_DIR} build-binutils
-	rm -rf ${GCC_DIR} build-gcc
-	rm -rf ${GDB_DIR} build-gdb
-	rm -rf ${EXPAT_DIR} build-expat
-	rm -rf ${PYTHON_DIR} build-python
+	rm -rf ${GMP_DIR} ${BUILDDIRPREFIX}-gmp
+	rm -rf ${MPFR_DIR} ${BUILDDIRPREFIX}-mpfr
+	rm -rf ${MPC_DIR} ${BUILDDIRPREFIX}-mpc
+	rm -rf ${LIBELF_DIR} ${BUILDDIRPREFIX}-libelf
+	rm -rf ${BINUTILS_DIR} ${BUILDDIRPREFIX}-binutils
+	rm -rf ${GCC_DIR} ${BUILDDIRPREFIX}-gcc
+	rm -rf ${GDB_DIR} ${BUILDDIRPREFIX}-gdb
+	rm -rf ${EXPAT_DIR} ${BUILDDIRPREFIX}-expat
+	rm -rf ${PYTHON_DIR} ${BUILDDIRPREFIX}-python
 	rm -rf ${IASL_DIR}
 	printf "${green}ok${NC}\n"
 else

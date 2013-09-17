@@ -54,6 +54,7 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 {
 	u16 nbid   = pci_read_config16(dev_find_slot(0, 0), PCI_DEVICE_ID);
 	int i440fx = (nbid == 0x1237);
+	int q35    = (nbid == 0x29c0);
 	struct resource *res;
 	unsigned long tomk = 0, high;
 	int idx = 10;
@@ -88,6 +89,21 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 #if !CONFIG_DYNAMIC_CBMEM
 	set_top_of_ram(tomk * 1024);
 #endif
+
+	if (q35 && ((tomk * 1024) < 0xb0000000)) {
+		/*
+		 * Reserve the region between top-of-ram and the
+		 * mmconf xbar (ar 0xb0000000), so coreboot doesn't
+		 * place pci bars there.  The region isn't declared as
+		 * pci io window in the acpi tables (\_SB.PCI0._CRS).
+		 */
+		res = new_resource(dev, idx++);
+		res->base = tomk * 1024;
+		res->size = 0xb0000000 - tomk * 1024;
+		res->limit = 0xffffffff;
+		res->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
+			IORESOURCE_STORED | IORESOURCE_ASSIGNED;
+	}
 
 	if (i440fx) {
 		/* Reserve space for the IOAPIC.  This should be in

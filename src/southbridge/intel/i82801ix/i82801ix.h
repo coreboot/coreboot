@@ -29,7 +29,11 @@
 
 #define DEFAULT_TBAR		0xfed1b000
 #define DEFAULT_RCBA		0xfed1c000
-#define DEFAULT_PMBASE		0x00000500 /* Speedstep code has this hardcoded, too. */
+#ifdef CONFIG_BOARD_EMULATION_QEMU_X86_Q35
+# define DEFAULT_PMBASE		0x00000700
+#else
+# define DEFAULT_PMBASE		0x00000500 /* Speedstep code has this hardcoded, too. */
+#endif
 #define DEFAULT_TCOBASE		(DEFAULT_PMBASE + 0x60)
 #define DEFAULT_GPIOBASE	0x00000580
 
@@ -120,7 +124,11 @@
 #define D28Fx_SLCAP		0x54
 
 
-#define SMBUS_IO_BASE		0x0400
+#ifdef CONFIG_BOARD_EMULATION_QEMU_X86_Q35
+# define SMBUS_IO_BASE		0x0600
+#else
+# define SMBUS_IO_BASE		0x0400
+#endif
 
 /* PCI Configuration Space (D31:F3): SMBus */
 #define SMB_BASE		0x20

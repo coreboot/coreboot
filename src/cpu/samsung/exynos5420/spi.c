@@ -342,13 +342,15 @@ struct exynos_spi_media {
 	struct cbfs_simple_buffer buffer;
 };
 
-static int exynos_spi_cbfs_open(struct cbfs_media *media) {
+static int exynos_spi_cbfs_open(struct cbfs_media *media)
+{
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_open\n");
 	return spi_claim_bus(spi->slave);
 }
 
-static int exynos_spi_cbfs_close(struct cbfs_media *media) {
+static int exynos_spi_cbfs_close(struct cbfs_media *media)
+{
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_close\n");
 	spi_release_bus(spi->slave);
@@ -356,7 +358,8 @@ static int exynos_spi_cbfs_close(struct cbfs_media *media) {
 }
 
 static size_t exynos_spi_cbfs_read(struct cbfs_media *media, void *dest,
-				   size_t offset, size_t count) {
+				   size_t offset, size_t count)
+{
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	int bytes;
 	DEBUG_SPI("exynos_spi_cbfs_read(%u)\n", count);
@@ -365,7 +368,8 @@ static size_t exynos_spi_cbfs_read(struct cbfs_media *media, void *dest,
 }
 
 static void *exynos_spi_cbfs_map(struct cbfs_media *media, size_t offset,
-				 size_t count) {
+				 size_t count)
+{
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_map\n");
 	// exynos: spi_rx_tx may work in 4 byte-width-transmission mode and
@@ -376,7 +380,8 @@ static void *exynos_spi_cbfs_map(struct cbfs_media *media, size_t offset,
 }
 
 static void *exynos_spi_cbfs_unmap(struct cbfs_media *media,
-				   const void *address) {
+				   const void *address)
+{
 	struct exynos_spi_media *spi = (struct exynos_spi_media*)media->context;
 	DEBUG_SPI("exynos_spi_cbfs_unmap\n");
 	return cbfs_simple_buffer_unmap(&spi->buffer, address);
@@ -384,18 +389,14 @@ static void *exynos_spi_cbfs_unmap(struct cbfs_media *media,
 
 int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
 				     void *buffer_address,
-				     size_t buffer_size) {
+				     size_t buffer_size)
+{
 	// TODO Replace static variable to support multiple streams.
 	static struct exynos_spi_media context;
-	static struct exynos_spi_slave eslave = {
-		.slave = { .bus = 1, .rw = SPI_READ_FLAG, },
-		.regs = samsung_get_base_spi1(),
-		.fifo_size = 64,
-		.half_duplex = 0,
-	};
+	static struct exynos_spi_slave *eslave = &exynos_spi_slaves[1];
 	DEBUG_SPI("initialize_exynos_spi_cbfs_media\n");
 
-	context.slave = &eslave.slave;
+	context.slave = &eslave->slave;
 	context.buffer.allocated = context.buffer.last_allocate = 0;
 	context.buffer.buffer = buffer_address;
 	context.buffer.size = buffer_size;

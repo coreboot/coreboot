@@ -29,7 +29,16 @@
 
 #define DEFAULT_TBAR		0xfed1b000
 #define DEFAULT_RCBA		0xfed1c000
-#define DEFAULT_PMBASE		0x00000500 /* Speedstep code has this hardcoded, too. */
+#ifdef CONFIG_BOARD_EMULATION_QEMU_X86_Q35
+/*
+ * Qemu has the fw_cfg interface at 0x510.  Move the pmbase to a
+ * non-conflicting address.  No need to worry about speedstep, it
+ * is not supported by qemu and isn't enabled in the qemu config.
+ */
+# define DEFAULT_PMBASE		0x00000600
+#else
+# define DEFAULT_PMBASE		0x00000500 /* Speedstep code has this hardcoded, too. */
+#endif
 #define DEFAULT_TCOBASE		(DEFAULT_PMBASE + 0x60)
 #define DEFAULT_GPIOBASE	0x00000580
 

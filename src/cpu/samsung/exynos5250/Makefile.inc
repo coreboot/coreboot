@@ -31,6 +31,7 @@ endif
 romstage-y += wakeup.c
 romstage-y += gpio.c
 romstage-y += timer.c
+romstage-y += trustzone.c
 romstage-y += i2c.c
 #romstage-y += wdt.c
 romstage-y += cbmem.c

@@ -35,6 +35,7 @@ romstage-y += timer.c
 romstage-y += i2c.c
 #romstage-y += wdt.c
 romstage-y += cbmem.c
+romstage-y += trustzone.c
 
 ramstage-y += spi.c alternate_cbfs.c
 ramstage-y += clock.c

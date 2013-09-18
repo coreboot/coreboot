@@ -32,6 +32,7 @@
 #include <cpu/samsung/exynos5250/setup.h>
 #include <cpu/samsung/exynos5250/periph.h>
 #include <cpu/samsung/exynos5250/power.h>
+#include <cpu/samsung/exynos5250/trustzone.h>
 #include <cpu/samsung/exynos5250/wakeup.h>
 #include <console/console.h>
 #include <arch/stages.h>
@@ -153,6 +154,9 @@ void main(void)
 
 	setup_power(is_resume);
 	setup_memory(mem, is_resume);
+
+	/* This needs to happen on normal boots and on resume. */
+	trustzone_init();
 
 	if (is_resume) {
 		wakeup();

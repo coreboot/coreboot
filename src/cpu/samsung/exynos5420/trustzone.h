@@ -1,0 +1,81 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2013 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+#ifndef CPU_SAMSUNG_EXYNOS5420_TRUSTZONE_H
+#define CPU_SAMSUNG_EXYNOS5420_TRUSTZONE_H
+
+#include <stdint.h>
+
+/* Distance between each Trust Zone PC register set */
+#define TZPC_BASE_OFFSET		0x10000
+/* TZPC : Register Offsets */
+#define TZPC0_BASE		0x10100000
+#define TZPC1_BASE		0x10110000
+#define TZPC2_BASE		0x10120000
+#define TZPC3_BASE		0x10130000
+#define TZPC4_BASE		0x10140000
+#define TZPC5_BASE		0x10150000
+#define TZPC6_BASE		0x10160000
+#define TZPC7_BASE		0x10170000
+#define TZPC8_BASE		0x10180000
+#define TZPC9_BASE		0x10190000
+#define TZPC10_BASE		0x100E0000
+#define TZPC11_BASE		0x100F0000
+
+/*
+ * TZPC Register Value :
+ * R0SIZE: 0x0 : Size of secured ram
+ */
+#define R0SIZE			0x0
+
+/*
+ * TZPC Decode Protection Register Value :
+ * DECPROTXSET: 0xFF : Set Decode region to non-secure
+ */
+#define DECPROTXSET		0xFF
+
+struct exynos_tzpc {
+	u32 r0size;
+	u8 res1[0x7FC];
+	u32 decprot0stat;
+	u32 decprot0set;
+	u32 decprot0clr;
+	u32 decprot1stat;
+	u32 decprot1set;
+	u32 decprot1clr;
+	u32 decprot2stat;
+	u32 decprot2set;
+	u32 decprot2clr;
+	u32 decprot3stat;
+	u32 decprot3set;
+	u32 decprot3clr;
+	u8 res2[0x7B0];
+	u32 periphid0;
+	u32 periphid1;
+	u32 periphid2;
+	u32 periphid3;
+	u32 pcellid0;
+	u32 pcellid1;
+	u32 pcellid2;
+	u32 pcellid3;
+};
+
+void trustzone_init(void);
+
+#endif	/* CPU_SAMSUNG_EXYNOS5420_TRUSTZONE_H */

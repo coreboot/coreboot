@@ -37,26 +37,6 @@
 static unsigned int cpu_id;
 static unsigned int cpu_rev;
 
-/* Setting TZPC[TrustZone Protection Controller]
- * We pretty much disable it all, as the kernel
- * expects it that way -- and that's not the default.
- */
-static void tzpc_init(void)
-{
-	struct exynos_tzpc *tzpc;
-	unsigned int addr;
-
-	for (addr = TZPC10_BASE; addr <= TZPC9_BASE; addr += TZPC_BASE_OFFSET) {
-		tzpc = (struct exynos_tzpc *)addr;
-		if (addr == TZPC0_BASE)
-			writel(R0SIZE, &tzpc->r0size);
-		writel(DECPROTXSET, &tzpc->decprot0set);
-		writel(DECPROTXSET, &tzpc->decprot1set);
-		writel(DECPROTXSET, &tzpc->decprot2set);
-		writel(DECPROTXSET, &tzpc->decprot3set);
-	}
-}
-
 static void set_cpu_id(void)
 {
 	u32 pro_id = (read32((void *)EXYNOS5_PRO_ID) & 0x00FFF000) >> 12;
@@ -172,8 +152,6 @@ static void cpu_enable(device_t dev)
 	exynos_displayport_init(dev, lcdbase, fb_size);
 
 	set_cpu_id();
-
-	tzpc_init();
 }
 
 static void cpu_init(device_t dev)

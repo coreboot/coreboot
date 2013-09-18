@@ -365,7 +365,7 @@ readwrite_blocks_512 (usbdev_t *dev, int start, int n,
  * @param buf buffer to read into or write from. Must be at least n*sectorsize bytes
  * @return 0 on success, 1 on failure
  */
-int
+static int
 readwrite_chunk (usbdev_t *dev, int start, int n, cbw_direction dir, u8 *buf)
 {
 	cmdblock_t cb;

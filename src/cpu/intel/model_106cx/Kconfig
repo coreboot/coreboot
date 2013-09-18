@@ -11,7 +11,10 @@ config CPU_INTEL_MODEL_106CX
 	select TSC_SYNC_MFENCE
 	select SUPPORT_CPU_UCODE_IN_CBFS
 
+if CPU_INTEL_MODEL_106CX
+
 config CPU_ADDR_BITS
 	int
 	default 32
 
+endif

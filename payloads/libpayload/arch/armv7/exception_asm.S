@@ -79,6 +79,7 @@ exception_common:
 	str	sp, exception_handler
 	ldr	sp, exception_stack_end
 	push	{ lr }
+	stmfd	sp, { sp, lr }^
 	sub	sp, sp, $8
 	push	{ r0 - r12 }
 	mov	r0, sp
@@ -86,7 +87,7 @@ exception_common:
 	ldr	pc, exception_handler
 	pop	{ r0 - r12 }
 	add	sp, sp, $8
-	ldm	sp!, { pc }^
+	ldmfd	sp!, { pc }^
 
 
 _undefined_instruction:	.word exception_undefined_instruction

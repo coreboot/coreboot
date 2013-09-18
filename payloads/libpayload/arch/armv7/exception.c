@@ -43,20 +43,32 @@ void exception_not_used(uint32_t *);
 void exception_irq(uint32_t *);
 void exception_fiq(uint32_t *);
 
+static void dump_stack(uintptr_t addr, size_t bytes)
+{
+	int i, j;
+	const int line = 8;
+	uint32_t *ptr = (uint32_t *)(addr & ~(line * sizeof(*ptr) - 1));
+
+	printf("Dumping stack:\n");
+	for (i = bytes / sizeof(*ptr); i >= 0; i -= line) {
+		printf("%p: ", ptr + i);
+		for (j = i; j < i + line; j++)
+			printf("%08x ", *(ptr + j));
+		printf("\n");
+	}
+}
+
 static void print_regs(uint32_t *regs)
 {
 	int i;
-	/* Don't print the link register and stack pointer since we don't have their
-	 * actual value. They are hidden by the 'shadow' registers provided
-	 * by the trap hardware.
-	 */
+
 	for (i = 0; i < 16; i++) {
 		if (i == 15)
 			printf("PC");
 		else if (i == 14)
-			continue; /* LR */
+			printf("LR");
 		else if (i == 13)
-			continue; /* SP */
+			printf("SP");
 		else if (i == 12)
 			printf("IP");
 		else
@@ -69,6 +81,7 @@ void exception_undefined_instruction(uint32_t *regs)
 {
 	printf("exception _undefined_instruction\n");
 	print_regs(regs);
+	dump_stack(regs[13], 512);
 	halt();
 }
 
@@ -76,6 +89,7 @@ void exception_software_interrupt(uint32_t *regs)
 {
 	printf("exception _software_interrupt\n");
 	print_regs(regs);
+	dump_stack(regs[13], 512);
 	halt();
 }
 
@@ -83,6 +97,7 @@ void exception_prefetch_abort(uint32_t *regs)
 {
 	printf("exception _prefetch_abort\n");
 	print_regs(regs);
+	dump_stack(regs[13], 512);
 	halt();
 }
 
@@ -94,6 +109,7 @@ void exception_data_abort(uint32_t *regs)
 	} else {
 		printf("exception _data_abort\n");
 		print_regs(regs);
+		dump_stack(regs[13], 512);
 	}
 	halt();
 }
@@ -102,6 +118,7 @@ void exception_not_used(uint32_t *regs)
 {
 	printf("exception _not_used\n");
 	print_regs(regs);
+	dump_stack(regs[13], 512);
 	halt();
 }
 
@@ -109,6 +126,7 @@ void exception_irq(uint32_t *regs)
 {
 	printf("exception _irq\n");
 	print_regs(regs);
+	dump_stack(regs[13], 512);
 	halt();
 }
 
@@ -116,6 +134,7 @@ void exception_fiq(uint32_t *regs)
 {
 	printf("exception _fiq\n");
 	print_regs(regs);
+	dump_stack(regs[13], 512);
 	halt();
 }
 

@@ -169,7 +169,7 @@ static void core_start_execution(void)
 	struct exynos5_power *power = samsung_get_base_power();
 
 	enable_smp();
-	set_svc32_mode();
+	set_system_mode();
 
 	cpu_id = read_mpidr() & 0x3;  /* up to 4 processors for one cluster. */
 	cpu_state = exynos_cpu_states->cpu_states[cpu_id];
@@ -221,7 +221,7 @@ static void low_power_start(void)
 		sev();
 	}
 
-	set_svc32_mode();
+	set_system_mode();
 
 	/* Whenever a Cortex A-15 core powers on, iROM resets its L2 cache
 	 * so we need to configure again. */

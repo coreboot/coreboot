@@ -43,15 +43,12 @@ _cbfs_master_header:
 
 reset:
 	/*
-	 * Set the cpu to SVC32 mode and unmask aborts. Aborts might happen
-	 * before logging is turned on and may crash the machine, but at least
-	 * the problem will show up near the code that causes it.
+	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
+	 * aborts may happen early and crash before the abort handlers are
+	 * installed, but at least the problem will show up near the code that
+	 * causes it.
 	 */
-	mrs	r0, cpsr
-	bic	r0, r0, #0x1f
-	orr	r0, r0, #0xd3
-	bic	r0, r0, #0x100
-	msr	cpsr_cxsf,r0
+	msr	cpsr_cxf, #0xdf
 
 	/*
 	 * From Cortex-A Series Programmer's Guide:

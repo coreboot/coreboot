@@ -47,10 +47,11 @@ usb_quirks_t usb_quirks[] = {
 	{ 0x13fd, 0x0841, USB_QUIRK_NONE, 0 },	// Samsung SE-S084
 
 	/* Silence the warning for known devices with more
-	 * than one interface
+	 * than one interface. The 'interface' value should specify the
+	 * interface we want to use (interface numbers usually start at 0).
 	 */
-	{ 0x1267, 0x0103, USB_QUIRK_NONE, 1 },	// Keyboard Trust KB-1800S
-	{ 0x0a12, 0x0001, USB_QUIRK_NONE, 1 },	// Bluetooth Allnet ALL1575
+	{ 0x1267, 0x0103, USB_QUIRK_NONE, 0 },	// Keyboard Trust KB-1800S
+	{ 0x0a12, 0x0001, USB_QUIRK_NONE, 0 },	// Bluetooth Allnet ALL1575
 
 	/* Currently unsupported, possibly interesting devices:
 	 * FTDI serial: device 0x0403:0x6001 is USB 1.10 (class ff)
@@ -83,6 +84,6 @@ int usb_interface_check(u16 vendor, u16 device)
 		}
 	}
 
-	return 0;
+	return -1;
 }
 

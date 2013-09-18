@@ -39,6 +39,14 @@ typedef enum { standard_type = 0, class_type = 1, vendor_type =
 typedef enum { dev_recp = 0, iface_recp = 1, endp_recp = 2, other_recp = 3
 } dev_req_recp;
 
+enum {
+	DT_DEV = 1,
+	DT_CFG = 2,
+	DT_STR = 3,
+	DT_INTF = 4,
+	DT_ENDP = 5,
+};
+
 typedef enum {
 	GET_STATUS = 0,
 	CLEAR_FEATURE = 1,
@@ -191,8 +199,8 @@ struct usbdev {
 	usb_speed speed;
 	u32 quirks;		// quirks field. got to love usb
 	void *data;
-	u8 *descriptor;
-	u8 *configuration;
+	device_descriptor_t *descriptor;
+	configuration_descriptor_t *configuration;
 	void (*init) (usbdev_t *dev);
 	void (*destroy) (usbdev_t *dev);
 	void (*poll) (usbdev_t *dev);
@@ -230,12 +238,12 @@ struct usbdev_hc {
 	u8* (*poll_intr_queue) (void *queue);
 	void *instance;
 
-	/* set_address():		Tell the usb device its address and
-					return it. xHCI controllers want to
-					do this by themself. Also, the usbdev
-					structure has to be allocated and
-					initialized. */
-	int (*set_address) (hci_t *controller, usb_speed speed,
+	/* set_address():		Tell the usb device its address (xHCI
+					controllers want to do this by
+					themselves). Also, allocate the usbdev
+					structure, initialize enpoint 0
+					(including MPS) and return it. */
+	usbdev_t *(*set_address) (hci_t *controller, usb_speed speed,
 				  int hubport, int hubaddr);
 	/* finish_device_config():	Another hook for xHCI,
 					returns 0 on success. */
@@ -250,12 +258,14 @@ hci_t *usb_add_mmio_hc(hc_type type, void *bar);
 hci_t *new_controller (void);
 void detach_controller (hci_t *controller);
 void usb_poll (void);
-void init_device_entry (hci_t *controller, int num);
+usbdev_t *init_device_entry (hci_t *controller, int num);
 
 int usb_decode_mps0 (usb_speed speed, u8 bMaxPacketSize0);
-void set_feature (usbdev_t *dev, int endp, int feature, int rtype);
-void get_status (usbdev_t *dev, int endp, int rtype, int len, void *data);
-void set_configuration (usbdev_t *dev);
+int set_feature (usbdev_t *dev, int endp, int feature, int rtype);
+int get_status (usbdev_t *dev, int endp, int rtype, int len, void *data);
+int get_descriptor (usbdev_t *dev, int rtype, int descType, int descIdx,
+		    void *data, size_t len);
+int set_configuration (usbdev_t *dev);
 int clear_feature (usbdev_t *dev, int endp, int feature, int rtype);
 int clear_stall (endpoint_t *ep);
 
@@ -265,9 +275,6 @@ void usb_hid_init (usbdev_t *dev);
 void usb_msc_init (usbdev_t *dev);
 void usb_generic_init (usbdev_t *dev);
 
-u8 *get_descriptor (usbdev_t *dev, unsigned char bmRequestType,
-		    int descType, int descIdx, int langID);
-
 static inline unsigned char
 gen_bmRequestType (dev_req_dir dir, dev_req_type type, dev_req_recp recp)
 {
@@ -275,7 +282,7 @@ gen_bmRequestType (dev_req_dir dir, dev_req_type type, dev_req_recp recp)
 }
 
 /* default "set address" handler */
-int generic_set_address (hci_t *controller, usb_speed speed,
+usbdev_t *generic_set_address (hci_t *controller, usb_speed speed,
 			       int hubport, int hubaddr);
 
 void usb_detach_device(hci_t *controller, int devno);

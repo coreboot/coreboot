@@ -75,27 +75,6 @@ xhci_get_tt(xhci_t *const xhci, const usb_speed speed,
 	return *tt != 0;
 }
 
-static long
-xhci_get_mps0(usbdev_t *const dev, const int speed)
-{
-	u8 buf[8];
-	dev_req_t dr = {
-		.bmRequestType	= gen_bmRequestType(
-					device_to_host, standard_type, dev_recp),
-		.data_dir	= device_to_host,
-		.bRequest	= GET_DESCRIPTOR,
-		.wValue		= (1 << 8),
-		.wIndex		= 0,
-		.wLength	= 8,
-	};
-	if (dev->controller->control(dev, IN, sizeof(dr), &dr, 8, buf)) {
-		xhci_debug("Failed to read MPS0\n");
-		return COMMUNICATION_ERROR;
-	} else {
-		return usb_decode_mps0(speed, buf[7]);
-	}
-}
-
 static inputctx_t *
 xhci_make_inputctx(const size_t ctxsize)
 {
@@ -120,14 +99,14 @@ xhci_make_inputctx(const size_t ctxsize)
 	return ic;
 }
 
-int
+usbdev_t *
 xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 {
 	xhci_t *const xhci = XHCI_INST(controller);
 	const size_t ctxsize = CTXSIZE(xhci);
 	devinfo_t *di = NULL;
-
-	int i, ret = -1;
+	usbdev_t *dev = NULL;
+	int i;
 
 	inputctx_t *const ic = xhci_make_inputctx(ctxsize);
 	transfer_ring_t *const tr = malloc(sizeof(*tr));
@@ -193,33 +172,46 @@ xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	}
 	mdelay(SET_ADDRESS_MDELAY);
 
-	init_device_entry(controller, slot_id);
-	controller->devices[slot_id]->address = slot_id;
-
-	const long mps0 = xhci_get_mps0(
-			controller->devices[slot_id], speed);
-	if (mps0 < 0) {
+	dev = init_device_entry(controller, slot_id);
+	if (!dev)
 		goto _disable_return;
-	} else if (mps0 != 8) {
+
+	dev->address = slot_id;
+	dev->hub = hubaddr;
+	dev->port = hubport;
+	dev->speed = speed;
+	dev->endpoints[0].dev = dev;
+	dev->endpoints[0].endpoint = 0;
+	dev->endpoints[0].toggle = 0;
+	dev->endpoints[0].direction = SETUP;
+	dev->endpoints[0].type = CONTROL;
+
+	u8 buf[8];
+	if (get_descriptor(dev, gen_bmRequestType(device_to_host, standard_type,
+		dev_recp), DT_DEV, 0, buf, sizeof(buf)) != sizeof(buf)) {
+		usb_debug("first get_descriptor(DT_DEV) failed\n");
+		goto _disable_return;
+	}
+
+	dev->endpoints[0].maxpacketsize = usb_decode_mps0(speed, buf[7]);
+	if (dev->endpoints[0].maxpacketsize != 8) {
 		memset((void *)ic->dev.ep0, 0x00, ctxsize);
 		*ic->add = (1 << 1); /* EP0 Context */
-		EC_SET(MPS, ic->dev.ep0, mps0);
+		EC_SET(MPS, ic->dev.ep0, dev->endpoints[0].maxpacketsize);
 		cc = xhci_cmd_evaluate_context(xhci, slot_id, ic);
 		if (cc != CC_SUCCESS) {
 			xhci_debug("Context evaluation failed: %d\n", cc);
 			goto _disable_return;
-		} else {
-			xhci_debug("Set MPS0 to %dB\n", mps0);
 		}
 	}
 
-	ret = slot_id;
 	goto _free_ic_return;
 
 _disable_return:
 	xhci_cmd_disable_slot(xhci, slot_id);
 	xhci->dcbaa[slot_id] = 0;
 	usb_detach_device(controller, slot_id);
+	dev = NULL;
 _free_return:
 	if (tr)
 		free((void *)tr->ring);
@@ -231,30 +223,27 @@ _free_ic_return:
 	if (ic)
 		free(ic->raw);
 	free(ic);
-	return ret;
+	return dev;
 }
 
 static int
 xhci_finish_hub_config(usbdev_t *const dev, inputctx_t *const ic)
 {
-	hub_descriptor_t *const descriptor = (hub_descriptor_t *)
-		get_descriptor(
-			dev,
-			gen_bmRequestType(device_to_host, class_type, dev_recp),
-			0x29, 0, 0);
-	if (!descriptor) {
+	hub_descriptor_t desc;
+
+	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,
+		dev_recp), 0x29, 0, &desc, sizeof(desc)) != sizeof(desc)) {
 		xhci_debug("Failed to fetch hub descriptor\n");
 		return COMMUNICATION_ERROR;
 	}
 
 	SC_SET(HUB,	ic->dev.slot, 1);
 	SC_SET(MTT,	ic->dev.slot, 0); /* No support for Multi-TT */
-	SC_SET(NPORTS,	ic->dev.slot, descriptor->bNbrPorts);
+	SC_SET(NPORTS,	ic->dev.slot, desc.bNbrPorts);
 	if (dev->speed == HIGH_SPEED)
 		SC_SET(TTT, ic->dev.slot,
-		       (descriptor->wHubCharacteristics >> 5) & 0x0003);
+		       (desc.wHubCharacteristics >> 5) & 0x0003);
 
-	free(descriptor);
 	return 0;
 }
 
@@ -349,7 +338,7 @@ xhci_finish_device_config(usbdev_t *const dev)
 	ic->dev.slot->f2 = di->ctx.slot->f2;
 	ic->dev.slot->f3 = di->ctx.slot->f3;
 
-	if (((device_descriptor_t *)dev->descriptor)->bDeviceClass == 0x09) {
+	if (dev->descriptor->bDeviceClass == 0x09 && dev->speed < SUPER_SPEED) {
 		ret = xhci_finish_hub_config(dev, ic);
 		if (ret)
 			goto _free_return;
@@ -363,8 +352,7 @@ xhci_finish_device_config(usbdev_t *const dev)
 
 	xhci_dump_inputctx(ic);
 
-	const int config_id = ((configuration_descriptor_t *)
-				dev->configuration)->bConfigurationValue;
+	const int config_id = dev->configuration->bConfigurationValue;
 	xhci_debug("config_id: %d\n", config_id);
 	const int cc =
 		xhci_cmd_configure_endpoint(xhci, dev->address, config_id, ic);

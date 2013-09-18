@@ -32,6 +32,8 @@
 #include <libpayload-config.h>
 #include <usb/usb.h>
 
+#define DR_DESC gen_bmRequestType(device_to_host, standard_type, dev_recp)
+
 hci_t *usb_hcs = 0;
 
 hci_t *
@@ -100,21 +102,27 @@ usb_poll (void)
 	}
 }
 
-void
+usbdev_t *
 init_device_entry (hci_t *controller, int i)
 {
+	usbdev_t *dev = calloc(1, sizeof(usbdev_t));
+	if (!dev) {
+		usb_debug("no memory to allocate device structure\n");
+		return NULL;
+	}
 	if (controller->devices[i] != 0)
 		usb_debug("warning: device %d reassigned?\n", i);
-	controller->devices[i] = malloc(sizeof(usbdev_t));
-	controller->devices[i]->controller = controller;
-	controller->devices[i]->address = -1;
-	controller->devices[i]->hub = -1;
-	controller->devices[i]->port = -1;
-	controller->devices[i]->init = usb_nop_init;
-	controller->devices[i]->init (controller->devices[i]);
+	controller->devices[i] = dev;
+	dev->controller = controller;
+	dev->address = -1;
+	dev->hub = -1;
+	dev->port = -1;
+	dev->init = usb_nop_init;
+	dev->init (controller->devices[i]);
+	return dev;
 }
 
-void
+int
 set_feature (usbdev_t *dev, int endp, int feature, int rtype)
 {
 	dev_req_t dr;
@@ -125,10 +133,11 @@ set_feature (usbdev_t *dev, int endp, int feature, int rtype)
 	dr.wValue = feature;
 	dr.wIndex = endp;
 	dr.wLength = 0;
-	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+
+	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
 }
 
-void
+int
 get_status (usbdev_t *dev, int intf, int rtype, int len, void *data)
 {
 	dev_req_t dr;
@@ -139,67 +148,37 @@ get_status (usbdev_t *dev, int intf, int rtype, int len, void *data)
 	dr.wValue = 0;
 	dr.wIndex = intf;
 	dr.wLength = len;
-	dev->controller->control (dev, IN, sizeof (dr), &dr, len, data);
+
+	return dev->controller->control (dev, IN, sizeof (dr), &dr, len, data);
 }
 
-u8 *
-get_descriptor (usbdev_t *dev, unsigned char bmRequestType, int descType,
-		int descIdx, int langID)
+int
+get_descriptor (usbdev_t *dev, int rtype, int descType, int descIdx,
+		void *data, size_t len)
 {
-	u8 buf[8];
-	u8 *result;
 	dev_req_t dr;
-	int size;
 
-	dr.bmRequestType = bmRequestType;
-	dr.data_dir = device_to_host;	// always like this for descriptors
+	dr.bmRequestType = rtype;
 	dr.bRequest = GET_DESCRIPTOR;
-	dr.wValue = (descType << 8) | descIdx;
-	dr.wIndex = langID;
-	dr.wLength = 8;
-	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 8, buf) < 0) {
-		usb_debug ("getting descriptor size (type %x) failed\n",
-			descType);
-	}
+	dr.wValue = descType << 8 | descIdx;
+	dr.wIndex = 0;
+	dr.wLength = len;
 
-	if (descType == 1) {
-		device_descriptor_t *dd = (device_descriptor_t *) buf;
-		usb_debug ("maxPacketSize0: %x\n", dd->bMaxPacketSize0);
-		if (dd->bMaxPacketSize0 != 0)
-			dev->endpoints[0].maxpacketsize = dd->bMaxPacketSize0;
-	}
-
-	/* special case for configuration descriptors: they carry all their
-	   subsequent descriptors with them, and keep the entire size at a
-	   different location */
-	size = buf[0];
-	if (buf[1] == 2) {
-		int realsize = ((unsigned short *) (buf + 2))[0];
-		size = realsize;
-	}
-	result = malloc (size);
-	memset (result, 0, size);
-	dr.wLength = size;
-	if (dev->controller->
-	    control (dev, IN, sizeof (dr), &dr, size, result) < 0) {
-		usb_debug ("getting descriptor (type %x, size %x) failed\n",
-			descType, size);
-	}
-
-	return result;
+	return dev->controller->control (dev, IN, sizeof (dr), &dr, len, data);
 }
 
-void
+int
 set_configuration (usbdev_t *dev)
 {
 	dev_req_t dr;
 
 	dr.bmRequestType = 0;
 	dr.bRequest = SET_CONFIGURATION;
-	dr.wValue = dev->configuration[5];
+	dr.wValue = dev->configuration->bConfigurationValue;
 	dr.wIndex = 0;
 	dr.wLength = 0;
-	dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
+
+	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0);
 }
 
 int
@@ -213,18 +192,15 @@ clear_feature (usbdev_t *dev, int endp, int feature, int rtype)
 	dr.wValue = feature;
 	dr.wIndex = endp;
 	dr.wLength = 0;
+
 	return dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0;
 }
 
 int
 clear_stall (endpoint_t *ep)
 {
-	usbdev_t *dev = ep->dev;
-	int endp = ep->endpoint;
-	int rtype = gen_bmRequestType (host_to_device, standard_type,
-					endp ? endp_recp : dev_recp);
-
-	int ret = clear_feature (dev, endp, ENDPOINT_HALT, rtype);
+	int ret = clear_feature (ep->dev, ep->endpoint, ENDPOINT_HALT,
+		gen_bmRequestType (host_to_device, standard_type, endp_recp));
 	ep->toggle = 0;
 	return ret;
 }
@@ -319,7 +295,7 @@ usb_decode_interval(usb_speed speed, const endpoint_type type, const unsigned ch
 #undef LOG2
 }
 
-int
+usbdev_t *
 generic_set_address (hci_t *controller, usb_speed speed,
 		     int hubport, int hubaddr)
 {
@@ -335,8 +311,10 @@ generic_set_address (hci_t *controller, usb_speed speed,
 	dr.wIndex = 0;
 	dr.wLength = 0;
 
-	init_device_entry(controller, adr);
-	usbdev_t *dev = controller->devices[adr];
+	usbdev_t *dev = init_device_entry(controller, adr);
+	if (!dev)
+		return NULL;
+
 	// dummy values for registering the address
 	dev->address = 0;
 	dev->hub = hubaddr;
@@ -347,130 +325,174 @@ generic_set_address (hci_t *controller, usb_speed speed,
 	dev->endpoints[0].maxpacketsize = 8;
 	dev->endpoints[0].toggle = 0;
 	dev->endpoints[0].direction = SETUP;
+	dev->endpoints[0].type = CONTROL;
 	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0) {
 		usb_debug ("set_address failed\n");
-		return -1;
+		usb_detach_device (controller, adr);
+		return NULL;
 	}
 	mdelay (SET_ADDRESS_MDELAY);
 
-	return adr;
+	u8 buf[8];
+	dev->address = adr;
+	if (get_descriptor (dev, DR_DESC, DT_DEV, 0, buf, sizeof(buf))
+			!= sizeof(buf)) {
+		usb_debug("first get_descriptor(DT_DEV) failed\n");
+		usb_detach_device (controller, adr);
+		return NULL;
+	}
+	dev->endpoints[0].maxpacketsize = usb_decode_mps0(speed, buf[7]);
+
+	return dev;
 }
 
 static int
 set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 {
-	int adr = controller->set_address(controller, speed, hubport, hubaddr);
-	if (adr < 0 || !controller->devices[adr]) {
+	usbdev_t *dev = controller->set_address(controller, speed,
+						hubport, hubaddr);
+	if (!dev) {
 		usb_debug ("set_address failed\n");
 		return -1;
 	}
-	configuration_descriptor_t *cd;
-	device_descriptor_t *dd;
 
-	usbdev_t *dev = controller->devices[adr];
-	dev->address = adr;
-	dev->hub = hubaddr;
-	dev->port = hubport;
-	dev->speed = speed;
-	dev->descriptor = get_descriptor (dev, gen_bmRequestType
-		(device_to_host, standard_type, dev_recp), 1, 0, 0);
-	dd = (device_descriptor_t *) dev->descriptor;
-
-	usb_debug ("* found device (0x%04x:0x%04x, USB %x.%x)",
-		 dd->idVendor, dd->idProduct,
-		 dd->bcdUSB >> 8, dd->bcdUSB & 0xff);
-	dev->quirks = usb_quirk_check(dd->idVendor, dd->idProduct);
-
-	usb_debug ("\ndevice has %x configurations\n", dd->bNumConfigurations);
-	if (dd->bNumConfigurations == 0) {
-		/* device isn't usable */
-		usb_debug ("... no usable configuration!\n");
-		dev->address = 0;
+	dev->descriptor = malloc(sizeof(*dev->descriptor));
+	if (!dev->descriptor || get_descriptor (dev, DR_DESC, DT_DEV, 0,
+			dev->descriptor, sizeof(*dev->descriptor))
+			!= sizeof(*dev->descriptor)) {
+		usb_debug ("get_descriptor(DT_DEV) failed\n");
+		usb_detach_device (controller, dev->address);
 		return -1;
 	}
 
-	dev->configuration = get_descriptor (dev, gen_bmRequestType
-		(device_to_host, standard_type, dev_recp), 2, 0, 0);
-	cd = (configuration_descriptor_t *) dev->configuration;
-	interface_descriptor_t *interface =
-		(interface_descriptor_t *) (((char *) cd) + cd->bLength);
-	{
-		int i;
-		int num = cd->bNumInterfaces;
-		interface_descriptor_t *current = interface;
-		usb_debug ("device has %x interfaces\n", num);
-		if (num > 1) {
-			int interfaces = usb_interface_check(dd->idVendor, dd->idProduct);
-			if (interfaces) {
-				/* Well known device, don't warn */
-				num = interfaces;
-			} else {
+	usb_debug ("* found device (0x%04x:0x%04x, USB %x.%x, MPS0: %d)\n",
+		 dev->descriptor->idVendor, dev->descriptor->idProduct,
+		 dev->descriptor->bcdUSB >> 8, dev->descriptor->bcdUSB & 0xff,
+		 dev->endpoints[0].maxpacketsize);
+	dev->quirks = usb_quirk_check(dev->descriptor->idVendor,
+				      dev->descriptor->idProduct);
 
-				usb_debug ("\nNOTICE: This driver defaults to using the first interface.\n"
-					"This might be the wrong choice and lead to limited functionality\n"
-					"of the device. Please report such a case to coreboot@coreboot.org\n"
-					"as you might be the first.\n");
-				/* we limit to the first interface, as there was no need to
-				 * implement something else for the time being. If you need
-				 * it, see the SetInterface and GetInterface functions in
-				 * the USB specification, and adapt appropriately.
-				 */
-				num = (num > 1) ? 1 : num;
-			}
-		}
-		for (i = 0; i < num; i++) {
-			int j;
-			usb_debug (" #%x has %x endpoints, interface %x:%x, protocol %x\n",
-					current->bInterfaceNumber, current->bNumEndpoints, current->bInterfaceClass, current->bInterfaceSubClass, current->bInterfaceProtocol);
-			endpoint_descriptor_t *endp =
-				(endpoint_descriptor_t *) (((char *) current)
-							   + current->bLength);
-			/* Skip any non-endpoint descriptor */
-			if (endp->bDescriptorType != 0x05)
-				endp = (endpoint_descriptor_t *)(((char *)endp) + ((char *)endp)[0]);
-
-			memset (dev->endpoints, 0, sizeof (dev->endpoints));
-			dev->num_endp = 1;	// 0 always exists
-			dev->endpoints[0].dev = dev;
-			dev->endpoints[0].maxpacketsize = dd->bMaxPacketSize0;
-			dev->endpoints[0].direction = SETUP;
-			dev->endpoints[0].type = CONTROL;
-			dev->endpoints[0].interval = usb_decode_interval(dev->speed, CONTROL, endp->bInterval);
-			for (j = 1; j <= current->bNumEndpoints; j++) {
-#ifdef USB_DEBUG
-				static const char *transfertypes[4] = {
-					"control", "isochronous", "bulk", "interrupt"
-				};
-				usb_debug ("   #%x: Endpoint %x (%s), max packet size %x, type %s\n", j, endp->bEndpointAddress & 0x7f, ((endp->bEndpointAddress & 0x80) != 0) ? "in" : "out", endp->wMaxPacketSize, transfertypes[endp->bmAttributes]);
-#endif
-				endpoint_t *ep =
-					&dev->endpoints[dev->num_endp++];
-				ep->dev = dev;
-				ep->endpoint = endp->bEndpointAddress;
-				ep->toggle = 0;
-				ep->maxpacketsize = endp->wMaxPacketSize;
-				ep->direction =
-					((endp->bEndpointAddress & 0x80) ==
-					 0) ? OUT : IN;
-				ep->type = endp->bmAttributes;
-				ep->interval = usb_decode_interval(dev->speed, ep->type, endp->bInterval);
-				endp = (endpoint_descriptor_t
-					*) (((char *) endp) + endp->bLength);
-			}
-			current = (interface_descriptor_t *) endp;
-		}
+	usb_debug ("device has %d configurations\n",
+		   dev->descriptor->bNumConfigurations);
+	if (dev->descriptor->bNumConfigurations == 0) {
+		/* device isn't usable */
+		usb_debug ("... no usable configuration!\n");
+		usb_detach_device (controller, dev->address);
+		return -1;
 	}
 
-	if (controller->finish_device_config &&
-			controller->finish_device_config(dev))
-		return adr; /* Device isn't configured correctly,
-			       only control transfers may work. */
+	u16 buf[2];
+	if (get_descriptor (dev, DR_DESC, DT_CFG, 0, buf, sizeof(buf))
+			!= sizeof(buf)) {
+		usb_debug ("first get_descriptor(DT_CFG) failed\n");
+		usb_detach_device (controller, dev->address);
+		return -1;
+	}
+	dev->configuration = malloc(buf[1]);
+	if (!dev->configuration) {
+		usb_debug ("could not allocate %d bytes for DT_CFG\n", buf[1]);
+		usb_detach_device (controller, dev->address);
+		return -1;
+	}
+	if (get_descriptor (dev, DR_DESC, DT_CFG, 0, dev->configuration,
+			    buf[1]) != buf[1]) {
+		usb_debug ("get_descriptor(DT_CFG) failed\n");
+		usb_detach_device (controller, dev->address);
+		return -1;
+	}
+	configuration_descriptor_t *cd = dev->configuration;
+	if (cd->wTotalLength != buf[1]) {
+		usb_debug ("configuration descriptor size changed, aborting\n");
+		usb_detach_device (controller, dev->address);
+		return -1;
+	}
 
-	set_configuration(dev);
+	/*
+	 * If the device is not well known (ifnum == -1), we use the first
+	 * interface we encounter, as there was no need to implement something
+	 * else for the time being. If you need it, see the SetInterface and
+	 * GetInterface functions in the USB specification and set it yourself.
+	 */
+	usb_debug ("device has %x interfaces\n", cd->bNumInterfaces);
+	int ifnum = usb_interface_check(dev->descriptor->idVendor,
+					dev->descriptor->idProduct);
+	if (cd->bNumInterfaces > 1 && ifnum < 0)
+		usb_debug ("NOTICE: Your device has multiple interfaces and\n"
+			   "this driver will only use the first one. That may\n"
+			   "be the wrong choice and cause the device to not\n"
+			   "work correctly. Please report this case\n"
+			   "(including the above debugging output) to\n"
+			   "coreboot@coreboot.org to have the device added to\n"
+			   "the list of well-known quirks.\n");
 
-	int class = dd->bDeviceClass;
+	u8 *end = (void *)dev->configuration + cd->wTotalLength;
+	interface_descriptor_t *intf;
+	u8 *ptr;
+
+	/* Find our interface (or the first good one if we don't know) */
+	for (ptr = (void *)dev->configuration + sizeof(*cd); ; ptr += ptr[0]) {
+		if (ptr + 2 > end || !ptr[0] || ptr + ptr[0] > end) {
+			usb_debug ("Couldn't find usable DT_INTF\n");
+			usb_detach_device (controller, dev->address);
+			return -1;
+		}
+		if (ptr[1] != DT_INTF)
+			continue;
+		intf = (void *)ptr;
+		if (intf->bLength != sizeof(*intf)) {
+			usb_debug ("Skipping broken DT_INTF\n");
+			continue;
+		}
+		if (ifnum >= 0 && intf->bInterfaceNumber != ifnum)
+			continue;
+		usb_debug ("Interface %d: class 0x%x, sub 0x%x. proto 0x%x\n",
+			intf->bInterfaceNumber, intf->bInterfaceClass,
+			intf->bInterfaceSubClass, intf->bInterfaceProtocol);
+		ptr += sizeof(*intf);
+		break;
+	}
+
+	/* Gather up all endpoints belonging to this inteface */
+	dev->num_endp = 1;
+	for (; ptr + 2 <= end && ptr[0] && ptr + ptr[0] <= end; ptr += ptr[0]) {
+		if (ptr[1] == DT_INTF || ptr[1] == DT_CFG ||
+				dev->num_endp >= ARRAY_SIZE(dev->endpoints))
+			break;
+		if (ptr[1] != DT_ENDP)
+			continue;
+
+		endpoint_descriptor_t *desc = (void *)ptr;
+		static const char *transfertypes[4] = {
+			"control", "isochronous", "bulk", "interrupt"
+		};
+		usb_debug (" #Endpoint %d (%s), max packet size %x, type %s\n",
+			desc->bEndpointAddress & 0x7f,
+			(desc->bEndpointAddress & 0x80) ? "in" : "out",
+			desc->wMaxPacketSize,
+			transfertypes[desc->bmAttributes & 0x3]);
+
+		endpoint_t *ep = &dev->endpoints[dev->num_endp++];
+		ep->dev = dev;
+		ep->endpoint = desc->bEndpointAddress;
+		ep->toggle = 0;
+		ep->maxpacketsize = desc->wMaxPacketSize;
+		ep->direction = (desc->bEndpointAddress & 0x80) ? IN : OUT;
+		ep->type = desc->bmAttributes & 0x3;
+		ep->interval = usb_decode_interval (dev->speed, ep->type,
+						    desc->bInterval);
+	}
+
+	if ((controller->finish_device_config &&
+			controller->finish_device_config(dev)) ||
+			set_configuration(dev) < 0) {
+		usb_debug ("Could not finalize device configuration\n");
+		usb_detach_device (controller, dev->address);
+		return -1;
+	}
+
+	int class = dev->descriptor->bDeviceClass;
 	if (class == 0)
-		class = interface->bInterfaceClass;
+		class = intf->bInterfaceClass;
 
 	enum {
 		audio_device      = 0x01,
@@ -490,7 +512,7 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		wireless_device   = 0xe0,
 		misc_device       = 0xef,
 	};
-	usb_debug(", class: ");
+	usb_debug("Class: ");
 	switch (class) {
 	case audio_device:
 		usb_debug("audio\n");
@@ -501,8 +523,8 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	case hid_device:
 		usb_debug ("HID\n");
 #ifdef CONFIG_LP_USB_HID
-		controller->devices[adr]->init = usb_hid_init;
-		return adr;
+		dev->init = usb_hid_init;
+		return dev->address;
 #else
 		usb_debug ("NOTICE: USB HID support not compiled in\n");
 #endif
@@ -519,20 +541,24 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 	case msc_device:
 		usb_debug ("MSC\n");
 #ifdef CONFIG_LP_USB_MSC
-		controller->devices[adr]->init = usb_msc_init;
-		return adr;
+		dev->init = usb_msc_init;
+		return dev->address;
 #else
 		usb_debug ("NOTICE: USB MSC support not compiled in\n");
 #endif
 		break;
 	case hub_device:
-		usb_debug ("hub\n");
+		if (speed < SUPER_SPEED) {
+			usb_debug ("hub (2.0)\n");
 #ifdef CONFIG_LP_USB_HUB
-		controller->devices[adr]->init = usb_hub_init;
-		return adr;
+			dev->init = usb_hub_init;
+			return dev->address;
 #else
-		usb_debug ("NOTICE: USB hub support not compiled in.\n");
+			usb_debug ("NOTICE: USB hub support not compiled in\n");
 #endif
+		} else {
+			usb_debug ("hub (3.0) - not yet supported!\n");
+		}
 		break;
 	case cdc_device:
 		usb_debug("CDC\n");
@@ -559,8 +585,8 @@ set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 		usb_debug("unsupported class %x\n", class);
 		break;
 	}
-	controller->devices[adr]->init = usb_generic_init;
-	return adr;
+	dev->init = usb_generic_init;
+	return dev->address;
 }
 
 /*

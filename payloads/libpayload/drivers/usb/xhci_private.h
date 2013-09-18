@@ -470,7 +470,7 @@ typedef struct xhci {
 
 void *xhci_align(const size_t min_align, const size_t size);
 void xhci_init_cycle_ring(transfer_ring_t *, const size_t ring_size);
-int xhci_set_address (hci_t *, usb_speed speed, int hubport, int hubaddr);
+usbdev_t *xhci_set_address (hci_t *, usb_speed speed, int hubport, int hubaddr);
 int xhci_finish_device_config(usbdev_t *);
 void xhci_destroy_dev(hci_t *, int slot_id);
 

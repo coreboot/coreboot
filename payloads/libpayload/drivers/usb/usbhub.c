@@ -46,67 +46,76 @@
 static int
 usb_hub_port_status_changed(usbdev_t *const dev, const int port)
 {
-	unsigned short buf[2] = { 0, 0 };
-	get_status (dev, port, DR_PORT, 4, buf);
-	if (buf[1] & PORT_CONNECTION)
-		clear_feature (dev, port, SEL_C_PORT_CONNECTION, DR_PORT);
-	return buf[1] & PORT_CONNECTION;
+	unsigned short buf[2];
+	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	if (ret >= 0) {
+		ret = buf[1] & PORT_CONNECTION;
+		if (ret)
+			clear_feature (dev, port, SEL_C_PORT_CONNECTION,
+				       DR_PORT);
+	}
+	return ret;
 }
 
 static int
 usb_hub_port_connected(usbdev_t *const dev, const int port)
 {
-	unsigned short buf[2] = { 0, 0 };
-	get_status (dev, port, DR_PORT, 4, buf);
-	return buf[0] & PORT_CONNECTION;
+	unsigned short buf[2];
+	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	if (ret >= 0)
+		ret = buf[0] & PORT_CONNECTION;
+	return ret;
 }
 
 static int
 usb_hub_port_in_reset(usbdev_t *const dev, const int port)
 {
-	unsigned short buf[2] = { 0, 0 };
-	get_status (dev, port, DR_PORT, 4, buf);
-	return buf[0] & PORT_RESET;
+	unsigned short buf[2];
+	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	if (ret >= 0)
+		ret = buf[0] & PORT_RESET;
+	return ret;
 }
 
 static int
 usb_hub_port_enabled(usbdev_t *const dev, const int port)
 {
-	unsigned short buf[2] = { 0, 0 };
-	get_status (dev, port, DR_PORT, 4, buf);
-	return (buf[0] & PORT_ENABLE) != 0;
+	unsigned short buf[2];
+	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	if (ret >= 0)
+		ret = buf[0] & PORT_ENABLE;
+	return ret;
 }
 
 static usb_speed
 usb_hub_port_speed(usbdev_t *const dev, const int port)
 {
-	unsigned short buf[2] = { 0, 0 };
-	get_status (dev, port, DR_PORT, 4, buf);
-	if (buf[0] & PORT_ENABLE) {
+	unsigned short buf[2];
+	int ret = get_status (dev, port, DR_PORT, sizeof(buf), buf);
+	if (ret >= 0 && (buf[0] & PORT_ENABLE)) {
 		/* bit  10  9
 		 *      0   0  full speed
 		 *      0   1  low speed
 		 *      1   0  high speed
 		 *      1   1  super speed (hack, not in spec!)
 		 */
-		return (buf[0] >> 9) & 0x3;
+		ret = (buf[0] >> 9) & 0x3;
 	} else {
-		return -1;
+		ret = -1;
 	}
+	return ret;
 }
 
 static int
 usb_hub_enable_port(usbdev_t *const dev, const int port)
 {
-	set_feature(dev, port, SEL_PORT_POWER, DR_PORT);
-	return 0;
+	return set_feature(dev, port, SEL_PORT_POWER, DR_PORT);
 }
 
 static int
 usb_hub_start_port_reset(usbdev_t *const dev, const int port)
 {
-	set_feature (dev, port, SEL_PORT_RESET, DR_PORT);
-	return 0;
+	return set_feature (dev, port, SEL_PORT_RESET, DR_PORT);
 }
 
 static const generic_hub_ops_t usb_hub_ops = {
@@ -125,17 +134,13 @@ static const generic_hub_ops_t usb_hub_ops = {
 void
 usb_hub_init(usbdev_t *const dev)
 {
-	hub_descriptor_t *const descriptor = (hub_descriptor_t *)
-		get_descriptor(
-			dev,
-			gen_bmRequestType(device_to_host, class_type, dev_recp),
-			0x29, 0, 0);
-	if (!descriptor) {
-		usb_debug("usbhub: ERROR: Failed to fetch hub descriptor\n");
+	hub_descriptor_t desc;	/* won't fit the whole thing, we don't care */
+	if (get_descriptor(dev, gen_bmRequestType(device_to_host, class_type,
+		dev_recp), 0x29, 0, &desc, sizeof(desc)) != sizeof(desc)) {
+		usb_debug("get_descriptor(HUB) failed\n");
+		usb_detach_device(dev->controller, dev->address);
 		return;
 	}
-	const int num_ports = descriptor->bNbrPorts;
-	free(descriptor);
 
-	generic_hub_init(dev, num_ports, &usb_hub_ops);
+	generic_hub_init(dev, desc.bNbrPorts, &usb_hub_ops);
 }

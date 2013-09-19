@@ -473,12 +473,18 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 		 * rgb888 (i.e. no alpha, but pixels on 32-bit boundaries)
 		 * The mainboard can modify these if needed, though
 		 * we have yet to see a case where that will happen.
+		 * The existing ARM mainboards don't even call this function
+		 * so this will not affect them.
 		 */
-		out->bpp = 32;
+		out->framebuffer_bits_per_pixel = 32;
 
-		out->x_resolution = ALIGN(out->ha * ((out->bpp + 7) / 8),64) / (out->bpp/8);
+		out->x_resolution = ALIGN(out->ha *
+					  ((out->framebuffer_bits_per_pixel + 7) / 8),
+					  64) / (out->framebuffer_bits_per_pixel/8);
 		out->y_resolution = out->va;
-		out->bytes_per_line = ALIGN(out->ha * ((out->bpp + 7) / 8),64);
+		out->bytes_per_line = ALIGN(out->ha *
+					    ((out->framebuffer_bits_per_pixel + 7)/8),
+					    64);
 		printk(BIOS_SPEW, "Did detailed timing\n");
 	}
 	did_detailed_timing = 1;
@@ -1064,7 +1070,8 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			else
 				printk(BIOS_SPEW, "%d bits per primary color channel\n",
 				       ((edid[0x14] & 0x70) >> 3) + 4);
-			out->bpp = ((edid[0x14] & 0x70) >> 3) + 4;
+			out->panel_bits_per_color = ((edid[0x14] & 0x70) >> 3) + 4;
+			out->panel_bits_per_pixel = 3*out->panel_bits_per_color;
 
 			switch (edid[0x14] & 0x0f) {
 			case 0x00: printk(BIOS_SPEW, "Digital interface is not defined\n"); break;
@@ -1423,7 +1430,7 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 	edid_fb.x_resolution = edid->x_resolution;
 	edid_fb.y_resolution = edid->y_resolution;
 	edid_fb.bytes_per_line = edid->bytes_per_line;
-	/* In the case of (e.g.) 24bpp, the convention nowadays
+	/* In the case of (e.g.) 24 framebuffer bits per pixel, the convention nowadays
 	 * seems to be to round it up to the nearest reasonable
 	 * boundary, because otherwise the byte-packing is hideous.
 	 * So, for example, in RGB with no alpha, the bytes are still
@@ -1434,8 +1441,8 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 	 * It's not clear we're covering all cases here, but
 	 * I'm not sure with grahpics you ever can.
 	 */
-	edid_fb.bits_per_pixel = edid->bpp;
-	switch(edid->bpp){
+	edid_fb.bits_per_pixel = edid->framebuffer_bits_per_pixel;
+	switch(edid->framebuffer_bits_per_pixel){
 	case 32:
 	case 24:
 		/* packed into 4-byte words */
@@ -1457,7 +1464,7 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 		break;
 	default:
 		printk(BIOS_SPEW, "%s: unsupported BPP %d\n", __func__,
-		       edid->bpp);
+		       edid->framebuffer_bits_per_pixel);
 		return;
 	}
 

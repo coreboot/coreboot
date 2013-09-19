@@ -90,11 +90,6 @@ static unsigned int *mmio;
 static unsigned int graphics;
 static unsigned int physbase;
 
-void ug1(int);
-void ug2(int);
-void ug22(int);
-void ug3(int);
-
 /* GTT is the Global Translation Table for the graphics pipeline.
  * It is used to translate graphics addresses to physical
  * memory addresses. As in the CPU, GTTs map 4K pages.
@@ -115,6 +110,8 @@ void ug3(int);
  */
 
 #define GTT_PTE_BASE (2 << 20)
+
+int intel_dp_bw_code_to_link_rate(u8 link_bw);
 
 static void
 setgtt(int start, int end, unsigned long base, int inc)
@@ -145,12 +142,23 @@ static void palette(void)
 	}
 }
 
+/* assumption: the dpcd in the dp is valid. The raw edid has been read
+ * and the translation has been done.
+ */
 void dp_init_dim_regs(struct intel_dp *dp);
 void dp_init_dim_regs(struct intel_dp *dp)
 {
 	struct edid *edid = &(dp->edid);
 
-	dp->bytes_per_pixel = edid->framebuffer_bits_per_pixel / 8;
+	/* step 1: get the constants in the dp struct set up. */
+	dp->lane_count = dp->dpcd[DP_MAX_LANE_COUNT]&DP_LANE_COUNT_MASK;
+
+	dp->link_bw = dp->dpcd[DP_MAX_LINK_RATE];
+	dp->clock = intel_dp_bw_code_to_link_rate(dp->link_bw);
+	dp->edid.link_clock = intel_dp_bw_code_to_link_rate(dp->link_bw);
+
+	/* step 2. Do some computation of other stuff. */
+	dp->bytes_per_pixel = dp->pipe_bits_per_pixel/8;
 
 	dp->stride = edid->bytes_per_line;
 
@@ -173,11 +181,13 @@ void dp_init_dim_regs(struct intel_dp *dp)
 
 	dp->pfa_pos = 0;
 
+	/* XXXXXXXXXXXXXX hard code */
 	dp->pfa_ctl = 0x80800000;
 
 	dp->pfa_sz = (edid->ha << 16) | (edid->va);
 
-	dp->flags = intel_ddi_calc_transcoder_flags(3 * 6,  /* bits per color is 6 */
+	/* step 3. Call the linux code we pulled in. */
+	dp->flags = intel_ddi_calc_transcoder_flags(edid->panel_bits_per_pixel,
 						    dp->port,
 						    dp->pipe,
 						    dp->type,
@@ -189,12 +199,13 @@ void dp_init_dim_regs(struct intel_dp *dp)
 	dp->transcoder = intel_ddi_get_transcoder(dp->port,
 						  dp->pipe);
 
-	intel_dp_compute_m_n(dp->pipe_bits_per_pixel,
+	intel_dp_compute_m_n(edid->panel_bits_per_pixel,
 			     dp->lane_count,
 			     dp->edid.pixel_clock,
 			     dp->edid.link_clock,
 			     &dp->m_n);
 
+	printk(BIOS_SPEW, "dp->lane_count  = 0x%08x\n",dp->lane_count);
 	printk(BIOS_SPEW, "dp->stride  = 0x%08x\n",dp->stride);
 	printk(BIOS_SPEW, "dp->htotal  = 0x%08x\n", dp->htotal);
 	printk(BIOS_SPEW, "dp->hblank  = 0x%08x\n", dp->hblank);
@@ -208,19 +219,21 @@ void dp_init_dim_regs(struct intel_dp *dp)
 	printk(BIOS_SPEW, "dp->pfa_sz  = 0x%08x\n", dp->pfa_sz);
 	printk(BIOS_SPEW, "dp->link_m  = 0x%08x\n", dp->m_n.link_m);
 	printk(BIOS_SPEW, "dp->link_n  = 0x%08x\n", dp->m_n.link_n);
-	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n", TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m);
+	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n",
+	       TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m);
 	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n", dp->m_n.gmch_m);
 	printk(BIOS_SPEW, "0x6f034     = 0x%08x\n", dp->m_n.gmch_n);
 	printk(BIOS_SPEW, "dp->flags   = 0x%08x\n", dp->flags);
 }
 
-int intel_dp_bw_code_to_link_rate(u8 link_bw);
-
 int intel_dp_bw_code_to_link_rate(u8 link_bw)
 {
 	switch (link_bw) {
-        case DP_LINK_BW_1_62:
         default:
+		printk(BIOS_ERR,
+			"ERROR: link_bw(%d) is bogus; must be one of 6, 0xa, or 0x14\n",
+			link_bw);
+        case DP_LINK_BW_1_62:
 		return 162000;
         case DP_LINK_BW_2_7:
 		return 270000;
@@ -234,36 +247,55 @@ void mainboard_train_link(struct intel_dp *intel_dp)
 	u8 read_val;
 	u8 link_status[DP_LINK_STATUS_SIZE];
 
-	gtt_write(DP_TP_CTL(intel_dp->port),DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE);
-	gtt_write(DP_A, DP_PORT_EN | DP_LINK_TRAIN_PAT_1 | DP_LINK_TRAIN_PAT_1_CPT | DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0 | DP_PORT_WIDTH_1 | DP_PLL_FREQ_270MHZ | DP_SYNC_VS_HIGH |0x80000011);
+	gtt_write(DP_TP_CTL(intel_dp->port),
+		  DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE);
+	gtt_write(DDI_BUF_CTL_A,
+		  DDI_BUF_CTL_ENABLE|
+		  DDI_A_4_LANES|DDI_PORT_WIDTH_X1|DDI_INIT_DISPLAY_DETECTED|0x80000011);
 
 	intel_dp_get_training_pattern(intel_dp, &read_val);
-	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_1 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
-	intel_dp_get_lane_count(intel_dp, &read_val);
-	intel_dp_set_training_lane0(intel_dp, DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0);
+	intel_dp_set_training_pattern(intel_dp,
+				      DP_TRAINING_PATTERN_1 | DP_LINK_QUAL_PATTERN_DISABLE |
+				      DP_SYMBOL_ERROR_COUNT_BOTH);
+
+	intel_dp_set_training_lane0(intel_dp,
+				    DP_TRAIN_VOLTAGE_SWING_400 | DP_TRAIN_PRE_EMPHASIS_0);
 	intel_dp_get_link_status(intel_dp, link_status);
 
-	gtt_write(DP_TP_CTL(intel_dp->port),DP_TP_CTL_ENABLE | DP_TP_CTL_ENHANCED_FRAME_ENABLE | DP_TP_CTL_LINK_TRAIN_PAT2);
+	gtt_write(DP_TP_CTL(intel_dp->port),
+		  DP_TP_CTL_ENABLE |
+		  DP_TP_CTL_ENHANCED_FRAME_ENABLE | DP_TP_CTL_LINK_TRAIN_PAT2);
 
 	intel_dp_get_training_pattern(intel_dp, &read_val);
-	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_2 | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
+	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_2 |
+				      DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
 	intel_dp_get_link_status(intel_dp, link_status);
 	intel_dp_get_lane_align_status(intel_dp, &read_val);
 	intel_dp_get_training_pattern(intel_dp, &read_val);
-	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_DISABLE | DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
+	intel_dp_set_training_pattern(intel_dp, DP_TRAINING_PATTERN_DISABLE |
+				      DP_LINK_QUAL_PATTERN_DISABLE | DP_SYMBOL_ERROR_COUNT_BOTH);
 }
 
-#define TEST_GFX 0
+/* This variable controls whether the test_gfx function below puts up
+ * color bars or not. In previous revs we ifdef'd the test_gfx function out
+ * but it's handy, especially when using a JTAG debugger
+ * to be able to enable and disable a test graphics.
+ */
+int show_test = 0;
 
-#if TEST_GFX
 static void test_gfx(struct intel_dp *dp)
 {
 	int i;
 
+	if (!show_test)
+		return;
 	/* This is a sanity test code which fills the screen with two bands --
 	   green and blue. It is very useful to ensure all the initializations
 	   are made right. Thus, to be used only for testing, not otherwise
 	*/
+	printk(BIOS_SPEW, "TEST: graphics %p, va %d, ha %d, stride %d\n",
+		(u32 *)graphics, dp->edid.va, dp->edid.ha, dp->stride);
+
 	for (i = 0; i < (dp->edid.va - 4); i++) {
 		u32 *l;
 		int j;
@@ -276,11 +308,9 @@ static void test_gfx(struct intel_dp *dp)
 			memcpy(l,&tcolor,sizeof(tcolor));
 		}
 	}
+	printk(BIOS_SPEW, "sleep 10\n");
+	delay(10);
 }
-#else
-static void test_gfx(struct intel_dp *dp) {}
-#endif
-
 
 void mainboard_set_port_clk_dp(struct intel_dp *intel_dp)
 {
@@ -313,6 +343,8 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 	int edid_ok;
 	int pixels = FRAME_BUFFER_BYTES/64;
 
+	gtt_write(PCH_PP_CONTROL,0xabcd000f);
+	delay(1);
 	mmio = (void *)pmmio;
 	physbase = pphysbase;
 	graphics = pgfx;
@@ -322,34 +354,33 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 	       (void *)graphics, mmio, physbase);
 
 	void runio(struct intel_dp *dp);
-	void runlinux(struct intel_dp *dp);
+	/* hard codes -- stuff you can only know from the mainboard */
 	dp->gen = 8; // This is gen 8 which we believe is Haswell
 	dp->is_haswell = 1;
 	dp->DP = 0x2;
-	/* These values are used for training the link */
-	dp->lane_count = 2;
-	dp->link_bw = DP_LINK_BW_2_7;
-	dp->panel_power_down_delay = 600;
-	dp->panel_power_up_delay = 200;
-	dp->panel_power_cycle_delay = 600;
 	dp->pipe = PIPE_A;
 	dp->port = PORT_A;
 	dp->plane = PLANE_A;
-	dp->clock = 160000;
-	dp->pipe_bits_per_pixel = 32;
+	dp->pipe_bits_per_pixel = 24;
 	dp->type = INTEL_OUTPUT_EDP;
 	dp->output_reg = DP_A;
 	/* observed from YABEL. */
 	dp->aux_clock_divider = 0xe1;
 	dp->precharge = 3;
 
+	/* CRAP -- needs to be done elsewhere from the device tree. */
+	dp->panel_power_down_delay = 600;
+	dp->panel_power_up_delay = 200;
+	dp->panel_power_cycle_delay = 600;
+
 	/* 1. Normal mode: Set the first page to zero and make
 	   all GTT entries point to the same page
-	   2. Developer/Recovery mode: We do not zero out all
-	   the pages pointed to by GTT in order to avoid wasting time */
-        if (init_fb)
+	   2. Developer/Recovery mode: Set up a tasteful color
+	      so people know we are alive. */
+        if (init_fb || show_test) {
                 setgtt(0, FRAME_BUFFER_PAGES, physbase, 4096);
-        else {
+		memset((void *)graphics, 0x55, FRAME_BUFFER_PAGES*4096);
+        } else {
                 setgtt(0, FRAME_BUFFER_PAGES, physbase, 0);
                 memset((void*)graphics, 0, 4096);
         }
@@ -368,13 +399,13 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 	}
 
 	edid_ok = decode_edid(dp->rawedid, dp->edidlen, &dp->edid);
+
 	printk(BIOS_SPEW, "decode edid returns %d\n", edid_ok);
 
-	dp->edid.link_clock = intel_dp_bw_code_to_link_rate(dp->link_bw);
-
-	printk(BIOS_SPEW, "pixel_clock is %i, link_clock is %i\n",dp->edid.pixel_clock, dp->edid.link_clock);
-
 	dp_init_dim_regs(dp);
+
+	printk(BIOS_SPEW, "pixel_clock is %i, link_clock is %i\n",
+	       dp->edid.pixel_clock, dp->edid.link_clock);
 
 	intel_ddi_set_pipe_settings(dp);
 
@@ -384,12 +415,11 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 
 	pixels = dp->edid.ha * (dp->edid.va-4) * 4;
 	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.ha, dp->edid.va);
-
 	test_gfx(dp);
 
 	set_vbe_mode_info_valid(&dp->edid, graphics);
 	i915_init_done = 1;
-	return i915_init_done;
+	return 1;
 
 fail:
 	printk(BIOS_SPEW, "Graphics could not be started;");

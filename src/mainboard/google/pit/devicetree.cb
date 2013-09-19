@@ -21,7 +21,7 @@ chip cpu/samsung/exynos5420
 	device cpu_cluster 0 on end
 	register "xres" = "1366"
 	register "yres" = "768"
-	register "bpp" = "16"
+	register "framebuffer_bits_per_pixel" = "16"
 	# complex magic timing!
 	register "clkval_f" = "2"
 	register "upper_margin" = "14"

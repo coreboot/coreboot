@@ -34,7 +34,7 @@ struct cpu_samsung_exynos5250_config {
 
 	int xres;
 	int yres;
-	int bpp;
+	int framebuffer_bits_per_pixel;
 
 	int usb_vbus_gpio;
 	int usb_hsic_gpio;

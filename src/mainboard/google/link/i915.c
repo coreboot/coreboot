@@ -258,7 +258,7 @@ int i915lightup(const struct northbridge_intel_sandybridge_config *info,
 	edid_ok = decode_edid((unsigned char *)&link_edid_data,
 			      sizeof(link_edid_data), &edid);
 	printk(BIOS_SPEW, "decode edid returns %d\n", edid_ok);
-	edid.bpp = 32;
+	edid.framebuffer_bits_per_pixel = 32;
 
 	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl- 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HTOTAL(pipe), %08x)\n", htotal);

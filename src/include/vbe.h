@@ -20,7 +20,7 @@ typedef struct {
 	u16 screen_width;
 	u16 screen_height;
 	u16 screen_linebytes;	// bytes per line in framebuffer, may be more than screen_width
-	u8 color_depth;	// color depth in bpp
+	u8 color_depth;	// color depth in bits per pixel
 	u32 framebuffer_address;
 	u8 edid_block_zero[128];
 } __attribute__ ((__packed__)) screen_info_t;

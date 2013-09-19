@@ -253,7 +253,7 @@ void intel_ddi_set_pipe_settings(struct intel_dp *intel_dp)
 {
 	u32 val = TRANS_MSA_SYNC_CLK;
 
-	switch (intel_dp->bpp) {
+	switch (intel_dp->pipe_bits_per_pixel) {
 	case 18:
 		val |= TRANS_MSA_6_BPC;
 		break;
@@ -267,7 +267,7 @@ void intel_ddi_set_pipe_settings(struct intel_dp *intel_dp)
 		val |= TRANS_MSA_12_BPC;
 		break;
 	default:
-		printk(BIOS_ERR, "Invalid bpp settings %d\n", intel_dp->bpp);
+		printk(BIOS_ERR, "Invalid bpp settings %d\n", intel_dp->pipe_bits_per_pixel);
 	}
 	gtt_write(TRANS_MSA_MISC(intel_dp->transcoder),val);
 }

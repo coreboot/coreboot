@@ -28,6 +28,7 @@
 #include <drivers/intel/gma/i915.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "chip.h"
 #include "haswell.h"
@@ -130,7 +131,10 @@ static struct resource *gtt_res = NULL;
 
 u32 gtt_read(u32 reg)
 {
-	return read32(gtt_res->base + reg);
+	u32 val;
+	val = read32(gtt_res->base + reg);
+	return val;
+
 }
 
 void gtt_write(u32 reg, u32 data)
@@ -157,7 +161,7 @@ static inline void gtt_write_regs(const struct gt_reg *gt)
 }
 
 #define GTT_RETRY 1000
-static int gtt_poll(u32 reg, u32 mask, u32 value)
+int gtt_poll(u32 reg, u32 mask, u32 value)
 {
 	unsigned try = GTT_RETRY;
 	u32 data;
@@ -177,6 +181,13 @@ static void power_well_enable(void)
 {
 	gtt_write(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_ENABLE);
 	gtt_poll(HSW_PWR_WELL_CTL1, HSW_PWR_WELL_STATE, HSW_PWR_WELL_STATE);
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	/* In the native graphics case, we've got about 20 ms.
+	 * after we power up the the AUX channel until we can talk to it.
+	 * So get that going right now. We can't turn on the panel, yet, just VDD.
+	 */
+	gtt_write(PCH_PP_CONTROL, PCH_PP_UNLOCK| EDP_FORCE_VDD | PANEL_POWER_RESET);
+#endif
 }
 
 static void gma_pm_init_pre_vbios(struct device *dev)

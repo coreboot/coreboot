@@ -139,7 +139,7 @@ struct intel_dp {
 	int port;
 	int pipe;
 	int plane;
-	int bpp;
+	int pipe_bits_per_pixel;
 	/* i2c on aux is ... interesting.
 	 * Before you do an i2c cycle, you need to set the address.
 	 * This requires we remember it from one moment to the next.
@@ -272,6 +272,7 @@ int intel_dp_get_lane_align_status(struct intel_dp *intel_dp,
 void intel_prepare_ddi(void);
 void intel_ddi_set_pipe_settings(struct intel_dp *intel_dp);
 
+int gtt_poll(u32 reg, u32 mask, u32 value);
 void gtt_write(u32 reg, u32 data);
 u32 gtt_read(u32 reg);
 

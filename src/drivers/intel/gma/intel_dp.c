@@ -260,7 +260,7 @@ int intel_dp_set_bw(struct intel_dp *intel_dp)
 
 int intel_dp_set_lane_count(struct intel_dp *intel_dp)
 {
-	printk(BIOS_SPEW, "DP_LANE_COUNT_SET");
+	printk(BIOS_SPEW, "DP_LANE_COUNT_SET %d ", intel_dp->lane_count);
 	return intel_dp_aux_native_write_1(intel_dp,
 					   DP_LANE_COUNT_SET,
 					   intel_dp->lane_count);
@@ -471,7 +471,24 @@ unsigned int roundup_power_of_two(unsigned int n)
 static void compute_m_n(unsigned int m, unsigned int n,
 			unsigned int *ret_m, unsigned int *ret_n)
 {
-	*ret_n = MIN(roundup_power_of_two(n), DATA_LINK_N_MAX);
+	/* We noticed in the IO operations that
+	 * the VBIOS was setting N to DATA_LINK_N_MAX.
+	 * This makes sense, actually: the bigger N is, i.e.
+	 * the bigger the denominator is, the bigger
+	 * the numerator can be, and the more
+	 * bits of numerator you get, the better the result.
+	 * So, first pick the max of the two powers of two.
+	 * And, in the (unlikely) event that you end up with
+	 * something bigger than DATA_LINK_N_MAX, catch that
+	 * case with a MIN. Note the second case is unlikely,
+	 * but we are best off being careful.
+	 */
+	/*
+	 * This code is incorrect and will always set ret_n
+	 * to DATA_LINK_N_MAX.
+	 */
+	*ret_n = MAX(roundup_power_of_two(n), DATA_LINK_N_MAX);
+	*ret_n = MIN(*ret_n, DATA_LINK_N_MAX);
 	*ret_m = ( (unsigned long long)m * *ret_n) / n;
 	intel_reduce_m_n_ratio(ret_m, ret_n);
 }
@@ -483,42 +500,12 @@ void intel_dp_compute_m_n(unsigned int bits_per_pixel,
 			  struct intel_dp_m_n *m_n)
 {
 	m_n->tu = 64;
-
 	compute_m_n(bits_per_pixel * pixel_clock,
 		    link_clock * nlanes * 8,
 		    &m_n->gmch_m, &m_n->gmch_n);
 
 	compute_m_n(pixel_clock, link_clock,
 		    &m_n->link_m, &m_n->link_n);
-}
-
-/* not sure. */
-void intel_dp_set_m_n(struct intel_dp *intel_dp);
-
-void
-intel_dp_set_m_n(struct intel_dp *intel_dp)
-{
-	int lane_count;
-	struct intel_dp_m_n m_n;
-	int pipe = intel_dp->pipe;
-
-	lane_count = intel_dp->lane_count;
-
-	/*
-	 * Compute the GMCH and Link ratios. The '3' here is
-	 * the number of bytes_per_pixel post-LUT, which we always
-	 * set up for 8-bits of R/G/B, or 3 bytes total.
-	 */
-	intel_dp_compute_m_n(intel_dp->bpp, lane_count,
-			     intel_dp->clock, intel_dp->clock, &m_n);
-
-	{
-		gtt_write(TRANSDATA_M1(pipe),
-			  ((m_n.tu - 1) << PIPE_GMCH_DATA_M_TU_SIZE_SHIFT) |m_n.gmch_m);
-		gtt_write(TRANSDATA_N1(pipe),m_n.gmch_n);
-		gtt_write(TRANSDPLINK_M1(pipe),m_n.link_m);
-		gtt_write(TRANSDPLINK_N1(pipe),m_n.link_n);
-	}
 }
 
 static void ironlake_edp_pll_off(void);
@@ -1791,17 +1778,13 @@ intel_dp_get_max_downspread(struct intel_dp *intel_dp, u8 *max_downspread)
 	return 1;
 }
 
-void intel_dp_set_m_n_regs(struct intel_dp *intel_dp)
+void intel_dp_set_m_n_regs(struct intel_dp *dp)
 {
-        gtt_write(PIPE_DATA_M1(intel_dp->transcoder),0x7e4a0000);
-        /* gtt_write(0x6f034,0x00800000); */
-        /* Write to 0x6f030 has to be 0x7e4ayyyy -- First four hex digits are important.
-           However, with our formula we always see values 0x7e43yyyy (1366 panel) and
-           0x7e42yyy (1280 panel) */
-        /* gtt_write(PIPE_DATA_M1(intel_dp->transcoder),TU_SIZE(intel_dp->m_n.tu) | intel_dp->m_n.gmch_m); */
-        gtt_write(PIPE_DATA_N1(intel_dp->transcoder),intel_dp->m_n.gmch_n);
-        gtt_write(PIPE_LINK_M1(intel_dp->transcoder),intel_dp->m_n.link_m);
-        gtt_write(PIPE_LINK_N1(intel_dp->transcoder),intel_dp->m_n.link_n);
+        gtt_write(PIPE_DATA_M1(dp->transcoder),
+		  TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m);
+        gtt_write(PIPE_DATA_N1(dp->transcoder),dp->m_n.gmch_n);
+        gtt_write(PIPE_LINK_M1(dp->transcoder),dp->m_n.link_m);
+        gtt_write(PIPE_LINK_N1(dp->transcoder),dp->m_n.link_n);
 }
 
 void intel_dp_set_resolution(struct intel_dp *intel_dp)
@@ -1826,10 +1809,13 @@ int intel_dp_get_training_pattern(struct intel_dp *intel_dp,
 int intel_dp_get_lane_count(struct intel_dp *intel_dp,
 			    u8 *recv)
 {
-	return intel_dp_aux_native_read_retry(intel_dp,
+	int val = intel_dp_aux_native_read_retry(intel_dp,
 					      DP_LANE_COUNT_SET,
 					      recv,
 					      0);
+	*recv &= DP_LANE_COUNT_MASK;
+	printk(BIOS_SPEW, "Lane count %s:%d\n", val < 0 ? "fail" : "ok", *recv);
+	return val;
 }
 
 int intel_dp_get_lane_align_status(struct intel_dp *intel_dp,

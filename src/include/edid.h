@@ -35,7 +35,27 @@ struct edid {
 	unsigned int version[2];
 	unsigned int nonconformant;
 	unsigned int type;
-	unsigned int bpp;
+	/* These next three things used to all be called bpp.
+	 * Merriment ensued. The identifier
+	 * 'bpp' is herewith banished from our
+	 * Kingdom.
+	 */
+	/* How many bits in the framebuffer per pixel.
+	 * Under all reasonable circumstances, it's 32.
+	 */
+	unsigned int framebuffer_bits_per_pixel;
+	/* On the panel, how many bits per color?
+	 * In almost all cases, it's 6 or 8.
+	 * The standard allows for much more!
+	 */
+	unsigned int panel_bits_per_color;
+	/* On the panel, how many bits per pixel.
+	 * On Planet Earth, there are three colors
+	 * per pixel, but this is convenient to have here
+	 * instead of having 3*panel_bits_per_color
+	 * all over the place.
+	 */
+	unsigned int panel_bits_per_pixel;
 	unsigned int xres;
 	unsigned int yres;
 	unsigned int voltage;

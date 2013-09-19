@@ -366,7 +366,7 @@ function build_target
 			done
 		fi
 		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ARMV7 ];then
-			for prefix in armv7a-eabi- armv7a-cros-linux-gnueabi-; do
+			for prefix in armv7a-eabi- armv7-a-eabi- armv7a-cros-linux-gnueabi-; do
 				if ${prefix}gcc --version > /dev/null 2> /dev/null ; then
 					found_crosscompiler=true
 					CROSS_COMPILE=$prefix

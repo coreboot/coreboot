@@ -22,6 +22,8 @@
 
 #include <arch/io.h>
 
+#define EXYNOS5_SRAM_BASE		0x02020000
+
 /* Base address registers */
 #define EXYNOS5420_GPIO_PART6_BASE	0x03860000 /* Z0 */
 #define EXYNOS5_PRO_ID			0x10000000

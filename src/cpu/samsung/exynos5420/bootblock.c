@@ -24,7 +24,7 @@
 #include "cpu.h"
 
 /* convenient shorthand (in MB) */
-#define SRAM_START	(0x02020000 >> 20)
+#define SRAM_START	(EXYNOS5_SRAM_BASE >> 20)
 #define SRAM_SIZE	1
 #define SRAM_END	(SRAM_START + SRAM_SIZE)	/* plus one... */
 
@@ -43,7 +43,7 @@ void bootblock_cpu_init(void)
 
 	/* set up dcache and MMU */
 	mmu_init();
-	mmu_config_range(0, SRAM_START, DCACHE_OFF);
+	mmu_disable_range(0, SRAM_START);
 	mmu_config_range(SRAM_START, SRAM_SIZE, DCACHE_WRITEBACK);
 	mmu_config_range(SRAM_END, 4096 - SRAM_END, DCACHE_OFF);
 	dcache_mmu_enable();

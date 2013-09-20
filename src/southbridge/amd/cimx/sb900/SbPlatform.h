@@ -24,6 +24,8 @@
 #ifndef  _AMD_SBPLATFORM_H_
 #define  _AMD_SBPLATFORM_H_
 
+#include <console/console.h>
+
 //#include "cbtypes.h"
 #ifdef NULL
   #undef NULL
@@ -57,7 +59,6 @@ typedef union _PCI_ADDR {
 #endif
 #define FIXUP_PTR(ptr)  ptr
 
-#include <console/console.h>
 #include "AmdSbLib.h"
 #include "Amd.h"
 #include "Hudson-2.h"

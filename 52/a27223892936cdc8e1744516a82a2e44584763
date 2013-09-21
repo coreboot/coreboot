@@ -1,0 +1,9 @@
+Code-Review+2: Patrick Georgi <patrick@georgi-clan.de>
+Verified+1: build bot (Jenkins)
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Code-Review+2: Aaron Durbin <adurbin@google.com>
+Submitted-by: Kyösti Mälkki <kyosti.malkki@gmail.com>
+Submitted-at: Sat, 21 Sep 2013 06:21:53 +0200
+Reviewed-on: http://review.coreboot.org/3915
+Project: coreboot
+Branch: refs/heads/master

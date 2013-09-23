@@ -18,10 +18,6 @@ source src/cpu/via/Kconfig
 source src/cpu/qemu-x86/Kconfig
 source src/cpu/x86/Kconfig
 
-config CACHE_AS_RAM
-	bool
-	default !ROMCC
-
 config DCACHE_RAM_BASE
 	hex
 
@@ -72,6 +68,10 @@ config SSE2
 	  with more efficient code if SSE2 instructions are available.
 
 endif # ARCH_X86
+
+config CACHE_AS_RAM
+	bool
+	default !ROMCC
 
 config CPU_MICROCODE_IN_CBFS
 	bool

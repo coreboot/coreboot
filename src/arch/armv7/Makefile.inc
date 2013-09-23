@@ -167,12 +167,14 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += early_console.c
 bootblock-y += cache.c
 
 romstage-y += cache.c
+romstage-y += cbmem.c
 romstage-y += div0.c
 romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
 
 ramstage-y += div0.c
 #ramstage-y += interrupts.c
 ramstage-y += cache.c
+ramstage-y += cbmem.c
 ramstage-y += mmu.c
 
 romstage-y += eabi_compat.c

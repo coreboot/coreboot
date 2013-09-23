@@ -111,6 +111,7 @@ ramstage-y += cbmem.c
 romstage-$(CONFIG_CACHE_AS_RAM) += cbmem.c
 endif # CONFIG_DYNAMIC_CBMEM
 ramstage-y += cbmem_info.c
+romstage-$(CONFIG_CACHE_AS_RAM) += car.c
 
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 

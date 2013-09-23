@@ -75,8 +75,8 @@ Name(APR0, Package(){
 	/* Bus 0, Dev 0 - F15 Host Controller */
 
 	/* Bus 0, Dev 1 - PCI Bridge for Internal Graphics(IGP) */
-	Package(){0x0001FFFF, 0, 0, 17 },
-	Package(){0x0001FFFF, 1, 0, 18 },
+	Package(){0x0001FFFF, 0, 0, 44 },
+	Package(){0x0001FFFF, 1, 0, 45 },
 
 	/* Bus 0, Dev 2 - PCIe Bridges  */
 	Package(){0x0002FFFF, 0, 0, 18 },

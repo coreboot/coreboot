@@ -18,11 +18,42 @@
  */
 
 #include <arch/io.h>
+#include <cpu/x86/cache.h>
+#include <cpu/x86/msr.h>
+#include <cpu/x86/mtrr.h>
 #include <baytrail/iosf.h>
+
+static void set_var_mtrr(int reg, uint32_t base, uint32_t size, int type)
+{
+	msr_t basem, maskm;
+	basem.lo = base | type;
+	basem.hi = 0;
+	wrmsr(MTRRphysBase_MSR(reg), basem);
+	maskm.lo = ~(size - 1) | MTRRphysMaskValid;
+	maskm.hi = (1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1;
+	wrmsr(MTRRphysMask_MSR(reg), maskm);
+}
+
+static void enable_rom_caching(void)
+{
+	msr_t msr;
+
+	disable_cache();
+	/* Why only top 4MiB ? */
+	set_var_mtrr(1, 0xffc00000, 4*1024*1024, MTRR_TYPE_WRPROT);
+	enable_cache();
+
+	/* Enable Variable MTRRs */
+	msr.hi = 0x00000000;
+	msr.lo = 0x00000800;
+	wrmsr(MTRRdefType_MSR, msr);
+}
 
 static void bootblock_cpu_init(void)
 {
 	uint32_t reg;
+
+	enable_rom_caching();
 
 	/* Set up the MMCONF range. The register lives in the BUNIT. The
 	 * IO variant of the config access needs to be used initially to

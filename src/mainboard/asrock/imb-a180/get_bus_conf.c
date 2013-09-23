@@ -54,6 +54,7 @@ void get_bus_conf(void)
 {
 	u32 apicid_base;
 	u32 status;
+	u32 value;
 
 	device_t dev;
 	int i, j;
@@ -97,6 +98,12 @@ void get_bus_conf(void)
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */
 	pci_write_config32(dev, 0xF8, 0);
 	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
+
+	/* disable No Snoop */
+	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+	value = pci_read_config32(dev, 0x60);
+	value &= ~(1 << 11);
+	pci_write_config32(dev, 0x60, value);
 
 	sbdn_yangtze = 0;
 

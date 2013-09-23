@@ -59,3 +59,24 @@ void iosf_bunit_write(int reg, uint32_t val)
 	write_iosf_reg(MCR_REG, cr);
 	write_iosf_reg(MDR_REG, val);
 }
+
+uint32_t iosf_dunit_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_SYSMEMC) |
+	              IOSF_PORT(IOSF_PORT_SYSMEMC) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MCR_REG, cr);
+	return read_iosf_reg(MDR_REG);
+}
+
+void iosf_dunit_write(int reg, uint32_t val)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_SYSMEMC) |
+	              IOSF_PORT(IOSF_PORT_SYSMEMC) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+
+	write_iosf_reg(MCR_REG, cr);
+	write_iosf_reg(MDR_REG, val);
+}

@@ -51,6 +51,8 @@
 
 uint32_t iosf_bunit_read(int reg);
 void iosf_bunit_write(int reg, uint32_t val);
+uint32_t iosf_dunit_read(int reg);
+void iosf_dunit_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
@@ -106,6 +108,20 @@ void iosf_bunit_write(int reg, uint32_t val);
 #define BUNIT_SMRRH		0x2f
 # define BUNIT_SMRR_ENABLE	(1 << 31)
 
+/*
+ * DUNIT Registers.
+ */
 
+#define DRP			0x00
+# define DRP_CH0_RANK0_EN	(0x01 << 0)
+# define DRP_CH0_RANK1_EN	(0x01 << 1)
+# define DRP_CH1_RANK0_EN	(0x01 << 2)
+# define DRP_CH1_RANK1_EN	(0x01 << 3)
+#define DTR0			0x01
+# define DTR0_SPEED_MASK	0x03
+# define DTR0_SPEED_800		0x00
+# define DTR0_SPEED_1066	0x01
+# define DTR0_SPEED_1333	0x02
+# define DTR0_SPEED_1600	0x03
 
 #endif /* _BAYTRAIL_IOSF_H_ */

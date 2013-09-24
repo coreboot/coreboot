@@ -21,6 +21,7 @@
 #define _BAYTRAIL_LPC_H_
 
 /* PCI config registers in LPC bridge. */
+#define REVID		0x08
 #define ABASE		0x40
 #define PBASE		0x44
 #define GBASE		0x48
@@ -30,5 +31,17 @@
 #define MPBASE		0x58
 #define UART_CONT	0x80
 #define RCBA		0xf0
+
+
+#define RID_A_STEPPING_START 1
+#define RID_B_STEPPING_START 5
+enum baytrail_stepping {
+	STEP_A0,
+	STEP_A1,
+	STEP_B0,
+	STEP_B1,
+	STEP_B2,
+	STEP_B3,
+};
 
 #endif /* _BAYTRAIL_LPC_H_ */

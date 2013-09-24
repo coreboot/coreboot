@@ -18,47 +18,47 @@
 #include <bootblock_common.h>
 #include <console/uart.h>
 #include <console/console.h>
+#include <cpu/ti/am335x/clock.h>
+#include <cpu/ti/am335x/gpio.h>
 #include <cpu/ti/am335x/pinmux.h>
+
+#include "leds.h"
 
 void bootblock_mainboard_init(void)
 {
-	void *uart_clock_ctrl = NULL;
+	write32(&am335x_cm_wkup->wkup_gpio0, CM_ST_SW_WKUP | CM_FCLK_EN);
+	write32(&am335x_cm_per->gpio1, CM_ST_SW_WKUP | CM_FCLK_EN);
+	write32(&am335x_cm_per->gpio2, CM_ST_SW_WKUP | CM_FCLK_EN);
+	write32(&am335x_cm_per->gpio3, CM_ST_SW_WKUP | CM_FCLK_EN);
 
-	/* Enable the GPIO module */
-	write32((uint32_t *)(0x44e00000 + 0xac), (0x2 << 0) | (1 << 18));
+	am335x_disable_gpio_irqs();
 
-	/* Disable interrupts from these GPIOs */
-	setbits_le32((uint32_t *)(0x4804c000 + 0x3c), 0xf << 21);
-
-	/* Enable output */
-	clrbits_le32((uint32_t *)(0x4804c000 + 0x134), 0xf << 21);
-
-	/* Set every other light */
-	clrbits_le32((uint32_t *)(0x4804c000 + 0x13c), 0xf << 21);
-	setbits_le32((uint32_t *)(0x4804c000 + 0x13c), 0x5 << 21);
+	beaglebone_leds_init();
+	beaglebone_leds_set(BEAGLEBONE_LED_USR0, 1);
+	beaglebone_leds_set(BEAGLEBONE_LED_USR1, 0);
+	beaglebone_leds_set(BEAGLEBONE_LED_USR2, 1);
+	beaglebone_leds_set(BEAGLEBONE_LED_USR3, 0);
 
 	/* Set up the UART we're going to use */
 	if (CONFIG_UART_FOR_CONSOLE == 0) {
 		am335x_pinmux_uart0();
-		uart_clock_ctrl = (void *)(uintptr_t)(0x44e00400 + 0xb4);
+		write32(&am335x_cm_wkup->wkup_uart0, CM_ST_SW_WKUP);
 	} else if (CONFIG_UART_FOR_CONSOLE == 1) {
 		am335x_pinmux_uart1();
-		uart_clock_ctrl = (void *)(uintptr_t)(0x44e00000 + 0x6c);
+		write32(&am335x_cm_per->uart1, CM_ST_SW_WKUP);
 	} else if (CONFIG_UART_FOR_CONSOLE == 2) {
 		am335x_pinmux_uart2();
-		uart_clock_ctrl = (void *)(uintptr_t)(0x44e00000 + 0x70);
+		write32(&am335x_cm_per->uart2, CM_ST_SW_WKUP);
 	} else if (CONFIG_UART_FOR_CONSOLE == 3) {
 		am335x_pinmux_uart3();
-		uart_clock_ctrl = (void *)(uintptr_t)(0x44e00000 + 0x74);
+		write32(&am335x_cm_per->uart3, CM_ST_SW_WKUP);
 	} else if (CONFIG_UART_FOR_CONSOLE == 4) {
 		am335x_pinmux_uart4();
-		uart_clock_ctrl = (void *)(uintptr_t)(0x44e00000 + 0x78);
+		write32(&am335x_cm_per->uart4, CM_ST_SW_WKUP);
 	} else if (CONFIG_UART_FOR_CONSOLE == 5) {
 		am335x_pinmux_uart5();
-		uart_clock_ctrl = (void *)(uintptr_t)(0x44e00000 + 0x38);
+		write32(&am335x_cm_per->uart5, CM_ST_SW_WKUP);
 	}
-	if (uart_clock_ctrl)
-		write32(uart_clock_ctrl, 0x2);
 
 	/* Start monotonic timer */
 	//rtc_start();

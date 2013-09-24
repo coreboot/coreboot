@@ -181,8 +181,9 @@ config USBDEBUG_IN_ROMSTAGE
 if USBDEBUG
 
 config USBDEBUG_HCD_INDEX
-	int "Index for EHCI controller to use with usbdebug"
+	int
 	default 0
+	prompt "Index for EHCI controller to use with usbdebug" if HAVE_USBDEBUG_OPTIONS
 	help
 	   Some boards have multiple EHCI controllers with possibly only
 	   one having the Debug Port capability on an external USB port.
@@ -192,8 +193,9 @@ config USBDEBUG_HCD_INDEX
 	   a working default value here.
 
 config USBDEBUG_DEFAULT_PORT
-	int "Default USB port to use as Debug Port"
+	int
 	default 0
+	prompt "Default USB port to use as Debug Port" if HAVE_USBDEBUG_OPTIONS
 	help
 	  Selects which physical USB port usbdebug dongle is connected to.
 	  Setting of 0 means to scan possible ports starting from 1.

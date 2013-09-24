@@ -68,9 +68,16 @@ static void enable_dev(device_t dev)
 	}
 }
 
+/* Called at BS_DEV_INIT_CHIPS time -- very early. Just after BS_PRE_DEVICE. */
+static void soc_init(void *chip_info)
+{
+	baytrail_init_pre_device();
+}
+
 struct chip_operations soc_intel_baytrail_ops = {
 	CHIP_NAME("Intel BayTrail SoC")
 	.enable_dev = enable_dev,
+	.init = soc_init,
 };
 
 static void pci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

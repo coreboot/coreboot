@@ -3,6 +3,7 @@ subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/tsc
+subdirs-y += ../../../cpu/intel/microcode
 
 ramstage-y += memmap.c
 romstage-y += memmap.c
@@ -16,6 +17,7 @@ ramstage-y += chip.c
 ramstage-y += iosf.c
 romstage-y += iosf.c
 ramstage-y += northcluster.c
+ramstage-y += ramstage.c
 
 
 # Remove as ramstage gets fleshed out

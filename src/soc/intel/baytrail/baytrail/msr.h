@@ -20,6 +20,11 @@
 #ifndef _BAYTRAIL_MSR_H_
 #define _BAYTRAIL_MSR_H_
 
-#define MSR_PLATFORM_INFO	0xce
+#define MSR_IA32_PLATFORM_ID		0x17
+#define MSR_PLATFORM_INFO		0xce
+#define MSR_IA32_PERF_CTL		0x199
+#define MSR_IA32_MISC_ENABLES		0x1a0
+#define MSR_IACORE_RATIOS		0x66a
+#define MSR_IACORE_VIDS			0x66b
 
 #endif /* _BAYTRAIL_IOSF_H_ */

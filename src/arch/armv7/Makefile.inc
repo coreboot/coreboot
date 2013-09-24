@@ -169,7 +169,6 @@ ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV7),y)
 ramstage-y += exception.c
 ramstage-y += exception_asm.S
 ramstage-y += div0.c
-#ramstage-y += interrupts.c
 ramstage-y += cache.c
 ramstage-y += cpu.c
 ramstage-y += mmu.c

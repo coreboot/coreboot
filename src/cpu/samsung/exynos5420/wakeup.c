@@ -51,3 +51,8 @@ int get_wakeup_state(void)
 
 	return IS_NOT_WAKEUP;
 }
+
+void wakeup_enable_uart(void)
+{
+	power_release_uart_retention();
+}

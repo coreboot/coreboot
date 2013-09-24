@@ -85,3 +85,8 @@ void power_enable_xclkout(void)
 	clrsetbits_le32(&exynos_power->pmu_debug, PMU_DEBUG_CLKOUT_SEL_MASK,
 			PMU_DEBUG_XXTI);
 }
+
+void power_release_uart_retention(void)
+{
+	writel(1 << 28, &exynos_power->padret_uart_opt);
+}

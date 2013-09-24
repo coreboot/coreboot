@@ -70,9 +70,11 @@ struct exynos5_power {
 	} arm_core[4];
 	uint8_t		reserved9[0xe04];
 	uint32_t	padret_dram_status;	/* 0x3004 */
-	uint8_t         reservedA[0x1e0];
+	uint8_t         reservedA[0xe0];
+	uint32_t        padret_uart_opt;        /* 0x30e8 */
+	uint8_t         reservedB[0xfc];
 	uint32_t	padret_dram_cblk_opt;	/* 0x31e8 */
-	uint8_t         reservedB[0x120];
+	uint8_t         reservedC[0x120];
 	uint32_t	ps_hold_ctrl;		/* 0x330c */
 } __attribute__ ((__packed__));
 
@@ -102,5 +104,9 @@ void power_exit_wakeup(void);
 
 /* pmu debug is used for xclkout, enable xclkout with source as XXTI */
 void power_enable_xclkout(void);
+
+/* Release UART retention on resume (only for debugging, may conflict with
+ * kernel). */
+void power_release_uart_retention(void);
 
 #endif

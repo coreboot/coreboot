@@ -38,5 +38,6 @@ enum {
 int wakeup_need_reset(void);
 int get_wakeup_state(void);
 void wakeup(void);
+void wakeup_enable_uart(void);
 
 #endif	/* CPU_SAMSUNG_EXYNOS5250_WAKEUP_H */

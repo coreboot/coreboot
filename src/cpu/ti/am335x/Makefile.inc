@@ -1,6 +1,7 @@
 bootblock-y	+= bootblock.c
 bootblock-y	+= bootblock_media.c
 bootblock-y	+= dmtimer.c
+bootblock-y	+= gpio.c
 bootblock-y	+= pinmux.c
 
 romstage-y	+= nand.c

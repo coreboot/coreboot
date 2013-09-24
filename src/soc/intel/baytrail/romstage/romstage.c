@@ -89,6 +89,8 @@ void romstage_common(const struct romstage_params *params)
 
 	console_init();
 
+	gfx_init();
+
 	/* Initialize RAM */
 	raminit(params->mrc_params, 5);
 

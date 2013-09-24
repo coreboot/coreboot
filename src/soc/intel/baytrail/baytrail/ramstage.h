@@ -22,6 +22,10 @@
 
 #include <device/device.h>
 
+/* The baytrail_init_pre_device() function is called prior to device
+ * initialization, but it's after console and cbmem has been reinitialized. */
+void baytrail_init_pre_device(void);
+
 extern struct pci_operations soc_pci_ops;
 
 #endif /* _BAYTRAIL_RAMSTAGE_H_ */

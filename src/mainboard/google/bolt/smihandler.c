@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include <southbridge/intel/lynxpoint/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/me.h>
@@ -87,6 +88,26 @@ void mainboard_smi_gpi(u32 gpi_sts)
 	}
 }
 
+static void bolt_wlan_off(void)
+{
+	u16 gpio_base = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
+	u32 gpio_conf;
+
+	/* Make sure pin is owned by GPIO subsystem and not ACPI */
+	gpio_conf = inl(gpio_base + GPIO_OWNER(0));
+	gpio_conf |= GPIO_OWNER_GPIO << 29;
+	outl(gpio_conf, gpio_base + GPIO_OWNER(0));
+
+	/* Set GPIO29 config to only be reset on RSMRST */
+	gpio_conf = inl(gpio_base + GPIO_RESET(0));
+	gpio_conf |= GPIO_RESET_RSMRST << 29;
+	outl(gpio_conf, gpio_base + GPIO_RESET(0));
+
+	/* Set WLAN_OFF_L (GPIO29) as Output GPIO driven high */
+	gpio_conf = GPIO_MODE_GPIO | GPIO_DIR_OUTPUT | GPO_LEVEL_HIGH;
+	outl(gpio_conf, gpio_base + GPIO_CONFIG0(29));
+}
+
 void mainboard_smi_sleep(u8 slp_typ)
 {
 	/* Disable USB charging if required */
@@ -108,6 +129,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 				1, USB_CHARGE_MODE_DISABLED);
 		break;
 	}
+
+	/* Set WLAN_OFF GPIO state */
+	bolt_wlan_off();
 
 	/* Disable SCI and SMI events */
 	google_chromeec_set_smi_mask(0);

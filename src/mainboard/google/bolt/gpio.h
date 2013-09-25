@@ -52,7 +52,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 26: UNUSED */
 	LP_GPIO_UNUSED,        /* 27: UNUSED */
 	LP_GPIO_UNUSED,        /* 28: UNUSED */
-	LP_GPIO_NATIVE,        /* 29: NATIVE: WLAN_OFF_L */
+	LP_GPIO_INPUT,         /* 29: NATIVE: WLAN_OFF_L */
 	LP_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSWARN_L */
 	LP_GPIO_NATIVE,        /* 31: NATIVE: ACOK_BUF */
 	LP_GPIO_NATIVE,        /* 32: NATIVE: LPC_CLKRUN_L */

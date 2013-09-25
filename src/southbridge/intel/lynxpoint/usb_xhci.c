@@ -37,8 +37,6 @@ static u32 usb_xhci_mem_base(device_t dev)
 	return mem_base & ~0xf;
 }
 
-#ifdef __SMM__
-
 static int usb_xhci_port_count_usb3(device_t dev)
 {
 	if (pch_is_lp()) {
@@ -127,7 +125,8 @@ static void usb_xhci_reset_usb3(device_t dev, int all)
 			continue;
 		status = read32(portsc) & XHCI_USB3_PORTSC_PLS;
 		/* Reset all or only disconnected ports */
-		if (all || status == XHCI_PLSR_RXDETECT)
+		if (all || (status == XHCI_PLSR_RXDETECT ||
+			    status == XHCI_PLSR_POLLING))
 			usb_xhci_reset_port_usb3(mem_base, port);
 		else
 			port_disabled |= 1 << port;
@@ -155,6 +154,8 @@ static void usb_xhci_reset_usb3(device_t dev, int all)
 	for (port = 0; port < port_count; port++)
 		usb_xhci_reset_status_usb3(mem_base, port);
 }
+
+#ifdef __SMM__
 
 /* Handler for XHCI controller on entry to S3/S4/S5 */
 void usb_xhci_sleep_prepare(device_t dev, u8 slp_typ)
@@ -350,6 +351,12 @@ static void usb_xhci_init(device_t dev)
 	reg32 &= ~(1 << 23); /* unsupported request */
 	reg32 |= (1 << 31);
 	pci_write_config32(dev, 0x40, reg32);
+
+	if (acpi_is_wakeup_s3()) {
+		/* Reset ports that are disabled or
+		 * polling before returning to the OS. */
+		usb_xhci_reset_usb3(dev, 0);
+	}
 }
 
 static void usb_xhci_set_subsystem(device_t dev, unsigned vendor,

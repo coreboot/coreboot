@@ -468,14 +468,17 @@ usb_hid_init (usbdev_t *dev)
 			dev->destroy = usb_hid_destroy;
 			dev->poll = usb_hid_poll;
 			int i;
-			for (i = 0; i <= dev->num_endp; i++) {
-				if (dev->endpoints[i].endpoint == 0)
-					continue;
+			for (i = 1; i < dev->num_endp; i++) {
 				if (dev->endpoints[i].type != INTERRUPT)
 					continue;
 				if (dev->endpoints[i].direction != IN)
 					continue;
 				break;
+			}
+			if (i >= dev->num_endp) {
+				usb_debug ("Could not find HID endpoint\n");
+				usb_detach_device (dev->controller, dev->address);
+				return;
 			}
 			usb_debug ("  found endpoint %x for interrupt-in\n", i);
 			/* 20 buffers of 8 bytes, for every 10 msecs */

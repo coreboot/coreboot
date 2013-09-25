@@ -598,6 +598,7 @@ usb_msc_init (usbdev_t *dev)
 
 	if (interface->bInterfaceProtocol != 0x50) {
 		usb_debug ("  Protocol not supported.\n");
+		usb_detach_device (dev->controller, dev->address);
 		return;
 	}
 
@@ -606,6 +607,7 @@ usb_msc_init (usbdev_t *dev)
 		(interface->bInterfaceSubClass != 6)) {	// SCSI
 		/* Other protocols, such as ATAPI don't seem to be very popular. looks like ATAPI would be really easy to add, if necessary. */
 		usb_debug ("  Interface SubClass not supported.\n");
+		usb_detach_device (dev->controller, dev->address);
 		return;
 	}
 
@@ -632,11 +634,13 @@ usb_msc_init (usbdev_t *dev)
 	}
 
 	if (MSC_INST (dev)->bulk_in == 0) {
-		usb_debug("couldn't find bulk-in endpoint");
+		usb_debug("couldn't find bulk-in endpoint.\n");
+		usb_detach_device (dev->controller, dev->address);
 		return;
 	}
 	if (MSC_INST (dev)->bulk_out == 0) {
-		usb_debug("couldn't find bulk-out endpoint");
+		usb_debug("couldn't find bulk-out endpoint.\n");
+		usb_detach_device (dev->controller, dev->address);
 		return;
 	}
 	usb_debug ("  using endpoint %x as in, %x as out\n",

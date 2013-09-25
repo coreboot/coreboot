@@ -539,10 +539,14 @@ usb_detach_device(hci_t *controller, int devno)
 	   been called yet by the usb class driver */
 	if (controller->devices[devno]) {
 		controller->devices[devno]->destroy (controller->devices[devno]);
-		free(controller->devices[devno]);
-		controller->devices[devno] = NULL;
 		if (controller->destroy_device)
 			controller->destroy_device(controller, devno);
+		if (controller->devices[devno]->configuration)
+			free(controller->devices[devno]->configuration);
+		if (controller->devices[devno]->descriptor)
+			free(controller->devices[devno]->descriptor);
+		free(controller->devices[devno]);
+		controller->devices[devno] = NULL;
 	}
 }
 

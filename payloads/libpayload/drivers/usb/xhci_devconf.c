@@ -180,7 +180,7 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	di = &xhci->dev[slot_id];
 	void *dma_buffer = dma_memalign(64, NUM_EPS * ctxsize);
 	if (!dma_buffer)
-		goto _free_return;
+		goto _disable_return;
 	memset(dma_buffer, 0, NUM_EPS * ctxsize);
 	for (i = 0; i < NUM_EPS; i++, dma_buffer += ctxsize)
 		di->ctx.ep[i] = dma_buffer;
@@ -249,6 +249,7 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 _disable_return:
 	xhci_cmd_disable_slot(xhci, slot_id);
 	xhci->dcbaa[slot_id] = 0;
+	usb_detach_device(controller, slot_id);
 _free_return:
 	if (tr)
 		free((void *)tr->ring);
@@ -425,7 +426,7 @@ xhci_destroy_dev(hci_t *const controller, const int slot_id)
 {
 	xhci_t *const xhci = XHCI_INST(controller);
 
-	if (slot_id <= 0 || xhci->max_slots_en > slot_id)
+	if (slot_id <= 0 || slot_id > xhci->max_slots_en)
 		return;
 
 	int i;

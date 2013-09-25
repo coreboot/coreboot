@@ -200,7 +200,7 @@ generic_hub_attach_dev(usbdev_t *const dev, const int port)
 				  "disabled after 10ms\n", port);
 	}
 
-	const int speed = hub->ops->port_speed(dev, port);
+	const usb_speed speed = hub->ops->port_speed(dev, port);
 	if (speed >= 0) {
 		usb_debug("generic_hub: Success at port %d\n", port);
 		if (hub->ops->reset_port)

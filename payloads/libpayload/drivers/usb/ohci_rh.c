@@ -121,7 +121,7 @@ ohci_rh_scanport (usbdev_t *dev, int port)
 		return;
 	}
 
-	int speed = (OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & LowSpeedDeviceAttached) != 0;
+	usb_speed speed = (OHCI_INST(dev->controller)->opreg->HcRhPortStatus[port] & LowSpeedDeviceAttached) != 0;
 	RH_INST (dev)->port[port] = usb_attach_device(dev->controller, dev->address, port, speed);
 }
 

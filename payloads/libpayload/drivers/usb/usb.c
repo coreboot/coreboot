@@ -243,44 +243,43 @@ get_free_address (hci_t *controller)
 }
 
 int
-generic_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
+usb_decode_mps0(usb_speed speed, u8 bMaxPacketSize0)
 {
-	int adr = get_free_address (controller);	// address to set
-	dev_req_t dr;
-
-	memset (&dr, 0, sizeof (dr));
-	dr.data_dir = host_to_device;
-	dr.req_type = standard_type;
-	dr.req_recp = dev_recp;
-	dr.bRequest = SET_ADDRESS;
-	dr.wValue = adr;
-	dr.wIndex = 0;
-	dr.wLength = 0;
-
-	init_device_entry(controller, adr);
-	usbdev_t *dev = controller->devices[adr];
-	// dummy values for registering the address
-	dev->address = 0;
-	dev->hub = hubaddr;
-	dev->port = hubport;
-	dev->speed = speed;
-	dev->endpoints[0].dev = dev;
-	dev->endpoints[0].endpoint = 0;
-	dev->endpoints[0].maxpacketsize = 8;
-	dev->endpoints[0].toggle = 0;
-	dev->endpoints[0].direction = SETUP;
-	mdelay (50);
-	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0) {
-		return -1;
+	switch (speed) {
+	case LOW_SPEED:
+		if (bMaxPacketSize0 != 8) {
+			usb_debug("Invalid MPS0: 0x%02x\n", bMaxPacketSize0);
+			bMaxPacketSize0 = 8;
+		}
+		return bMaxPacketSize0;
+	case FULL_SPEED:
+		switch (bMaxPacketSize0) {
+		case 8: case 16: case 32: case 64:
+			return bMaxPacketSize0;
+		default:
+			usb_debug("Invalid MPS0: 0x%02x\n", bMaxPacketSize0);
+			return 8;
+		}
+	case HIGH_SPEED:
+		if (bMaxPacketSize0 != 64) {
+			usb_debug("Invalid MPS0: 0x%02x\n", bMaxPacketSize0);
+			bMaxPacketSize0 = 64;
+		}
+		return bMaxPacketSize0;
+	case SUPER_SPEED:
+		if (bMaxPacketSize0 != 9) {
+			usb_debug("Invalid MPS0: 0x%02x\n", bMaxPacketSize0);
+			bMaxPacketSize0 = 9;
+		}
+		return 2 << bMaxPacketSize0;
+	default: 	/* GCC is stupid and cannot deal with enums correctly */
+		return 8;
 	}
-	mdelay (50);
-
-	return adr;
 }
 
 /* Normalize bInterval to log2 of microframes */
 static int
-usb_decode_interval(const int speed, const endpoint_type type, const unsigned char bInterval)
+usb_decode_interval(usb_speed speed, const endpoint_type type, const unsigned char bInterval)
 {
 #define LOG2(a) ((sizeof(unsigned) << 3) - __builtin_clz(a) - 1)
 	switch (speed) {
@@ -320,8 +319,45 @@ usb_decode_interval(const int speed, const endpoint_type type, const unsigned ch
 #undef LOG2
 }
 
+int
+generic_set_address (hci_t *controller, usb_speed speed,
+		     int hubport, int hubaddr)
+{
+	int adr = get_free_address (controller);	// address to set
+	dev_req_t dr;
+
+	memset (&dr, 0, sizeof (dr));
+	dr.data_dir = host_to_device;
+	dr.req_type = standard_type;
+	dr.req_recp = dev_recp;
+	dr.bRequest = SET_ADDRESS;
+	dr.wValue = adr;
+	dr.wIndex = 0;
+	dr.wLength = 0;
+
+	init_device_entry(controller, adr);
+	usbdev_t *dev = controller->devices[adr];
+	// dummy values for registering the address
+	dev->address = 0;
+	dev->hub = hubaddr;
+	dev->port = hubport;
+	dev->speed = speed;
+	dev->endpoints[0].dev = dev;
+	dev->endpoints[0].endpoint = 0;
+	dev->endpoints[0].maxpacketsize = 8;
+	dev->endpoints[0].toggle = 0;
+	dev->endpoints[0].direction = SETUP;
+	if (dev->controller->control (dev, OUT, sizeof (dr), &dr, 0, 0) < 0) {
+		usb_debug ("set_address failed\n");
+		return -1;
+	}
+	mdelay (SET_ADDRESS_MDELAY);
+
+	return adr;
+}
+
 static int
-set_address (hci_t *controller, int speed, int hubport, int hubaddr)
+set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 {
 	int adr = controller->set_address(controller, speed, hubport, hubaddr);
 	if (adr < 0 || !controller->devices[adr]) {
@@ -539,22 +575,19 @@ usb_detach_device(hci_t *controller, int devno)
 	   been called yet by the usb class driver */
 	if (controller->devices[devno]) {
 		controller->devices[devno]->destroy (controller->devices[devno]);
-		if (controller->destroy_device)
-			controller->destroy_device(controller, devno);
-		if (controller->devices[devno]->configuration)
-			free(controller->devices[devno]->configuration);
-		if (controller->devices[devno]->descriptor)
-			free(controller->devices[devno]->descriptor);
 		free(controller->devices[devno]);
 		controller->devices[devno] = NULL;
+		if (controller->destroy_device)
+			controller->destroy_device(controller, devno);
 	}
 }
 
 int
-usb_attach_device(hci_t *controller, int hubaddress, int port, int speed)
+usb_attach_device(hci_t *controller, int hubaddress, int port, usb_speed speed)
 {
-	static const char* speeds[] = { "full", "low", "high" };
-	usb_debug ("%sspeed device\n", (speed <= 2) ? speeds[speed] : "invalid value - no");
+	static const char* speeds[] = { "full", "low", "high", "super" };
+	usb_debug ("%sspeed device\n", (speed < sizeof(speeds) / sizeof(char*))
+		? speeds[speed] : "invalid value - no");
 	int newdev = set_address (controller, speed, port, hubaddress);
 	if (newdev == -1)
 		return -1;

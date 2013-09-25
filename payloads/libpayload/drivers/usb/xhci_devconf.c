@@ -30,6 +30,7 @@
 //#define XHCI_SPEW_DEBUG
 
 #include <arch/virtual.h>
+#include <usb/usb.h>
 #include "xhci_private.h"
 
 static u32
@@ -57,7 +58,7 @@ xhci_get_rh_port(xhci_t *const xhci, const int hubport, const int hubaddr)
 }
 
 static int
-xhci_get_tt(xhci_t *const xhci, const int xhci_speed,
+xhci_get_tt(xhci_t *const xhci, const usb_speed speed,
 	    const int hubport, const int hubaddr,
 	    int *const tt, int *const tt_port)
 {
@@ -66,8 +67,8 @@ xhci_get_tt(xhci_t *const xhci, const int xhci_speed,
 	const slotctx_t *const slot = xhci->dev[hubaddr].ctx.slot;
 	if ((*tt = SC_GET(TTID, slot))) {
 		*tt_port = SC_GET(TTPORT, slot);
-	} else if (xhci_speed < XHCI_HIGH_SPEED &&
-			SC_GET(SPEED, slot) == XHCI_HIGH_SPEED) {
+	} else if (speed < HIGH_SPEED &&
+			SC_GET(SPEED1, slot) - 1 == HIGH_SPEED) {
 		*tt = hubaddr;
 		*tt_port = hubport;
 	}
@@ -75,37 +76,7 @@ xhci_get_tt(xhci_t *const xhci, const int xhci_speed,
 }
 
 static long
-xhci_decode_mps0(const int xhci_speed, const u8 b_mps)
-{
-	switch (xhci_speed) {
-	case XHCI_LOW_SPEED:
-	case XHCI_FULL_SPEED:
-	case XHCI_HIGH_SPEED:
-		switch (b_mps) {
-		case 8: case 16: case 32: case 64:
-			return b_mps;
-		default:
-			xhci_debug("Invalid MPS0: 0x%02x\n", b_mps);
-			return 8;
-		}
-		break;
-	case XHCI_SUPER_SPEED:
-		if (b_mps == 9) {
-			return 2 << b_mps;
-		} else {
-			xhci_debug("Invalid MPS0: 0x%02x\n", b_mps);
-			return 2 << 9;
-		}
-		break;
-	default:
-		xhci_debug("Invalid speed for MPS0: %d\n", xhci_speed);
-		return 8;
-	}
-}
-
-
-static long
-xhci_get_mps0(usbdev_t *const dev, const int xhci_speed)
+xhci_get_mps0(usbdev_t *const dev, const int speed)
 {
 	u8 buf[8];
 	dev_req_t dr = {
@@ -121,7 +92,7 @@ xhci_get_mps0(usbdev_t *const dev, const int xhci_speed)
 		xhci_debug("Failed to read MPS0\n");
 		return COMMUNICATION_ERROR;
 	} else {
-		return xhci_decode_mps0(xhci_speed, buf[7]);
+		return usb_decode_mps0(speed, buf[7]);
 	}
 }
 
@@ -150,10 +121,9 @@ xhci_make_inputctx(const size_t ctxsize)
 }
 
 int
-xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
+xhci_set_address (hci_t *controller, usb_speed speed, int hubport, int hubaddr)
 {
 	xhci_t *const xhci = XHCI_INST(controller);
-	const int xhci_speed = speed + 1;
 	const size_t ctxsize = CTXSIZE(xhci);
 	devinfo_t *di = NULL;
 
@@ -188,12 +158,12 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 	*ic->add = (1 << 0) /* Slot Context */ | (1 << 1) /* EP0 Context */ ;
 
 	SC_SET(ROUTE,	ic->dev.slot, xhci_gen_route(xhci, hubport, hubaddr));
-	SC_SET(SPEED,	ic->dev.slot, xhci_speed);
+	SC_SET(SPEED1,	ic->dev.slot, speed + 1);
 	SC_SET(CTXENT,	ic->dev.slot, 1); /* the endpoint 0 context */
 	SC_SET(RHPORT,	ic->dev.slot, xhci_get_rh_port(xhci, hubport, hubaddr));
 
 	int tt, tt_port;
-	if (xhci_get_tt(xhci, xhci_speed, hubport, hubaddr, &tt, &tt_port)) {
+	if (xhci_get_tt(xhci, speed, hubport, hubaddr, &tt, &tt_port)) {
 		xhci_debug("TT for %d: %d[%d]\n", slot_id, tt, tt_port);
 		SC_SET(MTT, ic->dev.slot, SC_GET(MTT, xhci->dev[tt].ctx.slot));
 		SC_SET(TTID, ic->dev.slot, tt);
@@ -221,13 +191,13 @@ xhci_set_address (hci_t *controller, int speed, int hubport, int hubaddr)
 		xhci_debug("Addressed device %d (USB: %d)\n",
 			  slot_id, SC_GET(UADDR, di->ctx.slot));
 	}
-	mdelay(2); /* SetAddress() recovery interval (usb20 spec 9.2.6.3) */
+	mdelay(SET_ADDRESS_MDELAY);
 
 	init_device_entry(controller, slot_id);
 	controller->devices[slot_id]->address = slot_id;
 
 	const long mps0 = xhci_get_mps0(
-			controller->devices[slot_id], xhci_speed);
+			controller->devices[slot_id], speed);
 	if (mps0 < 0) {
 		goto _disable_return;
 	} else if (mps0 != 8) {

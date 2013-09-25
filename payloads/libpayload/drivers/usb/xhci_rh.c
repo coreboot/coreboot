@@ -84,7 +84,7 @@ xhci_rh_port_enabled(usbdev_t *const dev, const int port)
 	return !!(*portsc & PORTSC_PED);
 }
 
-static int
+static usb_speed
 xhci_rh_port_speed(usbdev_t *const dev, const int port)
 {
 	xhci_t *const xhci = XHCI_INST(dev->controller);

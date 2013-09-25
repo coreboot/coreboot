@@ -77,7 +77,7 @@ usb_hub_port_enabled(usbdev_t *const dev, const int port)
 	return (buf[0] & PORT_ENABLE) != 0;
 }
 
-static int
+static usb_speed
 usb_hub_port_speed(usbdev_t *const dev, const int port)
 {
 	unsigned short buf[2] = { 0, 0 };
@@ -87,6 +87,7 @@ usb_hub_port_speed(usbdev_t *const dev, const int port)
 		 *      0   0  full speed
 		 *      0   1  low speed
 		 *      1   0  high speed
+		 *      1   1  super speed (hack, not in spec!)
 		 */
 		return (buf[0] >> 9) & 0x3;
 	} else {

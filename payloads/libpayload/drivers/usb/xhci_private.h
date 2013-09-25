@@ -44,8 +44,6 @@
 
 #define MASK(startbit, lenbit) (((1<<(lenbit))-1)<<(startbit))
 
-enum { XHCI_FULL_SPEED = 1, XHCI_LOW_SPEED = 2, XHCI_HIGH_SPEED = 3, XHCI_SUPER_SPEED = 4 };
-
 #define TIMEOUT			-1
 #define CONTROLLER_ERROR	-2
 #define COMMUNICATION_ERROR	-3
@@ -164,9 +162,9 @@ typedef transfer_ring_t command_ring_t;
 #define SC_ROUTE_FIELD		f1		/* ROUTE - Route String */
 #define SC_ROUTE_START		0
 #define SC_ROUTE_LEN		20
-#define SC_SPEED_FIELD		f1
-#define SC_SPEED_START		20
-#define SC_SPEED_LEN		4
+#define SC_SPEED1_FIELD		f1		/* SPEED - Port speed plus one (compared to usb_speed enum) */
+#define SC_SPEED1_START		20
+#define SC_SPEED1_LEN		4
 #define SC_MTT_FIELD		f1		/* MTT - Multi Transaction Translator */
 #define SC_MTT_START		25
 #define SC_MTT_LEN		1
@@ -472,7 +470,7 @@ typedef struct xhci {
 
 void *xhci_align(const size_t min_align, const size_t size);
 void xhci_init_cycle_ring(transfer_ring_t *, const size_t ring_size);
-int xhci_set_address (hci_t *, int speed, int hubport, int hubaddr);
+int xhci_set_address (hci_t *, usb_speed speed, int hubport, int hubaddr);
 int xhci_finish_device_config(usbdev_t *);
 void xhci_destroy_dev(hci_t *, int slot_id);
 

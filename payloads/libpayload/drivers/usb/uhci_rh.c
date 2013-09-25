@@ -133,7 +133,7 @@ uhci_rh_scanport (usbdev_t *dev, int port)
 		uhci_rh_disable_port (dev, port);
 		uhci_rh_enable_port (dev, port);
 
-		int speed = ((uhci_reg_read16 (dev->controller, portsc) >> 8) & 1);
+		usb_speed speed = ((uhci_reg_read16 (dev->controller, portsc) >> 8) & 1);
 
 		RH_INST (dev)->port[offset] = usb_attach_device(dev->controller, dev->address, portsc, speed);
 	}

@@ -67,36 +67,6 @@ static const char *msc_protocol_strings[0x51] = {
 	"Bulk-Only Transport"
 };
 
-static inline void
-usb_msc_mark_ready (usbdev_t *dev)
-{
-	MSC_INST (dev)->ready = USB_MSC_READY;
-}
-
-static inline void
-usb_msc_mark_not_ready (usbdev_t *dev)
-{
-	MSC_INST (dev)->ready = USB_MSC_NOT_READY;
-}
-
-static inline void
-usb_msc_mark_detached (usbdev_t *dev)
-{
-	MSC_INST (dev)->ready = USB_MSC_DETACHED;
-}
-
-static inline int
-usb_msc_is_detached (usbdev_t *dev)
-{
-	return MSC_INST (dev)->ready == USB_MSC_DETACHED;
-}
-
-static inline int
-usb_msc_is_ready (usbdev_t *dev)
-{
-	return MSC_INST (dev)->ready == USB_MSC_READY;
-}
-
 static void
 usb_msc_create_disk (usbdev_t *dev)
 {
@@ -156,7 +126,8 @@ enum {
 	 * MSC commands can be
 	 *   successful,
 	 *   fail with proper response or
-	 *   fail totally, which results in detaching of the usb device.
+	 *   fail totally, which results in detaching of the usb device
+	 *   and immediate cleanup of the usbdev_t structure.
 	 * In the latter case the caller has to make sure, that he won't
 	 * use the device any more.
 	 */
@@ -468,7 +439,7 @@ static int request_sense_no_media (usbdev_t *dev)
 	/* No media is present. Return MSC_COMMAND_OK while marking the disk
 	 * not ready. */
 	usb_debug ("Empty media found.\n");
-	usb_msc_mark_not_ready (dev);
+	MSC_INST (dev)->ready = USB_MSC_NOT_READY;
 	return MSC_COMMAND_OK;
 }
 
@@ -533,7 +504,7 @@ read_capacity (usbdev_t *dev)
 	return MSC_COMMAND_OK;
 }
 
-static void
+static int
 usb_msc_test_unit_ready (usbdev_t *dev)
 {
 	int i;
@@ -547,7 +518,7 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 	usb_debug ("  Waiting for device to become ready...");
 
 	/* Initially mark the device ready. */
-	usb_msc_mark_ready (dev);
+	MSC_INST (dev)->ready = USB_MSC_READY;
 	gettimeofday (&tv, NULL);
 	start_time_secs = tv.tv_sec;
 
@@ -561,22 +532,21 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 			gettimeofday (&tv, NULL);
 			continue;
 		default:
-			usb_debug ("detached. Device not ready.\n");
-			usb_msc_mark_detached (dev);
-			return;
+			/* Device detached, return immediately */
+			return USB_MSC_DETACHED;
 		}
 		break;
 	}
 	if (!(tv.tv_sec - start_time_secs < timeout_secs)) {
 		usb_debug ("timeout. Device not ready.\n");
-		usb_msc_mark_not_ready (dev);
+		MSC_INST (dev)->ready = USB_MSC_NOT_READY;
 	}
 
 	/* Don't bother spinning up the stroage device if the device is not
 	 * ready. This can happen when empty card readers are present.
 	 * Polling will pick it back up if readiness changes. */
-	if (!usb_msc_is_ready (dev))
-		return;
+	if (!MSC_INST (dev)->ready)
+		return MSC_INST (dev)->ready;
 
 	usb_debug ("ok.\n");
 
@@ -591,16 +561,17 @@ usb_msc_test_unit_ready (usbdev_t *dev)
 			mdelay (100);
 			continue;
 		default:
-			/* Device is no longer ready. */
-			usb_msc_mark_detached (dev);
-			return;
+			/* Device detached, return immediately */
+			return USB_MSC_DETACHED;
 		}
 		break;
 	}
 	usb_debug ("\n");
 
-	if (read_capacity (dev) != MSC_COMMAND_OK)
-		usb_msc_mark_not_ready (dev);
+	if (read_capacity (dev) == MSC_COMMAND_DETACHED)
+		return USB_MSC_DETACHED;
+
+	return MSC_INST (dev)->ready;
 }
 
 void
@@ -646,7 +617,6 @@ usb_msc_init (usbdev_t *dev)
 	MSC_INST (dev)->bulk_in = 0;
 	MSC_INST (dev)->bulk_out = 0;
 	MSC_INST (dev)->usbdisk_created = 0;
-	usb_msc_mark_ready (dev);
 
 	for (i = 1; i <= dev->num_endp; i++) {
 		if (dev->endpoints[i].endpoint == 0)
@@ -675,11 +645,8 @@ usb_msc_init (usbdev_t *dev)
 
 	usb_debug ("  has %d luns\n", get_max_luns (dev) + 1);
 
-	/* Test if unit is ready. */
-	usb_msc_test_unit_ready (dev);
-
-	/* Nothing to do if device is not ready. */
-	if (!usb_msc_is_ready (dev))
+	/* Test if unit is ready (nothing to do if it isn't). */
+	if (usb_msc_test_unit_ready (dev) != USB_MSC_READY)
 		return;
 
 	/* Create the disk. */
@@ -689,21 +656,15 @@ usb_msc_init (usbdev_t *dev)
 static void
 usb_msc_poll (usbdev_t *dev)
 {
-	int prev_ready;
+	int prev_ready = MSC_INST (dev)->ready;
 
-	/* Nothing to do if device is detached. */
-	if (usb_msc_is_detached (dev))
+	if (usb_msc_test_unit_ready (dev) == USB_MSC_DETACHED)
 		return;
 
-	/* Handle ready transitions by keeping track of previous state . */
-	prev_ready = usb_msc_is_ready (dev);
-
-	usb_msc_test_unit_ready (dev);
-
-	if (!prev_ready && usb_msc_is_ready (dev)) {
+	if (!prev_ready && MSC_INST (dev)->ready) {
 		usb_debug ("usb msc: not ready -> ready\n");
 		usb_msc_create_disk (dev);
-	} else if (prev_ready && !usb_msc_is_ready (dev)) {
+	} else if (prev_ready && !MSC_INST (dev)->ready) {
 		usb_debug ("usb msc: ready -> not ready\n");
 		usb_msc_remove_disk (dev);
 	}

@@ -64,7 +64,6 @@ static void set_cpu_id(void)
  */
 static void exynos_displayport_init(device_t dev)
 {
-	int ret;
 	struct cpu_samsung_exynos5420_config *conf = dev->chip_info;
 	/* put these on the stack. If, at some point, we want to move
 	 * this code to a pre-ram stage, it will be much easier.
@@ -117,7 +116,7 @@ static void exynos_displayport_init(device_t dev)
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 	printk(BIOS_DEBUG,
 	       "Initializing Exynos VGA, base %p\n", (void *)lcdbase);
-	ret = lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
+	lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
 }
 
 static void cpu_enable(device_t dev)

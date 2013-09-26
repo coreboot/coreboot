@@ -31,6 +31,7 @@
 #include <baytrail/msr.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
+#include <baytrail/gpio.h>
 
 /* Global PATTRS */
 DEFINE_PATTRS;
@@ -101,7 +102,14 @@ static void fill_in_pattrs(void)
 	fill_in_msr(&attrs->iacore_vids, MSR_IACORE_VIDS);
 }
 
+
 void baytrail_init_pre_device(void)
 {
+	struct soc_gpio_config *config;
+
 	fill_in_pattrs();
+
+	/* Get GPIO initial states from mainboard */
+	config = mainboard_get_gpios();
+	setup_soc_gpios(config);
 }

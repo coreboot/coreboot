@@ -1,0 +1,1 @@
+subdirs-$(CONFIG_SOC_NVIDIA_TEGRA124) += tegra124

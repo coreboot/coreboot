@@ -1,0 +1,42 @@
+config SOC_NVIDIA_TEGRA124
+	depends on ARCH_ARMV7
+	bool
+	default n
+
+if SOC_NVIDIA_TEGRA124
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "soc/nvidia/tegra124/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code. This is useful if the
+	  bootblock must load microcode or copy data from ROM before
+	  searching for the bootblock.
+
+# ROM image layout.
+#
+# 0x00000 Combined bootblock and BCT blob
+# 0x18000 Master CBFS header.
+# 0x18080 Free for CBFS data.
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x0
+
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x18000
+
+config CBFS_ROM_OFFSET
+	hex "offset of CBFS data in ROM"
+	default 0x18080
+
+config SYS_SDRAM_BASE
+	hex
+	default 0x80000000
+
+config BOOTBLOCK_BASE
+	hex
+	default 0x80000000
+
+endif

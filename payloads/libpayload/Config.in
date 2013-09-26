@@ -162,14 +162,16 @@ config SERIAL_CONSOLE
 	bool "See output on the serial port console"
 	default y
 
-config X86_SERIAL_CONSOLE
-	bool
-	depends on ARCH_X86 && SERIAL_CONSOLE
-	default y
+config 8250_SERIAL_CONSOLE
+	bool "8250, 16450, 16550, 16550A compatible serial port driver"
+	depends on SERIAL_CONSOLE
+	default y if ARCH_X86
+	default n if !ARCH_X86
 
 config SERIAL_IOBASE
-	hex "I/O base for the serial port (default 0x3f8)"
-	depends on X86_SERIAL_CONSOLE
+	## This default is currently not used on non-x86 systems.
+	hex "Default I/O base for the serial port (default 0x3f8)"
+	depends on SERIAL_CONSOLE && ARCH_X86
 	default 0x3f8
 
 config SERIAL_SET_SPEED

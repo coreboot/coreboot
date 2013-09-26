@@ -33,7 +33,7 @@ libc-$(CONFIG_LP_PCI) += pci.c
 
 libc-$(CONFIG_LP_SPEAKER) += speaker.c
 
-libc-$(CONFIG_LP_X86_SERIAL_CONSOLE) += serial.c
+libc-$(CONFIG_LP_8250_SERIAL_CONSOLE) += serial.c
 
 libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
 

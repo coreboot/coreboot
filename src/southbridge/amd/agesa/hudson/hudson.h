@@ -21,6 +21,7 @@
 #define HUDSON_H
 
 #include <device/pci_ids.h>
+#include <device/device.h>
 #include "chip.h"
 
 /* Power management index/data registers */
@@ -69,6 +70,8 @@ int acpi_is_wakeup_early(void);
 #else
 void hudson_enable(device_t dev);
 void __attribute__((weak)) hudson_setup_sata_phys(struct device *dev);
+void s3_resume_init_data(void *FchParams);
+
 #endif
 
 #endif /* HUDSON_H */

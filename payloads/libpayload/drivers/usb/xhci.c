@@ -599,9 +599,9 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 		return -1;
 	}
 
-	/* Reset endpoint if it's halted */
+	/* Reset endpoint if it's not running */
 	const unsigned ep_state = EC_GET(STATE, epctx);
-	if (ep_state == 2 || ep_state == 4) {
+	if (ep_state > 1) {
 		if (xhci_reset_endpoint(dev, NULL, 0))
 			return -1;
 	}
@@ -710,9 +710,9 @@ xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
 			memcpy(data, src, size);
 	}
 
-	/* Reset endpoint if it's halted */
+	/* Reset endpoint if it's not running */
 	const unsigned ep_state = EC_GET(STATE, epctx);
-	if (ep_state == 2 || ep_state == 4) {
+	if (ep_state > 1) {
 		if (xhci_reset_endpoint(ep->dev, ep, 0))
 			return -1;
 	}

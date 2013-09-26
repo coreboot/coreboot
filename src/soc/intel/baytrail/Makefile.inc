@@ -18,7 +18,7 @@ ramstage-y += iosf.c
 romstage-y += iosf.c
 ramstage-y += northcluster.c
 ramstage-y += ramstage.c
-
+ramstage-y += gpio.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

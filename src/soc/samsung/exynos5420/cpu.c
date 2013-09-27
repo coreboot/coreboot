@@ -76,7 +76,7 @@ static void set_cpu_id(void)
 static void exynos_displayport_init(device_t dev, u32 lcdbase,
 		unsigned long fb_size)
 {
-	struct cpu_samsung_exynos5420_config *conf = dev->chip_info;
+	struct soc_samsung_exynos5420_config *conf = dev->chip_info;
 	/* put these on the stack. If, at some point, we want to move
 	 * this code to a pre-ram stage, it will be much easier.
 	 */

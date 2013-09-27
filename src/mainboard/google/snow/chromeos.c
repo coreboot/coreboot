@@ -24,8 +24,8 @@
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <bootmode.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/gpio.h>
+#include <soc/samsung/exynos5250/cpu.h>
+#include <soc/samsung/exynos5250/gpio.h>
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

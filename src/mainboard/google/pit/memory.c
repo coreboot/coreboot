@@ -22,10 +22,10 @@
 #include <stdlib.h>
 #include <console/console.h>
 
-#include <cpu/samsung/exynos5420/gpio.h>
-#include <cpu/samsung/exynos5420/dmc.h>
-#include <cpu/samsung/exynos5420/setup.h>
-#include <cpu/samsung/exynos5420/clk.h>
+#include <soc/samsung/exynos5420/gpio.h>
+#include <soc/samsung/exynos5420/dmc.h>
+#include <soc/samsung/exynos5420/setup.h>
+#include <soc/samsung/exynos5420/clk.h>
 
 const struct mem_timings mem_timings = {
 		.mem_manuf = MEM_MANUF_SAMSUNG,

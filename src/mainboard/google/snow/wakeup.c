@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5250/wakeup.h>
+#include <soc/samsung/exynos5250/gpio.h>
+#include <soc/samsung/exynos5250/wakeup.h>
 
 int wakeup_need_reset(void)
 {

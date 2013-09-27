@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-chip cpu/samsung/exynos5250
+chip soc/samsung/exynos5250
 	device cpu_cluster 0 on end
 	register "xres" = "1366"
 	register "yres" = "768"

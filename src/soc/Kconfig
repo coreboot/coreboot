@@ -1,2 +1,3 @@
 source src/soc/intel/Kconfig
 source src/soc/nvidia/Kconfig
+source src/soc/samsung/Kconfig

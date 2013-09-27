@@ -25,16 +25,16 @@
 #include <cbmem.h>
 
 #include <arch/cache.h>
-#include <cpu/samsung/exynos5420/i2c.h>
-#include <cpu/samsung/exynos5420/clk.h>
-#include <cpu/samsung/exynos5420/cpu.h>
-#include <cpu/samsung/exynos5420/dmc.h>
-#include <cpu/samsung/exynos5420/gpio.h>
-#include <cpu/samsung/exynos5420/setup.h>
-#include <cpu/samsung/exynos5420/periph.h>
-#include <cpu/samsung/exynos5420/power.h>
-#include <cpu/samsung/exynos5420/trustzone.h>
-#include <cpu/samsung/exynos5420/wakeup.h>
+#include <soc/samsung/exynos5420/i2c.h>
+#include <soc/samsung/exynos5420/clk.h>
+#include <soc/samsung/exynos5420/cpu.h>
+#include <soc/samsung/exynos5420/dmc.h>
+#include <soc/samsung/exynos5420/gpio.h>
+#include <soc/samsung/exynos5420/setup.h>
+#include <soc/samsung/exynos5420/periph.h>
+#include <soc/samsung/exynos5420/power.h>
+#include <soc/samsung/exynos5420/trustzone.h>
+#include <soc/samsung/exynos5420/wakeup.h>
 #include <console/console.h>
 #include <arch/stages.h>
 

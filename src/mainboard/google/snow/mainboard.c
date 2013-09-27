@@ -28,14 +28,14 @@
 #include <boot/coreboot_tables.h>
 #include <arch/cache.h>
 #include <arch/exception.h>
-#include <cpu/samsung/exynos5250/tmu.h>
-#include <cpu/samsung/exynos5250/clk.h>
-#include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5250/i2c.h>
-#include <cpu/samsung/exynos5250/dp-core.h>
-#include <cpu/samsung/exynos5250/dp.h>
-#include <cpu/samsung/exynos5250/usb.h>
+#include <soc/samsung/exynos5250/tmu.h>
+#include <soc/samsung/exynos5250/clk.h>
+#include <soc/samsung/exynos5250/gpio.h>
+#include <soc/samsung/exynos5250/power.h>
+#include <soc/samsung/exynos5250/i2c.h>
+#include <soc/samsung/exynos5250/dp-core.h>
+#include <soc/samsung/exynos5250/dp.h>
+#include <soc/samsung/exynos5250/usb.h>
 
 #include "exynos5250.h"
 

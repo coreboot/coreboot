@@ -1,2 +1,0 @@
-source src/cpu/samsung/exynos5250/Kconfig
-source src/cpu/samsung/exynos5420/Kconfig

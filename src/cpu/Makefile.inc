@@ -6,7 +6,6 @@ subdirs-y += amd
 subdirs-y += dmp
 subdirs-y += armltd
 subdirs-y += intel
-subdirs-y += samsung
 subdirs-y += ti
 subdirs-y += via
 subdirs-y += x86

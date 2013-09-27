@@ -4,7 +4,6 @@
 
 source src/cpu/allwinner/Kconfig
 source src/cpu/armltd/Kconfig
-source src/cpu/samsung/Kconfig
 source src/cpu/ti/Kconfig
 
 source src/cpu/amd/Kconfig

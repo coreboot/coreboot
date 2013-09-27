@@ -24,16 +24,16 @@
 #include <cbmem.h>
 
 #include <arch/cache.h>
-#include <cpu/samsung/exynos5250/i2c.h>
-#include <cpu/samsung/exynos5250/clk.h>
-#include <cpu/samsung/exynos5250/cpu.h>
-#include <cpu/samsung/exynos5250/dmc.h>
-#include <cpu/samsung/exynos5250/gpio.h>
-#include <cpu/samsung/exynos5250/setup.h>
-#include <cpu/samsung/exynos5250/periph.h>
-#include <cpu/samsung/exynos5250/power.h>
-#include <cpu/samsung/exynos5250/trustzone.h>
-#include <cpu/samsung/exynos5250/wakeup.h>
+#include <soc/samsung/exynos5250/i2c.h>
+#include <soc/samsung/exynos5250/clk.h>
+#include <soc/samsung/exynos5250/cpu.h>
+#include <soc/samsung/exynos5250/dmc.h>
+#include <soc/samsung/exynos5250/gpio.h>
+#include <soc/samsung/exynos5250/setup.h>
+#include <soc/samsung/exynos5250/periph.h>
+#include <soc/samsung/exynos5250/power.h>
+#include <soc/samsung/exynos5250/trustzone.h>
+#include <soc/samsung/exynos5250/wakeup.h>
 #include <console/console.h>
 #include <arch/stages.h>
 

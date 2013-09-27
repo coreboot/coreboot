@@ -57,5 +57,6 @@ ramstage-y += cbmem.c
 $(obj)/coreboot.rom: exynos5250_add_bl1
 exynos5250_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5250 BL1\n"
+	# TODO(hungte) Change this 'cpu' to soc when build scripts are changed.
 	dd if=3rdparty/cpu/samsung/exynos5250/bl1.bin \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1

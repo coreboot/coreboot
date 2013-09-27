@@ -1,8 +1,3 @@
-# Run an intermediate step when producing coreboot.rom
-# that adds additional components to the final firmware
-# image outside of CBFS
-INTERMEDIATE += exynos5250_add_bl1
-
 bootblock-y += spi.c alternate_cbfs.c
 bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART
@@ -54,6 +49,11 @@ ramstage-y += fb.c
 ramstage-y += usb.c
 ramstage-y += cbmem.c
 
+# Run an intermediate step when producing coreboot.rom
+# that adds additional components to the final firmware
+# image outside of CBFS
+.PHONY: exynos5250_add_bl1
+$(obj)/coreboot.rom: exynos5250_add_bl1
 exynos5250_add_bl1: $(obj)/coreboot.pre
 	printf "    DD         Adding Samsung Exynos5250 BL1\n"
 	dd if=3rdparty/cpu/samsung/exynos5250/bl1.bin \

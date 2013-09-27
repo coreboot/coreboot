@@ -26,12 +26,27 @@
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
 #include <romstage_handoff.h>
+#include <timestamp.h>
 #include <baytrail/gpio.h>
 #include <baytrail/iomap.h>
 #include <baytrail/iosf.h>
 #include <baytrail/lpc.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/romstage.h>
+
+static inline uint64_t timestamp_get(void)
+{
+	return rdtscll();
+}
+
+static inline tsc_t ts64_to_tsc(uint64_t ts)
+{
+	tsc_t tsc = {
+		.lo = ts,
+		.hi = ts >> 32,
+	};
+	return tsc;
+}
 
 /* The cache-as-ram assembly file calls romstage_main() after setting up
  * cache-as-ram.  romstage_main() will then call the mainboards's
@@ -69,17 +84,36 @@ static void program_base_addresses(void)
 	pci_write_config32(lpc_dev, GBASE, reg);
 }
 
-/* Entry from cache-as-ram.inc. */
-void * asmlinkage romstage_main(unsigned long bist)
+static inline void mark_ts(struct romstage_params *rp, uint64_t ts)
 {
+	struct romstage_timestamps *rt = &rp->ts;
+
+	rt->times[rt->count] = ts;
+	rt->count++;
+}
+
+/* Entry from cache-as-ram.inc. */
+void * asmlinkage romstage_main(unsigned long bist,
+                                uint32_t tsc_low, uint32_t tsc_hi)
+{
+	struct romstage_params rp = {
+		.bist = bist,
+		.mrc_params = NULL,
+	};
+
+	/* Save initial timestamp from bootblock. */
+	mark_ts(&rp, (((uint64_t)tsc_hi) << 32) | (uint64_t)tsc_low);
+	/* Save romstage begin */
+	mark_ts(&rp, timestamp_get());
+
 	/* Call into mainboard. */
-	mainboard_romstage_entry(bist);
+	mainboard_romstage_entry(&rp);
 
 	return setup_stack_and_mttrs();
 }
 
 /* Entry from the mainboard. */
-void romstage_common(const struct romstage_params *params)
+void romstage_common(struct romstage_params *params)
 {
 	struct romstage_handoff *handoff;
 
@@ -91,8 +125,12 @@ void romstage_common(const struct romstage_params *params)
 
 	gfx_init();
 
+	mark_ts(params, timestamp_get());
+
 	/* Initialize RAM */
 	raminit(params->mrc_params, 5);
+
+	mark_ts(params, timestamp_get());
 
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
@@ -100,6 +138,11 @@ void romstage_common(const struct romstage_params *params)
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
+	/* Save timestamp information. */
+	timestamp_init(ts64_to_tsc(params->ts.times[0]));
+	timestamp_add(TS_START_ROMSTAGE, ts64_to_tsc(params->ts.times[1]));
+	timestamp_add(TS_BEFORE_INITRAM, ts64_to_tsc(params->ts.times[2]));
+	timestamp_add(TS_AFTER_INITRAM, ts64_to_tsc(params->ts.times[3]));
 }
 
 static void open_up_spi(void)
@@ -116,6 +159,8 @@ void asmlinkage romstage_after_car(void)
 {
 	/* Allow BIOS to program SPI part. */
 	open_up_spi();
+
+	timestamp_add_now(TS_END_ROMSTAGE);
 
 	/* Load the ramstage. */
 	copy_and_run();

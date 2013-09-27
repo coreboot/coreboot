@@ -25,6 +25,7 @@ config CPU_SPECIFIC_OPTIONS
 	select CACHE_MRC_SETTINGS
 	select CACHE_ROM
 	select SPI_FLASH
+	select COLLECT_TIMESTAMPS
 
 config BOOTBLOCK_CPU_INIT
 	string

@@ -169,6 +169,12 @@ wait_for_sipi:
 	movl	$(CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE), %eax
 	movl	%eax, %esp
 
+	/* Push the initial TSC value from boot block. The low 32 bits are
+	 * in mm0, and the high 32 bits are in mm1. */
+	movd	%mm1, %eax
+	pushl	%eax
+	movd	%mm0, %eax
+	pushl	%eax
 	/* Restore the BIST result. */
 	movl	%ebp, %eax
 	movl	%esp, %ebp

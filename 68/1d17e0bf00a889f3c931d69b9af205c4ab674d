@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Code-Review+2: Gabe Black <gabeblack@chromium.org>
+Submitted-by: Patrick Georgi <patrick@georgi-clan.de>
+Submitted-at: Sat, 28 Sep 2013 22:25:14 +0200
+Reviewed-on: http://review.coreboot.org/3949
+Project: coreboot
+Branch: refs/heads/master

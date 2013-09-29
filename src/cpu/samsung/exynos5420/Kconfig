@@ -2,6 +2,7 @@ config CPU_SAMSUNG_EXYNOS5420
 	select ARCH_BOOTBLOCK_ARMV7
 	select ARCH_ROMSTAGE_ARMV7
 	select ARCH_RAMSTAGE_ARMV7
+	select CPU_HAS_BOOTBLOCK_INIT
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
 	select RELOCATABLE_MODULES
@@ -10,14 +11,6 @@ config CPU_SAMSUNG_EXYNOS5420
 	default n
 
 if CPU_SAMSUNG_EXYNOS5420
-
-config BOOTBLOCK_CPU_INIT
-	string
-	default "cpu/samsung/exynos5420/bootblock.c"
-	help
-	  CPU/SoC-specific bootblock code. This is useful if the
-	  bootblock must load microcode or copy data from ROM before
-	  searching for the bootblock.
 
 # ROM image layout.
 #

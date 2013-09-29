@@ -19,15 +19,13 @@
  * MA 02110-1301 USA
  */
 
-#include <bootblock_common.h>
 #include <arch/cache.h>
 #include <arch/hlt.h>
 #include <arch/stages.h>
+#include <bootblock_common.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <smp/node.h>
-
-#include "stages.c"
 
 void main(void)
 {
@@ -51,10 +49,8 @@ void main(void)
 	sctlr |= SCTLR_Z | SCTLR_I;
 	write_sctlr(sctlr);
 
-	if (boot_cpu()) {
-		bootblock_cpu_init();
-		bootblock_mainboard_init();
-	}
+	bootblock_cpu_init();
+	bootblock_mainboard_init();
 
 #if CONFIG_BOOTBLOCK_CONSOLE
 	console_init();

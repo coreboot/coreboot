@@ -17,7 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-void bootblock_cpu_init(void);
+#include <bootblock_common.h>
+
 void bootblock_cpu_init(void)
 {
 }

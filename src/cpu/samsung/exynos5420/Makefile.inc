@@ -1,4 +1,5 @@
 bootblock-y += spi.c alternate_cbfs.c
+bootblock-y += bootblock.c
 bootblock-y += pinmux.c mct.c power.c
 # Clock is required for UART
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock_init.c

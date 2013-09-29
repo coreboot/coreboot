@@ -4,6 +4,7 @@ config SOC_NVIDIA_TEGRA124
 	select ARCH_RAMSTAGE_ARMV7
 	bool
 	default n
+	select CPU_HAS_BOOTBLOCK_INIT
 
 if SOC_NVIDIA_TEGRA124
 

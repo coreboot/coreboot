@@ -17,10 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <bootblock_common.h>
+
 #include "clk.h"
 #include "wakeup.h"
 
-void bootblock_cpu_init(void);
 void bootblock_cpu_init(void)
 {
 	/* kick off the multi-core timer.

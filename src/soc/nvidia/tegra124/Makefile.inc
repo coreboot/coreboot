@@ -1,5 +1,6 @@
 CBOOTIMAGE = cbootimage
 
+bootblock-y += bootblock.c
 bootblock-y += cbfs.c
 bootblock-y += clock.c
 bootblock-y += i2c.c

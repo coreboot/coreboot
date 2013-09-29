@@ -17,8 +17,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <bootblock_common.h>
+#include <arch/hlt.h>
+#include <arch/stages.h>
+#include <cbfs.h>
+#include <console/console.h>
 
-void bootblock_cpu_init(void)
+void main(void)
 {
+	void *entry;
+
+	if (CONFIG_BOOTBLOCK_CONSOLE)
+		console_init();
+
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/romstage");
+
+	if (entry) stage_exit(entry);
+	hlt();
 }

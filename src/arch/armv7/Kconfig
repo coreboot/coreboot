@@ -11,6 +11,12 @@ config ARCH_RAMSTAGE_ARMV7
 	bool
 	default n
 
+# If a custom bootblock is necessary, this option should be "select"-ed by
+# the thing that needs it, probably the CPU.
+config ARM_BOOTBLOCK_CUSTOM
+	bool
+	default n
+
 config CPU_HAS_BOOTBLOCK_INIT
 	bool
 	default n

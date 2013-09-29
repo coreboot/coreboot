@@ -51,11 +51,12 @@ endif # CONFIG_ARCH_ARMV7
 
 ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV7),y)
 
-bootblock-y += id.S
+ifneq ($(CONFIG_ARM_BOOTBLOCK_CUSTOM),y)
 bootblock-y += bootblock.S
-
+bootblock-$(CONFIG_BOOTBLOCK_SIMPLE) += bootblock_simple.c
+endif
+bootblock-y += id.S
 $(obj)/arch/arm/id.bootblock.o: $(obj)/build.h
-bootblock-y += $(call strip_quotes,$(CONFIG_BOOTBLOCK_SOURCE))
 
 bootblock-y += stages.c
 bootblock-y += cache.c

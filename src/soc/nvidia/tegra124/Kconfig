@@ -39,4 +39,16 @@ config BOOTBLOCK_BASE
 	hex
 	default 0x80000000
 
+config STACK_TOP
+	hex
+	default 0x80400000
+
+config STACK_BOTTOM
+	hex
+	default 0x803f8000
+
+config STACK_SIZE
+	hex
+	default 0x800
+
 endif

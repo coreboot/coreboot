@@ -1,0 +1,16 @@
+if VENDOR_MICROPASSION
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_MICROPASSION_KRATOSX1
+	bool "KRATOS-X1"
+endchoice
+
+source "src/mainboard/micropassion/kratosx1/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Micro Passion Ltd"
+
+endif # VENDOR_MICROPASSION

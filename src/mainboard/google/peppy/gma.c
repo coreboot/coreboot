@@ -43,6 +43,7 @@
 #include <cpu/x86/msr.h>
 #include <edid.h>
 #include <drivers/intel/gma/i915.h>
+#include <northbridge/intel/haswell/haswell.h>
 #include "mainboard.h"
 
 /*
@@ -90,44 +91,7 @@ static unsigned int *mmio;
 static unsigned int graphics;
 static unsigned int physbase;
 
-/* GTT is the Global Translation Table for the graphics pipeline.
- * It is used to translate graphics addresses to physical
- * memory addresses. As in the CPU, GTTs map 4K pages.
- * The setgtt function adds a further bit of flexibility:
- * it allows you to set a range (the first two parameters) to point
- * to a physical address (third parameter);the physical address is
- * incremented by a count (fourth parameter) for each GTT in the
- * range.
- * Why do it this way? For ultrafast startup,
- * we can point all the GTT entries to point to one page,
- * and set that page to 0s:
- * memset(physbase, 0, 4096);
- * setgtt(0, 4250, physbase, 0);
- * this takes about 2 ms, and is a win because zeroing
- * the page takes a up to 200 ms.
- * This call sets the GTT to point to a linear range of pages
- * starting at physbase.
- */
-
-#define GTT_PTE_BASE (2 << 20)
-
 int intel_dp_bw_code_to_link_rate(u8 link_bw);
-
-static void
-setgtt(int start, int end, unsigned long base, int inc)
-{
-	int i;
-
-	for(i = start; i < end; i++){
-		u32 word = base + i*inc;
-		/* note: we've confirmed by checking
-		 * the values that mrc does no
-		 * useful setup before we run this.
-		 */
-		gtt_write(GTT_PTE_BASE + i * 4, word|1);
-		gtt_read(GTT_PTE_BASE + i * 4);
-	}
-}
 
 static int i915_init_done = 0;
 
@@ -378,10 +342,10 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 	   2. Developer/Recovery mode: Set up a tasteful color
 	      so people know we are alive. */
         if (init_fb || show_test) {
-                setgtt(0, FRAME_BUFFER_PAGES, physbase, 4096);
+                set_translation_table(0, FRAME_BUFFER_PAGES, physbase, 4096);
 		memset((void *)graphics, 0x55, FRAME_BUFFER_PAGES*4096);
         } else {
-                setgtt(0, FRAME_BUFFER_PAGES, physbase, 0);
+		set_translation_table(0, FRAME_BUFFER_PAGES, physbase, 0);
                 memset((void*)graphics, 0, 4096);
         }
 

@@ -1,8 +1,5 @@
 CBOOTIMAGE = cbootimage
 
-bootblock-c-ccopts += -marm
-bootblock-S-ccopts += -marm
-
 bootblock-y += bootblock.c
 bootblock-y += bootblock_asm.S
 bootblock-y += cbfs.c

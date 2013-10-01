@@ -1787,6 +1787,22 @@ void intel_dp_set_m_n_regs(struct intel_dp *dp)
         gtt_write(PIPE_LINK_N1(dp->transcoder),dp->m_n.link_n);
 }
 
+int intel_dp_bw_code_to_link_rate(u8 link_bw)
+{
+	switch (link_bw) {
+        default:
+		printk(BIOS_ERR,
+			"ERROR: link_bw(%d) is bogus; must be one of 6, 0xa, or 0x14\n",
+			link_bw);
+        case DP_LINK_BW_1_62:
+		return 162000;
+        case DP_LINK_BW_2_7:
+		return 270000;
+        case DP_LINK_BW_5_4:
+                return 540000;
+	}
+}
+
 void intel_dp_set_resolution(struct intel_dp *intel_dp)
 {
         gtt_write(HTOTAL(intel_dp->transcoder),intel_dp->htotal);

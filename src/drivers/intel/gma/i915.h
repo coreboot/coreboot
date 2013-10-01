@@ -242,6 +242,7 @@ enum transcoder intel_ddi_get_transcoder(enum port port,
 					 enum pipe pipe);
 
 void intel_dp_set_m_n_regs(struct intel_dp *intel_dp);
+int intel_dp_bw_code_to_link_rate(u8 link_bw);
 void intel_dp_set_resolution(struct intel_dp *intel_dp);
 
 int intel_dp_i2c_write(struct intel_dp *intel_dp,
@@ -278,3 +279,6 @@ u32 gtt_read(u32 reg);
 
 int i915lightup(unsigned int physbase, unsigned int mmio,
 		unsigned int gfx, unsigned int init_fb);
+
+/* display.c */
+void compute_display_params(struct intel_dp *dp);

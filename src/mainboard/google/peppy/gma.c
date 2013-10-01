@@ -91,8 +91,6 @@ static unsigned int *mmio;
 static unsigned int graphics;
 static unsigned int physbase;
 
-int intel_dp_bw_code_to_link_rate(u8 link_bw);
-
 static int i915_init_done = 0;
 
 /* fill the palette. */
@@ -103,106 +101,6 @@ static void palette(void)
 
 	for(i = 0; i < 256; i++, color += 0x010101){
 		gtt_write(_LGC_PALETTE_A + (i<<2),color);
-	}
-}
-
-/* assumption: the dpcd in the dp is valid. The raw edid has been read
- * and the translation has been done.
- */
-void dp_init_dim_regs(struct intel_dp *dp);
-void dp_init_dim_regs(struct intel_dp *dp)
-{
-	struct edid *edid = &(dp->edid);
-
-	/* step 1: get the constants in the dp struct set up. */
-	dp->lane_count = dp->dpcd[DP_MAX_LANE_COUNT]&DP_LANE_COUNT_MASK;
-
-	dp->link_bw = dp->dpcd[DP_MAX_LINK_RATE];
-	dp->clock = intel_dp_bw_code_to_link_rate(dp->link_bw);
-	dp->edid.link_clock = intel_dp_bw_code_to_link_rate(dp->link_bw);
-
-	/* step 2. Do some computation of other stuff. */
-	dp->bytes_per_pixel = dp->pipe_bits_per_pixel/8;
-
-	dp->stride = edid->bytes_per_line;
-
-	dp->htotal = (edid->ha - 1) | ((edid->ha + edid->hbl - 1) << 16);
-
-	dp->hblank = (edid->ha - 1) | ((edid->ha + edid->hbl - 1) << 16);
-
-	dp->hsync = (edid->ha + edid->hso - 1) |
-		((edid->ha + edid->hso + edid->hspw - 1) << 16);
-
-	dp->vtotal = (edid->va - 1) | ((edid->va + edid->vbl - 1) << 16);
-
-	dp->vblank = (edid->va - 1) | ((edid->va + edid->vbl - 1) << 16);
-
-	dp->vsync = (edid->va + edid->vso - 1) |
-		((edid->va + edid->vso + edid->vspw - 1) << 16);
-
-	/* PIPEASRC is wid-1 x ht-1 */
-	dp->pipesrc = (edid->ha-1)<<16 | (edid->va-1);
-
-	dp->pfa_pos = 0;
-
-	/* XXXXXXXXXXXXXX hard code */
-	dp->pfa_ctl = 0x80800000;
-
-	dp->pfa_sz = (edid->ha << 16) | (edid->va);
-
-	/* step 3. Call the linux code we pulled in. */
-	dp->flags = intel_ddi_calc_transcoder_flags(edid->panel_bits_per_pixel,
-						    dp->port,
-						    dp->pipe,
-						    dp->type,
-						    dp->lane_count,
-						    dp->pfa_sz,
-						    dp->edid.phsync == '+'?1:0,
-						    dp->edid.pvsync == '+'?1:0);
-
-	dp->transcoder = intel_ddi_get_transcoder(dp->port,
-						  dp->pipe);
-
-	intel_dp_compute_m_n(edid->panel_bits_per_pixel,
-			     dp->lane_count,
-			     dp->edid.pixel_clock,
-			     dp->edid.link_clock,
-			     &dp->m_n);
-
-	printk(BIOS_SPEW, "dp->lane_count  = 0x%08x\n",dp->lane_count);
-	printk(BIOS_SPEW, "dp->stride  = 0x%08x\n",dp->stride);
-	printk(BIOS_SPEW, "dp->htotal  = 0x%08x\n", dp->htotal);
-	printk(BIOS_SPEW, "dp->hblank  = 0x%08x\n", dp->hblank);
-	printk(BIOS_SPEW, "dp->hsync   = 0x%08x\n", dp->hsync);
-	printk(BIOS_SPEW, "dp->vtotal  = 0x%08x\n", dp->vtotal);
-	printk(BIOS_SPEW, "dp->vblank  = 0x%08x\n", dp->vblank);
-	printk(BIOS_SPEW, "dp->vsync   = 0x%08x\n", dp->vsync);
-	printk(BIOS_SPEW, "dp->pipesrc = 0x%08x\n", dp->pipesrc);
-	printk(BIOS_SPEW, "dp->pfa_pos = 0x%08x\n", dp->pfa_pos);
-	printk(BIOS_SPEW, "dp->pfa_ctl = 0x%08x\n", dp->pfa_ctl);
-	printk(BIOS_SPEW, "dp->pfa_sz  = 0x%08x\n", dp->pfa_sz);
-	printk(BIOS_SPEW, "dp->link_m  = 0x%08x\n", dp->m_n.link_m);
-	printk(BIOS_SPEW, "dp->link_n  = 0x%08x\n", dp->m_n.link_n);
-	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n",
-	       TU_SIZE(dp->m_n.tu) | dp->m_n.gmch_m);
-	printk(BIOS_SPEW, "0x6f030     = 0x%08x\n", dp->m_n.gmch_m);
-	printk(BIOS_SPEW, "0x6f034     = 0x%08x\n", dp->m_n.gmch_n);
-	printk(BIOS_SPEW, "dp->flags   = 0x%08x\n", dp->flags);
-}
-
-int intel_dp_bw_code_to_link_rate(u8 link_bw)
-{
-	switch (link_bw) {
-        default:
-		printk(BIOS_ERR,
-			"ERROR: link_bw(%d) is bogus; must be one of 6, 0xa, or 0x14\n",
-			link_bw);
-        case DP_LINK_BW_1_62:
-		return 162000;
-        case DP_LINK_BW_2_7:
-		return 270000;
-        case DP_LINK_BW_5_4:
-                return 540000;
 	}
 }
 
@@ -366,7 +264,7 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 
 	printk(BIOS_SPEW, "decode edid returns %d\n", edid_ok);
 
-	dp_init_dim_regs(dp);
+	compute_display_params(dp);
 
 	printk(BIOS_SPEW, "pixel_clock is %i, link_clock is %i\n",
 	       dp->edid.pixel_clock, dp->edid.link_clock);

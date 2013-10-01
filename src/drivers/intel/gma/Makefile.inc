@@ -17,6 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-ramstage-$(CONFIG_INTEL_DP) += intel_dp.c drm_dp_helper.c
+ramstage-$(CONFIG_INTEL_DP) += intel_dp.c drm_dp_helper.c display.c
 ramstage-$(CONFIG_INTEL_DDI) += intel_ddi.c
 ramstage-$(CONFIG_INTEL_EDID) += edid.c

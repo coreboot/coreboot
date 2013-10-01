@@ -214,21 +214,6 @@ void dp_init_dim_regs(struct intel_dp *dp)
 	printk(BIOS_SPEW, "dp->flags   = 0x%08x\n", dp->flags);
 }
 
-int intel_dp_bw_code_to_link_rate(u8 link_bw);
-
-int intel_dp_bw_code_to_link_rate(u8 link_bw)
-{
-	switch (link_bw) {
-        case DP_LINK_BW_1_62:
-        default:
-		return 162000;
-        case DP_LINK_BW_2_7:
-		return 270000;
-        case DP_LINK_BW_5_4:
-                return 540000;
-	}
-}
-
 void mainboard_train_link(struct intel_dp *intel_dp)
 {
 	u8 read_val;

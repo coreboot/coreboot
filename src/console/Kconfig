@@ -48,7 +48,7 @@ config UART_FOR_CONSOLE
 # program different LDN to actually change the physical port.
 config TTYS0_BASE
 	hex
-	depends on DRIVERS_UART_8250IO
+	depends on DRIVERS_UART
 	default 0x3f8 if UART_FOR_CONSOLE = 0
 	default 0x2f8 if UART_FOR_CONSOLE = 1
 	default 0x3e8 if UART_FOR_CONSOLE = 2

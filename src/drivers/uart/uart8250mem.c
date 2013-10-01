@@ -35,7 +35,7 @@
 
 static int uart8250_mem_can_tx_byte(unsigned base_port)
 {
-	return read8(base_port + UART_LSR) & UART_LSR_THRE;
+	return read8(base_port + UART8250_LSR) & UART8250_LSR_THRE;
 }
 
 static void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
@@ -43,19 +43,19 @@ static void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while(i-- && !uart8250_mem_can_tx_byte(base_port))
 		udelay(1);
-	write8(base_port + UART_TBR, data);
+	write8(base_port + UART8250_TBR, data);
 }
 
 static void uart8250_mem_tx_flush(unsigned base_port)
 {
 	unsigned long int i = FIFO_TIMEOUT;
-	while(i-- && !(read8(base_port + UART_LSR) & UART_LSR_TEMT))
+	while(i-- && !(read8(base_port + UART8250_LSR) & UART8250_LSR_TEMT))
 		udelay(1);
 }
 
 static int uart8250_mem_can_rx_byte(unsigned base_port)
 {
-	return read8(base_port + UART_LSR) & UART_LSR_DR;
+	return read8(base_port + UART8250_LSR) & UART8250_LSR_DR;
 }
 
 static unsigned char uart8250_mem_rx_byte(unsigned base_port)
@@ -64,7 +64,7 @@ static unsigned char uart8250_mem_rx_byte(unsigned base_port)
 	while(i-- && !uart8250_mem_can_rx_byte(base_port))
 		udelay(1);
 	if (i)
-		return read8(base_port + UART_RBR);
+		return read8(base_port + UART8250_RBR);
 	else
 		return 0x0;
 }
@@ -72,21 +72,21 @@ static unsigned char uart8250_mem_rx_byte(unsigned base_port)
 static void uart8250_mem_init(unsigned base_port, unsigned divisor)
 {
 	/* Disable interrupts */
-	write8(base_port + UART_IER, 0x0);
+	write8(base_port + UART8250_IER, 0x0);
 	/* Enable FIFOs */
-	write8(base_port + UART_FCR, UART_FCR_FIFO_EN);
+	write8(base_port + UART8250_FCR, UART8250_FCR_FIFO_EN);
 
 	/* Assert DTR and RTS so the other end is happy */
-	write8(base_port + UART_MCR, UART_MCR_DTR | UART_MCR_RTS);
+	write8(base_port + UART8250_MCR, UART8250_MCR_DTR | UART8250_MCR_RTS);
 
 	/* DLAB on */
-	write8(base_port + UART_LCR, UART_LCR_DLAB | CONFIG_TTYS0_LCS);
+	write8(base_port + UART8250_LCR, UART8250_LCR_DLAB | CONFIG_TTYS0_LCS);
 
-	write8(base_port + UART_DLL, divisor & 0xFF);
-	write8(base_port + UART_DLM, (divisor >> 8) & 0xFF);
+	write8(base_port + UART8250_DLL, divisor & 0xFF);
+	write8(base_port + UART8250_DLM, (divisor >> 8) & 0xFF);
 
 	/* Set to 3 for 8N1 */
-	write8(base_port + UART_LCR, CONFIG_TTYS0_LCS);
+	write8(base_port + UART8250_LCR, CONFIG_TTYS0_LCS);
 }
 
 void uart_init(int idx)

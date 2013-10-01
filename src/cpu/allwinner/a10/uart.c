@@ -22,19 +22,19 @@ static void a10_uart_configure(struct a10_uart *uart, u32 baud_rate, u8 data_bit
 	div = (u16) uart_baudrate_divisor(baud_rate,
 		uart_platform_refclk(), 16);
 	/* Enable access to Divisor Latch register */
-	write32(UART_LCR_DLAB, &uart->lcr);
+	write32(UART8250_LCR_DLAB, &uart->lcr);
 	/* Set baudrate */
 	write32((div >> 8) & 0xff, &uart->dlh);
 	write32(div & 0xff, &uart->dll);
 	/* Set line control */
-	reg32 = (data_bits - 5) & UART_LCR_WLS_MSK;
+	reg32 = (data_bits - 5) & UART8250_LCR_WLS_MSK;
 	switch (parity) {
 	case UART_PARITY_ODD:
-		reg32 |= UART_LCR_PEN;
+		reg32 |= UART8250_LCR_PEN;
 		break;
 	case UART_PARITY_EVEN:
-		reg32 |= UART_LCR_PEN;
-		reg32 |= UART_LCR_EPS;
+		reg32 |= UART8250_LCR_PEN;
+		reg32 |= UART8250_LCR_EPS;
 		break;
 	case UART_PARITY_NONE:	/* Fall through */
 	default:
@@ -45,7 +45,7 @@ static void a10_uart_configure(struct a10_uart *uart, u32 baud_rate, u8 data_bit
 
 static void a10_uart_enable_fifos(struct a10_uart *uart)
 {
-	write32(UART_FCR_FIFO_EN, &uart->fcr);
+	write32(UART8250_FCR_FIFO_EN, &uart->fcr);
 }
 
 static int tx_fifo_full(struct a10_uart *uart)
@@ -54,12 +54,12 @@ static int tx_fifo_full(struct a10_uart *uart)
 	 * that the TX register is empty, not that the FIFO is not full, but
 	 * this may be due to a datasheet typo. Keep the current name to signal
 	 * intent. */
-	return !(read32(&uart->lsr) & UART_LSR_THRE);
+	return !(read32(&uart->lsr) & UART8250_LSR_THRE);
 }
 
 static int rx_fifo_empty(struct a10_uart *uart)
 {
-	return !(read32(&uart->lsr) & UART_LSR_DR);
+	return !(read32(&uart->lsr) & UART8250_LSR_DR);
 }
 
 /**

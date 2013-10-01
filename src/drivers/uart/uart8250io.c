@@ -48,25 +48,25 @@
 
 static int uart8250_can_tx_byte(unsigned base_port)
 {
-	return inb(base_port + UART_LSR) & UART_LSR_THRE;
+	return inb(base_port + UART8250_LSR) & UART8250_LSR_THRE;
 }
 
 static void uart8250_tx_byte(unsigned base_port, unsigned char data)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_can_tx_byte(base_port));
-	outb(data, base_port + UART_TBR);
+	outb(data, base_port + UART8250_TBR);
 }
 
 static void uart8250_tx_flush(unsigned base_port)
 {
 	unsigned long int i = FIFO_TIMEOUT;
-	while (i-- && !(inb(base_port + UART_LSR) & UART_LSR_TEMT));
+	while (i-- && !(inb(base_port + UART8250_LSR) & UART8250_LSR_TEMT));
 }
 
 static int uart8250_can_rx_byte(unsigned base_port)
 {
-	return inb(base_port + UART_LSR) & UART_LSR_DR;
+	return inb(base_port + UART8250_LSR) & UART8250_LSR_DR;
 }
 
 static unsigned char uart8250_rx_byte(unsigned base_port)
@@ -75,7 +75,7 @@ static unsigned char uart8250_rx_byte(unsigned base_port)
 	while (i-- && !uart8250_can_rx_byte(base_port));
 
 	if (i)
-		return inb(base_port + UART_RBR);
+		return inb(base_port + UART8250_RBR);
 	else
 		return 0x0;
 }
@@ -84,22 +84,22 @@ static void uart8250_init(unsigned base_port, unsigned divisor)
 {
 	DISABLE_TRACE;
 	/* Disable interrupts */
-	outb(0x0, base_port + UART_IER);
+	outb(0x0, base_port + UART8250_IER);
 	/* Enable FIFOs */
-	outb(UART_FCR_FIFO_EN, base_port + UART_FCR);
+	outb(UART8250_FCR_FIFO_EN, base_port + UART8250_FCR);
 
 	/* assert DTR and RTS so the other end is happy */
-	outb(UART_MCR_DTR | UART_MCR_RTS, base_port + UART_MCR);
+	outb(UART8250_MCR_DTR | UART8250_MCR_RTS, base_port + UART8250_MCR);
 
 	/* DLAB on */
-	outb(UART_LCR_DLAB | CONFIG_TTYS0_LCS, base_port + UART_LCR);
+	outb(UART8250_LCR_DLAB | CONFIG_TTYS0_LCS, base_port + UART8250_LCR);
 
 	/* Set Baud Rate Divisor. 12 ==> 9600 Baud */
-	outb(divisor & 0xFF,   base_port + UART_DLL);
-	outb((divisor >> 8) & 0xFF,    base_port + UART_DLM);
+	outb(divisor & 0xFF,   base_port + UART8250_DLL);
+	outb((divisor >> 8) & 0xFF,    base_port + UART8250_DLM);
 
 	/* Set to 3 for 8N1 */
-	outb(CONFIG_TTYS0_LCS, base_port + UART_LCR);
+	outb(CONFIG_TTYS0_LCS, base_port + UART8250_LCR);
 	ENABLE_TRACE;
 }
 

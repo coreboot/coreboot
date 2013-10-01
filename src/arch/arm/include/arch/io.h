@@ -23,48 +23,9 @@
 #ifndef __ASM_ARM_IO_H
 #define __ASM_ARM_IO_H
 
-#include <types.h>
-#include <arch/cache.h>		/* for dmb() */
 #include <arch/byteorder.h>
-
-static inline uint8_t read8(const void *addr)
-{
-	dmb();
-	return *(volatile uint8_t *)addr;
-}
-
-static inline uint16_t read16(const void *addr)
-{
-	dmb();
-	return *(volatile uint16_t *)addr;
-}
-
-static inline uint32_t read32(const void *addr)
-{
-	dmb();
-	return *(volatile uint32_t *)addr;
-}
-
-static inline void write8(uint8_t val, void *addr)
-{
-	dmb();
-	*(volatile uint8_t *)addr = val;
-	dmb();
-}
-
-static inline void write16(uint16_t val, void *addr)
-{
-	dmb();
-	*(volatile uint16_t *)addr = val;
-	dmb();
-}
-
-static inline void write32(uint32_t val, void *addr)
-{
-	dmb();
-	*(volatile uint32_t *)addr = val;
-	dmb();
-}
+#include <arch/arch_io.h>
+#include <stdint.h>
 
 /*
  * FIXME: These are to avoid breaking existing ARM code. We should eventually

@@ -28,8 +28,8 @@
  */
 
 /**
- * @file armv7/timer.c
- * ARMv7 specific timer routines
+ * @file arm/timer.c
+ * ARM specific timer routines
  */
 
 #include <libpayload.h>

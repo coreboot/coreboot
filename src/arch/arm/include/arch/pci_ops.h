@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef ARCH_ARMV7_PCI_OPS_H
-#define ARCH_ARMV7_PCI_OPS_H
+#ifndef ARCH_ARM_PCI_OPS_H
+#define ARCH_ARM_PCI_OPS_H
 
 /* Empty stub until PCI includes are properly fixed. */
 

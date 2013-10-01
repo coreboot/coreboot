@@ -167,10 +167,10 @@ EOF
 }
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 armv7 aarch64"
+SUPPORTED_ARCHITECTURE="x86 arm aarch64"
 
-arch_config_armv7() {
-	TARCH="armv7"
+arch_config_arm() {
+	TARCH="arm"
 	TBFDARCH="littlearm"
 	TCLIST="armv7a armv7-a"
 	TWIDTH="32"

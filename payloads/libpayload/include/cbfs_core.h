@@ -106,7 +106,7 @@ struct cbfs_header {
  */
 #define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
 #define CBFS_ARCHITECTURE_X86      0x00000001
-#define CBFS_ARCHITECTURE_ARMV7    0x00000010
+#define CBFS_ARCHITECTURE_ARM      0x00000010
 
 /** This is a component header - every entry in the CBFS
     will have this header.

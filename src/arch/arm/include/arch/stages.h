@@ -22,7 +22,7 @@
 
 extern void main(void);
 
-void stage_entry(void) __attribute__((section(".text.stage_entry.armv7")));
+void stage_entry(void) __attribute__((section(".text.stage_entry.arm")));
 void stage_exit(void *);
 
 #endif

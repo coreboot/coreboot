@@ -67,10 +67,10 @@ choice
         prompt "Target Architecture"
         default ARCH_X86
 
-config ARCH_ARMV7
-        bool "ARMv7"
+config ARCH_ARM
+        bool "ARM"
         help
-          Support the x86 architecture
+          Support the ARM architecture
 
 config ARCH_X86
         bool "x86"

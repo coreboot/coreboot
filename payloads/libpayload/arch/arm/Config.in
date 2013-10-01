@@ -27,7 +27,7 @@
 ## SUCH DAMAGE.
 ##
 
-if ARCH_ARMV7
+if ARCH_ARM
 
 config ARCH_SPECIFIC_OPTIONS # dummy
 	def_bool y

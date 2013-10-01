@@ -16,7 +16,7 @@ ramstage-y	+= uart.c
 endif
 
 $(call add-class,omap-header)
-$(eval $(call create_class_compiler,omap-header,armv7))
+$(eval $(call create_class_compiler,omap-header,arm))
 
 real-target: $(obj)/MLO
 

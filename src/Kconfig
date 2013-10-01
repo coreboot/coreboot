@@ -210,12 +210,12 @@ config ARCH_X86
 	default n
 	select PCI
 
-config ARCH_ARMV7
+config ARCH_ARM
 	bool
 	default n
 
 source src/arch/x86/Kconfig
-source src/arch/armv7/Kconfig
+source src/arch/arm/Kconfig
 
 source src/vendorcode/Kconfig
 
@@ -273,7 +273,7 @@ config TPM
 	bool
 	default n
 	select LPC_TPM if ARCH_X86
-	select I2C_TPM if ARCH_ARMV7
+	select I2C_TPM if ARCH_ARM
 	help
 	  Enable this option to enable TPM support in coreboot.
 

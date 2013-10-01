@@ -1,15 +1,17 @@
-config ARCH_BOOTBLOCK_ARMV7
+config ARCH_BOOTBLOCK_ARM
 	bool
 	default n
-	select ARCH_ARMV7
+	select ARCH_ARM
 
-config ARCH_ROMSTAGE_ARMV7
+config ARCH_ROMSTAGE_ARM
 	bool
 	default n
 
-config ARCH_RAMSTAGE_ARMV7
+config ARCH_RAMSTAGE_ARM
 	bool
 	default n
+
+source src/arch/arm/armv7/Kconfig
 
 # If a custom bootblock is necessary, this option should be "select"-ed by
 # the thing that needs it, probably the CPU.

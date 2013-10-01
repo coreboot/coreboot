@@ -27,5 +27,5 @@
 ## SUCH DAMAGE.
 ##
 
-source "arch/armv7/Config.in"
+source "arch/arm/Config.in"
 source "arch/x86/Config.in"

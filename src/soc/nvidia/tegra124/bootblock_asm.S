@@ -1,5 +1,5 @@
 /*
- * Early initialization code for ARMv7 architecture.
+ * Early initialization code for ARM architecture.
  *
  * This file is based off of the OMAP3530/ARM Cortex start.S file from Das
  * U-Boot, which itself got the file from armboot.

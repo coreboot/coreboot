@@ -15,7 +15,7 @@ CONFIG_LP_CHROMEOS=y
 #
 # Architecture Options
 #
-# CONFIG_LP_ARCH_ARMV7 is not set
+# CONFIG_LP_ARCH_ARM is not set
 # CONFIG_LP_ARCH_POWERPC is not set
 CONFIG_LP_ARCH_X86=y
 # CONFIG_LP_MEMMAP_RAM_ONLY is not set

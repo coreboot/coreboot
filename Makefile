@@ -117,7 +117,7 @@ else
 include $(HAVE_DOTCONFIG)
 
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-# FIXME: armv7/aarch64 won't build right now
+# FIXME: arm/aarch64 won't build right now
 CFLAGS_x86_32 = -no-integrated-as -Qunused-arguments -target i386-elf -m32
 CC_x86_32:=clang
 
@@ -130,8 +130,8 @@ endif
 #CFLAGS_x86_32 += -mno-sse
 #endif
 
-CFLAGS_armv7 = -no-integrated-as -Qunused-arguments -target armv7-eabi -ccc-gcc-name $(CC_armv7)
-CC_armv7:=clang
+CFLAGS_arm = -no-integrated-as -Qunused-arguments -target arm-eabi -ccc-gcc-name $(CC_arm)
+CC_arm:=clang
 
 CFLAGS_aarch64 = -no-integrated-as -Qunused-arguments -target aarch64-eabi -ccc-gcc-name $(CC_aarch64)
 CC_aarch64:=clang

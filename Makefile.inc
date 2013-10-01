@@ -68,7 +68,7 @@ PHONY+= clean-abuild coreboot lint lint-stable build-dirs
 subdirs-y := src/lib src/console src/device src/ec src/southbridge src/soc
 subdirs-y += src/northbridge src/superio src/drivers src/cpu src/vendorcode
 subdirs-y += util/cbfstool util/sconfig util/nvramtool
-subdirs-y += src/arch/armv7 src/arch/x86
+subdirs-y += src/arch/arm src/arch/x86
 subdirs-y += src/mainboard/$(MAINBOARDDIR)
 
 subdirs-y += site-local
@@ -550,7 +550,7 @@ cbfs-files-$(CONFIG_BOOTSPLASH) += bootsplash.jpg
 bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
 bootsplash.jpg-type := bootsplash
 
-ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV7),y)
+ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM),y)
 ROMSTAGE_ELF := romstage.elf
 endif
 ifeq ($(CONFIG_ARCH_ROMSTAGE_X86_32),y)

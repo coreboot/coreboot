@@ -55,12 +55,9 @@ COREBOOT_STANDARD_STAGES := bootblock romstage ramstage
 
 ARCHDIR-i386    := x86
 ARCHDIR-x86_32  := x86
-ARCHDIR-armv7   := armv7
+ARCHDIR-arm     := arm
 
-CFLAGS_armv7 += \
-	-ffixed-r8\
-	-march=armv7-a\
-	-marm\
+CFLAGS_arm += \
 	-mno-unaligned-access\
 	-mthumb\
 	-mthumb-interwork

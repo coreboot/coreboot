@@ -5,7 +5,7 @@ config DRIVERS_UART
 
 config DRIVERS_UART_8250IO
 	bool "Serial port on SuperIO"
-	depends on !ARCH_ARMV7
+	depends on !ARCH_ARM
 	default n if NO_UART_ON_SUPERIO
 	default y if ARCH_X86
 

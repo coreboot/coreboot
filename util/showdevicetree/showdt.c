@@ -165,5 +165,5 @@ main()
  * Example: (yank this and paste into M-x compile in emacs)
  * or tail -2 showdt.c | head -1 |sh
  * or whatever.
-   cc -I ../src -I ../src/include -I ../src/arch/armv7/include/ -include build/mainboard/google/snow/static.c showdt.c
+   cc -I ../src -I ../src/include -I ../src/arch/arm/include/ -include build/mainboard/google/snow/static.c showdt.c
 */

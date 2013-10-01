@@ -34,6 +34,7 @@
 #include <stdint.h>
 
 #include <arch/cache.h>
+#include <arch/virtual.h>
 
 #define bitmask(high, low) ((1UL << (high)) + \
 			((1UL << (high)) - 1) - ((1UL << (low)) - 1))
@@ -213,15 +214,16 @@ static unsigned int line_bytes(void)
  * perform cache maintenance on a particular memory range rather than the
  * entire cache.
  */
-static void dcache_op_mva(void const *addr, size_t len, enum dcache_op op)
+static void dcache_op_mva(void const *vaddr, size_t len, enum dcache_op op)
 {
 	unsigned long line, linesize;
+	unsigned long paddr = virt_to_phys(vaddr);
 
 	linesize = line_bytes();
-	line = (uint32_t)addr & ~(linesize - 1);
+	line = paddr & ~(linesize - 1);
 
 	dsb();
-	while ((void *)line < addr + len) {
+	while (line < paddr + len) {
 		switch(op) {
 		case OP_DCCIMVAC:
 			dccimvac(line);
@@ -265,7 +267,6 @@ void dcache_mmu_disable(void)
 	write_sctlr(sctlr);
 }
 
-
 void dcache_mmu_enable(void)
 {
 	uint32_t sctlr;
@@ -276,7 +277,7 @@ void dcache_mmu_enable(void)
 	write_sctlr(sctlr);
 }
 
-void armv7_invalidate_caches(void)
+void arm_invalidate_caches(void)
 {
 	uint32_t clidr;
 	int level;

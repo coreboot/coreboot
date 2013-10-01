@@ -2,7 +2,7 @@ menu "Console"
 
 config BOOTBLOCK_CONSOLE
 	bool "Enable early (bootblock) console output."
-	depends on ARCH_ARMV7
+	depends on ARCH_ARM
 	default n
 	help
 	  Use console during the bootblock if supported

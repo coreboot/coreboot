@@ -114,7 +114,7 @@ Error in re-setting breakpoint 3: No source file named runbios.c.
 1: x/i $pc
 => 0x20234bc <call_bootblock+12>:       blx     0x20244b8 <main>
 (gdb)
-main (bist=0) at src/arch/armv7/bootblock_simple.c:37
+main (bist=0) at src/arch/arm/bootblock_simple.c:37
 37      {
 1: x/i $pc
 => 0x20244b8 <main>:    push    {r3, lr}

@@ -39,7 +39,7 @@ void main(void)
 	sctlr &= ~(SCTLR_M | SCTLR_C | SCTLR_Z | SCTLR_I);
 	write_sctlr(sctlr);
 
-	armv7_invalidate_caches();
+	arm_invalidate_caches();
 
 	/*
 	 * Re-enable icache and branch prediction. MMU and dcache will be

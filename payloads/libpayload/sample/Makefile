@@ -31,7 +31,7 @@
 include ../.xcompile
 include ../.config
 
-ARCH-$(CONFIG_ARCH_ARMV7)   := armv7
+ARCH-$(CONFIG_ARCH_ARMV)   := arm
 ARCH-$(CONFIG_ARCH_POWERPC) := powerpc
 ARCH-$(CONFIG_ARCH_X86)     := i386
 

@@ -261,7 +261,6 @@ static void calc_fixed_mtrrs(void)
 
 	desc = &fixed_mtrr_desc[0];
 	last_desc = &fixed_mtrr_desc[ARRAY_SIZE(fixed_mtrr_desc) - 1];
-	type_index = desc->range_index;
 
 	memranges_each_entry(r, phys_addr_space) {
 		begin = range_entry_base_mtrr_addr(r);

@@ -52,6 +52,11 @@ static void enable_smbus(void)
 	score_select_func(PCU_SMB_DATA_PAD, 1);
 }
 
+static void ABI_X86 send_to_console(unsigned char b)
+{
+	console_tx_byte(b);
+}
+
 void raminit(struct mrc_params *mp, int prev_sleep_state)
 {
 	int ret;
@@ -60,7 +65,7 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	/* Fill in default entries. */
 	mp->version = MRC_PARAMS_VER;
-	mp->console_out = &console_tx_byte;
+	mp->console_out = &send_to_console;
 	mp->prev_sleep_state = prev_sleep_state;
 
 	if (!mrc_cache_get_current(&cache)) {

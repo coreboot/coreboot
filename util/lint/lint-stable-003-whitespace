@@ -32,6 +32,7 @@ find src util -name .svn -type d -prune -o \
 	-name microcode-\*.h -prune -o \
 	-name \*.?_shipped -prune -o \
 	-name \*.[18] -prune -o \
+	-name \*~ -prune -o \
 	-name kconfig -type d -prune -o \
 	-name romcc -type d -prune -o \
 	-name crossgcc -type d -prune -o \

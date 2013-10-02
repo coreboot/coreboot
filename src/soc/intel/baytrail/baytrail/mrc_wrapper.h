@@ -32,6 +32,9 @@
 
 #define NUM_CHANNELS 2
 
+/* Provide generic x86 calling conventions. */
+#define ABI_X86 __attribute((regparm(0)))
+
 enum {
 	DRAM_INFO_SPD_SMBUS, /* Use the typical SPD smbus access. */
 	DRAM_INFO_SPD_MEM,   /* SPD info in memory. */
@@ -67,7 +70,7 @@ struct mrc_params {
 
 	struct mrc_mainboard_params mainboard;
 
-	void (*console_out)(unsigned char byte);
+	void ABI_X86 (*console_out)(unsigned char byte);
 
 	int prev_sleep_state;
 
@@ -83,6 +86,6 @@ struct mrc_params {
 } __attribute__((packed));
 
 /* Call into wrapper. */
-typedef int (*mrc_wrapper_entry_t)(struct mrc_params *);
+typedef int ABI_X86 (*mrc_wrapper_entry_t)(struct mrc_params *);
 
 #endif /* _MRC_WRAPPER_H_ */

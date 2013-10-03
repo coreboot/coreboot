@@ -29,6 +29,7 @@
 #define IBASE		0x50
 #define SBASE		0x54
 #define MPBASE		0x58
+#define PUBASE		0x5c
 #define UART_CONT	0x80
 #define RCBA		0xf0
 

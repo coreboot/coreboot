@@ -3,6 +3,9 @@ CBOOTIMAGE = cbootimage
 bootblock-y += cbfs.c
 bootblock-y += clock.c
 bootblock-y += monotonic_timer.c
+bootblock-y += ../tegra/gpio.c
+bootblock-y += ../tegra/pingroup.c
+bootblock-y += ../tegra/pinmux.c
 bootblock-y += timer.c
 
 romstage-y += cbfs.c

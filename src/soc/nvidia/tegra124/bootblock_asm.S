@@ -65,7 +65,7 @@ init_stack_loop:
 	cmp	r0, r1
 	bne	init_stack_loop
 
-/* Set stackpointer in internal RAM to call board_init_f */
+/* Set stackpointer in internal RAM to call bootblock main() */
 call_bootblock:
 	ldr	sp, .Stack /* Set up stack pointer */
 	ldr	r0,=0x00000000

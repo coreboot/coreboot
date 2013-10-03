@@ -28,6 +28,7 @@
 #define ILB_BASE_ADDRESS		0xfed08000
 #define SPI_BASE_ADDRESS		0xfed01000
 #define MPHY_BASE_ADDRESS		0xfef00000
+#define PUNIT_BASE_ADDRESS		0xfed05000
 #define RCBA_BASE_ADDRESS		0xfed1c000
 
 /* IO Port base */

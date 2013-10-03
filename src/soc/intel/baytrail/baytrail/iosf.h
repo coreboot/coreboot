@@ -45,7 +45,12 @@
 #define  IOSF_OPCODE(x) ((x) << 24)
 #define  IOSF_PORT(x) ((0xff & (x)) << 16)
 #define  IOSF_REG(x) ((0xff & (x)) << 8)
-#define  IOSF_BYTE_EN 0xf0
+#define  IOSF_BYTE_EN_0 0x10
+#define  IOSF_BYTE_EN_1 0x20
+#define  IOSF_BYTE_EN_2 0x40
+#define  IOSF_BYTE_EN_3 0x80
+#define  IOSF_BYTE_EN \
+	  (IOSF_BYTE_EN_0 | IOSF_BYTE_EN_1 | IOSF_BYTE_EN_2 | IOSF_BYTE_EN_3)
 #define MDR_REG 0xd4
 #define MCRX_REG 0xd8
 
@@ -123,5 +128,23 @@ void iosf_dunit_write(int reg, uint32_t val);
 # define DTR0_SPEED_1066	0x01
 # define DTR0_SPEED_1333	0x02
 # define DTR0_SPEED_1600	0x03
+
+/*
+ * PUNIT Registers
+ */
+#define SB_BIOS_CONFIG			0x06
+# define  SB_BIOS_CONFIG_ECC_EN			(1 << 31)
+# define  SB_BIOS_CONFIG_DUAL_CH_DIS		(1 << 30)
+# define  SB_BIOS_CONFIG_EFF_ECC		(1 << 29)
+# define  SB_BIOS_CONFIG_EFF_DUAL_CH_DIS	(1 << 28)
+# define  SB_BIOS_CONFIG_PERF_MODE		(1 << 17)
+# define  SB_BIOS_CONFIG_PDM_MODE		(1 << 16)
+# define  SB_BIOS_CONFIG_DDRIO_PWRGATE		(1 << 8)
+# define  SB_BIOS_CONFIG_GFX_TURBO_DIS		(1 << 7)
+# define  SB_BIOS_CONFIG_PCIE_PLLOFFOK		(1 << 1)
+# define  SB_BIOS_CONFIG_USB_CACHING_EN		(1 << 0)
+#define BIOS_RESET_CPL			0x05
+# define  BIOS_RESET_CPL_ALL_DONE		(1 << 1)
+# define  BIOS_RESET_CPL_RESET_DONE		(1 << 0)
 
 #endif /* _BAYTRAIL_IOSF_H_ */

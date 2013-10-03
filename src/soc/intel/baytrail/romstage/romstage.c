@@ -74,6 +74,8 @@ static void program_base_addresses(void)
 	pci_write_config32(lpc_dev, SBASE, reg);
 	reg = MPHY_BASE_ADDRESS | 2;
 	pci_write_config32(lpc_dev, MPBASE, reg);
+	reg = PUNIT_BASE_ADDRESS | 2;
+	pci_write_config32(lpc_dev, PUBASE, reg);
 	reg = RCBA_BASE_ADDRESS | 1;
 	pci_write_config32(lpc_dev, RCBA, reg);
 

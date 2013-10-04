@@ -1,6 +1,9 @@
 CBOOTIMAGE = cbootimage
 
 bootblock-y += cbfs.c
+bootblock-y += clock.c
+bootblock-y += monotonic_timer.c
+bootblock-y += timer.c
 
 romstage-y += cbfs.c
 romstage-y += monotonic_timer.c
@@ -9,6 +12,8 @@ romstage-y += timer.c
 ramstage-y += cbfs.c
 ramstage-y += monotonic_timer.c
 ramstage-y += timer.c
+
+INCLUDES += -Isrc/soc/nvidia/tegra124 -Isrc/soc/nvidia
 
 # We want to grab the bootblock right before it goes into the image and wrap
 # it inside a BCT, but ideally we would do that without making special, one

@@ -29,7 +29,6 @@
 #include <timestamp.h>
 #include <baytrail/gpio.h>
 #include <baytrail/iomap.h>
-#include <baytrail/iosf.h>
 #include <baytrail/lpc.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/romstage.h>
@@ -120,6 +119,8 @@ void romstage_common(struct romstage_params *params)
 	struct romstage_handoff *handoff;
 
 	program_base_addresses();
+
+	tco_disable();
 
 	byt_config_com1_and_enable();
 

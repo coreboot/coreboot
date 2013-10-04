@@ -126,6 +126,8 @@ void romstage_common(struct romstage_params *params)
 
 	console_init();
 
+	punit_init();
+
 	gfx_init();
 
 	mark_ts(params, timestamp_get());

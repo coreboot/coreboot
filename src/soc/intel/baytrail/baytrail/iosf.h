@@ -58,6 +58,8 @@ uint32_t iosf_bunit_read(int reg);
 void iosf_bunit_write(int reg, uint32_t val);
 uint32_t iosf_dunit_read(int reg);
 void iosf_dunit_write(int reg, uint32_t val);
+uint32_t iosf_punit_read(int reg);
+void iosf_punit_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */

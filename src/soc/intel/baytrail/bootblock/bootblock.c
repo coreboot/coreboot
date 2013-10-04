@@ -22,6 +22,7 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <baytrail/iosf.h>
+#include <cpu/intel/microcode/microcode.c>
 
 static void set_var_mtrr(int reg, uint32_t base, uint32_t size, int type)
 {
@@ -49,11 +50,9 @@ static void enable_rom_caching(void)
 	wrmsr(MTRRdefType_MSR, msr);
 }
 
-static void bootblock_cpu_init(void)
+static void setup_mmconfig(void)
 {
 	uint32_t reg;
-
-	enable_rom_caching();
 
 	/* Set up the MMCONF range. The register lives in the BUNIT. The
 	 * IO variant of the config access needs to be used initially to
@@ -67,4 +66,14 @@ static void bootblock_cpu_init(void)
 	reg = IOSF_OPCODE(IOSF_OP_WRITE_BUNIT) | IOSF_PORT(IOSF_PORT_BUNIT) |
 	      IOSF_REG(BUNIT_MMCONF_REG) | IOSF_BYTE_EN;
 	pci_io_write_config32(IOSF_PCI_DEV, MCR_REG, reg);
+}
+
+static void bootblock_cpu_init(void)
+{
+	/* Allow memory-mapped PCI config access. */
+	setup_mmconfig();
+
+	/* Load microcode before any caching. */
+	intel_update_microcode_from_cbfs();
+	enable_rom_caching();
 }

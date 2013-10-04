@@ -1,0 +1,28 @@
+if BOARD_GOOGLE_RAMBI
+
+config BOARD_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_X86
+	select SOC_INTEL_BAYTRAIL
+	select ENABLE_BUILTIN_COM1
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select MAINBOARD_HAS_CHROMEOS
+	select CHROMEOS
+	select MARK_GRAPHICS_MEM_WRCOMB
+
+config MAINBOARD_DIR
+	string
+	default google/rambi
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "RAMBI"
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0166.rom"
+
+endif # BOARD_INTEL_BAYLEYBAY

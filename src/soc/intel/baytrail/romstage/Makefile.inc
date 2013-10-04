@@ -3,3 +3,4 @@ romstage-y += romstage.c
 romstage-y += raminit.c
 romstage-$(CONFIG_ENABLE_BUILTIN_COM1) += uart.c
 romstage-y += gfx.c
+romstage-y += pmc.c

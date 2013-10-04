@@ -17,24 +17,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _BAYTRAIL_PMC_H_
-#define _BAYTRAIL_PMC_H_
+#include <stddef.h>
+#include <arch/io.h>
+#include <baytrail/iomap.h>
+#include <baytrail/iosf.h>
+#include <baytrail/pci_devs.h>
+#include <baytrail/pmc.h>
+#include <baytrail/romstage.h>
 
+void tco_disable(void)
+{
+	uint32_t reg;
 
-#define IOCOM1		0x3f8
+	reg = inl(ACPI_BASE_ADDRESS + TCO1_CNT);
+	reg |= TCO_TMR_HALT;
+	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
+}
 
-/* Memory mapped IO registers behind PMC_BASE_ADDRESS */
-#define GEN_PMCONF1	0x20
-#	define UART_EN		(1 << 24)
-
-/* IO Mapped registers behind ACPI_BASE_ADDRESS */
-#define TCO_RLD			0x60
-#define TCO_STS			0x64
-#	define SECOND_TO_STS	(1 << 17)
-#	define TCO_TIMEOUT	(1 << 3)
-#define TCO1_CNT		0x68
-#	define TCO_LOCK		(1 << 12)
-#	define TCO_TMR_HALT	(1 << 11)
-#define TCO_TMR			0x70
-
-#endif /* _BAYTRAIL_PMC_H_ */

@@ -27,9 +27,9 @@
 /* #define GPIO_DEBUG */
 
 /* Pad base, ex. PAD_CONF0[n]= PAD_BASE+16*n */
-#define GPSCORE_PAD_BASE		IO_BASE_ADDRESS + 0x0000
-#define GPNCORE_PAD_BASE		IO_BASE_ADDRESS + 0x1000
-#define GPSSUS_PAD_BASE			IO_BASE_ADDRESS + 0x2000
+#define GPSCORE_PAD_BASE		(IO_BASE_ADDRESS + 0x0000)
+#define GPNCORE_PAD_BASE		(IO_BASE_ADDRESS + 0x1000)
+#define GPSSUS_PAD_BASE			(IO_BASE_ADDRESS + 0x2000)
 
 /* Pad register offset */
 #define PAD_CONF0_REG			0x0
@@ -37,8 +37,8 @@
 #define PAD_VAL_REG			0x8
 
 /* Legacy IO register base */
-#define GPSCORE_LEGACY_BASE		GPIO_BASE_ADDRESS + 0x00
-#define GPSSUS_LEGACY_BASE		GPIO_BASE_ADDRESS + 0x80
+#define GPSCORE_LEGACY_BASE		(GPIO_BASE_ADDRESS + 0x00)
+#define GPSSUS_LEGACY_BASE		(GPIO_BASE_ADDRESS + 0x80)
 /* Some banks have no legacy GPIO interface */
 #define GP_LEGACY_BASE_NONE		0xFFFF
 
@@ -71,19 +71,45 @@
 #define GPIO_NEDGE_DISABLE	0
 #define GPIO_NEDGE_ENABLE	1
 
-/* PAD_CONF0 settings */
-#define PAD_IRQ_EN		(1 << 27)
-#define PAD_LEVEL_IRQ		(1 << 24)
+/* config0[29] - Disable second mask */
+#define PAD_MASK2_DISABLE	(1 << 29)
 
+/* config0[27] - Direct Irq En */
+#define PAD_IRQ_EN		(1 << 27)
+
+/* config0[24] - Gd Level */
+#define PAD_LEVEL_IRQ		(1 << 24)
+#define PAD_EDGE_IRQ		(0 << 24)
+
+/* config0[17] - Slow clkgate / glitch filter */
+#define PAD_SLOWGF_ENABLE	(1 << 17)
+
+/* config0[16] - Fast clkgate / glitch filter */
+#define PAD_FASTGF_ENABLE	(1 << 16)
+
+/* config0[15] - Hysteresis enable (inverted) */
+#define PAD_HYST_DISABLE	(1 << 15)
+#define PAD_HYST_ENABLE		(0 << 15)
+
+/* config0[14:13] - Hysteresis control */
+#define PAD_HYST_CTRL_DEFAULT	(2 << 13)
+
+/* config0[11] - Bypass Flop */
+#define PAD_FLOP_BYPASS		(1 << 11)
+#define PAD_FLOP_ENABLE		(0 << 11)
+
+/* config0[10:9] - Pull str */
 #define PAD_PU_2K		(0 << 9)
 #define PAD_PU_10K		(1 << 9)
 #define PAD_PU_20K		(2 << 9)
 #define PAD_PU_40K		(3 << 9)
 
+/* config0[8:7] - Pull assign */
 #define PAD_PU_DISABLE		(0 << 7)
 #define PAD_PU_UP		(1 << 7)
 #define PAD_PU_DOWN		(2 << 7)
 
+/* config0[2:0] - Func. pin mux */
 #define PAD_FUNC0		0x0
 #define PAD_FUNC1		0x1
 #define PAD_FUNC2		0x2
@@ -92,68 +118,101 @@
 #define PAD_FUNC5		0x5
 #define PAD_FUNC6		0x6
 
-/* PAD_VAL settings */
-#define PAD_INPUT_ENABLE	(1 << 2)
-#define PAD_OUTPUT_ENABLE	(1 << 1)
+/* pad config0 power-on values - We will not often want to change these */
+#define PAD_CONFIG0_DEFAULT	(PAD_MASK2_DISABLE     | PAD_SLOWGF_ENABLE | \
+				 PAD_FASTGF_ENABLE     | PAD_HYST_DISABLE | \
+				 PAD_HYST_CTRL_DEFAULT | PAD_FLOP_BYPASS)
 
-/* End marker */
-#define GPIO_LIST_END		0xffffffff
+/* pad config1 reg power-on values - Shouldn't need to change this */
+#define PAD_CONFIG1_DEFAULT	0x8000
+
+/* pad_val[2] - Iinenb - active low */
+#define PAD_VAL_INPUT_DISABLE	(1 << 2)
+#define PAD_VAL_INPUT_ENABLE	(0 << 2)
+
+/* pad_val[1] - Ioutenb - active low */
+#define PAD_VAL_OUTPUT_DISABLE	(1 << 1)
+#define PAD_VAL_OUTPUT_ENABLE	(0 << 1)
+
+/* pad_val reg power-on default varies by pad, and apparently can cause issues
+ * if not set correctly, even if the pin isn't configured as GPIO. */
+#define PAD_VAL_DEFAULT		(PAD_VAL_INPUT_ENABLE | PAD_VAL_OUTPUT_DISABLE)
 
 #define GPIO_INPUT_PU_10K \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PU_UP, \
-	  .pad_val   = PAD_INPUT_ENABLE, \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PU_UP | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT }
 
 #define GPIO_OUT_LOW \
-	{ .pad_conf0 = PAD_PU_DISABLE, \
-	  .pad_val   = PAD_OUTPUT_ENABLE, \
+	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_OUTPUT_ENABLE, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_LOW }
 
 #define GPIO_OUT_HIGH \
-	{ .pad_conf0 = PAD_PU_DISABLE, \
-	  .pad_val   = PAD_OUTPUT_ENABLE, \
+	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_OUTPUT_ENABLE, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_HIGH }
 
 #define GPIO_FUNC0 \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC0 }
+	  .pad_conf0 = PAD_FUNC0 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_DEFAULT }
 
 #define GPIO_FUNC1 \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC1 }
+	  .pad_conf0 = PAD_FUNC1 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_DEFAULT }
 
 #define GPIO_FUNC2 \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC2 }
+	  .pad_conf0 = PAD_FUNC2 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_DEFAULT }
 
 #define GPIO_FUNC3 \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC3 }
+	  .pad_conf0 = PAD_FUNC3 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_DEFAULT }
 
 #define GPIO_FUNC4 \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC4 }
+	  .pad_conf0 = PAD_FUNC4 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_DEFAULT }
 
 #define GPIO_FUNC5 \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC5 }
+	  .pad_conf0 = PAD_FUNC5 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_DEFAULT }
 
 #define GPIO_FUNC6 \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC6 }
+	  .pad_conf0 = PAD_FUNC6 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_DEFAULT }
+
+/* End marker */
+#define GPIO_LIST_END		0xffffffff
 
 #define GPIO_END \
 	{  .pad_conf0 = GPIO_LIST_END }
 
 /* Common default GPIO settings */
-#define GPIO_INPUT GPIO_INPUT_PU_10K
-#define GPIO_UNUSED GPIO_INPUT_PU_10K
-#define GPIO_DEFAULT GPIO_FUNC0
+#define GPIO_INPUT 	GPIO_INPUT_PU_10K
+#define GPIO_UNUSED 	GPIO_INPUT_PU_10K
+#define GPIO_DEFAULT 	GPIO_FUNC0
 
 struct soc_gpio_map {
 	u32 pad_conf0;

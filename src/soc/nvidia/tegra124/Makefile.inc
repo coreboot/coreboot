@@ -13,7 +13,7 @@ ramstage-y += cbfs.c
 ramstage-y += monotonic_timer.c
 ramstage-y += timer.c
 
-INCLUDES += -Isrc/soc/nvidia/tegra124 -Isrc/soc/nvidia
+CPPFLAGS_common += -Isrc/soc/nvidia/tegra124/include/
 
 # We want to grab the bootblock right before it goes into the image and wrap
 # it inside a BCT, but ideally we would do that without making special, one

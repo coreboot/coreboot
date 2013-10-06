@@ -16,11 +16,12 @@
 
 #include <delay.h>
 #include <arch/io.h>
-#include <soc.h>
-#include <clk_rst.h>
-#include <clock.h>
+#include <soc/addressmap.h>
 
-static struct clk_rst_ctlr *clk_rst = (void *)NV_PA_CLK_RST_BASE;
+#include "clk_rst.h"
+#include "clock.h"
+
+static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 /*
  * On poweron, AVP clock source (also called system clock) is set to PLLP_out0
  * with frequency set at 1MHz. Before initializing PLLP, we need to move the

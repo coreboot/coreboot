@@ -31,10 +31,10 @@
 	(CONFIG_DCACHE_RAM_SIZE + CONFIG_DCACHE_RAM_MRC_VAR_SIZE)
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
-/* Enough room to cache CAR_TILE_SIZE starting at MRC_BIN_ADDRESS */
-#define CACHE_MRC_BASE    (CONFIG_MRC_BIN_ADDRESS)
-#define CACHE_MRC_MASK    (~(CONFIG_CAR_TILE_SIZE - 1))
-
+/* Cache all of CBFS just below 4GiB as Write-Protect type. */
+#define CODE_CACHE_SIZE  (CONFIG_CBFS_SIZE)
+#define CODE_CACHE_BASE  (-CODE_CACHE_SIZE)
+#define CODE_CACHE_MASK  (~(CODE_CACHE_SIZE - 1))
 #define CPU_PHYSMASK_HI  ((1 << (CONFIG_CPU_ADDR_BITS - 32)) - 1)
 
 #define NoEvictMod_MSR 0x2e0
@@ -109,14 +109,14 @@ wait_for_sipi:
 	wrmsr
 
 	post_code(0x25)
-	/* Set Cache-as-RAM base address. */
+	/* Set code caching up for romstage. */
 	movl	$(MTRRphysBase_MSR(1)), %ecx
-	movl	$(CACHE_MRC_BASE | MTRR_TYPE_WRPROT), %eax
+	movl	$(CODE_CACHE_BASE | MTRR_TYPE_WRPROT), %eax
 	xorl	%edx, %edx
 	wrmsr
 
 	movl	$(MTRRphysMask_MSR(1)), %ecx
-	movl	$(CACHE_MRC_MASK | MTRRphysMaskValid), %eax
+	movl	$(CODE_CACHE_MASK | MTRRphysMaskValid), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 

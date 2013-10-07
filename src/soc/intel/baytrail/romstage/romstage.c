@@ -126,6 +126,8 @@ void romstage_common(struct romstage_params *params)
 
 	console_init();
 
+	set_max_freq();
+
 	punit_init();
 
 	gfx_init();

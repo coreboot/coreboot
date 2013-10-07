@@ -213,6 +213,7 @@ int smbus_read_byte(unsigned device, unsigned address);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
 int early_pch_init(const void *gpio_map,
                    const struct rcba_config_instruction *rcba_config);
+void pch_enable_lpc(void);
 #endif /* !__PRE_RAM__ && !__SMM__ */
 #endif /* __ASSEMBLER__ */
 

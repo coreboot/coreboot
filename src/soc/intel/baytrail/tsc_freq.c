@@ -21,6 +21,12 @@
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
 #include <baytrail/msr.h>
+#if !defined(__PRE_RAM__)
+#include <baytrail/ramstage.h>
+#else
+#include <baytrail/romstage.h>
+#endif
+
 
 #define BCLK 100 /* 100 MHz */
 unsigned long tsc_freq_mhz(void)
@@ -29,4 +35,27 @@ unsigned long tsc_freq_mhz(void)
 
 	platform_info = rdmsr(MSR_PLATFORM_INFO);
 	return BCLK * ((platform_info.lo >> 8) & 0xff);
+}
+
+void set_max_freq(void)
+{
+	msr_t perf_ctl;
+	msr_t msr;
+
+	/* Enable speed step. */
+	msr = rdmsr(MSR_IA32_MISC_ENABLES);
+	msr.lo |= (1 << 16);
+	wrmsr(MSR_IA32_MISC_ENABLES, msr);
+
+	/* Set guranteed ratio [21:16] from IACORE_RATIOS to bits [15:8] of
+	* the PERF_CTL. */
+	msr = rdmsr(MSR_IACORE_RATIOS);
+	perf_ctl.lo = (msr.lo & 0x3f0000) >> 8;
+	/* Set guranteed vid [21:16] from IACORE_VIDS to bits [7:0] of
+	* the PERF_CTL. */
+	msr = rdmsr(MSR_IACORE_VIDS);
+	perf_ctl.lo |= (msr.lo & 0x7f0000) >> 16;
+	perf_ctl.hi = 0;
+
+	wrmsr(MSR_IA32_PERF_CTL, perf_ctl);
 }

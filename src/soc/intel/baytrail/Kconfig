@@ -95,15 +95,6 @@ endif # CACHE_MRC_SETTINGS
 
 endif # HAVE_MRC
 
-config CAR_TILE_SIZE
-	hex
-	default 0x8000
-	help
-	 The tile size is the limit that can be assigned to cache-as-ram
-	 region as well as the amount of code cache used during cache-as-ram.
-	 Also note that (DCACHE_RAM_BASE ^ MRC_BIN_ADDRESS) & CAR_TILE_SIZE ==
-	 CAR_TILE_SIZE.
-
 # Cache As RAM region layout:
 #
 # +-------------+ DCACHE_RAM_BASE + DCACHE_RAM_SIZE + DCACHE_RAM_MRC_VAR_SIZE
@@ -126,11 +117,11 @@ config CAR_TILE_SIZE
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xff7f8000
+	default 0xff800000
 
 config DCACHE_RAM_SIZE
 	hex
-	default 0x1000
+	default 0x8000
 	help
 	  The size of the cache-as-ram region required during bootblock
 	  and/or romstage. Note DCACHE_RAM_SIZE and DCACHE_RAM_MRC_VAR_SIZE
@@ -138,7 +129,7 @@ config DCACHE_RAM_SIZE
 
 config DCACHE_RAM_MRC_VAR_SIZE
 	hex
-	default 0x7000
+	default 0x8000
 	help
 	  The amount of cache-as-ram region required by the reference code.
 

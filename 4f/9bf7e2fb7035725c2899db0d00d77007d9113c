@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Ronald G. Minnich <rminnich@gmail.com>
+Code-Review+2: Bruce Griffith <Bruce.Griffith@se-eng.com>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Submitted-by: Kyösti Mälkki <kyosti.malkki@gmail.com>
+Submitted-at: Mon, 07 Oct 2013 19:09:34 +0200
+Reviewed-on: http://review.coreboot.org/3954
+Project: coreboot
+Branch: refs/heads/master

@@ -107,17 +107,6 @@ void * asmlinkage romstage_main(unsigned long bist,
 	/* Save romstage begin */
 	mark_ts(&rp, timestamp_get());
 
-	/* Call into mainboard. */
-	mainboard_romstage_entry(&rp);
-
-	return setup_stack_and_mttrs();
-}
-
-/* Entry from the mainboard. */
-void romstage_common(struct romstage_params *params)
-{
-	struct romstage_handoff *handoff;
-
 	program_base_addresses();
 
 	tco_disable();
@@ -131,6 +120,17 @@ void romstage_common(struct romstage_params *params)
 	punit_init();
 
 	gfx_init();
+
+	/* Call into mainboard. */
+	mainboard_romstage_entry(&rp);
+
+	return setup_stack_and_mttrs();
+}
+
+/* Entry from the mainboard. */
+void romstage_common(struct romstage_params *params)
+{
+	struct romstage_handoff *handoff;
 
 	mark_ts(params, timestamp_get());
 

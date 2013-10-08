@@ -134,6 +134,10 @@
 #define PAD_VAL_OUTPUT_DISABLE	(1 << 1)
 #define PAD_VAL_OUTPUT_ENABLE	(0 << 1)
 
+/* pad_val[0] - Value */
+#define PAD_VAL_HIGH		(1 << 0)
+#define PAD_VAL_LOW		(0 << 0)
+
 /* pad_val reg power-on default varies by pad, and apparently can cause issues
  * if not set correctly, even if the pin isn't configured as GPIO. */
 #define PAD_VAL_DEFAULT		(PAD_VAL_INPUT_ENABLE | PAD_VAL_OUTPUT_DISABLE)
@@ -247,6 +251,8 @@ struct soc_gpio_config* mainboard_get_gpios(void);
 
 /* Functions / defines for changing GPIOs in romstage */
 /* SCORE Pad definitions. */
+#define UART_RXD_PAD			82
+#define UART_TXD_PAD			83
 #define PCU_SMB_CLK_PAD			88
 #define PCU_SMB_DATA_PAD		90
 
@@ -280,6 +286,21 @@ static inline void ssus_select_func(int pad, int func)
 	reg &= ~0x7;
 	reg |= func & 0x7;
 	write32(pconf0_addr, reg);
+}
+
+/* These functions require that the input pad be configured as an input GPIO */
+static inline int score_get_gpio(int pad)
+{
+	uint32_t val_addr = score_pconf0(pad) + PAD_VAL_REG;
+
+	return read32(val_addr) & PAD_VAL_HIGH;
+}
+
+static inline int ssus_get_gpio(int pad)
+{
+	uint32_t val_addr = ssus_pconf0(pad) + PAD_VAL_REG;
+
+	return read32(val_addr) & PAD_VAL_HIGH;
 }
 
 #endif /* _BAYTRAIL_GPIO_H_ */

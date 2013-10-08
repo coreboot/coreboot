@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+subdirs-y += spd
+
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += gpio.c

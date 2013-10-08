@@ -32,8 +32,7 @@ void byt_config_com1_and_enable(void)
 	reg = 1;
 	pci_write_config32(PCI_DEV(0, LPC_DEV, 0), UART_CONT, reg);
 
-	/* Set up the pads to select the UART function. RXD and TXD are
-	 * 0x520 and 0x530, respectively. */
-	write32(IO_BASE_ADDRESS + 0x520, read32(IO_BASE_ADDRESS + 0x520) | 1);
-	write32(IO_BASE_ADDRESS + 0x530, read32(IO_BASE_ADDRESS + 0x530) | 1);
+	/* Set up the pads to select the UART function */
+	score_select_func(UART_RXD_PAD, 1);
+	score_select_func(UART_TXD_PAD, 1);
 }

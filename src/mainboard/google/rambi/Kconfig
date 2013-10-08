@@ -25,4 +25,8 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0166.rom"
 
+config SPD_CBFS_ADDRESS
+	hex "Location of SPD in CBFS"
+	default 0xfffec000
+
 endif # BOARD_INTEL_BAYLEYBAY

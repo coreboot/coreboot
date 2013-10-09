@@ -147,8 +147,8 @@ static void enable_exynos5250_dev(device_t dev)
 	dev->ops = &cpu_ops;
 }
 
-struct chip_operations cpu_samsung_exynos5250_ops = {
-	CHIP_NAME("CPU Samsung Exynos 5250")
+struct chip_operations soc_samsung_exynos5250_ops = {
+	CHIP_NAME("SOC Samsung Exynos 5250")
 	.enable_dev = enable_exynos5250_dev,
 };
 

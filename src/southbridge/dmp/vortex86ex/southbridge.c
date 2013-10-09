@@ -23,6 +23,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
+#include <pc80/keyboard.h>
 #include <string.h>
 #include "arch/io.h"
 #include "chip.h"
@@ -137,6 +138,10 @@ static void upload_dmp_keyboard_firmware(struct device *dev)
 
 	// disable firmware uploading.
 	pci_write_config32(dev, SB_REG_IPFCR, reg_sb_c0 & ~0x400L);
+}
+
+static void wait_dmp_keyboard_firmware_ready(void)
+{
 	// wait keyboard controller ready by checking status port bit 2.
 	post_code(POST_KBD_CHK_READY);
 	while ((inb(0x64) & 0x4) == 0) {
@@ -570,6 +575,8 @@ static void southbridge_init(struct device *dev)
 
 	fix_cmos_rtc_time();
 	rtc_init(0);
+	wait_dmp_keyboard_firmware_ready();
+	pc_keyboard_init(0);
 }
 
 static struct device_operations vortex_sb_ops = {

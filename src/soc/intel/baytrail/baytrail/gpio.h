@@ -142,25 +142,47 @@
  * if not set correctly, even if the pin isn't configured as GPIO. */
 #define PAD_VAL_DEFAULT		(PAD_VAL_INPUT_ENABLE | PAD_VAL_OUTPUT_DISABLE)
 
+/* Configure GPIOs as legacy by default. GPNCORE doesn't support
+ * legacy config -- so also configure the pad regs as GPIO. We rely upon
+ * the fact that all GPNCORE pads are function 0 GPIO. */
 #define GPIO_INPUT_PU_10K \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PU_UP | PAD_CONFIG0_DEFAULT, \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PU_UP | PAD_CONFIG0_DEFAULT \
+		     | PAD_FUNC0, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_INPUT }
+
+#define GPIO_INPUT_PD_10K \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PU_DOWN | PAD_CONFIG0_DEFAULT \
+		     | PAD_FUNC0, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_INPUT }
+
+#define GPIO_INPUT_NOPU \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT \
+		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT }
 
 #define GPIO_OUT_LOW \
-	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT, \
+	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT \
+		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_OUTPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_OUTPUT_ENABLE | PAD_VAL_LOW, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_LOW }
 
 #define GPIO_OUT_HIGH \
-	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT, \
+	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT \
+		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_OUTPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_OUTPUT_ENABLE | PAD_VAL_HIGH, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_HIGH }
@@ -214,8 +236,10 @@
 	{  .pad_conf0 = GPIO_LIST_END }
 
 /* Common default GPIO settings */
-#define GPIO_INPUT 	GPIO_INPUT_PU_10K
-#define GPIO_UNUSED 	GPIO_INPUT_PU_10K
+#define GPIO_INPUT 	GPIO_INPUT_NOPU
+#define GPIO_INPUT_PU	GPIO_INPUT_PU_10K
+#define GPIO_INPUT_PD 	GPIO_INPUT_PD_10K
+#define GPIO_NC		GPIO_INPUT_PU_10K
 #define GPIO_DEFAULT 	GPIO_FUNC0
 
 struct soc_gpio_map {

@@ -23,53 +23,57 @@
 
 /* GPIO-to-Pad LUTs */
 static const u8 gpncore_gpio_to_pad[GPNCORE_COUNT] =
-        { 25, 24, 23, 32, 33, 34, 36, 37, 35, 22,
-          20, 21, 18, 38, 39,  1,  4,  8, 17,  0,
-           3,  6, 16, 19,  2,  5,  9 };
+	{ 25, 24, 23, 32, 33, 34, 36, 37,	/* [ 0: 7] */
+	  35, 22, 20, 21, 18, 38, 39,  1,	/* [ 8:15] */
+	   4,  8, 17,  0,  3,  6, 16, 19,	/* [16:23] */
+	   2,  5,  9 };				/* [24:26] */
 
 static const u8 gpscore_gpio_to_pad[GPSCORE_COUNT] =
-        { 85,  89, 93, 96,  99, 102,  98, 101, 34,  37,
-          36,  38, 39, 35,  40,  84,  62,  61, 64,  59,
-          54,  56, 60, 55,  63,  57,  51,  50, 53,  47,
-          52,  49, 48, 43,  46,  41,  45,  42, 58,  44,
-          95, 105, 70, 68,  67,  66,  69,  71, 65,  72,
-          86,  90, 88, 92, 103,  77,  79,  83, 78,  81,
-          80,  82, 13, 12,  15,  14,  17,  18, 19,  16,
-           2,   1,  0,  4,   6,   7,   9,   8, 33,  32,
-          31,  30, 29, 27,  25,  28,  26,  23, 21,  20,
-          24,  22,  5,  3,  10,  11, 106,  87, 91, 104,
-          97, 100 };
+	{  85,  89, 93,  96, 99, 102,  98, 101,	/* [ 0:  7] */
+	   34,  37, 36,  38, 39,  35,  40,  84,	/* [ 8: 15] */
+	   62,  61, 64,  59, 54,  56,  60,  55,	/* [16: 23] */
+	   63,  57, 51,  50, 53,  47,  52,  49,	/* [24: 31] */
+	   48,  43, 46,  41, 45,  42,  58,  44,	/* [32: 39] */
+	   95, 105, 70,  68, 67,  66,  69,  71,	/* [40: 47] */
+	   65,  72, 86,  90, 88,  92, 103,  77,	/* [48: 55] */
+	   79,  83, 78,  81, 80,  82,  13,  12,	/* [56: 63] */
+	   15,  14, 17,  18, 19,  16,   2,   1,	/* [64: 71] */
+	    0,   4,  6,   7,  9,   8,  33,  32,	/* [72: 79] */
+	   31,  30, 29,  27, 25,  28,  26,  23,	/* [80: 87] */
+	   21,  20, 24,  22,  5,   3,  10,  11,	/* [88: 95] */
+	  106,  87, 91, 104, 97, 100 };		/* [96:101] */
 
 static const u8 gpssus_gpio_to_pad[GPSSUS_COUNT] =
-        { 29, 33, 30, 31, 32, 34, 36, 35, 38, 37,
-          18,  7, 11, 20, 17,  1,  8, 10, 19, 12,
-           0,  2, 23, 39, 28, 27, 22, 21, 24, 25,
-          26, 51, 56, 54, 49, 55, 48, 57, 50, 58,
-          52, 53, 59, 40 };
+	{ 29, 33, 30, 31, 32, 34, 36, 35,	/* [ 0: 7] */
+	  38, 37, 18,  7, 11, 20, 17,  1,	/* [ 8:15] */
+	   8, 10, 19, 12,  0,  2, 23, 39,	/* [16:23] */
+	  28, 27, 22, 21, 24, 25, 26, 51,	/* [24:31] */
+	  56, 54, 49, 55, 48, 57, 50, 58,	/* [32:39] */
+	  52, 53, 59, 40 };			/* [40:43] */
 
 /* GPIO bank descriptions */
 static const struct gpio_bank gpncore_bank = {
-        .gpio_count = GPNCORE_COUNT,
-        .gpio_to_pad = gpncore_gpio_to_pad,
-        .legacy_base = GP_LEGACY_BASE_NONE,
-        .pad_base = GPNCORE_PAD_BASE,
-        .has_wake_en = 0,
+	.gpio_count = GPNCORE_COUNT,
+	.gpio_to_pad = gpncore_gpio_to_pad,
+	.legacy_base = GP_LEGACY_BASE_NONE,
+	.pad_base = GPNCORE_PAD_BASE,
+	.has_wake_en = 0,
 };
 
 static const struct gpio_bank gpscore_bank = {
-        .gpio_count = GPSCORE_COUNT,
-        .gpio_to_pad = gpscore_gpio_to_pad,
-        .legacy_base = GPSCORE_LEGACY_BASE,
-        .pad_base = GPSCORE_PAD_BASE,
-        .has_wake_en = 0,
+	.gpio_count = GPSCORE_COUNT,
+	.gpio_to_pad = gpscore_gpio_to_pad,
+	.legacy_base = GPSCORE_LEGACY_BASE,
+	.pad_base = GPSCORE_PAD_BASE,
+	.has_wake_en = 0,
 };
 
 static const struct gpio_bank gpssus_bank = {
-        .gpio_count = GPSSUS_COUNT,
-        .gpio_to_pad = gpssus_gpio_to_pad,
-        .legacy_base = GPSSUS_LEGACY_BASE,
-        .pad_base = GPSSUS_PAD_BASE,
-        .has_wake_en = 1,
+	.gpio_count = GPSSUS_COUNT,
+	.gpio_to_pad = gpssus_gpio_to_pad,
+	.legacy_base = GPSSUS_LEGACY_BASE,
+	.pad_base = GPSSUS_PAD_BASE,
+	.has_wake_en = 1,
 };
 
 static void setup_gpios(const struct soc_gpio_map *gpios,

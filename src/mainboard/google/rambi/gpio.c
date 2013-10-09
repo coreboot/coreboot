@@ -20,6 +20,38 @@
 #include <stdlib.h>
 #include <baytrail/gpio.h>
 
+/* NCORE GPIOs */
+static const struct soc_gpio_map gpncore_gpio_map[] = {
+	GPIO_DEFAULT,	/* GPIO 0 */
+	GPIO_DEFAULT,	/* GPIO 1 */
+	GPIO_DEFAULT,	/* GPIO 2 */
+	GPIO_DEFAULT,	/* GPIO 3 */
+	GPIO_DEFAULT,	/* GPIO 4 */
+	GPIO_DEFAULT,	/* GPIO 5 */
+	GPIO_DEFAULT,	/* GPIO 6 */
+	GPIO_DEFAULT,	/* GPIO 7 */
+	GPIO_DEFAULT,	/* GPIO 8 */
+	GPIO_DEFAULT,	/* GPIO 9 */
+	GPIO_DEFAULT,	/* GPIO 10 */
+	GPIO_DEFAULT,	/* GPIO 11 */
+	GPIO_DEFAULT,	/* GPIO 12 */
+	GPIO_DEFAULT,	/* GPIO 13 */
+	GPIO_DEFAULT,	/* GPIO 14 */
+	GPIO_DEFAULT,	/* GPIO 15 */
+	GPIO_DEFAULT,	/* GPIO 16 */
+	GPIO_DEFAULT,	/* GPIO 17 */
+	GPIO_DEFAULT,	/* GPIO 18 */
+	GPIO_DEFAULT,	/* GPIO 19 */
+	GPIO_DEFAULT,	/* GPIO 20 */
+	GPIO_DEFAULT,	/* GPIO 21 */
+	GPIO_DEFAULT,	/* GPIO 22 */
+	GPIO_DEFAULT,	/* GPIO 23 */
+	GPIO_DEFAULT,	/* GPIO 24 */
+	GPIO_DEFAULT,	/* GPIO 25 */
+	GPIO_DEFAULT,	/* GPIO 26 */
+	GPIO_END
+};
+
 /* SCORE GPIOs */
 static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_DEFAULT,	/* GPIO 0 */
@@ -177,7 +209,7 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 };
 
 static struct soc_gpio_config gpio_config = {
-	.ncore = NULL,
+	.ncore = gpncore_gpio_map,
 	.score = gpscore_gpio_map,
 	.ssus  = gpssus_gpio_map
 };

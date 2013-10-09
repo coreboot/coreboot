@@ -23,6 +23,7 @@
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
 #include <pc80/mc146818rtc.h>
+#include <pc80/keyboard.h>
 #include <string.h>
 #include "arch/io.h"
 #include "chip.h"
@@ -570,6 +571,7 @@ static void southbridge_init(struct device *dev)
 
 	fix_cmos_rtc_time();
 	rtc_init(0);
+	pc_keyboard_init(0);
 }
 
 static struct device_operations vortex_sb_ops = {

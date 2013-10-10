@@ -20,6 +20,7 @@
 #include <arch/cpu.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/x86/cr.h>
 #include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci_def.h>
@@ -108,6 +109,9 @@ void baytrail_init_pre_device(void)
 	struct soc_gpio_config *config;
 
 	fill_in_pattrs();
+
+	/* Allow for SSE instructions to be executed. */
+	write_cr4(read_cr4() | CR4_OSFXSR | CR4_OSXMMEXCPT);
 
 	/* Get GPIO initial states from mainboard */
 	config = mainboard_get_gpios();

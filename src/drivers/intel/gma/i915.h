@@ -180,14 +180,10 @@ struct intel_dp {
 /* we may yet need these. */
 void intel_dp_mode_set(struct intel_dp *intel_dp);
 void intel_dp_start_link_train(struct intel_dp *intel_dp);
-void intel_dp_complete_link_train(struct intel_dp *intel_dp);
-void intel_dp_link_down(struct intel_dp *intel_dp);
 
 int intel_dp_i2c_init(struct intel_dp *intel_dp);
 int intel_dp_i2c_aux_ch(struct intel_dp *intel_dp,
 			int mode, uint8_t write_byte, uint8_t *read_byte);
-void
-intel_dp_dpms(struct intel_dp *intel_dp, int mode);
 
 int intel_dp_get_dpcd(struct intel_dp *intel_dp);
 struct edid *intel_dp_get_edid(struct intel_dp *intel_dp);
@@ -205,7 +201,10 @@ int intel_dp_aux_ch(struct intel_dp *intel_dp,
 		    uint8_t *send, int send_bytes,
 		    uint8_t *recv, int recv_size);
 void unpack_aux(u32 src, uint8_t *dst, int dst_bytes);
-
+int intel_channel_eq_ok(struct intel_dp *intel_dp,
+		    uint8_t link_status[DP_LINK_STATUS_SIZE]);
+void ironlake_edp_panel_off(struct intel_dp *intel_dp);
+void ironlake_edp_backlight_off(struct intel_dp *intel_dp);
 
 /* drm_dp_helper.c */
 int drm_dp_channel_eq_ok(u8 link_status[DP_LINK_STATUS_SIZE],

@@ -9,17 +9,19 @@ bootblock-y += ../tegra/i2c.c
 bootblock-y += ../tegra/pingroup.c
 bootblock-y += ../tegra/pinmux.c
 bootblock-y += timer.c
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
+ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
+bootblock-$(CONFIG_CONSOLE_SERIAL) += uart.c
+endif
 
 romstage-y += cbfs.c
 romstage-y += monotonic_timer.c
 romstage-y += timer.c
-romstage-y += uart.c
+romstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
 
 ramstage-y += cbfs.c
 ramstage-y += monotonic_timer.c
 ramstage-y += timer.c
-ramstage-y += uart.c
+ramstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
 
 CPPFLAGS_common += -Isrc/soc/nvidia/tegra124/include/
 

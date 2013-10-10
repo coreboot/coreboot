@@ -93,17 +93,7 @@ static u32 bsf(u32 x)
 /* prevent speculative execution of following instructions */
 #define _EXECFENCE asm volatile ("outb %al, $0xed")
 
-static inline u32 read_cr4(void)
-{
-	u32 cr4;
-	__asm__ volatile ("movl %%cr4, %0" : "=r" (cr4));
-	return cr4;
-}
-
-static inline void write_cr4(u32 cr4)
-{
-	__asm__ volatile ("movl %0, %%cr4" : : "r" (cr4));
-}
+#include <cpu/x86/cr.h>
 
 u32 SetUpperFSbase(u32 addr_hi);
 

@@ -20,6 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <cpu/x86/cr.h>
 #include <cpu/x86/lapic.h>
 #include <delay.h>
 #include <lib.h>
@@ -401,26 +402,6 @@ void stop_this_cpu(void)
 }
 #endif
 
-#ifdef __SSE3__
-static __inline__ __attribute__((always_inline)) unsigned long readcr4(void)
-{
-	unsigned long value;
-	__asm__ __volatile__ (
-			"mov %%cr4, %[value]"
-			: [value] "=a" (value));
-	return value;
-}
-
-static __inline__ __attribute__((always_inline)) void writecr4(unsigned long Data)
-{
-	__asm__ __volatile__ (
-			"mov %%eax, %%cr4"
-			:
-			: "a" (Data)
-			);
-}
-#endif
-
 /* C entry point of secondary cpus */
 void asmlinkage secondary_cpu_init(unsigned int index)
 {
@@ -435,9 +416,9 @@ void asmlinkage secondary_cpu_init(unsigned int index)
 	 * Turn on CR4.OSFXSR and CR4.OSXMMEXCPT when SSE options enabled
 	 */
 	u32 cr4_val;
-	cr4_val = readcr4();
-	cr4_val |= (1 << 9 | 1 << 10);
-	writecr4(cr4_val);
+	cr4_val = read_cr4();
+	cr4_val |= (CR4_OSFXSR | CR4_OSXMMEXCPT);
+	write_cr4(cr4_val);
 #endif
 	cpu_initialize(index);
 #if CONFIG_SERIAL_CPU_INIT

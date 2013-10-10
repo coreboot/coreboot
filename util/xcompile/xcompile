@@ -138,6 +138,11 @@ detect_special_flags() {
 	x86)
 		testcc "$CC"   "$CFLAGS -Wa,--divide" &&
 			CFLAGS="$CFLAGS -Wa,--divide"
+		# Always build for i686 -- no sse/mmx instructions since SMM
+		# modules are compiled using these flags. Note that this
+		# doesn't prevent a project using xcompile to explicitly
+		# specify -mmsse, etc flags.
+		CFLAGS="$CFLAGS  -march=i686"
 		;;
 	esac
 }

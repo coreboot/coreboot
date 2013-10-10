@@ -19,6 +19,7 @@
 */
 
 #include <arch/stages.h>
+#include <cpu/x86/cr.h>
 
 //0: mean no debug info
 #define DQS_TRAIN_DEBUG 0
@@ -113,19 +114,6 @@ static unsigned Get_RcvrSysAddr(const struct mem_controller * ctrl, unsigned cha
 	return Get_MCTSysAddr(ctrl, cs_idx, sysinfo);
 
 }
-
-static inline unsigned long read_cr4(void)
-{
-	unsigned long cr4;
-	asm volatile ("movl %%cr4, %0" : "=r" (cr4));
-	return cr4;
-}
-
-static inline void write_cr4(unsigned long cr4)
-{
-	asm volatile ("movl %0, %%cr4" : : "r" (cr4));
-}
-
 
 static inline void enable_sse2(void)
 {

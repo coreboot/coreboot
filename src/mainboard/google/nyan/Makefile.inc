@@ -27,6 +27,11 @@ $(obj)/generated/bct.cfg:
 
 subdirs-y += bct
 
+bootblock-y += bootblock.c
+bootblock-y += pmic.c
+
 romstage-y += romstage.c
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 ramstage-y += mainboard.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c

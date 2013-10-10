@@ -25,68 +25,32 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
- * cache.c: Cache maintenance routines for ARMv7-A and ARMv7-R
- *
- * Reference: ARM Architecture Reference Manual, ARMv7-A and ARMv7-R edition
  */
 
-#include <stdint.h>
+	.align 6
+	.arm
 
-#include <arch/cache.h>
+	.global cpug_stack_pointer
+cpug_stack_pointer:
+	.word 0
 
-void tlb_invalidate_all(void)
-{
-}
+	.global cpug_entry_point
+cpug_entry_point:
+	.word 0
 
-void icache_invalidate_all(void)
-{
-}
+	.global cpug_setup
+	.type cpug_setup, function
+	cpug_setup:
 
-void dcache_clean_all(void)
-{
-}
-
-void dcache_clean_invalidate_all(void)
-{
-}
-
-void dcache_invalidate_all(void)
-{
-}
-
-unsigned int dcache_line_bytes(void)
-{
 	/*
-	 * TODO: Implement this correctly. For now we just return a
-	 * reasonable value. It was added during Nyan development and
-	 * may be used in bootblock code. It matters only if dcache is
-	 * turned on.
+	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
+	 * aborts may happen early and crash before the abort handlers are
+	 * installed, but at least the problem will show up near the code that
+	 * causes it.
 	 */
-	return 64;
-}
+	msr	cpsr_cxf, #0xdf
 
-void dcache_clean_by_mva(void const *addr, size_t len)
-{
-}
-
-void dcache_clean_invalidate_by_mva(void const *addr, size_t len)
-{
-}
-
-void dcache_invalidate_by_mva(void const *addr, size_t len)
-{
-}
-
-void dcache_mmu_disable(void)
-{
-}
-
-
-void dcache_mmu_enable(void)
-{
-}
-
-void arm_invalidate_caches(void)
-{
-}
+	ldr	sp, cpug_stack_pointer
+	eor	lr, lr
+	ldr	r0, cpug_entry_point
+	bx	r0

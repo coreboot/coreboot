@@ -2,8 +2,13 @@ bootblock-y += bootblock.c
 bootblock-y += bootblock_asm.S
 bootblock-y += cbfs.c
 bootblock-y += clock.c
+bootblock-y += cpug.S
+bootblock-y += dma.c
 bootblock-y += i2c.c
+bootblock-y += dma.c
 bootblock-y += monotonic_timer.c
+bootblock-y += power.c
+bootblock-y += spi.c
 bootblock-y += ../tegra/gpio.c
 bootblock-y += ../tegra/i2c.c
 bootblock-y += ../tegra/pingroup.c
@@ -14,12 +19,31 @@ bootblock-$(CONFIG_CONSOLE_SERIAL) += uart.c
 endif
 
 romstage-y += cbfs.c
+romstage-y += cbmem.c
+romstage-y += early_display.c
+romstage-y += dma.c
+romstage-y += i2c.c
 romstage-y += monotonic_timer.c
+romstage-y += spi.c
+romstage-y += ../tegra/gpio.c
+romstage-y += ../tegra/i2c.c
+romstage-y += ../tegra/pinmux.c
 romstage-y += timer.c
 romstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
 
 ramstage-y += cbfs.c
+ramstage-y += cbmem.c
+ramstage-y += cpug.S
+ramstage-y += clock.c
+ramstage-y += display.c
+ramstage-y += dma.c
+ramstage-y += i2c.c
 ramstage-y += monotonic_timer.c
+ramstage-y += soc.c
+ramstage-y += spi.c
+ramstage-y += ../tegra/gpio.c
+ramstage-y += ../tegra/i2c.c
+ramstage-y += ../tegra/pinmux.c
 ramstage-y += timer.c
 ramstage-$(CONFIG_CONSOLE_SERIAL) += uart.c
 

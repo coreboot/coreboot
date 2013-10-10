@@ -17,203 +17,275 @@
 #ifndef _TEGRA124_CLK_RST_H_
 #define _TEGRA124_CLK_RST_H_
 
-/* PLL registers - there are several PLLs in the clock controller */
-struct clk_pll {
-	u32 pll_base;	/* the control register */
-	/* pll_out[0] is output A control, pll_out[1] is output B control */
-	u32 pll_out[2];
-	u32 pll_misc;	/* other misc things */
-};
-
-/* PLL registers - there are several PLLs in the clock controller */
-struct clk_pll_simple {
-	u32 pll_base;		/* the control register */
-	u32 pll_misc;		/* other misc things */
-};
-
-struct clk_pllm {
-	u32 pllm_base;		/* the control register */
-	u32 pllm_out;		/* output control */
-	u32 pllm_misc1;	/* misc1 */
-	u32 pllm_misc2;	/* misc2 */
-};
-
-/* RST_DEV_(L,H,U,V,W)_(SET,CLR) and CLK_ENB_(L,H,U,V,W)_(SET,CLR) */
-struct clk_set_clr {
-	u32 set;
-	u32 clr;
-};
-
-/*
- * Most PLLs use the clk_pll structure, but some have a simpler two-member
- * structure for which we use clk_pll_simple. The reason for this non-
- * othogonal setup is not stated.
- */
-enum {
-	TEGRA_CLK_PLLS		= 6,	/* Number of normal PLLs */
-	TEGRA_CLK_SIMPLE_PLLS	= 3,	/* Number of simple PLLs */
-	TEGRA_CLK_REGS		= 3,	/* Number of clock enable regs L/H/U */
-	TEGRA_CLK_SOURCES	= 64,	/* Number of ppl clock sources L/H/U */
-	TEGRA_CLK_REGS_VW	= 2,	/* Number of clock enable regs V/W */
-	TEGRA_CLK_SOURCES_VW	= 32,	/* Number of ppl clock sources V/W */
-	TEGRA_CLK_SOURCES_X	= 32,	/* Number of ppl clock sources X */
-};
-
 /* Clock/Reset Controller (CLK_RST_CONTROLLER_) regs */
-struct clk_rst_ctlr {
-	u32 crc_rst_src;			/* _RST_SOURCE_0,0x00 */
-	u32 crc_rst_dev[TEGRA_CLK_REGS];	/* _RST_DEVICES_L/H/U_0 */
-	u32 crc_clk_out_enb[TEGRA_CLK_REGS];	/* _CLK_OUT_ENB_L/H/U_0 */
-	u32 crc_reserved0;		/* reserved_0,		0x1C */
-	u32 crc_cclk_brst_pol;		/* _CCLK_BURST_POLICY_0, 0x20 */
-	u32 crc_super_cclk_div;	/* _SUPER_CCLK_DIVIDER_0,0x24 */
-	u32 crc_sclk_brst_pol;		/* _SCLK_BURST_POLICY_0, 0x28 */
-	u32 crc_super_sclk_div;	/* _SUPER_SCLK_DIVIDER_0,0x2C */
-	u32 crc_clk_sys_rate;		/* _CLK_SYSTEM_RATE_0,	0x30 */
-	u32 crc_reserved01;		/* reserved_0_1,	0x34 */
-	u32 crc_reserved02;		/* reserved_0_2,	0x38 */
-	u32 crc_reserved1;		/* reserved_1,		0x3C */
-	u32 crc_cop_clk_skip_plcy;	/* _COP_CLK_SKIP_POLICY_0,0x40 */
-	u32 crc_clk_mask_arm;		/* _CLK_MASK_ARM_0,	0x44 */
-	u32 crc_misc_clk_enb;		/* _MISC_CLK_ENB_0,	0x48 */
-	u32 crc_clk_cpu_cmplx;		/* _CLK_CPU_CMPLX_0,	0x4C */
-	u32 crc_osc_ctrl;		/* _OSC_CTRL_0,		0x50 */
-	u32 crc_pll_lfsr;		/* _PLL_LFSR_0,		0x54 */
-	u32 crc_osc_freq_det;		/* _OSC_FREQ_DET_0,	0x58 */
-	u32 crc_osc_freq_det_stat;	/* _OSC_FREQ_DET_STATUS_0,0x5C */
-	u32 crc_reserved2[8];		/* reserved_2[8],	0x60-7C */
-
-	struct clk_pll crc_pll[TEGRA_CLK_PLLS];	/* PLLs from 0x80 to 0xdc */
-
-	/* PLLs from 0xe0 to 0xf4    */
-	struct clk_pll_simple crc_pll_simple[TEGRA_CLK_SIMPLE_PLLS];
-
-	u32 crc_reserved10;		/* _reserved_10,	0xF8 */
-	u32 crc_reserved11;		/* _reserved_11,	0xFC */
-
-	u32 crc_clk_src[TEGRA_CLK_SOURCES]; /*_I2S1_0...	0x100-1fc */
-
-	u32 crc_reserved20[32];	/* _reserved_20,	0x200-27c */
-
-	u32 crc_clk_out_enb_x;		/* _CLK_OUT_ENB_X_0,	0x280 */
-	u32 crc_clk_enb_x_set;		/* _CLK_ENB_X_SET_0,	0x284 */
-	u32 crc_clk_enb_x_clr;		/* _CLK_ENB_X_CLR_0,	0x288 */
-
-	u32 crc_rst_devices_x;		/* _RST_DEVICES_X_0,	0x28c */
-	u32 crc_rst_dev_x_set;		/* _RST_DEV_X_SET_0,	0x290 */
-	u32 crc_rst_dev_x_clr;		/* _RST_DEV_X_CLR_0,	0x294 */
-
-	u32 crc_reserved21[23];	/* _reserved_21,	0x298-2f0 */
-
-	u32 crc_dfll_base;		/* _DFLL_BASE_0,	0x2f4 */
-
-	u32 crc_reserved22[2];		/* _reserved_22,	0x2f8-2fc */
-
-	/* _RST_DEV_L/H/U_SET_0 0x300 ~ 0x314 */
-	struct clk_set_clr crc_rst_dev_ex[TEGRA_CLK_REGS];
-
-	u32 crc_reserved30[2];		/* _reserved_30,	0x318, 0x31c */
-
-	/* _CLK_ENB_L/H/U_CLR_0 0x320 ~ 0x334 */
-	struct clk_set_clr crc_clk_enb_ex[TEGRA_CLK_REGS];
-
-	u32 crc_reserved31;		/* _reserved_31,	0x338 */
-
-	u32 crc_ccplex_pg_sm_ovrd;	/* _CCPLEX_PG_SM_OVRD_0,    0x33c */
-
-	u32 crc_rst_cpu_cmplx_set;	/* _RST_CPU_CMPLX_SET_0,    0x340 */
-	u32 crc_rst_cpu_cmplx_clr;	/* _RST_CPU_CMPLX_CLR_0,    0x344 */
-	u32 crc_clk_cpu_cmplx_set;	/* _CLK_CPU_CMPLX_SET_0,    0x348 */
-	u32 crc_clk_cpu_cmplx_clr;	/* _CLK_CPU_CMPLX_SET_0,    0x34c */
-
-	u32 crc_reserved32[2];		/* _reserved_32,      0x350,0x354 */
-
-	u32 crc_rst_dev_vw[TEGRA_CLK_REGS_VW]; /* _RST_DEVICES_V/W_0 */
-	u32 crc_clk_out_enb_vw[TEGRA_CLK_REGS_VW]; /* _CLK_OUT_ENB_V/W_0 */
-	u32 crc_cclkg_brst_pol;	/* _CCLKG_BURST_POLICY_0,   0x368 */
-	u32 crc_super_cclkg_div;	/* _SUPER_CCLKG_DIVIDER_0,  0x36C */
-	u32 crc_cclklp_brst_pol;	/* _CCLKLP_BURST_POLICY_0,  0x370 */
-	u32 crc_super_cclkp_div;	/* _SUPER_CCLKLP_DIVIDER_0, 0x374 */
-	u32 crc_clk_cpug_cmplx;	/* _CLK_CPUG_CMPLX_0,       0x378 */
-	u32 crc_clk_cpulp_cmplx;	/* _CLK_CPULP_CMPLX_0,      0x37C */
-	u32 crc_cpu_softrst_ctrl;	/* _CPU_SOFTRST_CTRL_0,     0x380 */
-	u32 crc_cpu_softrst_ctrl1;	/* _CPU_SOFTRST_CTRL1_0,    0x384 */
-	u32 crc_cpu_softrst_ctrl2;	/* _CPU_SOFTRST_CTRL2_0,    0x388 */
-	u32 crc_reserved33[9];		/* _reserved_33,        0x38c-3ac */
-	u32 crc_clk_src_vw[TEGRA_CLK_SOURCES_VW];	/* 0x3B0-0x42C */
-	/* _RST_DEV_V/W_SET_0 0x430 ~ 0x43c */
-	struct clk_set_clr crc_rst_dev_ex_vw[TEGRA_CLK_REGS_VW];
-	/* _CLK_ENB_V/W_CLR_0 0x440 ~ 0x44c */
-	struct clk_set_clr crc_clk_enb_ex_vw[TEGRA_CLK_REGS_VW];
-	u32 crc_rst_cpug_cmplx_set;	/* _RST_CPUG_CMPLX_SET_0,   0x450*/
-	u32 crc_rst_cpug_cmplx_clr;	/* _RST_CPUG_CMPLX_CLR_0,   0x454*/
-	u32 crc_rst_cpulp_cmplx_set;	/* _RST_CPULP_CMPLX_SET_0,  0x458*/
-	u32 crc_rst_cpulp_cmplx_clr;	/* _RST_CPULP_CMPLX_CLR_0,  0x45C*/
-	u32 crc_clk_cpug_cmplx_set;	/* _CLK_CPUG_CMPLX_SET_0,  0x460 */
-	u32 crc_clk_cpug_cmplx_clr;	/* _CLK_CPUG_CMPLX_CLR_0,  0x464 */
-	u32 crc_clk_cpulp_cmplx_set;	/* _CLK_CPULP_CMPLX_SET_0, 0x468 */
-	u32 crc_clk_cpulp_cmplx_clr;	/* _CLK_CPULP_CMPLX_CLR_0, 0x46C */
-	u32 crc_cpu_cmplx_status;	/* _CPU_CMPLX_STATUS_0,    0x470 */
-	u32 crc_reserved40[1];		/* _reserved_40,        0x474 */
-	u32 crc_intstatus;		/* __INTSTATUS_0,       0x478 */
-	u32 crc_intmask;		/* __INTMASK_0,         0x47C */
-	u32 crc_utmip_pll_cfg0;	/* _UTMIP_PLL_CFG0_0,	0x480 */
-	u32 crc_utmip_pll_cfg1;	/* _UTMIP_PLL_CFG1_0,	0x484 */
-	u32 crc_utmip_pll_cfg2;	/* _UTMIP_PLL_CFG2_0,	0x488 */
-
-	u32 crc_plle_aux;		/* _PLLE_AUX_0,		0x48C */
-	u32 crc_sata_pll_cfg0;		/* _SATA_PLL_CFG0_0,	0x490 */
-	u32 crc_sata_pll_cfg1;		/* _SATA_PLL_CFG1_0,	0x494 */
-	u32 crc_pcie_pll_cfg0;		/* _PCIE_PLL_CFG0_0,	0x498 */
-
-	u32 crc_prog_audio_dly_clk;	/* _PROG_AUDIO_DLY_CLK_0, 0x49C */
-	u32 crc_audio_sync_clk_i2s0;	/* _AUDIO_SYNC_CLK_I2S0_0, 0x4A0 */
-	u32 crc_audio_sync_clk_i2s1;	/* _AUDIO_SYNC_CLK_I2S1_0, 0x4A4 */
-	u32 crc_audio_sync_clk_i2s2;	/* _AUDIO_SYNC_CLK_I2S2_0, 0x4A8 */
-	u32 crc_audio_sync_clk_i2s3;	/* _AUDIO_SYNC_CLK_I2S3_0, 0x4AC */
-	u32 crc_audio_sync_clk_i2s4;	/* _AUDIO_SYNC_CLK_I2S4_0, 0x4B0 */
-	u32 crc_audio_sync_clk_spdif;	/* _AUDIO_SYNC_CLK_SPDIF_0, 0x4B4 */
-
-	u32 crc_plld2_base;		/* _PLLD2_BASE_0, 0x4B8 */
-	u32 crc_plld2_misc;		/* _PLLD2_MISC_0, 0x4BC */
-	u32 crc_utmip_pll_cfg3;	/* _UTMIP_PLL_CFG3_0, 0x4C0 */
-	u32 crc_pllrefe_base;		/* _PLLREFE_BASE_0, 0x4C4 */
-	u32 crc_pllrefe_misc;		/* _PLLREFE_MISC_0, 0x4C8 */
-	u32 crs_reserved_50[7];	/* _reserved_50, 0x4CC-0x4E4 */
-	u32 crc_pllc2_base;		/* _PLLC2_BASE_0, 0x4E8 */
-	u32 crc_pllc2_misc0;		/* _PLLC2_MISC_0_0, 0x4EC */
-	u32 crc_pllc2_misc1;		/* _PLLC2_MISC_1_0, 0x4F0 */
-	u32 crc_pllc2_misc2;		/* _PLLC2_MISC_2_0, 0x4F4 */
-	u32 crc_pllc2_misc3;		/* _PLLC2_MISC_3_0, 0x4F8 */
-	u32 crc_pllc3_base;		/* _PLLC3_BASE_0, 0x4FC */
-	u32 crc_pllc3_misc0;		/* _PLLC3_MISC_0_0, 0x500 */
-	u32 crc_pllc3_misc1;		/* _PLLC3_MISC_1_0, 0x504 */
-	u32 crc_pllc3_misc2;		/* _PLLC3_MISC_2_0, 0x508 */
-	u32 crc_pllc3_misc3;		/* _PLLC3_MISC_3_0, 0x50C */
-	u32 crc_pllx_misc1;		/* _PLLX_MISC_1_0, 0x510 */
-	u32 crc_pllx_misc2;		/* _PLLX_MISC_2_0, 0x514 */
-	u32 crc_pllx_misc3;		/* _PLLX_MISC_3_0, 0x518 */
-	u32 crc_xusbio_pll_cfg0;	/* _XUSBIO_PLL_CFG0_0, 0x51C */
-	u32 crc_xusbio_pll_cfg1;	/* _XUSBIO_PLL_CFG0_1, 0x520 */
-	u32 crc_plle_aux1;		/* _PLLE_AUX1_0, 0x524 */
-	u32 crc_pllp_reshift;		/* _PLLP_RESHIFT_0, 0x528 */
-	u32 crc_utmipll_hw_pwrdn_cfg0;	/* _UTMIPLL_HW_PWRDN_CFG0_0, 0x52C */
-	u32 crc_pllu_hw_pwrdn_cfg0;	/* _PLLU_HW_PWRDN_CFG0_0, 0x530 */
-	u32 crc_xusb_pll_cfg0;		/* _XUSB_PLL_CFG0_0, 0x534 */
-	u32 crc_reserved51[1];		/* _reserved_51,     0x538 */
-	u32 crc_clk_cpu_misc;		/* _CLK_CPU_MISC_0, 0x53C */
-	u32 crc_clk_cpug_misc;		/* _CLK_CPUG_MISC_0, 0x540 */
-	u32 crc_clk_cpulp_misc;	/* _CLK_CPULP_MISC_0, 0x544 */
-	u32 crc_pllx_hw_ctrl_cfg;	/* _PLLX_HW_CTRL_CFG_0, 0x548 */
-	u32 crc_pllx_sw_ramp_cfg;	/* _PLLX_SW_RAMP_CFG_0, 0x54C */
-	u32 crc_pllx_hw_ctrl_status;	/* _PLLX_HW_CTRL_STATUS_0, 0x550 */
-	u32 crc_reserved52[1];		/* _reserved_52,     0x554 */
-	u32 crc_super_gr3d_clk_div;	/* _SUPER_GR3D_CLK_DIVIDER_0, 0x558 */
-	u32 crc_spare_reg0;		/* _SPARE_REG0_0, 0x55C */
-
-	/* T124 - skip to 0x600 here for new CLK_SOURCE_ regs */
-	u32 crc_reserved60[40];	/* _reserved_60,     0x560 - 0x5FC */
-	u32 crc_clk_src_x[TEGRA_CLK_SOURCES_X]; /* XUSB, etc, 0x600-0x678 */
+struct  __attribute__ ((__packed__)) clk_rst_ctlr {
+	u32 rst_src;			/* _RST_SOURCE,             0x000 */
+	u32 rst_dev_l;			/* _RST_DEVICES_L,          0x004 */
+	u32 rst_dev_h;			/* _RST_DEVICES_H,          0x008 */
+	u32 rst_dev_u;			/* _RST_DEVICES_U,          0x00c */
+	u32 clk_out_enb_l;		/* _CLK_OUT_ENB_L,          0x010 */
+	u32 clk_out_enb_h;		/* _CLK_OUT_ENB_H,          0x014 */
+	u32 clk_out_enb_u;		/* _CLK_OUT_ENB_U,          0x018 */
+	u32 _rsv0;			/*                          0x01c */
+	u32 cclk_brst_pol;		/* _CCLK_BURST_POLICY,      0x020 */
+	u32 super_cclk_div;		/* _SUPER_CCLK_DIVIDER,     0x024 */
+	u32 sclk_brst_pol;		/* _SCLK_BURST_POLICY,      0x028 */
+	u32 super_sclk_div;		/* _SUPER_SCLK_DIVIDER,     0x02C */
+	u32 clk_sys_rate;		/* _CLK_SYSTEM_RATE,        0x030 */
+	u32 _rsv1[3];			/*                      0x034-03c */
+	u32 cop_clk_skip_plcy;		/* _COP_CLK_SKIP_POLICY,    0x040 */
+	u32 clk_mask_arm;		/* _CLK_MASK_ARM,           0x044 */
+	u32 misc_clk_enb;		/* _MISC_CLK_ENB,           0x048 */
+	u32 clk_cpu_cmplx;		/* _CLK_CPU_CMPLX,          0x04C */
+	u32 osc_ctrl;			/* _OSC_CTRL,               0x050 */
+	u32 pll_lfsr;			/* _PLL_LFSR,               0x054 */
+	u32 osc_freq_det;		/* _OSC_FREQ_DET,           0x058 */
+	u32 osc_freq_det_stat;		/* _OSC_FREQ_DET_STATUS,    0x05C */
+	u32 _rsv2[8];			/*                      0x060-07C */
+	u32 pllc_base;			/* _PLLC_BASE,              0x080 */
+	u32 pllc_out;			/* _PLLC_OUT,               0x084 */
+	u32 pllc_misc2;			/* _PLLC_MISC2,             0x088 */
+	u32 pllc_misc;			/* _PLLC_MISC,              0x08c */
+	u32 pllm_base;			/* _PLLM_BASE,              0x090 */
+	u32 pllm_out;			/* _PLLM_OUT,               0x094 */
+	u32 pllm_misc1;			/* _PLLM_MISC1,             0x098 */
+	u32 pllm_misc2;			/* _PLLM_MISC2,             0x09c */
+	u32 pllp_base;			/* _PLLP_BASE,              0x0a0 */
+	u32 pllp_outa;			/* _PLLP_OUTA,              0x0a4 */
+	u32 pllp_outb;			/* _PLLP_OUTB,              0x0a8 */
+	u32 pllp_misc;			/* _PLLP_MISC,              0x0ac */
+	u32 plla_base;			/* _PLLA_BASE,              0x0b0 */
+	u32 plla_out;			/* _PLLA_OUT,               0x0b4 */
+	u32 _rsv3;			/*                          0x0b8 */
+	u32 plla_misc;			/* _PLLA_MISC,              0x0bc */
+	u32 pllu_base;			/* _PLLU_BASE,              0x0c0 */
+	u32 _rsv4[2];			/*                      0x0c4-0c8 */
+	u32 pllu_misc;			/* _PLLU_MISC,              0x0cc */
+	u32 plld_base;			/* _PLLD_BASE,              0x0d0 */
+	u32 _rsv5[2];			/*                      0x0d4-0d8 */
+	u32 plld_misc;			/* _PLLD_MISC,              0x0dc */
+	u32 pllx_base;			/* _PLLX_BASE,              0x0e0 */
+	u32 pllx_misc;			/* _PLLX_MISC,              0x0e4 */
+	u32 plle_base;			/* _PLLE_BASE,              0x0e8 */
+	u32 plle_misc;			/* _PLLE_MISC,              0x0ec */
+	u32 plls_base;			/* _PLLS_BASE,              0x0f0 */
+	u32 plls_misc;			/* _PLLS_MISC,              0x0f4 */
+	u32 _rsv6[2];			/*                      0x0f8-0fc */
+        u32 clk_src_i2s1;		/* _CLK_SOURCE_I2S1,        0x100 */
+        u32 clk_src_i2s2;		/* _CLK_SOURCE_I2S2,        0x104 */
+        u32 clk_src_spdif_out;		/* _CLK_SOURCE_SPDIF_OUT,   0x108 */
+        u32 clk_src_spdif_in;		/* _CLK_SOURCE_SPDIF_IN,    0x10c */
+        u32 clk_src_pwm;		/* _CLK_SOURCE_PWM,         0x110 */
+        u32 _rsv7;			/*                          0x114 */
+        u32 clk_src_sbc2;		/* _CLK_SOURCE_SBC2,        0x118 */
+        u32 clk_src_sbc3;		/* _CLK_SOURCE_SBC3,        0x11c */
+        u32 _rsv8;			/*                          0x120 */
+        u32 clk_src_i2c1;		/* _CLK_SOURCE_I2C1,        0x124 */
+        u32 clk_src_i2c5;		/* _CLK_SOURCE_I2C5,        0x128 */
+        u32 _rsv9[2];			/*                      0x12c-130 */
+        u32 clk_src_sbc1;		/* _CLK_SOURCE_SBC1,        0x134 */
+        u32 clk_src_disp1;		/* _CLK_SOURCE_DISP1,       0x138 */
+        u32 clk_src_disp2;		/* _CLK_SOURCE_DISP2,       0x13c */
+        u32 _rsv10[2];			/*                      0x140-144 */
+        u32 clk_src_vi;			/* _CLK_SOURCE_VI,          0x148 */
+        u32 _rsv11;			/*                          0x14c */
+        u32 clk_src_sdmmc1;		/* _CLK_SOURCE_SDMMC1,      0x150 */
+        u32 clk_src_sdmmc2;		/* _CLK_SOURCE_SDMMC2,      0x154 */
+        u32 clk_src_g3d;		/* _CLK_SOURCE_G3D,         0x158 */
+        u32 clk_src_g2d;		/* _CLK_SOURCE_G2D,         0x15c */
+        u32 clk_src_ndflash;		/* _CLK_SOURCE_NDFLASH,     0x160 */
+        u32 clk_src_sdmmc4;		/* _CLK_SOURCE_SDMMC4,      0x164 */
+        u32 clk_src_vfir;		/* _CLK_SOURCE_VFIR,        0x168 */
+        u32 clk_src_epp;		/* _CLK_SOURCE_EPP,         0x16c */
+        u32 clk_src_mpe;		/* _CLK_SOURCE_MPE,         0x170 */
+        u32 clk_src_hsi;		/* _CLK_SOURCE_HSI,         0x174 */
+        u32 clk_src_uarta;		/* _CLK_SOURCE_UARTA,       0x178 */
+        u32 clk_src_uartb;		/* _CLK_SOURCE_UARTB,       0x17c */
+        u32 clk_src_host1x;		/* _CLK_SOURCE_HOST1X,      0x180 */
+        u32 _rsv12[2];			/*                      0x184-188 */
+        u32 clk_src_hdmi;		/* _CLK_SOURCE_HDMI,        0x18c */
+        u32 _rsv13[2];			/*                      0x190-194 */
+        u32 clk_src_i2c2;		/* _CLK_SOURCE_I2C2,        0x198 */
+        u32 clk_src_emc;		/* _CLK_SOURCE_EMC,         0x19c */
+        u32 clk_src_uartc;		/* _CLK_SOURCE_UARTC,       0x1a0 */
+	u32 _rsv14;			/*                          0x1a4 */
+        u32 clk_src_vi_sensor;		/* _CLK_SOURCE_VI_SENSOR,   0x1a8 */
+        u32 _rsv15[2];			/*                      0x1ac-1b0 */
+        u32 clk_src_sbc4;		/* _CLK_SOURCE_SBC4,        0x1b4 */
+        u32 clk_src_i2c3;		/* _CLK_SOURCE_I2C3,        0x1b8 */
+        u32 clk_src_sdmmc3;		/* _CLK_SOURCE_SDMMC3,      0x1bc */
+        u32 clk_src_uartd;		/* _CLK_SOURCE_UARTD,       0x1c0 */
+        u32 clk_src_uarte;		/* _CLK_SOURCE_UARTE,       0x1c4 */
+        u32 clk_src_vde;		/* _CLK_SOURCE_VDE,         0x1c8 */
+        u32 clk_src_owr;		/* _CLK_SOURCE_OWR,         0x1cc */
+        u32 clk_src_nor;		/* _CLK_SOURCE_NOR,         0x1d0 */
+        u32 clk_src_csite;		/* _CLK_SOURCE_CSITE,       0x1d4 */
+        u32 clk_src_i2s0;		/* _CLK_SOURCE_I2S0,        0x1d8 */
+        u32 clk_src_dtv;		/* _CLK_SOURCE_DTV,         0x1dc */
+        u32 _rsv16[4];			/*                      0x1e0-1ec */
+        u32 clk_src_msenc;		/* _CLK_SOURCE_MSENC,       0x1f0 */
+        u32 clk_src_tsec;		/* _CLK_SOURCE_TSEC,        0x1f4 */
+	u32 _rsv17;			/*                          0x1f8 */
+        u32 clk_src_osc;		/* _CLK_SOURCE_OSC,         0x1fc */
+	u32 _rsv18[32];			/*                      0x200-27c */
+	u32 clk_out_enb_x;		/* _CLK_OUT_ENB_X_0,        0x280 */
+	u32 clk_enb_x_set;		/* _CLK_ENB_X_SET_0,        0x284 */
+	u32 clk_enb_x_clr;		/* _CLK_ENB_X_CLR_0,        0x288 */
+	u32 rst_devices_x;		/* _RST_DEVICES_X_0,        0x28c */
+	u32 rst_dev_x_set;		/* _RST_DEV_X_SET_0,        0x290 */
+	u32 rst_dev_x_clr;		/* _RST_DEV_X_CLR_0,        0x294 */
+	u32 _rsv19[23];			/*                      0x298-2f0 */
+	u32 dfll_base;			/* _DFLL_BASE_0,            0x2f4 */
+	u32 _rsv20[2];			/*                      0x2f8-2fc */
+	u32 rst_dev_l_set;		/* _RST_DEV_L_SET           0x300 */
+	u32 rst_dev_l_clr;		/* _RST_DEV_L_CLR           0x304 */
+	u32 rst_dev_h_set;		/* _RST_DEV_H_SET           0x308 */
+	u32 rst_dev_h_clr;		/* _RST_DEV_H_CLR           0x30c */
+	u32 rst_dev_u_set;		/* _RST_DEV_U_SET           0x310 */
+	u32 rst_dev_u_clr;		/* _RST_DEV_U_CLR           0x314 */
+	u32 _rsv21[2];			/*                      0x318-31c */
+	u32 clk_enb_l_set;		/* _CLK_ENB_L_SET           0x320 */
+	u32 clk_enb_l_clr;		/* _CLK_ENB_L_CLR           0x324 */
+	u32 clk_enb_h_set;		/* _CLK_ENB_H_SET           0x328 */
+	u32 clk_enb_h_clr;		/* _CLK_ENB_H_CLR           0x32c */
+	u32 clk_enb_u_set;		/* _CLK_ENB_U_SET           0x330 */
+	u32 clk_enb_u_clk;		/* _CLK_ENB_U_CLR           0x334 */
+	u32 _rsv22;			/*                          0x338 */
+	u32 ccplex_pg_sm_ovrd;		/* _CCPLEX_PG_SM_OVRD,      0x33c */
+	u32 rst_cpu_cmplx_set;		/* _RST_CPU_CMPLX_SET,      0x340 */
+	u32 rst_cpu_cmplx_clr;		/* _RST_CPU_CMPLX_CLR,      0x344 */
+	u32 clk_cpu_cmplx_set;		/* _CLK_CPU_CMPLX_SET,      0x348 */
+	u32 clk_cpu_cmplx_clr;		/* _CLK_CPU_CMPLX_SET,      0x34c */
+	u32 _rsv23[2];			/*                      0x350-354 */
+	u32 rst_dev_v;			/* _RST_DEVICES_V,          0x358 */
+	u32 rst_dev_w;			/* _RST_DEVICES_W,          0x35c */
+	u32 clk_out_enb_v;		/* _CLK_OUT_ENB_V,          0x360 */
+	u32 clk_out_enb_w;		/* _CLK_OUT_ENB_W,          0x364 */
+	u32 cclkg_brst_pol;		/* _CCLKG_BURST_POLICY,     0x368 */
+	u32 super_cclkg_div;		/* _SUPER_CCLKG_DIVIDER,    0x36c */
+	u32 cclklp_brst_pol;		/* _CCLKLP_BURST_POLICY,    0x370 */
+	u32 super_cclkp_div;		/* _SUPER_CCLKLP_DIVIDER,   0x374 */
+	u32 clk_cpug_cmplx;		/* _CLK_CPUG_CMPLX,         0x378 */
+	u32 clk_cpulp_cmplx;		/* _CLK_CPULP_CMPLX,        0x37c */
+	u32 cpu_softrst_ctrl;		/* _CPU_SOFTRST_CTRL,       0x380 */
+	u32 cpu_softrst_ctrl1;		/* _CPU_SOFTRST_CTRL1,      0x384 */
+	u32 cpu_softrst_ctrl2;		/* _CPU_SOFTRST_CTRL2,      0x388 */
+	u32 _rsv24[9];			/*                      0x38c-3ac */
+	u32 clk_src_g3d2;		/* _CLK_SOURCE_G3D2,        0x3b0 */
+	u32 clk_src_mselect;		/* _CLK_SOURCE_MSELECT,     0x3b4 */
+	u32 clk_src_tsensor;		/* _CLK_SOURCE_TSENSOR,     0x3b8 */
+	u32 clk_src_i2s3;		/* _CLK_SOURCE_I2S3,        0x3bc */
+	u32 clk_src_i2s4;		/* _CLK_SOURCE_I2S4,        0x3c0 */
+	u32 clk_src_i2c4;		/* _CLK_SOURCE_I2C4,        0x3c4 */
+	u32 clk_src_sbc5;		/* _CLK_SOURCE_SBC5,        0x3c8 */
+	u32 clk_src_sbc6;		/* _CLK_SOURCE_SBC6,        0x3cc */
+	u32 clk_src_audio;		/* _CLK_SOURCE_AUDIO,       0x3d0 */
+	u32 _rsv25;			/*                          0x3d4 */
+	u32 clk_src_dam0;		/* _CLK_SOURCE_DAM0,        0x3d8 */
+	u32 clk_src_dam1;		/* _CLK_SOURCE_DAM1,        0x3dc */
+	u32 clk_src_dam2;		/* _CLK_SOURCE_DAM2,        0x3e0 */
+	u32 clk_src_hda2codec_2x;	/* _CLK_SOURCE_HDA2CODEC_2X,0x3e4 */
+	u32 clk_src_actmon;		/* _CLK_SOURCE_ACTMON,      0x3e8 */
+	u32 clk_src_extperiph1;		/* _CLK_SOURCE_EXTPERIPH1,  0x3ec */
+	u32 clk_src_extperiph2;		/* _CLK_SOURCE_EXTPERIPH2,  0x3f0 */
+	u32 clk_src_extperiph3;		/* _CLK_SOURCE_EXTPERIPH3,  0x3f4 */
+	u32 clk_src_nand_speed;		/* _CLK_SOURCE_NAND_SPEED,  0x3f8 */
+	u32 clk_src_i2c_slow;		/* _CLK_SOURCE_I2C_SLOW,    0x3fc */
+	u32 clk_src_sys;		/* _CLK_SOURCE_SYS,         0x400 */
+	u32 _rsv26[7];			/*                      0x404-41c */
+	u32 clk_src_sata_oob;		/* _CLK_SOURCE_SATA_OOB,    0x420 */
+	u32 clk_src_sata;		/* _CLK_SOURCE_SATA,        0x424 */
+	u32 clk_src_hda;		/* _CLK_SOURCE_HDA,         0x428 */
+	u32 _rsv27;			/*                          0x42c */
+	u32 rst_dev_v_set;		/* _RST_DEV_V_SET,          0x430 */
+	u32 rst_dev_v_clr;		/* _RST_DEV_V_CLR,          0x434 */
+	u32 rst_dev_w_set;		/* _RST_DEV_W_SET,          0x438 */
+	u32 rst_dev_w_clr;		/* _RST_DEV_W_CLR,          0x43c */
+	u32 clk_enb_v_set;		/* _CLK_ENB_V_SET,          0x440 */
+	u32 clk_enb_v_clr;		/* _CLK_ENB_V_CLR,          0x444 */
+	u32 clk_enb_w_set;		/* _CLK_ENB_W_SET,          0x448 */
+	u32 clk_enb_w_clr;		/* _CLK_ENB_W_CLR,          0x44c */
+	u32 rst_cpug_cmplx_set;		/* _RST_CPUG_CMPLX_SET,     0x450 */
+	u32 rst_cpug_cmplx_clr;		/* _RST_CPUG_CMPLX_CLR,     0x454 */
+	u32 rst_cpulp_cmplx_set;	/* _RST_CPULP_CMPLX_SET,    0x458 */
+	u32 rst_cpulp_cmplx_clr;	/* _RST_CPULP_CMPLX_CLR,    0x45C */
+	u32 clk_cpug_cmplx_set;		/* _CLK_CPUG_CMPLX_SET,     0x460 */
+	u32 clk_cpug_cmplx_clr;		/* _CLK_CPUG_CMPLX_CLR,     0x464 */
+	u32 clk_cpulp_cmplx_set;	/* _CLK_CPULP_CMPLX_SET,    0x468 */
+	u32 clk_cpulp_cmplx_clr;	/* _CLK_CPULP_CMPLX_CLR,    0x46c */
+	u32 cpu_cmplx_status;		/* _CPU_CMPLX_STATUS,       0x470 */
+	u32 _rsv28;			/*                          0x474 */
+	u32 intstatus;			/* _INTSTATUS,              0x478 */
+	u32 intmask;			/* _INTMASK,                0x47c */
+	u32 utmip_pll_cfg0;		/* _UTMIP_PLL_CFG0,         0x480 */
+	u32 utmip_pll_cfg1;		/* _UTMIP_PLL_CFG1,         0x484 */
+	u32 utmip_pll_cfg2;		/* _UTMIP_PLL_CFG2,         0x488 */
+	u32 plle_aux;			/* _PLLE_AUX,               0x48c */
+	u32 sata_pll_cfg0;		/* _SATA_PLL_CFG0,          0x490 */
+	u32 sata_pll_cfg1;		/* _SATA_PLL_CFG1,          0x494 */
+	u32 pcie_pll_cfg0;		/* _PCIE_PLL_CFG0,          0x498 */
+	u32 prog_audio_dly_clk;		/* _PROG_AUDIO_DLY_CLK,     0x49c */
+	u32 audio_sync_clk_i2s0;	/* _AUDIO_SYNC_CLK_I2S0,    0x4a0 */
+	u32 audio_sync_clk_i2s1;	/* _AUDIO_SYNC_CLK_I2S1,    0x4a4 */
+	u32 audio_sync_clk_i2s2;	/* _AUDIO_SYNC_CLK_I2S2,    0x4a8 */
+	u32 audio_sync_clk_i2s3;	/* _AUDIO_SYNC_CLK_I2S3,    0x4ac */
+	u32 audio_sync_clk_i2s4;	/* _AUDIO_SYNC_CLK_I2S4,    0x4b0 */
+	u32 audio_sync_clk_spdif;	/* _AUDIO_SYNC_CLK_SPDIF,   0x4b4 */
+	u32 plld2_base;			/* _PLLD2_BASE,             0x4b8 */
+	u32 plld2_misc;			/* _PLLD2_MISC,             0x4bc */
+	u32 utmip_pll_cfg3;		/* _UTMIP_PLL_CFG3,         0x4c0 */
+	u32 pllrefe_base;		/* _PLLREFE_BASE,           0x4c4 */
+	u32 pllrefe_misc;		/* _PLLREFE_MISC,           0x4c8 */
+	u32 _rsv29[7];			/*                      0x4cc-4e4 */
+	u32 pllc2_base;			/* _PLLC2_BASE,             0x4e8 */
+	u32 pllc2_misc0;		/* _PLLC2_MISC_0,           0x4ec */
+	u32 pllc2_misc1;		/* _PLLC2_MISC_1,           0x4f0 */
+	u32 pllc2_misc2;		/* _PLLC2_MISC_2,           0x4f4 */
+	u32 pllc2_misc3;		/* _PLLC2_MISC_3,           0x4f8 */
+	u32 pllc3_base;			/* _PLLC3_BASE,             0x4fc */
+	u32 pllc3_misc0;		/* _PLLC3_MISC_0,           0x500 */
+	u32 pllc3_misc1;		/* _PLLC3_MISC_1,           0x504 */
+	u32 pllc3_misc2;		/* _PLLC3_MISC_2,           0x508 */
+	u32 pllc3_misc3;		/* _PLLC3_MISC_3,           0x50c */
+	u32 pllx_misc1;			/* _PLLX_MISC_1,            0x510 */
+	u32 pllx_misc2;			/* _PLLX_MISC_2,            0x514 */
+	u32 pllx_misc3;			/* _PLLX_MISC_3,            0x518 */
+	u32 xusbio_pll_cfg0;		/* _XUSBIO_PLL_CFG0,        0x51c */
+	u32 xusbio_pll_cfg1;		/* _XUSBIO_PLL_CFG1,        0x520 */
+	u32 plle_aux1;			/* _PLLE_AUX1,              0x524 */
+	u32 pllp_reshift;		/* _PLLP_RESHIFT,           0x528 */
+	u32 utmipll_hw_pwrdn_cfg0;	/* _UTMIPLL_HW_PWRDN_CFG0,  0x52c */
+	u32 pllu_hw_pwrdn_cfg0;		/* _PLLU_HW_PWRDN_CFG0,     0x530 */
+	u32 xusb_pll_cfg0;		/* _XUSB_PLL_CFG0,          0x534 */
+	u32 _rsv30;			/*                          0x538 */
+	u32 clk_cpu_misc;		/* _CLK_CPU_MISC,           0x53c */
+	u32 clk_cpug_misc;		/* _CLK_CPUG_MISC,          0x540 */
+	u32 clk_cpulp_misc;		/* _CLK_CPULP_MISC,         0x544 */
+	u32 pllx_hw_ctrl_cfg;		/* _PLLX_HW_CTRL_CFG,       0x548 */
+	u32 pllx_sw_ramp_cfg;		/* _PLLX_SW_RAMP_CFG,       0x54c */
+	u32 pllx_hw_ctrl_status;	/* _PLLX_HW_CTRL_STATUS,    0x550 */
+	u32 _rsv31;			/*                          0x554 */
+	u32 super_gr3d_clk_div;		/* _SUPER_GR3D_CLK_DIVIDER, 0x558 */
+	u32 spare_reg0;			/* _SPARE_REG0,             0x55c */
+	u32 _rsv32[40];			/*                      0x560-5fc */
+	u32 clk_src_xusb_core_host;	/* _CLK_SOURCE_XUSB_CORE_HOST 0x600 */
+	u32 clk_src_xusb_falcon;	/* _CLK_SOURCE_XUSB_FALCON  0x604 */
+	u32 clk_src_xusb_fs;		/* _CLK_SOURCE_XUSB_FS      0x608 */
+	u32 clk_src_xusb_core_dev;	/* _CLK_SOURCE_XUSB_CORE_DEV 0x60c */
+	u32 clk_src_xusb_ss;		/* _CLK_SOURCE_XUSB_SS      0x610 */
+	u32 clk_src_cilab;		/* _CLK_SOURCE_CILAB        0x614 */
+	u32 clk_src_cilcd;		/* _CLK_SOURCE_CILCD        0x618 */
+	u32 clk_src_cile;		/* _CLK_SOURCE_CILE         0x61c */
+	u32 clk_src_dsia_lp;		/* _CLK_SOURCE_DSIA_LP      0x620 */
+	u32 clk_src_dsib_lp;		/* _CLK_SOURCE_DSIB_LP      0x624 */
+	u32 clk_src_entropy;		/* _CLK_SOURCE_ENTROPY      0x628 */
+	u32 clk_src_dvfs_ref;		/* _CLK_SOURCE_DVFS_REF     0x62c */
+	u32 clk_src_dvfs_soc;		/* _CLK_SOURCE_DVFS_SOC     0x630 */
+	u32 clk_src_traceclkin;		/* _CLK_SOURCE_TRACECLKIN   0x634 */
+	u32 clk_src_adx0;		/* _CLK_SOURCE_ADX0         0x638 */
+	u32 clk_src_amx0;		/* _CLK_SOURCE_AMX0         0x63c */
+	u32 clk_src_emc_latency;	/* _CLK_SOURCE_EMC_LATENCY  0x640 */
+	u32 clk_src_soc_therm;		/* _CLK_SOURCE_SOC_THERM    0x644 */
 };
 
 #define TEGRA_DEV_L			0
@@ -254,31 +326,32 @@ struct clk_rst_ctlr {
 #define OSC_FREQ_OSC38P4		5	/* 38.4MHz */
 #define OSC_FREQ_OSC48			9	/* 48.0MHz */
 
-/* CLK_RST_CONTROLLER_PLLx_BASE_0 */
-#define PLL_BYPASS_SHIFT		31
-#define PLL_BYPASS_MASK			(1U << PLL_BYPASS_SHIFT)
+/* CLK_RST_CONTROLLER_PLL*_BASE_0 */
+#define PLL_BASE_BYPASS			(1U << 31)
+#define PLL_BASE_ENABLE			(1U << 30)
+#define PLL_BASE_REF_DIS		(1U << 29)
+#define PLL_BASE_OVRRIDE		(1U << 28)
+#define PLL_BASE_LOCK			(1U << 27)
 
-#define PLL_ENABLE_SHIFT		30
-#define PLL_ENABLE_MASK			(1U << PLL_ENABLE_SHIFT)
+#define PLL_BASE_DIVP_SHIFT		20
+#define PLL_BASE_DIVP_MASK		(7U << PLL_BASE_DIVP_SHIFT)
 
-#define PLL_BASE_OVRRIDE_MASK		(1U << 28)
-#define PLL_BASE_LOCK_MASK		(1U << 27)
+#define PLL_BASE_DIVN_SHIFT		8
+#define PLL_BASE_DIVN_MASK		(0x3ffU << PLL_BASE_DIVN_SHIFT)
 
-#define PLL_DIVP_SHIFT			20
-#define PLL_DIVP_MASK			(7U << PLL_DIVP_SHIFT)
-
-#define PLL_DIVN_SHIFT			8
-#define PLL_DIVN_MASK			(0x3ffU << PLL_DIVN_SHIFT)
-
-#define PLL_DIVM_SHIFT			0
-#define PLL_DIVM_MASK			(0x1f << PLL_DIVM_SHIFT)
+#define PLL_BASE_DIVM_SHIFT		0
+#define PLL_BASE_DIVM_MASK		(0x1f << PLL_BASE_DIVM_SHIFT)
 
 /* SPECIAL CASE: PLLM, PLLC and PLLX use different-sized fields here */
-#define PLLCMX_DIVP_MASK		(0xfU << PLL_DIVP_SHIFT)
-#define PLLCMX_DIVN_MASK		(0xffU << PLL_DIVN_SHIFT)
-#define PLLCMX_DIVM_MASK		(0xffU << PLL_DIVM_SHIFT)
+#define PLLCMX_BASE_DIVP_MASK		(0xfU << PLL_BASE_DIVP_SHIFT)
+#define PLLCMX_BASE_DIVN_MASK		(0xffU << PLL_BASE_DIVN_SHIFT)
+#define PLLCMX_BASE_DIVM_MASK		(0xffU << PLL_BASE_DIVM_SHIFT)
 
-/* CLK_RST_CONTROLLER_PLLx_OUTx_0 */
+/* Generic, indiscriminate divisor mask. May catch some innocent bystander bits
+ * on the side that we don't particularly care about. */
+#define PLL_BASE_DIV_MASK		(0xffffff)
+
+/* CLK_RST_CONTROLLER_PLL*_OUT*_0 */
 #define PLL_OUT_RSTN			(1 << 0)
 #define PLL_OUT_CLKEN			(1 << 1)
 #define PLL_OUT_OVRRIDE			(1 << 2)
@@ -293,21 +366,22 @@ struct clk_rst_ctlr {
 #define PLL_OUT2_RATIO_SHIFT		24
 #define PLL_OUT2_RATIO_MASK		(0xffU << PLL_OUT2_RATIO_SHIFT)
 
-/* CLK_RST_CONTROLLER_PLLx_MISC_0 */
-#define PLL_DCCON_SHIFT			20
-#define PLL_DCCON_MASK			(1U << PLL_DCCON_SHIFT)
+/* CLK_RST_CONTROLLER_PLL*_MISC_0 */
+#define PLL_MISC_DCCON			(1 << 20)
 
-#define PLL_LOCK_ENABLE_SHIFT		18
-#define PLL_LOCK_ENABLE_MASK		(1U << PLL_LOCK_ENABLE_SHIFT)
+#define PLL_MISC_CPCON_SHIFT		8
+#define PLL_MISC_CPCON_MASK		(0xfU << PLL_MISC_CPCON_SHIFT)
 
-#define PLL_CPCON_SHIFT			8
-#define PLL_CPCON_MASK			(15U << PLL_CPCON_SHIFT)
+#define PLL_MISC_LFCON_SHIFT		4
+#define PLL_MISC_LFCON_MASK		(0xfU << PLL_MISC_LFCON_SHIFT)
 
-#define PLL_LFCON_SHIFT			4
-#define PLL_LFCON_MASK			(15U << PLL_LFCON_SHIFT)
+/* This bit is different all over the place. Oh joy... */
+#define PLLC_MISC_LOCK_ENABLE		(1 << 24)
+#define PLLUD_MISC_LOCK_ENABLE		(1 << 22)
+#define PLLPAXS_MISC_LOCK_ENABLE	(1 << 18)
+#define PLLE_MISC_LOCK_ENABLE		(1 << 9)
 
-#define PLLU_VCO_FREQ_SHIFT		20
-#define PLLU_VCO_FREQ_MASK		(1U << PLLU_VCO_FREQ_SHIFT)
+#define PLLU_MISC_VCO_FREQ		(1 << 20)
 
 #define PLLP_OUT1_OVR			(1 << 2)
 #define PLLP_OUT2_OVR			(1 << 18)
@@ -334,19 +408,6 @@ enum {
 	IN_408_OUT_9_6_DIVISOR = 83,
 };
 
-/* CRC_PLLP_MISC_0 0xac */
-#define PLLP_MISC_PLLP_CPCON_8		(8 << 8)
-#define PLLP_MISC_PLLP_LOCK_ENABLE	(1 << 18)
-
-/* CRC_PLLU_BASE_0 0xc0 */
-#define PLLU_BYPASS_ENABLE		(1 << 31)
-#define PLLU_ENABLE_ENABLE		(1 << 30)
-#define PLLU_REF_DIS_REF_DISABLE	(1 << 29)
-#define PLLU_OVERRIDE_ENABLE		(1 << 24)
-
-/* CRC_PLLU_MISC_0 0xcc */
-#define PLLU_LOCK_ENABLE_ENABLE		(1 << 22)
-
 /* PLLX_BASE_0 0xe0 */
 #define PLLX_BASE_PLLX_ENABLE		(1 << 30)
 
@@ -371,17 +432,19 @@ enum {
  * get_periph_clock_source()) but it does not seem worth it since the code
  * already checks the ranges of values it is writing, in clk_get_divider().
  */
-#define OUT_CLK_DIVISOR_SHIFT		0
-#define OUT_CLK_DIVISOR_MASK		(0xffff << OUT_CLK_DIVISOR_SHIFT)
+#define CLK_DIVISOR_SHIFT		0
+#define CLK_DIVISOR_MASK		(0xffff << CLK_DIVISOR_SHIFT)
 
-#define OUT_CLK_SOURCE_SHIFT		30
-#define OUT_CLK_SOURCE_MASK		(3U << OUT_CLK_SOURCE_SHIFT)
+#define CLK_SOURCE_SHIFT		30
+#define CLK_SOURCE_MASK			(3U << CLK_SOURCE_SHIFT)
 
-#define OUT_CLK_SOURCE3_SHIFT		29
-#define OUT_CLK_SOURCE3_MASK		(7U << OUT_CLK_SOURCE3_SHIFT)
+#define CLK_SOURCE3_SHIFT		29
+#define CLK_SOURCE3_MASK		(7U << CLK_SOURCE3_SHIFT)
 
-#define OUT_CLK_SOURCE4_SHIFT		28
-#define OUT_CLK_SOURCE4_MASK		(15U << OUT_CLK_SOURCE4_SHIFT)
+#define CLK_SOURCE4_SHIFT		28
+#define CLK_SOURCE4_MASK		(15U << CLK_SOURCE4_SHIFT)
+
+#define CLK_UART_DIV_OVERRIDE		(1 << 24)
 
 /* CLK_RST_CONTROLLER_SCLK_BURST_POLICY */
 #define SCLK_SYS_STATE_SHIFT		28U
@@ -449,33 +512,6 @@ enum {
 #define CLK_SYS_RATE_APB_RATE_SHIFT     0
 #define CLK_SYS_RATE_APB_RATE_MASK      (3 << CLK_SYS_RATE_AHB_RATE_SHIFT)
 
-/* CLK_RST_CONTROLLER_RST_CPUxx_CMPLX_CLR 0x344 */
-#define CLR_CPURESET0			(1 << 0)
-#define CLR_CPURESET1			(1 << 1)
-#define CLR_CPURESET2			(1 << 2)
-#define CLR_CPURESET3			(1 << 3)
-#define CLR_DBGRESET0			(1 << 12)
-#define CLR_DBGRESET1			(1 << 13)
-#define CLR_DBGRESET2			(1 << 14)
-#define CLR_DBGRESET3			(1 << 15)
-#define CLR_CORERESET0			(1 << 16)
-#define CLR_CORERESET1			(1 << 17)
-#define CLR_CORERESET2			(1 << 18)
-#define CLR_CORERESET3			(1 << 19)
-#define CLR_CXRESET0			(1 << 20)
-#define CLR_CXRESET1			(1 << 21)
-#define CLR_CXRESET2			(1 << 22)
-#define CLR_CXRESET3			(1 << 23)
-#define CLR_L2RESET			(1 << 24)
-#define CLR_NONCPURESET			(1 << 29)
-#define CLR_PRESETDBG			(1 << 30)
-
-/* CLK_RST_CONTROLLER_CLK_CPU_CMPLX_CLR 0x34c */
-#define CLR_CPU3_CLK_STP		(1 << 11)
-#define CLR_CPU2_CLK_STP		(1 << 10)
-#define CLR_CPU1_CLK_STP		(1 << 9)
-#define CLR_CPU0_CLK_STP		(1 << 8)
-
 /* CRC_CLK_SOURCE_MSELECT_0 0x3b4 */
 #define MSELECT_CLK_SRC_PLLP_OUT0	(0 << 29)
 
@@ -493,5 +529,47 @@ enum {
 #define UTMIP_FORCE_PD_SAMP_C_POWERDOWN	(1 << 4)
 #define UTMIP_FORCE_PD_SAMP_B_POWERDOWN	(1 << 2)
 #define UTMIP_FORCE_PD_SAMP_A_POWERDOWN	(1 << 0)
+
+// CCLK_BRST_POL
+enum {
+	CRC_CCLK_BRST_POL_PLLX_OUT0 = 0x8,
+	CRC_CCLK_BRST_POL_CPU_STATE_RUN = 0x2
+};
+
+// SUPER_CCLK_DIVIDER
+enum {
+	CRC_SUPER_CCLK_DIVIDER_SUPER_CDIV_ENB = 1 << 31
+};
+
+// CLK_CPU_CMPLX_CLR
+enum {
+	CRC_CLK_CLR_CPU0_STP = 0x1 << 8,
+	CRC_CLK_CLR_CPU1_STP = 0x1 << 9,
+	CRC_CLK_CLR_CPU2_STP = 0x1 << 10,
+	CRC_CLK_CLR_CPU3_STP = 0x1 << 11
+};
+
+// RST_CPUG_CMPLX_CLR
+enum {
+	CRC_RST_CPUG_CLR_CPU0 = 0x1 << 0,
+	CRC_RST_CPUG_CLR_CPU1 = 0x1 << 1,
+	CRC_RST_CPUG_CLR_CPU2 = 0x1 << 2,
+	CRC_RST_CPUG_CLR_CPU3 = 0x1 << 3,
+	CRC_RST_CPUG_CLR_DBG0 = 0x1 << 12,
+	CRC_RST_CPUG_CLR_DBG1 = 0x1 << 13,
+	CRC_RST_CPUG_CLR_DBG2 = 0x1 << 14,
+	CRC_RST_CPUG_CLR_DBG3 = 0x1 << 15,
+	CRC_RST_CPUG_CLR_CORE0 = 0x1 << 16,
+	CRC_RST_CPUG_CLR_CORE1 = 0x1 << 17,
+	CRC_RST_CPUG_CLR_CORE2 = 0x1 << 18,
+	CRC_RST_CPUG_CLR_CORE3 = 0x1 << 19,
+	CRC_RST_CPUG_CLR_CX0 = 0x1 << 20,
+	CRC_RST_CPUG_CLR_CX1 = 0x1 << 21,
+	CRC_RST_CPUG_CLR_CX2 = 0x1 << 22,
+	CRC_RST_CPUG_CLR_CX3 = 0x1 << 23,
+	CRC_RST_CPUG_CLR_L2 = 0x1 << 24,
+	CRC_RST_CPUG_CLR_NONCPU = 0x1 << 29,
+	CRC_RST_CPUG_CLR_PDBG = 0x1 << 30,
+};
 
 #endif	/* _TEGRA124_CLK_RST_H_ */

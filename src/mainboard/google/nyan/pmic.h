@@ -17,14 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef __MAINBOARD_GOOGLE_NYAN_PMIC_H__
+#define __MAINBOARD_GOOGLE_NYAN_PMIC_H__
 
-#include <cbfs.h>  /* This driver serves as a CBFS media source. */
+void pmic_init(unsigned bus);
 
-#include "spi.h"
-
-int init_default_cbfs_media(struct cbfs_media *media)
-{
-	return initialize_tegra_spi_cbfs_media(media,
-		(void*)CONFIG_CBFS_CACHE_ADDRESS,
-		CONFIG_CBFS_CACHE_SIZE);
-}
+#endif /* __MAINBOARD_GOOGLE_NYAN_PMIC_H__ */

@@ -18,38 +18,19 @@
  */
 
 #include <arch/hlt.h>
-#include <arch/io.h>
+#include <bootblock_common.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <delay.h>
+#include <soc/clock.h>
 
-#include "clock.h"
 #include "pinmux.h"
-
-static void hacky_hardcoded_uart_setup_function(void)
-{
-	// Assert UART reset and enable clock.
-	setbits_le32((void *)(0x60006000 + 4 + 0), 1 << 6);
-
-	// Enable the clock.
-	setbits_le32((void *)(0x60006000 + 4 * 4 + 0), 1 << 6);
-
-	// Set the clock source.
-	clrbits_le32((void *)(0x60006000 + 0x100 + 4 * 0x1e), 3 << 30);
-
-	udelay(2);
-
-	// De-assert reset to UART.
-	clrbits_le32((void *)(0x60006000 + 4 + 0), 1 << 6);
-}
+#include "power.h"
 
 void main(void)
 {
 	void *entry;
 
-	set_avp_clock_to_clkm();
-
-	hacky_hardcoded_uart_setup_function();
+	clock_early_uart();
 
 	// Serial out, tristate off.
 	pinmux_set_config(PINMUX_KB_ROW9_INDEX, PINMUX_KB_ROW9_FUNC_UA3);
@@ -61,7 +42,26 @@ void main(void)
 	if (CONFIG_BOOTBLOCK_CONSOLE)
 		console_init();
 
+	clock_init();
+
+	bootblock_mainboard_init();
+
+	pinmux_set_config(PINMUX_CORE_PWR_REQ_INDEX,
+			  PINMUX_CORE_PWR_REQ_FUNC_PWRON);
+	pinmux_set_config(PINMUX_CPU_PWR_REQ_INDEX,
+			  PINMUX_CPU_PWR_REQ_FUNC_CPU);
+	pinmux_set_config(PINMUX_PWR_INT_N_INDEX,
+			  PINMUX_PWR_INT_N_FUNC_PMICINTR |
+			  PINMUX_TRISTATE |
+			  PINMUX_INPUT_ENABLE);
+
+	power_enable_cpu_rail();
+	power_ungate_cpu();
+
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/romstage");
+
+	if (entry)
+		clock_cpu0_config_and_reset(entry);
 
 	hlt();
 }

@@ -20,6 +20,8 @@
 #ifndef __ARCH_CPU_H__
 #define __ARCH_CPU_H__
 
+#include <stdint.h>
+
 #define asmlinkage
 
 #if !defined(__PRE_RAM__)

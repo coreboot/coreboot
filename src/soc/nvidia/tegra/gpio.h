@@ -22,12 +22,34 @@
 
 #include <stdint.h>
 
-/* Higher level functions for common GPIO configurations. */
+#include "pinmux.h"
 
-void gpio_input(int gpio_index, int pinmux_index);
-void gpio_input_pullup(int gpio_index, int pinmux_index);
-void gpio_input_pulldown(int gpio_index, int pinmux_index);
-void gpio_output(int gpio_index, int pinmux_index, int value);
+/* Wrapper type for GPIOs. Always use GPIO() macro to generate. */
+typedef u32 gpio_t;
+
+#define GPIO_PINMUX_SHIFT 16
+#define GPIO(name) ((gpio_t)(GPIO_##name##_INDEX | \
+			     (PINMUX_GPIO_##name << GPIO_PINMUX_SHIFT)))
+
+/* Higher level function wrappers for common GPIO configurations. */
+
+void gpio_output(gpio_t gpio, int value);
+void __gpio_input(gpio_t gpio, u32 pull);
+
+static inline void gpio_input(gpio_t gpio)
+{
+	__gpio_input(gpio, PINMUX_PULL_NONE);
+}
+
+static inline void gpio_input_pulldown(gpio_t gpio)
+{
+	__gpio_input(gpio, PINMUX_PULL_DOWN);
+}
+
+static inline void gpio_input_pullup(gpio_t gpio)
+{
+	__gpio_input(gpio, PINMUX_PULL_UP);
+}
 
 /* Functions to modify specific GPIO control values. */
 
@@ -35,29 +57,29 @@ enum gpio_mode {
 	GPIO_MODE_SPIO = 0,
 	GPIO_MODE_GPIO = 1
 };
-void gpio_set_mode(int gpio_index, enum gpio_mode);
-int gpio_get_mode(int gpio_index);
+void gpio_set_mode(gpio_t gpio, enum gpio_mode);
+int gpio_get_mode(gpio_t gpio);
 
 // Lock a GPIO with extreme caution since they can't be unlocked.
-void gpio_set_lock(int gpio_index);
-int gpio_get_lock(int gpio_index);
+void gpio_set_lock(gpio_t gpio);
+int gpio_get_lock(gpio_t gpio);
 
-void gpio_set_out_enable(int gpio_index, int enable);
-int gpio_get_out_enable(int gpio_index);
+void gpio_set_out_enable(gpio_t gpio, int enable);
+int gpio_get_out_enable(gpio_t gpio);
 
-void gpio_set_out_value(int gpio_index, int value);
-int gpio_get_out_value(int gpio_index);
+void gpio_set_out_value(gpio_t gpio, int value);
+int gpio_get_out_value(gpio_t gpio);
 
-int gpio_get_in_value(int gpio_index);
+int gpio_get_in_value(gpio_t gpio);
 
-int gpio_get_int_status(int gpio_index);
+int gpio_get_int_status(gpio_t gpio);
 
-void gpio_set_int_enable(int gpio_index, int enable);
-int gpio_get_int_enable(int gpio_index);
+void gpio_set_int_enable(gpio_t gpio, int enable);
+int gpio_get_int_enable(gpio_t gpio);
 
-void gpio_set_int_level(int gpio_index, int high_rise, int edge, int delta);
-void gpio_get_int_level(int gpio_index, int *high_rise, int *edge, int *delta);
+void gpio_set_int_level(gpio_t gpio, int high_rise, int edge, int delta);
+void gpio_get_int_level(gpio_t gpio, int *high_rise, int *edge, int *delta);
 
-void gpio_set_int_clear(int gpio_index);
+void gpio_set_int_clear(gpio_t gpio);
 
 #endif	/* __SOC_NVIDIA_TEGRA_GPIO_H__ */

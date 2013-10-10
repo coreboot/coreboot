@@ -14,9 +14,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __SOC_NVIDIA_TEGRA124_CLOCK_H__
-#define __SOC_NVIDIA_TEGRA124_CLOCK_H__
+#ifndef __NVIDIA_TEGRA124_SPI_H__
+#define __NVIDIA_TEGRA124_SPI_H__
 
-void set_avp_clock_to_clkm(void);
+#include <stddef.h>
 
-#endif /* __SOC_NVIDIA_TEGRA124_CLOCK_H__ */
+struct cbfs_media;
+int initialize_tegra_spi_cbfs_media(struct cbfs_media *media,
+				     void *buffer_address,
+				     size_t buffer_size);
+
+void tegra_spi_init(unsigned int bus);
+
+#endif	/* __NVIDIA_TEGRA124_SPI_H__ */

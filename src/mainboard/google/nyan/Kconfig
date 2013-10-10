@@ -22,6 +22,10 @@ if BOARD_GOOGLE_NYAN
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select SOC_NVIDIA_TEGRA124
+	select MAINBOARD_HAS_CHROMEOS
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_SPI
+	select MAINBOARD_HAS_BOOTBLOCK_INIT
 	select BOARD_ROMSIZE_KB_1024
 
 config MAINBOARD_DIR
@@ -53,5 +57,25 @@ config BCT_CFG_EMMC
 	  Configure the BCT for booting from eMMC.
 
 endchoice
+
+config BOOT_MEDIA_SPI_BUS
+	int "SPI bus with boot media ROM"
+	range 1 6
+	depends on BCT_CFG_SPI
+	default 4
+	help
+	  Which SPI bus the boot media is connected to.
+
+config BOOT_MEDIA_SPI_CHIP_SELECT
+	int "Chip select for SPI boot media"
+	range 0 3
+	depends on BCT_CFG_SPI
+	default 0
+	help
+	  Which chip select to use for boot media.
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 1
 
 endif # BOARD_GOOGLE_NYAN

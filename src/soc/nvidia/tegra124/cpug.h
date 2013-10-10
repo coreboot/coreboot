@@ -17,14 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef __SOC_NVIDIA_TEGRA124_CPUG_H__
+#define __SOC_NVIDIA_TEGRA124_CPUG_H__
 
-#include <cbfs.h>  /* This driver serves as a CBFS media source. */
+#include <stdint.h>
 
-#include "spi.h"
+extern u32 cpug_stack_pointer;
+extern u32 cpug_entry_point;
+void cpug_setup(void);
 
-int init_default_cbfs_media(struct cbfs_media *media)
-{
-	return initialize_tegra_spi_cbfs_media(media,
-		(void*)CONFIG_CBFS_CACHE_ADDRESS,
-		CONFIG_CBFS_CACHE_SIZE);
-}
+#endif	/* __SOC_NVIDIA_TEGRA124_CPUG_H__ */

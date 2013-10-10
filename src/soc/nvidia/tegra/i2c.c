@@ -32,12 +32,10 @@ static int tegra_i2c_send_recv(struct tegra_i2c_regs *regs, int read,
 {
 	while (data_len) {
 		uint32_t status = read32(&regs->fifo_status);
-		int tx_empty =
-			status & TEGRA_I2C_FIFO_STATUS_TX_FIFO_EMPTY_CNT_MASK;
-		tx_empty >>= TEGRA_I2C_FIFO_STATUS_TX_FIFO_EMPTY_CNT_SHIFT;
-		int rx_full =
-			status & TEGRA_I2C_FIFO_STATUS_RX_FIFO_FULL_CNT_MASK;
-		rx_full >>= TEGRA_I2C_FIFO_STATUS_RX_FIFO_FULL_CNT_SHIFT;
+		int tx_empty = status & I2C_FIFO_STATUS_TX_FIFO_EMPTY_CNT_MASK;
+		tx_empty >>= I2C_FIFO_STATUS_TX_FIFO_EMPTY_CNT_SHIFT;
+		int rx_full = status & I2C_FIFO_STATUS_RX_FIFO_FULL_CNT_MASK;
+		rx_full >>= I2C_FIFO_STATUS_RX_FIFO_FULL_CNT_SHIFT;
 
 		while (header_words && tx_empty) {
 			write32(*headers++, &regs->tx_packet_fifo);
@@ -73,19 +71,17 @@ static int tegra_i2c_send_recv(struct tegra_i2c_regs *regs, int read,
 		uint32_t transfer_status =
 			read32(&regs->packet_transfer_status);
 
-		if (transfer_status & TEGRA_I2C_PKT_STATUS_NOACK_ADDR_MASK) {
+		if (transfer_status & I2C_PKT_STATUS_NOACK_ADDR) {
 			printk(BIOS_ERR,
 			       "%s: The address was not acknowledged.\n",
 			       __func__);
 			return -1;
-		} else if (transfer_status &
-			   TEGRA_I2C_PKT_STATUS_NOACK_DATA_MASK) {
+		} else if (transfer_status & I2C_PKT_STATUS_NOACK_DATA) {
 			printk(BIOS_ERR,
 			       "%s: The data was not acknowledged.\n",
 			       __func__);
 			return -1;
-		} else if (transfer_status &
-			   TEGRA_I2C_PKT_STATUS_ARB_LOST_MASK) {
+		} else if (transfer_status & I2C_PKT_STATUS_ARB_LOST) {
 			printk(BIOS_ERR,
 			       "%s: Lost arbitration.\n",
 			       __func__);
@@ -108,25 +104,22 @@ static int tegra_i2c_request(int bus, unsigned chip, int cont, int restart,
 		return -1;
 	}
 
-	headers[0] = (0 << IOHEADER_WORD0_PROTHDRSZ_SHIFT) |
-		     (1 << IOHEADER_WORD0_PKTID_SHIFT) |
-		     (bus << IOHEADER_WORD0_CONTROLLER_ID_SHIFT) |
-		     IOHEADER_WORD0_PROTOCOL_I2C |
-		     IOHEADER_WORD0_PKTTYPE_REQUEST;
+	headers[0] = (0 << IOHEADER_PROTHDRSZ_SHIFT) |
+		     (1 << IOHEADER_PKTID_SHIFT) |
+		     (bus << IOHEADER_CONTROLLER_ID_SHIFT) |
+		     IOHEADER_PROTOCOL_I2C | IOHEADER_PKTTYPE_REQUEST;
 
-	headers[1] = (data_len - 1) << IOHEADER_WORD1_PAYLOADSIZE_SHIFT;
+	headers[1] = (data_len - 1) << IOHEADER_PAYLOADSIZE_SHIFT;
 
 	uint32_t slave_addr = (chip << 1) | (read ? 1 : 0);
-	headers[2] = IOHEADER_I2C_REQ_ADDRESS_MODE_7BIT |
+	headers[2] = IOHEADER_I2C_REQ_ADDR_MODE_7BIT |
 		     (slave_addr << IOHEADER_I2C_REQ_SLAVE_ADDR_SHIFT);
 	if (read)
-		headers[2] |= IOHEADER_I2C_REQ_READ_WRITE_READ;
-	else
-		headers[2] |= IOHEADER_I2C_REQ_READ_WRITE_WRITE;
+		headers[2] |= IOHEADER_I2C_REQ_READ;
 	if (restart)
-		headers[2] |= IOHEADER_I2C_REQ_REPEAT_START_STOP_START;
+		headers[2] |= IOHEADER_I2C_REQ_REPEAT_START;
 	if (cont)
-		headers[2] |= IOHEADER_I2C_REQ_CONTINUE_XFER_MASK;
+		headers[2] |= IOHEADER_I2C_REQ_CONTINUE_XFER;
 
 	return tegra_i2c_send_recv(regs, read, headers, ARRAY_SIZE(headers),
 				   data, data_len);
@@ -136,8 +129,7 @@ static int i2c_readwrite(unsigned bus, unsigned chip, unsigned addr,
 			 unsigned alen, uint8_t *buf, unsigned len, int read)
 {
 	const uint32_t max_payload =
-		(IOHEADER_WORD1_PAYLOADSIZE_MASK + 1) >>
-		IOHEADER_WORD1_PAYLOADSIZE_SHIFT;
+		(IOHEADER_PAYLOADSIZE_MASK + 1) >> IOHEADER_PAYLOADSIZE_SHIFT;
 	uint8_t abuf[sizeof(addr)];
 
 	int i;
@@ -176,5 +168,5 @@ void i2c_init(unsigned bus)
 {
 	struct tegra_i2c_regs * const regs = tegra_i2c_bases[bus];
 
-	write32(TEGRA_I2C_CNFG_PACKET_MODE_EN_MASK, &regs->cnfg);
+	write32(I2C_CNFG_PACKET_MODE_EN, &regs->cnfg);
 }

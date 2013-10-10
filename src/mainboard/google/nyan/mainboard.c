@@ -19,10 +19,44 @@
 
 #include <device/device.h>
 #include <boot/coreboot_tables.h>
+#include <soc/nvidia/tegra124/gpio.h>
 
-/* this happens after cpu_init where exynos resources are set */
+static void setup_pinmux(void)
+{
+	// Write protect.
+	gpio_input_pullup(GPIO(R1));
+	// Recovery mode.
+	gpio_input_pullup(GPIO(Q7));
+	// Lid switch.
+	gpio_input_pullup(GPIO(R4));
+	// Power switch.
+	gpio_input_pullup(GPIO(Q0));
+	// Developer mode.
+	gpio_input_pullup(GPIO(Q6));
+	// EC in RW.
+	gpio_input_pullup(GPIO(U4));
+
+	// SPI1 MOSI
+	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
+						 PINMUX_PULL_UP |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 MISO
+	pinmux_set_config(PINMUX_ULPI_DIR_INDEX, PINMUX_ULPI_DIR_FUNC_SPI1 |
+						 PINMUX_PULL_UP |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 SCLK
+	pinmux_set_config(PINMUX_ULPI_NXT_INDEX, PINMUX_ULPI_NXT_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 CS0
+	pinmux_set_config(PINMUX_ULPI_STP_INDEX, PINMUX_ULPI_STP_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+}
+
 static void mainboard_init(device_t dev)
 {
+	setup_pinmux();
 }
 
 static void mainboard_enable(device_t dev)

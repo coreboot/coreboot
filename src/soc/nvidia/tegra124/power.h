@@ -17,14 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef __SOC_NVIDIA_TEGRA124_POWER_H__
+#define __SOC_NVIDIA_TEGRA124_POWER_H__
 
-#include <cbfs.h>  /* This driver serves as a CBFS media source. */
+// This function does not enable the external power to the rail, it enables
+// the rail itself internal to the SOC.
+void power_enable_cpu_rail(void);
 
-#include "spi.h"
+void power_ungate_cpu(void);
 
-int init_default_cbfs_media(struct cbfs_media *media)
-{
-	return initialize_tegra_spi_cbfs_media(media,
-		(void*)CONFIG_CBFS_CACHE_ADDRESS,
-		CONFIG_CBFS_CACHE_SIZE);
-}
+#endif	/* __SOC_NVIDIA_TEGRA124_POWER_H__ */

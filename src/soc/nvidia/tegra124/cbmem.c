@@ -17,14 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <cbmem.h>
+#include <soc/addressmap.h>
 
-#include <cbfs.h>  /* This driver serves as a CBFS media source. */
-
-#include "spi.h"
-
-int init_default_cbfs_media(struct cbfs_media *media)
+void *cbmem_top(void)
 {
-	return initialize_tegra_spi_cbfs_media(media,
-		(void*)CONFIG_CBFS_CACHE_ADDRESS,
-		CONFIG_CBFS_CACHE_SIZE);
+	return (void *)(CONFIG_SYS_SDRAM_BASE +
+		((CONFIG_DRAM_SIZE_MB - FB_SIZE_MB)<< 20UL));
 }

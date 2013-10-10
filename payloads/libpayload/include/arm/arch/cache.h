@@ -304,6 +304,9 @@ void dcache_clean_all(void);
 /* dcache invalidate all (on current level given by CCSELR) */
 void dcache_invalidate_all(void);
 
+/* returns number of bytes per cache line */
+unsigned int dcache_line_bytes(void);
+
 /* dcache and MMU disable */
 void dcache_mmu_disable(void);
 

@@ -194,17 +194,20 @@ void dcache_invalidate_all(void)
 	dcache_foreach(OP_DCISW);
 }
 
-static unsigned int line_bytes(void)
+unsigned int dcache_line_bytes(void)
 {
 	uint32_t ccsidr;
-	unsigned int size;
+	static unsigned int line_bytes = 0;
+
+	if (line_bytes)
+		return line_bytes;
 
 	ccsidr = read_ccsidr();
 	/* [2:0] - Indicates (Log2(number of words in cache line)) - 2 */
-	size = 1 << ((ccsidr & 0x7) + 2);	/* words per line */
-	size *= sizeof(unsigned int);		/* bytes per line */
+	line_bytes = 1 << ((ccsidr & 0x7) + 2);	/* words per line */
+	line_bytes *= sizeof(unsigned int);	/* bytes per line */
 
-	return size;
+	return line_bytes;
 }
 
 /*
@@ -217,7 +220,7 @@ static void dcache_op_mva(void const *addr, size_t len, enum dcache_op op)
 {
 	unsigned long line, linesize;
 
-	linesize = line_bytes();
+	linesize = dcache_line_bytes();
 	line = (uint32_t)addr & ~(linesize - 1);
 
 	dsb();

@@ -581,7 +581,7 @@ err:
 
 static void enable_usbdebug(void)
 {
-#if defined(__PRE_RAM__) || !(CONFIG_EARLY_CONSOLE && CONFIG_EARLY_CBMEM_INIT)
+#if defined(__PRE_RAM__) || !CONFIG_USBDEBUG_IN_ROMSTAGE
 	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
 	pci_ehci_dbg_enable(dbg_dev, CONFIG_EHCI_BAR);
 #endif

@@ -17,5 +17,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-romstage-$(CONFIG_USBDEBUG) += usb_debug.c
+romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += usb_debug.c
 ramstage-$(CONFIG_USBDEBUG) += usb_debug.c

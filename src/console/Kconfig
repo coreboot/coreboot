@@ -173,6 +173,11 @@ config USBDEBUG
 
 	  If unsure, say N.
 
+config USBDEBUG_IN_ROMSTAGE
+	bool
+	default y if USBDEBUG && EARLY_CBMEM_INIT && EARLY_CONSOLE
+	default n
+
 if USBDEBUG
 
 config USBDEBUG_HCD_INDEX

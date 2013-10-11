@@ -21,6 +21,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select CHANNEL_XOR_RANDOMIZATION
 	select HAVE_ACPI_TABLES
 	select HAVE_ACPI_RESUME
+	select EARLY_CBMEM_INIT
 config MAINBOARD_DIR
 	string
 	default lenovo/t60

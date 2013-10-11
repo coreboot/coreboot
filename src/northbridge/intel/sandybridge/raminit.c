@@ -58,6 +58,7 @@ static void save_mrc_data(struct pei_data *pei_data)
 {
 	u16 c1, c2, checksum;
 
+#if CONFIG_EARLY_CBMEM_INIT
 	struct mrc_data_container *mrcdata;
 	int output_len = ALIGN(pei_data->mrc_output_len, 16);
 
@@ -83,6 +84,7 @@ static void save_mrc_data(struct pei_data *pei_data)
 
 	mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
 						    mrcdata->mrc_data_size);
+#endif
 
 	/* Save the MRC seed values to CMOS */
 	cmos_write32(CMOS_OFFSET_MRC_SEED, pei_data->scrambler_seed);

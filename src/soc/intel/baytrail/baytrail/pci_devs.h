@@ -32,11 +32,6 @@
 #define GFX_FUNC 0
 # define GFX_DEVID 0x0f31
 
-/* MMC Port */
-#define MMC_DEV 16
-#define MMC_FUNC 0
-# define MMC_DEVID 0x0f14
-
 /* SDIO Port */
 #define SDIO_DEV 17
 #define SDIO_FUNC 0
@@ -62,6 +57,11 @@
 #define LPE_DEV 21
 #define LPE_FUNC 0
 # define LPE_DEVID 0x0f28
+
+/* MMC Port */
+#define MMC_DEV 23
+#define MMC_FUNC 0
+# define MMC_DEVID 0x0f50
 
 /* Serial IO 1 */
 #define SIO1_DEV 24

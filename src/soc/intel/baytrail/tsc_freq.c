@@ -27,14 +27,21 @@
 #include <baytrail/romstage.h>
 #endif
 
-
-#define BCLK 100 /* 100 MHz */
 unsigned long tsc_freq_mhz(void)
 {
 	msr_t platform_info;
+	msr_t clk_info;
+	unsigned long bclk_khz;
 
 	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	return BCLK * ((platform_info.lo >> 8) & 0xff);
+	clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
+	switch (clk_info.lo & 0x3) {
+	case 0: bclk_khz =  83333; break;
+	case 1: bclk_khz = 100000; break;
+	case 2: bclk_khz = 133333; break;
+	case 3: bclk_khz = 116666; break;
+	}
+	return (bclk_khz * ((platform_info.lo >> 8) & 0xff)) / 1000;
 }
 
 void set_max_freq(void)

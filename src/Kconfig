@@ -182,6 +182,7 @@ config EARLY_CBMEM_INIT
 config DYNAMIC_CBMEM
 	bool "The CBMEM space is dynamically grown."
 	default n
+	select EARLY_CBMEM_INIT
 	help
 	  Instead of reserving a static amount of CBMEM space the CBMEM
 	  area grows dynamically.  CBMEM can be used both in romstage (after

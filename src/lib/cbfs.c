@@ -127,53 +127,6 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 
 #include <rmodule.h>
 #include <romstage_handoff.h>
-/* When CONFIG_RELOCATABLE_RAMSTAGE is enabled and this file is being compiled
- * for the romstage, the rmodule loader is used.  */
-void __attribute__((weak))
-cache_loaded_ramstage(struct romstage_handoff *handoff,
-                      const struct cbmem_entry *ramstage, void *entry_point)
-{
-	uint32_t ramstage_size;
-	const struct cbmem_entry *entry;
-
-	if (handoff == NULL)
-		return;
-
-	ramstage_size = cbmem_entry_size(ramstage);
-	/* cbmem_entry_add() does a find() before add(). */
-	entry = cbmem_entry_add(CBMEM_ID_RAMSTAGE_CACHE, ramstage_size);
-
-	if (entry == NULL)
-		return;
-
-	/* Keep track of the entry point in the handoff structure. */
-	handoff->ramstage_entry_point = (uint32_t)entry_point;
-
-	memcpy(cbmem_entry_start(entry), cbmem_entry_start(ramstage),
-	       ramstage_size);
-}
-
-void * __attribute__((weak))
-load_cached_ramstage(struct romstage_handoff *handoff,
-                     const struct cbmem_entry *ramstage)
-{
-	const struct cbmem_entry *entry_cache;
-
-	if (handoff == NULL)
-		return NULL;
-
-	entry_cache = cbmem_entry_find(CBMEM_ID_RAMSTAGE_CACHE);
-
-	if (entry_cache == NULL)
-		return NULL;
-
-	/* Load the cached ramstage copy into the to-be-run region. */
-	memcpy(cbmem_entry_start(ramstage), cbmem_entry_start(entry_cache),
-	       cbmem_entry_size(ramstage));
-
-	return (void *)handoff->ramstage_entry_point;
-}
-
 static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
                                   struct romstage_handoff *handoff)
 {

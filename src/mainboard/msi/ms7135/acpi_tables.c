@@ -48,28 +48,29 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 /* APIC */
 unsigned long acpi_fill_madt(unsigned long current)
 {
-	unsigned long apic_addr;
 	device_t dev;
+	struct resource *res;
 
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
 
 	/* Write NVIDIA CK804 IOAPIC. */
 	dev = dev_find_slot(0x0, PCI_DEVFN(0x1,0));
-	if (dev) {
-		apic_addr = pci_read_config32(dev, PCI_BASE_ADDRESS_1) & ~0xf;
-		current += acpi_create_madt_ioapic(
-			(acpi_madt_ioapic_t *)current,
-			CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS,
-			apic_addr, 0);
-		/* Initialize interrupt mapping if mptable.c didn't. */
+	ASSERT(dev != NULL);
+
+	res = find_resource(dev, PCI_BASE_ADDRESS_1);
+	ASSERT(res != NULL);
+
+	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current,
+		CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS, res->base, 0);
+
+	/* Initialize interrupt mapping if mptable.c didn't. */
 #if (!CONFIG_GENERATE_MP_TABLE)
 #error untested config
-		pci_write_config32(dev, 0x7c, 0x0120d218);
-		pci_write_config32(dev, 0x80, 0x12008a00);
-		pci_write_config32(dev, 0x84, 0x0000007d);
+	pci_write_config32(dev, 0x7c, 0x0120d218);
+	pci_write_config32(dev, 0x80, 0x12008a00);
+	pci_write_config32(dev, 0x84, 0x0000007d);
 #endif
-	}
 
 	/* IRQ of timer */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)

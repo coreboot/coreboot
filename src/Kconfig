@@ -190,7 +190,7 @@ config DYNAMIC_CBMEM
 
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
-	depends on (EARLY_CBMEM_INIT || DYNAMIC_CBMEM)
+	default n
 	help
 	  Make coreboot create a table of timer-ID/timer-value pairs to
 	  allow measuring time spent at different phases of the boot process.

@@ -58,16 +58,21 @@ uint32_t iosf_bunit_read(int reg);
 void iosf_bunit_write(int reg, uint32_t val);
 uint32_t iosf_dunit_read(int reg);
 void iosf_dunit_write(int reg, uint32_t val);
+/* Some registers are per channel while the gloals live in dunit 0 */
+uint32_t iosf_dunit_ch0_read(int reg);
+uint32_t iosf_dunit_ch1_read(int reg);
 uint32_t iosf_punit_read(int reg);
 void iosf_punit_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
 #define IOSF_PORT_SYSMEMC	0x01 /* System Memory Controller */
+#define IOSF_PORT_DUNIT_CH0	0x07 /* DUNIT Channel 0 */
 #define IOSF_PORT_CPU_BUS	0x02 /* CPU Bus Interface Controller */
 #define IOSF_PORT_BUNIT		0x03 /* System Memroy Arbiter/Bunit */
 #define IOSF_PORT_PMC		0x04 /* Power Management Controller */
 #define IOSF_PORT_GFX		0x06 /* Graphics Adapter */
+#define IOSF_PORT_DUNIT_CH1	0x07 /* DUNIT Channel 1 */
 #define IOSF_PORT_SYSMEMIO	0x0c /* System Memory IO */
 #define IOSF_PORT_USBPHY	0x43 /* USB PHY */
 #define IOSF_PORT_SATAPHY	0xa3 /* SATA PHY */
@@ -120,10 +125,12 @@ void iosf_punit_write(int reg, uint32_t val);
  */
 
 #define DRP			0x00
-# define DRP_CH0_RANK0_EN	(0x01 << 0)
-# define DRP_CH0_RANK1_EN	(0x01 << 1)
-# define DRP_CH1_RANK0_EN	(0x01 << 2)
-# define DRP_CH1_RANK1_EN	(0x01 << 3)
+# define DRP_DIMM0_RANK0_EN	(0x01 << 0)
+# define DRP_DIMM0_RANK1_EN	(0x01 << 1)
+# define DRP_DIMM1_RANK0_EN	(0x01 << 2)
+# define DRP_DIMM1_RANK1_EN	(0x01 << 3)
+# define DRP_RANK_MASK (DRP_DIMM0_RANK0_EN | DRP_DIMM0_RANK1_EN | \
+			DRP_DIMM1_RANK0_EN | DRP_DIMM1_RANK1_EN)
 #define DTR0			0x01
 # define DTR0_SPEED_MASK	0x03
 # define DTR0_SPEED_800		0x00

@@ -187,47 +187,35 @@
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_HIGH }
 
-#define GPIO_FUNC0 \
+/* Define no-pull / PU / PD configs for each functional config option */
+#define _GPIO_FUNC(_func, _pu, _str) \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC0 | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf0 = PAD_FUNC##_func | PAD_PU_##_pu | PAD_PU_##_str | \
+		       PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_DEFAULT }
 
-#define GPIO_FUNC1 \
-	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC1 | PAD_CONFIG0_DEFAULT, \
-	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_DEFAULT }
-
-#define GPIO_FUNC2 \
-	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC2 | PAD_CONFIG0_DEFAULT, \
-	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_DEFAULT }
-
-#define GPIO_FUNC3 \
-	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC3 | PAD_CONFIG0_DEFAULT, \
-	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_DEFAULT }
-
-#define GPIO_FUNC4 \
-	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC4 | PAD_CONFIG0_DEFAULT, \
-	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_DEFAULT }
-
-#define GPIO_FUNC5 \
-	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC5 | PAD_CONFIG0_DEFAULT, \
-	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_DEFAULT }
-
-#define GPIO_FUNC6 \
-	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC6 | PAD_CONFIG0_DEFAULT, \
-	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_DEFAULT }
+#define GPIO_FUNC0		_GPIO_FUNC(0, DISABLE, 10K)
+#define GPIO_FUNC0_PU_10K	_GPIO_FUNC(0, UP, 10K)
+#define GPIO_FUNC0_PD_10K	_GPIO_FUNC(0, DOWN, 10K)
+#define GPIO_FUNC1		_GPIO_FUNC(1, DISABLE, 10K)
+#define GPIO_FUNC1_PU_10K	_GPIO_FUNC(1, UP, 10K)
+#define GPIO_FUNC1_PD_10K	_GPIO_FUNC(1, DOWN, 10K)
+#define GPIO_FUNC2		_GPIO_FUNC(2, DISABLE, 10K)
+#define GPIO_FUNC2_PU_10K	_GPIO_FUNC(2, UP, 10K)
+#define GPIO_FUNC2_PD_10K	_GPIO_FUNC(2, DOWN, 10K)
+#define GPIO_FUNC3		_GPIO_FUNC(3, DISABLE, 10K)
+#define GPIO_FUNC3_PU_10K	_GPIO_FUNC(3, UP, 10K)
+#define GPIO_FUNC3_PD_10K	_GPIO_FUNC(3, DOWN, 10K)
+#define GPIO_FUNC4		_GPIO_FUNC(4, DISABLE, 10K)
+#define GPIO_FUNC4_PU_10K	_GPIO_FUNC(4, UP, 10K)
+#define GPIO_FUNC4_PD_10K	_GPIO_FUNC(4, DOWN, 10K)
+#define GPIO_FUNC5		_GPIO_FUNC(5, DISABLE, 10K)
+#define GPIO_FUNC5_PU_10K	_GPIO_FUNC(5, UP, 10K)
+#define GPIO_FUNC5_PD_10K	_GPIO_FUNC(5, DOWN, 10K)
+#define GPIO_FUNC6		_GPIO_FUNC(6, DISABLE, 10K)
+#define GPIO_FUNC6_PU_10K	_GPIO_FUNC(6, UP, 10K)
+#define GPIO_FUNC6_PD_10K	_GPIO_FUNC(6, DOWN, 10K)
 
 /* End marker */
 #define GPIO_LIST_END		0xffffffff

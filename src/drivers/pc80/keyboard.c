@@ -31,6 +31,7 @@
 #define KBD_STATUS	0x64
 #define   KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
 #define   KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
+#define   KBD_SYS_FLAG	(1 << 2) // 1: self-test passed
 
 // Keyboard Controller Commands
 #define KBC_CMD_READ_COMMAND	0x20 // Read command byte
@@ -63,6 +64,18 @@
 
 /* Wait 400ms for keyboard controller answers */
 #define KBC_TIMEOUT_IN_MS 400
+
+static int kbc_wait_system_flag(void)
+{
+	u32 timeout;
+	for (timeout = KBC_TIMEOUT_IN_MS;
+	     timeout && ((inb(KBD_STATUS) & KBD_SYS_FLAG) == 0); timeout--)
+		mdelay(1);
+
+	if (!timeout)
+		printk(BIOS_INFO, "Keyboard controller timed out setting system flag\n");
+	return !!timeout;
+}
 
 static int kbc_input_buffer_empty(void)
 {
@@ -112,6 +125,10 @@ static int kbc_cleanup_buffers(void)
 static int kbc_self_test(void)
 {
 	u8 self_test;
+
+	/* Wait until keyboard controller ready (system flag = 1) */
+	if (!kbc_wait_system_flag())
+		return 0;
 
 	/* Clean up any junk that might have been in the KBC.
 	 * Both input and output buffers must be empty.

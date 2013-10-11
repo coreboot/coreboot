@@ -215,22 +215,6 @@ void release_aps_for_smm_relocation(int do_parallel_relocation);
 extern int ht_disabled;
 #endif
 
-/* This structure is saved along with the relocated ramstage program in SMM
- * space. It is used to protect the integrity of the ramstage program on S3
- * resume by saving a copy of the relocated ramstage in SMM space with the
- * assumption that the SMM region cannot be altered from the OS. The magic
- * value just serves as a quick sanity check. */
-
-#define RAMSTAGE_CACHE_MAGIC 0xf3c3a02a
-
-struct ramstage_cache {
-	uint32_t magic;
-	uint32_t entry_point;
-	uint32_t load_address;
-	uint32_t size;
-	char program[0];
-} __attribute__((packed));
-
 /* CPU identification */
 int haswell_family_model(void);
 int haswell_stepping(void);

@@ -579,13 +579,13 @@ err:
 }
 #endif /* CONFIG_USBDEBUG_OPTIONAL_HUB_PORT */
 
-#if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
 static void enable_usbdebug(void)
 {
+#if defined(__PRE_RAM__) || !(CONFIG_EARLY_CONSOLE && CONFIG_EARLY_CBMEM_INIT)
 	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
 	pci_ehci_dbg_enable(dbg_dev, CONFIG_EHCI_BAR);
-}
 #endif
+}
 
 static void set_debug_port(unsigned int port)
 {
@@ -1038,8 +1038,6 @@ int usbdebug_init(void)
 	if (!get_usbdebug_from_cbmem(dbg_info))
 		return 0;
 #endif
-#if defined(__PRE_RAM__) || !CONFIG_EARLY_CONSOLE
 	enable_usbdebug();
-#endif
 	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }

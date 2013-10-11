@@ -274,6 +274,7 @@ config CONSOLE_NE2K_IO_PORT
 	  boundary, qemu needs broader align)
 
 config CONSOLE_CBMEM
+	depends on (EARLY_CBMEM_INIT || DYNAMIC_CBMEM)
 	bool "Send console output to a CBMEM buffer"
 	default n
 	help

@@ -170,6 +170,15 @@ config INCLUDE_CONFIG_FILE
 	    config                         0x8d740    raw          3324
 	    (empty)                        0x8e480    null         3610440
 
+config EARLY_CBMEM_INIT
+	bool
+	default n
+	help
+	  Make coreboot initialize the CBMEM structures while running in ROM
+	  stage. This is useful when the ROM stage wants to communicate
+	  some, for instance, execution timestamps. It needs support in
+	  romstage.c and should be enabled by the board's Kconfig.
+
 config DYNAMIC_CBMEM
 	bool "The CBMEM space is dynamically grown."
 	default n
@@ -180,7 +189,7 @@ config DYNAMIC_CBMEM
 
 config COLLECT_TIMESTAMPS
 	bool "Create a table of timestamps collected during boot"
-	default n
+	depends on (EARLY_CBMEM_INIT || DYNAMIC_CBMEM)
 	help
 	  Make coreboot create a table of timer-ID/timer-value pairs to
 	  allow measuring time spent at different phases of the boot process.

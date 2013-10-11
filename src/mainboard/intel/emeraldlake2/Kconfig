@@ -13,6 +13,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_RESUME
 	select GFXUMA
 	#select CHROMEOS
+	select EARLY_CBMEM_INIT
 
 config MAINBOARD_DIR
 	string

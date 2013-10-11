@@ -56,6 +56,10 @@ romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 endif
 
+ifneq ($(CONFIG_DYNAMIC_CBMEM),y)
+romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c
+endif
+
 romstage-y += compute_ip_checksum.c
 ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
 romstage-y += memmove.c
@@ -108,7 +112,7 @@ ramstage-y += dynamic_cbmem.c
 romstage-y += dynamic_cbmem.c
 else
 ramstage-y += cbmem.c
-romstage-$(CONFIG_CACHE_AS_RAM) += cbmem.c
+romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
 endif # CONFIG_DYNAMIC_CBMEM
 ramstage-y += cbmem_info.c
 

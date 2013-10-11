@@ -65,17 +65,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 		/* Initialize interrupt mapping if mptable.c didn't. */
 #if (!CONFIG_GENERATE_MP_TABLE)
 #error untested config
-		{
-			u32 dword;
-			dword = 0x0120d218;
-			pci_write_config32(dev, 0x7c, dword);
-
-			dword = 0x12008a00;
-			pci_write_config32(dev, 0x80, dword);
-
-			dword = 0x0000007d;
-			pci_write_config32(dev, 0x84, dword);
-		}
+		pci_write_config32(dev, 0x7c, 0x0120d218);
+		pci_write_config32(dev, 0x80, 0x12008a00);
+		pci_write_config32(dev, 0x84, 0x0000007d);
 #endif
 	}
 

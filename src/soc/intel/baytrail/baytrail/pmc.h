@@ -26,6 +26,12 @@
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
 #define GEN_PMCONF1	0x20
 #	define UART_EN		(1 << 24)
+#define ETR			0x48
+#	define CF9LOCK		(1 << 31)
+#	define LTR_DEF		(1 << 22)
+#	define IGNORE_HPET	(1 << 21)
+#	define CF9GR		(1 << 20)
+#	define CWORWRE		(1 << 18)
 
 /* IO Mapped registers behind ACPI_BASE_ADDRESS */
 #define TCO_RLD			0x60
@@ -36,5 +42,11 @@
 #	define TCO_LOCK		(1 << 12)
 #	define TCO_TMR_HALT	(1 << 11)
 #define TCO_TMR			0x70
+
+/* I/O ports */
+#define RST_CNT			0xcf9
+#	define FULL_RST		(1 << 3)
+#	define RST_CPU		(1 << 2)
+#	define SYS_RST		(1 << 1)
 
 #endif /* _BAYTRAIL_PMC_H_ */

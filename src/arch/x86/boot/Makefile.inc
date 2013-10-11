@@ -1,4 +1,5 @@
-romstage-y += cbmem.c
+romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c
+romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
 
 ramstage-y += boot.c
 ramstage-$(CONFIG_MULTIBOOT) += multiboot.c

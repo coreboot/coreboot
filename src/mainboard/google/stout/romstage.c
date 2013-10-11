@@ -296,7 +296,11 @@ void main(unsigned long bist)
 	post_code(0x3e);
 
 	MCHBAR16(SSKPD) = 0xCAFE;
+#if CONFIG_EARLY_CBMEM_INIT
 	cbmem_was_initted = !cbmem_initialize();
+#else
+	cbmem_was_initted = cbmem_reinit();
+#endif
 
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so

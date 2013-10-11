@@ -95,6 +95,7 @@ void cbmem_late_set_table(uint64_t base, uint64_t size)
  *  - suspend/resume backup memory
  */
 
+#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
 static void cbmem_init(void)
 {
 	uint64_t baseaddr, size;
@@ -119,6 +120,7 @@ static void cbmem_init(void)
 		.size	= size - CBMEM_TOC_RESERVED
 	};
 }
+#endif
 
 int cbmem_reinit(void)
 {
@@ -218,6 +220,7 @@ void *cbmem_find(u32 id)
 	return (void *)NULL;
 }
 
+#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
 /* Returns True if it was not initialized before. */
 int cbmem_initialize(void)
 {
@@ -241,6 +244,7 @@ int cbmem_initialize(void)
 
 	return rv;
 }
+#endif
 
 #ifndef __PRE_RAM__
 static void init_cbmem_post_device(void *unused)

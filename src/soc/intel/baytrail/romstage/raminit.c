@@ -26,6 +26,7 @@
 #include <baytrail/gpio.h>
 #include <baytrail/mrc_cache.h>
 #include <baytrail/iomap.h>
+#include <baytrail/iosf.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/romstage.h>
 
@@ -57,6 +58,48 @@ static void ABI_X86 send_to_console(unsigned char b)
 	console_tx_byte(b);
 }
 
+static void print_dram_info(void)
+{
+	const int mrc_ver_reg = 0xf0;
+	const uint32_t soc_dev = PCI_DEV(0, SOC_DEV, SOC_FUNC);
+	uint32_t reg;
+	int num_channels;
+	int speed;
+	uint32_t ch0;
+	uint32_t ch1;
+
+	reg = pci_read_config32(soc_dev, mrc_ver_reg);
+
+	printk(BIOS_INFO, "MRC v%d.%02d\n", (reg >> 8) & 0xff, reg & 0xff);
+
+	/* Number of channels enabled and DDR3 type. Determine number of
+	 * channels by keying of the rank enable bits [3:0]. * */
+	ch0 = iosf_dunit_ch0_read(DRP);
+	ch1 = iosf_dunit_ch1_read(DRP);
+	num_channels = 0;
+	if (ch0 & DRP_RANK_MASK)
+		num_channels++;
+	if (ch1 & DRP_RANK_MASK)
+		num_channels++;
+
+	printk(BIOS_INFO, "%d channels of %sDDR3 @ ", num_channels,
+	       (reg & (1 << 22)) ? "LP" : "");
+
+	/* DRAM frequency -- all channels run at same frequency. */
+	reg = iosf_dunit_read(DTR0);
+	switch (reg & 0x3) {
+	case 0:
+		speed = 800; break;
+	case 1:
+		speed = 1066; break;
+	case 2:
+		speed = 1333; break;
+	case 3:
+		speed = 1600; break;
+	}
+	printk(BIOS_INFO, "%dMHz\n", speed);
+}
+
 void raminit(struct mrc_params *mp, int prev_sleep_state)
 {
 	int ret;
@@ -86,6 +129,8 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		enable_smbus();
 
 	ret = mrc_entry(mp);
+
+	print_dram_info();
 
 	cbmem_initialize_empty();
 

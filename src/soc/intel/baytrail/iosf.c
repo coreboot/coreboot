@@ -70,6 +70,21 @@ uint32_t iosf_dunit_read(int reg)
 	return read_iosf_reg(MDR_REG);
 }
 
+uint32_t iosf_dunit_ch0_read(int reg)
+{
+	return iosf_dunit_read(reg);
+}
+
+uint32_t iosf_dunit_ch1_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_SYSMEMC) |
+	              IOSF_PORT(IOSF_PORT_DUNIT_CH1) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MCR_REG, cr);
+	return read_iosf_reg(MDR_REG);
+}
+
 void iosf_dunit_write(int reg, uint32_t val)
 {
 	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_SYSMEMC) |

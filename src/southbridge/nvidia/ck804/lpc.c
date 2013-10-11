@@ -205,7 +205,7 @@ static void ck804_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	if (dev->device != PCI_DEVICE_ID_NVIDIA_CK804_SLAVE) {
-		res = find_resource(dev, 0x14); /* IOAPIC */
+		res = find_resource(dev, PCI_BASE_ADDRESS_1); /* IOAPIC */
 		if (res) {
 			res->base = IO_APIC_ADDR;
 			res->flags |= IORESOURCE_ASSIGNED | IORESOURCE_FIXED;

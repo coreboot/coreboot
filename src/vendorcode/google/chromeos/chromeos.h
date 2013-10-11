@@ -34,11 +34,14 @@ void save_vbnv(const uint8_t *vbnv_copy);
 /* functions implemented in vboot.c */
 void init_chromeos(int bootmode);
 
+struct romstage_handoff;
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 /* Returns 0 on success < 0 on error. */
 int vboot_get_handoff_info(void **addr, uint32_t *size);
 int vboot_enable_developer(void);
 int vboot_enable_recovery(void);
+#else
+static inline void vboot_verify_firmware(struct romstage_handoff *h) {}
 #endif
 
 #include "gnvs.h"

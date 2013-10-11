@@ -119,6 +119,8 @@ romstage-y += hexdump.c
 
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
+romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += ramstage_cache.c
+
 ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
 smm-y += memset.c
 endif

@@ -18,12 +18,6 @@
 #include <console/console.h>
 #include <cbmem.h>
 
-unsigned long __attribute__((weak)) get_top_of_ram(void)
-{
-	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
-	return 0;
-}
-
 #if !CONFIG_DYNAMIC_CBMEM
 void get_cbmem_table(uint64_t *base, uint64_t *size)
 {
@@ -37,9 +31,8 @@ void get_cbmem_table(uint64_t *base, uint64_t *size)
 		*size = 0;
 	}
 }
-#endif
 
-#if !CONFIG_DYNAMIC_CBMEM && !defined(__PRE_RAM__)
+#if !defined(__PRE_RAM__)
 void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 {
 	/* Do nothing. Chipset may have implementation to save ramtop in NVRAM. */
@@ -54,4 +47,12 @@ void set_top_of_ram(uint64_t ramtop)
 	backup_top_of_ram(ramtop);
 	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
 }
+
+unsigned long __attribute__((weak)) get_top_of_ram(void)
+{
+	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
+	return 0;
+}
+#endif /* !__PRE_RAM__ */
+
 #endif

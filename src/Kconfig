@@ -431,6 +431,14 @@ config RELOCATABLE_RAMSTAGE
 	 wake. When selecting this option the romstage is responsible for
 	 determing a stack location to use for loading the ramstage.
 
+config CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
+	depends on RELOCATABLE_RAMSTAGE
+	bool "Cache the relocated ramstage outside of cbmem."
+	default n
+	help
+	 The relocated ramstage is saved in an area specified by the
+	 by the board and/or chipset.
+
 config HAVE_ACPI_TABLES
 	bool
 	help

@@ -32,6 +32,7 @@
 #include <arch/ioapic.h>
 #include <cpu/x86/lapic.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "ck804.h"
 
 #define CK804_CHIP_REV 2
@@ -54,14 +55,16 @@ static void lpc_common_init(device_t dev)
 {
 	u8 byte;
 	u32 dword;
+	struct resource *res;
 
 	/* I/O APIC initialization. */
 	byte = pci_read_config8(dev, 0x74);
 	byte |= (1 << 0);	/* Enable APIC. */
 	pci_write_config8(dev, 0x74, byte);
-	dword = pci_read_config32(dev, PCI_BASE_ADDRESS_1);	/* 0x14 */
 
-	setup_ioapic(dword, 0); /* Don't rename IOAPIC ID. */
+	res = find_resource(dev, PCI_BASE_ADDRESS_1);  /* IOAPIC */
+	ASSERT(res != NULL);
+	setup_ioapic(res->base, 0); /* Don't rename IOAPIC ID. */
 
 #if 1
 	dword = pci_read_config32(dev, 0xe4);

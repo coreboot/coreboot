@@ -113,13 +113,13 @@ void console_init(void)
 #if CONFIG_CONSOLE_NE2K
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
-#if CONFIG_CONSOLE_CBMEM && !defined(__BOOT_BLOCK__)
+#if CONFIG_CONSOLE_CBMEM && CONFIG_EARLY_CBMEM_INIT && !defined(__BOOT_BLOCK__)
 	cbmemc_init();
 #endif
 #if CONFIG_SPKMODEM
 	spkmodem_init();
 #endif
-#if CONFIG_USBDEBUG && !defined(__BOOT_BLOCK__)
+#if CONFIG_USBDEBUG && CONFIG_EARLY_CBMEM_INIT && !defined(__BOOT_BLOCK__)
 	usbdebug_init();
 #endif
 

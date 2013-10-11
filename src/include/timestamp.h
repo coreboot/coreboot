@@ -54,7 +54,7 @@ enum timestamp_id {
 	TS_SELFBOOT_JUMP = 99,
 };
 
-#if CONFIG_COLLECT_TIMESTAMPS
+#if CONFIG_COLLECT_TIMESTAMPS && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
 #include <cpu/x86/tsc.h>
 void timestamp_init(tsc_t base);
 void timestamp_add(enum timestamp_id id, tsc_t ts_time);

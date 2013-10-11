@@ -30,5 +30,5 @@ ramstage-y += reset.c
 ramstage-y   += smbus.c
 ramstage-y   += lpc.c
 
-romstage-$(CONFIG_USBDEBUG) += ../../sb700/enable_usbdebug.c
+romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += ../../sb700/enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += ../../sb700/enable_usbdebug.c

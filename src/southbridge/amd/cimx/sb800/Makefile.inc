@@ -34,7 +34,7 @@ ramstage-$(CONFIG_SB800_IMC_FAN_CONTROL) += fan.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 
-romstage-$(CONFIG_USBDEBUG) += ../../sb800/enable_usbdebug.c
+romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += ../../sb800/enable_usbdebug.c
 ramstage-$(CONFIG_USBDEBUG) += ../../sb800/enable_usbdebug.c
 
 ramstage-y   += smbus.c

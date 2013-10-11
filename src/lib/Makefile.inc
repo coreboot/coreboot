@@ -49,11 +49,11 @@ romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_SPKMODEM) += spkmodem.c
+romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += usbdebug.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
-romstage-$(CONFIG_USBDEBUG) += usbdebug.c
 endif
 
 romstage-y += compute_ip_checksum.c

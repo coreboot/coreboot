@@ -25,12 +25,16 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
+#include <ramstage_cache.h>
+#include <ramstage_cache.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <baytrail/gpio.h>
 #include <baytrail/iomap.h>
 #include <baytrail/lpc.h>
 #include <baytrail/pci_devs.h>
+#include <baytrail/reset.h>
 #include <baytrail/romstage.h>
 
 static inline uint64_t timestamp_get(void)
@@ -169,6 +173,9 @@ void asmlinkage romstage_after_car(void)
 
 	timestamp_add_now(TS_END_ROMSTAGE);
 
+	/* Run vboot verification if configured. */
+	vboot_verify_firmware(romstage_handoff_find_or_add());
+
 	/* Load the ramstage. */
 	copy_and_run();
 	while (1);
@@ -270,3 +277,25 @@ static void *setup_stack_and_mttrs(void)
 
 	return slot;
 }
+
+struct ramstage_cache *ramstage_cache_location(long *size)
+{
+	char *smm_base;
+	/* 1MiB cache size */
+	const long cache_size = (1 << 20);
+
+	/* Ramstage cache lives in TSEG region which is the definition of
+	 * cbmem_top(). */
+	smm_base = cbmem_top();
+	*size = cache_size;
+	return (void *)&smm_base[CONFIG_SMM_TSEG_SIZE - cache_size];
+}
+
+void ramstage_cache_invalid(struct ramstage_cache *cache)
+{
+#if CONFIG_RESET_ON_INVALID_RAMSTAGE_CACHE
+	/* Perform cold reset on invalid ramstage cache. */
+	cold_reset();
+#endif
+}
+

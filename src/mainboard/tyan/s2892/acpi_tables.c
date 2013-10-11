@@ -43,19 +43,11 @@ unsigned long acpi_fill_madt(unsigned long current)
 		current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 4,
 						   apic_addr, 0);
 		/* Initialize interrupt mapping if mptable.c didn't. */
-		#if (!CONFIG_GENERATE_MP_TABLE)
-		{
-			u32 dword;
-			dword = 0x0120d218;
-			pci_write_config32(dev, 0x7c, dword);
-
-			dword = 0x12008a00;
-			pci_write_config32(dev, 0x80, dword);
-
-			dword = 0x0000007d;
-			pci_write_config32(dev, 0x84, dword);
-		}
-		#endif
+#if (!CONFIG_GENERATE_MP_TABLE)
+		pci_write_config32(dev, 0x7c, 0x0120d218);
+		pci_write_config32(dev, 0x80, 0x12008a00);
+		pci_write_config32(dev, 0x84, 0x0000007d);
+#endif
 	}
 
 	/* Write AMD 8131 two IOAPICs. */

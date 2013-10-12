@@ -20,24 +20,18 @@
 #ifndef THERMAL_H
 #define THERMAL_H
 
-/* Config TDP Sensor ID */
-#define CTDP_SENSOR_ID			0 /* PECI */
+#define TEMPERATURE_SENSOR_ID		0	/* PECI */
 
-/* Config TDP Nominal */
-#define CTDP_NOMINAL_THRESHOLD_OFF	0
-#define CTDP_NOMINAL_THRESHOLD_ON	0
-
-/* Config TDP Down */
-#define CTDP_DOWN_THRESHOLD_OFF		80
-#define CTDP_DOWN_THRESHOLD_ON		90
+/* Power level to set when EC requests throttle */
+#define EC_THROTTLE_POWER_LIMIT		12	/* 12W */
 
 /* Temperature which OS will shutdown at */
-#define CRITICAL_TEMPERATURE		104
+#define CRITICAL_TEMPERATURE		99
 
 /* Temperature which OS will throttle CPU */
-#define PASSIVE_TEMPERATURE		100
+#define PASSIVE_TEMPERATURE		95
 
 /* Tj_max value for calculating PECI CPU temperature */
-#define MAX_TEMPERATURE			105
+#define MAX_TEMPERATURE			100
 
 #endif

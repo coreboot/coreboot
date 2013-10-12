@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
- * Copyright (C) 2013 Micro Passion Ltd 
+ * Copyright (C) 2013 Micro Passion Ltd
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -120,7 +120,7 @@ AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AGESA_READ_SPD_PARAMS * Params = (AGESA_READ_SPD_PARAMS *) ConfigPtr;
 
 	printk(BIOS_DEBUG, "BiosReadSpd: %d %d %d\n", Params->SocketId, Params->MemChannelId, Params->DimmId);
-	
+
 	memcpy(Params->Buffer, SPD_2GB_1R8_1333, 256);
 
 	Status = AGESA_SUCCESS;

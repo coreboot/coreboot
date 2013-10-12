@@ -58,7 +58,7 @@ chip northbridge/amd/agesa/family16kb/root_complex
 			device pci 18.3 on  end
 			device pci 18.4 on  end
 			device pci 18.5 on  end
-	
+
 		end	#chip northbridge/amd/agesa/family16kb # CPU side of HT root complex
 	end	#domain
 end	#northbridge/amd/agesa/family16kb/root_complex

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
- * Copyright (C) 2013 Micro Passion Ltd 
+ * Copyright (C) 2013 Micro Passion Ltd
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,11 +107,11 @@ void get_bus_conf(void)
 	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
 
 
-	/* disable No Snoop */ 
-    dev = dev_find_slot(0, PCI_DEVFN(1, 1)); 
-    value = pci_read_config32(dev, 0x60);  
-    value &= ~(1 << 11); 
-    pci_write_config32(dev, 0x60, value); 
+	/* disable No Snoop */
+    dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+    value = pci_read_config32(dev, 0x60);
+    value &= ~(1 << 11);
+    pci_write_config32(dev, 0x60, value);
 
 	sbdn_yangtze = 0;
 
@@ -159,7 +159,7 @@ void get_bus_conf(void)
 
 	//Setup Ethernet LED Configuration
 	pcidev = dev_find_device(0x10EC, 0x8168, 0);
-	if (pcidev) 
+	if (pcidev)
 	{
 		temp = pci_read_config16(pcidev, 0x10);
 		temp &= 0xFFFE;
@@ -173,7 +173,7 @@ void get_bus_conf(void)
 
 	//Setup PSI_L VID threshold
 	pcidev = dev_find_slot(0, PCI_DEVFN(0x18, 3));
-	if (pcidev) 
+	if (pcidev)
 	{
 		temp = pci_read_config16(pcidev, 0xA0);
 		temp &= 0xFF00;

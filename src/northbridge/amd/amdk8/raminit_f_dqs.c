@@ -1735,7 +1735,6 @@ static void set_top_mem_ap(unsigned tom_k, unsigned tom2_k)
 
 static void setup_mtrr_dqs(unsigned tom_k, unsigned tom2_k)
 {
-	unsigned reg;
 	msr_t msr;
 
 #if 0
@@ -1752,7 +1751,7 @@ static void setup_mtrr_dqs(unsigned tom_k, unsigned tom2_k)
 	wrmsr(0x258, msr);
 
 	//[1M, TOM)
-	reg = range_to_mtrr(2, 0, tom_k,4*1024*1024, MTRR_TYPE_WRBACK, 40);
+	range_to_mtrr(2, 0, tom_k,4*1024*1024, MTRR_TYPE_WRBACK, 40);
 
 	//[4G, TOM2)
 	if(tom2_k) {

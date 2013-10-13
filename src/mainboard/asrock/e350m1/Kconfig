@@ -98,9 +98,5 @@ config VGA_BIOS_ID
         string
         default "1002,9802"
 
-config DRIVERS_PS2_KEYBOARD
-	bool
-	default n
-
 endif # BOARD_ASROCK_E350M1
 

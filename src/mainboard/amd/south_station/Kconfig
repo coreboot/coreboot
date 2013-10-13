@@ -105,9 +105,5 @@ config VGA_BIOS_ID
 	string
 	default "1002,9806"
 
-config DRIVERS_PS2_KEYBOARD
-	bool
-	default n
-
 endif # BOARD_AMD_SOUTHSTATION
 

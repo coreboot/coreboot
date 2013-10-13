@@ -27,7 +27,7 @@
 
 #define MAX_TIMESTAMPS 30
 
-static struct timestamp_table* ts_table CAR_GLOBAL = NULL;
+static struct timestamp_table* ts_table_p CAR_GLOBAL = NULL;
 static tsc_t ts_basetime CAR_GLOBAL = { .lo = 0, .hi =0 };
 
 static void timestamp_stash(enum timestamp_id id, tsc_t ts_time);
@@ -54,16 +54,18 @@ static void timestamp_real_init(tsc_t base)
 	tst->max_entries = MAX_TIMESTAMPS;
 	tst->num_entries = 0;
 
-	ts_table = tst;
+	car_set_var(ts_table_p, tst);
 }
 
 void timestamp_add(enum timestamp_id id, tsc_t ts_time)
 {
 	struct timestamp_entry *tse;
+	struct timestamp_table *ts_table = NULL;
 
 	if (!boot_cpu())
 		return;
 
+	ts_table = car_get_var(ts_table_p);
 	if (!ts_table) {
 		timestamp_stash(id, ts_time);
 		return;
@@ -90,30 +92,36 @@ struct timestamp_cache {
 static int timestamp_entries CAR_GLOBAL = 0;
 
 /**
- * timestamp_stash() allows to temporarily cache time stamps.
- * This is needed when time stamping before the CBMEM area
- * is initialized. The function timestamp_sync() is used to
- * write the time stamps to the CBMEM area. This is done in
- * ram stage main()
+ * timestamp_stash() allows to temporarily cache timestamps.
+ * This is needed when timestamping before the CBMEM area
+ * is initialized. The function timestamp_do_sync() is used to
+ * write the timestamps to the CBMEM area and this is done as
+ * part of CAR migration for romstage, and in ramstage main().
  */
 
 static void timestamp_stash(enum timestamp_id id, tsc_t ts_time)
 {
-	if (timestamp_entries >= MAX_TIMESTAMP_CACHE) {
+	struct timestamp_cache *ts_cache = car_get_var(timestamp_cache);
+	int ts_entries = car_get_var(timestamp_entries);
+
+	if (ts_entries >= MAX_TIMESTAMP_CACHE) {
 		printk(BIOS_ERR, "ERROR: failed to add timestamp to cache\n");
 		return;
 	}
-	timestamp_cache[timestamp_entries].id = id;
-	timestamp_cache[timestamp_entries].time = ts_time;
-	timestamp_entries++;
+	ts_cache[ts_entries].id = id;
+	ts_cache[ts_entries].time = ts_time;
+	car_set_var(timestamp_entries, ++ts_entries);
 }
 
 static void timestamp_do_sync(void)
 {
+	struct timestamp_cache *ts_cache = car_get_var(timestamp_cache);
+	int ts_entries = car_get_var(timestamp_entries);
+
 	int i;
-	for (i = 0; i < timestamp_entries; i++)
-		timestamp_add(timestamp_cache[i].id, timestamp_cache[i].time);
-	timestamp_entries = 0;
+	for (i = 0; i < ts_entries; i++)
+		timestamp_add(ts_cache[i].id, ts_cache[i].time);
+	car_set_var(timestamp_entries, 0);
 }
 
 void timestamp_init(tsc_t base)
@@ -123,19 +131,19 @@ void timestamp_init(tsc_t base)
 
 #ifdef __PRE_RAM__
 	/* Copy of basetime, it is too early for CBMEM. */
-	ts_basetime = base;
+	car_set_var(ts_basetime, base);
 #else
 	struct timestamp_table* tst;
 
 	/* Locate and use an already existing table. */
 	tst = cbmem_find(CBMEM_ID_TIMESTAMP);
 	if (tst) {
-		ts_table = tst;
+		car_set_var(ts_table_p, tst);
 		return;
 	}
 
 	/* Copy of basetime, may be too early for CBMEM. */
-	ts_basetime = base;
+	car_set_var(ts_basetime, base);
 	timestamp_real_init(base);
 #endif
 }
@@ -146,12 +154,12 @@ void timestamp_reinit(void)
 		return;
 
 #ifdef __PRE_RAM__
-	timestamp_real_init(ts_basetime);
+	timestamp_real_init(car_get_var(ts_basetime));
 #else
-	if (!ts_table)
-		timestamp_init(ts_basetime);
+	if (!car_get_var(ts_table_p))
+		timestamp_init(car_get_var(ts_basetime));
 #endif
-	if (ts_table)
+	if (car_get_var(ts_table_p))
 		timestamp_do_sync();
 }
 

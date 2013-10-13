@@ -123,6 +123,7 @@ void main(unsigned long bist)
 {
 	sysinfo_t sysinfo;
 	int s3resume = 0;
+	int cbmem_initted;
 	u16 reg16;
 
 	/* basic northbridge setup, including MMCONF BAR */
@@ -183,11 +184,12 @@ void main(unsigned long bist)
 
 	init_iommu();
 
+	cbmem_initted = !cbmem_initialize();
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
-	if (s3resume && cbmem_reinit() {
+	if (s3resume && cbmem_initted) {
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption

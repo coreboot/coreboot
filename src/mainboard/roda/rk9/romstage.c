@@ -183,25 +183,6 @@ void main(unsigned long bist)
 
 	init_iommu();
 
-#if CONFIG_HAVE_ACPI_RESUME
-	/* If there is no high memory area, we didn't boot before, so
-	 * this is not a resume. In that case we just create the cbmem toc.
-	 */
-	if (s3resume && cbmem_reinit() {
-		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
-
-		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
-		 * through stage 2. We could keep stuff like stack and heap in high tables
-		 * memory completely, but that's a wonderful clean up task for another
-		 * day.
-		 */
-		if (resume_backup_memory)
-			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE, HIGH_MEMORY_SAVE);
-
-		/* Magic for S3 resume */
-		pci_write_config32(PCI_DEV(0, 0, 0), D0F0_SKPD, SKPAD_ACPI_S3_MAGIC);
-	}
-#endif
 	printk(BIOS_SPEW, "exit main()\n");
 }
 

@@ -27,7 +27,7 @@
 
 #define MAX_TIMESTAMPS 30
 
-static struct timestamp_table* ts_table CAR_GLOBAL = NULL;
+static struct timestamp_table* ts_table_p CAR_GLOBAL = NULL;
 static tsc_t ts_basetime CAR_GLOBAL = { .lo = 0, .hi =0 };
 
 static void timestamp_stash(enum timestamp_id id, tsc_t ts_time);
@@ -54,16 +54,18 @@ static void timestamp_real_init(tsc_t base)
 	tst->max_entries = MAX_TIMESTAMPS;
 	tst->num_entries = 0;
 
-	ts_table = tst;
+	car_set_var(ts_table_p, tst);
 }
 
 void timestamp_add(enum timestamp_id id, tsc_t ts_time)
 {
 	struct timestamp_entry *tse;
+	struct timestamp_table *ts_table = NULL;
 
 	if (!boot_cpu())
 		return;
 
+	ts_table = car_get_var(ts_table_p);
 	if (!ts_table) {
 		timestamp_stash(id, ts_time);
 		return;
@@ -123,14 +125,14 @@ void timestamp_init(tsc_t base)
 
 #ifdef __PRE_RAM__
 	/* Copy of basetime, it is too early for CBMEM. */
-	ts_basetime = base;
+	car_set_var(ts_basetime, base);
 #else
 	struct timestamp_table* tst;
 
 	/* Locate and use an already existing table. */
 	tst = cbmem_find(CBMEM_ID_TIMESTAMP);
 	if (tst) {
-		ts_table = tst;
+		ts_table_p = tst;
 		return;
 	}
 
@@ -146,12 +148,12 @@ void timestamp_reinit(void)
 		return;
 
 #ifdef __PRE_RAM__
-	timestamp_real_init(ts_basetime);
+	timestamp_real_init(car_get_var(ts_basetime));
 #else
-	if (!ts_table)
+	if (!ts_table_p)
 		timestamp_init(ts_basetime);
 #endif
-	if (ts_table)
+	if (car_get_var(ts_table_p))
 		timestamp_do_sync();
 }
 

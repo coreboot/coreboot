@@ -28,6 +28,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <lib.h>
+#include <cbmem.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
@@ -249,12 +250,11 @@ static void init_artec_dongle(void)
 	outb(0xf4, 0x88);
 }
 
-#include <cbmem.h>
-
 void main(unsigned long bist)
 {
 	u32 reg32;
 	int boot_mode = 0;
+	int cbmem_was_initted;
 
 	if (bist == 0)
 		enable_lapic();
@@ -346,11 +346,13 @@ void main(unsigned long bist)
 
 	MCHBAR16(SSKPD) = 0xCAFE;
 
+	cbmem_was_initted = !cbmem_initialize();
+
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
-	if ((boot_mode == 2) && cbmem_reinit()) {
+	if ((boot_mode == 2) && cbmem_was_initted) {
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption

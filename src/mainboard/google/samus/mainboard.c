@@ -58,7 +58,7 @@ static int mainboard_smbios_data(device_t dev, int *handle,
 		BOARD_TRACKPAD_IRQ,		/* instance */
 		BOARD_TRACKPAD_I2C_BUS,		/* segment */
 		BOARD_TRACKPAD_I2C_ADDR,	/* bus */
-		0,				/* device */
+		BOARD_TRACKPAD_IRQ_TYPE,	/* device */
 		0);				/* function */
 
 	len += smbios_write_type41(
@@ -67,7 +67,43 @@ static int mainboard_smbios_data(device_t dev, int *handle,
 		BOARD_TOUCHSCREEN_IRQ,		/* instance */
 		BOARD_TOUCHSCREEN_I2C_BUS,	/* segment */
 		BOARD_TOUCHSCREEN_I2C_ADDR,	/* bus */
-		0,				/* device */
+		BOARD_TOUCHSCREEN_IRQ_TYPE,	/* device */
+		0);				/* function */
+
+	len += smbios_write_type41(
+		current, handle,
+		BOARD_CODEC_NAME,		/* name */
+		BOARD_CODEC_IRQ,		/* instance */
+		BOARD_CODEC_I2C_BUS,		/* segment */
+		BOARD_CODEC_I2C_ADDR,		/* bus */
+		BOARD_CODEC_IRQ_TYPE,		/* device */
+		0);				/* function */
+
+	len += smbios_write_type41(
+		current, handle,
+		BOARD_NFC_NAME,			/* name */
+		BOARD_NFC_IRQ,			/* instance */
+		BOARD_NFC_I2C_BUS,		/* segment */
+		BOARD_NFC_I2C_ADDR,		/* bus */
+		BOARD_NFC_IRQ_TYPE,		/* device */
+		0);				/* function */
+
+	len += smbios_write_type41(
+		current, handle,
+		BOARD_ACCEL_NAME,		/* name */
+		BOARD_ACCEL_IRQ,		/* instance */
+		BOARD_ACCEL_I2C_BUS,		/* segment */
+		BOARD_ACCEL_I2C_ADDR,		/* bus */
+		BOARD_ACCEL_IRQ_TYPE,		/* device */
+		0);				/* function */
+
+	len += smbios_write_type41(
+		current, handle,
+		BOARD_ACCEL_GYRO_NAME,		/* name */
+		BOARD_ACCEL_GYRO_IRQ,		/* instance */
+		BOARD_ACCEL_GYRO_I2C_BUS,	/* segment */
+		BOARD_ACCEL_GYRO_I2C_ADDR,	/* bus */
+		BOARD_ACCEL_GYRO_IRQ_TYPE,	/* device */
 		0);				/* function */
 
 	return len;

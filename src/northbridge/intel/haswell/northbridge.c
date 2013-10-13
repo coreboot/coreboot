@@ -535,14 +535,14 @@ static void northbridge_init(struct device *dev)
 	MCHBAR32(0x5500) = 0x00100001;
 }
 
-void *cbmem_top(void)
+unsigned long get_top_of_ram(void)
 {
 	u32 reg;
 
 	/* The top the reserve regions fall just below the TSEG region. */
 	reg = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)), TSEG);
 
-	return (void *)(reg & ~((1 << 20) - 1));
+	return (reg & ~((1 << 20) - 1));
 }
 
 static void northbridge_enable(device_t dev)

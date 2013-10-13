@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+1: Jonathan A. Kollasch <jakllsch@kollasch.net>
+Code-Review+2: Ronald G. Minnich <rminnich@gmail.com>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Submitted-by: Jonathan A. Kollasch <jakllsch@kollasch.net>
+Submitted-at: Sun, 13 Oct 2013 19:11:48 +0200
+Reviewed-on: http://review.coreboot.org/3957
+Project: coreboot
+Branch: refs/heads/master

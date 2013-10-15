@@ -11,14 +11,8 @@ extern  unsigned char bus_ck804_2; //3
 extern  unsigned char bus_ck804_3; //4
 extern  unsigned char bus_ck804_4; //5
 extern  unsigned char bus_ck804_5; //6
-extern  unsigned char bus_8131_0;  //7
-extern  unsigned char bus_8131_1;  //8
-extern  unsigned char bus_8131_2;  //9
 extern  unsigned apicid_ck804;
-extern  unsigned apicid_8131_1;
-extern  unsigned apicid_8131_2;
 
-extern  unsigned sbdn3;
 
 static void *smp_write_config_table(void *v)
 {
@@ -60,22 +54,6 @@ static void *smp_write_config_table(void *v)
 
 			dword = 0x0000007d;
 			pci_write_config32(dev, 0x84, dword);
-
-		}
-
-		dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3,1));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
-				smp_write_ioapic(mc, apicid_8131_1, 0x11, res->base);
-			}
-		}
-		dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3+1,1));
-		if (dev) {
-			res = find_resource(dev, PCI_BASE_ADDRESS_0);
-			if (res) {
-				smp_write_ioapic(mc, apicid_8131_2, 0x11, res->base);
-			}
 		}
 
 	}
@@ -107,28 +85,8 @@ static void *smp_write_config_table(void *v)
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_4, (0x00<<2)|i, apicid_ck804, 0x10 + (1+i+4-sbdn%4)%4);
 	}
 
-//Onboard ati
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (7<<2)|0, apicid_ck804, 0x13); // 19
-
-//Channel B of 8131
-
-
-//Onboard Broadcom NIC
-	for(i=0;i<2;i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, (9<<2)|i, apicid_8131_2, (0+i)%4); //28
-	}
-
-//Channel A of 8131
-
-//Slot 4 PCIX 133/100/66
-	for(i=0;i<4;i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (8<<2)|i, apicid_8131_1, (0+i)%4); //24
-	}
-
-//Slot 3 PCIX 133/100/66 SoDIMM PCI
-	for(i=0;i<4;i++) {
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, (0xa<<2)|i, apicid_8131_1, (2+i)%4); //26
-	}
+//Onboard SM720 VGA
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_ck804_1, (6<<2)|0, apicid_ck804, 0x13); // 19
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	mptable_lintsrc(mc, bus_isa);

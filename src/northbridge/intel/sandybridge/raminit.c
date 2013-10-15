@@ -304,10 +304,3 @@ void sdram_initialize(struct pei_data *pei_data)
 	if (pei_data->boot_mode != 2)
 		save_mrc_data(pei_data);
 }
-
-unsigned long get_top_of_ram(void)
-{
-	/* Base of TSEG is top of usable DRAM */
-	u32 tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
-	return (unsigned long) tom;
-}

@@ -201,13 +201,3 @@ void sdram_initialize(struct pei_data *pei_data)
 
 	report_memory_config();
 }
-
-unsigned long get_top_of_ram(void)
-{
-	/*
-	 * Base of TSEG is top of usable DRAM below 4GiB. The register has
-	 * 1 MiB alignement.
-	 */
-	u32 tom = pci_read_config32(PCI_DEV(0,0,0), TSEG);
-	return (unsigned long) tom & ~((1 << 20) - 1);
-}

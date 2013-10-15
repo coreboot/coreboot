@@ -18,13 +18,7 @@
         unsigned char bus_ck804_3; //4
         unsigned char bus_ck804_4; //5
         unsigned char bus_ck804_5; //6
-        unsigned char bus_8131_0;  //7
-        unsigned char bus_8131_1;  //8
-        unsigned char bus_8131_2;  //9
-	unsigned char bus_coproc_0;
         unsigned apicid_ck804;
-        unsigned apicid_8131_1;
-        unsigned apicid_8131_2;
 
 
 unsigned pci1234x[] =
@@ -121,37 +115,6 @@ void get_bus_conf(void)
                         printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn+ 0x0e);
                 }
 
-		bus_8131_0 = (sysconf.pci1234[1] >> 16) & 0xff;
-                /* 8131-1 */
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3,0));
-                if (dev) {
-                        bus_8131_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_8131_2 = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_8131_2++;
-                }
-                else {
-                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:01.0, using defaults\n", bus_8131_0);
-
-                        bus_8131_1 = bus_8131_0+1;
-                        bus_8131_2 = bus_8131_0+2;
-                }
-                /* 8131-2 */
-                dev = dev_find_slot(bus_8131_0, PCI_DEVFN(sbdn3+1,0));
-                if (dev) {
-                        bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                }
-                else {
-                        printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:02.0, using defaults\n", bus_8131_0);
-
-                        bus_8131_2 = bus_8131_1+1;
-                }
-
-		if(sysconf.pci1234[2] & 1) {
-			bus_coproc_0 = (sysconf.pci1234[2] >> 16) & 0xff;
-			coprocdn =  (sysconf.hcdn[2] & 0xff);
-		}
-
-
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS
 	apicid_base = get_apicid_base(3);
@@ -159,6 +122,4 @@ void get_bus_conf(void)
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
 	apicid_ck804 = apicid_base+0;
-        apicid_8131_1 = apicid_base+1;
-        apicid_8131_2 = apicid_base+2;
 }

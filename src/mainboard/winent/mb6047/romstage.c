@@ -16,12 +16,12 @@
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/winbond/w83627hf/early_serial.c"
+#include "superio/winbond/w83627thg/early_serial.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
 
 static void memreset_setup(void) { }
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
@@ -35,12 +35,14 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/amd/amdk8/raminit.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "lib/generic_sdram.c"
-#include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/nvidia/ck804/early_setup_ss.h"
 #include "southbridge/nvidia/ck804/early_setup.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
+#if CONFIG_SET_FIDVID
+#include "cpu/amd/model_fxx/fidvid.c"
+#endif
 #include "northbridge/amd/amdk8/early_ht.c"
 
 static void sio_setup(void)
@@ -59,24 +61,16 @@ static void sio_setup(void)
 	dword |= (1<<0) | (1<<1);
 	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa0, dword);
 
-#if 1
-	/* s2891 has onboard LPC port 80 */
-	/*Hope I can enable port 80 here
-	It will decode port 80 to LPC, If you are using PCI post code you can not do this */
-	dword = pci_read_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4);
-	dword |= (1<<16);
-	pci_write_config32(PCI_DEV(0, CK804_DEVN_BASE+1 , 0), 0xa4, dword);
-#endif
 }
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr [] = {
-		DIMM0, DIMM2, 0, 0,
-		DIMM1, DIMM3, 0, 0,
+		DIMM0, 0, 0, 0,
+		DIMM1, 0, 0, 0,
 #if CONFIG_MAX_PHYSICAL_CPUS > 1
-		DIMM4, DIMM6, 0, 0,
-		DIMM5, DIMM7, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
 #endif
 	};
 
@@ -96,16 +90,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 //	post_code(0x32);
 
- 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	w83627thg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-	setup_s2891_resource_map();
 #if 0
 	dump_pci_device(PCI_DEV(0, 0x18, 0));
-	dump_pci_device(PCI_DEV(0, 0x19, 0));
 #endif
 
 	needs_reset = setup_coherent_ht_domain();
@@ -115,6 +107,23 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	// It is said that we should start core1 after all core0 launched
 	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
+#endif
+
+#if CONFIG_SET_FIDVID
+	/* Check to see if processor is capable of changing FIDVID  */
+	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
+	if ((cpuid_edx(0x80000007) & 0x6) == 0x6) {
+		msr_t msr;
+		/* Read FIDVID_STATUS */
+		msr = rdmsr(0xc0010042);
+		printk(BIOS_DEBUG, "begin msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
+
+		enable_fid_change();
+		init_fidvid_bsp(bsp_apicid);
+
+		msr = rdmsr(0xc0010042);
+		printk(BIOS_DEBUG, "end msr fid, vid: hi=0x%x, lo=0x%x\n", msr.hi, msr.lo);
+	}
 #endif
 
 	needs_reset |= ht_setup_chains_x();

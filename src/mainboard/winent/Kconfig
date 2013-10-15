@@ -21,11 +21,15 @@ if VENDOR_WINENT
 choice
 	prompt "Mainboard model"
 
+config BOARD_WINENT_MB6047
+	bool "MB6047"
+
 config BOARD_WINENT_PL6064
 	bool "PL6064"
 
 endchoice
 
+source "src/mainboard/winent/mb6047/Kconfig"
 source "src/mainboard/winent/pl6064/Kconfig"
 
 config MAINBOARD_VENDOR

@@ -36,15 +36,6 @@ extern  unsigned char bus_ck804_2; //3
 extern  unsigned char bus_ck804_3; //4
 extern  unsigned char bus_ck804_4; //5
 extern  unsigned char bus_ck804_5; //6
-extern  unsigned char bus_8131_0;  //7
-extern  unsigned char bus_8131_1;  //8
-extern  unsigned char bus_8131_2;  //9
-extern  unsigned char bus_coproc_0;
-
-extern  unsigned sbdn3;
-extern  unsigned coprocdn;
-
-
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
@@ -91,14 +82,6 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 //pci bridge
 	write_pirq_info(pirq_info, bus_ck804_0, ((sbdn+9)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++; slot_num++;
-//pcix bridge
-	write_pirq_info(pirq_info, bus_8131_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-	pirq_info++; slot_num++;
-//co processor
-	if(sysconf.pci1234[2] & 1) {
-		write_pirq_info(pirq_info, bus_coproc_0, (coprocdn<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-		pirq_info++; slot_num++;
-	}
 
 #if 0
 //smbus

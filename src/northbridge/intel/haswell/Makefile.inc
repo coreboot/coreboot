@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
 
@@ -24,6 +25,7 @@ ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-y += mrccache.c
 ramstage-y += minihd.c
 
+romstage-y += ram_calc.c
 romstage-y += raminit.c
 romstage-y += mrccache.c
 romstage-y += early_init.c

@@ -24,7 +24,7 @@
 
 DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "CB-DSDT ", 1)
 {
-	 #include "northbridge/amd/amdk8/util.asl"
+	#include "northbridge/amd/amdk8/util.asl"
 
 	/* For now only define 2 power states:
 	 *  - S0 which is fully on
@@ -32,7 +32,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "CB-DSDT ", 1)
 	 * Any others would involve declaring the wake up methods.
 	 */
 	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
-	Name (\_S5, Package () { 0x02, 0x02, 0x00, 0x00 })
+	Name (\_S5, Package () { 0x07, 0x00, 0x00, 0x00 })
+
+	Name (PICM, 0x00)
+	Method (_PIC, 1, Serialized) {
+		Store (Arg0, PICM)
+	}
 
 	/* Root of the bus hierarchy */
 	Scope (\_SB)
@@ -83,53 +88,80 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "CB-DSDT ", 1)
 				Return (Local3)
 			}
 
+			#include "southbridge/nvidia/ck804/acpi/ck804.asl"
+
 			/* PCI Routing Table */
 			Name (_PRT, Package () {
-						/* Since source is 0, index is IRQ. */
-						/* in ABCD, A=0, B=1, C=2, D=3 */
-						/* SlotFFFF, ABCD, source, index */
-				Package (0x04) { 0x0001FFFF, 0x00, 0x00, 0x0A }, /* 0x1 SMBUS IRQ 10 */
-				Package (0x04) { 0x0002FFFF, 0x00, 0x00, 0x15 }, /* 0x2 USB IRQ 21 */
-				Package (0x04) { 0x0002FFFF, 0x01, 0x00, 0x14 }, /* 0x2 USB IRQ 20 */
-				Package (0x04) { 0x0007FFFF, 0x00, 0x00, 0x17 }, /* 0x7 SATA 0 IRQ 23 */
-				Package (0x04) { 0x0008FFFF, 0x00, 0x00, 0x16 }, /* 0x8 SATA 1 IRQ 22 */
+				Package (0x04) { 0x0001FFFF, 0x00, \_SB.PCI0.LLAS, 0x00 },
+				Package (0x04) { 0x0001FFFF, 0x01, \_SB.PCI0.LLAS, 0x00 },
+				Package (0x04) { 0x0002FFFF, 0x00, \_SB.PCI0.LUOH, 0x00 },
+				Package (0x04) { 0x0002FFFF, 0x01, \_SB.PCI0.LUEH, 0x00 },
+				Package (0x04) { 0x0004FFFF, 0x00, \_SB.PCI0.LAUD, 0x00 },
+				Package (0x04) { 0x0004FFFF, 0x01, \_SB.PCI0.LMOD, 0x00 },
+				Package (0x04) { 0x0006FFFF, 0x00, \_SB.PCI0.LPA0, 0x00 },
+				Package (0x04) { 0x0007FFFF, 0x00, \_SB.PCI0.LSA0, 0x00 },
+				Package (0x04) { 0x0008FFFF, 0x00, \_SB.PCI0.LSA1, 0x00 },
+				Package (0x04) { 0x000AFFFF, 0x00, \_SB.PCI0.LEMA, 0x00 },
 			})
 
 			Device (PCIL)
 			{
 				Name (_ADR, 0x00090000)
 				Name (_UID, 0x00)
-				Name (_BBN, 0x01)
 				Name (_PRT, Package () {
-					Package (0x04) { 0x0007FFFF, 0x00, 0x00, 0x12 }, /* 1:06 Onboard ATI Rage IRQ 18 */
+					/* onboard SM720 VGA */
+					Package (0x04) { 0x0006FFFF, 0x00, \_SB.PCI0.LNKC, 0x00 },
+					Package (0x04) { 0x0006FFFF, 0x01, \_SB.PCI0.LNKD, 0x00 },
+					Package (0x04) { 0x0006FFFF, 0x02, \_SB.PCI0.LNKA, 0x00 },
+					Package (0x04) { 0x0006FFFF, 0x03, \_SB.PCI0.LNKB, 0x00 },
 				})
 			}
 
-			/* 2:00 PCIe x16 SB IRQ 18 */
-			Device (PE16)
+			Device (PEX0)
 			{
 				Name (_ADR, 0x000e0000)
 				Name (_UID, 0x00)
-				Name (_BBN, 0x02)
 				Name (_PRT, Package () {
-					Package (0x04) { 0x0000FFFF, 0x00, 0x00, 0x12 }, /* PCIE IRQ16-IRQ19 */
-					Package (0x04) { 0x0000FFFF, 0x01, 0x00, 0x13 },
-					Package (0x04) { 0x0000FFFF, 0x02, 0x00, 0x10 },
-					Package (0x04) { 0x0000FFFF, 0x03, 0x00, 0x11 },
+					Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKC, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKD, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKA, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKB, 0x00 },
 				})
 			}
 
-			/* 2:00 PCIe x4 SB IRQ 17 */
-			Device (PE4)
+			Device (PEX1)
 			{
-				Name (_ADR, 0x000e0000)
+				Name (_ADR, 0x000d0000)
 				Name (_UID, 0x00)
-				Name (_BBN, 0x02)
 				Name (_PRT, Package () {
-					Package (0x04) { 0x0000FFFF, 0x00, 0x00, 0x11 }, /* PCIE IRQ16-IRQ19 */
-					Package (0x04) { 0x0000FFFF, 0x01, 0x00, 0x12 },
-					Package (0x04) { 0x0000FFFF, 0x02, 0x00, 0x13 },
-					Package (0x04) { 0x0000FFFF, 0x03, 0x00, 0x10 },
+					Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKD, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKA, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKB, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKC, 0x00 },
+				})
+			}
+
+			Device (PEX2)
+			{
+				Name (_ADR, 0x000c0000)
+				Name (_UID, 0x00)
+				Name (_PRT, Package () {
+					Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKA, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKB, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKC, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKD, 0x00 },
+				})
+			}
+
+			Device (PEX3)
+			{
+				Name (_ADR, 0x000b0000)
+				Name (_UID, 0x00)
+				Name (_PRT, Package () {
+					Package (0x04) { 0x0000FFFF, 0x00, \_SB.PCI0.LNKB, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x01, \_SB.PCI0.LNKC, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x02, \_SB.PCI0.LNKD, 0x00 },
+					Package (0x04) { 0x0000FFFF, 0x03, \_SB.PCI0.LNKA, 0x00 },
 				})
 			}
 
@@ -172,110 +204,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "CB-DSDT ", 1)
 						Return (TMP)
 					}
 				}
-
-				/* Parallel port */
-				Device (LP0)
-				{
-					Name (_HID, EisaId ("PNP0400")) // "PNP0401" for ECP
-					Method (_STA, 0, NotSerialized)
-					{
-						Return (0x0f)
-					}
-					Method (_CRS, 0, NotSerialized)
-					{
-						Name (TMP, ResourceTemplate () {
-							FixedIO (0x0378, 0x10)
-							IRQNoFlags () {7}
-						})
-						Return (TMP)
-					}
-				}
-
-				/* Floppy controller */
-				Device (FDC0)
-				{
-					Name (_HID, EisaId ("PNP0700"))
-					Method (_STA, 0, NotSerialized)
-					{
-						Return (0x0f)
-					}
-					Method (_CRS, 0, NotSerialized)
-					{
-						Name (BUF0, ResourceTemplate () {
-							FixedIO (0x03F0, 0x08)
-							IRQNoFlags () {6}
-							DMA (Compatibility, NotBusMaster, Transfer8) {2}
-						})
-						Return (BUF0)
-					}
-				}
-			}
-		}
-
-		/* AMD 8131 PCI-X tunnel */
-		Device (PCI2)
-		{
-			Name (_HID, EisaId ("PNP0A03"))
-			Name (_ADR, 0x00)
-			Name (_UID, 0x00)
-			Name (_BBN, 0x40)
-
-			/* There is no _PRT Here because I don't know what to
-			 * put in it.  Since the 8131 has its own APIC, it
-			 * isn't wired to other IRQs. */
-
-			Method (_CRS, 0, NotSerialized)
-			{
-				Name (BUF0, ResourceTemplate ()
-				{
-					IO (Decode16,
-					0x0CF8,	// Address Range Minimum
-					0x0CF8,	// Address Range Maximum
-					0x01,	// Address Alignment
-					0x08,	// Address Length
-					)
-				})
-				/* Methods bellow use SSDT to get actual MMIO regs
-				   The IO ports are from 0xd00, optionally an VGA,
-				   otherwise the info from MMIO is used.
-				   \_SB.GXXX(node, link)
-				 */
-				Concatenate (\_SB.GMEM (0x00, 0x02), BUF0, Local1)
-				Concatenate (\_SB.GIOR (0x00, 0x02), Local1, Local2)
-				Concatenate (\_SB.GWBN (0x00, 0x02), Local2, Local3)
-				Return (Local3)
-			}
-
-			/* Channel A PCIX 133 */
-			Device (PCXF)
-			{
-				Name (_ADR, 0x00000000)
-				Name (_UID, 0x00)
-				Name (_BBN, 0x41)
-				Name (_PRT, Package () {
-					Package (0x04) { 0x0008FFFF, 0x00, 0x00, 0x18 }, /* PCIE IRQ24-IRQ27 shifted 3*/
-					Package (0x04) { 0x0008FFFF, 0x01, 0x00, 0x10 },
-					Package (0x04) { 0x0008FFFF, 0x02, 0x00, 0x1a },
-					Package (0x04) { 0x0008FFFF, 0x03, 0x00, 0x1b },
-					Package (0x04) { 0x000aFFFF, 0x00, 0x00, 0x1a }, /* PCIE IRQ24-IRQ27 shifted 2*/
-					Package (0x04) { 0x000aFFFF, 0x01, 0x00, 0x1b },
-					Package (0x04) { 0x000aFFFF, 0x02, 0x00, 0x18 },
-					Package (0x04) { 0x000aFFFF, 0x03, 0x00, 0x19 },
-				})
-			}
-
-			/* Channel B PCIX 100 */
-			Device (PCXS) /* Onboard NIC */
-			{
-				Name (_ADR, 0x00010000)
-				Name (_UID, 0x00)
-				Name (_BBN, 0x42)
-				Name (_PRT, Package () {
-					Package (0x04) { 0x0009FFFF, 0x00, 0x00, 0x1c }, /* PCIE IRQ28-IRQ31 */
-					Package (0x04) { 0x0009FFFF, 0x01, 0x00, 0x1d },
-					Package (0x04) { 0x0009FFFF, 0x02, 0x00, 0x1e },
-					Package (0x04) { 0x0009FFFF, 0x03, 0x00, 0x1f },
-				})
 			}
 		}
 	}

@@ -70,6 +70,7 @@ static const unsigned char irq_to_int_routing[16] = {
 #define PIDE_IRQ 5
 
 #define SPI1_IRQ 10
+#define I2C0_IRQ 10
 #define MOTOR_IRQ 11
 
 /* RT0-3 IRQs. */
@@ -424,6 +425,16 @@ static void ex_sb_uart_init(struct device *dev)
 	//pci_write_config16(SB, SB_REG_UART_CFG_IO_BASE, 0x0);
 }
 
+static void i2c_init(struct device *dev)
+{
+	u8 mapped_irq = irq_to_int_routing[I2C0_IRQ];
+	u32 cfg = 0;
+	cfg |= 1 << 31;			// UE = enabled.
+	cfg |= (mapped_irq << 16);	// IIRT0.
+	cfg |= CONFIG_I2C_BASE;		// UIOA.
+	pci_write_config32(dev, SB_REG_II2CCR, cfg);
+}
+
 static int get_rtc_update_in_progress(void)
 {
 	if (cmos_read(RTC_REG_A) & RTC_UIP)
@@ -500,21 +511,21 @@ static void fix_cmos_rtc_time(void)
 	}
 }
 
-static void vortex86_sb_set_io_resv(device_t dev, u32 io_resv_size)
+static void vortex86_sb_set_io_resv(device_t dev, unsigned index, u32 base, u32 size)
 {
 	struct resource *res;
-	res = new_resource(dev, 1);
-	res->base = 0x0UL;
-	res->size = io_resv_size;
+	res = new_resource(dev, index);
+	res->base = base;
+	res->size = size;
 	res->limit = 0xffffUL;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void vortex86_sb_set_spi_flash_size(device_t dev, u32 flash_size)
+static void vortex86_sb_set_spi_flash_size(device_t dev, unsigned index, u32 flash_size)
 {
 	/* SPI flash is in topmost of 4G memory space */
 	struct resource *res;
-	res = new_resource(dev, 2);
+	res = new_resource(dev, index);
 	res->base = 0x100000000LL - flash_size;
 	res->size = flash_size;
 	res->limit = 0xffffffffUL;
@@ -537,11 +548,14 @@ static void vortex86_sb_read_resources(device_t dev)
 		flash_size = 64 * 1024 * 1024;
 	}
 
-	/* Reserve space for I/O */
-	vortex86_sb_set_io_resv(dev, 0x1000UL);
+	/* Reserve space for legacy I/O */
+	vortex86_sb_set_io_resv(dev, 1, 0, 0x1000UL);
 
 	/* Reserve space for flash */
-	vortex86_sb_set_spi_flash_size(dev, flash_size);
+	vortex86_sb_set_spi_flash_size(dev, 2, flash_size);
+
+	/* Reserve space for I2C */
+	vortex86_sb_set_io_resv(dev, 3, CONFIG_I2C_BASE, 8);
 }
 
 static void southbridge_init_func1(struct device *dev)
@@ -572,6 +586,7 @@ static void southbridge_init(struct device *dev)
 	if (dev->device == 0x6011) {
 		ex_sb_gpio_init(dev);
 		ex_sb_uart_init(dev);
+		i2c_init(dev);
 	}
 	pci_routing_fixup(dev);
 

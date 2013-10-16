@@ -37,13 +37,28 @@
 #define GPIO_SSUS_38_PAD 50
 #define GPIO_SSUS_39_PAD 58
 
+static inline void disable_internal_pull(int pad)
+{
+	const int pull_mask = ~(0xf << 7);
+	write32(ssus_pconf0(pad), read32(ssus_pconf0(pad)) & pull_mask);
+}
+
 static void *get_spd_pointer(char *spd_file_content, int total_spds)
 {
 	int ram_id = 0;
 
+	/* The ram_id[2:0] pullups on rambi are too large for the default 20K
+	 * pulldown on the pad. Therefore, disable the internal pull resistor to
+	 * read high values correctly. */
+	disable_internal_pull(GPIO_SSUS_37_PAD);
+	disable_internal_pull(GPIO_SSUS_38_PAD);
+	disable_internal_pull(GPIO_SSUS_39_PAD);
+
 	ram_id |= (ssus_get_gpio(GPIO_SSUS_37_PAD) << 0);
 	ram_id |= (ssus_get_gpio(GPIO_SSUS_38_PAD) << 1);
 	ram_id |= (ssus_get_gpio(GPIO_SSUS_39_PAD) << 2);
+
+	printk(BIOS_DEBUG, "ram_id=%d, total_spds: %d\n", ram_id, total_spds);
 
 	if (ram_id >= total_spds)
 		return NULL;

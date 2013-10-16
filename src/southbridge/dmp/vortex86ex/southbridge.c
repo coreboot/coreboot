@@ -28,6 +28,7 @@
 #include "arch/io.h"
 #include "chip.h"
 #include "southbridge.h"
+#include "mainboard/dmp/vortex86ex/platform_cfg.h"
 
 /* IRQ number to S/B PCI Interrupt routing table reg(0x58/0xb4) mapping table. */
 static const unsigned char irq_to_int_routing[16] = {
@@ -418,6 +419,16 @@ static void ex_sb_uart_init(struct device *dev)
 	//pci_write_config16(SB, SB_REG_UART_CFG_IO_BASE, 0x0);
 }
 
+static void i2c_init(struct device *dev)
+{
+	u8 mapped_irq = irq_to_int_routing[I2C0_IRQ];
+	u32 cfg = 0;
+	cfg |= 1 << 31;			// UE = enabled.
+	cfg |= (mapped_irq << 16);	// IIRT0.
+	cfg |= I2C_BASE;		// UIOA.
+	pci_write_config32(dev, SB_REG_II2CCR, cfg);
+}
+
 static int get_rtc_update_in_progress(void)
 {
 	if (cmos_read(RTC_REG_A) & RTC_UIP)
@@ -566,6 +577,7 @@ static void southbridge_init(struct device *dev)
 	if (dev->device == 0x6011) {
 		ex_sb_gpio_init(dev);
 		ex_sb_uart_init(dev);
+		i2c_init(dev);
 	}
 	pci_routing_fixup(dev);
 

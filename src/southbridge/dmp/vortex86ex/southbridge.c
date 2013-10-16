@@ -70,6 +70,7 @@ static const unsigned char irq_to_int_routing[16] = {
 #define PIDE_IRQ 5
 
 #define SPI1_IRQ 10
+#define I2C0_IRQ 10
 #define MOTOR_IRQ 11
 
 /* RT0-3 IRQs. */
@@ -88,6 +89,9 @@ static const unsigned char irq_to_int_routing[16] = {
 #define LPT_UE 1
 #define LPT_PDMAS 0
 #define LPT_DREQS 0
+
+/* internal I2C */
+#define I2C_BASE 0xfb00
 
 /* Post codes */
 #define POST_KBD_FW_UPLOAD 0x06
@@ -418,6 +422,16 @@ static void ex_sb_uart_init(struct device *dev)
 	//pci_write_config16(SB, SB_REG_UART_CFG_IO_BASE, 0x0);
 }
 
+static void i2c_init(struct device *dev)
+{
+	u8 mapped_irq = irq_to_int_routing[I2C0_IRQ];
+	u32 cfg = 0;
+	cfg |= 1 << 31;			// UE = enabled.
+	cfg |= (mapped_irq << 16);	// IIRT0.
+	cfg |= I2C_BASE;		// UIOA.
+	pci_write_config32(dev, SB_REG_II2CCR, cfg);
+}
+
 static int get_rtc_update_in_progress(void)
 {
 	if (cmos_read(RTC_REG_A) & RTC_UIP)
@@ -566,6 +580,7 @@ static void southbridge_init(struct device *dev)
 	if (dev->device == 0x6011) {
 		ex_sb_gpio_init(dev);
 		ex_sb_uart_init(dev);
+		i2c_init(dev);
 	}
 	pci_routing_fixup(dev);
 

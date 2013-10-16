@@ -38,19 +38,19 @@ SECTIONS
 	. = CONFIG_ROMSTAGE_BASE;
 
 	.romtext . : {
-		_rom = .;
 		_start = .;
 		*(.text.stage_entry.arm);
 		*(.text.startup);
 		*(.text);
+		*(.text.*);
 	} : to_load
 
 	.romdata . : {
 		*(.rodata);
-		*(.machine_param);
+		*(.rodata.*);
 		*(.data);
+		*(.data.*);
 		. = ALIGN(8);
-		_erom = .;
 	}
 
 	/* bss does not contain data, it is just a space that should be zero
@@ -61,11 +61,11 @@ SECTIONS
 		. = ALIGN(8);
 		_bss = .;
 		*(.bss)
+		*(.bss.*)
 		*(.sbss)
-		*(COMMON)
+		*(.sbss.*)
+		_ebss = .;
 	}
-
-	_ebss = .;
 
 	_end = .;
 

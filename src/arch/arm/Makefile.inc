@@ -62,9 +62,9 @@ bootblock-y += memmove.S
 $(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_bootblock) -m armelf_linux_eabi -static -o $@ -L$(obj) $< -T $(src)/arch/arm/bootblock.ld
+	$(LD_bootblock) -m armelf_linux_eabi --gc-sections -static -o $@ -L$(obj) $< -T $(src)/arch/arm/bootblock.ld
 else
-	$(CC_bootblock) $(CFLAGS_bootblock) -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/arm/bootblock.ld -Wl,--start-group $(bootblock-objs) $(LIBGCC_FILE_NAME_bootblock) -Wl,--end-group
+	$(CC_bootblock) $(CFLAGS_bootblock) -nostartfiles -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm/bootblock.ld -Wl,--start-group $(bootblock-objs) $(LIBGCC_FILE_NAME_bootblock) -Wl,--end-group
 endif
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM
@@ -87,9 +87,9 @@ VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm.o
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(src)/arch/arm/romstage.ld $(obj)/ldoptions
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(src)/arch/arm/romstage.ld
+	$(LD_romstage) -nostdlib -nostartfiles --gc-sections -static -o $@ -L$(obj) $(romstage-objs) -T $(src)/arch/arm/romstage.ld
 else
-	$(CC_romstage) $(CFLAGS_romstage) -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/arm/romstage.ld -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
+	$(CC_romstage) $(CFLAGS_romstage) -nostartfiles -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm/romstage.ld -Wl,--start-group $(romstage-objs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
 endif
 
 endif # CONFIG_ARCH_ROMSTAGE_ARM
@@ -122,9 +122,9 @@ endif
 $(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) --end-group
+	$(LD_ramstage) -m -m armelf_linux_eabi --gc-sections -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) --end-group
 else
-	$(CC_ramstage) $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group
+	$(CC_ramstage) $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) -nostdlib -Wl,--gc-sections -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group
 endif
 
 endif # CONFIG_ARCH_RAMSTAGE_ARM

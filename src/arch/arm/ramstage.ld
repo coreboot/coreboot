@@ -48,7 +48,7 @@ SECTIONS
 	.ctors : {
 		. = ALIGN(0x100);
 		__CTOR_LIST__ = .;
-		*(.ctors);
+		KEEP(*(.ctors));
 		LONG(0);
 		__CTOR_END__ = .;
 	}
@@ -57,13 +57,13 @@ SECTIONS
 		_rodata = .;
 		. = ALIGN(4);
 		pci_drivers = . ;
-		*(.rodata.pci_driver)
+		KEEP(*(.rodata.pci_driver));
 		epci_drivers = . ;
 		cpu_drivers = . ;
-		*(.rodata.cpu_driver)
+		KEEP(*(.rodata.cpu_driver));
 		ecpu_drivers = . ;
 		_bs_init_begin = .;
-		*(.bs_init)
+		KEEP(*(.bs_init));
 		_bs_init_end = .;
 		*(.rodata)
 		*(.rodata.*)
@@ -83,6 +83,7 @@ SECTIONS
 	.data : {
 		_data = .;
 		*(.data)
+		*(.data.*)
 		_edata = .;
 	}
 
@@ -90,26 +91,27 @@ SECTIONS
 	 * initialized on startup. (typically uninitialized global variables)
 	 * crt0.S fills between _bss and _ebss with zeroes.
 	 */
-	_bss = .;
 	.bss . : {
+		_bss = .;
 		*(.bss)
+		*(.bss.*)
 		*(.sbss)
-		*(COMMON)
+		*(.sbss.*)
+		_ebss = .;
 	}
-	_ebss = .;
 	_end = .;
 
 	/* coreboot really "ends" here. Only heap and stack are placed after
 	 * this line.
 	 */
 
-        _heap = .;
         .heap . : {
+			_heap = .;
                 /* Reserve CONFIG_HEAP_SIZE bytes for the heap */
                 . = CONFIG_HEAP_SIZE ;
                 . = ALIGN(4);
+			_eheap = .;
         }
-        _eheap = .;
 
 	/* The ram segment. This includes all memory used by the memory
 	 * resident copy of coreboot, except the tables that are produced on

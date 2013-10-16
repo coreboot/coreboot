@@ -28,23 +28,25 @@ PHDRS
 	to_load PT_LOAD;
 }
 
+ENTRY(_start)
 TARGET(binary)
 SECTIONS
 {
-	ROMLOC = CONFIG_BOOTBLOCK_BASE;
+	. = CONFIG_BOOTBLOCK_BASE;
 
-	/* This section might be better named .setup */
-	.rom ROMLOC : {
-		_rom = .;
+	.bootblock . : {
 		*(.start);
-		*(.id);
+		KEEP(*(.id));
 		*(.text);
 		*(.text.*);
-		*(.rom.text);
-		*(.rom.data);
-		*(.rom.data.*);
+		*(.rodata);
 		*(.rodata.*);
-		_erom = .;
+		*(.data);
+		*(.data.*);
+		*(.bss);
+		*(.bss.*);
+		*(.sbss);
+		*(.sbss.*);
 	} : to_load = 0xff
 
 	/DISCARD/ : {

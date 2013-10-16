@@ -122,6 +122,14 @@ menu "On-Chip Device Power Down Control"
 
 endmenu
 
+menu "On-Chip Device I/O Base Address Control"
+
+config I2C_BASE
+	hex "I2C base address"
+	default 0xfb00
+
+endmenu
+
 menu "Watchdog Timer setting"
 
 config WDT1_INITIALIZE

@@ -24,7 +24,7 @@ menu "ChromeOS"
 
 config CHROMEOS
 	bool "Build for ChromeOS"
-	default y
+	default n
 	select TPM
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in

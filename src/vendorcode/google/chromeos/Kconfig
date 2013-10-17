@@ -16,17 +16,22 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+config MAINBOARD_HAS_CHROMEOS
+	def_bool n
+
+menu "ChromeOS"
+	depends on MAINBOARD_HAS_CHROMEOS
+
 config CHROMEOS
-	bool
-	default n
+	bool "Build for ChromeOS"
+	default y
 	select TPM
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
 	  the coreboot table. NOTE: Enabling this option on an unsupported
 	  board will most likely break your build.
 
-menu "ChromeOS"
-	depends on CHROMEOS
+if CHROMEOS
 
 config VBNV_OFFSET
 	hex
@@ -66,12 +71,9 @@ config FLASHMAP_OFFSET
 	help
 	  Offset of flash map in firmware image
 
-endmenu
-
 config VBOOT_VERIFY_FIRMWARE
 	bool "Verify firmware with vboot."
 	default n
-	depends on CHROMEOS
 	help
 	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the ramstage
 	  and boot loader.
@@ -111,8 +113,10 @@ config VBOOT_RAMSTAGE_INDEX
 config NO_TPM_RESUME
 	bool
 	default n
-	depends on CHROMEOS
 	help
 	  On some boards the TPM stays powered up in S3. On those
 	  boards, booting Windows will break if the TPM resume command
 	  is sent during an S3 resume.
+
+endif
+endmenu

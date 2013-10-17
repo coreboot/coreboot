@@ -4,7 +4,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
 	select BOARD_ROMSIZE_KB_8192
-	select CHROMEOS
+	select MAINBOARD_HAS_CHROMEOS
 	select CPU_INTEL_SOCKET_RPGA989
 	select EC_SMSC_MEC1308
 	select GFXUMA

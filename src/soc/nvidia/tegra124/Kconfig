@@ -41,6 +41,14 @@ config BOOTBLOCK_BASE
 	hex
 	default 0x80000000
 
+config ROMSTAGE_BASE
+	hex
+	default 0x80100000
+
+config RAMSTAGE_BASE
+	hex
+	default 0x80200000
+
 config STACK_TOP
 	hex
 	default 0x80400000

@@ -219,6 +219,11 @@ config USBDEBUG_DONGLE_BEAGLEBONE
 	help
 	  Use this to configure the USB hub on BeagleBone board.
 
+config USBDEBUG_DONGLE_BEAGLEBONE_BLACK
+	bool "BeagleBone Black"
+	help
+	  Use this with BeagleBone Black.
+
 endchoice
 
 config USBDEBUG_OPTIONAL_HUB_PORT

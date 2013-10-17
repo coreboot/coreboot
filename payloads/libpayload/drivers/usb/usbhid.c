@@ -452,7 +452,7 @@ usb_hid_init (usbdev_t *dev)
 			hid_descriptor_t *desc = malloc(sizeof(hid_descriptor_t));
 			if (!desc || get_descriptor(dev, gen_bmRequestType(
 				device_to_host, standard_type, iface_recp),
-				0x21, 0, desc, sizeof(*desc)) != sizeof(desc)) {
+				0x21, 0, desc, sizeof(*desc)) != sizeof(*desc)) {
 				usb_debug ("get_descriptor(HID) failed\n");
 				usb_detach_device (dev->controller, dev->address);
 				return;

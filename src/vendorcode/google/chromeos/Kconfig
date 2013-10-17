@@ -24,7 +24,7 @@ menu "ChromeOS"
 
 config CHROMEOS
 	bool "Build for ChromeOS"
-	default y
+	default n
 	select TPM
 	select BOOTMODE_STRAPS
 	help

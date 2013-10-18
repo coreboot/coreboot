@@ -111,6 +111,9 @@ struct southbridge_intel_lynxpoint_config {
 	 *    [24] = CLKOUT_ITPXDP
 	 */
 	uint32_t icc_clock_disable;
+
+	/* Route USB ports to XHCI per default */
+	uint8_t xhci_default;
 };
 
 extern struct chip_operations southbridge_intel_lynxpoint_ops;

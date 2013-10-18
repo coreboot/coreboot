@@ -26,6 +26,8 @@
 #include <arch/io.h>
 #include "pch.h"
 
+typedef struct southbridge_intel_lynxpoint_config config_t;
+
 static u32 usb_xhci_mem_base(device_t dev)
 {
 	u32 mem_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -294,6 +296,7 @@ static void usb_xhci_init(device_t dev)
 	u32 reg32;
 	u16 reg16;
 	u32 mem_base = usb_xhci_mem_base(dev);
+	config_t *config = dev->chip_info;
 
 	/* D20:F0:74h[1:0] = 00b (set D0 state) */
 	reg16 = pci_read_config16(dev, XHCI_PWR_CTL_STS);
@@ -356,6 +359,9 @@ static void usb_xhci_init(device_t dev)
 		/* Reset ports that are disabled or
 		 * polling before returning to the OS. */
 		usb_xhci_reset_usb3(dev, 0);
+	} else if (config->xhci_default) {
+		/* Route all ports to XHCI */
+		outb(0xca, 0xb2);
 	}
 }
 

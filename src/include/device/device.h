@@ -131,9 +131,11 @@ extern struct bus	*free_links;
 
 extern const char mainboard_name[];
 
+#if CONFIG_GFXUMA
 /* IGD UMA memory */
 extern uint64_t uma_memory_base;
 extern uint64_t uma_memory_size;
+#endif
 
 /* Generic device interface functions */
 device_t alloc_dev(struct bus *parent, struct device_path *path);

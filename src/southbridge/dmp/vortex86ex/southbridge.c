@@ -138,7 +138,13 @@ static void upload_dmp_keyboard_firmware(struct device *dev)
 
 	// disable firmware uploading.
 	pci_write_config32(dev, SB_REG_IPFCR, reg_sb_c0 & ~0x400L);
-	// wait keyboard controller ready by checking status port bit 2.
+}
+
+static void kbc_wait_system_flag(void)
+{
+	/* wait keyboard controller ready by checking system flag
+	 * (status port bit 2).
+	 */
 	post_code(POST_KBD_CHK_READY);
 	while ((inb(0x64) & 0x4) == 0) {
 	}
@@ -571,6 +577,7 @@ static void southbridge_init(struct device *dev)
 
 	fix_cmos_rtc_time();
 	rtc_init(0);
+	kbc_wait_system_flag();
 	pc_keyboard_init(0);
 }
 

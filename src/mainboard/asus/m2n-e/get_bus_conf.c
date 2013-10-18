@@ -85,7 +85,7 @@ void get_bus_conf(void)
 
 	get_sblk_pci1234();
 
-	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); /* First byte of first chain */
+	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);	/* First byte of first chain */
 	sbdn = sysconf.sbdn;
 
 	for (i = 0; i < 8; i++)

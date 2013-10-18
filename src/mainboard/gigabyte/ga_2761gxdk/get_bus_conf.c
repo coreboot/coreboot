@@ -33,17 +33,14 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include <stdlib.h>
 
-
 // Global variables for MB layouts and these will be shared by irqtable mptable and acpi_tables
 //busnum is default
-        unsigned char bus_sis966[8]; //1
-        unsigned apicid_sis966;
+unsigned char bus_sis966[8];	//1
+unsigned apicid_sis966;
 
-
-unsigned pci1234x[] =
-{        //Here you only need to set value in pci1234 for HT-IO that could be installed or not
-	 //You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-        0x0000ff0,
+unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO that could be installed or not
+	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
+	0x0000ff0,
 //        0x0000ff0,
 //        0x0000ff0,
 //        0x0000ff0,
@@ -52,10 +49,10 @@ unsigned pci1234x[] =
 //        0x0000ff0,
 //        0x0000ff0
 };
-unsigned hcdnx[] =
-{ //HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
+
+unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
-//	0x20202020,
+//      0x20202020,
 //        0x20202020,
 //        0x20202020,
 //        0x20202020,
@@ -72,51 +69,55 @@ void get_bus_conf(void)
 	unsigned apicid_base;
 	unsigned sbdn;
 
-        device_t dev;
-        int i;
+	device_t dev;
+	int i;
 
-        if(get_bus_conf_done==1) return; //do it only once
+	if (get_bus_conf_done == 1)
+		return;		//do it only once
 
-        get_bus_conf_done = 1;
+	get_bus_conf_done = 1;
 
-        sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
-        for(i=0;i<sysconf.hc_possible_num; i++) {
-                sysconf.pci1234[i] = pci1234x[i];
-                sysconf.hcdn[i] = hcdnx[i];
-        }
+	sysconf.hc_possible_num = ARRAY_SIZE(pci1234x);
+	for (i = 0; i < sysconf.hc_possible_num; i++) {
+		sysconf.pci1234[i] = pci1234x[i];
+		sysconf.hcdn[i] = hcdnx[i];
+	}
 
-        get_sblk_pci1234();
+	get_sblk_pci1234();
 
-	sysconf.sbdn = (sysconf.hcdn[0] & 0xff); // first byte of first chain
+	sysconf.sbdn = (sysconf.hcdn[0] & 0xff);	// first byte of first chain
 	sbdn = sysconf.sbdn;
 
-	for(i=0; i<8; i++) {
+	for (i = 0; i < 8; i++) {
 		bus_sis966[i] = 0;
 	}
 
 	bus_sis966[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 
-                /* SIS966 */
-                dev = dev_find_slot(bus_sis966[0], PCI_DEVFN(sbdn + 0x06,0));
-                if (dev) {
-                        bus_sis966[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-                        bus_sis966[2] = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-                        bus_sis966[2]++;
-                }
-                else {
-                        printk(BIOS_DEBUG, "ERROR - could not find PCI 1:%02x.0, using defaults\n", sbdn + 0x06);
+	/* SIS966 */
+	dev = dev_find_slot(bus_sis966[0], PCI_DEVFN(sbdn + 0x06, 0));
+	if (dev) {
+		bus_sis966[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
+		bus_sis966[2] = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
+		bus_sis966[2]++;
+	} else {
+		printk(BIOS_DEBUG,
+		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+		       sbdn + 0x06);
 
-                        bus_sis966[1] = 2;
-                        bus_sis966[2] = 3;
-                }
+		bus_sis966[1] = 2;
+		bus_sis966[2] = 3;
+	}
 
-		for(i=2; i<8;i++) {
-	                dev = dev_find_slot(bus_sis966[0], PCI_DEVFN(sbdn + 0x0a + i - 2 , 0));
-        	        if (dev) {
-                	        bus_sis966[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	                }
+	for (i = 2; i < 8; i++) {
+		dev =
+		    dev_find_slot(bus_sis966[0],
+				  PCI_DEVFN(sbdn + 0x0a + i - 2, 0));
+		if (dev) {
+			bus_sis966[i] =
+			    pci_read_config8(dev, PCI_SECONDARY_BUS);
 		}
-
+	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
 #if CONFIG_LOGICAL_CPUS
@@ -124,6 +125,6 @@ void get_bus_conf(void)
 #else
 	apicid_base = CONFIG_MAX_PHYSICAL_CPUS;
 #endif
-	apicid_sis966 = apicid_base+0;
+	apicid_sis966 = apicid_base + 0;
 
 }

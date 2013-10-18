@@ -14,7 +14,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_CMOS_DEFAULT
 	select HAVE_ACPI_RESUME
 	select HAVE_SMI_HANDLER
-	select GFXUMA
 	select EARLY_CBMEM_INIT
 
 	# Workaround for EC/KBC IRQ1.

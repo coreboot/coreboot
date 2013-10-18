@@ -99,6 +99,7 @@ static void pci_domain_set_resources(device_t dev)
 	u8 reg8;
 	u16 reg16;
 	unsigned long long tomk, tolud, tomk_stolen;
+	uint64_t uma_memory_base = 0, uma_memory_size = 0;
 	uint64_t tseg_memory_base = 0, tseg_memory_size = 0;
 
 	/* Can we find out how much memory we can use at most this way? */

@@ -73,6 +73,7 @@ static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
 	int igd_memory = 0;
+	uint64_t uma_memory_base = 0, uma_memory_size = 0;
 
 	mc_dev = dev->link_list->children;
 	if (!mc_dev)

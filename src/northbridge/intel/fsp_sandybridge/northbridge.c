@@ -41,6 +41,10 @@
 static int bridge_revision_id = -1;
 static u8 finished_FSP_after_pci = 0;
 
+/* IGD UMA memory */
+static uint64_t uma_memory_base = 0;
+static uint64_t uma_memory_size = 0;
+
 int bridge_silicon_revision(void)
 {
 	if (bridge_revision_id < 0) {

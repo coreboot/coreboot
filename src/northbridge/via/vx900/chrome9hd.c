@@ -220,12 +220,6 @@ static void chrome9hd_handle_uma(device_t dev)
 	/* Mirror mirror, shiny glass, tell me that is not my ass */
 	u32 fb_size = chrome9hd_fb_size() >> 20;
 
-	//uma_resource(dev, 0x18, uma_memory_base>>10, uma_memory_size>>10);
-
-	printk(BIOS_DEBUG, "UMA base 0x%.8llx (%lluMB)\n", uma_memory_base,
-	       uma_memory_base >> 20);
-	printk(BIOS_DEBUG, "UMA size 0x%.8llx (%lluMB)\n", uma_memory_size,
-	       uma_memory_size >> 20);
 	u8 fb_pow = 0;
 	while (fb_size >> fb_pow)
 		fb_pow++;
@@ -286,13 +280,13 @@ static void chrome9hd_biosguide_init_seq(device_t dev)
 
 	chrome9hd_handle_uma(dev);
 
-	/* Step 8 - Enable memory base register on the GFX */
-	if (uma_memory_base == 0)
+	uint64_t gfx_base = get_uma_memory_base();
+	if (gfx_base == 0)
 		die("uma_memory_base not set. Abandon ship!\n");
-	printk(BIOS_DEBUG, "UMA base 0x%.10llx (%lluMB)\n", uma_memory_base,
-	       uma_memory_base >> 20);
-	vga_sr_write(0x6d, (uma_memory_base >> 21) & 0xff);	/* base 28:21 */
-	vga_sr_write(0x6e, (uma_memory_base >> 29) & 0xff);	/* base 36:29 */
+
+	/* Step 8 - Enable memory base register on the GFX */
+	vga_sr_write(0x6d, (gfx_base >> 21) & 0xff);	/* base 28:21 */
+	vga_sr_write(0x6e, (gfx_base >> 29) & 0xff);	/* base 36:29 */
 	vga_sr_write(0x6f, 0x00);	/* base 43:37 */
 
 	/* Step 9 - Set SID/VID */

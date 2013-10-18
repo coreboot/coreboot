@@ -32,6 +32,9 @@
 
 #define RAM_4GB		(((u64)1) << 32)
 
+static uint64_t uma_memory_base = 0;
+static uint64_t uma_memory_size = 0;
+
 /**
  * @file northbridge.c
  *
@@ -46,6 +49,15 @@
 void hard_reset(void)
 {
 	outb((1 << 2) | (1 << 1), 0xcf9);
+}
+
+uint64_t get_uma_memory_base(void)
+{
+	printk(BIOS_DEBUG, "UMA base 0x%.8llx (%lluMB)\n", uma_memory_base,
+		uma_memory_base >> 20);
+	printk(BIOS_DEBUG, "UMA size 0x%.8llx (%lluMB)\n", uma_memory_size,
+		uma_memory_size >> 20);
+	return uma_memory_base;
 }
 
 static u64 vx900_get_top_of_ram(device_t mcu)
@@ -259,6 +271,8 @@ static void vx900_set_resources(device_t dev)
 	ram_resource(dev, idx++, 768, (tolmk - 768));
 	uma_memory_size = fbufk << 10;
 	uma_memory_base = tolmk << 10;
+
+	//uma_resource(dev, idx++, uma_memory_base>>10, uma_memory_size>>10);
 
 	printk(BIOS_DEBUG, "UMA @ %lldMB + %lldMB\n", uma_memory_base >> 20,
 	       uma_memory_size >> 20);

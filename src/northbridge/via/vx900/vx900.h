@@ -40,6 +40,7 @@
 
 u32 chrome9hd_fb_size(void);
 u8 vx900_int15_get_5f18_bl(void);
+uint64_t get_uma_memory_base(void);
 
 /* We use these throughout the code. They really belong in a generic part of
  * coreboot, but until bureaucracy gets them there, we still need them  */

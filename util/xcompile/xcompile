@@ -89,11 +89,6 @@ testas() {
 
 detect_special_flags() {
 	local architecture="$1"
-	# GCC 4.6 is much more picky about unused variables.
-	# Turn off it's warnings for now:
-	testcc "$CC"   "$CFLAGS -Wno-unused-but-set-variable " &&
-		CFLAGS="$CFLAGS -Wno-unused-but-set-variable "
-
 	# Use bfd linker instead of gold if available:
 	testcc "$CC"   "$CFLAGS -fuse-ld=bfd" &&
 		CFLAGS="$CFLAGS -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'

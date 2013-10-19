@@ -29,7 +29,7 @@
 
 static void vt8237_cfg(struct device *dev)
 {
-	u8 regm, regm3;
+	u8 regm;
 	device_t devfun3;
 
 	devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
@@ -80,8 +80,7 @@ static void vt8237_cfg(struct device *dev)
 	regm = pci_read_config8(devfun3, 0x83);
 	pci_write_config8(dev, 0x63, regm);
 
-	// FIXME is this really supposed to be regm3?
-	regm3 = pci_read_config8(devfun3, 0x82);/* Shadow page E */
+	regm = pci_read_config8(devfun3, 0x82);/* Shadow page E */
 	pci_write_config8(dev, 0x64, regm);
 
 	regm = pci_read_config8(devfun3, 0x86);	/* SMM and APIC decoding */

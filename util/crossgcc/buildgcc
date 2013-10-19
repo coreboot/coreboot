@@ -130,6 +130,11 @@ if ! flex --version > /dev/null 2> /dev/null; then
 	exit 1
 fi
 
+WGET=wget
+if ! $WGET --version > /dev/null 2> /dev/null; then
+	printf "${RED}ERROR:${red} Missing tool chain (program for downloading archives): wget${NC}\n" >&2
+fi
+
 cleanup()
 {
 	printf "Cleaning up temporary files... "
@@ -269,7 +274,7 @@ for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
 	test -f tarballs/$FILE && printf "(cached)" || (
 		printf "(downloading)"
 		cd tarballs
-		wget --no-check-certificate -q $ARCHIVE
+		$WGET --no-check-certificate -q $ARCHIVE
 	)
 	test -f tarballs/$FILE || \
 		printf "\n${RED}Failed to download $FILE.${NC}\n"

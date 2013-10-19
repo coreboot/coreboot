@@ -171,11 +171,6 @@ testas() {
 
 detect_special_flags() {
 	local architecture="$1"
-	# GCC 4.6 is much more picky about unused variables.
-	# Turn off it's warnings for now:
-	testcc "$GCC"      "$CFLAGS_GCC -Wno-unused-but-set-variable " &&
-		CFLAGS_GCC="$CFLAGS_GCC -Wno-unused-but-set-variable "
-
 	# Check for an operational -m32/-m64
 	testcc "$GCC"      "$CFLAGS_GCC -m$TWIDTH " &&
 		CFLAGS_GCC="$CFLAGS_GCC -m$TWIDTH "

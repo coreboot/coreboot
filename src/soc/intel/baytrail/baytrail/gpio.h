@@ -105,9 +105,9 @@
 #define PAD_PU_40K		(3 << 9)
 
 /* config0[8:7] - Pull assign */
-#define PAD_PU_DISABLE		(0 << 7)
-#define PAD_PU_UP		(1 << 7)
-#define PAD_PU_DOWN		(2 << 7)
+#define PAD_PULL_DISABLE	(0 << 7)
+#define PAD_PULL_UP		(1 << 7)
+#define PAD_PULL_DOWN		(2 << 7)
 
 /* config0[2:0] - Func. pin mux */
 #define PAD_FUNC0		0x0
@@ -146,7 +146,7 @@
  * legacy config -- so also configure the pad regs as GPIO. We rely upon
  * the fact that all GPNCORE pads are function 0 GPIO. */
 #define GPIO_INPUT_PU_10K \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PU_UP | PAD_CONFIG0_DEFAULT \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
@@ -154,7 +154,7 @@
 	  .io_sel    = GPIO_DIR_INPUT }
 
 #define GPIO_INPUT_PD_10K \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PU_DOWN | PAD_CONFIG0_DEFAULT \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DOWN | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
@@ -162,7 +162,7 @@
 	  .io_sel    = GPIO_DIR_INPUT }
 
 #define GPIO_INPUT_NOPU \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
@@ -170,7 +170,7 @@
 	  .io_sel    = GPIO_DIR_INPUT }
 
 #define GPIO_OUT_LOW \
-	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_OUTPUT_ENABLE | PAD_VAL_LOW, \
@@ -179,7 +179,7 @@
 	  .gp_lvl    = GPIO_LEVEL_LOW }
 
 #define GPIO_OUT_HIGH \
-	{ .pad_conf0 = PAD_PU_DISABLE | PAD_CONFIG0_DEFAULT \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_OUTPUT_ENABLE | PAD_VAL_HIGH, \
@@ -188,34 +188,21 @@
 	  .gp_lvl    = GPIO_LEVEL_HIGH }
 
 /* Define no-pull / PU / PD configs for each functional config option */
-#define _GPIO_FUNC(_func, _pu, _str) \
+#define GPIO_FUNC(_func, _pudir, _str) \
 	{ .use_sel   = GPIO_USE_PAD, \
-	  .pad_conf0 = PAD_FUNC##_func | PAD_PU_##_pu | PAD_PU_##_str | \
+	  .pad_conf0 = PAD_FUNC##_func | PAD_##_pudir | PAD_PU_##_str | \
 		       PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_DEFAULT }
 
-#define GPIO_FUNC0		_GPIO_FUNC(0, DISABLE, 10K)
-#define GPIO_FUNC0_PU_10K	_GPIO_FUNC(0, UP, 10K)
-#define GPIO_FUNC0_PD_10K	_GPIO_FUNC(0, DOWN, 10K)
-#define GPIO_FUNC1		_GPIO_FUNC(1, DISABLE, 10K)
-#define GPIO_FUNC1_PU_10K	_GPIO_FUNC(1, UP, 10K)
-#define GPIO_FUNC1_PD_10K	_GPIO_FUNC(1, DOWN, 10K)
-#define GPIO_FUNC2		_GPIO_FUNC(2, DISABLE, 10K)
-#define GPIO_FUNC2_PU_10K	_GPIO_FUNC(2, UP, 10K)
-#define GPIO_FUNC2_PD_10K	_GPIO_FUNC(2, DOWN, 10K)
-#define GPIO_FUNC3		_GPIO_FUNC(3, DISABLE, 10K)
-#define GPIO_FUNC3_PU_10K	_GPIO_FUNC(3, UP, 10K)
-#define GPIO_FUNC3_PD_10K	_GPIO_FUNC(3, DOWN, 10K)
-#define GPIO_FUNC4		_GPIO_FUNC(4, DISABLE, 10K)
-#define GPIO_FUNC4_PU_10K	_GPIO_FUNC(4, UP, 10K)
-#define GPIO_FUNC4_PD_10K	_GPIO_FUNC(4, DOWN, 10K)
-#define GPIO_FUNC5		_GPIO_FUNC(5, DISABLE, 10K)
-#define GPIO_FUNC5_PU_10K	_GPIO_FUNC(5, UP, 10K)
-#define GPIO_FUNC5_PD_10K	_GPIO_FUNC(5, DOWN, 10K)
-#define GPIO_FUNC6		_GPIO_FUNC(6, DISABLE, 10K)
-#define GPIO_FUNC6_PU_10K	_GPIO_FUNC(6, UP, 10K)
-#define GPIO_FUNC6_PD_10K	_GPIO_FUNC(6, DOWN, 10K)
+/* Default functional configs -- no PU */
+#define GPIO_FUNC0		GPIO_FUNC(0, PULL_DISABLE, 10K)
+#define GPIO_FUNC1		GPIO_FUNC(1, PULL_DISABLE, 10K)
+#define GPIO_FUNC2		GPIO_FUNC(2, PULL_DISABLE, 10K)
+#define GPIO_FUNC3		GPIO_FUNC(3, PULL_DISABLE, 10K)
+#define GPIO_FUNC4		GPIO_FUNC(4, PULL_DISABLE, 10K)
+#define GPIO_FUNC5		GPIO_FUNC(5, PULL_DISABLE, 10K)
+#define GPIO_FUNC6		GPIO_FUNC(6, PULL_DISABLE, 10K)
 
 /* End marker */
 #define GPIO_LIST_END		0xffffffff

@@ -33,6 +33,9 @@
 #include <cbmem.h>
 #include <cpu/x86/lapic_def.h>
 #include <cpu/cpu.h>
+#if CONFIG_KEEP_BOOT_COUNT
+#include <fallback.h>
+#endif
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
@@ -637,6 +640,15 @@ void acpi_resume(void *wake_vec)
 	/* Call mainboard resume handler first, if defined. */
 	if (mainboard_suspend_resume)
 		mainboard_suspend_resume();
+
+#if CONFIG_KEEP_BOOT_COUNT
+	/* we don't want to resume with the wrong prefix next time.
+	 * And doing it in the bootblock seems counterintuitive:
+	 * the bootblock would then need to know it's resuming...
+	 */
+	if (strncmp(CONFIG_CBFS_PREFIX, "fallback", sizeof("fallback")))
+		set_boot_successful();
+#endif
 
 	post_code(POST_OS_RESUME);
 	acpi_jump_to_wakeup(wake_vec);

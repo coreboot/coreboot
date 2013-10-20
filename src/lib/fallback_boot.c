@@ -3,7 +3,7 @@
 #include <watchdog.h>
 #include <arch/io.h>
 
-#if CONFIG_PC80_SYSTEM
+#if CONFIG_PC80_SYSTEM && !CONFIG_KEEP_BOOT_COUNT
 #include <pc80/mc146818rtc.h>
 
 static void set_boot_successful(void)

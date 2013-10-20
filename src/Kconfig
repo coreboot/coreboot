@@ -47,6 +47,13 @@ config CBFS_PREFIX
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.
 
+config KEEP_BOOT_COUNT
+	bool "Keep boot count"
+	depends on PC80_SYSTEM
+	help
+	  If enabled, the boot count is not reset anymore in the ramstage.
+	  This delegates that task to the software running after the ramstage.
+
 config ALT_CBFS_LOAD_PAYLOAD
 	bool "Use alternative cbfs_load_payload() implementation."
 	default n

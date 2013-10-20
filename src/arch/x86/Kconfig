@@ -46,7 +46,7 @@ config STACK_SIZE
 # TODO: Improve description.
 config MAX_REBOOT_CNT
 	int
-	default 3
+	default 1
 
 # This is something you almost certainly don't want to mess with.
 # How many SIPIs do we send when starting up APs and cores?

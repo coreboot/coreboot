@@ -43,10 +43,18 @@ config STACK_SIZE
 	default 0x1000
 
 # Maximum reboot count
-# TODO: Improve description.
 config MAX_REBOOT_CNT
-	int
-	default 3
+	int "Number of failed boot attempts before switching back to fallback/"
+	default 1
+	depends on X86_BOOTBLOCK_NORMAL
+	help
+	 Note that the minimum number of reset a machine has to do to boot
+	 can vary across machines.
+	 If you set it to a number that is less that the machine minimum,
+	 the machine will then switch to fallback/ during the next boot.
+	 Once in fallback/, the machine will keep that settings unless
+	 the nvram is reset, which will make it switch to fallback/
+	 again during the next boot.
 
 # This is something you almost certainly don't want to mess with.
 # How many SIPIs do we send when starting up APs and cores?

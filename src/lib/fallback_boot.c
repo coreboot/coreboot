@@ -10,8 +10,17 @@ void boot_successful(void)
 
 	vbe_textmode_console();
 #endif
+
+#if CONFIG_KEEP_BOOT_COUNT && CONFIG_CBFS_PREFIX != "fallback"
+	/* we don't want to resume with the wrong prefix next time */
+	if (acpi_slp_type == 3)
+		set_boot_successful();
+#endif
+
+#if !CONFIG_KEEP_BOOT_COUNT
 	/* Remember this was a successful boot */
 	set_boot_successful();
+#endif
 
 	/* turn off the boot watchdog */
 	watchdog_off();

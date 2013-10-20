@@ -10,8 +10,12 @@ void boot_successful(void)
 
 	vbe_textmode_console();
 #endif
+
+/* We want to only do it at resume in the case of CONFIG_KEEP_BOOT_COUNT */
+#if !CONFIG_KEEP_BOOT_COUNT
 	/* Remember this was a successful boot */
 	set_boot_successful();
+#endif
 
 	/* turn off the boot watchdog */
 	watchdog_off();

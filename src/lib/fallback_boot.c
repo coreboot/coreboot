@@ -10,8 +10,11 @@ void boot_successful(void)
 
 	vbe_textmode_console();
 #endif
+
+#if !CONFIG_KEEP_BOOT_COUNT
 	/* Remember this was a successful boot */
 	set_boot_successful();
+#endif
 
 	/* turn off the boot watchdog */
 	watchdog_off();

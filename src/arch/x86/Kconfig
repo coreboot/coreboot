@@ -80,6 +80,14 @@ config MAX_REBOOT_CNT
 	 the nvram is reset, which will make it switch to fallback/
 	 again during the next boot.
 
+config KEEP_BOOT_COUNT
+	bool "Keep boot count"
+	default n
+	depends on PC80_SYSTEM && X86_BOOTBLOCK_NORMAL
+	help
+	  If enabled, the boot count is not reset anymore in the ramstage.
+	  This delegates that task to the software running after the ramstage.
+
 config BOOTBLOCK_SOURCE
 	string
 	default "bootblock_simple.c" if X86_BOOTBLOCK_SIMPLE

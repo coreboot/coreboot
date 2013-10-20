@@ -54,6 +54,10 @@ config MAX_CPUS
 	int
 	default 2
 
+config MAX_REBOOT_CNT
+	int
+	default 1
+
 config MAINBOARD_SMBIOS_MANUFACTURER
 	string
 	default "LENOVO"

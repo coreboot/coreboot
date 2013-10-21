@@ -18,14 +18,17 @@
 #include <arch/io.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <stdlib.h>
 #include "clk_rst.h"
 #include "cpug.h"
 #include "flow.h"
 #include "pmc.h"
+#include "sysctr.h"
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 static struct flow_ctlr *flow = (void *)TEGRA_FLOW_BASE;
-static struct tegra_pmc_regs *pmc = (void*)TEGRA_PMC_BASE;
+static struct tegra_pmc_regs *pmc = (void *)TEGRA_PMC_BASE;
+static struct sysctr_regs *sysctr = (void *)TEGRA_SYSCTR0_BASE;
 
 struct pll_dividers {
 	u32	n : 10;
@@ -143,21 +146,6 @@ struct {
 	},
 };
 
-void clock_ll_set_source_divisor(u32 *reg, u32 source, u32 divisor)
-{
-        u32 value;
-
-        value = readl(reg);
-
-        value &= ~CLK_SOURCE_MASK;
-        value |= source << CLK_SOURCE_SHIFT;
-
-        value &= ~CLK_DIVISOR_MASK;
-        value |= divisor << CLK_DIVISOR_SHIFT;
-
-        writel(value, reg);
-}
-
 /* Get the oscillator frequency, from the corresponding hardware
  * configuration field. This is actually a per-soc thing. Avoid the
  * temptation to make it common.
@@ -170,6 +158,20 @@ static u32 clock_get_osc_bits(void)
 int clock_get_osc_khz(void)
 {
 	return osc_table[clock_get_osc_bits()].khz;
+}
+
+void clock_init_arm_generic_timer(void)
+{
+	uint32_t freq = clock_get_osc_khz() * 1000;
+	// Set the cntfrq register.
+	__asm__ __volatile__("mcr p15, 0, %0, c14, c0, 0\n" :: "r"(freq));
+
+	// Record the system timer frequency.
+	write32(freq, &sysctr->cntfid0);
+	// Enable the system counter.
+	uint32_t cntcr = read32(&sysctr->cntcr);
+	cntcr |= SYSCTR_CNTCR_EN | SYSCTR_CNTCR_HDBG;
+	write32(cntcr, &sysctr->cntcr);
 }
 
 static void adjust_pllp_out_freqs(void)
@@ -204,6 +206,37 @@ static void init_pll(u32 *base, u32 *misc, const union pll_fields pll)
 	writel(dividers | PLL_BASE_ENABLE, base);
 }
 
+static void init_utmip_pll(void)
+{
+	int khz = clock_get_osc_khz();
+
+	/* Shut off PLL crystal clock while we mess with it */
+	clrbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
+	udelay(1);
+
+	write32(80 << 16 |			/* (rst) phy_divn */
+		1 << 8 |			/* (rst) phy_divm */
+		0, &clk_rst->utmip_pll_cfg0);	/* 960MHz * 1 / 80 == 12 MHz */
+
+	write32(CEIL_DIV(khz, 8000) << 27 |	/* pllu_enbl_cnt / 8 (1us) */
+		0 << 16 |			/* PLLU pwrdn */
+		0 << 14 |			/* pll_enable pwrdn */
+		0 << 12 |			/* pll_active pwrdn */
+		CEIL_DIV(khz, 102) << 0 |	/* phy_stbl_cnt / 256 (2.5ms) */
+		0, &clk_rst->utmip_pll_cfg1);
+
+	/* TODO: TRM can't decide if actv is 5us or 10us, keep an eye on it */
+	write32(0 << 24 |			/* SAMP_D/XDEV pwrdn */
+		CEIL_DIV(khz, 3200) << 18 |	/* phy_actv_cnt / 16 (5us) */
+		CEIL_DIV(khz, 256) << 6 |	/* pllu_stbl_cnt / 256 (1ms) */
+		0 << 4 |			/* SAMP_C/USB3 pwrdn */
+		0 << 2 |			/* SAMP_B/XHOST pwrdn */
+		0 << 0 |			/* SAMP_A/USBD pwrdn */
+		0, &clk_rst->utmip_pll_cfg2);
+
+	setbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
+}
+
 /* Initialize the UART and put it on CLK_M so we can use it during clock_init().
  * Will later move it to PLLP in clock_config(). The divisor must be very small
  * to accomodate 12KHz OSCs, so we override the 16.0 UART divider with the 15.1
@@ -212,8 +245,8 @@ static void init_pll(u32 *base, u32 *misc, const union pll_fields pll)
  * been determined through trial and error (must lead to div 13 at 24MHz). */
 void clock_early_uart(void)
 {
-	clock_ll_set_source_divisor(&clk_rst->clk_src_uarta, 3,
-		CLK_UART_DIV_OVERRIDE | CLK_DIVIDER(clock_get_osc_khz(), 1800));
+	write32(CLK_M << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE |
+		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1800), &clk_rst->clk_src_uarta);
 	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_UARTA);
 	udelay(2);
 	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_UARTA);
@@ -319,62 +352,26 @@ void clock_init(void)
 	init_pll(&clk_rst->pllc_base, &clk_rst->pllc_misc, osc_table[osc].pllc);
 	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, osc_table[osc].plld);
 	init_pll(&clk_rst->pllu_base, &clk_rst->pllu_misc, osc_table[osc].pllu);
+	init_utmip_pll();
 
 	val = (1 << CLK_SYS_RATE_AHB_RATE_SHIFT);
 	writel(val, &clk_rst->clk_sys_rate);
 }
 
-void clock_config(void)
+void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w)
 {
-	/* Enable clocks for the required peripherals. */
-	/* TODO: can (should?) we use the _SET and _CLR registers here? */
-	setbits_le32(&clk_rst->clk_out_enb_l,
-		     CLK_L_CACHE2 | CLK_L_GPIO | CLK_L_TMR | CLK_L_I2C1 |
-		     CLK_L_SDMMC4);
-	setbits_le32(&clk_rst->clk_out_enb_h,
-		     CLK_H_EMC | CLK_H_I2C2 | CLK_H_I2C5 | CLK_H_SBC1 |
-		     CLK_H_PMC | CLK_H_APBDMA | CLK_H_MEM);
-	setbits_le32(&clk_rst->clk_out_enb_u,
-		     CLK_U_I2C3 | CLK_U_CSITE | CLK_U_SDMMC3);
-	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_MSELECT);
-	setbits_le32(&clk_rst->clk_out_enb_w, CLK_W_DVFS);
+	if (l) writel(l, &clk_rst->clk_enb_l_set);
+	if (h) writel(h, &clk_rst->clk_enb_h_set);
+	if (u) writel(u, &clk_rst->clk_enb_u_set);
+	if (v) writel(v, &clk_rst->clk_enb_v_set);
+	if (w) writel(w, &clk_rst->clk_enb_w_set);
 
-	/*
-	 * Set MSELECT clock source as PLLP (00)_REG, and ask for a clock
-	 * divider that would set the MSELECT clock at 102MHz for a
-	 * PLLP base of 408MHz.
-	 */
-	clock_ll_set_source_divisor(&clk_rst->clk_src_mselect, 0,
-		CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000));
-
-	/* Give clock time to stabilize */
+	/* Give clocks time to stabilize. */
 	udelay(IO_STABILIZATION_DELAY);
 
-	/* I2C1 gets CLK_M and a divisor of 17 */
-	clock_ll_set_source_divisor(&clk_rst->clk_src_i2c1, 3, 16);
-	/* I2C2 gets CLK_M and a divisor of 17 */
-	clock_ll_set_source_divisor(&clk_rst->clk_src_i2c2, 3, 16);
-	/* I2C3 (cam) gets CLK_M and a divisor of 17 */
-	clock_ll_set_source_divisor(&clk_rst->clk_src_i2c3, 3, 16);
-	/* I2C5 (PMU) gets CLK_M and a divisor of 17 */
-	clock_ll_set_source_divisor(&clk_rst->clk_src_i2c5, 3, 16);
-
-	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
-	writel(0 << CLK_SOURCE_SHIFT, &clk_rst->clk_src_uarta);
-
-	/* Give clock time to stabilize. */
-	udelay(IO_STABILIZATION_DELAY);
-
-	/* Take required peripherals out of reset. */
-
-	clrbits_le32(&clk_rst->rst_dev_l,
-		     CLK_L_CACHE2 | CLK_L_GPIO | CLK_L_TMR | CLK_L_I2C1 |
-		     CLK_L_SDMMC4);
-	clrbits_le32(&clk_rst->rst_dev_h,
-		     CLK_H_EMC | CLK_H_I2C2 | CLK_H_I2C5 | CLK_H_SBC1 |
-		     CLK_H_PMC | CLK_H_APBDMA | CLK_H_MEM);
-	clrbits_le32(&clk_rst->rst_dev_u,
-		     CLK_U_I2C3 | CLK_U_CSITE | CLK_U_SDMMC3);
-	clrbits_le32(&clk_rst->rst_dev_v, CLK_V_MSELECT);
-	clrbits_le32(&clk_rst->rst_dev_w, CLK_W_DVFS);
+	if (l) writel(l, &clk_rst->rst_dev_l_clr);
+	if (h) writel(h, &clk_rst->rst_dev_h_clr);
+	if (u) writel(u, &clk_rst->rst_dev_u_clr);
+	if (v) writel(v, &clk_rst->rst_dev_v_clr);
+	if (w) writel(w, &clk_rst->rst_dev_w_clr);
 }

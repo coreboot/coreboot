@@ -62,7 +62,9 @@ struct tegra_pmc_regs {
 	u32 no_iopower;
 	u32 pwr_det;
 	u32 pwr_det_latch;
-	u32 scratch[24];
+	u32 scratch[20];
+	u32 odmdata;
+	u32 scratch21[24 - 21];
 	u32 secure_scratch[6];
 	u32 cpupwrgood_timer;
 	u32 cpupwroff_timer;

@@ -561,4 +561,5 @@ struct disp_ctl_win {
 };
 
 void display_startup(device_t dev);
+void dp_bringup(u32 winb_addr);
 #endif /* __SOC_NVIDIA_TEGRA_DC_H */

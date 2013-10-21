@@ -17,50 +17,47 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <device/i2c.h>
+#include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/i2c.h>
+#include <soc/nvidia/tegra124/clk_rst.h>
 #include <soc/nvidia/tegra124/pinmux.h>
 #include <soc/nvidia/tegra124/spi.h>	/* FIXME: move back to soc code? */
 
 #include "pmic.h"
 
+static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
+
+static void set_clock_sources(void)
+{
+	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
+	writel(PLLP << CLK_SOURCE_SHIFT, &clk_rst->clk_src_uarta);
+
+	clock_configure_source(mselect, PLLP, 102000);
+
+	/* TODO: is the 1.333MHz correct? This may have always been bogus... */
+	clock_configure_source(i2c5, CLK_M, 1333);
+}
+
 void bootblock_mainboard_init(void)
 {
-	clock_config();
+	set_clock_sources();
 
-	// I2C1 clock.
-	pinmux_set_config(PINMUX_GEN1_I2C_SCL_INDEX,
-			  PINMUX_GEN1_I2C_SCL_FUNC_I2C1 | PINMUX_INPUT_ENABLE);
-	// I2C1 data.
-	pinmux_set_config(PINMUX_GEN1_I2C_SDA_INDEX,
-			  PINMUX_GEN1_I2C_SDA_FUNC_I2C1 | PINMUX_INPUT_ENABLE);
-	// I2C2 clock.
-	pinmux_set_config(PINMUX_GEN2_I2C_SCL_INDEX,
-			  PINMUX_GEN2_I2C_SCL_FUNC_I2C2 | PINMUX_INPUT_ENABLE);
-	// I2C2 data.
-	pinmux_set_config(PINMUX_GEN2_I2C_SDA_INDEX,
-			  PINMUX_GEN2_I2C_SDA_FUNC_I2C2 | PINMUX_INPUT_ENABLE);
-	// I2C3 (cam) clock.
-	pinmux_set_config(PINMUX_CAM_I2C_SCL_INDEX,
-			  PINMUX_CAM_I2C_SCL_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
-	// I2C3 (cam) data.
-	pinmux_set_config(PINMUX_CAM_I2C_SDA_INDEX,
-			  PINMUX_CAM_I2C_SDA_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
+	clock_enable_clear_reset(CLK_L_CACHE2 | CLK_L_TMR,
+				 CLK_H_I2C5 | CLK_H_APBDMA,
+				 0, CLK_V_MSELECT, 0);
+
 	// I2C5 (PMU) clock.
 	pinmux_set_config(PINMUX_PWR_I2C_SCL_INDEX,
 			  PINMUX_PWR_I2C_SCL_FUNC_I2CPMU | PINMUX_INPUT_ENABLE);
 	// I2C5 (PMU) data.
 	pinmux_set_config(PINMUX_PWR_I2C_SDA_INDEX,
 			  PINMUX_PWR_I2C_SDA_FUNC_I2CPMU | PINMUX_INPUT_ENABLE);
-
-	i2c_init(0);
-	i2c_init(1);
-	i2c_init(2);
 	i2c_init(4);
-
 	pmic_init(4);
 
 	/* SPI4 data out (MOSI) */
@@ -75,6 +72,6 @@ void bootblock_mainboard_init(void)
 	/* SPI4 chip select 0 */
 	pinmux_set_config(PINMUX_SDMMC1_DAT3_INDEX,
 			  PINMUX_SDMMC1_DAT3_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
-//	spi_init();
+
 	tegra_spi_init(4);
 }

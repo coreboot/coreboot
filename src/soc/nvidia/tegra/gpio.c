@@ -36,15 +36,13 @@ void __gpio_input(gpio_t gpio, u32 pull)
 	pinmux_set_config(gpio >> GPIO_PINMUX_SHIFT, pinmux_config);
 }
 
-void gpio_output(gpio_t gpio, int value)
+void __gpio_output(gpio_t gpio, int value, u32 od)
 {
-	/* TODO: Set OPEN_DRAIN based on what pin it is? */
-
 	gpio_set_int_enable(gpio, 0);
 	gpio_set_out_value(gpio, value);
 	gpio_set_out_enable(gpio, 1);
 	gpio_set_mode(gpio, GPIO_MODE_GPIO);
-	pinmux_set_config(gpio >> GPIO_PINMUX_SHIFT, PINMUX_PULL_NONE);
+	pinmux_set_config(gpio >> GPIO_PINMUX_SHIFT, PINMUX_PULL_NONE | od);
 }
 
 enum {

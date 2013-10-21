@@ -31,10 +31,20 @@ typedef u32 gpio_t;
 #define GPIO(name) ((gpio_t)(GPIO_##name##_INDEX | \
 			     (PINMUX_GPIO_##name << GPIO_PINMUX_SHIFT)))
 
+void __gpio_output(gpio_t gpio, int value, u32 open_drain);
+void __gpio_input(gpio_t gpio, u32 pull);
+
 /* Higher level function wrappers for common GPIO configurations. */
 
-void gpio_output(gpio_t gpio, int value);
-void __gpio_input(gpio_t gpio, u32 pull);
+static inline void gpio_output(gpio_t gpio, int value)
+{
+	__gpio_output(gpio, value, 0);
+}
+
+static inline void gpio_output_open_drain(gpio_t gpio, int value)
+{
+	__gpio_output(gpio, value, PINMUX_OPEN_DRAIN);
+}
 
 static inline void gpio_input(gpio_t gpio)
 {

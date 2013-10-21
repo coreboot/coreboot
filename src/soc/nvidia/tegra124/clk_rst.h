@@ -192,7 +192,9 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 clk_src_nand_speed;		/* _CLK_SOURCE_NAND_SPEED,  0x3f8 */
 	u32 clk_src_i2c_slow;		/* _CLK_SOURCE_I2C_SLOW,    0x3fc */
 	u32 clk_src_sys;		/* _CLK_SOURCE_SYS,         0x400 */
-	u32 _rsv26[7];			/*                      0x404-41c */
+	u32 _rsv26[4];			/*                      0x404-410 */
+	u32 clk_src_sor;		/* _CLK_SOURCE_SOR_0,       0x414 */
+	u32 _rsv261[2];			/*                      0x404-410 */
 	u32 clk_src_sata_oob;		/* _CLK_SOURCE_SATA_OOB,    0x420 */
 	u32 clk_src_sata;		/* _CLK_SOURCE_SATA,        0x424 */
 	u32 clk_src_hda;		/* _CLK_SOURCE_HDA,         0x428 */
@@ -267,7 +269,11 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 _rsv31;			/*                          0x554 */
 	u32 super_gr3d_clk_div;		/* _SUPER_GR3D_CLK_DIVIDER, 0x558 */
 	u32 spare_reg0;			/* _SPARE_REG0,             0x55c */
-	u32 _rsv32[40];			/*                      0x560-5fc */
+	u32 _rsv32[11];			/*                      0x560-58c */
+	u32 plldp_base;			/* _PLLDP_BASE,             0x590 */
+	u32 plldp_misc;			/* _PLLDP_MISC,             0x594 */
+	u32 plldp_ss_cfg;		/* _PLLDP_SS_CFG,           0x598 */
+	u32 _rsrv321[26];
 	u32 clk_src_xusb_core_host;	/* _CLK_SOURCE_XUSB_CORE_HOST 0x600 */
 	u32 clk_src_xusb_falcon;	/* _CLK_SOURCE_XUSB_FALCON  0x604 */
 	u32 clk_src_xusb_fs;		/* _CLK_SOURCE_XUSB_FS      0x608 */
@@ -425,24 +431,10 @@ enum {
 #define OSC_XOFS_MASK			(0x3F << OSC_XOFS_SHIFT)
 #define OSC_DRIVE_STRENGTH		7
 
-/*
- * CLK_RST_CONTROLLER_CLK_SOURCE_x_OUT_0 - the mask here is normally 8 bits
- * but can be 16. We could use knowledge we have to restrict the mask in
- * the 8-bit cases (the divider_bits value returned by
- * get_periph_clock_source()) but it does not seem worth it since the code
- * already checks the ranges of values it is writing, in clk_get_divider().
- */
-#define CLK_DIVISOR_SHIFT		0
-#define CLK_DIVISOR_MASK		(0xffff << CLK_DIVISOR_SHIFT)
+#define CLK_DIVISOR_MASK		(0xffff)
 
-#define CLK_SOURCE_SHIFT		30
-#define CLK_SOURCE_MASK			(3U << CLK_SOURCE_SHIFT)
-
-#define CLK_SOURCE3_SHIFT		29
-#define CLK_SOURCE3_MASK		(7U << CLK_SOURCE3_SHIFT)
-
-#define CLK_SOURCE4_SHIFT		28
-#define CLK_SOURCE4_MASK		(15U << CLK_SOURCE4_SHIFT)
+#define CLK_SOURCE_SHIFT		29
+#define CLK_SOURCE_MASK			(0x7 << CLK_SOURCE_SHIFT)
 
 #define CLK_UART_DIV_OVERRIDE		(1 << 24)
 

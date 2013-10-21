@@ -30,13 +30,30 @@
 #include <cpu/cpu.h>
 #include <boot/tables.h>
 #include <cbmem.h>
+#include <edid.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/dc.h>
-#include "clk_rst.h"
 #include "chip.h"
 #include <soc/display.h>
 
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
+int dump = 0;
+unsigned long READL(void * p);
+void WRITEL(unsigned long value, void * p);
+unsigned long READL(void * p)
+{
+        unsigned long value = readl(p);
+        if (dump)
+		printk(BIOS_SPEW, "readl %p %08lx\n", p, value);
+        return value;
+}
+
+
+void WRITEL(unsigned long value, void * p)
+{
+        if (dump)
+		printk(BIOS_SPEW, "writel %p %08lx\n", p, value);
+        writel(value, p);
+}
 
 static const u32 rgb_enb_tab[PIN_REG_COUNT] = {
 	0x00000000,
@@ -76,25 +93,25 @@ static int update_display_mode(struct dc_disp_reg *disp,
 	u32 rate;
 	u32 div;
 
-	writel(0x0, &disp->disp_timing_opt);
+	WRITEL(0x0, &disp->disp_timing_opt);
 
-	writel(config->vref_to_sync << 16 | config->href_to_sync,
+	WRITEL(config->vref_to_sync << 16 | config->href_to_sync,
 		   &disp->ref_to_sync);
-	writel(config->vsync_width << 16 | config->hsync_width, &disp->sync_width);
-	writel(config->vback_porch << 16 | config->hback_porch, &disp->back_porch);
-	writel(config->vfront_porch << 16 | config->hfront_porch,
+	WRITEL(config->vsync_width << 16 | config->hsync_width, &disp->sync_width);
+	WRITEL(config->vback_porch << 16 | config->hback_porch, &disp->back_porch);
+	WRITEL(config->vfront_porch << 16 | config->hfront_porch,
 		   &disp->front_porch);
 
-	writel(config->xres | (config->yres << 16), &disp->disp_active);
+	WRITEL(config->xres | (config->yres << 16), &disp->disp_active);
 
 	val = DE_SELECT_ACTIVE << DE_SELECT_SHIFT;
 	val |= DE_CONTROL_NORMAL << DE_CONTROL_SHIFT;
-	writel(val, &disp->data_enable_opt);
+	WRITEL(val, &disp->data_enable_opt);
 
 	val = DATA_FORMAT_DF1P1C << DATA_FORMAT_SHIFT;
 	val |= DATA_ALIGNMENT_MSB << DATA_ALIGNMENT_SHIFT;
 	val |= DATA_ORDER_RED_BLUE << DATA_ORDER_SHIFT;
-	writel(val, &disp->disp_interface_ctrl);
+	WRITEL(val, &disp->disp_interface_ctrl);
 
 	/*
 	 * The pixel clock divider is in 7.1 format (where the bottom bit
@@ -107,11 +124,11 @@ static int update_display_mode(struct dc_disp_reg *disp,
 	div = ((rate * 2 + config->pixel_clock / 2) / config->pixel_clock) - 2;
 	printk(BIOS_SPEW, "Display clock %d, divider %d\n", rate, div);
 
-	writel(0x00010001, &disp->shift_clk_opt);
+	WRITEL(0x00010001, &disp->shift_clk_opt);
 
 	val = PIXEL_CLK_DIVIDER_PCD1 << PIXEL_CLK_DIVIDER_SHIFT;
 	val |= div << SHIFT_CLK_DIVIDER_SHIFT;
-	writel(val, &disp->disp_clk_ctrl);
+	WRITEL(val, &disp->disp_clk_ctrl);
 
 	return 0;
 }
@@ -157,55 +174,55 @@ static void update_window(struct display_controller *dc,
 	u32 h_dda, v_dda;
 	u32 val;
 
-	val = readl(&dc->cmd.disp_win_header);
+	val = READL(&dc->cmd.disp_win_header);
 	val |= WINDOW_A_SELECT;
-	writel(val, &dc->cmd.disp_win_header);
+	WRITEL(val, &dc->cmd.disp_win_header);
 
-	writel(win->fmt, &dc->win.color_depth);
+	WRITEL(win->fmt, &dc->win.color_depth);
 
 	clrsetbits_le32(&dc->win.byte_swap, BYTE_SWAP_MASK,
 					BYTE_SWAP_NOSWAP << BYTE_SWAP_SHIFT);
 
 	val = win->out_x << H_POSITION_SHIFT;
 	val |= win->out_y << V_POSITION_SHIFT;
-	writel(val, &dc->win.pos);
+	WRITEL(val, &dc->win.pos);
 
 	val = win->out_w << H_SIZE_SHIFT;
 	val |= win->out_h << V_SIZE_SHIFT;
-	writel(val, &dc->win.size);
+	WRITEL(val, &dc->win.size);
 
 	val = (win->w * win->bpp / 8) << H_PRESCALED_SIZE_SHIFT;
 	val |= win->h << V_PRESCALED_SIZE_SHIFT;
-	writel(val, &dc->win.prescaled_size);
+	WRITEL(val, &dc->win.prescaled_size);
 
-	writel(0, &dc->win.h_initial_dda);
-	writel(0, &dc->win.v_initial_dda);
+	WRITEL(0, &dc->win.h_initial_dda);
+	WRITEL(0, &dc->win.v_initial_dda);
 
 	h_dda = (win->w * 0x1000) / MAX(win->out_w - 1, 1);
 	v_dda = (win->h * 0x1000) / MAX(win->out_h - 1, 1);
 
 	val = h_dda << H_DDA_INC_SHIFT;
 	val |= v_dda << V_DDA_INC_SHIFT;
-	writel(val, &dc->win.dda_increment);
+	WRITEL(val, &dc->win.dda_increment);
 
-	writel(win->stride, &dc->win.line_stride);
-	writel(0, &dc->win.buf_stride);
+	WRITEL(win->stride, &dc->win.line_stride);
+	WRITEL(0, &dc->win.buf_stride);
 
 	val = WIN_ENABLE;
 	if (win->bpp < 24)
 		val |= COLOR_EXPAND;
-	writel(val, &dc->win.win_opt);
+	WRITEL(val, &dc->win.win_opt);
 
-	writel((u32) win->phys_addr, &dc->winbuf.start_addr);
-	writel(win->x, &dc->winbuf.addr_h_offset);
-	writel(win->y, &dc->winbuf.addr_v_offset);
+	WRITEL((u32) win->phys_addr, &dc->winbuf.start_addr);
+	WRITEL(win->x, &dc->winbuf.addr_h_offset);
+	WRITEL(win->y, &dc->winbuf.addr_v_offset);
 
-	writel(0xff00, &dc->win.blend_nokey);
-	writel(0xff00, &dc->win.blend_1win);
+	WRITEL(0xff00, &dc->win.blend_nokey);
+	WRITEL(0xff00, &dc->win.blend_1win);
 
 	val = GENERAL_ACT_REQ | WIN_A_ACT_REQ;
 	val |= GENERAL_UPDATE | WIN_A_UPDATE;
-	writel(val, &dc->cmd.state_ctrl);
+	WRITEL(val, &dc->cmd.state_ctrl);
 }
 
 /* this is really aimed at the lcd panel. That said, there are two display
@@ -222,7 +239,36 @@ void display_startup(device_t dev)
 	/* should probably just make it all MiB ... in future */
 	u32 framebuffer_size_mb = config->framebuffer_size / MiB;
 	u32 framebuffer_base_mb= config->framebuffer_base / MiB;
+	/* light it all up */
+	/* This one may have been done in romstage but that's ok for now. */
+	if (config->panel_vdd_gpio){
+		gpio_output(config->panel_vdd_gpio, 1);
+		printk(BIOS_SPEW,"%s: panel_vdd setting gpio %08x to %d\n",
+			__func__, config->panel_vdd_gpio, 1);
+	}
+	delay(1);
+	if (config->backlight_vdd_gpio){
+		gpio_output(config->backlight_vdd_gpio, 1);
+		printk(BIOS_SPEW,"%s: backlight vdd setting gpio %08x to %d\n",
+			__func__, config->backlight_vdd_gpio, 1);
+	}
+	delay(1);
+	if (config->lvds_shutdown_gpio){
+		gpio_output(config->lvds_shutdown_gpio, 0);
+		printk(BIOS_SPEW,"%s: lvds shutdown setting gpio %08x to %d\n",
+			__func__, config->lvds_shutdown_gpio, 0);
+	}
+	if (config->backlight_en_gpio){
+		gpio_output(config->backlight_en_gpio, 1);
+		printk(BIOS_SPEW,"%s: backlight enable setting gpio %08x to %d\n",
+			__func__, config->backlight_en_gpio, 1);
+	}
 
+	if (config->pwm){
+		gpio_output(config->pwm, 1);
+		printk(BIOS_SPEW,"%s: pwm setting gpio %08x to %d\n",
+			__func__, config->pwm, 1);
+	}
 	printk(BIOS_SPEW,
 		"%s: xres %d yres %d framebuffer_bits_per_pixel %d\n",
 		__func__,
@@ -252,53 +298,73 @@ void display_startup(device_t dev)
 	 * The panel_vdd is done in the romstage, so we need only
 	 * light things up here once we're sure it's all working.
 	 */
-	setbits_le32(&clk_rst->rst_dev_l, CLK_L_DISP1 | CLK_L_HOST1X);
 
-	clock_ll_set_source_divisor(&clk_rst->clk_src_host1x, 4,
-				    CLK_DIVIDER(TEGRA_PLLP_KHZ, 144000));
-	/* u-boot uses PLLC for DISP1.
-	 * But the u-boot code does not work and we don't set up PLLC anyway.
-	 * PLLP seems quite good enough, so run with that for now.  */
-	clock_ll_set_source_divisor(&clk_rst->clk_src_disp1, 0 /* 4 */,
-				    CLK_DIVIDER(TEGRA_PLLP_KHZ, 600000));
+	/* init dc_a */
+	init_dca_regs();
+	/* init sor */
+	init_sor_regs();
 
-	udelay(2);
+	/* init dpaux */
+	init_dpaux_regs();
 
-	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_DISP1|CLK_L_HOST1X);
+	/* power up perip */
+	dp_io_powerup();
 
-	writel(0x00000100, &dc->cmd.gen_incr_syncpt_ctrl);
-	writel(0x0000011a, &dc->cmd.cont_syncpt_vsync);
-	writel(0x00000000, &dc->cmd.int_type);
-	writel(0x00000000, &dc->cmd.int_polarity);
-	writel(0x00000000, &dc->cmd.int_mask);
-	writel(0x00000000, &dc->cmd.int_enb);
+	/* bringup dp */
+	dp_bringup(framebuffer_base_mb*MiB);
+
+	{  u16 *cp = (void *)(framebuffer_base_mb*MiB);
+		for(i = 0; i < 1048576*8; i++)
+			if (i %(2560/2) < 1280/2)
+				cp[i] = 0x222;
+			else
+				cp[i] = 0x888;
+	}
+
+	/* tell depthcharge ...
+	 */
+	struct edid edid;
+	edid.x_resolution = 2560;
+	edid.y_resolution = 1700;
+	edid.bytes_per_line = 2560 * 2;
+	edid.framebuffer_bits_per_pixel = 16;
+	set_vbe_mode_info_valid(&edid, (uintptr_t)(framebuffer_base_mb*MiB));
+
+	if (0){
+/* do we still need these? */
+	WRITEL(0x00000100, &dc->cmd.gen_incr_syncpt_ctrl);
+	WRITEL(0x0000011a, &dc->cmd.cont_syncpt_vsync);
+	WRITEL(0x00000000, &dc->cmd.int_type);
+	WRITEL(0x00000000, &dc->cmd.int_polarity);
+	WRITEL(0x00000000, &dc->cmd.int_mask);
+	WRITEL(0x00000000, &dc->cmd.int_enb);
 
 	val = PW0_ENABLE | PW1_ENABLE | PW2_ENABLE;
 	val |= PW3_ENABLE | PW4_ENABLE | PM0_ENABLE;
 	val |= PM1_ENABLE;
-	writel(val, &dc->cmd.disp_pow_ctrl);
+	WRITEL(val, &dc->cmd.disp_pow_ctrl);
 
-	val = readl(&dc->cmd.disp_cmd);
+	val = READL(&dc->cmd.disp_cmd);
 	val |= CTRL_MODE_C_DISPLAY << CTRL_MODE_SHIFT;
-	writel(val, &dc->cmd.disp_cmd);
+	WRITEL(val, &dc->cmd.disp_cmd);
 
-	writel(0x00000020, &dc->disp.mem_high_pri);
-	writel(0x00000001, &dc->disp.mem_high_pri_timer);
+	WRITEL(0x00000020, &dc->disp.mem_high_pri);
+	WRITEL(0x00000001, &dc->disp.mem_high_pri_timer);
 
 	for (i = 0; i < PIN_REG_COUNT; i++) {
-		writel(rgb_enb_tab[i], &dc->com.pin_output_enb[i]);
-		writel(rgb_polarity_tab[i], &dc->com.pin_output_polarity[i]);
-		writel(rgb_data_tab[i], &dc->com.pin_output_data[i]);
+		WRITEL(rgb_enb_tab[i], &dc->com.pin_output_enb[i]);
+		WRITEL(rgb_polarity_tab[i], &dc->com.pin_output_polarity[i]);
+		WRITEL(rgb_data_tab[i], &dc->com.pin_output_data[i]);
 	}
 
 	for (i = 0; i < PIN_OUTPUT_SEL_COUNT; i++)
-		writel(rgb_sel_tab[i], &dc->com.pin_output_sel[i]);
+		WRITEL(rgb_sel_tab[i], &dc->com.pin_output_sel[i]);
 
 	if (config->pixel_clock)
 		update_display_mode(&dc->disp, config);
 
 	if (!setup_window(&window, config))
 		update_window(dc, &window, config);
-
+	}
 }
 

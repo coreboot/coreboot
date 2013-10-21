@@ -18,5 +18,8 @@
 #define __SOC_NVIDIA_TEGRA124_INCLUDE_SOC_DISPLAY_H__
 
 void setup_display(struct soc_nvidia_tegra124_config *config);
-
+void init_dca_regs(void);
+void init_dpaux_regs(void);
+void init_sor_regs(void);
+void dp_io_powerup(void);
 #endif /* __SOC_NVIDIA_TEGRA124_INCLUDE_SOC_DISPLAY_H__ */

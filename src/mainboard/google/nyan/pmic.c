@@ -61,9 +61,14 @@ static struct pmic_write pmic_writes[] =
 	 * NOTE: We do this early because doing it later seems to hose the CPU
 	 * power rail/partition startup. Need to debug.
 	 */
-	{ 0x16, 0x3f }
+	{ 0x16, 0x3f },
 
 	/* Don't write LDCONTROL - it's already 0xFF, i.e. all LDOs enabled. */
+	/* panel power GPIO O4. Set mode for GPIO4 (0x0c to 7), then set
+	 * the value (register 0x20 bit 4)
+	 */
+	{ 0x0c, 0x07 },
+	{ 0x20, 0x10 },
 };
 
 void pmic_init(unsigned bus)

@@ -48,6 +48,9 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV7),y)
 
 romstage-y += cache.c
+romstage-y += exception.c
+romstage-y += exception_asm.S
+romstage-y += mmu.c
 
 CFLAGS_romstage += $(armv7_flags)
 CPPFLAGS_romstage += $(armv7_flags)

@@ -65,4 +65,17 @@ config STACK_SIZE
 	hex
 	default 0x800
 
+# TTB needs to be aligned to 16KB. Stick it in iRAM.
+config TTB_BUFFER
+	hex "memory address of the TTB buffer"
+	default 0x40000000
+
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x803c0000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00020000
+
 endif

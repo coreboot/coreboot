@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <arch/cache.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
@@ -46,8 +47,7 @@
  */
 #define SPI_PACKET_SIZE_BYTES		1
 #define SPI_MAX_TRANSFER_BYTES_FIFO	(64 * SPI_PACKET_SIZE_BYTES)
-#define SPI_MAX_TRANSFER_BYTES_DMA	((65536 * SPI_PACKET_SIZE_BYTES) - \
-							TEGRA_DMA_ALIGN_BYTES)
+#define SPI_MAX_TRANSFER_BYTES_DMA	(65535 * SPI_PACKET_SIZE_BYTES)
 
 /* COMMAND1 */
 #define SPI_CMD1_GO			(1 << 31)
@@ -114,31 +114,8 @@
 #define SPI_DMA_CTL_TX_TRIG_SHIFT	15
 
 /* SPI_DMA_BLK */
-#define SPI_DMA_CTL_BLOCK_SIZE_MASK	0xff
+#define SPI_DMA_CTL_BLOCK_SIZE_MASK	0xffff
 #define SPI_DMA_CTL_BLOCK_SIZE_SHIFT	0
-
-struct tegra_spi_regs {
-	u32 command1;		/* 0x000: SPI_COMMAND1 */
-	u32 command2;		/* 0x004: SPI_COMMAND2 */
-	u32 timing1;		/* 0x008: SPI_CS_TIM1 */
-	u32 timing2;		/* 0x00c: SPI_CS_TIM2 */
-	u32 trans_status;	/* 0x010: SPI_TRANS_STATUS */
-	u32 fifo_status;	/* 0x014: SPI_FIFO_STATUS */
-	u32 tx_data;		/* 0x018: SPI_TX_DATA */
-	u32 rx_data;		/* 0x01c: SPI_RX_DATA */
-	u32 dma_ctl;		/* 0x020: SPI_DMA_CTL */
-	u32 dma_blk;		/* 0x024: SPI_DMA_BLK */
-	u32 rsvd[56];		/* 0x028-0x107: reserved */
-	u32 tx_fifo;		/* 0x108: SPI_FIFO1 */
-	u32 rsvd2[31];		/* 0x10c-0x187 reserved */
-	u32 rx_fifo;		/* 0x188: SPI_FIFO2 */
-	u32 spare_ctl;		/* 0x18c: SPI_SPARE_CTRL */
-} __attribute__((packed));
-
-struct tegra_spi_channel {
-	struct spi_slave slave;
-	struct tegra_spi_regs *regs;
-};
 
 static struct tegra_spi_channel tegra_spi_channels[] = {
 	/*
@@ -175,40 +152,35 @@ static struct tegra_spi_channel tegra_spi_channels[] = {
 	},
 };
 
-static void flush_fifos(struct tegra_spi_regs *regs)
-{
-	setbits_le32(&regs->fifo_status, SPI_FIFO_STATUS_RX_FIFO_FLUSH |
-					SPI_FIFO_STATUS_TX_FIFO_FLUSH);
-	while (read32(&regs->fifo_status) &
-		(SPI_FIFO_STATUS_RX_FIFO_FLUSH | SPI_FIFO_STATUS_TX_FIFO_FLUSH))
-		;
-}
+enum spi_direction {
+	SPI_SEND,
+	SPI_RECEIVE,
+};
 
-void tegra_spi_init(unsigned int bus)
+struct tegra_spi_channel *tegra_spi_init(unsigned int bus)
 {
 	int i;
+	struct tegra_spi_channel *spi = NULL;
 
 	for (i = 0; i < ARRAY_SIZE(tegra_spi_channels); i++) {
-		struct tegra_spi_regs *regs;
-
-		if (tegra_spi_channels[i].slave.bus == bus)
-			regs = tegra_spi_channels[i].regs;
-		else
-			continue;
-
-		/* software drives chip-select, set value to high */
-		setbits_le32(&regs->command1,
-				SPI_CMD1_CS_SW_HW | SPI_CMD1_CS_SW_VAL);
-
-		/* 8-bit transfers, unpacked mode, most significant bit first */
-		clrbits_le32(&regs->command1,
-				SPI_CMD1_BIT_LEN_MASK | SPI_CMD1_PACKED);
-		setbits_le32(&regs->command1, 7 << SPI_CMD1_BIT_LEN_SHIFT);
-
-		flush_fifos(regs);
+		if (tegra_spi_channels[i].slave.bus == bus) {
+			spi = &tegra_spi_channels[i];
+			break;
+		}
 	}
-	printk(BIOS_INFO, "Tegra SPI bus %d initialized.\n", bus);
+	if (!spi)
+		return NULL;
 
+	/* software drives chip-select, set value to high */
+	setbits_le32(&spi->regs->command1,
+			SPI_CMD1_CS_SW_HW | SPI_CMD1_CS_SW_VAL);
+
+	/* 8-bit transfers, unpacked mode, most significant bit first */
+	clrbits_le32(&spi->regs->command1,
+			SPI_CMD1_BIT_LEN_MASK | SPI_CMD1_PACKED);
+	setbits_le32(&spi->regs->command1, 7 << SPI_CMD1_BIT_LEN_SHIFT);
+
+	return spi;
 }
 
 static struct tegra_spi_channel * const to_tegra_spi(int bus) {
@@ -219,27 +191,6 @@ static unsigned int tegra_spi_speed(unsigned int bus)
 {
 	/* FIXME: implement this properly, for now use max value (50MHz) */
 	return 50000000;
-}
-
-/*
- * This calls udelay() with a calculated value based on the SPI speed and
- * number of bytes remaining to be transferred. It assumes that if the
- * calculated delay period is less than MIN_DELAY_US then it is probably
- * not worth the overhead of yielding.
- */
-#define MIN_DELAY_US 250
-static void tegra_spi_delay(struct tegra_spi_channel *spi,
-				unsigned int bytes_remaining)
-{
-	unsigned int ns_per_byte, delay_us;
-
-	ns_per_byte = 1000000000 / (tegra_spi_speed(spi->slave.bus) / 8);
-	delay_us = (ns_per_byte * bytes_remaining) / 1000;
-
-	if (delay_us < MIN_DELAY_US)
-		return;
-
-	udelay(delay_us);
 }
 
 void spi_cs_activate(struct spi_slave *slave)
@@ -343,22 +294,6 @@ static void dump_dma_regs(struct apb_dma_channel *dma)
 			read32(&dma->regs->word_transfer));
 }
 
-static void dump_regs(struct tegra_spi_channel *spi,
-			struct apb_dma_channel *dma)
-{
-	if (dma)
-		dump_dma_regs(dma);
-	if (spi) {
-		dump_spi_regs(spi);
-		dump_fifo_status(spi);
-	}
-}
-
-static int fifo_error(struct tegra_spi_channel *spi)
-{
-	return read32(&spi->regs->fifo_status) & SPI_FIFO_STATUS_ERR ? 1 : 0;
-}
-
 static inline unsigned int spi_byte_count(struct tegra_spi_channel *spi)
 {
 	/* FIXME: Make this take total packet size into account */
@@ -366,102 +301,111 @@ static inline unsigned int spi_byte_count(struct tegra_spi_channel *spi)
 		(SPI_STATUS_BLOCK_COUNT << SPI_STATUS_BLOCK_COUNT_SHIFT);
 }
 
-static int tegra_spi_fifo_receive(struct tegra_spi_channel *spi,
-			u8 *din, unsigned int in_bytes)
+/*
+ * This calls udelay() with a calculated value based on the SPI speed and
+ * number of bytes remaining to be transferred. It assumes that if the
+ * calculated delay period is less than MIN_DELAY_US then it is probably
+ * not worth the overhead of yielding.
+ */
+#define MIN_DELAY_US 250
+static void spi_delay(struct tegra_spi_channel *spi,
+				unsigned int bytes_remaining)
 {
-	unsigned int received = 0, remaining = in_bytes;
+	unsigned int ns_per_byte, delay_us;
 
-	printk(BIOS_SPEW, "%s: Receiving %d bytes\n", __func__, in_bytes);
-	setbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
+	ns_per_byte = 1000000000 / (tegra_spi_speed(spi->slave.bus) / 8);
+	delay_us = (ns_per_byte * bytes_remaining) / 1000;
 
-	while (remaining) {
-		unsigned int from_fifo, count;
+	if (delay_us < MIN_DELAY_US)
+		return;
 
-		from_fifo = MIN(in_bytes, SPI_MAX_TRANSFER_BYTES_FIFO);
-		remaining -= from_fifo;
-
-		/* BLOCK_SIZE in SPI_DMA_BLK register applies to both DMA and
-		 * PIO transfers */
-		write32(from_fifo - 1, &spi->regs->dma_blk);
-
-		setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
-		setbits_le32(&spi->regs->command1, SPI_CMD1_GO);
-
-		while ((count = spi_byte_count(spi)) != from_fifo) {
-			tegra_spi_delay(spi, from_fifo - count);
-			if (fifo_error(spi))
-				goto done;
-		}
-
-		received += from_fifo;
-		while (from_fifo) {
-			*din = read8(&spi->regs->rx_fifo);
-			din++;
-			from_fifo--;
-		}
-	}
-
-done:
-	clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
-	if ((received != in_bytes) || fifo_error(spi)) {
-		printk(BIOS_ERR, "%s: ERROR: Received %u bytes, expected %u\n",
-				__func__, received, in_bytes);
-		dump_regs(spi, NULL);
-		return -1;
-	}
-	return in_bytes;
+	udelay(delay_us);
 }
 
-static int tegra_spi_fifo_send(struct tegra_spi_channel *spi,
-			const u8 *dout, unsigned int out_bytes)
+static void tegra_spi_wait(struct tegra_spi_channel *spi)
 {
-	unsigned int sent = 0, remaining = out_bytes;
+	unsigned int count, dma_blk;
 
-	printk(BIOS_SPEW, "%s: Sending %d bytes\n", __func__, out_bytes);
-	setbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
+	dma_blk = 1 + (read32(&spi->regs->dma_blk) &
+		(SPI_DMA_CTL_BLOCK_SIZE_MASK << SPI_DMA_CTL_BLOCK_SIZE_SHIFT));
 
-	while (remaining) {
-		unsigned int to_fifo, tmp;
-
-		to_fifo = MIN(out_bytes, SPI_MAX_TRANSFER_BYTES_FIFO);
-
-		/* BLOCK_SIZE in SPI_DMA_BLK register applies to both DMA and
-		 * PIO transfers */
-		write32(to_fifo - 1, &spi->regs->dma_blk);
-
-		tmp = to_fifo;
-		while (tmp) {
-			write32(*dout, &spi->regs->tx_fifo);
-			dout++;
-			tmp--;
-		}
-
-		setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
-		setbits_le32(&spi->regs->command1, SPI_CMD1_GO);
-
-		while (!(read32(&spi->regs->fifo_status) &
-				SPI_FIFO_STATUS_TX_FIFO_EMPTY)) {
-			tegra_spi_delay(spi, to_fifo - spi_byte_count(spi));
-			if (fifo_error(spi))
-				goto done;
-		}
-
-		remaining -= to_fifo;
-		sent += to_fifo;
-	}
-
-done:
-	clrbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
-	if ((sent != out_bytes) || fifo_error(spi)) {
-		printk(BIOS_ERR, "%s: ERROR: Sent %u bytes, expected "
-				"to send %u\n", __func__, sent, out_bytes);
-		dump_regs(spi, NULL);
-		return -1;
-	}
-	return out_bytes;
+	while ((count = spi_byte_count(spi)) != dma_blk)
+		spi_delay(spi, dma_blk - count);
 }
 
-static void tegra2_spi_dma_setup(struct apb_dma_channel *dma)
+
+static int fifo_error(struct tegra_spi_channel *spi)
+{
+	return read32(&spi->regs->fifo_status) & SPI_FIFO_STATUS_ERR ? 1 : 0;
+}
+
+static int tegra_spi_pio_prepare(struct tegra_spi_channel *spi,
+			unsigned int bytes, enum spi_direction dir)
+{
+	u8 *p = spi->out_buf;
+	unsigned int todo = MIN(bytes, SPI_MAX_TRANSFER_BYTES_FIFO);
+	u32 flush_mask, enable_mask;
+
+	if (dir == SPI_SEND) {
+		flush_mask = SPI_FIFO_STATUS_TX_FIFO_FLUSH;
+		enable_mask = SPI_CMD1_TX_EN;
+	} else {
+		flush_mask = SPI_FIFO_STATUS_RX_FIFO_FLUSH;
+		enable_mask = SPI_CMD1_RX_EN;
+	}
+
+	setbits_le32(&spi->regs->fifo_status, flush_mask);
+	while (read32(&spi->regs->fifo_status) & flush_mask)
+		;
+
+	setbits_le32(&spi->regs->command1, enable_mask);
+
+	/* BLOCK_SIZE in SPI_DMA_BLK register applies to both DMA and
+	 * PIO transfers */
+	write32(todo - 1, &spi->regs->dma_blk);
+
+	if (dir == SPI_SEND) {
+		unsigned int to_fifo = bytes;
+		while (to_fifo) {
+			write32(*p, &spi->regs->tx_fifo);
+			p++;
+			to_fifo--;
+		}
+	}
+
+	return todo;
+}
+
+static void tegra_spi_pio_start(struct tegra_spi_channel *spi)
+{
+	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
+	setbits_le32(&spi->regs->command1, SPI_CMD1_GO);
+}
+
+static int tegra_spi_pio_finish(struct tegra_spi_channel *spi)
+{
+	u8 *p = spi->in_buf;
+
+	clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN | SPI_CMD1_TX_EN);
+
+	while (!(read32(&spi->regs->fifo_status) &
+				SPI_FIFO_STATUS_RX_FIFO_EMPTY)) {
+		*p = read8(&spi->regs->rx_fifo);
+		p++;
+	}
+
+	if (fifo_error(spi)) {
+		printk(BIOS_ERR, "%s: ERROR:\n", __func__);
+		dump_spi_regs(spi);
+		dump_fifo_status(spi);
+		return -1;
+	}
+
+	return 0;
+}
+
+static void setup_dma_params(struct tegra_spi_channel *spi,
+				struct apb_dma_channel *dma)
 {
 	/* APB bus width = 8-bits, address wrap for each word */
 	clrbits_le32(&dma->regs->apb_seq, 0x7 << 28);
@@ -473,219 +417,365 @@ static void tegra2_spi_dma_setup(struct apb_dma_channel *dma)
 	setbits_le32(&dma->regs->csr, 1 << 27);
 }
 
+static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
+		unsigned int bytes, enum spi_direction dir)
+{
+	unsigned int todo, wcount;
+
+	/*
+	 * For DMA we need to think of things in terms of word count.
+	 * AHB width is fixed at 32-bits. To avoid overrunning
+	 * the in/out buffers we must align down. (Note: lowest 2-bits
+	 * in WCOUNT register are ignored, and WCOUNT seems to count
+	 * words starting at n-1)
+	 *
+	 * Example: If "bytes" is 7 and we are transferring 1-byte at a time,
+	 * WCOUNT should be 4. The remaining 3 bytes must be transferred
+	 * using PIO.
+	 */
+	todo = MIN(bytes, SPI_MAX_TRANSFER_BYTES_DMA - TEGRA_DMA_ALIGN_BYTES);
+	todo = ALIGN_DOWN(todo, TEGRA_DMA_ALIGN_BYTES);
+	wcount = ALIGN_DOWN(todo - TEGRA_DMA_ALIGN_BYTES, TEGRA_DMA_ALIGN_BYTES);
+
+	if (dir == SPI_SEND) {
+		spi->dma_out = dma_claim();
+		if (!spi->dma_out)
+			return -1;
+
+		/* ensure bytes to send will be visible to DMA controller */
+		dcache_clean_by_mva(spi->out_buf, bytes);
+
+		write32((u32)&spi->regs->tx_fifo, &spi->dma_out->regs->apb_ptr);
+		write32((u32)spi->out_buf, &spi->dma_out->regs->ahb_ptr);
+		setbits_le32(&spi->dma_out->regs->csr, APBDMACHAN_CSR_DIR);
+		setup_dma_params(spi, spi->dma_out);
+		write32(wcount, &spi->dma_out->regs->wcount);
+	} else {
+		spi->dma_in = dma_claim();
+		if (!spi->dma_in)
+			return -1;
+
+		/* avoid data collisions */
+		dcache_clean_invalidate_by_mva(spi->in_buf, bytes);
+
+		write32((u32)&spi->regs->rx_fifo, &spi->dma_in->regs->apb_ptr);
+		write32((u32)spi->in_buf, &spi->dma_in->regs->ahb_ptr);
+		clrbits_le32(&spi->dma_in->regs->csr, APBDMACHAN_CSR_DIR);
+		setup_dma_params(spi, spi->dma_in);
+		write32(wcount, &spi->dma_in->regs->wcount);
+	}
+
+	/* BLOCK_SIZE starts at n-1 */
+	write32(todo - 1, &spi->regs->dma_blk);
+	return todo;
+}
+
+static void tegra_spi_dma_start(struct tegra_spi_channel *spi)
+{
+	/*
+	 * The RDY bit in SPI_TRANS_STATUS needs to be cleared manually
+	 * (set bit to clear) between each transaction. Otherwise the next
+	 * transaction does not start.
+	 */
+	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
+
+	if (spi->dma_out)
+		setbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
+	if (spi->dma_in)
+		setbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
+
+	/*
+	 * To avoid underrun conditions, enable APB DMA before SPI DMA for
+	 * Tx and enable SPI DMA before APB DMA before Rx.
+	 */
+	if (spi->dma_out)
+		dma_start(spi->dma_out);
+	setbits_le32(&spi->regs->dma_ctl, SPI_DMA_CTL_DMA);
+	if (spi->dma_in)
+		dma_start(spi->dma_in);
+
+
+}
+
+static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
+{
+	int ret;
+	unsigned int todo;
+
+	todo = read32(&spi->dma_in->regs->wcount);
+
+	if (spi->dma_in) {
+		while ((read32(&spi->dma_in->regs->dma_byte_sta) < todo) ||
+				dma_busy(spi->dma_in))
+			;	/* this shouldn't take long, no udelay */
+		dma_stop(spi->dma_in);
+		clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
+	}
+
+	if (spi->dma_out) {
+		while ((read32(&spi->dma_out->regs->dma_byte_sta) < todo) ||
+				dma_busy(spi->dma_out))
+			spi_delay(spi, todo - spi_byte_count(spi));
+		clrbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
+		dma_stop(spi->dma_out);
+	}
+
+	if (fifo_error(spi)) {
+		printk(BIOS_ERR, "%s: ERROR:\n", __func__);
+		dump_dma_regs(spi->dma_out);
+		dump_dma_regs(spi->dma_in);
+		dump_spi_regs(spi);
+		dump_fifo_status(spi);
+		ret = -1;
+		goto done;
+	}
+
+	ret = 0;
+done:
+	spi->dma_in = NULL;
+	spi->dma_out = NULL;
+	return ret;
+}
+
 /*
- * Notes for DMA transmit and receive, experimentally determined (need to
- * verify):
- * - WCOUNT seems to be an "n-1" count, but the documentation does not
- *   make this clear. Without the -1 dma_byte_sta will show 1 AHB word
- *   (4 bytes) higher than it should and Tx overrun / Rx underrun will
- *   likely occur.
+ * xfer_setup() prepares a transfer. It does sanity checking, alignment, and
+ * sets transfer mode used by this channel (if not set already).
  *
- * - dma_byte_sta is always a multiple 4, so we check for
- *   dma_byte_sta < length
+ * A few caveats to watch out for:
+ * - The number of bytes which can be transferred may be smaller than the
+ *   number of bytes the caller specifies. The number of bytes ready for
+ *   a transfer will be returned (unless an error occurs).
  *
- * - The RDY bit in SPI_TRANS_STATUS needs to be cleared manually
- *   (set bit to clear) between each transaction. Otherwise the next
- *   transaction does not start.
+ * - Only one mode can be used for both RX and TX. The transfer mode of the
+ *   SPI channel (spi->xfer_mode) is checked each time this function is called.
+ *   If conflicting modes are detected, spi->xfer_mode will be set to
+ *   XFER_MODE_NONE and an error will be returned.
+ *
+ * Returns bytes ready for transfer if successful, <0 to indicate error.
  */
-
-static int tegra_spi_dma_receive(struct tegra_spi_channel *spi,
-		const void *din, unsigned int in_bytes)
+static int xfer_setup(struct tegra_spi_channel *spi, void *buf,
+		unsigned int bytes, enum spi_direction dir)
 {
-	struct apb_dma_channel *dma;
+	unsigned int line_size = dcache_line_bytes();
+	unsigned int align;
+	int ret = -1;
 
-	dma = dma_claim();
-	if (!dma) {
-		printk(BIOS_ERR, "%s: Unable to claim DMA channel\n", __func__);
-		return -1;
+	if (!bytes)
+		return 0;
+
+	if (dir == SPI_SEND)
+		spi->out_buf = buf;
+	else if (dir == SPI_RECEIVE)
+		spi->in_buf = buf;
+
+	/*
+	 * Alignment consideratons:
+	 * When we enable caching we'll need to clean/invalidate portions of
+	 * memory. So we need to be careful about memory alignment. Also, DMA
+	 * likes to operate on 4-bytes at a time on the AHB side. So for
+	 * example, if we only want to receive 1 byte, 4 bytes will be be
+	 * written in memory even if those extra 3 bytes are beyond the length
+	 * we want.
+	 *
+	 * For now we'll use PIO to send/receive unaligned bytes. We may
+	 * consider setting aside some space for a kind of bounce buffer to
+	 * stay in DMA mode once we have a chance to benchmark the two
+	 * approaches.
+	 */
+
+	if (bytes < line_size) {
+		if (spi->xfer_mode == XFER_MODE_DMA) {
+			spi->xfer_mode = XFER_MODE_NONE;
+			ret = -1;
+		} else {
+			spi->xfer_mode = XFER_MODE_PIO;
+			ret = tegra_spi_pio_prepare(spi, bytes, dir);
+		}
+		goto done;
 	}
 
-	printk(BIOS_SPEW, "%s: Receiving %d bytes\n", __func__, in_bytes);
-	tegra2_spi_dma_setup(dma);
-
-	/* set AHB & APB address pointers */
-	write32((u32)din, &dma->regs->ahb_ptr);
-	write32((u32)&spi->regs->rx_fifo, &dma->regs->apb_ptr);
-
-	setbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
-
-	/* FIXME: calculate word count so that it corresponds to bus width */
-	write32(in_bytes - 1, &dma->regs->wcount);
-
-	/* specify BLOCK_SIZE in SPI_DMA_BLK */
-	write32(in_bytes - 1, &spi->regs->dma_blk);
-
-	/* Set DMA direction for APB (SPI) --> AHB (DRAM) */
-	clrbits_le32(&dma->regs->csr, 1 << 28);
-
-	/* write to SPI_TRANS_STATUS RDY bit to clear it */
-	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
-
-	/* set DMA bit in SPI_DMA_CTL to start */
-	setbits_le32(&spi->regs->dma_ctl, SPI_DMA_CTL_DMA);
-
-	/* start APBDMA after SPI DMA so we don't read empty bytes
-	 * from Rx FIFO */
-	dma_start(dma);
-
-	while (spi_byte_count(spi) != in_bytes)
-		tegra_spi_delay(spi, in_bytes - spi_byte_count(spi));
-	clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
-
-	while ((read32(&dma->regs->dma_byte_sta) < in_bytes) || dma_busy(dma))
-		;	/* this shouldn't take long, no udelay */
-	dma_stop(dma);
-	dma_release(dma);
-
-	if ((spi_byte_count(spi) != in_bytes) || fifo_error(spi)) {
-		printk(BIOS_ERR, "%s: ERROR: Received %u bytes, expected %u\n",
-				__func__, spi_byte_count(spi), in_bytes);
-		dump_regs(spi, dma);
-		return -1;
+	/* transfer bytes before the aligned boundary */
+	align = line_size - ((uintptr_t)buf % line_size);
+	if ((align != 0) && (align != line_size)) {
+		if (spi->xfer_mode == XFER_MODE_DMA) {
+			spi->xfer_mode = XFER_MODE_NONE;
+			ret = -1;
+		} else {
+			spi->xfer_mode = XFER_MODE_PIO;
+			ret = tegra_spi_pio_prepare(spi, align, dir);
+		}
+		goto done;
 	}
 
-	return in_bytes;
+	/* do aligned DMA transfer */
+	align = (((uintptr_t)buf + bytes) % line_size);
+	if (bytes - align > 0) {
+		unsigned int dma_bytes = bytes - align;
+
+		if (spi->xfer_mode == XFER_MODE_PIO) {
+			spi->xfer_mode = XFER_MODE_NONE;
+			ret = -1;
+		} else {
+			spi->xfer_mode = XFER_MODE_DMA;
+			ret = tegra_spi_dma_prepare(spi, dma_bytes, dir);
+		}
+
+		goto done;
+	}
+
+	/* transfer any remaining unaligned bytes */
+	if (align) {
+		if (spi->xfer_mode == XFER_MODE_DMA) {
+			spi->xfer_mode = XFER_MODE_NONE;
+			ret = -1;
+		} else {
+			spi->xfer_mode = XFER_MODE_PIO;
+			ret = tegra_spi_pio_prepare(spi, align, dir);
+		}
+		goto done;
+	}
+
+done:
+	return ret;
 }
 
-static int tegra_spi_dma_send(struct tegra_spi_channel *spi,
-		const u8 *dout, unsigned int out_bytes)
+static void xfer_start(struct tegra_spi_channel *spi)
 {
-	struct apb_dma_channel *dma;
-	unsigned int count;
-
-	dma = dma_claim();
-	if (!dma) {
-		printk(BIOS_ERR, "%s: Unable to claim DMA channel\n", __func__);
-		return -1;
-	}
-
-	printk(BIOS_SPEW, "%s: Sending %d bytes\n", __func__, out_bytes);
-	tegra2_spi_dma_setup(dma);
-
-	/* set AHB & APB address pointers */
-	write32((u32)dout, &dma->regs->ahb_ptr);
-	write32((u32)&spi->regs->tx_fifo, &dma->regs->apb_ptr);
-
-	setbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
-
-	/* FIXME: calculate word count so that it corresponds to bus width */
-	write32(out_bytes - 1, &dma->regs->wcount);
-
-	/* specify BLOCK_SIZE in SPI_DMA_BLK */
-	write32(out_bytes - 1, &spi->regs->dma_blk);
-
-	/* Set DMA direction for AHB (DRAM) --> APB (SPI) */
-	setbits_le32(&dma->regs->csr, (1 << 28));
-
-	/* write to SPI_TRANS_STATUS RDY bit to clear it */
-	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
-
-	dma_start(dma);
-	/* set DMA bit in SPI_DMA_CTL to start */
-	setbits_le32(&spi->regs->dma_ctl, SPI_DMA_CTL_DMA);
-
-	while ((read32(&dma->regs->dma_byte_sta) < out_bytes) || dma_busy(dma))
-		tegra_spi_delay(spi, out_bytes - spi_byte_count(spi));
-	dma_stop(dma);
-
-	while ((count = spi_byte_count(spi)) != out_bytes)
-		tegra_spi_delay(spi, out_bytes - count);
-	clrbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
-
-	dma_release(dma);
-
-	if ((spi_byte_count(spi) != out_bytes) || fifo_error(spi)) {
-		printk(BIOS_ERR, "%s: ERROR: Sent %u bytes, expected %u\n",
-				__func__, spi_byte_count(spi), out_bytes);
-		dump_regs(spi, dma);
-		return -1;
-	}
-
-	return out_bytes;
+	if (spi->xfer_mode == XFER_MODE_DMA)
+		tegra_spi_dma_start(spi);
+	else
+		tegra_spi_pio_start(spi);
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bitsout,
-	     void *din, unsigned int bitsin)
+static void xfer_wait(struct tegra_spi_channel *spi)
+{
+	tegra_spi_wait(spi);
+}
+
+static int xfer_finish(struct tegra_spi_channel *spi)
+{
+	int ret;
+
+	if (spi->xfer_mode == XFER_MODE_DMA)
+		ret = tegra_spi_dma_finish(spi);
+	else
+		ret = tegra_spi_pio_finish(spi);
+
+	spi->xfer_mode = XFER_MODE_NONE;
+	return ret;
+}
+
+int spi_xfer(struct spi_slave *slave, const void *dout,
+		unsigned int bitsout, void *din, unsigned int bitsin)
 {
 	unsigned int out_bytes = bitsout / 8, in_bytes = bitsin / 8;
 	struct tegra_spi_channel *spi = to_tegra_spi(slave->bus);
-	int ret = 0;
 	u8 *out_buf = (u8 *)dout;
 	u8 *in_buf = (u8 *)din;
+	unsigned int todo;
+	int ret = 0, frame_started = 1;
 
 	ASSERT(bitsout % 8 == 0 && bitsin % 8 == 0);
 
 	/* tegra bus numbers start at 1 */
 	ASSERT(slave->bus >= 1 && slave->bus <= ARRAY_SIZE(tegra_spi_channels));
 
-	flush_fifos(spi->regs);
+	if (spi->rx_frame_header_enable) {
+		memset(in_buf, ~spi->frame_header, in_bytes);
+		frame_started = 0;
+	}
 
-	/*
-	 * DMA operates on 4 bytes at a time, so to avoid accessing memory
-	 * outside the specified buffers we'll only use DMA for 4-byte aligned
-	 * transactions accesses and transfer remaining bytes manually using
-	 * the Rx/Tx FIFOs.
-	 */
+	while (out_bytes || in_bytes) {
+		int x = 0;
 
-	while (out_bytes > 0) {
-		unsigned int dma_out, fifo_out;
+		if (out_bytes == 0)
+			todo = in_bytes;
+		else if (in_bytes == 0)
+			todo = out_bytes;
+		else
+			todo = MIN(out_bytes, in_bytes);
 
-		dma_out = MIN(out_bytes, SPI_MAX_TRANSFER_BYTES_DMA);
-		fifo_out = dma_out % TEGRA_DMA_ALIGN_BYTES;
-		dma_out -= fifo_out;
-
-		if (dma_out) {
-			ret = tegra_spi_dma_send(spi, out_buf, dma_out);
-			if (ret != dma_out) {
-				ret = -1;
-				goto spi_xfer_exit;
+		if (out_bytes) {
+			x = xfer_setup(spi, out_buf, todo, SPI_SEND);
+			if (x < 0) {
+				if (spi->xfer_mode == XFER_MODE_NONE) {
+					spi->xfer_mode = XFER_MODE_PIO;
+					continue;
+				} else {
+					ret = -1;
+					break;
+				}
 			}
-			out_buf += dma_out;
-			out_bytes -= dma_out;
 		}
-		if (fifo_out) {
-			ret = tegra_spi_fifo_send(spi, out_buf, fifo_out);
-			if (ret != fifo_out) {
-				ret = -1;
-				goto spi_xfer_exit;
+		if (in_bytes) {
+			x = xfer_setup(spi, in_buf, todo, SPI_RECEIVE);
+			if (x < 0) {
+				if (spi->xfer_mode == XFER_MODE_NONE) {
+					spi->xfer_mode = XFER_MODE_PIO;
+					continue;
+				} else {
+					ret = -1;
+					break;
+				}
 			}
-			out_buf += fifo_out;
-			out_bytes -= fifo_out;
+		}
+
+		/*
+		 * Note: Some devices (such as Chrome EC) are sensitive to
+		 * delays, so be careful when adding debug prints not to
+		 * cause timeouts between transfers.
+		 */
+		xfer_start(spi);
+		xfer_wait(spi);
+		if (xfer_finish(spi)) {
+			ret = -1;
+			break;
+		}
+
+		/*
+		 * Post-processing. For output, we only need to increment
+		 * the buffer and decrement the counter. Same for input if
+		 * there is no frame header to be concerned with.
+		 *
+		 * If a frame header is used and is found, the input buffer
+		 * is shifted so that the header starts at offset 0, and
+		 * in_bytes and in_buf are incremented/decremented according
+		 * to the offset where the header was originally found.
+		 */
+		if (out_bytes) {
+			out_bytes -= x;
+			out_buf += x;
+		}
+		if (in_bytes) {
+			if (spi->rx_frame_header_enable && !frame_started) {
+				int i;
+
+				for (i = 0; i < x; i++) {
+					if (in_buf[i] == spi->frame_header) {
+						frame_started = 1;
+						i++; /* discard frame header */
+						break;
+					}
+				}
+
+				if (frame_started) {
+					memmove(&in_buf[0], &in_buf[i], x - i);
+					in_bytes -= x - i;
+					in_buf += x - i;
+				}
+			} else {
+				in_bytes -= x;
+				in_buf += x;
+			}
 		}
 	}
 
-	while (in_bytes > 0) {
-		unsigned int dma_in, fifo_in;
-
-		dma_in = MIN(in_bytes, SPI_MAX_TRANSFER_BYTES_DMA);
-		fifo_in = dma_in % TEGRA_DMA_ALIGN_BYTES;
-		dma_in -= fifo_in;
-
-		if (dma_in) {
-			ret = tegra_spi_dma_receive(spi, in_buf, dma_in);
-			if (ret != dma_in) {
-				ret = -1;
-				goto spi_xfer_exit;
-			}
-			in_buf += dma_in;
-			in_bytes -= dma_in;
-		}
-		if (fifo_in) {
-			ret = tegra_spi_fifo_receive(spi, in_buf, fifo_in);
-			if (ret != fifo_in) {
-				ret = -1;
-				goto spi_xfer_exit;
-			}
-			in_buf += fifo_in;
-			in_bytes -= fifo_in;
-		}
-	}
-
-	ret = 0;
-
-spi_xfer_exit:
-	if (ret < 0)
+	if (ret < 0) {
+		printk(BIOS_ERR, "%s: Error detected\n", __func__);
+		printk(BIOS_ERR, "Transaction size: %u, bytes remaining: "
+				"%u out / %u in\n", todo, out_bytes, in_bytes);
 		clear_fifo_status(spi);
+	}
 	return ret;
 }
 

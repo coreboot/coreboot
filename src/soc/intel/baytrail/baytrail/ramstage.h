@@ -25,6 +25,7 @@
 /* The baytrail_init_pre_device() function is called prior to device
  * initialization, but it's after console and cbmem has been reinitialized. */
 void baytrail_init_pre_device(void);
+void baytrail_init_cpus(device_t dev);
 void set_max_freq(void);
 
 extern struct pci_operations soc_pci_ops;

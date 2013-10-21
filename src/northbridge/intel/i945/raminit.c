@@ -1952,8 +1952,6 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 
 static void sdram_program_pll_settings(struct sys_info *sysinfo)
 {
-	volatile u16 reg16;
-
 	MCHBAR32(PLLMON) = 0x80800000;
 
 	sysinfo->fsb_frequency = fsbclk();
@@ -1970,7 +1968,7 @@ static void sdram_program_pll_settings(struct sys_info *sysinfo)
 
 	MCHBAR16(CPCTL) &= ~(1 << 11);
 
-	reg16 = MCHBAR16(CPCTL); /* Read back register to activate settings */
+	MCHBAR16(CPCTL); /* Read back register to activate settings */
 }
 
 static void sdram_program_graphics_frequency(struct sys_info *sysinfo)

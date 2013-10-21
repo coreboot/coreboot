@@ -115,3 +115,10 @@ config X86_AMD_FIXED_MTRRS
 	help
 	  This option informs the MTRR code to use the RdMem and WrMem fields
 	  in the fixed MTRR MSRs.
+
+config PARALLEL_MP
+	def_bool n
+	help
+	 This option uses common MP infrastructure for bringing up APs
+	 in parallel. It additionally provides a more flexible mechanism
+	 for sequencing the steps of bringing up the APs.

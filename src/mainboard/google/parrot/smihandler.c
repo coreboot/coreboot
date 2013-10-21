@@ -94,7 +94,9 @@ static u8 mainboard_smi_ec(void)
 {
 	u8 src;
 	u32 pm1_cnt;
+#if CONFIG_ELOG_GSMI
 	static int battery_critical_logged;
+#endif
 
 	ec_kbc_write_cmd(0x56);
 	src = ec_kbc_read_ob();
@@ -106,8 +108,8 @@ static u8 mainboard_smi_ec(void)
 		if (!battery_critical_logged)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT,
 					    EC_EVENT_BATTERY_CRITICAL);
-#endif
 		battery_critical_logged = 1;
+#endif
 		break;
 	case EC_LID_CLOSE:
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");

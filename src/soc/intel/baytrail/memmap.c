@@ -20,8 +20,14 @@
 #include <arch/io.h>
 #include <cbmem.h>
 #include <baytrail/iosf.h>
+#include <baytrail/smm.h>
+
+void *smm_region_start(void)
+{
+	return (void *)(iosf_bunit_read(BUNIT_SMRRL) << 20);
+}
 
 unsigned long get_top_of_ram(void)
 {
-	return (void *)(iosf_bunit_read(BUNIT_SMRRL) << 20);
+	return (unsigned long)smm_region_start();
 }

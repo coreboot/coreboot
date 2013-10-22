@@ -3,6 +3,7 @@ subdirs-y += microcode
 subdirs-y += romstage
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
+subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/intel/microcode
 
@@ -10,10 +11,12 @@ ramstage-y += memmap.c
 romstage-y += memmap.c
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
+smm-y += tsc_freq.c
 ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += nvm.c
 ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 romstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 ramstage-y += spi.c
+smm-y += spi.c
 ramstage-y += chip.c
 ramstage-y += iosf.c
 romstage-y += iosf.c
@@ -23,6 +26,10 @@ ramstage-y += gpio.c
 romstage-y += reset.c
 ramstage-y += reset.c
 ramstage-y += cpu.c
+ramstage-y += pmutil.c
+smm-y += pmutil.c
+smm-y += smihandler.c
+ramstage-y += smm.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

@@ -35,6 +35,7 @@
 #include <baytrail/pci_devs.h>
 #include <baytrail/reset.h>
 #include <baytrail/romstage.h>
+#include <baytrail/smm.h>
 
 static inline uint64_t timestamp_get(void)
 {
@@ -281,13 +282,13 @@ struct ramstage_cache *ramstage_cache_location(long *size)
 {
 	char *smm_base;
 	/* 1MiB cache size */
-	const long cache_size = (1 << 20);
+	const long cache_size = CONFIG_SMM_RESERVED_SIZE;
 
 	/* Ramstage cache lives in TSEG region which is the definition of
 	 * cbmem_top(). */
 	smm_base = cbmem_top();
 	*size = cache_size;
-	return (void *)&smm_base[CONFIG_SMM_TSEG_SIZE - cache_size];
+	return (void *)&smm_base[smm_region_size() - cache_size];
 }
 
 void ramstage_cache_invalid(struct ramstage_cache *cache)

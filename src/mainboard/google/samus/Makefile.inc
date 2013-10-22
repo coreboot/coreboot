@@ -28,13 +28,14 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 SPD_BIN = $(obj)/spd.bin
 
 # Order of names in SPD_SOURCES is important!
+# { GPIO69, GPIO68, GPIO67 }
 SPD_SOURCES  = empty            # 0: { 0, 0, 0 }
-SPD_SOURCES += empty            # 1: { 0, 0, 1 }
+SPD_SOURCES += elpida_4Gb       # 1: { 0, 0, 1 }
 SPD_SOURCES += empty            # 2: { 0, 1, 0 }
-SPD_SOURCES += samsung_4Gb      # 3: { 0, 1, 1 }
-SPD_SOURCES += micron_4Gb       # 4: { 1, 0, 0 }
+SPD_SOURCES += elpida_8Gb       # 3: { 0, 1, 1 }
+SPD_SOURCES += empty            # 4: { 1, 0, 0 }
 SPD_SOURCES += samsung_8Gb      # 5: { 1, 0, 1 }
-SPD_SOURCES += micron_8Gb       # 6: { 1, 1, 0 }
+SPD_SOURCES += samsung_4Gb      # 6: { 1, 1, 0 }
 SPD_SOURCES += empty            # 7: { 1, 1, 1 }
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)

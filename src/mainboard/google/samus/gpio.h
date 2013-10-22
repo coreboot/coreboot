@@ -52,7 +52,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_OUT_HIGH,      /* 26: NFC_EN */
 	LP_GPIO_UNUSED,        /* 27: UNUSED */
 	LP_GPIO_IRQ_EDGE,      /* 29: NFC_INT (GPIO IRQ) */
-	LP_GPIO_NATIVE,        /* 29: NATIVE: WLAN_OFF_L */
+	LP_GPIO_UNUSED,        /* 29: UNUSED */
 	LP_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSWARN_L */
 	LP_GPIO_NATIVE,        /* 31: NATIVE: ACOK_BUF */
 	LP_GPIO_NATIVE,        /* 32: NATIVE: LPC_CLKRUN_L */
@@ -67,12 +67,12 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_NATIVE,        /* 41: NATIVE: PCH_USB2_OC_L */
 	LP_GPIO_IRQ_EDGE,      /* 42: CODEC_INT_L (GPIO IRQ) */
 	LP_GPIO_IRQ_EDGE,      /* 43: ACCEL_INT (GPIO IRQ) */
-	LP_GPIO_OUT_HIGH,      /* 44: CODEC_LDOENA */
-	LP_GPIO_OUT_HIGH,      /* 45: PP1800_CODEC_EN */
+	LP_GPIO_OUT_LOW,       /* 44: CODEC_LDOENA (DISABLED FOR BRINGUP) */
+	LP_GPIO_OUT_LOW,       /* 45: PP1800_CODEC_EN (DISABLED FOR BRINGUP) */
 	LP_GPIO_OUT_HIGH,      /* 46: WLAN_DISABLE_L */
 	LP_GPIO_PIRQ,          /* 47: ACCEL_GYRO_INT (PIRQP) */
 	LP_GPIO_UNUSED,        /* 48: UNUSED */
-	LP_GPIO_OUT_HIGH,      /* 49: HDMI_CEC */
+	LP_GPIO_INPUT,         /* 49: HDMI_CEC */
 	LP_GPIO_UNUSED,        /* 50: UNUSED */
 	LP_GPIO_UNUSED,        /* 51: UNUSED */
 	LP_GPIO_INPUT,         /* 52: SIM_DET */
@@ -80,15 +80,15 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 54: UNUSED */
 	LP_GPIO_UNUSED,        /* 55: UNUSED */
 	LP_GPIO_UNUSED,        /* 56: UNUSED */
-	LP_GPIO_OUT_HIGH,      /* 57: CODEC_RESET_L */
+	LP_GPIO_OUT_LOW,       /* 57: CODEC_RESET_L (DISABLED FOR BRINGUP) */
 	LP_GPIO_UNUSED,        /* 58: UNUSED */
 	LP_GPIO_OUT_HIGH,      /* 59: LTE_DISABLE_L */
 	LP_GPIO_UNUSED,        /* 60: UNUSED */
 	LP_GPIO_NATIVE,        /* 61: NATIVE: PCH_SUS_STAT */
 	LP_GPIO_NATIVE,        /* 62: NATIVE: PCH_SUSCLK */
 	LP_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
-	LP_GPIO_OUT_HIGH,      /* 64: NFS_FW_UPDATE */
-	LP_GPIO_OUT_HIGH,      /* 65: MINIDP_PWR_FLT_L */
+	LP_GPIO_OUT_HIGH,      /* 64: NFC_FW_UPDATE */
+	LP_GPIO_INPUT,         /* 65: MINIDP_PWR_FLT_L */
 	LP_GPIO_OUT_HIGH,      /* 66: MINIDP_PWR_EN */
 	LP_GPIO_INPUT,         /* 67: RAM_ID0 */
 	LP_GPIO_INPUT,         /* 68: RAM_ID1 */

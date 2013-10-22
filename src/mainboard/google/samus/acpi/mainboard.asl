@@ -99,6 +99,7 @@ Scope (\_SB)
 			}
 		})
 
+#if 0 // Disabled until kernel driver is working
 		Name (_PRW, Package() { BOARD_TOUCHSCREEN_WAKE_GPIO, 0x3 })
 
 		Method (_DSW, 3, NotSerialized)
@@ -110,5 +111,6 @@ Scope (\_SB)
 				\_SB.PCI0.LPCB.GWAK (Local0)
 			}
 		}
+#endif
 	}
 }

@@ -117,4 +117,13 @@ void mp_initialize_cpu(void *unused);
 /* Returns apic id for coreboot cpu number or < 0 on failure. */
 int mp_get_apic_id(int cpu_slot);
 
+/*
+ * SMM helpers to use with initializing CPUs.
+ */
+
+/* Send SMI to self without any serialization. */
+void smm_initiate_relocation_parallel(void);
+/* Send SMI to self with single execution. */
+void smm_initiate_relocation(void);
+
 #endif /* _X86_MP_H_ */

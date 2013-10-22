@@ -584,3 +584,34 @@ int mp_get_apic_id(int cpu_slot)
 
 	return cpus[cpu_slot].apic_id;
 }
+
+void smm_initiate_relocation_parallel(void)
+{
+	if ((lapic_read(LAPIC_ICR) & LAPIC_ICR_BUSY)) {
+		printk(BIOS_DEBUG, "Waiting for ICR not to be busy...");
+		if (apic_wait_timeout(1000 /* 1 ms */, 50)) {
+			printk(BIOS_DEBUG, "timed out. Aborting.\n");
+			return;
+		} else
+			printk(BIOS_DEBUG, "done.\n");
+	}
+
+	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(lapicid()));
+	lapic_write_around(LAPIC_ICR, LAPIC_INT_ASSERT | LAPIC_DM_SMI);
+	if (apic_wait_timeout(1000 /* 1 ms */, 100 /* us */)) {
+		printk(BIOS_DEBUG, "SMI Relocation timed out.\n");
+	} else
+		printk(BIOS_DEBUG, "Relocation complete.\n");
+
+}
+
+DECLARE_SPIN_LOCK(smm_relocation_lock);
+
+/* Send SMI to self with single user serialization. */
+void smm_initiate_relocation(void)
+{
+	spin_lock(&smm_relocation_lock);
+	smm_initiate_relocation_parallel();
+	spin_unlock(&smm_relocation_lock);
+}
+

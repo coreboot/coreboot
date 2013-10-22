@@ -25,6 +25,7 @@
 
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
 #define GEN_PMCONF1	0x20
+#	define AFTERG3_EN	(1 <<  0)
 #	define UART_EN		(1 << 24)
 #define ETR			0x48
 #	define CF9LOCK		(1 << 31)
@@ -34,6 +35,105 @@
 #	define CWORWRE		(1 << 18)
 
 /* IO Mapped registers behind ACPI_BASE_ADDRESS */
+#define PM1_STS			0x00
+#define   WAK_STS	(1 << 15)
+#define   PCIEXPWAK_STS	(1 << 14)
+#define   USB_STS	(1 << 13)
+#define   PRBTNOR_STS	(1 << 11)
+#define   RTC_STS	(1 << 10)
+#define   PWRBTN_STS	(1 << 8)
+#define   GBL_STS	(1 << 5)
+#define   TMROF_STS	(1 << 0)
+#define PM1_EN			0x02
+#define   PCIEXPWAK_DIS	(1 << 14)
+#define   USB_WAKE_EN	(1 << 13)
+#define   RTC_EN	(1 << 10)
+#define   PWRBTN_EN	(1 << 8)
+#define   GBL_EN	(1 << 5)
+#define   TMROF_EN	(1 << 0)
+#define PM1_CNT			0x04
+#define   SLP_EN	(1 << 13)
+#define   SLP_TYP	(7 << 10)
+#define    SLP_TYP_S0	0
+#define    SLP_TYP_S1	1
+#define    SLP_TYP_S3	5
+#define    SLP_TYP_S4	6
+#define    SLP_TYP_S5	7
+#define   GBL_RLS	(1 << 2)
+#define   BM_RLD	(1 << 1)
+#define   SCI_EN	(1 << 0)
+#define PM1_TMR			0x08
+#define GPE0_STS		0x20
+#define   CORE_GPIO_STS7	(1 << 31)
+#define   CORE_GPIO_STS6	(1 << 30)
+#define   CORE_GPIO_STS5	(1 << 29)
+#define   CORE_GPIO_STS4	(1 << 28)
+#define   CORE_GPIO_STS3	(1 << 27)
+#define   CORE_GPIO_STS2	(1 << 26)
+#define   CORE_GPIO_STS1	(1 << 25)
+#define   CORE_GPIO_STS0	(1 << 24)
+#define   SUS_GPIO_STS7		(1 << 23)
+#define   SUS_GPIO_STS6		(1 << 22)
+#define   SUS_GPIO_STS5		(1 << 21)
+#define   SUS_GPIO_STS4		(1 << 20)
+#define   SUS_GPIO_STS3		(1 << 19)
+#define   SUS_GPIO_STS2		(1 << 18)
+#define   SUS_GPIO_STS1		(1 << 17)
+#define   SUS_GPIO_STS0		(1 << 16)
+#define   PME_B0_STS		(1 << 13)
+#define   BATLOW_STS		(1 << 10)
+#define   PCI_EXP_STS		(1 << 9)
+#define   PCIE_WAKE3_STS	(1 << 8)
+#define   PCIE_WAKE2_STS	(1 << 7)
+#define   PCIE_WAKE1_STS	(1 << 6)
+#define   GUNIT_SCI_STS		(1 << 5)
+#define   PUNIT_SCI_STS		(1 << 4)
+#define   PCIE_WAKE0_STS	(1 << 3)
+#define   SWGPE_STS		(1 << 2)
+#define   HOT_PLUG_STS		(1 << 1)
+#define GPE0_EN			0x28
+#define   CORE_GPIO_EN7	(1 << 31)
+#define   CORE_GPIO_EN6	(1 << 30)
+#define   CORE_GPIO_EN5	(1 << 29)
+#define   CORE_GPIO_EN4	(1 << 28)
+#define   CORE_GPIO_EN3	(1 << 27)
+#define   CORE_GPIO_EN2	(1 << 26)
+#define   CORE_GPIO_EN1	(1 << 25)
+#define   CORE_GPIO_EN0	(1 << 24)
+#define   SUS_GPIO_EN7		(1 << 23)
+#define   SUS_GPIO_EN6		(1 << 22)
+#define   SUS_GPIO_EN5		(1 << 21)
+#define   SUS_GPIO_EN4		(1 << 20)
+#define   SUS_GPIO_EN3		(1 << 19)
+#define   SUS_GPIO_EN2		(1 << 18)
+#define   SUS_GPIO_EN1		(1 << 17)
+#define   SUS_GPIO_EN0		(1 << 16)
+#define   PME_B0_EN		(1 << 13)
+#define   BATLOW_EN		(1 << 10)
+#define   PCI_EXP_EN		(1 << 9)
+#define   PCIE_WAKE3_EN		(1 << 8)
+#define   PCIE_WAKE2_EN		(1 << 7)
+#define   PCIE_WAKE1_EN		(1 << 6)
+#define   PCIE_WAKE0_EN		(1 << 3)
+#define   SWGPE_EN		(1 << 2)
+#define   HOT_PLUG_EN		(1 << 1)
+#define SMI_EN			0x30
+#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
+#define   USB_EN	 (1 << 17) // Legacy USB2 SMI logic
+#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
+#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
+#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
+#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
+#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
+#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
+#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
+#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
+#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
+#define SMI_STS			0x34
+#define ALT_GPIO_SMI		0x38
+#define UPRWC			0x3c
+#define GPE_CTRL		0x40
+#define PM2A_CNT_BLK		0x50
 #define TCO_RLD			0x60
 #define TCO_STS			0x64
 #	define SECOND_TO_STS	(1 << 17)
@@ -48,5 +148,23 @@
 #	define FULL_RST		(1 << 3)
 #	define RST_CPU		(1 << 2)
 #	define SYS_RST		(1 << 1)
+
+
+/* Power Management Utility Functions. */
+uint16_t get_pmbase(void);
+uint32_t clear_smi_status(void);
+uint16_t clear_pm1_status(void);
+uint32_t clear_tco_status(void);
+uint32_t clear_gpe_status(void);
+void enable_smi(uint32_t mask);
+void disable_smi(uint32_t mask);
+void enable_pm1(uint16_t events);
+void enable_pm1_control(uint32_t mask);
+void disable_pm1_control(uint32_t mask);
+void enable_gpe(uint32_t mask);
+void disable_gpe(uint32_t mask);
+void disable_all_gpe(void);
+
+static inline void southcluster_log_state(void) {}
 
 #endif /* _BAYTRAIL_PMC_H_ */

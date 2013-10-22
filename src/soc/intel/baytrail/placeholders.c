@@ -13,8 +13,6 @@ void acpi_create_serialio_ssdt(acpi_header_t *ssdt) {}
 
 unsigned long acpi_fill_mcfg(unsigned long current) { return current; }
 
-void smm_setup_structures(void *gnvs, void *tcg, void *smi1) {}
-
 void smm_init(void) {}
 
 /* Rmodules don't like weak symbols. */

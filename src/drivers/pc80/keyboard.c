@@ -29,8 +29,8 @@
 #define KBD_DATA	0x60
 #define KBD_COMMAND	0x64
 #define KBD_STATUS	0x64
-#define   KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
-#define   KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
+#define KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
+#define KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
 
 // Keyboard Controller Commands
 #define KBC_CMD_READ_COMMAND	0x20 // Read command byte
@@ -67,13 +67,11 @@
 static int kbc_input_buffer_empty(void)
 {
 	u32 timeout;
-	for(timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS) & KBD_IBF); timeout--) {
+	for (timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS) & KBD_IBF); timeout--)
 		mdelay(1);
-	}
 
-	if (!timeout) {
+	if (!timeout)
 		printk(BIOS_WARNING, "Unexpected Keyboard controller input buffer full\n");
-	}
 	return !!timeout;
 }
 
@@ -81,13 +79,11 @@ static int kbc_input_buffer_empty(void)
 static int kbc_output_buffer_full(void)
 {
 	u32 timeout;
-	for(timeout = KBC_TIMEOUT_IN_MS; timeout && ((inb(KBD_STATUS) & KBD_OBF) == 0); timeout--) {
+	for (timeout = KBC_TIMEOUT_IN_MS; timeout && ((inb(KBD_STATUS) & KBD_OBF) == 0); timeout--)
 		mdelay(1);
-	}
 
-	if (!timeout) {
+	if (!timeout)
 		printk(BIOS_INFO, "Keyboard controller output buffer result timeout\n");
-	}
 	return !!timeout;
 }
 
@@ -95,7 +91,7 @@ static int kbc_output_buffer_full(void)
 static int kbc_cleanup_buffers(void)
 {
 	u32 timeout;
-	for(timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS) & (KBD_OBF | KBD_IBF)); timeout--) {
+	for (timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(KBD_STATUS) & (KBD_OBF | KBD_IBF)); timeout--) {
 		mdelay(1);
 		inb(KBD_DATA);
 	}

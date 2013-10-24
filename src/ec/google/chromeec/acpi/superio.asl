@@ -52,12 +52,14 @@ Device (SIO) {
 
 		Name (_CRS, ResourceTemplate ()
 		{
-			FixedIO (EC_LPC_ADDR_MEMMAP, EC_MEMMAP_SIZE)
+			IO (Decode16, EC_LPC_ADDR_MEMMAP, EC_LPC_ADDR_MEMMAP,
+			    0x08, EC_MEMMAP_SIZE)
 		})
 
 		Name (_PRS, ResourceTemplate ()
 		{
-			FixedIO (EC_LPC_ADDR_MEMMAP, EC_MEMMAP_SIZE)
+			IO (Decode16, EC_LPC_ADDR_MEMMAP, EC_LPC_ADDR_MEMMAP,
+			    0x08, EC_MEMMAP_SIZE)
 		})
 	}
 #endif
@@ -74,21 +76,33 @@ Device (SIO) {
 
 		Name (_CRS, ResourceTemplate ()
 		{
-			FixedIO (EC_LPC_ADDR_HOST_DATA, 1)
-			FixedIO (EC_LPC_ADDR_HOST_CMD, 1)
-			FixedIO (EC_HOST_CMD_REGION0, EC_HOST_CMD_REGION_SIZE)
-			FixedIO (EC_HOST_CMD_REGION1, EC_HOST_CMD_REGION_SIZE)
+			IO (Decode16,
+			    EC_LPC_ADDR_HOST_DATA, EC_LPC_ADDR_HOST_DATA,
+			    0x01, 0x01)
+			IO (Decode16,
+			    EC_LPC_ADDR_HOST_CMD, EC_LPC_ADDR_HOST_CMD,
+			    0x01, 0x01)
+			IO (Decode16,
+			    EC_HOST_CMD_REGION0, EC_HOST_CMD_REGION0, 0x08,
+			    EC_HOST_CMD_REGION_SIZE)
+			IO (Decode16,
+			    EC_HOST_CMD_REGION1, EC_HOST_CMD_REGION0, 0x08,
+			    EC_HOST_CMD_REGION_SIZE)
 		})
 
 		Name (_PRS, ResourceTemplate ()
 		{
 			StartDependentFn (0, 0) {
-				FixedIO (EC_LPC_ADDR_HOST_DATA, 1)
-				FixedIO (EC_LPC_ADDR_HOST_CMD, 1)
-				FixedIO (EC_HOST_CMD_REGION0,
-					EC_HOST_CMD_REGION_SIZE)
-				FixedIO (EC_HOST_CMD_REGION1,
-					EC_HOST_CMD_REGION_SIZE)
+				IO (Decode16, EC_LPC_ADDR_HOST_DATA,
+				    EC_LPC_ADDR_HOST_DATA, 0x01, 0x01)
+				IO (Decode16, EC_LPC_ADDR_HOST_CMD,
+				    EC_LPC_ADDR_HOST_CMD, 0x01, 0x01)
+				IO (Decode16,
+				    EC_HOST_CMD_REGION0, EC_HOST_CMD_REGION0,
+				    0x08, EC_HOST_CMD_REGION_SIZE)
+				IO (Decode16,
+				    EC_HOST_CMD_REGION1, EC_HOST_CMD_REGION1,
+				    0x08, EC_HOST_CMD_REGION_SIZE)
 			}
 			EndDependentFn ()
 		})
@@ -107,14 +121,14 @@ Device (SIO) {
 
 		Name (_CRS, ResourceTemplate ()
 		{
-			FixedIO (0x03F8, 0x08)
+			IO (Decode16, 0x03F8, 0x3F8, 0x08, 0x08)
 			IRQNoFlags () {4}
 		})
 
 		Name (_PRS, ResourceTemplate ()
 		{
 			StartDependentFn (0, 0) {
-				FixedIO (0x03F8, 0x08)
+				IO (Decode16, 0x03F8, 0x3F8, 0x08, 0x08)
 				IRQNoFlags () {4}
 			}
 			EndDependentFn ()
@@ -136,16 +150,16 @@ Device (SIO) {
 
 		Name (_CRS, ResourceTemplate()
 		{
-			FixedIO (0x60, 0x01)
-			FixedIO (0x64, 0x01)
+			IO (Decode16, 0x60, 0x60, 0x01, 0x01)
+			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
 			IRQNoFlags () {1}
 		})
 
 		Name (_PRS, ResourceTemplate()
 		{
 			StartDependentFn (0, 0) {
-				FixedIO (0x60, 0x01)
-				FixedIO (0x64, 0x01)
+				IO (Decode16, 0x60, 0x60, 0x01, 0x01)
+				IO (Decode16, 0x64, 0x64, 0x01, 0x01)
 				IRQNoFlags () {1}
 			}
 			EndDependentFn ()

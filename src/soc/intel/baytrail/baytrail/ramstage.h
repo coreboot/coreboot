@@ -27,6 +27,11 @@
 void baytrail_init_pre_device(void);
 void baytrail_init_cpus(device_t dev);
 void set_max_freq(void);
+#if CONFIG_HAVE_REFCODE_BLOB
+void baytrail_run_reference_code(void);
+#else
+static inline void baytrail_run_reference_code(void) {}
+#endif
 
 extern struct pci_operations soc_pci_ops;
 

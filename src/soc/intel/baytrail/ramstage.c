@@ -113,6 +113,9 @@ void baytrail_init_pre_device(void)
 	/* Allow for SSE instructions to be executed. */
 	write_cr4(read_cr4() | CR4_OSFXSR | CR4_OSXMMEXCPT);
 
+	/* Run reference code. */
+	baytrail_run_reference_code();
+
 	/* Get GPIO initial states from mainboard */
 	config = mainboard_get_gpios();
 	setup_soc_gpios(config);

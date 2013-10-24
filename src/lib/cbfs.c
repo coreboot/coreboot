@@ -177,51 +177,19 @@ load_cached_ramstage(struct romstage_handoff *handoff,
 static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
                                   struct romstage_handoff *handoff)
 {
-	struct cbfs_stage *stage;
-	struct rmodule ramstage;
-	void *entry_point;
-	size_t region_size;
-	char *ramstage_region;
-	int rmodule_offset;
-	int load_offset;
-	const struct cbmem_entry *ramstage_entry;
+	struct rmod_stage_load rmod_ram = {
+		.cbmem_id = CBMEM_ID_RAMSTAGE,
+		.name = name,
+	};
 
-	stage = (struct cbfs_stage *)
-	  cbfs_get_file_content(media, name, CBFS_TYPE_STAGE, NULL);
-
-	if (stage == NULL)
+	if (rmodule_stage_load_from_cbfs(&rmod_ram)) {
+		printk(BIOS_DEBUG, "Could not load ramstage.\n");
 		return (void *) -1;
+	}
 
-	rmodule_offset =
-		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
-	                            stage->memlen, &region_size, &load_offset);
+	cache_loaded_ramstage(handoff, rmod_ram.cbmem_entry, rmod_ram.entry);
 
-	ramstage_entry = cbmem_entry_add(CBMEM_ID_RAMSTAGE, region_size);
-
-	if (ramstage_entry == NULL)
-		return (void *) -1;
-
-	ramstage_region = cbmem_entry_start(ramstage_entry);
-
-	LOG("Decompressing stage %s @ 0x%p (%d bytes)\n",
-	    name, &ramstage_region[rmodule_offset], stage->memlen);
-
-	if (!cbfs_decompress(stage->compression, &stage[1],
-	                     &ramstage_region[rmodule_offset], stage->len))
-		return (void *) -1;
-
-	if (rmodule_parse(&ramstage_region[rmodule_offset], &ramstage))
-		return (void *) -1;
-
-	/* The ramstage is responsible for clearing its own bss. */
-	if (rmodule_load(&ramstage_region[load_offset], &ramstage))
-		return (void *) -1;
-
-	entry_point = rmodule_entry(&ramstage);
-
-	cache_loaded_ramstage(handoff, ramstage_entry, entry_point);
-
-	return entry_point;
+	return rmod_ram.entry;
 }
 
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)

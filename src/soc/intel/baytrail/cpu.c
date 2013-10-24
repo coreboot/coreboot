@@ -32,8 +32,6 @@
 #include <baytrail/ramstage.h>
 #include <baytrail/smm.h>
 
-static const void *microcode_ptr;
-
 static void smm_relocate(void *unused);
 static void enable_smis(void *unused);
 
@@ -61,15 +59,12 @@ void baytrail_init_cpus(device_t dev)
 	x86_setup_var_mtrrs(pattrs->address_bits, 2);
 	x86_mtrr_check();
 
-	/* Stash microcode. */
-	microcode_ptr = intel_microcode_find();
-
 	mp_params.num_cpus = pattrs->num_cpus,
 	mp_params.parallel_microcode_load = 1,
 	mp_params.adjust_apic_id = adjust_apic_id;
 	mp_params.flight_plan = &mp_steps[0];
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
-	mp_params.microcode_pointer = microcode_ptr;
+	mp_params.microcode_pointer = pattrs->microcode_patch;
 
 	if (mp_init(cpu_bus, &mp_params)) {
 		printk(BIOS_ERR, "MP initialization failure.\n");
@@ -220,6 +215,8 @@ static int smm_load_handlers(void)
 
 static void smm_relocate(void *unused)
 {
+	const struct pattrs *pattrs = pattrs_get();
+
 	/* Load relocation and permanent handler. */
 	if (boot_cpu()) {
 		if (smm_load_handlers() < 0) {
@@ -233,7 +230,7 @@ static void smm_relocate(void *unused)
 	smm_initiate_relocation();
 
 	/* Load microcode after SMM relocation. */
-	intel_microcode_load_unlocked(microcode_ptr);
+	intel_microcode_load_unlocked(pattrs->microcode_patch);
 }
 
 static void enable_smis(void *unused)

@@ -300,3 +300,64 @@ int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
 
 	return region_alignment - sizeof(struct rmodule_header);
 }
+
+#if CONFIG_DYNAMIC_CBMEM
+#include <cbmem.h>
+#include <cbfs_core.h>
+
+int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage)
+{
+	struct rmodule rmod_stage;
+	size_t region_size;
+	char *stage_region;
+	int rmodule_offset;
+	int load_offset;
+	const struct cbmem_entry *cbmem_entry;
+
+	if (stage == NULL || rsl->name == NULL)
+		return -1;
+
+	rmodule_offset =
+		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
+		                    stage->memlen, &region_size, &load_offset);
+
+	cbmem_entry = cbmem_entry_add(rsl->cbmem_id, region_size);
+
+	if (cbmem_entry == NULL)
+		return -1;
+
+	stage_region = cbmem_entry_start(cbmem_entry);
+
+	printk(BIOS_INFO, "Decompressing stage %s @ 0x%p (%d bytes)\n",
+	       rsl->name, &stage_region[rmodule_offset], stage->memlen);
+
+	if (!cbfs_decompress(stage->compression, &stage[1],
+	                    &stage_region[rmodule_offset], stage->len))
+		return -1;
+
+	if (rmodule_parse(&stage_region[rmodule_offset], &rmod_stage))
+		return -1;
+
+	if (rmodule_load(&stage_region[load_offset], &rmod_stage))
+		return -1;
+
+	rsl->cbmem_entry = cbmem_entry;
+	rsl->entry = rmodule_entry(&rmod_stage);
+
+	return 0;
+}
+
+int rmodule_stage_load_from_cbfs(struct rmod_stage_load *rsl)
+{
+	struct cbfs_stage *stage;
+
+	stage = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
+	                              rsl->name, CBFS_TYPE_STAGE, NULL);
+
+	if (stage == NULL)
+		return -1;
+
+	return rmodule_stage_load(rsl, stage);
+}
+
+#endif /* DYNAMIC_CBMEM */

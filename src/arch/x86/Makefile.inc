@@ -136,6 +136,9 @@ endif
 ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
 	$(CBFSTOOL) $@.tmp add-stage -f $(VBOOT_STUB_ELF) -n $(CONFIG_CBFS_PREFIX)/vboot -c $(CBFS_COMPRESS_FLAG)
 endif
+ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
+	$(CBFSTOOL) $@.tmp add-stage -f $(CONFIG_REFCODE_BLOB_FILE) -n $(CONFIG_CBFS_PREFIX)/refcode -c $(CBFS_COMPRESS_FLAG)
+endif
 ifeq ($(CONFIG_PXE_ROM),y)
 	$(CBFSTOOL) $@.tmp add -f $(CONFIG_PXE_ROM_FILE) -n pci$(CONFIG_PXE_ROM_ID).rom -t raw
 endif

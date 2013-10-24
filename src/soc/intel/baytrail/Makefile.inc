@@ -30,6 +30,7 @@ ramstage-y += pmutil.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 ramstage-y += smm.c
+ramstage-y += southcluster.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

@@ -37,59 +37,26 @@
 
 static void vboot_run_stub(struct vboot_context *context)
 {
-	const struct cbmem_entry *vboot_entry;
-	struct rmodule vbootstub;
-	struct cbfs_stage *stage;
-	size_t region_size;
-	int rmodule_offset;
-	int load_offset;
-	char *vboot_region;
+	struct rmod_stage_load rmod_stage = {
+		.cbmem_id = 0xffffffff,
+		.name = CONFIG_CBFS_PREFIX "/vboot",
+	};
 	void (*entry)(struct vboot_context *context);
 
-	stage = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-	                              CONFIG_CBFS_PREFIX "/vboot",
-	                              CBFS_TYPE_STAGE, NULL);
-
-	if (stage == NULL)
-		return;
-
-	rmodule_offset =
-		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
-	                            stage->memlen, &region_size, &load_offset);
-
-	vboot_entry = cbmem_entry_add(0xffffffff, region_size);
-
-	if (vboot_entry == NULL) {
-		printk(BIOS_DEBUG, "Couldn't get region for vboot stub.\n");
-		return;
-	}
-
-	vboot_region = cbmem_entry_start(vboot_entry);
-
-	if (!cbfs_decompress(stage->compression, &stage[1],
-	                     &vboot_region[rmodule_offset], stage->len)) {
-		printk(BIOS_DEBUG, "Couldn't decompress vboot stub.\n");
+	if (rmodule_stage_load_from_cbfs(&rmod_stage)) {
+		printk(BIOS_DEBUG, "Could not load vboot stub.\n");
 		goto out;
 	}
 
-	if (rmodule_parse(&vboot_region[rmodule_offset], &vbootstub)) {
-		printk(BIOS_DEBUG, "Couldn't parse vboot stub rmodule.\n");
-		goto out;
-	}
-
-	if (rmodule_load(&vboot_region[load_offset], &vbootstub)) {
-		printk(BIOS_DEBUG, "Couldn't load vboot stub.\n");
-		goto out;
-	}
-
-	entry = rmodule_entry(&vbootstub);
+	entry = rmod_stage.entry;
 
 	/* Call stub. */
 	entry(context);
 
 out:
 	/* Tear down the region no longer needed. */
-	cbmem_entry_remove(vboot_entry);
+	if (rmod_stage.cbmem_entry != NULL)
+		cbmem_entry_remove(rmod_stage.cbmem_entry);
 }
 
 /* Helper routines for the vboot stub. */
@@ -177,14 +144,11 @@ static void vboot_load_ramstage(struct vboot_handoff *vboot_handoff,
                                 struct romstage_handoff *handoff)
 {
 	struct cbfs_stage *stage;
-	struct rmodule ramstage;
-	void *entry_point;
-	size_t region_size;
-	char *ramstage_region;
-	int rmodule_offset;
-	int load_offset;
-	const struct cbmem_entry *ramstage_entry;
 	const struct firmware_component *fwc;
+	struct rmod_stage_load rmod_load = {
+		.cbmem_id = CBMEM_ID_RAMSTAGE,
+		.name = CONFIG_CBFS_PREFIX "/coreboot_ram",
+	};
 
 	if (CONFIG_VBOOT_RAMSTAGE_INDEX >= MAX_PARSED_FW_COMPONENTS) {
 		printk(BIOS_ERR, "Invalid ramstage index: %d\n",
@@ -204,45 +168,22 @@ static void vboot_load_ramstage(struct vboot_handoff *vboot_handoff,
 
 	stage = (void *)fwc->address;
 
-	rmodule_offset =
-		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
-	                            stage->memlen, &region_size, &load_offset);
+	timestamp_add_now(TS_START_COPYRAM);
 
-	ramstage_entry = cbmem_entry_add(CBMEM_ID_RAMSTAGE, region_size);
-
-	if (ramstage_entry == NULL) {
+	if (rmodule_stage_load(&rmod_load, stage)) {
 		vboot_handoff->selected_firmware = VB_SELECT_FIRMWARE_READONLY;
-		printk(BIOS_DEBUG, "Could not add ramstage region.\n");
+		printk(BIOS_DEBUG, "Could not load ramstage region.\n");
 		return;
 	}
 
-	timestamp_add_now(TS_START_COPYRAM);
-
-	ramstage_region = cbmem_entry_start(ramstage_entry);
-
-	printk(BIOS_DEBUG, "Decompressing ramstage @ 0x%p (%d bytes)\n",
-	       &ramstage_region[rmodule_offset], stage->memlen);
-
-	if (!cbfs_decompress(stage->compression, &stage[1],
-	                     &ramstage_region[rmodule_offset], stage->len))
-		return;
-
-	if (rmodule_parse(&ramstage_region[rmodule_offset], &ramstage))
-		return;
-
-	if (rmodule_load(&ramstage_region[load_offset], &ramstage))
-		return;
-
-	entry_point = rmodule_entry(&ramstage);
-
-	cache_loaded_ramstage(handoff, ramstage_entry, entry_point);
+	cache_loaded_ramstage(handoff, rmod_load.cbmem_entry, rmod_load.entry);
 
 	timestamp_add_now(TS_END_COPYRAM);
 
 	__asm__ volatile (
 		"movl $0, %%ebp\n"
 		"jmp  *%%edi\n"
-		:: "D"(entry_point)
+		:: "D"(rmod_load.entry)
 	);
 }
 

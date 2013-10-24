@@ -79,6 +79,26 @@ int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
 	__attribute__ ((section (".module_header"))) = \
 	RMODULE_HEADER(entry_, type_)
 
+/* Support for loading rmodule stages. This API is only available wwhen
+ * using dynamic cbmem because it uses the dynamic cbmem API to obtain
+ * the backing store region for the stage. */
+#if CONFIG_DYNAMIC_CBMEM
+struct cbfs_stage;
+struct cbmem_entry;
+
+struct rmod_stage_load {
+	/* Inputs */
+	uint32_t cbmem_id;
+	const char *name;
+	/* Outputs */
+	const struct cbmem_entry *cbmem_entry;
+	void *entry;
+};
+
+/* Both of the following functions return 0 on success, -1 on error. */
+int rmodule_stage_load(struct rmod_stage_load *rsl, struct cbfs_stage *stage);
+int rmodule_stage_load_from_cbfs(struct rmod_stage_load *rsl);
+#endif
 
 /* Private data structures below should not be used directly. */
 

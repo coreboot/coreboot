@@ -439,6 +439,23 @@ config CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM
 	 The relocated ramstage is saved in an area specified by the
 	 by the board and/or chipset.
 
+config HAVE_REFCODE_BLOB
+	depends on ARCH_X86
+	bool "An external reference code blob should be put into cbfs."
+	default n
+	help
+	 The reference code blob will be placed into cbfs.
+
+if HAVE_REFCODE_BLOB
+
+config REFCODE_BLOB_FILE
+	string "Path and filename to reference code blob."
+	default "refcode.elf"
+	help
+	 The path and filename to the file to be added to cbfs.
+
+endif # HAVE_REFCODE_BLOB
+
 config HAVE_ACPI_TABLES
 	bool
 	help

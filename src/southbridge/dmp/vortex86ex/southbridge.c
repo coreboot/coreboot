@@ -25,6 +25,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/keyboard.h>
 #include <string.h>
+#include <delay.h>
 #include "arch/io.h"
 #include "chip.h"
 #include "southbridge.h"
@@ -93,7 +94,11 @@ static const unsigned char irq_to_int_routing[16] = {
 #define POST_KBD_FW_UPLOAD 0x06
 #define POST_KBD_CHK_READY 0x07
 #define POST_KBD_IS_READY 0x08
+#define POST_KBD_IS_BAD 0x09
 #define POST_KBD_FW_VERIFY_FAILURE 0x82
+
+/* keyboard controller system flag timeout : 400 ms */
+#define KBC_TIMEOUT_SYS_FLAG 400
 
 static u8 get_pci_dev_func(device_t dev)
 {
@@ -140,15 +145,21 @@ static void upload_dmp_keyboard_firmware(struct device *dev)
 	pci_write_config32(dev, SB_REG_IPFCR, reg_sb_c0 & ~0x400L);
 }
 
-static void kbc_wait_system_flag(void)
+static int kbc_wait_system_flag(void)
 {
 	/* wait keyboard controller ready by checking system flag
 	 * (status port bit 2).
 	 */
 	post_code(POST_KBD_CHK_READY);
-	while ((inb(0x64) & 0x4) == 0) {
+	u32 timeout;
+	for (timeout = KBC_TIMEOUT_SYS_FLAG;
+	     timeout && ((inb(0x64) & 0x4) == 0); timeout--)
+		mdelay(1);
+
+	if (!timeout) {
+		printk(BIOS_WARNING, "Keyboard controller system flag timeout\n");
 	}
-	post_code(POST_KBD_IS_READY);
+	return !!timeout;
 }
 
 static void pci_routing_fixup(struct device *dev)
@@ -577,7 +588,21 @@ static void southbridge_init(struct device *dev)
 
 	fix_cmos_rtc_time();
 	rtc_init(0);
-	kbc_wait_system_flag();
+	/* Check keyboard controller ready. If timeout, reload firmware code
+	 * and try again.
+	 */
+	u32 retries = 10;
+	while (!kbc_wait_system_flag()) {
+		if (!retries) {
+			post_code(POST_KBD_IS_BAD);
+			die("The keyboard timeout occurred too often. "
+			    "Your CPU is probably defect. "
+			    "Contact your dealer to replace it\n");
+		}
+		upload_dmp_keyboard_firmware(dev);
+		retries --;
+	}
+	post_code(POST_KBD_IS_READY);
 	pc_keyboard_init(0);
 }
 

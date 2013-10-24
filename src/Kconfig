@@ -429,6 +429,23 @@ config RELOCATABLE_RAMSTAGE
 	 wake. When selecting this option the romstage is responsible for
 	 determing a stack location to use for loading the ramstage.
 
+config HAVE_REFCODE_BLOB
+	depends on ARCH_X86
+	bool "An external reference code blob should be put into cbfs."
+	default n
+	help
+	 The reference code blob will be placed into cbfs.
+
+if HAVE_REFCODE_BLOB
+
+config REFCODE_BLOB_FILE
+	string "Path and filename to reference code blob."
+	default "refcode.elf"
+	help
+	 The path and filename to the file to be added to cbfs.
+
+endif # HAVE_REFCODE_BLOB
+
 config HAVE_ACPI_TABLES
 	bool
 	help

@@ -64,7 +64,7 @@
  */
 #define RES_IN_KiB(r) ((r) >> 10)
 
-static void soc_trans_router_read_resources(device_t dev)
+static void nc_read_resources(device_t dev)
 {
 	unsigned long mmconf;
 	unsigned long bmbound;
@@ -117,18 +117,6 @@ static void soc_trans_router_read_resources(device_t dev)
 	if (bmbound_hi > four_gig_kib)
 		ram_resource(dev, index++, four_gig_kib,
 		             bmbound_hi - four_gig_kib);
-}
-
-static void nc_read_resources(device_t dev)
-{
-	/* For some reason the graphics pci device (0, 2, 0) and the SoC
-	 * transaction router are coming up with the same device id. */
-	if (dev_find_slot(0, PCI_DEVFN(SOC_DEV, SOC_FUNC)) == dev)
-		return soc_trans_router_read_resources(dev);
-	else
-		/* Read standard PCI resources. */
-		pci_dev_read_resources(dev);
-
 }
 
 static struct device_operations nc_ops = {

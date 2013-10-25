@@ -28,6 +28,7 @@
 #include "arch/io.h"
 #include "chip.h"
 #include "southbridge.h"
+#include "mainboard/dmp/dmp_post_code.h"
 
 /* IRQ number to S/B PCI Interrupt routing table reg(0x58/0xb4) mapping table. */
 static const unsigned char irq_to_int_routing[16] = {
@@ -89,12 +90,6 @@ static const unsigned char irq_to_int_routing[16] = {
 #define LPT_PDMAS 0
 #define LPT_DREQS 0
 
-/* Post codes */
-#define POST_KBD_FW_UPLOAD 0x06
-#define POST_KBD_CHK_READY 0x07
-#define POST_KBD_IS_READY 0x08
-#define POST_KBD_FW_VERIFY_FAILURE 0x82
-
 static u8 get_pci_dev_func(device_t dev)
 {
 	return PCI_FUNC(dev->path.pci.devfn);
@@ -102,7 +97,7 @@ static u8 get_pci_dev_func(device_t dev)
 
 static void verify_dmp_keyboard_error(void)
 {
-	post_code(POST_KBD_FW_VERIFY_FAILURE);
+	post_code(POST_DMP_KBD_FW_VERIFY_ERR);
 	die("Internal keyboard firmware verify error!\n");
 }
 
@@ -112,7 +107,7 @@ static void upload_dmp_keyboard_firmware(struct device *dev)
 	u32 fwptr;
 
 	// enable firmware uploading function by set bit 10.
-	post_code(POST_KBD_FW_UPLOAD);
+	post_code(POST_DMP_KBD_FW_UPLOAD);
 	reg_sb_c0 = pci_read_config32(dev, SB_REG_IPFCR);
 	pci_write_config32(dev, SB_REG_IPFCR, reg_sb_c0 | 0x400);
 
@@ -145,10 +140,10 @@ static void kbc_wait_system_flag(void)
 	/* wait keyboard controller ready by checking system flag
 	 * (status port bit 2).
 	 */
-	post_code(POST_KBD_CHK_READY);
+	post_code(POST_DMP_KBD_CHK_READY);
 	while ((inb(0x64) & 0x4) == 0) {
 	}
-	post_code(POST_KBD_IS_READY);
+	post_code(POST_DMP_KBD_IS_READY);
 }
 
 static void pci_routing_fixup(struct device *dev)

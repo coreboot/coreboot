@@ -27,6 +27,7 @@
 #include "northbridge/dmp/vortex86ex/northbridge.h"
 #include "southbridge/dmp/vortex86ex/southbridge.h"
 #include "northbridge/dmp/vortex86ex/raminit.c"
+#include "cpu/dmp/dmp_post_code.h"
 
 #define DMP_CPUID_SX      0x31504d44
 #define DMP_CPUID_DX      0x32504d44
@@ -34,11 +35,6 @@
 #define DMP_CPUID_DX2     0x34504d44
 #define DMP_CPUID_MX_PLUS 0x35504d44
 #define DMP_CPUID_EX      0x37504d44
-
-/* Post codes */
-#define POST_DMP_ID_ERR 0x85
-#define POST_DRAM_TEST_ERR 0x86
-#define POST_DRAM_SIZING_ERR 0x77
 
 static u32 get_dmp_id(void)
 {
@@ -273,7 +269,7 @@ static void test_dram_stability(void)
 		}
 	}
 	if (v != -1) {
-		post_code(POST_DRAM_TEST_ERR);
+		post_code(POST_DMP_DRAM_TEST_ERR);
 		print_emerg("DRAM stablility test error!\nADDR = ");
 		print_emerg_hex32(v);
 		print_emerg(", WRITE = ");
@@ -342,7 +338,7 @@ static void main(unsigned long bist)
 	reg_nb_f1_cc &= ~(1 << 4);
 	pci_write_config8(NB1, 0xcc, reg_nb_f1_cc);
 	if (detect_ddr3_dram_size()) {
-		post_code(POST_DRAM_SIZING_ERR);
+		post_code(POST_DMP_DRAM_SIZING_ERR);
 		die("DRAM sizing error!\n");
 	}
 	/* Reset enhance read push write to default(enable) */

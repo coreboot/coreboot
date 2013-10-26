@@ -33,20 +33,20 @@
  * bit controls or represents the status for the corresponding channel.
  * So we will not bother to list each individual bit in this case.
  */
-#define APBDMA_COMMAND_GEN			(1 << 31)
+#define APB_COMMAND_GEN			(1 << 31)
 
-#define APBDMA_CNTRL_REG_COUNT_VALUE_MASK	0xffff
-#define APBDMA_CNTRL_REG_COUNT_VALUE_SHIFT	0
+#define APB_CNTRL_REG_COUNT_VALUE_MASK	0xffff
+#define APB_CNTRL_REG_COUNT_VALUE_SHIFT	0
 
 /*
  * Note: Many APB DMA controller registers are laid out such that each
  * bit controls or represents the status for the corresponding channel.
  * So we will not bother to list each individual bit in this case.
  */
-#define APBDMA_COMMAND_GEN			(1 << 31)
+#define APB_COMMAND_GEN			(1 << 31)
 
-#define APBDMA_CNTRL_REG_COUNT_VALUE_MASK	0xffff
-#define APBDMA_CNTRL_REG_COUNT_VALUE_SHIFT	0
+#define APB_CNTRL_REG_COUNT_VALUE_MASK	0xffff
+#define APB_CNTRL_REG_COUNT_VALUE_SHIFT	0
 struct apb_dma {
 	u32 command;		/* 0x00 */
 	u32 status;		/* 0x04 */
@@ -75,14 +75,14 @@ struct apb_dma {
  * Naming in the doc included a superfluous _CHANNEL_n_ for
  * each entry and was left out for the sake of conciseness.
  */
-#define APBDMACHAN_CSR_ENB			(1 << 31)
-#define APBDMACHAN_CSR_IE_EOC			(1 << 30)
-#define APBDMACHAN_CSR_HOLD			(1 << 29)
-#define APBDMACHAN_CSR_DIR			(1 << 28)
-#define APBDMACHAN_CSR_ONCE			(1 << 27)
-#define APBDMACHAN_CSR_FLOW			(1 << 21)
-#define APBDMACHAN_CSR_REQ_SEL_MASK		0x1f
-#define APBDMACHAN_CSR_REQ_SEL_SHIFT		16
+#define APB_CSR_ENB			(1 << 31)
+#define APB_CSR_IE_EOC			(1 << 30)
+#define APB_CSR_HOLD			(1 << 29)
+#define APB_CSR_DIR			(1 << 28)
+#define APB_CSR_ONCE			(1 << 27)
+#define APB_CSR_FLOW			(1 << 21)
+#define APB_CSR_REQ_SEL_MASK		0x1f
+#define APB_CSR_REQ_SEL_SHIFT		16
 
 enum apbdmachan_req_sel {
 	APBDMA_SLAVE_CNTR_REQ	= 0,
@@ -119,46 +119,41 @@ enum apbdmachan_req_sel {
 	APBDMA_SLAVE_NA31	= 31,
 };
 
-#define APBDMACHAN_STA_BSY			(1 << 31)
-#define APBDMACHAN_STA_ISE_EOC			(1 << 30)
-#define APBDMACHAN_STA_HALT			(1 << 29)
-#define APBDMACHAN_STA_PING_PONG_STA		(1 << 28)
-#define APBDMACHAN_STA_DMA_ACTIVITY		(1 << 27)
-#define APBDMACHAN_STA_CHANNEL_PAUSE		(1 << 26)
+#define APB_STA_BSY			(1 << 31)
+#define APB_STA_ISE_EOC			(1 << 30)
+#define APB_STA_HALT			(1 << 29)
+#define APB_STA_PING_PONG_STA		(1 << 28)
+#define APB_STA_DMA_ACTIVITY		(1 << 27)
+#define APB_STA_CHANNEL_PAUSE		(1 << 26)
 
-#define APBDMACHAN_CSRE_CHANNEL_PAUSE		(1 << 31)
-#define APBDMACHAN_CSRE_TRIG_SEL_MASK		0x3f
-#define APBDMACHAN_CSRE_TRIG_SEL_SHIFT		14
+#define APB_CSRE_CHANNEL_PAUSE		(1 << 31)
+#define APB_CSRE_TRIG_SEL_MASK		0x3f
+#define APB_CSRE_TRIG_SEL_SHIFT		14
 
-#define APBDMACHAN_AHB_PTR_MASK			(0x3fffffff)
-#define APBDMACHAN_AHB_PTR_SHIFT		2
+#define AHB_PTR_MASK			(0x3fffffff)
+#define AHB_PTR_SHIFT			2
 
-#define APBDMACHAN_AHB_SEQ_INTR_ENB		(1 << 31)
-#define APBDMACHAN_AHB_SEQ_AHB_BUS_WIDTH_MASK	0x7
-#define APBDMACHAN_AHB_SEQ_AHB_BUS_WIDTH_SHIFT	28
-#define APBDMACHAN_AHB_SEQ_AHB_DATA_SWAP	(1 << 27)
-#define APBDMACHAN_AHB_SEQ_AHB_BURST_MASK	0x7
-#define APBDMACHAN_AHB_SEQ_AHB_BURST_SHIFT	24
-#define APBDMACHAN_AHB_SEQ_DBL_BUF		(1 << 19)
-#define APBDMACHAN_AHB_SEQ_WRAP_MASK		0x7
-#define APBDMACHAN_AHB_SEQ_WRAP_SHIFT		16
+#define AHB_SEQ_INTR_ENB		(1 << 31)
+#define AHB_BUS_WIDTH_MASK		0x7
+#define AHB_BUS_WIDTH_SHIFT		28
+#define AHB_DATA_SWAP			(1 << 27)
+#define AHB_BURST_MASK			0x7
+#define AHB_BURST_SHIFT			24
+#define AHB_SEQ_DBL_BUF			(1 << 19)
+#define AHB_SEQ_WRAP_MASK		0x7
+#define AHB_SEQ_WRAP_SHIFT		16
 
-#define APBDMACHAN_AHB_SEQ_AHB_BUS_WIDTH_MASK	0x7
-#define APBDMACHAN_AHB_SEQ_AHB_BUS_WIDTH_SHIFT	28
+#define APB_PTR_MASK			0x3fffffff
+#define APB_PTR_SHIFT			2
 
-#define APBDMACHAN_APB_PTR_MASK			0x3fffffff
-#define APBDMACHAN_APB_PTR_SHIFT		2
+#define APB_BUS_WIDTH_MASK		0x7
+#define APB_BUS_WIDTH_SHIFT		28
+#define APB_DATA_SWAP			(1 << 27)
+#define APB_ADDR_WRAP_MASK		0x7
+#define APB_ADDR_WRAP_SHIFT		16
 
-#define APBDMACHAN_APB_SEQ_APB_BUS_WIDTH_MASK	0x7
-#define APBDMACHAN_APB_SEQ_APB_BUS_WIDTH_SHIFT	28
-#define APBDMACHAN_APB_SEQ_APB_DATA_SWAP	(1 << 27)
-#define APBDMACHAN_APB_SEQ_APB_ADDR_WRAP_MASK	0x7
-#define APBDMACHAN_APB_SEQ_APB_ADDR_WRAP_SHIFT	16
-
-#define APBDMACHAN_WORD_TRANSFER_
-
-#define APBDMACHAN_WORD_TRANSFER_MASK		0x0fffffff
-#define APBDMACHAN_WORD_TRANSFER_SHIFT		2
+#define APB_WORD_TRANSFER_MASK		0x0fffffff
+#define APB_WORD_TRANSFER_SHIFT		2
 
 struct apb_dma_channel_regs {
 	u32 csr;		/* 0x00 */

@@ -47,8 +47,11 @@ enum spi_xfer_mode {
 };
 
 struct tegra_spi_channel {
-	struct spi_slave slave;
 	struct tegra_spi_regs *regs;
+
+	/* static configuration */
+	struct spi_slave slave;
+	unsigned int req_sel;
 
 	/* stuff that is specific to the attached device */
 	int rx_frame_header_enable;
@@ -58,7 +61,6 @@ struct tegra_spi_channel {
 	u8 *in_buf, *out_buf;
 	struct apb_dma_channel *dma_out, *dma_in;
 	enum spi_xfer_mode xfer_mode;
-
 };
 
 struct cbfs_media;

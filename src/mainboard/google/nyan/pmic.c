@@ -23,36 +23,76 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "boardid.h"
 #include "pmic.h"
-
-struct pmic_write
-{
-	uint8_t reg; // Register to write.
-	uint8_t val; // Value to write.
-};
 
 enum {
 	AS3722_I2C_ADDR = 0x40
 };
 
-static struct pmic_write pmic_writes[] =
+struct as3722_init_reg {
+	u8 reg;
+	u8 val;
+};
+
+static struct as3722_init_reg init_list[] = {
+	{AS3722_SDO0, 0x3C},
+	{AS3722_SDO1, 0x32},
+	{AS3722_SDO2, 0x3C},
+	{AS3722_SDO3, 0x00},
+	{AS3722_SDO4, 0x00},
+	{AS3722_SDO5, 0x50},
+	{AS3722_SDO6, 0x28},
+	{AS3722_LDO0, 0x8A},
+	{AS3722_LDO1, 0x00},
+	{AS3722_LDO2, 0x10},
+	{AS3722_LDO3, 0x59},
+	{AS3722_LDO4, 0x00},
+	{AS3722_LDO5, 0x00},
+	{AS3722_LDO6, 0x3F},
+	{AS3722_LDO7, 0x00},
+	{AS3722_LDO9, 0x00},
+	{AS3722_LDO10, 0x00},
+	{AS3722_LDO11, 0x00},
+};
+#define AS3722_INIT_REG_LEN ARRAY_SIZE(init_list)
+
+static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val)
 {
-	/* Don't need to set up VDD_CORE - already done - by OTP */
+	i2c_write(bus, AS3722_I2C_ADDR, reg, 1, &val, 1);
+	udelay(10 * 1000);
+}
 
-	/* First set VDD_CPU to 1.0V, then enable the VDD_CPU regulator. */
-	{ 0x00, 0x28 },
+static void pmic_slam_defaults(unsigned bus)
+{
+	int i;
 
-	/* Don't write SDCONTROL - it's already 0x7F, i.e. all SDs enabled. */
+	for (i = 0; i < AS3722_INIT_REG_LEN; i++)
+		pmic_write_reg(bus, init_list[i].reg, init_list[i].val);
+}
+
+void pmic_init(unsigned bus)
+{
+	/*
+	 * Don't need to set up VDD_CORE - already done - by OTP
+	 * Don't write SDCONTROL - it's already 0x7F, i.e. all SDs enabled.
+	 * Don't write LDCONTROL - it's already 0xFF, i.e. all LDOs enabled.
+	 */
+
+	/* Restore PMIC POR defaults, in case kernel changed 'em */
+	pmic_slam_defaults(bus);
+
+	/* First set VDD_CPU to 1.2V, then enable the VDD_CPU regulator. */
+	if (board_id() == 0)
+		pmic_write_reg(bus, 0x00, 0x3c);
+	else
+		pmic_write_reg(bus, 0x00, 0x50);
 
 	/* First set VDD_GPU to 1.0V, then enable the VDD_GPU regulator. */
-	{ 0x06, 0x28 },
-
-	/* Don't write SDCONTROL - it's already 0x7F, i.e. all SDs enabled. */
+	pmic_write_reg(bus, 0x06, 0x28);
 
 	/* First set VPP_FUSE to 1.2V, then enable the VPP_FUSE regulator. */
-	{ 0x12, 0x10 },
-
-	/* Don't write LDCONTROL - it's already 0xFF, i.e. all LDOs enabled. */
+	pmic_write_reg(bus, 0x12, 0x10);
 
 	/*
 	 * Bring up VDD_SDMMC via the AS3722 PMIC on the PWR I2C bus.
@@ -61,23 +101,12 @@ static struct pmic_write pmic_writes[] =
 	 * NOTE: We do this early because doing it later seems to hose the CPU
 	 * power rail/partition startup. Need to debug.
 	 */
-	{ 0x16, 0x3f },
+	pmic_write_reg(bus, 0x16, 0x3f);
 
-	/* Don't write LDCONTROL - it's already 0xFF, i.e. all LDOs enabled. */
-	/* panel power GPIO O4. Set mode for GPIO4 (0x0c to 7), then set
+	/*
+	 * Panel power GPIO O4. Set mode for GPIO4 (0x0c to 7), then set
 	 * the value (register 0x20 bit 4)
 	 */
-	{ 0x0c, 0x07 },
-	{ 0x20, 0x10 },
-};
-
-void pmic_init(unsigned bus)
-{
-	int i;
-
-	for (i = 0; i < ARRAY_SIZE(pmic_writes); i++) {
-		i2c_write(bus, AS3722_I2C_ADDR, pmic_writes[i].reg, 1,
-			  &pmic_writes[i].val, 1);
-		udelay(10 * 1000);
-	}
+	pmic_write_reg(bus, 0x0c, 0x07);
+	pmic_write_reg(bus, 0x20, 0x10);
 }

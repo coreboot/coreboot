@@ -87,4 +87,18 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 1
 
+choice
+	prompt "BCT sdram configuration"
+	default BCT_SDRAM_792
+	help
+	  The SDRAM configuration to put in the BCT.
+
+config BCT_SDRAM_792
+	bool "792 MHz"
+
+config BCT_SDRAM_924
+	bool "924 MHz"
+
+endchoice
+
 endif # BOARD_GOOGLE_NYAN

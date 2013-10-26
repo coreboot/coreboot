@@ -37,7 +37,15 @@ void main(void)
 	// Serial in, tristate_on.
 	pinmux_set_config(PINMUX_KB_ROW10_INDEX, PINMUX_KB_ROW10_FUNC_UA3 |
 						 PINMUX_TRISTATE |
+						 PINMUX_PULL_UP |
 						 PINMUX_INPUT_ENABLE);
+	// Mux some pins away from uart A.
+	pinmux_set_config(PINMUX_UART2_CTS_N_INDEX,
+			  PINMUX_UART2_CTS_N_FUNC_UB3 |
+			  PINMUX_TRISTATE |
+			  PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_UART2_RTS_N_INDEX,
+			  PINMUX_UART2_RTS_N_FUNC_UB3);
 
 	if (CONFIG_BOOTBLOCK_CONSOLE)
 		console_init();
@@ -63,5 +71,5 @@ void main(void)
 	if (entry)
 		clock_cpu0_config_and_reset(entry);
 
-	hlt();
+	clock_halt_avp();
 }

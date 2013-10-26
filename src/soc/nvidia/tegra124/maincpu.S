@@ -27,20 +27,20 @@
  * SUCH DAMAGE.
  */
 
-	.align 6
+	.align 2
 	.arm
 
-	.global cpug_stack_pointer
-cpug_stack_pointer:
+	.global maincpu_stack_pointer
+maincpu_stack_pointer:
 	.word 0
 
-	.global cpug_entry_point
-cpug_entry_point:
+	.global maincpu_entry_point
+maincpu_entry_point:
 	.word 0
 
-	.global cpug_setup
-	.type cpug_setup, function
-	cpug_setup:
+	.global maincpu_setup
+	.type maincpu_setup, function
+	maincpu_setup:
 
 	/*
 	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
@@ -50,7 +50,7 @@ cpug_entry_point:
 	 */
 	msr	cpsr_cxf, #0xdf
 
-	ldr	sp, cpug_stack_pointer
+	ldr	sp, maincpu_stack_pointer
 	eor	lr, lr
-	ldr	r0, cpug_entry_point
+	ldr	r0, maincpu_entry_point
 	bx	r0

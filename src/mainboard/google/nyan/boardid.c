@@ -17,13 +17,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __SOC_NVIDIA_TEGRA124_CPUG_H__
-#define __SOC_NVIDIA_TEGRA124_CPUG_H__
+#include <console/console.h>
+#include <soc/nvidia/tegra124/gpio.h>
 
-#include <stdint.h>
+#include "boardid.h"
 
-extern u32 cpug_stack_pointer;
-extern u32 cpug_entry_point;
-void cpug_setup(void);
+uint8_t board_id(void)
+{
+	static int id = -1;
 
-#endif	/* __SOC_NVIDIA_TEGRA124_CPUG_H__ */
+	if (id < 0) {
+		id = gpio_get_in_value(GPIO(Q3)) << 0 |
+		     gpio_get_in_value(GPIO(T1)) << 1 |
+		     gpio_get_in_value(GPIO(X1)) << 2 |
+		     gpio_get_in_value(GPIO(X4)) << 3;
+		printk(BIOS_SPEW, "Board ID: %#x.\n", id);
+	}
+
+	return id;
+}

@@ -171,10 +171,8 @@ enum {
 #define EDP_PWR_OFF_TO_ON_TIME_MS	    (500+10)
 
 struct tegra_dc_dp_data {
-	struct tegra_dc			*dc;
-	struct tegra_dc_sor_data	*sor;
+	struct tegra_dc_sor_data	sor;
 	void				*aux_base;
-	struct tegra_dc_mode		*mode;
 	struct tegra_dc_dp_link_config	 link_cfg;
 };
 

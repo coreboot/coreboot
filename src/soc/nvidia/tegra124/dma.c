@@ -73,7 +73,7 @@ int dma_busy(struct apb_dma_channel * const channel)
 	 * as the channel is enabled. So for this function we'll use the
 	 * DMA_ACTIVITY bit.
 	 */
-	return read32(&channel->regs->sta) & APBDMACHAN_STA_DMA_ACTIVITY ? 1 : 0;
+	return read32(&channel->regs->sta) & APB_STA_DMA_ACTIVITY ? 1 : 0;
 }
 /* claim a DMA channel */
 struct apb_dma_channel * const dma_claim(void)
@@ -85,7 +85,7 @@ struct apb_dma_channel * const dma_claim(void)
 	 * Set global enable bit, otherwise register access to channel
 	 * DMA registers will not be possible.
 	 */
-	setbits_le32(&apb_dma->command, APBDMA_COMMAND_GEN);
+	setbits_le32(&apb_dma->command, APB_COMMAND_GEN);
 
 	for (i = 0; i < ARRAY_SIZE(apb_dma_channels); i++) {
 		regs = apb_dma_channels[i].regs;
@@ -125,7 +125,7 @@ void dma_release(struct apb_dma_channel * const channel)
 			return;
 	}
 
-	clrbits_le32(&apb_dma->command, APBDMA_COMMAND_GEN);
+	clrbits_le32(&apb_dma->command, APB_COMMAND_GEN);
 }
 
 int dma_start(struct apb_dma_channel * const channel)
@@ -133,7 +133,7 @@ int dma_start(struct apb_dma_channel * const channel)
 	struct apb_dma_channel_regs *regs = channel->regs;
 
 	/* Set ENB bit for this channel */
-	setbits_le32(&regs->csr, APBDMACHAN_CSR_ENB);
+	setbits_le32(&regs->csr, APB_CSR_ENB);
 
 	return 0;
 }
@@ -143,7 +143,7 @@ int dma_stop(struct apb_dma_channel * const channel)
 	struct apb_dma_channel_regs *regs = channel->regs;
 
 	/* Clear ENB bit for this channel */
-	clrbits_le32(&regs->csr, APBDMACHAN_CSR_ENB);
+	clrbits_le32(&regs->csr, APB_CSR_ENB);
 
 	return 0;
 }

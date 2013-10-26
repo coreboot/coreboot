@@ -885,11 +885,8 @@ struct tegra_dc_dp_link_config {
  * having two channels.
  */
 struct tegra_dc_sor_data {
-	struct tegra_dc	*dc;
 	void	*base;
 	u8					 portnum;	/* 0 or 1 */
-	const struct tegra_dc_dp_link_config	*link_cfg;
-
 	int   power_is_up;
 };
 

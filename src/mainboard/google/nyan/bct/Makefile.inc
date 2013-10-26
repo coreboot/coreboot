@@ -20,4 +20,5 @@
 bct-cfg-$(CONFIG_BCT_CFG_EMMC) += emmc.cfg
 bct-cfg-$(CONFIG_BCT_CFG_SPI) += spi.cfg
 bct-cfg-y += odmdata.cfg
-bct-cfg-y += sdram.cfg
+bct-cfg-$(CONFIG_BCT_SDRAM_924) += sdram-924.cfg
+bct-cfg-$(CONFIG_BCT_SDRAM_792) += sdram-792.cfg

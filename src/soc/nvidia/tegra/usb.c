@@ -93,13 +93,13 @@ void usb_setup_utmip(struct usb_ctlr *usb)
 }
 
 /*
- * Tegra EHCI controllers need their usb_mode and lpm_ctrl registers initialized
- * after every EHCI reset and before any other actions (such as Run/Stop bit)
- * are taken. We reset the controller here, set those registers and rely on the
- * fact that libpayload doesn't reset EHCI controllers on initialization for
- * whatever weird reason. This is ugly, fragile, and I really don't like it, but
- * making this work will require an ugly hack one way or another so we might as
- * well take the path of least resistance for now.
+ * Tegra EHCI controllers need their usb_mode, lpm_ctrl and tx_fill_tuning
+ * registers initialized after every EHCI reset and before any other actions
+ * (such as Run/Stop bit) are taken. We reset the controller here, set those
+ * registers and rely on the fact that libpayload doesn't reset EHCI controllers
+ * on initialization for whatever weird reason. This is ugly, fragile, and I
+ * really don't like it, but making this work will require an ugly hack one way
+ * or another so we might as well take the path of least resistance for now.
  */
 void usb_ehci_reset_and_prepare(struct usb_ctlr *usb, enum usb_phy_type type)
 {
@@ -117,4 +117,5 @@ void usb_ehci_reset_and_prepare(struct usb_ctlr *usb, enum usb_phy_type type)
 
 	write32(3 << 0, &usb->usb_mode);	/* Controller mode: HOST */
 	write32(type << 29, &usb->lpm_ctrl);	/* Parallel transceiver selct */
+	write32(0x10 << 16, &usb->tx_fill_tuning);  /* Tx FIFO Burst thresh */
 }

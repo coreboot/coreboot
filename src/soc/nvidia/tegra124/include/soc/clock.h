@@ -129,6 +129,7 @@ enum {
 	CLK_V_HDA2CODEC_2X = 0x1 << 15,
 	CLK_V_ATOMICS = 0x1 << 16,
 	CLK_V_ACTMON = 0x1 << 23,
+	CLK_V_EXTPERIPH1 = 0x1 << 24,
 	CLK_V_SATA = 0x1 << 28,
 	CLK_V_HDA = 0x1 << 29,
 
@@ -142,7 +143,28 @@ enum {
 	CLK_W_DVFS = 0x1 << 27,
 	CLK_W_XUSB_SS = 0x1 << 28,
 	CLK_W_MC1 = 0x1 << 30,
-	CLK_W_EMC1 = 0x1 << 31
+	CLK_W_EMC1 = 0x1 << 31,
+
+	CLK_X_AFC0 = 0x1 << 31,
+	CLK_X_AFC1 = 0x1 << 30,
+	CLK_X_AFC2 = 0x1 << 29,
+	CLK_X_AFC3 = 0x1 << 28,
+	CLK_X_AFC4 = 0x1 << 27,
+	CLK_X_AFC5 = 0x1 << 26,
+	CLK_X_AMX1 = 0x1 << 25,
+	CLK_X_GPU = 0x1 << 24,
+	CLK_X_SOR0 = 0x1 << 22,
+	CLK_X_DPAUX = 0x1 << 21,
+	CLK_X_ADX1 = 0x1 << 20,
+	CLK_X_VIC = 0x1 << 18,
+	CLK_X_CLK72MHZ = 0x1 << 17,
+	CLK_X_HDMI_AUDIO = 0x1 << 16,
+	CLK_X_EMC_DLL = 0x1 << 14,
+	CLK_X_VIM2_CLK = 0x1 << 11,
+	CLK_X_I2C6 = 0x1 << 6,
+	CLK_X_CAM_MCLK2 = 0x1 << 5,
+	CLK_X_CAM_MCLK = 0x1 << 4,
+	CLK_X_SPARE = 0x1 << 0,
 };
 
 /* PLL stabilization delay in usec */
@@ -191,12 +213,16 @@ enum {
  */
 #define CLK_FREQUENCY(REF, REG)	(((REF) * 2) / (REG + 2))
 
+#define clock_configure_irregular_source(device, src, freq, src_id) \
+	clrsetbits_le32(&clk_rst->clk_src_##device, \
+		CLK_SOURCE_MASK | CLK_DIVISOR_MASK, \
+		src_id << CLK_SOURCE_SHIFT | \
+		CLK_DIVIDER(TEGRA_##src##_KHZ, freq));
+
 /* Warning: Some devices just use different bits for the same sources for no
  * apparent reason. *Always* double-check the TRM before trusting this macro. */
 #define clock_configure_source(device, src, freq) \
-	clrsetbits_le32(&clk_rst->clk_src_##device, \
-		CLK_SOURCE_MASK | CLK_DIVISOR_MASK, \
-		src << CLK_SOURCE_SHIFT | CLK_DIVIDER(TEGRA_##src##_KHZ, freq));
+	clock_configure_irregular_source(device, src, freq, src);
 
 enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 	PLLP = 0,
@@ -220,8 +246,14 @@ enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 
 int clock_get_osc_khz(void);
 void clock_early_uart(void);
+void clock_external_output(int clk_id);
 void clock_cpu0_config_and_reset(void * entry);
-void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w);
+void clock_halt_avp(void);
+void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
 void clock_init(void);
 void clock_init_arm_generic_timer(void);
+void sor_clock_stop(void);
+void sor_clock_start(void);
+
 #endif /* __SOC_NVIDIA_TEGRA124_CLOCK_H__ */
+

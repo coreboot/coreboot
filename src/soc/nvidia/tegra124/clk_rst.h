@@ -269,11 +269,13 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 _rsv31;			/*                          0x554 */
 	u32 super_gr3d_clk_div;		/* _SUPER_GR3D_CLK_DIVIDER, 0x558 */
 	u32 spare_reg0;			/* _SPARE_REG0,             0x55c */
-	u32 _rsv32[11];			/*                      0x560-58c */
+	u32 _rsv32[4];                  /*                    0x560-0x56c */
+	u32 plld2_ss_cfg;               /* _PLLD2_SS_CFG            0x570 */
+	u32 _rsv32_1[7];			/*                      0x574-58c */
 	u32 plldp_base;			/* _PLLDP_BASE,             0x590 */
 	u32 plldp_misc;			/* _PLLDP_MISC,             0x594 */
 	u32 plldp_ss_cfg;		/* _PLLDP_SS_CFG,           0x598 */
-	u32 _rsrv321[26];
+	u32 _rsrv32_2[25];
 	u32 clk_src_xusb_core_host;	/* _CLK_SOURCE_XUSB_CORE_HOST 0x600 */
 	u32 clk_src_xusb_falcon;	/* _CLK_SOURCE_XUSB_FALCON  0x604 */
 	u32 clk_src_xusb_fs;		/* _CLK_SOURCE_XUSB_FS      0x608 */
@@ -360,17 +362,15 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 /* CLK_RST_CONTROLLER_PLL*_OUT*_0 */
 #define PLL_OUT_RSTN			(1 << 0)
 #define PLL_OUT_CLKEN			(1 << 1)
-#define PLL_OUT_OVRRIDE			(1 << 2)
+#define PLL_OUT_OVR			(1 << 2)
 
 #define PLL_OUT_RATIO_SHIFT		8
 #define PLL_OUT_RATIO_MASK		(0xffU << PLL_OUT_RATIO_SHIFT)
 
-#define PLL_OUT2_RSTN			(1 << 16)
-#define PLL_OUT2_CLKEN			(1 << 17)
-#define PLL_OUT2_OVRRIDE		(1 << 18)
-
-#define PLL_OUT2_RATIO_SHIFT		24
-#define PLL_OUT2_RATIO_MASK		(0xffU << PLL_OUT2_RATIO_SHIFT)
+#define PLL_OUT1_SHIFT			0
+#define PLL_OUT2_SHIFT			16
+#define PLL_OUT3_SHIFT			0
+#define PLL_OUT4_SHIFT			16
 
 /* CLK_RST_CONTROLLER_PLL*_MISC_0 */
 #define PLL_MISC_DCCON			(1 << 20)
@@ -382,37 +382,14 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 #define PLL_MISC_LFCON_MASK		(0xfU << PLL_MISC_LFCON_SHIFT)
 
 /* This bit is different all over the place. Oh joy... */
+#define PLLDPD2_MISC_LOCK_ENABLE	(1 << 30)
 #define PLLC_MISC_LOCK_ENABLE		(1 << 24)
 #define PLLUD_MISC_LOCK_ENABLE		(1 << 22)
+#define PLLD_MISC_CLK_ENABLE		(1 << 30)
 #define PLLPAXS_MISC_LOCK_ENABLE	(1 << 18)
 #define PLLE_MISC_LOCK_ENABLE		(1 << 9)
 
 #define PLLU_MISC_VCO_FREQ		(1 << 20)
-
-#define PLLP_OUT1_OVR			(1 << 2)
-#define PLLP_OUT2_OVR			(1 << 18)
-#define PLLP_OUT3_OVR			(1 << 2)
-#define PLLP_OUT4_OVR			(1 << 18)
-#define PLLP_OUT1_RATIO			8
-#define PLLP_OUT2_RATIO			24
-#define PLLP_OUT3_RATIO			8
-#define PLLP_OUT4_RATIO			24
-
-#define PLLP_OUT3_RSTN_DIS		(1 << 0)
-#define PLLP_OUT3_RSTN_EN		(0 << 0)
-#define PLLP_OUT3_CLKEN			(1 << 1)
-#define PLLP_OUT3_OVRRIDE		(1 << 2)
-#define PLLP_OUT4_RSTN_DIS		(1 << 16)
-#define PLLP_OUT4_RSTN_EN		(0 << 16)
-#define PLLP_OUT4_CLKEN			(1 << 17)
-#define PLLP_OUT4_OVRRIDE		(1 << 18)
-
-enum {
-	IN_408_OUT_204_DIVISOR = 2,
-	IN_408_OUT_102_DIVISOR = 6,
-	IN_408_OUT_48_DIVISOR = 15,
-	IN_408_OUT_9_6_DIVISOR = 83,
-};
 
 /* PLLX_BASE_0 0xe0 */
 #define PLLX_BASE_PLLX_ENABLE		(1 << 30)
@@ -453,56 +430,39 @@ enum {
 #define SCLK_COP_IRQ_MASK		(1 << 25)
 #define SCLK_CPU_IRQ_MASK		(1 << 24)
 
-#define SCLK_SWAKEUP_FIQ_SOURCE_SHIFT		12
-#define SCLK_SWAKEUP_FIQ_SOURCE_MASK		\
-		(7 << SCLK_SWAKEUP_FIQ_SOURCE_SHIFT)
-#define SCLK_SWAKEUP_IRQ_SOURCE_SHIFT		8
-#define SCLK_SWAKEUP_IRQ_SOURCE_MASK		\
-		(7 << SCLK_SWAKEUP_FIQ_SOURCE_SHIFT)
-#define SCLK_SWAKEUP_RUN_SOURCE_SHIFT		4
-#define SCLK_SWAKEUP_RUN_SOURCE_MASK		\
-		(7 << SCLK_SWAKEUP_FIQ_SOURCE_SHIFT)
-#define SCLK_SWAKEUP_IDLE_SOURCE_SHIFT		0
-
-#define SCLK_SWAKEUP_IDLE_SOURCE_MASK		\
-		(7 << SCLK_SWAKEUP_FIQ_SOURCE_SHIFT)
+#define SCLK_FIQ_SHIFT			12
+#define SCLK_FIQ_MASK			(7 << SCLK_FIQ_SHIFT)
+#define SCLK_IRQ_SHIFT			8
+#define SCLK_IRQ_MASK			(7 << SCLK_FIQ_SHIFT)
+#define SCLK_RUN_SHIFT			4
+#define SCLK_RUN_MASK			(7 << SCLK_FIQ_SHIFT)
+#define SCLK_IDLE_SHIFT			0
+#define SCLK_IDLE_MASK			(7 << SCLK_FIQ_SHIFT)
 enum {
 	SCLK_SOURCE_CLKM,
 	SCLK_SOURCE_PLLC_OUT1,
 	SCLK_SOURCE_PLLP_OUT4,
 	SCLK_SOURCE_PLLP_OUT3,
 	SCLK_SOURCE_PLLP_OUT2,
-	SCLK_SOURCE_CLKD,
+	SCLK_SOURCE_PLLC_OUT0,
 	SCLK_SOURCE_CLKS,
 	SCLK_SOURCE_PLLM_OUT1,
 };
 
-#define SCLK_SWAKE_FIQ_SRC_CLKM		(0 << 12)
-#define SCLK_SWAKE_IRQ_SRC_CLKM		(0 << 8)
-#define SCLK_SWAKE_RUN_SRC_CLKM		(0 << 4)
-#define SCLK_SWAKE_IDLE_SRC_CLKM	(0 << 0)
-#define SCLK_SWAKE_FIQ_SRC_PLLM_OUT1	(7 << 12)
-#define SCLK_SWAKE_IRQ_SRC_PLLM_OUT1	(7 << 8)
-#define SCLK_SWAKE_RUN_SRC_PLLM_OUT1	(7 << 4)
-#define SCLK_SWAKE_IDLE_SRC_PLLM_OUT1	(7 << 0)
-
 /* CLK_RST_CONTROLLER_SUPER_SCLK_DIVIDER 0x2c */
-#define SUPER_SCLK_ENB_SHIFT		31U
-#define SUPER_SCLK_ENB_MASK		(1U << 31)
-#define SUPER_SCLK_DIVIDEND_SHIFT	8
-#define SUPER_SCLK_DIVIDEND_MASK	(0xff << SUPER_SCLK_DIVIDEND_SHIFT)
-#define SUPER_SCLK_DIVISOR_SHIFT	0
-#define SUPER_SCLK_DIVISOR_MASK		(0xff << SUPER_SCLK_DIVISOR_SHIFT)
+#define SCLK_DIV_ENB			(1 << 31)
+#define SCLK_DIVIDEND_SHIFT		8
+#define SCLK_DIVIDEND_MASK		(0xff << SCLK_DIVIDEND_SHIFT)
+#define SCLK_DIVISOR_SHIFT		0
+#define SCLK_DIVISOR_MASK		(0xff << SCLK_DIVISOR_SHIFT)
 
 /* CLK_RST_CONTROLLER_CLK_SYSTEM_RATE 0x30 */
-#define CLK_SYS_RATE_HCLK_DISABLE_SHIFT 7
-#define CLK_SYS_RATE_HCLK_DISABLE_MASK  (1 << CLK_SYS_RATE_HCLK_DISABLE_SHIFT)
-#define CLK_SYS_RATE_AHB_RATE_SHIFT     4
-#define CLK_SYS_RATE_AHB_RATE_MASK      (3 << CLK_SYS_RATE_AHB_RATE_SHIFT)
-#define CLK_SYS_RATE_PCLK_DISABLE_SHIFT 3
-#define CLK_SYS_RATE_PCLK_DISABLE_MASK  (1 << CLK_SYS_RATE_PCLK_DISABLE_SHIFT)
-#define CLK_SYS_RATE_APB_RATE_SHIFT     0
-#define CLK_SYS_RATE_APB_RATE_MASK      (3 << CLK_SYS_RATE_AHB_RATE_SHIFT)
+#define HCLK_DISABLE 			(1 << 7)
+#define HCLK_DIVISOR_SHIFT    		4
+#define HCLK_DIVISOR_MASK     		(3 << AHB_RATE_SHIFT)
+#define PCLK_DISABLE 			(1 << 3)
+#define PCLK_DIVISOR_SHIFT    		0
+#define PCLK_DIVISOR_MASK     		(3 << AHB_RATE_SHIFT)
 
 /* CRC_CLK_SOURCE_MSELECT_0 0x3b4 */
 #define MSELECT_CLK_SRC_PLLP_OUT0	(0 << 29)

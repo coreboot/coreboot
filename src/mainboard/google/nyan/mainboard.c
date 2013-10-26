@@ -25,6 +25,7 @@
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra124/clk_rst.h>
 #include <soc/nvidia/tegra124/gpio.h>
+#include <soc/nvidia/tegra124/mc.h>
 #include <soc/nvidia/tegra124/pmc.h>
 #include <soc/nvidia/tegra124/spi.h>
 #include <soc/nvidia/tegra124/usb.h>
@@ -48,15 +49,24 @@ static void set_clock_sources(void)
 	clock_configure_source(sdmmc3, PLLP, 48000);
 	clock_configure_source(sdmmc4, PLLP, 48000);
 
-	/* PLLP and PLLM are switched for HOST1x for no apparent reason. */
-	write32(4 /* PLLP! */ << CLK_SOURCE_SHIFT |
-		/* TODO(rminnich): The divisor isn't accurate enough to get to
-		 * 144MHz (it goes to 163 instead). What should we do here? */
-		CLK_DIVIDER(TEGRA_PLLP_KHZ, 144000),
-		&clk_rst->clk_src_host1x);
+	/* External peripheral 1: audio codec (max98090) using 12MHz CLK1.
+	 * Note the source id of CLK_M for EXTPERIPH1 is 3. */
+	clock_configure_irregular_source(extperiph1, CLK_M, 12000, 3);
 
-	/* DISP1 doesn't support a divisor. Use PLLC which runs at 600MHz. */
-	clock_configure_source(disp1, PLLC, 600000);
+	/*
+	 * I2S1 can use either PLLP or PLLA. Using PLLP is sufficient now since
+	 * we only need 4.8MHz. Note the source id of PLLP for I2S is 4.
+	 */
+	clock_configure_irregular_source(i2s1, PLLP, 4800, 4);
+
+	/* Note source id of PLLP for HOST1x is 4. */
+	clock_configure_irregular_source(host1x, PLLP, 408000, 4);
+
+	/* Use PLLD_OUT0 as clock source for disp1 */
+	clrsetbits_le32(&clk_rst->clk_src_disp1,
+			CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
+			2 /*PLLD_OUT0 */ << CLK_SOURCE_SHIFT);
+
 }
 
 static void setup_pinmux(void)
@@ -73,6 +83,9 @@ static void setup_pinmux(void)
 	gpio_input_pullup(GPIO(Q6));
 	// EC in RW.
 	gpio_input_pullup(GPIO(U4));
+
+	// SOC and TPM reset GPIO, active low.
+	gpio_output(GPIO(I5), 1);
 
 	// SPI1 MOSI
 	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
@@ -169,10 +182,25 @@ static void setup_pinmux(void)
 	pinmux_set_config(PINMUX_SDMMC4_DAT7_INDEX,
 			  PINMUX_SDMMC4_DAT7_FUNC_SDMMC4 | pin_up);
 
-	/* TODO: This is supposed to work with the USB special function pinmux,
-	 * but it doesn't. Go with GPIOs for now and solve the problem later. */
-	gpio_output_open_drain(GPIO(N4), 1);	/* USB VBUS EN0 */
-	gpio_output_open_drain(GPIO(N5), 1);	/* USB VBUS EN1 */
+	/* We pull the USB VBUS signals up but keep them as inputs since the
+	 * voltage source likes to drive them low on overcurrent conditions */
+	gpio_input_pullup(GPIO(N4));	/* USB VBUS EN0 */
+	gpio_input_pullup(GPIO(N5));	/* USB VBUS EN1 */
+
+	/* Clock output 1 (for external peripheral) */
+	pinmux_set_config(PINMUX_DAP_MCLK1_INDEX,
+			  PINMUX_DAP_MCLK1_FUNC_EXTPERIPH1 | PINMUX_PULL_NONE);
+
+	/* I2S1 */
+	pinmux_set_config(PINMUX_DAP2_DIN_INDEX,
+			  PINMUX_DAP2_DIN_FUNC_I2S1 | PINMUX_TRISTATE |
+			  PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_DAP2_DOUT_INDEX,
+			  PINMUX_DAP2_DOUT_FUNC_I2S1 | PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_DAP2_FS_INDEX,
+			  PINMUX_DAP2_FS_FUNC_I2S1 | PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_DAP2_SCLK_INDEX,
+			  PINMUX_DAP2_SCLK_FUNC_I2S1 | PINMUX_INPUT_ENABLE);
 }
 
 static void setup_kernel_info(void)
@@ -185,6 +213,12 @@ static void setup_kernel_info(void)
 	// value defined in BCT.
 	struct tegra_pmc_regs *pmc = (void*)TEGRA_PMC_BASE;
 	writel(0x80080000, &pmc->odmdata);
+
+	// Not strictly info, but kernel graphics driver needs this region locked down
+	struct tegra_mc_regs *mc = (void *)TEGRA_MC_BASE;
+	writel(0, &mc->mc_vpr_bom);
+	writel(0, &mc->mc_vpr_size);
+	writel(1, &mc->mc_vpr_ctrl);
 }
 
 static void setup_ec_spi(void)
@@ -201,13 +235,35 @@ static void setup_ec_spi(void)
 static void mainboard_init(device_t dev)
 {
 	set_clock_sources();
-	clock_enable_clear_reset(CLK_L_GPIO | CLK_L_I2C1 |
-				 CLK_L_SDMMC4 | CLK_L_USBD,
+
+	clock_external_output(1); /* For external MAX98090 audio codec. */
+
+	/*
+	 * Confirmed by NVIDIA hardware team, we need to take ALL audio devices
+	 * conntected to AHUB (AUDIO, APBIF, I2S, DAM, AMX, ADX, SPDIF, AFC) out
+	 * of reset and clock-enabled, otherwise reading AHUB devices (In our
+	 * case, I2S/APBIF/AUDIO<XBAR>) will hang.
+	 */
+	clock_enable_clear_reset(CLK_L_GPIO | CLK_L_I2C1 | CLK_L_SDMMC4 |
+				 CLK_L_I2S0 | CLK_L_I2S1 | CLK_L_I2S2 |
+				 CLK_L_SPDIF | CLK_L_USBD | CLK_L_DISP1 |
+				 CLK_L_HOST1X,
+
 				 CLK_H_EMC | CLK_H_I2C2 | CLK_H_SBC1 |
 				 CLK_H_PMC | CLK_H_MEM | CLK_H_USB3,
+
 				 CLK_U_I2C3 | CLK_U_CSITE | CLK_U_SDMMC3,
-				 CLK_V_I2C4,
-				 CLK_W_DVFS);
+
+				 CLK_V_I2C4 | CLK_V_EXTPERIPH1 | CLK_V_APBIF |
+				 CLK_V_AUDIO | CLK_V_I2S3 | CLK_V_I2S4 |
+				 CLK_V_DAM0 | CLK_V_DAM1 | CLK_V_DAM2,
+
+				 CLK_W_DVFS | CLK_W_AMX0 | CLK_W_ADX0,
+
+				 CLK_X_DPAUX | CLK_X_SOR0 | CLK_X_AMX1 |
+				 CLK_X_ADX1 | CLK_X_AFC0 | CLK_X_AFC1 |
+				 CLK_X_AFC2 | CLK_X_AFC3 | CLK_X_AFC4 |
+				 CLK_X_AFC5);
 
 	usb_setup_utmip1();
 	/* USB2 is the camera, we don't need it in firmware */

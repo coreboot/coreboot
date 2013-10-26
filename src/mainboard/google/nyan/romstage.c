@@ -27,6 +27,7 @@
 #include <console/console.h>
 #include "soc/nvidia/tegra124/chip.h"
 #include <soc/display.h>
+#include <timestamp.h>
 
 // Convenient shorthand (in MB)
 #define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
@@ -73,6 +74,10 @@ static void configure_l2actlr(void)
 
 void main(void)
 {
+#if CONFIG_COLLECT_TIMESTAMPS
+	uint64_t romstage_start_time = timestamp_get();
+#endif
+
 	// Globally disable MMU, caches and branch prediction (these should
 	// already be disabled by default on reset).
 	uint32_t sctlr = read_sctlr();
@@ -89,6 +94,8 @@ void main(void)
 	configure_l2ctlr();
 	configure_l2actlr();
 
+	console_init();
+
 	mmu_init();
 	mmu_config_range(0, DRAM_START, DCACHE_OFF);
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
@@ -101,12 +108,15 @@ void main(void)
 
 	exception_init();
 
-	/* for quality of the user interface, it's important to get
+	/* For quality of the user experience, it's important to get
 	 * the video going ASAP. Because there are long delays in some
 	 * of the powerup steps, we do some very early setup here in
-	 * romstage. We don't do this in the bootblock because video
-	 * setup is finicky and subject to change; hence, we do it as
-	 * early as we can in the RW stage, but never in the RO stage.
+	 * romstage. The only thing setup_display does is manage
+	 * 4 GPIOs, under control of the config struct members.
+	 * In general, it is safe to enable panel power, and disable
+	 * anything related to the backlight. If we get something wrong,
+	 * we can easily fix it in ramstage by further GPIO manipulation,
+	 * so we feel it is ok to do some setting at this point.
 	 */
 
 	const struct device *soc = dev_find_slot(DEVICE_PATH_CPU_CLUSTER, 0);
@@ -119,7 +129,15 @@ void main(void)
 
 	cbmem_initialize_empty();
 
+#if CONFIG_COLLECT_TIMESTAMPS
+	timestamp_init(0);
+	timestamp_add(TS_START_ROMSTAGE, romstage_start_time);
+	timestamp_add(TS_START_COPYRAM, timestamp_get());
+#endif
 	void *entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 				      "fallback/coreboot_ram");
+#if CONFIG_COLLECT_TIMESTAMPS
+	timestamp_add(TS_END_COPYRAM, timestamp_get());
+#endif
 	stage_exit(entry);
 }

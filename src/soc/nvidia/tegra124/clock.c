@@ -20,8 +20,8 @@
 #include <soc/clock.h>
 #include <stdlib.h>
 #include "clk_rst.h"
-#include "cpug.h"
 #include "flow.h"
+#include "maincpu.h"
 #include "pmc.h"
 #include "sysctr.h"
 
@@ -79,7 +79,8 @@ union __attribute__((transparent_union)) pll_fields {
 /* This table defines the frequency dividers for every PLL to turn the external
  * OSC clock into the frequencies defined by TEGRA_PLL*_KHZ in soc/clock.h.
  * All PLLs have three dividers (N, M and P), with the governing formula for
- * the output frequency being OUT = (IN / m) * N / (2^P). */
+ * the output frequency being OUT = (IN / m) * N / (2^P).
+ * Yes, it really is one equation with three unknowns ... */
 struct {
 	int khz;
 	struct pllcx_dividers	pllx;	/* target: 1900 MHz */
@@ -87,62 +88,78 @@ struct {
 	struct pllcx_dividers	pllc;	/* target:  600 MHz */
 	struct pllpad_dividers	plld;	/* target:  925 MHz */
 	struct pllu_dividers	pllu;	/* target;  960 MHz */
+	struct pllcx_dividers	plldp;	/* target;  270 MHz */
+	struct pllcx_dividers	plld2;	/* target;  570 MHz */
 } static const osc_table[16] = {
 	[OSC_FREQ_OSC12]{
 		.khz = 12000,
 		.pllx = {.n = 158, .m =  1, .p = 0},		  /* 1896 MHz */
 		.pllp = {.n =  34, .m =  1, .p = 0, .cpcon = 2},
 		.pllc = {.n =  50, .m =  1, .p = 0},
-		.plld = {.n = 925, .m = 12, .p = 0, .cpcon = 12},
+		.plld = {.n = 283, .m = 12, .p = 0, .cpcon = 8}, /* 283 MHz */
 		.pllu = {.n =  80, .m =  1, .p = 0, .cpcon = 3},
+		.plldp = {.n = 90, .m =  1, .p = 3},		/* 270 MHz */
+		.plld2 = {.n = 95, .m =  1, .p = 1},		/* 570 MHz */
 	},
 	[OSC_FREQ_OSC13]{
 		.khz = 13000,
 		.pllx = {.n = 146, .m =  1, .p = 0},		  /* 1898 MHz */
 		.pllp = {.n = 408, .m = 13, .p = 0, .cpcon = 8},
 		.pllc = {.n = 231, .m =  5, .p = 0},		 /* 600.6 MHz */
-		.plld = {.n = 925, .m = 13, .p = 0, .cpcon = 12},
+		.plld = {.n = 283, .m = 13, .p = 0, .cpcon = 8}, /* 283 MHz*/
 		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12},
+		.plldp = {.n = 83, .m =  1, .p = 3},		/* 269.75 MHz */
+		.plld2 = {.n = 88, .m =  1, .p = 1},		/* 572 MHz */
 	},
 	[OSC_FREQ_OSC16P8]{
 		.khz = 16800,
 		.pllx = {.n = 113, .m =  1, .p = 0},		/* 1898.4 MHz */
 		.pllp = {.n = 170, .m =  7, .p = 0, .cpcon = 4},
 		.pllc = {.n = 250, .m =  7, .p = 0},
-		.plld = {.n = 936, .m = 17, .p = 0, .cpcon = 12},/* 924.9 MHz */
+		.plld = {.n = 286, .m = 17, .p = 0, .cpcon = 8}, /* 282.6 MHz*/
 		.pllu = {.n = 400, .m =  7, .p = 0, .cpcon = 8},
+		.plldp = {.n = 64, .m =  1, .p = 3},		/* 268.8 MHz */
+		.plld2 = {.n = 68, .m =  1, .p = 1},		/* 571.2  MHz */
 	},
 	[OSC_FREQ_OSC19P2]{
 		.khz = 19200,
 		.pllx = {.n =  98, .m =  1, .p = 0},		/* 1881.6 MHz */
 		.pllp = {.n =  85, .m =  4, .p = 0, .cpcon = 3},
 		.pllc = {.n = 125, .m =  4, .p = 0},
-		.plld = {.n = 819, .m = 17, .p = 0, .cpcon = 12},/* 924.9 MHz */
+		.plld = {.n = 251, .m = 17, .p = 0, .cpcon = 8}, /* 283.5 MHz */
 		.pllu = {.n =  50, .m =  1, .p = 0, .cpcon = 2},
+		.plldp = {.n = 56, .m =  1, .p = 3},		/* 270.75 MHz */
+		.plld2 = {.n = 59, .m =  1, .p = 1},		/* 570 MHz */
 	},
 	[OSC_FREQ_OSC26]{
 		.khz = 26000,
 		.pllx = {.n =  73, .m =  1, .p = 0},		  /* 1898 MHz */
 		.pllp = {.n = 204, .m = 13, .p = 0, .cpcon = 5},
 		.pllc = {.n =  23, .m =  1, .p = 0},		   /* 598 MHz */
-		.plld = {.n = 925, .m = 26, .p = 0, .cpcon = 12},
+		.plld = {.n = 283, .m = 26, .p = 0, .cpcon = 8}, /* 283 MHz */
 		.pllu = {.n = 480, .m = 13, .p = 0, .cpcon = 8},
+		.plldp = {.n = 83, .m =  2, .p = 3},		/* 266.50 MHz */
+		.plld2 = {.n = 88, .m =  2, .p = 1},		/* 570 MHz */
 	},
 	[OSC_FREQ_OSC38P4]{
 		.khz = 38400,
 		.pllx = {.n =  98, .m =  1, .p = 0},		/* 1881.6 MHz */
 		.pllp = {.n =  85, .m =  4, .p = 0, .cpcon = 3},
 		.pllc = {.n = 125, .m =  4, .p = 0},
-		.plld = {.n = 819, .m = 17, .p = 0, .cpcon = 12},/* 924.9 MHz */
+		.plld = {.n = 125, .m = 17, .p = 0, .cpcon = 8}, /* 282.4 MHz */
 		.pllu = {.n =  50, .m =  1, .p = 0, .cpcon = 2},
+		.plldp = {.n = 56, .m =  2, .p = 3},		/* 268 MHz */
+		.plld2 = {.n = 59, .m =  2, .p = 1},		/* 566 MHz */
 	},
 	[OSC_FREQ_OSC48]{
 		.khz = 48000,
 		.pllx = {.n = 158, .m =  1, .p = 0},		  /* 1896 MHz */
 		.pllp = {.n =  24, .m =  1, .p = 0, .cpcon = 2},
 		.pllc = {.n =  50, .m =  1, .p = 0},
-		.plld = {.n = 925, .m = 12, .p = 0, .cpcon = 12},
+		.plld = {.n = 71, .m = 12, .p = 0, .cpcon = 8}, /* 284 MHz */
 		.pllu = {.n =  80, .m =  1, .p = 0, .cpcon = 3},
+		.plldp = {.n = 90, .m =  4, .p = 3},		/* 264 MHz */
+		.plld2 = {.n = 95, .m =  4, .p = 1},		/* 570 MHz */
 	},
 };
 
@@ -174,19 +191,23 @@ void clock_init_arm_generic_timer(void)
 	write32(cntcr, &sysctr->cntcr);
 }
 
-static void adjust_pllp_out_freqs(void)
-{
-	u32 reg;
-	/* Set T30 PLLP_OUT1, 2, 3 & 4 freqs to 9.6, 48, 102 & 204MHz */
-	reg = readl(&clk_rst->pllp_outa); // OUTA contains OUT2 / OUT1
-	reg |= (IN_408_OUT_48_DIVISOR << PLLP_OUT2_RATIO) | PLLP_OUT2_OVR
-		| (IN_408_OUT_9_6_DIVISOR << PLLP_OUT1_RATIO) | PLLP_OUT1_OVR;
-	writel(reg, &clk_rst->pllp_outa);
+#define SOR0_CLK_SEL0			(1 << 14)
+#define SOR0_CLK_SEL1			(1 << 15)
 
-	reg = readl(&clk_rst->pllp_outb);   // OUTB, contains OUT4 / OUT3
-	reg |= (IN_408_OUT_204_DIVISOR << PLLP_OUT4_RATIO) | PLLP_OUT4_OVR
-		| (IN_408_OUT_102_DIVISOR << PLLP_OUT3_RATIO) | PLLP_OUT3_OVR;
-	writel(reg, &clk_rst->pllp_outb);
+void sor_clock_stop(void)
+{
+	/* The Serial Output Resource clock has to be off
+	 * before we start the plldp. Learned the hard way.
+	 * FIXME: this has to be cleaned up a bit more.
+	 * Waiting on some new info from Nvidia.
+	 */
+	clrbits_le32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0 | SOR0_CLK_SEL1);
+}
+
+void sor_clock_start(void)
+{
+	/* uses PLLP, has a non-standard bit layout. */
+	setbits_le32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0);
 }
 
 static void init_pll(u32 *base, u32 *misc, const union pll_fields pll)
@@ -197,7 +218,6 @@ static void init_pll(u32 *base, u32 *misc, const union pll_fields pll)
 
 	/* Write dividers but BYPASS the PLL while we're messing with it. */
 	writel(dividers | PLL_BASE_BYPASS, base);
-
 	/* Set CPCON field (defaults to 0 if it doesn't exist for this PLL) */
 	writel(pll.div.cpcon << PLL_MISC_CPCON_SHIFT, misc);
 
@@ -237,6 +257,41 @@ static void init_utmip_pll(void)
 	setbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
 }
 
+/* Graphics just has to be different. There's a few more bits we
+ * need to set in here, but it makes sense just to restrict all the
+ * special bits to this one function.
+ */
+static void graphics_pll(void)
+{
+	int osc = clock_get_osc_bits();
+	u32 *cfg = &clk_rst->plldp_ss_cfg;
+	/* the vendor code sets the dither bit (28)
+	 * an undocumented bit (24)
+	 * and clamp while we mess with it (22)
+	 * Dither is pretty important to display port
+	 * so we really do need to handle these bits.
+	 * I'm not willing to not clamp it, even if
+	 * it might "mostly work" with it not set,
+	 * I don't want to find out in a few months
+	 * that it is needed.
+	 */
+	u32 scfg = (1<<28) | (1<<24) | (1<<22);
+	writel(scfg, cfg);
+	init_pll(&clk_rst->plldp_base, &clk_rst->plldp_misc, osc_table[osc].plldp);
+	/* leave dither and undoc bits set, release clamp */
+	scfg = (1<<28) | (1<<24);
+	writel(scfg, cfg);
+	/* set lock bit */
+	setbits_le32(&clk_rst->plldp_misc, PLLDPD2_MISC_LOCK_ENABLE);
+
+	/* init clock source for disp1 */
+	/* init plld (the actual output is plld_out0 that is 1/2 of plld. */
+	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, osc_table[osc].plld);
+	setbits_le32(&clk_rst->plld_misc, PLLUD_MISC_LOCK_ENABLE);
+	setbits_le32(&clk_rst->plld_misc, PLLD_MISC_CLK_ENABLE);
+	udelay(10);	/* wait for plld ready */
+}
+
 /* Initialize the UART and put it on CLK_M so we can use it during clock_init().
  * Will later move it to PLLP in clock_config(). The divisor must be very small
  * to accomodate 12KHz OSCs, so we override the 16.0 UART divider with the 15.1
@@ -252,13 +307,36 @@ void clock_early_uart(void)
 	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_UARTA);
 }
 
+/* Enable output clock (CLK1~3) for external peripherals. */
+void clock_external_output(int clk_id)
+{
+	switch (clk_id) {
+	case 1:
+		setbits_le32(&pmc->clk_out_cntrl, 1 << 2);
+		break;
+	case 2:
+		setbits_le32(&pmc->clk_out_cntrl, 1 << 10);
+		break;
+	case 3:
+		setbits_le32(&pmc->clk_out_cntrl, 1 << 18);
+		break;
+	default:
+		printk(BIOS_CRIT, "ERROR: Unknown output clock id %d\n",
+		       clk_id);
+		break;
+	}
+}
+
 void clock_cpu0_config_and_reset(void *entry)
 {
 	void * const evp_cpu_reset = (uint8_t *)TEGRA_EVP_BASE + 0x100;
 
-	write32(CONFIG_STACK_TOP, &cpug_stack_pointer);
-	write32((uintptr_t)entry, &cpug_entry_point);
-	write32((uintptr_t)&cpug_setup, evp_cpu_reset);
+	write32(CONFIG_STACK_TOP, &maincpu_stack_pointer);
+	write32((uintptr_t)entry, &maincpu_entry_point);
+	write32((uintptr_t)&maincpu_setup, evp_cpu_reset);
+
+	/* Set active CPU cluster to G */
+	clrbits_le32(&flow->cluster_control, 1);
 
 	// Set up cclk_brst and divider.
 	write32((CRC_CCLK_BRST_POL_PLLX_OUT0 << 0) |
@@ -296,75 +374,82 @@ void clock_cpu0_config_and_reset(void *entry)
 		&clk_rst->rst_cpug_cmplx_clr);
 }
 
-/**
- * The T124 requires some special clock initialization, including setting up
- * the DVC I2C, turning on MSELECT and selecting the G CPU cluster
- */
+void clock_halt_avp(void)
+{
+	for (;;) {
+		write32(FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ |
+			FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT,
+			&flow->halt_cop_events);
+	}
+}
+
 void clock_init(void)
 {
-	u32 val;
 	u32 osc = clock_get_osc_bits();
-
-	/*
-	 * On poweron, AVP clock source (also called system clock) is set to
-	 * PLLP_out0 with frequency set at 1MHz. Before initializing PLLP, we
-	 * need to move the system clock's source to CLK_M temporarily. And
-	 * then switch it to PLLP_out4 (204MHz) at a later time.
-	 */
-	val = (SCLK_SOURCE_CLKM << SCLK_SWAKEUP_FIQ_SOURCE_SHIFT) |
-		(SCLK_SOURCE_CLKM << SCLK_SWAKEUP_IRQ_SOURCE_SHIFT) |
-		(SCLK_SOURCE_CLKM << SCLK_SWAKEUP_RUN_SOURCE_SHIFT) |
-		(SCLK_SOURCE_CLKM << SCLK_SWAKEUP_IDLE_SOURCE_SHIFT) |
-		(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT);
-	writel(val, &clk_rst->sclk_brst_pol);
-	udelay(2);
-
-	/* Set active CPU cluster to G */
-	clrbits_le32(&flow->cluster_control, 1);
-
-	/* Change the oscillator drive strength */
-	val = readl(&clk_rst->osc_ctrl);
-	val &= ~OSC_XOFS_MASK;
-	val |= (OSC_DRIVE_STRENGTH << OSC_XOFS_SHIFT);
-	writel(val, &clk_rst->osc_ctrl);
-
-	/* Ambiguous quote from u-boot. TODO: what's this mean?
-	 * "should update same value in PMC_OSC_EDPD_OVER XOFS
-	   field for warmboot "*/
-	val = readl(&pmc->osc_edpd_over);
-	val &= ~PMC_OSC_EDPD_OVER_XOFS_MASK;
-	val |= (OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
-	writel(val, &pmc->osc_edpd_over);
-
-	/* Disable IDDQ for PLLX before we set it up (from U-Boot -- why?) */
-	val = readl(&clk_rst->pllx_misc3);
-	val &= ~PLLX_IDDQ_MASK;
-	writel(val, &clk_rst->pllx_misc3);
-	udelay(2);
 
 	/* Set PLLC dynramp_step A to 0x2b and B to 0xb (from U-Boot -- why? */
 	writel(0x2b << 17 | 0xb << 9, &clk_rst->pllc_misc2);
 
-	adjust_pllp_out_freqs();
+	/* Max out the AVP clock before everything else (need PLLC for that). */
+	init_pll(&clk_rst->pllc_base, &clk_rst->pllc_misc, osc_table[osc].pllc);
+
+	/* Be more careful with processor clock, wait for the lock. (~10us) */
+	setbits_le32(&clk_rst->pllc_misc, PLLC_MISC_LOCK_ENABLE);
+	while (!(read32(&clk_rst->pllc_base) & PLL_BASE_LOCK)) /* wait */;
+
+	/* Typical ratios are 1:2:2 or 1:2:3 sclk:hclk:pclk (See: APB DMA
+	 * features section in the TRM). */
+	write32(1 << HCLK_DIVISOR_SHIFT | 0 << PCLK_DIVISOR_SHIFT,
+		&clk_rst->clk_sys_rate);	/* pclk = hclk = sclk/2 */
+	write32(0 << SCLK_DIVIDEND_SHIFT |
+		(CEIL_DIV(TEGRA_PLLC_KHZ, 300000) - 1) << SCLK_DIVISOR_SHIFT
+		| SCLK_DIV_ENB, &clk_rst->super_sclk_div);
+	write32(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT |
+		SCLK_SOURCE_PLLC_OUT0 << SCLK_RUN_SHIFT,
+		&clk_rst->sclk_brst_pol);		/* sclk = 300 MHz */
+
+	/* Change the oscillator drive strength (from U-Boot -- why?) */
+	clrsetbits_le32(&clk_rst->osc_ctrl, OSC_XOFS_MASK,
+			OSC_DRIVE_STRENGTH << OSC_XOFS_SHIFT);
+
+	/*
+	 * Ambiguous quote from u-boot. TODO: what's this mean?
+	 * "should update same value in PMC_OSC_EDPD_OVER XOFS
+	 * field for warmboot "
+	 */
+	clrsetbits_le32(&pmc->osc_edpd_over, PMC_OSC_EDPD_OVER_XOFS_MASK,
+			OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
+
+	/* Disable IDDQ for PLLX before we set it up (from U-Boot -- why?) */
+	clrbits_le32(&clk_rst->pllx_misc3, PLLX_IDDQ_MASK);
+
+	/* Set up PLLP_OUT(1|2|3|4) divisor to generate (9.6|48|102|204)MHz */
+	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT |
+		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT |
+		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 48000) << PLL_OUT_RATIO_SHIFT |
+		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT2_SHIFT,
+		&clk_rst->pllp_outa);
+	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 102000) << PLL_OUT_RATIO_SHIFT |
+		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT3_SHIFT |
+		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT |
+		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
+		&clk_rst->pllp_outb);
 
 	init_pll(&clk_rst->pllx_base, &clk_rst->pllx_misc, osc_table[osc].pllx);
 	init_pll(&clk_rst->pllp_base, &clk_rst->pllp_misc, osc_table[osc].pllp);
-	init_pll(&clk_rst->pllc_base, &clk_rst->pllc_misc, osc_table[osc].pllc);
-	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, osc_table[osc].plld);
 	init_pll(&clk_rst->pllu_base, &clk_rst->pllu_misc, osc_table[osc].pllu);
 	init_utmip_pll();
-
-	val = (1 << CLK_SYS_RATE_AHB_RATE_SHIFT);
-	writel(val, &clk_rst->clk_sys_rate);
+	graphics_pll();
 }
 
-void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w)
+void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
 {
 	if (l) writel(l, &clk_rst->clk_enb_l_set);
 	if (h) writel(h, &clk_rst->clk_enb_h_set);
 	if (u) writel(u, &clk_rst->clk_enb_u_set);
 	if (v) writel(v, &clk_rst->clk_enb_v_set);
 	if (w) writel(w, &clk_rst->clk_enb_w_set);
+	if (x) writel(x, &clk_rst->clk_enb_x_set);
 
 	/* Give clocks time to stabilize. */
 	udelay(IO_STABILIZATION_DELAY);
@@ -374,4 +459,5 @@ void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w)
 	if (u) writel(u, &clk_rst->rst_dev_u_clr);
 	if (v) writel(v, &clk_rst->rst_dev_v_clr);
 	if (w) writel(w, &clk_rst->rst_dev_w_clr);
+	if (x) writel(x, &clk_rst->rst_dev_x_clr);
 }

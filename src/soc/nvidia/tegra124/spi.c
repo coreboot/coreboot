@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <timer.h>
 #include <arch/cache.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -48,6 +49,13 @@
 #define SPI_PACKET_SIZE_BYTES		1
 #define SPI_MAX_TRANSFER_BYTES_FIFO	(64 * SPI_PACKET_SIZE_BYTES)
 #define SPI_MAX_TRANSFER_BYTES_DMA	(65535 * SPI_PACKET_SIZE_BYTES)
+
+/*
+ * This is used to workaround an issue seen where it may take some time for
+ * packets to show up in the FIFO after they have been received and the
+ * BLOCK_COUNT has been incremented.
+ */
+#define SPI_FIFO_XFER_TIMEOUT_US	1000
 
 /* COMMAND1 */
 #define SPI_CMD1_GO			(1 << 31)
@@ -89,19 +97,23 @@
 #define SPI_STATUS_BLOCK_COUNT_SHIFT	0
 
 /* SPI_FIFO_STATUS */
-#define SPI_FIFO_STATUS_CS_INACTIVE	(1 << 31)
-#define SPI_FIFO_STATUS_FRAME_END	(1 << 30)
-#define SPI_FIFO_STATUS_RX_FIFO_FLUSH	(1 << 15)
-#define SPI_FIFO_STATUS_TX_FIFO_FLUSH	(1 << 14)
-#define SPI_FIFO_STATUS_ERR		(1 << 8)
-#define SPI_FIFO_STATUS_TX_FIFO_OVF	(1 << 7)
-#define SPI_FIFO_STATUS_TX_FIFO_UNR	(1 << 6)
-#define SPI_FIFO_STATUS_RX_FIFO_OVF	(1 << 5)
-#define SPI_FIFO_STATUS_RX_FIFO_UNR	(1 << 4)
-#define SPI_FIFO_STATUS_TX_FIFO_FULL	(1 << 3)
-#define SPI_FIFO_STATUS_TX_FIFO_EMPTY	(1 << 2)
-#define SPI_FIFO_STATUS_RX_FIFO_FULL	(1 << 1)
-#define SPI_FIFO_STATUS_RX_FIFO_EMPTY	(1 << 0)
+#define SPI_FIFO_STATUS_CS_INACTIVE			(1 << 31)
+#define SPI_FIFO_STATUS_FRAME_END			(1 << 30)
+#define SPI_FIFO_STATUS_RX_FIFO_FULL_COUNT_MASK		0x7f
+#define SPI_FIFO_STATUS_RX_FIFO_FULL_COUNT_SHIFT	23
+#define SPI_FIFO_STATUS_TX_FIFO_EMPTY_COUNT_MASK	0x7f
+#define SPI_FIFO_STATUS_TX_FIFO_EMPTY_COUNT_SHIFT	16
+#define SPI_FIFO_STATUS_RX_FIFO_FLUSH			(1 << 15)
+#define SPI_FIFO_STATUS_TX_FIFO_FLUSH			(1 << 14)
+#define SPI_FIFO_STATUS_ERR				(1 << 8)
+#define SPI_FIFO_STATUS_TX_FIFO_OVF			(1 << 7)
+#define SPI_FIFO_STATUS_TX_FIFO_UNR			(1 << 6)
+#define SPI_FIFO_STATUS_RX_FIFO_OVF			(1 << 5)
+#define SPI_FIFO_STATUS_RX_FIFO_UNR			(1 << 4)
+#define SPI_FIFO_STATUS_TX_FIFO_FULL			(1 << 3)
+#define SPI_FIFO_STATUS_TX_FIFO_EMPTY			(1 << 2)
+#define SPI_FIFO_STATUS_RX_FIFO_FULL			(1 << 1)
+#define SPI_FIFO_STATUS_RX_FIFO_EMPTY			(1 << 0)
 
 /* SPI_DMA_CTL */
 #define SPI_DMA_CTL_DMA			(1 << 31)
@@ -129,26 +141,32 @@ static struct tegra_spi_channel tegra_spi_channels[] = {
 	{
 		.slave = { .bus = 1, },
 		.regs = (struct tegra_spi_regs *)TEGRA_SPI1_BASE,
+		.req_sel = APBDMA_SLAVE_SL2B1,
 	},
 	{
 		.slave = { .bus = 2, },
 		.regs = (struct tegra_spi_regs *)TEGRA_SPI2_BASE,
+		.req_sel = APBDMA_SLAVE_SL2B2,
 	},
 	{
 		.slave = { .bus = 3, },
 		.regs = (struct tegra_spi_regs *)TEGRA_SPI3_BASE,
+		.req_sel = APBDMA_SLAVE_SL2B3,
 	},
 	{
 		.slave = { .bus = 4, },
 		.regs = (struct tegra_spi_regs *)TEGRA_SPI4_BASE,
+		.req_sel = APBDMA_SLAVE_SL2B4,
 	},
 	{
 		.slave = { .bus = 5, },
 		.regs = (struct tegra_spi_regs *)TEGRA_SPI5_BASE,
+		.req_sel = APBDMA_SLAVE_SL2B5,
 	},
 	{
 		.slave = { .bus = 6, },
 		.regs = (struct tegra_spi_regs *)TEGRA_SPI6_BASE,
+		.req_sel = APBDMA_SLAVE_SL2B6,
 	},
 };
 
@@ -382,11 +400,31 @@ static void tegra_spi_pio_start(struct tegra_spi_channel *spi)
 	setbits_le32(&spi->regs->command1, SPI_CMD1_GO);
 }
 
+static inline u32 rx_fifo_count(struct tegra_spi_channel *spi)
+{
+	return (read32(&spi->regs->fifo_status) >>
+		SPI_FIFO_STATUS_RX_FIFO_FULL_COUNT_SHIFT) &
+		SPI_FIFO_STATUS_RX_FIFO_FULL_COUNT_MASK;
+}
+
 static int tegra_spi_pio_finish(struct tegra_spi_channel *spi)
 {
 	u8 *p = spi->in_buf;
+	struct mono_time start;
+	struct rela_time rt;
 
 	clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN | SPI_CMD1_TX_EN);
+
+	/*
+	 * Allow some time in case the Rx FIFO does not yet have
+	 * all packets pushed into it. See chrome-os-partner:24215.
+	 */
+	timer_monotonic_get(&start);
+	do {
+		if (rx_fifo_count(spi) == spi_byte_count(spi))
+			break;
+		rt = current_time_from(&start);
+	} while (rela_time_in_microseconds(&rt) < SPI_FIFO_XFER_TIMEOUT_US);
 
 	while (!(read32(&spi->regs->fifo_status) &
 				SPI_FIFO_STATUS_RX_FIFO_EMPTY)) {
@@ -408,13 +446,20 @@ static void setup_dma_params(struct tegra_spi_channel *spi,
 				struct apb_dma_channel *dma)
 {
 	/* APB bus width = 8-bits, address wrap for each word */
-	clrbits_le32(&dma->regs->apb_seq, 0x7 << 28);
+	clrbits_le32(&dma->regs->apb_seq,
+			AHB_BUS_WIDTH_MASK << AHB_BUS_WIDTH_SHIFT);
 	/* AHB 1 word burst, bus width = 32 bits (fixed in hardware),
 	 * no address wrapping */
 	clrsetbits_le32(&dma->regs->ahb_seq,
-			(0x7 << 24) | (0x7 << 16), 0x4 << 24);
-	/* Set ONCE mode to transfer one "blocK" at a time (64KB). */
-	setbits_le32(&dma->regs->csr, 1 << 27);
+			(AHB_BURST_MASK << AHB_BURST_SHIFT),
+			4 << AHB_BURST_SHIFT);
+
+	/* Set ONCE mode to transfer one "block" at a time (64KB) and enable
+	 * flow control. */
+	clrbits_le32(&dma->regs->csr,
+			APB_CSR_REQ_SEL_MASK << APB_CSR_REQ_SEL_SHIFT);
+	setbits_le32(&dma->regs->csr, APB_CSR_ONCE | APB_CSR_FLOW |
+			(spi->req_sel << APB_CSR_REQ_SEL_SHIFT));
 }
 
 static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
@@ -447,7 +492,7 @@ static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
 
 		write32((u32)&spi->regs->tx_fifo, &spi->dma_out->regs->apb_ptr);
 		write32((u32)spi->out_buf, &spi->dma_out->regs->ahb_ptr);
-		setbits_le32(&spi->dma_out->regs->csr, APBDMACHAN_CSR_DIR);
+		setbits_le32(&spi->dma_out->regs->csr, APB_CSR_DIR);
 		setup_dma_params(spi, spi->dma_out);
 		write32(wcount, &spi->dma_out->regs->wcount);
 	} else {
@@ -460,7 +505,7 @@ static int tegra_spi_dma_prepare(struct tegra_spi_channel *spi,
 
 		write32((u32)&spi->regs->rx_fifo, &spi->dma_in->regs->apb_ptr);
 		write32((u32)spi->in_buf, &spi->dma_in->regs->ahb_ptr);
-		clrbits_le32(&spi->dma_in->regs->csr, APBDMACHAN_CSR_DIR);
+		clrbits_le32(&spi->dma_in->regs->csr, APB_CSR_DIR);
 		setup_dma_params(spi, spi->dma_in);
 		write32(wcount, &spi->dma_in->regs->wcount);
 	}
@@ -844,7 +889,6 @@ static void *tegra_spi_cbfs_map(struct cbfs_media *media, size_t offset,
 	void *map;
 	DEBUG_SPI("tegra_spi_cbfs_map\n");
 	map = cbfs_simple_buffer_map(&spi->buffer, media, offset, count);
-	printk(BIOS_INFO, "%s: map: 0x%p\n", __func__, map);
 	return map;
 }
 

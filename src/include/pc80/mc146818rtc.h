@@ -14,6 +14,7 @@
 #define RTC_REG_C		12
 #define RTC_REG_D		13
 
+#define RTC_BOOT_BYTE		48
 
 /**********************************************************************
  * register details
@@ -171,6 +172,7 @@ static inline void cmos_write32(u8 offset, u32 value)
 void rtc_init(int invalid);
 void rtc_check_update_cmos_date(u8 has_century);
 #if CONFIG_USE_OPTION_TABLE
+void set_boot_successful(void);
 int set_option(const char *name, void *val);
 int get_option(void *dest, const char *name);
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);

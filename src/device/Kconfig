@@ -25,6 +25,11 @@ config MAINBOARD_HAS_NATIVE_VGA_INIT
 	bool
 	default n
 
+# Only set this in the mainboard
+config MAINBOARD_DO_EDID
+	bool
+	default n
+
 config MAINBOARD_DO_NATIVE_VGA_INIT
 	bool "Use native graphics initialization"
 	depends on MAINBOARD_HAS_NATIVE_VGA_INIT

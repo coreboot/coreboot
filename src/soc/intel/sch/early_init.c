@@ -196,9 +196,6 @@ static void sch_setup_non_standard_bars(void)
 	/* Base of Stolen Memory Address 0x1080 size 64B */
 	pci_write_config32(PCI_DEV(0, 0x02, 0), 0x5C, 0x3F800000);
 
-	sch_port_access_write(0, 0, 4, DEFAULT_PCIEXBAR | 1); /* pre-b1 */
-	sch_port_access_write(2, 9, 4, DEFAULT_PCIEXBAR | 1); /* b1+ */
-
 	/* RCBA */
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0xF0,
 			   ((uintptr_t)DEFAULT_RCBABASE | 1));

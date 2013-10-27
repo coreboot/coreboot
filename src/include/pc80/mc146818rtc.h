@@ -14,6 +14,7 @@
 #define RTC_REG_C		12
 #define RTC_REG_D		13
 
+#define RTC_BOOT_BYTE		48
 
 /**********************************************************************
  * register details

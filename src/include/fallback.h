@@ -5,8 +5,9 @@
 
 void boot_successful(void);
 
+#if CONFIG_PC80_SYSTEM
+void set_boot_successful(void);
+#endif /* CONFIG_PC80_SYSTEM */
+
 #endif /* __ASSEMBLER__ */
-
-#define RTC_BOOT_BYTE	48
-
 #endif /* FALLBACK_H */

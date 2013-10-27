@@ -4,9 +4,11 @@
 #if !defined(__ASSEMBLER__) && !defined(__PRE_RAM__)
 
 void boot_successful(void);
+void set_boot_successful(void);
+
+#if !CONFIG_PC80_SYSTEM
+#define set_boot_successful(void) do{} while(0)
+#endif
 
 #endif /* __ASSEMBLER__ */
-
-#define RTC_BOOT_BYTE	48
-
 #endif /* FALLBACK_H */

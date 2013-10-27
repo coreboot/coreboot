@@ -139,7 +139,8 @@ int gtt_setup(unsigned int mmiobase)
 	PGETBL_save = read32(mmiobase + PGETBL_CTL) & ~PGETBL_ENABLED;
 	PGETBL_save |= PGETBL_ENABLED;
 
-	printk(BIOS_DEBUG, "PGETBL_save=0x%lx\n", PGETBL_save);
+	PGETBL_save |= pci_read_config32(dev_find_slot(0, PCI_DEVFN(2,0)), 0x5c) & 0xfffff000;
+	PGETBL_save |= 2; /* set GTT to 256kb */
 
 	write32(mmiobase + GFX_FLSH_CNTL, 0);
 

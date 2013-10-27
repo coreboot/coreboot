@@ -40,7 +40,7 @@
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
 int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-        unsigned int gfx);
+	unsigned int gfx);
 
 static acpi_cstate_t cst_entries[] = {
 	{ 1,  1, 1000, { 0x7f, 1, 2, { 0 }, 1, 0 } },

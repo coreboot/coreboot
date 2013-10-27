@@ -39,65 +39,65 @@
 /* PCI config space */
 
 #define HPLLCC	0xc0 /* 855 only */
-#define   GC_CLOCK_CONTROL_MASK		(0xf << 0)
-#define   GC_CLOCK_133_200		(0 << 0)
-#define   GC_CLOCK_100_200		(1 << 0)
-#define   GC_CLOCK_100_133		(2 << 0)
-#define   GC_CLOCK_166_250		(3 << 0)
-#define GCFGC2	0xda
-#define GCFGC	0xf0 /* 915+ only */
-#define   GC_LOW_FREQUENCY_ENABLE	(1 << 7)
-#define   GC_DISPLAY_CLOCK_190_200_MHZ	(0 << 4)
-#define   GC_DISPLAY_CLOCK_333_MHZ	(4 << 4)
-#define   GC_DISPLAY_CLOCK_MASK		(7 << 4)
-#define   GM45_GC_RENDER_CLOCK_MASK	(0xf << 0)
-#define   GM45_GC_RENDER_CLOCK_266_MHZ	(8 << 0)
-#define   GM45_GC_RENDER_CLOCK_320_MHZ	(9 << 0)
-#define   GM45_GC_RENDER_CLOCK_400_MHZ	(0xb << 0)
-#define   GM45_GC_RENDER_CLOCK_533_MHZ	(0xc << 0)
-#define   I965_GC_RENDER_CLOCK_MASK	(0xf << 0)
-#define   I965_GC_RENDER_CLOCK_267_MHZ	(2 << 0)
-#define   I965_GC_RENDER_CLOCK_333_MHZ	(3 << 0)
-#define   I965_GC_RENDER_CLOCK_444_MHZ	(4 << 0)
-#define   I965_GC_RENDER_CLOCK_533_MHZ	(5 << 0)
-#define   I945_GC_RENDER_CLOCK_MASK	(7 << 0)
-#define   I945_GC_RENDER_CLOCK_166_MHZ	(0 << 0)
-#define   I945_GC_RENDER_CLOCK_200_MHZ	(1 << 0)
-#define   I945_GC_RENDER_CLOCK_250_MHZ	(3 << 0)
-#define   I945_GC_RENDER_CLOCK_400_MHZ	(5 << 0)
-#define   I915_GC_RENDER_CLOCK_MASK	(7 << 0)
-#define   I915_GC_RENDER_CLOCK_166_MHZ	(0 << 0)
-#define   I915_GC_RENDER_CLOCK_200_MHZ	(1 << 0)
-#define   I915_GC_RENDER_CLOCK_333_MHZ	(4 << 0)
-#define LBB	0xf4
+#define GC_CLOCK_CONTROL_MASK		(0xf << 0)
+#define GC_CLOCK_133_200		(0 << 0)
+#define GC_CLOCK_100_200		(1 << 0)
+#define GC_CLOCK_100_133		(2 << 0)
+#define GC_CLOCK_166_250		(3 << 0)
+#define GCFGC2				0xda
+#define GCFGC				0xf0 /* 915+ only */
+#define GC_LOW_FREQUENCY_ENABLE		(1 << 7)
+#define GC_DISPLAY_CLOCK_190_200_MHZ	(0 << 4)
+#define GC_DISPLAY_CLOCK_333_MHZ	(4 << 4)
+#define GC_DISPLAY_CLOCK_MASK		(7 << 4)
+#define GM45_GC_RENDER_CLOCK_MASK	(0xf << 0)
+#define GM45_GC_RENDER_CLOCK_266_MHZ	(8 << 0)
+#define GM45_GC_RENDER_CLOCK_320_MHZ	(9 << 0)
+#define GM45_GC_RENDER_CLOCK_400_MHZ	(0xb << 0)
+#define GM45_GC_RENDER_CLOCK_533_MHZ	(0xc << 0)
+#define I965_GC_RENDER_CLOCK_MASK	(0xf << 0)
+#define I965_GC_RENDER_CLOCK_267_MHZ	(2 << 0)
+#define I965_GC_RENDER_CLOCK_333_MHZ	(3 << 0)
+#define I965_GC_RENDER_CLOCK_444_MHZ	(4 << 0)
+#define I965_GC_RENDER_CLOCK_533_MHZ	(5 << 0)
+#define I945_GC_RENDER_CLOCK_MASK	(7 << 0)
+#define I945_GC_RENDER_CLOCK_166_MHZ	(0 << 0)
+#define I945_GC_RENDER_CLOCK_200_MHZ	(1 << 0)
+#define I945_GC_RENDER_CLOCK_250_MHZ	(3 << 0)
+#define I945_GC_RENDER_CLOCK_400_MHZ	(5 << 0)
+#define I915_GC_RENDER_CLOCK_MASK	(7 << 0)
+#define I915_GC_RENDER_CLOCK_166_MHZ	(0 << 0)
+#define I915_GC_RENDER_CLOCK_200_MHZ	(1 << 0)
+#define I915_GC_RENDER_CLOCK_333_MHZ	(4 << 0)
+#define LBB				0xf4
 
 /* Graphics reset regs */
-#define I965_GDRST 0xc0 /* PCI config register */
-#define ILK_GDSR 0x2ca4 /* MCHBAR offset */
-#define  GRDOM_FULL	(0<<2)
-#define  GRDOM_RENDER	(1<<2)
-#define  GRDOM_MEDIA	(3<<2)
+#define I965_GDRST	0xc0 /* PCI config register */
+#define ILK_GDSR	0x2ca4 /* MCHBAR offset */
+#define GRDOM_FULL	(0<<2)
+#define GRDOM_RENDER	(1<<2)
+#define GRDOM_MEDIA	(3<<2)
 
 #define GEN6_MBCUNIT_SNPCR	0x900c /* for LLC config */
-#define   GEN6_MBC_SNPCR_SHIFT	21
-#define   GEN6_MBC_SNPCR_MASK	(3<<21)
-#define   GEN6_MBC_SNPCR_MAX	(0<<21)
-#define   GEN6_MBC_SNPCR_MED	(1<<21)
-#define   GEN6_MBC_SNPCR_LOW	(2<<21)
-#define   GEN6_MBC_SNPCR_MIN	(3<<21) /* only 1/16th of the cache is shared */
+#define GEN6_MBC_SNPCR_SHIFT	21
+#define GEN6_MBC_SNPCR_MASK	(3<<21)
+#define GEN6_MBC_SNPCR_MAX	(0<<21)
+#define GEN6_MBC_SNPCR_MED	(1<<21)
+#define GEN6_MBC_SNPCR_LOW	(2<<21)
+#define GEN6_MBC_SNPCR_MIN	(3<<21) /* only 1/16th of the cache is shared */
 
-#define GEN6_MBCTL		0x0907c
-#define   GEN6_MBCTL_ENABLE_BOOT_FETCH	(1 << 4)
-#define   GEN6_MBCTL_CTX_FETCH_NEEDED	(1 << 3)
-#define   GEN6_MBCTL_BME_UPDATE_ENABLE	(1 << 2)
-#define   GEN6_MBCTL_MAE_UPDATE_ENABLE	(1 << 1)
-#define   GEN6_MBCTL_BOOT_FETCH_MECH	(1 << 0)
+#define GEN6_MBCTL			0x0907c
+#define GEN6_MBCTL_ENABLE_BOOT_FETCH	(1 << 4)
+#define GEN6_MBCTL_CTX_FETCH_NEEDED	(1 << 3)
+#define GEN6_MBCTL_BME_UPDATE_ENABLE	(1 << 2)
+#define GEN6_MBCTL_MAE_UPDATE_ENABLE	(1 << 1)
+#define GEN6_MBCTL_BOOT_FETCH_MECH	(1 << 0)
 
-#define GEN6_GDRST	0x941c
-#define  GEN6_GRDOM_FULL		(1 << 0)
-#define  GEN6_GRDOM_RENDER		(1 << 1)
-#define  GEN6_GRDOM_MEDIA		(1 << 2)
-#define  GEN6_GRDOM_BLT			(1 << 3)
+#define GEN6_GDRST			0x941c
+#define GEN6_GRDOM_FULL			(1 << 0)
+#define GEN6_GRDOM_RENDER		(1 << 1)
+#define GEN6_GRDOM_MEDIA		(1 << 2)
+#define GEN6_GRDOM_BLT			(1 << 3)
 
 /* PPGTT stuff */
 #define GEN6_GTT_ADDR_ENCODE(addr)	((addr) | (((addr) >> 28) & 0xff0))
@@ -118,43 +118,43 @@
 #define RING_PP_DIR_BASE(ring)		((ring)->mmio_base+0x228)
 #define RING_PP_DIR_BASE_READ(ring)	((ring)->mmio_base+0x518)
 #define RING_PP_DIR_DCLV(ring)		((ring)->mmio_base+0x220)
-#define   PP_DIR_DCLV_2G		0xffffffff
+#define PP_DIR_DCLV_2G			0xffffffff
 
 #define GAM_ECOCHK			0x4090
-#define   ECOCHK_SNB_BIT		(1<<10)
-#define   ECOCHK_PPGTT_CACHE64B		(0x3<<3)
-#define   ECOCHK_PPGTT_CACHE4B		(0x0<<3)
+#define ECOCHK_SNB_BIT			(1<<10)
+#define ECOCHK_PPGTT_CACHE64B		(0x3<<3)
+#define ECOCHK_PPGTT_CACHE4B		(0x0<<3)
 
 /* VGA stuff */
 
-#define VGA_ST01_MDA 0x3ba
-#define VGA_ST01_CGA 0x3da
+#define VGA_ST01_MDA		0x3ba
+#define VGA_ST01_CGA		0x3da
 
-#define VGA_MSR_WRITE 0x3c2
-#define VGA_MSR_READ 0x3cc
-#define   VGA_MSR_MEM_EN (1<<1)
-#define   VGA_MSR_CGA_MODE (1<<0)
+#define VGA_MSR_WRITE		0x3c2
+#define VGA_MSR_READ		0x3cc
+#define VGA_MSR_MEM_EN		(1<<1)
+#define VGA_MSR_CGA_MODE	(1<<0)
 
-#define VGA_SR_INDEX 0x3c4
-#define VGA_SR_DATA 0x3c5
+#define VGA_SR_INDEX		0x3c4
+#define VGA_SR_DATA		0x3c5
 
-#define VGA_AR_INDEX 0x3c0
-#define   VGA_AR_VID_EN (1<<5)
-#define VGA_AR_DATA_WRITE 0x3c0
-#define VGA_AR_DATA_READ 0x3c1
+#define VGA_AR_INDEX		0x3c0
+#define   VGA_AR_VID_EN		(1<<5)
+#define VGA_AR_DATA_WRITE	0x3c0
+#define VGA_AR_DATA_READ	0x3c1
 
-#define VGA_GR_INDEX 0x3ce
-#define VGA_GR_DATA 0x3cf
+#define VGA_GR_INDEX		0x3ce
+#define VGA_GR_DATA		0x3cf
 /* GR05 */
-#define   VGA_GR_MEM_READ_MODE_SHIFT 3
-#define     VGA_GR_MEM_READ_MODE_PLANE 1
+#define VGA_GR_MEM_READ_MODE_SHIFT	3
+#define VGA_GR_MEM_READ_MODE_PLANE	1
 /* GR06 */
-#define   VGA_GR_MEM_MODE_MASK 0xc
-#define   VGA_GR_MEM_MODE_SHIFT 2
-#define   VGA_GR_MEM_A0000_AFFFF 0
-#define   VGA_GR_MEM_A0000_BFFFF 1
-#define   VGA_GR_MEM_B0000_B7FFF 2
-#define   VGA_GR_MEM_B0000_BFFFF 3
+#define VGA_GR_MEM_MODE_MASK	0xc
+#define VGA_GR_MEM_MODE_SHIFT	2
+#define VGA_GR_MEM_A0000_AFFFF	0
+#define VGA_GR_MEM_A0000_BFFFF	1
+#define VGA_GR_MEM_B0000_B7FFF	2
+#define VGA_GR_MEM_B0000_BFFFF	3
 
 #define VGA_DACMASK 0x3c6
 #define VGA_DACRX 0x3c7
@@ -3701,20 +3701,20 @@
 #define  EDP_LINK_TRAIN_VOL_EMP_MASK_SNB	(0x3f<<22)
 
 /* IVB */
-#define EDP_LINK_TRAIN_400MV_0DB_IVB		(0x24 <<22)
-#define EDP_LINK_TRAIN_400MV_3_5DB_IVB		(0x2a <<22)
-#define EDP_LINK_TRAIN_400MV_6DB_IVB		(0x2f <<22)
-#define EDP_LINK_TRAIN_600MV_0DB_IVB		(0x30 <<22)
-#define EDP_LINK_TRAIN_600MV_3_5DB_IVB		(0x36 <<22)
-#define EDP_LINK_TRAIN_800MV_0DB_IVB		(0x38 <<22)
-#define EDP_LINK_TRAIN_800MV_3_5DB_IVB		(0x33 <<22)
+#define EDP_LINK_TRAIN_400MV_0DB_IVB		(0x24 << 22)
+#define EDP_LINK_TRAIN_400MV_3_5DB_IVB		(0x2a << 22)
+#define EDP_LINK_TRAIN_400MV_6DB_IVB		(0x2f << 22)
+#define EDP_LINK_TRAIN_600MV_0DB_IVB		(0x30 << 22)
+#define EDP_LINK_TRAIN_600MV_3_5DB_IVB		(0x36 << 22)
+#define EDP_LINK_TRAIN_800MV_0DB_IVB		(0x38 << 22)
+#define EDP_LINK_TRAIN_800MV_3_5DB_IVB		(0x33 << 22)
 
 /* legacy values */
-#define EDP_LINK_TRAIN_500MV_0DB_IVB		(0x00 <<22)
-#define EDP_LINK_TRAIN_1000MV_0DB_IVB		(0x20 <<22)
-#define EDP_LINK_TRAIN_500MV_3_5DB_IVB		(0x02 <<22)
-#define EDP_LINK_TRAIN_1000MV_3_5DB_IVB		(0x22 <<22)
-#define EDP_LINK_TRAIN_1000MV_6DB_IVB		(0x23 <<22)
+#define EDP_LINK_TRAIN_500MV_0DB_IVB		(0x00 << 22)
+#define EDP_LINK_TRAIN_1000MV_0DB_IVB		(0x20 << 22)
+#define EDP_LINK_TRAIN_500MV_3_5DB_IVB		(0x02 << 22)
+#define EDP_LINK_TRAIN_1000MV_3_5DB_IVB		(0x22 << 22)
+#define EDP_LINK_TRAIN_1000MV_6DB_IVB		(0x23 << 22)
 
 #define  EDP_LINK_TRAIN_VOL_EMP_MASK_IVB	(0x3f<<22)
 

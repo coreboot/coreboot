@@ -18,11 +18,10 @@
 
 #include <arch/io.h>
 
-#if CONFIG_MMCONF_SUPPORT
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS
 
 static inline __attribute__ ((always_inline))
-u8 pcie_read_config8(pci_devfn_t dev, unsigned int where)
+u8 pci_mmio_read_config8(pci_devfn_t dev, unsigned int where)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(DEFAULT_PCIEXBAR | dev | where);
@@ -30,7 +29,7 @@ u8 pcie_read_config8(pci_devfn_t dev, unsigned int where)
 }
 
 static inline __attribute__ ((always_inline))
-u16 pcie_read_config16(pci_devfn_t dev, unsigned int where)
+u16 pci_mmio_read_config16(pci_devfn_t dev, unsigned int where)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(DEFAULT_PCIEXBAR | dev | (where & ~1));
@@ -38,7 +37,7 @@ u16 pcie_read_config16(pci_devfn_t dev, unsigned int where)
 }
 
 static inline __attribute__ ((always_inline))
-u32 pcie_read_config32(pci_devfn_t dev, unsigned int where)
+u32 pci_mmio_read_config32(pci_devfn_t dev, unsigned int where)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(DEFAULT_PCIEXBAR | dev | (where & ~3));
@@ -46,7 +45,7 @@ u32 pcie_read_config32(pci_devfn_t dev, unsigned int where)
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
+void pci_mmio_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(DEFAULT_PCIEXBAR | dev | where);
@@ -54,7 +53,7 @@ void pcie_write_config8(pci_devfn_t dev, unsigned int where, u8 value)
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
+void pci_mmio_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(DEFAULT_PCIEXBAR | dev | (where & ~1));
@@ -62,30 +61,11 @@ void pcie_write_config16(pci_devfn_t dev, unsigned int where, u16 value)
 }
 
 static inline __attribute__ ((always_inline))
-void pcie_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
+void pci_mmio_write_config32(pci_devfn_t dev, unsigned int where, u32 value)
 {
 	void *addr;
 	addr = (void *)(uintptr_t)(DEFAULT_PCIEXBAR | dev | (where & ~3));
 	write32(addr, value);
 }
 
-#define pci_mmio_read_config8 	pcie_read_config8
-#define pci_mmio_read_config16	pcie_read_config16
-#define pci_mmio_read_config32	pcie_read_config32
-
-#define pci_mmio_write_config8 	pcie_write_config8
-#define pci_mmio_write_config16	pcie_write_config16
-#define pci_mmio_write_config32	pcie_write_config32
-
-#if CONFIG_MMCONF_SUPPORT_DEFAULT
-#define pci_read_config8 	pcie_read_config8
-#define pci_read_config16	pcie_read_config16
-#define pci_read_config32	pcie_read_config32
-
-#define pci_write_config8 	pcie_write_config8
-#define pci_write_config16	pcie_write_config16
-#define pci_write_config32	pcie_write_config32
-#endif
-
-#endif /* CONFIG_MMCONF_SUPPORT */
 #endif /* _PCI_MMIO_CFG_H */

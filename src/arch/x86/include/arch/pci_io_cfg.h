@@ -94,14 +94,4 @@ void pci_io_write_config32(pci_devfn_t dev, unsigned where, uint32_t value)
 	outl(value, 0xCFC);
 }
 
-#if !CONFIG_MMCONF_SUPPORT_DEFAULT
-#define pci_read_config8 	pci_io_read_config8
-#define pci_read_config16	pci_io_read_config16
-#define pci_read_config32	pci_io_read_config32
-
-#define pci_write_config8 	pci_io_write_config8
-#define pci_write_config16	pci_io_write_config16
-#define pci_write_config32	pci_io_write_config32
-#endif
-
 #endif /* _PCI_IO_CFG_H */

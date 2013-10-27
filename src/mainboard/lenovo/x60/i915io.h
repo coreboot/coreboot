@@ -52,7 +52,7 @@
  *   2 -> print IO ops
  *   4 -> print the number of times we spin on a register in a poll
  *   8 -> restore whatever the previous verbosity level was
- *   		(only one deep stack)
+ *		(only one deep stack)
  *
  * Again, this is not really meant for human consumption. There is not a poll
  * operator as such because, sometimes, there is a read/write/read where the
@@ -84,4 +84,3 @@ u32 pack_aux(u32 *src, int src_bytes);
 void unpack_aux(u32 src, u32 *dst, int dst_bytes);
 int intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 	u32 *recv, int recv_size);
-

@@ -57,14 +57,10 @@ static unsigned int graphics;
 static unsigned short addrport;
 static unsigned short dataport;
 static unsigned int physbase;
-#if 0 //undefined reference
-extern int oprom_is_loaded;
-#else
 int oprom_is_loaded;
-#endif
 
-#define PGETBL_CTL              0x2020
-#define PGETBL_ENABLED          0x00000001
+#define PGETBL_CTL	0x2020
+#define PGETBL_ENABLED	0x00000001
 
 
 static u32 htotal, hblank, hsync, vtotal, vblank, vsync;
@@ -126,36 +122,37 @@ setgtt(int start, int end, unsigned long base, int inc)
 {
 	int i;
 
-	printk(BIOS_INFO, "%s(%d,%d,0x%08lx,%d);\n",__func__, start, end, base, inc);
+	printk(BIOS_INFO, "%s(%d,%d,0x%08lx,%d);\n",
+			 __func__, start, end, base, inc);
 
-	for(i = start; i < end; i++){
+	for (i = start; i < end; i++) {
 		u32 word = base + i*inc;
-		WRITE32(word|1,(i*4)|1);
+		WRITE32(word|1, (i*4)|1);
 	}
 }
 
 int gtt_setup(unsigned int mmiobase);
 int gtt_setup(unsigned int mmiobase)
 {
-        unsigned long PGETBL_save;
+	unsigned long PGETBL_save;
 
-        PGETBL_save = read32(mmiobase + PGETBL_CTL) & ~PGETBL_ENABLED;
-        PGETBL_save |= PGETBL_ENABLED;
+	PGETBL_save = read32(mmiobase + PGETBL_CTL) & ~PGETBL_ENABLED;
+	PGETBL_save |= PGETBL_ENABLED;
 
-        printk(BIOS_DEBUG, "PGETBL_save=0x%lx\n",PGETBL_save );
+	printk(BIOS_DEBUG, "PGETBL_save=0x%lx\n", PGETBL_save);
 
-        write32(mmiobase + GFX_FLSH_CNTL, 0);
+	write32(mmiobase + GFX_FLSH_CNTL, 0);
 
-        write32(mmiobase + PGETBL_CTL, PGETBL_save);
+	write32(mmiobase + PGETBL_CTL, PGETBL_save);
 
-        /* verify */
-        if ( read32( mmiobase + PGETBL_CTL) & PGETBL_ENABLED ){
-                printk(BIOS_DEBUG, "gtt_setup is enabled!!!\n");
-	}else{
+	/* verify */
+	if (read32(mmiobase + PGETBL_CTL) & PGETBL_ENABLED) {
+		printk(BIOS_DEBUG, "gtt_setup is enabled.\n");
+	} else {
 		printk(BIOS_DEBUG, "gtt_setup failed!!!\n");
 		return 1;
 	}
-        write32(mmiobase + GFX_FLSH_CNTL, 0);
+	write32(mmiobase + GFX_FLSH_CNTL, 0);
 
 	return 0;
 }
@@ -188,9 +185,8 @@ static void palette(void)
 	int i;
 	unsigned long color = 0;
 
-	for(i = 0; i < 256; i++, color += 0x010101){
+	for (i = 0; i < 256; i++, color += 0x010101)
 		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
-	}
 }
 
 int vbe_mode_info_valid(void);
@@ -202,7 +198,8 @@ int vbe_mode_info_valid(void)
 void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
-	printk(BIOS_SPEW, "fill_lb_framebuffer: graphics is %p\n", (void *)graphics);
+	printk(BIOS_SPEW, "fill_lb_framebuffer: graphics is %p\n",
+	       (void *)graphics);
 	framebuffer->physical_address = graphics;
 	framebuffer->x_resolution = 1024;
 	framebuffer->y_resolution = 768;
@@ -228,10 +225,11 @@ static int run(int index)
 	if (index >= niodefs)
 		return index;
 	/* state machine! */
-	for(i = index, id = &iodefs[i]; id->op; i++, id++){
-		switch(id->op){
+	for (i = index, id = &iodefs[i]; id->op; i++, id++) {
+		switch (id->op) {
 		case M:
-			if (verbose & vmsg) printk(BIOS_SPEW, "%ld: %s\n",
+			if (verbose & vmsg)
+				printk(BIOS_SPEW, "%ld: %s\n",
 						globalmicroseconds(), id->msg);
 			break;
 		case P:
@@ -242,15 +240,16 @@ static int run(int index)
 			if (verbose & vio)
 				printk(BIOS_SPEW, "\texpect %08lx\n", id->data);
 			/* we're looking for something. */
-			if (lastidread->addr == id->addr){
+			if (lastidread->addr == id->addr) {
 				/* they're going to be polling.
 				 * just do it 1000 times
 				 */
-				for (t = 0; t < 1000 && id->data != u; t++){
+				for (t = 0; t < 1000 && id->data != u; t++)
 					u = READ32(id->addr);
-				}
-				if (verbose & vspin) printk(BIOS_SPEW,
-						"%s: # loops %ld got %08lx want %08lx\n",
+
+				if (verbose & vspin)
+					printk(BIOS_SPEW,
+					       "%s: # loops %ld got %08lx want %08lx\n",
 						regname(id->addr),
 						t, u, id->data);
 			}
@@ -258,20 +257,24 @@ static int run(int index)
 			break;
 		case W:
 			WRITE32(id->data, id->addr);
-			if (id->addr == PCH_PP_CONTROL){
+			if (id->addr == PCH_PP_CONTROL) {
 				if (verbose & vio)
 					printk(BIOS_SPEW, "PCH_PP_CONTROL\n");
-				switch(id->data & 0xf){
-				case 8: break;
-				case 7: break;
-				default: udelay(100000);
+				switch (id->data & 0xf) {
+				case 8:
+					break;
+				case 7:
+					break;
+				default:
+					udelay(100000);
 					if (verbose & vio)
-						printk(BIOS_SPEW, "U %d\n", 100000);
+						printk(BIOS_SPEW, "U %d\n",
+						       100000);
 				}
 			}
 			break;
 		case V:
-			if (id->count < 8){
+			if (id->count < 8) {
 				prev = verbose;
 				verbose = id->count;
 			} else {
@@ -284,7 +287,8 @@ static int run(int index)
 			return i+1;
 			break;
 		default:
-			printk(BIOS_SPEW, "BAD TABLE, opcode %d @ %d\n", id->op, i);
+			printk(BIOS_SPEW, "BAD TABLE, opcode %d @ %d\n",
+			       id->op, i);
 			return -1;
 		}
 		if (id->udelay)
@@ -311,31 +315,33 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	dataport = addrport + 4;
 	physbase = pphysbase;
 	graphics = pgfx;
-	printk(BIOS_SPEW, "i915lightup: graphics %p mmio %p"
-		"addrport %04x physbase %08x\n",
+	printk(BIOS_SPEW,
+		"i915lightup: graphics %p mmio %p addrport %04x physbase %08x\n",
 		(void *)graphics, mmio, addrport, physbase);
 	globalstart = rdtscll();
 
 
-	decode_edid((unsigned char *)&x60_edid_data, sizeof(x60_edid_data), &edid);
+	decode_edid((unsigned char *)&x60_edid_data,
+		    sizeof(x60_edid_data), &edid);
 
-	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl- 1) << 16);
+	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HTOTAL(pipe), %08x)\n", htotal);
 
-	hblank = (edid.ha  - 1) | ((edid.ha + edid.hbl- 1) << 16);
+	hblank = (edid.ha  - 1) | ((edid.ha + edid.hbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HBLANK(pipe),0x%08x)\n", hblank);
 
 	hsync = (edid.ha + edid.hso  - 1) |
-		((edid.ha + edid.hso + edid.hspw- 1) << 16);
+		((edid.ha + edid.hso + edid.hspw - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HSYNC(pipe),0x%08x)\n", hsync);
 
-	vtotal = (edid.va - 1) | ((edid.va + edid.vbl- 1) << 16);
+	vtotal = (edid.va - 1) | ((edid.va + edid.vbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(VTOTAL(pipe), %08x)\n", vtotal);
 
-	vblank = (edid.va  - 1) | ((edid.va + edid.vbl- 1) << 16);
+	vblank = (edid.va  - 1) | ((edid.va + edid.vbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(VBLANK(pipe),0x%08x)\n", vblank);
 
-	vsync = (edid.va + edid.vso  - 1) |((edid.va + edid.vso + edid.vspw- 1) << 16);
+	vsync = (edid.va + edid.vso  - 1) |
+		((edid.va + edid.vso + edid.vspw - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(VSYNC(pipe),0x%08x)\n", vsync);
 
 	printk(BIOS_SPEW, "Table has %d elements\n", niodefs);
@@ -368,7 +374,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	 * starting at physbase.
 	 */
 
-	if ( gtt_setup(pmmio) ){
+	if (gtt_setup(pmmio)) {
 		printk(BIOS_ERR, "ERROR: GTT Setup Failed!!!\n");
 		return 0;
 	}
@@ -376,7 +382,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	setgtt(0, 800 , physbase, 4096);
 
 	temp = READ32(PGETLB_CTL);
-        printk(BIOS_INFO, "GTT PGETLB_CTL register: 0x%lx\n", temp);
+	printk(BIOS_INFO, "GTT PGETLB_CTL register: 0x%lx\n", temp);
 
 	if (temp & 1)
 		printk(BIOS_INFO, "GTT Enabled\n");

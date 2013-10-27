@@ -86,10 +86,10 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 	}
 
 	if (try == 3) {
-	  printk(BIOS_SPEW, "[000000.0] [drm:%s], ", __func__);
-	  printk(BIOS_SPEW, "dp_aux_ch not started status 0x%08lx\n",
-		  io_i915_READ32(ch_ctl));
-	  return -1;
+		printk(BIOS_SPEW, "[000000.0] [drm:%s], ", __func__);
+		printk(BIOS_SPEW, "dp_aux_ch not started status 0x%08lx\n",
+				  io_i915_READ32(ch_ctl));
+		return -1;
 	}
 
 	/* Must try at least 3 times according to DP spec */
@@ -140,7 +140,8 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 	 */
 	if (status & DP_AUX_CH_CTL_RECEIVE_ERROR) {
 		printk(BIOS_SPEW, "[000000.0] [drm:%s], ", __func__);
-		printk(BIOS_SPEW, "dp_aux_ch receive error status 0x%08x\n", status);
+		printk(BIOS_SPEW,
+		       "dp_aux_ch receive error status 0x%08x\n", status);
 		return -1;
 	}
 
@@ -164,4 +165,3 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 
 	return recv_bytes;
 }
-

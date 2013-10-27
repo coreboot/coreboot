@@ -1466,6 +1466,7 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 	vbe_valid = 1;
 }
 
+#if !CONFIG_MAINBOARD_DO_EDID
 int vbe_mode_info_valid(void)
 {
 	return vbe_valid;
@@ -1475,3 +1476,4 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
 	*framebuffer = edid_fb;
 }
+#endif

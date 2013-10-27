@@ -3,6 +3,7 @@
 #include <console/console.h>
 #include <pc80/mc146818rtc.h>
 #include <boot/coreboot_tables.h>
+#include <fallback.h>
 #include <string.h>
 #if CONFIG_USE_OPTION_TABLE
 #include "option_table.h"
@@ -322,3 +323,32 @@ void rtc_check_update_cmos_date(u8 has_century)
 		rtc_update_cmos_date(has_century);
 	}
 }
+
+#if CONFIG_USE_OPTION_TABLE
+/* Reset the boot count if the boot is considered successfull */
+void set_boot_successful(void)
+{
+	/* Remember I successfully booted by setting
+	 * the initial boot direction
+	 * to the direction that I booted.
+	 */
+	unsigned char index, byte;
+	index = inb(RTC_PORT(0)) & 0x80;
+	index |= RTC_BOOT_BYTE;
+	outb(index, RTC_PORT(0));
+
+	byte = inb(RTC_PORT(1));
+	byte &= 0xfe;
+	byte |= (byte & (1 << 1)) >> 1;
+
+	/* If we are in normal mode set the boot count to 0 */
+	if(byte & 1)
+		byte &= 0x0f;
+	outb(byte, RTC_PORT(1));
+}
+#else
+void set_boot_successful(void)
+{
+	/* Nothing to do. */
+}
+#endif

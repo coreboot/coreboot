@@ -25,6 +25,10 @@ config SOC_INTEL_SCH
 
 if SOC_INTEL_SCH
 
+config BOOTBLOCK_NORTHBRIDGE_INIT
+	string
+	default "soc/intel/sch/bootblock.c"
+
 config VGA_BIOS_ID
 	string
 	default "8086,8108"

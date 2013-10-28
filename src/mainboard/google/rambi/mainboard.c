@@ -33,6 +33,7 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include "ec.h"
 
 void mainboard_suspend_resume(void)
 {
@@ -125,6 +126,11 @@ static int int15_handler(void)
 	return res;
 }
 #endif
+
+static void mainboard_init(device_t dev)
+{
+	mainboard_ec_init();
+}
 
 // mainboard_enable is executed as first thing after
 // enumerate_buses().

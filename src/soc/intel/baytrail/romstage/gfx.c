@@ -37,7 +37,8 @@ void gfx_init(void)
 	msac = pci_read_config8(gfx_dev, MSAC);
 
 	ggc &= ~(GGC_GTT_SIZE_MASK | GGC_GSM_SIZE_MASK);
-	ggc |= GGC_GTT_SIZE_2MB | GGC_GSM_SIZE_32MB;
+	/* 32MB GSM is not supported with <C0 stepping. */
+	ggc |= GGC_GTT_SIZE_2MB | GGC_GSM_SIZE_64MB;
 	/* Enable VGA decoding as well. */
 	ggc &= ~(GGC_VGA_DISABLE);
 

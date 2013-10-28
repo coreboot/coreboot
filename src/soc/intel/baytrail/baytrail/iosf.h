@@ -155,5 +155,8 @@ void iosf_punit_write(int reg, uint32_t val);
 #define BIOS_RESET_CPL			0x05
 # define  BIOS_RESET_CPL_ALL_DONE		(1 << 1)
 # define  BIOS_RESET_CPL_RESET_DONE		(1 << 0)
+#define PUNIT_PWRGT_CONTROL		0x60
+#define PUNIT_PWRGT_STATUS		0x61
+#define PUNIT_GPU_EC_VIRUS		0xd2
 
 #endif /* _BAYTRAIL_IOSF_H_ */

@@ -18,6 +18,7 @@ romstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 ramstage-y += spi.c
 smm-y += spi.c
 ramstage-y += chip.c
+ramstage-y += gfx.c
 ramstage-y += iosf.c
 romstage-y += iosf.c
 ramstage-y += northcluster.c

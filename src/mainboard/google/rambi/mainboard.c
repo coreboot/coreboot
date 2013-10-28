@@ -33,6 +33,7 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include "ec.h"
 
 void mainboard_suspend_resume(void)
 {
@@ -126,11 +127,17 @@ static int int15_handler(void)
 }
 #endif
 
+static void mainboard_init(device_t dev)
+{
+	mainboard_ec_init();
+}
+
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
 static void mainboard_enable(device_t dev)
 {
+	dev->ops->init = mainboard_init;
 #if CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

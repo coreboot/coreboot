@@ -22,10 +22,15 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
+#include <baytrail/gpio.h>
 
-/* Compile-time settings for developer and recovery mode. */
-#define DEV_MODE_SETTING 1
-#define REC_MODE_SETTING 0
+#if CONFIG_EC_GOOGLE_CHROMEEC
+#include "ec.h"
+#include <ec/google/chromeec/ec.h>
+#endif
+
+/* The WP status pin lives on GPIO_SSUS_6 which is pad 36 in the SUS well. */
+#define WP_STATUS_PAD	36
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>
@@ -34,11 +39,23 @@
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
 
-static void fill_lb_gpio(struct lb_gpio *gpio, int polarity,
+static int get_lid_switch(void)
+{
+#if CONFIG_EC_GOOGLE_CHROMEEC
+	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
+
+	return !!(ec_switches & EC_SWITCH_LID_OPEN);
+#else
+	/* Default to force open. */
+	return 1;
+#endif
+}
+
+static void fill_lb_gpio(struct lb_gpio *gpio, int port, int polarity,
 			 const char *name, int force)
 {
 	memset(gpio, 0, sizeof(*gpio));
-	gpio->port = -1;
+	gpio->port = port;
 	gpio->polarity = polarity;
 	if (force >= 0)
 		gpio->value = force;
@@ -53,27 +70,46 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	gpios->count = GPIO_COUNT;
 
 	gpio = gpios->gpios;
-	fill_lb_gpio(gpio++, ACTIVE_HIGH, "write protect", 0);
-	fill_lb_gpio(gpio++, ACTIVE_HIGH, "recovery", REC_MODE_SETTING);
-	fill_lb_gpio(gpio++, ACTIVE_HIGH, "developer", DEV_MODE_SETTING);
-	fill_lb_gpio(gpio++, ACTIVE_HIGH, "lid", 1); // force open
-	fill_lb_gpio(gpio++, ACTIVE_HIGH, "power", 0);
-	fill_lb_gpio(gpio++, ACTIVE_HIGH, "oprom", oprom_is_loaded);
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "write protect",
+		     get_write_protect_state());
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery",
+		     get_recovery_mode_switch());
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer",
+		     get_developer_mode_switch());
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid", get_lid_switch());
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", oprom_is_loaded);
 }
 #endif
 
 int get_developer_mode_switch(void)
 {
-	return DEV_MODE_SETTING;
+	return 0;
 }
 
 int get_recovery_mode_switch(void)
 {
-	return REC_MODE_SETTING;
+#if CONFIG_EC_GOOGLE_CHROMEEC
+	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
+	u32 ec_events;
+
+	/* If a switch is set, we don't need to look at events. */
+	if (ec_switches & (EC_SWITCH_DEDICATED_RECOVERY))
+		return 1;
+
+	/* Else check if the EC has posted the keyboard recovery event. */
+	ec_events = google_chromeec_get_events_b();
+
+	return !!(ec_events &
+		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+#else
+	return 0;
+#endif
 }
 
 int get_write_protect_state(void)
 {
-	return 0;
+	/* WP is enabled when the pin is reading high. */
+	return ssus_get_gpio(WP_STATUS_PAD);
 }
 

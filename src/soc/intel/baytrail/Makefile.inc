@@ -33,6 +33,7 @@ smm-y += smihandler.c
 ramstage-y += smm.c
 ramstage-y += southcluster.c
 ramstage-$(CONFIG_HAVE_REFCODE_BLOB) += refcode.c
+ramstage-y += sata.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

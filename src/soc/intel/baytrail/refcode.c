@@ -19,6 +19,7 @@
 
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/x86/tsc.h>
 #include <rmodule.h>
 
 #include <baytrail/ramstage.h>
@@ -47,6 +48,7 @@ void baytrail_run_reference_code(void)
 		return;
 	}
 
+	wrp.tsc_ticks_per_microsecond = tsc_freq_mhz();
 	entry = refcode.entry;
 
 	/* Call into reference code. */

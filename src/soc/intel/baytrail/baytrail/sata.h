@@ -17,19 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* The devicetree parser expects chip.h to reside directly in the path
- * specified by the devicetree. */
+#ifndef BAYTRAIL_SATA_H
+#define BAYTRAIL_SATA_H
 
-#ifndef _BAYTRAIL_CHIP_H_
-#define _BAYTRAIL_CHIP_H_
+#define SATA_SIRI 0xa0
+#define SATA_SIRD 0xa4
 
-#include <stdint.h>
-
-struct soc_intel_baytrail_config {
-        uint8_t sata_port_map;
-        uint8_t sata_ahci;
-        uint8_t ide_legacy_combined;
-};
-
-extern struct chip_operations soc_intel_baytrail_ops;
-#endif /* _BAYTRAIL_CHIP_H_ */
+#endif

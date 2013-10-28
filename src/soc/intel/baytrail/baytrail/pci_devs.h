@@ -45,8 +45,10 @@
 /* SATA */
 #define SATA_DEV 19
 #define SATA_FUNC 0
-# define ACHI1_DEVID 0x0f22
-# define ACHI2_DEVID 0x0f23
+#define IDE1_DEVID  0x0f20
+#define IDE2_DEVID  0x0f21
+#define AHCI1_DEVID 0x0f22
+#define AHCI2_DEVID 0x0f23
 
 /* xHCI */
 #define XHCI_DEV 20

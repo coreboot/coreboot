@@ -25,6 +25,9 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
+#if CONFIG_EC_GOOGLE_CHROMEEC
+#include <ec/google/chromeec/ec.h>
+#endif
 #include <ramstage_cache.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
@@ -123,6 +126,11 @@ void * asmlinkage romstage_main(unsigned long bist,
 	punit_init();
 
 	gfx_init();
+
+#if CONFIG_EC_GOOGLE_CHROMEEC
+	/* Ensure the EC is in the right mode for recovery */
+	google_chromeec_early_init();
+#endif
 
 	/* Call into mainboard. */
 	mainboard_romstage_entry(&rp);

@@ -22,5 +22,6 @@ subdirs-y += spd
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += gpio.c
+ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c

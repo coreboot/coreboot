@@ -374,7 +374,7 @@ int i915lightup(const struct northbridge_intel_sandybridge_config *info,
 		(void *)graphics, FRAME_BUFFER_BYTES);
 	memset((void *)graphics, 0, FRAME_BUFFER_BYTES);
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
-	set_vbe_mode_info_valid(&edid, graphics);
+	set_vbe_mode_info_valid(&edid, (uintptr_t)graphics);
 	i915_init_done = 1;
 	return i915_init_done;
 }

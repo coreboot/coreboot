@@ -426,20 +426,17 @@ static void gma_pm_init_post_vbios(struct device *dev)
 
 static void gma_func0_init(struct device *dev)
 {
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	struct northbridge_intel_haswell_config *conf = dev->chip_info;
+	struct intel_dp dp;
+#endif
+
 	int lightup_ok = 0;
 	u32 reg32;
-	u32 graphics_base; //, graphics_size;
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
-
-
-	/* the BAR for graphics space is a well known number for
-	 * sandy and ivy. And the resource code renumbers it.
-	 * So it's almost like having two hardcodes.
-	 */
-	graphics_base = dev->resource_list[1].base;
 
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);
@@ -449,17 +446,25 @@ static void gma_func0_init(struct device *dev)
 
 #if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	printk(BIOS_SPEW, "NATIVE graphics, run native enable\n");
-	u32 mmiobase, physbase;
 	/* Default set to 1 since it might be required for
 	   stuff like seabios */
 	unsigned int init_fb = 1;
-	mmiobase = dev->resource_list[0].base;
-	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+
+	/* the BAR for graphics space is a well known number for
+	 * sandy and ivy. And the resource code renumbers it.
+	 * So it's almost like having two hardcodes.
+	 */
+	dp.graphics = (void *)((uintptr_t)dev->resource_list[1].base);
+	dp.physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+	dp.panel_power_down_delay = conf->gpu_panel_power_down_delay;
+	dp.panel_power_up_delay = conf->gpu_panel_power_up_delay;
+	dp.panel_power_cycle_delay = conf->gpu_panel_power_cycle_delay;
+
+	dp.physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 #ifdef CONFIG_CHROMEOS
 	init_fb = developer_mode_enabled() || recovery_mode_enabled();
 #endif
-	lightup_ok = i915lightup(physbase, mmiobase, graphics_base, init_fb);
-	if (lightup_ok)
+	lightup_ok = panel_lightup(&dp, init_fb);
 		gfx_set_init_done(1);
 #endif
 	if (! lightup_ok) {

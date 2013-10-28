@@ -60,7 +60,7 @@ void runio(struct intel_dp *dp,  int verbose)
 	mainboard_set_port_clk_dp(dp);
 
 	gtt_write(DSPSTRIDE(dp->plane),dp->stride);
-        gtt_write(DSPCNTR(dp->plane),DISPLAY_PLANE_ENABLE|DISPPLANE_RGBX888);
+        gtt_write(DSPCNTR(dp->plane),DISPLAY_PLANE_ENABLE|DISPPLANE_BGRX888);
 
 	gtt_write(DEIIR,0x00000080);
 	intel_dp_wait_reg(DEIIR, 0x00000000);
@@ -132,7 +132,7 @@ void runio(struct intel_dp *dp,  int verbose)
 	intel_dp_wait_reg(DEIIR, 0x00000000);
 
 	gtt_write(DSPSTRIDE(dp->plane),dp->stride);
-	gtt_write(DSPCNTR(dp->plane),DISPLAY_PLANE_ENABLE | DISPPLANE_RGBX888);
+	gtt_write(DSPCNTR(dp->plane),DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888);
 
 	gtt_write(PCH_PP_CONTROL,EDP_BLC_ENABLE | EDP_BLC_ENABLE | PANEL_POWER_ON);
 

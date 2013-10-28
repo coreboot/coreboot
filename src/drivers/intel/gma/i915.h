@@ -175,6 +175,12 @@ struct intel_dp {
 	struct intel_dp_m_n m_n;
 	u32 flags;
 	u32 transcoder;
+	/* parameters computed by the early startup, to be used
+	 * in the GMA code.
+	 */
+	u8 *graphics;
+	/* physical address, not to be used directly. */
+	u64 physbase;
 };
 
 /* we may yet need these. */
@@ -278,6 +284,7 @@ u32 gtt_read(u32 reg);
 
 int i915lightup(unsigned int physbase, unsigned int mmio,
 		unsigned int gfx, unsigned int init_fb);
+int panel_lightup(struct intel_dp *dp, unsigned int init_fb);
 
 /* display.c */
 void compute_display_params(struct intel_dp *dp);

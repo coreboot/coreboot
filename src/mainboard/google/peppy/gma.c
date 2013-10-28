@@ -87,9 +87,6 @@
  */
 #define FRAME_BUFFER_PAGES (FRAME_BUFFER_BYTES/(4096))
 
-static unsigned int *mmio;
-static unsigned int graphics;
-static unsigned int physbase;
 
 static int i915_init_done = 0;
 
@@ -155,8 +152,6 @@ static void test_gfx(struct intel_dp *dp)
 	   green and blue. It is very useful to ensure all the initializations
 	   are made right. Thus, to be used only for testing, not otherwise
 	*/
-	printk(BIOS_SPEW, "TEST: graphics %p, va %d, ha %d, stride %d\n",
-		(u32 *)graphics, dp->edid.va, dp->edid.ha, dp->stride);
 
 	for (i = 0; i < (dp->edid.va - 4); i++) {
 		u32 *l;
@@ -166,7 +161,7 @@ static void test_gfx(struct intel_dp *dp)
 			if (j == (dp->edid.ha/2)) {
 				tcolor = 0xff00;
 			}
-			l = (u32*)(graphics + i * dp->stride + j * sizeof(tcolor));
+			l = (u32*)(dp->graphics + i * dp->stride + j * sizeof(tcolor));
 			memcpy(l,&tcolor,sizeof(tcolor));
 		}
 	}
@@ -196,24 +191,14 @@ void mainboard_set_port_clk_dp(struct intel_dp *intel_dp)
 	gtt_write(PORT_CLK_SEL(intel_dp->port), ddi_pll_sel);
 }
 
-int i915lightup(unsigned int pphysbase, unsigned int pmmio,
-		unsigned int pgfx, unsigned int init_fb)
+int panel_lightup(struct intel_dp *dp, unsigned int init_fb)
 {
-	int must_cycle_power = 0;
-	struct intel_dp adp, *dp = &adp;
 	int i;
 	int edid_ok;
 	int pixels = FRAME_BUFFER_BYTES/64;
 
 	gtt_write(PCH_PP_CONTROL,0xabcd000f);
 	delay(1);
-	mmio = (void *)pmmio;
-	physbase = pphysbase;
-	graphics = pgfx;
-	printk(BIOS_SPEW,
-	       "i915lightup: graphics %p mmio %p"
-	       "physbase %08x\n",
-	       (void *)graphics, mmio, physbase);
 
 	void runio(struct intel_dp *dp);
 	/* hard codes -- stuff you can only know from the mainboard */
@@ -240,11 +225,12 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 	   2. Developer/Recovery mode: Set up a tasteful color
 	      so people know we are alive. */
         if (init_fb || show_test) {
-                set_translation_table(0, FRAME_BUFFER_PAGES, physbase, 4096);
-		memset((void *)graphics, 0x55, FRAME_BUFFER_PAGES*4096);
+                set_translation_table(0, FRAME_BUFFER_PAGES, dp->physbase,
+					4096);
+		memset((void *)dp->graphics, 0x55, FRAME_BUFFER_PAGES*4096);
         } else {
-		set_translation_table(0, FRAME_BUFFER_PAGES, physbase, 0);
-                memset((void*)graphics, 0, 4096);
+		set_translation_table(0, FRAME_BUFFER_PAGES, dp->physbase, 0);
+                memset((void*)dp->graphics, 0, 4096);
         }
 
 	dp->address = 0x50;
@@ -279,13 +265,14 @@ int i915lightup(unsigned int pphysbase, unsigned int pmmio,
 	printk(BIOS_SPEW, "ha=%d, va=%d\n",dp->edid.ha, dp->edid.va);
 	test_gfx(dp);
 
-	set_vbe_mode_info_valid(&dp->edid, graphics);
+	set_vbe_mode_info_valid(&dp->edid, (uintptr_t)dp->graphics);
 	i915_init_done = 1;
 	return 1;
 
 fail:
 	printk(BIOS_SPEW, "Graphics could not be started;");
-	if (0 && must_cycle_power){
+	/* unclear we will *ever* want to do this. */
+	if (0){
 		printk(BIOS_SPEW, "Turn off power and wait ...");
 		gtt_write(PCH_PP_CONTROL,0xabcd0000);
 		udelay(600000);

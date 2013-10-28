@@ -9,6 +9,7 @@ ramstage-y += hda.c
 ramstage-y += pci.c
 ramstage-y += pcie.c
 ramstage-y += sd.c
+ramstage-y += imc_fan_control.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
 ramstage-y += reset.c

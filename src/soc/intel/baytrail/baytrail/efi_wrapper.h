@@ -29,7 +29,7 @@
 #ifndef __EFI_WRAPPER_H__
 #define __EFI_WRAPPER_H__
 
-#define EFI_WRAPPER_VER 1
+#define EFI_WRAPPER_VER 2
 
 /* Provide generic x86 calling conventions. */
 #define ABI_X86 __attribute((regparm(0)))
@@ -44,6 +44,8 @@ struct efi_wrapper_params {
 	int version;
 
 	void ABI_X86 (*console_out)(unsigned char byte);
+
+	unsigned int tsc_ticks_per_microsecond;
 } __attribute__((packed));
 
 typedef int ABI_X86 (*efi_wrapper_entry_t)(struct efi_wrapper_params *);

@@ -54,7 +54,7 @@ static void dump_td(u32 addr)
 	usb_debug("|:+-----------------------------------------------+:|\n");
 	usb_debug("|:| Alt. Next qTD   [0x%08lx]                  |:|\n", td->alt_next_qtd);
 	usb_debug("|:+-----------------------------------------------+:|\n");
-	usb_debug("|:|       | Bytes to Transfer            | [%04ld] |:|\n", (td->token & (0x7FUL << 16)) >> 16);
+	usb_debug("|:|       | Bytes to Transfer            |[%05ld] |:|\n", (td->token & QTD_TOTAL_LEN_MASK) >> 16);
 	usb_debug("|:|       | PID CODE:                    |    [%ld] |:|\n", (td->token & (3UL << 8)) >> 8);
 	usb_debug("|:|       | Interrupt On Complete (IOC)  |    [%ld] |:|\n", (td->token & (1UL << 15)) >> 15);
 	usb_debug("|:|       | Status Active                |    [%ld] |:|\n", (td->token & (1UL << 7)) >> 7);

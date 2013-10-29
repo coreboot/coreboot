@@ -167,6 +167,11 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 			file_ptr = media->map(media, offset,
 					      file_offset + file_len);
 			media->close(media);
+			if (file_ptr == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
+				ERROR("ERROR: Mapping %s failed (insufficient "
+				      "buffer space?).\n", file_name);
+				return NULL;
+			}
 			return file_ptr;
 		} else {
 			DEBUG(" (unmatched file @0x%x: %s)\n", offset,

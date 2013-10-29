@@ -22,7 +22,9 @@ struct pnp_mode_ops;
 struct chip_operations {
 	void (*enable_dev)(struct device *dev);
 	void (*init)(void *chip_info);
+	void (*final)(void *chip_info);
 	unsigned int initialized : 1;
+	unsigned int finalized : 1;
 	const char *name;
 };
 
@@ -35,6 +37,7 @@ struct device_operations {
 	void (*set_resources)(device_t dev);
 	void (*enable_resources)(device_t dev);
 	void (*init)(device_t dev);
+	void (*final)(device_t dev);
 	unsigned int (*scan_bus)(device_t bus, unsigned int max);
 	void (*enable)(device_t dev);
 	void (*disable)(device_t dev);
@@ -140,6 +143,8 @@ void dev_configure(void);
 void dev_enable(void);
 void dev_initialize(void);
 void dev_optimize(void);
+void dev_finalize(void);
+void dev_finalize_chips(void);
 
 /* Generic device helper functions */
 int reset_bus(struct bus *bus);

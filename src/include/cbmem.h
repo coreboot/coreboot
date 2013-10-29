@@ -73,6 +73,7 @@
 #define CBMEM_ID_EHCI_DEBUG	0xe4c1deb9
 #define CBMEM_ID_NONE		0x00000000
 #define CBMEM_ID_AGESA_RUNTIME	0x41474553
+#define CBMEM_ID_HOB_POINTER		0x484f4221
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>

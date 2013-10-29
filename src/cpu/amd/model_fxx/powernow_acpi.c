@@ -758,7 +758,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	u16 Pstate_feq[MAXP+1];
 	u8 Pstate_vid[MAXP+1];
 	u32 Pstate_power[MAXP+1];
-	u8 Max_fid, Start_fid, Start_vid, Max_vid;
+	u8 Max_fid, Start_fid, Max_vid;
 	struct cpuid_result cpuid1;
 
 	/* See if the CPUID(0x80000007) returned EDX[2:1]==11b */
@@ -777,7 +777,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	Max_fid = (msr.lo & 0x3F0000) >> 16;
 	Max_vid = (msr.hi & 0x3F0000) >> 16;
 	Start_fid = (msr.lo & 0x3F00) >> 8;
-	Start_vid = (msr.hi & 0x3F00) >> 8;
+	/* Start_vid = (msr.hi & 0x3F00) >> 8; */
 
 	cmp_cap =
 	    (pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x18, 3)), 0xE8) &

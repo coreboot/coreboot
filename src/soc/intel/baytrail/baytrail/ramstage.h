@@ -27,6 +27,7 @@
 void baytrail_init_pre_device(void);
 void baytrail_init_cpus(device_t dev);
 void set_max_freq(void);
+void southcluster_enable_dev(device_t dev);
 #if CONFIG_HAVE_REFCODE_BLOB
 void baytrail_run_reference_code(void);
 #else

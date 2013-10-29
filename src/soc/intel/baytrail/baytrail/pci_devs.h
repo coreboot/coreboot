@@ -102,12 +102,16 @@
 
 /* PCIe Ports */
 #define PCIE_DEV 28
+# define PCIE_PORT1_DEV PCIE_DEV
 # define PCIE_PORT1_FUNC 0
 # define PCIE_PORT1_DEVID 0x0f48
+# define PCIE_PORT2_DEV PCIE_DEV
 # define PCIE_PORT2_FUNC 1
 # define PCIE_PORT2_DEVID 0x0f4a
+# define PCIE_PORT3_DEV PCIE_DEV
 # define PCIE_PORT3_FUNC 2
 # define PCIE_PORT3_DEVID 0x0f4c
+# define PCIE_PORT4_DEV PCIE_DEV
 # define PCIE_PORT4_FUNC 3
 # define PCIE_PORT4_DEVID 0x0f4e
 

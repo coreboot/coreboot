@@ -45,6 +45,7 @@
 #define  IOSF_OPCODE(x) ((x) << 24)
 #define  IOSF_PORT(x) ((0xff & (x)) << 16)
 #define  IOSF_REG(x) ((0xff & (x)) << 8)
+#define  IOSF_REG_UPPER(x) (((~0xff) & (x)))
 #define  IOSF_BYTE_EN_0 0x10
 #define  IOSF_BYTE_EN_1 0x20
 #define  IOSF_BYTE_EN_2 0x40

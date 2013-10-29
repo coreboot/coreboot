@@ -1,1 +1,2 @@
 source src/vendorcode/google/Kconfig
+source src/vendorcode/intel/Kconfig

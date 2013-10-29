@@ -15,3 +15,4 @@ source src/northbridge/intel/i5000/Kconfig
 source src/northbridge/intel/nehalem/Kconfig
 source src/northbridge/intel/sandybridge/Kconfig
 source src/northbridge/intel/haswell/Kconfig
+source src/northbridge/intel/fsp_sandybridge/Kconfig

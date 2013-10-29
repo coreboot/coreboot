@@ -28,6 +28,12 @@ cpu_ucode_cbfs_file = $(obj)/cpu_microcode_blob.bin
 cbfs_include_ucode = y
 endif
 
+ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC), 0)
+cpu_ucode_cbfs_offset = "-b $(CONFIG_CPU_MICROCODE_CBFS_LOC)"
+else
+cpu_ucode_cbfs_offset = "-b"
+endif
+
 # In case we have more than one "source" (cough) files containing microcode, we
 # link them together in one large blob, so that we get all the microcode updates
 # in one file. This makes it easier for objcopy in the final step.
@@ -46,7 +52,7 @@ $(obj)/cpu_microcode_blob.bin: $(obj)/cpu_microcode_blob.o
 ifeq ($(cbfs_include_ucode),y)
 # Add CPU microcode to specified rom image $(1)
 add-cpu-microcode-to-cbfs = \
-	$(CBFSTOOL) $(1) locate -f $(cpu_ucode_cbfs_file) -n $(cpu_ucode_cbfs_name) -a 16 | xargs $(CBFSTOOL) $(1) add -n $(cpu_ucode_cbfs_name) -f $(cpu_ucode_cbfs_file) -t 0x53 -b
+	$(CBFSTOOL) $(1) locate -f $(cpu_ucode_cbfs_file) -n $(cpu_ucode_cbfs_name) -a 16 | xargs $(CBFSTOOL) $(1) add -n $(cpu_ucode_cbfs_name) -f $(cpu_ucode_cbfs_file) -t 0x53 $(cpu_ucode_cbfs_offset)
 else
 add-cpu-microcode-to-cbfs = true
 endif

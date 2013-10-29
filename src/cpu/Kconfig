@@ -77,10 +77,32 @@ config CPU_MICROCODE_IN_CBFS
 	bool
 	default n
 
+# The following options (BOARD_MICROCODE_CBFS_*) make it possible for the
+# microcode configuration to be selected in the board-level Kconfig.  If
+# you want your platform's microcode to be generated during the build,
+# add "select BOARD_MICROCODE_CBFS_GENERATE" to your mainboard's Kconfig.
+# If you want to use an external microcode file, add "select
+# BOARD_MICROCODE_CBFS_EXTERNAL" instead.  If neither of these statements
+# exists in your mainboard's configuration file (or if you include a
+# "select BOARD_MICROCODE_CBFS_NONE" statement), then the ROM image will
+# be built without any microcode.
+config BOARD_MICROCODE_CBFS_NONE
+	bool
+	default y
+
+config BOARD_MICROCODE_CBFS_GENERATE
+	bool
+	default n
+
+config BOARD_MICROCODE_CBFS_EXTERNAL
+	bool
+	default n
+
 choice
 	prompt "Include CPU microcode in CBFS" if ARCH_X86
-	default CPU_MICROCODE_CBFS_GENERATE if CPU_MICROCODE_IN_CBFS
-	default CPU_MICROCODE_CBFS_NONE if !CPU_MICROCODE_IN_CBFS
+	default CPU_MICROCODE_CBFS_GENERATE if CPU_MICROCODE_IN_CBFS && BOARD_MICROCODE_CBFS_GENERATE
+	default CPU_MICROCODE_CBFS_EXTERNAL if CPU_MICROCODE_IN_CBFS && BOARD_MICROCODE_CBFS_EXTERNAL
+	default CPU_MICROCODE_CBFS_NONE
 
 config CPU_MICROCODE_CBFS_GENERATE
 	bool "Generate from tree"
@@ -158,3 +180,16 @@ config CPU_MICROCODE_FILE
 	  default "cpu_microcode.bin"
 	  help
 	    The path and filename of the file containing the CPU microcode.
+
+config CPU_MICROCODE_CBFS_LOC
+	  hex "Microcode address in CBFS"
+	  depends on CPU_MICROCODE_IN_CBFS
+	  default 0
+
+config CPU_MICROCODE_CBFS_LEN
+	  hex "Microcode length in CBFS"
+	  depends on CPU_MICROCODE_IN_CBFS
+	  default 0xC000
+	  help
+		The microcode needs a specific length to get correctly
+		detected and loaded by all CPUs.

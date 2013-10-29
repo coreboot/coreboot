@@ -141,12 +141,12 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				Store (0, \FLVL)
-				Store (\F0PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F0PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
 				Store (1, \FLVL)
-				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -162,12 +162,12 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				Store (1, \FLVL)
-				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
 				Store (2, \FLVL)
-				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -183,12 +183,12 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				Store (2, \FLVL)
-				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
 				Store (3, \FLVL)
-				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -204,12 +204,12 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				Store (3, \FLVL)
-				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
 				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}
@@ -225,12 +225,12 @@ Scope (\_TZ)
 			}
 			Method (_ON)  {
 				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 			Method (_OFF) {
 				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F3PS)
+				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
 				Notify (\_TZ.THRM, 0x81)
 			}
 		}

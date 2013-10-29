@@ -175,6 +175,7 @@ static boot_state_t bs_dev_init(void *arg)
 
 static boot_state_t bs_post_device(void *arg)
 {
+	dev_finalize();
 	timestamp_add_now(TS_DEVICE_DONE);
 
 	timestamp_reinit();
@@ -216,6 +217,8 @@ static boot_state_t bs_write_tables(void *arg)
 	 * write our configuration tables.
 	 */
 	write_tables();
+
+	dev_finalize_chips();
 
 	return BS_PAYLOAD_LOAD;
 }

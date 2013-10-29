@@ -72,6 +72,26 @@ void dev_initialize_chips(void)
 	}
 }
 
+/**
+ * Finalize all chips of statically known devices.
+ *
+ * This is the last call before calling the payload. This is a good place
+ * to lock registers or other final cleanup.
+ */
+void dev_finalize_chips(void)
+{
+	struct device *dev;
+
+	for (dev = all_devices; dev; dev = dev->next) {
+		/* Initialize chip if we haven't yet. */
+		if (dev->chip_ops && dev->chip_ops->final &&
+				!dev->chip_ops->finalized) {
+			dev->chip_ops->final(dev->chip_info);
+			dev->chip_ops->finalized = 1;
+		}
+	}
+}
+
 DECLARE_SPIN_LOCK(dev_lock)
 
 #if CONFIG_GFXUMA
@@ -1166,4 +1186,60 @@ void dev_initialize(void)
 
 	printk(BIOS_INFO, "Devices initialized\n");
 	show_all_devs(BIOS_SPEW, "After init.");
+}
+
+/**
+ * Finalize a specific device.
+ *
+ * The parent should be finalized first to avoid having an ordering problem.
+ * This is done by calling the parent's final() method before its childrens'
+ * final() methods.
+ *
+ * @param dev The device to be initialized.
+ */
+static void final_dev(struct device *dev)
+{
+	if (!dev->enabled)
+		return;
+
+	if (dev->ops && dev->ops->final) {
+		printk(BIOS_DEBUG, "%s final\n", dev_path(dev));
+		dev->ops->final(dev);
+	}
+}
+
+static void final_link(struct bus *link)
+{
+	struct device *dev;
+	struct bus *c_link;
+
+	for (dev = link->children; dev; dev = dev->sibling)
+		final_dev(dev);
+
+	for (dev = link->children; dev; dev = dev->sibling) {
+		for (c_link = dev->link_list; c_link; c_link = c_link->next)
+			final_link(c_link);
+	}
+}
+/**
+ * Finalize all devices in the global device tree.
+ *
+ * Starting at the root device, call the device's final() method to do
+ * device-specific cleanup, then call each child's final() method.
+ */
+void dev_finalize(void)
+{
+	struct bus *link;
+
+	printk(BIOS_INFO, "Finalize devices...\n");
+
+	/* First call the mainboard finalize. */
+	final_dev(&dev_root);
+
+	/* Now finalize everything. */
+	for (link = dev_root.link_list; link; link = link->next)
+		final_link(link);
+
+	printk(BIOS_INFO, "Devices finalized\n");
+	show_all_devs(BIOS_SPEW, "After finalize.");
 }

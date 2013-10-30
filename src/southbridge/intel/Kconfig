@@ -14,3 +14,4 @@ source src/southbridge/intel/pxhd/Kconfig
 source src/southbridge/intel/sch/Kconfig
 source src/southbridge/intel/bd82x6x/Kconfig
 source src/southbridge/intel/lynxpoint/Kconfig
+source src/southbridge/intel/fsp_bd82x6x/Kconfig

@@ -31,6 +31,7 @@
 #define PUNIT_BASE_ADDRESS		0xfed05000
 #define RCBA_BASE_ADDRESS		0xfed1c000
 #define HPET_BASE_ADDRESS		0xfed00000
+#define TEMP_BASE_ADDRESS		0xfd000000
 
 /* IO Port base */
 #define ACPI_BASE_ADDRESS		0x0400

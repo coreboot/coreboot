@@ -28,6 +28,7 @@
 #if CONFIG_EC_GOOGLE_CHROMEEC
 #include <ec/google/chromeec/ec.h>
 #endif
+#include <elog.h>
 #include <ramstage_cache.h>
 #include <ramstage_cache.h>
 #include <romstage_handoff.h>
@@ -146,6 +147,10 @@ void romstage_common(struct romstage_params *params)
 	struct romstage_handoff *handoff;
 
 	mark_ts(params, timestamp_get());
+
+#if CONFIG_ELOG_BOOT_COUNT
+	boot_count_increment();
+#endif
 
 	/* Initialize RAM */
 	raminit(params->mrc_params, 5);

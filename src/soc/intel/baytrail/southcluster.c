@@ -217,9 +217,36 @@ static inline void set_d3hot_bits(device_t dev, int offset)
 	pci_write_config8(dev, offset + 4, reg8);
 }
 
+/* Parts of the audio subsystem are powered by the HDA device. Therefore, one
+ * cannot put HDA into D3Hot. Instead perform this workaround to make some of
+ * the audio paths work for LPE audio. */
+static void hda_work_around(device_t dev)
+{
+	unsigned long gctl = TEMP_BASE_ADDRESS + 0x8;
+
+	/* Need to set magic register 0x43 to 0xd7 in config space. */
+	pci_write_config8(dev, 0x43, 0xd7);
+
+	/* Need to set bit 0 of GCTL to take the device out of reset. However,
+	 * that requires setting up the 64-bit BAR. */
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, TEMP_BASE_ADDRESS);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_1, 0);
+	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
+	write32(gctl, read32(gctl) | 0x1);
+	pci_write_config8(dev, PCI_COMMAND, 0);
+	pci_write_config32(dev, PCI_BASE_ADDRESS_0, 0);
+}
+
 static int place_device_in_d3hot(device_t dev)
 {
 	unsigned offset;
+
+	/* Parts of the HDA block are used for LPE audio as well.
+	 * Therefore assume the HDA will never be put into D3Hot. */
+	if (dev->path.pci.devfn == PCI_DEVFN(HDA_DEV, HDA_FUNC)) {
+		hda_work_around(dev);
+		return 0;
+	}
 
 	offset = pci_find_capability(dev, PCI_CAP_ID_PM);
 

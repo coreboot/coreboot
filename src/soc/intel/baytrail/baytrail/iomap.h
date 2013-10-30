@@ -30,6 +30,7 @@
 #define MPHY_BASE_ADDRESS		0xfef00000
 #define PUNIT_BASE_ADDRESS		0xfed05000
 #define RCBA_BASE_ADDRESS		0xfed1c000
+#define HPET_BASE_ADDRESS		0xfed00000
 
 /* IO Port base */
 #define ACPI_BASE_ADDRESS		0x0400

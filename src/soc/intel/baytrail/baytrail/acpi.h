@@ -23,7 +23,6 @@
 #include <arch/acpi.h>
 
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
-void acpi_create_serialio_ssdt(acpi_header_t *ssdt);
 
 #endif /* _BAYTRAIL_ACPI_H_ */
 

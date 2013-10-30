@@ -24,7 +24,12 @@ void get_cbmem_table(uint64_t *base, uint64_t *size)
 	uint64_t top_of_ram = get_top_of_ram();
 
 	if (top_of_ram >= HIGH_MEMORY_SIZE) {
+#if CONFIG_HAVE_FSP_BIN
+		/* The FSP uses space for HOB and other stuff. Don't overwrite it */
+		*base = top_of_ram - HIGH_MEMORY_SIZE - 0x200000;	/* 2MB for FSP HOB */
+#else
 		*base = top_of_ram - HIGH_MEMORY_SIZE;
+#endif
 		*size = HIGH_MEMORY_SIZE;
 	} else {
 		*base = 0;
@@ -45,7 +50,12 @@ void __attribute__((weak)) backup_top_of_ram(uint64_t ramtop)
 void set_top_of_ram(uint64_t ramtop)
 {
 	backup_top_of_ram(ramtop);
+#if CONFIG_HAVE_FSP_BIN
+	/* The FSP uses space for HOB and other stuff. Don't overwrite it */
+	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE - 0x200000, HIGH_MEMORY_SIZE); 	/* 2MB for FSP HOB */
+#else
 	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
+#endif
 }
 
 unsigned long __attribute__((weak)) get_top_of_ram(void)

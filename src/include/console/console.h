@@ -27,7 +27,7 @@
 #if CONFIG_CONSOLE_SERIAL
 #include <uart.h>
 #endif
-#if CONFIG_USBDEBUG
+#if CONFIG_USBDEBUG && !defined(__ROMCC__)
 #include <usbdebug.h>
 #endif
 #if CONFIG_CONSOLE_NE2K

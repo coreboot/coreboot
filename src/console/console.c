@@ -135,3 +135,23 @@ void console_init(void)
 #endif /* CONFIG_EARLY_CONSOLE */
 }
 #endif
+
+#ifndef __ROMCC__
+void hexdump(char LEVEL, const void *d, int len)
+{
+	int count=0;
+
+	while (len > 0) {
+		if (count % 8 == 0) {
+			printk(LEVEL,"\n");
+			printk(LEVEL, "%p:", d);
+		}
+		printk(LEVEL, " 0x%08lx", *(unsigned long*)d);
+		count++;
+		len -= 4;
+		d += 4;
+	}
+
+	printk(LEVEL,"\n");
+}
+#endif /* !__ROMCC__ */

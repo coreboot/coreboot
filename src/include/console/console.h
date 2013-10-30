@@ -76,6 +76,7 @@ void post_code(u8 value);
 void mainboard_post(u8 value);
 void __attribute__ ((noreturn)) die(const char *msg);
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+void hexdump(char LEVEL, const void *d, int len);
 
 #if defined(__BOOT_BLOCK__) && !CONFIG_BOOTBLOCK_CONSOLE || \
     (defined(__PRE_RAM__) && !defined(__BOOT_BLOCK__)) && !CONFIG_EARLY_CONSOLE

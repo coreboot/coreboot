@@ -322,7 +322,8 @@ static int place_device_in_d3hot(device_t dev)
 		offset = 0x50;
 		break;
 	case PCI_DEVFN(TXE_DEV, TXE_FUNC):
-		break;
+		/* TXE cannot be placed in D3Hot. */
+		return 0;
 	case PCI_DEVFN(PCIE_PORT1_DEV, PCIE_PORT1_FUNC):
 		offset = 0xa0;
 		break;

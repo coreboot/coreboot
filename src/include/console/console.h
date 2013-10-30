@@ -40,6 +40,8 @@
 #include <console/spkmodem.h>
 #endif
 
+void hexdump(char LEVEL, const void *d, int len);
+
 #ifndef __PRE_RAM__
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);

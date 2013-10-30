@@ -3,6 +3,8 @@ if VENDOR_INTEL
 choice
 	prompt "Mainboard model"
 
+config BOARD_INTEL_COUGAR_CANYON2
+	bool "Cougar Canyon 2 CRB"
 config BOARD_INTEL_D810E2CB
 	bool "D810E2CB"
 config BOARD_INTEL_D945GCLF
@@ -26,6 +28,7 @@ config BOARD_INTEL_WTM2
 
 endchoice
 
+source "src/mainboard/intel/cougar_canyon2/Kconfig"
 source "src/mainboard/intel/d810e2cb/Kconfig"
 source "src/mainboard/intel/d945gclf/Kconfig"
 source "src/mainboard/intel/eagleheights/Kconfig"

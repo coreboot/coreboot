@@ -18,6 +18,8 @@
  */
 
 #include <arch/cpu.h>
+#include <arch/acpi.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cr.h>
@@ -25,14 +27,16 @@
 #include <device/device.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
+#include <romstage_handoff.h>
 #include <stdlib.h>
 
-#include <baytrail/pattrs.h>
+#include <baytrail/gpio.h>
 #include <baytrail/lpc.h>
 #include <baytrail/msr.h>
+#include <baytrail/nvs.h>
+#include <baytrail/pattrs.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
-#include <baytrail/gpio.h>
 
 /* Global PATTRS */
 DEFINE_PATTRS;
@@ -103,6 +107,31 @@ static void fill_in_pattrs(void)
 	fill_in_msr(&attrs->iacore_vids, MSR_IACORE_VIDS);
 }
 
+static inline void set_acpi_sleep_type(int val)
+{
+#if CONFIG_HAVE_ACPI_RESUME
+	acpi_slp_type = val;
+#endif
+}
+
+static void s3_resume_prepare(void)
+{
+	global_nvs_t *gnvs;
+	struct romstage_handoff *romstage_handoff;
+
+	gnvs = cbmem_add(CBMEM_ID_ACPI_GNVS, sizeof(global_nvs_t));
+
+	romstage_handoff = cbmem_find(CBMEM_ID_ROMSTAGE_INFO);
+	if (romstage_handoff == NULL || romstage_handoff->s3_resume == 0) {
+		if (gnvs != NULL) {
+			memset(gnvs, 0, sizeof(global_nvs_t));
+		}
+		set_acpi_sleep_type(0);
+		return;
+	}
+
+	set_acpi_sleep_type(3);
+}
 
 void baytrail_init_pre_device(void)
 {
@@ -119,4 +148,7 @@ void baytrail_init_pre_device(void)
 	/* Get GPIO initial states from mainboard */
 	config = mainboard_get_gpios();
 	setup_soc_gpios(config);
+
+	/* Indicate S3 resume to rest of ramstage. */
+	s3_resume_prepare();
 }

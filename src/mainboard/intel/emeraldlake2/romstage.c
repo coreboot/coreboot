@@ -29,7 +29,7 @@
 #include <pc80/mc146818rtc.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include "superio/smsc/sio1007/early_serial.c"
+#include "superio/smsc/sio1007/chip.h"
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit.h"
 #include "southbridge/intel/bd82x6x/pch.h"
@@ -46,6 +46,7 @@ static void pch_enable_lpc(void)
 {
 	device_t dev = PCH_LPC_DEV;
 	int i;
+	const u16 sio1007_lpc_ports[] = {0x2e, 0x4e, 0x162e, 0x164e};
 
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(dev, LPC_IO_DEC, 0x0010);

@@ -17,13 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*
- * The chip could be bootstrap mapped to one of four LPC addresses:
- * 0x2e, 0x4e, 0x162e, and 0x164e.
- */
-const u16 sio1007_lpc_ports[] = {0x2e, 0x4e, 0x162e, 0x164e};
+#include <stdint.h>
+#include <arch/io.h>
+#include "chip.h"
 
-static void sio1007_setreg(u16 lpc_port, u8 reg, u8 value, u8 mask)
+void sio1007_setreg(u16 lpc_port, u8 reg, u8 value, u8 mask)
 {
 	u8 reg_value;
 
@@ -34,7 +32,7 @@ static void sio1007_setreg(u16 lpc_port, u8 reg, u8 value, u8 mask)
 	outb(reg_value, lpc_port + 1);
 }
 
-static int sio1007_enable_uart_at(u16 port)
+int sio1007_enable_uart_at(u16 port)
 {
 	/* Enable config mode. */
 	outb(0x55, port);

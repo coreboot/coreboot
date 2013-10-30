@@ -67,8 +67,15 @@
 #include <northbridge/intel/haswell/haswell.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
 #else
+#if CONFIG_NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_FSP_IVYBRIDGE
+#include <northbridge/intel/fsp_sandybridge/northbridge.h>
+#define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
+#else
 #error "Northbridge must define TSEG_BAR."
 #endif
+#endif
+
+
 
 /* initially SMM is some sort of real mode. Let gcc know
  * how to treat the SMM handler stub

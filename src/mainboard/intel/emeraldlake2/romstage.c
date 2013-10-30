@@ -29,7 +29,7 @@
 #include <pc80/mc146818rtc.h>
 #include <cbmem.h>
 #include <console/console.h>
-#include "superio/smsc/sio1007/early_serial.c"
+#include "superio/smsc/sio1007/chip.h"
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit.h"
 #include "southbridge/intel/bd82x6x/pch.h"

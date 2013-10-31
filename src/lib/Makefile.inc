@@ -117,6 +117,9 @@ ramstage-y += cbmem_info.c
 ramstage-y += hexdump.c
 romstage-y += hexdump.c
 
+ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c
+romstage-$(CONFIG_REG_SCRIPT) += reg_script.c
+
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += ramstage_cache.c

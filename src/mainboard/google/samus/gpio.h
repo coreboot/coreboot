@@ -32,7 +32,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_NATIVE,        /* 6: NATIVE: I2C1_SDA_GPIO6 */
 	LP_GPIO_NATIVE,        /* 7: NATIVE: I2C1_SCL_GPIO7 */
 	LP_GPIO_ACPI_SCI,      /* 8: PCH_LTE_WAKE_L */
-	LP_GPIO_UNUSED,        /* 9: UNUSED */
+	LP_GPIO_IRQ_EDGE,      /* 9: NFC_INT (GPIO IRQ) */
 	LP_GPIO_ACPI_SCI,      /* 10: PCH_WLAN_WAKE_L */
 	LP_GPIO_UNUSED,        /* 11: UNUSED */
 	LP_GPIO_UNUSED,        /* 12: UNUSED */
@@ -51,7 +51,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_INPUT,         /* 25: EC_IN_RW */
 	LP_GPIO_OUT_HIGH,      /* 26: NFC_EN */
 	LP_GPIO_UNUSED,        /* 27: UNUSED */
-	LP_GPIO_IRQ_EDGE,      /* 29: NFC_INT (GPIO IRQ) */
+	LP_GPIO_UNUSED,        /* 28: UNUSED */
 	LP_GPIO_UNUSED,        /* 29: UNUSED */
 	LP_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSWARN_L */
 	LP_GPIO_NATIVE,        /* 31: NATIVE: ACOK_BUF */
@@ -65,11 +65,11 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 39: UNUSED */
 	LP_GPIO_NATIVE,        /* 40: NATIVE: PCH_USB1_OC_L */
 	LP_GPIO_NATIVE,        /* 41: NATIVE: PCH_USB2_OC_L */
-	LP_GPIO_IRQ_EDGE,      /* 42: CODEC_INT_L (GPIO IRQ) */
-	LP_GPIO_IRQ_EDGE,      /* 43: ACCEL_INT (GPIO IRQ) */
-	LP_GPIO_OUT_LOW,       /* 44: CODEC_LDOENA (DISABLED FOR BRINGUP) */
-	LP_GPIO_OUT_LOW,       /* 45: PP1800_CODEC_EN (DISABLED FOR BRINGUP) */
-	LP_GPIO_OUT_HIGH,      /* 46: WLAN_DISABLE_L */
+	LP_GPIO_OUT_HIGH,      /* 42: WLAN_DISABLE_L */
+	LP_GPIO_OUT_HIGH,      /* 43: PP1800_CODEC_EN */
+	LP_GPIO_OUT_HIGH,      /* 44: CODEC_LDOENA */
+	LP_GPIO_PIRQ,          /* 45: ACCEL_INT (PIRQW) */
+	LP_GPIO_PIRQ,          /* 46: CODEC_INT_L (PIRQO) */
 	LP_GPIO_PIRQ,          /* 47: ACCEL_GYRO_INT (PIRQP) */
 	LP_GPIO_UNUSED,        /* 48: UNUSED */
 	LP_GPIO_INPUT,         /* 49: HDMI_CEC */
@@ -80,14 +80,14 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 54: UNUSED */
 	LP_GPIO_UNUSED,        /* 55: UNUSED */
 	LP_GPIO_UNUSED,        /* 56: UNUSED */
-	LP_GPIO_OUT_LOW,       /* 57: CODEC_RESET_L (DISABLED FOR BRINGUP) */
+	LP_GPIO_OUT_HIGH,      /* 57: CODEC_RESET_L */
 	LP_GPIO_UNUSED,        /* 58: UNUSED */
 	LP_GPIO_OUT_HIGH,      /* 59: LTE_DISABLE_L */
 	LP_GPIO_UNUSED,        /* 60: UNUSED */
 	LP_GPIO_NATIVE,        /* 61: NATIVE: PCH_SUS_STAT */
 	LP_GPIO_NATIVE,        /* 62: NATIVE: PCH_SUSCLK */
 	LP_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
-	LP_GPIO_OUT_HIGH,      /* 64: NFC_FW_UPDATE */
+	LP_GPIO_OUT_LOW,       /* 64: NFC_FW_UPDATE */
 	LP_GPIO_INPUT,         /* 65: MINIDP_PWR_FLT_L */
 	LP_GPIO_OUT_HIGH,      /* 66: MINIDP_PWR_EN */
 	LP_GPIO_INPUT,         /* 67: RAM_ID0 */

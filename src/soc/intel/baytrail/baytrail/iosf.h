@@ -68,6 +68,8 @@ uint32_t iosf_usbphy_read(int reg);
 void iosf_usbphy_write(int reg, uint32_t val);
 uint32_t iosf_ushphy_read(int reg);
 void iosf_ushphy_write(int reg, uint32_t val);
+uint32_t iosf_lpss_read(int reg);
+void iosf_lpss_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
@@ -81,6 +83,7 @@ void iosf_ushphy_write(int reg, uint32_t val);
 #define IOSF_PORT_SYSMEMIO	0x0c /* System Memory IO */
 #define IOSF_PORT_USBPHY	0x43 /* USB PHY */
 #define IOSF_PORT_USHPHY	0x61 /* USB XHCI PHY */
+#define IOSF_PORT_LPSS		0xa0 /* LPSS - Low Power Subsystem */
 #define IOSF_PORT_SATAPHY	0xa3 /* SATA PHY */
 #define IOSF_PORT_PCIEPHY	0xa3 /* PCIE PHY */
 
@@ -103,6 +106,8 @@ void iosf_ushphy_write(int reg, uint32_t val);
 #define IOSF_OP_WRITE_USBPHY	(IOSF_OP_READ_USBPHY | 1)
 #define IOSF_OP_READ_USHPHY	0x06
 #define IOSF_OP_WRITE_USHPHY	(IOSF_OP_READ_USHPHY | 1)
+#define IOSF_OP_READ_LPSS	0x06
+#define IOSF_OP_WRITE_LPSS	(IOSF_OP_READ_LPSS | 1)
 #define IOSF_OP_READ_SATAPHY	0x00
 #define IOSF_OP_WRITE_SATAPHY	(IOSF_OP_READ_SATAPHY | 1)
 #define IOSF_OP_READ_PCIEPHY	0x00
@@ -166,5 +171,29 @@ void iosf_ushphy_write(int reg, uint32_t val);
 #define PUNIT_PWRGT_CONTROL		0x60
 #define PUNIT_PWRGT_STATUS		0x61
 #define PUNIT_GPU_EC_VIRUS		0xd2
+
+/*
+ * LPSS Registers
+ */
+#define LPSS_SIO_DMA1_CTL		0x280
+#define LPSS_I2C1_CTL			0x288
+#define LPSS_I2C2_CTL			0x290
+#define LPSS_I2C3_CTL			0x298
+#define LPSS_I2C4_CTL			0x2a0
+#define LPSS_I2C5_CTL			0x2a8
+#define LPSS_I2C6_CTL			0x2b0
+#define LPSS_I2C7_CTL			0x2b8
+#define LPSS_SIO_DMA2_CTL		0x240
+#define LPSS_PWM1_CTL			0x248
+#define LPSS_PWM2_CTL			0x250
+#define LPSS_HSUART1_CTL		0x258
+#define LPSS_HSUART2_CTL		0x260
+#define LPSS_SPI_CTL			0x268
+# define LPSS_CTL_ACPI_INT_EN			(1 << 21)
+# define LPSS_CTL_PCI_CFG_DIS			(1 << 20)
+# define LPSS_CTL_SNOOP				(1 << 18)
+# define LPSS_CTL_NOSNOOP			(1 << 19)
+# define LPSS_CTL_PM_CAP_PRSNT			(1 <<  1)
+
 
 #endif /* _BAYTRAIL_IOSF_H_ */

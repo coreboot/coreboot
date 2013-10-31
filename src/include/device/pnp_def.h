@@ -12,5 +12,6 @@
 #define PNP_IDX_DRQ1 0x75
 #define PNP_IDX_MSC0 0xf0
 #define PNP_IDX_MSC1 0xf1
+#define PNP_IDX_MSC10 0xfa
 
 #endif /* DEVICE_PNP_DEF_H */

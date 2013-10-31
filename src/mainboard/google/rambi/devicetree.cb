@@ -38,7 +38,15 @@ chip soc/intel/baytrail
 		device pci 1e.3 off end # HSUART1
 		device pci 1e.4 on  end # HSUART2
 		device pci 1e.5 on  end # SPI
-		device pci 1f.0 on  end # LPC Bridge
+		device pci 1f.0 on
+			chip ec/google/chromeec
+				# We only have one init function that
+				# we need to call to initialize the
+				# keyboard part of the EC.
+				device pnp ff.1 on # dummy address
+				end
+			end
+		end # LPC Bridge
 		device pci 1f.3 off end # SMBus
 	end
 end

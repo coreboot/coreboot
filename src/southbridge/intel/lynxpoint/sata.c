@@ -172,10 +172,14 @@ static void sata_init(struct device *dev)
 		/* CAP2 (HBA Capabilities Extended)*/
 		reg32 = read32(abar + 0x24);
 		/* Enable DEVSLP */
-		if (pch_is_lp())
-			reg32 |= (1 << 5)|(1 << 4)|(1 << 3)|(1 << 2);
-		else
+		if (pch_is_lp()) {
+			if (config->sata_devslp_disable)
+				reg32 &= ~(1 << 3);
+			else
+				reg32 |= (1 << 5)|(1 << 4)|(1 << 3)|(1 << 2);
+		} else {
 			reg32 &= ~0x00000002;
+		}
 		write32(abar + 0x24, reg32);
 	} else {
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");

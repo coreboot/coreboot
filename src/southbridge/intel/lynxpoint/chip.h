@@ -81,6 +81,13 @@ struct southbridge_intel_lynxpoint_config {
 	 */
 	uint8_t sata_devslp_mux;
 
+	/*
+	 * DEVSLP Disable
+	 * 0: DEVSLP is enabled
+	 * 1: DEVSLP is disabled
+	 */
+	uint8_t sata_devslp_disable;
+
 	uint32_t gen1_dec;
 	uint32_t gen2_dec;
 	uint32_t gen3_dec;

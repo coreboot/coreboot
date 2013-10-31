@@ -505,21 +505,21 @@ static void fix_cmos_rtc_time(void)
 	}
 }
 
-static void vortex86_sb_set_io_resv(device_t dev, u32 io_resv_size)
+static void vortex86_sb_set_io_resv(device_t dev, unsigned index, u32 base, u32 size)
 {
 	struct resource *res;
-	res = new_resource(dev, 1);
-	res->base = 0x0UL;
-	res->size = io_resv_size;
+	res = new_resource(dev, index);
+	res->base = base;
+	res->size = size;
 	res->limit = 0xffffUL;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 }
 
-static void vortex86_sb_set_spi_flash_size(device_t dev, u32 flash_size)
+static void vortex86_sb_set_spi_flash_size(device_t dev, unsigned index, u32 flash_size)
 {
 	/* SPI flash is in topmost of 4G memory space */
 	struct resource *res;
-	res = new_resource(dev, 2);
+	res = new_resource(dev, index);
 	res->base = 0x100000000LL - flash_size;
 	res->size = flash_size;
 	res->limit = 0xffffffffUL;
@@ -542,11 +542,11 @@ static void vortex86_sb_read_resources(device_t dev)
 		flash_size = 64 * 1024 * 1024;
 	}
 
-	/* Reserve space for I/O */
-	vortex86_sb_set_io_resv(dev, 0x1000UL);
+	/* Reserve space for legacy I/O */
+	vortex86_sb_set_io_resv(dev, 1, 0, 0x1000UL);
 
 	/* Reserve space for flash */
-	vortex86_sb_set_spi_flash_size(dev, flash_size);
+	vortex86_sb_set_spi_flash_size(dev, 2, flash_size);
 }
 
 static void southbridge_init_func1(struct device *dev)

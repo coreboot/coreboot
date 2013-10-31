@@ -165,3 +165,25 @@ void iosf_ushphy_write(int reg, uint32_t val)
 	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
 	write_iosf_reg(MCR_REG, cr);
 }
+
+uint32_t iosf_lpss_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_LPSS) |
+	              IOSF_PORT(IOSF_PORT_LPSS) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
+	write_iosf_reg(MCR_REG, cr);
+	return read_iosf_reg(MDR_REG);
+}
+
+void iosf_lpss_write(int reg, uint32_t val)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_LPSS) |
+	              IOSF_PORT(IOSF_PORT_LPSS) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MDR_REG, val);
+	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
+	write_iosf_reg(MCR_REG, cr);
+}

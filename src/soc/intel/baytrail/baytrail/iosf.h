@@ -64,6 +64,10 @@ uint32_t iosf_dunit_ch0_read(int reg);
 uint32_t iosf_dunit_ch1_read(int reg);
 uint32_t iosf_punit_read(int reg);
 void iosf_punit_write(int reg, uint32_t val);
+uint32_t iosf_usbphy_read(int reg);
+void iosf_usbphy_write(int reg, uint32_t val);
+uint32_t iosf_ushphy_read(int reg);
+void iosf_ushphy_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
@@ -76,6 +80,7 @@ void iosf_punit_write(int reg, uint32_t val);
 #define IOSF_PORT_DUNIT_CH1	0x07 /* DUNIT Channel 1 */
 #define IOSF_PORT_SYSMEMIO	0x0c /* System Memory IO */
 #define IOSF_PORT_USBPHY	0x43 /* USB PHY */
+#define IOSF_PORT_USHPHY	0x61 /* USB XHCI PHY */
 #define IOSF_PORT_SATAPHY	0xa3 /* SATA PHY */
 #define IOSF_PORT_PCIEPHY	0xa3 /* PCIE PHY */
 
@@ -96,6 +101,8 @@ void iosf_punit_write(int reg, uint32_t val);
 #define IOSF_OP_WRITE_SYSMEMIO	(IOSF_OP_READ_SYSMEMIO | 1)
 #define IOSF_OP_READ_USBPHY	0x06
 #define IOSF_OP_WRITE_USBPHY	(IOSF_OP_READ_USBPHY | 1)
+#define IOSF_OP_READ_USHPHY	0x06
+#define IOSF_OP_WRITE_USHPHY	(IOSF_OP_READ_USHPHY | 1)
 #define IOSF_OP_READ_SATAPHY	0x00
 #define IOSF_OP_WRITE_SATAPHY	(IOSF_OP_READ_SATAPHY | 1)
 #define IOSF_OP_READ_PCIEPHY	0x00

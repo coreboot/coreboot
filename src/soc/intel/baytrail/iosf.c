@@ -121,3 +121,47 @@ void iosf_punit_write(int reg, uint32_t val)
 	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
 	write_iosf_reg(MCR_REG, cr);
 }
+
+uint32_t iosf_usbphy_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_USBPHY) |
+	              IOSF_PORT(IOSF_PORT_USBPHY) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
+	write_iosf_reg(MCR_REG, cr);
+	return read_iosf_reg(MDR_REG);
+}
+
+void iosf_usbphy_write(int reg, uint32_t val)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_USBPHY) |
+	              IOSF_PORT(IOSF_PORT_USBPHY) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MDR_REG, val);
+	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
+	write_iosf_reg(MCR_REG, cr);
+}
+
+uint32_t iosf_ushphy_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_USHPHY) |
+	              IOSF_PORT(IOSF_PORT_USHPHY) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
+	write_iosf_reg(MCR_REG, cr);
+	return read_iosf_reg(MDR_REG);
+}
+
+void iosf_ushphy_write(int reg, uint32_t val)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_USHPHY) |
+	              IOSF_PORT(IOSF_PORT_USHPHY) | IOSF_REG(reg) |
+	              IOSF_BYTE_EN;
+
+	write_iosf_reg(MDR_REG, val);
+	write_iosf_reg(MCRX_REG, IOSF_REG_UPPER(reg));
+	write_iosf_reg(MCR_REG, cr);
+}

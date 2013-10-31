@@ -1087,3 +1087,10 @@ config POWER_BUTTON_IS_OPTIONAL
 	default n if !(POWER_BUTTON_DEFAULT_ENABLE || POWER_BUTTON_DEFAULT_DISABLE)
 	help
 	  Internal option that controls ENABLE_POWER_BUTTON visibility.
+
+config REG_SCRIPT
+	bool
+	default y if ARCH_X86
+	default n
+	help
+	  Internal option that controls whether we compile in register scripts.

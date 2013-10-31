@@ -321,7 +321,7 @@ static struct device_operations device_ops = {
 	.enable_resources	= NULL,
 	.init			= NULL,
 	.enable			= southcluster_enable_dev,
-	.scan_bus		= NULL,
+	.scan_bus		= scan_static_bus,
 	.ops_pci		= &soc_pci_ops,
 };
 

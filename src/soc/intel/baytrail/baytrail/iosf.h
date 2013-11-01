@@ -70,6 +70,8 @@ uint32_t iosf_ushphy_read(int reg);
 void iosf_ushphy_write(int reg, uint32_t val);
 uint32_t iosf_lpss_read(int reg);
 void iosf_lpss_write(int reg, uint32_t val);
+uint32_t iosf_ccu_read(int reg);
+void iosf_ccu_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
@@ -86,6 +88,7 @@ void iosf_lpss_write(int reg, uint32_t val);
 #define IOSF_PORT_LPSS		0xa0 /* LPSS - Low Power Subsystem */
 #define IOSF_PORT_SATAPHY	0xa3 /* SATA PHY */
 #define IOSF_PORT_PCIEPHY	0xa3 /* PCIE PHY */
+#define IOSF_PORT_CCU		0xa9 /* Clock control unit. */
 
 /* Read and write opcodes differ per port. */
 #define IOSF_OP_READ_AUNIT	0x10
@@ -112,6 +115,8 @@ void iosf_lpss_write(int reg, uint32_t val);
 #define IOSF_OP_WRITE_SATAPHY	(IOSF_OP_READ_SATAPHY | 1)
 #define IOSF_OP_READ_PCIEPHY	0x00
 #define IOSF_OP_WRITE_PCIEPHY	(IOSF_OP_READ_PCIEPHY | 1)
+#define IOSF_OP_READ_CCU	0x06
+#define IOSF_OP_WRITE_CCU	(IOSF_OP_READ_CCU | 1)
 
 
 /*
@@ -195,5 +200,18 @@ void iosf_lpss_write(int reg, uint32_t val);
 # define LPSS_CTL_NOSNOOP			(1 << 19)
 # define LPSS_CTL_PM_CAP_PRSNT			(1 <<  1)
 
+/*
+ * CCU Registers
+ */
+
+#define PLT_CLK_CTRL_0			0x3c
+#define PLT_CLK_CTRL_1			0x40
+#define PLT_CLK_CTRL_2			0x44
+#define PLT_CLK_CTRL_3			0x48
+#define PLT_CLK_CTRL_4			0x4c
+#define PLT_CLK_CTRL_5			0x50
+# define PLT_CLK_CTRL_19P2MHZ_FREQ		(0 <<  1)
+# define PLT_CLK_CTRL_25MHZ_FREQ		(1 <<  1)
+# define PLT_CLK_CTRL_SELECT_FREQ		(1 <<  0)
 
 #endif /* _BAYTRAIL_IOSF_H_ */

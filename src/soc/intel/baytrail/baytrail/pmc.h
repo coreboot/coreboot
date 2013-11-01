@@ -165,6 +165,7 @@
 #define SMI_STS			0x34
 #define ALT_GPIO_SMI		0x38
 #define UPRWC			0x3c
+# define  UPRWC_WR_EN	 (1 << 1) // USB Per-Port Registers Write Enable
 #define GPE_CTRL		0x40
 #define PM2A_CNT_BLK		0x50
 #define TCO_RLD			0x60

@@ -31,6 +31,7 @@ ramstage-y += pmutil.c
 smm-y += pmutil.c
 smm-y += smihandler.c
 ramstage-y += smm.c
+ramstage-y += xhci.c
 ramstage-y += southcluster.c
 ramstage-$(CONFIG_HAVE_REFCODE_BLOB) += refcode.c
 ramstage-y += sata.c

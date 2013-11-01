@@ -29,6 +29,13 @@ struct soc_intel_baytrail_config {
         uint8_t sata_port_map;
         uint8_t sata_ahci;
         uint8_t ide_legacy_combined;
+
+	/* USB Port Disable mask */
+	uint16_t usb2_port_disable_mask;
+	uint16_t usb3_port_disable_mask;
+
+	/* USB routing */
+	int usb_route_to_xhci;
 };
 
 extern struct chip_operations soc_intel_baytrail_ops;

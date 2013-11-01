@@ -214,4 +214,16 @@ void iosf_ccu_write(int reg, uint32_t val);
 # define PLT_CLK_CTRL_25MHZ_FREQ		(1 <<  1)
 # define PLT_CLK_CTRL_SELECT_FREQ		(1 <<  0)
 
+/*
+ * USHPHY Registers
+ */
+#define USHPHY_CDN_PLL_CONTROL			0x03c0
+#define USHPHY_CDN_VCO_START_CAL_POINT		0x0054
+#define USHPHY_CCDRLF				0x8040
+#define USHPHY_PEAKING_AMP_CONFIG_DIAG		0x80a8
+#define USHPHY_OFFSET_COR_CONFIG_DIAG		0x80b0
+#define USHPHY_VGA_GAIN_CONFIG_DIAG		0x8080
+#define USHPHY_REE_DAC_CONTROL			0x80b8
+#define USHPHY_CDN_U1_POWER_STATE_DEF		0x0000
+
 #endif /* _BAYTRAIL_IOSF_H_ */

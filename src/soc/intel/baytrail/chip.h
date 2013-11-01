@@ -36,6 +36,16 @@ struct soc_intel_baytrail_config {
 
 	/* USB routing */
 	int usb_route_to_xhci;
+
+	/* USB PHY settings specific to the board */
+	uint32_t usb2_per_port_lane0;
+	uint32_t usb2_per_port_rcomp_hs_pullup0;
+	uint32_t usb2_per_port_lane1;
+	uint32_t usb2_per_port_rcomp_hs_pullup1;
+	uint32_t usb2_per_port_lane2;
+	uint32_t usb2_per_port_rcomp_hs_pullup2;
+	uint32_t usb2_per_port_lane3;
+	uint32_t usb2_per_port_rcomp_hs_pullup3;
 };
 
 extern struct chip_operations soc_intel_baytrail_ops;

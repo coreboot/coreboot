@@ -154,3 +154,17 @@ void iosf_lpss_write(int reg, uint32_t val)
 	              IOSF_PORT(IOSF_PORT_LPSS);
 	return iosf_write_port(cr, reg, val);
 }
+
+uint32_t iosf_ccu_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_CCU) |
+	              IOSF_PORT(IOSF_PORT_CCU);
+	return iosf_read_port(cr, reg);
+}
+
+void iosf_ccu_write(int reg, uint32_t val)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_CCU) |
+	              IOSF_PORT(IOSF_PORT_CCU);
+	return iosf_write_port(cr, reg, val);
+}

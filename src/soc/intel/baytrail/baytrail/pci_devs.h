@@ -53,7 +53,7 @@
 /* xHCI */
 #define XHCI_DEV 20
 #define XHCI_FUNC 0
-# define XCHI_DEVID 0x0f35
+# define XHCI_DEVID 0x0f35
 
 /* LPE Audio */
 #define LPE_DEV 21
@@ -119,7 +119,7 @@
 
 /* EHCI */
 #define EHCI_DEV 29
-#define EHCI_FUNC 29
+#define EHCI_FUNC 0
 # define EHCI_DEVID 0x0f34
 
 /* Serial IO 2 */

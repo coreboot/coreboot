@@ -8,6 +8,8 @@ config VENDOR_AAEON
 	bool "Aaeon"
 config VENDOR_ABIT
 	bool "Abit"
+config VENDOR_ACER
+	bool "Acer"
 config VENDOR_ADLINK
 	bool "ADLINK"
 config VENDOR_ADVANSUS
@@ -142,6 +144,7 @@ endchoice
 source "src/mainboard/a-trend/Kconfig"
 source "src/mainboard/aaeon/Kconfig"
 source "src/mainboard/abit/Kconfig"
+source "src/mainboard/acer/Kconfig"
 source "src/mainboard/adlink/Kconfig"
 source "src/mainboard/advansus/Kconfig"
 source "src/mainboard/advantech/Kconfig"

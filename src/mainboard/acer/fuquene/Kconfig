@@ -1,0 +1,52 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013 Edward O'Callaghan <eocallaghan@alterapraxis.com>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+if BOARD_ACER_FUQUENE
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_AMD_SOCKET_S1G1
+	select NORTHBRIDGE_AMD_AMDK8
+	select SOUTHBRIDGE_AMD_RS690
+	select SOUTHBRIDGE_AMD_SB600
+	select SUPERIO_ITE_IT8712F
+	select HAVE_ACPI_TABLES
+	select HAVE_MP_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_OPTION_TABLE
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select BOARD_ROMSIZE_KB_1024
+	select RAMINIT_SYSINFO
+	select QRANK_DIMM_SUPPORT
+	select SET_FIDVID
+
+
+config MAINBOARD_DIR
+	string
+	default acer/fuquene
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "FUQUENE"
+
+config IRQ_SLOT_COUNT
+	int
+	default 9
+
+endif # BOARD_ACER_FUQUENE

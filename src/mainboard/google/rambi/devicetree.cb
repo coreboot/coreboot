@@ -5,6 +5,24 @@ chip soc/intel/baytrail
 	register "sata_ahci" = "0x1"
 	register "ide_legacy_combined" = "0x0"
 
+	# Route USB ports to XHCI -- DISABLED UNTIL XHCI WORKS
+	register "usb_route_to_xhci" = "0"
+
+	# USB Port Disable Mask
+	register "usb2_port_disable_mask" = "0x0"
+	register "usb3_port_disable_mask" = "0x0"
+
+	# USB PHY settings
+	# TODO: These values are from Baytrail and need tuned for Rambi board
+	register "usb2_per_port_lane0" = "0x00049a09"
+	register "usb2_per_port_rcomp_hs_pullup0" = "0x0300401d"
+	register "usb2_per_port_lane1" = "0x00049a09"
+	register "usb2_per_port_rcomp_hs_pullup1" = "0x0300401d"
+	register "usb2_per_port_lane2" = "0x00049209"
+	register "usb2_per_port_rcomp_hs_pullup2" = "0x01004015"
+	register "usb2_per_port_lane3" = "0x00049a09"
+	register "usb2_per_port_rcomp_hs_pullup3" = "0x0300401d"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

@@ -48,7 +48,7 @@
 #include "southbridge/intel/lynxpoint/me.h"
 
 
-static inline void reset_system(void)
+void reset_system(void)
 {
 	hard_reset();
 	while (1) {

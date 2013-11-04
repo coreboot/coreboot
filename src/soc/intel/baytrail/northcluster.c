@@ -117,6 +117,20 @@ static void nc_read_resources(device_t dev)
 	if (bmbound_hi > four_gig_kib)
 		ram_resource(dev, index++, four_gig_kib,
 		             bmbound_hi - four_gig_kib);
+
+	/* Reserve everything between A segment and 1MB:
+	 *
+	 * 0xa0000 - 0xbffff: legacy VGA
+	 * 0xc0000 - 0xfffff: RAM
+	 */
+	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
+	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
+	                      (0x100000 - 0xc0000) >> 10);
+#if CONFIG_CHROMEOS_RAMOOPS
+	reserved_ram_resource(dev, index++,
+			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
+			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
+#endif
 }
 
 static struct device_operations nc_ops = {

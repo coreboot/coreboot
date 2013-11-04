@@ -83,11 +83,11 @@ const struct reg_script xhci_init_script[] = {
 	/* BAR + 0x0010[10,9,5]=110b */
 	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x0010, ~0x00000020, 0x00000600),
 	/* BAR + 0x8058[20,16,8]=110b */
-	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x8058, ~0x00000010, 0x00110000),
+	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x8058, ~0x00000100, 0x00110000),
 	/* BAR + 0x8060[25]=1b */
 	REG_RES_OR32(PCI_BASE_ADDRESS_0,  0x8060, 0x02000000),
-	/* BAR + 0x80e0[19,9,6]=001b, toggle bit 24=1 */
-	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x00010020, 0x01000040),
+	/* BAR + 0x80e0[16,9,6]=001b, toggle bit 24=1 */
+	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x00010200, 0x01000040),
 	/* BAR + 0x80e0 toggle bit 24=0 */
 	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x01000000, 0),
 	/* BAR + 0x80f0[20]=0b */
@@ -113,7 +113,7 @@ const struct reg_script xhci_init_script[] = {
 const struct reg_script xhci_clock_gating_script[] = {
 	/* ConfigureXhciClockGating() */
 	/* D20:F0:40[21:19,18,10:8]=000,1,001 (don't write byte 3) */
-	REG_PCI_RMW16(0x40, ~0x0300, 0x0010),
+	REG_PCI_RMW16(0x40, ~0x0600, 0x0100),
 	REG_PCI_RMW8(0x42, ~0x38, 0x04),
 	/* D20:F0:44[5:3]=001b */
 	REG_PCI_RMW16(0x44, ~0x0030, 0x0008),
@@ -187,6 +187,9 @@ static void xhci_init(device_t dev)
 		REG_SCRIPT_NEXT(xhci_init_script),
 		/* Initialize clock gating */
 		REG_SCRIPT_NEXT(xhci_clock_gating_script),
+		/* Finalize XHCC1 and XHCC2 */
+		REG_PCI_RMW32(0x44, ~0x00000000, 0x83c00000),
+		REG_PCI_RMW32(0x40, ~0x00800000, 0x80000000),
 		/* Set USB2 Port Routing Mask */
 		REG_PCI_WRITE32(XHCI_USB2PRM, BYTM_USB2_PORT_MAP),
 		/* Set USB3 Port Routing Mask */

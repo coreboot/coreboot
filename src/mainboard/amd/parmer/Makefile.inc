@@ -26,3 +26,4 @@ ramstage-y += buildOpts.c
 ramstage-y += agesawrapper.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
+ramstage-y += imc_fan_control.c

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <cpu/amd/amdfam14.h>
 #include "agesawrapper.h"
+#include "imc.h"
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
  * and acpi_tables busnum is default.
@@ -134,4 +135,8 @@ void get_bus_conf(void)
 	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_hudson = apicid_base;
+
+#if defined CONFIG_HUDSON_IMC_FWM && (CONFIG_HUDSON_IMC_FWM == 1)
+	imc_fan_control();
+#endif
 }

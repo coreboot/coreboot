@@ -5,8 +5,8 @@ chip soc/intel/baytrail
 	register "sata_ahci" = "0x1"
 	register "ide_legacy_combined" = "0x0"
 
-	# Route USB ports to XHCI -- DISABLED UNTIL XHCI WORKS
-	register "usb_route_to_xhci" = "0"
+	# Route USB ports to XHCI
+	register "usb_route_to_xhci" = "1"
 
 	# USB Port Disable Mask
 	register "usb2_port_disable_mask" = "0x0"

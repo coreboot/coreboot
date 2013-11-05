@@ -21,13 +21,16 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <cpu/intel/microcode.h>
+#include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
+#include <reg_script.h>
 
+#include <baytrail/msr.h>
 #include <baytrail/pattrs.h>
 #include <baytrail/ramstage.h>
 #include <baytrail/smm.h>
@@ -48,6 +51,26 @@ static int adjust_apic_id(int index, int apic_id)
 	return 2 * index;
 }
 
+/* Package level MSRs */
+const struct reg_script package_msr_script[] = {
+	/* Set Package TDP to ~7W */
+	REG_MSR_WRITE(MSR_PKG_POWER_LIMIT, 0x3880fa),
+	REG_MSR_WRITE(MSR_PKG_TURBO_CFG1, 0x702),
+	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG1, 0x200b),
+	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG2, 0),
+	REG_SCRIPT_END
+};
+
+/* Core level MSRs */
+const struct reg_script core_msr_script[] = {
+	/* Dynamic L2 shrink enable and threshold */
+	REG_MSR_RMW(MSR_PMG_CST_CONFIG_CONTROL, ~0x3f000f, 0xe0008),
+	/* Disable C1E */
+	REG_MSR_RMW(MSR_POWER_CTL, ~0x2, 0),
+	REG_MSR_OR(MSR_POWER_MISC, 0x44),
+	REG_SCRIPT_END
+};
+
 void baytrail_init_cpus(device_t dev)
 {
 	struct bus *cpu_bus = dev->link_list;
@@ -66,6 +89,12 @@ void baytrail_init_cpus(device_t dev)
 	mp_params.num_records = ARRAY_SIZE(mp_steps);
 	mp_params.microcode_pointer = pattrs->microcode_patch;
 
+	/* Set package MSRs */
+	reg_script_run(package_msr_script);
+
+	/* Enable Turbo/Burst Mode */
+	enable_turbo();
+
 	if (mp_init(cpu_bus, &mp_params)) {
 		printk(BIOS_ERR, "MP initialization failure.\n");
 	}
@@ -74,6 +103,12 @@ void baytrail_init_cpus(device_t dev)
 static void baytrail_core_init(device_t cpu)
 {
 	printk(BIOS_DEBUG, "Init BayTrail core.\n");
+
+	/* Set core MSRs */
+	reg_script_run(core_msr_script);
+
+	/* Set this core to max frequency ratio */
+	set_max_freq();
 }
 
 static struct device_operations cpu_dev_ops = {

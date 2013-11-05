@@ -6,6 +6,7 @@ subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
 subdirs-y += ../../../cpu/x86/tsc
 subdirs-y += ../../../cpu/intel/microcode
+subdirs-y += ../../../cpu/intel/turbo
 
 ramstage-y += memmap.c
 romstage-y += memmap.c

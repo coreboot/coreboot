@@ -18,8 +18,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <soc/intel/baytrail/baytrail/iomap.h>
-
 #define ENABLE_TPM
 
 DefinitionBlock(
@@ -32,14 +30,15 @@ DefinitionBlock(
 )
 {
 	// Some generic macros
-	#include "acpi/platform.asl"
+	#include <soc/intel/baytrail/acpi/platform.asl>
+	#include "acpi/mainboard.asl"
 
 	// global NVS and variables
 	#include <soc/intel/baytrail/acpi/globalnvs.asl>
 
 	//#include "acpi/thermal.asl"
 
-	//#include <soc/intel/baytrail/acpi/cpu.asl>
+	#include <soc/intel/baytrail/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)

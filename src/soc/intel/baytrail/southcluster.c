@@ -27,6 +27,7 @@
 #include <romstage_handoff.h>
 
 #include <baytrail/iomap.h>
+#include <baytrail/irq.h>
 #include <baytrail/lpc.h>
 #include <baytrail/nvs.h>
 #include <baytrail/pci_devs.h>
@@ -114,6 +115,23 @@ static void sc_read_resources(device_t dev)
 
 	/* Add IO resources. */
 	sc_add_io_resources(dev);
+}
+
+static void sc_init(device_t dev)
+{
+	int i;
+	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
+	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
+	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;
+
+	/* Set up the PIRQ PIC routing based on static config. */
+	for (i = 0; i < NUM_PIRQS; i++) {
+		write8(pr_base + i*sizeof(ir->pic[i]), ir->pic[i]);
+	}
+	/* Set up the per device PIRQ routing base on static config. */
+	for (i = 0; i < NUM_IR_DEVS; i++) {
+		write16(ir_base + i*sizeof(ir->pcidev[i]), ir->pcidev[i]);
+	}
 }
 
 /*
@@ -412,7 +430,7 @@ static struct device_operations device_ops = {
 	.read_resources		= sc_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= NULL,
-	.init			= NULL,
+	.init			= sc_init,
 	.enable			= southcluster_enable_dev,
 	.scan_bus		= scan_static_bus,
 	.ops_pci		= &soc_pci_ops,

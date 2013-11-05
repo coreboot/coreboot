@@ -30,8 +30,8 @@
 #ifndef _SYSINFO_H
 #define _SYSINFO_H
 
-/* Allow a maximum of 16 memory range definitions. */
-#define SYSINFO_MAX_MEM_RANGES 16
+/* Maximum number of memory range definitions. */
+#define SYSINFO_MAX_MEM_RANGES 32
 /* Allow a maximum of 8 GPIOs */
 #define SYSINFO_MAX_GPIOS 8
 

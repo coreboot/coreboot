@@ -30,45 +30,16 @@
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
+#include <ec/google/chromeec/ec.h>
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <baytrail/acpi.h>
 #include <baytrail/nvs.h>
+#include <baytrail/iomap.h>
 
 extern const unsigned char AmlCode[];
 
-#include "thermal.h"
-
-static void acpi_update_thermal_table(global_nvs_t *gnvs)
-{
-	gnvs->f4of = FAN4_THRESHOLD_OFF;
-	gnvs->f4on = FAN4_THRESHOLD_ON;
-	gnvs->f4pw = FAN4_PWM;
-
-	gnvs->f3of = FAN3_THRESHOLD_OFF;
-	gnvs->f3on = FAN3_THRESHOLD_ON;
-	gnvs->f3pw = FAN3_PWM;
-
-	gnvs->f2of = FAN2_THRESHOLD_OFF;
-	gnvs->f2on = FAN2_THRESHOLD_ON;
-	gnvs->f2pw = FAN2_PWM;
-
-	gnvs->f1of = FAN1_THRESHOLD_OFF;
-	gnvs->f1on = FAN1_THRESHOLD_ON;
-	gnvs->f1pw = FAN1_PWM;
-
-	gnvs->f0of = FAN0_THRESHOLD_OFF;
-	gnvs->f0on = FAN0_THRESHOLD_ON;
-	gnvs->f0pw = FAN0_PWM;
-
-	gnvs->tcrt = CRITICAL_TEMPERATURE;
-	gnvs->tpsv = PASSIVE_TEMPERATURE;
-	gnvs->tmax = MAX_TEMPERATURE;
-}
-
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	gnvs->apic = 1;
-	gnvs->mpen = 1; /* Enable Multi Processing */
 	gnvs->pcnt = dev_count_cpu();
 
 	/* Enable USB ports in S3 */
@@ -82,28 +53,20 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	/* CBMEM TOC */
 	gnvs->cmem = 0;
 
+	/* Top of Low Memory (start of resource allocation) */
+	gnvs->tolm = nc_read_top_of_low_memory();
+
 	/* TPM Present */
 	gnvs->tpmp = 1;
 
-	/* IGD Displays */
-	gnvs->ndid = 3;
-	gnvs->did[0] = 0x80000100;
-	gnvs->did[1] = 0x80000240;
-	gnvs->did[2] = 0x80000410;
-	gnvs->did[3] = 0x80000410;
-	gnvs->did[4] = 0x00000005;
-
 #if CONFIG_CHROMEOS
-	// TODO(reinauer) this could move elsewhere?
 	chromeos_init_vboot(&(gnvs->chromeos));
-	/* Emerald Lake has no EC (?) */
-	gnvs->chromeos.vbt2 = ACTIVE_ECFW_RO;
+	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
+		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
 #endif
 
 	/* Update the mem console pointer. */
 	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
-
-	acpi_update_thermal_table(gnvs);
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

@@ -30,3 +30,32 @@ Scope(\)
 		TRP0, 8		// IO-Trap at 0x808
 	}
 }
+
+/* Device Resource Consumption */
+Device (PDRC)
+{
+	Name (_HID, EISAID("PNP0C02"))
+	Name (_UID, 1)
+
+	Name (PDRS, ResourceTemplate() {
+		Memory32Fixed(ReadWrite, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE)
+		Memory32Fixed(ReadWrite, MCFG_BASE_ADDRESS, MCFG_BASE_SIZE)
+		Memory32Fixed(ReadWrite, PMC_BASE_ADDRESS, PMC_BASE_SIZE)
+		Memory32Fixed(ReadWrite, IO_BASE_ADDRESS, IO_BASE_SIZE)
+		Memory32Fixed(ReadWrite, ILB_BASE_ADDRESS, ILB_BASE_SIZE)
+		Memory32Fixed(ReadWrite, SPI_BASE_ADDRESS, SPI_BASE_SIZE)
+		Memory32Fixed(ReadWrite, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE)
+		Memory32Fixed(ReadWrite, PUNIT_BASE_ADDRESS, PUNIT_BASE_SIZE)
+		Memory32Fixed(ReadWrite, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE)
+#if CONFIG_CHROMEOS_RAMOOPS
+		Memory32Fixed(ReadWrite, CONFIG_CHROMEOS_RAMOOPS_RAM_START,
+					 CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE)
+#endif
+	})
+
+	// Current Resource Settings
+	Method (_CRS, 0, Serialized)
+	{
+		Return(PDRS)
+	}
+}

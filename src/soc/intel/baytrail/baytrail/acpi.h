@@ -23,6 +23,7 @@
 #include <arch/acpi.h>
 
 void acpi_create_intel_hpet(acpi_hpet_t * hpet);
+void acpi_fill_in_fadt(acpi_fadt_t *fadt);
 
 #endif /* _BAYTRAIL_ACPI_H_ */
 

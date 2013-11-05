@@ -79,4 +79,9 @@
 
 #define SMBUS_BASE_ADDRESS		0xefa0
 
+#ifndef __ACPI__
+/* Read Top of Low Memory (BMBOUND) */
+uint32_t nc_read_top_of_low_memory(void);
+#endif
+
 #endif /* _BAYTRAIL_IOMAP_H_ */

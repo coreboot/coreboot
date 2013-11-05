@@ -19,6 +19,8 @@
  * MA 02110-1301 USA
  */
 
+#include <soc/intel/baytrail/baytrail/iomap.h>
+
 Scope(\)
 {
 	// IO-Trap at 0x800. This is the ACPI->SMI communication interface.
@@ -28,6 +30,21 @@ Scope(\)
 	{
 		Offset(0x8),
 		TRP0, 8		// IO-Trap at 0x808
+	}
+
+	// Intel Legacy Block
+	OperationRegion(ILBS, SystemMemory, ILB_BASE_ADDRESS, ILB_BASE_SIZE)
+	Field (ILBS, AnyAcc, NoLock, Preserve)
+	{
+		Offset (0x8),
+		PRTA, 8,
+		PRTB, 8,
+		PRTC, 8,
+		PRTD, 8,
+		PRTE, 8,
+		PRTF, 8,
+		PRTG, 8,
+		PRTH, 8,
 	}
 }
 
@@ -210,3 +227,9 @@ Method (_OSC, 4)
 		Return (Arg3)
 	}
 }
+
+// LPC Bridge 0:1f.0
+#include "lpc.asl"
+
+// IRQ routing for each PCI device
+#include "irqroute.asl"

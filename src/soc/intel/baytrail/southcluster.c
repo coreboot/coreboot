@@ -41,13 +41,14 @@ add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
 
 static void sc_add_mmio_resources(device_t dev)
 {
-	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, 1024);
-	add_mmio_resource(dev, IOBASE, IO_BASE_ADDRESS, 16 * 1024);
-	add_mmio_resource(dev, IBASE, ILB_BASE_ADDRESS, 1024);
-	add_mmio_resource(dev, SBASE, SPI_BASE_ADDRESS, 1024);
-	add_mmio_resource(dev, MPBASE, MPHY_BASE_ADDRESS, 1024 * 1024);
-	add_mmio_resource(dev, PUBASE, PUNIT_BASE_ADDRESS, 2048);
-	add_mmio_resource(dev, RCBA, RCBA_BASE_ADDRESS, 1024);
+	add_mmio_resource(dev, 0xfeb, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE);
+	add_mmio_resource(dev, PBASE, PMC_BASE_ADDRESS, PMC_BASE_SIZE);
+	add_mmio_resource(dev, IOBASE, IO_BASE_ADDRESS, IO_BASE_SIZE);
+	add_mmio_resource(dev, IBASE, ILB_BASE_ADDRESS, ILB_BASE_SIZE);
+	add_mmio_resource(dev, SBASE, SPI_BASE_ADDRESS, SPI_BASE_SIZE);
+	add_mmio_resource(dev, MPBASE, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE);
+	add_mmio_resource(dev, PUBASE, PUNIT_BASE_ADDRESS, PUNIT_BASE_SIZE);
+	add_mmio_resource(dev, RCBA, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE);
 }
 
 /* Default IO range claimed by the LPC device. The upper bound is exclusive. */

@@ -5,8 +5,6 @@
 #include <baytrail/acpi.h>
 
 
-void generate_cpu_entries(void) {}
-
 void smm_init(void) {}
 
 /* Rmodules don't like weak symbols. */

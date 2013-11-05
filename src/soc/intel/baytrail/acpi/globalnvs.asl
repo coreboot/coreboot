@@ -50,6 +50,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PWRS,	 8,	// 0x10 - Power State (AC = 1)
 	PCNT,	 8,	// 0x11 - Processor count
 	TPMP,	 8,	// 0x12 - TPM Present and Enabled
+	TLVL,	 8,	// 0x13 - Throttle Level
 
 	/* Device Config */
 	Offset (0x20),

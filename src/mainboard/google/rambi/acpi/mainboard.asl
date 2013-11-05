@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Google Inc.
+ * Copyright (C) 2012 Google Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -19,10 +19,20 @@
  * MA 02110-1301 USA
  */
 
-Device (PWRB)
+Scope (\_SB)
 {
-	Name(_HID, EisaId("PNP0C0C"))
+	Device (LID0)
+	{
+		Name(_HID, EisaId("PNP0C0D"))
+		Method(_LID, 0)
+		{
+			Store (\_SB.PCI0.LPCB.EC0.LIDS, \LIDS)
+			Return (\LIDS)
+		}
+	}
 
-	// Wake from deep sleep via GPIO27
-	Name(_PRW, Package(){27, 4})
+	Device (PWRB)
+	{
+		Name(_HID, EisaId("PNP0C0C"))
+	}
 }

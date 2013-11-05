@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Google Inc.
+ * Copyright (C) 2013 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* mainboard configuration */
-#include <mainboard/google/rambi/ec.h>
+#include "irqroute.h"
 
-/* ACPI code for EC functions */
-#include <ec/google/chromeec/acpi/ec.asl>
+DEFINE_IRQ_ROUTES;

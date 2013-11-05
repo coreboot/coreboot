@@ -36,7 +36,8 @@ typedef struct {
 	u8	pwrs; /* 0x10 - Power state (AC = 1) */
 	u8	pcnt; /* 0x11 - Processor Count */
 	u8	tpmp; /* 0x12 - TPM Present and Enabled */
-	u8	rsvd1[13];
+	u8	tlvl; /* 0x13 - Throttle Level */
+	u8	rsvd1[12];
 
 	/* Device Config */
 	u8	s5u0; /* 0x20 - Enable USB0 in S5 */

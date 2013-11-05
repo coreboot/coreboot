@@ -7,8 +7,6 @@
 
 void generate_cpu_entries(void) {}
 
-unsigned long acpi_fill_mcfg(unsigned long current) { return current; }
-
 void smm_init(void) {}
 
 /* Rmodules don't like weak symbols. */

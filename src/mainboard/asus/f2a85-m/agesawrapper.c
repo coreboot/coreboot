@@ -43,6 +43,8 @@
 #include <cbmem.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <device/device.h>
+#include "hudson.h"
 
 VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
@@ -525,59 +527,6 @@ UINT32 agesawrapper_amdinitresume(VOID)
 }
 
 #ifndef __PRE_RAM__
-
-extern FCH_DATA_BLOCK InitEnvCfgDefault;
-STATIC VOID s3_resume_init_data(FCH_DATA_BLOCK *FchParams)
-{
-	FchParams->Gpp.GppLinkConfig           = UserOptions.FchBldCfg->CfgFchGppLinkConfig;
-	FchParams->Gpp.PortCfg[0].PortPresent  = UserOptions.FchBldCfg->CfgFchGppPort0Present;
-	FchParams->Gpp.PortCfg[1].PortPresent  = UserOptions.FchBldCfg->CfgFchGppPort1Present;
-	FchParams->Gpp.PortCfg[2].PortPresent  = UserOptions.FchBldCfg->CfgFchGppPort2Present;
-	FchParams->Gpp.PortCfg[3].PortPresent  = UserOptions.FchBldCfg->CfgFchGppPort3Present;
-	FchParams->Gpp.PortCfg[0].PortHotPlug  = UserOptions.FchBldCfg->CfgFchGppPort0HotPlug;
-	FchParams->Gpp.PortCfg[1].PortHotPlug  = UserOptions.FchBldCfg->CfgFchGppPort1HotPlug;
-	FchParams->Gpp.PortCfg[2].PortHotPlug  = UserOptions.FchBldCfg->CfgFchGppPort2HotPlug;
-	FchParams->Gpp.PortCfg[3].PortHotPlug  = UserOptions.FchBldCfg->CfgFchGppPort3HotPlug;
-	FchParams->Gpp.GppFunctionEnable = TRUE; /* GppEnable */
-	FchParams->Gpp.GppPhyPllPowerDown = TRUE;
-	FchParams->Gpp.GppDynamicPowerSaving = TRUE;
-	FchParams->Gpp.UmiPhyPllPowerDown = TRUE;
-	FchParams->Gpp.NewGppAlgorithm = TRUE;
-	FchParams->Gpp.GppPortMinPollingTime = 40;
-
-	FchParams->Spi.SpiSpeed = 2;
-	FchParams->Ir.IrConfig = 3;
-
-	FchParams->HwAcpi.Smbus0BaseAddress    = UserOptions.FchBldCfg->CfgSmbus0BaseAddress;
-	FchParams->HwAcpi.Smbus1BaseAddress    = UserOptions.FchBldCfg->CfgSmbus1BaseAddress;
-	FchParams->HwAcpi.SioPmeBaseAddress    = UserOptions.FchBldCfg->CfgSioPmeBaseAddress;
-	FchParams->HwAcpi.AcpiPm1EvtBlkAddr    = UserOptions.FchBldCfg->CfgAcpiPm1EvtBlkAddr;
-	FchParams->HwAcpi.AcpiPm1CntBlkAddr    = UserOptions.FchBldCfg->CfgAcpiPm1CntBlkAddr;
-	FchParams->HwAcpi.AcpiPmTmrBlkAddr     = UserOptions.FchBldCfg->CfgAcpiPmTmrBlkAddr;
-	FchParams->HwAcpi.CpuControlBlkAddr    = UserOptions.FchBldCfg->CfgCpuControlBlkAddr;
-	FchParams->HwAcpi.AcpiGpe0BlkAddr      = UserOptions.FchBldCfg->CfgAcpiGpe0BlkAddr;
-	FchParams->HwAcpi.SmiCmdPortAddr       = UserOptions.FchBldCfg->CfgSmiCmdPortAddr;
-	FchParams->HwAcpi.AcpiPmaCntBlkAddr    = UserOptions.FchBldCfg->CfgAcpiPmaCntBlkAddr;
-	FchParams->HwAcpi.WatchDogTimerBase    = UserOptions.FchBldCfg->CfgWatchDogTimerBase;
-	FchParams->Sata.SataRaid5Ssid          = UserOptions.FchBldCfg->CfgSataRaid5Ssid;
-	FchParams->Sata.SataRaidSsid           = UserOptions.FchBldCfg->CfgSataRaidSsid;
-	FchParams->Sata.SataAhciSsid           = UserOptions.FchBldCfg->CfgSataAhciSsid;
-	FchParams->Sata.SataIdeSsid            = UserOptions.FchBldCfg->CfgSataIdeSsid;
-	FchParams->Gec.GecShadowRomBase        = UserOptions.FchBldCfg->CfgGecShadowRomBase;
-	FchParams->Spi.RomBaseAddress          = UserOptions.FchBldCfg->CfgSpiRomBaseAddress;
-	FchParams->Sd.SdSsid                   = UserOptions.FchBldCfg->CfgSdSsid;
-	FchParams->Spi.LpcSsid                 = UserOptions.FchBldCfg->CfgLpcSsid;
-	FchParams->Hpet.HpetBase               = UserOptions.FchBldCfg->CfgHpetBaseAddress;
-	FchParams->Azalia.AzaliaSsid           = UserOptions.FchBldCfg->CfgAzaliaSsid;
-	FchParams->Smbus.SmbusSsid             = UserOptions.FchBldCfg->CfgSmbusSsid;
-	FchParams->Ide.IdeSsid                 = UserOptions.FchBldCfg->CfgIdeSsid;
-	FchParams->Usb.EhciSsid                = UserOptions.FchBldCfg->CfgEhciSsid;
-	FchParams->Usb.OhciSsid                = UserOptions.FchBldCfg->CfgOhciSsid;
-	FchParams->Usb.XhciSsid                = UserOptions.FchBldCfg->CfgXhciSsid;
-	FchParams->Ir.IrPinControl             = UserOptions.FchBldCfg->CfgFchIrPinControl;
-	FchParams->Sd.SdClockControl           = UserOptions.FchBldCfg->CfgFchSdClockControl;
-}
-
 UINT32 agesawrapper_fchs3earlyrestore (VOID)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;
@@ -592,7 +541,6 @@ UINT32 agesawrapper_fchs3earlyrestore (VOID)
 	StdHeader.Func = 0;
 	StdHeader.ImageBasePtr = 0;
 
-	FchParams = InitEnvCfgDefault;
 	FchParams.StdHeader = &StdHeader;
 	s3_resume_init_data(&FchParams);
 
@@ -662,7 +610,6 @@ UINT32 agesawrapper_fchs3laterestore (VOID)
 	StdHeader.Func = 0;
 	StdHeader.ImageBasePtr = 0;
 
-	FchParams = InitEnvCfgDefault;
 	FchParams.StdHeader = &StdHeader;
 	s3_resume_init_data(&FchParams);
 	FchInitS3LateRestore(&FchParams);

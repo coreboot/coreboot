@@ -17,6 +17,7 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += early_setup.c
 
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
+ramstage-$(CONFIG_HAVE_ACPI_RESUME) += resume.c
 
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+

@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
+#include <baytrail/iomap.h>
 #include <baytrail/iosf.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
@@ -63,6 +64,11 @@
  * +--------------------------+ 0
  */
 #define RES_IN_KiB(r) ((r) >> 10)
+
+uint32_t nc_read_top_of_low_memory(void)
+{
+	return iosf_bunit_read(BUNIT_BMBOUND) & ~((1 << 27) - 1);
+}
 
 static void nc_read_resources(device_t dev)
 {
@@ -107,7 +113,7 @@ static void nc_read_resources(device_t dev)
 		reserved_ram_resource(dev, index++, smmrrl, smmrrh - smmrrl);
 
 	/* All address space between bmbound and smmrrh is unusable. */
-	bmbound = RES_IN_KiB(iosf_bunit_read(BUNIT_BMBOUND) & ~((1 << 27) - 1));
+	bmbound = RES_IN_KiB(nc_read_top_of_low_memory());
 	mmio_resource(dev, index++, smmrrh, bmbound - smmrrh);
 
 	/* The BMBOUND_HI register matches register bits of 31:24 with address

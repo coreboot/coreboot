@@ -2,6 +2,11 @@ config I2C_TPM
 	bool "I2C TPM"
 	depends on !PC80 # for now
 
+config DRIVER_TPM_I2C_BUS
+	hex "I2C TPM chip bus"
+	default 9 # FIXME, workaround for Kconfig BS
+	depends on I2C_TPM
+
 config DRIVER_TPM_I2C_ADDR
 	hex "I2C TPM chip address"
 	default 2 # FIXME, workaround for Kconfig BS

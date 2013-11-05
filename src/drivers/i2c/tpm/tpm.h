@@ -128,29 +128,10 @@ struct tpm_cmd_t {
 	tpm_cmd_params params;
 } __attribute__ ((packed));
 
-
 /* ---------- Interface for TPM vendor ------------ */
-
-struct tpm_chip *tpm_register_hardware(const struct tpm_vendor_specific *);
 
 int tpm_vendor_init(unsigned bus, uint32_t dev_addr);
 
 void tpm_vendor_cleanup(struct tpm_chip *chip);
-
-/* ---------- Interface for TDDL ------------------- */
-
-/*
- * if dev_addr != 0 - redefines TPM device address
- * Returns < 0 on error, 0 on success.
- */
-int tpm_open(unsigned bus, uint32_t dev_addr);
-
-void tpm_close(void);
-
-/*
- * Transmit bufsiz bytes out of buf to TPM and get results back in buf, too.
- * Returns < 0 on error, 0 on success.
- */
-ssize_t tpm_transmit(const unsigned char *buf, size_t bufsiz);
 
 #endif /* __DRIVERS_TPM_SLB9635_I2C_TPM_H__ */

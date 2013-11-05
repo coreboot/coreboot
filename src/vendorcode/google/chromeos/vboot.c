@@ -20,7 +20,7 @@
 #include <types.h>
 #include <console/console.h>
 #include <arch/acpi.h>
-#include <pc80/tpm.h>
+#include <tpm.h>
 #include <reset.h>
 #include "chromeos.h"
 

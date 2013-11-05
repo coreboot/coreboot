@@ -33,7 +33,7 @@
 #include <arch/io.h>
 #include <arch/byteorder.h>
 #include <console/console.h>
-#include <pc80/tpm.h>
+#include <tpm.h>
 #include <arch/early_variables.h>
 
 #define PREFIX "lpc_tpm: "

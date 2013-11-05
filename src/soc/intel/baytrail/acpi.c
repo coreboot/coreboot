@@ -56,3 +56,10 @@ void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 	header->checksum =
 	    acpi_checksum((void *) hpet, sizeof(acpi_hpet_t));
 }
+
+unsigned long acpi_fill_mcfg(unsigned long current)
+{
+	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *)current,
+					     MCFG_BASE_ADDRESS, 0, 0, 255);
+	return current;
+}

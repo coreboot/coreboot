@@ -38,6 +38,7 @@
 #include <baytrail/iomap.h>
 #include <baytrail/lpc.h>
 #include <baytrail/pci_devs.h>
+#include <baytrail/pmc.h>
 #include <baytrail/reset.h>
 #include <baytrail/romstage.h>
 #include <baytrail/smm.h>
@@ -141,10 +142,50 @@ void * asmlinkage romstage_main(unsigned long bist,
 	return setup_stack_and_mttrs();
 }
 
+/* Return 0, 3, or 5 to indicate the previous sleep state. */
+static int chipset_prev_sleep_state(void)
+{
+	uint16_t pm1_sts;
+	uint32_t pm1_cnt;
+	uint32_t gen_pmcon1;
+	/* Default to S0. */
+	int prev_sleep_state = 0;
+
+	pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
+	pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+
+	if (pm1_sts & WAK_STS) {
+		switch ((pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
+	#if CONFIG_HAVE_ACPI_RESUME
+		case SLP_TYP_S3:
+			prev_sleep_state = 3;
+			break;
+	#endif
+		case SLP_TYP_S5:
+			prev_sleep_state = 5;
+		}
+		/* Clear SLP_TYP. */
+		outl(pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
+	}
+
+	gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
+	if (gen_pmcon1 & (PWR_FLR | SUS_PWR_FLR)) {
+		/* Clear power failure bits. */
+		write32(PMC_BASE_ADDRESS + GEN_PMCON1, gen_pmcon1);
+		prev_sleep_state = 5;
+	}
+
+	printk(BIOS_DEBUG, "pm1_sts = %04x pm1_cnt = %08x gen_pmcon1 = %08x\n",
+	       pm1_sts, pm1_cnt, gen_pmcon1);
+
+	return prev_sleep_state;
+}
+
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
 	struct romstage_handoff *handoff;
+	int prev_sleep_state;
 
 	mark_ts(params, timestamp_get());
 
@@ -152,14 +193,18 @@ void romstage_common(struct romstage_params *params)
 	boot_count_increment();
 #endif
 
+	prev_sleep_state = chipset_prev_sleep_state();
+
+	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
+
 	/* Initialize RAM */
-	raminit(params->mrc_params, 5);
+	raminit(params->mrc_params, prev_sleep_state);
 
 	mark_ts(params, timestamp_get());
 
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
-		handoff->s3_resume = 0;
+		handoff->s3_resume = (prev_sleep_state == 3);
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 

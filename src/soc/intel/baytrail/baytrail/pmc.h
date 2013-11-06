@@ -24,9 +24,11 @@
 #define IOCOM1		0x3f8
 
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
-#define GEN_PMCONF1	0x20
+#define GEN_PMCON1	0x20
 #	define AFTERG3_EN	(1 <<  0)
 #	define UART_EN		(1 << 24)
+#	define PWR_FLR		(1 << 16)
+#	define SUS_PWR_FLR	(1 << 14)
 #define ETR			0x48
 #	define CF9LOCK		(1 << 31)
 #	define LTR_DEF		(1 << 22)
@@ -86,7 +88,8 @@
 #define   TMROF_EN	(1 << 0)
 #define PM1_CNT			0x04
 #define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
+#define   SLP_TYP_SHIFT	10
+#define   SLP_TYP	(7 << SLP_TYP_SHIFT)
 #define    SLP_TYP_S0	0
 #define    SLP_TYP_S1	1
 #define    SLP_TYP_S3	5

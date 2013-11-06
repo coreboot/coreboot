@@ -210,7 +210,7 @@ static int WaitForXfer(struct s3c24x0_i2c *i2c)
 
 static void ReadWriteByte(struct s3c24x0_i2c *i2c)
 {
-	writel(read32(&i2c->iiccon) & ~I2CCON_IRPND, &i2c->iiccon);
+	write32(read32(&i2c->iiccon) & ~I2CCON_IRPND, &i2c->iiccon);
 }
 
 static void i2c_ch_init(struct s3c24x0_i2c_bus *bus, int speed, int slaveadd)
@@ -318,7 +318,7 @@ static void hsi2c_ch_init(struct s3c24x0_i2c_bus *i2c_bus,
 	write32(HSI2C_RXFIFO_EN | HSI2C_TXFIFO_EN, &hsregs->usi_fifo_ctl);
 
 	/* i2c_conf configure */
-	write32(readl(&hsregs->usi_conf) | HSI2C_AUTO_MODE, &hsregs->usi_conf);
+	write32(read32(&hsregs->usi_conf) | HSI2C_AUTO_MODE, &hsregs->usi_conf);
 }
 
 /* SW reset for the high speed bus */
@@ -484,17 +484,19 @@ static int hsi2c_read(struct exynos5_hsi2c *i2c,
 	/* chip address */
 	write32(HSI2C_SLV_ADDR_MAS(chip), &i2c->i2c_addr);
 
-	/* usi_ctl enable i2c func, master write configure */
-	write32((HSI2C_TXCHON | HSI2C_FUNC_MODE_I2C | HSI2C_MASTER),
-							&i2c->usi_ctl);
+	if (alen) {
+		/* usi_ctl enable i2c func, master write configure */
+		write32(HSI2C_TXCHON | HSI2C_FUNC_MODE_I2C | HSI2C_MASTER,
+			&i2c->usi_ctl);
 
-	/* auto_conf */
-	write32(alen | HSI2C_MASTER_RUN | HSI2C_STOP_AFTER_TRANS,
-		&i2c->usi_auto_conf);
+		/* auto_conf */
+		write32(alen | HSI2C_MASTER_RUN | HSI2C_STOP_AFTER_TRANS,
+			&i2c->usi_auto_conf);
 
-	if (hsi2c_senddata(i2c, addr, alen) ||
-	    hsi2c_wait_for_transfer(i2c) != 1) {
-		return -1;
+		if (hsi2c_senddata(i2c, addr, alen) ||
+		    hsi2c_wait_for_transfer(i2c) != 1) {
+			return -1;
+		}
 	}
 
 	/* usi_ctl enable i2c func, master WRITE configure */
@@ -542,7 +544,7 @@ static int i2c_transfer(struct s3c24x0_i2c *i2c,
 	timer_monotonic_get(&current);
 	end = current;
 	mono_time_add_usecs(&end, I2C_TIMEOUT_MS * 1000);
-	while (readl(&i2c->iicstat) & I2CSTAT_BSY) {
+	while (read32(&i2c->iicstat) & I2CSTAT_BSY) {
 		if (!mono_time_before(&current, &end)){
 			printk(BIOS_ERR, "%s timed out\n", __func__);
 			return I2C_NOK_TOUT;
@@ -607,7 +609,7 @@ static int i2c_transfer(struct s3c24x0_i2c *i2c,
 		while ((i < data_len) && (result == I2C_OK)) {
 			/* disable ACK for final READ */
 			if (i == data_len - 1)
-				write32(readl(&i2c->iiccon)
+				write32(read32(&i2c->iiccon)
 				       & ~I2CCON_ACKGEN,
 				       &i2c->iiccon);
 			ReadWriteByte(i2c);

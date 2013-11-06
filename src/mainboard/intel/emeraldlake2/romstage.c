@@ -42,31 +42,28 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
+#define SIO_PORT 0x164e
+
 static void pch_enable_lpc(void)
 {
 	device_t dev = PCH_LPC_DEV;
-	int i;
 
 	/* Set COM1/COM2 decode range */
 	pci_write_config16(dev, LPC_IO_DEC, 0x0010);
 
 	/* Enable SuperIO + COM1 + PS/2 Keyboard/Mouse */
-	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | COMA_LPC_EN | KBC_LPC_EN;
+	u16 lpc_config = CNF1_LPC_EN | CNF2_LPC_EN | KBC_LPC_EN;
 	pci_write_config16(dev, LPC_EN, lpc_config);
 
 	/* Map 256 bytes at 0x1600 to the LPC bus. */
 	pci_write_config32(dev, LPC_GEN1_DEC, 0xfc1601);
 
-	/* Map a range for the runtime registers to the LPC bus. */
+	/* Map a range for the runtime_port registers to the LPC bus. */
 	pci_write_config32(dev, LPC_GEN2_DEC, 0xc0181);
 
-	for (i = 0; i < ARRAY_SIZE(sio1007_lpc_ports); i++) {
-		if (sio1007_enable_uart_at(sio1007_lpc_ports[i])) {
-			/* Keep COMA UART enable bit on. */
-			pci_write_config16(dev, LPC_EN,
-					   lpc_config | COMA_LPC_EN);
-			break;
-		}
+	if (sio1007_enable_uart_at(SIO_PORT)) {
+		pci_write_config16(dev, LPC_EN,
+				   lpc_config | COMA_LPC_EN);
 	}
 }
 
@@ -132,7 +129,7 @@ static void early_pch_init(void)
 
 static void setup_sio_gpios(void)
 {
-	const u16 port = 0x164e;
+	const u16 port = SIO_PORT;
 	const u16 runtime_port = 0x180;
 
 	/* Turn on configuration mode. */

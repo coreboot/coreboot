@@ -18,7 +18,9 @@
  */
 
 #include <stddef.h>
+#include <arch/hlt.h>
 #include <arch/io.h>
+#include <bootmode.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -28,8 +30,14 @@
 #include <baytrail/iomap.h>
 #include <baytrail/iosf.h>
 #include <baytrail/pci_devs.h>
+#include <baytrail/reset.h>
 #include <baytrail/romstage.h>
 
+static void reset_system(void)
+{
+	warm_reset();
+	while(1) { hlt(); }
+}
 
 static void enable_smbus(void)
 {
@@ -111,9 +119,16 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	mp->console_out = &send_to_console;
 	mp->prev_sleep_state = prev_sleep_state;
 
-	if (!mrc_cache_get_current(&cache)) {
+	if (recovery_mode_enabled()) {
+		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
+	} else if (!mrc_cache_get_current(&cache)) {
 		mp->saved_data_size = cache->size;
 		mp->saved_data = &cache->data[0];
+	} else if (prev_sleep_state == 3) {
+		/* If waking from S3 and no cache then. */
+		printk(BIOS_DEBUG, "No MRC cache found in S3 resume path.\n");
+		post_code(POST_RESUME_FAILURE);
+		reset_system();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
 	}
@@ -132,7 +147,15 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 
 	print_dram_info();
 
-	cbmem_initialize_empty();
+	if (prev_sleep_state != 3) {
+		cbmem_initialize_empty();
+	} else if (cbmem_initialize()) {
+	#if CONFIG_HAVE_ACPI_RESUME
+		printk(BIOS_DEBUG, "Failed to recover CBMEM in S3 resume.\n");
+		/* Failed S3 resume, reset to come up cleanly */
+		reset_system();
+	#endif
+	}
 
 	printk(BIOS_DEBUG, "MRC Wrapper returned %d\n", ret);
 	printk(BIOS_DEBUG, "MRC data at %p %d bytes\n", mp->data_to_save,

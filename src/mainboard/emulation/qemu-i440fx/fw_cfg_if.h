@@ -51,3 +51,9 @@ typedef struct FWCfgFiles {
     uint32_t  count;
     FWCfgFile f[];
 } FWCfgFiles;
+
+typedef struct FwCfgE820Entry {
+    uint64_t address;
+    uint64_t length;
+    uint32_t type;
+} FwCfgE820Entry __attribute((__aligned__(4)));

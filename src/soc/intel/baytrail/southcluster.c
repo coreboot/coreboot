@@ -122,6 +122,7 @@ static void sc_init(device_t dev)
 	int i;
 	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
 	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
+	const unsigned long actl = ILB_BASE_ADDRESS + ACTL;
 	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;
 
 	/* Set up the PIRQ PIC routing based on static config. */
@@ -132,6 +133,9 @@ static void sc_init(device_t dev)
 	for (i = 0; i < NUM_IR_DEVS; i++) {
 		write16(ir_base + i*sizeof(ir->pcidev[i]), ir->pcidev[i]);
 	}
+
+	/* Route SCI to IRQ9 */
+	write32(actl, (read32(actl) & ~SCIS_MASK) | SCIS_IRQ9);
 }
 
 /*

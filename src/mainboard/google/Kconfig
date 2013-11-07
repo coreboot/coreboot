@@ -32,8 +32,6 @@ config BOARD_GOOGLE_BUTTERFLY
 	bool "Butterfly"
 config BOARD_GOOGLE_FALCO
 	bool "Falco"
-config BOARD_GOOGLE_KIRBY
-	bool "Kirby"
 config BOARD_GOOGLE_LINK
 	bool "Link"
 config BOARD_GOOGLE_PARROT
@@ -54,7 +52,6 @@ endchoice
 source "src/mainboard/google/bolt/Kconfig"
 source "src/mainboard/google/butterfly/Kconfig"
 source "src/mainboard/google/falco/Kconfig"
-source "src/mainboard/google/kirby/Kconfig"
 source "src/mainboard/google/link/Kconfig"
 source "src/mainboard/google/parrot/Kconfig"
 source "src/mainboard/google/peppy/Kconfig"

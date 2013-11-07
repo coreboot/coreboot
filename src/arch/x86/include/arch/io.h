@@ -113,6 +113,7 @@ static inline void insb(uint16_t port, void *addr, unsigned long count)
 		"cld ; rep ; insb "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
+		: "memory"
 		);
 }
 
@@ -122,6 +123,7 @@ static inline void insw(uint16_t port, void *addr, unsigned long count)
 		"cld ; rep ; insw "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
+		: "memory"
 		);
 }
 
@@ -131,6 +133,7 @@ static inline void insl(uint16_t port, void *addr, unsigned long count)
 		"cld ; rep ; insl "
 		: "=D" (addr), "=c" (count)
 		: "d"(port), "0"(addr), "1" (count)
+		: "memory"
 		);
 }
 

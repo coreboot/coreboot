@@ -31,9 +31,14 @@
 #define MSR_PKG_POWER_SKU_UNIT		0x606
 #define MSR_PKG_POWER_LIMIT		0x610
 #define MSR_IACORE_RATIOS		0x66a
+#define MSR_IACORE_TURBO_RATIOS		0x66c
 #define MSR_IACORE_VIDS			0x66b
+#define MSR_IACORE_TURBO_VIDS		0x66d
 #define MSR_PKG_TURBO_CFG1		0x670
 #define MSR_CPU_TURBO_WKLD_CFG1		0x671
 #define MSR_CPU_TURBO_WKLD_CFG2		0x672
 
-#endif /* _BAYTRAIL_IOSF_H_ */
+/* Read BCLK from MSR */
+unsigned bus_freq_khz(void);
+
+#endif /* _BAYTRAIL_MSR_H_ */

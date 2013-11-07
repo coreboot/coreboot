@@ -76,6 +76,7 @@ static const char *stepping_str[] = { "A0", "A1", "B0", "B1", "B2", "B3" };
 static void fill_in_pattrs(void)
 {
 	device_t dev;
+	msr_t msr;
 	struct pattrs *attrs = (struct pattrs *)pattrs_get();
 
 	attrs->cpuid = cpuid_eax(1);
@@ -103,8 +104,24 @@ static void fill_in_pattrs(void)
 
 	fill_in_msr(&attrs->platform_id, MSR_IA32_PLATFORM_ID);
 	fill_in_msr(&attrs->platform_info, MSR_PLATFORM_INFO);
-	fill_in_msr(&attrs->iacore_ratios, MSR_IACORE_RATIOS);
-	fill_in_msr(&attrs->iacore_vids, MSR_IACORE_VIDS);
+
+	/* Set IA core speed ratio and voltages */
+	msr = rdmsr(MSR_IACORE_RATIOS);
+	attrs->iacore_ratios[IACORE_MIN] = msr.lo & 0x7f;
+	attrs->iacore_ratios[IACORE_LFM] = (msr.lo >> 8) & 0x7f;
+	attrs->iacore_ratios[IACORE_MAX] = (msr.lo >> 16) & 0x7f;
+	msr = rdmsr(MSR_IACORE_TURBO_RATIOS);
+	attrs->iacore_ratios[IACORE_TURBO] = (msr.lo & 0xff); /* 1 core max */
+
+	msr = rdmsr(MSR_IACORE_VIDS);
+	attrs->iacore_vids[IACORE_MIN] = msr.lo & 0x7f;
+	attrs->iacore_vids[IACORE_LFM] = (msr.lo >> 8) & 0x7f;
+	attrs->iacore_vids[IACORE_MAX] = (msr.lo >> 16) & 0x7f;
+	msr = rdmsr(MSR_IACORE_TURBO_VIDS);
+	attrs->iacore_vids[IACORE_TURBO] = (msr.lo & 0xff); /* 1 core max */
+
+	/* Set bus clock speed */
+	attrs->bclk_khz = bus_freq_khz();
 }
 
 static inline void set_acpi_sleep_type(int val)

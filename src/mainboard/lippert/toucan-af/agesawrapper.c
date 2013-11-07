@@ -493,7 +493,7 @@ agesawrapper_amdinitlate (
 	Status = AmdInitLate (AmdLateParamsPtr);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(Status <= AGESA_BOUNDS_CHK);
 	}
 
 	DmiTable    = AmdLateParamsPtr->DmiTable;
@@ -594,7 +594,7 @@ agesawrapper_amds3laterestore (
 	Status = AmdS3LateRestore (AmdS3LateParamsPtr);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(Status <= AGESA_BOUNDS_CHK);
 	}
 
 	return (UINT32)Status;
@@ -631,7 +631,7 @@ agesawrapper_amdS3Save (
 	Status = AmdS3Save (AmdS3SaveParamsPtr);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(Status <= AGESA_BOUNDS_CHK);
 	}
 
 	S3DataType = S3DataTypeNonVolatile;
@@ -684,7 +684,7 @@ agesawrapper_amdlaterunaptask (
 	Status = AmdLateRunApTask (&ApExeParams);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(Status <= AGESA_BOUNDS_CHK);
 	}
 
 	return (UINT32)Status;

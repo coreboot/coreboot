@@ -549,7 +549,7 @@ agesawrapper_amdinitlate(VOID)
 	if (Status != AGESA_SUCCESS) {
 		//agesawrapper_amdreadeventlog(AmdLateParamsPtr->StdHeader.HeapStatus);
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(Status <= AGESA_BOUNDS_CHK);
 	}
 	DmiTable    = AmdLateParamsPtr->DmiTable;
 	AcpiPstate  = AmdLateParamsPtr->AcpiPState;
@@ -594,7 +594,7 @@ agesawrapper_amdlaterunaptask (
 	Status = AmdLateRunApTask (&AmdLateParams);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(Status <= AGESA_BOUNDS_CHK);
 	}
 
 	return (UINT32)Status;

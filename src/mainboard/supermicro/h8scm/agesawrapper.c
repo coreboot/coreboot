@@ -450,7 +450,7 @@ UINT32 agesawrapper_amdinitlate(VOID)
 	Status = AmdInitLate(AmdLateParamsPtr);
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog(AmdLateParamsPtr->StdHeader.HeapStatus);
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(Status <= AGESA_BOUNDS_CHK);
 	}
 	DmiTable    = AmdLateParamsPtr->DmiTable;
 	AcpiPstate  = AmdLateParamsPtr->AcpiPState;

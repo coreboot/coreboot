@@ -138,6 +138,9 @@ Device (LPCB)
 		})
 	}
 
+	// Include mainboard's superio.asl file.
+	#include "acpi/superio.asl"
+
 #ifdef ENABLE_TPM
 	Device (TPM)		// Trusted Platform Module
 	{

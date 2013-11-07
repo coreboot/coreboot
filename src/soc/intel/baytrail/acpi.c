@@ -20,13 +20,50 @@
 
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
+#include <arch/io.h>
+#include <arch/smp/mpspec.h>
+#include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <types.h>
 #include <string.h>
 
 #include <baytrail/acpi.h>
 #include <baytrail/iomap.h>
+#include <baytrail/irq.h>
 #include <baytrail/pmc.h>
+
+static int acpi_sci_irq(void)
+{
+	const unsigned long actl = ILB_BASE_ADDRESS + ACTL;
+	int scis;
+	static int sci_irq;
+
+	if (sci_irq)
+		return sci_irq;
+
+	/* Determine how SCI is routed. */
+	scis = read32(actl) & SCIS_MASK;
+	switch (scis) {
+	case SCIS_IRQ9:
+	case SCIS_IRQ10:
+	case SCIS_IRQ11:
+		sci_irq = scis - SCIS_IRQ9 + 9;
+		break;
+	case SCIS_IRQ20:
+	case SCIS_IRQ21:
+	case SCIS_IRQ22:
+	case SCIS_IRQ23:
+		sci_irq = scis - SCIS_IRQ20 + 20;
+		break;
+	default:
+		printk(BIOS_DEBUG, "Invalid SCI route! Defaulting to IRQ9.\n");
+		sci_irq = 9;
+		break;
+	}
+
+	printk(BIOS_DEBUG, "SCI is IRQ%d\n", sci_irq);
+	return sci_irq;
+}
 
 void acpi_create_intel_hpet(acpi_hpet_t * hpet)
 {
@@ -70,7 +107,7 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 {
 	const uint16_t pmbase = ACPI_BASE_ADDRESS;
 
-	fadt->sci_int = 0x9;
+	fadt->sci_int = acpi_sci_irq();
 	fadt->smi_cmd = APM_CNT;
 	fadt->acpi_enable = APM_CNT_ACPI_ENABLE;
 	fadt->acpi_disable = APM_CNT_ACPI_DISABLE;
@@ -174,4 +211,26 @@ void acpi_fill_in_fadt(acpi_fadt_t *fadt)
 	fadt->x_gpe1_blk.addrl = 0x0;
 	fadt->x_gpe1_blk.addrh = 0x0;
 
+}
+
+unsigned long acpi_madt_irq_overrides(unsigned long current)
+{
+	int sci_irq = acpi_sci_irq();
+	acpi_madt_irqoverride_t *irqovr;
+	uint16_t sci_flags = MP_IRQ_TRIGGER_LEVEL;
+
+	/* INT_SRC_OVR */
+	irqovr = (void *)current;
+	current += acpi_create_madt_irqoverride(irqovr, 0, 0, 2, 0);
+
+	if (sci_irq >= 20)
+		sci_flags |= MP_IRQ_POLARITY_LOW;
+	else
+		sci_flags |= MP_IRQ_POLARITY_HIGH;
+
+	irqovr = (void *)current;
+	current += acpi_create_madt_irqoverride(irqovr, 0, sci_irq, sci_irq,
+	                                        sci_flags);
+
+	return current;
 }

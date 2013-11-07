@@ -52,6 +52,17 @@
 #define PIRQG				6
 #define PIRQH				7
 
+/* These registers live behind the ILB_BASE_ADDRESS */
+#define ACTL				0x00
+# define SCIS_MASK				0x07
+# define SCIS_IRQ9				0x00
+# define SCIS_IRQ10				0x01
+# define SCIS_IRQ11				0x02
+# define SCIS_IRQ20				0x04
+# define SCIS_IRQ21				0x05
+# define SCIS_IRQ22				0x06
+# define SCIS_IRQ23				0x07
+
 /* In each mainbaord directory there should exist a header file irqroute.h that
  * defines the PCI_DEV_PIRQ_ROUTES and PIRQ_PIC_ROUTES macros which
  * consist of PCI_DEV_PIRQ_ROUTE and PIRQ_PIC entries. */

@@ -28,7 +28,33 @@
 #define PIRQF_APIC_IRQ			21
 #define PIRQG_APIC_IRQ			22
 #define PIRQH_APIC_IRQ			23
+/* The below IRQs are for when devices are in ACPI mode. Active low. */
+#define LPE_DMA0_IRQ			24
+#define LPE_DMA1_IRQ			25
+#define LPE_SSP0_IRQ			26
+#define LPE_SSP1_IRQ			27
+#define LPE_SSP2_IRQ			28
+#define LPE_IPC2HOST_IRQ		29
+#define LPSS_I2C1_IRQ			32
+#define LPSS_I2C2_IRQ			33
+#define LPSS_I2C3_IRQ			34
+#define LPSS_I2C4_IRQ			35
+#define LPSS_I2C5_IRQ			36
+#define LPSS_I2C6_IRQ			37
+#define LPSS_I2C7_IRQ			38
+#define LPSS_HSUART1_IRQ		39
+#define LPSS_HSUART2_IRQ		40
+#define LPSS_SPI_IRQ			41
+#define LPSS_DMA2_IRQ			42
+#define LPSS_DMA1_IRQ			43
+#define SCC_EMMC_IRQ			45
+#define SCC_SDIO_IRQ			46
+#define SCC_SD_IRQ			47
+/* The dedicated gpio irqs are active high. */
+#define GPIO_S0_DED_IRQ(slot)		(51 + (slot))
+#define GPIO_S5_DED_IRQ(slot)		(67 + (slot))
 
+/* PIC IRQ settings. */
 #define PIRQ_PIC_IRQDISABLE		0x0
 #define PIRQ_PIC_IRQ3			0x3
 #define PIRQ_PIC_IRQ4			0x4

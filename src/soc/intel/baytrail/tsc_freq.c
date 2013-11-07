@@ -22,20 +22,27 @@
 #include <cpu/x86/tsc.h>
 #include <baytrail/msr.h>
 
+unsigned bus_freq_khz(void)
+{
+	msr_t clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
+	switch (clk_info.lo & 0x3) {
+	case 0: return 83333;
+	case 1: return 100000;
+	case 2: return 133333;
+	case 3: return 116666;
+	default: return 0;
+	}
+}
+
 unsigned long tsc_freq_mhz(void)
 {
 	msr_t platform_info;
-	msr_t clk_info;
-	unsigned long bclk_khz;
+	unsigned bclk_khz = bus_freq_khz();
+
+	if (!bclk_khz)
+		return 0;
 
 	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	clk_info = rdmsr(MSR_BSEL_CR_OVERCLOCK_CONTROL);
-	switch (clk_info.lo & 0x3) {
-	case 0: bclk_khz =  83333; break;
-	case 1: bclk_khz = 100000; break;
-	case 2: bclk_khz = 133333; break;
-	case 3: bclk_khz = 116666; break;
-	}
 	return (bclk_khz * ((platform_info.lo >> 8) & 0xff)) / 1000;
 }
 

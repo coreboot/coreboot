@@ -3,7 +3,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2013 Google Inc.
-# 
+#
 
 EXIT_SUCCESS=0
 EXIT_FAILURE=1
@@ -77,7 +77,7 @@ cmd()
 	if [ $? -eq 0 ]; then
 		return
 	fi
-		
+
 	echo "Failed to run command: $2"
 	exit $EXIT_FAILURE
 }

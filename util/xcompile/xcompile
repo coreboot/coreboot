@@ -110,6 +110,10 @@ detect_special_flags() {
 		ARMFLAGS=""
 		testcc "$CC" "$CFLAGS $ARMFLAGS"&&CFLAGS="$CFLAGS $ARMFLAGS"
 			;;
+	aarch64 )
+		ARMFLAGS=""
+		testcc "$CC" "$CFLAGS $ARMFLAGS"&&CFLAGS="$CFLAGS $ARMFLAGS"
+			;;
 	esac
 }
 
@@ -136,13 +140,19 @@ touch "$TMPFILE"
 trap clean_up EXIT
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 armv7"
+SUPPORTED_ARCHITECTURE="x86 armv7 aarch64"
 
 # ARM Architecture
 TARCH_armv7="armv7"
 TBFDARCH_armv7="littlearm"
 TCLIST_armv7="armv7a armv7-a"
 TWIDTH_armv7="32"
+
+# AARCH64 -- armv8
+TARCH_aarch64="aarch64"
+TBFDARCH_aarch64="littleaarch64"
+TCLIST_aarch64="aarch64"
+TWIDTH_aarch64="64"
 
 # X86 Architecture
 TARCH_x86="i386"
@@ -170,6 +180,7 @@ for architecture in $SUPPORTED_ARCHITECTURE; do
 	for toolchain in $TCLIST; do
 		search="$search $XGCCPATH$toolchain-elf-"
 		search="$search $toolchain-elf-"
+		search="$search $toolchain-linux-gnu-"
 		search="$search $XGCCPATH$toolchain-eabi-"
 		search="$search $toolchain-eabi-"
 	done

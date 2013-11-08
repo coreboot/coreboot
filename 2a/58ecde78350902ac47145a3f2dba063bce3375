@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Ronald G. Minnich <rminnich@gmail.com>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Code-Review+2: Aaron Durbin <adurbin@google.com>
+Submitted-by: Marc Jones <marc.jones@se-eng.com>
+Submitted-at: Fri, 08 Nov 2013 19:55:17 +0100
+Reviewed-on: http://review.coreboot.org/4012
+Project: coreboot
+Branch: refs/heads/master

@@ -92,17 +92,20 @@ static inline void outsb(int port, const void *addr, unsigned long count)
 
 static inline void insl(int port, void *addr, unsigned long count)
 {
-	__asm__ __volatile__("rep; insl" : "+D"(addr), "+c"(count) : "d"(port));
+	__asm__ __volatile__("rep; insl" : "+D"(addr), "+c"(count) : "d"(port)
+			     : "memory");
 }
 
 static inline void insw(int port, void *addr, unsigned long count)
 {
-	__asm__ __volatile__("rep; insw" : "+D"(addr), "+c"(count) : "d"(port));
+	__asm__ __volatile__("rep; insw" : "+D"(addr), "+c"(count) : "d"(port)
+			     : "memory");
 }
 
 static inline void insb(int port, void *addr, unsigned long count)
 {
-	__asm__ __volatile__("rep; insb" : "+D"(addr), "+c"(count) : "d"(port));
+	__asm__ __volatile__("rep; insb" : "+D"(addr), "+c"(count) : "d"(port)
+			     : "memory");
 }
 
 #endif

@@ -179,6 +179,25 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 	southcluster_smm_save_gpio_route(route_reg);
 }
 
+static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
+			const struct gpio_bank *bank)
+{
+	u32 reg = bank->pad_base + PAD_BASE_DIRQ_OFFSET;
+	u32 val;
+	int i;
+
+	/* Write all four DIRQ registers */
+	for (i=0; i<4; ++i) {
+		val = dirq[i * 4 + 3] << 24 | dirq[i * 4 + 2] << 16 |
+		      dirq[i * 4 + 1] << 8  | dirq[i * 4];
+		write32(reg + i * 4, val);
+#ifdef GPIO_DEBUG
+		printk(BIOS_DEBUG, "Write DIRQ reg(%x) - %x\n",
+			reg + i * 4, val);
+#endif
+	}
+}
+
 void setup_soc_gpios(struct soc_gpio_config *config)
 {
 	if (config) {
@@ -186,7 +205,13 @@ void setup_soc_gpios(struct soc_gpio_config *config)
 		setup_gpios(config->score, &gpscore_bank);
 		setup_gpios(config->ssus,  &gpssus_bank);
 		setup_gpio_route(config->ssus, config->score);
+
+		if (config->core_dirq)
+			setup_dirqs(*config->core_dirq, &gpscore_bank);
+		if (config->sus_dirq)
+			setup_dirqs(*config->sus_dirq, &gpssus_bank);
 	}
+
 }
 
 struct soc_gpio_config* __attribute__((weak)) mainboard_get_gpios(void)

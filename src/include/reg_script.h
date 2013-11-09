@@ -59,12 +59,14 @@ enum {
 	REG_SCRIPT_TYPE_MMIO,
 	REG_SCRIPT_TYPE_RES,
 	REG_SCRIPT_TYPE_IOSF,
+	REG_SCRIPT_TYPE_MSR,
 };
 
 enum {
 	REG_SCRIPT_SIZE_8,
 	REG_SCRIPT_SIZE_16,
 	REG_SCRIPT_SIZE_32,
+	REG_SCRIPT_SIZE_64,
 };
 
 struct reg_script {
@@ -72,8 +74,8 @@ struct reg_script {
 	uint32_t type;
 	uint32_t size;
 	uint32_t reg;
-	uint32_t mask;
-	uint32_t value;
+	uint64_t mask;
+	uint64_t value;
 	uint32_t timeout;
 	union {
 		uint32_t id;
@@ -288,6 +290,26 @@ struct reg_script {
 	REG_IOSF_RMW(unit_, reg_, 0xffffffff, value_)
 #define REG_IOSF_POLL(unit_, reg_, mask_, value_, timeout_) \
 	REG_SCRIPT_IOSF(POLL, unit_, reg_, mask_, value_, timeout_)
+
+/*
+ * CPU Model Specific Register
+ */
+
+#define REG_SCRIPT_MSR(cmd_, reg_, mask_, value_, timeout_) \
+	_REG_SCRIPT_ENCODE_RAW(REG_SCRIPT_COMMAND_##cmd_,   \
+			       REG_SCRIPT_TYPE_MSR,         \
+			       REG_SCRIPT_SIZE_64,          \
+			       reg_, mask_, value_, timeout_, 0)
+#define REG_MSR_READ(reg_) \
+	REG_SCRIPT_MSR(READ, reg_, 0, 0, 0)
+#define REG_MSR_WRITE(reg_, value_) \
+	REG_SCRIPT_MSR(WRITE, reg_, 0, value_, 0)
+#define REG_MSR_RMW(reg_, mask_, value_) \
+	REG_SCRIPT_MSR(RMW, reg_, mask_, value_, 0)
+#define REG_MSR_OR(reg_, value_) \
+	REG_MSR_RMW(reg_, -1ULL, value_)
+#define REG_MSR_POLL(reg_, mask_, value_, timeout_) \
+	REG_SCRIPT_MSR(POLL, reg_, mask_, value_, timeout_)
 
 /*
  * Chain to another table.

@@ -50,9 +50,44 @@
 #define SCC_EMMC_IRQ			45
 #define SCC_SDIO_IRQ			46
 #define SCC_SD_IRQ			47
-/* The dedicated gpio irqs are active high. */
-#define GPIO_S0_DED_IRQ(slot)		(51 + (slot))
-#define GPIO_S5_DED_IRQ(slot)		(67 + (slot))
+/* GPIO direct / dedicated IRQs. */
+#define GPIO_S0_DED_IRQ_0		51
+#define GPIO_S0_DED_IRQ_1		52
+#define GPIO_S0_DED_IRQ_2		53
+#define GPIO_S0_DED_IRQ_3		54
+#define GPIO_S0_DED_IRQ_4		55
+#define GPIO_S0_DED_IRQ_5		56
+#define GPIO_S0_DED_IRQ_6		57
+#define GPIO_S0_DED_IRQ_7		58
+#define GPIO_S0_DED_IRQ_8		59
+#define GPIO_S0_DED_IRQ_9		60
+#define GPIO_S0_DED_IRQ_10		61
+#define GPIO_S0_DED_IRQ_11		62
+#define GPIO_S0_DED_IRQ_12		63
+#define GPIO_S0_DED_IRQ_13		64
+#define GPIO_S0_DED_IRQ_14		65
+#define GPIO_S0_DED_IRQ_15		66
+#define GPIO_S5_DED_IRQ_0		67
+#define GPIO_S5_DED_IRQ_1		68
+#define GPIO_S5_DED_IRQ_2		69
+#define GPIO_S5_DED_IRQ_3		70
+#define GPIO_S5_DED_IRQ_4		71
+#define GPIO_S5_DED_IRQ_5		72
+#define GPIO_S5_DED_IRQ_6		73
+#define GPIO_S5_DED_IRQ_7		74
+#define GPIO_S5_DED_IRQ_8		75
+#define GPIO_S5_DED_IRQ_9		76
+#define GPIO_S5_DED_IRQ_10		77
+#define GPIO_S5_DED_IRQ_11		78
+#define GPIO_S5_DED_IRQ_12		79
+#define GPIO_S5_DED_IRQ_13		80
+#define GPIO_S5_DED_IRQ_14		81
+#define GPIO_S5_DED_IRQ_15		82
+/* DIRQs - Two levels of expansion to evaluate to numeric constants for ASL. */
+#define _GPIO_S0_DED_IRQ(slot)		GPIO_S0_DED_IRQ_##slot
+#define _GPIO_S5_DED_IRQ(slot)		GPIO_S5_DED_IRQ_##slot
+#define GPIO_S0_DED_IRQ(slot)		_GPIO_S0_DED_IRQ(slot)
+#define GPIO_S5_DED_IRQ(slot)		_GPIO_S5_DED_IRQ(slot)
 
 /* PIC IRQ settings. */
 #define PIRQ_PIC_IRQDISABLE		0x0

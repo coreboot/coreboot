@@ -19,6 +19,7 @@
 
 #include <stdlib.h>
 #include <baytrail/gpio.h>
+#include "irqroute.h"
 
 /* TODO(SHAWNN): Modify gpios labeled 'INT' for interrupt handling */
 /* NCORE GPIOs */
@@ -110,7 +111,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_NC,	/* S0-SC052 - SMB_SOC_CLK (XDP) */
 	GPIO_NC,	/* S0-SC053 - SMB_SOC_ALERTB (NC) */
 	GPIO_DEFAULT,	/* S0-SC054 - NC */
-	GPIO_INPUT,	/* S0-SC055 - TRACKPAD_INT_DX - INT */
+	GPIO_DIRQ,	/* S0-SC055 - TRACKPAD_INT_DX */
 	GPIO_INPUT,	/* S0-SC056 - GPIO_S0_SC_56 - STRAP */
 	GPIO_FUNC1,	/* S0-SC057 - PCH_UART_TXD */
 	GPIO_INPUT,	/* S0-SC058 - SIM_DET_C */
@@ -127,7 +128,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_FUNC1,	/* S0-SC069 - SIO_SPI_CLK */
 	GPIO_INPUT,	/* S0-SC070 - ALS_INT_L - INT */
 	GPIO_NC,	/* S0-SC071 - NC */
-	GPIO_INPUT,	/* S0-SC072 - TOUCH_INT_L_DX - INT */
+	GPIO_DIRQ,	/* S0-SC072 - TOUCH_INT_L_DX */
 	GPIO_NC,	/* S0-SC073 - NC */
 	GPIO_NC,	/* S0-SC074 - SIO_UART2_RXD (NC) */
 	GPIO_NC,	/* S0-SC075 - SIO_UART2_TXD (NC) */
@@ -209,10 +210,20 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_END
 };
 
+static const u8 core_dedicated_irq[GPIO_MAX_DIRQS] = {
+	[TPAD_IRQ_OFFSET] = TPAD_IRQ_GPIO,
+	[TOUCH_IRQ_OFFSET] = TOUCH_IRQ_GPIO,
+};
+
+static const u8 sus_dedicated_irq[GPIO_MAX_DIRQS] = {
+};
+
 static struct soc_gpio_config gpio_config = {
 	.ncore = gpncore_gpio_map,
 	.score = gpscore_gpio_map,
-	.ssus  = gpssus_gpio_map
+	.ssus  = gpssus_gpio_map,
+	.core_dirq = &core_dedicated_irq,
+	.sus_dirq = &sus_dedicated_irq,
 };
 
 struct soc_gpio_config* mainboard_get_gpios(void)

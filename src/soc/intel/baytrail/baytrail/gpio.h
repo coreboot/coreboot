@@ -31,6 +31,9 @@
 #define GPNCORE_PAD_BASE		(IO_BASE_ADDRESS + 0x1000)
 #define GPSSUS_PAD_BASE			(IO_BASE_ADDRESS + 0x2000)
 
+/* DIRQ registers start at pad base + 0x980 */
+#define PAD_BASE_DIRQ_OFFSET		0x980
+
 /* Pad register offset */
 #define PAD_CONF0_REG			0x0
 #define PAD_CONF1_REG			0x4
@@ -76,6 +79,12 @@
 
 /* config0[27] - Direct Irq En */
 #define PAD_IRQ_EN		(1 << 27)
+
+/* config0[26] - gd_tne */
+#define PAD_TNE_IRQ		(1 << 26)
+
+/* config0[25] - gd_tpe */
+#define PAD_TPE_IRQ		(1 << 25)
 
 /* config0[24] - Gd Level */
 #define PAD_LEVEL_IRQ		(1 << 24)
@@ -169,6 +178,26 @@
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT }
 
+/* Direct / dedicated IRQ input - falling-edge triggered */
+#define GPIO_DIRQ \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
+		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TNE_IRQ, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_INPUT, \
+	  .tne       = GPIO_NEDGE_ENABLE }
+
+/* Direct / dedicated IRQ input - rising-edge triggered */
+#define GPIO_DIRQ_INVERT \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
+		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_INPUT, \
+	  .tne       = GPIO_PEDGE_ENABLE }
+
 #define GPIO_OUT_LOW \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
@@ -236,6 +265,9 @@
 #define GPIO_NC		GPIO_INPUT_PU_10K
 #define GPIO_DEFAULT 	GPIO_FUNC0
 
+/* 16 DirectIRQs per supported bank */
+#define GPIO_MAX_DIRQS	16
+
 struct soc_gpio_map {
 	u32 pad_conf0;
 	u32 pad_conf1;
@@ -253,6 +285,8 @@ struct soc_gpio_config {
 	const struct soc_gpio_map *ncore;
 	const struct soc_gpio_map *score;
 	const struct soc_gpio_map *ssus;
+	const u8 (*core_dirq)[GPIO_MAX_DIRQS];
+	const u8 (*sus_dirq)[GPIO_MAX_DIRQS];
 };
 
 /* Description of GPIO 'bank' ex. {ncore, score. ssus} */

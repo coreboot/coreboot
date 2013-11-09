@@ -26,6 +26,10 @@
 #include <stdint.h>
 #include <reg_script.h>
 
+#if CONFIG_ARCH_X86
+#include <cpu/x86/msr.h>
+#endif
+
 #if CONFIG_SOC_INTEL_BAYTRAIL
 #include <baytrail/iosf.h>
 #endif
@@ -285,7 +289,31 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 #endif
 }
 
-static uint32_t reg_script_read(struct reg_script_context *ctx)
+static uint64_t reg_script_read_msr(struct reg_script_context *ctx)
+{
+#if CONFIG_ARCH_X86
+	const struct reg_script *step = reg_script_get_step(ctx);
+	msr_t msr = rdmsr(step->reg);
+	uint64_t value = msr.hi;
+	value = msr.hi;
+	value <<= 32;
+	value |= msr.lo;
+	return value;
+#endif
+}
+
+static void reg_script_write_msr(struct reg_script_context *ctx)
+{
+#if CONFIG_ARCH_X86
+	const struct reg_script *step = reg_script_get_step(ctx);
+	msr_t msr;
+	msr.hi = step->value >> 32;
+	msr.lo = step->value & 0xffffffff;
+	wrmsr(step->reg, msr);
+#endif
+}
+
+static uint64_t reg_script_read(struct reg_script_context *ctx)
 {
 	const struct reg_script *step = reg_script_get_step(ctx);
 
@@ -300,6 +328,8 @@ static uint32_t reg_script_read(struct reg_script_context *ctx)
 		return reg_script_read_res(ctx);
 	case REG_SCRIPT_TYPE_IOSF:
 		return reg_script_read_iosf(ctx);
+	case REG_SCRIPT_TYPE_MSR:
+		return reg_script_read_msr(ctx);
 	}
 	return 0;
 }
@@ -324,12 +354,15 @@ static void reg_script_write(struct reg_script_context *ctx)
 	case REG_SCRIPT_TYPE_IOSF:
 		reg_script_write_iosf(ctx);
 		break;
+	case REG_SCRIPT_TYPE_MSR:
+		reg_script_write_msr(ctx);
+		break;
 	}
 }
 
 static void reg_script_rmw(struct reg_script_context *ctx)
 {
-	uint32_t value;
+	uint64_t value;
 	const struct reg_script *step = reg_script_get_step(ctx);
 	struct reg_script write_step = *step;
 
@@ -349,50 +382,57 @@ static void reg_script_rmw(struct reg_script_context *ctx)
 static void reg_script_run_next(struct reg_script_context *ctx,
                                 const struct reg_script *step);
 
+
+static void reg_script_run_step(struct reg_script_context *ctx,
+				const struct reg_script *step)
+{
+	uint64_t value = 0, try;
+
+	switch (step->command) {
+	case REG_SCRIPT_COMMAND_READ:
+		(void)reg_script_read(ctx);
+		break;
+	case REG_SCRIPT_COMMAND_WRITE:
+		reg_script_write(ctx);
+		break;
+	case REG_SCRIPT_COMMAND_RMW:
+		reg_script_rmw(ctx);
+		break;
+	case REG_SCRIPT_COMMAND_POLL:
+		for (try = 0; try < step->timeout; try += POLL_DELAY) {
+			value = reg_script_read(ctx) & step->mask;
+			if (value == step->value)
+				break;
+			udelay(POLL_DELAY);
+		}
+		if (try >= step->timeout)
+			printk(BIOS_WARNING, "%s: POLL timeout waiting for "
+			       "0x%x to be 0x%lx, got 0x%lx\n", __func__,
+			       step->reg, (unsigned long)step->value,
+			       (unsigned long)value);
+		break;
+	case REG_SCRIPT_COMMAND_SET_DEV:
+		reg_script_set_dev(ctx, step->dev);
+		break;
+	case REG_SCRIPT_COMMAND_NEXT:
+		reg_script_run_next(ctx, step->next);
+		break;
+	default:
+		printk(BIOS_WARNING, "Invalid command: %08x\n",
+		       step->command);
+		break;
+	}
+}
+
 static void reg_script_run_with_context(struct reg_script_context *ctx)
 {
-	uint32_t value = 0, try;
-
 	while (1) {
 		const struct reg_script *step = reg_script_get_step(ctx);
 
 		if (step->command == REG_SCRIPT_COMMAND_END)
 			break;
 
-		switch (step->command) {
-		case REG_SCRIPT_COMMAND_READ:
-			(void)reg_script_read(ctx);
-			break;
-		case REG_SCRIPT_COMMAND_WRITE:
-			reg_script_write(ctx);
-			break;
-		case REG_SCRIPT_COMMAND_RMW:
-			reg_script_rmw(ctx);
-			break;
-		case REG_SCRIPT_COMMAND_POLL:
-			for (try = 0; try < step->timeout; try += POLL_DELAY) {
-				value = reg_script_read(ctx) & step->mask;
-				if (value == step->value)
-					break;
-				udelay(POLL_DELAY);
-			}
-			if (try >= step->timeout)
-				printk(BIOS_WARNING, "%s: POLL timeout waiting "
-				       "for 0x%08x to be 0x%08x, got 0x%08x\n",
-				       __func__, step->reg, step->value, value);
-			break;
-		case REG_SCRIPT_COMMAND_SET_DEV:
-			reg_script_set_dev(ctx, step->dev);
-			break;
-		case REG_SCRIPT_COMMAND_NEXT:
-			reg_script_run_next(ctx, step->next);
-			break;
-		default:
-			printk(BIOS_WARNING, "Invalid command: %08x\n",
-			       step->command);
-			break;
-		}
-
+		reg_script_run_step(ctx, step);
 		reg_script_set_step(ctx, step + 1);
 	}
 }

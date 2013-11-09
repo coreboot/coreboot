@@ -45,3 +45,10 @@
 	PIRQ_PIC(F, DISABLE), \
 	PIRQ_PIC(G, DISABLE), \
 	PIRQ_PIC(H, DISABLE)
+
+/* CORE bank DIRQs - up to 16 supported */
+#define TPAD_IRQ_OFFSET		0
+#define TOUCH_IRQ_OFFSET	1
+/* Corresponding SCORE GPIO pins */
+#define TPAD_IRQ_GPIO		55
+#define TOUCH_IRQ_GPIO		72

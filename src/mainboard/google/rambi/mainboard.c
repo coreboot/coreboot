@@ -33,7 +33,9 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <smbios.h>
 #include "ec.h"
+#include "onboard.h"
 
 void mainboard_suspend_resume(void)
 {
@@ -119,7 +121,7 @@ static int int15_handler(void)
 		}
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
 		break;
 	}
@@ -132,12 +134,39 @@ static void mainboard_init(device_t dev)
 	mainboard_ec_init();
 }
 
+static int mainboard_smbios_data(device_t dev, int *handle,
+				 unsigned long *current)
+{
+	int len = 0;
+
+	len += smbios_write_type41(
+		current, handle,
+		BOARD_TRACKPAD_NAME,            /* name */
+		BOARD_TRACKPAD_IRQ,             /* instance */
+		BOARD_TRACKPAD_I2C_BUS,         /* segment */
+		BOARD_TRACKPAD_I2C_ADDR,        /* bus */
+		0,                              /* device */
+		0);                             /* function */
+
+	len += smbios_write_type41(
+		current, handle,
+		BOARD_TOUCHSCREEN_NAME,         /* name */
+		BOARD_TOUCHSCREEN_IRQ,          /* instance */
+		BOARD_TOUCHSCREEN_I2C_BUS,      /* segment */
+		BOARD_TOUCHSCREEN_I2C_ADDR,     /* bus */
+		0,                              /* device */
+		0);                             /* function */
+
+	return len;
+}
+
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->get_smbios_data = mainboard_smbios_data;
 #if CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

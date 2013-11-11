@@ -17,9 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <baytrail/gpio.h>
 #include <device/pci.h>
 #include <console/console.h>
+#include <baytrail/gpio.h>
+#include <baytrail/pmc.h>
+#include <baytrail/smm.h>
 
 /* GPIO-to-Pad LUTs */
 static const u8 gpncore_gpio_to_pad[GPNCORE_COUNT] =
@@ -154,12 +156,36 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 		}
 }
 
+static void setup_gpio_route(const struct soc_gpio_map *sus,
+                             const struct soc_gpio_map *core)
+{
+	uint32_t route_reg = 0;
+	int i;
+
+	for (i = 0; i < 8; i++) {
+		/* SMI takes precedence and wake_en implies SCI. */
+		if (sus[i].smi) {
+			route_reg |= ROUTE_SMI << (2 * i);
+		} else if (sus[i].wake_en) {
+			route_reg |= ROUTE_SCI << (2 * i);
+		}
+
+		if (core[i].smi) {
+			route_reg |= ROUTE_SMI << (2 * (i + 8));
+		} else if (core[i].wake_en) {
+			route_reg |= ROUTE_SCI << (2 * (i + 8));
+		}
+	}
+	southcluster_smm_save_gpio_route(route_reg);
+}
+
 void setup_soc_gpios(struct soc_gpio_config *config)
 {
 	if (config) {
 		setup_gpios(config->ncore, &gpncore_bank);
 		setup_gpios(config->score, &gpscore_bank);
 		setup_gpios(config->ssus,  &gpssus_bank);
+		setup_gpio_route(config->ssus, config->score);
 	}
 }
 

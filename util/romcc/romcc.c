@@ -898,7 +898,7 @@ static const char *tops(int index)
 	if (index < 0) {
 		return unknown;
 	}
-	if (index > OP_MAX) {
+	if (index >= OP_MAX) {
 		return unknown;
 	}
 	return table_ops[index].name;
@@ -10398,7 +10398,7 @@ static void simplify(struct compile_state *state, struct triple *ins)
 	do {
 		op = ins->op;
 		do_simplify = 0;
-		if ((op < 0) || (op > sizeof(table_simplify)/sizeof(table_simplify[0]))) {
+		if ((op < 0) || (op >= sizeof(table_simplify)/sizeof(table_simplify[0]))) {
 			do_simplify = 0;
 		}
 		else {

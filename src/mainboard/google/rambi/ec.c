@@ -43,6 +43,7 @@ void mainboard_ec_init(void)
 	} else {
 		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
 					   MAINBOARD_EC_S5_WAKE_EVENTS);
+		google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);
 	}
 
 	/* Clear wake events, these are enabled on entry to sleep */

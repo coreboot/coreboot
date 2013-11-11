@@ -254,13 +254,33 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 
 #else
 
+static void *cbfs_pointer(u64 value)
+{
+	void *v;
+
+	/* While the goal was that cbfs data was bigendian,
+	 * these fields are in fact little endian. It's a bug.
+	 * But fixing it won't be simple as it will break
+	 * backwards compatibility with already built images.
+	 * For now, go with what works: use .
+	 */
+	/* there has to be a better way to do this. Do we need
+	 * CONFIG_WORD_SIZE or something?
+	 */
+#if (CONFIG_ARCH_X86 == 1) || (CONFIG_ARCH_ARMV7 == 1)
+	v = (void *)le32_to_cpu(value);
+#else
+	v = (void *)le64_to_cpu(value);
+#endif
+	return v;
+}
+
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
-	/* this is a mess. There is no ntohll. */
-	/* for now, assume compatible byte order until we solve this. */
-	uint32_t entry;
+
+	void *load, *entry;
 	uint32_t final_size;
 
 	if (stage == NULL)
@@ -271,29 +291,30 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 			(uint32_t) stage->load, stage->memlen,
 			stage->entry);
 
+	load = cbfs_pointer(stage->load);
 	final_size = cbfs_decompress(stage->compression,
 				     ((unsigned char *) stage) +
 				     sizeof(struct cbfs_stage),
-				     (void *) (uint32_t) stage->load,
+				     load,
 				     stage->len);
 	if (!final_size)
 		return (void *) -1;
 
 	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *)((uintptr_t)stage->load + final_size), 0,
+	memset((load + final_size), 0,
 	       stage->memlen - final_size);
 
 	DEBUG("stage loaded.\n");
 
-	entry = stage->entry;
-	// entry = ntohll(stage->entry);
+	entry = cbfs_pointer(stage->entry);
 
-	return (void *) entry;
+	return entry;
 }
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 {
+	void * entry;
 	struct cbfs_stage *stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
 
@@ -307,8 +328,9 @@ int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 	}
 
 	/* FIXME: This isn't right */
-	LOG("run @ %p\n", (void *) ntohl((uint32_t) stage->entry));
-	return run_address((void *)(uintptr_t)ntohll(stage->entry));
+	entry = cbfs_pointer(stage->entry);
+	LOG("run @ %p\n",  entry);
+	return run_address(entry);
 }
 
 #if !CONFIG_ALT_CBFS_LOAD_PAYLOAD

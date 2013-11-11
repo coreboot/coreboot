@@ -200,7 +200,7 @@ void *cbmem_add(u32 id, u64 size)
 	cbmem_toc[0].base += size;
 	cbmem_toc[0].size -= size;
 
-	return (void *)(u32)cbmem_toc[i].base;
+	return (void *)(uintptr_t)cbmem_toc[i].base;
 }
 
 void *cbmem_find(u32 id)

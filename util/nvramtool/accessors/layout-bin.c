@@ -112,6 +112,7 @@ int write_cmos_layout_bin(FILE *f)
 			sum += sizeof(table);
 			table.header_length = sizeof(table);
 			table.tag = LB_TAG_CMOS_OPTION_TABLE;
+			table.size = 0;
 
 			if (fwrite((char *)&table, sizeof(table), 1, f) != 1) {
 				perror("Error writing image file");
@@ -187,12 +188,13 @@ int write_cmos_layout_bin(FILE *f)
 		goto err;
 	}
 
-	if (fseek(f, sizeof(table.tag), SEEK_SET) != 0) {
+	if (fseek(f, 0, SEEK_SET) != 0) {
 		perror("Error while seeking");
 		goto err;
 	}
 
-	if (fwrite((char *)&sum, sizeof(table.tag), 1, f) != 1) {
+	table.size = sum;
+	if (fwrite((char *)&table, sizeof(table), 1, f) != 1) {
 		perror("Error writing image file");
 		goto err;
 	}

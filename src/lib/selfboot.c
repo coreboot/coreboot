@@ -305,7 +305,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 static int build_self_segment_list(
 	struct segment *head,
 	struct lb_memory *mem,
-	struct cbfs_payload *payload, u32 *entry)
+	struct cbfs_payload *payload, uintptr_t *entry)
 {
 	struct segment *new;
 	struct segment *ptr;
@@ -332,8 +332,9 @@ static int build_self_segment_list(
 			new->s_memsz = ntohl(segment->mem_len);
 			new->compression = ntohl(segment->compression);
 
-			new->s_srcaddr = (u32) ((unsigned char *)first_segment)
-						+ ntohl(segment->offset);
+			new->s_srcaddr = (uintptr_t)
+				((unsigned char *)first_segment)
+				+ ntohl(segment->offset);
 			new->s_filesz = ntohl(segment->len);
 			printk(BIOS_DEBUG, "  New segment dstaddr 0x%lx memsize 0x%lx srcaddr 0x%lx filesize 0x%lx\n",
 				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
@@ -504,7 +505,7 @@ static int load_self_segments(
 
 void *selfload(struct lb_memory *mem, struct cbfs_payload *payload)
 {
-	u32 entry=0;
+	uintptr_t entry=0;
 	struct segment head;
 
 	/* Preprocess the self segments */

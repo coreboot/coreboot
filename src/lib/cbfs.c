@@ -254,13 +254,23 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 
 #else
 
+static void *cbfs_pointer(u64 value)
+{
+	void *v;
+#if CONFIG_ARCH_AARCH64 == 1
+	v = (void *)ntohll(value);
+#else
+	v = (void *)ntohl(value);
+#endif
+	return v;
+}
+
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
-	/* this is a mess. There is no ntohll. */
-	/* for now, assume compatible byte order until we solve this. */
-	uint32_t entry;
+
+	void *load, *entry;
 	uint32_t final_size;
 
 	if (stage == NULL)
@@ -271,22 +281,22 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 			(uint32_t) stage->load, stage->memlen,
 			stage->entry);
 
+	load = cbfs_pointer(stage->load);
 	final_size = cbfs_decompress(stage->compression,
 				     ((unsigned char *) stage) +
 				     sizeof(struct cbfs_stage),
-				     (void *) (uint32_t) stage->load,
+				     (void *) load,
 				     stage->len);
 	if (!final_size)
 		return (void *) -1;
 
 	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *)((uintptr_t)stage->load + final_size), 0,
+	memset((void *)(load + final_size), 0,
 	       stage->memlen - final_size);
 
 	DEBUG("stage loaded.\n");
 
-	entry = stage->entry;
-	// entry = ntohll(stage->entry);
+	entry = cbfs_pointer(stage->entry);
 
 	return (void *) entry;
 }
@@ -294,6 +304,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 
 int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 {
+	void * entry;
 	struct cbfs_stage *stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
 
@@ -307,8 +318,9 @@ int cbfs_execute_stage(struct cbfs_media *media, const char *name)
 	}
 
 	/* FIXME: This isn't right */
-	LOG("run @ %p\n", (void *) ntohl((uint32_t) stage->entry));
-	return run_address((void *)(uintptr_t)ntohll(stage->entry));
+	entry = cbfs_pointer(stage->entry);
+	LOG("run @ %p\n",  entry);
+	return run_address(entry);
 }
 
 #if !CONFIG_ALT_CBFS_LOAD_PAYLOAD

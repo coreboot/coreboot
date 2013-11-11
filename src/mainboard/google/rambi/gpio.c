@@ -55,7 +55,7 @@ static const struct soc_gpio_map gpncore_gpio_map[] = {
 
 /* SCORE GPIOs */
 static const struct soc_gpio_map gpscore_gpio_map[] = {
-	GPIO_INPUT,	/* S0_SC000 - SOC_KBC_SCI - INT */
+	GPIO_ACPI_SCI,	/* S0_SC000 - SOC_KBC_SCI - INT */
 	GPIO_FUNC2,	/* S0_SC001 - SATA_DEVSLP_C */
 	GPIO_NC,	/* S0-SC002 - SATA_LED_R_N (NC/PU) */
 	GPIO_FUNC1,	/* S0-SC003 - PCIE_CLKREQ_IMAGE# */
@@ -105,7 +105,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_FUNC1,	/* S0-SC047 - PCLK_TPM */
 	GPIO_FUNC1,	/* S0-SC048 - CLK_PCI_EC */
 	GPIO_FUNC1,	/* S0-SC049 - LPC_CLKRUN_L */
-	GPIO_FUNC1,	/* S0-SC050 - IRQ_SERIRQ */
+	GPIO_FUNC(1, PULL_UP, 10K),	/* S0-SC050 - IRQ_SERIRQ */
 	GPIO_NC,	/* S0-SC051 - SMB_SOC_DATA (XDP) */
 	GPIO_NC,	/* S0-SC052 - SMB_SOC_CLK (XDP) */
 	GPIO_NC,	/* S0-SC053 - SMB_SOC_ALERTB (NC) */
@@ -162,14 +162,14 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 
 /* SSUS GPIOs */
 static const struct soc_gpio_map gpssus_gpio_map[] = {
-	GPIO_NC,	/* S500 - PCH_WAKE# (NC) */
+	GPIO_ACPI_SCI,	/* S500 - PCH_WAKE# */
 	GPIO_FUNC6,	/* S501 - TRACKPAD_INT# - INT */
 	GPIO_FUNC6,	/* S502 - TOUCH_INT# - INT */
 	GPIO_FUNC6,	/* S503 - LTE_WAKE_L# - INT */
 	GPIO_NC,	/* S504 - SOC_JTAG2_TDO (NC/PU) */
 	GPIO_NC,	/* S505 - SUS_CLK_WLAN (NC) */
 	GPIO_INPUT_PU,	/* S506 - PCH_SPI_WP */
-	GPIO_INPUT,	/* S507 - SOC_KBC_SMI - INT */
+	GPIO_ACPI_SMI,	/* S507 - SOC_KBC_SMI - INT */
 	GPIO_NC,	/* S508 - NC */
 	GPIO_NC,	/* S509 - MUX_AUD_INT1# (NC) */
 	GPIO_OUT_HIGH,	/* S510 - WIFI_DISABLE_L */

@@ -34,8 +34,10 @@ static inline int smm_region_size(void)
 void *smm_region_start(void);
 
 #if !defined(__PRE_RAM__) && !defined(__SMM___)
+#include <stdint.h>
 void southcluster_smm_clear_state(void);
 void southcluster_smm_enable_smi(void);
+void southcluster_smm_save_gpio_route(uint32_t route);
 #endif
 
 #endif /* _BAYTRAIL_SMM_H_ */

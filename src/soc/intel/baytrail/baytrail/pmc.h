@@ -68,6 +68,11 @@
 #	define USH_SS_PHY_DIS	(1 << 2)
 #	define OTG_SS_PHY_DIS	(1 << 1)
 #	define SMBUS_DIS	(1 << 0)
+#define GPIO_ROUT	0x58
+#	define ROUTE_MASK	3
+#	define ROUTE_NONE	0
+#	define ROUTE_SMI	1
+#	define ROUTE_SCI	2
 
 /* IO Mapped registers behind ACPI_BASE_ADDRESS */
 #define PM1_STS			0x00

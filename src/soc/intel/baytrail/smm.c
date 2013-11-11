@@ -27,8 +27,18 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 
+#include <baytrail/iomap.h>
 #include <baytrail/pmc.h>
 #include <baytrail/smm.h>
+
+/* Save the gpio route register. The settings are committed from
+ * southcluster_smm_enable_smi(). */
+static uint32_t gpio_route;
+
+void southcluster_smm_save_gpio_route(uint32_t route)
+{
+	gpio_route = route;
+}
 
 void southcluster_smm_clear_state(void)
 {
@@ -53,12 +63,41 @@ void southcluster_smm_clear_state(void)
 	clear_gpe_status();
 }
 
+static void southcluster_smm_route_gpios(void)
+{
+	const unsigned long gpio_rout = PMC_BASE_ADDRESS + GPIO_ROUT;
+	const unsigned short alt_gpio_smi = ACPI_BASE_ADDRESS + ALT_GPIO_SMI;
+	uint32_t alt_gpio_reg = 0;
+	uint32_t route_reg = gpio_route;
+	int i;
+
+	printk(BIOS_DEBUG, "GPIO_ROUT = %08x\n", route_reg);
+
+	/* Start the routing for the specific gpios. */
+	write32(gpio_rout, route_reg);
+
+	/* Enable SMIs for the gpios that are set to trigger the SMI. */
+	for (i = 0; i < 16; i++) {
+		if ((route_reg & ROUTE_MASK) == ROUTE_SMI) {
+			alt_gpio_reg |= (1 << i);
+		}
+		route_reg >>= 2;
+	}
+	printk(BIOS_DEBUG, "ALT_GPIO_SMI = %08x\n", alt_gpio_reg);
+
+	outl(alt_gpio_reg, alt_gpio_smi);
+}
+
 void southcluster_smm_enable_smi(void)
 {
+
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
 	/* Configure events */
 	enable_pm1(PWRBTN_EN | GBL_EN);
 	disable_gpe(PME_B0_EN);
+
+	/* Set up the GPIO route. */
+	southcluster_smm_route_gpios();
 
 	/* Enable SMI generation:
 	 *  - on TCO events

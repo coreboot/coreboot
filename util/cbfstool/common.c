@@ -283,7 +283,7 @@ int cbfs_file_header(unsigned long physaddr)
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size)
 {
 	struct cbfs_file *nextfile = (struct cbfs_file *)phys_to_virt(physaddr);
-	strncpy((char *)(nextfile->magic), "LARCHIVE", 8);
+	memcpy((char *)(nextfile->magic), "LARCHIVE", 8);
 	nextfile->len = htonl(size);
 	nextfile->type = htonl(0xffffffff);
 	nextfile->checksum = 0;	// FIXME?
@@ -652,7 +652,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 	}
 	memset(newdata, 0xff, *datasize + headersize);
 	struct cbfs_file *nextfile = (struct cbfs_file *)newdata;
-	strncpy((char *)(nextfile->magic), "LARCHIVE", 8);
+	memcpy((char *)(nextfile->magic), "LARCHIVE", 8);
 	nextfile->len = htonl(*datasize);
 	nextfile->type = htonl(type);
 	nextfile->checksum = 0;	// FIXME?

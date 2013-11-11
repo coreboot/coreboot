@@ -204,6 +204,25 @@
 #define GPIO_FUNC5		GPIO_FUNC(5, PULL_DISABLE, 10K)
 #define GPIO_FUNC6		GPIO_FUNC(6, PULL_DISABLE, 10K)
 
+/* ACPI GPIO routing. Assume everything is externally pulled and negative edge
+ * triggered. */
+#define GPIO_ACPI_SCI \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT | PAD_FUNC0, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_INPUT, \
+	  .tne       = 1, \
+	  .wake_en   = 1, }
+#define GPIO_ACPI_SMI \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT | PAD_FUNC0, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_INPUT, \
+	  .tne       = 1, \
+	  .smi       = 1}
+
 /* End marker */
 #define GPIO_LIST_END		0xffffffff
 
@@ -227,6 +246,7 @@ struct soc_gpio_map {
 	u8  tpe     : 1;
 	u8  tne     : 1;
 	u8  wake_en : 1;
+	u8  smi     : 1;
 } __attribute__ ((packed));
 
 struct soc_gpio_config {

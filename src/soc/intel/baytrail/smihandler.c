@@ -300,7 +300,7 @@ static void southbridge_smi_pm1(void)
 		elog_add_event(ELOG_TYPE_POWER_BUTTON);
 #endif
 		disable_pm1_control(-1UL);
-		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << 10));
+		enable_pm1_control(SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT));
 	}
 }
 
@@ -396,4 +396,8 @@ void southbridge_smi_handler(void)
 			       "handler available.\n", i);
 		}
 	}
+
+	/* The GPIO SMI events do not have a status bit in SMI_STS. Therefore,
+	 * these events need to be cleared and checked unconditionally. */
+	mainboard_smi_gpi(clear_alt_status());
 }

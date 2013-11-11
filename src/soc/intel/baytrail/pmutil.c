@@ -52,14 +52,15 @@ uint16_t get_pmbase(void)
 	return pci_read_config16(get_pcu_dev(), ABASE) & 0xfff8;
 }
 
-static void print_status_bits(uint32_t status, const char *bit_names[])
+static void print_num_status_bits(int num_bits, uint32_t status,
+                                  const char *bit_names[])
 {
 	int i;
 
 	if (!status)
 		return;
 
-	for (i = 31; i >= 0; i--) {
+	for (i = num_bits - 1; i >= 0; i--) {
 		if (status & (1 << i)) {
 			if (bit_names[i])
 				printk(BIOS_DEBUG, "%s ", bit_names[i]);
@@ -67,6 +68,11 @@ static void print_status_bits(uint32_t status, const char *bit_names[])
 				printk(BIOS_DEBUG, "BIT%d ", i);
 		}
 	}
+}
+
+static void print_status_bits(uint32_t status, const char *bit_names[])
+{
+	print_num_status_bits(32, status, bit_names);
 }
 
 static uint32_t print_smi_status(uint32_t smi_sts)
@@ -294,4 +300,51 @@ static uint32_t print_gpe_sts(uint32_t gpe_sts)
 uint32_t clear_gpe_status(void)
 {
 	return print_gpe_sts(reset_gpe_status());
+}
+
+static uint32_t reset_alt_status(void)
+{
+	uint16_t pmbase = get_pmbase();
+	uint32_t alt_gpio_smi = inl(pmbase + ALT_GPIO_SMI);
+	outl(alt_gpio_smi, pmbase + ALT_GPIO_SMI);
+	return alt_gpio_smi;
+}
+
+static uint32_t print_alt_sts(uint32_t alt_gpio_smi)
+{
+	uint32_t alt_gpio_sts;
+	static const char *alt_gpio_smi_sts_bits[] = {
+		[0] = "SUS_GPIO_0",
+		[1] = "SUS_GPIO_1",
+		[2] = "SUS_GPIO_2",
+		[3] = "SUS_GPIO_3",
+		[4] = "SUS_GPIO_4",
+		[5] = "SUS_GPIO_5",
+		[6] = "SUS_GPIO_6",
+		[7] = "SUS_GPIO_7",
+		[8] = "CORE_GPIO_0",
+		[9] = "CORE_GPIO_1",
+		[10] = "CORE_GPIO_2",
+		[11] = "CORE_GPIO_3",
+		[12] = "CORE_GPIO_4",
+		[13] = "CORE_GPIO_5",
+		[14] = "CORE_GPIO_6",
+		[15] = "CORE_GPIO_7",
+	};
+
+	/* Status bits are in the upper 16 bits. */
+	alt_gpio_sts = alt_gpio_smi >> 16;
+	if (!alt_gpio_sts)
+		return alt_gpio_smi;
+
+	printk(BIOS_DEBUG, "ALT_GPIO_SMI: ");
+	print_num_status_bits(16, alt_gpio_sts, alt_gpio_smi_sts_bits);
+	printk(BIOS_DEBUG, "\n");
+
+	return alt_gpio_smi;
+}
+
+uint32_t clear_alt_status(void)
+{
+	return print_alt_sts(reset_alt_status());
 }

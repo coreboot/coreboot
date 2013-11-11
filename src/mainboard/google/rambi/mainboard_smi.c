@@ -28,6 +28,9 @@
 #include <baytrail/nvs.h>
 #include <baytrail/pmc.h>
 
+/* The wake gpio is SUS_GPIO[0]. */
+#define WAKE_GPIO_EN SUS_GPIO_EN0
+
 int mainboard_io_trap_handler(int smif)
 {
 	switch (smif) {
@@ -67,7 +70,7 @@ static uint8_t mainboard_smi_ec(void)
 
 		/* Go to S5 */
 		pm1_cnt = inl(pmbase + PM1_CNT);
-		pm1_cnt |= SLP_TYP | (SLP_TYP_S5 << SLP_TYP_SHIFT);
+		pm1_cnt |= SLP_EN | (SLP_TYP_S5 << SLP_TYP_SHIFT);
 		outl(pm1_cnt, pmbase + PM1_CNT);
 		break;
 	}
@@ -75,9 +78,11 @@ static uint8_t mainboard_smi_ec(void)
 	return cmd;
 }
 
-void mainboard_smi_gpi(uint32_t gpi_sts)
+/* The entire 32-bit ALT_GPIO_SMI register is passed as a parameter. Note, that
+ * this includes the enable bits in the lower 16 bits. */
+void mainboard_smi_gpi(uint32_t alt_gpio_smi)
 {
-	if (gpi_sts & (1 << EC_SMI_GPI)) {
+	if (alt_gpio_smi & (1 << EC_SMI_GPI)) {
 		/* Process all pending events */
 		while (mainboard_smi_ec() != 0);
 	}
@@ -97,6 +102,8 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 
 		/* Enable wake events */
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
+		/* Enable wake pin in GPE block. */
+		enable_gpe(WAKE_GPIO_EN);
 		break;
 	case 5:
 		if (smm_get_gnvs()->s5u0 == 0)

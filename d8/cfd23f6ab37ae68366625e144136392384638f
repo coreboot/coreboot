@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Marc Jones <marc.jones@se-eng.com>
+Code-Review+2: Aaron Durbin <adurbin@google.com>
+Submitted-by: Marc Jones <marc.jones@se-eng.com>
+Submitted-at: Wed, 13 Nov 2013 00:38:45 +0100
+Reviewed-on: http://review.coreboot.org/4043
+Project: coreboot
+Branch: refs/heads/master

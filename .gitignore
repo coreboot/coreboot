@@ -55,6 +55,7 @@ tarballs/
 
 util/*/.dependencies
 util/*/.test
+util/board_status/board-status
 util/cbfstool/cbfstool
 util/cbmem/.dependencies
 util/cbmem/cbmem

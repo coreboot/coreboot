@@ -107,7 +107,7 @@ fi
 
 mkdir "$OUTDIR"
 
-getrevision="util/status/getrevision.sh"
+getrevision="util/board_status/getrevision.sh"
 test_cmd 0 $getrevision
 touch ${OUTDIR}/revision.txt
 printf "Local revision: %s\n" $($getrevision -l) >> ${OUTDIR}/revision.txt

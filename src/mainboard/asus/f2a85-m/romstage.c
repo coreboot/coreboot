@@ -90,6 +90,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sbxxx_enable_48mhzout();
 		it8712f_kill_watchdog();
 		it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
+		it8712f_enable_3vsbsw();
 		console_init();
 
 		/* turn on secondary smbus at b20 */

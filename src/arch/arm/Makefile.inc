@@ -59,12 +59,12 @@ bootblock-y += memset.S
 bootblock-y += memcpy.S
 bootblock-y += memmove.S
 
-$(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(bootblock-objs) $(obj)/config.h
+$(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(bootblock-objs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_bootblock) -m armelf_linux_eabi -static -o $@ -L$(obj) $< -T $(src)/arch/arm/bootblock.ld
 else
-	$(CC_bootblock) $(CFLAGS_bootblock) -nostartfiles -include $(obj)/config.h -static -o $@ -L$(obj) -T $(src)/arch/arm/bootblock.ld -Wl,--start-group $(bootblock-objs) $(LIBGCC_FILE_NAME_bootblock) -Wl,--end-group
+	$(CC_bootblock) $(CFLAGS_bootblock) -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/arm/bootblock.ld -Wl,--start-group $(bootblock-objs) $(LIBGCC_FILE_NAME_bootblock) -Wl,--end-group
 endif
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM

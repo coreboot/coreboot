@@ -8,7 +8,8 @@ config CPU_SPECIFIC_OPTIONS
 	select SMP
 	select SSE
 	select SSE2
-	select UDELAY_LAPIC
+	select UDELAY_TSC
+	select TSC_CONSTANT_RATE
 	select SMM_TSEG
 	select HAVE_INIT_TIMER
 	select CPU_MICROCODE_IN_CBFS

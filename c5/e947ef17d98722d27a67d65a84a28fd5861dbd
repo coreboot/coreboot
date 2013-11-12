@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Ronald G. Minnich <rminnich@gmail.com>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Submitted-by: David Hendricks <dhendrix@chromium.org>
+Submitted-at: Tue, 12 Nov 2013 20:14:23 +0100
+Reviewed-on: http://review.coreboot.org/4038
+Project: coreboot
+Branch: refs/heads/master

@@ -110,6 +110,7 @@ chip northbridge/intel/haswell
 					device pnp 2e.4 on # Environment Controller
 						io 0x60 = 0x700
 						io 0x62 = 0x710
+						irq 0xfa = 0x12
 					end
 					device pnp 2e.7 on # GPIO
 						io 0x60 = 0x720

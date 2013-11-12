@@ -22,8 +22,8 @@
 #ifndef _CPU_INTEL_MODEL_2065X_H
 #define _CPU_INTEL_MODEL_2065X_H
 
-/* SandyBridge/IvyBridge bus clock is fixed at 100MHz */
-#define SANDYBRIDGE_BCLK		133
+/* Nehalem bus clock is fixed at 133MHz */
+#define NEHALEM_BCLK		133
 
 #define IA32_FEATURE_CONTROL		0x3a
 #define  CPUID_VMX			(1 << 5)

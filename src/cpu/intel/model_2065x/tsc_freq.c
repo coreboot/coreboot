@@ -27,5 +27,5 @@ unsigned long tsc_freq_mhz(void)
 	msr_t platform_info;
 
 	platform_info = rdmsr(MSR_PLATFORM_INFO);
-	return SANDYBRIDGE_BCLK * ((platform_info.lo >> 8) & 0xff);
+	return NEHALEM_BCLK * ((platform_info.lo >> 8) & 0xff);
 }

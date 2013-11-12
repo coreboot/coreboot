@@ -1,0 +1,82 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2010 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+config NORTHBRIDGE_INTEL_NEHALEM
+	bool
+	select CPU_INTEL_MODEL_2065X
+	select VGA
+
+if NORTHBRIDGE_INTEL_NEHALEM
+
+config VGA_BIOS_ID
+	string
+	default "8086,0046"
+
+config CACHE_MRC_SIZE_KB
+	int
+	default 256
+
+# FIXME: build from rom size
+config MRC_CACHE_BASE
+	hex
+	default 0xff800000
+
+config MRC_CACHE_LOCATION
+	hex
+	depends on !CHROMEOS
+	default 0x500000
+
+config MRC_CACHE_SIZE
+	hex
+	depends on !CHROMEOS
+	default 0x10000
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xff7f0000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x10000
+
+config DCACHE_RAM_MRC_VAR_SIZE
+	hex
+	default 0x4000
+
+config MARK_GRAPHICS_MEM_WRCOMB
+	bool "Mark graphics memory as write-combining."
+	default n
+	help
+	 The graphics performance may increase if the graphics
+	 memory is set as write-combining cache type. This option
+	 enables marking the graphics memory as write-combining.
+
+config CBFS_SIZE
+	hex "Size of CBFS filesystem in ROM"
+	default 0x100000
+	help
+	  On Sandybridge and Ivybridge systems the firmware image has to
+	  store a lot more than just coreboot, including:
+	   - a firmware descriptor
+	   - Intel Management Engine firmware
+	   - MRC cache information
+	  This option allows to limit the size of the CBFS portion in the
+	  firmware image.
+
+endif

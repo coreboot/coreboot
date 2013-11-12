@@ -121,6 +121,20 @@ local_revision() {
 	echo "${r}"
 }
 
+# Similar to local_revision but uses "git describe" instead of "git log" which
+# includes number of commits since most recent tag.
+tagged_revision() {
+	local r
+
+	if git_is_file_tracked "$1" ; then
+		r=$(git describe --tags --dirty)
+	else
+		return ${EXIT_FAILURE}
+	fi
+
+	echo "${r}"
+}
+
 upstream_revision() {
 	local r=
 
@@ -143,6 +157,8 @@ Commands
         local revision information including an indicator for uncommitted changes
     -u or --upstream
         upstream revision
+    -T or --tags
+        similar to -l, but uses \"git describe\" to obtain revision info with tags
     -U or --url
         URL associated with the latest commit
     -d or --date
@@ -174,6 +190,10 @@ main() {
 		-l|--local)
 			check_action $1
 			action=local_revision
+			shift;;
+		-T|--tags)
+			check_action $1
+			action=tagged_revision
 			shift;;
 		-u|--upstream)
 			check_action $1

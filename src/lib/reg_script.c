@@ -257,8 +257,14 @@ static uint32_t reg_script_read_iosf(struct reg_script_context *ctx)
 		return iosf_punit_read(step->reg);
 	case IOSF_PORT_USBPHY:
 		return iosf_usbphy_read(step->reg);
+	case IOSF_PORT_SCORE:
+		return iosf_score_read(step->reg);
 	case IOSF_PORT_USHPHY:
 		return iosf_ushphy_read(step->reg);
+	case IOSF_PORT_SCC:
+		return iosf_scc_read(step->reg);
+	case IOSF_PORT_CCU:
+		return iosf_ccu_read(step->reg);
 	}
 #endif
 	return 0;
@@ -282,8 +288,17 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 	case IOSF_PORT_USBPHY:
 		iosf_usbphy_write(step->reg, step->value);
 		break;
+	case IOSF_PORT_SCORE:
+		iosf_score_write(step->reg, step->value);
+		break;
 	case IOSF_PORT_USHPHY:
 		iosf_ushphy_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_SCC:
+		iosf_scc_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_CCU:
+		iosf_ccu_write(step->reg, step->value);
 		break;
 	}
 #endif

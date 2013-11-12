@@ -48,6 +48,9 @@
 #if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
+#elif CONFIG_NORTHBRIDGE_INTEL_NEHALEM
+#include <northbridge/intel/nehalem/nehalem.h>
+#define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
 #else
 #error "Northbridge must define TSEG_BAR."
 #endif

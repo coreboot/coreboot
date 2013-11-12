@@ -72,6 +72,10 @@ uint32_t iosf_lpss_read(int reg);
 void iosf_lpss_write(int reg, uint32_t val);
 uint32_t iosf_ccu_read(int reg);
 void iosf_ccu_write(int reg, uint32_t val);
+uint32_t iosf_score_read(int reg);
+void iosf_score_write(int reg, uint32_t val);
+uint32_t iosf_scc_read(int reg);
+void iosf_scc_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
@@ -84,7 +88,9 @@ void iosf_ccu_write(int reg, uint32_t val);
 #define IOSF_PORT_DUNIT_CH1	0x07 /* DUNIT Channel 1 */
 #define IOSF_PORT_SYSMEMIO	0x0c /* System Memory IO */
 #define IOSF_PORT_USBPHY	0x43 /* USB PHY */
+#define IOSF_PORT_SCORE		0x48 /* SCORE */
 #define IOSF_PORT_USHPHY	0x61 /* USB XHCI PHY */
+#define IOSF_PORT_SCC		0x63 /* Storage Control Cluster */
 #define IOSF_PORT_LPSS		0xa0 /* LPSS - Low Power Subsystem */
 #define IOSF_PORT_SATAPHY	0xa3 /* SATA PHY */
 #define IOSF_PORT_PCIEPHY	0xa3 /* PCIE PHY */
@@ -107,8 +113,12 @@ void iosf_ccu_write(int reg, uint32_t val);
 #define IOSF_OP_WRITE_SYSMEMIO	(IOSF_OP_READ_SYSMEMIO | 1)
 #define IOSF_OP_READ_USBPHY	0x06
 #define IOSF_OP_WRITE_USBPHY	(IOSF_OP_READ_USBPHY | 1)
+#define IOSF_OP_READ_SCORE	0x06
+#define IOSF_OP_WRITE_SCORE	(IOSF_OP_READ_SCORE | 1)
 #define IOSF_OP_READ_USHPHY	0x06
 #define IOSF_OP_WRITE_USHPHY	(IOSF_OP_READ_USHPHY | 1)
+#define IOSF_OP_READ_SCC	0x06
+#define IOSF_OP_WRITE_SCC	(IOSF_OP_READ_SCC | 1)
 #define IOSF_OP_READ_LPSS	0x06
 #define IOSF_OP_WRITE_LPSS	(IOSF_OP_READ_LPSS | 1)
 #define IOSF_OP_READ_SATAPHY	0x00

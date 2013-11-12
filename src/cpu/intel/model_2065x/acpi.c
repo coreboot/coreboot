@@ -237,7 +237,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 		/* Max Non-Turbo Ratio */
 		ratio_max = (msr.lo >> 8) & 0xff;
 	}
-	clock_max = ratio_max * SANDYBRIDGE_BCLK + ratio_max / 3;
+	clock_max = ratio_max * NEHALEM_BCLK + ratio_max / 3;
 
 	/* Calculate CPU TDP in mW */
 	power_max = 25000;
@@ -298,7 +298,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 
 		/* Calculate power at this ratio */
 		power = calculate_power(power_max, ratio_max, ratio);
-		clock = ratio * SANDYBRIDGE_BCLK + ratio / 3;
+		clock = ratio * NEHALEM_BCLK + ratio / 3;
 
 		len_pss += acpigen_write_PSS_package(
 			clock,			/*MHz*/

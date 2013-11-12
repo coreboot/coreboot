@@ -3,9 +3,15 @@ subdirs-y += ../../x86/name
 subdirs-y += ../../x86/cache
 subdirs-y += ../../x86/mtrr
 subdirs-y += ../../x86/lapic
+subdirs-y += ../../x86/tsc
 subdirs-y += ../../intel/turbo
 subdirs-y += ../../intel/microcode
 subdirs-y += ../../x86/smm
+
+
+ramstage-y += tsc_freq.c
+romstage-y += tsc_freq.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 

@@ -39,6 +39,7 @@ ramstage-$(CONFIG_HAVE_REFCODE_BLOB) += refcode.c
 ramstage-y += sata.c
 ramstage-y += acpi.c
 ramstage-y += lpe.c
+ramstage-y += scc.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

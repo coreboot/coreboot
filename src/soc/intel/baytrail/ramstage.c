@@ -166,6 +166,8 @@ void baytrail_init_pre_device(void)
 	config = mainboard_get_gpios();
 	setup_soc_gpios(config);
 
+	baytrail_init_scc();
+
 	/* Indicate S3 resume to rest of ramstage. */
 	s3_resume_prepare();
 }

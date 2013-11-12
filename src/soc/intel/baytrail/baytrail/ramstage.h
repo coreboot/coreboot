@@ -33,6 +33,7 @@ void baytrail_run_reference_code(void);
 #else
 static inline void baytrail_run_reference_code(void) {}
 #endif
+void baytrail_init_scc(void);
 
 extern struct pci_operations soc_pci_ops;
 

@@ -168,3 +168,31 @@ void iosf_ccu_write(int reg, uint32_t val)
 	              IOSF_PORT(IOSF_PORT_CCU);
 	return iosf_write_port(cr, reg, val);
 }
+
+uint32_t iosf_score_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_SCORE) |
+	              IOSF_PORT(IOSF_PORT_SCORE);
+	return iosf_read_port(cr, reg);
+}
+
+void iosf_score_write(int reg, uint32_t val)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_SCORE) |
+	              IOSF_PORT(IOSF_PORT_SCORE);
+	return iosf_write_port(cr, reg, val);
+}
+
+uint32_t iosf_scc_read(int reg)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_SCC) |
+	              IOSF_PORT(IOSF_PORT_SCC);
+	return iosf_read_port(cr, reg);
+}
+
+void iosf_scc_write(int reg, uint32_t val)
+{
+	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_SCC) |
+	              IOSF_PORT(IOSF_PORT_SCC);
+	return iosf_write_port(cr, reg, val);
+}

@@ -263,6 +263,8 @@ static uint32_t reg_script_read_iosf(struct reg_script_context *ctx)
 		return iosf_ushphy_read(step->reg);
 	case IOSF_PORT_SCC:
 		return iosf_scc_read(step->reg);
+	case IOSF_PORT_LPSS:
+		return iosf_lpss_read(step->reg);
 	case IOSF_PORT_CCU:
 		return iosf_ccu_read(step->reg);
 	}
@@ -296,6 +298,9 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 		break;
 	case IOSF_PORT_SCC:
 		iosf_scc_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_LPSS:
+		iosf_lpss_write(step->reg, step->value);
 		break;
 	case IOSF_PORT_CCU:
 		iosf_ccu_write(step->reg, step->value);

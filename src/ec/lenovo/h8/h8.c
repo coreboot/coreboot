@@ -52,6 +52,14 @@ void h8_wlan_enable(int on)
 		ec_clr_bit(0x3a, 5);
 }
 
+static void h8_wwan_enable(int on)
+{
+	if (on)
+		ec_set_bit(0x3a, 6);
+	else
+		ec_clr_bit(0x3a, 6);
+}
+
 static void h8_log_ec_version(void)
 {
 	char ecfw[17];
@@ -174,6 +182,11 @@ static void h8_enable(device_t dev)
 	if (get_option(&val, "bluetooth") != CB_SUCCESS)
 		val = 1;
 	h8_bluetooth_enable(val);
+
+	if (get_option(&val, "wwan") != CB_SUCCESS)
+		val = 1;
+
+	h8_wwan_enable(val);
 
 	if (get_option(&val, "first_battery") != CB_SUCCESS)
 		val = 1;

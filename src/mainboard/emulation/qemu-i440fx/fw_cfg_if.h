@@ -38,6 +38,12 @@
 #define FW_CFG_ARCH_LOCAL       0x8000
 #define FW_CFG_ENTRY_MASK       ~(FW_CFG_WRITE_CHANNEL | FW_CFG_ARCH_LOCAL)
 
+#define FW_CFG_ACPI_TABLES      (FW_CFG_ARCH_LOCAL + 0)
+#define FW_CFG_SMBIOS_ENTRIES   (FW_CFG_ARCH_LOCAL + 1)
+#define FW_CFG_IRQ0_OVERRIDE    (FW_CFG_ARCH_LOCAL + 2)
+#define FW_CFG_E820_TABLE       (FW_CFG_ARCH_LOCAL + 3)
+#define FW_CFG_HPET             (FW_CFG_ARCH_LOCAL + 4)
+
 #define FW_CFG_INVALID          0xffff
 
 typedef struct FWCfgFile {
@@ -57,3 +63,14 @@ typedef struct FwCfgE820Entry {
     uint64_t length;
     uint32_t type;
 } FwCfgE820Entry __attribute((__aligned__(4)));
+
+
+#define SMBIOS_FIELD_ENTRY 0
+#define SMBIOS_TABLE_ENTRY 1
+
+typedef struct FwCfgSmbios {
+	uint16_t length;
+	uint8_t  headertype;
+	uint8_t  tabletype;
+	uint16_t fieldoffset;
+} FwCfgSmbios;

@@ -29,12 +29,12 @@
 
 #include <stdint.h>
 #include <types.h>
+#include <arch/cache.h>
 #include <arch/exception.h>
 #include <console/console.h>
 
-void exception_test(void);
-
-static int test_abort;
+uint8_t exception_stack[0x100] __attribute__((aligned(8)));
+extern void *exception_stack_end;
 
 void exception_undefined_instruction(uint32_t *);
 void exception_software_interrupt(uint32_t *);
@@ -104,14 +104,9 @@ void exception_prefetch_abort(uint32_t *regs)
 
 void exception_data_abort(uint32_t *regs)
 {
-	if (test_abort) {
-		regs[15] = regs[0];
-		return;
-	} else {
-		printk(BIOS_ERR, "exception _data_abort\n");
-		print_regs(regs);
-		dump_stack(regs[13], 512);
-	}
+	printk(BIOS_ERR, "exception _data_abort\n");
+	print_regs(regs);
+	dump_stack(regs[13], 512);
 	die("exception");
 }
 
@@ -139,42 +134,19 @@ void exception_fiq(uint32_t *regs)
 	die("exception");
 }
 
-static inline uint32_t get_sctlr(void)
-{
-	uint32_t val;
-	asm("mrc p15, 0, %0, c1, c0, 0" : "=r" (val));
-	return val;
-}
-
-static inline void set_sctlr(uint32_t val)
-{
-	asm volatile("mcr p15, 0, %0, c1, c0, 0" :: "r" (val));
-	asm volatile("" ::: "memory");
-}
-
 void exception_init(void)
 {
-	static const uint32_t sctlr_te = (0x1 << 30);
-	static const uint32_t sctlr_v = (0x1 << 13);
-	static const uint32_t sctlr_a = (0x1 << 1);
-
-	uint32_t sctlr = get_sctlr();
+	uint32_t sctlr = read_sctlr();
 	/* Handle exceptions in ARM mode. */
-	sctlr &= ~sctlr_te;
+	sctlr &= ~SCTLR_TE;
 	/* Set V=0 in SCTLR so VBAR points to the exception vector table. */
-	sctlr &= ~sctlr_v;
+	sctlr &= ~SCTLR_V;
 	/* Enforce alignment temporarily. */
-	set_sctlr(sctlr | sctlr_a);
+	write_sctlr(sctlr);
 
 	extern uint32_t exception_table[];
 	set_vbar((uintptr_t)exception_table);
+	exception_stack_end = exception_stack + sizeof(exception_stack);
 
-	test_abort = 1;
-	printk(BIOS_ERR, "Testing exceptions\n");
-	exception_test();
-	test_abort = 0;
-	printk(BIOS_ERR, "Testing exceptions: DONE\n");
-
-	/* Restore original alignment settings. */
-	set_sctlr(sctlr);
+	printk(BIOS_DEBUG, "Exception handlers installed.\n");
 }

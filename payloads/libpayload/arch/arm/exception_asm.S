@@ -27,11 +27,9 @@
  * SUCH DAMAGE.
  */
 
-exception_stack:
-	.align 5
-	.skip 0x2000, 0xa5
+	.global exception_stack_end
 exception_stack_end:
-	.word	exception_stack_end
+	.word	0
 
 exception_handler:
 	.word 0
@@ -103,14 +101,5 @@ _fiq:			.word exception_fiq
 	.thumb_func
 set_vbar:
 	mcr	p15, 0, r0, c12, c0, 0
-	bx	lr
-
-	.global exception_test
-	.thumb_func
-exception_test:
-	mov	r1, $1
-	mov	r0, pc
-	add	r0, $3
-	ldr	r1, [r1]
 	bx	lr
 

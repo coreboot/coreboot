@@ -109,6 +109,7 @@ entries
 
 1060         1       e       1        touchpad
 1061         1       e       1        bluetooth
+1062         1       e       1        wwan
 1064         8       h       0        volume
 1072         1       e       9        first_battery
 # -----------------------------------------------------------------

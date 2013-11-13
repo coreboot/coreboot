@@ -8,8 +8,11 @@ unsigned long smbios_write_tables(unsigned long start);
 int smbios_add_string(char *start, const char *str);
 int smbios_string_table_len(char *start);
 
+const char *smbios_mainboard_manufacturer(void);
+const char *smbios_mainboard_product_name(void);
 const char *smbios_mainboard_serial_number(void);
 const char *smbios_mainboard_version(void);
+void smbios_mainboard_set_uuid(u8 *uuid);
 
 #define BIOS_CHARACTERISTICS_PCI_SUPPORTED  (1 << 7)
 #define BIOS_CHARACTERISTICS_PC_CARD  (1 << 8)

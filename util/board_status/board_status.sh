@@ -46,14 +46,10 @@ test_cmd()
 	exit $EXIT_FAILURE
 }
 
-# run a command
-#
-# $1: 0 to run command locally, 1 to run remotely if remote host defined
-# $2: command
-cmd()
+_cmd()
 {
 	if [ -e "$2" ]; then
-		return
+		return $EXIT_FAILURE
 	fi
 
 	if [[ $1 -eq $REMOTE && -n "$REMOTE_HOST" ]]; then
@@ -61,6 +57,15 @@ cmd()
 	else
 		$2
 	fi
+}
+
+# run a command
+#
+# $1: 0 to run command locally, 1 to run remotely if remote host defined
+# $2: command
+cmd()
+{
+	_cmd $1 $2
 
 	if [ $? -eq 0 ]; then
 		return
@@ -68,6 +73,21 @@ cmd()
 
 	echo "Failed to run command: $2"
 	exit $EXIT_FAILURE
+}
+
+# run a command where failure is considered to be non-fatal
+#
+# $1: 0 to run command locally, 1 to run remotely if remote host defined
+# $2: command
+cmd_nonfatal()
+{
+	_cmd $1 $2
+
+	if [ $? -eq 0 ]; then
+		return
+	fi
+
+	echo "Failed to run command: $2"
 }
 
 show_help() {
@@ -144,9 +164,7 @@ printf "Timestamp: %s\n" "$timestamp" >> ${tmpdir}/${results}/revision.txt
 
 test_cmd $REMOTE "cbmem"
 cmd $REMOTE "cbmem -c" > ${tmpdir}/${results}/coreboot_console.txt
-
-# TODO: Some commands should be optional and be non-fatal in case of error.
-#cmd $REMOTE "cbmem -t" > ${outdir}/coreboot_timestamps.txt
+cmd_nonfatal $REMOTE "cbmem -t" > ${tmpdir}/${results}/coreboot_timestamps.txt
 
 cmd $REMOTE dmesg > ${tmpdir}/${results}/kernel_log.txt
 

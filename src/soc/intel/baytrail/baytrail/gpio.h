@@ -143,13 +143,17 @@
 #define PAD_VAL_OUTPUT_DISABLE	(1 << 1)
 #define PAD_VAL_OUTPUT_ENABLE	(0 << 1)
 
+/* Input / Output state should usually be mutually exclusive */
+#define PAD_VAL_INPUT		(PAD_VAL_INPUT_ENABLE | PAD_VAL_OUTPUT_DISABLE)
+#define PAD_VAL_OUTPUT		(PAD_VAL_OUTPUT_ENABLE | PAD_VAL_INPUT_DISABLE)
+
 /* pad_val[0] - Value */
 #define PAD_VAL_HIGH		(1 << 0)
 #define PAD_VAL_LOW		(0 << 0)
 
 /* pad_val reg power-on default varies by pad, and apparently can cause issues
  * if not set correctly, even if the pin isn't configured as GPIO. */
-#define PAD_VAL_DEFAULT		(PAD_VAL_INPUT_ENABLE | PAD_VAL_OUTPUT_DISABLE)
+#define PAD_VAL_DEFAULT		PAD_VAL_INPUT
 
 /* Configure GPIOs as legacy by default. GPNCORE doesn't support
  * legacy config -- so also configure the pad regs as GPIO. We rely upon
@@ -158,7 +162,7 @@
 	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT }
 
@@ -166,7 +170,7 @@
 	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DOWN | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT }
 
@@ -174,7 +178,7 @@
 	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT }
 
@@ -183,7 +187,7 @@
 	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TNE_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT, \
 	  .tne       = GPIO_NEDGE_ENABLE }
@@ -193,7 +197,7 @@
 	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT, \
 	  .tne       = GPIO_PEDGE_ENABLE }
@@ -202,7 +206,7 @@
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_OUTPUT_ENABLE | PAD_VAL_LOW, \
+	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_LOW, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_LOW }
@@ -211,7 +215,7 @@
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
 		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_OUTPUT_ENABLE | PAD_VAL_HIGH, \
+	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_HIGH, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
 	  .gp_lvl    = GPIO_LEVEL_HIGH }
@@ -238,7 +242,7 @@
 #define GPIO_ACPI_SCI \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT, \
 	  .tne       = 1, \
@@ -246,7 +250,7 @@
 #define GPIO_ACPI_SMI \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT_ENABLE, \
+	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT, \
 	  .tne       = 1, \

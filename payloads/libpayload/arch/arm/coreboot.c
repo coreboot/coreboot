@@ -79,6 +79,14 @@ static void cb_parse_serial(void *ptr, struct sysinfo_t *info)
 }
 
 #ifdef CONFIG_LP_CHROMEOS
+static void cb_parse_vboot_handoff(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_range *vbho = (struct cb_range *)ptr;
+
+	info->vboot_handoff = (void *)(uintptr_t)vbho->range_start;
+	info->vboot_handoff_size = vbho->range_size;
+}
+
 static void cb_parse_vbnv(unsigned char *ptr, struct sysinfo_t *info)
 {
 	struct lb_range *vbnv = (struct lb_range *)ptr;
@@ -266,6 +274,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_VBNV:
 			cb_parse_vbnv(ptr, info);
+			break;
+		case CB_TAG_VBOOT_HANDOFF:
+			cb_parse_vboot_handoff(ptr, info);
 			break;
 #endif
 		case CB_TAG_DMA:

@@ -35,7 +35,7 @@
 #include "../../../southbridge/intel/i82801dx/i82801dx.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_SCH
 #include "../../../southbridge/intel/sch/sch.h"
-#elif CONFIG_SOUTHBRIDGE_INTEL_BD82X6X || CONFIG_SOUTHBRIDGE_INTEL_C216
+#elif CONFIG_SOUTHBRIDGE_INTEL_BD82X6X || CONFIG_SOUTHBRIDGE_INTEL_C216 || CONFIG_SOUTHBRIDGE_INTEL_IBEXPEAK
 #include "../../../southbridge/intel/bd82x6x/pch.h"
 #elif CONFIG_SOUTHBRIDGE_INTEL_I82801IX
 #include "../../../southbridge/intel/i82801ix/i82801ix.h"
@@ -47,6 +47,9 @@
 
 #if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 #include <northbridge/intel/sandybridge/sandybridge.h>
+#define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
+#elif CONFIG_NORTHBRIDGE_INTEL_NEHALEM
+#include <northbridge/intel/nehalem/nehalem.h>
 #define TSEG_BAR (DEFAULT_PCIEXBAR | TSEG)
 #else
 #error "Northbridge must define TSEG_BAR."

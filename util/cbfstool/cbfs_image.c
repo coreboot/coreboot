@@ -570,13 +570,14 @@ int cbfs_print_header_info(struct cbfs_image *image)
 	char *name = strdup(image->buffer.name);
 	assert(image && image->header);
 	printf("%s: %zd kB, bootblocksize %d, romsize %d, offset 0x%x\n"
-	       "alignment: %d bytes\n\n",
+	       "alignment: %d bytes, architecture: %s\n\n",
 	       basename(name),
 	       image->buffer.size / 1024,
 	       image->header->bootblocksize,
 	       image->header->romsize,
 	       image->header->offset,
-	       image->header->align);
+	       image->header->align,
+	       arch_to_string(image->header->architecture));
 	free(name);
 	return 0;
 }

@@ -112,6 +112,7 @@ int buffer_write_file(struct buffer *buffer, const char *filename);
 /* Destroys a memory buffer. */
 void buffer_delete(struct buffer *buffer);
 
+const char *arch_to_string(uint32_t a);
 uint32_t string_to_arch(const char *arch_string);
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))

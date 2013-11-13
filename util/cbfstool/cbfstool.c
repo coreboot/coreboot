@@ -136,20 +136,21 @@ static int cbfs_add_component(const char *cbfs_name,
 		return 1;
 	}
 
+	if (cbfs_image_from_file(&image, cbfs_name) != 0) {
+		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
+		return 1;
+	}
+
 	if (buffer_from_file(&buffer, filename) != 0) {
 		ERROR("Could not load file '%s'.\n", filename);
+		cbfs_image_delete(&image);
 		return 1;
 	}
 
 	if (convert && convert(&buffer, &offset) != 0) {
 		ERROR("Failed to parse file '%s'.\n", filename);
 		buffer_delete(&buffer);
-		return 1;
-	}
-
-	if (cbfs_image_from_file(&image, cbfs_name) != 0) {
-		ERROR("Could not load ROM image '%s'.\n", cbfs_name);
-		buffer_delete(&buffer);
+		cbfs_image_delete(&image);
 		return 1;
 	}
 

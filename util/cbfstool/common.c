@@ -150,6 +150,21 @@ uint32_t string_to_arch(const char *arch_string)
 	return ret;
 }
 
+const char *arch_to_string(uint32_t a)
+{
+	int i;
+	const char *ret = NULL;
+
+	for (i = 0; i < ARRAY_SIZE(arch_names); i++) {
+		if (a == arch_names[i].arch) {
+			ret = arch_names[i].name;
+			break;
+		}
+	}
+
+	return ret;
+}
+
 static struct filetypes_t {
 	uint32_t type;
 	const char *name;

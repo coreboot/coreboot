@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <swab.h>
+#include <smbios.h>
 #include <console/console.h>
 #include <arch/io.h>
 #include <arch/acpigen.h>
@@ -306,4 +307,87 @@ err:
 	free(s);
 	free(addrs);
 	return 0;
+}
+
+/* ---------------------------------------------------------------------- */
+/* pick up smbios information from fw_cfg                                 */
+
+static const char *type1_manufacturer;
+static const char *type1_product_name;
+static const char *type1_version;
+static const char *type1_serial_number;
+static const char *type1_family;
+static u8 type1_uuid[16];
+
+static void fw_cfg_smbios_init(void)
+{
+	static int done = 0;
+	uint16_t i, count = 0;
+	FwCfgSmbios entry;
+	char *buf;
+
+	if (done)
+		return;
+	done = 1;
+
+	fw_cfg_get(FW_CFG_SMBIOS_ENTRIES, &count, sizeof(count));
+	for (i = 0; i < count; i++) {
+		insb(FW_CFG_PORT_DATA, &entry, sizeof(entry));
+		buf = malloc(entry.length - sizeof(entry));
+		insb(FW_CFG_PORT_DATA, buf, entry.length - sizeof(entry));
+		if (entry.headertype == SMBIOS_FIELD_ENTRY &&
+		    entry.tabletype == 1) {
+			switch (entry.fieldoffset) {
+			case offsetof(struct smbios_type1, manufacturer):
+				type1_manufacturer = strdup(buf);
+				break;
+			case offsetof(struct smbios_type1, product_name):
+				type1_product_name = strdup(buf);
+				break;
+			case offsetof(struct smbios_type1, version):
+				type1_version = strdup(buf);
+				break;
+			case offsetof(struct smbios_type1, serial_number):
+				type1_serial_number = strdup(buf);
+				break;
+			case offsetof(struct smbios_type1, family):
+				type1_family = strdup(buf);
+				break;
+			case offsetof(struct smbios_type1, uuid):
+				memcpy(type1_uuid, buf, 16);
+				break;
+			}
+		}
+		free(buf);
+	}
+}
+
+const char *smbios_mainboard_manufacturer(void)
+{
+	fw_cfg_smbios_init();
+	return type1_manufacturer ?: CONFIG_MAINBOARD_SMBIOS_MANUFACTURER;
+}
+
+const char *smbios_mainboard_product_name(void)
+{
+	fw_cfg_smbios_init();
+	return type1_product_name ?: CONFIG_MAINBOARD_SMBIOS_PRODUCT_NAME;
+}
+
+const char *smbios_mainboard_version(void)
+{
+	fw_cfg_smbios_init();
+	return type1_version ?: CONFIG_MAINBOARD_VERSION;
+}
+
+const char *smbios_mainboard_serial_number(void)
+{
+	fw_cfg_smbios_init();
+	return type1_serial_number ?: CONFIG_MAINBOARD_SERIAL_NUMBER;
+}
+
+void smbios_mainboard_set_uuid(u8 *uuid)
+{
+	fw_cfg_smbios_init();
+	memcpy(uuid, type1_uuid, 16);
 }

@@ -20,12 +20,18 @@
  */
 
 #include "smi.h"
+#if defined (CONFIG_BOARD_LENOVO_X201) && CONFIG_BOARD_LENOVO_X201
+#define THINKPAD_EC_GPE 0x11
+#else
+#define THINKPAD_EC_GPE 28
+#endif
+
 Device(EC)
 {
 	Name (_HID, EISAID("PNP0C09"))
 	Name (_UID, 0)
 
-	Name (_GPE, 28)
+	Name (_GPE, THINKPAD_EC_GPE)
 	Mutex (ECLK, 0)
 
 	OperationRegion(ERAM, EmbeddedControl, 0x00, 0x100)

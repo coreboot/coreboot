@@ -25,8 +25,8 @@ show_help() {
 Options
     -h
         Show this message.
-    -c
-        Clobber temporary output when finished. Useful when not uploading.
+    -C
+        Clobber temporary output when finished. Useful for debugging.
     -r  <host>
         Obtain machine information from remote host (using ssh).
     -u
@@ -86,13 +86,13 @@ cmd()
 	exit $EXIT_FAILURE
 }
 
-while getopts "chr:u" opt; do
+while getopts "Chr:u" opt; do
 	case "$opt" in
 		h)
 			show_help
 			exit $EXIT_SUCCESS
 			;;
-		c)
+		C)
 			CLOBBER_OUTPUT=1
 			;;
 		r)

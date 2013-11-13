@@ -29,7 +29,7 @@ int checkstack(void *top_of_stack, int core)
 	u32 *stack = (u32 *) (top_of_stack - CONFIG_STACK_SIZE);
 
 	if (stack[0] != 0xDEADBEEF){
-		printk(BIOS_ERR, "Stack overrun on CPU%d."
+		printk(BIOS_ERR, "Stack overrun on CPU%d. "
 			"Increase stack from current %d bytes\n",
 			core, CONFIG_STACK_SIZE);
 		return -1;

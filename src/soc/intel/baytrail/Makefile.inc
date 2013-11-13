@@ -41,6 +41,7 @@ ramstage-y += acpi.c
 ramstage-y += lpe.c
 ramstage-y += scc.c
 ramstage-y += emmc.c
+ramstage-y += lpss.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

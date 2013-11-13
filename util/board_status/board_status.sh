@@ -53,25 +53,29 @@ _cmd()
 	fi
 
 	if [[ $1 -eq $REMOTE && -n "$REMOTE_HOST" ]]; then
-		ssh root@${REMOTE_HOST} "$2"
+		ssh root@${REMOTE_HOST} "$2" > "${3}" 2>&1
 	else
-		$2
+		$2 > "${3}" 2>&1
 	fi
+
+	return $?
 }
 
 # run a command
 #
 # $1: 0 to run command locally, 1 to run remotely if remote host defined
 # $2: command
+# $3: filename to direct output of command into
 cmd()
 {
-	_cmd $1 $2
+	_cmd $1 "$2" "$3"
 
 	if [ $? -eq 0 ]; then
 		return
 	fi
 
-	echo "Failed to run command: $2"
+	echo "Failed to run \"$2\", aborting"
+	rm -f "$3"	# don't leave an empty file
 	exit $EXIT_FAILURE
 }
 
@@ -79,15 +83,17 @@ cmd()
 #
 # $1: 0 to run command locally, 1 to run remotely if remote host defined
 # $2: command
+# $3: filename to direct output of command into
 cmd_nonfatal()
 {
-	_cmd $1 $2
+	_cmd $1 "$2" "$3"
 
 	if [ $? -eq 0 ]; then
 		return
 	fi
 
-	echo "Failed to run command: $2"
+	echo "Failed to run \"$2\", ignoring"
+	rm -f "$3"	# don't leave an empty file
 }
 
 show_help() {
@@ -163,10 +169,10 @@ printf "Upstream URL: %s\n" $($getrevision -U)>> ${tmpdir}/${results}/revision.t
 printf "Timestamp: %s\n" "$timestamp" >> ${tmpdir}/${results}/revision.txt
 
 test_cmd $REMOTE "cbmem"
-cmd $REMOTE "cbmem -c" > ${tmpdir}/${results}/coreboot_console.txt
-cmd_nonfatal $REMOTE "cbmem -t" > ${tmpdir}/${results}/coreboot_timestamps.txt
+cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
+cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 
-cmd $REMOTE dmesg > ${tmpdir}/${results}/kernel_log.txt
+cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 
 # FIXME: the board-status directory might get big over time. Is there a way we
 # can push the results without fetching the whole repo?

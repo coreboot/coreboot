@@ -174,8 +174,9 @@ cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 
 cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 
-# FIXME: the board-status directory might get big over time. Is there a way we
-# can push the results without fetching the whole repo?
+#
+# Finish up.
+#
 coreboot_dir=`pwd`
 if [ $UPLOAD_RESULTS -eq 1 ]; then
 	# extract username from ssh://<username>@review.coreboot.org/blah
@@ -183,6 +184,9 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 
 	cd "util/board_status/"
 	if [ ! -e "board-status" ]; then
+		# FIXME: the board-status directory might get big over time.
+		# Is there a way we can push the results without fetching the
+		# whole repo?
 		git clone "ssh://${username}@review.coreboot.org:29418/board-status"
 		if [ $? -ne 0 ]; then
 			"Error cloning board-status repo, aborting."

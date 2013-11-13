@@ -110,7 +110,7 @@ entries
 1064         8       h       0        volume
 1072         8       h       0        tft_brightness
 1080         1       e       9        first_battery
-1081	     1	     e	     1	      bluetooth
+1081         1       e       1        bluetooth
 # -----------------------------------------------------------------
 
 enumerations

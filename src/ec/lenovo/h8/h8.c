@@ -155,16 +155,17 @@ static void h8_enable(device_t dev)
 	if (!get_option(&val, "volume"))
 		ec_write(H8_VOLUME_CONTROL, val);
 
+	if (get_option(&val, "bluetooth"))
+		val = 1;
+	h8_bluetooth_enable(val);
 
-	if (!get_option(&val, "bluetooth"))
-		h8_bluetooth_enable(val);
+	if (get_option(&val, "first_battery"))
+		val = 1;
 
-	if (!get_option(&val, "first_battery")) {
-		tmp = ec_read(H8_CONFIG3);
-		tmp &= ~(1 << 4);
-		tmp |= (val & 1)<< 4;
-		ec_write(H8_CONFIG3, tmp);
-	}
+	tmp = ec_read(H8_CONFIG3);
+	tmp &= ~(1 << 4);
+	tmp |= (val & 1) << 4;
+	ec_write(H8_CONFIG3, tmp);
 	h8_set_audio_mute(0);
 
 #if IS_ENABLED (CONFIG_BOARD_LENOVO_X201)

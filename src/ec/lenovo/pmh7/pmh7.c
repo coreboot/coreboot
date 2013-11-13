@@ -113,8 +113,9 @@ static void enable_dev(device_t dev)
 	pmh7_backlight_enable(conf->backlight_enable);
 	pmh7_dock_event_enable(conf->dock_event_enable);
 
-	if (!get_option(&val, "touchpad"))
-		pmh7_touchpad_enable(val);
+	if (get_option(&val, "touchpad"))
+		val = 1;
+	pmh7_touchpad_enable(val);
 }
 
 struct chip_operations ec_lenovo_pmh7_ops = {

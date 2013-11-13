@@ -18,22 +18,6 @@ UPLOAD_RESULTS=0
 LOCAL=0
 REMOTE=1
 
-show_help() {
-	echo "Usage:
-	${0} <option>
-
-Options
-    -h
-        Show this message.
-    -C
-        Clobber temporary output when finished. Useful for debugging.
-    -r  <host>
-        Obtain machine information from remote host (using ssh).
-    -u
-        Upload results to coreboot.org.
-"
-}
-
 # test a command
 #
 # $1: test command on remote host (0=no, 1=yes)
@@ -84,6 +68,22 @@ cmd()
 
 	echo "Failed to run command: $2"
 	exit $EXIT_FAILURE
+}
+
+show_help() {
+	echo "Usage:
+	${0} <option>
+
+Options
+    -h
+        Show this message.
+    -C
+        Clobber temporary output when finished. Useful for debugging.
+    -r  <host>
+        Obtain machine information from remote host (using ssh).
+    -u
+        Upload results to coreboot.org.
+"
 }
 
 while getopts "Chr:u" opt; do

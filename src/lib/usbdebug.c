@@ -1041,3 +1041,27 @@ int usbdebug_init(void)
 	enable_usbdebug();
 	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }
+
+#ifdef NOTUPDATED
+unsigned char usbdebug_rx_byte(struct ehci_debug_info *dbg_info)
+{
+	if (!dbg_info) {
+		/* "Find" dbg_info structure in Cache */
+		dbg_info = (struct ehci_debug_info *)
+		    (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE - sizeof(struct ehci_debug_info));
+	}
+
+	if (dbg_info->ehci_debug) {
+		unsigned char c = 0xff;
+		u32 pids;
+		usbdebug_tx_flush (dbg_info);
+		pids = read32((unsigned long)&((struct ehci_dbg_port *) dbg_info->ehci_debug)->pids);
+		while (dbgp_bulk_read_x (dbg_info, &c, 1) <= 0);
+		write32((unsigned long)&((struct ehci_dbg_port *) dbg_info->ehci_debug)->pids, pids);
+		usbdebug_tx_byte(dbg_info, c);
+		usbdebug_tx_flush (dbg_info);
+		return c;
+	}
+	return 0xff;
+}
+#endif

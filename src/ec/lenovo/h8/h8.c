@@ -26,6 +26,11 @@
 #include "h8.h"
 #include "chip.h"
 #include <pc80/mc146818rtc.h>
+#include <kconfig.h>
+
+#if IS_ENABLED (CONFIG_BOARD_LENOVO_X201)
+#include "mainboard/lenovo/x201/dock.h"
+#endif
 
 static void h8_bluetooth_enable(int on)
 {
@@ -175,6 +180,14 @@ static void h8_enable(device_t dev)
 	tmp |= (val & 1) << 4;
 	ec_write(H8_CONFIG3, tmp);
 	h8_set_audio_mute(0);
+
+#if IS_ENABLED (CONFIG_BOARD_LENOVO_X201)
+	if (dock_present()) {
+		printk(BIOS_DEBUG, "dock is connected\n");
+		dock_connect();
+	} else
+		printk(BIOS_DEBUG, "dock is not connected\n");
+#endif
 }
 
 struct chip_operations ec_lenovo_h8_ops = {

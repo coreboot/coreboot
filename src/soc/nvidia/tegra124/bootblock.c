@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/exception.h>
 #include <arch/hlt.h>
 #include <bootblock_common.h>
 #include <cbfs.h>
@@ -47,8 +48,10 @@ void main(void)
 	pinmux_set_config(PINMUX_UART2_RTS_N_INDEX,
 			  PINMUX_UART2_RTS_N_FUNC_UB3);
 
-	if (CONFIG_BOOTBLOCK_CONSOLE)
+	if (CONFIG_BOOTBLOCK_CONSOLE) {
 		console_init();
+		exception_init();
+	}
 
 	clock_init();
 

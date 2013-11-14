@@ -27,7 +27,6 @@
 #include <vbe.h>
 #include <boot/coreboot_tables.h>
 #include <arch/cache.h>
-#include <arch/exception.h>
 #include <soc/samsung/exynos5250/tmu.h>
 #include <soc/samsung/exynos5250/clk.h>
 #include <soc/samsung/exynos5250/gpio.h>
@@ -337,10 +336,6 @@ static void mainboard_enable(device_t dev)
 	mmu_config_range(DRAM_END, 4096 - DRAM_END, DCACHE_OFF);
 	dcache_invalidate_all();
 	dcache_mmu_enable();
-
-	/* this is going to move, but we must have it now and we're
-	 * not sure where */
-	exception_init();
 
 	const unsigned epll_hz = 192000000;
 	const unsigned sample_rate = 48000;

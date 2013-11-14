@@ -95,6 +95,7 @@ void main(void)
 	configure_l2actlr();
 
 	console_init();
+	exception_init();
 
 	mmu_init();
 	mmu_config_range(0, DRAM_START, DCACHE_OFF);
@@ -105,8 +106,6 @@ void main(void)
 	mmu_disable_range(0, 1);
 	dcache_invalidate_all();
 	dcache_mmu_enable();
-
-	exception_init();
 
 	/* For quality of the user experience, it's important to get
 	 * the video going ASAP. Because there are long delays in some

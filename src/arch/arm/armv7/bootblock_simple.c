@@ -20,6 +20,7 @@
  */
 
 #include <arch/cache.h>
+#include <arch/exception.h>
 #include <arch/hlt.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>
@@ -54,6 +55,7 @@ void main(void)
 
 #if CONFIG_BOOTBLOCK_CONSOLE
 	console_init();
+	exception_init();
 #endif
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);

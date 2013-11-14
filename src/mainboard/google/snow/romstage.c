@@ -24,6 +24,7 @@
 #include <cbmem.h>
 
 #include <arch/cache.h>
+#include <arch/exception.h>
 #include <soc/samsung/exynos5250/i2c.h>
 #include <soc/samsung/exynos5250/clk.h>
 #include <soc/samsung/exynos5250/cpu.h>
@@ -151,6 +152,7 @@ void main(void)
 	mem = setup_clock();
 
 	console_init();
+	exception_init();
 
 	setup_power(is_resume);
 	setup_memory(mem, is_resume);

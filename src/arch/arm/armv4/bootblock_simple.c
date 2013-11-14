@@ -19,6 +19,7 @@
  * MA 02110-1301 USA
  */
 
+#include <arch/exception.h>
 #include <arch/hlt.h>
 #include <arch/stages.h>
 #include <bootblock_common.h>
@@ -33,8 +34,10 @@ void main(void)
 	bootblock_cpu_init();
 	bootblock_mainboard_init();
 
-	if (CONFIG_BOOTBLOCK_CONSOLE)
+	if (CONFIG_BOOTBLOCK_CONSOLE) {
 		console_init();
+		exception_init();
+	}
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, stage_name);
 

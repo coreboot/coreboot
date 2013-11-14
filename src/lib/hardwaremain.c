@@ -22,6 +22,7 @@
  * C Bootstrap code for the coreboot
  */
 
+#include <arch/exception.h>
 #include <bootstate.h>
 #include <console/console.h>
 #include <console/post_codes.h>
@@ -469,6 +470,7 @@ void main(void)
 	acpi_is_wakeup();
 #endif
 
+	exception_init();
 	threads_initialize();
 
 	/* Schedule the static boot state entries. */

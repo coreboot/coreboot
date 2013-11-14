@@ -4,6 +4,7 @@
 build/
 coreboot-builds/
 payloads/external/FILO/filo/
+payloads/external/GRUB2/grub2/
 payloads/external/SeaBIOS/seabios/
 util/crossgcc/acpica-unix-*/
 util/crossgcc/binutils-*/

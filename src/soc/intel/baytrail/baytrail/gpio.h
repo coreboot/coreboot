@@ -182,25 +182,13 @@
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_INPUT }
 
-/* Direct / dedicated IRQ input - falling-edge triggered */
+/* Direct / dedicated IRQ input - pass signal directly to apic */
 #define GPIO_DIRQ \
 	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
-		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TNE_IRQ, \
+		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ | PAD_LEVEL_IRQ, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT, \
-	  .use_sel   = GPIO_USE_LEGACY, \
-	  .io_sel    = GPIO_DIR_INPUT, \
-	  .tne       = GPIO_NEDGE_ENABLE }
+	  .pad_val   = PAD_VAL_INPUT, }
 
-/* Direct / dedicated IRQ input - rising-edge triggered */
-#define GPIO_DIRQ_INVERT \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
-		     | PAD_FUNC0 | PAD_IRQ_EN | PAD_TPE_IRQ, \
-	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
-	  .pad_val   = PAD_VAL_INPUT, \
-	  .use_sel   = GPIO_USE_LEGACY, \
-	  .io_sel    = GPIO_DIR_INPUT, \
-	  .tne       = GPIO_PEDGE_ENABLE }
 
 #define GPIO_OUT_LOW \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \

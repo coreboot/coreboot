@@ -1,0 +1,72 @@
+Thanks for your interest in Lenovo X201 port.
+
+Flash in X201 is divided roughly in 4 parts:
+
+- Descriptor (12K)
+- ME firmware (5M-12K)
+- Rewriteable flash (3M-96K)
+- Locked bootblock (96K)
+
+Descriptor and bootblock are read-only. ME firmware is not readable.
+Rewriteable region can be rewritten easily with flashrom.
+
+For coreboot we need to preserve descriptor and ME firmware while overwriting
+rewriteable region and bootblock. To achieve this there are 2 ways:
+
+- External flasher.
+- Unlock bootblock
+
+For the first one proceeds as follows:
+- Turn off your laptop, remove battery and AC adapter.
+- Remove the keyboard.
+- Connect your external SPI flasher to the SPI chip which is under keyboard,
+  around the position of trackpoint under protective layer. I recommend using
+  SOIC clip. Depending on the flasher you use, you may have to use separate
+  3.3V source. Make sure not to feed more than 3.3V ot the chip. I used
+  buspirate as flasher and 3.3V power lines from another computer. 
+- Read the flash. Twice. Compare the files to be sure. Save a copy of it on
+  external media.
+- Recover descriptor and me firmare:
+  dd if=flash.bin of=coreboot/3rdparty/mainboard/lenovo/x201/descriptor.bin \
+    count=12288 bs=1M iflag=count_bytes
+  dd if=flash.bin of=coreboot/3rdparty/mainboard/lenovo/x201/me.bin \
+    skip=12288 count=5230592 bs=1M iflag=count_bytes
+- Compile coreboot
+- Flash the resulting build/coreboot.rom
+
+The other way has never been successfully used but it's known that the
+locking mechanism is in bootblock itself and that original firmware has
+a way to update it as follows:
+- Flash an update of rewriteable region. On next boot bootblock parses the
+  image and sees that it contains a compressed copy of new bootblock. That
+  copy is uncompressed and flashed.
+A way to unlock the bootblock would be to modify a firmware update to have a
+copy of bootblock without protection. For this you need to compress the
+modified block to fit into original space. The compression used is Lempel-Ziv-
+Huffman variant. I've written a compressor for it but unfortunately it's not
+performant enough.
+
+Known issues
+  - S3 doesn't work
+  - No expresscard hotplug
+  - Sometimes Gnome starts to think that battery is 10 time larger than real
+    Information from sysfs remains correct.
+  - On my X201 there due to recent hardware failure thermal management doesn't
+    work with either coreboot or original BIOS. Before this hardware fault
+    happened thermal management worked under coreboot as well.
+
+Tested:
+  RAM module combinations of 4G+4G, 4G, 2G+2G,4G+2G, 2G
+  USB
+  Video (both internal and VGA)
+  Expresscard slot
+  Sound
+  LAN
+  mini-PCIe slots (both wlan and wwan)
+  Linux (through GRUB-as-payload)
+  Windows (through GRUB-as-payload loading SeaBIOS image from disk)
+  SD card slot
+  Thermal management
+
+Not tested:
+  Modem

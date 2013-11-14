@@ -93,8 +93,8 @@ void southcluster_smm_enable_smi(void)
 {
 
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
-	/* Configure events */
-	enable_pm1(PWRBTN_EN | GBL_EN);
+	/* Configure events Disable pcie wake. */
+	enable_pm1(PWRBTN_EN | GBL_EN | PCIEXPWAK_DIS);
 	disable_gpe(PME_B0_EN);
 
 	/* Set up the GPIO route. */

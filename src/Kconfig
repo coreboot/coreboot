@@ -569,6 +569,15 @@ config PAYLOAD_FILO
 
 	  See http://coreboot.org/Payloads for more information.
 
+config PAYLOAD_GRUB2
+	bool "GRUB2"
+	help
+	  Select this option if you want to build a coreboot image
+	  with a GRUB2 payload. If you don't know what this is
+	  about, just leave it enabled.
+
+	  See http://coreboot.org/Payloads for more information.
+
 config PAYLOAD_TIANOCORE
 	bool "Tiano Core"
 	help
@@ -604,6 +613,17 @@ config SEABIOS_PS2_TIMEOUT
 	  Some PS/2 keyboard controllers don't respond to commands immediately
 	  after powering on. This specifies how long SeaBIOS will wait for the
 	  keyboard controller to become ready before giving up.
+
+choice
+	prompt "GRUB2 version"
+	default GRUB2_MASTER
+	depends on PAYLOAD_GRUB2
+
+config GRUB2_MASTER
+	bool "HEAD"
+	help
+	  Newest GRUB2 version
+endchoice
 
 choice
 	prompt "FILO version"
@@ -643,6 +663,10 @@ config PAYLOAD_FILE
 	default "payloads/external/FILO/filo/build/filo.elf"
 
 config PAYLOAD_FILE
+	depends on PAYLOAD_GRUB2
+	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
+
+config PAYLOAD_FILE
 	string "Tianocore firmware volume"
 	depends on PAYLOAD_TIANOCORE
 	default "COREBOOT.fd"
@@ -653,7 +677,7 @@ config PAYLOAD_FILE
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"
 	default y
-	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS || PAYLOAD_FILO || PAYLOAD_TIANOCORE
+	depends on PAYLOAD_ELF || PAYLOAD_SEABIOS || PAYLOAD_FILO || PAYLOAD_TIANOCORE || PAYLOAD_GRUB2
 	help
 	  In order to reduce the size payloads take up in the ROM chip
 	  coreboot can compress them using the LZMA algorithm.

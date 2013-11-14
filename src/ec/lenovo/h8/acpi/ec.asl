@@ -37,27 +37,34 @@ Device(EC)
 	OperationRegion(ERAM, EmbeddedControl, 0x00, 0x100)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
+		Offset (0x02),
+				DKR1, 1,
 		Offset (0x05),
 				HSPA, 1,
 		Offset (0x0C),
 				LEDS, 8,	/* LED state */
+		Offset (0x1a),
+				DKR2, 1,
 		Offset (0x2a),
 				EVNT, 8,	/* write will trigger EC event */
 		Offset (0x3a),
 				AMUT, 1,	/* Audio Mute */
 		Offset (0x3B),
 				    , 1,
-				KBLT, 1,        /* Keyboard Light */
+				KBLT, 1,	/* Keyboard Light */
 				    , 2,
 				USPW, 1,	/* USB Power enable */
 		Offset (0x4e),
-		               WAKE, 16,
+			       WAKE, 16,
 		Offset (0x78),
 				TMP0, 8,	/* Thermal Zone 0 temperature */
 				TMP1, 8,	/* Thermal Zone 1 temperature */
 		Offset (0x81),
-				PAGE, 8		/* Information Page Selector */
-        }
+				PAGE, 8,	/* Information Page Selector */
+		Offset (0xfe),
+				    , 4,
+				DKR3, 1
+	}
 
 	Method (_CRS, 0)
 	{

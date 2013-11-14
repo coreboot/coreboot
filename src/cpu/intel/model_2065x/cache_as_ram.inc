@@ -27,11 +27,6 @@
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
-/* Cache 4GB - MRC_SIZE_KB for MRC */
-#define CACHE_MRC_BYTES   ((CONFIG_CACHE_MRC_SIZE_KB << 10) - 1)
-#define CACHE_MRC_BASE    (0xFFFFFFFF - CACHE_MRC_BYTES)
-#define CACHE_MRC_MASK    (~CACHE_MRC_BYTES)
-
 #define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_ADDR_BITS - 32) - 1)
 
 #define NoEvictMod_MSR 0x2e0
@@ -147,17 +142,6 @@ clear_mtrrs:
 	wrmsr
 
 	post_code(0x27)
-#if CONFIG_CACHE_MRC_BIN
-	/* Enable caching for ram init code to run faster */
-	movl	$MTRRphysBase_MSR(2), %ecx
-	movl	$(CACHE_MRC_BASE | MTRR_TYPE_WRPROT), %eax
-	xorl	%edx, %edx
-	wrmsr
-	movl	$MTRRphysMask_MSR(2), %ecx
-	movl	$(CACHE_MRC_MASK | MTRRphysMaskValid), %eax
-	movl	$CPU_PHYSMASK_HI, %edx
-	wrmsr
-#endif
 
 	post_code(0x28)
 	/* Enable cache. */
@@ -166,8 +150,7 @@ clear_mtrrs:
 	movl	%eax, %cr0
 
 	/* Set up the stack pointer below MRC variable space. */
-	movl	$(CACHE_AS_RAM_SIZE + CACHE_AS_RAM_BASE - \
-		  CONFIG_DCACHE_RAM_MRC_VAR_SIZE - 4 - 4096), %eax
+	movl	$(CACHE_AS_RAM_SIZE + CACHE_AS_RAM_BASE - 4), %eax
 	movl	%eax, %esp
 
 	/* Restore the BIST result. */

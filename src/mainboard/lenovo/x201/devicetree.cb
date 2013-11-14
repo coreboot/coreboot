@@ -1,0 +1,146 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+## MA 02110-1301 USA
+##
+
+chip northbridge/intel/nehalem
+
+
+	# Enable DisplayPort Hotplug with 6ms pulse
+	register "gpu_dp_d_hotplug" = "0x06"
+
+	# Enable Panel as LVDS and configure power delays
+	register "gpu_panel_port_select" = "0"			# LVDS
+	register "gpu_panel_power_cycle_delay" = "3"
+	register "gpu_panel_power_up_delay" = "250"
+	register "gpu_panel_power_down_delay" = "250"
+	register "gpu_panel_power_backlight_on_delay" = "2500"
+	register "gpu_panel_power_backlight_off_delay" = "2500"
+	register "gpu_cpu_backlight" = "0x58d"
+	register "gpu_pch_backlight" = "0x061a061a"
+
+	chip ec/lenovo/pmh7
+		device pnp ff.1 on # dummy
+		end
+		register "backlight_enable" = "0x01"
+		register "dock_event_enable" = "0x01"
+	end
+
+	chip ec/lenovo/h8
+		device pnp ff.2 on # dummy
+			io 0x60 = 0x62
+			io 0x62 = 0x66
+			io 0x64 = 0x1600
+			io 0x66 = 0x1604
+		end
+
+		register "config0" = "0xa6"
+		register "config1" = "0x05"
+		register "config2" = "0xa0"
+		register "config3" = "0x01"
+
+		register "beepmask0" = "0xfe"
+		register "beepmask1" = "0x96"
+
+		register "event2_enable" = "0xff"
+		register "event3_enable" = "0xff"
+		register "event4_enable" = "0xf4"
+		register "event5_enable" = "0x3c"
+		register "event6_enable" = "0x80"
+		register "event7_enable" = "0x01"
+		register "eventc_enable" = "0x3c"
+		register "event8_enable" = "0x01"
+		register "event9_enable" = "0xff"
+		register "eventa_enable" = "0xff"
+		register "eventb_enable" = "0xff"
+		register "eventc_enable" = "0xff"
+		register "eventd_enable" = "0xff"
+
+		register "wlan_enable" = "0x01"
+		register "trackpoint_enable" = "0x03"
+	end
+
+	device cpu_cluster 0 on
+		chip cpu/intel/model_206ax
+			device lapic 0 on end
+		end
+	end
+
+	device domain 0 on
+		device pci 00.0 on # Host bridge
+			subsystemid 0x17aa 0x2193
+		end
+		device pci 02.0 on # VGA controller
+			subsystemid 0x17aa 0x215a
+		end
+		chip southbridge/intel/ibexpeak
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x0b"
+			register "pirqf_routing" = "0x0b"
+			register "pirqg_routing" = "0x0b"
+			register "pirqh_routing" = "0x0b"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi1_routing" = "2"
+			register "gpi13_routing" = "2"
+
+			register "sata_ahci" = "0x1"
+			register "sata_port_map" = "0x33"
+
+			register "gpe0_en" = "0x20022046"
+			register "alt_gp_smi_en" = "0x0000"
+
+			device pci 16.2 on # IDE/SATA
+				subsystemid 0x17aa 0x2161
+			end
+
+			device pci 19.0 on # Ethernet
+				subsystemid 0x17aa 0x2153
+			end
+
+			device pci 1a.0 on # USB2 EHCI
+				subsystemid 0x17aa 0x2163
+			end
+
+#			register "c4onc3_enable" = "1"
+			device pci 1b.0 on # Audio Controller
+				subsystemid 0x17aa 0x215e
+			end
+			device pci 1d.0 on # USB2 EHCI
+				subsystemid 0x17aa 0x2163
+			end
+			device pci 1f.0 on # PCI-LPC bridge
+				subsystemid 0x17aa 0x2166
+			end
+			device pci 1f.2 on # IDE/SATA
+				subsystemid 0x17aa 0x2168
+			end
+			device pci 1f.3 on # SMBUS
+				subsystemid 0x17aa 0x2167
+			end
+		end
+	end
+end

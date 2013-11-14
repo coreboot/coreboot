@@ -27,11 +27,6 @@
 #define CACHE_AS_RAM_SIZE CONFIG_DCACHE_RAM_SIZE
 #define CACHE_AS_RAM_BASE CONFIG_DCACHE_RAM_BASE
 
-/* Cache 4GB - MRC_SIZE_KB for MRC */
-#define CACHE_MRC_BYTES   ((CONFIG_CACHE_MRC_SIZE_KB << 10) - 1)
-#define CACHE_MRC_BASE    (0xFFFFFFFF - CACHE_MRC_BYTES)
-#define CACHE_MRC_MASK    (~CACHE_MRC_BYTES)
-
 #define CPU_PHYSMASK_HI  (1 << (CONFIG_CPU_ADDR_BITS - 32) - 1)
 
 #define NoEvictMod_MSR 0x2e0
@@ -54,7 +49,14 @@ wait_for_sipi:
 	jc	wait_for_sipi
 
 	post_code(0x21)
-	/* Zero out all fixed range and variable range MTRRs. */
+	/* Clean-up MTRRdefType_MSR. */
+	movl	$MTRRdefType_MSR, %ecx
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+	wrmsr
+
+	post_code(0x22)
+	/* Zero out all fixed range MTRRs. */
 	movl	$mtrr_table, %esi
 	movl	$((mtrr_table_end - mtrr_table) / 2), %edi
 	xorl	%eax, %eax
@@ -67,12 +69,20 @@ clear_mtrrs:
 	dec	%edi
 	jnz	clear_mtrrs
 
-	post_code(0x22)
-	/* Configure the default memory type to uncacheable. */
-	movl	$MTRRdefType_MSR, %ecx
+	/* Zero out all variable range MTRRs. */
+	movl    $MTRRcap_MSR, %ecx
 	rdmsr
-	andl	$(~0x00000cff), %eax
+	andl    $0xff, %eax
+	shl     $1, %eax
+	movl    %eax, %edi
+	movl    $0x200, %ecx
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+clear_var_mtrrs:
 	wrmsr
+	add	$1, %ecx
+	dec	%edi
+	jnz	clear_var_mtrrs
 
 	post_code(0x23)
 	/* Set Cache-as-RAM base address. */
@@ -147,17 +157,6 @@ clear_mtrrs:
 	wrmsr
 
 	post_code(0x27)
-#if CONFIG_CACHE_MRC_BIN
-	/* Enable caching for ram init code to run faster */
-	movl	$MTRRphysBase_MSR(2), %ecx
-	movl	$(CACHE_MRC_BASE | MTRR_TYPE_WRPROT), %eax
-	xorl	%edx, %edx
-	wrmsr
-	movl	$MTRRphysMask_MSR(2), %ecx
-	movl	$(CACHE_MRC_MASK | MTRRphysMaskValid), %eax
-	movl	$CPU_PHYSMASK_HI, %edx
-	wrmsr
-#endif
 
 	post_code(0x28)
 	/* Enable cache. */
@@ -165,9 +164,8 @@ clear_mtrrs:
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 
-	/* Set up the stack pointer below MRC variable space. */
-	movl	$(CACHE_AS_RAM_SIZE + CACHE_AS_RAM_BASE - \
-		  CONFIG_DCACHE_RAM_MRC_VAR_SIZE - 4 - 4096), %eax
+	/* Set up the stack pointer below the end of CAR. */
+	movl	$(CACHE_AS_RAM_SIZE + CACHE_AS_RAM_BASE - 4), %eax
 	movl	%eax, %esp
 
 	/* Restore the BIST result. */
@@ -211,16 +209,6 @@ before_romstage:
 	rdmsr
 	andl    $~1, %eax
 	wrmsr
-
-#if CONFIG_CACHE_MRC_BIN
-	/* Clear MTRR that was used to cache MRC */
-	xorl	%eax, %eax
-	xorl	%edx, %edx
-	movl	$MTRRphysBase_MSR(2), %ecx
-	wrmsr
-	movl	$MTRRphysMask_MSR(2), %ecx
-	wrmsr
-#endif
 
 	post_code(0x33)
 
@@ -321,18 +309,10 @@ __main:
 	jmp	.Lhlt
 
 mtrr_table:
-	.word 0x02FF
-
 	/* Fixed MTRRs */
 	.word 0x250, 0x258, 0x259
 	.word 0x268, 0x269, 0x26A
 	.word 0x26B, 0x26C, 0x26D
 	.word 0x26E, 0x26F
-
-	/* Variable MTRRs */
-	.word 0x200, 0x201, 0x202, 0x203
-	.word 0x204, 0x205, 0x206, 0x207
-	.word 0x208, 0x209, 0x20A, 0x20B
-	.word 0x20C, 0x20D, 0x20E, 0x20F
 mtrr_table_end:
 

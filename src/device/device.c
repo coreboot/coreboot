@@ -549,6 +549,12 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 		       resource->base, (resource->flags & IORESOURCE_IO)
 		       ? "io" : (resource->flags & IORESOURCE_PREFETCH)
 		       ? "prefmem" : "mem");
+		if (resource->base == 0xe0000000
+		    && 	PCI_SLOT(dev->path.pci.devfn) == 0x2)
+		  {
+		    printk (BIOS_ERR, "moving to 0xd0000000\n");
+		    resource->base = 0xd0000000;
+		  }
 	}
 
 	/*
@@ -606,19 +612,14 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	}
 }
 
-#if CONFIG_PCI_64BIT_PREF_MEM
-#define MEM_MASK (IORESOURCE_PREFETCH | IORESOURCE_MEM)
-#else
 #define MEM_MASK (IORESOURCE_MEM)
-#endif
-
 #define IO_MASK   (IORESOURCE_IO)
 #define PREF_TYPE (IORESOURCE_PREFETCH | IORESOURCE_MEM)
 #define MEM_TYPE  (IORESOURCE_MEM)
 #define IO_TYPE   (IORESOURCE_IO)
 
 struct constraints {
-	struct resource pref, io, mem;
+	struct resource io, mem;
 };
 
 static void constrain_resources(struct device *dev, struct constraints* limits)
@@ -642,9 +643,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 		}
 
 		/* PREFETCH, MEM, or I/O - skip any others. */
-		if ((res->flags & MEM_MASK) == PREF_TYPE)
-			lim = &limits->pref;
-		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+		if ((res->flags & MEM_MASK) == MEM_TYPE)
 			lim = &limits->mem;
 		else if ((res->flags & IO_MASK) == IO_TYPE)
 			lim = &limits->io;
@@ -689,11 +688,9 @@ static void avoid_fixed_resources(struct device *dev)
 	printk(BIOS_SPEW, "%s: %s\n", __func__, dev_path(dev));
 
 	/* Initialize constraints to maximum size. */
-	limits.pref.base = 0;
-	limits.pref.limit = 0xffffffffffffffffULL;
 	limits.io.base = 0;
 	limits.io.limit = 0xffffffffffffffffULL;
-	limits.mem.base = 0;
+	limits.mem.base = 0xe0000000;
 	limits.mem.limit = 0xffffffffffffffffULL;
 
 	/* Constrain the limits to dev's initial resources. */
@@ -702,9 +699,6 @@ static void avoid_fixed_resources(struct device *dev)
 			continue;
 		printk(BIOS_SPEW, "%s:@%s %02lx limit %08llx\n", __func__,
 		       dev_path(dev), res->index, res->limit);
-		if ((res->flags & MEM_MASK) == PREF_TYPE &&
-		    (res->limit < limits.pref.limit))
-			limits.pref.limit = res->limit;
 		if ((res->flags & MEM_MASK) == MEM_TYPE &&
 		    (res->limit < limits.mem.limit))
 			limits.mem.limit = res->limit;
@@ -724,9 +718,7 @@ static void avoid_fixed_resources(struct device *dev)
 			continue;
 
 		/* PREFETCH, MEM, or I/O - skip any others. */
-		if ((res->flags & MEM_MASK) == PREF_TYPE)
-			lim = &limits.pref;
-		else if ((res->flags & MEM_MASK) == MEM_TYPE)
+		if ((res->flags & MEM_MASK) == MEM_TYPE)
 			lim = &limits.mem;
 		else if ((res->flags & IO_MASK) == IO_TYPE)
 			lim = &limits.io;

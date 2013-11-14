@@ -48,6 +48,9 @@ endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
 COREBOOT_ROM_DEPENDENCIES+=filo
 endif
+ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
+COREBOOT_ROM_DEPENDENCIES+=grub2
+endif
 
 extract_nth=$(word $(1), $(subst |, ,$(2)))
 
@@ -113,6 +116,12 @@ ifeq ($(CONFIG_PAYLOAD_FILO),y)
 	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
+
+ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
+	@printf "    PAYLOAD    GRUB2 (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+
 ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
 	@printf "    PAYLOAD    Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
@@ -439,4 +448,13 @@ filo:
 			OBJCOPY="$(OBJCOPY)" STRIP="$(STRIP)" \
 			CONFIG_FILO_MASTER=$(CONFIG_FILO_MASTER) \
 			CONFIG_FILO_STABLE=$(CONFIG_FILO_STABLE)
+
+
+grub2:
+	$(MAKE) -C payloads/external/GRUB2 -f Makefile.inc \
+			HOSTCC="$(HOSTCC)" \
+			CC="$(CC)" LD="$(LD)" OBJDUMP="$(OBJDUMP)" \
+			OBJCOPY="$(OBJCOPY)" STRIP="$(STRIP)" \
+			CONFIG_GRUB2_MASTER=$(CONFIG_GRUB2_MASTER) \
+			CONFIG_GRUB2_STABLE=$(CONFIG_GRUB2_STABLE)
 

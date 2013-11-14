@@ -569,6 +569,15 @@ config PAYLOAD_FILO
 
 	  See http://coreboot.org/Payloads for more information.
 
+config PAYLOAD_GRUB2
+	bool "GRUB2"
+	help
+	  Select this option if you want to build a coreboot image
+	  with a GRUB2 payload. If you don't know what this is
+	  about, just leave it enabled.
+
+	  See http://coreboot.org/Payloads for more information.
+
 config PAYLOAD_TIANOCORE
 	bool "Tiano Core"
 	help
@@ -606,6 +615,17 @@ config SEABIOS_PS2_TIMEOUT
 	  keyboard controller to become ready before giving up.
 
 choice
+	prompt "GRUB2 version"
+	default GRUB2_MASTER
+	depends on PAYLOAD_GRUB2
+
+config GRUB2_MASTER
+	bool "HEAD"
+	help
+	  Newest GRUB2 version
+endchoice
+
+choice
 	prompt "FILO version"
 	default FILO_STABLE
 	depends on PAYLOAD_FILO
@@ -641,6 +661,10 @@ config PAYLOAD_FILE
 config PAYLOAD_FILE
 	depends on PAYLOAD_FILO
 	default "payloads/external/FILO/filo/build/filo.elf"
+
+config PAYLOAD_FILE
+	depends on PAYLOAD_GRUB2
+	default "payloads/external/GRUB2/grub2/build/default_payload.elf"
 
 config PAYLOAD_FILE
 	string "Tianocore firmware volume"

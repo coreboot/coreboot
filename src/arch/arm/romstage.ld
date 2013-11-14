@@ -35,7 +35,6 @@ PHDRS
 
 SECTIONS
 {
-	/* TODO make this a configurable option (per chipset). */
 	. = CONFIG_ROMSTAGE_BASE;
 
 	.romtext . : {
@@ -50,11 +49,7 @@ SECTIONS
 		*(.rodata);
 		*(.machine_param);
 		*(.data);
-		. = ALIGN(16);
-		_car_migrate_start = .;
-		*(.car.migrate);
-		_car_migrate_end = .;
-		. = ALIGN(16);
+		. = ALIGN(8);
 		_erom = .;
 	}
 
@@ -72,31 +67,7 @@ SECTIONS
 
 	_ebss = .;
 
-	.car.data . : {
-		. = ALIGN(8);
-		_car_data_start = .;
-		*(.car.global_data);
-		. = ALIGN(8);
-		/* The cbmem_console section comes last to take advantage of
-		 * a zero-sized array to hold the memconsole contents that
-		 * grows to a bound of CONFIG_CONSOLE_CAR_BUFFER_SIZE. However,
-		 * collisions within the cache-as-ram region cannot be
-		 * statically checked because the cache-as-ram region usage is
-		 * cpu/chipset dependent. */
-		*(.car.cbmem_console);
-		_car_data_end = .;
-	}
-
 	_end = .;
-
-	/* TODO: check if we are running out of SRAM. Below check is not good
-	 * enough though because SRAM has different size on different CPUs
-	 * and not all SRAM is available to the romstage. On Exynos, some is
-	 * used for BL1, the bootblock and the stack.
-	 *
-	 * _bogus = ASSERT((_end - _start + EXPECTED_CBMEM_CONSOLE_SIZE <= \
-	 * 				0x54000), "SRAM area is too full");
-	 */
 
 	/* Discard the sections we don't need/want */
 	/DISCARD/ : {

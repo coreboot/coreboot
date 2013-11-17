@@ -292,25 +292,6 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 }
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
-int cbfs_execute_stage(struct cbfs_media *media, const char *name)
-{
-	struct cbfs_stage *stage = (struct cbfs_stage *)
-		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
-
-	if (stage == NULL)
-		return 1;
-
-	if (ntohl(stage->compression) != CBFS_COMPRESS_NONE) {
-		LOG("Unable to run %s:  Compressed file"
-		       "Not supported for in-place execution\n", name);
-		return 1;
-	}
-
-	/* FIXME: This isn't right */
-	LOG("run @ %p\n", (void *) ntohl((uint32_t) stage->entry));
-	return run_address((void *)(uintptr_t)ntohll(stage->entry));
-}
-
 #if !CONFIG_ALT_CBFS_LOAD_PAYLOAD
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 {

@@ -74,7 +74,7 @@
 #define BLDOPT_REMOVE_SLIT                     FALSE //TRUE
 #define BLDOPT_REMOVE_WHEA                     FALSE //TRUE
 #define	BLDOPT_REMOVE_CRAT			TRUE
-//#define BLDOPT_REMOVE_DMI                      FALSE //TRUE
+#define BLDOPT_REMOVE_DMI                      TRUE
 //#define BLDOPT_REMOVE_EARLY_SAMPLES            FALSE
 //#define BLDCFG_REMOVE_ACPI_PSTATES_PPC               TRUE
 //#define BLDCFG_REMOVE_ACPI_PSTATES_PCT               TRUE

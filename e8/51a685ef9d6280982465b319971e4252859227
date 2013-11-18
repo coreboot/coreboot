@@ -1,0 +1,8 @@
+Code-Review+1: Patrick Georgi <patrick@georgi-clan.de>
+Verified+1: build bot (Jenkins)
+Code-Review+2: Ronald G. Minnich <rminnich@gmail.com>
+Submitted-by: Gerd Hoffmann <kraxel@redhat.com>
+Submitted-at: Mon, 18 Nov 2013 12:50:42 +0100
+Reviewed-on: http://review.coreboot.org/4086
+Project: coreboot
+Branch: refs/heads/master

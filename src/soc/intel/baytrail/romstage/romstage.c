@@ -41,6 +41,7 @@
 #include <baytrail/reset.h>
 #include <baytrail/romstage.h>
 #include <baytrail/smm.h>
+#include <baytrail/spi.h>
 
 static inline uint64_t timestamp_get(void)
 {
@@ -94,6 +95,13 @@ static void program_base_addresses(void)
 	pci_write_config32(lpc_dev, GBASE, reg);
 }
 
+static void spi_init(void)
+{
+	const unsigned long bcr = SPI_BASE_ADDRESS + BCR;
+	/* Enable caching and prefetching in the SPI controller. */
+	write32(bcr, (read32(bcr) & ~SRC_MASK) | SRC_CACHE_PREFETCH);
+}
+
 static inline void mark_ts(struct romstage_params *rp, uint64_t ts)
 {
 	struct romstage_timestamps *rt = &rp->ts;
@@ -123,6 +131,8 @@ void * asmlinkage romstage_main(unsigned long bist,
 	byt_config_com1_and_enable();
 
 	console_init();
+
+	spi_init();
 
 	set_max_freq();
 

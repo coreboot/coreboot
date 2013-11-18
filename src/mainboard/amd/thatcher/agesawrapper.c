@@ -425,7 +425,6 @@ agesawrapper_amdinitlate (
 	AmdCreateStruct(&AmdParamStruct);
 	AmdLateParams = (AMD_LATE_PARAMS *)AmdParamStruct.NewStructPtr;
 	Status = AmdInitLate(AmdLateParams);
-	/* CDIT table is not created. */
 	if (Status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog(AmdLateParams->StdHeader.HeapStatus);
 		ASSERT(Status == AGESA_SUCCESS);

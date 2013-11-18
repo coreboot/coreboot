@@ -39,7 +39,7 @@ Method(SLEN, 1)
 	Return(Sizeof(Local0))
 }
 
-Method(S2BF, 1)
+Method(S2BF, 1, Serialized)
 {
 	Add(SLEN(Arg0), One, Local0)
 	Name(BUFF, Buffer(Local0) {})

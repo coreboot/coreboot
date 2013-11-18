@@ -200,9 +200,9 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_NC,	/* S534 - NC */
 	GPIO_OUT_HIGH,	/* S535 - LTE_DISABLE_L */
 	GPIO_NC,	/* S536 - NC */
-	GPIO_INPUT,	/* S537 - RAM_ID0 */
-	GPIO_INPUT,	/* S538 - RAM_ID1 */
-	GPIO_INPUT,	/* S539 - RAM_ID2 */
+	GPIO_FUNC0,	/* S537 - RAM_ID0 */
+	GPIO_FUNC0,	/* S538 - RAM_ID1 */
+	GPIO_FUNC0,	/* S539 - RAM_ID2 */
 	GPIO_NC,	/* S540 - NC */
 	GPIO_NC,	/* S541 - NC */
 	GPIO_NC,	/* S542 - NC */

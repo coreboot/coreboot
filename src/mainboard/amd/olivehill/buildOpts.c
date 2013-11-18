@@ -61,6 +61,10 @@
   #endif
 #endif
 
+/* remove CDIT and DMI table */
+#define BLDOPT_REMOVE_CDIT TRUE
+#define BLDOPT_REMOVE_DMI TRUE
+
 //#define BLDOPT_REMOVE_UDIMMS_SUPPORT           TRUE
 //#define BLDOPT_REMOVE_RDIMMS_SUPPORT           TRUE
 #define BLDOPT_REMOVE_LRDIMMS_SUPPORT          TRUE

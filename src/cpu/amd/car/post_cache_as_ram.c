@@ -119,7 +119,7 @@ static void post_cache_as_ram(void)
 		::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- (CONFIG_RAMTOP) )
 		/* discard all registers (eax is used for %0), so gcc redoes everything
 		   after the stack is moved */
-		: "cc", "memory", "%ebx", "%ecx", "%edx", "%esi", "%edi", "%ebp"
+		: "cc", "memory", "%ebx", "%ecx", "%edx", "%esi", "%edi"
 	);
 
 	/* We can put data to stack again */

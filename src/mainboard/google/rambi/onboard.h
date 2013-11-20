@@ -34,4 +34,6 @@
 #define BOARD_TOUCHSCREEN_I2C_BUS       5
 #define BOARD_TOUCHSCREEN_I2C_ADDR      0x4a    /* TODO(shawnn): Check this */
 
+#define BOARD_I8042_IRQ                 GPIO_S0_DED_IRQ(I8042_IRQ_OFFSET)
+
 #endif

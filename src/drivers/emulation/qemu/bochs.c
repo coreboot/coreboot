@@ -1,4 +1,6 @@
+#include <stdint.h>
 #include <delay.h>
+#include <edid.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>
@@ -64,8 +66,6 @@ static void bochs_init(device_t dev)
 		return;
 	}
 	mem = bochs_read(VBE_DISPI_INDEX_VIDEO_MEMORY_64K) * 64 * 1024;
-	printk(BIOS_DEBUG, "QEMU VGA: bochs dispi interface found, "
-	       "%d MiB video memory\n", mem / ( 1024 * 1024));
 
 	/* find lfb pci bar */
 	addr = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
@@ -78,6 +78,12 @@ static void bochs_init(device_t dev)
 		bar = 1;
 	}
 	addr &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
+
+	if (!addr)
+		return;
+
+	printk(BIOS_DEBUG, "QEMU VGA: bochs dispi interface found, "
+	       "%d MiB video memory\n", mem / ( 1024 * 1024));
 	printk(BIOS_DEBUG, "QEMU VGA: framebuffer @ %x (pci bar %d)\n",
 	       addr, bar);
 
@@ -95,33 +101,11 @@ static void bochs_init(device_t dev)
 		    VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
 
 	outb(0x20, 0x3c0); /* disable blanking */
-}
-
-int vbe_mode_info_valid(void);
-int vbe_mode_info_valid(void)
-{
-	return addr != 0;
-}
-
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	printk(BIOS_DEBUG, "QEMU VGA: fill lb_framebuffer: %dx%d @ %x\n",
-	       width, height, addr);
-
-	framebuffer->physical_address = addr;
-	framebuffer->x_resolution = width;
-	framebuffer->y_resolution = height;
-	framebuffer->bytes_per_line = width * 4;
-	framebuffer->bits_per_pixel = 32;
-	framebuffer->red_mask_pos = 16;
-	framebuffer->red_mask_size = 8;
-	framebuffer->green_mask_pos = 8;
-	framebuffer->green_mask_size = 8;
-	framebuffer->blue_mask_pos = 0;
-	framebuffer->blue_mask_size = 8;
-	framebuffer->reserved_mask_pos = 24;
-	framebuffer->reserved_mask_size = 8;
+	struct edid edid;
+	edid.ha = width;
+	edid.va = height;
+	edid.bpp = 32;
+	set_vbe_mode_info_valid(&edid, addr);
 }
 
 static struct device_operations qemu_graph_ops = {

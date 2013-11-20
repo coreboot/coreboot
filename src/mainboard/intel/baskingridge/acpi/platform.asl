@@ -62,19 +62,6 @@ Method(_PIC, 1)
 
 Method(_PTS,1)
 {
-	// NVS has a flag to determine USB policy in S3
-	if (S3U0) {
-		Store (One, GP47)   // Enable USB0
-	} Else {
-		Store (Zero, GP47)  // Disable USB0
-	}
-
-	// NVS has a flag to determine USB policy in S3
-	if (S3U1) {
-		Store (One, GP56)   // Enable USB1
-	} Else {
-		Store (Zero, GP56)  // Disable USB1
-	}
 }
 
 /* The _WAK method is called on system wakeup */

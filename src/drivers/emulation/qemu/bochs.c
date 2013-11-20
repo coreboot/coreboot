@@ -1,4 +1,6 @@
+#include <stdint.h>
 #include <delay.h>
+#include <edid.h>
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>
@@ -81,6 +83,8 @@ static void bochs_init(device_t dev)
 	printk(BIOS_DEBUG, "QEMU VGA: framebuffer @ %x (pci bar %d)\n",
 	       addr, bar);
 
+	if (!addr)
+		return;
 	/* setup video mode */
 	bochs_write(VBE_DISPI_INDEX_ENABLE,	 0);
 	bochs_write(VBE_DISPI_INDEX_BANK,	 0);
@@ -95,8 +99,16 @@ static void bochs_init(device_t dev)
 		    VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
 
 	outb(0x20, 0x3c0); /* disable blanking */
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+	struct edid edid;
+	edid.ha = width;
+	edid.va = height;
+	edid.bpp = 32;
+	set_vbe_mode_info_valid(&edid, addr);
+#endif
 }
 
+#if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 int vbe_mode_info_valid(void);
 int vbe_mode_info_valid(void)
 {
@@ -123,6 +135,7 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 	framebuffer->reserved_mask_pos = 24;
 	framebuffer->reserved_mask_size = 8;
 }
+#endif
 
 static struct device_operations qemu_graph_ops = {
 	.read_resources	  = pci_dev_read_resources,

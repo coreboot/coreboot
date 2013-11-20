@@ -152,7 +152,11 @@ Device (SIO) {
 		{
 			IO (Decode16, 0x60, 0x60, 0x01, 0x01)
 			IO (Decode16, 0x64, 0x64, 0x01, 0x01)
+#ifdef SIO_EC_PS2K_IRQ
+			SIO_EC_PS2K_IRQ
+#else
 			IRQNoFlags () {1}
+#endif
 		})
 
 		Name (_PRS, ResourceTemplate()
@@ -160,7 +164,11 @@ Device (SIO) {
 			StartDependentFn (0, 0) {
 				IO (Decode16, 0x60, 0x60, 0x01, 0x01)
 				IO (Decode16, 0x64, 0x64, 0x01, 0x01)
+#ifdef SIO_EC_PS2K_IRQ
+				SIO_EC_PS2K_IRQ
+#else
 				IRQNoFlags () {1}
+#endif
 			}
 			EndDependentFn ()
 		})

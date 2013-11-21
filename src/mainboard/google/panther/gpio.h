@@ -51,7 +51,7 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_UNUSED,        /* 25: UNUSED */
 	LP_GPIO_OUT_HIGH,      /* 26: USB_CTL_1 */
 	LP_GPIO_UNUSED,        /* 27: UNUSED */
-	LP_GPIO_OUT_HIGH,      /* 28: USB_ILIM_SEL */
+	LP_GPIO_OUT_LOW,      /* 28: USB_ILIM_SEL */
 	LP_GPIO_UNUSED,        /* 29: UNUSED */
 	LP_GPIO_NATIVE,        /* 30: NATIVE: PCH_SUSPWRACK_L */
 	LP_GPIO_NATIVE,        /* 31: NATIVE: PCH_ACPRESENT */

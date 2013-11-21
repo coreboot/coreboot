@@ -89,6 +89,8 @@ Method(\_WAK, 1) {
 	/* DBGO("From S") */
 	/* DBGO(Arg0) */
 	/* DBGO(" to S0\n") */
+	Store(1,USBS)
+
 	\_SB.AWAK(Arg0)
 
 	Return(WKST)

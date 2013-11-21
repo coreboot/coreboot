@@ -32,3 +32,10 @@ Name(SSFG, 0x0D)		/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed 
 Name(OSTP, 3)	/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 Name(OSV, Ones)	/* Assume nothing */
 Name(PMOD, One)	/* Assume APIC */
+
+/* AcpiGpe0Blk */
+OperationRegion(GP0B, SystemMemory, 0xfed80814, 0x04)
+	Field(GP0B, ByteAcc, NoLock, Preserve) {
+	, 11,
+	USBS, 1,
+}

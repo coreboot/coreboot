@@ -36,6 +36,10 @@ Name(WKST,Package(){Zero, Zero})
 * the ACPI driver.  This method cannot modify the configuration or power
 * state of any device in the system.
 */
+
+External(\_SB.APTS, MethodObj)
+External(\_SB.AWAK, MethodObj)
+
 Method(_PTS, 1) {
 	/* DBGO("\\_PTS\n") */
 	/* DBGO("From S0 to S") */
@@ -46,6 +50,7 @@ Method(_PTS, 1) {
 	Store(0, Index(WKST,0))
 	Store(0, Index(WKST,1))
 	Store(7, UPWS)
+	\_SB.APTS(Arg0)
 } /* End Method(\_PTS) */
 
 /*
@@ -84,6 +89,7 @@ Method(\_WAK, 1) {
 	/* DBGO("From S") */
 	/* DBGO(Arg0) */
 	/* DBGO(" to S0\n") */
+	\_SB.AWAK(Arg0)
 
 	Return(WKST)
 } /* End Method(\_WAK) */

@@ -42,6 +42,7 @@ ramstage-y += lpe.c
 ramstage-y += scc.c
 ramstage-y += emmc.c
 ramstage-y += lpss.c
+ramstage-y += pcie.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

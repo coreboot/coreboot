@@ -5,6 +5,7 @@ cbfsobj += compress.o
 cbfsobj += cbfs_image.o
 cbfsobj += cbfs-mkstage.o
 cbfsobj += cbfs-mkpayload.o
+cbfsobj += xdr.o
 cbfsobj += fit.o
 # LZMA
 cbfsobj += lzma.o

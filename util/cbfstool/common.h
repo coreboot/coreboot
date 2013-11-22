@@ -131,6 +131,17 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 
 void print_supported_filetypes(void);
 
+/* xdr.c */
+struct xdr {
+	uint16_t (*get16)(struct buffer *input);
+	uint32_t (*get32)(struct buffer *input);
+	uint64_t (*get64)(struct buffer *input);
+	void (*put16)(struct buffer *input, uint16_t val);
+	void (*put32)(struct buffer *input, uint32_t val);
+	void (*put64)(struct buffer *input, uint64_t val);
+};
+
+extern struct xdr xdr_le, xdr_be;
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
 
 #endif

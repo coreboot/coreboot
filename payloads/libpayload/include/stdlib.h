@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2008 Advanced Micro Devices, Inc.
+ * Copyright 2013 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,7 +31,9 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
+#include <die.h>
 #include <stddef.h>
+#include <string.h>
 
 /**
  * @defgroup malloc Memory allocation functions
@@ -145,6 +148,27 @@ void *dma_memalign(size_t align, size_t size);
 void init_dma_memory(void *start, u32 size);
 int dma_initialized(void);
 int dma_coherent(void *ptr);
+
+static inline void *xmalloc_work(size_t size, const char *file,
+				 const char *func, int line)
+{
+	void *ret = malloc(size);
+	if (!ret && size) {
+		die_work(file, func, line, "Failed to malloc %zu bytes.\n",
+			 size);
+	}
+	return ret;
+}
+#define xmalloc(size) xmalloc_work((size), __FILE__, __FUNCTION__, __LINE__)
+
+static inline void *xzalloc_work(size_t size, const char *file,
+				 const char *func, int line)
+{
+	void *ret = xmalloc_work(size, file, func, line);
+	memset(ret, 0, size);
+	return ret;
+}
+#define xzalloc(size) xzalloc_work((size), __FILE__, __FUNCTION__, __LINE__)
 /** @} */
 
 /**

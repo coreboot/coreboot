@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (c) 2012 The Chromium OS Authors.
+ * Copyright 2013 Google Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,14 +27,16 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __IPCHKSUM_H__
-#define __IPCHKSUM_H__
+#include <libpayload.h>
 
-/**
- * @defgroup ipchecksum IP checksum functions
- * @{
- */
-unsigned short ipchksum(const void *ptr, unsigned long nbytes);
-/** @} */
+void die_work(const char *file, const char *func, const int line,
+	      const char *fmt, ...)
+{
+	va_list args;
 
-#endif
+	printf("%s:%d %s(): ", file, line, func);
+	va_start(args, fmt);
+	vprintf(fmt, args);
+	va_end(args);
+	abort();
+}

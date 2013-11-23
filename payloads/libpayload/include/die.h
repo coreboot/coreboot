@@ -1,7 +1,7 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright (c) 2012 The Chromium OS Authors.
+ * Copyright (C) 2013 coresystems GmbH
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,14 +27,19 @@
  * SUCH DAMAGE.
  */
 
-#ifndef __IPCHKSUM_H__
-#define __IPCHKSUM_H__
+#ifndef __DIE_H__
+#define __DIE_H__
 
-/**
- * @defgroup ipchecksum IP checksum functions
- * @{
- */
-unsigned short ipchksum(const void *ptr, unsigned long nbytes);
-/** @} */
+void die_work(const char *file, const char *func, const int line,
+	   const char *fmt, ...)
+	__attribute__((format (printf, 4, 5)))
+	__attribute__((noreturn));
 
-#endif
+#define die(fmt, args...) \
+	do { die_work(__FILE__, __FUNCTION__, __LINE__, fmt, ##args); } \
+	while (0)
+
+#define die_if(condition, fmt, args...) \
+	do { if (condition) die(fmt, ##args); } while (0)
+
+#endif /* __DIE_H__ */

@@ -36,6 +36,7 @@ libc-$(CONFIG_LP_LIBC) += args.c strings.c
 libc-$(CONFIG_LP_LIBC) += strlcpy.c
 libc-$(CONFIG_LP_LIBC) += qsort.c
 libc-$(CONFIG_LP_LIBC) += hexdump.c
+libc-$(CONFIG_LP_LIBC) += die.c
 
 # should be moved to coreboot directory
 libc-$(CONFIG_LP_LAR) += lar.c

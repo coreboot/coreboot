@@ -21,5 +21,19 @@
 #define __TYPES_H
 #include <stdint.h>
 #include <stddef.h>
-#endif
 
+/**
+ * Coreboot error codes
+ *
+ * When building functions that return a status or an error code, use cb_err as
+ * the return type. When failure reason needs to be communicated by the return
+ * value, define a it here. Start new enum groups with values in decrements of
+ * 100.
+ */
+enum cb_err {
+	CB_SUCCESS = 0,		/**< Call completed succesfully */
+	CB_ERR = -1,		/**< Generic error code */
+	CB_ERR_ARG = -2,	/**< Invalid argument */
+};
+
+#endif /* __TYPES_H */

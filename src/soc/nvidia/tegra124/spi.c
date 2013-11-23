@@ -710,17 +710,19 @@ static int xfer_finish(struct tegra_spi_channel *spi)
 	return ret;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bitsout, void *din, unsigned int bitsin)
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
 {
-	unsigned int out_bytes = bitsout / 8, in_bytes = bitsin / 8;
+	return buf_len;
+}
+
+int spi_xfer(struct spi_slave *slave, const void *dout,
+		unsigned int out_bytes, void *din, unsigned int in_bytes)
+{
 	struct tegra_spi_channel *spi = to_tegra_spi(slave->bus);
 	u8 *out_buf = (u8 *)dout;
 	u8 *in_buf = (u8 *)din;
 	unsigned int todo;
 	int ret = 0, frame_started = 1;
-
-	ASSERT(bitsout % 8 == 0 && bitsin % 8 == 0);
 
 	/* tegra bus numbers start at 1 */
 	ASSERT(slave->bus >= 1 && slave->bus <= ARRAY_SIZE(tegra_spi_channels));
@@ -842,19 +844,37 @@ static int tegra_spi_cbfs_close(struct cbfs_media *media)
 	return 0;
 }
 
-#define JEDEC_READ		0x03
-#define JEDEC_READ_OUTSIZE	0x04
-/*      JEDEC_READ_INSIZE : any length */
+#define JEDEC_READ			0x03
+#define JEDEC_READ_OUTSIZE		0x04
+#define JEDEC_FAST_READ_DUAL		0x3b
+#define JEDEC_FAST_READ_DUAL_OUTSIZE	0x05
 
 static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
 				   size_t offset, size_t count)
 {
 	struct tegra_spi_media *spi = (struct tegra_spi_media *)media->context;
-	u8 spi_read_cmd[JEDEC_READ_OUTSIZE];
+	u8 spi_read_cmd[JEDEC_FAST_READ_DUAL_OUTSIZE];
+	unsigned int read_cmd_bytes;
 	int ret = count;
+	struct tegra_spi_channel *channel;
 
-	/* TODO: Dual mode (BOTH_EN_BIT) and packed mode */
-	spi_read_cmd[0] = JEDEC_READ;
+	channel = to_tegra_spi(spi->slave->bus);
+
+	if (channel->dual_mode) {
+		/*
+		 * Command 0x3b will interleave data only, command 0xbb will
+		 * interleave the address as well. It's nice to see the address
+		 * plainly when debugging, and we're mostly concerned with
+		 * large transfers so the optimization of using 0xbb isn't
+		 * really worthwhile.
+		 */
+		spi_read_cmd[0] = JEDEC_FAST_READ_DUAL;
+		spi_read_cmd[4] = 0x00;	/* dummy byte */
+		read_cmd_bytes = JEDEC_FAST_READ_DUAL_OUTSIZE;
+	} else {
+		spi_read_cmd[0] = JEDEC_READ;
+		read_cmd_bytes = JEDEC_READ_OUTSIZE;
+	}
 	spi_read_cmd[1] = (offset >> 16) & 0xff;
 	spi_read_cmd[2] = (offset >> 8) & 0xff;
 	spi_read_cmd[3] = offset & 0xff;
@@ -863,18 +883,23 @@ static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
 	spi_cs_activate(spi->slave);
 
 	if (spi_xfer(spi->slave, spi_read_cmd,
-			sizeof(spi_read_cmd) * 8, NULL, 0) < 0) {
+			read_cmd_bytes, NULL, 0) < 0) {
 		ret = -1;
 		printk(BIOS_ERR, "%s: Failed to transfer %u bytes\n",
 				__func__, sizeof(spi_read_cmd));
 		goto tegra_spi_cbfs_read_exit;
 	}
 
-	if (spi_xfer(spi->slave, NULL, 0, dest, count * 8)) {
+	if (channel->dual_mode) {
+		setbits_le32(&channel->regs->command1, SPI_CMD1_BOTH_EN_BIT);
+	}
+	if (spi_xfer(spi->slave, NULL, 0, dest, count)) {
 		ret = -1;
 		printk(BIOS_ERR, "%s: Failed to transfer %u bytes\n",
 				__func__, count);
 	}
+	if (channel->dual_mode)
+		clrbits_le32(&channel->regs->command1, SPI_CMD1_BOTH_EN_BIT);
 
 tegra_spi_cbfs_read_exit:
 	/* de-assert /CS */
@@ -923,6 +948,10 @@ int initialize_tegra_spi_cbfs_media(struct cbfs_media *media,
 	media->read = tegra_spi_cbfs_read;
 	media->map = tegra_spi_cbfs_map;
 	media->unmap = tegra_spi_cbfs_unmap;
+
+#if CONFIG_SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B == 1
+	channel->dual_mode = 1;
+#endif
 
 	return 0;
 }

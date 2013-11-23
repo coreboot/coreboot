@@ -56,6 +56,7 @@ struct tegra_spi_channel {
 	/* stuff that is specific to the attached device */
 	int rx_frame_header_enable;
 	u8 frame_header;
+	int dual_mode;		/* for x2 transfers with bit interleaving */
 
 	/* context (used internally) */
 	u8 *in_buf, *out_buf;

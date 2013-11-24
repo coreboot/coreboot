@@ -34,6 +34,13 @@ enum cb_err {
 	CB_SUCCESS = 0,		/**< Call completed succesfully */
 	CB_ERR = -1,		/**< Generic error code */
 	CB_ERR_ARG = -2,	/**< Invalid argument */
+
+	/* NVRAM/CMOS errors */
+	CB_CMOS_OTABLE_DISABLED = -100,		/**< Option table disabled */
+	CB_CMOS_LAYOUT_NOT_FOUND = -101,	/**< Layout file not found */
+	CB_CMOS_OPTION_NOT_FOUND = -102,	/**< Option string not found */
+	CB_CMOS_ACCESS_ERROR = -103,		/**< CMOS access error */
+	CB_CMOS_CHECKSUM_INVALID = -104,	/**< CMOS checksum is invalid */
 };
 
 #endif /* __TYPES_H */

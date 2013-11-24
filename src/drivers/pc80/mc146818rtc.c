@@ -150,9 +150,10 @@ void rtc_init(int invalid)
 	      length = number of bits to include in the value
 	      ret = a character pointer to where the value is to be returned
 	output the value placed in ret
-	      returns 0 = successful, -1 = an error occurred
+	      returns CB_SUCCESS = successful, cb_err code if an error occurred
 */
-static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
+static enum cb_err get_cmos_value(unsigned long bit, unsigned long length,
+				  void *vret)
 {
 	unsigned char *ret;
 	unsigned long byte,byte_bit;
@@ -176,10 +177,10 @@ static int get_cmos_value(unsigned long bit, unsigned long length, void *vret)
 			ret[i]=cmos_read(byte);
 		}
 	}
-	return 0;
+	return CB_SUCCESS;
 }
 
-int get_option(void *dest, const char *name)
+enum cb_err get_option(void *dest, const char *name)
 {
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
@@ -195,7 +196,7 @@ int get_option(void *dest, const char *name)
 	if (!ct) {
 		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
 						"Options are disabled\n");
-		return(-2);
+		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
 	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
 	for(;ce->tag==LB_TAG_OPTION;
@@ -207,18 +208,18 @@ int get_option(void *dest, const char *name)
 	}
 	if(!found) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
-		return(-2);
+		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
-	if(get_cmos_value(ce->bit, ce->length, dest))
-		return(-3);
-	if(!rtc_checksum_valid(LB_CKS_RANGE_START,
-			LB_CKS_RANGE_END,LB_CKS_LOC))
-		return(-4);
-	return(0);
+	if(get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS)
+		return CB_CMOS_ACCESS_ERROR;
+	if(!rtc_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END,LB_CKS_LOC))
+		return CB_CMOS_CHECKSUM_INVALID;
+	return CB_SUCCESS;
 }
 
-static int set_cmos_value(unsigned long bit, unsigned long length, void *vret)
+static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
+				  void *vret)
 {
 	unsigned char *ret;
 	unsigned long byte,byte_bit;
@@ -241,7 +242,7 @@ static int set_cmos_value(unsigned long bit, unsigned long length, void *vret)
 			chksum_update_needed = 1;
 	} else {			/* more that one byte so transfer the whole bytes */
 		if (byte_bit || length % 8)
-			return -1;
+			return CB_ERR_ARG;
 
 		for(i=0; length; i++, length-=8, byte++)
 			cmos_write(ret[i], byte);
@@ -253,11 +254,11 @@ static int set_cmos_value(unsigned long bit, unsigned long length, void *vret)
 		rtc_set_checksum(LB_CKS_RANGE_START,
 			LB_CKS_RANGE_END,LB_CKS_LOC);
 	}
-	return 0;
+	return CB_SUCCESS;
 }
 
 
-int set_option(const char *name, void *value)
+enum cb_err set_option(const char *name, void *value)
 {
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
@@ -273,7 +274,7 @@ int set_option(const char *name, void *value)
 				   CBFS_COMPONENT_CMOS_LAYOUT);
 	if (!ct) {
 		printk(BIOS_ERR, "cmos_layout.bin could not be found. Options are disabled\n");
-		return(-2);
+		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
 	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
 	for(;ce->tag==LB_TAG_OPTION;
@@ -285,21 +286,22 @@ int set_option(const char *name, void *value)
 	}
 	if(!found) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
-		return(-2);
+		return CB_CMOS_OPTION_NOT_FOUND;
 	}
 
 	length = ce->length;
 	if (ce->config == 's') {
 		length = MAX(strlen((const char *)value) * 8, ce->length - 8);
 		/* make sure the string is null terminated */
-		if ((set_cmos_value(ce->bit + ce->length - 8, 8, &(u8[]){0})))
-			return (-3);
+		if (set_cmos_value(ce->bit + ce->length - 8, 8, &(u8[]){0})
+		    != CB_SUCCESS)
+			return (CB_CMOS_ACCESS_ERROR);
 	}
 
-	if ((set_cmos_value(ce->bit, length, value)))
-		return (-3);
+	if (set_cmos_value(ce->bit, length, value) != CB_SUCCESS)
+		return (CB_CMOS_ACCESS_ERROR);
 
-	return 0;
+	return CB_SUCCESS;
 }
 #endif /* CONFIG_USE_OPTION_TABLE */
 

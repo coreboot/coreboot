@@ -1,6 +1,8 @@
 #ifndef PC80_MC146818RTC_H
 #define PC80_MC146818RTC_H
 
+#include <types.h>
+
 #ifndef RTC_BASE_PORT
 #define RTC_BASE_PORT 0x70
 #endif
@@ -171,13 +173,16 @@ static inline void cmos_write32(u8 offset, u32 value)
 void rtc_init(int invalid);
 void rtc_check_update_cmos_date(u8 has_century);
 #if CONFIG_USE_OPTION_TABLE
-int set_option(const char *name, void *val);
-int get_option(void *dest, const char *name);
+enum cb_err set_option(const char *name, void *val);
+enum cb_err get_option(void *dest, const char *name);
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
 #else
-static inline int set_option(const char *name __attribute__((unused)), void *val __attribute__((unused))) { return -2; };
-static inline int get_option(void *dest __attribute__((unused)),
-	const char *name __attribute__((unused))) { return -2; }
+static inline enum cb_err set_option(const char *name __attribute__((unused)),
+				     void *val __attribute__((unused)))
+				{ return CB_CMOS_OTABLE_DISABLED; };
+static inline enum cb_err get_option(void *dest __attribute__((unused)),
+				     const char *name __attribute__((unused)))
+				{ return CB_CMOS_OTABLE_DISABLED; }
 #define read_option_lowlevel(start, size, def) def
 #endif
 #else

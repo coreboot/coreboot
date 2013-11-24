@@ -543,7 +543,7 @@ static void vt8237_common_init(struct device *dev)
 	}
 
 	/* configure power state of the board after loss of power */
-	if (get_option(&pwr_on, "power_on_after_fail") < 0)
+	if (get_option(&pwr_on, "power_on_after_fail") != CB_SUCCESS)
 		pwr_on = 1;
 	enables = pci_read_config8(dev, 0x58);
 	pci_write_config8(dev, 0x58, enables & ~0x02);

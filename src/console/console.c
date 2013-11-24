@@ -24,6 +24,7 @@
 
 #ifndef __PRE_RAM__
 #include <string.h>
+#include <types.h>
 
 /*
  * FIXME: get_option() needs to be abstracted better so that other non-volatile
@@ -33,14 +34,15 @@
 #if CONFIG_USE_OPTION_TABLE
 #include <pc80/mc146818rtc.h>
 #else
-static inline int get_option(void *dest, const char *name) { return -1; }
+static inline enum cb_err get_option(void *dest, const char *name)
+				{ return CB_CMOS_OTABLE_DISABLED; }
 #endif
 
 /* initialize the console */
 void console_init(void)
 {
 	struct console_driver *driver;
-	if(get_option(&console_loglevel, "debug_level"))
+	if(get_option(&console_loglevel, "debug_level") != CB_SUCCESS)
 		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {

@@ -245,10 +245,8 @@ static void init_ecc_memory(unsigned node_id)
 
 	/* See if we scrubbing should be enabled */
 	enable_scrubbing = 1;
-	if( get_option(&enable_scrubbing, "hw_scrubber") < 0 )
-	{
+	if (get_option(&enable_scrubbing, "hw_scrubber") != CB_SUCCESS)
 		enable_scrubbing = CONFIG_HW_SCRUBBER;
-	}
 
 	/* Enable cache scrubbing at the lowest possible rate */
 	if (enable_scrubbing) {

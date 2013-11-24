@@ -172,14 +172,14 @@ static void h8_enable(device_t dev)
 	h8_trackpoint_enable(conf->trackpoint_enable);
 	h8_usb_power_enable(1);
 
-	if (!get_option(&val, "volume"))
+	if (get_option(&val, "volume") == CB_SUCCESS)
 		ec_write(H8_VOLUME_CONTROL, val);
 
 
-	if (!get_option(&val, "bluetooth"))
+	if (get_option(&val, "bluetooth") == CB_SUCCESS)
 		h8_bluetooth_enable(val);
 
-	if (!get_option(&val, "first_battery")) {
+	if (get_option(&val, "first_battery") == CB_SUCCESS) {
 		tmp = ec_read(H8_CONFIG3);
 		tmp &= ~(1 << 4);
 		tmp |= (val & 1)<< 4;

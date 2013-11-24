@@ -118,9 +118,8 @@ u32 uart_mem_init(void)
 	b_index &= 7;
 	uart_baud = baud[b_index];
 #else
-	if (get_option(&b_index, "baud_rate") == 0) {
+	if (get_option(&b_index, "baud_rate") == CB_SUCCESS)
 		uart_baud = baud[b_index];
-	}
 #endif
 #endif
 

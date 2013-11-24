@@ -26,7 +26,7 @@ void cbmemc_tx_byte(unsigned char data);
 #else
 #define cbmemc_init()
 #define cbmemc_reinit()
-#define cbmemc_tx_byte()
+#define cbmemc_tx_byte(x)
 #endif
 
 #endif

@@ -94,7 +94,7 @@ static void gma_func1_init(struct device *dev)
 	pci_write_config32(dev, PCI_COMMAND, reg32 |
 			PCI_COMMAND_MASTER | PCI_COMMAND_IO);
 
-	if (!get_option(&val, "tft_brightness"))
+	if (get_option(&val, "tft_brightness") == CB_SUCCESS)
 		pci_write_config8(dev, 0xf4, val);
 	else
 		pci_write_config8(dev, 0xf4, 0xff);

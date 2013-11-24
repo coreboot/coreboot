@@ -119,7 +119,7 @@ static void sata_init(struct device *dev)
 	pci_write_config8(dev, 0x40, byte);
 
 	// 1 means IDE, 0 means AHCI
-	if( get_option(&i, "sata_mode") < 0 ) {
+	if (get_option(&i, "sata_mode") != CB_SUCCESS) {
 		// no cmos option
 		i = CONFIG_SATA_MODE;
 	}

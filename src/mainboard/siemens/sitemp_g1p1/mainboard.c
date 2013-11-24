@@ -448,11 +448,11 @@ static void set_thermal_config(void)
 	cpu_fan_control = cpu_fan_control_defaults;
 	case_fan_control = case_fan_control_defaults;
 
-	if( get_option(&byte, "cpu_fan_control") == -4 ) {
+	if (get_option(&byte, "cpu_fan_control") == CB_CMOS_CHECKSUM_INVALID) {
 		printk(BIOS_WARNING, "%s: CMOS checksum invalid, keeping default values\n",__func__);
 	} else {
 		// get all the options needed
-		if( get_option(&byte, "cpu_fan_control") == 0 )
+		if( get_option(&byte, "cpu_fan_control") == CB_SUCCESS )
 			cpu_fan_control.enable = byte ? 1 : 0;
 
 		get_option(&cpu_fan_control.polarity, "cpu_fan_polarity");
@@ -461,7 +461,7 @@ static void set_thermal_config(void)
 		get_option(&cpu_fan_control.pwm_min, "cpu_dutycycle_min");
 		get_option(&cpu_fan_control.pwm_max, "cpu_dutycycle_max");
 
-		if( get_option(&byte, "chassis_fan_control") == 0)
+		if( get_option(&byte, "chassis_fan_control") == CB_SUCCESS)
 			case_fan_control.enable = byte ? 1 : 0;
 		get_option(&case_fan_control.polarity, "chassis_fan_polarity");
 		get_option(&case_fan_control.t_min, "chassis_t_min");
@@ -816,7 +816,7 @@ static void mainboard_init(device_t dev)
 		dev_name(dev), dev_path(dev), dev->subsystem_vendor, dev->subsystem_device, __func__);
 
 #if CONFIG_PCI_OPTION_ROM_RUN_REALMODE
-	if(	get_option(&int15_func.regs.func00_LCD_panel_id, "lcd_panel_id") < 0 )
+	if (get_option(&int15_func.regs.func00_LCD_panel_id, "lcd_panel_id") != CB_SUCCESS)
 		int15_func.regs.func00_LCD_panel_id = PANEL_TABLE_ID_NO;
 	int15_func.regs.func05_TV_standard = TV_MODE_NO;
 	install_INT15_function_extensions(&int15_func);

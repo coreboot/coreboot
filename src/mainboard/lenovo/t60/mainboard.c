@@ -78,7 +78,7 @@ static void mainboard_enable(device_t dev)
 	ec_write(0x0c, 0x08);
 	ec_write(0x0c, inb(0x164c) & 8 ? 0x89 : 0x09);
 
-	if (get_option(&defaults_loaded, "cmos_defaults_loaded") < 0) {
+	if (get_option(&defaults_loaded, "cmos_defaults_loaded") != CB_SUCCESS) {
 		printk(BIOS_INFO, "failed to get cmos_defaults_loaded");
 		defaults_loaded = 0;
 	}

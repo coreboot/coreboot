@@ -116,18 +116,18 @@ static void hwm_setup(void)
 	int cpufan_speed = 0, sysfan_speed = 0;
 	int cpufan_temperature = 0, sysfan_temperature = 0;
 
-	if (get_option(&cpufan_control, "cpufan_cruise_control") < 0)
+	if (get_option(&cpufan_control, "cpufan_cruise_control") != CB_SUCCESS)
 		cpufan_control = FAN_CRUISE_CONTROL_DISABLED;
-	if (get_option(&cpufan_speed, "cpufan_speed") < 0)
+	if (get_option(&cpufan_speed, "cpufan_speed") != CB_SUCCESS)
 		cpufan_speed = FAN_SPEED_5625;
-	//if (get_option(&cpufan_temperature, "cpufan_temperature") < 0)
+	//if (get_option(&cpufan_temperature, "cpufan_temperature") != CB_SUCCESS)
 	//	cpufan_temperature = FAN_TEMPERATURE_30DEGC;
 
-	if (get_option(&sysfan_control, "sysfan_cruise_control") < 0)
+	if (get_option(&sysfan_control, "sysfan_cruise_control") != CB_SUCCESS)
 		sysfan_control = FAN_CRUISE_CONTROL_DISABLED;
-	if (get_option(&sysfan_speed, "sysfan_speed") < 0)
+	if (get_option(&sysfan_speed, "sysfan_speed") != CB_SUCCESS)
 		sysfan_speed = FAN_SPEED_5625;
-	//if (get_option(&sysfan_temperature, "sysfan_temperature") < 0)
+	//if (get_option(&sysfan_temperature, "sysfan_temperature") != CB_SUCCESS)
 	//	sysfan_temperature = FAN_TEMPERATURE_30DEGC;
 
 	// hwm_write(0x31, 0x20); // AVCC high limit

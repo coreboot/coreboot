@@ -123,9 +123,8 @@ void uart_init(void)
 	b_index &= 7;
 	div = divisor[b_index];
 #else
-	if (get_option(&b_index, "baud_rate") == 0) {
+	if (get_option(&b_index, "baud_rate") == CB_SUCCESS)
 		div = divisor[b_index];
-	}
 #endif
 #endif
 

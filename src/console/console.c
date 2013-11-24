@@ -40,7 +40,7 @@ static inline int get_option(void *dest, const char *name) { return -1; }
 void console_init(void)
 {
 	struct console_driver *driver;
-	if(get_option(&console_loglevel, "debug_level"))
+	if(get_option(&console_loglevel, "debug_level") != CB_SUCCESS)
 		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {

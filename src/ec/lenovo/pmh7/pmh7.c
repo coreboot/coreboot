@@ -113,7 +113,7 @@ static void enable_dev(device_t dev)
 	pmh7_backlight_enable(conf->backlight_enable);
 	pmh7_dock_event_enable(conf->dock_event_enable);
 
-	if (!get_option(&val, "touchpad"))
+	if (get_option(&val, "touchpad") == CB_SUCCESS)
 		pmh7_touchpad_enable(val);
 }
 

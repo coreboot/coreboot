@@ -1,0 +1,29 @@
+menu "Architecture (aarch64)"
+
+config ARM_AARCH64_OPTIONS
+	bool
+	default y
+#	select HAVE_ARCH_MEMSET
+#	select HAVE_ARCH_MEMCPY
+#	select HAVE_ARCH_MEMMOVE
+
+# Maximum reboot count
+# TODO: Improve description.
+config MAX_REBOOT_CNT
+	int
+	default 3
+
+config BOOTBLOCK_SOURCE
+	string
+	default "bootblock_simple.c"
+
+config UPDATE_IMAGE
+	bool "Update existing coreboot.rom image"
+	default n
+	help
+	  If this option is enabled, no new coreboot.rom file
+	  is created. Instead it is expected that there already
+	  is a suitable file for further processing.
+	  The bootblock will not be modified.
+
+endmenu

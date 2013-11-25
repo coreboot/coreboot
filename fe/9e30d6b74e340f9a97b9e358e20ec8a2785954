@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Ronald G. Minnich <rminnich@gmail.com>
+Code-Review+1: Vladimir Serbinenko <phcoder@gmail.com>
+Submitted-by: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Submitted-at: Mon, 25 Nov 2013 23:59:46 +0100
+Reviewed-on: http://review.coreboot.org/4264
+Project: coreboot
+Branch: refs/heads/master

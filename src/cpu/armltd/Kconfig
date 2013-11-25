@@ -6,3 +6,12 @@ config CPU_ARMLTD_CORTEX_A9
 if CPU_ARMLTD_CORTEX_A9
 source src/cpu/armltd/cortex-a9/Kconfig
 endif
+
+config CPU_ARMLTD_ARMV8
+	depends on ARCH_AARCH64
+	bool
+	default n
+
+if CPU_ARMLTD_ARMV8
+source src/cpu/armltd/armv8/Kconfig
+endif

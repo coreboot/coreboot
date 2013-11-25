@@ -227,6 +227,10 @@ config ARCH_ARMV7
 	bool
 	default n
 
+config ARCH_AARCH64
+	bool
+	default n
+
 # Warning: The file is included whether or not the if is here.
 # but the if controls how the evaluation occurs.
 if ARCH_X86
@@ -235,6 +239,10 @@ endif
 
 if ARCH_ARMV7
 source src/arch/armv7/Kconfig
+endif
+
+if ARCH_AARCH64
+source src/arch/aarch64/Kconfig
 endif
 
 config HAVE_ARCH_MEMSET

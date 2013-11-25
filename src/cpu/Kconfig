@@ -1,13 +1,19 @@
 # Warning: This file is included whether or not the if is here.
 # The if controls how the evaluation occurs.
 # (See also src/Kconfig)
-if ARCH_ARMV7
+
 
 source src/cpu/armltd/Kconfig
+
+# I'm not certain these should be here or in
+# src/cpu/armltd/Kconfig.
+
+if ARCH_ARMV7
+
 source src/cpu/samsung/Kconfig
 source src/cpu/ti/Kconfig
 
-endif	# ARCH_ARM
+endif	# ARCH_ARMV7
 
 if ARCH_X86
 

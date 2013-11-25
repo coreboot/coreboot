@@ -52,7 +52,7 @@ tarballs/
 *~
 *.kate-swp
 # Ignore Kdevelop project file
-.kdev4
+*.kdev4
 
 util/*/.dependencies
 util/*/.test

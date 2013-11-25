@@ -41,7 +41,6 @@
 
 static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
 static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
-static u32 addr   = 0;
 
 static void bochs_write(int index, int val)
 {
@@ -57,7 +56,9 @@ static int bochs_read(int index)
 
 static void bochs_init(device_t dev)
 {
+	struct edid edid;
 	int id, mem, bar;
+	u32 addr;
 
 	/* bochs dispi detection */
 	id = bochs_read(VBE_DISPI_INDEX_ID);
@@ -101,7 +102,8 @@ static void bochs_init(device_t dev)
 		    VBE_DISPI_ENABLED | VBE_DISPI_LFB_ENABLED);
 
 	outb(0x20, 0x3c0); /* disable blanking */
-	struct edid edid;
+
+	/* setup coreboot framebuffer */
 	edid.ha = width;
 	edid.va = height;
 	edid.bpp = 32;

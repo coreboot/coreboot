@@ -10,6 +10,14 @@ config DRIVERS_EMULATION_QEMU_BOCHS
 	   vga (cirrus) is *not* supported, so you have to
 	   pick another one explicitly via 'qemu -vga $card'.
 
+config DRIVERS_EMULATION_QEMU_CIRRUS
+	bool "cirrus vga driver"
+	default y
+	depends on BOARD_EMULATION_QEMU_X86
+	depends on MAINBOARD_DO_NATIVE_VGA_INIT
+	help
+	   VGA driver for qemu emulated cirrus vga card.
+
 config DRIVERS_EMULATION_QEMU_BOCHS_XRES
 	int "bochs vga xres"
 	default 800

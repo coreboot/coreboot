@@ -1,1 +1,2 @@
 ramstage-$(CONFIG_DRIVERS_EMULATION_QEMU_BOCHS) += bochs.c
+ramstage-$(CONFIG_DRIVERS_EMULATION_QEMU_CIRRUS) += cirrus.c

@@ -1,0 +1,106 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2013 Google Inc.
+##
+## This software is licensed under the terms of the GNU General Public
+## License version 2, as published by the Free Software Foundation, and
+## may be copied, distributed, and modified under those terms.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+if BOARD_EMULATION_FOUNDATION_ARMV8
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_AARCH64
+	select CPU_ARMLTD_ARMV8
+	select HAVE_UART_MEMORY_MAPPED
+	select HAVE_UART_SPECIAL
+	select BOARD_ROMSIZE_KB_4096
+
+config MAINBOARD_DIR
+	string
+	default emulation/foundation-armv8
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "FOUNDATION ARMV8"
+
+config MAX_CPUS
+	int
+	default 1
+
+config MAINBOARD_VENDOR
+	string
+	default "ARM Ltd."
+
+config BOOTBLOCK_MAINBOARD_INIT
+	string
+	default "mainboard/emulation/foundation-armv8/bootblock.c"
+
+config DRAM_SIZE_MB
+	int
+	default 1024
+
+# Memory map
+#
+# 0xA000_0000: first instruction (called from BL3)
+
+config BOOTBLOCK_BASE
+	hex
+	default 0xA0000000
+
+config ID_SECTION_BASE
+	hex
+	default 0xA001f000
+
+config ROMSTAGE_BASE
+	hex
+	default 0xA0020000
+
+config ROMSTAGE_SIZE
+	hex
+	default 0x20000
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x0
+
+config CBFS_HEADER_ROM_OFFSET
+	hex
+	default 0x0100000
+
+config CBFS_ROM_OFFSET
+	hex
+	default 0x0110000
+
+config IRAM_STACK
+	hex
+	default 0x0007ff00
+
+config XIP_ROM_SIZE
+	hex
+	default ROMSTAGE_SIZE
+
+config SYS_SDRAM_BASE
+	hex "SDRAM base address"
+	default 0x01000000
+
+config SYS_TEXT_BASE
+	hex "Executable code section"
+	default 0x04e00000
+
+config RAMBASE
+	hex
+	default SYS_SDRAM_BASE
+
+# according to stefan, this is RAMBASE + 1M.
+config RAMTOP
+	hex
+	default 0x01100000
+
+endif #  BOARD_EMULATION_FOUNDATION_ARMV8

@@ -58,4 +58,8 @@ config SEABIOS_PS2_TIMEOUT
 	int
 	default 3000
 
+config THINKPAD_EC_GPE
+	int
+	default 28
+
 endif

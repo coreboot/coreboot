@@ -20,19 +20,13 @@
  * MA 02110-1301 USA
  */
 
-#include <kconfig.h>
 #include "smi.h"
-#if IS_ENABLED (CONFIG_BOARD_LENOVO_X201)
-#define THINKPAD_EC_GPE 17
-#else
-#define THINKPAD_EC_GPE 28
-#endif
 Device(EC)
 {
 	Name (_HID, EISAID("PNP0C09"))
 	Name (_UID, 0)
 
-	Name (_GPE, THINKPAD_EC_GPE)
+	Name (_GPE, CONFIG_THINKPAD_EC_GPE)
 	Mutex (ECLK, 0)
 
 	OperationRegion(ERAM, EmbeddedControl, 0x00, 0x100)

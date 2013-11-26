@@ -26,7 +26,7 @@
 #include <device/pci_ids.h>
 #include "pch.h"
 
-typedef struct southbridge_intel_bd82x6x_config config_t;
+typedef struct southbridge_intel_ibexpeak_config config_t;
 
 static inline u32 sir_read(struct device *dev, int idx)
 {

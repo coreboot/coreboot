@@ -32,8 +32,6 @@
 #define HDA_ICII_BUSY (1 << 0)
 #define HDA_ICII_VALID (1 << 1)
 
-typedef struct southbridge_intel_bd82x6x_config config_t;
-
 static int set_bits(u32 port, u32 mask, u32 val)
 {
 	u32 reg32;

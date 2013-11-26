@@ -163,15 +163,15 @@ void x86emu_inc_decoded_inst_len (int x)
 
 void x86emu_decode_printf (const char *x)
 {
-    sprintf(M.x86.decoded_buf+M.x86.enc_str_pos,"%s",x);
+    strcpy(M.x86.decoded_buf+M.x86.enc_str_pos,x);
     M.x86.enc_str_pos += strlen(x);
 }
 
 void x86emu_decode_printf2 (const char *x, int y)
 {
     char temp[100];
-    sprintf(temp,x,y);
-    sprintf(M.x86.decoded_buf+M.x86.enc_str_pos,"%s",temp);
+    snprintf(temp, sizeof (temp), x,y);
+    strcpy(M.x86.decoded_buf+M.x86.enc_str_pos,temp);
     M.x86.enc_str_pos += strlen(temp);
 }
 
@@ -186,7 +186,7 @@ static void print_encoded_bytes (u16 s, u16 o)
     int i;
     char buf1[64];
     for (i=0; i< M.x86.enc_pos; i++) {
-        sprintf(buf1+2*i,"%02x", fetch_data_byte_abs(s,o+i));
+	    snprintf(buf1+2*i, 64 - 2 * i, "%02x", fetch_data_byte_abs(s,o+i));
     }
     printf("%-20s ",buf1);
 }

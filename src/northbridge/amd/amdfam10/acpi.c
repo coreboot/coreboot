@@ -313,7 +313,7 @@ static void update_sspr(void *sspr, u32 nodeid, u32 cpuindex)
 	CONTROL = sspr + 0x8d;
 	STATUS = sspr + 0x8f;
 
-	sprintf((char*)CPU, "%02x", (char)cpuindex);
+	snprintf((char*)CPU, 3, "%02x", (char)cpuindex);
 	*CPUIN = (u8) cpuindex;
 
 	for(i=0;i<sysconf.p_state_num;i++) {

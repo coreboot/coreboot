@@ -400,7 +400,7 @@ static void set_resource(device_t dev, struct resource *resource, u32 nodeid)
 		set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, node_nums) ;// [39:8]
 	}
 	resource->flags |= IORESOURCE_STORED;
-	sprintf(buf, " <node %x link %x>",
+	snprintf(buf, sizeof (buf), " <node %x link %x>",
 			nodeid, link_num);
 	report_resource_stored(dev, resource, buf);
 }

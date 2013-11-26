@@ -88,7 +88,7 @@ static int ioread = 0, iowrite = 0;
 static char *regname(unsigned long addr)
 {
 	static char name[16];
-	sprintf(name, "0x%lx", addr);
+	snprintf(name, sizeof (name), "0x%lx", addr);
 	return name;
 }
 

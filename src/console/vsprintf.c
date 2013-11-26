@@ -20,32 +20,32 @@
  */
 
 #include <string.h>
-#include <smp/spinlock.h>
 #include <console/vtxprintf.h>
 #include <trace.h>
 
-DECLARE_SPIN_LOCK(vsprintf_lock)
-
-static char *str_buf;
-
-static void str_tx_byte(unsigned char byte)
+struct context
 {
-	*str_buf = byte;
-	str_buf++;
+	char *str_buf;
+};
+
+static void str_tx_byte(unsigned char byte, void *data)
+{
+	struct context *ctx = data;
+	*ctx->str_buf = byte;
+	ctx->str_buf++;
 }
 
 static int vsprintf(char *buf, const char *fmt, va_list args)
 {
 	int i;
+	struct context ctx;
 
 	DISABLE_TRACE;
-	spin_lock(&vsprintf_lock);
 
-	str_buf = buf;
-	i = vtxprintf(str_tx_byte, fmt, args);
-	*str_buf = '\0';
+	ctx.str_buf = buf;
+	i = vtxdprintf(str_tx_byte, fmt, args, &ctx);
+	*ctx.str_buf = '\0';
 
-	spin_unlock(&vsprintf_lock);
 	ENABLE_TRACE;
 
 	return i;

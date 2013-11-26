@@ -57,20 +57,6 @@ static int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 	return i;
 }
 
-int sprintf(char *buf, const char *fmt, ...)
-{
-	va_list args;
-	int i;
-
-	va_start(args, fmt);
-	/* A trick: we have at most (size_t)-1 adressable space anyway, so
-	   if we output so much we'll crash anyway.  */
-	i = vsnprintf(buf, -1, fmt, args);
-	va_end(args);
-
-	return i;
-}
-
 int snprintf(char *buf, size_t size, const char *fmt, ...)
 {
 	va_list args;

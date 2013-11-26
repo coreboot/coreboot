@@ -274,7 +274,8 @@ int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 	acpigen_emit_byte(0x83);
 	len = acpigen_write_len_f();
 
-	sprintf(pscope, "\\_PR.CPU%x", (unsigned int) cpuindex);
+	snprintf(pscope, sizeof (pscope),
+		 "\\_PR.CPU%x", (unsigned int) cpuindex);
 	len += acpigen_emit_namestring(pscope);
 	acpigen_emit_byte(cpuindex);
 	acpigen_emit_byte(pblock_addr & 0xff);

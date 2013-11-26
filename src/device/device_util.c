@@ -176,48 +176,52 @@ const char *dev_path(device_t dev)
 			break;
 		case DEVICE_PATH_PCI:
 #if CONFIG_PCI_BUS_SEGN_BITS
-			sprintf(buffer, "PCI: %04x:%02x:%02x.%01x",
-				dev->bus->secondary >> 8,
-				dev->bus->secondary & 0xff,
-				PCI_SLOT(dev->path.pci.devfn),
-				PCI_FUNC(dev->path.pci.devfn));
+			snprintf(buffer, sizeof (buffer),
+				 "PCI: %04x:%02x:%02x.%01x",
+				 dev->bus->secondary >> 8,
+				 dev->bus->secondary & 0xff,
+				 PCI_SLOT(dev->path.pci.devfn),
+				 PCI_FUNC(dev->path.pci.devfn));
 #else
-			sprintf(buffer, "PCI: %02x:%02x.%01x",
-				dev->bus->secondary,
-				PCI_SLOT(dev->path.pci.devfn),
-				PCI_FUNC(dev->path.pci.devfn));
+			snprintf(buffer, sizeof (buffer),
+				 "PCI: %02x:%02x.%01x",
+				 dev->bus->secondary,
+				 PCI_SLOT(dev->path.pci.devfn),
+				 PCI_FUNC(dev->path.pci.devfn));
 #endif
 			break;
 		case DEVICE_PATH_PNP:
-			sprintf(buffer, "PNP: %04x.%01x",
-				dev->path.pnp.port, dev->path.pnp.device);
+			snprintf(buffer, sizeof (buffer), "PNP: %04x.%01x",
+				 dev->path.pnp.port, dev->path.pnp.device);
 			break;
 		case DEVICE_PATH_I2C:
-			sprintf(buffer, "I2C: %02x:%02x",
-				dev->bus->secondary,
-				dev->path.i2c.device);
+			snprintf(buffer, sizeof (buffer), "I2C: %02x:%02x",
+				 dev->bus->secondary,
+				 dev->path.i2c.device);
 			break;
 		case DEVICE_PATH_APIC:
-			sprintf(buffer, "APIC: %02x",
-				dev->path.apic.apic_id);
+			snprintf(buffer, sizeof (buffer), "APIC: %02x",
+				 dev->path.apic.apic_id);
 			break;
 		case DEVICE_PATH_IOAPIC:
-			sprintf(buffer, "IOAPIC: %02x",
-				dev->path.ioapic.ioapic_id);
+			snprintf(buffer, sizeof (buffer), "IOAPIC: %02x",
+				 dev->path.ioapic.ioapic_id);
 			break;
 		case DEVICE_PATH_DOMAIN:
-			sprintf(buffer, "DOMAIN: %04x",
+			snprintf(buffer, sizeof (buffer), "DOMAIN: %04x",
 				dev->path.domain.domain);
 			break;
 		case DEVICE_PATH_CPU_CLUSTER:
-			sprintf(buffer, "CPU_CLUSTER: %01x",
+			snprintf(buffer, sizeof (buffer), "CPU_CLUSTER: %01x",
 				dev->path.cpu_cluster.cluster);
 			break;
 		case DEVICE_PATH_CPU:
-			sprintf(buffer, "CPU: %02x", dev->path.cpu.id);
+			snprintf(buffer, sizeof (buffer),
+				 "CPU: %02x", dev->path.cpu.id);
 			break;
 		case DEVICE_PATH_CPU_BUS:
-			sprintf(buffer, "CPU_BUS: %02x", dev->path.cpu_bus.id);
+			snprintf(buffer, sizeof (buffer),
+				 "CPU_BUS: %02x", dev->path.cpu_bus.id);
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",
@@ -241,7 +245,8 @@ const char *dev_name(device_t dev)
 const char *bus_path(struct bus *bus)
 {
 	static char buffer[BUS_PATH_MAX];
-	sprintf(buffer, "%s,%d", dev_path(bus->dev), bus->link_num);
+	snprintf(buffer, sizeof (buffer),
+		 "%s,%d", dev_path(bus->dev), bus->link_num);
 	return buffer;
 }
 
@@ -529,15 +534,15 @@ resource_t resource_max(struct resource *resource)
 const char *resource_type(struct resource *resource)
 {
 	static char buffer[RESOURCE_TYPE_MAX];
-	sprintf(buffer, "%s%s%s%s",
-		((resource->flags & IORESOURCE_READONLY) ? "ro" : ""),
-		((resource->flags & IORESOURCE_PREFETCH) ? "pref" : ""),
-		((resource->flags == 0) ? "unused" :
-		(resource->flags & IORESOURCE_IO) ? "io" :
-		(resource->flags & IORESOURCE_DRQ) ? "drq" :
-		(resource->flags & IORESOURCE_IRQ) ? "irq" :
-		(resource->flags & IORESOURCE_MEM) ? "mem" : "??????"),
-		((resource->flags & IORESOURCE_PCI64) ? "64" : ""));
+	snprintf(buffer, sizeof (buffer), "%s%s%s%s",
+		 ((resource->flags & IORESOURCE_READONLY) ? "ro" : ""),
+		 ((resource->flags & IORESOURCE_PREFETCH) ? "pref" : ""),
+		 ((resource->flags == 0) ? "unused" :
+		  (resource->flags & IORESOURCE_IO) ? "io" :
+		  (resource->flags & IORESOURCE_DRQ) ? "drq" :
+		  (resource->flags & IORESOURCE_IRQ) ? "irq" :
+		  (resource->flags & IORESOURCE_MEM) ? "mem" : "??????"),
+		 ((resource->flags & IORESOURCE_PCI64) ? "64" : ""));
 	return buffer;
 }
 
@@ -563,10 +568,12 @@ void report_resource_stored(device_t dev, struct resource *resource,
 
 	if (resource->flags & IORESOURCE_PCI_BRIDGE) {
 #if CONFIG_PCI_BUS_SEGN_BITS
-		sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
+		snprintf(buf, sizeof (buf),
+			 "bus %04x:%02x ", dev->bus->secondary >> 8,
 			dev->link_list->secondary & 0xff);
 #else
-		sprintf(buf, "bus %02x ", dev->link_list->secondary);
+		snprintf(buf, sizeof (buf),
+			 "bus %02x ", dev->link_list->secondary);
 #endif
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] size 0x%08llx "
@@ -775,10 +782,12 @@ void show_one_resource(int debug_level, struct device *dev,
 /*
 	if (resource->flags & IORESOURCE_BRIDGE) {
 #if CONFIG_PCI_BUS_SEGN_BITS
-		sprintf(buf, "bus %04x:%02x ", dev->bus->secondary >> 8,
-			dev->link[0].secondary & 0xff);
+		snprintf(buf, sizeof (buf), "bus %04x:%02x ",
+		         dev->bus->secondary >> 8,
+			 dev->link[0].secondary & 0xff);
 #else
-		sprintf(buf, "bus %02x ", dev->link[0].secondary);
+		snprintf(buf, sizeof (buf),
+		         "bus %02x ", dev->link[0].secondary);
 #endif
 	}
 */

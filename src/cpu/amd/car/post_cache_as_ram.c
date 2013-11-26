@@ -75,6 +75,8 @@ static void vErrata343(void)
 #endif
 }
 
+void cache_as_ram_switch_stack(void);
+
 static void post_cache_as_ram(void)
 {
 #if CONFIG_HAVE_ACPI_RESUME
@@ -91,9 +93,6 @@ static void post_cache_as_ram(void)
 	print_debug_pcar("v_esp=", v_esp);
 	}
 #endif
-
-	unsigned testx = 0x5a5a5a5a;
-	print_debug_pcar("testx = ", testx);
 
 	/* copy data from cache as ram to
 		ram need to set CONFIG_RAMTOP to 2M and use var mtrr instead.
@@ -112,21 +111,18 @@ static void post_cache_as_ram(void)
 	vErrata343();
 
 	memcopy((void *)((CONFIG_RAMTOP)-CONFIG_DCACHE_RAM_SIZE), (void *)CONFIG_DCACHE_RAM_BASE, CONFIG_DCACHE_RAM_SIZE); //inline
+}
 
-	__asm__ volatile (
-		/* set new esp */ /* before CONFIG_RAMBASE */
-		"subl   %0, %%esp\n\t"
-		::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- (CONFIG_RAMTOP) )
-		/* discard all registers (eax is used for %0), so gcc redoes everything
-		   after the stack is moved */
-		: "cc", "memory", "%ebx", "%ecx", "%edx", "%esi", "%edi", "%ebp"
-	);
+void
+cache_as_ram_new_stack (void);
 
+void
+cache_as_ram_new_stack (void)
+{
 	/* We can put data to stack again */
 
 	/* only global variable sysinfo in cache need to be offset */
 	print_debug("Done\n");
-	print_debug_pcar("testx = ", testx);
 
 	print_debug("Disabling cache as ram now \n");
 

@@ -26,16 +26,20 @@
 struct context
 {
 	char *str_buf;
+	size_t buf_limit;
 };
 
 static void str_tx_byte(unsigned char byte, void *data)
 {
 	struct context *ctx = data;
-	*ctx->str_buf = byte;
-	ctx->str_buf++;
+	if (ctx->buf_limit) {
+		*ctx->str_buf = byte;
+		ctx->str_buf++;
+		ctx->buf_limit--;
+	}
 }
 
-static int vsprintf(char *buf, const char *fmt, va_list args)
+static int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
 	int i;
 	struct context ctx;
@@ -43,8 +47,10 @@ static int vsprintf(char *buf, const char *fmt, va_list args)
 	DISABLE_TRACE;
 
 	ctx.str_buf = buf;
+	ctx.buf_limit = size ? size - 1 : 0;
 	i = vtxdprintf(str_tx_byte, fmt, args, &ctx);
-	*ctx.str_buf = '\0';
+	if (size)
+		*ctx.str_buf = '\0';
 
 	ENABLE_TRACE;
 
@@ -57,7 +63,21 @@ int sprintf(char *buf, const char *fmt, ...)
 	int i;
 
 	va_start(args, fmt);
-	i = vsprintf(buf, fmt, args);
+	/* A trick: we have at most (size_t)-1 adressable space anyway, so
+	   if we output so much we'll crash anyway.  */
+	i = vsnprintf(buf, -1, fmt, args);
+	va_end(args);
+
+	return i;
+}
+
+int snprintf(char *buf, size_t size, const char *fmt, ...)
+{
+	va_list args;
+	int i;
+
+	va_start(args, fmt);
+	i = vsnprintf(buf, size, fmt, args);
 	va_end(args);
 
 	return i;

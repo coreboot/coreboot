@@ -38,7 +38,7 @@
 #define ENABLE_ACPI_MODE_IN_COREBOOT	0
 #define TEST_SMM_FLASH_LOCKDOWN		0
 
-typedef struct southbridge_intel_bd82x6x_config config_t;
+typedef struct southbridge_intel_ibexpeak_config config_t;
 
 /**
  * Set miscellanous static southbridge features.

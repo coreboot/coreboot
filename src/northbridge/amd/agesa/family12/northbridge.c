@@ -402,7 +402,7 @@ static void set_resource(device_t dev, struct resource *resource,
         set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, 1) ;// [39:8]
     }
     resource->flags |= IORESOURCE_STORED;
-    sprintf(buf, " <node %x link %x>",
+    snprintf(buf, sizeof (buf), " <node %x link %x>",
         nodeid, link_num);
     report_resource_stored(dev, resource, buf);
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);

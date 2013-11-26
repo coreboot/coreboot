@@ -80,6 +80,10 @@ config MRC_BIN_ADDRESS
 	hex
 	default 0xfffa0000
 
+config MRC_RMT
+	bool "Enable MRC RMT training + debug prints"
+	default n
+
 config CACHE_MRC_SETTINGS
 	bool "Save cached MRC settings"
 	default n

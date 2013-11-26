@@ -414,9 +414,21 @@ CAR_FAM10_ap_out:
 	pushl	%ebx		/* Init detected. */
 	pushl	%eax		/* BIST */
 	call	cache_as_ram_main
+
 	/* We will not go back. */
 
 	post_code(0xaf)		/* Should never see this POST code. */
+
+	.globl cache_as_ram_switch_stack
+
+cache_as_ram_switch_stack:
+	/* Return address.  */
+	popl	%eax
+	/* Resume memory.  */
+	popl	%eax
+	subl	$(( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- (CONFIG_RAMTOP) )), %esp
+	pushl	%eax
+	call	cache_as_ram_new_stack
 
 all_mtrr_msrs:
 	/* fixed MTRR MSRs */

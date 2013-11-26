@@ -27,14 +27,18 @@
 DECLARE_SPIN_LOCK(vsprintf_lock)
 
 static char *str_buf;
+static size_t buf_limit;
 
 static void str_tx_byte(unsigned char byte)
 {
-	*str_buf = byte;
-	str_buf++;
+	if (buf_limit) {
+		*str_buf = byte;
+		str_buf++;
+		buf_limit--;
+	}
 }
 
-static int vsprintf(char *buf, const char *fmt, va_list args)
+static int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
 	int i;
 
@@ -42,8 +46,10 @@ static int vsprintf(char *buf, const char *fmt, va_list args)
 	spin_lock(&vsprintf_lock);
 
 	str_buf = buf;
+	buf_limit = size ? size - 1 : 0;
 	i = vtxprintf(str_tx_byte, fmt, args);
-	*str_buf = '\0';
+	if (size)
+		*str_buf = '\0';
 
 	spin_unlock(&vsprintf_lock);
 	ENABLE_TRACE;
@@ -57,7 +63,21 @@ int sprintf(char *buf, const char *fmt, ...)
 	int i;
 
 	va_start(args, fmt);
-	i = vsprintf(buf, fmt, args);
+	/* A trick: we have at most (size_t)-1 adressable space anyway, so
+	   if we output so much we'll crash anyway.  */
+	i = vsnprintf(buf, -1, fmt, args);
+	va_end(args);
+
+	return i;
+}
+
+int snprintf(char *buf, size_t size, const char *fmt, ...)
+{
+	va_list args;
+	int i;
+
+	va_start(args, fmt);
+	i = vsnprintf(buf, size, fmt, args);
 	va_end(args);
 
 	return i;

@@ -8,6 +8,16 @@
 #include <console/console.h>
 #include <console/vtxprintf.h>
 
+#if !defined (__ROMCC__) && !defined(__SMM__)
+#define DATA_ARG , data
+#define DATA_ARG_DECL , void *data
+#else
+#define DATA_ARG
+#define DATA_ARG_DECL
+#endif
+
+#define call_tx(x) tx_byte(x DATA_ARG)
+
 /* haha, don't need ctype.c */
 #define isdigit(c)	((c) >= '0' && (c) <= '9')
 #define is_digit isdigit
@@ -30,8 +40,9 @@ static int skip_atoi(const char **s)
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 
-static int number(void (*tx_byte)(unsigned char byte),
-	unsigned long long num, int base, int size, int precision, int type)
+static int number(void (*tx_byte)(unsigned char byte DATA_ARG_DECL),
+	unsigned long long num, int base, int size, int precision, int type
+	DATA_ARG_DECL)
 {
 	char c,sign,tmp[66];
 	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
@@ -77,31 +88,36 @@ static int number(void (*tx_byte)(unsigned char byte),
 	size -= precision;
 	if (!(type&(ZEROPAD+LEFT)))
 		while(size-->0)
-			tx_byte(' '), count++;
+			call_tx(' '), count++;
 	if (sign)
-		tx_byte(sign), count++;
+		call_tx(sign), count++;
 	if (type & SPECIAL) {
 		if (base==8)
-			tx_byte('0'), count++;
+			call_tx('0'), count++;
 		else if (base==16) {
-			tx_byte('0'), count++;
-			tx_byte(digits[33]), count++;
+			call_tx('0'), count++;
+			call_tx(digits[33]), count++;
 		}
 	}
 	if (!(type & LEFT))
 		while (size-- > 0)
-			tx_byte(c), count++;
+			call_tx(c), count++;
 	while (i < precision--)
-		tx_byte('0'), count++;
+		call_tx('0'), count++;
 	while (i-- > 0)
-		tx_byte(tmp[i]), count++;
+		call_tx(tmp[i]), count++;
 	while (size-- > 0)
-		tx_byte(' '), count++;
+		call_tx(' '), count++;
 	return count;
 }
 
 
+#if !defined (__ROMCC__) && !defined(__SMM__)
+int vtxdprintf(void (*tx_byte)(unsigned char byte, void *data),
+	       const char *fmt, va_list args, void *data)
+#else
 int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args)
+#endif
 {
 	int len;
 	unsigned long long num;
@@ -124,7 +140,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 
 	for (count=0; *fmt ; ++fmt) {
 		if (*fmt != '%') {
-			tx_byte(*fmt), count++;
+			call_tx(*fmt), count++;
 			continue;
 		}
 
@@ -187,10 +203,10 @@ repeat:
 		case 'c':
 			if (!(flags & LEFT))
 				while (--field_width > 0)
-					tx_byte(' '), count++;
-			tx_byte((unsigned char) va_arg(args, int)), count++;
+					call_tx(' '), count++;
+			call_tx((unsigned char) va_arg(args, int)), count++;
 			while (--field_width > 0)
-				tx_byte(' '), count++;
+				call_tx(' '), count++;
 			continue;
 
 		case 's':
@@ -202,11 +218,11 @@ repeat:
 
 			if (!(flags & LEFT))
 				while (len < field_width--)
-					tx_byte(' '), count++;
+					call_tx(' '), count++;
 			for (i = 0; i < len; ++i)
-				tx_byte(*s++), count++;
+				call_tx(*s++), count++;
 			while (len < field_width--)
-				tx_byte(' '), count++;
+				call_tx(' '), count++;
 			continue;
 
 		case 'p':
@@ -216,7 +232,7 @@ repeat:
 			}
 			count += number(tx_byte,
 				(unsigned long) va_arg(args, void *), 16,
-				field_width, precision, flags);
+				field_width, precision, flags DATA_ARG);
 			continue;
 
 		case 'n':
@@ -233,7 +249,7 @@ repeat:
 			continue;
 
 		case '%':
-			tx_byte('%'), count++;
+			call_tx('%'), count++;
 			continue;
 
 		/* integer number formats - set up the flags and "break" */
@@ -254,9 +270,9 @@ repeat:
 			break;
 
 		default:
-			tx_byte('%'), count++;
+			call_tx('%'), count++;
 			if (*fmt)
-				tx_byte(*fmt), count++;
+				call_tx(*fmt), count++;
 			else
 				--fmt;
 			continue;
@@ -276,8 +292,21 @@ repeat:
 		} else {
 			num = va_arg(args, unsigned int);
 		}
-		count += number(tx_byte, num, base, field_width, precision, flags);
+		count += number(tx_byte, num, base, field_width, precision, flags DATA_ARG);
 	}
 	return count;
 }
 
+
+#if !defined (__ROMCC__) && !defined(__SMM__)
+static void wrap_tx_byte (unsigned char byte, void *data)
+{
+  void (*tx_byte)(unsigned char byte) = data;
+  tx_byte (byte);
+}
+
+int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args)
+{
+  return vtxdprintf(wrap_tx_byte, fmt, args, tx_byte);
+}
+#endif

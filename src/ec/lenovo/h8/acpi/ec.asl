@@ -97,35 +97,23 @@ Device(EC)
 		Notify(^SLPB, 0x80)
 	}
 
-#if IS_ENABLED (CONFIG_BOARD_LENOVO_X201)
 	/* Brightness up GPE */
 	Method(_Q14, 0, NotSerialized)
 	{
-		\_SB.PCI0.GFX0.LCD0.INCB()
+		BRIGHTNESS_UP()
 	}
 
 	/* Brightness down GPE */
 	Method(_Q15, 0, NotSerialized)
 	{
-		\_SB.PCI0.GFX0.LCD0.DECB()
+		BRIGHTNESS_DOWN()
 	}
 
+#ifdef ACPI_VIDEO_DEVICE
 	/* Next display GPE */
 	Method(_Q16, 0, NotSerialized)
 	{
-		Notify (\_SB.PCI0.GFX0, 0x82)
-	}
-#else
-	/* Brightness up GPE */
-	Method(_Q14, 0, NotSerialized)
-	{
-		\DSPC.BRTU ()
-	}
-
-	/* Brightness down GPE */
-	Method(_Q15, 0, NotSerialized)
-	{
-		\DSPC.BRTD()
+		Notify (ACPI_VIDEO_DEVICE, 0x82)
 	}
 #endif
 	/* AC status change: present */

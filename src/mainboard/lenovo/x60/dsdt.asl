@@ -19,6 +19,8 @@
  * MA 02110-1301 USA
  */
 
+#define THINKPAD_EC_GPE 28
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

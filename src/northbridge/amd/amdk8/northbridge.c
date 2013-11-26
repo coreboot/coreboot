@@ -479,8 +479,8 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 		f1_write_config32(reg, base);
 	}
 	resource->flags |= IORESOURCE_STORED;
-	sprintf(buf, " <node %x link %x>",
-		nodeid, link_num);
+	snprintf(buf, sizeof (buf), " <node %x link %x>",
+		 nodeid, link_num);
 	report_resource_stored(dev, resource, buf);
 }
 

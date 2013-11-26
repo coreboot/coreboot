@@ -19,6 +19,9 @@
  * MA 02110-1301 USA
  */
 
+#define BRIGHTNESS_UP \DSPC.BRTU
+#define BRIGHTNESS_DOWN \DSPC.BRTD
+
 DefinitionBlock(
 	"dsdt.aml",
 	"DSDT",

@@ -20,6 +20,8 @@
  */
 
 #define THINKPAD_EC_GPE 28
+#define BRIGHTNESS_UP \DSPC.BRTU
+#define BRIGHTNESS_DOWN \DSPC.BRTD
 
 DefinitionBlock(
 	"dsdt.aml",

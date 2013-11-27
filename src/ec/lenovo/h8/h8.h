@@ -28,6 +28,10 @@ void h8_enable_event(int event);
 void h8_disable_event(int event);
 int h8_ultrabay_device_present(void);
 
+#if !IS_ENABLED (CONFIG_H8_DOCK_EARLY_INIT)
+void h8_mainboard_init_dock (void);
+#endif
+
 /* EC registers */
 #define H8_CONFIG0 0x00
 #define H8_CONFIG0_EVENTS_ENABLE	0x02

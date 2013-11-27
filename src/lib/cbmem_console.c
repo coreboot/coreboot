@@ -57,7 +57,7 @@ static struct cbmem_console car_cbmem_console CAR_CBMEM;
 #if CONFIG_DYNAMIC_CBMEM
 #define STATIC_CONSOLE_SIZE 1024
 #else
-#define STATIC_CONSOLE_SIZE 40000
+#define STATIC_CONSOLE_SIZE CONFIG_CONSOLE_CBMEM_BUFFER_SIZE
 #endif
 static u8 static_console[STATIC_CONSOLE_SIZE];
 #endif

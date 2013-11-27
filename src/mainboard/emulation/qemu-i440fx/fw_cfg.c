@@ -25,7 +25,7 @@
 #include "fw_cfg.h"
 #include "fw_cfg_if.h"
 
-#define FW_CFG_PORT_CTL       0x0510
+#define FW_CFG_PORT_CTL	      0x0510
 #define FW_CFG_PORT_DATA      0x0511
 
 static unsigned char fw_cfg_detected = 0xff;
@@ -40,7 +40,7 @@ static int fw_cfg_present(void)
 		fw_cfg_get(FW_CFG_SIGNATURE, sig, sizeof(sig));
 		fw_cfg_detected = (memcmp(sig, qsig, 4) == 0) ? 1 : 0;
 		printk(BIOS_INFO, "QEMU: firmware config interface %s\n",
-		       fw_cfg_detected ? "detected" : "not found");
+			 fw_cfg_detected ? "detected" : "not found");
 	}
 	return fw_cfg_detected;
 }
@@ -66,10 +66,10 @@ static void fw_cfg_init_file(void)
 	fw_cfg_get(FW_CFG_FILE_DIR, fw_files, size);
 	fw_files->count = swab32(fw_files->count);
 	for (i = 0; i < count; i++) {
-		fw_files->f[i].size   = swab32(fw_files->f[i].size);
+		fw_files->f[i].size	= swab32(fw_files->f[i].size);
 		fw_files->f[i].select = swab16(fw_files->f[i].select);
-		printk(BIOS_DEBUG, "QEMU:     %s [size=%d]\n",
-		       fw_files->f[i].name, fw_files->f[i].size);
+		printk(BIOS_DEBUG, "QEMU:	%s [size=%d]\n",
+			 fw_files->f[i].name, fw_files->f[i].size);
 	}
 }
 
@@ -192,7 +192,7 @@ struct BiosLinkerLoaderEntry {
 typedef struct BiosLinkerLoaderEntry BiosLinkerLoaderEntry;
 
 enum {
-	BIOS_LINKER_LOADER_COMMAND_ALLOCATE     = 0x1,
+	BIOS_LINKER_LOADER_COMMAND_ALLOCATE	 = 0x1,
 	BIOS_LINKER_LOADER_COMMAND_ADD_POINTER  = 0x2,
 	BIOS_LINKER_LOADER_COMMAND_ADD_CHECKSUM = 0x3,
 };
@@ -227,7 +227,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 		case BIOS_LINKER_LOADER_COMMAND_ALLOCATE:
 			current = ALIGN(current, s[i].alloc.align);
 			printk(BIOS_DEBUG, "QEMU: loading \"%s\" to 0x%lx\n",
-			       s[i].alloc.file, current);
+				  s[i].alloc.file, current);
 
 			rc = fw_cfg_check_file(s[i].alloc.file);
 			if (rc < 0)
@@ -268,7 +268,7 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 				 * would simply not fit in there ...
 				 */
 				printk(BIOS_DEBUG, "QEMU: acpi: unimplemented ptr size %d\n",
-				       s[i].pointer.size);
+					   s[i].pointer.size);
 				goto err;
 			}
 			break;
@@ -287,12 +287,12 @@ unsigned long fw_cfg_acpi_tables(unsigned long start)
 			ptr4 = (uint32_t*)(addrs[dst] + s[i].cksum.offset);
 			*ptr4 = 0;
 			*ptr4 = acpi_checksum((void *)(addrs[dst] + s[i].cksum.start),
-					      s[i].cksum.length);
+						   s[i].cksum.length);
 			break;
 
 		default:
 			printk(BIOS_DEBUG, "QEMU: acpi: unknown script cmd 0x%x @ %p\n",
-			       s[i].command, s+i);
+				  s[i].command, s+i);
 			goto err;
 		};
 	}
@@ -310,7 +310,7 @@ err:
 }
 
 /* ---------------------------------------------------------------------- */
-/* pick up smbios information from fw_cfg                                 */
+/* pick up smbios information from fw_cfg				  */
 
 static const char *type1_manufacturer;
 static const char *type1_product_name;

@@ -56,7 +56,7 @@ int dimm_is_registered(enum spd_dimm_type type)
  * array, and passed to this function.
  *
  * @param dimm pointer to @ref dimm_attr structure where the decoded data is to
- * 	       be stored
+ * 		   be stored
  * @param spd array of raw data previously read from the SPD.
  *
  * @return @ref spd_status enumerator
@@ -207,7 +207,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
 	bus_width = 8 << val;
-	printram("  Bus width         : %u\n", bus_width);
+	printram("  Bus width	       : %u\n", bus_width);
 
 	/* We have all the info we need to compute the dimm size */
 	/* Capacity is 256Mbit multiplied by the power of 2 specified in
@@ -345,12 +345,12 @@ void dram_print_spd_ddr3(const dimm_attr * dimm)
 
 	printk(BIOS_INFO, "  Row    addr bits  : %u\n", dimm->row_bits);
 	printk(BIOS_INFO, "  Column addr bits  : %u\n", dimm->col_bits);
-	printk(BIOS_INFO, "  Number of ranks   : %u\n", dimm->ranks);
-	printk(BIOS_INFO, "  DIMM Capacity     : %u MB\n", dimm->size_mb);
+	printk(BIOS_INFO, "  Number of ranks	: %u\n", dimm->ranks);
+	printk(BIOS_INFO, "  DIMM Capacity	: %u MB\n", dimm->size_mb);
 
 	/* CAS Latencies Supported */
 	val16 = dimm->cas_supported;
-	printk(BIOS_INFO, "  CAS latencies     :");
+	printk(BIOS_INFO, "  CAS latencies	:");
 	i = 0;
 	do {
 		if (val16 & 1)
@@ -360,18 +360,18 @@ void dram_print_spd_ddr3(const dimm_attr * dimm)
 	} while (val16);
 	printk(BIOS_INFO, "\n");
 
-	print_ns("  tCKmin            : ", dimm->tCK);
-	print_ns("  tAAmin            : ", dimm->tAA);
-	print_ns("  tWRmin            : ", dimm->tWR);
-	print_ns("  tRCDmin           : ", dimm->tRCD);
-	print_ns("  tRRDmin           : ", dimm->tRRD);
-	print_ns("  tRPmin            : ", dimm->tRP);
-	print_ns("  tRASmin           : ", dimm->tRAS);
-	print_ns("  tRCmin            : ", dimm->tRC);
-	print_ns("  tRFCmin           : ", dimm->tRFC);
-	print_ns("  tWTRmin           : ", dimm->tWTR);
-	print_ns("  tRTPmin           : ", dimm->tRTP);
-	print_ns("  tFAWmin           : ", dimm->tFAW);
+	print_ns("  tCKmin	       : ", dimm->tCK);
+	print_ns("  tAAmin	       : ", dimm->tAA);
+	print_ns("  tWRmin	       : ", dimm->tWR);
+	print_ns("  tRCDmin	       : ", dimm->tRCD);
+	print_ns("  tRRDmin	       : ", dimm->tRRD);
+	print_ns("  tRPmin	       : ", dimm->tRP);
+	print_ns("  tRASmin	       : ", dimm->tRAS);
+	print_ns("  tRCmin	       : ", dimm->tRC);
+	print_ns("  tRFCmin	       : ", dimm->tRFC);
+	print_ns("  tWTRmin	       : ", dimm->tWTR);
+	print_ns("  tRTPmin	       : ", dimm->tRTP);
+	print_ns("  tFAWmin	       : ", dimm->tFAW);
 }
 
 /*==============================================================================
@@ -430,12 +430,12 @@ static u16 ddr3_cas_to_mr0_map(u8 cas)
  * @param cas CAS latency in clock cycles.
  */
 mrs_cmd_t ddr3_get_mr0(enum ddr3_mr0_precharge precharge_pd,
-		       u8 write_recovery,
-		       enum ddr3_mr0_dll_reset dll_reset,
-		       enum ddr3_mr0_mode mode,
-		       u8 cas,
-		       enum ddr3_mr0_burst_type burst_type,
-		       enum ddr3_mr0_burst_length burst_length)
+			 u8 write_recovery,
+			 enum ddr3_mr0_dll_reset dll_reset,
+			 enum ddr3_mr0_mode mode,
+			 u8 cas,
+			 enum ddr3_mr0_burst_type burst_type,
+			 enum ddr3_mr0_burst_length burst_length)
 {
 	mrs_cmd_t cmd = 0 << 16;
 
@@ -493,12 +493,12 @@ static u16 ddr3_ods_to_mr1_map(enum ddr3_mr1_ods ods)
  * \brief Get command address for a DDR3 MR1 command
  */
 mrs_cmd_t ddr3_get_mr1(enum ddr3_mr1_qoff qoff,
-		       enum ddr3_mr1_tqds tqds,
-		       enum ddr3_mr1_rtt_nom rtt_nom,
-		       enum ddr3_mr1_write_leveling write_leveling,
-		       enum ddr3_mr1_ods ods,
-		       enum ddr3_mr1_additive_latency additive_latency,
-		       enum ddr3_mr1_dll dll_disable)
+			 enum ddr3_mr1_tqds tqds,
+			 enum ddr3_mr1_rtt_nom rtt_nom,
+			 enum ddr3_mr1_write_leveling write_leveling,
+			 enum ddr3_mr1_ods ods,
+			 enum ddr3_mr1_additive_latency additive_latency,
+			 enum ddr3_mr1_dll dll_disable)
 {
 	mrs_cmd_t cmd = 1 << 16;
 
@@ -532,8 +532,8 @@ mrs_cmd_t ddr3_get_mr1(enum ddr3_mr1_qoff qoff,
  * @param cas_cwl CAS write latency in clock cycles.
  */
 mrs_cmd_t ddr3_get_mr2(enum ddr3_mr2_rttwr rtt_wr,
-		       enum ddr3_mr2_srt_range extended_temp,
-		       enum ddr3_mr2_asr self_refresh, u8 cas_cwl)
+			 enum ddr3_mr2_srt_range extended_temp,
+			 enum ddr3_mr2_asr self_refresh, u8 cas_cwl)
 {
 	mrs_cmd_t cmd = 2 << 16;
 
@@ -554,7 +554,7 @@ mrs_cmd_t ddr3_get_mr2(enum ddr3_mr2_rttwr rtt_wr,
  * \brief Get command address for a DDR3 MR3 command
  *
  * @param dataflow_from_mpr Specify a non-zero value to put DRAM in read
- *			    leveling mode. Zero for normal operation.
+ *				 leveling mode. Zero for normal operation.
  */
 mrs_cmd_t ddr3_get_mr3(char dataflow_from_mpr)
 {
@@ -578,8 +578,8 @@ mrs_cmd_t ddr3_get_mr3(char dataflow_from_mpr)
 mrs_cmd_t ddr3_mrs_mirror_pins(mrs_cmd_t cmd)
 {
 	u32 downshift, upshift;
-	/* High bits=    A4    |    A6    |    A8    |    BA1 */
-	/* Low bits =    A3    |    A5    |    A7    |    BA0 */
+	/* High bits=	  A4	|    A6	   |	A8    |	   BA1 */
+	/* Low bits =	  A3	|    A5	   |	A7    |	   BA0 */
 	u32 lowbits = (1 << 3) | (1 << 5) | (1 << 7) | (1 << 16);
 	downshift = (cmd & (lowbits << 1));
 	upshift = (cmd & lowbits);

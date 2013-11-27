@@ -28,7 +28,7 @@
  * For Information about this file, see @ref platforminstall.
  *
  * @xrefitem bom "File Content Label" "Release Content"
- * @e project:      AGESA
+ * @e project:	    AGESA
  * @e sub-project:  Core
  * @e \$Revision: 6049 $   @e \$Date: 2008-05-14 01:58:02 -0500 (Wed, 14 May 2008) $
  */
@@ -62,29 +62,29 @@
  * Comment out or mark TRUE those features you want to REMOVE from the build.
  */
 
-#define BLDOPT_REMOVE_UDIMMS_SUPPORT           FALSE
-#define BLDOPT_REMOVE_RDIMMS_SUPPORT           FALSE
-#define BLDOPT_REMOVE_ECC_SUPPORT              FALSE
-#define BLDOPT_REMOVE_BANK_INTERLEAVE          FALSE
-#define BLDOPT_REMOVE_DCT_INTERLEAVE           FALSE
-#define BLDOPT_REMOVE_NODE_INTERLEAVE          TRUE
-#define BLDOPT_REMOVE_PARALLEL_TRAINING        TRUE
+#define BLDOPT_REMOVE_UDIMMS_SUPPORT	       FALSE
+#define BLDOPT_REMOVE_RDIMMS_SUPPORT	       FALSE
+#define BLDOPT_REMOVE_ECC_SUPPORT	       FALSE
+#define BLDOPT_REMOVE_BANK_INTERLEAVE	       FALSE
+#define BLDOPT_REMOVE_DCT_INTERLEAVE	       FALSE
+#define BLDOPT_REMOVE_NODE_INTERLEAVE	       TRUE
+#define BLDOPT_REMOVE_PARALLEL_TRAINING	       TRUE
 #define BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT     TRUE
 #define BLDOPT_REMOVE_MEM_RESTORE_SUPPORT      FALSE
-#define BLDOPT_REMOVE_DDR2_SUPPORT             TRUE
-#define BLDOPT_REMOVE_DDR3_SUPPORT             FALSE
+#define BLDOPT_REMOVE_DDR2_SUPPORT	       TRUE
+#define BLDOPT_REMOVE_DDR3_SUPPORT	       FALSE
 #define BLDOPT_REMOVE_MULTISOCKET_SUPPORT      TRUE
-#define BLDOPT_REMOVE_ACPI_PSTATES             FALSE
-#define BLDOPT_REMOVE_SRAT                     TRUE
-#define BLDOPT_REMOVE_SLIT                     TRUE
-#define BLDOPT_REMOVE_WHEA                     TRUE
-#define BLDOPT_REMOVE_DMI                      FALSE
-#define BLDOPT_REMOVE_EARLY_SAMPLES            TRUE
-#define BLDCFG_REMOVE_ACPI_PSTATES_PPC         FALSE
-#define BLDCFG_REMOVE_ACPI_PSTATES_PCT         FALSE
-#define BLDCFG_REMOVE_ACPI_PSTATES_PSD         FALSE
-#define BLDCFG_REMOVE_ACPI_PSTATES_PSS         FALSE
-#define BLDCFG_REMOVE_ACPI_PSTATES_XPSS        FALSE
+#define BLDOPT_REMOVE_ACPI_PSTATES	       FALSE
+#define BLDOPT_REMOVE_SRAT		       TRUE
+#define BLDOPT_REMOVE_SLIT		       TRUE
+#define BLDOPT_REMOVE_WHEA		       TRUE
+#define BLDOPT_REMOVE_DMI		       FALSE
+#define BLDOPT_REMOVE_EARLY_SAMPLES	       TRUE
+#define BLDCFG_REMOVE_ACPI_PSTATES_PPC	       FALSE
+#define BLDCFG_REMOVE_ACPI_PSTATES_PCT	       FALSE
+#define BLDCFG_REMOVE_ACPI_PSTATES_PSD	       FALSE
+#define BLDCFG_REMOVE_ACPI_PSTATES_PSS	       FALSE
+#define BLDCFG_REMOVE_ACPI_PSTATES_XPSS	       FALSE
 
 //For revision C single-link processors
 #define BLDCFG_SUPPORT_ACPI_PSTATES_PSD_INDPX  TRUE
@@ -92,17 +92,17 @@
 /*
  * Agesa entry points used in this implementation.
  */
-#define AGESA_ENTRY_INIT_RESET                    TRUE
-#define AGESA_ENTRY_INIT_RECOVERY                 FALSE
-#define AGESA_ENTRY_INIT_EARLY                    TRUE
-#define AGESA_ENTRY_INIT_POST                     TRUE
-#define AGESA_ENTRY_INIT_ENV                      TRUE
-#define AGESA_ENTRY_INIT_MID                      TRUE
-#define AGESA_ENTRY_INIT_LATE                     TRUE
-#define AGESA_ENTRY_INIT_S3SAVE                   TRUE
-#define AGESA_ENTRY_INIT_RESUME                   TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             FALSE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
+#define AGESA_ENTRY_INIT_RESET			  TRUE
+#define AGESA_ENTRY_INIT_RECOVERY		  FALSE
+#define AGESA_ENTRY_INIT_EARLY			  TRUE
+#define AGESA_ENTRY_INIT_POST			  TRUE
+#define AGESA_ENTRY_INIT_ENV			  TRUE
+#define AGESA_ENTRY_INIT_MID			  TRUE
+#define AGESA_ENTRY_INIT_LATE			  TRUE
+#define AGESA_ENTRY_INIT_S3SAVE			  TRUE
+#define AGESA_ENTRY_INIT_RESUME			  TRUE
+#define AGESA_ENTRY_INIT_LATE_RESTORE		  FALSE
+#define AGESA_ENTRY_INIT_GENERAL_SERVICES	  TRUE
 
 /*****************************************************************************
  *   Define the RELEASE VERSION string
@@ -117,89 +117,89 @@
  * version string as appropriate for the release. The trunk copy of this file
  * should also be updated/incremented for the next expected version, + trailing 'X'
  ****************************************************************************/
-                  // This is the delivery package title, "LlanoPI "
-                  // This string MUST be exactly 8 characters long
+		  // This is the delivery package title, "LlanoPI "
+		  // This string MUST be exactly 8 characters long
 #define AGESA_PACKAGE_STRING  {'L', 'l', 'a', 'n', 'o', 'P', 'I', ' '}
 
-                  // This is the release version number of the AGESA component
-                  // This string MUST be exactly 12 characters long
+		  // This is the release version number of the AGESA component
+		  // This string MUST be exactly 12 characters long
 #define AGESA_VERSION_STRING  {'V', '1', '.', '1', '.', '0', '.', '0', ' ', ' ', ' ', ' '}
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product
 // and BKDG content, please consult the AGESA Memory team for consultation.
-#define DFLT_SCRUB_DRAM_RATE            (0)
-#define DFLT_SCRUB_L2_RATE              (0)
-#define DFLT_SCRUB_L3_RATE              (0)
-#define DFLT_SCRUB_IC_RATE              (0)
-#define DFLT_SCRUB_DC_RATE              (0)
-#define DFLT_MEMORY_QUADRANK_TYPE       QUADRANK_UNBUFFERED
-#define DFLT_VRM_SLEW_RATE              (5000)
+#define DFLT_SCRUB_DRAM_RATE		(0)
+#define DFLT_SCRUB_L2_RATE		(0)
+#define DFLT_SCRUB_L3_RATE		(0)
+#define DFLT_SCRUB_IC_RATE		(0)
+#define DFLT_SCRUB_DC_RATE		(0)
+#define DFLT_MEMORY_QUADRANK_TYPE	QUADRANK_UNBUFFERED
+#define DFLT_VRM_SLEW_RATE		(5000)
 
 /* Build configuration values here.
  */
-#define BLDCFG_VRM_CURRENT_LIMIT                 65000  //240000 //120000
-#define BLDCFG_VRM_LOW_POWER_THRESHOLD           15000  // 0
-#define BLDCFG_VRM_INRUSH_CURRENT_LIMIT          0
-#define BLDCFG_PLAT_NUM_IO_APICS                 3
-#define BLDCFG_CORE_LEVELING_MODE                CORE_LEVEL_LOWEST
-#define BLDCFG_MEM_INIT_PSTATE                   0
+#define BLDCFG_VRM_CURRENT_LIMIT		 65000  //240000 //120000
+#define BLDCFG_VRM_LOW_POWER_THRESHOLD		 15000  // 0
+#define BLDCFG_VRM_INRUSH_CURRENT_LIMIT		 0
+#define BLDCFG_PLAT_NUM_IO_APICS		 3
+#define BLDCFG_CORE_LEVELING_MODE		 CORE_LEVEL_LOWEST
+#define BLDCFG_MEM_INIT_PSTATE			 0
 
-#define BLDCFG_AMD_PLATFORM_TYPE                  AMD_PLATFORM_MOBILE
+#define BLDCFG_AMD_PLATFORM_TYPE		  AMD_PLATFORM_MOBILE
 
-#define BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT         DDR1866_FREQUENCY //DDR1066_FREQUENCY
-#define BLDCFG_MEMORY_MODE_UNGANGED               TRUE
-#define BLDCFG_MEMORY_QUAD_RANK_CAPABLE           TRUE
-#define BLDCFG_MEMORY_QUADRANK_TYPE               QUADRANK_REGISTERED
-#define BLDCFG_MEMORY_RDIMM_CAPABLE               TRUE
-#define BLDCFG_MEMORY_UDIMM_CAPABLE               TRUE
-#define BLDCFG_MEMORY_SODIMM_CAPABLE              TRUE
-#define BLDCFG_MEMORY_ENABLE_BANK_INTERLEAVING    TRUE
-#define BLDCFG_MEMORY_ENABLE_NODE_INTERLEAVING    FALSE
-#define BLDCFG_MEMORY_CHANNEL_INTERLEAVING        TRUE
-#define BLDCFG_MEMORY_POWER_DOWN                  TRUE
-#define BLDCFG_POWER_DOWN_MODE                    POWER_DOWN_BY_CHIP_SELECT
-#define BLDCFG_ONLINE_SPARE                       FALSE
-#define BLDCFG_MEMORY_PARITY_ENABLE               FALSE
-#define BLDCFG_BANK_SWIZZLE                       TRUE
-#define BLDCFG_TIMING_MODE_SELECT                 TIMING_MODE_AUTO
-#define BLDCFG_MEMORY_CLOCK_SELECT                DDR800_FREQUENCY
-#define BLDCFG_DQS_TRAINING_CONTROL               TRUE
-#define BLDCFG_IGNORE_SPD_CHECKSUM                FALSE
-#define BLDCFG_USE_BURST_MODE                     FALSE
-#define BLDCFG_MEMORY_ALL_CLOCKS_ON               FALSE
-#define BLDCFG_ENABLE_ECC_FEATURE                 TRUE
-#define BLDCFG_ECC_REDIRECTION                    FALSE
-#define BLDCFG_SCRUB_DRAM_RATE                    0
-#define BLDCFG_SCRUB_L2_RATE                      0
-#define BLDCFG_SCRUB_L3_RATE                      0
-#define BLDCFG_SCRUB_IC_RATE                      0
-#define BLDCFG_SCRUB_DC_RATE                      0
-#define BLDCFG_ECC_SYNC_FLOOD                     FALSE
-#define BLDCFG_ECC_SYMBOL_SIZE                    4
-#define BLDCFG_HEAP_DRAM_ADDRESS                  0xB0000
-#define BLDCFG_1GB_ALIGN                          FALSE
-#define BLDCFG_VRM_HIGH_SPEED_ENABLE              TRUE
-//#define BLDCFG_PROCESSOR_SCOPE_NAME0              'C'
-//#define BLDCFG_PROCESSOR_SCOPE_NAME1              '0'
+#define BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT	  DDR1866_FREQUENCY //DDR1066_FREQUENCY
+#define BLDCFG_MEMORY_MODE_UNGANGED		  TRUE
+#define BLDCFG_MEMORY_QUAD_RANK_CAPABLE		  TRUE
+#define BLDCFG_MEMORY_QUADRANK_TYPE		  QUADRANK_REGISTERED
+#define BLDCFG_MEMORY_RDIMM_CAPABLE		  TRUE
+#define BLDCFG_MEMORY_UDIMM_CAPABLE		  TRUE
+#define BLDCFG_MEMORY_SODIMM_CAPABLE		  TRUE
+#define BLDCFG_MEMORY_ENABLE_BANK_INTERLEAVING	  TRUE
+#define BLDCFG_MEMORY_ENABLE_NODE_INTERLEAVING	  FALSE
+#define BLDCFG_MEMORY_CHANNEL_INTERLEAVING	  TRUE
+#define BLDCFG_MEMORY_POWER_DOWN		  TRUE
+#define BLDCFG_POWER_DOWN_MODE			  POWER_DOWN_BY_CHIP_SELECT
+#define BLDCFG_ONLINE_SPARE			  FALSE
+#define BLDCFG_MEMORY_PARITY_ENABLE		  FALSE
+#define BLDCFG_BANK_SWIZZLE			  TRUE
+#define BLDCFG_TIMING_MODE_SELECT		  TIMING_MODE_AUTO
+#define BLDCFG_MEMORY_CLOCK_SELECT		  DDR800_FREQUENCY
+#define BLDCFG_DQS_TRAINING_CONTROL		  TRUE
+#define BLDCFG_IGNORE_SPD_CHECKSUM		  FALSE
+#define BLDCFG_USE_BURST_MODE			  FALSE
+#define BLDCFG_MEMORY_ALL_CLOCKS_ON		  FALSE
+#define BLDCFG_ENABLE_ECC_FEATURE		  TRUE
+#define BLDCFG_ECC_REDIRECTION			  FALSE
+#define BLDCFG_SCRUB_DRAM_RATE			  0
+#define BLDCFG_SCRUB_L2_RATE			  0
+#define BLDCFG_SCRUB_L3_RATE			  0
+#define BLDCFG_SCRUB_IC_RATE			  0
+#define BLDCFG_SCRUB_DC_RATE			  0
+#define BLDCFG_ECC_SYNC_FLOOD			  FALSE
+#define BLDCFG_ECC_SYMBOL_SIZE			  4
+#define BLDCFG_HEAP_DRAM_ADDRESS		  0xB0000
+#define BLDCFG_1GB_ALIGN			  FALSE
+#define BLDCFG_VRM_HIGH_SPEED_ENABLE		  TRUE
+//#define BLDCFG_PROCESSOR_SCOPE_NAME0		    'C'
+//#define BLDCFG_PROCESSOR_SCOPE_NAME1		    '0'
 
 //enable HW C1E
 #define BLDCFG_PLATFORM_C1E_MODE     0 //C1eModeHardware
-//#define BLDCFG_PLATFORM_C1E_OPDATA              0x415
-#define BLDCFG_PLATFORM_CSTATE_MODE     CStateModeC6 //0 //CStateModeC6
-//#define BLDCFG_PLATFORM_CSTATE_OPDATA   0x840         //Specifies a free block of 8 consecutive I/O ports to be used to place the CPU into C6
-#define BLDCFG_PLATFORM_CSTATE_IO_BASE_ADDRESS   0x840         //Specifies a free block of 8 consecutive I/O ports to be used to place the CPU into C6
+//#define BLDCFG_PLATFORM_C1E_OPDATA		  0x415
+#define BLDCFG_PLATFORM_CSTATE_MODE	CStateModeC6 //0 //CStateModeC6
+//#define BLDCFG_PLATFORM_CSTATE_OPDATA	  0x840		//Specifies a free block of 8 consecutive I/O ports to be used to place the CPU into C6
+#define BLDCFG_PLATFORM_CSTATE_IO_BASE_ADDRESS	 0x840	       //Specifies a free block of 8 consecutive I/O ports to be used to place the CPU into C6
 
 
-//#define BLDCFG_VRM_NB_CURRENT_LIMIT               0  // Not currently used on Llano/Ontario
-#define BLDCFG_VRM_NB_LOW_POWER_THRESHOLD         1  // Zero - disable NBPSI_L, Non-zero - enable NBPSI_L.  Default is Zero.
-//#define BLDCFG_VRM_NB_SLEW_RATE                   5000 // Used in calculating the VSRampSlamTime per BKDG.  Defaults to 5000, same as core VRM.  Cannot be zero.
-//#define BLDCFG_VRM_NB_ADDITIONAL_DELAY            0  // Not currently used on Llano/Ontario
-//#define BLDCFG_VRM_NB_HIGH_SPEED_ENABLE           0  // Not currently used on Llano/Ontario
-//#define BLDCFG_VRM_NB_INRUSH_CURRENT_LIMIT        0  // Not currently used on Llano/Ontario
+//#define BLDCFG_VRM_NB_CURRENT_LIMIT		    0  // Not currently used on Llano/Ontario
+#define BLDCFG_VRM_NB_LOW_POWER_THRESHOLD	  1  // Zero - disable NBPSI_L, Non-zero - enable NBPSI_L.  Default is Zero.
+//#define BLDCFG_VRM_NB_SLEW_RATE		    5000 // Used in calculating the VSRampSlamTime per BKDG.  Defaults to 5000, same as core VRM.  Cannot be zero.
+//#define BLDCFG_VRM_NB_ADDITIONAL_DELAY	    0  // Not currently used on Llano/Ontario
+//#define BLDCFG_VRM_NB_HIGH_SPEED_ENABLE	    0  // Not currently used on Llano/Ontario
+//#define BLDCFG_VRM_NB_INRUSH_CURRENT_LIMIT	    0  // Not currently used on Llano/Ontario
 
-#define BLDCFG_UMA_ABOVE4G_SUPPORT              TRUE
-#define BLDCFG_STEREO_3D_PINOUT                 TRUE
+#define BLDCFG_UMA_ABOVE4G_SUPPORT		TRUE
+#define BLDCFG_STEREO_3D_PINOUT			TRUE
 
 /*  Process the options...
  * This file include MUST occur AFTER the user option selection settings
@@ -222,11 +222,11 @@ CONST AP_MTRR_SETTINGS ROMDATA LlanoApMtrrSettingsList[] =
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &LlanoApMtrrSettingsList
 //#define OPTION_NB_LCLK_DPM_INIT FALSE
-//#define OPTION_POWER_GATE       FALSE
+//#define OPTION_POWER_GATE	  FALSE
 //#define OPTION_PCIE_POWER_GATE  FALSE
-//#define OPTION_ALIB             FALSE
+//#define OPTION_ALIB		  FALSE
 //#define OPTION_PCIe_MID_INIT  FALSE
-//#define OPTION_NB_MID_INIT    FALSE
+//#define OPTION_NB_MID_INIT	FALSE
 
 #include "cpuRegisters.h"
 #include "cpuFamRegisters.h"
@@ -243,7 +243,7 @@ CONST AP_MTRR_SETTINGS ROMDATA LlanoApMtrrSettingsList[] =
 #include "PlatformInstall.h"
 
 /*----------------------------------------------------------------------------------------
- *                        CUSTOMER OVERIDES MEMORY TABLE
+ *			  CUSTOMER OVERIDES MEMORY TABLE
  *----------------------------------------------------------------------------------------
  */
 
@@ -258,57 +258,57 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
   // The following macros are supported (use comma to separate macros):
   //
   // MEMCLK_DIS_MAP(SocketID, ChannelID, MemClkDisBit0CSMap,..., MemClkDisBit7CSMap)
-  //      The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
-  //      AGESA will base on this value to disable unused MemClk to save power.
-  //      Example:
-  //      BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
-  //           Bit AM3/S1g3 pin name
-  //           0   M[B,A]_CLK_H/L[0]
-  //           1   M[B,A]_CLK_H/L[1]
-  //           2   M[B,A]_CLK_H/L[2]
-  //           3   M[B,A]_CLK_H/L[3]
-  //           4   M[B,A]_CLK_H/L[4]
-  //           5   M[B,A]_CLK_H/L[5]
-  //           6   M[B,A]_CLK_H/L[6]
-  //           7   M[B,A]_CLK_H/L[7]
-  //      And platform has the following routing:
-  //           CS0   M[B,A]_CLK_H/L[4]
-  //           CS1   M[B,A]_CLK_H/L[2]
-  //           CS2   M[B,A]_CLK_H/L[3]
-  //           CS3   M[B,A]_CLK_H/L[5]
-  //      Then platform can specify the following macro:
-  //      MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
+  //	  The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
+  //	  AGESA will base on this value to disable unused MemClk to save power.
+  //	  Example:
+  //	  BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
+  //	       Bit AM3/S1g3 pin name
+  //	       0   M[B,A]_CLK_H/L[0]
+  //	       1   M[B,A]_CLK_H/L[1]
+  //	       2   M[B,A]_CLK_H/L[2]
+  //	       3   M[B,A]_CLK_H/L[3]
+  //	       4   M[B,A]_CLK_H/L[4]
+  //	       5   M[B,A]_CLK_H/L[5]
+  //	       6   M[B,A]_CLK_H/L[6]
+  //	       7   M[B,A]_CLK_H/L[7]
+  //	  And platform has the following routing:
+  //	       CS0   M[B,A]_CLK_H/L[4]
+  //	       CS1   M[B,A]_CLK_H/L[2]
+  //	       CS2   M[B,A]_CLK_H/L[3]
+  //	       CS3   M[B,A]_CLK_H/L[5]
+  //	  Then platform can specify the following macro:
+  //	  MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
   //
   // CKE_TRI_MAP(SocketID, ChannelID, CKETriBit0CSMap, CKETriBit1CSMap)
-  //      The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
-  //      AGESA will base on this value to tristate unused CKE to save power.
+  //	  The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
+  //	  AGESA will base on this value to tristate unused CKE to save power.
   //
   // ODT_TRI_MAP(SocketID, ChannelID, ODTTriBit0CSMap,..., ODTTriBit3CSMap)
-  //      The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
-  //      AGESA will base on this value to tristate unused ODT pins to save power.
+  //	  The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
+  //	  AGESA will base on this value to tristate unused ODT pins to save power.
   //
   // CS_TRI_MAP(SocketID, ChannelID, CSTriBit0CSMap,..., CSTriBit7CSMap)
-  //      The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
-  //      AGESA will base on this value to tristate unused Chip select to save power.
+  //	  The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
+  //	  AGESA will base on this value to tristate unused Chip select to save power.
   //
   // NUMBER_OF_DIMMS_SUPPORTED(SocketID, ChannelID, NumberOfDimmSlotsPerChannel)
-  //      Specifies the number of DIMM slots per channel.
+  //	  Specifies the number of DIMM slots per channel.
   //
   // NUMBER_OF_CHIP_SELECTS_SUPPORTED(SocketID, ChannelID, NumberOfChipSelectsPerChannel)
-  //      Specifies the number of Chip selects per channel.
+  //	  Specifies the number of Chip selects per channel.
   //
   // NUMBER_OF_CHANNELS_SUPPORTED(SocketID, NumberOfChannelsPerSocket)
-  //      Specifies the number of channels per socket.
+  //	  Specifies the number of channels per socket.
   //
   // OVERRIDE_DDR_BUS_SPEED(SocketID, ChannelID, USER_MEMORY_TIMING_MODE, MEMORY_BUS_SPEED)
-  //      Specifies DDR bus speed of channel ChannelID on socket SocketID.
+  //	  Specifies DDR bus speed of channel ChannelID on socket SocketID.
   //
   // DRAM_TECHNOLOGY(SocketID, TECHNOLOGY_TYPE)
-  //      Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
+  //	  Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
   //
   // WRITE_LEVELING_SEED(SocketID, ChannelID, Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed, Byte4Seed, Byte5Seed,
-  //      Byte6Seed, Byte7Seed, ByteEccSeed)
-  //      Specifies the write leveling seed for a channel of a socket.
+  //	  Byte6Seed, Byte7Seed, ByteEccSeed)
+  //	  Specifies the write leveling seed for a channel of a socket.
   //
   NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 1),
   NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 2),
@@ -335,8 +335,8 @@ UINT8 AGESA_MEM_TABLE_LN[][sizeof (MEM_TABLE_ALIAS)] =
  //   with a particular DIMM configuration.  To hardcode your own values, uncomment the appropriate line in
  //   the table and replace the byte lane values with your own.
  //
- //                                                                               ------------------ BYTE LANES ----------------------
- //                                                                                BL0   BL1   BL2   BL3   BL4   BL5   BL6   Bl7   ECC
+ //										  ------------------ BYTE LANES ----------------------
+ //										   BL0	 BL1   BL2   BL3   BL4	 BL5   BL6   Bl7   ECC
  // Write Data Timing
   // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM0, BFWrDatDly, MTOverride, 0x15, 0x14, 0x21, 0x11, 0x40, 0x2A, 0x34, 0x2D, 0x15),// DCT0, DIMM0
  // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM1, BFWrDatDly, MTOverride, 0x1D, 0x00, 0x06, 0x0B, 0x17, 0x1A, 0x1E, 0x1F, 0x10),// DCT0, DIMM1
@@ -366,7 +366,7 @@ UINT8 AGESA_MEM_TABLE_LN[][sizeof (MEM_TABLE_ALIAS)] =
   // NBACCESS (MTAfterMaxRdLatTrn, MTNode0, MTDct0, BFMaxLatency, MTOverride, 0x0C),
   // NBACCESS (MTAfterMaxRdLatTrn, MTNode0, MTDct1, BFMaxLatency, MTOverride, 0x0C),
  // TABLE END
-  NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
+  NBACCESS (MTEnd, 0,  0, 0, 0, 0),	 // End of Table
 };
 UINT8 SizeOfTableLN = sizeof (AGESA_MEM_TABLE_LN) / sizeof (AGESA_MEM_TABLE_LN[0]);
 
@@ -376,7 +376,7 @@ UINT8 SizeOfTableLN = sizeof (AGESA_MEM_TABLE_LN) / sizeof (AGESA_MEM_TABLE_LN[0
  */
 //AGESA_STATUS
 //AgesaReadSpd (
-//  IN        UINTN                 FcnData,
+//  IN	      UINTN		    FcnData,
 //  IN OUT    AGESA_READ_SPD_PARAMS *ReadSpd
 //  )
 //{

@@ -22,7 +22,7 @@
 #include <arch/io.h>
 #include "Platform.h"
 #include "sb_cimx.h"
-#include "sb700_cfg.h"                /*sb700_cimx_config*/
+#include "sb700_cfg.h"		      /*sb700_cimx_config*/
 #include <console/console.h>
 #include <console/loglevel.h>
 #include "smbus.h"
@@ -53,7 +53,7 @@ u32 get_sbdn(u32 bus)
 
 /**
  * @brief South Bridge CIMx romstage entry,
- *        wrapper of sbPowerOnInit entry point.
+ *	  wrapper of sbPowerOnInit entry point.
  */
 void sb_Poweron_Init(void)
 {

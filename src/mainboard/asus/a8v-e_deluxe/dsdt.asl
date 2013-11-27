@@ -180,7 +180,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 					Method (_CRS, 0, NotSerialized)
 					{
 						Name (TMP, ResourceTemplate () {
-						     IRQNoFlags () {12}
+							   IRQNoFlags () {12}
 						})
 						Return (TMP)
 					}

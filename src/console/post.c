@@ -87,7 +87,7 @@ void cmos_post_log(void)
 		break;
 	default:
 		printk(BIOS_WARNING, "POST: Unexpected post code "
-		       "in previous boot: 0x%02x\n", code);
+			 "in previous boot: 0x%02x\n", code);
 #if CONFIG_ELOG
 		elog_add_event_word(ELOG_TYPE_LAST_POST_CODE, code);
 #if CONFIG_CMOS_POST_EXTRA

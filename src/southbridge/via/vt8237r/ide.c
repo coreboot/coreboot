@@ -110,7 +110,7 @@ static void ide_init(struct device *dev)
 
 	/* Set PATA Output Drive Strength */
 	lpc_dev = dev_find_device(PCI_VENDOR_ID_VIA,
-				    PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
+					PCI_DEVICE_ID_VIA_VT8237R_LPC, 0);
 	if (lpc_dev)
 		pci_write_config8(lpc_dev, 0x7C, 0x20);
 #endif

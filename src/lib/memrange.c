@@ -25,21 +25,21 @@
 static struct range_entry *free_list;
 
 static inline void range_entry_link(struct range_entry **prev_ptr,
-                                    struct range_entry *r)
+				    struct range_entry *r)
 {
 	r->next = *prev_ptr;
 	*prev_ptr = r;
 }
 
 static inline void range_entry_unlink(struct range_entry **prev_ptr,
-                                      struct range_entry *r)
+				      struct range_entry *r)
 {
 	*prev_ptr = r->next;
 	r->next = NULL;
 }
 
 static inline void range_entry_unlink_and_free(struct range_entry **prev_ptr,
-                                               struct range_entry *r)
+					       struct range_entry *r)
 {
 	range_entry_unlink(prev_ptr, r);
 	range_entry_link(&free_list, r);
@@ -59,7 +59,7 @@ static struct range_entry *alloc_range(void)
 
 static inline struct range_entry *
 range_list_add(struct range_entry **prev_ptr, resource_t begin, resource_t end,
-               unsigned long tag)
+	       unsigned long tag)
 {
 	struct range_entry *new_entry;
 
@@ -107,8 +107,8 @@ static void merge_neighbor_entries(struct memranges *ranges)
 }
 
 static void remove_memranges(struct memranges *ranges,
-                             resource_t begin, resource_t end,
-                             unsigned long unused)
+			     resource_t begin, resource_t end,
+			     unsigned long unused)
 {
 	struct range_entry *cur;
 	struct range_entry *next;
@@ -171,8 +171,8 @@ static void remove_memranges(struct memranges *ranges,
 }
 
 static void merge_add_memranges(struct memranges *ranges,
-                                   resource_t begin, resource_t end,
-                                   unsigned long tag)
+				   resource_t begin, resource_t end,
+				   unsigned long tag)
 {
 	struct range_entry *cur;
 	struct range_entry **prev_ptr;
@@ -205,12 +205,12 @@ static void merge_add_memranges(struct memranges *ranges,
 }
 
 typedef void (*range_action_t)(struct memranges *ranges,
-                               resource_t begin, resource_t end,
-                               unsigned long tag);
+			       resource_t begin, resource_t end,
+			       unsigned long tag);
 
 static void do_action(struct memranges *ranges,
-                      resource_t base, resource_t size, unsigned long tag,
-                      range_action_t action)
+		      resource_t base, resource_t size, unsigned long tag,
+		      range_action_t action)
 {
 	resource_t end;
 	resource_t begin;
@@ -225,13 +225,13 @@ static void do_action(struct memranges *ranges,
 }
 
 void memranges_create_hole(struct memranges *ranges,
-                              resource_t base, resource_t size)
+			      resource_t base, resource_t size)
 {
 	do_action(ranges, base, size, -1, remove_memranges);
 }
 
 void memranges_insert(struct memranges *ranges,
-                      resource_t base, resource_t size, unsigned long tag)
+		      resource_t base, resource_t size, unsigned long tag)
 {
 	do_action(ranges, base, size, tag, merge_add_memranges);
 }
@@ -249,8 +249,8 @@ static void collect_ranges(void *gp, struct device *dev, struct resource *res)
 }
 
 void memranges_add_resources(struct memranges *ranges,
-                                 unsigned long mask, unsigned long match,
-                                 unsigned long tag)
+				 unsigned long mask, unsigned long match,
+				 unsigned long tag)
 {
 	struct collect_context context;
 
@@ -264,8 +264,8 @@ void memranges_add_resources(struct memranges *ranges,
 }
 
 void memranges_init(struct memranges *ranges,
-                    unsigned long mask, unsigned long match,
-                    unsigned long tag)
+		    unsigned long mask, unsigned long match,
+		    unsigned long tag)
 {
 	ranges->entries = NULL;
 	memranges_add_resources(ranges, mask, match, tag);
@@ -279,7 +279,7 @@ void memranges_teardown(struct memranges *ranges)
 }
 
 void memranges_fill_holes_up_to(struct memranges *ranges,
-                                resource_t limit, unsigned long tag)
+				resource_t limit, unsigned long tag)
 {
 	struct range_entry *cur;
 	struct range_entry *prev;
@@ -301,7 +301,7 @@ void memranges_fill_holes_up_to(struct memranges *ranges,
 			if (end >= limit)
 				end = limit - 1;
 			range_list_add(&prev->next, range_entry_end(prev),
-			               end, tag);
+					  end, tag);
 		}
 
 		prev = cur;
@@ -316,14 +316,14 @@ void memranges_fill_holes_up_to(struct memranges *ranges,
 	 * to be added to cover the range up to the limit. */
 	if (prev != NULL && range_entry_end(prev) < limit)
 		range_list_add(&prev->next, range_entry_end(prev),
-		               limit - 1, tag);
+				 limit - 1, tag);
 
 	/* Merge all entries that were newly added. */
 	merge_neighbor_entries(ranges);
 }
 
 struct range_entry *memranges_next_entry(struct memranges *ranges,
-                                         const struct range_entry *r)
+					 const struct range_entry *r)
 {
 	return r->next;
 }

@@ -36,14 +36,14 @@
  * These values are in 1/256 ns units.
  * @{
  */
-#define TCK_1066MHZ     240
-#define TCK_800MHZ      320
-#define TCK_666MHZ      384
-#define TCK_533MHZ      480
-#define TCK_400MHZ      640
-#define TCK_333MHZ      768
-#define TCK_266MHZ      960
-#define TCK_200MHZ      1280
+#define TCK_1066MHZ	240
+#define TCK_800MHZ	320
+#define TCK_666MHZ	384
+#define TCK_533MHZ	480
+#define TCK_400MHZ	640
+#define TCK_333MHZ	768
+#define TCK_266MHZ	960
+#define TCK_200MHZ	1280
 /** @} */
 
 /**
@@ -235,12 +235,12 @@ enum ddr3_mr0_burst_length {
 	DDR3_MR0_BURST_LENGTH_4 = 2,
 };
 mrs_cmd_t ddr3_get_mr0(enum ddr3_mr0_precharge precharge_pd,
-		       u8 write_recovery,
-		       enum ddr3_mr0_dll_reset dll_reset,
-		       enum ddr3_mr0_mode mode,
-		       u8 cas,
-		       enum ddr3_mr0_burst_type interleaved_burst,
-		       enum ddr3_mr0_burst_length burst_length);
+			 u8 write_recovery,
+			 enum ddr3_mr0_dll_reset dll_reset,
+			 enum ddr3_mr0_mode mode,
+			 u8 cas,
+			 enum ddr3_mr0_burst_type interleaved_burst,
+			 enum ddr3_mr0_burst_length burst_length);
 
 enum ddr3_mr1_qoff {
 	DDR3_MR1_QOFF_ENABLE = 0,
@@ -277,12 +277,12 @@ enum ddr3_mr1_dll {
 };
 
 mrs_cmd_t ddr3_get_mr1(enum ddr3_mr1_qoff qoff,
-		       enum ddr3_mr1_tqds tqds,
-		       enum ddr3_mr1_rtt_nom rtt_nom,
-		       enum ddr3_mr1_write_leveling write_leveling,
-		       enum ddr3_mr1_ods output_drive_strenght,
-		       enum ddr3_mr1_additive_latency additive_latency,
-		       enum ddr3_mr1_dll dll_disable);
+			 enum ddr3_mr1_tqds tqds,
+			 enum ddr3_mr1_rtt_nom rtt_nom,
+			 enum ddr3_mr1_write_leveling write_leveling,
+			 enum ddr3_mr1_ods output_drive_strenght,
+			 enum ddr3_mr1_additive_latency additive_latency,
+			 enum ddr3_mr1_dll dll_disable);
 
 enum ddr3_mr2_rttwr {
 	DDR3_MR2_RTTWR_OFF = 0,
@@ -299,8 +299,8 @@ enum ddr3_mr2_asr {
 };
 
 mrs_cmd_t ddr3_get_mr2(enum ddr3_mr2_rttwr rtt_wr,
-		       enum ddr3_mr2_srt_range extended_temp,
-		       enum ddr3_mr2_asr self_refresh, u8 cas_cwl);
+			 enum ddr3_mr2_srt_range extended_temp,
+			 enum ddr3_mr2_asr self_refresh, u8 cas_cwl);
 
 mrs_cmd_t ddr3_get_mr3(char dataflow_from_mpr);
 mrs_cmd_t ddr3_mrs_mirror_pins(mrs_cmd_t cmd);

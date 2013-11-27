@@ -52,7 +52,7 @@ const struct irq_routing_table intel_irq_routing_table = {
 				 * would give 0 after the sum of all bytes
 				 * for this structure (including checksum). */
 	{
-		/* bus,        dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
+		/* bus,	 dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
 		{0x00, (0x01 << 3) | 0x0, {{LNKH, BITMAP}, {LNKH, BITMAP}, {_OFF, ___OFF}, {_OFF, ___OFF}}, 0x0, 0x0},
 		{0x00, (0x03 << 3) | 0x0, {{LNKH, BITMAP}, {LNKH, BITMAP}, {LNKH, BITMAP}, {LNKH, BITMAP}}, 0x0, 0x0},
 		{0x00, (0x0a << 3) | 0x0, {{LNKA, BITMAP}, {LNKB, B_SATA}, {LNKC, BITMAP}, {LNKD, BITMAP}}, 0x0, 0x0},

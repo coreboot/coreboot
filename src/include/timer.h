@@ -80,7 +80,7 @@ static inline void mono_time_add_msecs(struct mono_time *mt, long ms)
 }
 
 static inline void mono_time_add_rela_time(struct mono_time *mt,
-                                           const struct rela_time *t)
+					   const struct rela_time *t)
 {
 	mono_time_add_usecs(mt, t->microseconds);
 }
@@ -88,7 +88,7 @@ static inline void mono_time_add_rela_time(struct mono_time *mt,
 /* Compare two absolute times: Return -1, 0, or 1 if t1 is <, =, or > t2,
  * respectively. */
 static inline int mono_time_cmp(const struct mono_time *t1,
-                                const struct mono_time *t2)
+				const struct mono_time *t2)
 {
 	if (t1->microseconds == t2->microseconds)
 		return 0;
@@ -100,7 +100,7 @@ static inline int mono_time_cmp(const struct mono_time *t1,
 }
 
 static inline int rela_time_cmp(const struct rela_time *t1,
-                                const struct rela_time *t2)
+				const struct rela_time *t2)
 {
 	if (t1->microseconds == t2->microseconds)
 		return 0;
@@ -121,21 +121,21 @@ static inline struct rela_time rela_time_init_usecs(long us)
 
 /* Return time difference between t1 and t2. i.e. t2 - t1. */
 static struct rela_time mono_time_diff(const struct mono_time *t1,
-                                       const struct mono_time *t2)
+				       const struct mono_time *t2)
 {
 	return rela_time_init_usecs(t2->microseconds - t1->microseconds);
 }
 
 /* Return true if t1 after t2  */
 static inline int mono_time_after(const struct mono_time *t1,
-                                  const struct mono_time *t2)
+				  const struct mono_time *t2)
 {
 	return mono_time_cmp(t1, t2) > 0;
 }
 
 /* Return true if t1 before t2. */
 static inline int mono_time_before(const struct mono_time *t1,
-                                   const struct mono_time *t2)
+				   const struct mono_time *t2)
 {
 	return mono_time_cmp(t1, t2) < 0;
 }
@@ -156,7 +156,7 @@ static inline long rela_time_in_microseconds(const struct rela_time *rt)
 }
 
 static inline long mono_time_diff_microseconds(const struct mono_time *t1,
-					       const struct mono_time *t2)
+						    const struct mono_time *t2)
 {
 	struct rela_time rt;
 	rt = mono_time_diff(t1, t2);

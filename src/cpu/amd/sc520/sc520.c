@@ -37,13 +37,13 @@ static void sc520_enable_resources(struct device *dev) {
 	unsigned char command;
 
 	printk(BIOS_SPEW, "%s\n", __func__);
-        command = pci_read_config8(dev, PCI_COMMAND);
-        printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
-        command |= PCI_COMMAND_MEMORY | PCI_COMMAND_PARITY | PCI_COMMAND_SERR;
-        printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
-        pci_write_config8(dev, PCI_COMMAND, command);
-        command = pci_read_config8(dev, PCI_COMMAND);
-        printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
+	command = pci_read_config8(dev, PCI_COMMAND);
+	printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
+	command |= PCI_COMMAND_MEMORY | PCI_COMMAND_PARITY | PCI_COMMAND_SERR;
+	printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
+	pci_write_config8(dev, PCI_COMMAND, command);
+	command = pci_read_config8(dev, PCI_COMMAND);
+	printk(BIOS_SPEW, "========>%s, command 0x%x\n", __func__, command);
 /*
  */
 
@@ -70,11 +70,11 @@ static void sc520_read_resources(device_t dev)
 
 static struct device_operations cpu_operations = {
 	.read_resources   = sc520_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = sc520_enable_resources,
-	.init             = cpu_init,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init		   = cpu_init,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver cpu_driver __pci_driver = {
@@ -86,9 +86,9 @@ static const struct pci_driver cpu_driver __pci_driver = {
 static void pci_domain_set_resources(device_t dev)
 {
 	device_t mc_dev;
-        uint32_t pci_tolm;
+	uint32_t pci_tolm;
   printk(BIOS_SPEW, "%s\n", __func__);
-        pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
@@ -150,18 +150,18 @@ void sc520_enable_resources(device_t dev) {
 #endif
 
 static struct device_operations pci_domain_ops = {
-        .read_resources   = pci_domain_read_resources,
-        .set_resources    = pci_domain_set_resources,
+	.read_resources	  = pci_domain_read_resources,
+	.set_resources	  = pci_domain_set_resources,
 	/*
 	 * If enable_resources is set to the generic enable_resources
 	 * function the whole thing will hang in an endless loop on
 	 * the ts5300. If this is really needed on another platform,
 	 * something is conceptually wrong.
 	 */
-        .enable_resources = 0, //enable_resources,
-        .init             = 0,
-        .scan_bus         = pci_domain_scan_bus,
-        .ops_pci_bus      = pci_bus_default_ops,
+	.enable_resources = 0, //enable_resources,
+	.init		  = 0,
+	.scan_bus	  = pci_domain_scan_bus,
+	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
 #if 0
@@ -175,28 +175,28 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = cpu_bus_noop,
-        .set_resources    = cpu_bus_noop,
-        .enable_resources = cpu_bus_noop,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources	  = cpu_bus_noop,
+	.set_resources	  = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init		  = cpu_bus_init,
+	.scan_bus	  = 0,
 };
 #endif
 
 static void enable_dev(struct device *dev)
 {
   printk(BIOS_SPEW, "%s\n", __func__);
-        /* Set the operations if it is a special bus type */
-        if (dev->path.type == DEVICE_PATH_DOMAIN) {
-                dev->ops = &pci_domain_ops;
-        }
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		dev->ops = &pci_domain_ops;
+	}
 #if 0
 	/* This is never hit as none of the sc520 boards have
 	 * an APIC cluster defined
 	 */
-        else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-                dev->ops = &cpu_bus_ops;
-        }
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
+	}
 #endif
 }
 

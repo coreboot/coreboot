@@ -58,7 +58,7 @@
 #define RCBA_HPTC  0x3404 /* 32 bit */
 #define RCBA_GCS   0x3410 /* 32 bit */
 #define RCBA_BUC   0x3414 /*  8 bit */
-#define RCBA_FD    0x3418 /* 32 bit */
+#define RCBA_FD	   0x3418 /* 32 bit */
 #define RCBA_PRC   0x341C /* 32 bit */
 
 static inline int spd_read_byte(u16 device, u8 address)
@@ -102,12 +102,12 @@ static void early_config(void)
 	write32(DEFAULT_RCBA + RCBA_HPTC, (1 << 7));
 
 	/* Improve interrupt routing
-	 * D31:F2 SATA        INTB# -> PIRQD
+	 * D31:F2 SATA	       INTB# -> PIRQD
 	 * D31:F3 SMBUS       INTB# -> PIRQD
-	 * D31:F4 CHAP        INTD# -> PIRQA
+	 * D31:F4 CHAP	       INTD# -> PIRQA
 	 * D29:F0 USB1#1      INTA# -> PIRQH
 	 * D29:F1 USB1#2      INTB# -> PIRQD
-	 * D29:F7 USB2        INTA# -> PIRQH
+	 * D29:F7 USB2	       INTA# -> PIRQH
 	 * D28:F0 PCIe Port 1 INTA# -> PIRQE
 	 */
 

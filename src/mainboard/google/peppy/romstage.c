@@ -34,14 +34,14 @@
 const struct rcba_config_instruction rcba_config[] = {
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  PCIE   INTA -> PIRQA
-	 * D29IP_E1P   EHCI   INTA -> PIRQD
+	 * D29IP_E1P	EHCI   INTA -> PIRQD
 	 * D20IP_XHCI  XHCI   INTA -> PIRQC (MSI)
-	 * D31IP_SIP   SATA   INTA -> PIRQF (MSI)
+	 * D31IP_SIP	SATA   INTA -> PIRQF (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQG
 	 * D31IP_TTIP  THRT   INTC -> PIRQA
-	 * D27IP_ZIP   HDA    INTA -> PIRQG (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQG (MSI)
 	 */
 
 	/* Device interrupt pin register (board specific) */
@@ -93,9 +93,9 @@ static void copy_spd(struct pei_data *peid)
 		die("Missing SPD data.");
 
 	memcpy(peid->spd_data[0],
-	       ((char*)CBFS_SUBHEADER(spd_file)) +
-	       spd_index * sizeof(peid->spd_data[0]),
-	       sizeof(peid->spd_data[0]));
+		((char*)CBFS_SUBHEADER(spd_file)) +
+		spd_index * sizeof(peid->spd_data[0]),
+		sizeof(peid->spd_data[0]));
 }
 
 /*
@@ -103,10 +103,10 @@ static void copy_spd(struct pei_data *peid)
  *
  * Must be sequenced in this order with specified timing.
  *
- * 1. VCC_IO    : 30us - 100ms
+ * 1. VCC_IO	: 30us - 100ms
  * 2. VCC_FLASH : 70us - 10ms
- * 3. VCCQ      : 70us - 10ms
- * 4. VDDC      : 30us - 100ms
+ * 3. VCCQ	: 70us - 10ms
+ * 4. VDDC	: 30us - 100ms
  *
  * There is no feedback to know if the voltage has stabilized
  * so this implementation will use the max ramp times.  That
@@ -120,8 +120,8 @@ static void issd_power_sequence(void)
 	} issd_gpio_seq[] = {
 		{ 49, 100 },	/* VCC_IO:    GPIO 49, wait 100ms */
 		{ 44, 10 },	/* VCC_FLASH: GPIO 44, wait 10ms */
-		{ 17, 10 },	/* VCCQ:      GPIO 17, wait 10ms */
-		{ 16, 100 },	/* VDDC:      GPIO 16, wait 100ms */
+		{ 17, 10 },	/* VCCQ:	    GPIO 17, wait 10ms */
+		{ 16, 100 },	/* VDDC:	     GPIO 16, wait 100ms */
 	};
 	int step;
 
@@ -161,18 +161,18 @@ void mainboard_romstage_entry(unsigned long bist)
 		usb2_ports: {
 			/* Length, Enable, OCn# */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P0: LTE */
-			{ 0x0040, 1, 0               }, /* P1: Port A, CN10 */
+			{ 0x0040, 1, 0		}, /* P1: Port A, CN10 */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P2: CCD */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: BT */
-			{ 0x0040, 1, 2               }, /* P4: Port B, CN6  */
+			{ 0x0040, 1, 2		}, /* P4: Port B, CN6  */
 			{ 0x0040, 0, USB_OC_PIN_SKIP }, /* P5: EMPTY */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P6: SD Card */
 			{ 0x0040, 0, USB_OC_PIN_SKIP }, /* P7: EMPTY */
 		},
 		usb3_ports: {
 			/* Enable, OCn# */
-			{ 1, 0               }, /* P1; Port A, CN10 */
-			{ 1, 2               }, /* P2; Port B, CN6  */
+			{ 1, 0		}, /* P1; Port A, CN10 */
+			{ 1, 2		}, /* P2; Port B, CN6  */
 			{ 0, USB_OC_PIN_SKIP }, /* P3; */
 			{ 0, USB_OC_PIN_SKIP }, /* P4; */
 		},

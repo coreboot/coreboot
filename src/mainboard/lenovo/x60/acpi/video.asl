@@ -28,7 +28,7 @@ Device (DSPC)
 	Field (DSPC, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0xf4),
-		       BRTC, 8
+			 BRTC, 8
 	}
 
 	Method(BRTD, 0, NotSerialized)

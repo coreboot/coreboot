@@ -72,7 +72,7 @@
 
 		/* SB devices */
 		/* Bus 0, Dev 18,19,22 - USB: OHCI @ func 0
-		 *                            EHCI @ func 2 */
+		 *				EHCI @ func 2 */
 		Package(){0x0012FFFF, 0, INTC, 0 },
 		Package(){0x0012FFFF, 1, INTB, 0 },
 
@@ -150,7 +150,7 @@
 
 		/* SB devices in APIC mode */
 		/* Bus 0, Dev 18,19,22 - USB: OHCI @ func 0
-		 *                            EHCI @ func 2 */
+		 *				EHCI @ func 2 */
 		Package(){0x0012FFFF, 0, 0, 18 },
 		Package(){0x0012FFFF, 1, 0, 17 },
 

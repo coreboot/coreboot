@@ -177,9 +177,9 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	physbase = pphysbase;
 	graphics = pgfx;
 	printk(BIOS_SPEW,
-	       "i915lightup: graphics %p mmio %p"
-	       "addrport %04x physbase %08x\n",
-	       (void *)graphics, mmio, addrport, physbase);
+		"i915lightup: graphics %p mmio %p"
+		"addrport %04x physbase %08x\n",
+		(void *)graphics, mmio, addrport, physbase);
 	globalstart = rdtscll();
 
 	/* turn it on. The VBIOS does it this way, so we hope that's ok. */
@@ -192,7 +192,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	 * and set the global translation table (GTT)
 	 */
 	printk(BIOS_SPEW, "Set not-White (%08x) for %d pixels\n", 0xffffff,
-	       FRAME_BUFFER_BYTES/sizeof(u32));
+		FRAME_BUFFER_BYTES/sizeof(u32));
 	for(l = (u32 *)graphics, i = 0;
 		i < FRAME_BUFFER_BYTES/sizeof(u32); i++){
 		l[i] = 0x1122ff;

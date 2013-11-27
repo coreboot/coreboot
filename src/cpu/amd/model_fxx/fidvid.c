@@ -60,7 +60,7 @@ static void enable_fid_change(void)
 #endif
 
 		dword = 0x23070700;	/* enable FID/VID change */
-//              dword = 0x00070000; /* enable FID/VID change */
+//		dword = 0x00070000; /* enable FID/VID change */
 		pci_write_config32(PCI_DEV(0, 0x18 + i, 3), 0x80, dword);
 
 #if CONFIG_HAVE_ACPI_RESUME
@@ -94,14 +94,14 @@ static unsigned set_fidvid_without_init(unsigned fidvid)
 static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 {
 
-/*  CurrentFID--> 4x(00h)   5x(02h)   6x(04h)   7x(06h) ...
- *       --------------------------------------
+/*  CurrentFID--> 4x(00h)   5x(02h)   6x(04h)	7x(06h) ...
+ *	 --------------------------------------
  * TargetFID   | Next_FID, Next_FID, Next_FID, Next_FID ...
- *      |      | Next_FID, Next_FID, Next_FID, Next_FID ...
+ *	|      | Next_FID, Next_FID, Next_FID, Next_FID ...
  *     \|/     | Next_FID, Next_FID, Next_FID, Next_FID ...
  */
 	static const u8 next_fid_200[] = {
-/*         x4  x5  x6  x7  x8  x9 x10 x11 x12 x13 x14 x15  x16 */
+/*	   x4  x5  x6  x7  x8  x9 x10 x11 x12 x13 x14 x15  x16 */
 /* x4 */    0, -1, -1, -1,  0,  0,  9, 10, 11, 12, 13, 14, 15, /*  800 */
 /* x5 */   -1,  0, -1, -1, -1,  5,  5,  5, 11, 12, 13, 14, 15, /* 1000 */
 /* x6 */   -1, -1,  0, -1, -1, -1, -1,  6,  6,  6, 13, 14, 15, /* 1200 */
@@ -134,8 +134,8 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 
 	if (apicid != apicidx) {
 		printk(BIOS_ERR,
-		       "wrong apicid, we want change %x, but it is %x\n",
-		       apicid, apicidx);
+			 "wrong apicid, we want change %x, but it is %x\n",
+			 apicid, apicidx);
 		return fidvid;
 	}
 
@@ -166,12 +166,12 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	/* TODO - make this more correct. Not a big deal for setting max...
 	 * BKDG figure 11
 	 * if TargetFID > InitialFID
-	 *      TargetVID = FinalVID - RVO
+	 *	 TargetVID = FinalVID - RVO
 	 * else
-	 *      if CurrentVID > FinalVID
-	 *              TargetVID = FinalVID - RVO
-	 *      else
-	 *              TargetVID = CurrentVIDD - RVO
+	 *	 if CurrentVID > FinalVID
+	 *		 TargetVID = FinalVID - RVO
+	 *	 else
+	 *		 TargetVID = CurrentVIDD - RVO
 	 */
 	msr.hi = 1;
 	msr.lo = (vid_max << 8) | (fid_cur);
@@ -205,7 +205,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	 */
 
 	printk(BIOS_DEBUG, "Current fid_cur: 0x%x, fid_max: 0x%x\n", fid_cur,
-	       fid_max);
+		fid_max);
 	printk(BIOS_DEBUG, "Requested fid_new: 0x%x\n", fid_new);
 
 	step_limit = 8;		/* max 8 steps just in case... */
@@ -262,7 +262,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 
 		if (fid_temp > fid_max) {
 			printk(BIOS_DEBUG, "fid_temp 0x%x > fid_max 0x%x\n",
-			       fid_temp, fid_max);
+				  fid_temp, fid_max);
 			break;
 		}
 
@@ -333,11 +333,11 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 	if (showmessage) {
 		if (vid_new != vid_cur) {
 			printk(BIOS_ERR, "set vid failed for apicid =%02x\n",
-			       apicidx);
+				  apicidx);
 		}
 		if (fid_new != fid_cur) {
 			printk(BIOS_ERR, "set fid failed for apicid =%02x\n",
-			       apicidx);
+				  apicidx);
 		}
 	}
 
@@ -388,13 +388,13 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 	timeout = wait_cpu_state(bsp_apicid, 1);
 	if (timeout) {
 		printk(BIOS_DEBUG, "fidvid_ap_stage1: time out while reading"
-		       " from BSP on %02x\n", apicid);
+			 " from BSP on %02x\n", apicid);
 	}
 	/* send signal to BSP about this AP max fid and vid */
 	/* AP at state 1 that sent our fid and vid */
 	lapic_write(LAPIC_MSG_REG, send | 1);
 
-//      wait_cpu_state(bsp_apicid, 2); /* don't need we can use apicid directly */
+//	wait_cpu_state(bsp_apicid, 2); /* don't need we can use apicid directly */
 	loop = 1000000;
 	while (--loop > 0) {
 		/* remote read BSP signal that include vid/fid that need to set */
@@ -417,7 +417,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 		send = (apicid << 24) | (readback & 0x00ffff00);
 	} else {
 		printk(BIOS_DEBUG, "%s: time out while reading from BSP on %02x",
-		       __func__, apicid);
+			 __func__, apicid);
 	}
 
 	lapic_write(LAPIC_MSG_REG, send | 2);
@@ -425,7 +425,7 @@ static void init_fidvid_ap(unsigned bsp_apicid, unsigned apicid)
 	timeout = wait_cpu_state(bsp_apicid, 3);
 	if (timeout) {
 		printk(BIOS_DEBUG, "%s: time out while reading from BSP on %02x",
-		       __func__, apicid);
+			 __func__, apicid);
 	}
 }
 
@@ -466,7 +466,7 @@ static void init_fidvid_bsp_stage1(u32 ap_apicid, void *gp)
 
 	if (timeout) {
 		printk(BIOS_DEBUG, "%s: timed out reading from ap %02x\n",
-		       __func__, ap_apicid);
+			 __func__, ap_apicid);
 		return;
 	}
 
@@ -502,7 +502,7 @@ static void init_fidvid_bsp_stage2(unsigned ap_apicid, void *gp)
 
 	if (timeout) {
 		printk(BIOS_DEBUG, "%s: time out while reading from ap %02x",
-		       __func__, ap_apicid);
+			 __func__, ap_apicid);
 		return;
 	}
 

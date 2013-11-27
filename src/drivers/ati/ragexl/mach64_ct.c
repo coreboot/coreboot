@@ -11,12 +11,12 @@
 static int aty_valid_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
 			    struct pll_ct *pll);
 static int aty_dsp_gt(const struct fb_info_aty *info, u32 bpp,
-		      struct pll_ct *pll);
+			struct pll_ct *pll);
 static int aty_var_to_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
-			     u8 bpp, union aty_pll *pll);
+				u8 bpp, union aty_pll *pll);
 #if PLL_CRTC_DECODE==1
 static u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
-			     const union aty_pll *pll);
+				const union aty_pll *pll);
 #endif
 
 /* ------------------------------------------------------------------------- */
@@ -25,7 +25,7 @@ static u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
      *  PLL programming (Mach64 CT family)
      */
 static int aty_dsp_gt(const struct fb_info_aty *info, u32 bpp,
-		      struct pll_ct *pll)
+			struct pll_ct *pll)
 {
     u32 dsp_xclks_per_row, dsp_loop_latency, dsp_precision, dsp_off, dsp_on;
     u32 xclks_per_row, fifo_off, fifo_on, y, fifo_size;
@@ -111,8 +111,8 @@ static int aty_dsp_gt(const struct fb_info_aty *info, u32 bpp,
     dsp_off = fifo_off>>dsp_precision;
 
     pll->dsp_config = (dsp_xclks_per_row & 0x3fff) |
-		      ((dsp_loop_latency & 0xf)<<16) |
-		      ((dsp_precision & 7)<<20);
+			((dsp_loop_latency & 0xf)<<16) |
+			((dsp_precision & 7)<<20);
     pll->dsp_on_off = (dsp_off & 0x7ff) | ((dsp_on & 0x7ff)<<16);
     return 0;
 }
@@ -274,7 +274,7 @@ static void aty_calc_pll_ct(const struct fb_info_aty *info, struct pll_ct *pll)
 }
 
 int aty_var_to_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
-			     u8 bpp, union aty_pll *pll)
+				u8 bpp, union aty_pll *pll)
 {
     int err;
     if ((err = aty_valid_pll_ct(info, vclk_per, &pll->ct)))
@@ -287,7 +287,7 @@ int aty_var_to_pll_ct(const struct fb_info_aty *info, u32 vclk_per,
 #if CONFIG_CONSOLE_BTEXT
 #if PLL_CRTC_DECODE==1
 u32 aty_pll_ct_to_var(const struct fb_info_aty *info,
-			     const union aty_pll *pll)
+				const union aty_pll *pll)
 {
     u32 ref_clk_per = info->ref_clk_per;
     u8 pll_ref_div = pll->ct.pll_ref_div;

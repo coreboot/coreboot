@@ -85,7 +85,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
 						0x000CFFFF, // Address Range Maximum
 						0x00000000, // Address Translation Offset
 						0x00010000,,,
-						, AddressRangeMemory, TypeStatic)   //Video BIOS A0000h-C7FFFh
+						, AddressRangeMemory, TypeStatic)	  //Video BIOS A0000h-C7FFFh
 
 					Memory32Fixed (ReadWrite, 0x000D8000, 0x00004000)//USB HC D8000-DBFFF
 

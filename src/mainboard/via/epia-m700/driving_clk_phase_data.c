@@ -23,7 +23,7 @@
 // DQS Driving
 // Reg0xE0, 0xE1
 // According to #Bank to set DRAM DQS Driving
-// #Bank    1     2     3     4     5     6     7     8
+// #Bank    1	  2	3     4	    5	  6	7     8
 static const u8 DDR2_DQSA_Driving_Table[4] = { 0xEE, 0xEE, 0xEE, 0xEE };
 static const u8 DDR2_DQSB_Driving_Table[2] = { 0xEE, 0xEE };
 
@@ -36,7 +36,7 @@ static const u8 DDR2_DQB_Driving_Table[2] = { 0xCA, 0xCA };
 // CS Driving
 // Reg0xE4, 0xE5
 // According to #Bank to set DRAM CS Driving
-// DDR1 #Bank          1     2     3     4         5         6     7     8
+// DDR1 #Bank	       1     2	   3	 4	   5	     6	   7	 8
 static const u8 DDR2_CSA_Driving_Table_x8[4] =  { 0x44, 0x44, 0x44, 0x44 };
 static const u8 DDR2_CSB_Driving_Table_x8[2] =  { 0x44, 0x44 };
 static const u8 DDR2_CSA_Driving_Table_x16[4] = { 0x44, 0x44, 0x44, 0x44 };
@@ -45,23 +45,23 @@ static const u8 DDR2_CSB_Driving_Table_x16[2] = { 0x44, 0x44 };
 // MAA Driving
 // Reg0xE8, Reg0xE9
 static const u8 DDR2_MAA_Driving_Table[MA_Table][5] = {
-	// Chip number, 400,  533,  667   800    ;(SRAS, SCAS, SWE)RxE8
-	{6,             0x86, 0x86, 0x86, 0x86}, // total MAA chips = 00 ~ 06
-	{18,            0x86, 0x86, 0x86, 0x86}, // total MAA chips = 06 ~ 18
-	{255,           0xDB, 0xDB, 0xDB, 0xDB}, // total MAA chips = 18 ~
+	// Chip number, 400,  533,  667   800	  ;(SRAS, SCAS, SWE)RxE8
+	{6,		 0x86, 0x86, 0x86, 0x86}, // total MAA chips = 00 ~ 06
+	{18,		 0x86, 0x86, 0x86, 0x86}, // total MAA chips = 06 ~ 18
+	{255,		 0xDB, 0xDB, 0xDB, 0xDB}, // total MAA chips = 18 ~
 };
 
 static const u8 DDR2_MAB_Driving_Table[MA_Table][2] = {
-	// Chip number, Value                    ;(SRAS, SCAS, SWE)RxE9
-	{6,             0x86},			 // total MAB chips = 00 ~ 06
-	{18,            0x86},			 // total MAB chips = 06 ~ 18
-	{255,           0xDB},			 // total MAB chips = 18 ~
+	// Chip number, Value			  ;(SRAS, SCAS, SWE)RxE9
+	{6,		 0x86},			 // total MAB chips = 00 ~ 06
+	{18,		 0x86},			 // total MAB chips = 06 ~ 18
+	{255,		 0xDB},			 // total MAB chips = 18 ~
 };
 
 // DCLK Driving
 // Reg0xE6, 0xE7
 // For DDR2: According to #Freq to set DRAM DCLK Driving
-//                              freq            400M, 533M, 667M, 800M
+//				freq		400M, 533M, 667M, 800M
 static const u8 DDR2_DCLKA_Driving_Table[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
 static const u8 DDR2_DCLKB_Driving_Table[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
 
@@ -93,9 +93,9 @@ static const u8 ChB_Duty_Control_DDR2[DUTY_CYCLE_REG_NUM][DUTY_CYCLE_FREQ_NUM] =
  * Processing:
  *   1. Program VIA_NB3DRAM_REG90[7]=0b for FeedBack mode.
  *   2. Program clock phase value with ChA/B DCLK enable,
- *      VIA_NB3DRAM_REG91[7:3]=00b
+ *	VIA_NB3DRAM_REG91[7:3]=00b
  *   3. Check ChB rank #, if 0, VIA_NB3DRAM_REG91[7]=1b, to disable ChB DCLKO
- *      ChA DCLKO can't be disabled, so always program VIA_NB3DRAM_REG91[3]=0b.
+ *	ChA DCLKO can't be disabled, so always program VIA_NB3DRAM_REG91[3]=0b.
  */
 static const u8 DDR2_ChA_Clk_Phase_Table_1R[3][Clk_Phase_Table_DDR2_Width] = {
 	//    (And NOT) DDR800 DDR667 DDR533 DDR400
@@ -116,7 +116,7 @@ static const u8 DDR2_ChB_Clk_Phase_Table_1R[3][Clk_Phase_Table_DDR2_Width] = {
 /* vt6413c */
 #if 0
 static const u8 DDR2_ChA_Clk_Phase_Table_2R[3][Clk_Phase_Table_DDR2_Width] = {
-	//     (And NOT) DDR800 DDR667 DDR533 DDR400
+	//	(And NOT) DDR800 DDR667 DDR533 DDR400
 	//Reg  Mask  Value Value Value Value
 	{0x91, 0xF8, 0x04, 0x03, 0x04, 0x01 },	// 1Rank
 	{0x92, 0xF8, 0x03, 0x06, 0x05, 0x04 },
@@ -126,7 +126,7 @@ static const u8 DDR2_ChA_Clk_Phase_Table_2R[3][Clk_Phase_Table_DDR2_Width] = {
 
 /* vt6413d */
 static const u8 DDR2_ChA_Clk_Phase_Table_2R[3][Clk_Phase_Table_DDR2_Width] = {
-	//     (And NOT) DDR800 DDR667 DDR533 DDR400
+	//	(And NOT) DDR800 DDR667 DDR533 DDR400
 	//Reg  Mask  Value Value Value Value
 	{0x91, 0xF8, 0x02, 0x01, 0x00, 0x07},	// 1Rank
 	{0x92, 0xF8, 0x04, 0x03, 0x03, 0x02},

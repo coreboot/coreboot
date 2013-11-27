@@ -33,14 +33,14 @@
 const struct rcba_config_instruction rcba_config[] = {
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  PCIE   INTA -> PIRQA
-	 * D29IP_E1P   EHCI   INTA -> PIRQD
+	 * D29IP_E1P	EHCI   INTA -> PIRQD
 	 * D20IP_XHCI  XHCI   INTA -> PIRQC (MSI)
-	 * D31IP_SIP   SATA   INTA -> PIRQF (MSI)
+	 * D31IP_SIP	SATA   INTA -> PIRQF (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQG
 	 * D31IP_TTIP  THRT   INTC -> PIRQA
-	 * D27IP_ZIP   HDA    INTA -> PIRQG (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQG (MSI)
 	 */
 
 	/* Device interrupt pin register (board specific) */
@@ -98,9 +98,9 @@ static void copy_spd(struct pei_data *peid)
 		peid->dimm_channel1_disabled = 3;
 
 	memcpy(peid->spd_data[0],
-	       ((char*)CBFS_SUBHEADER(spd_file)) +
-	       spd_index * sizeof(peid->spd_data[0]),
-	       sizeof(peid->spd_data[0]));
+		((char*)CBFS_SUBHEADER(spd_file)) +
+		spd_index * sizeof(peid->spd_data[0]),
+		sizeof(peid->spd_data[0]));
 }
 
 void mainboard_romstage_entry(unsigned long bist)
@@ -132,19 +132,19 @@ void mainboard_romstage_entry(unsigned long bist)
 		max_ddr3_freq: 1600,
 		usb2_ports: {
 			/* Length, Enable, OCn# */
-			{ 0x0040, 1, 0               }, /* P0: Port A, CN8 */
-			{ 0x0040, 1, 0               }, /* P1: Port B, CN9  */
+			{ 0x0040, 1, 0		}, /* P0: Port A, CN8 */
+			{ 0x0040, 1, 0		}, /* P1: Port B, CN9  */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P2: CCD */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P3: BT */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P4: LTE */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P5: TOUCH */
 			{ 0x0040, 1, USB_OC_PIN_SKIP }, /* P6: SD Card */
-			{ 0x0040, 1, 3               }, /* P7: USB2 Port */
+			{ 0x0040, 1, 3		}, /* P7: USB2 Port */
 		},
 		usb3_ports: {
 			/* Enable, OCn# */
-			{ 1, 0               }, /* P1; Port A, CN8 */
-			{ 1, 0               }, /* P2; Port B, CN9  */
+			{ 1, 0		}, /* P1; Port A, CN8 */
+			{ 1, 0		}, /* P2; Port B, CN9  */
 			{ 0, USB_OC_PIN_SKIP }, /* P3; */
 			{ 0, USB_OC_PIN_SKIP }, /* P4; */
 		},

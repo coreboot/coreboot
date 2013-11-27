@@ -46,7 +46,7 @@ void set_pcie_dereset(void)
 {
 	/**
 	 * GPIO32 Pcie Device DeAssert for APU
-	 * GPIO25 Pcie LAN,       APU GPP2
+	 * GPIO25 Pcie LAN,	   APU GPP2
 	 * GPIO02 MINIPCIE SLOT1, APU GPP3
 	 * GPIO50 Pcie Device DeAssert for Hudson Southbridge
 	 * GPIO05 Express Card,     SB  GPP0

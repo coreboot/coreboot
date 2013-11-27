@@ -35,8 +35,8 @@
 #endif
 
 typedef enum {
-	S3DataTypeNonVolatile=0,            ///< NonVolatile Data Type
-	S3DataTypeVolatile                  ///< Volatile Data Type
+	S3DataTypeNonVolatile=0,	     ///< NonVolatile Data Type
+	S3DataTypeVolatile		     ///< Volatile Data Type
 } S3_DATA_TYPE;
 
 void restore_mtrr(void);

@@ -8,14 +8,14 @@
 
 #define ADM1026_DEVICE 0x2d	/* Either 0x2c or 0x2d or 0x2e */
 #define ADM1026_REG_CONFIG1 0x00
-#define CFG1_MONITOR     0x01
+#define CFG1_MONITOR	 0x01
 #define CFG1_INT_ENABLE  0x02
-#define CFG1_INT_CLEAR   0x04
-#define CFG1_AIN8_9      0x08
-#define CFG1_THERM_HOT   0x10
-#define CFT1_DAC_AFC     0x20
-#define CFG1_PWM_AFC     0x40
-#define CFG1_RESET       0x80
+#define CFG1_INT_CLEAR	 0x04
+#define CFG1_AIN8_9	 0x08
+#define CFG1_THERM_HOT	 0x10
+#define CFT1_DAC_AFC	 0x20
+#define CFG1_PWM_AFC	 0x40
+#define CFG1_RESET	 0x80
 #define ADM1026_REG_CONFIG2 0x01
 #define ADM1026_REG_CONFIG3 0x07
 

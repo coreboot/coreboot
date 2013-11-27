@@ -100,7 +100,7 @@ static const PCIe_DDI_DESCRIPTOR DdiList [] = {
 };
 
 static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
-	.Flags        = DESCRIPTOR_TERMINATE_LIST,
+	.Flags	       = DESCRIPTOR_TERMINATE_LIST,
 	.SocketId     = 0,
 	.PciePortList = PortList,
 	.DdiLinkList  = DdiList
@@ -118,7 +118,7 @@ static const PCIe_COMPLEX_DESCRIPTOR PcieComplex = {
  *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
- *    @retval         VOID
+ *    @retval	      VOID
  *
  **/
 /*---------------------------------------------------------------------------------------*/
@@ -127,7 +127,7 @@ OemCustomizeInitEarly (
 	IN  OUT AMD_EARLY_PARAMS    *InitEarly
 	)
 {
-	AGESA_STATUS            Status;
+	AGESA_STATUS		 Status;
 	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;

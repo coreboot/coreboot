@@ -34,14 +34,14 @@ static void si_sata_init(struct device *dev)
 
 static struct device_operations si_sata_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = si_sata_init,
-	.scan_bus         = 0,
+	.init		   = si_sata_init,
+	.scan_bus	   = 0,
 };
 
 static const struct pci_driver si_sata_driver __pci_driver = {
-        .ops    = &si_sata_ops,
-        .vendor = 0x1095,
-        .device = 0x3114,
+	.ops	= &si_sata_ops,
+	.vendor = 0x1095,
+	.device = 0x3114,
 };

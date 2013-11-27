@@ -18,7 +18,7 @@
 #endif
 
 static uint8_t pci_conf1_read_config8(struct bus *pbus, int bus, int devfn,
-				      int where)
+					  int where)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
 	return inb(0xCFC + (where & 3));
@@ -39,21 +39,21 @@ static uint32_t pci_conf1_read_config32(struct bus *pbus, int bus, int devfn,
 }
 
 static void pci_conf1_write_config8(struct bus *pbus, int bus, int devfn,
-				    int where, uint8_t value)
+					int where, uint8_t value)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
 	outb(value, 0xCFC + (where & 3));
 }
 
 static void pci_conf1_write_config16(struct bus *pbus, int bus, int devfn,
-				     int where, uint16_t value)
+					 int where, uint16_t value)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
 	outw(value, 0xCFC + (where & 2));
 }
 
 static void pci_conf1_write_config32(struct bus *pbus, int bus, int devfn,
-				     int where, uint32_t value)
+					 int where, uint32_t value)
 {
 	outl(CONFIG_CMD(bus, devfn, where), 0xCF8);
 	outl(value, 0xCFC);

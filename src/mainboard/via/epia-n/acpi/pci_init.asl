@@ -23,7 +23,7 @@ Method (\_SB.PCI0._INI, 0, NotSerialized)
 	{
     	If (LNotEqual (\_SB.PCI0.PATA.VID, 0x1106))
     	{
-        	Store (0x01, ATFL)
+		Store (0x01, ATFL)
     	}
 	}
 

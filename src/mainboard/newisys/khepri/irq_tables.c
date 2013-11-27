@@ -2,16 +2,16 @@
 
 static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE, /* u32 signature */
-	PIRQ_VERSION,   /* u16 version   */
-	32+16*CONFIG_IRQ_SLOT_COUNT,        /* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
-	1,              /* Where the interrupt router lies (bus) */
-	(4<<3)|3,       /* Where the interrupt router lies (dev) */
-	0x0,            /* IRQs devoted exclusively to PCI usage */
-	0x1022,         /* Vendor */
-	0x746b,         /* Device */
-	0,              /* Miniport data */
+	PIRQ_VERSION,	 /* u16 version	  */
+	32+16*CONFIG_IRQ_SLOT_COUNT,	     /* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
+	1,		 /* Where the interrupt router lies (bus) */
+	(4<<3)|3,	 /* Where the interrupt router lies (dev) */
+	0x0,		 /* IRQs devoted exclusively to PCI usage */
+	0x1022,	 /* Vendor */
+	0x746b,	 /* Device */
+	0,		 /* Miniport data */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0xb0,           /*  u8 checksum , mod 256 checksum must give zero */
+	0xb0,		 /*  u8 checksum , mod 256 checksum must give zero */
 	{	/* bus, devfn,     {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu  */
 		/* PCI Slot 1 */
 		{0x03, (0x01<<3)|0, {{0x02, 0xdef8}, {0x03, 0xdef8}, {0x04, 0xdef8}, {0x01, 0xdef8}}, 0x01, 0},
@@ -35,5 +35,5 @@ static const struct irq_routing_table intel_irq_routing_table = {
 
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-        return copy_pirq_routing_table(addr, &intel_irq_routing_table);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }

@@ -27,14 +27,14 @@ static void dump_mem(unsigned start, unsigned end)
 {
 
 	unsigned i;
-        print_debug("dump_mem:");
-        for(i=start;i<end;i++) {
-                if((i & 0xf)==0) {
-                        printk(BIOS_DEBUG, "\n%08x:", i);
-                }
-                printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
-        }
-        print_debug("\n");
+	print_debug("dump_mem:");
+	for(i=start;i<end;i++) {
+		if((i & 0xf)==0) {
+			printk(BIOS_DEBUG, "\n%08x:", i);
+		}
+		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
+	}
+	print_debug("\n");
  }
 #endif
 
@@ -58,9 +58,9 @@ unsigned long acpi_fill_madt(unsigned long current)
 {
 	unsigned int gsi_base=0x18;
 
-        struct mb_sysconf_t *m;
+	struct mb_sysconf_t *m;
 
-        m = sysconf.mb;
+	m = sysconf.mb;
 
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);
@@ -69,75 +69,75 @@ unsigned long acpi_fill_madt(unsigned long current)
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8111,
 			IO_APIC_ADDR, 0);
 
-        /* Write all 8131 IOAPICs */
-        {
-                device_t dev;
-                struct resource *res;
-                dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN((sysconf.hcdn[0]&0xff), 1));
-                if (dev) {
-                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                        if (res) {
-			        current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132_1,
-		                        res->base, gsi_base );
+	/* Write all 8131 IOAPICs */
+	{
+		device_t dev;
+		struct resource *res;
+		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN((sysconf.hcdn[0]&0xff), 1));
+		if (dev) {
+			res = find_resource(dev, PCI_BASE_ADDRESS_0);
+			if (res) {
+				   current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132_1,
+					  res->base, gsi_base );
 				gsi_base+=4;
 
-                        }
-                }
-                dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN((sysconf.hcdn[0] & 0xff)+1, 1));
-                if (dev) {
-                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                        if (res) {
-                                current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132_2,
-                                        res->base, gsi_base );
-                                gsi_base+=4;
-                        }
-                }
+			}
+		}
+		dev = dev_find_slot(m->bus_8132_0, PCI_DEVFN((sysconf.hcdn[0] & 0xff)+1, 1));
+		if (dev) {
+			res = find_resource(dev, PCI_BASE_ADDRESS_0);
+			if (res) {
+				current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132_2,
+					res->base, gsi_base );
+				gsi_base+=4;
+			}
+		}
 
-                int i;
-                int j = 0;
+		int i;
+		int j = 0;
 
-                for(i=1; i< sysconf.hc_possible_num; i++) {
+		for(i=1; i< sysconf.hc_possible_num; i++) {
 			unsigned d = 0;
-                        if(!(sysconf.pci1234[i] & 0x1) ) continue;
-                        // 8131 need to use +4
+			if(!(sysconf.pci1234[i] & 0x1) ) continue;
+			// 8131 need to use +4
 
-                        switch (sysconf.hcid[i]) {
-                        case 1:
+			switch (sysconf.hcid[i]) {
+			case 1:
 				d = 7;
 				break;
 			case 3:
 				d = 4;
 				break;
 			}
-                        switch (sysconf.hcid[i]) {
-                        case 1:
+			switch (sysconf.hcid[i]) {
+			case 1:
 			case 3:
-                                dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j], 1));
-                                if (dev) {
-                                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                                        if (res) {
-                                                current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][0],
-                                                        res->base, gsi_base );
-                                                gsi_base+=d;
-                                        }
-                                }
-                                dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j]+1, 1));
-                                if (dev) {
-                                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                                        if (res) {
-                                                current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][1],
-                                                        res->base, gsi_base );
-                                                gsi_base+=d;
+				dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j], 1));
+				if (dev) {
+					res = find_resource(dev, PCI_BASE_ADDRESS_0);
+					if (res) {
+						current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][0],
+							res->base, gsi_base );
+						gsi_base+=d;
+					}
+				}
+				dev = dev_find_slot(m->bus_8132a[j][0], PCI_DEVFN(m->sbdn3a[j]+1, 1));
+				if (dev) {
+					res = find_resource(dev, PCI_BASE_ADDRESS_0);
+					if (res) {
+						current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *)current, m->apicid_8132a[j][1],
+							res->base, gsi_base );
+						gsi_base+=d;
 
-                                        }
-                                }
-                                break;
-                        }
+					}
+				}
+				break;
+			}
 
-                        j++;
-                }
+			j++;
+		}
 
-        }
+	}
 
 	current += acpi_create_madt_irqoverride( (acpi_madt_irqoverride_t *)
 			current, 0, 0, 2, 5 );
@@ -147,8 +147,8 @@ unsigned long acpi_fill_madt(unsigned long current)
 		/* 5 mean: 0101 --> Edige-triggered, Active high*/
 
 
-	        /* create all subtables for processors */
-        current = acpi_create_madt_lapic_nmis(current, 5, 1);
+		 /* create all subtables for processors */
+	current = acpi_create_madt_lapic_nmis(current, 5, 1);
 		/* 1: LINT1 connect to NMI */
 
 
@@ -181,7 +181,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	get_bus_conf(); //it will get sblk, pci1234, hcdn, and sbdn
 
 	/* Align ACPI tables to 16byte */
-	start   = ALIGN(start, 16);
+	start	 = ALIGN(start, 16);
 	current = start;
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);
@@ -216,18 +216,18 @@ unsigned long write_acpi_tables(unsigned long start)
 
 
 	/* SRAT */
-        printk(BIOS_DEBUG, "ACPI:    * SRAT\n");
-        srat = (acpi_srat_t *) current;
-        acpi_create_srat(srat);
-        current+=srat->header.length;
-        acpi_add_table(rsdp,srat);
+	printk(BIOS_DEBUG, "ACPI:    * SRAT\n");
+	srat = (acpi_srat_t *) current;
+	acpi_create_srat(srat);
+	current+=srat->header.length;
+	acpi_add_table(rsdp,srat);
 
 	/* SLIT */
-        printk(BIOS_DEBUG, "ACPI:    * SLIT\n");
-        slit = (acpi_slit_t *) current;
-        acpi_create_slit(slit);
-        current+=slit->header.length;
-        acpi_add_table(rsdp,slit);
+	printk(BIOS_DEBUG, "ACPI:    * SLIT\n");
+	slit = (acpi_slit_t *) current;
+	acpi_create_slit(slit);
+	current+=slit->header.length;
+	acpi_add_table(rsdp,slit);
 
 	/* SSDT */
 	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");
@@ -239,43 +239,43 @@ unsigned long write_acpi_tables(unsigned long start)
 
 #if CONFIG_ACPI_SSDTX_NUM >= 1
 
-        //same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table
+	//same htio, but different position? We may have to copy, change HCIN, and recalculate the checknum and add_table
 
-        for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
-                if((sysconf.pci1234[i] & 1) != 1 ) continue;
-                uint8_t c;
-                if(i<7) {
-                        c  = (uint8_t) ('4' + i - 1);
-                }
-                else {
-                        c  = (uint8_t) ('A' + i - 1 - 6);
-                }
-                printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]); //pci0 and pci1 are in dsdt
-                current = ALIGN(current, 8);
-                ssdtx = (acpi_header_t *)current;
-                switch(sysconf.hcid[i]) {
-                case 1: //8132
-                        p = &AmlCode_ssdt2;
-                        break;
-                case 2: //8151
-                        p = &AmlCode_ssdt3;
-                        break;
-		case 3: //8131
-                        p = &AmlCode_ssdt4;
-                        break;
-                default:
-			//HTX no io apic
-                        p = &AmlCode_ssdt5;
+	for(i=1;i<sysconf.hc_possible_num;i++) {  // 0: is hc sblink
+		if((sysconf.pci1234[i] & 1) != 1 ) continue;
+		uint8_t c;
+		if(i<7) {
+			c  = (uint8_t) ('4' + i - 1);
+		}
+		else {
+			c  = (uint8_t) ('A' + i - 1 - 6);
+		}
+		printk(BIOS_DEBUG, "ACPI:    * SSDT for PCI%c Aka hcid = %d\n", c, sysconf.hcid[i]); //pci0 and pci1 are in dsdt
+		current = ALIGN(current, 8);
+		ssdtx = (acpi_header_t *)current;
+		switch(sysconf.hcid[i]) {
+		case 1: //8132
+			p = &AmlCode_ssdt2;
 			break;
-                }
+		case 2: //8151
+			p = &AmlCode_ssdt3;
+			break;
+		case 3: //8131
+			p = &AmlCode_ssdt4;
+			break;
+		default:
+			//HTX no io apic
+			p = &AmlCode_ssdt5;
+			break;
+		}
 		memcpy(ssdtx, p, sizeof(acpi_header_t));
 		current += ssdtx->length;
 		memcpy(ssdtx, p, ssdtx->length);
-                update_ssdtx((void *)ssdtx, i);
-                ssdtx->checksum = 0;
-                ssdtx->checksum = acpi_checksum((unsigned char *)ssdtx,ssdtx->length);
-                acpi_add_table(rsdp,ssdtx);
-        }
+		update_ssdtx((void *)ssdtx, i);
+		ssdtx->checksum = 0;
+		ssdtx->checksum = acpi_checksum((unsigned char *)ssdtx,ssdtx->length);
+		acpi_add_table(rsdp,ssdtx);
+	}
 #endif
 
 	/* FACS */
@@ -304,23 +304,23 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_DEBUG, "rsdp\n");
 	dump_mem(rsdp, ((void *)rsdp) + sizeof(acpi_rsdp_t));
 
-        printk(BIOS_DEBUG, "rsdt\n");
-        dump_mem(rsdt, ((void *)rsdt) + sizeof(acpi_rsdt_t));
+	printk(BIOS_DEBUG, "rsdt\n");
+	dump_mem(rsdt, ((void *)rsdt) + sizeof(acpi_rsdt_t));
 
-        printk(BIOS_DEBUG, "madt\n");
-        dump_mem(madt, ((void *)madt) + madt->header.length);
+	printk(BIOS_DEBUG, "madt\n");
+	dump_mem(madt, ((void *)madt) + madt->header.length);
 
-        printk(BIOS_DEBUG, "srat\n");
-        dump_mem(srat, ((void *)srat) + srat->header.length);
+	printk(BIOS_DEBUG, "srat\n");
+	dump_mem(srat, ((void *)srat) + srat->header.length);
 
-        printk(BIOS_DEBUG, "slit\n");
-        dump_mem(slit, ((void *)slit) + slit->header.length);
+	printk(BIOS_DEBUG, "slit\n");
+	dump_mem(slit, ((void *)slit) + slit->header.length);
 
-        printk(BIOS_DEBUG, "ssdt\n");
-        dump_mem(ssdt, ((void *)ssdt) + ssdt->length);
+	printk(BIOS_DEBUG, "ssdt\n");
+	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);
 
-        printk(BIOS_DEBUG, "fadt\n");
-        dump_mem(fadt, ((void *)fadt) + fadt->header.length);
+	printk(BIOS_DEBUG, "fadt\n");
+	dump_mem(fadt, ((void *)fadt) + fadt->header.length);
 #endif
 
 	printk(BIOS_INFO, "ACPI: done.\n");

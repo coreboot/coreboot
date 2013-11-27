@@ -68,7 +68,7 @@ static int via_cn400_int15_handler(void)
 	case 0x5f0f:
 		X86_EAX=0x860f;
 		break;
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				X86_EAX & 0xffff);
 		break;
@@ -140,14 +140,14 @@ static void vga_init(device_t dev)
 
 static const struct device_operations vga_operations = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = vga_init,
-	.ops_pci          = 0,
+	.init		   = vga_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver vga_driver __pci_driver = {
-	.ops    = &vga_operations,
+	.ops	 = &vga_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN400_VGA,
 };

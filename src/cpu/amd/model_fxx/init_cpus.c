@@ -128,8 +128,8 @@ void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id,
 				const char *str)
 {
 	printk(BIOS_DEBUG,
-	       "%s --- { APICID = %02x NODEID = %02x COREID = %02x} ---\n", str,
-	       apicid, id.nodeid, id.coreid);
+		"%s --- { APICID = %02x NODEID = %02x COREID = %02x} ---\n", str,
+		apicid, id.nodeid, id.coreid);
 }
 
 static u32 wait_cpu_state(u32 apicid, u32 state)
@@ -221,7 +221,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 	}
 
 	enable_lapic();
-	//      init_timer(); // We need TMICT to pass msg for FID/VID change
+	//	 init_timer(); // We need TMICT to pass msg for FID/VID change
 
 #if CONFIG_ENABLE_APIC_EXT_ID
 	u32 initial_apicid = get_initial_apicid();
@@ -259,14 +259,14 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 	if (cpu_init_detectedx) {
 		print_apicid_nodeid_coreid(apicid, id,
-					   "\n\n\nINIT detected from ");
+						"\n\n\nINIT detected from ");
 		printk(BIOS_DEBUG, "\nIssuing SOFT_RESET...\n");
 		soft_reset();
 	}
 
 	if (id.coreid == 0) {
 		distinguish_cpu_resets(id.nodeid);
-//            start_other_core(id.nodeid); // start second core in first cpu, only allowed for nb_cfg_54 is not set
+//	      start_other_core(id.nodeid); // start second core in first cpu, only allowed for nb_cfg_54 is not set
 	}
 	//here don't need to wait
 	lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x33);	// mark the cpu is started
@@ -288,8 +288,8 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		}
 		if (timeout) {
 			printk(BIOS_DEBUG,
-			       "while waiting for BSP signal to STOP, timeout in ap %02x\n",
-			       apicid);
+				  "while waiting for BSP signal to STOP, timeout in ap %02x\n",
+				  apicid);
 		}
 		lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x44);	// bsp can not check it before stop_this_cpu
 		set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);

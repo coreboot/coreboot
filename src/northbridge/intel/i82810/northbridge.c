@@ -55,7 +55,7 @@ static const struct pci_driver i810_northbridge_driver __pci_driver = {
 
 /* Intel 82810E */
 static const struct pci_driver i810e_northbridge_driver __pci_driver = {
-	.ops    = &northbridge_operations,
+	.ops	 = &northbridge_operations,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x7124,
 };
@@ -65,7 +65,7 @@ static const struct pci_driver i810e_northbridge_driver __pci_driver = {
  * Some size values appear twice, due to single-sided vs dual-sided banks.
  */
 static int translate_i82810_to_mb[] = {
-/* DRP	0  1 (2) 3   4   5   6   7   8   9   A   B   C    D    E    F */
+/* DRP	0  1 (2) 3   4	5   6	7   8	9   A	B   C	 D    E	   F */
 /* MB */0, 8, 0, 16, 16, 24, 32, 32, 48, 64, 64, 96, 128, 128, 192, 256,
 };
 

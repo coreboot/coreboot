@@ -53,8 +53,8 @@ static device_t ht_scan_get_devs(device_t *old_devices)
 	 * hypertransport device.
 	 */
 	while (last && last->sibling &&
-	       (last->sibling->path.type == DEVICE_PATH_PCI) &&
-	       (last->sibling->path.pci.devfn > last->path.pci.devfn))
+		(last->sibling->path.type == DEVICE_PATH_PCI) &&
+		(last->sibling->path.pci.devfn > last->path.pci.devfn))
 	{
 		last = last->sibling;
 	}
@@ -154,14 +154,14 @@ static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 	  (pci_read_config16(cur->dev, cur->pos + PCI_CAP_FLAGS) >> 10) & 1;
 
 	if (!linkb_to_host) {
-		cur->ctrl_off     = PCI_HT_CAP_SLAVE_CTRL0;
+		cur->ctrl_off	    = PCI_HT_CAP_SLAVE_CTRL0;
 		cur->config_off   = PCI_HT_CAP_SLAVE_WIDTH0;
-		cur->freq_off     = PCI_HT_CAP_SLAVE_FREQ0;
+		cur->freq_off	    = PCI_HT_CAP_SLAVE_FREQ0;
 		cur->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP0;
 	} else {
-		cur->ctrl_off     = PCI_HT_CAP_SLAVE_CTRL1;
+		cur->ctrl_off	    = PCI_HT_CAP_SLAVE_CTRL1;
 		cur->config_off   = PCI_HT_CAP_SLAVE_WIDTH1;
-		cur->freq_off     = PCI_HT_CAP_SLAVE_FREQ1;
+		cur->freq_off	    = PCI_HT_CAP_SLAVE_FREQ1;
 		cur->freq_cap_off = PCI_HT_CAP_SLAVE_FREQ_CAP1;
 	}
 
@@ -207,8 +207,8 @@ static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 		new_freq &= 0x0f;
 		if (new_freq != freq) {
 			printk(BIOS_ERR, "%s Hypertransport frequency would "
-			       "not set. Wanted: %x, got: %x\n",
-			       dev_path(dev), freq, new_freq);
+				  "not set. Wanted: %x, got: %x\n",
+				  dev_path(dev), freq, new_freq);
 		}
 	}
 	old_width = pci_read_config8(cur->dev, cur->pos + cur->config_off + 1);
@@ -218,13 +218,13 @@ static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 				  present_width);
 		reset_needed = 1;
 		printk(BIOS_SPEW, "HyperT widthP old %x new %x\n",
-		       old_width, present_width);
+			 old_width, present_width);
 		new_width = pci_read_config8(cur->dev,
-					     cur->pos + cur->config_off + 1);
+						  cur->pos + cur->config_off + 1);
 		if (new_width != present_width) {
 			printk(BIOS_ERR, "%s Hypertransport width would not "
-			       "set. Wanted: %x, got: %x\n",
-			       dev_path(dev), present_width, new_width);
+				  "set. Wanted: %x, got: %x\n",
+				  dev_path(dev), present_width, new_width);
 		}
 	}
 
@@ -236,14 +236,14 @@ static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 		pci_write_config8(prev->dev, prev->pos + prev->freq_off, freq);
 		reset_needed = 1;
 		printk(BIOS_SPEW, "HyperT freqU old %x new %x\n",
-		       old_freq, freq);
+			 old_freq, freq);
 		new_freq =
 		  pci_read_config8(prev->dev, prev->pos + prev->freq_off);
 		new_freq &= 0x0f;
 		if (new_freq != freq) {
 			printk(BIOS_ERR, "%s Hypertransport frequency would "
-			       "not set. Wanted: %x, got: %x\n",
-			       dev_path(prev->dev), freq, new_freq);
+				  "not set. Wanted: %x, got: %x\n",
+				  dev_path(prev->dev), freq, new_freq);
 		}
 	}
 	old_width =
@@ -254,13 +254,13 @@ static int ht_setup_link(struct ht_link *prev, device_t dev, unsigned pos)
 				  upstream_width);
 		reset_needed = 1;
 		printk(BIOS_SPEW, "HyperT widthU old %x new %x\n", old_width,
-		       upstream_width);
+			 upstream_width);
 		new_width = pci_read_config8(prev->dev,
-					     prev->pos + prev->config_off + 1);
+						  prev->pos + prev->config_off + 1);
 		if (new_width != upstream_width) {
 			printk(BIOS_ERR, "%s Hypertransport width would not "
-			       "set. Wanted: %x, got: %x\n",
-			       dev_path(prev->dev), upstream_width, new_width);
+				  "set. Wanted: %x, got: %x\n",
+				  dev_path(prev->dev), upstream_width, new_width);
 		}
 	}
 #endif
@@ -317,9 +317,9 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 	/* Initialize the hypertransport enumeration state. */
 	prev.dev = bus->dev;
 	prev.pos = bus->cap;
-	prev.ctrl_off     = PCI_HT_CAP_HOST_CTRL;
+	prev.ctrl_off	   = PCI_HT_CAP_HOST_CTRL;
 	prev.config_off   = PCI_HT_CAP_HOST_WIDTH;
-	prev.freq_off     = PCI_HT_CAP_HOST_FREQ;
+	prev.freq_off	   = PCI_HT_CAP_HOST_FREQ;
 	prev.freq_cap_off = PCI_HT_CAP_HOST_FREQ_CAP;
 
 	/* Wait until the link initialization is complete. */
@@ -339,12 +339,12 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 			 */
 			ctrl |= ((1 << 4) | (1 << 8)); /* Link fail + CRC */
 			pci_write_config16(prev.dev, prev.pos + prev.ctrl_off,
-					   ctrl);
+						ctrl);
 			ctrl = pci_read_config16(prev.dev,
 						 prev.pos + prev.ctrl_off);
 			if (ctrl & ((1 << 4) | (1 << 8))) {
 				printk(BIOS_ALERT, "Detected error on "
-				       "Hypertransport link\n");
+					   "Hypertransport link\n");
 				return;
 			}
 		}
@@ -405,14 +405,14 @@ static void ht_collapse_early_enumeration(struct bus *bus,
 		flags &= ~0x1f;
 		pci_write_config16(&dummy, pos + PCI_CAP_FLAGS, flags);
 		printk(BIOS_SPEW, "Collapsing %s [%04x/%04x]\n",
-		       dev_path(&dummy), dummy.vendor, dummy.device);
+			 dev_path(&dummy), dummy.vendor, dummy.device);
 	}
 }
 
 unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
-				       unsigned max_devfn, unsigned int max,
-				       unsigned *ht_unitid_base,
-				       unsigned offset_unitid)
+					   unsigned max_devfn, unsigned int max,
+					   unsigned *ht_unitid_base,
+					   unsigned offset_unitid)
 {
 	/*
 	 * Even CONFIG_HT_CHAIN_UNITID_BASE == 0, we still can go through this
@@ -427,7 +427,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 	min_unitid = (offset_unitid) ? CONFIG_HT_CHAIN_UNITID_BASE : 1;
 
 #if CONFIG_HT_CHAIN_END_UNITID_BASE != 0x20
-        /*
+	/*
 	 * Let's record the device of last HT device, so we can set the unitid
 	 * to CONFIG_HT_CHAIN_END_UNITID_BASE.
 	 */
@@ -447,9 +447,9 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 	prev.dev = bus->dev;
 	prev.pos = bus->cap;
 
-	prev.ctrl_off     = PCI_HT_CAP_HOST_CTRL;
+	prev.ctrl_off	   = PCI_HT_CAP_HOST_CTRL;
 	prev.config_off   = PCI_HT_CAP_HOST_WIDTH;
-	prev.freq_off     = PCI_HT_CAP_HOST_FREQ;
+	prev.freq_off	   = PCI_HT_CAP_HOST_FREQ;
 	prev.freq_cap_off = PCI_HT_CAP_HOST_FREQ_CAP;
 
 	/* If present, assign unitid to a hypertransport chain. */
@@ -485,7 +485,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 						prev.pos + prev.ctrl_off);
 				if (ctrl & ((1 << 4) | (1 << 8))) {
 					printk(BIOS_ALERT, "Detected error on "
-					       "hypertransport link\n");
+						    "hypertransport link\n");
 					goto end_of_chain;
 				}
 			}
@@ -504,7 +504,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 		pos = ht_lookup_slave_capability(dev);
 		if (pos == 0) {
 			printk(BIOS_ERR, "%s Hypertransport link capability "
-			       "not found", dev_path(dev));
+				  "not found", dev_path(dev));
 			break;
 		}
 
@@ -528,7 +528,7 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 			/* max_devfn will be (0x17<<3)|7 or (0x1f<<3)|7. */
 			if (next_unitid > (max_devfn >> 3)) {
 				if (!end_used) {
-			                next_unitid =
+					   next_unitid =
 					  CONFIG_HT_CHAIN_END_UNITID_BASE;
 					end_used = 1;
 				} else {
@@ -546,13 +546,13 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 		for (func = dev; func; func = func->sibling) {
 			func->path.pci.devfn += (next_unitid << 3);
 			static_count = (func->path.pci.devfn >> 3)
-				        - (dev->path.pci.devfn >> 3) + 1;
+					    - (dev->path.pci.devfn >> 3) + 1;
 			last_func = func;
 		}
 
 		/* Compute the number of unitids consumed. */
 		printk(BIOS_SPEW, "%s count: %04x static_count: %04x\n",
-		       dev_path(dev), count, static_count);
+			 dev_path(dev), count, static_count);
 		if (count < static_count)
 			count = static_count;
 
@@ -575,8 +575,8 @@ unsigned int hypertransport_scan_chain(struct bus *bus, unsigned min_devfn,
 		bus->reset_needed |= ht_setup_link(&prev, dev, pos);
 
 		printk(BIOS_DEBUG, "%s [%04x/%04x] %s next_unitid: %04x\n",
-		       dev_path(dev), dev->vendor, dev->device,
-		       (dev->enabled? "enabled" : "disabled"), next_unitid);
+			 dev_path(dev), dev->vendor, dev->device,
+			 (dev->enabled? "enabled" : "disabled"), next_unitid);
 
 	} while (last_unitid != next_unitid);
 
@@ -611,7 +611,7 @@ end_of_chain:
 		ht_unitid_base[ht_dev_num-1] = CONFIG_HT_CHAIN_END_UNITID_BASE;
 
 		printk(BIOS_DEBUG, " unitid: %04x --> %04x\n",
-		       real_last_unitid, CONFIG_HT_CHAIN_END_UNITID_BASE);
+			 real_last_unitid, CONFIG_HT_CHAIN_END_UNITID_BASE);
 	}
 #endif
 	next_unitid = max_unitid;
@@ -632,7 +632,7 @@ end_of_chain:
 			printk(BIOS_DEBUG, "%s\n", dev_path(left));
 
 		printk(BIOS_ERR, "HT: Leftover static devices. "
-		       "Check your devicetree.cb\n");
+			 "Check your devicetree.cb\n");
 
 		/*
 		 * Put back the leftover static device, and let pci_scan_bus()
@@ -682,11 +682,11 @@ static struct pci_operations ht_bus_ops_pci = {
 
 struct device_operations default_ht_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = ht_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &ht_bus_ops_pci,
+	.init		   = 0,
+	.scan_bus	   = ht_scan_bridge,
+	.enable	   = 0,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = &ht_bus_ops_pci,
 };

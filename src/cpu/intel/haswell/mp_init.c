@@ -112,7 +112,7 @@ static void (*ap_initiate_smm_relocation)(void) = &smm_initiate_relocation;
 
 /* Returns 1 if timeout waiting for APs. 0 if target aps found. */
 static int wait_for_aps(atomic_t *val, int target, int total_delay,
-                        int delay_step)
+			int delay_step)
 {
 	int timeout = 0;
 	int delayed = 0;
@@ -139,7 +139,7 @@ void release_aps_for_smm_relocation(int do_parallel)
 	release_barrier(&smm_relocation_barrier_begin);
 	/* Wait for CPUs to relocate their SMM handler up to 100ms. */
 	if (wait_for_aps(&num_aps_relocated_smm, atomic_read(&num_aps),
-	                 100000 /* 100 ms */, 200 /* us */))
+			  100000 /* 100 ms */, 200 /* us */))
 		printk(BIOS_DEBUG, "Timed out waiting for AP SMM relocation\n");
 }
 
@@ -304,7 +304,7 @@ static int load_sipi_vector(const void *microcode_patch)
 
 	if (rmodule_load_alignment(&sipi_mod) != 4096) {
 		printk(BIOS_CRIT, "SIPI module load alignment(%d) != 4096.\n",
-		       rmodule_load_alignment(&sipi_mod));
+			 rmodule_load_alignment(&sipi_mod));
 		return -1;
 	}
 
@@ -316,7 +316,7 @@ static int load_sipi_vector(const void *microcode_patch)
 
 	if (module_size > loc_size) {
 		printk(BIOS_CRIT, "SIPI module size (%d) > region size (%d).\n",
-		       module_size, loc_size);
+			 module_size, loc_size);
 		return -1;
 	}
 
@@ -374,13 +374,13 @@ static int allocate_cpu_devices(struct bus *cpu_bus, int *total_hw_threads)
 	num_threads = (msr.lo >> 0) & 0xffff;
 	num_cores = (msr.lo >> 16) & 0xffff;
 	printk(BIOS_DEBUG, "CPU has %u cores, %u threads enabled.\n",
-	       num_cores, num_threads);
+		num_cores, num_threads);
 
 	max_cpus = num_threads;
 	*total_hw_threads = num_threads;
 	if (num_threads > CONFIG_MAX_CPUS) {
 		printk(BIOS_CRIT, "CPU count(%d) exceeds CONFIG_MAX_CPUS(%d)\n",
-		       num_threads, CONFIG_MAX_CPUS);
+			 num_threads, CONFIG_MAX_CPUS);
 		max_cpus = CONFIG_MAX_CPUS;
 	}
 
@@ -411,7 +411,7 @@ static int allocate_cpu_devices(struct bus *cpu_bus, int *total_hw_threads)
 }
 
 int setup_ap_init(struct bus *cpu_bus, int *max_cpus,
-                  const void *microcode_patch)
+		  const void *microcode_patch)
 {
 	int num_cpus;
 	int hw_threads;
@@ -427,8 +427,8 @@ int setup_ap_init(struct bus *cpu_bus, int *max_cpus,
 
 	if (num_cpus < hw_threads) {
 		printk(BIOS_CRIT,
-		       "ERROR: More HW threads (%d) than support (%d).\n",
-		       hw_threads, num_cpus);
+			 "ERROR: More HW threads (%d) than support (%d).\n",
+			 hw_threads, num_cpus);
 		return -1;
 	}
 
@@ -465,7 +465,7 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 
 	if (sipi_vector > 256) {
 		printk(BIOS_CRIT, "SIPI vector too large! 0x%08x\n",
-		       sipi_vector);
+			 sipi_vector);
 		return -1;
 	}
 
@@ -483,7 +483,7 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 	/* Send INIT IPI to all but self. */
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
 	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-	                   LAPIC_DM_INIT);
+			    LAPIC_DM_INIT);
 	printk(BIOS_DEBUG, "Waiting for 10ms after sending INIT.\n");
 	mdelay(10);
 
@@ -499,7 +499,7 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
 	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-	                   LAPIC_DM_STARTUP | sipi_vector);
+			    LAPIC_DM_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for 1st SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "timed out.\n");
@@ -522,7 +522,7 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 
 	lapic_write_around(LAPIC_ICR2, SET_LAPIC_DEST_FIELD(0));
 	lapic_write_around(LAPIC_ICR, LAPIC_DEST_ALLBUT | LAPIC_INT_ASSERT |
-	                   LAPIC_DM_STARTUP | sipi_vector);
+			    LAPIC_DM_STARTUP | sipi_vector);
 	printk(BIOS_DEBUG, "Waiting for 2nd SIPI to complete...");
 	if (apic_wait_timeout(10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "timed out.\n");
@@ -534,7 +534,7 @@ int start_aps(struct bus *cpu_bus, int ap_count)
 	/* Wait for CPUs to check in. */
 	if (wait_for_aps(&num_aps, ap_count, 10000 /* 10 ms */, 50 /* us */)) {
 		printk(BIOS_DEBUG, "Not all APs checked in: %d/%d.\n",
-		       atomic_read(&num_aps), ap_count);
+			 atomic_read(&num_aps), ap_count);
 		return -1;
 	}
 

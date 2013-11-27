@@ -22,8 +22,8 @@
 #define NORTHBRIDGE_INTEL_I855_RAMINIT_H
 
 /* i855 Northbridge PCI devices */
-#define NORTHBRIDGE         PCI_DEV(0, 0, 0)
-#define NORTHBRIDGE_MMC     PCI_DEV(0, 0, 1)
+#define NORTHBRIDGE	    PCI_DEV(0, 0, 0)
+#define NORTHBRIDGE_MMC	    PCI_DEV(0, 0, 1)
 
 /* The i855 supports max. 2 dual-sided SO-DIMMs. */
 #define DIMM_SOCKETS 2

@@ -28,24 +28,24 @@
 
 const struct rcba_config_instruction rcba_config[] = {
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
 	 * D28IP_P4IP  ETH0   INTB -> PIRQC
-	 * D29IP_E1P   EHCI1  INTA -> PIRQD
-	 * D26IP_E2P   EHCI2  INTA -> PIRQE
-	 * D31IP_SIP   SATA   INTA -> PIRQF (MSI)
+	 * D29IP_E1P	EHCI1  INTA -> PIRQD
+	 * D26IP_E2P	EHCI2  INTA -> PIRQE
+	 * D31IP_SIP	SATA   INTA -> PIRQF (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQG
 	 * D31IP_TTIP  THRT   INTC -> PIRQH
-	 * D27IP_ZIP   HDA    INTA -> PIRQG (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQG (MSI)
 	 */
 
 	/* Device interrupt pin register (board specific) */
 	RCBA_SET_REG_32(D31IP, (INTC << D31IP_TTIP) | (NOINT << D31IP_SIP2) |
-		               (INTB << D31IP_SMIP) | (INTA << D31IP_SIP)),
+				 (INTB << D31IP_SMIP) | (INTA << D31IP_SIP)),
 	RCBA_SET_REG_32(D30IP, (NOINT << D30IP_PIP)),
 	RCBA_SET_REG_32(D29IP, (INTA << D29IP_E1P)),
 	RCBA_SET_REG_32(D28IP, (INTA << D28IP_P1IP) | (INTC << D28IP_P3IP) |
-	                       (INTB << D28IP_P4IP)),
+				(INTB << D28IP_P4IP)),
 	RCBA_SET_REG_32(D27IP, (INTA << D27IP_ZIP)),
 	RCBA_SET_REG_32(D26IP, (INTA << D26IP_E2P)),
 	RCBA_SET_REG_32(D25IP, (NOINT << D25IP_LIP)),

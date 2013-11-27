@@ -73,7 +73,7 @@ static void h8_log_ec_version(void)
 	fwvl = ec_read(0xe8);
 
 	printk(BIOS_INFO, "EC Firmware ID %s, Version %d.%d%d%c\n", ecfw,
-	       fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
+		fwvh >> 4, fwvh & 0x0f, fwvl >> 4, 0x41 + (fwvl & 0xf));
 }
 
 void h8_set_audio_mute(int mute)

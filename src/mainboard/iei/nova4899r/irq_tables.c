@@ -21,14 +21,14 @@
 #include <arch/pirq_routing.h>
 
 /*
- *    IRQ          5530       USB     Network   Network   Network    free
+ *    IRQ	   5530	      USB     Network	Network	  Network    free
  * controller  northbridge  device    device#0  device#1  device#2   slot
- *                          00.13.0   00.0a.00  00.0b.00  00.0c.00  00.0f.00
+ *			    00.13.0   00.0a.00  00.0b.00  00.0c.00  00.0f.00
  * ------------------------------------------------------------------------
- *    14          INTA#      INTA#      n.c.      n.c.     n.c.      INTA#
- *    5           INTB#       n.c.      n.c.      n.c.    INTA#       n.c.
- *    10          INTC#       n.c.      n.c.     INTA#     n.c.       n.c.
- *    11          INTD#       n.c.     INTA#      n.c.     n.c.       n.c.
+ *    14	  INTA#	     INTA#	n.c.	  n.c.	   n.c.	     INTA#
+ *    5		  INTB#	      n.c.	n.c.	  n.c.	  INTA#	      n.c.
+ *    10	  INTC#	      n.c.	n.c.	 INTA#	   n.c.	      n.c.
+ *    11	  INTD#	      n.c.     INTA#	  n.c.	   n.c.	      n.c.
  */
 
 /*

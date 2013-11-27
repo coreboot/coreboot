@@ -49,13 +49,13 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 #define REV_HUDSON_A11	0x11
 #define REV_HUDSON_A12	0x12
 
-#define PM1_EVT_BLK_ADDRESS                     0x800                           //      AcpiPm1EvtBlkAddr;
-#define PM1_CNT_BLK_ADDRESS                     0x804                           //      AcpiPm1CntBlkAddr;
-#define PM1_TMR_BLK_ADDRESS                     0x808                           //      AcpiPmTmrBlkAddr;
-#define CPU_CNT_BLK_ADDRESS                     0x810                           //      CpuControlBlkAddr;
-#define GPE0_BLK_ADDRESS                        0x820                           //  AcpiGpe0BlkAddr;
-#define SMI_CMD_PORT                            0xB0                            //      SmiCmdPortAddr;
-#define SPIROM_BASE_ADDRESS_REGISTER    0xA0
+#define PM1_EVT_BLK_ADDRESS			0x800				//	AcpiPm1EvtBlkAddr;
+#define PM1_CNT_BLK_ADDRESS			0x804				//	AcpiPm1CntBlkAddr;
+#define PM1_TMR_BLK_ADDRESS			0x808				//	AcpiPmTmrBlkAddr;
+#define CPU_CNT_BLK_ADDRESS			0x810				//	CpuControlBlkAddr;
+#define GPE0_BLK_ADDRESS			0x820				//  AcpiGpe0BlkAddr;
+#define SMI_CMD_PORT				0xB0				//	SmiCmdPortAddr;
+#define SPIROM_BASE_ADDRESS_REGISTER	0xA0
 
 #ifdef __PRE_RAM__
 void hudson_lpc_port80(void);

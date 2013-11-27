@@ -56,7 +56,7 @@
 
 #ifndef CONFIG_TPM_TIS_BASE_ADDRESS
 /* Base TPM address standard for x86 systems */
-#define CONFIG_TPM_TIS_BASE_ADDRESS        0xfed40000
+#define CONFIG_TPM_TIS_BASE_ADDRESS	   0xfed40000
 #endif
 
 /* the macro accepts the locality value, but only locality 0 is operational */
@@ -64,30 +64,30 @@
     (void *)(CONFIG_TPM_TIS_BASE_ADDRESS + (LOCALITY << 12) + REG)
 
 /* hardware registers' offsets */
-#define TIS_REG_ACCESS                 0x0
-#define TIS_REG_INT_ENABLE             0x8
-#define TIS_REG_INT_VECTOR             0xc
-#define TIS_REG_INT_STATUS             0x10
-#define TIS_REG_INTF_CAPABILITY        0x14
-#define TIS_REG_STS                    0x18
-#define TIS_REG_DATA_FIFO              0x24
-#define TIS_REG_DID_VID                0xf00
-#define TIS_REG_RID                    0xf04
+#define TIS_REG_ACCESS		       0x0
+#define TIS_REG_INT_ENABLE	       0x8
+#define TIS_REG_INT_VECTOR	       0xc
+#define TIS_REG_INT_STATUS	       0x10
+#define TIS_REG_INTF_CAPABILITY	       0x14
+#define TIS_REG_STS		       0x18
+#define TIS_REG_DATA_FIFO	       0x24
+#define TIS_REG_DID_VID		       0xf00
+#define TIS_REG_RID		       0xf04
 
 /* Some registers' bit field definitions */
-#define TIS_STS_VALID                  (1 << 7) /* 0x80 */
-#define TIS_STS_COMMAND_READY          (1 << 6) /* 0x40 */
-#define TIS_STS_TPM_GO                 (1 << 5) /* 0x20 */
-#define TIS_STS_DATA_AVAILABLE         (1 << 4) /* 0x10 */
-#define TIS_STS_EXPECT                 (1 << 3) /* 0x08 */
-#define TIS_STS_RESPONSE_RETRY         (1 << 1) /* 0x02 */
+#define TIS_STS_VALID		       (1 << 7) /* 0x80 */
+#define TIS_STS_COMMAND_READY	       (1 << 6) /* 0x40 */
+#define TIS_STS_TPM_GO		       (1 << 5) /* 0x20 */
+#define TIS_STS_DATA_AVAILABLE	       (1 << 4) /* 0x10 */
+#define TIS_STS_EXPECT		       (1 << 3) /* 0x08 */
+#define TIS_STS_RESPONSE_RETRY	       (1 << 1) /* 0x02 */
 
 #define TIS_ACCESS_TPM_REG_VALID_STS   (1 << 7) /* 0x80 */
 #define TIS_ACCESS_ACTIVE_LOCALITY     (1 << 5) /* 0x20 */
-#define TIS_ACCESS_BEEN_SEIZED         (1 << 4) /* 0x10 */
-#define TIS_ACCESS_SEIZE               (1 << 3) /* 0x08 */
+#define TIS_ACCESS_BEEN_SEIZED	       (1 << 4) /* 0x10 */
+#define TIS_ACCESS_SEIZE	       (1 << 3) /* 0x08 */
 #define TIS_ACCESS_PENDING_REQUEST     (1 << 2) /* 0x04 */
-#define TIS_ACCESS_REQUEST_USE         (1 << 1) /* 0x02 */
+#define TIS_ACCESS_REQUEST_USE	       (1 << 1) /* 0x02 */
 #define TIS_ACCESS_TPM_ESTABLISHMENT   (1 << 0) /* 0x01 */
 
 #define TIS_STS_BURST_COUNT_MASK       (0xffff)
@@ -258,7 +258,7 @@ static int tis_command_ready(u8 locality)
 
 	/* Wait for command ready to get set */
 	status = tis_wait_reg(TIS_REG_STS, locality,
-			      TIS_STS_COMMAND_READY, TIS_STS_COMMAND_READY);
+				 TIS_STS_COMMAND_READY, TIS_STS_COMMAND_READY);
 
 	return (status == TPM_TIMEOUT_ERR) ? TPM_TIMEOUT_ERR : 0;
 }
@@ -334,10 +334,10 @@ static u32 tis_senddata(const u8 * const data, u32 len)
 	u32 value;
 
 	value = tis_wait_reg(TIS_REG_STS, locality, TIS_STS_COMMAND_READY,
-			     TIS_STS_COMMAND_READY);
+				TIS_STS_COMMAND_READY);
 	if (value == TPM_TIMEOUT_ERR) {
 		printf("%s:%d - failed to get 'command_ready' status\n",
-		       __FILE__, __LINE__);
+			 __FILE__, __LINE__);
 		return TPM_DRIVER_ERR;
 	}
 	burst = BURST_COUNT(value);
@@ -349,7 +349,7 @@ static u32 tis_senddata(const u8 * const data, u32 len)
 		while (!burst) {
 			if (max_cycles++ == MAX_DELAY_US) {
 				printf("%s:%d failed to feed %d bytes of %d\n",
-				       __FILE__, __LINE__, len - offset, len);
+					   __FILE__, __LINE__, len - offset, len);
 				return TPM_DRIVER_ERR;
 			}
 			udelay(1);
@@ -372,11 +372,11 @@ static u32 tis_senddata(const u8 * const data, u32 len)
 			tpm_write(data[offset++], locality, TIS_REG_DATA_FIFO);
 
 		value = tis_wait_reg(TIS_REG_STS, locality,
-				     TIS_STS_VALID, TIS_STS_VALID);
+					 TIS_STS_VALID, TIS_STS_VALID);
 
 		if ((value == TPM_TIMEOUT_ERR) || !(value & TIS_STS_EXPECT)) {
 			printf("%s:%d TPM command feed overflow\n",
-			       __FILE__, __LINE__);
+				  __FILE__, __LINE__);
 			return TPM_DRIVER_ERR;
 		}
 
@@ -398,10 +398,10 @@ static u32 tis_senddata(const u8 * const data, u32 len)
 	 * command.
 	 */
 	value = tis_wait_reg(TIS_REG_STS, locality,
-			     TIS_STS_VALID, TIS_STS_VALID);
+				TIS_STS_VALID, TIS_STS_VALID);
 	if ((value == TPM_TIMEOUT_ERR) || (value & TIS_STS_EXPECT)) {
 		printf("%s:%d unexpected TPM status 0x%x\n",
-		       __FILE__, __LINE__, value);
+			 __FILE__, __LINE__, value);
 		return TPM_DRIVER_ERR;
 	}
 
@@ -437,7 +437,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 	status = tis_wait_reg(TIS_REG_STS, locality, has_data, has_data);
 	if (status == TPM_TIMEOUT_ERR) {
 		printf("%s:%d failed processing command\n",
-		       __FILE__, __LINE__);
+			 __FILE__, __LINE__);
 		return TPM_DRIVER_ERR;
 	}
 
@@ -445,7 +445,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 		while ((burst_count = BURST_COUNT(status)) == 0) {
 			if (max_cycles++ == MAX_DELAY_US) {
 				printf("%s:%d TPM stuck on read\n",
-				       __FILE__, __LINE__);
+					   __FILE__, __LINE__);
 				return TPM_DRIVER_ERR;
 			}
 			udelay(1);
@@ -467,15 +467,15 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 				 */
 				u32 real_length;
 				memcpy(&real_length,
-				       buffer + 2,
-				       sizeof(real_length));
+					   buffer + 2,
+					   sizeof(real_length));
 				expected_count = be32_to_cpu(real_length);
 
 				if ((expected_count < offset) ||
-				    (expected_count > *len)) {
+					(expected_count > *len)) {
 					printf("%s:%d bad response size %d\n",
-					       __FILE__, __LINE__,
-					       expected_count);
+						    __FILE__, __LINE__,
+						    expected_count);
 					return TPM_DRIVER_ERR;
 				}
 			}
@@ -483,10 +483,10 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 
 		/* Wait for the next portion */
 		status = tis_wait_reg(TIS_REG_STS, locality,
-				      TIS_STS_VALID, TIS_STS_VALID);
+					  TIS_STS_VALID, TIS_STS_VALID);
 		if (status == TPM_TIMEOUT_ERR) {
 			printf("%s:%d failed to read response\n",
-			       __FILE__, __LINE__);
+				  __FILE__, __LINE__);
 			return TPM_DRIVER_ERR;
 		}
 
@@ -501,7 +501,7 @@ static u32 tis_readresponse(u8 *buffer, size_t *len)
 	 */
 	if (status & TIS_STS_DATA_AVAILABLE) {
 		printf("%s:%d wrong receive status %x\n",
-		       __FILE__, __LINE__, status);
+			 __FILE__, __LINE__, status);
 		return TPM_DRIVER_ERR;
 	}
 
@@ -549,7 +549,7 @@ int tis_open(void)
 			 TIS_ACCESS_ACTIVE_LOCALITY,
 			 TIS_ACCESS_ACTIVE_LOCALITY) == TPM_TIMEOUT_ERR) {
 		printf("%s:%d - failed to lock locality %d\n",
-		       __FILE__, __LINE__, locality);
+			 __FILE__, __LINE__, locality);
 		return TPM_DRIVER_ERR;
 	}
 
@@ -580,7 +580,7 @@ int tis_close(void)
 				 TIS_ACCESS_ACTIVE_LOCALITY, 0) ==
 		    TPM_TIMEOUT_ERR) {
 			printf("%s:%d - failed to release locality %d\n",
-			       __FILE__, __LINE__, locality);
+				  __FILE__, __LINE__, locality);
 			return TPM_DRIVER_ERR;
 		}
 	}
@@ -605,7 +605,7 @@ int tis_sendrecv(const uint8_t *sendbuf, size_t send_size,
 {
 	if (tis_senddata(sendbuf, send_size)) {
 		printf("%s:%d failed sending data to TPM\n",
-		       __FILE__, __LINE__);
+			 __FILE__, __LINE__);
 		return TPM_DRIVER_ERR;
 	}
 

@@ -474,9 +474,9 @@ agesawrapper_amdinitlate (
 	AMD_LATE_PARAMS * AmdLateParamsPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -505,8 +505,8 @@ agesawrapper_amdinitlate (
 	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
 
 	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
-		"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
-		"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
+		"   DmiTable:%p\n   AcpiPstate: %p\n	 AcpiSrat:%p\n	 AcpiSlit:%p\n"
+		"   Mce:%p\n	 Cmc:%p\n   Alib:%p\n",
 		 __func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
 		 AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
 
@@ -526,12 +526,12 @@ agesawrapper_amdinitresume (
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_RESUME_PARAMS     *AmdResumeParamsPtr;
-	S3_DATA_TYPE            S3DataType;
+	S3_DATA_TYPE		 S3DataType;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESUME;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -565,15 +565,15 @@ agesawrapper_amds3laterestore (
   )
 {
 	AGESA_STATUS Status;
-	AMD_INTERFACE_PARAMS    AmdInterfaceParams;
-	AMD_S3LATE_PARAMS       AmdS3LateParams;
-	AMD_S3LATE_PARAMS       *AmdS3LateParamsPtr;
-	S3_DATA_TYPE          S3DataType;
+	AMD_INTERFACE_PARAMS	 AmdInterfaceParams;
+	AMD_S3LATE_PARAMS	 AmdS3LateParams;
+	AMD_S3LATE_PARAMS	 *AmdS3LateParamsPtr;
+	S3_DATA_TYPE	       S3DataType;
 
 	LibAmdMemFill (&AmdS3LateParams,
-		       0,
-		       sizeof (AMD_S3LATE_PARAMS),
-		       &(AmdS3LateParams.StdHeader));
+			 0,
+			 sizeof (AMD_S3LATE_PARAMS),
+			 &(AmdS3LateParams.StdHeader));
 	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
 	AmdInterfaceParams.AllocationMethod = ByHost;
 	AmdInterfaceParams.AgesaFunctionName = AMD_S3LATE_RESTORE;
@@ -609,12 +609,12 @@ agesawrapper_amdS3Save (
 	AGESA_STATUS Status;
 	AMD_S3SAVE_PARAMS *AmdS3SaveParamsPtr;
 	AMD_INTERFACE_PARAMS  AmdInterfaceParams;
-	S3_DATA_TYPE          S3DataType;
+	S3_DATA_TYPE	       S3DataType;
 
 	LibAmdMemFill (&AmdInterfaceParams,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdInterfaceParams.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdInterfaceParams.StdHeader));
 
 	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
 	AmdInterfaceParams.StdHeader.HeapStatus = HEAP_SYSTEM_MEM;

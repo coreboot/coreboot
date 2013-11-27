@@ -61,15 +61,15 @@ static void get_fx_devs(void)
 {
     int i;
     for(i = 0; i < FX_DEVS; i++) {
-        __f0_dev[i] = get_node_pci(i, 0);
-        __f1_dev[i] = get_node_pci(i, 1);
-        __f2_dev[i] = get_node_pci(i, 2);
-        __f4_dev[i] = get_node_pci(i, 4);
-        if (__f0_dev[i] != NULL && __f1_dev[i] != NULL)
-            fx_devs = i+1;
+	__f0_dev[i] = get_node_pci(i, 0);
+	__f1_dev[i] = get_node_pci(i, 1);
+	__f2_dev[i] = get_node_pci(i, 2);
+	__f4_dev[i] = get_node_pci(i, 4);
+	if (__f0_dev[i] != NULL && __f1_dev[i] != NULL)
+	    fx_devs = i+1;
     }
     if (__f1_dev[0] == NULL || __f0_dev[0] == NULL || fx_devs == 0) {
-        die("Cannot find 0:0x18.[0|1]\n");
+	die("Cannot find 0:0x18.[0|1]\n");
     }
 }
 
@@ -77,7 +77,7 @@ static void get_fx_devs(void)
 static u32 f1_read_config32(unsigned reg)
 {
     if (fx_devs == 0)
-        get_fx_devs();
+	get_fx_devs();
     return pci_read_config32(__f1_dev[0], reg);
 }
 
@@ -86,13 +86,13 @@ static void f1_write_config32(unsigned reg, u32 value)
 {
     int i;
     if (fx_devs == 0)
-        get_fx_devs();
+	get_fx_devs();
     for(i = 0; i < fx_devs; i++) {
-        device_t dev;
-        dev = __f1_dev[i];
-        if (dev && dev->enabled) {
-            pci_write_config32(dev, reg, value);
-        }
+	device_t dev;
+	dev = __f1_dev[i];
+	if (dev && dev->enabled) {
+	    pci_write_config32(dev, reg, value);
+	}
     }
 }
 
@@ -128,7 +128,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 
 
 static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
-            unsigned goal_link)
+	    unsigned goal_link)
 {
     struct resource *res;
     unsigned nodeid, link = 0;
@@ -136,22 +136,22 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     res = 0;
     for(nodeid = 0; !res && (nodeid < fx_devs); nodeid++) {
-        device_t dev;
-        dev = __f0_dev[nodeid];
-        if (!dev)
-            continue;
-        for(link = 0; !res && (link < 8); link++) {
-            res = probe_resource(dev, IOINDEX(0x1000 + reg, link));
-        }
+	device_t dev;
+	dev = __f0_dev[nodeid];
+	if (!dev)
+	    continue;
+	for(link = 0; !res && (link < 8); link++) {
+	    res = probe_resource(dev, IOINDEX(0x1000 + reg, link));
+	}
     }
     result = 2;
     if (res) {
-        result = 0;
-        if (    (goal_link == (link - 1)) &&
-            (goal_nodeid == (nodeid - 1)) &&
-            (res->flags <= 1)) {
-            result = 1;
-        }
+	result = 0;
+	if (	(goal_link == (link - 1)) &&
+	    (goal_nodeid == (nodeid - 1)) &&
+	    (res->flags <= 1)) {
+	    result = 1;
+	}
     }
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
     return result;
@@ -163,20 +163,20 @@ static struct resource *amdfam12_find_iopair(device_t dev, unsigned nodeid, unsi
     u32 result, reg;
     resource = 0;
     reg = 0;
-        result = reg_useable(0xc0, dev, nodeid, link);
-        if (result >= 1) {
-            /* I have been allocated this one */
-            reg = 0xc0;
+	result = reg_useable(0xc0, dev, nodeid, link);
+	if (result >= 1) {
+	    /* I have been allocated this one */
+	    reg = 0xc0;
     }
 
     //Ext conf space
     if(!reg) {
-        //because of Extend conf space, we will never run out of reg, but we need one index to differ them. so same node and same link can have multi range
-        u32 index = get_io_addr_index(nodeid, link);
-        reg = 0x110+ (index<<24) + (4<<20); // index could be 0, 255
+	//because of Extend conf space, we will never run out of reg, but we need one index to differ them. so same node and same link can have multi range
+	u32 index = get_io_addr_index(nodeid, link);
+	reg = 0x110+ (index<<24) + (4<<20); // index could be 0, 255
     }
 
-        resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
+	resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
 
     return resource;
 }
@@ -188,28 +188,28 @@ static struct resource *amdfam12_find_mempair(device_t dev, u32 nodeid, u32 link
     resource = 0;
     free_reg = 0;
     for(reg = 0x80; reg <= 0xb8; reg += 0x8) {
-        int result;
-        result = reg_useable(reg, dev, nodeid, link);
-        if (result == 1) {
-            /* I have been allocated this one */
-            break;
-        }
-        else if (result > 1) {
-            /* I have a free register pair */
-            free_reg = reg;
-        }
+	int result;
+	result = reg_useable(reg, dev, nodeid, link);
+	if (result == 1) {
+	    /* I have been allocated this one */
+	    break;
+	}
+	else if (result > 1) {
+	    /* I have a free register pair */
+	    free_reg = reg;
+	}
     }
     if (reg > 0xb8) {
-        reg = free_reg;
+	reg = free_reg;
     }
 
     //Ext conf space
     if(!reg) {
-        //because of Extend conf space, we will never run out of reg,
-        // but we need one index to differ them. so same node and
-        // same link can have multi range
-        u32 index = get_mmio_addr_index(nodeid, link);
-        reg = 0x110+ (index<<24) + (6<<20); // index could be 0, 63
+	//because of Extend conf space, we will never run out of reg,
+	// but we need one index to differ them. so same node and
+	// same link can have multi range
+	u32 index = get_mmio_addr_index(nodeid, link);
+	reg = 0x110+ (index<<24) + (6<<20); // index could be 0, 63
 
     }
     resource = new_resource(dev, IOINDEX(0x1000 + reg, link));
@@ -225,37 +225,37 @@ static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
     /* Initialize the io space constraints on the current bus */
     resource = amdfam12_find_iopair(dev, nodeid, link);
     if (resource) {
-        u32 align;
+	u32 align;
 #if CONFIG_EXT_CONF_SUPPORT
-        if((resource->index & 0x1fff) == 0x1110) { // ext
-            align = 8;
-        }
-        else
+	if((resource->index & 0x1fff) == 0x1110) { // ext
+	    align = 8;
+	}
+	else
 #endif
-            align = log2(HT_IO_HOST_ALIGN);
-        resource->base  = 0;
-        resource->size  = 0;
-        resource->align = align;
-        resource->gran  = align;
-        resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO | IORESOURCE_BRIDGE;
+	    align = log2(HT_IO_HOST_ALIGN);
+	resource->base  = 0;
+	resource->size  = 0;
+	resource->align = align;
+	resource->gran  = align;
+	resource->limit = 0xffffUL;
+	resource->flags = IORESOURCE_IO | IORESOURCE_BRIDGE;
     }
 
     /* Initialize the prefetchable memory constraints on the current bus */
     resource = amdfam12_find_mempair(dev, nodeid, link);
     if (resource) {
-        resource->base = 0;
-        resource->size = 0;
-        resource->align = log2(HT_MEM_HOST_ALIGN);
-        resource->gran = log2(HT_MEM_HOST_ALIGN);
-        resource->limit = 0xffffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
-        resource->flags |= IORESOURCE_BRIDGE;
+	resource->base = 0;
+	resource->size = 0;
+	resource->align = log2(HT_MEM_HOST_ALIGN);
+	resource->gran = log2(HT_MEM_HOST_ALIGN);
+	resource->limit = 0xffffffffffULL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+	resource->flags |= IORESOURCE_BRIDGE;
 
 #if CONFIG_EXT_CONF_SUPPORT
-        if((resource->index & 0x1fff) == 0x1110) { // ext
-            normalize_resource(resource);
-        }
+	if((resource->index & 0x1fff) == 0x1110) { // ext
+	    normalize_resource(resource);
+	}
 #endif
 
     }
@@ -263,16 +263,16 @@ static void amdfam12_link_read_bases(device_t dev, u32 nodeid, u32 link)
     /* Initialize the memory constraints on the current bus */
     resource = amdfam12_find_mempair(dev, nodeid, link);
     if (resource) {
-        resource->base = 0;
-        resource->size = 0;
-        resource->align = log2(HT_MEM_HOST_ALIGN);
-        resource->gran = log2(HT_MEM_HOST_ALIGN);
-        resource->limit = 0xffffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
+	resource->base = 0;
+	resource->size = 0;
+	resource->align = log2(HT_MEM_HOST_ALIGN);
+	resource->gran = log2(HT_MEM_HOST_ALIGN);
+	resource->limit = 0xffffffffffULL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_BRIDGE;
 #if CONFIG_EXT_CONF_SUPPORT
-        if((resource->index & 0x1fff) == 0x1110) { // ext
-            normalize_resource(resource);
-        }
+	if((resource->index & 0x1fff) == 0x1110) { // ext
+	    normalize_resource(resource);
+	}
 #endif
     }
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
@@ -284,7 +284,7 @@ static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
     min = 0;
     search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test, &min);
     if (min && tolm > min->base) {
-        tolm = min->base;
+	tolm = min->base;
     }
     return tolm;
 }
@@ -298,46 +298,46 @@ struct hw_mem_hole_info {
 
 static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 {
-        struct hw_mem_hole_info mem_hole;
+	struct hw_mem_hole_info mem_hole;
 
-        mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
-        mem_hole.node_id = -1;
+	mem_hole.hole_startk = CONFIG_HW_MEM_HOLE_SIZEK;
+	mem_hole.node_id = -1;
 
-        struct dram_base_mask_t d;
-        u32 hole;
-        d = get_dram_base_mask(0);
-        if(d.mask & 1) {
-            hole = pci_read_config32(__f1_dev[0], 0xf0);
-            if(hole & 1) { // we find the hole
-                mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
-                mem_hole.node_id = 0; // record the node No with hole
-            }
-        }
+	struct dram_base_mask_t d;
+	u32 hole;
+	d = get_dram_base_mask(0);
+	if(d.mask & 1) {
+	    hole = pci_read_config32(__f1_dev[0], 0xf0);
+	    if(hole & 1) { // we find the hole
+		mem_hole.hole_startk = (hole & (0xff<<24)) >> 10;
+		mem_hole.node_id = 0; // record the node No with hole
+	    }
+	}
 
 #if 0
-        // We need to double check if there is speical set on base reg and limit reg
-            // are not continous instead of hole, it will find out it's hole_startk
-        if(mem_hole.node_id==-1) {
-            resource_t limitk_pri = 0;
-            struct dram_base_mask_t d;
-            resource_t base_k, limit_k;
-            d = get_dram_base_mask(0);
-            if(d.base & 1) {
-                base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
-                if(base_k <= 4 *1024 * 1024) {
-                    if(limitk_pri != base_k) { // we find the hole
-                        mem_hole.hole_startk = (unsigned)limitk_pri; // must be below 4G
-                        mem_hole.node_id = 0;
-                    }
-                }
+	// We need to double check if there is speical set on base reg and limit reg
+	    // are not continous instead of hole, it will find out it's hole_startk
+	if(mem_hole.node_id==-1) {
+	    resource_t limitk_pri = 0;
+	    struct dram_base_mask_t d;
+	    resource_t base_k, limit_k;
+	    d = get_dram_base_mask(0);
+	    if(d.base & 1) {
+		base_k = ((resource_t)(d.base & 0x1fffff00)) <<9;
+		if(base_k <= 4 *1024 * 1024) {
+		    if(limitk_pri != base_k) { // we find the hole
+			mem_hole.hole_startk = (unsigned)limitk_pri; // must be below 4G
+			mem_hole.node_id = 0;
+		    }
+		}
 
-                limit_k = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
-                limitk_pri = limit_k;
-            }
-        }
+		limit_k = ((resource_t)((d.mask + 0x00000100) & 0x1fffff00)) << 9;
+		limitk_pri = limit_k;
+	    }
+	}
 #endif
 
-        return mem_hole;
+	return mem_hole;
 }
 #endif
 
@@ -350,16 +350,16 @@ static void read_resources(device_t dev)
 
     nodeid = amdfam12_nodeid(dev);
     for(link = dev->link_list; link; link = link->next) {
-        if (link->children) {
-            amdfam12_link_read_bases(dev, nodeid, link->link_num);
-        }
+	if (link->children) {
+	    amdfam12_link_read_bases(dev, nodeid, link->link_num);
+	}
     }
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
 static void set_resource(device_t dev, struct resource *resource,
-                u32 nodeid)
+		u32 nodeid)
 {
     resource_t rbase, rend;
     unsigned reg, link_num;
@@ -369,21 +369,21 @@ static void set_resource(device_t dev, struct resource *resource,
 
     /* Make certain the resource has actually been set */
     if (!(resource->flags & IORESOURCE_ASSIGNED)) {
-        return;
+	return;
     }
 
     /* If I have already stored this resource don't worry about it */
     if (resource->flags & IORESOURCE_STORED) {
-        return;
+	return;
     }
 
     /* Only handle PCI memory and IO resources */
     if (!(resource->flags & (IORESOURCE_MEM | IORESOURCE_IO)))
-        return;
+	return;
 
     /* Ensure I am actually looking at a resource of function 1 */
     if ((resource->index & 0xffff) < 0x1000) {
-        return;
+	return;
     }
     /* Get the base address */
     rbase = resource->base;
@@ -396,14 +396,14 @@ static void set_resource(device_t dev, struct resource *resource,
     link_num = IOINDEX_LINK(resource->index);
 
     if (resource->flags & IORESOURCE_IO) {
-        set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
+	set_io_addr_reg(dev, nodeid, link_num, reg, rbase>>8, rend>>8);
     }
     else if (resource->flags & IORESOURCE_MEM) {
-        set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, 1) ;// [39:8]
+	set_mmio_addr_reg(nodeid, link_num, reg, (resource->index >>24), rbase>>8, rend>>8, 1) ;// [39:8]
     }
     resource->flags |= IORESOURCE_STORED;
     sprintf(buf, " <node %x link %x>",
-        nodeid, link_num);
+	nodeid, link_num);
     report_resource_stored(dev, resource, buf);
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
@@ -422,22 +422,22 @@ static void create_vga_resource(device_t dev, unsigned nodeid)
     /* find out which link the VGA card is connected,
      * we only deal with the 'first' vga card */
     for (link = dev->link_list; link; link = link->next) {
-        if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
+	if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 #if CONFIG_CONSOLE_VGA_MULTI
-            printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
-                link->secondary,link->subordinate);
-            /* We need to make sure the vga_pri is under the link */
-            if((vga_pri->bus->secondary >= link->secondary ) &&
-                (vga_pri->bus->secondary <= link->subordinate )
-            )
+	    printk(BIOS_DEBUG, "VGA: vga_pri bus num = %d bus range [%d,%d]\n", vga_pri->bus->secondary,
+		link->secondary,link->subordinate);
+	    /* We need to make sure the vga_pri is under the link */
+	    if((vga_pri->bus->secondary >= link->secondary ) &&
+		(vga_pri->bus->secondary <= link->subordinate )
+	    )
 #endif
-            break;
-        }
+	    break;
+	}
     }
 
     /* no VGA card installed */
     if (link == NULL)
-        return;
+	return;
 
     printk(BIOS_DEBUG, "VGA: %s (aka node %d) link %d has VGA device\n", dev_path(dev), nodeid, link->link_num);
     set_vga_enable_reg(nodeid, link->link_num);
@@ -460,13 +460,13 @@ static void set_resources(device_t dev)
 
     /* Set each resource we have found */
     for(res = dev->resource_list; res; res = res->next) {
-        set_resource(dev, res, nodeid);
+	set_resource(dev, res, nodeid);
     }
 
     for(bus = dev->link_list; bus; bus = bus->next) {
-        if (bus->children) {
-            assign_resources(bus);
-        }
+	if (bus->children) {
+	    assign_resources(bus);
+	}
     }
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
@@ -480,10 +480,10 @@ static void setup_uma_memory(void)
   /* refer to UMA Size Consideration in Family12h BKDG. */
   /* Please reference MemNGetUmaSizeLN () */
   /*
-   *     Total system memory   UMASize
-   *     >= 2G                 512M
-   *     >=1G                  256M
-   *     <1G                    64M
+   *	 Total system memory   UMASize
+   *	 >= 2G		       512M
+   *	 >=1G		       256M
+   *	 <1G			64M
    */
   sys_mem = topmem + 0x1000000; // Ignore 16MB allocated for C6 when finding UMA size
   if ((bsp_topmem2()>>32) || (sys_mem >= 0x80000000)) {
@@ -495,7 +495,7 @@ static void setup_uma_memory(void)
   }
   uma_memory_base = topmem - uma_memory_size; /* TOP_MEM1 */
   printk(BIOS_INFO, "%s: uma size 0x%08llx, memory start 0x%08llx\n",
-        __func__, uma_memory_size, uma_memory_base);
+	__func__, uma_memory_size, uma_memory_base);
 #endif
 }
 
@@ -510,29 +510,29 @@ static void domain_read_resources(device_t dev)
     /* Find the already assigned resource pairs */
     get_fx_devs();
     for(reg = 0x80; reg <= 0xc0; reg+= 0x08) {
-        u32 base, limit;
-        base  = f1_read_config32(reg);
-        limit = f1_read_config32(reg + 0x04);
-        /* Is this register allocated? */
-        if ((base & 3) != 0) {
-            unsigned nodeid, reg_link;
-            device_t reg_dev;
-            if(reg<0xc0) { // mmio
-                nodeid = (limit & 0xf) + (base&0x30);
-            } else { // io
-                nodeid =  (limit & 0xf) + ((base>>4)&0x30);
-            }
-            reg_link = (limit >> 4) & 7;
-            reg_dev = __f0_dev[nodeid];
-            if (reg_dev) {
-                /* Reserve the resource  */
-                struct resource *res;
-                res = new_resource(reg_dev, IOINDEX(0x1000 + reg, reg_link));
-                if (res) {
-                    res->flags = 1;
-                }
-            }
-        }
+	u32 base, limit;
+	base  = f1_read_config32(reg);
+	limit = f1_read_config32(reg + 0x04);
+	/* Is this register allocated? */
+	if ((base & 3) != 0) {
+	    unsigned nodeid, reg_link;
+	    device_t reg_dev;
+	    if(reg<0xc0) { // mmio
+		nodeid = (limit & 0xf) + (base&0x30);
+	    } else { // io
+		nodeid =  (limit & 0xf) + ((base>>4)&0x30);
+	    }
+	    reg_link = (limit >> 4) & 7;
+	    reg_dev = __f0_dev[nodeid];
+	    if (reg_dev) {
+		/* Reserve the resource  */
+		struct resource *res;
+		res = new_resource(reg_dev, IOINDEX(0x1000 + reg, reg_link));
+		if (res) {
+		    res->flags = 1;
+		}
+	    }
+	}
     }
     /* FIXME: do we need to check extend conf space?
        I don't believe that much preset value */
@@ -558,21 +558,21 @@ static void domain_read_resources(device_t dev)
     struct bus *link;
     struct resource *resource;
     for(link=dev->link_list; link; link = link->next) {
-        /* Initialize the system wide io space constraints */
-        resource = new_resource(dev, 0|(link->link_num<<2));
-        resource->base  = 0x400;
-        resource->limit = 0xffffUL;
-        resource->flags = IORESOURCE_IO;
+	/* Initialize the system wide io space constraints */
+	resource = new_resource(dev, 0|(link->link_num<<2));
+	resource->base  = 0x400;
+	resource->limit = 0xffffUL;
+	resource->flags = IORESOURCE_IO;
 
-        /* Initialize the system wide prefetchable memory resources constraints */
-        resource = new_resource(dev, 1|(link->link_num<<2));
-        resource->limit = 0xfcffffffffULL;
-        resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
+	/* Initialize the system wide prefetchable memory resources constraints */
+	resource = new_resource(dev, 1|(link->link_num<<2));
+	resource->limit = 0xfcffffffffULL;
+	resource->flags = IORESOURCE_MEM | IORESOURCE_PREFETCH;
 
-        /* Initialize the system wide memory resources constraints */
-        resource = new_resource(dev, 2|(link->link_num<<2));
-        resource->limit = 0xfcffffffffULL;
-        resource->flags = IORESOURCE_MEM;
+	/* Initialize the system wide memory resources constraints */
+	resource = new_resource(dev, 2|(link->link_num<<2));
+	resource->limit = 0xfcffffffffULL;
+	resource->flags = IORESOURCE_MEM;
     }
 #endif
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
@@ -602,57 +602,57 @@ static void domain_set_resources(device_t dev)
 
 printk(BIOS_DEBUG, "adsr - CONFIG_PCI_64BIT_PREF_MEM is true.\n");
     for(link = dev->link_list; link; link = link->next) {
-        /* Now reallocate the pci resources memory with the
-         * highest addresses I can manage.
-         */
-        mem1 = find_resource(dev, 1|(link->link_num<<2));
-        mem2 = find_resource(dev, 2|(link->link_num<<2));
+	/* Now reallocate the pci resources memory with the
+	 * highest addresses I can manage.
+	 */
+	mem1 = find_resource(dev, 1|(link->link_num<<2));
+	mem2 = find_resource(dev, 2|(link->link_num<<2));
 
-        printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-            mem1->base, mem1->limit, mem1->size, mem1->align);
-        printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-            mem2->base, mem2->limit, mem2->size, mem2->align);
+	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+	    mem1->base, mem1->limit, mem1->size, mem1->align);
+	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+	    mem2->base, mem2->limit, mem2->size, mem2->align);
 
-        /* See if both resources have roughly the same limits */
-        if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
-            ((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
-        {
-            /* If so place the one with the most stringent alignment first
-             */
-            if (mem2->align > mem1->align) {
-                struct resource *tmp;
-                tmp = mem1;
-                mem1 = mem2;
-                mem2 = tmp;
-            }
-            /* Now place the memory as high up as it will go */
-            mem2->base = resource_max(mem2);
-            mem1->limit = mem2->base - 1;
-            mem1->base = resource_max(mem1);
-        }
-        else {
-            /* Place the resources as high up as they will go */
-            mem2->base = resource_max(mem2);
-            mem1->base = resource_max(mem1);
-        }
+	/* See if both resources have roughly the same limits */
+	if (((mem1->limit <= 0xffffffff) && (mem2->limit <= 0xffffffff)) ||
+	    ((mem1->limit > 0xffffffff) && (mem2->limit > 0xffffffff)))
+	{
+	    /* If so place the one with the most stringent alignment first
+	     */
+	    if (mem2->align > mem1->align) {
+		struct resource *tmp;
+		tmp = mem1;
+		mem1 = mem2;
+		mem2 = tmp;
+	    }
+	    /* Now place the memory as high up as it will go */
+	    mem2->base = resource_max(mem2);
+	    mem1->limit = mem2->base - 1;
+	    mem1->base = resource_max(mem1);
+	}
+	else {
+	    /* Place the resources as high up as they will go */
+	    mem2->base = resource_max(mem2);
+	    mem1->base = resource_max(mem1);
+	}
 
-        printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
-            mem1->base, mem1->limit, mem1->size, mem1->align);
-        printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
-            mem2->base, mem2->limit, mem2->size, mem2->align);
+	printk(BIOS_DEBUG, "base1: 0x%08Lx limit1: 0x%08Lx size: 0x%08Lx align: %d\n",
+	    mem1->base, mem1->limit, mem1->size, mem1->align);
+	printk(BIOS_DEBUG, "base2: 0x%08Lx limit2: 0x%08Lx size: 0x%08Lx align: %d\n",
+	    mem2->base, mem2->limit, mem2->size, mem2->align);
     }
 
     for(res = &dev->resource_list; res; res = res->next)
     {
-        res->flags |= IORESOURCE_ASSIGNED;
-        res->flags |= IORESOURCE_STORED;
-        report_resource_stored(dev, res, "");
+	res->flags |= IORESOURCE_ASSIGNED;
+	res->flags |= IORESOURCE_STORED;
+	report_resource_stored(dev, res, "");
     }
 #endif
 
     pci_tolm = 0xffffffffUL;
     for(link = dev->link_list; link; link = link->next) {
-        pci_tolm = my_find_pci_tolm(link, pci_tolm);
+	pci_tolm = my_find_pci_tolm(link, pci_tolm);
     }
 
     // FIXME handle interleaved nodes. If you fix this here, please fix
@@ -677,8 +677,8 @@ printk(BIOS_DEBUG, "adsr - CONFIG_PCI_64BIT_PREF_MEM is true.\n");
 
     // Use hole_basek as mmio_basek, and we don't need to reset hole anymore
     if ((mem_hole.node_id !=  -1) && (mmio_basek > mem_hole.hole_startk)) {
-        mmio_basek = mem_hole.hole_startk;
-        reset_memhole = 0;
+	mmio_basek = mem_hole.hole_startk;
+	reset_memhole = 0;
     }
 #endif
 
@@ -690,59 +690,59 @@ printk(BIOS_DEBUG, "adsr - CONFIG_PCI_64BIT_PREF_MEM is true.\n");
     d = get_dram_base_mask(0);
 
     if (d.mask & 1) {
-        basek = ((resource_t)(d.base)) << 8;
-        limitk = (resource_t)((d.mask << 8) | 0xFFFFFF);
+	basek = ((resource_t)(d.base)) << 8;
+	limitk = (resource_t)((d.mask << 8) | 0xFFFFFF);
 printk(BIOS_DEBUG, "adsr: (before) basek = %llx, limitk = %llx.\n",basek,limitk);
 
-        /* Convert these values to multiples of 1K for ease of math. */
-        basek >>= 10;
-        limitk >>= 10;
-        sizek = limitk - basek + 1;
+	/* Convert these values to multiples of 1K for ease of math. */
+	basek >>= 10;
+	limitk >>= 10;
+	sizek = limitk - basek + 1;
 
 printk(BIOS_DEBUG, "adsr: (after) basek = %llx, limitk = %llx, sizek = %llx.\n",basek,limitk,sizek);
 
-        /* see if we need a hole from 0xa0000 to 0xbffff */
-        if ((basek < 640) && (sizek > 768)) {
+	/* see if we need a hole from 0xa0000 to 0xbffff */
+	if ((basek < 640) && (sizek > 768)) {
 printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
-            ram_resource(dev, (idx | 0), basek, 640 - basek);
-            idx += 0x10;
-            basek = 768;
-            sizek = limitk - 768;
-        }
+	    ram_resource(dev, (idx | 0), basek, 640 - basek);
+	    idx += 0x10;
+	    basek = 768;
+	    sizek = limitk - 768;
+	}
 
 		printk(BIOS_DEBUG,
 			"adsr: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			 mmio_basek, basek, limitk);
 
-        /* split the region to accomodate pci memory space */
-        if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
-            if (basek <= mmio_basek) {
-                unsigned pre_sizek;
-                pre_sizek = mmio_basek - basek;
-                if(pre_sizek>0) {
-                    ram_resource(dev, idx, basek, pre_sizek);
-                    idx += 0x10;
-                    sizek -= pre_sizek;
-                    if (!ramtop)
-                            ramtop = mmio_basek * 1024;
-                }
-                basek = mmio_basek;
-            }
-            if ((basek + sizek) <= 4*1024*1024) {
-                sizek = 0;
-            }
-            else {
-                basek = 4*1024*1024;
-                sizek -= (4*1024*1024 - mmio_basek);
-            }
-        }
+	/* split the region to accomodate pci memory space */
+	if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
+	    if (basek <= mmio_basek) {
+		unsigned pre_sizek;
+		pre_sizek = mmio_basek - basek;
+		if(pre_sizek>0) {
+		    ram_resource(dev, idx, basek, pre_sizek);
+		    idx += 0x10;
+		    sizek -= pre_sizek;
+		    if (!ramtop)
+			    ramtop = mmio_basek * 1024;
+		}
+		basek = mmio_basek;
+	    }
+	    if ((basek + sizek) <= 4*1024*1024) {
+		sizek = 0;
+	    }
+	    else {
+		basek = 4*1024*1024;
+		sizek -= (4*1024*1024 - mmio_basek);
+	    }
+	}
 
-        ram_resource(dev, (idx | 0), basek, sizek);
-        idx += 0x10;
-        printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
-                 0, mmio_basek, basek, limitk);
-        if (!ramtop)
-                 ramtop = limitk * 1024;
+	ram_resource(dev, (idx | 0), basek, sizek);
+	idx += 0x10;
+	printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
+		 0, mmio_basek, basek, limitk);
+	if (!ramtop)
+		 ramtop = limitk * 1024;
     }
 	printk(BIOS_DEBUG, "  adsr - mmio_basek = %lx.\n", mmio_basek);
 
@@ -754,9 +754,9 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
 #endif
 
     for(link = dev->link_list; link; link = link->next) {
-        if (link->children) {
-            assign_resources(link);
-        }
+	if (link->children) {
+	    assign_resources(link);
+	}
     }
 printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
@@ -790,7 +790,7 @@ static void cpu_bus_read_resources(device_t dev)
     resource->base = CONFIG_MMCONF_BASE_ADDRESS;
     resource->size = CONFIG_MMCONF_BUS_NUMBER * 4096*256;
     resource->flags = IORESOURCE_MEM | IORESOURCE_RESERVE |
-        IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
+	IORESOURCE_FIXED | IORESOURCE_STORED |  IORESOURCE_ASSIGNED;
 #endif
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
@@ -801,7 +801,7 @@ static void cpu_bus_set_resources(device_t dev)
 
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     if (resource) {
-        report_resource_stored(dev, resource, " <mmconfig>");
+	report_resource_stored(dev, resource, " <mmconfig>");
     }
     pci_dev_set_resources(dev);
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
@@ -832,7 +832,7 @@ static void cpu_bus_init(device_t dev)
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - agesawrapper_amdinitmid - Start.\n",__func__);
     val = agesawrapper_amdinitmid ();
     if(val) {
-        printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
+	printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
     }
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - agesawrapper_amdinitmid - End.\n",__func__);
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
@@ -845,9 +845,9 @@ static struct device_operations northbridge_operations = {
     .read_resources   = read_resources,
     .set_resources    = set_resources,
   .enable_resources = pci_dev_enable_resources,
-  .init             = northbridge_init,
-  .enable           = 0,
-  .ops_pci          = 0,
+  .init		    = northbridge_init,
+  .enable	    = 0,
+  .ops_pci	    = 0,
 };
 
 
@@ -871,8 +871,8 @@ static struct device_operations pci_domain_ops = {
     .read_resources   = domain_read_resources,
     .set_resources    = domain_set_resources,
     .enable_resources = domain_enable_resources,
-    .init             = NULL,
-    .scan_bus         = pci_domain_scan_bus,
+    .init	      = NULL,
+    .scan_bus	      = pci_domain_scan_bus,
 };
 
 
@@ -880,8 +880,8 @@ static struct device_operations cpu_bus_ops = {
     .read_resources   = cpu_bus_read_resources,
     .set_resources    = cpu_bus_set_resources,
     .enable_resources = NULL,
-    .init             = cpu_bus_init,
-    .scan_bus         = 0,
+    .init	      = cpu_bus_init,
+    .scan_bus	      = 0,
 };
 
 
@@ -900,10 +900,10 @@ static void root_complex_enable_dev(struct device *dev)
 
     /* Set the operations if it is a special bus type */
     if (dev->path.type == DEVICE_PATH_DOMAIN) {
-        dev->ops = &pci_domain_ops;
+	dev->ops = &pci_domain_ops;
     }
     else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-        dev->ops = &cpu_bus_ops;
+	dev->ops = &cpu_bus_ops;
     }
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }

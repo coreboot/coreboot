@@ -181,10 +181,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	post_code(0x39);
 
-	if (!warm_reset_detect(0)) {                    // BSP is node 0
+	if (!warm_reset_detect(0)) {			 // BSP is node 0
 		init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
 	} else {
-		init_fidvid_stage2(bsp_apicid, 0);      // BSP is node 0
+		init_fidvid_stage2(bsp_apicid, 0);	  // BSP is node 0
 	}
 
 	post_code(0x3A);
@@ -233,8 +233,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  *	based on each device's unit count.
  *
  * Parameters:
- *	@param[in]  u8  node    = The node on which this chain is located
- *	@param[in]  u8  link    = The link on the host for this chain
+ *	@param[in]  u8  node	   = The node on which this chain is located
+ *	@param[in]  u8  link	   = The link on the host for this chain
  *	@param[out] u8** list   = supply a pointer to a list
  *	@param[out] BOOL result = true to use a manual list
  *				  false to initialize the link automatically

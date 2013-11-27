@@ -10,7 +10,7 @@
  *
  * All of the information should be Position Independent Data.
  * That is it should be safe to relocated any of the information
- * without it's meaning/correctness changing.   For table that
+ * without it's meaning/correctness changing.	For table that
  * can reasonably be used on multiple architectures the data
  * size should be fixed.  This should ease the transition between
  * 32 bit and 64 bit architectures etc.
@@ -202,7 +202,7 @@ struct lb_gpio {
 	uint32_t polarity;
 	uint32_t value;
 #define GPIO_MAX_NAME_LENGTH 16
-        uint8_t name[GPIO_MAX_NAME_LENGTH];
+	uint8_t name[GPIO_MAX_NAME_LENGTH];
 };
 
 struct lb_gpios {
@@ -262,55 +262,55 @@ struct lb_x86_rom_mtrr {
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */
 struct cmos_option_table {
-	uint32_t tag;               /* CMOS definitions table type */
-	uint32_t size;               /* size of the entire table */
+	uint32_t tag;		     /* CMOS definitions table type */
+	uint32_t size;		      /* size of the entire table */
 	uint32_t header_length;      /* length of header */
 };
 
 /* cmos entry record
-        This record is variable length.  The name field may be
-        shorter than CMOS_MAX_NAME_LENGTH. The entry may start
-        anywhere in the byte, but can not span bytes unless it
-        starts at the beginning of the byte and the length is
-        fills complete bytes.
+	This record is variable length.  The name field may be
+	shorter than CMOS_MAX_NAME_LENGTH. The entry may start
+	anywhere in the byte, but can not span bytes unless it
+	starts at the beginning of the byte and the length is
+	fills complete bytes.
 */
 #define LB_TAG_OPTION 201
 struct cmos_entries {
-	uint32_t tag;                /* entry type */
-	uint32_t size;               /* length of this record */
-	uint32_t bit;                /* starting bit from start of image */
-	uint32_t length;             /* length of field in bits */
-	uint32_t config;             /* e=enumeration, h=hex, r=reserved */
-	uint32_t config_id;          /* a number linking to an enumeration record */
+	uint32_t tag;		      /* entry type */
+	uint32_t size;		      /* length of this record */
+	uint32_t bit;		      /* starting bit from start of image */
+	uint32_t length;	      /* length of field in bits */
+	uint32_t config;	      /* e=enumeration, h=hex, r=reserved */
+	uint32_t config_id;	      /* a number linking to an enumeration record */
 #define CMOS_MAX_NAME_LENGTH 32
 	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name of entry in ascii,
-					       variable length int aligned */
+						    variable length int aligned */
 };
 
 
 /* cmos enumerations record
-        This record is variable length.  The text field may be
-        shorter than CMOS_MAX_TEXT_LENGTH.
+	This record is variable length.  The text field may be
+	shorter than CMOS_MAX_TEXT_LENGTH.
 */
 #define LB_TAG_OPTION_ENUM 202
 struct cmos_enums {
 	uint32_t tag;		     /* enumeration type */
 	uint32_t size; 		     /* length of this record */
-	uint32_t config_id;          /* a number identifying the config id */
-	uint32_t value;              /* the value associated with the text */
+	uint32_t config_id;	      /* a number identifying the config id */
+	uint32_t value;	      /* the value associated with the text */
 #define CMOS_MAX_TEXT_LENGTH 32
 	uint8_t text[CMOS_MAX_TEXT_LENGTH]; /* enum description in ascii,
 						variable length int aligned */
 };
 
 /* cmos defaults record
-        This record contains default settings for the cmos ram.
+	This record contains default settings for the cmos ram.
 */
 #define LB_TAG_OPTION_DEFAULTS 203
 struct cmos_defaults {
-	uint32_t tag;                /* default type */
-	uint32_t size;               /* length of this record */
-	uint32_t name_length;        /* length of the following name field */
+	uint32_t tag;		      /* default type */
+	uint32_t size;		      /* length of this record */
+	uint32_t name_length;	      /* length of the following name field */
 	uint8_t name[CMOS_MAX_NAME_LENGTH]; /* name identifying the default */
 #define CMOS_IMAGE_BUFFER_SIZE 256
 	uint8_t default_set[CMOS_IMAGE_BUFFER_SIZE]; /* default settings */

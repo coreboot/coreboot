@@ -103,7 +103,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	fadt->x_firmware_ctl_l = 0; /* Set X_FIRMWARE_CTRL only if FACS is */
 	fadt->x_firmware_ctl_h = 0; /* above 4GB. If X_FIRMWARE_CTRL is set, */
-				    /* then FIRMWARE_CTRL must be zero. */
+					/* then FIRMWARE_CTRL must be zero. */
 	fadt->x_dsdt_l = (unsigned long)dsdt;
 	fadt->x_dsdt_h = 0;
 
@@ -212,7 +212,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 		return current;
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
-					     reg & 0xf0000000, 0x0, 0x0, 255);
+						  reg & 0xf0000000, 0x0, 0x0, 255);
 	return current;
 }
 

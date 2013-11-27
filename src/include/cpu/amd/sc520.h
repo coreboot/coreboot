@@ -17,9 +17,9 @@ struct parreg {
 #define MMCRPIC (struct mmcrpic *) 0xfffefd00
 //static volatile struct mmcrpic *pic = MMCRPIC;
 
-#define M_GINT_MODE     1
-#define M_S1_MODE       2
-#define M_S2_MODE       4
+#define M_GINT_MODE	1
+#define M_S1_MODE	2
+#define M_S2_MODE	4
 
 
 /* here is the real mmcr struct */
@@ -151,7 +151,7 @@ struct gptimers {
 struct watchdog {
 	unsigned short ctl;
 	unsigned short cntll;
-        unsigned short cntlh;
+	unsigned short cntlh;
 	unsigned char pad[10];
 };
 

@@ -309,7 +309,7 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	mainboard->part_number_idx = strlen(mainboard_vendor) + 1;
 
 	memcpy(mainboard->strings + mainboard->vendor_idx,
-		mainboard_vendor,      strlen(mainboard_vendor) + 1);
+		mainboard_vendor,	 strlen(mainboard_vendor) + 1);
 	memcpy(mainboard->strings + mainboard->part_number_idx,
 		mainboard_part_number, strlen(mainboard_part_number) + 1);
 
@@ -342,16 +342,16 @@ static void lb_strings(struct lb_header *header)
 		uint32_t tag;
 		const char *string;
 	} strings[] = {
-		{ LB_TAG_VERSION,        coreboot_version,        },
+		{ LB_TAG_VERSION,	   coreboot_version,	    },
 		{ LB_TAG_EXTRA_VERSION,  coreboot_extra_version,  },
-		{ LB_TAG_BUILD,          coreboot_build,          },
+		{ LB_TAG_BUILD,	   coreboot_build,	    },
 		{ LB_TAG_COMPILE_TIME,   coreboot_compile_time,   },
-		{ LB_TAG_COMPILE_BY,     coreboot_compile_by,     },
+		{ LB_TAG_COMPILE_BY,	   coreboot_compile_by,	    },
 		{ LB_TAG_COMPILE_HOST,   coreboot_compile_host,   },
 		{ LB_TAG_COMPILE_DOMAIN, coreboot_compile_domain, },
-		{ LB_TAG_COMPILER,       coreboot_compiler,       },
-		{ LB_TAG_LINKER,         coreboot_linker,         },
-		{ LB_TAG_ASSEMBLER,      coreboot_assembler,      },
+		{ LB_TAG_COMPILER,	   coreboot_compiler,	    },
+		{ LB_TAG_LINKER,	   coreboot_linker,	    },
+		{ LB_TAG_ASSEMBLER,	   coreboot_assembler,	    },
 	};
 	unsigned int i;
 	for(i = 0; i < ARRAY_SIZE(strings); i++) {
@@ -391,8 +391,8 @@ static unsigned long lb_table_fini(struct lb_header *head)
 	head->header_checksum = 0;
 	head->header_checksum = compute_ip_checksum(head, sizeof(*head));
 	printk(BIOS_DEBUG,
-	       "Wrote coreboot table at: %p, 0x%x bytes, checksum %x\n",
-	       head, head->table_bytes, head->table_checksum);
+		"Wrote coreboot table at: %p, 0x%x bytes, checksum %x\n",
+		head, head->table_bytes, head->table_checksum);
 	return (unsigned long)rec + rec->size;
 }
 
@@ -423,9 +423,9 @@ static struct lb_memory *build_lb_mem(struct lb_header *head)
 	 * that each overlapping range will take over the next. Therefore,
 	 * add cacheable resources as RAM then add the reserved resources. */
 	memranges_init(&lb_ranges, IORESOURCE_CACHEABLE,
-	               IORESOURCE_CACHEABLE, LB_MEM_RAM);
+			IORESOURCE_CACHEABLE, LB_MEM_RAM);
 	memranges_add_resources(&lb_ranges, IORESOURCE_RESERVE,
-	                        IORESOURCE_RESERVE, LB_MEM_RESERVED);
+				 IORESOURCE_RESERVE, LB_MEM_RESERVED);
 
 	return mem;
 }

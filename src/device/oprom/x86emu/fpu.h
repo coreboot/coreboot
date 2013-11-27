@@ -2,9 +2,9 @@
 *
 *						Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*	     	Copyright (C) 1996-1999 SciTech Software, Inc.
+* 					   Copyright (C) David Mosberger-Tang
+* 						  Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -30,7 +30,7 @@
 *
 * Language:		ANSI C
 * Environment:	Any
-* Developer:    Kendall Bennett
+* Developer:	Kendall Bennett
 *
 * Description:  Header file for FPU instruction decoding.
 *
@@ -40,7 +40,7 @@
 #define __X86EMU_FPU_H
 
 #ifdef  __cplusplus
-extern "C" {            			/* Use "C" linkage when in C++ mode */
+extern "C" {					/* Use "C" linkage when in C++ mode */
 #endif
 
 /* these have to be defined, whether 8087 support compiled in or not. */
@@ -55,7 +55,7 @@ extern void x86emuOp_esc_coprocess_de (u8 op1);
 extern void x86emuOp_esc_coprocess_df (u8 op1);
 
 #ifdef  __cplusplus
-}                       			/* End of "C" linkage for C++   	*/
+}						/* End of "C" linkage for C++   	*/
 #endif
 
 #endif /* __X86EMU_FPU_H */

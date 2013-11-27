@@ -32,9 +32,9 @@
 void cpus_ready_for_init(void)
 {
 #if CONFIG_MEM_TRAIN_SEQ == 1
-        struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
-        // wait for ap memory to trained
-        wait_all_core0_mem_trained(sysinfox);
+	struct sys_info *sysinfox = (struct sys_info *)((CONFIG_RAMTOP) - sizeof(*sysinfox));
+	// wait for ap memory to trained
+	wait_all_core0_mem_trained(sysinfox);
 #endif
 }
 #endif
@@ -129,16 +129,16 @@ static void print_mtrr_state(struct mtrr_state *state)
 	int i;
 	for (i = 0; i < MTRR_COUNT; i++) {
 		printk(BIOS_DEBUG, "var mtrr %d: %08x%08x mask: %08x%08x\n",
-		       i,
-		       state->mtrrs[i].base.hi, state->mtrrs[i].base.lo,
-		       state->mtrrs[i].mask.hi, state->mtrrs[i].mask.lo);
+			 i,
+			 state->mtrrs[i].base.hi, state->mtrrs[i].base.lo,
+			 state->mtrrs[i].mask.hi, state->mtrrs[i].mask.lo);
 	}
 	printk(BIOS_DEBUG, "top_mem:  %08x%08x\n",
-	       state->top_mem.hi, state->top_mem.lo);
+		state->top_mem.hi, state->top_mem.lo);
 	printk(BIOS_DEBUG, "top_mem2: %08x%08x\n",
-	       state->top_mem2.hi, state->top_mem2.lo);
+		state->top_mem2.hi, state->top_mem2.lo);
 	printk(BIOS_DEBUG, "def_type: %08x%08x\n",
-	       state->def_type.hi, state->def_type.lo);
+		state->def_type.hi, state->def_type.lo);
 }
 #endif
 
@@ -621,6 +621,6 @@ static struct cpu_device_id cpu_table[] = {
 };
 
 static const struct cpu_driver model_fxx __cpu_driver = {
-	.ops      = &cpu_dev_ops,
+	.ops	   = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

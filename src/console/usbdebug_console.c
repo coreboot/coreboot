@@ -53,7 +53,7 @@ static int dbgp_tst_byte(void)
 }
 
 static const struct console_driver usbdebug_direct_console __console = {
-	.init     = dbgp_init,
+	.init	   = dbgp_init,
 	.tx_byte  = dbgp_tx_byte,
 	.tx_flush = dbgp_tx_flush,
 	.rx_byte  = dbgp_rx_byte,

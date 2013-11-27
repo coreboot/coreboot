@@ -65,32 +65,32 @@ ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 	printf "Coreboot will be built with a fake Intel Firmware Descriptor (IFD).\n"
 	printf "Never write a complete coreboot.rom with a fake IFD to your board's\n"
 	printf "flash ROM! Make sure that you only write valid flash regions.\n\n"
-	printf "    IFDFAKE    Building a fake Intel Firmware Descriptor\n"
+	printf "    IFDFAKE	Building a fake Intel Firmware Descriptor\n"
 	$(IFDFAKE) $(IFD_SECTIONS) $(IFD_BIN_PATH)
 endif
-	printf "    DD         Adding Intel Firmware Descriptor\n"
+	printf "    DD		Adding Intel Firmware Descriptor\n"
 	dd if=$(IFD_BIN_PATH) \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
 ifeq ($(CONFIG_HAVE_ME_BIN),y)
-	printf "    IFDTOOL    me.bin -> coreboot.pre\n"
+	printf "    IFDTOOL	me.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \
 		-i ME:$(CONFIG_ME_BIN_PATH) \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
 ifeq ($(CONFIG_HAVE_GBE_BIN),y)
-	printf "    IFDTOOL    gbe.bin -> coreboot.pre\n"
+	printf "    IFDTOOL	gbe.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \
 		-i GbE:$(CONFIG_GBE_BIN_PATH) \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
-	printf "    IFDTOOL    Locking Management Engine\n"
+	printf "    IFDTOOL	Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 else ifneq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
-	printf "    IFDTOOL    Unlocking Management Engine\n"
+	printf "    IFDTOOL	Unlocking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool -u $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif

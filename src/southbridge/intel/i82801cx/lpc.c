@@ -62,8 +62,8 @@ static void i82801cx_enable_serial_irqs( struct device *dev)
  *
  * @param dev TODO
  * @param mask Identifies whether each channel should be used for PCI DMA
- *             (bit = 0) or LPC DMA (bit = 1). The LSb controls channel 0.
- *             Channel 4 is not used (reserved).
+ *	       (bit = 0) or LPC DMA (bit = 1). The LSb controls channel 0.
+ *	       Channel 4 is not used (reserved).
  */
 static void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask)
 {
@@ -74,8 +74,8 @@ static void i82801cx_lpc_route_dma( struct device *dev, uint8_t mask)
     dmaConfig &= 0x300;				// Preserve reserved bits
     for(channelIndex = 0; channelIndex < 8; channelIndex++) {
     	if (channelIndex == 4)
-        	continue;		// Register doesn't support channel 4
-        dmaConfig |= ((mask & (1 << channelIndex))? 3:1) << (channelIndex*2);
+		continue;		// Register doesn't support channel 4
+	dmaConfig |= ((mask & (1 << channelIndex))? 3:1) << (channelIndex*2);
     }
     pci_write_config16(dev, PCI_DMA_CFG, dmaConfig);
 }
@@ -90,9 +90,9 @@ static void i82801cx_rtc_init(struct device *dev)
     rtc_failed = pmcon3 & RTC_BATTERY_DEAD;
     if (rtc_failed) {
     	// Clear the RTC_BATTERY_DEAD bit, but preserve
-        // the RTC_POWER_FAILED, G3 state, and reserved bits
+	// the RTC_POWER_FAILED, G3 state, and reserved bits
 		// NOTE: RTC_BATTERY_DEAD and RTC_POWER_FAILED are "write-1-clear" bits
-        pmcon3 &= ~RTC_POWER_FAILED;
+	pmcon3 &= ~RTC_POWER_FAILED;
     }
 
     get_option(&pwr_on, "power_on_after_fail");
@@ -162,11 +162,11 @@ static void lpc_init(struct device *dev)
 	i82801cx_enable_serial_irqs(dev);
 
 	/* power after power fail */
-	        /* FIXME this doesn't work! */
-        /* Which state do we want to goto after g3 (power restored)?
-         * 0 == S0 Full On
-         * 1 == S5 Soft Off
-         */
+		 /* FIXME this doesn't work! */
+	/* Which state do we want to goto after g3 (power restored)?
+	 * 0 == S0 Full On
+	 * 1 == S5 Soft Off
+	 */
     byte = pci_read_config8(dev, GEN_PMCON_3);
     if (pwr_on)
     	byte &= ~1;		// Return to S0 (boot) after power is re-applied
@@ -184,8 +184,8 @@ static void lpc_init(struct device *dev)
     nmi_option = NMI_OFF;
     get_option(&nmi_option, "nmi");
     if (nmi_option) {
-        byte &= ~(1 << 7); /* set NMI */
-        outb(byte, 0x70);
+	byte &= ~(1 << 7); /* set NMI */
+	outb(byte, 0x70);
     }
 
 	/* Initialize the real time clock */
@@ -227,15 +227,15 @@ static void i82801cx_lpc_read_resources(device_t dev)
 
 static struct device_operations lpc_ops  = {
 	.read_resources   = i82801cx_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = 0,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+	.enable	   = 0,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801CA_LPC,
 };

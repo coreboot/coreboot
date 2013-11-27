@@ -122,7 +122,7 @@ static void add_fixed_resources(struct device *dev, int index)
 
 	if (get_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
-		       "size=0x%x\n", pcie_config_base, pcie_config_size);
+			 "size=0x%x\n", pcie_config_base, pcie_config_size);
 		resource = new_resource(dev, index++);
 		resource->base = (resource_t) pcie_config_base;
 		resource->size = (resource_t) pcie_config_size;
@@ -156,27 +156,27 @@ static void pci_domain_set_resources(device_t dev)
 	/* Total Memory 2GB example:
 	 *
 	 *  00000000  0000MB-1992MB  1992MB  RAM     (writeback)
-	 *  7c800000  1992MB-2000MB     8MB  TSEG    (SMRR)
-	 *  7d000000  2000MB-2002MB     2MB  GFX GTT (uncached)
-	 *  7d200000  2002MB-2034MB    32MB  GFX UMA (uncached)
-	 *  7f200000   2034MB TOLUD
-	 *  7f800000   2040MB MEBASE
-	 *  7f800000  2040MB-2048MB     8MB  ME UMA  (uncached)
-	 *  80000000   2048MB TOM
-	 * 100000000  4096MB-4102MB     6MB  RAM     (writeback)
+	 *  7c800000  1992MB-2000MB	 8MB  TSEG    (SMRR)
+	 *  7d000000  2000MB-2002MB	 2MB  GFX GTT (uncached)
+	 *  7d200000  2002MB-2034MB	32MB  GFX UMA (uncached)
+	 *  7f200000	2034MB TOLUD
+	 *  7f800000	2040MB MEBASE
+	 *  7f800000  2040MB-2048MB	 8MB  ME UMA  (uncached)
+	 *  80000000	2048MB TOM
+	 * 100000000  4096MB-4102MB	 6MB  RAM     (writeback)
 	 *
 	 * Total Memory 4GB example:
 	 *
 	 *  00000000  0000MB-2768MB  2768MB  RAM     (writeback)
-	 *  ad000000  2768MB-2776MB     8MB  TSEG    (SMRR)
-	 *  ad800000  2776MB-2778MB     2MB  GFX GTT (uncached)
-	 *  ada00000  2778MB-2810MB    32MB  GFX UMA (uncached)
-	 *  afa00000   2810MB TOLUD
-	 *  ff800000   4088MB MEBASE
-	 *  ff800000  4088MB-4096MB     8MB  ME UMA  (uncached)
-	 * 100000000   4096MB TOM
+	 *  ad000000  2768MB-2776MB	 8MB  TSEG    (SMRR)
+	 *  ad800000  2776MB-2778MB	 2MB  GFX GTT (uncached)
+	 *  ada00000  2778MB-2810MB	32MB  GFX UMA (uncached)
+	 *  afa00000	2810MB TOLUD
+	 *  ff800000	4088MB MEBASE
+	 *  ff800000  4088MB-4096MB	 8MB  ME UMA  (uncached)
+	 * 100000000	4096MB TOM
 	 * 100000000  4096MB-5374MB  1278MB  RAM     (writeback)
-	 * 14fe00000   5368MB TOUUD
+	 * 14fe00000	5368MB TOUUD
 	 */
 
 	/* Top of Upper Usable DRAM, including remap */
@@ -193,7 +193,7 @@ static void pci_domain_set_resources(device_t dev)
 	tom |= pci_read_config32(dev, 0xa0);
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
-	       touud, tolud, tom);
+		touud, tolud, tom);
 
 	/* ME UMA needs excluding if total memory <4GB */
 	me_base = pci_read_config32(dev, 0x74);
@@ -212,7 +212,7 @@ static void pci_domain_set_resources(device_t dev)
 		uma_memory_base = tomk * 1024ULL;
 		uma_memory_size = uma_size * 1024ULL;
 		printk(BIOS_DEBUG, "ME UMA base 0x%llx size %uM\n",
-		       me_base, uma_size >> 10);
+			 me_base, uma_size >> 10);
 	}
 
 	/* Graphics memory comes next */
@@ -242,7 +242,7 @@ static void pci_domain_set_resources(device_t dev)
 	uma_memory_base = tomk * 1024ULL;
 	uma_memory_size += uma_size * 1024ULL;
 	printk(BIOS_DEBUG, "TSEG base 0x%08x size %uM\n",
-	       tseg_base, uma_size >> 10);
+		tseg_base, uma_size >> 10);
 
 	printk(BIOS_INFO, "Available memory below 4GB: %lluM\n", tomk >> 10);
 
@@ -259,7 +259,7 @@ static void pci_domain_set_resources(device_t dev)
 	if (touud > 4096 * 1024) {
 		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-		       (touud >> 10) - 4096);
+			 (touud >> 10) - 4096);
 	}
 
 	add_fixed_resources(dev, 6);
@@ -275,10 +275,10 @@ static void pci_domain_set_resources(device_t dev)
 	 */
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.set_resources	   = pci_domain_set_resources,
 	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = pci_domain_scan_bus,
+	.init		   = NULL,
+	.scan_bus	   = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
@@ -449,33 +449,33 @@ static void northbridge_enable(device_t dev)
 }
 
 static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = intel_set_subsystem,
+	.set_subsystem	   = intel_set_subsystem,
 };
 
 static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
-	.set_resources    = mc_set_resources,
+	.set_resources	   = mc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.enable           = northbridge_enable,
-	.scan_bus         = 0,
-	.ops_pci          = &intel_pci_ops,
+	.init		   = northbridge_init,
+	.enable	   = northbridge_enable,
+	.scan_bus	   = 0,
+	.ops_pci	   = &intel_pci_ops,
 };
 
 static const struct pci_driver mc_driver_0100 __pci_driver = {
-	.ops    = &mc_ops,
+	.ops	 = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0100,
 };
 
 static const struct pci_driver mc_driver __pci_driver = {
-	.ops    = &mc_ops,
+	.ops	 = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0104, /* Sandy bridge */
 };
 
 static const struct pci_driver mc_driver_1 __pci_driver = {
-	.ops    = &mc_ops,
+	.ops	 = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x0154, /* Ivy bridge */
 };
@@ -493,10 +493,10 @@ static void cpu_bus_noop(device_t dev)
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = 0,
 };
 
 static void enable_dev(device_t dev)

@@ -88,7 +88,7 @@ void enable_vx800_serial(void)
 	// Set 115 kb
 	vx800_writesioword(0x3f8, 1);
 	// Set 9.6 kb
-	//      WRITESIOWORD(0x3f8, 12)
+	//	 WRITESIOWORD(0x3f8, 12)
 	// now set no parity, one stop, 8 bits
 	vx800_writesiobyte(0x3fb, 3);
 	// now turn on RTS, DRT

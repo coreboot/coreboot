@@ -67,7 +67,7 @@ struct spansion_spi_flash {
 };
 
 static inline struct spansion_spi_flash *to_spansion_spi_flash(struct spi_flash
-							     *flash)
+								    *flash)
 {
 	return container_of(flash, struct spansion_spi_flash, flash);
 }

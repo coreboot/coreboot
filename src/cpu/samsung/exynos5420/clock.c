@@ -27,7 +27,7 @@
 #include "periph.h"
 
 /* input clock of PLL: SMDK5420 has 24MHz input clock */
-#define CONFIG_SYS_CLK_FREQ            24000000
+#define CONFIG_SYS_CLK_FREQ	       24000000
 
 /* src_bit div_bit prediv_bit */
 static struct clk_bit_info clk_bit_info[PERIPH_ID_COUNT] = {
@@ -304,7 +304,7 @@ void clock_ll_set_pre_ratio(enum periph_id periph_id, unsigned divisor)
 		break;
 	default:
 		printk(BIOS_DEBUG, "%s: Unsupported peripheral ID %d\n", __func__,
-		      periph_id);
+			periph_id);
 		return;
 	}
 	clrsetbits_le32(reg, mask << shift, (divisor & mask) << shift);
@@ -340,7 +340,7 @@ void clock_ll_set_ratio(enum periph_id periph_id, unsigned divisor)
 		break;
 	default:
 		printk(BIOS_DEBUG, "%s: Unsupported peripheral ID %d\n", __func__,
-		      periph_id);
+			periph_id);
 		return;
 	}
 	clrsetbits_le32(reg, mask << shift, (divisor & mask) << shift);
@@ -427,7 +427,7 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 		break;
 	default:
 		printk(BIOS_DEBUG, "%s: Unsupported peripheral ID %d\n", __func__,
-		      periph_id);
+			periph_id);
 		return -1;
 	}
 

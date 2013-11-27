@@ -45,18 +45,18 @@
 
 static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE, /* u32 signature */
-	PIRQ_VERSION,   /* u16 version   */
-	32+16*CONFIG_IRQ_SLOT_COUNT,        /* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
-	0,           /* Where the interrupt router lies (bus) */
+	PIRQ_VERSION,	 /* u16 version	  */
+	32+16*CONFIG_IRQ_SLOT_COUNT,	     /* there can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
+	0,	      /* Where the interrupt router lies (bus) */
 	(0x11<<3)|0, /* Where the interrupt router lies (dev) */
-	0,           /* IRQs devoted exclusively to PCI usage */
-	PCI_VENDOR_ID_VIA,         /* Compatible Vendor (VIA) */
+	0,	      /* IRQs devoted exclusively to PCI usage */
+	PCI_VENDOR_ID_VIA,	    /* Compatible Vendor (VIA) */
 	PCI_DEVICE_ID_VIA_82C596,  /* Compatible Device (82C596) */
-	0,           /* Miniport data */
+	0,	      /* Miniport data */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0x5f,        /*  u8 checksum, this has to be set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
+	0x5f,	      /*  u8 checksum, this has to be set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 	{
-		/* bus,        dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
+		/* bus,	 dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
 		/* peg bridge */
 		{0x00, (0x02 << 3) | 0x0, {{LNKH, IRQBM}, {LNKH, IRQBM}, {LNKH, IRQBM}, {LNKH, IRQBM}}, 0x0, 0x0},
 		/* pcie bridge */

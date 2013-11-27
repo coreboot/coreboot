@@ -54,10 +54,10 @@ static const uint32_t microcode_updates[] = {
 	#include "microcode-m806fda4.h"
 
 	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
 };
 
 #define IA32_FEATURE_CONTROL 0x003a
@@ -105,7 +105,7 @@ static void configure_c_states(void)
 	msr.lo &= ~(1 << 9); // Issue a  single stop grant cycle upon stpclk
 	msr.lo |= (1 << 3); // Dynamic L2
 
-        /* Number of supported C-States */
+	/* Number of supported C-States */
 	msr.lo &= ~7;
 	msr.lo |= HIGHEST_CLEVEL; // support at most C3
 
@@ -230,7 +230,7 @@ static void model_6fx_init(device_t cpu)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_6fx_init,
+	.init	   = model_6fx_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
@@ -246,7 +246,7 @@ static struct cpu_device_id cpu_table[] = {
 };
 
 static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
+	.ops	   = &cpu_dev_ops,
 	.id_table = cpu_table,
 };
 

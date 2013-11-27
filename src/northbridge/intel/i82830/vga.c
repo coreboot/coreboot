@@ -39,7 +39,7 @@ static void vga_init(device_t dev)
 	if (file) {
 		if (ntohl(file->type) != CBFS_TYPE_MBI) {
 			printk(BIOS_INFO,  "CBFS:  MBI binary is of type %x instead of"
-			       "type %x\n", file->type, CBFS_TYPE_MBI);
+				  "type %x\n", file->type, CBFS_TYPE_MBI);
 		} else {
 			mbi = (void *) CBFS_SUBHEADER(file);
 			mbi_len = ntohl(file->len);
@@ -91,16 +91,16 @@ static void vga_init(device_t dev)
 
 static const struct device_operations vga_operations = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = vga_init,
-	.scan_bus         = 0,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init		   = vga_init,
+	.scan_bus	   = 0,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver vga_driver __pci_driver = {
-	.ops    = &vga_operations,
+	.ops	 = &vga_operations,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x3577,
 };

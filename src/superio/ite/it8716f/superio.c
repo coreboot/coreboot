@@ -66,12 +66,12 @@ static void init_ec(u16 base)
 	/* Read out current value of FAN_CTL (0x14). */
 	value = pnp_read_index(base, 0x14);
 	printk(BIOS_DEBUG, "FAN_CTL: reg = 0x%04x, read value = 0x%02x\n",
-	       base + 0x14, value);
+		base + 0x14, value);
 
 	/* Set FAN_CTL (0x14) polarity to high, activate fans 1, 2 and 3. */
 	pnp_write_index(base, 0x14, value | 0x87);
 	printk(BIOS_DEBUG, "FAN_CTL: reg = 0x%04x, writing value = 0x%02x\n",
-	       base + 0x14, value | 0x87);
+		base + 0x14, value | 0x87);
 }
 #endif
 
@@ -103,11 +103,11 @@ static const struct pnp_mode_ops pnp_conf_mode_ops = {
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = it8716f_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.enable	   = pnp_alt_enable,
+	.init		   = it8716f_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_ops,
 };
 
 static struct pnp_info pnp_dev_info[] = {

@@ -82,16 +82,16 @@ typedef enum _NB_REVISION_ {
  ------------------- -----------------------*/
 #define	PCIE_CI_CNTL			0x20
 #define	PCIE_LC_LINK_WIDTH		0xa2
-#define   PCIE_LC_STATE0			0xa5
+#define	  PCIE_LC_STATE0			0xa5
 #define	PCIE_VC0_RESOURCE_STATUS	0x11a	/* 16bit read only */
 
 #define	PCIE_CORE_INDEX_GFX			(0 << 16) /* see 5.2.2 */
 #define	PCIE_CORE_INDEX_GPPSB		(1 << 16)
 
 /* contents of PCIE_NBCFG_REG7 */
-#define   RECONFIG_GPPSB_EN			(1 << 12)
+#define	  RECONFIG_GPPSB_EN			(1 << 12)
 #define	RECONFIG_GPPSB_GPPSB			(1 << 14)
-#define   RECONFIG_GPPSB_LINK_CONFIG		(1 << 15)
+#define	  RECONFIG_GPPSB_LINK_CONFIG		(1 << 15)
 #define	RECONFIG_GPPSB_ATOMIC_RESET		(1 << 17)
 
 /* contents of PCIE_VC0_RESOURCE_STATUS */

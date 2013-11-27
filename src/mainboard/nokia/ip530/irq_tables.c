@@ -37,7 +37,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	{
 		/**
 		 * Rebuild of the PIRQ table, to fix the non-working on-board NIC and PCMCIA controller.
-		 *          FEDCBA9876543210
+		 *	      FEDCBA9876543210
 		 * 0x1E20 = 0001111000100000
 		 * 0x0C60 = 0000110001100000
 		 */

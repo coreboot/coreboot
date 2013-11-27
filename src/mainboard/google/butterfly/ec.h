@@ -20,7 +20,7 @@
 #ifndef BUTTERFLY_EC_H
 #define BUTTERFLY_EC_H
 
-#define EC_SCI_GPI  13   /* GPIO13 is EC_SCI# */
+#define EC_SCI_GPI  13	 /* GPIO13 is EC_SCI# */
 
 /* EC SMI sources TODO: MLR- make defines */
 

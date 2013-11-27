@@ -30,14 +30,14 @@ static unsigned long qemu_get_high_memory_size(void)
 }
 
 static void qemu_reserve_ports(struct device *dev, unsigned int idx,
-			       unsigned int base, unsigned int size,
-			       const char *name)
+				  unsigned int base, unsigned int size,
+				  const char *name)
 {
 	unsigned int end = base + size -1;
 	struct resource *res;
 
 	printk(BIOS_DEBUG, "QEMU: reserve ioports 0x%04x-0x%04x [%s]\n",
-	       base, end, name);
+		base, end, name);
 	res = new_resource(dev, idx);
 	res->base = base;
 	res->size = size;
@@ -73,20 +73,20 @@ static void cpu_pci_domain_read_resources(struct device *dev)
 			switch (list[i].type) {
 			case 1: /* ram */
 				printk(BIOS_DEBUG, "QEMU: e820/ram: 0x%08llx +0x%08llx\n",
-				       list[i].address, list[i].length);
+					   list[i].address, list[i].length);
 				if (list[i].address == 0) {
 					tomk = list[i].length / 1024;
 					ram_resource(dev, idx++, 0, 640);
 					ram_resource(dev, idx++, 768, tomk - 768);
 				} else {
 					ram_resource(dev, idx++,
-						     list[i].address / 1024,
-						     list[i].length / 1024);
+							   list[i].address / 1024,
+							   list[i].length / 1024);
 				}
 				break;
 			case 2: /* reserved */
 				printk(BIOS_DEBUG, "QEMU: e820/res: 0x%08llx +0x%08llx\n",
-				       list[i].address, list[i].length);
+					   list[i].address, list[i].length);
 				res = new_resource(dev, idx++);
 				res->base = list[i].address;
 				res->size = list[i].length;
@@ -268,10 +268,10 @@ static void cpu_bus_noop(device_t dev)
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = cpu_bus_scan,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = cpu_bus_scan,
 };
 
 static void northbridge_enable(struct device *dev)

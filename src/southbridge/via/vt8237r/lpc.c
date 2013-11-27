@@ -39,13 +39,13 @@
 static void southbridge_init_common(struct device *dev);
 
 #if CONFIG_EPIA_VT8237R_INIT
-                   /* Interrupts for  INT# A   B   C   D */
+		   /* Interrupts for  INT# A   B   C   D */
 static const unsigned char pciIrqs[4]  = { 10, 11, 12, 0};
 
-            /* Interrupt Assignments for Pins   1   2   3   4  */
+	    /* Interrupt Assignments for Pins	1   2	3   4  */
 static const unsigned char sataPins[4] =     { 'A','B','C','D'};
-static const unsigned char vgaPins[4] =      { 'A','B','C','D'};
-static const unsigned char usbPins[4] =      { 'A','B','C','D'};
+static const unsigned char vgaPins[4] =	     { 'A','B','C','D'};
+static const unsigned char usbPins[4] =	     { 'A','B','C','D'};
 static const unsigned char enetPins[4] =     { 'A','B','C','D'};
 static const unsigned char vt8237Pins[4] =   { 'A','B','C','D'};
 static const unsigned char slotPins[4] =     { 'C','D','A','B'};
@@ -358,9 +358,9 @@ static void vt8237a_init(struct device *dev)
 {
 	/*
 	 * FIXME: This is based on vt8237s_init() and the values the AMI
-	 *        BIOS on my M2V wrote to these registers (by loking
-	 *        at lspci -nxxx output).
-	 *        Works for me.
+	 *	   BIOS on my M2V wrote to these registers (by loking
+	 *	   at lspci -nxxx output).
+	 *	   Works for me.
 	 */
 	u32 tmp;
 
@@ -510,7 +510,7 @@ static void vt8237_common_init(struct device *dev)
 	 *   3 | Bypass APIC De-Assert Message (1=Enable)
 	 *   2 | APIC HyperTransport Mode (1=Enable)
 	 *   1 | possibly "INTE#, INTF#, INTG#, INTH# as PCI"
-	 *     | bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
+	 *	| bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
 	 *   0 | Dynamic Clock Gating Main Switch (1=Enable)
 	 */
 	pci_write_config8(dev, 0x5b, 0x9);
@@ -533,7 +533,7 @@ static void vt8237_common_init(struct device *dev)
 	 *   3 | Bypass APIC De-Assert Message (1=Enable)
 	 *   2 | APIC HyperTransport Mode (1=Enable)
 	 *   1 | possibly "INTE#, INTF#, INTG#, INTH# as PCI"
-	 *     | bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
+	 *	| bit 1=1 works for Aaron at VIA, bit 1=0 works for jakllsch
 	 *   0 | Dynamic Clock Gating Main Switch (1=Enable)
 	 */
 	if (cfg && cfg->int_efgh_as_gpio) {

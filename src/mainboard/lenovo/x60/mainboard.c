@@ -56,7 +56,7 @@ static int int15_handler(void)
 	 * TODO: completely move to mainboards / chipsets.
 	 */
 	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-	       __func__, X86_AX, X86_BX, X86_CX, X86_DX);
+		__func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
 	switch (X86_AX) {
 	case 0x5f35: /* Boot Display */

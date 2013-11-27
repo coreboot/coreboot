@@ -323,7 +323,7 @@ struct mem_timings {
 	uint8_t bpll_mdiv;
 	uint8_t bpll_pdiv;
 	uint8_t bpll_sdiv;
-	uint8_t use_bpll;       /* 1 to use BPLL for cdrex, 0 to use MPLL */
+	uint8_t use_bpll;	 /* 1 to use BPLL for cdrex, 0 to use MPLL */
 	uint8_t pclk_cdrex_ratio;
 	unsigned int direct_cmd_msr[MEM_TIMINGS_MSR_COUNT];
 

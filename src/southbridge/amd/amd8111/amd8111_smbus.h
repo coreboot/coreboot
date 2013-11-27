@@ -1,7 +1,7 @@
 #include <device/smbus_def.h>
 
 #define SMBGSTATUS 0xe0
-#define SMBGCTL    0xe2
+#define SMBGCTL	   0xe2
 #define SMBHSTADDR 0xe4
 #define SMBHSTDAT  0xe6
 #define SMBHSTCMD  0xe8

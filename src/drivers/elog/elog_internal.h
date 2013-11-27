@@ -81,7 +81,7 @@ struct elog_descriptor {
 	void			*backing_store;
 	u8			*data;
 	u32			flash_base;
-	u16                     total_size;
+	u16			 total_size;
 	u16			data_size;
 	u16			next_event_offset;
 	u16			last_event_offset;

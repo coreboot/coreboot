@@ -180,7 +180,7 @@ uint32_t uartmem_getbaseaddr(void)
 
 #if !defined(__PRE_RAM__)
 static const struct console_driver exynos5_uart_console __console = {
-	.init     = am335x_uart_init_dev,
+	.init	   = am335x_uart_init_dev,
 	.tx_byte  = am335x_uart_tx_byte,
 	.rx_byte  = am335x_uart_rx_byte,
 };

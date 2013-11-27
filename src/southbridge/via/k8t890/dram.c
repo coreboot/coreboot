@@ -88,7 +88,7 @@ static void dram_enable_k8m890(struct device *dev)
 
 		if ((fbbits < 1) || (fbbits > 7)) {
 			printk(BIOS_WARNING, "Invalid videoram size (%d), using default.\n",
-				       4 << fbbits);
+					   4 << fbbits);
 			fbbits = 5;
 	}
 		uma_memory_size = 4 << (fbbits + 20);
@@ -110,9 +110,9 @@ int
 k8m890_host_fb_size_get(void)
 {
 	struct device *dev = dev_find_device(PCI_VENDOR_ID_VIA,
-					     PCI_DEVICE_ID_VIA_K8M800_DRAM, 0);
+						  PCI_DEVICE_ID_VIA_K8M800_DRAM, 0);
 	if(!dev) dev = dev_find_device(PCI_VENDOR_ID_VIA,
-					     PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
+						  PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
 	unsigned char tmp;
 
 	tmp = pci_read_config8(dev, 0xA1);

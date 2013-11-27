@@ -29,17 +29,17 @@
 
 STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
-	{AGESA_ALLOCATE_BUFFER,          fam16kb_AllocateBuffer },
-	{AGESA_DEALLOCATE_BUFFER,        fam16kb_DeallocateBuffer },
-	{AGESA_DO_RESET,                 fam16kb_Reset },
-	{AGESA_LOCATE_BUFFER,            fam16kb_LocateBuffer },
-	{AGESA_READ_SPD,                 fam16kb_ReadSpd },
-	{AGESA_READ_SPD_RECOVERY,        fam16kb_DefaultRet },
-	{AGESA_RUNFUNC_ONAP,             fam16kb_RunFuncOnAp },
-	{AGESA_GET_IDS_INIT_DATA,        fam16kb_GetIdsInitData },
+	{AGESA_ALLOCATE_BUFFER,	  fam16kb_AllocateBuffer },
+	{AGESA_DEALLOCATE_BUFFER,	  fam16kb_DeallocateBuffer },
+	{AGESA_DO_RESET,		  fam16kb_Reset },
+	{AGESA_LOCATE_BUFFER,		  fam16kb_LocateBuffer },
+	{AGESA_READ_SPD,		  fam16kb_ReadSpd },
+	{AGESA_READ_SPD_RECOVERY,	  fam16kb_DefaultRet },
+	{AGESA_RUNFUNC_ONAP,		  fam16kb_RunFuncOnAp },
+	{AGESA_GET_IDS_INIT_DATA,	  fam16kb_GetIdsInitData },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  fam16kb_HookBeforeDQSTraining },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, fam16kb_HookBeforeExitSelfRefresh },
-	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
+	{AGESA_FCH_OEM_CALLOUT,	  Fch_Oem_config },
 	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  fam16kb_HookGfxGetVbiosImage }
 };
 
@@ -68,7 +68,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
  */
 static const CODEC_ENTRY Alc662_VerbTbl[] =
 {
-	{ 0x14, /*01014010*/                /* Port D - green headphone jack    */
+	{ 0x14, /*01014010*/		     /* Port D - green headphone jack	 */
 			(AZALIA_PINCFG_PORT_JACK << 30)
 			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
 			| (AZALIA_PINCFG_DEVICE_LINEOUT << 20)
@@ -77,7 +77,7 @@ static const CODEC_ENTRY Alc662_VerbTbl[] =
 			| (1 << 4)
 			| (0 << 0)
 	},
-	{ 0x15, /*0x90170120*/              /* Port A - white speaker header    */
+	{ 0x15, /*0x90170120*/		     /* Port A - white speaker header	 */
 			(AZALIA_PINCFG_PORT_FIXED << 30)
 			| (AZALIA_PINCFG_LOCATION_INTERNAL << 24)
 			| (AZALIA_PINCFG_DEVICE_SPEAKER << 20)
@@ -87,8 +87,8 @@ static const CODEC_ENTRY Alc662_VerbTbl[] =
 			| (2 << 4)
 			| (0 << 0)
 	},
-	{ 0x16, 0x411111F0 },               /* Port G - not connected           */
-	{ 0x18, /*0x01A19040*/              /* Port B - pink headphone jack     */
+	{ 0x16, 0x411111F0 },		     /* Port G - not connected		 */
+	{ 0x18, /*0x01A19040*/		     /* Port B - pink headphone jack	 */
 			(AZALIA_PINCFG_PORT_JACK << 30)
 			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
 			| (AZALIA_PINCFG_DEVICE_MICROPHONE << 20)
@@ -97,7 +97,7 @@ static const CODEC_ENTRY Alc662_VerbTbl[] =
 			| (4 << 4)
 			| (0 << 0)
 	},
-	{ 0x19, /*0x02A19050*/              /* Port F - front panel header mic  */
+	{ 0x19, /*0x02A19050*/		     /* Port F - front panel header mic  */
 			(AZALIA_PINCFG_PORT_NC << 30)
 			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_FRONT) << 24)
 			| (AZALIA_PINCFG_DEVICE_MICROPHONE << 20)
@@ -106,7 +106,7 @@ static const CODEC_ENTRY Alc662_VerbTbl[] =
 			| (5 << 4)
 			| (0 << 0)
 	},
-	{ 0x1A, /*0x0181304F*/              /* Port C - NL blue headphone jack  */
+	{ 0x1A, /*0x0181304F*/		     /* Port C - NL blue headphone jack  */
 			(AZALIA_PINCFG_PORT_NC << 30)
 			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_REAR) << 24)
 			| (AZALIA_PINCFG_DEVICE_LINEIN << 20)
@@ -115,7 +115,7 @@ static const CODEC_ENTRY Alc662_VerbTbl[] =
 			| (4 << 4)
 			| (0xF << 0)
 	},
-	{ 0x1B, /*0x02214030*/              /* Port E - front panel line-out     */
+	{ 0x1B, /*0x02214030*/		     /* Port E - front panel line-out	  */
 			(AZALIA_PINCFG_PORT_NC << 30)
 			| ((AZALIA_PINCFG_LOCATION_EXTERNAL | AZALIA_PINCFG_LOCATION_FRONT) << 24)
 			| (AZALIA_PINCFG_DEVICE_HP_OUT << 20)
@@ -124,9 +124,9 @@ static const CODEC_ENTRY Alc662_VerbTbl[] =
 			| (3 << 4)
 			| (0 << 0)
 	},
-	{ 0x1C, 0x411111F0 },               /* CD-in - Not Connected            */
-	{ 0x1D, 0x411111F0 },               /* PC Beep - Not Connected          */
-	{ 0x1E, 0x411111F0 },               /* S/PDIF - Not connected           */
+	{ 0x1C, 0x411111F0 },		     /* CD-in - Not Connected		 */
+	{ 0x1D, 0x411111F0 },		     /* PC Beep - Not Connected		 */
+	{ 0x1E, 0x411111F0 },		     /* S/PDIF - Not connected		 */
 	{ 0xFF, 0xFFFFFFFF },
 };
 

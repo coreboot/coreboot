@@ -25,7 +25,7 @@
 #include <delay.h>
 #include "pch.h"
 
-#define SPI_DELAY 10     /* 10us */
+#define SPI_DELAY 10	 /* 10us */
 #define SPI_RETRY 200000 /* 2s */
 
 static int early_spi_read_block(u32 offset, u8 size, u8 *buffer)

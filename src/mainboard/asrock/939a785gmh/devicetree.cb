@@ -32,7 +32,7 @@ chip northbridge/amd/amdk8/root_complex
 					device pci 9.0 on end # GPP for x1 slot
 					device pci a.0 on end # GPP for internal network adapter
 					register "gppsb_configuration" = "4"   # Configuration ?
-					register "gpp_configuration" = "3"   # Configuration D default
+					register "gpp_configuration" = "3"	  # Configuration D default
 					register "port_enable" = "0x60c"
 					register "gfx_dev2_dev3" = "1"
 					register "gfx_dual_slot" = "0"

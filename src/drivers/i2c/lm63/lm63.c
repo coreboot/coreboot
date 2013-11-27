@@ -14,7 +14,7 @@ static void lm63_init(device_t dev)
 			if (dev->bus->dev->path.type == DEVICE_PATH_I2C)
 				smbus_set_link(dev);	// it is under mux
 			result = smbus_read_byte(dev, 0x03);
-//                      result &= ~0x04;
+//			result &= ~0x04;
 			result |= 0x04;
 			smbus_write_byte(dev, 0x03, result & 0xff);	// config lm63
 		}

@@ -130,17 +130,17 @@ detailed_cvt_descriptor(struct edid *out, unsigned char *x, int first)
 	reduced	= (x[2] & 0x01);
 
 	if (!valid) {
-		printk(BIOS_SPEW, "    (broken)\n");
+		printk(BIOS_SPEW, "	 (broken)\n");
 	} else {
-		printk(BIOS_SPEW, "    %dx%d @ ( %s%s%s%s%s) Hz (%s%s preferred)\n",
-		       width, height,
-		       fifty ? "50 " : "",
-		       sixty ? "60 " : "",
-		       seventyfive ? "75 " : "",
-		       eightyfive ? "85 " : "",
-		       reduced ? "60RB " : "",
-		       names[(x[2] & 0x60) >> 5],
-		       (((x[2] & 0x60) == 0x20) && reduced) ? "RB" : "");
+		printk(BIOS_SPEW, "	 %dx%d @ ( %s%s%s%s%s) Hz (%s%s preferred)\n",
+			 width, height,
+			 fifty ? "50 " : "",
+			 sixty ? "60 " : "",
+			 seventyfive ? "75 " : "",
+			 eightyfive ? "85 " : "",
+			 reduced ? "60RB " : "",
+			 names[(x[2] & 0x60) >> 5],
+			 (((x[2] & 0x60) == 0x20) && reduced) ? "RB" : "");
 	}
 
 	return valid;
@@ -205,13 +205,13 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 		if (x[2] != 0) {
 			/* 1.3, 3.10.3 */
 			printk(BIOS_SPEW, "Monitor descriptor block has byte 2 nonzero (0x%02x)\n",
-			       x[2]);
+				  x[2]);
 			has_valid_descriptor_pad = 0;
 		}
 		if (x[3] != 0xfd && x[4] != 0x00) {
 			/* 1.3, 3.10.3 */
 			printk(BIOS_SPEW, "Monitor descriptor block has byte 4 nonzero (0x%02x)\n",
-			       x[4]);
+				  x[4]);
 			has_valid_descriptor_pad = 0;
 		}
 
@@ -273,8 +273,8 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 				name_descriptor_terminated = 1;
 				/* later.
 				printk(BIOS_SPEW, "Monitor name: %s\n",
-				       extract_string(name, &has_valid_string_termination,
-						      strlen((char *)name)));
+					   extract_string(name, &has_valid_string_termination,
+							    strlen((char *)name)));
 				*/
 			}
 			return 0;
@@ -338,9 +338,9 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			if (x[7] + h_min_offset > x[8] + h_max_offset)
 				has_valid_range_descriptor = 0;
 			printk(BIOS_SPEW, "Monitor ranges (%s): %d-%dHz V, %d-%dkHz H",
-			       out->range_class,
-			       x[5] + v_min_offset, x[6] + v_max_offset,
-			       x[7] + h_min_offset, x[8] + h_max_offset);
+				  out->range_class,
+				  x[5] + v_min_offset, x[6] + v_max_offset,
+				  x[7] + h_min_offset, x[8] + h_max_offset);
 			if (x[9])
 				printk(BIOS_SPEW, ", max dotclock %dMHz\n", x[9] * 10);
 			else {
@@ -357,7 +357,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 				if (x[12] & 0xfc) {
 					int raw_offset = (x[12] & 0xfc) >> 2;
 					printk(BIOS_SPEW, "Real max dotclock: %.2fMHz\n",
-					       (x[9] * 10) - (raw_offset * 0.25));
+						    (x[9] * 10) - (raw_offset * 0.25));
 					if (raw_offset >= 40)
 						warning_excessive_dotclock_correction = 1;
 				}
@@ -370,11 +370,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 					printk(BIOS_SPEW, "Max active pixels per line: %d\n", max_h_pixels);
 
 				printk(BIOS_SPEW, "Supported aspect ratios: %s %s %s %s %s\n",
-				       x[14] & 0x80 ? "4:3" : "",
-				       x[14] & 0x40 ? "16:9" : "",
-				       x[14] & 0x20 ? "16:10" : "",
-				       x[14] & 0x10 ? "5:4" : "",
-				       x[14] & 0x08 ? "15:9" : "");
+					   x[14] & 0x80 ? "4:3" : "",
+					   x[14] & 0x40 ? "16:9" : "",
+					   x[14] & 0x20 ? "16:10" : "",
+					   x[14] & 0x10 ? "5:4" : "",
+					   x[14] & 0x08 ? "15:9" : "");
 				if (x[14] & 0x07)
 					has_valid_range_descriptor = 0;
 
@@ -430,11 +430,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			 * seems to be specified by SPWG: http://www.spwg.org/
 			 */
 			printk(BIOS_SPEW, "ASCII string: %s\n",
-			       extract_string(x + 5, &has_valid_string_termination, 13));
+				  extract_string(x + 5, &has_valid_string_termination, 13));
 			return 0;
 		case 0xFF:
 			printk(BIOS_SPEW, "Serial number: %s\n",
-			       extract_string(x + 5, &has_valid_string_termination, 13));
+				  extract_string(x + 5, &has_valid_string_termination, 13));
 			return 0;
 		default:
 			printk(BIOS_SPEW, "Unknown monitor description type %d\n", x[3]);
@@ -501,19 +501,19 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 	}
 
 	printk(BIOS_SPEW, "Detailed mode (IN HEX): Clock %d0 KHz, %x mm x %x mm\n"
-	       "               %04x %04x %04x %04x hborder %x\n"
-	       "               %04x %04x %04x %04x vborder %x\n"
-	       "               %chsync %cvsync%s%s %s\n",
-	       (x[0] + (x[1] << 8)),
-	       (x[12] + ((x[14] & 0xF0) << 4)),
-	       (x[13] + ((x[14] & 0x0F) << 8)),
-	       out->ha, out->ha + out->hso, out->ha + out->hso + out->hspw,
-	       out->ha + out->hbl, out->hborder,
-	       out->va, out->va + out->vso, out->va + out->vso + out->vspw,
-	       out->va + out->vbl, out->vborder,
-	       out->phsync, out->pvsync,
-	       out->syncmethod, x[17] & 0x80 ?" interlaced" : "",
-	       out->stereo
+		"		%04x %04x %04x %04x hborder %x\n"
+		"		%04x %04x %04x %04x vborder %x\n"
+		"		%chsync %cvsync%s%s %s\n",
+		(x[0] + (x[1] << 8)),
+		(x[12] + ((x[14] & 0xF0) << 4)),
+		(x[13] + ((x[14] & 0x0F) << 8)),
+		out->ha, out->ha + out->hso, out->ha + out->hso + out->hspw,
+		out->ha + out->hbl, out->hborder,
+		out->va, out->va + out->vso, out->va + out->vso + out->vspw,
+		out->va + out->vbl, out->vborder,
+		out->phsync, out->pvsync,
+		out->syncmethod, x[17] & 0x80 ?" interlaced" : "",
+		out->stereo
 		);
 	return 1;
 }
@@ -579,23 +579,23 @@ cea_audio_block(unsigned char *x)
 
 	for (i = 1; i < length; i += 3) {
 		format = (x[i] & 0x78) >> 3;
-		printk(BIOS_SPEW, "    %s, max channels %d\n", audio_format(format),
-		       x[i] & 0x07);
-		printk(BIOS_SPEW, "    Supported sample rates (kHz):%s%s%s%s%s%s%s\n",
-		       (x[i+1] & 0x40) ? " 192" : "",
-		       (x[i+1] & 0x20) ? " 176.4" : "",
-		       (x[i+1] & 0x10) ? " 96" : "",
-		       (x[i+1] & 0x08) ? " 88.2" : "",
-		       (x[i+1] & 0x04) ? " 48" : "",
-		       (x[i+1] & 0x02) ? " 44.1" : "",
-		       (x[i+1] & 0x01) ? " 32" : "");
+		printk(BIOS_SPEW, "	 %s, max channels %d\n", audio_format(format),
+			 x[i] & 0x07);
+		printk(BIOS_SPEW, "	 Supported sample rates (kHz):%s%s%s%s%s%s%s\n",
+			 (x[i+1] & 0x40) ? " 192" : "",
+			 (x[i+1] & 0x20) ? " 176.4" : "",
+			 (x[i+1] & 0x10) ? " 96" : "",
+			 (x[i+1] & 0x08) ? " 88.2" : "",
+			 (x[i+1] & 0x04) ? " 48" : "",
+			 (x[i+1] & 0x02) ? " 44.1" : "",
+			 (x[i+1] & 0x01) ? " 32" : "");
 		if (format == 1) {
-			printk(BIOS_SPEW, "    Supported sample sizes (bits):%s%s%s\n",
-			       (x[2] & 0x04) ? " 24" : "",
-			       (x[2] & 0x02) ? " 20" : "",
-			       (x[2] & 0x01) ? " 16" : "");
+			printk(BIOS_SPEW, "	  Supported sample sizes (bits):%s%s%s\n",
+				  (x[2] & 0x04) ? " 24" : "",
+				  (x[2] & 0x02) ? " 20" : "",
+				  (x[2] & 0x01) ? " 16" : "");
 		} else if (format <= 8) {
-			printk(BIOS_SPEW, "    Maximum bit rate: %d kHz\n", x[2] * 8);
+			printk(BIOS_SPEW, "	  Maximum bit rate: %d kHz\n", x[2] * 8);
 		}
 	}
 }
@@ -607,8 +607,8 @@ cea_video_block(unsigned char *x)
 	int length = x[0] & 0x1f;
 
 	for (i = 1; i < length; i++)
-		printk(BIOS_SPEW,"    VIC %02d %s\n", x[i] & 0x7f,
-		       x[i] & 0x80 ? "(native)" : "");
+		printk(BIOS_SPEW,"	VIC %02d %s\n", x[i] & 0x7f,
+			 x[i] & 0x80 ? "(native)" : "");
 }
 
 static void
@@ -618,69 +618,69 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 
 	printk(BIOS_SPEW, " (HDMI)\n");
 	printk(BIOS_SPEW,
-	       "    Source physical address %d.%d.%d.%d\n",
-	       x[4] >> 4, x[4] & 0x0f, x[5] >> 4, x[5] & 0x0f);
+		"    Source physical address %d.%d.%d.%d\n",
+		x[4] >> 4, x[4] & 0x0f, x[5] >> 4, x[5] & 0x0f);
 
 	if (length > 5) {
 		if (x[6] & 0x80)
-			printk(BIOS_SPEW, "    Supports_AI\n");
+			printk(BIOS_SPEW, "	  Supports_AI\n");
 		if (x[6] & 0x40)
-			printk(BIOS_SPEW, "    DC_48bit\n");
+			printk(BIOS_SPEW, "	  DC_48bit\n");
 		if (x[6] & 0x20)
-			printk(BIOS_SPEW, "    DC_36bit\n");
+			printk(BIOS_SPEW, "	  DC_36bit\n");
 		if (x[6] & 0x10)
-			printk(BIOS_SPEW, "    DC_30bit\n");
+			printk(BIOS_SPEW, "	  DC_30bit\n");
 		if (x[6] & 0x08)
-			printk(BIOS_SPEW, "    DC_Y444\n");
+			printk(BIOS_SPEW, "	  DC_Y444\n");
 		/* two reserved */
 		if (x[6] & 0x01)
-			printk(BIOS_SPEW, "    DVI_Dual\n");
+			printk(BIOS_SPEW, "	  DVI_Dual\n");
 	}
 
 	if (length > 6)
-		printk(BIOS_SPEW, "    Maximum TMDS clock: %dMHz\n", x[7] * 5);
+		printk(BIOS_SPEW, "	 Maximum TMDS clock: %dMHz\n", x[7] * 5);
 
 	/* XXX the walk here is really ugly, and needs to be length-checked */
 	if (length > 7) {
 		int b = 0;
 
 		if (x[8] & 0x80) {
-			printk(BIOS_SPEW, "    Video latency: %d\n", x[9 + b]);
-			printk(BIOS_SPEW, "    Audio latency: %d\n", x[10 + b]);
+			printk(BIOS_SPEW, "	  Video latency: %d\n", x[9 + b]);
+			printk(BIOS_SPEW, "	  Audio latency: %d\n", x[10 + b]);
 			b += 2;
 		}
 
 		if (x[8] & 0x40) {
-			printk(BIOS_SPEW, "    Interlaced video latency: %d\n", x[9 + b]);
-			printk(BIOS_SPEW, "    Interlaced audio latency: %d\n", x[10 + b]);
+			printk(BIOS_SPEW, "	  Interlaced video latency: %d\n", x[9 + b]);
+			printk(BIOS_SPEW, "	  Interlaced audio latency: %d\n", x[10 + b]);
 			b += 2;
 		}
 
 		if (x[8] & 0x20) {
 			int mask = 0, formats = 0;
 			int len_xx, len_3d;
-			printk(BIOS_SPEW, "    Extended HDMI video details:\n");
+			printk(BIOS_SPEW, "	  Extended HDMI video details:\n");
 			if (x[9 + b] & 0x80)
-				printk(BIOS_SPEW, "      3D present\n");
+				printk(BIOS_SPEW, "	     3D present\n");
 			if ((x[9 + b] & 0x60) == 0x20) {
-				printk(BIOS_SPEW, "      All advertised VICs are 3D-capable\n");
+				printk(BIOS_SPEW, "	     All advertised VICs are 3D-capable\n");
 				formats = 1;
 			}
 			if ((x[9 + b] & 0x60) == 0x40) {
-				printk(BIOS_SPEW, "      3D-capable-VIC mask present\n");
+				printk(BIOS_SPEW, "	     3D-capable-VIC mask present\n");
 				formats = 1;
 				mask = 1;
 			}
 			switch (x[9 + b] & 0x18) {
 			case 0x00: break;
 			case 0x08:
-				printk(BIOS_SPEW, "      Base EDID image size is aspect ratio\n");
+				printk(BIOS_SPEW, "	     Base EDID image size is aspect ratio\n");
 				break;
 			case 0x10:
-				printk(BIOS_SPEW, "      Base EDID image size is in units of 1cm\n");
+				printk(BIOS_SPEW, "	     Base EDID image size is in units of 1cm\n");
 				break;
 			case 0x18:
-				printk(BIOS_SPEW, "      Base EDID image size is in units of 5cm\n");
+				printk(BIOS_SPEW, "	     Base EDID image size is in units of 5cm\n");
 				break;
 			}
 			len_xx = (x[10 + b] & 0xe0) >> 5;
@@ -688,8 +688,8 @@ cea_hdmi_block(struct edid *out, unsigned char *x)
 			b += 2;
 
 			if (len_xx) {
-				printk(BIOS_SPEW, "      Skipping %d bytes that HDMI refuses to publicly"
-				       " document\n", len_xx);
+				printk(BIOS_SPEW, "	     Skipping %d bytes that HDMI refuses to publicly"
+					   " document\n", len_xx);
 				b += len_xx;
 			}
 
@@ -803,7 +803,7 @@ cea_block(struct edid *out, unsigned char *x)
 		int tag = (*x & 0xe0) >> 5;
 		int length = *x & 0x1f;
 		printk(BIOS_SPEW,
-		       "  Unknown tag %d, length %d (raw %02x)\n", tag, length, *x);
+			 "  Unknown tag %d, length %d (raw %02x)\n", tag, length, *x);
 		break;
 	}
 	}
@@ -920,7 +920,7 @@ static const struct {
 };
 
 static void print_subsection(const char *name, unsigned char *edid, int start,
-			     int end)
+				int end)
 {
 	int i;
 
@@ -973,13 +973,13 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	manufacturer_name(out, edid + 0x08);
 	out->model = (unsigned short)(edid[0x0A] + (edid[0x0B] << 8));
 	out->serial = (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
-				     + (edid[0x0E] << 16) + (edid[0x0F] << 24));
+					 + (edid[0x0E] << 16) + (edid[0x0F] << 24));
 
 	printk(BIOS_SPEW, "Manufacturer: %s Model %x Serial Number %u\n",
-	       out->manuf_name,
-	       (unsigned short)(edid[0x0A] + (edid[0x0B] << 8)),
-	       (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
-			      + (edid[0x0E] << 16) + (edid[0x0F] << 24)));
+		out->manuf_name,
+		(unsigned short)(edid[0x0A] + (edid[0x0B] << 8)),
+		(unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
+				 + (edid[0x0E] << 16) + (edid[0x0F] << 24)));
 		/* XXX need manufacturer ID table */
 
 		if (edid[0x10] < 55 || edid[0x10] == 0xff) {
@@ -988,7 +988,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				if (edid[0x10] == 0xff) {
 					has_valid_year = 1;
 					printk(BIOS_SPEW, "Made week %hd of model year %hd\n", edid[0x10],
-					       edid[0x11]);
+						    edid[0x11]);
 					out->week = edid[0x10];
 					out->year = edid[0x11];
 				} else {
@@ -996,7 +996,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 					if (edid[0x11] + 90 <= 2013) {
 						has_valid_year = 1;
 						printk(BIOS_SPEW, "Made week %hd of %hd\n",
-						       edid[0x10], edid[0x11] + 1990);
+							     edid[0x10], edid[0x11] + 1990);
 						out->week = edid[0x10];
 						out->year = edid[0x11] + 1990;
 					}
@@ -1041,7 +1041,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				nonconformant_digital_display = 1;
 			else
 				printk(BIOS_SPEW, "%d bits per primary color channel\n",
-				       ((edid[0x14] & 0x70) >> 3) + 4);
+					   ((edid[0x14] & 0x70) >> 3) + 4);
 			out->bpp = ((edid[0x14] & 0x70) >> 3) + 4;
 
 			switch (edid[0x14] & 0x0f) {
@@ -1074,10 +1074,10 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		out->sync = sync;
 
 		printk(BIOS_SPEW, "Analog display, Input voltage level: %s V\n",
-		       voltage == 3 ? "0.7/0.7" :
-		       voltage == 2 ? "1.0/0.4" :
-		       voltage == 1 ? "0.714/0.286" :
-		       "0.7/0.3");
+			 voltage == 3 ? "0.7/0.7" :
+			 voltage == 2 ? "1.0/0.4" :
+			 voltage == 1 ? "0.714/0.286" :
+			 "0.7/0.3");
 
 		if (claims_one_point_four) {
 			if (edid[0x14] & 0x10)
@@ -1094,26 +1094,26 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		}
 
 		printk(BIOS_SPEW, "Sync: %s%s%s%s\n", sync & 0x08 ? "Separate " : "",
-		       sync & 0x04 ? "Composite " : "",
-		       sync & 0x02 ? "SyncOnGreen " : "",
-		       sync & 0x01 ? "Serration " : "");
+			 sync & 0x04 ? "Composite " : "",
+			 sync & 0x02 ? "SyncOnGreen " : "",
+			 sync & 0x01 ? "Serration " : "");
 	}
 
 
 		if (edid[0x15] && edid[0x16]) {
 			printk(BIOS_SPEW, "Maximum image size: %d cm x %d cm\n",
-			       edid[0x15], edid[0x16]);
+				  edid[0x15], edid[0x16]);
 			out->xsize_cm = edid[0x15];
 			out->ysize_cm = edid[0x16];
 		} else if (claims_one_point_four && (edid[0x15] || edid[0x16])) {
 			if (edid[0x15]) {
 				printk(BIOS_SPEW, "Aspect ratio is %f (landscape)\n",
-				       100.0/(edid[0x16] + 99));
+					   100.0/(edid[0x16] + 99));
 				/* truncated to integer %. We try to avoid floating point */
 				out->aspect_landscape = 10000 /(edid[0x16] + 99);
 			} else {
 				printk(BIOS_SPEW, "Aspect ratio is %f (portrait)\n",
-				       100.0/(edid[0x15] + 99));
+					   100.0/(edid[0x15] + 99));
 				out->aspect_portrait = 10000 /(edid[0x16] + 99);
 			}
 		} else {
@@ -1172,7 +1172,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		for (i = 0; i < 17; i++) {
 			if (edid[0x23 + i / 8] & (1 << (7 - i % 8))) {
 				printk(BIOS_SPEW, "  %dx%d@%dHz\n", established_timings[i].x,
-				       established_timings[i].y, established_timings[i].refresh);
+					   established_timings[i].y, established_timings[i].refresh);
 			}
 		}
 
@@ -1255,7 +1255,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.3!\n");
 			if (nonconformant_digital_display)
 				printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
-				       nonconformant_digital_display);
+					   nonconformant_digital_display);
 			if (!has_name_descriptor)
 				printk(BIOS_ERR, "\tMissing name descriptor\n");
 			else if (!name_descriptor_terminated)
@@ -1276,7 +1276,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 				printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.2!\n");
 			if (nonconformant_digital_display)
 				printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
-				       nonconformant_digital_display);
+					   nonconformant_digital_display);
 			if (has_name_descriptor && !name_descriptor_terminated)
 				printk(BIOS_ERR, "\tName descriptor not terminated with a newline\n");
 		} else if (claims_one_point_oh) {
@@ -1303,7 +1303,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			printk(BIOS_ERR, "EDID block does not conform at all!\n");
 			if (nonconformant_extension)
 				printk(BIOS_ERR, "\tHas %d nonconformant extension block(s)\n",
-				       nonconformant_extension);
+					   nonconformant_extension);
 			if (!has_valid_checksum)
 				printk(BIOS_ERR, "\tBlock has broken checksum\n");
 			if (!has_valid_cvt)
@@ -1330,10 +1330,10 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 		if (warning_excessive_dotclock_correction)
 			printk(BIOS_ERR,
-			       "Warning: CVT block corrects dotclock by more than 9.75MHz\n");
+				  "Warning: CVT block corrects dotclock by more than 9.75MHz\n");
 		if (warning_zero_preferred_refresh)
 			printk(BIOS_ERR,
-			       "Warning: CVT block does not set preferred refresh rate\n");
+				  "Warning: CVT block does not set preferred refresh rate\n");
 		return !conformant;
 	}
 
@@ -1344,30 +1344,30 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
  * at offset 0x6c (fourth detailed block): (all other bits reserved)
  * 0x6c: 00 00 00 0e 00
  * 0x71: bit 6-5: data color mapping (00 conventional/fpdi/vesa, 01 openldi)
- *       bit 4-3: pixels per clock (00 1, 01 2, 10 4, 11 reserved)
- *       bit 2-0: bits per pixel (000 18, 001 24, 010 30, else reserved)
+ *	 bit 4-3: pixels per clock (00 1, 01 2, 10 4, 11 reserved)
+ *	 bit 2-0: bits per pixel (000 18, 001 24, 010 30, else reserved)
  * 0x72: bit 5: FPSCLK polarity (0 normal 1 inverted)
- *       bit 4: DE polarity (0 high active 1 low active)
- *       bit 3-0: interface (0000 LVDS TFT
- *                           0001 mono STN 4/8bit
- *                           0010 color STN 8/16 bit
- *                           0011 18 bit tft
- *                           0100 24 bit tft
- *                           0101 tmds
- *                           else reserved)
+ *	 bit 4: DE polarity (0 high active 1 low active)
+ *	 bit 3-0: interface (0000 LVDS TFT
+ *			     0001 mono STN 4/8bit
+ *			     0010 color STN 8/16 bit
+ *			     0011 18 bit tft
+ *			     0100 24 bit tft
+ *			     0101 tmds
+ *			     else reserved)
  * 0x73: bit 1: horizontal display mode (0 normal 1 right/left reverse)
- *       bit 0: vertical display mode (0 normal 1 up/down reverse)
+ *	 bit 0: vertical display mode (0 normal 1 up/down reverse)
  * 0x74: bit 7-4: total poweroff seq delay (0000 vga controller default
- *                                          else time in 10ms (10ms to 150ms))
- *       bit 3-0: total poweron seq delay (as above)
+ *					    else time in 10ms (10ms to 150ms))
+ *	 bit 3-0: total poweron seq delay (as above)
  * 0x75: contrast power on/off seq delay, same as 0x74
  * 0x76: bit 7: backlight control enable (1 means this field is valid)
- *       bit 6: backlight enabled at boot (0 on 1 off)
- *       bit 5-0: backlight brightness control steps (0..63)
+ *	 bit 6: backlight enabled at boot (0 on 1 off)
+ *	 bit 5-0: backlight brightness control steps (0..63)
  * 0x77: bit 7: contrast control, same bit pattern as 0x76 except bit 6 resvd
  * 0x78 - 0x7c: reserved
  * 0x7d: bit 7-4: EPI descriptor major version (1)
- *       bit 3-0: EPI descriptor minor version (0)
+ *	 bit 3-0: EPI descriptor minor version (0)
  *
  * ----
  *
@@ -1436,7 +1436,7 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 		break;
 	default:
 		printk(BIOS_SPEW, "%s: unsupported BPP %d\n", __func__,
-		       edid->bpp);
+			 edid->bpp);
 		return;
 	}
 

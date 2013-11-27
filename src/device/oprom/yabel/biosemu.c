@@ -110,7 +110,7 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 
 	if (biosmem_size < MIN_REQUIRED_VMEM_SIZE) {
 		printf("Error: Not enough virtual memory: %x, required: %x!\n",
-		       biosmem_size, MIN_REQUIRED_VMEM_SIZE);
+			 biosmem_size, MIN_REQUIRED_VMEM_SIZE);
 		return -1;
 	}
 	if (biosemu_dev_init(dev) != 0) {
@@ -164,9 +164,9 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 			if (c != *(rom_image + i)) {
 				clr_ci();
 				printf("Copy failed at: %x/%x\n", i,
-				       bios_device.img_size);
+					   bios_device.img_size);
 				printf("rom_image(%x): %x, mem_img(%x): %x\n",
-				       i, *(rom_image + i), i, *(mem_img + i));
+					   i, *(rom_image + i), i, *(mem_img + i));
 				break;
 			}
 			clr_ci();
@@ -392,8 +392,8 @@ biosemu(u8 *biosmem, u32 biosmem_size, struct device * dev, unsigned long rom_ad
 	} else {
 		printf("Stack unclean, initialization probably NOT COMPLETE!\n");
 		DEBUG_PRINTF("SS:SP = %04x:%04x, expected: %04x:%04x\n",
-			     M.x86.R_SS, M.x86.R_SP, STACK_SEGMENT,
-			     STACK_START_OFFSET);
+				M.x86.R_SS, M.x86.R_SP, STACK_SEGMENT,
+				STACK_START_OFFSET);
 	}
 
 	// TODO: according to the BIOS Boot Spec initializations may be ended using INT18h and setting

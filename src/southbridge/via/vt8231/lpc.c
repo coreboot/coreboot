@@ -15,8 +15,8 @@ static const unsigned char slotIrqs[4] = { 5, 10, 12, 11 };
 
 /*
 	Our IDSEL mappings are as follows
-	PCI slot is AD31          (device 15) (00:14.0)
-	Southbridge is AD28       (device 12) (00:11.0)
+	PCI slot is AD31	   (device 15) (00:14.0)
+	Southbridge is AD28	   (device 12) (00:11.0)
 */
 static void pci_routing_fixup(struct device *dev)
 {
@@ -150,12 +150,12 @@ static void southbridge_init(struct device *dev)
 
 static struct device_operations vt8231_lpc_ops = {
 	.read_resources   = vt8231_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = &southbridge_init,
 	.scan_bus	  = scan_static_bus,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {

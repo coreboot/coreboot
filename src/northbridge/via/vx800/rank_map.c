@@ -33,11 +33,11 @@ void DRAMPRToVRMapping(DRAM_SYS_ATTR * DramAttr);
 /*===================================================================
 Function   : DRAMBankInterleave()
 Precondition :
-Input        :
+Input	     :
 		   DramAttr: pointer point to  DRAMSYSATTR  which consist the DDR and Dimm information in MotherBoard
-Output     :  Void
-Purpose   :  STEP 13 Set Bank Interleave  VIANB3DRAMREG69[7:6] 00:No Interleave 01:2 Bank 10:4 Bank	11:8 Bank
-                   Scan all DIMMs on board to find out the lowest Bank Interleave among these DIMMs and set register.
+Output	   :  Void
+Purpose	  :  STEP 13 Set Bank Interleave  VIANB3DRAMREG69[7:6] 00:No Interleave 01:2 Bank 10:4 Bank	11:8 Bank
+		   Scan all DIMMs on board to find out the lowest Bank Interleave among these DIMMs and set register.
 ===================================================================*/
 void DRAMBankInterleave(DRAM_SYS_ATTR * DramAttr)
 {
@@ -86,16 +86,16 @@ void DRAMBankInterleave(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : DRAMSizingMATypeM()
 Precondition :
-Input        :
+Input	     :
 		   DramAttr: pointer point to  DRAMSYSATTR  which consist the DDR and Dimm information in MotherBoard
-Output     :  Void
+Output	   :  Void
  Purpose  : STEP 14  1 DRAM Sizing 2  Fill MA type 3 Prank to vrankMapping
 ===================================================================*/
 void DRAMSizingMATypeM(DRAM_SYS_ATTR * DramAttr)
 {
 	DRAMClearEndingAddress(DramAttr);
 	DRAMSizingEachRank(DramAttr);
-	//DRAMReInitDIMMBL           (DramAttr);
+	//DRAMReInitDIMMBL	      (DramAttr);
 	DRAMSetRankMAType(DramAttr);
 	DRAMSetEndingAddress(DramAttr);
 	DRAMPRToVRMapping(DramAttr);
@@ -104,10 +104,10 @@ void DRAMSizingMATypeM(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : DRAMClearEndingAddress()
 Precondition :
-Input        :
+Input	     :
 		   DramAttr: pointer point to  DRAMSYSATTR  which consist the DDR and Dimm information in MotherBoard
-Output     : Void
-Purpose   : clear Ending and Start adress from 0x40-4f to zero
+Output	   : Void
+Purpose	  : clear Ending and Start adress from 0x40-4f to zero
 ===================================================================*/
 void DRAMClearEndingAddress(DRAM_SYS_ATTR * DramAttr)
 {
@@ -121,10 +121,10 @@ void DRAMClearEndingAddress(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : DRAMSizingEachRank()
 Precondition :
-Input        :
+Input	     :
 		   DramAttr: pointer point to  DRAMSYSATTR  which consist the DDR and Dimm information in MotherBoard
-Output     : Void
-Purpose   : Sizing each Rank invidually, by number of rows column banks pins, be care about 128bit
+Output	   : Void
+Purpose	  : Sizing each Rank invidually, by number of rows column banks pins, be care about 128bit
 ===================================================================*/
 void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr)
 {
@@ -190,10 +190,10 @@ void DRAMSizingEachRank(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : DRAMSetRankMAType()
 Precondition :
-Input       :
+Input	    :
 		  DramAttr: pointer point to  DRAMSYSATTR  which consist the DDR and Dimm information in MotherBoard
-Output     : Void
-Purpose   : set the matype Reg by MAMapTypeTbl, which the rule can be found in memoryinit
+Output	   : Void
+Purpose	  : set the matype Reg by MAMapTypeTbl, which the rule can be found in memoryinit
 ===================================================================*/
 void DRAMSetRankMAType(DRAM_SYS_ATTR * DramAttr)
 {
@@ -222,19 +222,19 @@ void DRAMSetRankMAType(DRAM_SYS_ATTR * DramAttr)
 		if (DramAttr->DimmInfo[SlotNum].bPresence) {
 			for (j = 0; MAMapTypeTbl[j] != 0; j += 3) {
 				if ((1 << MAMapTypeTbl[j]) ==
-				    DramAttr->
-				    DimmInfo[SlotNum].SPDDataBuf
-				    [SPD_SDRAM_NO_OF_BANKS]
-				    && MAMapTypeTbl[j + 1] ==
-				    DramAttr->
-				    DimmInfo[SlotNum].SPDDataBuf
-				    [SPD_SDRAM_COL_ADDR]) {
+					DramAttr->
+					DimmInfo[SlotNum].SPDDataBuf
+					[SPD_SDRAM_NO_OF_BANKS]
+					&& MAMapTypeTbl[j + 1] ==
+					DramAttr->
+					DimmInfo[SlotNum].SPDDataBuf
+					[SPD_SDRAM_COL_ADDR]) {
 					break;
 				}
 			}
 			if (0 == MAMapTypeTbl[j]) {
 				PRINT_DEBUG_MEM
-				    ("UNSUPPORTED Bank, Row and Column Addr Bits!\r");
+					("UNSUPPORTED Bank, Row and Column Addr Bits!\r");
 				return;
 			}
 			or = MAMapTypeTbl[j + 2] << ShiftBits[SlotNum];
@@ -259,10 +259,10 @@ void DRAMSetRankMAType(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : DRAMSetEndingAddress()
 Precondition :
-Input      :
+Input	   :
 		  DramAttr: pointer point to  DRAMSYSATTR  which consist the DDR and Dimm information in MotherBoard
-Output     : Void
-Purpose   : realize the Vrank 40...Reg (Start and Ending Regs). Vrank have  same order with phy Rank, Size is actual Size
+Output	   : Void
+Purpose	  : realize the Vrank 40...Reg (Start and Ending Regs). Vrank have  same order with phy Rank, Size is actual Size
 ===================================================================*/
 void DRAMSetEndingAddress(DRAM_SYS_ATTR * DramAttr)
 {
@@ -274,7 +274,7 @@ void DRAMSetEndingAddress(DRAM_SYS_ATTR * DramAttr)
 
 				End = End + Size;	// calculate current ending address,   add the current Size to ending
 				Vrank = RankNO;	// get virtual Rank
-				Data = End;	// set begin/End address register to correspondig virtual       Rank #
+				Data = End;	// set begin/End address register to correspondig virtual	Rank #
 				pci_write_config8(MEMCTRL, 0x40 + Vrank, Data);
 				Data = Start;
 				pci_write_config8(MEMCTRL, 0x48 + Vrank, Data);
@@ -312,10 +312,10 @@ void DRAMSetEndingAddress(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : DRAMPRToVRMapping()
 Precondition :
-Input       :
+Input	    :
 		  DramAttr: pointer point to  DRAMSYSATTR  which consist the DDR and Dimm information in MotherBoard
-Output     : Void
-Purpose   : set the Vrank-prank map with the same order
+Output	   : Void
+Purpose	  : set the Vrank-prank map with the same order
 ===================================================================*/
 void DRAMPRToVRMapping(DRAM_SYS_ATTR * DramAttr)
 {
@@ -330,7 +330,7 @@ void DRAMPRToVRMapping(DRAM_SYS_ATTR * DramAttr)
 	Shift = 1;
 	for (PhyRankNO = 0; PhyRankNO < MAX_RANKS; PhyRankNO++) {
 		if ((DramAttr->RankPresentMap & Shift) != 0) {
-			or = PhyRankNO;	// get virtual Rank   ,same with PhyRank
+			or = PhyRankNO;	// get virtual Rank	 ,same with PhyRank
 			or |= 0x08;
 
 			if ((PhyRankNO & 0x01) == 0x01)	// get mask for register

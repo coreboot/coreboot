@@ -66,11 +66,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 	 *
 	 * Package contents:
 	 * ofs len desc
-	 * 0   1   Value for PM1a_CNT.SLP_TYP register to enter this system state.
-	 * 1   1   Value for PM1b_CNT.SLP_TYP register to enter this system state. To enter any
-	 *         given state, OSPM must write the PM1a_CNT.SLP_TYP register before the
-	 *         PM1b_CNT.SLP_TYP register.
-	 * 2   2   Reserved
+	 * 0	1   Value for PM1a_CNT.SLP_TYP register to enter this system state.
+	 * 1	1   Value for PM1b_CNT.SLP_TYP register to enter this system state. To enter any
+	 *	    given state, OSPM must write the PM1a_CNT.SLP_TYP register before the
+	 *	    PM1b_CNT.SLP_TYP register.
+	 * 2	2   Reserved
 	 */
 	Name (\_S0, Package () { 0x00, 0x00, 0x00, 0x00 })
 	Name (\_S3, Package () { 0x01, 0x01, 0x00, 0x00 })
@@ -374,7 +374,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 					Method (_CRS, 0, NotSerialized)
 					{
 						Name (TMP, ResourceTemplate () {
-						     IRQNoFlags () {12}
+							   IRQNoFlags () {12}
 						})
 						Return (TMP)
 					}
@@ -413,11 +413,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 			Method(_CRS, 0) {
 				Name(TMP, ResourceTemplate() {
 					WordBusNumber(ResourceProducer, MinFixed, MaxFixed, PosDecode,
-						0x0000,             // Granularity
-						0x0000,             // Range Minimum
-						0x00FF,             // Range Maximum
-						0x0000,             // Translation Offset
-						0x0100,             // Length
+						0x0000,		  // Granularity
+						0x0000,		  // Range Minimum
+						0x00FF,		  // Range Maximum
+						0x0000,		  // Translation Offset
+						0x0100,		  // Length
 						,,
 					)
 					IO(Decode16, 0x0CF8, 0x0CF8, 1, 8)
@@ -466,18 +466,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 			Offset (0x55),
 			/*
 			 * Offset 0x55:
-			 *    3-0: reserved
-			 *    7-4: PCI INTA# routing
+			 *	 3-0: reserved
+			 *	 7-4: PCI INTA# routing
 			 * Offset 0x56:
-			 *    3-0: PCI INTB# routing
-			 *    7-4: PCI INTC# routing
+			 *	 3-0: PCI INTB# routing
+			 *	 7-4: PCI INTC# routing
 			 * Offset 0x57:
-			 *    3-0: reserved
-			 *    7-4: PCI INTD# routing
+			 *	 3-0: reserved
+			 *	 7-4: PCI INTD# routing
 			 *
 			 * Valid values for routing link:
-			 * 0:                disabled
-			 * 2,8,13:           reserved
+			 * 0:		disabled
+			 * 2,8,13:		reserved
 			 * 1,3-7,9-12,14,15: corresponding irq
 			 */
 			    , 4,
@@ -545,7 +545,7 @@ PCI_INTX_DEV(INTD, PIND, 4)
 	{
 		Offset (0x94),
 		/* two LSB bits are blink rate */
-		LEDR,   2,
+		LEDR,	  2,
 	}
 
 	Method (_PTS, 1, NotSerialized)

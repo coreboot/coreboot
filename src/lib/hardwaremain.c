@@ -232,7 +232,7 @@ static boot_state_t bs_payload_load(void *arg)
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
 	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
-				    CONFIG_CBFS_PREFIX "/payload");
+					CONFIG_CBFS_PREFIX "/payload");
 	if (! payload)
 		die("Could not find a payload\n");
 
@@ -280,10 +280,10 @@ static void bs_report_time(struct boot_state *state)
 	exit_time = mono_time_diff(&times->samples[2], &times->samples[3]);
 
 	printk(BIOS_DEBUG, "BS: %s times (us): entry %ld run %ld exit %ld\n",
-	       state->name,
-	       rela_time_in_microseconds(&entry_time),
-	       rela_time_in_microseconds(&run_time),
-	       rela_time_in_microseconds(&exit_time));
+		state->name,
+		rela_time_in_microseconds(&entry_time),
+		rela_time_in_microseconds(&run_time),
+		rela_time_in_microseconds(&exit_time));
 }
 #else
 static inline void bs_sample_time(struct boot_state *state) {}
@@ -305,7 +305,7 @@ static void bs_run_timers(int drain) {}
 #endif
 
 static void bs_call_callbacks(struct boot_state *state,
-                              boot_state_sequence_t seq)
+			      boot_state_sequence_t seq)
 {
 	struct boot_phase *phase = &state->phases[seq];
 
@@ -320,7 +320,7 @@ static void bs_call_callbacks(struct boot_state *state,
 
 #if BOOT_STATE_DEBUG
 			printk(BS_DEBUG_LVL, "BS: callback (%p) @ %s.\n",
-			       bscb, bscb->location);
+				  bscb, bscb->location);
 #endif
 			bscb->callback(bscb->arg);
 
@@ -359,7 +359,7 @@ static void bs_walk_state_machine(void)
 
 		if (state->complete) {
 			printk(BIOS_EMERG, "BS: %s state already executed.\n",
-			       state->name);
+				  state->name);
 			break;
 		}
 
@@ -400,13 +400,13 @@ static void bs_walk_state_machine(void)
 }
 
 static int boot_state_sched_callback(struct boot_state *state,
-                                     struct boot_state_callback *bscb,
-                                     boot_state_sequence_t seq)
+				     struct boot_state_callback *bscb,
+				     boot_state_sequence_t seq)
 {
 	if (state->complete) {
 		printk(BIOS_WARNING,
-		       "Tried to schedule callback on completed state %s.\n",
-		       state->name);
+			 "Tried to schedule callback on completed state %s.\n",
+			 state->name);
 
 		return -1;
 	}
@@ -418,7 +418,7 @@ static int boot_state_sched_callback(struct boot_state *state,
 }
 
 int boot_state_sched_on_entry(struct boot_state_callback *bscb,
-                              boot_state_t state_id)
+			      boot_state_t state_id)
 {
 	struct boot_state *state = &boot_states[state_id];
 
@@ -426,7 +426,7 @@ int boot_state_sched_on_entry(struct boot_state_callback *bscb,
 }
 
 int boot_state_sched_on_exit(struct boot_state_callback *bscb,
-                             boot_state_t state_id)
+			     boot_state_t state_id)
 {
 	struct boot_state *state = &boot_states[state_id];
 
@@ -464,7 +464,7 @@ void main(void)
 	post_code(POST_CONSOLE_READY);
 
 	printk(BIOS_NOTICE, "coreboot-%s%s %s booting...\n",
-		      coreboot_version, coreboot_extra_version, coreboot_build);
+			coreboot_version, coreboot_extra_version, coreboot_build);
 
 	post_code(POST_CONSOLE_BOOT_MSG);
 
@@ -490,8 +490,8 @@ int boot_state_block(boot_state_t state, boot_state_sequence_t seq)
 	if (current_phase.state_id > state ||
 	    (current_phase.state_id == state && current_phase.seq > seq) ) {
 		printk(BIOS_WARNING,
-		       "BS: Completed state (%d, %d) block attempted.\n",
-		       state, seq);
+			 "BS: Completed state (%d, %d) block attempted.\n",
+			 state, seq);
 		return -1;
 	}
 
@@ -509,8 +509,8 @@ int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq)
 	if (current_phase.state_id > state ||
 	    (current_phase.state_id == state && current_phase.seq > seq) ) {
 		printk(BIOS_WARNING,
-		       "BS: Completed state (%d, %d) unblock attempted.\n",
-		       state, seq);
+			 "BS: Completed state (%d, %d) unblock attempted.\n",
+			 state, seq);
 		return -1;
 	}
 
@@ -518,8 +518,8 @@ int boot_state_unblock(boot_state_t state, boot_state_sequence_t seq)
 
 	if (bp->blockers == 0) {
 		printk(BIOS_WARNING,
-		       "BS: Unblock attempted on non-blocked state (%d, %d).\n",
-		       state, seq);
+			 "BS: Unblock attempted on non-blocked state (%d, %d).\n",
+			 state, seq);
 		return -1;
 	}
 

@@ -98,14 +98,14 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINT32              AvailableHeapSize;
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              CurrNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              BestFitNodeOffset;
-	UINT32              BestFitPrevNodeOffset;
-	UINT32              NextFreeOffset;
+	UINT32		     AvailableHeapSize;
+	UINT8		     *BiosHeapBaseAddr;
+	UINT32		     CurrNodeOffset;
+	UINT32		     PrevNodeOffset;
+	UINT32		     FreedNodeOffset;
+	UINT32		     BestFitNodeOffset;
+	UINT32		     BestFitPrevNodeOffset;
+	UINT32		     NextFreeOffset;
 	BIOS_BUFFER_NODE   *CurrNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
 	BIOS_BUFFER_NODE   *BestFitNodePtr;
@@ -230,12 +230,12 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              AllocNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              NextNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              EndNodeOffset;
+	UINT8		     *BiosHeapBaseAddr;
+	UINT32		     AllocNodeOffset;
+	UINT32		     PrevNodeOffset;
+	UINT32		     NextNodeOffset;
+	UINT32		     FreedNodeOffset;
+	UINT32		     EndNodeOffset;
 	BIOS_BUFFER_NODE   *AllocNodePtr;
 	BIOS_BUFFER_NODE   *PrevNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;

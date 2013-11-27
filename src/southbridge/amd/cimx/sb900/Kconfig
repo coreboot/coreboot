@@ -51,8 +51,8 @@ config ACPI_SCI_IRQ
 		Set SCI IRQ to 9.
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
-        default "southbridge/amd/cimx/sb900/bootblock.c"
+	string
+	default "southbridge/amd/cimx/sb900/bootblock.c"
 
 config S3_DATA_POS
 	hex "S3 volatile storage position"

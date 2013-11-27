@@ -147,7 +147,7 @@ unsigned pci_find_next_capability(struct device *dev, unsigned cap,
 		pos &= ~3;
 		this_cap = pci_read_config8(dev, pos + PCI_CAP_LIST_ID);
 		printk(BIOS_SPEW, "Capability: type 0x%02x @ 0x%02x\n",
-		       this_cap, pos);
+			 this_cap, pos);
 		if (this_cap == 0xff)
 			break;
 
@@ -244,8 +244,8 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 	if (moving == 0) {
 		if (value != 0) {
 			printk(BIOS_DEBUG, "%s register %02lx(%08lx), "
-			       "read-only ignoring it\n",
-			       dev_path(dev), index, value);
+				  "read-only ignoring it\n",
+				  dev_path(dev), index, value);
 		}
 		resource->flags = 0;
 	} else if (attr & PCI_BASE_ADDRESS_SPACE_IO) {
@@ -275,7 +275,7 @@ struct resource *pci_get_resource(struct device *dev, unsigned long index)
 			/* Invalid value. */
 			printk(BIOS_ERR, "Broken BAR with value %lx\n", attr);
 			printk(BIOS_ERR, " on dev %s at index %02lx\n",
-			       dev_path(dev), index);
+				  dev_path(dev), index);
 			resource->flags = 0;
 		}
 	}
@@ -330,8 +330,8 @@ static void pci_get_rom_resource(struct device *dev, unsigned long index)
 	} else {
 		if (value != 0) {
 			printk(BIOS_DEBUG, "%s register %02lx(%08lx), "
-			       "read-only ignoring it\n",
-			       dev_path(dev), index, value);
+				  "read-only ignoring it\n",
+				  dev_path(dev), index, value);
 		}
 		resource->flags = 0;
 	}
@@ -359,7 +359,7 @@ static void pci_read_bases(struct device *dev, unsigned int howmany)
 }
 
 static void pci_record_bridge_resource(struct device *dev, resource_t moving,
-				       unsigned index, unsigned long type)
+					   unsigned index, unsigned long type)
 {
 	struct resource *resource;
 	unsigned long gran;
@@ -470,8 +470,8 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 	/* Make certain the resource has actually been assigned a value. */
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx not "
-		       "assigned\n", dev_path(dev), resource->index,
-		       resource_type(resource), resource->size);
+			 "assigned\n", dev_path(dev), resource->index,
+			 resource_type(resource), resource->size);
 		return;
 	}
 
@@ -555,7 +555,7 @@ static void pci_set_resource(struct device *dev, struct resource *resource)
 		/* Don't let me think I stored the resource. */
 		resource->flags &= ~IORESOURCE_STORED;
 		printk(BIOS_ERR, "ERROR: invalid resource->index %lx\n",
-		       resource->index);
+			 resource->index);
 	}
 
 	report_resource_stored(dev, resource, "");
@@ -717,12 +717,12 @@ static struct pci_operations pci_dev_ops_pci = {
 
 struct device_operations default_pci_ops_dev = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = pci_dev_init,
-	.scan_bus         = 0,
-	.enable           = 0,
-	.ops_pci          = &pci_dev_ops_pci,
+	.init		   = pci_dev_init,
+	.scan_bus	   = 0,
+	.enable	   = 0,
+	.ops_pci	   = &pci_dev_ops_pci,
 };
 
 /** Default device operations for PCI bridges */
@@ -732,13 +732,13 @@ static struct pci_operations pci_bus_ops_pci = {
 
 struct device_operations default_pci_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pci_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &pci_bus_ops_pci,
+	.init		   = 0,
+	.scan_bus	   = pci_scan_bridge,
+	.enable	   = 0,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = &pci_bus_ops_pci,
 };
 
 /**
@@ -776,7 +776,7 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		if ((flags >> 13) == 1) {
 			/* Host or Secondary Interface */
 			printk(BIOS_DEBUG, "%s subordinate bus HT\n",
-			       dev_path(dev));
+				  dev_path(dev));
 			return &default_ht_ops_bus;
 		}
 	}
@@ -792,11 +792,11 @@ static struct device_operations *get_pci_bridge_ops(device_t dev)
 		case PCI_EXP_TYPE_UPSTREAM:
 		case PCI_EXP_TYPE_DOWNSTREAM:
 			printk(BIOS_DEBUG, "%s subordinate bus PCI Express\n",
-			       dev_path(dev));
+				  dev_path(dev));
 			return &default_pciexp_ops_bus;
 		case PCI_EXP_TYPE_PCI_BRIDGE:
 			printk(BIOS_DEBUG, "%s subordinate PCI\n",
-			       dev_path(dev));
+				  dev_path(dev));
 			return &default_pci_ops_bus;
 		default:
 			break;
@@ -853,8 +853,8 @@ static void set_pci_ops(struct device *dev)
 		    device_id_match(driver, dev->device)) {
 			dev->ops = (struct device_operations *)driver->ops;
 			printk(BIOS_SPEW, "%s [%04x/%04x] %sops\n",
-			       dev_path(dev), driver->vendor, driver->device,
-			       (driver->ops->scan_bus ? "bus " : ""));
+				  dev_path(dev), driver->vendor, driver->device,
+				  (driver->ops->scan_bus ? "bus " : ""));
 			return;
 		}
 	}
@@ -880,9 +880,9 @@ default:
 bad:
 		if (dev->enabled) {
 			printk(BIOS_ERR, "%s [%04x/%04x/%06x] has unknown "
-			       "header type %02x, ignoring.\n", dev_path(dev),
-			       dev->vendor, dev->device,
-			       dev->class >> 8, dev->hdr_type);
+				  "header type %02x, ignoring.\n", dev_path(dev),
+				  dev->vendor, dev->device,
+				  dev->class >> 8, dev->hdr_type);
 		}
 	}
 }
@@ -907,7 +907,7 @@ static struct device *pci_scan_get_dev(struct device **list, unsigned int devfn)
 	for (; *list; list = &(*list)->sibling) {
 		if ((*list)->path.type != DEVICE_PATH_PCI) {
 			printk(BIOS_ERR, "child %s not a PCI device\n",
-			       dev_path(*list));
+				  dev_path(*list));
 			continue;
 		}
 		if ((*list)->path.pci.devfn == devfn) {
@@ -977,7 +977,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 		if ((id == 0x00000000) || (id == 0x0000ffff) ||
 		    (id == 0xffff0000)) {
 			printk(BIOS_SPEW, "%s, bad id 0x%x\n",
-			       dev_path(&dummy), id);
+				  dev_path(&dummy), id);
 			return NULL;
 		}
 		dev = alloc_dev(bus, &dummy.path);
@@ -1011,7 +1011,7 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 		    (id == 0x0000ffff) || (id == 0xffff0000)) {
 			if (dev->enabled) {
 				printk(BIOS_INFO, "PCI: Static device %s not "
-				       "found, disabling it.\n", dev_path(dev));
+					   "found, disabling it.\n", dev_path(dev));
 				dev->enabled = 0;
 			}
 			return dev;
@@ -1047,8 +1047,8 @@ device_t pci_probe_dev(device_t dev, struct bus *bus, unsigned devfn)
 
 	/* Display the device. */
 	printk(BIOS_DEBUG, "%s [%04x/%04x] %s%s\n", dev_path(dev),
-	       dev->vendor, dev->device, dev->enabled ? "enabled" : "disabled",
-	       dev->ops ? "" : " No operations");
+		dev->vendor, dev->device, dev->enabled ? "enabled" : "disabled",
+		dev->ops ? "" : " No operations");
 
 	return dev;
 }
@@ -1090,7 +1090,7 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 
 #if CONFIG_PCI_BUS_SEGN_BITS
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %04x:%02x\n",
-	       bus->secondary >> 8, bus->secondary & 0xff);
+		bus->secondary >> 8, bus->secondary & 0xff);
 #else
 	printk(BIOS_DEBUG, "PCI: pci_scan_bus for bus %02x\n", bus->secondary);
 #endif
@@ -1098,9 +1098,9 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
 	/* Maximum sane devfn is 0xFF. */
 	if (max_devfn > 0xff) {
 		printk(BIOS_ERR, "PCI: pci_scan_bus limits devfn %x - "
-		       "devfn %x\n", min_devfn, max_devfn);
+			 "devfn %x\n", min_devfn, max_devfn);
 		printk(BIOS_ERR, "PCI: pci_scan_bus upper limit too big. "
-		       "Using 0xff.\n");
+			 "Using 0xff.\n");
 		max_devfn=0xff;
 	}
 
@@ -1180,9 +1180,9 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn,
  */
 unsigned int do_pci_scan_bridge(struct device *dev, unsigned int max,
 				unsigned int (*do_scan_bus) (struct bus * bus,
-							     unsigned min_devfn,
-							     unsigned max_devfn,
-							     unsigned int max))
+								    unsigned min_devfn,
+								    unsigned max_devfn,
+								    unsigned int max))
 {
 	struct bus *bus;
 	u32 buses;
@@ -1293,8 +1293,8 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
  * @param bus Pointer to the bus structure.
  * @param slot TODO
  * @param pIntAtoD An array of IRQ #s that are assigned to PINTA through PINTD
- *        of this slot. The particular IRQ #s that are passed in depend on the
- *        routing inside your southbridge and on your board.
+ *	  of this slot. The particular IRQ #s that are passed in depend on the
+ *	  routing inside your southbridge and on your board.
  */
 void pci_assign_irqs(unsigned bus, unsigned slot,
 		     const unsigned char pIntAtoD[4])
@@ -1319,7 +1319,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 		irq = pIntAtoD[line - 1];
 
 		printk(BIOS_DEBUG, "Assigning IRQ %d to %d:%x.%d\n",
-		       irq, bus, slot, funct);
+			 irq, bus, slot, funct);
 
 		pci_write_config8(pdev, PCI_INTERRUPT_LINE,
 				  pIntAtoD[line - 1]);
@@ -1332,7 +1332,7 @@ void pci_assign_irqs(unsigned bus, unsigned slot,
 #if CONFIG_PC80_SYSTEM
 		/* Change to level triggered. */
 		i8259_configure_irq_trigger(pIntAtoD[line - 1],
-					    IRQ_LEVEL_TRIGGERED);
+						 IRQ_LEVEL_TRIGGERED);
 #endif
 	}
 }

@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  * (Written by Nico Huber <nico.huber@secunet.com> for secunet)
  *
  * This program is free software; you can redistribute it and/or
@@ -136,10 +136,10 @@ static void i82801ix_ehci_init(void)
 		 restore these settings across S3. */
 	reg32 = pci_read_config32(pciEHCI1, 0xfc);
 	pci_write_config32(pciEHCI1, 0xfc, (reg32 & ~(3 << 2)) |
-					   (1 << 29) | (1 << 17) | (2 << 2));
+						(1 << 29) | (1 << 17) | (2 << 2));
 	reg32 = pci_read_config32(pciEHCI2, 0xfc);
 	pci_write_config32(pciEHCI2, 0xfc, (reg32 & ~(3 << 2)) |
-					   (1 << 29) | (1 << 17) | (2 << 2));
+						(1 << 29) | (1 << 17) | (2 << 2));
 }
 
 static int i82801ix_function_disabled(const unsigned devfn)
@@ -147,8 +147,8 @@ static int i82801ix_function_disabled(const unsigned devfn)
 	const struct device *const dev = dev_find_slot(0, devfn);
 	if (!dev) {
 		printk(BIOS_EMERG,
-		       "PCI device 00:%x.%x",
-		       PCI_SLOT(devfn), PCI_FUNC(devfn));
+			 "PCI device 00:%x.%x",
+			 PCI_SLOT(devfn), PCI_FUNC(devfn));
 		die(" is not listed in devicetree.\n");
 	}
 	return !dev->enabled;
@@ -160,7 +160,7 @@ static void i82801ix_hide_functions(void)
 	u32 reg32;
 
 	/* FIXME: This works pretty good if the devicetree is consistent. But
-	          some functions have to be disabled in right order and/or have
+		   some functions have to be disabled in right order and/or have
 		  other constraints. */
 
 	if (i82801ix_function_disabled(PCI_DEVFN(0x19, 0)))

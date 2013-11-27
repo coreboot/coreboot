@@ -27,7 +27,7 @@
 
 #include "vx900.h"
 
-#define CHROME_9_HD_MIN_FB_SIZE   8
+#define CHROME_9_HD_MIN_FB_SIZE	  8
 #define CHROME_9_HD_MAX_FB_SIZE 512
 
 /**
@@ -83,8 +83,8 @@ u32 chrome9hd_fb_size(void)
 	size_mb = MAX(size_mb, CHROME_9_HD_MIN_FB_SIZE);
 
 	const device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-					     PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
-					     0);
+						  PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
+						  0);
 	/*
 	 * We have two limitations on the maximum framebuffer size:
 	 * 1) (Sanity) No more that 1/4 of system RAM
@@ -94,8 +94,8 @@ u32 chrome9hd_fb_size(void)
 	max_size_mb = tom_mb >> 2;
 	if (size_mb > max_size_mb) {
 		printk(BIOS_ALERT, "The framebuffer size of of %dMB is larger"
-		       " than 1/4 of available memory.\n"
-		       " Limiting framebuffer to %dMB\n", size_mb, max_size_mb);
+			 " than 1/4 of available memory.\n"
+			 " Limiting framebuffer to %dMB\n", size_mb, max_size_mb);
 		size_mb = max_size_mb;
 	}
 
@@ -119,8 +119,8 @@ u32 chrome9hd_fb_size(void)
 	};
 	if (size_mb > max_size_mb) {
 		printk(BIOS_ALERT, "The framebuffer size of %dMB is larger"
-		       " than size of the last DRAM rank.\n"
-		       " Limiting framebuffer to %dMB\n", size_mb, max_size_mb);
+			 " than size of the last DRAM rank.\n"
+			 " Limiting framebuffer to %dMB\n", size_mb, max_size_mb);
 		size_mb = max_size_mb;
 	}
 
@@ -223,9 +223,9 @@ static void chrome9hd_handle_uma(device_t dev)
 	//uma_resource(dev, 0x18, uma_memory_base>>10, uma_memory_size>>10);
 
 	printk(BIOS_DEBUG, "UMA base 0x%.8llx (%lluMB)\n", uma_memory_base,
-	       uma_memory_base >> 20);
+		uma_memory_base >> 20);
 	printk(BIOS_DEBUG, "UMA size 0x%.8llx (%lluMB)\n", uma_memory_size,
-	       uma_memory_size >> 20);
+		uma_memory_size >> 20);
 	u8 fb_pow = 0;
 	while (fb_size >> fb_pow)
 		fb_pow++;
@@ -233,7 +233,7 @@ static void chrome9hd_handle_uma(device_t dev)
 
 	/* Step 6 - Let MCU know the framebuffer size */
 	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
+					   PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	pci_mod_config8(mcu, 0xa1, 7 << 4, (fb_pow - 2) << 4);
 
 	/* Step 7 - Let GFX know the framebuffer size (through PCI and IOCTL)
@@ -260,7 +260,7 @@ static void chrome9hd_handle_uma(device_t dev)
 static void chrome9hd_biosguide_init_seq(device_t dev)
 {
 	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
+					   PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	device_t host = dev_find_device(PCI_VENDOR_ID_VIA,
 					PCI_DEVICE_ID_VIA_VX900_HOST_BR, 0);
 
@@ -290,7 +290,7 @@ static void chrome9hd_biosguide_init_seq(device_t dev)
 	if (uma_memory_base == 0)
 		die("uma_memory_base not set. Abandon ship!\n");
 	printk(BIOS_DEBUG, "UMA base 0x%.10llx (%lluMB)\n", uma_memory_base,
-	       uma_memory_base >> 20);
+		uma_memory_base >> 20);
 	vga_sr_write(0x6d, (uma_memory_base >> 21) & 0xff);	/* base 28:21 */
 	vga_sr_write(0x6e, (uma_memory_base >> 29) & 0xff);	/* base 36:29 */
 	vga_sr_write(0x6f, 0x00);	/* base 43:37 */
@@ -325,7 +325,7 @@ static void chrome9hd_init(device_t dev)
 	}
 
 	printk(BIOS_INFO, "Chrome: Using %dMB Framebuffer at 0x%08X.\n",
-	       256, fb_address);
+		256, fb_address);
 
 	printk(BIOS_DEBUG, "Initializing VGA...\n");
 
@@ -339,7 +339,7 @@ static void chrome9hd_init(device_t dev)
 static void chrome9hd_enable(device_t dev)
 {
 	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
+					   PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	/* FIXME: here? -=- ACLK 250Mhz */
 	pci_mod_config8(mcu, 0xbb, 0, 0x01);
 }
@@ -347,7 +347,7 @@ static void chrome9hd_enable(device_t dev)
 static void chrome9hd_disable(device_t dev)
 {
 	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
+					   PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
 	/* Disable GFX - This step effectively renders the GFX inert
 	 * It won't even show up as a PCI device during enumeration */
 	pci_mod_config8(mcu, 0xa1, 1 << 7, 0);

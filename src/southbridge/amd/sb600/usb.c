@@ -135,7 +135,7 @@ static struct device_operations usb_ops = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = usb_init,
-	/*.enable           = sb600_enable, */
+	/*.enable	     = sb600_enable, */
 	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };
@@ -160,7 +160,7 @@ static struct device_operations usb_ops2 = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = usb_init2,
-	/*.enable           = sb600_enable, */
+	/*.enable	     = sb600_enable, */
 	.scan_bus = 0,
 	.ops_pci = &lops_pci,
 };

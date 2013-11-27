@@ -45,11 +45,11 @@ static void northbridge_init(device_t dev)
 
 static struct device_operations northbridge_operations = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init		   = northbridge_init,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
@@ -118,10 +118,10 @@ static void cpu_bus_noop(device_t dev)
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = 0,
 };
 
 static void enable_dev(struct device *dev)

@@ -135,7 +135,7 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 	ret = spi_claim_bus(flash->spi);
 	if (ret) {
 		printk(BIOS_WARNING,
-		       "SF gigadevice.c: Unable to claim SPI bus\n");
+			 "SF gigadevice.c: Unable to claim SPI bus\n");
 		return ret;
 	}
 
@@ -145,7 +145,7 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 		ret = spi_flash_cmd(flash->spi, CMD_GD25_WREN, NULL, 0);
 		if (ret < 0) {
 			printk(BIOS_WARNING,
-			       "SF gigadevice.c: Enabling Write failed\n");
+				  "SF gigadevice.c: Enabling Write failed\n");
 			goto out;
 		}
 
@@ -155,16 +155,16 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 		cmd[3] = offset & 0xff;
 #if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW,
-		       "PP gigadevice.c: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
-		       " chunk_len = %zu\n", buf + actual,
-		       cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
+			 "PP gigadevice.c: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
+			 " chunk_len = %zu\n", buf + actual,
+			 cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 
 		ret = spi_flash_cmd_write(flash->spi, cmd, 4,
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING,
-			       "SF gigadevice.c: Page Program failed\n");
+				  "SF gigadevice.c: Page Program failed\n");
 			goto out;
 		}
 
@@ -178,8 +178,8 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 
 #if CONFIG_DEBUG_SPI_FLASH
 	printk(BIOS_SPEW,
-	       "SF gigadevice.c: Successfully programmed %zu bytes @ %#x\n",
-	       len, (unsigned int)(offset - len));
+		"SF gigadevice.c: Successfully programmed %zu bytes @ %#x\n",
+		len, (unsigned int)(offset - len));
 #endif
 
 	ret = 0;
@@ -209,15 +209,15 @@ struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi, u8 *idcode)
 
 	if (i == ARRAY_SIZE(gigadevice_spi_flash_table)) {
 		printk(BIOS_WARNING,
-		       "SF gigadevice.c: Unsupported ID %#02x%02x\n",
-		       idcode[1], idcode[2]);
+			 "SF gigadevice.c: Unsupported ID %#02x%02x\n",
+			 idcode[1], idcode[2]);
 		return NULL;
 	}
 
 	stm = malloc(sizeof(struct gigadevice_spi_flash));
 	if (!stm) {
 		printk(BIOS_WARNING,
-		       "SF gigadevice.c: Failed to allocate memory\n");
+			 "SF gigadevice.c: Failed to allocate memory\n");
 		return NULL;
 	}
 

@@ -58,7 +58,7 @@ static void usb_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations usb_pci_ops = {
-	.set_subsystem    = usb_set_subsystem,
+	.set_subsystem	   = usb_set_subsystem,
 };
 
 static struct device_operations usb_ops = {

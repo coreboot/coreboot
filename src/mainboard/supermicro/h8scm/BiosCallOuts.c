@@ -138,11 +138,11 @@ CONST IDS_NV_ITEM IdsData[] =
 	}
 };
 
-#define   NUM_IDS_ENTRIES    (sizeof (IdsData) / sizeof (IDS_NV_ITEM))
+#define	  NUM_IDS_ENTRIES    (sizeof (IdsData) / sizeof (IDS_NV_ITEM))
 
 AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINTN   i;
+	UINTN	 i;
 	IDS_NV_ITEM *IdsPtr;
 
 	IdsPtr = ((IDS_CALLOUT_STRUCT *) ConfigPtr)->IdsNvPtr;
@@ -159,14 +159,14 @@ AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINT32              AvailableHeapSize;
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              CurrNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              BestFitNodeOffset;
-	UINT32              BestFitPrevNodeOffset;
-	UINT32              NextFreeOffset;
+	UINT32		     AvailableHeapSize;
+	UINT8		     *BiosHeapBaseAddr;
+	UINT32		     CurrNodeOffset;
+	UINT32		     PrevNodeOffset;
+	UINT32		     FreedNodeOffset;
+	UINT32		     BestFitNodeOffset;
+	UINT32		     BestFitPrevNodeOffset;
+	UINT32		     NextFreeOffset;
 	BIOS_BUFFER_NODE   *CurrNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
 	BIOS_BUFFER_NODE   *BestFitNodePtr;
@@ -289,12 +289,12 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              AllocNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              NextNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              EndNodeOffset;
+	UINT8		     *BiosHeapBaseAddr;
+	UINT32		     AllocNodeOffset;
+	UINT32		     PrevNodeOffset;
+	UINT32		     NextNodeOffset;
+	UINT32		     FreedNodeOffset;
+	UINT32		     EndNodeOffset;
 	BIOS_BUFFER_NODE   *AllocNodePtr;
 	BIOS_BUFFER_NODE   *PrevNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
@@ -407,8 +407,8 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINT32              AllocNodeOffset;
-	UINT8               *BiosHeapBaseAddr;
+	UINT32		     AllocNodeOffset;
+	UINT8		     *BiosHeapBaseAddr;
 	BIOS_BUFFER_NODE   *AllocNodePtr;
 	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
@@ -441,7 +441,7 @@ AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS        Status;
+	AGESA_STATUS	     Status;
 
 	Status = agesawrapper_amdlaterunaptask (Data, ConfigPtr);
 	return Status;
@@ -449,9 +449,9 @@ AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS        Status;
-	UINT8                 Value;
-	UINTN               ResetType;
+	AGESA_STATUS	     Status;
+	UINT8		       Value;
+	UINTN		     ResetType;
 	AMD_CONFIG_PARAMS   *StdHeader;
 
 	ResetType = Data;

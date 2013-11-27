@@ -171,7 +171,7 @@ void print_conf(void)
 	for (i = 0; cpu_msr_defs[i] != GL_END; i++) {
 		msr = rdmsr(cpu_msr_defs[i]);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
-			     cpu_msr_defs[i], msr.hi, msr.lo);
+				cpu_msr_defs[i], msr.hi, msr.lo);
 	}
 
 	printk(BIOS_DEBUG, "---------- GLIU 0 ------------\n");
@@ -179,7 +179,7 @@ void print_conf(void)
 	for (i = 0; gliu0_msr_defs[i] != GL_END; i++) {
 		msr = rdmsr(gliu0_msr_defs[i]);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
-			     gliu0_msr_defs[i], msr.hi, msr.lo);
+				gliu0_msr_defs[i], msr.hi, msr.lo);
 	}
 
 	printk(BIOS_DEBUG, "---------- GLIU 1 ------------\n");
@@ -187,7 +187,7 @@ void print_conf(void)
 	for (i = 0; gliu1_msr_defs[i] != GL_END; i++) {
 		msr = rdmsr(gliu1_msr_defs[i]);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n",
-			     gliu1_msr_defs[i], msr.hi, msr.lo);
+				gliu1_msr_defs[i], msr.hi, msr.lo);
 	}
 
 	printk(BIOS_DEBUG, "---------- RCONF ------------\n");
@@ -195,7 +195,7 @@ void print_conf(void)
 	for (i = 0; rconf_msr[i] != GL_END; i++) {
 		msr = rdmsr(rconf_msr[i]);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", rconf_msr[i],
-			     msr.hi, msr.lo);
+				msr.hi, msr.lo);
 	}
 
 	printk(BIOS_DEBUG, "---------- VARIA ------------\n");
@@ -226,7 +226,7 @@ void print_conf(void)
 	for (i = 0; pci_msr[i] != GL_END; i++) {
 		msr = rdmsr(pci_msr[i]);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", pci_msr[i],
-			     msr.hi, msr.lo);
+				msr.hi, msr.lo);
 	}
 
 	printk(BIOS_DEBUG, "---------- LPC/UART DMA ------------\n");
@@ -234,7 +234,7 @@ void print_conf(void)
 	for (i = 0; dma_msr[i] != GL_END; i++) {
 		msr = rdmsr(dma_msr[i]);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", dma_msr[i],
-			     msr.hi, msr.lo);
+				msr.hi, msr.lo);
 	}
 
 	printk(BIOS_DEBUG, "---------- CS5536 ------------\n");
@@ -242,7 +242,7 @@ void print_conf(void)
 	for (i = 0; cs5536_msr[i] != GL_END; i++) {
 		msr = rdmsr(cs5536_msr[i]);
 		printk(BIOS_DEBUG, "MSR 0x%08X is now 0x%08X:0x%08X\n", cs5536_msr[i],
-			     msr.hi, msr.lo);
+				msr.hi, msr.lo);
 	}
 
 	iol = inl(GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
@@ -332,7 +332,7 @@ static void northbridge_set_resources(struct device *dev)
 	for (bus = dev->link_list; bus; bus = bus->next) {
 		if (bus->children) {
 			printk(BIOS_DEBUG, "my_dev_set_resources: assign_resources %d\n",
-			     bus->secondary);
+				bus->secondary);
 			assign_resources(bus);
 		}
 	}

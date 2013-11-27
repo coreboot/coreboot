@@ -25,7 +25,7 @@ chip northbridge/amd/agesa/family15/root_complex
 	device domain 0 on
 		subsystemid 0x15d9 0xab11 inherit #Tyan
 		chip northbridge/amd/agesa/family15 # CPU side of HT root complex
-			device pci 18.0 on     # Put IO-HUB at link_num 0, Instead of HT Link topology
+			device pci 18.0 on	  # Put IO-HUB at link_num 0, Instead of HT Link topology
 				chip northbridge/amd/cimx/rd890 # Southbridge PCI side of HT Root complex
 					device pci 0.0 on  end # HT Root Complex 0x9600
 					device pci 0.1 off end # CLKCONFIG

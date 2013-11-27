@@ -63,7 +63,7 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
  *	 8 8 2 2 :1
  *	 8 8 4   :2
  *	 8 4 4 4 :3
- *	16 4     :4
+ *	16 4	    :4
  */
 
 #if CONFIG_CK804_NUM > 1

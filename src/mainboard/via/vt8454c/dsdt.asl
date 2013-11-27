@@ -76,7 +76,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				} Else {
 					Return (CRSA)
 				}
-                	}
+			}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -85,10 +85,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 			{
 				Name (PRSP, ResourceTemplate () {
 					IRQ (Level, ActiveLow, Shared) {3,4,6,7,10,11,12}
-                    		})
+		    		})
 				Name (PRSA, ResourceTemplate () {
 					Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {16,17,18,19,20,21,22,23}
-                    		})
+		    		})
 
 				If (LNot (PICF)) {
 					Return (PRSP)
@@ -96,9 +96,9 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 					Return (PRSA)
 				}
 
-                	}
+			}
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -135,7 +135,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				} Else {
 					Return (CRSA)
 				}
-                	}
+			}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -144,10 +144,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 			{
 				Name (PRSP, ResourceTemplate () {
 					IRQ (Level, ActiveLow, Shared) {3,4,6,7,10,11,12}
-                    		})
+		    		})
 				Name (PRSA, ResourceTemplate () {
 					Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {16,17,18,19,20,21,22,23}
-                    		})
+		    		})
 
 				If (LNot (PICF)) {
 					Return (PRSP)
@@ -155,10 +155,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 					Return (PRSA)
 				}
 
-                	}
+			}
 
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -195,7 +195,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				} Else {
 					Return (CRSA)
 				}
-                	}
+			}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -204,10 +204,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 			{
 				Name (PRSP, ResourceTemplate () {
 					IRQ (Level, ActiveLow, Shared) {3,4,6,7,10,11,12}
-                    		})
+		    		})
 				Name (PRSA, ResourceTemplate () {
 					Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {16,17,18,19,20,21,22,23}
-                    		})
+		    		})
 
 				If (LNot (PICF)) {
 					Return (PRSP)
@@ -215,10 +215,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 					Return (PRSA)
 				}
 
-                	}
+			}
 
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -255,7 +255,7 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 				} Else {
 					Return (CRSA)
 				}
-                	}
+			}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -264,10 +264,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 			{
 				Name (PRSP, ResourceTemplate () {
 					IRQ (Level, ActiveLow, Shared) {3,4,6,7,10,11,12}
-                    		})
+		    		})
 				Name (PRSA, ResourceTemplate () {
 					Interrupt (ResourceConsumer, Level, ActiveLow, Shared) {16,17,18,19,20,21,22,23}
-                    		})
+		    		})
 
 				If (LNot (PICF)) {
 					Return (PRSP)
@@ -275,10 +275,10 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 					Return (PRSA)
 				}
 
-                	}
+			}
 
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -301,17 +301,17 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 			#include "acpi/irq.asl"
 
 			/* PCI Routing Table */
-            		Method (_PRT, 0, NotSerialized)
-            		{
-                	    If (LNot (PICF))
-                	    {
-                    		Return (PICM)
-                	    }
-                	    Else
-                	    {
-                		Return (APIC)
-                            }
-            		}
+	    		Method (_PRT, 0, NotSerialized)
+	    		{
+			    If (LNot (PICF))
+			    {
+		    		Return (PICM)
+			    }
+			    Else
+			    {
+				Return (APIC)
+			    }
+	    		}
 
 			Device (P2PB) /* PCI to PCI bridge */
 			{

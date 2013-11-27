@@ -118,7 +118,7 @@ int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val)
 }
 
 int do_smbus_read_byte(u32 smbus_io_base, u32 device,
-			      u32 address)
+				 u32 address)
 {
 	u8 byte;
 
@@ -149,7 +149,7 @@ int do_smbus_read_byte(u32 smbus_io_base, u32 device,
 }
 
 int do_smbus_write_byte(u32 smbus_io_base, u32 device,
-			       u32 address, u8 val)
+				  u32 address, u8 val)
 {
 	u8 byte;
 

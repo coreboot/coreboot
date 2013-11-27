@@ -66,67 +66,67 @@
 #define PLX_VIDDID 0x861610b5
 
 /* 7475 Common Registers */
-#define REG_DEVREV2             0x12    /* ADT7490 only */
-#define REG_VTT                 0x1E    /* ADT7490 only */
-#define REG_EXTEND3             0x1F    /* ADT7490 only */
-#define REG_VOLTAGE_BASE        0x20
-#define REG_TEMP_BASE           0x25
-#define REG_TACH_BASE           0x28
-#define REG_PWM_BASE            0x30
-#define REG_PWM_MAX_BASE        0x38
-#define REG_DEVID               0x3D
-#define REG_VENDID              0x3E
-#define REG_DEVID2              0x3F
-#define REG_STATUS1             0x41
-#define REG_STATUS2             0x42
-#define REG_VID                 0x43    /* ADT7476 only */
-#define REG_VOLTAGE_MIN_BASE    0x44
-#define REG_VOLTAGE_MAX_BASE    0x45
-#define REG_TEMP_MIN_BASE       0x4E
-#define REG_TEMP_MAX_BASE       0x4F
-#define REG_TACH_MIN_BASE       0x54
-#define REG_PWM_CONFIG_BASE     0x5C
-#define REG_TEMP_TRANGE_BASE    0x5F
-#define REG_PWM_MIN_BASE        0x64
-#define REG_TEMP_TMIN_BASE      0x67
-#define REG_TEMP_THERM_BASE     0x6A
-#define REG_REMOTE1_HYSTERSIS   0x6D
-#define REG_REMOTE2_HYSTERSIS   0x6E
-#define REG_TEMP_OFFSET_BASE    0x70
-#define REG_CONFIG2             0x73
-#define REG_EXTEND1             0x76
-#define REG_EXTEND2             0x77
+#define REG_DEVREV2		0x12	/* ADT7490 only */
+#define REG_VTT			0x1E	/* ADT7490 only */
+#define REG_EXTEND3		0x1F	/* ADT7490 only */
+#define REG_VOLTAGE_BASE	0x20
+#define REG_TEMP_BASE		0x25
+#define REG_TACH_BASE		0x28
+#define REG_PWM_BASE		0x30
+#define REG_PWM_MAX_BASE	0x38
+#define REG_DEVID		0x3D
+#define REG_VENDID		0x3E
+#define REG_DEVID2		0x3F
+#define REG_STATUS1		0x41
+#define REG_STATUS2		0x42
+#define REG_VID			0x43	/* ADT7476 only */
+#define REG_VOLTAGE_MIN_BASE	0x44
+#define REG_VOLTAGE_MAX_BASE	0x45
+#define REG_TEMP_MIN_BASE	0x4E
+#define REG_TEMP_MAX_BASE	0x4F
+#define REG_TACH_MIN_BASE	0x54
+#define REG_PWM_CONFIG_BASE	0x5C
+#define REG_TEMP_TRANGE_BASE	0x5F
+#define REG_PWM_MIN_BASE	0x64
+#define REG_TEMP_TMIN_BASE	0x67
+#define REG_TEMP_THERM_BASE	0x6A
+#define REG_REMOTE1_HYSTERSIS	0x6D
+#define REG_REMOTE2_HYSTERSIS	0x6E
+#define REG_TEMP_OFFSET_BASE	0x70
+#define REG_CONFIG2		0x73
+#define REG_EXTEND1		0x76
+#define REG_EXTEND2		0x77
 #define REG_CONFIG1				0x40	// ADT7475
-#define REG_CONFIG3             0x78
-#define REG_CONFIG5             0x7C
+#define REG_CONFIG3		0x78
+#define REG_CONFIG5		0x7C
 #define REG_CONFIG6				0x10	// ADT7475
 #define REG_CONFIG7				0x11	// ADT7475
-#define REG_CONFIG4             0x7D
-#define REG_STATUS4             0x81    /* ADT7490 only */
-#define REG_VTT_MIN             0x84    /* ADT7490 only */
-#define REG_VTT_MAX             0x86    /* ADT7490 only */
+#define REG_CONFIG4		0x7D
+#define REG_STATUS4		0x81	/* ADT7490 only */
+#define REG_VTT_MIN		0x84	/* ADT7490 only */
+#define REG_VTT_MAX		0x86	/* ADT7490 only */
 
-#define VID_VIDSEL              0x80    /* ADT7476 only */
+#define VID_VIDSEL		0x80	/* ADT7476 only */
 
-#define CONFIG2_ATTN            0x20
-#define CONFIG3_SMBALERT        0x01
-#define CONFIG3_THERM           0x02
-#define CONFIG4_PINFUNC         0x03
-#define CONFIG4_MAXDUTY         0x08
-#define CONFIG4_ATTN_IN10       0x30
-#define CONFIG4_ATTN_IN43       0xC0
-#define CONFIG5_TWOSCOMP        0x01
-#define CONFIG5_TEMPOFFSET      0x02
-#define CONFIG5_VIDGPIO         0x10    /* ADT7476 only */
+#define CONFIG2_ATTN		0x20
+#define CONFIG3_SMBALERT	0x01
+#define CONFIG3_THERM		0x02
+#define CONFIG4_PINFUNC		0x03
+#define CONFIG4_MAXDUTY		0x08
+#define CONFIG4_ATTN_IN10	0x30
+#define CONFIG4_ATTN_IN43	0xC0
+#define CONFIG5_TWOSCOMP	0x01
+#define CONFIG5_TEMPOFFSET	0x02
+#define CONFIG5_VIDGPIO		0x10	/* ADT7476 only */
 #define REMOTE1					0
 #define LOCAL					1
 #define REMOTE2					2
 
 /* ADT7475 Settings */
-#define ADT7475_VOLTAGE_COUNT   5       /* Not counting Vtt */
-#define ADT7475_TEMP_COUNT      3
-#define ADT7475_TACH_COUNT      4
-#define ADT7475_PWM_COUNT       3
+#define ADT7475_VOLTAGE_COUNT	5	/* Not counting Vtt */
+#define ADT7475_TEMP_COUNT	3
+#define ADT7475_TACH_COUNT	4
+#define ADT7475_PWM_COUNT	3
 
 /* Macros to easily index the registers */
 #define TACH_REG(idx) (REG_TACH_BASE + ((idx) * 2))
@@ -152,11 +152,11 @@
 #define SMBUS_IO_BASE 0x1000
 #define ADT7475_ADDRESS 0x2E
 
-#define   D_OPEN	(1 << 6)
-#define   D_CLS		(1 << 5)
-#define   D_LCK		(1 << 4)
-#define   G_SMRAME	(1 << 3)
-#define   A_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0)) // 0x2: SMM space at 640KB-768KB
+#define	  D_OPEN	(1 << 6)
+#define	  D_CLS		(1 << 5)
+#define	  D_LCK		(1 << 4)
+#define	  G_SMRAME	(1 << 3)
+#define	  A_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0)) // 0x2: SMM space at 640KB-768KB
 
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
@@ -343,27 +343,27 @@ static void cable_detect(void)
 
 static const char * adt7475_detect( void ) {
 
-        int vendid, devid, devid2;
-        const char *name = NULL;
+	int vendid, devid, devid2;
+	const char *name = NULL;
 
-        vendid = adt7475_read_byte(REG_VENDID);
-        devid2 = adt7475_read_byte(REG_DEVID2);
-        if (vendid != 0x41 ||           /* Analog Devices */
-            (devid2 & 0xf8) != 0x68) {
-                return name;
+	vendid = adt7475_read_byte(REG_VENDID);
+	devid2 = adt7475_read_byte(REG_DEVID2);
+	if (vendid != 0x41 ||		/* Analog Devices */
+	    (devid2 & 0xf8) != 0x68) {
+		return name;
 		}
 
-        devid = adt7475_read_byte(REG_DEVID);
-        if (devid == 0x73)
-                name = "adt7473";
-        else if (devid == 0x75 && adt7475_address == 0x2e)
-                name = "adt7475";
-        else if (devid == 0x76)
-                name = "adt7476";
-        else if ((devid2 & 0xfc) == 0x6c)
-                name = "adt7490";
+	devid = adt7475_read_byte(REG_DEVID);
+	if (devid == 0x73)
+		name = "adt7473";
+	else if (devid == 0x75 && adt7475_address == 0x2e)
+		name = "adt7475";
+	else if (devid == 0x76)
+		name = "adt7476";
+	else if ((devid2 & 0xfc) == 0x6c)
+		name = "adt7490";
 
-        return name;
+	return name;
 }
 
 // thermal control defaults
@@ -537,15 +537,15 @@ static void set_thermal_config(void)
 
 	/* remote 1 low temp limit */
 	adt7475_write_byte(TEMP_MIN_REG(0), 0x00);
-	/* remote 1 High temp limit    (90C) */
+	/* remote 1 High temp limit	(90C) */
 	adt7475_write_byte(TEMP_MAX_REG(0), 0x9a);
 
 	/* local Low Temp Limit */
 	adt7475_write_byte(TEMP_MIN_REG(1), 0x00);
-	/* local High Limit    (90C) */
+	/* local High Limit	(90C) */
 	adt7475_write_byte(TEMP_MAX_REG(1), 0x9a);
 
-	/*  remote 1 therm temp limit    (95C) */
+	/*  remote 1 therm temp limit	  (95C) */
 	adt7475_write_byte(TEMP_THERM_REG(0), 0x9f);
 	/* local therm temp limit    (95C) */
 	adt7475_write_byte(TEMP_THERM_REG(1), 0x9f);
@@ -556,26 +556,26 @@ static void set_thermal_config(void)
 	adt7475_write_byte(PWM_CONFIG_REG(2), case_pwm_conf);
 
 	if( cpu_fan_control.enable ) {
-		/* PWM 1 minimum duty cycle     (37%) */
+		/* PWM 1 minimum duty cycle	  (37%) */
 		adt7475_write_byte(PWM_MIN_REG(0), cpu_fan_control.pwm_min);
-		/* PWM 1 Maximum duty cycle    (100%) */
+		/* PWM 1 Maximum duty cycle	 (100%) */
 		adt7475_write_byte(PWM_MAX_REG(0), cpu_fan_control.pwm_max);
-		/*  Remote 1 temperature Tmin     (32C) */
+		/*  Remote 1 temperature Tmin	    (32C) */
 		adt7475_write_byte(TEMP_TMIN_REG(0), cpu_fan_control.t_min);
-		/* remote 1 Trange            (53C ramp range) */
+		/* remote 1 Trange		(53C ramp range) */
 		adt7475_write_byte(TEMP_TRANGE_REG(0), cpu_fan_control.t_range);
 	} else {
 		adt7475_write_byte(PWM_REG(0), cpu_fan_control.pwm_max);
 	}
 
 	if( case_fan_control.enable ) {
-		/* PWM 2 minimum duty cycle     (37%) */
+		/* PWM 2 minimum duty cycle	  (37%) */
 		adt7475_write_byte(PWM_MIN_REG(2), case_fan_control.pwm_min);
-		/* PWM 2 Maximum Duty Cycle    (100%) */
+		/* PWM 2 Maximum Duty Cycle	 (100%) */
 		adt7475_write_byte(PWM_MAX_REG(2), case_fan_control.pwm_max);
-		/* local temperature Tmin     (32C) */
+		/* local temperature Tmin	(32C) */
 		adt7475_write_byte(TEMP_TMIN_REG(1), case_fan_control.t_min);
-		/* local Trange            (53C ramp range) */
+		/* local Trange	     (53C ramp range) */
 		adt7475_write_byte(TEMP_TRANGE_REG(1), case_fan_control.t_range); // Local TRange
 		adt7475_write_byte(TEMP_TRANGE_REG(2), case_fan_control.t_range); // PWM2 Freq
 	} else {

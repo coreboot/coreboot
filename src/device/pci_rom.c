@@ -55,7 +55,7 @@ struct rom_header *pci_rom_probe(struct device *dev)
 
 	if (rom_header) {
 		printk(BIOS_DEBUG, "In CBFS, ROM address for %s = %p\n",
-		       dev_path(dev), rom_header);
+			 dev_path(dev), rom_header);
 	} else {
 		u32 rom_address;
 
@@ -71,12 +71,12 @@ struct rom_header *pci_rom_probe(struct device *dev)
 		} else {
 			/* Enable expansion ROM address decoding. */
 			pci_write_config32(dev, PCI_ROM_ADDRESS,
-					   rom_address|PCI_ROM_ADDRESS_ENABLE);
+						rom_address|PCI_ROM_ADDRESS_ENABLE);
 		}
 
 #if CONFIG_ON_DEVICE_ROM_RUN
 		printk(BIOS_DEBUG, "Option ROM address for %s = %lx\n",
-		       dev_path(dev), (unsigned long)rom_address);
+			 dev_path(dev), (unsigned long)rom_address);
 		rom_header = (struct rom_header *)rom_address;
 #else
 		printk(BIOS_DEBUG, "Option ROM execution disabled "
@@ -86,37 +86,37 @@ struct rom_header *pci_rom_probe(struct device *dev)
 	}
 
 	printk(BIOS_SPEW, "PCI expansion ROM, signature 0x%04x, "
-	       "INIT size 0x%04x, data ptr 0x%04x\n",
-	       le32_to_cpu(rom_header->signature),
-	       rom_header->size * 512, le32_to_cpu(rom_header->data));
+		"INIT size 0x%04x, data ptr 0x%04x\n",
+		le32_to_cpu(rom_header->signature),
+		rom_header->size * 512, le32_to_cpu(rom_header->data));
 
 	if (le32_to_cpu(rom_header->signature) != PCI_ROM_HDR) {
 		printk(BIOS_ERR, "Incorrect expansion ROM header "
-		       "signature %04x\n", le32_to_cpu(rom_header->signature));
+			 "signature %04x\n", le32_to_cpu(rom_header->signature));
 		return NULL;
 	}
 
 	rom_data = (((void *)rom_header) + le32_to_cpu(rom_header->data));
 
 	printk(BIOS_SPEW, "PCI ROM image, vendor ID %04x, device ID %04x,\n",
-	       rom_data->vendor, rom_data->device);
+		rom_data->vendor, rom_data->device);
 	/* If the device id is mapped, a mismatch is expected */
 	if ((dev->vendor != rom_data->vendor
 	    || dev->device != rom_data->device)
 	    && (vendev == mapped_vendev)) {
 		printk(BIOS_ERR, "ID mismatch: vendor ID %04x, "
-		       "device ID %04x\n", rom_data->vendor, rom_data->device);
+			 "device ID %04x\n", rom_data->vendor, rom_data->device);
 		return NULL;
 	}
 
 	printk(BIOS_SPEW, "PCI ROM image, Class Code %04x%02x, "
-	       "Code Type %02x\n", rom_data->class_hi, rom_data->class_lo,
-	       rom_data->type);
+		"Code Type %02x\n", rom_data->class_hi, rom_data->class_lo,
+		rom_data->type);
 
 	if (dev->class != ((rom_data->class_hi << 8) | rom_data->class_lo)) {
 		printk(BIOS_DEBUG, "Class Code mismatch ROM %08x, dev %08x\n",
-		       (rom_data->class_hi << 8) | rom_data->class_lo,
-		       dev->class);
+			 (rom_data->class_hi << 8) | rom_data->class_lo,
+			 dev->class);
 		// return NULL;
 	}
 
@@ -135,7 +135,7 @@ struct rom_header *pci_rom_load(struct device *dev,
 	do {
 		/* Get next image. */
 		rom_header = (struct rom_header *)((void *) rom_header
-							    + image_size);
+								   + image_size);
 
 		rom_data = (struct pci_data *)((void *) rom_header
 				+ le32_to_cpu(rom_header->data));
@@ -160,16 +160,16 @@ struct rom_header *pci_rom_load(struct device *dev,
 #endif
 		if ((void *)PCI_VGA_RAM_IMAGE_START != rom_header) {
 			printk(BIOS_DEBUG, "Copying VGA ROM Image from %p to "
-			       "0x%x, 0x%x bytes\n", rom_header,
-			       PCI_VGA_RAM_IMAGE_START, rom_size);
+				  "0x%x, 0x%x bytes\n", rom_header,
+				  PCI_VGA_RAM_IMAGE_START, rom_size);
 			memcpy((void *)PCI_VGA_RAM_IMAGE_START, rom_header,
-			       rom_size);
+				  rom_size);
 		}
 		return (struct rom_header *) (PCI_VGA_RAM_IMAGE_START);
 	}
 
 	printk(BIOS_DEBUG, "Copying non-VGA ROM image from %p to %p, 0x%x "
-	       "bytes\n", rom_header, pci_ram_image_start, rom_size);
+		"bytes\n", rom_header, pci_ram_image_start, rom_size);
 
 	memcpy(pci_ram_image_start, rom_header, rom_size);
 	pci_ram_image_start += rom_size;

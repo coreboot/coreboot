@@ -36,7 +36,7 @@ Scope(\)
 	// ICH7 Power Management Registers, located at PMBASE (0x1f.0 0x40.l)
 	// this doesn't work as ACPI initializes regions and packages first, devices second.
 	// use dynamic operation region? if so, how? XXX
-        //OperationRegion(PMIO, SystemIO, And(\_SB_.PCI0.LPCB.PMBS, 0xfffc), 0x80)
+	//OperationRegion(PMIO, SystemIO, And(\_SB_.PCI0.LPCB.PMBS, 0xfffc), 0x80)
 	OperationRegion(PMIO, SystemIO, 0x500, 0x80)
 	Field(PMIO, ByteAcc, NoLock, Preserve)
 	{

@@ -97,7 +97,7 @@ static int lsmbus_write_byte(device_t dev, u8 address, u8 data)
 }
 
 static int do_smbus_block_write(unsigned smbus_base, unsigned device,
-			      unsigned cmd, unsigned bytes, const u8 *buf)
+				 unsigned cmd, unsigned bytes, const u8 *buf)
 {
 	u8 status;
 
@@ -132,8 +132,8 @@ static int do_smbus_block_write(unsigned smbus_base, unsigned device,
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
 		if (status & ((1 << 4) | /* FAILED */
-			      (1 << 3) | /* BUS ERR */
-			      (1 << 2))) /* DEV ERR */
+				 (1 << 3) | /* BUS ERR */
+				 (1 << 2))) /* DEV ERR */
 			return SMBUS_ERROR;
 
 		if (status & 0x80) { /* Byte done */
@@ -160,7 +160,7 @@ static int lsmbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buf)
 }
 
 static int do_smbus_block_read(unsigned smbus_base, unsigned device,
-			      unsigned cmd, unsigned bytes, u8 *buf)
+				 unsigned cmd, unsigned bytes, u8 *buf)
 {
 	u8 status;
 	int bytes_read = 0;
@@ -189,8 +189,8 @@ static int do_smbus_block_read(unsigned smbus_base, unsigned device,
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
 		if (status & ((1 << 4) | /* FAILED */
-			      (1 << 3) | /* BUS ERR */
-			      (1 << 2))) /* DEV ERR */
+				 (1 << 3) | /* BUS ERR */
+				 (1 << 2))) /* DEV ERR */
 			return SMBUS_ERROR;
 
 		if (status & 0x80) { /* Byte done */
@@ -224,9 +224,9 @@ static int lsmbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buf)
 
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
-	.write_byte     = lsmbus_write_byte,
-	.block_read     = lsmbus_block_read,
-	.block_write    = lsmbus_block_write,
+	.write_byte	 = lsmbus_write_byte,
+	.block_read	 = lsmbus_block_read,
+	.block_write	 = lsmbus_block_write,
 };
 
 static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
@@ -241,7 +241,7 @@ static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations smbus_pci_ops = {
-	.set_subsystem    = smbus_set_subsystem,
+	.set_subsystem	   = smbus_set_subsystem,
 };
 
 static void smbus_read_resources(device_t dev)

@@ -84,7 +84,7 @@ void enable_smbus(void)
 
 	/* Locate the Power Management control */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_LPC), 0);
+					   PCI_DEVICE_ID_VIA_VX900_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		die("Power Management Controller not found\n");
@@ -182,7 +182,7 @@ void dump_spd_data(spd_raw_data spd)
 	 * I originally saw this way to present SPD data in code from VIA. I
 	 * really liked the idea, so here it goes.
 	 */
-	print_debug("     00 01 02 03 04 05 06 07 07 09 0A 0B 0C 0D 0E 0F\n");
+	print_debug("	   00 01 02 03 04 05 06 07 07 09 0A 0B 0C 0D 0E 0F\n");
 	print_debug("---+------------------------------------------------");
 	for (i = 0; i < len; i++) {
 		reg = spd[i];

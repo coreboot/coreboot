@@ -141,7 +141,7 @@ biosemu_dev_get_addr_info(void)
 	assigned_address_t buf[11];
 	len =
 	    of_getprop(bios_device.phandle, "assigned-addresses", buf,
-		       sizeof(buf));
+			 sizeof(buf));
 	bios_device.bus = buf[0].bus;
 	bios_device.devfn = buf[0].devfn;
 	DEBUG_PRINTF("bus: %x, devfn: %x\n", bios_device.bus,
@@ -340,7 +340,7 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 		if (rom_signature != 0xaa55) {
 			printf
 			    ("Error: invalid Expansion ROM signature: %02x!\n",
-			     *((u16 *) rom_base_addr));
+				*((u16 *) rom_base_addr));
 			return -1;
 		}
 		set_ci();
@@ -348,11 +348,11 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 		pci_ds_offset = in16le((void *) (rom_base_addr + 0x18));
 		//copy the PCI Data Structure
 		memcpy(&pci_ds, (void *) (rom_base_addr + pci_ds_offset),
-		       sizeof(pci_ds));
+			 sizeof(pci_ds));
 		clr_ci();
 #if CONFIG_X86EMU_DEBUG
 		DEBUG_PRINTF("PCI Data Structure @%lx:\n",
-			     rom_base_addr + pci_ds_offset);
+				rom_base_addr + pci_ds_offset);
 		dump((void *) &pci_ds, sizeof(pci_ds));
 #endif
 		if (strncmp((const char *) pci_ds.signature, "PCIR", 4) != 0) {
@@ -368,13 +368,13 @@ biosemu_dev_check_exprom(unsigned long rom_base_addr)
 		if (pci_ds.vendor_id != bios_device.pci_vendor_id) {
 			printf
 			    ("Image has invalid Vendor ID: %04x, expected: %04x\n",
-			     pci_ds.vendor_id, bios_device.pci_vendor_id);
+				pci_ds.vendor_id, bios_device.pci_vendor_id);
 			break;
 		}
 		if (pci_ds.device_id != bios_device.pci_device_id) {
 			printf
 			    ("Image has invalid Device ID: %04x, expected: %04x\n",
-			     pci_ds.device_id, bios_device.pci_device_id);
+				pci_ds.device_id, bios_device.pci_device_id);
 			break;
 		}
 #endif

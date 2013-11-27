@@ -44,8 +44,8 @@ chip northbridge/via/cn400			# Northbridge
       register "ide1_80pin_cable" = "0"
       device pci f.0 on end			# IDE/SATA
 	  device pci f.1 on end			# IDE
-      register "fn_ctrl_lo" = "0xC0"    # Disable AC/MC97
-      register "fn_ctrl_hi" = "0x9d"    # Disable USB Direct & LAN Gating
+      register "fn_ctrl_lo" = "0xC0"	# Disable AC/MC97
+      register "fn_ctrl_hi" = "0x9d"	# Disable USB Direct & LAN Gating
       device pci 10.0 on end			# OHCI
       device pci 10.1 on end			# OHCI
       device pci 10.2 on end			# OHCI
@@ -53,45 +53,45 @@ chip northbridge/via/cn400			# Northbridge
       device pci 10.4 on end			# EHCI
       device pci 10.5 off end			# USB Direct
       device pci 11.0 on			# Southbridge LPC
-        chip superio/winbond/w83697hf		# Super I/O
-          device pnp 2e.0 off			# Floppy
-            io 0x60 = 0x3f0
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 2e.1 off			# Parallel Port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-            drq 0x74 = 3
-          end
-          device pnp 2e.2 on			# COM1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 2e.3 off			# COM2
-            io 0x60 = 0x2f8
-            irq 0x70 = 3
-          end
-          device pnp 2e.6 off			# IR Port
-            io 0x60 = 0x000
-          end
-          device pnp 2e.7 off			# GPIO 1
-            io 0x60 = 0x201			# 0x201
-          end
-          device pnp 2e.8 off			# GPIO 5
-            io 0x60 = 0x330			# 0x330
-          end
-          device pnp 2e.9 off			# GPIO 2, 3,and 4
-            io 0x60 = 0x000			#
-          end
-          device pnp 2e.a off			# ACPI
-            io 0x60 = 0x000			#
-          end
-          device pnp 2e.b on			# HWM
-            io 0x60 = 0x290
+	chip superio/winbond/w83697hf		# Super I/O
+	  device pnp 2e.0 off			# Floppy
+	    io 0x60 = 0x3f0
+	    irq 0x70 = 6
+	    drq 0x74 = 2
+	  end
+	  device pnp 2e.1 off			# Parallel Port
+	    io 0x60 = 0x378
+	    irq 0x70 = 7
+	    drq 0x74 = 3
+	  end
+	  device pnp 2e.2 on			# COM1
+	    io 0x60 = 0x3f8
+	    irq 0x70 = 4
+	  end
+	  device pnp 2e.3 off			# COM2
+	    io 0x60 = 0x2f8
+	    irq 0x70 = 3
+	  end
+	  device pnp 2e.6 off			# IR Port
+	    io 0x60 = 0x000
+	  end
+	  device pnp 2e.7 off			# GPIO 1
+	    io 0x60 = 0x201			# 0x201
+	  end
+	  device pnp 2e.8 off			# GPIO 5
+	    io 0x60 = 0x330			# 0x330
+	  end
+	  device pnp 2e.9 off			# GPIO 2, 3,and 4
+	    io 0x60 = 0x000			#
+	  end
+	  device pnp 2e.a off			# ACPI
+	    io 0x60 = 0x000			#
+	  end
+	  device pnp 2e.b on			# HWM
+	    io 0x60 = 0x290
 			irq 0x70 = 0
-          end
-        end
+	  end
+	end
       end
       device pci 11.5 off end			# AC'97 audio
       device pci 11.6 off end			# AC'97 Modem

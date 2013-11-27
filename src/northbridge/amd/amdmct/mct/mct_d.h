@@ -257,7 +257,7 @@
 struct MCTStatStruc {
 	u32 GStatus;		/* Global Status bitfield*/
 	u32 HoleBase;		/* If not zero, BASE[39:8] (system address)
-				      of sub 4GB dram hole for HW remapping.*/
+					  of sub 4GB dram hole for HW remapping.*/
 	u32 Sub4GCacheTop;	/* If not zero, the 32-bit top of cacheable memory.*/
 	u32 SysLimit;		/* LIMIT[39:8] (system address)*/
 };
@@ -568,81 +568,81 @@ struct DCTStatStruc {		/* A per Node structure*/
 ===============================================================================*/
 /*Platform Configuration*/
 #define NV_PACK_TYPE		0	/* CPU Package Type (2-bits)
-					    0=NPT L1
-					    1=NPT M2
-					    2=NPT S1*/
+						 0=NPT L1
+						 1=NPT M2
+						 2=NPT S1*/
 #define NV_MAX_NODES		1	/* Number of Nodes/Sockets (4-bits)*/
 #define NV_MAX_DIMMS		2	/* Number of DIMM slots for the specified Node ID (4-bits)*/
 #define NV_MAX_MEMCLK		3	/* Maximum platform demonstrated Memclock (10-bits)
-					    200=200Mhz (DDR400)
-					    266=266Mhz (DDR533)
-					    333=333Mhz (DDR667)
-					    400=400Mhz (DDR800)*/
+						 200=200Mhz (DDR400)
+						 266=266Mhz (DDR533)
+						 333=333Mhz (DDR667)
+						 400=400Mhz (DDR800)*/
 #define NV_ECC_CAP		4	/* Bus ECC capable (1-bits)
-					    0=Platform not capable
-					    1=Platform is capable*/
+						 0=Platform not capable
+						 1=Platform is capable*/
 #define NV_4RANKType		5	/* Quad Rank DIMM slot type (2-bits)
-					    0=Normal
-					    1=R4 (4-Rank Registered DIMMs in AMD server configuration)
-					    2=S4 (Unbuffered SO-DIMMs)*/
+						 0=Normal
+						 1=R4 (4-Rank Registered DIMMs in AMD server configuration)
+						 2=S4 (Unbuffered SO-DIMMs)*/
 #define NV_BYPMAX		6	/* Value to set DcqBypassMax field (See Function 2, Offset 94h, [27:24] of BKDG for field definition).
-					    4=4 times bypass (normal for non-UMA systems)
-					    7=7 times bypass (normal for UMA systems)*/
+						 4=4 times bypass (normal for non-UMA systems)
+						 7=7 times bypass (normal for UMA systems)*/
 #define NV_RDWRQBYP		7	/* Value to set RdWrQByp field (See Function 2, Offset A0h, [3:2] of BKDG for field definition).
-					    2=8 times (normal for non-UMA systems)
-					    3=16 times (normal for UMA systems)*/
+						 2=8 times (normal for non-UMA systems)
+						 3=16 times (normal for UMA systems)*/
 
 
 /*Dram Timing*/
 #define NV_MCTUSRTMGMODE	10	/* User Memclock Mode (2-bits)
-					    0=Auto, no user limit
-					    1=Auto, user limit provided in NV_MemCkVal
-					    2=Manual, user value provided in NV_MemCkVal*/
+						 0=Auto, no user limit
+						 1=Auto, user limit provided in NV_MemCkVal
+						 2=Manual, user value provided in NV_MemCkVal*/
 #define NV_MemCkVal		11	/* Memory Clock Value (2-bits)
-					    0=200Mhz
-					    1=266Mhz
-					    2=333Mhz
-					    3=400Mhz*/
+						 0=200Mhz
+						 1=266Mhz
+						 2=333Mhz
+						 3=400Mhz*/
 
 /*Dram Configuration*/
 #define NV_BankIntlv		20	/* Dram Bank (chip-select) Interleaving (1-bits)
-					    0=disable
-					    1=enable*/
+						 0=disable
+						 1=enable*/
 #define NV_AllMemClks		21	/* Turn on All DIMM clocks (1-bits)
-					    0=normal
-					    1=enable all memclocks*/
+						 0=normal
+						 1=enable all memclocks*/
 #define NV_SPDCHK_RESTRT	22	/* SPD Check control bitmap (1-bits)
-					    0=Exit current node init if any DIMM has SPD checksum error
-					    1=Ignore faulty SPD checksums (Note: DIMM cannot be enabled)*/
+						 0=Exit current node init if any DIMM has SPD checksum error
+						 1=Ignore faulty SPD checksums (Note: DIMM cannot be enabled)*/
 #define NV_DQSTrainCTL		23	/* DQS Signal Timing Training Control
-					    0=skip DQS training
-					    1=perform DQS training*/
+						 0=skip DQS training
+						 1=perform DQS training*/
 #define NV_NodeIntlv		24	/* Node Memory Interleaving (1-bits)
-					    0=disable
-					    1=enable*/
+						 0=disable
+						 1=enable*/
 #define NV_BurstLen32		25	/* BurstLength32 for 64-bit mode (1-bits)
-					    0=disable (normal)
-					    1=enable (4 beat burst when width is 64-bits)*/
+						 0=disable (normal)
+						 1=enable (4 beat burst when width is 64-bits)*/
 
 /*Dram Power*/
 #define NV_CKE_PDEN		30	/* CKE based power down mode (1-bits)
-					    0=disable
-					    1=enable*/
+						 0=disable
+						 1=enable*/
 #define NV_CKE_CTL		31	/* CKE based power down control (1-bits)
-					    0=per Channel control
-					    1=per Chip select control*/
+						 0=per Channel control
+						 1=per Chip select control*/
 #define NV_CLKHZAltVidC3	32	/* Memclock tri-stating during C3 and Alt VID (1-bits)
-					    0=disable
-					    1=enable*/
+						 0=disable
+						 1=enable*/
 
 /*Memory Map/Mgt.*/
 #define NV_BottomIO		40	/* Bottom of 32-bit IO space (8-bits)
-					    NV_BottomIO[7:0]=Addr[31:24]*/
+						 NV_BottomIO[7:0]=Addr[31:24]*/
 #define NV_BottomUMA		41	/* Bottom of shared graphics dram (8-bits)
-					    NV_BottomUMA[7:0]=Addr[31:24]*/
+						 NV_BottomUMA[7:0]=Addr[31:24]*/
 #define NV_MemHole		42	/* Memory Hole Remapping (1-bits)
-					    0=disable
-					    1=enable  */
+						 0=disable
+						 1=enable  */
 
 /*ECC*/
 #define NV_ECC			50	/* Dram ECC enable*/
@@ -653,13 +653,13 @@ struct DCTStatStruc {		/* A per Node structure*/
 #define NV_L2BKScrub		56	/* L2 ECC Background Scrubber CTL*/
 #define NV_DCBKScrub		57	/* DCache ECC Background Scrubber CTL*/
 #define NV_CS_SpareCTL		58	/* Chip Select Spare Control bit 0:
-					       0=disable Spare
-					       1=enable Spare */
+						    0=disable Spare
+						    1=enable Spare */
 					/* Chip Select Spare Control bit 1-4:
-					     Reserved, must be zero*/
+						  Reserved, must be zero*/
 #define NV_SyncOnUnEccEn	61	/* SyncOnUnEccEn control
-					   0=disable
-					   1=enable*/
+						0=disable
+						1=enable*/
 #define NV_Unganged		62
 
 #define NV_ChannelIntlv	63	/* Channel Interleaving (3-bits)

@@ -30,10 +30,10 @@
  * states. Upon a state's entry and exit and callbacks can be made. For
  * example:
  *
- *      Enter State
- *           +
- *           |
- *           V
+ *	Enter State
+ *	     +
+ *	     |
+ *	     V
  *   +-----------------+
  *   | Entry callbacks |
  *   +-----------------+
@@ -41,37 +41,37 @@
  *   +-----------------+
  *   | Exit callbacks  |
  *   +-------+---------+
- *           |
- *           V
- *       Next State
+ *	     |
+ *	     V
+ *	 Next State
  *
  * Below is the current flow from top to bottom:
  *
- *        start
- *          |
+ *	  start
+ *	    |
  *    BS_PRE_DEVICE
- *          |
+ *	    |
  *    BS_DEV_INIT_CHIPS
- *          |
+ *	    |
  *    BS_DEV_ENUMERATE
- *          |
+ *	    |
  *    BS_DEV_RESOURCES
- *          |
+ *	    |
  *    BS_DEV_ENABLE
- *          |
+ *	    |
  *    BS_DEV_INIT
- *          |
+ *	    |
  *    BS_POST_DEVICE
- *          |
+ *	    |
  *    BS_OS_RESUME_CHECK -------- BS_OS_RESUME
- *          |                          |
- *    BS_WRITE_TABLES              os handoff
- *          |
+ *	    |			       |
+ *    BS_WRITE_TABLES		   os handoff
+ *	    |
  *    BS_PAYLOAD_LOAD
- *          |
+ *	    |
  *    BS_PAYLOAD_BOOT
- *          |
- *      payload run
+ *	    |
+ *	payload run
  *
  * Brief description of states:
  *   BS_PRE_DEVICE - before any device tree actions take place
@@ -152,9 +152,9 @@ struct boot_state_callback {
  * individual callbacks on a given state. 0 is returned on success < 0 on
  * error. */
 int boot_state_sched_on_entry(struct boot_state_callback *bscb,
-                              boot_state_t state);
+			      boot_state_t state);
 int boot_state_sched_on_exit(struct boot_state_callback *bscb,
-                             boot_state_t state);
+			     boot_state_t state);
 
 /* Block/Unblock the (state, seq) pair from transitioning. Returns 0 on
  * success < 0  when the phase of the (state,seq) has already ran. */

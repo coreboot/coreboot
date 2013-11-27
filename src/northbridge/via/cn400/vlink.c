@@ -123,14 +123,14 @@ static void vlink_init(device_t dev)
 
 static const struct device_operations vlink_operations = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = vlink_init,
-	.ops_pci          = 0,
+	.init		   = vlink_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver vlink_driver __pci_driver = {
-	.ops    = &vlink_operations,
+	.ops	 = &vlink_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN400_VLINK,
 };
@@ -159,14 +159,14 @@ static void c3_host_init(device_t dev)
 
 static const struct device_operations c3_host_operations = {
 	.read_resources   = cn400_noop,
-	.set_resources    = cn400_noop,
+	.set_resources	   = cn400_noop,
 	.enable_resources = cn400_noop,
-	.init             = c3_host_init,
-	.ops_pci          = 0,
+	.init		   = c3_host_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver c3_host_driver __pci_driver = {
-	.ops    = &c3_host_operations,
+	.ops	 = &c3_host_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN400_HOST,
 };
@@ -196,14 +196,14 @@ static void c3_err_init(device_t dev)
 
 static const struct device_operations c3_err_operations = {
 	.read_resources   = cn400_noop,
-	.set_resources    = cn400_noop,
+	.set_resources	   = cn400_noop,
 	.enable_resources = cn400_noop,
-	.init             = c3_err_init,
-	.ops_pci          = 0,
+	.init		   = c3_err_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver c3_err_driver __pci_driver = {
-	.ops    = &c3_err_operations,
+	.ops	 = &c3_err_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN400_ERR,
 };
@@ -232,14 +232,14 @@ static void cn400_pm_init(device_t dev)
 
 static const struct device_operations cn400_pm_operations = {
 	.read_resources   = cn400_noop,
-	.set_resources    = cn400_noop,
+	.set_resources	   = cn400_noop,
 	.enable_resources = cn400_noop,
-	.init             = cn400_pm_init,
-	.ops_pci          = 0,
+	.init		   = cn400_pm_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver cn400_pm_driver __pci_driver = {
-	.ops    = &c3_err_operations,
+	.ops	 = &c3_err_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN400_PM,
 };

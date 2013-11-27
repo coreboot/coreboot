@@ -121,7 +121,7 @@ void sb600_enable(device_t dev)
 	printk(BIOS_DEBUG, "sb600_enable()\n");
 
 	/*
-	 * 0:12.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
+	 * 0:12.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default	    + 32 * 3
 	 * 0:13.1  USB-1	bit 2 of sm_dev 0x68
 	 * 0:13.2  USB-2	bit 3 of sm_dev 0x68
 	 * 0:13.3  USB-3	bit 4 of sm_dev 0x68
@@ -199,7 +199,7 @@ void sb600_enable(device_t dev)
 	case (0x14 << 3) | 2:
 		index = 3;
 		set_pmio_enable_bits(sm_dev, 0x59, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		index += 32 * 4;
 		break;
 	case (0x14 << 3) | 3:
@@ -216,12 +216,12 @@ void sb600_enable(device_t dev)
 		index = dev->path.pci.devfn & 7;
 		index -= 5;
 		set_pmio_enable_bits(sm_dev, 0x59, 1 << index,
-				     (dev->enabled ? 0 : 1) << index);
+					 (dev->enabled ? 0 : 1) << index);
 		index += 32 * 4;
 		break;
 	default:
 		printk(BIOS_DEBUG, "unknown dev: %s deviceid=%4x\n", dev_path(dev),
-			     deviceid);
+				deviceid);
 	}
 }
 

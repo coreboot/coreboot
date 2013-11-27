@@ -25,13 +25,13 @@ static struct pci_operations lops_pci = {
 };
 static struct device_operations smbus_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
-	.scan_bus         = scan_static_bus,
-	.enable           = amd8111_enable,
-	.ops_pci          = &lops_pci,
-	.ops_smbus_bus    = &lops_smbus_bus,
+	.init		   = 0,
+	.scan_bus	   = scan_static_bus,
+	.enable	   = amd8111_enable,
+	.ops_pci	   = &lops_pci,
+	.ops_smbus_bus	   = &lops_smbus_bus,
 };
 
 static const struct pci_driver smbus_driver __pci_driver = {

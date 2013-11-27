@@ -18,16 +18,16 @@ static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 static inline uint8_t set_apicid_cpuid_lo(void)
 {
 #if !CONFIG_K8_REV_F_SUPPORT
-        if(is_cpu_pre_e0()) return 0; // pre_e0 can not be set
+	if(is_cpu_pre_e0()) return 0; // pre_e0 can not be set
 #endif
 
-        // set the NB_CFG[54]=1; why the OS will be happy with that ???
-        msr_t msr;
-        msr = rdmsr(NB_CFG_MSR);
-        msr.hi |= (1<<(54-32)); // InitApicIdCpuIdLo
-        wrmsr(NB_CFG_MSR, msr);
+	// set the NB_CFG[54]=1; why the OS will be happy with that ???
+	msr_t msr;
+	msr = rdmsr(NB_CFG_MSR);
+	msr.hi |= (1<<(54-32)); // InitApicIdCpuIdLo
+	wrmsr(NB_CFG_MSR, msr);
 
-        return 1;
+	return 1;
 }
 
 static inline void real_start_other_core(unsigned nodeid)
@@ -53,9 +53,9 @@ static inline void start_other_cores(void)
 		return; // disable multi_core
 	}
 
-        nodes = get_nodes();
+	nodes = get_nodes();
 
-        for(nodeid=0; nodeid<nodes; nodeid++) {
+	for(nodeid=0; nodeid<nodes; nodeid++) {
 		if( get_core_num_in_bsp(nodeid) > 0) {
 			real_start_other_core(nodeid);
 		}

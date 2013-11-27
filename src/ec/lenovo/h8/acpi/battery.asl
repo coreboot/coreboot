@@ -31,7 +31,7 @@ Field(ERAM, ByteAcc, NoLock, Preserve)
 			B1ST, 4,	/* Battery 1 state */
 			    , 1,
 			B1CH, 1,	/* Battery 1 charging, */
-			B1DI, 1,        /* Battery 1 discharging,*/
+			B1DI, 1,	   /* Battery 1 discharging,*/
 			B1PR, 1		/* Battery 1 present */
 }
 
@@ -157,7 +157,7 @@ Method(BINF, 2, NotSerialized)
 	Divide (Local2, 20, Local0, Index(Arg0, 5)) // Warning capacity
 
 	Store (BASN, Local0)
-	Name (SERN, Buffer (0x06) { "     " })
+	Name (SERN, Buffer (0x06) { "	   " })
 	Store (4, Local1)
 	While (Local0)
 	{

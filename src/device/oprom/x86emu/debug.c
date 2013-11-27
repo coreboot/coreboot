@@ -1,10 +1,10 @@
 /****************************************************************************
 *
-*                       Realmode X86 Emulator Library
+*			Realmode X86 Emulator Library
 *
-*               Copyright (C) 1991-2004 SciTech Software, Inc.
-*                    Copyright (C) David Mosberger-Tang
-*                      Copyright (C) 1999 Egbert Eich
+*		Copyright (C) 1991-2004 SciTech Software, Inc.
+*		     Copyright (C) David Mosberger-Tang
+*		       Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -28,12 +28,12 @@
 *
 *  ========================================================================
 *
-* Language:     ANSI C
+* Language:	ANSI C
 * Environment:  Any
-* Developer:    Kendall Bennett
+* Developer:	Kendall Bennett
 *
 * Description:  This file contains the code to handle debugging of the
-*               emulator.
+*		emulator.
 *
 ****************************************************************************/
 
@@ -43,31 +43,31 @@
 
 #ifdef DEBUG
 
-static void     print_encoded_bytes (u16 s, u16 o);
-static void     print_decoded_instruction (void);
-int      parse_line (char *s, int *ps, int *n);
+static void	print_encoded_bytes (u16 s, u16 o);
+static void	print_decoded_instruction (void);
+int	 parse_line (char *s, int *ps, int *n);
 
 /* should look something like debug's output. */
 void X86EMU_trace_regs (void)
 {
     if (DEBUG_TRACE()) {
 	if (M.x86.mode & (SYSMODE_PREFIX_DATA | SYSMODE_PREFIX_ADDR)) {
-	        x86emu_dump_xregs();
+		 x86emu_dump_xregs();
 	} else {
-	        x86emu_dump_regs();
+		 x86emu_dump_regs();
 	}
     }
     if (DEBUG_DECODE() && ! DEBUG_DECODE_NOPRINT()) {
-        printf("%04x:%04x ",M.x86.saved_cs, M.x86.saved_ip);
-        print_encoded_bytes( M.x86.saved_cs, M.x86.saved_ip);
-        print_decoded_instruction();
+	printf("%04x:%04x ",M.x86.saved_cs, M.x86.saved_ip);
+	print_encoded_bytes( M.x86.saved_cs, M.x86.saved_ip);
+	print_decoded_instruction();
     }
 }
 
 void X86EMU_trace_xregs (void)
 {
     if (DEBUG_TRACE()) {
-        x86emu_dump_xregs();
+	x86emu_dump_xregs();
     }
 }
 
@@ -97,8 +97,8 @@ void disassemble_forward (u16 seg, u16 off, int n)
      * the preprocessor.  The TRACE_REGS macro expands to:
      *
      * if (debug&DEBUG_DISASSEMBLE)
-     *     {just_disassemble(); goto EndOfInstruction;}
-     *     if (debug&DEBUG_TRACE) trace_regs(r,m);
+     *	   {just_disassemble(); goto EndOfInstruction;}
+     *	   if (debug&DEBUG_TRACE) trace_regs(r,m);
      *
      * ......  and at the last line of the routine.
      *
@@ -131,8 +131,8 @@ void disassemble_forward (u16 seg, u16 off, int n)
      * Note the use of a copy of the register structure...
      */
     for (i=0; i<n; i++) {
-        op1 = (*sys_rdb)(((u32)M.x86.R_CS<<4) + (M.x86.R_IP++));
-        (x86emu_optab[op1])(op1);
+	op1 = (*sys_rdb)(((u32)M.x86.R_CS<<4) + (M.x86.R_IP++));
+	(x86emu_optab[op1])(op1);
     }
     /* end major hack mode. */
 }
@@ -186,7 +186,7 @@ static void print_encoded_bytes (u16 s, u16 o)
     int i;
     char buf1[64];
     for (i=0; i< M.x86.enc_pos; i++) {
-        sprintf(buf1+2*i,"%02x", fetch_data_byte_abs(s,o+i));
+	sprintf(buf1+2*i,"%02x", fetch_data_byte_abs(s,o+i));
     }
     printf("%-20s ",buf1);
 }
@@ -201,8 +201,8 @@ void x86emu_print_int_vect (u16 iv)
     u16 seg,off;
 
     if (iv > 256) return;
-    seg   = fetch_data_word_abs(0,iv*4);
-    off   = fetch_data_word_abs(0,iv*4+2);
+    seg	  = fetch_data_word_abs(0,iv*4);
+    off	  = fetch_data_word_abs(0,iv*4+2);
     printf("%04x:%04x ", seg, off);
 }
 
@@ -215,14 +215,14 @@ void X86EMU_dump_memory (u16 seg, u16 off, u32 amt)
 
     current = start;
     while (end <= off + amt) {
-        printf("%04x:%04x ", seg, start);
-        for (i=start; i< off; i++)
-          printf("   ");
-        for (       ; i< end; i++)
-          printf("%02x ", fetch_data_byte_abs(seg,i));
-        printf("\n");
-        start = end;
-        end = start + 16;
+	printf("%04x:%04x ", seg, start);
+	for (i=start; i< off; i++)
+	  printf("   ");
+	for (	    ; i< end; i++)
+	  printf("%02x ", fetch_data_byte_abs(seg,i));
+	printf("\n");
+	start = end;
+	end = start + 16;
     }
 }
 
@@ -234,88 +234,88 @@ void x86emu_single_step (void)
     int ntok;
     int cmd;
     int done;
-        int segment;
+	int segment;
     int offset;
     static int breakpoint;
     static int noDecode = 1;
 
     char *p;
 
-        if (DEBUG_BREAK()) {
-                if (M.x86.saved_ip != breakpoint) {
-                        return;
-                } else {
-              M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F;
-                        M.x86.debug |= DEBUG_TRACE_F;
-                        M.x86.debug &= ~DEBUG_BREAK_F;
-                        print_decoded_instruction ();
-                        X86EMU_trace_regs();
-                }
-        }
+	if (DEBUG_BREAK()) {
+		if (M.x86.saved_ip != breakpoint) {
+			return;
+		} else {
+	      M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F;
+			M.x86.debug |= DEBUG_TRACE_F;
+			M.x86.debug &= ~DEBUG_BREAK_F;
+			print_decoded_instruction ();
+			X86EMU_trace_regs();
+		}
+	}
     done=0;
     offset = M.x86.saved_ip;
     while (!done) {
-        printf("-");
-        p = fgets(s, 1023, stdin);
-        cmd = parse_line(s, ps, &ntok);
-        switch(cmd) {
-          case 'u':
-            disassemble_forward(M.x86.saved_cs,(u16)offset,10);
-            break;
-          case 'd':
-                            if (ntok == 2) {
-                                    segment = M.x86.saved_cs;
-                                    offset = ps[1];
-                                    X86EMU_dump_memory(segment,(u16)offset,16);
-                                    offset += 16;
-                            } else if (ntok == 3) {
-                                    segment = ps[1];
-                                    offset = ps[2];
-                                    X86EMU_dump_memory(segment,(u16)offset,16);
-                                    offset += 16;
-                            } else {
-                                    segment = M.x86.saved_cs;
-                                    X86EMU_dump_memory(segment,(u16)offset,16);
-                                    offset += 16;
-                            }
-            break;
-          case 'c':
-            M.x86.debug ^= DEBUG_TRACECALL_F;
-            break;
-          case 's':
-            M.x86.debug ^= DEBUG_SVC_F | DEBUG_SYS_F | DEBUG_SYSINT_F;
-            break;
-          case 'r':
-            X86EMU_trace_regs();
-            break;
-          case 'x':
-            X86EMU_trace_xregs();
-            break;
-          case 'g':
-            if (ntok == 2) {
-                breakpoint = ps[1];
-        if (noDecode) {
-                        M.x86.debug |= DEBUG_DECODE_NOPRINT_F;
-        } else {
-                        M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F;
-        }
-        M.x86.debug &= ~DEBUG_TRACE_F;
-        M.x86.debug |= DEBUG_BREAK_F;
-        done = 1;
-            }
-            break;
-          case 'q':
-          M.x86.debug |= DEBUG_EXIT;
-          return;
+	printf("-");
+	p = fgets(s, 1023, stdin);
+	cmd = parse_line(s, ps, &ntok);
+	switch(cmd) {
+	  case 'u':
+	    disassemble_forward(M.x86.saved_cs,(u16)offset,10);
+	    break;
+	  case 'd':
+			    if (ntok == 2) {
+				    segment = M.x86.saved_cs;
+				    offset = ps[1];
+				    X86EMU_dump_memory(segment,(u16)offset,16);
+				    offset += 16;
+			    } else if (ntok == 3) {
+				    segment = ps[1];
+				    offset = ps[2];
+				    X86EMU_dump_memory(segment,(u16)offset,16);
+				    offset += 16;
+			    } else {
+				    segment = M.x86.saved_cs;
+				    X86EMU_dump_memory(segment,(u16)offset,16);
+				    offset += 16;
+			    }
+	    break;
+	  case 'c':
+	    M.x86.debug ^= DEBUG_TRACECALL_F;
+	    break;
+	  case 's':
+	    M.x86.debug ^= DEBUG_SVC_F | DEBUG_SYS_F | DEBUG_SYSINT_F;
+	    break;
+	  case 'r':
+	    X86EMU_trace_regs();
+	    break;
+	  case 'x':
+	    X86EMU_trace_xregs();
+	    break;
+	  case 'g':
+	    if (ntok == 2) {
+		breakpoint = ps[1];
+	if (noDecode) {
+			M.x86.debug |= DEBUG_DECODE_NOPRINT_F;
+	} else {
+			M.x86.debug &= ~DEBUG_DECODE_NOPRINT_F;
+	}
+	M.x86.debug &= ~DEBUG_TRACE_F;
+	M.x86.debug |= DEBUG_BREAK_F;
+	done = 1;
+	    }
+	    break;
+	  case 'q':
+	  M.x86.debug |= DEBUG_EXIT;
+	  return;
       case 'P':
-          noDecode = (noDecode)?0:1;
-          printf("Toggled decoding to %s\n",(noDecode)?"FALSE":"TRUE");
-          break;
-          case 't':
+	  noDecode = (noDecode)?0:1;
+	  printf("Toggled decoding to %s\n",(noDecode)?"FALSE":"TRUE");
+	  break;
+	  case 't':
       case 0:
-            done = 1;
-            break;
-        }
+	    done = 1;
+	    break;
+	}
     }
 #endif
 }
@@ -340,23 +340,23 @@ int parse_line (char *s, int *ps, int *n)
     ps[*n] = *s;
     switch (*s) {
       case '\n':
-        *n += 1;
-        return 0;
+	*n += 1;
+	return 0;
       default:
-        cmd = *s;
-        *n += 1;
+	cmd = *s;
+	*n += 1;
     }
 
     while (1) {
-        while (*s != ' ' && *s != '\t' && *s != '\n')  s++;
+	while (*s != ' ' && *s != '\t' && *s != '\n')  s++;
 
-        if (*s == '\n')
-            return cmd;
+	if (*s == '\n')
+	    return cmd;
 
-        while(*s == ' ' || *s == '\t') s++;
+	while(*s == ' ' || *s == '\t') s++;
 
-        sscanf(s,"%x",&ps[*n]);
-        *n += 1;
+	sscanf(s,"%x",&ps[*n]);
+	*n += 1;
     }
 #else
     return 0;
@@ -380,22 +380,22 @@ void x86emu_dump_regs (void)
     printf("SS=%04x  ", M.x86.R_SS );
     printf("CS=%04x  ", M.x86.R_CS );
     printf("IP=%04x   ", M.x86.R_IP );
-    if (ACCESS_FLAG(F_OF))    printf("OV ");     /* CHECKED... */
-    else                        printf("NV ");
+    if (ACCESS_FLAG(F_OF))    printf("OV ");	 /* CHECKED... */
+    else			printf("NV ");
     if (ACCESS_FLAG(F_DF))    printf("DN ");
-    else                        printf("UP ");
+    else			printf("UP ");
     if (ACCESS_FLAG(F_IF))    printf("EI ");
-    else                        printf("DI ");
+    else			printf("DI ");
     if (ACCESS_FLAG(F_SF))    printf("NG ");
-    else                        printf("PL ");
+    else			printf("PL ");
     if (ACCESS_FLAG(F_ZF))    printf("ZR ");
-    else                        printf("NZ ");
+    else			printf("NZ ");
     if (ACCESS_FLAG(F_AF))    printf("AC ");
-    else                        printf("NA ");
+    else			printf("NA ");
     if (ACCESS_FLAG(F_PF))    printf("PE ");
-    else                        printf("PO ");
+    else			printf("PO ");
     if (ACCESS_FLAG(F_CF))    printf("CY ");
-    else                        printf("NC ");
+    else			printf("NC ");
     printf("\n");
 }
 
@@ -414,21 +414,21 @@ void x86emu_dump_xregs (void)
     printf("SS=%04x  ", M.x86.R_SS );
     printf("CS=%04x  ", M.x86.R_CS );
     printf("EIP=%08x\n\t", M.x86.R_EIP );
-    if (ACCESS_FLAG(F_OF))    printf("OV ");     /* CHECKED... */
-    else                        printf("NV ");
+    if (ACCESS_FLAG(F_OF))    printf("OV ");	 /* CHECKED... */
+    else			printf("NV ");
     if (ACCESS_FLAG(F_DF))    printf("DN ");
-    else                        printf("UP ");
+    else			printf("UP ");
     if (ACCESS_FLAG(F_IF))    printf("EI ");
-    else                        printf("DI ");
+    else			printf("DI ");
     if (ACCESS_FLAG(F_SF))    printf("NG ");
-    else                        printf("PL ");
+    else			printf("PL ");
     if (ACCESS_FLAG(F_ZF))    printf("ZR ");
-    else                        printf("NZ ");
+    else			printf("NZ ");
     if (ACCESS_FLAG(F_AF))    printf("AC ");
-    else                        printf("NA ");
+    else			printf("NA ");
     if (ACCESS_FLAG(F_PF))    printf("PE ");
-    else                        printf("PO ");
+    else			printf("PO ");
     if (ACCESS_FLAG(F_CF))    printf("CY ");
-    else                        printf("NC ");
+    else			printf("NC ");
     printf("\n");
 }

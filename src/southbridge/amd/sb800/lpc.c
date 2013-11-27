@@ -143,7 +143,7 @@ static void sb800_lpc_enable_childrens_resources(device_t dev)
 					base = res->base;
 					end = resource_end(res);
 					printk(BIOS_DEBUG, "sb800 lpc decode:%s, base=0x%08x, end=0x%08x\n",
-					     dev_path(child), base, end);
+						  dev_path(child), base, end);
 					switch (base) {
 					case 0x60:	/*  KB */
 					case 0x64:	/*  MS */
@@ -208,7 +208,7 @@ static void sb800_lpc_enable_childrens_resources(device_t dev)
 							break;
 						}
 						reg_var[var_num++] =
-						    base & 0xffff;
+							  base & 0xffff;
 					}
 				}
 			}

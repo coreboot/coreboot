@@ -52,10 +52,10 @@ static void qemu_nb_init(device_t dev)
 
 static struct device_operations nb_operations = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = qemu_nb_init,
-	.ops_pci          = 0,
+	.init		   = qemu_nb_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver nb_driver __pci_driver = {

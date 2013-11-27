@@ -19,7 +19,7 @@
 
 void main(void)
 {
-        void *entry;
+	void *entry;
 
 	console_init();
 

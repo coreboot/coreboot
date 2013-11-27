@@ -70,7 +70,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Write SB700 IOAPIC, only one */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2,
-					   IO_APIC_ADDR, 0);
+						IO_APIC_ADDR, 0);
 
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
 						current, 0, 0, 2, 0);

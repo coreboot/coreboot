@@ -27,12 +27,12 @@
 #define FBIOPUT_CON2FBMAP	0x4610
 #define FBIOBLANK		0x4611		/* arg: 0 or vesa level + 1 */
 #define FBIOGET_VBLANK		_IOR('F', 0x12, struct fb_vblank)
-#define FBIO_ALLOC              0x4613
-#define FBIO_FREE               0x4614
-#define FBIOGET_GLYPH           0x4615
-#define FBIOGET_HWCINFO         0x4616
-#define FBIOPUT_MODEINFO        0x4617
-#define FBIOGET_DISPINFO        0x4618
+#define FBIO_ALLOC		0x4613
+#define FBIO_FREE		0x4614
+#define FBIOGET_GLYPH		0x4615
+#define FBIOGET_HWCINFO		0x4616
+#define FBIOPUT_MODEINFO	0x4617
+#define FBIOGET_DISPINFO	0x4618
 
 
 #define FB_TYPE_PACKED_PIXELS		0	/* Packed Pixels	*/
@@ -45,7 +45,7 @@
 #define FB_AUX_TEXT_CGA		1	/* CGA/EGA/VGA Color text */
 #define FB_AUX_TEXT_S3_MMIO	2	/* S3 MMIO fasttext */
 #define FB_AUX_TEXT_MGA_STEP16	3	/* MGA Millenium I: text, attr, 14 reserved bytes */
-#define FB_AUX_TEXT_MGA_STEP8	4	/* other MGAs:      text, attr,  6 reserved bytes */
+#define FB_AUX_TEXT_MGA_STEP8	4	/* other MGAs:	    text, attr,  6 reserved bytes */
 
 #define FB_AUX_VGA_PLANES_VGA4		0	/* 16 color planes (EGA/VGA) */
 #define FB_AUX_VGA_PLANES_CFB4		1	/* CFB4 in planes (VGA) */
@@ -60,9 +60,9 @@
 
 #define FB_ACCEL_NONE		0	/* no hardware accelerator	*/
 #define FB_ACCEL_ATARIBLITT	1	/* Atari Blitter		*/
-#define FB_ACCEL_AMIGABLITT	2	/* Amiga Blitter                */
+#define FB_ACCEL_AMIGABLITT	2	/* Amiga Blitter		      */
 #define FB_ACCEL_S3_TRIO64	3	/* Cybervision64 (S3 Trio64)    */
-#define FB_ACCEL_NCR_77C32BLT	4	/* RetinaZ3 (NCR 77C32BLT)      */
+#define FB_ACCEL_NCR_77C32BLT	4	/* RetinaZ3 (NCR 77C32BLT)	*/
 #define FB_ACCEL_S3_VIRGE	5	/* Cybervision64/3D (S3 ViRGE)	*/
 #define FB_ACCEL_ATI_MACH64GX	6	/* ATI Mach 64GX family		*/
 #define FB_ACCEL_DEC_TGA	7	/* DEC 21030 TGA		*/
@@ -85,7 +85,7 @@
 #define FB_ACCEL_SUN_CGTHREE	24	/* Sun cgthree			*/
 #define FB_ACCEL_SUN_TCX	25	/* Sun tcx			*/
 #define FB_ACCEL_MATROX_MGAG400	26	/* Matrox G400			*/
-#define FB_ACCEL_NV3		27	/* nVidia RIVA 128              */
+#define FB_ACCEL_NV3		27	/* nVidia RIVA 128		 */
 #define FB_ACCEL_NV4		28	/* nVidia RIVA TNT		*/
 #define FB_ACCEL_NV5		29	/* nVidia RIVA TNT2		*/
 #define FB_ACCEL_CT_6555x	30	/* C&T 6555x			*/
@@ -94,21 +94,21 @@
 #define FB_ACCEL_IGS_CYBER2000	33	/* CyberPro 2000		*/
 #define FB_ACCEL_IGS_CYBER2010	34	/* CyberPro 2010		*/
 #define FB_ACCEL_IGS_CYBER5000	35	/* CyberPro 5000		*/
-#define FB_ACCEL_SIS_GLAMOUR    36	/* SiS 300/630/540              */
+#define FB_ACCEL_SIS_GLAMOUR	36	/* SiS 300/630/540		   */
 #define FB_ACCEL_3DLABS_PERMEDIA3 37	/* 3Dlabs Permedia 3		*/
 #define FB_ACCEL_ATI_RADEON	38	/* ATI Radeon family		*/
 #define FB_ACCEL_SIS_GLAMOUR_2  40	/* SiS 315, 650, 740		*/
 #define FB_ACCEL_SIS_XABRE	41	/* SiS 330 ("Xabre")		*/
 
-#define FB_ACCEL_NEOMAGIC_NM2070 90	/* NeoMagic NM2070              */
-#define FB_ACCEL_NEOMAGIC_NM2090 91	/* NeoMagic NM2090              */
-#define FB_ACCEL_NEOMAGIC_NM2093 92	/* NeoMagic NM2093              */
-#define FB_ACCEL_NEOMAGIC_NM2097 93	/* NeoMagic NM2097              */
-#define FB_ACCEL_NEOMAGIC_NM2160 94	/* NeoMagic NM2160              */
-#define FB_ACCEL_NEOMAGIC_NM2200 95	/* NeoMagic NM2200              */
-#define FB_ACCEL_NEOMAGIC_NM2230 96	/* NeoMagic NM2230              */
-#define FB_ACCEL_NEOMAGIC_NM2360 97	/* NeoMagic NM2360              */
-#define FB_ACCEL_NEOMAGIC_NM2380 98	/* NeoMagic NM2380              */
+#define FB_ACCEL_NEOMAGIC_NM2070 90	/* NeoMagic NM2070		    */
+#define FB_ACCEL_NEOMAGIC_NM2090 91	/* NeoMagic NM2090		    */
+#define FB_ACCEL_NEOMAGIC_NM2093 92	/* NeoMagic NM2093		    */
+#define FB_ACCEL_NEOMAGIC_NM2097 93	/* NeoMagic NM2097		    */
+#define FB_ACCEL_NEOMAGIC_NM2160 94	/* NeoMagic NM2160		    */
+#define FB_ACCEL_NEOMAGIC_NM2200 95	/* NeoMagic NM2200		    */
+#define FB_ACCEL_NEOMAGIC_NM2230 96	/* NeoMagic NM2230		    */
+#define FB_ACCEL_NEOMAGIC_NM2360 97	/* NeoMagic NM2360		    */
+#define FB_ACCEL_NEOMAGIC_NM2380 98	/* NeoMagic NM2380		    */
 
 #if 0
 
@@ -122,8 +122,8 @@ struct fb_fix_screeninfo {
 	u32 visual;			/* see FB_VISUAL_*		*/
 	u16 xpanstep;			/* zero if no hardware panning  */
 	u16 ypanstep;			/* zero if no hardware panning  */
-	u16 ywrapstep;		/* zero if no hardware ywrap    */
-	u32 line_length;		/* length of a line in bytes    */
+	u16 ywrapstep;		/* zero if no hardware ywrap	 */
+	u32 line_length;		/* length of a line in bytes	   */
 	unsigned long mmio_start;	/* Start of Memory Mapped I/O   */
 					/* (physical address) */
 	u32 mmio_len;			/* Length of Memory Mapped I/O  */
@@ -146,7 +146,7 @@ struct fb_bitfield {
 					/* right */
 };
 
-#define FB_NONSTD_HAM		1	/* Hold-And-Modify (HAM)        */
+#define FB_NONSTD_HAM		1	/* Hold-And-Modify (HAM)	 */
 
 #define FB_ACTIVATE_NOW		0	/* set values immediately (or vbl)*/
 #define FB_ACTIVATE_NXTOPEN	1	/* activate on next open	*/
@@ -162,8 +162,8 @@ struct fb_bitfield {
 #define FB_SYNC_HOR_HIGH_ACT	1	/* horizontal sync high active	*/
 #define FB_SYNC_VERT_HIGH_ACT	2	/* vertical sync high active	*/
 #define FB_SYNC_EXT		4	/* external sync		*/
-#define FB_SYNC_COMP_HIGH_ACT	8	/* composite sync high active   */
-#define FB_SYNC_BROADCAST	16	/* broadcast video timings      */
+#define FB_SYNC_COMP_HIGH_ACT	8	/* composite sync high active	*/
+#define FB_SYNC_BROADCAST	16	/* broadcast video timings	     */
 					/* vtotal = 144d/288n/576i => PAL  */
 					/* vtotal = 121d/242n/484i => NTSC */
 #define FB_SYNC_ON_GREEN	32	/* sync on green */
@@ -173,7 +173,7 @@ struct fb_bitfield {
 #define FB_VMODE_DOUBLE		2	/* double scan */
 #define FB_VMODE_MASK		255
 
-#define FB_VMODE_YWRAP		256	/* ywrap instead of panning     */
+#define FB_VMODE_YWRAP		256	/* ywrap instead of panning	    */
 #define FB_VMODE_SMOOTH_XPAN	512	/* smooth xpan possible (internally used) */
 #define FB_VMODE_CONUPDATE	512	/* don't update x/yoffset	*/
 
@@ -198,7 +198,7 @@ struct fb_var_screeninfo {
 	u32 activate;			/* see FB_ACTIVATE_*		*/
 
 	u32 height;			/* height of picture in mm    */
-	u32 width;			/* width of picture in mm     */
+	u32 width;			/* width of picture in mm	    */
 
 	u32 accel_flags;		/* acceleration flags (hints)	*/
 
@@ -230,10 +230,10 @@ struct fb_con2fbmap {
 };
 
 /* VESA Blanking Levels */
-#define VESA_NO_BLANKING        0
-#define VESA_VSYNC_SUSPEND      1
-#define VESA_HSYNC_SUSPEND      2
-#define VESA_POWERDOWN          3
+#define VESA_NO_BLANKING	0
+#define VESA_VSYNC_SUSPEND	1
+#define VESA_HSYNC_SUSPEND	2
+#define VESA_POWERDOWN		3
 
 struct fb_monspecs {
 	u32 hfmin;			/* hfreq lower limit (Hz) */
@@ -272,14 +272,14 @@ struct fb_vblank {
 
 
    /*
-    *    Hardware Cursor
+    *	 Hardware Cursor
     */
 
-#define FBIOGET_FCURSORINFO     0x4607
-#define FBIOGET_VCURSORINFO     0x4608
-#define FBIOPUT_VCURSORINFO     0x4609
-#define FBIOGET_CURSORSTATE     0x460A
-#define FBIOPUT_CURSORSTATE     0x460B
+#define FBIOGET_FCURSORINFO	0x4607
+#define FBIOGET_VCURSORINFO	0x4608
+#define FBIOPUT_VCURSORINFO	0x4609
+#define FBIOGET_CURSORSTATE	0x460A
+#define FBIOPUT_CURSORSTATE	0x460B
 
 
 struct fb_fix_cursorinfo {
@@ -296,7 +296,7 @@ struct fb_var_cursorinfo {
 	u16 height;
 	u16 xspot;
 	u16 yspot;
-	u8 data[1];			/* field with [height][width]        */
+	u8 data[1];			/* field with [height][width]	    */
 };
 
 struct fb_cursorstate {
@@ -307,36 +307,36 @@ struct fb_cursorstate {
 
 
 struct fb_info {
-   char modename[40];                   /* default video mode */
+   char modename[40];			/* default video mode */
 //   kdev_t node;
    int flags;
-   int open;                            /* Has this been open already ? */
-   struct fb_var_screeninfo var;        /* Current var */
+   int open;				/* Has this been open already ? */
+   struct fb_var_screeninfo var;	/* Current var */
 #if 0
-   struct fb_fix_screeninfo fix;        /* Current fix */
+   struct fb_fix_screeninfo fix;	/* Current fix */
 #endif
-   struct fb_monspecs monspecs;         /* Current Monitor specs */
-   struct fb_cmap cmap;                 /* Current cmap */
+   struct fb_monspecs monspecs;		/* Current Monitor specs */
+   struct fb_cmap cmap;			/* Current cmap */
 //   struct fb_ops *fbops;
-   char *screen_base;                   /* Virtual address */
-   struct display *disp;                /* initial display variable */
-//   struct vc_data *display_fg;          /* Console visible on this display */
-   char fontname[40];                   /* default font name */
+   char *screen_base;			/* Virtual address */
+   struct display *disp;		/* initial display variable */
+//   struct vc_data *display_fg;	  /* Console visible on this display */
+   char fontname[40];			/* default font name */
 #if 0
-   devfs_handle_t devfs_handle;         /* Devfs handle for new name         */
-   devfs_handle_t devfs_lhandle;        /* Devfs handle for compat. symlink  */
-   int (*changevar)(int);               /* tell console var has changed */
+   devfs_handle_t devfs_handle;		/* Devfs handle for new name	     */
+   devfs_handle_t devfs_lhandle;	/* Devfs handle for compat. symlink  */
+   int (*changevar)(int);		/* tell console var has changed */
    int (*switch_con)(int, struct fb_info*);
-                                        /* tell fb to switch consoles */
+					/* tell fb to switch consoles */
    int (*updatevar)(int, struct fb_info*);
-                                        /* tell fb to update the vars */
+					/* tell fb to update the vars */
    void (*blank)(int, struct fb_info*); /* tell fb to (un)blank the screen */
-                                        /* arg = 0: unblank */
-                                        /* arg > 0: VESA level (arg-1) */
+					/* arg = 0: unblank */
+					/* arg > 0: VESA level (arg-1) */
 #endif
-   void *pseudo_palette;                /* Fake palette of 16 colors and
-                                           the cursor's color for non
-                                           palette mode */
+   void *pseudo_palette;		/* Fake palette of 16 colors and
+					   the cursor's color for non
+					   palette mode */
    /* From here on everything is device dependent */
    void *par;
 };

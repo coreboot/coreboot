@@ -99,8 +99,8 @@
  *	PCI config address for a link.
  *
  *  Parameters:
- *	@param[in]  u8  node    = the node this link is on
- *	@param[in]  u8  link    = the link
+ *	@param[in]  u8  node	   = the node this link is on
+ *	@param[in]  u8  link	   = the link
  *	@param[out] SBDFO  result  = the pci config address
  *
  * ---------------------------------------------------------------------------------------
@@ -180,10 +180,10 @@ static void setHtControlRegisterBits(SBDFO reg, u8 hiBit, u8 loBit, u32 *pValue)
  *	 response paths.
  *
  *  Parameters:
- *	@param[in]  u8  node    = the node that will have it's routing tables modified.
+ *	@param[in]  u8  node	   = the node that will have it's routing tables modified.
  *	@param[in]  u8  target  = For routing to node target
- *	@param[in]  u8  Link    =  Link from node to target
- *	@param[in]  cNorthBridge *nb   = this northbridge
+ *	@param[in]  u8  Link	   =  Link from node to target
+ *	@param[in]  cNorthBridge *nb	  = this northbridge
  *
  * ---------------------------------------------------------------------------------------
  */
@@ -213,7 +213,7 @@ static void writeRoutingTable(u8 node, u8 target, u8 link, cNorthBridge *nb)
  *	Modifies the NodeID register on the target node
  *
  *  Parameters:
- *	@param[in] u8  node    = the node that will have its NodeID altered.
+ *	@param[in] u8  node	  = the node that will have its NodeID altered.
  *	@param[in] u8  nodeID  = the new value for NodeID
  *	@param[in] cNorthBridge *nb = this northbridge
  *
@@ -308,15 +308,15 @@ static void enableRoutingTables(u8 node, cNorthBridge *nb)
  *	Verify that the link is coherent, connected, and ready
  *
  *  Parameters:
- *	@param[in]   u8  node      = the node that will be examined
- *	@param[in]   u8  link      = the link on that Node to examine
- *	@param[in]   cNorthBridge *nb = this northbridge
+ *	@param[in]	u8  node      = the node that will be examined
+ *	@param[in]	u8  link      = the link on that Node to examine
+ *	@param[in]	cNorthBridge *nb = this northbridge
  *	@param[out]  u8  result    = true - The link has the following status
- *				  linkCon=1,	       Link is connected
- *				  InitComplete=1,      Link initialization is complete
- *				  NC=0,		       Link is coherent
- *				  UniP-cLDT=0,	       Link is not Uniprocessor cLDT
- *				  LinkConPend=0	       Link connection is not pending
+ *				  linkCon=1,		  Link is connected
+ *				  InitComplete=1,	     Link initialization is complete
+ *				  NC=0,			      Link is coherent
+ *				  UniP-cLDT=0,		    Link is not Uniprocessor cLDT
+ *				  LinkConPend=0		     Link connection is not pending
  *				  false- The link has some other status
  *
  * ---------------------------------------------------------------------------------------
@@ -353,20 +353,20 @@ static BOOL verifyLinkIsCoherent(u8 node, u8 link, cNorthBridge *nb)
  *	Also, call event notify if a Hardware Fault caused a synch flood on a previous boot.
  *
  *	The table below summarizes correct responses of this routine.
- *	Family	  before    after    unconnected    Notify?    return
- *	  0F         0       0          0             No         0
- *	  0F         1       0          0             Yes        0
- *	  0F         1       1          X             No         1
- *	  10         0       0          0             No         0
- *	  10         1       0          0             Yes        0
- *	  10         1       0          3             No         1
+ *	Family	  before    after    unconnected    Notify?	 return
+ *	  0F		0	0	   0		 No	    0
+ *	  0F		1	0	   0		 Yes	    0
+ *	  0F		1	1	   X		 No	    1
+ *	  10		0	0	   0		 No	    0
+ *	  10		1	0	   0		 Yes	    0
+ *	  10		1	0	   3		 No	    1
  *
  *  Parameters:
- *	@param[in]    u8  node      = the node that will be examined
- *	@param[in]    u8  link      = the link on that node to examine
- *	@param[in]    u8  sMainData = access to call back routine
- *	@param[in]    cNorthBridge *nb = this northbridge
- *	@param[out]   u8  result    = true - the link is not connected or has hard error
+ *	@param[in]	 u8  node      = the node that will be examined
+ *	@param[in]	 u8  link      = the link on that node to examine
+ *	@param[in]	 u8  sMainData = access to call back routine
+ *	@param[in]	 cNorthBridge *nb = this northbridge
+ *	@param[out]	 u8  result    = true - the link is not connected or has hard error
  *					false- if the link is connected
  *
  * ---------------------------------------------------------------------------------------
@@ -446,7 +446,7 @@ static BOOL readTrueLinkFailStatus(u8 node, u8 link, sMainData *pDat, cNorthBrid
  *	using it will have no ill-effects during HyperTransport initialization.
  *
  *  Parameters:
- *	@param[in]  u8  node      = the node that will be examined
+ *	@param[in]  u8  node	     = the node that will be examined
  *	@param[in]  cNorthBridge *nb = this northbridge
  *	@param[out] u8  result    = the Token read from the node
  *
@@ -511,7 +511,7 @@ static void writeToken(u8 node, u8 value, cNorthBridge *nb)
  *	Return the number of cores (1 based count) on node.
  *
  *  Parameters:
- *	@param[in]  u8  node      = the node that will be examined
+ *	@param[in]  u8  node	     = the node that will be examined
  *	@param[in]  cNorthBridge *nb = this northbridge
  *	@param[out] u8  result    = the number of cores
  *
@@ -543,7 +543,7 @@ static u8 fam0FGetNumCoresOnNode(u8 node, cNorthBridge *nb)
  *	Return the number of cores (1 based count) on node.
  *
  *  Parameters:
- *	@param[in]  u8  node      = the node that will be examined
+ *	@param[in]  u8  node	     = the node that will be examined
  *	@param[in]  cNorthBridge *nb = this northbridge
  *	@param[out] u8  result    = the number of cores
  *
@@ -592,10 +592,10 @@ static u8 fam10GetNumCoresOnNode(u8 node, cNorthBridge *nb)
  *	Write the total number of cores and nodes to the node
  *
  *  Parameters:
- *	@param[in]  u8  node   = the node that will be examined
+ *	@param[in]  u8  node	  = the node that will be examined
  *	@param[in]  u8  totalNodes  = the total number of nodes
  *	@param[in]  u8  totalCores  = the total number of cores
- *	@param[in]  cNorthBridge *nb   = this northbridge
+ *	@param[in]  cNorthBridge *nb	  = this northbridge
  *
  * ---------------------------------------------------------------------------------------
  */
@@ -657,7 +657,7 @@ static void limitNodes(u8 node, cNorthBridge *nb)
  *	link, and broadcast links provided.
  *
  *  Parameters:
- *	@param[in]  u8  node   = the node that will be examined
+ *	@param[in]  u8  node	  = the node that will be examined
  *	@param[in]  u8  target   = the target node for these routes
  *	@param[in]  u8  reqLink  = the link for requests to target
  *	@param[in]  u8  rspLink  = the link for responses to target
@@ -743,7 +743,7 @@ static u32 makeKey(u8 node)
  *	same as the BSP's.
  *
  *  Parameters:
- *	@param[in]  u8  node   = the node
+ *	@param[in]  u8  node	  = the node
  *	@param[in]  cNorthBridge *nb  = this northbridge
  *	@param[out] BOOL   result = true: the new is compatible, false: it is not
  *
@@ -764,11 +764,11 @@ static BOOL isCompatible(u8 node, cNorthBridge *nb)
  *	Return whether the current configuration exceeds the capability.
  *
  *  Parameters:
- *	@param[in] u8  node      = the node
+ *	@param[in] u8  node	    = the node
  *	@param[in,out]  sMainData *pDat = sysMpCap (updated) and NodesDiscovered
  *	@param[in] cNorthBridge *nb = this northbridge
  *	@param[out] BOOL  result    = true: system is capable of current config.
- *			      false: system is not capable of current config.
+ *				   false: system is not capable of current config.
  *
  * ---------------------------------------------------------------------------------------
  */
@@ -818,11 +818,11 @@ static BOOL fam0fIsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
  *	Return whether the current configuration exceeds the capability.
  *
  *  Parameters:
- *	@param[in] u8  node   = the node
+ *	@param[in] u8  node	 = the node
  *	@param[in,out] sMainData *pDat = sysMpCap (updated) and NodesDiscovered
- *	@param[in]  cNorthBridge *nb   = this northbridge
+ *	@param[in]  cNorthBridge *nb	  = this northbridge
  *	@param[out] BOOL  result = true: system is capable of current config.
- *			   false: system is not capable of current config.
+ *				false: system is not capable of current config.
  *
  * ---------------------------------------------------------------------------------------
  */
@@ -870,8 +870,8 @@ static BOOL fam10IsCapable(u8 node, sMainData *pDat, cNorthBridge *nb)
  *	Disable a cHT link on node by setting F0x[E4, C4, A4, 84][TransOff, EndOfChain]=1
  *
  *  Parameters:
- *	@param[in]  u8  node      = the node this link is on
- *	@param[in]  u8  link      = the link to stop
+ *	@param[in]  u8  node	     = the node this link is on
+ *	@param[in]  u8  link	     = the link to stop
  *	@param[in]  cNorthBridge *nb = this northbridge
  *
  * ---------------------------------------------------------------------------------------
@@ -918,7 +918,7 @@ static void commonVoid(void)
  *	Return False.
  *
  *  Parameters:
- *	     @param[out]    BOOL     result	   = false
+ *		@param[out]    BOOL	result		  = false
  * ---------------------------------------------------------------------------------------
  */
 static BOOL commonReturnFalse(void)
@@ -966,13 +966,13 @@ static u8 readSbLink(cNorthBridge *nb)
  *	 Verify that the link is non-coherent, connected, and ready
  *
  *  Parameters:
- *	@param[in]  u8  node   = the node that will be examined
- *	@param[in]  u8  link   = the Link on that node to examine
+ *	@param[in]  u8  node	  = the node that will be examined
+ *	@param[in]  u8  link	  = the Link on that node to examine
  *	@param[in]  cNorthBridge *nb = this northbridge
  *	@param[out] u8  results   = true - The link has the following status
  *					LinkCon=1,     Link is connected
  *					InitComplete=1,Link initilization is complete
- *					NC=1,          Link is coherent
+ *					NC=1,	      Link is coherent
  *					UniP-cLDT=0,   Link is not Uniprocessor cLDT
  *					LinkConPend=0  Link connection is not pending
  *					false- The link has some other status
@@ -1005,11 +1005,11 @@ static BOOL verifyLinkIsNonCoherent(u8 node, u8 link, cNorthBridge *nb)
  *
  *  Parameters:
  *	@param[in] u8 cfgRouteIndex = the map entry to set
- *	@param[in] u8 secBus      = The secondary bus number to use
- *	@param[in] u8 subBus      = The subordinate bus number to use
+ *	@param[in] u8 secBus	     = The secondary bus number to use
+ *	@param[in] u8 subBus	     = The subordinate bus number to use
  *	@param[in] u8 targetNode  = The node  that shall be the recipient of the traffic
  *	@param[in] u8 targetLink  = The link that shall be the recipient of the traffic
- *	@param[in] sMainData* pDat   = our global state
+ *	@param[in] sMainData* pDat	= our global state
  *	@param[in] cNorthBridge *nb  = this northbridge
  *
  * ---------------------------------------------------------------------------------------
@@ -1055,8 +1055,8 @@ static void  ht3SetCFGAddrMap(u8 cfgMapIndex, u8 secBus, u8 subBus, u8 targetNod
  *	@param[in] u8  subBus      = The subordinate bus number to use
  *	@param[in] u8  targetNode  = The node  that shall be the recipient of the traffic
  *	@param[in] u8  targetLink  = The link that shall be the recipient of the traffic
- *	@param[in] sMainData*  pDat   = our global state
- *	@param[in] cNorthBridge *nb   = this northbridge
+ *	@param[in] sMainData*  pDat	 = our global state
+ *	@param[in] cNorthBridge *nb	 = this northbridge
  *
  * ---------------------------------------------------------------------------------------
  */
@@ -1158,7 +1158,7 @@ static u8 convertWidthToBits(u8 value, cNorthBridge *nb)
  *	northbridge frequency.
  *
  *  Parameters:
- *	@param[in]  u8  node      = Result could (later) be for a specific node
+ *	@param[in]  u8  node	     = Result could (later) be for a specific node
  *	@param[in]  cNorthBridge *nb = this northbridge
  *	@param[out] u16 results   = Frequency mask
  *
@@ -1236,7 +1236,7 @@ static u16 fam10NorthBridgeFreqMask(u8 node, cNorthBridge *nb)
  *
  *  Parameters:
  *	@param[in,out] sMainData*  pDat = our global state, port list
- *	@param[in]     cNorthBridge *nb = this northbridge
+ *	@param[in]	  cNorthBridge *nb = this northbridge
  *
  * ---------------------------------------------------------------------------------------
  */
@@ -1723,7 +1723,7 @@ static void ht1WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *
 	/* Convert the request routes to a link number.  Note "0xE" is ht1 nb specific.
 	 * Find the response link numbers.
 	*/
-	ASSERT((route01 & 0xE) && (route10 & 0xE));    /* no route! error! */
+	ASSERT((route01 & 0xE) && (route10 & 0xE));	/* no route! error! */
 	req0 = (u8)AmdBitScanReverse((route01 & 0xE)) - 1;
 	req1 = (u8)AmdBitScanReverse((route10 & 0xE)) - 1;
 	/* Now, find the other link for the responses */
@@ -1795,7 +1795,7 @@ static void ht1WriteTrafficDistribution(u32 links01, u32 links10, cNorthBridge *
  *	 which require adjustments and apply any standard workarounds to this node.
  *
  *  Parameters:
- *	@param[in]  u8  node      = the node to
+ *	@param[in]  u8  node	     = the node to
  *	@param[in]  sMainData *pDat  = coherent links from node 0 to 1
  *	@param[in]  cNorthBridge* nb = this northbridge
  *
@@ -1992,7 +1992,7 @@ static void fam0fBufferOptimizations(u8 node, sMainData *pDat, cNorthBridge *nb)
  *	 which require adjustments and apply any standard workarounds to this node.
  *
  *  Parameters:
- *	@param[in] u8 node       = the node to tune
+ *	@param[in] u8 node	    = the node to tune
  *	@param[in] sMainData *pDat  = global state
  *	@param[in] cNorthBridge* nb = this northbridge
  *

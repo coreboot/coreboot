@@ -92,30 +92,30 @@ static struct {
 	int vendor;
 	const char *name;
 } x86_vendors[] = {
-	{ X86_VENDOR_INTEL,     "GenuineIntel", },
-	{ X86_VENDOR_CYRIX,     "CyrixInstead", },
-	{ X86_VENDOR_AMD,       "AuthenticAMD", },
-	{ X86_VENDOR_UMC,       "UMC UMC UMC ", },
-	{ X86_VENDOR_NEXGEN,    "NexGenDriven", },
-	{ X86_VENDOR_CENTAUR,   "CentaurHauls", },
-        { X86_VENDOR_RISE,      "RiseRiseRise", },
-        { X86_VENDOR_TRANSMETA, "GenuineTMx86", },
+	{ X86_VENDOR_INTEL,	 "GenuineIntel", },
+	{ X86_VENDOR_CYRIX,	 "CyrixInstead", },
+	{ X86_VENDOR_AMD,	 "AuthenticAMD", },
+	{ X86_VENDOR_UMC,	 "UMC UMC UMC ", },
+	{ X86_VENDOR_NEXGEN,	 "NexGenDriven", },
+	{ X86_VENDOR_CENTAUR,	 "CentaurHauls", },
+	{ X86_VENDOR_RISE,	"RiseRiseRise", },
+	{ X86_VENDOR_TRANSMETA, "GenuineTMx86", },
 	{ X86_VENDOR_TRANSMETA, "TransmetaCPU", },
-	{ X86_VENDOR_NSC,       "Geode by NSC", },
-	{ X86_VENDOR_SIS,       "SiS SiS SiS ", },
+	{ X86_VENDOR_NSC,	 "Geode by NSC", },
+	{ X86_VENDOR_SIS,	 "SiS SiS SiS ", },
 };
 
 static const char *x86_vendor_name[] = {
-	[X86_VENDOR_INTEL]     = "Intel",
-	[X86_VENDOR_CYRIX]     = "Cyrix",
-	[X86_VENDOR_AMD]       = "AMD",
-	[X86_VENDOR_UMC]       = "UMC",
-	[X86_VENDOR_NEXGEN]    = "NexGen",
-	[X86_VENDOR_CENTAUR]   = "Centaur",
-	[X86_VENDOR_RISE]      = "Rise",
+	[X86_VENDOR_INTEL]	= "Intel",
+	[X86_VENDOR_CYRIX]	= "Cyrix",
+	[X86_VENDOR_AMD]	= "AMD",
+	[X86_VENDOR_UMC]	= "UMC",
+	[X86_VENDOR_NEXGEN]	= "NexGen",
+	[X86_VENDOR_CENTAUR]	= "Centaur",
+	[X86_VENDOR_RISE]	= "Rise",
 	[X86_VENDOR_TRANSMETA] = "Transmeta",
-	[X86_VENDOR_NSC]       = "NSC",
-	[X86_VENDOR_SIS]       = "SiS",
+	[X86_VENDOR_NSC]	= "NSC",
+	[X86_VENDOR_SIS]	= "SiS",
 };
 
 static const char *cpu_vendor_name(int vendor)
@@ -178,7 +178,7 @@ static void identify_cpu(struct device *cpu)
 		int  cpuid_level;
 		struct cpuid_result result;
 		result = cpuid(0x00000000);
-		cpuid_level    = result.eax;
+		cpuid_level	 = result.eax;
 		vendor_name[ 0] = (result.ebx >>  0) & 0xff;
 		vendor_name[ 1] = (result.ebx >>  8) & 0xff;
 		vendor_name[ 2] = (result.ebx >> 16) & 0xff;

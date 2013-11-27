@@ -53,8 +53,8 @@ struct gliutable gliu1table[] = {
 	{.desc_name = MSR_GLIU1_BASE1,.desc_type = BM,.hi = MSR_GL0 + 0x0,.lo = 0x0FFF80},	/*  0-7FFFF to MC */
 	{.desc_name = MSR_GLIU1_BASE2,.desc_type = BM,.hi = MSR_GL0 + 0x0,.lo = (0x80 << 20) + 0x0FFFE0},	/*  80000-9ffff to Mc */
 	{.desc_name = MSR_GLIU1_SHADOW,.desc_type = SC_SHADOW,.hi = MSR_GL0 + 0x0,.lo = 0x03},	/*  C0000-Fffff split to MC and PCI (sub decode) */
-	{.desc_name = MSR_GLIU1_SYSMEM,.desc_type = R_SYSMEM,.hi = MSR_GL0,.lo = 0x0},	/*      Catch and fix dynamicly. */
-	{.desc_name = MSR_GLIU1_SMM,.desc_type = BM_SMM,.hi = MSR_GL0,.lo = 0x0},	/*      Catch and fix dynamicly. */
+	{.desc_name = MSR_GLIU1_SYSMEM,.desc_type = R_SYSMEM,.hi = MSR_GL0,.lo = 0x0},	/*	Catch and fix dynamicly. */
+	{.desc_name = MSR_GLIU1_SMM,.desc_type = BM_SMM,.hi = MSR_GL0,.lo = 0x0},	/*	   Catch and fix dynamicly. */
 	{.desc_name = GLIU1_GLD_MSR_COH,.desc_type = OTHER,.hi = 0x0,.lo =
 	 GL1_GLIU0},
 	{.desc_name = MSR_GLIU1_FPU_TRAP,.desc_type = SCIO,.hi = (GL1_GLCP << 29) + 0x0,.lo = 0x033000F0},	/*  FooGlue FPU 0xF0 */
@@ -224,18 +224,18 @@ static void GLIUInit(struct gliutable *gl)
 
 	/* ************************************************************************** */
 	/* * */
-	/* *    GLPCIInit */
+	/* *	 GLPCIInit */
 	/* * */
-	/* *    Set up GLPCI settings for reads/write into memory */
-	/* *    R0:  0-640KB, */
-	/* *    R1:  1MB - Top of System Memory */
-	/* *    R2: SMM Memory */
-	/* *    R3: Framebuffer? - not set up yet */
-	/* *    R4: ?? */
+	/* *	 Set up GLPCI settings for reads/write into memory */
+	/* *	 R0:  0-640KB, */
+	/* *	 R1:  1MB - Top of System Memory */
+	/* *	 R2: SMM Memory */
+	/* *	 R3: Framebuffer? - not set up yet */
+	/* *	 R4: ?? */
 	/* * */
-	/* *    Entry: */
-	/* *    Exit: */
-	/* *    Modified: */
+	/* *	 Entry: */
+	/* *	 Exit: */
+	/* *	 Modified: */
 	/* * */
 	/* ************************************************************************** */
 static void GLPCIInit(void)
@@ -290,13 +290,13 @@ static void GLPCIInit(void)
 		    GLPCI_RC_LOWER_EN_SET | GLPCI_RC_LOWER_PF_SET |
 		    GLPCI_RC_LOWER_WC_SET;
 		printk(BIOS_DEBUG, "GLPCI R1: system msr.lo 0x%08x msr.hi 0x%08x\n",
-			     msr.lo, msr.hi);
+				msr.lo, msr.hi);
 		msrnum = GLPCI_RC1;
 		wrmsr(msrnum, msr);
 	}
 
 	/* */
-	/*      R2 - GLPCI settings for SMM space */
+	/*	 R2 - GLPCI settings for SMM space */
 	/* */
 	msr.hi =
 	    ((SMM_OFFSET +
@@ -415,13 +415,13 @@ static void GLPCIInit(void)
 
 	/* ************************************************************************** */
 	/* * */
-	/* *    ClockGatingInit */
+	/* *	 ClockGatingInit */
 	/* * */
-	/* *    Enable Clock Gating. */
+	/* *	 Enable Clock Gating. */
 	/* * */
-	/* *    Entry: */
-	/* *    Exit: */
-	/* *    Modified: */
+	/* *	 Entry: */
+	/* *	 Exit: */
+	/* *	 Modified: */
 	/* * */
 	/* ************************************************************************** */
 static void ClockGatingInit(void)
@@ -570,8 +570,8 @@ static void setShadow(uint64_t shadowSettings)
 				msr.lo = (uint32_t) shadowSettings;
 				msr.hi &= 0xFFFF0000;	// maintain PDID in upper EDX
 				msr.hi |=
-				    ((uint32_t) (shadowSettings >> 32)) &
-				    0x0000FFFF;
+					((uint32_t) (shadowSettings >> 32)) &
+					0x0000FFFF;
 				wrmsr(pTable->desc_name, msr);	// MSR - See the table above
 			}
 		}

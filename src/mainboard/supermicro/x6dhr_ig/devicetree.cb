@@ -52,9 +52,9 @@ chip northbridge/intel/e7520 # mch
 				device pci 0.2 on
 				# On board gig e1000
 					chip drivers/generic/generic
-        		        	        device pci 02.0 on end
-        		        	        device pci 02.1 on end
-        		        	end
+				  		   device pci 02.0 on end
+				  		   device pci 02.1 on end
+				  	end
 				end
 				device pci 0.3 on end
 			end

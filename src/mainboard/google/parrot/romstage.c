@@ -62,15 +62,15 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P2IP  WLAN   INTA -> PIRQB
 	 * D28IP_P3IP  ETH0   INTC -> PIRQD
-	 * D29IP_E1P   EHCI1  INTA -> PIRQE
-	 * D26IP_E2P   EHCI2  INTA -> PIRQE
-	 * D31IP_SIP   SATA   INTA -> PIRQF (MSI)
+	 * D29IP_E1P	EHCI1  INTA -> PIRQE
+	 * D26IP_E2P	EHCI2  INTA -> PIRQE
+	 * D31IP_SIP	SATA   INTA -> PIRQF (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQG
 	 * D31IP_TTIP  THRT   INTC -> PIRQH
-	 * D27IP_ZIP   HDA    INTA -> PIRQG (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQG (MSI)
 	 *
 	 * Trackpad DVT PIRQA (16)
 	 * Trackpad DVT PIRQE (20)

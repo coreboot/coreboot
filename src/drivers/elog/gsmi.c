@@ -81,13 +81,13 @@ u32 gsmi_exec(u8 command, u32 *param)
 			break;
 
 		printk(BIOS_DEBUG, "GSMI Set Event Log "
-		       "(type=0x%x instance=0x%x)\n",
-		       type1->type, type1->instance);
+			 "(type=0x%x instance=0x%x)\n",
+			 type1->type, type1->instance);
 
 		if (type1->type == GSMI_LOG_ENTRY_TYPE_KERNEL) {
 			/* Special case for linux kernel shutdown reason */
 			elog_add_event_dword(ELOG_TYPE_OS_EVENT,
-					     type1->instance);
+						  type1->instance);
 		} else {
 			/* Add other events that may be used for testing */
 			elog_add_event_dword(type1->type, type1->instance);
@@ -102,7 +102,7 @@ u32 gsmi_exec(u8 command, u32 *param)
 			break;
 
 		printk(BIOS_DEBUG, "GSMI Clear Event Log (%u%% type=%u)\n",
-		       cel->percentage, cel->data_type);
+			 cel->percentage, cel->data_type);
 
 		if (elog_clear() == 0)
 			ret = GSMI_RET_SUCCESS;

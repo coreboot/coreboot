@@ -47,22 +47,22 @@ static struct pci_operations lops_pci = {
 };
 static struct device_operations ehci_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = ehci_init,
-	.scan_bus         = 0,
-	.enable           = i3100_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = ehci_init,
+	.scan_bus	   = 0,
+	.enable	   = i3100_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver ehci_driver __pci_driver = {
-	.ops    = &ehci_ops,
+	.ops	 = &ehci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_3100_EHCI,
 };
 
 static const struct pci_driver ehci_driver_ep80579 __pci_driver = {
-	.ops    = &ehci_ops,
+	.ops	 = &ehci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_EP80579_EHCI,
 };

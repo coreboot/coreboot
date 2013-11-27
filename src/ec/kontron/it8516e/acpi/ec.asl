@@ -53,8 +53,8 @@ Device(IT8516E_EC_DEV) {
 	OperationRegion (CREG, SystemIO, SUPERIO_PNP_BASE, 0x02)
 	Field (CREG, ByteAcc, NoLock, Preserve)
 	{
-		ADDR,   8,
-		DATA,   8
+		ADDR,	  8,
+		DATA,	  8
 	}
 	IndexField (ADDR, DATA, ByteAcc, NoLock, Preserve)
 	{

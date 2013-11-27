@@ -46,9 +46,9 @@ static const struct VIA_PCI_REG_INIT_TABLE mSbStage1InitTbl[] = {
 	{0x00, 0xFF, SB_LPC_REG(0xBC), 0xFF, 0x00},
 	{0x00, 0xFF, SB_LPC_REG(0xBD), 0xFF, 0xD1},
 	{0x00, 0xFF, SB_LPC_REG(0xBE), 0xFF, 0xFE},
-//      {0x00, 0xFF, ((0x11<<16)|(0x00<<8)|0xBC), 0xFF, 0x00},//this , for the different macro
-//      {0x00, 0xFF, ((0x11<<16)|(0x00<<8)|0xBD), 0xFF, 0xD1},
-//      {0x00, 0xFF, ((0x11<<16)|(0x00<<8)|0xBE), 0xFF, 0xFE},
+//	{0x00, 0xFF, ((0x11<<16)|(0x00<<8)|0xBC), 0xFF, 0x00},//this , for the different macro
+//	{0x00, 0xFF, ((0x11<<16)|(0x00<<8)|0xBD), 0xFF, 0xD1},
+//	{0x00, 0xFF, ((0x11<<16)|(0x00<<8)|0xBE), 0xFF, 0xFE},
 	///// End of 2008-04-17
 
 	{0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},	// End of Table
@@ -175,8 +175,8 @@ static const struct VIA_PCI_REG_INIT_TABLE mPCI1InitTable[] = {
 	{ 0x00, 0xFF, SB_VLINK_REG(0x0C), 0x00, 0x08 },	// Reserved in 409 by Eric
 	{ 0x00, 0xFF, SB_VLINK_REG(0x4F), 0x40, 0x41 },	//RENPPB, RP2CFLSH
 	{ 0x00, 0xFF, SB_VLINK_REG(0x77), 0x00, 0x48 },	//ROP2CFLSH, RFFTMR[1:0]. ROP2CFLSH work with Rx4F[0](RP2CFLSH) assertion
-	// { 0x00, 0xFF, SB_VLINK_REG(0x51), 0x00, 0x80 },      //RSUB_DEC_P2P, RSUBDECOD(Window xp). If Bit7 is set, PCI lock will occured.
-	// { 0x00, 0xFF, SB_VLINK_REG(0x51), 0x00, 0x81 },      //RSUB_DEC_P2P, RSUBDECOD(Window Vista)
+	// { 0x00, 0xFF, SB_VLINK_REG(0x51), 0x00, 0x80 },	  //RSUB_DEC_P2P, RSUBDECOD(Window xp). If Bit7 is set, PCI lock will occured.
+	// { 0x00, 0xFF, SB_VLINK_REG(0x51), 0x00, 0x81 },	  //RSUB_DEC_P2P, RSUBDECOD(Window Vista)
 	//(2)Configure D19F0
 	{ 0x00, 0xFF, SB_P2PB_REG(0x04), 0x00, 0x07 },
 
@@ -245,7 +245,7 @@ void AcpiInit(void)
 	rawdevice = PCI_RAWDEV(0, 0x11, 0);
 	// Set the PMIO base io address
 	pci_rawmodify_config16(rawdevice, 0x88, VX800_ACPI_IO_BASE,
-			       0xff80);
+				  0xff80);
 	// Enable PMIO
 	pci_rawmodify_config16(rawdevice, 0x80, 0x8000, 0x8000);
 	// Enable Soft Resume
@@ -293,7 +293,7 @@ void IDECSupportOption(u8 sbchiprev)
 	pci_rawmodify_config8(PCI_RAWDEV(0, 0xf, 0), 0x40, 0x02, 0x00);
 
 	pci_rawmodify_config8(PCI_RAWDEV(0, 0xf, 0), 0x09, 0x00, 0x05);	//COMPATIBLE MODE
-//      pci_rawmodify_config8(PCI_RAWDEV(0, 0xf, 0), 0x09, 0x05, 0x05);//native MODE
+//	pci_rawmodify_config8(PCI_RAWDEV(0, 0xf, 0), 0x09, 0x05, 0x05);//native MODE
 
 	via_pci_inittable(sbchiprev, IDEC_INIT);
 }
@@ -311,9 +311,9 @@ void InitUHCI(u8 Number, u8 bEnable)
 	u8 BitShift;
 	// USB Device 16
 	// Function : Number
-	//         0      :      0
-	//         1      :      1
-	//         2      :      2
+	//	    0	   :	  0
+	//	    1	   :	  1
+	//	    2	   :	  2
 	// The BitShift is got from Datasheet.
 
 	switch (Number) {
@@ -345,18 +345,18 @@ void InitUHCI(u8 Number, u8 bEnable)
 	if (bEnable) {
 		D16 = 0;
 		pci_rawwrite_config16(PCI_RAWDEV(0, 0x10, BaseAddress),
-				      0x20, D16);
+					  0x20, D16);
 
 		// Config some Control Register
 		Mask = 0x00;
 		Value = 0x12;
 
 		pci_rawmodify_config8(PCI_RAWDEV(0, 0x10, BaseAddress),
-				      0x41, Value, Mask);
+					  0x41, Value, Mask);
 		Mask = 0x00;
 		Value = 0xEB;
 		pci_rawmodify_config8(PCI_RAWDEV(0, 0x10, BaseAddress),
-				      0x4B, Value, Mask);
+					  0x4B, Value, Mask);
 	}
 	return;
 }
@@ -464,9 +464,9 @@ void HpetInit(void)
 	u8 HpetEnable = HPET_ENABLE_BIT;
 	u16 HpetBase = HPET_BASE_ADDRESS;
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), R_SB_HPET_CONTROL,
-			     HpetEnable);
+				HpetEnable);
 	pci_rawwrite_config16(PCI_RAWDEV(0, 0x11, 0),
-			      R_SB_HPET_ADDRESS + 1, HpetBase);
+				 R_SB_HPET_ADDRESS + 1, HpetBase);
 }
 
 static const struct VIA_PCI_REG_INIT_TABLE mPMUInitTable[] = {
@@ -510,8 +510,8 @@ void InitPMU(u8 sbchiprev)
 #define R_SB_MULTI_FUNCTION_SELECT_1  0xE4
 #define R_SB_CX_STATE_BREAK_EVENT_ENABLE_1  0xE6
 #define PMIO_PROCESSOR_CONTROL  0x26
-#define R_SB_PCI_ARBITRATION_2      0x76
-#define R_SB_AUTO_SWITCH_P_STATE        0x8A
+#define R_SB_PCI_ARBITRATION_2	    0x76
+#define R_SB_AUTO_SWITCH_P_STATE	0x8A
 
 void InitCPUCStatueSupport()
 {
@@ -526,7 +526,7 @@ void InitCPUCStatueSupport()
 	Mask = 0xFF;
 	Value = 0x1F;
 	io_rawmodify_config8(VX800_ACPI_IO_BASE + PMIO_PROCESSOR_CONTROL,
-			     Value, Mask);
+				Value, Mask);
 
 	Mask = 0x00;
 	Value = 0x80;
@@ -623,7 +623,7 @@ void main(void)
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 4), 0xa3, 0x80);
 	pci_rawwrite_config8(PCI_RAWDEV(0, 17, 7), 0x60, 0x20);
 	pci_rawwrite_config8(PCI_RAWDEV(0, 17, 7), 0xE5,
-			     pci_rawread_config8(PCI_RAWDEV(0, 3, 0),
+				pci_rawread_config8(PCI_RAWDEV(0, 3, 0),
 						 0x88));
 #endif
 
@@ -656,7 +656,7 @@ void main(void)
 		y = 0;
 		for (; y < 16; y++) {
 			printk(BIOS_INFO, "%02x ",
-				    pci_rawread_config8(PCI_RAWDEV
+					pci_rawread_config8(PCI_RAWDEV
 							(0, 0x10, 4),
 							x * 16 + y));
 		}
@@ -703,7 +703,7 @@ void main(void)
 	post_code(0x89);
 	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
 
-//          pci_rawwrite_config16(PCI_RAWDEV(0, 0xf, 0), 0xBA, 0x0571);
+//	    pci_rawwrite_config16(PCI_RAWDEV(0, 0xf, 0), 0xBA, 0x0571);
 
 #if 0
 	x = y = 0;
@@ -933,17 +933,17 @@ void main(void)
 #if 1
 	for (i = 0; i < 9; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 2), i + 0x50,
-				     d0f2pcitable[i]);
+					 d0f2pcitable[i]);
 	}
-	//9 is warm reset reg,   // boot err in coreboot
+	//9 is warm reset reg,	  // boot err in coreboot
 	for (i = 10; i < 64; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 2), i + 0x50,
-				     d0f2pcitable[i]);
+					 d0f2pcitable[i]);
 	}
-	//0x90 look d0f2 appendixA1 ,   if set this to 09 or 0b, then some ddr2 will crash.
+	//0x90 look d0f2 appendixA1 ,	 if set this to 09 or 0b, then some ddr2 will crash.
 	for (i = 65; i < 113; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 2), i + 0x50,
-				     d0f2pcitable[i]);
+					 d0f2pcitable[i]);
 	}
 #endif
 #ifdef OPTION_1
@@ -961,12 +961,12 @@ void main(void)
 
 //d0f3
 /*		*/
-	//      pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x86, 0x3b);  setting, my lspci is 0x29
+	//	 pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x86, 0x3b);  setting, my lspci is 0x29
 	//set bit4 cause the ide not be found
-//              pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x86, 0x2b);
+//		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x86, 0x2b);
 	//set bit1 cause the ide not be found
 
-//              pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x86, 0x29);
+//		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x86, 0x29);
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x95, 0x05);
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0, 3), 0x99, 0x12);
 
@@ -977,7 +977,7 @@ void main(void)
 #if 1
 	for (i = 0; i < 99; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 4), i + 0x8d,
-				     d0f4pcitable[i]);
+					 d0f4pcitable[i]);
 	}
 #endif
 
@@ -993,19 +993,19 @@ void main(void)
 //boot ok, resume still err in linux
 	for (i = 0; i < 160; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 5), i + 0x60,
-				     d0f5pcitable[i]);
+					 d0f5pcitable[i]);
 	}
 	for (i = 0; i < 144; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0, 7), i + 0x60,
-				     d0f7pcitable[i]);
+					 d0f7pcitable[i]);
 	}
 	for (i = 0; i < 3; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 1, 0), i + 0xb0,
-				     d1f0pcitable[i]);
+					 d1f0pcitable[i]);
 	}
 	for (i = 0; i < 96; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0xc, 0), i + 0x40,
-				     dcf0pcitable[i]);
+					 dcf0pcitable[i]);
 	}
 #endif
 
@@ -1026,10 +1026,10 @@ void main(void)
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0x10, 2), 0x4a, 0xa2);
 
 //boot ok, resume still err in linux,  and if disable USB, then all ok
-//      for(i=0;i<48;i++){
+//	for(i=0;i<48;i++){
 	for (i = 0; i < 44; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x10, 4), i + 0x40,
-				     d10f4pcitable[i]);
+					 d10f4pcitable[i]);
 	}
 #endif
 
@@ -1043,42 +1043,42 @@ void main(void)
 
 #if 1
 //before (11.0)is add, s3 resume has already always dead in first resume(more frequenly), and sleep ok
-//      for(i=0;i<192;i++){
+//	for(i=0;i<192;i++){
 	for (i = 0; i < 6; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 	//6 is uart and dvp vcp,   will have // HAVE no com1 ,and no gui show,textmode ok ,s3 sleep ok, resume fail
 
 	//7-18 is my familar part
 	for (i = 7; i < 18; i++) {	//sleep ok ,resume sleep err 2
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 
 	for (i = 18; i < 21; i++) {	//sleep ok ,   sleep err 1, resume
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 	//0x55 56 57 irq intA#B#C# linkA#linkB#linkC#
 	for (i = 24; i < 27; i++) {	//sleep ok , resume sleep err 1  resume  1
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 	//5b port 80h
 	pci_rawmodify_config8(PCI_RAWDEV(0, 0x11, 0), 0x5b, 0x0, 0x08);
-	//          i++;
-	//      pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i+0x40, d11f0pcitable[i]);
+	//	     i++;
+	//	 pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i+0x40, d11f0pcitable[i]);
 
 	for (i = 28; i < 72; i++) {	//sleep ok , resume  sleep err 1 , resume 1ci
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 	//7273ACPI BASE
 
 	for (i = 74; i < 112; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 
 	//B0B4B5 dvp vcp,  if copy this ,then no uart, no gui(of unbuntu)
@@ -1093,57 +1093,57 @@ void main(void)
 
 	for (i = 113; i < 114; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 
 	for (i = 115; i < 116; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 
 
 	for (i = 118; i < 192; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 #endif
 #ifdef NOOPTION_1
-//      for(i=0;i<192;i++){
+//	for(i=0;i<192;i++){
 	for (i = 0; i < 6; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     OPTION_1_d11f0pcitable[i]);
+					 OPTION_1_d11f0pcitable[i]);
 	}
 	//6 is uart and dvp vcp,   will have // HAVE no com1 ,and no gui show,textmode ok ,s3 sleep ok, resume fail
 
 	//7-18 is my familar part
-	for (i = 7; i < 18; i++) {	//   sleep err 2
+	for (i = 7; i < 18; i++) {	//	 sleep err 2
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     OPTION_1_d11f0pcitable[i]);
+					 OPTION_1_d11f0pcitable[i]);
 	}
 
 	for (i = 18; i < 21; i++) {	//sleep ok , resume ???
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 	//0x55 56 57 irq intA#B#C# linkA#linkB#linkC#
 	for (i = 24; i < 27; i++) {	//sleep ok , resume ???
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     d11f0pcitable[i]);
+					 d11f0pcitable[i]);
 	}
 	//5b port 80h
 	i++;
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-			     OPTION_1_d11f0pcitable[i]);
+				OPTION_1_d11f0pcitable[i]);
 
 	for (i = 28; i < 72; i++) {	//sleep ok , resume???
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     OPTION_1_d11f0pcitable[i]);
+					 OPTION_1_d11f0pcitable[i]);
 	}
 	//7273ACPI BASE
 
 	for (i = 74; i < 112; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     OPTION_1_d11f0pcitable[i]);
+					 OPTION_1_d11f0pcitable[i]);
 	}
 
 	//B0B4B5 dvp vcp,  if copy this ,then no uart, no gui(of unbuntu)
@@ -1158,38 +1158,38 @@ void main(void)
 
 	for (i = 113; i < 114; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     OPTION_1_d11f0pcitable[i]);
+					 OPTION_1_d11f0pcitable[i]);
 	}
 
 	for (i = 115; i < 116; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     OPTION_1_d11f0pcitable[i]);
+					 OPTION_1_d11f0pcitable[i]);
 	}
 
 	for (i = 118; i < 192; i++) {	//boot ok, resume still err in linux
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), i + 0x40,
-				     OPTION_1_d11f0pcitable[i]);
+					 OPTION_1_d11f0pcitable[i]);
 	}
 #endif
 
 #if 1
 	pci_rawwrite_config16(PCI_RAWDEV(0, 0xf, 0), 0xBA, PCI_DEVICE_ID_VIA_VX855_IDE);	//5324
 	pci_rawwrite_config16(PCI_RAWDEV(0, 0xf, 0), 0xBE,
-			      PCI_DEVICE_ID_VIA_VX855_IDE);
+				 PCI_DEVICE_ID_VIA_VX855_IDE);
 	pci_rawwrite_config16(PCI_RAWDEV(0, 0x11, 0), 0xA0,
-			      PCI_VENDOR_ID_VIA);
+				 PCI_VENDOR_ID_VIA);
 	pci_rawwrite_config16(PCI_RAWDEV(0, 0x11, 0), 0xA2, PCI_DEVICE_ID_VIA_VX855_LPC);	//8353
 	i = pci_rawread_config8(PCI_RAWDEV(0, 0x11, 0), 0x79);
 	i &= ~0x40;
 	i |= 0x40;
 	pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 0), 0x79, i);
 	pci_rawwrite_config16(PCI_RAWDEV(0, 0x11, 0), 0x72,
-			      PCI_DEVICE_ID_VIA_VX855_LPC);
+				 PCI_DEVICE_ID_VIA_VX855_LPC);
 
 //boot ok, resume still err in linux
 	for (i = 0; i < 192; i++) {
 		pci_rawwrite_config8(PCI_RAWDEV(0, 0x11, 7), i + 0x40,
-				     d11f7pcitable[i]);
+					 d11f7pcitable[i]);
 	}
 #endif
 #ifdef OPTION_1
@@ -1228,7 +1228,7 @@ void main(void)
 				y = 0;
 				for (; y < 16; y++) {
 					printk(BIOS_INFO, "%02x ",
-					    pci_read_config8(dev, x * 16 + y));
+						 pci_read_config8(dev, x * 16 + y));
 				}
 				printk(BIOS_INFO, "\n");
 			}

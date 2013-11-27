@@ -77,8 +77,8 @@ static void vt8237_usb_i_read_resources(struct device *dev)
 	printk(BIOS_SPEW, "VT8237R Fixing USB 1.1 fn %d I/O resource = 0x%04X\n", function, usb_io_addr[function]);
 
 	/* Fix the I/O Resources of the USB1.1 Interfaces */
-	/* Auto PCI probe seems to size the resources     */
-	/* Incorrectly                                    */
+	/* Auto PCI probe seems to size the resources	   */
+	/* Incorrectly					   */
 	res = new_resource(dev, PCI_BASE_ADDRESS_4);
 	res->base = usb_io_addr[function];
 	res->size = 256;

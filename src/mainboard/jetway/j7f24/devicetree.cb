@@ -25,29 +25,29 @@ chip northbridge/via/cn700			# Northbridge
       device pci 10.3 on end			# OHCI
       device pci 10.4 on end			# EHCI
       device pci 11.0 on			# Southbridge LPC
-        chip superio/fintek/f71805f		# Super I/O
-          device pnp 2e.0 off			# Floppy
-            io 0x60 = 0x3f0
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 2e.1 on			# Parallel Port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-            drq 0x74 = 3
-          end
-          device pnp 2e.2 on			# COM1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 2e.3 on			# COM2
-            io 0x60 = 0x2f8
-            irq 0x70 = 3
-          end
-          device pnp 2e.b on			# HWM
-            io 0x60 = 0xec00
-          end
-        end
+	chip superio/fintek/f71805f		# Super I/O
+	  device pnp 2e.0 off			# Floppy
+	    io 0x60 = 0x3f0
+	    irq 0x70 = 6
+	    drq 0x74 = 2
+	  end
+	  device pnp 2e.1 on			# Parallel Port
+	    io 0x60 = 0x378
+	    irq 0x70 = 7
+	    drq 0x74 = 3
+	  end
+	  device pnp 2e.2 on			# COM1
+	    io 0x60 = 0x3f8
+	    irq 0x70 = 4
+	  end
+	  device pnp 2e.3 on			# COM2
+	    io 0x60 = 0x2f8
+	    irq 0x70 = 3
+	  end
+	  device pnp 2e.b on			# HWM
+	    io 0x60 = 0xec00
+	  end
+	end
       end
       device pci 11.5 on end			# AC'97 audio
       # device pci 11.6 off end			# AC'97 Modem

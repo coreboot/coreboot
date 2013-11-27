@@ -72,7 +72,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
 		if (!cpu->enabled)
 			continue;
 		current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-					      current, cpu_index, flags, lint);
+						   current, cpu_index, flags, lint);
 		cpu_index++;
 	}
 	return current;
@@ -97,7 +97,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Create all subtables for processors. */
 	current = acpi_create_madt_lapic_nmis(current,
-			      MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 1);
+				 MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 1);
 
 	return current;
 }
@@ -114,8 +114,8 @@ unsigned long acpi_fill_srat(unsigned long current)
 	return current;
 }
 
-#define ALIGN(x,a)              __ALIGN_MASK(x,(typeof(x))(a)-1)
-#define __ALIGN_MASK(x,mask)    (((x)+(mask))&~(mask))
+#define ALIGN(x,a)		__ALIGN_MASK(x,(typeof(x))(a)-1)
+#define __ALIGN_MASK(x,mask)	(((x)+(mask))&~(mask))
 
 unsigned long write_acpi_tables(unsigned long start)
 {

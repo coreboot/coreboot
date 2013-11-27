@@ -281,7 +281,7 @@ static void sb800_sm_read_resources(device_t dev)
 	res->gran = 8;
 	res->flags = IORESOURCE_MEM | IORESOURCE_FIXED;
 
-	#if 0			       /* Linux ACPI crashes when it is 1. For late debugging. */
+	#if 0				/* Linux ACPI crashes when it is 1. For late debugging. */
 	res = new_resource(dev, 0x14); /* TODO: hpet */
 	res->base  = 0xfed00000;	/* reset hpet to widely accepted address */
 	res->size = 0x400;

@@ -34,8 +34,8 @@
 		Field (PIRY, ByteAcc, NoLock, Preserve)
 		{
 			Z000,   2,	 // Parallel Port Range
-			 ,   1,
-			ECP,    1,	 // ECP Enable
+			 ,	1,
+			ECP,	   1,	 // ECP Enable
 			FDC1,   1,	 // Floppy Drive Controller 1
 			FDC2,   1,	 // Floppy Drive Controller 2
 			Offset (0x01),

@@ -84,7 +84,7 @@ OemCustomizeInitEarly (
 	PCIe_DDI_DESCRIPTOR DdiList [] = {
 		// Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...) DP0 to LVDS
 		{
-			0,   //Descriptor flags
+			0,	//Descriptor flags
 			PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
 			PCIE_DDI_DATA_INITIALIZER (ConnectorTypeLvds, Aux1, Hdp1)
 		},
@@ -122,10 +122,10 @@ OemCustomizeInitEarly (
 	BrazosPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
 	AllocHeapParams.BufferPtr += sizeof(Brazos);
-	BrazosPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
+	BrazosPciePortPtr	   =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
 
 	AllocHeapParams.BufferPtr += sizeof(PortList);
-	BrazosPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
+	BrazosPcieDdiPtr	   =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
 	LibAmdMemFill (BrazosPcieComplexListPtr,
 			0,

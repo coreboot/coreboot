@@ -45,7 +45,7 @@ struct pnp_info {
 #define PNP_IRQ1 0x020
 #define PNP_DRQ0 0x040
 #define PNP_DRQ1 0x080
-#define PNP_EN   0x100
+#define PNP_EN	 0x100
 #define PNP_MSC0 0x200
 #define PNP_MSC1 0x400
 	struct io_info io0, io1, io2, io3;

@@ -21,6 +21,6 @@
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
-        /* FIXME: add support for reading coreboot from NAND */
+	/* FIXME: add support for reading coreboot from NAND */
 	return 0;
 }

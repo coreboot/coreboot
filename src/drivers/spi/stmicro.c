@@ -68,7 +68,7 @@ struct stmicro_spi_flash {
 };
 
 static inline struct stmicro_spi_flash *to_stmicro_spi_flash(struct spi_flash
-							     *flash)
+								    *flash)
 {
 	return container_of(flash, struct stmicro_spi_flash, flash);
 }

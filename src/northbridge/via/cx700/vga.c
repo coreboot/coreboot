@@ -120,7 +120,7 @@ static int via_cx700_int15_handler(void)
 		res=1;
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				X86_EAX & 0xffff);
 		break;
@@ -153,7 +153,7 @@ static void vga_enable_console(void)
 	 * it on is good.
 	 */
 
-	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
+	/*		    int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
 	realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
 #endif
 }

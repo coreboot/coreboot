@@ -25,7 +25,7 @@
  *
  * @param smbus_dev The base SMBus IO port
  * @param host_status The data returned on the host status register after
- *		      a transaction is processed.
+ *			  a transaction is processed.
  * @param loops The number of times a transaction was attempted.
  * @return	0 if no error occurred
  * 		1 if an error was detected

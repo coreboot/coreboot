@@ -160,12 +160,12 @@ static void mainboard_smi_hotkey(u8 hotkey)
 	case 0x3d: break; // Fn+F3
 	case 0x3e: break; // Fn+F4
 	case 0x3f: break; // Fn+F5
-	case 0x40:        // Fn+F6 (Decrease Display Brightness)
+	case 0x40:	   // Fn+F6 (Decrease Display Brightness)
 		   reg8 = ec_read(0x17);
 		   reg8 = (reg8 > 8) ? (reg8 - 8) : 0;
 		   ec_write(0x17, reg8);
 		   return;
-	case 0x41:        // Fn+F7 (Increase Display Brightness)
+	case 0x41:	   // Fn+F7 (Increase Display Brightness)
 		   reg8 = ec_read(0x17);
 		   reg8 += 8;
 		   reg8 = (reg8 >= MAX_LCD_BRIGHTNESS) ? MAX_LCD_BRIGHTNESS : reg8;

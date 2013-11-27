@@ -50,7 +50,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	LIDS,	 8,	// 0x0f - LID state (open = 1)
 	PWRS,	 8,	// 0x10 - Power State (AC = 1)
 	DBGS,	 8,	// 0x11 - Debug State
-	LINX,    8,	// 0x12 - Linux OS
+	LINX,	  8,	// 0x12 - Linux OS
 	DCKN,	 8,	// 0x13 - PCIe docking state
 	/* Thermal policy */
 	Offset (0x14),

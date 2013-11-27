@@ -59,17 +59,17 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 			    Name (BUF0, ResourceTemplate ()
 			    {
 				IO (Decode16,
-				0x0CF8,             // Address Range Minimum
-				0x0CF8,             // Address Range Maximum
-				0x01,               // Address Alignment
-				0x08,               // Address Length
+				0x0CF8,		// Address Range Minimum
+				0x0CF8,		// Address Range Maximum
+				0x01,		// Address Alignment
+				0x08,		// Address Length
 				)
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-				0x0000,             // Address Space Granularity
-				0x0000,             // Address Range Minimum
-				0x0CF7,             // Address Range Maximum
-				0x0000,             // Address Translation Offset
-				0x0CF8,             // Address Length
+				0x0000,		// Address Space Granularity
+				0x0000,		// Address Range Minimum
+				0x0CF7,		// Address Range Maximum
+				0x0000,		// Address Translation Offset
+				0x0CF8,		// Address Length
 				,, , TypeStatic)
 			    })
 				/* Methods bellow use SSDT to get actual MMIO regs
@@ -148,7 +148,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 					Method (_CRS, 0, NotSerialized)
 					{
 						Name (TMP, ResourceTemplate () {
-						     IRQNoFlags () {12}
+							   IRQNoFlags () {12}
 						})
 						Return (TMP)
 					}

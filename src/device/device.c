@@ -16,7 +16,7 @@
  */
 
 /*
- *      (c) 1999--2000 Martin Mares <mj@suse.cz>
+ *	(c) 1999--2000 Martin Mares <mj@suse.cz>
  */
 
 /*
@@ -201,7 +201,7 @@ static void read_resources(struct bus *bus)
 	struct device *curdev;
 
 	printk(BIOS_SPEW, "%s %s bus %x link: %d\n", dev_path(bus->dev),
-	       __func__, bus->secondary, bus->link_num);
+		__func__, bus->secondary, bus->link_num);
 
 	/* Walk through all devices and find which resources they need. */
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
@@ -212,7 +212,7 @@ static void read_resources(struct bus *bus)
 
 		if (!curdev->ops || !curdev->ops->read_resources) {
 			printk(BIOS_ERR, "%s missing read_resources\n",
-			       dev_path(curdev));
+				  dev_path(curdev));
 			continue;
 		}
 		curdev->ops->read_resources(curdev);
@@ -222,7 +222,7 @@ static void read_resources(struct bus *bus)
 			read_resources(link);
 	}
 	printk(BIOS_SPEW, "%s read_resources bus %d link: %d done\n",
-	       dev_path(bus->dev), bus->secondary, bus->link_num);
+		dev_path(bus->dev), bus->secondary, bus->link_num);
 }
 
 struct pick_largest_state {
@@ -249,9 +249,9 @@ static void pick_largest_resource(void *gp, struct device *dev,
 		return;	/* Skip it. */
 	if (last && ((last->align < resource->align) ||
 		     ((last->align == resource->align) &&
-		      (last->size < resource->size)) ||
+			(last->size < resource->size)) ||
 		     ((last->align == resource->align) &&
-		      (last->size == resource->size) && (!state->seen_last)))) {
+			(last->size == resource->size) && (!state->seen_last)))) {
 		return;
 	}
 	if (!state->result ||
@@ -264,9 +264,9 @@ static void pick_largest_resource(void *gp, struct device *dev,
 }
 
 static struct device *largest_resource(struct bus *bus,
-				       struct resource **result_res,
-				       unsigned long type_mask,
-				       unsigned long type)
+					   struct resource **result_res,
+					   unsigned long type_mask,
+					   unsigned long type)
 {
 	struct pick_largest_state state;
 
@@ -276,7 +276,7 @@ static struct device *largest_resource(struct bus *bus,
 	state.seen_last = 0;
 
 	search_bus_resources(bus, type_mask, type, pick_largest_resource,
-			     &state);
+				&state);
 
 	*result_res = state.result;
 	return state.result_dev;
@@ -316,7 +316,7 @@ static struct device *largest_resource(struct bus *bus,
  * @return TODO
  */
 static void compute_resources(struct bus *bus, struct resource *bridge,
-			      unsigned long type_mask, unsigned long type)
+				 unsigned long type_mask, unsigned long type)
 {
 	struct device *dev;
 	struct resource *resource;
@@ -324,10 +324,10 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 	base = round(bridge->base, bridge->align);
 
 	printk(BIOS_SPEW,  "%s %s_%s: base: %llx size: %llx align: %d gran: %d"
-	       " limit: %llx\n", dev_path(bus->dev), __func__,
-	       (type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
-	       "prefmem" : "mem", base, bridge->size, bridge->align,
-	       bridge->gran, bridge->limit);
+		" limit: %llx\n", dev_path(bus->dev), __func__,
+		(type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
+		"prefmem" : "mem", base, bridge->size, bridge->align,
+		bridge->gran, bridge->limit);
 
 	/* For each child which is a bridge, compute the resource needs. */
 	for (dev = bus->children; dev; dev = dev->sibling) {
@@ -359,8 +359,8 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 
 			if (link == NULL) {
 				printk(BIOS_ERR, "link %ld not found on %s\n",
-				       IOINDEX_LINK(child_bridge->index),
-				       dev_path(dev));
+					   IOINDEX_LINK(child_bridge->index),
+					   dev_path(dev));
 			}
 
 			compute_resources(link, child_bridge,
@@ -396,9 +396,9 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 		if ((resource->limit == 0xffffffff) &&
 		    (resource->flags & IORESOURCE_ASSIGNED)) {
 			printk(BIOS_ERR,
-			       "Resource limit looks wrong! (no APIC?)\n");
+				  "Resource limit looks wrong! (no APIC?)\n");
 			printk(BIOS_ERR, "%s %02lx limit %08llx\n",
-			       dev_path(dev), resource->index, resource->limit);
+				  dev_path(dev), resource->index, resource->limit);
 		}
 
 		if (resource->flags & IORESOURCE_IO) {
@@ -426,11 +426,11 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 		base += resource->size;
 
 		printk(BIOS_SPEW, "%s %02lx *  [0x%llx - 0x%llx] %s\n",
-		       dev_path(dev), resource->index, resource->base,
-		       resource->base + resource->size - 1,
-		       (resource->flags & IORESOURCE_IO) ? "io" :
-		       (resource->flags & IORESOURCE_PREFETCH) ?
-		        "prefmem" : "mem");
+			 dev_path(dev), resource->index, resource->base,
+			 resource->base + resource->size - 1,
+			 (resource->flags & IORESOURCE_IO) ? "io" :
+			 (resource->flags & IORESOURCE_PREFETCH) ?
+			  "prefmem" : "mem");
 	}
 
 	/*
@@ -440,13 +440,13 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
 	 * address positively decoded by the bridge.
 	 */
 	bridge->size = round(base, bridge->gran) -
-		       round(bridge->base, bridge->align);
+			 round(bridge->base, bridge->align);
 
 	printk(BIOS_SPEW, "%s %s_%s: base: %llx size: %llx align: %d gran: %d"
-	       " limit: %llx done\n", dev_path(bus->dev), __func__,
-	       (bridge->flags & IORESOURCE_IO) ? "io" :
-	       (bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem",
-	       base, bridge->size, bridge->align, bridge->gran, bridge->limit);
+		" limit: %llx done\n", dev_path(bus->dev), __func__,
+		(bridge->flags & IORESOURCE_IO) ? "io" :
+		(bridge->flags & IORESOURCE_PREFETCH) ? "prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran, bridge->limit);
 }
 
 /**
@@ -464,7 +464,7 @@ static void compute_resources(struct bus *bus, struct resource *bridge,
  * @see compute_resources
  */
 static void allocate_resources(struct bus *bus, struct resource *bridge,
-			       unsigned long type_mask, unsigned long type)
+				  unsigned long type_mask, unsigned long type)
 {
 	struct device *dev;
 	struct resource *resource;
@@ -472,10 +472,10 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	base = bridge->base;
 
 	printk(BIOS_SPEW, "%s %s_%s: base:%llx size:%llx align:%d gran:%d "
-	       "limit:%llx\n", dev_path(bus->dev), __func__,
-	       (type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
-	       "prefmem" : "mem",
-	       base, bridge->size, bridge->align, bridge->gran, bridge->limit);
+		"limit:%llx\n", dev_path(bus->dev), __func__,
+		(type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
+		"prefmem" : "mem",
+		base, bridge->size, bridge->align, bridge->gran, bridge->limit);
 
 	/* Remember we haven't found anything yet. */
 	resource = NULL;
@@ -528,29 +528,29 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 			base += resource->size;
 		} else {
 			printk(BIOS_ERR, "!! Resource didn't fit !!\n");
-			printk(BIOS_ERR, "   aligned base %llx size %llx "
-			       "limit %llx\n", round(base, resource->align),
-			       resource->size, resource->limit);
-			printk(BIOS_ERR, "   %llx needs to be <= %llx "
-			       "(limit)\n", (round(base, resource->align) +
+			printk(BIOS_ERR, "	aligned base %llx size %llx "
+				  "limit %llx\n", round(base, resource->align),
+				  resource->size, resource->limit);
+			printk(BIOS_ERR, "	%llx needs to be <= %llx "
+				  "(limit)\n", (round(base, resource->align) +
 				resource->size) - 1, resource->limit);
-			printk(BIOS_ERR, "   %s%s %02lx *  [0x%llx - 0x%llx]"
-			       " %s\n", (resource->flags & IORESOURCE_ASSIGNED)
-			       ? "Assigned: " : "", dev_path(dev),
-			       resource->index, resource->base,
-			       resource->base + resource->size - 1,
-			       (resource->flags & IORESOURCE_IO) ? "io"
-			       : (resource->flags & IORESOURCE_PREFETCH)
-			       ? "prefmem" : "mem");
+			printk(BIOS_ERR, "	%s%s %02lx *  [0x%llx - 0x%llx]"
+				  " %s\n", (resource->flags & IORESOURCE_ASSIGNED)
+				  ? "Assigned: " : "", dev_path(dev),
+				  resource->index, resource->base,
+				  resource->base + resource->size - 1,
+				  (resource->flags & IORESOURCE_IO) ? "io"
+				  : (resource->flags & IORESOURCE_PREFETCH)
+				  ? "prefmem" : "mem");
 		}
 
 		printk(BIOS_SPEW, "%s%s %02lx *  [0x%llx - 0x%llx] %s\n",
-		       (resource->flags & IORESOURCE_ASSIGNED) ? "Assigned: "
-		       : "", dev_path(dev), resource->index, resource->base,
-		       resource->size ? resource->base + resource->size - 1 :
-		       resource->base, (resource->flags & IORESOURCE_IO)
-		       ? "io" : (resource->flags & IORESOURCE_PREFETCH)
-		       ? "prefmem" : "mem");
+			 (resource->flags & IORESOURCE_ASSIGNED) ? "Assigned: "
+			 : "", dev_path(dev), resource->index, resource->base,
+			 resource->size ? resource->base + resource->size - 1 :
+			 resource->base, (resource->flags & IORESOURCE_IO)
+			 ? "io" : (resource->flags & IORESOURCE_PREFETCH)
+			 ? "prefmem" : "mem");
 	}
 
 	/*
@@ -563,10 +563,10 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 	bridge->flags |= IORESOURCE_ASSIGNED;
 
 	printk(BIOS_SPEW, "%s %s_%s: next_base: %llx size: %llx align: %d "
-	       "gran: %d done\n", dev_path(bus->dev), __func__,
-	       (type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
-	       "prefmem" : "mem", base, bridge->size, bridge->align,
-	       bridge->gran);
+		"gran: %d done\n", dev_path(bus->dev), __func__,
+		(type & IORESOURCE_IO) ? "io" : (type & IORESOURCE_PREFETCH) ?
+		"prefmem" : "mem", base, bridge->size, bridge->align,
+		bridge->gran);
 
 	/* For each child which is a bridge, allocate_resources. */
 	for (dev = bus->children; dev; dev = dev->sibling) {
@@ -593,17 +593,17 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 			 */
 			link = dev->link_list;
 			while (link && link->link_num !=
-			               IOINDEX_LINK(child_bridge->index))
+					  IOINDEX_LINK(child_bridge->index))
 				link = link->next;
 			if (link == NULL)
 				printk(BIOS_ERR, "link %ld not found on %s\n",
-				       IOINDEX_LINK(child_bridge->index),
-				       dev_path(dev));
+					   IOINDEX_LINK(child_bridge->index),
+					   dev_path(dev));
 
 			allocate_resources(link, child_bridge,
-					   type_mask | IORESOURCE_PREFETCH,
-					   type | (child_bridge->flags &
-						   IORESOURCE_PREFETCH));
+						type_mask | IORESOURCE_PREFETCH,
+						type | (child_bridge->flags &
+							 IORESOURCE_PREFETCH));
 		}
 	}
 }
@@ -614,10 +614,10 @@ static void allocate_resources(struct bus *bus, struct resource *bridge,
 #define MEM_MASK (IORESOURCE_MEM)
 #endif
 
-#define IO_MASK   (IORESOURCE_IO)
+#define IO_MASK	  (IORESOURCE_IO)
 #define PREF_TYPE (IORESOURCE_PREFETCH | IORESOURCE_MEM)
 #define MEM_TYPE  (IORESOURCE_MEM)
-#define IO_TYPE   (IORESOURCE_IO)
+#define IO_TYPE	  (IORESOURCE_IO)
 
 struct constraints {
 	struct resource pref, io, mem;
@@ -639,7 +639,7 @@ static void constrain_resources(struct device *dev, struct constraints* limits)
 		if (!res->size) {
 			/* It makes no sense to have 0-sized, fixed resources.*/
 			printk(BIOS_ERR, "skipping %s@%lx fixed resource, "
-			       "size=0!\n", dev_path(dev), res->index);
+				  "size=0!\n", dev_path(dev), res->index);
 			continue;
 		}
 
@@ -703,7 +703,7 @@ static void avoid_fixed_resources(struct device *dev)
 		if ((res->flags & IORESOURCE_FIXED))
 			continue;
 		printk(BIOS_SPEW, "%s:@%s %02lx limit %08llx\n", __func__,
-		       dev_path(dev), res->index, res->limit);
+			 dev_path(dev), res->index, res->limit);
 		if ((res->flags & MEM_MASK) == PREF_TYPE &&
 		    (res->limit < limits.pref.limit))
 			limits.pref.limit = res->limit;
@@ -736,9 +736,9 @@ static void avoid_fixed_resources(struct device *dev)
 			continue;
 
 		printk(BIOS_SPEW, "%s2: %s@%02lx limit %08llx\n", __func__,
-			     dev_path(dev), res->index, res->limit);
+				dev_path(dev), res->index, res->limit);
 		printk(BIOS_SPEW, "\tlim->base %08llx lim->limit %08llx\n",
-			     lim->base, lim->limit);
+				lim->base, lim->limit);
 
 		/* Is the resource outside the limits? */
 		if (lim->base > res->base)
@@ -808,7 +808,7 @@ static void set_vga_bridge_bits(void)
 	/* Now walk up the bridges setting the VGA enable. */
 	while (bus) {
 		printk(BIOS_DEBUG, "Setting PCI_BRIDGE_CTL_VGA for bridge %s\n",
-		       dev_path(bus->dev));
+			 dev_path(bus->dev));
 		bus->bridge_ctrl |= PCI_BRIDGE_CTL_VGA;
 		bus = (bus == bus->dev->bus) ? 0 : bus->dev->bus;
 	}
@@ -832,7 +832,7 @@ void assign_resources(struct bus *bus)
 	struct device *curdev;
 
 	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n",
-	       dev_path(bus->dev), bus->secondary, bus->link_num);
+		dev_path(bus->dev), bus->secondary, bus->link_num);
 
 	for (curdev = bus->children; curdev; curdev = curdev->sibling) {
 		if (!curdev->enabled || !curdev->resource_list)
@@ -840,7 +840,7 @@ void assign_resources(struct bus *bus)
 
 		if (!curdev->ops || !curdev->ops->set_resources) {
 			printk(BIOS_ERR, "%s missing set_resources\n",
-			       dev_path(curdev));
+				  dev_path(curdev));
 			continue;
 		}
 		post_log_path(curdev);
@@ -848,7 +848,7 @@ void assign_resources(struct bus *bus)
 	}
 	post_log_clear();
 	printk(BIOS_SPEW, "%s assign_resources, bus %d link: %d\n",
-	       dev_path(bus->dev), bus->secondary, bus->link_num);
+		dev_path(bus->dev), bus->secondary, bus->link_num);
 }
 
 /**
@@ -1078,17 +1078,17 @@ void dev_configure(void)
 				continue;
 			if (res->flags & IORESOURCE_PREFETCH) {
 				allocate_resources(child->link_list,
-						   res, MEM_MASK, PREF_TYPE);
+							 res, MEM_MASK, PREF_TYPE);
 				continue;
 			}
 			if (res->flags & IORESOURCE_MEM) {
 				allocate_resources(child->link_list,
-						   res, MEM_MASK, MEM_TYPE);
+							 res, MEM_MASK, MEM_TYPE);
 				continue;
 			}
 			if (res->flags & IORESOURCE_IO) {
 				allocate_resources(child->link_list,
-						   res, IO_MASK, IO_TYPE);
+							 res, IO_MASK, IO_TYPE);
 				continue;
 			}
 		}
@@ -1142,7 +1142,7 @@ static void init_dev(struct device *dev)
 #endif
 		if (dev->path.type == DEVICE_PATH_I2C) {
 			printk(BIOS_DEBUG, "smbus: %s[%d]->",
-			       dev_path(dev->bus->dev), dev->bus->link_num);
+				  dev_path(dev->bus->dev), dev->bus->link_num);
 		}
 
 		printk(BIOS_DEBUG, "%s init\n", dev_path(dev));
@@ -1151,7 +1151,7 @@ static void init_dev(struct device *dev)
 #if CONFIG_HAVE_MONOTONIC_TIMER
 		dev_init_time = current_time_from(&start_time);
 		printk(BIOS_DEBUG, "%s init %ld usecs\n", dev_path(dev),
-		       rela_time_in_microseconds(&dev_init_time));
+			 rela_time_in_microseconds(&dev_init_time));
 #endif
 	}
 }

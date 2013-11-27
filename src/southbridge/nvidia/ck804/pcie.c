@@ -38,15 +38,15 @@ static void pcie_init(struct device *dev)
 
 static struct device_operations pcie_ops = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = pcie_init,
-	.scan_bus         = pci_scan_bridge,
-	// .enable        = ck804_enable,
+	.init		   = pcie_init,
+	.scan_bus	   = pci_scan_bridge,
+	// .enable	   = ck804_enable,
 };
 
 static const struct pci_driver pcie_driver __pci_driver = {
-	.ops    = &pcie_ops,
+	.ops	 = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_PCI_E,
 };

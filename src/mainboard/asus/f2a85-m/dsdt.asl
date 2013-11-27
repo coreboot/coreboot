@@ -64,14 +64,14 @@ DefinitionBlock (
 
 			/**
 			 * TODO: The devices listed here (SBR0 and SBR1) do not appear to
-			 *       be referenced anywhere and could possibly be removed.
+			 *	    be referenced anywhere and could possibly be removed.
 			 */
 			Device(SBR0) { /* PCIe 1x SB */
 				Name(_ADR, 0x00150000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(ABR0) }   /* APIC mode */
-					Return (PBR0)              /* PIC mode  */
+					If(PMOD){ Return(ABR0) }	/* APIC mode */
+					Return (PBR0)		/* PIC mode  */
 				}
 			}
 
@@ -79,8 +79,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00150001)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT, 0) {
-					If(PMOD){ Return(ABR1) }   /* APIC mode */
-					Return (PBR1)              /* PIC mode  */
+					If(PMOD){ Return(ABR1) }	/* APIC mode */
+					Return (PBR1)		/* PIC mode  */
 				}
 			}
 		}

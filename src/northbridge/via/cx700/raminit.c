@@ -25,7 +25,7 @@
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP
-#define PRINTK_DEBUG(x...)      printk(BIOS_DEBUG, x)
+#define PRINTK_DEBUG(x...)	printk(BIOS_DEBUG, x)
 #else
 #define PRINTK_DEBUG(x...)
 #endif
@@ -215,13 +215,13 @@ static const u8 Dram_Driving_ODT_CTRL[] = {
 
 static const u8 ODT_TBL[] = {
 /*	RankMap, ODT Control Bits,						 	DRAM & NB ODT setting	*/
-	0x01,	 ((NA_ODT << 6)    | (NA_ODT << 4)    | (NA_ODT << 2)    | Rank0_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
-	0x03, 	 ((NA_ODT << 6)    | (NA_ODT << 4)    | (Rank0_ODT << 2) | Rank1_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
-	0x04,	 ((NA_ODT << 6)    | (Rank2_ODT << 4) | (NA_ODT << 2)    | NA_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
-	0x05,	 ((NA_ODT << 6)    | (Rank0_ODT << 4) | (NA_ODT << 2)    | Rank2_ODT),	(DDR2_ODT_75ohm  | NB_ODT_150ohm),
-	0x07,	 ((NA_ODT << 6)    | (Rank0_ODT << 4) | (Rank2_ODT << 2) | Rank2_ODT),	(DDR2_ODT_75ohm  | NB_ODT_150ohm),
-	0x0c,	 ((Rank2_ODT << 6) | (Rank3_ODT << 4) | (NA_ODT << 2)    | NA_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
-	0x0d,	 ((Rank0_ODT << 6) | (Rank0_ODT << 4) | (NA_ODT << 2)    | Rank2_ODT),	(DDR2_ODT_75ohm  | NB_ODT_150ohm),
+	0x01,	 ((NA_ODT << 6)	  | (NA_ODT << 4)    | (NA_ODT << 2)	| Rank0_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
+	0x03, 	 ((NA_ODT << 6)	   | (NA_ODT << 4)    | (Rank0_ODT << 2) | Rank1_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
+	0x04,	 ((NA_ODT << 6)	  | (Rank2_ODT << 4) | (NA_ODT << 2)	| NA_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
+	0x05,	 ((NA_ODT << 6)	  | (Rank0_ODT << 4) | (NA_ODT << 2)	| Rank2_ODT),	(DDR2_ODT_75ohm  | NB_ODT_150ohm),
+	0x07,	 ((NA_ODT << 6)	  | (Rank0_ODT << 4) | (Rank2_ODT << 2) | Rank2_ODT),	(DDR2_ODT_75ohm  | NB_ODT_150ohm),
+	0x0c,	 ((Rank2_ODT << 6) | (Rank3_ODT << 4) | (NA_ODT << 2)	| NA_ODT),	(DDR2_ODT_150ohm | NB_ODT_75ohm),
+	0x0d,	 ((Rank0_ODT << 6) | (Rank0_ODT << 4) | (NA_ODT << 2)	| Rank2_ODT),	(DDR2_ODT_75ohm  | NB_ODT_150ohm),
 	0x0f,	 ((Rank0_ODT << 6) | (Rank0_ODT << 4) | (Rank2_ODT << 2) | Rank2_ODT),	(DDR2_ODT_75ohm  | NB_ODT_150ohm),
 };
 
@@ -239,7 +239,7 @@ static const u8 Duty_Control_DDR2[] = {
 /*	RxEC, RxED, RxEE, RXEF */
 	/* DDRII533 1~2 rank, DDRII400 */
 	0x84, 0x10, 0x00, 0x10,
-	/* DDRII533 3~4 rank    */
+	/* DDRII533 3~4 rank	 */
 	0x44, 0x10, 0x00, 0x10,
 };
 
@@ -308,7 +308,7 @@ static const u8 Init_Rank_Reg_Table[] = {
 };
 
 static const u16 DDR2_MRS_table[] = {
-/* CL:	2,     3,     4,     5 */
+/* CL:	2,     3,     4,	    5 */
 	0x150, 0x1d0, 0x250, 0x2d0,	/* BL=4 ;Use 1X-bandwidth MA table to init DRAM */
 	0x158, 0x1d8, 0x258, 0x2d8,	/* BL=8 ;Use 1X-bandwidth MA table to init DRAM */
 };
@@ -351,7 +351,7 @@ static void do_ram_command(const struct mem_controller *ctrl, u8 command)
 	reg |= command;
 	pci_write_config8(MEMCTRL, 0x6b, reg);
 
-	PRINTK_DEBUG("    Sending RAM command 0x%02x\n", reg);
+	PRINTK_DEBUG("	   Sending RAM command 0x%02x\n", reg);
 }
 
 // TODO factor out to another file
@@ -422,7 +422,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x6d, 0xc0);
 
 	/**********************************************/
-	/*          Set DRAM Freq (DDR2 533)          */
+	/*	     Set DRAM Freq (DDR2 533)	       */
 	/**********************************************/
 	/* SPD 9 SDRAM Cycle Time */
 	GET_SPD(dimm, spds, regs, 9);
@@ -480,7 +480,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x6f, regs);
 
 	/**********************************************/
-	/*      Set DRAM Timing Setting (DDR2 533)    */
+	/*	 Set DRAM Timing Setting (DDR2 533)    */
 	/**********************************************/
 	/* SPD 9 18 23 25 CAS Latency NB3DRAM_REG62[2:0] */
 	/* Read SPD byte 18 CAS Latency */
@@ -663,7 +663,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x63, regs);
 
 	/**********************************************/
-	/*           Set DRAM DRDY Setting            */
+	/*	      Set DRAM DRDY Setting	       */
 	/**********************************************/
 	/* Write slowest value to register */
 	tmp = sizeof(Host_Reg_Val) / sizeof(Host_Reg_Val[0]);
@@ -676,7 +676,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	pci_write_config8(HOSTCTRL, 0x51, regs);
 
 	/**********************************************/
-	/*           Set DRAM BurstLength             */
+	/*	      Set DRAM BurstLength	       */
 	/**********************************************/
 	regs = pci_read_config8(MEMCTRL, 0x6c);
 	for (dimm = 0; dimm < DIMM_SOCKETS; dimm++) {
@@ -696,7 +696,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	pci_write_config8(HOSTCTRL, 0x54, val);
 
 	/**********************************************/
-	/*          Set DRAM Driving Setting          */
+	/*	     Set DRAM Driving Setting	       */
 	/**********************************************/
 	/* DRAM Timing ODT */
 	tmp = sizeof(Dram_Driving_ODT_CTRL) / sizeof(Dram_Driving_ODT_CTRL[0]);
@@ -774,7 +774,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0xe6, 0xaa);
 
 	/**********************************************/
-	/*            Set DRAM Duty Control           */
+	/*	       Set DRAM Duty Control	       */
 	/**********************************************/
 	regs = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_RANK_NUM);
 	switch (regs) {
@@ -799,7 +799,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	}
 
 	/**********************************************/
-	/*            Set DRAM Clock Control          */
+	/*	       Set DRAM Clock Control	       */
 	/**********************************************/
 	/* Write Data Phase */
 	val = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_FREQ);
@@ -821,7 +821,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 
 	/* Clock Phase Control for FeedBack Mode */
 	regs = pci_read_config8(MEMCTRL, 0x90);
-//      regs |= 0x80;
+//	regs |= 0x80;
 	pci_write_config8(MEMCTRL, 0x90, regs);
 
 	regs = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_FREQ);
@@ -918,7 +918,7 @@ static void sdram_set_safe_values(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x6f, regs);
 
 	/***************************************************/
-	/*    Find suitable DQS value for ChA and ChB      */
+	/*    Find suitable DQS value for ChA and ChB	    */
 	/***************************************************/
 	// Set DQS output delay for Channel A
 	regs = pci_read_config8(PCI_DEV(0, 0, 4), SCRATCH_DRAM_FREQ);
@@ -1258,7 +1258,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 
 #ifdef MEM_WIDTH_32BIT_MODE
 	/****************************************************************/
-	/*                      Set Dram 32bit Mode                     */
+	/*			 Set Dram 32bit Mode			 */
 	/****************************************************************/
 	reg8 = pci_read_config8(MEMCTRL, 0x6c);
 	reg8 |= 0x20;
@@ -1347,7 +1347,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x77, reg8);
 
 	/****************************************************************/
-	/*     Find out the lowest Bank Interleave and Set Register     */
+	/*	Find out the lowest Bank Interleave and Set Register	 */
 	/****************************************************************/
 #if 0
 	//TODO
@@ -1388,7 +1388,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x69, reg8);
 
 	/****************************************************************/
-	/*               DRAM Sizing and Fill MA type                   */
+	/*		  DRAM Sizing and Fill MA type			 */
 	/****************************************************************/
 	for (i = 0; i < 4; i++) {
 		val = pci_read_config8(PCI_DEV(0, 0, 4), (SCRATCH_RANK_0 + i));
@@ -1450,7 +1450,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	pci_write_config8(MEMCTRL, 0x6b, reg8);
 
 	/****************************************************************/
-	/*             DRAM re-initialize for burst length              */
+	/*		DRAM re-initialize for burst length		 */
 	/****************************************************************/
 	for (i = 0; i < 4; i++) {
 		reg8 = pci_read_config8(PCI_DEV(0, 0, 4), (SCRATCH_RANK_0 + i));
@@ -1464,7 +1464,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	}
 
 	/****************************************************************/
-	/*                    Set the MA Type                           */
+	/*		       Set the MA Type				 */
 	/****************************************************************/
 	reg8 = pci_read_config8(MEMCTRL, 0x50);
 	reg8 &= 0x11;
@@ -1495,7 +1495,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	}
 
 	/****************************************************************/
-	/*                 Set Start and Ending Address                 */
+	/*		    Set Start and Ending Address		 */
 	/****************************************************************/
 	dl = 0;			/* Begin Address */
 	dh = 0;			/* Ending Address */
@@ -1523,7 +1523,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	pci_write_config8(PCI_DEV(0, 0, 7), 0xe5, dh);
 
 	/****************************************************************/
-	/*            Set Physical to Virtual Rank mapping              */
+	/*	       Set Physical to Virtual Rank mapping		 */
 	/****************************************************************/
 	pci_write_config32(MEMCTRL, 0x54, 0x0);
 	for (i = 0; i < 4; i++) {
@@ -1543,7 +1543,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	}
 
 	/****************************************************************/
-	/*                   Set DRAM Refresh Counter                   */
+	/*		      Set DRAM Refresh Counter			 */
 	/****************************************************************/
 	val = pci_read_config8(MEMCTRL, 0X90) & 0X7;
 	val <<= 1;
@@ -1586,7 +1586,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	pci_write_config8(HOSTCTRL, 0x5d, 0xb2);
 
 	/****************************************************************/
-	/*              UMA registers for N-series projects             */
+	/*		 UMA registers for N-series projects		 */
 	/****************************************************************/
 
 	/* Manual setting frame buffer bank */

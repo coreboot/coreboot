@@ -135,7 +135,7 @@ void get_bus_conf(void)
 		bus_type[j] = 1;
 
 
-	/* I/O APICs:    APIC ID Version State   Address */
+	/* I/O APICs:	  APIC ID Version State	  Address */
 	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_sb800 = apicid_base;

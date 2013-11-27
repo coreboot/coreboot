@@ -261,7 +261,7 @@ static void pch_power_options(device_t dev)
 
 	/* GPE setup based on device tree configuration */
 	enable_all_gpe(config->gpe0_en_1, config->gpe0_en_2,
-		       config->gpe0_en_3, config->gpe0_en_4);
+			 config->gpe0_en_3, config->gpe0_en_4);
 
 	/* SMI setup based on device tree configuration */
 	enable_alt_smi(config->alt_gp_smi_en);
@@ -312,7 +312,7 @@ const struct rcba_config_instruction lpt_lp_pm_rcba[] = {
 	RCBA_RMW_REG_32(0x1100, ~0xc000, 0xc000),  /* 5 */
 	RCBA_RMW_REG_32(0x1100, ~0, 0x00000100),  /* 6 */
 	RCBA_RMW_REG_32(0x1100, ~0, 0x0000003f),  /* 7 */
-	RCBA_RMW_REG_32(0x2320, ~0x60, 0x10),     /* 8? */
+	RCBA_RMW_REG_32(0x2320, ~0x60, 0x10),	   /* 8? */
 	RCBA_RMW_REG_32(0x3314,  0, 0x00012fff),  /* 9? */
 	RCBA_RMW_REG_32(0x3318,  0, 0x0dcf0400),  /* 10? */
 	RCBA_RMW_REG_32(0x3324,  0, 0x04000000),  /* 11 */
@@ -595,7 +595,7 @@ static void pch_lpc_add_mmio_resources(device_t dev)
 		res->base = DEFAULT_RCBA;
 		res->size = 16 * 1024;
 		res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-		             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+			       IORESOURCE_FIXED | IORESOURCE_RESERVE;
 	}
 
 	/* Check LPC Memory Decode register. */
@@ -607,7 +607,7 @@ static void pch_lpc_add_mmio_resources(device_t dev)
 			res->base = reg;
 			res->size = 16 * 1024;
 			res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED |
-			             IORESOURCE_FIXED | IORESOURCE_RESERVE;
+					IORESOURCE_FIXED | IORESOURCE_RESERVE;
 		}
 	}
 }
@@ -674,7 +674,7 @@ static void pch_lpc_add_io_resources(device_t dev)
 
 	/* GPIOBASE */
 	pch_lpc_add_io_resource(dev, get_gpiobase(), DEFAULT_GPIOSIZE,
-	                        GPIO_BASE);
+				 GPIO_BASE);
 
 	/* PMBASE */
 	pch_lpc_add_io_resource(dev, get_pmbase(), 256, PMBASE);

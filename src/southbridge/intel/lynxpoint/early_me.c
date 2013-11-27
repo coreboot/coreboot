@@ -140,7 +140,7 @@ int intel_early_me_init_done(u8 status)
 
 	/* Send message to ME */
 	printk(BIOS_DEBUG, "ME: Sending Init Done with status: %d, "
-	       "UMA base: 0x%04x\n", status, did.uma_base);
+		"UMA base: 0x%04x\n", status, did.uma_base);
 
 	pci_write_dword_ptr(&did, PCI_ME_H_GS);
 
@@ -165,7 +165,7 @@ int intel_early_me_init_done(u8 status)
 
 	/* Return the requested BIOS action */
 	printk(BIOS_NOTICE, "ME: Requested BIOS Action: %s\n",
-	       me_ack_values[hfs.ack_data]);
+		me_ack_values[hfs.ack_data]);
 
 	/* Check status after acknowledgement */
 	intel_early_me_status();

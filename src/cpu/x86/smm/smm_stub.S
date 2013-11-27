@@ -67,7 +67,7 @@ smm_handler_start:
 
 	movl	%cr0, %eax
 	andl	$0x1FFAFFD1, %eax /* CD,NW,PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl	$0x1, %eax        /* PE = 1 */
+	orl	$0x1, %eax	       /* PE = 1 */
 	movl	%eax, %cr0
 
 	/* Enable protected mode */

@@ -98,8 +98,8 @@ static struct dimm_size spd_get_dimm_size(unsigned device)
 
 	/* test for ddr2 */
 	ddr2=0;
-	value = spd_read_byte(device, 2);       /* type */
-        if (value < 0) goto hw_err;
+	value = spd_read_byte(device, 2);	 /* type */
+	if (value < 0) goto hw_err;
 	if (value == 8) ddr2 = 1;
 
 	/* Note it might be easier to use byte 31 here, it has the DIMM size as
@@ -344,7 +344,7 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 				continue;
 			}
 			value = spd_read_byte(ctrl->channel0[cnt],
-				        latency_indicies[index]);
+					    latency_indicies[index]);
 
 			if(value <= cycle_time[drc&3]) {
 				if( latency > cas_latency) {
@@ -361,8 +361,8 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 
 	for(cnt=0;cnt<4;cnt++) {
 		if (!(dimm_mask & (1 << cnt))) {
-                        continue;
-                }
+			continue;
+		}
 		reg = spd_read_byte(ctrl->channel0[cnt], 27)&0x0ff;
 		if(((index>>8)&0x0ff)<reg) {
 			index &= ~(0x0ff << 8);
@@ -698,8 +698,8 @@ static void do_delay(void)
 static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 {
 	unsigned char c1,c2;
-        unsigned int dimm,i;
-        unsigned int data32;
+	unsigned int dimm,i;
+	unsigned int data32;
 	unsigned int t4;
 
 	/* Set up northbridge values */
@@ -1081,7 +1081,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		/* 0x9a DDRCSR Take subsystem out of idle */
   	data16 = pci_read_config16(ctrl->f0, DDRCSR);
 	data16 &= ~(7 << 12);
-	data16 |= (3 << 12);   /* use dual channel lock step */
+	data16 |= (3 << 12);	/* use dual channel lock step */
   	pci_write_config16(ctrl->f0, DDRCSR, data16);
 
 		/* program row size DRB */
@@ -1122,9 +1122,9 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	do_delay();
 	for(cs=0;cs<8;cs++) {
 		if ((drc & 3) == 2) /* DDR2  */
-                        write32(BAR+DCALADDR, 0x04000000);
-                else   /* DDR1  */
-                        write32(BAR+DCALADDR, 0x00000000);
+			write32(BAR+DCALADDR, 0x04000000);
+		else   /* DDR1  */
+			write32(BAR+DCALADDR, 0x00000000);
 		write32(BAR+DCALCSR, (0x83000002 | (cs<<20)));
 		do data32 = read32(BAR+DCALCSR);
 		while(data32 & 0x80000000);
@@ -1135,9 +1135,9 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	for(cs=0;cs<8;cs++) {
 		if ((drc & 3) == 2) /* DDR2  */
 			/* fixme hard code AL additive latency */
-                        write32(BAR+DCALADDR, 0x0b940001);
-                else   /* DDR1  */
-                        write32(BAR+DCALADDR, 0x00000001);
+			write32(BAR+DCALADDR, 0x0b940001);
+		else   /* DDR1  */
+			write32(BAR+DCALADDR, 0x00000001);
 		write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
 		do data32 = read32(BAR+DCALCSR);
 		while(data32 & 0x80000000);
@@ -1145,17 +1145,17 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	/* MRS reset dll's */
 	do_delay();
 	if ((drc & 3) == 2) {  /* DDR2  */
-                if(cas_latency == 30)
-                        mode_reg = 0x053a0000;
-                else
-                        mode_reg = 0x054a0000;
-        }
-        else {  /* DDR1  */
-                if(cas_latency == 20)
-                        mode_reg = 0x012a0000;
-                else  /*  CAS Latency 2.5 */
-                        mode_reg = 0x016a0000;
-        }
+		if(cas_latency == 30)
+			mode_reg = 0x053a0000;
+		else
+			mode_reg = 0x054a0000;
+	}
+	else {  /* DDR1  */
+		if(cas_latency == 20)
+			mode_reg = 0x012a0000;
+		else  /*  CAS Latency 2.5 */
+			mode_reg = 0x016a0000;
+	}
 	for(cs=0;cs<8;cs++) {
 		write32(BAR+DCALADDR, mode_reg);
 		write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
@@ -1169,9 +1169,9 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	do_delay();
 	for(cs=0;cs<8;cs++) {
 		if ((drc & 3) == 2) /* DDR2  */
-                        write32(BAR+DCALADDR, 0x04000000);
-                else   /* DDR1  */
-                        write32(BAR+DCALADDR, 0x00000000);
+			write32(BAR+DCALADDR, 0x04000000);
+		else   /* DDR1  */
+			write32(BAR+DCALADDR, 0x00000000);
 		write32(BAR+DCALCSR, (0x83000002 | (cs<<20)));
 		do data32 = read32(BAR+DCALCSR);
 		while(data32 & 0x80000000);
@@ -1226,15 +1226,15 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	}
 
 	/* Do only if DDR2  EMRS dll's enabled */
-        if ((drc & 3) == 2) { /* DDR2  */
-                do_delay();
-                for(cs=0;cs<8;cs++) {
-                        write32(BAR+DCALADDR, (0x0b940001));
-                        write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
+	if ((drc & 3) == 2) { /* DDR2  */
+		do_delay();
+		for(cs=0;cs<8;cs++) {
+			write32(BAR+DCALADDR, (0x0b940001));
+			write32(BAR+DCALCSR, (0x83000003 | (cs<<20)));
 			do data32 = read32(BAR+DCALCSR);
 			while(data32 & 0x80000000);
-                }
-        }
+		}
+	}
 
 	do_delay();
 	/* No command */
@@ -1244,7 +1244,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 	write32(BAR, 0x00100000);
 
-        if ((drc & 3) == 2) { /* DDR2  */
+	if ((drc & 3) == 2) { /* DDR2  */
 	/* enable on dimm termination */
 		set_on_dimm_termination_enable(ctrl);
 	}

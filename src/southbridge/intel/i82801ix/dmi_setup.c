@@ -132,7 +132,7 @@ void i82801ix_dmi_poll_vc1(void)
 		RCBA16(0x20c4) |= (1 << 15);
 		RCBA16(0x20e4) |= (1 << 15);
 		/* TODO: Maybe we have to save and
-		         restore these settings across S3. */
+			   restore these settings across S3. */
 	}
 
 	timeout = 0x7ffff;

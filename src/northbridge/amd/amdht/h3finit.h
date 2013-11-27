@@ -139,10 +139,10 @@ typedef struct {
 	 *	(Note: not called for IO device to IO Device links.)
 	 *
 	 * Parameters:
-	 *	@param[in]   u8   node   = The node on which this link is located
-	 *	@param[in]   u8   link   = The link about to be initialized
+	 *	@param[in]	 u8   node   = The node on which this link is located
+	 *	@param[in]	 u8   link   = The link about to be initialized
 	 *	@param[out]  BOOL result = true to ignore this link and skip it
-	 *				   false to initialize the link normally
+	 *					  false to initialize the link normally
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -217,8 +217,8 @@ typedef struct {
 	 *	@param[in]  u8  hostLink  = The link on the host for this chain
 	 *	@param[in]  u8  Depth     = The depth in the I/O chain from the Host
 	 *	@param[in]  u8  Segment   = The Device's PCI Bus Segment number
-	 *	@param[in]  u8  Bus       = The Device's PCI Bus number
-	 *	@param[in]  u8  Dev       = The Device's PCI device Number
+	 *	@param[in]  u8  Bus	      = The Device's PCI Bus number
+	 *	@param[in]  u8  Dev	      = The Device's PCI device Number
 	 *	@param[in]  u32 DevVenID  = The Device's PCI Vendor + Device ID (offset 0x00)
 	 *	@param[in]  u8  Link      = The Device's link number (0 or 1)
 	 *	@param[in,out] u8*  LinkWidthIn  = modify to change the Link Witdh In
@@ -279,7 +279,7 @@ typedef struct {
 	 *
 	 * void
 	 * AMD_CB_IOPCBLimits(u8 HostNode, u8 HostLink, u8 Depth, u8 *DownstreamLinkWidthLimit,
-	 *			    u8 *UpstreamLinkWidthLimit, u16 *PCBFreqCap)
+	 *				  u8 *UpstreamLinkWidthLimit, u16 *PCBFreqCap)
 	 *
 	 * Description:
 	 *	For each non-coherent connection this routine is called once.
@@ -349,7 +349,7 @@ typedef struct {
 	 *
 	 * Parameters:
 	 *	@param[out]  BOOL result  = true skip traffic distribution
-	 *				    false do normal traffic distribution
+	 *					   false do normal traffic distribution
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -370,7 +370,7 @@ typedef struct {
 	 * Parameters:
 	 *	@param[in] u8 node  = buffer allocation may apply to this node
 	 *	@param[out] BOOL  result  = true skip buffer allocation on this node
-	 *				    false tune buffers normally
+	 *					   false tune buffers normally
 	 *
 	 * ---------------------------------------------------------------------------------------
 	 */
@@ -380,7 +380,7 @@ typedef struct {
 	 *
 	 * void
 	 * AMD_CB_OverrideDevicePort(u8 HostNode, u8 HostLink, u8 Depth, u8 *LinkWidthIn,
-	 *				   u8 *LinkWidthOut, u16 *LinkFrequency)
+	 *					  u8 *LinkWidthOut, u16 *LinkFrequency)
 	 *
 	 * Description:
 	 *	Called once for each active link on each IO device.
@@ -393,8 +393,8 @@ typedef struct {
 	 *	@param[in]  u8   hostLink  = The link about to be initialized
 	 *	@param[in]  u8   Depth     = The depth in the I/O chain from the Host
 	 *	@param[in]  u8   Link      = the link on the device (0 or 1)
-	 *	@param[in,out]  u8*   LinkWidthIn    = modify to change the Link Witdh In
-	 *	@param[in,out]  u8*   LinkWidthOut   = modify to change the Link Witdh Out
+	 *	@param[in,out]  u8*	  LinkWidthIn	 = modify to change the Link Witdh In
+	 *	@param[in,out]  u8*	  LinkWidthOut	 = modify to change the Link Witdh Out
 	 *	@param[in,out]  u16*   LinkFrequency = modify to change the link's frequency capability
 	 *
 	 * ---------------------------------------------------------------------------------------
@@ -544,7 +544,7 @@ typedef struct
 } sHtEventNcohAutoDepth;
 
 /* For event HT_EVENT_OPT_REQUIRED_CAP_RETRY,
- *	      HT_EVENT_OPT_REQUIRED_CAP_GEN3
+ *		 HT_EVENT_OPT_REQUIRED_CAP_GEN3
  */
 typedef struct
 {

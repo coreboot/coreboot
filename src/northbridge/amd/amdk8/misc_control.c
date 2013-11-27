@@ -221,15 +221,15 @@ static void misc_control_init(struct device *dev)
 
 static struct device_operations mcf3_ops  = {
 	.read_resources   = mcf3_read_resources,
-	.set_resources    = mcf3_set_resources,
+	.set_resources	   = mcf3_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = misc_control_init,
-	.scan_bus         = 0,
-	.ops_pci          = 0,
+	.init		   = misc_control_init,
+	.scan_bus	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver mcf3_driver __pci_driver = {
-	.ops    = &mcf3_ops,
+	.ops	 = &mcf3_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x1103,
 };

@@ -41,7 +41,7 @@ static int kbc_input_buffer_empty(void)
 
 	if (!timeout) {
 		printk(BIOS_WARNING,
-		       "Unexpected Keyboard controller input buffer full\n");
+			 "Unexpected Keyboard controller input buffer full\n");
 	}
 	return !!timeout;
 }
@@ -157,13 +157,13 @@ static void ene932_enable_resources(device_t dev)
 }
 
 static struct device_operations ops = {
-	.init             = ene932_init,
+	.init		   = ene932_init,
 	.read_resources   = ene932_read_resources,
 	.enable_resources = ene932_enable_resources
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, 0, 0, { 0, 0 }, }
+	{ &ops, 0, 0, { 0, 0 }, }
 };
 
 static void enable_dev(device_t dev)

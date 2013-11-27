@@ -11,19 +11,19 @@
 
 unsigned long log2(unsigned long x)
 {
-        // assume 8 bits per byte.
-        unsigned long i = 1ULL << (sizeof(x)* CHAR_BIT - 1ULL);
-        unsigned long pow = sizeof(x) * CHAR_BIT - 1ULL;
+	// assume 8 bits per byte.
+	unsigned long i = 1ULL << (sizeof(x)* CHAR_BIT - 1ULL);
+	unsigned long pow = sizeof(x) * CHAR_BIT - 1ULL;
 
-        if (! x) {
+	if (! x) {
 #ifdef DEBUG_LOG2
-                printk(BIOS_WARNING, "%s called with invalid parameter of 0\n",
+		printk(BIOS_WARNING, "%s called with invalid parameter of 0\n",
 			__func__);
 #endif
-                return -1;
-        }
-        for(; i > x; i >>= 1, pow--)
-                ;
+		return -1;
+	}
+	for(; i > x; i >>= 1, pow--)
+		;
 
-        return pow;
+	return pow;
 }

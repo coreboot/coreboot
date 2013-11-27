@@ -112,8 +112,8 @@ config CONSOLE_SERIAL_UART_ADDRESS
 	  Map the UART names to the respective MMIO address.
 
 #################################################################
-#   stuff from smdk5250.h                                       #
-#   FIXME: can we move some of these to exynos5250's Kconfig?   #
+#   stuff from smdk5250.h					#
+#   FIXME: can we move some of these to exynos5250's Kconfig?	#
 #################################################################
 config SYS_I2C_SPEED
 	int

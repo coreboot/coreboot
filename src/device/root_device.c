@@ -99,11 +99,11 @@ unsigned int scan_static_bus(device_t bus, unsigned int max)
 
 			if (child->path.type == DEVICE_PATH_I2C) {
 				printk(BIOS_DEBUG, "smbus: %s[%d]->",
-				       dev_path(child->bus->dev),
-				       child->bus->link_num);
+					   dev_path(child->bus->dev),
+					   child->bus->link_num);
 			}
 			printk(BIOS_DEBUG, "%s %s\n", dev_path(child),
-			       child->enabled ? "enabled" : "disabled");
+				  child->enabled ? "enabled" : "disabled");
 		}
 	}
 
@@ -158,9 +158,9 @@ static void root_dev_reset(struct bus *bus)
  */
 struct device_operations default_dev_ops_root = {
 	.read_resources   = root_dev_read_resources,
-	.set_resources    = root_dev_set_resources,
+	.set_resources	   = root_dev_set_resources,
 	.enable_resources = root_dev_enable_resources,
-	.init             = root_dev_init,
-	.scan_bus         = root_dev_scan_bus,
-	.reset_bus        = root_dev_reset,
+	.init		   = root_dev_init,
+	.scan_bus	   = root_dev_scan_bus,
+	.reset_bus	   = root_dev_reset,
 };

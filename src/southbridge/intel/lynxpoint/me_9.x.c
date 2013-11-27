@@ -77,10 +77,10 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 			break;
 		}
 		printk(BIOS_SPEW, "cbd=%u cbrp=%02u cbwp=%02u ready=%u "
-		       "reset=%u ig=%u is=%u ie=%u\n", csr->buffer_depth,
-		       csr->buffer_read_ptr, csr->buffer_write_ptr,
-		       csr->ready, csr->reset, csr->interrupt_generate,
-		       csr->interrupt_status, csr->interrupt_enable);
+			 "reset=%u ig=%u is=%u ie=%u\n", csr->buffer_depth,
+			 csr->buffer_read_ptr, csr->buffer_write_ptr,
+			 csr->ready, csr->reset, csr->interrupt_generate,
+			 csr->interrupt_status, csr->interrupt_enable);
 		break;
 	case MEI_ME_CB_RW:
 	case MEI_H_CB_WW:
@@ -227,7 +227,7 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	 */
 	if ((host.buffer_depth - host.buffer_write_ptr) < ndata) {
 		printk(BIOS_ERR, "ME: message (%u) too large for buffer (%u)\n",
-		       ndata + 2, host.buffer_depth);
+			 ndata + 2, host.buffer_depth);
 		return -1;
 	}
 
@@ -281,8 +281,8 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 	}
 	if (!n) {
 		printk(BIOS_ERR, "ME: timeout waiting for data: expected "
-		       "%u, available %u\n", expected,
-		       me.buffer_write_ptr - me.buffer_read_ptr);
+			 "%u, available %u\n", expected,
+			 me.buffer_write_ptr - me.buffer_read_ptr);
 		return -1;
 	}
 
@@ -299,7 +299,7 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 		ndata++;
 	if (ndata != (expected - 1)) {
 		printk(BIOS_ERR, "ME: response is missing data %d != %d\n",
-		       ndata, (expected - 1));
+			 ndata, (expected - 1));
 		return -1;
 	}
 
@@ -309,9 +309,9 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 	    mkhi->group_id != mkhi_rsp.group_id ||
 	    mkhi->command != mkhi_rsp.command) {
 		printk(BIOS_ERR, "ME: invalid response, group %u ?= %u,"
-		       "command %u ?= %u, is_response %u\n", mkhi->group_id,
-		       mkhi_rsp.group_id, mkhi->command, mkhi_rsp.command,
-		       mkhi_rsp.is_response);
+			 "command %u ?= %u, is_response %u\n", mkhi->group_id,
+			 mkhi_rsp.group_id, mkhi->command, mkhi_rsp.command,
+			 mkhi_rsp.is_response);
 		return -1;
 	}
 	ndata--; /* MKHI header has been read */
@@ -319,7 +319,7 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 	/* Make sure caller passed a buffer with enough space */
 	if (ndata != (rsp_bytes >> 2)) {
 		printk(BIOS_ERR, "ME: not enough room in response buffer: "
-		       "%u != %u\n", ndata, rsp_bytes >> 2);
+			 "%u != %u\n", ndata, rsp_bytes >> 2);
 		return -1;
 	}
 
@@ -338,7 +338,7 @@ static int mei_recv_msg(struct mkhi_header *mkhi,
 }
 
 static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
-			       void *req_data, void *rsp_data, int rsp_bytes)
+				  void *req_data, void *rsp_data, int rsp_bytes)
 {
 	if (mei_send_msg(mei, mkhi, req_data) < 0)
 		return -1;
@@ -351,7 +351,7 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
-	       name, state ? " en" : "dis");
+		name, state ? " en" : "dis");
 }
 
 static void me_print_fw_version(mbp_fw_version_name *vers_name)
@@ -362,8 +362,8 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 	}
 
 	printk(BIOS_DEBUG, "ME: found version %d.%d.%d.%d\n",
-	       vers_name->major_version, vers_name->minor_version,
-	       vers_name->hotfix_version, vers_name->build_version);
+		vers_name->major_version, vers_name->minor_version,
+		vers_name->hotfix_version, vers_name->build_version);
 }
 
 /* Get ME Firmware Capabilities */
@@ -372,14 +372,14 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 	u32 rule_id = 0;
 	struct me_fwcaps cap_msg;
 	struct mkhi_header mkhi = {
-		.group_id       = MKHI_GROUP_ID_FWCAPS,
-		.command        = MKHI_FWCAPS_GET_RULE,
+		.group_id	  = MKHI_GROUP_ID_FWCAPS,
+		.command	  = MKHI_FWCAPS_GET_RULE,
 	};
 	struct mei_header mei = {
-		.is_complete    = 1,
-		.host_address   = MEI_HOST_ADDRESS,
+		.is_complete	  = 1,
+		.host_address	  = MEI_HOST_ADDRESS,
 		.client_address = MEI_ADDRESS_MKHI,
-		.length         = sizeof(mkhi) + sizeof(rule_id),
+		.length	  = sizeof(mkhi) + sizeof(rule_id),
 	};
 
 	/* Send request and wait for response */
@@ -387,7 +387,7 @@ static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 	    < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
 		return -1;
-        }
+	}
 	*cap = cap_msg.caps_sku;
 	return 0;
 }
@@ -410,7 +410,7 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
 	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
 	print_cap("ICC Over Clocking", cap->icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
+	print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
 	print_cap("IPV6", cap->ipv6);
 	print_cap("KVM Remote Control (KVM)", cap->kvm);
 	print_cap("Outbreak Containment Heuristic (OCH)", cap->och);
@@ -532,7 +532,7 @@ static me_bios_path intel_me_path(device_t dev)
 	/* Check if the MBP is ready */
 	if (!hfs2.mbp_rdy) {
 		printk(BIOS_CRIT, "%s: mbp is not ready!\n",
-		       __FUNCTION__);
+			 __FUNCTION__);
 		path = ME_ERROR_BIOS_PATH;
 	}
 
@@ -540,12 +540,12 @@ static me_bios_path intel_me_path(device_t dev)
 	if (path != ME_NORMAL_BIOS_PATH) {
 		struct elog_event_data_me_extended data = {
 			.current_working_state = hfs.working_state,
-			.operation_state       = hfs.operation_state,
-			.operation_mode        = hfs.operation_mode,
-			.error_code            = hfs.error_code,
-			.progress_code         = hfs2.progress_code,
-			.current_pmevent       = hfs2.current_pmevent,
-			.current_state         = hfs2.current_state,
+			.operation_state	  = hfs.operation_state,
+			.operation_mode	  = hfs.operation_mode,
+			.error_code		  = hfs.error_code,
+			.progress_code	  = hfs2.progress_code,
+			.current_pmevent	  = hfs2.current_pmevent,
+			.current_state	  = hfs2.current_state,
 		};
 		elog_add_event_byte(ELOG_TYPE_MANAGEMENT_ENGINE, path);
 		elog_add_event_raw(ELOG_TYPE_MANAGEMENT_ENGINE_EXT,
@@ -615,7 +615,7 @@ static int intel_me_extend_valid(device_t dev)
 		break;
 	default:
 		printk(BIOS_ERR, "ME: Extend Algorithm %d unknown\n",
-		       status.extend_reg_algorithm);
+			 status.extend_reg_algorithm);
 		return -1;
 	}
 
@@ -684,11 +684,11 @@ static void intel_me_init(device_t dev)
 
 	if (mbp_data.plat_time) {
 		printk(BIOS_DEBUG, "ME: Wake Event to ME Reset:      %u ms\n",
-		       mbp_data.plat_time->wake_event_mrst_time_ms);
+			 mbp_data.plat_time->wake_event_mrst_time_ms);
 		printk(BIOS_DEBUG, "ME: ME Reset to Platform Reset:  %u ms\n",
-		       mbp_data.plat_time->mrst_pltrst_time_ms);
+			 mbp_data.plat_time->mrst_pltrst_time_ms);
 		printk(BIOS_DEBUG, "ME: Platform Reset to CPU Reset: %u ms\n",
-		       mbp_data.plat_time->pltrst_cpurst_time_ms);
+			 mbp_data.plat_time->pltrst_cpurst_time_ms);
 	}
 #endif
 
@@ -734,7 +734,7 @@ static const struct pci_driver intel_me __pci_driver = {
 };
 
 /******************************************************************************
- *									     */
+ *										*/
 static u32 me_to_host_words_pending(void)
 {
 	struct mei_csr me;
@@ -816,9 +816,9 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	if ((mbp_hdr.num_entries > (mbp_hdr.mbp_size / 2)) ||
 	    (me2host_pending < mbp_hdr.mbp_size)) {
 		printk(BIOS_ERR, "ME: mbp of %d entries, total size %d words"
-		       " buffer contains %d words\n",
-		       mbp_hdr.num_entries, mbp_hdr.mbp_size,
-		       me2host_pending);
+			 " buffer contains %d words\n",
+			 mbp_hdr.num_entries, mbp_hdr.mbp_size,
+			 me2host_pending);
 		goto mbp_failure;
 	}
 	mbp = malloc(mbp_hdr.mbp_size * sizeof(u32));
@@ -855,7 +855,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 	/* Dump out the MBP contents. */
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	printk(BIOS_INFO, "ME MBP: Header: items: %d, size dw: %d\n",
-	       mbp->header.num_entries, mbp->header.mbp_size);
+		mbp->header.num_entries, mbp->header.mbp_size);
 	for (i = 0; i < mbp->header.mbp_size - 1; i++) {
 		printk(BIOS_INFO, "ME MBP: %04x: 0x%08x\n", i, mbp->data[i]);
 	}
@@ -903,7 +903,7 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data, device_t dev)
 
 		default:
 			printk(BIOS_ERR, "ME MBP: unknown item 0x%x @ dw offset 0x%x\n",
-			       mbp->data[i], i);
+				  mbp->data[i], i);
 			break;
 		}
 		i += item->length;

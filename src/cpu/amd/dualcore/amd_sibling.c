@@ -38,17 +38,17 @@ static int get_max_siblings(int nodes)
 
 static void enable_apic_ext_id(int nodes)
 {
-        device_t dev;
-        int nodeid;
+	device_t dev;
+	int nodeid;
 
-        //enable APIC_EXIT_ID all the nodes
-        for(nodeid=0; nodeid<nodes; nodeid++){
-                uint32_t val;
-                dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 0));
-                val = pci_read_config32(dev, 0x68);
+	//enable APIC_EXIT_ID all the nodes
+	for(nodeid=0; nodeid<nodes; nodeid++){
+		uint32_t val;
+		dev = dev_find_slot(0, PCI_DEVFN(0x18+nodeid, 0));
+		val = pci_read_config32(dev, 0x68);
 		val |= (1<<17)|(1<<18);
 		pci_write_config32(dev, 0x68, val);
-        }
+	}
 }
 
 
@@ -59,13 +59,13 @@ unsigned get_apicid_base(unsigned ioapic_num)
 	unsigned apicid_base;
 	int siblings;
 	unsigned nb_cfg_54;
-        int bsp_apic_id = lapicid(); // bsp apicid
+	int bsp_apic_id = lapicid(); // bsp apicid
 
-        get_option(&disable_siblings, "multi_core");
+	get_option(&disable_siblings, "multi_core");
 
-        //get the nodes number
-        dev = dev_find_slot(0, PCI_DEVFN(0x18,0));
-        nodes = ((pci_read_config32(dev, 0x60)>>4) & 7) + 1;
+	//get the nodes number
+	dev = dev_find_slot(0, PCI_DEVFN(0x18,0));
+	nodes = ((pci_read_config32(dev, 0x60)>>4) & 7) + 1;
 
 	siblings = get_max_siblings(nodes);
 
@@ -98,9 +98,9 @@ unsigned get_apicid_base(unsigned ioapic_num)
 		and the kernel will try to get one that is small than 16 to make io apic work.
 		I don't know when the kernel can support 256 apic id. (APIC_EXT_ID is enabled) */
 
-	        //4:10 for two way  8:12 for four way 16:16 for eight way
+		 //4:10 for two way  8:12 for four way 16:16 for eight way
 		//Use CONFIG_MAX_PHYSICAL_CPUS instead of nodes for better consistency?
-	        apicid_base = nb_cfg_54 ? (siblings+1) * nodes :  8 * siblings + nodes;
+		 apicid_base = nb_cfg_54 ? (siblings+1) * nodes :  8 * siblings + nodes;
 
 	}
 	else {

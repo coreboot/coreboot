@@ -1,6 +1,6 @@
 #include <device/pnp_def.h>
 
-#define SCH4307_CONFIG_PORT     0x162e
+#define SCH4307_CONFIG_PORT	0x162e
 static inline void shc4307_enter_ext_func_mode(device_t dev)
 {
 	unsigned port = dev >> 8;
@@ -19,7 +19,7 @@ static inline void shc4307_exit_ext_func_mode(device_t dev)
 #define REGS_DEV PNP_DEV(SCH4307_CONFIG_PORT, 0xa)
 
 /* FIXME: This appears to be a super-io initialisation,
- *        placed in the mainboard directory.
+ *	  placed in the mainboard directory.
  */
 void shc4307_init(void)
 {

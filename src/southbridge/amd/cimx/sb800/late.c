@@ -49,8 +49,8 @@ static AMDSBCFG *sb_config = &sb_late_cfg;
  *
  * prototype UINT32 (*SBCIM_HOOK_ENTRY)(UINT32 Param1, UINT32 Param2, void* pConfig)
  *
- * @param[in] func      Southbridge CIMx Function ID.
- * @param[in] data      Southbridge Input Data.
+ * @param[in] func	Southbridge CIMx Function ID.
+ * @param[in] data	Southbridge Input Data.
  * @param[in] sb_config Southbridge configuration structure pointer.
  *
  */
@@ -78,12 +78,12 @@ u32 sb800_callout_entry(u32 func, u32 data, void* config)
 	return ret;
 }
 
-#define HOST_CAP                  0x00 /* host capabilities */
-#define HOST_CTL                  0x04 /* global host control */
-#define HOST_IRQ_STAT             0x08 /* interrupt status */
-#define HOST_PORTS_IMPL           0x0c /* bitmap of implemented ports */
+#define HOST_CAP		  0x00 /* host capabilities */
+#define HOST_CTL		  0x04 /* global host control */
+#define HOST_IRQ_STAT		  0x08 /* interrupt status */
+#define HOST_PORTS_IMPL		  0x0c /* bitmap of implemented ports */
 
-#define HOST_CTL_AHCI_EN          (1 << 31) /* AHCI enabled */
+#define HOST_CTL_AHCI_EN	  (1 << 31) /* AHCI enabled */
 static void ahci_raid_init(struct device *dev)
 {
 	u8 irq = 0;
@@ -140,18 +140,18 @@ static void lpc_init(device_t dev)
 }
 
 static struct device_operations lpc_ops = {
-        .read_resources = lpc_read_resources,
-        .set_resources = lpc_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init = lpc_init,
-        .scan_bus = scan_static_bus,
-        .ops_pci = &lops_pci,
+	.read_resources = lpc_read_resources,
+	.set_resources = lpc_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init = lpc_init,
+	.scan_bus = scan_static_bus,
+	.ops_pci = &lops_pci,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-        .ops = &lpc_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_LPC,
+	.ops = &lpc_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_LPC,
 };
 
 static struct device_operations sata_ops = {
@@ -212,34 +212,34 @@ static const struct pci_driver usb_ohci4_driver __pci_driver = {
 
 
 static struct device_operations azalia_ops = {
-        .read_resources = pci_dev_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init = 0,
-        .scan_bus = 0,
-        .ops_pci = &lops_pci,
+	.read_resources = pci_dev_read_resources,
+	.set_resources = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init = 0,
+	.scan_bus = 0,
+	.ops_pci = &lops_pci,
 };
 
 static const struct pci_driver azalia_driver __pci_driver = {
-        .ops = &azalia_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_HDA,
+	.ops = &azalia_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_HDA,
 };
 
 
 static struct device_operations gec_ops = {
-        .read_resources = pci_dev_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init = 0,
-        .scan_bus = 0,
-        .ops_pci = &lops_pci,
+	.read_resources = pci_dev_read_resources,
+	.set_resources = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init = 0,
+	.scan_bus = 0,
+	.ops_pci = &lops_pci,
 };
 
 static const struct pci_driver gec_driver __pci_driver = {
-        .ops = &gec_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_GEC,
+	.ops = &gec_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_GEC,
 };
 
 /**
@@ -248,7 +248,7 @@ static const struct pci_driver gec_driver __pci_driver = {
  * PcibConfig [PM_Reg: EAh], PCIDisable [Bit0]
  * 'PCIDisable' set to 0 to enable P2P bridge.
  * 'PCIDisable' set to 1 to disable P2P bridge and enable PCI interface pins
- *              to function as GPIO {GPIO 35:0}.
+ *		to function as GPIO {GPIO 35:0}.
  */
 static void pci_init(device_t dev)
 {
@@ -260,31 +260,31 @@ static void pci_init(device_t dev)
 
 
 static struct device_operations pci_ops = {
-        .read_resources = pci_bus_read_resources,
-        .set_resources = pci_dev_set_resources,
-        .enable_resources = pci_bus_enable_resources,
-        .init = pci_init,
-        .scan_bus = pci_scan_bridge,
-        .reset_bus = pci_bus_reset,
-        .ops_pci = &lops_pci,
+	.read_resources = pci_bus_read_resources,
+	.set_resources = pci_dev_set_resources,
+	.enable_resources = pci_bus_enable_resources,
+	.init = pci_init,
+	.scan_bus = pci_scan_bridge,
+	.reset_bus = pci_bus_reset,
+	.ops_pci = &lops_pci,
 };
 
 static const struct pci_driver pci_driver __pci_driver = {
-        .ops = &pci_ops,
-        .vendor = PCI_VENDOR_ID_ATI,
-        .device = PCI_DEVICE_ID_ATI_SB800_PCI,
+	.ops = &pci_ops,
+	.vendor = PCI_VENDOR_ID_ATI,
+	.device = PCI_DEVICE_ID_ATI_SB800_PCI,
 };
 
 
 struct device_operations bridge_ops = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pci_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &lops_pci,
+	.init		   = 0,
+	.scan_bus	   = pci_scan_bridge,
+	.enable	   = 0,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = &lops_pci,
 };
 
 /**

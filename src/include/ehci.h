@@ -50,11 +50,11 @@ struct ehci_caps {
 #define HCC_HW_PREFETCH(p)		((p)&(1 << 16))
 
 #define HCC_EXT_CAPS(p)		(((p)>>8)&0xff)	/* for pci extended caps */
-#define HCC_ISOC_CACHE(p)       ((p)&(1 << 7))  /* true: can cache isoc frame */
-#define HCC_ISOC_THRES(p)       (((p)>>4)&0x7)  /* bits 6:4, uframes cached */
+#define HCC_ISOC_CACHE(p)	((p)&(1 << 7))  /* true: can cache isoc frame */
+#define HCC_ISOC_THRES(p)	(((p)>>4)&0x7)  /* bits 6:4, uframes cached */
 #define HCC_CANPARK(p)		((p)&(1 << 2))  /* true: can park on async qh */
 #define HCC_PGM_FRAMELISTLEN(p) ((p)&(1 << 1))  /* true: periodic_size changes*/
-#define HCC_64BIT_ADDR(p)       ((p)&(1))       /* true: can use 64-bit addr */
+#define HCC_64BIT_ADDR(p)	((p)&(1))	/* true: can use 64-bit addr */
 	u8		portroute[8];	 /* nibbles for routing - offset 0xC */
 } __attribute__ ((packed));
 
@@ -151,7 +151,7 @@ struct ehci_regs {
 #define PORT_PE		(1<<2)		/* port enable */
 #define PORT_CSC	(1<<1)		/* connect status change */
 #define PORT_CONNECT	(1<<0)		/* device connected */
-#define PORT_RWC_BITS   (PORT_CSC | PORT_PEC | PORT_OCC)
+#define PORT_RWC_BITS	(PORT_CSC | PORT_PEC | PORT_OCC)
 } __attribute__ ((packed));
 
 #define USBMODE		0x68		/* USB Device mode */

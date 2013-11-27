@@ -123,7 +123,7 @@ static inline void *get_root(void)
 }
 
 static inline void cbmem_entry_assign(struct cbmem_entry *entry,
-                                      u32 id, u32 start, u32 size)
+				      u32 id, u32 start, u32 size)
 {
 	entry->magic = CBMEM_ENTRY_MAGIC;
 	entry->start = start;
@@ -163,7 +163,7 @@ void cbmem_initialize_empty(void)
 	pointer_addr -= sizeof(struct cbmem_root_pointer);
 
 	max_entries = (pointer_addr - (root_addr + sizeof(*root))) /
-	              sizeof(struct cbmem_entry);
+		       sizeof(struct cbmem_entry);
 
 	pointer = (void *)pointer_addr;
 	pointer->magic = CBMEM_POINTER_MAGIC;
@@ -174,13 +174,13 @@ void cbmem_initialize_empty(void)
 	root->num_entries = 0;
 	root->locked = 0;
 	root->size = pointer_addr - root_addr +
-	             sizeof(struct cbmem_root_pointer);
+		      sizeof(struct cbmem_root_pointer);
 
 	/* Add an entry covering the root region. */
 	cbmem_entry_append(root, CBMEM_ID_ROOT, root_addr, root->size);
 
 	printk(BIOS_DEBUG, "CBMEM: root @ %p %d entries.\n",
-	       root, root->max_entries);
+		root, root->max_entries);
 
 	cbmem_arch_init();
 
@@ -205,7 +205,7 @@ static int validate_entries(struct cbmem_root *root)
 	current_end = (u32)get_top_aligned();
 
 	printk(BIOS_DEBUG, "CBMEM: recovering %d/%d entries from root @ %p\n",
-	       root->num_entries, root->max_entries, root);
+		root->num_entries, root->max_entries, root);
 
 	/* Check that all regions are properly aligned and are just below
 	 * the previous entry */
@@ -431,7 +431,7 @@ static void init_cbmem_pre_device(void *unused)
 
 BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 	BOOT_STATE_INIT_ENTRY(BS_PRE_DEVICE, BS_ON_ENTRY,
-	                      init_cbmem_pre_device, NULL),
+			       init_cbmem_pre_device, NULL),
 };
 
 void cbmem_add_lb_mem(struct lb_memory *mem)

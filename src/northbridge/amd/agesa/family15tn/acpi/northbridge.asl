@@ -55,7 +55,7 @@ Device(PBR2) {
 	Name(_PRW, Package() {0x18, 4})
 	Method(_PRT,0) {
 		If(PMOD){ Return(APS2) }   /* APIC mode */
-		Return (PS2)                  /* PIC Mode */
+		Return (PS2)			/* PIC Mode */
 	} /* end _PRT */
 } /* end PBR2 */
 

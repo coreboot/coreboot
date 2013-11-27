@@ -21,7 +21,7 @@
  *  for rs690 internal graphics device
  *  device id of internal grphics:
  *	RS690M/T: 0x791f
- *    RS690:	   0x791e
+ *    RS690:		0x791e
  */
 #include <console/console.h>
 #include <device/device.h>
@@ -260,15 +260,15 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 		case 1:
 		case 2:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x7f7f : 0xccfefe);
+						    cfg->gfx_lane_reversal ? 0x7f7f : 0xccfefe);
 			break;
 		case 4:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x3f3f : 0xccfcfc);
+						    cfg->gfx_lane_reversal ? 0x3f3f : 0xccfcfc);
 			break;
 		case 8:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x0f0f : 0xccf0f0);
+						    cfg->gfx_lane_reversal ? 0x0f0f : 0xccf0f0);
 			break;
 		}
 	}
@@ -308,11 +308,11 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 		case 1:
 		case 2:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x0707 : 0x0e0e);
+						    cfg->gfx_lane_reversal ? 0x0707 : 0x0e0e);
 			break;
 		case 4:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x0303 : 0x0c0c);
+						    cfg->gfx_lane_reversal ? 0x0303 : 0x0c0c);
 			break;
 		}
 	}
@@ -338,11 +338,11 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 		case 1:
 		case 2:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x7070 : 0xe0e0);
+						    cfg->gfx_lane_reversal ? 0x7070 : 0xe0e0);
 			break;
 		case 4:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x3030 : 0xc0c0);
+						    cfg->gfx_lane_reversal ? 0x3030 : 0xc0c0);
 			break;
 		}
 	}
@@ -416,7 +416,7 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* step 0, REFCLK_SEL, skip A11 revision */
 	set_nbmisc_enable_bits(nb_dev, 0x6a, 1 << 9,
-			       cfg->gfx_dev2_dev3 ? 1 << 9 : 0 << 9);
+				  cfg->gfx_dev2_dev3 ? 1 << 9 : 0 << 9);
 	printk(BIOS_INFO, "rs690_gfx_init step0.\n");
 
 	/* step 1, lane reversal (only need if CMOS option is enabled) */
@@ -465,48 +465,48 @@ void rs690_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* done by enable_pci_bar3() before */
 
 	/* step 6 SBIOS compile flags */
-        if (cfg->gfx_tmds) {
-                /* step 6.2.2 Clock-Muxing Control */
-                /* step 6.2.2.1 */
-                set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 16, 1 << 16);
+	if (cfg->gfx_tmds) {
+		/* step 6.2.2 Clock-Muxing Control */
+		/* step 6.2.2.1 */
+		set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 16, 1 << 16);
 
-                /* step 6.2.2.2 */
-                set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 8, 1 << 8);
-                set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 10, 1 << 10);
+		/* step 6.2.2.2 */
+		set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 8, 1 << 8);
+		set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 10, 1 << 10);
 
-                /* step 6.2.2.3 */
-                set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 26, 1 << 26);
+		/* step 6.2.2.3 */
+		set_nbmisc_enable_bits(nb_dev, 0x7, 1 << 26, 1 << 26);
 
-                /* step 6.2.3 Lane-Muxing Control */
-                /* step 6.2.3.1 */
-                set_nbmisc_enable_bits(nb_dev, 0x37, 0x3 << 8, 0x2 << 8);
+		/* step 6.2.3 Lane-Muxing Control */
+		/* step 6.2.3.1 */
+		set_nbmisc_enable_bits(nb_dev, 0x37, 0x3 << 8, 0x2 << 8);
 
-                /* step 6.2.4 Received Data Control */
-                /* step 6.2.4.1 */
-                set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 16, 0x2 << 16);
+		/* step 6.2.4 Received Data Control */
+		/* step 6.2.4.1 */
+		set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 16, 0x2 << 16);
 
-                /* step 6.2.4.2 */
-                set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 18, 0x3 << 18);
+		/* step 6.2.4.2 */
+		set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 18, 0x3 << 18);
 
-                /* step 6.2.4.3 */
-                set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 20, 0x0 << 20);
+		/* step 6.2.4.3 */
+		set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 20, 0x0 << 20);
 
-                /* step 6.2.4.4 */
-                set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 22, 0x1 << 22);
+		/* step 6.2.4.4 */
+		set_pcie_enable_bits(nb_dev, 0x40, 0x3 << 22, 0x1 << 22);
 
-                /* step 6.2.5 PLL Power Down Control */
-                /* step 6.2.5.1 */
-                set_nbmisc_enable_bits(nb_dev, 0x35, 0x3 << 6, 0x0 << 6);
+		/* step 6.2.5 PLL Power Down Control */
+		/* step 6.2.5.1 */
+		set_nbmisc_enable_bits(nb_dev, 0x35, 0x3 << 6, 0x0 << 6);
 
-                /* step 6.2.6 Driving Strength Control */
-                /* step 6.2.6.1 */
-                set_nbmisc_enable_bits(nb_dev, 0x34, 0x1 << 24, 0x0 << 24);
+		/* step 6.2.6 Driving Strength Control */
+		/* step 6.2.6.1 */
+		set_nbmisc_enable_bits(nb_dev, 0x34, 0x1 << 24, 0x0 << 24);
 
-                /* step 6.2.6.2 */
-                set_nbmisc_enable_bits(nb_dev, 0x35, 0x3 << 2, 0x3 << 2);
-        }
+		/* step 6.2.6.2 */
+		set_nbmisc_enable_bits(nb_dev, 0x35, 0x3 << 2, 0x3 << 2);
+	}
 
-        printk(BIOS_INFO, "rs690_gfx_init step6.\n");
+	printk(BIOS_INFO, "rs690_gfx_init step6.\n");
 
 	/* step 7 compliance state, (only need if CMOS option is enabled) */
 	/* the compliance stete is just for test. refer to 4.2.5.2 of PCIe specification */

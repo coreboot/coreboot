@@ -383,14 +383,14 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 	print_debug("\n");
 
 	val = (drt0[index] | ((trc - 11) << 12) | ((cl - 3) << 9)
-	       | ((cl - 3) << 6) | ((cl - 3) << 3));
+		| ((cl - 3) << 6) | ((cl - 3) << 3));
 	print_debug("drt0 = ");
 	print_debug_hex32(val);
 	print_debug("\n");
 	pci_write_config32(ctrl->f0, DRT0, val);
 
 	val = (drt1[index] | ((tras - 8) << 28) | ((trtp - 2) << 25)
-	       | (twtr << 15));
+		| (twtr << 15));
 	print_debug("drt1 = ");
 	print_debug_hex32(val);
 	print_debug("\n");
@@ -503,8 +503,8 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 {
 	u8 c1,c2;
-        u32 dimm,i;
-        u32 data32;
+	u32 dimm,i;
+	u32 data32;
 	u32 t4;
 
 	/* Set up northbridge values */
@@ -700,7 +700,7 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		write32(BAR+DCALCSR, (0x80000003 | ((cs+1)<<21)));
 		do data32 = read32(BAR+DCALCSR);
 		while (data32 & 0x80000000);
-        }
+	}
 
 	udelay(16);
 	/* No command */

@@ -102,12 +102,12 @@ static void southbridge_init(struct device *dev)
 
 static struct device_operations r8610_sb_ops = {
 	.read_resources   = r8610_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = &southbridge_init,
 	.scan_bus	  = scan_static_bus,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {

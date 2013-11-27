@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2009 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -41,9 +41,9 @@
 
 /* Speedstep related MSRs */
 #define IA32_PLATFORM_ID  0x017
-#define IA32_PERF_STS     0x198
-#define IA32_PERF_CTL     0x199
-#define MSR_THERM2_CTL    0x19D
+#define IA32_PERF_STS	  0x198
+#define IA32_PERF_CTL	  0x199
+#define MSR_THERM2_CTL	  0x19D
 #define IA32_MISC_ENABLES 0x1A0
 #define MSR_FSB_FREQ		0xcd
 #define MSR_FSB_CLOCK_VCC	0xce

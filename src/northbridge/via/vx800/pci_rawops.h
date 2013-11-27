@@ -44,7 +44,7 @@ static void pci_modify_config8(device_t dev, unsigned where, u8 orval, u8 mask)
 }
 
 static void via_pci_inittable(u8 chipversion,
-		       const struct VIA_PCI_REG_INIT_TABLE *initdata)
+			 const struct VIA_PCI_REG_INIT_TABLE *initdata)
 {
 	u8 i = 0;
 	device_t devbxdxfx;
@@ -61,11 +61,11 @@ static void via_pci_inittable(u8 chipversion,
 		    && (chipversion <= initdata[i].ChipRevisionEnd)) {
 			devbxdxfx =
 			    PCI_DEV(initdata[i].Bus, initdata[i].Device,
-				       initdata[i].Function);
+					   initdata[i].Function);
 			pci_modify_config8(devbxdxfx,
-					      initdata[i].Register,
-					      initdata[i].Value,
-					      initdata[i].Mask);
+						   initdata[i].Register,
+						   initdata[i].Value,
+						   initdata[i].Mask);
 		}
 	}
 }

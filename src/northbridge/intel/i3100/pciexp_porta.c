@@ -67,22 +67,22 @@ static unsigned int pcie_scan_bridge(struct device *dev, unsigned int max)
 
 static struct device_operations pcie_ops  = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = pcie_init,
-	.scan_bus         = pcie_scan_bridge,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = 0,
+	.init		   = pcie_init,
+	.scan_bus	   = pcie_scan_bridge,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver pci_driver_0 __pci_driver = {
-	.ops    = &pcie_ops,
+	.ops	 = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_3100_PCIE_PA0,
 };
 
 static const struct pci_driver pci_driver_1 __pci_driver = {
-	.ops    = &pcie_ops,
+	.ops	 = &pcie_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_3100_PCIE_PA1,
 };

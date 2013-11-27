@@ -177,11 +177,11 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_add_table(rsdp, srat);
 
 	/* SLIT */
-        printk(BIOS_DEBUG, "ACPI:    * SLIT\n");
-        slit = (acpi_slit_t *) current;
-        acpi_create_slit(slit);
-        current+=slit->header.length;
-        acpi_add_table(rsdp,slit);
+	printk(BIOS_DEBUG, "ACPI:    * SLIT\n");
+	slit = (acpi_slit_t *) current;
+	acpi_create_slit(slit);
+	current+=slit->header.length;
+	acpi_add_table(rsdp,slit);
 
 	/* SSDT */
 	printk(BIOS_DEBUG, "ACPI:    * SSDT\n");

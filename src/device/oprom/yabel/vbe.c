@@ -106,7 +106,7 @@ vbe_info(vbe_info_t * info)
 	// offset 6: 32bit le containing segment:offset of OEM String in virtual Mem.
 	info->oem_string_ptr =
 	    biosmem + ((in16le(vbe_info_buffer + 8) << 4) +
-		       in16le(vbe_info_buffer + 6));
+			 in16le(vbe_info_buffer + 6));
 
 	// offset 10: 32bit le capabilities
 	info->capabilities = in32le(vbe_info_buffer + 10);
@@ -125,7 +125,7 @@ vbe_info(vbe_info_t * info)
 	while ((i <
 		(sizeof(info->video_mode_list) /
 		 sizeof(info->video_mode_list[0])))
-	       && (info->video_mode_list[i - 1] != 0xFFFF));
+		&& (info->video_mode_list[i - 1] != 0xFFFF));
 
 	//offset 18: 16bit le total memory in 64KB blocks
 	info->total_memory = in16le(vbe_info_buffer + 18);
@@ -172,8 +172,8 @@ vbe_get_mode_info(vbe_mode_info_t * mode_info)
 
 	//pointer to mode_info_block is in ES:DI
 	memcpy(mode_info->mode_info_block,
-	       biosmem + ((M.x86.R_ES << 4) + M.x86.R_DI),
-	       sizeof(mode_info->mode_info_block));
+		biosmem + ((M.x86.R_ES << 4) + M.x86.R_DI),
+		sizeof(mode_info->mode_info_block));
 	mode_info_valid = 1;
 
 	//printf("Mode Info Dump:");
@@ -410,8 +410,8 @@ vbe_get_ddc_info(vbe_ddc_info_t * ddc_info)
 	}
 
 	memcpy(ddc_info->edid_block_zero,
-	       biosmem + (M.x86.R_ES << 4) + M.x86.R_DI,
-	       sizeof(ddc_info->edid_block_zero));
+		biosmem + (M.x86.R_ES << 4) + M.x86.R_DI,
+		sizeof(ddc_info->edid_block_zero));
 
 	return 0;
 }
@@ -457,8 +457,8 @@ vbe_get_info(void)
 	// as input, it must contain a screen_info_input_t with the following content:
 	// byte[0:3] = "DDC\0" (zero-terminated signature header)
 	// byte[4:5] = reserved space for the return struct... just in case we ever change
-	//             the struct and don't have reserved enough memory (and let's hope the struct
-	//             never gets larger than 64KB)
+	//		the struct and don't have reserved enough memory (and let's hope the struct
+	//		never gets larger than 64KB)
 	// byte[6] = monitor port number for DDC requests ("only" one byte... so lets hope we never have more than 255 monitors...
 	// byte[7:8] = max. screen width (OF may want to limit this)
 	// byte[9] = required color depth in bpp
@@ -514,7 +514,7 @@ vbe_get_info(void)
 	}
 	DEBUG_PRINTF_VBE("DDC: found display type %d\n", output->display_type);
 	memcpy(output->edid_block_zero, ddc_info.edid_block_zero,
-	       sizeof(ddc_info.edid_block_zero));
+		sizeof(ddc_info.edid_block_zero));
 	i = 0;
 	vbe_mode_info_t mode_info;
 	vbe_mode_info_t best_mode_info;
@@ -621,14 +621,14 @@ vbe_get_info(void)
 			for (g = 0; g < mc_size; g++) {
 				for (b = 0; b < mc_size; b++) {
 					curr_color_index =
-					    (r * mc_size * mc_size) +
-					    (g * mc_size) + b;
+						 (r * mc_size * mc_size) +
+						 (g * mc_size) + b;
 					curr_color = 0;
 					curr_color |= ((u32) mixed_color_values[r]) << 16;	//red value
 					curr_color |= ((u32) mixed_color_values[g]) << 8;	//green value
 					curr_color |= (u32) mixed_color_values[b];	//blue value
 					vbe_set_color(curr_color_index,
-						      curr_color);
+							    curr_color);
 				}
 			}
 		}
@@ -726,8 +726,8 @@ void vbe_set_graphics(void)
 	// int imagesize = 1024*768*2;
 
 	unsigned char *jpeg = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-						    "bootsplash.jpg",
-						    CBFS_TYPE_BOOTSPLASH);
+							  "bootsplash.jpg",
+							  CBFS_TYPE_BOOTSPLASH);
 	if (!jpeg) {
 		DEBUG_PRINTF_VBE("Could not find bootsplash.jpg\n");
 		return;

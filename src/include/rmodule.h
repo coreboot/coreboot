@@ -50,7 +50,7 @@ int rmodule_load_alignment(const struct rmodule *m);
  * load_offset is the address to load and relocate the rmodule.
  * region_alignment must be a power of 2. */
 int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
-                        size_t *region_size, int *load_offset);
+			size_t *region_size, int *load_offset);
 
 #define FIELD_ENTRY(x_) ((u32)&x_)
 #define RMODULE_HEADER(entry_, type_)					\

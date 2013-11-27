@@ -629,7 +629,7 @@ void acpi_resume(void *wake_vec)
 	/* Restore GNVS pointer in SMM if found */
 	if (gnvs_address && *gnvs_address) {
 		printk(BIOS_DEBUG, "Restore GNVS pointer to 0x%08x\n",
-		       *gnvs_address);
+			 *gnvs_address);
 		smm_setup_structures((void *)*gnvs_address, NULL, NULL);
 	}
 #endif
@@ -723,7 +723,7 @@ void *acpi_find_wakeup_vector(void)
 
 	if (facs == NULL) {
 		printk(BIOS_DEBUG, "No FACS found, wake up from S3 not "
-		       "possible.\n");
+			 "possible.\n");
 		return NULL;
 	}
 
@@ -757,7 +757,7 @@ void acpi_jump_to_wakeup(void *vector)
 
 	if (!acpi_backup_memory) {
 		printk(BIOS_WARNING, "ACPI: Backup memory missing. "
-		       "No S3 resume.\n");
+			 "No S3 resume.\n");
 		return;
 	}
 #endif
@@ -779,7 +779,7 @@ void acpi_jump_to_wakeup(void *vector)
 #endif
 
 	acpi_do_wakeup((u32)vector, acpi_backup_memory, CONFIG_RAMBASE,
-		       HIGH_MEMORY_SAVE);
+			 HIGH_MEMORY_SAVE);
 }
 #endif
 

@@ -74,7 +74,7 @@ static void killme_debug_4g_remap_reg(u32 reg32)
 	remapstart <<= 26;
 	remapend <<= 26;
 	printk(BIOS_DEBUG, "Remapstart %lld(MB) \n", remapstart >> 20);
-	printk(BIOS_DEBUG, "Remapend   %lld(MB) \n", remapend >> 20);
+	printk(BIOS_DEBUG, "Remapend	%lld(MB) \n", remapend >> 20);
 }
 
 /**
@@ -97,14 +97,14 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 	 * The remapping mechanism works like this:
 	 *
 	 * - Choose the top of low memory.
-	 *      This becomes the "remap from"
+	 *	 This becomes the "remap from"
 	 * - Choose a chunk above 4G where to remap.
-	 *      This becomes "remap to"
+	 *	 This becomes "remap to"
 	 * - Choose a chunk above 4G where to end the remapping.
-	 *      This becomes "remap until"
+	 *	 This becomes "remap until"
 	 *
 	 * This remaps a "chunk" of memory where we want to.
-	 *      sizeof(chunk) = until - to;
+	 *	 sizeof(chunk) = until - to;
 	 *
 	 * Therefore the memory region from "from" to " from + sizeof(chunk)"
 	 * becomes accessible at "to" to "until"
@@ -159,16 +159,16 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 
 		if (end < (tolm >> 26)) {
 			printk(BIOS_DEBUG, "Huh? rank %ld don't need remap?\n",
-			       i);
+				  i);
 			continue;
 		}
 
 		printk(BIOS_DEBUG, "Physical rank %u is mapped to\n"
-		       "    Start address: 0x%.10llx (%dMB)\n"
-		       "    End   address: 0x%.10llx (%dMB)\n",
-		       (int)i,
-		       ((u64) start << 26), (start << (26 - 20)),
-		       ((u64) end << 26), (end << (26 - 20)));
+			 "    Start address: 0x%.10llx (%dMB)\n"
+			 "    End   address: 0x%.10llx (%dMB)\n",
+			 (int)i,
+			 ((u64) start << 26), (start << (26 - 20)),
+			 ((u64) end << 26), (end << (26 - 20)));
 
 		if (end < (RAM_4GB >> 26))
 			end = (RAM_4GB >> 26);
@@ -183,11 +183,11 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 		pci_write_config8(mcu, 0x40 + i, end);
 
 		printk(BIOS_DEBUG, "ReMapped Physical rank %u, to\n"
-		       "    Start address: 0x%.10llx (%dMB)\n"
-		       "    End   address: 0x%.10llx (%dMB)\n",
-		       (int)i,
-		       ((u64) start << 26), (start << (26 - 20)),
-		       ((u64) end << 26), (end << (26 - 20)));
+			 "    Start address: 0x%.10llx (%dMB)\n"
+			 "    End   address: 0x%.10llx (%dMB)\n",
+			 (int)i,
+			 ((u64) start << 26), (start << (26 - 20)),
+			 ((u64) end << 26), (end << (26 - 20)));
 	}
 
 	/* The "remap to where?" register */
@@ -217,8 +217,8 @@ static void vx900_set_resources(device_t dev)
 
 	int idx = 10;
 	const device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
-					     PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
-					     0);
+						  PCI_DEVICE_ID_VIA_VX900_MEMCTRL,
+						  0);
 	if (!mcu) {
 		die("Something is terribly wrong.\n"
 		    " We tried locating the MCU on the PCI bus, "
@@ -227,12 +227,12 @@ static void vx900_set_resources(device_t dev)
 
 	/* How much low adrress space do we have? */
 	pci_tolm = find_pci_tolm(dev->link_list);
-	printk(BIOS_SPEW, "Found PCI tolm at           %.8x\n", pci_tolm);
-	printk(BIOS_SPEW, "Found PCI tolm at           %dMB\n", pci_tolm >> 20);
+	printk(BIOS_SPEW, "Found PCI tolm at		%.8x\n", pci_tolm);
+	printk(BIOS_SPEW, "Found PCI tolm at		%dMB\n", pci_tolm >> 20);
 
 	/* Figure out the total amount of RAM */
 	tomk = vx900_get_top_of_ram(mcu) >> 10;
-	printk(BIOS_SPEW, "Found top of memory at      %dMB\n", tomk >> 10);
+	printk(BIOS_SPEW, "Found top of memory at	%dMB\n", tomk >> 10);
 
 	/* Do the same for top of low RAM */
 	vx900_tolm = (pci_read_config16(mcu, 0x84) & 0xfff0) >> 4;
@@ -240,7 +240,7 @@ static void vx900_set_resources(device_t dev)
 	/* Remap above 4G if needed */
 	full_tolmk = MIN(full_tolmk, pci_tolm >> 10);
 	printk(BIOS_SPEW, "Found top of low memory at  %dMB\n",
-	       full_tolmk >> 10);
+		full_tolmk >> 10);
 
 	/* What about the framebuffer for the integrated GPU? */
 	fbufk = chrome9hd_fb_size() >> 10;
@@ -250,7 +250,7 @@ static void vx900_set_resources(device_t dev)
 	tolmk = MIN(full_tolmk, tomk);
 	tolmk -= fbufk;
 	ram_resource(dev, idx++, 0, 640);
-	printk(BIOS_SPEW, "System ram left:            %dMB\n", tolmk >> 10);
+	printk(BIOS_SPEW, "System ram left:		%dMB\n", tolmk >> 10);
 	/* FIXME: how can we avoid leaving this hole?
 	 * Leave a hole for VGA, 0xa0000 - 0xc0000  ?? */
 	/* TODO: VGA Memory hole can be disabled in SNMIC. Upper 64k of ROM seem
@@ -261,7 +261,7 @@ static void vx900_set_resources(device_t dev)
 	uma_memory_base = tolmk << 10;
 
 	printk(BIOS_DEBUG, "UMA @ %lldMB + %lldMB\n", uma_memory_base >> 20,
-	       uma_memory_size >> 20);
+		uma_memory_size >> 20);
 	/* FIXME: How do we handle remapping above 4G? */
 	u64 tor = vx900_remap_above_4g(mcu, pci_tolm);
 	ram_resource(dev, idx++, RAM_4GB >> 10, (tor - RAM_4GB) >> 10);

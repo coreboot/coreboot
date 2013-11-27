@@ -36,7 +36,7 @@
 /***************************************************************************/
 DCacheSetup:
 	/* Save the BIST result */
-	movl    %eax, %ebx
+	movl	 %eax, %ebx
 
 	invd
 	/* set cache properties */
@@ -189,24 +189,24 @@ DCacheSetupGood:
 	call	main
 done_cache_as_ram_main:
 
-        /* We now run over the stack-in-cache, copying it back to itself to invalidate the cache */
+	/* We now run over the stack-in-cache, copying it back to itself to invalidate the cache */
 
-        push   %edi
-        mov    $(CONFIG_DCACHE_RAM_SIZE/4),%ecx
-        push   %esi
-        mov    $(CONFIG_DCACHE_RAM_BASE),%edi
-        mov    %edi,%esi
-        cld
-        rep movsl %ds:(%esi),%es:(%edi)
-        pop    %esi
-        pop    %edi
+	push   %edi
+	mov    $(CONFIG_DCACHE_RAM_SIZE/4),%ecx
+	push   %esi
+	mov    $(CONFIG_DCACHE_RAM_BASE),%edi
+	mov    %edi,%esi
+	cld
+	rep movsl %ds:(%esi),%es:(%edi)
+	pop    %esi
+	pop    %edi
 
 	/* Clear the cache out to ram */
 	wbinvd
-        /* re-enable the cache */
-        movl    %cr0, %eax
-        xorl             $(CR0_CD + CR0_NW), %eax        /* clear  the CD and NW bits */
-        movl    %eax, %cr0
+	/* re-enable the cache */
+	movl	%cr0, %eax
+	xorl		 $(CR0_CD + CR0_NW), %eax	 /* clear  the CD and NW bits */
+	movl	%eax, %cr0
 
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)

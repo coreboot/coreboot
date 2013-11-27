@@ -35,7 +35,7 @@ struct bus *get_pbus_smbus(device_t dev)
 	if (!pbus || !pbus->dev || !pbus->dev->ops
 	    || !pbus->dev->ops->ops_smbus_bus) {
 		printk(BIOS_ALERT, "%s Cannot find SMBus bus operations",
-		       dev_path(dev));
+			 dev_path(dev));
 		die("");
 	}
 
@@ -127,11 +127,11 @@ int smbus_process_call(device_t dev, u8 cmd, u16 data)
 int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_read(dev, cmd,
-							      bytes, buffer);
+								     bytes, buffer);
 }
 
 int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer)
 {
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_write(dev, cmd,
-							       bytes, buffer);
+								      bytes, buffer);
 }

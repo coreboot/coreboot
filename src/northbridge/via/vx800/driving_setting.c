@@ -65,7 +65,7 @@ Processing: According to DRAM frequency to ODT control bits.
       		the last register	to be programmed.
 */
 //-------------------------------------------------------------------------------
-//                      ODT Lookup Table
+//			ODT Lookup Table
 //-------------------------------------------------------------------------------
 #define Rank0_ODT				0
 #define Rank1_ODT				1
@@ -79,15 +79,15 @@ Processing: According to DRAM frequency to ODT control bits.
 #define DDR2_ODT_150ohm			0x40
 
 // Setting of ODT Lookup TBL
-//                      RankMAP , Rank 3               Rank 2              Rank 1              Rank 0           , DRAM & NB ODT setting
-//                  db  0000b   , Reserved
+//			RankMAP , Rank 3	       Rank 2		   Rank 1	       Rank 0		, DRAM & NB ODT setting
+//		    db  0000b	, Reserved
 #define ODTLookup_Tbl_count 8
 static const u8 ODTLookup_TBL[ODTLookup_Tbl_count][3] = {
 	// 0001b
 	{0x01,
 	 (Rank3_ODT << 6) + (Rank2_ODT << 4) + (Rank1_ODT << 2) +
 	 Rank0_ODT, DDR2_ODT_150ohm + NB_ODT_75ohm},
-	// 0010b        , Reserved
+	// 0010b	 , Reserved
 	// 0011b
 	{0x03,
 	 (Rank3_ODT << 6) + (Rank2_ODT << 4) + (Rank0_ODT << 2) +
@@ -100,15 +100,15 @@ static const u8 ODTLookup_TBL[ODTLookup_Tbl_count][3] = {
 	{0x05,
 	 (Rank3_ODT << 6) + (Rank0_ODT << 4) + (Rank1_ODT << 2) +
 	 Rank2_ODT, DDR2_ODT_75ohm + NB_ODT_150ohm},
-	// 0110b        , Reserved
+	// 0110b	 , Reserved
 	// 0111b
 	{0x07,
 	 (Rank3_ODT << 6) + (Rank0_ODT << 4) + (Rank2_ODT << 2) +
 	 Rank2_ODT, DDR2_ODT_75ohm + NB_ODT_150ohm},
-	// 1000b        , Reserved
-	// 1001b        , Reserved
-	// 1010b        , Reserved
-	// 1011b        , Reserved
+	// 1000b	 , Reserved
+	// 1001b	 , Reserved
+	// 1010b	 , Reserved
+	// 1011b	 , Reserved
 	// 1100b
 	{0x0c,
 	 (Rank2_ODT << 6) + (Rank3_ODT << 4) + (Rank1_ODT << 2) +
@@ -117,7 +117,7 @@ static const u8 ODTLookup_TBL[ODTLookup_Tbl_count][3] = {
 	{0x0d,
 	 (Rank0_ODT << 6) + (Rank0_ODT << 4) + (Rank1_ODT << 2) +
 	 Rank2_ODT, DDR2_ODT_75ohm + NB_ODT_150ohm},
-	// 1110b        , Reserved
+	// 1110b	 , Reserved
 	// 1111b
 	{0x0f,
 	 (Rank0_ODT << 6) + (Rank0_ODT << 4) + (Rank2_ODT << 2) +
@@ -125,7 +125,7 @@ static const u8 ODTLookup_TBL[ODTLookup_Tbl_count][3] = {
 };
 
 #define ODT_Table_Width_DDR2		4
-//                                                                                               RxD6   RxD3
+//												 RxD6	RxD3
 static const u8 ODT_Control_DDR2[ODT_Table_Width_DDR2] = { 0xFC, 0x01 };
 
 void DrivingODT(DRAM_SYS_ATTR * DramAttr)
@@ -201,14 +201,14 @@ void DrivingODT(DRAM_SYS_ATTR * DramAttr)
 			bFound = FALSE;
 			for (i = 0; i < ODTLookup_Tbl_count; i++) {
 				if ((DramAttr->RankPresentMap & 0x0F) ==
-				    ODTLookup_TBL[i][0]) {
+					ODTLookup_TBL[i][0]) {
 					Data = ODTLookup_TBL[i][1];
 					bFound = TRUE;
 				}
 			}
 			if (!bFound) {	/*set default value */
 				Data =
-				    ODTLookup_TBL[ODTLookup_Tbl_count - 1][1];
+					ODTLookup_TBL[ODTLookup_Tbl_count - 1][1];
 			}
 			pci_write_config8(MEMCTRL, 0x9c, Data);
 

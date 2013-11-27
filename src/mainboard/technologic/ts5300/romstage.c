@@ -22,10 +22,10 @@
 /* PAR register setup */
 void setup_pars(void)
 {
-        volatile unsigned long *par;
-        par = (unsigned long *) 0xfffef088;
+	volatile unsigned long *par;
+	par = (unsigned long *) 0xfffef088;
 
-        /* NOTE: Ron says, move this to mainboard.c */
+	/* NOTE: Ron says, move this to mainboard.c */
 	*par++ = 0x00000000;
 	*par++ = 0x340f0070;
 	*par++ = 0x380701f0;
@@ -147,8 +147,8 @@ static void main(unsigned long bist)
 	for(i = 0; i < 100; i++)
 		;
 
-        setupsc520();
-        console_init();
+	setupsc520();
+	console_init();
 
 
 	print_err("Technologic Systems TS5300 - http://www.embeddedx86.com/\n");

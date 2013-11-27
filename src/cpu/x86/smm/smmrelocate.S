@@ -100,9 +100,9 @@
  *   13		0x9cc00		0xa4c00		0xac900
  *   14		0x9c800		0xa4800		0xac500
  *   15		0x9c400		0xa4400		0xac100
- *    .		   .		   .		   .
- *    .		   .		   .		   .
- *    .		   .		   .		   .
+ *    .		   .			  .			.
+ *    .		   .			  .			.
+ *    .		   .			  .			.
  *   31		0x98400		0xa0400		0xa8100
  *
  * With 32 cores, the SMM handler would need to fit between
@@ -123,7 +123,7 @@ smm_relocation_start:
 	 *   Intel Core Solo/Duo:  0x30007
 	 *   Intel Core2 Solo/Duo: 0x30100
 	 *   Intel SandyBridge:    0x30101
-	 *   AMD64:                0x3XX64
+	 *   AMD64:		    0x3XX64
 	 * This check does not make much sense, unless someone ports
 	 * SMI handling to AMD64 CPUs.
 	 */

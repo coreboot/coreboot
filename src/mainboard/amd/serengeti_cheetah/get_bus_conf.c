@@ -19,23 +19,23 @@ static unsigned pci1234x[] = {	//Here you only need to set value in pci1234 for 
 	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 	0x0000ff0,
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0
 };
 
 static unsigned hcdnx[] = {	//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
 };
 
 static unsigned get_bus_conf_done = 0;
@@ -109,8 +109,8 @@ void get_bus_conf(void)
 		m->bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-		       m->bus_8111_0, sysconf.sbdn);
+			 "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+			 m->bus_8111_0, sysconf.sbdn);
 	}
 
 	/* 8132-1 */
@@ -119,8 +119,8 @@ void get_bus_conf(void)
 		m->bus_8132_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-		       m->bus_8132_0, m->sbdn3);
+			 "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+			 m->bus_8132_0, m->sbdn3);
 	}
 
 	/* 8132-2 */
@@ -129,8 +129,8 @@ void get_bus_conf(void)
 		m->bus_8132_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-		       m->bus_8132_0, m->sbdn3 + 1);
+			 "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+			 m->bus_8132_0, m->sbdn3 + 1);
 	}
 
 	/* HT chain 1 */
@@ -157,11 +157,11 @@ void get_bus_conf(void)
 					  PCI_DEVFN(m->sbdn3a[j], 0));
 			if (dev) {
 				m->bus_8132a[j][1] =
-				    pci_read_config8(dev, PCI_SECONDARY_BUS);
+					pci_read_config8(dev, PCI_SECONDARY_BUS);
 			} else {
 				printk(BIOS_DEBUG,
-				       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-				       m->bus_8132a[j][0], m->sbdn3a[j]);
+					   "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+					   m->bus_8132a[j][0], m->sbdn3a[j]);
 			}
 
 			/* 8132-2 */
@@ -170,11 +170,11 @@ void get_bus_conf(void)
 					  PCI_DEVFN(m->sbdn3a[j] + 1, 0));
 			if (dev) {
 				m->bus_8132a[j][2] =
-				    pci_read_config8(dev, PCI_SECONDARY_BUS);
+					pci_read_config8(dev, PCI_SECONDARY_BUS);
 			} else {
 				printk(BIOS_DEBUG,
-				       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-				       m->bus_8132a[j][0], m->sbdn3a[j] + 1);
+					   "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+					   m->bus_8132a[j][0], m->sbdn3a[j] + 1);
 			}
 
 			break;
@@ -190,12 +190,12 @@ void get_bus_conf(void)
 
 			if (dev) {
 				m->bus_8151[j][1] =
-				    pci_read_config8(dev, PCI_SECONDARY_BUS);
-				//                        printk(BIOS_DEBUG, "bus_8151_1=%d\n",bus_8151[j][1]);
+					pci_read_config8(dev, PCI_SECONDARY_BUS);
+				//			      printk(BIOS_DEBUG, "bus_8151_1=%d\n",bus_8151[j][1]);
 			} else {
 				printk(BIOS_DEBUG,
-				       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-				       m->bus_8151[j][0], m->sbdn5[j] + 1);
+					   "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+					   m->bus_8151[j][0], m->sbdn5[j] + 1);
 			}
 
 			break;

@@ -119,7 +119,7 @@ static void set_fam10_ext_cfg_enable_bits(device_t fam10_dev, u32 reg_pos, u32 m
 
 
 static void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask,
-				    u8 val)
+					u8 val)
 {
 	u8 reg_old, reg;
 	reg = reg_old = pci_read_config8(nb_dev, reg_pos);
@@ -190,7 +190,7 @@ static const u8 rs780_ibias[] = {
 	[0x2] = 0x4C,		/* 400Mhz HyperTransport 1 only */
 	[0x4] = 0xB6,		/* 600Mhz HyperTransport 1 only */
 	[0x5] = 0x4C,		/* 800Mhz HyperTransport 1 only */
-	[0x6] = 0x9D,		/* 1Ghz   HyperTransport 1 only */
+	[0x6] = 0x9D,		/* 1Ghz	  HyperTransport 1 only */
 	/* HT3 for Family 10 */
 	[0x7] = 0xB6,		/* 1.2Ghz HyperTransport 3 only */
 	[0x8] = 0x2B,		/* 1.4Ghz HyperTransport 3 only */
@@ -394,8 +394,8 @@ static void fam10_optimization(void)
 	Set_NB32(cpu_f3, 0x148, 0x8000832A);
 	/* Table 8-26 */
 	Set_NB32(cpu_f3, 0x158, 0);
-	/*          L3 Disabled:  L3 Enabled: */
-	/* cores:    2   3    4    2   3    4  */
+	/*	     L3 Disabled:  L3 Enabled: */
+	/* cores:    2	  3    4    2	3    4  */
 	/* bit8:4   28  26   24   24  20   16 */
 	if (!l3_cache()) {
 		Set_NB32(cpu_f3, 0x1A0, 4 << 12 | (24 + 2*(4-cpu_core_number())) << 4 | 2);
@@ -483,13 +483,13 @@ static void rs780_por_misc_index_init(device_t nb_dev)
 	 *   HIDE_NB_AGP_CAP  ([0], default=1)HIDE
 	 *   HIDE_P2P_AGP_CAP ([1], default=1)HIDE
 	 *   HIDE_NB_GART_BAR ([2], default=1)HIDE
-	 *   AGPMODE30        ([4], default=0)DISABLE
+	 *   AGPMODE30	       ([4], default=0)DISABLE
 	 *   AGP30ENCHANCED   ([5], default=0)DISABLE
 	 *   HIDE_AGP_CAP     ([8], default=1)ENABLE */
 	set_nbmisc_enable_bits(nb_dev, 0x00, ~0xFFFF0000, 0x00000506);	/* set bit 10 for MSI */
 
 	/* NBMISCIND:0x6A[16]= 1 SB link can get a full swing
-	 *      set_nbmisc_enable_bits(nb_dev, 0x6A, 0ffffffffh, 000010000);
+	 *	 set_nbmisc_enable_bits(nb_dev, 0x6A, 0ffffffffh, 000010000);
 	 * NBMISCIND:0x6A[17]=1 Set CMGOOD_OVERRIDE. */
 	set_nbmisc_enable_bits(nb_dev, 0x6A, ~0xffffffff, 0x00020000);
 

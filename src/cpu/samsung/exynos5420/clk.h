@@ -49,7 +49,7 @@ enum pll_src_bit {
  * positions of the peripheral clocks of the src and div registers
  */
 struct clk_bit_info {
-	s8 src_bit;    /* offset in register to clock source field */
+	s8 src_bit;	/* offset in register to clock source field */
 	s8 div_bit;
 	s8 prediv_bit;
 };

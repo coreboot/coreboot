@@ -38,7 +38,7 @@ void i82801bx_enable(device_t dev)
 	index = PCI_FUNC(dev->path.pci.devfn);
 
 	reg16 = pci_read_config16(lpc_dev, FUNC_DIS);
-	reg16 &= ~(1 << index);         /* Enable device. */
+	reg16 &= ~(1 << index);	 /* Enable device. */
 	if (!dev->enabled)
 		reg16 |= (1 << index);  /* Disable device, if desired. */
 	pci_write_config16(lpc_dev, FUNC_DIS, reg16);

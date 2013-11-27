@@ -165,22 +165,22 @@ static void sata_init(struct device *dev)
 
 static struct device_operations sata_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	// .enable        = ck804_enable,
-	.init             = sata_init,
-	.scan_bus         = 0,
-	.ops_pci          = &ck804_pci_ops,
+	// .enable	   = ck804_enable,
+	.init		   = sata_init,
+	.scan_bus	   = 0,
+	.ops_pci	   = &ck804_pci_ops,
 };
 
 static const struct pci_driver sata0_driver __pci_driver = {
-	.ops    = &sata_ops,
+	.ops	 = &sata_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_SATA0,
 };
 
 static const struct pci_driver sata1_driver __pci_driver = {
-	.ops    = &sata_ops,
+	.ops	 = &sata_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_SATA1,
 };

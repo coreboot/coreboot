@@ -41,7 +41,7 @@
 #define RCBA_RPC   0x0224 /* 32 bit */
 #define RCBA_HPTC  0x3404 /* 32 bit */
 #define RCBA_GCS   0x3410 /* 32 bit */
-#define RCBA_FD    0x3418 /* 32 bit */
+#define RCBA_FD	   0x3418 /* 32 bit */
 
 static void early_config(void)
 {

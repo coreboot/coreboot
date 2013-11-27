@@ -87,18 +87,18 @@ void intel_pch_finalize_smm(void);
 
 /* State Machine configuration. */
 #define RCBA_REG_SIZE_MASK 0x8000
-#define   RCBA_REG_SIZE_16   0x8000
-#define   RCBA_REG_SIZE_32   0x0000
+#define	  RCBA_REG_SIZE_16   0x8000
+#define	  RCBA_REG_SIZE_32   0x0000
 #define RCBA_COMMAND_MASK  0x000f
-#define   RCBA_COMMAND_SET   0x0001
-#define   RCBA_COMMAND_READ  0x0002
-#define   RCBA_COMMAND_RMW   0x0003
-#define   RCBA_COMMAND_END   0x0007
+#define	  RCBA_COMMAND_SET   0x0001
+#define	  RCBA_COMMAND_READ  0x0002
+#define	  RCBA_COMMAND_RMW   0x0003
+#define	  RCBA_COMMAND_END   0x0007
 
 #define RCBA_ENCODE_COMMAND(command_, reg_, mask_, or_value_) \
-	{ .command = command_,   \
-	  .reg = reg_,           \
-	  .mask = mask_,         \
+	{ .command = command_,	  \
+	  .reg = reg_,		  \
+	  .mask = mask_,	  \
 	  .or_value = or_value_  \
 	}
 #define RCBA_SET_REG_32(reg_, value_) \
@@ -183,7 +183,7 @@ void enable_usb_bar(void);
 int smbus_read_byte(unsigned device, unsigned address);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
 int early_pch_init(const void *gpio_map,
-                   const struct rcba_config_instruction *rcba_config);
+		   const struct rcba_config_instruction *rcba_config);
 #endif
 /*
  * get GPIO pin value
@@ -214,9 +214,9 @@ void set_gpio(int gpio_num, int value);
 #define SECSTS	0x1e
 #define INTR	0x3c
 #define BCTRL	0x3e
-#define   SBR	(1 << 6)
-#define   SEE	(1 << 1)
-#define   PERE	(1 << 0)
+#define	  SBR	(1 << 6)
+#define	  SEE	(1 << 1)
+#define	  PERE	(1 << 0)
 
 /* Power Management Control and Status */
 #define PCH_PCS			0x84
@@ -246,7 +246,7 @@ void set_gpio(int gpio_num, int value);
 
 #define PMBASE			0x40
 #define ACPI_CNTL		0x44
-#define   ACPI_EN		(1 << 7)
+#define	  ACPI_EN		(1 << 7)
 #define BIOS_CNTL		0xDC
 #define GPIO_BASE		0x48 /* LPC GPIO Base Address Register */
 #define GPIO_CNTL		0x4C /* LPC GPIO Control Register */
@@ -285,48 +285,48 @@ void set_gpio(int gpio_num, int value);
 #define PCH_SATA2_DEV		PCI_DEV(0, 0x1f, 5)
 #define INTR_LN			0x3c
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */
-#define   IDE_DECODE_ENABLE	(1 << 15)
-#define   IDE_SITRE		(1 << 14)
-#define   IDE_ISP_5_CLOCKS	(0 << 12)
-#define   IDE_ISP_4_CLOCKS	(1 << 12)
-#define   IDE_ISP_3_CLOCKS	(2 << 12)
-#define   IDE_RCT_4_CLOCKS	(0 <<  8)
-#define   IDE_RCT_3_CLOCKS	(1 <<  8)
-#define   IDE_RCT_2_CLOCKS	(2 <<  8)
-#define   IDE_RCT_1_CLOCKS	(3 <<  8)
-#define   IDE_DTE1		(1 <<  7)
-#define   IDE_PPE1		(1 <<  6)
-#define   IDE_IE1		(1 <<  5)
-#define   IDE_TIME1		(1 <<  4)
-#define   IDE_DTE0		(1 <<  3)
-#define   IDE_PPE0		(1 <<  2)
-#define   IDE_IE0		(1 <<  1)
-#define   IDE_TIME0		(1 <<  0)
+#define	  IDE_DECODE_ENABLE	(1 << 15)
+#define	  IDE_SITRE		(1 << 14)
+#define	  IDE_ISP_5_CLOCKS	(0 << 12)
+#define	  IDE_ISP_4_CLOCKS	(1 << 12)
+#define	  IDE_ISP_3_CLOCKS	(2 << 12)
+#define	  IDE_RCT_4_CLOCKS	(0 <<  8)
+#define	  IDE_RCT_3_CLOCKS	(1 <<  8)
+#define	  IDE_RCT_2_CLOCKS	(2 <<  8)
+#define	  IDE_RCT_1_CLOCKS	(3 <<  8)
+#define	  IDE_DTE1		(1 <<  7)
+#define	  IDE_PPE1		(1 <<  6)
+#define	  IDE_IE1		(1 <<  5)
+#define	  IDE_TIME1		(1 <<  4)
+#define	  IDE_DTE0		(1 <<  3)
+#define	  IDE_PPE0		(1 <<  2)
+#define	  IDE_IE0		(1 <<  1)
+#define	  IDE_TIME0		(1 <<  0)
 #define IDE_TIM_SEC		0x42	/* IDE timings, secondary */
 
 #define IDE_SDMA_CNT		0x48	/* Synchronous DMA control */
-#define   IDE_SSDE1		(1 <<  3)
-#define   IDE_SSDE0		(1 <<  2)
-#define   IDE_PSDE1		(1 <<  1)
-#define   IDE_PSDE0		(1 <<  0)
+#define	  IDE_SSDE1		(1 <<  3)
+#define	  IDE_SSDE0		(1 <<  2)
+#define	  IDE_PSDE1		(1 <<  1)
+#define	  IDE_PSDE0		(1 <<  0)
 
 #define IDE_SDMA_TIM		0x4a
 
 #define IDE_CONFIG		0x54	/* IDE I/O Configuration Register */
-#define   SIG_MODE_SEC_NORMAL	(0 << 18)
-#define   SIG_MODE_SEC_TRISTATE	(1 << 18)
-#define   SIG_MODE_SEC_DRIVELOW	(2 << 18)
-#define   SIG_MODE_PRI_NORMAL	(0 << 16)
-#define   SIG_MODE_PRI_TRISTATE	(1 << 16)
-#define   SIG_MODE_PRI_DRIVELOW	(2 << 16)
-#define   FAST_SCB1		(1 << 15)
-#define   FAST_SCB0		(1 << 14)
-#define   FAST_PCB1		(1 << 13)
-#define   FAST_PCB0		(1 << 12)
-#define   SCB1			(1 <<  3)
-#define   SCB0			(1 <<  2)
-#define   PCB1			(1 <<  1)
-#define   PCB0			(1 <<  0)
+#define	  SIG_MODE_SEC_NORMAL	(0 << 18)
+#define	  SIG_MODE_SEC_TRISTATE	(1 << 18)
+#define	  SIG_MODE_SEC_DRIVELOW	(2 << 18)
+#define	  SIG_MODE_PRI_NORMAL	(0 << 16)
+#define	  SIG_MODE_PRI_TRISTATE	(1 << 16)
+#define	  SIG_MODE_PRI_DRIVELOW	(2 << 16)
+#define	  FAST_SCB1		(1 << 15)
+#define	  FAST_SCB0		(1 << 14)
+#define	  FAST_PCB1		(1 << 13)
+#define	  FAST_PCB0		(1 << 12)
+#define	  SCB1			(1 <<  3)
+#define	  SCB0			(1 <<  2)
+#define	  PCB1			(1 <<  1)
+#define	  PCB0			(1 <<  0)
 
 #define SATA_SIRI		0xa0 /* SATA Indexed Register Index */
 #define SATA_SIRD		0xa4 /* SATA Indexed Register Data */
@@ -449,7 +449,7 @@ void set_gpio(int gpio_num, int value);
 #define RCBA32(x) *((volatile u32 *)(DEFAULT_RCBA + x))
 
 #define RCBA_AND_OR(bits, x, and, or) \
-        RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or))
+	RCBA##bits(x) = ((RCBA##bits(x) & (and)) | (or))
 #define RCBA8_AND_OR(x, and, or)  RCBA_AND_OR(8, x, and, or)
 #define RCBA16_AND_OR(x, and, or) RCBA_AND_OR(16, x, and, or)
 #define RCBA32_AND_OR(x, and, or) RCBA_AND_OR(32, x, and, or)
@@ -492,13 +492,13 @@ void set_gpio(int gpio_num, int value);
 #define RPFN		0x0404	/* 32bit */
 
 /* Root Port configuratinon space hide */
-#define RPFN_HIDE(port)         (1 << (((port) * 4) + 3))
+#define RPFN_HIDE(port)		(1 << (((port) * 4) + 3))
 /* Get the function number assigned to a Root Port */
-#define RPFN_FNGET(reg,port)    (((reg) >> ((port) * 4)) & 7)
+#define RPFN_FNGET(reg,port)	(((reg) >> ((port) * 4)) & 7)
 /* Set the function number for a Root Port */
-#define RPFN_FNSET(port,func)   (((func) & 7) << ((port) * 4))
+#define RPFN_FNSET(port,func)	(((func) & 7) << ((port) * 4))
 /* Root Port function number mask */
-#define RPFN_FNMASK(port)       (7 << ((port) * 4))
+#define RPFN_FNMASK(port)	(7 << ((port) * 4))
 
 #define TRSR		0x1e00	/*  8bit */
 #define TRCR		0x1e10	/* 64bit */
@@ -537,8 +537,8 @@ void set_gpio(int gpio_num, int value);
 #define IOBPS		0x2338
 #define  IOBPS_READY	0x0001
 #define  IOBPS_TX_MASK	0x0006
-#define  IOBPS_MASK     0xff00
-#define  IOBPS_READ     0x0600
+#define  IOBPS_MASK	0xff00
+#define  IOBPS_READ	0x0600
 #define  IOBPS_WRITE	0x0700
 #define IOBPU		0x233a
 #define  IOBPU_MAGIC	0xf000
@@ -630,31 +630,31 @@ void set_gpio(int gpio_num, int value);
 
 /* ICH7 PMBASE */
 #define PM1_STS		0x00
-#define   WAK_STS	(1 << 15)
-#define   PCIEXPWAK_STS	(1 << 14)
-#define   PRBTNOR_STS	(1 << 11)
-#define   RTC_STS	(1 << 10)
-#define   PWRBTN_STS	(1 << 8)
-#define   GBL_STS	(1 << 5)
-#define   BM_STS	(1 << 4)
-#define   TMROF_STS	(1 << 0)
+#define	  WAK_STS	(1 << 15)
+#define	  PCIEXPWAK_STS	(1 << 14)
+#define	  PRBTNOR_STS	(1 << 11)
+#define	  RTC_STS	(1 << 10)
+#define	  PWRBTN_STS	(1 << 8)
+#define	  GBL_STS	(1 << 5)
+#define	  BM_STS	(1 << 4)
+#define	  TMROF_STS	(1 << 0)
 #define PM1_EN		0x02
-#define   PCIEXPWAK_DIS	(1 << 14)
-#define   RTC_EN	(1 << 10)
-#define   PWRBTN_EN	(1 << 8)
-#define   GBL_EN	(1 << 5)
-#define   TMROF_EN	(1 << 0)
+#define	  PCIEXPWAK_DIS	(1 << 14)
+#define	  RTC_EN	(1 << 10)
+#define	  PWRBTN_EN	(1 << 8)
+#define	  GBL_EN	(1 << 5)
+#define	  TMROF_EN	(1 << 0)
 #define PM1_CNT		0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
-#define    SLP_TYP_S0	0
-#define    SLP_TYP_S1	1
-#define    SLP_TYP_S3	5
-#define    SLP_TYP_S4	6
-#define    SLP_TYP_S5	7
-#define   GBL_RLS	(1 << 2)
-#define   BM_RLD	(1 << 1)
-#define   SCI_EN	(1 << 0)
+#define	  SLP_EN	(1 << 13)
+#define	  SLP_TYP	(7 << 10)
+#define	   SLP_TYP_S0	0
+#define	   SLP_TYP_S1	1
+#define	   SLP_TYP_S3	5
+#define	   SLP_TYP_S4	6
+#define	   SLP_TYP_S5	7
+#define	  GBL_RLS	(1 << 2)
+#define	  BM_RLD	(1 << 1)
+#define	  SCI_EN	(1 << 0)
 #define PM1_TMR		0x08
 #define PROC_CNT	0x10
 #define LV2		0x14
@@ -662,35 +662,35 @@ void set_gpio(int gpio_num, int value);
 #define LV4		0x16
 #define PM2_CNT		0x50 // mobile only
 #define GPE0_STS	0x20
-#define   PME_B0_STS	(1 << 13)
-#define   PME_STS	(1 << 11)
-#define   BATLOW_STS	(1 << 10)
-#define   PCI_EXP_STS	(1 << 9)
-#define   RI_STS	(1 << 8)
-#define   SMB_WAK_STS	(1 << 7)
-#define   TCOSCI_STS	(1 << 6)
-#define   SWGPE_STS	(1 << 2)
-#define   HOT_PLUG_STS	(1 << 1)
+#define	  PME_B0_STS	(1 << 13)
+#define	  PME_STS	(1 << 11)
+#define	  BATLOW_STS	(1 << 10)
+#define	  PCI_EXP_STS	(1 << 9)
+#define	  RI_STS	(1 << 8)
+#define	  SMB_WAK_STS	(1 << 7)
+#define	  TCOSCI_STS	(1 << 6)
+#define	  SWGPE_STS	(1 << 2)
+#define	  HOT_PLUG_STS	(1 << 1)
 #define GPE0_STS_2	0x24
 #define GPE0_EN		0x28
-#define   PME_B0_EN	(1 << 13)
-#define   PME_EN	(1 << 11)
-#define   TCOSCI_EN	(1 << 6)
+#define	  PME_B0_EN	(1 << 13)
+#define	  PME_EN	(1 << 11)
+#define	  TCOSCI_EN	(1 << 6)
 #define GPE0_EN_2	0x2c
 #define SMI_EN		0x30
-#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
-#define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
-#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
-#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
-#define   MCSMI_EN	 (1 << 11) // Trap microcontroller range access
-#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
-#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
-#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
-#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
-#define   LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
-#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
-#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
-#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
+#define	  INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
+#define	  LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
+#define	  PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
+#define	  TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
+#define	  MCSMI_EN	 (1 << 11) // Trap microcontroller range access
+#define	  BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
+#define	  SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
+#define	  APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
+#define	  SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
+#define	  LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
+#define	  BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
+#define	  EOS		 (1 <<  1) // End of SMI (deassert SMI#)
+#define	  GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
 #define SMI_STS		0x34
 #define ALT_GP_SMI_EN	0x38
 #define ALT_GP_SMI_STS	0x3a
@@ -699,7 +699,7 @@ void set_gpio(int gpio_num, int value);
 #define SS_CNT		0x50
 #define C3_RES		0x54
 #define TCO1_STS	0x64
-#define   DMISCI_STS	(1 << 9)
+#define	  DMISCI_STS	(1 << 9)
 #define TCO2_STS	0x66
 #define ALT_GP_SMI_EN2	0x5c
 #define ALT_GP_SMI_STS2	0x5e
@@ -765,19 +765,19 @@ void set_gpio(int gpio_num, int value);
 
 #define SPI_OPPREFIX ((0x50 << 8) | 0x06) /* EWSR and WREN */
 
-#define SPIBAR_HSFS                 0x3804   /* SPI hardware sequence status */
-#define  SPIBAR_HSFS_SCIP           (1 << 5) /* SPI Cycle In Progress */
-#define  SPIBAR_HSFS_AEL            (1 << 2) /* SPI Access Error Log */
-#define  SPIBAR_HSFS_FCERR          (1 << 1) /* SPI Flash Cycle Error */
-#define  SPIBAR_HSFS_FDONE          (1 << 0) /* SPI Flash Cycle Done */
-#define SPIBAR_HSFC                 0x3806   /* SPI hardware sequence control */
+#define SPIBAR_HSFS		    0x3804   /* SPI hardware sequence status */
+#define  SPIBAR_HSFS_SCIP	    (1 << 5) /* SPI Cycle In Progress */
+#define  SPIBAR_HSFS_AEL	    (1 << 2) /* SPI Access Error Log */
+#define  SPIBAR_HSFS_FCERR	    (1 << 1) /* SPI Flash Cycle Error */
+#define  SPIBAR_HSFS_FDONE	    (1 << 0) /* SPI Flash Cycle Done */
+#define SPIBAR_HSFC		    0x3806   /* SPI hardware sequence control */
 #define  SPIBAR_HSFC_BYTE_COUNT(c)  (((c - 1) & 0x3f) << 8)
-#define  SPIBAR_HSFC_CYCLE_READ     (0 << 1) /* Read cycle */
+#define  SPIBAR_HSFC_CYCLE_READ	    (0 << 1) /* Read cycle */
 #define  SPIBAR_HSFC_CYCLE_WRITE    (2 << 1) /* Write cycle */
 #define  SPIBAR_HSFC_CYCLE_ERASE    (3 << 1) /* Erase cycle */
-#define  SPIBAR_HSFC_GO             (1 << 0) /* GO: start SPI transaction */
-#define SPIBAR_FADDR                0x3808   /* SPI flash address */
-#define SPIBAR_FDATA(n)             (0x3810 + (4 * n)) /* SPI flash data */
+#define  SPIBAR_HSFC_GO		    (1 << 0) /* GO: start SPI transaction */
+#define SPIBAR_FADDR		    0x3808   /* SPI flash address */
+#define SPIBAR_FDATA(n)		    (0x3810 + (4 * n)) /* SPI flash data */
 
 #endif /* __ACPI__ */
 #endif				/* SOUTHBRIDGE_INTEL_LYNXPOINT_PCH_H */

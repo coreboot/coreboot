@@ -24,7 +24,7 @@
 #include "AGESA.h"
 
 #define BIOS_HEAP_START_ADDRESS  0x00010000
-#define BIOS_HEAP_SIZE       0x20000   /* 64MB */
+#define BIOS_HEAP_SIZE	     0x20000   /* 64MB */
 
 typedef struct _BIOS_HEAP_MANAGER {
   //UINT32 AvailableSize;

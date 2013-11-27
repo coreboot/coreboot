@@ -126,7 +126,7 @@ SECTIONS
 	}
 	_relocations_begin_offset = LOADADDR(.relocations);
 	_relocations_end_offset  = _relocations_begin_offset +
-	                           SIZEOF(.relocations);
+				    SIZEOF(.relocations);
 
 	/DISCARD/ : {
 		/* Drop unnecessary sections. Since these modules are linked

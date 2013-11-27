@@ -159,16 +159,16 @@ config INCLUDE_CONFIG_FILE
 
 	    $ cbfstool coreboot.rom print
 	    coreboot.rom: 4096 kB, bootblocksize 1008, romsize 4194304,
-	                                               offset 0x0
+							offset 0x0
 	    Alignment: 64 bytes
 
-	    Name                           Offset     Type         Size
-	    cmos_layout.bin                0x0        cmos layout  1159
-	    fallback/romstage              0x4c0      stage        339756
-	    fallback/coreboot_ram          0x53440    stage        186664
-	    fallback/payload               0x80dc0    payload      51526
-	    config                         0x8d740    raw          3324
-	    (empty)                        0x8e480    null         3610440
+	    Name			    Offset     Type	    Size
+	    cmos_layout.bin		    0x0	       cmos layout  1159
+	    fallback/romstage		    0x4c0      stage	    339756
+	    fallback/coreboot_ram	    0x53440    stage	    186664
+	    fallback/payload		    0x80dc0    payload	    51526
+	    config			    0x8d740    raw	    3324
+	    (empty)			    0x8e480    null	    3610440
 
 config EARLY_CBMEM_INIT
 	bool

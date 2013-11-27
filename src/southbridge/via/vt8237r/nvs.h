@@ -35,7 +35,7 @@ typedef struct {
 	u8	dbgs; /* 0x11 - Debug state */
 	u8	linx; /* 0x12 - Linux OS */
 	u8	dckn; /* 0x13 - PCIe docking state */
-	u8      rsvd[0x28-0x14];
+	u8	 rsvd[0x28-0x14];
 	/* Processor Identification */
 	u8	apic; /* 0x28 - APIC enabled */
 	u8	mpen; /* 0x29 - MP capable/enabled */

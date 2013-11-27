@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*	Vendor Name    : IDT
- *	Vendor ID      : 0x111d76e5
- *	Subsystem ID   : 0x103c18f9
- *	Revision ID    : 0x100303
+/*	Vendor Name	  : IDT
+ *	Vendor ID	  : 0x111d76e5
+ *	Subsystem ID	  : 0x103c18f9
+ *	Revision ID	  : 0x100303
  */
 
 
@@ -213,18 +213,18 @@ static const u32 mainboard_cim_verb_data[] = {
 		0x00D70740, /* Enable PortD as Output */
 		0x0017A200, /* Disable ClkEn of PortSenseTst */
 		0x0017C621, /* Slave Port - Port A used as microphone input for
-		                            combo Jack
-		               Master Port - Port B used for Jack Presence Detect
-		               Enable Combo Jack Detection */
+					      combo Jack
+				 Master Port - Port B used for Jack Presence Detect
+				 Enable Combo Jack Detection */
 		0x0017A208, /* Enable ClkEn of PortSenseTst */
 		0x00170500, /* Set power state to D0 */
 
 	/* --- Next Codec --- */
 
-/*	Vendor Name    : Intel
- *	Vendor ID      : 0x80862806
- *	Subsystem ID   : 0x80860101
- *	Revision ID    : 0x100000
+/*	Vendor Name	  : Intel
+ *	Vendor ID	  : 0x80862806
+ *	Subsystem ID	  : 0x80860101
+ *	Revision ID	  : 0x100000
  */
 	/* coreboot specific header */
 	0x80862806,	// Codec Vendor / Device ID: Intel PantherPoint HDMI

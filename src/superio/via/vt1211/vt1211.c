@@ -137,8 +137,8 @@ static void vt1211_pnp_set_resources(struct device *dev)
 	for (res = dev->resource_list; res; res = res->next) {
 		if (!(res->flags & IORESOURCE_ASSIGNED)) {
 			printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010Lx "
-			       "not assigned\n", dev_path(dev), res->index,
-			       resource_type(res), res->size);
+				  "not assigned\n", dev_path(dev), res->index,
+				  resource_type(res), res->size);
 			continue;
 		}
 
@@ -151,7 +151,7 @@ static void vt1211_pnp_set_resources(struct device *dev)
 			pnp_set_irq(dev, res->index, res->base);
 		} else {
 			printk(BIOS_ERR, "ERROR: %s %02lx unknown resource "
-			       "type\n", dev_path(dev), res->index);
+				  "type\n", dev_path(dev), res->index);
 			return;
 		}
 		res->flags |= IORESOURCE_STORED;
@@ -164,11 +164,11 @@ static void vt1211_pnp_set_resources(struct device *dev)
 
 struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = vt1211_pnp_set_resources,
+	.set_resources	   = vt1211_pnp_set_resources,
 	.enable_resources = vt1211_pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = vt1211_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = vt1211_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_8787_aa,
 };
 
 /* TODO: Check if 0x07f8 is correct for FDC/PP/SP1/SP2, the rest is correct. */

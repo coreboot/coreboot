@@ -49,7 +49,7 @@ static int int15_handler(void)
 	int res = 0;
 
 	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-	       __func__, X86_AX, X86_BX, X86_CX, X86_DX);
+		__func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
 	switch (X86_AX) {
 	case 0x5f34:
@@ -58,7 +58,7 @@ static int int15_handler(void)
 		 *  bit 2 = Graphics Stretching
 		 *  bit 1 = Text Stretching
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
-		 *  0     = video bios default
+		 *  0	    = video bios default
 		 */
 		X86_AX = 0x005f;
 		X86_CX = 0x0001;
@@ -115,13 +115,13 @@ static int int15_handler(void)
 		default:
 			/* Interrupt was not handled */
 			printk(BIOS_DEBUG,
-			       "Unknown INT15 5f70 function: 0x%02x\n",
+				  "Unknown INT15 5f70 function: 0x%02x\n",
 				((X86_CX >> 8) & 0xff));
 			break;
 		}
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
 		break;
 	}

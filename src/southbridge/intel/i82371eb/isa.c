@@ -39,7 +39,7 @@ static void enable_intel_82093aa_ioapic(void)
 	device_t dev;
 
 	dev = dev_find_device(PCI_VENDOR_ID_INTEL,
-			      PCI_DEVICE_ID_INTEL_82371AB_ISA, 0);
+				 PCI_DEVICE_ID_INTEL_82371AB_ISA, 0);
 
 	/* Enable IOAPIC. */
 	reg16 = pci_read_config16(dev, XBCS);

@@ -28,7 +28,7 @@
 /*
  * Need two versions because ROMCC chokes on certain clobbers:
  * cache.h:29.71: cache.h:60.24: earlymtrr.c:117.23: romstage.c:144.33:
- * 0x1559920 asm        Internal compiler error: lhs 1 regcm == 0
+ * 0x1559920 asm	Internal compiler error: lhs 1 regcm == 0
  */
 
 #if defined(__GNUC__)

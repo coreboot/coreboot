@@ -61,33 +61,33 @@ static struct pci_operations ti_pci1x2y_pci_ops = {
 
 struct device_operations southbridge_ti_pci1x2x_pciops = {
 	.read_resources   = cardbus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = cardbus_enable_resources,
-	.init             = ti_pci1x2y_init,
-	.scan_bus         = 0,
-	.ops_pci          = &ti_pci1x2y_pci_ops,
+	.init		   = ti_pci1x2y_init,
+	.scan_bus	   = 0,
+	.ops_pci	   = &ti_pci1x2y_pci_ops,
 };
 
 static const struct pci_driver ti_pci1225_driver __pci_driver = {
-	.ops    = &southbridge_ti_pci1x2x_pciops,
+	.ops	 = &southbridge_ti_pci1x2x_pciops,
 	.vendor = PCI_VENDOR_ID_TI,
 	.device = PCI_DEVICE_ID_TI_1225,
 };
 
 static const struct pci_driver ti_pci1420_driver __pci_driver = {
-	.ops    = &southbridge_ti_pci1x2x_pciops,
+	.ops	 = &southbridge_ti_pci1x2x_pciops,
 	.vendor = PCI_VENDOR_ID_TI,
 	.device = PCI_DEVICE_ID_TI_1420,
 };
 
 static const struct pci_driver ti_pci1510_driver __pci_driver = {
-	.ops    = &southbridge_ti_pci1x2x_pciops,
+	.ops	 = &southbridge_ti_pci1x2x_pciops,
 	.vendor = PCI_VENDOR_ID_TI,
 	.device = PCI_DEVICE_ID_TI_1510,
 };
 
 static const struct pci_driver ti_pci1520_driver __pci_driver = {
-	.ops    = &southbridge_ti_pci1x2x_pciops,
+	.ops	 = &southbridge_ti_pci1x2x_pciops,
 	.vendor = PCI_VENDOR_ID_TI,
 	.device = PCI_DEVICE_ID_TI_1520,
 };

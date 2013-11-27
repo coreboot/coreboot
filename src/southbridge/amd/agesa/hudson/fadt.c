@@ -183,7 +183,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 
 	/*
 	 * Note: Under this current AMD C state implementation, this is no longer
-	 *       used and should not be reported to OS.
+	 *	  used and should not be reported to OS.
 	 */
 	fadt->x_pm2_cnt_blk.space_id = ACPI_ADDRESS_SPACE_IO;
 	fadt->x_pm2_cnt_blk.bit_width = 0;

@@ -14,7 +14,7 @@ static void logbuf_tx_byte(unsigned char byte)
 }
 
 static const struct console_driver __console = {
-	.init    = 0,
+	.init	  = 0,
 	.tx_byte = logbuf_tx_byte,
 	.rx_byte = 0,
 	.tst_byte = 0,

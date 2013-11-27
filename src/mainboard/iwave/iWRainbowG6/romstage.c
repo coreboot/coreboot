@@ -133,7 +133,7 @@ void transaction1(unsigned char dev_addr)
 		printk(BIOS_DEBUG, "SMBus Busy.. status =%x\r\n", temp);
 		//sch_SMbus_regs ();
 		printk(BIOS_DEBUG, "SMBHSTSTS. =%x\r\n",
-		       inb(SMBusBase + SMBHSTSTS));
+			 inb(SMBusBase + SMBHSTSTS));
 		if (temp > 0)
 			break;
 	} while (1);
@@ -149,7 +149,7 @@ void transaction1(unsigned char dev_addr)
 	}
 	sch_SMbus_regs();
 	printk(BIOS_DEBUG, "Command in TRansaction 1=%x\r\n\n",
-	       inb(SMBusBase + SMBHSTCMD));
+		inb(SMBusBase + SMBHSTCMD));
 }
 
 void transaction2(unsigned char dev_addr)
@@ -182,7 +182,7 @@ void transaction2(unsigned char dev_addr)
 		printk(BIOS_DEBUG, "SMBus Busy.. status =%x\r\n", temp);
 		//sch_SMbus_regs ();
 		printk(BIOS_DEBUG, "SMBHSTSTS. =%x\r\n",
-		       inb(SMBusBase + SMBHSTSTS));
+			 inb(SMBusBase + SMBHSTSTS));
 		if (temp > 0)
 			break;
 	} while (1);
@@ -199,7 +199,7 @@ void transaction2(unsigned char dev_addr)
 	sch_SMbus_regs();
 
 	printk(BIOS_DEBUG, "Command in TRansaction 2=%x\r\n\n",
-	       inb(SMBusBase + SMBHSTCMD));
+		inb(SMBusBase + SMBHSTCMD));
 }
 
 void transaction3(unsigned char dev_addr)
@@ -229,7 +229,7 @@ void transaction3(unsigned char dev_addr)
 	do {
 		temp = inb(SMBusBase + SMBHSTSTS);
 		printk(BIOS_DEBUG, "SMBHSTSTS. =%x\r\n",
-		       inb(SMBusBase + SMBHSTSTS));
+			 inb(SMBusBase + SMBHSTSTS));
 		//sch_SMbus_regs ();
 		if (temp > 0)
 			break;
@@ -255,7 +255,7 @@ void transaction3(unsigned char dev_addr)
 	printk(BIOS_DEBUG, "Status .. %x\r\n", inb(SMBusBase + SMBHSTDATB + 1));
 	for (index = 0; index < length; index++)
 		printk(BIOS_DEBUG, "Serial Byte[%x]..%x\r\n", index,
-		       inb(SMBusBase + SMBHSTDATB + index));
+			 inb(SMBusBase + SMBHSTDATB + index));
 }
 
 int selectcard(void)
@@ -302,7 +302,7 @@ static void sch_shadow_CMC(void)
 	reg32 = cpuid_eax(0x80000008);
 	printk(BIOS_INFO, "Physical Address size: %d.\n", (reg32 & 0xFF));
 	printk(BIOS_INFO, "Virtual Address size: %d.\n",
-	       ((reg32 & 0xFF00) >> 8));
+		((reg32 & 0xFF00) >> 8));
 	sch_port_access_write_ram_cmd(0xB8, 4, 0, 0x3faf0000);
 	printk(BIOS_DEBUG, "1 ");
 	sch_port_access_write_ram_cmd(0xBA, 4, 0, reg32);

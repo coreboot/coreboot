@@ -117,7 +117,7 @@ static void lpc_init(device_t dev)
 		dword = inl(pm10_bar + 0x10);
 		on = 8 - on;
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
-		       (on * 12) + (on >> 1), (on & 1) * 5);
+			 (on * 12) + (on >> 1), (on & 1) * 5);
 	}
 
 #if 0
@@ -228,7 +228,7 @@ static void mcp55_lpc_enable_childrens_resources(device_t dev)
 						break;
 					}
 					if ((base == 0x290)
-					    || (base >= 0x400)) {
+						 || (base >= 0x400)) {
 						/* Only 4 var; compact them? */
 						if (var_num >= 4)
 							continue;
@@ -252,12 +252,12 @@ static void mcp55_lpc_enable_resources(device_t dev)
 
 static struct device_operations lpc_ops = {
 	.read_resources   = mcp55_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = mcp55_lpc_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-//	.enable           = mcp55_enable,
-	.ops_pci          = &mcp55_pci_ops,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+//	.enable	     = mcp55_enable,
+	.ops_pci	   = &mcp55_pci_ops,
 };
 static const unsigned short lpc_ids[] = {
 	PCI_DEVICE_ID_NVIDIA_MCP55_LPC,
@@ -277,11 +277,11 @@ static const struct pci_driver lpc_driver __pci_driver = {
 
 static struct device_operations lpc_slave_ops = {
 	.read_resources   = mcp55_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = lpc_slave_init,
-//	.enable           = mcp55_enable,
-	.ops_pci          = &mcp55_pci_ops,
+	.init		   = lpc_slave_init,
+//	.enable	     = mcp55_enable,
+	.ops_pci	   = &mcp55_pci_ops,
 };
 
 static const struct pci_driver lpc_driver_slave __pci_driver = {

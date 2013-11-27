@@ -179,7 +179,7 @@ void ram_check(unsigned long start, unsigned long stop)
 	/*
 	 * This is much more of a "Is my DRAM properly configured?"
 	 * test than a "Is my DRAM faulty?" test.  Not all bits
-	 * are tested.   -Tyson
+	 * are tested.	  -Tyson
 	 */
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Testing DRAM at: %08lx\n", start);
@@ -204,7 +204,7 @@ int ram_check_nodie(unsigned long start, unsigned long stop)
 	/*
 	 * This is much more of a "Is my DRAM properly configured?"
 	 * test than a "Is my DRAM faulty?" test.  Not all bits
-	 * are tested.   -Tyson
+	 * are tested.	  -Tyson
 	 */
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "Testing DRAM at : %08lx\n", start);

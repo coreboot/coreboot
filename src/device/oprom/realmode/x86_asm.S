@@ -343,12 +343,12 @@ __interrupt_handler_16bit = RELOCATED(.)
 	pushl	%eax		/* ... and make it the first parameter */
 
 	/* Switch to protected mode */
-	movl    %cr0, %eax
+	movl	 %cr0, %eax
 	orl	$PE, %eax
 	movl	%eax, %cr0
 
 	/* ... and jump to a 32 bit code segment. */
-	data32 ljmp    $0x10, $RELOCATED(1f)
+	data32 ljmp	$0x10, $RELOCATED(1f)
 1:
 	.code32
 	mov	$0x18, %ax

@@ -28,15 +28,15 @@ static struct pci_operations lops_pci = {
 };
 static struct device_operations ide_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = ide_init,
-	.scan_bus         = 0,
-	.ops_pci          = &lops_pci,
+	.init		   = ide_init,
+	.scan_bus	   = 0,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver ide_driver __pci_driver = {
-	.ops    = &ide_ops,
+	.ops	 = &ide_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_IDE,
 };

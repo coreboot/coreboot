@@ -164,8 +164,8 @@ static const u8 ddr3_lut[2][64][8] = {
 	}
 };
 static void lookup_and_write(const int a1step,
-				    const int row, const int col,
-				    unsigned int mchbar)
+					const int row, const int col,
+					unsigned int mchbar)
 {
 	int i;
 

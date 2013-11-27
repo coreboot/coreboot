@@ -22,13 +22,13 @@
 
 #include <cpu/x86/msr.h>
 
-#define HWCR_MSR                        0xC0010015
-#define NB_CFG_MSR                      0xC001001f
-#define LS_CFG_MSR                      0xC0011020
-#define IC_CFG_MSR                      0xC0011021
-#define DC_CFG_MSR                      0xC0011022
-#define BU_CFG_MSR                      0xC0011023
-#define BU_CFG2_MSR                     0xC001102A
+#define HWCR_MSR			0xC0010015
+#define NB_CFG_MSR			0xC001001f
+#define LS_CFG_MSR			0xC0011020
+#define IC_CFG_MSR			0xC0011021
+#define DC_CFG_MSR			0xC0011022
+#define BU_CFG_MSR			0xC0011023
+#define BU_CFG2_MSR			0xC001102A
 
 #define CPU_ID_FEATURES_MSR		0xC0011004
 #define CPU_ID_EXT_FEATURES_MSR		0xC0011005
@@ -50,10 +50,10 @@
 #define  HTTC_RSP_PASS_PW		(1 << 11)
 #define  HTTC_BUF_REL_PRI_SHIFT	13
 #define  HTTC_BUF_REL_PRI_MASK		3
-#define   HTTC_BUF_REL_PRI_64		0
-#define   HTTC_BUF_REL_PRI_16		1
-#define   HTTC_BUF_REL_PRI_8		2
-#define   HTTC_BUF_REL_PRI_2		3
+#define	  HTTC_BUF_REL_PRI_64		0
+#define	  HTTC_BUF_REL_PRI_16		1
+#define	  HTTC_BUF_REL_PRI_8		2
+#define	  HTTC_BUF_REL_PRI_2		3
 #define  HTTC_LIMIT_CLDT_CFG		(1 << 15)
 #define  HTTC_LINT_EN			(1 << 16)
 #define  HTTC_APIC_EXT_BRD_CST		(1 << 17)
@@ -62,10 +62,10 @@
 #define  HTTC_SEQ_ID_SRC_NODE_EN	(1 << 20)
 #define  HTTC_DS_NP_REQ_LIMIT_SHIFT	21
 #define  HTTC_DS_NP_REQ_LIMIT_MASK	3
-#define   HTTC_DS_NP_REQ_LIMIT_NONE	0
-#define   HTTC_DS_NP_REQ_LIMIT_1	1
-#define   HTTC_DS_NP_REQ_LIMIT_4	2
-#define   HTTC_DS_NP_REQ_LIMIT_8	3
+#define	  HTTC_DS_NP_REQ_LIMIT_NONE	0
+#define	  HTTC_DS_NP_REQ_LIMIT_1	1
+#define	  HTTC_DS_NP_REQ_LIMIT_4	2
+#define	  HTTC_DS_NP_REQ_LIMIT_8	3
 
 /* Function 1 */
 

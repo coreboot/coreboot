@@ -57,11 +57,11 @@ typedef struct {
 	int p;
 } read_timing_t;
 static void print_read_timing(const int msg_lvl, const char *const msg,
-			      const int lane, const int channel,
-			      const read_timing_t *const timing)
+				 const int lane, const int channel,
+				 const read_timing_t *const timing)
 {
 	printk(msg_lvl, "%s for byte lane %d on channel %d: %d.%d\n",
-	       msg, lane, channel, timing->t, timing->p);
+		msg, lane, channel, timing->t, timing->p);
 }
 
 static int normalize_read_timing(read_timing_t *const timing)
@@ -76,13 +76,13 @@ static int normalize_read_timing(read_timing_t *const timing)
 	}
 	if (timing->t < 0) {
 		printk(BIOS_WARNING,
-		       "Timing underflow during read training.\n");
+			 "Timing underflow during read training.\n");
 		timing->t = 0;
 		timing->p = 0;
 		return -1;
 	} else if (timing->t >= READ_TIMING_T_BOUND) {
 		printk(BIOS_WARNING,
-		       "Timing overflow during read training.\n");
+			 "Timing overflow during read training.\n");
 		timing->t = READ_TIMING_T_BOUND - 1;
 		timing->p = READ_TIMING_P_BOUND - 1;
 		return -1;
@@ -90,7 +90,7 @@ static int normalize_read_timing(read_timing_t *const timing)
 	return 0;
 }
 static int program_read_timing(const int ch, const int lane,
-			       read_timing_t *const timing)
+				  read_timing_t *const timing)
 {
 	if (normalize_read_timing(timing) < 0)
 		return -1;
@@ -104,7 +104,7 @@ static int program_read_timing(const int ch, const int lane,
 }
 /* Returns 1 on success, 0 on failure. */
 static int read_training_test(const int channel, const int lane,
-			      const address_bunch_t *const addresses)
+				 const address_bunch_t *const addresses)
 {
 	int i;
 
@@ -123,8 +123,8 @@ static int read_training_test(const int channel, const int lane,
 	return 1;
 }
 static int read_training_find_lower(const int channel, const int lane,
-				    const address_bunch_t *const addresses,
-				    read_timing_t *const lower)
+					const address_bunch_t *const addresses,
+					read_timing_t *const lower)
 {
 	/* Coarse search for good t. */
 	program_read_timing(channel, lane, lower);
@@ -150,14 +150,14 @@ static int read_training_find_lower(const int channel, const int lane,
 	return 0;
 }
 static int read_training_find_upper(const int channel, const int lane,
-				    const address_bunch_t *const addresses,
-				    read_timing_t *const upper)
+					const address_bunch_t *const addresses,
+					read_timing_t *const upper)
 {
 	if (program_read_timing(channel, lane, upper) < 0)
 		return -1;
 	if (!read_training_test(channel, lane, addresses)) {
 		printk(BIOS_WARNING,
-		       "Read training failure: limits too narrow.\n");
+			 "Read training failure: limits too narrow.\n");
 		return -1;
 	}
 	/* Coarse search for bad t. */
@@ -275,7 +275,7 @@ static void read_training_restore_results(void)
 			bl_reg |= (3 << 25) | CxRDTy_T(t) | CxRDTy_P(p);
 			MCHBAR32(CxRDTy_MCHBAR(ch, i)) = bl_reg;
 			printk(BIOS_DEBUG, "Restored timings for byte lane "
-			       "%d on channel %d: %d.%d\n", i, ch, t, p);
+				  "%d on channel %d: %d.%d\n", i, ch, t, p);
 		}
 	}
 }
@@ -352,11 +352,11 @@ typedef struct {
 	int p;
 } write_timing_t;
 static void print_write_timing(const int msg_lvl, const char *const msg,
-			       const int group, const int channel,
-			       const write_timing_t *const timing)
+				  const int group, const int channel,
+				  const write_timing_t *const timing)
 {
 	printk(msg_lvl, "%s for group %d on channel %d: %d.%d.%d\n",
-	       msg, group, channel, timing->f, timing->t, timing->p);
+		msg, group, channel, timing->f, timing->t, timing->p);
 }
 
 static int normalize_write_timing(write_timing_t *const timing)
@@ -379,14 +379,14 @@ static int normalize_write_timing(write_timing_t *const timing)
 	}
 	if (timing->f < 0) {
 		printk(BIOS_WARNING,
-		       "Timing underflow during write training.\n");
+			 "Timing underflow during write training.\n");
 		timing->f = 0;
 		timing->t = 0;
 		timing->p = 0;
 		return -1;
 	} else if (timing->f >= WRITE_TIMING_F_BOUND) {
 		printk(BIOS_WARNING,
-		       "Timing overflow during write training.\n");
+			 "Timing overflow during write training.\n");
 		timing->f = WRITE_TIMING_F_BOUND - 1;
 		timing->t = timing->t_bound - 1;
 		timing->p = WRITE_TIMING_P_BOUND - 1;
@@ -406,7 +406,7 @@ static int program_write_timing(const int ch, const int group,
 	const int f = timing->f;
 	const int t = timing->t;
 	const int p = (memclk1067 && (((t ==  9) && (timing->p >= 4)) ||
-				       ((t == 10) && (timing->p < 4))))
+					   ((t == 10) && (timing->p < 4))))
 		? 4 : timing->p;
 	const int d =
 		(t <= d_bounds[memclk1067][0]) ? CxWRTy_BELOW_D :
@@ -422,7 +422,7 @@ static int program_write_timing(const int ch, const int group,
 }
 /* Returns 1 on success, 0 on failure. */
 static int write_training_test(const address_bunch_t *const addresses,
-			       const u32 *const masks)
+				  const u32 *const masks)
 {
 	int i, ret = 0;
 
@@ -461,9 +461,9 @@ _bad_timing_out:
 	return ret;
 }
 static int write_training_find_lower(const int ch, const int group,
-				     const address_bunch_t *const addresses,
-				     const u32 masks[][2], const int memclk1067,
-				     write_timing_t *const lower)
+					 const address_bunch_t *const addresses,
+					 const u32 masks[][2], const int memclk1067,
+					 write_timing_t *const lower)
 {
 	program_write_timing(ch, group, lower, memclk1067);
 	/* Coarse search for good t. */
@@ -488,15 +488,15 @@ static int write_training_find_lower(const int ch, const int group,
 	return 0;
 }
 static int write_training_find_upper(const int ch, const int group,
-				     const address_bunch_t *const addresses,
-				     const u32 masks[][2], const int memclk1067,
-				     write_timing_t *const upper)
+					 const address_bunch_t *const addresses,
+					 const u32 masks[][2], const int memclk1067,
+					 write_timing_t *const upper)
 {
 	if (program_write_timing(ch, group, upper, memclk1067) < 0)
 		return -1;
 	if (!write_training_test(addresses, masks[group])) {
 		printk(BIOS_WARNING,
-		       "Write training failure; limits too narrow.\n");
+			 "Write training failure; limits too narrow.\n");
 		return -1;
 	}
 	/* Coarse search for bad t. */
@@ -517,12 +517,12 @@ static int write_training_find_upper(const int ch, const int group,
 	return 0;
 }
 static void write_training_per_group(const int ch, const int group,
-				     const address_bunch_t *const addresses,
-				     const u32 masks[][2], const int memclk1067)
+					 const address_bunch_t *const addresses,
+					 const u32 masks[][2], const int memclk1067)
 {
 	const int t_bound = memclk1067 ? 12 : 11;
 	write_timing_t lower = { 0, 0, t_bound, 0 },
-		       upper = { 0, 0, t_bound, 0 };
+			 upper = { 0, 0, t_bound, 0 };
 
 	/*** Search lower bound. ***/
 
@@ -533,7 +533,7 @@ static void write_training_per_group(const int ch, const int group,
 	lower.f = ((reg >>  2) & 0x3) - 1;
 
 	if (write_training_find_lower(ch, group, addresses,
-				      masks, memclk1067, &lower) < 0)
+					  masks, memclk1067, &lower) < 0)
 		die("Write training failure: lower bound.\n");
 	print_write_timing(BIOS_SPEW, "Lower bound", group, ch, &lower);
 
@@ -545,7 +545,7 @@ static void write_training_per_group(const int ch, const int group,
 	upper.f = lower.f;
 
 	if (write_training_find_upper(ch, group, addresses,
-				      masks, memclk1067, &upper) < 0)
+					  masks, memclk1067, &upper) < 0)
 		printk(BIOS_WARNING, "Write training failure: upper bound.\n");
 	print_write_timing(BIOS_SPEW, "Upper bound", group, ch, &upper);
 
@@ -567,7 +567,7 @@ static void perform_write_training(const int memclk1067,
 				   const dimminfo_t *const dimms)
 {
 	const int cardF[] = { dimms[0].card_type == 0xf,
-			      dimms[1].card_type == 0xf };
+				 dimms[1].card_type == 0xf };
 	int ch, r, group;
 
 	address_bunch_t addr[2] = { { { 0, }, 0 }, { { 0, }, 0 }, };
@@ -642,8 +642,8 @@ static void write_training_restore_results(const int memclk1067)
 			timing.p = bytes[(ch * 8) + (i * 2)] & 7;
 			program_write_timing(ch, i, &timing, memclk1067);
 			printk(BIOS_DEBUG, "Restored timings for group %d "
-					   "on channel %d: %d.%d.%d\n",
-			       i, ch, timing.f, timing.t, timing.p);
+						"on channel %d: %d.%d.%d\n",
+				  i, ch, timing.f, timing.t, timing.p);
 		}
 	}
 }

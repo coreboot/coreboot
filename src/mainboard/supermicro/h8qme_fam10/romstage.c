@@ -82,23 +82,23 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-        uint32_t dword;
-        uint8_t byte;
-        enable_smbus();
+	uint32_t dword;
+	uint8_t byte;
+	enable_smbus();
 //	smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
 	smbusx_write_byte(1, (0x58>>1), 0xb1, 0xff); /* set FAN ctrl to DC mode */
 
-        byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20;
-        pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
+	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
 
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1<<0);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
+	dword |= (1<<0);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
 
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
-        dword |= (1<<16);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4);
+	dword |= (1<<16);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa4, dword);
 }
 
 static const u8 spd_addr[] = {
@@ -163,17 +163,17 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 bsp_apicid = 0, val, wants_reset;
 	msr_t msr;
 
-        if (!cpu_init_detectedx && boot_cpu()) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		set_bsp_node_CHtExtNodeCfgEn();
 		enumerate_ht_chain();
 		sio_setup();
-        }
+	}
 
   post_code(0x30);
 
-        if (bist == 0)
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
   post_code(0x32);
@@ -222,13 +222,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
   * of the BSP located right after sysinfo.
   */
 
-        wait_all_core0_started();
+	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS
  /* Core0 on each node is configured. Now setup any additional cores. */
  printk(BIOS_DEBUG, "start_other_cores()\n");
-        start_other_cores();
+	start_other_cores();
  post_code(0x37);
-        wait_all_other_cores_started(bsp_apicid);
+	wait_all_other_cores_started(bsp_apicid);
 #endif
 
  post_code(0x38);
@@ -240,14 +240,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  /* FIXME: The sb fid change may survive the warm reset and only
   * need to be done once.*/
 
-        enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
+	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
  post_code(0x39);
 
- if (!warm_reset_detect(0)) {      // BSP is node 0
+ if (!warm_reset_detect(0)) {	   // BSP is node 0
    init_fidvid_bsp(bsp_apicid, sysinfo->nodes);
  } else {
    init_fidvid_stage2(bsp_apicid, 0);  // BSP is node 0
-        }
+	}
 
  post_code(0x3A);
 
@@ -263,9 +263,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  /* Reset for HT, FIDVID, PLL and errata changes to take affect. */
  if (!warm_reset_detect(0)) {
    print_info("...WARM RESET...\n\n\n");
-              	soft_reset();
+	      	soft_reset();
    die("After soft_reset_x - shouldn't see this message!!!\n");
-        }
+	}
 
  if (wants_reset)
    printk(BIOS_DEBUG, "mcp55_early_setup_x wanted additional reset!\n");
@@ -279,7 +279,7 @@ fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 post_code(0x3D);
 
 //printk(BIOS_DEBUG, "enable_smbus()\n");
-//        enable_smbus(); /* enable in sio_setup */
+//	  enable_smbus(); /* enable in sio_setup */
 
 post_code(0x40);
 
@@ -304,8 +304,8 @@ post_code(0x40);
  *	based on each device's unit count.
  *
  * Parameters:
- *	@param[in]  u8  node    = The node on which this chain is located
- *	@param[in]  u8  link    = The link on the host for this chain
+ *	@param[in]  u8  node	   = The node on which this chain is located
+ *	@param[in]  u8  link	   = The link on the host for this chain
  *	@param[out] u8** list   = supply a pointer to a list
  *	@param[out] BOOL result = true to use a manual list
  *				  false to initialize the link automatically

@@ -270,7 +270,7 @@ static void gma_read_resources(struct device *dev)
 }
 
 static struct pci_operations gma_pci_ops = {
-	.set_subsystem    = gma_set_subsystem,
+	.set_subsystem	   = gma_set_subsystem,
 };
 
 static struct device_operations gma_func0_ops = {

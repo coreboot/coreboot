@@ -25,7 +25,7 @@
  * This file is used to switch on/off IDS features.
  *
  * @xrefitem bom "File Content Label" "Release Content"
- * @e project:      AGESA
+ * @e project:	    AGESA
  * @e sub-project:  Core
  * @e \$Revision: 12067 $   @e \$Date: 2009-04-11 04:34:13 +0800 (Sat, 11 Apr 2009) $
  */
@@ -56,9 +56,9 @@
 
 //#define IDSOPT_DEBUG_ENABLED  FALSE
 //#undef IDSOPT_HOST_SIMNOW
-//#define IDSOPT_HOST_SIMNOW    FALSE
+//#define IDSOPT_HOST_SIMNOW	FALSE
 //#undef IDSOPT_HOST_HDT
-//#define IDSOPT_HOST_HDT       FALSE
+//#define IDSOPT_HOST_HDT	FALSE
 //#define IDS_DEBUG_PORT    0x80
 
 #endif

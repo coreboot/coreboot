@@ -44,7 +44,7 @@ static device_t find_lpc_dev(device_t dev, unsigned devfn)
 		u32 id;
 		id = pci_read_config32(lpc_dev, PCI_VENDOR_ID);
 		if ((id != (PCI_VENDOR_ID_NVIDIA |
-		      (PCI_DEVICE_ID_NVIDIA_CK804_LPC << 16)))
+			(PCI_DEVICE_ID_NVIDIA_CK804_LPC << 16)))
 		    && (id != (PCI_VENDOR_ID_NVIDIA |
 			 (PCI_DEVICE_ID_NVIDIA_CK804_PRO << 16)))
 		    && (id != (PCI_VENDOR_ID_NVIDIA |

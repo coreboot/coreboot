@@ -49,7 +49,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 12.2 on  end # USB
 				device pci 13.0 on  end # USB
 				device pci 13.2 on  end # USB
-				device pci 14.0 on      # SMBUS
+				device pci 14.0 on	    # SMBUS
 					chip drivers/generic/generic #dimm 0
 						device i2c 50 on end # 7-bit SPD address
 					end
@@ -59,7 +59,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				end # SM
 				device pci 14.1 off end # IDE	0x439c
 				device pci 14.2 on  end # HDA	0x4383
-				device pci 14.3 on      # LPC	0x439d
+				device pci 14.3 on	    # LPC	0x439d
 					chip superio/ite/it8712f
 						device pnp 2e.0 off #  Floppy
 							io 0x60 = 0x3f0

@@ -63,7 +63,7 @@ struct bus {
 	unsigned char	link_num;	/* The index of this link */
 	uint16_t	secondary; 	/* secondary bus number */
 	uint16_t	subordinate;	/* max subordinate bus number */
-	unsigned char   cap;		/* PCi capability offset */
+	unsigned char	 cap;		/* PCi capability offset */
 	unsigned	reset_needed : 1;
 	unsigned	disable_relaxed_ordering : 1;
 };
@@ -77,7 +77,7 @@ struct pci_irq_info {
 	unsigned int	ioapic_irq_pin;
 	unsigned int	ioapic_src_pin;
 	unsigned int	ioapic_dst_id;
-	unsigned int    ioapic_flags;
+	unsigned int	 ioapic_flags;
 };
 
 struct device {
@@ -95,9 +95,9 @@ struct device {
 	u16		subsystem_device;
 	unsigned int	class;		/* 3 bytes: (base, sub, prog-if) */
 	unsigned int	hdr_type;	/* PCI header type */
-	unsigned int    enabled : 1;	/* set if we should enable the device */
-	unsigned int    initialized : 1; /* set if we have initialized the device */
-	unsigned int    on_mainboard : 1;
+	unsigned int	 enabled : 1;	/* set if we should enable the device */
+	unsigned int	 initialized : 1; /* set if we have initialized the device */
+	unsigned int	 on_mainboard : 1;
 	struct pci_irq_info pci_irq_info[4];
 	u8 command;
 
@@ -190,7 +190,7 @@ void show_devs_subtree(struct device *root, int debug_level, const char *msg);
 void show_all_devs(int debug_level, const char *msg);
 void show_all_devs_tree(int debug_level, const char *msg);
 void show_one_resource(int debug_level, struct device *dev,
-		       struct resource *resource, const char *comment);
+			 struct resource *resource, const char *comment);
 void show_all_devs_resources(int debug_level, const char* msg);
 
 /* Rounding for boundaries.

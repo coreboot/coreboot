@@ -35,9 +35,9 @@ void power_enable_hw_thermal_trip(void);
 #define DPTX_PHY_ENABLE		(1 << 0)
 
 /* PMU_DEBUG bits [12:8] = 0x1000 selects XXTI clock source */
-#define PMU_DEBUG_XXTI                          0x1000
+#define PMU_DEBUG_XXTI				0x1000
 /* Mask bit[12:8] for xxti clock selection */
-#define PMU_DEBUG_CLKOUT_SEL_MASK               0x1f00
+#define PMU_DEBUG_CLKOUT_SEL_MASK		0x1f00
 
 /* Power Management Unit register map */
 struct exynos5_power {
@@ -55,7 +55,7 @@ struct exynos5_power {
 	uint32_t	inform1;		/* 0x0804 */
 	uint8_t		reserved6[0x1f8];
 	uint32_t	pmu_debug;		/* 0x0A00*/
-	uint8_t         reserved7[0x2908];
+	uint8_t	 reserved7[0x2908];
 	uint32_t	ps_hold_ctrl;		/* 0x330c */
 } __attribute__ ((__packed__));
 

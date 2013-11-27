@@ -170,9 +170,9 @@ int LzmaDecode(CLzmaDecoderState *vs,
     CProb *prob;
     UInt32 bound;
     int posState = (int)(
-        (nowPos
-        )
-        & posStateMask);
+	(nowPos
+	)
+	& posStateMask);
 
     prob = p + IsMatch + (state << kNumPosBitsMax) + posState;
     IfBit0(prob)
@@ -180,30 +180,30 @@ int LzmaDecode(CLzmaDecoderState *vs,
       int symbol = 1;
       UpdateBit0(prob)
       prob = p + Literal + (LZMA_LIT_SIZE *
-        (((
-        (nowPos
-        )
-        & literalPosMask) << lc) + (previousByte >> (8 - lc))));
+	(((
+	(nowPos
+	)
+	& literalPosMask) << lc) + (previousByte >> (8 - lc))));
 
       if (state >= kNumLitStates)
       {
-        int matchByte;
-        matchByte = outStream[nowPos - rep0];
-        do
-        {
-          int bit;
-          CProb *probLit;
-          matchByte <<= 1;
-          bit = (matchByte & 0x100);
-          probLit = prob + 0x100 + bit + symbol;
-          RC_GET_BIT2(probLit, symbol, if (bit != 0) break, if (bit == 0) break)
-        }
-        while (symbol < 0x100);
+	int matchByte;
+	matchByte = outStream[nowPos - rep0];
+	do
+	{
+	  int bit;
+	  CProb *probLit;
+	  matchByte <<= 1;
+	  bit = (matchByte & 0x100);
+	  probLit = prob + 0x100 + bit + symbol;
+	  RC_GET_BIT2(probLit, symbol, if (bit != 0) break, if (bit == 0) break)
+	}
+	while (symbol < 0x100);
       }
       while (symbol < 0x100)
       {
-        CProb *probLit = prob + symbol;
-        RC_GET_BIT(probLit, symbol)
+	CProb *probLit = prob + symbol;
+	RC_GET_BIT(probLit, symbol)
       }
       previousByte = (Byte)symbol;
 
@@ -218,173 +218,173 @@ int LzmaDecode(CLzmaDecoderState *vs,
       prob = p + IsRep + state;
       IfBit0(prob)
       {
-        UpdateBit0(prob);
-        rep3 = rep2;
-        rep2 = rep1;
-        rep1 = rep0;
-        state = state < kNumLitStates ? 0 : 3;
-        prob = p + LenCoder;
+	UpdateBit0(prob);
+	rep3 = rep2;
+	rep2 = rep1;
+	rep1 = rep0;
+	state = state < kNumLitStates ? 0 : 3;
+	prob = p + LenCoder;
       }
       else
       {
-        UpdateBit1(prob);
-        prob = p + IsRepG0 + state;
-        IfBit0(prob)
-        {
-          UpdateBit0(prob);
-          prob = p + IsRep0Long + (state << kNumPosBitsMax) + posState;
-          IfBit0(prob)
-          {
-            UpdateBit0(prob);
+	UpdateBit1(prob);
+	prob = p + IsRepG0 + state;
+	IfBit0(prob)
+	{
+	  UpdateBit0(prob);
+	  prob = p + IsRep0Long + (state << kNumPosBitsMax) + posState;
+	  IfBit0(prob)
+	  {
+	    UpdateBit0(prob);
 
-            if (nowPos == 0)
-              return LZMA_RESULT_DATA_ERROR;
+	    if (nowPos == 0)
+	      return LZMA_RESULT_DATA_ERROR;
 
-            state = state < kNumLitStates ? 9 : 11;
-            previousByte = outStream[nowPos - rep0];
-            outStream[nowPos++] = previousByte;
+	    state = state < kNumLitStates ? 9 : 11;
+	    previousByte = outStream[nowPos - rep0];
+	    outStream[nowPos++] = previousByte;
 
-            continue;
-          }
-          else
-          {
-            UpdateBit1(prob);
-          }
-        }
-        else
-        {
-          UInt32 distance;
-          UpdateBit1(prob);
-          prob = p + IsRepG1 + state;
-          IfBit0(prob)
-          {
-            UpdateBit0(prob);
-            distance = rep1;
-          }
-          else
-          {
-            UpdateBit1(prob);
-            prob = p + IsRepG2 + state;
-            IfBit0(prob)
-            {
-              UpdateBit0(prob);
-              distance = rep2;
-            }
-            else
-            {
-              UpdateBit1(prob);
-              distance = rep3;
-              rep3 = rep2;
-            }
-            rep2 = rep1;
-          }
-          rep1 = rep0;
-          rep0 = distance;
-        }
-        state = state < kNumLitStates ? 8 : 11;
-        prob = p + RepLenCoder;
+	    continue;
+	  }
+	  else
+	  {
+	    UpdateBit1(prob);
+	  }
+	}
+	else
+	{
+	  UInt32 distance;
+	  UpdateBit1(prob);
+	  prob = p + IsRepG1 + state;
+	  IfBit0(prob)
+	  {
+	    UpdateBit0(prob);
+	    distance = rep1;
+	  }
+	  else
+	  {
+	    UpdateBit1(prob);
+	    prob = p + IsRepG2 + state;
+	    IfBit0(prob)
+	    {
+	      UpdateBit0(prob);
+	      distance = rep2;
+	    }
+	    else
+	    {
+	      UpdateBit1(prob);
+	      distance = rep3;
+	      rep3 = rep2;
+	    }
+	    rep2 = rep1;
+	  }
+	  rep1 = rep0;
+	  rep0 = distance;
+	}
+	state = state < kNumLitStates ? 8 : 11;
+	prob = p + RepLenCoder;
       }
       {
-        int numBits, offset;
-        CProb *probLen = prob + LenChoice;
-        IfBit0(probLen)
-        {
-          UpdateBit0(probLen);
-          probLen = prob + LenLow + (posState << kLenNumLowBits);
-          offset = 0;
-          numBits = kLenNumLowBits;
-        }
-        else
-        {
-          UpdateBit1(probLen);
-          probLen = prob + LenChoice2;
-          IfBit0(probLen)
-          {
-            UpdateBit0(probLen);
-            probLen = prob + LenMid + (posState << kLenNumMidBits);
-            offset = kLenNumLowSymbols;
-            numBits = kLenNumMidBits;
-          }
-          else
-          {
-            UpdateBit1(probLen);
-            probLen = prob + LenHigh;
-            offset = kLenNumLowSymbols + kLenNumMidSymbols;
-            numBits = kLenNumHighBits;
-          }
-        }
-        RangeDecoderBitTreeDecode(probLen, numBits, len);
-        len += offset;
+	int numBits, offset;
+	CProb *probLen = prob + LenChoice;
+	IfBit0(probLen)
+	{
+	  UpdateBit0(probLen);
+	  probLen = prob + LenLow + (posState << kLenNumLowBits);
+	  offset = 0;
+	  numBits = kLenNumLowBits;
+	}
+	else
+	{
+	  UpdateBit1(probLen);
+	  probLen = prob + LenChoice2;
+	  IfBit0(probLen)
+	  {
+	    UpdateBit0(probLen);
+	    probLen = prob + LenMid + (posState << kLenNumMidBits);
+	    offset = kLenNumLowSymbols;
+	    numBits = kLenNumMidBits;
+	  }
+	  else
+	  {
+	    UpdateBit1(probLen);
+	    probLen = prob + LenHigh;
+	    offset = kLenNumLowSymbols + kLenNumMidSymbols;
+	    numBits = kLenNumHighBits;
+	  }
+	}
+	RangeDecoderBitTreeDecode(probLen, numBits, len);
+	len += offset;
       }
 
       if (state < 4)
       {
-        int posSlot;
-        state += kNumLitStates;
-        prob = p + PosSlot +
-            ((len < kNumLenToPosStates ? len : kNumLenToPosStates - 1) <<
-            kNumPosSlotBits);
-        RangeDecoderBitTreeDecode(prob, kNumPosSlotBits, posSlot);
-        if (posSlot >= kStartPosModelIndex)
-        {
-          int numDirectBits = ((posSlot >> 1) - 1);
-          rep0 = (2 | ((UInt32)posSlot & 1));
-          if (posSlot < kEndPosModelIndex)
-          {
-            rep0 <<= numDirectBits;
-            prob = p + SpecPos + rep0 - posSlot - 1;
-          }
-          else
-          {
-            numDirectBits -= kNumAlignBits;
-            do
-            {
-              RC_NORMALIZE
-              Range >>= 1;
-              rep0 <<= 1;
-              if (Code >= Range)
-              {
-                Code -= Range;
-                rep0 |= 1;
-              }
-            }
-            while (--numDirectBits != 0);
-            prob = p + Align;
-            rep0 <<= kNumAlignBits;
-            numDirectBits = kNumAlignBits;
-          }
-          {
-            int i = 1;
-            int mi = 1;
-            do
-            {
-              CProb *prob3 = prob + mi;
-              RC_GET_BIT2(prob3, mi, ; , rep0 |= i);
-              i <<= 1;
-            }
-            while(--numDirectBits != 0);
-          }
-        }
-        else
-          rep0 = posSlot;
-        if (++rep0 == (UInt32)(0))
-        {
-          /* it's for stream version */
-          len = kLzmaStreamWasFinishedId;
-          break;
-        }
+	int posSlot;
+	state += kNumLitStates;
+	prob = p + PosSlot +
+	    ((len < kNumLenToPosStates ? len : kNumLenToPosStates - 1) <<
+	    kNumPosSlotBits);
+	RangeDecoderBitTreeDecode(prob, kNumPosSlotBits, posSlot);
+	if (posSlot >= kStartPosModelIndex)
+	{
+	  int numDirectBits = ((posSlot >> 1) - 1);
+	  rep0 = (2 | ((UInt32)posSlot & 1));
+	  if (posSlot < kEndPosModelIndex)
+	  {
+	    rep0 <<= numDirectBits;
+	    prob = p + SpecPos + rep0 - posSlot - 1;
+	  }
+	  else
+	  {
+	    numDirectBits -= kNumAlignBits;
+	    do
+	    {
+	      RC_NORMALIZE
+	      Range >>= 1;
+	      rep0 <<= 1;
+	      if (Code >= Range)
+	      {
+		Code -= Range;
+		rep0 |= 1;
+	      }
+	    }
+	    while (--numDirectBits != 0);
+	    prob = p + Align;
+	    rep0 <<= kNumAlignBits;
+	    numDirectBits = kNumAlignBits;
+	  }
+	  {
+	    int i = 1;
+	    int mi = 1;
+	    do
+	    {
+	      CProb *prob3 = prob + mi;
+	      RC_GET_BIT2(prob3, mi, ; , rep0 |= i);
+	      i <<= 1;
+	    }
+	    while(--numDirectBits != 0);
+	  }
+	}
+	else
+	  rep0 = posSlot;
+	if (++rep0 == (UInt32)(0))
+	{
+	  /* it's for stream version */
+	  len = kLzmaStreamWasFinishedId;
+	  break;
+	}
       }
 
       len += kMatchMinLen;
       if (rep0 > nowPos)
-        return LZMA_RESULT_DATA_ERROR;
+	return LZMA_RESULT_DATA_ERROR;
 
 
       do
       {
-        previousByte = outStream[nowPos - rep0];
-        len--;
-        outStream[nowPos++] = previousByte;
+	previousByte = outStream[nowPos - rep0];
+	len--;
+	outStream[nowPos++] = previousByte;
       }
       while(len != 0 && nowPos < outSize);
     }

@@ -2,9 +2,9 @@
 *
 *						Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*	     	Copyright (C) 1996-1999 SciTech Software, Inc.
+* 					   Copyright (C) David Mosberger-Tang
+* 						  Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -30,11 +30,11 @@
 *
 * Language:		ANSI C
 * Environment:	Any
-* Developer:    Kendall Bennett
+* Developer:	Kendall Bennett
 *
 * Description:  Header file for public specific functions.
-*               Any application linking against us should only
-*               include this header
+*		Any application linking against us should only
+*		include this header
 *
 ****************************************************************************/
 /* $XFree86: xc/extras/x86emu/include/x86emu.h,v 1.2 2000/11/21 23:10:25 tsi Exp $ */
@@ -73,10 +73,10 @@ x86emu.h
 MEMBERS:
 inb		- Function to read a byte from an I/O port
 inw		- Function to read a word from an I/O port
-inl     - Function to read a dword from an I/O port
+inl	- Function to read a dword from an I/O port
 outb	- Function to write a byte to an I/O port
-outw    - Function to write a word to an I/O port
-outl    - Function to write a dword to an I/O port
+outw	- Function to write a word to an I/O port
+outl	- Function to write a dword to an I/O port
 ****************************************************************************/
 typedef struct {
 	u8  	(X86APIP inb)(X86EMU_pioAddr addr);
@@ -104,7 +104,7 @@ x86emu.h
 MEMBERS:
 rdb		- Function to read a byte from an address
 rdw		- Function to read a word from an address
-rdl     - Function to read a dword from an address
+rdl	- Function to read a dword from an address
 wrb		- Function to write a byte to an address
 wrw    	- Function to write a word to an address
 wrl    	- Function to write a dword to an address
@@ -139,7 +139,7 @@ extern X86EMU_intrFuncs _X86EMU_intrTab[256];
 /*-------------------------- Function Prototypes --------------------------*/
 
 #ifdef  __cplusplus
-extern "C" {            			/* Use "C" linkage when in C++ mode */
+extern "C" {					/* Use "C" linkage when in C++ mode */
 #endif
 
 void 	X86EMU_setupMemFuncs(X86EMU_memFuncs *funcs);
@@ -164,25 +164,25 @@ void 	X86EMU_halt_sys(void);
 
 /* Debug options */
 
-#define DEBUG_DECODE_F          0x000001 /* print decoded instruction  */
-#define DEBUG_TRACE_F           0x000002 /* dump regs before/after execution */
-#define DEBUG_STEP_F            0x000004
-#define DEBUG_DISASSEMBLE_F     0x000008
-#define DEBUG_BREAK_F           0x000010
-#define DEBUG_SVC_F             0x000020
-#define DEBUG_FS_F              0x000080
-#define DEBUG_PROC_F            0x000100
-#define DEBUG_SYSINT_F          0x000200 /* bios system interrupts. */
-#define DEBUG_TRACECALL_F       0x000400
-#define DEBUG_INSTRUMENT_F      0x000800
-#define DEBUG_MEM_TRACE_F       0x001000
-#define DEBUG_IO_TRACE_F        0x002000
+#define DEBUG_DECODE_F		0x000001 /* print decoded instruction  */
+#define DEBUG_TRACE_F		0x000002 /* dump regs before/after execution */
+#define DEBUG_STEP_F		0x000004
+#define DEBUG_DISASSEMBLE_F	0x000008
+#define DEBUG_BREAK_F		0x000010
+#define DEBUG_SVC_F		0x000020
+#define DEBUG_FS_F		0x000080
+#define DEBUG_PROC_F		0x000100
+#define DEBUG_SYSINT_F		0x000200 /* bios system interrupts. */
+#define DEBUG_TRACECALL_F	0x000400
+#define DEBUG_INSTRUMENT_F	0x000800
+#define DEBUG_MEM_TRACE_F	0x001000
+#define DEBUG_IO_TRACE_F	0x002000
 #define DEBUG_TRACECALL_REGS_F  0x004000
 #define DEBUG_DECODE_NOPRINT_F  0x008000
-#define DEBUG_SAVE_IP_CS_F      0x010000
-#define DEBUG_TRACEJMP_F        0x020000
-#define DEBUG_TRACEJMP_REGS_F   0x040000
-#define DEBUG_SYS_F             (DEBUG_SVC_F|DEBUG_FS_F|DEBUG_PROC_F)
+#define DEBUG_SAVE_IP_CS_F	0x010000
+#define DEBUG_TRACEJMP_F	0x020000
+#define DEBUG_TRACEJMP_REGS_F	0x040000
+#define DEBUG_SYS_F		(DEBUG_SVC_F|DEBUG_FS_F|DEBUG_PROC_F)
 
 void 	X86EMU_trace_regs(void);
 void 	X86EMU_trace_xregs(void);
@@ -191,7 +191,7 @@ int 	X86EMU_trace_on(void);
 int 	X86EMU_trace_off(void);
 
 #ifdef  __cplusplus
-}                       			/* End of "C" linkage for C++   	*/
+}						/* End of "C" linkage for C++   	*/
 #endif
 
 #endif /* __X86EMU_X86EMU_H */

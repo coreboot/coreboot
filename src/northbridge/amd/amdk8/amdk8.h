@@ -3,9 +3,9 @@
 #define AMDK8_H
 
 #if CONFIG_K8_REV_F_SUPPORT
-        #include "f.h"
+	#include "f.h"
 #else
-        #include "pre_f.h"
+	#include "pre_f.h"
 #endif
 
 #ifdef __PRE_RAM__

@@ -25,15 +25,15 @@ static void p64h2_ioapic_enable(device_t dev)
  * will be called twice for each P64H2 in the system.
  *
  * @param dev PCI bus/device/function of P64H2 IOAPIC.
- *            NOTE: There are two IOAPICs per P64H2, at D28:F0 and D30:F0.
+ *	      NOTE: There are two IOAPICs per P64H2, at D28:F0 and D30:F0.
  */
 static void p64h2_ioapic_init(device_t dev)
 {
     uint32_t memoryBase;
     int apic_index, apic_id;
 
-    volatile uint32_t* pIndexRegister;    /* io apic io memory space command address */
-    volatile uint32_t* pWindowRegister;    /* io apic io memory space data address */
+    volatile uint32_t* pIndexRegister;	  /* io apic io memory space command address */
+    volatile uint32_t* pWindowRegister;	   /* io apic io memory space data address */
 
     apic_index = num_p64h2_ioapics;
     num_p64h2_ioapics++;
@@ -49,11 +49,11 @@ static void p64h2_ioapic_init(device_t dev)
     // IDs 3, 4, 5, and 8+ are available (see above note)
 
     if (apic_index < 3)
-        apic_id = apic_index + 3;
+	apic_id = apic_index + 3;
     else
-        apic_id = apic_index + 5;
+	apic_id = apic_index + 5;
 
-    ASSERT(apic_id < 16);       // ID is only 4 bits
+    ASSERT(apic_id < 16);	// ID is only 4 bits
 
     // Read the MBAR address for setting up the IOAPIC in memory space
     // NOTE: this address was assigned during enumeration of the bus
@@ -63,36 +63,36 @@ static void p64h2_ioapic_init(device_t dev)
     pWindowRegister = (volatile uint32_t*)(memoryBase + 0x10);
 
     printk(BIOS_DEBUG, "IOAPIC %d at %02x:%02x.%01x  MBAR = %p DataAddr = %p\n",
-                 apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn),
-                 PCI_FUNC(dev->path.pci.devfn), pIndexRegister, pWindowRegister);
+		 apic_id, dev->bus->secondary, PCI_SLOT(dev->path.pci.devfn),
+		 PCI_FUNC(dev->path.pci.devfn), pIndexRegister, pWindowRegister);
 
-    apic_id <<= 24;             // Convert ID to bitmask
+    apic_id <<= 24;		// Convert ID to bitmask
 
-    *pIndexRegister = 0;        // Select APIC ID register
+    *pIndexRegister = 0;	// Select APIC ID register
     *pWindowRegister = (*pWindowRegister & ~(0xF<<24)) | apic_id;   // Set the ID
 
     if ((*pWindowRegister & (0xF<<24)) != apic_id)
-        die("p64h2_ioapic_init failed");
+	die("p64h2_ioapic_init failed");
 
     *pIndexRegister  = 3;   // Select Boot Configuration register
     *pWindowRegister |= 1;  // Use Processor System Bus to deliver interrupts
 
     if (!(*pWindowRegister & 1))
-        die("p64h2_ioapic_init failed");
+	die("p64h2_ioapic_init failed");
 }
 
 static struct device_operations ioapic_ops = {
-        .read_resources   = pci_dev_read_resources,
-        .set_resources    = pci_dev_set_resources,
-        .enable_resources = pci_dev_enable_resources,
-        .init     = p64h2_ioapic_init,
-        .scan_bus = 0,
-        .enable   = p64h2_ioapic_enable,
+	.read_resources	  = pci_dev_read_resources,
+	.set_resources	  = pci_dev_set_resources,
+	.enable_resources = pci_dev_enable_resources,
+	.init	  = p64h2_ioapic_init,
+	.scan_bus = 0,
+	.enable	  = p64h2_ioapic_enable,
 };
 
 static const struct pci_driver ioapic_driver __pci_driver = {
-        .ops    = &ioapic_ops,
-        .vendor = PCI_VENDOR_ID_INTEL,
-        .device = PCI_DEVICE_ID_INTEL_82870_1E0,
+	.ops	= &ioapic_ops,
+	.vendor = PCI_VENDOR_ID_INTEL,
+	.device = PCI_DEVICE_ID_INTEL_82870_1E0,
 
 };

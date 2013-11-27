@@ -67,16 +67,16 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/*
-	 *             GFX         INTA -> PIRQA (MSI)
-	 * D20IP_XHCI  XHCI        INTA -> PIRQD (MSI)
-	 * D26IP_E2P   EHCI #2     INTA -> PIRQF
-	 * D27IP_ZIP   HDA         INTA -> PIRQA (MSI)
-	 * D28IP_P2IP  WLAN        INTA -> PIRQD
+	 *		GFX	    INTA -> PIRQA (MSI)
+	 * D20IP_XHCI  XHCI	    INTA -> PIRQD (MSI)
+	 * D26IP_E2P	EHCI #2	    INTA -> PIRQF
+	 * D27IP_ZIP	HDA	    INTA -> PIRQA (MSI)
+	 * D28IP_P2IP  WLAN	    INTA -> PIRQD
 	 * D28IP_P3IP  Card Reader INTB -> PIRQE
-	 * D28IP_P6IP  LAN         INTC -> PIRQB
-	 * D29IP_E1P   EHCI #1     INTA -> PIRQD
-	 * D31IP_SIP   SATA        INTA -> PIRQB (MSI)
-	 * D31IP_SMIP  SMBUS       INTB -> PIRQH
+	 * D28IP_P6IP  LAN	    INTC -> PIRQB
+	 * D29IP_E1P	EHCI #1	    INTA -> PIRQD
+	 * D31IP_SIP	SATA	    INTA -> PIRQB (MSI)
+	 * D31IP_SMIP  SMBUS	    INTB -> PIRQH
 	 */
 
 	/* Device interrupt pin register (board specific) */
@@ -185,7 +185,7 @@ void main(unsigned long bist)
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1600,
 		usb_port_config: {
-			/* enabled   usb oc pin    length */
+			/* enabled	usb oc pin    length */
 			{ 1, 0, 0x0040 }, /* P0: USB 3.0 1  (OC0) */
 			{ 1, 0, 0x0040 }, /* P1: USB 3.0 2  (OC0) */
 			{ 0, 1, 0x0000 }, /* P2: Empty */

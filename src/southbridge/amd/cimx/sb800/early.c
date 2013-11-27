@@ -50,7 +50,7 @@ u32 get_sbdn(u32 bus)
 
 /**
  * @brief South Bridge CIMx romstage entry,
- *        wrapper of sbPowerOnInit entry point.
+ *	  wrapper of sbPowerOnInit entry point.
  */
 void sb_Poweron_Init(void)
 {
@@ -74,8 +74,8 @@ void sb800_clk_output_48Mhz(void)
 	/* AcpiMMioDecodeEn */
 	RWPMIO(SB_PMIOA_REG24, AccWidthUint8, ~(BIT0 + BIT1), BIT0);
 
-        *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) &= ~((1 << 0) | (1 << 2)); /* 48Mhz */
-        *(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) |= 1 << 1; /* 48Mhz */
+	*(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) &= ~((1 << 0) | (1 << 2)); /* 48Mhz */
+	*(volatile u32 *)(ACPI_MMIO_BASE + MISC_BASE + 0x40) |= 1 << 1; /* 48Mhz */
 }
 
 #if CONFIG_HAVE_ACPI_RESUME

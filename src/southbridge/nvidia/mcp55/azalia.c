@@ -226,7 +226,7 @@ static void azalia_init(struct device *dev)
 	mdelay(1);
 	reg8 = pci_read_config8(dev, 0x40);
 	printk(BIOS_DEBUG, "Azalia: codec type: %s\n",
-	       (reg8 & (1 << 1)) ? "Azalia" : "AC97");
+		(reg8 & (1 << 1)) ? "Azalia" : "AC97");
 
 	reg8 = pci_read_config8(dev, 0x40); /* Audio control */
 	reg8 |= 1; /* Select Azalia mode. TODO: Control via devicetree.cb. */

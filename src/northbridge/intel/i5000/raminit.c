@@ -59,7 +59,7 @@ static int i5000_for_each_branch(struct i5000_fbd_setup *setup,
 }
 
 static int i5000_for_each_dimm(struct i5000_fbd_setup *setup,
-			       int (*cb)(struct i5000_fbdimm *))
+				  int (*cb)(struct i5000_fbdimm *))
 {
 	struct i5000_fbdimm *d;
 	int ret, i;
@@ -74,7 +74,7 @@ static int i5000_for_each_dimm(struct i5000_fbd_setup *setup,
 }
 
 static int i5000_for_each_dimm_present(struct i5000_fbd_setup *setup,
-				       int (*cb)(struct i5000_fbdimm *))
+					   int (*cb)(struct i5000_fbdimm *))
 {
 	struct i5000_fbdimm *d;
 	int ret, i;
@@ -171,7 +171,7 @@ static int delay_ns_to_clocks(struct i5000_fbdimm *d, int del)
 
 	default:
 		printk(BIOS_ERR, "Invalid clock: %d, using 667MHz\n",
-		       d->setup->ddr_speed);
+			 d->setup->ddr_speed);
 
 	case DDR_667MHZ:
 		div = 300;
@@ -191,7 +191,7 @@ static int mtb2clks(struct i5000_fbdimm *d, int del)
 		break;
 	default:
 		printk(BIOS_ERR, "Invalid clock: %d, using 667MHz\n",
-		       d->setup->ddr_speed);
+			 d->setup->ddr_speed);
 
 	case DDR_667MHZ:
 		div = 300;
@@ -214,7 +214,7 @@ static int i5000_read_spd_data(struct i5000_fbdimm *d)
 
 	if (spd_read_byte(d, SPD_MEMORY_TYPE, 1, &val)) {
 		printk(BIOS_DEBUG, "DIMM %d/%d/%d not present\n",
-		       d->branch->num, d->channel->num, d->num);
+			 d->branch->num, d->channel->num, d->num);
 		return 0; // No FBDIMM present
 	}
 
@@ -300,7 +300,7 @@ static int i5000_read_spd_data(struct i5000_fbdimm *d)
 	}
 
 	s->t_rc = MAX(s->t_rc, mtb2clks(d,
-		      t_rc | ((t_ras_rc_h & 0xf0) << 4)));
+			t_rc | ((t_ras_rc_h & 0xf0) << 4)));
 	s->t_rrd = MAX(s->t_rrd, mtb2clks(d, d->t_rrd));
 	s->t_rfc = MAX(s->t_rfc, mtb2clks(d, d->t_rfc));
 	s->t_rcd = MAX(s->t_rcd, mtb2clks(d, t_rcd));
@@ -327,9 +327,9 @@ static int i5000_read_spd_data(struct i5000_fbdimm *d)
 	d->channel->width = d->sdram_width;
 
 	printk(BIOS_INFO, "DIMM %d/%d/%d %dMB: %d banks, "
-	       "%d columns, %d rows, %d ranks\n",
-	       d->branch->num, d->channel->num, d->num, dimmsize,
-	       d->banks, d->columns, d->rows, d->ranks);
+		"%d columns, %d rows, %d ranks\n",
+		d->branch->num, d->channel->num, d->num, dimmsize,
+		d->banks, d->columns, d->rows, d->ranks);
 
 	d->present = 1;
 	d->branch->used |= 1;
@@ -356,7 +356,7 @@ static int i5000_amb_smbus_write(struct i5000_fbdimm *d,  int byte1, int byte2)
 		return 0;
 
 	printk(BIOS_ERR, "SMBus write failed: %d/%d/%d, byte1 %02x, byte2 %02x status %04x\n",
-	       d->branch->num, d->channel->num, d->num, byte1, byte2, status);
+		d->branch->num, d->channel->num, d->num, byte1, byte2, status);
 	for(;;);
 	return -1;
 }
@@ -380,7 +380,7 @@ static int i5000_amb_smbus_read(struct i5000_fbdimm *d, int byte1, u8 *out)
 
 	if (status & I5000_SPD_SBE || !timeout) {
 		printk(BIOS_ERR, "SMBus write failed: %d/%d/%d, byte1 %02x status %04x\n",
-		       d->branch->num, d->channel->num, d->num, byte1, status);
+			 d->branch->num, d->channel->num, d->num, byte1, status);
 		return -1;
 	}
 	return 0;
@@ -455,19 +455,19 @@ static int i5000_amb_smbus_read_config32(struct i5000_fbdimm *d,
 }
 
 static void i5000_amb_write_config8(struct i5000_fbdimm *d,
-				    int fn, int reg, u32 val)
+					int fn, int reg, u32 val)
 {
 	write8(DEFAULT_AMBASE + AMB_ADDR(d->ambase, fn, reg), val);
 }
 
 static void i5000_amb_write_config16(struct i5000_fbdimm *d,
-				     int fn, int reg, u32 val)
+					 int fn, int reg, u32 val)
 {
 	write16(DEFAULT_AMBASE + AMB_ADDR(d->ambase, fn, reg), val);
 }
 
 static void i5000_amb_write_config32(struct i5000_fbdimm *d,
-				     int fn, int reg, u32 val)
+					 int fn, int reg, u32 val)
 {
 	write32(DEFAULT_AMBASE + AMB_ADDR(d->ambase, fn, reg), val);
 }
@@ -483,7 +483,7 @@ static int ddr_command(struct i5000_fbdimm *d, int rank, u32 addr, u32 command)
 	u32 drc, status;
 
 	printk(BIOS_SPEW, "DIMM %d/%d/%d: rank %d: sending command %x (addr %08x)...",
-	       d->branch->num, d->channel->num, d->num, rank, command, addr);
+		d->branch->num, d->channel->num, d->num, rank, command, addr);
 
 	drc = i5000_amb_read_config32(d, 3, AMB_DRC);
 	drc &= ~((3 << 9) | (1 << 12));
@@ -536,7 +536,7 @@ static int i5000_ddr_init(struct i5000_fbdimm *d)
 
 	for(rank = 0; rank < d->ranks; rank++) {
 		printk(BIOS_DEBUG, "%s: %d/%d/%d rank %d\n", __func__,
-		       d->branch->num, d->channel->num, d->num, rank);
+			 d->branch->num, d->channel->num, d->num, rank);
 
 		if (ddr_command(d, 1 << rank,
 				0, AMB_DCALCSR_OPCODE_NOP))
@@ -603,7 +603,7 @@ static int i5000_ddr_init(struct i5000_fbdimm *d)
 
 		val = (d->setup->t_al << 19) |
 			((odt & 1) << 18) |
-		        ((odt & 2) << 21) | 1;
+			  ((odt & 2) << 21) | 1;
 
 		printk(BIOS_DEBUG, "EMRS(1): 0x%08x\n", val);
 
@@ -621,14 +621,14 @@ static int i5000_amb_preinit(struct i5000_fbdimm *d)
 	u32 id, drc, fbdsbcfg = 0x0909;
 
 	printk(BIOS_DEBUG, "%s: %d/%d/%d\n", __func__,
-	       d->branch->num, d->channel->num, d->num);
+		d->branch->num, d->channel->num, d->num);
 
 	i5000_amb_smbus_write_config32(d, 1, 0xb0, p32[0]);
 	i5000_amb_smbus_write_config16(d, 1, 0xb4, p16[2]);
 
 	drc = (d->setup->t_al << 4) | (d->setup->t_cl);
 	printk(BIOS_SPEW, "DRC: %02X, CMD2DATANXT: %02x\n", drc,
-	       d->cmd2datanxt[d->setup->ddr_speed]);
+		d->cmd2datanxt[d->setup->ddr_speed]);
 
 	switch(d->setup->ddr_speed) {
 	case DDR_533MHZ:
@@ -655,7 +655,7 @@ static int i5000_amb_preinit(struct i5000_fbdimm *d)
 	}
 
 	pci_write_config8(d->branch->branchdev,
-			       d->channel->num ? I5000_FBDSBTXCFG1 : I5000_FBDSBTXCFG0, 0x04);
+				  d->channel->num ? I5000_FBDSBTXCFG1 : I5000_FBDSBTXCFG0, 0x04);
 	return 0;
 }
 
@@ -679,7 +679,7 @@ static void i5000_fbd_next_state(struct i5000_fbd_branch *b, int state)
 	}
 
 	printk(BIOS_ERR, "timeout while entering state %02x on branch %d\n",
-	       state, b->num);
+		state, b->num);
 }
 
 static int i5000_wait_pattern_recognized(struct i5000_fbd_channel *c)
@@ -688,13 +688,13 @@ static int i5000_wait_pattern_recognized(struct i5000_fbd_channel *c)
 	device_t dev = PCI_ADDR(0, c->branch->num ? 22 : 21, 0,
 				c->num ? I5000_FBDISTS1 : I5000_FBDISTS0);
 
-	printk(BIOS_DEBUG, "      waiting for pattern recognition...");
+	printk(BIOS_DEBUG, "	   waiting for pattern recognition...");
 	while(pci_read_config16(dev, 0) != 0x1fff && --i > 0)
 		udelay(5000);
 
 	printk(BIOS_DEBUG, i ?  "done\n" : "failed\n");
 	printk(BIOS_DEBUG, "%d/%d Round trip latency: %d\n", c->branch->num, c->num,
-	       pci_read_config8(c->branch->branchdev, c->num ? I5000_FBDLVL1 : I5000_FBDLVL0) & 0x3f);
+		pci_read_config8(c->branch->branchdev, c->num ? I5000_FBDLVL1 : I5000_FBDLVL0) & 0x3f);
 	return !i;
 }
 
@@ -710,9 +710,9 @@ static int i5000_drive_pattern(struct i5000_fbd_channel *c, int pattern, int wai
 	device_t dev = PCI_ADDR(0, c->branch->num ? 22 : 21, 0,
 				c->num ? I5000_FBDICMD1 : I5000_FBDICMD0);
 
-	printk(BIOS_DEBUG, "    %d/%d  driving pattern %s to AMB%d (%02x)\n",
-	       c->branch->num, c->num,
-	       pattern_names[(pattern >> 4) & 0xf], pattern & 3, pattern);
+	printk(BIOS_DEBUG, "	 %d/%d  driving pattern %s to AMB%d (%02x)\n",
+		c->branch->num, c->num,
+		pattern_names[(pattern >> 4) & 0xf], pattern & 3, pattern);
 	pci_write_config8(dev, 0, pattern);
 
 	if (!wait)
@@ -809,7 +809,7 @@ static int i5000_train_channel_idle(struct i5000_fbd_channel *c)
 	}
 
 	pci_write_config8(c->branch->branchdev,
-			       c->num ? I5000_FBDSBTXCFG1 : I5000_FBDSBTXCFG0, 0x05);
+				  c->num ? I5000_FBDSBTXCFG1 : I5000_FBDSBTXCFG0, 0x05);
 
 	for(i = 0; i < 4; i++) {
 		if (c->dimm[i].present)
@@ -900,8 +900,8 @@ static int i5000_amb_check(struct i5000_fbdimm *d)
 	u32 id = i5000_amb_read_config32(d, 0, 0);
 
 	printk(BIOS_DEBUG, "AMB %d/%d/%d ID: %04x:%04x\n",
-	       d->branch->num, d->channel->num, d->num,
-	       id & 0xffff, id >> 16);
+		d->branch->num, d->channel->num, d->num,
+		id & 0xffff, id >> 16);
 
 	if ((id & 0xffff) != d->vendor || id >> 16 != d->device) {
 		printk(BIOS_ERR, "AMB mapping failed\n");
@@ -930,7 +930,7 @@ static int i5000_amb_dram_timing_init(struct i5000_fbdimm *d)
 	s = d->setup;
 
 	printk(BIOS_DEBUG, "DIMM %d/%d/%d config:\n",
-	       d->branch->num, d->channel->num, d->num);
+		d->branch->num, d->channel->num, d->num);
 
 	val = 0x44;
 	printk(BIOS_DEBUG, "\tDDR2ODTC: 0x%02x\n", val);
@@ -989,7 +989,7 @@ static int i5000_amb_dram_timing_init(struct i5000_fbdimm *d)
 		break;
 	default:
 		printk(BIOS_ERR, "unsupported t_refi value: %d, using 7.8us\n",
-		       d->t_refi & 0x0f);
+			 d->t_refi & 0x0f);
 		refi = 7800;
 		break;
 	}
@@ -1028,7 +1028,7 @@ static int i5000_amb_dram_timing_init(struct i5000_fbdimm *d)
 static int i5000_do_amb_membist_start(struct i5000_fbdimm *d, int rank, int pattern)
 {
 	printk(BIOS_DEBUG, "DIMM %d/%d/%d rank %d pattern %d\n",
-	       d->branch->num, d->channel->num, d->num, rank, pattern);
+		d->branch->num, d->channel->num, d->num, rank, pattern);
 
 	i5000_amb_write_config32(d, 3, AMB_DAREFTC,
 				 i5000_amb_read_config32(d, 3, AMB_DAREFTC) | 0x8000);
@@ -1051,7 +1051,7 @@ static int i5000_do_amb_membist_status(struct i5000_fbdimm *d, int rank)
 		return 0;
 
 	printk(BIOS_ERR, "DIMM %d/%d/%d rank %d failed membist check\n",
-	       d->branch->num, d->channel->num, d->num, rank);
+		d->branch->num, d->channel->num, d->num, rank);
 	return -1;
 }
 
@@ -1130,24 +1130,24 @@ static void i5000_program_mtr(struct i5000_fbd_channel *c, int mtr)
 
 	if (c->dimm[0].present || c->dimm[1].present) {
 		val = (((c->columns - 10) & 3) |
-		       (((c->rows - 13) & 3) << 2) |
-		       (((c->ranks == 2) ? 1 : 0) << 4) |
-		       (((c->banks == 8) ? 1 : 0) << 5) |
-		       ((c->width ? 1 : 0) << 6) |
-		       (1 << 7) | /* Electrical Throttling enabled */
-		       (1 << 8)); /* DIMM present and compatible */
+			 (((c->rows - 13) & 3) << 2) |
+			 (((c->ranks == 2) ? 1 : 0) << 4) |
+			 (((c->banks == 8) ? 1 : 0) << 5) |
+			 ((c->width ? 1 : 0) << 6) |
+			 (1 << 7) | /* Electrical Throttling enabled */
+			 (1 << 8)); /* DIMM present and compatible */
 		printk(BIOS_DEBUG, "MTR0: %04x\n", val);
 		pci_write_config16(c->branch->branchdev, mtr, val);
 	}
 
 	if (c->dimm[2].present || c->dimm[3].present) {
 		val = (((c->columns - 10) & 3) |
-		       (((c->rows - 13) & 3) << 4) |
-		       ((c->ranks ? 1 : 0) << 4) |
-		       (((c->banks == 8) ? 1 : 0) << 5) |
-		       ((c->width ? 1 : 0) << 6) |
-		       (1 << 7) | /* Electrical Throttling enabled */
-		       (1 << 8)); /* DIMM present and compatible */
+			 (((c->rows - 13) & 3) << 4) |
+			 ((c->ranks ? 1 : 0) << 4) |
+			 (((c->banks == 8) ? 1 : 0) << 5) |
+			 ((c->width ? 1 : 0) << 6) |
+			 (1 << 7) | /* Electrical Throttling enabled */
+			 (1 << 8)); /* DIMM present and compatible */
 		printk(BIOS_DEBUG, "MTR1: %04x\n", val);
 		pci_write_config16(c->branch->branchdev, mtr+2, val);
 	}
@@ -1239,14 +1239,14 @@ static int i5000_setup_dmir(struct i5000_fbd_branch *b)
 		rankoffset += (set * ranksize);
 
 		printk(BIOS_DEBUG, "DMIR%d: %08x\n", (dmir - I5000_DMIR0) >> 2,
-		       dmirval);
+			 dmirval);
 		pci_write_config32(dev, dmir, dmirval);
 		dmir += 4;
 	}
 
 	for(; dmir <= I5000_DMIR4; dmir += 4) {
 		printk(BIOS_DEBUG, "DMIR%d: %08x\n", (dmir - I5000_DMIR0) >> 2,
-		       dmirval);
+			 dmirval);
 		pci_write_config32(dev, dmir, dmirval);
 	}
 	return rankoffset;
@@ -1272,7 +1272,7 @@ static void i5000_setup_interleave(struct i5000_fbd_setup *setup)
 		mir0 = (size0 << 1) | 3;
 		mir1 = (size0 << 1);
 		mir2 = (size0 << 1);
-        } else if (!size0) {
+	} else if (!size0) {
 		mir0 = size1 | 1;
 		mir1 = size1;
 		mir2 = size1;
@@ -1460,60 +1460,60 @@ static void i5000_dump_error_registers(void)
 	device_t dev = PCI_ADDR(0, 16, 1, 0);
 
 	printk(BIOS_ERR, "Dump of FBD error registers:\n"
-	       "FERR_FAT_FBD: 0x%08x NERR_FAT_FBD: 0x%08x\n"
-	       "FERR_NF_FBD:  0x%08x NERR_NF_FBD:  0x%08x\n"
-	       "EMASK_FBD:    0x%08x\n"
-	       "ERR0_FBD:     0x%08x\n"
-	       "ERR1_FBD:     0x%08x\n"
-	       "ERR2_FBD:     0x%08x\n"
-	       "MC_ERR_FBD:   0x%08x\n",
-	       pci_read_config32(dev, I5000_FERR_FAT_FBD),
-	       pci_read_config32(dev, I5000_NERR_FAT_FBD),
-	       pci_read_config32(dev, I5000_FERR_NF_FBD),
-	       pci_read_config32(dev, I5000_NERR_NF_FBD),
-	       pci_read_config32(dev, I5000_EMASK_FBD),
-	       pci_read_config32(dev, I5000_ERR0_FBD),
-	       pci_read_config32(dev, I5000_ERR1_FBD),
-	       pci_read_config32(dev, I5000_ERR2_FBD),
-	       pci_read_config32(dev, I5000_MCERR_FBD));
+		"FERR_FAT_FBD: 0x%08x NERR_FAT_FBD: 0x%08x\n"
+		"FERR_NF_FBD:  0x%08x NERR_NF_FBD:  0x%08x\n"
+		"EMASK_FBD:    0x%08x\n"
+		"ERR0_FBD:     0x%08x\n"
+		"ERR1_FBD:     0x%08x\n"
+		"ERR2_FBD:     0x%08x\n"
+		"MC_ERR_FBD:   0x%08x\n",
+		pci_read_config32(dev, I5000_FERR_FAT_FBD),
+		pci_read_config32(dev, I5000_NERR_FAT_FBD),
+		pci_read_config32(dev, I5000_FERR_NF_FBD),
+		pci_read_config32(dev, I5000_NERR_NF_FBD),
+		pci_read_config32(dev, I5000_EMASK_FBD),
+		pci_read_config32(dev, I5000_ERR0_FBD),
+		pci_read_config32(dev, I5000_ERR1_FBD),
+		pci_read_config32(dev, I5000_ERR2_FBD),
+		pci_read_config32(dev, I5000_MCERR_FBD));
 
 	printk(BIOS_ERR, "Non recoverable error registers:\n"
-	       "NRECMEMA:     0x%08x NRECMEMB:    0x%08x\n"
-	       "NRECFGLOG:    0x%08x\n",
-	       pci_read_config32(dev, I5000_NRECMEMA),
-	       pci_read_config32(dev, I5000_NRECMEMB),
-	       pci_read_config32(dev, I5000_NRECFGLOG));
+		"NRECMEMA:     0x%08x NRECMEMB:	   0x%08x\n"
+		"NRECFGLOG:    0x%08x\n",
+		pci_read_config32(dev, I5000_NRECMEMA),
+		pci_read_config32(dev, I5000_NRECMEMB),
+		pci_read_config32(dev, I5000_NRECFGLOG));
 
 	printk(BIOS_ERR, "Packet data:\n"
-	       "NRECFBDA: 0x%08x\n"
-	       "NRECFBDB: 0x%08x\n"
-	       "NRECFBDC: 0x%08x\n"
-	       "NRECFBDD: 0x%08x\n"
-	       "NRECFBDE: 0x%08x\n",
-	       pci_read_config32(dev, I5000_NRECFBDA),
-	       pci_read_config32(dev, I5000_NRECFBDB),
-	       pci_read_config32(dev, I5000_NRECFBDC),
-	       pci_read_config32(dev, I5000_NRECFBDD),
-	       pci_read_config32(dev, I5000_NRECFBDE));
+		"NRECFBDA: 0x%08x\n"
+		"NRECFBDB: 0x%08x\n"
+		"NRECFBDC: 0x%08x\n"
+		"NRECFBDD: 0x%08x\n"
+		"NRECFBDE: 0x%08x\n",
+		pci_read_config32(dev, I5000_NRECFBDA),
+		pci_read_config32(dev, I5000_NRECFBDB),
+		pci_read_config32(dev, I5000_NRECFBDC),
+		pci_read_config32(dev, I5000_NRECFBDD),
+		pci_read_config32(dev, I5000_NRECFBDE));
 
 	printk(BIOS_ERR, "recoverable error registers:\n"
-	       "RECMEMA:     0x%08x RECMEMB:    0x%08x\n"
-	       "RECFGLOG:    0x%08x\n",
-	       pci_read_config32(dev, I5000_RECMEMA),
-	       pci_read_config32(dev, I5000_RECMEMB),
-	       pci_read_config32(dev, I5000_RECFGLOG));
+		"RECMEMA:     0x%08x RECMEMB:	 0x%08x\n"
+		"RECFGLOG:    0x%08x\n",
+		pci_read_config32(dev, I5000_RECMEMA),
+		pci_read_config32(dev, I5000_RECMEMB),
+		pci_read_config32(dev, I5000_RECFGLOG));
 
 	printk(BIOS_ERR, "Packet data:\n"
-	       "RECFBDA: 0x%08x\n"
-	       "RECFBDB: 0x%08x\n"
-	       "RECFBDC: 0x%08x\n"
-	       "RECFBDD: 0x%08x\n"
-	       "RECFBDE: 0x%08x\n",
-	       pci_read_config32(dev, I5000_RECFBDA),
-	       pci_read_config32(dev, I5000_RECFBDB),
-	       pci_read_config32(dev, I5000_RECFBDC),
-	       pci_read_config32(dev, I5000_RECFBDD),
-	       pci_read_config32(dev, I5000_RECFBDE));
+		"RECFBDA: 0x%08x\n"
+		"RECFBDB: 0x%08x\n"
+		"RECFBDC: 0x%08x\n"
+		"RECFBDD: 0x%08x\n"
+		"RECFBDE: 0x%08x\n",
+		pci_read_config32(dev, I5000_RECFBDA),
+		pci_read_config32(dev, I5000_RECFBDB),
+		pci_read_config32(dev, I5000_RECFBDC),
+		pci_read_config32(dev, I5000_RECFBDD),
+		pci_read_config32(dev, I5000_RECFBDE));
 
 }
 
@@ -1620,7 +1620,7 @@ static int i5000_setup_clocking(struct i5000_fbd_setup *setup)
 
 	if (ddrfrq != ddrfrqnow) {
 		printk(BIOS_DEBUG, "old DDRFRQ: 0x%02x new DDRFRQ: 0x%02x\n",
-		       ddrfrqnow, ddrfrq);
+			 ddrfrqnow, ddrfrq);
 		pci_write_config8(PCI_ADDR(0, 16, 1, 0), 0x56, ddrfrq);
 		/* FSB:FBD mapping changed, needs hard reset */
 		outb(0x06, 0xcf9);
@@ -1660,12 +1660,12 @@ void i5000_fbdimm_init(void)
 	setup.t_al = setup.t_rcd - 1;
 
 	printk(BIOS_DEBUG, "global timing parameters:\n"
-	       "CL: %d RAS: %d WRC: %d RC: %d RFC: %d RRD: %d REF: %d W2RDR: %d\n"
-	       "R2W: %d W2R: %d R2R: %d W2W: %d WTR: %d RCD: %d RP %d WR: %d RTP: %d AL: %d\n",
-	       setup.t_cl, setup.t_ras, setup.t_wrc, setup.t_rc, setup.t_rfc,
-	       setup.t_rrd, setup.t_ref, setup.t_w2rdr, setup.t_r2w, setup.t_w2r,
-	       setup.t_r2r, setup.t_w2w, setup.t_wtr, setup.t_rcd,
-	       setup.t_rp, setup.t_wr, setup.t_rtp, setup.t_al);
+		"CL: %d RAS: %d WRC: %d RC: %d RFC: %d RRD: %d REF: %d W2RDR: %d\n"
+		"R2W: %d W2R: %d R2R: %d W2W: %d WTR: %d RCD: %d RP %d WR: %d RTP: %d AL: %d\n",
+		setup.t_cl, setup.t_ras, setup.t_wrc, setup.t_rc, setup.t_rfc,
+		setup.t_rrd, setup.t_ref, setup.t_w2rdr, setup.t_r2w, setup.t_w2r,
+		setup.t_r2r, setup.t_w2w, setup.t_wtr, setup.t_rcd,
+		setup.t_rp, setup.t_wr, setup.t_rtp, setup.t_al);
 
 	setup.single_channel = (!(setup.branch[0].channel[1].used ||
 				  setup.branch[1].channel[0].used ||

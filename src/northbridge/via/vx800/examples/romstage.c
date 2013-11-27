@@ -46,7 +46,7 @@ static int acpi_is_wakeup_early_via_vx800(void)
 	print_debug("In acpi_is_wakeup_early_via_vx800\n");
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX855_LPC), 0);
+					   PCI_DEVICE_ID_VIA_VX855_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID)
 		die("Power management controller not found\n");
@@ -59,7 +59,7 @@ static int acpi_is_wakeup_early_via_vx800(void)
 
 	tmp = inw(VX800_ACPI_IO_BASE + 0x04);
 	result = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0;
-	print_debug("         boot_mode=");
+	print_debug("	       boot_mode=");
 	print_debug_hex16(result);
 	print_debug("\n");
 	return result;
@@ -165,7 +165,7 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 	0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00	// End of the table
 };
 
-#define USE_VCP     1		//0 means use DVP
+#define USE_VCP	    1		//0 means use DVP
 #define USE_COM1    1
 #define USE_COM2    0
 
@@ -297,31 +297,31 @@ void main(unsigned long bist)
 	//enable_vx800_serial();
 	//uart_init();
 
-/*	1.    D15F0
+/*	1.	 D15F0
 
-a)      RxBAh = 71h
+a)	RxBAh = 71h
 
-b)      RxBBh = 05h
+b)	RxBBh = 05h
 
-c)      RxBEh = 71h
+c)	RxBEh = 71h
 
-d)      RxBFh = 05h
+d)	RxBFh = 05h
 
 2.    D17F0
 
-a)      RxA0h = 06h
+a)	RxA0h = 06h
 
-b)      RxA1h = 11h
+b)	RxA1h = 11h
 
-c)      RxA2h = 27h
+c)	RxA2h = 27h
 
-d)      RxA3h = 32h
+d)	RxA3h = 32h
 
-e)      Rx79h = 40h
+e)	Rx79h = 40h
 
-f)      Rx72h = 27h
+f)	Rx72h = 27h
 
-g)      Rx73h = 32h
+g)	Rx73h = 32h
 */
 
 	u8 Data8;
@@ -445,7 +445,7 @@ g)      Rx73h = 32h
 		u32 memtop4 =
 		    *(u32 *) WAKE_MEM_INFO - 64 * 1024 - 0x100000 +
 		    0xe0000;
-		/*      __asm__ volatile (
+		/*	  __asm__ volatile (
 		   "movl    $0x204, %%ecx\n\t"
 		   "xorl    %%edx, %%edx\n\t"
 		   "movl     %0,%%eax\n\t"
@@ -455,8 +455,8 @@ g)      Rx73h = 32h
 		   "movl    $0x205, %%ecx\n\t"
 		   "xorl    %%edx, %%edx\n\t"
 		   "movl   $0x100000,%%eax\n\t"
-		   "decl                %%eax\n\t"
-		   "notl                %%eax\n\t"
+		   "decl		  %%eax\n\t"
+		   "notl		  %%eax\n\t"
 		   "orl    $(0 | 0x800), %%eax\n\t"
 		   "wrmsr\n\t"
 		   ::"g"(memtop2)
@@ -471,8 +471,8 @@ g)      Rx73h = 32h
 		   "movl    $0x207, %%ecx\n\t"
 		   "xorl    %%edx, %%edx\n\t"
 		   "movl   $0x100000,%%eax\n\t"
-		   "decl                %%eax\n\t"
-		   "notl                %%eax\n\t"
+		   "decl		  %%eax\n\t"
+		   "notl		  %%eax\n\t"
 		   "orl    $(0 | 0x800), %%eax\n\t"
 		   "wrmsr\n\t"
 		   ::"g"(memtop1)
@@ -487,8 +487,8 @@ g)      Rx73h = 32h
 		   "movl    $0x209, %ecx\n\t"
 		   "xorl    %edx, %edx\n\t"
 		   "movl     $0x100000,%eax\n\t"
-		   "decl                %eax\n\t"
-		   "notl                %eax\n\t"
+		   "decl		  %eax\n\t"
+		   "notl		  %eax\n\t"
 		   "orl     $(0 | 0x800), %eax\n\t"
 		   "wrmsr\n\t"
 		   );
@@ -497,45 +497,45 @@ g)      Rx73h = 32h
 		// these two memcpy not not be enabled if set the MTRR around this two lines.
 		/*__asm__ volatile (
 	 			"movl    $0, %%esi\n\t"
-        "movl    %0, %%edi\n\t"
-       	"movl    $0xa0000, %%ecx\n\t"
-       	"shrl    $2, %%ecx\n\t"
-        "rep movsd\n\t"
-        ::"g"(memtop3)
+	"movl	 %0, %%edi\n\t"
+       	"movl	 $0xa0000, %%ecx\n\t"
+       	"shrl	 $2, %%ecx\n\t"
+	"rep movsd\n\t"
+	::"g"(memtop3)
    	);
 	__asm__ volatile (
 	 			"movl    $0xe0000, %%esi\n\t"
-        "movl    %0, %%edi\n\t"
-       	"movl    $0x20000, %%ecx\n\t"
-       	"shrl    $2, %%ecx\n\t"
-        "rep movsd\n\t"
-        ::"g"(memtop4)
+	"movl	 %0, %%edi\n\t"
+       	"movl	 $0x20000, %%ecx\n\t"
+       	"shrl	 $2, %%ecx\n\t"
+	"rep movsd\n\t"
+	::"g"(memtop4)
    	);*/
 		print_debug("copy memory to high memory to protect s3 wakeup vector code \n");	//this can have function call, because no variable used before this
 		memcpy((unsigned char *) ((*(u32 *) WAKE_MEM_INFO) -
 					  64 * 1024 - 0x100000),
-		       (unsigned char *) 0, 0xa0000);
+			 (unsigned char *) 0, 0xa0000);
 		memcpy((unsigned char *) ((*(u32 *) WAKE_MEM_INFO) -
 					  64 * 1024 - 0x100000 + 0xe0000),
-		       (unsigned char *) 0xe0000, 0x20000);
+			 (unsigned char *) 0xe0000, 0x20000);
 
 		/* restore the MTRR previously modified. */
 /*		__asm__ volatile (
-        "wbinvd\n\t"
-        "xorl    %edx, %edx\n\t"
-       	"xorl    %eax, %eax\n\t"
-       	"movl    $0x204, %ecx\n\t"
-        "wrmsr\n\t"
+	"wbinvd\n\t"
+	"xorl	 %edx, %edx\n\t"
+       	"xorl	 %eax, %eax\n\t"
+       	"movl	 $0x204, %ecx\n\t"
+	"wrmsr\n\t"
 	 			"movl    $0x205, %ecx\n\t"
-        "wrmsr\n\t"
+	"wrmsr\n\t"
 	 			"movl    $0x206, %ecx\n\t"
-        "wrmsr\n\t"
+	"wrmsr\n\t"
 	 			"movl    $0x207, %ecx\n\t"
-        "wrmsr\n\t"
+	"wrmsr\n\t"
 	 			"movl    $0x208, %ecx\n\t"
-        "wrmsr\n\t"
+	"wrmsr\n\t"
 	 			"movl    $0x209, %ecx\n\t"
-        "wrmsr\n\t"
+	"wrmsr\n\t"
 		);*/
 	}
 #endif

@@ -25,8 +25,8 @@ typedef struct msr_struct
 
 typedef struct msrinit_struct
 {
-        unsigned index;
-        msr_t msr;
+	unsigned index;
+	msr_t msr;
 } msrinit_t;
 
 /* The following functions require the always_inline due to AMD

@@ -55,7 +55,7 @@ uint8_t	SiS_SiS1183_init[68][3]={
 {0x85, 0x00, 0xB3},
 {0x86, 0x00, 0x72},
 {0x87, 0x00, 0x40},
-{0x88, 0x00, 0xDE},      // after set mode
+{0x88, 0x00, 0xDE},	 // after set mode
 {0x89, 0x00, 0xB3},
 {0x8A, 0x00, 0x72},
 {0x8B, 0x00, 0x40},
@@ -116,19 +116,19 @@ static void sata_init(struct device *dev)
 
 
 	conf = dev->chip_info;
-        print_debug("SATA_INIT:---------->\n");
+	print_debug("SATA_INIT:---------->\n");
 
 //-------------- enable IDE (SiS1183) -------------------------
 {
-        uint8_t  temp8;
-        int i=0;
+	uint8_t  temp8;
+	int i=0;
 	while(SiS_SiS1183_init[i][0] != 0)
 	{
-                temp8 = pci_read_config8(dev, SiS_SiS1183_init[i][0]);
-                temp8 &= SiS_SiS1183_init[i][1];
-                temp8 |= SiS_SiS1183_init[i][2];
-                pci_write_config8(dev, SiS_SiS1183_init[i][0], temp8);
-                i++;
+		temp8 = pci_read_config8(dev, SiS_SiS1183_init[i][0]);
+		temp8 &= SiS_SiS1183_init[i][1];
+		temp8 |= SiS_SiS1183_init[i][2];
+		pci_write_config8(dev, SiS_SiS1183_init[i][0], temp8);
+		i++;
 	};
 }
 //-----------------------------------------------------------
@@ -149,25 +149,25 @@ for (i=0;i<10;i++){
 
 #if DEBUG_SATA
 {
-        int i;
+	int i;
 
-        print_debug("****** SATA PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	print_debug("****** SATA PCI config ******");
+	print_debug("\n	   03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
-                }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
-        }
-        print_debug("\n");
+	for(i=0;i<0xff;i+=4){
+		if((i%16)==0){
+			print_debug("\n");
+			print_debug_hex8(i);
+			print_debug(": ");
+		}
+		print_debug_hex32(pci_read_config32(dev,i));
+		print_debug("  ");
+	}
+	print_debug("\n");
 }
 #endif
 
-        print_debug("SATA_INIT:<----------\n");
+	print_debug("SATA_INIT:<----------\n");
 
 }
 

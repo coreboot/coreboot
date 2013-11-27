@@ -68,12 +68,12 @@ static void ide_init(struct device *dev)
 
 static struct device_operations ide_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = ide_init,
-	.scan_bus         = 0,
-//	.enable           = mcp55_enable,
-	.ops_pci          = &mcp55_pci_ops,
+	.init		   = ide_init,
+	.scan_bus	   = 0,
+//	.enable	     = mcp55_enable,
+	.ops_pci	   = &mcp55_pci_ops,
 };
 
 static const struct pci_driver ide_driver __pci_driver = {

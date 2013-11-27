@@ -25,7 +25,7 @@ Method(_PRT)
 	If (PICM) {
 		Return (Package() {
 			// Onboard graphics (IGD)	0:2.0
-			Package() { 0x0002ffff, 0, 0, 16 },//              GFX    INTA -> PIRQA (MSI)
+			Package() { 0x0002ffff, 0, 0, 16 },//	      GFX    INTA -> PIRQA (MSI)
 			// High Definition Audio	0:1b.0
 			Package() { 0x001bffff, 0, 0, 16 },//  D27IP_ZIP   HDA    INTA -> PIRQA (MSI)
 			// PCIe Root Ports		0:1c.x

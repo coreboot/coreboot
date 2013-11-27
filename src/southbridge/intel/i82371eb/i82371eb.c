@@ -28,14 +28,14 @@
  *   - Order Number: 290550-002
  *
  *   - Name: 82371FB (PIIX) and 82371SB (PIIX3) PCI ISA IDE Xcelerator
- *           Specification Update
+ *	     Specification Update
  *   - URL: http://www.intel.com/design/chipsets/specupdt/297658.htm
  *   - PDF: http://download.intel.com/design/chipsets/specupdt/29765801.pdf
  *   - Date: March 1998
  *   - Order Number: 297658-004
  *
  *   - Name: 82371AB PCI-TO-ISA / IDE XCELERATOR (PIIX4)
- *           (applies to 82371AB/EB/MB, a.k.a. PIIX4/PIIX4E/PIIX4M)
+ *	     (applies to 82371AB/EB/MB, a.k.a. PIIX4/PIIX4E/PIIX4M)
  *   - URL: http://www.intel.com/design/intarch/datashts/290562.htm
  *   - PDF: http://www.intel.com/design/intarch/datashts/29056201.pdf
  *   - Date: April 1997

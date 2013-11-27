@@ -22,15 +22,15 @@
 #include "it8671f.h"
 
 /* The base address is 0x3f0, 0x3bd, or 0x370, depending on config bytes. */
-#define SIO_BASE                   0x3f0
-#define SIO_INDEX                  SIO_BASE
-#define SIO_DATA                   (SIO_BASE + 1)
+#define SIO_BASE		   0x3f0
+#define SIO_INDEX		   SIO_BASE
+#define SIO_DATA		   (SIO_BASE + 1)
 
 /* Global configuration registers. */
-#define IT8671F_CONFIG_REG_CC      0x02   /* Configure Control (write-only). */
-#define IT8671F_CONFIG_REG_LDN     0x07   /* Logical Device Number. */
-#define IT8671F_CONFIG_REG_LDE     0x23   /* PnP Logical Device Enable. */
-#define IT8671F_CONFIG_REG_SWSUSP  0x24   /* Software Suspend. */
+#define IT8671F_CONFIG_REG_CC	   0x02	  /* Configure Control (write-only). */
+#define IT8671F_CONFIG_REG_LDN	   0x07	  /* Logical Device Number. */
+#define IT8671F_CONFIG_REG_LDE	   0x23	  /* PnP Logical Device Enable. */
+#define IT8671F_CONFIG_REG_SWSUSP  0x24	  /* Software Suspend. */
 
 #define IT8671F_CONFIGURATION_PORT 0x0279 /* Write-only. */
 
@@ -93,7 +93,7 @@ static void it8671f_enable_serial(device_t dev, u16 iobase)
 
 	/*
 	 * Allow all devices to be enabled. Bits: FDC (0), Com1 (1), Com2 (2),
-         * PP (3), Reserved (4), KBCK (5), KBCM (6), Reserved (7).
+	 * PP (3), Reserved (4), KBCK (5), KBCM (6), Reserved (7).
 	 */
 	it8671f_sio_write(0x00, IT8671F_CONFIG_REG_LDE, 0x6f);
 

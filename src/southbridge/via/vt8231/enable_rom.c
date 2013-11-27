@@ -26,7 +26,7 @@ static void vt8231_enable_rom(void)
 	device_t dev;
 
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-	                               PCI_DEVICE_ID_VIA_8231), 0);
+					PCI_DEVICE_ID_VIA_8231), 0);
 
 	/*
 	 * ROM decode control register (0x43):

@@ -24,7 +24,7 @@
 
 /*
  * TODO: Investigate somehow... Current values are taken from a running
- *       system with vendor supplied firmware.
+ *	 system with vendor supplied firmware.
  */
 
 const struct pch_gpio_set1 pch_gpio_set1_mode = {
@@ -56,7 +56,7 @@ const struct pch_gpio_set1 pch_gpio_set1_mode = {
 	.gpio25 = GPIO_MODE_GPIO,   /* Unknown Input */
 	.gpio26 = GPIO_MODE_NATIVE, /* Native - PCIECLKRQ4# pin */
 	.gpio27 = GPIO_MODE_GPIO,   /* Unknown Input */ /* Vendor supplied DSDT sets this conditionally
-							   when going to suspend (S3, S4, S5). */
+								  when going to suspend (S3, S4, S5). */
 	.gpio28 = GPIO_MODE_GPIO,   /* Unknown Output HIGH */
 	.gpio29 = GPIO_MODE_NATIVE,   /* Native - SLP_LAN# pin, forced by soft strap */
 	.gpio30 = GPIO_MODE_NATIVE, /* Native - SUSWARN_EC# pin */

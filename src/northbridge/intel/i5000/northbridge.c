@@ -69,7 +69,7 @@ static void mc_read_resources(device_t dev)
 	ram_resource(dev, idx++, 768, ((tolm >> 10) - 768));
 
 	memsize = MAX(pci_read_config16(dev16_1, 0x80) & ~3,
-		      pci_read_config16(dev16_1, 0x84) & ~3);
+			pci_read_config16(dev16_1, 0x84) & ~3);
 	memsize = MAX(memsize, pci_read_config16(dev16_1, 0x88) & ~3);
 
 	memsize <<= 24;
@@ -115,15 +115,15 @@ static void mc_read_resources(device_t dev)
 }
 
 static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = intel_set_subsystem,
+	.set_subsystem	   = intel_set_subsystem,
 };
 
 static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.scan_bus         = 0,
-	.ops_pci          = &intel_pci_ops,
+	.scan_bus	   = 0,
+	.ops_pci	   = &intel_pci_ops,
 };
 
 static const unsigned short nb_ids[] = {
@@ -134,7 +134,7 @@ static const unsigned short nb_ids[] = {
 	0};
 
 static const struct pci_driver mc_driver __pci_driver = {
-	.ops    = &mc_ops,
+	.ops	 = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.devices = nb_ids,
 };
@@ -149,10 +149,10 @@ static void cpu_bus_noop(device_t dev)
 }
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = 0,
 };
 static void pci_domain_set_resources(device_t dev)
 {
@@ -161,10 +161,10 @@ static void pci_domain_set_resources(device_t dev)
 
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.set_resources	   = pci_domain_set_resources,
 	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = pci_domain_scan_bus,
+	.init		   = NULL,
+	.scan_bus	   = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
 };
 

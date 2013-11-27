@@ -308,20 +308,20 @@ static void dc_setup_layout(u32 gx_base, const struct video_mode *mode)
  * Note: This routine assumes unlocked DC registers
  *
  * |<------------------------- htotal ----------------------------->|
- * |<------------ hactive -------------->|                          |
- * |                       hblankstart-->|                          |
- * |                                                    hblankend-->|
- * |                                hsyncstart-->|                  |
- * |                                           hsyncend-->|         |
+ * |<------------ hactive -------------->|			    |
+ * |			   hblankstart-->|			    |
+ * |							hblankend-->|
+ * |				    hsyncstart-->|		    |
+ * |					       hsyncend-->|	    |
  * |#####################################___________________________| RGB data
  * |______________________________________________---------_________| HSYNC
  *
  * |<------------------------- vtotal ----------------------------->|
- * |<------------ vactive -------------->|                          |
- * |                       vblankstart-->|                          |
- * |                                                    vblankend-->|
- * |                                vsyncstart-->|                  |
- * |                                           vsyncend-->|         |
+ * |<------------ vactive -------------->|			    |
+ * |			   vblankstart-->|			    |
+ * |							vblankend-->|
+ * |				    vsyncstart-->|		    |
+ * |					       vsyncend-->|	    |
  * |#####################################___________________________| line data
  * |______________________________________________---------_________| YSYNC
  */
@@ -480,10 +480,10 @@ static void cs5530_vga_init(device_t dev)
 
 static struct device_operations vga_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = cs5530_vga_init,
-	.enable           = NULL, /* not required */
+	.init		   = cs5530_vga_init,
+	.enable	   = NULL, /* not required */
 };
 
 static const struct pci_driver vga_pci_driver __pci_driver = {

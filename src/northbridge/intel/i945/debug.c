@@ -83,21 +83,21 @@ void dump_pci_devices(void)
 
 void dump_spd_registers(void)
 {
-        unsigned device;
-        device = DIMM0;
-        while(device <= DIMM3) {
-                int status = 0;
-                int i;
-        	printk(BIOS_DEBUG, "\ndimm %02x", device);
+	unsigned device;
+	device = DIMM0;
+	while(device <= DIMM3) {
+		int status = 0;
+		int i;
+		printk(BIOS_DEBUG, "\ndimm %02x", device);
 
-                for(i = 0; (i < 256) ; i++) {
-                        if ((i % 16) == 0) {
+		for(i = 0; (i < 256) ; i++) {
+			if ((i % 16) == 0) {
 				printk(BIOS_DEBUG, "\n%02x: ", i);
-                        }
+			}
 			status = smbus_read_byte(device, i);
-                        if (status < 0) {
-			         printk(BIOS_DEBUG, "bad device: %02x\n", -status);
-			         break;
+			if (status < 0) {
+				    printk(BIOS_DEBUG, "bad device: %02x\n", -status);
+				    break;
 			}
 			printk(BIOS_DEBUG, "%02x ", status);
 		}
@@ -108,13 +108,13 @@ void dump_spd_registers(void)
 
 void dump_mem(unsigned start, unsigned end)
 {
-        unsigned i;
+	unsigned i;
 	print_debug("dump_mem:");
-        for(i=start;i<end;i++) {
+	for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
 			printk(BIOS_DEBUG, "\n%08x:", i);
 		}
 		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
-        }
-        print_debug("\n");
+	}
+	print_debug("\n");
  }

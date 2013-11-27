@@ -116,7 +116,7 @@ static struct mrc_data_container *find_current_mrc_cache_local
 	}
 
 	printk(BIOS_DEBUG, "%s: picked entry %u from cache block\n", __func__,
-	       entry_id - 1);
+		entry_id - 1);
 
 	return mrc_cache;
 }
@@ -144,11 +144,11 @@ static struct mrc_data_container *find_next_mrc_cache
 		/* Crossed the boundary */
 		mrc_cache = NULL;
 		printk(BIOS_DEBUG, "%s: no available entries found\n",
-		       __func__);
+			 __func__);
 	} else {
 		printk(BIOS_DEBUG,
-		       "%s: picked next entry from cache block at %p\n",
-		       __func__, mrc_cache);
+			 "%s: picked next entry from cache block at %p\n",
+			 __func__, mrc_cache);
 	}
 
 	return mrc_cache;
@@ -173,7 +173,7 @@ static void update_mrc_cache(void *unused)
 	cache_size = get_mrc_cache_region(&cache_base);
 	if (cache_base == NULL) {
 		printk(BIOS_ERR, "%s: could not find MRC cache area\n",
-		       __func__);
+			 __func__);
 		return;
 	}
 
@@ -209,8 +209,8 @@ static void update_mrc_cache(void *unused)
 	 */
 	if (!cache) {
 		printk(BIOS_DEBUG,
-		       "Need to erase the MRC cache region of %d bytes at %p\n",
-		       cache_size, cache_base);
+			 "Need to erase the MRC cache region of %d bytes at %p\n",
+			 cache_size, cache_base);
 
 		flash->erase(flash, to_flash_offset(cache_base), cache_size);
 
@@ -219,14 +219,14 @@ static void update_mrc_cache(void *unused)
 	}
 	//  4. write mrc data with flash->write()
 	printk(BIOS_DEBUG, "Finally: write MRC cache update to flash at %p\n",
-	       cache);
+		cache);
 	flash->write(flash, to_flash_offset(cache),
 		     current->mrc_data_size + sizeof(*current), current);
 }
 
 BOOT_STATE_INIT_ENTRIES(mrc_cache_update) = {
 	BOOT_STATE_INIT_ENTRY(BS_WRITE_TABLES, BS_ON_ENTRY,
-	                      update_mrc_cache, NULL),
+			       update_mrc_cache, NULL),
 };
 #endif
 
@@ -238,7 +238,7 @@ struct mrc_data_container *find_current_mrc_cache(void)
 	cache_size = get_mrc_cache_region(&cache_base);
 	if (cache_base == NULL) {
 		printk(BIOS_ERR, "%s: could not find MRC cache area\n",
-		       __func__);
+			 __func__);
 		return NULL;
 	}
 

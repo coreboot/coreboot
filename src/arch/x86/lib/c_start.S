@@ -42,7 +42,7 @@ _start:
 	leal	_stack, %edi
 	movl	$_estack, %ecx
 	subl	%edi, %ecx
-	shrl	$2, %ecx   /* it is 32 bit aligned, right? */
+	shrl	$2, %ecx	 /* it is 32 bit aligned, right? */
 	movl	$0xDEADBEEF, %eax
 	rep
 	stosl
@@ -293,12 +293,12 @@ gdt:
 	/* The next two entries are used for executing VGA option ROMs */
 
 	/* selgdt 0x28 16 bit 64k code at 0x00000000 */
-	.word   0xffff, 0x0000
-	.byte   0, 0x9a, 0, 0
+	.word	 0xffff, 0x0000
+	.byte	 0, 0x9a, 0, 0
 
 	/* selgdt 0x30 16 bit 64k data at 0x00000000 */
-	.word   0xffff, 0x0000
-	.byte   0, 0x92, 0, 0
+	.word	 0xffff, 0x0000
+	.byte	 0, 0x92, 0, 0
 
 	/* The next two entries are used for ACPI S3 RESUME */
 

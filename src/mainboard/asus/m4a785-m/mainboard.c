@@ -28,7 +28,7 @@
 #include "southbridge/amd/sb700/smbus.h"
 
 #define ADT7461_ADDRESS 0x4C
-#define ARA_ADDRESS     0x0C /* Alert Response Address */
+#define ARA_ADDRESS	0x0C /* Alert Response Address */
 
 #define ADT7461_read_byte(address) \
 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)

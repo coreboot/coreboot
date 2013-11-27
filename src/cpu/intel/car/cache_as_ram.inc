@@ -169,7 +169,7 @@ clear_fixed_var_mtrr_out:
 /*
  * 0x06 is the WB IO type for a given 4k segment.
  * segs is the number of 4k segments in the area of the particular
- *      register we want to use for CAR.
+ *	register we want to use for CAR.
  * reg  is the register where the IO type should be stored.
  */
 .macro extractmask segs, reg

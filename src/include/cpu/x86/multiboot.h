@@ -29,19 +29,19 @@
 #include <stdint.h>
 
 /* How many bytes from the start of the file we search for the header.  */
-#define MB_SEARCH                 8192
+#define MB_SEARCH		  8192
 
 /* The magic field should contain this.  */
-#define MB_MAGIC                  0x1BADB002
+#define MB_MAGIC		  0x1BADB002
 
 /* This should be in %eax.  */
-#define MB_MAGIC2                 0x2BADB002
+#define MB_MAGIC2		  0x2BADB002
 
 /* The bits in the required part of flags field we don't support.  */
-#define MB_UNSUPPORTED            0x0000fffc
+#define MB_UNSUPPORTED		  0x0000fffc
 
 /* Alignment of multiboot modules.  */
-#define MB_MOD_ALIGN              0x00001000
+#define MB_MOD_ALIGN		  0x00001000
 
 /*
  * Flags set in the 'flags' member of the multiboot header.
@@ -167,8 +167,8 @@ struct multiboot_info {
 	uint16_t vbe_interface_len;
 };
 
-#define MULTIBOOT_MEMORY_AVAILABLE              1
-#define MULTIBOOT_MEMORY_RESERVED               2
+#define MULTIBOOT_MEMORY_AVAILABLE		1
+#define MULTIBOOT_MEMORY_RESERVED		2
 
 struct multiboot_mmap_entry {
 	uint32_t size;

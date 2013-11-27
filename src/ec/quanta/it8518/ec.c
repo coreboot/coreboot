@@ -185,13 +185,13 @@ static void it8518_enable_resources(device_t dev)
 }
 
 static struct device_operations ops = {
-	.init             = it8518_init,
+	.init		   = it8518_init,
 	.read_resources   = it8518_read_resources,
 	.enable_resources = it8518_enable_resources
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, 0, 0, { 0, 0 }, }
+	{ &ops, 0, 0, { 0, 0 }, }
 };
 
 static void enable_dev(device_t dev)

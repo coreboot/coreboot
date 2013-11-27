@@ -213,11 +213,11 @@ void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 		/* Fill MMIO limit/base pair. */
 		pci_write_config32(k8_f1, 0xbc,
 				   (((pcie_base_add + 0x10000000 -
-				     1) >> 8) & 0xffffff00) | 0x80 | (sblk << 4));
+					 1) >> 8) & 0xffffff00) | 0x80 | (sblk << 4));
 		pci_write_config32(k8_f1, 0xb8, (pcie_base_add >> 8) | 0x3);
 		pci_write_config32(k8_f1, 0xb4,
 				   (((mmio_base_add + 0x10000000 -
-				     1) >> 8) & 0xffffff00) | (sblk << 4));
+					 1) >> 8) & 0xffffff00) | (sblk << 4));
 		pci_write_config32(k8_f1, 0xb0, (mmio_base_add >> 8) | 0x3);
 	} else {
 		pci_write_config32(k8_f1, 0xb8, 0);
@@ -233,14 +233,14 @@ void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port)
 	case 2:		/* GFX, bit4-5 */
 	case 3:
 		set_nbmisc_enable_bits(nb_dev, PCIE_LINK_CFG,
-				       1 << (port + 2), 0 << (port + 2));
+					   1 << (port + 2), 0 << (port + 2));
 		break;
 	case 4:		/* GPP, bit20-24 */
 	case 5:
 	case 6:
 	case 7:
 		set_nbmisc_enable_bits(nb_dev, PCIE_LINK_CFG,
-				       1 << (port + 17), 0 << (port + 17));
+					   1 << (port + 17), 0 << (port + 17));
 		break;
 	}
 }
@@ -261,7 +261,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 		udelay(200);
 		lc_state = nbpcie_p_read_index(dev, 0xa5);	/* lc_state */
 		printk(BIOS_DEBUG, "PcieLinkTraining port=%x:lc current state=%x\n",
-			     port, lc_state);
+				port, lc_state);
 		current = lc_state & 0x3f;	/* get LC_CURRENT_STATE, bit0-5 */
 
 		switch (current) {
@@ -287,7 +287,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 				/* set bit8=1, bit0-2=bit4-6 */
 				u32 tmp;
 				reg =
-				    nbpcie_p_read_index(dev,
+					nbpcie_p_read_index(dev,
 							PCIE_LC_LINK_WIDTH);
 				tmp = (reg >> 4) && 0x3;	/* get bit4-6 */
 				reg &= 0xfff8;	/* clear bit0-2 */

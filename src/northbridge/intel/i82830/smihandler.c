@@ -44,11 +44,11 @@ extern u32 mbi_len;
 
 /* I830M */
 #define SMRAM		0x90
-#define   D_OPEN	(1 << 6)
-#define   D_CLS		(1 << 5)
-#define   D_LCK		(1 << 4)
-#define   G_SMRANE	(1 << 3)
-#define   C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
+#define	  D_OPEN	(1 << 6)
+#define	  D_CLS		(1 << 5)
+#define	  D_LCK		(1 << 4)
+#define	  G_SMRANE	(1 << 3)
+#define	  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
 
 typedef struct {
@@ -285,8 +285,8 @@ static void mbi_call(u8 subf, banner_id_t *banner_id)
 }
 
 #define SMI_IFC_SUCCESS		    1
-#define SMI_IFC_FAILURE_GENERIC     0
-#define SMI_IFC_FAILURE_INVALID     2
+#define SMI_IFC_FAILURE_GENERIC	    0
+#define SMI_IFC_FAILURE_INVALID	    2
 #define SMI_IFC_FAILURE_CRITICAL    4
 #define SMI_IFC_FAILURE_NONCRITICAL 6
 

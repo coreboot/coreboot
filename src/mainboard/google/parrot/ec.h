@@ -20,8 +20,8 @@
 #ifndef PARROT_EC_H
 #define PARROT_EC_H
 
-#define EC_SCI_GPI      7   /* GPIO7 is EC_SCI# */
-#define EC_SMI_GPI      8   /* GPIO8 is EC_SMI# */
+#define EC_SCI_GPI	7   /* GPIO7 is EC_SCI# */
+#define EC_SMI_GPI	8   /* GPIO8 is EC_SMI# */
 #define EC_LID_GPI     15   /* GPIO15 is EC_LID_OUT# */
 
 /* EC SMI sources TODO - make defines

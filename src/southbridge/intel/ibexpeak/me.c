@@ -82,10 +82,10 @@ static void mei_dump(void *ptr, int dword, int offset, const char *type)
 			break;
 		}
 		printk(BIOS_SPEW, "cbd=%u cbrp=%02u cbwp=%02u ready=%u "
-		       "reset=%u ig=%u is=%u ie=%u\n", csr->buffer_depth,
-		       csr->buffer_read_ptr, csr->buffer_write_ptr,
-		       csr->ready, csr->reset, csr->interrupt_generate,
-		       csr->interrupt_status, csr->interrupt_enable);
+			 "reset=%u ig=%u is=%u ie=%u\n", csr->buffer_depth,
+			 csr->buffer_read_ptr, csr->buffer_write_ptr,
+			 csr->ready, csr->reset, csr->interrupt_generate,
+			 csr->interrupt_status, csr->interrupt_enable);
 		break;
 	case MEI_ME_CB_RW:
 	case MEI_H_CB_WW:
@@ -234,7 +234,7 @@ static int mei_send_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	 */
 	if ((host.buffer_depth - host.buffer_write_ptr) < ndata) {
 		printk(BIOS_ERR, "ME: message (%u) too large for buffer (%u)\n",
-		       ndata + 2, host.buffer_depth);
+			 ndata + 2, host.buffer_depth);
 		return -1;
 	}
 
@@ -288,8 +288,8 @@ static int mei_recv_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	}
 	if (!n) {
 		printk(BIOS_ERR, "ME: timeout waiting for data: expected "
-		       "%u, available %u\n", expected,
-		       me.buffer_write_ptr - me.buffer_read_ptr);
+			 "%u, available %u\n", expected,
+			 me.buffer_write_ptr - me.buffer_read_ptr);
 		return -1;
 	}
 
@@ -315,9 +315,9 @@ static int mei_recv_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	    mkhi->group_id != mkhi_rsp.group_id ||
 	    mkhi->command != mkhi_rsp.command) {
 		printk(BIOS_ERR, "ME: invalid response, group %u ?= %u, "
-		       "command %u ?= %u, is_response %u\n", mkhi->group_id,
-		       mkhi_rsp.group_id, mkhi->command, mkhi_rsp.command,
-		       mkhi_rsp.is_response);
+			 "command %u ?= %u, is_response %u\n", mkhi->group_id,
+			 mkhi_rsp.group_id, mkhi->command, mkhi_rsp.command,
+			 mkhi_rsp.is_response);
 		return -1;
 	}
 	ndata--; /* MKHI header has been read */
@@ -325,7 +325,7 @@ static int mei_recv_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 	/* Make sure caller passed a buffer with enough space */
 	if (ndata != (rsp_bytes >> 2)) {
 		printk(BIOS_ERR, "ME: not enough room in response buffer: "
-		       "%u != %u\n", ndata, rsp_bytes >> 2);
+			 "%u != %u\n", ndata, rsp_bytes >> 2);
 		return -1;
 	}
 
@@ -344,7 +344,7 @@ static int mei_recv_msg(struct mei_header *mei, struct mkhi_header *mkhi,
 }
 
 static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
-			       void *req_data, void *rsp_data, int rsp_bytes)
+				  void *req_data, void *rsp_data, int rsp_bytes)
 {
 	if (mei_send_msg(mei, mkhi, req_data) < 0)
 		return -1;
@@ -402,11 +402,11 @@ static int mkhi_get_fw_version(void)
 	}
 
 	printk(BIOS_INFO, "ME: Firmware Version %u.%u.%u.%u (code) "
-	       "%u.%u.%u.%u (recovery)\n",
-	       version.code_major, version.code_minor,
-	       version.code_build_number, version.code_hot_fix,
-	       version.recovery_major, version.recovery_minor,
-	       version.recovery_build_number, version.recovery_hot_fix);
+		"%u.%u.%u.%u (recovery)\n",
+		version.code_major, version.code_minor,
+		version.code_build_number, version.code_hot_fix,
+		version.recovery_major, version.recovery_minor,
+		version.recovery_build_number, version.recovery_hot_fix);
 
 	return 0;
 }
@@ -414,7 +414,7 @@ static int mkhi_get_fw_version(void)
 static inline void print_cap(const char *name, int state)
 {
 	printk(BIOS_DEBUG, "ME Capability: %-30s : %sabled\n",
-	       name, state ? "en" : "dis");
+		name, state ? "en" : "dis");
 }
 
 /* Get ME Firmware Capabilities */
@@ -450,7 +450,7 @@ static int mkhi_get_fwcaps(void)
 	print_cap("IntelR Power Sharing Technology (MPC)",
 		  cap.caps_sku.intel_mpc);
 	print_cap("ICC Over Clocking", cap.caps_sku.icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)", cap.caps_sku.pavp);
+	print_cap("Protected Audio Video Path (PAVP)", cap.caps_sku.pavp);
 	print_cap("IPV6", cap.caps_sku.ipv6);
 	print_cap("KVM Remote Control (KVM)", cap.caps_sku.kvm);
 	print_cap("Outbreak Containment Heuristic (OCH)", cap.caps_sku.och);
@@ -601,12 +601,12 @@ static me_bios_path intel_me_path(device_t dev)
 	if (path != ME_NORMAL_BIOS_PATH) {
 		struct elog_event_data_me_extended data = {
 			.current_working_state = hfs.working_state,
-			.operation_state       = hfs.operation_state,
-			.operation_mode        = hfs.operation_mode,
-			.error_code            = hfs.error_code,
-			.progress_code         = gmes.progress_code,
-			.current_pmevent       = gmes.current_pmevent,
-			.current_state         = gmes.current_state,
+			.operation_state	  = hfs.operation_state,
+			.operation_mode	  = hfs.operation_mode,
+			.error_code		  = hfs.error_code,
+			.progress_code	  = gmes.progress_code,
+			.current_pmevent	  = gmes.current_pmevent,
+			.current_state	  = gmes.current_state,
 		};
 		elog_add_event_byte(ELOG_TYPE_MANAGEMENT_ENGINE, path);
 		elog_add_event_raw(ELOG_TYPE_MANAGEMENT_ENGINE_EXT,
@@ -676,7 +676,7 @@ static int intel_me_extend_valid(device_t dev)
 		break;
 	default:
 		printk(BIOS_ERR, "ME: Extend Algorithm %d unknown\n",
-		       status.extend_reg_algorithm);
+			 status.extend_reg_algorithm);
 		return -1;
 	}
 

@@ -52,16 +52,16 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations pci_ops  = {
 	.read_resources   = pic_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = pic_init,
-	.scan_bus         = 0,
-	.enable           = esb6300_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = pic_init,
+	.scan_bus	   = 0,
+	.enable	   = esb6300_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver pci_driver __pci_driver = {
-	.ops    = &pci_ops,
+	.ops	 = &pci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_APIC1,
 };

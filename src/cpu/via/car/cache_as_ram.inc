@@ -212,8 +212,8 @@ testok:
 
 	/*
 	 * TODO: Backup stack in CACHE_AS_RAM into MMX and SSE and after we
-	 *       get STACK up, we restore that. It is only needed if we
-	 *       want to go back.
+	 *	  get STACK up, we restore that. It is only needed if we
+	 *	  want to go back.
 	 */
 
 	/* We don't need CAR from now on. */

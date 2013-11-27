@@ -47,7 +47,7 @@ static int ttyS0_tst_byte(void)
 }
 
 static const struct console_driver uart8250_console __console = {
-	.init     = ttyS0_init,
+	.init	   = ttyS0_init,
 	.tx_byte  = ttyS0_tx_byte,
 	.tx_flush = ttyS0_tx_flush,
 	.rx_byte  = ttyS0_rx_byte,

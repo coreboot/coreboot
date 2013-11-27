@@ -397,11 +397,11 @@ static void ResetDCTWrPtr(const struct mem_controller *ctrl)
 
 static uint16_t get_exact_T1000(unsigned i)
 {
-	//				   200   266,   333,  400
+	//					  200	266,   333,  400
 	static const uint16_t T1000_a[]= { 5000, 3759, 3003, 2500 };
 
 	static const uint16_t TT_a[] = {
-		 /*200   266   333   400 */
+		 /*200   266	 333   400 */
 	 /*4 */   6250, 6250, 6250, 6250,
 	 /*5 */   5000, 5000, 5000, 2500,
 	 /*6 */   5000, 4166, 4166, 2500,
@@ -665,9 +665,9 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 
 				if(RcvrEnDly & 1) {
 					/* Odd steps get another pattern such that even
-					   and odd steps alternate.
-					   The pointers to the patterns will be swapped
-					   at the end of the loop so they are correspond
+						and odd steps alternate.
+						The pointers to the patterns will be swapped
+						at the end of the loop so they are correspond
 					*/
 					PatternA = 1;
 					PatternB = 0;
@@ -707,7 +707,7 @@ static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, st
 				if(Test0 == DQS_PASS) {
 
 					Read1LTestPattern(TestAddr0B);
-			       		Test1 = CompareTestPatternQW0(channel, TestAddr0B, PatternB, TestPattern0, TestPattern1, TestPattern2, Pass, is_Width128);
+				  		Test1 = CompareTestPatternQW0(channel, TestAddr0B, PatternB, TestPattern0, TestPattern1, TestPattern2, Pass, is_Width128);
 					proc_IOCLFLUSH(TestAddr0B);
 
 					ResetDCTWrPtr(ctrl);
@@ -977,7 +977,7 @@ static void ReadL9TestPattern(unsigned addr_lo)
 		"movl %%fs:(%%edx), %%eax\n\t"      //+6
 		"movl %%fs:64(%%edx), %%eax\n\t"   //+7
 
-		"movl %%fs:-128(%%ebx), %%eax\n\t"      //+8
+		"movl %%fs:-128(%%ebx), %%eax\n\t"	  //+8
 
 		:: "a"(0), "b" (addr_lo+128+8*64), "c"(addr_lo+128), "d"(addr_lo+128+4*64)
 	);
@@ -1304,12 +1304,12 @@ static unsigned TrainDQSRdWrPos(const struct mem_controller *ctrl, struct sys_in
 					0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe, // QW5,CHA-B, DQ0-ODD
 					0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe,0xFeFeFeFe, // QW6,CHA-B, DQ0-ODD
 					0x01010101,0x01010101,0x01010101,0x01010101, // QW7,CHA-B, DQ0-ODD
-				    	0x02020202,0x02020202,0x02020202,0x02020202, // QW0,CHA-B, DQ1-ODD
-				    	0x02020202,0x02020202,0x02020202,0x02020202, // QW1,CHA-B, DQ1-ODD
+						0x02020202,0x02020202,0x02020202,0x02020202, // QW0,CHA-B, DQ1-ODD
+						0x02020202,0x02020202,0x02020202,0x02020202, // QW1,CHA-B, DQ1-ODD
 					0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW2,CHA-B, DQ1-ODD
 					0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW3,CHA-B, DQ1-ODD
-				    	0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW4,CHA-B, DQ1-ODD
-				    	0x02020202,0x02020202,0x02020202,0x02020202, // QW5,CHA-B, DQ1-ODD
+						0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd,0xFdFdFdFd, // QW4,CHA-B, DQ1-ODD
+						0x02020202,0x02020202,0x02020202,0x02020202, // QW5,CHA-B, DQ1-ODD
 					0x02020202,0x02020202,0x02020202,0x02020202, // QW6,CHA-B, DQ1-ODD
 					0x02020202,0x02020202,0x02020202,0x02020202, // QW7,CHA-B, DQ1-ODD
 					0x04040404,0x04040404,0x04040404,0x04040404, // QW0,CHA-B, DQ2-ODD
@@ -2064,7 +2064,7 @@ out:
 
 	if(v) {
 		for(ii=0;ii<4;ii++) {
-		      print_debug_dqs_tsc_x("Total DQS Training : tsc ", ii,  tsc[ii].hi, tsc[ii].lo);
+			print_debug_dqs_tsc_x("Total DQS Training : tsc ", ii,  tsc[ii].hi, tsc[ii].lo);
 		}
 	}
 
@@ -2079,8 +2079,8 @@ out:
 static void train_ram(unsigned nodeid, struct sys_info *sysinfo, struct sys_info *sysinfox)
 {
 	dqs_timing(nodeid, &sysinfo->ctrl[nodeid], sysinfo, 0); // keep the output tidy
-//      memcpy(&sysinfox->dqs_rcvr_dly_a[nodeid * 2 * 8],&sysinfo->dqs_rcvr_dly_a[nodeid * 2 * 8], 2*8);
-//      memcpy(&sysinfox->dqs_delay_a[nodeid * 2 * 2 * 9], &sysinfo->dqs_delay_a[nodeid * 2 * 2 * 9], 2 * 2 * 9);
+//	memcpy(&sysinfox->dqs_rcvr_dly_a[nodeid * 2 * 8],&sysinfo->dqs_rcvr_dly_a[nodeid * 2 * 8], 2*8);
+//	memcpy(&sysinfox->dqs_delay_a[nodeid * 2 * 2 * 9], &sysinfo->dqs_delay_a[nodeid * 2 * 2 * 9], 2 * 2 * 9);
 	sysinfox->mem_trained[nodeid] = sysinfo->mem_trained[nodeid];
 
 }

@@ -79,7 +79,7 @@ static void ht_collapse_previous_enumeration(uint8_t bus, unsigned offset_unitid
 		dev = PCI_DEV(bus, 0, 0);
 		id = pci_read_config32(dev, PCI_VENDOR_ID);
 		if (!((id == 0xffffffff) || (id == 0x00000000) ||
-		      (id == 0x0000ffff) || (id == 0xffff0000))) {
+			(id == 0x0000ffff) || (id == 0xffff0000))) {
 			return;
 		}
 	}
@@ -178,9 +178,9 @@ static uint8_t ht_read_width_cap(device_t dev, uint8_t pos)
 #define LINK_OFFS(CTRL, WIDTH,FREQ,FREQ_CAP) \
 	(((CTRL & 0xff) << 24) | ((WIDTH & 0xff) << 16) | ((FREQ & 0xff) << 8) | (FREQ_CAP & 0xFF))
 
-#define LINK_CTRL(OFFS)     ((OFFS >> 24) & 0xFF)
+#define LINK_CTRL(OFFS)	    ((OFFS >> 24) & 0xFF)
 #define LINK_WIDTH(OFFS)    ((OFFS >> 16) & 0xFF)
-#define LINK_FREQ(OFFS)     ((OFFS >> 8) & 0xFF)
+#define LINK_FREQ(OFFS)	    ((OFFS >> 8) & 0xFF)
 #define LINK_FREQ_CAP(OFFS) ((OFFS) & 0xFF)
 
 #define PCI_HT_HOST_OFFS LINK_OFFS(		\

@@ -20,8 +20,8 @@
 void DRAMSetVRNum(DRAM_SYS_ATTR *DramAttr, u8 PhyRank /* physical rank */,
 		  u8 VirRank /* virtual rank */, BOOLEAN Enable);
 void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank /* Ending address
-                   register number indicator (INDEX */, INT8 Value /* (value)
-                   add or subtract value to this and after banks. */);
+		   register number indicator (INDEX */, INT8 Value /* (value)
+		   add or subtract value to this and after banks. */);
 void InitDDR2CHA(DRAM_SYS_ATTR *DramAttr);
 void InitDDR2CHB(DRAM_SYS_ATTR *DramAttr);
 void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr);
@@ -31,11 +31,11 @@ CB_STATUS VerifyChc(void);
 /*===================================================================
 Function   : DRAMRegInitValue()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : Set necessary register before DRAM initialize
+				      in MotherBoard
+Output	   : Void
+Purpose	  : Set necessary register before DRAM initialize
 ===================================================================*/
 
 static const u8 DramRegTbl[][3] = {
@@ -147,20 +147,20 @@ void DRAMRegInitValue(DRAM_SYS_ATTR *DramAttr)
 	}
 
 	// Disable Read DRAM fast ready ;Rx51[7]
-	// Disable Read Around Write    ;Rx51[6]
+	// Disable Read Around Write	 ;Rx51[6]
 
-	// Disable Consecutive Read     ;RX52[1:0]
+	// Disable Consecutive Read	 ;RX52[1:0]
 	// Disable Speculative Read
 }
 
 /*===================================================================
 Function   : DRAMInitializeProc()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : DRAM initialize according to the bios porting guid
+				      in MotherBoard
+Output	   : Void
+Purpose	  : DRAM initialize according to the bios porting guid
 ===================================================================*/
 
 #define EXIST_TEST_PATTERN		0x55555555
@@ -248,16 +248,16 @@ void DRAMInitializeProc(DRAM_SYS_ATTR *DramAttr)
 /*===================================================================
 Function   : DRAMSetVRNUM()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
+				      in MotherBoard
 		  PhyRank:   Physical Rank number
-		  VirRank:    Virtual Rank number
-		  Enable:      Enable/Disable Physical Rank
-Output     : Void
-Purpose   : Set virtual rank number for physical rank
-                 Program the specific physical rank with specific virtual rank number
-                 Program when necessary, otherwise don't touch the pr-vr-mapping registers
+		  VirRank:	Virtual Rank number
+		  Enable:	 Enable/Disable Physical Rank
+Output	   : Void
+Purpose	  : Set virtual rank number for physical rank
+		 Program the specific physical rank with specific virtual rank number
+		 Program when necessary, otherwise don't touch the pr-vr-mapping registers
 ===================================================================*/
 
 void DRAMSetVRNum(DRAM_SYS_ATTR *DramAttr, u8 PhyRank /* physical rank */,
@@ -286,13 +286,13 @@ void DRAMSetVRNum(DRAM_SYS_ATTR *DramAttr, u8 PhyRank /* physical rank */,
 /*===================================================================
 Function   : SetEndingAddr()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-		  VirRank:    Virtual Rank number
-		  Value:       (value) add or subtract value to this and after banks
-Output     : Void
-Purpose   : Set ending address of virtual rank specified by VirRank
+				      in MotherBoard
+		  VirRank:	Virtual Rank number
+		  Value:	 (value) add or subtract value to this and after banks
+Output	   : Void
+Purpose	  : Set ending address of virtual rank specified by VirRank
 ===================================================================*/
 
 void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank /* ending address
@@ -313,45 +313,45 @@ void SetEndingAddr(DRAM_SYS_ATTR *DramAttr, u8 VirRank /* ending address
 /*===================================================================
 Function   : InitDDR2()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : Initialize DDR2 by standard sequence
+				      in MotherBoard
+Output	   : Void
+Purpose	  : Initialize DDR2 by standard sequence
 ===================================================================*/
 
-//                               DLL:         Enable                              Reset
+//				 DLL:	      Enable				  Reset
 static const u32 CHA_MRS_DLL_150[2] = { 0x00020200, 0x00000800 };	// with 150 ohm (A17=1, A9=1), (A11=1)(cpu address)
 static const u32 CHA_MRS_DLL_75[2] = { 0x00020020, 0x00000800 };	// with 75 ohm  (A17=1, A5=1), (A11=1)(cpu address)
 
-//               CPU(DRAM)
+//		 CPU(DRAM)
 // { DLL: Enable. A17(BA0)=1 and A3(MA0)=0 }
 // { DLL: reset.  A11(MA8)=1 }
 //
-//                      DDR2                    CL=2    CL=3    CL=4    CL=5     CL=6(Burst type=interleave)(WR fine tune in code)
+//			DDR2			CL=2	CL=3	CL=4	CL=5	 CL=6(Burst type=interleave)(WR fine tune in code)
 static const u16 CHA_DDR2_MRS_table[5] = { 0x0150, 0x01D0, 0x0250, 0x02D0, 0x350 };	// BL=4 ;Use 1X-bandwidth MA table to init DRAM
 
-//                                                       MA11        MA10(AP)      MA9
+//							 MA11	     MA10(AP)	   MA9
 #define CHA_MRS_DDR2_TWR2		(0 << 13) + (0 << 20) + (1 << 12)	// Value = 001000h
 #define CHA_MRS_DDR2_TWR3		(0 << 13) + (1 << 20) + (0 << 12)	// Value = 100000h
 #define CHA_MRS_DDR2_TWR4		(0 << 13) + (1 << 20) + (1 << 12)	// Value = 101000h
 #define CHA_MRS_DDR2_TWR5		(1 << 13) + (0 << 20) + (0 << 12)	// Value = 002000h
 #define CHA_MRS_DDR2_TWR6		(1 << 13) + (0 << 20) + (1 << 12)	// Value = 003000h
 
-//                              DDR2             Twr=2                  Twr=3              Twr=4                  Twr=5
+//				DDR2		 Twr=2			Twr=3		   Twr=4		  Twr=5
 static const u32 CHA_DDR2_Twr_table[5] = {
 	CHA_MRS_DDR2_TWR2, CHA_MRS_DDR2_TWR3, CHA_MRS_DDR2_TWR4,
 	CHA_MRS_DDR2_TWR5, CHA_MRS_DDR2_TWR6
 };
 
 #define CHA_OCD_Exit_150ohm		0x20200	// EMRS(1), BA0=1, MA9=MA8=MA7=0,MA6=1,MA2=0 (DRAM bus address)
-//                A17=1, A12=A11=A10=0,A9=1 ,A5=0  (CPU address)
+//		  A17=1, A12=A11=A10=0,A9=1 ,A5=0  (CPU address)
 #define CHA_OCD_Default_150ohm		0x21E00	// EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=1,MA2=0 (DRAM bus address)
-//               A17=1, A12=A11=A10=1,A9=1 ,A5=0  (CPU address)
+//		 A17=1, A12=A11=A10=1,A9=1 ,A5=0  (CPU address)
 #define CHA_OCD_Exit_75ohm		0x20020	// EMRS(1), BA0=1, MA9=MA8=MA7=0,MA6=0,MA2=1 (DRAM bus address)
-//              A17=1, A12=A11=A10=0,A9=0 ,A5=1  (CPU address)
+//		A17=1, A12=A11=A10=0,A9=0 ,A5=1  (CPU address)
 #define CHA_OCD_Default_75ohm		0x21C20	// EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=0,MA2=1 (DRAM bus address)
-//              A17=1, A12=A11=A10=1,A9=0 ,A5=1  (CPU address)
+//		A17=1, A12=A11=A10=1,A9=0 ,A5=1  (CPU address)
 
 void InitDDR2CHA(DRAM_SYS_ATTR *DramAttr)
 {
@@ -523,49 +523,49 @@ void InitDDR2CHA(DRAM_SYS_ATTR *DramAttr)
 /*===================================================================
 Function   : InitDDR2_CHB()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : Initialize DDR2 of CHB by standard sequence
+				      in MotherBoard
+Output	   : Void
+Purpose	  : Initialize DDR2 of CHB by standard sequence
 Reference  :
 ===================================================================*/
-/*//		                 DLL:	      Enable				  Reset
+/*//				       DLL:		  Enable				  Reset
 static const  u32 CHB_MRS_DLL_150[2] =	{ 0x00020200 | (1 << 20), 0x00000800 };	// with 150 ohm (A17=1, A9=1), (A11=1)(cpu address)
 //u32 CHB_MRS_DLL_75[2]  =	{ 0x00020020 | (1 << 20), 0x00000800 };	// with 75 ohm  (A17=1, A5=1), (A11=1)(cpu address)
 //		 CPU(DRAM)
 // { DLL: Enable. A17(BA0)=1 and A3(MA0)=0 }
 // { DLL: reset.  A11(MA8)=1 }
 //
-//                      DDR2 			CL=2	CL=3	CL=4	CL=5 	(Burst type=interleave)(WR fine tune in code)
+//			DDR2 			CL=2	CL=3	CL=4	CL=5 	(Burst type=interleave)(WR fine tune in code)
 static const  u16 CHB_DDR2_MRS_table[4] ={ 0x0150, 0x01D0, 0x0250, 0x02D0 };	// BL=4 ;Use 1X-bandwidth MA table to init DRAM
 
-//			 				 MA11	     MA10(AP)      MA9
+//			 				 MA11	     MA10(AP)	   MA9
 #define CHB_MRS_DDR2_TWR2		(0 << 13) + (0 << 20) + (1 << 12)	// Value = 001000h
 #define CHB_MRS_DDR2_TWR3		(0 << 13) + (1 << 20) + (0 << 12)	// Value = 100000h
 #define CHB_MRS_DDR2_TWR4		(0 << 13) + (1 << 20) + (1 << 12)	// Value = 101000h
 #define CHB_MRS_DDR2_TWR5		(1 << 13) + (0 << 20) + (0 << 12)	// Value = 002000h
 #define CHB_MRS_DDR2_TWR6		(1 << 13) + (0 << 20) + (1 << 12)	// Value = 003000h
 
-//				DDR2 		 Twr=2			Twr=3		   Twr=4		  Twr=5
+//				DDR2 		 Twr=2			Twr=3			Twr=4		  Twr=5
 static const u32 CHB_DDR2_Twr_table[5] = { CHB_MRS_DDR2_TWR2,	CHB_MRS_DDR2_TWR3, CHB_MRS_DDR2_TWR4, CHB_MRS_DDR2_TWR5, CHB_MRS_DDR2_TWR6 };
 
 #define CHB_OCD_Exit_150ohm		0x20200 | (1 << 20) 		 // EMRS(1), BA0=1, MA9=MA8=MA7=0,MA6=1,MA2=0 (DRAM bus address)
-//	          A17=1, A12=A11=A10=0,A9=1 ,A5=0  (CPU address)
+//		     A17=1, A12=A11=A10=0,A9=1 ,A5=0  (CPU address)
 #define CHB_OCD_Default_150ohm	0x21E00 | (1 << 20)     	// EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=1,MA2=0 (DRAM bus address)
-//	         A17=1, A12=A11=A10=1,A9=1 ,A5=0  (CPU address)
-//#define CHB_OCD_Exit_75ohm		0x20020 | (1 << 20) 	      // EMRS(1), BA0=1, MA9=MA8=MA7=0,MA6=0,MA2=1 (DRAM bus address)
-//	        A17=1, A12=A11=A10=0,A9=0 ,A5=1  (CPU address)
-//#define CHB_OCD_Default_75ohm	0x21C20 | (1 << 20)      // EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=0,MA2=1 (DRAM bus address)
-//	        A17=1, A12=A11=A10=1,A9=0 ,A5=1  (CPU address)
+//		    A17=1, A12=A11=A10=1,A9=1 ,A5=0  (CPU address)
+//#define CHB_OCD_Exit_75ohm		0x20020 | (1 << 20) 		 // EMRS(1), BA0=1, MA9=MA8=MA7=0,MA6=0,MA2=1 (DRAM bus address)
+//		   A17=1, A12=A11=A10=0,A9=0 ,A5=1  (CPU address)
+//#define CHB_OCD_Default_75ohm	0x21C20 | (1 << 20)	 // EMRS(1), BA0=1, MA9=MA8=MA7=1,MA6=0,MA2=1 (DRAM bus address)
+//		   A17=1, A12=A11=A10=1,A9=0 ,A5=1  (CPU address)
 void InitDDR2CHB(
-               DRAM_SYS_ATTR          *DramAttr
-             )
+	       DRAM_SYS_ATTR	      *DramAttr
+	     )
 
 {
-    u8     Data;
-    u8	    Idx, CL, BL, Twr;
-    u32   AccessAddr;
+    u8	   Data;
+    u8		   Idx, CL, BL, Twr;
+    u32	  AccessAddr;
 
     Data = 0x80;
     pci_write_config8(MEMCTRL, 0x54, Data);
@@ -603,7 +603,7 @@ void InitDDR2CHB(
     // - <<<	reduce BOOT UP time >>>	-
     // Loop 200us
     for (Idx = 0; Idx < 0x10; Idx++)
-        WaitMicroSec(10);
+	WaitMicroSec(10);
 
     // Step 8.
     // all banks precharge command enable
@@ -709,7 +709,7 @@ void InitDDR2CHB(
     //repeat issue 8 CBR cycle, between each cycle stop 100us
     for (Idx = 0; Idx < 8; Idx++)
     {
-         // issue CBR cycle
+	 // issue CBR cycle
     Data=pci_read_config8(MEMCTRL, 0xd3);
     Data &= 0x7F;
     pci_write_config8(MEMCTRL, 0xd3, Data);
@@ -744,7 +744,7 @@ void InitDDR2CHB(
     AccessAddr  = (u32)(CHB_DDR2_MRS_table[CL]);
     if (BL)
     {
-        AccessAddr += 8;
+	AccessAddr += 8;
     }
 
     //Write recovery  : really offset Rx63[7:5]
@@ -875,14 +875,14 @@ void InitDDR2CHB(
 /*===================================================================
 Function   : InitDDR2CHC()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : Initialize DDR2 of CHC by standard sequence
+				      in MotherBoard
+Output	   : Void
+Purpose	  : Initialize DDR2 of CHC by standard sequence
 Reference  :
 ===================================================================*/
-//                      DDR2                 CL=2          CL=3 CL=4   CL=5     (Burst type=interleave)(WR fine tune in code)
+//			DDR2		     CL=2	   CL=3 CL=4   CL=5	(Burst type=interleave)(WR fine tune in code)
 static const u16 CHC_MRS_table[4] = { 0x22B, 0x23B, 0x24B, 0x25B };	// Use 1X-bandwidth MA table to init DRAM
 
 void InitDDR2CHC(DRAM_SYS_ATTR *DramAttr)

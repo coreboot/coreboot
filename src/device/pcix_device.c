@@ -128,7 +128,7 @@ unsigned int pcix_scan_bridge(device_t dev, unsigned int max)
 
 	/* Print the PCI-X bus speed. */
 	printk(BIOS_DEBUG, "PCI: %02x: %s\n", dev->link_list->secondary,
-	       pcix_speed(sstatus));
+		pcix_speed(sstatus));
 
 	return max;
 }
@@ -140,11 +140,11 @@ static struct pci_operations pcix_bus_ops_pci = {
 
 struct device_operations default_pcix_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pcix_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &pcix_bus_ops_pci,
+	.init		   = 0,
+	.scan_bus	   = pcix_scan_bridge,
+	.enable	   = 0,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = &pcix_bus_ops_pci,
 };

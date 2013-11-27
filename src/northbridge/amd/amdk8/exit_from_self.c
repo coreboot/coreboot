@@ -55,7 +55,7 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		}
 
 		printk(BIOS_DEBUG, "before resume errata #%d\n",
-			     (is_post_rev_g) ? 270 : 125);
+				(is_post_rev_g) ? 270 : 125);
 		/*
 		   1. Restore memory controller registers as normal.
 		   2. Set the DisAutoRefresh bit (Dev:2x8C[18]). (270 only)
@@ -77,10 +77,10 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		if (is_post_rev_g) {
 			dcl =
 			    pci_read_config32(ctrl[i].f2,
-					      DRAM_TIMING_HIGH);
+						   DRAM_TIMING_HIGH);
 			dcl |= (1 << 18);
 			pci_write_config32(ctrl[i].f2, DRAM_TIMING_HIGH,
-					   dcl);
+						dcl);
 		}
 
 		dcl = DI_EnDramInit;
@@ -97,10 +97,10 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		if (is_post_rev_g) {
 			dcl =
 			    pci_read_config32(ctrl[i].f2,
-					      DRAM_TIMING_HIGH);
+						   DRAM_TIMING_HIGH);
 			dcl &= ~(1 << 18);
 			pci_write_config32(ctrl[i].f2, DRAM_TIMING_HIGH,
-					   dcl);
+						dcl);
 		}
 
 		dcl = pci_read_config32(ctrl[i].f2, DRAM_BANK_ADDR_MAP);
@@ -113,18 +113,18 @@ void exit_from_self(int controllers, const struct mem_controller *ctrl,
 		printk(BIOS_DEBUG, "pcidev is %x\n", pcidev);
 		bitmask = 2;
 		__asm__ __volatile__("pushl %0\n\t"
-				     "movw $0xcf8, %%dx\n\t"
-				     "out %%eax, (%%dx)\n\t"
-				     "movw $0xcfc, %%dx\n\t"
-				     "inl %%dx, %%eax\n\t"
-				     "orb %1, %%al\n\t"
-				     "not %1\n\t"
-				     ".align 64\n\t"
-				     "outl  %%eax, (%%dx) \n\t"
-				     "andb %1, %%al\n\t"
-				     "outl %%eax, (%%dx)\n\t"
-				     "popl %0\n\t"::"a"(pcidev),
-				     "q"(bitmask):"edx");
+					 "movw $0xcf8, %%dx\n\t"
+					 "out %%eax, (%%dx)\n\t"
+					 "movw $0xcfc, %%dx\n\t"
+					 "inl %%dx, %%eax\n\t"
+					 "orb %1, %%al\n\t"
+					 "not %1\n\t"
+					 ".align 64\n\t"
+					 "outl  %%eax, (%%dx) \n\t"
+					 "andb %1, %%al\n\t"
+					 "outl %%eax, (%%dx)\n\t"
+					 "popl %0\n\t"::"a"(pcidev),
+					 "q"(bitmask):"edx");
 	}
 
 	printk(BIOS_DEBUG, "after exit errata\n");

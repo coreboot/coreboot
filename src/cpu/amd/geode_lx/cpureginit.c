@@ -49,15 +49,15 @@ static const struct delay_controls {
 	u32 fast_hi;
 	u32 fast_low;
 } delay_control_table[] = {
-	/* DIMMs Devs Slow (<=333MHz)            Fast (>334MHz) */
-	{   1,     4, 0x0837100FF, 0x056960004,  0x0827100FF, 0x056960004 },
-	{   1,     8, 0x0837100AA, 0x056960004,  0x0827100AA, 0x056960004 },
-	{   1,    16, 0x0837100AA, 0x056960004,  0x082710055, 0x056960004 },
-	{   2,     8, 0x0837100A5, 0x056960004,  0x082710000, 0x056960004 },
-	{   2,    16, 0x0937100A5, 0x056960004,  0x0C27100A5, 0x056960004 },
-	{   2,    20, 0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
-	{   2,    24, 0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
-	{   2,    32, 0x0B37100A5, 0x056960004,  0x0B2710000, 0x056960004 },
+	/* DIMMs Devs Slow (<=333MHz)		  Fast (>334MHz) */
+	{   1,	    4, 0x0837100FF, 0x056960004,  0x0827100FF, 0x056960004 },
+	{   1,	    8, 0x0837100AA, 0x056960004,  0x0827100AA, 0x056960004 },
+	{   1,	   16, 0x0837100AA, 0x056960004,  0x082710055, 0x056960004 },
+	{   2,	    8, 0x0837100A5, 0x056960004,  0x082710000, 0x056960004 },
+	{   2,	   16, 0x0937100A5, 0x056960004,  0x0C27100A5, 0x056960004 },
+	{   2,	   20, 0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
+	{   2,	   24, 0x0B37100A5, 0x056960004,  0x0B27100A5, 0x056960004 },
+	{   2,	   32, 0x0B37100A5, 0x056960004,  0x0B2710000, 0x056960004 },
 };
 
 /*
@@ -120,7 +120,7 @@ static void SetDelayControl(u8 dimm0, u8 dimm1, int terminated)
 
 	/* Delay Controls based on DIMM loading. UGH!
 	 * Number of devices = module width (SPD 6) / device width (SPD 13)
-	 *                     * physical banks (SPD 5)
+	 *			* physical banks (SPD 5)
 	 *
 	 * Note: We only support a module width of 64.
 	 */
@@ -180,7 +180,7 @@ void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 	msr_t msr;
 
 	/* Castle 2.0 BTM periodic sync period. */
-	/*      [40:37] 1 sync record per 256 bytes */
+	/*	 [40:37] 1 sync record per 256 bytes */
 	print_debug("Castle 2.0 BTM periodic sync period.\n");
 	msrnum = CPU_PF_CONF;
 	msr = rdmsr(msrnum);

@@ -57,7 +57,7 @@ static void do_early_mtrr_init(const unsigned long *mtrr_msrs)
 	 * Determine address by calculating the XIP_ROM_SIZE sized area with
 	 * XIP_ROM_SIZE alignment that contains the global variable defined above;
 	 */
-        unsigned long f = (unsigned long)&addr_det & ~(CONFIG_XIP_ROM_SIZE - 1);
+	unsigned long f = (unsigned long)&addr_det & ~(CONFIG_XIP_ROM_SIZE - 1);
 	set_var_mtrr(1, f, CONFIG_XIP_ROM_SIZE, MTRR_TYPE_WRBACK);
 #endif
 

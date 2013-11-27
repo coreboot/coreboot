@@ -56,7 +56,7 @@ static void report_cpu_info(void)
 	txt = (cpuidr.ecx & (1 << 6)) ? 1 : 0;
 	vt = (cpuidr.ecx & (1 << 5)) ? 1 : 0;
 	printk(BIOS_DEBUG, "AES %ssupported, TXT %ssupported, VT %ssupported\n",
-	       mode[aes], mode[txt], mode[vt]);
+		mode[aes], mode[txt], mode[vt]);
 }
 
 /* The PCI id name match comes from Intel document 472178 */

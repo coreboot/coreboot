@@ -3,9 +3,9 @@
 static inline void print_debug_sdram_8(const char *strval, uint32_t val)
 {
 #if CONFIG_CACHE_AS_RAM
-        printk(BIOS_DEBUG, "%s%02x\n", strval, val);
+	printk(BIOS_DEBUG, "%s%02x\n", strval, val);
 #else
-        print_debug(strval); print_debug_hex8(val); print_debug("\n");
+	print_debug(strval); print_debug_hex8(val); print_debug("\n");
 #endif
 }
 
@@ -30,12 +30,12 @@ void sdram_initialize(int controllers, const struct mem_controller *ctrl)
 
 	/* Now setup those things we can auto detect */
 	for(i = 0; i < controllers; i++) {
-                print_debug_sdram_8("Ram2.", i);
+		print_debug_sdram_8("Ram2.", i);
 
 	#if CONFIG_RAMINIT_SYSINFO
 		sdram_set_spd_registers(ctrl + i, sysinfo);
 	#else
-                sdram_set_spd_registers(ctrl + i);
+		sdram_set_spd_registers(ctrl + i);
 	#endif
 
 	}

@@ -9,14 +9,14 @@ chip northbridge/amd/amdk8/root_complex
 		chip northbridge/amd/amdk8
 			device pci 18.0 on end # link 0
 			device pci 18.0 on end # link 1
-			device pci 18.0 on     # link 2
+			device pci 18.0 on	  # link 2
 				chip southbridge/amd/amd8131
 					# the on/off keyword is mandatory
 					device pci 0.0 on # PCIX Bridge A
 						# PCI-X expansion slot cards auto-detected here
 					end
 					device pci 0.1 on end  # IOAPIC A
-					device pci 1.0 on      # PCIX Bridge B
+					device pci 1.0 on	    # PCIX Bridge B
 						# On-board BCM5704 dual port ethernet chip auto-detected here
 						# Optional SCSI board also (?)
 					end
@@ -124,7 +124,7 @@ chip northbridge/amd/amdk8/root_complex
 							device i2c 69 on end  # Texas Instruments cdc960 clock synthesizer
 						end
 					end # SMBus 2.0 controller
-					device pci 1.3 on     # System management registers (ACPI)
+					device pci 1.3 on	   # System management registers (ACPI)
 					end # System management
 					#device pci 1.4 off end
 					device pci 1.5 off end # AC97 Audio

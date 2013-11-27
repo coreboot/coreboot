@@ -161,30 +161,30 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 	switch (fan_mode) {
 	case IT8516E_MODE_AUTO:
 		printk(BIOS_DEBUG,
-		       "Setting it8516e fan%d "
-		       "control to auto.\n",
-		       fan_idx + 1);
+			 "Setting it8516e fan%d "
+			 "control to auto.\n",
+			 fan_idx + 1);
 		break;
 	case IT8516E_MODE_PWM:
 		printk(BIOS_DEBUG,
-		       "Setting it8516e fan%d "
-		       "control to %d%% PWM.\n",
-		       fan_idx + 1, fan_target);
+			 "Setting it8516e fan%d "
+			 "control to %d%% PWM.\n",
+			 fan_idx + 1, fan_target);
 		if (fan_target > 100)		/* Constrain to 100% */
 			fan_target = 100;
 		it8516e_set_fan_pwm(fan_idx, (fan_target * 255) / 100);
 		break;
 	case IT8516E_MODE_SPEED:
 		printk(BIOS_DEBUG,
-		       "Setting it8516e fan%d "
-		       "control to %d RPMs.\n",
-		       fan_idx + 1, fan_target);
+			 "Setting it8516e fan%d "
+			 "control to %d RPMs.\n",
+			 fan_idx + 1, fan_target);
 		it8516e_set_fan_speed(fan_idx, fan_target);
 		break;
 	case IT8516E_MODE_THERMAL:
 		printk(BIOS_DEBUG,
-		       "Setting it8516e fan%d control to %d C.\n",
-		       fan_idx + 1, fan_target);
+			 "Setting it8516e fan%d control to %d C.\n",
+			 fan_idx + 1, fan_target);
 		if (fan_target > 1024)		/* Constrain to 1K */
 			fan_target = 1024;
 		it8516e_set_fan_temperature(fan_idx, fan_target * 64);
@@ -199,13 +199,13 @@ static void it8516e_set_fan_from_options(const config_t *const config,
 		if (fan_min >= 100)		/* Constrain fan_min to  99% */
 			fan_min = 99;
 		if (fan_max <= fan_min)	/* If fan_min is the higher of the two,
-					   it's safer for the hardware to keep
-					   its value. Therefore, update fan_max. */
+						it's safer for the hardware to keep
+						its value. Therefore, update fan_max. */
 			fan_max = fan_min + 1;
 
 		printk(BIOS_DEBUG,
-		       "Setting it8516e fan%d limits to %d%% - %d%% PWM.\n",
-		       fan_idx + 1, fan_min, fan_max);
+			 "Setting it8516e fan%d limits to %d%% - %d%% PWM.\n",
+			 fan_idx + 1, fan_min, fan_max);
 		it8516e_set_fan_limits(fan_idx, fan_min, fan_max);
 		break;
 	}
@@ -232,23 +232,23 @@ static void it8516e_pm2_init(const device_t dev)
 
 static struct device_operations it8516e_pm2_ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_enable,
-	.init             = it8516e_pm2_init
+	.enable	   = pnp_enable,
+	.init		   = it8516e_pm2_init
 };
 
 static struct pnp_info it8516e_dev_infos[] = {
-	{ NULL,             IT8516E_LDN_UART1, PNP_IO0 | PNP_IRQ0, { 0x07f8, }, },
-	{ NULL,             IT8516E_LDN_UART2, PNP_IO0 | PNP_IRQ0, { 0x07f8, }, },
-	{ NULL,             IT8516E_LDN_SWUC,  PNP_IO0 | PNP_IRQ0, { 0xff7e0, }, },
-	{ NULL,             IT8516E_LDN_MOUSE, PNP_IRQ0, },
-	{ NULL,             IT8516E_LDN_KBD,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
-	{ NULL,             IT8516E_LDN_SMFI,  PNP_IO0 | PNP_IRQ0, { 0xfff0, }, },
-	{ NULL,             IT8516E_LDN_BRAM,  PNP_IO0 | PNP_IO1, { 0xfffe, }, { 0xfffe, }, },
-	{ NULL,             IT8516E_LDN_PM1,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
-	{ &it8516e_pm2_ops, IT8516E_LDN_PM2,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
-	{ NULL,             IT8516E_LDN_PM3,   PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
+	{ NULL,	     IT8516E_LDN_UART1, PNP_IO0 | PNP_IRQ0, { 0x07f8, }, },
+	{ NULL,	     IT8516E_LDN_UART2, PNP_IO0 | PNP_IRQ0, { 0x07f8, }, },
+	{ NULL,	     IT8516E_LDN_SWUC,  PNP_IO0 | PNP_IRQ0, { 0xff7e0, }, },
+	{ NULL,	     IT8516E_LDN_MOUSE, PNP_IRQ0, },
+	{ NULL,	     IT8516E_LDN_KBD,	PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
+	{ NULL,	     IT8516E_LDN_SMFI,  PNP_IO0 | PNP_IRQ0, { 0xfff0, }, },
+	{ NULL,	     IT8516E_LDN_BRAM,  PNP_IO0 | PNP_IO1, { 0xfffe, }, { 0xfffe, }, },
+	{ NULL,	     IT8516E_LDN_PM1,	PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
+	{ &it8516e_pm2_ops, IT8516E_LDN_PM2,	PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
+	{ NULL,	     IT8516E_LDN_PM3,	PNP_IO0 | PNP_IO1 | PNP_IRQ0, { 0x07ff, }, { 0x07ff, }, },
 };
 
 static void it8516e_enable(const device_t dev)

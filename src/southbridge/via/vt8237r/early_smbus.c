@@ -28,7 +28,7 @@
  * Print an error, should it occur. If no error, just exit.
  *
  * @param host_status The data returned on the host status register after
- *		      a transaction is processed.
+ *			  a transaction is processed.
  * @param loops The number of times a transaction was attempted.
  */
 static void smbus_print_error(u8 host_status, int loops)
@@ -151,7 +151,7 @@ static device_t get_vt8237_lpc(void)
 
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
+					   PCI_DEVICE_ID_VIA_VT8237R_LPC), 0);
 	if (dev != PCI_DEV_INVALID)
 		return dev;
 
@@ -181,7 +181,7 @@ void enable_smbus(void)
 	/* Make sure the RTC power well is up before touching smbus. */
 	loops = 0;
 	while (!(pci_read_config8(dev, VT8237R_PSON) & (1<<6))
-	       && loops < PSONREADY_TIMEOUT)
+		&& loops < PSONREADY_TIMEOUT)
 		++loops;
 
 	/*
@@ -214,8 +214,8 @@ void enable_smbus(void)
  * known-good data from a slot/address. Exits on either good data or a timeout.
  *
  * TODO: This should probably go into some global file, but one would need to
- *       be created just for it. If some other chip needs/wants it, we can
- *       worry about it then.
+ *	 be created just for it. If some other chip needs/wants it, we can
+ *	 worry about it then.
  *
  * @param ctrl The memory controller and SMBus addresses.
  */
@@ -283,7 +283,7 @@ void vt8237_sb_enable_fid_vid(void)
 	if (devid == PCI_DEVICE_ID_VIA_VT8237S_LPC ||
 	    devid == PCI_DEVICE_ID_VIA_VT8237A_LPC) {
 		devctl = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-					   PCI_DEVICE_ID_VIA_VT8237_VLINK), 0);
+						PCI_DEVICE_ID_VIA_VT8237_VLINK), 0);
 
 		if (devctl != PCI_DEV_INVALID) {
 			/* So the chip knows we are on AMD. */
@@ -361,7 +361,7 @@ void vt8237_early_spi_init(void)
 
 	/* Bus Control and Power Management */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
+					   PCI_DEVICE_ID_VIA_VT8237S_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID)
 		die("SB not found\n");
@@ -420,7 +420,7 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 
 	/* Network adapter */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_8233_7), 0);
+					   PCI_DEVICE_ID_VIA_8233_7), 0);
 	if (dev == PCI_DEV_INVALID) {
 		print_err("Network is disabled, please enable\n");
 		return 0;
@@ -494,7 +494,7 @@ int vt8237_early_network_init(struct vt8237_network_rom *rom)
 	/* XXX not so messy, but an explanation of the hack would have been better */
 	loops = 0;
 	while ((((pci_read_config32(dev, 0x5c) >> 25) & 1) == 0)
-	       && (loops < LAN_TIMEOUT)) {
+		&& (loops < LAN_TIMEOUT)) {
 		++loops;
 	}
 

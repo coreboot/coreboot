@@ -102,13 +102,13 @@ static inline void change_i2c_mux(unsigned device)
 	smbus_send_byte(SMBUS_SWITCH1, device & 0x0f);
 	smbus_send_byte_one(SMBUS_SWITCH2, (device >> 4) & 0x0f);
 	int ret;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
+	print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
 	dump_smbus_registers();
-        ret = smbus_send_byte(SMBUS_SWITCH1, device);
-        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
+	ret = smbus_send_byte(SMBUS_SWITCH1, device);
+	print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
 	dump_smbus_registers();
-        ret = smbus_send_byte_one(SMBUS_SWITCH2, device);
-        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
+	ret = smbus_send_byte_one(SMBUS_SWITCH2, device);
+	print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
 	dump_smbus_registers();
 }
 #endif
@@ -138,7 +138,7 @@ static void sio_setup(void)
 	uint8_t byte;
 
 	enable_smbus();
-//      smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
+//	smbusx_write_byte(1, (0x58>>1), 0, 0x80); /* select bank0 */
 	smbusx_write_byte(1, (0x58 >> 1), 0xb1, 0xff);	/* set FAN ctrl to DC mode */
 
 	byte = pci_read_config8(PCI_DEV(0, MCP55_DEVN_BASE + 1, 0), 0x7b);

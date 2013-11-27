@@ -94,10 +94,10 @@ static void lpc_init(device_t dev)
 	 int on;
 	 int nmi_option;
 
-        printk(BIOS_DEBUG, "LPC_INIT -------->\n");
-        pc_keyboard_init(0);
+	printk(BIOS_DEBUG, "LPC_INIT -------->\n");
+	pc_keyboard_init(0);
 
-        lpc_usb_legacy_init(dev);
+	lpc_usb_legacy_init(dev);
 	 lpc_common_init(dev);
 
 	/* power after power fail */
@@ -127,33 +127,33 @@ static void lpc_init(device_t dev)
 				(on*12)+(on>>1),(on&1)*5);
 	}
 
-        /* Enable Error reporting */
-        /* Set up sync flood detected */
-        byte = pci_read_config8(dev, 0x47);
-        byte |= (1 << 1);
-        pci_write_config8(dev, 0x47, byte);
+	/* Enable Error reporting */
+	/* Set up sync flood detected */
+	byte = pci_read_config8(dev, 0x47);
+	byte |= (1 << 1);
+	pci_write_config8(dev, 0x47, byte);
 
-        /* Set up NMI on errors */
-        byte = inb(0x70); // RTC70
-        byte_old = byte;
-        nmi_option = NMI_OFF;
-        get_option(&nmi_option, "nmi");
-        if (nmi_option) {
-                byte &= ~(1 << 7); /* set NMI */
-        } else {
-                byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
-        }
-        if( byte != byte_old) {
-                outb(byte, 0x70);
-        }
+	/* Set up NMI on errors */
+	byte = inb(0x70); // RTC70
+	byte_old = byte;
+	nmi_option = NMI_OFF;
+	get_option(&nmi_option, "nmi");
+	if (nmi_option) {
+		byte &= ~(1 << 7); /* set NMI */
+	} else {
+		byte |= ( 1 << 7); // Can not mask NMI from PCI-E and NMI_NOW
+	}
+	if( byte != byte_old) {
+		outb(byte, 0x70);
+	}
 
-        /* Initialize the real time clock */
-        rtc_init(0);
+	/* Initialize the real time clock */
+	rtc_init(0);
 
-        /* Initialize isa dma */
-        isa_dma_init();
+	/* Initialize isa dma */
+	isa_dma_init();
 
-        printk(BIOS_DEBUG, "LPC_INIT <--------\n");
+	printk(BIOS_DEBUG, "LPC_INIT <--------\n");
 }
 
 static void sis966_lpc_read_resources(device_t dev)

@@ -47,14 +47,14 @@ static void pcixx12_set_resources(device_t dev)
 
 static struct device_operations ti_pcixx12_ops = {
 	.read_resources   = pcixx12_read_resources,
-	.set_resources    = pcixx12_set_resources,
+	.set_resources	   = pcixx12_set_resources,
 	.enable_resources = cardbus_enable_resources,
-	.init             = pcixx12_init,
-	.scan_bus         = pci_scan_bridge,
+	.init		   = pcixx12_init,
+	.scan_bus	   = pci_scan_bridge,
 };
 
 static const struct pci_driver ti_pcixx12_driver __pci_driver = {
-	.ops    = &ti_pcixx12_ops,
+	.ops	 = &ti_pcixx12_ops,
 	.vendor = 0x104c,
 	.device = 0x8039,
 };
@@ -65,5 +65,5 @@ static void southbridge_init(device_t dev)
 
 struct chip_operations southbridge_ti_pcixx12_ops = {
 	CHIP_NAME("Texas Instruments PCIxx12 Cardbus Controller")
-	.enable_dev    = southbridge_init,
+	.enable_dev	= southbridge_init,
 };

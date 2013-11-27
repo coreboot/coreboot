@@ -353,14 +353,14 @@ static void smm_install(void)
 	/* copy the real SMM handler */
 	printk(BIOS_DEBUG, "Installing SMM handler to 0x%08x\n", smm_base);
 	memcpy((void *)smm_base, &_binary_smm_start,
-	       (size_t)(&_binary_smm_end - &_binary_smm_start));
+		(size_t)(&_binary_smm_end - &_binary_smm_start));
 
 	/* copy the IED header into place */
 	if (CONFIG_SMM_TSEG_SIZE > IED_SIZE) {
 		/* Top of TSEG region */
 		smm_base += CONFIG_SMM_TSEG_SIZE - IED_SIZE;
 		printk(BIOS_DEBUG, "Installing IED header to 0x%08x\n",
-		       smm_base);
+			 smm_base);
 		memcpy((void *)smm_base, &ied, sizeof(ied));
 	}
 	wbinvd();

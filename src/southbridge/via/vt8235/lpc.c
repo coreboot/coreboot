@@ -20,7 +20,7 @@
 	IRQ 4 = COM 1
 	IRQ 5 = available for PCI interrupts
 	IRQ 6 = floppy or availbale for PCI if floppy controller disabled
-        IRQ 7 = LPT or available if LPT port disabled
+	IRQ 7 = LPT or available if LPT port disabled
 	IRQ 8 = rtc
 	IRQ 9 = available for PCI interrupts
 	IRQ 10 = cardbus slot or available for PCI if no cardbus (ie epia)
@@ -33,13 +33,13 @@
 */
 static const unsigned char pciIrqs[4] = { 5 , 9 , 9, 5 };
 
-static const unsigned char usbPins[4] =      { 'A','B','C','D'};
+static const unsigned char usbPins[4] =	     { 'A','B','C','D'};
 static const unsigned char enetPins[4] =     { 'A','B','C','D'};
 static const unsigned char slotPins[4] =     { 'B','C','D','A'};
 static const unsigned char firewirePins[4] = { 'B','C','D','A'};
 static const unsigned char vt8235Pins[4] =   { 'A','B','C','D'};
-static const unsigned char vgaPins[4] =      { 'A','B','C','D'};
-static const unsigned char cbPins[4] =       { 'A','B','C','D'};
+static const unsigned char vgaPins[4] =	     { 'A','B','C','D'};
+static const unsigned char cbPins[4] =	     { 'A','B','C','D'};
 static const unsigned char riserPins[4] =    { 'A','B','C','D'};
 
 
@@ -248,14 +248,14 @@ static void southbridge_init(struct device *dev)
 
 static struct device_operations vt8235_lpc_ops = {
 	.read_resources   = vt8235_read_resources,
-	.set_resources    = vt8235_set_resources,
+	.set_resources	   = vt8235_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = southbridge_init,
-	.scan_bus         = scan_static_bus,
+	.init		   = southbridge_init,
+	.scan_bus	   = scan_static_bus,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &vt8235_lpc_ops,
+	.ops	 = &vt8235_lpc_ops,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_8235,
 };

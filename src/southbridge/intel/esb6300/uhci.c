@@ -28,29 +28,29 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations uhci_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = uhci_init,
-	.scan_bus         = 0,
-	.enable           = esb6300_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = uhci_init,
+	.scan_bus	   = 0,
+	.enable	   = esb6300_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver usb1_driver __pci_driver = {
-	.ops    = &uhci_ops,
+	.ops	 = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_USB1,
 };
 
 static const struct pci_driver usb2_driver __pci_driver = {
-	.ops    = &uhci_ops,
+	.ops	 = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_USB2,
 };
 
 /* Note: May or may not need different init than UHCI. */
 static const struct pci_driver ehci_driver __pci_driver = {
-	.ops    = &uhci_ops,
+	.ops	 = &uhci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_EHCI,
 };

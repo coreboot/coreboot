@@ -34,28 +34,28 @@
 #define MSR_IA32_MISC_ENABLE	0x000001a0
 
 static int c7a_speed_translation[] = {
-//      LFM     HFM
-	0x0409, 0x0f13,		// 400MHz, 844mV --> 1500MHz, 1.004V    C7-M
+//	LFM	HFM
+	0x0409, 0x0f13,		// 400MHz, 844mV --> 1500MHz, 1.004V	  C7-M
 	0x0409, 0x1018,		// 400MHz, 844mV --> 1600MHz, 1.084V
 	0x0409, 0x0c18,		// 533MHz, 844mV --> 1600MHz, 1.084V
 	0x0409, 0x121c,		// 400MHz, 844mV --> 1800MHz, 1.148V
 	0x0409, 0x0e1c,		// 533MHz, 844mV --> 1860MHz, 1.148V
 	0x0409, 0x141f,		// 400MHz, 844mV --> 2000MHz, 1.196V
 	0x0409, 0x0f1f,		// 533MHz, 844mV --> 2000MHz, 1.196V
-	0x0406, 0x0a06,		// 400MHz, 796mV --> 1000MHz, 796mV     C7-M ULV
+	0x0406, 0x0a06,		// 400MHz, 796mV --> 1000MHz, 796mV	  C7-M ULV
 	0x0406, 0x0a09,		// 400MHz, 796mV --> 1000MHz, 844mV
 	0x0406, 0x0c09,		// 400MHz, 796mV --> 1200MHz, 844mV
 	0x0406, 0x0f10,		// 400MHz, 796mV --> 1500MHz, 956mV
 };
 
 static int c7d_speed_translation[] = {
-//      LFM     HFM
-	0x0409, 0x1018,		// 400MHz, 844mV --> 1600MHz, 1.084V    C7-M
+//	LFM	HFM
+	0x0409, 0x1018,		// 400MHz, 844mV --> 1600MHz, 1.084V	  C7-M
 	0x0409, 0x121f,		// 400MHz, 844mV --> 1800MHz, 1.196V
 	0x0809, 0x121f,		// 800MHz, 844mV --> 1800MHz, 1.196V
 	0x0409, 0x141f,		// 400MHz, 844mV --> 2000MHz, 1.196V
 	0x0809, 0x141f,		// 800MHz, 844mV --> 2000MHz, 1.196V
-	0x0406, 0x0806,		// 400MHz, 796mV --> 800MHz, 796mV      C7-M ULV
+	0x0406, 0x0806,		// 400MHz, 796mV --> 800MHz, 796mV	  C7-M ULV
 	0x0406, 0x0a06,		// 400MHz, 796mV --> 1000MHz, 796mV
 	0x0406, 0x0c09,		// 400MHz, 796mV --> 1200MHz, 844mV
 	0x0806, 0x0c09,		// 800MHz, 796mV --> 1200MHz, 844mV
@@ -107,7 +107,7 @@ static void set_c7_speed(int model) {
 		for (i = 0; i < ARRAY_SIZE(c7a_speed_translation); i += 2) {
 			if ((c7a_speed_translation[i] == current) &&
 			    ((c7a_speed_translation[i + 1] & 0xff00) ==
-			     (msr.hi & 0xff00))) {
+				(msr.hi & 0xff00))) {
 				new = c7a_speed_translation[i + 1];
 			}
 		}
@@ -116,7 +116,7 @@ static void set_c7_speed(int model) {
 		for (i = 0; i < ARRAY_SIZE(c7d_speed_translation); i += 2) {
 			if ((c7d_speed_translation[i] == current) &&
 			    ((c7d_speed_translation[i + 1] & 0xff00) ==
-			     (msr.hi & 0xff00))) {
+				(msr.hi & 0xff00))) {
 				new = c7d_speed_translation[i + 1];
 			}
 		}

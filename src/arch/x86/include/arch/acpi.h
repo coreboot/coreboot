@@ -34,7 +34,7 @@
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
 #define ACPI_TABLE_CREATOR	"COREBOOT"  /* Must be exactly 8 bytes long! */
 #define OEM_ID			"CORE  "    /* Must be exactly 6 bytes long! */
-#define ASLC			"CORE"      /* Must be exactly 4 bytes long! */
+#define ASLC			"CORE"	   /* Must be exactly 4 bytes long! */
 
 /* RSDP (Root System Description Pointer) */
 typedef struct acpi_rsdp {
@@ -64,9 +64,9 @@ typedef struct acpi_gen_regaddr {
 } __attribute__ ((packed)) acpi_addr_t;
 
 #define ACPI_ADDRESS_SPACE_MEMORY	   0	/* System memory */
-#define ACPI_ADDRESS_SPACE_IO		   1	/* System I/O */
+#define ACPI_ADDRESS_SPACE_IO			  1	/* System I/O */
 #define ACPI_ADDRESS_SPACE_PCI		   2	/* PCI config space */
-#define ACPI_ADDRESS_SPACE_EC		   3	/* Embedded controller */
+#define ACPI_ADDRESS_SPACE_EC			  3	/* Embedded controller */
 #define ACPI_ADDRESS_SPACE_SMBUS	   4	/* SMBus */
 #define ACPI_ADDRESS_SPACE_PCC		0x0A	/* Platform Comm. Channel */
 #define ACPI_ADDRESS_SPACE_FIXED	0x7f	/* Functional fixed hardware */
@@ -74,7 +74,7 @@ typedef struct acpi_gen_regaddr {
 #define  ACPI_FFIXEDHW_CLASS_HLT	   0	/* C1 Halt */
 #define  ACPI_FFIXEDHW_CLASS_IO_HLT	   1	/* C1 I/O then Halt */
 #define  ACPI_FFIXEDHW_CLASS_MWAIT	   2	/* MWAIT Native C-state */
-#define  ACPI_FFIXEDHW_FLAG_HW_COORD	   1	/* Hardware Coordination bit */
+#define  ACPI_FFIXEDHW_FLAG_HW_COORD		1	/* Hardware Coordination bit */
 #define  ACPI_FFIXEDHW_FLAG_BM_STS	   2	/* BM_STS avoidance bit */
 /* 0x80-0xbf: Reserved */
 /* 0xc0-0xff: OEM defined */
@@ -88,13 +88,13 @@ typedef struct acpi_gen_regaddr {
 
 /* Generic ACPI header, provided by (almost) all tables */
 typedef struct acpi_table_header {
-	char signature[4];           /* ACPI signature (4 ASCII characters) */
-	u32  length;                 /* Table length in bytes (incl. header) */
-	u8   revision;               /* Table version (not ACPI version!) */
-	u8   checksum;               /* To make sum of entire table == 0 */
-	char oem_id[6];              /* OEM identification */
-	char oem_table_id[8];        /* OEM table identification */
-	u32  oem_revision;           /* OEM revision number */
+	char signature[4];	      /* ACPI signature (4 ASCII characters) */
+	u32  length;		      /* Table length in bytes (incl. header) */
+	u8   revision;		      /* Table version (not ACPI version!) */
+	u8   checksum;		      /* To make sum of entire table == 0 */
+	char oem_id[6];	      /* OEM identification */
+	char oem_table_id[8];	      /* OEM table identification */
+	u32  oem_revision;	      /* OEM revision number */
 	char asl_compiler_id[4];     /* ASL compiler vendor ID */
 	u32  asl_compiler_revision;  /* ASL compiler revision number */
 } __attribute__ ((packed)) acpi_header_t;
@@ -491,7 +491,7 @@ unsigned long acpi_fill_mcfg(unsigned long current);
 unsigned long acpi_fill_srat(unsigned long current);
 unsigned long acpi_fill_slit(unsigned long current);
 unsigned long acpi_fill_ssdt_generator(unsigned long current,
-				       const char *oem_table_id);
+					   const char *oem_table_id);
 void acpi_create_ssdt_generator(acpi_header_t *ssdt, const char *oem_table_id);
 void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs, void *dsdt);
 
@@ -509,7 +509,7 @@ int acpi_create_madt_ioapic(acpi_madt_ioapic_t *ioapic, u8 id, u32 addr,
 int acpi_create_madt_irqoverride(acpi_madt_irqoverride_t *irqoverride,
 				 u8 bus, u8 source, u32 gsirq, u16 flags);
 int acpi_create_madt_lapic_nmi(acpi_madt_lapic_nmi_t *lapic_nmi, u8 cpu,
-			       u16 flags, u8 lint);
+				  u16 flags, u8 lint);
 void acpi_create_madt(acpi_madt_t *madt);
 unsigned long acpi_create_madt_lapics(unsigned long current);
 unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
@@ -519,7 +519,7 @@ int acpi_create_srat_lapic(acpi_srat_lapic_t *lapic, u8 node, u8 apic);
 int acpi_create_srat_mem(acpi_srat_mem_t *mem, u8 node, u32 basek,u32 sizek,
 			 u32 flags);
 int acpi_create_mcfg_mmconfig(acpi_mcfg_mmconfig_t *mmconfig, u32 base,
-			      u16 seg_nr, u8 start, u8 end);
+				 u16 seg_nr, u8 start, u8 end);
 unsigned long acpi_create_srat_lapics(unsigned long current);
 void acpi_create_srat(acpi_srat_t *srat);
 
@@ -533,10 +533,10 @@ void acpi_create_facs(acpi_facs_t *facs);
 
 void acpi_create_dmar(acpi_dmar_t *dmar);
 unsigned long acpi_create_dmar_drhd(unsigned long current, u8 flags,
-				    u16 segment, u32 bar);
+					u16 segment, u32 bar);
 void acpi_dmar_drhd_fixup(unsigned long base, unsigned long current);
 unsigned long acpi_create_dmar_drhd_ds_pci(unsigned long current, u8 segment,
-					   u8 dev, u8 fn);
+						u8 dev, u8 fn);
 
 unsigned long acpi_fill_dmar(unsigned long);
 

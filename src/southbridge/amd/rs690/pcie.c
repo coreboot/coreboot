@@ -88,7 +88,7 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 			   PCIE_GFX_COMPLIANCE))) {
 	}
 
-        if (!cfg->gfx_tmds){
+	if (!cfg->gfx_tmds){
 		/* step 3 Power Down Control for Southbridge */
 		reg = nbpcie_p_read_index(dev, 0xa2);
 
@@ -212,7 +212,7 @@ void rs690_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* init GPP core */
 	set_pcie_enable_bits(nb_dev, 0x20 | PCIE_CORE_INDEX_GPPSB, 1 << 8,
-			     1 << 8);
+				1 << 8);
 	/* PCIE initialization 5.10.2: rpr 2.12*/
 	set_pcie_enable_bits(nb_dev, 0x02 | PCIE_CORE_INDEX_GPPSB, 1 << 0, 1 << 0);	/* no description in datasheet. */
 

@@ -55,90 +55,90 @@
  * Comment out the items wanted to be included in the build.
  * Uncomment those items you with to REMOVE from the build.
  */
-//#define BLDOPT_REMOVE_UDIMMS_SUPPORT           TRUE
-//#define BLDOPT_REMOVE_RDIMMS_SUPPORT           TRUE
-//#define BLDOPT_REMOVE_ECC_SUPPORT              TRUE
-//#define BLDOPT_REMOVE_BANK_INTERLEAVE          TRUE
-//#define BLDOPT_REMOVE_DCT_INTERLEAVE           TRUE
-//#define BLDOPT_REMOVE_NODE_INTERLEAVE          TRUE
-//#define BLDOPT_REMOVE_PARALLEL_TRAINING        TRUE
-//#define BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT     TRUE
+//#define BLDOPT_REMOVE_UDIMMS_SUPPORT		 TRUE
+//#define BLDOPT_REMOVE_RDIMMS_SUPPORT		 TRUE
+//#define BLDOPT_REMOVE_ECC_SUPPORT		 TRUE
+//#define BLDOPT_REMOVE_BANK_INTERLEAVE		 TRUE
+//#define BLDOPT_REMOVE_DCT_INTERLEAVE		 TRUE
+//#define BLDOPT_REMOVE_NODE_INTERLEAVE		 TRUE
+//#define BLDOPT_REMOVE_PARALLEL_TRAINING	 TRUE
+//#define BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT	 TRUE
 #define BLDOPT_REMOVE_MEM_RESTORE_SUPPORT      TRUE
-//#define BLDOPT_REMOVE_MULTISOCKET_SUPPORT      TRUE
-//#define BLDOPT_REMOVE_ACPI_PSTATES             TRUE
-//#define BLDOPT_REMOVE_SRAT                     TRUE
-//#define BLDOPT_REMOVE_SLIT                     TRUE
-//#define BLDOPT_REMOVE_WHEA                     TRUE
-//#define BLDOPT_REMOVE_DMI                      TRUE
+//#define BLDOPT_REMOVE_MULTISOCKET_SUPPORT	 TRUE
+//#define BLDOPT_REMOVE_ACPI_PSTATES		 TRUE
+//#define BLDOPT_REMOVE_SRAT			 TRUE
+//#define BLDOPT_REMOVE_SLIT			 TRUE
+//#define BLDOPT_REMOVE_WHEA			 TRUE
+//#define BLDOPT_REMOVE_DMI			 TRUE
 
 /*f15 Rev A1 ucode patch CpuF15OrMicrocodePatch0600011F */
 #define BLDOPT_REMOVE_EARLY_SAMPLES		FALSE
 
-//#define BLDOPT_REMOVE_HT_ASSIST                TRUE
-//#define BLDOPT_REMOVE_MSG_BASED_C1E            TRUE
-//#define BLDCFG_REMOVE_ACPI_PSTATES_PPC               TRUE
-//#define BLDCFG_REMOVE_ACPI_PSTATES_PCT               TRUE
-//#define BLDCFG_REMOVE_ACPI_PSTATES_PSD               TRUE
-//#define BLDCFG_REMOVE_ACPI_PSTATES_PSS               TRUE
-//#define BLDCFG_REMOVE_ACPI_PSTATES_XPSS              TRUE
+//#define BLDOPT_REMOVE_HT_ASSIST		 TRUE
+//#define BLDOPT_REMOVE_MSG_BASED_C1E		 TRUE
+//#define BLDCFG_REMOVE_ACPI_PSTATES_PPC	       TRUE
+//#define BLDCFG_REMOVE_ACPI_PSTATES_PCT	       TRUE
+//#define BLDCFG_REMOVE_ACPI_PSTATES_PSD	       TRUE
+//#define BLDCFG_REMOVE_ACPI_PSTATES_PSS	       TRUE
+//#define BLDCFG_REMOVE_ACPI_PSTATES_XPSS	       TRUE
 
 /* Build configuration values here.
  */
-#define BLDCFG_VRM_CURRENT_LIMIT                 120000
-#define BLDCFG_VRM_LOW_POWER_THRESHOLD           0
-#define BLDCFG_VRM_INRUSH_CURRENT_LIMIT          0
-#define BLDCFG_PLAT_NUM_IO_APICS                 3
-#define BLDCFG_CORE_LEVELING_MODE                CORE_LEVEL_LOWEST
-#define BLDCFG_MEM_INIT_PSTATE                   0
-#define BLDCFG_AMD_PSTATE_CAP_VALUE              0
+#define BLDCFG_VRM_CURRENT_LIMIT		 120000
+#define BLDCFG_VRM_LOW_POWER_THRESHOLD		 0
+#define BLDCFG_VRM_INRUSH_CURRENT_LIMIT		 0
+#define BLDCFG_PLAT_NUM_IO_APICS		 3
+#define BLDCFG_CORE_LEVELING_MODE		 CORE_LEVEL_LOWEST
+#define BLDCFG_MEM_INIT_PSTATE			 0
+#define BLDCFG_AMD_PSTATE_CAP_VALUE		 0
 
-#define BLDCFG_AMD_PLATFORM_TYPE                  AMD_PLATFORM_SERVER
+#define BLDCFG_AMD_PLATFORM_TYPE		  AMD_PLATFORM_SERVER
 
-#define BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT         DDR800_FREQUENCY//1600
-#define BLDCFG_MEMORY_MODE_UNGANGED               TRUE
-#define BLDCFG_MEMORY_QUAD_RANK_CAPABLE           TRUE
-#define BLDCFG_MEMORY_QUADRANK_TYPE               QUADRANK_REGISTERED
-#define BLDCFG_MEMORY_RDIMM_CAPABLE               TRUE
-#define BLDCFG_MEMORY_UDIMM_CAPABLE               TRUE
-#define BLDCFG_MEMORY_SODIMM_CAPABLE              FALSE
-#define BLDCFG_LIMIT_MEMORY_TO_BELOW_1TB          TRUE
-#define BLDCFG_MEMORY_ENABLE_BANK_INTERLEAVING    FALSE//TRUE
-#define BLDCFG_MEMORY_ENABLE_NODE_INTERLEAVING    FALSE//TRUE
-#define BLDCFG_MEMORY_CHANNEL_INTERLEAVING        TRUE//TRUE
-#define BLDCFG_MEMORY_POWER_DOWN                  FALSE
-#define BLDCFG_POWER_DOWN_MODE                    POWER_DOWN_BY_CHANNEL
-#define BLDCFG_ONLINE_SPARE                       FALSE
-#define BLDCFG_BANK_SWIZZLE                       TRUE
-#define BLDCFG_TIMING_MODE_SELECT                 TIMING_MODE_AUTO
-#define BLDCFG_MEMORY_CLOCK_SELECT                DDR800_FREQUENCY //DDR800_FREQUENCY
-#define BLDCFG_DQS_TRAINING_CONTROL               TRUE
-#define BLDCFG_IGNORE_SPD_CHECKSUM                FALSE
-#define BLDCFG_USE_BURST_MODE                     FALSE
-#define BLDCFG_MEMORY_ALL_CLOCKS_ON               TRUE
-#define BLDCFG_ENABLE_ECC_FEATURE                 TRUE
-#define BLDCFG_ECC_REDIRECTION                    FALSE
-#define BLDCFG_SCRUB_IC_RATE                      0
-#define BLDCFG_ECC_SYNC_FLOOD                     TRUE
-#define BLDCFG_ECC_SYMBOL_SIZE                    4
+#define BLDCFG_MEMORY_BUS_FREQUENCY_LIMIT	  DDR800_FREQUENCY//1600
+#define BLDCFG_MEMORY_MODE_UNGANGED		  TRUE
+#define BLDCFG_MEMORY_QUAD_RANK_CAPABLE		  TRUE
+#define BLDCFG_MEMORY_QUADRANK_TYPE		  QUADRANK_REGISTERED
+#define BLDCFG_MEMORY_RDIMM_CAPABLE		  TRUE
+#define BLDCFG_MEMORY_UDIMM_CAPABLE		  TRUE
+#define BLDCFG_MEMORY_SODIMM_CAPABLE		  FALSE
+#define BLDCFG_LIMIT_MEMORY_TO_BELOW_1TB	  TRUE
+#define BLDCFG_MEMORY_ENABLE_BANK_INTERLEAVING	  FALSE//TRUE
+#define BLDCFG_MEMORY_ENABLE_NODE_INTERLEAVING	  FALSE//TRUE
+#define BLDCFG_MEMORY_CHANNEL_INTERLEAVING	  TRUE//TRUE
+#define BLDCFG_MEMORY_POWER_DOWN		  FALSE
+#define BLDCFG_POWER_DOWN_MODE			  POWER_DOWN_BY_CHANNEL
+#define BLDCFG_ONLINE_SPARE			  FALSE
+#define BLDCFG_BANK_SWIZZLE			  TRUE
+#define BLDCFG_TIMING_MODE_SELECT		  TIMING_MODE_AUTO
+#define BLDCFG_MEMORY_CLOCK_SELECT		  DDR800_FREQUENCY //DDR800_FREQUENCY
+#define BLDCFG_DQS_TRAINING_CONTROL		  TRUE
+#define BLDCFG_IGNORE_SPD_CHECKSUM		  FALSE
+#define BLDCFG_USE_BURST_MODE			  FALSE
+#define BLDCFG_MEMORY_ALL_CLOCKS_ON		  TRUE
+#define BLDCFG_ENABLE_ECC_FEATURE		  TRUE
+#define BLDCFG_ECC_REDIRECTION			  FALSE
+#define BLDCFG_SCRUB_IC_RATE			  0
+#define BLDCFG_ECC_SYNC_FLOOD			  TRUE
+#define BLDCFG_ECC_SYMBOL_SIZE			  4
 
-#define BLDCFG_PCI_MMIO_BASE                    CONFIG_MMCONF_BASE_ADDRESS
-#define BLDCFG_PCI_MMIO_SIZE                    CONFIG_MMCONF_BUS_NUMBER
+#define BLDCFG_PCI_MMIO_BASE			CONFIG_MMCONF_BASE_ADDRESS
+#define BLDCFG_PCI_MMIO_SIZE			CONFIG_MMCONF_BUS_NUMBER
 
 /**
  * Enable Message Based C1e CPU feature in multi-socket systems.
  * BLDCFG_PLATFORM_C1E_OPDATA element be defined with a valid IO port value,
  * else the feature cannot be enabled.
  */
-#define BLDCFG_PLATFORM_C1E_MODE                  C1eModeMsgBased
-#define BLDCFG_PLATFORM_C1E_OPDATA                0x80//TODO
-//#define BLDCFG_PLATFORM_C1E_MODE_OPDATA1        0
-//#define BLDCFG_PLATFORM_C1E_MODE_OPDATA2        0
+#define BLDCFG_PLATFORM_C1E_MODE		  C1eModeMsgBased
+#define BLDCFG_PLATFORM_C1E_OPDATA		  0x80//TODO
+//#define BLDCFG_PLATFORM_C1E_MODE_OPDATA1	  0
+//#define BLDCFG_PLATFORM_C1E_MODE_OPDATA2	  0
 
-#define BLDCFG_HEAP_DRAM_ADDRESS                  0xB0000
-#define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS    0xD0000000
-#define BLDCFG_1GB_ALIGN                          FALSE
-//#define BLDCFG_PROCESSOR_SCOPE_NAME0              'C'
-//#define BLDCFG_PROCESSOR_SCOPE_NAME1              '0'
+#define BLDCFG_HEAP_DRAM_ADDRESS		  0xB0000
+#define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS	  0xD0000000
+#define BLDCFG_1GB_ALIGN			  FALSE
+//#define BLDCFG_PROCESSOR_SCOPE_NAME0		    'C'
+//#define BLDCFG_PROCESSOR_SCOPE_NAME1		    '0'
 //
 
 // Select the platform control flow mode for performance tuning.
@@ -151,8 +151,8 @@
  *
  * This feature may interact with other performance features.
  *  TRUE  -Enable the feature (default) if supported by all processors,
- *         based on revision and presence of L3 cache.
- *         The feature is not enabled if there are no coherent HT links.
+ *	   based on revision and presence of L3 cache.
+ *	   The feature is not enabled if there are no coherent HT links.
  *  FALSE -Do not enable the feature regardless of the configuration.
  */
 //TODO enable it,
@@ -339,22 +339,22 @@ CONST AP_MTRR_SETTINGS ROMDATA h8scm_ap_mtrr_list[] =
 /*  Process the options...
  * This file include MUST occur AFTER the user option selection settings
  */
-#define AGESA_ENTRY_INIT_RESET                    TRUE//FALSE
-#define AGESA_ENTRY_INIT_RECOVERY                 FALSE
-#define AGESA_ENTRY_INIT_EARLY                    TRUE
-#define AGESA_ENTRY_INIT_POST                     TRUE
-#define AGESA_ENTRY_INIT_ENV                      TRUE
-#define AGESA_ENTRY_INIT_MID                      TRUE
-#define AGESA_ENTRY_INIT_LATE                     TRUE
-#define AGESA_ENTRY_INIT_S3SAVE                   TRUE
-#define AGESA_ENTRY_INIT_RESUME                   TRUE
-#define AGESA_ENTRY_INIT_LATE_RESTORE             TRUE
-#define AGESA_ENTRY_INIT_GENERAL_SERVICES         TRUE
+#define AGESA_ENTRY_INIT_RESET			  TRUE//FALSE
+#define AGESA_ENTRY_INIT_RECOVERY		  FALSE
+#define AGESA_ENTRY_INIT_EARLY			  TRUE
+#define AGESA_ENTRY_INIT_POST			  TRUE
+#define AGESA_ENTRY_INIT_ENV			  TRUE
+#define AGESA_ENTRY_INIT_MID			  TRUE
+#define AGESA_ENTRY_INIT_LATE			  TRUE
+#define AGESA_ENTRY_INIT_S3SAVE			  TRUE
+#define AGESA_ENTRY_INIT_RESUME			  TRUE
+#define AGESA_ENTRY_INIT_LATE_RESTORE		  TRUE
+#define AGESA_ENTRY_INIT_GENERAL_SERVICES	  TRUE
 
 #include "SanMarinoInstall.h"
 
 /*----------------------------------------------------------------------------------------
- *                        CUSTOMER OVERIDES MEMORY TABLE
+ *			  CUSTOMER OVERIDES MEMORY TABLE
  *----------------------------------------------------------------------------------------
  */
 
@@ -380,64 +380,64 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 	// The following macros are supported (use comma to separate macros):
 	//
 	// MEMCLK_DIS_MAP(SocketID, ChannelID, MemClkDisBit0CSMap,..., MemClkDisBit7CSMap)
-	//      The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
-	//      AGESA will base on this value to disable unused MemClk to save power.
-	//      Example:
-	//      BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
-	//           Bit AM3/S1g3 pin name
-	//           0   M[B,A]_CLK_H/L[0]
-	//           1   M[B,A]_CLK_H/L[1]
-	//           2   M[B,A]_CLK_H/L[2]
-	//           3   M[B,A]_CLK_H/L[3]
-	//           4   M[B,A]_CLK_H/L[4]
-	//           5   M[B,A]_CLK_H/L[5]
-	//           6   M[B,A]_CLK_H/L[6]
-	//           7   M[B,A]_CLK_H/L[7]
-	//      And platform has the following routing:
-	//           CS0   M[B,A]_CLK_H/L[4]
-	//           CS1   M[B,A]_CLK_H/L[2]
-	//           CS2   M[B,A]_CLK_H/L[3]
-	//           CS3   M[B,A]_CLK_H/L[5]
-	//      Then platform can specify the following macro:
-	//      MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
+	//	 The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
+	//	 AGESA will base on this value to disable unused MemClk to save power.
+	//	 Example:
+	//	 BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
+	//	      Bit AM3/S1g3 pin name
+	//	      0	  M[B,A]_CLK_H/L[0]
+	//	      1	  M[B,A]_CLK_H/L[1]
+	//	      2	  M[B,A]_CLK_H/L[2]
+	//	      3	  M[B,A]_CLK_H/L[3]
+	//	      4	  M[B,A]_CLK_H/L[4]
+	//	      5	  M[B,A]_CLK_H/L[5]
+	//	      6	  M[B,A]_CLK_H/L[6]
+	//	      7	  M[B,A]_CLK_H/L[7]
+	//	 And platform has the following routing:
+	//	      CS0   M[B,A]_CLK_H/L[4]
+	//	      CS1   M[B,A]_CLK_H/L[2]
+	//	      CS2   M[B,A]_CLK_H/L[3]
+	//	      CS3   M[B,A]_CLK_H/L[5]
+	//	 Then platform can specify the following macro:
+	//	 MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
 	//
 	// CKE_TRI_MAP(SocketID, ChannelID, CKETriBit0CSMap, CKETriBit1CSMap)
-	//      The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
-	//      AGESA will base on this value to tristate unused CKE to save power.
+	//	 The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
+	//	 AGESA will base on this value to tristate unused CKE to save power.
 	//
 	// ODT_TRI_MAP(SocketID, ChannelID, ODTTriBit0CSMap,..., ODTTriBit3CSMap)
-	//      The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
-	//      AGESA will base on this value to tristate unused ODT pins to save power.
+	//	 The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
+	//	 AGESA will base on this value to tristate unused ODT pins to save power.
 	//
 	// CS_TRI_MAP(SocketID, ChannelID, CSTriBit0CSMap,..., CSTriBit7CSMap)
-	//      The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
-	//      AGESA will base on this value to tristate unused Chip select to save power.
+	//	 The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
+	//	 AGESA will base on this value to tristate unused Chip select to save power.
 	//
 	// NUMBER_OF_DIMMS_SUPPORTED(SocketID, ChannelID, NumberOfDimmSlotsPerChannel)
-	//      Specifies the number of DIMM slots per channel.
+	//	 Specifies the number of DIMM slots per channel.
 	//
 	// NUMBER_OF_CHIP_SELECTS_SUPPORTED(SocketID, ChannelID, NumberOfChipSelectsPerChannel)
-	//      Specifies the number of Chip selects per channel.
+	//	 Specifies the number of Chip selects per channel.
 	//
 	// NUMBER_OF_CHANNELS_SUPPORTED(SocketID, NumberOfChannelsPerSocket)
-	//      Specifies the number of channels per socket.
+	//	 Specifies the number of channels per socket.
 	//
 	// OVERRIDE_DDR_BUS_SPEED(SocketID, ChannelID, USER_MEMORY_TIMING_MODE, MEMORY_BUS_SPEED)
-	//      Specifies DDR bus speed of channel ChannelID on socket SocketID.
+	//	 Specifies DDR bus speed of channel ChannelID on socket SocketID.
 	//
 	// DRAM_TECHNOLOGY(ANY_SOCKET, DDR3_TECHNOLOGY),
-	//      Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
+	//	 Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
 	//
 	// WRITE_LEVELING_SEED(SocketID, ChannelID, Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed, Byte4Seed, Byte5Seed,
-	//      Byte6Seed, Byte7Seed, ByteEccSeed)
-	//      Specifies the write leveling seed for a channel of a socket.
+	//	 Byte6Seed, Byte7Seed, ByteEccSeed)
+	//	 Specifies the write leveling seed for a channel of a socket.
 	//
 
 	/* Specifies the write leveling seed for a channel of a socket.
 	 * WRITE_LEVELING_SEED(SocketID, ChannelID, DimmID,
-	 *                     Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed,
-	 *                     Byte4Seed, Byte5Seed, Byte6Seed, Byte7Seed,
-	 *                     ByteEccSeed)
+	 *			Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed,
+	 *			Byte4Seed, Byte5Seed, Byte6Seed, Byte7Seed,
+	 *			ByteEccSeed)
 	 */
 	WRITE_LEVELING_SEED(
 			ANY_SOCKET, ANY_CHANNEL, ALL_DIMMS,
@@ -446,8 +446,8 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 			F15_WL_SEED),
 
 	/* HW_RXEN_SEED(SocketID, ChannelID, DimmID,
-	 *              Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed,
-	 *              Byte4Seed, Byte5Seed, Byte6Seed, Byte7Seed, ByteEccSeed)
+	 *		 Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed,
+	 *		 Byte4Seed, Byte5Seed, Byte6Seed, Byte7Seed, ByteEccSeed)
 	 */
 	HW_RXEN_SEED(
 		ANY_SOCKET, CHANNEL_A, ALL_DIMMS,
@@ -487,8 +487,8 @@ UINT8 AGESA_MEM_TABLE_HY[][sizeof (MEM_TABLE_ALIAS)] =
 	//   with a particular DIMM configuration.  To hardcode your own values, uncomment the appropriate line in
 	//   the table and replace the byte lane values with your own.
 	//
-	//                                                                               ------------------ BYTE LANES ----------------------
-	//                                                                                BL0   BL1   BL2   BL3   BL4   BL5   BL6   Bl7   ECC
+	//										  ------------------ BYTE LANES ----------------------
+	//										   BL0	 BL1   BL2   BL3   BL4	 BL5   BL6   Bl7   ECC
 	// Write Data Timing
 	// DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM0, BFWrDatDly, MTOverride, 0x1D, 0x20, 0x26, 0x2B, 0x37, 0x3A, 0x3e, 0x3F, 0x30),// DCT0, DIMM0
 	// DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM1, BFWrDatDly, MTOverride, 0x1D, 0x00, 0x06, 0x0B, 0x17, 0x1A, 0x1E, 0x1F, 0x10),// DCT0, DIMM1
@@ -514,7 +514,7 @@ UINT8 AGESA_MEM_TABLE_HY[][sizeof (MEM_TABLE_ALIAS)] =
 	// DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM1, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT1, DIMM1
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	// TABLE END
-	NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
+	NBACCESS (MTEnd, 0,  0, 0, 0, 0),	// End of Table
 };
 UINT8 SizeOfTableHy = sizeof (AGESA_MEM_TABLE_HY) / sizeof (AGESA_MEM_TABLE_HY[0]);
 

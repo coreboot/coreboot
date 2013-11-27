@@ -161,7 +161,7 @@ Method(_CRS, 0) {
 
 /*
  *
- *               FIRST METHOD CALLED UPON BOOT
+ *		 FIRST METHOD CALLED UPON BOOT
  *
  *  1. If debugging, print current OS and ACPI interpreter.
  *  2. Get PCI Interrupt routing from ACPI VSM, this

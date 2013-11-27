@@ -145,7 +145,7 @@ handleInt10(void)
 				printf("%c", M.x86.R_AL);
 				// for debugging, to read all lines
 				//if (M.x86.R_AL == 0xd) // carriage return
-				//      printf("\n");
+				//	    printf("\n");
 			}
 		}
 		break;
@@ -160,7 +160,7 @@ handleInt10(void)
 		break;
 	default:
 		printf("%s(): unknown function (%x) for int10 handler.\n",
-		       __func__, M.x86.R_AH);
+			 __func__, M.x86.R_AH);
 		DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 				  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 				  M.x86.R_DX);
@@ -224,7 +224,7 @@ translate_keycode(u64 * keycode)
 			break;
 		default:
 			printf("%s(): unknown multibyte keycode: %llx\n",
-			       __func__, *keycode);
+				  __func__, *keycode);
 			break;
 		}
 	}
@@ -290,11 +290,11 @@ handleInt16(void)
 				while ((c = -1 /*getchar()*/) != -1) {
 					*keycode = (*keycode << 8) | c;
 					DEBUG_PRINTF(" key read: %0llx\n",
-						     *keycode);
+							   *keycode);
 				}
 				translate_keycode(keycode);
 				DEBUG_PRINTF(" translated key: %0llx\n",
-					     *keycode);
+						  *keycode);
 				if (*keycode == 0) {
 					//not found
 					SET_FLAG(F_ZF);
@@ -309,7 +309,7 @@ handleInt16(void)
 		break;
 	default:
 		printf("%s(): unknown function (%x) for int16 handler.\n",
-		       __func__, M.x86.R_AH);
+			 __func__, M.x86.R_AH);
 		DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 				  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 				  M.x86.R_DX);
@@ -348,7 +348,7 @@ handleInt1a(void)
 		if (dev != 0) {
 			DEBUG_PRINTF_INTR
 			    ("%s(): function %x: PCI Find Device --> 0x%04x\n",
-			     __func__, M.x86.R_AX, M.x86.R_BX);
+				__func__, M.x86.R_AX, M.x86.R_BX);
 
 			M.x86.R_BH = dev->bus->secondary;
 			M.x86.R_BL = dev->path.pci.devfn;
@@ -361,16 +361,16 @@ handleInt1a(void)
 		   // device index must be 0
 		   && (M.x86.R_SI == 0)) {
 			CLEAR_FLAG(F_CF);
-			M.x86.R_AH = 0x00;      // return code: success
+			M.x86.R_AH = 0x00;	   // return code: success
 			M.x86.R_BH = bios_device.bus;
 			M.x86.R_BL = bios_device.devfn;
 #endif
 		} else {
 			DEBUG_PRINTF_INTR
 			    ("%s(): function %x: invalid device/vendor/device index! (%04x/%04x/%02x expected: %04x/%04x/00) \n",
-			     __func__, M.x86.R_AX, M.x86.R_CX, M.x86.R_DX,
-			     M.x86.R_SI, bios_device.pci_device_id,
-			     bios_device.pci_vendor_id);
+				__func__, M.x86.R_AX, M.x86.R_CX, M.x86.R_DX,
+				M.x86.R_SI, bios_device.pci_device_id,
+				bios_device.pci_vendor_id);
 
 			SET_FLAG(F_CF);
 			M.x86.R_AH = 0x86;	// return code: device not found
@@ -398,8 +398,8 @@ handleInt1a(void)
 #endif
 			printf
 			    ("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
-			     __func__, bus, bios_device.bus, devfn,
-			     bios_device.devfn, offs);
+				__func__, bus, bios_device.bus, devfn,
+				bios_device.devfn, offs);
 			SET_FLAG(F_CF);
 			M.x86.R_AH = 0x87;	//return code: bad pci register
 			HALT_SYS();
@@ -411,45 +411,45 @@ handleInt1a(void)
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_read_config8(dev, offs);
 #else
-				    (u8) rtas_pci_config_read(bios_device.
+					(u8) rtas_pci_config_read(bios_device.
 								   puid, 1,
 								   bus, devfn,
 								   offs);
 #endif
 				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Read @%02x --> 0x%02x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CL);
+					("%s(): function %x: PCI Config Read @%02x --> 0x%02x\n",
+					 __func__, M.x86.R_AX, offs,
+					 M.x86.R_CL);
 				break;
 			case 0xb109:
 				M.x86.R_CX =
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_read_config16(dev, offs);
 #else
-				    (u16) rtas_pci_config_read(bios_device.
+					(u16) rtas_pci_config_read(bios_device.
 								    puid, 2,
 								    bus, devfn,
 								    offs);
 #endif
 				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Read @%02x --> 0x%04x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CX);
+					("%s(): function %x: PCI Config Read @%02x --> 0x%04x\n",
+					 __func__, M.x86.R_AX, offs,
+					 M.x86.R_CX);
 				break;
 			case 0xb10a:
 				M.x86.R_ECX =
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_read_config32(dev, offs);
 #else
-				    (u32) rtas_pci_config_read(bios_device.
+					(u32) rtas_pci_config_read(bios_device.
 								    puid, 4,
 								    bus, devfn,
 								    offs);
 #endif
 				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Read @%02x --> 0x%08x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_ECX);
+					("%s(): function %x: PCI Config Read @%02x --> 0x%08x\n",
+					 __func__, M.x86.R_AX, offs,
+					 M.x86.R_ECX);
 				break;
 			}
 			CLEAR_FLAG(F_CF);
@@ -467,8 +467,8 @@ handleInt1a(void)
 			// fail accesses to any device but ours...
 			printf
 			    ("%s(): Config read access invalid! bus: %x (%x), devfn: %x (%x), offs: %x\n",
-			     __func__, bus, bios_device.bus, devfn,
-			     bios_device.devfn, offs);
+				__func__, bus, bios_device.bus, devfn,
+				bios_device.devfn, offs);
 			SET_FLAG(F_CF);
 			M.x86.R_AH = 0x87;	//return code: bad pci register
 			HALT_SYS();
@@ -480,36 +480,36 @@ handleInt1a(void)
 					pci_write_config8(bios_device.dev, offs, M.x86.R_CL);
 #else
 				rtas_pci_config_write(bios_device.puid, 1, bus,
-						      devfn, offs, M.x86.R_CL);
+							    devfn, offs, M.x86.R_CL);
 #endif
 				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%02x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CL);
+					("%s(): function %x: PCI Config Write @%02x <-- 0x%02x\n",
+					 __func__, M.x86.R_AX, offs,
+					 M.x86.R_CL);
 				break;
 			case 0xb10c:
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_write_config16(bios_device.dev, offs, M.x86.R_CX);
 #else
 				rtas_pci_config_write(bios_device.puid, 2, bus,
-						      devfn, offs, M.x86.R_CX);
+							    devfn, offs, M.x86.R_CX);
 #endif
 				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%04x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_CX);
+					("%s(): function %x: PCI Config Write @%02x <-- 0x%04x\n",
+					 __func__, M.x86.R_AX, offs,
+					 M.x86.R_CX);
 				break;
 			case 0xb10d:
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 					pci_write_config32(bios_device.dev, offs, M.x86.R_ECX);
 #else
 				rtas_pci_config_write(bios_device.puid, 4, bus,
-						      devfn, offs, M.x86.R_ECX);
+							    devfn, offs, M.x86.R_ECX);
 #endif
 				DEBUG_PRINTF_INTR
-				    ("%s(): function %x: PCI Config Write @%02x <-- 0x%08x\n",
-				     __func__, M.x86.R_AX, offs,
-				     M.x86.R_ECX);
+					("%s(): function %x: PCI Config Write @%02x <-- 0x%08x\n",
+					 __func__, M.x86.R_AX, offs,
+					 M.x86.R_ECX);
 				break;
 			}
 			CLEAR_FLAG(F_CF);
@@ -518,7 +518,7 @@ handleInt1a(void)
 		break;
 	default:
 		printf("%s(): unknown function (%x) for int1a handler.\n",
-		       __func__, M.x86.R_AX);
+			 __func__, M.x86.R_AX);
 		DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 				  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 				  M.x86.R_DX);
@@ -554,8 +554,8 @@ handleInterrupt(int intNum)
 #if 0
 				// ignore interrupt...
 				DEBUG_PRINTF_INTR
-				    ("%s(%x): invalid interrupt Vector (%08x) found, interrupt ignored...\n",
-				     __func__, intNum, my_rdl(intNum * 4));
+					("%s(%x): invalid interrupt Vector (%08x) found, interrupt ignored...\n",
+					 __func__, intNum, my_rdl(intNum * 4));
 				DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 						  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 						  M.x86.R_DX);
@@ -585,7 +585,7 @@ handleInterrupt(int intNum)
 			break;
 		default:
 			printf("Interrupt %#x (Vector: %x) not implemented\n", intNum,
-			       my_rdl(intNum * 4));
+				  my_rdl(intNum * 4));
 			DEBUG_PRINTF_INTR("AX=%04x BX=%04x CX=%04x DX=%04x\n",
 					  M.x86.R_AX, M.x86.R_BX, M.x86.R_CX,
 					  M.x86.R_DX);

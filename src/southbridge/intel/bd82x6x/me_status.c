@@ -148,43 +148,43 @@ void intel_me_status(struct me_hfs *hfs, struct me_gmes *gmes)
 {
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
 	/* Check Current States */
-	printk(BIOS_DEBUG, "ME: FW Partition Table      : %s\n",
-	       hfs->fpt_bad ? "BAD" : "OK");
+	printk(BIOS_DEBUG, "ME: FW Partition Table	 : %s\n",
+		hfs->fpt_bad ? "BAD" : "OK");
 	printk(BIOS_DEBUG, "ME: Bringup Loader Failure  : %s\n",
-	       hfs->ft_bup_ld_flr ? "YES" : "NO");
+		hfs->ft_bup_ld_flr ? "YES" : "NO");
 	printk(BIOS_DEBUG, "ME: Firmware Init Complete  : %s\n",
-	       hfs->fw_init_complete ? "YES" : "NO");
-	printk(BIOS_DEBUG, "ME: Manufacturing Mode      : %s\n",
-	       hfs->mfg_mode ? "YES" : "NO");
-	printk(BIOS_DEBUG, "ME: Boot Options Present    : %s\n",
-	       hfs->boot_options_present ? "YES" : "NO");
-	printk(BIOS_DEBUG, "ME: Update In Progress      : %s\n",
-	       hfs->update_in_progress ? "YES" : "NO");
-	printk(BIOS_DEBUG, "ME: Current Working State   : %s\n",
-	       me_cws_values[hfs->working_state]);
+		hfs->fw_init_complete ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Manufacturing Mode	 : %s\n",
+		hfs->mfg_mode ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Boot Options Present	 : %s\n",
+		hfs->boot_options_present ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Update In Progress	 : %s\n",
+		hfs->update_in_progress ? "YES" : "NO");
+	printk(BIOS_DEBUG, "ME: Current Working State	 : %s\n",
+		me_cws_values[hfs->working_state]);
 	printk(BIOS_DEBUG, "ME: Current Operation State : %s\n",
-	       me_opstate_values[hfs->operation_state]);
+		me_opstate_values[hfs->operation_state]);
 	printk(BIOS_DEBUG, "ME: Current Operation Mode  : %s\n",
-	       me_opmode_values[hfs->operation_mode]);
-	printk(BIOS_DEBUG, "ME: Error Code              : %s\n",
-	       me_error_values[hfs->error_code]);
-	printk(BIOS_DEBUG, "ME: Progress Phase          : %s\n",
-	       me_progress_values[gmes->progress_code]);
+		me_opmode_values[hfs->operation_mode]);
+	printk(BIOS_DEBUG, "ME: Error Code		 : %s\n",
+		me_error_values[hfs->error_code]);
+	printk(BIOS_DEBUG, "ME: Progress Phase		 : %s\n",
+		me_progress_values[gmes->progress_code]);
 	printk(BIOS_DEBUG, "ME: Power Management Event  : %s\n",
-	       me_pmevent_values[gmes->current_pmevent]);
+		me_pmevent_values[gmes->current_pmevent]);
 
-	printk(BIOS_DEBUG, "ME: Progress Phase State    : ");
+	printk(BIOS_DEBUG, "ME: Progress Phase State	 : ");
 	switch (gmes->progress_code) {
 	case ME_GMES_PHASE_ROM:		/* ROM Phase */
 		printk(BIOS_DEBUG, "%s",
-		       me_progress_rom_values[gmes->current_state]);
+			 me_progress_rom_values[gmes->current_state]);
 		break;
 
 	case ME_GMES_PHASE_BUP:		/* Bringup Phase */
 		if (gmes->current_state < ARRAY_SIZE(me_progress_bup_values)
 		    && me_progress_bup_values[gmes->current_state])
 			printk(BIOS_DEBUG, "%s",
-			       me_progress_bup_values[gmes->current_state]);
+				  me_progress_bup_values[gmes->current_state]);
 		else
 			printk(BIOS_DEBUG, "0x%02x", gmes->current_state);
 		break;
@@ -193,7 +193,7 @@ void intel_me_status(struct me_hfs *hfs, struct me_gmes *gmes)
 		if (gmes->current_state < ARRAY_SIZE(me_progress_policy_values)
 		    && me_progress_policy_values[gmes->current_state])
 			printk(BIOS_DEBUG, "%s",
-			       me_progress_policy_values[gmes->current_state]);
+				  me_progress_policy_values[gmes->current_state]);
 		else
 			printk(BIOS_DEBUG, "0x%02x", gmes->current_state);
 		break;

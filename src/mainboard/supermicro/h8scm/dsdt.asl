@@ -22,7 +22,7 @@ DefinitionBlock (
 	"DSDT.AML",	/* Output filename */
 	"DSDT",		/* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-	"AMD   ",	/* OEMID */
+	"AMD	",	/* OEMID */
 	"COREBOOT",	/* TABLE ID */
 	0x00010001	/* OEM Revision */
 	)
@@ -314,8 +314,8 @@ DefinitionBlock (
 		Field(P1EB, ByteAcc, NoLock, Preserve) {
 		TMST, 1,
 		,    3,
-		BMST,    1,
-		GBST,   1,
+		BMST,	   1,
+		GBST,	  1,
 		Offset(0x01),
 		PBST, 1,
 		, 1,
@@ -455,7 +455,7 @@ DefinitionBlock (
 			if(CondRefOf(\_OSI,Local1))
 			{
 				Store(1, OSTP)			/* Assume some form of XP */
-				if (\_OSI("Windows 2006"))      /* Vista */
+				if (\_OSI("Windows 2006"))	    /* Vista */
 				{
 					Store(2, OSTP)
 				}
@@ -834,7 +834,7 @@ DefinitionBlock (
 				}
 				Store(Local0, PINH)
 			} /* End Method(_SB.INTH._SRS)  */
-		} /* End Device(INTH)   */
+		} /* End Device(INTH)	  */
 
 	}   /* End Scope(_SB)  */
 
@@ -989,17 +989,17 @@ DefinitionBlock (
 	Scope(\_GPE) {	/* Start Scope GPE */
 		/*  General event 0  */
 		Method(_L00) {
-		      //DBGO("\\_GPE\\_L00\n")
+			//DBGO("\\_GPE\\_L00\n")
 		}
 
 		/*  General event 1  */
 		Method(_L01) {
-		      //DBGO("\\_GPE\\_L01\n")
+			//DBGO("\\_GPE\\_L01\n")
 		}
 
 		/*  General event 2  */
 		Method(_L02) {
-		      //DBGO("\\_GPE\\_L02\n")
+			//DBGO("\\_GPE\\_L02\n")
 		}
 
 		/*  General event 3  */
@@ -1010,12 +1010,12 @@ DefinitionBlock (
 
 		/*  General event 4  */
 		Method(_L04) {
-		      //DBGO("\\_GPE\\_L04\n")
+			//DBGO("\\_GPE\\_L04\n")
 		}
 
 		/*  General event 5  */
 		Method(_L05) {
-		      //DBGO("\\_GPE\\_L05\n")
+			//DBGO("\\_GPE\\_L05\n")
 		}
 
 		/* _L06 General event 6 - Used for GPM6, moved to USB.asl */
@@ -1034,7 +1034,7 @@ DefinitionBlock (
 
 		/*  Reserved  */
 		Method(_L0A) {
-		      //DBGO("\\_GPE\\_L0A\n")
+			//DBGO("\\_GPE\\_L0A\n")
 		}
 
 		/*  USB controller PME#  */
@@ -1051,12 +1051,12 @@ DefinitionBlock (
 
 		/*  AC97 controller PME#  */
 		Method(_L0C) {
-		      //DBGO("\\_GPE\\_L0C\n")
+			//DBGO("\\_GPE\\_L0C\n")
 		}
 
 		/*  OtherTherm PME#  */
 		Method(_L0D) {
-		      //DBGO("\\_GPE\\_L0D\n")
+			//DBGO("\\_GPE\\_L0D\n")
 		}
 
 		/* _L0E GPM9 SCI event - Moved to USB.asl */
@@ -1079,7 +1079,7 @@ DefinitionBlock (
 
 		/*  PCIe PME# event  */
 		Method(_L12) {
-		      //DBGO("\\_GPE\\_L12\n")
+			//DBGO("\\_GPE\\_L12\n")
 		}
 
 		/* _L13 GPM0 SCI event - Moved to USB.asl */
@@ -1111,12 +1111,12 @@ DefinitionBlock (
 
 		/*  GPM6 SCI event - Reassigned to _L06 */
 		Method(_L1C) {
-		      //DBGO("\\_GPE\\_L1C\n")
+			//DBGO("\\_GPE\\_L1C\n")
 		}
 
 		/*  GPM7 SCI event - Reassigned to _L07 */
 		Method(_L1D) {
-		      //DBGO("\\_GPE\\_L1D\n")
+			//DBGO("\\_GPE\\_L1D\n")
 		}
 
 		/*  GPIO2 or GPIO66 SCI event  */
@@ -1434,7 +1434,7 @@ DefinitionBlock (
 			OperationRegion (IOID, SystemIO, 0x2E, 0x02)	/* sometimes it is 0x4E */
 				Field (IOID, ByteAcc, NoLock, Preserve)
 				{
-					SIOI,   8,    SIOD,   8		/* 0x2E and 0x2F */
+					SIOI,   8,	   SIOD,   8		/* 0x2E and 0x2F */
 				}
 
 			IndexField (SIOI, SIOD, ByteAcc, NoLock, Preserve)
@@ -1508,60 +1508,60 @@ DefinitionBlock (
 			Name (CRS, ResourceTemplate ()
 			{
 				WordBusNumber (ResourceProducer, MinFixed, MaxFixed, PosDecode,
-					0x0000,             // Granularity
-					0x0000,             // Range Minimum
-					0x00FF,             // Range Maximum
-					0x0000,             // Translation Offset
-					0x0100,             // Length
+					0x0000,		 // Granularity
+					0x0000,		 // Range Minimum
+					0x00FF,		 // Range Maximum
+					0x0000,		 // Translation Offset
+					0x0100,		 // Length
 					,,)
 				IO (Decode16,
-					0x0CF8,             // Range Minimum
-					0x0CF8,             // Range Maximum
-					0x01,               // Alignment
-					0x08,               // Length
+					0x0CF8,		 // Range Minimum
+					0x0CF8,		 // Range Maximum
+					0x01,		 // Alignment
+					0x08,		 // Length
 					)
 
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-					0x0000,             // Granularity
-					0x0000,             // Range Minimum
-					0x03AF,             // Range Maximum
-					0x0000,             // Translation Offset
-					0x03B0,             // Length
+					0x0000,		 // Granularity
+					0x0000,		 // Range Minimum
+					0x03AF,		 // Range Maximum
+					0x0000,		 // Translation Offset
+					0x03B0,		 // Length
 					,, , TypeStatic)
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-					0x0000,             // Granularity
-					0x03E0,             // Range Minimum
-					0x0CF7,             // Range Maximum
-					0x0000,             // Translation Offset
-					0x0918,             // Length
+					0x0000,		 // Granularity
+					0x03E0,		 // Range Minimum
+					0x0CF7,		 // Range Maximum
+					0x0000,		 // Translation Offset
+					0x0918,		 // Length
 					,, , TypeStatic)
 
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-					0x0000,             // Granularity
-					0x03B0,             // Range Minimum
-					0x03BB,             // Range Maximum
-					0x0000,             // Translation Offset
-					0x000C,             // Length
+					0x0000,		 // Granularity
+					0x03B0,		 // Range Minimum
+					0x03BB,		 // Range Maximum
+					0x0000,		 // Translation Offset
+					0x000C,		 // Length
 					,, , TypeStatic)
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-					0x0000,             // Granularity
-					0x03C0,             // Range Minimum
-					0x03DF,             // Range Maximum
-					0x0000,             // Translation Offset
-					0x0020,             // Length
+					0x0000,		 // Granularity
+					0x03C0,		 // Range Minimum
+					0x03DF,		 // Range Maximum
+					0x0000,		 // Translation Offset
+					0x0020,		 // Length
 					,, , TypeStatic)
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-					0x0000,             // Granularity
-					0x0D00,             // Range Minimum
-					0xFFFF,             // Range Maximum
-					0x0000,             // Translation Offset
-					0xF300,             // Length
+					0x0000,		 // Granularity
+					0x0D00,		 // Range Minimum
+					0xFFFF,		 // Range Maximum
+					0x0000,		 // Translation Offset
+					0xF300,		 // Length
 					,, , TypeStatic)
 				Memory32Fixed(READONLY, 0x000A0000, 0x00020000, VGAM) 	// VGA memory space
 
 				Memory32Fixed (ReadOnly,
-						0xE0000000,         // Address Base
-						0x10000000,         // Address Length, (1MB each Bus, 256 Buses by default)
+						0xE0000000,	  // Address Base
+						0x10000000,	  // Address Length, (1MB each Bus, 256 Buses by default)
 						MMIO)
 			})
 
@@ -1570,18 +1570,18 @@ DefinitionBlock (
 				CreateDWordField (CRS, \_SB.PCI0.MMIO._BAS, BAS1)
 				CreateDWordField (CRS, \_SB.PCI0.MMIO._LEN, LEN1)
 
-                                /*
-                                 * Declare memory between TOM1 and 4GB as available
-                                 * for PCI MMIO.
-                                 * Use ShiftLeft to avoid 64bit constant (for XP).
-                                 * This will work even if the OS does 32bit arithmetic, as
-                                 * 32bit (0x00000000 - TOM1) will wrap and give the same
-                                 * result as 64bit (0x100000000 - TOM1).
-                                 */
+				/*
+				 * Declare memory between TOM1 and 4GB as available
+				 * for PCI MMIO.
+				 * Use ShiftLeft to avoid 64bit constant (for XP).
+				 * This will work even if the OS does 32bit arithmetic, as
+				 * 32bit (0x00000000 - TOM1) will wrap and give the same
+				 * result as 64bit (0x100000000 - TOM1).
+				 */
 				Store(TOM1, BAS1)
-                                ShiftLeft(0x10000000, 4, Local0)
-                                Subtract(Local0, TOM1, Local0)
-                                Store(Local0, LEN1)
+				ShiftLeft(0x10000000, 4, Local0)
+				Subtract(Local0, TOM1, Local0)
+				Store(Local0, LEN1)
 				//DBGO(TOM1)
 
 				Return (CRS)
@@ -1589,23 +1589,23 @@ DefinitionBlock (
 
 			/*
 			 *
-			 *               FIRST METHOD CALLED UPON BOOT
+			 *		    FIRST METHOD CALLED UPON BOOT
 			 *
 			 *  1. If debugging, print current OS and ACPI interpreter.
 			 *  2. Get PCI Interrupt routing from ACPI VSM, this
-			 *     value is based on user choice in BIOS setup.
+			 *	  value is based on user choice in BIOS setup.
 			 */
 			Method(_INI, 0) {
 				/* DBGO("\\_SB\\_INI\n") */
-				/* DBGO("   DSDT.ASL code from ") */
+				/* DBGO("	DSDT.ASL code from ") */
 				/* DBGO(__DATE__) */
 				/* DBGO(" ") */
 				/* DBGO(__TIME__) */
-				/* DBGO("\n   Sleep states supported: ") */
+				/* DBGO("\n	  Sleep states supported: ") */
 				/* DBGO("\n") */
-				/* DBGO("   \\_OS=") */
+				/* DBGO("	\\_OS=") */
 				/* DBGO(\_OS) */
-				/* DBGO("\n   \\_REV=") */
+				/* DBGO("\n	  \\_REV=") */
 				/* DBGO(\_REV) */
 				/* DBGO("\n") */
 
@@ -1613,7 +1613,7 @@ DefinitionBlock (
 				CkOT()
 				/* On older chips, clear PciExpWakeDisEn */
 				/*if (LLessEqual(\SBRI, 0x13)) {
-				 *    	Store(0,\PWDE)
+				 *	  	Store(0,\PWDE)
 				 *}
 				 */
 			} /* End Method(_SB._INI) */

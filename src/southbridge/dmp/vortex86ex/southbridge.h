@@ -40,6 +40,6 @@
 #define	SB1			PCI_DEV(0, 7, 1)
 #define	SB1_REG_EXT_PIRQ_ROUTE2	0xb4
 
-#define	SYSTEM_CTL_PORT         0x92
+#define	SYSTEM_CTL_PORT		0x92
 
 #endif				/* SOUTHBRIDGE_H */

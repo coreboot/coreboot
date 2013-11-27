@@ -87,9 +87,9 @@ static void auto_size_dimm(unsigned int dimm)
 
 	/*; Field: DIMM size
 	 *; EEPROM byte usage: (3)  Number of Row Addresses
-	 *;                                       (4)  Number of Column Addresses
-	 *;                                       (5)  Number of DIMM Banks
-	 *;                                       (31) Module Bank Density
+	 *;					   (4)  Number of Column Addresses
+	 *;					   (5)  Number of DIMM Banks
+	 *;					   (31) Module Bank Density
 	 *; Size = Module Density * Module Banks
 	 */
 	if ((spd_read_byte(dimm, SPD_NUM_ROWS) & 0xF0)
@@ -105,7 +105,7 @@ static void auto_size_dimm(unsigned int dimm)
 	dimm_size |= (dimm_size << 8);	/* align so 1GB(bit0) is bit 8, this is a little weird to get gcc to not optimize this out */
 	dimm_size &= 0x01FC;	/* and off 2GB DIMM size : not supported and the 1GB size we just moved up to bit 8 as well as all the extra on top */
 
-	/*       Module Density * Module Banks */
+	/*	  Module Density * Module Banks */
 	dimm_size <<= (dimm_setting >> CF07_UPPER_D0_MB_SHIFT) & 1;	/* shift to multiply by # DIMM banks */
 	banner("BEFORT CTZ");
 	dimm_size = __builtin_ctz(dimm_size);
@@ -131,7 +131,7 @@ static void auto_size_dimm(unsigned int dimm)
 *;pa					09 08 07 06 05 04 03	(7 col addr bits = 1K page size)
 *;pa				 10 09 08 07 06 05 04 03	(8 col addr bits = 2K page size)
 *;pa			  11 10 09 08 07 06 05 04 03	(9 col addr bits = 4K page size)
-*;pa		   12 11 10 09 08 07 06 05 04 03	(10 col addr bits = 8K page size)
+*;pa			 12 11 10 09 08 07 06 05 04 03	(10 col addr bits = 8K page size)
 *;pa	 13 AP 12 11 10 09 08 07 06 05 04 03	(11 col addr bits = 16K page size)
 *;pa  14 13 AP 12 11 10 09 08 07 06 05 04 03	(12 col addr bits = 32K page size)
 *; *AP=autoprecharge bit
@@ -638,7 +638,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl)
 		hcf();
 	}
 
-	/*      Set CKEs */
+	/*	 Set CKEs */
 	msrnum = MC_CFCLK_DBUG;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~(CFCLK_LOWER_MASK_CKE_SET0 | CFCLK_LOWER_MASK_CKE_SET1);
@@ -763,11 +763,11 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	if ((msr.lo & 0x7FF) == 0x104) {
 
 		/* If you had it you would need to clear out the fail boot count flag */
-		/*       (depending on where it counts from etc). */
+		/*	   (depending on where it counts from etc). */
 
 		/* The reset we are about to perform clears the PM_SSC register in the */
-		/*       5536 so will need to store the S3 resume flag in NVRAM otherwise */
-		/*       it would do a normal boot */
+		/*	   5536 so will need to store the S3 resume flag in NVRAM otherwise */
+		/*	   it would do a normal boot */
 
 		/* Reset the system */
 		msrnum = MDD_SOFT_RESET;

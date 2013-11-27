@@ -30,7 +30,7 @@
 #include "vgabios.h"
 
 #define ADT7461_ADDRESS 0x4C
-#define ARA_ADDRESS     0x0C /* Alert Response Address */
+#define ARA_ADDRESS	0x0C /* Alert Response Address */
 #define SMBUS_IO_BASE 0x1000
 
 
@@ -56,21 +56,21 @@
 #define TV_MODE_NO	0xff	/* No TV Support */
 
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
-#define SIO_BASE                     0x2e
-#define SIO_INDEX                    SIO_BASE
-#define SIO_DATA                     SIO_BASE+1
+#define SIO_BASE		     0x2e
+#define SIO_INDEX		     SIO_BASE
+#define SIO_DATA		     SIO_BASE+1
 
 /* Global configuration registers. */
-#define IT8712F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
-#define IT8712F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
+#define IT8712F_CONFIG_REG_CC	     0x02 /* Configure Control (write-only). */
+#define IT8712F_CONFIG_REG_LDN	     0x07 /* Logical Device Number. */
 #define IT8712F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
 #define IT8712F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8712F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
-#define IT8712F_CONFIG_REG_MFC       0x2a /* Multi-function control */
+#define IT8712F_CONFIG_REG_MFC	     0x2a /* Multi-function control */
 #define IT8712F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
 
 #define IT8712F_CONFIGURATION_PORT   0x2e /* Write-only. */
-#define IT8712F_SIMPLE_IO_BASE       0x200 /* Simple I/O base address */
+#define IT8712F_SIMPLE_IO_BASE	     0x200 /* Simple I/O base address */
 
 int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
@@ -86,29 +86,29 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);
    LDN the register belongs to, before you can access the register. */
 static void it8712f_sio_write(uint8_t ldn, uint8_t index, uint8_t value)
 {
-        outb(IT8712F_CONFIG_REG_LDN, SIO_BASE);
-        outb(ldn, SIO_DATA);
-        outb(index, SIO_BASE);
-        outb(value, SIO_DATA);
+	outb(IT8712F_CONFIG_REG_LDN, SIO_BASE);
+	outb(ldn, SIO_DATA);
+	outb(index, SIO_BASE);
+	outb(value, SIO_DATA);
 }
 
 static void it8712f_enter_conf(void)
 {
-        /*  Enter the configuration state (MB PnP mode). */
+	/*  Enter the configuration state (MB PnP mode). */
 
-        /* Perform MB PnP setup to put the SIO chip at 0x2e. */
-        /* Base address 0x2e: 0x87 0x01 0x55 0x55. */
-        /* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
-        outb(0x87, IT8712F_CONFIGURATION_PORT);
-        outb(0x01, IT8712F_CONFIGURATION_PORT);
-        outb(0x55, IT8712F_CONFIGURATION_PORT);
-        outb(0x55, IT8712F_CONFIGURATION_PORT);
+	/* Perform MB PnP setup to put the SIO chip at 0x2e. */
+	/* Base address 0x2e: 0x87 0x01 0x55 0x55. */
+	/* Base address 0x4e: 0x87 0x01 0x55 0xaa. */
+	outb(0x87, IT8712F_CONFIGURATION_PORT);
+	outb(0x01, IT8712F_CONFIGURATION_PORT);
+	outb(0x55, IT8712F_CONFIGURATION_PORT);
+	outb(0x55, IT8712F_CONFIGURATION_PORT);
 }
 
 static void it8712f_exit_conf(void)
 {
-        /* Exit the configuration state (MB PnP mode). */
-        it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
+	/* Exit the configuration state (MB PnP mode). */
+	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
 }
 
 /* set thermal config
@@ -177,15 +177,15 @@ static void set_thermal_config(void)
 /* Mainboard specific GPIO setup. */
 static void mb_gpio_init(u16 *iobase)
 {
-        /* Init Super I/O GPIOs. */
-        it8712f_enter_conf();
-        outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
-        outb(IT8712F_GPIO, SIO_DATA);
-        outb(0x62, SIO_INDEX);
-        outb((*iobase >> 8), SIO_DATA);
-        outb(0x63, SIO_INDEX);
-        outb((*iobase & 0xff), SIO_DATA);
-        it8712f_exit_conf();
+	/* Init Super I/O GPIOs. */
+	it8712f_enter_conf();
+	outb(IT8712F_CONFIG_REG_LDN, SIO_INDEX);
+	outb(IT8712F_GPIO, SIO_DATA);
+	outb(0x62, SIO_INDEX);
+	outb((*iobase >> 8), SIO_DATA);
+	outb(0x63, SIO_INDEX);
+	outb((*iobase & 0xff), SIO_DATA);
+	it8712f_exit_conf();
 }
 
 #if CONFIG_VGA_ROM_RUN

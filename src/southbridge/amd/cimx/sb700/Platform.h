@@ -28,33 +28,33 @@
 #ifdef NULL
 #undef NULL
 #endif
-#define NULL            0
+#define NULL		0
 
 typedef struct _EXT_PCI_ADDR{
-	UINT32                  Reg :16;
-	UINT32                  Func:3;
-	UINT32                  Dev :5;
-	UINT32                  Bus :8;
+	UINT32			 Reg :16;
+	UINT32			 Func:3;
+	UINT32			 Dev :5;
+	UINT32			 Bus :8;
 }EXT_PCI_ADDR;
 
 
 typedef union _PCI_ADDR{
-	UINT32                  ADDR;
-	EXT_PCI_ADDR            Addr;
+	UINT32			 ADDR;
+	EXT_PCI_ADDR		 Addr;
 }PCI_ADDR;
 
 
 #ifdef CIM_DEBUG
 
 #if   CIM_DEBUG & 2
-void    TraceDebug( UINT32 Level, CHAR8 *Format, ...);
+void	TraceDebug( UINT32 Level, CHAR8 *Format, ...);
 #define TRACE(Arguments) TraceDebug Arguments
 #else
 #define TRACE(Arguments)
 #endif
 
 #if   CIM_DEBUG & 1
-void    TraceCode ( UINT32 Level, UINT32 Code);
+void	TraceCode ( UINT32 Level, UINT32 Code);
 #define TRACECODE(Arguments) TraceCode Arguments
 #else
 #define TRACECODE(Arguments)
@@ -84,7 +84,7 @@ void    TraceCode ( UINT32 Level, UINT32 Code);
 #include "SB700.h"
 #include "SBDEF.h"
 
-#define DMSG_SB_TRACE   0x02
+#define DMSG_SB_TRACE	0x02
 
 #endif  //#ifndef _AMD_SB_CIMx_PLATFORM_H_
 

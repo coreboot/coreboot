@@ -111,8 +111,8 @@ static void init_dmi(int b2step)
 }
 
 static void init_pcie(const int peg_enabled,
-		      const int sdvo_enabled,
-		      const int peg_x16)
+			const int sdvo_enabled,
+			const int peg_x16)
 {
 	u8 tmp8;
 	u16 tmp16;

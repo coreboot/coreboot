@@ -20,7 +20,7 @@
  */
 
 Name (PICM, Package () {
-	//           _ADR        PIN   SRC   IDX
+	//	      _ADR	  PIN	SRC   IDX
 
 	Package () { 0x0003FFFF, 0x00, LNKA, 0x00 },
 	Package () { 0x0003FFFF, 0x01, LNKB, 0x00 },

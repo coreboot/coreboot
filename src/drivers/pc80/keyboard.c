@@ -29,8 +29,8 @@
 #define KBD_DATA	0x60
 #define KBD_COMMAND	0x64
 #define KBD_STATUS	0x64
-#define   KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
-#define   KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
+#define	  KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
+#define	  KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
 
 // Keyboard Controller Commands
 #define KBC_CMD_READ_COMMAND	0x20 // Read command byte
@@ -59,7 +59,7 @@
 //
 #define KBD_REPLY_POR		0xAA    // Power on reset
 #define KBD_REPLY_ACK		0xFA    // Command ACK
-#define KBD_REPLY_RESEND	0xFE    // Command NACK, send command again
+#define KBD_REPLY_RESEND	0xFE	 // Command NACK, send command again
 
 /* Wait 400ms for keyboard controller answers */
 #define KBC_TIMEOUT_IN_MS 400

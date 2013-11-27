@@ -506,7 +506,7 @@ static void set_ht_c_io_addr_reg(u32 nodeid, u32 linkn, u32 ht_c_index,
 		#endif
 			pci_write_config32(dev, 0xC4 + ht_c_index * 8, tempreg);
 		}
-		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	     //base :ISA and VGA ?
+		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));		    //base :ISA and VGA ?
 		for(i=0; i<nodes; i++){
 		#if defined(__PRE_RAM__)
 			dev = NODE_PCI(i, 1);
@@ -781,7 +781,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 		for(i=0; i<sysconf.nodes; i++)
 			pci_write_config32(__f1_dev[i], reg+4, tempreg);
 
-		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));		     //base :ISA and VGA ?
 #if 0
 		// FIXME: can we use VGA reg instead?
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {

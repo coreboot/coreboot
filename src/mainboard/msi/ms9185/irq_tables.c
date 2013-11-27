@@ -39,11 +39,11 @@
 
 
 static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t devfn, uint8_t link0, uint16_t bitmap0,
-                uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
-                uint8_t slot, uint8_t rfu)
+		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
+		uint8_t slot, uint8_t rfu)
 {
-        pirq_info->bus = bus;
-        pirq_info->devfn = devfn;
+	pirq_info->bus = bus;
+	pirq_info->devfn = devfn;
 
        pirq_info->irq[0].link = link0;
        pirq_info->irq[0].bitmap = bitmap0;
@@ -68,8 +68,8 @@ unsigned long write_pirq_routing_table(unsigned long addr)
        unsigned slot_num;
        uint8_t *v;
 
-        uint8_t sum=0;
-        int i;
+	uint8_t sum=0;
+	int i;
 
        struct mb_sysconf_t *m;
 
@@ -77,12 +77,12 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
        m = sysconf.mb;
 
-        /* Align the table to be 16 byte aligned. */
-        addr += 15;
-        addr &= ~15;
+	/* Align the table to be 16 byte aligned. */
+	addr += 15;
+	addr &= ~15;
 
-        /* This table must be betweeen 0xf0000 & 0x100000 */
-        printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
+	/* This table must be betweeen 0xf0000 & 0x100000 */
+	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
        pirq = (void *)(addr);
        v = (uint8_t *)(addr);
@@ -110,14 +110,14 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
        pirq->size = 32 + 16 * slot_num;
 
-        for (i = 0; i < pirq->size; i++)
-                sum += v[i];
+	for (i = 0; i < pirq->size; i++)
+		sum += v[i];
 
        sum = pirq->checksum - sum;
 
-        if (sum != pirq->checksum) {
-                pirq->checksum = sum;
-        }
+	if (sum != pirq->checksum) {
+		pirq->checksum = sum;
+	}
 
        printk(BIOS_INFO, "done.\n");
 

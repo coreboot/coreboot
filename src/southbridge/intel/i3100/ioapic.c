@@ -45,16 +45,16 @@ static void read_resources(struct device *dev)
 
 static struct device_operations pci_ops  = {
 	.read_resources   = read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.scan_bus         = pci_scan_bridge,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = 0,
+	.scan_bus	   = pci_scan_bridge,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = 0,
 
 };
 
 static const struct pci_driver pci_driver0 __pci_driver = {
-	.ops    = &pci_ops,
+	.ops	 = &pci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = 0x3500,
 };

@@ -30,22 +30,22 @@
  */
 
 static const struct irq_routing_table intel_irq_routing_table = {
-	PIRQ_SIGNATURE,         /* u32 signature */
-	PIRQ_VERSION,           /* u16 version */
+	PIRQ_SIGNATURE,	 /* u32 signature */
+	PIRQ_VERSION,		 /* u16 version */
 	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* Max. number of devices on the bus */
-	0x00,                   /* Interrupt router bus */
-	(0x1f << 3) | 0x0,      /* Interrupt router dev */
-	0,                      /* IRQs devoted exclusively to PCI usage */
-	0x8086,                 /* Vendor */
-	0x7000,                 /* Device */
-	0,                      /* Miniport */
+	0x00,			 /* Interrupt router bus */
+	(0x1f << 3) | 0x0,	 /* Interrupt router dev */
+	0,			 /* IRQs devoted exclusively to PCI usage */
+	0x8086,		 /* Vendor */
+	0x7000,		 /* Device */
+	0,			 /* Miniport */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0xb6,                   /* Checksum (has to be set to some value that
-	                         * would give 0 after the sum of all bytes
-	                         * for this structure (including checksum).
-	                         */
+	0xb6,			 /* Checksum (has to be set to some value that
+				  * would give 0 after the sum of all bytes
+				  * for this structure (including checksum).
+				  */
 	{
-		/* bus,        dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
+		/* bus,	 dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap}, slot, rfu */
 		{0x00, (0x1f << 3) | 0x0, {{0x00, 0x0000}, {0x61, 0xca28}, {0x00, 0x0000}, {0x63, 0xca28}}, 0x0, 0x0},
 		{0x00, (0x1e << 3) | 0x0, {{0x60, 0xca28}, {0x61, 0xca28}, {0x62, 0xca28}, {0x63, 0xca28}}, 0x0, 0x0},
 		{0x00, (0x01 << 3) | 0x0, {{0x60, 0xca28}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x0000}}, 0x0, 0x0},

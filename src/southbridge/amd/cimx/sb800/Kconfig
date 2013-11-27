@@ -27,8 +27,8 @@ config SOUTHBRIDGE_AMD_CIMX_SB800
 
 if SOUTHBRIDGE_AMD_CIMX_SB800
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
-        default "southbridge/amd/cimx/sb800/bootblock.c"
+	string
+	default "southbridge/amd/cimx/sb800/bootblock.c"
 
 config ENABLE_IDE_COMBINED_MODE
 	bool "Enable SATA IDE combined mode"
@@ -72,15 +72,15 @@ config SB800_SATA_RAID
 endchoice
 
 config SB800_SATA_MODE
-        hex
+	hex
 	depends on (SB800_SATA_IDE || SB800_SATA_RAID || SB800_SATA_AHCI)
 	default "0x0" if SB800_SATA_IDE
 	default "0x1" if SB800_SATA_RAID
 	default "0x2" if SB800_SATA_AHCI
 
 config SB_SUPERIO_HWM
-        bool
-        default n
+	bool
+	default n
 
 if SB800_SATA_AHCI
 config AHCI_ROM_ID
@@ -100,8 +100,8 @@ if SB800_SATA_RAID
 config RAID_ROM_ID
 	string "RAID device PCI IDs"
 	default "1002,4393"
-        help
-          1002,4392 for SATA NON-RAID5 module, 1002,4393 for SATA RAID5 mode
+	help
+	  1002,4392 for SATA NON-RAID5 module, 1002,4393 for SATA RAID5 mode
 
 config RAID_ROM_FILE
 	string "RAID ROM path and filename"
@@ -109,8 +109,8 @@ config RAID_ROM_FILE
 	default "site-local/sb800/raid.bin"
 
 config RAID_MISC_ROM_FILE
-        string "RAID Misc ROM path and filename"
-        default "site-local/sb800/misc.bin"
+	string "RAID Misc ROM path and filename"
+	default "site-local/sb800/misc.bin"
 	depends on SB800_SATA_RAID
 
 config RAID_MISC_ROM_POSITION

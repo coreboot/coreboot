@@ -55,6 +55,6 @@ ramstage-y += fb.c
 ramstage-y += usb.c
 
 exynos5250_add_bl1: $(obj)/coreboot.pre
-	printf "    DD         Adding Samsung Exynos5250 BL1\n"
+	printf "    DD		Adding Samsung Exynos5250 BL1\n"
 	dd if=3rdparty/cpu/samsung/exynos5250/bl1.bin \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1

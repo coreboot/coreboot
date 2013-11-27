@@ -22,17 +22,17 @@
 #include "it8712f.h"
 
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
-#define SIO_BASE                     0x2e
-#define SIO_INDEX                    SIO_BASE
-#define SIO_DATA                     (SIO_BASE + 1)
+#define SIO_BASE		     0x2e
+#define SIO_INDEX		     SIO_BASE
+#define SIO_DATA		     (SIO_BASE + 1)
 
 /* Global configuration registers. */
-#define IT8712F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
-#define IT8712F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
+#define IT8712F_CONFIG_REG_CC	     0x02 /* Configure Control (write-only). */
+#define IT8712F_CONFIG_REG_LDN	     0x07 /* Logical Device Number. */
 #define IT8712F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
 #define IT8712F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8712F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
-#define IT8712F_CONFIG_REG_MFC       0x2a /* Multi-function control */
+#define IT8712F_CONFIG_REG_MFC	     0x2a /* Multi-function control */
 #define IT8712F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
 
 static void it8712f_sio_write(u8 ldn, u8 index, u8 value)

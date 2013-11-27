@@ -192,8 +192,8 @@ static void asmlinkage call_wrapper_block_state(void *arg)
 /* Prepare a thread so that it starts by executing thread_entry(thread_arg).
  * Within thread_entry() it will call func(arg). */
 static void prepare_thread(struct thread *t, void *func, void *arg,
-                           void asmlinkage (*thread_entry)(void *),
-                           void *thread_arg)
+			   void asmlinkage (*thread_entry)(void *),
+			   void *thread_arg)
 {
 	/* Stash the function and argument to run. */
 	t->entry = func;
@@ -291,7 +291,7 @@ int thread_run(void (*func)(void *), void *arg)
 
 	if (!thread_can_yield(current)) {
 		printk(BIOS_ERR,
-		       "thread_run() called from non-yielding context!\n");
+			 "thread_run() called from non-yielding context!\n");
 		return -1;
 	}
 
@@ -309,7 +309,7 @@ int thread_run(void (*func)(void *), void *arg)
 }
 
 int thread_run_until(void (*func)(void *), void *arg,
-                     boot_state_t state, boot_state_sequence_t seq)
+		     boot_state_t state, boot_state_sequence_t seq)
 {
 	struct thread *current;
 	struct thread *t;
@@ -319,7 +319,7 @@ int thread_run_until(void (*func)(void *), void *arg,
 
 	if (!thread_can_yield(current)) {
 		printk(BIOS_ERR,
-		       "thread_run() called from non-yielding context!\n");
+			 "thread_run() called from non-yielding context!\n");
 		return -1;
 	}
 

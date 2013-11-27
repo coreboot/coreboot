@@ -34,7 +34,7 @@ struct intel_mp_floating
 	unsigned char mpf_feature1;	/* Standard or configuration ? 	*/
 	unsigned char mpf_feature2;	/* Bit7 set for IMCR|PIC	*/
 #define MP_FEATURE_VIRTUALWIRE (1 << 7)
-#define MP_FEATURE_PIC         (0 << 7)
+#define MP_FEATURE_PIC	       (0 << 7)
 	unsigned char mpf_feature3;	/* Unused (0)			*/
 	unsigned char mpf_feature4;	/* Unused (0)			*/
 	unsigned char mpf_feature5;	/* Unused (0)			*/
@@ -128,11 +128,11 @@ enum mp_irq_source_types {
 #define MP_IRQ_POLARITY_DEFAULT	0x0
 #define MP_IRQ_POLARITY_HIGH	0x1
 #define MP_IRQ_POLARITY_LOW	0x3
-#define MP_IRQ_POLARITY_MASK    0x3
+#define MP_IRQ_POLARITY_MASK	0x3
 #define MP_IRQ_TRIGGER_DEFAULT	0x0
 #define MP_IRQ_TRIGGER_EDGE	0x4
 #define MP_IRQ_TRIGGER_LEVEL	0xc
-#define MP_IRQ_TRIGGER_MASK     0xc
+#define MP_IRQ_TRIGGER_MASK	0xc
 
 
 struct mpc_config_lintsrc
@@ -186,7 +186,7 @@ struct mp_exten_system_address_space {
 	unsigned char mpe_length;
 	unsigned char mpe_busid;
 	unsigned char mpe_address_type;
-#define ADDRESS_TYPE_IO       0
+#define ADDRESS_TYPE_IO	      0
 #define ADDRESS_TYPE_MEM      1
 #define ADDRESS_TYPE_PREFETCH 2
 	unsigned int  mpe_address_base_low;

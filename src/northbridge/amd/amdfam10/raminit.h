@@ -45,8 +45,8 @@ struct mem_controller {
 //#if (CONFIG_DIMM_SUPPORT & 0x00ff)==0x0004
 //DDR2 REG and unbuffered : Socket F 1027 and AM3
 /* every channel have 4 DDR2 DIMM for socket F
- *		       2 for socket M2/M3
- *		       1 for socket s1g1
+ *			   2 for socket M2/M3
+ *			   1 for socket s1g1
  */
 #define DIMM_SOCKETS 4
 struct mem_controller {

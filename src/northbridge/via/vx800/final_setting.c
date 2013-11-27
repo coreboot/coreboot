@@ -65,16 +65,16 @@ void DRAMRefreshCounter(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : DRAMRegFinalValue()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : Chipset Performance UP and other setting after DRAM Sizing
-                 Turn on register directly to promote performance
+				      in MotherBoard
+Output	   : Void
+Purpose	  : Chipset Performance UP and other setting after DRAM Sizing
+		 Turn on register directly to promote performance
 ===================================================================*/
 
 //--------------------------------------------------------------------------
-//        register       AND   OR
+//	  register	 AND   OR
 //--------------------------------------------------------------------------
 #define DRAM_table_item		9
 static const u8 DRAM_table[DRAM_table_item][3] = {

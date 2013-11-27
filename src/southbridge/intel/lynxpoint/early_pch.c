@@ -124,7 +124,7 @@ static void pch_enable_lpc(void)
 }
 
 int early_pch_init(const void *gpio_map,
-                   const struct rcba_config_instruction *rcba_config)
+		   const struct rcba_config_instruction *rcba_config)
 {
 	int wake_from_s3;
 

@@ -78,17 +78,17 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P3IP  WLAN   INTA -> PIRQB
-	 * D29IP_E1P   EHCI1  INTA -> PIRQD
-	 * D26IP_E2P   EHCI2  INTA -> PIRQF
-	 * D31IP_SIP   SATA   INTA -> PIRQF (MSI)
+	 * D29IP_E1P	EHCI1  INTA -> PIRQD
+	 * D26IP_E2P	EHCI2  INTA -> PIRQF
+	 * D31IP_SIP	SATA   INTA -> PIRQF (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQH
 	 * D31IP_TTIP  THRT   INTC -> PIRQA
-	 * D27IP_ZIP   HDA    INTA -> PIRQA (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQA (MSI)
 	 *
-	 * TRACKPAD                -> PIRQE (Edge Triggered)
-	 * TOUCHSCREEN             -> PIRQG (Edge Triggered)
+	 * TRACKPAD		    -> PIRQE (Edge Triggered)
+	 * TOUCHSCREEN		    -> PIRQG (Edge Triggered)
 	 */
 
 	/* Device interrupt pin register (board specific) */
@@ -142,9 +142,9 @@ static void copy_spd(struct pei_data *peid)
 		die("Missing SPD data.");
 
 	memcpy(peid->spd_data[0],
-	       ((char*)CBFS_SUBHEADER(spd_file)) +
-	       spd_index * sizeof(peid->spd_data[0]),
-	       sizeof(peid->spd_data[0]));
+		((char*)CBFS_SUBHEADER(spd_file)) +
+		spd_index * sizeof(peid->spd_data[0]),
+		sizeof(peid->spd_data[0]));
 }
 
 void main(unsigned long bist)
@@ -185,14 +185,14 @@ void main(unsigned long bist)
 			{ 0, 3, 0x0000 }, /* P0: Empty */
 			{ 1, 0, 0x0040 }, /* P1: Left USB 1  (OC0) */
 			{ 1, 1, 0x0040 }, /* P2: Left USB 2  (OC1) */
-			{ 1, 3, 0x0040 }, /* P3: SDCARD      (no OC) */
+			{ 1, 3, 0x0040 }, /* P3: SDCARD	(no OC) */
 			{ 0, 3, 0x0000 }, /* P4: Empty */
-			{ 1, 3, 0x0040 }, /* P5: WWAN        (no OC) */
+			{ 1, 3, 0x0040 }, /* P5: WWAN	(no OC) */
 			{ 0, 3, 0x0000 }, /* P6: Empty */
 			{ 0, 3, 0x0000 }, /* P7: Empty */
 			/* Empty and onboard Ports 8-13, set to un-used pin OC4 */
-			{ 1, 4, 0x0040 }, /* P8: Camera      (no OC) */
-			{ 1, 4, 0x0040 }, /* P9: Bluetooth   (no OC) */
+			{ 1, 4, 0x0040 }, /* P8: Camera	(no OC) */
+			{ 1, 4, 0x0040 }, /* P9: Bluetooth	(no OC) */
 			{ 0, 4, 0x0000 }, /* P10: Empty */
 			{ 0, 4, 0x0000 }, /* P11: Empty */
 			{ 0, 4, 0x0000 }, /* P12: Empty */

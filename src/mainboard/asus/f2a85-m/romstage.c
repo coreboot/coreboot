@@ -82,7 +82,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		post_code(0x30);
 
-                /* enable SB MMIO space */
+		/* enable SB MMIO space */
 		outb(0x24, 0xcd6);
 		outb(0x1, 0xcd7);
 

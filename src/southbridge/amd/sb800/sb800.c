@@ -301,7 +301,7 @@ void sb800_enable(device_t dev)
 	case (0x11 << 3) | 0:
 		index = 8;
 		set_pmio_enable_bits(0xDA, 1 << 0,
-				     (dev->enabled ? 1 : 0) << 0);
+					 (dev->enabled ? 1 : 0) << 0);
 		/* Set the device ID of SATA as 0x4390 to reduce the confusing. */
 		dword = pci_read_config32(dev, 0x40);
 		dword |= 1 << 0;
@@ -315,13 +315,13 @@ void sb800_enable(device_t dev)
 	case (0x12 << 3) | 2:
 		index = (dev->path.pci.devfn & 0x3) / 2;
 		set_pmio_enable_bits(0xEF, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		break;
 	case (0x13 << 3) | 0:
 	case (0x13 << 3) | 2:
 		index = (dev->path.pci.devfn & 0x3) / 2 + 2;
 		set_pmio_enable_bits(0xEF, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		index += 32 * 2;
 		break;
 	case (0x14 << 3) | 0:
@@ -330,28 +330,28 @@ void sb800_enable(device_t dev)
 	case (0x14 << 3) | 1:
 		index = 1;
 		set_pmio_enable_bits(0xDA, 1 << 3,
-				     (dev->enabled ? 0 : 1) << 3);
+					 (dev->enabled ? 0 : 1) << 3);
 		break;
 	case (0x14 << 3) | 2:
 		index = 0;
 		set_pmio_enable_bits(0xEB, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		break;
 	case (0x14 << 3) | 3:
 		index = 0;
 		set_pmio_enable_bits(0xEC, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		index += 32 * 1;
 		break;
 	case (0x14 << 3) | 4:
 		index = 0;
 		set_pmio_enable_bits(0xEA, 1 << index,
-				     (dev->enabled ? 0 : 1) << index);
+					 (dev->enabled ? 0 : 1) << index);
 		break;
 	case (0x14 << 3) | 5:
 		index = 6;
 		set_pmio_enable_bits(0xEF, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		break;
 	case (0x14 << 3) | 6:
 		/* From linux-2.6.32 to 2.6.34, the broadcom has problems
@@ -365,7 +365,7 @@ void sb800_enable(device_t dev)
 		 */
 		index = 0;
 		set_pmio_enable_bits(0xF6, 1 << index,
-				     (dev->enabled ? 0 : 1) << index);
+					 (dev->enabled ? 0 : 1) << index);
 		break;
 	case (0x15 << 3) | 0:
 		set_sb800_gpp(dev);
@@ -379,11 +379,11 @@ void sb800_enable(device_t dev)
 	case (0x16 << 3) | 2:
 		index = (dev->path.pci.devfn & 0x3) / 2 + 4;
 		set_pmio_enable_bits(0xEF, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		break;
 	default:
 		printk(BIOS_DEBUG, "unknown dev: %s deviceid=%4x\n", dev_path(dev),
-			     deviceid);
+				deviceid);
 	}
 }
 

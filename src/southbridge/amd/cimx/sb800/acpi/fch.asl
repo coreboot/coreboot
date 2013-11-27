@@ -44,12 +44,12 @@ Method(_BBN, 0) { /* Bus number = 0 */
 }
 Method(_STA, 0) {
 	/* DBGO("\\_SB\\PCI0\\_STA\n") */
-	Return(0x0B)     /* Status is visible */
+	Return(0x0B)	  /* Status is visible */
 }
 
 Method(_PRT,0) {
 	If(PMOD){ Return(APR0) }   /* APIC mode */
-	Return (PR0)                  /* PIC Mode */
+	Return (PR0)		       /* PIC Mode */
 } /* end _PRT */
 
 /* Describe the Southbridge devices */
@@ -163,7 +163,7 @@ Method(_CRS, 0) {
 
 /*
 *
-*               FIRST METHOD CALLED UPON BOOT
+*		FIRST METHOD CALLED UPON BOOT
 *
 *  1. If debugging, print current OS and ACPI interpreter.
 *  2. Get PCI Interrupt routing from ACPI VSM, this
@@ -197,13 +197,13 @@ Scope(\){
 	/* Client Management index/data registers */
 	OperationRegion(CMT, SystemIO, 0x00000C50, 0x00000002)
 		Field(CMT, ByteAcc, NoLock, Preserve) {
-		CMTI,      8,
+		CMTI,	     8,
 		/* Client Management Data register */
-		G64E,   1,
-		G64O,      1,
-		G32O,      2,
-		,       2,
-		GPSL,     2,
+		G64E,	  1,
+		G64O,	     1,
+		G32O,	     2,
+		,	  2,
+		GPSL,	    2,
 	}
 
 	/* GPM Port register */
@@ -222,7 +222,7 @@ Scope(\){
 	/* Flash ROM program enable register */
 	OperationRegion(FRE, SystemIO, 0x00000C6F, 0x00000001)
 		Field(FRE, ByteAcc, NoLock, Preserve) {
-		,     0x00000006,
+		,	0x00000006,
 		FLRE, 0x00000001,
 	}
 
@@ -347,8 +347,8 @@ Scope(\){
 		Field(P1EB, ByteAcc, NoLock, Preserve) {
 		TMST, 1,
 		,    3,
-		BMST,    1,
-		GBST,   1,
+		BMST,	   1,
+		GBST,	  1,
 		Offset(0x01),
 		PBST, 1,
 		, 1,

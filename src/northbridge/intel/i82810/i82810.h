@@ -24,7 +24,7 @@
 /*
  * Datasheet:
  *   - Name: Intel 810 Chipset:
- *           82810/82810-DC100 Graphics and Memory Controller Hub (GMCH)
+ *	     82810/82810-DC100 Graphics and Memory Controller Hub (GMCH)
  *   - URL: http://www.intel.com/design/chipsets/datashts/290656.htm
  *   - PDF: ftp://download.intel.com/design/chipsets/datashts/29065602.pdf
  *   - Order Number: 290656-002

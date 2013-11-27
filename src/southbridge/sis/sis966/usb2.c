@@ -66,50 +66,50 @@ static const u8 SiS_SiS7002_init[22][3]={
 
 static void usb2_init(struct device *dev)
 {
-        u32 base;
-        struct resource *res;
-        int i;
-        u8  temp8;
+	u32 base;
+	struct resource *res;
+	int i;
+	u8  temp8;
 
-        print_debug("USB 2.0 INIT:---------->\n");
+	print_debug("USB 2.0 INIT:---------->\n");
 
 	//-------------- enable USB2.0 (SiS7002) ----------------------
 
 	i = 0;
-        while(SiS_SiS7002_init[i][0] != 0)
-        {
-                temp8 = pci_read_config8(dev, SiS_SiS7002_init[i][0]);
-                temp8 &= SiS_SiS7002_init[i][1];
-                temp8 |= SiS_SiS7002_init[i][2];
-                pci_write_config8(dev, SiS_SiS7002_init[i][0], temp8);
-                i++;
-        };
+	while(SiS_SiS7002_init[i][0] != 0)
+	{
+		temp8 = pci_read_config8(dev, SiS_SiS7002_init[i][0]);
+		temp8 &= SiS_SiS7002_init[i][1];
+		temp8 |= SiS_SiS7002_init[i][2];
+		pci_write_config8(dev, SiS_SiS7002_init[i][0], temp8);
+		i++;
+	};
 
-        res = find_resource(dev, 0x10);
-        if(!res)
-                return;
+	res = find_resource(dev, 0x10);
+	if(!res)
+		return;
 
-        base = res->base;
-        printk(BIOS_DEBUG, "base = 0x%08x\n", base);
-        write32(base+0x20, 0x2);
+	base = res->base;
+	printk(BIOS_DEBUG, "base = 0x%08x\n", base);
+	write32(base+0x20, 0x2);
 	//-------------------------------------------------------------
 
 #if DEBUG_USB2
-        print_debug("****** USB 2.0 PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	print_debug("****** USB 2.0 PCI config ******");
+	print_debug("\n	   03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
-                }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
-        }
-        print_debug("\n");
+	for(i=0;i<0xff;i+=4){
+		if((i%16)==0){
+			print_debug("\n");
+			print_debug_hex8(i);
+			print_debug(": ");
+		}
+		print_debug_hex32(pci_read_config32(dev,i));
+		print_debug("  ");
+	}
+	print_debug("\n");
 #endif
-        print_debug("USB 2.0 INIT:<----------\n");
+	print_debug("USB 2.0 INIT:<----------\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

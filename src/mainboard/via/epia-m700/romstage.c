@@ -59,7 +59,7 @@ static int acpi_is_wakeup_early_via_vx800(void)
 	print_debug("In acpi_is_wakeup_early_via_vx800\n");
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX855_LPC), 0);
+					   PCI_DEVICE_ID_VIA_VX855_LPC), 0);
 
 	if (dev == PCI_DEV_INVALID)
 		die("Power management controller not found\n");
@@ -72,7 +72,7 @@ static int acpi_is_wakeup_early_via_vx800(void)
 
 	tmp = inw(VX800_ACPI_IO_BASE + 0x04);
 	result = ((tmp & (7 << 10)) >> 10) == 1 ? 3 : 0;
-	print_debug("         boot_mode=");
+	print_debug("	       boot_mode=");
 	print_debug_hex16(result);
 	print_debug("\n");
 	return result;
@@ -89,7 +89,7 @@ static void enable_mainboard_devices(void)
 	 */
 	u8 regdata;
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX855_LPC), 0);
+					   PCI_DEVICE_ID_VIA_VX855_LPC), 0);
 
 	/* Disable GP3. */
 	pci_write_config8(dev, 0x98, 0x00);
@@ -254,7 +254,7 @@ static const struct VIA_PCI_REG_INIT_TABLE mNbStage1InitTbl[] = {
 	{ 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }	// End of the table
 };
 
-#define USE_VCP     1		/* 0 means "use DVP". */
+#define USE_VCP	    1		/* 0 means "use DVP". */
 #define USE_COM1    1
 #define USE_COM2    0
 
@@ -543,11 +543,11 @@ void main(unsigned long bist)
 		 * here, we must be careful:
 		 *
 		 * 1. during this MTRR code, must no function call (after
-		 *    this MTRR, I think it should be OK to use function).
+		 *	this MTRR, I think it should be OK to use function).
 		 * 2. Before stack switch, no use variable that have value
-		 *    set before this.
+		 *	set before this.
 		 * 3. Due to 2, take care of "cpu_reset", I directlly set it
-		 *    to ZERO.
+		 *	to ZERO.
 		 */
 		u32 memtop = *(u32 *) WAKE_MEM_INFO;
 		u32 memtop1 = *(u32 *) WAKE_MEM_INFO - 0x100000;

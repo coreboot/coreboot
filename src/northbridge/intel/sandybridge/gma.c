@@ -321,8 +321,8 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x80860116:		/* GT2 Mobile */
 	case 0x80860122:		/* GT2 Desktop >=1.3GHz */
 	case 0x80860126:		/* GT2 Mobile >=1.3GHz */
-	case 0x80860156:                /* IVB */
-	case 0x80860166:                /* IVB */
+	case 0x80860156:		 /* IVB */
+	case 0x80860166:		 /* IVB */
 		new_vendev=0x80860106;	/* GT1 Mobile */
 		break;
 	}
@@ -424,17 +424,17 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 			if (tdp <= 17) {
 				/* <=17W ULV */
 				printk(BIOS_DEBUG, "IVB GT2 17W "
-				       "Power Meter Weights\n");
+					   "Power Meter Weights\n");
 				gtt_write_powermeter(ivb_pm_gt2_17w);
 			} else if ((tdp >= 25) && (tdp <= 35)) {
 				/* 25W-35W */
 				printk(BIOS_DEBUG, "IVB GT2 25W-35W "
-				       "Power Meter Weights\n");
+					   "Power Meter Weights\n");
 				gtt_write_powermeter(ivb_pm_gt2_35w);
 			} else {
 				/* All others */
 				printk(BIOS_DEBUG, "IVB GT2 35W "
-				       "Power Meter Weights\n");
+					   "Power Meter Weights\n");
 				gtt_write_powermeter(ivb_pm_gt2_35w);
 			}
 		}
@@ -682,7 +682,7 @@ static void gma_read_resources(struct device *dev)
 }
 
 static struct pci_operations gma_pci_ops = {
-	.set_subsystem    = gma_set_subsystem,
+	.set_subsystem	   = gma_set_subsystem,
 };
 
 static struct device_operations gma_func0_ops = {

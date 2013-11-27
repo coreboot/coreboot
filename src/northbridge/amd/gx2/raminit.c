@@ -113,7 +113,7 @@ static void auto_size_dimm(unsigned int dimm)
  * Field: PAGE size
  * EEPROM byte usage: (4)  Number of Column Addresses
  * PageSize = 2^# Column Addresses * Data width in bytes
- *                                   (should be 8bytes for a normal DIMM)
+ *				     (should be 8bytes for a normal DIMM)
  *
  * But this really works by magic.
  * If ma[11:0] is the memory address pins, and pa[13:0] is the physical column
@@ -122,10 +122,10 @@ static void auto_size_dimm(unsigned int dimm)
  *
  * ma  11 10 09 08 07 06 05 04 03 02 01 00
  * ---------------------------------------
- * pa                 09 08 07 06 05 04 03  (7 col addr bits = 1K page size)
- * pa              10 09 08 07 06 05 04 03  (8 col addr bits = 2K page size)
- * pa           11 10 09 08 07 06 05 04 03  (9 col addr bits = 4K page size)
- * pa        12 11 10 09 08 07 06 05 04 03  (10 col addr bits = 8K page size)
+ * pa		      09 08 07 06 05 04 03  (7 col addr bits = 1K page size)
+ * pa		   10 09 08 07 06 05 04 03  (8 col addr bits = 2K page size)
+ * pa		11 10 09 08 07 06 05 04 03  (9 col addr bits = 4K page size)
+ * pa	     12 11 10 09 08 07 06 05 04 03  (10 col addr bits = 8K page size)
  * pa  13 AP 12 11 10 09 08 07 06 05 04 03  (11 col addr bits = 16K page size)
  *
  * (AP = autoprecharge bit)

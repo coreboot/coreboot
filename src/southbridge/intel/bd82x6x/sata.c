@@ -272,7 +272,7 @@ static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations sata_pci_ops = {
-	.set_subsystem    = sata_set_subsystem,
+	.set_subsystem	   = sata_set_subsystem,
 };
 
 static struct device_operations sata_ops = {

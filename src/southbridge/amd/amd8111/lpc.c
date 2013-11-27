@@ -118,16 +118,16 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations lpc_ops  = {
 	.read_resources   = amd8111_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = amd8111_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+	.enable	   = amd8111_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_ISA,
 };

@@ -187,25 +187,25 @@ static const u8 Table_DQSRcvEn_Offset[] = {0x00,0x01,0x10,0x11,0x2};
 
    Example:
    BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
-        Bit AM3/S1g3 pin name
-        0   M[B,A]_CLK_H/L[0]
-        1   M[B,A]_CLK_H/L[1]
-        2   M[B,A]_CLK_H/L[2]
-        3   M[B,A]_CLK_H/L[3]
-        4   M[B,A]_CLK_H/L[4]
-        5   M[B,A]_CLK_H/L[5]
-        6   M[B,A]_CLK_H/L[6]
-        7   M[B,A]_CLK_H/L[7]
+	Bit AM3/S1g3 pin name
+	0   M[B,A]_CLK_H/L[0]
+	1   M[B,A]_CLK_H/L[1]
+	2   M[B,A]_CLK_H/L[2]
+	3   M[B,A]_CLK_H/L[3]
+	4   M[B,A]_CLK_H/L[4]
+	5   M[B,A]_CLK_H/L[5]
+	6   M[B,A]_CLK_H/L[6]
+	7   M[B,A]_CLK_H/L[7]
 
    And platform has the following routing:
-        CS0   M[B,A]_CLK_H/L[4]
-        CS1   M[B,A]_CLK_H/L[2]
-        CS2   M[B,A]_CLK_H/L[3]
-        CS3   M[B,A]_CLK_H/L[5]
+	CS0   M[B,A]_CLK_H/L[4]
+	CS1   M[B,A]_CLK_H/L[2]
+	CS2   M[B,A]_CLK_H/L[3]
+	CS3   M[B,A]_CLK_H/L[5]
 
    Then:
-                        ;    CS0        CS1        CS2        CS3        CS4        CS5        CS6        CS7
-   MEMCLK_MAPPING  EQU    00010000b, 00000100b, 00001000b, 00100000b, 00000000b, 00000000b, 00000000b, 00000000b
+			;    CS0	CS1	   CS2	      CS3	 CS4	    CS5	       CS6	  CS7
+   MEMCLK_MAPPING  EQU	  00010000b, 00000100b, 00001000b, 00100000b, 00000000b, 00000000b, 00000000b, 00000000b
 */
 
 /* Note: If you are not sure about the pin mappings at initial stage, we dont have to disable MemClk.
@@ -255,16 +255,16 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 * Global relationship between index values and item values:
 	 *
 	 * pDCTstat.CASL pDCTstat.Speed
-	 * j CL(j)       k   F(k)
+	 * j CL(j)	  k   F(k)
 	 * --------------------------
-	 * 0 2.0         -   -
-	 * 1 3.0         1   200 Mhz
-	 * 2 4.0         2   266 Mhz
-	 * 3 5.0         3   333 Mhz
-	 * 4 6.0         4   400 Mhz
-	 * 5 7.0         5   533 Mhz
-	 * 6 8.0         6   667 Mhz
-	 * 7 9.0         7   800 Mhz
+	 * 0 2.0	  -   -
+	 * 1 3.0	  1   200 Mhz
+	 * 2 4.0	  2   266 Mhz
+	 * 3 5.0	  3   333 Mhz
+	 * 4 6.0	  4   400 Mhz
+	 * 5 7.0	  5   533 Mhz
+	 * 6 8.0	  6   667 Mhz
+	 * 7 9.0	  7   800 Mhz
 	 */
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
@@ -488,9 +488,9 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 				 * and set conf for dimm0, hw will copy to dimm1/2/3
 				 * set for dimm1, hw will copy to dimm3
 				 * Rev A/B only support DIMM0/1 when 800Mhz and above
-				 *   + 0x100 to next dimm
+				 *	 + 0x100 to next dimm
 				 * Rev C support DIMM0/1/2/3 when 800Mhz and above
-				 *   + 0x100 to next dimm
+				 *	 + 0x100 to next dimm
 				*/
 				for (DIMM = 0; DIMM < 4; DIMM++) {
 					if (DIMM == 0) {
@@ -810,7 +810,7 @@ static void DCTInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTst
 						stopDCTflag = 0;
 						if (!(pMCTstat->GStatus & (1 << GSB_EnDIMMSpareNW))) {
 							printk(BIOS_DEBUG, "\t\tDCTInit_D: StartupDCT_D\n");
-							StartupDCT_D(pMCTstat, pDCTstat, dct);   /*yeaahhh! */
+							StartupDCT_D(pMCTstat, pDCTstat, dct);	/*yeaahhh! */
 						}
 					}
 				}
@@ -1507,7 +1507,7 @@ static u8 PlatformSpec_D(struct MCTStatStruc *pMCTstat,
 		dev = pDCTstat->dev_dct;
 		reg = 0x94 + 0x100 * dct; /* Dram Configuration Hi */
 		val = Get_NB32(dev, reg);
-		val |= 1 << 20;		       /* 2T CMD mode */
+		val |= 1 << 20;			  /* 2T CMD mode */
 		Set_NB32(dev, reg, val);
 	}
 
@@ -2145,7 +2145,7 @@ static u8 DIMMPresence_D(struct MCTStatStruc *pMCTstat,
 				/* byte = mctRead_SPD(smbaddr, SPD_RefRawCard); */
 				/* Get Byte65/66 for register manufacture ID code */
 				if ((0x97 == mctRead_SPD(smbaddr, SPD_RegManufactureID_H)) &&
-				    (0x80 == mctRead_SPD(smbaddr, SPD_RegManufactureID_L))) {
+					(0x80 == mctRead_SPD(smbaddr, SPD_RegManufactureID_L))) {
 					if (0x16 == mctRead_SPD(smbaddr, SPD_RegManRevID))
 						pDCTstat->RegMan2Present |= 1 << i;
 					else
@@ -2906,7 +2906,7 @@ static u16 Get_WrDatGross_MaxMin(struct DCTStatStruc *pDCTstat,
 }
 
 static void mct_PhyController_Config(struct MCTStatStruc *pMCTstat,
-				     struct DCTStatStruc *pDCTstat, u8 dct)
+					 struct DCTStatStruc *pDCTstat, u8 dct)
 {
 	u32 index_reg = 0x98 + 0x100 * dct;
 	u32 dev = pDCTstat->dev_dct;
@@ -3566,13 +3566,13 @@ void mct_SetDramConfigHi_D(struct DCTStatStruc *pDCTstat, u32 dct,
 	 * subsequent update to be invalid during any MemClk frequency change:
 	 * Solution: From the bug report:
 	 *  1. A software-initiated frequency change should be wrapped into the
-	 *     following sequence :
+	 *	following sequence :
 	 * 	- a) Disable Compensation (F2[1, 0]9C_x08[30] )
 	 * 	b) Reset the Begin Compensation bit (D3CMP->COMP_CONFIG[0]) in all the compensation engines
 	 * 	c) Do frequency change
 	 * 	d) Enable Compensation (F2[1, 0]9C_x08[30] )
 	 *  2. A software-initiated Disable Compensation should always be
-	 *     followed by step b) of the above steps.
+	 *	followed by step b) of the above steps.
 	 * Silicon Status: Fixed In Rev B0
 	 *
 	 * Errata#177: DRAM Phy Automatic Compensation Updates May Be Invalid
@@ -3580,7 +3580,7 @@ void mct_SetDramConfigHi_D(struct DCTStatStruc *pDCTstat, u32 dct,
 	 * to initiating a memory clock frequency change as follows:
 	 *  1. Disable PhyAutoComp by writing 1'b1 to F2x[1, 0]9C_x08[30]
 	 *  2. Reset the Begin Compensation bits by writing 32'h0 to
-	 *     F2x[1, 0]9C_x4D004F00
+	 *	F2x[1, 0]9C_x4D004F00
 	 *  3. Perform frequency change
 	 *  4. Enable PhyAutoComp by writing 1'b0 to F2x[1, 0]9C_08[30]
 	 *  In addition, any time software disables the automatic phy
@@ -3613,9 +3613,9 @@ static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,
 	/* Errata 178
 	 *
 	 * Bug#15115: Uncertainty In The Sync Chain Leads To Setup Violations
-	 *            In TX FIFO
+	 *	       In TX FIFO
 	 * Solution: BIOS should program DRAM Control Register[RdPtrInit] =
-	 *            5h, (F2x[1, 0]78[3:0] = 5h).
+	 *	       5h, (F2x[1, 0]78[3:0] = 5h).
 	 * Silicon Status: Fixed In Rev B0
 	 *
 	 * Bug#15880: Determine validity of reset settings for DDR PHY timing.

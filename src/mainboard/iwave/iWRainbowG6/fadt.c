@@ -26,7 +26,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {
 	acpi_header_t *header = &(fadt->header);
 	u16 pmbase = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
-				       0x40) & 0xfffe;
+					   0x40) & 0xfffe;
 
 	memset((void *)fadt, 0, sizeof(acpi_fadt_t));
 	memcpy(header->signature, "FACP", 4);

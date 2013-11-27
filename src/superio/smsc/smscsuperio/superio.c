@@ -68,7 +68,7 @@
 /* Register defines */
 #define DEVICE_ID_REG	0x20	/* Device ID register */
 #define DEVICE_REV_REG	0x21	/* Device revision register */
-#define DEVICE_TEST7_REG 0x29   /* Device test 7 register */
+#define DEVICE_TEST7_REG 0x29	/* Device test 7 register */
 
 /* Static variables for the Super I/O device ID and revision. */
 static int first_time = 1;
@@ -116,7 +116,7 @@ enum {
  * device is not present on that chip.
  *
  * Note: Do _not_ list chips with different name but same device ID twice!
- *       The result would be that the init code would be executed twice!
+ *	 The result would be that the init code would be executed twice!
  */
 static const struct logical_devices {
 	u8 superio_id;
@@ -129,12 +129,12 @@ static const struct logical_devices {
 	{FDC37B72X,{0, 3, 4,  5, -1,  7,  8,  -1, -1,  -1, -1, -1, -1, 10, -1}},
 	{FDC37M81X,{0, 3, 4,  5, -1,  7,  8,  -1, -1,  -1, -1, -1, -1, -1, -1}},
 	{FDC37M60X,{0, 3, 4,  5, -1,  7,  8,  -1, -1,  -1, -1, -1, -1, -1, -1}},
-	{LPC47B27X,{0, 3, 4,  5, -1,  7, -1,  -1, -1,   9, -1, 11, 10, -1, -1}},
-	{LPC47M10X,{0, 3, 4,  5, -1,  7, -1,  -1, -1,   9, 10, 11, -1, -1, -1}},
-	{LPC47M15X,{0, 3, 4,  5, -1,  7, -1,  -1, -1,   9, 10, 11, -1, -1, -1}},
-	{LPC47S45X,{0, 3, 4,  5,  6,  7, -1,   8, -1,  -1, -1, -1, 10, -1, 11}},
+	{LPC47B27X,{0, 3, 4,  5, -1,  7, -1,  -1, -1,	 9, -1, 11, 10, -1, -1}},
+	{LPC47M10X,{0, 3, 4,  5, -1,  7, -1,  -1, -1,	 9, 10, 11, -1, -1, -1}},
+	{LPC47M15X,{0, 3, 4,  5, -1,  7, -1,  -1, -1,	 9, 10, 11, -1, -1, -1}},
+	{LPC47S45X,{0, 3, 4,  5,  6,  7, -1,	8, -1,  -1, -1, -1, 10, -1, 11}},
 	{LPC47B397,{0, 3, 4,  5, -1,  7, -1,  -1,  8,  -1, -1, -1, 10, -1, -1}},
-	{LPC47U33X,{0, 3, 4, -1, -1,  7, -1,  -1, -1,   9,  0,  5, 10,  0, 11}},
+	{LPC47U33X,{0, 3, 4, -1, -1,  7, -1,  -1, -1,	 9,  0,  5, 10,  0, 11}},
 	{A8000,    {0, 3, 4,  5, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, -1}},
 	{DME1737,  {0, 3, 4,  5, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, -1}},
 	{SCH3112,  {0, 3, 4,  5, -1,  7, -1,  -1, -1,  -1, -1, -1, 10, -1, -1}},
@@ -177,11 +177,11 @@ static void smsc_init(device_t dev)
 /** Standard device operations. */
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = smsc_init,
-	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = smsc_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_55_aa,
 };
 
 /**
@@ -222,7 +222,7 @@ static struct pnp_info pnp_dev_info[] = {
  * Enable the logical devices of the Super I/O chip.
  *
  * TODO: Think about how to handle the case when a mainboard has multiple
- *       Super I/O chips soldered on.
+ *	 Super I/O chips soldered on.
  * TODO: Can this code be simplified a bit?
  *
  * @param dev The device to use.
@@ -243,7 +243,7 @@ static void enable_dev(device_t dev)
 		/* TODO: Error handling? */
 
 		printk(BIOS_INFO, "Found SMSC Super I/O (ID=0x%02x, "
-		       "rev=0x%02x)\n", superio_id, superio_rev);
+			 "rev=0x%02x)\n", superio_id, superio_rev);
 		first_time = 0;
 
 		if (superio_id == LPC47M172) {

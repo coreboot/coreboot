@@ -35,8 +35,8 @@
 
 /* Datasheet:
  *   - Name: AMD Geode Solutions
- *           Integrated Processors, Companion Devices, and System Platforms
- *           (Geode CS5530 I/O Companion Multi-Function South Bridge)
+ *	     Integrated Processors, Companion Devices, and System Platforms
+ *	     (Geode CS5530 I/O Companion Multi-Function South Bridge)
  *   - URL: http://www.amd.com/us-en/ConnectivitySolutions/ProductInformation/0,,50_2330_9863_9919,00.html
  *   - PDF: http://www.amd.com/files/connectivitysolutions/geode/5530_db_v41.pdf
  *   - Date: September 2004

@@ -34,6 +34,6 @@ $(SIPI_BIN): $(SIPI_ELF)
 	$(OBJCOPY) -O binary $< $@
 
 $(SIPI_BIN).ramstage.o: $(SIPI_BIN)
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
 

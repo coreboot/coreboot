@@ -38,19 +38,19 @@ Device (BATX)
 	//
 	Name (PBIF, Package()
 	{
-		0,            //  0: Power Unit
-		0xFFFFFFFF,   //  1: Design Capacity
-		0xFFFFFFFF,   //  2: Last Full Charge Capacity
-		1,            //  3: Battery Technology(Rechargable)
-		10800,        //  4: Design Voltage 10.8V
-		0,            //  5: Design capacity of warning
-		0,            //  6: Design capacity of low
-		1,            //  7: Battery capacity granularity 1
-		1,            //  8: Battery capacity granularity 2
-		"",           //  9: Model Number
-		"",           // 10: Serial Number
-		"",           // 11: Battery Type
-		""            // 12: OEM Infomration
+		0,		//  0: Power Unit
+		0xFFFFFFFF,	//  1: Design Capacity
+		0xFFFFFFFF,	//  2: Last Full Charge Capacity
+		1,		//  3: Battery Technology(Rechargable)
+		10800,	//  4: Design Voltage 10.8V
+		0,		//  5: Design capacity of warning
+		0,		//  6: Design capacity of low
+		1,		//  7: Battery capacity granularity 1
+		1,		//  8: Battery capacity granularity 2
+		"",		//  9: Model Number
+		"",		// 10: Serial Number
+		"",		// 11: Battery Type
+		""		// 12: OEM Infomration
 	})
 
 	Name (PBST, Package ()
@@ -121,7 +121,7 @@ Device (BATX)
 		//
 		//  Power Unit
 		//   SMART battery : 1 - 10mWh : 0 - mAh
-		//   ACPI spec     : 0 - mWh   : 1 - mAh
+		//   ACPI spec     : 0 - mWh	 : 1 - mAh
 		//
 		Store(SBCM, Local7)
 		XOr (Local7, One, Index (PBIF, 0))
@@ -314,7 +314,7 @@ Device (BATX)
 		//
 		// Get Power unit from the battery static information
 		//   SMART battery : 1 - 10mWh : 0 - mAh
-		//   ACPI spec     : 0 - mWh   : 1 - mAh
+		//   ACPI spec     : 0 - mWh	 : 1 - mAh
 		If (Local6)
 		{
 			Multiply (ECRC, 10, Local1)
@@ -336,7 +336,7 @@ Device (BATX)
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
 			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-			          LLess (Local1, Add (Local2, Local3))))
+				     LLess (Local1, Add (Local2, Local3))))
 			{
 				Store (Local2, Local1)
 			}

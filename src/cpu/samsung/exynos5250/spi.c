@@ -36,7 +36,7 @@
 #endif
 
 static void exynos_spi_rx_tx(struct exynos_spi *regs, int todo,
-			     void *dinp, void const *doutp, int i)
+				void *dinp, void const *doutp, int i)
 {
 	int rx_lvl, tx_lvl;
 	unsigned int *rxp = (unsigned int *)(dinp + (i * (32 * 1024)));
@@ -195,8 +195,8 @@ static void *exynos_spi_cbfs_unmap(struct cbfs_media *media,
 }
 
 int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size) {
+					 void *buffer_address,
+					 size_t buffer_size) {
 	// TODO Replace static variable to support multiple streams.
 	static struct exynos_spi_media context;
 	DEBUG_SPI("initialize_exynos_spi_cbfs_media\n");

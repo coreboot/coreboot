@@ -258,7 +258,7 @@ int init_processor_name(void)
 		goto done;
 
 	j = strcpymax(program_string, processor_name_string,
-		      sizeof(program_string));
+			sizeof(program_string));
 
 	/* Translate Model from 01-99 to ASCII and put it on the end.
 	 * Numbers less than 10 should include a leading zero, e.g., 09.*/

@@ -81,7 +81,7 @@ int int10_handler(void)
 		X86_EBX &= 0x00ff;
 		res = 1;
 		break;
-        default:
+	default:
 		printk(BIOS_WARNING, "Unknown INT10 function %04x!\n",
 				X86_EAX & 0xffff);
 		break;
@@ -107,7 +107,7 @@ int int16_handler(void)
 		X86_EFLAGS |= 1<<6; // Zero Flag set (no key available)
 		res = 1;
 		break;
-        default:
+	default:
 		printk(BIOS_WARNING, "Unknown INT16 function %04x!\n",
 				X86_EAX & 0xffff);
 		break;
@@ -216,7 +216,7 @@ int int1a_handler(void)
 
 #if CONFIG_REALMODE_DEBUG
 		printk(BIOS_DEBUG, "0x%x: bus %d devfn 0x%x reg 0x%x val 0x%x\n",
-			     func, bus, devfn, reg, X86_ECX);
+				func, bus, devfn, reg, X86_ECX);
 #endif
 		X86_EAX &= 0xffff00ff; /* Clear AH */
 		X86_EAX |= PCIBIOS_SUCCESSFUL;

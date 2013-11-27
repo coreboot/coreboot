@@ -48,7 +48,7 @@ void pci_mod_config8(device_t dev, unsigned int where,
 }
 
 void pci_mod_config16(device_t dev, unsigned int where,
-		      uint16_t clr_mask, uint16_t set_mask)
+			uint16_t clr_mask, uint16_t set_mask)
 {
 	uint16_t reg16 = pci_read_config16(dev, where);
 	reg16 &= ~clr_mask;
@@ -57,7 +57,7 @@ void pci_mod_config16(device_t dev, unsigned int where,
 }
 
 void pci_mod_config32(device_t dev, unsigned int where,
-		      uint32_t clr_mask, uint32_t set_mask)
+			uint32_t clr_mask, uint32_t set_mask)
 {
 	uint32_t reg32 = pci_read_config32(dev, where);
 	reg32 &= ~clr_mask;

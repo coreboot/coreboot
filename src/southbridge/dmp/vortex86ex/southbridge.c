@@ -578,16 +578,16 @@ static void southbridge_init(struct device *dev)
 
 static struct device_operations vortex_sb_ops = {
 	.read_resources   = vortex86_sb_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = &southbridge_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init		   = &southbridge_init,
+	.scan_bus	   = scan_static_bus,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver pci_driver_6011 __pci_driver = {
-	.ops    = &vortex_sb_ops,
+	.ops	 = &vortex_sb_ops,
 	.vendor = PCI_VENDOR_ID_RDC,
 	.device = 0x6011,	/* EX CPU S/B ID */
 };

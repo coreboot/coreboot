@@ -36,7 +36,7 @@ extern char _car_data_end[];
  * been migrated to real RAM. It does this by assuming the following things:
  *   1. cache-as-ram space is zero'd out once it is set up.
  *   2. Either the cache-as-ram space is memory-backed after getting torn down
- *      or the space returns 0xff's for each byte read.
+ *	or the space returns 0xff's for each byte read.
  * Based on these 2 attributes there is the ability to tell when the
  * cache-as-ram region has been migrated.
  */
@@ -57,8 +57,8 @@ void *car_get_var_ptr(void *var)
 
 	if (var < _car_start || var >= _car_end) {
 		printk(BIOS_ERR,
-		       "Requesting CAR variable outside of CAR region: %p\n",
-		       var);
+			 "Requesting CAR variable outside of CAR region: %p\n",
+			 var);
 		return var;
 	}
 

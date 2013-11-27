@@ -133,14 +133,14 @@ void dmc_config_mrs(struct mem_timings *mem, struct exynos5_dmc *dmc)
 			/* Sending EMRS/MRS commands */
 			for (i = 0; i < MEM_TIMINGS_MSR_COUNT; i++) {
 				writel(mem->direct_cmd_msr[i] | mask,
-				       &dmc->directcmd);
+					   &dmc->directcmd);
 				udelay(100);
 			}
 
 			if (mem->send_zq_init) {
 				/* Sending ZQINIT command */
 				writel(DIRECT_CMD_ZQINIT | mask,
-				       &dmc->directcmd);
+					   &dmc->directcmd);
 				/*
 				 * FIXME: This was originally sdelay(10000)
 				 * in the imported u-boot code. That may have

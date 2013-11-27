@@ -85,7 +85,7 @@ int init_x86rom_cbfs_media(struct cbfs_media *media) {
 #if defined(CONFIG_ROM_SIZE)
 		if (CONFIG_ROM_SIZE != romsize)
 			printk(BIOS_INFO, "Warning: rom size unmatch (%d/%d)\n",
-			       CONFIG_ROM_SIZE, romsize);
+				  CONFIG_ROM_SIZE, romsize);
 #endif
 	}
 	media->open = x86_rom_open;

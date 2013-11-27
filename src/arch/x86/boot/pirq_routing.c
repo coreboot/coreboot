@@ -33,8 +33,8 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 
 	if (sizeof(struct irq_routing_table) != rt->size) {
 		printk(BIOS_WARNING, "Inconsistent Interrupt Routing Table size (0x%x/0x%x).\n",
-			       (unsigned int) sizeof(struct irq_routing_table),
-			       rt->size
+				  (unsigned int) sizeof(struct irq_routing_table),
+				  rt->size
 			);
 		rt->size=sizeof(struct irq_routing_table);
 	}
@@ -50,7 +50,7 @@ static void check_pirq_routing_table(struct irq_routing_table *rt)
 
 	if (sum != rt->checksum) {
 		printk(BIOS_WARNING, "Interrupt Routing Table checksum is: 0x%02x but should be: 0x%02x.\n",
-			       rt->checksum, sum);
+				  rt->checksum, sum);
 		rt->checksum = sum;
 	}
 

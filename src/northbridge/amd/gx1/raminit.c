@@ -2,7 +2,7 @@
 
 /*
 This software and ancillary information (herein called SOFTWARE )
-called LinuxBIOS          is made available under the terms described
+called LinuxBIOS	  is made available under the terms described
 here.  The SOFTWARE has been approved for release with associated
 LA-CC Number 00-34   .  Unless otherwise indicated, this SOFTWARE has
 been authored by an employee or employees of the University of
@@ -150,7 +150,7 @@ int comp_banks;
 	page_size <<= (((getGX1Mem(GX_BASE + MC_BANK_CFG) & (DIMM_PG_SZ << dimm_shift)) >> dimm_shift) >> 4);
 
 #if 0
-	print_debug("    page_size = ");
+	print_debug("	  page_size = ");
 	print_debug_hex32(page_size);
 	print_debug("\n");
 #endif
@@ -187,7 +187,7 @@ int page_size = 0x800;			/* Smallest page = 1K * 2 banks */
 	page_size = page_size << (((getGX1Mem(GX_BASE + MC_BANK_CFG) & (DIMM_PG_SZ << dimm_shift)) >> dimm_shift) >> 4);
 
 #if 0
-	print_debug("    page_size = ");
+	print_debug("	  page_size = ");
 	print_debug_hex32(page_size);
 	print_debug("\n");
 #endif
@@ -267,7 +267,7 @@ unsigned int test;
 	if (test != TEST_DATA1)
 		return 0;
 
-	print_debug("    Found DIMM");
+	print_debug("	  Found DIMM");
 	print_debug_char((dimm_shift >> 4) + 0x30);
 	print_debug("\n");
 
@@ -283,7 +283,7 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 	mem_config &= (~(DIMM_PG_SZ << dimm_shift));
 	mem_config |= (page_size(dimm_shift));
 
-	print_debug("    Page Size:       ");
+	print_debug("	  Page Size:	   ");
 	print_debug_hex32(0x400 << ((mem_config & (DIMM_PG_SZ << dimm_shift)) >> (dimm_shift + 4)));
 	print_debug("\n");
 
@@ -292,7 +292,7 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 	mem_config &= (~(DIMM_COMP_BNK << dimm_shift));
 	mem_config |= (component_banks(dimm_shift));
 
-	print_debug("    Component Banks: ");
+	print_debug("	  Component Banks: ");
 	print_debug_char((((mem_config & (DIMM_COMP_BNK << dimm_shift)) >> (dimm_shift + 12)) ? 4 : 2) + 0x30);
 	print_debug("\n");
 
@@ -301,14 +301,14 @@ static int size_memory(int dimm_shift, unsigned int mem_config)
 	mem_config &= (~(DIMM_MOD_BNK << dimm_shift));
 	mem_config |= (module_banks(dimm_shift));
 
-	print_debug("    Module Banks:    ");
+	print_debug("	  Module Banks:	   ");
 	print_debug_char((((mem_config & (DIMM_MOD_BNK << dimm_shift)) >> (dimm_shift + 14)) ? 2 : 1) + 0x30);
 	print_debug("\n");
 
 	mem_config &= (~(DIMM_SZ << dimm_shift));
 	mem_config |= (size_dimm(dimm_shift));
 
-	print_debug("    DIMM size:       ");
+	print_debug("	  DIMM size:	   ");
 	print_debug_hex32(1 <<
 		((mem_config & (DIMM_SZ << dimm_shift)) >> (dimm_shift + 8)) + 22);
 	print_debug("\n");

@@ -123,7 +123,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 					base = res->base;
 					end = resource_end(res);
 					printk(BIOS_DEBUG, "sb600 lpc decode:%s, base=0x%08x, end=0x%08x\n",
-					     dev_path(child), base, end);
+						  dev_path(child), base, end);
 					switch (base) {
 					case 0x60:	/*  KB */
 					case 0x64:	/*  MS */
@@ -188,7 +188,7 @@ static void sb600_lpc_enable_childrens_resources(device_t dev)
 							break;
 						}
 						reg_var[var_num++] =
-						    base & 0xffff;
+							  base & 0xffff;
 					}
 				}
 			}
@@ -225,7 +225,7 @@ static struct device_operations lpc_ops = {
 	.enable_resources = sb600_lpc_enable_resources,
 	.init = lpc_init,
 	.scan_bus = scan_static_bus,
-	/* .enable           = sb600_enable, */
+	/* .enable	      = sb600_enable, */
 	.ops_pci = &lops_pci,
 };
 static const struct pci_driver lpc_driver __pci_driver = {

@@ -57,7 +57,7 @@ static void *smp_write_config_table(void *v)
 
 	mptable_write_buses(mc, NULL, &isa_bus);
 
-	/*I/O APICs:   APIC ID Version State           Address*/
+	/*I/O APICs:	APIC ID Version State		Address*/
 	{
 		device_t dev = 0;
 		int i;

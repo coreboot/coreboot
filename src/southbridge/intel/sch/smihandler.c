@@ -29,11 +29,11 @@
 
 /* I945 */
 #define SMRAM		0x9d
-#define   D_OPEN	(1 << 6)
-#define   D_CLS		(1 << 5)
-#define   D_LCK		(1 << 4)
-#define   G_SMRANE	(1 << 3)
-#define   C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
+#define	  D_OPEN	(1 << 6)
+#define	  D_CLS		(1 << 5)
+#define	  D_LCK		(1 << 4)
+#define	  G_SMRANE	(1 << 3)
+#define	  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
 /* ICH7 */
 #define PM1_STS		0x00
@@ -48,20 +48,20 @@
 #define GPE0_STS	0x28
 #define GPE0_EN		0x2c
 #define SMI_EN		0x30
-#define   EL_SMI_EN	 (1 << 25) // Intel Quick Resume Technology
-#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
-#define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
-#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
-#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
-#define   MCSMI_EN	 (1 << 11) // Trap microcontroller range access
-#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
-#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
-#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
-#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
-#define   LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
-#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
-#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
-#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
+#define	  EL_SMI_EN	 (1 << 25) // Intel Quick Resume Technology
+#define	  INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
+#define	  LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
+#define	  PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
+#define	  TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
+#define	  MCSMI_EN	 (1 << 11) // Trap microcontroller range access
+#define	  BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
+#define	  SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
+#define	  APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
+#define	  SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
+#define	  LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
+#define	  BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
+#define	  EOS		 (1 <<  1) // End of SMI (deassert SMI#)
+#define	  GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
 #define SMI_STS		0x34
 #define ALT_GP_SMI_EN	0x38
 #define ALT_GP_SMI_STS	0x3a

@@ -47,30 +47,30 @@
 #define BBL_CR_BUSY	0x11B
 #define BBL_CR_CTL3	0x11E
 
-#define BBLCR3_L2_CONFIGURED       (1<<0)
+#define BBLCR3_L2_CONFIGURED	   (1<<0)
 /* bits [4:1] */
-#define BBLCR3_L2_LATENCY          0x1e
+#define BBLCR3_L2_LATENCY	   0x1e
 #define BBLCR3_L2_ECC_CHECK_ENABLE (1<<5)
 #define BBLCR3_L2_ADDR_PARITY_ENABLE (1<<6)
 #define BBLCR3_L2_CRTN_PARITY_ENABLE (1<<7)
-#define BBLCR3_L2_ENABLED          (1<<8)
+#define BBLCR3_L2_ENABLED	   (1<<8)
 /* bits [17:13] */
-#define BBLCR3_L2_SIZE             (0x1f << 13)
-#define BBLCR3_L2_SIZE_256K        (0x01 << 13)
-#define BBLCR3_L2_SIZE_512K        (0x02 << 13)
-#define BBLCR3_L2_SIZE_1M          (0x04 << 13)
-#define BBLCR3_L2_SIZE_2M          (0x08 << 13)
-#define BBLCR3_L2_SIZE_4M          (0x10 << 13)
+#define BBLCR3_L2_SIZE		   (0x1f << 13)
+#define BBLCR3_L2_SIZE_256K	   (0x01 << 13)
+#define BBLCR3_L2_SIZE_512K	   (0x02 << 13)
+#define BBLCR3_L2_SIZE_1M	   (0x04 << 13)
+#define BBLCR3_L2_SIZE_2M	   (0x08 << 13)
+#define BBLCR3_L2_SIZE_4M	   (0x10 << 13)
 /* bits [22:20] */
 #define BBLCR3_L2_PHYSICAL_RANGE   (0x7 << 20);
 /* TODO: This bitmask does not agree with Intel's documentation.
  * Get confirmation one way or another.
  */
-#define BBLCR3_L2_SUPPLIED_ECC     0x40000
+#define BBLCR3_L2_SUPPLIED_ECC	   0x40000
 
 #define BBLCR3_L2_HARDWARE_DISABLE (1<<23)
 /* Also known as... */
-#define BBLCR3_L2_NOT_PRESENT      (1<<23)
+#define BBLCR3_L2_NOT_PRESENT	   (1<<23)
 
 /* L2 commands */
 #define L2CMD_RLU 0x0c /* 01100 Data read w/ LRU update */

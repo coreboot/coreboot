@@ -85,31 +85,31 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 	};
 
-        int needs_reset;
+	int needs_reset;
 
-        if (bist == 0)
+	if (bist == 0)
 		init_cpus(cpu_init_detectedx);
 
 	pc87366_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        console_init();
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-        setup_ibm_e325_resource_map();
+	setup_ibm_e325_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
 
 #if CONFIG_LOGICAL_CPUS
-        // It is said that we should start core1 after all core0 launched
-        start_other_cores();
+	// It is said that we should start core1 after all core0 launched
+	start_other_cores();
 #endif
-        // automatically set that for you, but you might meet tight space
-        needs_reset |= ht_setup_chains_x();
+	// automatically set that for you, but you might meet tight space
+	needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {
-               	print_info("ht reset -\n");
-               	soft_reset();
+	       	print_info("ht reset -\n");
+	       	soft_reset();
        	}
 
 	enable_smbus();

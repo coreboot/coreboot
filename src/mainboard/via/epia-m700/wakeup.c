@@ -88,7 +88,7 @@ no_idt = { 0, 0 };
  * occurred; hopefully real BIOSs don't assume much.
  */
 
-//      0x66, 0x0d, 0x00, 0x00, 0x00, 0x60,     /* orl $0x60000000, %eax */
+//	0x66, 0x0d, 0x00, 0x00, 0x00, 0x60,	/* orl $0x60000000, %eax */
 
 static unsigned char real_mode_switch[] = {
 	0x66, 0x0f, 0x20, 0xc0,			/* movl %cr0,%eax */
@@ -115,9 +115,9 @@ void acpi_jump_wake(u32 vector)
 		     jump_to_wakeup[2], jump_to_wakeup[3], jump_to_wakeup[4]);
 
 	memcpy((void *)(WAKE_THUNK16_ADDR - sizeof(real_mode_switch) - 100),
-	       real_mode_switch, sizeof(real_mode_switch));
+		real_mode_switch, sizeof(real_mode_switch));
 	memcpy((void *)(WAKE_THUNK16_ADDR - 100), jump_to_wakeup,
-	       sizeof(jump_to_wakeup));
+		sizeof(jump_to_wakeup));
 
 	//jason_tsc_count();
 	printk(BIOS_EMERG, "file '%s', line %d\n\n", __FILE__, __LINE__);
@@ -153,7 +153,7 @@ void acpi_jump_wake(u32 vector)
 		dest[i] = src[i];
 
 	__asm__ __volatile__("ljmp $0x0010,%0"	/* 08 error */
-			     ::"i"((void *)(WAKE_RECOVER1M_CODE + 0x20)));
+				::"i"((void *)(WAKE_RECOVER1M_CODE + 0x20)));
 
 	/* Added 0x20 "nop" to make sure the ljmp will not jump then halt. */
 	asm volatile ("nop");

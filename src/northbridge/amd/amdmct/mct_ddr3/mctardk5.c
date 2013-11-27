@@ -39,11 +39,11 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 
 /*
  *  In: MAAdimms   - number of DIMMs on the channel
- *    : Speed      - Speed (see DCTStatstruc.Speed for definition)
- *    : MAAload    - number of address bus loads on the channel
+ *    : Speed	   - Speed (see DCTStatstruc.Speed for definition)
+ *    : MAAload	   - number of address bus loads on the channel
  * Out: AddrTmgCTL - Address Timing Control Register Value
- *    : ODC_CTL    - Output Driver Compensation Control Register Value
- *    : CMDmode    - CMD mode
+ *    : ODC_CTL	   - Output Driver Compensation Control Register Value
+ *    : CMDmode	   - CMD mode
  */
 static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 				u32 *AddrTmgCTL, u32 *ODC_CTL,

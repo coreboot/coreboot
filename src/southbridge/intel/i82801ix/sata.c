@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -258,7 +258,7 @@ static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations sata_pci_ops = {
-	.set_subsystem    = sata_set_subsystem,
+	.set_subsystem	   = sata_set_subsystem,
 };
 
 static struct device_operations sata_ops = {

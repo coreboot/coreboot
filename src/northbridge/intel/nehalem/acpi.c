@@ -41,7 +41,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	/* Quickpath bus is not in standard coreboot device tree,
 	   so read register directly.  */
 	pciexbar_reg = read32(DEFAULT_PCIEXBAR
-			      | (QUICKPATH_BUS << 20) | 0x1050);
+				 | (QUICKPATH_BUS << 20) | 0x1050);
 
 	// MMCFG not supported or not enabled.
 	if (!(pciexbar_reg & (1 << 0)))
@@ -51,19 +51,19 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	case 0:		// 256MB
 		pciexbar =
 		    pciexbar_reg & ((1 << 31) | (1 << 30) | (1 << 29) |
-				    (1 << 28));
+					(1 << 28));
 		max_buses = 256;
 		break;
 	case 1:		// 128M
 		pciexbar =
 		    pciexbar_reg & ((1 << 31) | (1 << 30) | (1 << 29) |
-				    (1 << 28) | (1 << 27));
+					(1 << 28) | (1 << 27));
 		max_buses = 128;
 		break;
 	case 2:		// 64M
 		pciexbar =
 		    pciexbar_reg & ((1 << 31) | (1 << 30) | (1 << 29) |
-				    (1 << 28) | (1 << 27) | (1 << 26));
+					(1 << 28) | (1 << 27) | (1 << 26));
 		max_buses = 64;
 		break;
 	default:		// RSVD
@@ -74,7 +74,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 		return current;
 
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
-					     pciexbar, 0x0, 0x0, max_buses - 1);
+						  pciexbar, 0x0, 0x0, max_buses - 1);
 
 	return current;
 }
@@ -89,11 +89,11 @@ static void *get_intel_vbios(void)
 
 	optionrom_header_t *oprom = (optionrom_header_t *) vbios;
 	optionrom_pcir_t *pcir = (optionrom_pcir_t *) (vbios +
-						       oprom->pcir_offset);
+							     oprom->pcir_offset);
 
 	printk(BIOS_DEBUG, "GET_VBIOS: %x %x %x %x %x\n",
-	       oprom->signature, pcir->vendor, pcir->classcode[0],
-	       pcir->classcode[1], pcir->classcode[2]);
+		oprom->signature, pcir->vendor, pcir->classcode[0],
+		pcir->classcode[1], pcir->classcode[2]);
 
 	if ((oprom->signature == OPROM_SIGNATURE) &&
 	    (pcir->vendor == PCI_VENDOR_ID_INTEL) &&
@@ -124,7 +124,7 @@ static int init_opregion_vbt(igd_opregion_t * opregion)
 
 	memcpy(opregion->header.vbios_version, vbt->coreblock_biosbuild, 4);
 	memcpy(opregion->vbt.gvd1, vbt, vbt->hdr_vbt_size < 7168 ?
-	       vbt->hdr_vbt_size : 7168);
+		vbt->hdr_vbt_size : 7168);
 
 	return 0;
 }
@@ -140,7 +140,7 @@ int init_igd_opregion(igd_opregion_t * opregion)
 	// FIXME if IGD is disabled, we should exit here.
 
 	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
-	       sizeof(IGD_OPREGION_SIGNATURE));
+		sizeof(IGD_OPREGION_SIGNATURE));
 
 	/* 8kb */
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;

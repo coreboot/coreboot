@@ -46,66 +46,66 @@
 
 //Dram Type
 #define  RAMTYPE_FPMDRAM   1
-#define  RAMTYPE_EDO       2
+#define  RAMTYPE_EDO	   2
 #define  RAMTYPE_PipelinedNibble 3
-#define  RAMTYPE_SDRAM     4
-#define  RAMTYPE_ROM       5
+#define  RAMTYPE_SDRAM	   4
+#define  RAMTYPE_ROM	   5
 #define  RAMTYPE_SGRAMDDR  6
 #define  RAMTYPE_SDRAMDDR  7
 #define  RAMTYPE_SDRAMDDR2 8
 
 /* CAS latency constant */
-#define CASLAN_15         15
-#define CASLAN_2           20
-#define CASLAN_25         25
-#define CASLAN_3           30
-#define CASLAN_35         35
-#define CASLAN_4           40
-#define CASLAN_45         45
-#define CASLAN_5           50
-#define CASLAN_NULL     00
+#define CASLAN_15	  15
+#define CASLAN_2	   20
+#define CASLAN_25	  25
+#define CASLAN_3	   30
+#define CASLAN_35	  35
+#define CASLAN_4	   40
+#define CASLAN_45	  45
+#define CASLAN_5	   50
+#define CASLAN_NULL	00
 
 //Burst length
-#define  BURSTLENGTH8    8
-#define  BURSTLENGTH4    4
+#define  BURSTLENGTH8	 8
+#define  BURSTLENGTH4	 4
 
 //Data Width
-//#define  DATAWIDTHX16    16
-//#define  DATAWIDTHX8       8
-//#define  DATAWIDTHX4       4
+//#define  DATAWIDTHX16	   16
+//#define  DATAWIDTHX8	     8
+//#define  DATAWIDTHX4	     4
 
-#define SPD_MEMORY_TYPE              2	/*Memory type FPM,EDO,SDRAM,DDR,DDR2 */
-#define SPD_SDRAM_ROW_ADDR           3	/*Number of row addresses on this assembly */
-#define SPD_SDRAM_COL_ADDR           4	/*Number of column addresses on this assembly */
-#define SPD_SDRAM_DIMM_RANKS         5	/*Number of RANKS on this assembly */
+#define SPD_MEMORY_TYPE		     2	/*Memory type FPM,EDO,SDRAM,DDR,DDR2 */
+#define SPD_SDRAM_ROW_ADDR	     3	/*Number of row addresses on this assembly */
+#define SPD_SDRAM_COL_ADDR	     4	/*Number of column addresses on this assembly */
+#define SPD_SDRAM_DIMM_RANKS	     5	/*Number of RANKS on this assembly */
 #define SPD_SDRAM_MOD_DATA_WIDTH     6	/*Data width of this assembly */
-#define SPD_SDRAM_TCLK_X             9	/*Cycle time at Maximum supported CAS latency (CL=X) */
-#define SPD_SDRAM_TAC_X              10	/*Access time for highest CL */
-#define SPD_SDRAM_CONFIG_TYPE        11	/*Non-parity , Parity or ECC */
-#define SPD_SDRAM_REFRESH            12	/*Refresh rate/type */
-#define SPD_SDRAM_WIDTH              13	/*Primary sdram width */
-#define SPD_SDRAM_MIN_CLK_DLY        15	/*Minimum clock delay */
-#define SPD_SDRAM_BURSTLENGTH        16	/*Burst Lengths supported */
-#define SPD_SDRAM_NO_OF_BANKS        17	/*Number of banks on this assembly */
-#define SPD_SDRAM_CAS_LATENCY        18	/*CAS latency */
+#define SPD_SDRAM_TCLK_X	     9	/*Cycle time at Maximum supported CAS latency (CL=X) */
+#define SPD_SDRAM_TAC_X		     10	/*Access time for highest CL */
+#define SPD_SDRAM_CONFIG_TYPE	     11	/*Non-parity , Parity or ECC */
+#define SPD_SDRAM_REFRESH	     12	/*Refresh rate/type */
+#define SPD_SDRAM_WIDTH		     13	/*Primary sdram width */
+#define SPD_SDRAM_MIN_CLK_DLY	     15	/*Minimum clock delay */
+#define SPD_SDRAM_BURSTLENGTH	     16	/*Burst Lengths supported */
+#define SPD_SDRAM_NO_OF_BANKS	     17	/*Number of banks on this assembly */
+#define SPD_SDRAM_CAS_LATENCY	     18	/*CAS latency */
 #define SPD_SDRAM_DIMM_TYPE_DDR2     20	/*DIMM type information; identifies the DDR2 memory module type */
-#define SPD_SDRAM_DEV_ATTR_DDR1      20	/*WE latency */
-#define SPD_SDRAM_MODULES_ATTR       21	/*This byte depicts various aspects of the modules; DDR DDR2 have different aspects */
-#define SPD_SDRAM_DEV_ATTR_GEN       22	/*General device attributes */
-#define SPD_SDRAM_TCLK_X_1           23	/*Minimum clock cycle time at Reduced CL, DDR: X-0.5 DDR2: X-1 */
-#define SPD_SDRAM_TAC_X_1            24	/*Maximum Data Access time from Clock at reduced CL,DDR: X-0.5 DDR2: X-1 */
-#define SPD_SDRAM_TCLK_X_2           25	/*Minimum clock cycle time at reduced CL, DDR: X-1 DDR2: X-2 */
-#define SPD_SDRAM_TAC_X_2            26	/*Maximum Data Access time from Clock at reduced CL, DDR: X-1 DDR2: X-2 */
-#define SPD_SDRAM_TRP                27	/*minimum row precharge time */
-#define SPD_SDRAM_TRRD               28	/*minimum row active to row active delay */
-#define SPD_SDRAM_TRCD               29	/*minimum RAS to CAS delay */
-#define SPD_SDRAM_TRAS               30	/*minimum active to precharge time */
-#define SPD_SDRAM_TWR                36	/*write recovery time, only DDR2 use it */
-#define SPD_SDRAM_TWTR               37	/*internal write to read command delay, only DDR2 use it */
-#define SPD_SDRAM_TRTP               38	/*internal read to prechange command delay, only DDR2 use it */
-#define SPD_SDRAM_TRFC2              40	/*extension of byte 41 tRC and byte 42 tRFC, only DDR2 use it */
+#define SPD_SDRAM_DEV_ATTR_DDR1	     20	/*WE latency */
+#define SPD_SDRAM_MODULES_ATTR	     21	/*This byte depicts various aspects of the modules; DDR DDR2 have different aspects */
+#define SPD_SDRAM_DEV_ATTR_GEN	     22	/*General device attributes */
+#define SPD_SDRAM_TCLK_X_1	     23	/*Minimum clock cycle time at Reduced CL, DDR: X-0.5 DDR2: X-1 */
+#define SPD_SDRAM_TAC_X_1	     24	/*Maximum Data Access time from Clock at reduced CL,DDR: X-0.5 DDR2: X-1 */
+#define SPD_SDRAM_TCLK_X_2	     25	/*Minimum clock cycle time at reduced CL, DDR: X-1 DDR2: X-2 */
+#define SPD_SDRAM_TAC_X_2	     26	/*Maximum Data Access time from Clock at reduced CL, DDR: X-1 DDR2: X-2 */
+#define SPD_SDRAM_TRP		     27	/*minimum row precharge time */
+#define SPD_SDRAM_TRRD		     28	/*minimum row active to row active delay */
+#define SPD_SDRAM_TRCD		     29	/*minimum RAS to CAS delay */
+#define SPD_SDRAM_TRAS		     30	/*minimum active to precharge time */
+#define SPD_SDRAM_TWR		     36	/*write recovery time, only DDR2 use it */
+#define SPD_SDRAM_TWTR		     37	/*internal write to read command delay, only DDR2 use it */
+#define SPD_SDRAM_TRTP		     38	/*internal read to prechange command delay, only DDR2 use it */
+#define SPD_SDRAM_TRFC2		     40	/*extension of byte 41 tRC and byte 42 tRFC, only DDR2 use it */
 #define SPC_SDRAM_TRC				 41	/*minimum active to active/refresh time */
-#define SPD_SDRAM_TRFC               42	/*minimum refresh to active / refresh command period */
+#define SPD_SDRAM_TRFC		     42	/*minimum refresh to active / refresh command period */
 
 #define  SPD_DATA_SIZE 44
 //Dram cofig are
@@ -137,17 +137,17 @@ typedef struct _DRAM_CONFIG_DATA {
 
 	u8 CmdRate;
 	u8 DualEn;
-	//u8    IntLv0;
-	//u8    IntLv1;
-	//u8    Ba0Sel;
-	//u8    Ba1Sel;
-	//u8    Ba2Sel;
+	//u8	 IntLv0;
+	//u8	 IntLv1;
+	//u8	 Ba0Sel;
+	//u8	 Ba1Sel;
+	//u8	 Ba2Sel;
 	u8 BaScmb;
 	u8 DrdyTiming;
-	//u8    Above4G;
-	//u8    RdsaitMode;
-	//u8    Rdsait;
-	//u8    TopPerf;
+	//u8	 Above4G;
+	//u8	 RdsaitMode;
+	//u8	 Rdsait;
+	//u8	 TopPerf;
 
 	u16 UMASize;
 } DRAM_CONFIG_DATA;
@@ -174,7 +174,7 @@ typedef struct _DRAM_SYS_ATTR_tag {
 	u16 DramFreq;
 	u16 DramCyc;		/*10ns, 7.5ns, 6ns, 5ns, 3.75ns, 3ns, 2.5ns   =1/SysFreq, unit: 100*ns. */
 
-	//u16    HFreq; /*100, 133, 166, 200, 266, 333, 400*/
+	//u16	  HFreq; /*100, 133, 166, 200, 266, 333, 400*/
 
 	u8 CL;			/* CAS lantency */
 	u8 CmdRate;		/*1T or 2T */

@@ -32,15 +32,15 @@ static void bridge1c_init(struct device *dev)
 
 static struct device_operations pci_ops  = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = bridge1c_init,
-	.scan_bus         = pci_scan_bridge,
-	.ops_pci          = 0,
+	.init		   = bridge1c_init,
+	.scan_bus	   = pci_scan_bridge,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver pci_driver __pci_driver = {
-	.ops    = &pci_ops,
+	.ops	 = &pci_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_PCI_X,
 };

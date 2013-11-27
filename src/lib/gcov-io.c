@@ -419,7 +419,7 @@ gcov_read_words (unsigned words)
       excess = gcov_var.alloc - gcov_var.length;
 #endif
       excess = fread (gcov_var.buffer + gcov_var.length,
-		      1, excess << 2, gcov_var.file) >> 2;
+			1, excess << 2, gcov_var.file) >> 2;
       gcov_var.length += excess;
       if (gcov_var.length < words)
 	{

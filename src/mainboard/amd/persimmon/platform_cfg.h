@@ -143,13 +143,13 @@
 
 
 /**
- * @def   AZALIA_AUTO
+ * @def	  AZALIA_AUTO
  * @brief Detect Azalia controller automatically.
  *
- * @def   AZALIA_DISABLE
+ * @def	  AZALIA_DISABLE
  * @brief Disable Azalia controller.
 
- * @def   AZALIA_ENABLE
+ * @def	  AZALIA_ENABLE
  * @brief Enable Azalia controller.
  */
 #define AZALIA_AUTO			0
@@ -221,7 +221,7 @@
 #define SB_GPP_UNHIDE_PORTS		FALSE
 
 /**
- * @def   GEC_CONFIG
+ * @def	  GEC_CONFIG
  *    0  - Enable
  *    1  - Disable
  */
@@ -258,15 +258,15 @@ static const CODECTBLLIST codec_tablelist[] =
 
 /* set up an ACPI prefered power management profile */
 /*  from acpi.h
- *	PM_UNSPECIFIED          = 0,
- *	PM_DESKTOP              = 1,
- *	PM_MOBILE               = 2,
- *	PM_WORKSTATION          = 3,
- *	PM_ENTERPRISE_SERVER    = 4,
- *	PM_SOHO_SERVER          = 5,
- *	PM_APPLIANCE_PC         = 6,
+ *	PM_UNSPECIFIED	   = 0,
+ *	PM_DESKTOP		   = 1,
+ *	PM_MOBILE		   = 2,
+ *	PM_WORKSTATION	   = 3,
+ *	PM_ENTERPRISE_SERVER	   = 4,
+ *	PM_SOHO_SERVER	   = 5,
+ *	PM_APPLIANCE_PC	   = 6,
  *	PM_PERFORMANCE_SERVER   = 7,
- *	PM_TABLET               = 8
+ *	PM_TABLET		   = 8
  */
 #define FADT_PM_PROFILE 1
 

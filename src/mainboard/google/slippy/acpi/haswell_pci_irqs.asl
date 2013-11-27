@@ -42,12 +42,12 @@ Method(_PRT)
 			Package() { 0x001fffff, 1, 0, 18 },
 			Package() { 0x001fffff, 2, 0, 17 },
 			Package() { 0x001fffff, 3, 0, 16 },
-			// Serial IO                    0:15.0
+			// Serial IO			   0:15.0
 			Package() { 0x0015ffff, 0, 0, 20 },
 			Package() { 0x0015ffff, 1, 0, 21 },
 			Package() { 0x0015ffff, 2, 0, 21 },
 			Package() { 0x0015ffff, 3, 0, 21 },
-			// SDIO                         0:17.0
+			// SDIO			   0:17.0
 			Package() { 0x0017ffff, 0, 0, 23 },
 		})
 	} Else {
@@ -70,12 +70,12 @@ Method(_PRT)
 			Package() { 0x001fffff, 1, \_SB.PCI0.LPCB.LNKC, 0 },
 			Package() { 0x001fffff, 2, \_SB.PCI0.LPCB.LNKB, 0 },
 			Package() { 0x001fffff, 3, \_SB.PCI0.LPCB.LNKA, 0 },
-			// Serial IO                    0:15.0
+			// Serial IO			   0:15.0
 			Package() { 0x0015ffff, 0, \_SB.PCI0.LPCB.LNKE, 0 },
 			Package() { 0x0015ffff, 1, \_SB.PCI0.LPCB.LNKF, 0 },
 			Package() { 0x0015ffff, 2, \_SB.PCI0.LPCB.LNKF, 0 },
 			Package() { 0x0015ffff, 3, \_SB.PCI0.LPCB.LNKF, 0 },
-			// SDIO                         0:17.0
+			// SDIO			   0:17.0
 			Package() { 0x0017ffff, 0, \_SB.PCI0.LPCB.LNKH, 0 },
 		})
 	}

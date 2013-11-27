@@ -30,10 +30,10 @@
  * @def BIOS_SIZE_4M
  * @def BIOS_SIZE_8M
  */
-#define BIOS_SIZE_1M                    0
-#define BIOS_SIZE_2M                    1
-#define BIOS_SIZE_4M                    3
-#define BIOS_SIZE_8M                    7
+#define BIOS_SIZE_1M			0
+#define BIOS_SIZE_2M			1
+#define BIOS_SIZE_4M			3
+#define BIOS_SIZE_8M			7
 
 /* In SB700, default ROM size is 1M Bytes, if your platform ROM
  * bigger than 1M you have to set the ROM size outside CIMx module and
@@ -57,7 +57,7 @@
  *  0 - Disable Spread Spectrum function
  *  1 - Enable  Spread Spectrum function
  */
-#define SPREAD_SPECTRUM                 0
+#define SPREAD_SPECTRUM			0
 
 /**
  * @def SB_HPET_TIMER
@@ -65,7 +65,7 @@
  *  0 - Disable hpet
  *  1 - Enable  hpet
  */
-#define HPET_TIMER                      1
+#define HPET_TIMER			1
 
 /**
  * @def USB_CONFIG
@@ -80,7 +80,7 @@
  *  Usb Ehci3 Contoller (Bus 0 Dev 22 Func2) is define at BIT5
  *  Usb Ohci4 Contoller (Bus 0 Dev 20 Func5) is define at BIT6
  */
-#define USB_CINFIG              0x7F
+#define USB_CINFIG		0x7F
 
 /**
  * @def PCI_CLOCK_CTRL
@@ -93,14 +93,14 @@
  *  PCI SLOT 3 define at BIT3
  *  PCI SLOT 4 define at BIT4
  */
-#define PCI_CLOCK_CTRL                  0x1F
+#define PCI_CLOCK_CTRL			0x1F
 
 /**
  * @def SATA_CONTROLLER
  * @brief INCHIP Sata Controller
  */
 #ifndef SATA_CONTROLLER
-#define SATA_CONTROLLER               1
+#define SATA_CONTROLLER		      1
 #endif
 
 /**
@@ -109,14 +109,14 @@
  *   NOTE: DO NOT ALLOW SATA & IDE use same mode
  */
 #ifndef SATA_MODE
-#define SATA_MODE                     NATIVE_IDE_MODE
+#define SATA_MODE		      NATIVE_IDE_MODE
 #endif
 
 /**
  * @brief INCHIP Sata IDE Controller Mode
  */
-#define IDE_LEGACY_MODE                 0
-#define IDE_NATIVE_MODE                 1
+#define IDE_LEGACY_MODE			0
+#define IDE_NATIVE_MODE			1
 
 /**
  * @def SATA_IDE_MODE
@@ -124,7 +124,7 @@
  *   NOTE: DO NOT ALLOW SATA & IDE use same mode
  */
 #ifndef SATA_IDE_MODE
-#define SATA_IDE_MODE                 IDE_LEGACY_MODE
+#define SATA_IDE_MODE		      IDE_LEGACY_MODE
 #endif
 
 /**
@@ -136,37 +136,37 @@
  * @brief 01/11: Reference clock from internal clock through
  *  CP_PLL_REFCLK_P and CP_PLL_REFCLK_N via RDL
  */
-#define EXTERNAL_CLOCK          0x00
-#define INTERNAL_CLOCK          0x01
+#define EXTERNAL_CLOCK		0x00
+#define INTERNAL_CLOCK		0x01
 
-#define SATA_CLOCK_SOURCE       EXTERNAL_CLOCK
+#define SATA_CLOCK_SOURCE	EXTERNAL_CLOCK
 
 /**
  * @def SATA_PORT_MULT_CAP_RESERVED
  * @brief 1 ON, 0 0FF
  */
-#define SATA_PORT_MULT_CAP_RESERVED     1
+#define SATA_PORT_MULT_CAP_RESERVED	1
 
 
 /**
- * @def   AZALIA_AUTO
+ * @def	  AZALIA_AUTO
  * @brief Detect Azalia controller automatically.
  *
- * @def   AZALIA_DISABLE
+ * @def	  AZALIA_DISABLE
  * @brief Disable Azalia controller.
 
- * @def   AZALIA_ENABLE
+ * @def	  AZALIA_ENABLE
  * @brief Enable Azalia controller.
  */
-#define AZALIA_AUTO                     0
-#define AZALIA_DISABLE                  1
-#define AZALIA_ENABLE                   2
+#define AZALIA_AUTO			0
+#define AZALIA_DISABLE			1
+#define AZALIA_ENABLE			2
 
 /**
  * @brief INCHIP HDA controller
  */
 #ifndef AZALIA_CONTROLLER
-#define AZALIA_CONTROLLER             AZALIA_AUTO
+#define AZALIA_CONTROLLER	      AZALIA_AUTO
 #endif
 
 /**
@@ -176,7 +176,7 @@
  *  1 - enable
  */
 #ifndef AZALIA_PIN_CONFIG
-#define AZALIA_PIN_CONFIG             1
+#define AZALIA_PIN_CONFIG	      1
 #endif
 
 /**
@@ -191,14 +191,14 @@
  *  SDIN3 is define at BIT6 & BIT7
  */
 #ifndef AZALIA_SDIN_PIN
-#define AZALIA_SDIN_PIN              0x02
+#define AZALIA_SDIN_PIN		     0x02
 #endif
 
 /**
  * @def GPP_CONTROLLER
  */
 #ifndef GPP_CONTROLLER
-#define GPP_CONTROLLER                1
+#define GPP_CONTROLLER		      1
 #endif
 
 /**
@@ -211,7 +211,7 @@
  *  GPP_CFGMODE_X1111
  */
 #ifndef GPP_CFGMODE
-#define GPP_CFGMODE                   GPP_CFGMODE_X1111
+#define GPP_CFGMODE		      GPP_CFGMODE_X1111
 #endif
 
 

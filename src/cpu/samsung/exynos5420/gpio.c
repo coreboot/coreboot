@@ -53,7 +53,7 @@ static const struct gpio_info gpio_data[EXYNOS_GPIO_NUM_PARTS] = {
 };
 
 /* This macro gets gpio pin offset from 0..7 */
-#define GPIO_BIT(x)     ((x) & 0x7)
+#define GPIO_BIT(x)	((x) & 0x7)
 
 static struct gpio_bank *gpio_get_bank(unsigned int gpio)
 {

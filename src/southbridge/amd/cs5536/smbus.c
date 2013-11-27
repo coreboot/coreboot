@@ -100,7 +100,7 @@ static int smbus_ack(unsigned smbus_io_base, int state)
 }
 
 int smbus_send_slave_address(unsigned smbus_io_base,
-				    unsigned char device)
+					unsigned char device)
 {
 	unsigned char val;
 

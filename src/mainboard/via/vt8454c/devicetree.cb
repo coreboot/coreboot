@@ -11,7 +11,7 @@ chip northbridge/via/cx700
 		device pci 0.3 on end # Memory Controller
 		device pci 0.4 on end # Power Management
 		device pci 0.7 on end # V-Link Controller
-		device pci 1.0 on     # PCI Bridge
+		device pci 1.0 on	# PCI Bridge
 			device pci 0.0 on end # Onboard Video
 		end # PCI Bridge
 		device pci f.0 on end # IDE/SATA
@@ -20,7 +20,7 @@ chip northbridge/via/cx700
 		device pci 10.1 on end # USB 1.1
 		device pci 10.2 on end # USB 1.1
 		device pci 10.4 on end # USB 2.0
-		device pci 11.0 on      # Southbridge LPC
+		device pci 11.0 on	  # Southbridge LPC
 			chip superio/via/vt1211
 				device pnp 2e.0 on	# Floppy
 					io 0x60 = 0x3f0

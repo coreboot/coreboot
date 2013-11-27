@@ -46,10 +46,10 @@ Device (BAT0)
 		0xFFFFFFFF,  // Design Capacity of Low
 		0x00000001,  // Capacity Granularity 1
 		0x00000001,  // Capacity Granularity 2
-		"",          // Model Number
-		"",          // Serial Number
+		"",	       // Model Number
+		"",	       // Serial Number
 		"LION",      // Battery Type
-		""           // OEM Information
+		""	       // OEM Information
 	})
 
 	Name (PBST, Package () {
@@ -153,7 +153,7 @@ Device (BAT0)
 
 		Store (SWAB (BTPR), Local1)
 		If (LAnd (LNotEqual (Local1, 0xFFFFFFFF),
-		          LGreaterEqual (Local1, 0x8000))) {
+			    LGreaterEqual (Local1, 0x8000))) {
 			Xor (Local1, 0xFFFF, Local1)
 			Increment (Local1)
 		}
@@ -164,7 +164,7 @@ Device (BAT0)
 		//
 		Store (SWAB (BTRA), Local1)
 		If (LAnd (LNotEqual (Local1, 0xFFFFFFFF),
-		          LGreaterEqual (Local1, 0x8000))) {
+			    LGreaterEqual (Local1, 0x8000))) {
 			Xor (Local1, 0xFFFF, Local1)
 			Increment (Local1)
 		}
@@ -179,7 +179,7 @@ Device (BAT0)
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
 			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-			          LLess (Local1, Add (Local2, Local3))))
+				     LLess (Local1, Add (Local2, Local3))))
 			{
 				Store (Local2, Local1)
 			}

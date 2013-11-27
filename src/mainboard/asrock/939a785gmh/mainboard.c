@@ -57,7 +57,7 @@ void set_pcie_reset()
     pcie_rst_toggle(0x0);
 }
 
-#if 0	     /* not tested yet */
+#if 0		   /* not tested yet */
 /********************************************************
 * mahogany uses SB700 GPIO9 to detect IDE_DMA66.
 * IDE_DMA66 is routed to GPIO 9. So we read Gpio 9 to

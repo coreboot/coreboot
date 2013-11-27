@@ -44,7 +44,7 @@ static void northbridge_init(device_t dev)
 		/* Fixup GART and framebuffer addresses properly.
 		 * First setup frame buffer properly.
 		 */
-		//fb = pci_read_config32(dev, 0x10);       /* Base addres of framebuffer */
+		//fb = pci_read_config32(dev, 0x10);	     /* Base addres of framebuffer */
 		fb = 0xd0000000;
 		printk(BIOS_DEBUG, "Frame buffer at %8lx\n",fb);
 
@@ -52,9 +52,9 @@ static void northbridge_init(device_t dev)
 		c |= fb>>28;  /* upper nibble of frame buffer address */
 		c = 0xdd;
 		pci_write_config8(dev, 0xe1, c);
-		c = 0x81;                                /* enable framebuffer */
+		c = 0x81;				   /* enable framebuffer */
 		pci_write_config8(dev, 0xe0, c);
-		pci_write_config8(dev, 0xe2, 0x42);      /* 'cos award does */
+		pci_write_config8(dev, 0xe2, 0x42);	   /* 'cos award does */
 	}
 }
 
@@ -65,9 +65,9 @@ static void nullfunc(device_t dev)
 
 static struct device_operations northbridge_operations = {
 	.read_resources   = nullfunc,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init
+	.init		   = northbridge_init
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
@@ -90,11 +90,11 @@ static void agp_init(device_t dev)
 
 static struct device_operations agp_operations = {
 	.read_resources   = nullfunc,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = agp_init,
-	.scan_bus         = pci_scan_bridge,
-	.ops_pci          = 0,
+	.init		   = agp_init,
+	.scan_bus	   = pci_scan_bridge,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver agp_driver __pci_driver = {
@@ -107,11 +107,11 @@ static void pci_domain_set_resources(device_t dev)
 {
 	static const uint8_t ramregs[] = {0x5a, 0x5b, 0x5c, 0x5d };
 	device_t mc_dev;
-        uint32_t pci_tolm;
+	uint32_t pci_tolm;
 
 	printk(BIOS_SPEW, "Entering vt8623 pci_domain_set_resources.\n");
 
-        pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = find_pci_tolm(dev->link_list);
 	mc_dev = dev->link_list->children;
 	if (mc_dev) {
 		unsigned long tomk, tolmk;
@@ -154,17 +154,17 @@ static void pci_domain_set_resources(device_t dev)
 }
 
 static struct device_operations pci_domain_ops = {
-        .read_resources   = pci_domain_read_resources,
-        .set_resources    = pci_domain_set_resources,
-        .enable_resources = NULL,
-        .init             = NULL,
-        .scan_bus         = pci_domain_scan_bus,
-        .ops_pci_bus      = pci_bus_default_ops,
+	.read_resources	  = pci_domain_read_resources,
+	.set_resources	  = pci_domain_set_resources,
+	.enable_resources = NULL,
+	.init		  = NULL,
+	.scan_bus	  = pci_domain_scan_bus,
+	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(dev->link_list);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)
@@ -172,24 +172,24 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = cpu_bus_noop,
-        .set_resources    = cpu_bus_noop,
-        .enable_resources = cpu_bus_noop,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources	  = cpu_bus_noop,
+	.set_resources	  = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init		  = cpu_bus_init,
+	.scan_bus	  = 0,
 };
 
 static void enable_dev(struct device *dev)
 {
 	printk(BIOS_SPEW, "In vt8623 enable_dev for device %s.\n", dev_path(dev));
 
-        /* Set the operations if it is a special bus type */
-        if (dev->path.type == DEVICE_PATH_DOMAIN) {
-                dev->ops = &pci_domain_ops;
-        }
-        else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
-                dev->ops = &cpu_bus_ops;
-        }
+	/* Set the operations if it is a special bus type */
+	if (dev->path.type == DEVICE_PATH_DOMAIN) {
+		dev->ops = &pci_domain_ops;
+	}
+	else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
+		dev->ops = &cpu_bus_ops;
+	}
 }
 
 struct chip_operations northbridge_via_vt8623_ops = {

@@ -190,7 +190,7 @@ struct bus;
 void bsp_init_and_start_aps(struct bus *cpu_bus);
 /* Returns 0 on success. < 0 on failure. */
 int setup_ap_init(struct bus *cpu_bus, int *max_cpus,
-                  const void *microcode_patch);
+		  const void *microcode_patch);
 /* Returns 0 on success, < 0 on failure. */
 int start_aps(struct bus *cpu_bus, int max_cpus);
 void release_aps_for_smm_relocation(int do_parallel_relocation);

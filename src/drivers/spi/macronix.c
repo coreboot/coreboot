@@ -64,7 +64,7 @@ struct macronix_spi_flash {
 };
 
 static inline struct macronix_spi_flash *to_macronix_spi_flash(struct spi_flash
-							       *flash)
+								      *flash)
 {
 	return container_of(flash, struct macronix_spi_flash, flash);
 }

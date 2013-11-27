@@ -82,15 +82,15 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
 	 * D28IP_P4IP  ETH0   INTB -> PIRQC
-	 * D29IP_E1P   EHCI1  INTA -> PIRQD
-	 * D26IP_E2P   EHCI2  INTA -> PIRQE
-	 * D31IP_SIP   SATA   INTA -> PIRQF (MSI)
+	 * D29IP_E1P	EHCI1  INTA -> PIRQD
+	 * D26IP_E2P	EHCI2  INTA -> PIRQE
+	 * D31IP_SIP	SATA   INTA -> PIRQF (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQG
 	 * D31IP_TTIP  THRT   INTC -> PIRQH
-	 * D27IP_ZIP   HDA    INTA -> PIRQG (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQG (MSI)
 	 */
 
 	/* Device interrupt pin register (board specific) */
@@ -201,15 +201,15 @@ void main(unsigned long bist)
 		max_ddr3_freq: 1333,
 		usb_port_config: {
 			{ 1, 0, 0x0080 }, /* P0: Front port  (OC0) */
-			{ 1, 1, 0x0040 }, /* P1: Back port   (OC1) */
-			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1   (no OC) */
-			{ 1, 0, 0x0040 }, /* P3: MMC         (no OC) */
+			{ 1, 1, 0x0040 }, /* P1: Back port	(OC1) */
+			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1	(no OC) */
+			{ 1, 0, 0x0040 }, /* P3: MMC		(no OC) */
 			{ 1, 2, 0x0080 }, /* P4: Front port  (OC2) */
 			{ 0, 0, 0x0000 }, /* P5: Empty */
 			{ 0, 0, 0x0000 }, /* P6: Empty */
 			{ 0, 0, 0x0000 }, /* P7: Empty */
-			{ 1, 4, 0x0040 }, /* P8: Back port   (OC4) */
-			{ 1, 4, 0x0040 }, /* P9: MINIPCIE3   (no OC) */
+			{ 1, 4, 0x0040 }, /* P8: Back port	(OC4) */
+			{ 1, 4, 0x0040 }, /* P9: MINIPCIE3	(no OC) */
 			{ 1, 4, 0x0040 }, /* P10: BLUETOOTH  (no OC) */
 			{ 0, 4, 0x0000 }, /* P11: Empty */
 			{ 1, 6, 0x0040 }, /* P12: Back port  (OC6) */
@@ -235,7 +235,7 @@ void main(unsigned long bist)
 	it8772f_kill_watchdog();
 	it8772f_ac_resume_southbridge();
 	it8772f_enable_serial(PNP_DEV(IT8772F_BASE, IT8772F_SP1),
-			      CONFIG_TTYS0_BASE);
+				 CONFIG_TTYS0_BASE);
 	console_init();
 
 #if CONFIG_CHROMEOS

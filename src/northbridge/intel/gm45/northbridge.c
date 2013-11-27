@@ -83,20 +83,20 @@ static void mch_domain_read_resources(device_t dev)
 	/* Total Memory 2GB example:
 	 *
 	 *  00000000  0000MB-2014MB  2014MB  RAM     (writeback)
-	 *  7de00000  2014MB-2016MB     2MB  GFX GTT (uncached)
-	 *  7e000000  2016MB-2048MB    32MB  GFX UMA (uncached)
-	 *  80000000   2048MB TOLUD
-	 *  80000000   2048MB TOM
+	 *  7de00000  2014MB-2016MB	 2MB  GFX GTT (uncached)
+	 *  7e000000  2016MB-2048MB	32MB  GFX UMA (uncached)
+	 *  80000000	2048MB TOLUD
+	 *  80000000	2048MB TOM
 	 *
 	 * Total Memory 4GB example:
 	 *
 	 *  00000000  0000MB-3038MB  3038MB  RAM     (writeback)
-	 *  bde00000  3038MB-3040MB     2MB  GFX GTT (uncached)
-	 *  be000000  3040MB-3072MB    32MB  GFX UMA (uncached)
-	 *  be000000   3072MB TOLUD
-	 * 100000000   4096MB TOM
+	 *  bde00000  3038MB-3040MB	 2MB  GFX GTT (uncached)
+	 *  be000000  3040MB-3072MB	32MB  GFX UMA (uncached)
+	 *  be000000	3072MB TOLUD
+	 * 100000000	4096MB TOM
 	 * 100000000  4096MB-5120MB  1024MB  RAM     (writeback)
-	 * 140000000   5120MB TOUUD
+	 * 140000000	5120MB TOUUD
 	 */
 
 	pci_domain_read_resources(dev);
@@ -114,7 +114,7 @@ static void mch_domain_read_resources(device_t dev)
 	tom <<= 27;
 
 	printk(BIOS_DEBUG, "TOUUD 0x%llx TOLUD 0x%08x TOM 0x%llx\n",
-	       touud, tolud, tom);
+		touud, tolud, tom);
 
 	tomk = tolud >> 10;
 
@@ -151,17 +151,17 @@ static void mch_domain_read_resources(device_t dev)
 	if (touud > 4096 * 1024) {
 		ram_resource(dev, 5, 4096 * 1024, touud - (4096 * 1024));
 		printk(BIOS_INFO, "Available memory above 4GB: %lluM\n",
-		       (touud >> 10) - 4096);
+			 (touud >> 10) - 4096);
 	}
 
 	printk(BIOS_DEBUG, "Adding UMA memory area base=0x%llx "
-	       "size=0x%llx\n", ((u64)tomk) << 10, ((u64)uma_sizek) << 10);
+		"size=0x%llx\n", ((u64)tomk) << 10, ((u64)uma_sizek) << 10);
 	/* Don't use uma_resource() as our UMA touches the PCI hole. */
 	fixed_mem_resource(dev, 6, tomk, uma_sizek, IORESOURCE_RESERVE);
 
 	if (decode_pcie_bar(&pcie_config_base, &pcie_config_size)) {
 		printk(BIOS_DEBUG, "Adding PCIe config bar base=0x%08x "
-		       "size=0x%x\n", pcie_config_base, pcie_config_size);
+			 "size=0x%x\n", pcie_config_base, pcie_config_size);
 		fixed_mem_resource(dev, 7, pcie_config_base >> 10,
 			pcie_config_size >> 10, IORESOURCE_RESERVE);
 	}
@@ -196,10 +196,10 @@ static void mch_domain_init(device_t dev)
 
 static struct device_operations pci_domain_ops = {
 	.read_resources   = mch_domain_read_resources,
-	.set_resources    = mch_domain_set_resources,
+	.set_resources	   = mch_domain_set_resources,
 	.enable_resources = NULL,
-	.init             = mch_domain_init,
-	.scan_bus         = pci_domain_scan_bus,
+	.init		   = mch_domain_init,
+	.scan_bus	   = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
@@ -215,10 +215,10 @@ static void cpu_bus_noop(device_t dev)
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = 0,
 };
 
 
@@ -260,7 +260,7 @@ static void gm45_init(void *const chip_info)
 			if (!d || d->enabled) continue;
 			const u32 deven = pci_read_config32(d0f0, D0F0_DEVEN);
 			pci_write_config32(d0f0, D0F0_DEVEN,
-					   deven & ~(1 << (bit_base + fn)));
+						deven & ~(1 << (bit_base + fn)));
 		}
 	}
 

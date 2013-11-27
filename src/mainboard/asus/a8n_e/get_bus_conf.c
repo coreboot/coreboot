@@ -105,12 +105,12 @@ void get_bus_conf(void)
 
 	for (i = 2; i < 6; i++) {
 		dev = dev_find_slot(bus_ck804[0],
-				    PCI_DEVFN(sbdn + 0x0b + i - 2, 0));
+					PCI_DEVFN(sbdn + 0x0b + i - 2, 0));
 		if (dev) {
 			bus_ck804[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-			     bus_ck804[0], sbdn + 0x0b + i - 2);
+				bus_ck804[0], sbdn + 0x0b + i - 2);
 		}
 	}
 

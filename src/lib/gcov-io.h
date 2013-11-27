@@ -109,8 +109,8 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 	basic_block: header int32:flags*
 	arcs: header int32:block_no arc*
 	arc:  int32:dest_block int32:flags
-        lines: header int32:block_no line*
-               int32:0 string:NULL
+	lines: header int32:block_no line*
+	       int32:0 string:NULL
 	line:  int32:line_no | int32:0 string:filename
 
    The BASIC_BLOCK record holds per-bb flags.  The number of blocks
@@ -130,9 +130,9 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
    blocks they are for.
 
    The data file contains the following records.
-        data: {unit summary:object summary:program* function-data*}*
+	data: {unit summary:object summary:program* function-data*}*
 	unit: header int32:checksum
-        function-data:	announce_function present counts
+	function-data:	announce_function present counts
 	announce_function: header int32:ident
 		int32:lineno_checksum int32:cfg_checksum
 	present: header int32:present
@@ -335,26 +335,26 @@ typedef HOST_WIDEST_INT gcov_type;
 /* Counters that are collected.  */
 #define GCOV_COUNTER_ARCS 	0  /* Arc transitions.  */
 #define GCOV_COUNTERS_SUMMABLE	1  /* Counters which can be
-				      summed.  */
+					  summed.  */
 #define GCOV_FIRST_VALUE_COUNTER 1 /* The first of counters used for value
-				      profiling.  They must form a consecutive
-				      interval and their order must match
-				      the order of HIST_TYPEs in
-				      value-prof.h.  */
+					  profiling.  They must form a consecutive
+					  interval and their order must match
+					  the order of HIST_TYPEs in
+					  value-prof.h.  */
 #define GCOV_COUNTER_V_INTERVAL	1  /* Histogram of value inside an interval.  */
 #define GCOV_COUNTER_V_POW2	2  /* Histogram of exact power2 logarithm
-				      of a value.  */
+					  of a value.  */
 #define GCOV_COUNTER_V_SINGLE	3  /* The most common value of expression.  */
 #define GCOV_COUNTER_V_DELTA	4  /* The most common difference between
-				      consecutive values of expression.  */
+					  consecutive values of expression.  */
 
 #define GCOV_COUNTER_V_INDIR	5  /* The most common indirect address */
 #define GCOV_COUNTER_AVERAGE	6  /* Compute average value passed to the
-				      counter.  */
+					  counter.  */
 #define GCOV_COUNTER_IOR	7  /* IOR of the all values passed to
-				      counter.  */
+					  counter.  */
 #define GCOV_LAST_VALUE_COUNTER 7  /* The last of counters used for value
-				      profiling.  */
+					  profiling.  */
 #define GCOV_COUNTERS		8
 
 /* Number of counters used for value profiling.  */
@@ -416,7 +416,7 @@ struct gcov_ctr_summary
   gcov_unsigned_t runs;		/* number of program runs */
   gcov_type sum_all;		/* sum of all counters accumulated.  */
   gcov_type run_max;		/* maximum value on a single run.  */
-  gcov_type sum_max;    	/* sum of individual run max values.  */
+  gcov_type sum_max;		/* sum of individual run max values.  */
 };
 
 /* Object & program summary record.  */
@@ -469,7 +469,7 @@ struct gcov_info
 
   unsigned n_functions;		/* number of functions */
   const struct gcov_fn_info *const *functions; /* pointer to pointers
-					          to function information  */
+						       to function information  */
 };
 
 /* Register a new object file module.  */
@@ -528,7 +528,7 @@ GCOV_LINKAGE struct gcov_var
   unsigned length;		/* Read limit in the block.  */
   unsigned overread;		/* Number of words overread.  */
   int error;			/* < 0 overflow, > 0 disk error.  */
-  int mode;	                /* < 0 writing, > 0 reading */
+  int mode;			    /* < 0 writing, > 0 reading */
 #if IN_LIBGCOV
   /* Holds one block plus 4 bytes, thus all coverage reads & writes
      fit within this buffer and we always can transfer GCOV_BLOCK_SIZE
@@ -575,7 +575,7 @@ GCOV_LINKAGE void gcov_write_counter (gcov_type) ATTRIBUTE_HIDDEN;
 GCOV_LINKAGE void gcov_write_tag_length (gcov_unsigned_t, gcov_unsigned_t)
     ATTRIBUTE_HIDDEN;
 GCOV_LINKAGE void gcov_write_summary (gcov_unsigned_t /*tag*/,
-				      const struct gcov_summary *)
+					  const struct gcov_summary *)
     ATTRIBUTE_HIDDEN;
 static void gcov_rewrite (void);
 GCOV_LINKAGE void gcov_seek (gcov_position_t /*position*/) ATTRIBUTE_HIDDEN;
@@ -583,7 +583,7 @@ GCOV_LINKAGE void gcov_seek (gcov_position_t /*position*/) ATTRIBUTE_HIDDEN;
 /* Available outside libgcov */
 GCOV_LINKAGE const char *gcov_read_string (void);
 GCOV_LINKAGE void gcov_sync (gcov_position_t /*base*/,
-			     gcov_unsigned_t /*length */);
+				gcov_unsigned_t /*length */);
 #endif
 
 #if !IN_GCOV

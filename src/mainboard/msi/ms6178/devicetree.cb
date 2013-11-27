@@ -33,45 +33,45 @@ chip northbridge/intel/i82810			# Northbridge
 
       device pci 1e.0 on end			# PCI bridge
       device pci 1f.0 on			# ISA/LPC bridge
-        chip superio/winbond/w83627hf		# Super I/O
-          device pnp 2e.0 on			# Floppy
-            io 0x60 = 0x3f0
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 2e.1 on			# Parallel port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-            drq 0x74 = 3
-          end
-          device pnp 2e.2 on			# Com1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 2e.3 on			# Com2 (only header on board)
-            io 0x60 = 0x2f8
-            irq 0x70 = 3
-          end
-          device pnp 2e.5 on			# PS/2 keyboard/mouse
-            io 0x60 = 0x60
-            io 0x62 = 0x64
-            irq 0x70 = 1			# Keyboard interrupt
-            irq 0x72 = 12			# Mouse interrupt
-          end
-          device pnp 2e.6 off end		# Consumer IR (TODO)
-          device pnp 2e.7 on			# Game port / MIDI / GPIO 1
-            io 0x60 = 0x201
-            io 0x62 = 0x330
-            irq 0x70 = 9
-          end
-          device pnp 2e.8 on end		# GPIO 2
-          device pnp 2e.9 on end		# GPIO 3
-          device pnp 2e.a on end		# ACPI
-          device pnp 2e.b on			# Hardware monitor
-            io 0x60 = 0x290
-            irq 0x70 = 5
-          end
-        end
+	chip superio/winbond/w83627hf		# Super I/O
+	  device pnp 2e.0 on			# Floppy
+	    io 0x60 = 0x3f0
+	    irq 0x70 = 6
+	    drq 0x74 = 2
+	  end
+	  device pnp 2e.1 on			# Parallel port
+	    io 0x60 = 0x378
+	    irq 0x70 = 7
+	    drq 0x74 = 3
+	  end
+	  device pnp 2e.2 on			# Com1
+	    io 0x60 = 0x3f8
+	    irq 0x70 = 4
+	  end
+	  device pnp 2e.3 on			# Com2 (only header on board)
+	    io 0x60 = 0x2f8
+	    irq 0x70 = 3
+	  end
+	  device pnp 2e.5 on			# PS/2 keyboard/mouse
+	    io 0x60 = 0x60
+	    io 0x62 = 0x64
+	    irq 0x70 = 1			# Keyboard interrupt
+	    irq 0x72 = 12			# Mouse interrupt
+	  end
+	  device pnp 2e.6 off end		# Consumer IR (TODO)
+	  device pnp 2e.7 on			# Game port / MIDI / GPIO 1
+	    io 0x60 = 0x201
+	    io 0x62 = 0x330
+	    irq 0x70 = 9
+	  end
+	  device pnp 2e.8 on end		# GPIO 2
+	  device pnp 2e.9 on end		# GPIO 3
+	  device pnp 2e.a on end		# ACPI
+	  device pnp 2e.b on			# Hardware monitor
+	    io 0x60 = 0x290
+	    irq 0x70 = 5
+	  end
+	end
       end
       device pci 1f.1 on end			# IDE
       device pci 1f.2 on end			# USB

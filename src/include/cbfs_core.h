@@ -68,13 +68,13 @@
     Users are welcome to use any other value for their
     components */
 
-#define CBFS_TYPE_STAGE      0x10
+#define CBFS_TYPE_STAGE	     0x10
 #define CBFS_TYPE_PAYLOAD    0x20
 #define CBFS_TYPE_OPTIONROM  0x30
 #define CBFS_TYPE_BOOTSPLASH 0x40
-#define CBFS_TYPE_RAW        0x50
-#define CBFS_TYPE_VSA        0x51
-#define CBFS_TYPE_MBI        0x52
+#define CBFS_TYPE_RAW	     0x50
+#define CBFS_TYPE_VSA	     0x51
+#define CBFS_TYPE_MBI	     0x52
 #define CBFS_TYPE_MICROCODE  0x53
 #define CBFS_COMPONENT_CMOS_DEFAULT 0xaa
 #define CBFS_COMPONENT_CMOS_LAYOUT 0x01aa
@@ -106,8 +106,8 @@ struct cbfs_header {
  * before the architecture was defined (i.e., x86 only).
  */
 #define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
-#define CBFS_ARCHITECTURE_X86      0x00000001
-#define CBFS_ARCHITECTURE_ARMV7    0x00000010
+#define CBFS_ARCHITECTURE_X86	   0x00000001
+#define CBFS_ARCHITECTURE_ARMV7	   0x00000010
 
 /** This is a component header - every entry in the CBFS
     will have this header.
@@ -145,8 +145,8 @@ struct cbfs_file {
 struct cbfs_stage {
 	uint32_t compression;  /** Compression type */
 	uint64_t entry;  /** entry point */
-	uint64_t load;   /** Where to load in memory */
-	uint32_t len;          /** length of data to load */
+	uint64_t load;	  /** Where to load in memory */
+	uint32_t len;		/** length of data to load */
 	uint32_t memlen;	   /** total length of object in memory */
 } __attribute__((packed));
 
@@ -195,7 +195,7 @@ struct cbfs_media {
 	/* returns number of bytes read from media into dest, starting from
 	 * offset for count of bytes */
 	size_t (*read)(struct cbfs_media *media, void *dest, size_t offset,
-		       size_t count);
+			 size_t count);
 
 	/* returns a pointer to memory with count of bytes from media source
 	 * starting from offset, or CBFS_MEDIA_INVALID_MAP_ADDRESS on failure.

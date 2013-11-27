@@ -93,11 +93,11 @@ config RAMBASE
 	default 0x200000
 
 config VGA_BIOS_ID
-        string
-        default "1002,9712"
+	string
+	default "1002,9712"
 
 config SIO_PORT
-        hex
-        default 0x2E
+	hex
+	default 0x2E
 
 endif #BOARD_AVALUE_EAX_785E

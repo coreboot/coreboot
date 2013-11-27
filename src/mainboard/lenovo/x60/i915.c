@@ -200,7 +200,7 @@ void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
 void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
 {
 	printk(BIOS_SPEW, "fill_lb_framebuffer: graphics is %p\n",
-	       (void *)graphics);
+		(void *)graphics);
 	framebuffer->physical_address = graphics;
 	framebuffer->x_resolution = 1024;
 	framebuffer->y_resolution = 768;
@@ -250,7 +250,7 @@ static int run(int index)
 
 				if (verbose & vspin)
 					printk(BIOS_SPEW,
-					       "%s: # loops %ld got %08lx want %08lx\n",
+						    "%s: # loops %ld got %08lx want %08lx\n",
 						regname(id->addr),
 						t, u, id->data);
 			}
@@ -270,7 +270,7 @@ static int run(int index)
 					udelay(100000);
 					if (verbose & vio)
 						printk(BIOS_SPEW, "U %d\n",
-						       100000);
+							     100000);
 				}
 			}
 			break;
@@ -289,7 +289,7 @@ static int run(int index)
 			break;
 		default:
 			printk(BIOS_SPEW, "BAD TABLE, opcode %d @ %d\n",
-			       id->op, i);
+				  id->op, i);
 			return -1;
 		}
 		if (id->udelay)

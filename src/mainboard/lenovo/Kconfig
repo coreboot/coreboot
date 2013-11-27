@@ -16,7 +16,7 @@ config BOARD_LENOVO_T60
 	bool "ThinkPad T60 / T60p"
 	help
 	  The following T60 series ThinkPad machines have been verified to
-          work correctly:
+	  work correctly:
 
 	    Thinkpad T60p (Model 2007)
 

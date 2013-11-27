@@ -31,15 +31,15 @@
 #include "gm45.h"
 
 static const gmch_gfx_t gmch_gfx_types[][5] = {
-/*  MAX_667MHz    MAX_533MHz    MAX_400MHz    MAX_333MHz    MAX_800MHz    */
+/*  MAX_667MHz	  MAX_533MHz	MAX_400MHz    MAX_333MHz    MAX_800MHz	  */
   { GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN  },
-  { GMCH_GM47,    GMCH_GM45,    GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_GM49     },
-  { GMCH_GE45,    GMCH_GE45,    GMCH_GE45,    GMCH_GE45,    GMCH_GE45     },
-  { GMCH_UNKNOWN, GMCH_GL43,	GMCH_GL40,    GMCH_UNKNOWN, GMCH_UNKNOWN  },
-  { GMCH_UNKNOWN, GMCH_GS45,    GMCH_GS40,    GMCH_UNKNOWN, GMCH_UNKNOWN  },
+  { GMCH_GM47,	  GMCH_GM45,	GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_GM49	  },
+  { GMCH_GE45,	  GMCH_GE45,	GMCH_GE45,    GMCH_GE45,    GMCH_GE45	  },
+  { GMCH_UNKNOWN, GMCH_GL43,	GMCH_GL40,	   GMCH_UNKNOWN, GMCH_UNKNOWN  },
+  { GMCH_UNKNOWN, GMCH_GS45,	GMCH_GS40,    GMCH_UNKNOWN, GMCH_UNKNOWN  },
   { GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN  },
   { GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN, GMCH_UNKNOWN  },
-  { GMCH_PM45,    GMCH_PM45,    GMCH_PM45,    GMCH_PM45,    GMCH_PM45     },
+  { GMCH_PM45,	  GMCH_PM45,	GMCH_PM45,    GMCH_PM45,    GMCH_PM45	  },
 };
 
 void get_gmch_info(sysinfo_t *sysinfo)
@@ -47,7 +47,7 @@ void get_gmch_info(sysinfo_t *sysinfo)
 	sysinfo->stepping = pci_read_config8(PCI_DEV(0, 0, 0), PCI_CLASS_REVISION);
 	if ((sysinfo->stepping > STEPPING_B3) &&
 			(sysinfo->stepping != STEPPING_CONVERSION_A1))
-	       die("Unknown stepping.\n");
+		die("Unknown stepping.\n");
 	if (sysinfo->stepping <= STEPPING_B3)
 		printk(BIOS_DEBUG, "Stepping %c%d\n", 'A' + sysinfo->stepping / 4, sysinfo->stepping % 4);
 	else
@@ -335,7 +335,7 @@ static void collect_ddr3(spdinfo_t *const config)
 			config->channel[cur].chip_capacity = smbus_read_byte(smb_addr, 4) & 0xf;
 
 			config->channel[cur].banks = 8; /* GM45 only accepts this for DDR3.
-							   verify_ddr3() fails for other values. */
+								  verify_ddr3() fails for other values. */
 			config->channel[cur].ranks = ((smbus_read_byte(smb_addr, 7) >> 3) & 7) + 1;
 
 			config->channel[cur].cas_latencies =
@@ -472,8 +472,8 @@ static unsigned int find_common_clock_cas(sysinfo_t *const sysinfo,
 }
 
 static void calculate_derived_timings(sysinfo_t *const sysinfo,
-				      const unsigned int tCLK,
-				      const spdinfo_t *const spdinfo)
+					  const unsigned int tCLK,
+					  const spdinfo_t *const spdinfo)
 {
 	int i;
 
@@ -496,10 +496,10 @@ static void calculate_derived_timings(sysinfo_t *const sysinfo,
 
 	/* Lookup tRFC and calculate common tRFCmin. */
 	const unsigned int tRFC_from_clock_and_cap[][4] = {
-	/*             CAP_256M	   CAP_512M      CAP_1G      CAP_2G */
-	/* 533MHz */ {       40,         56,         68,        104 },
-	/* 400MHz */ {       30,         42,         51,         78 },
-	/* 333MHz */ {       25,         35,         43,         65 },
+	/*		CAP_256M	   CAP_512M	  CAP_1G      CAP_2G */
+	/* 533MHz */ {	      40,	  56,	      68,	 104 },
+	/* 400MHz */ {	      30,	  42,	      51,	  78 },
+	/* 333MHz */ {	      25,	  35,	      43,	  65 },
 	};
 	unsigned int tRFCmin = 0;
 	FOR_EACH_POPULATED_CHANNEL(sysinfo->dimms, i) {
@@ -624,14 +624,14 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 					  " Raw card type: %4c\n"
 					  " Row addr bits: %4u\n"
 					  " Col addr bits: %4u\n"
-					  " byte width:    %4u\n"
-					  " page size:     %4u\n"
-					  " banks:         %4u\n"
-					  " ranks:         %4u\n"
+					  " byte width:	%4u\n"
+					  " page size:	%4u\n"
+					  " banks:		%4u\n"
+					  " ranks:		%4u\n"
 					  " tAAmin:    %3u\n"
 					  " tCKmin:    %3u\n"
 					  "  Max clock: %3u MHz\n"
-					  " CAS:       0x%04x\n",
+					  " CAS:	    0x%04x\n",
 				i, spdinfo.channel[i].raw_card + 'A',
 				spdinfo.channel[i].rows, spdinfo.channel[i].cols,
 				spdinfo.channel[i].width, spdinfo.channel[i].page_size,
@@ -770,14 +770,14 @@ static void set_igd_memory_frequencies(const sysinfo_t *const sysinfo)
 
 	/* Render and sampler frequency values seem to be some kind of factor. */
 	const u16 render_freq_from_vco_and_gfxtype[][10] = {
-	/*              GM45  GM47  GM49  GE45  GL40  GL43  GS40  GS45 (perf) */
+	/*		 GM45  GM47  GM49  GE45  GL40  GL43  GS40  GS45 (perf) */
 	/* VCO 2666 */ { 0xd,  0xd,  0xe,  0xd,  0xb,  0xd,  0xb,  0xa,  0xd },
 	/* VCO 3200 */ { 0xd,  0xe,  0xf,  0xd,  0xb,  0xd,  0xb,  0x9,  0xd },
 	/* VCO 4000 */ { 0xc,  0xd,  0xf,  0xc,  0xa,  0xc,  0xa,  0x9,  0xc },
 	/* VCO 5333 */ { 0xb,  0xc,  0xe,  0xb,  0x9,  0xb,  0x9,  0x8,  0xb },
 	};
 	const u16 sampler_freq_from_vco_and_gfxtype[][10] = {
-	/*              GM45  GM47  GM49  GE45  GL40  GL43  GS40  GS45 (perf) */
+	/*		 GM45  GM47  GM49  GE45  GL40  GL43  GS40  GS45 (perf) */
 	/* VCO 2666 */ { 0xc,  0xc,  0xd,  0xc,  0x9,  0xc,  0x9,  0x8,  0xc },
 	/* VCO 3200 */ { 0xc,  0xd,  0xe,  0xc,  0x9,  0xc,  0x9,  0x8,  0xc },
 	/* VCO 4000 */ { 0xa,  0xc,  0xd,  0xa,  0x8,  0xa,  0x8,  0x8,  0xa },
@@ -785,7 +785,7 @@ static void set_igd_memory_frequencies(const sysinfo_t *const sysinfo)
 	};
 	const u16 display_clock_select_from_gfxtype[] = {
 		/* GM45  GM47  GM49  GE45  GL40  GL43  GS40  GS45 (perf) */
-		      1,    1,    1,    1,    1,    1,    1,    0,    1
+			1,    1,    1,	  1,	1,    1,    1,	  0,	1
 	};
 
 	if (pci_read_config16(GCFGC_PCIDEV, 0) != 0x8086) {
@@ -984,12 +984,12 @@ static void dram_program_timings(const timings_t *const timings)
 
 		reg = MCHBAR32(CxDRT4_MCHBAR(i));
 		static const u8 timings_by_clock[4][3] = {
-			/*   333MHz  400MHz  533MHz
-			     667MT   800MT  1067MT   */
-			{     0x07,   0x0a,   0x0d   },
-			{     0x3a,   0x46,   0x5d   },
-			{     0x0c,   0x0e,   0x18   },
-			{     0x21,   0x28,   0x35   },
+			/*	333MHz  400MHz  533MHz
+				667MT	800MT  1067MT	*/
+			{	 0x07,	 0x0a,	 0x0d	},
+			{	 0x3a,	 0x46,	 0x5d	},
+			{	 0x0c,	 0x0e,	 0x18	},
+			{	 0x21,	 0x28,	 0x35	},
 		};
 		const int clk_idx = 2 - timings->mem_clock;
 		reg = (reg & ~(0x01f << 27)) | (timings_by_clock[0][clk_idx] << 27);
@@ -1091,7 +1091,7 @@ static void misc_settings(const timings_t *const timings,
 	MCHBAR8(0x13a0) = (MCHBAR8(0x13a0) & ~(0xf)) | 0xa;
 
 	MCHBAR32(0x218) = (MCHBAR32(0x218) & ~((7 << 29) | (7 << 25) | (3 << 22) | (3 << 10))) |
-					       (4 << 29) | (3 << 25) | (0 << 22) | (1 << 10);
+						    (4 << 29) | (3 << 25) | (0 << 22) | (1 << 10);
 	MCHBAR32(0x220) = (MCHBAR32(0x220) & ~(7 << 16)) | (1 << 21) | (1 << 16);
 	MCHBAR32(0x224) = (MCHBAR32(0x224) & ~(7 <<  8)) | (3 << 8);
 	if (stepping >= STEPPING_B1)
@@ -1129,7 +1129,7 @@ static void clock_crossing_setup(const fsb_clock_t fsb,
 		MCHBAR32(0x0210) = data[1];
 
 	static const u32 from_fsb_and_mem[][3] = {
-			 /* DDR3-1067    DDR3-800    DDR3-667 */
+			 /* DDR3-1067    DDR3-800	DDR3-667 */
 	/* FSB 1067MHz */{ 0x40100401, 0x10040220, 0x08040110, },
 	/* FSB  800MHz */{ 0x00000000, 0x40100401, 0x00080201, },
 	/* FSB  667MHz */{ 0x00000000, 0x00000000, 0x40100401, },
@@ -1293,16 +1293,16 @@ static void ddr3_select_clock_mux(const mem_clock_t ddr3clock,
 			mixed = 4 << 11;
 		const unsigned int b = 0x14b0 + (ch * 0x0100);
 		MCHBAR32(b+0x1c) = (MCHBAR32(b+0x1c) & ~(7 << 11)) |
-					(((             cardF[ch])?1:0) << 11) | mixed;
-		MCHBAR32(b+0x18) = (MCHBAR32(b+0x18) & ~(7 << 11))             | mixed;
+					(((	     cardF[ch])?1:0) << 11) | mixed;
+		MCHBAR32(b+0x18) = (MCHBAR32(b+0x18) & ~(7 << 11))		 | mixed;
 		MCHBAR32(b+0x14) = (MCHBAR32(b+0x14) & ~(7 << 11)) |
 					(((!clk1067 && !cardF[ch])?0:1) << 11) | mixed;
 		MCHBAR32(b+0x10) = (MCHBAR32(b+0x10) & ~(7 << 11)) |
 					((( clk1067 && !cardF[ch])?1:0) << 11) | mixed;
 		MCHBAR32(b+0x0c) = (MCHBAR32(b+0x0c) & ~(7 << 11)) |
-					(((             cardF[ch])?3:2) << 11) | mixed;
+					(((	     cardF[ch])?3:2) << 11) | mixed;
 		MCHBAR32(b+0x08) = (MCHBAR32(b+0x08) & ~(7 << 11)) |
-					(2 << 11)                              | mixed;
+					(2 << 11)				    | mixed;
 		MCHBAR32(b+0x04) = (MCHBAR32(b+0x04) & ~(7 << 11)) |
 					(((!clk1067 && !cardF[ch])?2:3) << 11) | mixed;
 		MCHBAR32(b+0x00) = (MCHBAR32(b+0x00) & ~(7 << 11)) |
@@ -1310,9 +1310,9 @@ static void ddr3_select_clock_mux(const mem_clock_t ddr3clock,
 	}
 }
 static void ddr3_write_io_init(const mem_clock_t ddr3clock,
-			       const dimminfo_t *const dimms,
-			       const stepping_t stepping,
-			       const int sff)
+				  const dimminfo_t *const dimms,
+				  const stepping_t stepping,
+				  const int sff)
 {
 	const int a1step = stepping >= STEPPING_CONVERSION_A1;
 	const int cardF[] = { CHANNEL_IS_CARDF(dimms, 0), CHANNEL_IS_CARDF(dimms, 1) };
@@ -1376,8 +1376,8 @@ static void ddr3_write_io_init(const mem_clock_t ddr3clock,
 	MCHBAR32(0x1594) = 0x000d8000;
 }
 static void ddr3_read_io_init(const mem_clock_t ddr3clock,
-			      const dimminfo_t *const dimms,
-			      const int sff)
+				 const dimminfo_t *const dimms,
+				 const int sff)
 {
 	int ch;
 
@@ -1509,7 +1509,7 @@ static void memory_io_init(const mem_clock_t ddr3clock,
 }
 
 static void jedec_init(const timings_t *const timings,
-		       const dimminfo_t *const dimms)
+			 const dimminfo_t *const dimms)
 {
 	if ((timings->tWR < 5) || (timings->tWR > 12))
 		die("tWR value unsupported in Jedec initialization.\n");
@@ -1558,7 +1558,7 @@ static void jedec_init(const timings_t *const timings,
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_CMD_MASK) | DCC_SET_MREG;
 		read32(rankaddr | WR | DLL1 | CAS | INTERLEAVED);
 		MCHBAR32(DCC_MCHBAR) = (MCHBAR32(DCC_MCHBAR) & ~DCC_CMD_MASK) | DCC_SET_MREG;
-		read32(rankaddr | WR        | CAS | INTERLEAVED);
+		read32(rankaddr | WR	      | CAS | INTERLEAVED);
 	}
 }
 
@@ -1614,7 +1614,7 @@ static void post_jedec_sequence(const int cores) {
 }
 
 static void dram_optimizations(const timings_t *const timings,
-			       const dimminfo_t *const dimms)
+				  const dimminfo_t *const dimms)
 {
 	int ch;
 

@@ -44,13 +44,13 @@ static void pci7420_firewire_init(device_t dev)
 
 static struct device_operations ti_pci7420_firewire_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = pci7420_firewire_init,
+	.init		   = pci7420_firewire_init,
 };
 
 static const struct pci_driver ti_pci7420_driver __pci_driver = {
-	.ops    = &ti_pci7420_firewire_ops,
+	.ops	 = &ti_pci7420_firewire_ops,
 	.vendor = 0x104c,
 	.device = 0x802e,
 };
@@ -62,5 +62,5 @@ static void ti_pci7420_firewire_enable_dev(device_t dev)
 
 struct chip_operations southbridge_ti_pci7420_firewire_ops = {
 	CHIP_NAME("Texas Instruments PCI7420/7620 FireWire (IEEE 1394)")
-	.enable_dev    = ti_pci7420_firewire_enable_dev,
+	.enable_dev	= ti_pci7420_firewire_enable_dev,
 };

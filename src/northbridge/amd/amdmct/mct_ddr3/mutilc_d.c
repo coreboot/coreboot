@@ -70,9 +70,9 @@ static void AmdMemPCIWriteBits(SBDFO loc, u8 highbit, u8 lowbit, u32 *pValue)
  *     This routine sets a bit in a u32
  *
  * Parameters:
- *     IN        csMask = Target value in which the bit will be set
- *     IN        tempD     =  Bit that will be set
- *     OUT    value     =  Target value with the bit set
+ *     IN	 csMask = Target value in which the bit will be set
+ *     IN	 tempD	   =  Bit that will be set
+ *     OUT    value	=  Target value with the bit set
  *-----------------------------------------------------------------------------
  */
 static u32 bitTestSet(u32 csMask,u32 tempD)
@@ -91,9 +91,9 @@ static u32 bitTestSet(u32 csMask,u32 tempD)
  *     This routine re-sets a bit in a u32
  *
  * Parameters:
- *     IN        csMask = Target value in which the bit will be re-set
- *     IN        tempD     =  Bit that will be re-set
- *     OUT    value     =  Target value with the bit re-set
+ *     IN	 csMask = Target value in which the bit will be re-set
+ *     IN	 tempD	   =  Bit that will be re-set
+ *     OUT    value	=  Target value with the bit re-set
  *-----------------------------------------------------------------------------
  */
 static u32 bitTestReset(u32 csMask,u32 tempD)
@@ -109,24 +109,24 @@ static u32 bitTestReset(u32 csMask,u32 tempD)
 
 /*-----------------------------------------------------------------------------
  *  u32 get_Bits(DCTStruct *DCTData, u8 DCT, u8 Node, u8 func, u16 offset,
- *                 u8 low, u8 high)
+ *		   u8 low, u8 high)
  *
  * Description:
  *     This routine Gets the PCT bits from the specified Node, DCT and PCI address
  *
  * Parameters:
  *   IN  OUT *DCTData - Pointer to buffer with information about each DCT
- *     IN        DCT - DCT number
- *              - 1 indicates DCT 1
- *              - 0 indicates DCT 0
- *              - 2 both DCTs
- *          Node - Node number
- *          Func - PCI Function number
- *          Offset - PCI register number
- *          Low - Low bit of the bit field
- *          High - High bit of the bit field
+ *     IN	 DCT - DCT number
+ *		- 1 indicates DCT 1
+ *		- 0 indicates DCT 0
+ *		- 2 both DCTs
+ *	    Node - Node number
+ *	    Func - PCI Function number
+ *	    Offset - PCI register number
+ *	    Low - Low bit of the bit field
+ *	    High - High bit of the bit field
  *
- *     OUT    value     =  Value read from PCI space
+ *     OUT    value	=  Value read from PCI space
  *-----------------------------------------------------------------------------
  */
 static u32 get_Bits(sDCTStruct *pDCTData,
@@ -159,22 +159,22 @@ static u32 get_Bits(sDCTStruct *pDCTData,
 
 /*-----------------------------------------------------------------------------
  *  void set_Bits(DCTStruct *DCTData,u8 DCT,u8 Node,u8 func, u16 offset,
- *                u8 low, u8 high, u32 value)
+ *		  u8 low, u8 high, u32 value)
  *
  * Description:
  *     This routine Sets the PCT bits from the specified Node, DCT and PCI address
  *
  * Parameters:
  *   IN  OUT *DCTData - Pointer to buffer with information about each DCT
- *     IN        DCT - DCT number
- *              - 1 indicates DCT 1
- *              - 0 indicates DCT 0
- *              - 2 both DCTs
- *          Node - Node number
- *          Func - PCI Function number
- *          Offset - PCI register number
- *          Low - Low bit of the bit field
- *          High - High bit of the bit field
+ *     IN	 DCT - DCT number
+ *		- 1 indicates DCT 1
+ *		- 0 indicates DCT 0
+ *		- 2 both DCTs
+ *	    Node - Node number
+ *	    Func - PCI Function number
+ *	    Offset - PCI register number
+ *	    Low - Low bit of the bit field
+ *	    High - High bit of the bit field
  *
  *     OUT
  *-----------------------------------------------------------------------------
@@ -209,7 +209,7 @@ static void set_Bits(sDCTStruct *pDCTData,
 
 /*-------------------------------------------------
  *  u32 get_ADD_DCT_Bits(DCTStruct *DCTData,u8 DCT,u8 Node,u8 func,
- *                         u16 offset,u8 low, u8 high)
+ *			   u16 offset,u8 low, u8 high)
  *
  * Description:
  *     This routine gets the Additional PCT register from Function 2 by specified
@@ -217,15 +217,15 @@ static void set_Bits(sDCTStruct *pDCTData,
  *
  * Parameters:
  *   IN  OUT *DCTData - Pointer to buffer with information about each DCT
- *     IN        DCT - DCT number
- *              - 1 indicates DCT 1
- *              - 0 indicates DCT 0
- *              - 2 both DCTs
- *          Node - Node number
- *          Func - PCI Function number
- *          Offset - Additional PCI register number
- *          Low - Low bit of the bit field
- *          High - High bit of the bit field
+ *     IN	 DCT - DCT number
+ *		- 1 indicates DCT 1
+ *		- 0 indicates DCT 0
+ *		- 2 both DCTs
+ *	    Node - Node number
+ *	    Func - PCI Function number
+ *	    Offset - Additional PCI register number
+ *	    Low - Low bit of the bit field
+ *	    High - High bit of the bit field
  *
  *     OUT
  *-------------------------------------------------
@@ -247,7 +247,7 @@ static u32 get_ADD_DCT_Bits(sDCTStruct *pDCTData,
 
 /*-------------------------------------------------
  *  void set_DCT_ADDR_Bits(DCTStruct *DCTData, u8 DCT,u8 Node,u8 func,
- *                         u16 offset,u8 low, u8 high, u32 value)
+ *			   u16 offset,u8 low, u8 high, u32 value)
  *
  * Description:
  *     This routine sets the Additional PCT register from Function 2 by specified
@@ -255,15 +255,15 @@ static u32 get_ADD_DCT_Bits(sDCTStruct *pDCTData,
  *
  * Parameters:
  *   IN  OUT *DCTData - Pointer to buffer with information about each DCT
- *     IN        DCT - DCT number
- *              - 1 indicates DCT 1
- *              - 0 indicates DCT 0
- *              - 2 both DCTs
- *          Node - Node number
- *          Func - PCI Function number
- *          Offset - Additional PCI register number
- *          Low - Low bit of the bit field
- *          High - High bit of the bit field
+ *     IN	 DCT - DCT number
+ *		- 1 indicates DCT 1
+ *		- 0 indicates DCT 0
+ *		- 2 both DCTs
+ *	    Node - Node number
+ *	    Func - PCI Function number
+ *	    Offset - Additional PCI register number
+ *	    Low - Low bit of the bit field
+ *	    High - High bit of the bit field
  *
  *     OUT
  *-------------------------------------------------
@@ -297,10 +297,10 @@ static void set_DCT_ADDR_Bits(sDCTStruct *pDCTData,
  *     This routine tests the value to determine if the bitLoc is set
  *
  * Parameters:
- *     IN        Value - value to be tested
- *          bitLoc - bit location to be tested
+ *     IN	 Value - value to be tested
+ *	    bitLoc - bit location to be tested
  *     OUT    TRUE - bit is set
- *          FALSE - bit is clear
+ *	    FALSE - bit is clear
  *-------------------------------------------------
  */
 static BOOL bitTest(u32 value, u8 bitLoc)

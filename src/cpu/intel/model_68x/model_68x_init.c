@@ -52,10 +52,10 @@ static const uint32_t microcode_updates[] = {
 	#include "microcode-691-MU168a04.h"
 	#include "microcode-692-MU168a05.h"
 	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
 };
 
 static void model_68x_init(device_t cpu)
@@ -81,7 +81,7 @@ static void model_68x_init(device_t cpu)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_68x_init,
+	.init	   = model_68x_init,
 };
 
 /*
@@ -108,7 +108,7 @@ static struct cpu_device_id cpu_table[] = {
 };
 
 static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
+	.ops	   = &cpu_dev_ops,
 	.id_table = cpu_table,
 };
 

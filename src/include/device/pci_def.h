@@ -36,10 +36,10 @@
 #define  PCI_STATUS_DETECTED_PARITY 0x8000 /* Set on parity error */
 
 #define PCI_CLASS_REVISION	0x08	/* High 24 bits are class, low 8
-					   revision */
-#define PCI_REVISION_ID         0x08    /* Revision ID */
-#define PCI_CLASS_PROG          0x09    /* Reg. Level Programming Interface */
-#define PCI_CLASS_DEVICE        0x0a    /* Device class */
+						revision */
+#define PCI_REVISION_ID		0x08	/* Revision ID */
+#define PCI_CLASS_PROG		0x09	/* Reg. Level Programming Interface */
+#define PCI_CLASS_DEVICE	0x0a	/* Device class */
 
 #define PCI_CACHE_LINE_SIZE	0x0c	/* 8 bits */
 #define PCI_LATENCY_TIMER	0x0d	/* 8 bits */
@@ -180,7 +180,7 @@
 #define  PCI_CAP_ID_MSI		0x05	/* Message Signaled Interrupts */
 #define  PCI_CAP_ID_CHSWP	0x06	/* CompactPCI HotSwap */
 #define  PCI_CAP_ID_PCIX	0x07	/* PCIX  */
-#define  PCI_CAP_ID_HT          0x08	/* Hypertransport */
+#define  PCI_CAP_ID_HT		0x08	/* Hypertransport */
 #define  PCI_CAP_ID_SHPC 	0x0C	/* PCI Standard Hot-Plug Controller */
 #define  PCI_CAP_ID_PCIE	0x10	/* PCI Express */
 #define  PCI_CAP_ID_MSIX	0x11	/* MSI-X */
@@ -189,23 +189,23 @@
 
 /* Hypertransport Registers */
 #define PCI_HT_CAP_SIZEOF	   4
-#define PCI_HT_CAP_HOST_CTRL       4	/* Host link control */
-#define PCI_HT_CAP_HOST_WIDTH	   6	/* width value & capability  */
-#define PCI_HT_CAP_HOST_FREQ	   0x09	/* Host frequency */
+#define PCI_HT_CAP_HOST_CTRL	   4	/* Host link control */
+#define PCI_HT_CAP_HOST_WIDTH		 6	/* width value & capability  */
+#define PCI_HT_CAP_HOST_FREQ		0x09	/* Host frequency */
 #define PCI_HT_CAP_HOST_FREQ_CAP   0x0a	/* Host Frequency capability  */
-#define PCI_HT_CAP_SLAVE_CTRL0	   4	/* link control */
-#define PCI_HT_CAP_SLAVE_CTRL1	   8	/* link control to */
+#define PCI_HT_CAP_SLAVE_CTRL0		  4	/* link control */
+#define PCI_HT_CAP_SLAVE_CTRL1		  8	/* link control to */
 #define PCI_HT_CAP_SLAVE_WIDTH0	   6	/* width value & capability  */
 #define PCI_HT_CAP_SLAVE_WIDTH1	   0x0a	/* width value & capability  to */
-#define PCI_HT_CAP_SLAVE_FREQ0	   0x0d	/* Slave frequency from */
-#define PCI_HT_CAP_SLAVE_FREQ1	   0x011	/* Slave frequency to */
+#define PCI_HT_CAP_SLAVE_FREQ0		  0x0d	/* Slave frequency from */
+#define PCI_HT_CAP_SLAVE_FREQ1		  0x011	/* Slave frequency to */
 #define PCI_HT_CAP_SLAVE_FREQ_CAP0 0x0e	/* Frequency capability from */
 #define PCI_HT_CAP_SLAVE_FREQ_CAP1 0x12	/* Frequency capability to */
 #define PCI_HT_CAP_SLAVE_LINK_ENUM   0x14 /* Link Enumeration Scratchpad */
 
 /* Power Management Registers */
 
-#define PCI_PM_PMC              2       /* PM Capabilities Register */
+#define PCI_PM_PMC		2	/* PM Capabilities Register */
 #define  PCI_PM_CAP_VER_MASK	0x0007	/* Version */
 #define  PCI_PM_CAP_PME_CLOCK	0x0008	/* PME clock required */
 #define  PCI_PM_CAP_AUX_POWER	0x0010	/* Auxiliary power support */
@@ -312,16 +312,16 @@
 #define  PCI_X_SSTATUS_SPL_OVR	0x0010	/* Split Completion Overrun */
 #define  PCI_X_SSTATUS_SPL_DLY	0x0020	/* Split Completion Delayed */
 #define  PCI_X_SSTATUS_MFREQ(x) (((x) & 0x03c0) >> 6)	/* PCI-X mode and frequency */
-#define   PCI_X_SSTATUS_CONVENTIONAL_PCI	0x0
-#define   PCI_X_SSTATUS_MODE1_66MHZ	0x1
-#define   PCI_X_SSTATUS_MODE1_100MHZ	0x2
-#define   PCI_X_SSTATUS_MODE1_133MHZ	0x3
-#define   PCI_X_SSTATUS_MODE2_266MHZ_REF_66MHZ	0x9
-#define   PCI_X_SSTATUS_MODE2_266MHZ_REF_100MHZ	0xa
-#define   PCI_X_SSTATUS_MODE2_266MHZ_REF_133MHZ	0xb
-#define   PCI_X_SSTATUS_MODE2_533MHZ_REF_66MHZ	0xd
-#define   PCI_X_SSTATUS_MODE2_533MHZ_REF_100MHZ	0xe
-#define   PCI_X_SSTATUS_MODE2_533MHZ_REF_133MHZ	0xf
+#define	  PCI_X_SSTATUS_CONVENTIONAL_PCI	0x0
+#define	  PCI_X_SSTATUS_MODE1_66MHZ	0x1
+#define	  PCI_X_SSTATUS_MODE1_100MHZ	0x2
+#define	  PCI_X_SSTATUS_MODE1_133MHZ	0x3
+#define	  PCI_X_SSTATUS_MODE2_266MHZ_REF_66MHZ	0x9
+#define	  PCI_X_SSTATUS_MODE2_266MHZ_REF_100MHZ	0xa
+#define	  PCI_X_SSTATUS_MODE2_266MHZ_REF_133MHZ	0xb
+#define	  PCI_X_SSTATUS_MODE2_533MHZ_REF_66MHZ	0xd
+#define	  PCI_X_SSTATUS_MODE2_533MHZ_REF_100MHZ	0xe
+#define	  PCI_X_SSTATUS_MODE2_533MHZ_REF_133MHZ	0xf
 #define  PCI_X_SSTATUS_VERSION(x)	(((x) >> 12) & 3) /* Version */
 #define  PCI_X_SSTATUS_266MHZ	0x4000	/* The bus behind the bridge is 266Mhz Capable */
 #define  PCI_X_SSTAUTS_533MHZ	0x8000	/* The bus behind the bridge is 533Mhz Capable */
@@ -452,11 +452,11 @@
 #define PCI_PWR_DSR		4	/* Data Select Register */
 #define PCI_PWR_DATA		8	/* Data Register */
 #define  PCI_PWR_DATA_BASE(x)	((x) & 0xff)	    /* Base Power */
-#define  PCI_PWR_DATA_SCALE(x)	(((x) >> 8) & 3)    /* Data Scale */
+#define  PCI_PWR_DATA_SCALE(x)	(((x) >> 8) & 3)	   /* Data Scale */
 #define  PCI_PWR_DATA_PM_SUB(x)	(((x) >> 10) & 7)   /* PM Sub State */
 #define  PCI_PWR_DATA_PM_STATE(x) (((x) >> 13) & 3) /* PM State */
-#define  PCI_PWR_DATA_TYPE(x)	(((x) >> 15) & 7)   /* Type */
-#define  PCI_PWR_DATA_RAIL(x)	(((x) >> 18) & 7)   /* Power Rail */
+#define  PCI_PWR_DATA_TYPE(x)	(((x) >> 15) & 7)	  /* Type */
+#define  PCI_PWR_DATA_RAIL(x)	(((x) >> 18) & 7)	  /* Power Rail */
 #define PCI_PWR_CAP		12	/* Capability */
 #define  PCI_PWR_CAP_BUDGET(x)	((x) & 1)	/* Included in system budget */
 

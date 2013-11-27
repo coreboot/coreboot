@@ -88,46 +88,46 @@ endif
 endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $$(VBOOT_STUB_ELF)
-	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	@printf "    CBFS	 $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
-	@printf "    PAYLOAD    none (as specified by user)\n"
+	@printf "    PAYLOAD	 none (as specified by user)\n"
 endif
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
-	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	@printf "    PAYLOAD	 $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_PAYLOAD_LINUX),y)
-	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	@printf "    PAYLOAD	 $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG) $(LINUX_ADDITIONAL_CONFIG)
 endif
 ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
-	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	@printf "    PAYLOAD	 SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),)
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
-	@printf "    SeaBIOS    Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
+	@printf "    SeaBIOS	 Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
 	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
 endif
 endif
 endif
 ifeq ($(CONFIG_PAYLOAD_FILO),y)
-	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	@printf "    PAYLOAD	 FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 
 ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
-	@printf "    PAYLOAD    GRUB2 (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	@printf "    PAYLOAD	 GRUB2 (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 
 ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
-	@printf "    PAYLOAD    Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	@printf "    PAYLOAD	 Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
-	@printf "    CONFIG     $(DOTCONFIG)\n"
+	@printf "    CONFIG	 $(DOTCONFIG)\n"
 	if [ -f $(DOTCONFIG) ]; then \
 	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
 	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
@@ -167,22 +167,22 @@ bootsplash.jpg-type := bootsplash
 NVRAMTOOL:=$(objutil)/nvramtool/nvramtool
 
 $(OPTION_TABLE_H): $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
-	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
+	@printf "    OPTION	 $(subst $(obj)/,,$(@))\n"
 	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -H $@
 
 $(obj)/cmos_layout.bin: $(NVRAMTOOL) $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout
-	@printf "    OPTION     $(subst $(obj)/,,$(@))\n"
+	@printf "    OPTION	 $(subst $(obj)/,,$(@))\n"
 	$(NVRAMTOOL) -y $(top)/src/mainboard/$(MAINBOARDDIR)/cmos.layout -L $@
 
 ################################################################################
 # Common recipes for all stages
 
 $(objcbfs)/%.bin: $(objcbfs)/%.elf
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -O binary $< $@
 
 $(objcbfs)/%.elf: $(objcbfs)/%.debug
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	cp $< $@.tmp
 	$(NM) -n $@.tmp | sort > $(basename $@).map
 	$(OBJCOPY) --strip-debug $@.tmp
@@ -199,7 +199,7 @@ $(eval $(call rmodule_link,$(objcbfs)/coreboot_ram.debug, $(objgenerated)/corebo
 else
 
 $(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m elf_i386 -o $@ -L$(obj) $< -T $(src)/arch/x86/coreboot_ram.ld
 else
@@ -209,7 +209,7 @@ endif
 endif
 
 $(objgenerated)/coreboot_ram.o: $$(ramstage-objs) $(LIBGCC_FILE_NAME)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m elf_i386 -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) --end-group
 else
@@ -251,16 +251,16 @@ else
 endif
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
-	printf "    ROMCC      romstage.inc\n"
+	printf "    ROMCC	romstage.inc\n"
 	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(INCLUDES) $< -o $@
 else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
-	@printf "    CC         romstage.inc\n"
+	@printf "    CC	 romstage.inc\n"
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
-	@printf "    POST       romstage.inc\n"
+	@printf "    POST	 romstage.inc\n"
 	sed -e 's/\.rodata/.rom.data/g' -e 's/\^\.text/.section .rom.text/g' \
 		-e 's/\^\.section \.text/.section .rom.text/g' $^ > $@.tmp
 	mv $@.tmp $@
@@ -312,7 +312,7 @@ endif
 # Build the final rom image
 
 $(obj)/coreboot.pre: $(objcbfs)/romstage_xip.elf $(obj)/coreboot.pre1 $(CBFSTOOL)
-	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	@printf "    CBFS	 $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre1 $@.tmp
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/romstage_xip.elf \
 		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
@@ -353,29 +353,29 @@ bootblock_romccflags := -mcpu=k7 -msse -O2 -D__PRE_RAM__
 endif
 
 $(objgenerated)/bootblock.ld: $$(bootblock_lds) $(obj)/ldoptions
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
 
 $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
-	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
+	@printf "    ROMCC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) $(INCLUDES) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
 	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(INCLUDES) $< -o $@
 
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	@printf "    LINK	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m elf_i386 -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
@@ -386,7 +386,7 @@ endif
 # Build the romstage
 
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	@printf "    LINK	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(LIBGCC_FILE_NAME) --end-group -T $(objgenerated)/romstage_null.ld
 else
@@ -398,7 +398,7 @@ endif
 		else true; fi
 
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	@printf "    LINK	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(LIBGCC_FILE_NAME) --end-group -T $(objgenerated)/romstage_xip.ld
 else
@@ -406,14 +406,14 @@ else
 endif
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf "ROMSTAGE_BASE = 0x0;\n" > $@.tmp
 	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
 	mv $@.tmp $@
 
 $(objgenerated)/romstage_xip.ld: $(objgenerated)/romstage_null.ld $(objcbfs)/base_xip.txt
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	sed -e 's/^/ROMSTAGE_BASE = /g' -e 's/$$/;/g' $(objcbfs)/base_xip.txt > $@.tmp
 	sed -e '/ROMSTAGE_BASE/d' $(objgenerated)/romstage_null.ld >> $@.tmp
@@ -426,15 +426,15 @@ $(objcbfs)/base_xip.txt: $(obj)/coreboot.pre1 $(objcbfs)/romstage_null.bin
 	mv $@.tmp $@
 
 $(objgenerated)/crt0.romstage.S: $$(crt0s)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
 $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 
 seabios:

@@ -96,11 +96,11 @@ static void PciePowerOffGppPorts(device_t nb_dev, device_t dev, u32 port)
 	switch ((reg >> 4) & 0x7) {	/* get bit 4-6, LC_LINK_WIDTH_RD */
 	case 1:
 		set_pcie_enable_bits(nb_dev, 0x65 | PCIE_CORE_INDEX_GPPSB,
-				     0x0f0f, 0x0e0e);
+					 0x0f0f, 0x0e0e);
 		break;
 	case 2:
 		set_pcie_enable_bits(nb_dev, 0x65 | PCIE_CORE_INDEX_GPPSB,
-				     0x0f0f, 0x0c0c);
+					 0x0f0f, 0x0c0c);
 		break;
 	default:
 		break;
@@ -253,7 +253,7 @@ void rs780_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	/* init GPP core */
 	/* 5.10.8.3. Disable slave ordering logic */
 	set_pcie_enable_bits(nb_dev, 0x20 | gfx_gpp_sb_sel, 1 << 8,
-			     1 << 8);
+				1 << 8);
 	/* 5.10.8.7. PCIE initialization 5.10.2: rpr 2.12*/
 	set_pcie_enable_bits(nb_dev, 0x02 | gfx_gpp_sb_sel, 1 << 0, 1 << 0);	/* no description in datasheet. */
 
@@ -326,8 +326,8 @@ void rs780_gpp_sb_init(device_t nb_dev, device_t dev, u32 port)
 	}
 	/* 5.10.8.30. Set TX arbitration algorithm to round robin. */
 	set_pcie_enable_bits(nb_dev, 0x1C | gfx_gpp_sb_sel,
-			     1 << 0 | 0x1F << 1 | 0x1F << 6,
-			     1 << 0 | 0x04 << 1 | 0x04 << 6);
+				1 << 0 | 0x1F << 1 | 0x1F << 6,
+				1 << 0 | 0x04 << 1 | 0x04 << 6);
 
 	/* check compliance rpr step 2.1*/
 	if (AtiPcieCfg.Config & PCIE_GPP_COMPLIANCE) {

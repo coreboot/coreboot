@@ -53,10 +53,10 @@ struct chip_operations superio_smsc_lpc47n227_ops = {
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = lpc47n227_pnp_set_resources,
+	.set_resources	   = lpc47n227_pnp_set_resources,
 	.enable_resources = lpc47n227_pnp_enable_resources,
-	.enable           = lpc47n227_pnp_enable,
-	.init             = lpc47n227_init,
+	.enable	   = lpc47n227_pnp_enable,
+	.init		   = lpc47n227_init,
 };
 
 static struct pnp_info pnp_dev_info[] = {
@@ -146,7 +146,7 @@ static void lpc47n227_pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02lx not allocated\n",
-		       dev_path(dev), resource->index);
+			 dev_path(dev), resource->index);
 		return;
 	}
 
@@ -163,7 +163,7 @@ static void lpc47n227_pnp_set_resource(device_t dev, struct resource *resource)
 		lpc47n227_pnp_set_irq(dev, resource->base);
 	} else {
 		printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
-		       dev_path(dev), resource->index);
+			 dev_path(dev), resource->index);
 		return;
 	}
 	resource->flags |= IORESOURCE_STORED;

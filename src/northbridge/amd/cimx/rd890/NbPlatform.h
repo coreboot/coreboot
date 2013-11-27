@@ -63,7 +63,7 @@
 #endif
 
 /*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
+ *			    E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
@@ -79,16 +79,16 @@
 
 
 // CIMX configuration parameters
-//#define CIMX_B2_IMAGE_BASE_ADDRESS      0xFFF40000
+//#define CIMX_B2_IMAGE_BASE_ADDRESS	  0xFFF40000
 /**
  * PCIEX_BASE_ADDRESS - Define PCIE base address
  *
  * @param[Option]     MOVE_PCIEBAR_TO_F0000000 Set PCIe base address to 0xF7000000
  */
 #ifdef  MOVE_PCIEBAR_TO_F0000000
-#define PCIEX_BASE_ADDRESS           0xF7000000
+#define PCIEX_BASE_ADDRESS	     0xF7000000
 #else
-#define PCIEX_BASE_ADDRESS           CONFIG_MMCONF_BASE_ADDRESS
+#define PCIEX_BASE_ADDRESS	     CONFIG_MMCONF_BASE_ADDRESS
 #endif
 
 
@@ -136,11 +136,11 @@
 
 #define AmdNbDispatcher NULL
 
-#define CIMX_TRACE_ALL    0xFFFFFFFF
+#define CIMX_TRACE_ALL	  0xFFFFFFFF
 #define CIMX_NBPOR_TRACE  0xFFFFFFFF
-#define CIMX_NBHT_TRACE   0xFFFFFFFF
+#define CIMX_NBHT_TRACE	  0xFFFFFFFF
 #define CIMX_NBPCIE_TRACE 0xFFFFFFFF
-#define CIMX_NB_TRACE     0xFFFFFFFF
+#define CIMX_NB_TRACE	  0xFFFFFFFF
 #define CIMX_NBPCIE_MISC  0xFFFFFFFF
 
 #endif

@@ -453,9 +453,9 @@ agesawrapper_amdinitlate (
 	AMD_LATE_PARAMS * AmdLateParamsPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
 	AmdParamStruct.AllocationMethod = PostMemDram;

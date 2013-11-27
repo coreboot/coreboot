@@ -123,9 +123,9 @@ static void dcache_op_set_way(enum dcache_op op)
 	 * S: Log2(num_sets)
 	 *
 	 * The bits are packed as follows:
-	 *  31  31-A        B B-1    L L-1   4 3   1 0
+	 *  31  31-A	     B B-1    L L-1   4 3   1 0
 	 * |---|-------------|--------|-------|-----|-|
-	 * |Way|    zeros    |   Set  | zeros |level|0|
+	 * |Way|    zeros    |	  Set  | zeros |level|0|
 	 * |---|-------------|--------|-------|-----|-|
 	 */
 	for (way = 0; way < associativity; way++) {

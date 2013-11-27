@@ -48,7 +48,7 @@
 /* 2 MTRRS are reserved for the operating system */
 #define BIOS_MTRRS 6
 #define OS_MTRRS   2
-#define MTRRS      (BIOS_MTRRS + OS_MTRRS)
+#define MTRRS	   (BIOS_MTRRS + OS_MTRRS)
 
 static int total_mtrrs = MTRRS;
 static int bios_mtrrs = BIOS_MTRRS;
@@ -88,9 +88,9 @@ static inline unsigned int fms(unsigned int x)
 	int r;
 
 	__asm__("bsrl %1,%0\n\t"
-	        "jnz 1f\n\t"
-	        "movl $0,%0\n"
-	        "1:" : "=r" (r) : "g" (x));
+		 "jnz 1f\n\t"
+		 "movl $0,%0\n"
+		 "1:" : "=r" (r) : "g" (x));
 	return r;
 }
 
@@ -100,9 +100,9 @@ static inline unsigned int fls(unsigned int x)
 	int r;
 
 	__asm__("bsfl %1,%0\n\t"
-	        "jnz 1f\n\t"
-	        "movl $32,%0\n"
-	        "1:" : "=r" (r) : "g" (x));
+		 "jnz 1f\n\t"
+		 "movl $32,%0\n"
+		 "1:" : "=r" (r) : "g" (x));
 	return r;
 }
 
@@ -175,7 +175,7 @@ static struct memranges *get_physical_address_space(void)
 		 * regions. */
 		memranges_init(addr_space, mask, mask, MTRR_TYPE_WRBACK);
 		memranges_add_resources(addr_space, mask, 0,
-		                        MTRR_TYPE_UNCACHEABLE);
+					  MTRR_TYPE_UNCACHEABLE);
 
 		/* Handle any write combining resources. Only prefetchable
 		 * resources with the IORESOURCE_WRCOMB flag are appropriate
@@ -183,7 +183,7 @@ static struct memranges *get_physical_address_space(void)
 		match = IORESOURCE_PREFETCH | IORESOURCE_WRCOMB;
 		mask |= match;
 		memranges_add_resources(addr_space, mask, match,
-		                        MTRR_TYPE_WRCOMB);
+					  MTRR_TYPE_WRCOMB);
 
 #if CONFIG_CACHE_ROM
 		/* Add a write-protect region covering the ROM size
@@ -192,7 +192,7 @@ static struct memranges *get_physical_address_space(void)
 		resource_t rom_base = RANGE_TO_PHYS_ADDR(
 			RANGE_4GB - PHYS_TO_RANGE_ADDR(CONFIG_ROM_SIZE));
 		memranges_insert(addr_space, rom_base, CONFIG_ROM_SIZE,
-		                 MTRR_TYPE_WRPROT);
+				   MTRR_TYPE_WRPROT);
 #endif
 
 		/* The address space below 4GiB is special. It needs to be
@@ -201,15 +201,15 @@ static struct memranges *get_physical_address_space(void)
 		 * Therefore, ensure holes are filled up to 4GiB as
 		 * uncacheable */
 		memranges_fill_holes_up_to(addr_space,
-		                           RANGE_TO_PHYS_ADDR(RANGE_4GB),
-		                           MTRR_TYPE_UNCACHEABLE);
+					     RANGE_TO_PHYS_ADDR(RANGE_4GB),
+					     MTRR_TYPE_UNCACHEABLE);
 
 		printk(BIOS_DEBUG, "MTRR: Physical address space:\n");
 		memranges_each_entry(r, addr_space)
 			printk(BIOS_DEBUG,
-			       "0x%016llx - 0x%016llx size 0x%08llx type %ld\n",
-			       range_entry_base(r), range_entry_end(r),
-			       range_entry_size(r), range_entry_tag(r));
+				  "0x%016llx - 0x%016llx size 0x%08llx type %ld\n",
+				  range_entry_base(r), range_entry_end(r),
+				  range_entry_size(r), range_entry_tag(r));
 	}
 
 	return addr_space;
@@ -284,8 +284,8 @@ static void calc_fixed_mtrrs(void)
 
 			type = range_entry_tag(r);
 			printk(MTRR_VERBOSE_LEVEL,
-			       "MTRR addr 0x%x-0x%x set to %d type @ %d\n",
-			       begin, begin + desc->step, type, type_index);
+				  "MTRR addr 0x%x-0x%x set to %d type @ %d\n",
+				  begin, begin + desc->step, type, type_index);
 			if (type == MTRR_TYPE_WRBACK)
 				type |= MTRR_FIXED_WRBACK_BITS;
 			fixed_mtrr_types[type_index] = type;
@@ -345,7 +345,7 @@ static void commit_fixed_mtrrs(void)
 
 	for (i = 0; i < ARRAY_SIZE(fixed_msrs); i++) {
 		printk(BIOS_DEBUG, "MTRR: Fixed MSR 0x%lx 0x%08x%08x\n",
-		       msr_index[i], fixed_msrs[i].hi, fixed_msrs[i].lo);
+			 msr_index[i], fixed_msrs[i].hi, fixed_msrs[i].lo);
 		wrmsr(msr_index[i], fixed_msrs[i]);
 	}
 
@@ -415,9 +415,9 @@ static void disable_cache_rom(void *unused)
 
 BOOT_STATE_INIT_ENTRIES(disable_rom_cache_bscb) = {
 	BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
-	                      disable_cache_rom, NULL),
+			       disable_cache_rom, NULL),
 	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT,
-	                      disable_cache_rom, NULL),
+			       disable_cache_rom, NULL),
 };
 #endif
 
@@ -440,7 +440,7 @@ static void clear_var_mtrr(int index)
 }
 
 static void write_var_mtrr(struct var_mtrr_state *var_state,
-                           uint32_t base, uint32_t size, int mtrr_type)
+			   uint32_t base, uint32_t size, int mtrr_type)
 {
 	msr_t msr_val;
 	unsigned long msr_index;
@@ -480,7 +480,7 @@ static void write_var_mtrr(struct var_mtrr_state *var_state,
 #endif
 
 	printk(BIOS_DEBUG, "MTRR: %d base 0x%016llx mask 0x%016llx type %d\n",
-	       var_state->mtrr_index, rbase, rsize, mtrr_type);
+		var_state->mtrr_index, rbase, rsize, mtrr_type);
 
 	msr_val.lo = rbase;
 	msr_val.lo |= mtrr_type;
@@ -497,7 +497,7 @@ static void write_var_mtrr(struct var_mtrr_state *var_state,
 }
 
 static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
-                                uint32_t base, uint32_t size, int mtrr_type)
+				uint32_t base, uint32_t size, int mtrr_type)
 {
 	while (size != 0) {
 		uint32_t addr_lsb;
@@ -525,7 +525,7 @@ static void calc_var_mtrr_range(struct var_mtrr_state *var_state,
 }
 
 static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
-                                     struct range_entry *r)
+				     struct range_entry *r)
 {
 	uint32_t a1, a2, b1, b2;
 	int mtrr_type;
@@ -536,7 +536,7 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 	 * +------------------+ b2 = ALIGN_UP(end)
 	 * |  0 or more bytes | <-- hole is carved out between b1 and b2
 	 * +------------------+ a2 = b1 = end
-	 * |                  |
+	 * |		       |
 	 * +------------------+ a1 = begin
 	 *
 	 * Thus, there are 3 sub-ranges to configure variable MTRRs for.
@@ -603,7 +603,7 @@ static void calc_var_mtrrs_with_hole(struct var_mtrr_state *var_state,
 }
 
 static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
-                                         struct range_entry *r)
+					 struct range_entry *r)
 {
 	uint32_t a1, a2, b1, b2, c1, c2;
 	int mtrr_type;
@@ -614,7 +614,7 @@ static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
 	 * +------------------+ c2 = end
 	 * |  0 or more bytes |
 	 * +------------------+ b2 = c1 = ALIGN_DOWN(end)
-	 * |                  |
+	 * |		       |
 	 * +------------------+ b1 = a2 = ALIGN_UP(begin)
 	 * |  0 or more bytes |
 	 * +------------------+ a1 = begin
@@ -662,7 +662,7 @@ static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
 }
 
 static int calc_var_mtrrs(struct memranges *addr_space,
-                          int above4gb, int address_bits)
+			  int above4gb, int address_bits)
 {
 	int wb_deftype_count;
 	int uc_deftype_count;
@@ -740,7 +740,7 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 	}
 
 	printk(BIOS_DEBUG, "MTRR: default type WB/UC MTRR counts: %d/%d.\n",
-	       wb_deftype_count, uc_deftype_count);
+		wb_deftype_count, uc_deftype_count);
 
 	if (wb_deftype_count < uc_deftype_count) {
 		printk(BIOS_DEBUG, "MTRR: WB selected as default type.\n");
@@ -751,7 +751,7 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 }
 
 static void commit_var_mtrrs(struct memranges *addr_space, int def_type,
-                             int above4gb, int address_bits)
+			     int above4gb, int address_bits)
 {
 	struct range_entry *r;
 	struct var_mtrr_state var_state;
@@ -797,7 +797,7 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 
 	disable_cache();
 	commit_var_mtrrs(addr_space, mtrr_default_type, !!above4gb,
-	                 address_bits);
+			  address_bits);
 	enable_var_mtrr(mtrr_default_type);
 	enable_cache();
 }

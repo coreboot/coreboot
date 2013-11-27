@@ -53,7 +53,7 @@ static void *smp_write_config_table(void *v)
 	apicid_sr5650 = apicid_sp5100 + 1;
 
 	mptable_write_buses(mc, NULL, &bus_isa);
-	/* I/O APICs:   APIC ID Version State   Address */
+	/* I/O APICs:	 APIC ID Version State	 Address */
 	{
 		device_t dev;
 		u32 dword;
@@ -101,7 +101,7 @@ static void *smp_write_config_table(void *v)
 		}
 	}
 
-	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
+	/* I/O Ints:	 Type	 Polarity    Trigger	 Bus ID	  IRQ	 APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin) \
 	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
 
@@ -112,7 +112,7 @@ static void *smp_write_config_table(void *v)
 	 */
 #if !CONFIG_GENERATE_ACPI_TABLES
 #define PCI_INT(bus, dev, fn, pin) \
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sp5100, (pin))
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sp5100, (pin))
 #else
 #define PCI_INT(bus, dev, fn, pin)
 #endif
@@ -168,7 +168,7 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(bus_sp5100[1], 0x7, 0x2, 0x14);
 	PCI_INT(bus_sp5100[1], 0x7, 0x3, 0x15);
 
-	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
+	/*Local Ints:	 Type	 Polarity    Trigger	 Bus ID	  IRQ	 APIC ID PIN# */
 	IO_LOCAL_INT(mp_ExtINT, 0x0, MP_APIC_ALL, 0x0);
 	IO_LOCAL_INT(mp_NMI, 0x0, MP_APIC_ALL, 0x1);
 	/* There is no extension information... */

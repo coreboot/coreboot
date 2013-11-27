@@ -22,7 +22,7 @@
 #include "chip.h"
 
 #define SATA_CMD     0x04
-#define SATA_PI      0x09
+#define SATA_PI	     0x09
 #define SATA_PTIM    0x40
 #define SATA_STIM    0x42
 #define SATA_D1TIM   0x44
@@ -35,7 +35,7 @@
 #define SATA_ACR1    0xAC
 #define SATA_ATC     0xC0
 #define SATA_ATS     0xC4
-#define SATA_SP      0xD0
+#define SATA_SP	     0xD0
 
 #define SATA_MODE_IDE  0x00
 #define SATA_MODE_AHCI 0x01

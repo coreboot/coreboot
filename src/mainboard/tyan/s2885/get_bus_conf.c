@@ -27,23 +27,23 @@ unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO 
 	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 	0x0000ff0,
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0
 };
 
 unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
 };
 
 unsigned sbdn3;
@@ -85,8 +85,8 @@ void get_bus_conf(void)
 		bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:03.0, using defaults\n",
-		       bus_8111_0);
+			 "ERROR - could not find PCI %02x:03.0, using defaults\n",
+			 bus_8111_0);
 	}
 
 	/* 8131-1 */
@@ -95,8 +95,8 @@ void get_bus_conf(void)
 		bus_8131_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:01.0, using defaults\n",
-		       bus_8131_0);
+			 "ERROR - could not find PCI %02x:01.0, using defaults\n",
+			 bus_8131_0);
 	}
 
 	/* 8132-2 */
@@ -105,8 +105,8 @@ void get_bus_conf(void)
 		bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:02.0, using defaults\n",
-		       bus_8131_0);
+			 "ERROR - could not find PCI %02x:02.0, using defaults\n",
+			 bus_8131_0);
 	}
 
 	/* HT chain 1 */
@@ -117,7 +117,7 @@ void get_bus_conf(void)
 
 	if (dev) {
 		bus_8151_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
-//              printk(BIOS_DEBUG, "bus_8151_1=%d\n",bus_8151_1);
+//		printk(BIOS_DEBUG, "bus_8151_1=%d\n",bus_8151_1);
 	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/

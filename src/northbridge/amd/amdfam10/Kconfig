@@ -59,8 +59,8 @@ config MMCONF_BUS_NUMBER
 	default 256
 
 config BOOTBLOCK_NORTHBRIDGE_INIT
-        string
-        default "northbridge/amd/amdfam10/bootblock.c"
+	string
+	default "northbridge/amd/amdfam10/bootblock.c"
 
 config SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	bool
@@ -113,8 +113,8 @@ endif
 config SVI_HIGH_FREQ
 	bool
 	default n
-        help
-          Select this for boards with a Voltage Regulator able to operate
-          at 3.4 MHz in SVI mode. Ignored unless the AMD CPU is rev C3.
+	help
+	  Select this for boards with a Voltage Regulator able to operate
+	  at 3.4 MHz in SVI mode. Ignored unless the AMD CPU is rev C3.
 
 endif # NORTHBRIDGE_AMD_AMDFAM10

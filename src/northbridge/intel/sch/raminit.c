@@ -134,7 +134,7 @@ static void program_sch_dram_data(struct sys_info *sysinfo)
 	reg32 |= (sysinfo->data_width << 4)
 		 | ((sysinfo->device_density) << 5) | (1 << 7);
 	sch_port_access_write(SCH_MSG_DUNIT_PORT,
-			      SCH_MSG_DUNIT_REG_DRP, 4, reg32);
+				 SCH_MSG_DUNIT_REG_DRP, 4, reg32);
 
 	/*
 	 * Program DTR DRAM Timing Register as per data in sysinfo SCH port 1
@@ -152,7 +152,7 @@ static void program_sch_dram_data(struct sys_info *sysinfo)
 	reg32 |= (sysinfo->cl) << 4;
 	reg32 |= 0X4000;	/* tRD_dly = 2 (15:13 = 010b) */
 	sch_port_access_write(SCH_MSG_DUNIT_PORT, SCH_MSG_DUNIT_REG_DTR, 4,
-			      reg32);
+				 reg32);
 
 	/*
 	 * DCO DRAM Controller Operation Register as per data in sysinfo
@@ -169,7 +169,7 @@ static void program_sch_dram_data(struct sys_info *sysinfo)
 	reg32 = 0x006911c;	// FIXME ?
 
 	sch_port_access_write(SCH_MSG_DUNIT_PORT, SCH_MSG_DUNIT_REG_DCO, 4,
-			      reg32);
+				 reg32);
 }
 
 static void program_dll_config(struct sys_info *sysinfo)
@@ -198,7 +198,7 @@ static void do_jedec_init(struct sys_info *sysinfo)
 	    sch_port_access_read(SCH_MSG_DUNIT_PORT, SCH_MSG_DUNIT_REG_DRP, 4);
 	reg32 |= DRP_CKE_DIS;
 	sch_port_access_write(SCH_MSG_DUNIT_PORT,
-			      SCH_MSG_DUNIT_REG_DRP, 4, reg32);
+				 SCH_MSG_DUNIT_REG_DRP, 4, reg32);
 	reg32 =
 	    sch_port_access_read(SCH_MSG_DUNIT_PORT, SCH_MSG_DUNIT_REG_DRP, 4);
 	rank = 0;
@@ -207,12 +207,12 @@ static void do_jedec_init(struct sys_info *sysinfo)
 	do {
 		/* Start clocks */
 		reg32 = sch_port_access_read(SCH_MSG_DUNIT_PORT,
-					     SCH_MSG_DUNIT_REG_DRP, 4);
+						  SCH_MSG_DUNIT_REG_DRP, 4);
 		reg32 &= ~(DRP_SCK_DIS); /* Enable all SCK/SCKB by def. */
 		sch_port_access_write(1, SCH_MSG_DUNIT_REG_DRP, 4, reg32);
 		/* Program misc. SCH registers on rank 0 initialization. */
 		reg32 = sch_port_access_read(SCH_MSG_DUNIT_PORT,
-					     SCH_MSG_DUNIT_REG_DRP, 4);
+						  SCH_MSG_DUNIT_REG_DRP, 4);
 		if (rank == 0)
 			program_dll_config(sysinfo);
 
@@ -233,23 +233,23 @@ static void do_jedec_init(struct sys_info *sysinfo)
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_NOP;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 		/* Set CKE=high. */
 		reg32 = sch_port_access_read(SCH_MSG_DUNIT_PORT,
-					     SCH_MSG_DUNIT_REG_DRP, 4);
+						  SCH_MSG_DUNIT_REG_DRP, 4);
 		reg32 &= 0xFFFF9FFF; /* Clear both the CKE static disables. */
 		sch_port_access_write(SCH_MSG_DUNIT_PORT,
-				      SCH_MSG_DUNIT_REG_DRP, 4, reg32);
+					  SCH_MSG_DUNIT_REG_DRP, 4, reg32);
 		/*
 		 * Wait 400ns (not needed when executing from flash).
 		 * Precharge all.
 		 */
 		reg32 = sch_port_access_read(SCH_MSG_DUNIT_PORT,
-					     SCH_MSG_DUNIT_REG_DRP, 4);
+						  SCH_MSG_DUNIT_REG_DRP, 4);
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_PALL;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/*
 		 * EMRS(2); High temp self refresh=disabled,
@@ -258,40 +258,40 @@ static void do_jedec_init(struct sys_info *sysinfo)
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_EMRS2;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/* EMRS(3) (no command). */
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_EMRS3;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/* EMRS(1); Enable DLL (Leave all bits in the command at 0). */
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_EMRS1;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/* MRS; Reset DLL (Set memory address bit 8). */
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_MRS;
 		cmd |= (SCH_JEDEC_DLLRESET << SCH_DRAMINIT_ADDR_OFFSET);
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/* Precharge all. */
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_PALL;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/* Issue 2 auto-refresh commands. */
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_AREF;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/* MRS command including tCL, tWR, burst length (always 4). */
 		cmd = rank;
@@ -299,10 +299,10 @@ static void do_jedec_init(struct sys_info *sysinfo)
 		temp = sysinfo->cl;
 		temp += TCL_LOW;	/* Adjust for the TCL base. */
 		temp = temp << ((SCH_JEDEC_CL_OFFSET
-		      + SCH_DRAMINIT_ADDR_OFFSET)); /* Ready the CAS latency */
+			+ SCH_DRAMINIT_ADDR_OFFSET)); /* Ready the CAS latency */
 		cmd |= temp;
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/*
 		 * Wait 200 clocks (max of 1us, so no need to delay).
@@ -312,14 +312,14 @@ static void do_jedec_init(struct sys_info *sysinfo)
 		cmd |= SCH_DRAMINIT_CMD_EMRS1;
 		cmd |= (SCH_JEDEC_OCD_DEFAULT << SCH_DRAMINIT_ADDR_OFFSET);
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 
 		/* Issue EMRS(1): OCD cal. mode exit. */
 		cmd = rank;
 		cmd |= SCH_DRAMINIT_CMD_EMRS1;
 		cmd |= (SCH_JEDEC_DQS_DIS << SCH_DRAMINIT_ADDR_OFFSET);
 		sch_port_access_write_ram_cmd(SCH_OPCODE_DRAMINIT,
-					      SCH_MSG_DUNIT_PORT, 0, cmd);
+						   SCH_MSG_DUNIT_PORT, 0, cmd);
 		rank += SCH_DRAMINIT_RANK_MASK;
 		num_ranks--;
 	} while (num_ranks);
@@ -355,7 +355,7 @@ void sdram_initialize(int boot_mode)
 	reg32 |= ((sysinfo.refresh) << 2);
 	reg32 = 0x006919c;
 	sch_port_access_write(SCH_MSG_DUNIT_PORT,
-			      SCH_MSG_DUNIT_REG_DCO, 4, reg32);
+				 SCH_MSG_DUNIT_REG_DCO, 4, reg32);
 
 	/* Setting up TOM. */
 	reg32 = 0x10000000;
@@ -368,7 +368,7 @@ void sdram_initialize(int boot_mode)
 	/* Resume mode. */
 	if (boot_mode == BOOT_MODE_RESUME)
 		sch_port_access_write_ram_cmd(SCH_OPCODE_WAKEFULLON,
-					      SCH_MSG_DUNIT_PORT, 0, 0);
+						   SCH_MSG_DUNIT_PORT, 0, 0);
 
 	sch_port_access_write(2, 0, 4, 0x98);
 	sch_port_access_write(2, 3, 4, 0x7);

@@ -62,7 +62,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* IOAPIC */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current,
-					   2, IO_APIC_ADDR, 0);
+						2, IO_APIC_ADDR, 0);
 
 	/* INT_SRC_OVR */
 	current += acpi_create_madt_irqoverride((acpi_madt_irqoverride_t *)
@@ -76,7 +76,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 }
 
 unsigned long acpi_fill_ssdt_generator(unsigned long current,
-				       const char *oem_table_id)
+					   const char *oem_table_id)
 {
 	generate_cpu_entries();
 	return (unsigned long)(acpigen_get_current());
@@ -185,8 +185,8 @@ unsigned long write_acpi_tables(unsigned long start)
 	for (i = 0; i < dsdt->length; i++) {
 		if (*(u32 *) (((u32) dsdt) + i) == 0xC0DEBABE) {
 			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in "
-			       "DSDT at offset 0x%04x -> 0x%08lx\n",
-			       i, current);
+				  "DSDT at offset 0x%04x -> 0x%08lx\n",
+				  i, current);
 			*(u32 *) (((u32) dsdt) + i) = current;	// 0x92 bytes
 			break;
 		}
@@ -206,7 +206,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	dsdt->checksum = acpi_checksum((void *)dsdt, dsdt->length);
 
 	printk(BIOS_DEBUG, "ACPI:     * DSDT @ %p Length %x\n", dsdt,
-	       dsdt->length);
+		dsdt->length);
 
 #if CONFIG_HAVE_ACPI_SLIC
 	printk(BIOS_DEBUG, "ACPI:     * SLIC\n");

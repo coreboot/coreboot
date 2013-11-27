@@ -21,7 +21,7 @@ config EC_GOOGLE_CHROMEEC_I2C_CHIP
 	default 0x1e
 
 config EC_GOOGLE_CHROMEEC_LPC
-        depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
+	depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
 	def_bool y
 	help
 	  Google Chrome EC via LPC bus.

@@ -53,33 +53,33 @@
 	(((1 << ((base)*5)) * (limit)) / 1000)
 #define C_STATE_LATENCY_FROM_LAT_REG(reg) \
 	C_STATE_LATENCY_MICRO_SECONDS(C_STATE_LATENCY_CONTROL_ ##reg## _LIMIT, \
-	                              (IRTL_1024_NS >> 10))
+				       (IRTL_1024_NS >> 10))
 
 /*
  * List of supported C-states in this processor. Only the ULT parts support C8,
  * C9, and C10.
  */
 enum {
-	C_STATE_C0,             /* 0 */
-	C_STATE_C1,             /* 1 */
-	C_STATE_C1E,            /* 2 */
-	C_STATE_C3,             /* 3 */
-	C_STATE_C6_SHORT_LAT,   /* 4 */
-	C_STATE_C6_LONG_LAT,    /* 5 */
-	C_STATE_C7_SHORT_LAT,   /* 6 */
-	C_STATE_C7_LONG_LAT,    /* 7 */
+	C_STATE_C0,		 /* 0 */
+	C_STATE_C1,		 /* 1 */
+	C_STATE_C1E,		 /* 2 */
+	C_STATE_C3,		 /* 3 */
+	C_STATE_C6_SHORT_LAT,	 /* 4 */
+	C_STATE_C6_LONG_LAT,	 /* 5 */
+	C_STATE_C7_SHORT_LAT,	 /* 6 */
+	C_STATE_C7_LONG_LAT,	 /* 7 */
 	C_STATE_C7S_SHORT_LAT,  /* 8 */
-	C_STATE_C7S_LONG_LAT,   /* 9 */
-	C_STATE_C8,             /* 10 */
-	C_STATE_C9,             /* 11 */
-	C_STATE_C10,            /* 12 */
+	C_STATE_C7S_LONG_LAT,	 /* 9 */
+	C_STATE_C8,		 /* 10 */
+	C_STATE_C9,		 /* 11 */
+	C_STATE_C10,		 /* 12 */
 	NUM_C_STATES
 };
 
-#define MWAIT_RES(state, sub_state)                         \
-	{                                                   \
+#define MWAIT_RES(state, sub_state)			    \
+	{						     \
 		.addrl = (((state) << 4) | (sub_state)),    \
-		.space_id = ACPI_ADDRESS_SPACE_FIXED,       \
+		.space_id = ACPI_ADDRESS_SPACE_FIXED,	      \
 		.bit_width = ACPI_FFIXEDHW_VENDOR_INTEL,    \
 		.bit_offset = ACPI_FFIXEDHW_CLASS_MWAIT,    \
 		.access_size = ACPI_FFIXEDHW_FLAG_HW_COORD, \
@@ -259,7 +259,7 @@ static void calibrate_24mhz_bclk(void)
 	err_code = MCHBAR32(BIOS_MAILBOX_INTERFACE) & 0xff;
 
 	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration response: %d\n",
-	       err_code);
+		err_code);
 
 	/* Read the calibrated value. */
 	MCHBAR32(BIOS_MAILBOX_INTERFACE) =
@@ -271,7 +271,7 @@ static void calibrate_24mhz_bclk(void)
 	}
 
 	printk(BIOS_DEBUG, "PCODE: 24MHz BLCK calibration value: 0x%08x\n",
-	       MCHBAR32(BIOS_MAILBOX_DATA));
+		MCHBAR32(BIOS_MAILBOX_DATA));
 }
 
 static u32 pcode_mailbox_read(u32 command)
@@ -303,7 +303,7 @@ static void configure_pch_power_sharing(void)
 	pch_power_ext = pcode_mailbox_read(MAILBOX_BIOS_CMD_READ_PCH_POWER_EXT);
 
 	printk(BIOS_INFO, "PCH Power: PCODE Levels 0x%08x 0x%08x\n",
-               pch_power, pch_power_ext);
+	       pch_power, pch_power_ext);
 
 	pmsync = RCBA32(PMSYNC_CONFIG);
 	pmsync2 = RCBA32(PMSYNC_CONFIG2);
@@ -465,19 +465,19 @@ static void configure_c_states(void)
 		/* C-state Interrupt Response Latency Control 3 - package C8 */
 		msr.hi = 0;
 		msr.lo = IRTL_VALID | IRTL_1024_NS |
-		         C_STATE_LATENCY_CONTROL_3_LIMIT;
+			   C_STATE_LATENCY_CONTROL_3_LIMIT;
 		wrmsr(MSR_C_STATE_LATENCY_CONTROL_3, msr);
 
 		/* C-state Interrupt Response Latency Control 4 - package C9 */
 		msr.hi = 0;
 		msr.lo = IRTL_VALID | IRTL_1024_NS |
-		         C_STATE_LATENCY_CONTROL_4_LIMIT;
+			   C_STATE_LATENCY_CONTROL_4_LIMIT;
 		wrmsr(MSR_C_STATE_LATENCY_CONTROL_4, msr);
 
 		/* C-state Interrupt Response Latency Control 5 - package C10 */
 		msr.hi = 0;
 		msr.lo = IRTL_VALID | IRTL_1024_NS |
-		         C_STATE_LATENCY_CONTROL_5_LIMIT;
+			   C_STATE_LATENCY_CONTROL_5_LIMIT;
 		wrmsr(MSR_C_STATE_LATENCY_CONTROL_5, msr);
 	}
 }
@@ -567,7 +567,7 @@ static void set_max_ratio(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "haswell: frequency set to %d\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * HASWELL_BCLK);
+		((perf_ctl.lo >> 8) & 0xff) * HASWELL_BCLK);
 }
 
 static void set_energy_perf_bias(u8 policy)
@@ -587,7 +587,7 @@ static void set_energy_perf_bias(u8 policy)
 	wrmsr(IA32_ENERGY_PERFORMANCE_BIAS, msr);
 
 	printk(BIOS_DEBUG, "haswell: energy policy set to %u\n",
-	       policy);
+		policy);
 }
 
 static void configure_mca(void)
@@ -694,7 +694,7 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 	 * can be mirrored by the APs. */
 	if (setup_ap_init(cpu_bus, &max_cpus, microcode_patch)) {
 		printk(BIOS_CRIT, "AP setup initialization failed. "
-		       "No APs will be brought up.\n");
+			 "No APs will be brought up.\n");
 		return;
 	}
 
@@ -716,7 +716,7 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = haswell_init,
+	.init	   = haswell_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
@@ -728,7 +728,7 @@ static struct cpu_device_id cpu_table[] = {
 };
 
 static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
+	.ops	   = &cpu_dev_ops,
 	.id_table = cpu_table,
 	.cstates  = cstate_map,
 };

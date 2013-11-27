@@ -71,15 +71,15 @@ void vx900_print_strapping_info(void)
 
 	print_debug("VX900 strapping pins indicate that:\n");
 	printk(BIOS_DEBUG, " ROM is on %s bus\n",
-	       (strap & (1 << 0)) ? "SPI" : "LPC");
+		(strap & (1 << 0)) ? "SPI" : "LPC");
 	printk(BIOS_DEBUG, " Auto reset is %s\n",
-	       (strap & (1 << 1)) ? "disabled" : "enabled");
+		(strap & (1 << 1)) ? "disabled" : "enabled");
 	printk(BIOS_DEBUG, " LPC FWH command is %s\n",
-	       (strap & (1 << 2)) ? "enabled" : "disabled");
+		(strap & (1 << 2)) ? "enabled" : "disabled");
 	printk(BIOS_DEBUG, " Debug link is is %s\n",
-	       (strap & (1 << 4)) ? "enabled" : "disabled");
+		(strap & (1 << 4)) ? "enabled" : "disabled");
 	printk(BIOS_DEBUG, " PCI master mode is %s\n",
-	       (strap & (1 << 5)) ? "enabled" : "disabled");
+		(strap & (1 << 5)) ? "enabled" : "disabled");
 }
 
 /**

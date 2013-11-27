@@ -91,7 +91,7 @@ config RAMBASE
 	default 0x200000
 
 config VGA_BIOS_ID
-        string
-        default "1002,9715"
+	string
+	default "1002,9715"
 
 endif #BOARD_ASUS_M5A88_V

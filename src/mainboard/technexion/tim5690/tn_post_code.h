@@ -18,9 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#define LED_MESSAGE_START       0xFF
-#define LED_MESSAGE_FINISH      0x99
-#define LED_MESSAGE_RAM         0x01
+#define LED_MESSAGE_START	0xFF
+#define LED_MESSAGE_FINISH	0x99
+#define LED_MESSAGE_RAM		0x01
 
 
 #ifdef __PRE_RAM__

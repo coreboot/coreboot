@@ -207,7 +207,7 @@ static u32 amdfam10_scan_chain(device_t dev, u32 nodeid, struct bus *link, u32 l
 	#if CONFIG_SB_HT_CHAIN_ON_BUS0 > 1
 		// second chain will be on 0x40, third 0x80, forth 0xc0
 		// i would refined that to  2, 3, 4 ==> 0, 0x, 40, 0x80, 0xc0
-		//			    >4 will use	 more segments, We can have 16 segmment and every segment have 256 bus, For that case need the kernel support mmio pci config.
+		//				   >4 will use	 more segments, We can have 16 segmment and every segment have 256 bus, For that case need the kernel support mmio pci config.
 		else {
 			min_bus = ((busn>>3) + 1) << 3; // one node can have 8 link and segn is the same
 		}
@@ -1066,7 +1066,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
-			     i, mmio_basek, basek, limitk);
+				i, mmio_basek, basek, limitk);
 		if (!ramtop)
 			ramtop = limitk * 1024;
 	}

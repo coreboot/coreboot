@@ -257,7 +257,7 @@ void azalia_audio_init(struct device *dev)
 
 	if (codec_mask) {
 		printk(BIOS_DEBUG, "azalia_audio: codec_mask = %02x\n",
-		       codec_mask);
+			 codec_mask);
 		codecs_init(dev, base, codec_mask);
 	}
 }

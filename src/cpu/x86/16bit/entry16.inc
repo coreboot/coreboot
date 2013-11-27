@@ -20,7 +20,7 @@
  * it with the version available from LANL.
  *
  * Copyright (C) 2000, Ron Minnich rminnich@lanl.gov
- *                     Advanced Computing Lab, LANL
+ *		       Advanced Computing Lab, LANL
  */
 
 

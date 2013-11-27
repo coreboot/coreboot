@@ -155,7 +155,7 @@ static const PCIe_DDI_DESCRIPTOR DdiList [] = {
  *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
- *    @retval         VOID
+ *    @retval	      VOID
  *
  **/
 /*---------------------------------------------------------------------------------------*/
@@ -164,7 +164,7 @@ OemCustomizeInitEarly (
 	IN  OUT AMD_EARLY_PARAMS    *InitEarly
 	)
 {
-	AGESA_STATUS            Status;
+	AGESA_STATUS		 Status;
 	PCIe_COMPLEX_DESCRIPTOR *PcieComplexListPtr;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
@@ -188,12 +188,12 @@ OemCustomizeInitEarly (
 	PcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
 	LibAmdMemFill (PcieComplexListPtr,
-		       0,
-		       sizeof(PCIe_COMPLEX_DESCRIPTOR),
-		       &InitEarly->StdHeader);
+			 0,
+			 sizeof(PCIe_COMPLEX_DESCRIPTOR),
+			 &InitEarly->StdHeader);
 
-	PcieComplexListPtr->Flags        = DESCRIPTOR_TERMINATE_LIST;
-	PcieComplexListPtr->SocketId     = 0;
+	PcieComplexListPtr->Flags	  = DESCRIPTOR_TERMINATE_LIST;
+	PcieComplexListPtr->SocketId	  = 0;
 	PcieComplexListPtr->PciePortList = PortList;
 	PcieComplexListPtr->DdiLinkList  = DdiList;
 

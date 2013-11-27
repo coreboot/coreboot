@@ -105,14 +105,14 @@ static void agp_init(device_t dev)
 
 static const struct device_operations agp_operations = {
 	.read_resources   = cn700_noop,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = agp_init,
-	.ops_pci          = 0,
+	.init		   = agp_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver agp_driver __pci_driver = {
-	.ops    = &agp_operations,
+	.ops	 = &agp_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN700_AGP,
 };
@@ -158,15 +158,15 @@ static void agp_bridge_init(device_t dev)
 
 static const struct device_operations agp_bridge_operations = {
 	.read_resources   = cn700_noop,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = agp_bridge_init,
-	.scan_bus         = pci_scan_bridge,
-	.ops_pci          = 0,
+	.init		   = agp_bridge_init,
+	.scan_bus	   = pci_scan_bridge,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver agp_bridge_driver __pci_driver = {
-	.ops    = &agp_bridge_operations,
+	.ops	 = &agp_bridge_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN700_BRIDGE,
 };

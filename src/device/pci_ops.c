@@ -62,8 +62,8 @@ static struct bus *get_pbus(device_t dev)
 	while (pbus && pbus->dev && !pci_bus_ops(pbus, dev)) {
 		if (pbus == pbus->dev->bus) {
 			printk(BIOS_ALERT, "%s in endless loop looking for a "
-			       "parent bus with pci_bus_ops for %s, breaking "
-			       "out.\n", __func__, dev_path(dev));
+				  "parent bus with pci_bus_ops for %s, breaking "
+				  "out.\n", __func__, dev_path(dev));
 			break;
 		}
 		pbus = pbus->dev->bus;
@@ -129,42 +129,42 @@ u8 pci_mmio_read_config8(device_t dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
 	return pci_ops_mmconf.read8(pbus, dev->bus->secondary,
-				    dev->path.pci.devfn, where);
+					dev->path.pci.devfn, where);
 }
 
 u16 pci_mmio_read_config16(device_t dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
 	return pci_ops_mmconf.read16(pbus, dev->bus->secondary,
-				     dev->path.pci.devfn, where);
+					 dev->path.pci.devfn, where);
 }
 
 u32 pci_mmio_read_config32(device_t dev, unsigned int where)
 {
 	struct bus *pbus = get_pbus(dev);
 	return pci_ops_mmconf.read32(pbus, dev->bus->secondary,
-				     dev->path.pci.devfn, where);
+					 dev->path.pci.devfn, where);
 }
 
 void pci_mmio_write_config8(device_t dev, unsigned int where, u8 val)
 {
 	struct bus *pbus = get_pbus(dev);
 	pci_ops_mmconf.write8(pbus, dev->bus->secondary, dev->path.pci.devfn,
-			      where, val);
+				 where, val);
 }
 
 void pci_mmio_write_config16(device_t dev, unsigned int where, u16 val)
 {
 	struct bus *pbus = get_pbus(dev);
 	pci_ops_mmconf.write16(pbus, dev->bus->secondary, dev->path.pci.devfn,
-			       where, val);
+				  where, val);
 }
 
 void pci_mmio_write_config32(device_t dev, unsigned int where, u32 val)
 {
 	struct bus *pbus = get_pbus(dev);
 	pci_ops_mmconf.write32(pbus, dev->bus->secondary, dev->path.pci.devfn,
-			       where, val);
+				  where, val);
 }
 
 #endif

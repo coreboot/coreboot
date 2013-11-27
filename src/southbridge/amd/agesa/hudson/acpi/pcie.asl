@@ -71,7 +71,7 @@
 	/* Flash ROM program enable register */
 	OperationRegion(FRE, SystemIO, 0x00000C6F, 0x00000001)
 		Field(FRE, ByteAcc, NoLock, Preserve) {
-		,     0x00000006,
+		,	0x00000006,
 		FLRE, 0x00000001,
 	}
 

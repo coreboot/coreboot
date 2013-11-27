@@ -17,152 +17,152 @@ enum regnames {
 
 static uint32_t gdb_stub_registers[NUM_REGS];
 
-#define GDB_SIG0         0     /* Signal 0 */
-#define GDB_SIGHUP       1     /* Hangup */
-#define GDB_SIGINT       2     /* Interrupt */
-#define GDB_SIGQUIT      3     /* Quit */
-#define GDB_SIGILL       4     /* Illegal instruction */
-#define GDB_SIGTRAP      5     /* Trace/breakpoint trap */
-#define GDB_SIGABRT      6     /* Aborted */
-#define GDB_SIGEMT       7     /* Emulation trap */
-#define GDB_SIGFPE       8     /* Arithmetic exception */
-#define GDB_SIGKILL      9     /* Killed */
-#define GDB_SIGBUS       10    /* Bus error */
-#define GDB_SIGSEGV      11    /* Segmentation fault */
-#define GDB_SIGSYS       12    /* Bad system call */
-#define GDB_SIGPIPE      13    /* Broken pipe */
-#define GDB_SIGALRM      14    /* Alarm clock */
-#define GDB_SIGTERM      15    /* Terminated */
-#define GDB_SIGURG       16    /* Urgent I/O condition */
-#define GDB_SIGSTOP      17    /* Stopped (signal) */
-#define GDB_SIGTSTP      18    /* Stopped (user) */
-#define GDB_SIGCONT      19    /* Continued */
-#define GDB_SIGCHLD      20    /* Child status changed */
-#define GDB_SIGTTIN      21    /* Stopped (tty input) */
-#define GDB_SIGTTOU      22    /* Stopped (tty output) */
-#define GDB_SIGIO        23    /* I/O possible */
-#define GDB_SIGXCPU      24    /* CPU time limit exceeded */
-#define GDB_SIGXFSZ      25    /* File size limit exceeded */
-#define GDB_SIGVTALRM    26    /* Virtual timer expired */
-#define GDB_SIGPROF      27    /* Profiling timer expired */
-#define GDB_SIGWINCH     28    /* Window size changed */
-#define GDB_SIGLOST      29    /* Resource lost */
-#define GDB_SIGUSR1      30    /* User defined signal 1 */
-#define GDB_SUGUSR2      31    /* User defined signal 2 */
-#define GDB_SIGPWR       32    /* Power fail/restart */
-#define GDB_SIGPOLL      33    /* Pollable event occurred */
-#define GDB_SIGWIND      34    /* SIGWIND */
-#define GDB_SIGPHONE     35    /* SIGPHONE */
-#define GDB_SIGWAITING   36    /* Process's LWPs are blocked */
-#define GDB_SIGLWP       37    /* Signal LWP */
-#define GDB_SIGDANGER    38    /* Swap space dangerously low */
-#define GDB_SIGGRANT     39    /* Monitor mode granted */
-#define GDB_SIGRETRACT   40    /* Need to relinquish monitor mode */
-#define GDB_SIGMSG       41    /* Monitor mode data available */
-#define GDB_SIGSOUND     42    /* Sound completed */
-#define GDB_SIGSAK       43    /* Secure attention */
-#define GDB_SIGPRIO      44    /* SIGPRIO */
+#define GDB_SIG0	 0     /* Signal 0 */
+#define GDB_SIGHUP	 1     /* Hangup */
+#define GDB_SIGINT	 2     /* Interrupt */
+#define GDB_SIGQUIT	 3     /* Quit */
+#define GDB_SIGILL	 4     /* Illegal instruction */
+#define GDB_SIGTRAP	 5     /* Trace/breakpoint trap */
+#define GDB_SIGABRT	 6     /* Aborted */
+#define GDB_SIGEMT	 7     /* Emulation trap */
+#define GDB_SIGFPE	 8     /* Arithmetic exception */
+#define GDB_SIGKILL	 9     /* Killed */
+#define GDB_SIGBUS	 10    /* Bus error */
+#define GDB_SIGSEGV	 11    /* Segmentation fault */
+#define GDB_SIGSYS	 12    /* Bad system call */
+#define GDB_SIGPIPE	 13    /* Broken pipe */
+#define GDB_SIGALRM	 14    /* Alarm clock */
+#define GDB_SIGTERM	 15    /* Terminated */
+#define GDB_SIGURG	 16    /* Urgent I/O condition */
+#define GDB_SIGSTOP	 17    /* Stopped (signal) */
+#define GDB_SIGTSTP	 18    /* Stopped (user) */
+#define GDB_SIGCONT	 19    /* Continued */
+#define GDB_SIGCHLD	 20    /* Child status changed */
+#define GDB_SIGTTIN	 21    /* Stopped (tty input) */
+#define GDB_SIGTTOU	 22    /* Stopped (tty output) */
+#define GDB_SIGIO	 23    /* I/O possible */
+#define GDB_SIGXCPU	 24    /* CPU time limit exceeded */
+#define GDB_SIGXFSZ	 25    /* File size limit exceeded */
+#define GDB_SIGVTALRM	 26    /* Virtual timer expired */
+#define GDB_SIGPROF	 27    /* Profiling timer expired */
+#define GDB_SIGWINCH	 28    /* Window size changed */
+#define GDB_SIGLOST	 29    /* Resource lost */
+#define GDB_SIGUSR1	 30    /* User defined signal 1 */
+#define GDB_SUGUSR2	 31    /* User defined signal 2 */
+#define GDB_SIGPWR	 32    /* Power fail/restart */
+#define GDB_SIGPOLL	 33    /* Pollable event occurred */
+#define GDB_SIGWIND	 34    /* SIGWIND */
+#define GDB_SIGPHONE	 35    /* SIGPHONE */
+#define GDB_SIGWAITING	 36    /* Process's LWPs are blocked */
+#define GDB_SIGLWP	 37    /* Signal LWP */
+#define GDB_SIGDANGER	 38    /* Swap space dangerously low */
+#define GDB_SIGGRANT	 39    /* Monitor mode granted */
+#define GDB_SIGRETRACT	 40    /* Need to relinquish monitor mode */
+#define GDB_SIGMSG	 41    /* Monitor mode data available */
+#define GDB_SIGSOUND	 42    /* Sound completed */
+#define GDB_SIGSAK	 43    /* Secure attention */
+#define GDB_SIGPRIO	 44    /* SIGPRIO */
 
-#define GDB_SIG33        45    /* Real-time event 33 */
-#define GDB_SIG34        46    /* Real-time event 34 */
-#define GDB_SIG35        47    /* Real-time event 35 */
-#define GDB_SIG36        48    /* Real-time event 36 */
-#define GDB_SIG37        49    /* Real-time event 37 */
-#define GDB_SIG38        50    /* Real-time event 38 */
-#define GDB_SIG39        51    /* Real-time event 39 */
-#define GDB_SIG40        52    /* Real-time event 40 */
-#define GDB_SIG41        53    /* Real-time event 41 */
-#define GDB_SIG42        54    /* Real-time event 42 */
-#define GDB_SIG43        55    /* Real-time event 43 */
-#define GDB_SIG44        56    /* Real-time event 44 */
-#define GDB_SIG45        57    /* Real-time event 45 */
-#define GDB_SIG46        58    /* Real-time event 46 */
-#define GDB_SIG47        59    /* Real-time event 47 */
-#define GDB_SIG48        60    /* Real-time event 48 */
-#define GDB_SIG49        61    /* Real-time event 49 */
-#define GDB_SIG50        62    /* Real-time event 50 */
-#define GDB_SIG51        63    /* Real-time event 51 */
-#define GDB_SIG52        64    /* Real-time event 52 */
-#define GDB_SIG53        65    /* Real-time event 53 */
-#define GDB_SIG54        66    /* Real-time event 54 */
-#define GDB_SIG55        67    /* Real-time event 55 */
-#define GDB_SIG56        68    /* Real-time event 56 */
-#define GDB_SIG57        69    /* Real-time event 57 */
-#define GDB_SIG58        70    /* Real-time event 58 */
-#define GDB_SIG59        71    /* Real-time event 59 */
-#define GDB_SIG60        72    /* Real-time event 60 */
-#define GDB_SIG61        73    /* Real-time event 61 */
-#define GDB_SIG62        74    /* Real-time event 62 */
-#define GDB_SIG63        75    /* Real-time event 63 */
-#define GDB_SIGCANCEL    76    /* LWP internal signal */
-#define GDB_SIG32        77    /* Real-time event 32 */
-#define GDB_SIG64        78    /* Real-time event 64 */
-#define GDB_SIG65        79    /* Real-time event 65 */
-#define GDB_SIG66        80    /* Real-time event 66 */
-#define GDB_SIG67        81    /* Real-time event 67 */
-#define GDB_SIG68        82    /* Real-time event 68 */
-#define GDB_SIG69        83    /* Real-time event 69 */
-#define GDB_SIG70        84    /* Real-time event 70 */
-#define GDB_SIG71        85    /* Real-time event 71 */
-#define GDB_SIG72        86    /* Real-time event 72 */
-#define GDB_SIG73        87    /* Real-time event 73 */
-#define GDB_SIG74        88    /* Real-time event 74 */
-#define GDB_SIG75        89    /* Real-time event 75 */
-#define GDB_SIG76        90    /* Real-time event 76 */
-#define GDB_SIG77        91    /* Real-time event 77 */
-#define GDB_SIG78        92    /* Real-time event 78 */
-#define GDB_SIG79        93    /* Real-time event 79 */
-#define GDB_SIG80        94    /* Real-time event 80 */
-#define GDB_SIG81        95    /* Real-time event 81 */
-#define GDB_SIG82        96    /* Real-time event 82 */
-#define GDB_SIG83        97    /* Real-time event 83 */
-#define GDB_SIG84        98    /* Real-time event 84 */
-#define GDB_SIG85        99    /* Real-time event 85 */
-#define GDB_SIG86       100    /* Real-time event 86 */
-#define GDB_SIG87       101    /* Real-time event 87 */
-#define GDB_SIG88       102    /* Real-time event 88 */
-#define GDB_SIG89       103    /* Real-time event 89 */
-#define GDB_SIG90       104    /* Real-time event 90 */
-#define GDB_SIG91       105    /* Real-time event 91 */
-#define GDB_SIG92       106    /* Real-time event 92 */
-#define GDB_SIG93       107    /* Real-time event 93 */
-#define GDB_SIG94       108    /* Real-time event 94 */
-#define GDB_SIG95       109    /* Real-time event 95 */
-#define GDB_SIG96       110    /* Real-time event 96 */
-#define GDB_SIG97       111    /* Real-time event 97 */
-#define GDB_SIG98       112    /* Real-time event 98 */
-#define GDB_SIG99       113    /* Real-time event 99 */
-#define GDB_SIG100      114    /* Real-time event 100 */
-#define GDB_SIG101      115    /* Real-time event 101 */
-#define GDB_SIG102      116    /* Real-time event 102 */
-#define GDB_SIG103      117    /* Real-time event 103 */
-#define GDB_SIG104      118    /* Real-time event 104 */
-#define GDB_SIG105      119    /* Real-time event 105 */
-#define GDB_SIG106      120    /* Real-time event 106 */
-#define GDB_SIG107      121    /* Real-time event 107 */
-#define GDB_SIG108      122    /* Real-time event 108 */
-#define GDB_SIG109      123    /* Real-time event 109 */
-#define GDB_SIG110      124    /* Real-time event 110 */
-#define GDB_SIG111      125    /* Real-time event 111 */
-#define GDB_SIG112      126    /* Real-time event 112 */
-#define GDB_SIG113      127    /* Real-time event 113 */
-#define GDB_SIG114      128    /* Real-time event 114 */
-#define GDB_SIG115      129    /* Real-time event 115 */
-#define GDB_SIG116      130    /* Real-time event 116 */
-#define GDB_SIG117      131    /* Real-time event 117 */
-#define GDB_SIG118      132    /* Real-time event 118 */
-#define GDB_SIG119      133    /* Real-time event 119 */
-#define GDB_SIG120      134    /* Real-time event 120 */
-#define GDB_SIG121      135    /* Real-time event 121 */
-#define GDB_SIG122      136    /* Real-time event 122 */
-#define GDB_SIG123      137    /* Real-time event 123 */
-#define GDB_SIG124      138    /* Real-time event 124 */
-#define GDB_SIG125      139    /* Real-time event 125 */
-#define GDB_SIG126      140    /* Real-time event 126 */
-#define GDB_SIG127      141    /* Real-time event 127 */
-#define GDB_SIGINFO     142    /* Information request */
-#define GDB_UNKNOWN     143    /* Unknown signal */
-#define GDB_DEFAULT     144    /* error: default signal */
+#define GDB_SIG33	 45    /* Real-time event 33 */
+#define GDB_SIG34	 46    /* Real-time event 34 */
+#define GDB_SIG35	 47    /* Real-time event 35 */
+#define GDB_SIG36	 48    /* Real-time event 36 */
+#define GDB_SIG37	 49    /* Real-time event 37 */
+#define GDB_SIG38	 50    /* Real-time event 38 */
+#define GDB_SIG39	 51    /* Real-time event 39 */
+#define GDB_SIG40	 52    /* Real-time event 40 */
+#define GDB_SIG41	 53    /* Real-time event 41 */
+#define GDB_SIG42	 54    /* Real-time event 42 */
+#define GDB_SIG43	 55    /* Real-time event 43 */
+#define GDB_SIG44	 56    /* Real-time event 44 */
+#define GDB_SIG45	 57    /* Real-time event 45 */
+#define GDB_SIG46	 58    /* Real-time event 46 */
+#define GDB_SIG47	 59    /* Real-time event 47 */
+#define GDB_SIG48	 60    /* Real-time event 48 */
+#define GDB_SIG49	 61    /* Real-time event 49 */
+#define GDB_SIG50	 62    /* Real-time event 50 */
+#define GDB_SIG51	 63    /* Real-time event 51 */
+#define GDB_SIG52	 64    /* Real-time event 52 */
+#define GDB_SIG53	 65    /* Real-time event 53 */
+#define GDB_SIG54	 66    /* Real-time event 54 */
+#define GDB_SIG55	 67    /* Real-time event 55 */
+#define GDB_SIG56	 68    /* Real-time event 56 */
+#define GDB_SIG57	 69    /* Real-time event 57 */
+#define GDB_SIG58	 70    /* Real-time event 58 */
+#define GDB_SIG59	 71    /* Real-time event 59 */
+#define GDB_SIG60	 72    /* Real-time event 60 */
+#define GDB_SIG61	 73    /* Real-time event 61 */
+#define GDB_SIG62	 74    /* Real-time event 62 */
+#define GDB_SIG63	 75    /* Real-time event 63 */
+#define GDB_SIGCANCEL	 76    /* LWP internal signal */
+#define GDB_SIG32	 77    /* Real-time event 32 */
+#define GDB_SIG64	 78    /* Real-time event 64 */
+#define GDB_SIG65	 79    /* Real-time event 65 */
+#define GDB_SIG66	 80    /* Real-time event 66 */
+#define GDB_SIG67	 81    /* Real-time event 67 */
+#define GDB_SIG68	 82    /* Real-time event 68 */
+#define GDB_SIG69	 83    /* Real-time event 69 */
+#define GDB_SIG70	 84    /* Real-time event 70 */
+#define GDB_SIG71	 85    /* Real-time event 71 */
+#define GDB_SIG72	 86    /* Real-time event 72 */
+#define GDB_SIG73	 87    /* Real-time event 73 */
+#define GDB_SIG74	 88    /* Real-time event 74 */
+#define GDB_SIG75	 89    /* Real-time event 75 */
+#define GDB_SIG76	 90    /* Real-time event 76 */
+#define GDB_SIG77	 91    /* Real-time event 77 */
+#define GDB_SIG78	 92    /* Real-time event 78 */
+#define GDB_SIG79	 93    /* Real-time event 79 */
+#define GDB_SIG80	 94    /* Real-time event 80 */
+#define GDB_SIG81	 95    /* Real-time event 81 */
+#define GDB_SIG82	 96    /* Real-time event 82 */
+#define GDB_SIG83	 97    /* Real-time event 83 */
+#define GDB_SIG84	 98    /* Real-time event 84 */
+#define GDB_SIG85	 99    /* Real-time event 85 */
+#define GDB_SIG86	100    /* Real-time event 86 */
+#define GDB_SIG87	101    /* Real-time event 87 */
+#define GDB_SIG88	102    /* Real-time event 88 */
+#define GDB_SIG89	103    /* Real-time event 89 */
+#define GDB_SIG90	104    /* Real-time event 90 */
+#define GDB_SIG91	105    /* Real-time event 91 */
+#define GDB_SIG92	106    /* Real-time event 92 */
+#define GDB_SIG93	107    /* Real-time event 93 */
+#define GDB_SIG94	108    /* Real-time event 94 */
+#define GDB_SIG95	109    /* Real-time event 95 */
+#define GDB_SIG96	110    /* Real-time event 96 */
+#define GDB_SIG97	111    /* Real-time event 97 */
+#define GDB_SIG98	112    /* Real-time event 98 */
+#define GDB_SIG99	113    /* Real-time event 99 */
+#define GDB_SIG100	114    /* Real-time event 100 */
+#define GDB_SIG101	115    /* Real-time event 101 */
+#define GDB_SIG102	116    /* Real-time event 102 */
+#define GDB_SIG103	117    /* Real-time event 103 */
+#define GDB_SIG104	118    /* Real-time event 104 */
+#define GDB_SIG105	119    /* Real-time event 105 */
+#define GDB_SIG106	120    /* Real-time event 106 */
+#define GDB_SIG107	121    /* Real-time event 107 */
+#define GDB_SIG108	122    /* Real-time event 108 */
+#define GDB_SIG109	123    /* Real-time event 109 */
+#define GDB_SIG110	124    /* Real-time event 110 */
+#define GDB_SIG111	125    /* Real-time event 111 */
+#define GDB_SIG112	126    /* Real-time event 112 */
+#define GDB_SIG113	127    /* Real-time event 113 */
+#define GDB_SIG114	128    /* Real-time event 114 */
+#define GDB_SIG115	129    /* Real-time event 115 */
+#define GDB_SIG116	130    /* Real-time event 116 */
+#define GDB_SIG117	131    /* Real-time event 117 */
+#define GDB_SIG118	132    /* Real-time event 118 */
+#define GDB_SIG119	133    /* Real-time event 119 */
+#define GDB_SIG120	134    /* Real-time event 120 */
+#define GDB_SIG121	135    /* Real-time event 121 */
+#define GDB_SIG122	136    /* Real-time event 122 */
+#define GDB_SIG123	137    /* Real-time event 123 */
+#define GDB_SIG124	138    /* Real-time event 124 */
+#define GDB_SIG125	139    /* Real-time event 125 */
+#define GDB_SIG126	140    /* Real-time event 126 */
+#define GDB_SIG127	141    /* Real-time event 127 */
+#define GDB_SIGINFO	142    /* Information request */
+#define GDB_UNKNOWN	143    /* Unknown signal */
+#define GDB_DEFAULT	144    /* error: default signal */
 /* Mach exceptions */
 #define GDB_EXC_BAD_ACCESS     145 /* Could not access memory */
 #define GDB_EXC_BAD_INSTRCTION 146 /* Illegal instruction/operand */
@@ -404,8 +404,8 @@ void x86_exception(struct eregs *info)
 		case 'G': /* set the value of the CPU registers - return OK */
 			copy_from_hex(&gdb_stub_registers, in_buffer + 1, sizeof(gdb_stub_registers));
 			memcpy(info, gdb_stub_registers, 8*sizeof(uint32_t));
-			info->eip    = gdb_stub_registers[PC];
-			info->cs     = gdb_stub_registers[CS];
+			info->eip	= gdb_stub_registers[PC];
+			info->cs	= gdb_stub_registers[CS];
 			info->eflags = gdb_stub_registers[PS];
 			memcpy(out_buffer, "OK",3);
 			break;
@@ -436,8 +436,8 @@ void x86_exception(struct eregs *info)
 			break;
 		case 's':
 		case 'c':
-			/* cAA..AA    Continue at address AA..AA(optional) */
-			/* sAA..AA    Step one instruction from AA..AA(optional) */
+			/* cAA..AA	 Continue at address AA..AA(optional) */
+			/* sAA..AA	 Step one instruction from AA..AA(optional) */
 			ptr = &in_buffer[1];
 			if (parse_ulong(&ptr, &addr)) {
 				info->eip = addr;

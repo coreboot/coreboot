@@ -65,7 +65,7 @@ void clear_ioapic(u32 ioapic_base)
 		io_apic_write(ioapic_base, i * 2 + 0x11, high);
 
 		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
-		       i, high, low);
+			 i, high, low);
 	}
 
 	if (io_apic_read(ioapic_base, 0x10) == 0xffffffff) {
@@ -80,9 +80,9 @@ void set_ioapic_id(u32 ioapic_base, u8 ioapic_id)
 	int i;
 
 	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n",
-	       ioapic_base);
+		ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = 0x%02x\n",
-	       bsp_lapicid);
+		bsp_lapicid);
 
 	if (ioapic_id) {
 		printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
@@ -95,7 +95,7 @@ void set_ioapic_id(u32 ioapic_base, u8 ioapic_id)
 	printk(BIOS_SPEW, "IOAPIC: Dumping registers\n");
 	for (i = 0; i < 3; i++)
 		printk(BIOS_SPEW, "  reg 0x%04x: 0x%08x\n", i,
-		       io_apic_read(ioapic_base, i));
+			 io_apic_read(ioapic_base, i));
 
 }
 
@@ -114,7 +114,7 @@ static void load_vectors(u32 ioapic_base)
 	 */
 	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on FSB\n");
 	io_apic_write(ioapic_base, 0x03,
-		      io_apic_read(ioapic_base, 0x03) | (1 << 0));
+			io_apic_read(ioapic_base, 0x03) | (1 << 0));
 #endif
 #if CONFIG_IOAPIC_INTERRUPTS_ON_APIC_SERIAL_BUS
 	printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on APIC serial bus\n");
@@ -134,7 +134,7 @@ static void load_vectors(u32 ioapic_base)
 	}
 
 	printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
-	       0, high, low);
+		0, high, low);
 	low = DISABLED;
 	high = NONE;
 	for (i = 1; i < ioapic_interrupts; i++) {
@@ -142,7 +142,7 @@ static void load_vectors(u32 ioapic_base)
 		io_apic_write(ioapic_base, i * 2 + 0x11, high);
 
 		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
-		       i, high, low);
+			 i, high, low);
 	}
 }
 

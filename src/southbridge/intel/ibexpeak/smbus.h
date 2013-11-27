@@ -145,7 +145,7 @@ static  int do_smbus_write_byte(unsigned smbus_base, unsigned device, unsigned a
 }
 
 static int do_smbus_block_write(unsigned smbus_base, unsigned device,
-			      unsigned cmd, unsigned bytes, const u8 *buf)
+				 unsigned cmd, unsigned bytes, const u8 *buf)
 {
 	u8 status;
 
@@ -180,8 +180,8 @@ static int do_smbus_block_write(unsigned smbus_base, unsigned device,
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
 		if (status & ((1 << 4) | /* FAILED */
-			      (1 << 3) | /* BUS ERR */
-			      (1 << 2))) /* DEV ERR */
+				 (1 << 3) | /* BUS ERR */
+				 (1 << 2))) /* DEV ERR */
 			return SMBUS_ERROR;
 
 		if (status & 0x80) { /* Byte done */
@@ -194,7 +194,7 @@ static int do_smbus_block_write(unsigned smbus_base, unsigned device,
 }
 
 static int do_smbus_block_read(unsigned smbus_base, unsigned device,
-			      unsigned cmd, unsigned bytes, u8 *buf)
+				 unsigned cmd, unsigned bytes, u8 *buf)
 {
 	u8 status;
 	int bytes_read = 0;
@@ -223,8 +223,8 @@ static int do_smbus_block_read(unsigned smbus_base, unsigned device,
 	do {
 		status = inb(smbus_base + SMBHSTSTAT);
 		if (status & ((1 << 4) | /* FAILED */
-			      (1 << 3) | /* BUS ERR */
-			      (1 << 2))) /* DEV ERR */
+				 (1 << 3) | /* BUS ERR */
+				 (1 << 2))) /* DEV ERR */
 			return SMBUS_ERROR;
 
 		if (status & 0x80) { /* Byte done */

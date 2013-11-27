@@ -151,13 +151,13 @@ Scope(\_SB)
 		 * We have to do this in order to be able to work around
 		 * certain windows bugs.
 		 *
-		 *    OSYS value | Operating System
-		 *    -----------+------------------
-		 *       2000    | Windows 2000
-		 *       2001    | Windows XP(+SP1)
-		 *       2002    | Windows XP SP2
-		 *       2006    | Windows Vista
-		 *       ????    | Windows 7
+		 *	OSYS value | Operating System
+		 *	-----------+------------------
+		 *	   2000	   | Windows 2000
+		 *	   2001	   | Windows XP(+SP1)
+		 *	   2002	   | Windows XP SP2
+		 *	   2006	   | Windows Vista
+		 *	   ????	   | Windows 7
 		 */
 
 		/* Let's assume we're running at least Windows 2000 */

@@ -431,7 +431,7 @@ struct smm_runtime {
 } __attribute__ ((packed));
 
 typedef void asmlinkage (*smm_handler_t)(void *arg, int cpu,
-                                         const struct smm_runtime *runtime);
+					 const struct smm_runtime *runtime);
 
 #ifdef __SMM__
 /* SMM Runtime helpers. */
@@ -448,21 +448,21 @@ void *smm_get_save_state(int cpu);
 
 /* The smm_loader_params structure provides direction to the SMM loader:
  * - stack_top - optional external stack provided to loader. It must be at
- *               least per_cpu_stack_size * num_concurrent_stacks in size.
+ *		 least per_cpu_stack_size * num_concurrent_stacks in size.
  * - per_cpu_stack_size - stack size per cpu for smm modules.
  * - num_concurrent_stacks - number of concurrent cpus in handler needing stack
- *                           optional for setting up relocation handler.
+ *			     optional for setting up relocation handler.
  * - per_cpu_save_state_size - the smm save state size per cpu
  * - num_concurrent_save_states - number of concurrent cpus needing save state
- *                                space
+ *				  space
  * - handler - optional handler to call. Only used during SMM relocation setup.
  * - handler_arg - optional argument to handler for SMM relocation setup. For
- *                 loading the SMM module, the handler_arg is filled in with
- *                 the address of the module's parameters (if present).
+ *		   loading the SMM module, the handler_arg is filled in with
+ *		   the address of the module's parameters (if present).
  * - runtime - this field is a result only. The SMM runtime location is filled
- *             into this field so the code doing the loading can manipulate the
- *             runtime's assumptions. e.g. updating the apic id to cpu map to
- *             handle sparse apic id space.
+ *	       into this field so the code doing the loading can manipulate the
+ *	       runtime's assumptions. e.g. updating the apic id to cpu map to
+ *	       handle sparse apic id space.
  */
 struct smm_loader_params {
 	void *stack_top;

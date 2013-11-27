@@ -23,15 +23,15 @@ void SetDQSOutputCHB(DRAM_SYS_ATTR * DramAttr);
 /*===================================================================
 Function   : DRAMDQSOutputSearchCHA()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : set DQS output delay register reg70  and DQ output delay register reg71
+				      in MotherBoard
+Output	   : Void
+Purpose	  : set DQS output delay register reg70  and DQ output delay register reg71
 ===================================================================*/
 
-#define CH_A      0
-#define CH_B      1
+#define CH_A	  0
+#define CH_B	  1
 void DRAMDQSOutputSearch(DRAM_SYS_ATTR * DramAttr)
 {
 	if (DramAttr->RankNumChA > 0)
@@ -41,11 +41,11 @@ void DRAMDQSOutputSearch(DRAM_SYS_ATTR * DramAttr)
 /*===================================================================
 Function   : SetDQSOutputCHA()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   :  according the frequence set CHA DQS output
+				      in MotherBoard
+Output	   : Void
+Purpose	  :  according the frequence set CHA DQS output
 ===================================================================*/
 void SetDQSOutputCHA(DRAM_SYS_ATTR * DramAttr)
 {
@@ -75,17 +75,17 @@ void SetDQSOutputCHA(DRAM_SYS_ATTR * DramAttr)
 }
 
 //################
-//     STEP 12   #
+//     STEP 12	 #
 //################
 
 /*===================================================================
 Function   : DRAMDQSInputSearch()
 Precondition :
-Input      :
+Input	   :
 		   DramAttr:  pointer point to  DRAM_SYS_ATTR  which consist the DDR and Dimm information
-		                    in MotherBoard
-Output     : Void
-Purpose   : search DQS input delay for CHA/CHB
+				      in MotherBoard
+Output	   : Void
+Purpose	  : search DQS input delay for CHA/CHB
 ===================================================================*/
 
 void DRAMDQSInputSearch(DRAM_SYS_ATTR * DramAttr)

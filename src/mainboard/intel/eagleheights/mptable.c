@@ -60,7 +60,7 @@
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	unsigned char bus_chipset, bus_pci;
 	unsigned char bus_pcie_a, bus_pcie_a1, bus_pcie_b;
 	int bus_isa, i;
@@ -76,11 +76,11 @@ static void *smp_write_config_table(void *v)
 	}
 	rcba = res->base;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	/* Get bus numbers */
 	bus_chipset = 0;
@@ -125,7 +125,7 @@ static void *smp_write_config_table(void *v)
 
 	mptable_add_isa_interrupts(mc, bus_isa, IO_APIC0, 0);
 
-	/*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
+	/*Local Ints:	Type	Polarity	Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	mptable_lintsrc(mc, bus_isa);
 
 	/* Internal PCI device for i3100 */

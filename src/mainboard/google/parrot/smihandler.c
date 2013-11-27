@@ -107,7 +107,7 @@ static u8 mainboard_smi_ec(void)
 #if CONFIG_ELOG_GSMI
 		if (!battery_critical_logged)
 			elog_add_event_byte(ELOG_TYPE_EC_EVENT,
-					    EC_EVENT_BATTERY_CRITICAL);
+						 EC_EVENT_BATTERY_CRITICAL);
 		battery_critical_logged = 1;
 #endif
 		break;

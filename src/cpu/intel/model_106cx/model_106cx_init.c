@@ -41,10 +41,10 @@ static const uint32_t microcode_updates[] = {
 	#include "microcode-M10106CA107.h"
 
 	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
+	0x0, 0x0, 0x0, 0x0,
 };
 
 #define IA32_FEATURE_CONTROL 0x003a
@@ -164,7 +164,7 @@ static void model_106cx_init(device_t cpu)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_106cx_init,
+	.init	   = model_106cx_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
@@ -173,7 +173,7 @@ static struct cpu_device_id cpu_table[] = {
 };
 
 static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
+	.ops	   = &cpu_dev_ops,
 	.id_table = cpu_table,
 };
 

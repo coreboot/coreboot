@@ -42,7 +42,7 @@ void enable_int_gfx(void)
 	RWPMIO(SB_PMIOA_REGF6, AccWidthUint8, ~(BIT0), BIT0); /* Disable Gec */
 #endif
 	/* make sure the Acpi MMIO(fed80000) is accessible */
-        RWPMIO(SB_PMIOA_REG24, AccWidthUint8, ~(BIT0), BIT0);
+	RWPMIO(SB_PMIOA_REG24, AccWidthUint8, ~(BIT0), BIT0);
 
 	gpio_reg = (volatile u8 *)ACPI_MMIO_BASE + 0xD00; /* IoMux Register */
 

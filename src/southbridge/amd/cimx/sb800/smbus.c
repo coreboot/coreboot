@@ -72,7 +72,7 @@ int do_smbus_recv_byte(u32 smbus_io_base, u32 device)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
-        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_recv_byte - smbus not ready.\n");
+	printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_recv_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 
@@ -102,7 +102,7 @@ int do_smbus_send_byte(u32 smbus_io_base, u32 device, u8 val)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
-        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_send_byte - smbus not ready.\n");
+	printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_send_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 
@@ -132,7 +132,7 @@ int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
-        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_read_byte - smbus not ready.\n");
+	printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_read_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 
@@ -165,7 +165,7 @@ int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val)
 	u8 byte;
 
 	if (smbus_wait_until_ready(smbus_io_base) < 0) {
-        printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_write_byte - smbus not ready.\n");
+	printk(BIOS_DEBUG, "SB800 - Smbus.c - do_smbus_write_byte - smbus not ready.\n");
 		return -2;	/* not ready */
 	}
 

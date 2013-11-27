@@ -272,8 +272,8 @@ void vbe_set_graphics(void)
 	struct jpeg_decdata *decdata;
 	decdata = malloc(sizeof(*decdata));
 	unsigned char *jpeg = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-						    "bootsplash.jpg",
-						    CBFS_TYPE_BOOTSPLASH);
+							  "bootsplash.jpg",
+							  CBFS_TYPE_BOOTSPLASH);
 	if (!jpeg) {
 		printk(BIOS_DEBUG, "VBE: No bootsplash found.\n");
 		return;
@@ -458,10 +458,10 @@ int asmlinkage interrupt_handler(u32 intnumber,
 #if CONFIG_REALMODE_DEBUG
 	printk(BIOS_DEBUG, "oprom: INT# 0x%x\n", intnumber);
 	printk(BIOS_DEBUG, "oprom: eax: %08x ebx: %08x ecx: %08x edx: %08x\n",
-		      eax, ebx, ecx, edx);
+			eax, ebx, ecx, edx);
 	printk(BIOS_DEBUG, "oprom: ebp: %08x esp: %08x edi: %08x esi: %08x\n",
 		     ebp, esp, edi, esi);
-	printk(BIOS_DEBUG, "oprom:  ip: %04x      cs: %04x   flags: %08x\n",
+	printk(BIOS_DEBUG, "oprom:  ip: %04x	   cs: %04x   flags: %08x\n",
 		     ip, cs, flags);
 #endif
 

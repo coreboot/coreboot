@@ -4,11 +4,11 @@ config SOUTHBRIDGE_VIA_K8T890
 
 if SOUTHBRIDGE_VIA_K8T890
 
-config SOUTHBRIDGE_VIA_SUBTYPE_K8M800     # not tested
+config SOUTHBRIDGE_VIA_SUBTYPE_K8M800	  # not tested
 	def_bool n
 config SOUTHBRIDGE_VIA_SUBTYPE_K8T800_OLD # not tested, lspci lists B188 and 3188
 	def_bool n
-config SOUTHBRIDGE_VIA_SUBTYPE_K8T800     # lspci lists 0282, 1282, 2282, 3282, and 7282
+config SOUTHBRIDGE_VIA_SUBTYPE_K8T800	  # lspci lists 0282, 1282, 2282, 3282, and 7282
 	def_bool n
 config SOUTHBRIDGE_VIA_SUBTYPE_K8T800PRO  # lspci lists 0282, 1282, 2282, 3282, and 7282
 	def_bool n

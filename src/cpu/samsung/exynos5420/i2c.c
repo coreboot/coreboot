@@ -186,8 +186,8 @@ static struct s3c24x0_i2c_bus i2c_buses[] = {
  *
  * @param i2c- pointer to the appropriate i2c register bank.
  * @return I2C_OK, if transmission was ACKED
- *         I2C_NACK, if transmission was NACKED
- *         I2C_NOK_TIMEOUT, if transaction did not complete in I2C_TIMEOUT_MS
+ *	   I2C_NACK, if transmission was NACKED
+ *	   I2C_NOK_TIMEOUT, if transaction did not complete in I2C_TIMEOUT_MS
  */
 
 static int WaitForXfer(struct s3c24x0_i2c *i2c)
@@ -366,19 +366,19 @@ static int hsi2c_check_transfer(struct exynos5_hsi2c *i2c)
 {
 	uint32_t status = read32(&i2c->usi_trans_status);
 	if (status & (HSI2C_TRANS_ABORT | HSI2C_NO_DEV_ACK |
-		      HSI2C_NO_DEV | HSI2C_TIMEOUT_AUTO)) {
+			HSI2C_NO_DEV | HSI2C_TIMEOUT_AUTO)) {
 		if (status & HSI2C_TRANS_ABORT)
 			printk(BIOS_ERR,
-			       "%s: Transaction aborted.\n", __func__);
+				  "%s: Transaction aborted.\n", __func__);
 		if (status & HSI2C_NO_DEV_ACK)
 			printk(BIOS_ERR,
-			       "%s: No ack from device.\n", __func__);
+				  "%s: No ack from device.\n", __func__);
 		if (status & HSI2C_NO_DEV)
 			printk(BIOS_ERR,
-			       "%s: No response from device.\n", __func__);
+				  "%s: No response from device.\n", __func__);
 		if (status & HSI2C_TIMEOUT_AUTO)
 			printk(BIOS_ERR,
-			       "%s: Transaction time out.\n", __func__);
+				  "%s: Transaction time out.\n", __func__);
 		return -1;
 	}
 	return !(status & HSI2C_MASTER_BUSY);
@@ -556,10 +556,10 @@ static int i2c_transfer(struct s3c24x0_i2c *i2c,
 	write32(chip, &i2c->iicds);
 	if ((cmd_type == I2C_WRITE) || (addr && addr_len))
 		write32(I2C_MODE_MT | I2C_TXRX_ENA | I2C_START_STOP,
-		       &i2c->iicstat);
+			 &i2c->iicstat);
 	else
 		write32(I2C_MODE_MR | I2C_TXRX_ENA | I2C_START_STOP,
-		       &i2c->iicstat);
+			 &i2c->iicstat);
 
 	/* Wait for chip address to transmit. */
 	result = WaitForXfer(i2c);
@@ -597,7 +597,7 @@ static int i2c_transfer(struct s3c24x0_i2c *i2c,
 
 			/* Generate a re-START. */
 			write32(I2C_MODE_MR | I2C_TXRX_ENA | I2C_START_STOP,
-			       &i2c->iicstat);
+				  &i2c->iicstat);
 			ReadWriteByte(i2c);
 			result = WaitForXfer(i2c);
 			if (result != I2C_OK)
@@ -608,8 +608,8 @@ static int i2c_transfer(struct s3c24x0_i2c *i2c,
 			/* disable ACK for final READ */
 			if (i == data_len - 1)
 				write32(readl(&i2c->iiccon)
-				       & ~I2CCON_ACKGEN,
-				       &i2c->iiccon);
+					   & ~I2CCON_ACKGEN,
+					   &i2c->iiccon);
 			ReadWriteByte(i2c);
 			result = WaitForXfer(i2c);
 			data[i++] = read32(&i2c->iicds);

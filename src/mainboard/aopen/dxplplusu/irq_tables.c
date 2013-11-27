@@ -43,7 +43,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	PCI_DEVICE_ID_INTEL_82801DB_LPC,		// Device ID of compatible PCI interrupt router
 	0,		 				// Additional miniport information
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 		// Reserved, must be zero
-	0xB1,      					// Checksum of the entire structure (causes 8-bit sum == 0)
+	0xB1,	    					// Checksum of the entire structure (causes 8-bit sum == 0)
 	{
 		// NOTE: For 82801, a nonzero link value is a pointer to a PIRQ[n]_ROUT register in PCI configuration space
 		//		 This was determined from linux-2.6.11/arch/i386/pci/irq.c
@@ -51,19 +51,19 @@ static const struct irq_routing_table intel_irq_routing_table = {
 		// ICH-3 doesn't allow SERIRQ or PCI message to generate IRQ0, IRQ2, IRQ8, or IRQ13
 		// Not sure why IRQ9 isn't routable (inherited from Tyan S2735)
 
-		//				   	  INTA#              INTB#	      INTC#             INTD#
+		//				   	  INTA#		 INTB#		     INTC#	       INTD#
 		//  bus,		device #  	  {link  , bitmap}, {link  , bitmap}, {link  , bitmap}, {link  , bitmap},  slot, rfu
 
-		{PCI_BUS_ROOT,		PCI_DEVFN(31, 0), {{PIRQ_C, 0xdcf8}, {PIRQ_B, 0xdcf8}, UNUSED_INTERRUPT, UNUSED_INTERRUPT},   0, 0},	// IDE / SMBus
-		{PCI_BUS_ROOT,		PCI_DEVFN(29, 0), {{PIRQ_A, 0xdcf8}, {PIRQ_D, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_H, 0xdcf8}},   0, 0},	// USB 1.1
+		{PCI_BUS_ROOT,		PCI_DEVFN(31, 0), {{PIRQ_C, 0xdcf8}, {PIRQ_B, 0xdcf8}, UNUSED_INTERRUPT, UNUSED_INTERRUPT},	0, 0},	// IDE / SMBus
+		{PCI_BUS_ROOT,		PCI_DEVFN(29, 0), {{PIRQ_A, 0xdcf8}, {PIRQ_D, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_H, 0xdcf8}},	0, 0},	// USB 1.1
 
-		{PCI_BUS_P64H2_B,	PCI_DEVFN(2, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},   0, 0},
-		{PCI_BUS_P64H2_B,	PCI_DEVFN(3, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},   0, 0},
-		{PCI_BUS_P64H2_B,	PCI_DEVFN(4, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},   0, 0},    // GbE
+		{PCI_BUS_P64H2_B,	PCI_DEVFN(2, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},	  0, 0},
+		{PCI_BUS_P64H2_B,	PCI_DEVFN(3, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},	  0, 0},
+		{PCI_BUS_P64H2_B,	PCI_DEVFN(4, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},	  0, 0},    // GbE
 
-		{PCI_BUS_P64H2_A,	PCI_DEVFN(2, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},   0, 0},
-		{PCI_BUS_P64H2_A,	PCI_DEVFN(3, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},   0, 0},
-		{PCI_BUS_P64H2_A,	PCI_DEVFN(4, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},   0, 0},    // SCSI
+		{PCI_BUS_P64H2_A,	PCI_DEVFN(2, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},	  0, 0},
+		{PCI_BUS_P64H2_A,	PCI_DEVFN(3, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},	  0, 0},
+		{PCI_BUS_P64H2_A,	PCI_DEVFN(4, 0) , {{PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}, {PIRQ_C, 0xdcf8}},	  0, 0},    // SCSI
 
 		{PCI_BUS_ICH4,		PCI_DEVFN(3, 0),  {{PIRQ_E, 0xdcf8}, {PIRQ_F, 0xdcf8}, {PIRQ_G, 0xdcf8}, {PIRQ_H, 0xdcf8}},  0, 0},	// 32-bit slot
 

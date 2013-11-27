@@ -187,7 +187,7 @@ void exynos_fimd_disable(void)
  * return		status
  */
 static int s5p_dp_config_video(struct s5p_dp_device *dp,
-			       struct video_info *video_info)
+				  struct video_info *video_info)
 {
 	int timeout = 0;
 	struct exynos5_dp *base = dp->base;
@@ -195,9 +195,9 @@ static int s5p_dp_config_video(struct s5p_dp_device *dp,
 	s5p_dp_config_video_slave_mode(dp, video_info);
 
 	s5p_dp_set_video_color_format(dp, video_info->color_depth,
-				      video_info->color_space,
-				      video_info->dynamic_range,
-				      video_info->ycbcr_coeff);
+					  video_info->color_space,
+					  video_info->dynamic_range,
+					  video_info->ycbcr_coeff);
 
 	if (s5p_dp_get_pll_lock_status(dp) == PLL_UNLOCKED) {
 		printk(BIOS_DEBUG, "PLL is not locked yet.\n");
@@ -258,8 +258,8 @@ static int s5p_dp_enable_rx_to_enhanced_mode(struct s5p_dp_device *dp)
 		return -ERR_DPCD_READ_ERROR1;
 	}
 	if (s5p_dp_write_byte_to_dpcd(dp, DPCD_ADDR_LANE_COUNT_SET,
-				      DPCD_ENHANCED_FRAME_EN |
-				      (data & DPCD_LANE_COUNT_SET_MASK))) {
+					  DPCD_ENHANCED_FRAME_EN |
+					  (data & DPCD_LANE_COUNT_SET_MASK))) {
 		printk(BIOS_DEBUG, "DPCD write error\n");
 		return -ERR_DPCD_WRITE_ERROR1;
 	}
@@ -280,13 +280,13 @@ static int s5p_dp_enable_scramble(struct s5p_dp_device *dp)
 	clrbits_le32(&base->dp_training_ptn_set, SCRAMBLING_DISABLE);
 
 	if (s5p_dp_read_byte_from_dpcd(dp, DPCD_ADDR_TRAINING_PATTERN_SET,
-				       &data)) {
+					   &data)) {
 		printk(BIOS_DEBUG, "DPCD read error\n");
 		return -ERR_DPCD_READ_ERROR2;
 	}
 
 	if (s5p_dp_write_byte_to_dpcd(dp, DPCD_ADDR_TRAINING_PATTERN_SET,
-			      (u8)(data & ~DPCD_SCRAMBLING_DISABLED))) {
+				 (u8)(data & ~DPCD_SCRAMBLING_DISABLED))) {
 		printk(BIOS_DEBUG, "DPCD write error\n");
 		return -ERR_DPCD_WRITE_ERROR2;
 	}
@@ -334,7 +334,7 @@ static int s5p_dp_init_dp(struct s5p_dp_device *dp)
  * return		status
  */
 static int s5p_dp_set_lane_lane_pre_emphasis(struct s5p_dp_device *dp,
-					     int pre_emphasis, int lane)
+						  int pre_emphasis, int lane)
 {
 	u32 reg;
 	struct exynos5_dp *base = dp->base;
@@ -439,7 +439,7 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	/* Set TX pre-emphasis to minimum */
 	for (lane = 0; lane < max_lane; lane++)
 		if (s5p_dp_set_lane_lane_pre_emphasis(dp,
-					      PRE_EMPHASIS_LEVEL_0, lane)) {
+						   PRE_EMPHASIS_LEVEL_0, lane)) {
 			printk(BIOS_DEBUG, "Unable to set pre emphasis level\n");
 			return -ERR_PRE_EMPHASIS_LEVELS;
 		}
@@ -457,14 +457,14 @@ static int s5p_dp_hw_link_training(struct s5p_dp_device *dp,
 	if ((dp->link_train.link_rate != LINK_RATE_1_62GBPS) &&
 	    (dp->link_train.link_rate != LINK_RATE_2_70GBPS)) {
 		printk(BIOS_DEBUG, "Rx Max Link Rate is abnormal :%x !\n",
-		      dp->link_train.link_rate);
+			dp->link_train.link_rate);
 		/* Not Retrying */
 		return -ERR_LINK_RATE_ABNORMAL;
 	}
 
 	if (dp->link_train.lane_count == 0) {
 		printk(BIOS_DEBUG, "Rx Max Lane count is abnormal :%x !\n",
-		      dp->link_train.lane_count);
+			dp->link_train.lane_count);
 		/* Not retrying */
 		return -ERR_MAX_LANE_COUNT_ABNORMAL;
 	}
@@ -529,7 +529,7 @@ int dp_controller_init(struct s5p_dp_device *dp_device)
 	}
 
 	ret = s5p_dp_hw_link_training(dp, dp->video_info->lane_count,
-				      dp->video_info->link_rate);
+					  dp->video_info->link_rate);
 	if (ret) {
 		printk(BIOS_ERR, "unable to do link train\n");
 		return ret;

@@ -28,7 +28,7 @@
 #define W83627UHG_KBC			5   /* PS/2 keyboard & mouse */
 #define W83627UHG_SP3			6   /* Com3 */
 #define W83627UHG_GPIO3_4		7   /* GPIO 3/4 */
-#define W83627UHG_WDTO_PLED_GPIO5_6	8   /* WDTO#, PLED, GPIO5/6 */
+#define W83627UHG_WDTO_PLED_GPIO5_6	8	/* WDTO#, PLED, GPIO5/6 */
 #define W83627UHG_GPIO1_2		9   /* GPIO 1/2, SUSLED */
 #define W83627UHG_ACPI			10  /* ACPI */
 #define W83627UHG_HWM			11  /* Hardware monitor */

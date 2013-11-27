@@ -54,7 +54,7 @@ static void reset_phy_ctrl(void)
 }
 
 int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
-		       int mem_reset)
+			 int mem_reset)
 {
 	unsigned int val;
 	struct exynos5_phy_control *phy0_ctrl, *phy1_ctrl;
@@ -76,7 +76,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 	/* Set Impedance Output Driver */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: Set Impedance Output Driver\n");
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: mem->impedance 0x%x\n",
-	       mem->impedance);
+		mem->impedance);
 	val = (mem->impedance << CA_CK_DRVR_DS_OFFSET) |
 		(mem->impedance << CA_CKE_DRVR_DS_OFFSET) |
 		(mem->impedance << CA_CS_DRVR_DS_OFFSET) |
@@ -87,7 +87,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 
 	/* Set Read Latency and Burst Length for PHY0 and PHY1 */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
-	       "Set Read Latency and Burst Length for PHY0 and PHY1\n");
+		"Set Read Latency and Burst Length for PHY0 and PHY1\n");
 	val = (mem->ctrl_bstlen << PHY_CON42_CTRL_BSTLEN_SHIFT) |
 		(mem->ctrl_rdlat << PHY_CON42_CTRL_RDLAT_SHIFT);
 	writel(val, &phy0_ctrl->phy_con42);
@@ -141,7 +141,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 
 	/* Memory Channel Interleaving Size */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
-	       "Memory Channel Interleaving Size\n");
+		"Memory Channel Interleaving Size\n");
 	writel(mem->iv_size, &dmc->ivcontrol);
 
 	/* Set DMC MEMCONTROL register */
@@ -161,7 +161,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 
 	/* Power Down mode Configuration */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
-	       "Power Down mode Configuration\n");
+		"Power Down mode Configuration\n");
 	writel(mem->dpwrdn_cyc << PWRDNCONFIG_DPWRDN_CYC_SHIFT |
 		mem->dsref_cyc << PWRDNCONFIG_DSREF_CYC_SHIFT,
 		&dmc->pwrdnconfig);
@@ -170,7 +170,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 	 * values as per Memory AC parameters
 	 */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
-	       "TimingRow, TimingData, TimingPower and Timingaref\n");
+		"TimingRow, TimingData, TimingPower and Timingaref\n");
 	writel(mem->timing_ref, &dmc->timingref);
 	writel(mem->timing_row, &dmc->timingrow);
 	writel(mem->timing_data, &dmc->timingdata);
@@ -270,7 +270,7 @@ int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
 
 	/* Set DMC Concontrol and enable auto-refresh counter */
 	printk(BIOS_SPEW, "ddr3_mem_ctrl_init: "
-	       "Set DMC Concontrol and enable auto-refresh counter\n");
+		"Set DMC Concontrol and enable auto-refresh counter\n");
 	writel(mem->concontrol | (mem->rd_fetch << CONCONTROL_RD_FETCH_SHIFT)
 		| (mem->aref_en << CONCONTROL_AREF_EN_SHIFT), &dmc->concontrol);
 	return 0;

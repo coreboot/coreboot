@@ -139,7 +139,7 @@ static void lpc_init(device_t dev)
 		dword = inl(pm10_bar + 0x10);
 		on = 8 - on;
 		printk(BIOS_DEBUG, "Throttling CPU %2d.%1.1d percent.\n",
-		       (on * 12) + (on >> 1), (on & 1) * 5);
+			 (on * 12) + (on >> 1), (on & 1) * 5);
 	}
 #if 0
 	/* Enable Port 92 fast reset (default is enabled). */
@@ -314,44 +314,44 @@ static void ck804_lpc_enable_resources(device_t dev)
 
 static struct device_operations lpc_ops = {
 	.read_resources   = ck804_lpc_read_resources,
-	.set_resources    = ck804_lpc_set_resources,
+	.set_resources	   = ck804_lpc_set_resources,
 	.enable_resources = ck804_lpc_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	// .enable        = ck804_enable,
-	.ops_pci          = &ck804_pci_ops,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+	// .enable	   = ck804_enable,
+	.ops_pci	   = &ck804_pci_ops,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_LPC,
 };
 
 static const struct pci_driver lpc_driver_pro __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_PRO,
 };
 
 #if CK804_CHIP_REV == 1
 static const struct pci_driver lpc_driver_slave __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_SLAVE,
 };
 #else
 static struct device_operations lpc_slave_ops = {
 	.read_resources   = ck804_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = lpc_slave_init,
-	// .enable        = ck804_enable,
-	.ops_pci          = &ck804_pci_ops,
+	.init		   = lpc_slave_init,
+	// .enable	   = ck804_enable,
+	.ops_pci	   = &ck804_pci_ops,
 };
 
 static const struct pci_driver lpc_driver_slave __pci_driver = {
-	.ops    = &lpc_slave_ops,
+	.ops	 = &lpc_slave_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_SLAVE,
 };

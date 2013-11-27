@@ -44,7 +44,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 					IRQ (Level, ActiveLow, Shared) {5}
 				})
 				Return (BUFF)
-                	}
+			}
 			/* Possible Resources - return the range of irqs
  			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -52,13 +52,13 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 			Method (_PRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
-                    		{
+		    		{
 					IRQ (Level, ActiveLow, Shared) {5,9,10}
-                    		})
-                    		Return (BUFF)
-                	}
+		    		})
+		    		Return (BUFF)
+			}
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -86,7 +86,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 					IRQ (Level, ActiveLow, Shared) {9}
 				})
 				Return (BUFF)
-                	}
+			}
 			/* Possible Resources - return the range of irqs
 			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -94,13 +94,13 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 			Method (_PRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
-                    		{
+		    		{
 					IRQ (Level, ActiveLow, Shared) {5,9,10}
-                    		})
-                    		Return (BUFF)
-                	}
+		    		})
+		    		Return (BUFF)
+			}
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -128,7 +128,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 					IRQ (Level, ActiveLow, Shared) {9}
 				})
 				Return (BUFF)
-                	}
+			}
 			/* Possible Resources - return the range of irqs
 			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -136,13 +136,13 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 			Method (_PRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
-                    		{
+		    		{
 					IRQ (Level, ActiveLow, Shared) {5,9,10}
-                    		})
-                    		Return (BUFF)
-                	}
+		    		})
+		    		Return (BUFF)
+			}
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -170,7 +170,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 					IRQ (Level, ActiveLow, Shared) {5}
 				})
 				Return (BUFF)
-                	}
+			}
 			/* Possible Resources - return the range of irqs
 			 * we are using for PCI - only here to keep Linux ACPI
 			 * happy
@@ -178,13 +178,13 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 			Method (_PRS, 0, NotSerialized)
 			{
 				Name (BUFF, ResourceTemplate ()
-                    		{
+		    		{
 					IRQ (Level, ActiveLow, Shared) {5,9,10}
-                    		})
-                    		Return (BUFF)
-                	}
+		    		})
+		    		Return (BUFF)
+			}
 			/* Set Resources - dummy function to keep Linux ACPI happy
-                         * Linux is more than happy not to tinker with irq
+			 * Linux is more than happy not to tinker with irq
 			 * assignments as long as the CRS and STA functions
 			 * return good values
 			 */
@@ -246,7 +246,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 				Package () {0x0001FFFF, 0x02, LNKC, 0x00}, // VGA Link C
 				Package () {0x0001FFFF, 0x03, LNKD, 0x00} // VGA Link D
 
-            		})
+	    		})
 
 
 		} // End of PCI0

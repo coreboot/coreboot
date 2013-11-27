@@ -53,9 +53,9 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #define SMBUS_SWITCH1 0x70
 #define SMBUS_SWITCH2 0x72
-        unsigned device=(ctrl->channel0[0])>>8;
-        smbus_send_byte(SMBUS_SWITCH1, device);
-        smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
+	unsigned device=(ctrl->channel0[0])>>8;
+	smbus_send_byte(SMBUS_SWITCH1, device);
+	smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
 }
 
 #if 0
@@ -63,8 +63,8 @@ static inline void change_i2c_mux(unsigned device)
 {
 #define SMBUS_SWITCH1 0x70
 #define SMBUS_SWITHC2 0x72
-        smbus_send_byte(SMBUS_SWITCH1, device & 0x0f);
-        smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
+	smbus_send_byte(SMBUS_SWITCH1, device & 0x0f);
+	smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f);
 }
 #endif
 
@@ -84,10 +84,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 //set GPIO to input mode
 #define MCP55_MB_SETUP \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXA_PRSNT2_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/ \
-                RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+15, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* M8,GPIO16, PCIXA_PRSNT2_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+44, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P5,GPIO45, PCIXA_PRSNT1_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+16, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* K4,GPIO17, PCIXB_PRSNT1_L*/ \
+		RES_PORT_IO_8, SYSCTRL_IO_BASE + 0xc0+45, ~(0xff), ((0<<4)|(0<<2)|(0<<0)),/* P7,GPIO46, PCIXB_PRSNT2_L*/ \
 
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
 #include "cpu/amd/car/post_cache_as_ram.c"
@@ -98,16 +98,16 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 
 static void sio_setup(void)
 {
-        uint32_t dword;
-        uint8_t byte;
+	uint32_t dword;
+	uint8_t byte;
 
-        byte = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
-        byte |= 0x20;
-        pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
+	byte = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b);
+	byte |= 0x20;
+	pci_write_config8(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0x7b, byte);
 
-        dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
-        dword |= (1<<0);
-        pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
+	dword = pci_read_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0);
+	dword |= (1<<0);
+	pci_write_config32(PCI_DEV(0, MCP55_DEVN_BASE+1 , 0), 0xa0, dword);
 }
 
 //CPU 1 mem is on SMBUS_HUB channel 2, and CPU 2 mem is on channel 1.
@@ -126,20 +126,20 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	};
 
 	unsigned bsp_apicid = 0;
-        int needs_reset;
+	int needs_reset;
 	struct sys_info *sysinfo = &sysinfo_car;
 
-        if (!cpu_init_detectedx && boot_cpu()) {
+	if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
 		/* Allow the HT devices to be found */
 		enumerate_ht_chain();
 		sio_setup();
-        }
+	}
 
-        if (bist == 0) {
-               //init_cpus(cpu_init_detectedx);
-               bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
-        }
+	if (bist == 0) {
+	       //init_cpus(cpu_init_detectedx);
+	       bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
+	}
 
 	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
@@ -154,33 +154,33 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	wait_all_core0_started();
 
 #if CONFIG_LOGICAL_CPUS
-        // It is said that we should start core1 after all core0 launched
-        start_other_cores();
-        //wait_all_other_cores_started(bsp_apicid);
+	// It is said that we should start core1 after all core0 launched
+	start_other_cores();
+	//wait_all_other_cores_started(bsp_apicid);
 #endif
-        ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
+	ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
 	init_timer(); /* Need to use TMICT to synconize FID/VID. */
 
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 	needs_reset |= mcp55_early_setup_x();
-        if (needs_reset) {
-        	print_info("ht reset -\n");
-                soft_reset();
-        }
+	if (needs_reset) {
+		print_info("ht reset -\n");
+		soft_reset();
+	}
 
-        //It's the time to set ctrl now;
-        fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
+	//It's the time to set ctrl now;
+	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
        enable_smbus();
 
 #if 0
-        int i;
-        for(i=4;i<8;i++) {
-                change_i2c_mux(i);
-                dump_smbus_registers();
-        }
+	int i;
+	for(i=4;i<8;i++) {
+		change_i2c_mux(i);
+		dump_smbus_registers();
+	}
 #endif
 
        sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);

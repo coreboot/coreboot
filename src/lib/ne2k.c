@@ -155,7 +155,7 @@ unsigned long compute_ip_checksum_from_sram(unsigned short offset, unsigned shor
 			sum = (sum + (sum >> 16)) & 0xFFFF;
 		}
 	}
-	return   (~((sum & 0xff) | (((sum >> 8) & 0xff) << 8) )) & 0xffff;
+	return	  (~((sum & 0xff) | (((sum >> 8) & 0xff) << 8) )) & 0xffff;
 }
 
 
@@ -389,7 +389,7 @@ int ne2k_init(unsigned int eth_nic_base) {
 
 	/* Power management controller */
 	dev = pci_locate_device(PCI_ID(0x10ec,
-				       0x8029), 0);
+					   0x8029), 0);
 
 	if (dev == PCI_DEV_INVALID)
 		return 0;
@@ -443,16 +443,16 @@ static void read_resources(struct device *dev)
 
 static struct device_operations ne2k_ops  = {
 	.read_resources   = read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
-	.scan_bus         = 0,
+	.init		   = 0,
+	.scan_bus	   = 0,
 };
 
 static const struct pci_driver ne2k_driver __pci_driver = {
-        .ops    = &ne2k_ops,
-        .vendor = 0x10ec,
-        .device = 0x8029,
+	.ops	= &ne2k_ops,
+	.vendor = 0x10ec,
+	.device = 0x8029,
 };
 
 #endif

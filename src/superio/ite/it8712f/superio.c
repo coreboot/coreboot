@@ -79,11 +79,11 @@ static const struct pnp_mode_ops pnp_conf_mode_ops = {
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = it8712f_init,
-	.ops_pnp_mode     = &pnp_conf_mode_ops,
+	.enable	   = pnp_alt_enable,
+	.init		   = it8712f_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_ops,
 };
 
 static struct pnp_info pnp_dev_info[] = {

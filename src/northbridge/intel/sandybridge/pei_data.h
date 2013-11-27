@@ -7,13 +7,13 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
+ *	 notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
+ *	 notice, this list of conditions and the following disclaimer in the
+ *	 documentation and/or other materials provided with the distribution.
  *     * Neither the name of Google Inc. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
+ *	 names of its contributors may be used to endorse or promote products
+ *	 derived from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -31,10 +31,10 @@
 #define PEI_DATA_H
 
 typedef struct {
-	uint16_t mode;                // 0: Disable, 1: Enable, 2: Auto, 3: Smart Auto
+	uint16_t mode;		       // 0: Disable, 1: Enable, 2: Auto, 3: Smart Auto
 	uint16_t hs_port_switch_mask; // 4 bit mask, 1: switchable, 0: not switchable
 	uint16_t preboot_support;     // 0: No xHCI preOS driver, 1: xHCI preOS driver
-	uint16_t xhci_streams;        // 0: Disable, 1: Enable
+	uint16_t xhci_streams;	       // 0: Disable, 1: Enable
 } pch_usb3_controller_settings;
 
 typedef void (*tx_byte_func)(unsigned char byte);

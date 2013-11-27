@@ -20,7 +20,7 @@ static void pci_domain_set_resources(device_t dev)
 	device_t mc_dev;
 	uint32_t pci_tolm;
 
-        pci_tolm = find_pci_tolm(dev->link_list);
+	pci_tolm = find_pci_tolm(dev->link_list);
 
 	printk(BIOS_DEBUG, "PCI mem marker = %x\n", pci_tolm);
 
@@ -52,7 +52,7 @@ static void pci_domain_set_resources(device_t dev)
 			 * we won't use the remap window.
 			 */
 			tolmk = tomk;
-			remapbasek   = 0x3ff << 16;
+			remapbasek	= 0x3ff << 16;
 			remaplimitk  = 0 << 16;
 			remapoffsetk = 0 << 16;
 		}
@@ -115,11 +115,11 @@ static u32 e7520_domain_scan_bus(device_t dev, u32 max)
 
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.set_resources	   = pci_domain_set_resources,
 	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = e7520_domain_scan_bus,
-	.ops_pci_bus      = pci_bus_default_ops,
+	.init		   = NULL,
+	.scan_bus	   = e7520_domain_scan_bus,
+	.ops_pci_bus	   = pci_bus_default_ops,
 };
 
 static void mc_read_resources(device_t dev)
@@ -157,11 +157,11 @@ static struct pci_operations intel_pci_ops = {
 
 static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
-	.set_resources    = mc_set_resources,
+	.set_resources	   = mc_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = 0,
-	.scan_bus         = 0,
-	.ops_pci          = &intel_pci_ops,
+	.init		   = 0,
+	.scan_bus	   = 0,
+	.ops_pci	   = &intel_pci_ops,
 };
 
 static const struct pci_driver mc_driver __pci_driver = {
@@ -172,7 +172,7 @@ static const struct pci_driver mc_driver __pci_driver = {
 
 static void cpu_bus_init(device_t dev)
 {
-        initialize_cpus(dev->link_list);
+	initialize_cpus(dev->link_list);
 }
 
 static void cpu_bus_noop(device_t dev)
@@ -180,11 +180,11 @@ static void cpu_bus_noop(device_t dev)
 }
 
 static struct device_operations cpu_bus_ops = {
-        .read_resources   = cpu_bus_noop,
-        .set_resources    = cpu_bus_noop,
-        .enable_resources = cpu_bus_noop,
-        .init             = cpu_bus_init,
-        .scan_bus         = 0,
+	.read_resources	  = cpu_bus_noop,
+	.set_resources	  = cpu_bus_noop,
+	.enable_resources = cpu_bus_noop,
+	.init		  = cpu_bus_init,
+	.scan_bus	  = 0,
 };
 
 

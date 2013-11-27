@@ -18,7 +18,7 @@
  */
 
 /*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
+ *			       M O D U L E S	U S E D
  *----------------------------------------------------------------------------------------
  */
 
@@ -30,7 +30,7 @@
 #include <cbtypes.h>
 
 /*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
+ *		     D E F I N I T I O N S    A N D    M A C R O S
  *----------------------------------------------------------------------------------------
  */
 #define Mmio_Address( BaseAddr, Register ) \
@@ -69,1234 +69,1234 @@
      )
 
 #define SMIREG_EVENT_ENABLE 0x04
-#define SMIREG_SCITRIG      0x08
-#define SMIREG_SCILEVEL     0x0C
-#define SMIREG_SMISCIEN     0x14
-#define SMIREG_SCIS0EN      0x20
-#define SMIREG_SCIMAP0      0x40
-#define SMIREG_SCIMAP1      0x44
-#define SMIREG_SCIMAP2      0x48
-#define SMIREG_SCIMAP3      0x4C
-#define SMIREG_SCIMAP4      0x50
-#define SMIREG_SCIMAP5      0x54
-#define SMIREG_SCIMAP6      0x58
-#define SMIREG_SCIMAP7      0x5C
-#define SMIREG_SCIMAP8      0x60
-#define SMIREG_SCIMAP9      0x64
-#define SMIREG_SCIMAP10     0x68
-#define SMIREG_SCIMAP11     0x6C
-#define SMIREG_SCIMAP12     0x70
-#define SMIREG_SCIMAP13     0x74
-#define SMIREG_SCIMAP14     0x78
-#define SMIREG_SCIMAP15     0x7C
-#define SMIREG_SMITRIG      0x98
+#define SMIREG_SCITRIG	    0x08
+#define SMIREG_SCILEVEL	    0x0C
+#define SMIREG_SMISCIEN	    0x14
+#define SMIREG_SCIS0EN	    0x20
+#define SMIREG_SCIMAP0	    0x40
+#define SMIREG_SCIMAP1	    0x44
+#define SMIREG_SCIMAP2	    0x48
+#define SMIREG_SCIMAP3	    0x4C
+#define SMIREG_SCIMAP4	    0x50
+#define SMIREG_SCIMAP5	    0x54
+#define SMIREG_SCIMAP6	    0x58
+#define SMIREG_SCIMAP7	    0x5C
+#define SMIREG_SCIMAP8	    0x60
+#define SMIREG_SCIMAP9	    0x64
+#define SMIREG_SCIMAP10	    0x68
+#define SMIREG_SCIMAP11	    0x6C
+#define SMIREG_SCIMAP12	    0x70
+#define SMIREG_SCIMAP13	    0x74
+#define SMIREG_SCIMAP14	    0x78
+#define SMIREG_SCIMAP15	    0x7C
+#define SMIREG_SMITRIG	    0x98
 #define SMIREG_SMICONTROL0  0xA0
 #define SMIREG_SMICONTROL1  0xA4
 
-#define FUNCTION0           0
-#define FUNCTION1           1
-#define FUNCTION2           2
-#define FUNCTION3           3
-#define NonGpio             0x80				// BIT7
+#define FUNCTION0	    0
+#define FUNCTION1	    1
+#define FUNCTION2	    2
+#define FUNCTION3	    3
+#define NonGpio		    0x80				// BIT7
 
 // S0-domain General Purpose I/O: GPIO 00~67
-#define GPIO_00_SELECT      FUNCTION1+NonGpio   // MPCIE_RST1# for J3703, LOW ACTIVE, HIGH DEFAULT
-#define GPIO_01_SELECT      FUNCTION1+NonGpio   // MPCIE_RST2# for J3711, LOW ACTIVE, HIGH DEFAULT
-#define GPIO_02_SELECT      FUNCTION1           // MPCIE_RST0# for J3700, LOW ACTIVE, HIGH DEFAULT
-#define GPIO_03_SELECT      FUNCTION1+NonGpio   // NOT USED
-#define GPIO_04_SELECT      FUNCTION1+NonGpio   // x1 gpp reset, for J3701, low active, HIGH DEFAULT
-#define GPIO_05_SELECT      FUNCTION1+NonGpio   // express card reset, for J2500,  low active, HIGH DEFAULT
-#define GPIO_06_SELECT      FUNCTION0+NonGpio   //NOT USED
-#define GPIO_07_SELECT      FUNCTION1           // BT_ON, 1: BT ON(DEFAULT); 0: BT OFF
-#define GPIO_08_SELECT      FUNCTION1           // PEX_STD_SW#, 1:Low Level Mode(default); 0:Standard(desktop) Swing Level
-#define GPIO_09_SELECT      FUNCTION1+NonGpio   // MXM_PRESENT2#, INPUT, LOW MEANS MXM IS INSTALLED
-#define GPIO_10_SELECT      FUNCTION1+NonGpio   // MXM_PRESENT1#, INPUT, LOW MEANS MXM IS INSTALLED
-#define GPIO_11_SELECT      FUNCTION0+NonGpio   // NOT USED
-#define GPIO_12_SELECT      FUNCTION1           // WL_DISABLE#, DISABLE THE WALN IN J3702
-#define GPIO_13_SELECT      FUNCTION1           // WU_DISABLE#, DISABLE THE WUSB IN J3711
-#define GPIO_14_SELECT      FUNCTION1           // WP_DISABLE, DISABLE THE WWAN IN J3703
-#define GPIO_15_SELECT      FUNCTION1+NonGpio   // NOT USED, //FUNCTION1, Reset_CEC# Low Active, High default
-#define GPIO_16_SELECT      FUNCTION0+NonGpio   // NOT USED
-#define GPIO_17_SELECT      FUNCTION0+NonGpio   // NOT USED
-#define GPIO_18_SELECT      FUNCTION0+NonGpio   // NOT USED
-#define GPIO_19_SELECT      FUNCTION1           // For LASSO_DET# detection when Gevent14# is asserted.
-#define GPIO_20_SELECT      FUNCTION1           // PX_MUX for DOCKING card, PX MUX selection in mux mode. dGPU enable with high(option)
-#define GPIO_21_SELECT      FUNCTION1           // DOCK_MUX for DCKING card, MUX selection output. Docking display enabled when high(option)
-#define GPIO_22_SELECT      FUNCTION1           // SB_PWR_LV, INDICATE TO THE MXM THE SYSTEM IS IN LOW BATTERY MODE
-//      1:BATTERY IS FINE(DEFAULT)
-//      0:BATTERY IS LOW
-#define GPIO_23_SELECT      FUNCTION1	        // CODEC_ON.1: CODEC ON (default)0: CODEC OFF
-#define GPIO_24_SELECT      FUNCTION1           // Travis reset,Low active High default
-#define GPIO_25_SELECT      FUNCTION1+NonGpio   // PCIE_RST# for LAN (AND gate with PCIE_RST#); default high
-#define GPIO_26_SELECT      FUNCTION1+NonGpio   // PCIE_RST# for USB3.0 (AND gate with PCIE_RST#); default high
-#define GPIO_27_SELECT      FUNCTION1+NonGpio   // PCIE_RST# for 1394 (AND gate with PCIE_RST#); default high
-#define GPIO_28_SELECT      FUNCTION1           // MXM PWRGD INDICATOR, INPUT
-#define GPIO_29_SELECT      FUNCTION1           // MEM HOT, LOW ACTIVE, OUTPUT
-#define GPIO_30_SELECT      FUNCTION1           // INPUT, DEFINE THE BOARD REVISION 0
-#define GPIO_31_SELECT      FUNCTION1           // INPUT, DEFINE THE BOARD REVISION 1
-//      00 - REVA
-//      01 - REVB
-//      10 - REVC
-//      11 - REVD
-#define GPIO_32_SELECT      FUNCTION1+NonGpio   // PCIE_SW - HIGH:MXM; LOW:LASSO
-#define GPIO_33_SELECT      FUNCTION1           // USB3.0 DETECT of Express Card:USB3.0_DET#, Low active.
-//      0:USB3.0 I/F in Express CARD
-//      1:PCIE I/F  in Express CARD detection
-#define GPIO_34_SELECT      FUNCTION1           // WEBCAM_ON#. 0: ON (default) 1: OFF
-#define GPIO_35_SELECT      FUNCTION1           // ODD_DA_INTH#
-#define GPIO_36_SELECT      FUNCTION0+NonGpio   // PCICLK FOR KBC
-#define GPIO_37_SELECT      FUNCTION0+NonGpio   // NOT USED
-#define GPIO_38_SELECT      FUNCTION0+NonGpio   // NOT USED
-#define GPIO_39_SELECT      FUNCTION0+NonGpio   // NOT USED
-#define GPIO_40_SELECT      FUNCTION1           // For DOCK# detection when Gevent14# is asserted.
-#define GPIO_41_SELECT      FUNCTION1+NonGpio   // 1394 CLK REQ#
-#define GPIO_42_SELECT      FUNCTION1+NonGpio   // X4 GPP CLK REQ#
-#define GPIO_43_SELECT      FUNCTION0+NonGpio   // SMBUS0, CLOCK
-#define GPIO_44_SELECT      FUNCTION1+NonGpio   // PEGPIO0, RESET THE MXM MODULE
-#define GPIO_45_SELECT      FUNCTION2+NonGpio   // PEGPIO1, 1:MXM IS POWER ON; 0:MXM IS OFF
-#define GPIO_46_SELECT      FUNCTION1+NonGpio   // USB3.0_CLKREQ#
-#define GPIO_47_SELECT      FUNCTION0+NonGpio   // SMBUS0, DATA
-#define GPIO_48_SELECT      FUNCTION0+NonGpio   // SERIRQ
-#define GPIO_49_SELECT      FUNCTION0+NonGpio   // LDRQ#1
-#define GPIO_50_SELECT      FUNCTION2           // SMARTVOLTAGE TO CONTROL THE 5V - 1:5V; 0:4.56V
-#define GPIO_51_SELECT      FUNCTION0+NonGpio   // back-up for SMARTVOLTAGE1
-#define GPIO_52_SELECT      FUNCTION0+NonGpio   // CPU FAN OUT
-#define GPIO_53_SELECT      FUNCTION1           // ODD POWER ENABLE, HIGH ACTIVE
-#define GPIO_54_SELECT      FUNCTION0+NonGpio   // SB_PROCHOT, OUTPUT, LOW ACTIVE
-#define GPIO_55_SELECT      FUNCTION2+NonGpio   // MXM POWER ENABLE(POWER ON MODULE)
-//      1:ENABLE; 0:DISABLE
+#define GPIO_00_SELECT	    FUNCTION1+NonGpio	// MPCIE_RST1# for J3703, LOW ACTIVE, HIGH DEFAULT
+#define GPIO_01_SELECT	    FUNCTION1+NonGpio	// MPCIE_RST2# for J3711, LOW ACTIVE, HIGH DEFAULT
+#define GPIO_02_SELECT	    FUNCTION1		// MPCIE_RST0# for J3700, LOW ACTIVE, HIGH DEFAULT
+#define GPIO_03_SELECT	    FUNCTION1+NonGpio	// NOT USED
+#define GPIO_04_SELECT	    FUNCTION1+NonGpio	// x1 gpp reset, for J3701, low active, HIGH DEFAULT
+#define GPIO_05_SELECT	    FUNCTION1+NonGpio	// express card reset, for J2500,  low active, HIGH DEFAULT
+#define GPIO_06_SELECT	    FUNCTION0+NonGpio	//NOT USED
+#define GPIO_07_SELECT	    FUNCTION1		// BT_ON, 1: BT ON(DEFAULT); 0: BT OFF
+#define GPIO_08_SELECT	    FUNCTION1		// PEX_STD_SW#, 1:Low Level Mode(default); 0:Standard(desktop) Swing Level
+#define GPIO_09_SELECT	    FUNCTION1+NonGpio	// MXM_PRESENT2#, INPUT, LOW MEANS MXM IS INSTALLED
+#define GPIO_10_SELECT	    FUNCTION1+NonGpio	// MXM_PRESENT1#, INPUT, LOW MEANS MXM IS INSTALLED
+#define GPIO_11_SELECT	    FUNCTION0+NonGpio	// NOT USED
+#define GPIO_12_SELECT	    FUNCTION1		// WL_DISABLE#, DISABLE THE WALN IN J3702
+#define GPIO_13_SELECT	    FUNCTION1		// WU_DISABLE#, DISABLE THE WUSB IN J3711
+#define GPIO_14_SELECT	    FUNCTION1		// WP_DISABLE, DISABLE THE WWAN IN J3703
+#define GPIO_15_SELECT	    FUNCTION1+NonGpio	// NOT USED, //FUNCTION1, Reset_CEC# Low Active, High default
+#define GPIO_16_SELECT	    FUNCTION0+NonGpio	// NOT USED
+#define GPIO_17_SELECT	    FUNCTION0+NonGpio	// NOT USED
+#define GPIO_18_SELECT	    FUNCTION0+NonGpio	// NOT USED
+#define GPIO_19_SELECT	    FUNCTION1		// For LASSO_DET# detection when Gevent14# is asserted.
+#define GPIO_20_SELECT	    FUNCTION1		// PX_MUX for DOCKING card, PX MUX selection in mux mode. dGPU enable with high(option)
+#define GPIO_21_SELECT	    FUNCTION1		// DOCK_MUX for DCKING card, MUX selection output. Docking display enabled when high(option)
+#define GPIO_22_SELECT	    FUNCTION1		// SB_PWR_LV, INDICATE TO THE MXM THE SYSTEM IS IN LOW BATTERY MODE
+//	1:BATTERY IS FINE(DEFAULT)
+//	0:BATTERY IS LOW
+#define GPIO_23_SELECT	    FUNCTION1		      // CODEC_ON.1: CODEC ON (default)0: CODEC OFF
+#define GPIO_24_SELECT	    FUNCTION1		// Travis reset,Low active High default
+#define GPIO_25_SELECT	    FUNCTION1+NonGpio	// PCIE_RST# for LAN (AND gate with PCIE_RST#); default high
+#define GPIO_26_SELECT	    FUNCTION1+NonGpio	// PCIE_RST# for USB3.0 (AND gate with PCIE_RST#); default high
+#define GPIO_27_SELECT	    FUNCTION1+NonGpio	// PCIE_RST# for 1394 (AND gate with PCIE_RST#); default high
+#define GPIO_28_SELECT	    FUNCTION1		// MXM PWRGD INDICATOR, INPUT
+#define GPIO_29_SELECT	    FUNCTION1		// MEM HOT, LOW ACTIVE, OUTPUT
+#define GPIO_30_SELECT	    FUNCTION1		// INPUT, DEFINE THE BOARD REVISION 0
+#define GPIO_31_SELECT	    FUNCTION1		// INPUT, DEFINE THE BOARD REVISION 1
+//	00 - REVA
+//	01 - REVB
+//	10 - REVC
+//	11 - REVD
+#define GPIO_32_SELECT	    FUNCTION1+NonGpio	// PCIE_SW - HIGH:MXM; LOW:LASSO
+#define GPIO_33_SELECT	    FUNCTION1		// USB3.0 DETECT of Express Card:USB3.0_DET#, Low active.
+//	0:USB3.0 I/F in Express CARD
+//	1:PCIE I/F  in Express CARD detection
+#define GPIO_34_SELECT	    FUNCTION1		// WEBCAM_ON#. 0: ON (default) 1: OFF
+#define GPIO_35_SELECT	    FUNCTION1		// ODD_DA_INTH#
+#define GPIO_36_SELECT	    FUNCTION0+NonGpio	// PCICLK FOR KBC
+#define GPIO_37_SELECT	    FUNCTION0+NonGpio	// NOT USED
+#define GPIO_38_SELECT	    FUNCTION0+NonGpio	// NOT USED
+#define GPIO_39_SELECT	    FUNCTION0+NonGpio	// NOT USED
+#define GPIO_40_SELECT	    FUNCTION1		// For DOCK# detection when Gevent14# is asserted.
+#define GPIO_41_SELECT	    FUNCTION1+NonGpio	// 1394 CLK REQ#
+#define GPIO_42_SELECT	    FUNCTION1+NonGpio	// X4 GPP CLK REQ#
+#define GPIO_43_SELECT	    FUNCTION0+NonGpio	// SMBUS0, CLOCK
+#define GPIO_44_SELECT	    FUNCTION1+NonGpio	// PEGPIO0, RESET THE MXM MODULE
+#define GPIO_45_SELECT	    FUNCTION2+NonGpio	// PEGPIO1, 1:MXM IS POWER ON; 0:MXM IS OFF
+#define GPIO_46_SELECT	    FUNCTION1+NonGpio	// USB3.0_CLKREQ#
+#define GPIO_47_SELECT	    FUNCTION0+NonGpio	// SMBUS0, DATA
+#define GPIO_48_SELECT	    FUNCTION0+NonGpio	// SERIRQ
+#define GPIO_49_SELECT	    FUNCTION0+NonGpio	// LDRQ#1
+#define GPIO_50_SELECT	    FUNCTION2		// SMARTVOLTAGE TO CONTROL THE 5V - 1:5V; 0:4.56V
+#define GPIO_51_SELECT	    FUNCTION0+NonGpio	// back-up for SMARTVOLTAGE1
+#define GPIO_52_SELECT	    FUNCTION0+NonGpio	// CPU FAN OUT
+#define GPIO_53_SELECT	    FUNCTION1		// ODD POWER ENABLE, HIGH ACTIVE
+#define GPIO_54_SELECT	    FUNCTION0+NonGpio	// SB_PROCHOT, OUTPUT, LOW ACTIVE
+#define GPIO_55_SELECT	    FUNCTION2+NonGpio	// MXM POWER ENABLE(POWER ON MODULE)
+//	1:ENABLE; 0:DISABLE
 // DEFAULT VALUE DEPENDS ON GPIO 9 AND 10
-#define GPIO_56_SELECT      FUNCTION0+NonGpio   //HDD2_POWER/HDD0_POWER/CPU FAN ;CPU FAN
-#define GPIO_57_SELECT      FUNCTION1           // HDD0_POWER
-#define GPIO_58_SELECT      FUNCTION1           // HDD2_POWER
-#define GPIO_59_SELECT      FUNCTION2+NonGpio   // 1394 POWER, OUTPUT, HIGH ACTIVE
-#define GPIO_60_SELECT      FUNCTION0+NonGpio   // EXPCARD_CLKREQ#
-#define GPIO_61_SELECT      FUNCTION0+NonGpio   // PE0_CLKREQ#, FROM J3700
-#define GPIO_62_SELECT      FUNCTION0+NonGpio   // PE2_CLKREQ#, FROM J3711
-#define GPIO_63_SELECT      FUNCTION0+NonGpio   // LAN_CLKREQ#
-#define GPIO_64_SELECT      FUNCTION0+NonGpio   // PE1_CLKREQ#, FROM J3703
-#define GPIO_65_SELECT      FUNCTION0+NonGpio   // MXM CLK REQ#, FROM MXM
-#define GPIO_66_SELECT      FUNCTION1           // USED AS TRAVIS_EN#; 0:ENABLE as default
-#define GPIO_67_SELECT      FUNCTION0+NonGpio   // USED AS SATA_ACT#
-#define GPIO_68_SELECT      FUNCTION0+NonGpio
-#define GPIO_69_SELECT      FUNCTION0+NonGpio
-#define GPIO_70_SELECT      FUNCTION0+NonGpio
-#define GPIO_71_SELECT      FUNCTION0+NonGpio
-#define GPIO_72_SELECT      FUNCTION0+NonGpio
-#define GPIO_73_SELECT      FUNCTION0+NonGpio
-#define GPIO_74_SELECT      FUNCTION0+NonGpio
-#define GPIO_75_SELECT      FUNCTION0+NonGpio
-#define GPIO_76_SELECT      FUNCTION0+NonGpio
-#define GPIO_77_SELECT      FUNCTION0+NonGpio
-#define GPIO_78_SELECT      FUNCTION0+NonGpio
-#define GPIO_79_SELECT      FUNCTION0+NonGpio
-#define GPIO_80_SELECT      FUNCTION0+NonGpio
-#define GPIO_81_SELECT      FUNCTION0+NonGpio
-#define GPIO_82_SELECT      FUNCTION0+NonGpio
-#define GPIO_83_SELECT      FUNCTION0+NonGpio
-#define GPIO_84_SELECT      FUNCTION0+NonGpio
-#define GPIO_85_SELECT      FUNCTION0+NonGpio
-#define GPIO_86_SELECT      FUNCTION0+NonGpio
-#define GPIO_87_SELECT      FUNCTION0+NonGpio
-#define GPIO_88_SELECT      FUNCTION0+NonGpio
-#define GPIO_89_SELECT      FUNCTION0+NonGpio
-#define GPIO_90_SELECT      FUNCTION0+NonGpio
-#define GPIO_91_SELECT      FUNCTION0+NonGpio
-#define GPIO_92_SELECT      FUNCTION0+NonGpio
-#define GPIO_93_SELECT      FUNCTION0+NonGpio
-#define GPIO_94_SELECT      FUNCTION0+NonGpio
-#define GPIO_95_SELECT      FUNCTION0+NonGpio
+#define GPIO_56_SELECT	    FUNCTION0+NonGpio	//HDD2_POWER/HDD0_POWER/CPU FAN ;CPU FAN
+#define GPIO_57_SELECT	    FUNCTION1		// HDD0_POWER
+#define GPIO_58_SELECT	    FUNCTION1		// HDD2_POWER
+#define GPIO_59_SELECT	    FUNCTION2+NonGpio	// 1394 POWER, OUTPUT, HIGH ACTIVE
+#define GPIO_60_SELECT	    FUNCTION0+NonGpio	// EXPCARD_CLKREQ#
+#define GPIO_61_SELECT	    FUNCTION0+NonGpio	// PE0_CLKREQ#, FROM J3700
+#define GPIO_62_SELECT	    FUNCTION0+NonGpio	// PE2_CLKREQ#, FROM J3711
+#define GPIO_63_SELECT	    FUNCTION0+NonGpio	// LAN_CLKREQ#
+#define GPIO_64_SELECT	    FUNCTION0+NonGpio	// PE1_CLKREQ#, FROM J3703
+#define GPIO_65_SELECT	    FUNCTION0+NonGpio	// MXM CLK REQ#, FROM MXM
+#define GPIO_66_SELECT	    FUNCTION1		// USED AS TRAVIS_EN#; 0:ENABLE as default
+#define GPIO_67_SELECT	    FUNCTION0+NonGpio	// USED AS SATA_ACT#
+#define GPIO_68_SELECT	    FUNCTION0+NonGpio
+#define GPIO_69_SELECT	    FUNCTION0+NonGpio
+#define GPIO_70_SELECT	    FUNCTION0+NonGpio
+#define GPIO_71_SELECT	    FUNCTION0+NonGpio
+#define GPIO_72_SELECT	    FUNCTION0+NonGpio
+#define GPIO_73_SELECT	    FUNCTION0+NonGpio
+#define GPIO_74_SELECT	    FUNCTION0+NonGpio
+#define GPIO_75_SELECT	    FUNCTION0+NonGpio
+#define GPIO_76_SELECT	    FUNCTION0+NonGpio
+#define GPIO_77_SELECT	    FUNCTION0+NonGpio
+#define GPIO_78_SELECT	    FUNCTION0+NonGpio
+#define GPIO_79_SELECT	    FUNCTION0+NonGpio
+#define GPIO_80_SELECT	    FUNCTION0+NonGpio
+#define GPIO_81_SELECT	    FUNCTION0+NonGpio
+#define GPIO_82_SELECT	    FUNCTION0+NonGpio
+#define GPIO_83_SELECT	    FUNCTION0+NonGpio
+#define GPIO_84_SELECT	    FUNCTION0+NonGpio
+#define GPIO_85_SELECT	    FUNCTION0+NonGpio
+#define GPIO_86_SELECT	    FUNCTION0+NonGpio
+#define GPIO_87_SELECT	    FUNCTION0+NonGpio
+#define GPIO_88_SELECT	    FUNCTION0+NonGpio
+#define GPIO_89_SELECT	    FUNCTION0+NonGpio
+#define GPIO_90_SELECT	    FUNCTION0+NonGpio
+#define GPIO_91_SELECT	    FUNCTION0+NonGpio
+#define GPIO_92_SELECT	    FUNCTION0+NonGpio
+#define GPIO_93_SELECT	    FUNCTION0+NonGpio
+#define GPIO_94_SELECT	    FUNCTION0+NonGpio
+#define GPIO_95_SELECT	    FUNCTION0+NonGpio
 // GEVENT 00~23 are mapped to GPIO 96~119
-#define GPIO_96_SELECT      FUNCTION0           // GA20IN/GEVENT0#
-#define GPIO_97_SELECT      FUNCTION0           // KBRST#/GEVENT1#
-#define GPIO_98_SELECT      FUNCTION0           // THRMTRIP#/SMBALERT#/GEVENT2# -> APU_THERMTRIP
-#define GPIO_99_SELECT      FUNCTION1           // LPC_PME#/GEVENT3# -> EC_SCI#
-#define GPIO_100_SELECT     FUNCTION2           // PCIE_RST2#/PCI_PME#/GEVENT4# -> APU_MEMHOT#
-#define GPIO_101_SELECT     FUNCTION1           // LPC_PD#/GEVENT5# -> hotplug of express card, low active
-#define GPIO_102_SELECT     FUNCTION0+NonGpio   // USB_OC6#/IR_TX1/ GEVENT6# -> NOT USED,
+#define GPIO_96_SELECT	    FUNCTION0		// GA20IN/GEVENT0#
+#define GPIO_97_SELECT	    FUNCTION0		// KBRST#/GEVENT1#
+#define GPIO_98_SELECT	    FUNCTION0		// THRMTRIP#/SMBALERT#/GEVENT2# -> APU_THERMTRIP
+#define GPIO_99_SELECT	    FUNCTION1		// LPC_PME#/GEVENT3# -> EC_SCI#
+#define GPIO_100_SELECT	    FUNCTION2		// PCIE_RST2#/PCI_PME#/GEVENT4# -> APU_MEMHOT#
+#define GPIO_101_SELECT	    FUNCTION1		// LPC_PD#/GEVENT5# -> hotplug of express card, low active
+#define GPIO_102_SELECT	    FUNCTION0+NonGpio	// USB_OC6#/IR_TX1/ GEVENT6# -> NOT USED,
 // there is a confliction to IR function when this pin is as a GEVENT.
-#define GPIO_103_SELECT     FUNCTION0+NonGpio   // DDR3_RST#/GEVENT7#/VGA_PD -> VGA_PD,
+#define GPIO_103_SELECT	    FUNCTION0+NonGpio	// DDR3_RST#/GEVENT7#/VGA_PD -> VGA_PD,
 // special pin difination for SB700 VGA OUTPUT, high active,
 // VGA power for Hudson-M2 will be down when it was asserted.
-#define GPIO_104_SELECT     FUNCTION0           // WAKE#/GEVENT8# -> WAKEUP, low active
-#define GPIO_105_SELECT     FUNCTION2           // SPI_HOLD/GBE_LED1/GEVENT9# - WF_RADIO (wireless radio)
-#define GPIO_106_SELECT     FUNCTION0           // GBE_LED2/GEVENT10# -> GBE_LED2
-#define GPIO_107_SELECT     FUNCTION0+NonGpio   // GBE_STAT0/GEVENT11# -> GBE_STAT0
-#define GPIO_108_SELECT     FUNCTION2           // USB_OC0#/TRST#/GEVENT12# -> SMBALERT# (Light Sensor), low active
+#define GPIO_104_SELECT	    FUNCTION0		// WAKE#/GEVENT8# -> WAKEUP, low active
+#define GPIO_105_SELECT	    FUNCTION2		// SPI_HOLD/GBE_LED1/GEVENT9# - WF_RADIO (wireless radio)
+#define GPIO_106_SELECT	    FUNCTION0		// GBE_LED2/GEVENT10# -> GBE_LED2
+#define GPIO_107_SELECT	    FUNCTION0+NonGpio	// GBE_STAT0/GEVENT11# -> GBE_STAT0
+#define GPIO_108_SELECT	    FUNCTION2		// USB_OC0#/TRST#/GEVENT12# -> SMBALERT# (Light Sensor), low active
 // [option for SPI_TPM_CS# in Hudson-M2 A12)]
-#define GPIO_109_SELECT     FUNCTION0           // USB_OC1#/TDI/GEVENT13# - USB OC for 0, 1,2,3 & USB_OC expresscard (usb4) &
+#define GPIO_109_SELECT	    FUNCTION0		// USB_OC1#/TDI/GEVENT13# - USB OC for 0, 1,2,3 & USB_OC expresscard (usb4) &
 //  USB3.0 PORT0,1:low active,disable all usb ports and new card power at a same time
-#define GPIO_110_SELECT     FUNCTION2           // USB_OC2#/TCK/GEVENT14# -> Lasso detect or Dock detect,
+#define GPIO_110_SELECT	    FUNCTION2		// USB_OC2#/TCK/GEVENT14# -> Lasso detect or Dock detect,
 // plus judge GPIO40 and GPIO19 level,low is assert.
-//      LASSO_DET# :0 & GPIO19:0 -----> LASSO is present (default)
-//      DOCK#:0 & GPIO40:0 -----------> DOCK is present(option)
-#define GPIO_111_SELECT     FUNCTION1+NonGpio	// USB_OC3#/AC_PRES/TDO/GEVENT15# -> AC_PRES, high active
-#define GPIO_112_SELECT     FUNCTION2           // USB_OC4#/IR_RX0/GEVENT16# -> ODD_DA, ODD device attention,
+//	LASSO_DET# :0 & GPIO19:0 -----> LASSO is present (default)
+//	DOCK#:0 & GPIO40:0 -----------> DOCK is present(option)
+#define GPIO_111_SELECT	    FUNCTION1+NonGpio	// USB_OC3#/AC_PRES/TDO/GEVENT15# -> AC_PRES, high active
+#define GPIO_112_SELECT	    FUNCTION2		// USB_OC4#/IR_RX0/GEVENT16# -> ODD_DA, ODD device attention,
 // low active, when it's low, BIOS will enbale ODD_PWR
-#define GPIO_113_SELECT     FUNCTION2			// USB_OC5#/IR_TX0/GEVENT17# -> use TWARN mapping to trigger GEVENT17#
-#define GPIO_114_SELECT     FUNCTION2           // BLINK/USB_OC7#/GEVENT18# -> BLINK
-#define GPIO_115_SELECT     FUNCTION0           // SYS_RESET#/GEVENT19# -> SYS_RST#
-#define GPIO_116_SELECT     FUNCTION0           // R_RX1/GEVENT20# -> IR INPUT
-#define GPIO_117_SELECT     FUNCTION1+NonGpio   // SPI_CS3#/GBE_STAT1/GEVENT21# -> GBE_STAT1
-#define GPIO_118_SELECT     FUNCTION1           // RI#/GEVENT22# -> LID_CLOSED#
-#define GPIO_119_SELECT     FUNCTION0           // LPC_SMI#/GEVENT23# -> EC_SMI
-#define GPIO_120_SELECT     FUNCTION0+NonGpio
-#define GPIO_121_SELECT     FUNCTION0+NonGpio
-#define GPIO_122_SELECT     FUNCTION0+NonGpio
-#define GPIO_123_SELECT     FUNCTION0+NonGpio
-#define GPIO_124_SELECT     FUNCTION0+NonGpio
-#define GPIO_125_SELECT     FUNCTION0+NonGpio
-#define GPIO_126_SELECT     FUNCTION0+NonGpio
-#define GPIO_127_SELECT     FUNCTION0+NonGpio
-#define GPIO_128_SELECT     FUNCTION0+NonGpio
-#define GPIO_129_SELECT     FUNCTION0+NonGpio
-#define GPIO_130_SELECT     FUNCTION0+NonGpio
-#define GPIO_131_SELECT     FUNCTION0+NonGpio
-#define GPIO_132_SELECT     FUNCTION0+NonGpio
-#define GPIO_133_SELECT     FUNCTION0+NonGpio
-#define GPIO_134_SELECT     FUNCTION0+NonGpio
-#define GPIO_135_SELECT     FUNCTION0+NonGpio
-#define GPIO_136_SELECT     FUNCTION0+NonGpio
-#define GPIO_137_SELECT     FUNCTION0+NonGpio
-#define GPIO_138_SELECT     FUNCTION0+NonGpio
-#define GPIO_139_SELECT     FUNCTION0+NonGpio
-#define GPIO_140_SELECT     FUNCTION0+NonGpio
-#define GPIO_141_SELECT     FUNCTION0+NonGpio
-#define GPIO_142_SELECT     FUNCTION0+NonGpio
-#define GPIO_143_SELECT     FUNCTION0+NonGpio
-#define GPIO_144_SELECT     FUNCTION0+NonGpio
-#define GPIO_145_SELECT     FUNCTION0+NonGpio
-#define GPIO_146_SELECT     FUNCTION0+NonGpio
-#define GPIO_147_SELECT     FUNCTION0+NonGpio
-#define GPIO_148_SELECT     FUNCTION0+NonGpio
-#define GPIO_149_SELECT     FUNCTION0+NonGpio
-#define GPIO_150_SELECT     FUNCTION0+NonGpio
-#define GPIO_151_SELECT     FUNCTION0+NonGpio
-#define GPIO_152_SELECT     FUNCTION0+NonGpio
-#define GPIO_153_SELECT     FUNCTION0+NonGpio
-#define GPIO_154_SELECT     FUNCTION0+NonGpio
-#define GPIO_155_SELECT     FUNCTION0+NonGpio
-#define GPIO_156_SELECT     FUNCTION0+NonGpio
-#define GPIO_157_SELECT     FUNCTION0+NonGpio
-#define GPIO_158_SELECT     FUNCTION0+NonGpio
-#define GPIO_159_SELECT     FUNCTION0+NonGpio
-#define GPIO_160_SELECT     FUNCTION0+NonGpio
+#define GPIO_113_SELECT	    FUNCTION2			// USB_OC5#/IR_TX0/GEVENT17# -> use TWARN mapping to trigger GEVENT17#
+#define GPIO_114_SELECT	    FUNCTION2		// BLINK/USB_OC7#/GEVENT18# -> BLINK
+#define GPIO_115_SELECT	    FUNCTION0		// SYS_RESET#/GEVENT19# -> SYS_RST#
+#define GPIO_116_SELECT	    FUNCTION0		// R_RX1/GEVENT20# -> IR INPUT
+#define GPIO_117_SELECT	    FUNCTION1+NonGpio	// SPI_CS3#/GBE_STAT1/GEVENT21# -> GBE_STAT1
+#define GPIO_118_SELECT	    FUNCTION1		// RI#/GEVENT22# -> LID_CLOSED#
+#define GPIO_119_SELECT	    FUNCTION0		// LPC_SMI#/GEVENT23# -> EC_SMI
+#define GPIO_120_SELECT	    FUNCTION0+NonGpio
+#define GPIO_121_SELECT	    FUNCTION0+NonGpio
+#define GPIO_122_SELECT	    FUNCTION0+NonGpio
+#define GPIO_123_SELECT	    FUNCTION0+NonGpio
+#define GPIO_124_SELECT	    FUNCTION0+NonGpio
+#define GPIO_125_SELECT	    FUNCTION0+NonGpio
+#define GPIO_126_SELECT	    FUNCTION0+NonGpio
+#define GPIO_127_SELECT	    FUNCTION0+NonGpio
+#define GPIO_128_SELECT	    FUNCTION0+NonGpio
+#define GPIO_129_SELECT	    FUNCTION0+NonGpio
+#define GPIO_130_SELECT	    FUNCTION0+NonGpio
+#define GPIO_131_SELECT	    FUNCTION0+NonGpio
+#define GPIO_132_SELECT	    FUNCTION0+NonGpio
+#define GPIO_133_SELECT	    FUNCTION0+NonGpio
+#define GPIO_134_SELECT	    FUNCTION0+NonGpio
+#define GPIO_135_SELECT	    FUNCTION0+NonGpio
+#define GPIO_136_SELECT	    FUNCTION0+NonGpio
+#define GPIO_137_SELECT	    FUNCTION0+NonGpio
+#define GPIO_138_SELECT	    FUNCTION0+NonGpio
+#define GPIO_139_SELECT	    FUNCTION0+NonGpio
+#define GPIO_140_SELECT	    FUNCTION0+NonGpio
+#define GPIO_141_SELECT	    FUNCTION0+NonGpio
+#define GPIO_142_SELECT	    FUNCTION0+NonGpio
+#define GPIO_143_SELECT	    FUNCTION0+NonGpio
+#define GPIO_144_SELECT	    FUNCTION0+NonGpio
+#define GPIO_145_SELECT	    FUNCTION0+NonGpio
+#define GPIO_146_SELECT	    FUNCTION0+NonGpio
+#define GPIO_147_SELECT	    FUNCTION0+NonGpio
+#define GPIO_148_SELECT	    FUNCTION0+NonGpio
+#define GPIO_149_SELECT	    FUNCTION0+NonGpio
+#define GPIO_150_SELECT	    FUNCTION0+NonGpio
+#define GPIO_151_SELECT	    FUNCTION0+NonGpio
+#define GPIO_152_SELECT	    FUNCTION0+NonGpio
+#define GPIO_153_SELECT	    FUNCTION0+NonGpio
+#define GPIO_154_SELECT	    FUNCTION0+NonGpio
+#define GPIO_155_SELECT	    FUNCTION0+NonGpio
+#define GPIO_156_SELECT	    FUNCTION0+NonGpio
+#define GPIO_157_SELECT	    FUNCTION0+NonGpio
+#define GPIO_158_SELECT	    FUNCTION0+NonGpio
+#define GPIO_159_SELECT	    FUNCTION0+NonGpio
+#define GPIO_160_SELECT	    FUNCTION0+NonGpio
 
 // S5-domain General Purpose I/O
-#define GPIO_161_SELECT     FUNCTION0+NonGpio   // ROM_RST#
-#define GPIO_162_SELECT     FUNCTION0+NonGpio   // SPI ROM
-#define GPIO_163_SELECT     FUNCTION0+NonGpio   // SPI ROM
-#define GPIO_164_SELECT     FUNCTION0+NonGpio   // SPI ROM
-#define GPIO_165_SELECT     FUNCTION0+NonGpio   // SPI ROM
-#define GPIO_166_SELECT     FUNCTION1+NonGpio   // GBE_STAT2
-#define GPIO_167_SELECT     FUNCTION0+NonGpio   // AZ_SDATA_IN0
-#define GPIO_168_SELECT     FUNCTION0+NonGpio   // AZ_SDATA_IN1
-#define GPIO_169_SELECT     FUNCTION0+NonGpio   // AZ_SDATA_IN2
-#define GPIO_170_SELECT     FUNCTION1+NonGpio   // gating the power control signal for ODD, see BIOS requirements doc for detail.
-#define GPIO_171_SELECT     FUNCTION0+NonGpio   // TEMPIN0,
-#define GPIO_172_SELECT     FUNCTION1           // used as FCH_USB3.0PORT_EN# - 0:ENABLE; 1:DISABLE
-#define GPIO_173_SELECT     FUNCTION0+NonGpio   // TEMPIN3
-#define GPIO_174_SELECT     FUNCTION1+NonGpio   // USED AS TALERT#
-#define GPIO_175_SELECT     FUNCTION1           // WLAN, WIRELESS DISABLE 1:DISABLE; 0:ENABLE
-#define GPIO_176_SELECT     FUNCTION1+NonGpio   // WWAN, WIRELESS DISABLE 1:DISABLE; 0:ENABLE
-#define GPIO_177_SELECT     FUNCTION2+NonGpio   // WUSB, WIRELESS DISABLE 1:DISABLE; 0:ENABLE
-#define GPIO_178_SELECT     FUNCTION2           // MEM_1V5
-#define GPIO_179_SELECT     FUNCTION2           // MEM_1V35
-#define GPIO_180_SELECT     FUNCTION0+NonGpio   // Use as VIN VDDIO
-#define GPIO_181_SELECT     FUNCTION0+NonGpio   // Use as VIN VDDR
-#define GPIO_182_SELECT     FUNCTION1+NonGpio   // GBE_LED3
-#define GPIO_183_SELECT     FUNCTION0+NonGpio   // GBE_LED0
-#define GPIO_184_SELECT     FUNCTION1+NonGpio   // USED AS LLB#
-#define GPIO_185_SELECT     FUNCTION0+NonGpio   // USED AS USB
-#define GPIO_186_SELECT     FUNCTION0+NonGpio   // USED AS USB
-#define GPIO_187_SELECT     FUNCTION2           // USED AS AC LED INDICATOR, LOW ACTIVE
-#define GPIO_188_SELECT     FUNCTION2           // default used AS BATT LED INDICATOR, LOW ACTIVE
+#define GPIO_161_SELECT	    FUNCTION0+NonGpio	// ROM_RST#
+#define GPIO_162_SELECT	    FUNCTION0+NonGpio	// SPI ROM
+#define GPIO_163_SELECT	    FUNCTION0+NonGpio	// SPI ROM
+#define GPIO_164_SELECT	    FUNCTION0+NonGpio	// SPI ROM
+#define GPIO_165_SELECT	    FUNCTION0+NonGpio	// SPI ROM
+#define GPIO_166_SELECT	    FUNCTION1+NonGpio	// GBE_STAT2
+#define GPIO_167_SELECT	    FUNCTION0+NonGpio	// AZ_SDATA_IN0
+#define GPIO_168_SELECT	    FUNCTION0+NonGpio	// AZ_SDATA_IN1
+#define GPIO_169_SELECT	    FUNCTION0+NonGpio	// AZ_SDATA_IN2
+#define GPIO_170_SELECT	    FUNCTION1+NonGpio	// gating the power control signal for ODD, see BIOS requirements doc for detail.
+#define GPIO_171_SELECT	    FUNCTION0+NonGpio	// TEMPIN0,
+#define GPIO_172_SELECT	    FUNCTION1		// used as FCH_USB3.0PORT_EN# - 0:ENABLE; 1:DISABLE
+#define GPIO_173_SELECT	    FUNCTION0+NonGpio	// TEMPIN3
+#define GPIO_174_SELECT	    FUNCTION1+NonGpio	// USED AS TALERT#
+#define GPIO_175_SELECT	    FUNCTION1		// WLAN, WIRELESS DISABLE 1:DISABLE; 0:ENABLE
+#define GPIO_176_SELECT	    FUNCTION1+NonGpio	// WWAN, WIRELESS DISABLE 1:DISABLE; 0:ENABLE
+#define GPIO_177_SELECT	    FUNCTION2+NonGpio	// WUSB, WIRELESS DISABLE 1:DISABLE; 0:ENABLE
+#define GPIO_178_SELECT	    FUNCTION2		// MEM_1V5
+#define GPIO_179_SELECT	    FUNCTION2		// MEM_1V35
+#define GPIO_180_SELECT	    FUNCTION0+NonGpio	// Use as VIN VDDIO
+#define GPIO_181_SELECT	    FUNCTION0+NonGpio	// Use as VIN VDDR
+#define GPIO_182_SELECT	    FUNCTION1+NonGpio	// GBE_LED3
+#define GPIO_183_SELECT	    FUNCTION0+NonGpio	// GBE_LED0
+#define GPIO_184_SELECT	    FUNCTION1+NonGpio	// USED AS LLB#
+#define GPIO_185_SELECT	    FUNCTION0+NonGpio	// USED AS USB
+#define GPIO_186_SELECT	    FUNCTION0+NonGpio	// USED AS USB
+#define GPIO_187_SELECT	    FUNCTION2		// USED AS AC LED INDICATOR, LOW ACTIVE
+#define GPIO_188_SELECT	    FUNCTION2		// default used AS BATT LED INDICATOR, LOW ACTIVE
 // option for HDMI CEC signal OW ACTIVE
-#define GPIO_189_SELECT     FUNCTION1           // USED AS AC_OK RECIEVER, INPUT, low active
-#define GPIO_190_SELECT     FUNCTION1           // USED TO MONITER INTERUPT FROM BATT CHARGER, INPUT
-#define GPIO_191_SELECT     FUNCTION0+NonGpio   // TOUCH PAD, DATA
-#define GPIO_192_SELECT     FUNCTION0+NonGpio   // TOUCH PAD, CLK
-#define GPIO_193_SELECT     FUNCTION0+NonGpio   // SMBUS CLK,
-#define GPIO_194_SELECT     FUNCTION0+NonGpio   // SMBUS, DATA
-#define GPIO_195_SELECT     FUNCTION0+NonGpio   // SMBUS CLK,
-#define GPIO_196_SELECT     FUNCTION0+NonGpio   // SMBUS, DATA
-#define GPIO_197_SELECT     FUNCTION2+NonGpio   // Default GPIO for LOM_POWER, high active
+#define GPIO_189_SELECT	    FUNCTION1		// USED AS AC_OK RECIEVER, INPUT, low active
+#define GPIO_190_SELECT	    FUNCTION1		// USED TO MONITER INTERUPT FROM BATT CHARGER, INPUT
+#define GPIO_191_SELECT	    FUNCTION0+NonGpio	// TOUCH PAD, DATA
+#define GPIO_192_SELECT	    FUNCTION0+NonGpio	// TOUCH PAD, CLK
+#define GPIO_193_SELECT	    FUNCTION0+NonGpio	// SMBUS CLK,
+#define GPIO_194_SELECT	    FUNCTION0+NonGpio	// SMBUS, DATA
+#define GPIO_195_SELECT	    FUNCTION0+NonGpio	// SMBUS CLK,
+#define GPIO_196_SELECT	    FUNCTION0+NonGpio	// SMBUS, DATA
+#define GPIO_197_SELECT	    FUNCTION2+NonGpio	// Default GPIO for LOM_POWER, high active
 // RESERVED FOR LCD BACKLIGHT PWM
-#define GPIO_198_SELECT     FUNCTION0+NonGpio   // IMC SCROLL LED CONTROL
-#define GPIO_199_SELECT     FUNCTION3           // STRAP TO SELECT BOOT ROM - H:LPC ROM   L: SPI ROM
-#define GPIO_200_SELECT     FUNCTION2           // NEC USB3.0 POWER CONTROL 1:ON(DEFAULT); 0:OFF
-#define GPIO_201_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_202_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_203_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_204_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_205_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_206_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_207_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_208_SELECT     FUNCTION0+NonGpio   // KSI
-#define GPIO_209_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_210_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_211_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_212_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_213_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_214_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_215_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_216_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_217_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_218_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_219_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_220_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_221_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_222_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_223_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_224_SELECT     FUNCTION0+NonGpio   // KSO
-#define GPIO_225_SELECT     FUNCTION2+NonGpio   // KSO
-#define GPIO_226_SELECT     FUNCTION2+NonGpio   // KSO
-#define GPIO_227_SELECT     FUNCTION0+NonGpio   // SMBUS CLK,
-#define GPIO_228_SELECT     FUNCTION0+NonGpio   // SMBUS, DATA
-#define GPIO_229_SELECT     FUNCTION0+NonGpio   // DP1_HPD
+#define GPIO_198_SELECT	    FUNCTION0+NonGpio	// IMC SCROLL LED CONTROL
+#define GPIO_199_SELECT	    FUNCTION3		// STRAP TO SELECT BOOT ROM - H:LPC ROM	  L: SPI ROM
+#define GPIO_200_SELECT	    FUNCTION2		// NEC USB3.0 POWER CONTROL 1:ON(DEFAULT); 0:OFF
+#define GPIO_201_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_202_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_203_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_204_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_205_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_206_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_207_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_208_SELECT	    FUNCTION0+NonGpio	// KSI
+#define GPIO_209_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_210_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_211_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_212_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_213_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_214_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_215_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_216_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_217_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_218_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_219_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_220_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_221_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_222_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_223_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_224_SELECT	    FUNCTION0+NonGpio	// KSO
+#define GPIO_225_SELECT	    FUNCTION2+NonGpio	// KSO
+#define GPIO_226_SELECT	    FUNCTION2+NonGpio	// KSO
+#define GPIO_227_SELECT	    FUNCTION0+NonGpio	// SMBUS CLK,
+#define GPIO_228_SELECT	    FUNCTION0+NonGpio	// SMBUS, DATA
+#define GPIO_229_SELECT	    FUNCTION0+NonGpio	// DP1_HPD
 
 #define TYPE_GPI  (1<<5)
 #define TYPE_GPO  (0<<5)
 
-#define GPIO_00_TYPE        TYPE_GPO
-#define GPIO_01_TYPE        TYPE_GPO
-#define GPIO_02_TYPE        TYPE_GPO
-#define GPIO_03_TYPE        TYPE_GPO
-#define GPIO_04_TYPE        TYPE_GPO
-#define GPIO_05_TYPE        TYPE_GPO
-#define GPIO_06_TYPE        TYPE_GPO
-#define GPIO_07_TYPE        TYPE_GPO
-#define GPIO_08_TYPE        TYPE_GPO
-#define GPIO_09_TYPE        TYPE_GPI
-#define GPIO_10_TYPE        TYPE_GPI
-#define GPIO_11_TYPE        TYPE_GPO
-#define GPIO_12_TYPE        TYPE_GPO
-#define GPIO_13_TYPE        TYPE_GPO
-#define GPIO_14_TYPE        TYPE_GPO
-#define GPIO_15_TYPE        TYPE_GPO
-#define GPIO_16_TYPE        TYPE_GPO
-#define GPIO_17_TYPE        TYPE_GPO
-#define GPIO_18_TYPE        TYPE_GPO
-#define GPIO_19_TYPE        TYPE_GPO
-#define GPIO_20_TYPE        TYPE_GPO
-#define GPIO_21_TYPE        TYPE_GPO
-#define GPIO_22_TYPE        TYPE_GPO
-#define GPIO_23_TYPE        TYPE_GPO
-#define GPIO_24_TYPE        TYPE_GPO
-#define GPIO_25_TYPE        TYPE_GPO
-#define GPIO_26_TYPE        TYPE_GPO
-#define GPIO_27_TYPE        TYPE_GPO
-#define GPIO_28_TYPE        TYPE_GPI
-#define GPIO_29_TYPE        TYPE_GPO
-#define GPIO_30_TYPE        TYPE_GPI
-#define GPIO_31_TYPE        TYPE_GPI
-#define GPIO_32_TYPE        TYPE_GPO
-#define GPIO_33_TYPE        TYPE_GPI
-#define GPIO_34_TYPE        TYPE_GPO
-#define GPIO_35_TYPE        TYPE_GPO
-#define GPIO_36_TYPE        TYPE_GPO
-#define GPIO_37_TYPE        TYPE_GPO
-#define GPIO_38_TYPE        TYPE_GPO
-#define GPIO_39_TYPE        TYPE_GPO
-#define GPIO_40_TYPE        TYPE_GPO
-#define GPIO_41_TYPE        TYPE_GPI
-#define GPIO_42_TYPE        TYPE_GPI
-#define GPIO_43_TYPE        TYPE_GPO
-#define GPIO_44_TYPE        TYPE_GPO
-#define GPIO_45_TYPE        TYPE_GPO
-#define GPIO_46_TYPE        TYPE_GPI
-#define GPIO_47_TYPE        TYPE_GPO
-#define GPIO_48_TYPE        TYPE_GPO
-#define GPIO_49_TYPE        TYPE_GPO
-#define GPIO_50_TYPE        TYPE_GPO
-#define GPIO_51_TYPE        TYPE_GPO
-#define GPIO_52_TYPE        TYPE_GPO
-#define GPIO_53_TYPE        TYPE_GPO
-#define GPIO_54_TYPE        TYPE_GPO
-#define GPIO_55_TYPE        TYPE_GPO
-#define GPIO_56_TYPE        TYPE_GPI
-#define GPIO_57_TYPE        TYPE_GPO
-#define GPIO_58_TYPE        TYPE_GPO
-#define GPIO_59_TYPE        TYPE_GPO
-#define GPIO_60_TYPE        TYPE_GPI
-#define GPIO_61_TYPE        TYPE_GPI
-#define GPIO_62_TYPE        TYPE_GPI
-#define GPIO_63_TYPE        TYPE_GPI
-#define GPIO_64_TYPE        TYPE_GPI
-#define GPIO_65_TYPE        TYPE_GPI
-#define GPIO_66_TYPE        TYPE_GPO
-#define GPIO_67_TYPE        TYPE_GPO
-#define GPIO_68_TYPE        TYPE_GPO
-#define GPIO_69_TYPE        TYPE_GPO
-#define GPIO_70_TYPE        TYPE_GPO
-#define GPIO_71_TYPE        TYPE_GPO
-#define GPIO_72_TYPE        TYPE_GPO
-#define GPIO_73_TYPE        TYPE_GPO
-#define GPIO_74_TYPE        TYPE_GPO
-#define GPIO_75_TYPE        TYPE_GPO
-#define GPIO_76_TYPE        TYPE_GPO
-#define GPIO_77_TYPE        TYPE_GPO
-#define GPIO_78_TYPE        TYPE_GPO
-#define GPIO_79_TYPE        TYPE_GPO
-#define GPIO_80_TYPE        TYPE_GPO
-#define GPIO_81_TYPE        TYPE_GPO
-#define GPIO_82_TYPE        TYPE_GPO
-#define GPIO_83_TYPE        TYPE_GPO
-#define GPIO_84_TYPE        TYPE_GPO
-#define GPIO_85_TYPE        TYPE_GPO
-#define GPIO_86_TYPE        TYPE_GPO
-#define GPIO_87_TYPE        TYPE_GPO
-#define GPIO_88_TYPE        TYPE_GPO
-#define GPIO_89_TYPE        TYPE_GPO
-#define GPIO_90_TYPE        TYPE_GPO
-#define GPIO_91_TYPE        TYPE_GPO
-#define GPIO_92_TYPE        TYPE_GPO
-#define GPIO_93_TYPE        TYPE_GPO
-#define GPIO_94_TYPE        TYPE_GPO
-#define GPIO_95_TYPE        TYPE_GPO
+#define GPIO_00_TYPE	    TYPE_GPO
+#define GPIO_01_TYPE	    TYPE_GPO
+#define GPIO_02_TYPE	    TYPE_GPO
+#define GPIO_03_TYPE	    TYPE_GPO
+#define GPIO_04_TYPE	    TYPE_GPO
+#define GPIO_05_TYPE	    TYPE_GPO
+#define GPIO_06_TYPE	    TYPE_GPO
+#define GPIO_07_TYPE	    TYPE_GPO
+#define GPIO_08_TYPE	    TYPE_GPO
+#define GPIO_09_TYPE	    TYPE_GPI
+#define GPIO_10_TYPE	    TYPE_GPI
+#define GPIO_11_TYPE	    TYPE_GPO
+#define GPIO_12_TYPE	    TYPE_GPO
+#define GPIO_13_TYPE	    TYPE_GPO
+#define GPIO_14_TYPE	    TYPE_GPO
+#define GPIO_15_TYPE	    TYPE_GPO
+#define GPIO_16_TYPE	    TYPE_GPO
+#define GPIO_17_TYPE	    TYPE_GPO
+#define GPIO_18_TYPE	    TYPE_GPO
+#define GPIO_19_TYPE	    TYPE_GPO
+#define GPIO_20_TYPE	    TYPE_GPO
+#define GPIO_21_TYPE	    TYPE_GPO
+#define GPIO_22_TYPE	    TYPE_GPO
+#define GPIO_23_TYPE	    TYPE_GPO
+#define GPIO_24_TYPE	    TYPE_GPO
+#define GPIO_25_TYPE	    TYPE_GPO
+#define GPIO_26_TYPE	    TYPE_GPO
+#define GPIO_27_TYPE	    TYPE_GPO
+#define GPIO_28_TYPE	    TYPE_GPI
+#define GPIO_29_TYPE	    TYPE_GPO
+#define GPIO_30_TYPE	    TYPE_GPI
+#define GPIO_31_TYPE	    TYPE_GPI
+#define GPIO_32_TYPE	    TYPE_GPO
+#define GPIO_33_TYPE	    TYPE_GPI
+#define GPIO_34_TYPE	    TYPE_GPO
+#define GPIO_35_TYPE	    TYPE_GPO
+#define GPIO_36_TYPE	    TYPE_GPO
+#define GPIO_37_TYPE	    TYPE_GPO
+#define GPIO_38_TYPE	    TYPE_GPO
+#define GPIO_39_TYPE	    TYPE_GPO
+#define GPIO_40_TYPE	    TYPE_GPO
+#define GPIO_41_TYPE	    TYPE_GPI
+#define GPIO_42_TYPE	    TYPE_GPI
+#define GPIO_43_TYPE	    TYPE_GPO
+#define GPIO_44_TYPE	    TYPE_GPO
+#define GPIO_45_TYPE	    TYPE_GPO
+#define GPIO_46_TYPE	    TYPE_GPI
+#define GPIO_47_TYPE	    TYPE_GPO
+#define GPIO_48_TYPE	    TYPE_GPO
+#define GPIO_49_TYPE	    TYPE_GPO
+#define GPIO_50_TYPE	    TYPE_GPO
+#define GPIO_51_TYPE	    TYPE_GPO
+#define GPIO_52_TYPE	    TYPE_GPO
+#define GPIO_53_TYPE	    TYPE_GPO
+#define GPIO_54_TYPE	    TYPE_GPO
+#define GPIO_55_TYPE	    TYPE_GPO
+#define GPIO_56_TYPE	    TYPE_GPI
+#define GPIO_57_TYPE	    TYPE_GPO
+#define GPIO_58_TYPE	    TYPE_GPO
+#define GPIO_59_TYPE	    TYPE_GPO
+#define GPIO_60_TYPE	    TYPE_GPI
+#define GPIO_61_TYPE	    TYPE_GPI
+#define GPIO_62_TYPE	    TYPE_GPI
+#define GPIO_63_TYPE	    TYPE_GPI
+#define GPIO_64_TYPE	    TYPE_GPI
+#define GPIO_65_TYPE	    TYPE_GPI
+#define GPIO_66_TYPE	    TYPE_GPO
+#define GPIO_67_TYPE	    TYPE_GPO
+#define GPIO_68_TYPE	    TYPE_GPO
+#define GPIO_69_TYPE	    TYPE_GPO
+#define GPIO_70_TYPE	    TYPE_GPO
+#define GPIO_71_TYPE	    TYPE_GPO
+#define GPIO_72_TYPE	    TYPE_GPO
+#define GPIO_73_TYPE	    TYPE_GPO
+#define GPIO_74_TYPE	    TYPE_GPO
+#define GPIO_75_TYPE	    TYPE_GPO
+#define GPIO_76_TYPE	    TYPE_GPO
+#define GPIO_77_TYPE	    TYPE_GPO
+#define GPIO_78_TYPE	    TYPE_GPO
+#define GPIO_79_TYPE	    TYPE_GPO
+#define GPIO_80_TYPE	    TYPE_GPO
+#define GPIO_81_TYPE	    TYPE_GPO
+#define GPIO_82_TYPE	    TYPE_GPO
+#define GPIO_83_TYPE	    TYPE_GPO
+#define GPIO_84_TYPE	    TYPE_GPO
+#define GPIO_85_TYPE	    TYPE_GPO
+#define GPIO_86_TYPE	    TYPE_GPO
+#define GPIO_87_TYPE	    TYPE_GPO
+#define GPIO_88_TYPE	    TYPE_GPO
+#define GPIO_89_TYPE	    TYPE_GPO
+#define GPIO_90_TYPE	    TYPE_GPO
+#define GPIO_91_TYPE	    TYPE_GPO
+#define GPIO_92_TYPE	    TYPE_GPO
+#define GPIO_93_TYPE	    TYPE_GPO
+#define GPIO_94_TYPE	    TYPE_GPO
+#define GPIO_95_TYPE	    TYPE_GPO
 
 // GEVENT 00 ~ 23 are mapped to GPIO 96 ~ 119
-#define GPIO_96_TYPE        TYPE_GPI
-#define GPIO_97_TYPE        TYPE_GPI
-#define GPIO_98_TYPE        TYPE_GPI
-#define GPIO_99_TYPE        TYPE_GPI
-#define GPIO_100_TYPE       TYPE_GPI
-#define GPIO_101_TYPE       TYPE_GPI
-#define GPIO_102_TYPE       TYPE_GPO
-#define GPIO_103_TYPE       TYPE_GPO
-#define GPIO_104_TYPE       TYPE_GPI
-#define GPIO_105_TYPE       TYPE_GPI
-#define GPIO_106_TYPE       TYPE_GPO
-#define GPIO_107_TYPE       TYPE_GPI
-#define GPIO_108_TYPE       TYPE_GPI
-#define GPIO_109_TYPE       TYPE_GPI
-#define GPIO_110_TYPE       TYPE_GPI
-#define GPIO_111_TYPE       TYPE_GPI
-#define GPIO_112_TYPE       TYPE_GPI
-#define GPIO_113_TYPE       TYPE_GPI
-#define GPIO_114_TYPE       TYPE_GPO
-#define GPIO_115_TYPE       TYPE_GPI
-#define GPIO_116_TYPE       TYPE_GPI
-#define GPIO_117_TYPE       TYPE_GPI
-#define GPIO_118_TYPE       TYPE_GPI
-#define GPIO_119_TYPE       TYPE_GPI
+#define GPIO_96_TYPE	    TYPE_GPI
+#define GPIO_97_TYPE	    TYPE_GPI
+#define GPIO_98_TYPE	    TYPE_GPI
+#define GPIO_99_TYPE	    TYPE_GPI
+#define GPIO_100_TYPE	    TYPE_GPI
+#define GPIO_101_TYPE	    TYPE_GPI
+#define GPIO_102_TYPE	    TYPE_GPO
+#define GPIO_103_TYPE	    TYPE_GPO
+#define GPIO_104_TYPE	    TYPE_GPI
+#define GPIO_105_TYPE	    TYPE_GPI
+#define GPIO_106_TYPE	    TYPE_GPO
+#define GPIO_107_TYPE	    TYPE_GPI
+#define GPIO_108_TYPE	    TYPE_GPI
+#define GPIO_109_TYPE	    TYPE_GPI
+#define GPIO_110_TYPE	    TYPE_GPI
+#define GPIO_111_TYPE	    TYPE_GPI
+#define GPIO_112_TYPE	    TYPE_GPI
+#define GPIO_113_TYPE	    TYPE_GPI
+#define GPIO_114_TYPE	    TYPE_GPO
+#define GPIO_115_TYPE	    TYPE_GPI
+#define GPIO_116_TYPE	    TYPE_GPI
+#define GPIO_117_TYPE	    TYPE_GPI
+#define GPIO_118_TYPE	    TYPE_GPI
+#define GPIO_119_TYPE	    TYPE_GPI
 
-#define GPIO_120_TYPE       TYPE_GPO
-#define GPIO_121_TYPE       TYPE_GPO
-#define GPIO_122_TYPE       TYPE_GPO
-#define GPIO_123_TYPE       TYPE_GPO
-#define GPIO_124_TYPE       TYPE_GPO
-#define GPIO_125_TYPE       TYPE_GPO
-#define GPIO_126_TYPE       TYPE_GPO
-#define GPIO_127_TYPE       TYPE_GPO
-#define GPIO_128_TYPE       TYPE_GPO
-#define GPIO_129_TYPE       TYPE_GPO
-#define GPIO_130_TYPE       TYPE_GPO
-#define GPIO_131_TYPE       TYPE_GPO
-#define GPIO_132_TYPE       TYPE_GPO
-#define GPIO_133_TYPE       TYPE_GPO
-#define GPIO_134_TYPE       TYPE_GPO
-#define GPIO_135_TYPE       TYPE_GPO
-#define GPIO_136_TYPE       TYPE_GPO
-#define GPIO_137_TYPE       TYPE_GPO
-#define GPIO_138_TYPE       TYPE_GPO
-#define GPIO_139_TYPE       TYPE_GPO
-#define GPIO_140_TYPE       TYPE_GPO
-#define GPIO_141_TYPE       TYPE_GPO
-#define GPIO_142_TYPE       TYPE_GPO
-#define GPIO_143_TYPE       TYPE_GPO
-#define GPIO_144_TYPE       TYPE_GPO
-#define GPIO_145_TYPE       TYPE_GPO
-#define GPIO_146_TYPE       TYPE_GPO
-#define GPIO_147_TYPE       TYPE_GPO
-#define GPIO_148_TYPE       TYPE_GPO
-#define GPIO_149_TYPE       TYPE_GPO
-#define GPIO_150_TYPE       TYPE_GPO
-#define GPIO_151_TYPE       TYPE_GPO
-#define GPIO_152_TYPE       TYPE_GPO
-#define GPIO_153_TYPE       TYPE_GPO
-#define GPIO_154_TYPE       TYPE_GPO
-#define GPIO_155_TYPE       TYPE_GPO
-#define GPIO_156_TYPE       TYPE_GPO
-#define GPIO_157_TYPE       TYPE_GPO
-#define GPIO_158_TYPE       TYPE_GPO
-#define GPIO_159_TYPE       TYPE_GPO
-#define GPIO_160_TYPE       TYPE_GPO
-#define GPIO_161_TYPE       TYPE_GPO
-#define GPIO_162_TYPE       TYPE_GPO
-#define GPIO_163_TYPE       TYPE_GPO
-#define GPIO_164_TYPE       TYPE_GPI
-#define GPIO_165_TYPE       TYPE_GPO
-#define GPIO_166_TYPE       TYPE_GPI
-#define GPIO_167_TYPE       TYPE_GPI
-#define GPIO_168_TYPE       TYPE_GPI
-#define GPIO_169_TYPE       TYPE_GPI
-#define GPIO_170_TYPE       TYPE_GPO
-#define GPIO_171_TYPE       TYPE_GPI
-#define GPIO_172_TYPE       TYPE_GPO
-#define GPIO_173_TYPE       TYPE_GPI
-#define GPIO_174_TYPE       TYPE_GPI
-#define GPIO_175_TYPE       TYPE_GPO
-#define GPIO_176_TYPE       TYPE_GPO
-#define GPIO_177_TYPE       TYPE_GPO
-#define GPIO_178_TYPE       TYPE_GPO
-#define GPIO_179_TYPE       TYPE_GPO
-#define GPIO_180_TYPE       TYPE_GPO
-#define GPIO_181_TYPE       TYPE_GPO
-#define GPIO_182_TYPE       TYPE_GPO
-#define GPIO_183_TYPE       TYPE_GPO
-#define GPIO_184_TYPE       TYPE_GPI
-#define GPIO_185_TYPE       TYPE_GPO
-#define GPIO_186_TYPE       TYPE_GPO
-#define GPIO_187_TYPE       TYPE_GPO
-#define GPIO_188_TYPE       TYPE_GPO
-#define GPIO_189_TYPE       TYPE_GPI
-#define GPIO_190_TYPE       TYPE_GPI
-#define GPIO_191_TYPE       TYPE_GPO
-#define GPIO_192_TYPE       TYPE_GPO
-#define GPIO_193_TYPE       TYPE_GPO
-#define GPIO_194_TYPE       TYPE_GPO
-#define GPIO_195_TYPE       TYPE_GPO
-#define GPIO_196_TYPE       TYPE_GPO
-#define GPIO_197_TYPE       TYPE_GPO
-#define GPIO_198_TYPE       TYPE_GPO
-#define GPIO_199_TYPE       TYPE_GPI
-#define GPIO_200_TYPE       TYPE_GPO
-#define GPIO_201_TYPE       TYPE_GPI
-#define GPIO_202_TYPE       TYPE_GPI
-#define GPIO_203_TYPE       TYPE_GPI
-#define GPIO_204_TYPE       TYPE_GPI
-#define GPIO_205_TYPE       TYPE_GPI
-#define GPIO_206_TYPE       TYPE_GPI
-#define GPIO_207_TYPE       TYPE_GPI
-#define GPIO_208_TYPE       TYPE_GPI
-#define GPIO_209_TYPE       TYPE_GPO
-#define GPIO_210_TYPE       TYPE_GPO
-#define GPIO_211_TYPE       TYPE_GPO
-#define GPIO_212_TYPE       TYPE_GPO
-#define GPIO_213_TYPE       TYPE_GPO
-#define GPIO_214_TYPE       TYPE_GPO
-#define GPIO_215_TYPE       TYPE_GPO
-#define GPIO_216_TYPE       TYPE_GPO
-#define GPIO_217_TYPE       TYPE_GPO
-#define GPIO_218_TYPE       TYPE_GPO
-#define GPIO_219_TYPE       TYPE_GPO
-#define GPIO_220_TYPE       TYPE_GPO
-#define GPIO_221_TYPE       TYPE_GPO
-#define GPIO_222_TYPE       TYPE_GPO
-#define GPIO_223_TYPE       TYPE_GPO
-#define GPIO_224_TYPE       TYPE_GPO
-#define GPIO_225_TYPE       TYPE_GPO
-#define GPIO_226_TYPE       TYPE_GPO
-#define GPIO_227_TYPE       TYPE_GPO
-#define GPIO_228_TYPE       TYPE_GPO
-#define GPIO_229_TYPE       TYPE_GPO
+#define GPIO_120_TYPE	    TYPE_GPO
+#define GPIO_121_TYPE	    TYPE_GPO
+#define GPIO_122_TYPE	    TYPE_GPO
+#define GPIO_123_TYPE	    TYPE_GPO
+#define GPIO_124_TYPE	    TYPE_GPO
+#define GPIO_125_TYPE	    TYPE_GPO
+#define GPIO_126_TYPE	    TYPE_GPO
+#define GPIO_127_TYPE	    TYPE_GPO
+#define GPIO_128_TYPE	    TYPE_GPO
+#define GPIO_129_TYPE	    TYPE_GPO
+#define GPIO_130_TYPE	    TYPE_GPO
+#define GPIO_131_TYPE	    TYPE_GPO
+#define GPIO_132_TYPE	    TYPE_GPO
+#define GPIO_133_TYPE	    TYPE_GPO
+#define GPIO_134_TYPE	    TYPE_GPO
+#define GPIO_135_TYPE	    TYPE_GPO
+#define GPIO_136_TYPE	    TYPE_GPO
+#define GPIO_137_TYPE	    TYPE_GPO
+#define GPIO_138_TYPE	    TYPE_GPO
+#define GPIO_139_TYPE	    TYPE_GPO
+#define GPIO_140_TYPE	    TYPE_GPO
+#define GPIO_141_TYPE	    TYPE_GPO
+#define GPIO_142_TYPE	    TYPE_GPO
+#define GPIO_143_TYPE	    TYPE_GPO
+#define GPIO_144_TYPE	    TYPE_GPO
+#define GPIO_145_TYPE	    TYPE_GPO
+#define GPIO_146_TYPE	    TYPE_GPO
+#define GPIO_147_TYPE	    TYPE_GPO
+#define GPIO_148_TYPE	    TYPE_GPO
+#define GPIO_149_TYPE	    TYPE_GPO
+#define GPIO_150_TYPE	    TYPE_GPO
+#define GPIO_151_TYPE	    TYPE_GPO
+#define GPIO_152_TYPE	    TYPE_GPO
+#define GPIO_153_TYPE	    TYPE_GPO
+#define GPIO_154_TYPE	    TYPE_GPO
+#define GPIO_155_TYPE	    TYPE_GPO
+#define GPIO_156_TYPE	    TYPE_GPO
+#define GPIO_157_TYPE	    TYPE_GPO
+#define GPIO_158_TYPE	    TYPE_GPO
+#define GPIO_159_TYPE	    TYPE_GPO
+#define GPIO_160_TYPE	    TYPE_GPO
+#define GPIO_161_TYPE	    TYPE_GPO
+#define GPIO_162_TYPE	    TYPE_GPO
+#define GPIO_163_TYPE	    TYPE_GPO
+#define GPIO_164_TYPE	    TYPE_GPI
+#define GPIO_165_TYPE	    TYPE_GPO
+#define GPIO_166_TYPE	    TYPE_GPI
+#define GPIO_167_TYPE	    TYPE_GPI
+#define GPIO_168_TYPE	    TYPE_GPI
+#define GPIO_169_TYPE	    TYPE_GPI
+#define GPIO_170_TYPE	    TYPE_GPO
+#define GPIO_171_TYPE	    TYPE_GPI
+#define GPIO_172_TYPE	    TYPE_GPO
+#define GPIO_173_TYPE	    TYPE_GPI
+#define GPIO_174_TYPE	    TYPE_GPI
+#define GPIO_175_TYPE	    TYPE_GPO
+#define GPIO_176_TYPE	    TYPE_GPO
+#define GPIO_177_TYPE	    TYPE_GPO
+#define GPIO_178_TYPE	    TYPE_GPO
+#define GPIO_179_TYPE	    TYPE_GPO
+#define GPIO_180_TYPE	    TYPE_GPO
+#define GPIO_181_TYPE	    TYPE_GPO
+#define GPIO_182_TYPE	    TYPE_GPO
+#define GPIO_183_TYPE	    TYPE_GPO
+#define GPIO_184_TYPE	    TYPE_GPI
+#define GPIO_185_TYPE	    TYPE_GPO
+#define GPIO_186_TYPE	    TYPE_GPO
+#define GPIO_187_TYPE	    TYPE_GPO
+#define GPIO_188_TYPE	    TYPE_GPO
+#define GPIO_189_TYPE	    TYPE_GPI
+#define GPIO_190_TYPE	    TYPE_GPI
+#define GPIO_191_TYPE	    TYPE_GPO
+#define GPIO_192_TYPE	    TYPE_GPO
+#define GPIO_193_TYPE	    TYPE_GPO
+#define GPIO_194_TYPE	    TYPE_GPO
+#define GPIO_195_TYPE	    TYPE_GPO
+#define GPIO_196_TYPE	    TYPE_GPO
+#define GPIO_197_TYPE	    TYPE_GPO
+#define GPIO_198_TYPE	    TYPE_GPO
+#define GPIO_199_TYPE	    TYPE_GPI
+#define GPIO_200_TYPE	    TYPE_GPO
+#define GPIO_201_TYPE	    TYPE_GPI
+#define GPIO_202_TYPE	    TYPE_GPI
+#define GPIO_203_TYPE	    TYPE_GPI
+#define GPIO_204_TYPE	    TYPE_GPI
+#define GPIO_205_TYPE	    TYPE_GPI
+#define GPIO_206_TYPE	    TYPE_GPI
+#define GPIO_207_TYPE	    TYPE_GPI
+#define GPIO_208_TYPE	    TYPE_GPI
+#define GPIO_209_TYPE	    TYPE_GPO
+#define GPIO_210_TYPE	    TYPE_GPO
+#define GPIO_211_TYPE	    TYPE_GPO
+#define GPIO_212_TYPE	    TYPE_GPO
+#define GPIO_213_TYPE	    TYPE_GPO
+#define GPIO_214_TYPE	    TYPE_GPO
+#define GPIO_215_TYPE	    TYPE_GPO
+#define GPIO_216_TYPE	    TYPE_GPO
+#define GPIO_217_TYPE	    TYPE_GPO
+#define GPIO_218_TYPE	    TYPE_GPO
+#define GPIO_219_TYPE	    TYPE_GPO
+#define GPIO_220_TYPE	    TYPE_GPO
+#define GPIO_221_TYPE	    TYPE_GPO
+#define GPIO_222_TYPE	    TYPE_GPO
+#define GPIO_223_TYPE	    TYPE_GPO
+#define GPIO_224_TYPE	    TYPE_GPO
+#define GPIO_225_TYPE	    TYPE_GPO
+#define GPIO_226_TYPE	    TYPE_GPO
+#define GPIO_227_TYPE	    TYPE_GPO
+#define GPIO_228_TYPE	    TYPE_GPO
+#define GPIO_229_TYPE	    TYPE_GPO
 
-#define GPO_LOW   (0<<6)
-#define GPO_HI    (1<<6)
+#define GPO_LOW	  (0<<6)
+#define GPO_HI	  (1<<6)
 
-#define GPO_00_LEVEL        GPO_HI
-#define GPO_01_LEVEL        GPO_HI
-#define GPO_02_LEVEL        GPO_HI
-#define GPO_03_LEVEL        GPO_HI
-#define GPO_04_LEVEL        GPO_HI
-#define GPO_05_LEVEL        GPO_HI
-#define GPO_06_LEVEL        GPO_HI
-#define GPO_07_LEVEL        GPO_HI
-#define GPO_08_LEVEL        GPO_HI
-#define GPO_09_LEVEL        GPO_LOW
-#define GPO_10_LEVEL        GPO_LOW
-#define GPO_11_LEVEL        GPO_HI
-#define GPO_12_LEVEL        GPO_HI
-#define GPO_13_LEVEL        GPO_HI
-#define GPO_14_LEVEL        GPO_HI
-#define GPO_15_LEVEL        GPO_HI
-#define GPO_16_LEVEL        GPO_HI
-#define GPO_17_LEVEL        GPO_HI
-#define GPO_18_LEVEL        GPO_HI
-#define GPO_19_LEVEL        GPO_LOW
-#define GPO_20_LEVEL        GPO_LOW
-#define GPO_21_LEVEL        GPO_LOW
-#define GPO_22_LEVEL        GPO_HI
-#define GPO_23_LEVEL        GPO_HI
-#define GPO_24_LEVEL        GPO_HI
-#define GPO_25_LEVEL        GPO_HI
-#define GPO_26_LEVEL        GPO_HI
-#define GPO_27_LEVEL        GPO_HI
-#define GPO_28_LEVEL        GPO_LOW
-#define GPO_29_LEVEL        GPO_HI
-#define GPO_30_LEVEL        GPO_LOW
-#define GPO_31_LEVEL        GPO_LOW
-#define GPO_32_LEVEL        GPO_HI
-#define GPO_33_LEVEL        GPO_LOW
-#define GPO_34_LEVEL        GPO_LOW
-#define GPO_35_LEVEL        GPO_LOW
-#define GPO_36_LEVEL        GPO_LOW
-#define GPO_37_LEVEL        GPO_HI
-#define GPO_38_LEVEL        GPO_HI
-#define GPO_39_LEVEL        GPO_HI
-#define GPO_40_LEVEL        GPO_LOW
-#define GPO_41_LEVEL        GPO_LOW
-#define GPO_42_LEVEL        GPO_LOW
-#define GPO_43_LEVEL        GPO_LOW
-#define GPO_44_LEVEL        GPO_HI
-#define GPO_45_LEVEL        GPO_HI
-#define GPO_46_LEVEL        GPO_LOW
-#define GPO_47_LEVEL        GPO_LOW
-#define GPO_48_LEVEL        GPO_LOW
-#define GPO_49_LEVEL        GPO_HI
-#define GPO_50_LEVEL        GPO_HI
-#define GPO_51_LEVEL        GPO_LOW
-#define GPO_52_LEVEL        GPO_HI
-#define GPO_53_LEVEL        GPO_HI
-#define GPO_54_LEVEL        GPO_LOW
-#define GPO_55_LEVEL        GPO_LOW
-#define GPO_56_LEVEL        GPO_LOW
-#define GPO_57_LEVEL        GPO_HI
-#define GPO_58_LEVEL        GPO_HI
-#define GPO_59_LEVEL        GPO_HI
-#define GPO_60_LEVEL        GPO_LOW
-#define GPO_61_LEVEL        GPO_LOW
-#define GPO_62_LEVEL        GPO_LOW
-#define GPO_63_LEVEL        GPO_LOW
-#define GPO_64_LEVEL        GPO_LOW
-#define GPO_65_LEVEL        GPO_LOW
-#define GPO_66_LEVEL        GPO_LOW
-#define GPO_67_LEVEL        GPO_LOW
-#define GPO_68_LEVEL        GPO_LOW
-#define GPO_69_LEVEL        GPO_LOW
-#define GPO_70_LEVEL        GPO_LOW
-#define GPO_71_LEVEL        GPO_LOW
-#define GPO_72_LEVEL        GPO_LOW
-#define GPO_73_LEVEL        GPO_LOW
-#define GPO_74_LEVEL        GPO_LOW
-#define GPO_75_LEVEL        GPO_LOW
-#define GPO_76_LEVEL        GPO_LOW
-#define GPO_77_LEVEL        GPO_LOW
-#define GPO_78_LEVEL        GPO_LOW
-#define GPO_79_LEVEL        GPO_LOW
-#define GPO_80_LEVEL        GPO_LOW
-#define GPO_81_LEVEL        GPO_LOW
-#define GPO_82_LEVEL        GPO_LOW
-#define GPO_83_LEVEL        GPO_LOW
-#define GPO_84_LEVEL        GPO_LOW
-#define GPO_85_LEVEL        GPO_LOW
-#define GPO_86_LEVEL        GPO_LOW
-#define GPO_87_LEVEL        GPO_LOW
-#define GPO_88_LEVEL        GPO_LOW
-#define GPO_89_LEVEL        GPO_LOW
-#define GPO_90_LEVEL        GPO_LOW
-#define GPO_91_LEVEL        GPO_LOW
-#define GPO_92_LEVEL        GPO_LOW
-#define GPO_93_LEVEL        GPO_LOW
-#define GPO_94_LEVEL        GPO_LOW
-#define GPO_95_LEVEL        GPO_LOW
-#define GPO_96_LEVEL        GPO_LOW
-#define GPO_97_LEVEL        GPO_LOW
-#define GPO_98_LEVEL        GPO_LOW
-#define GPO_99_LEVEL        GPO_LOW
-#define GPO_100_LEVEL       GPO_LOW
-#define GPO_101_LEVEL       GPO_LOW
-#define GPO_102_LEVEL       GPO_LOW
-#define GPO_103_LEVEL       GPO_LOW
-#define GPO_104_LEVEL       GPO_LOW
-#define GPO_105_LEVEL       GPO_LOW
-#define GPO_106_LEVEL       GPO_LOW
-#define GPO_107_LEVEL       GPO_LOW
-#define GPO_108_LEVEL       GPO_HI
-#define GPO_109_LEVEL       GPO_LOW
-#define GPO_110_LEVEL       GPO_HI
-#define GPO_111_LEVEL       GPO_HI
-#define GPO_112_LEVEL       GPO_HI
-#define GPO_113_LEVEL       GPO_LOW
-#define GPO_114_LEVEL       GPO_LOW
-#define GPO_115_LEVEL       GPO_LOW
-#define GPO_116_LEVEL       GPO_LOW
-#define GPO_117_LEVEL       GPO_LOW
-#define GPO_118_LEVEL       GPO_LOW
-#define GPO_119_LEVEL       GPO_LOW
-#define GPO_120_LEVEL       GPO_LOW
-#define GPO_121_LEVEL       GPO_LOW
-#define GPO_122_LEVEL       GPO_LOW
-#define GPO_123_LEVEL       GPO_LOW
-#define GPO_124_LEVEL       GPO_LOW
-#define GPO_125_LEVEL       GPO_LOW
-#define GPO_126_LEVEL       GPO_LOW
-#define GPO_127_LEVEL       GPO_LOW
-#define GPO_128_LEVEL       GPO_LOW
-#define GPO_129_LEVEL       GPO_LOW
-#define GPO_130_LEVEL       GPO_LOW
-#define GPO_131_LEVEL       GPO_LOW
-#define GPO_132_LEVEL       GPO_LOW
-#define GPO_133_LEVEL       GPO_LOW
-#define GPO_134_LEVEL       GPO_LOW
-#define GPO_135_LEVEL       GPO_LOW
-#define GPO_136_LEVEL       GPO_LOW
-#define GPO_137_LEVEL       GPO_LOW
-#define GPO_138_LEVEL       GPO_LOW
-#define GPO_139_LEVEL       GPO_LOW
-#define GPO_140_LEVEL       GPO_LOW
-#define GPO_141_LEVEL       GPO_LOW
-#define GPO_142_LEVEL       GPO_LOW
-#define GPO_143_LEVEL       GPO_LOW
-#define GPO_144_LEVEL       GPO_LOW
-#define GPO_145_LEVEL       GPO_LOW
-#define GPO_146_LEVEL       GPO_LOW
-#define GPO_147_LEVEL       GPO_LOW
-#define GPO_148_LEVEL       GPO_LOW
-#define GPO_149_LEVEL       GPO_LOW
-#define GPO_150_LEVEL       GPO_LOW
-#define GPO_151_LEVEL       GPO_LOW
-#define GPO_152_LEVEL       GPO_LOW
-#define GPO_153_LEVEL       GPO_LOW
-#define GPO_154_LEVEL       GPO_LOW
-#define GPO_155_LEVEL       GPO_LOW
-#define GPO_156_LEVEL       GPO_LOW
-#define GPO_157_LEVEL       GPO_LOW
-#define GPO_158_LEVEL       GPO_LOW
-#define GPO_159_LEVEL       GPO_LOW
-#define GPO_160_LEVEL       GPO_LOW
-#define GPO_161_LEVEL       GPO_LOW
-#define GPO_162_LEVEL       GPO_LOW
-#define GPO_163_LEVEL       GPO_LOW
-#define GPO_164_LEVEL       GPO_LOW
-#define GPO_165_LEVEL       GPO_LOW
-#define GPO_166_LEVEL       GPO_LOW
-#define GPO_167_LEVEL       GPO_LOW
-#define GPO_168_LEVEL       GPO_LOW
-#define GPO_169_LEVEL       GPO_LOW
-#define GPO_170_LEVEL       GPO_HI
-#define GPO_171_LEVEL       GPO_LOW
-#define GPO_172_LEVEL       GPO_HI		// FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
-#define GPO_173_LEVEL       GPO_LOW
-#define GPO_174_LEVEL       GPO_LOW
-#define GPO_175_LEVEL       GPO_LOW
-#define GPO_176_LEVEL       GPO_LOW
-#define GPO_177_LEVEL       GPO_LOW
-#define GPO_178_LEVEL       GPO_HI      // AMD.SR BU to set VDDIO level to 1.5V for Barb BU
-#define GPO_179_LEVEL       GPO_HI
-#define GPO_180_LEVEL       GPO_HI
-#define GPO_181_LEVEL       GPO_LOW
-#define GPO_182_LEVEL       GPO_HI
-#define GPO_183_LEVEL       GPO_LOW
-#define GPO_184_LEVEL       GPO_LOW
-#define GPO_185_LEVEL       GPO_LOW
-#define GPO_186_LEVEL       GPO_LOW
-#define GPO_187_LEVEL       GPO_LOW
-#define GPO_188_LEVEL       GPO_LOW
-#define GPO_189_LEVEL       GPO_LOW
-#define GPO_190_LEVEL       GPO_LOW
-#define GPO_191_LEVEL       GPO_LOW
-#define GPO_192_LEVEL       GPO_LOW
-#define GPO_193_LEVEL       GPO_LOW
-#define GPO_194_LEVEL       GPO_LOW
-#define GPO_195_LEVEL       GPO_LOW
-#define GPO_196_LEVEL       GPO_LOW
-#define GPO_197_LEVEL       GPO_LOW
-#define GPO_198_LEVEL       GPO_LOW
-#define GPO_199_LEVEL       GPO_LOW
-#define GPO_200_LEVEL       GPO_HI
-#define GPO_201_LEVEL       GPO_LOW
-#define GPO_202_LEVEL       GPO_LOW
-#define GPO_203_LEVEL       GPO_LOW
-#define GPO_204_LEVEL       GPO_LOW
-#define GPO_205_LEVEL       GPO_LOW
-#define GPO_206_LEVEL       GPO_LOW
-#define GPO_207_LEVEL       GPO_LOW
-#define GPO_208_LEVEL       GPO_LOW
-#define GPO_209_LEVEL       GPO_LOW
-#define GPO_210_LEVEL       GPO_LOW
-#define GPO_211_LEVEL       GPO_LOW
-#define GPO_212_LEVEL       GPO_LOW
-#define GPO_213_LEVEL       GPO_LOW
-#define GPO_214_LEVEL       GPO_LOW
-#define GPO_215_LEVEL       GPO_LOW
-#define GPO_216_LEVEL       GPO_LOW
-#define GPO_217_LEVEL       GPO_LOW
-#define GPO_218_LEVEL       GPO_LOW
-#define GPO_219_LEVEL       GPO_LOW
-#define GPO_220_LEVEL       GPO_LOW
-#define GPO_221_LEVEL       GPO_LOW
-#define GPO_222_LEVEL       GPO_LOW
-#define GPO_223_LEVEL       GPO_LOW
-#define GPO_224_LEVEL       GPO_LOW
-#define GPO_225_LEVEL       GPO_LOW
-#define GPO_226_LEVEL       GPO_LOW
-#define GPO_227_LEVEL       GPO_LOW
-#define GPO_228_LEVEL       GPO_LOW
-#define GPO_229_LEVEL       GPO_LOW
+#define GPO_00_LEVEL	    GPO_HI
+#define GPO_01_LEVEL	    GPO_HI
+#define GPO_02_LEVEL	    GPO_HI
+#define GPO_03_LEVEL	    GPO_HI
+#define GPO_04_LEVEL	    GPO_HI
+#define GPO_05_LEVEL	    GPO_HI
+#define GPO_06_LEVEL	    GPO_HI
+#define GPO_07_LEVEL	    GPO_HI
+#define GPO_08_LEVEL	    GPO_HI
+#define GPO_09_LEVEL	    GPO_LOW
+#define GPO_10_LEVEL	    GPO_LOW
+#define GPO_11_LEVEL	    GPO_HI
+#define GPO_12_LEVEL	    GPO_HI
+#define GPO_13_LEVEL	    GPO_HI
+#define GPO_14_LEVEL	    GPO_HI
+#define GPO_15_LEVEL	    GPO_HI
+#define GPO_16_LEVEL	    GPO_HI
+#define GPO_17_LEVEL	    GPO_HI
+#define GPO_18_LEVEL	    GPO_HI
+#define GPO_19_LEVEL	    GPO_LOW
+#define GPO_20_LEVEL	    GPO_LOW
+#define GPO_21_LEVEL	    GPO_LOW
+#define GPO_22_LEVEL	    GPO_HI
+#define GPO_23_LEVEL	    GPO_HI
+#define GPO_24_LEVEL	    GPO_HI
+#define GPO_25_LEVEL	    GPO_HI
+#define GPO_26_LEVEL	    GPO_HI
+#define GPO_27_LEVEL	    GPO_HI
+#define GPO_28_LEVEL	    GPO_LOW
+#define GPO_29_LEVEL	    GPO_HI
+#define GPO_30_LEVEL	    GPO_LOW
+#define GPO_31_LEVEL	    GPO_LOW
+#define GPO_32_LEVEL	    GPO_HI
+#define GPO_33_LEVEL	    GPO_LOW
+#define GPO_34_LEVEL	    GPO_LOW
+#define GPO_35_LEVEL	    GPO_LOW
+#define GPO_36_LEVEL	    GPO_LOW
+#define GPO_37_LEVEL	    GPO_HI
+#define GPO_38_LEVEL	    GPO_HI
+#define GPO_39_LEVEL	    GPO_HI
+#define GPO_40_LEVEL	    GPO_LOW
+#define GPO_41_LEVEL	    GPO_LOW
+#define GPO_42_LEVEL	    GPO_LOW
+#define GPO_43_LEVEL	    GPO_LOW
+#define GPO_44_LEVEL	    GPO_HI
+#define GPO_45_LEVEL	    GPO_HI
+#define GPO_46_LEVEL	    GPO_LOW
+#define GPO_47_LEVEL	    GPO_LOW
+#define GPO_48_LEVEL	    GPO_LOW
+#define GPO_49_LEVEL	    GPO_HI
+#define GPO_50_LEVEL	    GPO_HI
+#define GPO_51_LEVEL	    GPO_LOW
+#define GPO_52_LEVEL	    GPO_HI
+#define GPO_53_LEVEL	    GPO_HI
+#define GPO_54_LEVEL	    GPO_LOW
+#define GPO_55_LEVEL	    GPO_LOW
+#define GPO_56_LEVEL	    GPO_LOW
+#define GPO_57_LEVEL	    GPO_HI
+#define GPO_58_LEVEL	    GPO_HI
+#define GPO_59_LEVEL	    GPO_HI
+#define GPO_60_LEVEL	    GPO_LOW
+#define GPO_61_LEVEL	    GPO_LOW
+#define GPO_62_LEVEL	    GPO_LOW
+#define GPO_63_LEVEL	    GPO_LOW
+#define GPO_64_LEVEL	    GPO_LOW
+#define GPO_65_LEVEL	    GPO_LOW
+#define GPO_66_LEVEL	    GPO_LOW
+#define GPO_67_LEVEL	    GPO_LOW
+#define GPO_68_LEVEL	    GPO_LOW
+#define GPO_69_LEVEL	    GPO_LOW
+#define GPO_70_LEVEL	    GPO_LOW
+#define GPO_71_LEVEL	    GPO_LOW
+#define GPO_72_LEVEL	    GPO_LOW
+#define GPO_73_LEVEL	    GPO_LOW
+#define GPO_74_LEVEL	    GPO_LOW
+#define GPO_75_LEVEL	    GPO_LOW
+#define GPO_76_LEVEL	    GPO_LOW
+#define GPO_77_LEVEL	    GPO_LOW
+#define GPO_78_LEVEL	    GPO_LOW
+#define GPO_79_LEVEL	    GPO_LOW
+#define GPO_80_LEVEL	    GPO_LOW
+#define GPO_81_LEVEL	    GPO_LOW
+#define GPO_82_LEVEL	    GPO_LOW
+#define GPO_83_LEVEL	    GPO_LOW
+#define GPO_84_LEVEL	    GPO_LOW
+#define GPO_85_LEVEL	    GPO_LOW
+#define GPO_86_LEVEL	    GPO_LOW
+#define GPO_87_LEVEL	    GPO_LOW
+#define GPO_88_LEVEL	    GPO_LOW
+#define GPO_89_LEVEL	    GPO_LOW
+#define GPO_90_LEVEL	    GPO_LOW
+#define GPO_91_LEVEL	    GPO_LOW
+#define GPO_92_LEVEL	    GPO_LOW
+#define GPO_93_LEVEL	    GPO_LOW
+#define GPO_94_LEVEL	    GPO_LOW
+#define GPO_95_LEVEL	    GPO_LOW
+#define GPO_96_LEVEL	    GPO_LOW
+#define GPO_97_LEVEL	    GPO_LOW
+#define GPO_98_LEVEL	    GPO_LOW
+#define GPO_99_LEVEL	    GPO_LOW
+#define GPO_100_LEVEL	    GPO_LOW
+#define GPO_101_LEVEL	    GPO_LOW
+#define GPO_102_LEVEL	    GPO_LOW
+#define GPO_103_LEVEL	    GPO_LOW
+#define GPO_104_LEVEL	    GPO_LOW
+#define GPO_105_LEVEL	    GPO_LOW
+#define GPO_106_LEVEL	    GPO_LOW
+#define GPO_107_LEVEL	    GPO_LOW
+#define GPO_108_LEVEL	    GPO_HI
+#define GPO_109_LEVEL	    GPO_LOW
+#define GPO_110_LEVEL	    GPO_HI
+#define GPO_111_LEVEL	    GPO_HI
+#define GPO_112_LEVEL	    GPO_HI
+#define GPO_113_LEVEL	    GPO_LOW
+#define GPO_114_LEVEL	    GPO_LOW
+#define GPO_115_LEVEL	    GPO_LOW
+#define GPO_116_LEVEL	    GPO_LOW
+#define GPO_117_LEVEL	    GPO_LOW
+#define GPO_118_LEVEL	    GPO_LOW
+#define GPO_119_LEVEL	    GPO_LOW
+#define GPO_120_LEVEL	    GPO_LOW
+#define GPO_121_LEVEL	    GPO_LOW
+#define GPO_122_LEVEL	    GPO_LOW
+#define GPO_123_LEVEL	    GPO_LOW
+#define GPO_124_LEVEL	    GPO_LOW
+#define GPO_125_LEVEL	    GPO_LOW
+#define GPO_126_LEVEL	    GPO_LOW
+#define GPO_127_LEVEL	    GPO_LOW
+#define GPO_128_LEVEL	    GPO_LOW
+#define GPO_129_LEVEL	    GPO_LOW
+#define GPO_130_LEVEL	    GPO_LOW
+#define GPO_131_LEVEL	    GPO_LOW
+#define GPO_132_LEVEL	    GPO_LOW
+#define GPO_133_LEVEL	    GPO_LOW
+#define GPO_134_LEVEL	    GPO_LOW
+#define GPO_135_LEVEL	    GPO_LOW
+#define GPO_136_LEVEL	    GPO_LOW
+#define GPO_137_LEVEL	    GPO_LOW
+#define GPO_138_LEVEL	    GPO_LOW
+#define GPO_139_LEVEL	    GPO_LOW
+#define GPO_140_LEVEL	    GPO_LOW
+#define GPO_141_LEVEL	    GPO_LOW
+#define GPO_142_LEVEL	    GPO_LOW
+#define GPO_143_LEVEL	    GPO_LOW
+#define GPO_144_LEVEL	    GPO_LOW
+#define GPO_145_LEVEL	    GPO_LOW
+#define GPO_146_LEVEL	    GPO_LOW
+#define GPO_147_LEVEL	    GPO_LOW
+#define GPO_148_LEVEL	    GPO_LOW
+#define GPO_149_LEVEL	    GPO_LOW
+#define GPO_150_LEVEL	    GPO_LOW
+#define GPO_151_LEVEL	    GPO_LOW
+#define GPO_152_LEVEL	    GPO_LOW
+#define GPO_153_LEVEL	    GPO_LOW
+#define GPO_154_LEVEL	    GPO_LOW
+#define GPO_155_LEVEL	    GPO_LOW
+#define GPO_156_LEVEL	    GPO_LOW
+#define GPO_157_LEVEL	    GPO_LOW
+#define GPO_158_LEVEL	    GPO_LOW
+#define GPO_159_LEVEL	    GPO_LOW
+#define GPO_160_LEVEL	    GPO_LOW
+#define GPO_161_LEVEL	    GPO_LOW
+#define GPO_162_LEVEL	    GPO_LOW
+#define GPO_163_LEVEL	    GPO_LOW
+#define GPO_164_LEVEL	    GPO_LOW
+#define GPO_165_LEVEL	    GPO_LOW
+#define GPO_166_LEVEL	    GPO_LOW
+#define GPO_167_LEVEL	    GPO_LOW
+#define GPO_168_LEVEL	    GPO_LOW
+#define GPO_169_LEVEL	    GPO_LOW
+#define GPO_170_LEVEL	    GPO_HI
+#define GPO_171_LEVEL	    GPO_LOW
+#define GPO_172_LEVEL	    GPO_HI		// FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
+#define GPO_173_LEVEL	    GPO_LOW
+#define GPO_174_LEVEL	    GPO_LOW
+#define GPO_175_LEVEL	    GPO_LOW
+#define GPO_176_LEVEL	    GPO_LOW
+#define GPO_177_LEVEL	    GPO_LOW
+#define GPO_178_LEVEL	    GPO_HI	// AMD.SR BU to set VDDIO level to 1.5V for Barb BU
+#define GPO_179_LEVEL	    GPO_HI
+#define GPO_180_LEVEL	    GPO_HI
+#define GPO_181_LEVEL	    GPO_LOW
+#define GPO_182_LEVEL	    GPO_HI
+#define GPO_183_LEVEL	    GPO_LOW
+#define GPO_184_LEVEL	    GPO_LOW
+#define GPO_185_LEVEL	    GPO_LOW
+#define GPO_186_LEVEL	    GPO_LOW
+#define GPO_187_LEVEL	    GPO_LOW
+#define GPO_188_LEVEL	    GPO_LOW
+#define GPO_189_LEVEL	    GPO_LOW
+#define GPO_190_LEVEL	    GPO_LOW
+#define GPO_191_LEVEL	    GPO_LOW
+#define GPO_192_LEVEL	    GPO_LOW
+#define GPO_193_LEVEL	    GPO_LOW
+#define GPO_194_LEVEL	    GPO_LOW
+#define GPO_195_LEVEL	    GPO_LOW
+#define GPO_196_LEVEL	    GPO_LOW
+#define GPO_197_LEVEL	    GPO_LOW
+#define GPO_198_LEVEL	    GPO_LOW
+#define GPO_199_LEVEL	    GPO_LOW
+#define GPO_200_LEVEL	    GPO_HI
+#define GPO_201_LEVEL	    GPO_LOW
+#define GPO_202_LEVEL	    GPO_LOW
+#define GPO_203_LEVEL	    GPO_LOW
+#define GPO_204_LEVEL	    GPO_LOW
+#define GPO_205_LEVEL	    GPO_LOW
+#define GPO_206_LEVEL	    GPO_LOW
+#define GPO_207_LEVEL	    GPO_LOW
+#define GPO_208_LEVEL	    GPO_LOW
+#define GPO_209_LEVEL	    GPO_LOW
+#define GPO_210_LEVEL	    GPO_LOW
+#define GPO_211_LEVEL	    GPO_LOW
+#define GPO_212_LEVEL	    GPO_LOW
+#define GPO_213_LEVEL	    GPO_LOW
+#define GPO_214_LEVEL	    GPO_LOW
+#define GPO_215_LEVEL	    GPO_LOW
+#define GPO_216_LEVEL	    GPO_LOW
+#define GPO_217_LEVEL	    GPO_LOW
+#define GPO_218_LEVEL	    GPO_LOW
+#define GPO_219_LEVEL	    GPO_LOW
+#define GPO_220_LEVEL	    GPO_LOW
+#define GPO_221_LEVEL	    GPO_LOW
+#define GPO_222_LEVEL	    GPO_LOW
+#define GPO_223_LEVEL	    GPO_LOW
+#define GPO_224_LEVEL	    GPO_LOW
+#define GPO_225_LEVEL	    GPO_LOW
+#define GPO_226_LEVEL	    GPO_LOW
+#define GPO_227_LEVEL	    GPO_LOW
+#define GPO_228_LEVEL	    GPO_LOW
+#define GPO_229_LEVEL	    GPO_LOW
 
-#define GPIO_NONSTICKY   (0<<2)
-#define GPIO_STICKY      (1<<2)
+#define GPIO_NONSTICKY	 (0<<2)
+#define GPIO_STICKY	 (1<<2)
 
-#define GPIO_00_STICKY      GPIO_NONSTICKY
-#define GPIO_01_STICKY      GPIO_NONSTICKY
-#define GPIO_02_STICKY      GPIO_NONSTICKY
-#define GPIO_03_STICKY      GPIO_NONSTICKY
-#define GPIO_04_STICKY      GPIO_NONSTICKY
-#define GPIO_05_STICKY      GPIO_NONSTICKY
-#define GPIO_06_STICKY      GPIO_NONSTICKY
-#define GPIO_07_STICKY      GPIO_NONSTICKY
-#define GPIO_08_STICKY      GPIO_NONSTICKY
-#define GPIO_09_STICKY      GPIO_NONSTICKY
-#define GPIO_10_STICKY      GPIO_NONSTICKY
-#define GPIO_11_STICKY      GPIO_NONSTICKY
-#define GPIO_12_STICKY      GPIO_NONSTICKY
-#define GPIO_13_STICKY      GPIO_NONSTICKY
-#define GPIO_14_STICKY      GPIO_NONSTICKY
-#define GPIO_15_STICKY      GPIO_NONSTICKY
-#define GPIO_16_STICKY      GPIO_NONSTICKY
-#define GPIO_17_STICKY      GPIO_STICKY
-#define GPIO_18_STICKY      GPIO_NONSTICKY
-#define GPIO_19_STICKY      GPIO_NONSTICKY
-#define GPIO_20_STICKY      GPIO_NONSTICKY
-#define GPIO_21_STICKY      GPIO_NONSTICKY
-#define GPIO_22_STICKY      GPIO_NONSTICKY
-#define GPIO_23_STICKY      GPIO_NONSTICKY
-#define GPIO_24_STICKY      GPIO_NONSTICKY
-#define GPIO_25_STICKY      GPIO_NONSTICKY
-#define GPIO_26_STICKY      GPIO_NONSTICKY
-#define GPIO_27_STICKY      GPIO_NONSTICKY
-#define GPIO_28_STICKY      GPIO_NONSTICKY
-#define GPIO_29_STICKY      GPIO_NONSTICKY
-#define GPIO_30_STICKY      GPIO_NONSTICKY
-#define GPIO_31_STICKY      GPIO_NONSTICKY
-#define GPIO_32_STICKY      GPIO_NONSTICKY
-#define GPIO_33_STICKY      GPIO_NONSTICKY
-#define GPIO_34_STICKY      GPIO_NONSTICKY
-#define GPIO_35_STICKY      GPIO_NONSTICKY
-#define GPIO_36_STICKY      GPIO_NONSTICKY
-#define GPIO_37_STICKY      GPIO_NONSTICKY
-#define GPIO_38_STICKY      GPIO_NONSTICKY
-#define GPIO_39_STICKY      GPIO_NONSTICKY
-#define GPIO_40_STICKY      GPIO_NONSTICKY
-#define GPIO_41_STICKY      GPIO_NONSTICKY
-#define GPIO_42_STICKY      GPIO_NONSTICKY
-#define GPIO_43_STICKY      GPIO_NONSTICKY
-#define GPIO_44_STICKY      GPIO_NONSTICKY
-#define GPIO_45_STICKY      GPIO_NONSTICKY
-#define GPIO_46_STICKY      GPIO_NONSTICKY
-#define GPIO_47_STICKY      GPIO_NONSTICKY
-#define GPIO_48_STICKY      GPIO_NONSTICKY
-#define GPIO_49_STICKY      GPIO_NONSTICKY
-#define GPIO_50_STICKY      GPIO_NONSTICKY
-#define GPIO_51_STICKY      GPIO_NONSTICKY
-#define GPIO_52_STICKY      GPIO_NONSTICKY
-#define GPIO_53_STICKY      GPIO_NONSTICKY
-#define GPIO_54_STICKY      GPIO_NONSTICKY
-#define GPIO_55_STICKY      GPIO_NONSTICKY
-#define GPIO_56_STICKY      GPIO_NONSTICKY
-#define GPIO_57_STICKY      GPIO_NONSTICKY
-#define GPIO_58_STICKY      GPIO_NONSTICKY
-#define GPIO_59_STICKY      GPIO_NONSTICKY
-#define GPIO_60_STICKY      GPIO_NONSTICKY
-#define GPIO_61_STICKY      GPIO_NONSTICKY
-#define GPIO_62_STICKY      GPIO_NONSTICKY
-#define GPIO_63_STICKY      GPIO_NONSTICKY
-#define GPIO_64_STICKY      GPIO_NONSTICKY
-#define GPIO_65_STICKY      GPIO_NONSTICKY
-#define GPIO_66_STICKY      GPIO_NONSTICKY
-#define GPIO_67_STICKY      GPIO_NONSTICKY
-#define GPIO_68_STICKY      GPIO_NONSTICKY
-#define GPIO_69_STICKY      GPIO_NONSTICKY
-#define GPIO_70_STICKY      GPIO_NONSTICKY
-#define GPIO_71_STICKY      GPIO_NONSTICKY
-#define GPIO_72_STICKY      GPIO_NONSTICKY
-#define GPIO_73_STICKY      GPIO_NONSTICKY
-#define GPIO_74_STICKY      GPIO_NONSTICKY
-#define GPIO_75_STICKY      GPIO_NONSTICKY
-#define GPIO_76_STICKY      GPIO_NONSTICKY
-#define GPIO_77_STICKY      GPIO_NONSTICKY
-#define GPIO_78_STICKY      GPIO_NONSTICKY
-#define GPIO_79_STICKY      GPIO_NONSTICKY
-#define GPIO_80_STICKY      GPIO_NONSTICKY
-#define GPIO_81_STICKY      GPIO_NONSTICKY
-#define GPIO_82_STICKY      GPIO_NONSTICKY
-#define GPIO_83_STICKY      GPIO_NONSTICKY
-#define GPIO_84_STICKY      GPIO_NONSTICKY
-#define GPIO_85_STICKY      GPIO_NONSTICKY
-#define GPIO_86_STICKY      GPIO_NONSTICKY
-#define GPIO_87_STICKY      GPIO_NONSTICKY
-#define GPIO_88_STICKY      GPIO_NONSTICKY
-#define GPIO_89_STICKY      GPIO_NONSTICKY
-#define GPIO_90_STICKY      GPIO_NONSTICKY
-#define GPIO_91_STICKY      GPIO_NONSTICKY
-#define GPIO_92_STICKY      GPIO_NONSTICKY
-#define GPIO_93_STICKY      GPIO_NONSTICKY
-#define GPIO_94_STICKY      GPIO_NONSTICKY
-#define GPIO_95_STICKY      GPIO_NONSTICKY
-#define GPIO_96_STICKY      GPIO_NONSTICKY
-#define GPIO_97_STICKY      GPIO_NONSTICKY
-#define GPIO_98_STICKY      GPIO_NONSTICKY
-#define GPIO_99_STICKY      GPIO_NONSTICKY
-#define GPIO_100_STICKY     GPIO_NONSTICKY
-#define GPIO_101_STICKY     GPIO_NONSTICKY
-#define GPIO_102_STICKY     GPIO_STICKY
-#define GPIO_103_STICKY     GPIO_STICKY
-#define GPIO_104_STICKY     GPIO_NONSTICKY
-#define GPIO_105_STICKY     GPIO_NONSTICKY
-#define GPIO_106_STICKY     GPIO_NONSTICKY
-#define GPIO_107_STICKY     GPIO_NONSTICKY
-#define GPIO_108_STICKY     GPIO_STICKY
-#define GPIO_109_STICKY     GPIO_NONSTICKY
-#define GPIO_110_STICKY     GPIO_NONSTICKY
-#define GPIO_111_STICKY     GPIO_NONSTICKY
-#define GPIO_112_STICKY     GPIO_NONSTICKY
-#define GPIO_113_STICKY     GPIO_NONSTICKY
-#define GPIO_114_STICKY     GPIO_NONSTICKY
-#define GPIO_115_STICKY     GPIO_NONSTICKY
-#define GPIO_116_STICKY     GPIO_NONSTICKY
-#define GPIO_117_STICKY     GPIO_NONSTICKY
-#define GPIO_118_STICKY     GPIO_NONSTICKY
-#define GPIO_119_STICKY     GPIO_NONSTICKY
-#define GPIO_120_STICKY     GPIO_NONSTICKY
-#define GPIO_121_STICKY     GPIO_NONSTICKY
-#define GPIO_122_STICKY     GPIO_NONSTICKY
-#define GPIO_123_STICKY     GPIO_NONSTICKY
-#define GPIO_124_STICKY     GPIO_NONSTICKY
-#define GPIO_125_STICKY     GPIO_NONSTICKY
-#define GPIO_126_STICKY     GPIO_NONSTICKY
-#define GPIO_127_STICKY     GPIO_NONSTICKY
-#define GPIO_128_STICKY     GPIO_NONSTICKY
-#define GPIO_129_STICKY     GPIO_NONSTICKY
-#define GPIO_130_STICKY     GPIO_NONSTICKY
-#define GPIO_131_STICKY     GPIO_NONSTICKY
-#define GPIO_132_STICKY     GPIO_NONSTICKY
-#define GPIO_133_STICKY     GPIO_NONSTICKY
-#define GPIO_134_STICKY     GPIO_NONSTICKY
-#define GPIO_135_STICKY     GPIO_NONSTICKY
-#define GPIO_136_STICKY     GPIO_NONSTICKY
-#define GPIO_137_STICKY     GPIO_NONSTICKY
-#define GPIO_138_STICKY     GPIO_NONSTICKY
-#define GPIO_139_STICKY     GPIO_NONSTICKY
-#define GPIO_140_STICKY     GPIO_NONSTICKY
-#define GPIO_141_STICKY     GPIO_NONSTICKY
-#define GPIO_142_STICKY     GPIO_NONSTICKY
-#define GPIO_143_STICKY     GPIO_NONSTICKY
-#define GPIO_144_STICKY     GPIO_NONSTICKY
-#define GPIO_145_STICKY     GPIO_NONSTICKY
-#define GPIO_146_STICKY     GPIO_NONSTICKY
-#define GPIO_147_STICKY     GPIO_NONSTICKY
-#define GPIO_148_STICKY     GPIO_NONSTICKY
-#define GPIO_149_STICKY     GPIO_NONSTICKY
-#define GPIO_150_STICKY     GPIO_NONSTICKY
-#define GPIO_151_STICKY     GPIO_NONSTICKY
-#define GPIO_152_STICKY     GPIO_NONSTICKY
-#define GPIO_153_STICKY     GPIO_NONSTICKY
-#define GPIO_154_STICKY     GPIO_NONSTICKY
-#define GPIO_155_STICKY     GPIO_NONSTICKY
-#define GPIO_156_STICKY     GPIO_NONSTICKY
-#define GPIO_157_STICKY     GPIO_NONSTICKY
-#define GPIO_158_STICKY     GPIO_NONSTICKY
-#define GPIO_159_STICKY     GPIO_NONSTICKY
-#define GPIO_160_STICKY     GPIO_NONSTICKY
-#define GPIO_161_STICKY     GPIO_NONSTICKY
-#define GPIO_162_STICKY     GPIO_NONSTICKY
-#define GPIO_163_STICKY     GPIO_NONSTICKY
-#define GPIO_164_STICKY     GPIO_NONSTICKY
-#define GPIO_165_STICKY     GPIO_NONSTICKY
-#define GPIO_166_STICKY     GPIO_NONSTICKY
-#define GPIO_167_STICKY     GPIO_NONSTICKY
-#define GPIO_168_STICKY     GPIO_NONSTICKY
-#define GPIO_169_STICKY     GPIO_NONSTICKY
-#define GPIO_170_STICKY     GPIO_STICKY
-#define GPIO_171_STICKY     GPIO_NONSTICKY
-#define GPIO_172_STICKY     GPIO_STICKY
-#define GPIO_173_STICKY     GPIO_NONSTICKY
-#define GPIO_174_STICKY     GPIO_NONSTICKY
-#define GPIO_175_STICKY     GPIO_NONSTICKY
-#define GPIO_176_STICKY     GPIO_NONSTICKY
-#define GPIO_177_STICKY     GPIO_NONSTICKY
-#define GPIO_178_STICKY     GPIO_NONSTICKY
-#define GPIO_179_STICKY     GPIO_NONSTICKY
-#define GPIO_180_STICKY     GPIO_NONSTICKY
-#define GPIO_181_STICKY     GPIO_NONSTICKY
-#define GPIO_182_STICKY     GPIO_NONSTICKY
-#define GPIO_183_STICKY     GPIO_NONSTICKY
-#define GPIO_184_STICKY     GPIO_NONSTICKY
-#define GPIO_185_STICKY     GPIO_NONSTICKY
-#define GPIO_186_STICKY     GPIO_NONSTICKY
-#define GPIO_187_STICKY     GPIO_NONSTICKY
-#define GPIO_188_STICKY     GPIO_NONSTICKY
-#define GPIO_189_STICKY     GPIO_NONSTICKY
-#define GPIO_190_STICKY     GPIO_NONSTICKY
-#define GPIO_191_STICKY     GPIO_NONSTICKY
-#define GPIO_192_STICKY     GPIO_NONSTICKY
-#define GPIO_193_STICKY     GPIO_NONSTICKY
-#define GPIO_194_STICKY     GPIO_NONSTICKY
-#define GPIO_195_STICKY     GPIO_NONSTICKY
-#define GPIO_196_STICKY     GPIO_NONSTICKY
-#define GPIO_197_STICKY     GPIO_NONSTICKY
-#define GPIO_198_STICKY     GPIO_NONSTICKY
-#define GPIO_199_STICKY     GPIO_NONSTICKY
-#define GPIO_200_STICKY     GPIO_NONSTICKY
-#define GPIO_201_STICKY     GPIO_NONSTICKY
-#define GPIO_202_STICKY     GPIO_NONSTICKY
-#define GPIO_203_STICKY     GPIO_NONSTICKY
-#define GPIO_204_STICKY     GPIO_NONSTICKY
-#define GPIO_205_STICKY     GPIO_NONSTICKY
-#define GPIO_206_STICKY     GPIO_NONSTICKY
-#define GPIO_207_STICKY     GPIO_NONSTICKY
-#define GPIO_208_STICKY     GPIO_NONSTICKY
-#define GPIO_209_STICKY     GPIO_NONSTICKY
-#define GPIO_210_STICKY     GPIO_NONSTICKY
-#define GPIO_211_STICKY     GPIO_NONSTICKY
-#define GPIO_212_STICKY     GPIO_NONSTICKY
-#define GPIO_213_STICKY     GPIO_NONSTICKY
-#define GPIO_214_STICKY     GPIO_NONSTICKY
-#define GPIO_215_STICKY     GPIO_NONSTICKY
-#define GPIO_216_STICKY     GPIO_NONSTICKY
-#define GPIO_217_STICKY     GPIO_NONSTICKY
-#define GPIO_218_STICKY     GPIO_NONSTICKY
-#define GPIO_219_STICKY     GPIO_NONSTICKY
-#define GPIO_220_STICKY     GPIO_NONSTICKY
-#define GPIO_221_STICKY     GPIO_NONSTICKY
-#define GPIO_222_STICKY     GPIO_NONSTICKY
-#define GPIO_223_STICKY     GPIO_NONSTICKY
-#define GPIO_224_STICKY     GPIO_NONSTICKY
-#define GPIO_225_STICKY     GPIO_NONSTICKY
-#define GPIO_226_STICKY     GPIO_NONSTICKY
-#define GPIO_227_STICKY     GPIO_NONSTICKY
-#define GPIO_228_STICKY     GPIO_NONSTICKY
-#define GPIO_229_STICKY     GPIO_NONSTICKY
+#define GPIO_00_STICKY	    GPIO_NONSTICKY
+#define GPIO_01_STICKY	    GPIO_NONSTICKY
+#define GPIO_02_STICKY	    GPIO_NONSTICKY
+#define GPIO_03_STICKY	    GPIO_NONSTICKY
+#define GPIO_04_STICKY	    GPIO_NONSTICKY
+#define GPIO_05_STICKY	    GPIO_NONSTICKY
+#define GPIO_06_STICKY	    GPIO_NONSTICKY
+#define GPIO_07_STICKY	    GPIO_NONSTICKY
+#define GPIO_08_STICKY	    GPIO_NONSTICKY
+#define GPIO_09_STICKY	    GPIO_NONSTICKY
+#define GPIO_10_STICKY	    GPIO_NONSTICKY
+#define GPIO_11_STICKY	    GPIO_NONSTICKY
+#define GPIO_12_STICKY	    GPIO_NONSTICKY
+#define GPIO_13_STICKY	    GPIO_NONSTICKY
+#define GPIO_14_STICKY	    GPIO_NONSTICKY
+#define GPIO_15_STICKY	    GPIO_NONSTICKY
+#define GPIO_16_STICKY	    GPIO_NONSTICKY
+#define GPIO_17_STICKY	    GPIO_STICKY
+#define GPIO_18_STICKY	    GPIO_NONSTICKY
+#define GPIO_19_STICKY	    GPIO_NONSTICKY
+#define GPIO_20_STICKY	    GPIO_NONSTICKY
+#define GPIO_21_STICKY	    GPIO_NONSTICKY
+#define GPIO_22_STICKY	    GPIO_NONSTICKY
+#define GPIO_23_STICKY	    GPIO_NONSTICKY
+#define GPIO_24_STICKY	    GPIO_NONSTICKY
+#define GPIO_25_STICKY	    GPIO_NONSTICKY
+#define GPIO_26_STICKY	    GPIO_NONSTICKY
+#define GPIO_27_STICKY	    GPIO_NONSTICKY
+#define GPIO_28_STICKY	    GPIO_NONSTICKY
+#define GPIO_29_STICKY	    GPIO_NONSTICKY
+#define GPIO_30_STICKY	    GPIO_NONSTICKY
+#define GPIO_31_STICKY	    GPIO_NONSTICKY
+#define GPIO_32_STICKY	    GPIO_NONSTICKY
+#define GPIO_33_STICKY	    GPIO_NONSTICKY
+#define GPIO_34_STICKY	    GPIO_NONSTICKY
+#define GPIO_35_STICKY	    GPIO_NONSTICKY
+#define GPIO_36_STICKY	    GPIO_NONSTICKY
+#define GPIO_37_STICKY	    GPIO_NONSTICKY
+#define GPIO_38_STICKY	    GPIO_NONSTICKY
+#define GPIO_39_STICKY	    GPIO_NONSTICKY
+#define GPIO_40_STICKY	    GPIO_NONSTICKY
+#define GPIO_41_STICKY	    GPIO_NONSTICKY
+#define GPIO_42_STICKY	    GPIO_NONSTICKY
+#define GPIO_43_STICKY	    GPIO_NONSTICKY
+#define GPIO_44_STICKY	    GPIO_NONSTICKY
+#define GPIO_45_STICKY	    GPIO_NONSTICKY
+#define GPIO_46_STICKY	    GPIO_NONSTICKY
+#define GPIO_47_STICKY	    GPIO_NONSTICKY
+#define GPIO_48_STICKY	    GPIO_NONSTICKY
+#define GPIO_49_STICKY	    GPIO_NONSTICKY
+#define GPIO_50_STICKY	    GPIO_NONSTICKY
+#define GPIO_51_STICKY	    GPIO_NONSTICKY
+#define GPIO_52_STICKY	    GPIO_NONSTICKY
+#define GPIO_53_STICKY	    GPIO_NONSTICKY
+#define GPIO_54_STICKY	    GPIO_NONSTICKY
+#define GPIO_55_STICKY	    GPIO_NONSTICKY
+#define GPIO_56_STICKY	    GPIO_NONSTICKY
+#define GPIO_57_STICKY	    GPIO_NONSTICKY
+#define GPIO_58_STICKY	    GPIO_NONSTICKY
+#define GPIO_59_STICKY	    GPIO_NONSTICKY
+#define GPIO_60_STICKY	    GPIO_NONSTICKY
+#define GPIO_61_STICKY	    GPIO_NONSTICKY
+#define GPIO_62_STICKY	    GPIO_NONSTICKY
+#define GPIO_63_STICKY	    GPIO_NONSTICKY
+#define GPIO_64_STICKY	    GPIO_NONSTICKY
+#define GPIO_65_STICKY	    GPIO_NONSTICKY
+#define GPIO_66_STICKY	    GPIO_NONSTICKY
+#define GPIO_67_STICKY	    GPIO_NONSTICKY
+#define GPIO_68_STICKY	    GPIO_NONSTICKY
+#define GPIO_69_STICKY	    GPIO_NONSTICKY
+#define GPIO_70_STICKY	    GPIO_NONSTICKY
+#define GPIO_71_STICKY	    GPIO_NONSTICKY
+#define GPIO_72_STICKY	    GPIO_NONSTICKY
+#define GPIO_73_STICKY	    GPIO_NONSTICKY
+#define GPIO_74_STICKY	    GPIO_NONSTICKY
+#define GPIO_75_STICKY	    GPIO_NONSTICKY
+#define GPIO_76_STICKY	    GPIO_NONSTICKY
+#define GPIO_77_STICKY	    GPIO_NONSTICKY
+#define GPIO_78_STICKY	    GPIO_NONSTICKY
+#define GPIO_79_STICKY	    GPIO_NONSTICKY
+#define GPIO_80_STICKY	    GPIO_NONSTICKY
+#define GPIO_81_STICKY	    GPIO_NONSTICKY
+#define GPIO_82_STICKY	    GPIO_NONSTICKY
+#define GPIO_83_STICKY	    GPIO_NONSTICKY
+#define GPIO_84_STICKY	    GPIO_NONSTICKY
+#define GPIO_85_STICKY	    GPIO_NONSTICKY
+#define GPIO_86_STICKY	    GPIO_NONSTICKY
+#define GPIO_87_STICKY	    GPIO_NONSTICKY
+#define GPIO_88_STICKY	    GPIO_NONSTICKY
+#define GPIO_89_STICKY	    GPIO_NONSTICKY
+#define GPIO_90_STICKY	    GPIO_NONSTICKY
+#define GPIO_91_STICKY	    GPIO_NONSTICKY
+#define GPIO_92_STICKY	    GPIO_NONSTICKY
+#define GPIO_93_STICKY	    GPIO_NONSTICKY
+#define GPIO_94_STICKY	    GPIO_NONSTICKY
+#define GPIO_95_STICKY	    GPIO_NONSTICKY
+#define GPIO_96_STICKY	    GPIO_NONSTICKY
+#define GPIO_97_STICKY	    GPIO_NONSTICKY
+#define GPIO_98_STICKY	    GPIO_NONSTICKY
+#define GPIO_99_STICKY	    GPIO_NONSTICKY
+#define GPIO_100_STICKY	    GPIO_NONSTICKY
+#define GPIO_101_STICKY	    GPIO_NONSTICKY
+#define GPIO_102_STICKY	    GPIO_STICKY
+#define GPIO_103_STICKY	    GPIO_STICKY
+#define GPIO_104_STICKY	    GPIO_NONSTICKY
+#define GPIO_105_STICKY	    GPIO_NONSTICKY
+#define GPIO_106_STICKY	    GPIO_NONSTICKY
+#define GPIO_107_STICKY	    GPIO_NONSTICKY
+#define GPIO_108_STICKY	    GPIO_STICKY
+#define GPIO_109_STICKY	    GPIO_NONSTICKY
+#define GPIO_110_STICKY	    GPIO_NONSTICKY
+#define GPIO_111_STICKY	    GPIO_NONSTICKY
+#define GPIO_112_STICKY	    GPIO_NONSTICKY
+#define GPIO_113_STICKY	    GPIO_NONSTICKY
+#define GPIO_114_STICKY	    GPIO_NONSTICKY
+#define GPIO_115_STICKY	    GPIO_NONSTICKY
+#define GPIO_116_STICKY	    GPIO_NONSTICKY
+#define GPIO_117_STICKY	    GPIO_NONSTICKY
+#define GPIO_118_STICKY	    GPIO_NONSTICKY
+#define GPIO_119_STICKY	    GPIO_NONSTICKY
+#define GPIO_120_STICKY	    GPIO_NONSTICKY
+#define GPIO_121_STICKY	    GPIO_NONSTICKY
+#define GPIO_122_STICKY	    GPIO_NONSTICKY
+#define GPIO_123_STICKY	    GPIO_NONSTICKY
+#define GPIO_124_STICKY	    GPIO_NONSTICKY
+#define GPIO_125_STICKY	    GPIO_NONSTICKY
+#define GPIO_126_STICKY	    GPIO_NONSTICKY
+#define GPIO_127_STICKY	    GPIO_NONSTICKY
+#define GPIO_128_STICKY	    GPIO_NONSTICKY
+#define GPIO_129_STICKY	    GPIO_NONSTICKY
+#define GPIO_130_STICKY	    GPIO_NONSTICKY
+#define GPIO_131_STICKY	    GPIO_NONSTICKY
+#define GPIO_132_STICKY	    GPIO_NONSTICKY
+#define GPIO_133_STICKY	    GPIO_NONSTICKY
+#define GPIO_134_STICKY	    GPIO_NONSTICKY
+#define GPIO_135_STICKY	    GPIO_NONSTICKY
+#define GPIO_136_STICKY	    GPIO_NONSTICKY
+#define GPIO_137_STICKY	    GPIO_NONSTICKY
+#define GPIO_138_STICKY	    GPIO_NONSTICKY
+#define GPIO_139_STICKY	    GPIO_NONSTICKY
+#define GPIO_140_STICKY	    GPIO_NONSTICKY
+#define GPIO_141_STICKY	    GPIO_NONSTICKY
+#define GPIO_142_STICKY	    GPIO_NONSTICKY
+#define GPIO_143_STICKY	    GPIO_NONSTICKY
+#define GPIO_144_STICKY	    GPIO_NONSTICKY
+#define GPIO_145_STICKY	    GPIO_NONSTICKY
+#define GPIO_146_STICKY	    GPIO_NONSTICKY
+#define GPIO_147_STICKY	    GPIO_NONSTICKY
+#define GPIO_148_STICKY	    GPIO_NONSTICKY
+#define GPIO_149_STICKY	    GPIO_NONSTICKY
+#define GPIO_150_STICKY	    GPIO_NONSTICKY
+#define GPIO_151_STICKY	    GPIO_NONSTICKY
+#define GPIO_152_STICKY	    GPIO_NONSTICKY
+#define GPIO_153_STICKY	    GPIO_NONSTICKY
+#define GPIO_154_STICKY	    GPIO_NONSTICKY
+#define GPIO_155_STICKY	    GPIO_NONSTICKY
+#define GPIO_156_STICKY	    GPIO_NONSTICKY
+#define GPIO_157_STICKY	    GPIO_NONSTICKY
+#define GPIO_158_STICKY	    GPIO_NONSTICKY
+#define GPIO_159_STICKY	    GPIO_NONSTICKY
+#define GPIO_160_STICKY	    GPIO_NONSTICKY
+#define GPIO_161_STICKY	    GPIO_NONSTICKY
+#define GPIO_162_STICKY	    GPIO_NONSTICKY
+#define GPIO_163_STICKY	    GPIO_NONSTICKY
+#define GPIO_164_STICKY	    GPIO_NONSTICKY
+#define GPIO_165_STICKY	    GPIO_NONSTICKY
+#define GPIO_166_STICKY	    GPIO_NONSTICKY
+#define GPIO_167_STICKY	    GPIO_NONSTICKY
+#define GPIO_168_STICKY	    GPIO_NONSTICKY
+#define GPIO_169_STICKY	    GPIO_NONSTICKY
+#define GPIO_170_STICKY	    GPIO_STICKY
+#define GPIO_171_STICKY	    GPIO_NONSTICKY
+#define GPIO_172_STICKY	    GPIO_STICKY
+#define GPIO_173_STICKY	    GPIO_NONSTICKY
+#define GPIO_174_STICKY	    GPIO_NONSTICKY
+#define GPIO_175_STICKY	    GPIO_NONSTICKY
+#define GPIO_176_STICKY	    GPIO_NONSTICKY
+#define GPIO_177_STICKY	    GPIO_NONSTICKY
+#define GPIO_178_STICKY	    GPIO_NONSTICKY
+#define GPIO_179_STICKY	    GPIO_NONSTICKY
+#define GPIO_180_STICKY	    GPIO_NONSTICKY
+#define GPIO_181_STICKY	    GPIO_NONSTICKY
+#define GPIO_182_STICKY	    GPIO_NONSTICKY
+#define GPIO_183_STICKY	    GPIO_NONSTICKY
+#define GPIO_184_STICKY	    GPIO_NONSTICKY
+#define GPIO_185_STICKY	    GPIO_NONSTICKY
+#define GPIO_186_STICKY	    GPIO_NONSTICKY
+#define GPIO_187_STICKY	    GPIO_NONSTICKY
+#define GPIO_188_STICKY	    GPIO_NONSTICKY
+#define GPIO_189_STICKY	    GPIO_NONSTICKY
+#define GPIO_190_STICKY	    GPIO_NONSTICKY
+#define GPIO_191_STICKY	    GPIO_NONSTICKY
+#define GPIO_192_STICKY	    GPIO_NONSTICKY
+#define GPIO_193_STICKY	    GPIO_NONSTICKY
+#define GPIO_194_STICKY	    GPIO_NONSTICKY
+#define GPIO_195_STICKY	    GPIO_NONSTICKY
+#define GPIO_196_STICKY	    GPIO_NONSTICKY
+#define GPIO_197_STICKY	    GPIO_NONSTICKY
+#define GPIO_198_STICKY	    GPIO_NONSTICKY
+#define GPIO_199_STICKY	    GPIO_NONSTICKY
+#define GPIO_200_STICKY	    GPIO_NONSTICKY
+#define GPIO_201_STICKY	    GPIO_NONSTICKY
+#define GPIO_202_STICKY	    GPIO_NONSTICKY
+#define GPIO_203_STICKY	    GPIO_NONSTICKY
+#define GPIO_204_STICKY	    GPIO_NONSTICKY
+#define GPIO_205_STICKY	    GPIO_NONSTICKY
+#define GPIO_206_STICKY	    GPIO_NONSTICKY
+#define GPIO_207_STICKY	    GPIO_NONSTICKY
+#define GPIO_208_STICKY	    GPIO_NONSTICKY
+#define GPIO_209_STICKY	    GPIO_NONSTICKY
+#define GPIO_210_STICKY	    GPIO_NONSTICKY
+#define GPIO_211_STICKY	    GPIO_NONSTICKY
+#define GPIO_212_STICKY	    GPIO_NONSTICKY
+#define GPIO_213_STICKY	    GPIO_NONSTICKY
+#define GPIO_214_STICKY	    GPIO_NONSTICKY
+#define GPIO_215_STICKY	    GPIO_NONSTICKY
+#define GPIO_216_STICKY	    GPIO_NONSTICKY
+#define GPIO_217_STICKY	    GPIO_NONSTICKY
+#define GPIO_218_STICKY	    GPIO_NONSTICKY
+#define GPIO_219_STICKY	    GPIO_NONSTICKY
+#define GPIO_220_STICKY	    GPIO_NONSTICKY
+#define GPIO_221_STICKY	    GPIO_NONSTICKY
+#define GPIO_222_STICKY	    GPIO_NONSTICKY
+#define GPIO_223_STICKY	    GPIO_NONSTICKY
+#define GPIO_224_STICKY	    GPIO_NONSTICKY
+#define GPIO_225_STICKY	    GPIO_NONSTICKY
+#define GPIO_226_STICKY	    GPIO_NONSTICKY
+#define GPIO_227_STICKY	    GPIO_NONSTICKY
+#define GPIO_228_STICKY	    GPIO_NONSTICKY
+#define GPIO_229_STICKY	    GPIO_NONSTICKY
 
-#define PULLUP_ENABLE      (0<<3)
-#define PULLUP_DISABLE     (1<<3)
+#define PULLUP_ENABLE	   (0<<3)
+#define PULLUP_DISABLE	   (1<<3)
 
-#define GPIO_00_PULLUP      PULLUP_DISABLE
-#define GPIO_01_PULLUP      PULLUP_DISABLE
-#define GPIO_02_PULLUP      PULLUP_DISABLE
-#define GPIO_03_PULLUP      PULLUP_DISABLE
-#define GPIO_04_PULLUP      PULLUP_DISABLE
-#define GPIO_05_PULLUP      PULLUP_DISABLE
-#define GPIO_06_PULLUP      PULLUP_DISABLE
-#define GPIO_07_PULLUP      PULLUP_DISABLE
-#define GPIO_08_PULLUP      PULLUP_DISABLE
-#define GPIO_09_PULLUP      PULLUP_DISABLE
-#define GPIO_10_PULLUP      PULLUP_DISABLE
-#define GPIO_11_PULLUP      PULLUP_DISABLE
-#define GPIO_12_PULLUP      PULLUP_DISABLE
-#define GPIO_13_PULLUP      PULLUP_DISABLE
-#define GPIO_14_PULLUP      PULLUP_DISABLE
-#define GPIO_15_PULLUP      PULLUP_DISABLE
-#define GPIO_16_PULLUP      PULLUP_DISABLE
-#define GPIO_17_PULLUP      PULLUP_DISABLE
-#define GPIO_18_PULLUP      PULLUP_DISABLE
-#define GPIO_19_PULLUP      PULLUP_DISABLE
-#define GPIO_20_PULLUP      PULLUP_DISABLE
-#define GPIO_21_PULLUP      PULLUP_DISABLE
-#define GPIO_22_PULLUP      PULLUP_DISABLE
-#define GPIO_23_PULLUP      PULLUP_DISABLE
-#define GPIO_24_PULLUP      PULLUP_DISABLE
-#define GPIO_25_PULLUP      PULLUP_DISABLE
-#define GPIO_26_PULLUP      PULLUP_DISABLE
-#define GPIO_27_PULLUP      PULLUP_DISABLE
-#define GPIO_28_PULLUP      PULLUP_DISABLE
-#define GPIO_29_PULLUP      PULLUP_DISABLE
-#define GPIO_30_PULLUP      PULLUP_DISABLE
-#define GPIO_31_PULLUP      PULLUP_DISABLE
-#define GPIO_32_PULLUP      PULLUP_DISABLE
-#define GPIO_33_PULLUP      PULLUP_DISABLE
-#define GPIO_34_PULLUP      PULLUP_DISABLE
-#define GPIO_35_PULLUP      PULLUP_DISABLE
-#define GPIO_36_PULLUP      PULLUP_DISABLE
-#define GPIO_37_PULLUP      PULLUP_DISABLE
-#define GPIO_38_PULLUP      PULLUP_DISABLE
-#define GPIO_39_PULLUP      PULLUP_DISABLE
-#define GPIO_40_PULLUP      PULLUP_DISABLE
-#define GPIO_41_PULLUP      PULLUP_DISABLE
-#define GPIO_42_PULLUP      PULLUP_DISABLE
-#define GPIO_43_PULLUP      PULLUP_DISABLE
-#define GPIO_44_PULLUP      PULLUP_DISABLE
-#define GPIO_45_PULLUP      PULLUP_DISABLE
-#define GPIO_46_PULLUP      PULLUP_DISABLE
-#define GPIO_47_PULLUP      PULLUP_DISABLE
-#define GPIO_48_PULLUP      PULLUP_DISABLE
-#define GPIO_49_PULLUP      PULLUP_DISABLE
-#define GPIO_50_PULLUP      PULLUP_DISABLE
-#define GPIO_51_PULLUP      PULLUP_DISABLE
-#define GPIO_52_PULLUP      PULLUP_DISABLE
-#define GPIO_53_PULLUP      PULLUP_DISABLE
-#define GPIO_54_PULLUP      PULLUP_DISABLE
-#define GPIO_55_PULLUP      PULLUP_DISABLE
-#define GPIO_56_PULLUP      PULLUP_DISABLE
-#define GPIO_57_PULLUP      PULLUP_DISABLE
-#define GPIO_58_PULLUP      PULLUP_DISABLE
-#define GPIO_59_PULLUP      PULLUP_DISABLE
-#define GPIO_60_PULLUP      PULLUP_DISABLE
-#define GPIO_61_PULLUP      PULLUP_DISABLE
-#define GPIO_62_PULLUP      PULLUP_DISABLE
-#define GPIO_63_PULLUP      PULLUP_DISABLE
-#define GPIO_64_PULLUP      PULLUP_DISABLE
-#define GPIO_65_PULLUP      PULLUP_DISABLE
-#define GPIO_66_PULLUP      PULLUP_DISABLE
-#define GPIO_67_PULLUP      PULLUP_DISABLE
-#define GPIO_68_PULLUP      PULLUP_DISABLE
-#define GPIO_69_PULLUP      PULLUP_DISABLE
-#define GPIO_70_PULLUP      PULLUP_DISABLE
-#define GPIO_71_PULLUP      PULLUP_DISABLE
-#define GPIO_72_PULLUP      PULLUP_DISABLE
-#define GPIO_73_PULLUP      PULLUP_DISABLE
-#define GPIO_74_PULLUP      PULLUP_DISABLE
-#define GPIO_75_PULLUP      PULLUP_DISABLE
-#define GPIO_76_PULLUP      PULLUP_DISABLE
-#define GPIO_77_PULLUP      PULLUP_DISABLE
-#define GPIO_78_PULLUP      PULLUP_DISABLE
-#define GPIO_79_PULLUP      PULLUP_DISABLE
-#define GPIO_80_PULLUP      PULLUP_DISABLE
-#define GPIO_80_PULLUP      PULLUP_DISABLE
-#define GPIO_81_PULLUP      PULLUP_DISABLE
-#define GPIO_82_PULLUP      PULLUP_DISABLE
-#define GPIO_83_PULLUP      PULLUP_DISABLE
-#define GPIO_84_PULLUP      PULLUP_DISABLE
-#define GPIO_85_PULLUP      PULLUP_DISABLE
-#define GPIO_86_PULLUP      PULLUP_DISABLE
-#define GPIO_87_PULLUP      PULLUP_DISABLE
-#define GPIO_88_PULLUP      PULLUP_DISABLE
-#define GPIO_89_PULLUP      PULLUP_DISABLE
-#define GPIO_90_PULLUP      PULLUP_DISABLE
-#define GPIO_91_PULLUP      PULLUP_DISABLE
-#define GPIO_92_PULLUP      PULLUP_DISABLE
-#define GPIO_93_PULLUP      PULLUP_DISABLE
-#define GPIO_94_PULLUP      PULLUP_DISABLE
-#define GPIO_95_PULLUP      PULLUP_DISABLE
-#define GPIO_96_PULLUP      PULLUP_DISABLE
-#define GPIO_97_PULLUP      PULLUP_DISABLE
-#define GPIO_98_PULLUP      PULLUP_DISABLE
-#define GPIO_99_PULLUP      PULLUP_DISABLE
-#define GPIO_100_PULLUP     PULLUP_DISABLE
-#define GPIO_101_PULLUP     PULLUP_DISABLE
-#define GPIO_102_PULLUP     PULLUP_DISABLE
-#define GPIO_103_PULLUP     PULLUP_DISABLE
-#define GPIO_104_PULLUP     PULLUP_DISABLE
-#define GPIO_105_PULLUP     PULLUP_DISABLE
-#define GPIO_106_PULLUP     PULLUP_DISABLE
-#define GPIO_107_PULLUP     PULLUP_DISABLE
-#define GPIO_108_PULLUP     PULLUP_DISABLE
-#define GPIO_109_PULLUP     PULLUP_DISABLE
-#define GPIO_110_PULLUP     PULLUP_DISABLE
-#define GPIO_111_PULLUP     PULLUP_DISABLE
-#define GPIO_112_PULLUP     PULLUP_DISABLE
-#define GPIO_113_PULLUP     PULLUP_DISABLE
-#define GPIO_114_PULLUP     PULLUP_DISABLE
-#define GPIO_115_PULLUP     PULLUP_DISABLE
-#define GPIO_116_PULLUP     PULLUP_DISABLE
-#define GPIO_117_PULLUP     PULLUP_DISABLE
-#define GPIO_118_PULLUP     PULLUP_ENABLE
-#define GPIO_119_PULLUP     PULLUP_DISABLE
-#define GPIO_120_PULLUP     PULLUP_DISABLE
-#define GPIO_121_PULLUP     PULLUP_DISABLE
-#define GPIO_122_PULLUP     PULLUP_DISABLE
-#define GPIO_123_PULLUP     PULLUP_DISABLE
-#define GPIO_124_PULLUP     PULLUP_DISABLE
-#define GPIO_125_PULLUP     PULLUP_DISABLE
-#define GPIO_126_PULLUP     PULLUP_DISABLE
-#define GPIO_127_PULLUP     PULLUP_DISABLE
-#define GPIO_128_PULLUP     PULLUP_DISABLE
-#define GPIO_129_PULLUP     PULLUP_DISABLE
-#define GPIO_130_PULLUP     PULLUP_DISABLE
-#define GPIO_131_PULLUP     PULLUP_DISABLE
-#define GPIO_132_PULLUP     PULLUP_DISABLE
-#define GPIO_133_PULLUP     PULLUP_DISABLE
-#define GPIO_134_PULLUP     PULLUP_DISABLE
-#define GPIO_135_PULLUP     PULLUP_DISABLE
-#define GPIO_136_PULLUP     PULLUP_DISABLE
-#define GPIO_137_PULLUP     PULLUP_DISABLE
-#define GPIO_138_PULLUP     PULLUP_DISABLE
-#define GPIO_139_PULLUP     PULLUP_DISABLE
-#define GPIO_140_PULLUP     PULLUP_DISABLE
-#define GPIO_141_PULLUP     PULLUP_DISABLE
-#define GPIO_142_PULLUP     PULLUP_DISABLE
-#define GPIO_143_PULLUP     PULLUP_DISABLE
-#define GPIO_144_PULLUP     PULLUP_DISABLE
-#define GPIO_145_PULLUP     PULLUP_DISABLE
-#define GPIO_146_PULLUP     PULLUP_DISABLE
-#define GPIO_147_PULLUP     PULLUP_DISABLE
-#define GPIO_148_PULLUP     PULLUP_DISABLE
-#define GPIO_149_PULLUP     PULLUP_DISABLE
-#define GPIO_150_PULLUP     PULLUP_DISABLE
-#define GPIO_151_PULLUP     PULLUP_DISABLE
-#define GPIO_152_PULLUP     PULLUP_DISABLE
-#define GPIO_153_PULLUP     PULLUP_DISABLE
-#define GPIO_154_PULLUP     PULLUP_DISABLE
-#define GPIO_155_PULLUP     PULLUP_DISABLE
-#define GPIO_156_PULLUP     PULLUP_DISABLE
-#define GPIO_157_PULLUP     PULLUP_DISABLE
-#define GPIO_158_PULLUP     PULLUP_DISABLE
-#define GPIO_159_PULLUP     PULLUP_DISABLE
-#define GPIO_160_PULLUP     PULLUP_DISABLE
-#define GPIO_161_PULLUP     PULLUP_DISABLE
-#define GPIO_162_PULLUP     PULLUP_DISABLE
-#define GPIO_163_PULLUP     PULLUP_DISABLE
-#define GPIO_164_PULLUP     PULLUP_DISABLE
-#define GPIO_165_PULLUP     PULLUP_DISABLE
-#define GPIO_166_PULLUP     PULLUP_DISABLE
-#define GPIO_167_PULLUP     PULLUP_DISABLE
-#define GPIO_168_PULLUP     PULLUP_DISABLE
-#define GPIO_169_PULLUP     PULLUP_DISABLE
-#define GPIO_170_PULLUP     PULLUP_DISABLE
-#define GPIO_171_PULLUP     PULLUP_DISABLE
-#define GPIO_172_PULLUP     PULLUP_DISABLE
-#define GPIO_173_PULLUP     PULLUP_DISABLE
-#define GPIO_174_PULLUP     PULLUP_DISABLE
-#define GPIO_175_PULLUP     PULLUP_DISABLE
-#define GPIO_176_PULLUP     PULLUP_DISABLE
-#define GPIO_177_PULLUP     PULLUP_DISABLE
-#define GPIO_178_PULLUP     PULLUP_DISABLE
-#define GPIO_179_PULLUP     PULLUP_DISABLE
-#define GPIO_180_PULLUP     PULLUP_DISABLE
-#define GPIO_180_PULLUP     PULLUP_DISABLE
-#define GPIO_181_PULLUP     PULLUP_DISABLE
-#define GPIO_182_PULLUP     PULLUP_DISABLE
-#define GPIO_183_PULLUP     PULLUP_DISABLE
-#define GPIO_184_PULLUP     PULLUP_DISABLE
-#define GPIO_185_PULLUP     PULLUP_DISABLE
-#define GPIO_186_PULLUP     PULLUP_DISABLE
-#define GPIO_187_PULLUP     PULLUP_DISABLE
-#define GPIO_188_PULLUP     PULLUP_DISABLE
-#define GPIO_189_PULLUP     PULLUP_DISABLE
-#define GPIO_190_PULLUP     PULLUP_DISABLE
-#define GPIO_191_PULLUP     PULLUP_DISABLE
-#define GPIO_192_PULLUP     PULLUP_DISABLE
-#define GPIO_193_PULLUP     PULLUP_DISABLE
-#define GPIO_194_PULLUP     PULLUP_DISABLE
-#define GPIO_195_PULLUP     PULLUP_DISABLE
-#define GPIO_196_PULLUP     PULLUP_DISABLE
-#define GPIO_197_PULLUP     PULLUP_DISABLE
-#define GPIO_198_PULLUP     PULLUP_DISABLE
-#define GPIO_199_PULLUP     PULLUP_DISABLE
-#define GPIO_200_PULLUP     PULLUP_DISABLE
-#define GPIO_201_PULLUP     PULLUP_DISABLE
-#define GPIO_202_PULLUP     PULLUP_DISABLE
-#define GPIO_203_PULLUP     PULLUP_DISABLE
-#define GPIO_204_PULLUP     PULLUP_DISABLE
-#define GPIO_205_PULLUP     PULLUP_DISABLE
-#define GPIO_206_PULLUP     PULLUP_DISABLE
-#define GPIO_207_PULLUP     PULLUP_DISABLE
-#define GPIO_208_PULLUP     PULLUP_DISABLE
-#define GPIO_209_PULLUP     PULLUP_DISABLE
-#define GPIO_210_PULLUP     PULLUP_DISABLE
-#define GPIO_211_PULLUP     PULLUP_DISABLE
-#define GPIO_212_PULLUP     PULLUP_DISABLE
-#define GPIO_213_PULLUP     PULLUP_DISABLE
-#define GPIO_214_PULLUP     PULLUP_DISABLE
-#define GPIO_215_PULLUP     PULLUP_DISABLE
-#define GPIO_216_PULLUP     PULLUP_DISABLE
-#define GPIO_217_PULLUP     PULLUP_DISABLE
-#define GPIO_218_PULLUP     PULLUP_DISABLE
-#define GPIO_219_PULLUP     PULLUP_DISABLE
-#define GPIO_220_PULLUP     PULLUP_DISABLE
-#define GPIO_221_PULLUP     PULLUP_DISABLE
-#define GPIO_222_PULLUP     PULLUP_DISABLE
-#define GPIO_223_PULLUP     PULLUP_DISABLE
-#define GPIO_224_PULLUP     PULLUP_DISABLE
-#define GPIO_225_PULLUP     PULLUP_DISABLE
-#define GPIO_226_PULLUP     PULLUP_DISABLE
-#define GPIO_227_PULLUP     PULLUP_DISABLE
-#define GPIO_228_PULLUP     PULLUP_DISABLE
-#define GPIO_229_PULLUP     PULLUP_DISABLE
+#define GPIO_00_PULLUP	    PULLUP_DISABLE
+#define GPIO_01_PULLUP	    PULLUP_DISABLE
+#define GPIO_02_PULLUP	    PULLUP_DISABLE
+#define GPIO_03_PULLUP	    PULLUP_DISABLE
+#define GPIO_04_PULLUP	    PULLUP_DISABLE
+#define GPIO_05_PULLUP	    PULLUP_DISABLE
+#define GPIO_06_PULLUP	    PULLUP_DISABLE
+#define GPIO_07_PULLUP	    PULLUP_DISABLE
+#define GPIO_08_PULLUP	    PULLUP_DISABLE
+#define GPIO_09_PULLUP	    PULLUP_DISABLE
+#define GPIO_10_PULLUP	    PULLUP_DISABLE
+#define GPIO_11_PULLUP	    PULLUP_DISABLE
+#define GPIO_12_PULLUP	    PULLUP_DISABLE
+#define GPIO_13_PULLUP	    PULLUP_DISABLE
+#define GPIO_14_PULLUP	    PULLUP_DISABLE
+#define GPIO_15_PULLUP	    PULLUP_DISABLE
+#define GPIO_16_PULLUP	    PULLUP_DISABLE
+#define GPIO_17_PULLUP	    PULLUP_DISABLE
+#define GPIO_18_PULLUP	    PULLUP_DISABLE
+#define GPIO_19_PULLUP	    PULLUP_DISABLE
+#define GPIO_20_PULLUP	    PULLUP_DISABLE
+#define GPIO_21_PULLUP	    PULLUP_DISABLE
+#define GPIO_22_PULLUP	    PULLUP_DISABLE
+#define GPIO_23_PULLUP	    PULLUP_DISABLE
+#define GPIO_24_PULLUP	    PULLUP_DISABLE
+#define GPIO_25_PULLUP	    PULLUP_DISABLE
+#define GPIO_26_PULLUP	    PULLUP_DISABLE
+#define GPIO_27_PULLUP	    PULLUP_DISABLE
+#define GPIO_28_PULLUP	    PULLUP_DISABLE
+#define GPIO_29_PULLUP	    PULLUP_DISABLE
+#define GPIO_30_PULLUP	    PULLUP_DISABLE
+#define GPIO_31_PULLUP	    PULLUP_DISABLE
+#define GPIO_32_PULLUP	    PULLUP_DISABLE
+#define GPIO_33_PULLUP	    PULLUP_DISABLE
+#define GPIO_34_PULLUP	    PULLUP_DISABLE
+#define GPIO_35_PULLUP	    PULLUP_DISABLE
+#define GPIO_36_PULLUP	    PULLUP_DISABLE
+#define GPIO_37_PULLUP	    PULLUP_DISABLE
+#define GPIO_38_PULLUP	    PULLUP_DISABLE
+#define GPIO_39_PULLUP	    PULLUP_DISABLE
+#define GPIO_40_PULLUP	    PULLUP_DISABLE
+#define GPIO_41_PULLUP	    PULLUP_DISABLE
+#define GPIO_42_PULLUP	    PULLUP_DISABLE
+#define GPIO_43_PULLUP	    PULLUP_DISABLE
+#define GPIO_44_PULLUP	    PULLUP_DISABLE
+#define GPIO_45_PULLUP	    PULLUP_DISABLE
+#define GPIO_46_PULLUP	    PULLUP_DISABLE
+#define GPIO_47_PULLUP	    PULLUP_DISABLE
+#define GPIO_48_PULLUP	    PULLUP_DISABLE
+#define GPIO_49_PULLUP	    PULLUP_DISABLE
+#define GPIO_50_PULLUP	    PULLUP_DISABLE
+#define GPIO_51_PULLUP	    PULLUP_DISABLE
+#define GPIO_52_PULLUP	    PULLUP_DISABLE
+#define GPIO_53_PULLUP	    PULLUP_DISABLE
+#define GPIO_54_PULLUP	    PULLUP_DISABLE
+#define GPIO_55_PULLUP	    PULLUP_DISABLE
+#define GPIO_56_PULLUP	    PULLUP_DISABLE
+#define GPIO_57_PULLUP	    PULLUP_DISABLE
+#define GPIO_58_PULLUP	    PULLUP_DISABLE
+#define GPIO_59_PULLUP	    PULLUP_DISABLE
+#define GPIO_60_PULLUP	    PULLUP_DISABLE
+#define GPIO_61_PULLUP	    PULLUP_DISABLE
+#define GPIO_62_PULLUP	    PULLUP_DISABLE
+#define GPIO_63_PULLUP	    PULLUP_DISABLE
+#define GPIO_64_PULLUP	    PULLUP_DISABLE
+#define GPIO_65_PULLUP	    PULLUP_DISABLE
+#define GPIO_66_PULLUP	    PULLUP_DISABLE
+#define GPIO_67_PULLUP	    PULLUP_DISABLE
+#define GPIO_68_PULLUP	    PULLUP_DISABLE
+#define GPIO_69_PULLUP	    PULLUP_DISABLE
+#define GPIO_70_PULLUP	    PULLUP_DISABLE
+#define GPIO_71_PULLUP	    PULLUP_DISABLE
+#define GPIO_72_PULLUP	    PULLUP_DISABLE
+#define GPIO_73_PULLUP	    PULLUP_DISABLE
+#define GPIO_74_PULLUP	    PULLUP_DISABLE
+#define GPIO_75_PULLUP	    PULLUP_DISABLE
+#define GPIO_76_PULLUP	    PULLUP_DISABLE
+#define GPIO_77_PULLUP	    PULLUP_DISABLE
+#define GPIO_78_PULLUP	    PULLUP_DISABLE
+#define GPIO_79_PULLUP	    PULLUP_DISABLE
+#define GPIO_80_PULLUP	    PULLUP_DISABLE
+#define GPIO_80_PULLUP	    PULLUP_DISABLE
+#define GPIO_81_PULLUP	    PULLUP_DISABLE
+#define GPIO_82_PULLUP	    PULLUP_DISABLE
+#define GPIO_83_PULLUP	    PULLUP_DISABLE
+#define GPIO_84_PULLUP	    PULLUP_DISABLE
+#define GPIO_85_PULLUP	    PULLUP_DISABLE
+#define GPIO_86_PULLUP	    PULLUP_DISABLE
+#define GPIO_87_PULLUP	    PULLUP_DISABLE
+#define GPIO_88_PULLUP	    PULLUP_DISABLE
+#define GPIO_89_PULLUP	    PULLUP_DISABLE
+#define GPIO_90_PULLUP	    PULLUP_DISABLE
+#define GPIO_91_PULLUP	    PULLUP_DISABLE
+#define GPIO_92_PULLUP	    PULLUP_DISABLE
+#define GPIO_93_PULLUP	    PULLUP_DISABLE
+#define GPIO_94_PULLUP	    PULLUP_DISABLE
+#define GPIO_95_PULLUP	    PULLUP_DISABLE
+#define GPIO_96_PULLUP	    PULLUP_DISABLE
+#define GPIO_97_PULLUP	    PULLUP_DISABLE
+#define GPIO_98_PULLUP	    PULLUP_DISABLE
+#define GPIO_99_PULLUP	    PULLUP_DISABLE
+#define GPIO_100_PULLUP	    PULLUP_DISABLE
+#define GPIO_101_PULLUP	    PULLUP_DISABLE
+#define GPIO_102_PULLUP	    PULLUP_DISABLE
+#define GPIO_103_PULLUP	    PULLUP_DISABLE
+#define GPIO_104_PULLUP	    PULLUP_DISABLE
+#define GPIO_105_PULLUP	    PULLUP_DISABLE
+#define GPIO_106_PULLUP	    PULLUP_DISABLE
+#define GPIO_107_PULLUP	    PULLUP_DISABLE
+#define GPIO_108_PULLUP	    PULLUP_DISABLE
+#define GPIO_109_PULLUP	    PULLUP_DISABLE
+#define GPIO_110_PULLUP	    PULLUP_DISABLE
+#define GPIO_111_PULLUP	    PULLUP_DISABLE
+#define GPIO_112_PULLUP	    PULLUP_DISABLE
+#define GPIO_113_PULLUP	    PULLUP_DISABLE
+#define GPIO_114_PULLUP	    PULLUP_DISABLE
+#define GPIO_115_PULLUP	    PULLUP_DISABLE
+#define GPIO_116_PULLUP	    PULLUP_DISABLE
+#define GPIO_117_PULLUP	    PULLUP_DISABLE
+#define GPIO_118_PULLUP	    PULLUP_ENABLE
+#define GPIO_119_PULLUP	    PULLUP_DISABLE
+#define GPIO_120_PULLUP	    PULLUP_DISABLE
+#define GPIO_121_PULLUP	    PULLUP_DISABLE
+#define GPIO_122_PULLUP	    PULLUP_DISABLE
+#define GPIO_123_PULLUP	    PULLUP_DISABLE
+#define GPIO_124_PULLUP	    PULLUP_DISABLE
+#define GPIO_125_PULLUP	    PULLUP_DISABLE
+#define GPIO_126_PULLUP	    PULLUP_DISABLE
+#define GPIO_127_PULLUP	    PULLUP_DISABLE
+#define GPIO_128_PULLUP	    PULLUP_DISABLE
+#define GPIO_129_PULLUP	    PULLUP_DISABLE
+#define GPIO_130_PULLUP	    PULLUP_DISABLE
+#define GPIO_131_PULLUP	    PULLUP_DISABLE
+#define GPIO_132_PULLUP	    PULLUP_DISABLE
+#define GPIO_133_PULLUP	    PULLUP_DISABLE
+#define GPIO_134_PULLUP	    PULLUP_DISABLE
+#define GPIO_135_PULLUP	    PULLUP_DISABLE
+#define GPIO_136_PULLUP	    PULLUP_DISABLE
+#define GPIO_137_PULLUP	    PULLUP_DISABLE
+#define GPIO_138_PULLUP	    PULLUP_DISABLE
+#define GPIO_139_PULLUP	    PULLUP_DISABLE
+#define GPIO_140_PULLUP	    PULLUP_DISABLE
+#define GPIO_141_PULLUP	    PULLUP_DISABLE
+#define GPIO_142_PULLUP	    PULLUP_DISABLE
+#define GPIO_143_PULLUP	    PULLUP_DISABLE
+#define GPIO_144_PULLUP	    PULLUP_DISABLE
+#define GPIO_145_PULLUP	    PULLUP_DISABLE
+#define GPIO_146_PULLUP	    PULLUP_DISABLE
+#define GPIO_147_PULLUP	    PULLUP_DISABLE
+#define GPIO_148_PULLUP	    PULLUP_DISABLE
+#define GPIO_149_PULLUP	    PULLUP_DISABLE
+#define GPIO_150_PULLUP	    PULLUP_DISABLE
+#define GPIO_151_PULLUP	    PULLUP_DISABLE
+#define GPIO_152_PULLUP	    PULLUP_DISABLE
+#define GPIO_153_PULLUP	    PULLUP_DISABLE
+#define GPIO_154_PULLUP	    PULLUP_DISABLE
+#define GPIO_155_PULLUP	    PULLUP_DISABLE
+#define GPIO_156_PULLUP	    PULLUP_DISABLE
+#define GPIO_157_PULLUP	    PULLUP_DISABLE
+#define GPIO_158_PULLUP	    PULLUP_DISABLE
+#define GPIO_159_PULLUP	    PULLUP_DISABLE
+#define GPIO_160_PULLUP	    PULLUP_DISABLE
+#define GPIO_161_PULLUP	    PULLUP_DISABLE
+#define GPIO_162_PULLUP	    PULLUP_DISABLE
+#define GPIO_163_PULLUP	    PULLUP_DISABLE
+#define GPIO_164_PULLUP	    PULLUP_DISABLE
+#define GPIO_165_PULLUP	    PULLUP_DISABLE
+#define GPIO_166_PULLUP	    PULLUP_DISABLE
+#define GPIO_167_PULLUP	    PULLUP_DISABLE
+#define GPIO_168_PULLUP	    PULLUP_DISABLE
+#define GPIO_169_PULLUP	    PULLUP_DISABLE
+#define GPIO_170_PULLUP	    PULLUP_DISABLE
+#define GPIO_171_PULLUP	    PULLUP_DISABLE
+#define GPIO_172_PULLUP	    PULLUP_DISABLE
+#define GPIO_173_PULLUP	    PULLUP_DISABLE
+#define GPIO_174_PULLUP	    PULLUP_DISABLE
+#define GPIO_175_PULLUP	    PULLUP_DISABLE
+#define GPIO_176_PULLUP	    PULLUP_DISABLE
+#define GPIO_177_PULLUP	    PULLUP_DISABLE
+#define GPIO_178_PULLUP	    PULLUP_DISABLE
+#define GPIO_179_PULLUP	    PULLUP_DISABLE
+#define GPIO_180_PULLUP	    PULLUP_DISABLE
+#define GPIO_180_PULLUP	    PULLUP_DISABLE
+#define GPIO_181_PULLUP	    PULLUP_DISABLE
+#define GPIO_182_PULLUP	    PULLUP_DISABLE
+#define GPIO_183_PULLUP	    PULLUP_DISABLE
+#define GPIO_184_PULLUP	    PULLUP_DISABLE
+#define GPIO_185_PULLUP	    PULLUP_DISABLE
+#define GPIO_186_PULLUP	    PULLUP_DISABLE
+#define GPIO_187_PULLUP	    PULLUP_DISABLE
+#define GPIO_188_PULLUP	    PULLUP_DISABLE
+#define GPIO_189_PULLUP	    PULLUP_DISABLE
+#define GPIO_190_PULLUP	    PULLUP_DISABLE
+#define GPIO_191_PULLUP	    PULLUP_DISABLE
+#define GPIO_192_PULLUP	    PULLUP_DISABLE
+#define GPIO_193_PULLUP	    PULLUP_DISABLE
+#define GPIO_194_PULLUP	    PULLUP_DISABLE
+#define GPIO_195_PULLUP	    PULLUP_DISABLE
+#define GPIO_196_PULLUP	    PULLUP_DISABLE
+#define GPIO_197_PULLUP	    PULLUP_DISABLE
+#define GPIO_198_PULLUP	    PULLUP_DISABLE
+#define GPIO_199_PULLUP	    PULLUP_DISABLE
+#define GPIO_200_PULLUP	    PULLUP_DISABLE
+#define GPIO_201_PULLUP	    PULLUP_DISABLE
+#define GPIO_202_PULLUP	    PULLUP_DISABLE
+#define GPIO_203_PULLUP	    PULLUP_DISABLE
+#define GPIO_204_PULLUP	    PULLUP_DISABLE
+#define GPIO_205_PULLUP	    PULLUP_DISABLE
+#define GPIO_206_PULLUP	    PULLUP_DISABLE
+#define GPIO_207_PULLUP	    PULLUP_DISABLE
+#define GPIO_208_PULLUP	    PULLUP_DISABLE
+#define GPIO_209_PULLUP	    PULLUP_DISABLE
+#define GPIO_210_PULLUP	    PULLUP_DISABLE
+#define GPIO_211_PULLUP	    PULLUP_DISABLE
+#define GPIO_212_PULLUP	    PULLUP_DISABLE
+#define GPIO_213_PULLUP	    PULLUP_DISABLE
+#define GPIO_214_PULLUP	    PULLUP_DISABLE
+#define GPIO_215_PULLUP	    PULLUP_DISABLE
+#define GPIO_216_PULLUP	    PULLUP_DISABLE
+#define GPIO_217_PULLUP	    PULLUP_DISABLE
+#define GPIO_218_PULLUP	    PULLUP_DISABLE
+#define GPIO_219_PULLUP	    PULLUP_DISABLE
+#define GPIO_220_PULLUP	    PULLUP_DISABLE
+#define GPIO_221_PULLUP	    PULLUP_DISABLE
+#define GPIO_222_PULLUP	    PULLUP_DISABLE
+#define GPIO_223_PULLUP	    PULLUP_DISABLE
+#define GPIO_224_PULLUP	    PULLUP_DISABLE
+#define GPIO_225_PULLUP	    PULLUP_DISABLE
+#define GPIO_226_PULLUP	    PULLUP_DISABLE
+#define GPIO_227_PULLUP	    PULLUP_DISABLE
+#define GPIO_228_PULLUP	    PULLUP_DISABLE
+#define GPIO_229_PULLUP	    PULLUP_DISABLE
 
-#define PULLDOWN_ENABLE       (1<<4)
+#define PULLDOWN_ENABLE	      (1<<4)
 #define PULLDOWN_DISABLE      (0<<4)
 
 #define GPIO_00_PULLDOWN    PULLDOWN_DISABLE
@@ -1532,230 +1532,230 @@
 #define GPIO_228_PULLDOWN   PULLDOWN_DISABLE
 #define GPIO_229_PULLDOWN   PULLDOWN_DISABLE
 
-#define EVENT_DISABLE           0
-#define EVENT_ENABLE            1
+#define EVENT_DISABLE		0
+#define EVENT_ENABLE		1
 
-#define GEVENT_00_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_01_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_02_EVENTENABLE   EVENT_ENABLE	// APU THERMTRIP#
-#define GEVENT_03_EVENTENABLE   EVENT_ENABLE    // EC_SCI#
-#define GEVENT_04_EVENTENABLE   EVENT_ENABLE    // APU_MEMHOT#
-#define GEVENT_05_EVENTENABLE   EVENT_ENABLE    // PCIE_EXPCARD_PWREN#
-#define GEVENT_06_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_07_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_08_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_09_EVENTENABLE   EVENT_ENABLE    // WF_RADIO
-#define GEVENT_10_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_11_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_12_EVENTENABLE   EVENT_ENABLE    // SMBALERT#
-#define GEVENT_13_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_14_EVENTENABLE   EVENT_ENABLE    // LASSO_DET#/DOCK#
-#define GEVENT_15_EVENTENABLE   EVENT_ENABLE    // ODD_PLUGIN#
-#define GEVENT_16_EVENTENABLE   EVENT_ENABLE    // ODD_DA
-#define GEVENT_17_EVENTENABLE   EVENT_ENABLE    // TWARN
-#define GEVENT_18_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_19_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_20_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_21_EVENTENABLE   EVENT_DISABLE
-#define GEVENT_22_EVENTENABLE   EVENT_ENABLE    // LID_CLOSE#
-#define GEVENT_23_EVENTENABLE   EVENT_DISABLE   // EC_SMI#
+#define GEVENT_00_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_01_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_02_EVENTENABLE	EVENT_ENABLE	// APU THERMTRIP#
+#define GEVENT_03_EVENTENABLE	EVENT_ENABLE	// EC_SCI#
+#define GEVENT_04_EVENTENABLE	EVENT_ENABLE	// APU_MEMHOT#
+#define GEVENT_05_EVENTENABLE	EVENT_ENABLE	// PCIE_EXPCARD_PWREN#
+#define GEVENT_06_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_07_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_08_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_09_EVENTENABLE	EVENT_ENABLE	// WF_RADIO
+#define GEVENT_10_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_11_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_12_EVENTENABLE	EVENT_ENABLE	// SMBALERT#
+#define GEVENT_13_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_14_EVENTENABLE	EVENT_ENABLE	// LASSO_DET#/DOCK#
+#define GEVENT_15_EVENTENABLE	EVENT_ENABLE	// ODD_PLUGIN#
+#define GEVENT_16_EVENTENABLE	EVENT_ENABLE	// ODD_DA
+#define GEVENT_17_EVENTENABLE	EVENT_ENABLE	// TWARN
+#define GEVENT_18_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_19_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_20_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_21_EVENTENABLE	EVENT_DISABLE
+#define GEVENT_22_EVENTENABLE	EVENT_ENABLE	// LID_CLOSE#
+#define GEVENT_23_EVENTENABLE	EVENT_DISABLE	// EC_SMI#
 
-#define SCITRIG_LOW             0
-#define SCITRIG_HI              1
+#define SCITRIG_LOW		0
+#define SCITRIG_HI		1
 
-#define GEVENT_00_SCITRIG       SCITRIG_LOW
-#define GEVENT_01_SCITRIG       SCITRIG_LOW
-#define GEVENT_02_SCITRIG       SCITRIG_LOW
-#define GEVENT_03_SCITRIG       SCITRIG_LOW
-#define GEVENT_04_SCITRIG       SCITRIG_LOW
-#define GEVENT_05_SCITRIG       SCITRIG_LOW
-#define GEVENT_06_SCITRIG       SCITRIG_LOW
-#define GEVENT_07_SCITRIG       SCITRIG_LOW
-#define GEVENT_08_SCITRIG       SCITRIG_LOW
-#define GEVENT_09_SCITRIG       SCITRIG_LOW
-#define GEVENT_10_SCITRIG       SCITRIG_LOW
-#define GEVENT_11_SCITRIG       SCITRIG_LOW
-#define GEVENT_12_SCITRIG       SCITRIG_LOW
-#define GEVENT_13_SCITRIG       SCITRIG_LOW
-#define GEVENT_14_SCITRIG       SCITRIG_LOW
-#define GEVENT_15_SCITRIG       SCITRIG_LOW
-#define GEVENT_16_SCITRIG       SCITRIG_LOW
-#define GEVENT_17_SCITRIG       SCITRIG_HI
-#define GEVENT_18_SCITRIG       SCITRIG_LOW
-#define GEVENT_19_SCITRIG       SCITRIG_LOW
-#define GEVENT_20_SCITRIG       SCITRIG_LOW
-#define GEVENT_21_SCITRIG       SCITRIG_LOW
-#define GEVENT_22_SCITRIG       SCITRIG_LOW
-#define GEVENT_23_SCITRIG       SCITRIG_LOW
+#define GEVENT_00_SCITRIG	SCITRIG_LOW
+#define GEVENT_01_SCITRIG	SCITRIG_LOW
+#define GEVENT_02_SCITRIG	SCITRIG_LOW
+#define GEVENT_03_SCITRIG	SCITRIG_LOW
+#define GEVENT_04_SCITRIG	SCITRIG_LOW
+#define GEVENT_05_SCITRIG	SCITRIG_LOW
+#define GEVENT_06_SCITRIG	SCITRIG_LOW
+#define GEVENT_07_SCITRIG	SCITRIG_LOW
+#define GEVENT_08_SCITRIG	SCITRIG_LOW
+#define GEVENT_09_SCITRIG	SCITRIG_LOW
+#define GEVENT_10_SCITRIG	SCITRIG_LOW
+#define GEVENT_11_SCITRIG	SCITRIG_LOW
+#define GEVENT_12_SCITRIG	SCITRIG_LOW
+#define GEVENT_13_SCITRIG	SCITRIG_LOW
+#define GEVENT_14_SCITRIG	SCITRIG_LOW
+#define GEVENT_15_SCITRIG	SCITRIG_LOW
+#define GEVENT_16_SCITRIG	SCITRIG_LOW
+#define GEVENT_17_SCITRIG	SCITRIG_HI
+#define GEVENT_18_SCITRIG	SCITRIG_LOW
+#define GEVENT_19_SCITRIG	SCITRIG_LOW
+#define GEVENT_20_SCITRIG	SCITRIG_LOW
+#define GEVENT_21_SCITRIG	SCITRIG_LOW
+#define GEVENT_22_SCITRIG	SCITRIG_LOW
+#define GEVENT_23_SCITRIG	SCITRIG_LOW
 
-#define SCILEVEL_EDGE           0
-#define SCILEVEL_LEVEL          1
+#define SCILEVEL_EDGE		0
+#define SCILEVEL_LEVEL		1
 
-#define GEVENT_00_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_01_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_02_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_03_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_04_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_05_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_06_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_07_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_08_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_09_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_10_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_11_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_12_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_13_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_14_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_15_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_16_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_17_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_18_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_19_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_20_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_21_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_22_SCILEVEL      SCILEVEL_EDGE
-#define GEVENT_23_SCILEVEL      SCILEVEL_EDGE
+#define GEVENT_00_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_01_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_02_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_03_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_04_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_05_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_06_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_07_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_08_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_09_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_10_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_11_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_12_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_13_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_14_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_15_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_16_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_17_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_18_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_19_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_20_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_21_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_22_SCILEVEL	SCILEVEL_EDGE
+#define GEVENT_23_SCILEVEL	SCILEVEL_EDGE
 
-#define SMISCI_DISABLE          0
-#define SMISCI_ENABLE           1
+#define SMISCI_DISABLE		0
+#define SMISCI_ENABLE		1
 
-#define GEVENT_00_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_01_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_02_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_03_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_04_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_05_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_06_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_07_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_08_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_09_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_10_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_11_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_12_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_13_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_14_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_15_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_16_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_17_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_18_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_19_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_20_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_21_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_22_SMISCIEN      SMISCI_DISABLE
-#define GEVENT_23_SMISCIEN      SMISCI_DISABLE
+#define GEVENT_00_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_01_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_02_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_03_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_04_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_05_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_06_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_07_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_08_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_09_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_10_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_11_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_12_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_13_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_14_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_15_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_16_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_17_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_18_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_19_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_20_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_21_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_22_SMISCIEN	SMISCI_DISABLE
+#define GEVENT_23_SMISCIEN	SMISCI_DISABLE
 
-#define SCIS0_DISABLE           0
-#define SCIS0_ENABLE            1
+#define SCIS0_DISABLE		0
+#define SCIS0_ENABLE		1
 
-#define GEVENT_00_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_01_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_02_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_03_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_04_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_05_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_06_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_07_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_08_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_09_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_10_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_11_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_12_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_13_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_14_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_15_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_16_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_17_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_18_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_19_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_20_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_21_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_22_SCIS0EN       SCIS0_DISABLE
-#define GEVENT_23_SCIS0EN       SCIS0_DISABLE
+#define GEVENT_00_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_01_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_02_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_03_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_04_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_05_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_06_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_07_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_08_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_09_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_10_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_11_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_12_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_13_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_14_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_15_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_16_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_17_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_18_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_19_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_20_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_21_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_22_SCIS0EN	SCIS0_DISABLE
+#define GEVENT_23_SCIS0EN	SCIS0_DISABLE
 
-#define GEVENT_SCIMASK          0x1F
-#define GEVENT_00_SCIMAP        0
-#define GEVENT_01_SCIMAP        1
-#define GEVENT_02_SCIMAP        2
-#define GEVENT_03_SCIMAP        3
-#define GEVENT_04_SCIMAP        4
-#define GEVENT_05_SCIMAP        5
-#define GEVENT_06_SCIMAP        6
-#define GEVENT_07_SCIMAP        7
-#define GEVENT_08_SCIMAP        8
-#define GEVENT_09_SCIMAP        9
-#define GEVENT_10_SCIMAP        10
-#define GEVENT_11_SCIMAP        11
-#define GEVENT_12_SCIMAP        12
-#define GEVENT_13_SCIMAP        13
-#define GEVENT_14_SCIMAP        14
-#define GEVENT_15_SCIMAP        15
-#define GEVENT_16_SCIMAP        16
-#define GEVENT_17_SCIMAP        17
-#define GEVENT_18_SCIMAP        18
-#define GEVENT_19_SCIMAP        19
-#define GEVENT_20_SCIMAP        20
-#define GEVENT_21_SCIMAP        21
-#define GEVENT_22_SCIMAP        22
-#define GEVENT_23_SCIMAP        23
+#define GEVENT_SCIMASK		0x1F
+#define GEVENT_00_SCIMAP	0
+#define GEVENT_01_SCIMAP	1
+#define GEVENT_02_SCIMAP	2
+#define GEVENT_03_SCIMAP	3
+#define GEVENT_04_SCIMAP	4
+#define GEVENT_05_SCIMAP	5
+#define GEVENT_06_SCIMAP	6
+#define GEVENT_07_SCIMAP	7
+#define GEVENT_08_SCIMAP	8
+#define GEVENT_09_SCIMAP	9
+#define GEVENT_10_SCIMAP	10
+#define GEVENT_11_SCIMAP	11
+#define GEVENT_12_SCIMAP	12
+#define GEVENT_13_SCIMAP	13
+#define GEVENT_14_SCIMAP	14
+#define GEVENT_15_SCIMAP	15
+#define GEVENT_16_SCIMAP	16
+#define GEVENT_17_SCIMAP	17
+#define GEVENT_18_SCIMAP	18
+#define GEVENT_19_SCIMAP	19
+#define GEVENT_20_SCIMAP	20
+#define GEVENT_21_SCIMAP	21
+#define GEVENT_22_SCIMAP	22
+#define GEVENT_23_SCIMAP	23
 
-#define SMITRIG_LOW             0
-#define SMITRIG_HI              1
+#define SMITRIG_LOW		0
+#define SMITRIG_HI		1
 
-#define GEVENT_00_SMITRIG       SMITRIG_HI
-#define GEVENT_01_SMITRIG       SMITRIG_HI
-#define GEVENT_02_SMITRIG       SMITRIG_HI
-#define GEVENT_03_SMITRIG       SMITRIG_HI
-#define GEVENT_04_SMITRIG       SMITRIG_HI
-#define GEVENT_05_SMITRIG       SMITRIG_HI
-#define GEVENT_06_SMITRIG       SMITRIG_HI
-#define GEVENT_07_SMITRIG       SMITRIG_HI
-#define GEVENT_08_SMITRIG       SMITRIG_HI
-#define GEVENT_09_SMITRIG       SMITRIG_HI
-#define GEVENT_10_SMITRIG       SMITRIG_HI
-#define GEVENT_11_SMITRIG       SMITRIG_HI
-#define GEVENT_12_SMITRIG       SMITRIG_HI
-#define GEVENT_13_SMITRIG       SMITRIG_HI
-#define GEVENT_14_SMITRIG       SMITRIG_HI
-#define GEVENT_15_SMITRIG       SMITRIG_HI
-#define GEVENT_16_SMITRIG       SMITRIG_HI
-#define GEVENT_17_SMITRIG       SMITRIG_HI
-#define GEVENT_18_SMITRIG       SMITRIG_HI
-#define GEVENT_19_SMITRIG       SMITRIG_HI
-#define GEVENT_20_SMITRIG       SMITRIG_HI
-#define GEVENT_21_SMITRIG       SMITRIG_HI
-#define GEVENT_22_SMITRIG       SMITRIG_HI
-#define GEVENT_23_SMITRIG       SMITRIG_HI
+#define GEVENT_00_SMITRIG	SMITRIG_HI
+#define GEVENT_01_SMITRIG	SMITRIG_HI
+#define GEVENT_02_SMITRIG	SMITRIG_HI
+#define GEVENT_03_SMITRIG	SMITRIG_HI
+#define GEVENT_04_SMITRIG	SMITRIG_HI
+#define GEVENT_05_SMITRIG	SMITRIG_HI
+#define GEVENT_06_SMITRIG	SMITRIG_HI
+#define GEVENT_07_SMITRIG	SMITRIG_HI
+#define GEVENT_08_SMITRIG	SMITRIG_HI
+#define GEVENT_09_SMITRIG	SMITRIG_HI
+#define GEVENT_10_SMITRIG	SMITRIG_HI
+#define GEVENT_11_SMITRIG	SMITRIG_HI
+#define GEVENT_12_SMITRIG	SMITRIG_HI
+#define GEVENT_13_SMITRIG	SMITRIG_HI
+#define GEVENT_14_SMITRIG	SMITRIG_HI
+#define GEVENT_15_SMITRIG	SMITRIG_HI
+#define GEVENT_16_SMITRIG	SMITRIG_HI
+#define GEVENT_17_SMITRIG	SMITRIG_HI
+#define GEVENT_18_SMITRIG	SMITRIG_HI
+#define GEVENT_19_SMITRIG	SMITRIG_HI
+#define GEVENT_20_SMITRIG	SMITRIG_HI
+#define GEVENT_21_SMITRIG	SMITRIG_HI
+#define GEVENT_22_SMITRIG	SMITRIG_HI
+#define GEVENT_23_SMITRIG	SMITRIG_HI
 
-#define SMICONTROL_MASK         3
-#define SMICONTROL_DISABLE      0
-#define SMICONTROL_SMI          1
-#define SMICONTROL_NMI          2
-#define SMICONTROL_IRQ13        3
+#define SMICONTROL_MASK		3
+#define SMICONTROL_DISABLE	0
+#define SMICONTROL_SMI		1
+#define SMICONTROL_NMI		2
+#define SMICONTROL_IRQ13	3
 
-#define GEVENT_00_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_01_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_02_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_03_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_04_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_05_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_06_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_07_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_08_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_09_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_10_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_11_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_12_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_13_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_14_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_15_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_16_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_17_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_18_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_19_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_20_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_21_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_22_SMICONTROL    SMICONTROL_DISABLE
-#define GEVENT_23_SMICONTROL    SMICONTROL_DISABLE
+#define GEVENT_00_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_01_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_02_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_03_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_04_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_05_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_06_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_07_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_08_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_09_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_10_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_11_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_12_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_13_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_14_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_15_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_16_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_17_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_18_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_19_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_20_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_21_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_22_SMICONTROL	SMICONTROL_DISABLE
+#define GEVENT_23_SMICONTROL	SMICONTROL_DISABLE
 
 #define GPIO_RSVD_ZONE0_S   GPIO_81
 #define GPIO_RSVD_ZONE0_E   GPIO_95
@@ -1763,7 +1763,7 @@
 #define GPIO_RSVD_ZONE1_E   GPIO_127
 
 /*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
+ *		    T Y P E D E F S	A N D	  S T R U C T U  R E S
  *----------------------------------------------------------------------------------------
  */
 typedef enum _GPIO_COUNT
@@ -2274,13 +2274,13 @@ typedef enum _GEVENT_COUNT
 typedef struct _GEVENT_SETTINGS
 {
 	u8 EventEnable;      // 0: Disable, 1: Enable
-	u8 SciTrig;          // 0: Falling Edge, 1: Rising Edge
-	u8 SciLevl;          // 0: Edge trigger, 1: Level Trigger
-	u8 SmiSciEn;         // 0: Not send SMI, 1: Send SMI
-	u8 SciS0En;          // 0: Disable, 1: Enable
-	u8 SciMap;           // 0000b->1111b
-	u8 SmiTrig;          // 0: Active Low, 1: Active High
-	u8 SmiControl;       // 0: Disable, 1: SMI 2: NMI 3: IRQ13
+	u8 SciTrig;	      // 0: Falling Edge, 1: Rising Edge
+	u8 SciLevl;	      // 0: Edge trigger, 1: Level Trigger
+	u8 SmiSciEn;	      // 0: Not send SMI, 1: Send SMI
+	u8 SciS0En;	      // 0: Disable, 1: Enable
+	u8 SciMap;	      // 0000b->1111b
+	u8 SmiTrig;	      // 0: Active Low, 1: Active High
+	u8 SmiControl;	      // 0: Disable, 1: SMI 2: NMI 3: IRQ13
 } GEVENT_SETTINGS;
 
 GEVENT_SETTINGS gevent_table[] =
@@ -2312,17 +2312,17 @@ GEVENT_SETTINGS gevent_table[] =
 };
 
 /*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
+ *	     P R O T O T Y P E S     O F     L O C A L	   F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
+ *			    E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
+ *			    L O C A L	 F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
 

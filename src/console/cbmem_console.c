@@ -30,6 +30,6 @@ static void cbmemc_tx_byte_(unsigned char data)
 }
 
 static const struct console_driver cbmem_console __console = {
-	.init     = cbmemc_init_,
+	.init	   = cbmemc_init_,
 	.tx_byte  = cbmemc_tx_byte_,
 };

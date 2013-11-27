@@ -150,8 +150,8 @@ void *cbmem_add(u32 id, u64 size)
 	p = cbmem_find(id);
 	if (p) {
 		printk(BIOS_NOTICE,
-		       "CBMEM section %x: using existing location at %p.\n",
-		       id, p);
+			 "CBMEM section %x: using existing location at %p.\n",
+			 id, p);
 		return p;
 	}
 
@@ -257,7 +257,7 @@ static void init_cbmem_post_device(void *unused)
 
 BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 	BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_ENTRY,
-	                      init_cbmem_post_device, NULL),
+			       init_cbmem_post_device, NULL),
 };
 
 int cbmem_base_check(void)
@@ -290,7 +290,7 @@ void cbmem_list(void)
 		if (cbmem_toc[i].magic != CBMEM_MAGIC)
 			continue;
 		cbmem_print_entry(i, cbmem_toc[i].id, cbmem_toc[i].base,
-		                  cbmem_toc[i].size);
+				    cbmem_toc[i].size);
 	}
 }
 #endif

@@ -39,20 +39,20 @@ typedef struct _apic_device_info {
 
 static const apic_device_info default_apic_device_info_t [] = {
 	/* Group  Swizzling   Port Int Pin */
-	[0] = {0,     0,          31},   /* HT */
-	[1] = {0,     0,          31},   /* IOMMU */
-	[2] = {0,     ABCD,       28},   /* Dev2  Grp0 [Int - 0..3] */
-	[3] = {1,     ABCD,       28},   /* Dev3  Grp1 [Int - 4..7] */
-	[4] = {5,     ABCD,       28},   /* Dev4  Grp5 [Int - 20..23] */
-	[5] = {5,     CDAB,       28},   /* Dev5  Grp5 [Int - 20..23] */
-	[6] = {6,     BCDA,       29},   /* Dev6  Grp6 [Int - 24..27] */
-	[7] = {6,     CDAB,       29},   /* Dev7  Grp6 [Int - 24..27] */
-	[8] = {0,     0,          0 },   /* Reserved */
-	[9] = {6,     ABCD,       29},   /* Dev9  Grp6 [Int - 24..27] */
-	[10] = {5,     BCDA,       30},   /* Dev10 Grp5 [Int - 20..23] */
-	[11] = {2,     ABCD,       30},   /* Dev11 Grp2 [Int - 8..11] */
-	[12] = {3,     ABCD,       30},   /* Dev12 Grp3 [Int - 12..15] */
-	[13] = {4,     ABCD,       30}    /* Dev13 Grp4 [Int - 16..19] */
+	[0] = {0,     0,	   31},	  /* HT */
+	[1] = {0,     0,	   31},	  /* IOMMU */
+	[2] = {0,     ABCD,	   28},	  /* Dev2  Grp0 [Int - 0..3] */
+	[3] = {1,     ABCD,	   28},	  /* Dev3  Grp1 [Int - 4..7] */
+	[4] = {5,     ABCD,	   28},	  /* Dev4  Grp5 [Int - 20..23] */
+	[5] = {5,     CDAB,	   28},	  /* Dev5  Grp5 [Int - 20..23] */
+	[6] = {6,     BCDA,	   29},	  /* Dev6  Grp6 [Int - 24..27] */
+	[7] = {6,     CDAB,	   29},	  /* Dev7  Grp6 [Int - 24..27] */
+	[8] = {0,     0,	   0 },	  /* Reserved */
+	[9] = {6,     ABCD,	   29},	  /* Dev9  Grp6 [Int - 24..27] */
+	[10] = {5,	BCDA,	    30},   /* Dev10 Grp5 [Int - 20..23] */
+	[11] = {2,	ABCD,	    30},   /* Dev11 Grp2 [Int - 8..11] */
+	[12] = {3,	ABCD,	    30},   /* Dev12 Grp3 [Int - 12..15] */
+	[13] = {4,	ABCD,	    30}	   /* Dev13 Grp4 [Int - 16..19] */
 };
 
 /* Their name are quite regular. So I undefine them. */

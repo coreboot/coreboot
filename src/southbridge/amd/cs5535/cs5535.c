@@ -90,11 +90,11 @@ static void cs5535_read_resources(device_t dev)
 
 static struct device_operations southbridge_ops = {
 	.read_resources   = cs5535_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = southbridge_init,
-	.enable           = southbridge_enable,
-	.scan_bus         = scan_static_bus,
+	.init		   = southbridge_init,
+	.enable	   = southbridge_enable,
+	.scan_bus	   = scan_static_bus,
 };
 
 static const struct pci_driver cs5535_pci_driver __pci_driver = {
@@ -104,9 +104,9 @@ static const struct pci_driver cs5535_pci_driver __pci_driver = {
 };
 
 struct chip_operations southbridge_amd_cs5535_ops = {
-        CHIP_NAME("AMD Geode CS5535 Southbridge")
-            /* This is only called when this device is listed in the
-             * static device tree.
-             */
-            .enable_dev = southbridge_enable,
+	CHIP_NAME("AMD Geode CS5535 Southbridge")
+	    /* This is only called when this device is listed in the
+	     * static device tree.
+	     */
+	    .enable_dev = southbridge_enable,
 };

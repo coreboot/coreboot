@@ -195,16 +195,16 @@ static void ddr_ram_setup(void)
 			/* Read SPD byte 13, Primary DRAM width. */
 			b = smbus_read_byte(DIMM0, SPD_PRIMARY_SDRAM_WIDTH);
 			//print_val("\nPrimary DRAM width", b);
-			if( b != 4 )   // not 64/128Mb (x4)
+			if( b != 4 )	  // not 64/128Mb (x4)
 				c = 0x81;  // 256Mb
 		}
 
 		/* Read SPD byte 4, Number of column addresses. */
 		b = smbus_read_byte(DIMM0, SPD_NUM_COLUMNS);
 		//print_val("\nNo Columns ",b);
-		if( b == 10 || b == 11 || b == 12) c |= 0x60;   // 10/11 bit col addr
-		if( b == 9 ) c |= 0x40;           // 9 bit col addr
-		if( b == 8 ) c |= 0x20;           // 8 bit col addr
+		if( b == 10 || b == 11 || b == 12) c |= 0x60;	  // 10/11 bit col addr
+		if( b == 9 ) c |= 0x40;	    // 9 bit col addr
+		if( b == 8 ) c |= 0x20;	    // 8 bit col addr
 
 		//print_val("\nMA type ", c);
 		pci_write_config8(ctrl.d0f3, 0x50, c);
@@ -235,7 +235,7 @@ static void ddr_ram_setup(void)
 	b = smbus_read_byte(DIMM0, SPD_DENSITY_OF_EACH_ROW_ON_MODULE);
 	if( b & 0x02 )
 	{
-		c = 0x40;         				// 2GB
+		c = 0x40;	    				// 2GB
 		bank |= 0x02;
 	}
 	else if( b & 0x01)
@@ -265,8 +265,8 @@ static void ddr_ram_setup(void)
 		c = 0x02;    					// 64MB
 		bank |= 0x01;
 	}
-	else if( b & 0x08) c = 0x01;    	// 32MB
-	else c = 0x01;                  	// Error, use default
+	else if( b & 0x08) c = 0x01;	 	// 32MB
+	else c = 0x01;			 	// Error, use default
 
 	// set bank zero size
 	pci_write_config8(ctrl.d0f3, 0x40, c);
@@ -318,11 +318,11 @@ static void ddr_ram_setup(void)
 	print_val("\nCycle time at CL X-1   (nS)", c);
 */
 	/* Scaling of Cycle Time SPD data */
-	/* 7      4 3       0             */
-	/*    ns     x0.1ns               */
+	/* 7	   4 3	     0		   */
+	/*    ns     x0.1ns		   */
 	bank = smbus_read_byte(DIMM0, SPD_MIN_CYCLE_TIME_AT_CAS_MAX);
 
-	if( b & 0x10 ){             // DDR offering optional CAS 3
+	if( b & 0x10 ){	     // DDR offering optional CAS 3
 		//print_debug("\nStarting at CAS 3");
 		c = 0x30;
 		/* see if we can better it */
@@ -338,9 +338,9 @@ static void ddr_ram_setup(void)
 				c = 0x10;
 			}
 		}
-	}else{                     // no optional CAS values just 2 & 2.5
+	}else{			    // no optional CAS values just 2 & 2.5
 		//print_debug("\nStarting at CAS 2.5");
-		c = 0x20;          // assume CAS 2.5
+		c = 0x20;	     // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
 			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_2ND) <= bank){ // we can manage max Mhz at CAS 2
 				//print_debug("\nWe can do CAS 2");
@@ -350,8 +350,8 @@ static void ddr_ram_setup(void)
 	}
 
 	/* Scale DRAM Cycle Time to tRP/tRCD */
-	/* 7      2 1       0             */
-	/*    ns     x0.25ns               */
+	/* 7	   2 1	     0		   */
+	/*    ns     x0.25ns		    */
 	if ( bank <= 0x50 ) bank = 0x14;
 	else if (bank <= 0x60) bank = 0x18;
 	else bank = 0x1E;
@@ -360,10 +360,10 @@ static void ddr_ram_setup(void)
     DRAM Timing  Device 0  Fn 3 Offset 56
 
     RAS Pulse width 56[7,6]
-    CAS Latency     56[5,4]
+    CAS Latency	    56[5,4]
     Row pre-charge  56[1,0]
 
-         SDR  DDR
+	 SDR  DDR
       00  1T   -
       01  2T   2T
       10  3T   2.5T
@@ -535,7 +535,7 @@ static void ddr_ram_setup(void)
     		CPU Frequency  Device 0 Function 2 Offset 54
 
 			CPU FSB Operating Frequency (bits 7:5)
-	    	  	000 : 100MHz    001 : 133MHz
+	    	  	000 : 100MHz	 001 : 133MHz
 	    	  	010 : 200MHz
 			  	011->111 : Reserved
 
@@ -623,14 +623,14 @@ static void ddr_ram_setup(void)
     MR[0-2]   dont care
 
     CAS Latency
-    000       reserved
-    001       reserved
-    010       2
-    011       3
-    100       reserved
-    101       1.5
-    110       2.5
-    111       reserved
+    000	      reserved
+    001	      reserved
+    010	      2
+    011	      3
+    100	      reserved
+    101	      1.5
+    110	      2.5
+    111	      reserved
 
     CAS 2     0101011000 = 0x158
     CAS 2.5   1101011000 = 0x358

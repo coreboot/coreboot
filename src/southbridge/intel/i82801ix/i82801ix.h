@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,13 +46,13 @@
 #define APM_CNT		0xb2
 
 #define PM1_STS		0x00
-#define   PWRBTN_STS	(1 <<  8)
-#define   RTC_STS	(1 << 10)
+#define	  PWRBTN_STS	(1 <<  8)
+#define	  RTC_STS	(1 << 10)
 #define PM1_EN		0x02
-#define   PWRBTN_EN	(1 <<  8)
-#define   GBL_EN	(1 <<  5)
+#define	  PWRBTN_EN	(1 <<  8)
+#define	  GBL_EN	(1 <<  5)
 #define PM1_CNT		0x04
-#define   SCI_EN	(1 << 0)
+#define	  SCI_EN	(1 << 0)
 #define PM_LV2		0x14
 #define PM_LV3		0x15
 #define PM_LV4		0x16
@@ -60,12 +60,12 @@
 #define PM_LV6		0x18
 #define GPE0_STS	0x20
 #define SMI_EN		0x30
-#define   PERIODIC_EN	(1 << 14)
-#define   TCO_EN	(1 << 13)
-#define   APMC_EN	(1 <<  5)
-#define   BIOS_EN	(1 <<  2)
-#define   EOS		(1 <<  1)
-#define   GBL_SMI_EN	(1 <<  0)
+#define	  PERIODIC_EN	(1 << 14)
+#define	  TCO_EN	(1 << 13)
+#define	  APMC_EN	(1 <<  5)
+#define	  BIOS_EN	(1 <<  2)
+#define	  EOS		(1 <<  1)
+#define	  GBL_SMI_EN	(1 <<  0)
 #define SMI_STS		0x34
 #define ALT_GP_SMI_EN	0x38
 #define ALT_GP_SMI_STS	0x3a

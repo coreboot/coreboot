@@ -95,14 +95,14 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINT32              AvailableHeapSize;
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              CurrNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              BestFitNodeOffset;
-	UINT32              BestFitPrevNodeOffset;
-	UINT32              NextFreeOffset;
+	UINT32		     AvailableHeapSize;
+	UINT8		     *BiosHeapBaseAddr;
+	UINT32		     CurrNodeOffset;
+	UINT32		     PrevNodeOffset;
+	UINT32		     FreedNodeOffset;
+	UINT32		     BestFitNodeOffset;
+	UINT32		     BestFitPrevNodeOffset;
+	UINT32		     NextFreeOffset;
 	BIOS_BUFFER_NODE   *CurrNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
 	BIOS_BUFFER_NODE   *BestFitNodePtr;
@@ -224,12 +224,12 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              AllocNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              NextNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              EndNodeOffset;
+	UINT8		     *BiosHeapBaseAddr;
+	UINT32		     AllocNodeOffset;
+	UINT32		     PrevNodeOffset;
+	UINT32		     NextNodeOffset;
+	UINT32		     FreedNodeOffset;
+	UINT32		     EndNodeOffset;
 	BIOS_BUFFER_NODE   *AllocNodePtr;
 	BIOS_BUFFER_NODE   *PrevNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
@@ -340,8 +340,8 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	UINT32              AllocNodeOffset;
-	UINT8               *BiosHeapBaseAddr;
+	UINT32		     AllocNodeOffset;
+	UINT8		     *BiosHeapBaseAddr;
 	BIOS_BUFFER_NODE   *AllocNodePtr;
 	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
@@ -374,7 +374,7 @@ AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS        Status;
+	AGESA_STATUS	     Status;
 
 	Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
 	return Status;
@@ -382,9 +382,9 @@ AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS        Status;
-	UINT8                 Value;
-	UINTN               ResetType;
+	AGESA_STATUS	     Status;
+	UINT8		       Value;
+	UINTN		     ResetType;
 	AMD_CONFIG_PARAMS   *StdHeader;
 
 	ResetType = Data;
@@ -440,14 +440,14 @@ AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPt
 /*  Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	AGESA_STATUS      Status;
-	UINTN             FcnData;
+	AGESA_STATUS	   Status;
+	UINTN		   FcnData;
 	MEM_DATA_STRUCT   *MemData;
-	UINT32            AcpiMmioAddr;
-	UINT32            GpioMmioAddr;
-	UINT8             Data8;
-	UINT16            Data16;
-	UINT8             TempData8;
+	UINT32		   AcpiMmioAddr;
+	UINT32		   GpioMmioAddr;
+	UINT8		   Data8;
+	UINT16		   Data16;
+	UINT8		   TempData8;
 
 	FcnData = Data;
 	MemData = ConfigPtr;
@@ -455,10 +455,10 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	Status  = AGESA_SUCCESS;
 	/* Get SB MMIO Base (AcpiMmioAddr) */
 	WriteIo8 (0xCD6, 0x27);
-	Data8   = ReadIo8(0xCD7);
+	Data8	 = ReadIo8(0xCD7);
 	Data16  = Data8<<8;
 	WriteIo8 (0xCD6, 0x26);
-	Data8   = ReadIo8(0xCD7);
+	Data8	 = ReadIo8(0xCD7);
 	Data16  |= Data8;
 	AcpiMmioAddr = (UINT32)Data16 << 16;
 	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
@@ -535,12 +535,12 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *Conf
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	UINTN                 FcnData;
+	UINTN		       FcnData;
 	PCIe_SLOT_RESET_INFO  *ResetInfo;
 
 	UINT32  GpioMmioAddr;
 	UINT32  AcpiMmioAddr;
-	UINT8   Data8;
+	UINT8	 Data8;
 	UINT16  Data16;
 
 	FcnData   = Data;
@@ -568,7 +568,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 				case DeassertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG21);
 					Data8 |= BIT6 ;
-					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG21, Data8);       // MXM_GPIO0. GPIO21
+					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG21, Data8);	    // MXM_GPIO0. GPIO21
 					Status = AGESA_SUCCESS;
 					break;
 			}
@@ -584,7 +584,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 				case DeassertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG25);
 					Data8 |= BIT6 ;
-					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG25, Data8);       // PCIE_RST#_LAN, GPIO25
+					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG25, Data8);	    // PCIE_RST#_LAN, GPIO25
 					Status = AGESA_SUCCESS;
 					break;
 			}
@@ -600,7 +600,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 				case DeassertSlotReset:
 					Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG02);
 					Data8 |= BIT6 ;
-					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG02, Data8);       // MPCIE_RST0, GPIO02
+					Write64Mem8 (GpioMmioAddr+SB_GPIO_REG02, Data8);	    // MPCIE_RST0, GPIO02
 					Status = AGESA_SUCCESS;
 					break;
 			}

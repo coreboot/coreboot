@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2008 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ typedef struct {
 
 typedef struct {
 	unsigned int	card_type; /* 0x0: unpopulated,
-				      0xa - 0xf: raw card type A - F */
+					  0xa - 0xf: raw card type A - F */
 	chip_width_t	chip_width;
 	chip_capacity_t	chip_capacity;
 	unsigned int	page_size; /* of whole DIMM in Bytes (4096 or 8192) */

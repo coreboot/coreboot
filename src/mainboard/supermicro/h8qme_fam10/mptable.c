@@ -77,7 +77,7 @@ static void *smp_write_config_table(void *v)
 
 	mptable_add_isa_interrupts(mc, bus_isa, m->apicid_mcp55, 0);
 
-		   /*I/O Ints:	Type	Polarity    Trigger			Bus ID	 IRQ	APIC ID	PIN# */
+		   /*I/O Ints:	Type	Polarity	  Trigger			Bus ID	 IRQ	APIC ID	PIN# */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+1)<<2)|1, m->apicid_mcp55, 0x5);  /*  5 SMBus, OK */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|0, m->apicid_mcp55, 0xb); /* 11 USB, OK */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_mcp55[0], ((sbdn+2)<<2)|1, m->apicid_mcp55, 0xa); /* 10 USB, OK */

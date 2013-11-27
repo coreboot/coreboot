@@ -62,17 +62,17 @@ static void init(struct device *dev)
 
 	/* Init Hudson GPIOs. */
 	printk(BIOS_DEBUG, "Init FCH GPIOs @ 0x%08x\n", ACPI_MMIO_BASE+GPIO_BASE);
-	FCH_IOMUX( 50) = 2;    // GPIO50: FCH_ARST#_GATE resets stuck PCIe devices
+	FCH_IOMUX( 50) = 2;	// GPIO50: FCH_ARST#_GATE resets stuck PCIe devices
 	FCH_GPIO ( 50) = 0xC0; // = output set to 1 as it's never needed
-	FCH_IOMUX(197) = 2;    // GPIO197: BIOS_DEFAULTS#
+	FCH_IOMUX(197) = 2;	// GPIO197: BIOS_DEFAULTS#
 	FCH_GPIO (197) = 0x28; // = input, disable int. pull-up
-	FCH_IOMUX( 56) = 1;    // GPIO58-56: REV_ID2-0
+	FCH_IOMUX( 56) = 1;	// GPIO58-56: REV_ID2-0
 	FCH_GPIO ( 56) = 0x28; // = inputs, disable int. pull-ups
 	FCH_IOMUX( 57) = 1;
 	FCH_GPIO ( 57) = 0x28;
 	FCH_IOMUX( 58) = 1;
 	FCH_GPIO ( 58) = 0x28;
-	FCH_IOMUX(187) = 2;    // GPIO187,188,166,GPO160: GPO0-3 on COM Express connector
+	FCH_IOMUX(187) = 2;	// GPIO187,188,166,GPO160: GPO0-3 on COM Express connector
 	FCH_GPIO (187) = 0x08; // = outputs, disable PUs, default to 0
 	FCH_IOMUX(188) = 2;
 	FCH_GPIO (188) = 0x08;
@@ -82,14 +82,14 @@ static void init(struct device *dev)
 	FCH_PMIO(0xDC) &= ~0x80; FCH_PMIO(0xE6) = (FCH_PMIO(0xE6) & ~0x02) | 0x01;
 	FCH_IOMUX(160) = 1;
 	FCH_GPIO (160) = 0x08;
-	FCH_IOMUX(189) = 1;    // GPIO189-192: GPI0-3 on COM Express connector
-	FCH_IOMUX(190) = 1;    // default to inputs with int. PU
+	FCH_IOMUX(189) = 1;	// GPIO189-192: GPI0-3 on COM Express connector
+	FCH_IOMUX(190) = 1;	// default to inputs with int. PU
 	FCH_IOMUX(191) = 1;
 	FCH_IOMUX(192) = 1;
 	if (!fch_gpio_state(197)) // just in case anyone cares
 		printk(BIOS_INFO, "BIOS_DEFAULTS jumper is present.\n");
 	printk(BIOS_INFO, "Board revision ID: %u\n",
-	       fch_gpio_state(58)<<2 | fch_gpio_state(57)<<1 | fch_gpio_state(56));
+		fch_gpio_state(58)<<2 | fch_gpio_state(57)<<1 | fch_gpio_state(56));
 
 	/* Lower SPI speed from default 66 to 22 MHz for SST 25VF032B */
 	spi_base = (u8*)(pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x14, 3)), 0xA0) & 0xFFFFFFE0);

@@ -21,7 +21,7 @@
 
 Field(ERAM, ByteAcc, NoLock, Preserve)
 {
-                Offset (0x32),
+		Offset (0x32),
 			    , 2,
 			WKLD, 1,
 		Offset (0x46),

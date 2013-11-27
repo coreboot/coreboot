@@ -48,7 +48,7 @@ static void nano_finish_fid_vid_transition(void)
 		cnt++;
 		if (cnt > 128) {
 			printk(BIOS_WARNING,
-			       "Error while updating multiplier and voltage\n");
+				  "Error while updating multiplier and voltage\n");
 			break;
 		}
 	} while (msr.lo & ((1 << 16) | (1 << 17)));
@@ -73,9 +73,9 @@ static void nano_set_max_fid_vid(void)
 	u8 cur_fid = (msr.lo >>  8) & 0xff;
 
 	printk(BIOS_INFO, "CPU multiplier: %dx (min %dx; max %dx)\n",
-	       cur_fid, min_fid, max_fid);
-	printk(BIOS_INFO, "Voltage ID    : %dx (min %dx; max %dx)\n",
-	       cur_vid, min_vid, max_vid);
+		cur_fid, min_fid, max_fid);
+	printk(BIOS_INFO, "Voltage ID	  : %dx (min %dx; max %dx)\n",
+		cur_vid, min_vid, max_vid);
 
 	if( (cur_fid != max_fid) || (cur_vid != max_vid) ) {
 		/* Set highest frequency and VID */

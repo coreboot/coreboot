@@ -78,8 +78,8 @@ static void i82801ex_pci_dma_cfg(device_t dev)
 #define LPC_EN 0xe6
 static void i82801ex_enable_lpc(device_t dev)
 {
-        /* lpc i/f enable */
-        pci_write_config8(dev, LPC_EN, 0x0d);
+	/* lpc i/f enable */
+	pci_write_config8(dev, LPC_EN, 0x0d);
 }
 
 typedef struct southbridge_intel_i82801ex_config config_t;
@@ -96,7 +96,7 @@ static void set_i82801ex_gpio_use_sel(
 		int val;
 		switch(config->gpio[i] & ICH5R_GPIO_USE_MASK) {
 		case ICH5R_GPIO_USE_AS_NATIVE: val = 0; break;
-		case ICH5R_GPIO_USE_AS_GPIO:   val = 1; break;
+		case ICH5R_GPIO_USE_AS_GPIO:	 val = 1; break;
 		default:
 			continue;
 		}
@@ -172,7 +172,7 @@ static void set_i82801ex_gpio_level(
 			gpio_lvl2  |= (val << (i - 32));
 		}
 	}
-	outl(gpio_lvl,   res->base + 0x0c);
+	outl(gpio_lvl,	  res->base + 0x0c);
 	outl(gpio_blink, res->base + 0x18);
 	outl(gpio_lvl2,  res->base + 0x38);
 }
@@ -195,7 +195,7 @@ static void set_i82801ex_gpio_inv(
 		gpio_inv &= ~( 1 << i);
 		gpio_inv |= (val << i);
 	}
-	outl(gpio_inv,   res->base + 0x2c);
+	outl(gpio_inv,	  res->base + 0x2c);
 }
 
 static void i82801ex_pirq_init(device_t dev)
@@ -260,10 +260,10 @@ static void enable_hpet(struct device *dev)
 	dword |= (1 << 17); /* enable hpet */
 
 	/* Bits [16:15]  Memory Address Range
-	 *	    00   FED0_0000h - FED0_03FFh
-	 *	    01   FED0_1000h - FED0_13FFh
-	 *	    10   FED0_2000h - FED0_23FFh
-	 *	    11   FED0_3000h - FED0_33FFh
+	 *		00   FED0_0000h - FED0_03FFh
+	 *		01   FED0_1000h - FED0_13FFh
+	 *		10   FED0_2000h - FED0_23FFh
+	 *		11   FED0_3000h - FED0_33FFh
 	 */
 
 	dword &= ~(3 << 15); /* clear it */
@@ -292,7 +292,7 @@ static void lpc_init(struct device *dev)
 	/* Clear SATA to non raid */
 	pci_write_config8(dev, 0xae, 0x00);
 
-        get_option(&pwr_on, "power_on_after_fail");
+	get_option(&pwr_on, "power_on_after_fail");
 	byte = pci_read_config8(dev, 0xa4);
 	byte &= 0xfe;
 	if (!pwr_on) {
@@ -366,16 +366,16 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations lpc_ops  = {
 	.read_resources   = i82801ex_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = i82801ex_lpc_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = i82801ex_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+	.enable	   = i82801ex_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801ER_LPC,
 };

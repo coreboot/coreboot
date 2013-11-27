@@ -36,7 +36,7 @@
  * address and offset. Following bytes auto increment.
  */
 static UINT8 readSmbusByte(UINT16 iobase, UINT8 address, char *buffer,
-						   int offset, int initial_offset)
+							 int offset, int initial_offset)
 {
 	unsigned int status = -1;
 	UINT64 time_limit;
@@ -110,10 +110,10 @@ UINT8 writeSmbusByte(UINT16 iobase, UINT8 address, UINT8 buffer,
 
 static void setupFch(UINT16 ioBase)
 {
-	AMD_CONFIG_PARAMS         StdHeader;
-	UINT32                    PciData32;
-	UINT8                     PciData8;
-	PCI_ADDR                  PciAddress;
+	AMD_CONFIG_PARAMS	   StdHeader;
+	UINT32			   PciData32;
+	UINT8			   PciData8;
+	PCI_ADDR		   PciAddress;
 
 	/* Set SMBus MMIO. */
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 20, 0, 0x90);

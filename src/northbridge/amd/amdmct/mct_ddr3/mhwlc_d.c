@@ -45,20 +45,20 @@ void getWLByteDelay(sDCTStruct *pDCTData, u8 ByteLane, u8 dimm);
 
 /*-----------------------------------------------------------------------------
  * void AgesaHwWlPhase1(SPDStruct *SPDData,MCTStruct *MCTData, DCTStruct *DCTData,
- *                  u8 Dimm, u8 Pass)
+ *		    u8 Dimm, u8 Pass)
  *
  *  Description:
- *       This function initialized Hardware based write levelization phase 1
+ *	 This function initialized Hardware based write levelization phase 1
  *
  *   Parameters:
- *       IN  OUT   *SPDData - Pointer to buffer with information about each DIMMs
- *                            SPD information
- *                 *MCTData - Pointer to buffer with runtime parameters,
- *                 *DCTData - Pointer to buffer with information about each DCT
+ *	 IN  OUT   *SPDData - Pointer to buffer with information about each DIMMs
+ *			      SPD information
+ *		   *MCTData - Pointer to buffer with runtime parameters,
+ *		   *DCTData - Pointer to buffer with information about each DCT
  *
- *       IN        DIMM - Logical DIMM number
- *                 Pass - First or Second Pass
- *       OUT
+ *	 IN	   DIMM - Logical DIMM number
+ *		   Pass - First or Second Pass
+ *	 OUT
  *-----------------------------------------------------------------------------
  */
 void AgesaHwWlPhase1(sMCTStruct *pMCTData, sDCTStruct *pDCTData,
@@ -203,12 +203,12 @@ u32 swapAddrBits_wl(sDCTStruct *pDCTData, u32 MRSValue)
  *  u32 swapBankBits(sDCTStruct *pDCTData, u32 MRSValue)
  *
  *  Description:
- *       This function swaps the bits in MSR register value
+ *	 This function swaps the bits in MSR register value
  *
  *   Parameters:
- *       IN  OUT   *DCTData - Pointer to buffer with information about each DCT
- *       IN	u32: MRS value
- *       OUT       u32: Swapped BANK BITS
+ *	 IN  OUT   *DCTData - Pointer to buffer with information about each DCT
+ *	 IN	u32: MRS value
+ *	 OUT	   u32: Swapped BANK BITS
  *
  * ----------------------------------------------------------------------------
  */
@@ -239,18 +239,18 @@ u32 swapBankBits(sDCTStruct *pDCTData, u32 MRSValue)
  *  void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *DCTData, u8 Dimm, BOOL WL)
  *
  *  Description:
- *       This function prepares DIMMS for training
+ *	 This function prepares DIMMS for training
  *
  *   Parameters:
- *       IN  OUT   *DCTData - Pointer to buffer with information about each DCT
+ *	 IN  OUT   *DCTData - Pointer to buffer with information about each DCT
  *		 *SPDData - Pointer to buffer with information about each DIMMs
- *			    SPD information
+ *				 SPD information
  *		 *MCTData - Pointer to buffer with runtime parameters,
- *       IN	Dimm - Logical DIMM number
+ *	 IN	Dimm - Logical DIMM number
  *		 WL - indicates if the routine is used for Write levelization
- *		      training
+ *			  training
  *
- *       OUT
+ *	 OUT
  *
  * ----------------------------------------------------------------------------
  */
@@ -581,7 +581,7 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 						DRAM_INIT, MrsAddressStart, MrsAddressEnd, tempW);
 					/* Program F2x[1, 0]7C[SendMrsCmd]=1 to initiate the command to
-					   the specified DIMM.*/
+						the specified DIMM.*/
 					set_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId, FUN_DCT,
 						DRAM_INIT, SendMrsCmd, SendMrsCmd, 1);
 					/* Wait for F2x[1, 0]7C[SendMrsCmd] to be cleared by hardware. */
@@ -601,12 +601,12 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
  * void programODT(sMCTStruct *pMCTData, DCTStruct *DCTData, u8 dimm)
  *
  *  Description:
- *       This function programs the ODT values for the NB
+ *	 This function programs the ODT values for the NB
  *
  *   Parameters:
- *       IN  OUT   *DCTData - Pointer to buffer with information about each DCT
- *       IN
- *       OUT
+ *	 IN  OUT   *DCTData - Pointer to buffer with information about each DCT
+ *	 IN
+ *	 OUT
  * ----------------------------------------------------------------------------
  */
 void programODT(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm)
@@ -634,14 +634,14 @@ void programODT(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm)
  * void procConifg(MCTStruct *MCTData,DCTStruct *DCTData, u8 Dimm, u8 Pass)
  *
  *  Description:
- *       This function programs the ODT values for the NB
+ *	 This function programs the ODT values for the NB
  *
  *   Parameters:
- *       IN  OUT   *DCTData - Pointer to buffer with information about each DCT
+ *	 IN  OUT   *DCTData - Pointer to buffer with information about each DCT
  *		 *MCTData - Pointer to buffer with runtime parameters,
- *       IN	Dimm - Logical DIMM
+ *	 IN	Dimm - Logical DIMM
  *		 Pass - First of Second Pass
- *       OUT
+ *	 OUT
  * ----------------------------------------------------------------------------
  */
 void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
@@ -732,7 +732,7 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 		while(ByteLane < MAX_BYTE_LANES)
 		{
 			MemClkFreq = get_Bits(pDCTData, pDCTData->CurrDct, pDCTData->NodeId,
-					      FUN_DCT, DRAM_CONFIG_HIGH, 0, 2);
+						   FUN_DCT, DRAM_CONFIG_HIGH, 0, 2);
 			if (pDCTData->Status[DCT_STATUS_REGISTERED])
 				RegisterDelay = 0x20; /* TODO: ((RCW2 & BIT0) == 0) ? 0x20 : 0x30; */
 			else
@@ -743,7 +743,7 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 			   training) - RegisterDelay. */
 			/* MemClkFreq: 3: 400Mhz; 4: 533Mhz; 5: 667Mhz; 6: 800Mhz */
 			SeedTotal = (u16) (RegisterDelay + ((((u32) SeedTotal - RegisterDelay) *
-							     freq_tab[MemClkFreq-3]) / 400));
+								    freq_tab[MemClkFreq-3]) / 400));
 			Seed_Gross = (SeedTotal & 0x20) != 0 ? 1 : 2;
 			Seed_Fine = SeedTotal & 0x1F;
 			pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] = Seed_Gross;
@@ -759,12 +759,12 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
  *  void setWLByteDelay(DCTStruct *DCTData, u8 ByteLane, u8 Dimm){
  *
  *  Description:
- *       This function writes the write levelization byte delay for the Phase
- *       Recovery control registers
+ *	 This function writes the write levelization byte delay for the Phase
+ *	 Recovery control registers
  *
  *   Parameters:
- *       IN  OUT   *DCTData - Pointer to buffer with information about each DCT
- *       IN	Dimm - Dimm Number
+ *	 IN  OUT   *DCTData - Pointer to buffer with information about each DCT
+ *	 IN	Dimm - Dimm Number
  *		 DCTData->WLGrossDelay[index+ByteLane] - gross write delay for each
  *						     logical DIMM
  *		 DCTData->WLFineDelay[index+ByteLane] - fine write delay for each
@@ -772,7 +772,7 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
  *		 ByteLane - target byte lane to write
  *	  targetAddr -    0: write to DRAM phase recovery control register
  *			  1: write to DQS write register
- *       OUT
+ *	 OUT
  *
  *-----------------------------------------------------------------------------
  */
@@ -800,8 +800,8 @@ void setWLByteDelay(sDCTStruct *pDCTData, u8 ByteLane, u8 dimm, u8 targetAddr)
 			}
 			grossDelayValue = pDCTData->WLGrossDelay[index+ByteLane];
 			/* Adjust seed gross delay overflow (greater than 3):
-			 *      - Program seed gross delay as 2 (gross is 4 or 6) or 1 (gross is 5).
-			 *      - Keep original seed gross delay for later reference.
+			 *	   - Program seed gross delay as 2 (gross is 4 or 6) or 1 (gross is 5).
+			 *	   - Keep original seed gross delay for later reference.
 			 */
 			if(grossDelayValue >= 3)
 			{
@@ -875,14 +875,14 @@ void setWLByteDelay(sDCTStruct *pDCTData, u8 ByteLane, u8 dimm, u8 targetAddr)
  *  void getWLByteDelay(DCTStruct *DCTData, u8 ByteLane, u8 Dimm)
  *
  *  Description:
- *       This function reads the write levelization byte delay from the Phase
- *       Recovery control registers
+ *	 This function reads the write levelization byte delay from the Phase
+ *	 Recovery control registers
  *
  *   Parameters:
- *       IN  OUT   *DCTData - Pointer to buffer with information about each DCT
- *       IN	Dimm - Dimm Number
+ *	 IN  OUT   *DCTData - Pointer to buffer with information about each DCT
+ *	 IN	Dimm - Dimm Number
  *		 ByteLane - target byte lane to read
- *       OUT
+ *	 OUT
  *		 DCTData->WLGrossDelay[index+ByteLane] - gross write delay for current
  *						     byte for logical DIMM
  *		 DCTData->WLFineDelay[index+ByteLane] - fine write delay for current

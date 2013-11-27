@@ -37,18 +37,18 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t dev
 		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
 		uint8_t slot, uint8_t rfu)
 {
-        pirq_info->bus = bus;
-        pirq_info->devfn = devfn;
-                pirq_info->irq[0].link = link0;
-                pirq_info->irq[0].bitmap = bitmap0;
-                pirq_info->irq[1].link = link1;
-                pirq_info->irq[1].bitmap = bitmap1;
-                pirq_info->irq[2].link = link2;
-                pirq_info->irq[2].bitmap = bitmap2;
-                pirq_info->irq[3].link = link3;
-                pirq_info->irq[3].bitmap = bitmap3;
-        pirq_info->slot = slot;
-        pirq_info->rfu = rfu;
+	pirq_info->bus = bus;
+	pirq_info->devfn = devfn;
+		pirq_info->irq[0].link = link0;
+		pirq_info->irq[0].bitmap = bitmap0;
+		pirq_info->irq[1].link = link1;
+		pirq_info->irq[1].bitmap = bitmap1;
+		pirq_info->irq[2].link = link2;
+		pirq_info->irq[2].bitmap = bitmap2;
+		pirq_info->irq[3].link = link3;
+		pirq_info->irq[3].bitmap = bitmap3;
+	pirq_info->slot = slot;
+	pirq_info->rfu = rfu;
 }
 extern unsigned char bus_mcp55[8]; //1
 
@@ -63,18 +63,18 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	uint8_t *v;
 	unsigned sbdn;
 
-        uint8_t sum=0;
-        int i;
+	uint8_t sum=0;
+	int i;
 
-        get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+	get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
 	sbdn = sysconf.sbdn;
 
-        /* Align the table to be 16 byte aligned. */
-        addr += 15;
-        addr &= ~15;
+	/* Align the table to be 16 byte aligned. */
+	addr += 15;
+	addr &= ~15;
 
-        /* This table must be betweeen 0xf0000 & 0x100000 */
-        printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
+	/* This table must be betweeen 0xf0000 & 0x100000 */
+	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
 	v = (uint8_t *)(addr);
@@ -102,14 +102,14 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	pirq->size = 32 + 16 * slot_num;
 
-        for (i = 0; i < pirq->size; i++)
-                sum += v[i];
+	for (i = 0; i < pirq->size; i++)
+		sum += v[i];
 
 	sum = pirq->checksum - sum;
 
-        if (sum != pirq->checksum) {
-                pirq->checksum = sum;
-        }
+	if (sum != pirq->checksum) {
+		pirq->checksum = sum;
+	}
 
 	printk(BIOS_INFO, "done.\n");
 

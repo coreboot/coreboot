@@ -302,18 +302,18 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [15:12] CS7/6
 	 * [31:16]
 	      row    col   bank
-	  0:  13     9      2    :128M
-	  1:  13     10     2    :256M
-	  2:  14     10     2    :512M
-	  3:  13     11     2    :512M
-	  4:  13     10     3    :512M
-	  5:  14     10     3    :1G
-	  6:  14     11     2    :1G
-	  7:  15     10     3    :2G
-	  8:  14     11     3    :2G
-	  9:  15     11     3    :4G
-	 10:  16     10     3    :4G
-	 11:  16     11     3    :8G
+	  0:  13     9	     2	  :128M
+	  1:  13     10     2	  :256M
+	  2:  14     10     2	  :512M
+	  3:  13     11     2	  :512M
+	  4:  13     10     3	  :512M
+	  5:  14     10     3	  :1G
+	  6:  14     11     2	  :1G
+	  7:  15     10     3	  :2G
+	  8:  14     11     3	  :2G
+	  9:  15     11     3	  :4G
+	 10:  16     10     3	  :4G
+	 11:  16     11     3	  :8G
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x80), 0xffff0000, 0x00000000,
 	/* DRAM Timing Low Register
@@ -342,9 +342,9 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [10:10] Reserved
 	 * [11:11] Trtp (Read to Precharge Time, read Cas# to precharge time)
 	 *	   0 = 2 clocks for Burst Length of 32 Bytes
-	 *	       4 clocks for Burst Length of 64 Bytes
+	 *		   4 clocks for Burst Length of 64 Bytes
 	 *	   1 = 3 clocks for Burst Length of 32 Bytes
-	 *	       5 clocks for Burst Length of 64 Bytes
+	 *		   5 clocks for Burst Length of 64 Bytes
 	 * [15:12] Tras (Minimum Ras# Active Time)
 	 *	   0000 = reserved
 	 *	   0001 = reserved
@@ -372,14 +372,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [31:24] MemClkDis ( Disable the MEMCLK outputs for DRAM channel A,
 	 * BIOS should set it to reduce the power consumption)
 	 *	  Bit		F(1207)		M2 Package	S1g1 Package
-	 *	    0		N/A		MA1_CLK1	N/A
-	 *	    1		N/A		MA0_CLK1	MA0_CLK1
-	 *	    2		MA3_CLK		N/A		N/A
-	 *	    3		MA2_CLK		N/A		N/A
-	 *	    4		MA1_CLK		MA1_CLK0	N/A
-	 *	    5		MA0_CLK		MA0_CLK0	MA0_CLK0
-	 *	    6		N/A		MA1_CLK2	N/A
-	 *	    7		N/A		MA0_CLK2	MA0_CLK2
+	 *		0		N/A		MA1_CLK1	N/A
+	 *		1		N/A		MA0_CLK1	MA0_CLK1
+	 *		2		MA3_CLK		N/A		N/A
+	 *		3		MA2_CLK		N/A		N/A
+	 *		4		MA1_CLK		MA1_CLK0	N/A
+	 *		5		MA0_CLK		MA0_CLK0	MA0_CLK0
+	 *		6		N/A		MA1_CLK2	N/A
+	 *		7		N/A		MA0_CLK2	MA0_CLK2
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x88), 0x000004c8, 0xff000002 /* 0x03623125 */ ,
 	/* DRAM Timing High Register
@@ -445,10 +445,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * F2:0x90
 	 * [ 0: 0] InitDram (Initialize DRAM)
 	 *	   1 = write 1 cause DRAM controller to execute the DRAM
-	 *	       initialization, when done it read to 0
+	 *		   initialization, when done it read to 0
 	 * [ 1: 1] ExitSelfRef ( Exit Self Refresh Command )
 	 *	   1 = write 1 causes the DRAM controller to bring the DRAMs out
-	 *	       for self refresh mode
+	 *		   for self refresh mode
 	 * [ 3: 2] Reserved
 	 * [ 5: 4] DramTerm (DRAM Termination)
 	 *	   00 = On die termination disabled
@@ -461,10 +461,10 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   1 = Weak drive strength mode
 	 * [ 8: 8] ParEn (Parity Enable)
 	 *	   1 = Enable address parity computation output, PAR,
-	 *	       and enables the parity error input, ERR
+	 *		   and enables the parity error input, ERR
 	 * [ 9: 9] SelfRefRateEn (Faster Self Refresh Rate Enable)
 	 * 	  1 = Enable high temperature ( two times normal )
-	 *	      self refresh rate
+	 *		  self refresh rate
 	 * [10:10] BurstLength32 ( DRAM Burst Length Set for 32 Bytes)
 	 *	   0 = 64-byte mode
 	 *	   1 = 32-byte mode
@@ -475,15 +475,15 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [13:13] X4Dimm (DIMM 1 is x4)
 	 * [14:14] X4Dimm (DIMM 2 is x4)
 	 * [15:15] X4Dimm (DIMM 3 is x4)
-	 *         0 = DIMM is not x4
-	 *         1 = x4 DIMM present
+	 *	    0 = DIMM is not x4
+	 *	    1 = x4 DIMM present
 	 * [16:16] UnBuffDimm ( Unbuffered DIMMs)
 	 *	   0 = Buffered DIMMs
 	 *	   1 = Unbuffered DIMMs
 	 * [18:17] Reserved
 	 * [19:19] DimmEccEn ( DIMM ECC Enable )
 	 *	   1 =  ECC checking is being enabled for all DIMMs on the DRAM
-	 *	        controller ( Through F3 0x44[EccEn])
+	 *		    controller ( Through F3 0x44[EccEn])
 	 * [31:20] Reserved
 	 */
 	PCI_ADDR(0, 0x18, 2, 0x90), 0xfff6004c, 0x00000010,
@@ -497,11 +497,11 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   1xx = reserved
 	 * [ 3: 3] MemClkFreqVal (Memory Clock Freqency Valid)
 	 *	   1 = BIOS need to set the bit when setting up MemClkFreq to
-	 *	       the proper value
+	 *		   the proper value
 	 * [ 7: 4] MaxAsyncLat ( Maximum Asynchronous Latency)
-	 *         0000 = 0 ns
-	 *         ...
-	 *         1111 = 15 ns
+	 *	    0000 = 0 ns
+	 *	    ...
+	 *	    1111 = 15 ns
 	 * [11: 8] Reserved
 	 * [12:12] RDqsEn ( Read DQS Enable) This bit is only be set if x8
 	 *	   registered DIMMs are present in the system
@@ -521,29 +521,29 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   1 = Chip Select CKE Control
 	 * [17:17] FourRankSODimm (Four Rank SO-DIMM)
 	 *	   1 = this bit is set by BIOS to indicate that a four rank
-	 *	       SO-DIMM is present
+	 *		   SO-DIMM is present
 	 * [18:18] FourRankRDimm (Four Rank Registered DIMM)
-	 *         1 = this bit is set by BIOS to indicate that a four rank
-	 *	       registered DIMM is present
+	 *	    1 = this bit is set by BIOS to indicate that a four rank
+	 *		   registered DIMM is present
 	 * [19:19] Reserved
 	 * [20:20] SlowAccessMode (Slow Access Mode (2T Mode))
 	 *	   0 = DRAM address and control signals are driven for one
-	 *	       MEMCLK cycle
+	 *		   MEMCLK cycle
 	 *	   1 = One additional MEMCLK of setup time is provided on all
-	 *	       DRAM address and control signals except CS, CKE, and ODT;
-	 *	       i.e., these signals are drivern for two MEMCLK cycles
-	 *	       rather than one
+	 *		   DRAM address and control signals except CS, CKE, and ODT;
+	 *		   i.e., these signals are drivern for two MEMCLK cycles
+	 *		   rather than one
 	 * [21:21] Reserved
 	 * [22:22] BankSwizzleMode ( Bank Swizzle Mode),
-	 *         0 = Disabled (default)
-	 *         1 = Enabled
+	 *	    0 = Disabled (default)
+	 *	    1 = Enabled
 	 * [23:23] Reserved
 	 * [27:24] DcqBypassMax ( DRAM Controller Queue Bypass Maximum)
 	 *	   0000 = No bypass; the oldest request is never bypassed
 	 *	   0001 = The oldest request may be bypassed no more than 1 time
 	 *	   ...
 	 *	   1111 = The oldest request may be bypassed no more than 15\
-	 *	          times
+	 *		      times
 	 * [31:28] FourActWindow ( Four Bank Activate Window) , not more than
 	 *	   4 banks in a 8 bank device are activated
 	 *	   0000 = No tFAW window restriction
@@ -576,7 +576,7 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [ 5: 5] DCC_EN ( Dynamica Idle Cycle Counter Enable)
 	 *	   When set to 1, indicates that each entry in the page tables
 	 *	   dynamically adjusts the idle cycle limit based on page
-	 *	    Conflict/Page Miss (PC/PM) traffic
+	 *		Conflict/Page Miss (PC/PM) traffic
 	 * [ 8: 6] ILD_lmt ( Idle Cycle Limit)
 	 *	   000 = 0 cycles
 	 *	   001 = 4 cycles
@@ -597,15 +597,15 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 * [23:10] Reserved
 	 * [31:24] MemClkDis ( Disable the MEMCLK outputs for DRAM channel B,
 	 *	   BIOS should set it to reduce the power consumption)
-	 *         Bit          F(1207)         M2 Package      S1g1 Package
-	 *          0           N/A             MA1_CLK1        N/A
-	 *          1           N/A             MA0_CLK1        MA0_CLK1
-	 *          2           MA3_CLK         N/A             N/A
-	 *          3           MA2_CLK         N/A             N/A
-	 *          4           MA1_CLK         MA1_CLK0        N/A
-	 *          5           MA0_CLK         MA0_CLK0        MA0_CLK0
-	 *          6           N/A             MA1_CLK2        N/A
-	 *          7           N/A             MA0_CLK2        MA0_CLK2
+	 *	    Bit		 F(1207)	 M2 Package	 S1g1 Package
+	 *	     0		 N/A		 MA1_CLK1	 N/A
+	 *	     1		 N/A		 MA0_CLK1	 MA0_CLK1
+	 *	     2		 MA3_CLK	 N/A		 N/A
+	 *	     3		 MA2_CLK	 N/A		 N/A
+	 *	     4		 MA1_CLK	 MA1_CLK0	 N/A
+	 *	     5		 MA0_CLK	 MA0_CLK0	 MA0_CLK0
+	 *	     6		 N/A		 MA1_CLK2	 N/A
+	 *	     7		 N/A		 MA0_CLK2	 MA0_CLK2
 	 */
 	PCI_ADDR(0, 0x18, 2, 0xa0), 0x00fffc00, 0xff000000,
 
@@ -624,18 +624,18 @@ static void sdram_set_registers(const struct mem_controller *ctrl, struct sys_in
 	 *	   00011 = 160.00 ns
 	 *	   00100 = 320.00 ns
 	 *	   00101 = 640.00 ns
-	 *	   00110 =   1.28 us
-	 *	   00111 =   2.56 us
-	 *	   01000 =   5.12 us
+	 *	   00110 =	 1.28 us
+	 *	   00111 =	 2.56 us
+	 *	   01000 =	 5.12 us
 	 *	   01001 =  10.20 us
 	 *	   01011 =  41.00 us
 	 *	   01100 =  81.90 us
 	 *	   01101 = 163.80 us
 	 *	   01110 = 327.70 us
 	 *	   01111 = 655.40 us
-	 *	   10000 =   1.31 ms
-	 *	   10001 =   2.62 ms
-	 *	   10010 =   5.24 ms
+	 *	   10000 =	 1.31 ms
+	 *	   10001 =	 2.62 ms
+	 *	   10010 =	 5.24 ms
 	 *	   10011 =  10.49 ms
 	 *	   10100 =  20.97 ms
 	 *	   10101 =  42.00 ms
@@ -920,24 +920,24 @@ static void set_dimm_size(const struct mem_controller *ctrl,
 }
 
 /*    row    col   bank  for 64 bit
-  0:  13     9      2    :128M
-  1:  13     10     2    :256M
-  2:  14     10     2    :512M
-  3:  13     11     2    :512M
-  4:  13     10     3    :512M
-  5:  14     10     3    :1G
-  6:  14     11     2    :1G
-  7:  15     10     3    :2G
-  8:  14     11     3    :2G
-  9:  15     11     3    :4G
- 10:  16     10     3    :4G
- 11:  16     11     3    :8G
+  0:  13     9	    2	 :128M
+  1:  13     10	    2	 :256M
+  2:  14     10	    2	 :512M
+  3:  13     11	    2	 :512M
+  4:  13     10	    3	 :512M
+  5:  14     10	    3	 :1G
+  6:  14     11	    2	 :1G
+  7:  15     10	    3	 :2G
+  8:  14     11	    3	 :2G
+  9:  15     11	    3	 :4G
+ 10:  16     10	    3	 :4G
+ 11:  16     11	    3	 :8G
 */
 
 
 static void set_dimm_cs_map(const struct mem_controller *ctrl,
-			     struct dimm_size *sz, unsigned index,
-			     struct mem_info *meminfo)
+				struct dimm_size *sz, unsigned index,
+				struct mem_info *meminfo)
 {
 	static const uint8_t cs_map_aaa[24] = {
 		/* (bank=2, row=13, col=9)(3, 16, 11) ---> (0, 0, 0) (1, 3, 2) */
@@ -984,7 +984,7 @@ static void set_dimm_cs_map(const struct mem_controller *ctrl,
 
 
 static long spd_set_ram_size(const struct mem_controller *ctrl,
-			      struct mem_info *meminfo)
+				 struct mem_info *meminfo)
 {
 	int i;
 
@@ -1084,18 +1084,18 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 	/* 35 - 27 */
 
 	static const uint8_t csbase_low_f0_shift[] = {
-	 /* 128MB */       (14 - (13-5)),
-	 /* 256MB */       (15 - (13-5)),
-	 /* 512MB */       (15 - (13-5)),
-	 /* 512MB */       (16 - (13-5)),
-	 /* 512MB */       (16 - (13-5)),
-	 /* 1GB   */       (16 - (13-5)),
-	 /* 1GB   */       (16 - (13-5)),
-	 /* 2GB   */       (16 - (13-5)),
-	 /* 2GB   */       (17 - (13-5)),
-	 /* 4GB   */       (17 - (13-5)),
-	 /* 4GB   */       (16 - (13-5)),
-	 /* 8GB   */       (17 - (13-5)),
+	 /* 128MB */	    (14 - (13-5)),
+	 /* 256MB */	    (15 - (13-5)),
+	 /* 512MB */	    (15 - (13-5)),
+	 /* 512MB */	    (16 - (13-5)),
+	 /* 512MB */	    (16 - (13-5)),
+	 /* 1GB   */	    (16 - (13-5)),
+	 /* 1GB   */	    (16 - (13-5)),
+	 /* 2GB   */	    (16 - (13-5)),
+	 /* 2GB   */	    (17 - (13-5)),
+	 /* 4GB   */	    (17 - (13-5)),
+	 /* 4GB   */	    (16 - (13-5)),
+	 /* 8GB   */	    (17 - (13-5)),
 	};
 
 	/* cs_base_high is not changed */
@@ -1629,7 +1629,7 @@ static uint8_t get_exact_divisor(int i, uint8_t divisor)
 {
 	//input divisor could be 200(200), 150(266), 120(333), 100 (400)
 	static const uint8_t dv_a[] = {
-	       /* 200  266  333  400 */
+		/* 200  266  333  400 */
 	 /*4 */	  250, 250, 250, 250,
 	 /*5 */   200, 200, 200, 100,
 	 /*6 */   200, 166, 166, 100,
@@ -2096,7 +2096,7 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 }
 
 static int update_dimm_Trcd(const struct mem_controller *ctrl,
-			     const struct mem_param *param, int i, long dimm_mask)
+				const struct mem_param *param, int i, long dimm_mask)
 {
 	return update_dimm_TT_1_4(ctrl, param, i, dimm_mask, DRAM_TIMING_LOW, SPD_TRCD, DTL_TRCD_SHIFT, DTL_TRCD_MASK, DTL_TRCD_BASE, DTL_TRCD_MIN, DTL_TRCD_MAX);
 }
@@ -2174,7 +2174,7 @@ static int update_dimm_Twr(const struct mem_controller *ctrl, const struct mem_p
 
 
 static int update_dimm_Tref(const struct mem_controller *ctrl,
-			     const struct mem_param *param, int i, long dimm_mask)
+				const struct mem_param *param, int i, long dimm_mask)
 {
 	uint32_t dth, dth_old;
 	int value;
@@ -2238,7 +2238,7 @@ static void set_4RankRDimm(const struct mem_controller *ctrl,
 }
 
 static uint32_t get_extra_dimm_mask(const struct mem_controller *ctrl,
-				     struct mem_info *meminfo)
+					 struct mem_info *meminfo)
 {
 	int i;
 
@@ -2420,7 +2420,7 @@ static void set_ecc(const struct mem_controller *ctrl,
 
 
 static int update_dimm_Twtr(const struct mem_controller *ctrl,
-			     const struct mem_param *param, int i, long dimm_mask)
+				const struct mem_param *param, int i, long dimm_mask)
 {
 	return update_dimm_TT_1_4(ctrl, param, i, dimm_mask, DRAM_TIMING_HIGH, SPD_TWTR, DTH_TWTR_SHIFT, DTH_TWTR_MASK, DTH_TWTR_BASE, DTH_TWTR_MIN, DTH_TWTR_MAX);
 }
@@ -2534,7 +2534,7 @@ static void set_misc_timing(const struct mem_controller *ctrl, struct mem_info *
 	unsigned SlowAccessMode = 0;
 #endif
 
-#if CONFIG_DIMM_SUPPORT==0x0104   /* DDR2 and REG */
+#if CONFIG_DIMM_SUPPORT==0x0104	  /* DDR2 and REG */
 	long dimm_mask = meminfo->dimm_mask & 0x0f;
 	/* for REG DIMM */
 	dword = 0x00111222;
@@ -2832,7 +2832,7 @@ static long spd_set_dram_timing(const struct mem_controller *ctrl,
 }
 
 static void sdram_set_spd_registers(const struct mem_controller *ctrl,
-				     struct sys_info *sysinfo)
+					 struct sys_info *sysinfo)
 {
 	struct spd_set_memclk_result result;
 	const struct mem_param *param;
@@ -2873,7 +2873,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl,
 		goto hw_spd_err;
 
 	result = spd_set_memclk(ctrl, meminfo);
-	param     = result.param;
+	param	   = result.param;
 	meminfo->dimm_mask = result.dimm_mask;
 	printk_raminit("spd_set_memclk: dimm_mask=0x%x\n", meminfo->dimm_mask);
 	if (meminfo->dimm_mask == -1)

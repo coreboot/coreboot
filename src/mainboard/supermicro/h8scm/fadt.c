@@ -62,7 +62,7 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->pstate_cnt = 0xe2;
 
 	/* RTC_En_En, TMR_En_En, GBL_EN_EN */
-	outl(0x1, PM1_CNT_BLK_ADDRESS);           /* set SCI_EN */
+	outl(0x1, PM1_CNT_BLK_ADDRESS);	   /* set SCI_EN */
 	fadt->pm1a_evt_blk = PM1_EVT_BLK_ADDRESS;
 	fadt->pm1b_evt_blk = 0x0000;
 	fadt->pm1a_cnt_blk = PM1_CNT_BLK_ADDRESS;

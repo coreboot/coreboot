@@ -61,7 +61,7 @@ static void setup_ss_table(unsigned index, unsigned where, unsigned control,
  *	 8 8 2 2 :1
  *	 8 8 4   :2
  *	 8 4 4 4 :3
- *	16 4     :4
+ *	16 4	    :4
  */
 
 #define CK804_CHIP_REV 3
@@ -119,7 +119,7 @@ static void ck804_early_clear_port(unsigned ck804_num, unsigned *busn,
 }
 
 static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
-			      unsigned *io_base)
+				 unsigned *io_base)
 {
 	static const unsigned int ctrl_conf_master[] = {
 		RES_PCI_IO, PCI_ADDR(0, 1, 2, 0x8c), 0xffff0000, 0x00009880,
@@ -302,17 +302,17 @@ static void ck804_early_setup(unsigned ck804_num, unsigned *busn,
 		/* SATA  (SPPLL) SS table 0xb0, 0xb4, 0xb8 */
 		/* CPU   (PPLL)  SS table 0xc0, 0xc4, 0xc8 */
 		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0x40,
-			       io_base[j] + ANACTRL_IO_BASE + 0x44,
-			       io_base[j] + ANACTRL_IO_BASE + 0x48,
-			       pcie_ss_tbl, 64);
+				  io_base[j] + ANACTRL_IO_BASE + 0x44,
+				  io_base[j] + ANACTRL_IO_BASE + 0x48,
+				  pcie_ss_tbl, 64);
 		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xb0,
-			       io_base[j] + ANACTRL_IO_BASE + 0xb4,
-			       io_base[j] + ANACTRL_IO_BASE + 0xb8,
-			       sata_ss_tbl, 64);
+				  io_base[j] + ANACTRL_IO_BASE + 0xb4,
+				  io_base[j] + ANACTRL_IO_BASE + 0xb8,
+				  sata_ss_tbl, 64);
 		setup_ss_table(io_base[j] + ANACTRL_IO_BASE + 0xc0,
-			       io_base[j] + ANACTRL_IO_BASE + 0xc4,
-			       io_base[j] + ANACTRL_IO_BASE + 0xc8,
-			       cpu_ss_tbl, 64);
+				  io_base[j] + ANACTRL_IO_BASE + 0xc4,
+				  io_base[j] + ANACTRL_IO_BASE + 0xc8,
+				  cpu_ss_tbl, 64);
 	}
 }
 

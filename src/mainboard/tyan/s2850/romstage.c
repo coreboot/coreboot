@@ -26,18 +26,18 @@
 static void memreset_setup(void)
 {
    if (is_cpu_pre_c0())
-        outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
+	outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=0
    else
-        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
+	outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 16);  //REVC_MEMRST_EN=1
    outb((1<<2)|(0<<0), SMBUS_IO_BASE + 0xc0 + 17);
 }
 
 static void memreset(int controllers, const struct mem_controller *ctrl)
 {
    if (is_cpu_pre_c0()) {
-        udelay(800);
-        outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
-        udelay(90);
+	udelay(800);
+	outb((1<<2)|(1<<0), SMBUS_IO_BASE + 0xc0 + 17); //REVB_MEMRST_L=1
+	udelay(90);
    }
 }
 
@@ -70,32 +70,32 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		},
 	};
 
-        int needs_reset;
+	int needs_reset;
 
-        if (bist == 0)
+	if (bist == 0)
 		init_cpus(cpu_init_detectedx);
 
 //	post_code(0x32);
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        console_init();
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
-        setup_default_resource_map();
+	setup_default_resource_map();
 
 	needs_reset = setup_coherent_ht_domain();
 
 #if CONFIG_LOGICAL_CPUS
-        // It is said that we should start core1 after all core0 launched
-        start_other_cores();
+	// It is said that we should start core1 after all core0 launched
+	start_other_cores();
 #endif
-        needs_reset |= ht_setup_chains_x();
+	needs_reset |= ht_setup_chains_x();
 
        	if (needs_reset) {
-               	print_info("ht reset -\n");
-               	soft_reset();
+	       	print_info("ht reset -\n");
+	       	soft_reset();
        	}
 
 	enable_smbus();

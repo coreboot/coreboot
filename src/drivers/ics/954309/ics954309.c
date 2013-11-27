@@ -60,10 +60,10 @@ static void ics954309_noop(device_t dummy)
 }
 
 static struct device_operations ics954309_operations = {
-        .read_resources   = ics954309_noop,
-        .set_resources    = ics954309_noop,
-        .enable_resources = ics954309_noop,
-        .init             = ics954309_init,
+	.read_resources	  = ics954309_noop,
+	.set_resources	  = ics954309_noop,
+	.enable_resources = ics954309_noop,
+	.init		  = ics954309_init,
 };
 
 static void enable_dev(struct device *dev)

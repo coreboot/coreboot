@@ -22,13 +22,13 @@
 #include "it8673f.h"
 
 /* The base address is 0x3f0, 0x3bd, or 0x370, depending on config bytes. */
-#define SIO_BASE                    0x3f0
-#define SIO_INDEX                   SIO_BASE
-#define SIO_DATA                    (SIO_BASE + 1)
+#define SIO_BASE		    0x3f0
+#define SIO_INDEX		    SIO_BASE
+#define SIO_DATA		    (SIO_BASE + 1)
 
 /* Global configuration registers. */
-#define IT8673F_CONFIG_REG_CC       0x02   /* Configure Control (write-only). */
-#define IT8673F_CONFIG_REG_LDN      0x07   /* Logical Device Number. */
+#define IT8673F_CONFIG_REG_CC	    0x02   /* Configure Control (write-only). */
+#define IT8673F_CONFIG_REG_LDN	    0x07   /* Logical Device Number. */
 #define IT8673F_CONFIG_REG_CLOCKSEL 0x23   /* Clock Selection. */
 #define IT8673F_CONFIG_REG_SWSUSP   0x24   /* Software Suspend. */
 

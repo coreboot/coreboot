@@ -35,8 +35,8 @@
 #define KBD_DATA	0x60
 #define KBD_COMMAND	0x64
 #define KBD_STATUS	0x64
-#define   KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
-#define   KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
+#define	  KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
+#define	  KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
 
 // 62h/66h Command Interface
 #define EC_DATA	0x62
@@ -101,29 +101,29 @@ void ec_mem_write(u8 addr, u8 data);
 #define EC_BAT_DEVICE_NAME6		0x6A
 
 #define EC_POWER_FLAG			0x70
-#define   EC_PF_ADAPTER_IN		(1 << 0)
-#define   EC_PF_ADAPTER_PIN		(1 << 1)
-#define   EC_PF_BATT_IN			(1 << 2)
-#define   EC_PF_BATT_DESTROY	(1 << 3)
-#define   EC_PF_ACPI_MODE		(1 << 4)
-#define   EC_PF_X86_BIOS		(1 << 6)
-#define   EC_PF_COREBOOT		0
-#define   EC_PF_PASSIVE_THERM	(1 << 7)
+#define	  EC_PF_ADAPTER_IN		(1 << 0)
+#define	  EC_PF_ADAPTER_PIN		(1 << 1)
+#define	  EC_PF_BATT_IN			(1 << 2)
+#define	  EC_PF_BATT_DESTROY	(1 << 3)
+#define	  EC_PF_ACPI_MODE		(1 << 4)
+#define	  EC_PF_X86_BIOS		(1 << 6)
+#define	  EC_PF_COREBOOT		0
+#define	  EC_PF_PASSIVE_THERM	(1 << 7)
 
 #define EC_CHARGER_STATUS		0x71
-#define   EC_CHS_BAT_DISCHARGING	(1 << 0)
-#define   EC_CHS_BAT_CHARGING		(1 << 1)
-#define   EC_CHS_BAT_CRITICAL		(1 << 2)
+#define	  EC_CHS_BAT_DISCHARGING	(1 << 0)
+#define	  EC_CHS_BAT_CHARGING		(1 << 1)
+#define	  EC_CHS_BAT_CRITICAL		(1 << 2)
 
 #define EC_HW_GPI_STATUS			0x72
-#define   EC_GPI_LID_STAT_BIT		0
-#define   EC_GPI_RECOVERY_MODE_BIT	1
-#define   EC_GPI_LID_OPEN			(1 << EC_GPI_LID_STAT_BIT)
-#define   EC_GPI_RECOVERY_STATUS	(1 << EC_GPI_RECOVERY_MODE_BIT)
+#define	  EC_GPI_LID_STAT_BIT		0
+#define	  EC_GPI_RECOVERY_MODE_BIT	1
+#define	  EC_GPI_LID_OPEN			(1 << EC_GPI_LID_STAT_BIT)
+#define	  EC_GPI_RECOVERY_STATUS	(1 << EC_GPI_RECOVERY_MODE_BIT)
 
 #define EC_GPIO_STATUS				0x73
-#define   EC_GPIO_TP_LED_ENABLE		(1 << 0)
-#define   EC_GPIO_TP_LED_STATUS		(1 << 1)
+#define	  EC_GPIO_TP_LED_ENABLE		(1 << 0)
+#define	  EC_GPIO_TP_LED_STATUS		(1 << 1)
 
 #define EC_CPU_TMP					0x78
 #define EC_GPU_TMP					0x79
@@ -135,34 +135,34 @@ void ec_mem_write(u8 addr, u8 data);
 #define EC_FAN_DBG_RPM_HI			0x7F
 
 #define EC_KBID_REG			0x80
-#define   EC_KBD_EN			0
-#define   EC_KBD_JP			(1 << 1)
+#define	  EC_KBD_EN			0
+#define	  EC_KBD_JP			(1 << 1)
 #define EC_CURR_PS			0x81
 #define EC_MAX_PS			0x82
 
 #define EC_EC_PSW			0x83
-#define   EC_PSW_IKB		(1 << 0)
-#define   EC_PSW_TP			(1 << 1)
-#define   EC_PSW_LAN		(1 << 3)
-#define   EC_PSW_RTC		(1 << 4)
-#define   EC_PSW_USB		(1 << 5)
+#define	  EC_PSW_IKB		(1 << 0)
+#define	  EC_PSW_TP			(1 << 1)
+#define	  EC_PSW_LAN		(1 << 3)
+#define	  EC_PSW_RTC		(1 << 4)
+#define	  EC_PSW_USB		(1 << 5)
 
 #define EC_WAKE_EVEN_TID	0x84
-#define   EC_WID_IKB		(1 << 0)
-#define   EC_WID_TP			(1 << 1)
-#define   EC_WID_LID		(1 << 2)
-#define   EC_WID_PWRSW		(1 << 7)
+#define	  EC_WID_IKB		(1 << 0)
+#define	  EC_WID_TP			(1 << 1)
+#define	  EC_WID_LID		(1 << 2)
+#define	  EC_WID_PWRSW		(1 << 7)
 
 #define EC_CODE_STATE				0x85
-#define   EC_COS_INITIAL_STAGE		0xBB
-#define   EC_COS_EC_RO				0xC0
-#define   EC_COS_EC_RW				0xC1
+#define	  EC_COS_INITIAL_STAGE		0xBB
+#define	  EC_COS_EC_RO				0xC0
+#define	  EC_COS_EC_RW				0xC1
 
 #define EC_FW_REASON_ID				0x86
-#define   EC_FWR_NOT_RO				0x00
-#define   EC_FWR_GPI_ASSERTED		0x01
-#define   EC_FWR_HOTKEY_PRESSED		0x02
-#define   EC_FWR_FIRMWARE_CORRUPT	0x03
+#define	  EC_FWR_NOT_RO				0x00
+#define	  EC_FWR_GPI_ASSERTED		0x01
+#define	  EC_FWR_HOTKEY_PRESSED		0x02
+#define	  EC_FWR_FIRMWARE_CORRUPT	0x03
 
 #define EC_SHUTDOWN_REASON		0xB9
 #define EC_FW_VER0			0xBA

@@ -54,7 +54,7 @@
 /* Bits 20:19 reserved virtualization not supported */
 #define SCTLR_WXN	(1 << 19)	/* Write permission implies XN	*/
 #define SCTLR_UWXN	(1 << 20)	/* Unprivileged write permission
-					   implies PL1 XN		*/
+						implies PL1 XN		*/
 #define SCTLR_FI	(1 << 21)	/* Fast interrupt config enable	*/
 #define SCTLR_U		(1 << 22)	/* Unaligned access behavior	*/
 #define SCTLR_VE	(1 << 24)	/* Interrupt vectors enable	*/

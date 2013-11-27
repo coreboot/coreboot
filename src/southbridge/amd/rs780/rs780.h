@@ -92,37 +92,37 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V2
 //   =0: Voltage settings is determined by VBIOS PP table.
 //[7]=1: Enable CLMC Hybird Mode. CDLD and CILR will be disabled in this case and we're using legacy C1E. This is workaround for CPU(Griffin) performance issue.
 //   =0: Enable regular CLMC mode, CDLD and CILR will be enabled.
-//[8]=1: CDLF is supported and enabled by fuse   //CHP 914
+//[8]=1: CDLF is supported and enabled by fuse	 //CHP 914
 //   =0: CDLF is not supported and not enabled by fuses
-	ULONG                      ulBootUpReqDisplayVector;
-	ULONG                      ulOtherDisplayMisc;
-	ULONG                      ulDDISlot1Config;
-	ULONG                      ulDDISlot2Config;
-	UCHAR                      ucMemoryType; //[3:0]=1:DDR1;=2:DDR2;=3:DDR3.[7:4] is reserved
-	UCHAR                      ucUMAChannelNumber;
-	UCHAR                      ucDockingPinBit;
-	UCHAR                      ucDockingPinPolarity;
-	ULONG                      ulDockingPinCFGInfo;
-	ULONG                      ulCPUCapInfo;
-	USHORT                     usNumberOfCyclesInPeriod; //usNumberOfCyclesInPeriod[15] = 0 - invert waveform
-                                                       //                               1 - non inverted waveform
-	USHORT                     usMaxNBVoltage;
-	USHORT                     usMinNBVoltage;
-	USHORT                     usBootUpNBVoltage;
-	ULONG                      ulHTLinkFreq; //in 10Khz
-	USHORT                     usMinHTLinkWidth; // if no CLMC, usMinHTLinkWidth should be equal to usMaxHTLinkWidth??
-	USHORT                     usMaxHTLinkWidth;
-	USHORT                     usUMASyncStartDelay; // will be same as usK8SyncStartDelay on RS690
-	USHORT                     usUMADataReturnTime; // will be same as usK8DataReturnTime on RS690
-	USHORT                     usLinkStatusZeroTime;
-	USHORT                     usReserved;
-	ULONG                      ulHighVoltageHTLinkFreq; // in 10Khz
-	ULONG                      ulLowVoltageHTLinkFreq; // in 10Khz
-	USHORT                     usMaxUpStreamHTLinkWidth;
-	USHORT                     usMaxDownStreamHTLinkWidth;
-	USHORT                     usMinUpStreamHTLinkWidth;
-	USHORT                     usMinDownStreamHTLinkWidth;
-	ULONG                      ulReserved3[97]; //must be 0x0
+	ULONG			    ulBootUpReqDisplayVector;
+	ULONG			    ulOtherDisplayMisc;
+	ULONG			    ulDDISlot1Config;
+	ULONG			    ulDDISlot2Config;
+	UCHAR			    ucMemoryType; //[3:0]=1:DDR1;=2:DDR2;=3:DDR3.[7:4] is reserved
+	UCHAR			    ucUMAChannelNumber;
+	UCHAR			    ucDockingPinBit;
+	UCHAR			    ucDockingPinPolarity;
+	ULONG			    ulDockingPinCFGInfo;
+	ULONG			    ulCPUCapInfo;
+	USHORT			    usNumberOfCyclesInPeriod; //usNumberOfCyclesInPeriod[15] = 0 - invert waveform
+						       //				1 - non inverted waveform
+	USHORT			    usMaxNBVoltage;
+	USHORT			    usMinNBVoltage;
+	USHORT			    usBootUpNBVoltage;
+	ULONG			    ulHTLinkFreq; //in 10Khz
+	USHORT			    usMinHTLinkWidth; // if no CLMC, usMinHTLinkWidth should be equal to usMaxHTLinkWidth??
+	USHORT			    usMaxHTLinkWidth;
+	USHORT			    usUMASyncStartDelay; // will be same as usK8SyncStartDelay on RS690
+	USHORT			    usUMADataReturnTime; // will be same as usK8DataReturnTime on RS690
+	USHORT			    usLinkStatusZeroTime;
+	USHORT			    usReserved;
+	ULONG			    ulHighVoltageHTLinkFreq; // in 10Khz
+	ULONG			    ulLowVoltageHTLinkFreq; // in 10Khz
+	USHORT			    usMaxUpStreamHTLinkWidth;
+	USHORT			    usMaxDownStreamHTLinkWidth;
+	USHORT			    usMinUpStreamHTLinkWidth;
+	USHORT			    usMinDownStreamHTLinkWidth;
+	ULONG			    ulReserved3[97]; //must be 0x0
 } ATOM_INTEGRATED_SYSTEM_INFO_V2;
 
 /* PCIE config flags */
@@ -150,7 +150,7 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V2
  ------------------- -----------------------*/
 #define	PCIE_CI_CNTL			0x20
 #define	PCIE_LC_LINK_WIDTH		0xa2
-#define   PCIE_LC_STATE0			0xa5
+#define	  PCIE_LC_STATE0			0xa5
 #define	PCIE_VC0_RESOURCE_STATUS	0x12a	/* 16bit read only */
 
 #define	PCIE_CORE_INDEX_GFX		(0x00 << 16) /* see 5.2.2 */
@@ -159,9 +159,9 @@ typedef struct _ATOM_INTEGRATED_SYSTEM_INFO_V2
 #define	PCIE_CORE_INDEX_BRDCST		(0x03 << 16)
 
 /* contents of PCIE_NBCFG_REG7 */
-#define   RECONFIG_GPPSB_EN			(1 << 12)
+#define	  RECONFIG_GPPSB_EN			(1 << 12)
 #define	RECONFIG_GPPSB_GPPSB			(1 << 14)
-#define   RECONFIG_GPPSB_LINK_CONFIG		(1 << 15)
+#define	  RECONFIG_GPPSB_LINK_CONFIG		(1 << 15)
 #define	RECONFIG_GPPSB_ATOMIC_RESET		(1 << 17)
 
 /* contents of PCIE_VC0_RESOURCE_STATUS */

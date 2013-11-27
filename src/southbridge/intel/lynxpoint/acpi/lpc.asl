@@ -33,7 +33,7 @@ Device (LPCB)
 		Offset (0x40),
 		PMBS,	16,	// PMBASE
 		Offset (0x48),
-		GPBS,   16,	// GPIOBASE
+		GPBS,	  16,	// GPIOBASE
 		Offset (0x60),	// Interrupt Routing Registers
 		PRTA,	8,
 		PRTB,	8,

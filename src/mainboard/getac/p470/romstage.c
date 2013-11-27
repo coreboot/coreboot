@@ -82,7 +82,7 @@ static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
 	if (read_option(lpt, 0) != 0) {
-	       lpt_en = 1<<2; // enable LPT
+		lpt_en = 1<<2; // enable LPT
 	}
 	// Enable Serial IRQ
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x64, 0xd0);

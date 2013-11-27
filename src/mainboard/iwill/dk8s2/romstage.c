@@ -55,7 +55,7 @@ static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
-        return smbus_read_byte(device, address);
+	return smbus_read_byte(device, address);
 }
 
 #include "northbridge/amd/amdk8/amdk8.h"
@@ -74,81 +74,81 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
 			// first node
-                        DIMM0, DIMM2, 0, 0,
-                        DIMM1, DIMM3, 0, 0,
+			DIMM0, DIMM2, 0, 0,
+			DIMM1, DIMM3, 0, 0,
 
 			// second node
-                        DIMM4, DIMM6, 0, 0,
-                        DIMM5, DIMM7, 0, 0,
+			DIMM4, DIMM6, 0, 0,
+			DIMM5, DIMM7, 0, 0,
 	};
 
 	struct sys_info *sysinfo = &sysinfo_car;
-        int needs_reset;
-        unsigned bsp_apicid = 0;
+	int needs_reset;
+	unsigned bsp_apicid = 0;
 
-        if (bist == 0)
+	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
  	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        console_init();
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);
 
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 
-        setup_default_resource_map();
+	setup_default_resource_map();
 
 	print_debug("bsp_apicid="); print_debug_hex8(bsp_apicid); print_debug("\n");
 
 #if CONFIG_MEM_TRAIN_SEQ == 1
-        set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
+	set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
 #endif
 	setup_coherent_ht_domain(); // routing table and start other core0
 
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS
-        // It is said that we should start core1 after all core0 launched
+	// It is said that we should start core1 after all core0 launched
 	/* becase optimize_link_coherent_ht is moved out from setup_coherent_ht_domain,
 	 * So here need to make sure last core0 is started, esp for two way system,
 	 * (there may be apic id conflicts in that case)
 	 */
-        start_other_cores();
+	start_other_cores();
 	wait_all_other_cores_started(bsp_apicid);
 #endif
 
 	/* it will set up chains and store link pair for optimization later */
-        ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
+	ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
 #if CONFIG_SET_FIDVID
-        {
-                msr_t msr;
-	        msr=rdmsr(0xc0010042);
-                print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-        }
+	{
+		msr_t msr;
+		 msr=rdmsr(0xc0010042);
+		print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+	}
 	enable_fid_change();
 	enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
-        init_fidvid_bsp(bsp_apicid);
-        // show final fid and vid
-        {
-                msr_t msr;
-               	msr=rdmsr(0xc0010042);
-               	print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
-        }
+	init_fidvid_bsp(bsp_apicid);
+	// show final fid and vid
+	{
+		msr_t msr;
+	       	msr=rdmsr(0xc0010042);
+	       	print_debug("end   msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+	}
 #endif
 
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
 
-        // fidvid change will issue one LDTSTOP and the HT change will be effective too
-        if (needs_reset) {
-                print_info("ht reset -\n");
-                soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
-        }
+	// fidvid change will issue one LDTSTOP and the HT change will be effective too
+	if (needs_reset) {
+		print_info("ht reset -\n");
+		soft_reset_x(sysinfo->sbbusn, sysinfo->sbdn);
+	}
 
 	allow_all_aps_stop(bsp_apicid);
 
-        //It's the time to set ctrl in sysinfo now;
+	//It's the time to set ctrl in sysinfo now;
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	enable_smbus();
@@ -160,13 +160,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	memreset_setup();
 
 	//do we need apci timer, tsc...., only debug need it for better output
-        /* all ap stopped? */
-        init_timer(); // Need to use TMICT to synconize FID/VID
+	/* all ap stopped? */
+	init_timer(); // Need to use TMICT to synconize FID/VID
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 #if 0
-        dump_pci_devices();
+	dump_pci_devices();
 #endif
 
-        post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
+	post_cache_as_ram(); // bsp swtich stack to ram and copy sysinfo ram now
 }

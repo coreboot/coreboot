@@ -18,7 +18,7 @@
  */
 
 /*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
+ *			       M O D U L E S	U S E D
  *----------------------------------------------------------------------------------------
  */
 
@@ -30,46 +30,46 @@
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
 /*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
+ *		     D E F I N I T I O N S    A N D    M A C R O S
  *----------------------------------------------------------------------------------------
  */
 #ifndef SB_GPIO_REG01
-#define SB_GPIO_REG01   1
+#define SB_GPIO_REG01	1
 #endif
 
 #ifndef SB_GPIO_REG07
-#define SB_GPIO_REG07   7
+#define SB_GPIO_REG07	7
 #endif
 
 #ifndef SB_GPIO_REG25
-#define SB_GPIO_REG25   25
+#define SB_GPIO_REG25	25
 #endif
 
 #ifndef SB_GPIO_REG26
-#define SB_GPIO_REG26   26
+#define SB_GPIO_REG26	26
 #endif
 
 #ifndef SB_GPIO_REG27
-#define SB_GPIO_REG27   27
+#define SB_GPIO_REG27	27
 #endif
 
 /*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
+ *		    T Y P E D E F S	A N D	  S T R U C T U  R E S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
+ *	     P R O T O T Y P E S     O F     L O C A L	   F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
+ *			    E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
+ *			    L O C A L	 F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
 void
@@ -124,9 +124,9 @@ gpioEarlyInit(
 				Mmio8_And_Or (IoMuxMmioAddr, Index, 0x00, (gpio_table[Index].select & ~NonGpio));
 			}
 			// Configure GPIO
-            if(!((gpio_table[Index].NonGpioGevent & NonGpio))) {
-                Mmio8_And_Or (GpioMmioAddr, Index, 0xDF, gpio_table[Index].type);
-                Mmio8_And_Or (GpioMmioAddr, Index, 0xA3, gpio_table[Index].value);
+	    if(!((gpio_table[Index].NonGpioGevent & NonGpio))) {
+		Mmio8_And_Or (GpioMmioAddr, Index, 0xDF, gpio_table[Index].type);
+		Mmio8_And_Or (GpioMmioAddr, Index, 0xA3, gpio_table[Index].value);
 			}
 			if (Index == GPIO_65) {
 				if ( BoardType == 0 ) {
@@ -182,12 +182,12 @@ gpioEarlyInit(
 	//
 		// set INTE#/GPIO32 as GPO for PCIE_SW
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG32, AccWidthUint8, 00, 0x1);      // GPIO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG32, AccWidthUint8, 0x03, 0);       // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG32, AccWidthUint8, 0x03, 0);	      // GPO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG32, AccWidthUint8, 0x23, BIT3+BIT6);
 
 		// set SATA_IS4#/FANOUT3/GPIO55 as GPO for MXM_PWR_EN
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG55, AccWidthUint8, 00, 0x2);      // GPIO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG55, AccWidthUint8, 0x03, 0);       // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG55, AccWidthUint8, 0x03, 0);	      // GPO
 
 		// set AD9/GPIO9 as GPI for MXM_PRESENT2#
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG09, AccWidthUint8, 00, 0x1);      // GPIO
@@ -199,11 +199,11 @@ gpioEarlyInit(
 
 		// set GNT1#/GPIO44 as GPO for MXM Reset
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG44, AccWidthUint8, 00, 0x1);      // GPIO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0x03, 0);       // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG44, AccWidthUint8, 0x03, 0);	      // GPO
 
 		// set GNT2#/SD_LED/GPO45 as GPO for MXM Power Enable
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG45, AccWidthUint8, 00, 0x2);      // GPIO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG45, AccWidthUint8, 0x03, 0);       // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG45, AccWidthUint8, 0x03, 0);	      // GPO
 
 		// set AD28/GPIO28 as GPI for MXM_PWRGD
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG28, AccWidthUint8, 00, 0x1);      // GPIO
@@ -282,21 +282,21 @@ gpioEarlyInit(
 	//	Clock: GPP_CLK3
 	//
 		// Set EC_PWM0/EC_TIMER0/GPIO197 as GPO for LOM_POWER
-		RWMEM (IoMuxMmioAddr + SB_GPIO_REG197, AccWidthUint8, 00, 0x2);         // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x03, 0);          // GPO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x03, BIT6);       // output HIGH
-		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x63, BIT3);       // pullup DISABLE
+		RWMEM (IoMuxMmioAddr + SB_GPIO_REG197, AccWidthUint8, 00, 0x2);	  // GPIO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x03, 0);	    // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x03, BIT6);	  // output HIGH
+		RWMEM (GpioMmioAddr + SB_GPIO_REG197, AccWidthUint8, 0x63, BIT3);	  // pullup DISABLE
 
 		// Setup AD25/GPIO25 as GPO for PCIE_RST#_LAN:
-		RWMEM (IoMuxMmioAddr + SB_GPIO_REG25, AccWidthUint8, 00, 0x1);          // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x03, 0);           // GPO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x03, BIT6);        // output HIGH
-		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x63, BIT3);        // pullup DISABLE
+		RWMEM (IoMuxMmioAddr + SB_GPIO_REG25, AccWidthUint8, 00, 0x1);	  // GPIO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x03, 0);	    // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x03, BIT6);	  // output HIGH
+		RWMEM (GpioMmioAddr + SB_GPIO_REG25, AccWidthUint8, 0x63, BIT3);	  // pullup DISABLE
 
 
 		// set CLK_REQ3#/SATA_IS1#/GPIO63 as CLK_REQ for LAN_CLKREQ#
-		RWMEM (IoMuxMmioAddr + SB_GPIO_REG63, AccWidthUint8, 00, 0x0);          // CLK_REQ3#
-		RWMEM (MiscMmioAddr + SB_MISC_REG00+1, AccWidthUint8, 0x0F, 0xF0);       // Enable GPP_CLK3
+		RWMEM (IoMuxMmioAddr + SB_GPIO_REG63, AccWidthUint8, 00, 0x0);	  // CLK_REQ3#
+		RWMEM (MiscMmioAddr + SB_MISC_REG00+1, AccWidthUint8, 0x0F, 0xF0);	   // Enable GPP_CLK3
 
 	//
 	// APU GPP1: WUSB
@@ -306,21 +306,21 @@ gpioEarlyInit(
 	//
 		// Setup VIN2/SATA1_1/GPIO177 as GPO for MPCIE_PD2#: wireless disable
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG177, AccWidthUint8, 00, 0x2);     // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG177, AccWidthUint8, 0x03, 0);      // GPO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG177, AccWidthUint8, 0x03, 0);	// GPO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG177, AccWidthUint8, 0x03, 0);      // output LOW
 		RWMEM (GpioMmioAddr + SB_GPIO_REG177, AccWidthUint8, 0x63, BIT3);   // pullup DISABLE
 
 		// Setup AD01/GPIO01 as GPO for MPCIE_RST2#
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG01, AccWidthUint8, 00, 0x1);      // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG01, AccWidthUint8, 0x03, 0);       // GPO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG01, AccWidthUint8, 0x03, 0);	// GPO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG01, AccWidthUint8, 0x03, BIT6);    // output LOW
 		RWMEM (GpioMmioAddr + SB_GPIO_REG01, AccWidthUint8, 0x63, BIT3);    // pullup DISABLE
 
 		// Setup AD13/GPIO13 as GPO for WU_DISABLE#: disable WUSB
-//		RWMEM (IoMuxMmioAddr + SB_GPIO_REG13, AccWidthUint8, 00, 0x1);      // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG13, AccWidthUint8, 0x03, 0);       // GPO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG13, AccWidthUint8, 0x03, BIT6);    // output HIGH
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG13, AccWidthUint8, 0x63, BIT3);    // pullup DISABLE
+//		RWMEM (IoMuxMmioAddr + SB_GPIO_REG13, AccWidthUint8, 00, 0x1);	// GPIO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG13, AccWidthUint8, 0x03, 0);	// GPO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG13, AccWidthUint8, 0x03, BIT6);	// output HIGH
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG13, AccWidthUint8, 0x63, BIT3);	// pullup DISABLE
 
 	//
 	// APU GPP2: WWAN
@@ -330,19 +330,19 @@ gpioEarlyInit(
 	//
 		// Set VIN1/GPIO176 as GPO for MPCIE_PD1# for wireless disable
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG176, AccWidthUint8, 00, 0x1);     // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG176, AccWidthUint8, 0x03, 0);      // GPO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG176, AccWidthUint8, 0x03, 0);	// GPO
 		RWMEM (GpioMmioAddr + SB_GPIO_REG176, AccWidthUint8, 0x03, 0);      // output LOW
 		RWMEM (GpioMmioAddr + SB_GPIO_REG176, AccWidthUint8, 0x63, BIT3);   // pullup DISABLE
 
 		// Set AD00/GPIO00 as GPO for MPCIE_RST1#
 		RWMEM (IoMuxMmioAddr + SB_GPIO_REG00, AccWidthUint8, 00, 0x1);      // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG00, AccWidthUint8, 0x03, 0);       // GPO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG00, AccWidthUint8, 0x03, BIT6);    // output LOW
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG00, AccWidthUint8, 0x03, 0);	// GPO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG00, AccWidthUint8, 0x03, BIT6);	// output LOW
 		RWMEM (GpioMmioAddr + SB_GPIO_REG00, AccWidthUint8, 0x63, BIT3);    // pullup DISABLE
 
 		// Set AD14/GPIO14 as GPO for WP_DISABLE#: disable WWAN
-//		RWMEM (IoMuxMmioAddr + SB_GPIO_REG14, AccWidthUint8, 00, 0x1);      // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG14, AccWidthUint8, 0x03, 0);       // GPO
+//		RWMEM (IoMuxMmioAddr + SB_GPIO_REG14, AccWidthUint8, 00, 0x1);	// GPIO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG14, AccWidthUint8, 0x03, 0);	// GPO
 //		RWMEM (GpioMmioAddr + SB_GPIO_REG14, AccWidthUint8, 0x03, BIT6);
 //		RWMEM (GpioMmioAddr + SB_GPIO_REG14, AccWidthUint8, 0x63, BIT3);
 
@@ -354,25 +354,25 @@ gpioEarlyInit(
 	//	Clock: GPP_CLK8
 	//
 		// Setup SATA_IS5#/FANIN3/GPIO59 as GPO for 1394_ON:
-		RWMEM (IoMuxMmioAddr + SB_GPIO_REG59, AccWidthUint8, 00, 0x2);         // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x03, 0);          // GPO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x03, BIT6);       // output HIGH
-		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x63, BIT3);       // pullup DISABLE
+		RWMEM (IoMuxMmioAddr + SB_GPIO_REG59, AccWidthUint8, 00, 0x2);	 // GPIO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x03, 0);	   // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x03, BIT6);	 // output HIGH
+		RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0x63, BIT3);	 // pullup DISABLE
 
 		// Setup AD27/GPIO27 as GPO for MPCIE_RST#_1394
-		RWMEM (IoMuxMmioAddr + SB_GPIO_REG27, AccWidthUint8, 00, 0x1);         // GPIO
-//		RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x03, 0);          // GPO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x03, BIT6);       // output HIGH
-		RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x63, BIT3);       // pullup DISABLE
+		RWMEM (IoMuxMmioAddr + SB_GPIO_REG27, AccWidthUint8, 00, 0x1);	 // GPIO
+//		RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x03, 0);	   // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x03, BIT6);	 // output HIGH
+		RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0x63, BIT3);	 // pullup DISABLE
 
 		// set REQ2#/CLK_REQ2#/GPIO41 as CLK_REQ#
-		RWMEM (IoMuxMmioAddr + SB_GPIO_REG41, AccWidthUint8, 00, 0x1);         // CLK_REQ2#
+		RWMEM (IoMuxMmioAddr + SB_GPIO_REG41, AccWidthUint8, 00, 0x1);	 // CLK_REQ2#
 
 		// set AZ_SDIN3/GPIO170 as GPO for GPIO_GATE_C
-		RWMEM (IoMuxMmioAddr + SB_GPIO_REG170, AccWidthUint8, 00, 0x1);        // GPIO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0x03, 0);         // GPO
-		RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0x03, BIT6);       // output HIGH
-		RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0x63, BIT3);       // pullup DISABLE
+		RWMEM (IoMuxMmioAddr + SB_GPIO_REG170, AccWidthUint8, 00, 0x1);	 // GPIO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0x03, 0);	 // GPO
+		RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0x03, BIT6);	  // output HIGH
+		RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0x63, BIT3);	  // pullup DISABLE
 	//  To fix glitch issue
 		RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0xBF, 0);      // set GPIO_GATE_C to LOW
 	//
@@ -398,12 +398,12 @@ gpioEarlyInit(
 	//
 		if (!CONFIG_ONBOARD_1394)
 		{ // 1 - DISABLED
-//			RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0xBF, 0);      // set GPIO_GATE_C to LOW
+//			RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0xBF, 0);	 // set GPIO_GATE_C to LOW
 			RWMEM (GpioMmioAddr + SB_GPIO_REG59, AccWidthUint8, 0xBF, 0);       // 1394 power off
 			RWMEM (GpioMmioAddr + SB_GPIO_REG27, AccWidthUint8, 0xBF, 0);
 			RWMEM (GpioMmioAddr + SB_GPIO_REG41, AccWidthUint8, 0xFF, BIT3);    // pullup DISABLE
 			RWMEM (MiscMmioAddr + SB_MISC_REG04, AccWidthUint8, 0xF0, 0);       // DISABLE GPP_CLK8
-//			RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0xBF, BIT6);   // set GPIO_GATE_C to HIGH
+//			RWMEM (GpioMmioAddr + SB_GPIO_REG170, AccWidthUint8, 0xBF, BIT6);	 // set GPIO_GATE_C to HIGH
 		}
 //		else
 //		{ // 0 - AUTO
@@ -418,11 +418,11 @@ gpioEarlyInit(
 //
 // external USB 3.0 control:
 //    amdExternalUSBController: CMOS, 0 - AUTO, 1 - DISABLE
-//                      GPIO26: PCIE_RST#_USB3.0
-//                      GPIO46: PCIE_USB30_CLKREQ#
-//                     GPIO200: NEC_USB30_PWR_EN, 0 - OFF, 1 - ON
-//                       Clock: GPP_CLK7
-//                     GPIO172 used as FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
+//			GPIO26: PCIE_RST#_USB3.0
+//			GPIO46: PCIE_USB30_CLKREQ#
+//		       GPIO200: NEC_USB30_PWR_EN, 0 - OFF, 1 - ON
+//			 Clock: GPP_CLK7
+//		       GPIO172 used as FCH_USB3.0PORT_EN# 0:ENABLE; 1:DISABLE
 //	if ((Amd_SystemConfiguration.XhciSwitch == 1) || (SystemConfiguration.amdExternalUSBController == 1)) {
 // disable Onboard NEC USB3.0 controller
 		if (!CONFIG_ONBOARD_USB30) {
@@ -437,7 +437,7 @@ gpioEarlyInit(
 //
 // BlueTooth control: BT_ON
 //    amdBlueTooth: CMOS, 0 - AUTO, 1 - DISABLE
-//          GPIO07: BT_ON, 0 - OFF, 1 - ON
+//	    GPIO07: BT_ON, 0 - OFF, 1 - ON
 //
 if (!CONFIG_ONBOARD_BLUETOOTH) {
 //-	if (SystemConfiguration.amdBlueTooth == 1) {
@@ -448,7 +448,7 @@ if (!CONFIG_ONBOARD_BLUETOOTH) {
 //
 // WebCam control:
 //    amdWebCam: CMOS, 0 - AUTO, 1 - DISABLE
-//       GPIO34: WEBCAM_ON#, 0 - ON, 1 - OFF
+//	 GPIO34: WEBCAM_ON#, 0 - ON, 1 - OFF
 //
 if (!CONFIG_ONBOARD_WEBCAM) {
 //-	if (SystemConfiguration.amdWebCam == 1) {
@@ -459,7 +459,7 @@ if (!CONFIG_ONBOARD_WEBCAM) {
 //
 // Travis enable:
 //    amdTravisCtrl: CMOS, 0 - DISABLE, 1 - ENABLE
-//           GPIO66: TRAVIS_EN#, 0 - ENABLE, 1 - DISABLE
+//	     GPIO66: TRAVIS_EN#, 0 - ENABLE, 1 - DISABLE
 //
 if (!CONFIG_ONBOARD_TRAVIS) {
 //-	if (SystemConfiguration.amdTravisCtrl == 0) {
@@ -472,7 +472,7 @@ if (!CONFIG_ONBOARD_TRAVIS) {
 //
 if (CONFIG_ONBOARD_LIGHTSENSOR) {
 //-    if (SystemConfiguration.amdLightSensor == 1) {
-        RWMEM (IoMuxMmioAddr + SB_GEVENT_REG12, AccWidthUint8, 0x00, 0x1);
+	RWMEM (IoMuxMmioAddr + SB_GEVENT_REG12, AccWidthUint8, 0x00, 0x1);
 //-    }
 }
 

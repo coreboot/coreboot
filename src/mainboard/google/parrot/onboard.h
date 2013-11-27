@@ -22,8 +22,8 @@
 
 #include <arch/smp/mpspec.h>
 
-#define PARROT_TRACKPAD_NAME         "trackpad"
+#define PARROT_TRACKPAD_NAME	     "trackpad"
 #define PARROT_TRACKPAD_I2C_ADDR     0x67
-#define PARROT_TRACKPAD_IRQ_DVT      16
-#define PARROT_TRACKPAD_IRQ_PVT      20
+#define PARROT_TRACKPAD_IRQ_DVT	     16
+#define PARROT_TRACKPAD_IRQ_PVT	     20
 #endif

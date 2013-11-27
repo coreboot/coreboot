@@ -105,15 +105,15 @@ print_debug("IDE_INIT:---------->\n");
 
 //-------------- enable IDE (SiS5513) -------------------------
 {
-        uint8_t  temp8;
-        int i=0;
+	uint8_t  temp8;
+	int i=0;
 	while(SiS_SiS5513_init[i][0] != 0)
 	{
-                temp8 = pci_read_config8(dev, SiS_SiS5513_init[i][0]);
-                temp8 &= SiS_SiS5513_init[i][1];
-                temp8 |= SiS_SiS5513_init[i][2];
-                pci_write_config8(dev, SiS_SiS5513_init[i][0], temp8);
-                i++;
+		temp8 = pci_read_config8(dev, SiS_SiS5513_init[i][0]);
+		temp8 &= SiS_SiS5513_init[i][1];
+		temp8 |= SiS_SiS5513_init[i][2];
+		pci_write_config8(dev, SiS_SiS5513_init[i][0], temp8);
+		i++;
 	};
 }
 //-----------------------------------------------------------
@@ -150,21 +150,21 @@ print_debug("IDE_INIT:---------->\n");
 
 #if DEBUG_IDE
 {
-        int i;
+	int i;
 
-        print_debug("****** IDE PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	print_debug("****** IDE PCI config ******");
+	print_debug("\n	   03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
-                }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
-        }
-        print_debug("\n");
+	for(i=0;i<0xff;i+=4){
+		if((i%16)==0){
+			print_debug("\n");
+			print_debug_hex8(i);
+			print_debug(": ");
+		}
+		print_debug_hex32(pci_read_config32(dev,i));
+		print_debug("  ");
+	}
+	print_debug("\n");
 }
 #endif
 print_debug("IDE_INIT:<----------\n");

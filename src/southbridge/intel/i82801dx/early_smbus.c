@@ -74,7 +74,7 @@ static int smbus_wait_until_ready(void)
 		}
 		if (loops == (SMBUS_TIMEOUT / 2)) {
 			outb(inb(SMBUS_IO_BASE + SMBHSTSTAT),
-			     SMBUS_IO_BASE + SMBHSTSTAT);
+				SMBUS_IO_BASE + SMBHSTSTAT);
 		}
 	} while (--loops);
 	return loops ? 0 : -2;
@@ -157,7 +157,7 @@ int smbus_read_byte(unsigned device, unsigned address)
 
 #if 0
 static void smbus_write_byte(unsigned device, unsigned address,
-			     unsigned char val)
+				unsigned char val)
 {
 	if (smbus_wait_until_ready() < 0) {
 		return;

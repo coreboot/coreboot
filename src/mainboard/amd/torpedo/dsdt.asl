@@ -19,11 +19,11 @@
 
 /* DefinitionBlock Statement */
 DefinitionBlock (
-	"DSDT.AML",           /* Output filename */
-	"DSDT",                 /* Signature */
+	"DSDT.AML",	       /* Output filename */
+	"DSDT",		 /* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-	"AMD   ",               /* OEMID */
-	"COREBOOT",	     /* TABLE ID */
+	"AMD	",		 /* OEMID */
+	"COREBOOT",		  /* TABLE ID */
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
@@ -131,13 +131,13 @@ DefinitionBlock (
 	/* Client Management index/data registers */
 	OperationRegion(CMT, SystemIO, 0x00000C50, 0x00000002)
 		Field(CMT, ByteAcc, NoLock, Preserve) {
-		CMTI,      8,
+		CMTI,	     8,
 		/* Client Management Data register */
-		G64E,   1,
-		G64O,      1,
-		G32O,      2,
-		,       2,
-		GPSL,     2,
+		G64E,	  1,
+		G64O,	     1,
+		G32O,	     2,
+		,	  2,
+		GPSL,	    2,
 	}
 
 	/* GPM Port register */
@@ -156,7 +156,7 @@ DefinitionBlock (
 	/* Flash ROM program enable register */
 	OperationRegion(FRE, SystemIO, 0x00000C6F, 0x00000001)
 		Field(FRE, ByteAcc, NoLock, Preserve) {
-		,     0x00000006,
+		,	0x00000006,
 		FLRE, 0x00000001,
 	}
 
@@ -227,8 +227,8 @@ DefinitionBlock (
     OperationRegion (GRAM, SystemMemory, 0x0400, 0x0100)
     Field (GRAM, ByteAcc, Lock, Preserve)
     {
-        Offset (0x10),
-        FLG0,   8
+	Offset (0x10),
+	FLG0,	8
     }
 
 	Scope(\_SB) {
@@ -812,7 +812,7 @@ DefinitionBlock (
 			}
 			Method(_PRT,0) {
 				If(GPIC){ Return(APR0) }   /* APIC mode */
-				Return (PR0)                  /* PIC Mode */
+				Return (PR0)		  /* PIC Mode */
 			} /* end _PRT */
 
 			/* Describe the Northbridge devices */
@@ -832,8 +832,8 @@ DefinitionBlock (
 			Device(PBR2) {
 				Name(_ADR, 0x00020000)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APS2) }   /* APIC mode */
-					Return (PS2)               /* PIC Mode */
+					If(GPIC){ Return(APS2) }	/* APIC mode */
+					Return (PS2)		/* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR2 */
 
@@ -841,32 +841,32 @@ DefinitionBlock (
 			Device(PBR3) {
 				Name(_ADR, 0x00030000)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APS3) }   /* APIC mode */
-					Return (PS3)               /* PIC Mode */
+					If(GPIC){ Return(APS3) }	/* APIC mode */
+					Return (PS3)		/* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR3 */
 
 			Device(PBR4) {
 				Name(_ADR, 0x00040000)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APS4) }   /* APIC mode */
-					Return (PS4)                  /* PIC Mode */
+					If(GPIC){ Return(APS4) }	/* APIC mode */
+					Return (PS4)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR4 */
 
 			Device(PBR5) {
 				Name(_ADR, 0x00050000)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APS5) }   /* APIC mode */
-					Return (PS5)                  /* PIC Mode */
+					If(GPIC){ Return(APS5) }	/* APIC mode */
+					Return (PS5)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR5 */
 
 			Device(PBR6) {
 				Name(_ADR, 0x00060000)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APS6) }   /* APIC mode */
-					Return (PS6)                  /* PIC Mode */
+					If(GPIC){ Return(APS6) }	/* APIC mode */
+					Return (PS6)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR6 */
 
@@ -874,37 +874,37 @@ DefinitionBlock (
 			Device(PBR7) {
 				Name(_ADR, 0x00070000)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APS7) }   /* APIC mode */
-					Return (PS7)                  /* PIC Mode */
+					If(GPIC){ Return(APS7) }	/* APIC mode */
+					Return (PS7)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR7 */
 
 			Device(PE20) {
 				Name(_ADR, 0x00150000)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APE0) }   /* APIC mode */
-					Return (PE0)                  /* PIC Mode */
+					If(GPIC){ Return(APE0) }	/* APIC mode */
+					Return (PE0)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE20 */
 			Device(PE21) {
 				Name(_ADR, 0x00150001)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APE1) }   /* APIC mode */
-					Return (PE1)                  /* PIC Mode */
+					If(GPIC){ Return(APE1) }	/* APIC mode */
+					Return (PE1)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE21 */
 			Device(PE22) {
 				Name(_ADR, 0x00150002)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APE2) }   /* APIC mode */
-					Return (APE2)                  /* PIC Mode */
+					If(GPIC){ Return(APE2) }	/* APIC mode */
+					Return (APE2)		    /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE22 */
 			Device(PE23) {
 				Name(_ADR, 0x00150003)
 				Method(_PRT,0) {
-					If(GPIC){ Return(APE3) }   /* APIC mode */
-					Return (PE3)                  /* PIC Mode */
+					If(GPIC){ Return(APE3) }	/* APIC mode */
+					Return (PE3)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PE23 */
 
@@ -1110,7 +1110,7 @@ DefinitionBlock (
 			Method(_CRS, 0) {
 				/* DBGO("\\_SB\\PCI0\\_CRS\n") */
 				CreateDWordField(CRES, ^MMIO._BAS, MM1B)
-                CreateDWordField(CRES, ^MMIO._LEN, MM1L)
+		CreateDWordField(CRES, ^MMIO._LEN, MM1L)
 				/*
 				* Declare memory between TOM1 and 4GB as available
 				* for PCI MMIO.

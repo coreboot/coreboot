@@ -51,8 +51,8 @@ config CMC_FILE
 	  binary.
 
 config HPET_MIN_TICKS
-        hex
-        default 0x80
+	hex
+	default 0x80
 
 endif
 

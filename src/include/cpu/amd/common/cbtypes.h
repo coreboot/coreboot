@@ -31,7 +31,7 @@ typedef signed int INT32;
 typedef unsigned long long UINT64;
 typedef unsigned char BOOLEAN;
 
-#define DMSG_SB_TRACE   0x02
+#define DMSG_SB_TRACE	0x02
 #define TRACE(Arguments)
 
 #ifndef TRUE

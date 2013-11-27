@@ -65,8 +65,8 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->pm1b_cnt_blk = 0x0000;
 	fadt->pm2_cnt_blk  = 0x0000;
 	fadt->pm_tmr_blk   = pm_base+0x08;
-	fadt->gpe0_blk     = pm_base+0x20;
-	fadt->gpe1_blk     = pm_base+0xb0;
+	fadt->gpe0_blk	    = pm_base+0x20;
+	fadt->gpe1_blk	    = pm_base+0xb0;
 
 	fadt->pm1_evt_len  =  4;
 	fadt->pm1_cnt_len  =  2;
@@ -76,7 +76,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt,acpi_facs_t *facs,void *dsdt){
 	fadt->gpe1_blk_len =  8;
 	fadt->gpe1_base    = 16;
 
-	fadt->cst_cnt    = 0x00;// SMM is not used for p-state control
+	fadt->cst_cnt	  = 0x00;// SMM is not used for p-state control
 //	fadt->cst_cnt    = 0xe3;
 	fadt->p_lvl2_lat =  101;
 	fadt->p_lvl3_lat = 1001;

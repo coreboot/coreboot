@@ -209,19 +209,19 @@ static void i3100_pirq_init(device_t dev)
 	if(config->pirq_e_h)
 		pci_write_config32(dev, 0x68, config->pirq_e_h);
 
-        for(irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
-                u8 int_pin=0, int_line=0;
+	for(irq_dev = all_devices; irq_dev; irq_dev = irq_dev->next) {
+		u8 int_pin=0, int_line=0;
 
-                if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
-                        continue;
+		if (!irq_dev->enabled || irq_dev->path.type != DEVICE_PATH_PCI)
+			continue;
 
-                int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
-                switch (int_pin) {
-                case 1: /* INTA# */
+		int_pin = pci_read_config8(irq_dev, PCI_INTERRUPT_PIN);
+		switch (int_pin) {
+		case 1: /* INTA# */
 			int_line = config->pirq_a_d & 0xff;
 			break;
 
-                case 2: /* INTB# */
+		case 2: /* INTB# */
 			int_line = (config->pirq_a_d >> 8) & 0xff;
 			break;
 
@@ -229,17 +229,17 @@ static void i3100_pirq_init(device_t dev)
 			int_line = (config->pirq_a_d >> 16) & 0xff;
 			break;
 
-                case 4: /* INTD# */
+		case 4: /* INTD# */
 			int_line = (config->pirq_a_d >> 24) & 0xff;
 			break;
-                }
+		}
 
-                if (!int_line)
-                        continue;
+		if (!int_line)
+			continue;
 
 		printk(BIOS_DEBUG, "%s: irq pin %d, irq line %d\n", dev_path(irq_dev), int_pin, int_line);
-                pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
-        }
+		pci_write_config8(irq_dev, PCI_INTERRUPT_LINE, int_line);
+	}
 
 
 }
@@ -450,22 +450,22 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations lpc_ops  = {
 	.read_resources   = i3100_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = i3100_lpc_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = i3100_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+	.enable	   = i3100_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_3100_LPC,
 };
 
 static const struct pci_driver lpc_driver_ep80579 __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_EP80579_LPC,
 };

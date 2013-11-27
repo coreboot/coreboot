@@ -7,33 +7,33 @@
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
-        int isa_bus;
+	struct mp_config_table *mc;
+	int isa_bus;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 	mptable_write_buses(mc, NULL, &isa_bus);
 /*I/O APICs:	APIC ID	Version	State		Address*/
 	smp_write_ioapic(mc, 8, 0x20, IO_APIC_ADDR);
 	{
-                device_t dev;
-                struct resource *res;
+		device_t dev;
+		struct resource *res;
 		dev = dev_find_slot(1, PCI_DEVFN(0x1e,0));
 		if (dev) {
-                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                        if (res) {
-                                smp_write_ioapic(mc, 0x09, 0x20, res->base);
-                        }
+			res = find_resource(dev, PCI_BASE_ADDRESS_0);
+			if (res) {
+				smp_write_ioapic(mc, 0x09, 0x20, res->base);
+			}
 		}
 		dev = dev_find_slot(1, PCI_DEVFN(0x1c,0));
 		if (dev) {
-                        res = find_resource(dev, PCI_BASE_ADDRESS_0);
-                        if (res) {
-                                smp_write_ioapic(mc, 0x0a, 0x20, res->base);
-                        }
+			res = find_resource(dev, PCI_BASE_ADDRESS_0);
+			if (res) {
+				smp_write_ioapic(mc, 0x0a, 0x20, res->base);
+			}
 		}
 	}
 	mptable_add_isa_interrupts(mc, isa_bus, 0x8, 0);
@@ -48,32 +48,32 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x0, 0x77, 0x8, 0x17);
 
 //onboard ati
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x8, 0x8, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x8, 0x8, 0x12);
 
 //onboard intel 82551 10/100
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x4, 0x8, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, 0x4, 0x8, 0x11);
 
 // onboard Intel 82547 1000
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x4, 0xa, 0x0);
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x5, 0xa, 0x1);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x4, 0xa, 0x0);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x5, 0xa, 0x1);
 
 //Slot 4
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x3<<2)|0, 0x8, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x3<<2)|0, 0x8, 0x12);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x3<<2)|1, 0x8, 0x13);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x3<<2)|2, 0x8, 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x3<<2)|3, 0x8, 0x11);
 //Slot 3
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|0, 0x8, 0x13);
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|1, 0x8, 0x10);
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|2, 0x8, 0x11);
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|3, 0x8, 0x12);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|0, 0x8, 0x13);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|1, 0x8, 0x10);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|2, 0x8, 0x11);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x4, (0x4<<2)|3, 0x8, 0x12);
 //Slot 1
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|0, 0x9, 0x0);
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|1, 0x9, 0x1);
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|2, 0x9, 0x2);
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|3, 0x9, 0x3);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|0, 0x9, 0x0);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|1, 0x9, 0x1);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|2, 0x9, 0x2);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x3<<2)|3, 0x9, 0x3);
 //Slot 2
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x6<<2)|0, 0x9, 0x4);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x6<<2)|0, 0x9, 0x4);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x6<<2)|1, 0x9, 0x5);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x6<<2)|2, 0x9, 0x6);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x3, (0x6<<2)|3, 0x9, 0x7);

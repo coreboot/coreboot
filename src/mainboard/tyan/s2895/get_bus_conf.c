@@ -37,22 +37,22 @@ unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO 
 	0x0000ff0,
 	0x0000ff0,
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0
 };
 
 unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
 	0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
 };
 
 unsigned sbdn3;
@@ -99,8 +99,8 @@ void get_bus_conf(void)
 		bus_ck804_5++;
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sbdn + 0x09);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sbdn + 0x09);
 
 		bus_ck804_1 = 2;
 		bus_ck804_5 = 3;
@@ -111,8 +111,8 @@ void get_bus_conf(void)
 		bus_ck804_5 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sbdn + 0x0e);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sbdn + 0x0e);
 	}
 
 	bus_8131_0 = (sysconf.pci1234[1] >> 16) & 0xff;
@@ -124,8 +124,8 @@ void get_bus_conf(void)
 		bus_8131_2++;
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:01.0, using defaults\n",
-		       bus_8131_0);
+			 "ERROR - could not find PCI %02x:01.0, using defaults\n",
+			 bus_8131_0);
 
 		bus_8131_1 = bus_8131_0 + 1;
 		bus_8131_2 = bus_8131_0 + 2;
@@ -136,8 +136,8 @@ void get_bus_conf(void)
 		bus_8131_2 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:02.0, using defaults\n",
-		       bus_8131_0);
+			 "ERROR - could not find PCI %02x:02.0, using defaults\n",
+			 bus_8131_0);
 
 		bus_8131_2 = bus_8131_1 + 1;
 	}
@@ -152,8 +152,8 @@ void get_bus_conf(void)
 			bus_ck804b_5 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		} else {
 			printk(BIOS_DEBUG,
-			       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-			       bus_ck804b_0, sbdnb + 0x0e);
+				  "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+				  bus_ck804b_0, sbdnb + 0x0e);
 			bus_ck804b_5 = bus_ck804b_4 + 1;
 		}
 	}

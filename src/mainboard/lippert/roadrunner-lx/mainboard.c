@@ -53,11 +53,11 @@ static void init(struct device *dev)
 	gpio_base = pci_read_config32(dev_find_device(PCI_VENDOR_ID_AMD,
 		    PCI_DEVICE_ID_AMD_CS5536_ISA, 0), PCI_BASE_ADDRESS_1) - 1;
 
-	outl(0x00000040, gpio_base + 0x00); // GPIO6  value      1 - LAN_PD#
-	outl(0x00000040, gpio_base + 0x04); // GPIO6  output     1 - LAN_PD#
-	outl(0x00000400, gpio_base + 0x34); // GPIO10 in aux1    1 - THRM_ALRM#
-	outl(0x00000400, gpio_base + 0x20); // GPIO10 input      1 - THRM_ALRM#
-	outl(0x08000000, gpio_base + 0x98); // GPIO27 pull up    0 - PM-LED
+	outl(0x00000040, gpio_base + 0x00); // GPIO6  value	  1 - LAN_PD#
+	outl(0x00000040, gpio_base + 0x04); // GPIO6  output	  1 - LAN_PD#
+	outl(0x00000400, gpio_base + 0x34); // GPIO10 in aux1	  1 - THRM_ALRM#
+	outl(0x00000400, gpio_base + 0x20); // GPIO10 input	  1 - THRM_ALRM#
+	outl(0x08000000, gpio_base + 0x98); // GPIO27 pull up	  0 - PM-LED
 
 	/* Init Environment Controller. */
 	for (i = 0; i < ARRAY_SIZE(ec_init_table); i++) {

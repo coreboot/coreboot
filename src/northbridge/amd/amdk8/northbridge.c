@@ -296,7 +296,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 }
 
 static unsigned amdk8_find_reg(device_t dev, unsigned nodeid, unsigned link,
-			       unsigned min, unsigned max)
+				  unsigned min, unsigned max)
 {
 	unsigned resource;
 	unsigned free_reg, reg;
@@ -454,7 +454,7 @@ static void amdk8_set_resource(device_t dev, struct resource *resource, unsigned
 
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
 			printk(BIOS_SPEW, "%s, enabling legacy VGA IO forwarding for %s link 0x%x\n",
-				    __func__, dev_path(dev), link_num);
+					__func__, dev_path(dev), link_num);
 			base |= PCI_IO_BASE_VGA_EN;
 		}
 		if (link->bridge_ctrl & PCI_BRIDGE_CTL_NO_ISA) {
@@ -547,7 +547,7 @@ static void amdk8_set_resources(device_t dev)
 						  IOINDEX_LINK(res->index));
 		else
 			index = amdk8_find_mempair(dev, nodeid,
-						   IOINDEX_LINK(res->index));
+							 IOINDEX_LINK(res->index));
 
 		old = probe_resource(dev, index);
 		if (old) {
@@ -971,8 +971,8 @@ static void amdk8_domain_set_resources(device_t dev)
 
 		if(reset_memhole) {
 			if(mem_hole.node_id!=-1) { // We need to select CONFIG_HW_MEM_HOLE_SIZEK for raminit, it can not make hole_startk to some basek too....!
-			       // We need to reset our Mem Hole, because We want more big HOLE than we already set
-			       //Before that We need to disable mem hole at first, becase memhole could already be set on i+1 instead
+				  // We need to reset our Mem Hole, because We want more big HOLE than we already set
+				  //Before that We need to disable mem hole at first, becase memhole could already be set on i+1 instead
 				disable_hoist_memory(mem_hole.hole_startk, mem_hole.node_id);
 			}
 
@@ -1051,7 +1051,7 @@ static void amdk8_domain_set_resources(device_t dev)
 					#if !CONFIG_K8_REV_F_SUPPORT
 					if(!is_cpu_pre_e0() )
 					#endif
-		       				 sizek += hoist_memory(mmio_basek,i);
+			 				 sizek += hoist_memory(mmio_basek,i);
 				#endif
 
 				basek = mmio_basek;
@@ -1068,7 +1068,7 @@ static void amdk8_domain_set_resources(device_t dev)
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 		printk(BIOS_DEBUG, "%d: mmio_basek=%08lx, basek=%08x, limitk=%08x\n",
-			     i, mmio_basek, basek, limitk);
+				i, mmio_basek, basek, limitk);
 		if (!ramtop)
 			ramtop = limitk * 1024;
 	}
@@ -1256,14 +1256,14 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 				// That is the typical case
 
 				if(j == 0 ){
-				       #if !CONFIG_K8_REV_F_SUPPORT
-		 		       	e0_later_single_core = is_e0_later_in_bsp(i);  // single core
-				       #else
-				       	e0_later_single_core = is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3
-				       #endif
+					   #if !CONFIG_K8_REV_F_SUPPORT
+		 			    	e0_later_single_core = is_e0_later_in_bsp(i);  // single core
+					   #else
+					   	e0_later_single_core = is_cpu_f0_in_bsp(i);  // We can read cpuid(1) from Func3
+					   #endif
 				} else {
-				       e0_later_single_core = 0;
-	       			}
+					   e0_later_single_core = 0;
+					}
 				if(e0_later_single_core) {
 					printk(BIOS_DEBUG, "\tFound Rev E or Rev F later single core\n");
 

@@ -27,7 +27,7 @@
 
 static void usb_init(struct device *dev)
 {
-        uint32_t dword;
+	uint32_t dword;
 
 	dword = pci_read_config32(dev, 0x04);
 	dword |= (1<<2)|(1<<1)|(1<<0);
@@ -39,26 +39,26 @@ static void usb_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations usb_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = usb_init,
-//	.enable           = bcm5785_enable,
-	.scan_bus         = 0,
-	.ops_pci          = &lops_pci,
+	.init		   = usb_init,
+//	.enable	     = bcm5785_enable,
+	.scan_bus	   = 0,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver usb_driver __pci_driver = {
-	.ops    = &usb_ops,
+	.ops	 = &usb_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_USB,
 };

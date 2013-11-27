@@ -25,7 +25,7 @@ Device (USB0)
 	OperationRegion (USBS, PCI_Config, 0x00, 0x0100)
 	Field (USBS, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0xC4),  URES,   8
+		Offset (0xC4),  URES,	  8
 	}
 }
 
@@ -36,7 +36,7 @@ Device (USB1)
 	OperationRegion (USBS, PCI_Config, 0x00, 0x0100)
 	Field (USBS, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0xC4),  URES,   8
+		Offset (0xC4),  URES,	  8
 	}
 }
 
@@ -47,7 +47,7 @@ Device (USB2)
 	OperationRegion (USBS, PCI_Config, 0x00, 0x0100)
 	Field (USBS, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0xC4),  URES,   8
+		Offset (0xC4),  URES,	  8
 	}
 }
 
@@ -58,14 +58,14 @@ Device (USB3)
 	OperationRegion (USBS, PCI_Config, 0x00, 0x0100)
 	Field (USBS, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0xC4),  URES,   8
+		Offset (0xC4),  URES,	  8
 	}
 }
 
 Device(PCI5)
 {
 	Name (_ADR, 0x001E0000)
-	Name (_PRW, Package () { 0x0B, 0x05 })    /* PME# _STS */
+	Name (_PRW, Package () { 0x0B, 0x05 })	   /* PME# _STS */
 	Name (_PRT, Package() {
 		Package() { 0x0003ffff, 0, 0, 20 },
 		Package() { 0x0003ffff, 1, 0, 21 },
@@ -87,9 +87,9 @@ Device (ICH0)
 	OperationRegion (ACPI, SystemIO, 0x0400, 0xC0)
 	Field (ACPI, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0x00),       PS1L,8,  PS1H,8,   PE1L,8,   PE1H,8,
-		Offset (0x28),       GS0L,8,  GS0H,8,   GSPL,8,   GSPH,8,
-		Offset (0x2C),       GE0L,8,  GE0H,8,   GEPL,8,   GEPH,8,
+		Offset (0x00),       PS1L,8,  PS1H,8,	  PE1L,8,   PE1H,8,
+		Offset (0x28),       GS0L,8,  GS0H,8,	  GSPL,8,   GSPH,8,
+		Offset (0x2C),       GE0L,8,  GE0H,8,	  GEPL,8,   GEPH,8,
 		Offset (0xB8),       GPLV,8
 	}
 
@@ -150,9 +150,9 @@ Device (ICH0)
 		Name (MSBG, ResourceTemplate () {
 			Memory32Fixed (ReadOnly, 0xFFF00000, 0x00080000,)
 			Memory32Fixed (ReadOnly, 0xFFF80000, 0x00080000,)
-	        })
+		 })
 
-	        Method (_CRS, 0, NotSerialized)
+		 Method (_CRS, 0, NotSerialized)
 	      	{
 			Return (MSBG)
 		}

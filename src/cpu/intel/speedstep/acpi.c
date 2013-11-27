@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2009 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -78,13 +78,13 @@ static int get_fsb(void)
 		case 6: return 1200; /*  / 3 == 400 */
 	}
 	printk(BIOS_WARNING,
-	       "Warning: No supported FSB frequency. Assuming 200MHz\n");
+		"Warning: No supported FSB frequency. Assuming 200MHz\n");
 	return 600;
 }
 
 static int gen_pstate_entries(const sst_table_t *const pstates,
-			      const int cpuID, const int cores_per_package,
-			      const uint8_t coordination)
+				 const int cpuID, const int cores_per_package,
+				 const uint8_t coordination)
 {
 	int i;
 	int len, len_ps;
@@ -100,13 +100,13 @@ static int gen_pstate_entries(const sst_table_t *const pstates,
 		pstates->states[pstates->num_states - 1]);
 	const int max_ratio2 = SPEEDSTEP_DOUBLE_RATIO(pstates->states[0]);
 	printk(BIOS_DEBUG, "clocks between %d and %d MHz.\n",
-	       (min_ratio2 * fsb3)
+		(min_ratio2 * fsb3)
 		/ (pstates->states[pstates->num_states - 1].is_slfm ? 12 : 6),
-	       (max_ratio2 * fsb3) / 6);
+		(max_ratio2 * fsb3) / 6);
 
 	printk(BIOS_DEBUG, "adding %x P-States between "
 			   "busratio %x and %x, ""incl. P0\n",
-	       pstates->num_states, min_ratio2 / 2, max_ratio2 / 2);
+		pstates->num_states, min_ratio2 / 2, max_ratio2 / 2);
 	len_ps = acpigen_write_package(pstates->num_states);
 	for (i = 0; i < pstates->num_states; ++i) {
 		const sst_state_t *const pstate = &pstates->states[i];
@@ -144,15 +144,15 @@ void generate_cpu_entries(void)
 	int totalcores = determine_total_number_of_cores();
 	int cores_per_package = (cpuid_ebx(1)>>16) & 0xff;
 	int numcpus = totalcores/cores_per_package; /* This assumes that all
-						       CPUs share the same
-						       layout. */
+							     CPUs share the same
+							     layout. */
 	int num_cstates;
 	acpi_cstate_t *cstates;
 	sst_table_t pstates;
 	uint8_t coordination;
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
-	       numcpus, cores_per_package);
+		numcpus, cores_per_package);
 
 	num_cstates = get_cst_entries(&cstates);
 	speedstep_gen_pstates(&pstates);

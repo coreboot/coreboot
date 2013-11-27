@@ -73,7 +73,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Write SB700 IOAPIC, only one */
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2,
-					   IO_APIC_ADDR, gsi_base);
+						IO_APIC_ADDR, gsi_base);
 	/* IOAPIC on rs5690 */
 	gsi_base += 24;		/* SB700 has 24 IOAPIC entries. */
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0));
@@ -81,7 +81,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 		pci_write_config32(dev, 0xF8, 0x1);
 		dword = pci_read_config32(dev, 0xFC) & 0xfffffff0;
 		current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 2+1,
-						   dword, gsi_base);
+							 dword, gsi_base);
 	}
 
 

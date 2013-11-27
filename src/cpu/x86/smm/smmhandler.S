@@ -28,26 +28,26 @@
 
 /*
  * +--------------------------------+ 0xaffff
- * |  Save State Map Node 0         |
- * |  Save State Map Node 1         |
- * |  Save State Map Node 2         |
- * |  Save State Map Node 3         |
- * |  ...                           |
+ * |  Save State Map Node 0	    |
+ * |  Save State Map Node 1	    |
+ * |  Save State Map Node 2	    |
+ * |  Save State Map Node 3	    |
+ * |  ...			    |
  * +--------------------------------+ 0xaf000
- * |                                |
- * |                                |
- * |                                |
+ * |				    |
+ * |				    |
+ * |				    |
  * +--------------------------------+ 0xa8400
- * | SMM Entry Node 0 (+ stack)     |
+ * | SMM Entry Node 0 (+ stack)	    |
  * +--------------------------------+ 0xa8000
- * | SMM Entry Node 1 (+ stack)     |
- * | SMM Entry Node 2 (+ stack)     |
- * | SMM Entry Node 3 (+ stack)     |
- * | ...                            |
+ * | SMM Entry Node 1 (+ stack)	    |
+ * | SMM Entry Node 2 (+ stack)	    |
+ * | SMM Entry Node 3 (+ stack)	    |
+ * | ...			    |
  * +--------------------------------+ 0xa7400
- * |                                |
- * | SMM Handler                    |
- * |                                |
+ * |				    |
+ * | SMM Handler		    |
+ * |				    |
  * +--------------------------------+ 0xa0000
  *
  */
@@ -76,16 +76,16 @@
  * All the bad magic is not all that bad after all.
  */
 smm_handler_start:
-	movw    $(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
+	movw	 $(smm_gdtptr16 - smm_handler_start + SMM_HANDLER_OFFSET), %bx
 	data32  lgdt %cs:(%bx)
 
-	movl    %cr0, %eax
-	andl    $0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl     $0x60000001, %eax /* CD, NW, PE = 1 */
-	movl    %eax, %cr0
+	movl	 %cr0, %eax
+	andl	 $0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
+	orl	 $0x60000001, %eax /* CD, NW, PE = 1 */
+	movl	 %eax, %cr0
 
 	/* Enable protected mode */
-	data32  ljmp    $0x08, $1f
+	data32  ljmp	 $0x08, $1f
 
 .code32
 1:
@@ -93,12 +93,12 @@ smm_handler_start:
 	wbinvd
 
 	/* Use flat data segment */
-	movw    $0x10, %ax
-	movw    %ax, %ds
-	movw    %ax, %es
-	movw    %ax, %ss
-	movw    %ax, %fs
-	movw    %ax, %gs
+	movw	 $0x10, %ax
+	movw	 %ax, %ds
+	movw	 %ax, %es
+	movw	 %ax, %ss
+	movw	 %ax, %fs
+	movw	 %ax, %gs
 
 	/* Get this CPU's LAPIC ID */
 	movl $LAPIC_ID, %esi

@@ -37,10 +37,10 @@
 #define UNCORE_EMRRphysBase_MSR 0x2f4
 #define UNCORE_EMRRphysMask_MSR 0x2f5
 #define SMM_MCA_CAP_MSR 0x17d
-#define   SMM_CPU_SVRSTR_BIT 57
-#define   SMM_CPU_SVRSTR_MASK (1 << (SMM_CPU_SVRSTR_BIT - 32))
+#define	  SMM_CPU_SVRSTR_BIT 57
+#define	  SMM_CPU_SVRSTR_MASK (1 << (SMM_CPU_SVRSTR_BIT - 32))
 #define SMM_FEATURE_CONTROL_MSR 0x4e0
-#define   SMM_CPU_SAVE_EN (1 << 1)
+#define	  SMM_CPU_SAVE_EN (1 << 1)
 /* SMM save state MSRs */
 #define SMBASE_MSR 0xc20
 #define IEDBASE_MSR 0xc22
@@ -71,7 +71,7 @@ static struct smm_relocation_params smm_reloc_params;
 static inline void write_smrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG, "Writing SMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
+		relo_params->smrr_base.lo, relo_params->smrr_mask.lo);
 	wrmsr(SMRRphysBase_MSR, relo_params->smrr_base);
 	wrmsr(SMRRphysMask_MSR, relo_params->smrr_mask);
 }
@@ -79,7 +79,7 @@ static inline void write_smrr(struct smm_relocation_params *relo_params)
 static inline void write_emrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG, "Writing EMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->emrr_base.lo, relo_params->emrr_mask.lo);
+		relo_params->emrr_base.lo, relo_params->emrr_mask.lo);
 	wrmsr(EMRRphysBase_MSR, relo_params->emrr_base);
 	wrmsr(EMRRphysMask_MSR, relo_params->emrr_mask);
 }
@@ -87,16 +87,16 @@ static inline void write_emrr(struct smm_relocation_params *relo_params)
 static inline void write_uncore_emrr(struct smm_relocation_params *relo_params)
 {
 	printk(BIOS_DEBUG,
-	       "Writing UNCORE_EMRR. base = 0x%08x, mask=0x%08x\n",
-	       relo_params->uncore_emrr_base.lo,
-	       relo_params->uncore_emrr_mask.lo);
+		"Writing UNCORE_EMRR. base = 0x%08x, mask=0x%08x\n",
+		relo_params->uncore_emrr_base.lo,
+		relo_params->uncore_emrr_mask.lo);
 	wrmsr(UNCORE_EMRRphysBase_MSR, relo_params->uncore_emrr_base);
 	wrmsr(UNCORE_EMRRphysMask_MSR, relo_params->uncore_emrr_mask);
 }
 
 static void update_save_state(int cpu,
-                              struct smm_relocation_params *relo_params,
-                              const struct smm_runtime *runtime)
+			      struct smm_relocation_params *relo_params,
+			      const struct smm_runtime *runtime)
 {
 	u32 smbase;
 	u32 iedbase;
@@ -108,7 +108,7 @@ static void update_save_state(int cpu,
 	iedbase = relo_params->ied_base;
 
 	printk(BIOS_DEBUG, "New SMBASE=0x%08x IEDBASE=0x%08x\n",
-	       smbase, iedbase);
+		smbase, iedbase);
 
 	/* All threads need to set IEDBASE and SMBASE to the relocated
 	 * handler region. However, the save state location depends on the
@@ -136,7 +136,7 @@ static void update_save_state(int cpu,
 		em64t101_smm_state_save_area_t *save_state;
 
 		save_state = (void *)(runtime->smbase + SMM_DEFAULT_SIZE -
-				      runtime->save_state_size);
+					  runtime->save_state_size);
 
 		save_state->smbase = smbase;
 		save_state->iedbase = iedbase;
@@ -172,7 +172,7 @@ cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
 
 	if (cpu >= CONFIG_MAX_CPUS) {
 		printk(BIOS_CRIT,
-		       "Invalid CPU number assigned in SMM stub: %d\n", cpu);
+			 "Invalid CPU number assigned in SMM stub: %d\n", cpu);
 		return;
 	}
 
@@ -230,7 +230,7 @@ static u32 northbridge_get_base_reg(device_t dev, int reg)
 }
 
 static void fill_in_relocation_params(device_t dev,
-                                      struct smm_relocation_params *params)
+				      struct smm_relocation_params *params)
 {
 	u32 tseg_size;
 	u32 tsegmb;
@@ -282,7 +282,7 @@ static void fill_in_relocation_params(device_t dev,
 	params->uncore_emrr_base.lo = emrr_base;
 	params->uncore_emrr_base.hi = 0;
 	params->uncore_emrr_mask.lo = (~(emrr_size - 1) & rmask) |
-	                              MTRRphysMaskValid;
+				       MTRRphysMaskValid;
 	params->uncore_emrr_mask.hi = (1 << (39 - 32)) - 1;
 }
 
@@ -303,7 +303,7 @@ static void adjust_apic_id_map(struct smm_loader_params *smm_params)
 }
 
 static int install_relocation_handler(int num_cpus,
-                                      struct smm_relocation_params *relo_params)
+				      struct smm_relocation_params *relo_params)
 {
 	/* The default SMM entry can happen in parallel or serially. If the
 	 * default SMM entry is done in parallel the BSP has already setup
@@ -354,7 +354,7 @@ static void setup_ied_area(struct smm_relocation_params *params)
 }
 
 static int install_permanent_handler(int num_cpus,
-                                     struct smm_relocation_params *relo_params)
+				     struct smm_relocation_params *relo_params)
 {
 	/* There are num_cpus concurrent stacks and num_cpus concurrent save
 	 * state areas. Lastly, set the stack size to the save state size. */
@@ -367,9 +367,9 @@ static int install_permanent_handler(int num_cpus,
 	};
 
 	printk(BIOS_DEBUG, "Installing SMM handler to 0x%08x\n",
-	       relo_params->smram_base);
+		relo_params->smram_base);
 	if (smm_load_module((void *)relo_params->smram_base,
-	                     relo_params->smram_size, &smm_params))
+			      relo_params->smram_size, &smm_params))
 		return -1;
 
 	adjust_apic_id_map(&smm_params);
@@ -395,8 +395,8 @@ static int cpu_smm_setup(void)
 	num_cpus = msr.lo & 0xffff;
 	if (num_cpus > CONFIG_MAX_CPUS) {
 		printk(BIOS_CRIT,
-		       "Error: Hardware CPUs (%d) > MAX_CPUS (%d)\n",
-		       num_cpus, CONFIG_MAX_CPUS);
+			 "Error: Hardware CPUs (%d) > MAX_CPUS (%d)\n",
+			 num_cpus, CONFIG_MAX_CPUS);
 	}
 
 	if (install_relocation_handler(num_cpus, &smm_reloc_params)) {

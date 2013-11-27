@@ -29,7 +29,7 @@ void pirq_assign_irqs(const unsigned char pIntAtoD[4])
 	device_t pdev;
 
 	pdev = dev_find_device(PCI_VENDOR_ID_AMD,
-			       PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
+				  PCI_DEVICE_ID_AMD_CS5536_ISA, 0);
 
 	if (pdev) {
 		pci_write_config16(pdev, 0x5c, (pIntAtoD[3] << 12

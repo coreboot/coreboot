@@ -29,15 +29,15 @@ static void usb_init(struct device *dev)
 
 static struct device_operations usb_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = usb_init,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.init		   = usb_init,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {
-	.ops    = &usb_ops,
+	.ops	 = &usb_ops,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_82C586_2,
 };

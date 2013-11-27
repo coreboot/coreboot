@@ -24,13 +24,13 @@
 
 typedef struct __rs690_int15_regs__
 {
-        u8 fun00_panel_id;      // Callback Sub-Function 00h - Get LCD Panel ID
-        u8 fun05_tv_standard;   // Callback Sub-Function 05h - Select Boot-up TV Standard
+	u8 fun00_panel_id;	// Callback Sub-Function 00h - Get LCD Panel ID
+	u8 fun05_tv_standard;	// Callback Sub-Function 05h - Select Boot-up TV Standard
 }rs690_int15_regs;
 
 typedef struct __rs690_vbios_regs__
 {
-        rs690_int15_regs        int15_regs;
+	rs690_int15_regs	int15_regs;
 }rs690_vbios_regs;
 
 /* Initialization VBIOS function */

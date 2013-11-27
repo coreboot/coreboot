@@ -44,7 +44,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 	ASSERT(res != NULL);
 
 	current += acpi_create_madt_ioapic((acpi_madt_ioapic_t *) current, 4,
-					   res->base, 0);
+						res->base, 0);
 	/* Initialize interrupt mapping if mptable.c didn't. */
 #if (!CONFIG_GENERATE_MP_TABLE)
 	pci_write_config32(dev, 0x7c, 0x0120d218);

@@ -46,7 +46,7 @@ struct pll_ct {
     u8 pll_ref_div;
     u8 pll_gen_cntl;
     u8 mclk_fb_div;
-    u8 mclk_fb_mult;    /* 2 or 4 */
+    u8 mclk_fb_mult;	/* 2 or 4 */
     u8 sclk_fb_div;
     u8 pll_vclk_cntl;
     u8 vclk_post_div;
@@ -87,7 +87,7 @@ struct aty_cursor {
     int blink_rate;
     u32 offset;
     struct {
-        u16 x, y;
+	u16 x, y;
     } pos, hot, size;
     u32 color[2];
     u8 bits[8][64];
@@ -204,7 +204,7 @@ struct fb_info_aty {
      */
 
 static inline u32 aty_ld_le32(int regindex,
-			      const struct fb_info_aty *info)
+				 const struct fb_info_aty *info)
 {
     /* Hack for bloc 1, should be cleanly optimized by compiler */
     if (regindex >= 0x400)
@@ -218,7 +218,7 @@ static inline u32 aty_ld_le32(int regindex,
 }
 
 static inline void aty_st_le32(int regindex, u32 val,
-			       const struct fb_info_aty *info)
+				  const struct fb_info_aty *info)
 {
     /* Hack for bloc 1, should be cleanly optimized by compiler */
     if (regindex >= 0x400)
@@ -232,7 +232,7 @@ static inline void aty_st_le32(int regindex, u32 val,
 }
 
 static inline u16 aty_ld_le16(int regindex,
-			      const struct fb_info_aty *info)
+				 const struct fb_info_aty *info)
 {
     /* Hack for bloc 1, should be cleanly optimized by compiler */
     if (regindex >= 0x400)
@@ -246,7 +246,7 @@ static inline u16 aty_ld_le16(int regindex,
 }
 
 static inline void aty_st_le16(int regindex, u16 val,
-			       const struct fb_info_aty *info)
+				  const struct fb_info_aty *info)
 {
     /* Hack for bloc 1, should be cleanly optimized by compiler */
     if (regindex >= 0x400)
@@ -302,7 +302,7 @@ static inline u8 aty_ld_pll(int offset, const struct fb_info_aty *info)
  * CT family only.
  */
 static inline void aty_st_pll(int offset, u8 val,
-			      const struct fb_info_aty *info)
+				 const struct fb_info_aty *info)
 {
     /* write addr byte */
     aty_st_8(CLOCK_CNTL + 1, (offset << 2) | PLL_WR_EN, info);
@@ -337,10 +337,10 @@ static  struct aty_dac_ops aty_dac_ct;		/* Integrated */
 #if 0
 struct aty_pll_ops {
     int (*var_to_pll)(const struct fb_info_aty *info, u32 vclk_per, u8 bpp,
-		      union aty_pll *pll);
+			union aty_pll *pll);
 #if 0
     u32 (*pll_to_var)(const struct fb_info_aty *info,
-	    	      const union aty_pll *pll);
+	    		    const union aty_pll *pll);
     void (*set_pll)(const struct fb_info_aty *info, const union aty_pll *pll);
 #endif
 };

@@ -72,18 +72,18 @@ static void amd8131_enable(device_t dev)
 }
 
 static struct device_operations pcix_ops  = {
-        .read_resources   = amd8131_bus_read_resources,
-        .set_resources    = amd8131_bus_set_resources,
+	.read_resources	  = amd8131_bus_read_resources,
+	.set_resources	  = amd8131_bus_set_resources,
 	.enable_resources = amd8131_bus_enable_resources,
-        .init             = amd8131_bus_init,
-	.scan_bus         = 0,
-	.enable           = amd8131_enable,
+	.init		  = amd8131_bus_init,
+	.scan_bus	   = 0,
+	.enable	   = amd8131_enable,
 };
 
 static const struct pci_driver pcix_driver __pci_driver = {
-        .ops    = &pcix_ops,
-        .vendor = PCI_VENDOR_ID_AMD,
-        .device = 0x7450,
+	.ops	= &pcix_ops,
+	.vendor = PCI_VENDOR_ID_AMD,
+	.device = 0x7450,
 };
 
 
@@ -101,15 +101,15 @@ static void ioapic_enable(device_t dev)
 
 static struct device_operations ioapic_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init     = 0,
+	.init	   = 0,
 	.scan_bus = 0,
 	.enable   = ioapic_enable,
 };
 
 static const struct pci_driver ioapic_driver __pci_driver = {
-	.ops    = &ioapic_ops,
+	.ops	 = &ioapic_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = 0x7451,
 

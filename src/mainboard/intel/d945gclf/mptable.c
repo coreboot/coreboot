@@ -27,14 +27,14 @@
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	int isa_bus;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	mptable_write_buses(mc, NULL, &isa_bus);
 
@@ -75,7 +75,7 @@ static void *smp_write_config_table(void *v)
 	/* Onboard Ethernet */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x1, 0x0, 0x2, 0x10);
 
-	/* Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
+	/* Local Ints:	Type	Polarity	 Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	mptable_lintsrc(mc, isa_bus);
 
 	/* Compute the checksums */

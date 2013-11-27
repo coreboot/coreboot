@@ -41,15 +41,15 @@ int sbios_INT15_handler(void)
     printk(BIOS_DEBUG, "System BIOS INT 15h\n");
 
     switch (X86_EAX & 0xffff) {
-#define BOOT_DISPLAY_DEFAULT    0
-#define BOOT_DISPLAY_CRT        (1 << 0)
-#define BOOT_DISPLAY_TV         (1 << 1)
-#define BOOT_DISPLAY_EFP        (1 << 2)
-#define BOOT_DISPLAY_LCD        (1 << 3)
-#define BOOT_DISPLAY_CRT2       (1 << 4)
-#define BOOT_DISPLAY_TV2        (1 << 5)
-#define BOOT_DISPLAY_EFP2       (1 << 6)
-#define BOOT_DISPLAY_LCD2       (1 << 7)
+#define BOOT_DISPLAY_DEFAULT	0
+#define BOOT_DISPLAY_CRT	(1 << 0)
+#define BOOT_DISPLAY_TV		(1 << 1)
+#define BOOT_DISPLAY_EFP	(1 << 2)
+#define BOOT_DISPLAY_LCD	(1 << 3)
+#define BOOT_DISPLAY_CRT2	(1 << 4)
+#define BOOT_DISPLAY_TV2	(1 << 5)
+#define BOOT_DISPLAY_EFP2	(1 << 6)
+#define BOOT_DISPLAY_LCD2	(1 << 7)
 	case 0x5f35:
 		X86_EAX = 0x5f;
 		X86_ECX = BOOT_DISPLAY_DEFAULT;
@@ -62,20 +62,20 @@ int sbios_INT15_handler(void)
 		res = 0;
 		break;
     case 0x4e08:
-        switch (X86_EBX & 0xff) {
-        case 0x00:
-            X86_EAX &= ~(0xff);
-            X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func00_LCD_panel_id;
+	switch (X86_EBX & 0xff) {
+	case 0x00:
+	    X86_EAX &= ~(0xff);
+	    X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func00_LCD_panel_id;
 			printk(BIOS_DEBUG, "DISPLAY = %x\n", X86_EBX & 0xff);
-            res = 0;
+	    res = 0;
 			break;
 		case 0x02:
 			break;
-        case 0x05:
-            X86_EAX &= ~(0xff);
-            X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func05_TV_standard;
+	case 0x05:
+	    X86_EAX &= ~(0xff);
+	    X86_EBX = (X86_EBX & ~(0xff)) | __int15_func.regs.func05_TV_standard;
 			printk(BIOS_DEBUG, "TV = %x\n", X86_EBX & 0xff);
-            res = 0;
+	    res = 0;
 			break;
 		case 0x80:
 			X86_EAX &= ~(0xff);
@@ -92,10 +92,10 @@ int sbios_INT15_handler(void)
 			break;
 		default:
 			break;
-        }
-        break;
+	}
+	break;
 	default:
-        printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_EAX & 0xffff);
+	printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_EAX & 0xffff);
 		break;
     }
 

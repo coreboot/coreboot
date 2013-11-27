@@ -1,7 +1,7 @@
 if VENDOR_AOPEN
 
 choice
-        prompt "Mainboard model"
+	prompt "Mainboard model"
 
 config BOARD_AOPEN_DXPLPLUSU
 	bool "DXPL Plus-U"

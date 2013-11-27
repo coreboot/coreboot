@@ -166,7 +166,7 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
 
 #if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW, "SF: erase %2x %2x %2x %2x (%x)\n", cmd[0], cmd[1],
-		      cmd[2], cmd[3], offset);
+			cmd[2], cmd[3], offset);
 #endif
 		ret = spi_flash_cmd(flash->spi, CMD_WRITE_ENABLE, NULL, 0);
 		if (ret)

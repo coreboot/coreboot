@@ -56,7 +56,7 @@ static void *smp_write_config_table(void *v)
 
 	mptable_write_buses(mc, NULL, &bus_isa);
 
-	/*I/O APICs:   APIC ID Version State           Address*/
+	/*I/O APICs:	APIC ID Version State		Address*/
 	{
 		device_t dev = 0;
 		int i;
@@ -162,7 +162,7 @@ static void *smp_write_config_table(void *v)
 		}
 	}
 
-/*Local Ints:  Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN#*/
+/*Local Ints:  Type    Polarity	   Trigger     Bus ID	IRQ    APIC ID PIN#*/
 	printk(BIOS_DEBUG, "bus_isa is: %x\n", bus_isa);
 	mptable_lintsrc(mc, bus_isa);
 

@@ -19,11 +19,11 @@
 
 /* DefinitionBlock Statement */
 DefinitionBlock (
-	"dsdt.aml",     /* Output filename */
-	"DSDT",         /* Signature */
+	"dsdt.aml",	 /* Output filename */
+	"DSDT",	 /* Signature */
 	0x02,		/* DSDT Revision, needs to be 2 for 64bit */
-	"COREv2",       /* OEMID */
-	"COREBOOT",     /* TABLE ID */
+	"COREv2",	 /* OEMID */
+	"COREBOOT",	 /* TABLE ID */
 	0x00010001	/* OEM Revision */
 	)
 {	/* Start of ASL file */
@@ -71,7 +71,7 @@ DefinitionBlock (
 		PIND, 0x00000008,	/* Index 3 */
 		AINT, 0x00000008,	/* Index 4 */
 		SINT, 0x00000008,	/*  Index 5 */
-		, 0x00000008,	             /* Index 6 */
+		, 0x00000008,		     /* Index 6 */
 		AAUD, 0x00000008,	/* Index 7 */
 		AMOD, 0x00000008,	/* Index 8 */
 		PINE, 0x00000008,	/* Index 9 */
@@ -92,13 +92,13 @@ DefinitionBlock (
 	/* Client Management index/data registers */
 	OperationRegion(CMT, SystemIO, 0x00000C50, 0x00000002)
 		Field(CMT, ByteAcc, NoLock, Preserve) {
-		CMTI,      8,
+		CMTI,	     8,
 		/* Client Management Data register */
-		G64E,   1,
-		G64O,      1,
-		G32O,      2,
-		,       2,
-		GPSL,     2,
+		G64E,	  1,
+		G64O,	     1,
+		G32O,	     2,
+		,	  2,
+		GPSL,	    2,
 	}
 
 	/* GPM Port register */
@@ -117,7 +117,7 @@ DefinitionBlock (
 	/* Flash ROM program enable register */
 	OperationRegion(FRE, SystemIO, 0x00000C6F, 0x00000001)
 		Field(FRE, ByteAcc, NoLock, Preserve) {
-		,     0x00000006,
+		,	0x00000006,
 		FLRE, 0x00000001,
 	}
 
@@ -242,8 +242,8 @@ DefinitionBlock (
 		Field(P1EB, ByteAcc, NoLock, Preserve) {
 		TMST, 1,
 		,    3,
-		BMST,    1,
-		GBST,   1,
+		BMST,	   1,
+		GBST,	  1,
 		Offset(0x01),
 		PBST, 1,
 		, 1,
@@ -380,16 +380,16 @@ DefinitionBlock (
 
 			if(CondRefOf(\_OSI,Local1))
 			{
-				Store(1, OSTP)                /* Assume some form of XP */
-				if (\_OSI("Windows 2006"))      /* Vista */
+				Store(1, OSTP)		  /* Assume some form of XP */
+				if (\_OSI("Windows 2006"))	    /* Vista */
 				{
 					Store(2, OSTP)
 				}
 			} else {
 				If(WCMP(\_OS,"Linux")) {
-					Store(3, OSTP)            /* Linux */
+					Store(3, OSTP)	       /* Linux */
 				} Else {
-					Store(4, OSTP)            /* Gotta be WinCE */
+					Store(4, OSTP)	       /* Gotta be WinCE */
 				}
 			}
 			Return(OSTP)
@@ -762,7 +762,7 @@ DefinitionBlock (
 				}
 				Store(Local0, PINH)
 			} /* End Method(_SB.INTH._SRS)  */
-		} /* End Device(INTH)   */
+		} /* End Device(INTH)	  */
 
 	}   /* End Scope(_SB)  */
 
@@ -1142,7 +1142,7 @@ DefinitionBlock (
 
 			Method(_PRT,0) {
 				If(PMOD){ Return(APR0) }   /* APIC mode */
-				Return (PR0)                  /* PIC Mode */
+				Return (PR0)		  /* PIC Mode */
 			} /* end _PRT */
 
 			/* Describe the Northbridge devices */
@@ -1164,8 +1164,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00020000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS2) }   /* APIC mode */
-					Return (PS2)                  /* PIC Mode */
+					If(PMOD){ Return(APS2) }	/* APIC mode */
+					Return (PS2)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR2 */
 
@@ -1175,8 +1175,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00040000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS4) }   /* APIC mode */
-					Return (PS4)                  /* PIC Mode */
+					If(PMOD){ Return(APS4) }	/* APIC mode */
+					Return (PS4)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR4 */
 
@@ -1184,8 +1184,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00050000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS5) }   /* APIC mode */
-					Return (PS5)                  /* PIC Mode */
+					If(PMOD){ Return(APS5) }	/* APIC mode */
+					Return (PS5)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR5 */
 
@@ -1193,8 +1193,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00060000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS6) }   /* APIC mode */
-					Return (PS6)                  /* PIC Mode */
+					If(PMOD){ Return(APS6) }	/* APIC mode */
+					Return (PS6)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR6 */
 
@@ -1203,8 +1203,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00070000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS7) }   /* APIC mode */
-					Return (PS7)                  /* PIC Mode */
+					If(PMOD){ Return(APS7) }	/* APIC mode */
+					Return (PS7)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR7 */
 
@@ -1396,7 +1396,7 @@ DefinitionBlock (
 			OperationRegion (IOID, SystemIO, 0x2E, 0x02)	/* sometimes it is 0x4E */
 				Field (IOID, ByteAcc, NoLock, Preserve)
 				{
-					SIOI,   8,    SIOD,   8		/* 0x2E and 0x2F */
+					SIOI,   8,	   SIOD,   8		/* 0x2E and 0x2F */
 				}
 
 			IndexField (SIOI, SIOD, ByteAcc, NoLock, Preserve)
@@ -1411,7 +1411,7 @@ DefinitionBlock (
 					Offset (0xF0),
 				APC0,	8,	/* APC/PME Event Enable Register */
 				APC1,	8,	/* APC/PME Status Register */
-				APC2,	8,      /* APC/PME Control Register 1 */
+				APC2,	8,	  /* APC/PME Control Register 1 */
 				APC3,	8,	/* Environment Controller Special Configuration Register */
 				APC4,	8	/* APC/PME Control Register 2 */
 			}
@@ -1435,7 +1435,7 @@ DefinitionBlock (
 			 * Keyboard PME is routed to SB600 Gevent3. We can wake
 			 * up the system by pressing the key.
 			 */
-		        Method (SIOS, 1)
+			  Method (SIOS, 1)
 			{
 				/* We only enable KBD PME for S5. */
 				If (LLess (Arg0, 0x05))
@@ -1577,23 +1577,23 @@ DefinitionBlock (
 
 			/*
 			*
-			*               FIRST METHOD CALLED UPON BOOT
+			*		   FIRST METHOD CALLED UPON BOOT
 			*
 			*  1. If debugging, print current OS and ACPI interpreter.
 			*  2. Get PCI Interrupt routing from ACPI VSM, this
-			*     value is based on user choice in BIOS setup.
+			*	 value is based on user choice in BIOS setup.
 			*/
 			Method(_INI, 0) {
 				/* DBGO("\\_SB\\_INI\n") */
-				/* DBGO("   DSDT.ASL code from ") */
+				/* DBGO("	DSDT.ASL code from ") */
 				/* DBGO(__DATE__) */
 				/* DBGO(" ") */
 				/* DBGO(__TIME__) */
-				/* DBGO("\n   Sleep states supported: ") */
+				/* DBGO("\n	  Sleep states supported: ") */
 				/* DBGO("\n") */
-				/* DBGO("   \\_OS=") */
+				/* DBGO("	\\_OS=") */
 				/* DBGO(\_OS) */
-				/* DBGO("\n   \\_REV=") */
+				/* DBGO("\n	  \\_REV=") */
 				/* DBGO(\_REV) */
 				/* DBGO("\n") */
 
@@ -1602,7 +1602,7 @@ DefinitionBlock (
 
 				/* On older chips, clear PciExpWakeDisEn */
 				/*if (LLessEqual(\SBRI, 0x13)) {
-				*    	Store(0,\PWDE)
+				*	 	Store(0,\PWDE)
 				* }
 				*/
 			} /* End Method(_SB._INI) */

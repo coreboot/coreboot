@@ -33,8 +33,8 @@ Macros and definitions:
 
 /* Debugging macros. */
 #if CONFIG_DEBUG_RAM_SETUP
-#define PRINTK_DEBUG(x...)      printk(BIOS_DEBUG, x)
-#define DUMPNORTH()             dump_pci_device(NORTHBRIDGE_MMC)
+#define PRINTK_DEBUG(x...)	printk(BIOS_DEBUG, x)
+#define DUMPNORTH()		dump_pci_device(NORTHBRIDGE_MMC)
 #else
 #define PRINTK_DEBUG(x...)
 #define DUMPNORTH()
@@ -96,7 +96,7 @@ static const uint32_t refresh_rate_map[] = {
 	 * [2] ==   7.8   us ->  7.8 us
 	 * [3] ==  31.3   us -> 15.6 us
 	 * [4] ==  62.5   us -> 15.6 us
-	 * [5] == 125     us -> 15.6 us
+	 * [5] == 125	   us -> 15.6 us
 	 */
 	1, 7, 2, 1, 1, 1
 };
@@ -229,7 +229,7 @@ static struct dimm_size sdram_spd_get_width(u8 dimm_socket_address)
  * Calculate the log base 2 size in bits of both DIMM sides.
  *
  * log2(# bits) = (# columns) + log2(data width) +
- *                (# rows) + log2(banks per SDRAM)
+ *		  (# rows) + log2(banks per SDRAM)
  *
  * Note that it might be easier to use SPD byte 31 here, it has the DIMM size
  * as a multiple of 4MB. The way we do it now we can size both sides of an
@@ -317,7 +317,7 @@ static uint8_t spd_get_supported_dimms(void)
 		// Validate DIMM page size
 		// The i855 only supports page sizes of 4, 8, 16 KB per channel
 		// NOTE:  4 KB =  32 Kb = 2^15
-		//       16 KB = 128 Kb = 2^17
+		//	   16 KB = 128 Kb = 2^17
 
 		if ((page_size.side1 < 15) || (page_size.side1 > 17)) {
 			PRINTK_DEBUG("Skipping DIMM with unsupported page size: %d\n", page_size.side1);
@@ -372,32 +372,32 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 	PRINTK_DEBUG("  Sending RAM command 0x%08x\n", reg32);
 	pci_write_config32(NORTHBRIDGE_MMC, DRC, reg32);
 
-        // RAM_COMMAND_NORMAL is an exception.
-        // It affects only the memory controller and does not need to be "sent" to the DIMMs.
+	// RAM_COMMAND_NORMAL is an exception.
+	// It affects only the memory controller and does not need to be "sent" to the DIMMs.
 
-        if (command != RAM_COMMAND_NORMAL) {
+	if (command != RAM_COMMAND_NORMAL) {
 
-                // Send the command to all DIMMs by accessing a memory location within each
-                // NOTE: for mode select commands, some of the location address bits
-                // are part of the command
+		// Send the command to all DIMMs by accessing a memory location within each
+		// NOTE: for mode select commands, some of the location address bits
+		// are part of the command
 
-                // Map JEDEC mode bits to i855
-                if (command == RAM_COMMAND_MRS || command == RAM_COMMAND_EMRS) {
+		// Map JEDEC mode bits to i855
+		if (command == RAM_COMMAND_MRS || command == RAM_COMMAND_EMRS) {
 			/* Host address lines [13:3] map to DIMM address lines [11, 9:0] */
 			i855_mode_bits = ((jedec_mode_bits & 0x800) << (13 - 11)) | ((jedec_mode_bits & 0x3ff) << (12 - 9));
-                }
+		}
 
-                for (i = 0; i < (DIMM_SOCKETS * 2); ++i) {
-                        uint8_t dimm_end_32M_multiple = pci_read_config8(NORTHBRIDGE_MMC, DRB + i);
-                        if (dimm_end_32M_multiple > dimm_start_32M_multiple) {
+		for (i = 0; i < (DIMM_SOCKETS * 2); ++i) {
+			uint8_t dimm_end_32M_multiple = pci_read_config8(NORTHBRIDGE_MMC, DRB + i);
+			if (dimm_end_32M_multiple > dimm_start_32M_multiple) {
 
-                                uint32_t dimm_start_address = dimm_start_32M_multiple << 25;
+				uint32_t dimm_start_address = dimm_start_32M_multiple << 25;
 				PRINTK_DEBUG("  Sending RAM command to 0x%08x\n", dimm_start_address + i855_mode_bits);
-                                read32(dimm_start_address + i855_mode_bits);
+				read32(dimm_start_address + i855_mode_bits);
 
-                                // Set the start of the next DIMM
-                                dimm_start_32M_multiple = dimm_end_32M_multiple;
-                        }
+				// Set the start of the next DIMM
+				dimm_start_32M_multiple = dimm_end_32M_multiple;
+			}
 		}
 	}
 }
@@ -737,15 +737,15 @@ static void spd_set_dram_timing(uint8_t dimm_mask)
 	// i855 supports only 5, 6, 7 or 8 clocks for tRAS
 	// 5 clocks ~= 37.6 ns, 6 clocks ~= 45.1 ns, 7 clocks ~= 52.6 ns, 8 clocks ~= 60.1 ns
 	if (slowest_active_to_precharge_delay > 60)
-		die("unsupported DIMM tRAS");	// > 52 ns:      8 or more clocks
+		die("unsupported DIMM tRAS");	// > 52 ns:	 8 or more clocks
 	else if (slowest_active_to_precharge_delay > 52)
-		dram_timing |= DRT_TRAS_MIN_8;	// 46-52 ns:     7 clocks
+		dram_timing |= DRT_TRAS_MIN_8;	// 46-52 ns:	  7 clocks
 	else if (slowest_active_to_precharge_delay > 45)
-		dram_timing |= DRT_TRAS_MIN_7;	// 46-52 ns:     7 clocks
+		dram_timing |= DRT_TRAS_MIN_7;	// 46-52 ns:	  7 clocks
 	else if (slowest_active_to_precharge_delay > 37)
-		dram_timing |= DRT_TRAS_MIN_6;	// 38-45 ns:     6 clocks
+		dram_timing |= DRT_TRAS_MIN_6;	// 38-45 ns:	  6 clocks
 	else
-		dram_timing |= DRT_TRAS_MIN_5;	// < 38 ns:      5 clocks
+		dram_timing |= DRT_TRAS_MIN_5;	// < 38 ns:	  5 clocks
 
 	/* FIXME: guess work starts here...
 	 *
@@ -827,7 +827,7 @@ static void spd_set_dram_throttle_control(void)
 
 	/* DDR SDRAM Throttle Mode (TMODE):
 	 *   0011 = Both Rank and GMCH Thermal Sensor based throttling is enabled. When the external SO-
-	 *          DIMM Thermal Sensor is Tripped DDR SDRAM Throttling begins based on the setting in RTT
+	 *	     DIMM Thermal Sensor is Tripped DDR SDRAM Throttling begins based on the setting in RTT
 	 */
 	dtc_reg |= (3 << 28);
 

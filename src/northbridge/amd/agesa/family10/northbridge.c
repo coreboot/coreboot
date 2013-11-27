@@ -46,8 +46,8 @@ extern uint32_t agesawrapper_amdinitmid(void);
 
 typedef struct amdfam10_sysconf_t sys_info_conf_t;
 typedef struct dram_base_mask {
-        u32 base; //[47:27] at [28:8]
-        u32 mask; //[47:27] at [28:8] and enable at bit 0
+	u32 base; //[47:27] at [28:8]
+	u32 mask; //[47:27] at [28:8] and enable at bit 0
 } dram_base_mask_t;
 
 
@@ -263,7 +263,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 		for (i=0; i<sysconf.nodes; i++)
 			pci_write_config32(__f1_dev[i], reg+4, tempreg);
 
-		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+		tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));		     //base :ISA and VGA ?
 #if 0
 		// FIXME: can we use VGA reg instead?
 		if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
@@ -373,9 +373,9 @@ static device_t get_node_pci(u32 nodeid, u32 fn)
 
 static unsigned int read_nb_cfg_54(void)
 {
-        msr_t msr;
-        msr = rdmsr(NB_CFG_MSR);
-        return (( msr.hi >> (54-32)) & 1);
+	msr_t msr;
+	msr = rdmsr(NB_CFG_MSR);
+	return (( msr.hi >> (54-32)) & 1);
 }
 
 static void get_fx_devs(void)
@@ -1054,7 +1054,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 		ram_resource(dev, (idx | i), basek, sizek);
 		idx += 0x10;
 		printk(BIOS_DEBUG, "node %d: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
-			     i, mmio_basek, basek, limitk);
+				i, mmio_basek, basek, limitk);
 		if (!ramtop)
 			ramtop = limitk * 1024;
 	}

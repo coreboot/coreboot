@@ -127,8 +127,8 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
  *===============================================================================
  * #1, BYTE, Speed (DCTStatstruc.Speed) (Secondary Key)
  * #2, BYTE, number of Address bus loads on the Channel. (Tershery Key)
- *           These must be listed in ascending order.
- *           FFh (0xFE) has special meaning of 'any', and must be listed first for each speed grade.
+ *	     These must be listed in ascending order.
+ *	     FFh (0xFE) has special meaning of 'any', and must be listed first for each speed grade.
  * #3, DWORD, Address Timing Control Register Value
  * #4, DWORD, Output Driver Compensation Control Register Value
  * #5, BYTE, Number of DIMMs (Primary Key)

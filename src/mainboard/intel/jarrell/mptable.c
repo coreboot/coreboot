@@ -60,7 +60,7 @@ static void *smp_write_config_table(void *v)
 		}
 		/* test for active riser with 2nd pxh device */
 		dev = dev_find_slot(0, PCI_DEVFN(0x06,0));
-                if (dev) {
+		if (dev) {
 			bus_pxhd_id = pci_read_config32(dev, PCI_VENDOR_ID);
 			if(bus_pxhd_id == 0x35998086) {
 				bus_pxhd_x = pci_read_config8(dev, PCI_SECONDARY_BUS);
@@ -69,15 +69,15 @@ static void *smp_write_config_table(void *v)
 				if (dev) {
 					bus_pxhd_id = pci_read_config32(dev, PCI_VENDOR_ID);
 					if(bus_pxhd_id == 0x03298086) {
-					    bus_pxhd_3 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+						 bus_pxhd_3 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 					}
 				}
 				/* pxhd-4 */
 				dev = dev_find_slot(bus_pxhd_x, PCI_DEVFN(0x00,2));
 				if (dev) {
 					bus_pxhd_id = pci_read_config32(dev, PCI_VENDOR_ID);
-                                        if(bus_pxhd_id == 0x032a8086) {
-					    bus_pxhd_4 = pci_read_config8(dev, PCI_SECONDARY_BUS);
+					if(bus_pxhd_id == 0x032a8086) {
+						 bus_pxhd_4 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 					}
 				}
 			}
@@ -195,13 +195,13 @@ static void *smp_write_config_table(void *v)
 	/* PCI Slot 3 (if active riser) */
 	if(bus_pxhd_3) {
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-	                bus_pxhd_3, (1<<2)|0, 0xb, 0x0);
+			 bus_pxhd_3, (1<<2)|0, 0xb, 0x0);
 	}
 
 	/* PCI Slot 4 (if active riser) */
 	if(bus_pxhd_4) {
 		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT,
-	                bus_pxhd_4, (1<<2)|0, 0xc, 0x0);
+			 bus_pxhd_4, (1<<2)|0, 0xc, 0x0);
 	}
 
 	/* Onboard SCSI 0 */

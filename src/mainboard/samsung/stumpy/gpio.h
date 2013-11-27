@@ -291,17 +291,17 @@ const struct pch_gpio_set3 pch_gpio_set3_level = {
 
 const struct pch_gpio_map stumpy_gpio_map = {
 	.set1 = {
-		.mode      = &pch_gpio_set1_mode,
+		.mode	     = &pch_gpio_set1_mode,
 		.direction = &pch_gpio_set1_direction,
 		.level     = &pch_gpio_set1_level,
 	},
 	.set2 = {
-		.mode      = &pch_gpio_set2_mode,
+		.mode	     = &pch_gpio_set2_mode,
 		.direction = &pch_gpio_set2_direction,
 		.level     = &pch_gpio_set2_level,
 	},
 	.set3 = {
-		.mode      = &pch_gpio_set3_mode,
+		.mode	     = &pch_gpio_set3_mode,
 		.direction = &pch_gpio_set3_direction,
 		.level     = &pch_gpio_set3_level,
 	},

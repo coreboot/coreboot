@@ -274,7 +274,7 @@ static void sch_audio_init(struct device *dev)
 
 	if (codec_mask) {
 		printk(BIOS_DEBUG, "sch_audio: codec_mask = %02x\n",
-		       codec_mask);
+			 codec_mask);
 		codecs_init(dev, base, codec_mask);
 	} else {
 		/* No audio codecs found disable HD audio controller */
@@ -286,7 +286,7 @@ static void sch_audio_init(struct device *dev)
 }
 
 static void sch_audio_set_subsystem(device_t dev, unsigned vendor,
-				    unsigned device)
+					unsigned device)
 {
 	if (!vendor || !device) {
 		pci_write_config32(dev, PCI_SUBSYSTEM_VENDOR_ID,

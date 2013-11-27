@@ -39,7 +39,7 @@ static void vt8237_cfg(struct device *dev)
 					  PCI_DEVICE_ID_VIA_K8M800_DRAM, 0);
 	if (!devfun3)
 	  devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
-				    PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
+					PCI_DEVICE_ID_VIA_K8T890CE_3, 0);
 	if (!devfun3)
 		devfun3 = dev_find_device(PCI_VENDOR_ID_VIA,
 					  PCI_DEVICE_ID_VIA_K8M890CE_3, 0);
@@ -215,10 +215,10 @@ static void vt8237a_vlink_init(struct device *dev)
 	 * init code is required.
 	 *
 	 * FIXME: This is based on vt8237r_vlink_init() in
-	 *        k8t890/k8t890_ctrl.c and modified to fit what the AMI
-	 *        BIOS on my M2V wrote to these registers (by looking
-	 *        at lspci -nxxx output).
-	 *        Works for me.
+	 *	   k8t890/k8t890_ctrl.c and modified to fit what the AMI
+	 *	   BIOS on my M2V wrote to these registers (by looking
+	 *	   at lspci -nxxx output).
+	 *	   Works for me.
 	 */
 
 	/* disable auto disconnect */

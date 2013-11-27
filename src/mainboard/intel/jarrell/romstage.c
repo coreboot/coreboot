@@ -59,9 +59,9 @@ static void main(unsigned long bist)
 	pc87427_disable_dev(CONSOLE_SERIAL_DEV);
 	pc87427_disable_dev(HIDDEN_SERIAL_DEV);
 	pc87427_enable_dev(CONSOLE_SERIAL_DEV, CONFIG_TTYS0_BASE);
-        /* Enable Serial 2 lines instead of GPIO */
-        outb(0x2c, 0x2e);
-        outb((inb(0x2f) & (~1<<1)), 0x2f);
+	/* Enable Serial 2 lines instead of GPIO */
+	outb(0x2c, 0x2e);
+	outb((inb(0x2f) & (~1<<1)), 0x2f);
 	console_init();
 
 	/* Halt if there was a built in self test failure */
@@ -74,12 +74,12 @@ static void main(unsigned long bist)
 
 	/* MOVE ME TO A BETTER LOCATION !!! */
 	/* config LPC decode for flash memory access */
-        device_t dev;
-        dev = pci_locate_device(PCI_ID(0x8086, 0x24d0), 0);
-        if (dev == PCI_DEV_INVALID)
-                die("Missing ich5?");
-        pci_write_config32(dev, 0xe8, 0x00000000);
-        pci_write_config8(dev, 0xf0, 0x00);
+	device_t dev;
+	dev = pci_locate_device(PCI_ID(0x8086, 0x24d0), 0);
+	if (dev == PCI_DEV_INVALID)
+		die("Missing ich5?");
+	pci_write_config32(dev, 0xe8, 0x00000000);
+	pci_write_config8(dev, 0xf0, 0x00);
 
 #if 0
 	print_pci_devices();

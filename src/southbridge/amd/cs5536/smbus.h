@@ -26,7 +26,7 @@ int smbus_start_condition(unsigned smbus_io_base);
 int smbus_stop_condition(unsigned smbus_io_base);
 int smbus_check_stop_condition(unsigned smbus_io_base);
 int smbus_send_slave_address(unsigned smbus_io_base,
-				    unsigned char device);
+					unsigned char device);
 int smbus_send_command(unsigned smbus_io_base, unsigned char command);
 
 unsigned char do_smbus_read_byte(unsigned smbus_io_base,

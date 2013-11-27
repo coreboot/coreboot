@@ -65,7 +65,7 @@ ifeq ($(CONFIG_SB800_IMC_FWM), y)
 
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+
-# |0x55AA55AA |EC ROM Address |GEC ROM Address |            |
+# |0x55AA55AA |EC ROM Address |GEC ROM Address |	    |
 # +-----------+---------------+----------------+------------+
 # EC ROM should be 64K aligned.
 SB800_FWM_POSITION=$(shell printf %u $(CONFIG_SB800_FWM_POSITION))
@@ -81,7 +81,7 @@ $(obj)/coreboot_SB800_romsig.bin: \
 			$(call strip_quotes, $(CONFIG_SB800_IMC_FWM_FILE)) \
 			$(obj)/config.h \
 			$(obj)/mainboard/$(MAINBOARDDIR)/static.c
-	echo "    SB800 FW  $@"
+	echo "	   SB800 FW  $@"
 	for fwm in 1437226410 \
 		$(SB800_IMC_POSITION) \
 		0 \

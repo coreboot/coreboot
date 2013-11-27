@@ -158,7 +158,7 @@ static void set_ics_data(unsigned char dev, int data, char len)
 	}
 
 	//for (i=0; i < len; i++)
-	//      outb(data[i],SMBBLKDAT);
+	//	 outb(data[i],SMBBLKDAT);
 
 	outb(dev, SMBXMITADD);
 	outb(0, SMBHSTCMD);

@@ -58,7 +58,7 @@ int google_chromeec_kbbacklight(int percent)
 	cec_cmd.cmd_size_out = sizeof(rsp_backlight);
 	google_chromeec_command(&cec_cmd);
 	printk(BIOS_DEBUG, "Google Chrome set keyboard backlight: %x status (%x)\n",
-	       rsp_backlight.percent, cec_cmd.cmd_code);
+		rsp_backlight.percent, cec_cmd.cmd_code);
 	return cec_cmd.cmd_code;
 
 }
@@ -137,7 +137,7 @@ void google_chromeec_early_init(void)
 #ifndef __PRE_RAM__
 
 int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
-			     uint8_t *buffer, int len, int is_read)
+				uint8_t *buffer, int len, int is_read)
 {
 	union {
 		struct ec_params_i2c_passthru p;
@@ -209,7 +209,7 @@ int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 	/* Parse response */
 	if (r->i2c_status & EC_I2C_STATUS_ERROR) {
 		printk(BIOS_ERR, "Transfer failed with status=0x%x\n",
-		       r->i2c_status);
+			 r->i2c_status);
 		return -1;
 	}
 
@@ -299,7 +299,7 @@ void google_chromeec_log_events(u32 mask)
 	/* Log the last post code only if it is abornmal */
 	if (code > 0 && code != POST_OS_BOOT && code != POST_OS_RESUME)
 		printk(BIOS_DEBUG, "Chrome EC: Last POST code was 0x%02x\n",
-		       code);
+			 code);
 
 	while ((event = google_chromeec_get_event()) != 0) {
 		if (EC_HOST_EVENT_MASK(event) & mask)
@@ -360,7 +360,7 @@ int google_chromeec_hello(void)
 	cec_cmd.cmd_size_out = sizeof(rsp_hello.out_data);
 	google_chromeec_command(&cec_cmd);
 	printk(BIOS_DEBUG, "Google Chrome EC: Hello got back %x status (%x)\n",
-	       rsp_hello.out_data, cec_cmd.cmd_code);
+		rsp_hello.out_data, cec_cmd.cmd_code);
 	return cec_cmd.cmd_code;
 }
 
@@ -384,13 +384,13 @@ void google_chromeec_init(void)
 
 	if (cec_cmd.cmd_code) {
 		printk(BIOS_DEBUG,
-		       "Google Chrome EC: version command failed!\n");
+			 "Google Chrome EC: version command failed!\n");
 	} else {
 		printk(BIOS_DEBUG, "Google Chrome EC: version:\n");
-		printk(BIOS_DEBUG, "    ro: %s\n", cec_resp.version_string_ro);
-		printk(BIOS_DEBUG, "    rw: %s\n", cec_resp.version_string_rw);
+		printk(BIOS_DEBUG, "	  ro: %s\n", cec_resp.version_string_ro);
+		printk(BIOS_DEBUG, "	  rw: %s\n", cec_resp.version_string_rw);
 		printk(BIOS_DEBUG, "  running image: %d\n",
-		       cec_resp.current_image);
+			 cec_resp.current_image);
 		ec_image_type = cec_resp.current_image;
 	}
 

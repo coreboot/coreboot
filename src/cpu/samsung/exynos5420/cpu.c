@@ -115,7 +115,7 @@ static void exynos_displayport_init(device_t dev)
 
 	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
 	printk(BIOS_DEBUG,
-	       "Initializing Exynos VGA, base %p\n", (void *)lcdbase);
+		"Initializing Exynos VGA, base %p\n", (void *)lcdbase);
 	lcd_ctrl_init(fb_size, &panel, (void *)lcdbase);
 }
 
@@ -143,10 +143,10 @@ static void cpu_noop(device_t dev)
 
 static struct device_operations cpu_ops = {
 	.read_resources   = cpu_noop,
-	.set_resources    = cpu_noop,
+	.set_resources	   = cpu_noop,
 	.enable_resources = cpu_enable,
-	.init             = cpu_init,
-	.scan_bus         = 0,
+	.init		   = cpu_init,
+	.scan_bus	   = 0,
 };
 
 static void enable_exynos5420_dev(device_t dev)
@@ -164,9 +164,9 @@ void exynos5420_config_l2_cache(void)
 	uint32_t val;
 
 	/*
-	 * Bit    9 - L2 tag RAM setup (1 cycle)
+	 * Bit	   9 - L2 tag RAM setup (1 cycle)
 	 * Bits 8:6 - L2 tag RAM latency (3 cycles)
-	 * Bit    5 - L2 data RAM setup (1 cycle)
+	 * Bit	   5 - L2 data RAM setup (1 cycle)
 	 * Bits 2:0 - L2 data RAM latency (3 cycles)
 	 */
 	val = (1 << 9) | (0x2 << 6) | (1 << 5) | (0x2);

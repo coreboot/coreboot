@@ -71,15 +71,15 @@ static void *smp_write_config_table(void *v)
 
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_mcp55, 0);
 
-	/* I/O Ints:         Type       Trigger                Polarity              Bus ID        IRQ                    APIC ID       PIN# */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 1) << 2) | 1, apicid_mcp55, 0xa);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 2) << 2) | 0, apicid_mcp55, 0x16);	// 22
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 2) << 2) | 1, apicid_mcp55, 0x17);	// 23
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 6) << 2) | 1, apicid_mcp55, 0x17);	// 23
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 5) << 2) | 0, apicid_mcp55, 0x14);	// 20
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 5) << 2) | 1, apicid_mcp55, 0x17);	// 23
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 5) << 2) | 2, apicid_mcp55, 0x15);	// 21
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 8) << 2) | 0, apicid_mcp55, 0x16);	// 22
+	/* I/O Ints:	      Type	 Trigger		Polarity	      Bus ID	    IRQ			   APIC ID	 PIN# */
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 1) << 2) | 1, apicid_mcp55, 0xa);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 2) << 2) | 0, apicid_mcp55, 0x16);	// 22
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 2) << 2) | 1, apicid_mcp55, 0x17);	// 23
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 6) << 2) | 1, apicid_mcp55, 0x17);	// 23
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 5) << 2) | 0, apicid_mcp55, 0x14);	// 20
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 5) << 2) | 1, apicid_mcp55, 0x17);	// 23
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 5) << 2) | 2, apicid_mcp55, 0x15);	// 21
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,  bus_mcp55[0], ((sbdn + 8) << 2) | 0, apicid_mcp55, 0x16);	// 22
 
 	for (j = 7; j >= 2; j--) {
 		if (!bus_mcp55[j])
@@ -93,7 +93,7 @@ static void *smp_write_config_table(void *v)
 			smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, bus_mcp55[1], ((0x06 + j) << 2) | i, apicid_mcp55, 0x10 + (2 + i + j) % 4);
 	}
 
-	/* Local Ints:       Type       Trigger               Polarity              Bus ID   IRQ  APIC ID      PIN# */
+	/* Local Ints:	      Type	 Trigger	       Polarity		     Bus ID   IRQ  APIC ID	PIN# */
 	mptable_lintsrc(mc, bus_isa);
 
 	/* There is no extension information... */

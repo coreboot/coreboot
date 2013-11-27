@@ -428,7 +428,7 @@ DefinitionBlock (
 				}
 				Store(Local0, PINH)
 			} /* End Method(_SB.INTH._SRS)  */
-		} /* End Device(INTH)   */
+		} /* End Device(INTH)	  */
 
 	}   /* End Scope(_SB)  */
 
@@ -478,7 +478,7 @@ DefinitionBlock (
 
 			Method(_PRT,0) {
 				If(PMOD){ Return(APR0) }   /* APIC mode */
-				Return (PR0)                  /* PIC Mode */
+				Return (PR0)		  /* PIC Mode */
 			} /* end _PRT */
 
 			/* Describe the Northbridge devices */
@@ -500,8 +500,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00020000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS2) }   /* APIC mode */
-					Return (PS2)                  /* PIC Mode */
+					If(PMOD){ Return(APS2) }	/* APIC mode */
+					Return (PS2)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR2 */
 
@@ -510,8 +510,8 @@ DefinitionBlock (
 				Name(_ADR, 0x00090000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APS9) }   /* APIC mode */
-					Return (PS9)                  /* PIC Mode */
+					If(PMOD){ Return(APS9) }	/* APIC mode */
+					Return (PS9)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBR9 */
 
@@ -520,8 +520,8 @@ DefinitionBlock (
 				Name(_ADR, 0x000A0000)
 				Name(_PRW, Package() {0x18, 4})
 				Method(_PRT,0) {
-					If(PMOD){ Return(APSa) }   /* APIC mode */
-					Return (PSa)                  /* PIC Mode */
+					If(PMOD){ Return(APSa) }	/* APIC mode */
+					Return (PSa)		   /* PIC Mode */
 				} /* end _PRT */
 			} /* end PBRa */
 
@@ -630,17 +630,17 @@ DefinitionBlock (
 			    Name (BUF0, ResourceTemplate ()
 			    {
 				IO (Decode16,
-				0x0CF8,             // Address Range Minimum
-				0x0CF8,             // Address Range Maximum
-				0x01,               // Address Alignment
-				0x08,               // Address Length
+				0x0CF8,		// Address Range Minimum
+				0x0CF8,		// Address Range Maximum
+				0x01,		// Address Alignment
+				0x08,		// Address Length
 				)
 				WordIO (ResourceProducer, MinFixed, MaxFixed, PosDecode, EntireRange,
-				0x0000,             // Address Space Granularity
-				0x0000,             // Address Range Minimum
-				0x0CF7,             // Address Range Maximum
-				0x0000,             // Address Translation Offset
-				0x0CF8,             // Address Length
+				0x0000,		// Address Space Granularity
+				0x0000,		// Address Range Minimum
+				0x0CF7,		// Address Range Maximum
+				0x0000,		// Address Translation Offset
+				0x0CF8,		// Address Length
 				,, , TypeStatic)
 			    })
 				/* Methods bellow use SSDT to get actual MMIO regs

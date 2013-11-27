@@ -67,13 +67,13 @@ typedef u32 device_t;
 #define HECIBAR 0x10
 
 #define FOR_ALL_RANKS					   \
-  for (channel = 0; channel < NUM_CHANNELS; channel++)	   \
-    for (slot = 0; slot < NUM_SLOTS; slot++)		   \
+  for (channel = 0; channel < NUM_CHANNELS; channel++)		  \
+    for (slot = 0; slot < NUM_SLOTS; slot++)			 \
       for (rank = 0; rank < NUM_RANKS; rank++)
 
-#define FOR_POPULATED_RANKS				   \
-  for (channel = 0; channel < NUM_CHANNELS; channel++)	   \
-    for (slot = 0; slot < NUM_SLOTS; slot++)		   \
+#define FOR_POPULATED_RANKS					  \
+  for (channel = 0; channel < NUM_CHANNELS; channel++)		  \
+    for (slot = 0; slot < NUM_SLOTS; slot++)			 \
       for (rank = 0; rank < NUM_RANKS; rank++)		   \
 	if (info->populated_ranks[channel][slot][rank])
 
@@ -161,9 +161,9 @@ static void read128(u32 addr, u64 * out)
 	u128 ret;
 	u128 stor;
 	asm volatile ("movdqu %%xmm0, %0\n"
-		      "movdqa (%2), %%xmm0\n"
-		      "movdqu %%xmm0, %1\n"
-		      "movdqu %0, %%xmm0":"+m" (stor), "=m"(ret):"r"(addr));
+			"movdqa (%2), %%xmm0\n"
+			"movdqu %%xmm0, %1\n"
+			"movdqu %0, %%xmm0":"+m" (stor), "=m"(ret):"r"(addr));
 	out[0] = ret.lo;
 	out[1] = ret.hi;
 }
@@ -176,7 +176,7 @@ static void write_1d0(u32 val, u16 addr, int bits, int flag)
 	write_mchbar32(0x1d0, 0);
 	while (read_mchbar32(0x1d0) & 0x800000) ;
 	write_mchbar32(0x1d4,
-		       (val & ((1 << bits) - 1)) | (2 << bits) | (flag <<
+			 (val & ((1 << bits) - 1)) | (2 << bits) | (flag <<
 								  bits));
 	write_mchbar32(0x1d0, 0x40000000 | addr);
 	while (read_mchbar32(0x1d0) & 0x800000) ;
@@ -189,8 +189,8 @@ static u16 read_1d0(u16 addr, int split)
 	write_mchbar32(0x1d0, 0);
 	while (read_mchbar32(0x1d0) & 0x800000) ;
 	write_mchbar32(0x1d0,
-		       0x80000000 | (((read_mchbar8(0x246) >> 2) & 3) +
-				     0x361 - addr));
+			 0x80000000 | (((read_mchbar8(0x246) >> 2) & 3) +
+					 0x361 - addr));
 	while (read_mchbar32(0x1d0) & 0x800000) ;
 	val = read_mchbar32(0x1d8);
 	write_1d0(0, 0x33d, 0, 0);
@@ -284,8 +284,8 @@ read_500(struct raminfo *info, int channel, u16 addr, int split)
 	write_mchbar32(0x500 + (channel << 10), 0);
 	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
 	write_mchbar32(0x500 + (channel << 10),
-		       0x80000000 |
-		       (((read_mchbar8(0x246 + (channel << 10)) >> 2) &
+			 0x80000000 |
+			 (((read_mchbar8(0x246 + (channel << 10)) >> 2) &
 			 3) + 0xb88 - addr));
 	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
 	val = read_mchbar32(0x508 + (channel << 10));
@@ -304,7 +304,7 @@ write_500(struct raminfo *info, int channel, u32 val, u16 addr, int bits,
 	write_mchbar32(0x500 + (channel << 10), 0);
 	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
 	write_mchbar32(0x504 + (channel << 10),
-		       (val & ((1 << bits) - 1)) | (2 << bits) | (flag <<
+			 (val & ((1 << bits) - 1)) | (2 << bits) | (flag <<
 								  bits));
 	write_mchbar32(0x500 + (channel << 10), 0x40000000 | addr);
 	while (read_mchbar32(0x500 + (channel << 10)) & 0x800000) ;
@@ -383,10 +383,10 @@ static u32 get_580(int channel, u8 addr)
 	write_mchbar8(0x5ff, 0x80);	/* OK */
 	write_mchbar32(0x580 + (channel << 10), 0x8493c012 | addr);
 	write_mchbar8(0x580 + (channel << 10),
-		      read_mchbar8(0x580 + (channel << 10)) | 1);
+			read_mchbar8(0x580 + (channel << 10)) | 1);
 	while (!((ret = read_mchbar32(0x580 + (channel << 10))) & 0x10000)) ;
 	write_mchbar8(0x580 + (channel << 10),
-		      read_mchbar8(0x580 + (channel << 10)) & ~1);
+			read_mchbar8(0x580 + (channel << 10)) & ~1);
 	return ret;
 }
 
@@ -408,7 +408,7 @@ static void seq9(struct raminfo *info, int channel, int slot, int rank)
 		for (lane = 0; lane < 8; lane++)
 			write_500(info, channel,
 				  info->training.lane_timings[i +
-							      1][channel][slot]
+								     1][channel][slot]
 				  [rank][lane], get_timing_register_addr(lane,
 									 i + 1,
 									 slot,
@@ -426,7 +426,7 @@ static void seq9(struct raminfo *info, int channel, int slot, int rank)
 		for (lane = 0; lane < 8; lane++)
 			write_500(info, channel,
 				  info->training.lane_timings[i +
-							      1][channel][slot]
+								     1][channel][slot]
 				  [rank][lane], get_timing_register_addr(lane,
 									 i + 1,
 									 slot,
@@ -440,10 +440,10 @@ static void seq9(struct raminfo *info, int channel, int slot, int rank)
 	write_mchbar8(0x5ff, 0x80);	/* OK */
 	write_1d0(0x2, 0x142, 3, 1);
 	for (lane = 0; lane < 8; lane++) {
-		//      printk (BIOS_ERR, "before: %x\n", info->training.lane_timings[2][channel][slot][rank][lane]);
+		//	  printk (BIOS_ERR, "before: %x\n", info->training.lane_timings[2][channel][slot][rank][lane]);
 		info->training.lane_timings[2][channel][slot][rank][lane] =
 		    read_500(info, channel,
-			     get_timing_register_addr(lane, 2, slot, rank), 9);
+				get_timing_register_addr(lane, 2, slot, rank), 9);
 		//printk (BIOS_ERR, "after: %x\n", info->training.lane_timings[2][channel][slot][rank][lane]);
 		info->training.lane_timings[3][channel][slot][rank][lane] =
 		    info->training.lane_timings[2][channel][slot][rank][lane] +
@@ -521,22 +521,22 @@ static void set_334(int zero)
 
 			for (k = 0; k < 2; k++) {
 				write_mchbar32(0x138 + 8 * k,
-					       (channel << 26) | (j << 24));
+						    (channel << 26) | (j << 24));
 				gav(vd8[1][(channel << 3) | (j << 1) | k] =
-				    read_mchbar32(0x138 + 8 * k));
+					read_mchbar32(0x138 + 8 * k));
 				gav(vd8[0][(channel << 3) | (j << 1) | k] =
-				    read_mchbar32(0x13c + 8 * k));
+					read_mchbar32(0x13c + 8 * k));
 			}
 
 			write_mchbar32(0x334 + (channel << 10) + (j * 0x44),
-				       zero ? 0 : val3[j]);
+					   zero ? 0 : val3[j]);
 			write_mchbar32(0x32c + (channel << 10) + (j * 0x44),
-				       zero ? 0 : (0x18191819 & lmask));
+					   zero ? 0 : (0x18191819 & lmask));
 			write_mchbar16(0x34a + (channel << 10) + (j * 0x44), c);
 			write_mchbar32(0x33c + (channel << 10) + (j * 0x44),
-				       zero ? 0 : (a & lmask));
+					   zero ? 0 : (a & lmask));
 			write_mchbar32(0x344 + (channel << 10) + (j * 0x44),
-				       zero ? 0 : (a & lmask));
+					   zero ? 0 : (a & lmask));
 		}
 	}
 
@@ -607,12 +607,12 @@ static void calculate_timings(struct raminfo *info)
 		for (slot = 0; slot < NUM_SLOTS; slot++)
 			if (info->populated_ranks[channel][slot][0])
 				supported_cas_latencies &=
-				    2 *
-				    (info->
-				     spd[channel][slot][CAS_LATENCIES_LSB] |
-				     (info->
-				      spd[channel][slot][CAS_LATENCIES_MSB] <<
-				      8));
+					2 *
+					(info->
+					 spd[channel][slot][CAS_LATENCIES_LSB] |
+					 (info->
+					  spd[channel][slot][CAS_LATENCIES_MSB] <<
+					  8));
 
 	max_clock_index = min(3, info->max_supported_clock_speed_index);
 
@@ -624,16 +624,16 @@ static void calculate_timings(struct raminfo *info)
 			if (info->populated_ranks[channel][slot][0]) {
 				unsigned timebase;
 				timebase =
-				    1000 *
-				    info->
-				    spd[channel][slot][TIMEBASE_DIVIDEND] /
-				    info->spd[channel][slot][TIMEBASE_DIVISOR];
+					1000 *
+					info->
+					spd[channel][slot][TIMEBASE_DIVIDEND] /
+					info->spd[channel][slot][TIMEBASE_DIVISOR];
 				cycletime =
-				    max(cycletime,
+					max(cycletime,
 					timebase *
 					info->spd[channel][slot][CYCLETIME]);
 				cas_latency_time =
-				    max(cas_latency_time,
+					max(cas_latency_time,
 					timebase *
 					info->
 					spd[channel][slot][CAS_LATENCY_TIME]);
@@ -678,8 +678,8 @@ static void program_base_timings(struct raminfo *info)
 		for (channel = 0; channel < NUM_CHANNELS; channel++)
 			for (slot = 0; slot < NUM_SLOTS; slot++)
 				if ((info->
-				     spd[channel][slot][MODULE_TYPE] & 0xF) ==
-				    3)
+					 spd[channel][slot][MODULE_TYPE] & 0xF) ==
+					3)
 					extended_silicon_revision = 4;
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -695,54 +695,54 @@ static void program_base_timings(struct raminfo *info)
 
 					card_timing = 0;
 					if ((info->
-					     spd[channel][slot][MODULE_TYPE] &
-					     0xF) == 3) {
+						  spd[channel][slot][MODULE_TYPE] &
+						  0xF) == 3) {
 						int reference_card;
 						reference_card =
-						    info->
-						    spd[channel][slot]
-						    [REFERENCE_RAW_CARD_USED] &
-						    0x1f;
+							  info->
+							  spd[channel][slot]
+							  [REFERENCE_RAW_CARD_USED] &
+							  0x1f;
 						if (reference_card == 3)
 							card_timing =
-							    u16_ffd1188[0][lane]
-							    [info->
-							     clock_speed_index];
+								   u16_ffd1188[0][lane]
+								   [info->
+								    clock_speed_index];
 						if (reference_card == 5)
 							card_timing =
-							    u16_ffd1188[1][lane]
-							    [info->
-							     clock_speed_index];
+								   u16_ffd1188[1][lane]
+								   [info->
+								    clock_speed_index];
 					}
 
 					info->training.
-					    lane_timings[0][channel][slot][rank]
-					    [lane] =
-					    u8_FFFD1218[info->
+						 lane_timings[0][channel][slot][rank]
+						 [lane] =
+						 u8_FFFD1218[info->
 							clock_speed_index];
 					info->training.
-					    lane_timings[1][channel][slot][rank]
-					    [lane] = 256;
+						 lane_timings[1][channel][slot][rank]
+						 [lane] = 256;
 
 					for (tm_reg = 2; tm_reg < 4; tm_reg++)
 						info->training.
-						    lane_timings[tm_reg]
-						    [channel][slot][rank][lane]
-						    =
-						    u8_FFFD1240[channel]
-						    [extended_silicon_revision]
-						    [lane][2 * slot +
-							   rank][info->
+							  lane_timings[tm_reg]
+							  [channel][slot][rank][lane]
+							  =
+							  u8_FFFD1240[channel]
+							  [extended_silicon_revision]
+							  [lane][2 * slot +
+								  rank][info->
 								 clock_speed_index]
-						    + info->max4048[channel]
-						    +
-						    u8_FFFD0C78[channel]
-						    [extended_silicon_revision]
-						    [info->
-						     mode4030[channel]][slot]
-						    [rank][info->
-							   clock_speed_index]
-						    + card_timing;
+							  + info->max4048[channel]
+							  +
+							  u8_FFFD0C78[channel]
+							  [extended_silicon_revision]
+							  [info->
+							   mode4030[channel]][slot]
+							  [rank][info->
+								  clock_speed_index]
+							  + card_timing;
 					for (tm_reg = 0; tm_reg < 4; tm_reg++)
 						write_500(info, channel,
 							  info->training.
@@ -751,49 +751,49 @@ static void program_base_timings(struct raminfo *info)
 							  [lane],
 							  get_timing_register_addr
 							  (lane, tm_reg, slot,
-							   rank), 9, 0);
+								  rank), 9, 0);
 				}
 
 				card_timing_2 = 0;
 				if (!(extended_silicon_revision != 4
-				      || (info->
+					  || (info->
 					  populated_ranks_mask[channel] & 5) ==
-				      5)) {
+					  5)) {
 					if ((info->
-					     spd[channel][slot]
-					     [REFERENCE_RAW_CARD_USED] & 0x1F)
-					    == 3)
+						  spd[channel][slot]
+						  [REFERENCE_RAW_CARD_USED] & 0x1F)
+						 == 3)
 						card_timing_2 =
-						    u16_FFFE0EB8[0][info->
+							  u16_FFFE0EB8[0][info->
 								    clock_speed_index];
 					if ((info->
-					     spd[channel][slot]
-					     [REFERENCE_RAW_CARD_USED] & 0x1F)
-					    == 5)
+						  spd[channel][slot]
+						  [REFERENCE_RAW_CARD_USED] & 0x1F)
+						 == 5)
 						card_timing_2 =
-						    u16_FFFE0EB8[1][info->
+							  u16_FFFE0EB8[1][info->
 								    clock_speed_index];
 				}
 
 				for (i = 0; i < 3; i++)
 					write_500(info, channel,
 						  (card_timing_2 +
-						   info->max4048[channel]
-						   +
-						   u8_FFFD0EF8[channel]
-						   [extended_silicon_revision]
-						   [info->
-						    mode4030[channel]][info->
+							 info->max4048[channel]
+							 +
+							 u8_FFFD0EF8[channel]
+							 [extended_silicon_revision]
+							 [info->
+							  mode4030[channel]][info->
 								       clock_speed_index]),
 						  u16_fffd0c50[i][slot][rank],
 						  8, 1);
 				write_500(info, channel,
 					  (info->max4048[channel] +
-					   u8_FFFD0C78[channel]
-					   [extended_silicon_revision][info->
+						u8_FFFD0C78[channel]
+						[extended_silicon_revision][info->
 								       mode4030
 								       [channel]]
-					   [slot][rank][info->
+						[slot][rank][info->
 							clock_speed_index]),
 					  u16_fffd0c70[slot][rank], 7, 1);
 			}
@@ -806,8 +806,8 @@ static void program_base_timings(struct raminfo *info)
 				   +
 				   u8_FFFD17E0[channel]
 				   [extended_silicon_revision][info->
-							       mode4030
-							       [channel]][info->
+								      mode4030
+								      [channel]][info->
 									  clock_speed_index]),
 				  u16_fffd0c68[i], 8, 1);
 	}
@@ -873,8 +873,8 @@ static void compute_derived_timings(struct raminfo *info)
 		for (channel = 0; channel < NUM_CHANNELS; channel++)
 			for (slot = 0; slot < NUM_SLOTS; slot++)
 				if ((info->
-				     spd[channel][slot][MODULE_TYPE] & 0xF) ==
-				    3)
+					 spd[channel][slot][MODULE_TYPE] & 0xF) ==
+					3)
 					extended_silicon_revision = 4;
 	if (info->board_lane_delay[7] < 5)
 		info->board_lane_delay[7] = 5;
@@ -887,13 +887,13 @@ static void compute_derived_timings(struct raminfo *info)
 	if (info->revision < 8)
 		info->revision_flag_1 = 0;
 	if (info->revision >= 8 && (info->silicon_revision == 0
-				    || info->silicon_revision == 1))
+					|| info->silicon_revision == 1))
 		some_delay_2_ps = 735;
 	else
 		some_delay_2_ps = 750;
 
 	if (info->revision >= 0x10 && (info->silicon_revision == 0
-				       || info->silicon_revision == 1))
+					   || info->silicon_revision == 1))
 		some_delay_1_ps = 3929;
 	else
 		some_delay_1_ps = 3490;
@@ -943,9 +943,9 @@ static void compute_derived_timings(struct raminfo *info)
 		info->max_slots_used_in_channel = 1;
 	for (channel = 0; channel < 2; channel++)
 		write_mchbar32(0x244 + (channel << 10),
-			       ((info->revision < 8) ? 1 : 0x200)
-			       | ((2 - info->max_slots_used_in_channel) << 17) |
-			       (channel << 21) | (info->
+				  ((info->revision < 8) ? 1 : 0x200)
+				  | ((2 - info->max_slots_used_in_channel) << 17) |
+				  (channel << 21) | (info->
 						  some_delay_1_cycle_floor <<
 						  18) | 0x9510);
 	if (info->max_slots_used_in_channel == 1) {
@@ -954,7 +954,7 @@ static void compute_derived_timings(struct raminfo *info)
 	} else {
 		info->mode4030[0] = ((count_ranks_in_channel(info, 0) == 1) || (count_ranks_in_channel(info, 0) == 2)) ? 2 : 3;	/* 2 if 1 or 2 ranks */
 		info->mode4030[1] = ((count_ranks_in_channel(info, 1) == 1)
-				     || (count_ranks_in_channel(info, 1) ==
+					 || (count_ranks_in_channel(info, 1) ==
 					 2)) ? 2 : 3;
 	}
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
@@ -976,16 +976,16 @@ static void compute_derived_timings(struct raminfo *info)
 			int unk1;
 			if (info->revision < 8)
 				unk1 =
-				    u8_FFFD1891[0][channel][info->
-							    clock_speed_index]
-				    [i];
+					u8_FFFD1891[0][channel][info->
+								   clock_speed_index]
+					[i];
 			else if (!
 				 (info->revision >= 0x10
 				  || info->revision_flag_1))
 				unk1 =
-				    u8_FFFD1891[1][channel][info->
-							    clock_speed_index]
-				    [i];
+					u8_FFFD1891[1][channel][info->
+								   clock_speed_index]
+					[i];
 			else
 				unk1 = 0;
 			for (slot = 0; slot < NUM_SLOTS; slot++)
@@ -994,30 +994,30 @@ static void compute_derived_timings(struct raminfo *info)
 					int b = 0;
 
 					if (!info->
-					    populated_ranks[channel][slot]
-					    [rank])
+						 populated_ranks[channel][slot]
+						 [rank])
 						continue;
 					if (extended_silicon_revision == 4
-					    && (info->
+						 && (info->
 						populated_ranks_mask[channel] &
 						5) != 5) {
 						if ((info->
-						     spd[channel][slot]
-						     [REFERENCE_RAW_CARD_USED] &
-						     0x1F) == 3) {
+							   spd[channel][slot]
+							   [REFERENCE_RAW_CARD_USED] &
+							   0x1F) == 3) {
 							a = u16_ffd1178[0]
-							    [info->
-							     clock_speed_index];
+								   [info->
+								    clock_speed_index];
 							b = u16_fe0eb8[0][info->
 									  clock_speed_index];
 						} else
-						    if ((info->
+							  if ((info->
 							 spd[channel][slot]
 							 [REFERENCE_RAW_CARD_USED]
 							 & 0x1F) == 5) {
 							a = u16_ffd1178[1]
-							    [info->
-							     clock_speed_index];
+								   [info->
+								    clock_speed_index];
 							b = u16_fe0eb8[1][info->
 									  clock_speed_index];
 						}
@@ -1031,24 +1031,24 @@ static void compute_derived_timings(struct raminfo *info)
 					{
 						int t;
 						t = b +
-						    u8_FFFD0EF8[channel]
-						    [extended_silicon_revision]
-						    [info->
-						     mode4030[channel]][info->
+							  u8_FFFD0EF8[channel]
+							  [extended_silicon_revision]
+							  [info->
+							   mode4030[channel]][info->
 									clock_speed_index];
 						if (unk1 >= t)
 							max_of_unk =
-							    max(max_of_unk,
+								   max(max_of_unk,
 								unk1 - t);
 					}
 				}
 			{
 				int t =
-				    u8_FFFD17E0[channel]
-				    [extended_silicon_revision][info->
+					u8_FFFD17E0[channel]
+					[extended_silicon_revision][info->
 								mode4030
 								[channel]]
-				    [info->clock_speed_index] + min_of_unk_2;
+					[info->clock_speed_index] + min_of_unk_2;
 				if (unk1 >= t)
 					max_of_unk = max(max_of_unk, unk1 - t);
 			}
@@ -1060,14 +1060,14 @@ static void compute_derived_timings(struct raminfo *info)
 }
 
 static void jedec_read(struct raminfo *info,
-		       int channel, int slot, int rank,
-		       int total_rank, u8 addr3, unsigned int value)
+			 int channel, int slot, int rank,
+			 int total_rank, u8 addr3, unsigned int value)
 {
 	/* Handle mirrored mapping.  */
 	if ((rank & 1) && (info->spd[channel][slot][RANK1_ADDRESS_MAPPING] & 1))
 		addr3 =
 		    (addr3 & 0xCF) | ((addr3 & 0x10) << 1) | ((addr3 >> 1) &
-							      0x10);
+								     0x10);
 	write_mchbar8(0x271, addr3 | (read_mchbar8(0x271) & 0xC1));
 	write_mchbar8(0x671, addr3 | (read_mchbar8(0x671) & 0xC1));
 
@@ -1132,9 +1132,9 @@ static void jedec_init(struct raminfo *info)
 
 	dll_on = ((info->silicon_revision != 2 && info->silicon_revision != 3)
 		  || (info->populated_ranks[0][0][0]
-		      && info->populated_ranks[0][1][0])
+			&& info->populated_ranks[0][1][0])
 		  || (info->populated_ranks[1][0][0]
-		      && info->populated_ranks[1][1][0]));
+			&& info->populated_ranks[1][1][0]));
 
 	total_rank = 0;
 
@@ -1171,25 +1171,25 @@ static void jedec_init(struct raminfo *info)
 			for (rank = 0; rank < NUM_RANKS; rank++)
 				if (info->populated_ranks[channel][slot][rank]) {
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 0x28,
-						   rtt_wr | (info->
-							     clock_speed_index
-							     << 3)
-						   | (auto_self_refresh << 6) |
-						   (self_refresh_temperature <<
-						    7));
+							 total_rank, 0x28,
+							 rtt_wr | (info->
+								    clock_speed_index
+								    << 3)
+							 | (auto_self_refresh << 6) |
+							 (self_refresh_temperature <<
+							  7));
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 0x38, 0);
+							 total_rank, 0x38, 0);
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 0x18,
-						   rtt | MR1_ODS34OHM);
+							 total_rank, 0x18,
+							 rtt | MR1_ODS34OHM);
 					jedec_read(info, channel, slot, rank,
-						   total_rank, 6,
-						   (dll_on << 12) |
-						   (write_recovery << 9)
-						   | ((info->cas_latency - 4) <<
-						      4) | MR0_BT_INTERLEAVED |
-						   MR0_DLL_RESET_ON);
+							 total_rank, 6,
+							 (dll_on << 12) |
+							 (write_recovery << 9)
+							 | ((info->cas_latency - 4) <<
+							    4) | MR0_BT_INTERLEAVED |
+							 MR0_DLL_RESET_ON);
 					total_rank++;
 				}
 	}
@@ -1205,17 +1205,17 @@ static void program_modules_memory_map(struct raminfo *info, int pre_jedec)
 		if (info->populated_ranks[channel][slot][rank]) {
 			total_mb[channel] +=
 			    pre_jedec ? 256 : (256 << info->
-					       density[channel][slot] >> info->
-					       is_x16_module[channel][slot]);
+						    density[channel][slot] >> info->
+						    is_x16_module[channel][slot]);
 			write_mchbar8(0x208 + rank + 2 * slot + (channel << 10),
-				      (pre_jedec ? (1 | ((1 + 1) << 1))
-				       : (info->
+					  (pre_jedec ? (1 | ((1 + 1) << 1))
+					   : (info->
 					  is_x16_module[channel][slot] |
 					  ((info->density[channel][slot] +
-					    1) << 1))) | 0x80);
+						 1) << 1))) | 0x80);
 		}
 		write_mchbar16(0x200 + (channel << 10) + 4 * slot + 2 * rank,
-			       total_mb[channel] >> 6);
+				  total_mb[channel] >> 6);
 	}
 
 	info->total_memory_mb = total_mb[0] + total_mb[1];
@@ -1226,9 +1226,9 @@ static void program_modules_memory_map(struct raminfo *info, int pre_jedec)
 	    total_mb[0] + total_mb[1] - info->interleaved_part_mb;
 	channel_0_non_interleaved = total_mb[0] - info->interleaved_part_mb / 2;
 	write_mchbar32(0x100,
-		       channel_0_non_interleaved | (info->
-						    non_interleaved_part_mb <<
-						    16));
+			 channel_0_non_interleaved | (info->
+							  non_interleaved_part_mb <<
+							  16));
 	if (!pre_jedec)
 		write_mchbar16(0x104, info->interleaved_part_mb);
 }
@@ -1257,9 +1257,9 @@ static void program_board_delay(struct raminfo *info)
 		int speed_bit;
 		speed_bit =
 		    ((info->clock_speed_index > 1
-		      || (info->silicon_revision != 2
+			|| (info->silicon_revision != 2
 			  && info->silicon_revision != 3))) ^ (info->revision >=
-							       0x10);
+								      0x10);
 		write_500(info, 0, speed_bit | ((!info->use_ecc) << 1), 0x60e,
 			  3, 1);
 		write_500(info, 1, speed_bit | ((!info->use_ecc) << 1), 0x60e,
@@ -1270,34 +1270,34 @@ static void program_board_delay(struct raminfo *info)
 			rmw_1d0(0x116, 5, 2, 4, 1);
 	}
 	write_mchbar32(0x120,
-		       (1 << (info->max_slots_used_in_channel + 28)) |
-		       0x188e7f9f);
+			 (1 << (info->max_slots_used_in_channel + 28)) |
+			 0x188e7f9f);
 
 	write_mchbar8(0x124,
-		      info->board_lane_delay[4] +
-		      ((frequency_01(info) + 999) / 1000));
+			info->board_lane_delay[4] +
+			((frequency_01(info) + 999) / 1000));
 	write_mchbar16(0x125, 0x1360);
 	write_mchbar8(0x127, 0x40);
 	if (info->fsb_frequency < frequency_11(info) / 2) {
 		unsigned some_delay_2_half_cycles;
 		high_multiplier = 1;
 		some_delay_2_half_cycles = ps_to_halfcycles(info,
-							    ((3 *
-							      fsbcycle_ps(info))
-							     >> 1) +
-							    (halfcycle_ps(info)
-							     *
-							     reg178_min[info->
+								   ((3 *
+								     fsbcycle_ps(info))
+								    >> 1) +
+								   (halfcycle_ps(info)
+								    *
+								    reg178_min[info->
 									clock_speed_index]
-							     >> 6)
-							    +
-							    4 *
-							    halfcycle_ps(info)
-							    + 2230);
+								    >> 6)
+								   +
+								   4 *
+								   halfcycle_ps(info)
+								   + 2230);
 		some_delay_3_half_cycles =
 		    min((some_delay_2_half_cycles +
 			 (frequency_11(info) * 2) * (28 -
-						     some_delay_2_half_cycles) /
+							   some_delay_2_half_cycles) /
 			 (frequency_11(info) * 2 -
 			  4 * (info->fsb_frequency))) >> 3, 7);
 	}
@@ -1305,46 +1305,46 @@ static void program_board_delay(struct raminfo *info)
 		some_delay_3_half_cycles = 3;
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		write_mchbar32(0x220 + (channel << 10),
-			       read_mchbar32(0x220 +
-					     (channel << 10)) | 0x18001117);
+				  read_mchbar32(0x220 +
+						  (channel << 10)) | 0x18001117);
 		write_mchbar32(0x224 + (channel << 10),
-			       (info->max_slots_used_in_channel - 1)
-			       |
-			       ((info->cas_latency - 5 -
+				  (info->max_slots_used_in_channel - 1)
+				  |
+				  ((info->cas_latency - 5 -
 				 info->clock_speed_index) << 21)
-			       |
-			       ((info->max_slots_used_in_channel +
+				  |
+				  ((info->max_slots_used_in_channel +
 				 info->cas_latency - cas_latency_shift -
 				 4) << 16)
-			       | ((info->cas_latency - cas_latency_shift - 4) <<
+				  | ((info->cas_latency - cas_latency_shift - 4) <<
 				  26)
-			       |
-			       ((info->cas_latency - info->clock_speed_index +
+				  |
+				  ((info->cas_latency - info->clock_speed_index +
 				 info->max_slots_used_in_channel - 6) << 8));
 		write_mchbar32(0x228 + (channel << 10),
-			       info->max_slots_used_in_channel);
+				  info->max_slots_used_in_channel);
 		write_mchbar8(0x239 + (channel << 10), 32);
 		write_mchbar32(0x248 + (channel << 10),
-			       (high_multiplier << 24) |
-			       (some_delay_3_half_cycles << 25) | 0x840000);
+				  (high_multiplier << 24) |
+				  (some_delay_3_half_cycles << 25) | 0x840000);
 		write_mchbar32(0x278 + (channel << 10), 0xc362042);
 		write_mchbar32(0x27c + (channel << 10), 0x8b000062);
 		write_mchbar32(0x24c + (channel << 10),
-			       ((! !info->
+				  ((! !info->
 				 clock_speed_index) << 17) | (((2 +
 								info->
 								clock_speed_index
 								-
 								(! !info->
 								 clock_speed_index)))
-							      << 12) | 0x10200);
+								     << 12) | 0x10200);
 
 		write_mchbar8(0x267 + (channel << 10), 0x4);
 		write_mchbar16(0x272 + (channel << 10), 0x155);
 		write_mchbar32(0x2bc + (channel << 10),
-			       (read_mchbar32(0x2bc + (channel << 10)) &
+				  (read_mchbar32(0x2bc + (channel << 10)) &
 				0xFF000000)
-			       | 0x707070);
+				  | 0x707070);
 
 		write_500(info, channel,
 			  ((!info->populated_ranks[channel][1][1])
@@ -1379,11 +1379,11 @@ static void program_board_delay(struct raminfo *info)
 		cas_latency_derived++;
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		write_mchbar32(0x240 + (channel << 10),
-			       ((info->clock_speed_index ==
+				  ((info->clock_speed_index ==
 				 0) * 0x11000) | 0x1002100 | ((2 +
-							       info->
-							       clock_speed_index)
-							      << 4) | (info->
+								      info->
+								      clock_speed_index)
+								     << 4) | (info->
 								       cas_latency
 								       - 3));
 		write_500(info, channel, (info->clock_speed_index << 1) | 1,
@@ -1393,57 +1393,57 @@ static void program_board_delay(struct raminfo *info)
 			  0x601, 6, 1);
 
 		write_mchbar32(0x250 + (channel << 10),
-			       ((lane_3_delay + info->clock_speed_index +
+				  ((lane_3_delay + info->clock_speed_index +
 				 9) << 6)
-			       | (info->board_lane_delay[7] << 2) | (info->
+				  | (info->board_lane_delay[7] << 2) | (info->
 								     board_lane_delay
 								     [4] << 16)
-			       | (info->board_lane_delay[1] << 25) | (info->
+				  | (info->board_lane_delay[1] << 25) | (info->
 								      board_lane_delay
 								      [1] << 29)
-			       | 1);
+				  | 1);
 		write_mchbar32(0x254 + (channel << 10),
-			       (info->
+				  (info->
 				board_lane_delay[1] >> 3) | ((info->
-							      board_lane_delay
-							      [8] +
-							      4 *
-							      info->
-							      use_ecc) << 6) |
-			       0x80 | (info->board_lane_delay[6] << 1) | (info->
+								     board_lane_delay
+								     [8] +
+								     4 *
+								     info->
+								     use_ecc) << 6) |
+				  0x80 | (info->board_lane_delay[6] << 1) | (info->
 									  board_lane_delay
 									  [2] <<
 									  28) |
-			       (cas_latency_derived << 16) | 0x4700000);
+				  (cas_latency_derived << 16) | 0x4700000);
 		write_mchbar32(0x258 + (channel << 10),
-			       ((info->board_lane_delay[5] +
+				  ((info->board_lane_delay[5] +
 				 info->clock_speed_index +
 				 9) << 12) | ((info->clock_speed_index -
-					       info->cas_latency + 12) << 8)
-			       | (info->board_lane_delay[2] << 17) | (info->
+						    info->cas_latency + 12) << 8)
+				  | (info->board_lane_delay[2] << 17) | (info->
 								      board_lane_delay
 								      [4] << 24)
-			       | 0x47);
+				  | 0x47);
 		write_mchbar32(0x25c + (channel << 10),
-			       (info->board_lane_delay[1] << 1) | (info->
+				  (info->board_lane_delay[1] << 1) | (info->
 								   board_lane_delay
 								   [0] << 8) |
-			       0x1da50000);
+				  0x1da50000);
 		write_mchbar8(0x264 + (channel << 10), 0xff);
 		write_mchbar8(0x5f8 + (channel << 10),
-			      (cas_latency_shift << 3) | info->use_ecc);
+				 (cas_latency_shift << 3) | info->use_ecc);
 	}
 
 	program_modules_memory_map(info, 1);
 
 	write_mchbar16(0x610,
-		       (min(ns_to_cycles(info, some_delay_ns) / 2, 127) << 9)
-		       | (read_mchbar16(0x610) & 0x1C3) | 0x3C);
+			 (min(ns_to_cycles(info, some_delay_ns) / 2, 127) << 9)
+			 | (read_mchbar16(0x610) & 0x1C3) | 0x3C);
 	write_mchbar16(0x612, read_mchbar16(0x612) | 0x100);
 	write_mchbar16(0x214, read_mchbar16(0x214) | 0x3E00);
 	for (i = 0; i < 8; i++) {
 		pcie_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0x80 + 4 * i,
-			       (info->total_memory_mb - 64) | !i | 2);
+				  (info->total_memory_mb - 64) | !i | 2);
 		pcie_write_config32(PCI_DEV (QUICKPATH_BUS, 0, 1), 0xc0 + 4 * i, 0);
 	}
 }
@@ -1488,7 +1488,7 @@ static void program_total_memory_map(struct raminfo *info)
 		TOM = 4032;
 	TOUUD = ALIGN_DOWN(TOM - info->memory_reserved_for_heci_mb, 64);
 	TOLUD = ALIGN_DOWN(min(3072 + ALIGN_UP(uma_size_igd + uma_size_gtt, 64)
-			       , TOUUD), 64);
+				  , TOUUD), 64);
 	memory_remap = 0;
 	if (TOUUD - TOLUD > 64) {
 		memory_remap = 1;
@@ -1554,7 +1554,7 @@ static void program_total_memory_map(struct raminfo *info)
 	for (i = 0; i < ARRAY_SIZE(memory_map); i++) {
 		current_limit = max(current_limit, memory_map[i] & ~1);
 		pcie_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0x80,
-			       (memory_map[i] & 1) | ALIGN_DOWN(current_limit -
+				  (memory_map[i] & 1) | ALIGN_DOWN(current_limit -
 								1, 64) | 2);
 		pcie_write_config32(PCI_DEV(QUICKPATH_BUS, 0, 1), 4 * i + 0xc0, 0);
 	}
@@ -1645,7 +1645,7 @@ static void write_training_data(struct raminfo *info)
 							  [lane],
 							  get_timing_register_addr
 							  (lane, tm, slot,
-							   rank), 9, 0);
+								  rank), 9, 0);
 	write_1d0(info->cached_training->reg_178, 0x178, 7, 1);
 	write_1d0(info->cached_training->reg_10b, 0x10b, 6, 1);
 }
@@ -1657,26 +1657,26 @@ static void dump_timings(struct raminfo *info)
 	printk(BIOS_DEBUG, "Timings:\n");
 	FOR_POPULATED_RANKS {
 		printk(BIOS_DEBUG, "channel %d, slot %d, rank %d\n", channel,
-		       slot, rank);
+			 slot, rank);
 		for (lane = 0; lane < 9; lane++) {
 			printk(BIOS_DEBUG, "lane %d: ", lane);
 			for (i = 0; i < 4; i++) {
 				printk(BIOS_DEBUG, "%x (%x) ",
-				       read_500(info, channel,
+					   read_500(info, channel,
 						get_timing_register_addr
 						(lane, i, slot, rank),
 						9),
-				       info->training.
-				       lane_timings[i][channel][slot][rank]
-				       [lane]);
+					   info->training.
+					   lane_timings[i][channel][slot][rank]
+					   [lane]);
 			}
 			printk(BIOS_DEBUG, "\n");
 		}
 	}
 	printk(BIOS_DEBUG, "[178] = %x (%x)\n", read_1d0(0x178, 7),
-	       info->training.reg_178);
+		info->training.reg_178);
 	printk(BIOS_DEBUG, "[10b] = %x (%x)\n", read_1d0(0x10b, 6),
-	       info->training.reg_10b);
+		info->training.reg_10b);
 #endif
 }
 
@@ -1693,8 +1693,8 @@ static void save_timings(struct raminfo *info)
 		for (i = 0; i < 4; i++)
 			train.lane_timings[i][channel][slot][rank][lane] =
 			    read_500(info, channel,
-				     get_timing_register_addr(lane, i, slot,
-							      rank), 9);
+					 get_timing_register_addr(lane, i, slot,
+								     rank), 9);
 	train.reg_178 = read_1d0(0x178, 7);
 	train.reg_10b = read_1d0(0x10b, 6);
 
@@ -1704,7 +1704,7 @@ static void save_timings(struct raminfo *info)
 	    (CBMEM_ID_MRCDATA, output_len + sizeof(struct mrc_data_container));
 
 	printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%u bytes)\n",
-	       &train, mrcdata, output_len);
+		&train, mrcdata, output_len);
 
 	mrcdata->mrc_signature = MRC_DATA_SIGNATURE;
 	mrcdata->mrc_data_size = output_len;
@@ -1714,10 +1714,10 @@ static void save_timings(struct raminfo *info)
 	/* Zero the unused space in aligned buffer. */
 	if (output_len > sizeof(train))
 		memset(mrcdata->mrc_data + sizeof(train), 0,
-		       output_len - sizeof(train));
+			 output_len - sizeof(train));
 
 	mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
-						    mrcdata->mrc_data_size);
+							  mrcdata->mrc_data_size);
 #endif
 }
 
@@ -1753,8 +1753,8 @@ static void wait_heci_cb_avail(int len)
 	do
 		csr.raw = read32(DEFAULT_HECIBAR | 0x4);
 	while (len >
-	       csr.csr.buffer_depth - (csr.csr.buffer_write_ptr -
-				       csr.csr.buffer_read_ptr));
+		csr.csr.buffer_depth - (csr.csr.buffer_write_ptr -
+					   csr.csr.buffer_read_ptr));
 }
 
 static void send_heci_packet(struct mei_header *head, u32 * payload)
@@ -1835,7 +1835,7 @@ recv_heci_packet(struct raminfo *info, struct mei_header *head, u32 * packet,
 	do
 		csr.raw = read32(DEFAULT_HECIBAR | 0xc);
 	while ((head->length + 3) >> 2 >
-	       csr.csr.buffer_write_ptr - csr.csr.buffer_read_ptr);
+		csr.csr.buffer_write_ptr - csr.csr.buffer_read_ptr);
 
 	for (i = 0; i < (head->length + 3) >> 2; i++)
 		packet[i++] = read32(DEFAULT_HECIBAR | 0x8);
@@ -1950,7 +1950,7 @@ static void setup_heci_uma(struct raminfo *info)
 		write32(DEFAULT_RCBA | 0x40, 0x87000080);	// OK
 		write32(DEFAULT_DMIBAR | 0x38, 0x87000080);	// OK
 		while (read16(DEFAULT_RCBA | 0x46) & 2
-		       && read16(DEFAULT_DMIBAR | 0x3e) & 2) ;
+			 && read16(DEFAULT_DMIBAR | 0x3e) & 2) ;
 	}
 
 	write_mchbar32(0x24, 0x10000 + info->memory_reserved_for_heci_mb);
@@ -2000,8 +2000,8 @@ static void read_4090(struct raminfo *info)
 			for (rank = 0; rank < NUM_RANKS; rank++)
 				for (lane = 0; lane < 9; lane++)
 					info->training.
-					    lane_timings[0][i][slot][rank][lane]
-					    = 32;
+						 lane_timings[0][i][slot][rank][lane]
+						 = 32;
 
 	for (i = 1; i < 4; i++)
 		for (channel = 0; channel < NUM_CHANNELS; channel++)
@@ -2009,13 +2009,13 @@ static void read_4090(struct raminfo *info)
 				for (rank = 0; rank < NUM_RANKS; rank++)
 					for (lane = 0; lane < 9; lane++) {
 						info->training.
-						    lane_timings[i][channel]
-						    [slot][rank][lane] =
-						    read_500(info, channel,
-							     get_timing_register_addr
-							     (lane, i, slot,
-							      rank), 9)
-						    + (i == 1) * 11;	// !!!!
+							  lane_timings[i][channel]
+							  [slot][rank][lane] =
+							  read_500(info, channel,
+								    get_timing_register_addr
+								    (lane, i, slot,
+								     rank), 9)
+							  + (i == 1) * 11;	// !!!!
 					}
 
 }
@@ -2113,17 +2113,17 @@ static u8 check_testing(struct raminfo *info, u8 total_rank, int flip)
 			for (comp2 = 0; comp2 < 60; comp2++) {
 				u32 re[4];
 				u32 curroffset =
-				    comp3 * 8 * 60 + 2 * comp1 + 8 * comp2;
+					comp3 * 8 * 60 + 2 * comp1 + 8 * comp2;
 				read128((total_rank << 28) | (curroffset << 3),
 					(u64 *) re);
 				failxor[0] |=
-				    get_etalon2(flip, curroffset) ^ re[0];
+					get_etalon2(flip, curroffset) ^ re[0];
 				failxor[1] |=
-				    get_etalon2(flip, curroffset) ^ re[1];
+					get_etalon2(flip, curroffset) ^ re[1];
 				failxor[0] |=
-				    get_etalon2(flip, curroffset | 1) ^ re[2];
+					get_etalon2(flip, curroffset | 1) ^ re[2];
 				failxor[1] |=
-				    get_etalon2(flip, curroffset | 1) ^ re[3];
+					get_etalon2(flip, curroffset | 1) ^ re[3];
 			}
 		for (i = 0; i < 8; i++)
 			if ((0xff << (8 * (i % 4))) & failxor[i / 4])
@@ -2194,7 +2194,7 @@ static u32 get_etalon(int flip, u32 addr)
 			mask_byte |= 0xff << (8 * byte);
 
 	return (mask_bit & mask_byte) | (part1 << comp3) | (part2 <<
-							    (comp3 + 16));
+								   (comp3 + 16));
 }
 
 static void
@@ -2224,12 +2224,12 @@ check_testing_type2(struct raminfo *info, u8 totalrank, u8 region, u8 block,
 		for (comp1 = 0; comp1 < 16; comp1++)
 			for (comp2 = 0; comp2 < 64; comp2++) {
 				u32 addr =
-				    (totalrank << 28) | (region << 25) | (block
+					(totalrank << 28) | (region << 25) | (block
 									  << 16)
-				    | (comp3 << 12) | (comp2 << 6) | (comp1 <<
+					| (comp3 << 12) | (comp2 << 6) | (comp1 <<
 								      2);
 				failxor[comp1 & 1] |=
-				    read32(addr) ^ get_etalon(flip, addr);
+					read32(addr) ^ get_etalon(flip, addr);
 			}
 		for (i = 0; i < 8; i++)
 			if ((0xff << (8 * (i % 4))) & failxor[i / 4])
@@ -2355,9 +2355,9 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 			    timings[reg_178][channel][slot][rank][lane].
 			    largest) {
 				timings[reg_178][channel][slot][rank][lane].
-				    smallest = 0;
+					smallest = 0;
 				timings[reg_178][channel][slot][rank][lane].
-				    largest = 0;
+					largest = 0;
 				is_all_ok = 0;
 			}
 		if (is_all_ok) {
@@ -2374,7 +2374,7 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 		failmask = check_testing(info, total_rank, 0);
 		write_mchbar32(0xfb0, read_mchbar32(0xfb0) | 0x00030000);
 		do_fsm(state, count, failmask, 5, 47, lower_usable,
-		       upper_usable, reg1b3);
+			 upper_usable, reg1b3);
 	}
 
 	if (reg1b3) {
@@ -2383,17 +2383,17 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 		for (lane = 0; lane < 8; lane++) {
 			if (state[lane] == COMPLETE) {
 				timings[reg_178][channel][slot][rank][lane].
-				    smallest =
-				    lower_usable[lane] +
-				    (info->training.
-				     lane_timings[0][channel][slot][rank][lane]
-				     & 0x3F) - 32;
+					smallest =
+					lower_usable[lane] +
+					(info->training.
+					 lane_timings[0][channel][slot][rank][lane]
+					 & 0x3F) - 32;
 				timings[reg_178][channel][slot][rank][lane].
-				    largest =
-				    upper_usable[lane] +
-				    (info->training.
-				     lane_timings[0][channel][slot][rank][lane]
-				     & 0x3F) - 32;
+					largest =
+					upper_usable[lane] +
+					(info->training.
+					 lane_timings[0][channel][slot][rank][lane]
+					 & 0x3F) - 32;
 			}
 		}
 	}
@@ -2432,31 +2432,31 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 				if (failmask == 0xFF)
 					break;
 				failmask |=
-				    check_testing_type2(info, total_rank, 2, i,
+					check_testing_type2(info, total_rank, 2, i,
 							0);
 				failmask |=
-				    check_testing_type2(info, total_rank, 3, i,
+					check_testing_type2(info, total_rank, 3, i,
 							1);
 			}
 			write_mchbar32(0xfb0,
-				       read_mchbar32(0xfb0) | 0x00030000);
+					   read_mchbar32(0xfb0) | 0x00030000);
 			for (lane = 0; lane < 8; lane++)
 				if (num_sucessfully_checked[lane] != 0xffff) {
 					if ((1 << lane) & failmask) {
 						if (timings[reg_178][channel]
-						    [slot][rank][lane].
-						    largest <=
-						    timings[reg_178][channel]
-						    [slot][rank][lane].smallest)
+							  [slot][rank][lane].
+							  largest <=
+							  timings[reg_178][channel]
+							  [slot][rank][lane].smallest)
 							num_sucessfully_checked
-							    [lane] = -1;
+								   [lane] = -1;
 						else {
 							num_sucessfully_checked
-							    [lane] = 0;
+								   [lane] = 0;
 							timings[reg_178]
-							    [channel][slot]
-							    [rank][lane].
-							    smallest++;
+								   [channel][slot]
+								   [rank][lane].
+								   smallest++;
 							write_500(info, channel,
 								  timings
 								  [reg_178]
@@ -2532,33 +2532,33 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 				if (failmask == 0xFF)
 					break;
 				failmask |=
-				    check_testing_type2(info, total_rank, 2, i,
+					check_testing_type2(info, total_rank, 2, i,
 							0);
 				failmask |=
-				    check_testing_type2(info, total_rank, 3, i,
+					check_testing_type2(info, total_rank, 3, i,
 							1);
 			}
 
 			write_mchbar32(0xfb0,
-				       read_mchbar32(0xfb0) | 0x00030000);
+					   read_mchbar32(0xfb0) | 0x00030000);
 			for (lane = 0; lane < 8; lane++) {
 				if (num_sucessfully_checked[lane] != 0xffff) {
 					if ((1 << lane) & failmask) {
 						if (timings[reg_178][channel]
-						    [slot][rank][lane].
-						    largest <=
-						    timings[reg_178][channel]
-						    [slot][rank][lane].
-						    smallest) {
+							  [slot][rank][lane].
+							  largest <=
+							  timings[reg_178][channel]
+							  [slot][rank][lane].
+							  smallest) {
 							num_sucessfully_checked
-							    [lane] = -1;
+								   [lane] = -1;
 						} else {
 							num_sucessfully_checked
-							    [lane] = 0;
+								   [lane] = 0;
 							timings[reg_178]
-							    [channel][slot]
-							    [rank][lane].
-							    largest--;
+								   [channel][slot]
+								   [rank][lane].
+								   largest--;
 							write_500(info, channel,
 								  timings
 								  [reg_178]
@@ -2618,9 +2618,9 @@ train_ram_at_178(struct raminfo *info, u8 channel, int slot, int rank,
 			    timings[reg_178][channel][slot][rank][lane].
 			    smallest) {
 				timings[reg_178][channel][slot][rank][lane].
-				    largest = 0;
+					largest = 0;
 				timings[reg_178][channel][slot][rank][lane].
-				    smallest = 0;
+					smallest = 0;
 			}
 		}
 	}
@@ -2641,7 +2641,7 @@ static void set_10b(struct raminfo *info, u8 val)
 		u16 reg_500;
 		reg_500 = read_500(info, channel,
 				   get_timing_register_addr(lane, 0, slot,
-							    rank), 9);
+								   rank), 9);
 		if (val == 1) {
 			if (lut16[info->clock_speed_index] <= reg_500)
 				reg_500 -= lut16[info->clock_speed_index];
@@ -2681,7 +2681,7 @@ static void set_178(u8 val)
 
 static void
 write_500_timings_type(struct raminfo *info, int channel, int slot, int rank,
-		       int type)
+			 int type)
 {
 	int lane;
 
@@ -2727,7 +2727,7 @@ try_timing_offsets(struct raminfo *info, int channel,
 			failmask |= check_testing(info, totalrank, flip);
 		}
 		do_fsm(state, count, failmask, 10, 63, lower_usable,
-		       upper_usable, timing_offset);
+			 upper_usable, timing_offset);
 	}
 	write_1d0(0, 0x1bb, 6, 1);
 	dump_timings(info);
@@ -2887,16 +2887,16 @@ static u8 choose_reg178(struct raminfo *info, timing_bounds_t * timings)
 		     reg178 += reg178_step[info->clock_speed_index])
 			if (margin[reg178] >= threshold) {
 				usable_length +=
-				    reg178_step[info->clock_speed_index];
+					reg178_step[info->clock_speed_index];
 				info->training.reg178_largest =
-				    reg178 -
-				    2 * reg178_step[info->clock_speed_index];
+					reg178 -
+					2 * reg178_step[info->clock_speed_index];
 
 				if (!smallest_fount) {
 					smallest_fount = 1;
 					info->training.reg178_smallest =
-					    reg178 +
-					    reg178_step[info->
+						 reg178 +
+						 reg178_step[info->
 							clock_speed_index];
 				}
 			}
@@ -2922,20 +2922,20 @@ static int check_cached_sanity(struct raminfo *info)
 				for (lane = 0; lane < 8 + info->use_ecc; lane++) {
 					u16 cached_value, estimation_value;
 					cached_value =
-					    info->cached_training->
-					    lane_timings[1][channel][slot][rank]
-					    [lane];
+						 info->cached_training->
+						 lane_timings[1][channel][slot][rank]
+						 [lane];
 					if (cached_value >= 0x18
-					    && cached_value <= 0x1E7) {
+						 && cached_value <= 0x1E7) {
 						estimation_value =
-						    info->training.
-						    lane_timings[1][channel]
-						    [slot][rank][lane];
+							  info->training.
+							  lane_timings[1][channel]
+							  [slot][rank][lane];
 						if (estimation_value <
-						    cached_value - 24)
+							  cached_value - 24)
 							return 0;
 						if (estimation_value >
-						    cached_value + 24)
+							  cached_value + 24)
 							return 0;
 					}
 				}
@@ -2958,11 +2958,11 @@ static int try_cached_training(struct raminfo *info)
 	info->training.reg178_smallest = info->cached_training->reg178_smallest;
 	info->training.reg178_largest = info->cached_training->reg178_largest;
 	memcpy(&info->training.timing_bounds,
-	       &info->cached_training->timing_bounds,
-	       sizeof(info->training.timing_bounds));
+		&info->cached_training->timing_bounds,
+		sizeof(info->training.timing_bounds));
 	memcpy(&info->training.timing_offset,
-	       &info->cached_training->timing_offset,
-	       sizeof(info->training.timing_offset));
+		&info->cached_training->timing_offset,
+		sizeof(info->training.timing_offset));
 
 	write_1d0(2, 0x142, 3, 1);
 	saved_243[0] = read_mchbar8(0x243);
@@ -3026,13 +3026,13 @@ static int try_cached_training(struct raminfo *info)
 						  timing_offset[channel][slot]
 						  [rank][lane] +
 						  (i ? info->cached_training->
-						   timing_bounds[tm][channel]
-						   [slot][rank][lane].
-						   largest : info->
-						   cached_training->
-						   timing_bounds[tm][channel]
-						   [slot][rank][lane].
-						   smallest) - 64,
+							 timing_bounds[tm][channel]
+							 [slot][rank][lane].
+							 largest : info->
+							 cached_training->
+							 timing_bounds[tm][channel]
+							 [slot][rank][lane].
+							 smallest) - 64,
 						  get_timing_register_addr(lane,
 									   1,
 									   slot,
@@ -3046,7 +3046,7 @@ static int try_cached_training(struct raminfo *info)
 
 					reg1b3 = (j == 1) + 4;
 					reg1b3 =
-					    j == i ? reg1b3 : (-reg1b3) & 0x3f;
+						 j == i ? reg1b3 : (-reg1b3) & 0x3f;
 					write_1d0(reg1b3, 0x1bb, 6, 1);
 					write_1d0(reg1b3, 0x1b3, 6, 1);
 					write_1d0(reg1b3, 0x1a3, 6, 1);
@@ -3054,10 +3054,10 @@ static int try_cached_training(struct raminfo *info)
 					flip = !flip;
 					write_testing(info, totalrank, flip);
 					failmask =
-					    check_testing(info, totalrank,
+						 check_testing(info, totalrank,
 							  flip);
 					expected_failmask =
-					    j == 0 ? 0x00 : 0xff;
+						 j == 0 ? 0x00 : 0xff;
 					if (failmask != expected_failmask)
 						goto fail;
 				}
@@ -3143,8 +3143,8 @@ static void do_ram_training(struct raminfo *info)
 	if (reg178_min[info->clock_speed_index] <
 	    reg178_max[info->clock_speed_index])
 		memset(timings[reg178_min[info->clock_speed_index]], 0,
-		       sizeof(timings[0]) *
-		       (reg178_max[info->clock_speed_index] -
+			 sizeof(timings[0]) *
+			 (reg178_max[info->clock_speed_index] -
 			reg178_min[info->clock_speed_index]));
 	for (reg_178 = reg178_min[info->clock_speed_index];
 	     reg_178 < reg178_max[info->clock_speed_index];
@@ -3155,10 +3155,10 @@ static void do_ram_training(struct raminfo *info)
 			for (slot = 0; slot < NUM_SLOTS; slot++)
 				for (rank = 0; rank < NUM_RANKS; rank++) {
 					memset(&timings[reg_178][channel][slot]
-					       [rank][0].smallest, 0, 16);
+						    [rank][0].smallest, 0, 16);
 					if (info->
-					    populated_ranks[channel][slot]
-					    [rank]) {
+						 populated_ranks[channel][slot]
+						 [rank]) {
 						train_ram_at_178(info, channel,
 								 slot, rank,
 								 totalrank,
@@ -3200,7 +3200,7 @@ static void do_ram_training(struct raminfo *info)
 	if (info->silicon_revision == 1
 	    && (info->
 		populated_ranks_mask[1] ^ (info->
-					   populated_ranks_mask[1] >> 2)) & 1) {
+						populated_ranks_mask[1] >> 2)) & 1) {
 		int ranks_after_channel1;
 
 		totalrank = 0;
@@ -3211,7 +3211,7 @@ static void do_ram_training(struct raminfo *info)
 			for (slot = 0; slot < NUM_SLOTS; slot++)
 				for (rank = 0; rank < NUM_RANKS; rank++) {
 					if (info->
-					    populated_ranks[1][slot][rank]) {
+						 populated_ranks[1][slot][rank]) {
 						train_ram_at_178(info, 1, slot,
 								 rank,
 								 totalrank,
@@ -3231,7 +3231,7 @@ static void do_ram_training(struct raminfo *info)
 			for (slot = 0; slot < NUM_SLOTS; slot++)
 				for (rank = 0; rank < NUM_RANKS; rank++)
 					if (info->
-					    populated_ranks[0][slot][rank]) {
+						 populated_ranks[0][slot][rank]) {
 						train_ram_at_178(info, 0, slot,
 								 rank,
 								 totalrank,
@@ -3262,7 +3262,7 @@ static void do_ram_training(struct raminfo *info)
 
 		tm0 =
 		    choose_training(info, channel, slot, rank, lane, timings,
-				    reg178_center);
+					reg178_center);
 		write_500(info, channel, tm0,
 			  get_timing_register_addr(lane, 0, slot, rank), 9, 1);
 		write_500(info, channel,
@@ -3387,35 +3387,35 @@ compute_frequence_ratios(struct raminfo *info, u16 freq1, u16 freq2,
 			result->divisor_f3_to_f1 = freq3 / freq1_reduced;
 			result->divisor_f4_to_f2 =
 			    (freq4 -
-			     (freq1_reduced - freq2_reduced)) / freq2_reduced;
+				(freq1_reduced - freq2_reduced)) / freq2_reduced;
 			result->freq4_to_2_remainder =
 			    -(char)((freq1_reduced - freq2_reduced) +
-				    ((u8) freq4 -
-				     (freq1_reduced -
-				      freq2_reduced)) % (u8) freq2_reduced);
+					((u8) freq4 -
+					 (freq1_reduced -
+					  freq2_reduced)) % (u8) freq2_reduced);
 		} else {
 			if (freq2_reduced > freq1_reduced) {
 				result->freq4_to_max_remainder =
-				    (freq4 % freq2_reduced) - freq2_reduced + 1;
+					(freq4 % freq2_reduced) - freq2_reduced + 1;
 				result->freq4_to_2_remainder =
-				    freq4 % freq_max_reduced -
-				    freq_max_reduced + 1;
+					freq4 % freq_max_reduced -
+					freq_max_reduced + 1;
 			} else {
 				result->freq4_to_max_remainder =
-				    -(freq4 % freq2_reduced);
+					-(freq4 % freq2_reduced);
 				result->freq4_to_2_remainder =
-				    -(char)(freq4 % freq_max_reduced);
+					-(char)(freq4 % freq_max_reduced);
 			}
 			result->divisor_f4_to_f2 = freq4 / freq2_reduced;
 			result->divisor_f3_to_f1 =
 			    (freq3 -
-			     (freq2_reduced - freq1_reduced)) / freq1_reduced;
+				(freq2_reduced - freq1_reduced)) / freq1_reduced;
 			result->freq3_to_2_remainder = -(freq3 % freq2_reduced);
 			result->freq3_to_2_remaindera =
 			    -(char)((freq_max_reduced - freq_min_reduced) +
-				    (freq3 -
-				     (freq_max_reduced -
-				      freq_min_reduced)) % freq1_reduced);
+					(freq3 -
+					 (freq_max_reduced -
+					  freq_min_reduced)) % freq1_reduced);
 		}
 	}
 	result->divisor_f3_to_fmax = freq3 / freq_max_reduced;
@@ -3453,7 +3453,7 @@ set_2d5x_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 			(div_roundup(num_cycles_2, vv.common_time_unit_ps) +
 			 div_roundup(num_cycles_3, vv.common_time_unit_ps),
 			 div_roundup(num_cycles_1,
-				     vv.common_time_unit_ps) +
+					 vv.common_time_unit_ps) +
 			 div_roundup(num_cycles_4, vv.common_time_unit_ps))
 			+ vv.freq_min_reduced - 1, vv.freq_max_reduced) - 1;
 
@@ -3461,8 +3461,8 @@ set_2d5x_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 	    (u8) ((vv.freq_max_reduced - vv.freq_min_reduced) +
 		  vv.freq_max_reduced * multiplier)
 	    | (vv.
-	       freqs_reversed << 8) | ((u8) (vv.freq_min_reduced *
-					     multiplier) << 16) | ((u8) (vv.
+		freqs_reversed << 8) | ((u8) (vv.freq_min_reduced *
+						  multiplier) << 16) | ((u8) (vv.
 									 freq_min_reduced
 									 *
 									 multiplier)
@@ -3494,12 +3494,12 @@ set_6d_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 	compute_frequence_ratios(info, freq1, freq2, num_cycles_3, num_cycles_4,
 				 0, 1, &ratios1);
 	write_mchbar32(reg,
-		       ratios1.freq4_to_max_remainder | (ratios2.
+			 ratios1.freq4_to_max_remainder | (ratios2.
 							 freq4_to_max_remainder
 							 << 8)
-		       | (ratios1.divisor_f4_to_fmax << 16) | (ratios2.
-							       divisor_f4_to_fmax
-							       << 20));
+			 | (ratios1.divisor_f4_to_fmax << 16) | (ratios2.
+								      divisor_f4_to_fmax
+								      << 20));
 }
 
 static void
@@ -3513,42 +3513,42 @@ set_2dx8_reg(struct raminfo *info, u16 reg, u8 mode, u16 freq1, u16 freq2,
 	switch (mode) {
 	case 0:
 		write_mchbar32(reg + 4,
-			       ratios.freq_diff_reduced | (ratios.
-							   freqs_reversed <<
-							   8));
+				  ratios.freq_diff_reduced | (ratios.
+								  freqs_reversed <<
+								  8));
 		write_mchbar32(reg,
-			       ratios.freq3_to_2_remainder | (ratios.
-							      freq4_to_max_remainder
-							      << 8)
-			       | (ratios.divisor_f3_to_fmax << 16) | (ratios.
+				  ratios.freq3_to_2_remainder | (ratios.
+								     freq4_to_max_remainder
+								     << 8)
+				  | (ratios.divisor_f3_to_fmax << 16) | (ratios.
 								      divisor_f4_to_fmax
 								      << 20) |
-			       (ratios.freq_min_reduced << 24));
+				  (ratios.freq_min_reduced << 24));
 		break;
 
 	case 1:
 		write_mchbar32(reg,
-			       ratios.freq3_to_2_remainder | (ratios.
-							      divisor_f3_to_fmax
-							      << 16));
+				  ratios.freq3_to_2_remainder | (ratios.
+								     divisor_f3_to_fmax
+								     << 16));
 		break;
 
 	case 2:
 		write_mchbar32(reg,
-			       ratios.freq3_to_2_remainder | (ratios.
-							      freq4_to_max_remainder
-							      << 8) | (ratios.
+				  ratios.freq3_to_2_remainder | (ratios.
+								     freq4_to_max_remainder
+								     << 8) | (ratios.
 								       divisor_f3_to_fmax
 								       << 16) |
-			       (ratios.divisor_f4_to_fmax << 20));
+				  (ratios.divisor_f4_to_fmax << 20));
 		break;
 
 	case 4:
 		write_mchbar32(reg, (ratios.divisor_f3_to_fmax << 4)
-			       | (ratios.divisor_f4_to_fmax << 8) | (ratios.
+				  | (ratios.divisor_f4_to_fmax << 8) | (ratios.
 								     freqs_reversed
 								     << 12) |
-			       (ratios.freq_min_reduced << 16) | (ratios.
+				  (ratios.freq_min_reduced << 16) | (ratios.
 								  freq_diff_reduced
 								  << 24));
 		break;
@@ -3650,7 +3650,7 @@ static void set_274265(struct raminfo *info)
 		    - info->some_delay_3_ps_rounded + 200;
 		if (!
 		    ((info->silicon_revision == 0
-		      || info->silicon_revision == 1)
+			|| info->silicon_revision == 1)
 		     && (info->revision >= 8)))
 			delay_d_ps += halfcycle_ps(info) * 2;
 		delay_d_ps +=
@@ -3662,9 +3662,9 @@ static void set_274265(struct raminfo *info)
 		delay_d_ps += info->revision >= 8 ? 2758 : 4428;
 
 		write_mchbar32(0x140,
-			       (read_mchbar32(0x140) & 0xfaffffff) | 0x2000000);
+				  (read_mchbar32(0x140) & 0xfaffffff) | 0x2000000);
 		write_mchbar32(0x138,
-			       (read_mchbar32(0x138) & 0xfaffffff) | 0x2000000);
+				  (read_mchbar32(0x138) & 0xfaffffff) | 0x2000000);
 		if ((read_mchbar8(0x144) & 0x1f) > 0x13)
 			delay_d_ps += 650;
 		delay_c_ps = delay_d_ps + 1800;
@@ -3673,7 +3673,7 @@ static void set_274265(struct raminfo *info)
 		else
 			delay_e_ps =
 			    cycletime_ps * div_roundup(delay_c_ps - delay_a_ps,
-						       cycletime_ps);
+							     cycletime_ps);
 
 		delay_e_over_cycle_ps = delay_e_ps % (2 * halfcycle_ps(info));
 		delay_e_cycles = delay_e_ps / (2 * halfcycle_ps(info));
@@ -3701,7 +3701,7 @@ static void set_274265(struct raminfo *info)
 			delay_b_ps -= delay_a_ps;
 		info->delay54_ps[channel] =
 		    cycletime_ps * div_roundup(delay_b_ps,
-					       cycletime_ps) -
+						    cycletime_ps) -
 		    2 * halfcycle_ps(info) * delay_e_cycles;
 		if (info->delay54_ps[channel] < 2500)
 			info->delay54_ps[channel] = 2500;
@@ -3714,14 +3714,14 @@ static void set_274265(struct raminfo *info)
 			    div_roundup(delay_d_ps + 7 * halfcycle_ps(info),
 					4 * halfcycle_ps(info)) - 6;
 		write_mchbar32((channel << 10) + 0x274,
-			       info->reg274265[channel][1] | (info->
-							      reg274265[channel]
-							      [0] << 16));
+				  info->reg274265[channel][1] | (info->
+								     reg274265[channel]
+								     [0] << 16));
 		info->reg274265[channel][2] =
 		    div_roundup(delay_c_ps + 3 * fsbcycle_ps(info),
 				4 * halfcycle_ps(info)) + 1;
 		write_mchbar16((channel << 10) + 0x265,
-			       info->reg274265[channel][2] << 8);
+				  info->reg274265[channel][2] << 8);
 	}
 	if (info->reg2ca9_bit0)
 		write_mchbar8(0x2ca9, read_mchbar8(0x2ca9) | 1);
@@ -3735,10 +3735,10 @@ static void restore_274265(struct raminfo *info)
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		write_mchbar32((channel << 10) + 0x274,
-			       (info->reg274265[channel][0] << 16) | info->
-			       reg274265[channel][1]);
+				  (info->reg274265[channel][0] << 16) | info->
+				  reg274265[channel][1]);
 		write_mchbar16((channel << 10) + 0x265,
-			       info->reg274265[channel][2] << 8);
+				  info->reg274265[channel][2] << 8);
 	}
 	if (info->reg2ca9_bit0)
 		write_mchbar8(0x2ca9, read_mchbar8(0x2ca9) | 1);
@@ -3930,63 +3930,63 @@ void raminit(int s3resume)
 					CAS_LATENCY_TIME,
 					0x11, 0x12, 0x13, 0x14, 0x15,
 					0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
-					    0x1c, 0x1d,
+						 0x1c, 0x1d,
 					THERMAL_AND_REFRESH,
 					0x20,
 					REFERENCE_RAW_CARD_USED,
 					RANK1_ADDRESS_MAPPING,
 					0x75, 0x76, 0x77, 0x78,
 					0x79, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e,
-					    0x7f, 0x80, 0x81, 0x82, 0x83, 0x84,
-					    0x85, 0x86, 0x87, 0x88,
+						 0x7f, 0x80, 0x81, 0x82, 0x83, 0x84,
+						 0x85, 0x86, 0x87, 0x88,
 					0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e,
-					    0x8f, 0x90, 0x91, 0x92, 0x93, 0x94,
-					    0x95
+						 0x8f, 0x90, 0x91, 0x92, 0x93, 0x94,
+						 0x95
 				};
 				if (slot)
 					continue;
 				for (try = 0; try < 5; try++) {
 					v = smbus_read_byte(0x50 + channel,
-							    DEVICE_TYPE);
+								   DEVICE_TYPE);
 					if (v >= 0)
 						break;
 				}
 				if (v < 0)
 					continue;
 				for (addr = 0;
-				     addr <
-				     sizeof(useful_addresses) /
-				     sizeof(useful_addresses[0]); addr++)
+					 addr <
+					 sizeof(useful_addresses) /
+					 sizeof(useful_addresses[0]); addr++)
 					gav(info.
-					    spd[channel][0][useful_addresses
-							    [addr]] =
-					    smbus_read_byte(0x50 + channel,
-							    useful_addresses
-							    [addr]));
+						 spd[channel][0][useful_addresses
+								   [addr]] =
+						 smbus_read_byte(0x50 + channel,
+								   useful_addresses
+								   [addr]));
 				if (info.spd[channel][0][DEVICE_TYPE] != 11)
 					die("Only DDR3 is supported");
 
 				v = info.spd[channel][0][RANKS_AND_DQ];
 				info.populated_ranks[channel][0][0] = 1;
 				info.populated_ranks[channel][0][1] =
-				    ((v >> 3) & 7);
+					((v >> 3) & 7);
 				if (((v >> 3) & 7) > 1)
 					die("At most 2 ranks are supported");
 				if ((v & 7) == 0 || (v & 7) > 2)
 					die("Only x8 and x16 modules are supported");
 				if ((info.
-				     spd[channel][slot][MODULE_TYPE] & 0xF) != 2
-				    && (info.
+					 spd[channel][slot][MODULE_TYPE] & 0xF) != 2
+					&& (info.
 					spd[channel][slot][MODULE_TYPE] & 0xF)
-				    != 3)
+					!= 3)
 					die("Registered memory is not supported");
 				info.is_x16_module[channel][0] = (v & 7) - 1;
 				info.density[channel][slot] =
-				    info.spd[channel][slot][DENSITY] & 0xF;
+					info.spd[channel][slot][DENSITY] & 0xF;
 				if (!
-				    (info.
-				     spd[channel][slot][MEMORY_BUS_WIDTH] &
-				     0x18))
+					(info.
+					 spd[channel][slot][MEMORY_BUS_WIDTH] &
+					 0x18))
 					info.use_ecc = 0;
 			}
 
@@ -3997,8 +3997,8 @@ void raminit(int s3resume)
 			for (slot = 0; slot < NUM_SLOTS; slot++)
 				for (rank = 0; rank < NUM_RANKS; rank++)
 					v |= info.
-					    populated_ranks[channel][slot][rank]
-					    << (2 * slot + rank);
+						 populated_ranks[channel][slot][rank]
+						 << (2 * slot + rank);
 			info.populated_ranks_mask[channel] = v;
 		}
 
@@ -4036,7 +4036,7 @@ void raminit(int s3resume)
 				   (reg8 & ~(1 << 7)));
 
 			printk(BIOS_INFO,
-			       "Interrupted RAM init, reset required.\n");
+				  "Interrupted RAM init, reset required.\n");
 			outb(0x6, 0xcf9);
 #if REAL
 			while (1) {
@@ -4051,7 +4051,7 @@ void raminit(int s3resume)
 
 	if (!s3resume && x2ca8 == 0)
 		pcie_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
-			      pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) | 0x80);
+				 pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) | 0x80);
 
 	compute_derived_timings(&info);
 
@@ -4075,7 +4075,7 @@ void raminit(int s3resume)
 
 	gav(read_mchbar8(0x2ca8));	// !!!!
 	write_mchbar32(0x1804,
-		       (read_mchbar32(0x1804) & 0xfffffffc) | 0x8400080);
+			 (read_mchbar32(0x1804) & 0xfffffffc) | 0x8400080);
 
 	pcie_read_config32(PCI_DEV(0xff, 2, 1), 0x6c);	// !!!!
 	pcie_write_config32(PCI_DEV(0xff, 2, 1), 0x6c, 0x40a0a0);
@@ -4195,13 +4195,13 @@ void raminit(int s3resume)
 		for (i = 0; i < 2; i++)
 			for (j = 0; j < 3; j++)
 				printk(BIOS_DEBUG, "reg274265[%d][%d] = %x\n",
-				       i, j, info.reg274265[i][j]);
+					   i, j, info.reg274265[i][j]);
 		for (i = 0; i < 2; i++)
 			printk(BIOS_DEBUG, "delay46_ps[%d] = %x\n", i,
-			       info.delay46_ps[i]);
+				  info.delay46_ps[i]);
 		for (i = 0; i < 2; i++)
 			printk(BIOS_DEBUG, "delay54_ps[%d] = %x\n", i,
-			       info.delay54_ps[i]);
+				  info.delay54_ps[i]);
 
 		set_2dxx_series(&info);
 
@@ -4450,7 +4450,7 @@ void raminit(int s3resume)
 	write_mchbar32(0x1a30, 0x0);
 	write_mchbar32(0x1a34, 0x0);
 	write_mchbar16(0x614,
-		       0xb5b | (info.populated_ranks[1][0][0] *
+			 0xb5b | (info.populated_ranks[1][0][0] *
 				0x404) | (info.populated_ranks[0][0][0] *
 					  0xa0));
 	write_mchbar16(0x616, 0x26a);
@@ -4462,8 +4462,8 @@ void raminit(int s3resume)
 	write_mchbar32(0x118, 0x4);
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		write_mchbar32(0x260 + (channel << 10),
-			       0x30809ff |
-			       ((info.
+				  0x30809ff |
+				  ((info.
 				 populated_ranks_mask[channel] & 3) << 20));
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		write_mchbar16(0x31c + (channel << 10), 0x101);
@@ -4490,8 +4490,8 @@ void raminit(int s3resume)
 	rmw_1d0(0x21c, 0x38, 0, 6, 1);
 
 	write_1d0(((!info.populated_ranks[1][0][0]) << 1) | ((!info.
-							      populated_ranks[0]
-							      [0][0]) << 0),
+								     populated_ranks[0]
+								     [0][0]) << 0),
 		  0x1d1, 3, 1);
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		write_mchbar16(0x38e + (channel << 10), 0x5f5f);
@@ -4525,7 +4525,7 @@ void raminit(int s3resume)
 		if (info.cached_training == NULL) {
 			u32 reg32;
 			printk(BIOS_ERR,
-			       "Couldn't find training data. Rebooting\n");
+				  "Couldn't find training data. Rebooting\n");
 			reg32 = inl(DEFAULT_PMBASE + 0x04);
 			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 			outb(0xe, 0xcf9);
@@ -4638,8 +4638,8 @@ void raminit(int s3resume)
 			info.populated_ranks[channel][0][0] ? 9 : 0);
 
 	write_mchbar32(0x130,
-		       0x11111301 | (info.
-				     populated_ranks[1][0][0] << 30) | (info.
+			 0x11111301 | (info.
+					 populated_ranks[1][0][0] << 30) | (info.
 									populated_ranks
 									[0][0]
 									[0] <<
@@ -4682,15 +4682,15 @@ void raminit(int s3resume)
 	write_mchbar8(0x1e8, 0x4);	/* OK */
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		write_mchbar32(0x294 + (channel << 10),
-			       (info.populated_ranks_mask[channel] & 3) << 16);
+				  (info.populated_ranks_mask[channel] & 3) << 16);
 	write_mchbar32(0x134, (read_mchbar32(0x134) & 0xfc01ffff) | 0x10000);	/* OK */
 	write_mchbar32(0x134, (read_mchbar32(0x134) & 0xfc85ffff) | 0x850000);	/* OK */
 	for (channel = 0; channel < NUM_CHANNELS; channel++)
 		write_mchbar32(0x260 + (channel << 10),
-			       (read_mchbar32(0x260 + (channel << 10)) &
+				  (read_mchbar32(0x260 + (channel << 10)) &
 				~0xf00000) | 0x8000000 | ((info.
-							   populated_ranks_mask
-							   [channel] & 3) <<
+								  populated_ranks_mask
+								  [channel] & 3) <<
 							  20));
 
 	if (!s3resume)
@@ -4702,7 +4702,7 @@ void raminit(int s3resume)
 			for (rank = 0; rank < NUM_RANKS; rank++)
 				if (info.populated_ranks[channel][slot][rank]) {
 					jedec_read(&info, channel, slot, rank,
-						   totalrank, 0xa, 0x400);
+							 totalrank, 0xa, 0x400);
 					totalrank++;
 				}
 
@@ -4716,11 +4716,11 @@ void raminit(int s3resume)
 	if (!s3resume) {
 		for (channel = 0; channel < NUM_CHANNELS; channel++) {
 			write_mchbar32(0x294 + (channel << 10),
-				       (info.
+					   (info.
 					populated_ranks_mask[channel] & 3) <<
-				       16);
+					   16);
 			write_mchbar16(0x298 + (channel << 10),
-				       (info.
+					   (info.
 					populated_ranks[channel][0][0]) | (info.
 									   populated_ranks
 									   [channel]
@@ -4754,11 +4754,11 @@ void raminit(int s3resume)
 			for (slot = 0; slot < NUM_SLOTS; slot++)
 				for (rank = 0; rank < NUM_RANKS; rank++)
 					if (info.
-					    populated_ranks[channel][slot]
-					    [rank])
+						 populated_ranks[channel][slot]
+						 [rank])
 						config_rank(&info, s3resume,
-							    channel, slot,
-							    rank);
+								   channel, slot,
+								   rank);
 
 		write_mchbar8(0x243, 0x1);
 		write_mchbar8(0x643, 0x1);
@@ -4774,11 +4774,11 @@ void raminit(int s3resume)
 	if (s3resume) {
 		for (channel = 0; channel < NUM_CHANNELS; channel++) {
 			write_mchbar32(0x294 + (channel << 10),
-				       (info.
+					   (info.
 					populated_ranks_mask[channel] & 3) <<
-				       16);
+					   16);
 			write_mchbar16(0x298 + (channel << 10),
-				       (info.
+					   (info.
 					populated_ranks[channel][0][0]) | (info.
 									   populated_ranks
 									   [channel]
@@ -4989,7 +4989,7 @@ void raminit(int s3resume)
 	}
 
 	pcie_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
-		      pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) & ~0x80);
+			pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) & ~0x80);
 	udelay(10000);
 	write_mchbar16(0x2ca8, 0x0);
 

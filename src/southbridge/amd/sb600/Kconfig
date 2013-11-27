@@ -56,7 +56,7 @@ config SATA_MODE
 	default 0 if SATA_MODE_AHCI
 
 config HPET_MIN_TICKS
-        hex
-        default 0x14
+	hex
+	default 0x14
 
 endif

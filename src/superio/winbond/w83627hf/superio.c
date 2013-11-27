@@ -79,7 +79,7 @@ static void init_hwm(u16 base)
 	int i;
 
 	u8 hwm_reg_values[] = {
-	/*      reg   mask  data */
+	/*	 reg   mask  data */
 		0x40, 0xff, 0x81, /* Start HWM. */
 		0x48, 0xaa, 0x2a, /* Set SMBus base to 0x2a (0x54 >> 1). */
 		0x4a, 0x21, 0x21, /* Set T2 SMBus base to 0x92>>1 and T3 SMBus base to 0x94>>1. */
@@ -96,7 +96,7 @@ static void init_hwm(u16 base)
 		value &= 0xff & hwm_reg_values[i + 1];
 		value |= 0xff & hwm_reg_values[i + 2];
 		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, "
-		       "value = 0x%02x\n", base, reg, value);
+			 "value = 0x%02x\n", base, reg, value);
 		pnp_write_index(base, reg, value);
 	}
 }
@@ -140,16 +140,16 @@ static void w83627hf_pnp_enable_resources(device_t dev)
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = w83627hf_pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = w83627hf_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = w83627hf_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_8787_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83627HF_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, W83627HF_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83627HF_PP,	PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
 	{ &ops, W83627HF_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, W83627HF_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, W83627HF_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, {0x07ff, 4}, },

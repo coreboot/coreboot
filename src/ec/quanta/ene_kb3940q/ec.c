@@ -165,13 +165,13 @@ static void ene_kb3940q_enable_resources(device_t dev)
 }
 
 static struct device_operations ops = {
-	.init             = ene_kb3940q_init,
+	.init		   = ene_kb3940q_init,
 	.read_resources   = ene_kb3940q_read_resources,
 	.enable_resources = ene_kb3940q_enable_resources
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, 0, 0, { 0, 0 }, }
+	{ &ops, 0, 0, { 0, 0 }, }
 };
 
 static void enable_dev(device_t dev)

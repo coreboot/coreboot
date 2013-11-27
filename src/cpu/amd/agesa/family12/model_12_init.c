@@ -106,14 +106,14 @@ static struct device_operations cpu_dev_ops = {
 };
 
 static struct cpu_device_id cpu_table[] = {
-  { X86_VENDOR_AMD, 0x300f00 },   /* LN1_A0x */
-  { X86_VENDOR_AMD, 0x300f01 },   /* LN1_A1x */
-  { X86_VENDOR_AMD, 0x300f10 },   /* LN1_B0x */
-  { X86_VENDOR_AMD, 0x300f20 },   /* LN2_B0x */
+  { X86_VENDOR_AMD, 0x300f00 },	  /* LN1_A0x */
+  { X86_VENDOR_AMD, 0x300f01 },	  /* LN1_A1x */
+  { X86_VENDOR_AMD, 0x300f10 },	  /* LN1_B0x */
+  { X86_VENDOR_AMD, 0x300f20 },	  /* LN2_B0x */
   { 0, 0 },
 };
 
 static const struct cpu_driver model_12 __cpu_driver = {
-  .ops      = &cpu_dev_ops,
+  .ops	    = &cpu_dev_ops,
   .id_table = cpu_table,
 };

@@ -64,7 +64,7 @@ static int int15_handler(void)
 		 *  bit 2 = Graphics Stretching
 		 *  bit 1 = Text Stretching
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
-		 *  0     = video bios default
+		 *  0	    = video bios default
 		 */
 		X86_AX = 0x005f;
 		X86_CL = 0x00; /* Use video bios default */
@@ -126,7 +126,7 @@ static int int15_handler(void)
 		}
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
 		break;
 	}
@@ -157,7 +157,7 @@ static void mainboard_init(device_t dev)
 }
 
 static int parrot_onboard_smbios_data(device_t dev, int *handle,
-				     unsigned long *current)
+					 unsigned long *current)
 {
 	int len = 0;
 	u8 hardware_version = parrot_rev();

@@ -29,12 +29,12 @@
 #include "northbridge/dmp/vortex86ex/raminit.c"
 #include "cpu/dmp/dmp_post_code.h"
 
-#define DMP_CPUID_SX      0x31504d44
-#define DMP_CPUID_DX      0x32504d44
-#define DMP_CPUID_MX      0x33504d44
-#define DMP_CPUID_DX2     0x34504d44
+#define DMP_CPUID_SX	  0x31504d44
+#define DMP_CPUID_DX	  0x32504d44
+#define DMP_CPUID_MX	  0x33504d44
+#define DMP_CPUID_DX2	  0x34504d44
 #define DMP_CPUID_MX_PLUS 0x35504d44
-#define DMP_CPUID_EX      0x37504d44
+#define DMP_CPUID_EX	  0x37504d44
 
 static u32 get_dmp_id(void)
 {

@@ -94,10 +94,10 @@ static void pci_domain_set_resources(device_t dev)
 	 */
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.set_resources	   = pci_domain_set_resources,
 	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = pci_domain_scan_bus,
+	.init		   = NULL,
+	.scan_bus	   = pci_domain_scan_bus,
 	.ops_pci_bus	  = pci_bus_default_ops,
 };
 
@@ -121,7 +121,7 @@ static int get_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
  * Intel special features, but they do consume resources that need to be
  * accounted for. */
 static int get_bar_in_mchbar(device_t dev, unsigned int index, u32 *base,
-                             u32 *len)
+			     u32 *len)
 {
 	u32 bar;
 
@@ -141,16 +141,16 @@ struct fixed_mmio_descriptor {
 	unsigned int index;
 	u32 size;
 	int (*get_resource)(device_t dev, unsigned int index,
-	                    u32 *base, u32 *size);
+			     u32 *base, u32 *size);
 	const char *description;
 };
 
 #define SIZE_KB(x) ((x)*1024)
 struct fixed_mmio_descriptor mc_fixed_resources[] = {
-	{ PCIEXBAR, SIZE_KB(0),  get_pcie_bar,      "PCIEXBAR" },
-	{ MCHBAR,   SIZE_KB(32), get_bar,           "MCHBAR"   },
-	{ DMIBAR,   SIZE_KB(4),  get_bar,           "DMIBAR"   },
-	{ EPBAR,    SIZE_KB(4),  get_bar,           "EPBAR"    },
+	{ PCIEXBAR, SIZE_KB(0),  get_pcie_bar,	     "PCIEXBAR" },
+	{ MCHBAR,   SIZE_KB(32), get_bar,	     "MCHBAR"	},
+	{ DMIBAR,   SIZE_KB(4),  get_bar,	     "DMIBAR"	},
+	{ EPBAR,    SIZE_KB(4),  get_bar,	     "EPBAR"	},
 	{ 0x5420,   SIZE_KB(4),  get_bar_in_mchbar, "GDXCBAR"  },
 	{ 0x5408,   SIZE_KB(16), get_bar_in_mchbar, "EDRAMBAR" },
 };
@@ -173,35 +173,35 @@ static void mc_add_fixed_mmio_resources(device_t dev)
 		size = mc_fixed_resources[i].size;
 		index = mc_fixed_resources[i].index;
 		if (!mc_fixed_resources[i].get_resource(dev, index,
-		                                        &base, &size))
+							  &base, &size))
 			continue;
 
 		resource = new_resource(dev, mc_fixed_resources[i].index);
 		resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-		                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-		                  IORESOURCE_ASSIGNED;
+				    IORESOURCE_STORED | IORESOURCE_RESERVE |
+				    IORESOURCE_ASSIGNED;
 		resource->base = base;
 		resource->size = size;
 		printk(BIOS_DEBUG, "%s: Adding %s @ %x 0x%08lx-0x%08lx.\n",
-		       __func__, mc_fixed_resources[i].description, index,
-		       (unsigned long)base, (unsigned long)(base + size - 1));
+			 __func__, mc_fixed_resources[i].description, index,
+			 (unsigned long)base, (unsigned long)(base + size - 1));
 	}
 }
 
 /* Host Memory Map:
  *
  * +--------------------------+ TOUUD
- * |                          |
+ * |			      |
  * +--------------------------+ 4GiB
- * |     PCI Address Space    |
+ * |	 PCI Address Space    |
  * +--------------------------+ TOLUD (also maps into MC address space)
- * |     iGD                  |
+ * |	 iGD		      |
  * +--------------------------+ BDSM
- * |     GTT                  |
+ * |	 GTT		      |
  * +--------------------------+ BGSM
- * |     TSEG                 |
+ * |	 TSEG		      |
  * +--------------------------+ TSEGMB
- * |     Usage DRAM           |
+ * |	 Usage DRAM	      |
  * +--------------------------+ 0
  *
  * Some of the base registers above can be equal making the size of those
@@ -218,7 +218,7 @@ struct map_entry {
 };
 
 static void read_map_entry(device_t dev, struct map_entry *entry,
-                           uint64_t *result)
+			   uint64_t *result)
 {
 	uint64_t value;
 	uint64_t mask;
@@ -245,8 +245,8 @@ static void read_map_entry(device_t dev, struct map_entry *entry,
 
 #define MAP_ENTRY(reg_, is_64_, is_limit_, desc_) \
 	{ \
-		.reg = reg_,           \
-		.is_64_bit = is_64_,   \
+		.reg = reg_,		 \
+		.is_64_bit = is_64_,	 \
 		.is_limit = is_limit_, \
 		.description = desc_,  \
 	}
@@ -299,7 +299,7 @@ static void mc_report_map_entries(device_t dev, uint64_t *values)
 	int i;
 	for (i = 0; i < NUM_MAP_ENTRIES; i++) {
 		printk(BIOS_DEBUG, "MC MAP: %s: 0x%llx\n",
-		       memory_map[i].description, values[i]);
+			 memory_map[i].description, values[i]);
 	}
 	/* One can validate the BDSM and BGSM against the GGC. */
 	printk(BIOS_DEBUG, "MC MAP: GGC: 0x%x\n", pci_read_config16(dev, GGC));
@@ -321,7 +321,7 @@ static void mc_add_dram_resources(device_t dev)
 	 * These are the host memory ranges that should be added:
 	 * - 0 -> SMM_DEFAULT_BASE : cacheable
 	 * - SMM_DEFAULT_BASE -> SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE :
-	 *       cacheable and reserved
+	 *	  cacheable and reserved
 	 * - SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE -> 0xa0000 : cacheable
 	 * - 0xc0000 -> TSEG : cacheable
 	 * - TESG -> BGSM: cacheable with standard MTRRs and reserved
@@ -362,8 +362,8 @@ static void mc_add_dram_resources(device_t dev)
 	resource->base = SMM_DEFAULT_BASE;
 	resource->size = SMM_DEFAULT_SIZE;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-	                  IORESOURCE_CACHEABLE | IORESOURCE_STORED |
-	                  IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
+			   IORESOURCE_CACHEABLE | IORESOURCE_STORED |
+			   IORESOURCE_RESERVE | IORESOURCE_ASSIGNED;
 
 	/* SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE -> 0xa0000 */
 	base_k = (SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE) >> 10;
@@ -380,16 +380,16 @@ static void mc_add_dram_resources(device_t dev)
 	resource->base = mc_values[TSEG_REG];
 	resource->size = mc_values[BGSM_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-	                  IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
+			   IORESOURCE_STORED | IORESOURCE_RESERVE |
+			   IORESOURCE_ASSIGNED | IORESOURCE_CACHEABLE;
 
 	/* BGSM -> TOLUD */
 	resource = new_resource(dev, index++);
 	resource->base = mc_values[BGSM_REG];
 	resource->size = mc_values[TOLUD_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
-	                  IORESOURCE_STORED | IORESOURCE_RESERVE |
-	                  IORESOURCE_ASSIGNED;
+			   IORESOURCE_STORED | IORESOURCE_RESERVE |
+			   IORESOURCE_ASSIGNED;
 
 	/* 4GiB -> TOUUD */
 	base_k = 4096 * 1024; /* 4GiB */
@@ -405,7 +405,7 @@ static void mc_add_dram_resources(device_t dev)
 	 */
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
-	                      (0x100000 - 0xc0000) >> 10);
+			       (0x100000 - 0xc0000) >> 10);
 #if CONFIG_CHROMEOS_RAMOOPS
 	reserved_ram_resource(dev, index++,
 			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
@@ -566,27 +566,27 @@ static void northbridge_enable(device_t dev)
 }
 
 static struct pci_operations intel_pci_ops = {
-	.set_subsystem    = intel_set_subsystem,
+	.set_subsystem	   = intel_set_subsystem,
 };
 
 static struct device_operations mc_ops = {
 	.read_resources   = mc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = northbridge_init,
-	.enable           = northbridge_enable,
-	.scan_bus         = 0,
-	.ops_pci          = &intel_pci_ops,
+	.init		   = northbridge_init,
+	.enable	   = northbridge_enable,
+	.scan_bus	   = 0,
+	.ops_pci	   = &intel_pci_ops,
 };
 
 static const struct pci_driver mc_driver_hsw_mobile __pci_driver = {
-	.ops    = &mc_ops,
+	.ops	 = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_HSW_MOBILE,
 };
 
 static const struct pci_driver mc_driver_hsw_ult __pci_driver = {
-	.ops    = &mc_ops,
+	.ops	 = &mc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_HSW_ULT,
 };
@@ -602,10 +602,10 @@ static void cpu_bus_noop(device_t dev)
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = 0,
 };
 
 static void enable_dev(device_t dev)

@@ -131,15 +131,15 @@ static inline unsigned int cpuid_edx(unsigned int op)
 #define X86_VENDOR_INVALID    0
 #define X86_VENDOR_INTEL      1
 #define X86_VENDOR_CYRIX      2
-#define X86_VENDOR_AMD        3
-#define X86_VENDOR_UMC        4
+#define X86_VENDOR_AMD	      3
+#define X86_VENDOR_UMC	      4
 #define X86_VENDOR_NEXGEN     5
 #define X86_VENDOR_CENTAUR    6
-#define X86_VENDOR_RISE       7
+#define X86_VENDOR_RISE	      7
 #define X86_VENDOR_TRANSMETA  8
-#define X86_VENDOR_NSC        9
-#define X86_VENDOR_SIS       10
-#define X86_VENDOR_ANY     0xfe
+#define X86_VENDOR_NSC	      9
+#define X86_VENDOR_SIS	     10
+#define X86_VENDOR_ANY	   0xfe
 #define X86_VENDOR_UNKNOWN 0xff
 
 int cpu_phys_address_size(void);
@@ -194,21 +194,21 @@ static inline unsigned long cpu_index(void)
 
 #ifndef __ROMCC__ // romcc is segfaulting in some cases
 struct cpuinfo_x86 {
-        uint8_t    x86;            /* CPU family */
-        uint8_t    x86_vendor;     /* CPU vendor */
-        uint8_t    x86_model;
-        uint8_t    x86_mask;
+	uint8_t	   x86;		   /* CPU family */
+	uint8_t	   x86_vendor;	   /* CPU vendor */
+	uint8_t	   x86_model;
+	uint8_t	   x86_mask;
 };
 
 static inline void get_fms(struct cpuinfo_x86 *c, uint32_t tfms)
 {
-        c->x86 = (tfms >> 8) & 0xf;
-        c->x86_model = (tfms >> 4) & 0xf;
-        c->x86_mask = tfms & 0xf;
-        if (c->x86 == 0xf)
-                c->x86 += (tfms >> 20) & 0xff;
-        if (c->x86 >= 0x6)
-                c->x86_model += ((tfms >> 16) & 0xF) << 4;
+	c->x86 = (tfms >> 8) & 0xf;
+	c->x86_model = (tfms >> 4) & 0xf;
+	c->x86_mask = tfms & 0xf;
+	if (c->x86 == 0xf)
+		c->x86 += (tfms >> 20) & 0xff;
+	if (c->x86 >= 0x6)
+		c->x86_model += ((tfms >> 16) & 0xF) << 4;
 
 }
 #endif

@@ -39,18 +39,18 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t dev
 		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
 		uint8_t slot, uint8_t rfu)
 {
-        pirq_info->bus = bus;
-        pirq_info->devfn = devfn;
-                pirq_info->irq[0].link = link0;
-                pirq_info->irq[0].bitmap = bitmap0;
-                pirq_info->irq[1].link = link1;
-                pirq_info->irq[1].bitmap = bitmap1;
-                pirq_info->irq[2].link = link2;
-                pirq_info->irq[2].bitmap = bitmap2;
-                pirq_info->irq[3].link = link3;
-                pirq_info->irq[3].bitmap = bitmap3;
-        pirq_info->slot = slot;
-        pirq_info->rfu = rfu;
+	pirq_info->bus = bus;
+	pirq_info->devfn = devfn;
+		pirq_info->irq[0].link = link0;
+		pirq_info->irq[0].bitmap = bitmap0;
+		pirq_info->irq[1].link = link1;
+		pirq_info->irq[1].bitmap = bitmap1;
+		pirq_info->irq[2].link = link2;
+		pirq_info->irq[2].bitmap = bitmap2;
+		pirq_info->irq[3].link = link3;
+		pirq_info->irq[3].bitmap = bitmap3;
+	pirq_info->slot = slot;
+	pirq_info->rfu = rfu;
 }
 extern unsigned char bus_sis966[8]; //1
 
@@ -63,17 +63,17 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	uint8_t *v;
 	unsigned sbdn;
 
-        uint8_t sum=0;
-        int i;
+	uint8_t sum=0;
+	int i;
 
-        get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
+	get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
 	sbdn = sysconf.sbdn;
 
-        /* Align the table to be 16 byte aligned. */
-        addr += 15;
-        addr &= ~15;
+	/* Align the table to be 16 byte aligned. */
+	addr += 15;
+	addr &= ~15;
 
-        /* This table must be betweeen 0xf0000 & 0x100000 */
+	/* This table must be betweeen 0xf0000 & 0x100000 */
 	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
@@ -113,51 +113,51 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 
 	printk(BIOS_INFO, "done.\n");
 
-        {
-                device_t dev;
-                dev = dev_find_slot(0, PCI_DEVFN(2,0));
+	{
+		device_t dev;
+		dev = dev_find_slot(0, PCI_DEVFN(2,0));
 		if (dev) {
-                        /* initialize PCI interupts - these assignments depend
-                        on the PCB routing of PINTA-D
+			/* initialize PCI interupts - these assignments depend
+			on the PCB routing of PINTA-D
 
-                        PINTA = IRQ10
-                        PINTB = IRQ11
+			PINTA = IRQ10
+			PINTB = IRQ11
 			PINTC = NA
 			PINTD = IRQ10
-                        PINTE = IRQ11
-                        PINTF = IRQ5
+			PINTE = IRQ11
+			PINTF = IRQ5
 			PINTG = NA
 			PINTH = IRQ7
 
-                        */
-                uint8_t	reg[8]={0x41,0x42,0x43,0x44,0x60,0x61,0x62,0x63};
+			*/
+		uint8_t	reg[8]={0x41,0x42,0x43,0x44,0x60,0x61,0x62,0x63};
 		uint8_t irq[8]={0x0A,0X0B,0X0,0X0a,0X0B,0X05,0X0,0X07};
 
-                for(i=0;i<8;i++)
-                    pci_write_config8(dev, reg[i], irq[i]);
+		for(i=0;i<8;i++)
+		    pci_write_config8(dev, reg[i], irq[i]);
 		} // endif
 
-                printk(BIOS_DEBUG, "Setting Onboard SiS Southbridge\n");
+		printk(BIOS_DEBUG, "Setting Onboard SiS Southbridge\n");
 
-                dev = dev_find_slot(0, PCI_DEVFN(2,5));   // 5513 (IDE)
-                pci_write_config8(dev, 0x3C, 0x0A);
-                dev = dev_find_slot(0, PCI_DEVFN(3,0));   // USB 1.1
-                pci_write_config8(dev, 0x3C, 0x0B);
-                dev = dev_find_slot(0, PCI_DEVFN(3,1));   // USB 1.1
-                pci_write_config8(dev, 0x3C, 0x05);
-                dev = dev_find_slot(0, PCI_DEVFN(3,3));   // USB 2.0
-		pci_write_config8(dev, 0x3C, 0x07);
-                dev = dev_find_slot(0, PCI_DEVFN(4,0));   // 191 (LAN)
+		dev = dev_find_slot(0, PCI_DEVFN(2,5));	  // 5513 (IDE)
 		pci_write_config8(dev, 0x3C, 0x0A);
-                dev = dev_find_slot(0, PCI_DEVFN(5,0));   // 1183 (SATA)
-                pci_write_config8(dev, 0x3C, 0x0B);
-                dev = dev_find_slot(0, PCI_DEVFN(6,0));   // PCI-E
-                pci_write_config8(dev, 0x3C, 0x0A);
-                dev = dev_find_slot(0, PCI_DEVFN(7,0));   // PCI-E
-                pci_write_config8(dev, 0x3C, 0x0A);
-                dev = dev_find_slot(0, PCI_DEVFN(15,0));  // Azalia
-                pci_write_config8(dev, 0x3C, 0x05);
-        }
+		dev = dev_find_slot(0, PCI_DEVFN(3,0));	  // USB 1.1
+		pci_write_config8(dev, 0x3C, 0x0B);
+		dev = dev_find_slot(0, PCI_DEVFN(3,1));	  // USB 1.1
+		pci_write_config8(dev, 0x3C, 0x05);
+		dev = dev_find_slot(0, PCI_DEVFN(3,3));	  // USB 2.0
+		pci_write_config8(dev, 0x3C, 0x07);
+		dev = dev_find_slot(0, PCI_DEVFN(4,0));	  // 191 (LAN)
+		pci_write_config8(dev, 0x3C, 0x0A);
+		dev = dev_find_slot(0, PCI_DEVFN(5,0));	  // 1183 (SATA)
+		pci_write_config8(dev, 0x3C, 0x0B);
+		dev = dev_find_slot(0, PCI_DEVFN(6,0));	  // PCI-E
+		pci_write_config8(dev, 0x3C, 0x0A);
+		dev = dev_find_slot(0, PCI_DEVFN(7,0));	  // PCI-E
+		pci_write_config8(dev, 0x3C, 0x0A);
+		dev = dev_find_slot(0, PCI_DEVFN(15,0));  // Azalia
+		pci_write_config8(dev, 0x3C, 0x05);
+	}
 
 	printk(BIOS_DEBUG, "pirq routing table, size=%d\n", pirq->size);
 	for (i = 0; i < pirq->size; i+=4)

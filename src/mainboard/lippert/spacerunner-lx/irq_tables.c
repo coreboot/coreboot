@@ -46,7 +46,7 @@
 
 static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
-	PIRQ_VERSION,		/* u16 version   */
+	PIRQ_VERSION,		/* u16 version	 */
 	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* There can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
 	0x00,			/* Where the interrupt router lies (bus) */
 	(0x0F << 3) | 0x0,	/* Where the interrupt router lies (dev) */
@@ -58,10 +58,10 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	0xE0,			/* u8 checksum, this has to set to some value that would give 0 after the sum of all bytes for this structure (including checksum) */
 	{
 		/* If you change the number of entries, change the CONFIG_IRQ_SLOT_COUNT above! */
-		/* bus, dev|fn,           {link, bitmap},      {link, bitmap},     {link, bitmap},     {link, bitmap},     slot, rfu */
-		{0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},       {0x00, 0x00},       {0x00, 0x00}},       0x0, 0x0},	/* CPU */
+		/* bus, dev|fn,	    {link, bitmap},	 {link, bitmap},     {link, bitmap},	 {link, bitmap},     slot, rfu */
+		{0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},	     {0x00, 0x00},	 {0x00, 0x00}},	      0x0, 0x0},	/* CPU */
 		{0x00, (0x0F << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},	/* chipset */
-		{0x00, (0x0E << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},       {0x00, 0x00},       {0x00, 0x00}},       0x0, 0x0},	/* ethernet */
+		{0x00, (0x0E << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x00},	     {0x00, 0x00},	 {0x00, 0x00}},	      0x0, 0x0},	/* ethernet */
 		{0x00, (0x0B << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x1, 0x0},	/* slot1 */
 		{0x00, (0x0A << 3) | 0x0, {{L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}}, 0x2, 0x0},	/* slot2 */
 		{0x00, (0x09 << 3) | 0x0, {{L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}, {L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}}, 0x3, 0x0},	/* slot3 */

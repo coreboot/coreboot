@@ -52,7 +52,7 @@ static int smbus_wait_until_done(u16 smbus_base)
 }
 
 static int do_smbus_read_byte(unsigned smbus_base, unsigned device,
-			      unsigned address)
+				 unsigned address)
 {
 	unsigned char global_status_register;
 	unsigned char byte;

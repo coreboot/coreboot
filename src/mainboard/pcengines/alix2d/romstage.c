@@ -111,22 +111,22 @@ static void mb_gpio_init(void)
 	 * Enable LEDs GPIO outputs to light up the leds
 	 * This is how the original tinyBIOS sets them after boot.
 	 * Info: GPIO_IO_BASE, 0x6100, is only valid before PCI init, so it
-	 *       may be used here, but not after PCI Init.
+	 *	  may be used here, but not after PCI Init.
 	 * Note: Prior to a certain release, Linux used a hardwired 0x6100 in the
-	 *       leds-alix2.c driver. Coreboot dynamically assigns this space,
-	 *       so the driver does not work anymore.
-	 *       Good workaround: use the newer driver
-	 *       Ugly workaround: $ wrmsr 0x5140000C 0xf00100006100
-	 *         This resets the GPIO I/O space to 0x6100.
-	 *         This may break other things, though.
+	 *	  leds-alix2.c driver. Coreboot dynamically assigns this space,
+	 *	  so the driver does not work anymore.
+	 *	  Good workaround: use the newer driver
+	 *	  Ugly workaround: $ wrmsr 0x5140000C 0xf00100006100
+	 *	    This resets the GPIO I/O space to 0x6100.
+	 *	    This may break other things, though.
 	 */
 	outl(1 << 6, GPIO_IO_BASE + GPIOL_OUTPUT_ENABLE);
 	outl(1 << 9, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
 	outl(1 << 11, GPIO_IO_BASE + GPIOH_OUTPUT_ENABLE);
 
 	/* outl(1 << 6, GPIO_IO_BASE + GPIOL_OUTPUT_VALUE); */  /* Led 1 enabled  */
-	outl(1 << 9, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);        /* Led 2 disabled */
-	outl(1 << 11, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);       /* Led 3 disabled */
+	outl(1 << 9, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);	 /* Led 2 disabled */
+	outl(1 << 11, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);	 /* Led 3 disabled */
 }
 
 void main(unsigned long bist)

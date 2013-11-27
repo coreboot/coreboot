@@ -17,7 +17,7 @@
 
 static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
-	PIRQ_VERSION,           /* u16 version   */
+	PIRQ_VERSION,		 /* u16 version	  */
 	32+16*CONFIG_IRQ_SLOT_COUNT,	/* there can be total CONFIG_IRQ_SLOT_COUNT table entries */
 	IRQ_ROUTER_BUS,		/* Where the interrupt router lies (bus) */
 	IRQ_ROUTER_DEVFN,	/* Where the interrupt router lies (dev) */
@@ -26,7 +26,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	IRQ_ROUTER_DEVICE,	/* Device */
 	0x00,			/* Miniport data */
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
-	0xb0,           /*  u8 checksum , mod 256 checksum must give zero */
+	0xb0,		 /*  u8 checksum , mod 256 checksum must give zero */
 	{	/* slot(0=onboard), devfn, irqlinks (line id, 0=not routed) */
 		/* PCI Slot 1-6 */
 		IRQ_SLOT(1, 3,1,0, 2,3,4,1 ),
@@ -44,5 +44,5 @@ static const struct irq_routing_table intel_irq_routing_table = {
 };
 unsigned long write_pirq_routing_table(unsigned long addr)
 {
-        return copy_pirq_routing_table(addr, &intel_irq_routing_table);
+	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }

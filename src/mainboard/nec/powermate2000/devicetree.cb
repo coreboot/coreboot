@@ -13,35 +13,35 @@ chip northbridge/intel/i82810			# Northbridge
 
       device pci 1e.0 on end			# PCI bridge
       device pci 1f.0 on			# ISA/LPC bridge
-        chip superio/smsc/smscsuperio		# Super I/O (SMSC LPC47B27x)
-          device pnp 2e.0 on			# Floppy
-            io 0x60 = 0x3f0
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 2e.3 on			# Parallel port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-            drq 0x74 = 3
-          end
-          device pnp 2e.4 on			# Com1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 2e.5 off end		# Com2 (N/A)
-          device pnp 2e.7 on			# PS/2 keyboard
-            irq 0x70 = 1
-            irq 0x72 = 0
-          end
-          device pnp 2e.9 off end		# Game port (N/A)
-          device pnp 2e.a on			# Power-management events (PME)
-            io 0x60 = 0x800
-          end
-          device pnp 2e.b on			# MIDI port
-            io 0x60 = 0x330
-            irq 0x70 = 5
-          end
-        end
+	chip superio/smsc/smscsuperio		# Super I/O (SMSC LPC47B27x)
+	  device pnp 2e.0 on			# Floppy
+	    io 0x60 = 0x3f0
+	    irq 0x70 = 6
+	    drq 0x74 = 2
+	  end
+	  device pnp 2e.3 on			# Parallel port
+	    io 0x60 = 0x378
+	    irq 0x70 = 7
+	    drq 0x74 = 3
+	  end
+	  device pnp 2e.4 on			# Com1
+	    io 0x60 = 0x3f8
+	    irq 0x70 = 4
+	  end
+	  device pnp 2e.5 off end		# Com2 (N/A)
+	  device pnp 2e.7 on			# PS/2 keyboard
+	    irq 0x70 = 1
+	    irq 0x72 = 0
+	  end
+	  device pnp 2e.9 off end		# Game port (N/A)
+	  device pnp 2e.a on			# Power-management events (PME)
+	    io 0x60 = 0x800
+	  end
+	  device pnp 2e.b on			# MIDI port
+	    io 0x60 = 0x330
+	    irq 0x70 = 5
+	  end
+	end
       end
       device pci 1f.1 on end			# IDE
       device pci 1f.2 on end			# USB

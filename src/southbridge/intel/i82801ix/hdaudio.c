@@ -307,7 +307,7 @@ static void azalia_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations azalia_pci_ops = {
-	.set_subsystem    = azalia_set_subsystem,
+	.set_subsystem	   = azalia_set_subsystem,
 };
 
 static struct device_operations azalia_ops = {

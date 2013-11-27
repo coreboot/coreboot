@@ -60,7 +60,7 @@
 /* Internal functions */
 static void smbus_print_error(unsigned char host_status_register, int loops)
 {
-//              print_err("some i2c error\n");
+//		print_err("some i2c error\n");
 	/* Check if there actually was an error */
 	if (host_status_register == 0x00 || host_status_register == 0x40 ||
 	    host_status_register == 0x42)
@@ -173,8 +173,8 @@ void enable_smbus(void)
  * known-good data from a slot/address. Exits on either good data or a timeout.
  *
  * TODO: This should probably go into some global file, but one would need to
- *       be created just for it. If some other chip needs/wants it, we can
- *       worry about it then.
+ *	 be created just for it. If some other chip needs/wants it, we can
+ *	 worry about it then.
  *
  * @param mem_ctrl The memory controller and SMBus addresses.
  */
@@ -197,15 +197,15 @@ void smbus_fixup(const struct mem_controller *mem_ctrl)
 	 * VT8237R has only been seen on DDR and DDR2 based systems, so far.
 	 */
 	for (i = 0; (i < SMBUS_TIMEOUT && ((result < SPD_MEMORY_TYPE_SDRAM) ||
-					   (result >
-					    SPD_MEMORY_TYPE_SDRAM_DDR3)));
+						(result >
+						 SPD_MEMORY_TYPE_SDRAM_DDR3)));
 	     i++) {
 
 		if (current_slot > ram_slots)
 			current_slot = 0;
 
 		result = get_spd_data(mem_ctrl->channel0[current_slot],
-				      SPD_MEMORY_TYPE);
+					  SPD_MEMORY_TYPE);
 		current_slot++;
 		PRINT_DEBUG(".");
 	}

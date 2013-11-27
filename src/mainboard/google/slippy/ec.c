@@ -32,7 +32,7 @@ void mainboard_ec_init(void)
 	/* Restore SCI event mask on resume. */
 	if (acpi_slp_type == 3) {
 		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
-					   MAINBOARD_EC_S3_WAKE_EVENTS);
+						MAINBOARD_EC_S3_WAKE_EVENTS);
 
 		/* Disable SMI and wake events */
 		google_chromeec_set_smi_mask(0);
@@ -42,7 +42,7 @@ void mainboard_ec_init(void)
 		google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
 	} else {
 		google_chromeec_log_events(MAINBOARD_EC_LOG_EVENTS |
-					   MAINBOARD_EC_S5_WAKE_EVENTS);
+						MAINBOARD_EC_S5_WAKE_EVENTS);
 	}
 
 	/* Clear wake events, these are enabled on entry to sleep */

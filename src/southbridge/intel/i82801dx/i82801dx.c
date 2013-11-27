@@ -30,7 +30,7 @@ void i82801dx_enable(device_t dev)
 	uint8_t bHasDisableBit = 0;
 	uint16_t cur_disable_mask, new_disable_mask;
 
-//      all 82801dbm devices are in bus 0
+//	all 82801dbm devices are in bus 0
 	unsigned int devfn = PCI_DEVFN(0x1f, 0);	// lpc
 	device_t lpc_dev = dev_find_slot(0, devfn);	// 0
 	if (!lpc_dev)
@@ -38,8 +38,8 @@ void i82801dx_enable(device_t dev)
 
 	// Calculate disable bit position for specified device:function
 	// NOTE: For ICH-4, only the following devices can be disabled:
-	//               D31: F0, F1, F3, F5, F6,
-	//               D29: F0, F1, F2, F7
+	//		  D31: F0, F1, F3, F5, F6,
+	//		  D29: F0, F1, F2, F7
 
 	if (PCI_SLOT(dev->path.pci.devfn) == 31) {
 		index = PCI_FUNC(dev->path.pci.devfn);

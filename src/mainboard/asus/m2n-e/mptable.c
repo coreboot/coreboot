@@ -90,7 +90,7 @@ static void *smp_write_config_table(void *v)
 			PCI_INT(1, 0x06 + j, i, 0x10 + (2 + i + j) % 4);
 	}
 
-	/* Local Ints:        Type       Trigger               Polarity              Bus ID   IRQ  APIC ID      PIN# */
+	/* Local Ints:	       Type	  Trigger		Polarity	      Bus ID   IRQ  APIC ID	 PIN# */
 	mptable_lintsrc(mc, bus_isa);
 
 	/* Compute the checksums. */

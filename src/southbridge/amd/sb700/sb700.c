@@ -121,7 +121,7 @@ void sb7xx_51xx_enable(device_t dev)
 	printk(BIOS_DEBUG, "sb7xx_51xx_enable()\n");
 
 	/*
-	 * 0:11.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default         + 32 * 3
+	 * 0:11.0  SATA	bit 8 of sm_dev 0xac : 1 - enable, default	    + 32 * 3
 	 * 0:12.0  OHCI0-USB1	bit 0 of sm_dev 0x68
 	 * 0:12.1  OHCI1-USB1	bit 1 of sm_dev 0x68
 	 * 0:12.2  EHCI-USB1	bit 2 of sm_dev 0x68
@@ -208,7 +208,7 @@ void sb7xx_51xx_enable(device_t dev)
 	case (0x14 << 3) | 2:
 		index = 3;
 		set_pmio_enable_bits(sm_dev, 0x59, 1 << index,
-				     (dev->enabled ? 1 : 0) << index);
+					 (dev->enabled ? 1 : 0) << index);
 		index += 32 * 4;
 		break;
 	case (0x14 << 3) | 3:
@@ -222,7 +222,7 @@ void sb7xx_51xx_enable(device_t dev)
 		break;
 	default:
 		printk(BIOS_DEBUG, "unknown dev: %s deviceid=%4x\n", dev_path(dev),
-			     deviceid);
+				deviceid);
 	}
 }
 

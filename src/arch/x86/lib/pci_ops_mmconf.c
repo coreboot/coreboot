@@ -16,7 +16,7 @@
 				((WHERE) & 0xFFF))
 
 static uint8_t pci_mmconf_read_config8(struct bus *pbus, int bus, int devfn,
-				       int where)
+					   int where)
 {
 	return (read8(PCI_MMIO_ADDR(bus, devfn, where)));
 }
@@ -34,19 +34,19 @@ static uint32_t pci_mmconf_read_config32(struct bus *pbus, int bus, int devfn,
 }
 
 static void pci_mmconf_write_config8(struct bus *pbus, int bus, int devfn,
-				     int where, uint8_t value)
+					 int where, uint8_t value)
 {
 	write8(PCI_MMIO_ADDR(bus, devfn, where), value);
 }
 
 static void pci_mmconf_write_config16(struct bus *pbus, int bus, int devfn,
-				      int where, uint16_t value)
+					  int where, uint16_t value)
 {
 	write16(PCI_MMIO_ADDR(bus, devfn, where) & ~1, value);
 }
 
 static void pci_mmconf_write_config32(struct bus *pbus, int bus, int devfn,
-				      int where, uint32_t value)
+					  int where, uint32_t value)
 {
 	write32(PCI_MMIO_ADDR(bus, devfn, where) & ~3, value);
 }

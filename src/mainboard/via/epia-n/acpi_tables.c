@@ -48,11 +48,11 @@ extern const unsigned char AmlCode[];
 #define MP_IRQ_POLARITY_DEFAULT	0x0
 #define MP_IRQ_POLARITY_HIGH	0x1
 #define MP_IRQ_POLARITY_LOW		0x3
-#define MP_IRQ_POLARITY_MASK    0x3
+#define MP_IRQ_POLARITY_MASK	0x3
 #define MP_IRQ_TRIGGER_DEFAULT	0x0
 #define MP_IRQ_TRIGGER_EDGE		0x4
 #define MP_IRQ_TRIGGER_LEVEL	0xc
-#define MP_IRQ_TRIGGER_MASK     0xc
+#define MP_IRQ_TRIGGER_MASK	0xc
 
 unsigned long acpi_fill_mcfg(unsigned long current)
 {
@@ -80,7 +80,7 @@ unsigned long acpi_create_madt_lapic_nmis(unsigned long current, u16 flags,
 		if (!cpu->enabled)
 			continue;
 		current += acpi_create_madt_lapic_nmi((acpi_madt_lapic_nmi_t *)
-					      current, cpu_index, flags, lint);
+						   current, cpu_index, flags, lint);
 		cpu_index++;
 	}
 	return current;
@@ -107,7 +107,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 	/* Create all subtables for processors. */
 	current = acpi_create_madt_lapic_nmis(current,
-			      MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 1);
+				 MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, 1);
 
 	return current;
 }
@@ -129,7 +129,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *dsdt;
 
 	/* Align ACPI tables to 16byte */
-	start   = ALIGN(start, 16);
+	start	 = ALIGN(start, 16);
 	current = start;
 
 	printk(BIOS_INFO, "ACPI: Writing ACPI tables at %lx...\n", start);

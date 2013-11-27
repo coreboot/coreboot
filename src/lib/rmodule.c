@@ -71,7 +71,7 @@ static inline int rmodule_is_loaded(const struct rmodule *module)
 
 /* Calculate a loaded program address based on the blob address. */
 static inline void *rmodule_load_addr(const struct rmodule *module,
-                                      u32 blob_addr)
+				      u32 blob_addr)
 {
 	char *loc = module->location;
 	return &loc[blob_addr - module->header->module_link_start_address];
@@ -104,7 +104,7 @@ int rmodule_parse(void *ptr, struct rmodule *module)
 	/* The payload lives after the header. */
 	module->payload = &base[rhdr->payload_begin_offset];
 	module->payload_size = rhdr->payload_end_offset -
-	                       rhdr->payload_begin_offset;
+				rhdr->payload_begin_offset;
 	module->relocations = &base[rhdr->relocations_begin_offset];
 
 	return 0;
@@ -130,7 +130,7 @@ void *rmodule_parameters(const struct rmodule *module)
 int rmodule_entry_offset(const struct rmodule *module)
 {
 	return module->header->module_entry_point -
-	       module->header->module_link_start_address;
+		module->header->module_link_start_address;
 }
 
 void *rmodule_entry(const struct rmodule *module)
@@ -164,9 +164,9 @@ static inline int rmodule_number_relocations(const struct rmodule *module)
 static void rmodule_copy_payload(const struct rmodule *module)
 {
 	printk(BIOS_DEBUG, "Loading module at %p with entry %p. "
-	       "filesize: 0x%x memsize: 0x%x\n",
-	       module->location, rmodule_entry(module),
-	       module->payload_size, rmodule_memory_size(module));
+		"filesize: 0x%x memsize: 0x%x\n",
+		module->location, rmodule_entry(module),
+		module->payload_size, rmodule_memory_size(module));
 
 	/* No need to copy the payload if the load location and the
 	 * payload location are the same. */
@@ -177,7 +177,7 @@ static void rmodule_copy_payload(const struct rmodule *module)
 }
 
 static inline u32 *rmodule_adjustment_location(const struct rmodule *module,
-                                               const void *reloc)
+					       const void *reloc)
 {
 	int reloc_offset;
 
@@ -203,7 +203,7 @@ static int rmodule_relocate(const struct rmodule *module)
 	num_relocations = rmodule_number_relocations(module);
 
 	printk(BIOS_DEBUG, "Processing %d relocs with adjust value of 0x%08x\n",
-	       num_relocations, adjustment);
+		num_relocations, adjustment);
 
 	while (num_relocations > 0) {
 		u32 *adjust_loc;
@@ -215,8 +215,8 @@ static int rmodule_relocate(const struct rmodule *module)
 		adjust_loc = rmodule_adjustment_location(module, reloc);
 		if (adjust_loc != NULL) {
 			printk(PK_ADJ_LEVEL, "Adjusting %p: 0x%08x -> 0x%08x\n",
-			       adjust_loc, *adjust_loc,
-			       *adjust_loc + adjustment);
+				  adjust_loc, *adjust_loc,
+				  *adjust_loc + adjustment);
 			*adjust_loc += adjustment;
 		}
 
@@ -244,8 +244,8 @@ int rmodule_load(void *base, struct rmodule *module)
 	 *  1. Copy payload to base address.
 	 *  2. Adjust relocations within the module to new base address.
 	 *  3. Clear the bss segment last since the relocations live where
-	 *     the bss is. If an rmodule is being loaded from its load
-	 *     address the relocations need to be processed before the bss.
+	 *	the bss is. If an rmodule is being loaded from its load
+	 *	address the relocations need to be processed before the bss.
 	 */
 	module->location = base;
 	rmodule_copy_payload(module);
@@ -256,7 +256,7 @@ int rmodule_load(void *base, struct rmodule *module)
 }
 
 int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
-                        size_t *region_size, int *load_offset)
+			size_t *region_size, int *load_offset)
 {
 	/* region_alignment must be a power of 2. */
 	if (region_alignment & (region_alignment - 1))
@@ -289,7 +289,7 @@ int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
 	 * +--------------------------------+  region_alignment + region_size
 	 * |  >= 0 bytes from alignment     |
 	 * +--------------------------------+  program end (4KiB aligned)
-	 * |  program size                  |
+	 * |  program size		     |
 	 * +--------------------------------+  program_begin (4KiB aligned)
 	 * |  sizeof(struct rmodule_header) |
 	 * +--------------------------------+  rmodule header start

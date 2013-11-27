@@ -64,7 +64,7 @@ static const long register_values[] = {
 
 	DBC, 0x00, 0xC3,
 
-	DRT,   0x00, 0xFF,
+	DRT,	0x00, 0xFF,
 	DRT+1, 0x00, 0xFF,
 
 	DRAMC, 0x00, 0x00, /* disable refresh for now. */
@@ -124,29 +124,29 @@ static void do_ram_command(u32 command)
 	/* Send the RAM command to each row of memory. */
 	dimm_start = 0;
 	for (i = 0; i < (DIMM_SOCKETS * 2); i++) {
-                addr_offset = 0;
-                caslatency = 3; /* TODO: Dynamically get CAS latency later. */
+		addr_offset = 0;
+		caslatency = 3; /* TODO: Dynamically get CAS latency later. */
 
 		/* before translation it is
 		 *
 		 * M[02:00] Burst Length
 		 * M[03:03] Burst Type
 		 * M[06:04] Cas Latency
-		 *          000 - Reserved
-		 *          001 - Reserved
-		 *          010 - CAS 2
-		 *          011 - CAS 3
-		 *          100 - Reserved
-		 *          101 - Reserved
-		 *          110 - Reserved
-		 *          111 - Reserved
+		 *	      000 - Reserved
+		 *	      001 - Reserved
+		 *	      010 - CAS 2
+		 *	      011 - CAS 3
+		 *	      100 - Reserved
+		 *	      101 - Reserved
+		 *	      110 - Reserved
+		 *	      111 - Reserved
 		 * M[08:07] Op Mode
-		 *          Must Be 00b (Defined mode)
+		 *	      Must Be 00b (Defined mode)
 		 * M[09:09] Write Burst Mode
-		 *          0 - Programmed burst length
-		 *          1 - Single location access
+		 *	      0 - Programmed burst length
+		 *	      1 - Single location access
 		 * M[11:10] Reserved
-                 *          write 0 to ensure compatibility with....
+		 *	    write 0 to ensure compatibility with....
 		 */
 
 		/* seems constructed value will be right shifted by 3 bit, thus constructed value
@@ -266,7 +266,7 @@ static void sdram_set_registers(void)
 		 * for me to confirm what got written
 		 */
 #if CONFIG_DEBUG_RAM_SETUP
-		PRINT_DEBUG("    Set register 0x");
+		PRINT_DEBUG("	   Set register 0x");
 		PRINT_DEBUG_HEX8(register_values[i]);
 		PRINT_DEBUG(" to 0x");
 		PRINT_DEBUG_HEX8(reg);

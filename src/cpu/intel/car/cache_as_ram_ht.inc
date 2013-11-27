@@ -205,7 +205,7 @@ ap_init:
 	post_code(0x27)
 
 	/* Do not disable cache (so BSP can enable it). */
-        movl	%cr0, %eax
+	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	movl	%eax, %cr0
 

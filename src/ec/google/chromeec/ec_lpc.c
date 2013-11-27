@@ -41,7 +41,7 @@ static int google_chromeec_wait_ready(u16 port)
 #define MAX_EC_TIMEOUT_US 1000000
 
 	while (ec_status &
-	       (EC_LPC_CMDR_PENDING | EC_LPC_CMDR_BUSY)) {
+		(EC_LPC_CMDR_PENDING | EC_LPC_CMDR_BUSY)) {
 		udelay(1);
 		if (time_count++ == MAX_EC_TIMEOUT_US)
 			return -1;
@@ -85,7 +85,7 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 
 	if (google_chromeec_wait_ready(EC_LPC_ADDR_HOST_CMD)) {
 		printk(BIOS_ERR, "Timeout waiting for EC process command %d!\n",
-		       cec_command->cmd_code);
+			 cec_command->cmd_code);
 		return 1;
 	}
 
@@ -157,7 +157,7 @@ static void lpc_ec_enable_resources(device_t dev)
 }
 
 static struct device_operations ops = {
-	.init             = lpc_ec_init,
+	.init		   = lpc_ec_init,
 	.read_resources   = lpc_ec_read_resources,
 	.enable_resources = lpc_ec_enable_resources
 };

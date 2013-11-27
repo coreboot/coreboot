@@ -484,18 +484,18 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 *	   00011 = 160.00 ns
 	 *	   00100 = 320.00 ns
 	 *	   00101 = 640.00 ns
-	 *	   00110 =   1.28 us
-	 *	   00111 =   2.56 us
-	 *	   01000 =   5.12 us
+	 *	   00110 =	 1.28 us
+	 *	   00111 =	 2.56 us
+	 *	   01000 =	 5.12 us
 	 *	   01001 =  10.20 us
 	 *	   01011 =  41.00 us
 	 *	   01100 =  81.90 us
 	 *	   01101 = 163.80 us
 	 *	   01110 = 327.70 us
 	 *	   01111 = 655.40 us
-	 *	   10000 =   1.31 ms
-	 *	   10001 =   2.62 ms
-	 *	   10010 =   5.24 ms
+	 *	   10000 =	 1.31 ms
+	 *	   10001 =	 2.62 ms
+	 *	   10010 =	 5.24 ms
 	 *	   10011 =  10.49 ms
 	 *	   10100 =  20.97 ms
 	 *	   10101 =  42.00 ms
@@ -894,17 +894,17 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl)
 	};
 
 	static const uint8_t csbase_low_d0_shift[] = {
-	/* 32MB */      (13 - 4),
-	/* 64MB */      (14 - 4),
-	/* 128MB */     (14 - 4),
-	/* 128MB */     (15 - 4),
-	/* 256MB */     (15 - 4),
-	/* 512MB */     (15 - 4),
-	/* 256MB */     (16 - 4),
-	/* 512MB */     (16 - 4),
-	/* 1GB */       (16 - 4),
-	/* 1GB */       (17 - 4),
-	/* 2GB */       (17 - 4),
+	/* 32MB */	 (13 - 4),
+	/* 64MB */	 (14 - 4),
+	/* 128MB */	 (14 - 4),
+	/* 128MB */	 (15 - 4),
+	/* 256MB */	 (15 - 4),
+	/* 512MB */	 (15 - 4),
+	/* 256MB */	 (16 - 4),
+	/* 512MB */	 (16 - 4),
+	/* 1GB */	 (16 - 4),
+	/* 1GB */	 (17 - 4),
+	/* 2GB */	 (17 - 4),
 	};
 
 	/* cs_base_high is not changed */
@@ -2214,7 +2214,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 	if (dimm_mask < 0)
 		goto hw_spd_err;
 	result = spd_set_memclk(ctrl, dimm_mask);
-	param     = result.param;
+	param	   = result.param;
 	dimm_mask = result.dimm_mask;
 	if (dimm_mask < 0)
 		goto hw_spd_err;

@@ -21,7 +21,7 @@
 #include <device/pci_def.h>
 
 static void bootblock_southbridge_init(void) {
-        uint32_t tmp;
+	uint32_t tmp;
 	tmp = pci_read_config32(PCI_DEV(0,7,0), 0x40);
 	/* decode all flash ranges */
 	pci_write_config32(PCI_DEV(0,7,0), 0x40, tmp | 0x07ff0000);

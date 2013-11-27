@@ -25,7 +25,7 @@ chip northbridge/amd/lx
 			register "com2_address" = "0x2F8"
 			register "com2_irq" = "3"
 			register "unwanted_vpci[0]" = "0"	# End of list has a zero
-        			device pci f.0 on	# ISA Bridge
+				device pci f.0 on	# ISA Bridge
 				chip superio/winbond/w83627hf
 					device pnp 2e.0 off #  Floppy
 						io 0x60 = 0x3f0
@@ -69,8 +69,8 @@ chip northbridge/amd/lx
 			end
 			device pci f.1 on end	# Flash controller
 			device pci f.2 on end	# IDE controller
-        			device pci f.3 on end 	# Audio
-        			device pci f.4 on end	# OHCI
+				device pci f.3 on end 	# Audio
+				device pci f.4 on end	# OHCI
 			device pci f.5 on end	# EHCI
       		end
 	end

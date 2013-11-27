@@ -80,10 +80,10 @@ static void c7_cpu_setup(device_t dev)
 	/* Miscellaneous Control */
 	/*
 	 * DRAM Operating Frequency (bits 7:5)
-	 *      000 : 100MHz    001 : 133MHz
-	 *      010 : 166MHz    011 : 200MHz
-	 *      100 : 266MHz    101 : 333MHz
-	 *      110/111 : Reserved
+	 *	 000 : 100MHz	 001 : 133MHz
+	 *	 010 : 166MHz	 011 : 200MHz
+	 *	 100 : 266MHz	 101 : 333MHz
+	 *	 110/111 : Reserved
 	 */
 	/* CPU Miscellaneous Control */
 	pci_write_config8(dev, 0x59, 0x44);
@@ -461,6 +461,6 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	reg = pci_read_config8(ctrl->d0f3, 0x41);
 	if (reg != 0)
 		sdram_enable(ctrl->d0f3,
-			     pci_read_config8(ctrl->d0f3, 0x40) << 26);
+				pci_read_config8(ctrl->d0f3, 0x40) << 26);
 	sdram_set_post(ctrl);
 }

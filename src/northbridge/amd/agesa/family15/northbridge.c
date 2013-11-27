@@ -89,7 +89,7 @@ static void set_io_addr_reg(device_t dev, u32 nodeid, u32 linkn, u32 reg,
 	tempreg = (nodeid&0xf) | ((nodeid & 0x30)<<(8-4)) | (linkn<<4) | ((io_max&0xf0)<<(12-4)); //limit
 	for (i=0; i<node_nums; i++)
 		pci_write_config32(__f1_dev[i], reg+4, tempreg);
-	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));	      //base :ISA and VGA ?
+	tempreg = 3 /*| ( 3<<4)*/ | ((io_min&0xf0)<<(12-4));		    //base :ISA and VGA ?
 #if 0
 	// FIXME: can we use VGA reg instead?
 	if (dev->link[link].bridge_ctrl & PCI_BRIDGE_CTL_VGA) {
@@ -656,10 +656,10 @@ static void setup_uma_memory(void)
 	/* refer to UMA Size Consideration in Family15h BKDG. */
 	/* Please reference MemNGetUmaSizeOR () */
 	/*
-	 *     Total system memory   UMASize
-	 *     >= 2G                 512M
-	 *     >=1G                  256M
-	 *     <1G                    64M
+	 *	Total system memory   UMASize
+	 *	>= 2G		      512M
+	 *	>=1G		      256M
+	 *	<1G		       64M
 	 */
 	sys_mem = topmem + (16 << ONE_MB_SHIFT);   // Ignore 16MB allocated for C6 when finding UMA size
 	if ((bsp_topmem2()>>32) || (sys_mem >= 2048 << ONE_MB_SHIFT)) {
@@ -1057,7 +1057,7 @@ static u32 cpu_bus_scan(device_t dev, u32 max)
 			 *
 			 * This is needed because many IO-APIC devices only have 4 bits
 			 * for their APIC id and therefore must reside at 0..15
-                         */
+			 */
 #ifndef CFG_PLAT_NUM_IO_APICS /* defined in mainboard buildOpts.c */
 #define CFG_PLAT_NUM_IO_APICS 3
 #endif

@@ -11,7 +11,7 @@ fit_pointer:
 .global fit_table
 .global fit_table_end
 fit_table:
-/* Address for type 0 is '_FIT_   ' */
+/* Address for type 0 is '_FIT_	  ' */
 .long 0x5449465f
 .long 0x2020205f
 /*

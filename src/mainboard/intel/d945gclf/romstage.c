@@ -211,7 +211,7 @@ void main(unsigned long bist)
 	 */
 	i945_early_initialization();
 
-        /* Read PM1_CNT */
+	/* Read PM1_CNT */
 	reg32 = inl(DEFAULT_PMBASE + 0x04);
 	printk(BIOS_DEBUG, "PM1_CNT: %08x\n", reg32);
 	if (((reg32 >> 10) & 7) == 5) {

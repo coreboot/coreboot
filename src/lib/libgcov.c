@@ -83,7 +83,7 @@ void __gcov_flush (void) {}
 
 #ifdef L_gcov_merge_add
 void __gcov_merge_add (gcov_type *counters  __attribute__ ((unused)),
-		       unsigned n_counters __attribute__ ((unused))) {}
+			 unsigned n_counters __attribute__ ((unused))) {}
 #endif
 
 #ifdef L_gcov_merge_single
@@ -153,22 +153,22 @@ create_file_directory (char *filename)
   for (; *s != '\0'; s++)
     if (IS_DIR_SEPARATOR(*s))
       {
-        char sep = *s;
+	char sep = *s;
 	*s  = '\0';
 
-        /* Try to make directory if it doesn't already exist.  */
-        if (access (filename, F_OK) == -1
+	/* Try to make directory if it doesn't already exist.  */
+	if (access (filename, F_OK) == -1
 #ifdef TARGET_POSIX_IO
-            && mkdir (filename, 0755) == -1
+	    && mkdir (filename, 0755) == -1
 #else
-            && mkdir (filename) == -1
+	    && mkdir (filename) == -1
 #endif
-            /* The directory might have been made by another process.  */
+	    /* The directory might have been made by another process.  */
 	    && errno != EEXIST)
 	  {
-            fprintf (stderr, "profiling:%s:Cannot create directory\n",
+	    fprintf (stderr, "profiling:%s:Cannot create directory\n",
 		     filename);
-            *s = sep;
+	    *s = sep;
 	    return -1;
 	  };
 
@@ -295,8 +295,8 @@ gcov_version (struct gcov_info *ptr, gcov_unsigned_t version,
       GCOV_UNSIGNED2STRING (e, GCOV_VERSION);
 
       fprintf (stderr,
-	       "profiling:%s:Version mismatch - expected %.4s got %.4s\n",
-	       filename? filename : ptr->filename, e, v);
+		"profiling:%s:Version mismatch - expected %.4s got %.4s\n",
+		filename? filename : ptr->filename, e, v);
       return 0;
     }
   return 1;
@@ -428,48 +428,48 @@ gcov_exit (void)
 
       /* Avoid to add multiple drive letters into combined path.  */
       if (prefix_length != 0 && HAS_DRIVE_SPEC(fname))
-        fname += 2;
+	fname += 2;
 
       /* Build relocated filename, stripping off leading
-         directories from the initial filename if requested. */
+	 directories from the initial filename if requested. */
       if (gcov_prefix_strip > 0)
-        {
-          int level = 0;
-          s = fname;
-          if (IS_DIR_SEPARATOR(*s))
-            ++s;
+	{
+	  int level = 0;
+	  s = fname;
+	  if (IS_DIR_SEPARATOR(*s))
+	    ++s;
 
-          /* Skip selected directory levels. */
+	  /* Skip selected directory levels. */
 	  for (; (*s != '\0') && (level < gcov_prefix_strip); s++)
 	    if (IS_DIR_SEPARATOR(*s))
 	      {
 		fname = s;
 		level++;
 	      }
-        }
+	}
 
       /* Update complete filename with stripped original. */
       if (prefix_length != 0 && !IS_DIR_SEPARATOR (*fname))
-        {
-          /* If prefix is given, add directory separator.  */
+	{
+	  /* If prefix is given, add directory separator.  */
 	  strcpy (gi_filename_up, "/");
 	  strcpy (gi_filename_up + 1, fname);
 	}
       else
-        strcpy (gi_filename_up, fname);
+	strcpy (gi_filename_up, fname);
 
       if (!gcov_open (gi_filename))
 	{
 	  /* Open failed likely due to missed directory.
 	     Create directory and retry to open file. */
-          if (create_file_directory (gi_filename))
+	  if (create_file_directory (gi_filename))
 	    {
 	      fprintf (stderr, "profiling:%s:Skip\n", gi_filename);
 	      continue;
 	    }
 	  if (!gcov_open (gi_filename))
 	    {
-              fprintf (stderr, "profiling:%s:Cannot open\n", gi_filename);
+	      fprintf (stderr, "profiling:%s:Cannot open\n", gi_filename);
 	      continue;
 	    }
 	}
@@ -481,7 +481,7 @@ gcov_exit (void)
 	  if (tag != GCOV_DATA_MAGIC)
 	    {
 	      fprintf (stderr, "profiling:%s:Not a gcov data file\n",
-		       gi_filename);
+			 gi_filename);
 	      goto read_fatal;
 	    }
 	  length = gcov_read_unsigned ();
@@ -524,7 +524,7 @@ gcov_exit (void)
 
 	  /* Merge execution counts for each function.  */
 	  for (f_ix = 0; (unsigned)f_ix != gi_ptr->n_functions;
-	       f_ix++, tag = gcov_read_unsigned ())
+		f_ix++, tag = gcov_read_unsigned ())
 	    {
 	      gfi_ptr = gi_ptr->functions[f_ix];
 
@@ -548,7 +548,7 @@ gcov_exit (void)
 		     this point, so cannot simply keep the data in the
 		     file.  */
 		  fn_tail = buffer_fn_data (gi_filename,
-					    gi_ptr, fn_tail, f_ix);
+						 gi_ptr, fn_tail, f_ix);
 		  if (!fn_tail)
 		    goto read_mismatch;
 		  continue;
@@ -577,7 +577,7 @@ gcov_exit (void)
 		  tag = gcov_read_unsigned ();
 		  length = gcov_read_unsigned ();
 		  if (tag != GCOV_TAG_FOR_COUNTER (t_ix)
-		      || length != GCOV_TAG_COUNTER_LENGTH (ci_ptr->num))
+			|| length != GCOV_TAG_COUNTER_LENGTH (ci_ptr->num))
 		    goto read_mismatch;
 		  (*merge) (ci_ptr->values, ci_ptr->num);
 		  ci_ptr++;
@@ -590,8 +590,8 @@ gcov_exit (void)
 	    {
 	    read_mismatch:;
 	      fprintf (stderr, "profiling:%s:Merge mismatch for %s %u\n",
-		       gi_filename, f_ix >= 0 ? "function" : "summary",
-		       f_ix < 0 ? -1 - f_ix : f_ix);
+			 gi_filename, f_ix >= 0 ? "function" : "summary",
+			 f_ix < 0 ? -1 - f_ix : f_ix);
 	      goto read_fatal;
 	    }
 	}
@@ -599,7 +599,7 @@ gcov_exit (void)
 
     read_error:;
       fprintf (stderr, "profiling:%s:%s merging\n", gi_filename,
-	       error < 0 ? "Overflow": "Error");
+		error < 0 ? "Overflow": "Error");
 
       goto read_fatal;
 
@@ -637,8 +637,8 @@ gcov_exit (void)
 		   && memcmp (cs_all, cs_prg, sizeof (*cs_all)))
 	    {
 	      fprintf (stderr, "profiling:%s:Invocation mismatch - some data files may have been removed%s\n",
-		       gi_filename, GCOV_LOCKED
-		       ? "" : " or concurrently updated without locking support");
+			 gi_filename, GCOV_LOCKED
+			 ? "" : " or concurrently updated without locking support");
 	      all_prg.checksum = ~0u;
 	    }
 	}
@@ -698,7 +698,7 @@ gcov_exit (void)
 
 	      n_counts = ci_ptr->num;
 	      gcov_write_tag_length (GCOV_TAG_FOR_COUNTER (t_ix),
-				     GCOV_TAG_COUNTER_LENGTH (n_counts));
+					 GCOV_TAG_COUNTER_LENGTH (n_counts));
 	      gcov_type *c_ptr = ci_ptr->values;
 	      while (n_counts--)
 		gcov_write_counter (*c_ptr++);
@@ -736,7 +736,7 @@ __gcov_init (struct gcov_info *info)
 
       /* Refresh the longest file name information */
       if (filename_length > gcov_max_filename)
-        gcov_max_filename = filename_length;
+	gcov_max_filename = filename_length;
 
 #ifndef __COREBOOT__
       if (!gcov_list)
@@ -978,7 +978,7 @@ __gcov_one_value_profiler (gcov_type *counters, gcov_type value)
 /* Tries to determine the most common value among its inputs. */
 void
 __gcov_indirect_call_profiler (gcov_type* counter, gcov_type value,
-			       void* cur_func, void* callee_func)
+				  void* cur_func, void* callee_func)
 {
   /* If the C++ virtual tables contain function descriptors then one
      function may have multiple descriptors and we need to dereference

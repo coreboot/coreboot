@@ -28,15 +28,15 @@ void sch_port_access_write_ram_cmd(int cmd, int port, int reg, int data);
 
 /* Southbridge IO BARs */
 /* TODO Make sure these don't get changed by stage2 */
-#define SCH_ENABLE_BIT                        (1<<31)
-#define DEFAULT_ACPIPBLKBASE	              0x510
+#define SCH_ENABLE_BIT			      (1<<31)
+#define DEFAULT_ACPIPBLKBASE			   0x510
 
-#define DEFAULT_SMBUSBASE	              0x540
-#define DEFAULT_GPIOBASE		      0x588
-#define DEFAULT_GPE0BASE	              0x5C0
-#define DEFAULT_SMMCNTRLBASE	              0x3F703F76
+#define DEFAULT_SMBUSBASE			0x540
+#define DEFAULT_GPIOBASE			0x588
+#define DEFAULT_GPE0BASE		       0x5C0
+#define DEFAULT_SMMCNTRLBASE			   0x3F703F76
 
-#define DEFAULT_RCBABASE                      0xfed1c000
+#define DEFAULT_RCBABASE		      0xfed1c000
 
 #define DEFAULT_PCIEXBAR		CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
 

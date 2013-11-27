@@ -126,7 +126,7 @@ chrome_init(struct device *dev)
 	fb_size = k8m890_host_fb_size_get();
 	if (!fb_size) {
 		printk(BIOS_WARNING, "Chrome: Device has not been initialised in the"
-			       " ramcontroller!\n");
+				  " ramcontroller!\n");
 		return;
 	}
 
@@ -160,21 +160,21 @@ chrome_init(struct device *dev)
 static struct device_operations
 chrome_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = chrome_init,
-	.scan_bus         = 0,
-	.enable           = 0,
+	.init		   = chrome_init,
+	.scan_bus	   = 0,
+	.enable	   = 0,
 };
 
 static const struct pci_driver unichrome_driver_800 __pci_driver = {
-	.ops    = &chrome_ops,
+	.ops	 = &chrome_ops,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_K8M800_CHROME,
 };
 
 static const struct pci_driver unichrome_driver_890 __pci_driver = {
-	.ops    = &chrome_ops,
+	.ops	 = &chrome_ops,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_K8M890_CHROME,
 };

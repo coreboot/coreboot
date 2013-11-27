@@ -30,7 +30,7 @@
  * The SB700 power-on default is to map 512K ROM space.
  *
  * Details: AMD SB700/710/750 BIOS Developer's Guide (BDG), Rev. 1.00,
- *          PN 43366_sb7xx_bdg_pub_1.00, June 2009, section 3.1, page 14.
+ *	    PN 43366_sb7xx_bdg_pub_1.00, June 2009, section 3.1, page 14.
  */
 static void sb700_enable_rom(void)
 {

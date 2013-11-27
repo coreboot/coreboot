@@ -21,30 +21,30 @@
 
 /*
  * +--------------------------------+
- * | SMM Handler C Code             |
+ * | SMM Handler C Code		    |
  * +--------------------------------+ 0x14000
- * | SMM Handler Heap               |
+ * | SMM Handler Heap		    |
  * +--------------------------------+ 0x10000
- * |  Save State Map Node 0         |
- * |  Save State Map Node 1         |
- * |  Save State Map Node 2         |
- * |  Save State Map Node 3         |
- * |  ...                           |
+ * |  Save State Map Node 0	    |
+ * |  Save State Map Node 1	    |
+ * |  Save State Map Node 2	    |
+ * |  Save State Map Node 3	    |
+ * |  ...			    |
  * +--------------------------------+ 0xf000
- * |                                |
- * |                                |
- * | EARLY DATA (lock, vectors)     |
+ * |				    |
+ * |				    |
+ * | EARLY DATA (lock, vectors)	    |
  * +--------------------------------+ 0x8400
- * | SMM Entry Node 0 (+ stack)     |
+ * | SMM Entry Node 0 (+ stack)	    |
  * +--------------------------------+ 0x8000
- * | SMM Entry Node 1 (+ stack)     |
- * | SMM Entry Node 2 (+ stack)     |
- * | SMM Entry Node 3 (+ stack)     |
- * | ...                            |
+ * | SMM Entry Node 1 (+ stack)	    |
+ * | SMM Entry Node 2 (+ stack)	    |
+ * | SMM Entry Node 3 (+ stack)	    |
+ * | ...			    |
  * +--------------------------------+ 0x7400
- * |                                |
- * | SMM Handler Assembly Stub      |
- * |                                |
+ * |				    |
+ * | SMM Handler Assembly Stub	    |
+ * |				    |
  * +--------------------------------+ TSEG
  *
  */
@@ -132,14 +132,14 @@ smm_check_gdt_vector:
 	addr32	movl %ebx, (%eax)
 
 smm_load_gdt:
-	movl    $(smm_gdt_vector), %ebx
-	addl	%edx, %ebx        /* TSEG base in %edx */
+	movl	 $(smm_gdt_vector), %ebx
+	addl	%edx, %ebx	/* TSEG base in %edx */
 	data32  lgdt (%ebx)
 
-	movl    %cr0, %eax
-	andl    $0x1FFAFFD1, %eax /* CD,NW,PG,AM,WP,NE,TS,EM,MP = 0 */
-	orl     $0x1, %eax        /* PE = 1 */
-	movl    %eax, %cr0
+	movl	 %cr0, %eax
+	andl	 $0x1FFAFFD1, %eax /* CD,NW,PG,AM,WP,NE,TS,EM,MP = 0 */
+	orl	 $0x1, %eax	   /* PE = 1 */
+	movl	 %eax, %cr0
 
 	/* Enable protected mode */
 	movl	$(smm_prot_vector), %eax
@@ -149,12 +149,12 @@ smm_load_gdt:
 .code32
 smm_prot_start:
 	/* Use flat data segment */
-	movw    $0x10, %ax
-	movw    %ax, %ds
-	movw    %ax, %es
-	movw    %ax, %ss
-	movw    %ax, %fs
-	movw    %ax, %gs
+	movw	 $0x10, %ax
+	movw	 %ax, %ds
+	movw	 %ax, %es
+	movw	 %ax, %ss
+	movw	 %ax, %fs
+	movw	 %ax, %gs
 
 	/* Get this CPU's LAPIC ID */
 	movl	$LAPIC_ID, %esi

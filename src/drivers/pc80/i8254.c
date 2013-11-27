@@ -38,18 +38,18 @@ void setup_i8254(void)
 #if CONFIG_UDELAY_TIMER2
 static void load_timer2(unsigned int ticks)
 {
-        /* Set up the timer gate, turn off the speaker */
-        outb((inb(PPC_PORTB) & ~PPCB_SPKR) | PPCB_T2GATE, PPC_PORTB);
-        outb(TIMER2_SEL|WORD_ACCESS|MODE0|BINARY_COUNT, TIMER_MODE_PORT);
-        outb(ticks & 0xFF, TIMER2_PORT);
-        outb(ticks >> 8, TIMER2_PORT);
+	/* Set up the timer gate, turn off the speaker */
+	outb((inb(PPC_PORTB) & ~PPCB_SPKR) | PPCB_T2GATE, PPC_PORTB);
+	outb(TIMER2_SEL|WORD_ACCESS|MODE0|BINARY_COUNT, TIMER_MODE_PORT);
+	outb(ticks & 0xFF, TIMER2_PORT);
+	outb(ticks >> 8, TIMER2_PORT);
 }
 
 
 void udelay(int usecs)
 {
-        load_timer2((usecs*TICKS_PER_MS)/1000);
-        while ((inb(PPC_PORTB) & PPCB_T2OUT) == 0)
-                ;
+	load_timer2((usecs*TICKS_PER_MS)/1000);
+	while ((inb(PPC_PORTB) & PPCB_T2OUT) == 0)
+		;
 }
 #endif

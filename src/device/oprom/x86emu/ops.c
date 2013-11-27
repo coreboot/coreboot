@@ -2,9 +2,9 @@
 *
 *						Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1991-2004 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*	     	Copyright (C) 1991-2004 SciTech Software, Inc.
+* 					   Copyright (C) David Mosberger-Tang
+* 						  Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -30,10 +30,10 @@
 *
 * Language:		ANSI C
 * Environment:	Any
-* Developer:    Kendall Bennett
+* Developer:	Kendall Bennett
 *
 * Description:  This file includes subroutines to implement the decoding
-*               and emulation of all the x86 processor instructions.
+*		and emulation of all the x86 processor instructions.
 *
 * There are approximately 250 subroutines in here, which correspond
 * to the 256 byte-"opcodes" found on the 8086.  The table which
@@ -84,38 +84,38 @@ static const char *x86emu_GenOpName[8] = {
 /* used by several opcodes  */
 static u8 (*genop_byte_operation[])(u8 d, u8 s) =
 {
-    add_byte,           /* 00 */
-    or_byte,            /* 01 */
-    adc_byte,           /* 02 */
-    sbb_byte,           /* 03 */
-    and_byte,           /* 04 */
-    sub_byte,           /* 05 */
-    xor_byte,           /* 06 */
-    cmp_byte,           /* 07 */
+    add_byte,		/* 00 */
+    or_byte,		/* 01 */
+    adc_byte,		/* 02 */
+    sbb_byte,		/* 03 */
+    and_byte,		/* 04 */
+    sub_byte,		/* 05 */
+    xor_byte,		/* 06 */
+    cmp_byte,		/* 07 */
 };
 
 static u16 (*genop_word_operation[])(u16 d, u16 s) =
 {
-    add_word,           /*00 */
-    or_word,            /*01 */
-    adc_word,           /*02 */
-    sbb_word,           /*03 */
-    and_word,           /*04 */
-    sub_word,           /*05 */
-    xor_word,           /*06 */
-    cmp_word,           /*07 */
+    add_word,		/*00 */
+    or_word,		/*01 */
+    adc_word,		/*02 */
+    sbb_word,		/*03 */
+    and_word,		/*04 */
+    sub_word,		/*05 */
+    xor_word,		/*06 */
+    cmp_word,		/*07 */
 };
 
 static u32 (*genop_long_operation[])(u32 d, u32 s) =
 {
-    add_long,           /*00 */
-    or_long,            /*01 */
-    adc_long,           /*02 */
-    sbb_long,           /*03 */
-    and_long,           /*04 */
-    sub_long,           /*05 */
-    xor_long,           /*06 */
-    cmp_long,           /*07 */
+    add_long,		/*00 */
+    or_long,		/*01 */
+    adc_long,		/*02 */
+    sbb_long,		/*03 */
+    and_long,		/*04 */
+    sub_long,		/*05 */
+    xor_long,		/*06 */
+    cmp_long,		/*07 */
 };
 
 /* used by opcodes 80, c0, d0, and d2. */
@@ -127,7 +127,7 @@ static u8(*opcD0_byte_operation[])(u8 d, u8 s) =
     rcr_byte,
     shl_byte,
     shr_byte,
-    shl_byte,           /* sal_byte === shl_byte  by definition */
+    shl_byte,		/* sal_byte === shl_byte  by definition */
     sar_byte,
 };
 
@@ -140,7 +140,7 @@ static u16(*opcD1_word_operation[])(u16 s, u8 d) =
     rcr_word,
     shl_word,
     shr_word,
-    shl_word,           /* sal_byte === shl_byte  by definition */
+    shl_word,		/* sal_byte === shl_byte  by definition */
     sar_word,
 };
 
@@ -153,7 +153,7 @@ static u32 (*opcD1_long_operation[])(u32 s, u8 d) =
     rcr_long,
     shl_long,
     shr_long,
-    shl_long,           /* sal_byte === shl_byte  by definition */
+    shl_long,		/* sal_byte === shl_byte  by definition */
     sar_long,
 };
 
@@ -176,21 +176,21 @@ static void x86emuOp_illegal_op(
 {
     START_OF_INSTR();
     if (M.x86.R_SP != 0) {
-        DECODE_PRINTF("ILLEGAL X86 OPCODE\n");
-        TRACE_REGS();
-        DB( printf("%04x:%04x: %02X ILLEGAL X86 OPCODE!\n",
-            M.x86.R_CS, M.x86.R_IP-1,op1));
-        HALT_SYS();
-        }
+	DECODE_PRINTF("ILLEGAL X86 OPCODE\n");
+	TRACE_REGS();
+	DB( printf("%04x:%04x: %02X ILLEGAL X86 OPCODE!\n",
+	    M.x86.R_CS, M.x86.R_IP-1,op1));
+	HALT_SYS();
+	}
     else {
-        /* If we get here, it means the stack pointer is back to zero
-         * so we are just returning from an emulator service call
-         * so therte is no need to display an error message. We trap
-         * the emulator with an 0xF1 opcode to finish the service
-         * call.
-         */
-        X86EMU_halt_sys();
-        }
+	/* If we get here, it means the stack pointer is back to zero
+	 * so we are just returning from an emulator service call
+	 * so therte is no need to display an error message. We trap
+	 * the emulator with an 0xF1 opcode to finish the service
+	 * call.
+	 */
+	X86EMU_halt_sys();
+	}
     END_OF_INSTR();
 }
 
@@ -212,25 +212,25 @@ static void x86emuOp_genop_byte_RM_R(u8 op1)
     DECODE_PRINTF("\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if(mod<3)
-        { destoffset = decode_rmXX_address(mod,rl);
-        DECODE_PRINTF(",");
-        destval = fetch_data_byte(destoffset);
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        destval = genop_byte_operation[op1](destval, *srcreg);
-        if (op1 != 7)
-            store_data_byte(destoffset, destval);
-        }
+	{ destoffset = decode_rmXX_address(mod,rl);
+	DECODE_PRINTF(",");
+	destval = fetch_data_byte(destoffset);
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	destval = genop_byte_operation[op1](destval, *srcreg);
+	if (op1 != 7)
+	    store_data_byte(destoffset, destval);
+	}
     else
-        {                       /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *destreg = genop_byte_operation[op1](*destreg, *srcreg);
-        }
+	{			/* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*destreg = genop_byte_operation[op1](*destreg, *srcreg);
+	}
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
@@ -252,52 +252,52 @@ static void x86emuOp_genop_word_RM_R(u8 op1)
     FETCH_DECODE_MODRM(mod, rh, rl);
 
     if(mod<3) {
-        destoffset = decode_rmXX_address(mod,rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval;
-            u32 *srcreg;
+	destoffset = decode_rmXX_address(mod,rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval;
+	    u32 *srcreg;
 
-            DECODE_PRINTF(",");
-            destval = fetch_data_long(destoffset);
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            destval = genop_long_operation[op1](destval, *srcreg);
-            if (op1 != 7)
-                store_data_long(destoffset, destval);
-        } else {
-            u16 destval;
-            u16 *srcreg;
+	    DECODE_PRINTF(",");
+	    destval = fetch_data_long(destoffset);
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    destval = genop_long_operation[op1](destval, *srcreg);
+	    if (op1 != 7)
+		store_data_long(destoffset, destval);
+	} else {
+	    u16 destval;
+	    u16 *srcreg;
 
-            DECODE_PRINTF(",");
-            destval = fetch_data_word(destoffset);
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            destval = genop_word_operation[op1](destval, *srcreg);
-            if (op1 != 7)
-                store_data_word(destoffset, destval);
-        }
-    } else {                    /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg, *srcreg;
+	    DECODE_PRINTF(",");
+	    destval = fetch_data_word(destoffset);
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    destval = genop_word_operation[op1](destval, *srcreg);
+	    if (op1 != 7)
+		store_data_word(destoffset, destval);
+	}
+    } else {			/* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg, *srcreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = genop_long_operation[op1](*destreg, *srcreg);
-        } else {
-            u16 *destreg, *srcreg;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = genop_long_operation[op1](*destreg, *srcreg);
+	} else {
+	    u16 *destreg, *srcreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = genop_word_operation[op1](*destreg, *srcreg);
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = genop_word_operation[op1](*destreg, *srcreg);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -321,15 +321,15 @@ static void x86emuOp_genop_byte_R_RM(u8 op1)
     DECODE_PRINTF("\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF(",");
-        srcoffset = decode_rmXX_address(mod,rl);
-        srcval = fetch_data_byte(srcoffset);
-    } else {     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_BYTE_REGISTER(rl);
-        srcval = *srcreg;
+	destreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF(",");
+	srcoffset = decode_rmXX_address(mod,rl);
+	srcval = fetch_data_byte(srcoffset);
+    } else {	 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_BYTE_REGISTER(rl);
+	srcval = *srcreg;
     }
     DECODE_PRINTF("\n");
     TRACE_AND_STEP();
@@ -357,40 +357,40 @@ static void x86emuOp_genop_word_R_RM(u8 op1)
     DECODE_PRINTF("\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        srcoffset = decode_rmXX_address(mod,rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            destreg32 = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcval = fetch_data_long(srcoffset);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg32 = genop_long_operation[op1](*destreg32, srcval);
-        } else {
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcval = fetch_data_word(srcoffset);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = genop_word_operation[op1](*destreg, srcval);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *srcreg;
-            destreg32 = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg32 = genop_long_operation[op1](*destreg32, *srcreg);
-        } else {
-            u16 *srcreg;
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = genop_word_operation[op1](*destreg, *srcreg);
-        }
+	srcoffset = decode_rmXX_address(mod,rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    destreg32 = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcval = fetch_data_long(srcoffset);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg32 = genop_long_operation[op1](*destreg32, srcval);
+	} else {
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcval = fetch_data_word(srcoffset);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = genop_word_operation[op1](*destreg, srcval);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *srcreg;
+	    destreg32 = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg32 = genop_long_operation[op1](*destreg32, *srcreg);
+	} else {
+	    u16 *srcreg;
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = genop_word_operation[op1](*destreg, *srcreg);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -429,20 +429,20 @@ static void x86emuOp_genop_word_AX_IMM(u8 op1)
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF(x86emu_GenOpName[op1]);
-        DECODE_PRINTF("\tEAX,");
-        srcval = fetch_long_imm();
+	DECODE_PRINTF(x86emu_GenOpName[op1]);
+	DECODE_PRINTF("\tEAX,");
+	srcval = fetch_long_imm();
     } else {
-        DECODE_PRINTF(x86emu_GenOpName[op1]);
-        DECODE_PRINTF("\tAX,");
-        srcval = fetch_word_imm();
+	DECODE_PRINTF(x86emu_GenOpName[op1]);
+	DECODE_PRINTF("\tAX,");
+	srcval = fetch_word_imm();
     }
     DECODE_PRINTF2("%x\n", srcval);
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        M.x86.R_EAX = genop_long_operation[op1](M.x86.R_EAX, srcval);
+	M.x86.R_EAX = genop_long_operation[op1](M.x86.R_EAX, srcval);
     } else {
-        M.x86.R_AX = genop_word_operation[op1](M.x86.R_AX, (u16)srcval);
+	M.x86.R_AX = genop_word_operation[op1](M.x86.R_AX, (u16)srcval);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -682,17 +682,17 @@ static void x86emuOp_inc_register(u8 op1)
     op1 &= 0x7;
     DECODE_PRINTF("INC\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        u32 *reg;
-        reg = DECODE_RM_LONG_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *reg = inc_long(*reg);
+	u32 *reg;
+	reg = DECODE_RM_LONG_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*reg = inc_long(*reg);
     } else {
-        u16 *reg;
-        reg = DECODE_RM_WORD_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *reg = inc_word(*reg);
+	u16 *reg;
+	reg = DECODE_RM_WORD_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*reg = inc_word(*reg);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -708,17 +708,17 @@ static void x86emuOp_dec_register(u8 op1)
     op1 &= 0x7;
     DECODE_PRINTF("DEC\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        u32 *reg;
-        reg = DECODE_RM_LONG_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *reg = dec_long(*reg);
+	u32 *reg;
+	reg = DECODE_RM_LONG_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*reg = dec_long(*reg);
     } else {
-        u16 *reg;
-        reg = DECODE_RM_WORD_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *reg = dec_word(*reg);
+	u16 *reg;
+	reg = DECODE_RM_WORD_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*reg = dec_word(*reg);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -734,17 +734,17 @@ static void x86emuOp_push_register(u8 op1)
     op1 &= 0x7;
     DECODE_PRINTF("PUSH\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        u32 *reg;
-        reg = DECODE_RM_LONG_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        push_long(*reg);
+	u32 *reg;
+	reg = DECODE_RM_LONG_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	push_long(*reg);
     } else {
-        u16 *reg;
-        reg = DECODE_RM_WORD_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        push_word(*reg);
+	u16 *reg;
+	reg = DECODE_RM_WORD_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	push_word(*reg);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -760,17 +760,17 @@ static void x86emuOp_pop_register(u8 op1)
     op1 &= 0x7;
     DECODE_PRINTF("POP\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        u32 *reg;
-        reg = DECODE_RM_LONG_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *reg = pop_long();
+	u32 *reg;
+	reg = DECODE_RM_LONG_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*reg = pop_long();
     } else {
-        u16 *reg;
-        reg = DECODE_RM_WORD_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *reg = pop_word();
+	u16 *reg;
+	reg = DECODE_RM_WORD_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*reg = pop_word();
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -784,33 +784,33 @@ static void x86emuOp_push_all(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("PUSHAD\n");
+	DECODE_PRINTF("PUSHAD\n");
     } else {
-        DECODE_PRINTF("PUSHA\n");
+	DECODE_PRINTF("PUSHA\n");
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        u32 old_sp = M.x86.R_ESP;
+	u32 old_sp = M.x86.R_ESP;
 
-        push_long(M.x86.R_EAX);
-        push_long(M.x86.R_ECX);
-        push_long(M.x86.R_EDX);
-        push_long(M.x86.R_EBX);
-        push_long(old_sp);
-        push_long(M.x86.R_EBP);
-        push_long(M.x86.R_ESI);
-        push_long(M.x86.R_EDI);
+	push_long(M.x86.R_EAX);
+	push_long(M.x86.R_ECX);
+	push_long(M.x86.R_EDX);
+	push_long(M.x86.R_EBX);
+	push_long(old_sp);
+	push_long(M.x86.R_EBP);
+	push_long(M.x86.R_ESI);
+	push_long(M.x86.R_EDI);
     } else {
-        u16 old_sp = M.x86.R_SP;
+	u16 old_sp = M.x86.R_SP;
 
-        push_word(M.x86.R_AX);
-        push_word(M.x86.R_CX);
-        push_word(M.x86.R_DX);
-        push_word(M.x86.R_BX);
-        push_word(old_sp);
-        push_word(M.x86.R_BP);
-        push_word(M.x86.R_SI);
-        push_word(M.x86.R_DI);
+	push_word(M.x86.R_AX);
+	push_word(M.x86.R_CX);
+	push_word(M.x86.R_DX);
+	push_word(M.x86.R_BX);
+	push_word(old_sp);
+	push_word(M.x86.R_BP);
+	push_word(M.x86.R_SI);
+	push_word(M.x86.R_DI);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -824,36 +824,36 @@ static void x86emuOp_pop_all(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("POPAD\n");
+	DECODE_PRINTF("POPAD\n");
     } else {
-        DECODE_PRINTF("POPA\n");
+	DECODE_PRINTF("POPA\n");
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        M.x86.R_EDI = pop_long();
-        M.x86.R_ESI = pop_long();
-        M.x86.R_EBP = pop_long();
-        M.x86.R_ESP += 4;              /* skip ESP */
-        M.x86.R_EBX = pop_long();
-        M.x86.R_EDX = pop_long();
-        M.x86.R_ECX = pop_long();
-        M.x86.R_EAX = pop_long();
+	M.x86.R_EDI = pop_long();
+	M.x86.R_ESI = pop_long();
+	M.x86.R_EBP = pop_long();
+	M.x86.R_ESP += 4;	       /* skip ESP */
+	M.x86.R_EBX = pop_long();
+	M.x86.R_EDX = pop_long();
+	M.x86.R_ECX = pop_long();
+	M.x86.R_EAX = pop_long();
     } else {
-        M.x86.R_DI = pop_word();
-        M.x86.R_SI = pop_word();
-        M.x86.R_BP = pop_word();
-        M.x86.R_SP += 2;               /* skip SP */
-        M.x86.R_BX = pop_word();
-        M.x86.R_DX = pop_word();
-        M.x86.R_CX = pop_word();
-        M.x86.R_AX = pop_word();
+	M.x86.R_DI = pop_word();
+	M.x86.R_SI = pop_word();
+	M.x86.R_BP = pop_word();
+	M.x86.R_SP += 2;	       /* skip SP */
+	M.x86.R_BX = pop_word();
+	M.x86.R_DX = pop_word();
+	M.x86.R_CX = pop_word();
+	M.x86.R_AX = pop_word();
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
 
-/*opcode 0x62   ILLEGAL OP, calls x86emuOp_illegal_op() */
-/*opcode 0x63   ILLEGAL OP, calls x86emuOp_illegal_op() */
+/*opcode 0x62	ILLEGAL OP, calls x86emuOp_illegal_op() */
+/*opcode 0x63	ILLEGAL OP, calls x86emuOp_illegal_op() */
 
 /****************************************************************************
 REMARKS:
@@ -927,16 +927,16 @@ static void x86emuOp_push_word_IMM(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        imm = fetch_long_imm();
+	imm = fetch_long_imm();
     } else {
-        imm = fetch_word_imm();
+	imm = fetch_word_imm();
     }
     DECODE_PRINTF2("PUSH\t%x\n", imm);
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        push_long(imm);
+	push_long(imm);
     } else {
-        push_word((u16)imm);
+	push_word((u16)imm);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -955,95 +955,95 @@ static void x86emuOp_imul_word_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("IMUL\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        srcoffset = decode_rmXX_address(mod, rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg;
-            u32 srcval;
-            u32 res_lo,res_hi;
-            s32 imm;
+	srcoffset = decode_rmXX_address(mod, rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg;
+	    u32 srcval;
+	    u32 res_lo,res_hi;
+	    s32 imm;
 
-            destreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcval = fetch_data_long(srcoffset);
-            imm = fetch_long_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            TRACE_AND_STEP();
-            imul_long_direct(&res_lo,&res_hi,(s32)srcval,(s32)imm);
-            if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
-                (((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u32)res_lo;
-        } else {
-            u16 *destreg;
-            u16 srcval;
-            u32 res;
-            s16 imm;
+	    destreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcval = fetch_data_long(srcoffset);
+	    imm = fetch_long_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    TRACE_AND_STEP();
+	    imul_long_direct(&res_lo,&res_hi,(s32)srcval,(s32)imm);
+	    if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
+		(((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u32)res_lo;
+	} else {
+	    u16 *destreg;
+	    u16 srcval;
+	    u32 res;
+	    s16 imm;
 
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcval = fetch_data_word(srcoffset);
-            imm = fetch_word_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            TRACE_AND_STEP();
-            res = (s16)srcval * (s16)imm;
-            if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
-                (((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u16)res;
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg,*srcreg;
-            u32 res_lo,res_hi;
-            s32 imm;
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcval = fetch_data_word(srcoffset);
+	    imm = fetch_word_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    TRACE_AND_STEP();
+	    res = (s16)srcval * (s16)imm;
+	    if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
+		(((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u16)res;
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg,*srcreg;
+	    u32 res_lo,res_hi;
+	    s32 imm;
 
-            destreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rl);
-            imm = fetch_long_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            TRACE_AND_STEP();
-            imul_long_direct(&res_lo,&res_hi,(s32)*srcreg,(s32)imm);
-            if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
-                (((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u32)res_lo;
-        } else {
-            u16 *destreg,*srcreg;
-            u32 res;
-            s16 imm;
+	    destreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rl);
+	    imm = fetch_long_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    TRACE_AND_STEP();
+	    imul_long_direct(&res_lo,&res_hi,(s32)*srcreg,(s32)imm);
+	    if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
+		(((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u32)res_lo;
+	} else {
+	    u16 *destreg,*srcreg;
+	    u32 res;
+	    s16 imm;
 
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rl);
-            imm = fetch_word_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            res = (s16)*srcreg * (s16)imm;
-            if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
-                (((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u16)res;
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rl);
+	    imm = fetch_word_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    res = (s16)*srcreg * (s16)imm;
+	    if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
+		(((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u16)res;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1062,9 +1062,9 @@ static void x86emuOp_push_byte_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF2("PUSH\t%d\n", imm);
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        push_long(imm);
+	push_long(imm);
     } else {
-        push_word(imm);
+	push_word(imm);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1084,92 +1084,92 @@ static void x86emuOp_imul_byte_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("IMUL\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        srcoffset = decode_rmXX_address(mod, rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg;
-            u32 srcval;
-            u32 res_lo,res_hi;
+	srcoffset = decode_rmXX_address(mod, rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg;
+	    u32 srcval;
+	    u32 res_lo,res_hi;
 
-            destreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcval = fetch_data_long(srcoffset);
-            imm = fetch_byte_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            TRACE_AND_STEP();
-            imul_long_direct(&res_lo,&res_hi,(s32)srcval,(s32)imm);
-            if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
-                (((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u32)res_lo;
-        } else {
-            u16 *destreg;
-            u16 srcval;
-            u32 res;
+	    destreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcval = fetch_data_long(srcoffset);
+	    imm = fetch_byte_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    TRACE_AND_STEP();
+	    imul_long_direct(&res_lo,&res_hi,(s32)srcval,(s32)imm);
+	    if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
+		(((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u32)res_lo;
+	} else {
+	    u16 *destreg;
+	    u16 srcval;
+	    u32 res;
 
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcval = fetch_data_word(srcoffset);
-            imm = fetch_byte_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            TRACE_AND_STEP();
-            res = (s16)srcval * (s16)imm;
-            if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
-                (((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u16)res;
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg,*srcreg;
-            u32 res_lo,res_hi;
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcval = fetch_data_word(srcoffset);
+	    imm = fetch_byte_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    TRACE_AND_STEP();
+	    res = (s16)srcval * (s16)imm;
+	    if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
+		(((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u16)res;
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg,*srcreg;
+	    u32 res_lo,res_hi;
 
-            destreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rl);
-            imm = fetch_byte_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            TRACE_AND_STEP();
-            imul_long_direct(&res_lo,&res_hi,(s32)*srcreg,(s32)imm);
-            if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
-                (((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u32)res_lo;
-        } else {
-            u16 *destreg,*srcreg;
-            u32 res;
+	    destreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rl);
+	    imm = fetch_byte_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    TRACE_AND_STEP();
+	    imul_long_direct(&res_lo,&res_hi,(s32)*srcreg,(s32)imm);
+	    if ((((res_lo & 0x80000000) == 0) && (res_hi == 0x00000000)) ||
+		(((res_lo & 0x80000000) != 0) && (res_hi == 0xFFFFFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u32)res_lo;
+	} else {
+	    u16 *destreg,*srcreg;
+	    u32 res;
 
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rl);
-            imm = fetch_byte_imm();
-            DECODE_PRINTF2(",%d\n", (s32)imm);
-            TRACE_AND_STEP();
-            res = (s16)*srcreg * (s16)imm;
-            if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
-                (((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
-                CLEAR_FLAG(F_CF);
-                CLEAR_FLAG(F_OF);
-            } else {
-                SET_FLAG(F_CF);
-                SET_FLAG(F_OF);
-            }
-            *destreg = (u16)res;
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rl);
+	    imm = fetch_byte_imm();
+	    DECODE_PRINTF2(",%d\n", (s32)imm);
+	    TRACE_AND_STEP();
+	    res = (s16)*srcreg * (s16)imm;
+	    if ((((res & 0x8000) == 0) && ((res >> 16) == 0x0000)) ||
+		(((res & 0x8000) != 0) && ((res >> 16) == 0xFFFF))) {
+		CLEAR_FLAG(F_CF);
+		CLEAR_FLAG(F_OF);
+	    } else {
+		SET_FLAG(F_CF);
+		SET_FLAG(F_OF);
+	    }
+	    *destreg = (u16)res;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1197,11 +1197,11 @@ static void x86emuOp_ins_word(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("INSD\n");
-        ins(4);
+	DECODE_PRINTF("INSD\n");
+	ins(4);
     } else {
-        DECODE_PRINTF("INSW\n");
-        ins(2);
+	DECODE_PRINTF("INSW\n");
+	ins(2);
     }
     TRACE_AND_STEP();
     DECODE_CLEAR_SEGOVR();
@@ -1230,11 +1230,11 @@ static void x86emuOp_outs_word(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("OUTSD\n");
-        outs(4);
+	DECODE_PRINTF("OUTSD\n");
+	outs(4);
     } else {
-        DECODE_PRINTF("OUTSW\n");
-        outs(2);
+	DECODE_PRINTF("OUTSW\n");
+	outs(2);
     }
     TRACE_AND_STEP();
     DECODE_CLEAR_SEGOVR();
@@ -1259,7 +1259,7 @@ static void x86emuOp_jump_near_cond(u8 op1)
     DECODE_PRINTF2("%x\n", target);
     TRACE_AND_STEP();
     if (cond) {
-        M.x86.R_IP = target;
+	M.x86.R_IP = target;
 	JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, M.x86.R_IP, " NEAR COND ");
     }
     DECODE_CLEAR_SEGOVR();
@@ -1287,59 +1287,59 @@ static void x86emuOp_opc80_byte_RM_IMM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
 
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ADD\t");
-            break;
-        case 1:
-            DECODE_PRINTF("OR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("ADC\t");
-            break;
-        case 3:
-            DECODE_PRINTF("SBB\t");
-            break;
-        case 4:
-            DECODE_PRINTF("AND\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SUB\t");
-            break;
-        case 6:
-            DECODE_PRINTF("XOR\t");
-            break;
-        case 7:
-            DECODE_PRINTF("CMP\t");
-            break;
-        }
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ADD\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("OR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("ADC\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("SBB\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("AND\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SUB\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("XOR\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("CMP\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",");
-        destval = fetch_data_byte(destoffset);
-        imm = fetch_byte_imm();
-        DECODE_PRINTF2("%x\n", imm);
-        TRACE_AND_STEP();
-        destval = (*genop_byte_operation[rh]) (destval, imm);
-        if (rh != 7)
-            store_data_byte(destoffset, destval);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF(",");
-        imm = fetch_byte_imm();
-        DECODE_PRINTF2("%x\n", imm);
-        TRACE_AND_STEP();
-        *destreg = (*genop_byte_operation[rh]) (*destreg, imm);
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",");
+	destval = fetch_data_byte(destoffset);
+	imm = fetch_byte_imm();
+	DECODE_PRINTF2("%x\n", imm);
+	TRACE_AND_STEP();
+	destval = (*genop_byte_operation[rh]) (destval, imm);
+	if (rh != 7)
+	    store_data_byte(destoffset, destval);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF(",");
+	imm = fetch_byte_imm();
+	DECODE_PRINTF2("%x\n", imm);
+	TRACE_AND_STEP();
+	*destreg = (*genop_byte_operation[rh]) (*destreg, imm);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1363,37 +1363,37 @@ static void x86emuOp_opc81_word_RM_IMM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
 
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ADD\t");
-            break;
-        case 1:
-            DECODE_PRINTF("OR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("ADC\t");
-            break;
-        case 3:
-            DECODE_PRINTF("SBB\t");
-            break;
-        case 4:
-            DECODE_PRINTF("AND\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SUB\t");
-            break;
-        case 6:
-            DECODE_PRINTF("XOR\t");
-            break;
-        case 7:
-            DECODE_PRINTF("CMP\t");
-            break;
-        }
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ADD\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("OR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("ADC\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("SBB\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("AND\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SUB\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("XOR\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("CMP\t");
+	    break;
+	}
     }
 #endif
     /*
@@ -1401,51 +1401,51 @@ static void x86emuOp_opc81_word_RM_IMM(u8 X86EMU_UNUSED(op1))
      * mode.
      */
     if (mod < 3) {
-        DECODE_PRINTF("DWORD PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval,imm;
+	DECODE_PRINTF("DWORD PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval,imm;
 
-            DECODE_PRINTF(",");
-            destval = fetch_data_long(destoffset);
-            imm = fetch_long_imm();
-            DECODE_PRINTF2("%x\n", imm);
-            TRACE_AND_STEP();
-            destval = (*genop_long_operation[rh]) (destval, imm);
-            if (rh != 7)
-                store_data_long(destoffset, destval);
-        } else {
-            u16 destval,imm;
+	    DECODE_PRINTF(",");
+	    destval = fetch_data_long(destoffset);
+	    imm = fetch_long_imm();
+	    DECODE_PRINTF2("%x\n", imm);
+	    TRACE_AND_STEP();
+	    destval = (*genop_long_operation[rh]) (destval, imm);
+	    if (rh != 7)
+		store_data_long(destoffset, destval);
+	} else {
+	    u16 destval,imm;
 
-            DECODE_PRINTF(",");
-            destval = fetch_data_word(destoffset);
-            imm = fetch_word_imm();
-            DECODE_PRINTF2("%x\n", imm);
-            TRACE_AND_STEP();
-            destval = (*genop_word_operation[rh]) (destval, imm);
-            if (rh != 7)
-                store_data_word(destoffset, destval);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg, imm;
+	    DECODE_PRINTF(",");
+	    destval = fetch_data_word(destoffset);
+	    imm = fetch_word_imm();
+	    DECODE_PRINTF2("%x\n", imm);
+	    TRACE_AND_STEP();
+	    destval = (*genop_word_operation[rh]) (destval, imm);
+	    if (rh != 7)
+		store_data_word(destoffset, destval);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg, imm;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF(",");
-            imm = fetch_long_imm();
-            DECODE_PRINTF2("%x\n", imm);
-            TRACE_AND_STEP();
-            *destreg = (*genop_long_operation[rh]) (*destreg, imm);
-        } else {
-            u16 *destreg, imm;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    imm = fetch_long_imm();
+	    DECODE_PRINTF2("%x\n", imm);
+	    TRACE_AND_STEP();
+	    *destreg = (*genop_long_operation[rh]) (*destreg, imm);
+	} else {
+	    u16 *destreg, imm;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF(",");
-            imm = fetch_word_imm();
-            DECODE_PRINTF2("%x\n", imm);
-            TRACE_AND_STEP();
-            *destreg = (*genop_word_operation[rh]) (*destreg, imm);
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    imm = fetch_word_imm();
+	    DECODE_PRINTF2("%x\n", imm);
+	    TRACE_AND_STEP();
+	    *destreg = (*genop_word_operation[rh]) (*destreg, imm);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1473,56 +1473,56 @@ static void x86emuOp_opc82_byte_RM_IMM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ADD\t");
-            break;
-        case 1:
-            DECODE_PRINTF("OR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("ADC\t");
-            break;
-        case 3:
-            DECODE_PRINTF("SBB\t");
-            break;
-        case 4:
-            DECODE_PRINTF("AND\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SUB\t");
-            break;
-        case 6:
-            DECODE_PRINTF("XOR\t");
-            break;
-        case 7:
-            DECODE_PRINTF("CMP\t");
-            break;
-        }
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ADD\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("OR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("ADC\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("SBB\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("AND\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SUB\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("XOR\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("CMP\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        destval = fetch_data_byte(destoffset);
-        imm = fetch_byte_imm();
-        DECODE_PRINTF2(",%x\n", imm);
-        TRACE_AND_STEP();
-        destval = (*genop_byte_operation[rh]) (destval, imm);
-        if (rh != 7)
-            store_data_byte(destoffset, destval);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        imm = fetch_byte_imm();
-        DECODE_PRINTF2(",%x\n", imm);
-        TRACE_AND_STEP();
-        *destreg = (*genop_byte_operation[rh]) (*destreg, imm);
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	destval = fetch_data_byte(destoffset);
+	imm = fetch_byte_imm();
+	DECODE_PRINTF2(",%x\n", imm);
+	TRACE_AND_STEP();
+	destval = (*genop_byte_operation[rh]) (destval, imm);
+	if (rh != 7)
+	    store_data_byte(destoffset, destval);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	imm = fetch_byte_imm();
+	DECODE_PRINTF2(",%x\n", imm);
+	TRACE_AND_STEP();
+	*destreg = (*genop_byte_operation[rh]) (*destreg, imm);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1547,83 +1547,83 @@ static void x86emuOp_opc83_word_RM_IMM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ADD\t");
-            break;
-        case 1:
-            DECODE_PRINTF("OR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("ADC\t");
-            break;
-        case 3:
-            DECODE_PRINTF("SBB\t");
-            break;
-        case 4:
-            DECODE_PRINTF("AND\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SUB\t");
-            break;
-        case 6:
-            DECODE_PRINTF("XOR\t");
-            break;
-        case 7:
-            DECODE_PRINTF("CMP\t");
-            break;
-        }
+	case 0:
+	    DECODE_PRINTF("ADD\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("OR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("ADC\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("SBB\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("AND\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SUB\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("XOR\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("CMP\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     if (mod < 3) {
-        DECODE_PRINTF("DWORD PTR ");
-        destoffset = decode_rmXX_address(mod,rl);
+	DECODE_PRINTF("DWORD PTR ");
+	destoffset = decode_rmXX_address(mod,rl);
 
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval,imm;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval,imm;
 
-            destval = fetch_data_long(destoffset);
-            imm = (s8) fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            destval = (*genop_long_operation[rh]) (destval, imm);
-            if (rh != 7)
-                store_data_long(destoffset, destval);
-        } else {
-            u16 destval,imm;
+	    destval = fetch_data_long(destoffset);
+	    imm = (s8) fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    destval = (*genop_long_operation[rh]) (destval, imm);
+	    if (rh != 7)
+		store_data_long(destoffset, destval);
+	} else {
+	    u16 destval,imm;
 
-            destval = fetch_data_word(destoffset);
-            imm = (s8) fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            destval = (*genop_word_operation[rh]) (destval, imm);
-            if (rh != 7)
-                store_data_word(destoffset, destval);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg, imm;
+	    destval = fetch_data_word(destoffset);
+	    imm = (s8) fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    destval = (*genop_word_operation[rh]) (destval, imm);
+	    if (rh != 7)
+		store_data_word(destoffset, destval);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg, imm;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            imm = (s8) fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            *destreg = (*genop_long_operation[rh]) (*destreg, imm);
-        } else {
-            u16 *destreg, imm;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    imm = (s8) fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    *destreg = (*genop_long_operation[rh]) (*destreg, imm);
+	} else {
+	    u16 *destreg, imm;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            imm = (s8) fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            *destreg = (*genop_word_operation[rh]) (*destreg, imm);
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    imm = (s8) fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    *destreg = (*genop_word_operation[rh]) (*destreg, imm);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1644,20 +1644,20 @@ static void x86emuOp_test_byte_RM_R(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("TEST\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",");
-        destval = fetch_data_byte(destoffset);
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        test_byte(destval, *srcreg);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        test_byte(*destreg, *srcreg);
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",");
+	destval = fetch_data_byte(destoffset);
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	test_byte(destval, *srcreg);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	test_byte(*destreg, *srcreg);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1676,48 +1676,48 @@ static void x86emuOp_test_word_RM_R(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("TEST\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval;
-            u32 *srcreg;
+	destoffset = decode_rmXX_address(mod, rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval;
+	    u32 *srcreg;
 
-            DECODE_PRINTF(",");
-            destval = fetch_data_long(destoffset);
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            test_long(destval, *srcreg);
-        } else {
-            u16 destval;
-            u16 *srcreg;
+	    DECODE_PRINTF(",");
+	    destval = fetch_data_long(destoffset);
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    test_long(destval, *srcreg);
+	} else {
+	    u16 destval;
+	    u16 *srcreg;
 
-            DECODE_PRINTF(",");
-            destval = fetch_data_word(destoffset);
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            test_word(destval, *srcreg);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg,*srcreg;
+	    DECODE_PRINTF(",");
+	    destval = fetch_data_word(destoffset);
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    test_word(destval, *srcreg);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg,*srcreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            test_long(*destreg, *srcreg);
-        } else {
-            u16 *destreg,*srcreg;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    test_long(*destreg, *srcreg);
+	} else {
+	    u16 *destreg,*srcreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            test_word(*destreg, *srcreg);
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    test_word(*destreg, *srcreg);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1739,25 +1739,25 @@ static void x86emuOp_xchg_byte_RM_R(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("XCHG\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",");
-        destval = fetch_data_byte(destoffset);
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        tmp = *srcreg;
-        *srcreg = destval;
-        destval = tmp;
-        store_data_byte(destoffset, destval);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        tmp = *srcreg;
-        *srcreg = *destreg;
-        *destreg = tmp;
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",");
+	destval = fetch_data_byte(destoffset);
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	tmp = *srcreg;
+	*srcreg = destval;
+	destval = tmp;
+	store_data_byte(destoffset, destval);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	tmp = *srcreg;
+	*srcreg = *destreg;
+	*destreg = tmp;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1776,59 +1776,59 @@ static void x86emuOp_xchg_word_RM_R(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("XCHG\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",");
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *srcreg;
-            u32 destval,tmp;
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",");
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *srcreg;
+	    u32 destval,tmp;
 
-            destval = fetch_data_long(destoffset);
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            tmp = *srcreg;
-            *srcreg = destval;
-            destval = tmp;
-            store_data_long(destoffset, destval);
-        } else {
-            u16 *srcreg;
-            u16 destval,tmp;
+	    destval = fetch_data_long(destoffset);
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    tmp = *srcreg;
+	    *srcreg = destval;
+	    destval = tmp;
+	    store_data_long(destoffset, destval);
+	} else {
+	    u16 *srcreg;
+	    u16 destval,tmp;
 
-            destval = fetch_data_word(destoffset);
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            tmp = *srcreg;
-            *srcreg = destval;
-            destval = tmp;
-            store_data_word(destoffset, destval);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg,*srcreg;
-            u32 tmp;
+	    destval = fetch_data_word(destoffset);
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    tmp = *srcreg;
+	    *srcreg = destval;
+	    destval = tmp;
+	    store_data_word(destoffset, destval);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg,*srcreg;
+	    u32 tmp;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            tmp = *srcreg;
-            *srcreg = *destreg;
-            *destreg = tmp;
-        } else {
-            u16 *destreg,*srcreg;
-            u16 tmp;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    tmp = *srcreg;
+	    *srcreg = *destreg;
+	    *destreg = tmp;
+	} else {
+	    u16 *destreg,*srcreg;
+	    u16 tmp;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            tmp = *srcreg;
-            *srcreg = *destreg;
-            *destreg = tmp;
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    tmp = *srcreg;
+	    *srcreg = *destreg;
+	    *destreg = tmp;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1848,19 +1848,19 @@ static void x86emuOp_mov_byte_RM_R(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        store_data_byte(destoffset, *srcreg);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *destreg = *srcreg;
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	store_data_byte(destoffset, *srcreg);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*destreg = *srcreg;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1879,44 +1879,44 @@ static void x86emuOp_mov_word_RM_R(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *srcreg;
+	destoffset = decode_rmXX_address(mod, rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *srcreg;
 
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            store_data_long(destoffset, *srcreg);
-        } else {
-            u16 *srcreg;
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    store_data_long(destoffset, *srcreg);
+	} else {
+	    u16 *srcreg;
 
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            store_data_word(destoffset, *srcreg);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg,*srcreg;
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    store_data_word(destoffset, *srcreg);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg,*srcreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = *srcreg;
-        } else {
-            u16 *destreg,*srcreg;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = *srcreg;
+	} else {
+	    u16 *destreg,*srcreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = *srcreg;
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = *srcreg;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1937,20 +1937,20 @@ static void x86emuOp_mov_byte_R_RM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF(",");
-        srcoffset = decode_rmXX_address(mod, rl);
-        srcval = fetch_data_byte(srcoffset);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *destreg = srcval;
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rh);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *destreg = *srcreg;
+	destreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF(",");
+	srcoffset = decode_rmXX_address(mod, rl);
+	srcval = fetch_data_byte(srcoffset);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*destreg = srcval;
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rh);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*destreg = *srcreg;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -1969,49 +1969,49 @@ static void x86emuOp_mov_word_R_RM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg;
-            u32 srcval;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg;
+	    u32 srcval;
 
-            destreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcoffset = decode_rmXX_address(mod, rl);
-            srcval = fetch_data_long(srcoffset);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = srcval;
-        } else {
-            u16 *destreg;
-            u16 srcval;
+	    destreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcoffset = decode_rmXX_address(mod, rl);
+	    srcval = fetch_data_long(srcoffset);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = srcval;
+	} else {
+	    u16 *destreg;
+	    u16 srcval;
 
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcoffset = decode_rmXX_address(mod, rl);
-            srcval = fetch_data_word(srcoffset);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = srcval;
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg, *srcreg;
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcoffset = decode_rmXX_address(mod, rl);
+	    srcval = fetch_data_word(srcoffset);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = srcval;
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg, *srcreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = *srcreg;
-        } else {
-            u16 *destreg, *srcreg;
+	    destreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = *srcreg;
+	} else {
+	    u16 *destreg, *srcreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            srcreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = *srcreg;
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    srcreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = *srcreg;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2032,20 +2032,20 @@ static void x86emuOp_mov_word_RM_SR(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",");
-        srcreg = decode_rm_seg_register(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        destval = *srcreg;
-        store_data_word(destoffset, destval);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_WORD_REGISTER(rl);
-        DECODE_PRINTF(",");
-        srcreg = decode_rm_seg_register(rh);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *destreg = *srcreg;
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",");
+	srcreg = decode_rm_seg_register(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	destval = *srcreg;
+	store_data_word(destoffset, destval);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_WORD_REGISTER(rl);
+	DECODE_PRINTF(",");
+	srcreg = decode_rm_seg_register(rh);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*destreg = *srcreg;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2064,21 +2064,21 @@ static void x86emuOp_lea_word_R_M(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("LEA\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        if (M.x86.mode & SYSMODE_PREFIX_ADDR) {
-            u32 *srcreg = DECODE_RM_LONG_REGISTER(rh);
-            DECODE_PRINTF(",");
-            destoffset = decode_rmXX_address(mod, rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *srcreg = (u32)destoffset;
+	if (M.x86.mode & SYSMODE_PREFIX_ADDR) {
+	    u32 *srcreg = DECODE_RM_LONG_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *srcreg = (u32)destoffset;
 	} else {
-            u16 *srcreg = DECODE_RM_WORD_REGISTER(rh);
-            DECODE_PRINTF(",");
-            destoffset = decode_rmXX_address(mod, rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *srcreg = (u16)destoffset;
-        }
+	    u16 *srcreg = DECODE_RM_WORD_REGISTER(rh);
+	    DECODE_PRINTF(",");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *srcreg = (u16)destoffset;
+	}
     }
     /* else { undefined.  Do nothing. } */
     DECODE_CLEAR_SEGOVR();
@@ -2100,20 +2100,20 @@ static void x86emuOp_mov_word_SR_RM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        destreg = decode_rm_seg_register(rh);
-        DECODE_PRINTF(",");
-        srcoffset = decode_rmXX_address(mod, rl);
-        srcval = fetch_data_word(srcoffset);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *destreg = srcval;
-    } else {                     /* register to register */
-        destreg = decode_rm_seg_register(rh);
-        DECODE_PRINTF(",");
-        srcreg = DECODE_RM_WORD_REGISTER(rl);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *destreg = *srcreg;
+	destreg = decode_rm_seg_register(rh);
+	DECODE_PRINTF(",");
+	srcoffset = decode_rmXX_address(mod, rl);
+	srcval = fetch_data_word(srcoffset);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*destreg = srcval;
+    } else {			 /* register to register */
+	destreg = decode_rm_seg_register(rh);
+	DECODE_PRINTF(",");
+	srcreg = DECODE_RM_WORD_REGISTER(rl);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*destreg = *srcreg;
     }
     /*
      * Clean up, and reset all the R_xSP pointers to the correct
@@ -2138,42 +2138,42 @@ static void x86emuOp_pop_RM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("POP\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (rh != 0) {
-        DECODE_PRINTF("ILLEGAL DECODE OF OPCODE 8F\n");
-        HALT_SYS();
+	DECODE_PRINTF("ILLEGAL DECODE OF OPCODE 8F\n");
+	HALT_SYS();
     }
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval;
+	destoffset = decode_rmXX_address(mod, rl);
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval;
 
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            destval = pop_long();
-            store_data_long(destoffset, destval);
-        } else {
-            u16 destval;
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    destval = pop_long();
+	    store_data_long(destoffset, destval);
+	} else {
+	    u16 destval;
 
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            destval = pop_word();
-            store_data_word(destoffset, destval);
-        }
-    } else {                    /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg;
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    destval = pop_word();
+	    store_data_word(destoffset, destval);
+	}
+    } else {			/* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = pop_long();
-        } else {
-            u16 *destreg;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = pop_long();
+	} else {
+	    u16 *destreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = pop_word();
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = pop_word();
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2205,23 +2205,23 @@ static void x86emuOp_xchg_word_AX_register(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
 
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        u32 *reg32;
-        DECODE_PRINTF("XCHG\tEAX,");
-        reg32 = DECODE_RM_LONG_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        tmp = M.x86.R_EAX;
-        M.x86.R_EAX = *reg32;
-        *reg32 = tmp;
+	u32 *reg32;
+	DECODE_PRINTF("XCHG\tEAX,");
+	reg32 = DECODE_RM_LONG_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	tmp = M.x86.R_EAX;
+	M.x86.R_EAX = *reg32;
+	*reg32 = tmp;
     } else {
-        u16 *reg16;
-        DECODE_PRINTF("XCHG\tAX,");
-        reg16 = DECODE_RM_WORD_REGISTER(op1);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        tmp = M.x86.R_AX;
-        M.x86.R_AX = *reg16;
-        *reg16 = (u16)tmp;
+	u16 *reg16;
+	DECODE_PRINTF("XCHG\tAX,");
+	reg16 = DECODE_RM_WORD_REGISTER(op1);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	tmp = M.x86.R_AX;
+	M.x86.R_AX = *reg16;
+	*reg16 = (u16)tmp;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2235,23 +2235,23 @@ static void x86emuOp_cbw(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("CWDE\n");
+	DECODE_PRINTF("CWDE\n");
     } else {
-        DECODE_PRINTF("CBW\n");
+	DECODE_PRINTF("CBW\n");
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        if (M.x86.R_AX & 0x8000) {
-            M.x86.R_EAX |= 0xffff0000;
-        } else {
-            M.x86.R_EAX &= 0x0000ffff;
-        }
+	if (M.x86.R_AX & 0x8000) {
+	    M.x86.R_EAX |= 0xffff0000;
+	} else {
+	    M.x86.R_EAX &= 0x0000ffff;
+	}
     } else {
-        if (M.x86.R_AL & 0x80) {
-            M.x86.R_AH = 0xff;
-        } else {
-            M.x86.R_AH = 0x0;
-        }
+	if (M.x86.R_AL & 0x80) {
+	    M.x86.R_AH = 0xff;
+	} else {
+	    M.x86.R_AH = 0x0;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2265,24 +2265,24 @@ static void x86emuOp_cwd(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("CDQ\n");
+	DECODE_PRINTF("CDQ\n");
     } else {
-        DECODE_PRINTF("CWD\n");
+	DECODE_PRINTF("CWD\n");
     }
     DECODE_PRINTF("CWD\n");
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        if (M.x86.R_EAX & 0x80000000) {
-            M.x86.R_EDX = 0xffffffff;
-        } else {
-            M.x86.R_EDX = 0x0;
-        }
+	if (M.x86.R_EAX & 0x80000000) {
+	    M.x86.R_EDX = 0xffffffff;
+	} else {
+	    M.x86.R_EDX = 0x0;
+	}
     } else {
-        if (M.x86.R_AX & 0x8000) {
-            M.x86.R_DX = 0xffff;
-        } else {
-            M.x86.R_DX = 0x0;
-        }
+	if (M.x86.R_AX & 0x8000) {
+	    M.x86.R_DX = 0xffff;
+	} else {
+	    M.x86.R_DX = 0x0;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2299,11 +2299,11 @@ static void x86emuOp_call_far_IMM(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     DECODE_PRINTF("CALL\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        faroff = fetch_long_imm();
-        farseg = fetch_word_imm();
+	faroff = fetch_long_imm();
+	farseg = fetch_word_imm();
     } else {
-        faroff = fetch_word_imm();
-        farseg = fetch_word_imm();
+	faroff = fetch_word_imm();
+	farseg = fetch_word_imm();
     }
     DECODE_PRINTF2("%04x:", farseg);
     DECODE_PRINTF2("%04x\n", faroff);
@@ -2319,9 +2319,9 @@ static void x86emuOp_call_far_IMM(u8 X86EMU_UNUSED(op1))
     push_word(M.x86.R_CS);
     M.x86.R_CS = farseg;
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        push_long(M.x86.R_EIP);
+	push_long(M.x86.R_EIP);
     } else {
-        push_word(M.x86.R_IP);
+	push_word(M.x86.R_IP);
     }
     M.x86.R_EIP = faroff & 0xffff;
     DECODE_CLEAR_SEGOVR();
@@ -2352,18 +2352,18 @@ static void x86emuOp_pushf_word(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("PUSHFD\n");
+	DECODE_PRINTF("PUSHFD\n");
     } else {
-        DECODE_PRINTF("PUSHF\n");
+	DECODE_PRINTF("PUSHF\n");
     }
     TRACE_AND_STEP();
 
     /* clear out *all* bits not representing flags, and turn on real bits */
     flags = (M.x86.R_EFLG & F_MSK) | F_ALWAYS_ON;
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        push_long(flags);
+	push_long(flags);
     } else {
-        push_word((u16)flags);
+	push_word((u16)flags);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2377,15 +2377,15 @@ static void x86emuOp_popf_word(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("POPFD\n");
+	DECODE_PRINTF("POPFD\n");
     } else {
-        DECODE_PRINTF("POPF\n");
+	DECODE_PRINTF("POPF\n");
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        M.x86.R_EFLG = pop_long();
+	M.x86.R_EFLG = pop_long();
     } else {
-        M.x86.R_FLG = pop_word();
+	M.x86.R_FLG = pop_word();
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2454,15 +2454,15 @@ static void x86emuOp_mov_AX_M_IMM(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     offset = fetch_word_imm();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF2("MOV\tEAX,[%04x]\n", offset);
+	DECODE_PRINTF2("MOV\tEAX,[%04x]\n", offset);
     } else {
-        DECODE_PRINTF2("MOV\tAX,[%04x]\n", offset);
+	DECODE_PRINTF2("MOV\tAX,[%04x]\n", offset);
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        M.x86.R_EAX = fetch_data_long(offset);
+	M.x86.R_EAX = fetch_data_long(offset);
     } else {
-        M.x86.R_AX = fetch_data_word(offset);
+	M.x86.R_AX = fetch_data_word(offset);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2497,15 +2497,15 @@ static void x86emuOp_mov_M_AX_IMM(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     offset = fetch_word_imm();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF2("MOV\t[%04x],EAX\n", offset);
+	DECODE_PRINTF2("MOV\t[%04x],EAX\n", offset);
     } else {
-        DECODE_PRINTF2("MOV\t[%04x],AX\n", offset);
+	DECODE_PRINTF2("MOV\t[%04x],AX\n", offset);
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        store_data_long(offset, M.x86.R_EAX);
+	store_data_long(offset, M.x86.R_EAX);
     } else {
-        store_data_word(offset, M.x86.R_AX);
+	store_data_word(offset, M.x86.R_AX);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2524,27 +2524,27 @@ static void x86emuOp_movs_byte(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     DECODE_PRINTF("MOVS\tBYTE\n");
     if (ACCESS_FLAG(F_DF))   /* down */
-        inc = -1;
+	inc = -1;
     else
-        inc = 1;
+	inc = 1;
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* don't care whether REPE or REPNE */
-        /* move them until (E)CX is ZERO. */
-        count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
-        M.x86.R_CX = 0;
+	/* don't care whether REPE or REPNE */
+	/* move them until (E)CX is ZERO. */
+	count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
+	M.x86.R_CX = 0;
 	if (M.x86.mode & SYSMODE_32BIT_REP)
-            M.x86.R_ECX = 0;
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	    M.x86.R_ECX = 0;
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     }
     while (count--) {
-        val = fetch_data_byte(M.x86.R_SI);
-        store_data_byte_abs(M.x86.R_ES, M.x86.R_DI, val);
-        M.x86.R_SI += inc;
-        M.x86.R_DI += inc;
-        if (M.x86.intr & INTR_HALTED)
-            break;
+	val = fetch_data_byte(M.x86.R_SI);
+	store_data_byte_abs(M.x86.R_ES, M.x86.R_DI, val);
+	M.x86.R_SI += inc;
+	M.x86.R_DI += inc;
+	if (M.x86.intr & INTR_HALTED)
+	    break;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2562,41 +2562,41 @@ static void x86emuOp_movs_word(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("MOVS\tDWORD\n");
-        if (ACCESS_FLAG(F_DF))      /* down */
-            inc = -4;
-        else
-            inc = 4;
+	DECODE_PRINTF("MOVS\tDWORD\n");
+	if (ACCESS_FLAG(F_DF))	    /* down */
+	    inc = -4;
+	else
+	    inc = 4;
     } else {
-        DECODE_PRINTF("MOVS\tWORD\n");
-        if (ACCESS_FLAG(F_DF))      /* down */
-            inc = -2;
-        else
-            inc = 2;
+	DECODE_PRINTF("MOVS\tWORD\n");
+	if (ACCESS_FLAG(F_DF))	    /* down */
+	    inc = -2;
+	else
+	    inc = 2;
     }
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* don't care whether REPE or REPNE */
-        /* move them until (E)CX is ZERO. */
-        count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
-        M.x86.R_CX = 0;
+	/* don't care whether REPE or REPNE */
+	/* move them until (E)CX is ZERO. */
+	count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
+	M.x86.R_CX = 0;
 	if (M.x86.mode & SYSMODE_32BIT_REP)
-            M.x86.R_ECX = 0;
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	    M.x86.R_ECX = 0;
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     }
     while (count--) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            val = fetch_data_long(M.x86.R_SI);
-            store_data_long_abs(M.x86.R_ES, M.x86.R_DI, val);
-        } else {
-            val = fetch_data_word(M.x86.R_SI);
-            store_data_word_abs(M.x86.R_ES, M.x86.R_DI, (u16)val);
-        }
-        M.x86.R_SI += inc;
-        M.x86.R_DI += inc;
-        if (M.x86.intr & INTR_HALTED)
-            break;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    val = fetch_data_long(M.x86.R_SI);
+	    store_data_long_abs(M.x86.R_ES, M.x86.R_DI, val);
+	} else {
+	    val = fetch_data_word(M.x86.R_SI);
+	    store_data_word_abs(M.x86.R_ES, M.x86.R_DI, (u16)val);
+	}
+	M.x86.R_SI += inc;
+	M.x86.R_DI += inc;
+	if (M.x86.intr & INTR_HALTED)
+	    break;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2615,35 +2615,35 @@ static void x86emuOp_cmps_byte(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("CMPS\tBYTE\n");
     TRACE_AND_STEP();
     if (ACCESS_FLAG(F_DF))   /* down */
-        inc = -1;
+	inc = -1;
     else
-        inc = 1;
+	inc = 1;
 
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* REPE  */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            val1 = fetch_data_byte(M.x86.R_SI);
-            val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
-                     cmp_byte(val1, val2);
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_SI += inc;
-            M.x86.R_DI += inc;
-            if ( (M.x86.mode & SYSMODE_PREFIX_REPE) && (ACCESS_FLAG(F_ZF) == 0) ) break;
-            if ( (M.x86.mode & SYSMODE_PREFIX_REPNE) && ACCESS_FLAG(F_ZF) ) break;
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	/* REPE  */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    val1 = fetch_data_byte(M.x86.R_SI);
+	    val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
+		     cmp_byte(val1, val2);
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_SI += inc;
+	    M.x86.R_DI += inc;
+	    if ( (M.x86.mode & SYSMODE_PREFIX_REPE) && (ACCESS_FLAG(F_ZF) == 0) ) break;
+	    if ( (M.x86.mode & SYSMODE_PREFIX_REPNE) && ACCESS_FLAG(F_ZF) ) break;
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     } else {
-        val1 = fetch_data_byte(M.x86.R_SI);
-        val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
-        cmp_byte(val1, val2);
-        M.x86.R_SI += inc;
-        M.x86.R_DI += inc;
+	val1 = fetch_data_byte(M.x86.R_SI);
+	val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
+	cmp_byte(val1, val2);
+	M.x86.R_SI += inc;
+	M.x86.R_DI += inc;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2660,53 +2660,53 @@ static void x86emuOp_cmps_word(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("CMPS\tDWORD\n");
-        inc = 4;
+	DECODE_PRINTF("CMPS\tDWORD\n");
+	inc = 4;
     } else {
-        DECODE_PRINTF("CMPS\tWORD\n");
-        inc = 2;
+	DECODE_PRINTF("CMPS\tWORD\n");
+	inc = 2;
     }
     if (ACCESS_FLAG(F_DF))   /* down */
-        inc = -inc;
+	inc = -inc;
 
     TRACE_AND_STEP();
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* REPE  */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                val1 = fetch_data_long(M.x86.R_SI);
-                val2 = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
-                cmp_long(val1, val2);
-            } else {
-                val1 = fetch_data_word(M.x86.R_SI);
-                val2 = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
-                cmp_word((u16)val1, (u16)val2);
-            }
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_SI += inc;
-            M.x86.R_DI += inc;
-            if ( (M.x86.mode & SYSMODE_PREFIX_REPE) && ACCESS_FLAG(F_ZF) == 0 ) break;
-            if ( (M.x86.mode & SYSMODE_PREFIX_REPNE) && ACCESS_FLAG(F_ZF) ) break;
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	/* REPE  */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		val1 = fetch_data_long(M.x86.R_SI);
+		val2 = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
+		cmp_long(val1, val2);
+	    } else {
+		val1 = fetch_data_word(M.x86.R_SI);
+		val2 = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
+		cmp_word((u16)val1, (u16)val2);
+	    }
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_SI += inc;
+	    M.x86.R_DI += inc;
+	    if ( (M.x86.mode & SYSMODE_PREFIX_REPE) && ACCESS_FLAG(F_ZF) == 0 ) break;
+	    if ( (M.x86.mode & SYSMODE_PREFIX_REPNE) && ACCESS_FLAG(F_ZF) ) break;
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     } else {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            val1 = fetch_data_long(M.x86.R_SI);
-            val2 = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
-            cmp_long(val1, val2);
-        } else {
-            val1 = fetch_data_word(M.x86.R_SI);
-            val2 = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
-            cmp_word((u16)val1, (u16)val2);
-        }
-        M.x86.R_SI += inc;
-        M.x86.R_DI += inc;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    val1 = fetch_data_long(M.x86.R_SI);
+	    val2 = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
+	    cmp_long(val1, val2);
+	} else {
+	    val1 = fetch_data_word(M.x86.R_SI);
+	    val2 = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
+	    cmp_word((u16)val1, (u16)val2);
+	}
+	M.x86.R_SI += inc;
+	M.x86.R_DI += inc;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2740,18 +2740,18 @@ static void x86emuOp_test_AX_IMM(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("TEST\tEAX,");
-        srcval = fetch_long_imm();
+	DECODE_PRINTF("TEST\tEAX,");
+	srcval = fetch_long_imm();
     } else {
-        DECODE_PRINTF("TEST\tAX,");
-        srcval = fetch_word_imm();
+	DECODE_PRINTF("TEST\tAX,");
+	srcval = fetch_word_imm();
     }
     DECODE_PRINTF2("%x\n", srcval);
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        test_long(M.x86.R_EAX, srcval);
+	test_long(M.x86.R_EAX, srcval);
     } else {
-        test_word(M.x86.R_AX, (u16)srcval);
+	test_word(M.x86.R_AX, (u16)srcval);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2768,27 +2768,27 @@ static void x86emuOp_stos_byte(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     DECODE_PRINTF("STOS\tBYTE\n");
     if (ACCESS_FLAG(F_DF))   /* down */
-        inc = -1;
+	inc = -1;
     else
-        inc = 1;
+	inc = 1;
     TRACE_AND_STEP();
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* don't care whether REPE or REPNE */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            store_data_byte_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_AL);
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_DI += inc;
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	/* don't care whether REPE or REPNE */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    store_data_byte_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_AL);
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_DI += inc;
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     } else {
-        store_data_byte_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_AL);
-        M.x86.R_DI += inc;
+	store_data_byte_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_AL);
+	M.x86.R_DI += inc;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2805,38 +2805,38 @@ static void x86emuOp_stos_word(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("STOS\tDWORD\n");
-        if (ACCESS_FLAG(F_DF))   /* down */
-            inc = -4;
-        else
-            inc = 4;
+	DECODE_PRINTF("STOS\tDWORD\n");
+	if (ACCESS_FLAG(F_DF))	 /* down */
+	    inc = -4;
+	else
+	    inc = 4;
     } else {
-        DECODE_PRINTF("STOS\tWORD\n");
-        if (ACCESS_FLAG(F_DF))   /* down */
-            inc = -2;
-        else
-            inc = 2;
+	DECODE_PRINTF("STOS\tWORD\n");
+	if (ACCESS_FLAG(F_DF))	 /* down */
+	    inc = -2;
+	else
+	    inc = 2;
     }
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* don't care whether REPE or REPNE */
-        /* move them until (E)CX is ZERO. */
-        count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
-        M.x86.R_CX = 0;
+	/* don't care whether REPE or REPNE */
+	/* move them until (E)CX is ZERO. */
+	count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
+	M.x86.R_CX = 0;
 	if (M.x86.mode & SYSMODE_32BIT_REP)
-            M.x86.R_ECX = 0;
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	    M.x86.R_ECX = 0;
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     }
     while (count--) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            store_data_long_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_EAX);
-        } else {
-            store_data_word_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_AX);
-        }
-        M.x86.R_DI += inc;
-        if (M.x86.intr & INTR_HALTED)
-            break;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    store_data_long_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_EAX);
+	} else {
+	    store_data_word_abs(M.x86.R_ES, M.x86.R_DI, M.x86.R_AX);
+	}
+	M.x86.R_DI += inc;
+	if (M.x86.intr & INTR_HALTED)
+	    break;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2854,26 +2854,26 @@ static void x86emuOp_lods_byte(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("LODS\tBYTE\n");
     TRACE_AND_STEP();
     if (ACCESS_FLAG(F_DF))   /* down */
-        inc = -1;
+	inc = -1;
     else
-        inc = 1;
+	inc = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* don't care whether REPE or REPNE */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            M.x86.R_AL = fetch_data_byte(M.x86.R_SI);
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_SI += inc;
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	/* don't care whether REPE or REPNE */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    M.x86.R_AL = fetch_data_byte(M.x86.R_SI);
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_SI += inc;
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     } else {
-        M.x86.R_AL = fetch_data_byte(M.x86.R_SI);
-        M.x86.R_SI += inc;
+	M.x86.R_AL = fetch_data_byte(M.x86.R_SI);
+	M.x86.R_SI += inc;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2890,38 +2890,38 @@ static void x86emuOp_lods_word(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("LODS\tDWORD\n");
-        if (ACCESS_FLAG(F_DF))   /* down */
-            inc = -4;
-        else
-            inc = 4;
+	DECODE_PRINTF("LODS\tDWORD\n");
+	if (ACCESS_FLAG(F_DF))	 /* down */
+	    inc = -4;
+	else
+	    inc = 4;
     } else {
-        DECODE_PRINTF("LODS\tWORD\n");
-        if (ACCESS_FLAG(F_DF))   /* down */
-            inc = -2;
-        else
-            inc = 2;
+	DECODE_PRINTF("LODS\tWORD\n");
+	if (ACCESS_FLAG(F_DF))	 /* down */
+	    inc = -2;
+	else
+	    inc = 2;
     }
     TRACE_AND_STEP();
     count = 1;
     if (M.x86.mode & (SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE)) {
-        /* don't care whether REPE or REPNE */
-        /* move them until (E)CX is ZERO. */
-        count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
-        M.x86.R_CX = 0;
+	/* don't care whether REPE or REPNE */
+	/* move them until (E)CX is ZERO. */
+	count = (M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX;
+	M.x86.R_CX = 0;
 	if (M.x86.mode & SYSMODE_32BIT_REP)
-            M.x86.R_ECX = 0;
-        M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
+	    M.x86.R_ECX = 0;
+	M.x86.mode &= ~(SYSMODE_PREFIX_REPE | SYSMODE_PREFIX_REPNE);
     }
     while (count--) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            M.x86.R_EAX = fetch_data_long(M.x86.R_SI);
-        } else {
-            M.x86.R_AX = fetch_data_word(M.x86.R_SI);
-        }
-        M.x86.R_SI += inc;
-        if (M.x86.intr & INTR_HALTED)
-            break;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    M.x86.R_EAX = fetch_data_long(M.x86.R_SI);
+	} else {
+	    M.x86.R_AX = fetch_data_word(M.x86.R_SI);
+	}
+	M.x86.R_SI += inc;
+	if (M.x86.intr & INTR_HALTED)
+	    break;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2940,47 +2940,47 @@ static void x86emuOp_scas_byte(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("SCAS\tBYTE\n");
     TRACE_AND_STEP();
     if (ACCESS_FLAG(F_DF))   /* down */
-        inc = -1;
+	inc = -1;
     else
-        inc = 1;
+	inc = 1;
     if (M.x86.mode & SYSMODE_PREFIX_REPE) {
-        /* REPE  */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
-            cmp_byte(M.x86.R_AL, val2);
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_DI += inc;
-            if (ACCESS_FLAG(F_ZF) == 0)
-                break;
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~SYSMODE_PREFIX_REPE;
+	/* REPE  */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
+	    cmp_byte(M.x86.R_AL, val2);
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_DI += inc;
+	    if (ACCESS_FLAG(F_ZF) == 0)
+		break;
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~SYSMODE_PREFIX_REPE;
     } else if (M.x86.mode & SYSMODE_PREFIX_REPNE) {
-        /* REPNE  */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
-            cmp_byte(M.x86.R_AL, val2);
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_DI += inc;
-            if (ACCESS_FLAG(F_ZF))
-                break;          /* zero flag set means equal */
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~SYSMODE_PREFIX_REPNE;
+	/* REPNE  */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
+	    cmp_byte(M.x86.R_AL, val2);
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_DI += inc;
+	    if (ACCESS_FLAG(F_ZF))
+		break;		/* zero flag set means equal */
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~SYSMODE_PREFIX_REPNE;
     } else {
-        val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
-        cmp_byte(M.x86.R_AL, val2);
-        M.x86.R_DI += inc;
+	val2 = fetch_data_byte_abs(M.x86.R_ES, M.x86.R_DI);
+	cmp_byte(M.x86.R_AL, val2);
+	M.x86.R_DI += inc;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -2997,72 +2997,72 @@ static void x86emuOp_scas_word(u8 X86EMU_UNUSED(op1))
 
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("SCAS\tDWORD\n");
-        if (ACCESS_FLAG(F_DF))   /* down */
-            inc = -4;
-        else
-            inc = 4;
+	DECODE_PRINTF("SCAS\tDWORD\n");
+	if (ACCESS_FLAG(F_DF))	 /* down */
+	    inc = -4;
+	else
+	    inc = 4;
     } else {
-        DECODE_PRINTF("SCAS\tWORD\n");
-        if (ACCESS_FLAG(F_DF))   /* down */
-            inc = -2;
-        else
-            inc = 2;
+	DECODE_PRINTF("SCAS\tWORD\n");
+	if (ACCESS_FLAG(F_DF))	 /* down */
+	    inc = -2;
+	else
+	    inc = 2;
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_REPE) {
-        /* REPE  */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                val = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
-                cmp_long(M.x86.R_EAX, val);
-            } else {
-                val = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
-                cmp_word(M.x86.R_AX, (u16)val);
-            }
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_DI += inc;
-            if (ACCESS_FLAG(F_ZF) == 0)
-                break;
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~SYSMODE_PREFIX_REPE;
+	/* REPE  */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		val = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
+		cmp_long(M.x86.R_EAX, val);
+	    } else {
+		val = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
+		cmp_word(M.x86.R_AX, (u16)val);
+	    }
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_DI += inc;
+	    if (ACCESS_FLAG(F_ZF) == 0)
+		break;
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~SYSMODE_PREFIX_REPE;
     } else if (M.x86.mode & SYSMODE_PREFIX_REPNE) {
-        /* REPNE  */
-        /* move them until (E)CX is ZERO. */
-        while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                val = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
-                cmp_long(M.x86.R_EAX, val);
-            } else {
-                val = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
-                cmp_word(M.x86.R_AX, (u16)val);
-            }
-            if (M.x86.mode & SYSMODE_32BIT_REP)
-                M.x86.R_ECX -= 1;
-            else
-                M.x86.R_CX -= 1;
-            M.x86.R_DI += inc;
-            if (ACCESS_FLAG(F_ZF))
-                break;          /* zero flag set means equal */
-            if (M.x86.intr & INTR_HALTED)
-                break;
-        }
-        M.x86.mode &= ~SYSMODE_PREFIX_REPNE;
+	/* REPNE  */
+	/* move them until (E)CX is ZERO. */
+	while (((M.x86.mode & SYSMODE_32BIT_REP) ? M.x86.R_ECX : M.x86.R_CX) != 0) {
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		val = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
+		cmp_long(M.x86.R_EAX, val);
+	    } else {
+		val = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
+		cmp_word(M.x86.R_AX, (u16)val);
+	    }
+	    if (M.x86.mode & SYSMODE_32BIT_REP)
+		M.x86.R_ECX -= 1;
+	    else
+		M.x86.R_CX -= 1;
+	    M.x86.R_DI += inc;
+	    if (ACCESS_FLAG(F_ZF))
+		break;		/* zero flag set means equal */
+	    if (M.x86.intr & INTR_HALTED)
+		break;
+	}
+	M.x86.mode &= ~SYSMODE_PREFIX_REPNE;
     } else {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            val = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
-            cmp_long(M.x86.R_EAX, val);
-        } else {
-            val = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
-            cmp_word(M.x86.R_AX, (u16)val);
-        }
-        M.x86.R_DI += inc;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    val = fetch_data_long_abs(M.x86.R_ES, M.x86.R_DI);
+	    cmp_long(M.x86.R_EAX, val);
+	} else {
+	    val = fetch_data_word_abs(M.x86.R_ES, M.x86.R_DI);
+	    cmp_word(M.x86.R_AX, (u16)val);
+	}
+	M.x86.R_DI += inc;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3101,19 +3101,19 @@ static void x86emuOp_mov_word_register_IMM(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     DECODE_PRINTF("MOV\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        u32 *reg32;
-        reg32 = DECODE_RM_LONG_REGISTER(op1);
-        srcval = fetch_long_imm();
-        DECODE_PRINTF2(",%x\n", srcval);
-        TRACE_AND_STEP();
-        *reg32 = srcval;
+	u32 *reg32;
+	reg32 = DECODE_RM_LONG_REGISTER(op1);
+	srcval = fetch_long_imm();
+	DECODE_PRINTF2(",%x\n", srcval);
+	TRACE_AND_STEP();
+	*reg32 = srcval;
     } else {
-        u16 *reg16;
-        reg16 = DECODE_RM_WORD_REGISTER(op1);
-        srcval = fetch_word_imm();
-        DECODE_PRINTF2(",%x\n", srcval);
-        TRACE_AND_STEP();
-        *reg16 = (u16)srcval;
+	u16 *reg16;
+	reg16 = DECODE_RM_WORD_REGISTER(op1);
+	srcval = fetch_word_imm();
+	DECODE_PRINTF2(",%x\n", srcval);
+	TRACE_AND_STEP();
+	*reg16 = (u16)srcval;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3140,57 +3140,57 @@ static void x86emuOp_opcC0_byte_RM_MEM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
 
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ROL\t");
-            break;
-        case 1:
-            DECODE_PRINTF("ROR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("RCL\t");
-            break;
-        case 3:
-            DECODE_PRINTF("RCR\t");
-            break;
-        case 4:
-            DECODE_PRINTF("SHL\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SHR\t");
-            break;
-        case 6:
-            DECODE_PRINTF("SAL\t");
-            break;
-        case 7:
-            DECODE_PRINTF("SAR\t");
-            break;
-        }
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ROL\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("ROR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("RCL\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("RCR\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("SHL\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SHR\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("SAL\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("SAR\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        amt = fetch_byte_imm();
-        DECODE_PRINTF2(",%x\n", amt);
-        destval = fetch_data_byte(destoffset);
-        TRACE_AND_STEP();
-        destval = (*opcD0_byte_operation[rh]) (destval, amt);
-        store_data_byte(destoffset, destval);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        amt = fetch_byte_imm();
-        DECODE_PRINTF2(",%x\n", amt);
-        TRACE_AND_STEP();
-        destval = (*opcD0_byte_operation[rh]) (*destreg, amt);
-        *destreg = destval;
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	amt = fetch_byte_imm();
+	DECODE_PRINTF2(",%x\n", amt);
+	destval = fetch_data_byte(destoffset);
+	TRACE_AND_STEP();
+	destval = (*opcD0_byte_operation[rh]) (destval, amt);
+	store_data_byte(destoffset, destval);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	amt = fetch_byte_imm();
+	DECODE_PRINTF2(",%x\n", amt);
+	TRACE_AND_STEP();
+	destval = (*opcD0_byte_operation[rh]) (*destreg, amt);
+	*destreg = destval;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3215,83 +3215,83 @@ static void x86emuOp_opcC1_word_RM_MEM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
 
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ROL\t");
-            break;
-        case 1:
-            DECODE_PRINTF("ROR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("RCL\t");
-            break;
-        case 3:
-            DECODE_PRINTF("RCR\t");
-            break;
-        case 4:
-            DECODE_PRINTF("SHL\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SHR\t");
-            break;
-        case 6:
-            DECODE_PRINTF("SAL\t");
-            break;
-        case 7:
-            DECODE_PRINTF("SAR\t");
-            break;
-        }
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ROL\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("ROR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("RCL\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("RCR\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("SHL\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SHR\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("SAL\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("SAR\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     if (mod < 3) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval;
 
-            DECODE_PRINTF("DWORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            amt = fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", amt);
-            destval = fetch_data_long(destoffset);
-            TRACE_AND_STEP();
-            destval = (*opcD1_long_operation[rh]) (destval, amt);
-            store_data_long(destoffset, destval);
-        } else {
-            u16 destval;
+	    DECODE_PRINTF("DWORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    amt = fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", amt);
+	    destval = fetch_data_long(destoffset);
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_long_operation[rh]) (destval, amt);
+	    store_data_long(destoffset, destval);
+	} else {
+	    u16 destval;
 
-            DECODE_PRINTF("WORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            amt = fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", amt);
-            destval = fetch_data_word(destoffset);
-            TRACE_AND_STEP();
-            destval = (*opcD1_word_operation[rh]) (destval, amt);
-            store_data_word(destoffset, destval);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg;
+	    DECODE_PRINTF("WORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    amt = fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", amt);
+	    destval = fetch_data_word(destoffset);
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_word_operation[rh]) (destval, amt);
+	    store_data_word(destoffset, destval);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            amt = fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", amt);
-            TRACE_AND_STEP();
-            *destreg = (*opcD1_long_operation[rh]) (*destreg, amt);
-        } else {
-            u16 *destreg;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    amt = fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", amt);
+	    TRACE_AND_STEP();
+	    *destreg = (*opcD1_long_operation[rh]) (*destreg, amt);
+	} else {
+	    u16 *destreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            amt = fetch_byte_imm();
-            DECODE_PRINTF2(",%x\n", amt);
-            TRACE_AND_STEP();
-            *destreg = (*opcD1_word_operation[rh]) (*destreg, amt);
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    amt = fetch_byte_imm();
+	    DECODE_PRINTF2(",%x\n", amt);
+	    TRACE_AND_STEP();
+	    *destreg = (*opcD1_word_operation[rh]) (*destreg, amt);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3346,15 +3346,15 @@ static void x86emuOp_les_R_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("LES\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        dstreg = DECODE_RM_WORD_REGISTER(rh);
-        DECODE_PRINTF(",");
-        srcoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *dstreg = fetch_data_word(srcoffset);
-        M.x86.R_ES = fetch_data_word(srcoffset + 2);
+	dstreg = DECODE_RM_WORD_REGISTER(rh);
+	DECODE_PRINTF(",");
+	srcoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*dstreg = fetch_data_word(srcoffset);
+	M.x86.R_ES = fetch_data_word(srcoffset + 2);
     }
-    /* else UNDEFINED!                   register to register */
+    /* else UNDEFINED!			 register to register */
 
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3374,13 +3374,13 @@ static void x86emuOp_lds_R_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("LDS\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (mod < 3) {
-        dstreg = DECODE_RM_WORD_REGISTER(rh);
-        DECODE_PRINTF(",");
-        srcoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        *dstreg = fetch_data_word(srcoffset);
-        M.x86.R_DS = fetch_data_word(srcoffset + 2);
+	dstreg = DECODE_RM_WORD_REGISTER(rh);
+	DECODE_PRINTF(",");
+	srcoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	*dstreg = fetch_data_word(srcoffset);
+	M.x86.R_DS = fetch_data_word(srcoffset + 2);
     }
     /* else UNDEFINED! */
     DECODE_CLEAR_SEGOVR();
@@ -3402,22 +3402,22 @@ static void x86emuOp_mov_byte_RM_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (rh != 0) {
-        DECODE_PRINTF("ILLEGAL DECODE OF OPCODE c6\n");
-        HALT_SYS();
+	DECODE_PRINTF("ILLEGAL DECODE OF OPCODE c6\n");
+	HALT_SYS();
     }
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        imm = fetch_byte_imm();
-        DECODE_PRINTF2(",%2x\n", imm);
-        TRACE_AND_STEP();
-        store_data_byte(destoffset, imm);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        imm = fetch_byte_imm();
-        DECODE_PRINTF2(",%2x\n", imm);
-        TRACE_AND_STEP();
-        *destreg = imm;
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	imm = fetch_byte_imm();
+	DECODE_PRINTF2(",%2x\n", imm);
+	TRACE_AND_STEP();
+	store_data_byte(destoffset, imm);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	imm = fetch_byte_imm();
+	DECODE_PRINTF2(",%2x\n", imm);
+	TRACE_AND_STEP();
+	*destreg = imm;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3436,49 +3436,49 @@ static void x86emuOp_mov_word_RM_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("MOV\t");
     FETCH_DECODE_MODRM(mod, rh, rl);
     if (rh != 0) {
-        DECODE_PRINTF("ILLEGAL DECODE OF OPCODE 8F\n");
-        HALT_SYS();
+	DECODE_PRINTF("ILLEGAL DECODE OF OPCODE 8F\n");
+	HALT_SYS();
     }
     if (mod < 3) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 imm;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 imm;
 
-            DECODE_PRINTF("DWORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            imm = fetch_long_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            store_data_long(destoffset, imm);
-        } else {
-            u16 imm;
+	    DECODE_PRINTF("DWORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    imm = fetch_long_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    store_data_long(destoffset, imm);
+	} else {
+	    u16 imm;
 
-            DECODE_PRINTF("WORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            imm = fetch_word_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            store_data_word(destoffset, imm);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    DECODE_PRINTF("WORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    imm = fetch_word_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    store_data_word(destoffset, imm);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
 			u32 *destreg;
 			u32 imm;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            imm = fetch_long_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            *destreg = imm;
-        } else {
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    imm = fetch_long_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    *destreg = imm;
+	} else {
 			u16 *destreg;
 			u16 imm;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            imm = fetch_word_imm();
-            DECODE_PRINTF2(",%x\n", imm);
-            TRACE_AND_STEP();
-            *destreg = imm;
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    imm = fetch_word_imm();
+	    DECODE_PRINTF2(",%x\n", imm);
+	    TRACE_AND_STEP();
+	    *destreg = imm;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3503,12 +3503,12 @@ static void x86emuOp_enter(u8 X86EMU_UNUSED(op1))
     push_word(M.x86.R_BP);
     frame_pointer = M.x86.R_SP;
     if (nesting > 0) {
-        for (i = 1; i < nesting; i++) {
-            M.x86.R_BP -= 2;
-            push_word(fetch_data_word_abs(M.x86.R_SS, M.x86.R_BP));
-            }
-        push_word(frame_pointer);
-        }
+	for (i = 1; i < nesting; i++) {
+	    M.x86.R_BP -= 2;
+	    push_word(fetch_data_word_abs(M.x86.R_SS, M.x86.R_BP));
+	    }
+	push_word(frame_pointer);
+	}
     M.x86.R_BP = frame_pointer;
     M.x86.R_SP = (u16)(M.x86.R_SP - local);
     DECODE_CLEAR_SEGOVR();
@@ -3583,13 +3583,13 @@ static void x86emuOp_int3(u8 X86EMU_UNUSED(op1))
 	if (_X86EMU_intrTab[3]) {
 		(*_X86EMU_intrTab[3])(3);
     } else {
-        push_word((u16)M.x86.R_FLG);
-        CLEAR_FLAG(F_IF);
-        CLEAR_FLAG(F_TF);
-        push_word(M.x86.R_CS);
-        M.x86.R_CS = mem_access_word(3 * 4 + 2);
-        push_word(M.x86.R_IP);
-        M.x86.R_IP = mem_access_word(3 * 4);
+	push_word((u16)M.x86.R_FLG);
+	CLEAR_FLAG(F_IF);
+	CLEAR_FLAG(F_TF);
+	push_word(M.x86.R_CS);
+	M.x86.R_CS = mem_access_word(3 * 4 + 2);
+	push_word(M.x86.R_IP);
+	M.x86.R_IP = mem_access_word(3 * 4);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3613,13 +3613,13 @@ static void x86emuOp_int_IMM(u8 X86EMU_UNUSED(op1))
 	if (_X86EMU_intrTab[intnum]) {
 		(*_X86EMU_intrTab[intnum])(intnum);
     } else {
-        push_word((u16)M.x86.R_FLG);
-        CLEAR_FLAG(F_IF);
-        CLEAR_FLAG(F_TF);
-        push_word(M.x86.R_CS);
-        M.x86.R_CS = mem_access_word(intnum * 4 + 2);
-        push_word(M.x86.R_IP);
-        M.x86.R_IP = mem_access_word(intnum * 4);
+	push_word((u16)M.x86.R_FLG);
+	CLEAR_FLAG(F_IF);
+	CLEAR_FLAG(F_TF);
+	push_word(M.x86.R_CS);
+	M.x86.R_CS = mem_access_word(intnum * 4 + 2);
+	push_word(M.x86.R_IP);
+	M.x86.R_IP = mem_access_word(intnum * 4);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3637,18 +3637,18 @@ static void x86emuOp_into(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("INTO\n");
     TRACE_AND_STEP();
     if (ACCESS_FLAG(F_OF)) {
-        tmp = mem_access_word(4 * 4 + 2);
+	tmp = mem_access_word(4 * 4 + 2);
 		if (_X86EMU_intrTab[4]) {
 			(*_X86EMU_intrTab[4])(4);
-        } else {
-            push_word((u16)M.x86.R_FLG);
-            CLEAR_FLAG(F_IF);
-            CLEAR_FLAG(F_TF);
-            push_word(M.x86.R_CS);
-            M.x86.R_CS = mem_access_word(4 * 4 + 2);
-            push_word(M.x86.R_IP);
-            M.x86.R_IP = mem_access_word(4 * 4);
-        }
+	} else {
+	    push_word((u16)M.x86.R_FLG);
+	    CLEAR_FLAG(F_IF);
+	    CLEAR_FLAG(F_TF);
+	    push_word(M.x86.R_CS);
+	    M.x86.R_CS = mem_access_word(4 * 4 + 2);
+	    push_word(M.x86.R_IP);
+	    M.x86.R_IP = mem_access_word(4 * 4);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3692,54 +3692,54 @@ static void x86emuOp_opcD0_byte_RM_1(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ROL\t");
-            break;
-        case 1:
-            DECODE_PRINTF("ROR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("RCL\t");
-            break;
-        case 3:
-            DECODE_PRINTF("RCR\t");
-            break;
-        case 4:
-            DECODE_PRINTF("SHL\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SHR\t");
-            break;
-        case 6:
-            DECODE_PRINTF("SAL\t");
-            break;
-        case 7:
-            DECODE_PRINTF("SAR\t");
-            break;
-        }
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ROL\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("ROR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("RCL\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("RCR\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("SHL\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SHR\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("SAL\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("SAR\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",1\n");
-        destval = fetch_data_byte(destoffset);
-        TRACE_AND_STEP();
-        destval = (*opcD0_byte_operation[rh]) (destval, 1);
-        store_data_byte(destoffset, destval);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF(",1\n");
-        TRACE_AND_STEP();
-        destval = (*opcD0_byte_operation[rh]) (*destreg, 1);
-        *destreg = destval;
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",1\n");
+	destval = fetch_data_byte(destoffset);
+	TRACE_AND_STEP();
+	destval = (*opcD0_byte_operation[rh]) (destval, 1);
+	store_data_byte(destoffset, destval);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF(",1\n");
+	TRACE_AND_STEP();
+	destval = (*opcD0_byte_operation[rh]) (*destreg, 1);
+	*destreg = destval;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3763,82 +3763,82 @@ static void x86emuOp_opcD1_word_RM_1(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ROL\t");
-            break;
-        case 1:
-            DECODE_PRINTF("ROR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("RCL\t");
-            break;
-        case 3:
-            DECODE_PRINTF("RCR\t");
-            break;
-        case 4:
-            DECODE_PRINTF("SHL\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SHR\t");
-            break;
-        case 6:
-            DECODE_PRINTF("SAL\t");
-            break;
-        case 7:
-            DECODE_PRINTF("SAR\t");
-            break;
-        }
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ROL\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("ROR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("RCL\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("RCR\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("SHL\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SHR\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("SAL\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("SAR\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     if (mod < 3) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval;
 
-            DECODE_PRINTF("DWORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            DECODE_PRINTF(",1\n");
-            destval = fetch_data_long(destoffset);
-            TRACE_AND_STEP();
-            destval = (*opcD1_long_operation[rh]) (destval, 1);
-            store_data_long(destoffset, destval);
-        } else {
-            u16 destval;
+	    DECODE_PRINTF("DWORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    DECODE_PRINTF(",1\n");
+	    destval = fetch_data_long(destoffset);
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_long_operation[rh]) (destval, 1);
+	    store_data_long(destoffset, destval);
+	} else {
+	    u16 destval;
 
-            DECODE_PRINTF("WORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            DECODE_PRINTF(",1\n");
-            destval = fetch_data_word(destoffset);
-            TRACE_AND_STEP();
-            destval = (*opcD1_word_operation[rh]) (destval, 1);
-            store_data_word(destoffset, destval);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    DECODE_PRINTF("WORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    DECODE_PRINTF(",1\n");
+	    destval = fetch_data_word(destoffset);
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_word_operation[rh]) (destval, 1);
+	    store_data_word(destoffset, destval);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
 			u32 destval;
 			u32 *destreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF(",1\n");
-            TRACE_AND_STEP();
-            destval = (*opcD1_long_operation[rh]) (*destreg, 1);
-            *destreg = destval;
-        } else {
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF(",1\n");
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_long_operation[rh]) (*destreg, 1);
+	    *destreg = destval;
+	} else {
 			u16 destval;
 			u16 *destreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF(",1\n");
-            TRACE_AND_STEP();
-            destval = (*opcD1_word_operation[rh]) (*destreg, 1);
-            *destreg = destval;
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF(",1\n");
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_word_operation[rh]) (*destreg, 1);
+	    *destreg = destval;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3865,55 +3865,55 @@ static void x86emuOp_opcD2_byte_RM_CL(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ROL\t");
-            break;
-        case 1:
-            DECODE_PRINTF("ROR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("RCL\t");
-            break;
-        case 3:
-            DECODE_PRINTF("RCR\t");
-            break;
-        case 4:
-            DECODE_PRINTF("SHL\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SHR\t");
-            break;
-        case 6:
-            DECODE_PRINTF("SAL\t");
-            break;
-        case 7:
-            DECODE_PRINTF("SAR\t");
-            break;
-        }
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ROL\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("ROR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("RCL\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("RCR\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("SHL\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SHR\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("SAL\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("SAR\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     amt = M.x86.R_CL;
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF(",CL\n");
-        destval = fetch_data_byte(destoffset);
-        TRACE_AND_STEP();
-        destval = (*opcD0_byte_operation[rh]) (destval, amt);
-        store_data_byte(destoffset, destval);
-    } else {                     /* register to register */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF(",CL\n");
-        TRACE_AND_STEP();
-        destval = (*opcD0_byte_operation[rh]) (*destreg, amt);
-        *destreg = destval;
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF(",CL\n");
+	destval = fetch_data_byte(destoffset);
+	TRACE_AND_STEP();
+	destval = (*opcD0_byte_operation[rh]) (destval, amt);
+	store_data_byte(destoffset, destval);
+    } else {			 /* register to register */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF(",CL\n");
+	TRACE_AND_STEP();
+	destval = (*opcD0_byte_operation[rh]) (*destreg, amt);
+	*destreg = destval;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -3938,79 +3938,79 @@ static void x86emuOp_opcD3_word_RM_CL(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("ROL\t");
-            break;
-        case 1:
-            DECODE_PRINTF("ROR\t");
-            break;
-        case 2:
-            DECODE_PRINTF("RCL\t");
-            break;
-        case 3:
-            DECODE_PRINTF("RCR\t");
-            break;
-        case 4:
-            DECODE_PRINTF("SHL\t");
-            break;
-        case 5:
-            DECODE_PRINTF("SHR\t");
-            break;
-        case 6:
-            DECODE_PRINTF("SAL\t");
-            break;
-        case 7:
-            DECODE_PRINTF("SAR\t");
-            break;
-        }
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("ROL\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("ROR\t");
+	    break;
+	case 2:
+	    DECODE_PRINTF("RCL\t");
+	    break;
+	case 3:
+	    DECODE_PRINTF("RCR\t");
+	    break;
+	case 4:
+	    DECODE_PRINTF("SHL\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("SHR\t");
+	    break;
+	case 6:
+	    DECODE_PRINTF("SAL\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("SAR\t");
+	    break;
+	}
     }
 #endif
     /* know operation, decode the mod byte to find the addressing
        mode. */
     amt = M.x86.R_CL;
     if (mod < 3) {
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval;
 
-            DECODE_PRINTF("DWORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            DECODE_PRINTF(",CL\n");
-            destval = fetch_data_long(destoffset);
-            TRACE_AND_STEP();
-            destval = (*opcD1_long_operation[rh]) (destval, amt);
-            store_data_long(destoffset, destval);
-        } else {
-            u16 destval;
+	    DECODE_PRINTF("DWORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    DECODE_PRINTF(",CL\n");
+	    destval = fetch_data_long(destoffset);
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_long_operation[rh]) (destval, amt);
+	    store_data_long(destoffset, destval);
+	} else {
+	    u16 destval;
 
-            DECODE_PRINTF("WORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            DECODE_PRINTF(",CL\n");
-            destval = fetch_data_word(destoffset);
-            TRACE_AND_STEP();
-            destval = (*opcD1_word_operation[rh]) (destval, amt);
-            store_data_word(destoffset, destval);
-        }
-    } else {                     /* register to register */
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg;
+	    DECODE_PRINTF("WORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    DECODE_PRINTF(",CL\n");
+	    destval = fetch_data_word(destoffset);
+	    TRACE_AND_STEP();
+	    destval = (*opcD1_word_operation[rh]) (destval, amt);
+	    store_data_word(destoffset, destval);
+	}
+    } else {			 /* register to register */
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
-            DECODE_PRINTF(",CL\n");
-            TRACE_AND_STEP();
-            *destreg = (*opcD1_long_operation[rh]) (*destreg, amt);
-        } else {
-            u16 *destreg;
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
+	    DECODE_PRINTF(",CL\n");
+	    TRACE_AND_STEP();
+	    *destreg = (*opcD1_long_operation[rh]) (*destreg, amt);
+	} else {
+	    u16 *destreg;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF(",CL\n");
-            TRACE_AND_STEP();
-            *destreg = (*opcD1_word_operation[rh]) (*destreg, amt);
-        }
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF(",CL\n");
+	    TRACE_AND_STEP();
+	    *destreg = (*opcD1_word_operation[rh]) (*destreg, amt);
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4028,9 +4028,9 @@ static void x86emuOp_aam(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("AAM\n");
     a = fetch_byte_imm();      /* this is a stupid encoding. */
     if (a != 10) {
-        DECODE_PRINTF("ERROR DECODING AAM\n");
-        TRACE_REGS();
-        HALT_SYS();
+	DECODE_PRINTF("ERROR DECODING AAM\n");
+	TRACE_REGS();
+	HALT_SYS();
     }
     TRACE_AND_STEP();
     /* note the type change here --- returning AL and AH in AX. */
@@ -4092,11 +4092,11 @@ static void x86emuOp_loopne(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF2("%04x\n", ip);
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_ADDR)
-        M.x86.R_ECX -= 1;
+	M.x86.R_ECX -= 1;
     else
-        M.x86.R_CX -= 1;
-    if (((M.x86.mode & SYSMODE_PREFIX_ADDR) ? M.x86.R_ECX : M.x86.R_CX) != 0 && !ACCESS_FLAG(F_ZF))      /* (E)CX != 0 and !ZF */
-        M.x86.R_IP = ip;
+	M.x86.R_CX -= 1;
+    if (((M.x86.mode & SYSMODE_PREFIX_ADDR) ? M.x86.R_ECX : M.x86.R_CX) != 0 && !ACCESS_FLAG(F_ZF))	 /* (E)CX != 0 and !ZF */
+	M.x86.R_IP = ip;
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
@@ -4116,11 +4116,11 @@ static void x86emuOp_loope(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF2("%04x\n", ip);
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_ADDR)
-        M.x86.R_ECX -= 1;
+	M.x86.R_ECX -= 1;
     else
-        M.x86.R_CX -= 1;
-    if (((M.x86.mode & SYSMODE_PREFIX_ADDR) ? M.x86.R_ECX : M.x86.R_CX) != 0 && ACCESS_FLAG(F_ZF))      /* (E)CX != 0 and ZF */
-        M.x86.R_IP = ip;
+	M.x86.R_CX -= 1;
+    if (((M.x86.mode & SYSMODE_PREFIX_ADDR) ? M.x86.R_ECX : M.x86.R_CX) != 0 && ACCESS_FLAG(F_ZF))	/* (E)CX != 0 and ZF */
+	M.x86.R_IP = ip;
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
@@ -4140,11 +4140,11 @@ static void x86emuOp_loop(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF2("%04x\n", ip);
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_ADDR)
-        M.x86.R_ECX -= 1;
+	M.x86.R_ECX -= 1;
     else
-        M.x86.R_CX -= 1;
-    if (((M.x86.mode & SYSMODE_PREFIX_ADDR) ? M.x86.R_ECX : M.x86.R_CX) != 0)      /* (E)CX != 0 */
-        M.x86.R_IP = ip;
+	M.x86.R_CX -= 1;
+    if (((M.x86.mode & SYSMODE_PREFIX_ADDR) ? M.x86.R_ECX : M.x86.R_CX) != 0)	   /* (E)CX != 0 */
+	M.x86.R_IP = ip;
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
@@ -4166,7 +4166,7 @@ static void x86emuOp_jcxz(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF2("%x\n", target);
     TRACE_AND_STEP();
     if (M.x86.R_CX == 0) {
-        M.x86.R_IP = target;
+	M.x86.R_IP = target;
 	JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, M.x86.R_IP, " CXZ ");
     }
     DECODE_CLEAR_SEGOVR();
@@ -4203,15 +4203,15 @@ static void x86emuOp_in_word_AX_IMM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("IN\t");
 	port = (u8) fetch_byte_imm();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF2("EAX,%x\n", port);
+	DECODE_PRINTF2("EAX,%x\n", port);
     } else {
-        DECODE_PRINTF2("AX,%x\n", port);
+	DECODE_PRINTF2("AX,%x\n", port);
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        M.x86.R_EAX = (*sys_inl)(port);
+	M.x86.R_EAX = (*sys_inl)(port);
     } else {
-        M.x86.R_AX = (*sys_inw)(port);
+	M.x86.R_AX = (*sys_inw)(port);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4247,15 +4247,15 @@ static void x86emuOp_out_word_IMM_AX(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF("OUT\t");
 	port = (u8) fetch_byte_imm();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF2("%x,EAX\n", port);
+	DECODE_PRINTF2("%x,EAX\n", port);
     } else {
-        DECODE_PRINTF2("%x,AX\n", port);
+	DECODE_PRINTF2("%x,AX\n", port);
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        (*sys_outl)(port, M.x86.R_EAX);
+	(*sys_outl)(port, M.x86.R_EAX);
     } else {
-        (*sys_outw)(port, M.x86.R_AX);
+	(*sys_outw)(port, M.x86.R_AX);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4273,23 +4273,23 @@ static void x86emuOp_call_near_IMM(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     DECODE_PRINTF("CALL\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        ip32 = (s32) fetch_long_imm();
-        ip32 += (s16) M.x86.R_IP;    /* CHECK SIGN */
-        DECODE_PRINTF2("%04x\n", (u16)ip32);
-        CALL_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip32, "");
+	ip32 = (s32) fetch_long_imm();
+	ip32 += (s16) M.x86.R_IP;    /* CHECK SIGN */
+	DECODE_PRINTF2("%04x\n", (u16)ip32);
+	CALL_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip32, "");
     } else {
-        ip16 = (s16) fetch_word_imm();
-        ip16 += (s16) M.x86.R_IP;    /* CHECK SIGN */
-        DECODE_PRINTF2("%04x\n", ip16);
-        CALL_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip16, "");
+	ip16 = (s16) fetch_word_imm();
+	ip16 += (s16) M.x86.R_IP;    /* CHECK SIGN */
+	DECODE_PRINTF2("%04x\n", ip16);
+	CALL_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip16, "");
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        push_long(M.x86.R_EIP);
-        M.x86.R_EIP = ip32 & 0xffff;
+	push_long(M.x86.R_EIP);
+	M.x86.R_EIP = ip32 & 0xffff;
     } else {
-        push_word(M.x86.R_IP);
-        M.x86.R_EIP = ip16;
+	push_word(M.x86.R_IP);
+	M.x86.R_EIP = ip16;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4306,19 +4306,19 @@ static void x86emuOp_jump_near_IMM(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     DECODE_PRINTF("JMP\t");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        ip = (u32)fetch_long_imm();
+	ip = (u32)fetch_long_imm();
 	ip += (u32)M.x86.R_EIP;
 	DECODE_PRINTF2("%08x\n", (u32)ip);
-        JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip, " NEAR ");
+	JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip, " NEAR ");
 	TRACE_AND_STEP();
 	M.x86.R_EIP = (u32)ip;
     } else {
-        ip = (s16)fetch_word_imm();
-        ip += (s16)M.x86.R_IP;
-        DECODE_PRINTF2("%04x\n", (u16)ip);
-        JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip, " NEAR ");
-        TRACE_AND_STEP();
-        M.x86.R_IP = (u16)ip;
+	ip = (s16)fetch_word_imm();
+	ip += (s16)M.x86.R_IP;
+	DECODE_PRINTF2("%04x\n", (u16)ip);
+	JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, ip, " NEAR ");
+	TRACE_AND_STEP();
+	M.x86.R_IP = (u16)ip;
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4336,9 +4336,9 @@ static void x86emuOp_jump_far_IMM(u8 X86EMU_UNUSED(op1))
     START_OF_INSTR();
     DECODE_PRINTF("JMP\tFAR ");
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        ip = fetch_long_imm();
+	ip = fetch_long_imm();
     } else {
-        ip = fetch_word_imm();
+	ip = fetch_word_imm();
     }
     cs = fetch_word_imm();
     DECODE_PRINTF2("%04x:", cs);
@@ -4394,15 +4394,15 @@ static void x86emuOp_in_word_AX_DX(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("IN\tEAX,DX\n");
+	DECODE_PRINTF("IN\tEAX,DX\n");
     } else {
-        DECODE_PRINTF("IN\tAX,DX\n");
+	DECODE_PRINTF("IN\tAX,DX\n");
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        M.x86.R_EAX = (*sys_inl)(M.x86.R_DX);
+	M.x86.R_EAX = (*sys_inl)(M.x86.R_DX);
     } else {
-        M.x86.R_AX = (*sys_inw)(M.x86.R_DX);
+	M.x86.R_AX = (*sys_inw)(M.x86.R_DX);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4430,15 +4430,15 @@ static void x86emuOp_out_word_DX_AX(u8 X86EMU_UNUSED(op1))
 {
     START_OF_INSTR();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        DECODE_PRINTF("OUT\tDX,EAX\n");
+	DECODE_PRINTF("OUT\tDX,EAX\n");
     } else {
-        DECODE_PRINTF("OUT\tDX,AX\n");
+	DECODE_PRINTF("OUT\tDX,AX\n");
     }
     TRACE_AND_STEP();
     if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-        (*sys_outl)(M.x86.R_DX, M.x86.R_EAX);
+	(*sys_outl)(M.x86.R_DX, M.x86.R_EAX);
     } else {
-        (*sys_outw)(M.x86.R_DX, M.x86.R_AX);
+	(*sys_outw)(M.x86.R_DX, M.x86.R_AX);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4470,7 +4470,7 @@ static void x86emuOp_repne(u8 X86EMU_UNUSED(op1))
     TRACE_AND_STEP();
     M.x86.mode |= SYSMODE_PREFIX_REPNE;
     if (M.x86.mode & SYSMODE_PREFIX_ADDR)
-        M.x86.mode |= SYSMODE_32BIT_REP;
+	M.x86.mode |= SYSMODE_32BIT_REP;
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
@@ -4486,7 +4486,7 @@ static void x86emuOp_repe(u8 X86EMU_UNUSED(op1))
     TRACE_AND_STEP();
     M.x86.mode |= SYSMODE_PREFIX_REPE;
     if (M.x86.mode & SYSMODE_PREFIX_ADDR)
-        M.x86.mode |= SYSMODE_32BIT_REP;
+	M.x86.mode |= SYSMODE_32BIT_REP;
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
 }
@@ -4537,100 +4537,100 @@ static void x86emuOp_opcF6_byte_RM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
     DECODE_PRINTF(opF6_names[rh]);
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        destval = fetch_data_byte(destoffset);
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	destval = fetch_data_byte(destoffset);
 
-        switch (rh) {
-        case 0:         /* test byte imm */
-            DECODE_PRINTF(",");
-            srcval = fetch_byte_imm();
-            DECODE_PRINTF2("%02x\n", srcval);
-            TRACE_AND_STEP();
-            test_byte(destval, srcval);
-            break;
-        case 1:
-            DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
-            HALT_SYS();
-            break;
-        case 2:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            destval = not_byte(destval);
-            store_data_byte(destoffset, destval);
-            break;
-        case 3:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            destval = neg_byte(destval);
-            store_data_byte(destoffset, destval);
-            break;
-        case 4:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            mul_byte(destval);
-            break;
-        case 5:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            imul_byte(destval);
-            break;
-        case 6:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            div_byte(destval);
-            break;
-        default:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            idiv_byte(destval);
-            break;
-        }
-    } else {                     /* mod=11 */
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        switch (rh) {
-        case 0:         /* test byte imm */
-            DECODE_PRINTF(",");
-            srcval = fetch_byte_imm();
-            DECODE_PRINTF2("%02x\n", srcval);
-            TRACE_AND_STEP();
-            test_byte(*destreg, srcval);
-            break;
-        case 1:
-            DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
-            HALT_SYS();
-            break;
-        case 2:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = not_byte(*destreg);
-            break;
-        case 3:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            *destreg = neg_byte(*destreg);
-            break;
-        case 4:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            mul_byte(*destreg);      /*!!!  */
-            break;
-        case 5:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            imul_byte(*destreg);
-            break;
-        case 6:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            div_byte(*destreg);
-            break;
-        default:
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            idiv_byte(*destreg);
-            break;
-        }
+	switch (rh) {
+	case 0:		/* test byte imm */
+	    DECODE_PRINTF(",");
+	    srcval = fetch_byte_imm();
+	    DECODE_PRINTF2("%02x\n", srcval);
+	    TRACE_AND_STEP();
+	    test_byte(destval, srcval);
+	    break;
+	case 1:
+	    DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
+	    HALT_SYS();
+	    break;
+	case 2:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    destval = not_byte(destval);
+	    store_data_byte(destoffset, destval);
+	    break;
+	case 3:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    destval = neg_byte(destval);
+	    store_data_byte(destoffset, destval);
+	    break;
+	case 4:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    mul_byte(destval);
+	    break;
+	case 5:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    imul_byte(destval);
+	    break;
+	case 6:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    div_byte(destval);
+	    break;
+	default:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    idiv_byte(destval);
+	    break;
+	}
+    } else {			 /* mod=11 */
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	switch (rh) {
+	case 0:		/* test byte imm */
+	    DECODE_PRINTF(",");
+	    srcval = fetch_byte_imm();
+	    DECODE_PRINTF2("%02x\n", srcval);
+	    TRACE_AND_STEP();
+	    test_byte(*destreg, srcval);
+	    break;
+	case 1:
+	    DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
+	    HALT_SYS();
+	    break;
+	case 2:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = not_byte(*destreg);
+	    break;
+	case 3:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    *destreg = neg_byte(*destreg);
+	    break;
+	case 4:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    mul_byte(*destreg);	     /*!!!  */
+	    break;
+	case 5:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    imul_byte(*destreg);
+	    break;
+	case 6:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    div_byte(*destreg);
+	    break;
+	default:
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    idiv_byte(*destreg);
+	    break;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4650,213 +4650,213 @@ static void x86emuOp_opcF7_word_RM(u8 X86EMU_UNUSED(op1))
     DECODE_PRINTF(opF6_names[rh]);
     if (mod < 3) {
 
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 destval, srcval;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 destval, srcval;
 
-            DECODE_PRINTF("DWORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            destval = fetch_data_long(destoffset);
+	    DECODE_PRINTF("DWORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    destval = fetch_data_long(destoffset);
 
-            switch (rh) {
-            case 0:
-                DECODE_PRINTF(",");
-                srcval = fetch_long_imm();
-                DECODE_PRINTF2("%x\n", srcval);
-                TRACE_AND_STEP();
-                test_long(destval, srcval);
-                break;
-            case 1:
-                DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F7\n");
-                HALT_SYS();
-                break;
-            case 2:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                destval = not_long(destval);
-                store_data_long(destoffset, destval);
-                break;
-            case 3:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                destval = neg_long(destval);
-                store_data_long(destoffset, destval);
-                break;
-            case 4:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                mul_long(destval);
-                break;
-            case 5:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                imul_long(destval);
-                break;
-            case 6:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                div_long(destval);
-                break;
-            case 7:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                idiv_long(destval);
-                break;
-            }
-        } else {
-            u16 destval, srcval;
+	    switch (rh) {
+	    case 0:
+		DECODE_PRINTF(",");
+		srcval = fetch_long_imm();
+		DECODE_PRINTF2("%x\n", srcval);
+		TRACE_AND_STEP();
+		test_long(destval, srcval);
+		break;
+	    case 1:
+		DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F7\n");
+		HALT_SYS();
+		break;
+	    case 2:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		destval = not_long(destval);
+		store_data_long(destoffset, destval);
+		break;
+	    case 3:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		destval = neg_long(destval);
+		store_data_long(destoffset, destval);
+		break;
+	    case 4:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		mul_long(destval);
+		break;
+	    case 5:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		imul_long(destval);
+		break;
+	    case 6:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		div_long(destval);
+		break;
+	    case 7:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		idiv_long(destval);
+		break;
+	    }
+	} else {
+	    u16 destval, srcval;
 
-            DECODE_PRINTF("WORD PTR ");
-            destoffset = decode_rmXX_address(mod, rl);
-            destval = fetch_data_word(destoffset);
+	    DECODE_PRINTF("WORD PTR ");
+	    destoffset = decode_rmXX_address(mod, rl);
+	    destval = fetch_data_word(destoffset);
 
-            switch (rh) {
-            case 0:         /* test word imm */
-                DECODE_PRINTF(",");
-                srcval = fetch_word_imm();
-                DECODE_PRINTF2("%x\n", srcval);
-                TRACE_AND_STEP();
-                test_word(destval, srcval);
-                break;
-            case 1:
-                DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F7\n");
-                HALT_SYS();
-                break;
-            case 2:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                destval = not_word(destval);
-                store_data_word(destoffset, destval);
-                break;
-            case 3:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                destval = neg_word(destval);
-                store_data_word(destoffset, destval);
-                break;
-            case 4:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                mul_word(destval);
-                break;
-            case 5:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                imul_word(destval);
-                break;
-            case 6:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                div_word(destval);
-                break;
-            case 7:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                idiv_word(destval);
-                break;
-            }
-        }
+	    switch (rh) {
+	    case 0:	    /* test word imm */
+		DECODE_PRINTF(",");
+		srcval = fetch_word_imm();
+		DECODE_PRINTF2("%x\n", srcval);
+		TRACE_AND_STEP();
+		test_word(destval, srcval);
+		break;
+	    case 1:
+		DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F7\n");
+		HALT_SYS();
+		break;
+	    case 2:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		destval = not_word(destval);
+		store_data_word(destoffset, destval);
+		break;
+	    case 3:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		destval = neg_word(destval);
+		store_data_word(destoffset, destval);
+		break;
+	    case 4:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		mul_word(destval);
+		break;
+	    case 5:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		imul_word(destval);
+		break;
+	    case 6:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		div_word(destval);
+		break;
+	    case 7:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		idiv_word(destval);
+		break;
+	    }
+	}
 
-    } else {                     /* mod=11 */
+    } else {			 /* mod=11 */
 
-        if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-            u32 *destreg;
-            u32 srcval;
+	if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+	    u32 *destreg;
+	    u32 srcval;
 
-            destreg = DECODE_RM_LONG_REGISTER(rl);
+	    destreg = DECODE_RM_LONG_REGISTER(rl);
 
-            switch (rh) {
-            case 0:         /* test word imm */
-                DECODE_PRINTF(",");
-                srcval = fetch_long_imm();
-                DECODE_PRINTF2("%x\n", srcval);
-                TRACE_AND_STEP();
-                test_long(*destreg, srcval);
-                break;
-            case 1:
-                DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
-                HALT_SYS();
-                break;
-            case 2:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg = not_long(*destreg);
-                break;
-            case 3:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg = neg_long(*destreg);
-                break;
-            case 4:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                mul_long(*destreg);      /*!!!  */
-                break;
-            case 5:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                imul_long(*destreg);
-                break;
-            case 6:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                div_long(*destreg);
-                break;
-            case 7:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                idiv_long(*destreg);
-                break;
-            }
-        } else {
-            u16 *destreg;
-            u16 srcval;
+	    switch (rh) {
+	    case 0:	    /* test word imm */
+		DECODE_PRINTF(",");
+		srcval = fetch_long_imm();
+		DECODE_PRINTF2("%x\n", srcval);
+		TRACE_AND_STEP();
+		test_long(*destreg, srcval);
+		break;
+	    case 1:
+		DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
+		HALT_SYS();
+		break;
+	    case 2:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg = not_long(*destreg);
+		break;
+	    case 3:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg = neg_long(*destreg);
+		break;
+	    case 4:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		mul_long(*destreg);	 /*!!!  */
+		break;
+	    case 5:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		imul_long(*destreg);
+		break;
+	    case 6:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		div_long(*destreg);
+		break;
+	    case 7:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		idiv_long(*destreg);
+		break;
+	    }
+	} else {
+	    u16 *destreg;
+	    u16 srcval;
 
-            destreg = DECODE_RM_WORD_REGISTER(rl);
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
 
-            switch (rh) {
-            case 0:         /* test word imm */
-                DECODE_PRINTF(",");
-                srcval = fetch_word_imm();
-                DECODE_PRINTF2("%x\n", srcval);
-                TRACE_AND_STEP();
-                test_word(*destreg, srcval);
-                break;
-            case 1:
-                DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
-                HALT_SYS();
-                break;
-            case 2:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg = not_word(*destreg);
-                break;
-            case 3:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg = neg_word(*destreg);
-                break;
-            case 4:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                mul_word(*destreg);      /*!!!  */
-                break;
-            case 5:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                imul_word(*destreg);
-                break;
-            case 6:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                div_word(*destreg);
-                break;
-            case 7:
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                idiv_word(*destreg);
-                break;
-            }
-        }
+	    switch (rh) {
+	    case 0:	    /* test word imm */
+		DECODE_PRINTF(",");
+		srcval = fetch_word_imm();
+		DECODE_PRINTF2("%x\n", srcval);
+		TRACE_AND_STEP();
+		test_word(*destreg, srcval);
+		break;
+	    case 1:
+		DECODE_PRINTF("ILLEGAL OP MOD=00 RH=01 OP=F6\n");
+		HALT_SYS();
+		break;
+	    case 2:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg = not_word(*destreg);
+		break;
+	    case 3:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg = neg_word(*destreg);
+		break;
+	    case 4:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		mul_word(*destreg);	 /*!!!  */
+		break;
+	    case 5:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		imul_word(*destreg);
+		break;
+	    case 6:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		div_word(*destreg);
+		break;
+	    case 7:
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		idiv_word(*destreg);
+		break;
+	    }
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -4968,49 +4968,49 @@ static void x86emuOp_opcFE_byte_RM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
 
-        switch (rh) {
-        case 0:
-            DECODE_PRINTF("INC\t");
-            break;
-        case 1:
-            DECODE_PRINTF("DEC\t");
-            break;
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-            DECODE_PRINTF2("ILLEGAL OP MAJOR OP 0xFE MINOR OP %x \n", mod);
-            HALT_SYS();
-            break;
-        }
+	switch (rh) {
+	case 0:
+	    DECODE_PRINTF("INC\t");
+	    break;
+	case 1:
+	    DECODE_PRINTF("DEC\t");
+	    break;
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+	    DECODE_PRINTF2("ILLEGAL OP MAJOR OP 0xFE MINOR OP %x \n", mod);
+	    HALT_SYS();
+	    break;
+	}
     }
 #endif
     if (mod < 3) {
-        DECODE_PRINTF("BYTE PTR ");
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF("\n");
-        destval = fetch_data_byte(destoffset);
-        TRACE_AND_STEP();
-        if (rh == 0)
-          destval = inc_byte(destval);
-        else
-          destval = dec_byte(destval);
-        store_data_byte(destoffset, destval);
+	DECODE_PRINTF("BYTE PTR ");
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF("\n");
+	destval = fetch_data_byte(destoffset);
+	TRACE_AND_STEP();
+	if (rh == 0)
+	  destval = inc_byte(destval);
+	else
+	  destval = dec_byte(destval);
+	store_data_byte(destoffset, destval);
     } else {
-        destreg = DECODE_RM_BYTE_REGISTER(rl);
-        DECODE_PRINTF("\n");
-        TRACE_AND_STEP();
-        if (rh == 0)
-          *destreg = inc_byte(*destreg);
-        else
-          *destreg = dec_byte(*destreg);
+	destreg = DECODE_RM_BYTE_REGISTER(rl);
+	DECODE_PRINTF("\n");
+	TRACE_AND_STEP();
+	if (rh == 0)
+	  *destreg = inc_byte(*destreg);
+	else
+	  *destreg = dec_byte(*destreg);
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();
@@ -5034,185 +5034,185 @@ static void x86emuOp_opcFF_word_RM(u8 X86EMU_UNUSED(op1))
     FETCH_DECODE_MODRM(mod, rh, rl);
 #ifdef DEBUG
     if (DEBUG_DECODE()) {
-        /* XXX DECODE_PRINTF may be changed to something more
-           general, so that it is important to leave the strings
-           in the same format, even though the result is that the
-           above test is done twice. */
+	/* XXX DECODE_PRINTF may be changed to something more
+	   general, so that it is important to leave the strings
+	   in the same format, even though the result is that the
+	   above test is done twice. */
 
-        switch (rh) {
-        case 0:
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                DECODE_PRINTF("INC\tDWORD PTR ");
-            } else {
-                DECODE_PRINTF("INC\tWORD PTR ");
-            }
-            break;
-        case 1:
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                DECODE_PRINTF("DEC\tDWORD PTR ");
-            } else {
-                DECODE_PRINTF("DEC\tWORD PTR ");
-            }
-            break;
-        case 2:
-            DECODE_PRINTF("CALL\t ");
-            break;
-        case 3:
-            DECODE_PRINTF("CALL\tFAR ");
-            break;
-        case 4:
-            DECODE_PRINTF("JMP\t");
-            break;
-        case 5:
-            DECODE_PRINTF("JMP\tFAR ");
-            break;
-        case 6:
-            DECODE_PRINTF("PUSH\t");
-            break;
-        case 7:
-            DECODE_PRINTF("ILLEGAL DECODING OF OPCODE FF\t");
-            HALT_SYS();
-            break;
-        }
+	switch (rh) {
+	case 0:
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		DECODE_PRINTF("INC\tDWORD PTR ");
+	    } else {
+		DECODE_PRINTF("INC\tWORD PTR ");
+	    }
+	    break;
+	case 1:
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		DECODE_PRINTF("DEC\tDWORD PTR ");
+	    } else {
+		DECODE_PRINTF("DEC\tWORD PTR ");
+	    }
+	    break;
+	case 2:
+	    DECODE_PRINTF("CALL\t ");
+	    break;
+	case 3:
+	    DECODE_PRINTF("CALL\tFAR ");
+	    break;
+	case 4:
+	    DECODE_PRINTF("JMP\t");
+	    break;
+	case 5:
+	    DECODE_PRINTF("JMP\tFAR ");
+	    break;
+	case 6:
+	    DECODE_PRINTF("PUSH\t");
+	    break;
+	case 7:
+	    DECODE_PRINTF("ILLEGAL DECODING OF OPCODE FF\t");
+	    HALT_SYS();
+	    break;
+	}
     }
 #endif
     if (mod < 3) {
-        destoffset = decode_rmXX_address(mod, rl);
-        DECODE_PRINTF("\n");
-        switch (rh) {
-        case 0:         /* inc word ptr ... */
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                destval32 = fetch_data_long(destoffset);
-                TRACE_AND_STEP();
-                destval32 = inc_long(destval32);
-                store_data_long(destoffset, destval32);
-            } else {
-                destval = fetch_data_word(destoffset);
-                TRACE_AND_STEP();
-                destval = inc_word(destval);
-                store_data_word(destoffset, destval);
-            }
-            break;
-        case 1:         /* dec word ptr ... */
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                destval32 = fetch_data_long(destoffset);
-                TRACE_AND_STEP();
-                destval32 = dec_long(destval32);
-                store_data_long(destoffset, destval32);
-            } else {
-                destval = fetch_data_word(destoffset);
-                TRACE_AND_STEP();
-                destval = dec_word(destval);
-                store_data_word(destoffset, destval);
-            }
-            break;
-        case 2:         /* call word ptr ... */
-            destval = fetch_data_word(destoffset);
-            TRACE_AND_STEP();
-            push_word(M.x86.R_IP);
-            M.x86.R_IP = destval;
-            break;
-        case 3:         /* call far ptr ... */
-            destval = fetch_data_word(destoffset);
-            destval2 = fetch_data_word(destoffset + 2);
-            TRACE_AND_STEP();
-            push_word(M.x86.R_CS);
-            M.x86.R_CS = destval2;
-            push_word(M.x86.R_IP);
-            M.x86.R_IP = destval;
-            break;
-        case 4:         /* jmp word ptr ... */
-            destval = fetch_data_word(destoffset);
-            JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, destval, " WORD ");
-            TRACE_AND_STEP();
-            M.x86.R_IP = destval;
-            break;
-        case 5:         /* jmp far ptr ... */
-            destval = fetch_data_word(destoffset);
-            destval2 = fetch_data_word(destoffset + 2);
-            JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, destval2, destval, " FAR ");
-            TRACE_AND_STEP();
-            M.x86.R_IP = destval;
-            M.x86.R_CS = destval2;
-            break;
-        case 6:         /*  push word ptr ... */
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                destval32 = fetch_data_long(destoffset);
-                TRACE_AND_STEP();
-                push_long(destval32);
-            } else {
-                destval = fetch_data_word(destoffset);
-                TRACE_AND_STEP();
-                push_word(destval);
-            }
-            break;
-        }
+	destoffset = decode_rmXX_address(mod, rl);
+	DECODE_PRINTF("\n");
+	switch (rh) {
+	case 0:		/* inc word ptr ... */
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		destval32 = fetch_data_long(destoffset);
+		TRACE_AND_STEP();
+		destval32 = inc_long(destval32);
+		store_data_long(destoffset, destval32);
+	    } else {
+		destval = fetch_data_word(destoffset);
+		TRACE_AND_STEP();
+		destval = inc_word(destval);
+		store_data_word(destoffset, destval);
+	    }
+	    break;
+	case 1:		/* dec word ptr ... */
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		destval32 = fetch_data_long(destoffset);
+		TRACE_AND_STEP();
+		destval32 = dec_long(destval32);
+		store_data_long(destoffset, destval32);
+	    } else {
+		destval = fetch_data_word(destoffset);
+		TRACE_AND_STEP();
+		destval = dec_word(destval);
+		store_data_word(destoffset, destval);
+	    }
+	    break;
+	case 2:		/* call word ptr ... */
+	    destval = fetch_data_word(destoffset);
+	    TRACE_AND_STEP();
+	    push_word(M.x86.R_IP);
+	    M.x86.R_IP = destval;
+	    break;
+	case 3:		/* call far ptr ... */
+	    destval = fetch_data_word(destoffset);
+	    destval2 = fetch_data_word(destoffset + 2);
+	    TRACE_AND_STEP();
+	    push_word(M.x86.R_CS);
+	    M.x86.R_CS = destval2;
+	    push_word(M.x86.R_IP);
+	    M.x86.R_IP = destval;
+	    break;
+	case 4:		/* jmp word ptr ... */
+	    destval = fetch_data_word(destoffset);
+	    JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, M.x86.R_CS, destval, " WORD ");
+	    TRACE_AND_STEP();
+	    M.x86.R_IP = destval;
+	    break;
+	case 5:		/* jmp far ptr ... */
+	    destval = fetch_data_word(destoffset);
+	    destval2 = fetch_data_word(destoffset + 2);
+	    JMP_TRACE(M.x86.saved_cs, M.x86.saved_ip, destval2, destval, " FAR ");
+	    TRACE_AND_STEP();
+	    M.x86.R_IP = destval;
+	    M.x86.R_CS = destval2;
+	    break;
+	case 6:		/*  push word ptr ... */
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		destval32 = fetch_data_long(destoffset);
+		TRACE_AND_STEP();
+		push_long(destval32);
+	    } else {
+		destval = fetch_data_word(destoffset);
+		TRACE_AND_STEP();
+		push_word(destval);
+	    }
+	    break;
+	}
     } else {
-        switch (rh) {
-        case 0:
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                destreg32 = DECODE_RM_LONG_REGISTER(rl);
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg32 = inc_long(*destreg32);
-            } else {
-                destreg = DECODE_RM_WORD_REGISTER(rl);
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg = inc_word(*destreg);
-            }
-            break;
-        case 1:
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                destreg32 = DECODE_RM_LONG_REGISTER(rl);
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg32 = dec_long(*destreg32);
-            } else {
-                destreg = DECODE_RM_WORD_REGISTER(rl);
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                *destreg = dec_word(*destreg);
-            }
-            break;
-        case 2:         /* call word ptr ... */
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            push_word(M.x86.R_IP);
-            M.x86.R_IP = *destreg;
-            break;
-        case 3:         /* jmp far ptr ... */
-            DECODE_PRINTF("OPERATION UNDEFINED 0XFF \n");
-            TRACE_AND_STEP();
-            HALT_SYS();
-            break;
+	switch (rh) {
+	case 0:
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		destreg32 = DECODE_RM_LONG_REGISTER(rl);
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg32 = inc_long(*destreg32);
+	    } else {
+		destreg = DECODE_RM_WORD_REGISTER(rl);
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg = inc_word(*destreg);
+	    }
+	    break;
+	case 1:
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		destreg32 = DECODE_RM_LONG_REGISTER(rl);
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg32 = dec_long(*destreg32);
+	    } else {
+		destreg = DECODE_RM_WORD_REGISTER(rl);
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		*destreg = dec_word(*destreg);
+	    }
+	    break;
+	case 2:		/* call word ptr ... */
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    push_word(M.x86.R_IP);
+	    M.x86.R_IP = *destreg;
+	    break;
+	case 3:		/* jmp far ptr ... */
+	    DECODE_PRINTF("OPERATION UNDEFINED 0XFF \n");
+	    TRACE_AND_STEP();
+	    HALT_SYS();
+	    break;
 
-        case 4:         /* jmp  ... */
-            destreg = DECODE_RM_WORD_REGISTER(rl);
-            DECODE_PRINTF("\n");
-            TRACE_AND_STEP();
-            M.x86.R_IP = (u16) (*destreg);
-            break;
-        case 5:         /* jmp far ptr ... */
-            DECODE_PRINTF("OPERATION UNDEFINED 0XFF \n");
-            TRACE_AND_STEP();
-            HALT_SYS();
-            break;
-        case 6:
-            if (M.x86.mode & SYSMODE_PREFIX_DATA) {
-                destreg32 = DECODE_RM_LONG_REGISTER(rl);
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                push_long(*destreg32);
-            } else {
-                destreg = DECODE_RM_WORD_REGISTER(rl);
-                DECODE_PRINTF("\n");
-                TRACE_AND_STEP();
-                push_word(*destreg);
-            }
-            break;
-        }
+	case 4:		/* jmp  ... */
+	    destreg = DECODE_RM_WORD_REGISTER(rl);
+	    DECODE_PRINTF("\n");
+	    TRACE_AND_STEP();
+	    M.x86.R_IP = (u16) (*destreg);
+	    break;
+	case 5:		/* jmp far ptr ... */
+	    DECODE_PRINTF("OPERATION UNDEFINED 0XFF \n");
+	    TRACE_AND_STEP();
+	    HALT_SYS();
+	    break;
+	case 6:
+	    if (M.x86.mode & SYSMODE_PREFIX_DATA) {
+		destreg32 = DECODE_RM_LONG_REGISTER(rl);
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		push_long(*destreg32);
+	    } else {
+		destreg = DECODE_RM_WORD_REGISTER(rl);
+		DECODE_PRINTF("\n");
+		TRACE_AND_STEP();
+		push_word(*destreg);
+	    }
+	    break;
+	}
     }
     DECODE_CLEAR_SEGOVR();
     END_OF_INSTR();

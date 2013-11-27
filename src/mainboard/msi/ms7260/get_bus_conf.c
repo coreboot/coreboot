@@ -41,13 +41,13 @@ unsigned pci1234x[] = {
 	 * please refer to * src/northbridge/amd/amdk8/get_sblk_pci1234.c.
 	 */
 	0x0000ff0,
-//      0x0000ff0,
-//      0x0000ff0,
-//      0x0000ff0,
-//      0x0000ff0,
-//      0x0000ff0,
-//      0x0000ff0,
-//      0x0000ff0
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0,
+//	0x0000ff0
 };
 
 unsigned hcdnx[] = {
@@ -55,13 +55,13 @@ unsigned hcdnx[] = {
 	 * device in chain, assume every chain only have 4 ht device at most.
 	 */
 	0x20202020,
-//      0x20202020,
-//      0x20202020,
-//      0x20202020,
-//      0x20202020,
-//      0x20202020,
-//      0x20202020,
-//      0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
+//	0x20202020,
 };
 
 static unsigned get_bus_conf_done = 0;
@@ -110,7 +110,7 @@ void get_bus_conf(void)
 
 	for (i = 2; i < 8; i++) {
 		dev = dev_find_slot(bus_mcp55[0],
-				    PCI_DEVFN(sbdn + 0x0a + i - 2, 0));
+					PCI_DEVFN(sbdn + 0x0a + i - 2, 0));
 		if (dev) {
 			bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		}

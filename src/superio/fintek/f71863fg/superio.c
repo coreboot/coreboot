@@ -47,11 +47,11 @@ static void f71863fg_init(device_t dev)
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = f71863fg_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = f71863fg_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_8787_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {
@@ -59,7 +59,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71863FG_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
 	{ &ops, F71863FG_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, F71863FG_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, F71863FG_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, F71863FG_PP,	PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
 	{ &ops, F71863FG_HWM,  PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 	{ &ops, F71863FG_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, },
 	{ &ops, F71863FG_GPIO, },

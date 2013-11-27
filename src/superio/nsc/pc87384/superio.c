@@ -30,9 +30,9 @@
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_enable,
+	.enable	   = pnp_enable,
 };
 
 static struct pnp_info pnp_dev_info[] = {

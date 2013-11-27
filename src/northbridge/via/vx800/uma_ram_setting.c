@@ -137,7 +137,7 @@ void SetUMARam(void)
 	ByteVal = (ByteVal & 0x8f) | (SLD0F3Val << 4);
 	pci_write_config8(MEMCTRL, 0xa1, ByteVal);
 
-//      vga_dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VGA, 0);
+//	vga_dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VGA, 0);
 
 	//RxB2 may be for S.L. and RxB1 may be for L. L.
 	// It is different from Spec.

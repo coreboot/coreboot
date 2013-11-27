@@ -115,9 +115,9 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 		return src;
 
 	if (!cbfs_decompress(ntohl(orom->compression),
-			     src,
-			     dest,
-			     ntohl(orom->len)))
+				src,
+				dest,
+				ntohl(orom->len)))
 		return NULL;
 
 	return dest;
@@ -131,7 +131,7 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
  * for the romstage, the rmodule loader is used.  */
 void __attribute__((weak))
 cache_loaded_ramstage(struct romstage_handoff *handoff,
-                      const struct cbmem_entry *ramstage, void *entry_point)
+		      const struct cbmem_entry *ramstage, void *entry_point)
 {
 	uint32_t ramstage_size;
 	const struct cbmem_entry *entry;
@@ -150,12 +150,12 @@ cache_loaded_ramstage(struct romstage_handoff *handoff,
 	handoff->ramstage_entry_point = (uint32_t)entry_point;
 
 	memcpy(cbmem_entry_start(entry), cbmem_entry_start(ramstage),
-	       ramstage_size);
+		ramstage_size);
 }
 
 void * __attribute__((weak))
 load_cached_ramstage(struct romstage_handoff *handoff,
-                     const struct cbmem_entry *ramstage)
+		     const struct cbmem_entry *ramstage)
 {
 	const struct cbmem_entry *entry_cache;
 
@@ -169,13 +169,13 @@ load_cached_ramstage(struct romstage_handoff *handoff,
 
 	/* Load the cached ramstage copy into the to-be-run region. */
 	memcpy(cbmem_entry_start(ramstage), cbmem_entry_start(entry_cache),
-	       cbmem_entry_size(ramstage));
+		cbmem_entry_size(ramstage));
 
 	return (void *)handoff->ramstage_entry_point;
 }
 
 static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
-                                  struct romstage_handoff *handoff)
+				  struct romstage_handoff *handoff)
 {
 	struct cbfs_stage *stage;
 	struct rmodule ramstage;
@@ -194,7 +194,7 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 
 	rmodule_offset =
 		rmodule_calc_region(DYN_CBMEM_ALIGN_SIZE,
-	                            stage->memlen, &region_size, &load_offset);
+				     stage->memlen, &region_size, &load_offset);
 
 	ramstage_entry = cbmem_entry_add(CBMEM_ID_RAMSTAGE, region_size);
 
@@ -207,7 +207,7 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 	    name, &ramstage_region[rmodule_offset], stage->memlen);
 
 	if (!cbfs_decompress(stage->compression, &stage[1],
-	                     &ramstage_region[rmodule_offset], stage->len))
+			      &ramstage_region[rmodule_offset], stage->len))
 		return (void *) -1;
 
 	if (rmodule_parse(&ramstage_region[rmodule_offset], &ramstage))
@@ -272,16 +272,16 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 			stage->entry);
 
 	final_size = cbfs_decompress(stage->compression,
-				     ((unsigned char *) stage) +
-				     sizeof(struct cbfs_stage),
-				     (void *) (uint32_t) stage->load,
-				     stage->len);
+					 ((unsigned char *) stage) +
+					 sizeof(struct cbfs_stage),
+					 (void *) (uint32_t) stage->load,
+					 stage->len);
 	if (!final_size)
 		return (void *) -1;
 
 	/* Stages rely the below clearing so that the bss is initialized. */
 	memset((void *)((uintptr_t)stage->load + final_size), 0,
-	       stage->memlen - final_size);
+		stage->memlen - final_size);
 
 	DEBUG("stage loaded.\n");
 
@@ -310,8 +310,8 @@ void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 /* Simple buffer */
 
 void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
-			     struct cbfs_media *media,
-			     size_t offset, size_t count) {
+				struct cbfs_media *media,
+				size_t offset, size_t count) {
 	void *address = buffer->buffer + buffer->allocated;;
 	DEBUG("simple_buffer_map(offset=%zd, count=%zd): "
 	      "allocated=%zd, size=%zd, last_allocate=%zd\n",
@@ -321,7 +321,7 @@ void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
 	if (media->read(media, address, offset, count) != count) {
 		ERROR("simple_buffer: fail to read %zd bytes from 0x%zx\n",
-		      count, offset);
+			count, offset);
 		return CBFS_MEDIA_INVALID_MAP_ADDRESS;
 	}
 	buffer->allocated += count;
@@ -330,7 +330,7 @@ void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 }
 
 void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
-			       const void *address) {
+				  const void *address) {
 	// TODO Add simple buffer management so we can free more than last
 	// allocated one.
 	DEBUG("simple_buffer_unmap(address=0x%p): "

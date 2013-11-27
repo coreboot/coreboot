@@ -118,7 +118,7 @@ static void set_vga_enable_reg(u32 nodeid, u32 linkn)
 }
 
 static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
-		       unsigned goal_link)
+			 unsigned goal_link)
 {
 	struct resource *res;
 	unsigned nodeid, link = 0;
@@ -145,7 +145,7 @@ static int reg_useable(unsigned reg, device_t goal_dev, unsigned goal_nodeid,
 }
 
 static struct resource *amdfam14_find_iopair(device_t dev, unsigned nodeid,
-					     unsigned link)
+						  unsigned link)
 {
 	struct resource *resource;
 	u32 result, reg;
@@ -172,7 +172,7 @@ static struct resource *amdfam14_find_iopair(device_t dev, unsigned nodeid,
 }
 
 static struct resource *amdfam14_find_mempair(device_t dev, u32 nodeid,
-					      u32 link)
+						   u32 link)
 {
 	struct resource *resource;
 	u32 free_reg, reg;
@@ -269,7 +269,7 @@ static u32 my_find_pci_tolm(struct bus *bus, u32 tolm)
 	struct resource *min;
 	min = 0;
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM, tolm_test,
-			     &min);
+				&min);
 	if (min && tolm > min->base) {
 		tolm = min->base;
 	}
@@ -502,7 +502,7 @@ static void domain_read_resources(device_t dev)
 				/* Reserve the resource  */
 				struct resource *res;
 				res =
-				    new_resource(reg_dev,
+					new_resource(reg_dev,
 						 IOINDEX(0x1000 + reg,
 							 reg_link));
 				if (res) {
@@ -714,7 +714,7 @@ static void domain_set_resources(device_t dev)
 				pre_sizek = mmio_basek - basek;
 				if (pre_sizek > 0) {
 					ram_resource(dev, idx, basek,
-						     pre_sizek);
+							   pre_sizek);
 					idx += 0x10;
 					sizek -= pre_sizek;
 					if (!ramtop)

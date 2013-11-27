@@ -111,13 +111,13 @@ static const u8 translate_spd_to_i82810[] = {
  * Some size values appear twice, due to single-sided vs dual-sided banks.
  */
 static const u16 translate_i82810_to_mb[] = {
-/* DRP	0  1 (2) 3   4   5   6   7   8   9   A   B   C    D    E    F */
+/* DRP	0  1 (2) 3   4	5   6	7   8	9   A	B   C	 D    E	   F */
 /* MB */0, 8, 0, 16, 16, 24, 32, 32, 48, 64, 64, 96, 128, 128, 192, 256,
 };
 
 /* Size of bank#0 for dual-sided DIMMs */
 static const u8 translate_i82810_to_bank[] = {
-/* DRP	0  1 (2) 3  4  5   6   7  8   9   A  B   C   D  E    F */
+/* DRP	0  1 (2) 3  4  5	  6   7  8   9	 A  B	C   D  E    F */
 /* MB */0, 0, 0, 8, 0, 16, 16, 0, 32, 32, 0, 64, 64, 0, 128, 128,
 };
 
@@ -171,11 +171,11 @@ static void do_ram_command(u8 command)
 		 *
 		 *  (1) Some hardcoded values specified in the datasheet.
 		 *  (2) Which CAS latency we will use/set. This is the SMAA[4]
-		 *      bit, which is 1 for CL3, and 0 for CL2. The bitstring
-		 *      so far has the form '00000001X1010', X being SMAA[4].
+		 *	  bit, which is 1 for CL3, and 0 for CL2. The bitstring
+		 *	  so far has the form '00000001X1010', X being SMAA[4].
 		 *  (3) The DIMM to which we want to send the command. For
-		 *      DIMM0 no special handling is needed, but for DIMM1 we
-		 *      must invert the four bits SMAA[7:4] (see datasheet).
+		 *	  DIMM0 no special handling is needed, but for DIMM1 we
+		 *	  must invert the four bits SMAA[7:4] (see datasheet).
 		 *
 		 * Finally, the bitstring has to be shifted 3 bits to the left.
 		 * See i810 datasheet pages 43, 85, and 86 for details.
@@ -247,7 +247,7 @@ static void spd_set_dram_size(void)
 				printk(BIOS_ERR, "DIMM row sizes larger than 128MB not"
 					  "supported on i810\n");
 				printk
-				    (BIOS_ERR, "Attempting to treat as 128MB DIMM\n");
+					(BIOS_ERR, "Attempting to treat as 128MB DIMM\n");
 				dimm_size = 32;
 			}
 
@@ -297,23 +297,23 @@ static void set_dram_timing(void)
  *
  * (DRP: c = 128MB dual sided, d = 128MB single sided, f = 256MB dual sided)
  *
- * BUFF_SC  TOM     DRP    DIMM0                DIMM1
+ * BUFF_SC  TOM	    DRP	   DIMM0		DIMM1
  * ----------------------------------------------------------------------------
- * 0x3356   128MB   0x0c   128MB dual-sided     -
- * 0xcc56   128MB   0xc0   -                    128MB dual-sided
- * 0x77da   128MB   0x0d   128MB single-sided   -
- * 0xddda   128MB   0xd0   -                    128MB single-sided
- * 0x0001   256MB   0xcc   128MB dual-sided     128MB dual-sided
- * 0x55c6   256MB   0xdd   128MB single-sided   128MB single-sided
- * 0x4445   256MB   0xcd   128MB single-sided   128MB dual-sided
- * 0x1145   256MB   0xdc   128MB dual-sided     128MB single-sided
- * 0x3356   256MB   0x0f   256MB dual-sided     -
- * 0xcc56   256MB   0xf0   -                    256MB dual-sided
- * 0x0001   384MB   0xcf   256MB dual-sided     128MB dual-sided
- * 0x0001   384MB   0xfc   128MB dual-sided     256MB dual-sided
- * 0x1145   384MB   0xdf   256MB dual-sided     128MB single-sided
- * 0x4445   384MB   0xfd   128MB single-sided   256MB dual-sided
- * 0x0001   512MB   0xff   256MB dual-sided     256MB dual-sided
+ * 0x3356   128MB   0x0c   128MB dual-sided	-
+ * 0xcc56   128MB   0xc0   -			128MB dual-sided
+ * 0x77da   128MB   0x0d   128MB single-sided	-
+ * 0xddda   128MB   0xd0   -			128MB single-sided
+ * 0x0001   256MB   0xcc   128MB dual-sided	128MB dual-sided
+ * 0x55c6   256MB   0xdd   128MB single-sided	128MB single-sided
+ * 0x4445   256MB   0xcd   128MB single-sided	128MB dual-sided
+ * 0x1145   256MB   0xdc   128MB dual-sided	128MB single-sided
+ * 0x3356   256MB   0x0f   256MB dual-sided	-
+ * 0xcc56   256MB   0xf0   -			256MB dual-sided
+ * 0x0001   384MB   0xcf   256MB dual-sided	128MB dual-sided
+ * 0x0001   384MB   0xfc   128MB dual-sided	256MB dual-sided
+ * 0x1145   384MB   0xdf   256MB dual-sided	128MB single-sided
+ * 0x4445   384MB   0xfd   128MB single-sided	256MB dual-sided
+ * 0x0001   512MB   0xff   256MB dual-sided	256MB dual-sided
  *
  * See also:
  * http://www.coreboot.org/pipermail/coreboot/2009-May/047966.html
@@ -402,7 +402,7 @@ void sdram_set_registers(void)
 	reg8 &= 0x3f;			     /* Disable graphics (for now). */
 #if CONFIG_VIDEO_MB
 	if (CONFIG_VIDEO_MB == 512)
-		reg8 |= (1 << 7);	     /* Enable graphics (512KB RAM). */
+		reg8 |= (1 << 7);		 /* Enable graphics (512KB RAM). */
 	else if (CONFIG_VIDEO_MB == 1)
 		reg8 |= (1 << 7) | (1 << 6); /* Enable graphics (1MB RAM). */
 #endif

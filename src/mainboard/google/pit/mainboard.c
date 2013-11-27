@@ -167,7 +167,7 @@ static void tps65090_thru_ec_fet_set(int index)
 
 	if (google_chromeec_i2c_xfer(0x48, 0xe + index, 1, &value, 1, 0)) {
 		printk(BIOS_ERR,
-		       "Error sending i2c pass through command to EC.\n");
+			 "Error sending i2c pass through command to EC.\n");
 		return;
 	}
 }

@@ -28,7 +28,7 @@
  * SUPERIO_PNP_LDN	The logical device number on the super i/o
  *			chip for this device (required)
  * SUPERIO_PNP_DDN	A string literal that identifies the dos device
- *                      name (DDN) of this device (e.g. "COM1", optional)
+ *			name (DDN) of this device (e.g. "COM1", optional)
  * SUPERIO_PNP_PM_REG	Identifier of a 1-bit register to power down
  *			the logical device (optional)
  * SUPERIO_PNP_PM_VAL	The value for SUPERIO_PNP_PM_REG to power the logical

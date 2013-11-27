@@ -188,7 +188,7 @@ static u32 verb_data[] = {
 
 static unsigned find_verb(u32 viddid, u32 **verb)
 {
-        if((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
+	if((viddid == 0x10ec0883) || (viddid == 0x10ec0882) || (viddid == 0x10ec0880)) return 0;
 	*verb =  (u32 *)verb_data;
 	return sizeof(verb_data)/sizeof(u32);
 }
@@ -240,48 +240,48 @@ static void codecs_init(u32 base, u32 codec_mask)
 
 static void aza_init(struct device *dev)
 {
-        u32 base;
-        struct resource *res;
-        u32 codec_mask;
+	u32 base;
+	struct resource *res;
+	u32 codec_mask;
 
-        print_debug("AZALIA_INIT:---------->\n");
+	print_debug("AZALIA_INIT:---------->\n");
 
 //-------------- enable AZA (SiS7502) -------------------------
 {
-        u8  temp8;
-        int i=0;
-        while(SiS_SiS7502_init[i][0] != 0)
-        {
-                temp8 = pci_read_config8(dev, SiS_SiS7502_init[i][0]);
-                temp8 &= SiS_SiS7502_init[i][1];
-                temp8 |= SiS_SiS7502_init[i][2];
-                pci_write_config8(dev, SiS_SiS7502_init[i][0], temp8);
-                i++;
-        };
+	u8  temp8;
+	int i=0;
+	while(SiS_SiS7502_init[i][0] != 0)
+	{
+		temp8 = pci_read_config8(dev, SiS_SiS7502_init[i][0]);
+		temp8 &= SiS_SiS7502_init[i][1];
+		temp8 |= SiS_SiS7502_init[i][2];
+		pci_write_config8(dev, SiS_SiS7502_init[i][0], temp8);
+		i++;
+	};
 }
 //-----------------------------------------------------------
 
 
-        // put audio to D0 state
-        pci_write_config8(dev, 0x54,0x00);
+	// put audio to D0 state
+	pci_write_config8(dev, 0x54,0x00);
 
 #if DEBUG_AZA
 {
-        int i;
+	int i;
 
-        print_debug("****** Azalia PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	print_debug("****** Azalia PCI config ******");
+	print_debug("\n	   03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
-                }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
-        }
-        print_debug("\n");
+	for(i=0;i<0xff;i+=4){
+		if((i%16)==0){
+			print_debug("\n");
+			print_debug_hex8(i);
+			print_debug(": ");
+		}
+		print_debug_hex32(pci_read_config32(dev,i));
+		print_debug("  ");
+	}
+	print_debug("\n");
 }
 #endif
 
@@ -299,7 +299,7 @@ static void aza_init(struct device *dev)
 		codecs_init(base, codec_mask);
 	}
 
-        print_debug("AZALIA_INIT:<----------\n");
+	print_debug("AZALIA_INIT:<----------\n");
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)

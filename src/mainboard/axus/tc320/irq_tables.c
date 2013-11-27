@@ -29,14 +29,14 @@
  *
  * This is the physical routing on this board:
  *
- *    IRQ          5530       USB     Network
+ *    IRQ	   5530	      USB     Network
  * controller  northbridge  device     device
- *                          00.13.0   00.0e.00
+ *			    00.13.0   00.0e.00
  * --------------------------------------------
- *    11          INTA#      INTA#      n.c.
- *    15          INTB#       n.c.     INTA#
- *                INTC#       n.c.      n.c.
- *                INTD#       n.c.      n.c.
+ *    11	  INTA#	     INTA#	n.c.
+ *    15	  INTB#	      n.c.     INTA#
+ *		  INTC#	      n.c.	n.c.
+ *		  INTD#	      n.c.	n.c.
  */
 
 #include <arch/pirq_routing.h>
@@ -83,7 +83,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 			.bus = 0x00,
 			.devfn = (0x13 << 3) | 0x0,
 			.irq = {
-				/*      Link   Bitmap */
+				/*	    Link   Bitmap */
 				[0] = { INT_A, IRQ_BITMAP_LINK0 },
 				[1] = { INT_B, IRQ_BITMAP_LINK1 },
 				[2] = { INT_C, IRQ_BITMAP_LINK2 },
@@ -99,7 +99,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 			.bus = 0x00,
 			.devfn = (0x0e << 3) | 0x0,
 			.irq = {
-				/*      Link   Bitmap */
+				/*	    Link   Bitmap */
 				[0] = { INT_B, IRQ_BITMAP_LINK1 },
 				[1] = { INT_C, IRQ_BITMAP_LINK2 },
 				[2] = { INT_D, IRQ_BITMAP_LINK3 },

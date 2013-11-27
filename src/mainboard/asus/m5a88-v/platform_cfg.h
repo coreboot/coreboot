@@ -141,13 +141,13 @@
 
 
 /**
- * @def   AZALIA_AUTO
+ * @def	  AZALIA_AUTO
  * @brief Detect Azalia controller automatically.
  *
- * @def   AZALIA_DISABLE
+ * @def	  AZALIA_DISABLE
  * @brief Disable Azalia controller.
 
- * @def   AZALIA_ENABLE
+ * @def	  AZALIA_ENABLE
  * @brief Enable Azalia controller.
  */
 #define AZALIA_AUTO			0
@@ -219,7 +219,7 @@
 #define SB_GPP_UNHIDE_PORTS		FALSE
 
 /**
- * @def   GEC_CONFIG
+ * @def	  GEC_CONFIG
  *    0  - Enable
  *    1  - Disable
  */

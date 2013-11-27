@@ -21,12 +21,12 @@ chip northbridge/amd/lx
 			register "com1_enable" = "1"
 			register "com1_address" = "0x3F8"
 			register "com1_irq" = "4"
-			register "com2_enable" = "1"                # Wired on Alix.2D13 only
+			register "com2_enable" = "1"		       # Wired on Alix.2D13 only
 			register "com2_address" = "0x2F8"
 			register "com2_irq" = "3"
 			register "unwanted_vpci[0]" = "0x80000900"	# Disable VGA controller (not wired)
 			register "unwanted_vpci[1]" = "0x80007B00"	# Disable AC97 controller (not wired)
-			register "unwanted_vpci[2]" = "0"	        # End of list has a zero
+			register "unwanted_vpci[2]" = "0"		     # End of list has a zero
 			device pci f.0 on end	# ISA Bridge
 			device pci f.1 on end	# Flash controller
 			device pci f.2 on end	# IDE controller

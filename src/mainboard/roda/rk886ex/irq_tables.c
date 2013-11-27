@@ -23,10 +23,10 @@
 
 static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,  /* u32 signature */
-	PIRQ_VERSION,    /* u16 version   */
+	PIRQ_VERSION,	  /* u16 version   */
 	32+16*18,	 /* There can be total 18 devices on the bus */
 	0x00,		 /* Where the interrupt router lies (bus) */
-	(0x1f<<3)|0x0,   /* Where the interrupt router lies (dev) */
+	(0x1f<<3)|0x0,	  /* Where the interrupt router lies (dev) */
 	0,		 /* IRQs devoted exclusively to PCI usage */
 	0x8086,		 /* Vendor */
 	0x27b0,		 /* Device */
@@ -34,7 +34,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* u8 rfu[11] */
 	0xf,		 /* u8 checksum. */
 	{
-		/* bus,     dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
+		/* bus,     dev|fn,	{link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
 		{0x00,(0x01<<3)|0x0, {{0x60, 0xdcf8}, {0x61, 0xdcf8}, {0x62, 0xdcf8}, {0x63, 0x0dcd8}}, 0x0, 0x0}, // PCIe?
 		{0x00,(0x02<<3)|0x0, {{0x60, 0xdcf8}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // VGA
 		{0x00,(0x1e<<3)|0x0, {{0x61, 0xdcf8}, {0x68, 0xdcf8}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0}, // PCI bridge

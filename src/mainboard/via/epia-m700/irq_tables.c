@@ -22,7 +22,7 @@
 
 static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,		/* u32 signature */
-	PIRQ_VERSION,		/* u16 version   */
+	PIRQ_VERSION,		/* u16 version	 */
 	32 + 16 * CONFIG_IRQ_SLOT_COUNT,/* Max. number of devices on the bus */
 	0x00,			/* Where the interrupt router lies (bus) */
 	(0x11 << 3) | 0x0,	/* Where the interrupt router lies (dev) */
@@ -33,7 +33,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 	{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* u8 rfu[11] */
 	0xdb,			/* Checksum. 0xa0? */
 	{
-		/* bus,        dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
+		/* bus,	 dev | fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
 		{0x00, (0x02 << 3) | 0x0, {{0x09, 0xdeb8}, {0x09, 0xdeb8}, {0x09, 0xdeb8}, {0x09, 0xdeb8}}, 0x1, 0x0},
 		{0x00, (0x03 << 3) | 0x0, {{0x09, 0xdeb8}, {0x09, 0xdeb8}, {0x09, 0xdeb8}, {0x09, 0xdeb8}}, 0x2, 0x0},
 		{0x00, (0x03 << 3) | 0x1, {{0x09, 0xdeb8}, {0x09, 0xdeb8}, {0x09, 0xdeb8}, {0x09, 0xdeb8}}, 0x3, 0x0},

@@ -29,7 +29,7 @@
  * SUPERIO_UART_LDN	The logical device number on the super i/o
  *			chip for this UART (required)
  * SUPERIO_UART_DDN	A string literal that identifies the dos device
- *                      name (DDN) of this uart (e.g. "COM1", optional)
+ *			name (DDN) of this uart (e.g. "COM1", optional)
  * SUPERIO_UART_PM_REG	Identifier of a 1-bit register to power down
  *			the UART (optional)
  * SUPERIO_UART_PM_VAL	The value for SUPERIO_UART_PM_REG to power the logical

@@ -64,7 +64,7 @@ static void vx900_north_ioapic_setup(device_t dev)
 	if (ioapic == 0) {
 		/* We don't have enough info to set up the IOAPIC */
 		printk(BIOS_ERR, "ERROR: North module IOAPIC not found. "
-		       "Check your devicetree.cb\n");
+			 "Check your devicetree.cb\n");
 		return;
 	}
 	/* Found our IOAPIC, and it should not carry ISA interrupts */
@@ -72,25 +72,25 @@ static void vx900_north_ioapic_setup(device_t dev)
 	if (config->have_isa_interrupts) {
 		/* Umh, is this the right IOAPIC ? */
 		printk(BIOS_ERR, "ERROR: North module IOAPIC should not carry "
-		       "ISA interrupts.\n" "Check your devicetree.cb\n");
+			 "ISA interrupts.\n" "Check your devicetree.cb\n");
 		printk(BIOS_ERR, "Will not initialize this IOAPIC.\n");
 		return;
 	}
 	/* The base address of this IOAPIC _must_
-	 *     be between 0xfec00000 and 0xfecfff00
-	 *     be 256-byte aligned
+	 *	be between 0xfec00000 and 0xfecfff00
+	 *	be 256-byte aligned
 	 */
 	if ((config->base < 0xfec0000 || config->base > 0xfecfff00)
 	    || ((config->base & 0xff) != 0)) {
 		printk(BIOS_ERR, "ERROR: North module IOAPIC base should be "
-		       "between 0xfec00000 and 0xfecfff00\n"
-		       "and must be aligned to a 256-byte boundary, "
-		       "but we found it at 0x%.8x\n", config->base);
+			 "between 0xfec00000 and 0xfecfff00\n"
+			 "and must be aligned to a 256-byte boundary, "
+			 "but we found it at 0x%.8x\n", config->base);
 		return;
 	}
 
 	printk(BIOS_DEBUG, "VX900 TRAF_CTR: Setting up the north module IOAPIC "
-	       "at 0%.8x\n", config->base);
+		"at 0%.8x\n", config->base);
 
 	/* First register of the IOAPIC base */
 	base_val = (config->base >> 8) & 0xff;

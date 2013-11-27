@@ -24,111 +24,111 @@
 
 static void print_reg(unsigned char index)
 {
-        unsigned char data;
+	unsigned char data;
 
-        outb(index, 0x2e);
-        data = inb(0x2f);
+	outb(index, 0x2e);
+	data = inb(0x2f);
 	print_debug("0x");
 	print_debug_hex8(index);
 	print_debug(": 0x");
 	print_debug_hex8(data);
 	print_debug("\n");
-        return;
+	return;
 }
 
 static inline void xbus_en(void)
 {
-        /* select the XBUS function in the SIO */
-        outb(0x07, 0x2e);
-        outb(0x0f, 0x2f);
-        outb(0x30, 0x2e);
-        outb(0x01, 0x2f);
+	/* select the XBUS function in the SIO */
+	outb(0x07, 0x2e);
+	outb(0x0f, 0x2f);
+	outb(0x30, 0x2e);
+	outb(0x01, 0x2f);
 	return;
 }
 
 static void setup_func(unsigned char func)
 {
-        /* select the function in the SIO */
-        outb(0x07, 0x2e);
-        outb(func, 0x2f);
-        /* print out the regs */
-        print_reg(0x30);
-        print_reg(0x60);
-        print_reg(0x61);
-        print_reg(0x62);
-        print_reg(0x63);
-        print_reg(0x70);
-        print_reg(0x71);
-        print_reg(0x74);
-        print_reg(0x75);
-        return;
+	/* select the function in the SIO */
+	outb(0x07, 0x2e);
+	outb(func, 0x2f);
+	/* print out the regs */
+	print_reg(0x30);
+	print_reg(0x60);
+	print_reg(0x61);
+	print_reg(0x62);
+	print_reg(0x63);
+	print_reg(0x70);
+	print_reg(0x71);
+	print_reg(0x74);
+	print_reg(0x75);
+	return;
 }
 
 static inline void siodump(void)
 {
-        int i;
-        unsigned char data;
+	int i;
+	unsigned char data;
 
 	 print_debug("\n*** SERVER I/O REGISTERS ***\n");
-        for (i=0x10; i<=0x2d; i++) {
-                print_reg((unsigned char)i);
-        }
+	for (i=0x10; i<=0x2d; i++) {
+		print_reg((unsigned char)i);
+	}
 #if 0
-        print_debug("\n*** XBUS REGISTERS ***\n");
-        setup_func(0x0f);
-        for (i=0xf0; i<=0xff; i++) {
-                print_reg((unsigned char)i);
-        }
+	print_debug("\n*** XBUS REGISTERS ***\n");
+	setup_func(0x0f);
+	for (i=0xf0; i<=0xff; i++) {
+		print_reg((unsigned char)i);
+	}
 
-        print_debug("\n***  SERIAL 1 CONFIG REGISTERS ***\n");
-        setup_func(0x03);
-        print_reg(0xf0);
+	print_debug("\n***  SERIAL 1 CONFIG REGISTERS ***\n");
+	setup_func(0x03);
+	print_reg(0xf0);
 
-        print_debug("\n***  SERIAL 2 CONFIG REGISTERS ***\n");
-        setup_func(0x02);
-        print_reg(0xf0);
+	print_debug("\n***  SERIAL 2 CONFIG REGISTERS ***\n");
+	setup_func(0x02);
+	print_reg(0xf0);
 
 #endif
-        print_debug("\n***  GPIO REGISTERS ***\n");
-        setup_func(0x07);
-        for (i=0xf0; i<=0xf8; i++) {
-                print_reg((unsigned char)i);
-        }
-        print_debug("\n***  GPIO VALUES ***\n");
-        data = inb(0x68a);
+	print_debug("\n***  GPIO REGISTERS ***\n");
+	setup_func(0x07);
+	for (i=0xf0; i<=0xf8; i++) {
+		print_reg((unsigned char)i);
+	}
+	print_debug("\n***  GPIO VALUES ***\n");
+	data = inb(0x68a);
 	print_debug("\nGPDO 4: 0x");
 	print_debug_hex8(data);
-        data = inb(0x68b);
+	data = inb(0x68b);
 	print_debug("\nGPDI 4: 0x");
 	print_debug_hex8(data);
 	print_debug("\n");
 
 #if 0
 
-        print_debug("\n***  WATCHDOG TIMER REGISTERS ***\n");
-        setup_func(0x0a);
-        print_reg(0xf0);
+	print_debug("\n***  WATCHDOG TIMER REGISTERS ***\n");
+	setup_func(0x0a);
+	print_reg(0xf0);
 
-        print_debug("\n***  FAN CONTROL REGISTERS ***\n");
-        setup_func(0x09);
-        print_reg(0xf0);
-        print_reg(0xf1);
+	print_debug("\n***  FAN CONTROL REGISTERS ***\n");
+	setup_func(0x09);
+	print_reg(0xf0);
+	print_reg(0xf1);
 
-        print_debug("\n***  RTC REGISTERS ***\n");
-        setup_func(0x10);
-        print_reg(0xf0);
-        print_reg(0xf1);
-        print_reg(0xf3);
-        print_reg(0xf6);
-        print_reg(0xf7);
-        print_reg(0xfe);
-        print_reg(0xff);
+	print_debug("\n***  RTC REGISTERS ***\n");
+	setup_func(0x10);
+	print_reg(0xf0);
+	print_reg(0xf1);
+	print_reg(0xf3);
+	print_reg(0xf6);
+	print_reg(0xf7);
+	print_reg(0xfe);
+	print_reg(0xff);
 
-        print_debug("\n***  HEALTH MONITORING & CONTROL REGISTERS ***\n");
-        setup_func(0x14);
-        print_reg(0xf0);
+	print_debug("\n***  HEALTH MONITORING & CONTROL REGISTERS ***\n");
+	setup_func(0x14);
+	print_reg(0xf0);
 #endif
-        return;
+	return;
 }
 
 static void print_debug_pci_dev(unsigned dev)
@@ -227,27 +227,27 @@ static inline void dump_pci_devices(void)
 
 static inline void dump_spd_registers(void)
 {
-        unsigned device;
-        device = DIMM0;
-        while(device <= DIMM7) {
-                int status = 0;
-                int i;
-        	print_debug("\n");
-                print_debug("dimm ");
+	unsigned device;
+	device = DIMM0;
+	while(device <= DIMM7) {
+		int status = 0;
+		int i;
+		print_debug("\n");
+		print_debug("dimm ");
 		print_debug_hex8(device);
 
-                for(i = 0; (i < 256) ; i++) {
-                        if ((i % 16) == 0) {
+		for(i = 0; (i < 256) ; i++) {
+			if ((i % 16) == 0) {
 				print_debug("\n");
 				print_debug_hex8(i);
 				print_debug(": ");
-                        }
+			}
 			status = smbus_read_byte(device, i);
-                        if (status < 0) {
-			         print_debug("bad device: ");
+			if (status < 0) {
+				    print_debug("bad device: ");
 				 print_debug_hex8(-status);
 				 print_debug("\n");
-			         break;
+				    break;
 			}
 			print_debug_hex8(status);
 			print_debug_char(' ');
@@ -259,22 +259,22 @@ static inline void dump_spd_registers(void)
 
 static inline void dump_ipmi_registers(void)
 {
-        unsigned device;
-        device = 0x42;
-        while(device <= 0x42) {
-                int status = 0;
-                int i;
-        	print_debug("\n");
-                print_debug("ipmi ");
+	unsigned device;
+	device = 0x42;
+	while(device <= 0x42) {
+		int status = 0;
+		int i;
+		print_debug("\n");
+		print_debug("ipmi ");
 		print_debug_hex8(device);
 
-                for(i = 0; (i < 8) ; i++) {
+		for(i = 0; (i < 8) ; i++) {
 			status = smbus_read_byte(device, 2);
-                        if (status < 0) {
-			         print_debug("bad device: ");
+			if (status < 0) {
+				    print_debug("bad device: ");
 				 print_debug_hex8(-status);
 				 print_debug("\n");
-			         break;
+				    break;
 			}
 			print_debug_hex8(status);
 			print_debug_char(' ');

@@ -71,9 +71,9 @@ CB_STATUS DRAMDetect(DRAM_SYS_ATTR *DramAttr)
  * three conditions:
  *
  *   1. Each DRAM channel may have 1 or 2 ranks of DIMM. 3/4 ranks can not
- *      support 1T command rate. It's for loading issue. 1T can supports
- *       (a) only one socket with two ranks, OR
- *       (b) two sockets each with 1 rank.
+ *	support 1T command rate. It's for loading issue. 1T can supports
+ *	 (a) only one socket with two ranks, OR
+ *	 (b) two sockets each with 1 rank.
  *   2. User wishes to enable 1T command rate mode and turn on by setup menu.
  *   3. If 1T command rate can be enabled, just set EBP bit here.
  */
@@ -130,8 +130,8 @@ CB_STATUS GetInfoFromSPD(DRAM_SYS_ATTR *DramAttr)
 			if (pSPDDataBuf[SPD_MEMORY_TYPE] != DramAttr->DramType) {
 				Status = CB_DEVICE_ERROR; /* memory int error */
 				PRINT_DEBUG_MEM("Memory Device ERROR: DRAM "
-                                                "controller detected type != "
-                                                "type got from SPD\r");
+						"controller detected type != "
+						"type got from SPD\r");
 				break;
 			}
 			DramAttr->DimmInfo[Sockets].bPresence = TRUE;
@@ -150,36 +150,36 @@ CB_STATUS GetInfoFromSPD(DRAM_SYS_ATTR *DramAttr)
 			LoadNum = (u8) (ModuleDataWidth / ChipWidth);
 
 			/* Set the RANK map. */
-                        /* Get bit0,1, the most number of supported RANK is 2. */
+			/* Get bit0,1, the most number of supported RANK is 2. */
 			RankNum = (u8) (pSPDDataBuf[SPD_SDRAM_DIMM_RANKS] & 0x3);
 			if (RAMTYPE_SDRAMDDR2 == DramAttr->DramType)
-                                /*
-                                 * For DDR bit[0,1]: 01->1 RANK, 10->2 RANK
-                                 * For DDR2 bit[0,1]: 00->1 RANK, 01->2 RANK
-                                 */
+				/*
+				 * For DDR bit[0,1]: 01->1 RANK, 10->2 RANK
+				 * For DDR2 bit[0,1]: 00->1 RANK, 01->2 RANK
+				 */
 				RankNum++;
 
-                        /* Every DIMM have 1 or 2 ranks. */
+			/* Every DIMM have 1 or 2 ranks. */
 			if (RankNum != 2 && RankNum != 1) {
 				Status = CB_DEVICE_ERROR;
 				PRINT_DEBUG_MEM("Memory Device ERROR: Number "
-                                                "of RANK not supported!\r");
+						"of RANK not supported!\r");
 				break;
 			}
 
 			if (Sockets < 2) { /* Sockets0,1 is channel A */
 				DramAttr->RankNumChA =
-				    (u8) (DramAttr->RankNumChA + RankNum);
+					(u8) (DramAttr->RankNumChA + RankNum);
 				DramAttr->DimmNumChA++;
 				DramAttr->LoadNumChA =
-				    (u8) (DramAttr->LoadNumChA * LoadNum *
+					(u8) (DramAttr->LoadNumChA * LoadNum *
 					  RankNum);
 			} else { /* Sockets2,3 is channel B */
 				DramAttr->RankNumChB =
-				    (u8) (DramAttr->RankNumChB + RankNum);
+					(u8) (DramAttr->RankNumChB + RankNum);
 				DramAttr->DimmNumChB++;
 				DramAttr->LoadNumChB =
-				    (u8) (DramAttr->LoadNumChB * LoadNum *
+					(u8) (DramAttr->LoadNumChB * LoadNum *
 					  RankNum);;
 			}
 			RankNum |= 1; /* Set rank map. */

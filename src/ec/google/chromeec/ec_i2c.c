@@ -57,7 +57,7 @@ static inline void i2c_dump(int bus, int chip, const uint8_t *data, size_t size)
 {
 #ifdef TRACE_CHROMEEC
 	printk(BIOS_INFO, "i2c: bus=%d, chip=%#x, size=%d, data: ", bus, chip,
-	       size);
+		size);
 	while (size-- > 0) {
 		printk(BIOS_INFO, "%02X ", *data++);
 	}
@@ -73,7 +73,7 @@ static int ec_verify_checksum(const EcResponseI2c *resp)
 	uint8_t received = resp->data[resp->length];
 	if (calculated != received) {
 		printk(BIOS_ERR, "%s: Unmatch (rx: %#02x, calc: %#02x)\n",
-		       __func__, received, calculated);
+			 __func__, received, calculated);
 		return 0;
 	}
 	return 1;
@@ -93,15 +93,15 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	int bus = CONFIG_EC_GOOGLE_CHROMEEC_I2C_BUS;
 	int chip = CONFIG_EC_GOOGLE_CHROMEEC_I2C_CHIP;
 	size_t size_i2c_cmd = (sizeof(cmd) - sizeof(cmd.data) +
-			       cec_command->cmd_size_in + 1),
-	       size_i2c_resp = (sizeof(resp) - sizeof(resp.data) +
+				  cec_command->cmd_size_in + 1),
+		size_i2c_resp = (sizeof(resp) - sizeof(resp.data) +
 				cec_command->cmd_size_out + 1);
 
 	if (cec_command->cmd_size_in > MAX_I2C_DATA_SIZE ||
 	    cec_command->cmd_size_out > MAX_I2C_DATA_SIZE) {
 		printk(BIOS_ERR, "%s: Command data size too large (%d,%d)\n",
-		       __func__, cec_command->cmd_size_in,
-		       cec_command->cmd_size_out);
+			 __func__, cec_command->cmd_size_in,
+			 cec_command->cmd_size_out);
 		cec_command->cmd_code = EC_RES_INVALID_PARAM;
 		return 1;
 	}
@@ -117,13 +117,13 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	i2c_dump(bus, chip, (const uint8_t *)&cmd, size_i2c_cmd);
 	if (i2c_write(bus, chip, 0, 0, (uint8_t *)&cmd, size_i2c_cmd) != 0) {
 		printk(BIOS_ERR, "%s: Cannot complete write to i2c-%d:%#x\n",
-		       __func__, bus, chip);
+			 __func__, bus, chip);
 		cec_command->cmd_code = EC_RES_ERROR;
 		return 1;
 	}
 	if (i2c_read(bus, chip, 0, 0, (uint8_t *)&resp, size_i2c_resp) != 0) {
 		printk(BIOS_ERR, "%s: Cannot complete read from i2c-%d:%#x\n",
-		       __func__, bus, chip);
+			 __func__, bus, chip);
 		cec_command->cmd_code = EC_RES_ERROR;
 		return 1;
 	}
@@ -132,12 +132,12 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	cec_command->cmd_code = resp.response;
 	if (resp.response != EC_RES_SUCCESS) {
 		printk(BIOS_DEBUG, "%s: Received bad result code %d\n",
-		       __func__, (int)resp.response);
+			 __func__, (int)resp.response);
 		return 1;
 	}
 	if (resp.length > cec_command->cmd_size_out) {
 		printk(BIOS_ERR, "%s: Received len %#02x too large\n",
-		       __func__, (int)resp.length);
+			 __func__, (int)resp.length);
 		cec_command->cmd_code = EC_RES_INVALID_RESPONSE;
 		return 1;
 	}

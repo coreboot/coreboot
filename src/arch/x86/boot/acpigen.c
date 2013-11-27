@@ -264,8 +264,8 @@ int acpigen_write_scope(const char *name)
 int acpigen_write_processor(u8 cpuindex, u32 pblock_addr, u8 pblock_len)
 {
 /*
-        Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
-        {
+	Processor (\_PR.CPUcpuindex, cpuindex, pblock_addr, pblock_len)
+	{
 */
 	char pscope[16];
 	int len;
@@ -290,32 +290,32 @@ int acpigen_write_empty_PCT(void)
 /*
     Name (_PCT, Package (0x02)
     {
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        },
+	ResourceTemplate ()
+	{
+	    Register (FFixedHW,
+		0x00,		    // Bit Width
+		0x00,		    // Bit Offset
+		0x0000000000000000, // Address
+		,)
+	},
 
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        }
+	ResourceTemplate ()
+	{
+	    Register (FFixedHW,
+		0x00,		    // Bit Width
+		0x00,		    // Bit Offset
+		0x0000000000000000, // Address
+		,)
+	}
     })
 */
 	static char stream[] = {
-		0x08, 0x5F, 0x50, 0x43, 0x54, 0x12, 0x2C,	/* 00000030    "0._PCT.," */
-		0x02, 0x11, 0x14, 0x0A, 0x11, 0x82, 0x0C, 0x00,	/* 00000038    "........" */
-		0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	/* 00000040    "........" */
-		0x00, 0x00, 0x00, 0x00, 0x79, 0x00, 0x11, 0x14,	/* 00000048    "....y..." */
-		0x0A, 0x11, 0x82, 0x0C, 0x00, 0x7F, 0x00, 0x00,	/* 00000050    "........" */
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	/* 00000058    "........" */
+		0x08, 0x5F, 0x50, 0x43, 0x54, 0x12, 0x2C,	/* 00000030	   "0._PCT.," */
+		0x02, 0x11, 0x14, 0x0A, 0x11, 0x82, 0x0C, 0x00,	/* 00000038	 "........" */
+		0x7F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	/* 00000040	 "........" */
+		0x00, 0x00, 0x00, 0x00, 0x79, 0x00, 0x11, 0x14,	/* 00000048	 "....y..." */
+		0x0A, 0x11, 0x82, 0x0C, 0x00, 0x7F, 0x00, 0x00,	/* 00000050	 "........" */
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,	/* 00000058	 "........" */
 		0x00, 0x79, 0x00
 	};
 	return acpigen_emit_stream(stream, ARRAY_SIZE(stream));
@@ -326,23 +326,23 @@ int acpigen_write_empty_PTC(void)
 /*
     Name (_PTC, Package (0x02)
     {
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        },
+	ResourceTemplate ()
+	{
+	    Register (FFixedHW,
+		0x00,		    // Bit Width
+		0x00,		    // Bit Offset
+		0x0000000000000000, // Address
+		,)
+	},
 
-        ResourceTemplate ()
-        {
-            Register (FFixedHW,
-                0x00,               // Bit Width
-                0x00,               // Bit Offset
-                0x0000000000000000, // Address
-                ,)
-        }
+	ResourceTemplate ()
+	{
+	    Register (FFixedHW,
+		0x00,		    // Bit Width
+		0x00,		    // Bit Offset
+		0x0000000000000000, // Address
+		,)
+	}
     })
 */
 	int len, nlen, rlen;
@@ -384,7 +384,7 @@ int acpigen_write_PPC(u8 nr)
 /*
     Method (_PPC, 0, NotSerialized)
     {
-        Return (nr)
+	Return (nr)
     }
 */
 	int len;
@@ -413,7 +413,7 @@ int acpigen_write_PPC_NVS(void)
 /*
     Method (_PPC, 0, NotSerialized)
     {
-        Return (PPCM)
+	Return (PPCM)
     }
 */
 	int len;
@@ -439,7 +439,7 @@ int acpigen_write_TPC(const char *gnvs_tpc_limit)
     // Sample _TPC method
     Method (_TPC, 0, NotSerialized)
     {
-        Return (\TLVL)
+	Return (\TLVL)
     }
  */
 	int len;
@@ -455,7 +455,7 @@ int acpigen_write_TPC(const char *gnvs_tpc_limit)
 }
 
 int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
-			      u32 busmLat, u32 control, u32 status)
+				 u32 busmLat, u32 control, u32 status)
 {
 	int len;
 	len = acpigen_write_package(6);
@@ -469,7 +469,7 @@ int acpigen_write_PSS_package(u32 coreFreq, u32 power, u32 transLat,
 	acpigen_patch_len(len - 1);
 
 	printk(BIOS_DEBUG, "PSS: %uMHz power %u control 0x%x status 0x%x\n",
-	       coreFreq, power, control, status);
+		coreFreq, power, control, status);
 
 	return len;
 }
@@ -532,8 +532,8 @@ int acpigen_write_TSS_package(int entries, acpi_tstate_t *tstate_list)
     Sample _TSS package with 100% and 50% duty cycles
     Name (_TSS, Package (0x02)
     {
-        Package(){100, 1000, 0, 0x00, 0)
-        Package(){50, 520, 0, 0x18, 0)
+	Package(){100, 1000, 0, 0x00, 0)
+	Package(){50, 520, 0, 0x18, 0)
     })
  */
 	int i, len, plen, nlen;

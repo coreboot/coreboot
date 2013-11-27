@@ -50,7 +50,7 @@ void dump_pci_device(unsigned dev)
 		unsigned char val;
 		if ((i & 0x0f) == 0) {
 #if !defined(__ROMCC__)
-                        printk(BIOS_DEBUG, "\n%02x:",i);
+			printk(BIOS_DEBUG, "\n%02x:",i);
 #else
 			print_debug("\n");
 			print_debug_hex8(i);
@@ -87,19 +87,19 @@ void dump_pci_devices(void)
 
 void dump_pci_devices_on_bus(unsigned busn)
 {
-        device_t dev;
-        for(dev = PCI_DEV(busn, 0, 0);
-                dev <= PCI_DEV(busn, 0x1f, 0x7);
-                dev += PCI_DEV(0,0,1)) {
-                uint32_t id;
-                id = pci_read_config32(dev, PCI_VENDOR_ID);
-                if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
-                        (((id >> 16) & 0xffff) == 0xffff) ||
-                        (((id >> 16) & 0xffff) == 0x0000)) {
-                        continue;
-                }
-                dump_pci_device(dev);
-        }
+	device_t dev;
+	for(dev = PCI_DEV(busn, 0, 0);
+		dev <= PCI_DEV(busn, 0x1f, 0x7);
+		dev += PCI_DEV(0,0,1)) {
+		uint32_t id;
+		id = pci_read_config32(dev, PCI_VENDOR_ID);
+		if (((id & 0xffff) == 0x0000) || ((id & 0xffff) == 0xffff) ||
+			(((id >> 16) & 0xffff) == 0xffff) ||
+			(((id >> 16) & 0xffff) == 0x0000)) {
+			continue;
+		}
+		dump_pci_device(dev);
+	}
 }
 
 void dump_spd_registers(const struct mem_controller *ctrl)
@@ -149,7 +149,7 @@ void dump_spd_registers(const struct mem_controller *ctrl)
 		if (device) {
 			int j;
 #if !defined(__ROMCC__)
-                        printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
+			printk(BIOS_DEBUG, "dimm: %02x.1: %02x", i, device);
 #else
 			print_debug("dimm: ");
 			print_debug_hex8(i);
@@ -161,7 +161,7 @@ void dump_spd_registers(const struct mem_controller *ctrl)
 				unsigned char byte;
 				if ((j & 0xf) == 0) {
 #if !defined(__ROMCC__)
-                                        printk(BIOS_DEBUG, "\n%02x: ", j);
+					printk(BIOS_DEBUG, "\n%02x: ", j);
 #else
 					print_debug("\n");
 					print_debug_hex8(j);
@@ -174,7 +174,7 @@ void dump_spd_registers(const struct mem_controller *ctrl)
 				}
 				byte = status & 0xff;
 #if !defined(__ROMCC__)
-                                printk(BIOS_DEBUG, "%02x ", byte);
+				printk(BIOS_DEBUG, "%02x ", byte);
 #else
 				print_debug_hex8(byte);
 				print_debug_char(' ');
@@ -187,41 +187,41 @@ void dump_spd_registers(const struct mem_controller *ctrl)
 void dump_smbus_registers(void)
 {
 	unsigned device;
-        print_debug("\n");
-        for(device = 1; device < 0x80; device++) {
-                int j;
+	print_debug("\n");
+	for(device = 1; device < 0x80; device++) {
+		int j;
 		if( spd_read_byte(device, 0) < 0 ) continue;
 #if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, "smbus: %02x", device);
 #else
-                print_debug("smbus: ");
-                print_debug_hex8(device);
+		print_debug("smbus: ");
+		print_debug_hex8(device);
 #endif
-                for(j = 0; j < 256; j++) {
-                	int status;
-                        unsigned char byte;
-                        status = spd_read_byte(device, j);
-                        if (status < 0) {
+		for(j = 0; j < 256; j++) {
+			int status;
+			unsigned char byte;
+			status = spd_read_byte(device, j);
+			if (status < 0) {
 				break;
-                        }
-                        if ((j & 0xf) == 0) {
+			}
+			if ((j & 0xf) == 0) {
 #if !defined(__ROMCC__)
 				printk(BIOS_DEBUG, "\n%02x: ",j);
 #else
-                	        print_debug("\n");
-                                print_debug_hex8(j);
-                                print_debug(": ");
+				 print_debug("\n");
+				print_debug_hex8(j);
+				print_debug(": ");
 #endif
-                        }
-                        byte = status & 0xff;
+			}
+			byte = status & 0xff;
 #if !defined(__ROMCC__)
-                        printk(BIOS_DEBUG, "%02x ", byte);
+			printk(BIOS_DEBUG, "%02x ", byte);
 #else
-                        print_debug_hex8(byte);
-                        print_debug_char(' ');
+			print_debug_hex8(byte);
+			print_debug_char(' ');
 #endif
-                }
-                print_debug("\n");
+		}
+		print_debug("\n");
 	}
 }
 
@@ -232,38 +232,38 @@ void dump_io_resources(unsigned port)
 #if !defined(__ROMCC__)
 	printk(BIOS_DEBUG, "%04x:\n", port);
 #else
-        print_debug_hex16(port);
-        print_debug(":\n");
+	print_debug_hex16(port);
+	print_debug(":\n");
 #endif
-        for(i=0;i<256;i++) {
-                uint8_t val;
-                if ((i & 0x0f) == 0) {
+	for(i=0;i<256;i++) {
+		uint8_t val;
+		if ((i & 0x0f) == 0) {
 #if !defined(__ROMCC__)
 			printk(BIOS_DEBUG, "%02x:", i);
 #else
-                        print_debug_hex8(i);
-                        print_debug_char(':');
+			print_debug_hex8(i);
+			print_debug_char(':');
 #endif
-                }
-                val = inb(port);
+		}
+		val = inb(port);
 #if !defined(__ROMCC__)
 		printk(BIOS_DEBUG, " %02x",val);
 #else
-                print_debug_char(' ');
-                print_debug_hex8(val);
+		print_debug_char(' ');
+		print_debug_hex8(val);
 #endif
-                if ((i & 0x0f) == 0x0f) {
-                        print_debug("\n");
-                }
+		if ((i & 0x0f) == 0x0f) {
+			print_debug("\n");
+		}
 		port++;
-        }
+	}
 }
 
 void dump_mem(unsigned start, unsigned end)
 {
-        unsigned i;
+	unsigned i;
 	print_debug("dump_mem:");
-        for(i=start;i<end;i++) {
+	for(i=start;i<end;i++) {
 		if((i & 0xf)==0) {
 #if !defined(__ROMCC__)
 			printk(BIOS_DEBUG, "\n%08x:", i);
@@ -277,8 +277,8 @@ void dump_mem(unsigned start, unsigned end)
 		printk(BIOS_DEBUG, " %02x", (unsigned char)*((unsigned char *)i));
 #else
 		print_debug(" ");
-             	print_debug_hex8((unsigned char)*((unsigned char *)i));
+	     	print_debug_hex8((unsigned char)*((unsigned char *)i));
 #endif
-        }
-        print_debug("\n");
+	}
+	print_debug("\n");
 }

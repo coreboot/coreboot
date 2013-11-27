@@ -49,7 +49,7 @@ static void pll_reset(void)
 			    (0xDE << RSTPPL_LOWER_HOLD_COUNT_SHIFT);
 			msrGlcpSysRstpll.lo &=
 			    ~(RSTPPL_LOWER_COREBYPASS_SET |
-			      RSTPPL_LOWER_MBBYPASS_SET);
+				 RSTPPL_LOWER_MBBYPASS_SET);
 			msrGlcpSysRstpll.lo |=
 			    RSTPPL_LOWER_COREPD_SET | RSTPPL_LOWER_CLPD_SET;
 		}

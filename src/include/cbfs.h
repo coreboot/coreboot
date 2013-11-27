@@ -66,11 +66,11 @@ struct cbfs_simple_buffer {
 };
 
 void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
-			     struct cbfs_media *media,
-			     size_t offset, size_t count);
+				struct cbfs_media *media,
+				size_t offset, size_t count);
 
 void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
-			       const void *address);
+				  const void *address);
 
 // Utility functions
 int run_address(void *f);
@@ -99,12 +99,12 @@ struct cbmem_entry;
  * ramstage. */
 void __attribute__((weak))
 cache_loaded_ramstage(struct romstage_handoff *handoff,
-                      const struct cbmem_entry *ramstage, void *entry_point);
+		      const struct cbmem_entry *ramstage, void *entry_point);
 /* Return NULL on error or entry point on success. The ramstage cbmem_entry is
  * the region where to load the cached contents to. */
 void * __attribute__((weak))
 load_cached_ramstage(struct romstage_handoff *handoff,
-                     const struct cbmem_entry *ramstage);
+		     const struct cbmem_entry *ramstage);
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 #endif

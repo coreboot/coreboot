@@ -73,16 +73,16 @@ static void w83697hf_init(device_t dev)
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = w83697hf_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = w83697hf_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_8787_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83697HF_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, W83697HF_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83697HF_PP,	PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
 	{ &ops, W83697HF_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, W83697HF_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, W83697HF_CIR,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },

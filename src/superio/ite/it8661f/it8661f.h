@@ -33,8 +33,8 @@
 
 /* Register and bit definitions. */
 #define IT8661F_REG_CC		0x02   /* Configure Control (write-only). */
-#define IT8661F_REG_LDE		0x23   /* PnP Logical Device Enable. */
-#define IT8661F_REG_SWSUSP	0x24   /* Software Suspend + Clock Select. */
+#define IT8661F_REG_LDE		0x23	/* PnP Logical Device Enable. */
+#define IT8661F_REG_SWSUSP	0x24	  /* Software Suspend + Clock Select. */
 
 #define IT8661F_ISA_PNP_PORT	0x0279 /* Write-only. */
 

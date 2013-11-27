@@ -22,15 +22,15 @@
  *
  * Constants that should be defined:
  *
- * SIO_EC_MEMMAP_ENABLE     : Enable EC LPC memory map resources
- * EC_LPC_ADDR_MEMMAP       : Base address of memory map range
- * EC_MEMMAP_SIZE           : Size of memory map range
+ * SIO_EC_MEMMAP_ENABLE	    : Enable EC LPC memory map resources
+ * EC_LPC_ADDR_MEMMAP	    : Base address of memory map range
+ * EC_MEMMAP_SIZE	    : Size of memory map range
  *
- * SIO_EC_HOST_ENABLE       : Enable EC host command interface resources
+ * SIO_EC_HOST_ENABLE	    : Enable EC host command interface resources
  * EC_LPC_ADDR_HOST_DATA    : EC host command interface data port
- * EC_LPC_ADDR_HOST_CMD     : EC host command interface command port
- * EC_HOST_CMD_REGION0      : EC host command buffer
- * EC_HOST_CMD_REGION1      : EC host command buffer
+ * EC_LPC_ADDR_HOST_CMD	    : EC host command interface command port
+ * EC_HOST_CMD_REGION0	    : EC host command buffer
+ * EC_HOST_CMD_REGION1	    : EC host command buffer
  * EC_HOST_CMD_REGION_SIZE  : EC host command buffer size
  */
 

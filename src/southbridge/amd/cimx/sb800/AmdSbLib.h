@@ -33,13 +33,13 @@ typedef signed char  *va_list;
 #ifndef va_start
   #define va_start(ap, v)  ( ap = (va_list)&(v) + _INTSIZEOF (v) )
 #endif
-#define va_arg(ap, t)    ( *(t *) ((ap += _INTSIZEOF (t)) - _INTSIZEOF (t)) )
-#define va_end(ap)      ( ap = (va_list)0 )
+#define va_arg(ap, t)	 ( *(t *) ((ap += _INTSIZEOF (t)) - _INTSIZEOF (t)) )
+#define va_end(ap)	( ap = (va_list)0 )
 
 
 #pragma pack (push, 1)
 
-#define IMAGE_ALIGN          32*1024
+#define IMAGE_ALIGN	     32*1024
 #define NUM_IMAGE_LOCATION   32
 
 //Entry Point Call

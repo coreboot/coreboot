@@ -73,11 +73,11 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 	 *    15 - APX, 0 for full access
 	 * 14:12 - TEX, 0b000 for outer and inner write-back
 	 * 11:10 - AP, 0b11 for full access
-	 *     9 - P, ? (FIXME: not described or possibly obsolete?)
+	 *	9 - P, ? (FIXME: not described or possibly obsolete?)
 	 *  8: 5 - Domain
-	 *     4 - XN, 1 to set execute-never (and also avoid prefetches)
-	 *     3 - C, 1 for cacheable
-	 *     2 - B, 1 for bufferable
+	 *	4 - XN, 1 to set execute-never (and also avoid prefetches)
+	 *	3 - C, 1 for cacheable
+	 *	2 - B, 1 for bufferable
 	 *  1: 0 - 0b10 to indicate section entry
 	 */
 

@@ -20,61 +20,61 @@
 // Set P6IF DRDY Timing
 // Because there are 1.5T & 2.5T CAS latency in DDR1 mode, we need to use RDELAYMD-0
 //
-//      Entry:
-//        EBP[29:25] = DRAM Speed, Dual_Channel
-//        VIA_NB2HOST_REG54[7:5]        Host Frequency
-//        VIA_NB3DRAM_REG62[2:0]        CAS Latency
+//	Entry:
+//	  EBP[29:25] = DRAM Speed, Dual_Channel
+//	  VIA_NB2HOST_REG54[7:5]	Host Frequency
+//	  VIA_NB3DRAM_REG62[2:0]	CAS Latency
 //
-//      Modify NB_Reg:
-//        VIA_NB2HOST_REG54[3,1]
-//        VIA_NB2HOST_REG55[1]
-//        VIA_NB2HOST_REG60
-//        VIA_NB2HOST_REG61
-//        VIA_NB2HOST_REG62[3:0]
-//        VIA_NB2HOST_REG63
-//        VIA_NB2HOST_REG64
-//        VIA_NB2HOST_REG65[3:0]
-//        VIA_NB2HOST_REG66
-//        VIA_NB2HOST_REG67[5:4]
+//	Modify NB_Reg:
+//	  VIA_NB2HOST_REG54[3,1]
+//	  VIA_NB2HOST_REG55[1]
+//	  VIA_NB2HOST_REG60
+//	  VIA_NB2HOST_REG61
+//	  VIA_NB2HOST_REG62[3:0]
+//	  VIA_NB2HOST_REG63
+//	  VIA_NB2HOST_REG64
+//	  VIA_NB2HOST_REG65[3:0]
+//	  VIA_NB2HOST_REG66
+//	  VIA_NB2HOST_REG67[5:4]
 //
 // Processing:
 //--------------------------------------------------------------------------
 // P6IF DRDY Timing Control:
 // *Following algorithm to set DRDY timing
-// Set P6IF DRDY Timing by the following 3      conditions:
+// Set P6IF DRDY Timing by the following 3	conditions:
 // 1. RDELAYMD
-//    a.RDRPH(MD        input internal timing control)
+//    a.RDRPH(MD	input internal timing control)
 //    b.CAS Latency
 //    RDELAYMD(1bit) = bit0 of (CL + RDRPH)
-//    for example: RDRPH=10b, CL3 -> F3_Rx56[5:4]=11b, 10b + 11b        = 101b, RDELAYMD=1 (bit0)
-//                RDRPH=00b, CL2.5 -> F3_Rx56[5:4]=10b, 00b + 10b = 010b, RDELAYMD=0 (bit0)
+//    for example: RDRPH=10b, CL3 -> F3_Rx56[5:4]=11b, 10b + 11b	= 101b, RDELAYMD=1 (bit0)
+//		  RDRPH=00b, CL2.5 -> F3_Rx56[5:4]=10b, 00b + 10b = 010b, RDELAYMD=0 (bit0)
 // 2. CPU Frequency
 // 3. DRAM Frequency
 //
 // According to above conditions, we create different tables:
-// 1. RDELAYMD=0        : for integer CAS latency(ex. CL=3)
-// 2. RDELAYMD=1        : for non-integer CAS latency(ex. CL=2.5)
+// 1. RDELAYMD=0	: for integer CAS latency(ex. CL=3)
+// 2. RDELAYMD=1	: for non-integer CAS latency(ex. CL=2.5)
 // 3. Normal performance
 // 4. Top performance :
-//                     Using phase0 to a case has better performance.
+//		       Using phase0 to a case has better performance.
 //
-// Note: The setting are        related to performance and maybe affect DRAM initialize.
-//      Turn OFF(F2_Rx51[7]=0) this feature at csDRAMRegInitValueJ procedure.
-//      Turn ON(F2_Rx51[7]=1) this feature at csDRAMRegFinalValueJ procedure.
+// Note: The setting are	related to performance and maybe affect DRAM initialize.
+//	Turn OFF(F2_Rx51[7]=0) this feature at csDRAMRegInitValueJ procedure.
+//	Turn ON(F2_Rx51[7]=1) this feature at csDRAMRegFinalValueJ procedure.
 //
-// If F2_Rx51[7]=0, then        CPU always wait 8QW, a slower but most stable way
-// If F2_Rx51[7]=1, then        the timing will refer to F2_Rx60 ~ F2_Rx67,
+// If F2_Rx51[7]=0, then	CPU always wait 8QW, a slower but most stable way
+// If F2_Rx51[7]=1, then	the timing will refer to F2_Rx60 ~ F2_Rx67,
 // a fast way but may cause the system to be unstable.
 //
 // Coding:
-// 1. RDELAYMD and user's option        for performance can determine which table
-// 2. CPU Frequency can get block offset        of table
-// 3. DRAM Frequency can        get row offset of block
+// 1. RDELAYMD and user's option	for performance can determine which table
+// 2. CPU Frequency can get block offset	of table
+// 3. DRAM Frequency can	get row offset of block
 // 4. Set value
 //
-// PS: Fun2 Rx62, Rx65, Rx67 are        don't care bits in 3296, CPU 266MHz doesn't be supported by 3296,
-//     but I still keep these bits in table to avoid the        usage in future
-//     and do the fewest        modification for code.
+// PS: Fun2 Rx62, Rx65, Rx67 are	don't care bits in 3296, CPU 266MHz doesn't be supported by 3296,
+//     but I still keep these bits in table to avoid the	usage in future
+//     and do the fewest	modification for code.
 //
 
 // Early 3T
@@ -98,7 +98,7 @@
 #define Rx54E0T			P6IF_Misc_RFASTH
 #define Rx55E0T			P6IF_Misc2_RRRDYH3E + P6IF_Misc2_RHTSEL
 
-// Latter       1T
+// Latter	1T
 #define Rx54L1T			P6IF_Misc_RFASTH
 #define Rx55L1T			P6IF_Misc2_RHTSEL
 
@@ -151,9 +151,9 @@
 
 static const u8 PT894_128bit_DELAYMD0_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 //    -----------------------------------------------------------------------------------------------------------------
-//    RX60           RX61           RX62            RX63           RX64       RX65           RX66  RX67   RX54[3,1]  RX55[3,1]    CPU/DRAM
-//    LN4:1          LN8:5          LN10:9          QW4:1          QW8:5      QW10:9     WS8:1 WS10:9 RFASTH     RRRDYH3E
-//                                                                                                                            RCONV          RHTSEL
+//    RX60	     RX61	    RX62	    RX63	   RX64	      RX65	     RX66  RX67	  RX54[3,1]  RX55[3,1]	  CPU/DRAM
+//    LN4:1	     LN8:5	    LN10:9	    QW4:1	   QW8:5      QW10:9	 WS8:1 WS10:9 RFASTH	 RRRDYH3E
+//															      RCONV	     RHTSEL
 //    -----------------------------------------------------------------------------------------------------------------
 {
 // cpu100
@@ -214,9 +214,9 @@ static const u8 PT894_128bit_DELAYMD0_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 
 static const u8 PT894_128bit_DELAYMD1_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 //    -----------------------------------------------------------------------------------------------------------------
-//    RX60           RX61           RX62            RX63           RX64       RX65           RX66  RX67   RX54[3,1]  RX55[3,1]    CPU/DRAM
-//    LN4:1          LN8:5          LN10:9          QW4:1          QW8:5      QW10:9     WS8:1 WS10:9 RFASTH     RRRDYH3E
-//                                                                                                                            RCONV          RHTSEL
+//    RX60	     RX61	    RX62	    RX63	   RX64	      RX65	     RX66  RX67	  RX54[3,1]  RX55[3,1]	  CPU/DRAM
+//    LN4:1	     LN8:5	    LN10:9	    QW4:1	   QW8:5      QW10:9	 WS8:1 WS10:9 RFASTH	 RRRDYH3E
+//															      RCONV	     RHTSEL
 //    -----------------------------------------------------------------------------------------------------------------
 {
 // cpu100
@@ -277,9 +277,9 @@ static const u8 PT894_128bit_DELAYMD1_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 
 static const u8 PT894_64bit_DELAYMD0_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 //    -----------------------------------------------------------------------------------------------------------------
-//    RX60           RX61           RX62            RX63           RX64       RX65           RX66  RX67   RX54[3,1]  RX55[3,1]    CPU/DRAM
-//    LN4:1          LN8:5          LN10:9          QW4:1          QW8:5      QW10:9     WS8:1 WS10:9 RFASTH     RRRDYH3E
-//                                                                                                                            RCONV          RHTSEL
+//    RX60	     RX61	    RX62	    RX63	   RX64	      RX65	     RX66  RX67	  RX54[3,1]  RX55[3,1]	  CPU/DRAM
+//    LN4:1	     LN8:5	    LN10:9	    QW4:1	   QW8:5      QW10:9	 WS8:1 WS10:9 RFASTH	 RRRDYH3E
+//															      RCONV	     RHTSEL
 //    -----------------------------------------------------------------------------------------------------------------
 {
 // cpu100
@@ -308,7 +308,7 @@ static const u8 PT894_64bit_DELAYMD0_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 	 {PH2_2_2_2, PH0_0_2_2, PH0_0_0_0, PH1_1_1_1, PH0_0_1_1, PH0_0_0_0, 0x3f, 0x00, Rx54E3T, Rx55E3T},	// 200/200
 	 {PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, 0x00, 0x00, Rx54E1T, Rx55E1T},	// 200/266
 	 {PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, 0x00, 0x00, Rx54E3T, Rx55E3T}	// 200/333
-// DDR2 Both E3T and E2T Fail, need set to E1T,  db     PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0,       00110011b, 00000000b, Rx54E3T,  Rx55E3T  ;200/266
+// DDR2 Both E3T and E2T Fail, need set to E1T,  db	PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0, PH0_0_0_0,	00110011b, 00000000b, Rx54E3T,  Rx55E3T  ;200/266
 	 },
 // cpu166
 	{
@@ -341,9 +341,9 @@ static const u8 PT894_64bit_DELAYMD0_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 
 static const u8 PT894_64bit_DELAYMD1_RCONV0[6][6][PT894_RDRDY_TBL_Width] =
 //    -----------------------------------------------------------------------------------------------------------------
-//    RX60           RX61           RX62            RX63           RX64       RX65           RX66  RX67   RX54[3,1]  RX55[3,1]    CPU/DRAM
-//    LN4:1          LN8:5          LN10:9          QW4:1          QW8:5      QW10:9     WS8:1 WS10:9 RFASTH     RRRDYH3E
-//                                                                                                                            RCONV          RHTSEL
+//    RX60	     RX61	    RX62	    RX63	   RX64	      RX65	     RX66  RX67	  RX54[3,1]  RX55[3,1]	  CPU/DRAM
+//    LN4:1	     LN8:5	    LN10:9	    QW4:1	   QW8:5      QW10:9	 WS8:1 WS10:9 RFASTH	 RRRDYH3E
+//															      RCONV	     RHTSEL
 //    -----------------------------------------------------------------------------------------------------------------
 {
 // cpu100
@@ -567,8 +567,8 @@ void DRAMBurstLength(DRAM_SYS_ATTR * DramAttr)
 		if (DramAttr->DimmInfo[Sockets].bPresence) {
 			BL &=
 			    (DramAttr->
-			     DimmInfo[Sockets].SPDDataBuf
-			     [SPD_SDRAM_BURSTLENGTH]);
+				DimmInfo[Sockets].SPDDataBuf
+				[SPD_SDRAM_BURSTLENGTH]);
 		}
 	}
 

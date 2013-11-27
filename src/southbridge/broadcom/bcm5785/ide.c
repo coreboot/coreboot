@@ -27,13 +27,13 @@
 
 static void bcm5785_ide_read_resources(device_t dev)
 {
-        /* Get the normal pci resources of this device */
-        pci_dev_read_resources(dev);
+	/* Get the normal pci resources of this device */
+	pci_dev_read_resources(dev);
 
-        /* BAR */
-        pci_get_resource(dev, 0x64);
+	/* BAR */
+	pci_get_resource(dev, 0x64);
 
-        compact_resources(dev);
+	compact_resources(dev);
 }
 
 static void ide_init(struct device *dev)
@@ -42,26 +42,26 @@ static void ide_init(struct device *dev)
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations ide_ops  = {
 	.read_resources   = bcm5785_ide_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = ide_init,
-	.scan_bus         = 0,
-//	.enable           = bcm5785_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = ide_init,
+	.scan_bus	   = 0,
+//	.enable	     = bcm5785_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver ide_driver __pci_driver = {
-	.ops    = &ide_ops,
+	.ops	 = &ide_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_IDE,
 };

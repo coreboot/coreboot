@@ -106,7 +106,7 @@ void cardbus_read_resources(device_t dev)
 
 	/* Initialize the I/O space constraints on the current bus. */
 	cardbus_record_bridge_resource(dev, moving, CARDBUS_IO_SIZE,
-				       PCI_CB_IO_BASE_0, IORESOURCE_IO);
+					   PCI_CB_IO_BASE_0, IORESOURCE_IO);
 	cardbus_size_bridge_resource(dev, PCI_CB_IO_BASE_0);
 
 	/* See which bridge I/O resources are implemented. */
@@ -116,7 +116,7 @@ void cardbus_read_resources(device_t dev)
 
 	/* Initialize the I/O space constraints on the current bus. */
 	cardbus_record_bridge_resource(dev, moving, CARDBUS_IO_SIZE,
-				       PCI_CB_IO_BASE_1, IORESOURCE_IO);
+					   PCI_CB_IO_BASE_1, IORESOURCE_IO);
 
 	/* If I can, enable prefetch for mem0. */
 	ctl = pci_read_config16(dev, PCI_CB_BRIDGE_CONTROL);
@@ -136,7 +136,7 @@ void cardbus_read_resources(device_t dev)
 	if (ctl & PCI_CB_BRIDGE_CTL_PREFETCH_MEM0)
 		type |= IORESOURCE_PREFETCH;
 	cardbus_record_bridge_resource(dev, moving, CARDBUS_MEM_SIZE,
-				       PCI_CB_MEMORY_BASE_0, type);
+					   PCI_CB_MEMORY_BASE_0, type);
 	if (type & IORESOURCE_PREFETCH)
 		cardbus_size_bridge_resource(dev, PCI_CB_MEMORY_BASE_0);
 
@@ -147,7 +147,7 @@ void cardbus_read_resources(device_t dev)
 
 	/* Initialize the memory space constraints on the current bus. */
 	cardbus_record_bridge_resource(dev, moving, CARDBUS_MEM_SIZE,
-				       PCI_CB_MEMORY_BASE_1, IORESOURCE_MEM);
+					   PCI_CB_MEMORY_BASE_1, IORESOURCE_MEM);
 	cardbus_size_bridge_resource(dev, PCI_CB_MEMORY_BASE_1);
 
 	compact_resources(dev);
@@ -175,10 +175,10 @@ void cardbus_enable_resources(device_t dev)
 
 struct device_operations default_cardbus_ops_bus = {
 	.read_resources   = cardbus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = cardbus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pci_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
+	.init		   = 0,
+	.scan_bus	   = pci_scan_bridge,
+	.enable	   = 0,
+	.reset_bus	   = pci_bus_reset,
 };

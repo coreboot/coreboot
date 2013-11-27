@@ -77,12 +77,12 @@ PTEs
 static void
 setgtt(int start, int end, unsigned long base, int inc)
 {
-        int i;
+	int i;
 
 	for(i = start; i < end; i++){
-                u32 word = base + i*inc;
-                WRITE32(word|1,(i*4)|1);
-        }
+		u32 word = base + i*inc;
+		WRITE32(word|1,(i*4)|1);
+	}
 }
 
 static char *regname(unsigned long addr)

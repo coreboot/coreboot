@@ -16,13 +16,13 @@
 
 /* Define register settings */
 #define HOST_RESET 0xff
-#define READ_CMD  0x01        // 1 in the 0 bit of SMBHSTADD states to READ
+#define READ_CMD  0x01	      // 1 in the 0 bit of SMBHSTADD states to READ
 
 
 #define SMBUS_TIMEOUT (100*1000*10)
 
-#define  I2C_TRANS_CMD          0x40
-#define  CLOCK_SLAVE_ADDRESS    0x69
+#define  I2C_TRANS_CMD		0x40
+#define  CLOCK_SLAVE_ADDRESS	0x69
 
 static void enable_smbus(void)
 {

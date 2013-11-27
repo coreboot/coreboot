@@ -87,11 +87,11 @@ static void lpc47b397_pnp_enable_resources(device_t dev)
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = lpc47b397_pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = lpc47b397_init,
-	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = lpc47b397_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_55_aa,
 };
 
 #define HWM_INDEX 0
@@ -145,13 +145,13 @@ static struct smbus_bus_operations lops_smbus_bus = {
 
 static struct device_operations ops_hwm = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = lpc47b397_pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = lpc47b397_init,
-	.scan_bus         = scan_static_bus,
-	.ops_smbus_bus    = &lops_smbus_bus,
-	.ops_pnp_mode     = &pnp_conf_mode_55_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = lpc47b397_init,
+	.scan_bus	   = scan_static_bus,
+	.ops_smbus_bus	   = &lops_smbus_bus,
+	.ops_pnp_mode	   = &pnp_conf_mode_55_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {

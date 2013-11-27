@@ -51,7 +51,7 @@ u32 get_sbdn(u32 bus)
 
 /**
  * @brief South Bridge CIMx romstage entry,
- *        wrapper of sbPowerOnInit entry point.
+ *	  wrapper of sbPowerOnInit entry point.
  */
 void sb_poweron_init(void)
 {
@@ -81,7 +81,7 @@ void sb_poweron_init(void)
 
 /**
  * @brief South Bridge CIMx romstage entry,
- *        wrapper of sbPowerOnInit entry point.
+ *	  wrapper of sbPowerOnInit entry point.
  */
 void sb_before_pci_init(void)
 {

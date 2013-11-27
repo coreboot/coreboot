@@ -89,7 +89,7 @@ static void init_hwm(u16 base)
 		value &= 0xff & (~(hwm_reg_values[i + 1]));
 		value |= 0xff & hwm_reg_values[i + 2];
 		printk(BIOS_DEBUG, "base = 0x%04x, reg = 0x%02x, "
-		       "value = 0x%02x\n", base, reg, value);
+			 "value = 0x%02x\n", base, reg, value);
 		pnp_write_index(base, reg, value);
 	}
 }
@@ -133,16 +133,16 @@ static void w83627ehg_pnp_enable_resources(device_t dev)
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = w83627ehg_pnp_enable_resources,
-	.enable           = pnp_alt_enable,
-	.init             = w83627ehg_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.enable	   = pnp_alt_enable,
+	.init		   = w83627ehg_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_8787_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {
 	{ &ops, W83627EHG_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, W83627EHG_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83627EHG_PP,	 PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
 	{ &ops, W83627EHG_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, W83627EHG_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, W83627EHG_KBC,  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, {0x07ff, 4}, },

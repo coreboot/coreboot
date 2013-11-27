@@ -26,55 +26,55 @@ chip northbridge/via/cn700			# Northbridge
       device pci 10.4 on end			# EHCI
       device pci 10.5 on end			# UDCI
       device pci 11.0 on			# Southbridge LPC
-        chip superio/ite/it8716f		# Super I/O
-          device pnp 2e.0 on			# Floppy
-            io 0x60 = 0x3f0
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 2e.1 on			# COM1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 2e.2 off			# COM2 (N/A on this board)
-            io 0x60 = 0x2f8
-            irq 0x70 = 3
-          end
-          device pnp 2e.3 on			# Parallel port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-            drq 0x74 = 3
-          end
-          device pnp 2e.4 on			# Environment controller
-            io 0x60 = 0x290
-            io 0x62 = 0x0000
-            irq 0x70 = 9
-          end
-          device pnp 2e.5 off			# PS/2 keyboard (not used)
-            io 0x60 = 0x60
-            io 0x62 = 0x64
-            irq 0x70 = 1
-          end
-          device pnp 2e.6 off			# PS/2 mouse (not used)
-            irq 0x70 = 12
-          end
-          device pnp 2e.7 on			# GPIO
-            io 0x60 = 0x0000
-            io 0x62 = 0x0800
-            io 0x64 = 0x0000
-          end
-          device pnp 2e.8 off			# MIDI port (N/A)
-            io 0x60 = 0x300
-            irq 0x70 = 10
-          end
-          device pnp 2e.9 off			# Game port (N/A)
-            io 0x60 = 0x201
-          end
-          device pnp 2e.a on			# Consumer IR
-            io 0x60 = 0x310
-            irq 0x70 = 11
-          end
-        end
+	chip superio/ite/it8716f		# Super I/O
+	  device pnp 2e.0 on			# Floppy
+	    io 0x60 = 0x3f0
+	    irq 0x70 = 6
+	    drq 0x74 = 2
+	  end
+	  device pnp 2e.1 on			# COM1
+	    io 0x60 = 0x3f8
+	    irq 0x70 = 4
+	  end
+	  device pnp 2e.2 off			# COM2 (N/A on this board)
+	    io 0x60 = 0x2f8
+	    irq 0x70 = 3
+	  end
+	  device pnp 2e.3 on			# Parallel port
+	    io 0x60 = 0x378
+	    irq 0x70 = 7
+	    drq 0x74 = 3
+	  end
+	  device pnp 2e.4 on			# Environment controller
+	    io 0x60 = 0x290
+	    io 0x62 = 0x0000
+	    irq 0x70 = 9
+	  end
+	  device pnp 2e.5 off			# PS/2 keyboard (not used)
+	    io 0x60 = 0x60
+	    io 0x62 = 0x64
+	    irq 0x70 = 1
+	  end
+	  device pnp 2e.6 off			# PS/2 mouse (not used)
+	    irq 0x70 = 12
+	  end
+	  device pnp 2e.7 on			# GPIO
+	    io 0x60 = 0x0000
+	    io 0x62 = 0x0800
+	    io 0x64 = 0x0000
+	  end
+	  device pnp 2e.8 off			# MIDI port (N/A)
+	    io 0x60 = 0x300
+	    irq 0x70 = 10
+	  end
+	  device pnp 2e.9 off			# Game port (N/A)
+	    io 0x60 = 0x201
+	  end
+	  device pnp 2e.a on			# Consumer IR
+	    io 0x60 = 0x310
+	    irq 0x70 = 11
+	  end
+	end
       end
       device pci 11.5 on end			# AC'97 audio
       # device pci 11.6 off end			# AC'97 modem (N/A)

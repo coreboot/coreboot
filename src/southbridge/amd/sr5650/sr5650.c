@@ -108,12 +108,12 @@ void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 		if (in_out) {
 			/* Fill MMIO limit/base pair. */
 			pci_write_config32(k8_f1, 0xbc,
-					   (((pcie_base_add + 0x10000000 -
-					      1) >> 8) & 0xffffff00) | 0x8 | (np ? 2 << 4 : 0 << 4));
+						(((pcie_base_add + 0x10000000 -
+						   1) >> 8) & 0xffffff00) | 0x8 | (np ? 2 << 4 : 0 << 4));
 			pci_write_config32(k8_f1, 0xb8, (pcie_base_add >> 8) | 0x3);
 			pci_write_config32(k8_f1, 0xb4,
-					   ((mmio_base_add + 0x10000000 -
-					     1) >> 8) | (np ? 2 << 4 : 0 << 4));
+						((mmio_base_add + 0x10000000 -
+						  1) >> 8) | (np ? 2 << 4 : 0 << 4));
 			pci_write_config32(k8_f1, 0xb0, (mmio_base_add >> 8) | 0x3);
 		} else {
 			pci_write_config32(k8_f1, 0xb8, 0);
@@ -130,28 +130,28 @@ void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port)
 	case 2:		/* GPP1, bit4-5 */
 	case 3:
 		set_nbmisc_enable_bits(nb_dev, PCIE_LINK_CFG,
-				       1 << (port + 2), 0 << (port + 2));
+					   1 << (port + 2), 0 << (port + 2));
 		break;
 	case 4:		/* GPP3a, bit20-24 */
 	case 5:
 	case 6:
 	case 7:
 		set_nbmisc_enable_bits(nb_dev, PCIE_LINK_CFG,
-				       1 << (port + 17), 0 << (port + 17));
+					   1 << (port + 17), 0 << (port + 17));
 		break;
 	case 9:		/* GPP3a, bit25,26 */
 	case 10:
 		set_nbmisc_enable_bits(nb_dev, PCIE_LINK_CFG,
-				      1 << (port + 16), 0 << (port + 16));
+					  1 << (port + 16), 0 << (port + 16));
 		break;
 	case 11:	/* GPP2, bit6-7 */
 	case 12:
 		set_nbmisc_enable_bits(nb_dev, PCIE_LINK_CFG,
-				       1 << (port - 5), 0 << (port - 5));
+					   1 << (port - 5), 0 << (port - 5));
 		break;
 	case 13:	/* GPP3b, bit4 of NBMISCIND:0x2A */
 		set_nbmisc_enable_bits(nb_dev, 0x2A,
-				       1 << 4, 0 << 4);
+					   1 << 4, 0 << 4);
 		break;
 	}
 }
@@ -191,7 +191,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 		udelay(40200);
 		lc_state = nbpcie_p_read_index(dev, 0xa5);	/* lc_state */
 		printk(BIOS_DEBUG, "PcieLinkTraining port=%x:lc current state=%x\n",
-			     port, lc_state);
+				port, lc_state);
 		current = lc_state & 0x3f;	/* get LC_CURRENT_STATE, bit0-5 */
 
 		switch (current) {
@@ -220,7 +220,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 			reg = 0xE0E0; /*I think that the lane_mask calc above is wrong, and this can't be hardcoded because the configuration changes.*/
 			nbpcie_ind_write_index(nb_dev, 0x65 | gpp_sb_sel, reg);
 			printk(BIOS_DEBUG, "link_width=%x, lane_mask=%x",
-				     current_link_width, lane_mask);
+					 current_link_width, lane_mask);
 			set_pcie_reset();
 			mdelay(1);
 			set_pcie_dereset();
@@ -239,7 +239,7 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 				/* set bit8=1, bit0-2=bit4-6 */
 				u32 tmp;
 				reg =
-				    nbpcie_p_read_index(dev,
+					nbpcie_p_read_index(dev,
 							PCIE_LC_LINK_WIDTH);
 				tmp = (reg >> 4) && 0x3;	/* get bit4-6 */
 				reg &= 0xfff8;	/* clear bit0-2 */
@@ -333,12 +333,12 @@ void sr5650_nb_pci_table(device_t nb_dev)
 *	0:00.0  NBCFG	:
 *	0:00.1  CLK	: bit 0 of nb_cfg 0x4c : 0 - disable, default
 *	0:01.0  P2P Internal:
-*	0:02.0  P2P	: bit 2 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:03.0  P2P	: bit 3 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:04.0  P2P	: bit 4 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:05.0  P2P	: bit 5 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:06.0  P2P	: bit 6 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:07.0  P2P	: bit 7 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
+*	0:02.0  P2P	: bit 2 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:03.0  P2P	: bit 3 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:04.0  P2P	: bit 4 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:05.0  P2P	: bit 5 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:06.0  P2P	: bit 6 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:07.0  P2P	: bit 7 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
 *	0:08.0  NB2SB	: bit 6 of nbmiscind 0x00 : 0 - disable, default   + 32 * 1
 * case 0 will be called twice, one is by cpu in hypertransport.c line458,
 * the other is by sr5650.
@@ -378,7 +378,7 @@ void sr5650_enable(device_t dev)
 	case 3:
 		printk(BIOS_INFO, "Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
-				       (dev->enabled ? 0 : 1) << dev_ind);
+					   (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
 			sr5650_gpp_sb_init(nb_dev, dev, dev_ind); /* Note, dev 2,3 are generic PCIe ports. */
 		break;
@@ -390,14 +390,14 @@ void sr5650_enable(device_t dev)
 		printk(BIOS_INFO, "Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
 			    dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
-				       (dev->enabled ? 0 : 1) << dev_ind);
+					   (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
 			sr5650_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;
 	case 8:		/* bus0, dev8, SB */
 		printk(BIOS_INFO, "Bus-0, Dev-8, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 6,
-				       (dev->enabled ? 1 : 0) << 6);
+					   (dev->enabled ? 1 : 0) << 6);
 		if (dev->enabled)
 			sr5650_gpp_sb_init(nb_dev, dev, dev_ind);
 		disable_pcie_bar3(nb_dev);
@@ -408,7 +408,7 @@ void sr5650_enable(device_t dev)
 			    dev->enabled);
 		enable_pcie_bar3(nb_dev);	/* PCIEMiscInit */
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << (7 + dev_ind),
-				       (dev->enabled ? 0 : 1) << (7 + dev_ind));
+					   (dev->enabled ? 0 : 1) << (7 + dev_ind));
 		if (dev->enabled)
 			sr5650_gpp_sb_init(nb_dev, dev, dev_ind);
 		/* Dont call disable_pcie_bar3(nb_dev) here, otherwise the screen will crash. */
@@ -417,13 +417,13 @@ void sr5650_enable(device_t dev)
 	case 12:	/* bus 0, dev 11,12, GPP2 */
 		printk(BIOS_INFO, "Bus-0, Dev-11,12, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << (7 + dev_ind),
-				       (dev->enabled ? 0 : 1) << (7 + dev_ind));
+					   (dev->enabled ? 0 : 1) << (7 + dev_ind));
 		if (dev->enabled)
 			sr5650_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;
 	case 13:	/* bus 0, dev 12, GPP3b */
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << (7 + dev_ind),
-				       (dev->enabled ? 0 : 1) << (7 + dev_ind));
+					   (dev->enabled ? 0 : 1) << (7 + dev_ind));
 		if (dev->enabled)
 			sr5650_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;

@@ -41,8 +41,8 @@ static void esb6300_pci_dma_cfg(device_t dev)
 #define LPC_EN 0xe6
 static void esb6300_enable_lpc(device_t dev)
 {
-        /* lpc i/f enable */
-        pci_write_config8(dev, LPC_EN, 0x0d);
+	/* lpc i/f enable */
+	pci_write_config8(dev, LPC_EN, 0x0d);
 }
 
 typedef struct southbridge_intel_esb6300_config config_t;
@@ -148,7 +148,7 @@ static void set_esb6300_gpio_level(
 		}
 	}
 #endif
-	outl(gpio_lvl,   res->base + 0x0c);
+	outl(gpio_lvl,	  res->base + 0x0c);
 	outl(gpio_blink, res->base + 0x18);
 	outl(gpio_lvl2,  res->base + 0x38);
 }
@@ -173,7 +173,7 @@ static void set_esb6300_gpio_inv(
 		gpio_inv |= (val << i);
 	}
 #endif
-	outl(gpio_inv,   res->base + 0x2c);
+	outl(gpio_inv,	  res->base + 0x2c);
 }
 
 static void esb6300_pirq_init(device_t dev)
@@ -281,7 +281,7 @@ static void lpc_init(struct device *dev)
 
 	esb6300_enable_lpc(dev);
 
-        get_option(&pwr_on, "power_on_after_fail");
+	get_option(&pwr_on, "power_on_after_fail");
 	byte = pci_read_config8(dev, 0xa4);
 	byte &= 0xfe;
 	if (!pwr_on) {
@@ -359,16 +359,16 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations lpc_ops  = {
 	.read_resources   = esb6300_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = esb6300_lpc_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-	.enable           = esb6300_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+	.enable	   = esb6300_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_LPC,
 };

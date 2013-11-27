@@ -58,20 +58,20 @@ static u8 check_dram_side(int addr_bit)
 }
 
 // DDRIII memory bank register control:
-// bit    :
+// bit	  :
 // 2 - 0  : DRAMC_COLSIZE : DDRIII Column Address Type : 0 0 0 = 10bit
-//                                                     : 0 0 1 = 11bit
+//						       : 0 0 1 = 11bit
 // 7 - 5  : DRAMC_ROWSIZE : DDRIII Row Address Type    : 0 0 0 = 13bit
-//                                                     : 0 0 1 = 14bit
-//                                                     : 0 1 0 = 15bit
-//                                                     : 0 1 1 = 16bit
-// 11 - 8 : DRAM_SIZE     : DDRIII Size                : 0 1 0 1 =  64M
-//                                                     : 0 1 1 0 = 128M
-//                                                     : 0 1 1 1 = 256M
-//                                                     : 1 0 0 0 = 512M
-//                                                     : 1 0 0 1 = 1GB
-//                                                     : 1 0 1 0 = 2GB
-// 13     : DRAMC_CSMASK  : DDRIII CS#[1] Mask         : 1 = Mask CS1 enable
+//						       : 0 0 1 = 14bit
+//						       : 0 1 0 = 15bit
+//						       : 0 1 1 = 16bit
+// 11 - 8 : DRAM_SIZE	  : DDRIII Size		       : 0 1 0 1 =  64M
+//						       : 0 1 1 0 = 128M
+//						       : 0 1 1 1 = 256M
+//						       : 1 0 0 0 = 512M
+//						       : 1 0 0 1 = 1GB
+//						       : 1 0 1 0 = 2GB
+// 13	  : DRAMC_CSMASK  : DDRIII CS#[1] Mask	       : 1 = Mask CS1 enable
 
 #define DDR3_COL_10BIT  0
 #define DDR3_COL_11BIT  1
@@ -79,14 +79,14 @@ static u8 check_dram_side(int addr_bit)
 #define DDR3_ROW_14BIT  1
 #define DDR3_ROW_15BIT  2
 #define DDR3_ROW_16BIT  3
-#define DDR3_SIZE_64M   5
+#define DDR3_SIZE_64M	5
 #define DDR3_SIZE_128M  6
 #define DDR3_SIZE_256M  7
 #define DDR3_SIZE_512M  8
-#define DDR3_SIZE_1GB   9
-#define DDR3_SIZE_2GB   10
+#define DDR3_SIZE_1GB	9
+#define DDR3_SIZE_2GB	10
 #define DDR3_C1M_ACTIVE 0
-#define DDR3_C1M_MASK   1
+#define DDR3_C1M_MASK	1
 
 static u16 set_ddr3_mem_reg_col(u16 reg, u16 col)
 {

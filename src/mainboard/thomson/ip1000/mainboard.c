@@ -59,9 +59,9 @@ static void parport_gpios(void)
 			(pp_gpios & PARPORT_GPIO_LED_GREEN) ? "off" : "on");
 	printk(BIOS_DEBUG, "  orange led: %s\n",
 			(pp_gpios & PARPORT_GPIO_LED_ORANGE) ? "off" : "on");
-	printk(BIOS_DEBUG, "  red led:    %s\n",
+	printk(BIOS_DEBUG, "  red led:	   %s\n",
 			(pp_gpios & PARPORT_GPIO_LED_RED) ? "off" : "on");
-	printk(BIOS_DEBUG, "  IR port:    %s\n",
+	printk(BIOS_DEBUG, "  IR port:	   %s\n",
 			(pp_gpios & PARPORT_GPIO_IR_PORT) ? "off" : "on");
 }
 

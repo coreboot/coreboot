@@ -276,12 +276,12 @@ static void rs780_nb_gfx_dev_table(device_t nb_dev, device_t dev)
 *	0:00.0  NBCFG	:
 *	0:00.1  CLK	: bit 0 of nb_cfg 0x4c : 0 - disable, default
 *	0:01.0  P2P Internal:
-*	0:02.0  P2P	: bit 2 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:03.0  P2P	: bit 3 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:04.0  P2P	: bit 4 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:05.0  P2P	: bit 5 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:06.0  P2P	: bit 6 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
-*	0:07.0  P2P	: bit 7 of nbmiscind 0x0c : 0 - enable, default	   + 32 * 2
+*	0:02.0  P2P	: bit 2 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:03.0  P2P	: bit 3 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:04.0  P2P	: bit 4 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:05.0  P2P	: bit 5 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:06.0  P2P	: bit 6 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
+*	0:07.0  P2P	: bit 7 of nbmiscind 0x0c : 0 - enable, default		 + 32 * 2
 *	0:08.0  NB2SB	: bit 6 of nbmiscind 0x00 : 0 - disable, default   + 32 * 1
 * case 0 will be called twice, one is by cpu in hypertransport.c line458,
 * the other is by rs780.
@@ -330,7 +330,7 @@ void rs780_enable(device_t dev)
 	case 3:
 		printk(BIOS_INFO, "Bus-0, Dev-2,3, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
-				       (dev->enabled ? 0 : 1) << dev_ind);
+					   (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
 			rs780_gfx_init(nb_dev, dev, dev_ind);
 		break;
@@ -341,14 +341,14 @@ void rs780_enable(device_t dev)
 		printk(BIOS_INFO, "Bus-0, Dev-4,5,6,7, Fun-0. enable=%d\n",
 			    dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << dev_ind,
-				       (dev->enabled ? 0 : 1) << dev_ind);
+					   (dev->enabled ? 0 : 1) << dev_ind);
 		if (dev->enabled)
 			rs780_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;
 	case 8:		/* bus0, dev8, SB */
 		printk(BIOS_INFO, "Bus-0, Dev-8, Fun-0. enable=%d\n", dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x00, 1 << 6,
-				       (dev->enabled ? 1 : 0) << 6);
+					   (dev->enabled ? 1 : 0) << 6);
 		if (dev->enabled)
 			rs780_gpp_sb_init(nb_dev, dev, dev_ind);
 		break;
@@ -357,7 +357,7 @@ void rs780_enable(device_t dev)
 		printk(BIOS_INFO, "Bus-0, Dev-9, 10, Fun-0. enable=%d\n",
 			    dev->enabled);
 		set_nbmisc_enable_bits(nb_dev, 0x0c, 1 << (7 + dev_ind),
-				       (dev->enabled ? 0 : 1) << (7 + dev_ind));
+					   (dev->enabled ? 0 : 1) << (7 + dev_ind));
 		if (dev->enabled)
 			rs780_gpp_sb_init(nb_dev, dev, dev_ind);
 

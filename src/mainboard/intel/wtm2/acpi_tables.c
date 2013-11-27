@@ -250,7 +250,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	for (i=0; i < dsdt->length; i++) {
 		if (*(u32*)(((u32)dsdt) + i) == 0xC0DEBABE) {
 			printk(BIOS_DEBUG, "ACPI: Patching up global NVS in "
-			       "DSDT at offset 0x%04x -> %p\n", i, gnvs);
+				  "DSDT at offset 0x%04x -> %p\n", i, gnvs);
 			*(u32*)(((u32)dsdt) + i) = (unsigned long)gnvs;
 			acpi_save_gnvs((unsigned long)gnvs);
 			break;

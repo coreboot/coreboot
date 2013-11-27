@@ -64,8 +64,8 @@ void get_bus_conf(void)
 		bus_ck804_4++;
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sbdn + 0x09);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sbdn + 0x09);
 
 		bus_ck804_1 = 2;
 		bus_ck804_4 = 3;
@@ -78,8 +78,8 @@ void get_bus_conf(void)
 		bus_ck804_5++;
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sbdn + 0x0d);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sbdn + 0x0d);
 
 		bus_ck804_5 = bus_ck804_4 + 1;
 	}
@@ -89,8 +89,8 @@ void get_bus_conf(void)
 		bus_ck804_5 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sbdn + 0x0e);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sbdn + 0x0e);
 	}
 
 /*I/O APICs:	APIC ID	Version	State		Address*/

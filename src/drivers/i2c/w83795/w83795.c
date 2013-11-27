@@ -206,12 +206,12 @@ static void w83795_init(w83795_fan_mode_t mode, u8 dts_src)
 	w83795_dts_enable(dts_src);
 	w83795_set_fan(mode);
 
-	printk(BIOS_INFO, "Fan   CTFS(celsius)  TTTI(celsius)\n");
+	printk(BIOS_INFO, "Fan	  CTFS(celsius)  TTTI(celsius)\n");
 	for (i = 0; i < 6; i++) {
 		val = w83795_read(W83795_REG_CTFS(i));
 		printk(BIOS_INFO, " %x     %d", i, val);
 		val = w83795_read(W83795_REG_TTTI(i));
-		printk(BIOS_INFO, "             %d\n", val);
+		printk(BIOS_INFO, "		  %d\n", val);
 	}
 
 	/* Temperature ReadOut */

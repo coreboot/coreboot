@@ -165,7 +165,7 @@ static void exynos5_uart_tx_byte(unsigned char data)
 #if !defined(__PRE_RAM__)
 
 static const struct console_driver exynos5_uart_console __console = {
-	.init     = exynos5_init_dev,
+	.init	   = exynos5_init_dev,
 	.tx_byte  = exynos5_uart_tx_byte,
 //	.tx_flush = exynos5_uart_tx_flush,
 	.rx_byte  = exynos5_uart_rx_byte,

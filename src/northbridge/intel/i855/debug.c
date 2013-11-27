@@ -123,31 +123,31 @@ static inline void dump_spd_registers(void)
 
 static inline void dump_smbus_registers(void)
 {
-        int i;
-        print_debug("\n");
-        for(i = 1; i < 0x80; i++) {
-                unsigned device;
-                device = i;
-                int j;
-                print_debug("smbus: ");
-                print_debug_hex8(device);
-                for(j = 0; j < 256; j++) {
-                	int status;
-                        unsigned char byte;
-                        if ((j & 0xf) == 0) {
-                	        print_debug("\n");
-                                print_debug_hex8(j);
-                                print_debug(": ");
-                        }
-                        status = smbus_read_byte(device, j);
-                        if (status < 0) {
-                                print_debug("bad device\n");
-                                break;
-                        }
-                        byte = status & 0xff;
-                        print_debug_hex8(byte);
-                        print_debug_char(' ');
-                }
-                print_debug("\n");
+	int i;
+	print_debug("\n");
+	for(i = 1; i < 0x80; i++) {
+		unsigned device;
+		device = i;
+		int j;
+		print_debug("smbus: ");
+		print_debug_hex8(device);
+		for(j = 0; j < 256; j++) {
+			int status;
+			unsigned char byte;
+			if ((j & 0xf) == 0) {
+				 print_debug("\n");
+				print_debug_hex8(j);
+				print_debug(": ");
+			}
+			status = smbus_read_byte(device, j);
+			if (status < 0) {
+				print_debug("bad device\n");
+				break;
+			}
+			byte = status & 0xff;
+			print_debug_hex8(byte);
+			print_debug_char(' ');
+		}
+		print_debug("\n");
 	}
 }

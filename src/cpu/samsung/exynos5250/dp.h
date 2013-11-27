@@ -425,8 +425,8 @@ struct exynos5_dp {
 #define VIDEO_MODE_SLAVE_MODE			(1 << 0)
 #define VIDEO_MODE_MASTER_MODE			(0 << 0)
 
-#define HW_TRAINING_ERROR_CODE                 (7<<4)
-#define HW_TRAINING_EN                         (1<<0)
+#define HW_TRAINING_ERROR_CODE		       (7<<4)
+#define HW_TRAINING_EN			       (1<<0)
 
 /* I2C EDID Chip ID, Slave Address */
 #define I2C_EDID_DEVICE_ADDR			0x50

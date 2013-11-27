@@ -32,8 +32,8 @@
 #define axindxc_reg(reg, mask, val) \
 	alink_ax_indx(0, (reg), (mask), (val))
 
-#define AB_INDX   0xCD8
-#define AB_DATA   (AB_INDX+4)
+#define AB_INDX	  0xCD8
+#define AB_DATA	  (AB_INDX+4)
 
 static inline u32 nb_read_index(device_t dev, u32 index_reg, u32 index)
 {
@@ -114,7 +114,7 @@ static inline void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 }
 
 static inline void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask,
-				    u8 val)
+					u8 val)
 {
 	u8 reg_old, reg;
 	reg = reg_old = pci_read_config8(nb_dev, reg_pos);

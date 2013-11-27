@@ -4,34 +4,34 @@ chip northbridge/amd/gx1		# Northbridge
     chip southbridge/amd/cs5530		# Southbridge
       device pci 0f.0 off end		# Ethernet (Realtek RTL8139B)
       device pci 12.0 on		# ISA bridge
-        chip superio/nsc/pc87351	# Super I/O
-          device pnp 2e.4 on		# PS/2 keyboard (+ mouse?)
-            io 0x60 = 0x60
-            io 0x62 = 0x64
-            irq 0x70 = 1
-            # irq 0x72 = 12
-          end
-          device pnp 2e.a on		# PS/2 mouse
-            irq 0x70 = 12
-          end
-          device pnp 2e.e on		# COM1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 2e.f off		# Floppy
-            io 0x60 = 0x3f2
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 2e.10 on		# Parallel port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-          end
-          device pnp 2e.12 on		# COM2
-            io 0x60 = 0x2f8
-            irq 0x70 = 3
-          end
-        end
+	chip superio/nsc/pc87351	# Super I/O
+	  device pnp 2e.4 on		# PS/2 keyboard (+ mouse?)
+	    io 0x60 = 0x60
+	    io 0x62 = 0x64
+	    irq 0x70 = 1
+	    # irq 0x72 = 12
+	  end
+	  device pnp 2e.a on		# PS/2 mouse
+	    irq 0x70 = 12
+	  end
+	  device pnp 2e.e on		# COM1
+	    io 0x60 = 0x3f8
+	    irq 0x70 = 4
+	  end
+	  device pnp 2e.f off		# Floppy
+	    io 0x60 = 0x3f2
+	    irq 0x70 = 6
+	    drq 0x74 = 2
+	  end
+	  device pnp 2e.10 on		# Parallel port
+	    io 0x60 = 0x378
+	    irq 0x70 = 7
+	  end
+	  device pnp 2e.12 on		# COM2
+	    io 0x60 = 0x2f8
+	    irq 0x70 = 3
+	  end
+	end
       end
       device pci 12.1 off end		# SMI
       device pci 12.2 on  end		# IDE

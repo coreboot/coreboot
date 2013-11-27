@@ -144,15 +144,15 @@ static inline int islower(int c)
 
 static inline int toupper(int c)
 {
-        if (islower(c))
-                c -= 'a'-'A';
-        return c;
+	if (islower(c))
+		c -= 'a'-'A';
+	return c;
 }
 
 static inline int tolower(int c)
 {
-        if (isupper(c))
-                c -= 'A'-'a';
-        return c;
+	if (isupper(c))
+		c -= 'A'-'a';
+	return c;
 }
 #endif /* STRING_H */

@@ -118,7 +118,7 @@ inline void *backup_resume(void)
 	if (((u32) resume_backup_memory == 0)
 	    || ((u32) resume_backup_memory == -1)) {
 		printk(BIOS_ERR, "Error: resume_backup_memory: %x\n",
-		       (u32) resume_backup_memory);
+			 (u32) resume_backup_memory);
 		for (;;) ;
 	}
 
@@ -135,8 +135,8 @@ void move_stack_high_mem(void)
 
 	__asm__
 	    volatile ("add	%0, %%esp; add %0, %%ebp; invd"::"g"
-		      (high_stack - BSP_STACK_BASE_ADDR)
-		      :);
+			(high_stack - BSP_STACK_BASE_ADDR)
+			:);
 }
 
 #ifndef __PRE_RAM__

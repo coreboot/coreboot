@@ -44,9 +44,9 @@
 #define PS_REG3 3			/* offset for P3 */
 #define PS_REG4 4			/* offset for P4 */
 
-#define PS_IDD_VALUE_SHFT 0            /* IddValue: current value
+#define PS_IDD_VALUE_SHFT 0	       /* IddValue: current value
 					  field offset for msr.hi */
-#define PS_IDD_VALUE_MASK 0xFF         /* IddValue: current value
+#define PS_IDD_VALUE_MASK 0xFF	       /* IddValue: current value
 					  field mask for msr.hi */
 #define PS_PSDIS_MASK	0x7fffffff	/* disable P-state register */
 #define PS_EN_MASK  0x80000000		/* P-state register enable mask */
@@ -60,8 +60,8 @@
 #define PS_CPU_NB_VID_SHFT 16		/* P-state bit shift from CpuVid to NbVid */
 #define PS_DIS 0x7fffffff		/* disable P-state reg */
 #define PS_EN 0x80000000		/* enable P-state reg */
-#define PS_CPU_FID_MASK 0x03f           /* MSRC001_00[68:64][CpuFid]
-					   Core Frequency Id */
+#define PS_CPU_FID_MASK 0x03f		/* MSRC001_00[68:64][CpuFid]
+						Core Frequency Id */
 #define PS_CURDIV_SHFT 8		/* P-state Current Divisor shift position */
 #define PS_CPUDID_SHIFT 6		/* P-state CPU DID shift position */
 
@@ -116,7 +116,7 @@
 #define NB_FID_EN 0x20			/* NbFidEn bit ON */
 #define NB_CLKDID_ALL 0x80000000	/* NbClkDidApplyAll bit ON */
 #define NB_CLKDID     0x40000000	/* NbClkDid value set by BIOS */
-#define NB_CLKDID_SHIFT   28	        /* NbClkDid bit shift */
+#define NB_CLKDID_SHIFT	  28		     /* NbClkDid bit shift */
 #define PW_STP_UP50   0x08000000	/* PowerStepUp 50nS(1000b) */
 #define PW_STP_DN50   0x00800000	/* PowerStepDown 50nS (1000b)*/
 #define PW_STP_UP100  0x03000000	/* PowerStepUp 100nS(0011b) */
@@ -126,10 +126,10 @@
 #define PW_STP_UP400  0x00000000	/* PowerStepUp 400nS(0000b) */
 #define PW_STP_DN400  0x00000000	/* PowerStepDown 400nS (0000b)*/
 #define CLK_RAMP_HYST_SEL_VAL 0x00000f00 /* value mask for clock ramp
-					    hysteresis select. BIOS
-					    should program
-					    F3xC4[ClkRampHystSel] to
-					    1111b */
+						 hysteresis select. BIOS
+						 should program
+						 F3xC4[ClkRampHystSel] to
+						 1111b */
 
 
 #define LNK_PLL_LOCK  0x00010000	/* LnkPllLock value set (01b) by BIOS */
@@ -188,7 +188,7 @@
 #define CPTC2 0xdc			/* Clock Power/Timing Control2 Register*/
 #define PS_MAX_VAL_POS 8		/* PstateMaxValue bit shift */
 #define PS_MAX_VAL_MASK 0xfffff8ff	/* PstateMaxValue Mask off */
-#define NB_SYN_PTR_ADJ_POS 12            /* NbsynPtrAdj bit shift */
+#define NB_SYN_PTR_ADJ_POS 12		 /* NbsynPtrAdj bit shift */
 #define NB_SYN_PTR_ADJ_MASK (0x7 << NB_SYN_PTR_ADJ_POS)  /* NbsynPtrAdj bit mask */
 
 #define PRCT_INFO 0x1fc		/* Product Info Register */
@@ -201,10 +201,10 @@
 #define NB_VID_UPDATE_ALL 0x02		/* F3x1FC[NbVidUpdatedAll] bit mask */
 #define C_FID_DID_M_OFF  0xfffffe00	/* mask off Core FID & DID */
 
-#define CPB_MASK 0x00000020             /* core performance
-					   boost. CPUID Fn8000 0007 edx */
-#define NC_MASK 0x000000FF              /* number of cores - 1. CPUID
-					   Fn8000 0008 ecx */
+#define CPB_MASK 0x00000020		/* core performance
+						boost. CPUID Fn8000 0007 edx */
+#define NC_MASK 0x000000FF		/* number of cores - 1. CPUID
+						Fn8000 0008 ecx */
 #define PW_CTL_MISC 0x0a0		/* Power Control Miscellaneous Register */
 #define COF_VID_PROG_BIT 0x80000000	/* CofVidProg bit. 0= unfused part */
 #define DUAL_VDD_BIT 0x40000000	/* DualVdd bit. */
@@ -221,8 +221,8 @@
 #define PLLLOCK_DFT 0x00001800		/* PllLockTime default value = 011b */
 #define PLLLOCK_DFT_L 0x00002800	/* PllLockTime long value = 101b */
 
-#define SVI_HIGH_FREQ_ON 0x00000200     /* F3xA0[SviHighFreqSel] for
-					   3.4 MHz SVI in rev. C3 */
+#define SVI_HIGH_FREQ_ON 0x00000200	/* F3xA0[SviHighFreqSel] for
+						3.4 MHz SVI in rev. C3 */
 
 /* P-state Specification register base in PCI space */
 #define PS_SPEC_REG 0x1e0		/* PS Spec register base address */
@@ -259,7 +259,7 @@
 /* sFidVidInit.outFlags defines */
 #define PWR_CK_OK 0			/* System board check OK */
 #define PWR_CK_NO_PS 1			/* All P-state registers are over
-					   the limit */
+						the limit */
 
 /* bit mask */
 #define BIT_MASK_1 0x1

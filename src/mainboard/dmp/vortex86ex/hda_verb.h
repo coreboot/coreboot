@@ -19,9 +19,9 @@
 
 static const u32 mainboard_cim_verb_data[] = {
 	/* coreboot specific header */
-	0x10ec0262,     // Codec Vendor / Device ID: Realtek ALC262
-	0x10714700,     // Subsystem ID
-	0x0000000f,     // Number of jacks
+	0x10ec0262,	 // Codec Vendor / Device ID: Realtek ALC262
+	0x10714700,	 // Subsystem ID
+	0x0000000f,	 // Number of jacks
 
 	/* ===== HDA Codec Subsystem ID Verb-table ===== */
 	/* HDA Codec Subsystem ID  : 0x10EC0000 */

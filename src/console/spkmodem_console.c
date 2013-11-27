@@ -37,7 +37,7 @@ static int spkmodem_tst_byte(void)
 
 
 static const struct console_driver spkmodem_console __console = {
-	.init     = spkmodem_init,
+	.init	   = spkmodem_init,
 	.tx_byte  = spkmodem_tx_byte,
 	.tx_flush = spkmodem_tx_flush,
 	.rx_byte  = spkmodem_rx_byte,

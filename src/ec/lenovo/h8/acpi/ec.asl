@@ -39,21 +39,21 @@ Device(EC)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x02),
-				DKR1, 1,        /* Dock register 1 */
+				DKR1, 1,	    /* Dock register 1 */
 		Offset (0x05),
 				HSPA, 1,
 		Offset (0x0C),
 				LEDS, 8,	/* LED state */
 		Offset (0x1a),
-				DKR2, 1,        /* Dock register 2 */
+				DKR2, 1,	    /* Dock register 2 */
 		Offset (0x2a),
 				EVNT, 8,	/* write will trigger EC event */
 		Offset (0x3a),
 				AMUT, 1,	/* Audio Mute */
 		Offset (0x3B),
-				    , 1,
+					, 1,
 				KBLT, 1,	/* Keyboard Light */
-				    , 2,
+					, 2,
 				USPW, 1,	/* USB Power enable */
 		Offset (0x4e),
 				WAKE, 16,
@@ -63,8 +63,8 @@ Device(EC)
 		Offset (0x81),
 				PAGE, 8,	/* Information Page Selector */
 		Offset (0xfe),
-				    , 4,
-				DKR3, 1        /* Dock register 3 */
+					, 4,
+				DKR3, 1	   /* Dock register 3 */
 	}
 
 	Method (_CRS, 0)
@@ -149,12 +149,12 @@ Device(EC)
 
        Method(_Q2A, 0, NotSerialized)
        {
-	       Notify(^LID, 0x80)
+		Notify(^LID, 0x80)
        }
 
        Method(_Q2B, 0, NotSerialized)
        {
-	       Notify(^LID, 0x80)
+		Notify(^LID, 0x80)
        }
 
 
@@ -259,39 +259,39 @@ Device(EC)
 
        Device (HKEY)
        {
-	       Name (_HID, EisaId ("IBM0068"))
-	       Name (BTN, 0)
-	       /* MASK */
-	       Name (DHKN, 0x080C)
-	       /* Effective Mask */
-	       Name (EMSK, 0)
-	       /* Device enabled. */
-	       Name (EN, 0)
-	       Method (_STA, 0, NotSerialized)
-	       {
+		Name (_HID, EisaId ("IBM0068"))
+		Name (BTN, 0)
+		/* MASK */
+		Name (DHKN, 0x080C)
+		/* Effective Mask */
+		Name (EMSK, 0)
+		/* Device enabled. */
+		Name (EN, 0)
+		Method (_STA, 0, NotSerialized)
+		{
 		    Return (0x0F)
-	       }
-	       /* Retrieve event. */
-	       Method (MHKP, 0, NotSerialized)
-	       {
+		}
+		/* Retrieve event. */
+		Method (MHKP, 0, NotSerialized)
+		{
 		    Store (BTN, Local0)
 		    If (LEqual (Local0, Zero)) {
-		       Return (Zero)
+			 Return (Zero)
 		    }
 		    Store (Zero, BTN)
 		    Add (Local0, 0x1000, Local0)
 		    Return (Local0)
-	       }
-	       /* Report event  */
-	       Method (RHK, 1, NotSerialized) {
-		      ShiftLeft (One, Subtract (Arg0, 1), Local0)
-		      If (And (EMSK, Local0)) {
+		}
+		/* Report event  */
+		Method (RHK, 1, NotSerialized) {
+			ShiftLeft (One, Subtract (Arg0, 1), Local0)
+			If (And (EMSK, Local0)) {
 			 Store (Arg0, BTN)
 			 Notify (HKEY, 0x80)
-		      }
-	       }
-	       /* Enable/disable all events.  */
-	       Method (MHKC, 1, NotSerialized) {
+			}
+		}
+		/* Enable/disable all events.  */
+		Method (MHKC, 1, NotSerialized) {
 			 If (Arg0) {
 				Store (DHKN, EMSK)
 			 }
@@ -300,35 +300,35 @@ Device(EC)
 				Store (Zero, EMSK)
 			 }
 			 Store (Arg0, EN)
-	       }
-	       /* Enable/disable event.  */
-	       Method (MHKM, 2, NotSerialized) {
+		}
+		/* Enable/disable event.  */
+		Method (MHKM, 2, NotSerialized) {
 		    If (LLessEqual (Arg0, 0x20)) {
 				ShiftLeft (One, Subtract (Arg0, 1), Local0)
 				If (Arg1)
 				{
-				    Or (DHKN, Local0, DHKN)
+					Or (DHKN, Local0, DHKN)
 				}
 				Else
 				{
-				    And (DHKN, Not (Local0), DHKN)
+					And (DHKN, Not (Local0), DHKN)
 				}
 				If (EN)
 				{
-				     Store (DHKN, EMSK)
+					 Store (DHKN, EMSK)
 				}
 		    }
-	       }
-	       /* Mask hotkey all. */
-	       Method (MHKA, 0, NotSerialized)
-	       {
+		}
+		/* Mask hotkey all. */
+		Method (MHKA, 0, NotSerialized)
+		{
 		    Return (0x07FFFFFF)
-	       }
-	       /* Version */
-	       Method (MHKV, 0, NotSerialized)
-	       {
+		}
+		/* Version */
+		Method (MHKV, 0, NotSerialized)
+		{
 		    Return (0x0100)
-	       }
+		}
        }
 
 #include "ac.asl"

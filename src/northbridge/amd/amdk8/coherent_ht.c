@@ -5,7 +5,7 @@
  *
  * (c) 2004 Tyan Computer
  *  2004.12 yhlu added support to create routing table dynamically.
- *          it also support 8 ways too. (8 ways ladder or 8 ways crossbar)
+ *	    it also support 8 ways too. (8 ways ladder or 8 ways crossbar)
  *
  * This code is licensed under GPL.
  */
@@ -13,53 +13,53 @@
 /*
  * This algorithm assumes a grid configuration as follows:
  *
- * nodes :  1    2    4    6    8
+ * nodes :  1	 2    4	   6	8
  * org.  :  1x1  2x1  2x2  2x3  2x4
  Ladder:
 			CPU7-------------CPU6
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
 			CPU5-------------CPU4
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
 			CPU3-------------CPU2
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
 			CPU1-------------CPU0
  CROSS_BAR_47_56:
 			CPU7-------------CPU6
 			|  \____    ___/ |
-			|       \  /     |
-			|        \/      |
-			|        /\      |
-			|       /  \     |
+			|	   \  /	    |
+			|	    \/	    |
+			|	    /\	    |
+			|	   /  \	    |
 			|  ____/    \___ |
-			CPU5             CPU4
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
+			CPU5		    CPU4
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
 			CPU3-------------CPU2
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
-			|                |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
+			|		    |
 			CPU1-------------CPU0
  */
 
@@ -127,20 +127,20 @@ static void disable_probes(void)
 	/* Hypetransport Transaction Control Register
 	 * F0:0x68
 	 * [ 0: 0] Disable read byte probe
-	 *         0 = Probes issues
-	 *         1 = Probes not issued
+	 *	    0 = Probes issues
+	 *	    1 = Probes not issued
 	 * [ 1: 1] Disable Read Doubleword probe
-	 *         0 = Probes issued
-	 *         1 = Probes not issued
+	 *	    0 = Probes issued
+	 *	    1 = Probes not issued
 	 * [ 2: 2] Disable write byte probes
-	 *         0 = Probes issued
-	 *         1 = Probes not issued
+	 *	    0 = Probes issued
+	 *	    1 = Probes not issued
 	 * [ 3: 3] Disable Write Doubleword Probes
-	 *         0 = Probes issued
-	 *         1 = Probes not issued.
+	 *	    0 = Probes issued
+	 *	    1 = Probes not issued.
 	 * [10:10] Disable Fill Probe
-	 *         0 = Probes issued for cache fills
-	 *         1 = Probes not issued for cache fills.
+	 *	    0 = Probes issued for cache fills
+	 *	    1 = Probes not issued for cache fills.
 	 */
 
 	u32 val;
@@ -179,22 +179,22 @@ static void enable_routing(u8 node)
 	/* HT Initialization Control Register
 	 * F0:0x6C
 	 * [ 0: 0] Routing Table Disable
-	 *         0 = Packets are routed according to routing tables
-	 *         1 = Packets are routed according to the default link field
+	 *	    0 = Packets are routed according to routing tables
+	 *	    1 = Packets are routed according to the default link field
 	 * [ 1: 1] Request Disable (BSP should clear this)
-	 *         0 = Request packets may be generated
-	 *         1 = Request packets may not be generated.
+	 *	    0 = Request packets may be generated
+	 *	    1 = Request packets may not be generated.
 	 * [ 3: 2] Default Link (Read-only)
-	 *         00 = LDT0
-	 *         01 = LDT1
-	 *         10 = LDT2
-	 *         11 = CPU on same node
+	 *	    00 = LDT0
+	 *	    01 = LDT1
+	 *	    10 = LDT2
+	 *	    11 = CPU on same node
 	 * [ 4: 4] Cold Reset
-	 *         - Scratch bit cleared by a cold reset
+	 *	    - Scratch bit cleared by a cold reset
 	 * [ 5: 5] BIOS Reset Detect
-	 *         - Scratch bit cleared by a cold reset
+	 *	    - Scratch bit cleared by a cold reset
 	 * [ 6: 6] INIT Detect
-	 *         - Scratch bit cleared by a warm or cold reset not by an INIT
+	 *	    - Scratch bit cleared by a warm or cold reset not by an INIT
 	 *
 	 */
 
@@ -219,10 +219,10 @@ static u8 link_to_register(int ldt)
 {
 	/*
 	 * [ 0: 3] Request Route
-	 *     [0] Route to this node
-	 *     [1] Route to Link 0
-	 *     [2] Route to Link 1
-	 *     [3] Route to Link 2
+	 *	[0] Route to this node
+	 *	[1] Route to Link 0
+	 *	[2] Route to Link 1
+	 *	[3] Route to Link 2
 	 */
 
 	if (ldt&0x08) return 0x40;
@@ -253,7 +253,7 @@ static void rename_temp_node(u8 node)
 
 	val=pci_read_config32(NODE_HT(7), 0x60);
 	val &= (~7);  /* clear low bits. */
-	val |= node;  /* new node        */
+	val |= node;  /* new node	  */
 	pci_write_config32(NODE_HT(7), 0x60, val);
 
 	print_spew(" done.\n");
@@ -433,7 +433,7 @@ static void setup_row_direct_x(u8 temp, u8 source, u8 dest, u8 linkn)
 	if(((source &1)!=(dest &1))
 #if CROSS_BAR_47_56
 		&& ( (source<4)||(source>5) ) //(6,7) (7,6) should still be here
-					       //(6,5) (7,4) should be here
+						    //(6,5) (7,4) should be here
 #endif
 	){
 		val |= (1<<16);
@@ -750,8 +750,8 @@ static unsigned setup_smp2(void)
 #endif
 
 	setup_remote_node(1);  /* Setup the regs on the remote node */
-	rename_temp_node(1);    /* Rename Node 7 to Node 1  */
-	enable_routing(1);      /* Enable routing on Node 1 */
+	rename_temp_node(1);	 /* Rename Node 7 to Node 1  */
+	enable_routing(1);	 /* Enable routing on Node 1 */
 #if 0
 	/*don't need and it is done by clear_dead_links */
 	clear_temp_row(0);
@@ -822,8 +822,8 @@ static unsigned setup_smp4(void)
 	setup_remote_row_direct(2, 0, byte);  /* node 2 to node 0 direct link done */
 	setup_remote_node(2);  /* Setup the regs on the remote node */
 
-	rename_temp_node(2);    /* Rename Node 7 to Node 2  */
-	enable_routing(2);      /* Enable routing on Node 2 */
+	rename_temp_node(2);	 /* Rename Node 7 to Node 2  */
+	enable_routing(2);	 /* Enable routing on Node 2 */
 
 	setup_temp_row(0,1);
 	setup_temp_row(1,3);
@@ -905,7 +905,7 @@ static unsigned setup_smp4(void)
 
 /* ready to enable RT for Node 3 */
 	rename_temp_node(3);
-	enable_routing(3);      /* enable routing on node 3 (temp.) */
+	enable_routing(3);	 /* enable routing on node 3 (temp.) */
 
 	// beside 2, 0 is set, We need to make sure 2, 4 link is set already in case has three link in 2
 #if !CROSS_BAR_47_56
@@ -1096,7 +1096,7 @@ static unsigned setup_smp6(void)
 
 /* ready to enable RT for 5 */
 	rename_temp_node(5);
-	enable_routing(5);      /* enable routing on node 5 (temp.) */
+	enable_routing(5);	 /* enable routing on node 5 (temp.) */
 
 	static const u8 conn6_4[] = {
 #if !CROSS_BAR_47_56
@@ -1223,7 +1223,7 @@ static unsigned setup_smp8(void)
 	setup_row_local(7,6);
 	setup_remote_row_direct(6, 4, byte);
 	setup_remote_node(6);  /* Setup the regs on the remote node */
-	/* Set indirect connection to 0, to 3   */
+	/* Set indirect connection to 0, to 3	 */
 #warning "FIXME we need to find out the correct gateway for 8p"
 	static const u8 conn8_2[] = {
 #if !CROSS_BAR_47_56
@@ -1261,19 +1261,19 @@ static unsigned setup_smp8(void)
 	if( (val>>16) == 1) { // it is real node 7 so swap it
 		/* We need to recompute link to 6 */
        		val = get_row(5,5);
-	       	byte = ((val>>16) & 0xfe) - link_connection(5,3);
+			byte = ((val>>16) & 0xfe) - link_connection(5,3);
 #if TRY_HIGH_FIRST == 1
 		byte = get_linkn_first(byte);
 #else
        		byte = get_linkn_last(byte);
 #endif
-	       	print_linkn("\t-->(5,6) link=", byte);
+			print_linkn("\t-->(5,6) link=", byte);
 		setup_row_direct(5, 6, byte);
 #if 0
-	       	setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
+			setup_temp_row(0,1); /* temp. link between nodes 0 and 1 */
 		for(byte=0; byte<4; byte+=2) {
        			setup_temp_row(byte+1,byte+3);
-	       	}
+			}
 #endif
 		setup_temp_row(5,6);
 
@@ -1426,7 +1426,7 @@ static unsigned setup_smp8(void)
 
 #if CROSS_BAR_47_56
 	/* for 47, 56, 57, 75, 46, 64 we need to substract another link to
-	       6,  7,  6,  6,  7,  7 */
+		6,  7,  6,  6,  7,  7 */
 	static const u8 conn8_4[] = {
 //direct
 		4, 7, 6,
@@ -1477,7 +1477,7 @@ static unsigned setup_smp8(void)
 
 
 /* ready to enable RT for Node 7 */
-	enable_routing(7);      /* enable routing on node 7 (temp.) */
+	enable_routing(7);	 /* enable routing on node 7 (temp.) */
 
 	return nodes;
 }
@@ -1526,7 +1526,7 @@ static unsigned verify_mp_capabilities(unsigned nodes)
 
 	switch(mask) {
 #if CONFIG_MAX_PHYSICAL_CPUS > 2
-	case 0x02: /* MPCap    */
+	case 0x02: /* MPCap	*/
 		if(nodes > 2) {
 			print_err("Going back to DP\n");
 			return 2;
@@ -1807,15 +1807,15 @@ static int optimize_link_coherent_ht(void)
 
 #if CONFIG_MAX_PHYSICAL_CPUS > 6
 	if(nodes>6) {
-	       static const uint8_t opt_conn8[] ={
-		       4, 6,
+		static const uint8_t opt_conn8[] ={
+			 4, 6,
 	#if CROSS_BAR_47_56
-		       4, 7,
-		       5, 6,
+			 4, 7,
+			 5, 6,
 	#endif
-		       5, 7,
-		       6, 7,
-	       };
+			 5, 7,
+			 6, 7,
+		};
 		needs_reset |= optimize_connection_group(opt_conn8, ARRAY_SIZE(opt_conn8));
 	}
 #endif

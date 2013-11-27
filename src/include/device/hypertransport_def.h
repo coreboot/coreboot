@@ -1,12 +1,12 @@
 #ifndef DEVICE_HYPERTRANSPORT_DEF_H
 #define DEVICE_HYPERTRANSPORT_DEF_H
 
-#define HT_FREQ_200Mhz   0
-#define HT_FREQ_300Mhz   1
-#define HT_FREQ_400Mhz   2
-#define HT_FREQ_500Mhz   3
-#define HT_FREQ_600Mhz   4
-#define HT_FREQ_800Mhz   5
+#define HT_FREQ_200Mhz	 0
+#define HT_FREQ_300Mhz	 1
+#define HT_FREQ_400Mhz	 2
+#define HT_FREQ_500Mhz	 3
+#define HT_FREQ_600Mhz	 4
+#define HT_FREQ_800Mhz	 5
 #define HT_FREQ_1000Mhz  6
 #define HT_FREQ_1200Mhz  7
 #define HT_FREQ_1400Mhz  8

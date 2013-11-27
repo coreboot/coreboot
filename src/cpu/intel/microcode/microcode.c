@@ -127,8 +127,8 @@ const void *intel_microcode_find(void)
 	microcode_updates = walkcbfs((char *) MICROCODE_CBFS_FILE);
 #else
 	microcode_updates = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-					       MICROCODE_CBFS_FILE,
-					       CBFS_TYPE_MICROCODE);
+						    MICROCODE_CBFS_FILE,
+						    CBFS_TYPE_MICROCODE);
 #endif
 
 	if (!microcode_updates)
@@ -250,9 +250,9 @@ void intel_update_microcode(const void *microcode_updates)
 
 #if !defined(__ROMCC__)
 			printk(BIOS_DEBUG, "microcode: updated to revision "
-				    "0x%x date=%04x-%02x-%02x\n", new_rev,
-				    m->date & 0xffff, (m->date >> 24) & 0xff,
-				    (m->date >> 16) & 0xff);
+					"0x%x date=%04x-%02x-%02x\n", new_rev,
+					m->date & 0xffff, (m->date >> 24) & 0xff,
+					(m->date >> 16) & 0xff);
 #endif
 			break;
 		}

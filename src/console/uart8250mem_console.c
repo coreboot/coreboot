@@ -63,7 +63,7 @@ static int uartmem_tst_byte(void)
 }
 
 static const struct console_driver uart8250mem_console __console = {
-	.init     = uartmem_init,
+	.init	   = uartmem_init,
 	.tx_byte  = uartmem_tx_byte,
 	.tx_flush = uartmem_tx_flush,
 	.rx_byte  = uartmem_rx_byte,

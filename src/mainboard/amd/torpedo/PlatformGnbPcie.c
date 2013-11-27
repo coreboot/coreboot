@@ -29,13 +29,13 @@
 PCIe_PORT_DESCRIPTOR PortList [] = {
 			// Initialize Port descriptor (PCIe port, Lanes 8:15, PCI Device Number 2, ...)
 			{
-			  0,   //Descriptor flags
+			  0,	  //Descriptor flags
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 8, 15),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 2, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, BIT2)
 			},
 			// Initialize Port descriptor (PCIe port, Lanes 16:19, PCI Device Number 3, ...)
 			{
-			  0,   //Descriptor flags
+			  0,	  //Descriptor flags
 			  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 16, 19),
 			  PCIE_PORT_DATA_INITIALIZER (PortEnabled, ChannelTypeExt6db, 3, HotplugDisabled, PcieGenMaxSupported, PcieGenMaxSupported, AspmDisabled, BIT3)
 			},
@@ -74,7 +74,7 @@ PCIe_PORT_DESCRIPTOR PortList [] = {
 PCIe_DDI_DESCRIPTOR DdiList [] = {
 			// Initialize Ddi descriptor (DDI interface Lanes 24:27, DdA, ...)
 			{
-			  0,   //Descriptor flags
+			  0,	  //Descriptor flags
 			  PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 24, 27),
 			  PCIE_DDI_DATA_INITIALIZER (ConnectorTypeNutmegDpToVga, Aux2, Hdp2)
 			},
@@ -87,10 +87,10 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 };
 
 PCIe_COMPLEX_DESCRIPTOR Llano = {
-        DESCRIPTOR_TERMINATE_LIST,
-        0,
-        &PortList[0],
-        &DdiList[0]
+	DESCRIPTOR_TERMINATE_LIST,
+	0,
+	&PortList[0],
+	&DdiList[0]
 };
 
 /*---------------------------------------------------------------------------------------*/
@@ -105,7 +105,7 @@ PCIe_COMPLEX_DESCRIPTOR Llano = {
  *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
- *    @retval         VOID
+ *    @retval	      VOID
  *
  **/
 /*---------------------------------------------------------------------------------------*/
@@ -114,10 +114,10 @@ OemCustomizeInitEarly (
   IN  OUT AMD_EARLY_PARAMS    *InitEarly
   )
 {
-  AGESA_STATUS         Status;
-  VOID                 *LlanoPcieComplexListPtr;
-  VOID                 *LlanoPciePortPtr;
-  VOID                 *LlanoPcieDdiPtr;
+  AGESA_STATUS	       Status;
+  VOID		       *LlanoPcieComplexListPtr;
+  VOID		       *LlanoPciePortPtr;
+  VOID		       *LlanoPcieDdiPtr;
 
   ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
@@ -140,25 +140,25 @@ OemCustomizeInitEarly (
   LlanoPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
   AllocHeapParams.BufferPtr += sizeof(Llano);
-  LlanoPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
+  LlanoPciePortPtr	   =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
 
   AllocHeapParams.BufferPtr += sizeof(PortList);
-  LlanoPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
+  LlanoPcieDdiPtr	   =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
   LibAmdMemFill (LlanoPcieComplexListPtr,
-                   0,
-                   sizeof(Llano),
-                   &InitEarly->StdHeader);
+		   0,
+		   sizeof(Llano),
+		   &InitEarly->StdHeader);
 
   LibAmdMemFill (LlanoPciePortPtr,
-                   0,
-                   sizeof(PortList),
-                   &InitEarly->StdHeader);
+		   0,
+		   sizeof(PortList),
+		   &InitEarly->StdHeader);
 
   LibAmdMemFill (LlanoPcieDdiPtr,
-                   0,
-                   sizeof(DdiList),
-                   &InitEarly->StdHeader);
+		   0,
+		   sizeof(DdiList),
+		   &InitEarly->StdHeader);
 
   LibAmdMemCopy  (LlanoPcieComplexListPtr, &Llano, sizeof(Llano), &InitEarly->StdHeader);
   LibAmdMemCopy  (LlanoPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);

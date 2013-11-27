@@ -127,7 +127,7 @@ static void dump_delay_range(const delay_range d_range)
 {
 	printram("Lower limit: ");
 	dump_delay(d_range.low);
-	printram("Average:     ");
+	printram("Average:	");
 	dump_delay(d_range.avg);
 	printram("Upper limit: ");
 	dump_delay(d_range.high);
@@ -354,7 +354,7 @@ static void dram_find_spds_ddr3(const dimm_layout * addr, dimm_info * dimm)
 }
 
 static void dram_find_common_params(const dimm_info * dimms,
-				    ramctr_timing * ctrl)
+					ramctr_timing * ctrl)
 {
 	size_t i, valid_dimms;
 	memset(ctrl, 0, sizeof(ramctr_timing));
@@ -402,7 +402,7 @@ static void dram_find_common_params(const dimm_info * dimms,
 }
 
 static void vx900_dram_phys_bank_range(const dimm_info * dimms,
-				       rank_layout * ranks)
+					   rank_layout * ranks)
 {
 	size_t i;
 	for (i = 0; i < VX900_MAX_DIMM_SLOTS; i++) {
@@ -443,7 +443,7 @@ static void vx900_dram_phys_bank_range(const dimm_info * dimms,
  * not suitable for the way we map ranks later on.
  */
 static const u8 odt_lookup_table[][2] = {
-	/* RankMAP    Rank 3          Rank 2          Rank 1          Rank 0 */
+	/* RankMAP    Rank 3	       Rank 2	       Rank 1	       Rank 0 */
 	{0x01, (ODT_R3 << 6) | (ODT_R2 << 4) | (ODT_R1 << 2) | (ODT_R0 << 0)},
 	{0x03, (ODT_R3 << 6) | (ODT_R2 << 4) | (ODT_R0 << 2) | (ODT_R1 << 0)},
 	{0x04, (ODT_R3 << 6) | (ODT_R2 << 4) | (ODT_R1 << 2) | (ODT_R0 << 0)},
@@ -538,7 +538,7 @@ static void vx900_map_pr_vr(u8 pr, u8 vr)
 static u8 vx900_get_CWL(u8 CAS)
 {
 	/* Get CWL based on CAS using the following rule:
-	 *       _________________________________________
+	 *	  _________________________________________
 	 * CAS: | 4T | 5T | 6T | 7T | 8T | 9T | 10T | 11T |
 	 * CWL: | 5T | 5T | 5T | 6T | 6T | 7T |  7T |  8T |
 	 */
@@ -576,49 +576,49 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 
 	/* Find CAS and CWL latencies */
 	val = (ctrl->tAA + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Minimum  CAS latency   : %uT\n", val);
+	printram("Minimum  CAS latency	  : %uT\n", val);
 	/* Find lowest supported CAS latency that satisfies the minimum value */
 	while (!((ctrl->cas_supported >> (val - 4)) & 1)
-	       && (ctrl->cas_supported >> (val - 4))) {
+		&& (ctrl->cas_supported >> (val - 4))) {
 		val++;
 	}
 	/* Is CAS supported */
 	if (!(ctrl->cas_supported & (1 << (val - 4))))
 		printram("CAS not supported\n");
-	printram("Selected CAS latency   : %uT\n", val);
+	printram("Selected CAS latency	  : %uT\n", val);
 	ctrl->CAS = val;
 	ctrl->CWL = vx900_get_CWL(ctrl->CAS);
-	printram("Selected CWL latency   : %uT\n", ctrl->CWL);
+	printram("Selected CWL latency	  : %uT\n", ctrl->CWL);
 	/* Write CAS and CWL */
 	reg8 = (((ctrl->CWL - 4) & 0x07) << 4) | ((ctrl->CAS - 4) & 0x07);
 	pci_write_config8(MCU, 0xc0, reg8);
 
 	/* Find tRCD */
 	val = (ctrl->tRCD + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tRCD          : %uT\n", val);
+	printram("Selected tRCD	  : %uT\n", val);
 	reg8 = ((val - 4) & 0x7) << 4;
 	/* Find tRP */
 	val = (ctrl->tRP + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tRP           : %uT\n", val);
+	printram("Selected tRP		  : %uT\n", val);
 	reg8 |= ((val - 4) & 0x7);
 	pci_write_config8(MCU, 0xc1, reg8);
 
 	/* Find tRAS */
 	val = (ctrl->tRAS + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tRAS          : %uT\n", val);
+	printram("Selected tRAS	  : %uT\n", val);
 	reg8 = ((val - 15) & 0x7) << 4;
 	/* Find tWR */
 	ctrl->WR = (ctrl->tWR + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tWR           : %uT\n", ctrl->WR);
+	printram("Selected tWR		  : %uT\n", ctrl->WR);
 	reg8 |= ((ctrl->WR - 4) & 0x7);
 	pci_write_config8(MCU, 0xc2, reg8);
 
 	/* Find tFAW */
 	tFAW = (ctrl->tFAW + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tFAW          : %uT\n", tFAW);
+	printram("Selected tFAW	  : %uT\n", tFAW);
 	/* Find tRRD */
 	tRRD = (ctrl->tRRD + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tRRD          : %uT\n", tRRD);
+	printram("Selected tRRD	  : %uT\n", tRRD);
 	val = tFAW - 4 * tRRD;	/* number of cycles above 4*tRRD */
 	reg8 = ((val - 0) & 0x7) << 4;
 	reg8 |= ((tRRD - 2) & 0x7);
@@ -626,37 +626,37 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 
 	/* Find tRTP */
 	val = (ctrl->tRTP + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tRTP          : %uT\n", val);
+	printram("Selected tRTP	  : %uT\n", val);
 	reg8 = ((val & 0x3) << 4);
 	/* Find tWTR */
 	val = (ctrl->tWTR + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Selected tWTR          : %uT\n", val);
+	printram("Selected tWTR	  : %uT\n", val);
 	reg8 |= ((val - 2) & 0x7);
 	pci_mod_config8(MCU, 0xc4, 0x3f, reg8);
 
 	/* DRAM Timing for All Ranks - VI
 	 * [7:6] CKE Assertion Minimum Pulse Width
-	 *     We probably don't want to mess with this just yet.
+	 *	We probably don't want to mess with this just yet.
 	 * [5:0] Refresh-to-Active or Refresh-to-Refresh (tRFC)
-	 *     tRFC = (30 + 2 * [5:0])T
-	 *     Since we previously set RxC4[7]
+	 *	tRFC = (30 + 2 * [5:0])T
+	 *	Since we previously set RxC4[7]
 	 */
 	reg8 = pci_read_config8(MCU, 0xc5);
 	val = (ctrl->tRFC + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Minimum  tRFC          : %uT\n", val);
+	printram("Minimum  tRFC	  : %uT\n", val);
 	if (val < 30) {
 		val = 0;
 	} else {
 		val = (val - 30 + 1) / 2;
 	}
 	;
-	printram("Selected tRFC          : %uT\n", 30 + 2 * val);
+	printram("Selected tRFC	  : %uT\n", 30 + 2 * val);
 	reg8 |= (val & 0x3f);
 	pci_write_config8(MCU, 0xc5, reg8);
 
 	/* Where does this go??? */
 	val = (ctrl->tRC + ctrl->tCK - 1) / ctrl->tCK;
-	printram("Required tRC           : %uT\n", val);
+	printram("Required tRC		  : %uT\n", val);
 }
 
 /* Program the DRAM frequency */
@@ -718,7 +718,7 @@ static void vx900_dram_freq(ramctr_timing * ctrl)
  * registers we have programmed earlier.
  */
 static void vx900_dram_ddr3_do_hw_mrs(u8 ma_swap, u8 rtt_nom,
-				      u8 ods, u8 rtt_wr, u8 srt, u8 asr)
+					  u8 ods, u8 rtt_wr, u8 srt, u8 asr)
 {
 	u16 reg16 = 0;
 
@@ -782,10 +782,10 @@ static u32 vx900_get_mrs_addr(mrs_cmd_t cmd)
  * earlier.
  */
 static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
-				      enum ddr3_mr1_ods ods,
-				      enum ddr3_mr2_rttwr rtt_wr,
-				      enum ddr3_mr2_srt_range srt,
-				      enum ddr3_mr2_asr asr)
+					  enum ddr3_mr1_ods ods,
+					  enum ddr3_mr2_rttwr rtt_wr,
+					  enum ddr3_mr2_srt_range srt,
+					  enum ddr3_mr2_asr asr)
 {
 	mrs_cmd_t mrs;
 	u8 reg8, cas, cwl, twr;
@@ -867,7 +867,7 @@ static void vx900_dram_ddr3_do_sw_mrs(u8 ma_swap, enum ddr3_mr1_rtt_nom rtt_nom,
  * individual physical rank.
  */
 static void vx900_dram_ddr3_dimm_init(const ramctr_timing * ctrl,
-				      const rank_layout * ranks)
+					  const rank_layout * ranks)
 {
 	size_t i;
 	u8 rtt_nom, rtt_wr, ods, pinswap;
@@ -1009,10 +1009,10 @@ static void vx900_dram_exit_read_leveling(u8 pinswap)
  * calibration will not work.
  */
 #define DQSI_THRESHOLD  0x10
-#define DQO_THRESHOLD   0x09
+#define DQO_THRESHOLD	0x09
 #define DQSO_THRESHOLD  0x12
 #define DELAY_RANGE_GOOD   0
-#define DELAY_RANGE_BAD   -1
+#define DELAY_RANGE_BAD	  -1
 static u8 vx900_dram_check_calib_range(const delay_range * dly, u8 window)
 {
 	size_t i;
@@ -1365,7 +1365,7 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 
 	/**** Read delay control ****/
 	/* MD Input Data Push Timing Control;
-	 *     use values recommended in datasheet
+	 *	use values recommended in datasheet
 	 * Setting this too low causes the Rx window to move below the range we
 	 * need it so we can capture it with Rx_78_7f
 	 * This causes Rx calibrations to be too close to 0, and Tx
@@ -1421,7 +1421,7 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 		break;
 	}
 	vx900_dram_calibrate_recieve_delays(&delay_cal,
-					    ranks->flags[i].pins_mirrored);
+						 ranks->flags[i].pins_mirrored);
 	printram("RX DQS calibration results\n");
 	dump_delay_range(delay_cal.rx_dqs);
 
@@ -1444,7 +1444,7 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 		/* Map the first rank of the DIMM to VR0 */
 		vx900_map_pr_vr(2 * i, 0);
 		vx900_dram_calibrate_transmit_delays(&(delay_cal.tx_dq[dimm]),
-						     &(delay_cal.tx_dqs[dimm]));
+							   &(delay_cal.tx_dqs[dimm]));
 		/* We run this more than once, so dump delays for each DIMM */
 		printram("Tx DQS calibration results\n");
 		dump_delay_range(delay_cal.tx_dqs[dimm]);
@@ -1462,9 +1462,9 @@ static void vx900_dram_calibrate_delays(const ramctr_timing * ctrl,
 	if (dimm > 1) {
 		vx900_dram_find_avg_delays(&delay_cal);
 		printram("Final delay values\n");
-		printram("Tx DQS:      ");
+		printram("Tx DQS:	 ");
 		dump_delay(delay_cal.tx_dqs[0].avg);
-		printram("Tx DQ:       ");
+		printram("Tx DQ:	 ");
 		dump_delay(delay_cal.tx_dq[0].avg);
 	}
 	/* Write manual settings */
@@ -1528,8 +1528,8 @@ static void vx900_dram_range(ramctr_timing * ctrl, rank_layout * ranks)
 		vx900_map_pr_vr(i, vrank);
 
 		printram("Mapped Physical rank %u, to virtual rank %u\n"
-			 "    Start address: 0x%.10llx\n"
-			 "    End   address: 0x%.10llx\n",
+			 "	 Start address: 0x%.10llx\n"
+			 "	 End   address: 0x%.10llx\n",
 			 (int)i, (int)vrank,
 			 (u64) ranks->virt[vrank].start_addr << 20,
 			 (u64) ranks->virt[vrank].end_addr << 20);
@@ -1644,7 +1644,7 @@ void vx900_init_dram_ddr3(const dimm_layout * dimm_addr)
 	}
 	/* Locate the Memory controller */
 	mcu = pci_locate_device(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL), 0);
+					   PCI_DEVICE_ID_VIA_VX900_MEMCTRL), 0);
 
 	if (mcu == PCI_DEV_INVALID) {
 		die("Memory Controller not found\n");

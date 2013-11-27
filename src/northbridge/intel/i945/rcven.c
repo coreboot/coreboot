@@ -67,7 +67,7 @@ static void set_receive_enable(int channel_offset, u8 medium, u8 coarse)
 {
 	u32 reg32;
 
-	printk(BIOS_SPEW, "    set_receive_enable() medium=0x%x, coarse=0x%x\n", medium, coarse);
+	printk(BIOS_SPEW, "	set_receive_enable() medium=0x%x, coarse=0x%x\n", medium, coarse);
 
 	reg32 = MCHBAR32(C0DRT1 + channel_offset);
 	reg32 &= 0xf0ffffff;
@@ -216,7 +216,7 @@ static int find_strobes_low(int channel_offset, u8 * mediumcoarse, u8 * fine,
 }
 
 static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
-			     struct sys_info *sysinfo)
+				struct sys_info *sysinfo)
 {
 
 	int counter;
@@ -253,7 +253,7 @@ static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
 		*mediumcoarse += 2;
 		if (*mediumcoarse <= 0x40) {
 			set_receive_enable(channel_offset, *mediumcoarse & 3,
-					   *mediumcoarse >> 2);
+						*mediumcoarse >> 2);
 			continue;
 		}
 
@@ -281,7 +281,7 @@ static int find_strobes_edge(int channel_offset, u8 * mediumcoarse, u8 * fine,
  */
 
 static int receive_enable_autoconfig(int channel_offset,
-				     struct sys_info *sysinfo)
+					 struct sys_info *sysinfo)
 {
 	u8 mediumcoarse;
 	u8 fine;

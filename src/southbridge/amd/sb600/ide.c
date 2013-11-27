@@ -61,7 +61,7 @@ static struct device_operations ide_ops = {
 	.enable_resources = pci_dev_enable_resources,
 	.init = ide_init,
 	.scan_bus = 0,
-	/* .enable           = sb600_enable, */
+	/* .enable	      = sb600_enable, */
 	.ops_pci = &lops_pci,
 };
 

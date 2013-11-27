@@ -72,12 +72,12 @@ static void main(unsigned long bist)
 
 	/* MOVE ME TO A BETTER LOCATION !!! */
 	/* config LPC decode for flash memory access */
-        device_t dev;
-        dev = pci_locate_device(PCI_ID(0x8086, 0x25a1), 0);
-        if (dev == PCI_DEV_INVALID)
-                die("Missing ich5r?");
-        pci_write_config32(dev, 0xe8, 0x00000000);
-        pci_write_config8(dev, 0xf0, 0x00);
+	device_t dev;
+	dev = pci_locate_device(PCI_ID(0x8086, 0x25a1), 0);
+	if (dev == PCI_DEV_INVALID)
+		die("Missing ich5r?");
+	pci_write_config32(dev, 0xe8, 0x00000000);
+	pci_write_config8(dev, 0xf0, 0x00);
 
 #if 0
 	display_cpuid_update_microcode();

@@ -33,17 +33,17 @@ Device(EC0)
 	Field (ERAM, ByteAcc, NoLock, Preserve)
 	{
 			Offset(0xb1),
-		CPWR,   1,
-		ACCH,   1, // AC connected (charger present)
-		B1PR,   1, // battery 1 present
-		B2PR,   1, // battery 2 present
-		B1CH,   1, // battery 1 charged
-		B2CH,   1, // battery 2 charged
+		CPWR,	  1,
+		ACCH,	  1, // AC connected (charger present)
+		B1PR,	  1, // battery 1 present
+		B2PR,	  1, // battery 2 present
+		B1CH,	  1, // battery 1 charged
+		B2CH,	  1, // battery 2 charged
 			Offset(0xb2),
-		B1CG,   1, // battery 1 charging
-		B2CG,   1, // battery 2 charging
-		B1LO,   1, // battery 1 low
-		B2LO,   1, // battery 2 low
+		B1CG,	  1, // battery 1 charging
+		B2CG,	  1, // battery 2 charging
+		B1LO,	  1, // battery 1 low
+		B2LO,	  1, // battery 2 low
 			Offset(0xb3),
 		B1DW,  16, // battery 1 design capacity
 		B1FW,  16, // battery 1 last full charge capacity
@@ -59,16 +59,16 @@ Device(EC0)
 			Offset(0xcb),
 		B2PV,  16, // battery 2 present voltage
 			Offset(0xcf),
-		FDDI,   1, // floppy on lpt indicator?
-		LIDC,   1, // LID switch
+		FDDI,	  1, // floppy on lpt indicator?
+		LIDC,	  1, // LID switch
 			Offset(0xd0),
-		TCPU,   8, // T_CPU in deg Celcius
+		TCPU,	  8, // T_CPU in deg Celcius
 			Offset(0xd6),
 		/* exact purpose of these three is guessed,
 		   but it's something about cooling */
-		ALRL,   1, // active cooling low limit
-		ALRH,   1, // active cooling high limit
-		ALRC,   1, // active cooling clear
+		ALRL,	  1, // active cooling low limit
+		ALRH,	  1, // active cooling high limit
+		ALRC,	  1, // active cooling clear
 			Offset(0xe8),
 		B1RW,  16, // battery 1 remaining capacity
 		B2RW,  16, // battery 2 remaining capacity

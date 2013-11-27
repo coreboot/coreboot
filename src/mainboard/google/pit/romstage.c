@@ -62,16 +62,16 @@ struct pmic_write pmic_writes[] =
 					  MAX77802_BUCK_TYPE1_IGNORE_PWRREQ },
 	{ 0, MAX77802_REG_PMIC_BUCK2DVS1, MAX77802_BUCK2DVS1_1V },
 	{ 1, MAX77802_REG_PMIC_BUCK2CTRL1, MAX77802_BUCK_TYPE2_ON |
-					   MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
+						MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
 	{ 0, MAX77802_REG_PMIC_BUCK3DVS1, MAX77802_BUCK3DVS1_1V },
 	{ 1, MAX77802_REG_PMIC_BUCK3CTRL1, MAX77802_BUCK_TYPE2_ON |
-					   MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
+						MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
 	{ 0, MAX77802_REG_PMIC_BUCK4DVS1, MAX77802_BUCK4DVS1_1V },
 	{ 1, MAX77802_REG_PMIC_BUCK4CTRL1, MAX77802_BUCK_TYPE2_ON |
-					   MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
+						MAX77802_BUCK_TYPE2_IGNORE_PWRREQ },
 	{ 0, MAX77802_REG_PMIC_BUCK6DVS1, MAX77802_BUCK6DVS1_1V },
 	{ 1, MAX77802_REG_PMIC_BUCK6CTRL, MAX77802_BUCK_TYPE1_ON |
-					   MAX77802_BUCK_TYPE1_IGNORE_PWRREQ },
+						MAX77802_BUCK_TYPE1_IGNORE_PWRREQ },
 	{ 1, MAX77802_REG_PMIC_LDO35CTRL1, MAX77802_LDO35CTRL1_1_2V },
 };
 
@@ -153,10 +153,10 @@ static void setup_gpio(void)
 static void setup_memory(struct mem_timings *mem, int is_resume)
 {
 	printk(BIOS_SPEW, "manufacturer: 0x%x type: 0x%x, div: 0x%x, mhz: %d\n",
-	       mem->mem_manuf,
-	       mem->mem_type,
-	       mem->mpll_mdiv,
-	       mem->frequency_mhz);
+		mem->mem_manuf,
+		mem->mem_type,
+		mem->mpll_mdiv,
+		mem->frequency_mhz);
 
 	/* FIXME Currently memory initialization with mem_reset on normal boot
 	 * will cause resume to fail (even if we don't do mem_reset on resume),
@@ -234,14 +234,14 @@ static void simple_spi_test(void)
 		if (data[i/4] != in){
 		  errors++;
 			printk(BIOS_SPEW, "BAD at %d(%p):\nRAM %08lx\nSPI %08lx\n",
-			       i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
+				  i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
 			/* reread it to see which is wrong. */
 			if (media->read(media, &in, (size_t) i, 4) < 1){
 				printk(BIOS_SPEW, "simple_spi_test fails at %d\n", i);
 				return;
 			}
 			printk(BIOS_SPEW, "RTRY at %d(%p):\nRAM %08lx\nSPI %08lx\n",
-			       i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
+				  i, &data[i/4], (unsigned long)data[i/4], (unsigned long)in);
 		}
 
 	}

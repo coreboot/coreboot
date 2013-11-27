@@ -105,7 +105,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	b = smbus_read_byte(DIMM0,17);
 	print_val("Detecting Memory\nNumber of Banks ",b);
 
-	if( b != 2 ){            // not 16 Mb type
+	if( b != 2 ){		  // not 16 Mb type
 
 /*
     Read SPD byte 3, Number of row addresses.
@@ -119,7 +119,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 */
 			b = smbus_read_byte(DIMM0,13);
 			print_val("\nPriamry DRAM width",b);
-			if( b != 4 )   // mot 64/128Mb (x4)
+			if( b != 4 )	  // mot 64/128Mb (x4)
 				c = 0x80;  // 256Mb
 		}
 
@@ -130,9 +130,9 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 */
 		b = smbus_read_byte(DIMM0,4);
 		print_val("\nNo Columns ",b);
-		if( b == 10 || b == 11 ) c |= 0x60;   // 10/11 bit col addr
-		if( b == 9 ) c |= 0x40;           // 9 bit col addr
-		if( b == 8 ) c |= 0x20;           // 8 bit col addr
+		if( b == 10 || b == 11 ) c |= 0x60;	// 10/11 bit col addr
+		if( b == 9 ) c |= 0x40;	    // 9 bit col addr
+		if( b == 8 ) c |= 0x20;	    // 8 bit col addr
 
 	}
 	print_val("\nMA type ",c);
@@ -151,15 +151,15 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 // Read SPD byte 31 Module bank density
 	c = 0;
 	b = smbus_read_byte(DIMM0,31);
-	if( b & 0x02 ) c = 0x80;         // 2GB
-	else if( b & 0x01) c = 0x40;     // 1GB
-	else if( b & 0x80) c = 0x20;     // 512Mb
-	else if( b & 0x40) c = 0x10;     // 256Mb
-	else if( b & 0x20) c = 0x08;     // 128Mb
-	else if( b & 0x10) c = 0x04;     // 64Mb
-	else if( b & 0x08) c = 0x02;     // 32Mb
-	else if( b & 0x04) c = 0x01;     // 16Mb / 4Gb
-	else c = 0x01;                   // Error, use default
+	if( b & 0x02 ) c = 0x80;	  // 2GB
+	else if( b & 0x01) c = 0x40;	  // 1GB
+	else if( b & 0x80) c = 0x20;	  // 512Mb
+	else if( b & 0x40) c = 0x10;	  // 256Mb
+	else if( b & 0x20) c = 0x08;	  // 128Mb
+	else if( b & 0x10) c = 0x04;	  // 64Mb
+	else if( b & 0x08) c = 0x02;	  // 32Mb
+	else if( b & 0x04) c = 0x01;	  // 16Mb / 4Gb
+	else c = 0x01;			  // Error, use default
 
 
 	print_val("\nBank 0 (*16 Mb) ",c);
@@ -194,7 +194,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	print_val("\nCycle time at CL X-1   (nS)",smbus_read_byte(DIMM0,25));
 
 
-	if( b & 0x10 ){             // DDR offering optional CAS 3
+	if( b & 0x10 ){	     // DDR offering optional CAS 3
 		print_debug("\nStarting at CAS 3");
 		c = 0x30;
 		/* see if we can better it */
@@ -210,9 +210,9 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 				c = 0x10;
 			}
 		}
-	}else{                     // no optional CAS values just 2 & 2.5
+	}else{			    // no optional CAS values just 2 & 2.5
 		print_debug("\nStarting at CAS 2.5");
-		c = 0x20;          // assume CAS 2.5
+		c = 0x20;	     // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
 			if( smbus_read_byte(DIMM0,23) <= 0x75){ // we can manage 133Mhz at CAS 2
 				print_debug("\nWe can do CAS 2");
@@ -228,9 +228,9 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
     Row pre-charge  64[7]
     RAS Pulse width 64[6]
-    CAS Latency     64[5,4]
+    CAS Latency	    64[5,4]
 
-         SDR  DDR
+	 SDR  DDR
       00  1T   -
       01  2T   2T
       10  3T   2.5T
@@ -242,13 +242,13 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
     Determine row pre-charge time (tRP)
 
-    T    nS    SPD*4   SPD
-    1T   7.5   0x1e
-    2T   15    0x3c
-    3T   22.5  0x5a
-    4T   30            0x1e
-    5T   37.5          0x25 .5?
-    6T   45            0x2d
+    T	 nS    SPD*4   SPD
+    1T	 7.5   0x1e
+    2T	 15    0x3c
+    3T	 22.5  0x5a
+    4T	 30	       0x1e
+    5T	 37.5	       0x25 .5?
+    6T	 45	       0x2d
 
 
     Read SPD byte 27, min row pre-charge time.
@@ -256,7 +256,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 	b = smbus_read_byte(DIMM0,27);
 	print_val("\ntRP ",b);
-	if( b > 0x3c )           // set tRP = 3T
+	if( b > 0x3c )		  // set tRP = 3T
 		c |= 0x80;
 
 
@@ -268,7 +268,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 	b = smbus_read_byte(DIMM0,29);
 	print_val("\ntRCD ",b);
-	if( b > 0x3c )           // set tRCD = 3T
+	if( b > 0x3c )		  // set tRCD = 3T
 		c |= 0x04;
 
 /*
@@ -280,7 +280,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 	b = smbus_read_byte(DIMM0,30);
 	print_val("\ntRAS ",b);
-	if( b > 0x25 )           // set tRAS = 6T
+	if( b > 0x25 )		  // set tRAS = 6T
 		c |= 0x40;
 
 
@@ -308,7 +308,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 /*
     CPU Frequency  Device 0 Offset 54
 
-    CPU Frequency          54[7,6]  bootstraps at 0xc0 (133Mhz)
+    CPU Frequency	   54[7,6]  bootstraps at 0xc0 (133Mhz)
     DRAM burst length = 8  54[5]
 */
 	pci_write_config8(north,0x54,0xe0);
@@ -317,11 +317,11 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 /*
     DRAM Clock  Device 0 Offset 69
 
-    DRAM/CPU speed      69[7,6]  (leave at default 00 == CPU)
+    DRAM/CPU speed	69[7,6]  (leave at default 00 == CPU)
     Controller que > 2  69[5]
     Controller que != 4 69[4]
-    DRAM 8k page size   69[3]
-    DRAM 4k page size   69[2]
+    DRAM 8k page size	69[3]
+    DRAM 4k page size	69[2]
     Multiple page mode  69[0]
 */
 
@@ -345,12 +345,12 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
 	b = smbus_read_byte(DIMM0,5); // SPD byte 5  # of physical banks
 	if( b > 1) {
-                // Increase drive control when there is more than 1 physical bank
-		pci_write_config8(north,0x6c,0x84);   // Drive control: MA, DQS, MD/CKE
-		pci_write_config8(north,0x6d,0x55);   // DC: Early clock select, DQM, CS#, MD
+		// Increase drive control when there is more than 1 physical bank
+		pci_write_config8(north,0x6c,0x84);	// Drive control: MA, DQS, MD/CKE
+		pci_write_config8(north,0x6d,0x55);	// DC: Early clock select, DQM, CS#, MD
 	}
 	/* place frame buffer on last bank */
-	if( !b) b++;     // make sure at least 1 bank reported
+	if( !b) b++;	  // make sure at least 1 bank reported
 	pci_write_config8(north,0xe3,b-1);
 
 	for( bank = 0 , bank_address=0; bank < b ; bank++){
@@ -418,14 +418,14 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
     MR[0-2]   dont care
 
     CAS Latency
-    000       reserved
-    001       reserved
-    010       2
-    011       3
-    100       reserved
-    101       1.5
-    110       2.5
-    111       reserved
+    000	      reserved
+    001	      reserved
+    010	      2
+    011	      3
+    100	      reserved
+    101	      1.5
+    110	      2.5
+    111	      reserved
 
     CAS 2     0101011000 = 0x158
     CAS 2.5   1101011000 = 0x358
@@ -567,14 +567,14 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
     Rx69 (DRAM freq)  Rx58 (chip tech)  Rx6a
 
-    133Mhz            64/128Mb          0x86
-    133Mhz            256/512Mb         0x43
-    100Mhz            64/128Mb          0x65
-    100Mhz            256/512Mb         0x32
+    133Mhz	      64/128Mb		0x86
+    133Mhz	      256/512Mb		0x43
+    100Mhz	      64/128Mb		0x65
+    100Mhz	      256/512Mb		0x32
 */
 
 	b = pci_read_config8(north,0x58);
-	if( b < 0x80 )   // 256 tech
+	if( b < 0x80 )	  // 256 tech
 		pci_write_config8(north,0x6a,0x86);
 	else
 		pci_write_config8(north,0x6a,0x43);
@@ -609,7 +609,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 	pci_write_config8(north,0xac,0x2f);
 	pci_write_config8(north,0xae,0x04);
 
-        print_debug("vt8623 done\n");
+	print_debug("vt8623 done\n");
 	dumpnorth(north);
 
 	print_debug("AGP\n");

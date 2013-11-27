@@ -130,7 +130,7 @@ static struct device_operations pci_ops = {
 	.enable_resources = pci_bus_enable_resources,
 	.init = pci_init,
 	.scan_bus = pci_scan_bridge,
-	/* .enable           = sb600_enable, */
+	/* .enable	      = sb600_enable, */
 	.reset_bus = pci_bus_reset,
 	.ops_pci = &lops_pci,
 };

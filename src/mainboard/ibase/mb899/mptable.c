@@ -27,16 +27,16 @@
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	struct device *riser = NULL, *firewire = NULL;
 	int firewire_bus = 0, riser_bus = 0, isa_bus;
 	int ioapic_id;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	firewire = dev_find_device(0x104c, 0x8023, 0);
 	if (firewire) {
@@ -69,7 +69,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x0, ioapic_id, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x3, ioapic_id, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x4, ioapic_id, 0x4);
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,       isa_bus, 0x8, ioapic_id, 0x8);
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,	      isa_bus, 0x8, ioapic_id, 0x8);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x9, ioapic_id, 0x9);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xa, ioapic_id, 0xa);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0xb, ioapic_id, 0xb);
@@ -118,7 +118,7 @@ static void *smp_write_config_table(void *v)
 	/* Onboard Ethernet */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x2, 0x0, ioapic_id, 0x10);
 
-	/* Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
+	/* Local Ints:	Type	Polarity	 Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	mptable_lintsrc(mc, isa_bus);
 
 	/* Compute the checksums */

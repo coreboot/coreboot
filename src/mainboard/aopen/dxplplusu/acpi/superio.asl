@@ -28,7 +28,7 @@ Name (MSBF, ResourceTemplate ()
 OperationRegion (LPC0, SystemIO, 0x0E00, 0x60)
 Field (LPC0, ByteAcc, NoLock, Preserve)
 {
-	PME0,   8,
+	PME0,	 8,
 	Offset (0x02),	PME2,8,
 	Offset (0x04),	PME4,8,
 	Offset (0x0A),	PMEA,8,
@@ -51,26 +51,26 @@ Field (LPC0, ByteAcc, NoLock, Preserve)
 OperationRegion (SMC1, SystemIO, 0x2E, 0x02)
 Field (SMC1, ByteAcc, NoLock, Preserve)
 {
-	INDX,   8,	DATA,   8
+	INDX,	 8,	DATA,   8
 }
 
 IndexField (INDX, DATA, ByteAcc, NoLock, Preserve)
 {
-	Offset (0x07),	LDN,    8,
-	Offset (0x22),	PWRC,   8,
-	Offset (0x30),	ACTR,   8,
+	Offset (0x07),	LDN,	8,
+	Offset (0x22),	PWRC,	8,
+	Offset (0x30),	ACTR,	8,
 	Offset (0x60),
-		IOAH,   8,	IOAL,   8,
-		IOBH,   8,	IOBL,   8,
+		IOAH,	  8,	IOAL,   8,
+		IOBH,	  8,	IOBL,   8,
 
-	Offset (0x70),	INTR,   8,
-	Offset (0x72),	INT1,   8,
-	Offset (0x74),	DMCH,   8,
-	Offset (0xB2),	SPS1,   8,	SPS2,   8,
-	Offset (0xB8),	D2TS,   8,
-	Offset (0xF0),	OPT1,   8,	OPT2,   8,	OPT3,   8,
-	Offset (0xF4),	WDTC,   8,
-	Offset (0xF6),	GP01,   8,	GP02,   8,	GP04,   8
+	Offset (0x70),	INTR,	8,
+	Offset (0x72),	INT1,	8,
+	Offset (0x74),	DMCH,	8,
+	Offset (0xB2),	SPS1,	8,	SPS2,   8,
+	Offset (0xB8),	D2TS,	8,
+	Offset (0xF0),	OPT1,	8,	OPT2,   8,	OPT3,   8,
+	Offset (0xF4),	WDTC,	8,
+	Offset (0xF6),	GP01,	8,	GP02,   8,	GP04,   8
 }
 
 Method (ECFG, 0, NotSerialized)

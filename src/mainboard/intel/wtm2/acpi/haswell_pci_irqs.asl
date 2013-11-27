@@ -42,12 +42,12 @@ Method(_PRT)
 			Package() { 0x001fffff, 1, 0, 22 },
 			Package() { 0x001fffff, 2, 0, 23 },
 			Package() { 0x001fffff, 3, 0, 16 },
-			// Serial IO                    0:15.0
+			// Serial IO			   0:15.0
 			Package() { 0x0015ffff, 0, 0, 16 },
 			Package() { 0x0015ffff, 1, 0, 17 },
 			Package() { 0x0015ffff, 2, 0, 18 },
 			Package() { 0x0015ffff, 3, 0, 19 },
-			// SDIO                         0:17.0
+			// SDIO			   0:17.0
 			Package() { 0x0017ffff, 0, 0, 16 },
 		})
 	} Else {

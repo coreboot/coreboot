@@ -18,7 +18,7 @@
  */
 
 /*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
+ *			       M O D U L E S	U S E D
  *----------------------------------------------------------------------------------------
  */
 
@@ -41,55 +41,55 @@
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
 /*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
+ *		     D E F I N I T I O N S    A N D    M A C R O S
  *----------------------------------------------------------------------------------------
  */
 
 /* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable    = NULL;
+VOID *DmiTable	  = NULL;
 VOID *AcpiPstate  = NULL;
-VOID *AcpiSrat    = NULL;
-VOID *AcpiSlit    = NULL;
+VOID *AcpiSrat	  = NULL;
+VOID *AcpiSlit	  = NULL;
 
 VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib    = NULL;
+VOID *AcpiAlib	  = NULL;
 
 
 /*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
+ *		    T Y P E D E F S	A N D	  S T R U C T U  R E S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
+ *	     P R O T O T Y P E S     O F     L O C A L	   F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
+ *			    E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
+ *			    L O C A L	 F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
 UINT32
 ReadAmdSbPmr (
-  IN     UINT8                      IndexValue,
-  OUT    UINT8                      *DataValue
+  IN	 UINT8			    IndexValue,
+  OUT	 UINT8			    *DataValue
   );
 
 UINT32
 WriteAmdSbPmr (
-  IN     UINT8                      IndexValue,
-  IN     UINT8                      DataValue
+  IN	 UINT8			    IndexValue,
+  IN	 UINT8			    DataValue
   );
 
 VOID
 ClearSBSmiAndWake (
-  IN UINT16             PmBase
+  IN UINT16		PmBase
   );
 
 VOID
@@ -102,8 +102,8 @@ ClearAllSmiEnableInPmio (
 /* Read SB Power Management Area */
 UINT32
 ReadAmdSbPmr (
-  IN     UINT8                      IndexValue,
-  OUT    UINT8                      *DataValue
+  IN	 UINT8			    IndexValue,
+  OUT	 UINT8			    *DataValue
   )
 {
   WriteIo8 (SB_PM_INDEX_PORT, IndexValue);
@@ -114,8 +114,8 @@ ReadAmdSbPmr (
 /* Write ATI SB Power Management Area */
 UINT32
 WriteAmdSbPmr (
-  IN     UINT8                      IndexValue,
-  IN     UINT8                      DataValue
+  IN	 UINT8			    IndexValue,
+  IN	 UINT8			    DataValue
   )
 {
   WriteIo8 (SB_PM_INDEX_PORT, IndexValue);
@@ -126,7 +126,7 @@ WriteAmdSbPmr (
 /* Clear any SMI status or wake status left over from boot. */
 VOID
 ClearSBSmiAndWake (
-  IN UINT16             PmBase
+  IN UINT16		PmBase
   )
 {
   UINT16  Pm1Sts;
@@ -156,7 +156,7 @@ ClearAllSmiEnableInPmio (
 {
   UINT32  AcpiMmioAddr;
   UINT32  SmiMmioAddr;
-  UINT8   Data8 = 0 ;
+  UINT8	  Data8 = 0 ;
   UINT16  Data16 = 0;
 
   /* Get SB900 MMIO Base (AcpiMmioAddr) */
@@ -184,11 +184,11 @@ agesawrapper_amdinitcpuio (
   VOID
   )
 {
-  AGESA_STATUS                  Status;
-  UINT64                        MsrReg;
-  UINT32                        PciData;
-  PCI_ADDR                      PciAddress;
-  AMD_CONFIG_PARAMS             StdHeader;
+  AGESA_STATUS			Status;
+  UINT64			MsrReg;
+  UINT32			PciData;
+  PCI_ADDR			PciAddress;
+  AMD_CONFIG_PARAMS		StdHeader;
 
   /* Enable MMIO on AMD CPU Address Map Controller */
 
@@ -233,11 +233,11 @@ agesawrapper_amdinitmmio (
   VOID
   )
 {
-  AGESA_STATUS                  Status;
-  UINT64                        MsrReg;
-  UINT32                        PciData;
-  PCI_ADDR                      PciAddress;
-  AMD_CONFIG_PARAMS             StdHeader;
+  AGESA_STATUS			Status;
+  UINT64			MsrReg;
+  UINT32			PciData;
+  PCI_ADDR			PciAddress;
+  AMD_CONFIG_PARAMS		StdHeader;
 
   /*
    Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
@@ -302,15 +302,15 @@ agesawrapper_amdinitreset (
   AMD_RESET_PARAMS AmdResetParams;
 
   LibAmdMemFill (&AmdParamStruct,
-                 0,
-                 sizeof (AMD_INTERFACE_PARAMS),
-                 &(AmdParamStruct.StdHeader));
+		 0,
+		 sizeof (AMD_INTERFACE_PARAMS),
+		 &(AmdParamStruct.StdHeader));
 
 
   LibAmdMemFill (&AmdResetParams,
-                 0,
-                 sizeof (AMD_RESET_PARAMS),
-                 &(AmdResetParams.StdHeader));
+		 0,
+		 sizeof (AMD_RESET_PARAMS),
+		 &(AmdResetParams.StdHeader));
 
   AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
   AmdParamStruct.AllocationMethod = ByHost;
@@ -339,9 +339,9 @@ agesawrapper_amdinitearly (
   AMD_EARLY_PARAMS     *AmdEarlyParamsPtr;
 
   LibAmdMemFill (&AmdParamStruct,
-                 0,
-                 sizeof (AMD_INTERFACE_PARAMS),
-                 &(AmdParamStruct.StdHeader));
+		 0,
+		 sizeof (AMD_INTERFACE_PARAMS),
+		 &(AmdParamStruct.StdHeader));
 
   AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
   AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -367,15 +367,15 @@ agesawrapper_amdinitpost (
   )
 {
   AGESA_STATUS status;
-  UINT16                  i;
-  UINT32          *HeadPtr;
+  UINT16		  i;
+  UINT32	  *HeadPtr;
   AMD_INTERFACE_PARAMS  AmdParamStruct;
   BIOS_HEAP_MANAGER    *BiosManagerPtr;
 
   LibAmdMemFill (&AmdParamStruct,
-                 0,
-                 sizeof (AMD_INTERFACE_PARAMS),
-                 &(AmdParamStruct.StdHeader));
+		 0,
+		 sizeof (AMD_INTERFACE_PARAMS),
+		 &(AmdParamStruct.StdHeader));
 
   AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
   AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -413,9 +413,9 @@ agesawrapper_amdinitenv (
   AMD_INTERFACE_PARAMS AmdParamStruct;
 
   LibAmdMemFill (&AmdParamStruct,
-                 0,
-                 sizeof (AMD_INTERFACE_PARAMS),
-                 &(AmdParamStruct.StdHeader));
+		 0,
+		 sizeof (AMD_INTERFACE_PARAMS),
+		 &(AmdParamStruct.StdHeader));
 
   AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
   AmdParamStruct.AllocationMethod = PostMemDram;
@@ -471,9 +471,9 @@ agesawrapper_amdinitmid (
   agesawrapper_amdinitcpuio ();
 
   LibAmdMemFill (&AmdParamStruct,
-                 0,
-                 sizeof (AMD_INTERFACE_PARAMS),
-                 &(AmdParamStruct.StdHeader));
+		 0,
+		 sizeof (AMD_INTERFACE_PARAMS),
+		 &(AmdParamStruct.StdHeader));
 
   AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
   AmdParamStruct.AllocationMethod = PostMemDram;
@@ -500,9 +500,9 @@ agesawrapper_amdinitlate (
   AMD_LATE_PARAMS AmdLateParams;
 
   LibAmdMemFill (&AmdLateParams,
-                 0,
-                 sizeof (AMD_LATE_PARAMS),
-                 &(AmdLateParams.StdHeader));
+		 0,
+		 sizeof (AMD_LATE_PARAMS),
+		 &(AmdLateParams.StdHeader));
 
   AmdLateParams.StdHeader.AltImageBasePtr = 0;
   AmdLateParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
@@ -515,14 +515,14 @@ agesawrapper_amdinitlate (
     ASSERT(Status == AGESA_SUCCESS);
   }
 
-  DmiTable       = AmdLateParams.DmiTable;
-  AcpiPstate     = AmdLateParams.AcpiPState;
-  AcpiSrat       = AmdLateParams.AcpiSrat;
-  AcpiSlit       = AmdLateParams.AcpiSlit;
+  DmiTable	 = AmdLateParams.DmiTable;
+  AcpiPstate	 = AmdLateParams.AcpiPState;
+  AcpiSrat	 = AmdLateParams.AcpiSrat;
+  AcpiSlit	 = AmdLateParams.AcpiSlit;
 
-  AcpiWheaMce    = AmdLateParams.AcpiWheaMce;
-  AcpiWheaCmc    = AmdLateParams.AcpiWheaCmc;
-  AcpiAlib       = AmdLateParams.AcpiAlib;
+  AcpiWheaMce	 = AmdLateParams.AcpiWheaMce;
+  AcpiWheaCmc	 = AmdLateParams.AcpiWheaCmc;
+  AcpiAlib	 = AmdLateParams.AcpiAlib;
 
   return (UINT32)Status;
 }
@@ -537,9 +537,9 @@ agesawrapper_amdlaterunaptask (
   AP_EXE_PARAMS ApExeParams;
 
   LibAmdMemFill (&ApExeParams,
-                 0,
-                 sizeof (AP_EXE_PARAMS),
-                 &(ApExeParams.StdHeader));
+		 0,
+		 sizeof (AP_EXE_PARAMS),
+		 &(ApExeParams.StdHeader));
 
   ApExeParams.StdHeader.AltImageBasePtr = 0;
   ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
@@ -564,9 +564,9 @@ agesawrapper_amdreadeventlog (
   EVENT_PARAMS AmdEventParams;
 
   LibAmdMemFill (&AmdEventParams,
-                 0,
-                 sizeof (EVENT_PARAMS),
-                 &(AmdEventParams.StdHeader));
+		 0,
+		 sizeof (EVENT_PARAMS),
+		 &(AmdEventParams.StdHeader));
 
   AmdEventParams.StdHeader.AltImageBasePtr = 0;
   AmdEventParams.StdHeader.CalloutPtr = NULL;

@@ -242,7 +242,7 @@ static void sm_init(device_t dev)
 		u16 word;
 
 		/* rpr v2.13 4.18 Enabling Posted Pass Non-Posted Downstream */
-        	axindxc_reg(0x02, 1 << 9, 1 << 9);
+		axindxc_reg(0x02, 1 << 9, 1 << 9);
 		abcfg_reg(0x9C, 0x00007CC0, 0x00007CC0);
 		abcfg_reg(0x1009C, 0x00000030, 0x00000030);
 		abcfg_reg(0x10090, 0x00001E00, 0x00001E00);
@@ -251,7 +251,7 @@ static void sm_init(device_t dev)
 		abcfg_reg(0x58, 0x0000F800, 0x0000E800);
 
 		/* rpr v2.13 4.20 64 bit Non-Posted Memory Write Support */
-        	axindxc_reg(0x02, 1 << 10, 1 << 10);
+		axindxc_reg(0x02, 1 << 10, 1 << 10);
 
 		/* rpr v2.13 2.38 Unconditional Shutdown */
  		byte = pci_read_config8(dev, 0x43);

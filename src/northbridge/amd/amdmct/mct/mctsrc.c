@@ -74,7 +74,7 @@ static void SetupRcvrPattern(struct MCTStatStruc *pMCTstat,
 {
 	/*
 	 * 1. Copy the alpha and Beta patterns from ROM to Cache,
-	 *     aligning on 16 byte boundary
+	 *	aligning on 16 byte boundary
 	 * 2. Set the ptr to DCTStatstruc.PtrPatternBufA for Alpha
 	 * 3. Set the ptr to DCTStatstruc.PtrPatternBufB for Beta
 	 */

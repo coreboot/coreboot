@@ -35,7 +35,7 @@
  * @param parent The bus to find the device on.
  * @param path The relative path from the bus to the appropriate device.
  * @return Pointer to a device structure for the device on bus at path
- *         or 0/NULL if no device is found.
+ *	   or 0/NULL if no device is found.
  */
 device_t find_dev_path(struct bus *parent, struct device_path *path)
 {
@@ -119,8 +119,8 @@ device_t dev_find_lapic(unsigned apic_id)
  * @param vendor A PCI vendor ID (e.g. 0x8086 for Intel).
  * @param device A PCI device ID.
  * @param from Pointer to the device structure, used as a starting point in
- *             the linked list of all_devices, which can be 0 to start at the
- *             head of the list (i.e. all_devices).
+ *	       the linked list of all_devices, which can be 0 to start at the
+ *	       head of the list (i.e. all_devices).
  * @return Pointer to the device struct.
  */
 struct device *dev_find_device(u16 vendor, u16 device, struct device *from)
@@ -141,8 +141,8 @@ struct device *dev_find_device(u16 vendor, u16 device, struct device *from)
  *
  * @param class Class of the device.
  * @param from Pointer to the device structure, used as a starting point in
- *             the linked list of all_devices, which can be 0 to start at the
- *             head of the list (i.e. all_devices).
+ *	       the linked list of all_devices, which can be 0 to start at the
+ *	       head of the list (i.e. all_devices).
  * @return Pointer to the device struct.
  */
 struct device *dev_find_class(unsigned int class, struct device *from)
@@ -276,7 +276,7 @@ const char *dev_path(device_t dev)
 			break;
 		default:
 			printk(BIOS_ERR, "Unknown device path type: %d\n",
-			       dev->path.type);
+				  dev->path.type);
 			break;
 		}
 	}
@@ -497,7 +497,7 @@ struct resource *find_resource(device_t dev, unsigned index)
 	resource = probe_resource(dev, index);
 	if (!resource) {
 		printk(BIOS_EMERG, "%s missing resource: %02x\n",
-		       dev_path(dev), index);
+			 dev_path(dev), index);
 		die("");
 	}
 	return resource;
@@ -625,7 +625,7 @@ void report_resource_stored(device_t dev, struct resource *resource,
 #endif
 	}
 	printk(BIOS_DEBUG, "%s %02lx <- [0x%010llx - 0x%010llx] size 0x%08llx "
-	       "gran 0x%02x %s%s%s\n", dev_path(dev), resource->index,
+		"gran 0x%02x %s%s%s\n", dev_path(dev), resource->index,
 		base, end, resource->size, resource->gran, buf,
 		resource_type(resource), comment);
 }
@@ -652,14 +652,14 @@ void search_bus_resources(struct bus *bus, unsigned long type_mask,
 			if (res->flags & IORESOURCE_SUBTRACTIVE) {
 				struct bus * subbus;
 				for (subbus = curdev->link_list; subbus;
-				     subbus = subbus->next)
+					 subbus = subbus->next)
 					if (subbus->link_num
 					== IOINDEX_SUBTRACTIVE_LINK(res->index))
 						break;
 				if (!subbus) /* Why can subbus be NULL?  */
 					break;
 				search_bus_resources(subbus, type_mask, type,
-						     search, gp);
+							   search, gp);
 				continue;
 			}
 			search(gp, curdev, res);
@@ -668,7 +668,7 @@ void search_bus_resources(struct bus *bus, unsigned long type_mask,
 }
 
 void search_global_resources(unsigned long type_mask, unsigned long type,
-			     resource_search_t search, void *gp)
+				resource_search_t search, void *gp)
 {
 	struct device *curdev;
 
@@ -760,7 +760,7 @@ void print_resource_tree(struct device *root, int debug_level, const char *msg)
 
 	/* Bail if not printing to screen. */
 	if (!do_printk(debug_level, "Show resources in subtree (%s)...%s\n",
-		       dev_path(root), msg))
+			 dev_path(root), msg))
 		return;
 
 	resource_tree(root, debug_level, 0);
@@ -799,7 +799,7 @@ void show_devs_subtree(struct device *root, int debug_level, const char *msg)
 {
 	/* Bail if not printing to screen. */
 	if (!do_printk(debug_level, "Show all devs in subtree %s...%s\n",
-		       dev_path(root), msg))
+			 dev_path(root), msg))
 		return;
 	do_printk(debug_level, "%s\n", msg);
 	show_devs_tree(root, debug_level, 0, -1);
@@ -819,7 +819,7 @@ void show_all_devs(int debug_level, const char *msg)
 }
 
 void show_one_resource(int debug_level, struct device *dev,
-		       struct resource *resource, const char *comment)
+			 struct resource *resource, const char *comment)
 {
 	char buf[10];
 	unsigned long long base, end;
@@ -896,7 +896,7 @@ u32 find_pci_tolm(struct bus *bus)
 	u32 tolm;
 
 	search_bus_resources(bus, IORESOURCE_MEM, IORESOURCE_MEM,
-			     tolm_test, &min);
+				tolm_test, &min);
 
 	tolm = 0xffffffffUL;
 

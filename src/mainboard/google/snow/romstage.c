@@ -135,10 +135,10 @@ static void setup_gpio(void)
 static void setup_memory(struct mem_timings *mem, int is_resume)
 {
 	printk(BIOS_SPEW, "man: 0x%x type: 0x%x, div: 0x%x, mhz: %d\n",
-	       mem->mem_manuf,
-	       mem->mem_type,
-	       mem->mpll_mdiv,
-	       mem->frequency_mhz);
+		mem->mem_manuf,
+		mem->mem_type,
+		mem->mpll_mdiv,
+		mem->frequency_mhz);
 
 	/* FIXME Currently memory initialization with mem_reset on normal boot
 	 * will cause resume to fail (even if we don't do mem_reset on resume),

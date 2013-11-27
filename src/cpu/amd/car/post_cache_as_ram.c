@@ -85,7 +85,7 @@ static void post_cache_as_ram(void)
 	/* Check value of esp to verify if we have enough room for stack in Cache as RAM */
 	unsigned v_esp;
 	__asm__ volatile (
-		"movl   %%esp, %0\n\t"
+		"movl	  %%esp, %0\n\t"
 		: "=a" (v_esp)
 	);
 	print_debug_pcar("v_esp=", v_esp);
@@ -115,7 +115,7 @@ static void post_cache_as_ram(void)
 
 	__asm__ volatile (
 		/* set new esp */ /* before CONFIG_RAMBASE */
-		"subl   %0, %%esp\n\t"
+		"subl	  %0, %%esp\n\t"
 		::"a"( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- (CONFIG_RAMTOP) )
 		/* discard all registers (eax is used for %0), so gcc redoes everything
 		   after the stack is moved */

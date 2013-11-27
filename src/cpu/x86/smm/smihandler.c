@@ -69,7 +69,7 @@ void io_trap_handler(int smif)
 	/* If a handler function handled a given IO trap, it
 	 * shall return a non-zero value
 	 */
-        printk(BIOS_DEBUG, "SMI function trap 0x%x: ", smif);
+	printk(BIOS_DEBUG, "SMI function trap 0x%x: ", smif);
 
 	if (southbridge_io_trap_handler(smif))
 		return;
@@ -167,7 +167,7 @@ void smi_handler(u32 smm_revision)
 		state_save.type = EM64T101;
 		state_save.em64t101_state_save =
 			smm_save_state(smm_base,
-			               SMM_EM64T101_ARCH_OFFSET, node);
+					  SMM_EM64T101_ARCH_OFFSET, node);
 		break;
 	case 0x00030064:
 		state_save.type = AMD64;

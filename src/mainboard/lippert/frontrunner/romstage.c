@@ -99,7 +99,7 @@ void main(unsigned long bist)
 
 	print_err("Done sdram_initialize\n");
 	print_err("Disable watchdog\n");
-	outb( 0x87, 0x4E);                            //enter SuperIO configuration mode
+	outb( 0x87, 0x4E);			       //enter SuperIO configuration mode
 	outb( 0x87, 0x4E);
 
    	outb(0x20, 0x4e);
@@ -112,17 +112,17 @@ void main(unsigned long bist)
 	outb(0x29, 0x4e);
 	outb(0x7c, 0x4f);
 
-	outb( 0x07, 0x4E);                            //enable logical device 9
+	outb( 0x07, 0x4E);			       //enable logical device 9
 	outb( 0x09, 0x4F);
 	outb(0x30, 0x4e);
 	outb(1, 0x4f);
-	outb( 0xF0, 0x4E);                            //set GP33 as outbut in configuration register F0h     Bit4 = \u20180\u2019
+	outb( 0xF0, 0x4E);			       //set GP33 as outbut in configuration register F0h     Bit4 = \u20180\u2019
 	outb( 0xC7, 0x4F);
-	outb( 0xF1, 0x4E);                            //clr GP33 (Bit4) value in cofiguration register F1h to \u20181\u2019 disables
-	temp = inb(0x4F);                            //watchdog function. Make sure to let the other Bits unchanged!
+	outb( 0xF1, 0x4E);			       //clr GP33 (Bit4) value in cofiguration register F1h to \u20181\u2019 disables
+	temp = inb(0x4F);			      //watchdog function. Make sure to let the other Bits unchanged!
 	print_debug_hex8(temp);print_debug(":");
 	temp = temp & ~8;
 	outb( temp, 0x4F);
-	temp = inb(0x4F);                            //watchdog function. Make sure to let the other Bits unchanged!
+	temp = inb(0x4F);			      //watchdog function. Make sure to let the other Bits unchanged!
 	print_debug_hex8(temp);print_debug("\n");
 }

@@ -120,7 +120,7 @@ void enable_vx800_serial(void);
 #define SB_EHCI_REG 0,0x10, 4,
 
 #define VX800SB_APIC_ID			0x4
-#define VX800SB_APIC_DATA_OFFSET             0x10
+#define VX800SB_APIC_DATA_OFFSET	     0x10
 #define VX800SB_APIC_ENTRY_NUMBER 0x40
 
 #define VX800_D0F5_MMCONFIG_MBAR	0x61

@@ -31,7 +31,7 @@
 
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
-			       u8 val);
+				  u8 val);
 #define ADT7475_read_byte(address) \
 	 do_smbus_read_byte(SMBUS_IO_BASE, ADT7475_ADDRESS, address)
 #define ADT7475_write_byte(address, val) \
@@ -96,35 +96,35 @@ static void set_thermal_config(void)
 
 	/* remote 1 low temp limit */
 	ADT7475_write_byte(0x4e, 0x00);
-	/* remote 1 High temp limit    (90C) */
+	/* remote 1 High temp limit	(90C) */
 	ADT7475_write_byte(0x4f, 0x9a);
 
 	/* remote2 Low Temp Limit */
 	ADT7475_write_byte(0x52, 0x00);
-	/* remote2 High Limit    (90C) */
+	/* remote2 High Limit	  (90C) */
 	ADT7475_write_byte(0x53, 0x9a);
 
-	/*  remote 1 therm temp limit    (95C) */
+	/*  remote 1 therm temp limit	  (95C) */
 	ADT7475_write_byte(0x6a, 0x9f);
-	/* remote 2 therm temp limit    (95C) */
+	/* remote 2 therm temp limit	 (95C) */
 	ADT7475_write_byte(0x6c, 0x9f);
 
-	/* PWM 1 minimum duty cycle     (37%) */
+	/* PWM 1 minimum duty cycle	 (37%) */
 	ADT7475_write_byte(0x64, 0x60);
-	/* PWM 1 Maximum duty cycle    (100%) */
+	/* PWM 1 Maximum duty cycle	(100%) */
 	ADT7475_write_byte(0x38, 0xff);
-	/* PWM 3 minimum duty cycle     (37%) */
+	/* PWM 3 minimum duty cycle	 (37%) */
 	ADT7475_write_byte(0x66, 0x60);
-	/* PWM 3 Maximum Duty Cycle    (100%) */
+	/* PWM 3 Maximum Duty Cycle	(100%) */
 	ADT7475_write_byte(0x3a, 0xff);
 
-	/*  Remote 1 temperature Tmin     (32C) */
+	/*  Remote 1 temperature Tmin	   (32C) */
 	ADT7475_write_byte(0x67, 0x60);
-	/* Remote 2 temperature Tmin     (32C) */
+	/* Remote 2 temperature Tmin	  (32C) */
 	ADT7475_write_byte(0x69, 0x60);
-	/* remote 1 Trange            (53C ramp range) */
+	/* remote 1 Trange	       (53C ramp range) */
 	ADT7475_write_byte(0x5f, 0xe8);
-	/* remote 2 Trange            (53C ramp range) */
+	/* remote 2 Trange	       (53C ramp range) */
 	ADT7475_write_byte(0x61, 0xe8);
 
 	/* PWM2 Duty cycle */

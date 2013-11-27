@@ -67,7 +67,7 @@ static void SetupDqsPattern_D(struct MCTStatStruc *pMCTstat,
 
 static void StoreWrRdDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
 					struct DCTStatStruc *pDCTstat, u8 ChipSel,
-				      u8 RnkDlyFilterMin, u8 RnkDlyFilterMax);
+					  u8 RnkDlyFilterMin, u8 RnkDlyFilterMax);
 
 static void StoreDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTstat, u8 ChipSel);
 

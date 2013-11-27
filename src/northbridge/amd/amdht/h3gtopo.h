@@ -84,7 +84,7 @@ static u8 const amdHtTopologyTriangle[] = {
 };
 
 /*
- *   2   3
+ *   2	 3
  *   |\  |
  *   |  \|
  *   0---1
@@ -128,9 +128,9 @@ static u8 const amdHtTopologyFourKite[] = {
 
 
 /*
- *   2   3
- *   |   |
- *   |   |
+ *   2	 3
+ *   |	 |
+ *   |	 |
  *   0---1
  */
 static u8 const amdHtTopologyFourLine[] = {
@@ -144,8 +144,8 @@ static u8 const amdHtTopologyFourLine[] = {
 
 /*
  *   2---3
- *   |   |
- *   |   |
+ *   |	 |
+ *   |	 |
  *   0---1
  */
 static u8 const amdHtTopologyFourSquare[] = {
@@ -161,7 +161,7 @@ static u8 const amdHtTopologyFourSquare[] = {
  *   2---3
  *   |\
  *   |  \
- *   0   1
+ *   0	 1
  */
 static u8 const amdHtTopologyFourStar[] = {
 	0x04,
@@ -187,8 +187,8 @@ static u8 const amdHtTopologyFiveFully[] = {
  *  4
  *  |\
  *  |  \
- *  2   3
- *  |   |
+ *  2	3
+ *  |	|
  *  0---1
  */
 static u8 const amdHtTopologyFiveTwistedLadder[] = {
@@ -213,11 +213,11 @@ static u8 const amdHtTopologySixFully[] = {
 
 /*
  *
- *  4   5
+ *  4	5
  *  |\ /|
  *  |/ \|
- *  2   3
- *  |   |
+ *  2	3
+ *  |	|
  *  0---1
  */
 static u8 const amdHtTopologySixTwistedLadder[] = {
@@ -245,11 +245,11 @@ static u8 const amdHtTopologySevenFully[] = {
 
 /*  6
  *  |
- *  4   5
+ *  4	5
  *  |\ /|
  *  |/ \|
- *  2   3
- *  |   |
+ *  2	3
+ *  |	|
  *  0---1
  */
 static u8 const amdHtTopologySevenTwistedLadder[] = {
@@ -287,11 +287,11 @@ static u8 const amdHtTopologyEightFully [] = {
 
 
 /*  6---7
- *  |   |
+ *  |	|
  *  4---5
- *  |   |
+ *  |	|
  *  2---3
- *  |   |
+ *  |	|
  *  0---1
  */
 static u8 const amdHtTopologyEightStraightLadder[] = {
@@ -308,12 +308,12 @@ static u8 const amdHtTopologyEightStraightLadder[] = {
 
 
 /*  6---7
- *  |   |
- *  4   5
+ *  |	|
+ *  4	5
  *  |\ /|
  *  |/ \|
- *  2   3
- *  |   |
+ *  2	3
+ *  |	|
  *  0---1
  */
 static u8 const amdHtTopologyEightTwistedLadder[] = {

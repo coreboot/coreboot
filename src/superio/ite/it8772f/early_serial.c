@@ -23,15 +23,15 @@
 #include "it8772f.h"
 
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
-#define SIO_BASE                     IT8772F_BASE
-#define SIO_INDEX                    SIO_BASE
-#define SIO_DATA                     (SIO_BASE + 1)
+#define SIO_BASE		     IT8772F_BASE
+#define SIO_INDEX		     SIO_BASE
+#define SIO_DATA		     (SIO_BASE + 1)
 
 /* Global configuration registers. */
-#define IT8772F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
-#define IT8772F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
+#define IT8772F_CONFIG_REG_CC	     0x02 /* Configure Control (write-only). */
+#define IT8772F_CONFIG_REG_LDN	     0x07 /* Logical Device Number. */
 #define IT8772F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
-#define IT8772F_CONFIG_REG_MFC       0x2a /* Multi-function control */
+#define IT8772F_CONFIG_REG_MFC	     0x2a /* Multi-function control */
 #define IT8772F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
 
 u8 it8772f_sio_read(u8 index)

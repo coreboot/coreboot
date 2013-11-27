@@ -112,7 +112,7 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations gma_pci_ops = {
-	.set_subsystem    = gma_set_subsystem,
+	.set_subsystem	   = gma_set_subsystem,
 };
 
 static struct device_operations gma_func0_ops = {

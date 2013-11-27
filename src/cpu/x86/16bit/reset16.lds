@@ -1,5 +1,5 @@
 /*
- *      _ROMTOP                 : The top of the rom used where we
+ *	_ROMTOP			: The top of the rom used where we
  *				  need to put the reset vector.
  */
 

@@ -99,7 +99,7 @@ static void enumerate_ht_chain(void)
 						}
 
 						if (ctrl & ((1 << 4) | (1 << 8))) {
-						       /*
+							     /*
 							* Either the link has failed, or we have
 							* a CRC error.
 							* Sometimes this can happen due to link
@@ -131,8 +131,8 @@ out:
 		uint16_t flags;
 		dev = PCI_DEV(0,real_last_unitid, 0);
 		flags = pci_read_config16(dev, real_last_pos + PCI_CAP_FLAGS);
-	        flags &= ~0x1f;
-	        flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
+		 flags &= ~0x1f;
+		 flags |= CONFIG_HT_CHAIN_END_UNITID_BASE & 0x1f;
 		pci_write_config16(dev, real_last_pos + PCI_CAP_FLAGS, flags);
 	}
 #endif

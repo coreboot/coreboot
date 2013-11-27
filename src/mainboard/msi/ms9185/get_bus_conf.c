@@ -42,23 +42,23 @@ static unsigned pci1234x[] = {	//Here you only need to set value in pci1234 for 
 	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 	0x0000ff0,
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0
 };
 
 static unsigned hcdnx[] = {	//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
 };
 
 static unsigned get_bus_conf_done = 0;
@@ -107,8 +107,8 @@ void get_bus_conf(void)
 		}
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-		       m->bus_bcm5785_0, sysconf.sbdn);
+			 "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+			 m->bus_bcm5785_0, sysconf.sbdn);
 	}
 
 	/* bcm5780 */
@@ -121,12 +121,12 @@ void get_bus_conf(void)
 			    pci_read_config8(dev, PCI_SECONDARY_BUS);
 		} else {
 			printk(BIOS_DEBUG,
-			       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-			       m->bus_bcm5780[0], m->sbdn2 + i - 1);
+				  "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+				  m->bus_bcm5780[0], m->sbdn2 + i - 1);
 		}
 	}
 
-/*I/O APICs:   APIC ID Version State           Address*/
+/*I/O APICs:   APIC ID Version State	       Address*/
 #if CONFIG_LOGICAL_CPUS
 	apicid_base = get_apicid_base(3);
 #else

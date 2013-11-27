@@ -28,7 +28,7 @@
 #include "southbridge/amd/sb700/smbus.h"
 
 #define ADT7461_ADDRESS 0x4C
-#define ARA_ADDRESS     0x0C /* Alert Response Address */
+#define ARA_ADDRESS	0x0C /* Alert Response Address */
 
 #define ADT7461_read_byte(address) \
 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
@@ -92,7 +92,7 @@ void set_pcie_reset()
 	pci_write_config16(sm_dev, 0x7e, word);
 }
 
-#if 0	     /* TODO: */
+#if 0		   /* TODO: */
 /********************************************************
 * tilapia uses SB700 GPIO8 to detect IDE_DMA66.
 * IDE_DMA66 is routed to GPIO 8. So we read Gpio 8 to
@@ -186,7 +186,7 @@ static void set_gpio40_gfx(void)
 		dword = pci_read_config32(sm_dev, 0xfc);
 		dword &= ~(1 << 10);
 
-	        /* When the gpio40 is configured as GPIO, this will represent the output value*/
+		 /* When the gpio40 is configured as GPIO, this will represent the output value*/
 		/* 1 :enable two x8  , 0 : master slot enable only */
 		dword |= (1 << 26);
 		pci_write_config32(sm_dev, 0xfc, dword);
@@ -198,7 +198,7 @@ static void set_gpio40_gfx(void)
 		dword = pci_read_config32(sm_dev, 0xfc);
 		dword &= ~(1 << 10);
 
-        	/* When the gpio40 is configured as GPIO, this will represent the output value*/
+		/* When the gpio40 is configured as GPIO, this will represent the output value*/
 		/* 1 :enable two x8  , 0 : master slot enable only */
 		dword &=  ~(1 << 26);
 		pci_write_config32(sm_dev, 0xfc, dword);

@@ -57,7 +57,7 @@ static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations smbus_pci_ops = {
-	.set_subsystem    = smbus_set_subsystem,
+	.set_subsystem	   = smbus_set_subsystem,
 };
 
 static struct device_operations smbus_ops = {

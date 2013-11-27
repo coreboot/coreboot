@@ -844,7 +844,7 @@ static void set_receive_enable(const struct mem_controller *ctrl)
 			recen+=2;
 		recen >>= 1;
 		recen += (cnt*8);
-		recen+=2;      /* this is not in the spec, but matches
+		recen+=2;	 /* this is not in the spec, but matches
 				 the factory output, and has less failure */
 		recen <<= (dimm/2) * 8;
 		if(!(dimm&1)) {

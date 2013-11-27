@@ -201,17 +201,17 @@ static int elog_is_header_valid(struct elog_header *header)
 
 	if (header->magic != ELOG_SIGNATURE) {
 		printk(BIOS_ERR, "ELOG: header magic 0x%X != 0x%X\n",
-		       header->magic, ELOG_SIGNATURE);
+			 header->magic, ELOG_SIGNATURE);
 		return 0;
 	}
 	if (header->version != ELOG_VERSION) {
 		printk(BIOS_ERR, "ELOG: header version %u != %u\n",
-		       header->version, ELOG_VERSION);
+			 header->version, ELOG_VERSION);
 		return 0;
 	}
 	if (header->header_size != sizeof(*header)) {
 		printk(BIOS_ERR, "ELOG: header size mismatch %u != %zu\n",
-		       header->header_size, sizeof(*header));
+			 header->header_size, sizeof(*header));
 		return 0;
 	}
 	return 1;
@@ -430,7 +430,7 @@ static void elog_reinit_descriptor(struct elog_descriptor *elog)
 {
 	elog_debug("elog_reinit_descriptor()\n");
 	elog_init_descriptor(elog, elog->type, elog->backing_store,
-			     elog->total_size, elog->staging_header);
+				elog->total_size, elog->staging_header);
 }
 
 /*
@@ -463,7 +463,7 @@ static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 	}
 	elog_get_flash()->flash_base = flash_base;
 	elog_init_descriptor(elog_get_flash(), ELOG_DESCRIPTOR_FLASH,
-			     area, area_size, staging_header);
+				area, area_size, staging_header);
 
 	/* Initialize the memory area to look like a cleared flash area */
 	area = malloc(area_size);
@@ -473,7 +473,7 @@ static int elog_setup_descriptors(u32 flash_base, u32 area_size)
 	}
 	memset(area, ELOG_TYPE_EOL, area_size);
 	elog_init_descriptor(elog_get_mem(), ELOG_DESCRIPTOR_MEMORY,
-			     area, area_size, (struct elog_header *)area);
+				area, area_size, (struct elog_header *)area);
 
 	return 0;
 }
@@ -490,7 +490,7 @@ static void elog_flash_erase_area(void)
 }
 
 static void elog_prepare_empty(struct elog_descriptor *elog,
-			       u8 *data, u32 data_size)
+				  u8 *data, u32 data_size)
 {
 	struct elog_header *header;
 
@@ -532,11 +532,11 @@ static int elog_sync_flash_to_mem(void)
 
 	/* Read the header from SPI to memory */
 	elog_spi->read(elog_spi, flash->flash_base,
-		       sizeof(struct elog_header), mem->backing_store);
+			 sizeof(struct elog_header), mem->backing_store);
 
 	/* Read the valid flash contents from SPI to memory */
 	elog_spi->read(elog_spi, flash->flash_base + sizeof(struct elog_header),
-		       flash->next_event_offset, mem->data);
+			 flash->next_event_offset, mem->data);
 
 	elog_reinit_descriptor(mem);
 
@@ -799,7 +799,7 @@ int elog_init(void)
 	flash_size = find_fmap_entry("RW_ELOG", (void **)&flash_base_ptr);
 	if (flash_size < 0) {
 		printk(BIOS_WARNING, "ELOG: Unable to find RW_ELOG in FMAP, "
-		       "using CONFIG_ELOG_FLASH_BASE instead\n");
+			 "using CONFIG_ELOG_FLASH_BASE instead\n");
 		flash_size = CONFIG_ELOG_AREA_SIZE;
 	} else {
 		flash_base = elog_flash_address_to_offset(flash_base_ptr);
@@ -831,17 +831,17 @@ int elog_init(void)
 	elog_initialized = 1;
 
 	printk(BIOS_INFO, "ELOG: MEM @0x%p FLASH @0x%p [SPI 0x%08x]\n",
-	       elog_get_mem()->backing_store,
-	       elog_get_flash()->backing_store, elog_get_flash()->flash_base);
+		elog_get_mem()->backing_store,
+		elog_get_flash()->backing_store, elog_get_flash()->flash_base);
 
 	printk(BIOS_INFO, "ELOG: areas are %d bytes, full threshold %d,"
-	       " shrink size %d\n", CONFIG_ELOG_AREA_SIZE,
-	       CONFIG_ELOG_FULL_THRESHOLD, CONFIG_ELOG_SHRINK_SIZE);
+		" shrink size %d\n", CONFIG_ELOG_AREA_SIZE,
+		CONFIG_ELOG_FULL_THRESHOLD, CONFIG_ELOG_SHRINK_SIZE);
 
 	/* Log a clear event if necessary */
 	if (elog_get_flash()->event_count == 0)
 		elog_add_event_word(ELOG_TYPE_LOG_CLEAR,
-				    elog_get_flash()->total_size);
+					elog_get_flash()->total_size);
 
 	/* Shrink the log if we are getting too full */
 	if (elog_get_mem()->next_event_offset >= CONFIG_ELOG_FULL_THRESHOLD)
@@ -877,10 +877,10 @@ static void elog_fill_timestamp(struct event_header *event)
 	/* Basic sanity check of expected ranges */
 	if (event->month > 0x12 || event->day > 0x31 || event->hour > 0x23 ||
 	    event->minute > 0x59 || event->second > 0x59) {
-		event->year   = 0;
+		event->year	= 0;
 		event->month  = 0;
-		event->day    = 0;
-		event->hour   = 0;
+		event->day	= 0;
+		event->hour	= 0;
 		event->minute = 0;
 		event->second = 0;
 	}
@@ -905,14 +905,14 @@ static int elog_add_event_mem(u8 event_type, void *data, u8 data_size)
 	event_size = sizeof(*event) + data_size + 1;
 	if (event_size > MAX_EVENT_SIZE) {
 		printk(BIOS_ERR, "ELOG: Event(%X) data size too "
-		       "big (%d)\n", event_type, event_size);
+			 "big (%d)\n", event_type, event_size);
 		return -1;
 	}
 
 	/* Make sure event data can fit */
 	if ((mem->next_event_offset + event_size) >= mem->data_size) {
 		printk(BIOS_ERR, "ELOG: Event(%X) does not fit\n",
-		       event_type);
+			 event_type);
 		return -1;
 	}
 
@@ -936,7 +936,7 @@ static int elog_add_event_mem(u8 event_type, void *data, u8 data_size)
 	mem->next_event_offset += event_size;
 
 	printk(BIOS_INFO, "ELOG: Event(%X) added with size %d\n",
-	       event_type, event_size);
+		event_type, event_size);
 	return 0;
 }
 

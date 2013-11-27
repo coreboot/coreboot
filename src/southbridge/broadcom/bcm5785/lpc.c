@@ -78,15 +78,15 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 	reg = pci_read_config8(dev, 0x44);
 
 	for (link = dev->link_list; link; link = link->next) {
-                device_t child;
-                for (child = link->children; child; child = child->sibling) {
+		device_t child;
+		for (child = link->children; child; child = child->sibling) {
 			if(child->enabled && (child->path.type == DEVICE_PATH_PNP)) {
 				struct resource *res;
 				for(res = child->resource_list; res; res = res->next) {
-			                unsigned long base, end; // don't need long long
+					   unsigned long base, end; // don't need long long
 					if(!(res->flags & IORESOURCE_IO)) continue;
-		        	        base = res->base;
-                			end = resource_end(res);
+			  		   base = res->base;
+					end = resource_end(res);
 					printk(BIOS_DEBUG, "bcm5785lpc decode:%s, base=0x%08lx, end=0x%08lx\n",dev_path(child),base, end);
 					switch(base) {
 					case 0x60: //KBC
@@ -107,8 +107,8 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 					}
 				}
 			}
-                }
-        }
+		}
+	}
 	pci_write_config32(dev, 0x44, reg);
 
 
@@ -116,32 +116,32 @@ static void bcm5785_lpc_enable_childrens_resources(device_t dev)
 
 static void bcm5785_lpc_enable_resources(device_t dev)
 {
-        pci_dev_enable_resources(dev);
-        bcm5785_lpc_enable_childrens_resources(dev);
+	pci_dev_enable_resources(dev);
+	bcm5785_lpc_enable_childrens_resources(dev);
 }
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
-        pci_write_config32(dev, 0x40,
-                ((device & 0xffff) << 16) | (vendor & 0xffff));
+	pci_write_config32(dev, 0x40,
+		((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
 static struct pci_operations lops_pci = {
-        .set_subsystem = lpci_set_subsystem,
+	.set_subsystem = lpci_set_subsystem,
 };
 
 static struct device_operations lpc_ops  = {
 	.read_resources   = bcm5785_lpc_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = bcm5785_lpc_enable_resources,
-	.init             = lpc_init,
-	.scan_bus         = scan_static_bus,
-//	.enable           = bcm5785_enable,
-	.ops_pci          = &lops_pci,
+	.init		   = lpc_init,
+	.scan_bus	   = scan_static_bus,
+//	.enable	     = bcm5785_enable,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver lpc_driver __pci_driver = {
-	.ops    = &lpc_ops,
+	.ops	 = &lpc_ops,
 	.vendor = PCI_VENDOR_ID_SERVERWORKS,
 	.device = PCI_DEVICE_ID_SERVERWORKS_BCM5785_LPC,
 };

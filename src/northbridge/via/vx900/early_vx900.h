@@ -32,30 +32,30 @@
 #define HOST_CTR PCI_DEV(0, 0, 0)
 #define ERR_REP  PCI_DEV(0, 0, 1)
 #define HOST_BUS PCI_DEV(0, 0, 2)
-#define MCU      PCI_DEV(0, 0, 3)
+#define MCU	 PCI_DEV(0, 0, 3)
 #define POWERMAN PCI_DEV(0, 0, 4)
 #define TRAF_CTR PCI_DEV(0, 0, 5)
-#define NSBIC    PCI_DEV(0, 0, 7)
+#define NSBIC	 PCI_DEV(0, 0, 7)
 
-#define GFX      PCI_DEV(0, 1, 0)
-#define HDMI     PCI_DEV(0, 1, 0)
+#define GFX	 PCI_DEV(0, 1, 0)
+#define HDMI	 PCI_DEV(0, 1, 0)
 
-#define PEXx     PCI_DEV(0, 3, x)
+#define PEXx	 PCI_DEV(0, 3, x)
 #define PEX_CTR  PCI_DEV(0, 3, 4)
 
 /* South Module devices */
-#define UARTx    PCI_DEV(0, 0x0a, x)
+#define UARTx	 PCI_DEV(0, 0x0a, x)
 #define USB_MASS PCI_DEV(0, 0x0b, 0)
-#define SDIO     PCI_DEV(0, 0x0c, 0)
+#define SDIO	 PCI_DEV(0, 0x0c, 0)
 #define CARD_RD  PCI_DEV(0, 0x0d, 0)
-#define SATA     PCI_DEV(0, 0x0d, 0)
-#define USBx     PCI_DEV(0, 0x10, x)
+#define SATA	 PCI_DEV(0, 0x0d, 0)
+#define USBx	 PCI_DEV(0, 0x10, x)
 #define USB_EHCI PCI_DEV(0, 0x10, 4)
-#define LPC      PCI_DEV(0, 0x11, 0)
-#define PMU      LPC
-#define SNMIC    PCI_DEV(0, 0x11, 7)
-#define P2P      PCI_DEV(0, 0x13, 0)
-#define HDAC     PCI_DEV(0, 0x14, 0)
+#define LPC	 PCI_DEV(0, 0x11, 0)
+#define PMU	 LPC
+#define SNMIC	 PCI_DEV(0, 0x11, 7)
+#define P2P	 PCI_DEV(0, 0x13, 0)
+#define HDAC	 PCI_DEV(0, 0x14, 0)
 
 /* These control the behavior of raminit */
 #define RAMINIT_USE_HW_RXCR_CALIB	0

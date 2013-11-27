@@ -39,7 +39,7 @@ static void *smp_write_config_table(void *v)
 	struct mp_config_table *mc;
 	int isa_bus;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 	mptable_init(mc, LOCAL_APIC_ADDR);
 	smp_write_processors(mc);
 
@@ -47,7 +47,7 @@ static void *smp_write_config_table(void *v)
 	printk(BIOS_DEBUG, "%s: apic_id=0x%x\n", __func__, apicid_sb600);
 
 	mptable_write_buses(mc, NULL, &isa_bus);
-	/* I/O APICs:   APIC ID Version State   Address */
+	/* I/O APICs:	 APIC ID Version State	 Address */
 	{
 		device_t dev;
 
@@ -115,7 +115,7 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(bus_sb600[1], 0x7, 0x2, 0x11);
 	PCI_INT(bus_sb600[1], 0x7, 0x3, 0x12);
 
-	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
+	/* I/O Ints:	 Type	 Polarity    Trigger	 Bus ID	  IRQ	 APIC ID PIN# */
 	mptable_lintsrc(mc, isa_bus);
 
 	/* Compute the checksums */

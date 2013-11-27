@@ -19,8 +19,8 @@
  */
 
 
-// 2005.9 yhlu    serengeti support
-// 2005.9 yhlu    modify that to more dynamic for AMD Opteron Based MB
+// 2005.9 yhlu	  serengeti support
+// 2005.9 yhlu	  modify that to more dynamic for AMD Opteron Based MB
 // 2007.9 stepan  improve code documentation
 
 #include <console/console.h>
@@ -100,22 +100,22 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
  * For this example you need to set
  *
  *     unsigned pci1234[] = {
- *             0x0000ff0,
- *             0x0000f10, // HT IO 1 card always on node 1
- *             0x0000f20, // HT IO 2 card always on node 2
- *             0x0000f30  // HT IO 3 card always on node 3
+ *	       0x0000ff0,
+ *	       0x0000f10, // HT IO 1 card always on node 1
+ *	       0x0000f20, // HT IO 2 card always on node 2
+ *	       0x0000f30  // HT IO 3 card always on node 3
  *     };
  *
  * For 2P + htio(n1) + htio(n0_1) + htio(n1_1), 2P + htio(n1) + 2P + htio(n2) + htio(n3):
  * You need an array pci1234[6]:
  *
  *     unsigned pci1234[] = {
- *             0x0000ff0,
- *             0x0000010, // HT IO 1 card always on node 1
- *             0x0000f00, // HT IO 2 card always on node 0
- *             0x0000110, // HT IO 3 card always on node 1
- *             0x0000f20, // HT IO 4 card always on node 2
- *             0x0000f30  // HT IO 5 card always on node 3
+ *	       0x0000ff0,
+ *	       0x0000010, // HT IO 1 card always on node 1
+ *	       0x0000f00, // HT IO 2 card always on node 0
+ *	       0x0000110, // HT IO 3 card always on node 1
+ *	       0x0000f20, // HT IO 4 card always on node 2
+ *	       0x0000f30  // HT IO 5 card always on node 3
  *     };
  *
  *
@@ -123,12 +123,12 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
  * You need an array pci1234[6]:
  *
  *     unsigned pci1234[] = {
- *             0x0000ff0,
- *             0x0000f10, // HT IO 1 card always on node 1
- *             0x0000f20, // HT IO 2 card always on node 2
- *             0x0000f30, // HT IO 3 card always on node 3
- *             0x0000f60, // HT IO 4 card always on node 6
- *             0x0000f70  // HT IO 5 card always on node 7
+ *	       0x0000ff0,
+ *	       0x0000f10, // HT IO 1 card always on node 1
+ *	       0x0000f20, // HT IO 2 card always on node 2
+ *	       0x0000f30, // HT IO 3 card always on node 3
+ *	       0x0000f60, // HT IO 4 card always on node 6
+ *	       0x0000f70  // HT IO 5 card always on node 7
  *     };
  *
  *
@@ -137,14 +137,14 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
  * you need an array pci1234[8]:
  *
  *     unsigned pci1234[] = {
- *             0x0000ff0,
- *             0x0000010, // HT IO 1 card always on node 1
- *             0x0000f00, // HT IO 2 card always on node 0
- *             0x0000110, // HT IO 3 card always on node 1
- *             0x0000f20, // HT IO 4 card always on node 2
- *             0x0000f30  // HT IO 5 card always on node 3
- *             0x0000f40, // HT IO 6 card always on node 4
- *             0x0000f50  // HT IO 7 card always on node 5
+ *	       0x0000ff0,
+ *	       0x0000010, // HT IO 1 card always on node 1
+ *	       0x0000f00, // HT IO 2 card always on node 0
+ *	       0x0000110, // HT IO 3 card always on node 1
+ *	       0x0000f20, // HT IO 4 card always on node 2
+ *	       0x0000f30  // HT IO 5 card always on node 3
+ *	       0x0000f40, // HT IO 6 card always on node 4
+ *	       0x0000f50  // HT IO 7 card always on node 5
  *     };
  *
  *
@@ -153,25 +153,25 @@ unsigned node_link_to_bus(unsigned node, unsigned link)
  * you need an array pci1234[8]:
  *
  *     unsigned pci1234[] = {
- *             0x0000ff0,
- *             0x0000f10, // HT IO 1 card always on node 1
- *             0x0000f20, // HT IO 2 card always on node 2
- *             0x0000f30, // HT IO 3 card always on node 3
- *             0x0000f40, // HT IO 4 card always on node 4
- *             0x0000f50  // HT IO 5 card always on node 5
- *             0x0000f60, // HT IO 6 card always on node 6
- *             0x0000f70  // HT IO 7 card always on node 7
+ *	       0x0000ff0,
+ *	       0x0000f10, // HT IO 1 card always on node 1
+ *	       0x0000f20, // HT IO 2 card always on node 2
+ *	       0x0000f30, // HT IO 3 card always on node 3
+ *	       0x0000f40, // HT IO 4 card always on node 4
+ *	       0x0000f50  // HT IO 5 card always on node 5
+ *	       0x0000f60, // HT IO 6 card always on node 6
+ *	       0x0000f70  // HT IO 7 card always on node 7
  *     };
  *
  *
  * So the maximum posible value of HC_POSSIBLE_NUM is 8. (FIXME Why?)
  *
- *     1n:       3
+ *     1n:	 3
  *     2n: 2x2 - 1
  *     4n: 1x4 - 2
- *     6n:       2
- *     8n:       2
- *  Total:      12
+ *     6n:	 2
+ *     8n:	 2
+ *  Total:	12
  *
  * Just put all the possible HT Node/link to the list tp pci1234[] in
  * src/mainboard/<vendor>/<mainboard>get_bus_conf.c

@@ -49,9 +49,9 @@ static void pcie_common_init(struct device *dev)
 	 * bit4: receive polarity change control
 	 * bits3:2: squelch window select 64~175mv
 	 * bit1: Number of non-idle bits detected before exiting idle state
-	 *       0: 10 bits, 1: 2 bits
+	 *	  0: 10 bits, 1: 2 bits
 	 * bit0: Number of idle bits detected before entering idle state
-	 *       0: 10 bits, 1: 2 bits
+	 *	  0: 10 bits, 1: 2 bits
 	 */
 	pci_write_config8(dev, 0xe1, 0xb);
 

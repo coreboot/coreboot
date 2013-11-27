@@ -49,7 +49,7 @@ struct exynos5_phy_control;
 #define APLL_CON1_VAL	(0x0020f300)
 
 /* MPLL_CON1	*/
-#define MPLL_CON1_VAL   (0x0020f300)
+#define MPLL_CON1_VAL	(0x0020f300)
 
 /* CPLL_CON1	*/
 #define CPLL_CON1_VAL	(0x0020f300)
@@ -89,11 +89,11 @@ struct exynos5_phy_control;
 
 /* CLK_SRC_CPU	*/
 /* 0 = MOUTAPLL,  1 = SCLKMPLL	*/
-#define MUX_HPM_SEL             1
-#define MUX_CPU_SEL             0
-#define MUX_APLL_SEL            1
+#define MUX_HPM_SEL		1
+#define MUX_CPU_SEL		0
+#define MUX_APLL_SEL		1
 
-#define CLK_SRC_CPU_VAL		((MUX_HPM_SEL << 20)    \
+#define CLK_SRC_CPU_VAL		((MUX_HPM_SEL << 20)	 \
 				| (MUX_CPU_SEL << 16)  \
 				| (MUX_APLL_SEL))
 
@@ -104,47 +104,47 @@ struct exynos5_phy_control;
 #define DMC_MEMCONTROL_TP_DISABLE	(0 << 4)
 #define DMC_MEMCONTROL_DSREF_DISABLE	(0 << 5)
 #define DMC_MEMCONTROL_DSREF_ENABLE	(1 << 5)
-#define DMC_MEMCONTROL_ADD_LAT_PALL_CYCLE(x)    (x << 6)
+#define DMC_MEMCONTROL_ADD_LAT_PALL_CYCLE(x)	(x << 6)
 
 #define DMC_MEMCONTROL_MEM_TYPE_LPDDR3  (7 << 8)
-#define DMC_MEMCONTROL_MEM_TYPE_DDR3    (6 << 8)
+#define DMC_MEMCONTROL_MEM_TYPE_DDR3	(6 << 8)
 #define DMC_MEMCONTROL_MEM_TYPE_LPDDR2  (5 << 8)
 
 #define DMC_MEMCONTROL_MEM_WIDTH_32BIT  (2 << 12)
 
-#define DMC_MEMCONTROL_NUM_CHIP_1       (0 << 16)
-#define DMC_MEMCONTROL_NUM_CHIP_2       (1 << 16)
+#define DMC_MEMCONTROL_NUM_CHIP_1	(0 << 16)
+#define DMC_MEMCONTROL_NUM_CHIP_2	(1 << 16)
 
-#define DMC_MEMCONTROL_BL_8             (3 << 20)
-#define DMC_MEMCONTROL_BL_4             (2 << 20)
+#define DMC_MEMCONTROL_BL_8		(3 << 20)
+#define DMC_MEMCONTROL_BL_4		(2 << 20)
 
-#define DMC_MEMCONTROL_PZQ_DISABLE      (0 << 24)
+#define DMC_MEMCONTROL_PZQ_DISABLE	(0 << 24)
 
-#define DMC_MEMCONTROL_MRR_BYTE_7_0     (0 << 25)
-#define DMC_MEMCONTROL_MRR_BYTE_15_8    (1 << 25)
-#define DMC_MEMCONTROL_MRR_BYTE_23_16   (2 << 25)
-#define DMC_MEMCONTROL_MRR_BYTE_31_24   (3 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_7_0	(0 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_15_8	(1 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_23_16	(2 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_31_24	(3 << 25)
 
 /* MEMCONFIG0 register bit fields */
-#define DMC_MEMCONFIGx_CHIP_MAP_INTERLEAVED     (1 << 12)
+#define DMC_MEMCONFIGx_CHIP_MAP_INTERLEAVED	(1 << 12)
 #define DMC_MEMCONFIG_CHIP_MAP_SPLIT		(2 << 12)
-#define DMC_MEMCONFIGx_CHIP_COL_10              (3 << 8)
-#define DMC_MEMCONFIGx_CHIP_ROW_14              (2 << 4)
-#define DMC_MEMCONFIGx_CHIP_ROW_15              (3 << 4)
-#define DMC_MEMCONFIGx_CHIP_BANK_8              (3 << 0)
+#define DMC_MEMCONFIGx_CHIP_COL_10		(3 << 8)
+#define DMC_MEMCONFIGx_CHIP_ROW_14		(2 << 4)
+#define DMC_MEMCONFIGx_CHIP_ROW_15		(3 << 4)
+#define DMC_MEMCONFIGx_CHIP_BANK_8		(3 << 0)
 
-#define DMC_MEMBASECONFIGx_CHIP_BASE(x)         (x << 16)
-#define DMC_MEMBASECONFIGx_CHIP_MASK(x)         (x << 0)
-#define DMC_MEMBASECONFIG_VAL(x)        (       \
-	DMC_MEMBASECONFIGx_CHIP_BASE(x) |       \
-	DMC_MEMBASECONFIGx_CHIP_MASK(0x780)     \
+#define DMC_MEMBASECONFIGx_CHIP_BASE(x)		(x << 16)
+#define DMC_MEMBASECONFIGx_CHIP_MASK(x)		(x << 0)
+#define DMC_MEMBASECONFIG_VAL(x)	(	\
+	DMC_MEMBASECONFIGx_CHIP_BASE(x) |	 \
+	DMC_MEMBASECONFIGx_CHIP_MASK(0x780)	 \
 )
 
 #define DMC_MEMBASECONFIG0_VAL  DMC_MEMBASECONFIG_VAL(0x40)
 #define DMC_MEMBASECONFIG1_VAL  DMC_MEMBASECONFIG_VAL(0x80)
 
-#define DMC_PRECHCONFIG_VAL             0xFF000000
-#define DMC_PWRDNCONFIG_VAL             0xFFFF00FF
+#define DMC_PRECHCONFIG_VAL		0xFF000000
+#define DMC_PWRDNCONFIG_VAL		0xFFFF00FF
 
 #define DMC_CONCONTROL_RESET_VAL	0x0FFF0000
 #define DFI_INIT_START		(1 << 28)
@@ -171,46 +171,46 @@ struct exynos5_phy_control;
 #define DMC_CONCONTROL_DFI_INIT_START_DISABLE	(0 << 28)
 
 /* CLK_FSYS */
-#define CLK_SRC_FSYS0_VAL              0x33033300
-#define CLK_DIV_FSYS0_VAL	       0x0
-#define CLK_DIV_FSYS1_VAL	       0x04f13c4f
-#define CLK_DIV_FSYS2_VAL	       0x041d0000
+#define CLK_SRC_FSYS0_VAL	       0x33033300
+#define CLK_DIV_FSYS0_VAL		 0x0
+#define CLK_DIV_FSYS1_VAL		 0x04f13c4f
+#define CLK_DIV_FSYS2_VAL		 0x041d0000
 
 /* CLK_DIV_CPU1	*/
-#define HPM_RATIO               0x2
-#define COPY_RATIO              0x0
+#define HPM_RATIO		0x2
+#define COPY_RATIO		0x0
 
 /* CLK_DIV_CPU1 = 0x00000003 */
-#define CLK_DIV_CPU1_VAL        ((HPM_RATIO << 4)		\
+#define CLK_DIV_CPU1_VAL	((HPM_RATIO << 4)		\
 				| (COPY_RATIO))
 
 /* CLK_SRC_CORE0 */
-#define CLK_SRC_CORE0_VAL       0x00000000
+#define CLK_SRC_CORE0_VAL	0x00000000
 
 /* CLK_SRC_CORE1 */
-#define CLK_SRC_CORE1_VAL       0x100
+#define CLK_SRC_CORE1_VAL	0x100
 
 /* CLK_DIV_CORE0 */
-#define CLK_DIV_CORE0_VAL       0x00120000
+#define CLK_DIV_CORE0_VAL	0x00120000
 
 /* CLK_DIV_CORE1 */
-#define CLK_DIV_CORE1_VAL       0x07070700
+#define CLK_DIV_CORE1_VAL	0x07070700
 
 /* CLK_DIV_SYSRGT */
-#define CLK_DIV_SYSRGT_VAL      0x00000111
+#define CLK_DIV_SYSRGT_VAL	0x00000111
 
 /* CLK_DIV_ACP */
-#define CLK_DIV_ACP_VAL         0x12
+#define CLK_DIV_ACP_VAL		0x12
 
 /* CLK_DIV_SYSLFT */
-#define CLK_DIV_SYSLFT_VAL      0x00000311
+#define CLK_DIV_SYSLFT_VAL	0x00000311
 
 /* CLK_SRC_CDREX */
-#define CLK_SRC_CDREX_VAL       0x00000001
+#define CLK_SRC_CDREX_VAL	0x00000001
 #define MUX_MCLK_CDR_MSPLL	(1 << 4)
-#define MUX_BPLL_SEL_FOUTBPLL   (1 << 0)
-#define BPLL_SEL_MASK   0x7
-#define FOUTBPLL        2
+#define MUX_BPLL_SEL_FOUTBPLL	(1 << 0)
+#define BPLL_SEL_MASK	0x7
+#define FOUTBPLL	2
 
 /* CLK_DIV_CDREX */
 #define CLK_DIV_CDREX0_VAL	0x30010100
@@ -282,19 +282,19 @@ struct exynos5_phy_control;
 #define TOP2_VAL		0x0110000
 
 /* CLK_SRC_LEX */
-#define CLK_SRC_LEX_VAL         0x0
+#define CLK_SRC_LEX_VAL		0x0
 
 /* CLK_DIV_LEX */
-#define CLK_DIV_LEX_VAL         0x10
+#define CLK_DIV_LEX_VAL		0x10
 
 /* CLK_DIV_R0X */
-#define CLK_DIV_R0X_VAL         0x10
+#define CLK_DIV_R0X_VAL		0x10
 
 /* CLK_DIV_L0X */
-#define CLK_DIV_R1X_VAL         0x10
+#define CLK_DIV_R1X_VAL		0x10
 
 /* CLK_DIV_ISP2 */
-#define CLK_DIV_ISP2_VAL        0x1
+#define CLK_DIV_ISP2_VAL	0x1
 
 /* CLK_SRC_KFC */
 #define SRC_KFC_HPM_SEL		(1 << 15)
@@ -421,19 +421,19 @@ struct exynos5_phy_control;
 #define MMC3_PRE_RATIO_OFFSET	24
 
 /* CLK_SRC_LEX */
-#define CLK_SRC_LEX_VAL         0x0
+#define CLK_SRC_LEX_VAL		0x0
 
 /* CLK_DIV_LEX */
-#define CLK_DIV_LEX_VAL         0x10
+#define CLK_DIV_LEX_VAL		0x10
 
 /* CLK_DIV_R0X */
-#define CLK_DIV_R0X_VAL         0x10
+#define CLK_DIV_R0X_VAL		0x10
 
 /* CLK_DIV_L0X */
-#define CLK_DIV_R1X_VAL         0x10
+#define CLK_DIV_R1X_VAL		0x10
 
 /* CLK_DIV_ISP2 */
-#define CLK_DIV_ISP2_VAL        0x1
+#define CLK_DIV_ISP2_VAL	0x1
 
 /* CLK_SRC_DISP1_0 */
 #define CLK_SRC_DISP1_0_VAL	0x10666600

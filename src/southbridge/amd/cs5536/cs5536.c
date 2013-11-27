@@ -120,23 +120,23 @@ static void pmChipsetInit(void)
 	val = 0x0E00;		/*  1ms */
 	outl(val, port);
 
-	/*      PM_WKXD */
-	/*      Make sure bits[3:0]=0000b to clear the */
-	/*      saved Sx state */
+	/*	 PM_WKXD */
+	/*	 Make sure bits[3:0]=0000b to clear the */
+	/*	 saved Sx state */
 	port = (PMS_IO_BASE + 0x034);
 	val = 0x0A0;		/*  5ms */
 	outl(val, port);
 
-	/*      PM_WKD */
+	/*	 PM_WKD */
 	port = (PMS_IO_BASE + 0x030);
 	outl(val, port);
 
-	/*      PM_SED */
+	/*	 PM_SED */
 	port = (PMS_IO_BASE + 0x014);
 	val = 0x04601;		/*  5ms, # of 3.57954MHz clock edges */
 	outl(val, port);
 
-	/*      PM_SIDD */
+	/*	 PM_SIDD */
 	port = (PMS_IO_BASE + 0x020);
 	val = 0x08C02;		/*  10ms, # of 3.57954MHz clock edges */
 	outl(val, port);
@@ -174,14 +174,14 @@ static void ChipsetFlashSetup(void)
 				msr.hi &= ~0x00000004;
 			msr.hi |= FlashInitTable[i].fMask;
 			printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n", FlashPort[i],
-				     msr.hi, msr.lo);
+					 msr.hi, msr.lo);
 			wrmsr(FlashPort[i], msr);
 
 			/* now write-enable the device */
 			msr = rdmsr(MDD_NORF_CNTRL);
 			msr.lo |= (1 << i);
 			printk(BIOS_DEBUG, "MSR(0x%08X, %08X_%08X)\n", MDD_NORF_CNTRL,
-				     msr.hi, msr.lo);
+					 msr.hi, msr.lo);
 			wrmsr(MDD_NORF_CNTRL, msr);
 
 			/* update the number enabled */
@@ -308,7 +308,7 @@ static void uarts_init(struct southbridge_amd_cs5536_config *sb)
 		outl(GPIOL_8_SET, gpio_addr + GPIOL_OUT_AUX1_SELECT);
 
 		/* GPIO9 - UART1_RX */
-		/* Set: Input Enable   (0x20) */
+		/* Set: Input Enable	 (0x20) */
 		outl(GPIOL_9_SET, gpio_addr + GPIOL_INPUT_ENABLE);
 		/* Set: INAUX1 Select (0x34) */
 		outl(GPIOL_9_SET, gpio_addr + GPIOL_IN_AUX1_SELECT);
@@ -471,12 +471,12 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		/* Overcurrent configuration */
 		if (sb->enable_USBP4_overcurrent) {
 			write32(bar + UOCCAP, read32(bar + UOCCAP)
-			       | sb->enable_USBP4_overcurrent);
+				  | sb->enable_USBP4_overcurrent);
 		}
 	}
 
 	/* PBz#6466: If the UOC(OTG) device, port 4, is configured as a device,
-	 *      then perform the following sequence:
+	 *	 then perform the following sequence:
 	 *
 	 * - set SD bit in DEVCTRL udc register
 	 * - set PADEN (former OTGPADEN) bit in uoc register
@@ -487,7 +487,7 @@ static void enable_USB_port4(struct southbridge_amd_cs5536_config *sb)
 		if (dev) {
 			bar = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 			write32(bar + UDCDEVCTL,
-			       read32(bar + UDCDEVCTL) | UDC_SD_SET);
+				  read32(bar + UDCDEVCTL) | UDC_SD_SET);
 
 		}
 
@@ -561,14 +561,14 @@ void chipsetinit(void)
 	outl(GPIOL_2_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
 	outl(GPIOL_2_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);
 
-	/*      Allow IO read and writes during a ATA DMA operation. */
-	/*       This could be done in the HD rom but do it here for easier debugging. */
+	/*	 Allow IO read and writes during a ATA DMA operation. */
+	/*	  This could be done in the HD rom but do it here for easier debugging. */
 	msrnum = ATA_SB_GLD_MSR_ERR;
 	msr = rdmsr(msrnum);
 	msr.lo &= ~0x100;
 	wrmsr(msrnum, msr);
 
-	/*      Enable Post Primary IDE. */
+	/*	 Enable Post Primary IDE. */
 	msrnum = GLPCI_SB_CTRL;
 	msr = rdmsr(msrnum);
 	msr.lo |= GLPCI_CRTL_PPIDE_SET;
@@ -581,14 +581,14 @@ void chipsetinit(void)
 		wrmsr(csi->msrnum, msr);	// MSR - see table above
 	}
 
-	/*      Flash BAR size Setup */
+	/*	 Flash BAR size Setup */
 	printk(BIOS_INFO, "%sDoing ChipsetFlashSetup()\n",
 		   sb->enable_ide_nand_flash == 1 ? "" : "Not ");
 	if (sb->enable_ide_nand_flash == 1)
 		ChipsetFlashSetup();
 
 	/* */
-	/*      Set up Hardware Clock Gating */
+	/*	 Set up Hardware Clock Gating */
 	/* */
 	{
 		csi = CS5536_CLOCK_GATING_TABLE;
@@ -639,7 +639,7 @@ static void southbridge_init(struct device *dev)
 	/* disable unwanted virtual PCI devices */
 	for (i = 0; (i < MAX_UNWANTED_VPCI) && (0 != sb->unwanted_vpci[i]); i++) {
 		printk(BIOS_DEBUG, "Disabling VPCI device: 0x%08X\n",
-			     sb->unwanted_vpci[i]);
+				sb->unwanted_vpci[i]);
 		outl(sb->unwanted_vpci[i] + 0x7C, 0xCF8);
 		outl(0xDEADBEEF, 0xCFC);
 	}
@@ -691,7 +691,7 @@ static struct device_operations southbridge_ops = {
 	.set_resources = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init = southbridge_init,
-//      .enable                   = southbridge_enable,
+//	.enable			  = southbridge_enable,
 	.scan_bus = scan_static_bus,
 	.ops_smbus_bus = &lops_smbus_bus,
 };

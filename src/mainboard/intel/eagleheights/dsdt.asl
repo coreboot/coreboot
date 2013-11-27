@@ -269,8 +269,8 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 					Name (CRS, ResourceTemplate ()
 					{
 						Memory32Fixed (ReadOnly,
-							0xE0000000,         // Address Base
-							0x10000000,         // Address Length
+							0xE0000000,	   // Address Base
+							0x10000000,	   // Address Length
 							_Y10)
 					})
 					Method (_CRS, 0, NotSerialized)
@@ -479,10 +479,10 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 						Name (BFU1, ResourceTemplate ()
 						{
 							IO (Decode16,
-								0x03F8,             // Range Minimum
-								0x03F8,             // Range Maximum
-								0x08,               // Alignment
-								0x08,               // Length
+								0x03F8,		    // Range Minimum
+								0x03F8,		    // Range Maximum
+								0x08,		    // Alignment
+								0x08,		    // Length
 								_Y03)
 							IRQNoFlags (_Y04)
 								{5}
@@ -510,10 +510,10 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 						StartDependentFnNoPri ()
 						{
 							IO (Decode16,
-								0x03F8,             // Range Minimum
-								0x03F8,             // Range Maximum
-								0x08,               // Alignment
-								0x08,               // Length
+								0x03F8,		    // Range Minimum
+								0x03F8,		    // Range Maximum
+								0x08,		    // Alignment
+								0x08,		    // Length
 								)
 							IRQNoFlags ()
 								{5}
@@ -521,10 +521,10 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 						StartDependentFnNoPri ()
 						{
 							IO (Decode16,
-								0x02F8,             // Range Minimum
-								0x02F8,             // Range Maximum
-								0x08,               // Alignment
-								0x08,               // Length
+								0x02F8,		    // Range Minimum
+								0x02F8,		    // Range Maximum
+								0x08,		    // Alignment
+								0x08,		    // Length
 								)
 							IRQNoFlags ()
 								{9}
@@ -591,10 +591,10 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 						Name (BFU1, ResourceTemplate ()
 						{
 							IO (Decode16,
-								0x03F8,             // Range Minimum
-								0x03F8,             // Range Maximum
-								0x08,               // Alignment
-								0x08,               // Length
+								0x03F8,		    // Range Minimum
+								0x03F8,		    // Range Maximum
+								0x08,		    // Alignment
+								0x08,		    // Length
 								_Y05)
 							IRQNoFlags (_Y06)
 								{9}
@@ -622,10 +622,10 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 						StartDependentFnNoPri ()
 						{
 							IO (Decode16,
-								0x03F8,             // Range Minimum
-								0x03F8,             // Range Maximum
-								0x08,               // Alignment
-								0x08,               // Length
+								0x03F8,		    // Range Minimum
+								0x03F8,		    // Range Maximum
+								0x08,		    // Alignment
+								0x08,		    // Length
 								)
 							IRQNoFlags ()
 								{5}
@@ -633,10 +633,10 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 						StartDependentFnNoPri ()
 						{
 							IO (Decode16,
-								0x02F8,             // Range Minimum
-								0x02F8,             // Range Maximum
-								0x08,               // Alignment
-								0x08,               // Length
+								0x02F8,		    // Range Minimum
+								0x02F8,		    // Range Maximum
+								0x08,		    // Alignment
+								0x08,		    // Length
 								)
 							IRQNoFlags ()
 								{9}
@@ -672,15 +672,15 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 	OperationRegion (_SB.PCI0.ISA.PIX0, PCI_Config, 0x60, 0x0C)
 	Field (\_SB.PCI0.ISA.PIX0, ByteAcc, NoLock, Preserve)
 	{
-		PIRA,   8,
-		PIRB,   8,
-		PIRC,   8,
-		PIRD,   8,
+		PIRA,	  8,
+		PIRB,	  8,
+		PIRC,	  8,
+		PIRD,	  8,
 				Offset (0x08),
-		PIRE,   8,
-		PIRF,   8,
-		PIRG,   8,
-		PIRH,   8
+		PIRE,	  8,
+		PIRF,	  8,
+		PIRG,	  8,
+		PIRH,	  8
 	}
 
 	Scope (_SB)

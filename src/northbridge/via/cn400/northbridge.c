@@ -44,10 +44,10 @@ static void memctrl_init(device_t dev)
 	printk(BIOS_SPEW, "Entering cn400 memctrl_init.\n");
 	/* vlink mirror */
 	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
-				    PCI_DEVICE_ID_VIA_CN400_VLINK, 0);
+					PCI_DEVICE_ID_VIA_CN400_VLINK, 0);
 
 	/* Setup Low Memory Top */
-	/* 0x47 == HA(32:25)    */
+	/* 0x47 == HA(32:25)	 */
 	/* 0x84/85 == HA(31:20) << 4 | DRAM Granularity */
 	ranks = pci_read_config8(dev, 0x47);
 	reg16 = (((u16)(ranks - 1) << 9) & 0xFFF0) | 0x01F0;
@@ -128,14 +128,14 @@ static void memctrl_init(device_t dev)
 
 static const struct device_operations memctrl_operations = {
 	.read_resources = cn400_noop,
-	.set_resources    = cn400_noop,
+	.set_resources	   = cn400_noop,
 	.enable_resources = cn400_noop,
-	.init           = memctrl_init,
-	.ops_pci          = 0,
+	.init		 = memctrl_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver memctrl_driver __pci_driver = {
-	.ops    = &memctrl_operations,
+	.ops	 = &memctrl_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN400_MEMCTRL,
 };
@@ -212,7 +212,7 @@ static void cn400_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, 640);	/* First 640k */
 		/* Leave a hole for VGA, 0xa0000 - 0xc0000 */
 		ram_resource(dev, idx++, 768,
-			     (tolmk - 768 - CONFIG_VIDEO_MB * 1024));
+				(tolmk - 768 - CONFIG_VIDEO_MB * 1024));
 	}
 	assign_resources(dev->link_list);
 
@@ -229,11 +229,11 @@ static unsigned int cn400_domain_scan_bus(device_t dev, unsigned int max)
 
 static struct device_operations pci_domain_ops = {
 	.read_resources   = cn400_domain_read_resources,
-	.set_resources    = cn400_domain_set_resources,
+	.set_resources	   = cn400_domain_set_resources,
 	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = cn400_domain_scan_bus,
-	.ops_pci_bus      = pci_bus_default_ops,
+	.init		   = NULL,
+	.scan_bus	   = cn400_domain_scan_bus,
+	.ops_pci_bus	   = pci_bus_default_ops,
 };
 
 static void cpu_bus_init(device_t dev)
@@ -247,10 +247,10 @@ static void cpu_bus_noop(device_t dev)
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = 0,
 };
 
 static void enable_dev(struct device *dev)

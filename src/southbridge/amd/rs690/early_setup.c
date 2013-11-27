@@ -102,7 +102,7 @@ static void set_nbcfg_enable_bits(device_t nb_dev, u32 reg_pos, u32 mask,
 }
 
 static void set_nbcfg_enable_bits_8(device_t nb_dev, u32 reg_pos, u8 mask,
-				    u8 val)
+					u8 val)
 {
 	u8 reg_old, reg;
 	reg = reg_old = pci_read_config8(nb_dev, reg_pos);
@@ -242,7 +242,7 @@ static void k8_optimization(void)
 	pci_write_config32(k8_f0, 0x90, 0x01700178);	/* CIM NPT_Optimization */
 	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 28, 0 << 28);
 	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 26 | 1 << 27,
-			      1 << 26 | 1 << 27);
+				 1 << 26 | 1 << 27);
 	set_nbcfg_enable_bits(k8_f0, 0x68, 1 << 11, 1 << 11);
 	set_nbcfg_enable_bits(k8_f0, 0x84, 1 << 11 | 1 << 13 | 1 << 15, 1 << 11 | 1 << 13 | 1 << 15);	/* TODO */
 
@@ -349,13 +349,13 @@ static void rs690_por_misc_index_init(device_t nb_dev)
 	 *   HIDE_NB_AGP_CAP  ([0], default=1)HIDE
 	 *   HIDE_P2P_AGP_CAP ([1], default=1)HIDE
 	 *   HIDE_NB_GART_BAR ([2], default=1)HIDE
-	 *   AGPMODE30        ([4], default=0)DISABLE
+	 *   AGPMODE30	       ([4], default=0)DISABLE
 	 *   AGP30ENCHANCED   ([5], default=0)DISABLE
 	 *   HIDE_AGP_CAP     ([8], default=1)ENABLE */
 	set_nbmisc_enable_bits(nb_dev, 0x00, ~0xFFFF0000, 0x00000506);	/* set bit 10 for MSI */
 
 	/* NBMISCIND:0x6A[16]= 1 SB link can get a full swing
-	 *      set_nbmisc_enable_bits(nb_dev, 0x6A, 0ffffffffh, 000010000);
+	 *	 set_nbmisc_enable_bits(nb_dev, 0x6A, 0ffffffffh, 000010000);
 	 * NBMISCIND:0x6A[17]=1 Set CMGOOD_OVERRIDE. */
 	set_nbmisc_enable_bits(nb_dev, 0x6A, ~0xffffffff, 0x00020000);
 
@@ -413,7 +413,7 @@ static void rs690_por_htiu_index_init(device_t nb_dev)
 	* Disables upstream system-management delay */
 	set_htiu_enable_bits(nb_dev, 0x07, ~0xFFFFFFF9, 0x001);
 
-	/* HTIUNBIND 0x16 [1] = 0x1     Enable crc decoding fix */
+	/* HTIUNBIND 0x16 [1] = 0x1	 Enable crc decoding fix */
 	set_htiu_enable_bits(nb_dev, 0x16, ~0xFFFFFFFF, 0x2);
 }
 

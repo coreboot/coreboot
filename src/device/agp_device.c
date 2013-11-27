@@ -65,11 +65,11 @@ static struct pci_operations agp_bus_ops_pci = {
 
 struct device_operations default_agp_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = agp_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &agp_bus_ops_pci,
+	.init		   = 0,
+	.scan_bus	   = agp_scan_bridge,
+	.enable	   = 0,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = &agp_bus_ops_pci,
 };

@@ -43,10 +43,10 @@
 
 static const struct irq_routing_table intel_irq_routing_table = {
 	PIRQ_SIGNATURE,  /* u32 signature */
-	PIRQ_VERSION,    /* u16 version   */
+	PIRQ_VERSION,	  /* u16 version   */
 	32+16*CONFIG_IRQ_SLOT_COUNT,	 /* There can be total CONFIG_IRQ_SLOT_COUNT devices on the bus */
 	0x00,		 /* Where the interrupt router lies (bus) */
-	(0x0f<<3)|0x0,   /* Where the interrupt router lies (dev) */
+	(0x0f<<3)|0x0,	  /* Where the interrupt router lies (dev) */
 	0,		 /* IRQs devoted exclusively to PCI usage */
 	0x100b,		 /* Vendor */
 	0x2b,		 /* Device */
@@ -56,7 +56,7 @@ static const struct irq_routing_table intel_irq_routing_table = {
 			    value that would give 0 after the sum of all
 			    bytes for this structure (including checksum) */
 	{
-		/* bus,     dev|fn,   {link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
+		/* bus,     dev|fn,	{link, bitmap}, {link, bitmap}, {link, bitmap}, {link, bitmap},  slot, rfu */
 		{0x00,(0x01<<3)|0x0, {{0x01, 0x0400}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0},
 		{0x00,(0x0f<<3)|0x0, {{0x01, 0x0400}, {0x02, 0x0800}, {0x03, 0x0400}, {0x04, 0x00800}}, 0x0, 0x0},
 		{0x00,(0x13<<3)|0x0, {{0x01, 0x0400}, {0x00, 0x0000}, {0x00, 0x0000}, {0x00, 0x00000}}, 0x0, 0x0},

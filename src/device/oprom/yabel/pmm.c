@@ -114,8 +114,8 @@ void pmm_handleInt()
 			/* request to allocate in  conventional memory */
 			if (curr_pmm_allocation_index >= MAX_PMM_AREAS) {
 				printf
-				    ("%s: pmmAllocate: Maximum Number of allocatable areas reached (%d), cannot allocate more memory!\n",
-				     __func__, MAX_PMM_AREAS);
+					("%s: pmmAllocate: Maximum Number of allocatable areas reached (%d), cannot allocate more memory!\n",
+					 __func__, MAX_PMM_AREAS);
 				rval = 0;
 				goto exit;
 			}
@@ -127,10 +127,10 @@ void pmm_handleInt()
 				/* we have already allocated... get the new next_offset
 				 * from the previous pmm_allocation_t */
 				next_offset =
-				    pmm_allocation_array
-				    [curr_pmm_allocation_index - 1].offset +
-				    pmm_allocation_array
-				    [curr_pmm_allocation_index - 1].length;
+					pmm_allocation_array
+					[curr_pmm_allocation_index - 1].offset +
+					pmm_allocation_array
+					[curr_pmm_allocation_index - 1].length;
 			}
 			DEBUG_PRINTF_PMM("%s: next_offset: 0x%x\n",
 					 __func__, next_offset);
@@ -168,8 +168,8 @@ void pmm_handleInt()
 			if ((next_offset + length) > 0xFFFF) {
 				rval = 0;
 				printf
-				    ("%s: pmmAllocate: Not enough memory available for allocation!\n",
-				     __func__);
+					("%s: pmmAllocate: Not enough memory available for allocation!\n",
+					 __func__);
 				goto exit;
 			}
 			curr_pmm_allocation_index++;
@@ -181,12 +181,12 @@ void pmm_handleInt()
 			rval = ((u32) (PMM_CONV_SEGMENT << 16)) | next_offset;
 			DEBUG_PRINTF_PMM
 			    ("%s: pmmAllocate: allocated memory at %x\n",
-			     __func__, rval);
+				__func__, rval);
 		} else {
 			rval = 0;
 			printf
 			    ("%s: pmmAllocate: allocation in extended memory not supported!\n",
-			     __func__);
+				__func__);
 		}
 		goto exit;
 	case 1:
@@ -198,18 +198,18 @@ void pmm_handleInt()
 		for (i = 0; i < curr_pmm_allocation_index; i++) {
 			if (pmm_allocation_array[i].handle == handle) {
 				DEBUG_PRINTF_PMM
-				    ("%s: pmmFind: found allocated memory at %x\n",
-				     __func__, rval);
+					("%s: pmmFind: found allocated memory at %x\n",
+					 __func__, rval);
 				/* return the 32bit "physical" address, i.e. combination of segment and offset */
 				rval =
-				    ((u32) (PMM_CONV_SEGMENT << 16)) |
-				    pmm_allocation_array[i].offset;
+					((u32) (PMM_CONV_SEGMENT << 16)) |
+					pmm_allocation_array[i].offset;
 			}
 		}
 		if (rval == 0) {
 			DEBUG_PRINTF_PMM
 			    ("%s: pmmFind: handle (%x) not found!\n",
-			     __func__, handle);
+				__func__, handle);
 		}
 		goto exit;
 	case 2:
@@ -233,36 +233,36 @@ void pmm_handleInt()
 				/* we found the requested buffer, rval = 0 */
 				rval = 0;
 				DEBUG_PRINTF_PMM
-				    ("%s: pmmDeallocate: found allocated memory at index: %d\n",
-				     __func__, i);
+					("%s: pmmDeallocate: found allocated memory at index: %d\n",
+					 __func__, i);
 				/* copy the remaining elements in pmm_allocation_array one position up */
 				j = i;
 				for (; j < curr_pmm_allocation_index; j++) {
 					pmm_allocation_array[j] =
-					    pmm_allocation_array[j + 1];
+						 pmm_allocation_array[j + 1];
 				}
 				/* move curr_pmm_allocation_index one up, too */
 				curr_pmm_allocation_index--;
 				/* finally clean last element */
 				pmm_allocation_array[curr_pmm_allocation_index].
-				    handle = 0;
+					handle = 0;
 				pmm_allocation_array[curr_pmm_allocation_index].
-				    offset = 0;
+					offset = 0;
 				pmm_allocation_array[curr_pmm_allocation_index].
-				    length = 0;
+					length = 0;
 				break;
 			}
 		}
 		if (rval != 0) {
 			DEBUG_PRINTF_PMM
 			    ("%s: pmmDeallocate: offset (%x) not found, cannot deallocate!\n",
-			     __func__, buffer);
+				__func__, buffer);
 		}
 		goto exit;
 	default:
 		/* invalid/unimplemented function */
 		printf("%s: invalid PMM function (0x%04x) called!\n",
-		       __func__, function);
+			 __func__, function);
 		/* PMM spec says if function is invalid, return 0xFFFFFFFF */
 		rval = 0xFFFFFFFF;
 		goto exit;
@@ -278,9 +278,9 @@ exit:
 		for (i = 0; i < MAX_PMM_AREAS; i++) {
 			DEBUG_PRINTF_PMM
 			    ("%d:\n\thandle: %x\n\toffset: %x\n\tlength: %x\n",
-			     i, pmm_allocation_array[i].handle,
-			     pmm_allocation_array[i].offset,
-			     pmm_allocation_array[i].length);
+				i, pmm_allocation_array[i].handle,
+				pmm_allocation_array[i].offset,
+				pmm_allocation_array[i].length);
 		}
 	}
 	return;

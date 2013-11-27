@@ -37,7 +37,7 @@ config EHCI_DEBUG_OFFSET
 	default 0xa0
 
 config BOOTBLOCK_SOUTHBRIDGE_INIT
-        string
+	string
 	default "southbridge/intel/i82801gx/bootblock.c"
 
 config HPET_MIN_TICKS

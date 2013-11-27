@@ -123,7 +123,7 @@ void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime)
 	if (cpu >= CONFIG_MAX_CPUS) {
 		console_init();
 		printk(BIOS_CRIT,
-		       "Invalid CPU number assigned in SMM stub: %d\n", cpu);
+			 "Invalid CPU number assigned in SMM stub: %d\n", cpu);
 		return;
 	}
 

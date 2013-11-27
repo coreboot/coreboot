@@ -18,7 +18,7 @@
  */
 
 /*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
+ *			       M O D U L E S	U S E D
  *----------------------------------------------------------------------------------------
  */
 
@@ -41,38 +41,38 @@
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
 /*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
+ *		     D E F I N I T I O N S    A N D    M A C R O S
  *----------------------------------------------------------------------------------------
  */
 
 /* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable    = NULL;
+VOID *DmiTable	  = NULL;
 VOID *AcpiPstate  = NULL;
-VOID *AcpiSrat    = NULL;
-VOID *AcpiSlit    = NULL;
+VOID *AcpiSrat	  = NULL;
+VOID *AcpiSlit	  = NULL;
 
 VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib    = NULL;
+VOID *AcpiAlib	  = NULL;
 
 
 /*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
+ *		    T Y P E D E F S	A N D	  S T R U C T U  R E S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
+ *	     P R O T O T Y P E S     O F     L O C A L	   F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
+ *			    E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
+ *			    L O C A L	 F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
 extern VOID OemCustomizeInitEarly(IN  OUT AMD_EARLY_PARAMS *InitEarly);
@@ -83,12 +83,12 @@ extern VOID OemCustomizeInitPost(IN  AMD_POST_PARAMS *InitPost);
 BusRange: bus range identifier. Read-write. Reset: X. This specifies the number of buses in the
 MMIO configuration space range. The size of the MMIO configuration space range varies with this
 field as follows: the size is 1 Mbyte times the number of buses. This field is encoded as follows:
-Bits    Buses  Bits    Buses
-0h      1       5h      32
-1h      2       6h      64
-2h      4       7h      128
-3h      8       8h      256
-4h      16      Fh-9h   Reserved
+Bits	Buses  Bits    Buses
+0h	1	5h	32
+1h	2	6h	64
+2h	4	7h	128
+3h	8	8h	256
+4h	16	Fh-9h	Reserved
 */
 STATIC
 UINT8
@@ -97,7 +97,7 @@ GetEndBusNum (
 	     )
 {
 	UINT64  BusNum;
-	UINT8   Index;
+	UINT8	 Index;
 	for (Index = 1; Index <= 8; Index ++ ) {
 		BusNum = CONFIG_MMCONF_BUS_NUMBER >> Index;
 		if (BusNum == 1 ) {
@@ -109,16 +109,16 @@ GetEndBusNum (
 
 static UINT32 amdinitcpuio(VOID)
 {
-	AGESA_STATUS                  Status;
-	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
-	AMD_CONFIG_PARAMS             StdHeader;
-	UINT32                        TopMem;
-	UINT32                        NodeCnt;
-	UINT32                        Node;
-	UINT32                        SbLink;
-	UINT32                        Index;
+	AGESA_STATUS		       Status;
+	UINT64			       MsrReg;
+	UINT32			       PciData;
+	PCI_ADDR		       PciAddress;
+	AMD_CONFIG_PARAMS	       StdHeader;
+	UINT32			       TopMem;
+	UINT32			       NodeCnt;
+	UINT32			       Node;
+	UINT32			       SbLink;
+	UINT32			       Index;
 
 	/* get the number of coherent nodes in the system */
 	PciAddress.AddressValue = MAKE_SBDFO(0, 0, 0x18, 0, 0x60);
@@ -232,11 +232,11 @@ agesawrapper_amdinitmmio (
 		VOID
 		)
 {
-	AGESA_STATUS                  Status;
-	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
-	AMD_CONFIG_PARAMS             StdHeader;
+	AGESA_STATUS		       Status;
+	UINT64			       MsrReg;
+	UINT32			       PciData;
+	PCI_ADDR		       PciAddress;
+	AMD_CONFIG_PARAMS	       StdHeader;
 
 	/*
 	   Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
@@ -366,7 +366,7 @@ agesawrapper_amdinitearly (
  *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
- *    @retval         VOID
+ *    @retval	      VOID
  *
  **/
 /*---------------------------------------------------------------------------------------*/
@@ -377,7 +377,7 @@ VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 
 VOID
 OemCustomizeInitPost (
-		IN  AMD_POST_PARAMS     *InitPost
+		IN  AMD_POST_PARAMS	  *InitPost
 		)
 {
 	InitPost->MemConfig.UmaMode = UMA_AUTO;
@@ -391,8 +391,8 @@ agesawrapper_amdinitpost (
 		)
 {
 	AGESA_STATUS status;
-	UINT16                  i;
-	UINT32          *HeadPtr;
+	UINT16			 i;
+	UINT32		 *HeadPtr;
 	AMD_INTERFACE_PARAMS  AmdParamStruct;
 	BIOS_HEAP_MANAGER    *BiosManagerPtr;
 
@@ -528,9 +528,9 @@ agesawrapper_amdinitlate(VOID)
 	AMD_LATE_PARAMS		*AmdLateParamsPtr;
 
 	LibAmdMemFill(&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -560,8 +560,8 @@ agesawrapper_amdinitlate(VOID)
 	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
 
 	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
-		"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
-		"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
+		"   DmiTable:%p\n   AcpiPstate: %p\n	 AcpiSrat:%p\n	 AcpiSlit:%p\n"
+		"   Mce:%p\n	 Cmc:%p\n   Alib:%p\n",
 		 __func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
 		 AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
 

@@ -107,8 +107,8 @@ static u8 function_ram[] = {
 #define KBD_DATA	0x60
 #define KBD_SC		0x64
 
-#define   KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
-#define   KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
+#define	  KBD_IBF	(1 << 1) // 1: input buffer full (data ready for ec)
+#define	  KBD_OBF	(1 << 0) // 1: output buffer full (data ready for host)
 
 static int send_kbd_command(u8 command)
 {

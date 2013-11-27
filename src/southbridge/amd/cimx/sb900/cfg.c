@@ -32,7 +32,7 @@
 void sb900_cimx_config(AMDSBCFG *sb_config)
 {
 	if (!sb_config) {
-        printk(BIOS_INFO, "SB900 - Cfg.c - sb900_cimx_config - No sb_config.\n");
+	printk(BIOS_INFO, "SB900 - Cfg.c - sb900_cimx_config - No sb_config.\n");
 		return;
 	}
     printk(BIOS_INFO, "SB900 - Cfg.c - sb900_cimx_config - Start.\n");
@@ -261,7 +261,7 @@ void sb900_cimx_config(AMDSBCFG *sb_config)
 void SbPowerOnInit_Config(AMDSBCFG *sb_config)
 {
 	if (!sb_config) {
-        printk(BIOS_INFO, "SB900 - Cfg.c - SbPowerOnInit_Config - No sb_config.\n");
+	printk(BIOS_INFO, "SB900 - Cfg.c - SbPowerOnInit_Config - No sb_config.\n");
 		return;
 	}
     printk(BIOS_INFO, "SB900 - Cfg.c - SbPowerOnInit_Config - Start.\n");

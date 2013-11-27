@@ -105,7 +105,7 @@ static void pci_domain_set_resources(device_t dev)
 	pci_tolm = find_pci_tolm(dev->link_list);
 	printk(BIOS_DEBUG, "pci_tolm: 0x%x\n", pci_tolm);
 	printk(BIOS_SPEW, "Base of stolen memory: 0x%08x\n",
-	       pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c));
+		pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c));
 
 	tolud = sch_port_access_read(2, 8, 4);
 	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08llx\n", tolud);
@@ -220,9 +220,9 @@ static void mc_read_resources(device_t dev)
 			  IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 	get_pcie_bar((u32 *)&resource->base, (u32 *)&resource->size);
 	printk(BIOS_DEBUG,
-	       "Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
-	       (unsigned long)(resource->base),
-	       (unsigned long)(resource->base + resource->size));
+		"Adding PCIe enhanced config space BAR 0x%08lx-0x%08lx.\n",
+		(unsigned long)(resource->base),
+		(unsigned long)(resource->base + resource->size));
 }
 
 static void mc_set_resources(device_t dev)

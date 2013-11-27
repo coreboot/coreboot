@@ -257,7 +257,7 @@ void SetTrfc(DRAM_SYS_ATTR * DramAttr)
 			/*only DDR2 need to add byte 40 bit[7:4] */
 			Byte40 =
 			    (DramAttr->
-			     DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRFC2]);
+				DimmInfo[Socket].SPDDataBuf[SPD_SDRAM_TRFC2]);
 			/*if bit0 = 1, byte42(RFC)+256ns, SPD spec JEDEC standard No.21.c */
 			if (Byte40 & 0x01)
 				Tmp += (256 * 100);

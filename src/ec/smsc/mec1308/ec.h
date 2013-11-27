@@ -22,12 +22,12 @@
 #ifndef _EC_SMSC_MEC1308_EC_H
 #define _EC_SMSC_MEC1308_EC_H
 
-#define EC_TIMEOUT           0xfff
+#define EC_TIMEOUT	     0xfff
 #define EC_MAILBOX_COMMAND   0x82  // Send a command
-#define EC_MAILBOX_DATA      0x84  // Send data with a command
+#define EC_MAILBOX_DATA	     0x84  // Send data with a command
 #define EC_MAILBOX_DATA_H    0x85  // Send data with a command
-#define EC_RAM_READ          0x88  // Read from RAM
-#define EC_RAM_WRITE         0x89  // Write to RAM
+#define EC_RAM_READ	     0x88  // Read from RAM
+#define EC_RAM_WRITE	     0x89  // Write to RAM
 
 int send_ec_command(u8 command);
 int send_ec_command_data(u8 command, u8 data);

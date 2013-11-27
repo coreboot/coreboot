@@ -97,8 +97,8 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 	outb(UART_LCR_DLAB | CONFIG_TTYS0_LCS, base_port + UART_LCR);
 
 	/* Set Baud Rate Divisor. 12 ==> 9600 Baud */
-	outb(divisor & 0xFF,   base_port + UART_DLL);
-	outb((divisor >> 8) & 0xFF,    base_port + UART_DLM);
+	outb(divisor & 0xFF,	base_port + UART_DLL);
+	outb((divisor >> 8) & 0xFF,	base_port + UART_DLM);
 
 	/* Set to 3 for 8N1 */
 	outb(CONFIG_TTYS0_LCS, base_port + UART_LCR);

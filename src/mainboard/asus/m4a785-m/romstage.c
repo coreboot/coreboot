@@ -237,8 +237,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
  *	based on each device's unit count.
  *
  * Parameters:
- *	@param[in]  u8  node    = The node on which this chain is located
- *	@param[in]  u8  link    = The link on the host for this chain
+ *	@param[in]  u8  node	   = The node on which this chain is located
+ *	@param[in]  u8  link	   = The link on the host for this chain
  *	@param[out] u8** list   = supply a pointer to a list
  *	@param[out] BOOL result = true to use a manual list
  *				  false to initialize the link automatically
@@ -258,7 +258,7 @@ BOOL AMD_CB_ManualBUIDSwapList (u8 node, u8 link, const u8 **List)
 #else
 	static const u8 swaplist[] = {0, 1, 0xFF, 0, 0xFF};
 	/* If the BUID was adjusted in early_ht we need to do the manual override */
-	if ((node == 0) && (link == 0)) {       /* BSP SB link */
+	if ((node == 0) && (link == 0)) {	 /* BSP SB link */
 		*List = swaplist;
 		return 1;
 	}

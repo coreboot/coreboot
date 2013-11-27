@@ -37,7 +37,7 @@
  *	address and offset. Following bytes auto increment.
  */
 static UINT8 readSmbusByte(UINT16 iobase, UINT8 address, char *buffer,
-						   int offset, int initial_offset)
+							 int offset, int initial_offset)
 {
 	unsigned int status = -1;
 	UINT64 time_limit;

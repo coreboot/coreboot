@@ -131,7 +131,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc_pci(mc, 7, (9 << 2) | 2, VT8237R_APIC_ID, 0x11);
 	smp_write_intsrc_pci(mc, 7, (9 << 2) | 3, VT8237R_APIC_ID, 0x12);
 
-	/* Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
+	/* Local Ints:	Type	Polarity	 Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	mptable_lintsrc(mc, 0);
 	/* There is no extension information... */
 

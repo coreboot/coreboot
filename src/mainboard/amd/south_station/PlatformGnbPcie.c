@@ -38,7 +38,7 @@
  *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
- *    @retval         VOID
+ *    @retval	      VOID
  *
  **/
 /*---------------------------------------------------------------------------------------*/
@@ -47,68 +47,68 @@ OemCustomizeInitEarly (
   IN  OUT AMD_EARLY_PARAMS    *InitEarly
   )
 {
-  AGESA_STATUS         Status;
-  VOID                 *BrazosPcieComplexListPtr;
-  VOID                 *BrazosPciePortPtr;
-  VOID                 *BrazosPcieDdiPtr;
+  AGESA_STATUS	       Status;
+  VOID		       *BrazosPcieComplexListPtr;
+  VOID		       *BrazosPciePortPtr;
+  VOID		       *BrazosPcieDdiPtr;
 
   ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
 PCIe_PORT_DESCRIPTOR PortList [] = {
-        // Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
-        {
-          0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
-          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
-          PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT4_PORT_PRESENT, GNB_GPP_PORT4_CHANNEL_TYPE, 4, GNB_GPP_PORT4_HOTPLUG_SUPPORT, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_LINK_ASPM, 4)
-        },
+	// Initialize Port descriptor (PCIe port, Lanes 4, PCI Device Number 4, ...)
+	{
+	  0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+	  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 4, 4),
+	  PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT4_PORT_PRESENT, GNB_GPP_PORT4_CHANNEL_TYPE, 4, GNB_GPP_PORT4_HOTPLUG_SUPPORT, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_SPEED_MODE, GNB_GPP_PORT4_LINK_ASPM, 4)
+	},
 	#if 1
-        // Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
-        {
-          0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
-          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
-          PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT5_PORT_PRESENT, GNB_GPP_PORT5_CHANNEL_TYPE, 5, GNB_GPP_PORT5_HOTPLUG_SUPPORT, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_LINK_ASPM, 5)
-        },
-        // Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
-        {
-          0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
-          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
-          PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT6_PORT_PRESENT, GNB_GPP_PORT6_CHANNEL_TYPE, 6, GNB_GPP_PORT6_HOTPLUG_SUPPORT, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_LINK_ASPM, 6)
-        },
-        // Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
-        {
-          0,
-          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
-          PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT7_PORT_PRESENT, GNB_GPP_PORT7_CHANNEL_TYPE, 7, GNB_GPP_PORT7_HOTPLUG_SUPPORT, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_LINK_ASPM, 7)
-        },
+	// Initialize Port descriptor (PCIe port, Lanes 5, PCI Device Number 5, ...)
+	{
+	  0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+	  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 5, 5),
+	  PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT5_PORT_PRESENT, GNB_GPP_PORT5_CHANNEL_TYPE, 5, GNB_GPP_PORT5_HOTPLUG_SUPPORT, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_SPEED_MODE, GNB_GPP_PORT5_LINK_ASPM, 5)
+	},
+	// Initialize Port descriptor (PCIe port, Lanes 6, PCI Device Number 6, ...)
+	{
+	  0, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+	  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 6, 6),
+	  PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT6_PORT_PRESENT, GNB_GPP_PORT6_CHANNEL_TYPE, 6, GNB_GPP_PORT6_HOTPLUG_SUPPORT, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_SPEED_MODE, GNB_GPP_PORT6_LINK_ASPM, 6)
+	},
+	// Initialize Port descriptor (PCIe port, Lanes 7, PCI Device Number 7, ...)
+	{
+	  0,
+	  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 7, 7),
+	  PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT7_PORT_PRESENT, GNB_GPP_PORT7_CHANNEL_TYPE, 7, GNB_GPP_PORT7_HOTPLUG_SUPPORT, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_SPEED_MODE, GNB_GPP_PORT7_LINK_ASPM, 7)
+	},
 	#endif
-        // Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
-        {
-          DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
-          PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
-          PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT8_PORT_PRESENT, GNB_GPP_PORT8_CHANNEL_TYPE, 8, GNB_GPP_PORT8_HOTPLUG_SUPPORT, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_LINK_ASPM, 0)
-        }
+	// Initialize Port descriptor (PCIe port, Lanes 8, PCI Device Number 8, ...)
+	{
+	  DESCRIPTOR_TERMINATE_LIST, //Descriptor flags  !!!IMPORTANT!!! Terminate last element of array
+	  PCIE_ENGINE_DATA_INITIALIZER (PciePortEngine, 0, 3),
+	  PCIE_PORT_DATA_INITIALIZER (GNB_GPP_PORT8_PORT_PRESENT, GNB_GPP_PORT8_CHANNEL_TYPE, 8, GNB_GPP_PORT8_HOTPLUG_SUPPORT, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_SPEED_MODE, GNB_GPP_PORT8_LINK_ASPM, 0)
+	}
 };
 
 PCIe_DDI_DESCRIPTOR DdiList [] = {
-        /* Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...) DP1 HDMI */
-        {
-          0,
-          PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
-          PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux2, Hdp2)
-        },
-        /* Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...) DP0 VGA */
-        {
-          DESCRIPTOR_TERMINATE_LIST,
-          PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
-          PCIE_DDI_DATA_INITIALIZER (ConnectorTypeCrt, Aux1, Hdp1)
-        }
+	/* Initialize Ddi descriptor (DDI interface Lanes 12:15, DdB, ...) DP1 HDMI */
+	{
+	  0,
+	  PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 12, 15),
+	  PCIE_DDI_DATA_INITIALIZER (ConnectorTypeHDMI, Aux2, Hdp2)
+	},
+	/* Initialize Ddi descriptor (DDI interface Lanes 8:11, DdA, ...) DP0 VGA */
+	{
+	  DESCRIPTOR_TERMINATE_LIST,
+	  PCIE_ENGINE_DATA_INITIALIZER (PcieDdiEngine, 8, 11),
+	  PCIE_DDI_DATA_INITIALIZER (ConnectorTypeCrt, Aux1, Hdp1)
+	}
 };
 
 PCIe_COMPLEX_DESCRIPTOR Brazos = {
-        DESCRIPTOR_TERMINATE_LIST,
-        0,
-        &PortList[0],
-        &DdiList[0]
+	DESCRIPTOR_TERMINATE_LIST,
+	0,
+	&PortList[0],
+	&DdiList[0]
 };
 
   // GNB PCIe topology Porting
@@ -130,25 +130,25 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
   BrazosPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
   AllocHeapParams.BufferPtr += sizeof(Brazos);
-  BrazosPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
+  BrazosPciePortPtr	    =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
 
   AllocHeapParams.BufferPtr += sizeof(PortList);
-  BrazosPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
+  BrazosPcieDdiPtr	    =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
   LibAmdMemFill (BrazosPcieComplexListPtr,
-                   0,
-                   sizeof(Brazos),
-                   &InitEarly->StdHeader);
+		   0,
+		   sizeof(Brazos),
+		   &InitEarly->StdHeader);
 
   LibAmdMemFill (BrazosPciePortPtr,
-                   0,
-                   sizeof(PortList),
-                   &InitEarly->StdHeader);
+		   0,
+		   sizeof(PortList),
+		   &InitEarly->StdHeader);
 
   LibAmdMemFill (BrazosPcieDdiPtr,
-                   0,
-                   sizeof(DdiList),
-                   &InitEarly->StdHeader);
+		   0,
+		   sizeof(DdiList),
+		   &InitEarly->StdHeader);
 
   LibAmdMemCopy  (BrazosPcieComplexListPtr, &Brazos, sizeof(Brazos), &InitEarly->StdHeader);
   LibAmdMemCopy  (BrazosPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);

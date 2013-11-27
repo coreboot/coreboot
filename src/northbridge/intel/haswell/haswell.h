@@ -224,8 +224,8 @@ void report_platform_info(void);
 #endif /* !__SMM__ */
 
 
-#define MRC_DATA_ALIGN           0x1000
-#define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
+#define MRC_DATA_ALIGN		 0x1000
+#define MRC_DATA_SIGNATURE	 (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
 
 struct mrc_data_container {
 	u32	mrc_signature;	// "MRCD"

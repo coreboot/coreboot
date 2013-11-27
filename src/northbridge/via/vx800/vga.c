@@ -118,7 +118,7 @@ static int via_vx800_int15_handler(void)
 		X86_EAX = 0x005f;
 		res = 1;
 		break;
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 				X86_EAX & 0xffff);
 		X86_EAX = 0;
@@ -135,13 +135,13 @@ static void write_protect_vgabios(void)
 	printk(BIOS_INFO, "write_protect_vgabios\n");
 	/* there are two possible devices. Just do both. */
 	dev = dev_find_device(PCI_VENDOR_ID_VIA,
-			      PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
+				 PCI_DEVICE_ID_VIA_VX855_MEMCTRL, 0);
 	if (dev)
 		pci_write_config8(dev, 0x80, 0xff);
 	/*vx855 no th 0x61 reg */
 	/*dev = dev_find_device(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_VX855_VLINK, 0);
 	   //if(dev)
-	   //   pci_write_config8(dev, 0x61, 0xff); */
+	   //	 pci_write_config8(dev, 0x61, 0xff); */
 }
 #endif
 
@@ -153,7 +153,7 @@ static void vga_enable_console(void)
 	 * it on is good.
 	 */
 
-	/*                 int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
+	/*		    int#,    EAX,    EBX,    ECX,    EDX,    ESI,    EDI */
 	realmode_interrupt(0x10, 0x4f14, 0x8003, 0x0001, 0x0000, 0x0000, 0x0000);
 #endif
 }

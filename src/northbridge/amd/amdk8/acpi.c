@@ -142,14 +142,14 @@ unsigned long acpi_fill_slit(unsigned long current)
 	/* fill the next num*num byte with distance, local is 10, 1 hop mean 20, and 2 hop with 30.... */
 
 	/* because We has assume that we know the topology of the HT connection, So we can have set if we know the node_num */
-	static u8 hops_8[] = {   0, 1, 1, 2, 2, 3, 3, 4,
-				      1, 0, 2, 1, 3, 2, 4, 3,
-				      1, 2, 0, 1, 1, 2, 2, 3,
-				      2, 1, 1, 0, 2, 1, 3, 2,
-				      2, 3, 1, 2, 0, 1, 1, 2,
-				      3, 2, 2, 1, 1, 0, 2, 1,
-				      3, 4, 2, 3, 1, 2, 0, 1,
-				      4, 4, 3, 2, 2, 1, 1, 0 };
+	static u8 hops_8[] = {	  0, 1, 1, 2, 2, 3, 3, 4,
+					  1, 0, 2, 1, 3, 2, 4, 3,
+					  1, 2, 0, 1, 1, 2, 2, 3,
+					  2, 1, 1, 0, 2, 1, 3, 2,
+					  2, 3, 1, 2, 0, 1, 1, 2,
+					  3, 2, 2, 1, 1, 0, 2, 1,
+					  3, 4, 2, 3, 1, 2, 0, 1,
+					  4, 4, 3, 2, 2, 1, 1, 0 };
 
 //	u8 outer_node[8];
 

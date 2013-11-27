@@ -23,29 +23,29 @@
 
 #include <arch/io.h>
 
-#define VGA_CR_INDEX          0x3D4
-#define VGA_CR_VALUE          0x3D5
+#define VGA_CR_INDEX	      0x3D4
+#define VGA_CR_VALUE	      0x3D5
 
-#define VGA_SR_INDEX          0x3C4
-#define VGA_SR_VALUE          0x3C5
+#define VGA_SR_INDEX	      0x3C4
+#define VGA_SR_VALUE	      0x3C5
 
-#define VGA_GR_INDEX          0x3CE
-#define VGA_GR_VALUE          0x3CF
+#define VGA_GR_INDEX	      0x3CE
+#define VGA_GR_VALUE	      0x3CF
 
-#define VGA_AR_INDEX          0x3C0
+#define VGA_AR_INDEX	      0x3C0
 #define VGA_AR_VALUE_READ     0x3C1
 #define VGA_AR_VALUE_WRITE    VGA_AR_INDEX
 
-#define VGA_MISC_WRITE        0x3C2
-#define VGA_MISC_READ         0x3CC
+#define VGA_MISC_WRITE	      0x3C2
+#define VGA_MISC_READ	      0x3CC
 
-#define VGA_ENABLE            0x3C3
-#define VGA_STAT1             0x3DA
+#define VGA_ENABLE	      0x3C3
+#define VGA_STAT1	      0x3DA
 
-#define VGA_DAC_MASK          0x3C6
+#define VGA_DAC_MASK	      0x3C6
 #define VGA_DAC_READ_ADDRESS  0x3C7
 #define VGA_DAC_WRITE_ADDRESS 0x3C8
-#define VGA_DAC_DATA          0x3C9
+#define VGA_DAC_DATA	      0x3C9
 
 /*
  * VGA enable. Poke this to have the PCI IO enabled device accept VGA IO.

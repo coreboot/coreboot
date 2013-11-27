@@ -19,7 +19,7 @@
  */
 
 #define PME_DEV			PNP_DEV(0x4e, 0x0a)
-#define PME_IO_BASE_ADDR	0x800      /* Runtime register base address */
+#define PME_IO_BASE_ADDR	0x800	    /* Runtime register base address */
 
 /* Early mainboard specific GPIO setup. */
 static void mb_gpio_init(void)

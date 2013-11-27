@@ -138,10 +138,10 @@ static u8 graphHowManyNodes(u8 *graph)
  * Relies on rule that directly connected nodes always route requests directly.
  *
  *  Parameters:
- *	@param[in]    u8    graph   = the graph to examine
- *	@param[in]    u8    nodeA   = the node number of the first node
- *	@param[in]    u8    nodeB   = the node number of the second node
- *	@param[out]   BOOL    results  = true if nodeA connects to nodeB false if not
+ *	@param[in]	 u8    graph   = the graph to examine
+ *	@param[in]	 u8    nodeA   = the node number of the first node
+ *	@param[in]	 u8    nodeB   = the node number of the second node
+ *	@param[out]	 BOOL	 results  = true if nodeA connects to nodeB false if not
  * ---------------------------------------------------------------------------------------
  */
 static BOOL graphIsAdjacent(u8 *graph, u8 nodeA, u8 nodeB)
@@ -164,10 +164,10 @@ static BOOL graphIsAdjacent(u8 *graph, u8 nodeA, u8 nodeB)
  *	it is the responsibility of the caller to apply any permutation needed.
  *
  *  Parameters:
- *	@param[in]    u8    graph   = the graph to examine
- *	@param[in]    u8    nodeA   = the node number of the first node
- *	@param[in]    u8    nodeB   = the node number of the second node
- *	@param[out]   u8    results = The response route node
+ *	@param[in]	 u8    graph   = the graph to examine
+ *	@param[in]	 u8    nodeA   = the node number of the first node
+ *	@param[in]	 u8    nodeB   = the node number of the second node
+ *	@param[out]	 u8    results = The response route node
  * ---------------------------------------------------------------------------------------
  */
 static u8 graphGetRsp(u8 *graph, u8 nodeA, u8 nodeB)
@@ -190,10 +190,10 @@ static u8 graphGetRsp(u8 *graph, u8 nodeA, u8 nodeB)
  *	it is the responsibility of the caller to apply any permutation needed.
  *
  *  Parameters:
- *	@param[in]    u8    graph   = the graph to examine
- *	@param[in]    u8    nodeA   = the node number of the first node
- *	@param[in]    u8    nodeB   = the node number of the second node
- *	@param[out]   u8    results = The request route node
+ *	@param[in]	 u8    graph   = the graph to examine
+ *	@param[in]	 u8    nodeA   = the node number of the first node
+ *	@param[in]	 u8    nodeB   = the node number of the second node
+ *	@param[out]	 u8    results = The request route node
  * ---------------------------------------------------------------------------------------
  */
 static u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
@@ -213,10 +213,10 @@ static u8 graphGetReq(u8 *graph, u8 nodeA, u8 nodeB)
  *	 nodeB towards
  *
  *  Parameters:
- *	@param[in]    u8    graph   = the graph to examine
- *	@param[in]    u8    nodeA   = the node number of the first node
- *	@param[in]    u8    nodeB   = the node number of the second node
- *	OU    u8    results = the broadcast routes for nodeA from nodeB
+ *	@param[in]	 u8    graph   = the graph to examine
+ *	@param[in]	 u8    nodeA   = the node number of the first node
+ *	@param[in]	 u8    nodeB   = the node number of the second node
+ *	OU	 u8    results = the broadcast routes for nodeA from nodeB
  * ---------------------------------------------------------------------------------------
  */
 static u8 graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
@@ -243,9 +243,9 @@ static u8 graphGetBc(u8 *graph, u8 nodeA, u8 nodeB)
  *	 for config access during discovery, but NOT for coherency.
  *
  *  Parameters:
- *	@param[in]    u8    targetNode   = the path to actual target goes through target
- *	@param[in]    u8    actualTarget = the ultimate target being routed to
- *	@param[in]    sMainData*  pDat   = our global state, port config info
+ *	@param[in]	 u8    targetNode   = the path to actual target goes through target
+ *	@param[in]	 u8    actualTarget = the ultimate target being routed to
+ *	@param[in]	 sMainData*  pDat   = our global state, port config info
  * ---------------------------------------------------------------------------------------
  */
 static void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
@@ -281,10 +281,10 @@ static void routeFromBSP(u8 targetNode, u8 actualTarget, sMainData *pDat)
  *	 Return the link on source node which connects to target node
  *
  *  Parameters:
- *	@param[in]    u8    srcNode    = the source node
- *	@param[in]    u8    targetNode = the target node to find the link to
- *	@param[in]    sMainData*  pDat = our global state
- *	@param[out]   u8    results    = the link on source which connects to target
+ *	@param[in]	 u8    srcNode	  = the source node
+ *	@param[in]	 u8    targetNode = the target node to find the link to
+ *	@param[in]	 sMainData*  pDat = our global state
+ *	@param[out]	 u8    results	  = the link on source which connects to target
  * ---------------------------------------------------------------------------------------
  */
 static u8 convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
@@ -323,7 +323,7 @@ static u8 convertNodeToLink(u8 srcNode, u8 targetNode, sMainData *pDat)
  *	 was discovered on (no coherency is active yet).
  *
  *  Parameters:
- *	@param[in]    sMainData*  pDat = our global state
+ *	@param[in]	 sMainData*  pDat = our global state
  * ---------------------------------------------------------------------------------------
  */
 static void htDiscoveryFloodFill(sMainData *pDat)
@@ -589,7 +589,7 @@ static void htDiscoveryFloodFill(sMainData *pDat)
  *
  *  Parameters:
  *	@param[in] u8 i   = the discovered node which we are trying to match
- *		    with a permutation the topology
+ *			with a permutation the topology
  *	@param[in]/@param[out] sMainData* pDat  = our global state, degree and adjacency matrix,
  *				  output a permutation if successful
  *	@param[out] BOOL results = the graphs are (or are not) isomorphic
@@ -665,7 +665,7 @@ static BOOL isoMorph(u8 i, sMainData *pDat)
  *	 node discovered to the BSP, writing the routing tables as we go.
  *
  *  Parameters:
- *	@param[in]    sMainData* pDat = our global state, the discovered fabric,
+ *	@param[in]	 sMainData* pDat = our global state, the discovered fabric,
  *	@param[out]			degree matrix, permutation
  * ---------------------------------------------------------------------------------------
  */
@@ -874,7 +874,7 @@ static void coherentInit(sMainData *pDat)
 }
 
 /***************************************************************************
- ***			    Non-coherent init code			  ***
+ ***				   Non-coherent init code			  ***
  ***				  Algorithms				  ***
  ***************************************************************************/
 /*----------------------------------------------------------------------------------------
@@ -1197,7 +1197,7 @@ static void ncInit(sMainData *pDat)
 		for (link = 0; link < pDat->nb->maxLinks; link++)
 		{
 			if (pDat->HtBlock->AMD_CB_IgnoreLink && pDat->HtBlock->AMD_CB_IgnoreLink(node, link))
-				continue;   /*  Skip the link */
+				continue;	/*  Skip the link */
 
 			if (node == 0 && link == compatLink)
 				continue;
@@ -1248,22 +1248,22 @@ static void regangLinks(sMainData *pDat)
 		for (j = i+2; j < pDat->TotalLinks*2; j += 2)
 		{
 			if ( (pDat->PortList[j].Type != PORTLIST_TYPE_CPU) || (pDat->PortList[j+1].Type != PORTLIST_TYPE_CPU) )
-				continue;   /*  Only process cpu to cpu links */
+				continue;	/*  Only process cpu to cpu links */
 
 			if (pDat->PortList[i].NodeID != pDat->PortList[j].NodeID)
-				continue;   /*  Links must be from the same source */
+				continue;	/*  Links must be from the same source */
 
 			if (pDat->PortList[i+1].NodeID != pDat->PortList[j+1].NodeID)
-				continue;   /*  Link must be to the same target */
+				continue;	/*  Link must be to the same target */
 
 			if ((pDat->PortList[i].Link & 3) != (pDat->PortList[j].Link & 3))
-				continue;   /*  Ensure same source base port */
+				continue;	/*  Ensure same source base port */
 
 			if ((pDat->PortList[i+1].Link & 3) != (pDat->PortList[j+1].Link & 3))
-				continue;   /*  Ensure same destination base port */
+				continue;	/*  Ensure same destination base port */
 
 			if ((pDat->PortList[i].Link & 4) != (pDat->PortList[i+1].Link & 4))
-				continue;   /*  Ensure sublink0 routes to sublink0 */
+				continue;	/*  Ensure sublink0 routes to sublink0 */
 
 			ASSERT((pDat->PortList[j].Link & 4) == (pDat->PortList[j+1].Link & 4)); /*  (therefore sublink1 routes to sublink1) */
 
@@ -1273,7 +1273,7 @@ static void regangLinks(sMainData *pDat)
 							pDat->PortList[i+1].NodeID,
 							pDat->PortList[i+1].Link & 0x03))
 			{
-				continue;   /*  Skip regang */
+				continue;	/*  Skip regang */
 			}
 
 
@@ -1309,7 +1309,7 @@ static void regangLinks(sMainData *pDat)
  *	 For all links:
  *	 Examine both sides of a link and determine the optimal frequency and width,
  *	 taking into account externally provided limits and enforcing any other limit
- *	 or matching rules as applicable except sublink balancing.   Update the port
+ *	 or matching rules as applicable except sublink balancing.	Update the port
  *	 list date with the optimal settings.
  *	 Note no hardware state changes in this routine.
  *
@@ -1506,36 +1506,36 @@ static void hammerSublinkFixup(sMainData *pDat)
 				{
 					if ((loFreq != 7) &&  /* {13, 7} 2400MHz / 1200MHz 2:1 */
 						(loFreq != 4) &&  /* {13, 4} 2400MHz /  600MHz 4:1 */
-						(loFreq != 2) )   /* {13, 2} 2400MHz /  400MHz 6:1 */
+						(loFreq != 2) )	/* {13, 2} 2400MHz /  400MHz 6:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 11)
 				{
-					if ((loFreq != 6))    /* {11, 6} 2000MHz / 1000MHz 2:1 */
+					if ((loFreq != 6))	   /* {11, 6} 2000MHz / 1000MHz 2:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 9)
 				{
 					if ((loFreq != 5) &&  /* { 9, 5} 1600MHz /  800MHz 2:1 */
 						(loFreq != 2) &&  /* { 9, 2} 1600MHz /  400MHz 4:1 */
-						(loFreq != 0) )   /* { 9, 0} 1600MHz /  200Mhz 8:1 */
+						(loFreq != 0) )	/* { 9, 0} 1600MHz /  200Mhz 8:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 7)
 				{
 					if ((loFreq != 4) &&  /* { 7, 4} 1200MHz /  600MHz 2:1 */
-						(loFreq != 0) )   /* { 7, 0} 1200MHz /  200MHz 6:1 */
+						(loFreq != 0) )	/* { 7, 0} 1200MHz /  200MHz 6:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 5)
 				{
 					if ((loFreq != 2) &&  /* { 5, 2}  800MHz /  400MHz 2:1 */
-						(loFreq != 0) )   /* { 5, 0}  800MHz /  200MHz 4:1 */
+						(loFreq != 0) )	/* { 5, 0}  800MHz /  200MHz 4:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 2)
 				{
-					if ((loFreq != 0))    /* { 2, 0}  400MHz /  200MHz 2:1 */
+					if ((loFreq != 0))	   /* { 2, 0}  400MHz /  200MHz 2:1 */
 						downgrade = TRUE;
 				}
 				else

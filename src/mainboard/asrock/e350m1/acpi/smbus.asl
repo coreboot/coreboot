@@ -21,18 +21,18 @@
 Mutex (SBX0, 0x00)
 OperationRegion (SMB0, SystemIO, 0xB00, 0x0C)
 	Field (SMB0, ByteAcc, NoLock, Preserve) {
-		HSTS,   8,  /* SMBUS status */
-		SSTS,   8,  /* SMBUS slave status */
-		HCNT,   8,  /* SMBUS control */
-		HCMD,   8,  /* SMBUS host cmd */
-		HADD,   8,  /* SMBUS address */
-		DAT0,   8,  /* SMBUS data0 */
-		DAT1,   8,  /* SMBUS data1 */
-		BLKD,   8,  /* SMBUS block data */
-		SCNT,   8,  /* SMBUS slave control */
-		SCMD,   8,  /* SMBUS shadow cmd */
-		SEVT,   8,  /* SMBUS slave event */
-		SDAT,   8   /* SMBUS slave data */
+		HSTS,	  8,  /* SMBUS status */
+		SSTS,	  8,  /* SMBUS slave status */
+		HCNT,	  8,  /* SMBUS control */
+		HCMD,	  8,  /* SMBUS host cmd */
+		HADD,	  8,  /* SMBUS address */
+		DAT0,	  8,  /* SMBUS data0 */
+		DAT1,	  8,  /* SMBUS data1 */
+		BLKD,	  8,  /* SMBUS block data */
+		SCNT,	  8,  /* SMBUS slave control */
+		SCMD,	  8,  /* SMBUS shadow cmd */
+		SEVT,	  8,  /* SMBUS slave event */
+		SDAT,	  8   /* SMBUS slave data */
 }
 
 Method (WCLR, 0, NotSerialized) { /* clear SMBUS status register */

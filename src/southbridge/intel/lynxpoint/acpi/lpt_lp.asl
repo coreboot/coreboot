@@ -75,11 +75,11 @@ Scope (\_SB.PCI0.LPCB)
 		// GPnCONFIG(GPIO)
 		OperationRegion (GPNC, SystemIO, Local3, 8)
 		Field (GPNC, AnyAcc, NoLock, Preserve) {
-			GMOD, 1,  // MODE:   0=NATIVE 1=GPIO
+			GMOD, 1,  // MODE:	0=NATIVE 1=GPIO
 			, 1,
 			GIOS, 1,  // IO_SEL: 0=OUTPUT 1=INPUT
 			GINV, 1,  // INVERT: 0=NORMAL 1=INVERT
-			GLES, 1,  // LxEB:   0=EDGE 1=LEVEL
+			GLES, 1,  // LxEB:	0=EDGE 1=LEVEL
 			, 24,
 			ILVL, 1,  // INPUT:  0=LOW 1=HIGH
 			OLVL, 1,  // OUTPUT: 0=LOW 1=HIGH

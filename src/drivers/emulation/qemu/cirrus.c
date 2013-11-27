@@ -38,7 +38,7 @@
 
 static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
 static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
-static u32 addr   = 0;
+static u32 addr	  = 0;
 
 enum
   {
@@ -194,7 +194,7 @@ enum
 #define CIRRUS_SR_EXTENDED_MODE 7
 #define CIRRUS_SR_EXTENDED_MODE_LFB_ENABLE 0xf0
 #define CIRRUS_SR_EXTENDED_MODE_ENABLE_EXT 0x01
-#define CIRRUS_SR_EXTENDED_MODE_32BPP      0x08
+#define CIRRUS_SR_EXTENDED_MODE_32BPP	   0x08
 #define CIRRUS_HIDDEN_DAC_888COLOR 0xc5
 
 static void
@@ -233,19 +233,19 @@ static void cirrus_init(device_t dev)
 	addr = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
 	addr &= ~PCI_BASE_ADDRESS_MEM_ATTR_MASK;
 	printk(BIOS_DEBUG, "QEMU VGA: cirrus framebuffer @ %x (pci bar 0)\n",
-	       addr);
+		addr);
 
 	vga_misc_write (VGA_IO_MISC_COLOR);
 
 	vga_sr_write (VGA_SR_MEMORY_MODE,
-		      VGA_SR_MEMORY_MODE_NORMAL);
+			VGA_SR_MEMORY_MODE_NORMAL);
 
 	vga_sr_write (VGA_SR_MAP_MASK_REGISTER,
-		      (1 << VGA_TEXT_TEXT_PLANE)
-		      | (1 << VGA_TEXT_ATTR_PLANE));
+			(1 << VGA_TEXT_TEXT_PLANE)
+			| (1 << VGA_TEXT_ATTR_PLANE));
 
 	vga_sr_write (VGA_SR_CLOCKING_MODE,
-		      VGA_SR_CLOCKING_MODE_8_DOT_CLOCK);
+			VGA_SR_CLOCKING_MODE_8_DOT_CLOCK);
 
 	vga_palette_disable();
 
@@ -280,9 +280,9 @@ static void cirrus_init(device_t dev)
 	vga_cr_write (VGA_CR_HBLANK_START, horizontal_blank_start - 1);
 	vga_cr_write (VGA_CR_HBLANK_END, horizontal_blank_end);
 	vga_cr_write (VGA_CR_HORIZ_SYNC_PULSE_START,
-		      horizontal_sync_pulse_start);
+			horizontal_sync_pulse_start);
 	vga_cr_write (VGA_CR_HORIZ_SYNC_PULSE_END,
-		      horizontal_sync_pulse_end);
+			horizontal_sync_pulse_end);
 	vga_cr_write (VGA_CR_VERT_TOTAL, vertical_total & 0xff);
 	vga_cr_write (VGA_CR_OVERFLOW, overflow);
 	vga_cr_write (VGA_CR_CELL_HEIGHT, cell_height_reg);
@@ -300,12 +300,12 @@ static void cirrus_init(device_t dev)
 	vga_sr_write (VGA_SR_MEMORY_MODE, VGA_SR_MEMORY_MODE_NORMAL);
 
 	vga_cr_write (CIRRUS_CR_EXTENDED_DISPLAY,
-		      (pitch >> CIRRUS_CR_EXTENDED_DISPLAY_PITCH_SHIFT)
-		      & CIRRUS_CR_EXTENDED_DISPLAY_PITCH_MASK);
+			(pitch >> CIRRUS_CR_EXTENDED_DISPLAY_PITCH_SHIFT)
+			& CIRRUS_CR_EXTENDED_DISPLAY_PITCH_MASK);
 
 	vga_cr_write (VGA_CR_MODE, VGA_CR_MODE_TIMING_ENABLE
-		      | VGA_CR_MODE_BYTE_MODE
-		      | VGA_CR_MODE_NO_HERCULES | VGA_CR_MODE_NO_CGA);
+			| VGA_CR_MODE_BYTE_MODE
+			| VGA_CR_MODE_NO_HERCULES | VGA_CR_MODE_NO_CGA);
 
 	vga_cr_write (VGA_CR_START_ADDR_LOW_REGISTER, 0);
 	vga_cr_write (VGA_CR_START_ADDR_HIGH_REGISTER, 0);

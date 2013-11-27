@@ -33,15 +33,15 @@ extern unsigned apicid_mcp55;
 
 static void *smp_write_config_table(void *v)
 {
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	unsigned sbdn;
 	int i, j, k, bus_isa;
 
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
-        smp_write_processors(mc);
+	smp_write_processors(mc);
 
 	get_bus_conf();
 	sbdn = sysconf.sbdn;
@@ -49,21 +49,21 @@ static void *smp_write_config_table(void *v)
 	mptable_write_buses(mc, NULL, &bus_isa);
 
 /*I/O APICs:	APIC ID	Version	State		Address*/
-        {
-                device_t dev;
+	{
+		device_t dev;
 		struct resource *res;
 
-                dev = dev_find_slot(bus_mcp55[0], PCI_DEVFN(sbdn+ 0x1,0));
-                if (dev) {
+		dev = dev_find_slot(bus_mcp55[0], PCI_DEVFN(sbdn+ 0x1,0));
+		if (dev) {
 			res = find_resource(dev, PCI_BASE_ADDRESS_1);
 			if (res) {
 				smp_write_ioapic(mc, apicid_mcp55, 0x11, res->base);
 			}
 			/* set up the interrupt registers of mcp55 */
-	        	pci_write_config32(dev, 0x7c, 0xc643c643);
-		        pci_write_config32(dev, 0x80, 0x8da01009);
-		        pci_write_config32(dev, 0x84, 0x200018d2);
-                }
+		 	pci_write_config32(dev, 0x7c, 0xc643c643);
+			  pci_write_config32(dev, 0x80, 0x8da01009);
+			  pci_write_config32(dev, 0x84, 0x200018d2);
+		}
 	}
 
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_mcp55, 0);
@@ -86,28 +86,28 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0,sbdn+8,0, 20); /* GBit Ethernet */
 
 	/* The PCIe slots, each on its own bus */
-        k = 1;
-        for(i=0; i<4; i++){
-                for(j=7; j>1; j--){
-                        if(k>3) k=0;
-                        PCI_INT(j,0,i, 16+k);
-                        k++;
-                }
-                k--;
-        }
+	k = 1;
+	for(i=0; i<4; i++){
+		for(j=7; j>1; j--){
+			if(k>3) k=0;
+			PCI_INT(j,0,i, 16+k);
+			k++;
+		}
+		k--;
+	}
 
 	/* On bus 1: the PCI bus slots...
 	   physical PCI slots are j = 7,8
 	   FireWire is j = 10
 	*/
-        k=2;
-        for(i=0; i<4; i++){
-                for(j=6; j<11; j++){
-                        if(k>3) k=0;
-                        PCI_INT(1,j,i, 16+k);
-                        k++;
-                }
-        }
+	k=2;
+	for(i=0; i<4; i++){
+		for(j=6; j<11; j++){
+			if(k>3) k=0;
+			PCI_INT(1,j,i, 16+k);
+			k++;
+		}
+	}
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	mptable_lintsrc(mc, bus_isa);

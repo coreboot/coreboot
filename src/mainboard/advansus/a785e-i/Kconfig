@@ -93,7 +93,7 @@ config RAMBASE
 	default 0x200000
 
 config VGA_BIOS_ID
-        string
-        default "1002,9712"
+	string
+	default "1002,9712"
 
 endif #BOARD_ADVANSUS_A785E_I

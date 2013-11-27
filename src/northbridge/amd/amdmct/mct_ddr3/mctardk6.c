@@ -35,9 +35,9 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 
 	if (pDCTstat->GangedMode == 1 && dct == 0)
 		Get_ChannelPS_Cfg0_D(pDCTstat->MAdimms[1], pDCTstat->Speed,
-				     pDCTstat->MAload[1], pDCTstat->DATAload[1],
-				     &(pDCTstat->CH_ADDR_TMG[1]), &(pDCTstat->CH_ODC_CTL[1]),
-				     &pDCTstat->_2Tmode);
+					 pDCTstat->MAload[1], pDCTstat->DATAload[1],
+					 &(pDCTstat->CH_ADDR_TMG[1]), &(pDCTstat->CH_ODC_CTL[1]),
+					 &pDCTstat->_2Tmode);
 
 	pDCTstat->CH_EccDQSLike[0]  = 0x0302;
 	pDCTstat->CH_EccDQSLike[1]  = 0x0302;
@@ -46,12 +46,12 @@ void mctGet_PS_Cfg_D(struct MCTStatStruc *pMCTstat,
 
 /*
  *  In: MAAdimms   - number of DIMMs on the channel
- *    : Speed      - Speed (see DCTStatstruc.Speed for definition)
- *    : MAAload    - number of address bus loads on the channel
+ *    : Speed	   - Speed (see DCTStatstruc.Speed for definition)
+ *    : MAAload	   - number of address bus loads on the channel
  *    : DATAAload  - number of ranks on the channel
  * Out: AddrTmgCTL - Address Timing Control Register Value
- *    : ODC_CTL    - Output Driver Compensation Control Register Value
- *    : CMDmode    - CMD mode
+ *    : ODC_CTL	   - Output Driver Compensation Control Register Value
+ *    : CMDmode	   - CMD mode
  */
 static void Get_ChannelPS_Cfg0_D( u8 MAAdimms, u8 Speed, u8 MAAload,
 				u8 DATAAload, u32 *AddrTmgCTL, u32 *ODC_CTL,

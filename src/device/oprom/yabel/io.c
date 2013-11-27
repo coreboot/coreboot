@@ -134,47 +134,47 @@ void my_outl(X86EMU_pioAddr addr, u32 val)
 static unsigned int
 read_io(void *addr, size_t sz)
 {
-        unsigned int ret;
+	unsigned int ret;
 	/* since we are using inb instructions, we need the port number as 16bit value */
 	u16 port = (u16)(u32) addr;
 
-        switch (sz) {
-        case 1:
+	switch (sz) {
+	case 1:
 		ret = inb(port);
-                break;
-        case 2:
+		break;
+	case 2:
 		ret = inw(port);
-                break;
-        case 4:
+		break;
+	case 4:
 		ret = inl(port);
-                break;
-        default:
-                ret = 0;
-        }
+		break;
+	default:
+		ret = 0;
+	}
 
-        return ret;
+	return ret;
 }
 
 static int
 write_io(void *addr, unsigned int value, size_t sz)
 {
 	u16 port = (u16)(u32) addr;
-        switch (sz) {
+	switch (sz) {
 	/* since we are using inb instructions, we need the port number as 16bit value */
-        case 1:
+	case 1:
 		outb(value, port);
-                break;
-        case 2:
+		break;
+	case 2:
 		outw(value, port);
-                break;
-        case 4:
+		break;
+	case 4:
 		outl(value, port);
-                break;
-        default:
-                return -1;
-        }
+		break;
+	default:
+		return -1;
+	}
 
-        return 0;
+	return 0;
 }
 
 u32 pci_cfg_read(X86EMU_pioAddr addr, u8 size);
@@ -222,7 +222,7 @@ my_inb(X86EMU_pioAddr addr)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x) reading from bios_device.io_buffer\n",
-			     __func__, addr);
+				__func__, addr);
 			rval = *((u8 *) (bios_device.io_buffer + addr));
 			DEBUG_PRINTF_IO("%s(%04x) I/O Buffer --> %02x\n",
 					__func__, addr, rval);
@@ -266,7 +266,7 @@ my_inw(X86EMU_pioAddr addr)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x) reading from bios_device.io_buffer\n",
-			     __func__, addr);
+				__func__, addr);
 			u16 rval =
 			    in16le((void *) bios_device.io_buffer + addr);
 			DEBUG_PRINTF_IO("%s(%04x) I/O Buffer --> %04x\n",
@@ -312,7 +312,7 @@ my_inl(X86EMU_pioAddr addr)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x) reading from bios_device.io_buffer\n",
-			     __func__, addr);
+				__func__, addr);
 			u32 rval =
 			    in32le((void *) bios_device.io_buffer + addr);
 			DEBUG_PRINTF_IO("%s(%04x) I/O Buffer --> %08x\n",
@@ -348,7 +348,7 @@ my_outb(X86EMU_pioAddr addr, u8 val)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x,%02x) writing to bios_device.io_buffer\n",
-			     __func__, addr, val);
+				__func__, addr, val);
 			*((u8 *) (bios_device.io_buffer + addr)) = val;
 			break;
 		}
@@ -389,7 +389,7 @@ my_outw(X86EMU_pioAddr addr, u16 val)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x,%04x) writing to bios_device.io_buffer\n",
-			     __func__, addr, val);
+				__func__, addr, val);
 			out16le((void *) bios_device.io_buffer + addr, val);
 			break;
 		}
@@ -433,7 +433,7 @@ my_outl(X86EMU_pioAddr addr, u32 val)
 		default:
 			DEBUG_PRINTF_IO
 			    ("%s(%04x,%08x) writing to bios_device.io_buffer\n",
-			     __func__, addr, val);
+				__func__, addr, val);
 			out32le((void *) bios_device.io_buffer + addr, val);
 			break;
 		}
@@ -468,13 +468,13 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 #else
 			dev = bios_device.dev;
 			if ((bus != bios_device.bus)
-			     || (devfn != bios_device.devfn)) {
+				|| (devfn != bios_device.devfn)) {
 				// fail accesses to any device but ours...
 #endif
 				printf
-				    ("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
-				     __func__, bus, bios_device.bus, devfn,
-				     bios_device.devfn, offs);
+					("%s(): Config read access invalid device! bus: %02x (%02x), devfn: %02x (%02x), offs: %02x\n",
+					 __func__, bus, bios_device.bus, devfn,
+					 bios_device.devfn, offs);
 				SET_FLAG(F_CF);
 				HALT_SYS();
 				return 0;
@@ -493,14 +493,14 @@ pci_cfg_read(X86EMU_pioAddr addr, u8 size)
 				}
 #else
 				rval =
-				    (u32) rtas_pci_config_read(bios_device.
+					(u32) rtas_pci_config_read(bios_device.
 								    puid, size,
 								    bus, devfn,
 								    offs);
 #endif
 				DEBUG_PRINTF_IO
-				    ("%s(%04x) PCI Config Read @%02x, size: %d --> 0x%08x\n",
-				     __func__, addr, offs, size, rval);
+					("%s(%04x) PCI Config Read @%02x, size: %d --> 0x%08x\n",
+					 __func__, addr, offs, size, rval);
 			}
 		}
 	}
@@ -526,8 +526,8 @@ pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 			    || (devfn != bios_device.devfn)) {
 				// fail accesses to any device but ours...
 				printf
-				    ("Config write access invalid! PCI device %x:%x.%x, offs: %x\n",
-				     bus, devfn >> 3, devfn & 7, offs);
+					("Config write access invalid! PCI device %x:%x.%x, offs: %x\n",
+					 bus, devfn >> 3, devfn & 7, offs);
 #if !CONFIG_YABEL_PCI_FAKE_WRITING_OTHER_DEVICES_CONFIG
 				HALT_SYS();
 #endif
@@ -546,12 +546,12 @@ pci_cfg_write(X86EMU_pioAddr addr, u32 val, u8 size)
 				}
 #else
 				rtas_pci_config_write(bios_device.puid,
-						      size, bus, devfn, offs,
-						      val);
+							    size, bus, devfn, offs,
+							    val);
 #endif
 				DEBUG_PRINTF_IO
-				    ("%s(%04x) PCI Config Write @%02x, size: %d <-- 0x%08x\n",
-				     __func__, addr, offs, size, val);
+					("%s(%04x) PCI Config Write @%02x, size: %d <-- 0x%08x\n",
+					 __func__, addr, offs, size, val);
 			}
 		}
 	}

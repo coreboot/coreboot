@@ -74,7 +74,7 @@ static void memctrl_init(device_t dev)
 	pci_write_config8(dev, 0x83, shadowreg);
 	/* vlink mirror */
 	vlink_dev = dev_find_device(PCI_VENDOR_ID_VIA,
-				    PCI_DEVICE_ID_VIA_CN700_VLINK, 0);
+					PCI_DEVICE_ID_VIA_CN700_VLINK, 0);
 	if (vlink_dev) {
 		pci_write_config8(vlink_dev, 0x61, pagec);
 		pci_write_config8(vlink_dev, 0x62, paged);
@@ -88,11 +88,11 @@ static void memctrl_init(device_t dev)
 
 static const struct device_operations memctrl_operations = {
 	.read_resources = cn700_noop,
-	.init           = memctrl_init,
+	.init		 = memctrl_init,
 };
 
 static const struct pci_driver memctrl_driver __pci_driver = {
-	.ops    = &memctrl_operations,
+	.ops	 = &memctrl_operations,
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_CN700_MEMCTRL,
 };
@@ -142,18 +142,18 @@ static void pci_domain_set_resources(device_t dev)
 		ram_resource(dev, idx++, 0, 640);	/* First 640k */
 		/* Leave a hole for VGA, 0xa0000 - 0xc0000 */
 		ram_resource(dev, idx++, 768,
-			     (tolmk - 768 - CONFIG_VIDEO_MB * 1024));
+				(tolmk - 768 - CONFIG_VIDEO_MB * 1024));
 	}
 	assign_resources(dev->link_list);
 }
 
 static struct device_operations pci_domain_ops = {
 	.read_resources   = pci_domain_read_resources,
-	.set_resources    = pci_domain_set_resources,
+	.set_resources	   = pci_domain_set_resources,
 	.enable_resources = NULL,
-	.init             = NULL,
-	.scan_bus         = pci_domain_scan_bus,
-	.ops_pci_bus      = pci_bus_default_ops,
+	.init		   = NULL,
+	.scan_bus	   = pci_domain_scan_bus,
+	.ops_pci_bus	   = pci_bus_default_ops,
 };
 
 static void cpu_bus_init(device_t dev)
@@ -167,10 +167,10 @@ static void cpu_bus_noop(device_t dev)
 
 static struct device_operations cpu_bus_ops = {
 	.read_resources   = cpu_bus_noop,
-	.set_resources    = cpu_bus_noop,
+	.set_resources	   = cpu_bus_noop,
 	.enable_resources = cpu_bus_noop,
-	.init             = cpu_bus_init,
-	.scan_bus         = 0,
+	.init		   = cpu_bus_init,
+	.scan_bus	   = 0,
 };
 
 static void enable_dev(struct device *dev)

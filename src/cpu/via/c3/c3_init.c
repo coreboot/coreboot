@@ -37,7 +37,7 @@ static void c3_init(device_t dev)
 };
 
 static struct device_operations cpu_dev_ops = {
-	.init     = c3_init,
+	.init	   = c3_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
@@ -48,6 +48,6 @@ static struct cpu_device_id cpu_table[] = {
 };
 
 static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
+	.ops	   = &cpu_dev_ops,
 	.id_table = cpu_table,
 };

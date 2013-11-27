@@ -311,14 +311,14 @@ static void ProgramMMIO(MMIORANGE *pMMIO, u8 LinkID, u8 Attribute)
  *
  * Inactive    B_PRX_PDNB_FDIS  B_PTX_PDNB_FDIS
  *  Lanes
- * Lanes  0-1   Bit  8           Bit 0
- * Lanes  2-3   Bit  9           Bit 1
- * Lanes  4-5   Bit 10           Bit 2
- * Lanes  6-7   Bit 11           Bit 3
- * Lanes  8-9   Bit 12           Bit 4
- * Lanes 10-11  Bit 13           Bit 5
- * Lanes 12-13  Bit 14           Bit 6
- * Lanes 14-15  Bit 15           Bit 7
+ * Lanes  0-1	Bit  8		 Bit 0
+ * Lanes  2-3	Bit  9		 Bit 1
+ * Lanes  4-5	Bit 10		 Bit 2
+ * Lanes  6-7	Bit 11		 Bit 3
+ * Lanes  8-9	Bit 12		 Bit 4
+ * Lanes 10-11  Bit 13		 Bit 5
+ * Lanes 12-13  Bit 14		 Bit 6
+ * Lanes 14-15  Bit 15		 Bit 7
  */
 static void poweron_ddi_lanes(device_t nb_dev)
 {
@@ -479,7 +479,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	vgainfo.ulMinSidePortClock = 333*100;
 #endif
 
-	vgainfo.ulBootUpEngineClock = 500 * 100;	       	// setup option on reference BIOS, 500 is default
+	vgainfo.ulBootUpEngineClock = 500 * 100;		 	// setup option on reference BIOS, 500 is default
 
 	// find the DDR memory frequency
 	if (is_family10h()) {
@@ -519,7 +519,7 @@ static void internal_gfx_pci_dev_init(struct device *dev)
 	/* HT speed */
 	value = pci_read_config8(nb_dev, 0xd1);
 	value = ht_freq_lookup [value] * 100;  // HT link frequency in MHz
-	vgainfo.ulHTLinkFreq = value * 100;    // HT frequency in units of 100 MHz
+	vgainfo.ulHTLinkFreq = value * 100;	// HT frequency in units of 100 MHz
 	vgainfo.ulHighVoltageHTLinkFreq = vgainfo.ulHTLinkFreq;
 	vgainfo.ulLowVoltageHTLinkFreq = vgainfo.ulHTLinkFreq;
 
@@ -1082,15 +1082,15 @@ static void single_port_configuration(device_t nb_dev, device_t dev)
 		case 1:
 		case 2:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x7f7f : 0xccfefe);
+						    cfg->gfx_lane_reversal ? 0x7f7f : 0xccfefe);
 			break;
 		case 4:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x3f3f : 0xccfcfc);
+						    cfg->gfx_lane_reversal ? 0x3f3f : 0xccfcfc);
 			break;
 		case 8:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x0f0f : 0xccf0f0);
+						    cfg->gfx_lane_reversal ? 0x0f0f : 0xccf0f0);
 			break;
 		}
 	}
@@ -1137,11 +1137,11 @@ static void dual_port_configuration(device_t nb_dev, device_t dev)
 		case 1:
 		case 2:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x0707 : 0x0e0e);
+						    cfg->gfx_lane_reversal ? 0x0707 : 0x0e0e);
 			break;
 		case 4:
 			nbpcie_ind_write_index(nb_dev, 0x65,
-					       cfg->gfx_lane_reversal ? 0x0303 : 0x0c0c);
+						    cfg->gfx_lane_reversal ? 0x0303 : 0x0c0c);
 			break;
 		}
 	}
@@ -1387,7 +1387,7 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 	/* 5.9.1.4 Selects the GFX REFCLK to be the source for PLL B. */
 	/* 5.9.1.5 Selects the GFX REFCLK to be the source for PLL C. */
 	set_nbmisc_enable_bits(nb_dev, 0x28, 3 << 6 | 3 << 8 | 3 << 10,
-			       0);
+				  0);
 	reg32 = nbmisc_read_index(nb_dev, 0x28);
 	printk(BIOS_DEBUG, "misc 28 = %x\n", reg32);
 
@@ -1527,8 +1527,8 @@ void rs780_gfx_init(device_t nb_dev, device_t dev, u32 port)
 
 	/* 5.9.12.30. Set TX arbitration algorithm to round robin */
 	set_pcie_enable_bits(nb_dev, 0x1C,
-			     1 << 0 | 0x1F << 1 | 0x1F << 6,
-			     1 << 0 | 0x04 << 1 | 0x04 << 6);
+				1 << 0 | 0x1F << 1 | 0x1F << 6,
+				1 << 0 | 0x04 << 1 | 0x04 << 6);
 
 	/* Single-port/Dual-port configureation. */
 	switch (cfg->gfx_dual_slot) {

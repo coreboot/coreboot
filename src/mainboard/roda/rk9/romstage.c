@@ -45,8 +45,8 @@ static void default_southbridge_gpio_setup(void)
 	/* Set input/output mode [31:0] (0 == out, 1 == in). */
 	outl(0xe0ea43fe, DEFAULT_GPIOBASE + 0x04);
 	/* Set gpio levels [31:0]. orig: 0x01140800 (~SATA0, ~SATA1, GSM, BT,
-						     WLAN, ~ANTMUX, ~GPIO12,
-						     ~SUSPWR, SMBALERT) */
+							   WLAN, ~ANTMUX, ~GPIO12,
+							   ~SUSPWR, SMBALERT) */
 	outl(0x00000800, DEFAULT_GPIOBASE + 0x0c);
 
 	/* Disable blink [31:0]. */
@@ -59,8 +59,8 @@ static void default_southbridge_gpio_setup(void)
 	/* Set input/output mode [60:32] (0 == out, 1 == in). */
 	outl(0x0e55ffb0, DEFAULT_GPIOBASE + 0x34);
 	/* Set gpio levels [60:32]. orig: 0x10020046 (LNKALERT, ~ATAIO,
-						      DMITERM, TXT, ~CLKSATA,
-						      GPS, AUDIO)  */
+							    DMITERM, TXT, ~CLKSATA,
+							    GPS, AUDIO)  */
 	outl(0x10020042, DEFAULT_GPIOBASE + 0x38);
 }
 

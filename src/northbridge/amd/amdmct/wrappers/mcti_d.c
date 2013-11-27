@@ -216,12 +216,12 @@ static u16 mctGet_NVbits(u8 index)
 		break;
 	case NV_ChannelIntlv:
 		val = 5;	/* Not currently checked in mctchi_d.c */
-	/* Bit 0 =     0 - Disable
-	 *             1 - Enable
+	/* Bit 0 =	0 - Disable
+	 *		1 - Enable
 	 * Bits[2:1] = 00b - Address bits 6
-	 *             01b - Address bits 1
-	 *             10b - Hash*, XOR of address bits [20:16, 6]
-	 *             11b - Hash*, XOR of address bits [20:16, 9]
+	 *		01b - Address bits 1
+	 *		10b - Hash*, XOR of address bits [20:16, 6]
+	 *		11b - Hash*, XOR of address bits [20:16, 9]
 	 */
 		break;
 	}
@@ -352,25 +352,25 @@ static void coreDelay(u32 microseconds)
 
 	cycles = (microseconds * 100) << 3;  /* x8 (number of 1.25ns ticks) */
 
-        if (!(rdmsr(HWCR).lo & TSC_FREQ_SEL_MASK)) {
-            msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
-            if (!(rdmsr(0xC0010064+pstate_msr.lo).lo & NB_DID_M_ON)) {
+	if (!(rdmsr(HWCR).lo & TSC_FREQ_SEL_MASK)) {
+	    msr_t pstate_msr = rdmsr(CUR_PSTATE_MSR);
+	    if (!(rdmsr(0xC0010064+pstate_msr.lo).lo & NB_DID_M_ON)) {
 	      cycles = cycles <<1; // half freq, double cycles
 	    }
 	} // else should we keep p0 freq at the time of setting TSC_FREQ_SEL_MASK somewhere and check it here ?
 
 	now = rdmsr(TSC_MSR);
-        // avoid overflow when called near 2^32 ticks ~ 5.3 s boundaries
+	// avoid overflow when called near 2^32 ticks ~ 5.3 s boundaries
 	if (0xffffffff - cycles >= now.lo ) {
 	  end.hi =  now.hi;
-          end.lo = now.lo + cycles;
+	  end.lo = now.lo + cycles;
 	} else {
-          end.hi = now.hi +1; //
-          end.lo = cycles - (1+(0xffffffff - now.lo));
+	  end.hi = now.hi +1; //
+	  end.lo = cycles - (1+(0xffffffff - now.lo));
 	}
 	do {
-          now = rdmsr(TSC_MSR);
-        } while ((now.hi < end.hi) || ((now.hi == end.hi) && (now.lo < end.lo)));
+	  now = rdmsr(TSC_MSR);
+	} while ((now.hi < end.hi) || ((now.hi == end.hi) && (now.lo < end.lo)));
 }
 
 /* Erratum 350 */
@@ -404,16 +404,16 @@ static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 	/* 2. Write 0000_8000h to register F2x[1, 0]9C_xD080F0C. */
 	u32DctDev = pDCTstat->dev_dct;
 	Set_NB32_index_wait(u32DctDev, 0x098, 0xD080F0C, 0x00008000);
-	/*                                                ^--- value
-	                                        ^---F2x[1, 0]9C_x0D080F0C, No description in BKDG.
-	                                 ^----F2x[1, 0]98 DRAM Controller Additional Data Offset Register */
+	/*						   ^--- value
+						 ^---F2x[1, 0]9C_x0D080F0C, No description in BKDG.
+					  ^----F2x[1, 0]98 DRAM Controller Additional Data Offset Register */
 
 	if(!pDCTstat->GangedMode) {
 		print_t("vErrata350: step 2b\n");
 		Set_NB32_index_wait(u32DctDev, 0x198, 0xD080F0C, 0x00008000);
-		/*                                                ^--- value
-		                                        ^---F2x[1, 0]9C_x0D080F0C, No description in BKDG
-		                                ^----F2x[1, 0]98 DRAM Controller Additional Data Offset Register */
+		/*						    ^--- value
+							  ^---F2x[1, 0]9C_x0D080F0C, No description in BKDG
+						  ^----F2x[1, 0]98 DRAM Controller Additional Data Offset Register */
 	}
 
 	print_t("vErrata350: step 3\n");
@@ -437,17 +437,17 @@ static void vErrata350(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTs
 
 static void vErratum372(struct DCTStatStruc *pDCTstat)
 {
-        msr_t msr = rdmsr(NB_CFG_MSR);
+	msr_t msr = rdmsr(NB_CFG_MSR);
 
-        int  nbPstate1supported = ! (msr.hi && (1 << (NB_GfxNbPstateDis -32))) ;
+	int  nbPstate1supported = ! (msr.hi && (1 << (NB_GfxNbPstateDis -32))) ;
 
-        // is this the right way to check for NB pstate 1 or DDR3-1333 ?
-        if (((pDCTstat->PresetmaxFreq==1333)||(nbPstate1supported))
-            &&(!pDCTstat->GangedMode)) {
-           	/* DisableCf8ExtCfg */
-        	msr.hi &= ~(3 << (51 - 32));
-        	wrmsr(NB_CFG_MSR, msr);
-        }
+	// is this the right way to check for NB pstate 1 or DDR3-1333 ?
+	if (((pDCTstat->PresetmaxFreq==1333)||(nbPstate1supported))
+	    &&(!pDCTstat->GangedMode)) {
+	   	/* DisableCf8ExtCfg */
+		msr.hi &= ~(3 << (51 - 32));
+		wrmsr(NB_CFG_MSR, msr);
+	}
 }
 
 static void vErratum414(struct DCTStatStruc *pDCTstat)
@@ -455,11 +455,11 @@ static void vErratum414(struct DCTStatStruc *pDCTstat)
      int dct=0;
     for(; dct < 2 ; dct++)
     {
-        int dRAMConfigHi = Get_NB32(pDCTstat->dev_dct,0x94 + (0x100 * dct));
-        int powerDown =  dRAMConfigHi && (1 << PowerDownEn ) ;
-        int ddr3 = dRAMConfigHi && (1 << Ddr3Mode ) ;
-        int dRAMMRS = Get_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct));
-        int pchgPDModeSel = dRAMMRS && (1 << PchgPDModeSel ) ;
+	int dRAMConfigHi = Get_NB32(pDCTstat->dev_dct,0x94 + (0x100 * dct));
+	int powerDown =  dRAMConfigHi && (1 << PowerDownEn ) ;
+	int ddr3 = dRAMConfigHi && (1 << Ddr3Mode ) ;
+	int dRAMMRS = Get_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct));
+	int pchgPDModeSel = dRAMMRS && (1 << PchgPDModeSel ) ;
 	if (powerDown && ddr3 && pchgPDModeSel )
 	{
 	  Set_NB32(pDCTstat->dev_dct,0x84 + (0x100 * dct), dRAMMRS & ~(1 << PchgPDModeSel) );

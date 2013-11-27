@@ -29,12 +29,12 @@
 
 #define	SMB_CTRL1_STASTRE (0x01 << 7)
 #define SMB_CTRL1_NMINTE  (0x01 << 6)
-#define	SMB_CTRL1_GCMEN   (0x01 << 5)
-#define SMB_CTRL1_ACK     (0x01 << 4)
-#define	SMB_CTRL1_RSVD    (0x01 << 3)
-#define SMB_CTRL1_INTEN   (0x01 << 2)
-#define	SMB_CTRL1_STOP    (0x01 << 1)
-#define SMB_CTRL1_START   (0x01 << 0)
+#define	SMB_CTRL1_GCMEN	  (0x01 << 5)
+#define SMB_CTRL1_ACK	  (0x01 << 4)
+#define	SMB_CTRL1_RSVD	  (0x01 << 3)
+#define SMB_CTRL1_INTEN	  (0x01 << 2)
+#define	SMB_CTRL1_STOP	  (0x01 << 1)
+#define SMB_CTRL1_START	  (0x01 << 0)
 
 #define	SMB_ADD_SAEN	  (0x01 << 7)
 

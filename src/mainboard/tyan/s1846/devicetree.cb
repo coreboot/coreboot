@@ -9,35 +9,35 @@ chip northbridge/intel/i440bx		# Northbridge
     device pci 1.0 on end		# PCI/AGP bridge
     chip southbridge/intel/i82371eb	# Southbridge
       device pci 7.0 on			# ISA bridge
-        chip superio/nsc/pc87309	# Super I/O
-          device pnp 2e.0 on		# Floppy
-            io 0x60 = 0x3f0
-            irq 0x70 = 6
-            drq 0x74 = 2
-          end
-          device pnp 2e.1 on		# Parallel port
-            io 0x60 = 0x378
-            irq 0x70 = 7
-          end
-          device pnp 2e.2 on		# COM2 / IR
-            io 0x60 = 0x2f8
-            irq 0x70 = 3
-          end
-          device pnp 2e.3 on		# COM1
-            io 0x60 = 0x3f8
-            irq 0x70 = 4
-          end
-          device pnp 2e.4 on		# Power management
-          end
-          device pnp 2e.5 on		# PS/2 mouse
-            irq 0x70 = 12
-          end
-          device pnp 2e.6 on		# PS/2 keyboard
-            io 0x60 = 0x60
-            io 0x62 = 0x64
-            irq 0x70 = 1
-          end
-        end
+	chip superio/nsc/pc87309	# Super I/O
+	  device pnp 2e.0 on		# Floppy
+	    io 0x60 = 0x3f0
+	    irq 0x70 = 6
+	    drq 0x74 = 2
+	  end
+	  device pnp 2e.1 on		# Parallel port
+	    io 0x60 = 0x378
+	    irq 0x70 = 7
+	  end
+	  device pnp 2e.2 on		# COM2 / IR
+	    io 0x60 = 0x2f8
+	    irq 0x70 = 3
+	  end
+	  device pnp 2e.3 on		# COM1
+	    io 0x60 = 0x3f8
+	    irq 0x70 = 4
+	  end
+	  device pnp 2e.4 on		# Power management
+	  end
+	  device pnp 2e.5 on		# PS/2 mouse
+	    irq 0x70 = 12
+	  end
+	  device pnp 2e.6 on		# PS/2 keyboard
+	    io 0x60 = 0x60
+	    io 0x62 = 0x64
+	    irq 0x70 = 1
+	  end
+	end
       end
       device pci 7.1 on	end		# IDE
       device pci 7.2 on	end		# USB

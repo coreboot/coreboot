@@ -136,7 +136,7 @@ void rtc_init(int invalid)
 
 	/* Make certain we have a valid checksum */
 	rtc_set_checksum(PC_CKS_RANGE_START,
-                        PC_CKS_RANGE_END,PC_CKS_LOC);
+			PC_CKS_RANGE_END,PC_CKS_LOC);
 #endif
 
 	/* Clear any pending interrupts */

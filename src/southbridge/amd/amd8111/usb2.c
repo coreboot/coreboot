@@ -31,15 +31,15 @@ static void amd8111_usb2_enable(device_t dev)
 
 static struct device_operations usb2_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.scan_bus         = 0,
-	.enable           = amd8111_usb2_enable,
-	// .ops_pci          = &lops_pci,
+	.scan_bus	   = 0,
+	.enable	   = amd8111_usb2_enable,
+	// .ops_pci	      = &lops_pci,
 };
 
 static const struct pci_driver usb2_driver __pci_driver = {
-	.ops    = &usb2_ops,
+	.ops	 = &usb2_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_USB2,
 };

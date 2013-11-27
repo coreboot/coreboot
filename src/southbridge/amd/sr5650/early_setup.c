@@ -30,22 +30,22 @@
  */
 static void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
 {
-        u32 tmp;
+	u32 tmp;
 
-        /* read axindc to tmp */
-        outl(space << 30 | space << 3 | 0x30, AB_INDX);
-        outl(axindc, AB_DATA);
-        outl(space << 30 | space << 3 | 0x34, AB_INDX);
-        tmp = inl(AB_DATA);
+	/* read axindc to tmp */
+	outl(space << 30 | space << 3 | 0x30, AB_INDX);
+	outl(axindc, AB_DATA);
+	outl(space << 30 | space << 3 | 0x34, AB_INDX);
+	tmp = inl(AB_DATA);
 
-        tmp &= ~mask;
-        tmp |= val;
+	tmp &= ~mask;
+	tmp |= val;
 
-        /* write tmp */
-        outl(space << 30 | space << 3 | 0x30, AB_INDX);
-        outl(axindc, AB_DATA);
-        outl(space << 30 | space << 3 | 0x34, AB_INDX);
-        outl(tmp, AB_DATA);
+	/* write tmp */
+	outl(space << 30 | space << 3 | 0x30, AB_INDX);
+	outl(axindc, AB_DATA);
+	outl(space << 30 | space << 3 | 0x34, AB_INDX);
+	outl(tmp, AB_DATA);
 }
 
 
@@ -130,7 +130,7 @@ static const u8 sr5650_ibias[] = {
 	[0x2] = 0x44,		/* 400Mhz HyperTransport 1 only */
 	[0x4] = 0xB6,		/* 600Mhz HyperTransport 1 only */
 	[0x5] = 0x44,		/* 800Mhz HyperTransport 1 only */
-	[0x6] = 0x96,		/* 1Ghz   HyperTransport 1 only */
+	[0x6] = 0x96,		/* 1Ghz	  HyperTransport 1 only */
 	/* HT3 for Family 10 */
 	[0x7] = 0xB6,		/* 1.2Ghz HyperTransport 3 only */
 	[0x8] = 0x23,		/* 1.4Ghz HyperTransport 3 only */
@@ -370,7 +370,7 @@ static void sr5650_por_misc_index_init(device_t nb_dev)
 	 *   HIDE_NB_AGP_CAP  ([0], default=1)HIDE
 	 *   HIDE_P2P_AGP_CAP ([1], default=1)HIDE
 	 *   HIDE_NB_GART_BAR ([2], default=1)HIDE
-	 *   AGPMODE30        ([4], default=0)DISABLE
+	 *   AGPMODE30	       ([4], default=0)DISABLE
 	 *   AGP30ENCHANCED   ([5], default=0)DISABLE
 	 *   HIDE_AGP_CAP     ([8], default=1)ENABLE */
 	set_nbmisc_enable_bits(nb_dev, 0x00, 0x0000FFFF, 0 << 0 | 1 << 1 | 1 << 2 | 0 << 6);

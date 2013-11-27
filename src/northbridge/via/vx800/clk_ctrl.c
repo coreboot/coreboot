@@ -106,7 +106,7 @@ void ClkPhsCtrlFBMDDR2(DRAM_SYS_ATTR *DramAttr)
 	} else if (DramAttr->RankNumChA > 1) {	/* 2~4 Rank */
 		for (i = 0; i < 3; i++) {
 			Data = pci_read_config8(MEMCTRL,
-				     DDR2_ChA_Clk_Phase_Table_2R[i][0]);
+					 DDR2_ChA_Clk_Phase_Table_2R[i][0]);
 			Data &= DDR2_ChA_Clk_Phase_Table_2R[i][1]; /* mask */
 			Data |= DDR2_ChA_Clk_Phase_Table_2R[i][FreqId];	/* set val */
 			pci_write_config8(MEMCTRL,
@@ -251,7 +251,7 @@ void DQSInputCaptureCtrl(DRAM_SYS_ATTR *DramAttr)
 			Data &= DDR2_ChB_DQS_Input_Capture_Tbl[i][1]; /* mask */
 			Data |= DDR2_ChB_DQS_Input_Capture_Tbl[i][FreqId]; /* set val */
 			pci_write_config8(MEMCTRL,
-			        DDR2_ChB_DQS_Input_Capture_Tbl[i][0], Data);
+				   DDR2_ChB_DQS_Input_Capture_Tbl[i][0], Data);
 		}
 	}
 #endif
@@ -267,7 +267,7 @@ void DCLKPhsCtrl(DRAM_SYS_ATTR *DramAttr)
 {
 	u8 Data;
 
-	Data = 0;       /* TODO: Can be dropped? */
+	Data = 0;	 /* TODO: Can be dropped? */
 	Data = pci_read_config8(MEMCTRL, 0x99);
 	Data &= 0xE1;
 	/* DDR in Dimm1, MCLKOA[4,3,0] will output MCLK */

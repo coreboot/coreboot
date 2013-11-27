@@ -90,7 +90,7 @@ static int ipmi_kcs_send_data_byte(int port, const unsigned char byte)
 	if (wait_ibf_timeout(port))
 		return 1;
 
-        status = ipmi_kcs_status(port);
+	status = ipmi_kcs_status(port);
 	if ((status & IPMI_KCS_OBF) &&
 	    IPMI_KCS_STATE(status) != IPMI_KCS_STATE_WRITE) {
 		printk(BIOS_ERR, "%s: status %02x\n", __func__, status);
@@ -111,7 +111,7 @@ static int ipmi_kcs_send_last_data_byte(int port, const unsigned char byte)
 	if (wait_ibf_timeout(port))
 		return 1;
 
-        status = ipmi_kcs_status(port);
+	status = ipmi_kcs_status(port);
 	if ((status & IPMI_KCS_OBF) &&
 	    IPMI_KCS_STATE(status) != IPMI_KCS_STATE_WRITE) {
 		printk(BIOS_ERR, "%s: status %02x\n", __func__, status);

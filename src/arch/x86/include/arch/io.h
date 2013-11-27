@@ -170,26 +170,26 @@ static inline __attribute__((always_inline)) void write32(unsigned long addr, ui
 #if defined(__PRE_RAM__) || defined(__SMM__)
 static inline int log2(int value)
 {
-        unsigned int r = 0;
-        __asm__ volatile (
-                "bsrl %1, %0\n\t"
-                "jnz 1f\n\t"
-                "movl $-1, %0\n\t"
-                "1:\n\t"
-                : "=r" (r) : "r" (value));
-        return r;
+	unsigned int r = 0;
+	__asm__ volatile (
+		"bsrl %1, %0\n\t"
+		"jnz 1f\n\t"
+		"movl $-1, %0\n\t"
+		"1:\n\t"
+		: "=r" (r) : "r" (value));
+	return r;
 
 }
 static inline int log2f(int value)
 {
-        unsigned int r = 0;
-        __asm__ volatile (
-                "bsfl %1, %0\n\t"
-                "jnz 1f\n\t"
-                "movl $-1, %0\n\t"
-                "1:\n\t"
-                : "=r" (r) : "r" (value));
-        return r;
+	unsigned int r = 0;
+	__asm__ volatile (
+		"bsfl %1, %0\n\t"
+		"jnz 1f\n\t"
+		"movl $-1, %0\n\t"
+		"1:\n\t"
+		: "=r" (r) : "r" (value));
+	return r;
 
 }
 #endif
@@ -197,15 +197,15 @@ static inline int log2f(int value)
 #ifdef __SIMPLE_DEVICE__
 
 #define PCI_ADDR(SEGBUS, DEV, FN, WHERE) ( \
-        (((SEGBUS) & 0xFFF) << 20) | \
-        (((DEV) & 0x1F) << 15) | \
-        (((FN) & 0x07) << 12) | \
-        ((WHERE) & 0xFFF))
+	(((SEGBUS) & 0xFFF) << 20) | \
+	(((DEV) & 0x1F) << 15) | \
+	(((FN) & 0x07) << 12) | \
+	((WHERE) & 0xFFF))
 
 #define PCI_DEV(SEGBUS, DEV, FN) ( \
-        (((SEGBUS) & 0xFFF) << 20) | \
-        (((DEV) & 0x1F) << 15) | \
-        (((FN)  & 0x07) << 12))
+	(((SEGBUS) & 0xFFF) << 20) | \
+	(((DEV) & 0x1F) << 15) | \
+	(((FN)  & 0x07) << 12))
 
 #define PCI_ID(VENDOR_ID, DEVICE_ID) \
 	((((DEVICE_ID) & 0xFFFF) << 16) | ((VENDOR_ID) & 0xFFFF))
@@ -248,14 +248,14 @@ void pci_or_config32(pci_devfn_t dev, unsigned where, uint32_t value)
 #define PCI_DEV_INVALID (0xffffffffU)
 static inline pci_devfn_t pci_io_locate_device(unsigned pci_id, pci_devfn_t dev)
 {
-        for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
-                unsigned int id;
-                id = pci_io_read_config32(dev, 0);
-                if (id == pci_id) {
-                        return dev;
-                }
-        }
-        return PCI_DEV_INVALID;
+	for(; dev <= PCI_DEV(255, 31, 7); dev += PCI_DEV(0,0,1)) {
+		unsigned int id;
+		id = pci_io_read_config32(dev, 0);
+		if (id == pci_id) {
+			return dev;
+		}
+	}
+	return PCI_DEV_INVALID;
 }
 
 static inline pci_devfn_t pci_locate_device(unsigned pci_id, pci_devfn_t dev)
@@ -274,17 +274,17 @@ static inline pci_devfn_t pci_locate_device_on_bus(unsigned pci_id, unsigned bus
 {
 	pci_devfn_t dev, last;
 
-        dev = PCI_DEV(bus, 0, 0);
-        last = PCI_DEV(bus, 31, 7);
+	dev = PCI_DEV(bus, 0, 0);
+	last = PCI_DEV(bus, 31, 7);
 
-        for(; dev <=last; dev += PCI_DEV(0,0,1)) {
-                unsigned int id;
-                id = pci_read_config32(dev, 0);
-                if (id == pci_id) {
-                        return dev;
-                }
-        }
-        return PCI_DEV_INVALID;
+	for(; dev <=last; dev += PCI_DEV(0,0,1)) {
+		unsigned int id;
+		id = pci_read_config32(dev, 0);
+		if (id == pci_id) {
+			return dev;
+		}
+	}
+	return PCI_DEV_INVALID;
 }
 
 /* Generic functions for pnp devices */

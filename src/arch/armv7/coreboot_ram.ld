@@ -15,7 +15,7 @@
 
 /*
  *	Written by Johan Rydberg, based on work by Daniel Kahlin.
- *      Rewritten by Eric Biederman
+ *	Rewritten by Eric Biederman
  *  2005.12 yhlu add coreboot_ram cross the vga font buffer handling
  */
 
@@ -107,13 +107,13 @@ SECTIONS
 	 * this line.
 	 */
 
-        _heap = .;
-        .heap . : {
-                /* Reserve CONFIG_HEAP_SIZE bytes for the heap */
-                . = CONFIG_HEAP_SIZE ;
-                . = ALIGN(4);
-        }
-        _eheap = .;
+	_heap = .;
+	.heap . : {
+		/* Reserve CONFIG_HEAP_SIZE bytes for the heap */
+		. = CONFIG_HEAP_SIZE ;
+		. = ALIGN(4);
+	}
+	_eheap = .;
 
 	_stack = CONFIG_STACK_BOTTOM;
 	_estack = CONFIG_STACK_TOP;

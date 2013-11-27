@@ -66,32 +66,32 @@ config HUDSON_XHCI_FWM
 config HUDSON_IMC_FWM
 	bool "Add imc firmware"
 	default y
-        help
+	help
 	  Add Hudson 2/3/4 IMC Firmware to support the onboard fan control
 
 config HUDSON_GEC_FWM
 	bool
 	default n
-        help
+	help
 	  Add Hudson 2/3/4 GEC Firmware to support the onboard gigabit Ethernet MAC.
 	  Must be connected to a Broadcom B50610 or B50610M PHY on the motherboard.
 
 config HUDSON_XHCI_FWM_FILE
-        string "XHCI firmware path and filename"
-        default "3rdparty/southbridge/amd/hudson/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
-        default "3rdparty/southbridge/amd/yangtze/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	string "XHCI firmware path and filename"
+	default "3rdparty/southbridge/amd/hudson/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
+	default "3rdparty/southbridge/amd/yangtze/xhci.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_XHCI_FWM
 
 config HUDSON_IMC_FWM_FILE
-        string "IMC firmware path and filename"
-        default "3rdparty/southbridge/amd/hudson/imc.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
-        default "3rdparty/southbridge/amd/yangtze/imc.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	string "IMC firmware path and filename"
+	default "3rdparty/southbridge/amd/hudson/imc.bin" if SOUTHBRIDGE_AMD_AGESA_HUDSON
+	default "3rdparty/southbridge/amd/yangtze/imc.bin" if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_IMC_FWM
 
 config HUDSON_GEC_FWM_FILE
-        string "GEC firmware path and filename"
-        default "3rdparty/southbridge/amd/hudson/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_HUDSON
-        default "3rdparty/southbridge/amd/yangtze/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_YANGTZE
+	string "GEC firmware path and filename"
+	default "3rdparty/southbridge/amd/hudson/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_HUDSON
+	default "3rdparty/southbridge/amd/yangtze/gec.bin"  if SOUTHBRIDGE_AMD_AGESA_YANGTZE
 	depends on HUDSON_GEC_FWM
 
 config HUDSON_FWM
@@ -102,12 +102,12 @@ config HUDSON_FWM
 if HUDSON_FWM
 
 config HUDSON_FWM_POSITION
-        hex "Hudson Firmware rom Position"
-        default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
-        default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
-        default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
-        default 0xFF820000 if BOARD_ROMSIZE_KB_8192
-        default 0xFF020000 if BOARD_ROMSIZE_KB_16384
+	hex "Hudson Firmware rom Position"
+	default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
+	default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
+	default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
+	default 0xFF820000 if BOARD_ROMSIZE_KB_8192
+	default 0xFF020000 if BOARD_ROMSIZE_KB_16384
 	help
 	  Hudson requires the firmware MUST be located at
 	  a specific address (ROM start address + 0x20000), otherwise
@@ -167,7 +167,7 @@ config HUDSON_SATA_IDE2AHCI7804
 endchoice
 
 config HUDSON_SATA_MODE
-        hex
+	hex
 	depends on (HUDSON_SATA_IDE || HUDSON_SATA_RAID || HUDSON_SATA_AHCI)
 	default "0x0" if HUDSON_SATA_IDE
 	default "0x1" if HUDSON_SATA_RAID
@@ -196,8 +196,8 @@ if HUDSON_SATA_RAID
 config RAID_ROM_ID
 	string "RAID device PCI IDs"
 	default "1022,7802"
-        help
-          1022,7802 for SATA NON-RAID5 module, 1022,7803 for SATA RAID5 mode
+	help
+	  1022,7802 for SATA NON-RAID5 module, 1022,7803 for SATA RAID5 mode
 
 config RAID_ROM_FILE
 	string "RAID ROM path and filename"
@@ -205,8 +205,8 @@ config RAID_ROM_FILE
 	default "src/southbridge/amd/agesa/hudson/raid.bin"
 
 config RAID_MISC_ROM_FILE
-        string "RAID Misc ROM path and filename"
-        default "src/southbridge/amd/agesa/hudson/misc.bin"
+	string "RAID Misc ROM path and filename"
+	default "src/southbridge/amd/agesa/hudson/misc.bin"
 	depends on HUDSON_SATA_RAID
 
 config RAID_MISC_ROM_POSITION

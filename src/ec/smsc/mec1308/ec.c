@@ -47,7 +47,7 @@ static int ec_ready(void)
 
 	if (!ec_cmd_reg || !ec_data_reg) {
 		printk(BIOS_DEBUG, "Invalid ports: cmd=0x%x data=0x%x\n",
-		       ec_cmd_reg, ec_data_reg);
+			 ec_cmd_reg, ec_data_reg);
 		return -1;
 	}
 

@@ -37,10 +37,10 @@
 #define  HTTC_RSP_PASS_PW		(1 << 11)
 #define  HTTC_BUF_REL_PRI_SHIFT	13
 #define  HTTC_BUF_REL_PRI_MASK		3
-#define   HTTC_BUF_REL_PRI_64		0
-#define   HTTC_BUF_REL_PRI_16		1
-#define   HTTC_BUF_REL_PRI_8		2
-#define   HTTC_BUF_REL_PRI_2		3
+#define	  HTTC_BUF_REL_PRI_64		0
+#define	  HTTC_BUF_REL_PRI_16		1
+#define	  HTTC_BUF_REL_PRI_8		2
+#define	  HTTC_BUF_REL_PRI_2		3
 #define  HTTC_LIMIT_CLDT_CFG		(1 << 15)
 #define  HTTC_LINT_EN			(1 << 16)
 #define  HTTC_APIC_EXT_BRD_CST		(1 << 17)
@@ -49,10 +49,10 @@
 #define  HTTC_SEQ_ID_SRC_NODE_EN	(1 << 20)
 #define  HTTC_DS_NP_REQ_LIMIT_SHIFT	21
 #define  HTTC_DS_NP_REQ_LIMIT_MASK	3
-#define   HTTC_DS_NP_REQ_LIMIT_NONE	0
-#define   HTTC_DS_NP_REQ_LIMIT_1	1
-#define   HTTC_DS_NP_REQ_LIMIT_4	2
-#define   HTTC_DS_NP_REQ_LIMIT_8	3
+#define	  HTTC_DS_NP_REQ_LIMIT_NONE	0
+#define	  HTTC_DS_NP_REQ_LIMIT_1	1
+#define	  HTTC_DS_NP_REQ_LIMIT_4	2
+#define	  HTTC_DS_NP_REQ_LIMIT_8	3
 
 
 /* Function 1 */
@@ -124,147 +124,147 @@
 #define  DM_MprEn (1<<26) /* DDR3 */
 
 #define DRAM_TIMING_LOW	   0x88
-#define	 DTL_TCL_SHIFT	   0
-#define	 DTL_TCL_MASK	   0xf
-#define	  DTL_TCL_BASE	   1 /* DDR3 =4 */
-#define	  DTL_TCL_MIN	   3 /* DDR3 =4 */
-#define	  DTL_TCL_MAX	   6 /* DDR3 =12 */
+#define	 DTL_TCL_SHIFT		  0
+#define	 DTL_TCL_MASK		 0xf
+#define	  DTL_TCL_BASE		  1 /* DDR3 =4 */
+#define	  DTL_TCL_MIN		 3 /* DDR3 =4 */
+#define	  DTL_TCL_MAX		 6 /* DDR3 =12 */
 #define	 DTL_TRCD_SHIFT	   4
-#define	 DTL_TRCD_MASK	   3 /* DDR3 =7 */
+#define	 DTL_TRCD_MASK		  3 /* DDR3 =7 */
 #define	  DTL_TRCD_BASE	   3 /* DDR3 =5 */
-#define	  DTL_TRCD_MIN	   3 /* DDR3 =5 */
-#define   DTL_TRCD_MAX	    6 /* DDR3 =12 */
-#define	 DTL_TRP_SHIFT	   8 /* DDR3 =7 */
-#define	 DTL_TRP_MASK	   3 /* DDR3 =7 */
-#define	  DTL_TRP_BASE	   3 /* DDR3 =5 */
-#define	  DTL_TRP_MIN	   3 /* DDR3 =5 */
-#define   DTL_TRP_MAX	    6 /* DDR3 =12 */
+#define	  DTL_TRCD_MIN		  3 /* DDR3 =5 */
+#define	  DTL_TRCD_MAX		   6 /* DDR3 =12 */
+#define	 DTL_TRP_SHIFT		  8 /* DDR3 =7 */
+#define	 DTL_TRP_MASK		 3 /* DDR3 =7 */
+#define	  DTL_TRP_BASE		  3 /* DDR3 =5 */
+#define	  DTL_TRP_MIN		 3 /* DDR3 =5 */
+#define	  DTL_TRP_MAX		  6 /* DDR3 =12 */
 #define	 DTL_TRTP_SHIFT	   11 /*DDR3 =10 */
-#define	 DTL_TRTP_MASK	   1  /*DDR3 =3 */
+#define	 DTL_TRTP_MASK		  1  /*DDR3 =3 */
 #define	  DTL_TRTP_BASE	   2  /* DDR3 =4 */
-#define	  DTL_TRTP_MIN	   2  /* 4 for 64 bytes*/  /* DDR3 =4 for 32bytes or 64bytes */
-#define   DTL_TRTP_MAX	    3  /* 5 for 64 bytes */ /* DDR3 =7 for 32Bytes or 64bytes */
+#define	  DTL_TRTP_MIN		  2  /* 4 for 64 bytes*/  /* DDR3 =4 for 32bytes or 64bytes */
+#define	  DTL_TRTP_MAX		   3  /* 5 for 64 bytes */ /* DDR3 =7 for 32Bytes or 64bytes */
 #define	 DTL_TRAS_SHIFT	   12
-#define	 DTL_TRAS_MASK	   0xf
+#define	 DTL_TRAS_MASK		  0xf
 #define	  DTL_TRAS_BASE	   3 /* DDR3 =15 */
-#define	  DTL_TRAS_MIN	   5 /* DDR3 =15 */
-#define	  DTL_TRAS_MAX	   18 /*DDR3 =30 */
-#define	 DTL_TRC_SHIFT	   16
-#define	 DTL_TRC_MASK	   0xf /* DDR3 =0x1f */
-#define	  DTL_TRC_BASE	   11
-#define	  DTL_TRC_MIN	   11
-#define	  DTL_TRC_MAX	   26  /* DDR3 =43 */
-#define	 DTL_TWR_SHIFT	   20 /* only for DDR2, DDR3's is on DC */
-#define	 DTL_TWR_MASK	   3
-#define	  DTL_TWR_BASE	   3
-#define	  DTL_TWR_MIN	   3
-#define	  DTL_TWR_MAX	   6
-#define  DTL_TRRD_SHIFT    22
-#define   DTL_TRRD_MASK    3
-#define   DTL_TRRD_BASE    2 /* DDR3 =4 */
-#define   DTL_TRRD_MIN	   2 /* DDR3 =4 */
-#define   DTL_TRRD_MAX	    5 /* DDR3 =7 */
-#define  DTL_MemClkDis_SHIFT 24    /* Channel A */
-#define  DTL_MemClkDis3       (1 << 26)
-#define  DTL_MemClkDis2       (1 << 27)
-#define  DTL_MemClkDis1       (1 << 28)
-#define  DTL_MemClkDis0       (1 << 29)
+#define	  DTL_TRAS_MIN		  5 /* DDR3 =15 */
+#define	  DTL_TRAS_MAX		  18 /*DDR3 =30 */
+#define	 DTL_TRC_SHIFT		  16
+#define	 DTL_TRC_MASK		 0xf /* DDR3 =0x1f */
+#define	  DTL_TRC_BASE		  11
+#define	  DTL_TRC_MIN		 11
+#define	  DTL_TRC_MAX		 26  /* DDR3 =43 */
+#define	 DTL_TWR_SHIFT		  20 /* only for DDR2, DDR3's is on DC */
+#define	 DTL_TWR_MASK		 3
+#define	  DTL_TWR_BASE		  3
+#define	  DTL_TWR_MIN		 3
+#define	  DTL_TWR_MAX		 6
+#define  DTL_TRRD_SHIFT	   22
+#define	  DTL_TRRD_MASK	   3
+#define	  DTL_TRRD_BASE	   2 /* DDR3 =4 */
+#define	  DTL_TRRD_MIN		  2 /* DDR3 =4 */
+#define	  DTL_TRRD_MAX		   5 /* DDR3 =7 */
+#define  DTL_MemClkDis_SHIFT 24	   /* Channel A */
+#define  DTL_MemClkDis3	      (1 << 26)
+#define  DTL_MemClkDis2	      (1 << 27)
+#define  DTL_MemClkDis1	      (1 << 28)
+#define  DTL_MemClkDis0	      (1 << 29)
 /* DTL_MemClkDis for m2 and s1g1 is different */
 
 #define DRAM_TIMING_HIGH   0x8c
 #define  DTH_TRWTWB_SHIFT 0
 #define  DTH_TRWTWB_MASK 3
-#define   DTH_TRWTWB_BASE 3  /* DDR3 =4 */
-#define   DTH_TRWTWB_MIN  3  /* DDR3 =5 */
-#define   DTH_TRWTWB_MAX  10 /* DDR3 =11 */
+#define	  DTH_TRWTWB_BASE 3  /* DDR3 =4 */
+#define	  DTH_TRWTWB_MIN  3  /* DDR3 =5 */
+#define	  DTH_TRWTWB_MAX  10 /* DDR3 =11 */
 #define  DTH_TRWTTO_SHIFT  4
 #define  DTH_TRWTTO_MASK   7
-#define   DTH_TRWTTO_BASE   2 /* DDR3 =3 */
-#define   DTH_TRWTTO_MIN    2 /* DDR3 =3 */
-#define   DTH_TRWTTO_MAX    9 /* DDR3 =10 */
+#define	  DTH_TRWTTO_BASE   2 /* DDR3 =3 */
+#define	  DTH_TRWTTO_MIN    2 /* DDR3 =3 */
+#define	  DTH_TRWTTO_MAX    9 /* DDR3 =10 */
 #define	 DTH_TWTR_SHIFT	   8
-#define	 DTH_TWTR_MASK	   3
+#define	 DTH_TWTR_MASK		  3
 #define	  DTH_TWTR_BASE	   0  /* DDR3 =4 */
-#define	  DTH_TWTR_MIN	   1  /* DDR3 =4 */
-#define	  DTH_TWTR_MAX	   3  /* DDR3 =7 */
+#define	  DTH_TWTR_MIN		  1  /* DDR3 =4 */
+#define	  DTH_TWTR_MAX		  3  /* DDR3 =7 */
 #define	 DTH_TWRRD_SHIFT   10
 #define	 DTH_TWRRD_MASK	   3	/* For DDR3 3_2 is at 0x78 DC */
 #define	  DTH_TWRRD_BASE   0  /* DDR3 =0 */
 #define	  DTH_TWRRD_MIN	   0  /* DDR3 =2 */
 #define	  DTH_TWRRD_MAX	   3  /* DDR3 =12 */
 #define  DTH_TWRWR_SHIFT   12
-#define  DTH_TWRWR_MASK    3	/* For DDR3 3_2 is at 0x78 DC */
-#define   DTH_TWRWR_BASE   1
-#define   DTH_TWRWR_MIN    1	/* DDR3 =3 */
-#define   DTH_TWRWR_MAX    3	/* DDR3 =12 */
+#define  DTH_TWRWR_MASK	   3	/* For DDR3 3_2 is at 0x78 DC */
+#define	  DTH_TWRWR_BASE   1
+#define	  DTH_TWRWR_MIN	   1	/* DDR3 =3 */
+#define	  DTH_TWRWR_MAX	   3	/* DDR3 =12 */
 #define  DTH_TRDRD_SHIFT   14
-#define  DTH_TRDRD_MASK    3  /* For DDR3 3_2 is at 0x78 DC */
-#define   DTH_TRDRD_BASE   2
-#define   DTH_TRDRD_MIN    2
-#define   DTH_TRDRD_MAX    5	/* DDR3 =10 */
+#define  DTH_TRDRD_MASK	   3  /* For DDR3 3_2 is at 0x78 DC */
+#define	  DTH_TRDRD_BASE   2
+#define	  DTH_TRDRD_MIN	   2
+#define	  DTH_TRDRD_MAX	   5	/* DDR3 =10 */
 #define	 DTH_TREF_SHIFT	   16
-#define	 DTH_TREF_MASK	   3
+#define	 DTH_TREF_MASK		  3
 #define	  DTH_TREF_7_8_US  2
 #define	  DTH_TREF_3_9_US  3
 #define  DTH_DisAutoRefresh (1<<18)
 #define  DTH_TRFC0_SHIFT   20 /* for Logical DIMM0 */
-#define  DTH_TRFC_MASK	     7
+#define  DTH_TRFC_MASK		    7
 #define	  DTH_TRFC_75_256M   0
 #define	  DTH_TRFC_105_512M  1
-#define   DTH_TRFC_127_5_1G  2
-#define   DTH_TRFC_195_2G    3
-#define   DTH_TRFC_327_5_4G  4
+#define	  DTH_TRFC_127_5_1G  2
+#define	  DTH_TRFC_195_2G    3
+#define	  DTH_TRFC_327_5_4G  4
 #if 0
 //DDR3
-#define   DTH_TRFC_90_512M   1
-#define   DTH_TRFC_110_5_1G  2
-#define   DTH_TRFC_160_2G    3
-#define   DTH_TRFC_300_4G    4
-#define   DTH_TRFC_UNDEFINED_8G   5
+#define	  DTH_TRFC_90_512M   1
+#define	  DTH_TRFC_110_5_1G  2
+#define	  DTH_TRFC_160_2G    3
+#define	  DTH_TRFC_300_4G    4
+#define	  DTH_TRFC_UNDEFINED_8G	  5
 #endif
 #define  DTH_TRFC1_SHIFT   23 /*for Logical DIMM1 */
 #define  DTH_TRFC2_SHIFT   26 /*for Logical DIMM2 */
 #define  DTH_TRFC3_SHIFT   29 /*for Logical DIMM3 */
 
 #define DRAM_CONFIG_LOW	   0x90
-#define	 DCL_InitDram	   (1<<0)
+#define	 DCL_InitDram		 (1<<0)
 #define	 DCL_ExitSelfRef   (1<<1)
 #define  DCL_PllLockTime_SHIFT 2
 #define  DCL_PllLockTime_MASK 3
-#define   DCL_PllLockTime_15US 0
-#define   DCL_PllLockTime_6US 1
+#define	  DCL_PllLockTime_15US 0
+#define	  DCL_PllLockTime_6US 1
 #define  DCL_DramTerm_SHIFT 4
 #define  DCL_DramTerm_MASK  3
-#define   DCL_DramTerm_No   0
-#define   DCL_DramTerm_75_OH 1
-#define   DCL_DramTerm_150_OH 2
-#define   DCL_DramTerm_50_OH 3
-#define  DCL_DisDqsBar	    (1<<6) /* only for DDR2 */
+#define	  DCL_DramTerm_No   0
+#define	  DCL_DramTerm_75_OH 1
+#define	  DCL_DramTerm_150_OH 2
+#define	  DCL_DramTerm_50_OH 3
+#define  DCL_DisDqsBar		   (1<<6) /* only for DDR2 */
 #define  DCL_DramDrvWeak   (1<<7) /* only for DDR2 */
 #define  DCL_ParEn	   (1<<8)
 #define  DCL_SelfRefRateEn (1<<9) /* only for DDR2 */
 #define  DCL_BurstLength32 (1<<10) /* only for DDR3 */
-#define  DCL_Width128	   (1<<11)
+#define  DCL_Width128		 (1<<11)
 #define  DCL_X4Dimm_SHIFT  12
 #define  DCL_X4Dimm_MASK   0xf
-#define  DCL_UnBuffDimm    (1<<16)
+#define  DCL_UnBuffDimm	   (1<<16)
 #define  DCL_EnPhyDqsRcvEnTr (1<<18)
-#define	 DCL_DimmEccEn	   (1<<19)
+#define	 DCL_DimmEccEn		  (1<<19)
 #define  DCL_DynPageCloseEn (1<<20)
 #define  DCL_IdleCycInit_SHIFT 21
 #define  DCL_IdleCycInit_MASK	3
-#define   DCL_IdleCycInit_16CLK 0
-#define   DCL_IdleCycInit_32CLK 1
-#define   DCL_IdleCycInit_64CLK 2
-#define   DCL_IdleCycInit_96CLK 3
+#define	  DCL_IdleCycInit_16CLK 0
+#define	  DCL_IdleCycInit_32CLK 1
+#define	  DCL_IdleCycInit_64CLK 2
+#define	  DCL_IdleCycInit_96CLK 3
 #define  DCL_ForceAutoPchg   (1<<23)
 
 #define DRAM_CONFIG_HIGH   0x94
 #define  DCH_MemClkFreq_SHIFT 0
 #define  DCH_MemClkFreq_MASK  7
-#define   DCH_MemClkFreq_200MHz 0  /* DDR2 */
-#define   DCH_MemClkFreq_266MHz 1  /* DDR2 */
-#define   DCH_MemClkFreq_333MHz 2  /* DDR2 */
+#define	  DCH_MemClkFreq_200MHz 0  /* DDR2 */
+#define	  DCH_MemClkFreq_266MHz 1  /* DDR2 */
+#define	  DCH_MemClkFreq_333MHz 2  /* DDR2 */
 #define	  DCH_MemClkFreq_400MHz 3  /* DDR2 and DDR 3*/
 #define	  DCH_MemClkFreq_533MHz 4  /* DDR 3 */
 #define	  DCH_MemClkFreq_667MHz 5  /* DDR 3 */
@@ -278,28 +278,28 @@
 #define  DCH_ZqcsInterval_64MS	 1
 #define  DCH_ZqcsInterval_128MS  2
 #define  DCH_ZqcsInterval_256MS  3
-#define  DCH_RDqsEn	      (1<<12) /* only for DDR2 */
+#define  DCH_RDqsEn		  (1<<12) /* only for DDR2 */
 #define  DCH_DisSimulRdWr	(1<<13)
 #define  DCH_DisDramInterface (1<<14)
 #define  DCH_PowerDownEn      (1<<15)
 #define  DCH_PowerDownMode_SHIFT 16
 #define  DCH_PowerDownMode_MASK 1
-#define   DCH_PowerDownMode_Channel_CKE 0
-#define   DCH_PowerDownMode_ChipSelect_CKE 1
+#define	  DCH_PowerDownMode_Channel_CKE 0
+#define	  DCH_PowerDownMode_ChipSelect_CKE 1
 #define  DCH_FourRankSODimm	(1<<17)
 #define  DCH_FourRankRDimm	(1<<18)
 #define  DCH_SlowAccessMode	(1<<20)
 #define  DCH_BankSwizzleMode	 (1<<22)
 #define  DCH_DcqBypassMax_SHIFT 24
 #define  DCH_DcqBypassMax_MASK	 0xf
-#define   DCH_DcqBypassMax_BASE 0
-#define   DCH_DcqBypassMax_MIN	 0
-#define   DCH_DcqBypassMax_MAX	 15
+#define	  DCH_DcqBypassMax_BASE 0
+#define	  DCH_DcqBypassMax_MIN	 0
+#define	  DCH_DcqBypassMax_MAX	 15
 #define  DCH_FourActWindow_SHIFT 28
 #define  DCH_FourActWindow_MASK 0xf
-#define   DCH_FourActWindow_BASE 7 /* DDR3 15 */
-#define   DCH_FourActWindow_MIN 8  /* DDR3 16 */
-#define   DCH_FourActWindow_MAX 20 /* DDR3 30 */
+#define	  DCH_FourActWindow_BASE 7 /* DDR3 15 */
+#define	  DCH_FourActWindow_MIN 8  /* DDR3 16 */
+#define	  DCH_FourActWindow_MAX 20 /* DDR3 30 */
 
 
 // for 0x98 index and 0x9c data for DCT0
@@ -317,56 +317,56 @@
 #define DRAM_OUTPUT_DRV_COMP_CTRL	0x00
 #define  DODCC_CkeDrvStren_SHIFT 0
 #define  DODCC_CkeDrvStren_MASK  3
-#define   DODCC_CkeDrvStren_1_0X  0
-#define   DODCC_CkeDrvStren_1_25X 1
-#define   DODCC_CkeDrvStren_1_5X  2
-#define   DODCC_CkeDrvStren_2_0X  3
+#define	  DODCC_CkeDrvStren_1_0X  0
+#define	  DODCC_CkeDrvStren_1_25X 1
+#define	  DODCC_CkeDrvStren_1_5X  2
+#define	  DODCC_CkeDrvStren_2_0X  3
 #define  DODCC_CsOdtDrvStren_SHIFT 4
 #define  DODCC_CsOdtDrvStren_MASK  3
-#define   DODCC_CsOdtDrvStren_1_0X  0
-#define   DODCC_CsOdtDrvStren_1_25X 1
-#define   DODCC_CsOdtDrvStren_1_5X  2
-#define   DODCC_CsOdtDrvStren_2_0X  3
+#define	  DODCC_CsOdtDrvStren_1_0X  0
+#define	  DODCC_CsOdtDrvStren_1_25X 1
+#define	  DODCC_CsOdtDrvStren_1_5X  2
+#define	  DODCC_CsOdtDrvStren_2_0X  3
 #define  DODCC_AddrCmdDrvStren_SHIFT 8
 #define  DODCC_AddrCmdDrvStren_MASK  3
-#define   DODCC_AddrCmdDrvStren_1_0X  0
-#define   DODCC_AddrCmdDrvStren_1_25X 1
-#define   DODCC_AddrCmdDrvStren_1_5X  2
-#define   DODCC_AddrCmdDrvStren_2_0X  3
+#define	  DODCC_AddrCmdDrvStren_1_0X  0
+#define	  DODCC_AddrCmdDrvStren_1_25X 1
+#define	  DODCC_AddrCmdDrvStren_1_5X  2
+#define	  DODCC_AddrCmdDrvStren_2_0X  3
 #define  DODCC_ClkDrvStren_SHIFT 12
 #define  DODCC_ClkDrvStren_MASK  3
-#define   DODCC_ClkDrvStren_0_75X  0
-#define   DODCC_ClkDrvStren_1_0X 1
-#define   DODCC_ClkDrvStren_1_25X  2
-#define   DODCC_ClkDrvStren_1_5X  3
+#define	  DODCC_ClkDrvStren_0_75X  0
+#define	  DODCC_ClkDrvStren_1_0X 1
+#define	  DODCC_ClkDrvStren_1_25X  2
+#define	  DODCC_ClkDrvStren_1_5X  3
 #define  DODCC_DataDrvStren_SHIFT 16
 #define  DODCC_DataDrvStren_MASK  3
-#define   DODCC_DataDrvStren_0_75X  0
-#define   DODCC_DataDrvStren_1_0X 1
-#define   DODCC_DataDrvStren_1_25X  2
-#define   DODCC_DataDrvStren_1_5X  3
+#define	  DODCC_DataDrvStren_0_75X  0
+#define	  DODCC_DataDrvStren_1_0X 1
+#define	  DODCC_DataDrvStren_1_25X  2
+#define	  DODCC_DataDrvStren_1_5X  3
 #define  DODCC_DqsDrvStren_SHIFT 20
 #define  DODCC_DqsDrvStren_MASK  3
-#define   DODCC_DqsDrvStren_0_75X  0
-#define   DODCC_DqsDrvStren_1_0X 1
-#define   DODCC_DqsDrvStren_1_25X  2
-#define   DODCC_DqsDrvStren_1_5X  3
+#define	  DODCC_DqsDrvStren_0_75X  0
+#define	  DODCC_DqsDrvStren_1_0X 1
+#define	  DODCC_DqsDrvStren_1_25X  2
+#define	  DODCC_DqsDrvStren_1_5X  3
 #define  DODCC_ProcOdt_SHIFT 28
 #define  DODCC_ProcOdt_MASK  3
-#define   DODCC_ProcOdt_300_OHMS  0
-#define   DODCC_ProcOdt_150_OHMS 1
-#define   DODCC_ProcOdt_75_OHMS  2
+#define	  DODCC_ProcOdt_300_OHMS  0
+#define	  DODCC_ProcOdt_150_OHMS 1
+#define	  DODCC_ProcOdt_75_OHMS  2
 #if 0
 //DDR3
-#define   DODCC_ProcOdt_240_OHMS  0
-#define   DODCC_ProcOdt_120_OHMS 1
-#define   DODCC_ProcOdt_60_OHMS  2
+#define	  DODCC_ProcOdt_240_OHMS  0
+#define	  DODCC_ProcOdt_120_OHMS 1
+#define	  DODCC_ProcOdt_60_OHMS  2
 #endif
 
 /*
    for DDR2 400, 533, 667, F2x[1,0]9C_x[02:01], [03], [06:05], [07] controll timing of all DIMMs
    for DDR2 800, DDR3 800, 1067, 1333, 1600, F2x[1,0]9C_x[02:01], [03], [06:05], [07] controll timing of DIMM0
-					     F2x[1,0]9C_x[102:101], [103], [106:105], [107] controll timing of DIMM1
+						  F2x[1,0]9C_x[102:101], [103], [106:105], [107] controll timing of DIMM1
 	So Socket F with Four Logical DIMM will only support DDR2 800  ?
 */
 /* there are index	   +100	   ===> for DIMM1
@@ -376,14 +376,14 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define DRAM_WRITE_DATA_TIMING_CTRL_LOW 0x01
 #define  DWDTC_WrDatFineDlyByte0_SHIFT 0
 #define  DWDTC_WrDatFineDlyByte_MASK  0x1f
-#define   DWDTC_WrDatFineDlyByte_BASE 0
-#define   DWDTC_WrDatFineDlyByte_MIN  0
-#define   DWDTC_WrDatFineDlyByte_MAX  31 // 1/64 MEMCLK
+#define	  DWDTC_WrDatFineDlyByte_BASE 0
+#define	  DWDTC_WrDatFineDlyByte_MIN  0
+#define	  DWDTC_WrDatFineDlyByte_MAX  31 // 1/64 MEMCLK
 #define  DWDTC_WrDatGrossDlyByte0_SHIFT 5
 #define  DWDTC_WrDatGrossDlyByte_MASK	0x3
-#define   DWDTC_WrDatGrossDlyByte_NO_DELAY 0
-#define   DWDTC_WrDatGrossDlyByte_0_5_	 1
-#define   DWDTC_WrDatGrossDlyByte_1  2
+#define	  DWDTC_WrDatGrossDlyByte_NO_DELAY 0
+#define	  DWDTC_WrDatGrossDlyByte_0_5_	 1
+#define	  DWDTC_WrDatGrossDlyByte_1  2
 #define  DWDTC_WrDatFineDlyByte1_SHIFT 8
 #define  DWDTC_WrDatGrossDlyByte1_SHIFT 13
 #define  DWDTC_WrDatFineDlyByte2_SHIFT 16
@@ -408,29 +408,29 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define DRAM_ADDR_CMD_TIMING_CTRL 0x04
 #define  DACTC_CkeFineDelay_SHIFT 0
 #define  DACTC_CkeFineDelay_MASK  0x1f
-#define   DACTC_CkeFineDelay_BASE 0
-#define   DACTC_CkeFineDelay_MIN  0
-#define   DACTC_CkeFineDelay_MAX 31
+#define	  DACTC_CkeFineDelay_BASE 0
+#define	  DACTC_CkeFineDelay_MIN  0
+#define	  DACTC_CkeFineDelay_MAX 31
 #define  DACTC_CkeSetup	(1<<5)
 #define  DACTC_CsOdtFineDelay_SHIFT 8
 #define  DACTC_CsOdtFineDelay_MASK  0x1f
-#define   DACTC_CsOdtFineDelay_BASE 0
-#define   DACTC_CsOdtFineDelay_MIN  0
-#define   DACTC_CsOdtFineDelay_MAX 31
+#define	  DACTC_CsOdtFineDelay_BASE 0
+#define	  DACTC_CsOdtFineDelay_MIN  0
+#define	  DACTC_CsOdtFineDelay_MAX 31
 #define  DACTC_CsOdtSetup   (1<<13)
 #define  DACTC_AddrCmdFineDelay_SHIFT 16
 #define  DACTC_AddrCmdFineDelay_MASK  0x1f
-#define   DACTC_AddrCmdFineDelay_BASE 0
-#define   DACTC_AddrCmdFineDelay_MIN  0
-#define   DACTC_AddrCmdFineDelay_MAX 31
+#define	  DACTC_AddrCmdFineDelay_BASE 0
+#define	  DACTC_AddrCmdFineDelay_MIN  0
+#define	  DACTC_AddrCmdFineDelay_MAX 31
 #define  DACTC_AddrCmdSetup   (1<<21)
 
 #define DRAM_READ_DQS_TIMING_CTRL_LOW 0x05
 #define  DRDTC_RdDqsTimeByte0_SHIFT 0
 #define  DRDTC_RdDqsTimeByte_MASK  0x3f
-#define   DRDTC_RdDqsTimeByte_BASE 0
-#define   DRDTC_RdDqsTimeByte_MIN  0
-#define   DRDTC_RdDqsTimeByte_MAX  63 // 1/128 MEMCLK
+#define	  DRDTC_RdDqsTimeByte_BASE 0
+#define	  DRDTC_RdDqsTimeByte_MIN  0
+#define	  DRDTC_RdDqsTimeByte_MAX  63 // 1/128 MEMCLK
 #define  DRDTC_RdDqsTimeByte1_SHIFT 8
 #define  DRDTC_RdDqsTimeByte2_SHIFT 16
 #define  DRDTC_RdDqsTimeByte3_SHIFT 24
@@ -449,9 +449,9 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define  DPC_WrtLvTrMode (1<<1)
 #define  DPC_TrNibbleSel (1<<2)
 #define  DPC_TrDimmSel_SHIFT 4
-#define   DPC_TrDimmSel_MASK 3 /* 0-->dimm0, 1-->dimm1, 2--->dimm2, 3--->dimm3 */
+#define	  DPC_TrDimmSel_MASK 3 /* 0-->dimm0, 1-->dimm1, 2--->dimm2, 3--->dimm3 */
 #define  DPC_WrLvOdt_SHIFT 8
-#define   DPC_WrLvOdt_MASK 0xf /* bit 0-->odt 0, ...*/
+#define	  DPC_WrLvOdt_MASK 0xf /* bit 0-->odt 0, ...*/
 #define  DPC_WrLvODtEn (1<<12)
 #define  DPC_DqsRcvTrEn (1<<13)
 #define  DPC_DisAutoComp (1<<30)
@@ -459,9 +459,9 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #define DRAM_DQS_RECV_ENABLE_TIME_CTRL_0_0 0x10 //DIMM0 Channel A
 #define  DDRETC_DqsRcvEnFineDelayByte0_SHIFT 0
-#define   DDRETC_DqsRcvEnFineDelayByte0_MASK 0x1f
+#define	  DDRETC_DqsRcvEnFineDelayByte0_MASK 0x1f
 #define  DDRETC_DqsRcvEnGrossDelayByte0_SHIFT 5
-#define   DDRETC_DqsRcvEnGrossDelayByte0_MASK 0x3
+#define	  DDRETC_DqsRcvEnGrossDelayByte0_MASK 0x3
 #define  DDRETC_DqsRcvEnFineDelayByte1_SHIFT 8
 #define  DDRETC_DqsRcvEnGrossDelayByte1_SHIFT 13
 #define  DDRETC_DqsRcvEnFineDelayByte2_SHIFT 16
@@ -483,7 +483,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define  DDRETCE_WrChkFineDlyByte0_SHIFT 0
 #define  DDRETCE_WrChkGrossDlyByte0_SHIFT 5
 
-#define DRAM_DQS_RECV_ENABLE_TIME_CTRL_0_2 0x20   //DIMM0 channel B
+#define DRAM_DQS_RECV_ENABLE_TIME_CTRL_0_2 0x20	  //DIMM0 channel B
 #define  DDRETC_DqsRcvEnFineDelayByte8_SHIFT 0
 #define  DDRETC_DqsRcvEnGrossDelayByte8_SHIFT 5
 #define  DDRETC_DqsRcvEnFineDelayByte9_SHIFT 8
@@ -514,14 +514,14 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define DRAM_DQS_RECV_ENABLE_TIME_CTRL_1_3 0x24
 #define DRAM_DQS_RECV_ENABLE_TIMING_CTRL_ECC_1_1 0x25
 
-#define DRAM_DQS_RECV_ENABLE_TIME_CTRL_2_0 0x16   // DIMM2
+#define DRAM_DQS_RECV_ENABLE_TIME_CTRL_2_0 0x16	  // DIMM2
 #define DRAM_DQS_RECV_ENABLE_TIME_CTRL_2_1 0x17
 #define DRAM_DQS_RECV_ENABLE_TIMING_CTRL_ECC_2_0 0x18
 #define DRAM_DQS_RECV_ENABLE_TIME_CTRL_2_2 0x26
 #define DRAM_DQS_RECV_ENABLE_TIME_CTRL_2_3 0x27
 #define DRAM_DQS_RECV_ENABLE_TIMING_CTRL_ECC_2_1 0x28
 
-#define DRAM_DQS_RECV_ENABLE_TIME_CTRL_3_0 0x19   // DIMM3
+#define DRAM_DQS_RECV_ENABLE_TIME_CTRL_3_0 0x19	  // DIMM3
 #define DRAM_DQS_RECV_ENABLE_TIME_CTRL_3_1 0x1a
 #define DRAM_DQS_RECV_ENABLE_TIMING_CTRL_ECC_3_0 0x1b
 #define DRAM_DQS_RECV_ENABLE_TIME_CTRL_3_2 0x29
@@ -534,9 +534,9 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 //DDR3
 #define DRAM_DQS_WRITE_TIME_CTRL_0_0 0x30 //DIMM0 Channel A
 #define  DDWTC_WrDqsFineDlyByte0_SHIFT 0
-#define   DDWTC_WrDqsFineDlyByte0_MASK 0x1f
+#define	  DDWTC_WrDqsFineDlyByte0_MASK 0x1f
 #define  DDWTC_WrDqsGrossDlyByte0_SHIFT 5
-#define   DDWTC_WrDqsGrossDlyByte0_MASK 0x3
+#define	  DDWTC_WrDqsGrossDlyByte0_MASK 0x3
 #define  DDWTC_WrDqsFineDlyByte1_SHIFT 8
 #define  DDWTC_WrDqsGrossDlyByte1_SHIFT 13
 #define  DDWTC_WrDqsFineDlyByte2_SHIFT 16
@@ -592,9 +592,9 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #define DRAM_PHASE_RECOVERY_CTRL_0 0x50
 #define  DPRC_PhRecFineDlyByte0_SHIFT 0
-#define   DDWTC_PhRecFineDlyByte0_MASK 0x1f
+#define	  DDWTC_PhRecFineDlyByte0_MASK 0x1f
 #define  DDWTC_PhRecGrossDlyByte0_SHIFT 5
-#define   DDWTC_PhRecGrossDlyByte0_MASK 0x3
+#define	  DDWTC_PhRecGrossDlyByte0_MASK 0x3
 #define  DDWTC_PhRecFineDlyByte1_SHIFT 8
 #define  DDWTC_PhRecGrossDlyByte1_SHIFT 13
 #define  DDWTC_PhRecFineDlyByte2_SHIFT 16
@@ -618,7 +618,7 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #define DRAM_WRITE_LEVEL_ERROR 0x53 /* read only */
 #define  DWLE_WrLvErr_SHIFT 0
-#define   DWLE_WrLvErr_MASK 0xff
+#define	  DWLE_WrLvErr_MASK 0xff
 
 #define DRAM_CTRL_MISC 0xa0
 #define  DCM_MemCleared (1<<0) /* RD  == F2x110 [MemCleared] */
@@ -634,11 +634,11 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #define DCT_DEBUG_CTRL 0xf0 /* 0xf0 for DCT0,	0x1f0 is for DCT1*/
 #define  DDC_DllAdjust_SHIFT 0
-#define   DDC_DllAdjust_MASK 0xff
+#define	  DDC_DllAdjust_MASK 0xff
 #define  DDC_DllSlower (1<<8)
 #define  DDC_DllFaster (1<<9)
 #define  DDC_WrtDqsAdjust_SHIFT 16
-#define   DDC_WrtDqsAdjust_MASK 0x7
+#define	  DDC_WrtDqsAdjust_MASK 0x7
 #define  DDC_WrtDqsAdjustEn (1<<19)
 
 #define DRAM_CTRL_SEL_LOW 0x110
@@ -649,62 +649,62 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define  DCSL_DctGangEn (1<<4)
 #define  DCSL_DctDataIntLv (1<<5)
 #define  DCSL_DctSelIntLvAddr_SHIFT
-#define   DCSL_DctSelIntLvAddr_MASK 3
+#define	  DCSL_DctSelIntLvAddr_MASK 3
 #define  DCSL_DramEnable (1<<8)  /* RD only */
 #define  DCSL_MemClrBusy (1<<9)  /* RD only */
 #define  DCSL_MemCleared (1<<10) /* RD only */
 #define  DCSL_DctSelBaseAddr_47_27_SHIFT 11
-#define   DCSL_DctSelBaseAddr_47_27_MASK 0x1fffff
+#define	  DCSL_DctSelBaseAddr_47_27_MASK 0x1fffff
 
 #define DRAM_CTRL_SEL_HIGH 0x114
 #define  DCSH_DctSelBaseOffset_47_26_SHIFT 10
-#define   DCSH_DctSelBaseOffset_47_26_MASK 0x3fffff
+#define	  DCSH_DctSelBaseOffset_47_26_MASK 0x3fffff
 
 #define MEM_CTRL_CONF_LOW 0x118
 #define  MCCL_MctPriCpuRd (1<<0)
 #define  MCCL_MctPriCpuWr (1<<1)
 #define  MCCL_MctPriIsocRd_SHIFT 4
-#define   MCCL_MctPriIsoc_MASK 0x3
+#define	  MCCL_MctPriIsoc_MASK 0x3
 #define  MCCL_MctPriIsocWr_SHIFT 6
-#define   MCCL_MctPriIsocWe_MASK 0x3
+#define	  MCCL_MctPriIsocWe_MASK 0x3
 #define  MCCL_MctPriDefault_SHIFT 8
-#define   MCCL_MctPriDefault_MASK 0x3
+#define	  MCCL_MctPriDefault_MASK 0x3
 #define  MCCL_MctPriWr_SHIFT 10
-#define   MCCL_MctPriWr_MASK 0x3
+#define	  MCCL_MctPriWr_MASK 0x3
 #define  MCCL_MctPriIsoc_SHIFT 12
-#define   MCCL_MctPriIsoc_MASK 0x3
+#define	  MCCL_MctPriIsoc_MASK 0x3
 #define  MCCL_MctPriTrace_SHIFT 14
-#define   MCCL_MctPriTrace_MASK 0x3
+#define	  MCCL_MctPriTrace_MASK 0x3
 #define  MCCL_MctPriScrub_SHIFT 16
-#define   MCCL_MctPriScrub_MASK 0x3
+#define	  MCCL_MctPriScrub_MASK 0x3
 #define  MCCL_McqMedPriByPassMax_SHIFT 20
-#define   MCCL_McqMedPriByPassMax_MASK 0x7
+#define	  MCCL_McqMedPriByPassMax_MASK 0x7
 #define  MCCL_McqHiPriByPassMax_SHIFT 24
-#define   MCCL_McqHiPriByPassMax_MASK 0x7
+#define	  MCCL_McqHiPriByPassMax_MASK 0x7
 #define  MCCL_MctVarPriCntLmt_SHIFT 28
-#define   MCCL_MctVarPriCntLmt_MASK 0x7
+#define	  MCCL_MctVarPriCntLmt_MASK 0x7
 
 #define MEM_CTRL_CONF_HIGH 0x11c
 #define  MCCH_DctWrLimit_SHIFT 0
-#define   MCCH_DctWrLimit_MASK 0x3
+#define	  MCCH_DctWrLimit_MASK 0x3
 #define  MCCH_MctWrLimit_SHIFT 2
-#define   MCCH_MctWrLimit_MASK 0x1f
+#define	  MCCH_MctWrLimit_MASK 0x1f
 #define  MCCH_MctPrefReqLimit_SHIFT 7
-#define   MCCH_MctPrefReqLimit_MASK 0x1f
+#define	  MCCH_MctPrefReqLimit_MASK 0x1f
 #define  MCCH_PrefCpuDis (1<<12)
 #define  MCCH_PrefIoDis (1<<13)
 #define  MCCH_PrefIoFixStrideEn (1<<14)
 #define  MCCH_PrefFixStrideEn (1<<15)
 #define  MCCH_PrefFixDist_SHIFT 16
-#define   MCCH_PrefFixDist_MASK 0x3
+#define	  MCCH_PrefFixDist_MASK 0x3
 #define  MCCH_PrefConfSat_SHIFT 18
-#define   MCCH_PrefConfSat_MASK 0x3
+#define	  MCCH_PrefConfSat_MASK 0x3
 #define  MCCH_PrefOneConf_SHIFT 20
-#define   MCCH_PrefOneConf_MASK 0x3
+#define	  MCCH_PrefOneConf_MASK 0x3
 #define  MCCH_PrefTwoConf_SHIFT 22
-#define   MCCH_PrefTwoConf_MASK 0x7
+#define	  MCCH_PrefTwoConf_MASK 0x7
 #define  MCCH_PrefThreeConf_SHIFT 25
-#define   MCCH_prefThreeConf_MASK 0x7
+#define	  MCCH_prefThreeConf_MASK 0x7
 #define  MCCH_PrefDramTrainMode (1<<28)
 #define  MCCH_FlushWrOnStpGnt (1<<29)
 #define  MCCH_FlushWr (1<<30)
@@ -746,60 +746,60 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 
 
-#define MCA_NB_CONFIG	    0x44
-#define   MNC_CpuRdDatErrEn   (1<<1)
-#define   MNC_SyncOnUcEccEn   (1<<2)
-#define   MNC_SynvPktGenDis   (1<<3)
-#define   MNC_SyncPktPropDis  (1<<4)
-#define   MNC_IoMstAbortDis   (1<<5)
-#define   MNC_CpuErrDis	      (1<<6)
-#define   MNC_IoErrDis	      (1<<7)
-#define   MNC_WdogTmrDis      (1<<8)
-#define   MNC_WdogTmrCntSel_2_0_SHIFT 9 /* 3 is ar f3x180 */
-#define    MNC_WdogTmrCntSel_2_0_MASK 0x3
-#define   MNC_WdogTmrBaseSel_SHIFT 12
-#define    MNC_WdogTmrBaseSel_MASK 0x3
-#define   MNC_LdtLinkSel_SHIFT 14
-#define    MNC_LdtLinkSel_MASK 0x3
-#define   MNC_GenCrcErrByte0	(1<<16)
-#define   MNC_GenCrcErrByte1	(1<<17)
-#define   MNC_SubLinkSel_SHIFT 18
-#define    MNC_SubLinkSel_MASK 0x3
-#define   MNC_SyncOnWdogEn  (1<<20)
-#define   MNC_SyncOnAnyErrEn (1<<21)
-#define   MNC_DramEccEn       (1<<22)
-#define   MNC_ChipKillEccEn  (1<<23)
-#define   MNC_IoRdDatErrEn (1<<24)
-#define   MNC_DisPciCfgCpuErrRsp (1<<25)
-#define   MNC_CorrMcaExcEn (1<<26)
-#define   MNC_NbMcaToMstCpuEn (1<<27)
-#define   MNC_DisTgtAbtCpuErrRsp (1<<28)
-#define   MNC_DisMstAbtCpuErrRsp (1<<29)
-#define   MNC_SyncOnDramAdrParErrEn (1<<30)
-#define   MNC_NbMcaLogEn (1<<31)
+#define MCA_NB_CONFIG		  0x44
+#define	  MNC_CpuRdDatErrEn   (1<<1)
+#define	  MNC_SyncOnUcEccEn   (1<<2)
+#define	  MNC_SynvPktGenDis   (1<<3)
+#define	  MNC_SyncPktPropDis  (1<<4)
+#define	  MNC_IoMstAbortDis   (1<<5)
+#define	  MNC_CpuErrDis	      (1<<6)
+#define	  MNC_IoErrDis		     (1<<7)
+#define	  MNC_WdogTmrDis      (1<<8)
+#define	  MNC_WdogTmrCntSel_2_0_SHIFT 9 /* 3 is ar f3x180 */
+#define	   MNC_WdogTmrCntSel_2_0_MASK 0x3
+#define	  MNC_WdogTmrBaseSel_SHIFT 12
+#define	   MNC_WdogTmrBaseSel_MASK 0x3
+#define	  MNC_LdtLinkSel_SHIFT 14
+#define	   MNC_LdtLinkSel_MASK 0x3
+#define	  MNC_GenCrcErrByte0	(1<<16)
+#define	  MNC_GenCrcErrByte1	(1<<17)
+#define	  MNC_SubLinkSel_SHIFT 18
+#define	   MNC_SubLinkSel_MASK 0x3
+#define	  MNC_SyncOnWdogEn  (1<<20)
+#define	  MNC_SyncOnAnyErrEn (1<<21)
+#define	  MNC_DramEccEn	      (1<<22)
+#define	  MNC_ChipKillEccEn  (1<<23)
+#define	  MNC_IoRdDatErrEn (1<<24)
+#define	  MNC_DisPciCfgCpuErrRsp (1<<25)
+#define	  MNC_CorrMcaExcEn (1<<26)
+#define	  MNC_NbMcaToMstCpuEn (1<<27)
+#define	  MNC_DisTgtAbtCpuErrRsp (1<<28)
+#define	  MNC_DisMstAbtCpuErrRsp (1<<29)
+#define	  MNC_SyncOnDramAdrParErrEn (1<<30)
+#define	  MNC_NbMcaLogEn (1<<31)
 
 #define MCA_NB_STATUS_LOW 0x48
 #define  MNSL_ErrorCode_SHIFT 0
-#define   MNSL_ErrorCode_MASK 0xffff
+#define	  MNSL_ErrorCode_MASK 0xffff
 #define  MNSL_ErrorCodeExt_SHIFT 16
-#define   MNSL_ErrorCodeExt_MASK 0x1f
+#define	  MNSL_ErrorCodeExt_MASK 0x1f
 #define  MNSL_Syndrome_15_8_SHIFT 24
-#define   MNSL_Syndrome_15_8_MASK 0xff
+#define	  MNSL_Syndrome_15_8_MASK 0xff
 
 #define MCA_NB_STATUS_HIGH 0x4c
 #define  MNSH_ErrCPU_SHIFT 0
-#define   MNSH_ErrCPU_MASK 0xf
+#define	  MNSH_ErrCPU_MASK 0xf
 #define  MNSH_LDTLink_SHIFT 4
-#define   MNSH_LDTLink_MASK 0xf
+#define	  MNSH_LDTLink_MASK 0xf
 #define  MNSH_ErrScrub (1<<8)
 #define  MNSH_SubLink (1<<9)
 #define  MNSH_McaStatusSubCache_SHIFT 10
-#define   MNSH_McaStatusSubCache_MASK 0x3
+#define	  MNSH_McaStatusSubCache_MASK 0x3
 #define  MNSH_Deffered (1<<12)
 #define  MNSH_UnCorrECC (1<<13)
 #define  MNSH_CorrECC (1<<14)
 #define  MNSH_Syndrome_7_0_SHIFT 15
-#define   MNSH_Syndrome_7_0_MASK 0xff
+#define	  MNSH_Syndrome_7_0_MASK 0xff
 #define  MNSH_PCC (1<<25)
 #define  MNSH_ErrAddrVal (1<<26)
 #define  MNSH_ErrMiscVal (1<<27)
@@ -810,36 +810,36 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 #define MCA_NB_ADDR_LOW 0x50
 #define  MNAL_ErrAddr_31_1_SHIFT 1
-#define   MNAL_ErrAddr_31_1_MASK 0x7fffffff
+#define	  MNAL_ErrAddr_31_1_MASK 0x7fffffff
 
 #define MCA_NB_ADDR_HIGH 0x54
 #define  MNAL_ErrAddr_47_32_SHIFT 0
-#define   MNAL_ErrAddr_47_32_MASK 0xffff
+#define	  MNAL_ErrAddr_47_32_MASK 0xffff
 
-#define DRAM_SCRUB_RATE_CTRL	   0x58
-#define	  SCRUB_NONE	    0
-#define	  SCRUB_40ns	    1
-#define	  SCRUB_80ns	    2
-#define	  SCRUB_160ns	    3
-#define	  SCRUB_320ns	    4
-#define	  SCRUB_640ns	    5
-#define	  SCRUB_1_28us	    6
-#define	  SCRUB_2_56us	    7
-#define	  SCRUB_5_12us	    8
-#define	  SCRUB_10_2us	    9
-#define	  SCRUB_20_5us	   0xa
-#define	  SCRUB_41_0us	   0xb
-#define	  SCRUB_81_9us	   0xc
+#define DRAM_SCRUB_RATE_CTRL		0x58
+#define	  SCRUB_NONE		 0
+#define	  SCRUB_40ns		 1
+#define	  SCRUB_80ns		 2
+#define	  SCRUB_160ns		  3
+#define	  SCRUB_320ns		  4
+#define	  SCRUB_640ns		  5
+#define	  SCRUB_1_28us		   6
+#define	  SCRUB_2_56us		   7
+#define	  SCRUB_5_12us		   8
+#define	  SCRUB_10_2us		   9
+#define	  SCRUB_20_5us		  0xa
+#define	  SCRUB_41_0us		  0xb
+#define	  SCRUB_81_9us		  0xc
 #define	  SCRUB_163_8us	   0xd
 #define	  SCRUB_327_7us	   0xe
 #define	  SCRUB_655_4us	   0xf
-#define	  SCRUB_1_31ms	   0x10
-#define	  SCRUB_2_62ms	   0x11
-#define	  SCRUB_5_24ms	   0x12
+#define	  SCRUB_1_31ms		  0x10
+#define	  SCRUB_2_62ms		  0x11
+#define	  SCRUB_5_24ms		  0x12
 #define	  SCRUB_10_49ms	   0x13
 #define	  SCRUB_20_97ms	   0x14
-#define	  SCRUB_42ms	   0x15
-#define	  SCRUB_84ms	   0x16
+#define	  SCRUB_42ms		0x15
+#define	  SCRUB_84ms		0x16
 #define	 DSRC_DramScrub_SHFIT  0
 #define	  DSRC_DramScrub_MASK	0x1f
 #define	 DSRC_L2Scrub_SHIFT	   8
@@ -852,11 +852,11 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define DRAM_SCRUB_ADDR_LOW	   0x5C
 #define  DSAL_ScrubReDirEn (1<<0)
 #define  DSAL_ScrubAddrLo_SHIFT 6
-#define   DSAL_ScrubAddrLo_MASK 0x3ffffff
+#define	  DSAL_ScrubAddrLo_MASK 0x3ffffff
 
-#define DRAM_SCRUB_ADDR_HIGH	   0x60
+#define DRAM_SCRUB_ADDR_HIGH		0x60
 #define  DSAH_ScrubAddrHi_SHIFT 0
-#define   DSAH_ScrubAddrHi_MASK 0xffff
+#define	  DSAH_ScrubAddrHi_MASK 0xffff
 
 #define HW_THERMAL_CTRL 0x64
 
@@ -899,10 +899,10 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 
 
 #define NORTHBRIDGE_CAP	   0xE8
-#define	 NBCAP_TwoChanDRAMcap	      (1 << 0)
-#define	 NBCAP_DualNodeMPcap	      (1 << 1)
-#define	 NBCAP_EightNodeMPcap	      (1 << 2)
-#define	 NBCAP_ECCcap	      (1 << 3)
+#define	 NBCAP_TwoChanDRAMcap		    (1 << 0)
+#define	 NBCAP_DualNodeMPcap		   (1 << 1)
+#define	 NBCAP_EightNodeMPcap		    (1 << 2)
+#define	 NBCAP_ECCcap		    (1 << 3)
 #define	 NBCAP_ChipkillECCcap	(1 << 4)
 #define	 NBCAP_DdrMaxRate_SHIFT	  5
 #define	 NBCAP_DdrMaxRate_MASK	  7
@@ -919,20 +919,20 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 #define	  NBCAP_DdrMaxRate_6_4G 3
 #define	  NBCAP_DdrMaxRate_8_0G 2
 #define	  NBCAP_DdrMaxRate_9_6G 1
-#define	 NBCAP_Mem_ctrl_cap	      (1 << 8)
-#define  MBCAP_SVMCap	     (1<<9)
+#define	 NBCAP_Mem_ctrl_cap		  (1 << 8)
+#define  MBCAP_SVMCap		   (1<<9)
 #define  NBCAP_HtcCap		(1<<10)
 #define  NBCAP_CmpCap_SHIFT	12
 #define  NBCAP_CmpCap_MASK	3
 #define  NBCAP_MpCap_SHIFT 16
 #define  NBCAP_MpCap_MASK 7
-#define   NBCAP_MpCap_1N 7
-#define   NBCAP_MpCap_2N 6
-#define   NBCAP_MpCap_4N 5
-#define   NBCAP_MpCap_8N 4
-#define   NBCAP_MpCap_32N 0
+#define	  NBCAP_MpCap_1N 7
+#define	  NBCAP_MpCap_2N 6
+#define	  NBCAP_MpCap_4N 5
+#define	  NBCAP_MpCap_8N 4
+#define	  NBCAP_MpCap_32N 0
 #define  NBCAP_UnGangEn_SHIFT 20
-#define   NBCAP_UnGangEn_MASK 0xf
+#define	  NBCAP_UnGangEn_MASK 0xf
 #define  NBCAP_L3Cap (1<<25)
 #define  NBCAP_HtAcCap (1<<26)
 
@@ -948,16 +948,16 @@ that are corresponding to 0x01, 0x02, 0x03, 0x05, 0x06, 0x07
 /* Function 5 for FBDIMM */
 #define FBD_DRAM_TIMING_LOW
 
-#define LinkConnected	   (1 << 0)
-#define InitComplete	   (1 << 1)
+#define LinkConnected		 (1 << 0)
+#define InitComplete		(1 << 1)
 #define NonCoherent	   (1 << 2)
 #define ConnectionPending (1 << 4)
 
 // Use the LAPIC timer count register to hold each core's init status
 //   Format: byte 0 - state
-//           byte 1 - fid_max
-//           byte 2 - nb_cof_vid_update
-//           byte 3 - apic id
+//	     byte 1 - fid_max
+//	     byte 2 - nb_cof_vid_update
+//	     byte 3 - apic id
 
 #define LAPIC_MSG_REG 0x380
 #define F10_APSTATE_STARTED 0x13  // start of AP execution

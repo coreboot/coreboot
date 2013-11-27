@@ -18,7 +18,7 @@
  */
 
 /*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
+ *			       M O D U L E S	U S E D
  *----------------------------------------------------------------------------------------
  */
 
@@ -52,38 +52,38 @@ VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
 /*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
+ *		     D E F I N I T I O N S    A N D    M A C R O S
  *----------------------------------------------------------------------------------------
  */
 
 /* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable    = NULL;
+VOID *DmiTable	  = NULL;
 VOID *AcpiPstate  = NULL;
-VOID *AcpiSrat    = NULL;
-VOID *AcpiSlit    = NULL;
+VOID *AcpiSrat	  = NULL;
+VOID *AcpiSlit	  = NULL;
 
 VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
-VOID *AcpiAlib    = NULL;
-VOID *AcpiIvrs    = NULL;
+VOID *AcpiAlib	  = NULL;
+VOID *AcpiIvrs	  = NULL;
 
 /*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
+ *		    T Y P E D E F S	A N D	  S T R U C T U  R E S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
+ *	     P R O T O T Y P E S     O F     L O C A L	   F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
+ *			    E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
+ *			    L O C A L	 F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
 UINT32
@@ -91,11 +91,11 @@ agesawrapper_amdinitcpuio (
 	VOID
 	)
 {
-	AGESA_STATUS                  Status;
-	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
-	AMD_CONFIG_PARAMS             StdHeader;
+	AGESA_STATUS		       Status;
+	UINT64			       MsrReg;
+	UINT32			       PciData;
+	PCI_ADDR		       PciAddress;
+	AMD_CONFIG_PARAMS	       StdHeader;
 
 	/* Enable legacy video routing: D18F1xF4 VGA Enable */
 	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x18, 1, 0xF4);
@@ -140,11 +140,11 @@ agesawrapper_amdinitmmio (
 	VOID
 	)
 {
-	AGESA_STATUS                  Status;
-	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
-	AMD_CONFIG_PARAMS             StdHeader;
+	AGESA_STATUS		       Status;
+	UINT64			       MsrReg;
+	UINT32			       PciData;
+	PCI_ADDR		       PciAddress;
+	AMD_CONFIG_PARAMS	       StdHeader;
 
 	/*
 	  Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
@@ -185,14 +185,14 @@ agesawrapper_amdinitreset (
 	AMD_RESET_PARAMS AmdResetParams;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	LibAmdMemFill (&AmdResetParams,
-		       0,
-		       sizeof (AMD_RESET_PARAMS),
-		       &(AmdResetParams.StdHeader));
+			 0,
+			 sizeof (AMD_RESET_PARAMS),
+			 &(AmdResetParams.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESET;
 	AmdParamStruct.AllocationMethod = ByHost;
@@ -223,9 +223,9 @@ agesawrapper_amdinitearly (
 	AMD_EARLY_PARAMS     *AmdEarlyParamsPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_EARLY;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -268,16 +268,16 @@ agesawrapper_amdinitpost (
 	)
 {
 	AGESA_STATUS status;
-	UINT16                  i;
-	UINT32          *HeadPtr;
+	UINT16			 i;
+	UINT32		 *HeadPtr;
 	AMD_INTERFACE_PARAMS  AmdParamStruct;
 	AMD_POST_PARAMS       *PostParams;
 	BIOS_HEAP_MANAGER    *BiosManagerPtr;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_POST;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -313,12 +313,12 @@ agesawrapper_amdinitenv (
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_ENV_PARAMS       *EnvParam;
+	AMD_ENV_PARAMS	      *EnvParam;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_ENV;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -378,9 +378,9 @@ agesawrapper_amdinitmid (
 	agesawrapper_amdinitcpuio ();
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_MID;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -409,9 +409,9 @@ agesawrapper_amdinitlate (
 	AMD_LATE_PARAMS *AmdLateParams;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_LATE;
 	AmdParamStruct.AllocationMethod = PostMemDram;
@@ -441,11 +441,11 @@ agesawrapper_amdinitlate (
 	AcpiIvrs    = AmdLateParams->AcpiIvrs;
 
 	printk(BIOS_DEBUG, "DmiTable:%x, AcpiPstatein: %x, AcpiSrat:%x,"
-	       "AcpiSlit:%x, Mce:%x, Cmc:%x,"
-	       "Alib:%x, AcpiIvrs:%x in %s\n",
-	       (unsigned int)DmiTable, (unsigned int)AcpiPstate, (unsigned int)AcpiSrat,
-	       (unsigned int)AcpiSlit, (unsigned int)AcpiWheaMce, (unsigned int)AcpiWheaCmc,
-	       (unsigned int)AcpiAlib, (unsigned int)AcpiIvrs, __func__);
+		"AcpiSlit:%x, Mce:%x, Cmc:%x,"
+		"Alib:%x, AcpiIvrs:%x in %s\n",
+		(unsigned int)DmiTable, (unsigned int)AcpiPstate, (unsigned int)AcpiSrat,
+		(unsigned int)AcpiSlit, (unsigned int)AcpiWheaMce, (unsigned int)AcpiWheaCmc,
+		(unsigned int)AcpiAlib, (unsigned int)AcpiIvrs, __func__);
 
 	/* AmdReleaseStruct (&AmdParamStruct); */
 	return (UINT32)Status;
@@ -462,9 +462,9 @@ agesawrapper_amdlaterunaptask (
 	AP_EXE_PARAMS ApExeParams;
 
 	LibAmdMemFill (&ApExeParams,
-		       0,
-		       sizeof (AP_EXE_PARAMS),
-		       &(ApExeParams.StdHeader));
+			 0,
+			 sizeof (AP_EXE_PARAMS),
+			 &(ApExeParams.StdHeader));
 
 	ApExeParams.StdHeader.AltImageBasePtr = 0;
 	ApExeParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;
@@ -489,12 +489,12 @@ UINT32 agesawrapper_amdinitresume(VOID)
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_RESUME_PARAMS     *AmdResumeParamsPtr;
-	S3_DATA_TYPE            S3DataType;
+	S3_DATA_TYPE		 S3DataType;
 
 	LibAmdMemFill (&AmdParamStruct,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdParamStruct.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdParamStruct.StdHeader));
 
 	AmdParamStruct.AgesaFunctionName = AMD_INIT_RESUME;
 	AmdParamStruct.AllocationMethod = PreMemHeap;
@@ -528,7 +528,7 @@ UINT32 agesawrapper_fchs3earlyrestore (VOID)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;
 
-	FCH_DATA_BLOCK      FchParams;
+	FCH_DATA_BLOCK	     FchParams;
 	AMD_CONFIG_PARAMS StdHeader;
 
 	StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
@@ -550,16 +550,16 @@ UINT32 agesawrapper_fchs3earlyrestore (VOID)
 UINT32 agesawrapper_amds3laterestore (VOID)
 {
 	AGESA_STATUS Status;
-	AMD_INTERFACE_PARAMS    AmdInterfaceParams;
-	AMD_S3LATE_PARAMS       AmdS3LateParams;
-	AMD_S3LATE_PARAMS       *AmdS3LateParamsPtr;
-	S3_DATA_TYPE          S3DataType;
+	AMD_INTERFACE_PARAMS	 AmdInterfaceParams;
+	AMD_S3LATE_PARAMS	 AmdS3LateParams;
+	AMD_S3LATE_PARAMS	 *AmdS3LateParamsPtr;
+	S3_DATA_TYPE	       S3DataType;
 
 	agesawrapper_amdinitcpuio();
 	LibAmdMemFill (&AmdS3LateParams,
-		       0,
-		       sizeof (AMD_S3LATE_PARAMS),
-		       &(AmdS3LateParams.StdHeader));
+			 0,
+			 sizeof (AMD_S3LATE_PARAMS),
+			 &(AmdS3LateParams.StdHeader));
 	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
 	AmdInterfaceParams.AllocationMethod = ByHost;
 	AmdInterfaceParams.AgesaFunctionName = AMD_S3LATE_RESTORE;
@@ -596,7 +596,7 @@ UINT32 agesawrapper_fchs3laterestore (VOID)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;
 
-	FCH_DATA_BLOCK      FchParams;
+	FCH_DATA_BLOCK	     FchParams;
 	AMD_CONFIG_PARAMS StdHeader;
 	UINT8 byte;
 
@@ -633,12 +633,12 @@ UINT32 agesawrapper_amdS3Save(VOID)
 	AGESA_STATUS Status;
 	AMD_S3SAVE_PARAMS *AmdS3SaveParamsPtr;
 	AMD_INTERFACE_PARAMS  AmdInterfaceParams;
-	S3_DATA_TYPE          S3DataType;
+	S3_DATA_TYPE	       S3DataType;
 
 	LibAmdMemFill (&AmdInterfaceParams,
-		       0,
-		       sizeof (AMD_INTERFACE_PARAMS),
-		       &(AmdInterfaceParams.StdHeader));
+			 0,
+			 sizeof (AMD_INTERFACE_PARAMS),
+			 &(AmdInterfaceParams.StdHeader));
 
 	AmdInterfaceParams.StdHeader.ImageBasePtr = 0;
 	AmdInterfaceParams.StdHeader.HeapStatus = HEAP_SYSTEM_MEM;
@@ -660,8 +660,8 @@ UINT32 agesawrapper_amdS3Save(VOID)
 
 	S3DataType = S3DataTypeNonVolatile;
 	printk(BIOS_DEBUG, "NvStorageSize=%x, NvStorage=%x\n",
-	       (unsigned int)AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
-	       (unsigned int)AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
+		(unsigned int)AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
+		(unsigned int)AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
 #if 1				/* TODO: Save the params to NvStorage */
 	Status = OemAgesaSaveS3Info (
 		S3DataType,
@@ -669,8 +669,8 @@ UINT32 agesawrapper_amdS3Save(VOID)
 		AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
 #endif
 	printk(BIOS_DEBUG, "VolatileStorageSize=%x, VolatileStorage=%x\n",
-	       (unsigned int)AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize,
-	       (unsigned int)AmdS3SaveParamsPtr->S3DataBlock.VolatileStorage);
+		(unsigned int)AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize,
+		(unsigned int)AmdS3SaveParamsPtr->S3DataBlock.VolatileStorage);
 
 	if (AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize != 0) {
 		S3DataType = S3DataTypeVolatile;
@@ -702,9 +702,9 @@ agesawrapper_amdreadeventlog (
 	EVENT_PARAMS AmdEventParams;
 
 	LibAmdMemFill (&AmdEventParams,
-		       0,
-		       sizeof (EVENT_PARAMS),
-		       &(AmdEventParams.StdHeader));
+			 0,
+			 sizeof (EVENT_PARAMS),
+			 &(AmdEventParams.StdHeader));
 
 	AmdEventParams.StdHeader.AltImageBasePtr = 0;
 	AmdEventParams.StdHeader.CalloutPtr = (CALLOUT_ENTRY) &GetBiosCallout;

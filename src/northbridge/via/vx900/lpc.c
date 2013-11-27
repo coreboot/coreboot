@@ -63,10 +63,10 @@ static void vx900_lpc_misc_stuff(device_t dev)
 	extint = nb->ext_int_route_to_pirq;
 	if (extint < 'A' || extint > 'H') {
 		printk(BIOS_WARNING, "Invalid PIRQ%c for external interrupt\n",
-		       extint);
+			 extint);
 	} else {
 		printk(BIOS_INFO, "Routing external interrupt to PIRQ%c\n",
-		       extint);
+			 extint);
 		val = extint - 'A';
 		val |= (1 << 3);	/* bit3 enables the external int */
 		pci_mod_config8(dev, 0x55, 0xf, val);
@@ -122,7 +122,7 @@ static void vx900_lpc_ioapic_setup(device_t dev)
 	if (ioapic == 0) {
 		/* We don't have enough info to set up the IOAPIC */
 		printk(BIOS_ERR, "ERROR: South module IOAPIC not found. "
-		       "Check your devicetree.cb\n");
+			 "Check your devicetree.cb\n");
 		return;
 	}
 
@@ -131,7 +131,7 @@ static void vx900_lpc_ioapic_setup(device_t dev)
 	if (!config->have_isa_interrupts) {
 		/* Umh, is this the right IOAPIC ? */
 		printk(BIOS_ERR, "ERROR: South module IOAPIC not carrying ISA "
-		       "interrupts. Check your devicetree.cb\n");
+			 "interrupts. Check your devicetree.cb\n");
 		printk(BIOS_ERR, "Will not initialize this IOAPIC.\n");
 		return;
 	}
@@ -142,7 +142,7 @@ static void vx900_lpc_ioapic_setup(device_t dev)
 	const u32 base = config->base;
 	if (base != 0xfec00000) {
 		printk(BIOS_ERR, "ERROR: South module IOAPIC base should be at "
-		       "0xfec00000\n but we found it at 0x%.8x\n", base);
+			 "0xfec00000\n but we found it at 0x%.8x\n", base);
 		return;
 	}
 
@@ -207,7 +207,7 @@ void pirq_assign_irqs(const u8 * pirq)
 	device_t lpc;
 
 	lpc = dev_find_device(PCI_VENDOR_ID_VIA,
-			      PCI_DEVICE_ID_VIA_VX900_LPC, 0);
+				 PCI_DEVICE_ID_VIA_VX900_LPC, 0);
 
 	/* Take care of INTA -> INTD */
 	pci_mod_config8(lpc, 0x55, (0xf << 4), pirq[0] << 4);

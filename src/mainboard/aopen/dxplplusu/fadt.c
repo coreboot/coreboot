@@ -26,12 +26,12 @@
  * code and the mainboard fadt.
  */
 #define APM_CNT		0x0   /* ACPI mode only */
-#define   CST_CONTROL	0x85
-#define   PST_CONTROL	0x0
-#define   ACPI_DISABLE	0xAA
-#define   ACPI_ENABLE	0x55
-#define   S4_BIOS	0x77
-#define   GNVS_UPDATE   0xea
+#define	  CST_CONTROL	0x85
+#define	  PST_CONTROL	0x0
+#define	  ACPI_DISABLE	0xAA
+#define	  ACPI_ENABLE	0x55
+#define	  S4_BIOS	0x77
+#define	  GNVS_UPDATE	0xea
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {

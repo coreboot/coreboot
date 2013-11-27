@@ -2,9 +2,9 @@
 *
 *						Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*	     	Copyright (C) 1996-1999 SciTech Software, Inc.
+* 					   Copyright (C) David Mosberger-Tang
+* 						  Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -30,7 +30,7 @@
 *
 * Language:		ANSI C
 * Environment:	Any
-* Developer:    Kendall Bennett
+* Developer:	Kendall Bennett
 *
 * Description:  Header file for system specific functions. These functions
 *				are always compiled and linked in the OS dependent libraries,
@@ -79,7 +79,7 @@
 /*--------------------------- Inline Functions ----------------------------*/
 
 #ifdef  __cplusplus
-extern "C" {            			/* Use "C" linkage when in C++ mode */
+extern "C" {					/* Use "C" linkage when in C++ mode */
 #endif
 
 extern u8  	(X86APIP sys_rdb)(u32 addr);
@@ -97,7 +97,7 @@ extern void (X86APIP sys_outw)(X86EMU_pioAddr addr,u16 val);
 extern void	(X86APIP sys_outl)(X86EMU_pioAddr addr,u32 val);
 
 #ifdef  __cplusplus
-}                       			/* End of "C" linkage for C++   	*/
+}						/* End of "C" linkage for C++   	*/
 #endif
 
 #endif /* __X86EMU_X86EMUI_H */

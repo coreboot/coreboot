@@ -328,7 +328,7 @@ void generate_cpu_entries(void)
 	int numcpus = totalcores/cores_per_package;
 
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
-	       numcpus, cores_per_package);
+		numcpus, cores_per_package);
 
 	for (cpuID=1; cpuID <=numcpus; cpuID++) {
 		for (coreID=1; coreID<=cores_per_package; coreID++) {

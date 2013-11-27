@@ -173,7 +173,7 @@ static void cx700_set_lpc_registers(struct device *dev)
 	pci_write_config8(dev, 0x6C, enables);
 
 	// Map 4MB of FLASH into the address space
-//      pci_write_config8(dev, 0x41, 0x7f);
+//	pci_write_config8(dev, 0x41, 0x7f);
 
 	// Set bit 6 of 0x40, because Award does it (IO recovery time)
 	// IMPORTANT FIX - EISA 0x4d0 decoding must be on so that PCI

@@ -22,7 +22,7 @@ chip northbridge/amd/amdfam10/root_complex
 					device pci 9.0 on end #
 					device pci a.0 off end #
 					register "gppsb_configuration" = "4"   # Configuration E
-					register "gpp_configuration" = "2"   # Configuration C
+					register "gpp_configuration" = "2"	  # Configuration C
 					register "port_enable" = "0x6fc"
 					register "gfx_dev2_dev3" = "1"
 					register "gfx_dual_slot" = "0"

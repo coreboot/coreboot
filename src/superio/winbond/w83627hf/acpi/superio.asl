@@ -35,25 +35,25 @@
  *   functionality
  *
  * Controllable through preprocessor macros:
- * NO_W83627HF_FDC:      don't expose the floppy disk controller
+ * NO_W83627HF_FDC:	 don't expose the floppy disk controller
  * NO_W83627HF_FDC_ENUM: don't try to enumerate the connected floppy drives
- * NO_W83627HF_PPORT:    don't expose the parallel port
- * NO_W83627HF_UARTA:    don't expose the first serial port
- * NO_W83627HF_UARTB:    don't expose the second serial port (already hidden
- *                       if UARTB is configured as IRDA port by firmware)
- * NO_W83627HF_IRDA:     don't expose the IRDA port (already hidden if UARTB is
- *                       configured as serial port by firmware)
- * NO_W83627HF_CIR:      don't expose the Consumer Infrared functionality
- * NO_W83627HF_KBC:      don't expose the keyboard controller
- * NO_W83627HF_PS2M:     don't expose the PS/2 mouse functionality of the
- *                       keyboard controller
- * NO_W83627HF_GAME:     don't expose the game port
- * NO_W83627HF_MIDI:     don't expose the MIDI port
- * NO_W83627HF_HWMON:    don't expose the hardware monitor as
- *                       PnP "Motherboard Ressource"
+ * NO_W83627HF_PPORT:	 don't expose the parallel port
+ * NO_W83627HF_UARTA:	 don't expose the first serial port
+ * NO_W83627HF_UARTB:	 don't expose the second serial port (already hidden
+ *			 if UARTB is configured as IRDA port by firmware)
+ * NO_W83627HF_IRDA:	 don't expose the IRDA port (already hidden if UARTB is
+ *			 configured as serial port by firmware)
+ * NO_W83627HF_CIR:	 don't expose the Consumer Infrared functionality
+ * NO_W83627HF_KBC:	 don't expose the keyboard controller
+ * NO_W83627HF_PS2M:	 don't expose the PS/2 mouse functionality of the
+ *			 keyboard controller
+ * NO_W83627HF_GAME:	 don't expose the game port
+ * NO_W83627HF_MIDI:	 don't expose the MIDI port
+ * NO_W83627HF_HWMON:	 don't expose the hardware monitor as
+ *			 PnP "Motherboard Ressource"
  * W83627HF_KBC_COMPAT:  show the keyboard controller and the PS/2 mouse as
- *                       enabled if it is disabled but an address is assigned
- *                       to it. This may be neccessary in some cases.
+ *			 enabled if it is disabled but an address is assigned
+ *			 to it. This may be neccessary in some cases.
  *
  * Datasheet: "W83627HF/F WINBOND I/O" rev. 6.0
  * http://www.itox.com/pages/support/wdt/W83627HF.pdf
@@ -71,83 +71,83 @@ Device(SIO) {
 	OperationRegion (CREG, SystemIO, 0x2E, 0x02)
 	Field (CREG, ByteAcc, NoLock, Preserve)
 	{
-		ADDR,   8,
-		DATA,   8
+		ADDR,	  8,
+		DATA,	  8
 	}
 	IndexField (ADDR, DATA, ByteAcc, NoLock, Preserve)
 	{
 		Offset (0x02),
-		RST,    1,     /* Soft reset */
-		,       7,
+		RST,	  1,	 /* Soft reset */
+		,	  7,
 		Offset (0x07),
-		LDN,    8,     /* Logical device selector */
+		LDN,	  8,	 /* Logical device selector */
 		Offset (0x20),
-		DID,    8,     /* Device ID */
-		DREV,   8,     /* Device Revision */
-		FDPW,   1,     /* FDC Power Down */
-		,       2,
-		PRPW,   1,     /* PRT Power Down */
-		UAPW,   1,     /* UART A Power Down */
-		UBPW,   1,     /* UART B Power Down */
-		HWPW,   1,     /* HWM Power Down */
-		,       1,
-		IPD,    1,     /* Immediate Chip Power Down */
-		,       7,
-		PNPS,   1,     /* PnP Address Select Register Default Value Mode */
-		,       1,
-		KBCR,   1,     /* KBC enabled after system reset (read-only) */
-		,       3,
-		CLKS,   1,     /* Clock select */
-		AQ16,   1,     /* 16bit Address Qualification */
-		FDCT,   1,     /* Tristate FDC (?) */
-		,       2,
-		PRTT,   1,     /* Tristate parallel port (?) */
-		URAT,   1,     /* Tristate UART A (?) */
-		URBT,   1,     /* Tristate UART B (?) */
-		,       2,
-		URAI,   1,     /* UART A Legacy IRQ Select Disable */
-		URBI,   1,     /* UART B Legacy IRQ Select Disable */
-		PRTI,   1,     /* Parallel Port Legacy IRQ/DRQ Select Disable */
-		FDCI,   1,     /* FDC Legacy IRQ/DRQ Select Disable */
-		,       1,
-		LCKC,   1,     /* Lock Configuration Registers */
+		DID,	  8,	 /* Device ID */
+		DREV,	  8,	 /* Device Revision */
+		FDPW,	  1,	 /* FDC Power Down */
+		,	  2,
+		PRPW,	  1,	 /* PRT Power Down */
+		UAPW,	  1,	 /* UART A Power Down */
+		UBPW,	  1,	 /* UART B Power Down */
+		HWPW,	  1,	 /* HWM Power Down */
+		,	  1,
+		IPD,	  1,	 /* Immediate Chip Power Down */
+		,	  7,
+		PNPS,	  1,	 /* PnP Address Select Register Default Value Mode */
+		,	  1,
+		KBCR,	  1,	 /* KBC enabled after system reset (read-only) */
+		,	  3,
+		CLKS,	  1,	 /* Clock select */
+		AQ16,	  1,	 /* 16bit Address Qualification */
+		FDCT,	  1,	 /* Tristate FDC (?) */
+		,	  2,
+		PRTT,	  1,	 /* Tristate parallel port (?) */
+		URAT,	  1,	 /* Tristate UART A (?) */
+		URBT,	  1,	 /* Tristate UART B (?) */
+		,	  2,
+		URAI,	  1,	 /* UART A Legacy IRQ Select Disable */
+		URBI,	  1,	 /* UART B Legacy IRQ Select Disable */
+		PRTI,	  1,	 /* Parallel Port Legacy IRQ/DRQ Select Disable */
+		FDCI,	  1,	 /* FDC Legacy IRQ/DRQ Select Disable */
+		,	  1,
+		LCKC,	  1,	 /* Lock Configuration Registers */
 		Offset (0x29),
-		IO3S,   8,     /* GPIO3 pin selection register */
+		IO3S,	  8,	 /* GPIO3 pin selection register */
 		Offset (0x30),
-		ACTR,   1,     /* Logical device activation */
-		ACT1,   1,     /* Logical part activation 1 (mostly unused) */
-		ACT2,   1,     /* Logical part activation 2 (mostly unused) */
-		,       5,
+		ACTR,	  1,	 /* Logical device activation */
+		ACT1,	  1,	 /* Logical part activation 1 (mostly unused) */
+		ACT2,	  1,	 /* Logical part activation 2 (mostly unused) */
+		,	  5,
 		Offset (0x60),
-		IO1H,   8,      /* First I/O port base - high byte */
-		IO1L,   8,      /* First I/O port base - low byte */
-		IO2H,   8,      /* Second I/O port base - high byte */
-		IO2L,   8,      /* Second I/O port base - low byte */
+		IO1H,	  8,	  /* First I/O port base - high byte */
+		IO1L,	  8,	  /* First I/O port base - low byte */
+		IO2H,	  8,	  /* Second I/O port base - high byte */
+		IO2L,	  8,	  /* Second I/O port base - low byte */
 		Offset (0x70),
-		IRQ0,   8,      /* First IRQ */
+		IRQ0,	  8,	  /* First IRQ */
 		Offset (0x72),
-		IRQ1,   8,      /* First IRQ */
+		IRQ1,	  8,	  /* First IRQ */
 		Offset (0x74),
-		DMA0,   8,      /* DMA */
+		DMA0,	  8,	  /* DMA */
 		Offset (0xE0),
 		/* CRE0-CRE4: function logical device dependant, seems to be reserved for ACPI settings */
-		CRE0,   8,
-		CRE1,   8,
-		CRE2,   8,
-		CRE3,   8,
-		CRE4,   8,
+		CRE0,	  8,
+		CRE1,	  8,
+		CRE2,	  8,
+		CRE3,	  8,
+		CRE4,	  8,
 		Offset (0xF0),
 		/* OPT1-OPTA aka CRF0-CRF9: function logical device dependant */
-		OPT1,   8,
-		OPT2,   8,
-		OPT3,   8,
-		OPT4,   8,
-		OPT5,   8,
-		OPT6,   8,
-		OPT7,   8,
-		OPT8,   8,
-		OPT9,   8,
-		OPTA,   8
+		OPT1,	  8,
+		OPT2,	  8,
+		OPT3,	  8,
+		OPT4,	  8,
+		OPT5,	  8,
+		OPT6,	  8,
+		OPT7,	  8,
+		OPT8,	  8,
+		OPT9,	  8,
+		OPTA,	  8
 	}
 
 	Method (_CRS)

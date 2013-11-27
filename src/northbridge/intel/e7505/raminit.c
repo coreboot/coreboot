@@ -60,8 +60,8 @@ Definitions:
 #define D060DEV		PCI_DEV(0,6,0)
 
 // NOTE: This used to be 0x100000.
-//       That doesn't work on systems where A20M# is asserted, because
-//       attempts to access 0x1000NN end up accessing 0x0000NN.
+//	 That doesn't work on systems where A20M# is asserted, because
+//	 attempts to access 0x1000NN end up accessing 0x0000NN.
 #define RCOMP_MMIO 0x200000
 
 struct dimm_size {
@@ -96,7 +96,7 @@ static const uint32_t refresh_rate_map[] = {
 	 * [2] ==   7.8   us ->  7.8 us
 	 * [3] ==  31.3   us -> 15.6 us
 	 * [4] ==  62.5   us -> 15.6 us
-	 * [5] == 125     us -> 64   us
+	 * [5] == 125	   us -> 64   us
 	 */
 	1, 7, 2, 1, 1, 3
 };
@@ -119,7 +119,7 @@ static const uint8_t dual_channel_parameters[] = {
 	 */
 
 	/* (DRAM Read Timing Control, if similar to 855PM?)
-	 * 0x80 - 0x81   documented differently for e7505
+	 * 0x80 - 0x81	  documented differently for e7505
 	 * This register has something to do with CAS latencies,
 	 * possibily this is the real chipset control.
 	 * At 0x00 CAS latency 1.5 works.
@@ -135,29 +135,29 @@ static const uint8_t dual_channel_parameters[] = {
 	 * Steven James 02/06/2003
 	 *
 	 * NOTE: values now configured in configure_e7501_cas_latency() based
-	 *       on SPD info and total number of DIMMs (per Intel)
+	 *	  on SPD info and total number of DIMMs (per Intel)
 	 */
 
 	/* FDHC - Fixed DRAM Hole Control  ???
 	 * 0x58  undocumented for e7505, memory hole in southbridge configuration?
 	 * [7:7] Hole_Enable
-	 *       0 == No memory Hole
-	 *       1 == Memory Hole from 15MB to 16MB
+	 *	  0 == No memory Hole
+	 *	  1 == Memory Hole from 15MB to 16MB
 	 * [6:0] Reserved
 	 */
 
 	/* Another Intel undocumented register
 	 * 0x88 - 0x8B
-	 * [31:31]      Purpose unknown
-	 * [26:26]      Master DLL Reset?
-	 *                      0 == Normal operation?
-	 *                      1 == Reset?
-	 * [07:07]      Periodic memory recalibration?
-	 *                      0 == Disabled?
-	 *                      1 == Enabled?
-	 * [04:04]      Receive FIFO RE-Sync?
-	 *                      0 == Normal operation?
-	 *                      1 == Reset?
+	 * [31:31]	 Purpose unknown
+	 * [26:26]	 Master DLL Reset?
+	 *			 0 == Normal operation?
+	 *			 1 == Reset?
+	 * [07:07]	 Periodic memory recalibration?
+	 *			 0 == Disabled?
+	 *			 1 == Enabled?
+	 * [04:04]	 Receive FIFO RE-Sync?
+	 *			 0 == Normal operation?
+	 *			 1 == Reset?
 	 */
 
 /* DDR RECOMP tables */
@@ -214,19 +214,19 @@ typedef enum {
 } rcomp_smr_cc;
 
 /**
- * MCHTST - 0xF4 - 0xF7     --   Based on similarity to 855PM
+ * MCHTST - 0xF4 - 0xF7	    --	 Based on similarity to 855PM
  *
  * [31:31] Purpose unknown
  * [30:30] Purpose unknown
  * [29:23] Unknown - not used?
  * [22:22] System Memory MMR Enable
- *         0 == Disable: mem space and BAR at 0x14 are not accessible
- *         1 == Enable: mem space and BAR at 0x14 are accessible
+ *	   0 == Disable: mem space and BAR at 0x14 are not accessible
+ *	   1 == Enable: mem space and BAR at 0x14 are accessible
  * [21:20] Purpose unknown
  * [19:02] Unknown - not used?
  * [01:01] D6EN (Device #6 enable)
- *         0 == Disable
- *         1 == Enable
+ *	   0 == Disable
+ *	   1 == Enable
  * [00:00] Unknown - not used?
  */
 static void mchtest_control(mchtst_cc cmd)
@@ -422,7 +422,7 @@ static struct dimm_size sdram_spd_get_width(uint16_t dimm_socket_address)
  * Calculate the log base 2 size in bits of both DIMM sides.
  *
  * log2(# bits) = (# columns) + log2(data width) +
- *                (# rows) + log2(banks per SDRAM)
+ *		  (# rows) + log2(banks per SDRAM)
  *
  * Note that it might be easier to use SPD byte 31 here, it has the DIMM size
  * as a multiple of 4MB. The way we do it now we can size both sides of an
@@ -477,11 +477,11 @@ static struct dimm_size spd_get_dimm_size(unsigned dimm_socket_address)
  * @param dimm0_address SMBus address of the 1st DIMM socket to interrogate.
  * @param dimm1_address SMBus address of the 2nd DIMM socket to interrogate.
  * @return 1 if both DIMM sockets report the same value for the specified
- *         SPD parameter, 0 if the values differed or an error occurred.
+ *	   SPD parameter, 0 if the values differed or an error occurred.
  */
 static uint8_t are_spd_values_equal(uint8_t spd_byte_number,
-				    uint16_t dimm0_address,
-				    uint16_t dimm1_address)
+					uint16_t dimm0_address,
+					uint16_t dimm1_address)
 {
 	uint8_t bEqual = 0;
 	int dimm0_value = spd_read_byte(dimm0_address, spd_byte_number);
@@ -502,16 +502,16 @@ static uint8_t are_spd_values_equal(uint8_t spd_byte_number,
  * that compatible DIMMs are paired.
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  * @return A bitmask indicating which of the possible sockets for each channel
- *         was found to contain a compatible DIMM.
- *         Bit 0 corresponds to the closest socket for channel 0
- *         Bit 1 to the next socket for channel 0
- *         ...
- *         Bit MAX_DIMM_SOCKETS_PER_CHANNEL-1 to the last socket for channel 0
- *         Bit MAX_DIMM_SOCKETS_PER_CHANNEL is the closest socket for channel 1
- *         ...
- *         Bit 2*MAX_DIMM_SOCKETS_PER_CHANNEL-1 is the last socket for channel 1
+ *	   was found to contain a compatible DIMM.
+ *	   Bit 0 corresponds to the closest socket for channel 0
+ *	   Bit 1 to the next socket for channel 0
+ *	   ...
+ *	   Bit MAX_DIMM_SOCKETS_PER_CHANNEL-1 to the last socket for channel 0
+ *	   Bit MAX_DIMM_SOCKETS_PER_CHANNEL is the closest socket for channel 1
+ *	   ...
+ *	   Bit 2*MAX_DIMM_SOCKETS_PER_CHANNEL-1 is the last socket for channel 1
  */
 static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 {
@@ -568,7 +568,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		// Validate DIMM page size
 		// The E7501 only supports page sizes of 4, 8, 16, or 32 KB per channel
 		// NOTE: 4 KB =  32 Kb = 2^15
-		//              32 KB = 262 Kb = 2^18
+		//		  32 KB = 262 Kb = 2^18
 
 		if ((page_size.side1 < 15) || (page_size.side1 > 18))
 			continue;
@@ -616,7 +616,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 		for (j = 0; j < sizeof(dual_channel_parameters); ++j) {
 			if (!are_spd_values_equal
 			    (dual_channel_parameters[j], channel0_dimm,
-			     channel1_dimm)) {
+				channel1_dimm)) {
 
 				bDualChannel = 0;
 				break;
@@ -657,7 +657,7 @@ SDRAM configuration functions:
  *
  * @param command Specifies the command to be sent to the DIMMs.
  * @param jedec_mode_bits For the MRS & EMRS commands, bits 0-12 contain the
- *                        register value in JEDEC format.
+ *			  register value in JEDEC format.
  */
 static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
 {
@@ -725,7 +725,7 @@ static void do_ram_command(uint8_t command, uint16_t jedec_mode_bits)
  * by the caller.
  *
  * @param jedec_mode_bits For the MRS & EMRS commands, bits 0-12 contain the
- *                        register value in JEDEC format.
+ *			  register value in JEDEC format.
  */
 static void set_ram_mode(uint16_t jedec_mode_bits)
 {
@@ -760,11 +760,11 @@ DIMM-independant configuration functions:
  * present in the specified DIMM.
  *
  * @param dimm_log2_num_bits Specifies log2(number of bits) for each side of
- *                           the DIMM.
+ *			     the DIMM.
  * @param total_dram_64M_multiple Total DRAM in the system (as a multiple of
- *                                64 MB) for DIMMs < dimm_index.
+ *				  64 MB) for DIMMs < dimm_index.
  * @param dimm_index Which DIMM pair is being processed
- *                   (0..MAX_DIMM_SOCKETS_PER_CHANNEL).
+ *		     (0..MAX_DIMM_SOCKETS_PER_CHANNEL).
  * @return New multiple of 64 MB total DRAM in the system.
  */
 static uint8_t configure_dimm_row_boundaries(struct dimm_size dimm_log2_num_bits, uint8_t total_dram_64M_multiple, unsigned dimm_index)
@@ -776,7 +776,7 @@ static uint8_t configure_dimm_row_boundaries(struct dimm_size dimm_log2_num_bits
 	// DIMM sides must be at least 32 MB
 	ASSERT(dimm_log2_num_bits.side1 >= 28);
 	ASSERT((dimm_log2_num_bits.side2 == 0)
-	       || (dimm_log2_num_bits.side2 >= 28));
+		|| (dimm_log2_num_bits.side2 >= 28));
 
 	// In dual-channel mode, we are called only once for each pair of DIMMs.
 	// Each time we process twice the capacity of a single DIMM.
@@ -827,7 +827,7 @@ static uint8_t configure_dimm_row_boundaries(struct dimm_size dimm_log2_num_bits
  * would lie behind addresses reserved for memory-mapped I/O.
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  * @param dimm_mask Bitmask of populated DIMMs, see spd_get_supported_dimms().
  */
 static void configure_e7501_ram_addresses(const struct mem_controller
@@ -867,7 +867,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 	// Configure the Top Of Low Memory (TOLM) in the E7501
 	// This address must be a multiple of 128 MB that is less than 4 GB.
 	// NOTE: 16-bit wide TOLM register stores only the highest 5 bits of a 32-bit address
-	//               in the highest 5 bits.
+	//		  in the highest 5 bits.
 
 	// We set TOLM to the smaller of 0xC0000000 (3 GB) or the total DRAM in the system.
 	// This reserves addresses from 0xC0000000 - 0xFFFFFFFF for non-DRAM purposes
@@ -915,7 +915,7 @@ static void configure_e7501_ram_addresses(const struct mem_controller
 		// Define a remap window to make the RAM that would appear from 3 GB - 4 GB
 		// visible just beyond 4 GB or the end of physical memory, whichever is larger
 		// NOTE: 16-bit wide REMAP registers store only the highest 10 bits of a 36-bit address,
-		//               (i.e. a multiple of 64 MB) in the lowest 10 bits.
+		//		   (i.e. a multiple of 64 MB) in the lowest 10 bits.
 		// NOTE: 0x100000000 / (64 MB) == 0x40
 
 		if (total_dram_64M_multiple < 0x40) {
@@ -1026,7 +1026,7 @@ static inline void __attribute__((always_inline))
  * parameters of the various installed DIMMs.
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  * @param dimm_mask Bitmask of populated DIMMs, see spd_get_supported_dimms().
  */
 static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
@@ -1043,7 +1043,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 
 	// CAS# latency must be programmed beforehand
 	ASSERT((current_cas_latency == DRT_CAS_2_0)
-	       || (current_cas_latency == DRT_CAS_2_5));
+		|| (current_cas_latency == DRT_CAS_2_5));
 
 	// Each timing parameter is determined by the slowest DIMM
 
@@ -1085,7 +1085,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 	}
 
 	// NOTE for timing parameters:
-	//              At 133 MHz, 1 clock == 7.52 ns
+	//		 At 133 MHz, 1 clock == 7.52 ns
 
 	/* Read the initial state */
 	dram_timing = pci_read_config32(MCHDEV, DRT);
@@ -1119,13 +1119,13 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 	dram_timing &= ~(3 << 9);
 
 	if (slowest_active_to_precharge_delay > 52)
-		die("unsupported DIMM tRAS");	// > 52 ns:      8 or more clocks
+		die("unsupported DIMM tRAS");	// > 52 ns:	 8 or more clocks
 	else if (slowest_active_to_precharge_delay > 45)
 		dram_timing |= (0 << 9);	// 46-52 ns: 7 clocks
 	else if (slowest_active_to_precharge_delay > 37)
 		dram_timing |= (1 << 9);	// 38-45 ns: 6 clocks
 	else
-		dram_timing |= (2 << 9);	// < 38 ns:      5 clocks
+		dram_timing |= (2 << 9);	// < 38 ns:	    5 clocks
 
 	/* Trd */
 
@@ -1160,7 +1160,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
  * common, and program the E7501 to use it.
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  * @param dimm_mask Bitmask of populated DIMMs, spd_get_supported_dimms().
  */
 static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
@@ -1226,7 +1226,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 				goto hw_err;
 			if (value > 0x75)
 				dimm_compatible_cas_latencies &=
-				    ~current_cas_latency;
+					~current_cas_latency;
 		}
 		// Can we support the next-highest CAS# latency (max - 1.0)?
 		current_cas_latency >>= 1;
@@ -1238,7 +1238,7 @@ static void configure_e7501_cas_latency(const struct mem_controller *ctrl,
 				goto hw_err;
 			if (value > 0x75)
 				dimm_compatible_cas_latencies &=
-				    ~current_cas_latency;
+					~current_cas_latency;
 		}
 		// Restrict the system to CAS# latencies compatible with this DIMM
 		system_compatible_cas_latencies &=
@@ -1316,7 +1316,7 @@ hw_err:
  * don't support it.
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  * @param dimm_mask Bitmask of populated DIMMs, spd_get_supported_dimms().
  */
 static void configure_e7501_dram_controller_mode(const struct
@@ -1333,8 +1333,8 @@ static void configure_e7501_dram_controller_mode(const struct
 	// Code below assumes that most aggressive settings are in
 	// force when we are called, either via E7501 reset defaults
 	// or by sdram_set_registers():
-	//      - ECC enabled
-	//      - No refresh
+	//	 - ECC enabled
+	//	 - No refresh
 
 	ASSERT((controller_mode & (3 << 20)) == (2 << 20));	// ECC
 	ASSERT(!(controller_mode & (7 << 8)));	// Refresh
@@ -1359,7 +1359,7 @@ static void configure_e7501_dram_controller_mode(const struct
 		else
 			dimm_socket_address =
 			    ctrl->channel1[i -
-					   MAX_DIMM_SOCKETS_PER_CHANNEL];
+						MAX_DIMM_SOCKETS_PER_CHANNEL];
 
 		// Disable ECC mode if any one of the DIMMs does not support ECC
 		// SJM: Should we just die here? E7501 datasheet says non-ECC DIMMs aren't supported.
@@ -1393,8 +1393,8 @@ static void configure_e7501_dram_controller_mode(const struct
 
 #ifdef SUSPICIOUS_LOOKING_CODE
 // SJM NOTE: This code doesn't look right. SPD values are an order of magnitude smaller
-//                       than the clock period of the memory controller. Also, no other northbridge
-//                       looks at SPD_CMD_SIGNAL_INPUT_HOLD_TIME.
+//			 than the clock period of the memory controller. Also, no other northbridge
+//			 looks at SPD_CMD_SIGNAL_INPUT_HOLD_TIME.
 
 		// Switch to 2 clocks for address/command if required by any one of the DIMMs
 		// NOTE: At 133 MHz, 1 clock == 7.52 ns
@@ -1423,11 +1423,11 @@ static void configure_e7501_dram_controller_mode(const struct
  * (4, 8, 16, or 32 KB).
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  * @param dimm_mask Bitmask of populated DIMMs, spd_get_supported_dimms().
  */
 static void configure_e7501_row_attributes(const struct mem_controller
-					   *ctrl, uint8_t dimm_mask)
+						*ctrl, uint8_t dimm_mask)
 {
 	int i;
 	uint32_t row_attributes = 0;
@@ -1657,7 +1657,7 @@ Public interface:
  * and running.
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  */
 static void sdram_enable(const struct mem_controller *ctrl)
 {
@@ -1686,8 +1686,8 @@ static void sdram_enable(const struct mem_controller *ctrl)
 	/* 5. Issue EMRS to enable DLL */
 	RAM_DEBUG_MESSAGE("Ram Enable 5\n");
 	do_ram_command(RAM_COMMAND_EMRS,
-		       SDRAM_EXTMODE_DLL_ENABLE |
-		       SDRAM_EXTMODE_DRIVE_NORMAL);
+			 SDRAM_EXTMODE_DLL_ENABLE |
+			 SDRAM_EXTMODE_DRIVE_NORMAL);
 
 	/* 6. Reset DLL */
 	RAM_DEBUG_MESSAGE("Ram Enable 6\n");
@@ -1736,7 +1736,7 @@ static void sdram_enable(const struct mem_controller *ctrl)
 
 /**
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  */
 static void sdram_post_ecc(const struct mem_controller *ctrl)
 {
@@ -1753,7 +1753,7 @@ static void sdram_post_ecc(const struct mem_controller *ctrl)
  * DIMMs via the standard Serial Presence Detect (SPD) interface.
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  */
 static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 {
@@ -1798,7 +1798,7 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
  * information (i.e. independent of DIMM specifics).
  *
  * @param ctrl PCI addresses of memory controller functions, and SMBus
- *             addresses of DIMM slots on the mainboard.
+ *	       addresses of DIMM slots on the mainboard.
  */
 static void sdram_set_registers(const struct mem_controller *ctrl)
 {

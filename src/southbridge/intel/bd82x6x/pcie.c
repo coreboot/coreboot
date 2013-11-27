@@ -127,7 +127,7 @@ static void pch_pcie_pm_early(struct device *dev)
 	/* Set slot power limit as configured above */
 	reg32 = pci_read_config32(dev, 0x54);
 	reg32 &= ~((1 << 15) | (1 << 16)); /* 16:15 = Slot power scale */
-	reg32 &= ~(0xff << 7);             /* 14:7  = Slot power limit */
+	reg32 &= ~(0xff << 7);		    /* 14:7  = Slot power limit */
 	reg32 |= (slot_power_limit << 7);
 	pci_write_config32(dev, 0x54, reg32);
 }
@@ -238,13 +238,13 @@ static void pci_init(struct device *dev)
 
 #ifdef EVEN_MORE_DEBUG
 	reg32 = pci_read_config32(dev, 0x20);
-	printk(BIOS_SPEW, "    MBL    = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "	MBL    = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x24);
-	printk(BIOS_SPEW, "    PMBL   = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "	PMBL   = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x28);
-	printk(BIOS_SPEW, "    PMBU32 = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "	PMBU32 = 0x%08x\n", reg32);
 	reg32 = pci_read_config32(dev, 0x2c);
-	printk(BIOS_SPEW, "    PMLU32 = 0x%08x\n", reg32);
+	printk(BIOS_SPEW, "	PMLU32 = 0x%08x\n", reg32);
 #endif
 
 	/* Clear errors in status registers */

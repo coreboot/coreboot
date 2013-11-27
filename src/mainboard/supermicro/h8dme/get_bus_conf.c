@@ -42,23 +42,23 @@ unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO 
 	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 	0x0000ff0,
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0
 };
 
 unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
 };
 
 unsigned sbdnb;
@@ -110,8 +110,8 @@ void get_bus_conf(void)
 		bus_mcp55[2]++;
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sbdn + 0x06);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sbdn + 0x06);
 
 		bus_mcp55[1] = 2;
 		bus_mcp55[2] = 3;
@@ -125,8 +125,8 @@ void get_bus_conf(void)
 			bus_mcp55[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		} else {
 			printk(BIOS_DEBUG,
-			       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-			       bus_mcp55[0], sbdn + 0x0a + i - 2);
+				  "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+				  bus_mcp55[0], sbdn + 0x0a + i - 2);
 		}
 	}
 
@@ -136,7 +136,7 @@ void get_bus_conf(void)
 			if (dev) {
 				bus_pcix[0] = bus_mcp55[2];
 				bus_pcix[i + 1] =
-				    pci_read_config8(dev, PCI_SECONDARY_BUS);
+					pci_read_config8(dev, PCI_SECONDARY_BUS);
 			}
 		}
 	}

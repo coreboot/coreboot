@@ -490,17 +490,17 @@ Device (GPIO)
 	Name (RBUF, ResourceTemplate()
 	{
 		DWordIo (ResourceProducer,
-			MinFixed,    // IsMinFixed
-			MaxFixed,    // IsMaxFixed
-			PosDecode,   // Decode
+			MinFixed,	// IsMinFixed
+			MaxFixed,	// IsMaxFixed
+			PosDecode,	// Decode
 			EntireRange, // ISARanges
 			0x00000000,  // AddressGranularity
 			0x00000000,  // AddressMinimum
 			0x00000000,  // AddressMaximum
 			0x00000000,  // AddressTranslation
 			0x00000000,  // RangeLength
-			,            // ResourceSourceIndex
-			,            // ResourceSource
+			,		// ResourceSourceIndex
+			,		// ResourceSource
 			BAR0)
 	})
 
@@ -514,7 +514,7 @@ Device (GPIO)
 			Store (DEFAULT_GPIOSIZE, BLEN)
 			Store (DEFAULT_GPIOBASE, BMIN)
 			Store (Subtract (Add (DEFAULT_GPIOBASE,
-					      DEFAULT_GPIOSIZE), 1), BMAX)
+						   DEFAULT_GPIOSIZE), 1), BMAX)
 		}
 
 		Return (RBUF)

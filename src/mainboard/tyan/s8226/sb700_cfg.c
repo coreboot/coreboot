@@ -19,7 +19,7 @@
 
 
 #include <string.h>
-#include <console/console.h>    /* printk */
+#include <console/console.h>	/* printk */
 #include "Platform.h"
 #include "sb700_cfg.h"
 
@@ -96,7 +96,7 @@ void sb700_cimx_config(AMDSBCFG *sb_config)
 	sb_config->HpetTimer = HPET_TIMER;
 
 	/* USB */
-	sb_config->UsbIntClock = 0;     // Use external clock
+	sb_config->UsbIntClock = 0;	 // Use external clock
 	sb_config->Usb1Ohci0 = 1; //0:disable  1:enable Bus 0 Dev 18 Func0
 	sb_config->Usb1Ohci1 = 1; //0:disable  1:enable Bus 0 Dev 18 Func1
 	sb_config->Usb1Ehci  = 1; //0:disable  1:enable Bus 0 Dev 18 Func2

@@ -207,12 +207,12 @@ static void m2v_bus_init(void)
 				PCI_DEVICE_ID_VIA_K8T890CF_5), 0);
 	/*
 	 * bit | meaning
-	 * 6   | 0: hide scratch register function 0:0.6 (we don't use it)
-	 * 5   | 1: enable pcie bridge 0:2.0
-	 * 4   | 0: hide   pcie bridge 0:3.3 (not connected)
-	 * 3   | 1: enable pcie bridge 0:3.2
-	 * 2   | 1: enable pcie bridge 0:3.1
-	 * 1   | 1: enable pcie bridge 0:3.0
+	 * 6	| 0: hide scratch register function 0:0.6 (we don't use it)
+	 * 5	| 1: enable pcie bridge 0:2.0
+	 * 4	| 0: hide   pcie bridge 0:3.3 (not connected)
+	 * 3	| 1: enable pcie bridge 0:3.2
+	 * 2	| 1: enable pcie bridge 0:3.1
+	 * 1	| 1: enable pcie bridge 0:3.0
 	 */
 	pci_write_config8(dev, 0xf0, 0x2e);
 }

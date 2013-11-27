@@ -107,7 +107,7 @@ static void *smp_write_config_table(void *v)
 			 bus_ck804[0], ((sbdn + 10) << 2) | 0, apicid_ck804,
 			 0x17);
 
-	/* Local Ints: Type Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
+	/* Local Ints: Type Polarity	 Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	mptable_lintsrc(mc, bus_ck804[0]);
 
 	/* There is no extension information... */

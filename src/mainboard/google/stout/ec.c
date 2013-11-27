@@ -54,7 +54,7 @@ void stout_ec_init(void)
 	 * 0/0 All USB port off
 	 * 1/0 USB on, all USB port didn’t support wake up
 	 * 0/1 USB on, yellow port support wake up charge, but may not support
-	 *             charge smart phone.
+	 *		charge smart phone.
 	 * 1/1 USB on, yellow port in AUTO mode and didn’t support wake up system.
 	 */
 	ec_write(EC_PERIPH_CNTL_3, ec_read(EC_PERIPH_CNTL_3) & 0xE);

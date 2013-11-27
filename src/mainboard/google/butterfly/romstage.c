@@ -62,19 +62,19 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
 	 * D28IP_P2IP  ETH0   INTB -> PIRQF
 	 * D28IP_P3IP  SDCARD INTC -> PIRQD
-	 * D29IP_E1P   EHCI1  INTA -> PIRQD
-	 * D26IP_E2P   EHCI2  INTA -> PIRQF
-	 * D31IP_SIP   SATA   INTA -> PIRQB (MSI)
+	 * D29IP_E1P	EHCI1  INTA -> PIRQD
+	 * D26IP_E2P	EHCI2  INTA -> PIRQF
+	 * D31IP_SIP	SATA   INTA -> PIRQB (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQH
 	 * D31IP_TTIP  THRT   INTC -> PIRQA
-	 * D27IP_ZIP   HDA    INTA -> PIRQA (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQA (MSI)
 	 *
 	 * Trackpad interrupt is edge triggered and cannot be shared.
-	 * TRACKPAD                -> PIRQG
+	 * TRACKPAD		    -> PIRQG
 
 	 */
 
@@ -146,7 +146,7 @@ void main(unsigned long bist)
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1600,
 		usb_port_config: {
-			 /* enabled   usb oc pin    length */
+			 /* enabled	 usb oc pin    length */
 			{ 1, 0, 0x0040 }, /* P0: Right USB 3.0 #1 (no OC) */
 			{ 1, 0, 0x0040 }, /* P1: Right USB 3.0 #2 (no OC) */
 			{ 1, 0, 0x0040 }, /* P2: Camera (no OC) */

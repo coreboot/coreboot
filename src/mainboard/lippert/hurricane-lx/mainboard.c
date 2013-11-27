@@ -53,16 +53,16 @@ static void init(struct device *dev)
 	gpio_base = pci_read_config32(dev_find_device(PCI_VENDOR_ID_AMD,
 		    PCI_DEVICE_ID_AMD_CS5536_ISA, 0), PCI_BASE_ADDRESS_1) - 1;
 
-	outl(0x00000040, gpio_base + 0x00); // GPIO6  value      1 - LAN_PD#
+	outl(0x00000040, gpio_base + 0x00); // GPIO6  value	  1 - LAN_PD#
 	outl(0x00000040, gpio_base + 0x08); // GPIO6  open drain 1 - LAN_PD# (jumpered GPIO per default)
-	outl(0x00000040, gpio_base + 0x04); // GPIO6  output     1 - LAN_PD#
-	outl(0x00000400, gpio_base + 0x34); // GPIO10 in aux1    1 - THRM_ALRM#
-	outl(0x00000400, gpio_base + 0x20); // GPIO10 input      1 - THRM_ALRM#
+	outl(0x00000040, gpio_base + 0x04); // GPIO6  output	  1 - LAN_PD#
+	outl(0x00000400, gpio_base + 0x34); // GPIO10 in aux1	  1 - THRM_ALRM#
+	outl(0x00000400, gpio_base + 0x20); // GPIO10 input	  1 - THRM_ALRM#
 #if !CONFIG_BOARD_OLD_REVISION
-	outl(0x00000800, gpio_base + 0x94); // GPIO27 out aux2   1 - 32kHz
-	outl(0x00000800, gpio_base + 0x84); // GPIO27 output     1 - 32kHz
+	outl(0x00000800, gpio_base + 0x94); // GPIO27 out aux2	  1 - 32kHz
+	outl(0x00000800, gpio_base + 0x84); // GPIO27 output	  1 - 32kHz
 #endif
-	outl(0x08000000, gpio_base + 0x98); // GPIO27 pull up    0 - 32kHz (new) / PM-LED (old)
+	outl(0x08000000, gpio_base + 0x98); // GPIO27 pull up	  0 - 32kHz (new) / PM-LED (old)
 
 	/* Init Environment Controller. */
 	for (i = 0; i < ARRAY_SIZE(ec_init_table); i++) {

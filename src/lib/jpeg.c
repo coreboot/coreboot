@@ -111,7 +111,7 @@ static void col221111_32 __P((int *, unsigned char *, int));
 #define M_APP0	0xe0
 #define M_DQT	0xdb
 #define M_SOF0	0xc0
-#define M_DHT   0xc4
+#define M_DHT	0xc4
 #define M_DRI	0xdd
 #define M_SOS	0xda
 #define M_RST0	0xd0
@@ -215,7 +215,7 @@ static int readtables(int till)
 					l -= hufflen[i];
 				}
 				dec_makehuff(dhuff + tt, hufflen,
-					     huffvals);
+						  huffvals);
 			}
 			break;
 
@@ -265,9 +265,9 @@ int jpeg_check_size(unsigned char *buf, int width, int height)
 	readtables(M_SOF0);
 	getword();
 	getbyte();
-        if (height != getword() || width != getword())
+	if (height != getword() || width != getword())
 		return 0;
-        return 1;
+	return 1;
 }
 
 int jpeg_decode(unsigned char *buf, unsigned char *pic,
@@ -409,7 +409,7 @@ int jpeg_decode(unsigned char *buf, unsigned char *pic,
 }
 
 /****************************************************************/
-/**************       huffman decoder             ***************/
+/**************	      huffman decoder		  ***************/
 /****************************************************************/
 
 static int fillbits __P((struct in *, int, unsigned int));
@@ -595,7 +595,7 @@ static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen, unsigned char *hu
 							(DECBITS - (i + 1 + v)) | 128;
 					} else
 						x = v << 16 | (hu-> vals[k] & 0xf0) << 4 |
-						        (DECBITS - (i + 1));
+							      (DECBITS - (i + 1));
 					hu->llvals[c | d] = x;
 				}
 			}
@@ -608,7 +608,7 @@ static void dec_makehuff(struct dec_hufftbl *hu, int *hufflen, unsigned char *hu
 }
 
 /****************************************************************/
-/**************             idct                  ***************/
+/**************		    idct		  ***************/
 /****************************************************************/
 
 #define ONE ((PREC)IFIX(1.))
@@ -768,7 +768,7 @@ static void scaleidctqtab(PREC *q, PREC sc)
 }
 
 /****************************************************************/
-/**************          color decoder            ***************/
+/**************		 color decoder		  ***************/
 /****************************************************************/
 
 #define ROUND
@@ -778,20 +778,20 @@ static void scaleidctqtab(PREC *q, PREC sc)
  *
  * y:0..255   Cb:-128..127   Cr:-128..127
  *
- *      R = Y                + 1.40200 * Cr
- *      G = Y - 0.34414 * Cb - 0.71414 * Cr
- *      B = Y + 1.77200 * Cb
+ *	R = Y		     + 1.40200 * Cr
+ *	G = Y - 0.34414 * Cb - 0.71414 * Cr
+ *	B = Y + 1.77200 * Cb
  *
  * =>
- *      Cr *= 1.40200;
- *      Cb *= 1.77200;
- *      Cg = 0.19421 * Cb + .50937 * Cr;
- *      R = Y + Cr;
- *      G = Y - Cg;
- *      B = Y + Cb;
+ *	Cr *= 1.40200;
+ *	Cb *= 1.77200;
+ *	Cg = 0.19421 * Cb + .50937 * Cr;
+ *	R = Y + Cr;
+ *	G = Y - Cg;
+ *	B = Y + Cb;
  *
  * =>
- *      Cg = (50 * Cb + 130 * Cr + 128) >> 8;
+ *	Cg = (50 * Cb + 130 * Cr + 128) >> 8;
  */
 
 static void initcol(PREC q[][64])
@@ -842,34 +842,34 @@ static void initcol(PREC q[][64])
 
 #ifdef __LITTLE_ENDIAN
 #define PIC_16(yin, xin, p, xout, add)		 \
-(                                                \
-  y = outy[(yin) * 8 + xin],                     \
+(						 \
+  y = outy[(yin) * 8 + xin],			 \
   y = ((CLAMP(y + cr + add*2+1) & 0xf8) <<  8) | \
       ((CLAMP(y - cg + add    ) & 0xfc) <<  3) | \
-      ((CLAMP(y + cb + add*2+1)       ) >>  3),  \
-  p[(xout) * 2 + 0] = y & 0xff,                  \
-  p[(xout) * 2 + 1] = y >> 8                     \
+      ((CLAMP(y + cb + add*2+1)	      ) >>  3),  \
+  p[(xout) * 2 + 0] = y & 0xff,			 \
+  p[(xout) * 2 + 1] = y >> 8			 \
 )
 #else
 #ifdef CONFIG_PPC
 #define PIC_16(yin, xin, p, xout, add)		 \
-(                                                \
-  y = outy[(yin) * 8 + xin],                     \
+(						 \
+  y = outy[(yin) * 8 + xin],			 \
   y = ((CLAMP(y + cr + add*2+1) & 0xf8) <<  7) | \
       ((CLAMP(y - cg + add*2+1) & 0xf8) <<  2) | \
-      ((CLAMP(y + cb + add*2+1)       ) >>  3),  \
-  p[(xout) * 2 + 0] = y >> 8,                    \
-  p[(xout) * 2 + 1] = y & 0xff                   \
+      ((CLAMP(y + cb + add*2+1)	      ) >>  3),  \
+  p[(xout) * 2 + 0] = y >> 8,			 \
+  p[(xout) * 2 + 1] = y & 0xff			 \
 )
 #else
 #define PIC_16(yin, xin, p, xout, add)	 	 \
-(                                                \
-  y = outy[(yin) * 8 + xin],                     \
+(						 \
+  y = outy[(yin) * 8 + xin],			 \
   y = ((CLAMP(y + cr + add*2+1) & 0xf8) <<  8) | \
       ((CLAMP(y - cg + add    ) & 0xfc) <<  3) | \
-      ((CLAMP(y + cb + add*2+1)       ) >>  3),  \
-  p[(xout) * 2 + 0] = y >> 8,                    \
-  p[(xout) * 2 + 1] = y & 0xff                   \
+      ((CLAMP(y + cb + add*2+1)	      ) >>  3),  \
+  p[(xout) * 2 + 0] = y >> 8,			 \
+  p[(xout) * 2 + 1] = y & 0xff			 \
 )
 #endif
 #endif
@@ -892,13 +892,13 @@ static void initcol(PREC q[][64])
   PIC(xin / 4 * 8 + 1, (xin & 3) * 2 + 1, pic1, xin * 2 + 1)	\
 )
 
-#define PIC221111_16(xin)                                               \
-(                                                               	\
-  CBCRCG(0, xin),                                               	\
-  PIC_16(xin / 4 * 8 + 0, (xin & 3) * 2 + 0, pic0, xin * 2 + 0, 3),     \
-  PIC_16(xin / 4 * 8 + 0, (xin & 3) * 2 + 1, pic0, xin * 2 + 1, 0),     \
-  PIC_16(xin / 4 * 8 + 1, (xin & 3) * 2 + 0, pic1, xin * 2 + 0, 1),     \
-  PIC_16(xin / 4 * 8 + 1, (xin & 3) * 2 + 1, pic1, xin * 2 + 1, 2)      \
+#define PIC221111_16(xin)						\
+(									\
+  CBCRCG(0, xin),							\
+  PIC_16(xin / 4 * 8 + 0, (xin & 3) * 2 + 0, pic0, xin * 2 + 0, 3),	\
+  PIC_16(xin / 4 * 8 + 0, (xin & 3) * 2 + 1, pic0, xin * 2 + 1, 0),	\
+  PIC_16(xin / 4 * 8 + 1, (xin & 3) * 2 + 0, pic1, xin * 2 + 0, 1),	\
+  PIC_16(xin / 4 * 8 + 1, (xin & 3) * 2 + 1, pic1, xin * 2 + 1, 2)	\
 )
 
 #define PIC221111_32(xin)					\

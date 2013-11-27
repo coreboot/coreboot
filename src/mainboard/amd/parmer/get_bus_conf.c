@@ -130,7 +130,7 @@ void get_bus_conf(void)
 	for (j = bus_hudson[2]; j < bus_isa; j++)
 		bus_type[j] = 1;
 
-	/* I/O APICs:   APIC ID Version State   Address */
+	/* I/O APICs:	 APIC ID Version State	 Address */
 	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_hudson = apicid_base;

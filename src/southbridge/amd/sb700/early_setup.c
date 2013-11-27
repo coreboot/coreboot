@@ -154,7 +154,7 @@ void sb7xx_51xx_lpc_init(void)
 
 #if CONFIG_SOUTHBRIDGE_AMD_SUBTYPE_SP5100
 	post_code(0x66);
-	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);     /* LPC Controller */
+	dev = pci_locate_device(PCI_ID(0x1002, 0x439d), 0);	 /* LPC Controller */
 	reg8 = pci_read_config8(dev, 0xBB);
 	reg8 |= 1 << 2 | 1 << 3 | 1 << 6 | 1 << 7;
 	reg8 &= ~(1 << 1);

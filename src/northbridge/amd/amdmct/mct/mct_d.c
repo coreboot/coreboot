@@ -200,23 +200,23 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 * 3. Checksummed or Valid NVRAM bits
 	 * 4. MCG_CTL=-1, MC4_CTL_EN=0 for all CPUs
 	 * 5. MCi_STS from shutdown/warm reset recorded (if desired) prior to
-	 *     entry
+	 *	entry
 	 * 6. All var MTRRs reset to zero
 	 * 7. State of NB_CFG.DisDatMsk set properly on all CPUs
 	 * 8. All CPUs at 2Ghz Speed (unless DQS training is not installed).
 	 * 9. All cHT links at max Speed/Width (unless DQS training is not
-	 *     installed).
+	 *	installed).
 	 *
 	 *
 	 * Global relationship between index values and item values:
-	 * j CL(j)       k   F(k)
+	 * j CL(j)	  k   F(k)
 	 * --------------------------
-	 * 0 2.0         -   -
-	 * 1 3.0         1   200 Mhz
-	 * 2 4.0         2   266 Mhz
-	 * 3 5.0         3   333 Mhz
-	 * 4 6.0         4   400 Mhz
-	 * 5 7.0         5   533 Mhz
+	 * 0 2.0	  -   -
+	 * 1 3.0	  1   200 Mhz
+	 * 2 4.0	  2   266 Mhz
+	 * 3 5.0	  3   333 Mhz
+	 * 4 6.0	  4   400 Mhz
+	 * 5 7.0	  5   533 Mhz
 	 */
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
@@ -438,9 +438,9 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 				 * and set conf for dimm0, hw will copy to dimm1/2/3
 				 * set for dimm1, hw will copy to dimm3
 				 * Rev A/B only support DIMM0/1 when 800Mhz and above
-				 *   + 0x100 to next dimm
+				 *	 + 0x100 to next dimm
 				 * Rev C support DIMM0/1/2/3 when 800Mhz and above
-				 *   + 0x100 to next dimm
+				 *	 + 0x100 to next dimm
 				*/
 				for (DIMM = 0; DIMM < 2; DIMM++) {
 					if (DIMM==0) {
@@ -810,7 +810,7 @@ static void DCTInit_D(struct MCTStatStruc *pMCTstat, struct DCTStatStruc *pDCTst
 						stopDCTflag = 0;
 						if (!(pMCTstat->GStatus & (1 << GSB_EnDIMMSpareNW))) {
 							print_t("\t\tDCTInit_D: StartupDCT_D\n");
-							StartupDCT_D(pMCTstat, pDCTstat, dct);   /*yeaahhh! */
+							StartupDCT_D(pMCTstat, pDCTstat, dct);	/*yeaahhh! */
 						}
 					}
 				}
@@ -1055,7 +1055,7 @@ static u8 AutoCycTiming_D(struct MCTStatStruc *pMCTstat,
 			val = ((byte >> 5) | (byte << 3)) & 0xFF;
 			val <<= 2;
 
-			byte = mctRead_SPD(smbaddr, SPD_DEVWIDTH) & 0xFE;     /* dev density=2^(rows+columns+banks) */
+			byte = mctRead_SPD(smbaddr, SPD_DEVWIDTH) & 0xFE;	 /* dev density=2^(rows+columns+banks) */
 			if (byte == 4) {
 				val >>= 4;
 			} else if (byte == 8) {
@@ -1471,7 +1471,7 @@ static u8 PlatformSpec_D(struct MCTStatStruc *pMCTstat,
 		dev = pDCTstat->dev_dct;
 		reg = 0x94 + 0x100 * dct; /* Dram Configuration Hi */
 		val = Get_NB32(dev, reg);
-		val |= 1 << 20;		       /* 2T CMD mode */
+		val |= 1 << 20;			  /* 2T CMD mode */
 		Set_NB32(dev, reg, val);
 	}
 
@@ -3745,13 +3745,13 @@ void mct_SetDramConfigHi_D(struct DCTStatStruc *pDCTstat, u32 dct,
 	 * subsequent update to be invalid during any MemClk frequency change:
 	 * Solution: From the bug report:
 	 *  1. A software-initiated frequency change should be wrapped into the
-	 *     following sequence :
+	 *	following sequence :
 	 * 	- a) Disable Compensation (F2[1, 0]9C_x08[30] )
 	 * 	b) Reset the Begin Compensation bit (D3CMP->COMP_CONFIG[0]) in all the compensation engines
 	 * 	c) Do frequency change
 	 * 	d) Enable Compensation (F2[1, 0]9C_x08[30] )
 	 *  2. A software-initiated Disable Compensation should always be
-	 *     followed by step b) of the above steps.
+	 *	followed by step b) of the above steps.
 	 * Silicon Status: Fixed In Rev B0
 	 *
 	 * Errata#177: DRAM Phy Automatic Compensation Updates May Be Invalid
@@ -3759,7 +3759,7 @@ void mct_SetDramConfigHi_D(struct DCTStatStruc *pDCTstat, u32 dct,
 	 * to initiating a memory clock frequency change as follows:
 	 *  1. Disable PhyAutoComp by writing 1'b1 to F2x[1, 0]9C_x08[30]
 	 *  2. Reset the Begin Compensation bits by writing 32'h0 to
-	 *     F2x[1, 0]9C_x4D004F00
+	 *	F2x[1, 0]9C_x4D004F00
 	 *  3. Perform frequency change
 	 *  4. Enable PhyAutoComp by writing 1'b0 to F2x[1, 0]9C_08[30]
 	 *  In addition, any time software disables the automatic phy
@@ -3802,9 +3802,9 @@ static void mct_BeforeDQSTrain_D(struct MCTStatStruc *pMCTstat,
 	/* Errata 178
 	 *
 	 * Bug#15115: Uncertainty In The Sync Chain Leads To Setup Violations
-	 *            In TX FIFO
+	 *	       In TX FIFO
 	 * Solution: BIOS should program DRAM Control Register[RdPtrInit] =
-	 *            5h, (F2x[1, 0]78[3:0] = 5h).
+	 *	       5h, (F2x[1, 0]78[3:0] = 5h).
 	 * Silicon Status: Fixed In Rev B0
 	 *
 	 * Bug#15880: Determine validity of reset settings for DDR PHY timing.

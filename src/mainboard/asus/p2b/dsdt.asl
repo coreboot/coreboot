@@ -28,11 +28,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "CORE  ", "COREBOOT", 1)
 	 * 1: suspend to ram						S3
 	 * 2: powered on suspend, context lost				S2
 	 *    Note: 'context lost' means the CPU restarts at the reset
-	 *          vector
+	 *	     vector
 	 * 3: powered on suspend, CPU context lost			S1
 	 *    Note: Looks like 'CPU context lost' does _not_ mean the
-	 *          CPU restarts at the reset vector. Most likely only
-	 *          caches are lost, so both 0x3 and 0x4 map to acpi S1
+	 *	     CPU restarts at the reset vector. Most likely only
+	 *	     caches are lost, so both 0x3 and 0x4 map to acpi S1
 	 * 4: powered on suspend, context maintained			S1
 	 * 5: working (clock control)					S0
 	 * 6: reserved

@@ -152,7 +152,7 @@ static void *smp_write_config_table(void *v)
 	/* Standard local interrupt assignments */
 	mptable_lintsrc(mc, bus_isa);
 
-	/* PCI Ints:	     Type    Trigger                Polarity                 Bus ID      PCIDEVNUM|IRQ  APIC ID PIN# */
+	/* PCI Ints:		   Type	   Trigger		  Polarity		   Bus ID      PCIDEVNUM|IRQ  APIC ID PIN# */
 	/* On board nics */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x03<<2)|0, apicid_8111, 0x13);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x04<<2)|0, apicid_8111, 0x13);

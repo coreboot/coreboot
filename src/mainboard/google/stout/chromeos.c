@@ -121,16 +121,16 @@ int get_recovery_mode_switch(void)
 	u8 ec_status = ec_read(EC_STATUS_REG);
 	u8 reg8 = pci_read_config8(dev, GEN_PMCON_3);
 
-	printk(BIOS_SPEW,"%s:  EC status:%#x   RTC_BAT: %x\n",
+	printk(BIOS_SPEW,"%s:  EC status:%#x	RTC_BAT: %x\n",
 			__func__, ec_status, reg8 & RTC_BATTERY_DEAD);
 
 #ifdef __PRE_RAM__
 	return (((reg8 & RTC_BATTERY_DEAD) != 0) &&
-	         ((ec_status & 0x3) == EC_IN_RECOVERY_MODE));
+		  ((ec_status & 0x3) == EC_IN_RECOVERY_MODE));
 #else
 	if (!ec_rec_flag_good) {
 		ec_in_rec_mode = (((reg8 & RTC_BATTERY_DEAD) != 0) &&
-		                     ((ec_status & 0x3) == EC_IN_RECOVERY_MODE));
+				       ((ec_status & 0x3) == EC_IN_RECOVERY_MODE));
 		ec_rec_flag_good = 1;
 	}
 	return ec_in_rec_mode;

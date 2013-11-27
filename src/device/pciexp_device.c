@@ -58,7 +58,7 @@ static int pciexp_retrain_link(device_t dev, unsigned cap)
  * enabled the link must be retrained.
  */
 static void pciexp_enable_common_clock(device_t root, unsigned root_cap,
-				       device_t endp, unsigned endp_cap)
+					   device_t endp, unsigned endp_cap)
 {
 	u16 root_scc, endp_scc, lnkctl;
 
@@ -97,8 +97,8 @@ static void pciexp_enable_common_clock(device_t root, unsigned root_cap,
  * the highest latency value.
  */
 static int pciexp_aspm_latency(device_t root, unsigned root_cap,
-			       device_t endp, unsigned endp_cap,
-			       enum aspm_type type)
+				  device_t endp, unsigned endp_cap,
+				  enum aspm_type type)
 {
 	int root_lat = 0, endp_lat = 0;
 	u32 root_lnkcap, endp_lnkcap;
@@ -154,14 +154,14 @@ static enum aspm_type pciexp_enable_aspm(device_t root, unsigned root_cap,
 	/* Enable L0s if it is within endpoint acceptable limit */
 	ok_latency = (devcap & PCI_EXP_DEVCAP_L0S) >> 6;
 	exit_latency = pciexp_aspm_latency(root, root_cap, endp, endp_cap,
-					   PCIE_ASPM_L0S);
+						PCIE_ASPM_L0S);
 	if (exit_latency >= 0 && exit_latency <= ok_latency)
 		apmc |= PCIE_ASPM_L0S;
 
 	/* Enable L1 if it is within endpoint acceptable limit */
 	ok_latency = (devcap & PCI_EXP_DEVCAP_L1) >> 9;
 	exit_latency = pciexp_aspm_latency(root, root_cap, endp, endp_cap,
-					   PCIE_ASPM_L1);
+						PCIE_ASPM_L1);
 	if (exit_latency >= 0 && exit_latency <= ok_latency)
 		apmc |= PCIE_ASPM_L1;
 
@@ -214,7 +214,7 @@ static void pciexp_tune_dev(device_t dev)
 }
 
 unsigned int pciexp_scan_bus(struct bus *bus, unsigned int min_devfn,
-			     unsigned int max_devfn, unsigned int max)
+				unsigned int max_devfn, unsigned int max)
 {
 	device_t child;
 
@@ -242,11 +242,11 @@ static struct pci_operations pciexp_bus_ops_pci = {
 
 struct device_operations default_pciexp_ops_bus = {
 	.read_resources   = pci_bus_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_bus_enable_resources,
-	.init             = 0,
-	.scan_bus         = pciexp_scan_bridge,
-	.enable           = 0,
-	.reset_bus        = pci_bus_reset,
-	.ops_pci          = &pciexp_bus_ops_pci,
+	.init		   = 0,
+	.scan_bus	   = pciexp_scan_bridge,
+	.enable	   = 0,
+	.reset_bus	   = pci_bus_reset,
+	.ops_pci	   = &pciexp_bus_ops_pci,
 };

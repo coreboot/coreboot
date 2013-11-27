@@ -25,8 +25,8 @@
 #define CALIBRATE_DIVISOR  (20*1000) /* 20ms / 20000 == 1usec */
 
 /* spll_raw_clk = SYSREF * FbDIV,
- * GLIU Clock   = spll_raw_clk / MDIV
- * CPU Clock    = spll_raw_clk / VDIV
+ * GLIU Clock	= spll_raw_clk / MDIV
+ * CPU Clock	= spll_raw_clk / VDIV
  */
 
 /* table for Feedback divisor to FbDiv register value */

@@ -18,19 +18,19 @@
  */
 
 
-#include <device/device.h>      /* device_t */
-#include <device/pci.h>         /* device_operations */
+#include <device/device.h>	/* device_t */
+#include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
 #include <arch/ioapic.h>
-#include <device/smbus.h>       /* smbus_bus_operations */
+#include <device/smbus.h>	/* smbus_bus_operations */
 #include <pc80/mc146818rtc.h>
-#include <console/console.h>    /* printk */
+#include <console/console.h>	/* printk */
 #include <usbdebug.h>
-#include "lpc.h"                /* lpc_read_resources */
-#include "Platform.h"   /* Platfrom Specific Definitions */
+#include "lpc.h"		/* lpc_read_resources */
+#include "Platform.h"	/* Platfrom Specific Definitions */
 #include "sb_cimx.h"
-#include "sb700_cfg.h"                /* sb700 Cimx configuration */
-#include "chip.h"               /* struct southbridge_amd_cimx_sb700_config */
+#include "sb700_cfg.h"		      /* sb700 Cimx configuration */
+#include "chip.h"		/* struct southbridge_amd_cimx_sb700_config */
 
 
 /*implement in mainboard.c*/
@@ -46,8 +46,8 @@ static AMDSBCFG *sb_config = &sb_late_cfg;
  *
  * prototype UINT32 (*SBCIM_HOOK_ENTRY)(UINT32 Param1, UINT32 Param2, void* pConfig)
  *
- * @param[in] func      Southbridge CIMx Function ID.
- * @param[in] data      Southbridge Input Data.
+ * @param[in] func	Southbridge CIMx Function ID.
+ * @param[in] data	Southbridge Input Data.
  * @param[in] sb_config Southbridge configuration structure pointer.
  *
  */

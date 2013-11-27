@@ -4,14 +4,14 @@
 /*  These are the region types  */
 #define MTRR_TYPE_UNCACHEABLE 0
 #define MTRR_TYPE_WRCOMB     1
-/*#define MTRR_TYPE_         2*/
-/*#define MTRR_TYPE_         3*/
+/*#define MTRR_TYPE_	     2*/
+/*#define MTRR_TYPE_	     3*/
 #define MTRR_TYPE_WRTHROUGH  4
 #define MTRR_TYPE_WRPROT     5
 #define MTRR_TYPE_WRBACK     6
-#define MTRR_NUM_TYPES       7
+#define MTRR_NUM_TYPES	     7
 
-#define MTRRcap_MSR     0x0fe
+#define MTRRcap_MSR	0x0fe
 #define MTRRdefType_MSR 0x2ff
 
 #define MTRRdefTypeEn		(1 << 11)
@@ -62,8 +62,8 @@ void x86_setup_mtrrs(void);
  * x86_setup_var_mtrrs() parameters:
  * address_bits - number of physical address bits supported by cpu
  * above4gb - 2 means dynamically detect number of variable MTRRs available.
- *            non-zero means handle memory ranges above 4GiB.
- *            0 means ignore memory ranges above 4GiB
+ *	      non-zero means handle memory ranges above 4GiB.
+ *	      0 means ignore memory ranges above 4GiB
  */
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb);
 void enable_fixed_mtrr(void);

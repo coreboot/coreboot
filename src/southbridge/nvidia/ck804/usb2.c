@@ -36,16 +36,16 @@ static void usb2_init(struct device *dev)
 
 static struct device_operations usb2_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = usb2_init,
-	// .enable        = ck804_enable,
-	.scan_bus         = 0,
-	.ops_pci          = &ck804_pci_ops,
+	.init		   = usb2_init,
+	// .enable	   = ck804_enable,
+	.scan_bus	   = 0,
+	.ops_pci	   = &ck804_pci_ops,
 };
 
 static const struct pci_driver usb2_driver __pci_driver = {
-	.ops    = &usb2_ops,
+	.ops	 = &usb2_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_USB2,
 };

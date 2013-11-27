@@ -80,13 +80,13 @@ void graphics_init(void)
 	wClassIndex = (VRC_VG << 8) + VG_CONFIG;
 
 	/*
-	 * Graphics Driver Enabled (13)                         0, NO (lets BIOS controls the GP)
-	 * External Monochrome Card Support(12)         0, NO
-	 * Controller Priority Select(11)                       1, Primary
-	 * Display Select(10:8)                                         0x0, CRT
-	 * Graphics Memory Size(7:1)                            CONFIG_VIDEO_MB >> 1,
-	 *                                                                                      defined in devicetree.cb
-	 * PLL Reference Clock Bypass(0)                        0, Default
+	 * Graphics Driver Enabled (13)			 0, NO (lets BIOS controls the GP)
+	 * External Monochrome Card Support(12)	 0, NO
+	 * Controller Priority Select(11)			 1, Primary
+	 * Display Select(10:8)					 0x0, CRT
+	 * Graphics Memory Size(7:1)				 CONFIG_VIDEO_MB >> 1,
+	 *											 defined in devicetree.cb
+	 * PLL Reference Clock Bypass(0)			 0, Default
 	 */
 
 	/* Video RAM has to be given in 2MB chunks

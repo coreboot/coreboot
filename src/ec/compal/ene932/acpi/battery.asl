@@ -37,10 +37,10 @@ Device (BATX)
 		0xFFFFFFFF,  // Design Capacity of Low
 		0x00000001,  // Capacity Granularity 1
 		0x00000001,  // Capacity Granularity 2
-		"",          // Model Number
-		"",          // Serial Number
+		"",	       // Model Number
+		"",	       // Serial Number
 		"LION",      // Battery Type
-		""           // OEM Information
+		""	       // OEM Information
 	})
 
 	Name (PBST, Package () {
@@ -136,7 +136,7 @@ Device (BATX)
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
 			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-			          LLess (Local1, Add (Local2, Local3))))
+				     LLess (Local1, Add (Local2, Local3))))
 			{
 				Store (Local2, Local1)
 			}

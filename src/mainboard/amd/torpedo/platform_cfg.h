@@ -55,7 +55,7 @@
  *    @li <b>0</b> - Legacy free disable
  */
 #ifndef SBCIMx_LEGACY_FREE
-  #define SBCIMx_LEGACY_FREE        0
+  #define SBCIMx_LEGACY_FREE	    0
 #endif
 
 /**
@@ -100,7 +100,7 @@
  *    @li <b>1</b> - Use EC PS/2 function.
  */
 #ifndef INCHIP_EC_KBD
-  #define INCHIP_EC_KBD             0
+  #define INCHIP_EC_KBD		    0
 #endif
 
 /**
@@ -109,7 +109,7 @@
  *    @li <b>1</b> - EC controller support Channel10.
  */
 #ifndef INCHIP_EC_CHANNEL10
-  #define INCHIP_EC_CHANNEL10       1
+  #define INCHIP_EC_CHANNEL10	    1
 #endif
 
 /**
@@ -217,7 +217,7 @@
  *    @li <b>0</b> - Primary
  *    @li <b>1</b> - Secondary<TD></TD>
  *  Sata Controller set as primary or
- *      secondary while Combined Mode is enabled
+ *	secondary while Combined Mode is enabled
  */
 #ifndef SATA_COMBINE_MODE_CHANNEL
   #define SATA_COMBINE_MODE_CHANNEL 0
@@ -230,7 +230,7 @@
  *    SataController Set to Max Gen2 mode
  */
 #ifndef SATA_MAX_GEN2_MODE
-  #define SATA_MAX_GEN2_MODE        0
+  #define SATA_MAX_GEN2_MODE	    0
 #endif
 
 /**
@@ -240,10 +240,10 @@
  *    Sata IDE Controller set to Combined Mode
  */
 #ifndef SATA_COMBINE_MODE
-  #define SATA_COMBINE_MODE         0
+  #define SATA_COMBINE_MODE	    0
 #endif
 
-#define SATA_CLK_RESERVED           9
+#define SATA_CLK_RESERVED	    9
 
 /**
  *   @section NbSbGen2
@@ -281,45 +281,45 @@
  *    @li <b>1</b> - Enable
  *    Spread Spectrum function
  */
-#define INCHIP_SPREAD_SPECTRUM     1
+#define INCHIP_SPREAD_SPECTRUM	   1
 
 /**
  *   @section INCHIP_USB_CINFIG INCHIP_USB_CINFIG
  *
  * - Usb Ohci1 Contoller is define at BIT0
  *    0:Disable 1:Enable
- *                             (Bus 0 Dev 18 Func0)
+ *			       (Bus 0 Dev 18 Func0)
  * - Usb Ehci1 Contoller is define at BIT1
  *    0:Disable 1:Enable
- *                             (Bus 0 Dev 18 Func2)
+ *			       (Bus 0 Dev 18 Func2)
  * - Usb Ohci2 Contoller is define at BIT2
  *    0:Disable 1:Enable
- *                             (Bus 0 Dev 19 Func0)
+ *			       (Bus 0 Dev 19 Func0)
  * - Usb Ehci2 Contoller is define at BIT3
  *    0:Disable 1:Enable
- *                             (Bus 0 Dev 19 Func2)
+ *			       (Bus 0 Dev 19 Func2)
  * - Usb Ohci3 Contoller is define at BIT4
  *    0:Disable 1:Enable
- *                             (Bus 0 Dev 22 Func0)
+ *			       (Bus 0 Dev 22 Func0)
  * - Usb Ehci3 Contoller is define at BIT5
  *    0:Disable 1:Enable
- *                             (Bus 0 Dev 22 Func2)
+ *			       (Bus 0 Dev 22 Func2)
  * - Usb Ohci4 Contoller is define at BIT6
  *    0:Disable 1:Enable
- *                             (Bus 0 Dev 20 Func5)
+ *			       (Bus 0 Dev 20 Func5)
  */
-#define INCHIP_USB_CINFIG          0x7F
-#define INCHIP_USB_OHCI1_CINFIG    0x01
-#define INCHIP_USB_OHCI2_CINFIG    0x01
+#define INCHIP_USB_CINFIG	   0x7F
+#define INCHIP_USB_OHCI1_CINFIG	   0x01
+#define INCHIP_USB_OHCI2_CINFIG	   0x01
 #if CONFIG_ONBOARD_USB30
-#define INCHIP_USB_OHCI3_CINFIG    0x00
+#define INCHIP_USB_OHCI3_CINFIG	   0x00
 #else
-#define INCHIP_USB_OHCI3_CINFIG    0x01
+#define INCHIP_USB_OHCI3_CINFIG	   0x01
 #endif
-#define INCHIP_USB_OHCI4_CINFIG    0x01
-#define INCHIP_USB_EHCI1_CINFIG    0x01
-#define INCHIP_USB_EHCI2_CINFIG    0x01
-#define INCHIP_USB_EHCI3_CINFIG    0x01
+#define INCHIP_USB_OHCI4_CINFIG	   0x01
+#define INCHIP_USB_EHCI1_CINFIG	   0x01
+#define INCHIP_USB_EHCI2_CINFIG	   0x01
+#define INCHIP_USB_EHCI3_CINFIG	   0x01
 
 /**
  *   @section INCHIP_SATA_MODE INCHIP_SATA_MODE
@@ -331,7 +331,7 @@
  *    @li <b>101</b> - AHCI mode as 7804 ID (AMD driver)
  *    @li <b>110</b> - IDE->AHCI mode as 7804 ID (AMD driver)
  */
-#define INCHIP_SATA_MODE           0
+#define INCHIP_SATA_MODE	   0
 
 /**
  *   @section INCHIP_IDE_MODE INCHIP_IDE_MODE
@@ -339,7 +339,7 @@
  *    @li <b>1</b> - Native IDE mode<TD></TD>
  *     ** DO NOT ALLOW SATA & IDE use same mode **
  */
-#define INCHIP_IDE_MODE            1
+#define INCHIP_IDE_MODE		   1
 
 #define SATA_PORT_MULT_CAP_RESERVED  1
 
@@ -381,35 +381,35 @@
  *   - 01: Reserved
  *   - 10: As a Azalia SDIN pin
  */
-#define AZALIA_PIN_CONFIG          0x2A
+#define AZALIA_PIN_CONFIG	   0x2A
 
 /**
  *   @section AzaliaSnoop
  *    @li <b>0</b> - disable
  *    @li <b>1</b> - enable *
  */
-#define INCHIP_AZALIA_SNOOP        0x01
+#define INCHIP_AZALIA_SNOOP	   0x01
 
 /**
  *   @section NCHIP_GEC_CONTROLLER
  *    @li <b>0</b> - Enable *
  *    @li <b>1</b> - Disable
  */
-#define INCHIP_GEC_CONTROLLER      0x00
+#define INCHIP_GEC_CONTROLLER	   0x00
 
 /**
  *   @section SB_HPET_TIMER SB_HPET_TIMER
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define SB_HPET_TIMER              1
+#define SB_HPET_TIMER		   1
 
 /**
  *   @section SB_GPP_CONTROLLER SB_GPP_CONTROLLER
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define SB_GPP_CONTROLLER          1
+#define SB_GPP_CONTROLLER	   1
 
 /**
  *   @section GPP_LINK_CONFIG GPP_LINK_CONFIG
@@ -419,35 +419,35 @@
  *    @li  <b>0011</b> - Port ABCD -> 2:1:1:0
  *    @li  <b>0100</b> - Port ABCD -> 1:1:1:1
  */
-#define GPP_LINK_CONFIG          4
+#define GPP_LINK_CONFIG		 4
 
 /**
  *   @section SB_GPP_PORT0 SB_GPP_PORT0
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define SB_GPP_PORT0               1
+#define SB_GPP_PORT0		   1
 
 /**
  *   @section SB_GPP_PORT1 SB_GPP_PORT1
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define SB_GPP_PORT1               1
+#define SB_GPP_PORT1		   1
 
 /**
  *   @section SB_GPP_PORT2 SB_GPP_PORT2
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define SB_GPP_PORT2               1
+#define SB_GPP_PORT2		   1
 
 /**
  *   @section SB_GPP_PORT3 SB_GPP_PORT3
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define SB_GPP_PORT3               1
+#define SB_GPP_PORT3		   1
 
 /**
  *   @section SB_IR_CONTROLLER
@@ -456,7 +456,7 @@
  *    @li <b>10 </b> - Rx and Tx1
  *    @li <b>11 </b> - Rx and both Tx0,Tx1
  */
-#define SB_IR_CONTROLLER           3
+#define SB_IR_CONTROLLER	   3
 
 /**
  *   @section INCHIP_USB_PHY_POWER_DOWN
@@ -477,14 +477,14 @@
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define INCHIP_NB_SB_GEN2           1
+#define INCHIP_NB_SB_GEN2	    1
 
 /**
  *   @section INCHIP_GPP_GEN2
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable
  */
-#define INCHIP_GPP_GEN2             1
+#define INCHIP_GPP_GEN2		    1
 
 /**
  *   @section INCHIP_GPP_MEMORY_WRITE_IMPROVE
@@ -498,7 +498,7 @@
  *    @li <b>0</b> - Gb PHY Mode *
  *    @li <b>1</b> - 100/10 PHY Mode
  */
-#define INCHIP_GEC_PHY_STATUS       0
+#define INCHIP_GEC_PHY_STATUS	    0
 
 /**
  *   @section INCHIP_GEC_POWER_POLICY
@@ -507,14 +507,14 @@
  *    @li <b>2</b> - S3
  *    @li <b>3</b> - Never power down *
  */
-#define INCHIP_GEC_POWER_POLICY     3
+#define INCHIP_GEC_POWER_POLICY	    3
 
 /**
  *   @section INCHIP_GEC_DEBUGBUS
  *    @li <b>0</b> - Disable *
  *    @li <b>1</b> - Enable
  */
-#define INCHIP_GEC_DEBUGBUS         0
+#define INCHIP_GEC_DEBUGBUS	    0
 
 /**
  *   @section SATA_MAX_GEN2_MODE SATA_MAX_GEN2_MODE
@@ -522,7 +522,7 @@
  *    @li <b>1</b> - Enable
  *    SataController Set to Max Gen2 mode
  */
-#define SATA_MAX_GEN2_MODE        0
+#define SATA_MAX_GEN2_MODE	  0
 
 /**
  *   @section INCHIP_SATA_AGGR_LINK_PM_CAP
@@ -545,14 +545,14 @@
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable *
 */
-#define INCHIP_SATA_PSC_CAP           0
+#define INCHIP_SATA_PSC_CAP	      0
 
 /**
  *   @section INCHIP_SATA_SSC_CAP
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable *
  */
-#define INCHIP_SATA_SSC_CAP           0
+#define INCHIP_SATA_SSC_CAP	      0
 
 /**
  *   @section INCHIP_SATA_CLK_AUTO_OFF
@@ -566,21 +566,21 @@
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable *
  */
-#define INCHIP_SATA_FIS_BASE_SW       1
+#define INCHIP_SATA_FIS_BASE_SW	      1
 
 /**
  *   @section INCHIP_SATA_CCC_SUPPORT
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable *
  */
-#define INCHIP_SATA_CCC_SUPPORT       1
+#define INCHIP_SATA_CCC_SUPPORT	      1
 
 /**
  *   @section INCHIP_SATA_MSI_CAP
  *    @li <b>0</b> - Disable
  *    @li <b>1</b> - Enable *
  */
-#define INCHIP_SATA_MSI_CAP           1
+#define INCHIP_SATA_MSI_CAP	      1
 
 /**
  *   @section CIMXSB_SATA_TARGET_8DEVICE_CAP
@@ -608,7 +608,7 @@
  *    @li <b>0</b> - Disable *
  *    @li <b>1</b> - Enable
  */
-#define INCHIP_SATA_FORCE_RAID5    0
+#define INCHIP_SATA_FORCE_RAID5	   0
 
 /**
  *   @section SATA_GPIO_0_CAP
@@ -1031,10 +1031,10 @@
 
 /**
  *   @section  GppPortAspm
- * @li   <b>01</b> - Disabled
- * @li   <b>01</b> - L0s
- * @li   <b>10</b> - L1
- * @li   <b>11</b> - L0s + L1
+ * @li	 <b>01</b> - Disabled
+ * @li	 <b>01</b> - L0s
+ * @li	 <b>10</b> - L1
+ * @li	 <b>11</b> - L0s + L1
  */
 #define INCHIP_GPP_PORT_ASPM 3
 
@@ -1215,7 +1215,7 @@
 #define INCHIP_STRESS_RESET_MODE 0
 
 #ifndef SB_PCI_CLOCK_RESERVED
-  #define SB_PCI_CLOCK_RESERVED      0x0 //according to CIMx change 0x1F
+  #define SB_PCI_CLOCK_RESERVED	     0x0 //according to CIMx change 0x1F
 #endif
 
 /**

@@ -2,32 +2,32 @@
 
 static void mch_reset(void)
 {
-        device_t dev;
-        unsigned long value, base;
-        dev = pci_locate_device_on_bus(PCI_ID(0x8086, 0x24d0), 0);
-        if (dev != PCI_DEV_INVALID) {
-                /* I/O space is always enables */
+	device_t dev;
+	unsigned long value, base;
+	dev = pci_locate_device_on_bus(PCI_ID(0x8086, 0x24d0), 0);
+	if (dev != PCI_DEV_INVALID) {
+		/* I/O space is always enables */
 
-                /* Set gpio base */
-                pci_write_config32(dev, 0x58, ICH5_GPIOBASE | 1);
-                base = ICH5_GPIOBASE;
+		/* Set gpio base */
+		pci_write_config32(dev, 0x58, ICH5_GPIOBASE | 1);
+		base = ICH5_GPIOBASE;
 
-                /* Enable GPIO Bar */
-                value = pci_read_config32(dev, 0x5c);
-                value |= 0x10;
-                pci_write_config32(dev, 0x5c, value);
+		/* Enable GPIO Bar */
+		value = pci_read_config32(dev, 0x5c);
+		value |= 0x10;
+		pci_write_config32(dev, 0x5c, value);
 
 		/* Set GPIO 19 mux to IO usage */
 		value = inl(base);
 		value |= (1 <<19);
 		outl(value, base);
 
-                /* Pull GPIO 19 low */
-                value = inl(base + 0x0c);
-                value &= ~(1 << 19);
-                outl(value, base + 0x0c);
-        }
-        return;
+		/* Pull GPIO 19 low */
+		value = inl(base + 0x0c);
+		value &= ~(1 << 19);
+		outl(value, base + 0x0c);
+	}
+	return;
 }
 
 static void mainboard_set_e7520_pll(unsigned bits)

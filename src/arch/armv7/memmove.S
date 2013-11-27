@@ -147,25 +147,25 @@ memmove:
 
 12:	PLD(	pld	[r1, #-128]		)
 13:		ldmdb   r1!, {r7, r8, r9, ip}
-		mov     lr, r3, push #\push
-		subs    r2, r2, #32
-		ldmdb   r1!, {r3, r4, r5, r6}
-		orr     lr, lr, ip, pull #\pull
-		mov     ip, ip, push #\push
-		orr     ip, ip, r9, pull #\pull
-		mov     r9, r9, push #\push
-		orr     r9, r9, r8, pull #\pull
-		mov     r8, r8, push #\push
-		orr     r8, r8, r7, pull #\pull
-		mov     r7, r7, push #\push
-		orr     r7, r7, r6, pull #\pull
-		mov     r6, r6, push #\push
-		orr     r6, r6, r5, pull #\pull
-		mov     r5, r5, push #\push
-		orr     r5, r5, r4, pull #\pull
-		mov     r4, r4, push #\push
-		orr     r4, r4, r3, pull #\pull
-		stmdb   r0!, {r4 - r9, ip, lr}
+		mov	  lr, r3, push #\push
+		subs	  r2, r2, #32
+		ldmdb	  r1!, {r3, r4, r5, r6}
+		orr	  lr, lr, ip, pull #\pull
+		mov	  ip, ip, push #\push
+		orr	  ip, ip, r9, pull #\pull
+		mov	  r9, r9, push #\push
+		orr	  r9, r9, r8, pull #\pull
+		mov	  r8, r8, push #\push
+		orr	  r8, r8, r7, pull #\pull
+		mov	  r7, r7, push #\push
+		orr	  r7, r7, r6, pull #\pull
+		mov	  r6, r6, push #\push
+		orr	  r6, r6, r5, pull #\pull
+		mov	  r5, r5, push #\push
+		orr	  r5, r5, r4, pull #\pull
+		mov	  r4, r4, push #\push
+		orr	  r4, r4, r3, pull #\pull
+		stmdb	  r0!, {r4 - r9, ip, lr}
 		bge	12b
 	PLD(	cmn	r2, #96			)
 	PLD(	bge	13b			)

@@ -247,7 +247,7 @@ static void pch_pcie_function_swap(u8 old_fn, u8 new_fn)
 	u32 old_rpfn = new_rpfn;
 
 	printk(BIOS_DEBUG, "PCH: Remap PCIe function %d to %d\n",
-	       old_fn, new_fn);
+		old_fn, new_fn);
 
 	new_rpfn &= ~(RPFN_FNMASK(old_fn) | RPFN_FNMASK(new_fn));
 
@@ -272,15 +272,15 @@ static void pch_pcie_devicetree_update(void)
 
 		/* Determine the new devfn for this port */
 		new_devfn = PCI_DEVFN(PCH_PCIE_DEV_SLOT,
-			      RPFN_FNGET(new_rpfn,
+				 RPFN_FNGET(new_rpfn,
 				 PCI_FUNC(dev->path.pci.devfn)));
 
 		if (dev->path.pci.devfn != new_devfn) {
 			printk(BIOS_DEBUG,
-			       "PCH: PCIe map %02x.%1x -> %02x.%1x\n",
-			       PCI_SLOT(dev->path.pci.devfn),
-			       PCI_FUNC(dev->path.pci.devfn),
-			       PCI_SLOT(new_devfn), PCI_FUNC(new_devfn));
+				  "PCH: PCIe map %02x.%1x -> %02x.%1x\n",
+				  PCI_SLOT(dev->path.pci.devfn),
+				  PCI_FUNC(dev->path.pci.devfn),
+				  PCI_SLOT(new_devfn), PCI_FUNC(new_devfn));
 
 			dev->path.pci.devfn = new_devfn;
 		}
@@ -311,7 +311,7 @@ static void pch_pcie_enable(device_t dev)
 
 		if (config->pcie_port_coalesce)
 			printk(BIOS_INFO,
-			       "PCH: PCIe Root Port coalescing is enabled\n");
+				  "PCH: PCIe Root Port coalescing is enabled\n");
 	}
 
 	if (!dev->enabled) {
@@ -386,7 +386,7 @@ static void pch_pcie_enable(device_t dev)
 	 */
 	if (PCI_FUNC(dev->path.pci.devfn) == 7) {
 		printk(BIOS_SPEW, "PCH: RPFN 0x%08x -> 0x%08x\n",
-		       RCBA32(RPFN), new_rpfn);
+			 RCBA32(RPFN), new_rpfn);
 		RCBA32(RPFN) = new_rpfn;
 
 		/* Update static devictree with new function numbers */

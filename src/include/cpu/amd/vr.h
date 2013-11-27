@@ -13,44 +13,44 @@
 #define NO_VR					-1		// No virtual registers
 
 #define	VRC_MISCELLANEOUS		0x00	// Miscellaneous Class
-    #define VSA_VERSION_NUM     0x00
+    #define VSA_VERSION_NUM	0x00
 	#define HIGH_MEM_ACCESS		0x01
-    #define GET_VSM_INFO        0x02	// Used by INFO
-       #define GET_BASICS       0x00
-       #define GET_EVENT        0x01
-       #define GET_STATISTICS   0x02
-       #define GET_HISTORY      0x03
-       #define GET_HARDWARE     0x04
-       #define GET_ERROR        0x05
-       #define SET_VSM_TYPE     0x06
+    #define GET_VSM_INFO	0x02	// Used by INFO
+       #define GET_BASICS	0x00
+       #define GET_EVENT	0x01
+       #define GET_STATISTICS	0x02
+       #define GET_HISTORY	0x03
+       #define GET_HARDWARE	0x04
+       #define GET_ERROR	0x05
+       #define SET_VSM_TYPE	0x06
 	#define SIGNATURE			0x03
        #define VSA2_SIGNATURE	0x56534132	// 'VSA2' returned in EAX
 
     #define GET_HW_INFO			0x04
     #define VSM_VERSION			0x05
 	#define CTRL_ALT_DEL		0x06
-    #define MSR_ACCESS          0x07
+    #define MSR_ACCESS		0x07
     #define GET_DESCR_INFO		0x08
     #define PCI_INT_AB			0x09	// GPIO pins for INTA# and INTB#
     #define PCI_INT_CD			0x0A	// GPIO pins for INTC# and INTD#
     #define WATCHDOG			0x0B	// Watchdog timer
 
-    #define MAX_MISC           	WATCHDOG
+    #define MAX_MISC	       	WATCHDOG
 
 
 // NOTE:  Do not change the order of the following registers:
 #define	VRC_AUDIO      			0x01	// XpressAudio Class
-	#define AUDIO_VERSION      	0x00
-	#define PM_STATE        	0x01
-	#define SB_16_IO_BASE   	0x02
-	#define MIDI_BASE       	0x03
-	#define CPU_USAGE       	0x04
-	#define CODEC_TYPE      	0x05
-	#define STATE_INDEX     	0x06
-	#define STATE_DATA      	0x07
-	#define AUDIO_IRQ	      	0x08	// For use by native audio drivers
+	#define AUDIO_VERSION	    	0x00
+	#define PM_STATE	 	0x01
+	#define SB_16_IO_BASE	 	0x02
+	#define MIDI_BASE	 	0x03
+	#define CPU_USAGE	 	0x04
+	#define CODEC_TYPE	 	0x05
+	#define STATE_INDEX	 	0x06
+	#define STATE_DATA	 	0x07
+	#define AUDIO_IRQ		 	0x08	// For use by native audio drivers
 	#define STATUS_PTR			0x09	// For use by native audio drivers
-	#define MAX_AUDIO           STATUS_PTR
+	#define MAX_AUDIO	     STATUS_PTR
 
 #define	VRC_VG					0x02	// SoftVG Class
 #define	VRC_VGA					0x02	// SoftVGA Class
@@ -189,16 +189,16 @@
 		//		SAA7127 - Not Used
 		//		ADV7300 - HDTV resolutions only
 		//			LO  -> 720x480p
-		//	   		MED -> 1280x720p
+		//				MED -> 1280x720p
 		//			HI  -> 1920x1080i
 		// 		FS454   - Both SD and HD resolutions
 		// 			SD Resolutions - NTSC and PAL
 		//				LO  -> 640x480
-		//	   			MED -> 800x600
+		//					MED -> 800x600
 		//				HI  -> 1024x768
 		// 			HD Resolutions
 		//				LO  -> 720x480p
-		//	   			MED -> 1280x720p
+		//					MED -> 1280x720p
 		//				HI  -> 1920x1080i
 		#define VG_TV_RES			0x0780	// TV resolution select mask
 			#define VG_TV_RES_SHIFT		0x0007	// Right shift value
@@ -237,16 +237,16 @@
 	#define	VG_FT_VESST			0x2C	// Fixed timings, vertical sync start
 	#define	VG_FT_VESND			0x2D	// Fixed timings, vertical sync end
 
-	#define MAX_VGA           	VGA_MEM_SIZE
-//	#define MAX_VG           	VG_FP_OPTION
-//	#define MAX_VG           	VG_START_OFFS_HI
-	#define MAX_VG           	VG_FT_VESND
+	#define MAX_VGA	   	VGA_MEM_SIZE
+//	#define MAX_VG	    	VG_FP_OPTION
+//	#define MAX_VG	    	VG_START_OFFS_HI
+	#define MAX_VG		  	VG_FT_VESND
 
 #define	VRC_APM					0x03
     #define REPORT_EVENT		0x00
     #define CAPABILITIES    	0x01
 	#define APM_PRESENT		0x02
-	#define MAX_APM           	APM_PRESENT
+	#define MAX_APM	   	APM_PRESENT
 
 
 #define	VRC_PM					0x04	// Legacy PM Class
@@ -275,12 +275,12 @@
 //	#define PM_S3_CLOCKS		0x14
 //	#define PM_S4_CLOCKS		0x15
 //	#define PM_S5_CLOCKS		0x16
-    #define PM_S0_LED           0x17
-    #define PM_S1_LED           0x18
-    #define PM_S2_LED           0x19
-    #define PM_S3_LED           0x1A
-    #define PM_S4_LED           0x1B
-    #define PM_S5_LED           0x1C
+    #define PM_S0_LED		0x17
+    #define PM_S1_LED		0x18
+    #define PM_S2_LED		0x19
+    #define PM_S3_LED		0x1A
+    #define PM_S4_LED		0x1B
+    #define PM_S5_LED		0x1C
 	#define PM_LED_GPIO			0x1D
     #define PM_IMM_LED			0x1E
     #define PM_PWR_LEDS			0x1F
@@ -293,11 +293,11 @@
 	    #define SIO_LED2			0x40
 	    #define SIO_LED3			0x80
 	#define PM_PME_MASK			0x20
-    #define MAX_PM              PM_PME_MASK
+    #define MAX_PM		PM_PME_MASK
 
 
 #define VRC_INFRARED			0x05
-	#define MAX_INFRARED        NO_VR
+	#define MAX_INFRARED	     NO_VR
 
 #define	VRC_TV					0x06	// TV Encoder Class
 	#define TV_ENCODER_TYPE		0x00
@@ -308,16 +308,16 @@
 	#define TV_CONTRAST			0x05
 	#define TV_OUTPUT			0x06
 	#define TV_TIMING			0x10	// 0x10...0x1D are all timings
-	#define MAX_TV           	TV_TIMING
+	#define MAX_TV		  	TV_TIMING
 
 
 
 #define VRC_EXTERNAL_AMP		0x07
-    #define EAPD_VERSION        0x00
-    #define AMP_POWER          	0x01
-	   #define AMP_OFF          0x00
-	   #define AMP_ON           0x01
-	#define AMP_TYPE            0x02
+    #define EAPD_VERSION	0x00
+    #define AMP_POWER	       	0x01
+	   #define AMP_OFF	     0x00
+	   #define AMP_ON	     0x01
+	#define AMP_TYPE	     0x02
 	#define MAX_EXTERNAL_AMP    	AMP_TYPE
 
 
@@ -340,46 +340,46 @@
 	#define	ACPI_GEN_PARAM2		0x0F
 	#define	ACPI_GEN_PARAM3		0x10
 	#define	ACPI_GEN_RETVAL		0x11
-	#define MAX_ACPI	        ACPI_GEN_RETVAL
+	#define MAX_ACPI		  ACPI_GEN_RETVAL
 
 #define	VRC_ACPI_OEM			0x09
-	#define MAX_ACPI_OEM        NO_VR
+	#define MAX_ACPI_OEM	     NO_VR
 
-#define VRC_POWER               0x0A
-    #define BATTERY_UNITS       0x00	// No. battery units
-    #define BATTERY_SELECT      0x01
-    #define AC_STATUS           0x02
+#define VRC_POWER		0x0A
+    #define BATTERY_UNITS	0x00	// No. battery units
+    #define BATTERY_SELECT	0x01
+    #define AC_STATUS		0x02
 	#define BATTERY_STATUS		0x03
 	#define BATTERY_FLAG		0x04
 	#define BATTERY_PERCENTAGE	0x05
-    #define BATTERY_TIME        0x06
-	#define MAX_POWER           BATTERY_TIME
+    #define BATTERY_TIME	0x06
+	#define MAX_POWER	     BATTERY_TIME
 
 
 
 #define VRC_OHCI				0x0B	// OHCI Class
-    #define SET_LED             0x00
+    #define SET_LED		0x00
     #define INIT_OHCI			0x01
-    #define MAX_OHCI            INIT_OHCI
+    #define MAX_OHCI		INIT_OHCI
 
-#define VRC_KEYBOARD            0x0C	// Kbd Controller Class
-    #define KEYBOARD_PRESENT    0x00
-    #define SCANCODE            0x01
+#define VRC_KEYBOARD		0x0C	// Kbd Controller Class
+    #define KEYBOARD_PRESENT	0x00
+    #define SCANCODE		0x01
     #define MOUSE_PRESENT		0x02
-    #define MOUSE_BUTTONS       0x03
-	#define MOUSE_XY            0x04
-	#define MAX_KEYBOARD        MOUSE_XY
+    #define MOUSE_BUTTONS	0x03
+	#define MOUSE_XY	     0x04
+	#define MAX_KEYBOARD	     MOUSE_XY
 
 
-#define VRC_DDC     			0x0D	// Video DDC Class
+#define VRC_DDC	    			0x0D	// Video DDC Class
 	#define VRC_DDC_ENABLE 		0x00	// Enable/disable register
 		#define DDC_DISABLE		0x00
 		#define DDC_ENABLE 		0x01
 	#define VRC_DDC_IO	  		0x01	// A non-zero value for safety
-	#define MAX_DDC           	VRC_DDC_IO
+	#define MAX_DDC	   	VRC_DDC_IO
 
 #define VRC_DEBUGGER			0x0E
-	#define MAX_DEBUGGER        NO_VR
+	#define MAX_DEBUGGER	     NO_VR
 
 
 #define	VRC_STR					0x0F		// Virtual Register class
@@ -395,7 +395,7 @@
 	#define	VRC_HIB_VERSION		0x03		// Read COP8 version
 	#define	VRC_HIB_SERIAL		0x04		// Read 8 byte serial number
 	#define	VRC_HIB_USRBTN		0x05		// Read POST button pressed status
-	#define MAX_COP8	        NO_VR
+	#define MAX_COP8		  NO_VR
 
 #define	VRC_OWL					0x11		// Virtual Register class
 	#define	VRC_OWL_DAC			0x00		// DAC (Backlight) Control
@@ -459,18 +459,18 @@
 	#define VRC_CS_UART2		0x02
 	#define MAX_CHIPSET			VRC_CS_UART2
 
-#define VRC_THERMAL     0x15
-    #define VRC_THERMAL_CURR_RTEMP      0x00        // read only
-    #define VRC_THERMAL_CURR_LTEMP      0x01        // read only
-    #define VRC_THERMAL_FAN             0x02
-    #define VRC_THERMAL_LOW_THRESHOLD   0x03
+#define VRC_THERMAL	0x15
+    #define VRC_THERMAL_CURR_RTEMP	0x00	    // read only
+    #define VRC_THERMAL_CURR_LTEMP	0x01	    // read only
+    #define VRC_THERMAL_FAN		0x02
+    #define VRC_THERMAL_LOW_THRESHOLD	0x03
     #define VRC_THERMAL_HIGH_THRESHOLD  0x04
-    #define VRC_THERMAL_INDEX           0x05
-    #define VRC_THERMAL_DATA            0x06
-    #define VRC_THERMAL_SMB_ADDRESS     0x07
-    #define VRC_THERMAL_SMB_INDEX       0x08
-    #define VRC_THERMAL_SMB_DATA        0x09
-    #define MAX_THERMAL         VRC_THERMAL_SMB_DATA
+    #define VRC_THERMAL_INDEX		0x05
+    #define VRC_THERMAL_DATA		0x06
+    #define VRC_THERMAL_SMB_ADDRESS	0x07
+    #define VRC_THERMAL_SMB_INDEX	0x08
+    #define VRC_THERMAL_SMB_DATA	0x09
+    #define MAX_THERMAL		VRC_THERMAL_SMB_DATA
 
 #define MAX_VR_CLASS	  		VRC_THERMAL
 

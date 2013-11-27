@@ -48,10 +48,10 @@ static void init(device_t dev)
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_enable,
-	.init             = init,
+	.enable	   = pnp_enable,
+	.init		   = init,
 };
 
 static struct pnp_info pnp_dev_info[] = {

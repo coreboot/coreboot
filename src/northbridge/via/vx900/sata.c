@@ -35,13 +35,13 @@ static void vx900_print_sata_errors(u32 flags)
 {
 	/* Status flags */
 	printk(BIOS_DEBUG, "\tPhyRdy %s\n",
-	       (flags & (1 << 16)) ? "changed" : "not changed");
+		(flags & (1 << 16)) ? "changed" : "not changed");
 	printk(BIOS_DEBUG, "\tCOMWAKE %s\n",
-	       (flags & (1 << 16)) ? "detected" : "not detected");
+		(flags & (1 << 16)) ? "detected" : "not detected");
 	printk(BIOS_DEBUG, "\tExchange as determined by COMINIT %s\n",
-	       (flags & (1 << 26)) ? "occured" : "not occured");
+		(flags & (1 << 26)) ? "occured" : "not occured");
 	printk(BIOS_DEBUG, "\tPort selector presence %s\n",
-	       (flags & (1 << 27)) ? "detected" : "not detected");
+		(flags & (1 << 27)) ? "detected" : "not detected");
 	/* Errors */
 	if (flags & (1 << 0))
 		print_debug("\tRecovered data integrity ERROR\n");

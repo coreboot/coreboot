@@ -62,7 +62,7 @@ void set_pcie_reset()
 	pci_write_config16(sm_dev, 0xA8, word);
 }
 
-#if 0	     /* not tested yet. */
+#if 0		   /* not tested yet. */
 /********************************************************
 * board uses SB700 GPIO9 to detect IDE_DMA66.
 * IDE_DMA66 is routed to GPIO 9. So we read Gpio 9 to

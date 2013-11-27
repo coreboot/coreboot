@@ -107,16 +107,16 @@ clear_var_mtrrs:
 	wrmsr
 
 	/* Enable cache (CR0.CD = 0, CR0.NW = 0). */
-        movl	%cr0, %eax
+	movl	%cr0, %eax
 	andl	$(~(CR0_CacheDisable | CR0_NoWriteThrough)), %eax
 	invd
 	movl	%eax, %cr0
 
 	/* enable the 'no eviction' mode */
-	movl    $NoEvictMod_MSR, %ecx
+	movl	 $NoEvictMod_MSR, %ecx
 	rdmsr
-	orl     $1, %eax
-	andl    $~2, %eax
+	orl	 $1, %eax
+	andl	 $~2, %eax
 	wrmsr
 
        /* Clear the cache memory region. This will also fill up the cache */
@@ -128,9 +128,9 @@ clear_var_mtrrs:
 	rep	stosl
 
 	/* enable the 'no eviction run' state */
-	movl    $NoEvictMod_MSR, %ecx
+	movl	 $NoEvictMod_MSR, %ecx
 	rdmsr
-	orl     $3, %eax
+	orl	 $3, %eax
 	wrmsr
 
 	post_code(0x26)
@@ -146,8 +146,8 @@ clear_var_mtrrs:
 	 * IMPORTANT: The following calculation _must_ be done at runtime. See
 	 * http://www.coreboot.org/pipermail/coreboot/2010-October/060855.html
 	 */
-	movl    $copy_and_run, %eax
-	andl    $(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
+	movl	 $copy_and_run, %eax
+	andl	 $(~(CONFIG_XIP_ROM_SIZE - 1)), %eax
 	orl	$MTRR_TYPE_WRPROT, %eax
 	wrmsr
 
@@ -198,16 +198,16 @@ before_romstage:
 	post_code(0x31)
 
 	/* Disable the no eviction run state */
-	movl    $NoEvictMod_MSR, %ecx
+	movl	 $NoEvictMod_MSR, %ecx
 	rdmsr
-	andl    $~2, %eax
+	andl	 $~2, %eax
 	wrmsr
 
 	invd
 
 	/* Disable the no eviction mode */
 	rdmsr
-	andl    $~1, %eax
+	andl	 $~1, %eax
 	wrmsr
 
 	post_code(0x33)

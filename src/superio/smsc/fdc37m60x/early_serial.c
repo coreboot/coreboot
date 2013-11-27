@@ -22,16 +22,16 @@
 #include "fdc37m60x.h"
 
 /* The base address is 0x3f0 or 0x370, depending on the SYSOPT pin. */
-#define SIO_BASE                       0x3f0
-#define SIO_INDEX                      SIO_BASE
-#define SIO_DATA                       (SIO_BASE + 1)
+#define SIO_BASE		       0x3f0
+#define SIO_INDEX		       SIO_BASE
+#define SIO_DATA		       (SIO_BASE + 1)
 
 /* Global configuration registers. */
-#define FDC37M60X_CONFIG_REG_CC        0x02  /* Configure Control. */
+#define FDC37M60X_CONFIG_REG_CC	       0x02  /* Configure Control. */
 #define FDC37M60X_CONFIG_REG_LDN       0x07  /* Logical Device Number. */
 #define FDC37M60X_CONFIG_POWER_CONTROL 0x22  /* Power Control. */
 #define FDC37M60X_CONFIG_POWER_MGMT    0x23  /* Intelligent Power Mgmt. */
-#define FDC37M60X_CONFIG_OSC           0x24  /* OSC. */
+#define FDC37M60X_CONFIG_OSC	       0x24  /* OSC. */
 
 #define FDC37M60X_CONFIGURATION_PORT   0x3f0 /* Write-only. */
 

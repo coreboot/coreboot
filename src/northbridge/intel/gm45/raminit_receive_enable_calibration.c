@@ -205,12 +205,12 @@ static void find_preamble(const int channel, const int group,
 }
 
 static void receive_enable_calibration(const timings_t *const timings,
-				       const dimminfo_t *const dimms)
+					   const dimminfo_t *const dimms)
 {
 	/* Override group to byte-lane mapping for raw card type F DIMMS. */
 	static const char over_bytelane_map[2][4][2] = {
 	/* A,B,C */{ { 0, 1 }, { 2, 3 }, { 4, 5 }, { 6, 7 } },
-	/*     F */{ { 0, 0 }, { 3, 3 }, { 6, 6 }, { 5, 5 } },
+	/*	F */{ { 0, 0 }, { 3, 3 }, { 6, 6 }, { 5, 5 } },
 	};
 
 	const int cardF[] =
@@ -265,12 +265,12 @@ static void receive_enable_calibration(const timings_t *const timings,
 			program_timing(ch, group, rec_timings);
 			printk(BIOS_SPEW, "Final timings for group %d "
 					  "on channel %d: %d.%d.%d.%d.%d\n",
-			       group, ch,
-			       rec_timings[ch][group].c,
-			       rec_timings[ch][group].pre,
-			       rec_timings[ch][group].ph,
-			       rec_timings[ch][group].t,
-			       rec_timings[ch][group].p);
+				  group, ch,
+				  rec_timings[ch][group].c,
+				  rec_timings[ch][group].pre,
+				  rec_timings[ch][group].ph,
+				  rec_timings[ch][group].t,
+				  rec_timings[ch][group].p);
 		}
 	}
 }

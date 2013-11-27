@@ -81,7 +81,7 @@ static int vx900_int15_handler(void)
 #endif
 	default:
 		printk(BIOS_DEBUG, "Unsupported INT15 call %04x!\n",
-		       X86_AX & 0xffff);
+			 X86_AX & 0xffff);
 		X86_AX = 0;
 		res = -1;
 		break;

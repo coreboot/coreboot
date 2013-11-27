@@ -55,10 +55,10 @@ static const struct irq_routing_table intel_irq_routing_table = {
 						 * for this structure (including checksum).
 						 */
 	{
-		/* bus,        dev | fn,   {link, bitmap},     {link, bitmap},     {link, bitmap},     {link, bitmap},      slot, rfu */
-		{0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x0000},     {0x00, 0x0000},     {0x00, 0x0000}},     0x0, 0x0},	/* CPU */
+		/* bus,	 dev | fn,   {link, bitmap},	 {link, bitmap},     {link, bitmap},	 {link, bitmap},      slot, rfu */
+		{0x00, (0x01 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x0000},     {0x00, 0x0000},	 {0x00, 0x0000}},     0x0, 0x0},	/* CPU */
 		{0x00, (0x0f << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {L_PIRQB, M_PIRQB}, {L_PIRQC, M_PIRQC}, {L_PIRQD, M_PIRQD}}, 0x0, 0x0},	/* chipset */
-		{0x00, (0x04 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x0000},     {0x00, 0x0000},     {0x00, 0x0000}},     0x0, 0x0},	/* ethernet */
+		{0x00, (0x04 << 3) | 0x0, {{L_PIRQA, M_PIRQA}, {0x00, 0x0000},     {0x00, 0x0000},	 {0x00, 0x0000}},     0x0, 0x0},	/* ethernet */
 	}
 };
 

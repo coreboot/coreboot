@@ -125,12 +125,12 @@ static inline void exynos_spi_flush_fifo(struct exynos_spi *regs)
 }
 
 static void exynos_spi_request_bytes(struct exynos_spi *regs, int count,
-				     int width)
+					 int width)
 {
 	uint32_t mode_word = SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD,
 		 swap_word = (SPI_TX_SWAP_EN | SPI_RX_SWAP_EN |
-			      SPI_TX_BYTE_SWAP | SPI_RX_BYTE_SWAP |
-			      SPI_TX_HWORD_SWAP | SPI_RX_HWORD_SWAP);
+				 SPI_TX_BYTE_SWAP | SPI_RX_BYTE_SWAP |
+				 SPI_TX_HWORD_SWAP | SPI_RX_HWORD_SWAP);
 
 	/* For word address we need to swap bytes */
 	if (width == sizeof(uint32_t)) {
@@ -170,7 +170,7 @@ static int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
 		step = 1;
 	} else if ((rx_bytes | tx_bytes | (uintptr_t)rxp |(uintptr_t)txp) & 3) {
 		printk(BIOS_CRIT, "%s: WARNING: tranfer mode decreased to 1B\n",
-		       __func__);
+			 __func__);
 		step = 1;
 	} else {
 		step = sizeof(uint32_t);
@@ -190,7 +190,7 @@ static int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
 		int rx_lvl = (spi_sts >> SPI_RX_LVL_OFFSET) & SPI_FIFO_LVL_MASK,
 		    tx_lvl = (spi_sts >> SPI_TX_LVL_OFFSET) & SPI_FIFO_LVL_MASK;
 		int min_tx = ((tx_bytes || !espi->half_duplex) ?
-			      (espi->fifo_size / 2) : 1);
+				 (espi->fifo_size / 2) : 1);
 
 		// TODO(hungte) Abort if timeout happens in half-duplex mode.
 
@@ -334,7 +334,7 @@ void spi_release_bus(struct spi_slave *slave)
 	/* Reset swap mode to make sure no one relying on default values (Ex,
 	 * payload or kernel) will go wrong. */
 	clrbits_le32(&regs->mode_cfg, (SPI_MODE_CH_WIDTH_WORD |
-				       SPI_MODE_BUS_WIDTH_WORD));
+					   SPI_MODE_BUS_WIDTH_WORD));
 	writel(0, &regs->swap_cfg);
 	exynos_spi_flush_fifo(regs);
 }
@@ -386,8 +386,8 @@ static void *exynos_spi_cbfs_unmap(struct cbfs_media *media,
 }
 
 int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size) {
+					 void *buffer_address,
+					 size_t buffer_size) {
 	// TODO Replace static variable to support multiple streams.
 	static struct exynos_spi_media context;
 	static struct exynos_spi_slave eslave = {

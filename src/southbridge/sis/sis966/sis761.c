@@ -114,15 +114,15 @@ static void sis761_init(struct device *dev)
 
 static struct device_operations sis761_ops  = {
 	.read_resources   = sis761_read_resources,
-	.set_resources    = sis761_set_resources,
+	.set_resources	   = sis761_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = sis761_init,
-	.scan_bus         = 0,
-	.ops_pci          = 0,
+	.init		   = sis761_init,
+	.scan_bus	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver sis761_driver __pci_driver = {
-	.ops    = &sis761_ops,
+	.ops	 = &sis761_ops,
 	.vendor = PCI_VENDOR_ID_SIS,
 	.device = PCI_DEVICE_ID_SIS_SIS761,
 };

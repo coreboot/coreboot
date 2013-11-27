@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -36,11 +36,11 @@ extern unsigned char _binary_smm_size;
 
 /* I945/GM45 */
 #define SMRAM		0x9d
-#define   D_OPEN	(1 << 6)
-#define   D_CLS		(1 << 5)
-#define   D_LCK		(1 << 4)
-#define   G_SMRAME	(1 << 3)
-#define   C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
+#define	  D_OPEN	(1 << 6)
+#define	  D_CLS		(1 << 5)
+#define	  D_LCK		(1 << 4)
+#define	  G_SMRAME	(1 << 3)
+#define	  C_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0))
 
 /* While we read PMBASE dynamically in case it changed, let's
  * initialize it with a sane value

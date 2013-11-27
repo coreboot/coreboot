@@ -415,17 +415,17 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 			if (tdp <= 17) {
 				/* <=17W ULV */
 				printk(BIOS_DEBUG, "IVB GT2 17W "
-				       "Power Meter Weights\n");
+					   "Power Meter Weights\n");
 				gtt_write_powermeter(ivb_pm_gt2_17w);
 			} else if ((tdp >= 25) && (tdp <= 35)) {
 				/* 25W-35W */
 				printk(BIOS_DEBUG, "IVB GT2 25W-35W "
-				       "Power Meter Weights\n");
+					   "Power Meter Weights\n");
 				gtt_write_powermeter(ivb_pm_gt2_35w);
 			} else {
 				/* All others */
 				printk(BIOS_DEBUG, "IVB GT2 35W "
-				       "Power Meter Weights\n");
+					   "Power Meter Weights\n");
 				gtt_write_powermeter(ivb_pm_gt2_35w);
 			}
 		}

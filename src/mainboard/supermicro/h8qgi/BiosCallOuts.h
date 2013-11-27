@@ -65,13 +65,13 @@ AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPt
 AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 /*  Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-#define SB_GPIO_REG02   2
-#define SB_GPIO_REG09   9
-#define SB_GPIO_REG10   10
-#define SB_GPIO_REG15   15
-#define SB_GPIO_REG17   17
-#define SB_GPIO_REG21   21
-#define SB_GPIO_REG25   25
-#define SB_GPIO_REG28   28
+#define SB_GPIO_REG02	2
+#define SB_GPIO_REG09	9
+#define SB_GPIO_REG10	10
+#define SB_GPIO_REG15	15
+#define SB_GPIO_REG17	17
+#define SB_GPIO_REG21	21
+#define SB_GPIO_REG25	25
+#define SB_GPIO_REG28	28
 #endif //_BIOS_CALLOUT_H_
 

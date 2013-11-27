@@ -17,15 +17,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 #ifndef BIOS_SIZE
-	#define BIOS_SIZE                      0x04   //04 - 1MB
+	#define BIOS_SIZE			0x04   //04 - 1MB
 #endif
-#define LEGACY_FREE                    0x00
+#define LEGACY_FREE		       0x00
 #if !CONFIG_ONBOARD_USB30
-  #define XHCI_SUPPORT                 0x01
+  #define XHCI_SUPPORT		       0x01
 #endif
 
-//#define ACPI_SLEEP_TRAP                0x01	// No sleep trap smi support in coreboot.
-//#define SPREAD_SPECTRUM_EPROM_LOAD     0x01
+//#define ACPI_SLEEP_TRAP		 0x01	// No sleep trap smi support in coreboot.
+//#define SPREAD_SPECTRUM_EPROM_LOAD	 0x01
 
 /**
  * Module Specific Defines for platform BIOS
@@ -38,9 +38,9 @@
  * @param[Option]     MOVE_PCIEBAR_TO_F0000000 Set PCIe base address to 0xF7000000
  */
 #ifdef  MOVE_PCIEBAR_TO_F0000000
-  #define PCIEX_BASE_ADDRESS           0xF7000000
+  #define PCIEX_BASE_ADDRESS	       0xF7000000
 #else
-  #define PCIEX_BASE_ADDRESS           0xE0000000
+  #define PCIEX_BASE_ADDRESS	       0xE0000000
 #endif
 
 /**
@@ -48,7 +48,7 @@
  *
  */
 #ifndef SMBUS0_BASE_ADDRESS
-  #define SMBUS0_BASE_ADDRESS          0xB00
+  #define SMBUS0_BASE_ADDRESS	       0xB00
 #endif
 
 /**
@@ -56,7 +56,7 @@
  *
  */
 #ifndef SMBUS1_BASE_ADDRESS
-  #define SMBUS1_BASE_ADDRESS          0xB20
+  #define SMBUS1_BASE_ADDRESS	       0xB20
 #endif
 
 /**
@@ -64,7 +64,7 @@
  *
  */
 #ifndef SIO_PME_BASE_ADDRESS
-  #define SIO_PME_BASE_ADDRESS         0xE00
+  #define SIO_PME_BASE_ADDRESS	       0xE00
 #endif
 
 /**
@@ -72,7 +72,7 @@
  *
  */
 #ifndef SPI_BASE_ADDRESS
-  #define SPI_BASE_ADDRESS             0xFEC10000
+  #define SPI_BASE_ADDRESS	       0xFEC10000
 #endif
 
 /**
@@ -80,7 +80,7 @@
  *
  */
 #ifndef WATCHDOG_TIMER_BASE_ADDRESS
-  #define WATCHDOG_TIMER_BASE_ADDRESS  0xFEC000F0        // Watchdog Timer Base Address
+  #define WATCHDOG_TIMER_BASE_ADDRESS  0xFEC000F0	 // Watchdog Timer Base Address
 #endif
 
 /**
@@ -88,7 +88,7 @@
  *
  */
 #ifndef HPET_BASE_ADDRESS
-  #define HPET_BASE_ADDRESS            0xFED00000        // HPET Base address
+  #define HPET_BASE_ADDRESS	       0xFED00000	 // HPET Base address
 #endif
 
 /**
@@ -96,129 +96,129 @@
  *
  */
 #ifdef ALT_ADDR_400
-  #define ACPI_BLK_BASE                0x400
+  #define ACPI_BLK_BASE		       0x400
 #else
-  #define ACPI_BLK_BASE                0x800
+  #define ACPI_BLK_BASE		       0x800
 #endif
 
-#define PM1_STATUS_OFFSET              0x00
-#define PM1_ENABLE_OFFSET              0x02
-#define PM1_CONTROL_OFFSET             0x04
-#define PM_TIMER_OFFSET                0x08
-#define CPU_CONTROL_OFFSET             0x10
-#define EVENT_STATUS_OFFSET            0x20
-#define EVENT_ENABLE_OFFSET            0x24
+#define PM1_STATUS_OFFSET	       0x00
+#define PM1_ENABLE_OFFSET	       0x02
+#define PM1_CONTROL_OFFSET	       0x04
+#define PM_TIMER_OFFSET		       0x08
+#define CPU_CONTROL_OFFSET	       0x10
+#define EVENT_STATUS_OFFSET	       0x20
+#define EVENT_ENABLE_OFFSET	       0x24
 
 /**
  * PM1_EVT_BLK_ADDRESS - ACPI power management Event Block base address
  *
  */
-#define PM1_EVT_BLK_ADDRESS           ACPI_BLK_BASE + PM1_STATUS_OFFSET     // AcpiPm1EvtBlkAddr
+#define PM1_EVT_BLK_ADDRESS	      ACPI_BLK_BASE + PM1_STATUS_OFFSET	    // AcpiPm1EvtBlkAddr
 
 /**
  * PM1_CNT_BLK_ADDRESS - ACPI power management Control block base address
  *
  */
-#define PM1_CNT_BLK_ADDRESS           ACPI_BLK_BASE + PM1_CONTROL_OFFSET    // AcpiPm1CntBlkAddr
+#define PM1_CNT_BLK_ADDRESS	      ACPI_BLK_BASE + PM1_CONTROL_OFFSET    // AcpiPm1CntBlkAddr
 
 /**
  * PM1_TMR_BLK_ADDRESS - ACPI power management Timer block base address
  *
  */
-#define PM1_TMR_BLK_ADDRESS           ACPI_BLK_BASE + PM_TIMER_OFFSET       // AcpiPmTmrBlkAddr
+#define PM1_TMR_BLK_ADDRESS	      ACPI_BLK_BASE + PM_TIMER_OFFSET	    // AcpiPmTmrBlkAddr
 
 /**
  * CPU_CNT_BLK_ADDRESS - ACPI power management CPU Control block base address
  *
  */
-#define CPU_CNT_BLK_ADDRESS           ACPI_BLK_BASE + CPU_CONTROL_OFFSET    // CpuControlBlkAddr
+#define CPU_CNT_BLK_ADDRESS	      ACPI_BLK_BASE + CPU_CONTROL_OFFSET    // CpuControlBlkAddr
 
 /**
  * GPE0_BLK_ADDRESS - ACPI power management General Purpose Event block base address
  *
  */
-#define GPE0_BLK_ADDRESS              ACPI_BLK_BASE + EVENT_STATUS_OFFSET   // AcpiGpe0BlkAddr
+#define GPE0_BLK_ADDRESS	      ACPI_BLK_BASE + EVENT_STATUS_OFFSET   // AcpiGpe0BlkAddr
 
 /**
  * SMI_CMD_PORT - ACPI SMI Command block base address
  *
  */
-#define SMI_CMD_PORT                  0xB0              // SmiCmdPortAddr
+#define SMI_CMD_PORT		      0xB0		// SmiCmdPortAddr
 
 /**
  * ACPI_PMA_CNT_BLK_ADDRESS - ACPI power management additional control block base address
  *
  */
-#define ACPI_PMA_CNT_BLK_ADDRESS      0xFE00            // AcpiPmaCntBlkAddr
+#define ACPI_PMA_CNT_BLK_ADDRESS      0xFE00		// AcpiPmaCntBlkAddr
 
 /**
  * SATA_IDE_MODE_SSID - Sata controller IDE mode SSID.
  *    Define value for SSID while SATA controller set to IDE mode.
  */
-#define SATA_IDE_MODE_SSID           0x78001022
+#define SATA_IDE_MODE_SSID	     0x78001022
 /**
  * SATA_RAID_MODE_SSID - Sata controller RAID mode SSID.
  *    Define value for SSID while SATA controller set to RAID mode.
  */
-#define SATA_RAID_MODE_SSID          0x78021022
+#define SATA_RAID_MODE_SSID	     0x78021022
 
 /**
  * SATA_RAID5_MODE_SSID - Sata controller RAID5 mode SSID.
  *    Define value for SSID while SATA controller set to RAID5 mode.
  */
-#define SATA_RAID5_MODE_SSID         0x78031022
+#define SATA_RAID5_MODE_SSID	     0x78031022
 
 /**
  * SATA_AHCI_MODE_SSID - Sata controller AHCI mode SSID.
  *    Define value for SSID while SATA controller set to AHCI mode.
  */
-#define SATA_AHCI_SSID               0x78011022
+#define SATA_AHCI_SSID		     0x78011022
 
 /**
  * OHCI_SSID - All SB OHCI controllers SSID value.
  *
  */
-#define OHCI_SSID                    0x78071022
+#define OHCI_SSID		     0x78071022
 
 /**
  * EHCI_SSID - All SB EHCI controllers SSID value.
  *
  */
-#define EHCI_SSID                    0x78081022
+#define EHCI_SSID		     0x78081022
 
 /**
  * OHCI4_SSID - OHCI (USB 1.1 mode *HW force) controllers SSID value.
  *
  */
-#define OHCI4_SSID                   0x78091022
+#define OHCI4_SSID		     0x78091022
 
 /**
  * SMBUS_SSID - Smbus controller (South Bridge device 0x14 function 0) SSID value.
  *
  */
-#define SMBUS_SSID                   0x780B1022
+#define SMBUS_SSID		     0x780B1022
 
 /**
  * IDE_SSID - SATA IDE controller (South Bridge device 0x14 function 1) SSID value.
  *
  */
-#define IDE_SSID                     0x780C1022
+#define IDE_SSID		     0x780C1022
 
 /**
  * AZALIA_SSID - AZALIA controller (South Bridge device 0x14 function 2) SSID value.
  *
  */
-#define AZALIA_SSID                  0x780D1022
+#define AZALIA_SSID		     0x780D1022
 
 /**
  * LPC_SSID - LPC controller (South Bridge device 0x14 function 3) SSID value.
  *
  */
-#define LPC_SSID                     0x780E1022
+#define LPC_SSID		     0x780E1022
 
 /**
  * PCIB_SSID - PCIB controller (South Bridge device 0x14 function 4) SSID value.
  *
  */
-#define PCIB_SSID                    0x780F1022
+#define PCIB_SSID		     0x780F1022
 

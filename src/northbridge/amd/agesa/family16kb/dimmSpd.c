@@ -42,11 +42,11 @@ static int readSmbusByteData (int iobase, int address, char *buffer, int offset)
 
 	address |= 1; // set read bit
 
-	__outbyte (iobase + 0, 0xFF);                // clear error status
-	__outbyte (iobase + 1, 0x1F);                // clear error status
-	__outbyte (iobase + 3, offset);              // offset in eeprom
-	__outbyte (iobase + 4, address);             // slave address and read bit
-	__outbyte (iobase + 2, 0x48);                // read byte command
+	__outbyte (iobase + 0, 0xFF);		      // clear error status
+	__outbyte (iobase + 1, 0x1F);		      // clear error status
+	__outbyte (iobase + 3, offset);	      // offset in eeprom
+	__outbyte (iobase + 4, address);	      // slave address and read bit
+	__outbyte (iobase + 2, 0x48);		      // read byte command
 
 	// time limit to avoid hanging for unexpected error status (should never happen)
 	limit = __rdtsc () + 2000000000 / 10;
@@ -54,20 +54,20 @@ static int readSmbusByteData (int iobase, int address, char *buffer, int offset)
 	{
 		status = __inbyte (iobase);
 		if (__rdtsc () > limit) break;
-		if ((status & 2) == 0) continue;               // SMBusInterrupt not set, keep waiting
-		if ((status & 1) == 1) continue;               // HostBusy set, keep waiting
+		if ((status & 2) == 0) continue;		 // SMBusInterrupt not set, keep waiting
+		if ((status & 1) == 1) continue;		 // HostBusy set, keep waiting
 		break;
 	}
 
 	buffer [0] = __inbyte (iobase + 5);
-	if (status == 2) status = 0;                      // check for done with no errors
+	if (status == 2) status = 0;			   // check for done with no errors
 	return status;
 }
 
 /*-----------------------------------------------------------------------------
  *
  * readSmbusByte - read a single SPD byte from the default offset
- *                 this function is faster function readSmbusByteData
+ *		   this function is faster function readSmbusByteData
  */
 
 static int readSmbusByte (int iobase, int address, char *buffer)
@@ -75,8 +75,8 @@ static int readSmbusByte (int iobase, int address, char *buffer)
 	unsigned int status;
 	UINT64 limit;
 
-	__outbyte (iobase + 0, 0xFF);                // clear error status
-	__outbyte (iobase + 2, 0x44);                // read command
+	__outbyte (iobase + 0, 0xFF);		      // clear error status
+	__outbyte (iobase + 2, 0x44);		      // read command
 
 	// time limit to avoid hanging for unexpected error status
 	limit = __rdtsc () + 2000000000 / 10;
@@ -84,23 +84,23 @@ static int readSmbusByte (int iobase, int address, char *buffer)
 	{
 		status = __inbyte (iobase);
 		if (__rdtsc () > limit) break;
-		if ((status & 2) == 0) continue;               // SMBusInterrupt not set, keep waiting
-		if ((status & 1) == 1) continue;               // HostBusy set, keep waiting
+		if ((status & 2) == 0) continue;		 // SMBusInterrupt not set, keep waiting
+		if ((status & 1) == 1) continue;		 // HostBusy set, keep waiting
 		break;
 	}
 
 	buffer [0] = __inbyte (iobase + 5);
-	if (status == 2) status = 0;                      // check for done with no errors
+	if (status == 2) status = 0;			   // check for done with no errors
 	return status;
 }
 
 /*---------------------------------------------------------------------------
  *
  * readspd - Read one or more SPD bytes from a DIMM.
- *           Start with offset zero and read sequentially.
- *           Optimization relies on autoincrement to avoid
- *           sending offset for every byte.
- *          Reads 128 bytes in 7-8 ms at 400 KHz.
+ *	     Start with offset zero and read sequentially.
+ *	     Optimization relies on autoincrement to avoid
+ *	     sending offset for every byte.
+ *	    Reads 128 bytes in 7-8 ms at 400 KHz.
  */
 
 static int readspd (int iobase, int SmbusSlaveAddress, char *buffer, int count)
@@ -143,11 +143,11 @@ AGESA_STATUS AmdMemoryReadSPD (UINT32 unused1, UINT32 unused2, AGESA_READ_SPD_PA
 	if ((dev == 0) || (config == 0))
 		return AGESA_ERROR;
 
-	if (info->SocketId     >= DIMENSION(config->spdAddrLookup      ))
+	if (info->SocketId	>= DIMENSION(config->spdAddrLookup	))
 		return AGESA_ERROR;
-	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]   ))
+	if (info->MemChannelId >= DIMENSION(config->spdAddrLookup[0]	))
 		return AGESA_ERROR;
-	if (info->DimmId       >= DIMENSION(config->spdAddrLookup[0][0]))
+	if (info->DimmId	>= DIMENSION(config->spdAddrLookup[0][0]))
 		return AGESA_ERROR;
 
 	spdAddress = config->spdAddrLookup

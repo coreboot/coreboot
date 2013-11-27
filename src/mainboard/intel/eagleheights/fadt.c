@@ -25,29 +25,29 @@
 #include <arch/acpi.h>
 #include <cpu/x86/smm.h>
 
-#define ACPI_PM1_STS        (pmbase + 0x00)
-#define ACPI_PM1_EN         (pmbase + 0x02)
-#define ACPI_PM1_CNT        (pmbase + 0x04)
-#define ACPI_PM1_TMR        (pmbase + 0x08)
-#define ACPI_PROC_CNT       (pmbase + 0x10)
-#define ACPI_LV2            (pmbase + 0x14)
-#define ACPI_GPE0_STS       (pmbase + 0x28)
-#define ACPI_GPE0_EN        (pmbase + 0x2C)
-#define ACPI_SMI_EN         (pmbase + 0x30)
-#define ACPI_SMI_STS        (pmbase + 0x34)
+#define ACPI_PM1_STS	    (pmbase + 0x00)
+#define ACPI_PM1_EN	    (pmbase + 0x02)
+#define ACPI_PM1_CNT	    (pmbase + 0x04)
+#define ACPI_PM1_TMR	    (pmbase + 0x08)
+#define ACPI_PROC_CNT	    (pmbase + 0x10)
+#define ACPI_LV2	    (pmbase + 0x14)
+#define ACPI_GPE0_STS	    (pmbase + 0x28)
+#define ACPI_GPE0_EN	    (pmbase + 0x2C)
+#define ACPI_SMI_EN	    (pmbase + 0x30)
+#define ACPI_SMI_STS	    (pmbase + 0x34)
 #define ACPI_ALT_GP_SMI_EN  (pmbase + 0x38)
 #define ACPI_ALT_GP_SMI_STS (pmbase + 0x3A)
-#define ACPI_MON_SMI        (pmbase + 0x40)
-#define ACPI_DEVACT_STS     (pmbase + 0x44)
-#define ACPI_DEVTRAP_EN     (pmbase + 0x48)
+#define ACPI_MON_SMI	    (pmbase + 0x40)
+#define ACPI_DEVACT_STS	    (pmbase + 0x44)
+#define ACPI_DEVTRAP_EN	    (pmbase + 0x48)
 #define ACPI_BUS_ADDR_TRACK (pmbase + 0x4C)
 #define ACPI_BUS_CYC_TRACK  (pmbase + 0x4E)
 
 #define ACPI_PM1a_EVT_BLK ACPI_PM1_STS
 #define ACPI_PM1a_CNT_BLK ACPI_PM1_CNT
-#define ACPI_PM_TMR_BLK   ACPI_PM1_TMR
-#define ACPI_P_BLK        ACPI_PROC_CNT
-#define ACPI_GPE0_BLK     ACPI_GPE0_STS
+#define ACPI_PM_TMR_BLK	  ACPI_PM1_TMR
+#define ACPI_P_BLK	  ACPI_PROC_CNT
+#define ACPI_GPE0_BLK	  ACPI_GPE0_STS
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 {

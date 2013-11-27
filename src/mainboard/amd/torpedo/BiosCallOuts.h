@@ -24,7 +24,7 @@
 #include "AGESA.h"
 
 #define BIOS_HEAP_START_ADDRESS  0x00010000
-#define BIOS_HEAP_SIZE       0x20000   /* 64MB */
+#define BIOS_HEAP_SIZE	     0x20000   /* 64MB */
 
 typedef struct _BIOS_HEAP_MANAGER {
   //UINT32 AvailableSize;
@@ -70,7 +70,7 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *Conf
 AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 // These registers are not defined in cimx/SB900/Hudson-2.h
-#define SB_GPIO_REG02   2
-#define SB_GPIO_REG15   15
-#define SB_GPIO_REG25   25
+#define SB_GPIO_REG02	2
+#define SB_GPIO_REG15	15
+#define SB_GPIO_REG25	25
 #endif //_BIOS_CALLOUT_H_

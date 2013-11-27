@@ -96,7 +96,7 @@ static void sata_init(struct device *dev)
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94,
 				   ((config->
-				     sata_port_map ^ 0x3f) << 24) | 0x183);
+					 sata_port_map ^ 0x3f) << 24) | 0x183);
 	} else if (config->sata_ahci) {
 		u32 abar;
 
@@ -129,7 +129,7 @@ static void sata_init(struct device *dev)
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94,
 				   ((config->
-				     sata_port_map ^ 0x3f) << 24) | 0x183 |
+					 sata_port_map ^ 0x3f) << 24) | 0x183 |
 				   0x40000000);
 		pci_write_config32(dev, 0x98, 0x00590200);
 
@@ -205,7 +205,7 @@ static void sata_init(struct device *dev)
 		/* SATA Initialization register */
 		pci_write_config32(dev, 0x94,
 				   ((config->
-				     sata_port_map ^ 0x3f) << 24) | 0x183);
+					 sata_port_map ^ 0x3f) << 24) | 0x183);
 	}
 
 	/* Set Gen3 Transmitter settings if needed */

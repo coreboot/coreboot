@@ -61,7 +61,7 @@ $(obj)/coreboot_hudson_romsig.bin: $(call strip_quotes, $(CONFIG_HUDSON_XHCI_FWM
 			$(call strip_quotes, $(CONFIG_HUDSON_IMC_FWM_FILE)) \
 			$(call strip_quotes, $(CONFIG_HUDSON_GEC_FWM_FILE)) \
 			$(obj)/config.h
-	echo "    Hudson FW  $@"
+	echo "	   Hudson FW  $@"
 	for fwm in 1437226410 \
 		$(HUDSON_IMC_POSITION) \
 		$(HUDSON_GEC_POSITION) \

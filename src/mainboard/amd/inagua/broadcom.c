@@ -168,9 +168,9 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	.init.unknown = 0x00,
 	.init.num_hunks = sizeof(selfboot_patch.init.hunk4_code) ? 0x80 : 0x60,
 	.init.size = sizeof(selfboot_patch.init.hunk1_code)
-	           + sizeof(selfboot_patch.init.hunk2_code)
-	           + sizeof(selfboot_patch.init.hunk3_code)
-	           + sizeof(selfboot_patch.init.hunk4_code),
+		    + sizeof(selfboot_patch.init.hunk2_code)
+		    + sizeof(selfboot_patch.init.hunk3_code)
+		    + sizeof(selfboot_patch.init.hunk4_code),
 	.init.hunk1_size = sizeof(selfboot_patch.init.hunk1_code),
 	.init.hunk2_size = sizeof(selfboot_patch.init.hunk2_code),
 	.init.hunk3_size = sizeof(selfboot_patch.init.hunk3_code),
@@ -204,13 +204,13 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 	 * 14-11: any bit 1=firmware execution seemed delayed
 	 * 10: 0=firmware execution seemed delayed
 	 * 9,2,0: select PHY type, affects these registers, probably more
-	 *  9 2 0 | reg 0x05A4  PHY reg 31  PHY 23,24,28        Notes
+	 *  9 2 0 | reg 0x05A4  PHY reg 31  PHY 23,24,28	 Notes
 	 * -------+----------------------------------------------------------
-	 *  0 0 0 | 0x331C71C1      -         changed   Inband Status enabled
-	 *  0 1 0 | 0x3210C500      -         changed             -
-	 *  0 X 1 | 0x33FF66C0   changed         -         10/100 Mbit only
-	 *  1 X 0 | 0x330C5180      -            -                -
-	 *  1 X 1 | 0x391C6140      -            -                -
+	 *  0 0 0 | 0x331C71C1	     -	       changed	 Inband Status enabled
+	 *  0 1 0 | 0x3210C500	     -	       changed		   -
+	 *  0 X 1 | 0x33FF66C0	  changed	  -	    10/100 Mbit only
+	 *  1 X 0 | 0x330C5180	     -		  -		   -
+	 *  1 X 1 | 0x391C6140	     -		  -		   -
 	 */
 #if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
 	.header.basic_config = be16(0x0404),	//original for B50610
@@ -256,7 +256,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 #endif
 		be(0xC1F005A0), be(0xFEFFEFFF), be(0x01001000),	//v1.05 : 5A0.24,12=1: auto-clock-switch
 		be(0x06100D34), be(0x00000000),			//v1.03 : MemD34: clear config vars
-		be(0x06100D38), be(0x00000000),			//v1.03 :    -  |
+		be(0x06100D38), be(0x00000000),			//v1.03 :	 -  |
 		be(0x06100D3C), be(0x00000000),			//v1.03 : MemD3F|
 	}, //-->INIT1_LENGTH!
 
@@ -307,7 +307,7 @@ static struct selfboot_patch {		//Watch out: all values are *BIG-ENDIAN*!
 #if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
 		be(0x083CB001),					//v1.10 : PHY1C: IDDQ B50610 PHY
 #endif
-		be(0xF7F30116),					//        IDDQ PHY
+		be(0xF7F30116),					//	IDDQ PHY
 		be(0xC40005A0),					//v1.09 : 5A0.0=0: Port Mode = MII
 		be(0xC4180400),					//v1.09 : 400.3=0|
 		be(0xC3100400),					//v1.09 : 400.2=1|

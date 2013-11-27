@@ -163,11 +163,11 @@ static void cs5536_setup_onchipuart1(void)
 
 	/* Setup early for polling only mode.
 	 * 1. Enable GPIO 8 to OUT_AUX1, 9 to IN_AUX1.
-	 *        GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
+	 *	   GPIO LBAR + 0x04, LBAR + 0x10, LBAR + 0x20, LBAR + 34
 	 * 2. Enable UART I/O space in MDD.
-	 *        MSR 0x51400014 bit 18:16
+	 *	   MSR 0x51400014 bit 18:16
 	 * 3. Enable UART controller.
-	 *        MSR 0x5140003A bit 0, 1
+	 *	   MSR 0x5140003A bit 0, 1
 	 */
 
 	/* GPIO8 - UART1_TX */
@@ -207,7 +207,7 @@ static void cs5536_setup_onchipuart2(void)
 	/* Set: OUTAUX1 Select (0x10) */
 	outl(GPIOL_4_SET, GPIO_IO_BASE + GPIOL_OUT_AUX1_SELECT);
 	/* GPIO4 - UART2_RX */
-	/* Set: Input Enable   (0x20) */
+	/* Set: Input Enable	(0x20) */
 	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_INPUT_ENABLE);
 	/* Set: INAUX1 Select  (0x34) */
 	outl(GPIOL_3_SET, GPIO_IO_BASE + GPIOL_IN_AUX1_SELECT);

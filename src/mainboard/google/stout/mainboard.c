@@ -64,7 +64,7 @@ static int int15_handler(void)
 		 *  bit 2 = Graphics Stretching
 		 *  bit 1 = Text Stretching
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
-		 *  0     = video bios default
+		 *  0	    = video bios default
 		 */
 		X86_AX = 0x005f;
 		X86_CL = 0x00; /* Use video bios default */
@@ -126,7 +126,7 @@ static int int15_handler(void)
 		}
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
 		break;
 	}
@@ -162,7 +162,7 @@ static void mainboard_init(device_t dev)
 	 * enable CLKREQ: LAN pci config space 0x81h=01
 	 */
 	ethernet_dev = dev_find_device(STOUT_NIC_VENDOR_ID,
-				       STOUT_NIC_DEVICE_ID, dev);
+					   STOUT_NIC_DEVICE_ID, dev);
 
 	if (ethernet_dev != NULL)
 		pci_write_config8(ethernet_dev, 0x81, 0x01);

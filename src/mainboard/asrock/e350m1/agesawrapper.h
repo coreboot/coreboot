@@ -18,7 +18,7 @@
  */
 
 /*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
+ *			       M O D U L E S	U S E D
  *----------------------------------------------------------------------------------------
  */
 
@@ -31,29 +31,29 @@
 #include "AGESA.h"
 
 /*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
+ *		     D E F I N I T I O N S    A N D    M A C R O S
  *----------------------------------------------------------------------------------------
  */
 /* Define AMD Ontario APPU SSID/SVID */
-#define AMD_APU_SVID    0x1022
-#define AMD_APU_SSID    0x1234
+#define AMD_APU_SVID	0x1022
+#define AMD_APU_SSID	0x1234
 #define PCIE_BASE_ADDRESS   CONFIG_MMCONF_BASE_ADDRESS
 
 
 enum {
-  PICK_DMI,       /* DMI Interface */
-  PICK_PSTATE,    /* Acpi Pstate SSDT Table */
-  PICK_SRAT,      /* SRAT Table */
-  PICK_SLIT,      /* SLIT Table */
+  PICK_DMI,	  /* DMI Interface */
+  PICK_PSTATE,	  /* Acpi Pstate SSDT Table */
+  PICK_SRAT,	  /* SRAT Table */
+  PICK_SLIT,	  /* SLIT Table */
   PICK_WHEA_MCE,  /* WHEA MCE table */
   PICK_WHEA_CMC,  /* WHEA CMV table */
-  PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
+  PICK_ALIB,	  /* SACPI SSDT table with ALIB implementation */
 };
 
 
 
 /*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
+ *		    T Y P E D E F S	A N D	  S T R U C T U  R E S
  *----------------------------------------------------------------------------------------
  */
 
@@ -63,17 +63,17 @@ typedef struct {
 } BIOS_CALLOUT_STRUCT;
 
 /*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
+ *	     P R O T O T Y P E S     O F     L O C A L	   F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
+ *			    E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
 
 /*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
+ *			    L O C A L	 F U N C T I O N S
  *---------------------------------------------------------------------------------------
  */
 

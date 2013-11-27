@@ -6,20 +6,20 @@
  Microprocessors.  You  may   copy,  view  and  install  the
  enclosed microcode  only for development  and deployment of
  firmware,  BIOS,  or  operating  system code  for  computer
- systems   that  contain  AMD   processors.   You   are  not
+ systems   that  contain  AMD	processors.   You   are  not
  authorized  to use  the  enclosed microcode  for any  other
  purpose.
 
  THE  MICROCODE IS PROVIDED  "AS IS"  WITHOUT ANY  EXPRESS OR
  IMPLIED WARRANTY  OF ANY KIND, INCLUDING BUT  NOT LIMITED TO
- WARRANTIES    OF    MERCHANTABILITY,   NON-    INFRINGEMENT,
+ WARRANTIES    OF    MERCHANTABILITY,	NON-	INFRINGEMENT,
  TITLE,FITNESS  FOR  ANY  PARTICULAR PURPOSE,  OR  WARRANTIES
  ARISING FROM CONDUCT, COURSE  OF DEALING, OR USAGE OF TRADE.
  AMD does not assume  any responsibility for any errors which
- may  appear   in  this   microcode  or  any   other  related
+ may  appear   in  this	  microcode  or  any   other  related
  information provided  to you by  AMD, or result from  use of
  this microcode.   AMD is not obligated  to furnish, support,
- or  make   any  further  information,   software,  technical
+ or  make   any  further  information,	 software,  technical
  information, know-how, or show-how available related to this
  microcode.
 
@@ -27,7 +27,7 @@
  duplication, or disclosure by the U.S. Government is subject
  to  the  restrictions as  set  forth  in  FAR 52.227-14  and
  DFAR252.227-7013,  et seq.,  or its  successor.  Use  of the
- microcode    by    the    U.S.     Government    constitutes
+ microcode    by    the	   U.S.	    Government	  constitutes
  acknowledgement  of   AMD's  proprietary  rights   in  them.
  ============================================================
 */

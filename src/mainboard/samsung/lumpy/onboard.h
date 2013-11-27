@@ -22,12 +22,12 @@
 
 #include <arch/smp/mpspec.h>
 
-#define LUMPY_LIGHTSENSOR_NAME      "lightsensor"
+#define LUMPY_LIGHTSENSOR_NAME	    "lightsensor"
 #define LUMPY_LIGHTSENSOR_I2C_ADDR  0x44
-#define LUMPY_LIGHTSENSOR_IRQ       20
+#define LUMPY_LIGHTSENSOR_IRQ	    20
 
-#define LUMPY_TRACKPAD_NAME         "trackpad"
-#define LUMPY_TRACKPAD_I2C_ADDR     0x67
-#define LUMPY_TRACKPAD_IRQ          21
+#define LUMPY_TRACKPAD_NAME	    "trackpad"
+#define LUMPY_TRACKPAD_I2C_ADDR	    0x67
+#define LUMPY_TRACKPAD_IRQ	    21
 
 #endif

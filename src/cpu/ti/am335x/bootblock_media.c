@@ -55,7 +55,7 @@ int init_default_cbfs_media(struct cbfs_media *media)
 {
 	struct cbfs_header *header =
 		(struct cbfs_header *)((uintptr_t)CONFIG_BOOTBLOCK_BASE +
-				       CONFIG_CBFS_HEADER_ROM_OFFSET);
+					   CONFIG_CBFS_HEADER_ROM_OFFSET);
 
 	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
 		printk(BIOS_ERR, "Invalid CBFS master header at %p\n", header);

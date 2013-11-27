@@ -210,14 +210,14 @@ static const struct {
 
 	{ 3, 0x44, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x4A30005C, 0x4A30005C },	/* [30] SyncOnDramAdrParErrEn = 1,
-					   [27] NbMcaToMstCpuEn = 1,
-					   [25] DisPciCfgCpuErrRsp = 1,
-					   [21] SyncOnAnyErrEn = 1,
-					   [20] SyncOnWDTEn = 1,
-					   [6] CpuErrDis = 1,
-					   [4] SyncPktPropDis = 1,
-					   [3] SyncPktGenDis = 1,
-					   [2] SyncOnUcEccEn = 1 */
+						[27] NbMcaToMstCpuEn = 1,
+						[25] DisPciCfgCpuErrRsp = 1,
+						[21] SyncOnAnyErrEn = 1,
+						[20] SyncOnWDTEn = 1,
+						[6] CpuErrDis = 1,
+						[4] SyncPktPropDis = 1,
+						[3] SyncPktGenDis = 1,
+						[2] SyncOnUcEccEn = 1 */
 
 	/* XBAR buffer settings */
 	{ 3, 0x6C, AMD_FAM10_ALL, AMD_PTYPE_ALL,
@@ -306,12 +306,12 @@ static const struct {
 	/* Extended NB MCA Config Register */
 	{ 3, 0x180, AMD_FAM10_ALL, AMD_PTYPE_ALL,
 	  0x007003E2, 0x007003E2 },	/* [22:20] = SyncFloodOn_Err = 7,
-					   [9] SyncOnUncNbAryEn = 1 ,
-					   [8] SyncOnProtEn = 1,
-					   [7] SyncFloodOnTgtAbtErr = 1,
-					   [6] SyncFloodOnDatErr = 1,
-					   [5] DisPciCfgCpuMstAbtRsp = 1,
-					   [1] SyncFloodOnUsPwDataErr = 1 */
+						[9] SyncOnUncNbAryEn = 1 ,
+						[8] SyncOnProtEn = 1,
+						[7] SyncFloodOnTgtAbtErr = 1,
+						[6] SyncFloodOnDatErr = 1,
+						[5] DisPciCfgCpuMstAbtRsp = 1,
+						[1] SyncFloodOnUsPwDataErr = 1 */
 
 	/* errata 346 - Fam10 C2, C3
 	 *  System software should set F3x188[22] to 1b. */
@@ -444,11 +444,11 @@ static const struct {
 
 	{ 0xCF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
-					   completeness */
+						completeness */
 
 	{ 0xDF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x00000000, 0x000000FF },	/* Provide clear setting for logical
-					   completeness */
+						completeness */
 
 	{ 0xCF, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
 	  0x0000006D, 0x000000FF },	/* HT_PHY_HT1_FIFO_PTR_OPT_VALUE */
@@ -459,19 +459,19 @@ static const struct {
 	/* Link Phy Receiver Loop Filter Registers */
 	{ 0xD1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x08040000, 0x3FFFC000 },	/* [29:22] LfcMax = 20h,
-					   [21:14] LfcMin = 10h */
+						[21:14] LfcMin = 10h */
 
 	{ 0xC1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT3,
 	  0x08040000, 0x3FFFC000 },	/* [29:22] LfcMax = 20h,
-					   [21:14] LfcMin = 10h */
+						[21:14] LfcMin = 10h */
 
 	{ 0xD1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
 	  0x04020000, 0x3FFFC000 },	/* [29:22] LfcMax = 10h,
-					   [21:14] LfcMin = 08h */
+						[21:14] LfcMin = 08h */
 
 	{ 0xC1, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_HT1,
 	  0x04020000, 0x3FFFC000 },	/* [29:22] LfcMax = 10h,
-					   [21:14] LfcMin = 08h */
+						[21:14] LfcMin = 08h */
 
 	{ 0xC0, AMD_FAM10_ALL, AMD_PTYPE_ALL, HTPHY_LINKTYPE_ALL,
 	  0x40040000, 0xe01F0000 },	/* [31:29] RttCtl = 02h,

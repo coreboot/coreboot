@@ -99,11 +99,11 @@ static void ide_init(struct device *dev)
 
 static struct device_operations ide_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = ide_init,
-	.enable           = 0,
-	.ops_pci          = 0,
+	.enable	   = 0,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver northbridge_driver __pci_driver = {

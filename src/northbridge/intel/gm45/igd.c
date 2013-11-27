@@ -48,9 +48,9 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 	MCHBAR8(0xbd0 + 4) = 0x5a;
 
 	static const u16 display_clock_from_f0_and_vco[][4] = {
-		  /* VCO 2666    VCO 3200    VCO 4000    VCO 5333 */
-		{         222,        228,        222,        222,  },
-		{         333,        320,        333,        333,  },
+		  /* VCO 2666	   VCO 3200    VCO 4000	   VCO 5333 */
+		{	    222,	228,	    222,	222,  },
+		{	    333,	320,	    333,	333,  },
 	};
 	const int f0_12 = (pci_read_config16(igd_dev, 0xf0) >> 12) & 1;
 	const int vco = raminit_read_vco_index();
@@ -60,7 +60,7 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 	pci_write_config16(igd_dev, 0xcc, reg16);
 
 	/* Graphics Stolen Memory: 2MB GTT (0x0300) when VT-d disabled,
-	                           2MB GTT + 2MB shadow GTT (0x0b00) else. */
+				    2MB GTT + 2MB shadow GTT (0x0b00) else. */
 	/* Graphics Mode Select: 32MB framebuffer (0x0050) */
 	/* TODO: We could switch to 64MB (0x0070), config flag? */
 	const u32 capid = pci_read_config32(mch_dev, D0F0_CAPID0 + 4);
@@ -99,7 +99,7 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 		if (!(deven & 2) || no_peg) {
 			/* Disable PEG finally. */
 			printk(BIOS_DEBUG, "Finally disabling "
-					   "PEG in favor of IGD.\n");
+						"PEG in favor of IGD.\n");
 			MCHBAR8(0xc14) |= (1 << 5) | (1 << 0);
 
 			reg32 = pci_read_config32(peg_dev, 0x200);

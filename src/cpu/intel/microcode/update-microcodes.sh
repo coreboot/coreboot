@@ -45,12 +45,12 @@ separate_microcode() {
     perl -pi -e 's,^,/,g' header.inc
     perl -pi -e 's,^//\*,/\*,' header.inc
     for i in xx????; do
-        name="`head -1 $i`"
-        name=${name%??}
-        name=${name:2}
-        name=$( echo $name )
-        name=microcode-${name%.inc}.h
-        cat header.inc $i > $name
+	name="`head -1 $i`"
+	name=${name%??}
+	name=${name:2}
+	name=$( echo $name )
+	name=microcode-${name%.inc}.h
+	cat header.inc $i > $name
     done
     rm -f xx???? header.inc
 }
@@ -73,7 +73,7 @@ dump_cpuids() {
 move_microcode() {
     printf "Moving microcode...\n"
     dump_cpuids | sort | while read N; do
-        ID=$( echo $N | cut -d: -f1 )
+	ID=$( echo $N | cut -d: -f1 )
 	F=$( echo $N | cut -d: -f2 )
 
 	if [ -d ../model_$ID ]; then
@@ -82,15 +82,15 @@ move_microcode() {
 	else
 	    ID2=${ID%?}x
 	    if [ -d ../model_$ID2 ]; then
-	        echo "Model: $ID($ID2)  Microcode: $F (copied)"
+		 echo "Model: $ID($ID2)  Microcode: $F (copied)"
 		mv $F ../model_$ID2/$F
-            else
-	        ID1=${ID%??}xx
+	    else
+		 ID1=${ID%??}xx
 		if [ -d ../model_$ID1 ]; then
-	            echo "Model: $ID($ID1)  Microcode: $F (copied)"
+		     echo "Model: $ID($ID1)  Microcode: $F (copied)"
 		    mv $F ../model_$ID1/$F
 		else
-	            echo "Model: $ID  Microcode: $F (erased)"
+		     echo "Model: $ID  Microcode: $F (erased)"
 		    rm -f $F
 		fi
 	    fi

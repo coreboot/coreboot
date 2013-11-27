@@ -3,7 +3,7 @@
 .globl	reset_vector
 reset_vector:
 	.byte  0xe9
-	.int   _start - ( . + 2 )
+	.int	_start - ( . + 2 )
 	/* Note: The above jump is hand coded to work around bugs in binutils.
 	 * 5 byte are used for a 3 byte instruction.  This works because x86
 	 * is little endian and allows us to use supported 32bit relocations

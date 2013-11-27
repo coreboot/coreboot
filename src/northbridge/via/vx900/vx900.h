@@ -47,8 +47,8 @@ void dump_pci_device(device_t dev);
 void pci_mod_config8(device_t dev, unsigned int where,
 		     uint8_t clr_mask, uint8_t set_mask);
 void pci_mod_config16(device_t dev, unsigned int where,
-		      uint16_t clr_mask, uint16_t set_mask);
+			uint16_t clr_mask, uint16_t set_mask);
 void pci_mod_config32(device_t dev, unsigned int where,
-		      uint32_t clr_mask, uint32_t set_mask);
+			uint32_t clr_mask, uint32_t set_mask);
 
 #endif				/* __VX900_H */

@@ -75,16 +75,16 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations nic_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
 	.init		  = nic_init,
-	.scan_bus         = 0,
+	.scan_bus	   = 0,
 	.enable		  = amd8111_enable,
 	.ops_pci	  = &lops_pci,
 };
 
 static const struct pci_driver nic_driver __pci_driver = {
-	.ops    = &nic_ops,
+	.ops	 = &nic_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_NIC,
 };

@@ -11,7 +11,7 @@
  * Copyright (c) 2003	Richard Woodruff <r-woodruff2@ti.com>
  * Copyright (c) 2003	Kshitij <kshitij@ti.com>
  * Copyright (c) 2006-2008 Syed Mohammed Khasim <x0khasim@ti.com>
- * Copyright (c) 2013   The Chromium OS Authors
+ * Copyright (c) 2013	The Chromium OS Authors
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as

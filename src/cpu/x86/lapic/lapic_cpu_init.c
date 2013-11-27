@@ -536,11 +536,11 @@ void initialize_cpus(struct bus *cpu_bus)
 	enable_lapic();
 
 	/* Get the device path of the boot cpu */
-	cpu_path.type           = DEVICE_PATH_APIC;
+	cpu_path.type		 = DEVICE_PATH_APIC;
 	cpu_path.apic.apic_id = lapicid();
 #else
 	/* Get the device path of the boot cpu */
-	cpu_path.type           = DEVICE_PATH_CPU;
+	cpu_path.type		 = DEVICE_PATH_CPU;
 	cpu_path.cpu.id       = 0;
 #endif
 

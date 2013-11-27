@@ -407,7 +407,7 @@ static void sb600_devices_por_init(void)
 
 	/*PHY Global Control, we are using A14.
 	 * default:  0x2c40 for ASIC revision A12 and below
-	 *      0x2c00 for ASIC revision A13 and above.*/
+	 *	 0x2c00 for ASIC revision A13 and above.*/
 	pci_write_config16(dev, 0x86, 0x2C00);
 
 	/* PHY Port0-3 Control */

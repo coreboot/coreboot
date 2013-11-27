@@ -32,26 +32,26 @@
 
 /* PMBASE FIXME mostly taken from ich7 */
 #define PM1_STS		0x00
-#define   WAK_STS	(1 << 15)
-#define   PCIEXPWAK_STS	(1 << 14)
-#define   PRBTNOR_STS	(1 << 11)
-#define   RTC_STS	(1 << 10)
-#define   PWRBTN_STS	(1 << 8)
-#define   GBL_STS	(1 << 5)
-#define   BM_STS	(1 << 4)
-#define   TMROF_STS	(1 << 0)
+#define	  WAK_STS	(1 << 15)
+#define	  PCIEXPWAK_STS	(1 << 14)
+#define	  PRBTNOR_STS	(1 << 11)
+#define	  RTC_STS	(1 << 10)
+#define	  PWRBTN_STS	(1 << 8)
+#define	  GBL_STS	(1 << 5)
+#define	  BM_STS	(1 << 4)
+#define	  TMROF_STS	(1 << 0)
 #define PM1_EN		0x02
-#define   PCIEXPWAK_DIS	(1 << 14)
-#define   RTC_EN	(1 << 10)
-#define   PWRBTN_EN	(1 << 8)
-#define   GBL_EN	(1 << 5)
-#define   TMROF_EN	(1 << 0)
+#define	  PCIEXPWAK_DIS	(1 << 14)
+#define	  RTC_EN	(1 << 10)
+#define	  PWRBTN_EN	(1 << 8)
+#define	  GBL_EN	(1 << 5)
+#define	  TMROF_EN	(1 << 0)
 #define PM1_CNT		0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
-#define   GBL_RLS	(1 << 2)
-#define   BM_RLD	(1 << 1)
-#define   SCI_EN	(1 << 0)
+#define	  SLP_EN	(1 << 13)
+#define	  SLP_TYP	(7 << 10)
+#define	  GBL_RLS	(1 << 2)
+#define	  BM_RLD	(1 << 1)
+#define	  SCI_EN	(1 << 0)
 #define PM1_TMR		0x08
 #define PROC_CNT	0x10
 #define LV2		0x14

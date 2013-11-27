@@ -64,7 +64,7 @@ static int int15_handler(void)
 		 *  bit 2 = Graphics Stretching
 		 *  bit 1 = Text Stretching
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
-		 *  0     = video bios default
+		 *  0	    = video bios default
 		 */
 		X86_AX = 0x005f;
 		X86_CL = 0x00;
@@ -126,7 +126,7 @@ static int int15_handler(void)
 		}
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
 		break;
 	}
@@ -182,19 +182,19 @@ static int lumpy_smbios_type41_irq(int *handle, unsigned long *current,
 
 
 static int lumpy_onboard_smbios_data(device_t dev, int *handle,
-				     unsigned long *current)
+					 unsigned long *current)
 {
 	int len = 0;
 
 	len += lumpy_smbios_type41_irq(handle, current,
-				       LUMPY_LIGHTSENSOR_NAME,
-				       LUMPY_LIGHTSENSOR_IRQ,
-				       LUMPY_LIGHTSENSOR_I2C_ADDR);
+					   LUMPY_LIGHTSENSOR_NAME,
+					   LUMPY_LIGHTSENSOR_IRQ,
+					   LUMPY_LIGHTSENSOR_I2C_ADDR);
 
 	len += lumpy_smbios_type41_irq(handle, current,
-				       LUMPY_TRACKPAD_NAME,
-				       LUMPY_TRACKPAD_IRQ,
-				       LUMPY_TRACKPAD_I2C_ADDR);
+					   LUMPY_TRACKPAD_NAME,
+					   LUMPY_TRACKPAD_IRQ,
+					   LUMPY_TRACKPAD_I2C_ADDR);
 
 	return len;
 }

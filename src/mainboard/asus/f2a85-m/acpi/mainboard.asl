@@ -31,6 +31,6 @@
 	Name(SSFG, 0x0D)		/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
 
 	/* Some global data */
-	Name(OSTP, 3)   /* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
+	Name(OSTP, 3)	 /* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 	Name(OSV, Ones) /* Assume nothing */
 	Name(PMOD, One) /* Assume APIC */

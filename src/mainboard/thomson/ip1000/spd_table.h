@@ -40,11 +40,11 @@ struct spd_entry {
  * have to be set manually, the onboard memory is located in socket1 (0x51).
  */
 const struct spd_entry spd_table [] = {
-	{SPD_MEMORY_TYPE,                     0x04}, /* (Fundamental) memory type */
-	{SPD_NUM_COLUMNS,                     0x09}, /* Number of column address bits */
-	{SPD_NUM_DIMM_BANKS,                  0x01}, /* Number of module rows (banks) */
-	{SPD_MODULE_DATA_WIDTH_LSB,           0x40}, /* Module data width (LSB) */
+	{SPD_MEMORY_TYPE,		       0x04}, /* (Fundamental) memory type */
+	{SPD_NUM_COLUMNS,		       0x09}, /* Number of column address bits */
+	{SPD_NUM_DIMM_BANKS,		       0x01}, /* Number of module rows (banks) */
+	{SPD_MODULE_DATA_WIDTH_LSB,	       0x40}, /* Module data width (LSB) */
 	{SPD_MIN_CYCLE_TIME_AT_CAS_MAX,       0x75}, /* SDRAM cycle time (highest CAS latency), RAS access time (tRAC) */
-	{SPD_ACCESS_TIME_FROM_CLOCK,          0x54}, /* SDRAM access time from clock (highest CAS latency), CAS access time (Tac, tCAC) */
+	{SPD_ACCESS_TIME_FROM_CLOCK,	       0x54}, /* SDRAM access time from clock (highest CAS latency), CAS access time (Tac, tCAC) */
 	{SPD_DENSITY_OF_EACH_ROW_ON_MODULE,   DENSITY}, /* Density of each row on module */
 };

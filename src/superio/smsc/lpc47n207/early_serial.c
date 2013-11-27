@@ -47,8 +47,8 @@ void try_enabling_LPC47N207_uart(void)
 	u16 lpc_port;
 	int i, j;
 
-#define CONFIG_ENABLE    0x55
-#define CONFIG_DISABLE   0xaa
+#define CONFIG_ENABLE	 0x55
+#define CONFIG_DISABLE	 0xaa
 
 	for (j = 0; j < ARRAY_SIZE(lpc_ports); j++) {
 		lpc_port = lpc_ports[j];

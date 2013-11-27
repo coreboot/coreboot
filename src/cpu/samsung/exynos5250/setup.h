@@ -42,7 +42,7 @@ struct exynos5_phy_control;
 #define APLL_CON1_VAL	(0x00203800)
 
 /* MPLL_CON1	*/
-#define MPLL_CON1_VAL   (0x00203800)
+#define MPLL_CON1_VAL	(0x00203800)
 
 /* CPLL_CON1	*/
 #define CPLL_CON1_VAL	(0x00203800)
@@ -66,11 +66,11 @@ struct exynos5_phy_control;
 
 /* CLK_SRC_CPU	*/
 /* 0 = MOUTAPLL,  1 = SCLKMPLL	*/
-#define MUX_HPM_SEL             0
-#define MUX_CPU_SEL             0
-#define MUX_APLL_SEL            1
+#define MUX_HPM_SEL		0
+#define MUX_CPU_SEL		0
+#define MUX_APLL_SEL		1
 
-#define CLK_SRC_CPU_VAL		((MUX_HPM_SEL << 20)    \
+#define CLK_SRC_CPU_VAL		((MUX_HPM_SEL << 20)	 \
 				| (MUX_CPU_SEL << 16)  \
 				| (MUX_APLL_SEL))
 
@@ -81,46 +81,46 @@ struct exynos5_phy_control;
 #define DMC_MEMCONTROL_TP_DISABLE	(0 << 4)
 #define DMC_MEMCONTROL_DSREF_DISABLE	(0 << 5)
 #define DMC_MEMCONTROL_DSREF_ENABLE	(1 << 5)
-#define DMC_MEMCONTROL_ADD_LAT_PALL_CYCLE(x)    (x << 6)
+#define DMC_MEMCONTROL_ADD_LAT_PALL_CYCLE(x)	(x << 6)
 
 #define DMC_MEMCONTROL_MEM_TYPE_LPDDR3  (7 << 8)
-#define DMC_MEMCONTROL_MEM_TYPE_DDR3    (6 << 8)
+#define DMC_MEMCONTROL_MEM_TYPE_DDR3	(6 << 8)
 #define DMC_MEMCONTROL_MEM_TYPE_LPDDR2  (5 << 8)
 
 #define DMC_MEMCONTROL_MEM_WIDTH_32BIT  (2 << 12)
 
-#define DMC_MEMCONTROL_NUM_CHIP_1       (0 << 16)
-#define DMC_MEMCONTROL_NUM_CHIP_2       (1 << 16)
+#define DMC_MEMCONTROL_NUM_CHIP_1	(0 << 16)
+#define DMC_MEMCONTROL_NUM_CHIP_2	(1 << 16)
 
-#define DMC_MEMCONTROL_BL_8             (3 << 20)
-#define DMC_MEMCONTROL_BL_4             (2 << 20)
+#define DMC_MEMCONTROL_BL_8		(3 << 20)
+#define DMC_MEMCONTROL_BL_4		(2 << 20)
 
-#define DMC_MEMCONTROL_PZQ_DISABLE      (0 << 24)
+#define DMC_MEMCONTROL_PZQ_DISABLE	(0 << 24)
 
-#define DMC_MEMCONTROL_MRR_BYTE_7_0     (0 << 25)
-#define DMC_MEMCONTROL_MRR_BYTE_15_8    (1 << 25)
-#define DMC_MEMCONTROL_MRR_BYTE_23_16   (2 << 25)
-#define DMC_MEMCONTROL_MRR_BYTE_31_24   (3 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_7_0	(0 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_15_8	(1 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_23_16	(2 << 25)
+#define DMC_MEMCONTROL_MRR_BYTE_31_24	(3 << 25)
 
 /* MEMCONFIG0 register bit fields */
-#define DMC_MEMCONFIGx_CHIP_MAP_INTERLEAVED     (1 << 12)
-#define DMC_MEMCONFIGx_CHIP_COL_10              (3 << 8)
-#define DMC_MEMCONFIGx_CHIP_ROW_14              (2 << 4)
-#define DMC_MEMCONFIGx_CHIP_ROW_15              (3 << 4)
-#define DMC_MEMCONFIGx_CHIP_BANK_8              (3 << 0)
+#define DMC_MEMCONFIGx_CHIP_MAP_INTERLEAVED	(1 << 12)
+#define DMC_MEMCONFIGx_CHIP_COL_10		(3 << 8)
+#define DMC_MEMCONFIGx_CHIP_ROW_14		(2 << 4)
+#define DMC_MEMCONFIGx_CHIP_ROW_15		(3 << 4)
+#define DMC_MEMCONFIGx_CHIP_BANK_8		(3 << 0)
 
-#define DMC_MEMBASECONFIGx_CHIP_BASE(x)         (x << 16)
-#define DMC_MEMBASECONFIGx_CHIP_MASK(x)         (x << 0)
-#define DMC_MEMBASECONFIG_VAL(x)        (       \
-	DMC_MEMBASECONFIGx_CHIP_BASE(x) |       \
-	DMC_MEMBASECONFIGx_CHIP_MASK(0x780)     \
+#define DMC_MEMBASECONFIGx_CHIP_BASE(x)		(x << 16)
+#define DMC_MEMBASECONFIGx_CHIP_MASK(x)		(x << 0)
+#define DMC_MEMBASECONFIG_VAL(x)	(	\
+	DMC_MEMBASECONFIGx_CHIP_BASE(x) |	 \
+	DMC_MEMBASECONFIGx_CHIP_MASK(0x780)	 \
 )
 
 #define DMC_MEMBASECONFIG0_VAL  DMC_MEMBASECONFIG_VAL(0x40)
 #define DMC_MEMBASECONFIG1_VAL  DMC_MEMBASECONFIG_VAL(0x80)
 
-#define DMC_PRECHCONFIG_VAL             0xFF000000
-#define DMC_PWRDNCONFIG_VAL             0xFFFF00FF
+#define DMC_PRECHCONFIG_VAL		0xFF000000
+#define DMC_PWRDNCONFIG_VAL		0xFFFF00FF
 
 #define DMC_CONCONTROL_RESET_VAL	0x0FFF0000
 #define DFI_INIT_START		(1 << 28)
@@ -147,55 +147,55 @@ struct exynos5_phy_control;
 #define DMC_CONCONTROL_DFI_INIT_START_DISABLE	(0 << 28)
 
 /* CLK_DIV_CPU0_VAL */
-#define CLK_DIV_CPU0_VAL	((ARM2_RATIO << 28)             \
-				| (APLL_RATIO << 24)            \
-				| (PCLK_DBG_RATIO << 20)        \
-				| (ATB_RATIO << 16)             \
-				| (PERIPH_RATIO << 12)          \
-				| (ACP_RATIO << 8)              \
-				| (CPUD_RATIO << 4)             \
+#define CLK_DIV_CPU0_VAL	((ARM2_RATIO << 28)		 \
+				| (APLL_RATIO << 24)	    \
+				| (PCLK_DBG_RATIO << 20)	    \
+				| (ATB_RATIO << 16)		    \
+				| (PERIPH_RATIO << 12)	    \
+				| (ACP_RATIO << 8)		    \
+				| (CPUD_RATIO << 4)		    \
 				| (ARM_RATIO))
 
 
 /* CLK_FSYS */
-#define CLK_SRC_FSYS0_VAL              0x66666
-#define CLK_DIV_FSYS0_VAL	       0x0BB00000
+#define CLK_SRC_FSYS0_VAL	       0x66666
+#define CLK_DIV_FSYS0_VAL		 0x0BB00000
 
 /* CLK_DIV_CPU1	*/
-#define HPM_RATIO               0x2
-#define COPY_RATIO              0x0
+#define HPM_RATIO		0x2
+#define COPY_RATIO		0x0
 
 /* CLK_DIV_CPU1 = 0x00000003 */
-#define CLK_DIV_CPU1_VAL        ((HPM_RATIO << 4)		\
+#define CLK_DIV_CPU1_VAL	((HPM_RATIO << 4)		\
 				| (COPY_RATIO))
 
 /* CLK_SRC_CORE0 */
-#define CLK_SRC_CORE0_VAL       0x00000000
+#define CLK_SRC_CORE0_VAL	0x00000000
 
 /* CLK_SRC_CORE1 */
-#define CLK_SRC_CORE1_VAL       0x100
+#define CLK_SRC_CORE1_VAL	0x100
 
 /* CLK_DIV_CORE0 */
-#define CLK_DIV_CORE0_VAL       0x00120000
+#define CLK_DIV_CORE0_VAL	0x00120000
 
 /* CLK_DIV_CORE1 */
-#define CLK_DIV_CORE1_VAL       0x07070700
+#define CLK_DIV_CORE1_VAL	0x07070700
 
 /* CLK_DIV_SYSRGT */
-#define CLK_DIV_SYSRGT_VAL      0x00000111
+#define CLK_DIV_SYSRGT_VAL	0x00000111
 
 /* CLK_DIV_ACP */
-#define CLK_DIV_ACP_VAL         0x12
+#define CLK_DIV_ACP_VAL		0x12
 
 /* CLK_DIV_SYSLFT */
-#define CLK_DIV_SYSLFT_VAL      0x00000311
+#define CLK_DIV_SYSLFT_VAL	0x00000311
 
 /* CLK_SRC_CDREX */
-#define CLK_SRC_CDREX_VAL       0x1
+#define CLK_SRC_CDREX_VAL	0x1
 
 /* CLK_DIV_CDREX */
-#define MCLK_CDREX2_RATIO       0x0
-#define ACLK_EFCON_RATIO        0x1
+#define MCLK_CDREX2_RATIO	0x0
+#define ACLK_EFCON_RATIO	0x1
 #define MCLK_DPHY_RATIO		0x1
 #define MCLK_CDREX_RATIO	0x1
 #define ACLK_C2C_200_RATIO	0x1
@@ -203,20 +203,20 @@ struct exynos5_phy_control;
 #define PCLK_CDREX_RATIO	0x1
 #define ACLK_CDREX_RATIO	0x1
 
-#define CLK_DIV_CDREX_VAL	((MCLK_DPHY_RATIO << 24)        \
+#define CLK_DIV_CDREX_VAL	((MCLK_DPHY_RATIO << 24)	  \
 				| (C2C_CLK_400_RATIO << 6)	\
 				| (PCLK_CDREX_RATIO << 4)	\
 				| (ACLK_CDREX_RATIO))
 
 /* CLK_SRC_TOP0	*/
-#define MUX_ACLK_300_GSCL_SEL           0x0
-#define MUX_ACLK_300_GSCL_MID_SEL       0x0
-#define MUX_ACLK_400_G3D_MID_SEL        0x0
-#define MUX_ACLK_333_SEL	        0x0
-#define MUX_ACLK_300_DISP1_SEL	        0x0
-#define MUX_ACLK_300_DISP1_MID_SEL      0x0
-#define MUX_ACLK_200_SEL	        0x0
-#define MUX_ACLK_166_SEL	        0x0
+#define MUX_ACLK_300_GSCL_SEL		0x0
+#define MUX_ACLK_300_GSCL_MID_SEL	0x0
+#define MUX_ACLK_400_G3D_MID_SEL	0x0
+#define MUX_ACLK_333_SEL		 0x0
+#define MUX_ACLK_300_DISP1_SEL		       0x0
+#define MUX_ACLK_300_DISP1_MID_SEL	0x0
+#define MUX_ACLK_200_SEL		 0x0
+#define MUX_ACLK_166_SEL		 0x0
 #define CLK_SRC_TOP0_VAL	((MUX_ACLK_300_GSCL_SEL  << 25)		\
 				| (MUX_ACLK_300_GSCL_MID_SEL << 24)	\
 				| (MUX_ACLK_400_G3D_MID_SEL << 20)	\
@@ -227,50 +227,50 @@ struct exynos5_phy_control;
 				| (MUX_ACLK_166_SEL << 8))
 
 /* CLK_SRC_TOP1	*/
-#define MUX_ACLK_400_G3D_SEL            0x1
-#define MUX_ACLK_400_ISP_SEL            0x0
-#define MUX_ACLK_400_IOP_SEL            0x0
-#define MUX_ACLK_MIPI_HSI_TXBASE_SEL    0x0
-#define MUX_ACLK_300_GSCL_MID1_SEL      0x0
-#define MUX_ACLK_300_DISP1_MID1_SEL     0x0
-#define CLK_SRC_TOP1_VAL	((MUX_ACLK_400_G3D_SEL << 28)           \
-				|(MUX_ACLK_400_ISP_SEL << 24)           \
-				|(MUX_ACLK_400_IOP_SEL << 20)           \
+#define MUX_ACLK_400_G3D_SEL		0x1
+#define MUX_ACLK_400_ISP_SEL		0x0
+#define MUX_ACLK_400_IOP_SEL		0x0
+#define MUX_ACLK_MIPI_HSI_TXBASE_SEL	0x0
+#define MUX_ACLK_300_GSCL_MID1_SEL	0x0
+#define MUX_ACLK_300_DISP1_MID1_SEL	0x0
+#define CLK_SRC_TOP1_VAL	((MUX_ACLK_400_G3D_SEL << 28)		 \
+				|(MUX_ACLK_400_ISP_SEL << 24)	    \
+				|(MUX_ACLK_400_IOP_SEL << 20)	    \
 				|(MUX_ACLK_MIPI_HSI_TXBASE_SEL << 16)   \
-				|(MUX_ACLK_300_GSCL_MID1_SEL << 12)     \
+				|(MUX_ACLK_300_GSCL_MID1_SEL << 12)	    \
 				|(MUX_ACLK_300_DISP1_MID1_SEL << 8))
 
 /* CLK_SRC_TOP2 */
-#define MUX_GPLL_SEL                    0x1
-#define MUX_BPLL_USER_SEL               0x0
-#define MUX_MPLL_USER_SEL               0x0
-#define MUX_VPLL_SEL                    0x1
-#define MUX_EPLL_SEL                    0x1
-#define MUX_CPLL_SEL                    0x1
-#define VPLLSRC_SEL                     0x0
+#define MUX_GPLL_SEL			0x1
+#define MUX_BPLL_USER_SEL		0x0
+#define MUX_MPLL_USER_SEL		0x0
+#define MUX_VPLL_SEL			0x1
+#define MUX_EPLL_SEL			0x1
+#define MUX_CPLL_SEL			0x1
+#define VPLLSRC_SEL			0x0
 #define CLK_SRC_TOP2_VAL	((MUX_GPLL_SEL << 28)		\
 				| (MUX_BPLL_USER_SEL << 24)	\
 				| (MUX_MPLL_USER_SEL << 20)	\
-				| (MUX_VPLL_SEL << 16)	        \
-				| (MUX_EPLL_SEL << 12)	        \
-				| (MUX_CPLL_SEL << 8)           \
+				| (MUX_VPLL_SEL << 16)		   \
+				| (MUX_EPLL_SEL << 12)		   \
+				| (MUX_CPLL_SEL << 8)	    \
 				| (VPLLSRC_SEL))
 /* CLK_SRC_TOP3 */
-#define MUX_ACLK_333_SUB_SEL            0x1
-#define MUX_ACLK_400_SUB_SEL            0x1
-#define MUX_ACLK_266_ISP_SUB_SEL        0x1
-#define MUX_ACLK_266_GPS_SUB_SEL        0x0
-#define MUX_ACLK_300_GSCL_SUB_SEL       0x1
-#define MUX_ACLK_266_GSCL_SUB_SEL       0x1
-#define MUX_ACLK_300_DISP1_SUB_SEL      0x1
-#define MUX_ACLK_200_DISP1_SUB_SEL      0x1
-#define CLK_SRC_TOP3_VAL	((MUX_ACLK_333_SUB_SEL << 24)	        \
-				| (MUX_ACLK_400_SUB_SEL << 20)	        \
+#define MUX_ACLK_333_SUB_SEL		0x1
+#define MUX_ACLK_400_SUB_SEL		0x1
+#define MUX_ACLK_266_ISP_SUB_SEL	0x1
+#define MUX_ACLK_266_GPS_SUB_SEL	0x0
+#define MUX_ACLK_300_GSCL_SUB_SEL	0x1
+#define MUX_ACLK_266_GSCL_SUB_SEL	0x1
+#define MUX_ACLK_300_DISP1_SUB_SEL	0x1
+#define MUX_ACLK_200_DISP1_SUB_SEL	0x1
+#define CLK_SRC_TOP3_VAL	((MUX_ACLK_333_SUB_SEL << 24)		       \
+				| (MUX_ACLK_400_SUB_SEL << 20)		   \
 				| (MUX_ACLK_266_ISP_SUB_SEL << 16)	\
-				| (MUX_ACLK_266_GPS_SUB_SEL << 12)      \
-				| (MUX_ACLK_300_GSCL_SUB_SEL << 10)     \
-				| (MUX_ACLK_266_GSCL_SUB_SEL << 8)      \
-				| (MUX_ACLK_300_DISP1_SUB_SEL << 6)     \
+				| (MUX_ACLK_266_GPS_SUB_SEL << 12)	    \
+				| (MUX_ACLK_300_GSCL_SUB_SEL << 10)	    \
+				| (MUX_ACLK_266_GSCL_SUB_SEL << 8)	    \
+				| (MUX_ACLK_300_DISP1_SUB_SEL << 6)	    \
 				| (MUX_ACLK_200_DISP1_SUB_SEL << 4))
 
 /* CLK_DIV_TOP0	*/
@@ -293,11 +293,11 @@ struct exynos5_phy_control;
 				| (ACLK_66_RATIO))
 
 /* CLK_DIV_TOP1	*/
-#define ACLK_MIPI_HSI_TX_BASE_RATIO     0x3
-#define ACLK_66_PRE_RATIO               0x1
-#define ACLK_400_ISP_RATIO              0x1
-#define ACLK_400_IOP_RATIO              0x1
-#define ACLK_300_GSCL_RATIO             0x2
+#define ACLK_MIPI_HSI_TX_BASE_RATIO	0x3
+#define ACLK_66_PRE_RATIO		0x1
+#define ACLK_400_ISP_RATIO		0x1
+#define ACLK_400_IOP_RATIO		0x1
+#define ACLK_300_GSCL_RATIO		0x2
 
 #define CLK_DIV_TOP1_VAL	((ACLK_MIPI_HSI_TX_BASE_RATIO << 28)	\
 				| (ACLK_66_PRE_RATIO << 24)		\
@@ -352,10 +352,10 @@ struct exynos5_phy_control;
 #define UART1_SEL	6
 #define UART0_SEL	6
 /* SRC_CLOCK = SCLK_MPLL */
-#define CLK_SRC_PERIC0_VAL	((PWM_SEL << 24)        \
-				| (UART3_SEL << 12)     \
-				| (UART2_SEL << 8)       \
-				| (UART1_SEL << 4)      \
+#define CLK_SRC_PERIC0_VAL	((PWM_SEL << 24)	   \
+				| (UART3_SEL << 12)	    \
+				| (UART2_SEL << 8)	     \
+				| (UART1_SEL << 4)	    \
 				| (UART0_SEL))
 
 /* CLK_SRC_PERIC1 */
@@ -387,7 +387,7 @@ struct exynos5_phy_control;
 #define UART1_RATIO	7
 #define UART0_RATIO	7
 
-#define CLK_DIV_PERIC0_VAL	((UART3_RATIO << 12)    \
+#define CLK_DIV_PERIC0_VAL	((UART3_RATIO << 12)	   \
 				| (UART2_RATIO << 8)    \
 				| (UART1_RATIO << 4)    \
 				| (UART0_RATIO))
@@ -424,25 +424,25 @@ struct exynos5_phy_control;
 #define MMC3_PRE_RATIO_OFFSET	24
 
 /* CLK_SRC_LEX */
-#define CLK_SRC_LEX_VAL         0x0
+#define CLK_SRC_LEX_VAL		0x0
 
 /* CLK_DIV_LEX */
-#define CLK_DIV_LEX_VAL         0x10
+#define CLK_DIV_LEX_VAL		0x10
 
 /* CLK_DIV_R0X */
-#define CLK_DIV_R0X_VAL         0x10
+#define CLK_DIV_R0X_VAL		0x10
 
 /* CLK_DIV_L0X */
-#define CLK_DIV_R1X_VAL         0x10
+#define CLK_DIV_R1X_VAL		0x10
 
 /* CLK_DIV_ISP0 */
-#define CLK_DIV_ISP0_VAL        0x31
+#define CLK_DIV_ISP0_VAL	0x31
 
 /* CLK_DIV_ISP1 */
-#define CLK_DIV_ISP1_VAL        0x0
+#define CLK_DIV_ISP1_VAL	0x0
 
 /* CLK_DIV_ISP2 */
-#define CLK_DIV_ISP2_VAL        0x1
+#define CLK_DIV_ISP2_VAL	0x1
 
 /* CLK_SRC_DISP1_0 */
 #define CLK_SRC_DISP1_0_VAL	0x6
@@ -701,7 +701,7 @@ void mem_ctrl_init(void);
  * @return 0 if ok, SETUP_ERR_... if there is a problem
  */
 int ddr3_mem_ctrl_init(struct mem_timings *mem, unsigned long mem_iv_size,
-		       int mem_reset);
+			 int mem_reset);
 
 /*
  * Configure ZQ I/O interface

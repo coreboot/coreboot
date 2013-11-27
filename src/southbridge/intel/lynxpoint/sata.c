@@ -145,7 +145,7 @@ static void sata_init(struct device *dev)
 		pci_write_config32(dev, 0x98, reg32);
 
 		/* Setup register 9Ch */
-		reg16 = 0;           /* Disable alternate ID */
+		reg16 = 0;	       /* Disable alternate ID */
 		reg16 = 1 << 5;      /* BWG step 12 */
 		pci_write_config16(dev, 0x9c, reg16);
 
@@ -163,7 +163,7 @@ static void sata_init(struct device *dev)
 		reg32 |= 0x0c006000;  // set PSC+SSC+SALP+SSS
 		reg32 &= ~0x00020060; // clear SXS+EMS+PMS
 		if (pch_is_lp())
-			reg32 |= (1 << 18);   // SAM: SATA AHCI MODE ONLY
+			reg32 |= (1 << 18);	 // SAM: SATA AHCI MODE ONLY
 		write32(abar + 0x00, reg32);
 		/* PI (Ports implemented) */
 		write32(abar + 0x0c, config->sata_port_map);
@@ -309,7 +309,7 @@ static void sata_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations sata_pci_ops = {
-	.set_subsystem    = sata_set_subsystem,
+	.set_subsystem	   = sata_set_subsystem,
 };
 
 static struct device_operations sata_ops = {
@@ -325,7 +325,7 @@ static struct device_operations sata_ops = {
 static const unsigned short pci_device_ids[] = {
 	0x8c00, 0x8c02, 0x8c04, 0x8c06, 0x8c08, 0x8c0e, /* Desktop */
 	0x8c01, 0x8c03, 0x8c05, 0x8c07, 0x8c09, 0x8c0f, /* Mobile */
-	0x9c03, 0x9c05, 0x9c07, 0x9c0f,                 /* Low Power */
+	0x9c03, 0x9c05, 0x9c07, 0x9c0f,		 /* Low Power */
 	0
 };
 

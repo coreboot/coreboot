@@ -27,12 +27,12 @@
 #include <southbridge/amd/sb600/sb600.h>
 
 #define ADT7461_ADDRESS 0x4C
-#define ARA_ADDRESS     0x0C /* Alert Response Address */
+#define ARA_ADDRESS	0x0C /* Alert Response Address */
 #define SMBUS_IO_BASE 0x1000
 
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address,
-			       u8 val);
+				  u8 val);
 #define ADT7461_read_byte(address) \
 	do_smbus_read_byte(SMBUS_IO_BASE, ADT7461_ADDRESS, address)
 #define ARA_read_byte(address) \

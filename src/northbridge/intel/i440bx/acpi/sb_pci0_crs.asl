@@ -38,11 +38,11 @@ Method(TOM1, 0) {
 Method(_CRS, 0) {
 	Name(TMP, ResourceTemplate() {
 		WordBusNumber(ResourceProducer, MinFixed, MaxFixed, PosDecode,
-			0x0000,             // Granularity
-			0x0000,             // Range Minimum
-			0x00FF,             // Range Maximum
-			0x0000,             // Translation Offset
-			0x0100,             // Length
+			0x0000,	       // Granularity
+			0x0000,	       // Range Minimum
+			0x00FF,	       // Range Maximum
+			0x0000,	       // Translation Offset
+			0x0100,	       // Length
 			,,
 		)
 		IO(Decode16, 0x0CF8, 0x0CF8, 1, 8)

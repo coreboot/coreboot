@@ -44,9 +44,9 @@ static void pch_enable_lpc(void)
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x0070);
 
 	/* Enable KBC on 0x06/0x64 (KBC),
-	 *        EC on 0x62/0x66 (MC),
-	 *        EC on 0x20c-0x20f (GAMEH),
-	 *        Super I/O on 0x2e/0x2f (CNF1),
+	 *	   EC on 0x62/0x66 (MC),
+	 *	   EC on 0x20c-0x20f (GAMEH),
+	 *	   Super I/O on 0x2e/0x2f (CNF1),
 	 *	  COM1/COM3 decode ranges. */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN,
 			   KBC_LPC_EN | MC_LPC_EN |
@@ -59,32 +59,32 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/*
-	 * D31IP_TTIP   THRT   INTC -> PIRQC
-	 * D31IP_SIP2   SATA2  NOINT
-	 * D31IP_SMIP   SMBUS  INTC -> PIRQC
-	 * D31IP_SIP    SATA   INTB -> PIRQD (MSI)
-	 * D29IP_E1P    EHCI1  INTA -> PIRQH
-	 * D28IP_P8IP   Slot?  INTD -> PIRQD
-	 * D28IP_P7IP   PCIEx1 INTC -> PIRQC
-	 * D28IP_P6IP   1394   INTB -> PIRQB (MSI)
-	 * D28IP_P5IP   GbEPHY INTA -> PIRQA
-	 * D28IP_P4IP   ETH2   INTD -> PIRQD (MSI)
-	 * D28IP_P3IP   ETH1   INTC -> PIRQC (MSI)
-	 * D28IP_P2IP   Slot?  INTB -> PIRQB
-	 * D28IP_P1IP   Slot?  INTA -> PIRQA
-	 * D27IP_ZIP    HDA    INTA -> PIRQG (MSI)
-	 * D26IP_E2P    EHCI2  INTA -> PIRQA
-	 * D25IP_LIP    ETH0   INTA -> PIRQE (MSI)
-	 * D22IP_KTIP   MEI    NOINT
-	 * D22IP_IDERIP MEI    NOINT
-	 * D22IP_MEI2IP MEI    NOINT
-	 * D22IP_MEI1IP MEI    NOINT
-	 * D20IP_XHCIIP XHCI   INTA -> PIRQA (MSI)
-	 *              GFX    INTA -> PIRQA (MSI)
-	 *              PEGx16 INTA -> PIRQA
-	 *                     INTB -> PIRQB
-	 *                     INTC -> PIRQC
-	 *                     INTD -> PIRQD
+	 * D31IP_TTIP	 THRT	INTC -> PIRQC
+	 * D31IP_SIP2	 SATA2  NOINT
+	 * D31IP_SMIP	 SMBUS  INTC -> PIRQC
+	 * D31IP_SIP	 SATA	INTB -> PIRQD (MSI)
+	 * D29IP_E1P	 EHCI1  INTA -> PIRQH
+	 * D28IP_P8IP	 Slot?  INTD -> PIRQD
+	 * D28IP_P7IP	 PCIEx1 INTC -> PIRQC
+	 * D28IP_P6IP	 1394	INTB -> PIRQB (MSI)
+	 * D28IP_P5IP	 GbEPHY INTA -> PIRQA
+	 * D28IP_P4IP	 ETH2	INTD -> PIRQD (MSI)
+	 * D28IP_P3IP	 ETH1	INTC -> PIRQC (MSI)
+	 * D28IP_P2IP	 Slot?  INTB -> PIRQB
+	 * D28IP_P1IP	 Slot?  INTA -> PIRQA
+	 * D27IP_ZIP	 HDA	INTA -> PIRQG (MSI)
+	 * D26IP_E2P	 EHCI2  INTA -> PIRQA
+	 * D25IP_LIP	 ETH0	INTA -> PIRQE (MSI)
+	 * D22IP_KTIP	 MEI	NOINT
+	 * D22IP_IDERIP MEI	NOINT
+	 * D22IP_MEI2IP MEI	NOINT
+	 * D22IP_MEI1IP MEI	NOINT
+	 * D20IP_XHCIIP XHCI	INTA -> PIRQA (MSI)
+	 *		 GFX	INTA -> PIRQA (MSI)
+	 *		 PEGx16 INTA -> PIRQA
+	 *			INTB -> PIRQB
+	 *			INTC -> PIRQC
+	 *			INTD -> PIRQD
 	 */
 
 	/* Device interrupt pin register (board specific) */
@@ -185,7 +185,7 @@ void main(unsigned long bist)
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1600,
 		usb_port_config: {
-			 /* enabled   usb oc pin    length */
+			 /* enabled	 usb oc pin    length */
 			{ 1, 0, 0x0040 }, /* P0: lower left USB 3.0 (OC0) */
 			{ 1, 0, 0x0040 }, /* P1: upper left USB 3.0 (OC0) */
 			{ 1, 0, 0x0040 }, /* P2: lower right USB 3.0 (OC0) */

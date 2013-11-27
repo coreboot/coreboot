@@ -95,7 +95,7 @@ NE1000/2000 definitions
 
 #define D8390_TXBUF_SIZE	6
 #define D8390_RXBUF_END		32
-#define D8390_PAGE_SIZE         256
+#define D8390_PAGE_SIZE		256
 
 struct ringbuffer {
 	unsigned char status;

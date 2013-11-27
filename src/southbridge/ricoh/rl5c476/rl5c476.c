@@ -211,20 +211,20 @@ static void rl5c476_set_subsystem(device_t dev, unsigned vendor, unsigned device
 }
 
 static struct pci_operations rl5c476_pci_ops = {
-       .set_subsystem    = rl5c476_set_subsystem,
+       .set_subsystem	 = rl5c476_set_subsystem,
 };
 
 static struct device_operations ricoh_rl5c476_ops = {
 	.read_resources   = rl5c476_read_resources,
-	.set_resources    = rl5c476_set_resources,
+	.set_resources	   = rl5c476_set_resources,
 	.enable_resources = cardbus_enable_resources,
-	.init             = rl5c476_init,
-	.scan_bus         = pci_scan_bridge,
-	.ops_pci          = &rl5c476_pci_ops,
+	.init		   = rl5c476_init,
+	.scan_bus	   = pci_scan_bridge,
+	.ops_pci	   = &rl5c476_pci_ops,
 };
 
 static const struct pci_driver ricoh_rl5c476_driver __pci_driver = {
-	.ops    = &ricoh_rl5c476_ops,
+	.ops	 = &ricoh_rl5c476_ops,
 	.vendor = PCI_VENDOR_ID_RICOH,
 	.device = PCI_DEVICE_ID_RICOH_RL5C476,
 };
@@ -237,5 +237,5 @@ static void southbridge_init(device_t dev)
 
 struct chip_operations southbridge_ricoh_rl5c476_ops = {
 	CHIP_NAME("Ricoh RL5C476 CardBus Controller")
-	.enable_dev    = southbridge_init,
+	.enable_dev	= southbridge_init,
 };

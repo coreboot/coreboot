@@ -123,7 +123,7 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 			   DP_AUX_CH_CTL_RECEIVE_ERROR, ch_ctl);
 
 		if (status & (DP_AUX_CH_CTL_TIME_OUT_ERROR |
-			      DP_AUX_CH_CTL_RECEIVE_ERROR))
+				 DP_AUX_CH_CTL_RECEIVE_ERROR))
 			continue;
 		if (status & DP_AUX_CH_CTL_DONE)
 			break;
@@ -154,7 +154,7 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 
 	/* Unload any bytes sent back from the other side */
 	recv_bytes = ((status & DP_AUX_CH_CTL_MESSAGE_SIZE_MASK) >>
-		      DP_AUX_CH_CTL_MESSAGE_SIZE_SHIFT);
+			DP_AUX_CH_CTL_MESSAGE_SIZE_SHIFT);
 	if (recv_bytes > recv_size)
 		recv_bytes = recv_size;
 

@@ -50,7 +50,7 @@ static void cpu_pci_domain_set_resources(device_t dev)
 
 	tomk = get_memory_size();
 	printk(BIOS_DEBUG, "Detected %lu Kbytes (%lu MiB) RAM.\n",
-	       tomk, tomk / 1024);
+		tomk, tomk / 1024);
 
 	/* Compute the top of Low memory */
 	tolmk = pci_tolm >> 10;

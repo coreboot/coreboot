@@ -64,9 +64,9 @@ Cache latency to
 be written to L2 -----++++
 control register      ||||
 0000 xx 00 -----> 000 cccc 0
-||||    00 66MHz
-||||    10 100MHz
-||||    01 133MHz (Katmai "B" only)
+||||	00 66MHz
+||||	10 100MHz
+||||	01 133MHz (Katmai "B" only)
 ++++------ CPU frequency multiplier
 
 0000 2x
@@ -344,7 +344,7 @@ int test_l2_address_alias(u32 address1, u32 address2,
 /* Calculates the L2 cache size.
  *
  * Reference: Intel(R) 64 and IA-32 Architectures Software Developer�s Manual
- *            Volume 3B: System Programming Guide, Part 2, Intel pub. 253669, pg. B-172.
+ *	      Volume 3B: System Programming Guide, Part 2, Intel pub. 253669, pg. B-172.
  *
  */
 int calculate_l2_cache_size(void)
@@ -696,7 +696,7 @@ int p6_configure_l2_cache(void)
 	if (v >= 0 && (v & 0x20)) {
 		bblctl3 = rdmsr(BBL_CR_CTL3);
 		bblctl3.lo |= (BBLCR3_L2_ADDR_PARITY_ENABLE |
-		               BBLCR3_L2_CRTN_PARITY_ENABLE);
+				 BBLCR3_L2_CRTN_PARITY_ENABLE);
 		wrmsr(BBL_CR_CTL3, bblctl3);
 	}
 
@@ -756,7 +756,7 @@ int p6_configure_l2_cache(void)
 			 */
 			if (signal_l2(cache_size, 0, 0, v, L2CMD_TWW | L2CMD_MESI_I) != 0) {
 				printk(BIOS_ERR, "Failed on signal_l2(%x, %x)\n",
-				       cache_size, v);
+					   cache_size, v);
 				goto bad;
 			}
 		}

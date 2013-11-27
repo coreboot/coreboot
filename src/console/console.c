@@ -97,7 +97,7 @@ int console_tst_byte(void)
 	return 0;
 }
 
-#else // __PRE_RAM__   ^^^ NOT defined   vvv defined
+#else // __PRE_RAM__   ^^^ NOT defined	 vvv defined
 
 void console_init(void)
 {

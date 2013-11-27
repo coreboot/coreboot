@@ -49,7 +49,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 		"	pushl	%%ebx\n\t"
 		/* Save the parameters I was passed */
 		"	pushl	$0\n\t" /* 20 adjust */
-	        "	pushl	%0\n\t" /* 16 lb_start */
+		 "	pushl	%0\n\t" /* 16 lb_start */
 		"	pushl	%1\n\t" /* 12 buffer */
 		"	pushl	%2\n\t" /*  8 lb_size */
 		"	pushl	%3\n\t" /*  4 entry */

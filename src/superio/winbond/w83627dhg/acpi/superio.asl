@@ -67,7 +67,7 @@ Device(SUPERIO_DEV) {
 	Field (CREG, ByteAcc, NoLock, Preserve)
 	{
 		PNP_ADDR_REG,	8,
-		PNP_DATA_REG,   8
+		PNP_DATA_REG,	  8
 	}
 	IndexField (ADDR, DATA, ByteAcc, NoLock, Preserve)
 	{

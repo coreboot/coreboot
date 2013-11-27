@@ -47,24 +47,24 @@ static void w83627thg_init(device_t dev)
 
 static struct device_operations ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_enable,
-	.init             = w83627thg_init,
-	.ops_pnp_mode     = &pnp_conf_mode_8787_aa,
+	.enable	   = pnp_enable,
+	.init		   = w83627thg_init,
+	.ops_pnp_mode	   = &pnp_conf_mode_8787_aa,
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, W83627THG_FDC,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, W83627THG_PP,    PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
-	{ &ops, W83627THG_SP1,   PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
-	{ &ops, W83627THG_SP2,   PNP_IO0 | PNP_IRQ0 | PNP_MSC1, {0x07f8, 0}, },
-	{ &ops, W83627THG_KBC,   PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1 | PNP_MSC0, {0x07ff, 0}, {0x07ff, 4}, },
+	{ &ops, W83627THG_FDC,	  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83627THG_PP,	  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
+	{ &ops, W83627THG_SP1,	  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, W83627THG_SP2,	  PNP_IO0 | PNP_IRQ0 | PNP_MSC1, {0x07f8, 0}, },
+	{ &ops, W83627THG_KBC,	  PNP_IO0 | PNP_IO1 | PNP_IRQ0 | PNP_IRQ1 | PNP_MSC0, {0x07ff, 0}, {0x07ff, 4}, },
 	{ &ops, W83627THG_GAME_MIDI_GPIO1, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x07ff, 0}, {0x07fe, 4}, },
 	{ &ops, W83627THG_GPIO2, },
 	{ &ops, W83627THG_GPIO3, PNP_EN | PNP_MSC0 | PNP_MSC1, },
 	{ &ops, W83627THG_ACPI,  PNP_IRQ0, },
-	{ &ops, W83627THG_HWM,   PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
+	{ &ops, W83627THG_HWM,	  PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 };
 
 static void enable_dev(device_t dev)

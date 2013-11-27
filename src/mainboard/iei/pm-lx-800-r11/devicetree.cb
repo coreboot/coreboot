@@ -32,7 +32,7 @@ chip northbridge/amd/lx
 			register "enable_ide_nand_flash" = "0"
 			register "enable_USBP4_device" = "0"		# 0:host, 1:device
 			register "enable_USBP4_overcurrent" = "0"
-			register "com1_enable" = "1"                    # CN10 (RS422/486 COM3)
+			register "com1_enable" = "1"			   # CN10 (RS422/486 COM3)
 			register "com1_address" = "0x3e8"
 			register "com1_irq" = "5"
 			register "com2_enable" = "0"
@@ -49,7 +49,7 @@ chip northbridge/amd/lx
 					device pnp 2e.1 on		# Parallel port
 						io 0x60 = 0x378
 						irq 0x70 = 7
-					        drq 0x74 = 3
+						     drq 0x74 = 3
 					end
 
 					device pnp 2e.2 on		# COM1
@@ -72,7 +72,7 @@ chip northbridge/amd/lx
 					device pnp 2e.b on		# HW Monitor
 						io 0x60 = 0x290
 						irq 0x70 = 0
-                                        end
+					end
 
 					device pnp 2e.6 off end		# Serial Flash Interface
 					device pnp 2e.7 off end		# GPIO1, GPIO6, Game Port & MIDI Port

@@ -72,8 +72,8 @@ static void ich_pci_dev_enable_resources(struct device *dev)
 	ops = ops_pci(dev);
 	if (dev->on_mainboard && ops && ops->set_subsystem) {
 		printk(BIOS_DEBUG, "%s subsystem <- %04x/%04x\n",
-		       dev_path(dev), dev->subsystem_vendor,
-		       dev->subsystem_device);
+			 dev_path(dev), dev->subsystem_vendor,
+			 dev->subsystem_device);
 		ops->set_subsystem(dev, dev->subsystem_vendor,
 				   dev->subsystem_device);
 	}

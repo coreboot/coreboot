@@ -31,10 +31,10 @@ void WaitMicroSec(UINTN MicroSeconds)
 /*===================================================================
 Function   : via_write_phys()
 Precondition :
-Input      :  addr
-                  value
-Output     : void
-Purpose    :
+Input	   :  addr
+		  value
+Output	   : void
+Purpose	   :
 Reference  : None
 ===================================================================*/
 
@@ -48,9 +48,9 @@ void via_write_phys(volatile u32 addr, volatile u32 value)
 /*===================================================================
 Function   : via_read_phys()
 Precondition :
-Input      :  addr
-Output     : u32
-Purpose    :
+Input	   :  addr
+Output	   : u32
+Purpose	   :
 Reference  : None
 ===================================================================*/
 
@@ -64,9 +64,9 @@ u32 via_read_phys(volatile u32 addr)
 /*===================================================================
 Function   : DimmRead()
 Precondition :
-Input      :  x
-Output     : u32
-Purpose    :
+Input	   :  x
+Output	   : u32
+Purpose	   :
 Reference  : None
 ===================================================================*/
 
@@ -81,12 +81,12 @@ u32 DimmRead(volatile u32 x)
 /*===================================================================
 Function   : DramBaseTest()
 Precondition : this function used to verify memory
-Input      :
-                 BaseAdd,
-                 length,
-                 mode
-Output     : u32
-Purpose    :write into and read out to verify if dram is correct
+Input	   :
+		 BaseAdd,
+		 length,
+		 mode
+Output	   : u32
+Purpose	   :write into and read out to verify if dram is correct
 Reference  : None
 ===================================================================*/
 BOOLEAN DramBaseTest(u32 BaseAdd, u32 Length,
@@ -171,12 +171,12 @@ BOOLEAN DramBaseTest(u32 BaseAdd, u32 Length,
 /*===================================================================
 Function   : DumpRegisters()
 Precondition :
-Input      :
-                pPCIPPI,
-                DevNum,
-                FuncNum
-Output     : Void
-Purpose    :
+Input	   :
+		pPCIPPI,
+		DevNum,
+		FuncNum
+Output	   : Void
+Purpose	   :
 Reference  : None
 ===================================================================*/
 
@@ -197,7 +197,7 @@ void DumpRegisters(INTN DevNum, INTN FuncNum)
 		for (j = 0; j < 0x10; j++) {
 			ByteVal =
 			    pci_read_config8(PCI_DEV(0, DevNum, FuncNum),
-					     i * 0x10 + j);
+						  i * 0x10 + j);
 			PRINT_DEBUG_MEM_HEX8(ByteVal);
 			PRINT_DEBUG_MEM(" ");
 
@@ -210,11 +210,11 @@ void DumpRegisters(INTN DevNum, INTN FuncNum)
 /*===================================================================
 Function   : dumpnorth()
 Precondition :
-Input      :
-                pPCIPPI,
-                Func
-Output     : Void
-Purpose    :
+Input	   :
+		pPCIPPI,
+		Func
+Output	   : Void
+Purpose	   :
 Reference  : None
 ===================================================================*/
 

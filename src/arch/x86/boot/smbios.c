@@ -138,7 +138,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 		t->bios_version = smbios_add_string(t->eos, COREBOOT_VERSION);
 #else
 #define SPACES \
-	"                                                                  "
+	"								    "
 	t->bios_release_date = smbios_add_string(t->eos, COREBOOT_DMI_DATE);
 	u32 version_offset = (u32)smbios_string_table_len(t->eos);
 	t->bios_version = smbios_add_string(t->eos, SPACES);
@@ -396,7 +396,7 @@ unsigned long smbios_write_tables(unsigned long current)
 	se->struct_table_length = len;
 
 	se->intermediate_checksum = smbios_checksum((u8 *)se + 0x10,
-						    sizeof(struct smbios_entry) - 0x10);
+							  sizeof(struct smbios_entry) - 0x10);
 	se->checksum = smbios_checksum((u8 *)se, sizeof(struct smbios_entry));
 	return current;
 }

@@ -75,7 +75,7 @@ static __attribute__((noinline)) void do_ram_command(u32 command)
 	if (command == RAM_COMMAND_NORMAL)
 		reg32 |= RAM_INITIALIZATION_COMPLETE;
 
-	PRINTK_DEBUG("   Sending RAM command 0x%08x", reg32);
+	PRINTK_DEBUG("	  Sending RAM command 0x%08x", reg32);
 
 	MCHBAR32(DCC) = reg32;  /* This is the actual magic */
 
@@ -86,7 +86,7 @@ static __attribute__((noinline)) void do_ram_command(u32 command)
 
 static void ram_read32(u32 offset)
 {
-	PRINTK_DEBUG("   ram read: %08x\n", offset);
+	PRINTK_DEBUG("	  ram read: %08x\n", offset);
 
 	read32(offset);
 }
@@ -574,7 +574,7 @@ static void sdram_detect_cas_latency_and_ram_speed(struct sys_info * sysinfo, u8
 
 				if (spd_read_byte(device, spd_lookup_table[2*idx]) <= ddr2_speeds_table[2*j] &&
 						spd_read_byte(device, spd_lookup_table[(2*idx)+1]) <= ddr2_speeds_table[(2*j)+1]) {
-					PRINTK_DEBUG(":    OK\n");
+					PRINTK_DEBUG(":	OK\n");
 					break;
 				}
 
@@ -869,7 +869,7 @@ static void sdram_verify_burst_length(struct sys_info * sysinfo)
 			continue;
 
 		if (!(spd_read_byte(get_dimm_spd_address(sysinfo, i),
-				    SPD_SUPPORTED_BURST_LENGTHS) & SPD_BURST_LENGTH_8))
+					SPD_SUPPORTED_BURST_LENGTHS) & SPD_BURST_LENGTH_8))
 			die("Only DDR-II RAM with burst length 8 is supported by this chipset.\n");
 	}
 }
@@ -988,63 +988,63 @@ enum {
 static const u8 dual_channel_slew_group_lookup[] = {
 	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210,
 	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210,
-	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210,
+	DQ2030, CMD3210, NC,	   CTL3215, NC,	     CLK2030, DQ2030, CMD3210,
 	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD2710,
-	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,
+	DQ2030, CMD3210, NC,	   CTL3215, NC,	     CLK2030, NC,     NC,
 
 	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210,
-	DQ2030, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210,
+	DQ2030, CMD3210, CTL3215, NC,	    CLK2030, NC,      DQ2030, CMD3210,
 	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210,
-	DQ2030, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD2710,
-	DQ2030, CMD3210, CTL3215, NC,      CLK2030, NC,      NC,     NC,
+	DQ2030, CMD3210, CTL3215, NC,	    CLK2030, NC,      DQ2030, CMD2710,
+	DQ2030, CMD3210, CTL3215, NC,	    CLK2030, NC,      NC,     NC,
 
-	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210,
+	DQ2030, CMD3210, NC,	   CTL3215, NC,	     CLK2030, DQ2030, CMD3210,
 	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210,
-	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210,
+	DQ2030, CMD3210, NC,	   CTL3215, NC,	     CLK2030, DQ2030, CMD3210,
 	DQ2030, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD2710,
-	DQ2030, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,
+	DQ2030, CMD3210, NC,	   CTL3215, NC,	     CLK2030, NC,     NC,
 
 	DQ2030, CMD2710, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210,
-	DQ2030, CMD2710, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210,
+	DQ2030, CMD2710, CTL3215, NC,	    CLK2030, NC,      DQ2030, CMD3210,
 	DQ2030, CMD2710, CTL3215, CTL3215, CLK2030, CLK2030, DQ2030, CMD3210,
-	DQ2030, CMD2710, CTL3215, NC,      CLK2030, NC,      DQ2030, CMD2710,
-	DQ2030, CMD2710, CTL3215, NC,      CLK2030, NC,      NC,     NC,
+	DQ2030, CMD2710, CTL3215, NC,	    CLK2030, NC,      DQ2030, CMD2710,
+	DQ2030, CMD2710, CTL3215, NC,	    CLK2030, NC,      NC,     NC,
 
-	NC,     NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210,
-	NC,     NC,      CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210,
-	NC,     NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210,
-	NC,     NC,      CTL3215, NC,      CLK2030, CLK2030, DQ2030, CMD2710
+	NC,	 NC,	  NC,	   CTL3215, NC,	     CLK2030, DQ2030, CMD3210,
+	NC,	 NC,	  CTL3215, NC,	    CLK2030, NC,      DQ2030, CMD3210,
+	NC,	 NC,	  NC,	   CTL3215, NC,	     CLK2030, DQ2030, CMD3210,
+	NC,	 NC,	  CTL3215, NC,	    CLK2030, CLK2030, DQ2030, CMD2710
 };
 
 static const u8 single_channel_slew_group_lookup[] = {
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2330, CMD3210,
+	DQ2330, CMD3210, NC,	   CTL3215, NC,	     CLK2030, DQ2330, CMD3210,
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,
+	DQ2330, CMD3210, NC,	   CTL3215, NC,	     CLK2030, NC,     NC,
 
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210,
+	DQ2330, CMD3210, CTL3215, NC,	    CLK2030, NC,      DQ2330, CMD3210,
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210,
-	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      NC,     NC,
+	DQ2330, CMD3210, CTL3215, NC,	    CLK2030, NC,      DQ2330, CMD3210,
+	DQ2330, CMD3210, CTL3215, NC,	    CLK2030, NC,      NC,     NC,
 
-	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2330, CMD3210,
+	DQ2330, CMD3210, NC,	   CTL3215, NC,	     CLK2030, DQ2330, CMD3210,
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, DQ2330, CMD3210,
+	DQ2330, CMD3210, NC,	   CTL3215, NC,	     CLK2030, DQ2330, CMD3210,
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, NC,      CTL3215, NC,      CLK2030, NC,     NC,
+	DQ2330, CMD3210, NC,	   CTL3215, NC,	     CLK2030, NC,     NC,
 
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210,
+	DQ2330, CMD3210, CTL3215, NC,	    CLK2030, NC,      DQ2330, CMD3210,
 	DQ2330, CMD3210, CTL3215, CTL3215, CLK2030, CLK2030, DQ2330, CMD3210,
-	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      DQ2330, CMD3210,
-	DQ2330, CMD3210, CTL3215, NC,      CLK2030, NC,      NC,     NC,
+	DQ2330, CMD3210, CTL3215, NC,	    CLK2030, NC,      DQ2330, CMD3210,
+	DQ2330, CMD3210, CTL3215, NC,	    CLK2030, NC,      NC,     NC,
 
-	DQ2330, NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210,
-	DQ2330, NC,      CTL3215, NC,      CLK2030, NC,      DQ2030, CMD3210,
-	DQ2330, NC,      NC,      CTL3215, NC,      CLK2030, DQ2030, CMD3210,
-	DQ2330, NC,      CTL3215, NC,      CLK2030, CLK2030, DQ2030, CMD3210
+	DQ2330, NC,	  NC,	   CTL3215, NC,	     CLK2030, DQ2030, CMD3210,
+	DQ2330, NC,	  CTL3215, NC,	    CLK2030, NC,      DQ2030, CMD3210,
+	DQ2330, NC,	  NC,	   CTL3215, NC,	     CLK2030, DQ2030, CMD3210,
+	DQ2330, NC,	  CTL3215, NC,	    CLK2030, CLK2030, DQ2030, CMD3210
 };
 
 static const u32 *slew_group_lookup(int dual_channel, int index)
@@ -1912,7 +1912,7 @@ static void sdram_set_channel_mode(struct sys_info *sysinfo)
 	if (sdram_capabilities_interleave() &&
 		    ( ( sysinfo->banksize[0] + sysinfo->banksize[1] +
 			sysinfo->banksize[2] + sysinfo->banksize[3] ) ==
-		      ( sysinfo->banksize[4] + sysinfo->banksize[5] +
+			( sysinfo->banksize[4] + sysinfo->banksize[5] +
 			sysinfo->banksize[6] + sysinfo->banksize[7] ) ) ) {
 		/* Both channels equipped with DIMMs of the same size */
 		sysinfo->interleaved = 1;

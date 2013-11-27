@@ -121,10 +121,10 @@ struct me_did {
 #define  ME_HFS2_PHASE_UNKNOWN		5
 #define  ME_HFS2_PHASE_HOST_COMM	6
 /* Current State - Based on Infra Progress values. */
-/*       ROM State */
+/*	 ROM State */
 #define  ME_HFS2_STATE_ROM_BEGIN 0
 #define  ME_HFS2_STATE_ROM_DISABLE 6
-/*       BUP State */
+/*	 BUP State */
 #define  ME_HFS2_STATE_BUP_INIT 0
 #define  ME_HFS2_STATE_BUP_DIS_HOST_WAKE 1
 #define  ME_HFS2_STATE_BUP_FLOW_DET 4
@@ -150,7 +150,7 @@ struct me_did {
 #define  ME_HFS2_STATE_BUP_M0_CLK_ERR 0x27
 #define  ME_HFS2_STATE_BUP_TEMP_DIS 0x28
 #define  ME_HFS2_STATE_BUP_M0_KERN_LOAD 0x32
-/*       Policy Module State */
+/*	 Policy Module State */
 #define  ME_HFS2_STATE_POLICY_ENTRY 0
 #define  ME_HFS2_STATE_POLICY_RCVD_S3 3
 #define  ME_HFS2_STATE_POLICY_RCVD_S4 4
@@ -199,7 +199,7 @@ struct me_hfs2 {
 } __attribute__ ((packed));
 
 #define PCI_ME_H_GS2		0x70
-#define   PCI_ME_MBP_GIVE_UP	0x01
+#define	  PCI_ME_MBP_GIVE_UP	0x01
 
 #define PCI_ME_HERES		0xbc
 #define  PCI_ME_EXT_SHA1	0x00
@@ -287,7 +287,7 @@ struct me_fw_version {
 } __attribute__ ((packed));
 
 
-#define HECI_EOP_STATUS_SUCCESS       0x0
+#define HECI_EOP_STATUS_SUCCESS	      0x0
 #define HECI_EOP_PERFORM_GLOBAL_RESET 0x1
 
 #define CBM_RR_GLOBAL_RESET	0x01
@@ -359,7 +359,7 @@ void intel_me8_finalize_smm(void);
 typedef  struct {
 	u32  mbp_size	 : 8;
 	u32  num_entries : 8;
-	u32  rsvd      	 : 16;
+	u32  rsvd		 : 16;
 } __attribute__ ((packed)) mbp_header;
 
 typedef struct {
@@ -370,10 +370,10 @@ typedef struct {
 }  __attribute__ ((packed)) mbp_item_header;
 
 typedef struct {
-	u32       major_version  : 16;
-	u32       minor_version  : 16;
-	u32       hotfix_version : 16;
-	u32       build_version  : 16;
+	u32	   major_version  : 16;
+	u32	   minor_version  : 16;
+	u32	   hotfix_version : 16;
+	u32	   build_version  : 16;
 } __attribute__ ((packed)) mbp_fw_version_name;
 
 typedef struct {
@@ -399,13 +399,13 @@ typedef struct {
 } __attribute__ ((packed)) mbp_mefwcaps;
 
 typedef struct {
-	u16        device_id;
-	u16        fuse_test_flags;
-	u32        umchid[4];
+	u16	    device_id;
+	u16	    fuse_test_flags;
+	u32	    umchid[4];
 }  __attribute__ ((packed)) mbp_rom_bist_data;
 
 typedef struct {
-	u32        key[8];
+	u32	    key[8];
 } mbp_platform_key;
 
 typedef struct {
@@ -424,7 +424,7 @@ typedef struct {
 
 typedef struct {
 	mbp_me_firmware_type rule_data;
-	u8                   available;
+	u8		      available;
 } mbp_plat_type;
 
 typedef struct {
@@ -433,11 +433,11 @@ typedef struct {
 } __attribute__ ((packed)) icc_address_mask;
 
 typedef struct {
-	u8        num_icc_profiles;
-	u8        icc_profile_soft_strap;
-	u8        icc_profile_index;
-	u8        reserved;
-	u32       icc_reg_bundles;
+	u8	   num_icc_profiles;
+	u8	   icc_profile_soft_strap;
+	u8	   icc_profile_index;
+	u8	   reserved;
+	u32	   icc_reg_bundles;
 	icc_address_mask icc_address_mask[0];
 } __attribute__ ((packed)) mbp_icc_profile;
 
@@ -445,14 +445,14 @@ typedef struct {
 	u16  lock_state		     : 1;
 	u16  authenticate_module     : 1;
 	u16  s3authentication  	     : 1;
-	u16  flash_wear_out          : 1;
+	u16  flash_wear_out	      : 1;
 	u16  flash_variable_security : 1;
 	u16  reserved		     : 11;
 } __attribute__ ((packed)) tdt_state_flag;
 
 typedef struct {
-	u8           state;
-	u8           last_theft_trigger;
+	u8	      state;
+	u8	      last_theft_trigger;
 	tdt_state_flag  flags;
 }  __attribute__ ((packed)) mbp_at_state;
 
@@ -464,20 +464,20 @@ typedef struct {
 
 typedef struct {
 	u32 device_type : 2;
-	u32 reserved    : 30;
+	u32 reserved	 : 30;
 } __attribute__ ((packed)) mbp_nfc_data;
 
 typedef struct {
 	mbp_fw_version_name  *fw_version_name;
-	mbp_mefwcaps         *fw_capabilities;
+	mbp_mefwcaps	      *fw_capabilities;
 	mbp_rom_bist_data    *rom_bist_data;
 	mbp_platform_key     *platform_key;
-	mbp_plat_type        *fw_plat_type;
+	mbp_plat_type	      *fw_plat_type;
 	mbp_icc_profile	     *icc_profile;
-	mbp_at_state         *at_state;
-	u32		     *mfsintegrity;
-	mbp_plat_time        *plat_time;
-	mbp_nfc_data         *nfc_data;
+	mbp_at_state	      *at_state;
+	u32			   *mfsintegrity;
+	mbp_plat_time	      *plat_time;
+	mbp_nfc_data	      *nfc_data;
 } me_bios_payload;
 
 struct me_fwcaps {

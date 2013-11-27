@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2008-2009 coresystems GmbH
- *               2012 secunet Security Networks AG
+ *		 2012 secunet Security Networks AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -276,10 +276,10 @@ static void i82801ix_power_options(device_t dev)
 	/* Set up power management block and determine sleep mode */
 	reg16 = inw(pmbase + 0x00); /* PM1_STS */
 	outw(reg16, pmbase + 0x00); /* Clear status bits. At least bit11 (power
-				       button override) must be cleared or SCI
-				       will be constantly fired and OSPM must
-				       not know about it (ACPI spec says to
-				       ignore the bit). */
+					   button override) must be cleared or SCI
+					   will be constantly fired and OSPM must
+					   not know about it (ACPI spec says to
+					   ignore the bit). */
 	reg32 = inl(pmbase + 0x04); // PM1_CNT
 	reg32 &= ~(7 << 10);	// SLP_TYP
 	outl(reg32, pmbase + 0x04);
@@ -470,7 +470,7 @@ static void lpc_init(struct device *dev)
 static void i82801ix_lpc_read_resources(device_t dev)
 {
 	/*
-	 *             I/O Resources
+	 *		I/O Resources
 	 *
 	 * 0x0000 - 0x000f....ISA DMA
 	 * 0x0010 - 0x001f....ISA DMA aliases

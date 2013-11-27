@@ -28,17 +28,17 @@
 
 STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
-	{AGESA_ALLOCATE_BUFFER,          fam16kb_AllocateBuffer },
-	{AGESA_DEALLOCATE_BUFFER,        fam16kb_DeallocateBuffer },
-	{AGESA_DO_RESET,                 fam16kb_Reset },
-	{AGESA_LOCATE_BUFFER,            fam16kb_LocateBuffer },
-	{AGESA_READ_SPD,                 fam16kb_ReadSpd },
-	{AGESA_READ_SPD_RECOVERY,        fam16kb_DefaultRet },
-	{AGESA_RUNFUNC_ONAP,             fam16kb_RunFuncOnAp },
-	{AGESA_GET_IDS_INIT_DATA,        fam16kb_GetIdsInitData },
+	{AGESA_ALLOCATE_BUFFER,	  fam16kb_AllocateBuffer },
+	{AGESA_DEALLOCATE_BUFFER,	  fam16kb_DeallocateBuffer },
+	{AGESA_DO_RESET,		  fam16kb_Reset },
+	{AGESA_LOCATE_BUFFER,		  fam16kb_LocateBuffer },
+	{AGESA_READ_SPD,		  fam16kb_ReadSpd },
+	{AGESA_READ_SPD_RECOVERY,	  fam16kb_DefaultRet },
+	{AGESA_RUNFUNC_ONAP,		  fam16kb_RunFuncOnAp },
+	{AGESA_GET_IDS_INIT_DATA,	  fam16kb_GetIdsInitData },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  fam16kb_HookBeforeDQSTraining },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, fam16kb_HookBeforeExitSelfRefresh },
-	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
+	{AGESA_FCH_OEM_CALLOUT,	  Fch_Oem_config },
 	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  fam16kb_HookGfxGetVbiosImage }
 };
 
@@ -66,9 +66,9 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
  * AMD Olivehill Platform ALC272 Verb Table
  */
 static const CODEC_ENTRY Olivehill_Alc272_VerbTbl[] = {
-	{0x11, 0x411111F0}, //        - SPDIF_OUT2
-	{0x12, 0x411111F0}, //        - DMIC_1/2
-	{0x13, 0x411111F0}, //        - DMIC_3/4
+	{0x11, 0x411111F0}, //	       - SPDIF_OUT2
+	{0x12, 0x411111F0}, //	       - DMIC_1/2
+	{0x13, 0x411111F0}, //	       - DMIC_3/4
 	{0x14, 0x411111F0}, // Port D - LOUT1
 	{0x15, 0x411111F0}, // Port A - LOUT2
 	{0x16, 0x411111F0}, //
@@ -77,8 +77,8 @@ static const CODEC_ENTRY Olivehill_Alc272_VerbTbl[] = {
 	{0x19, 0x411111F0}, // Port F - MIC2
 	{0x1a, 0x01813030}, // Port C - LINE1
 	{0x1b, 0x411111F0}, // Port E - LINE2
-	{0x1d, 0x40130605}, //        - PCBEEP
-	{0x1e, 0x01441120}, //        - SPDIF_OUT1
+	{0x1d, 0x40130605}, //	       - PCBEEP
+	{0x1e, 0x01441120}, //	       - SPDIF_OUT1
 	{0x21, 0x01214010}, // Port I - HPOUT
 	{0xff, 0xffffffff}
 };

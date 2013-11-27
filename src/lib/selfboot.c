@@ -200,7 +200,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 	 * to load onto the bounce buffer instead.
 	 */
 	/* ret:  1 : A new segment is inserted before the seg.
-	 *       0 : A new segment is inserted after the seg, or no new one.
+	 *	  0 : A new segment is inserted after the seg, or no new one.
 	 */
 	unsigned long start, middle, end, ret = 0;
 
@@ -247,7 +247,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			/* compute the new value of start */
 			start = seg->s_dstaddr;
 
-			printk(BIOS_SPEW, "   early: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+			printk(BIOS_SPEW, "	 early: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
@@ -279,7 +279,7 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 			seg->next->prev = new;
 			seg->next = new;
 
-			printk(BIOS_SPEW, "   late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
+			printk(BIOS_SPEW, "	 late: [0x%016lx, 0x%016lx, 0x%016lx)\n",
 				new->s_dstaddr,
 				new->s_dstaddr + new->s_filesz,
 				new->s_dstaddr + new->s_memsz);
@@ -358,7 +358,7 @@ static int build_self_segment_list(
 
 		case PAYLOAD_SEGMENT_ENTRY:
 			printk(BIOS_DEBUG, "  Entry Point 0x%p\n",
-			       (void *)(intptr_t)ntohll(segment->load_addr));
+				  (void *)(intptr_t)ntohll(segment->load_addr));
 			*entry =  ntohll(segment->load_addr);
 			/* Per definition, a payload always has the entry point
 			 * as last segment. Thus, we use the occurrence of the

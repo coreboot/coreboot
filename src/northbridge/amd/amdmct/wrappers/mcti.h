@@ -37,7 +37,7 @@ COMMENT OUT ALL BUT 1
 COMMENT OUT ALL BUT 1
 ----------------------------------------------------------------------------*/
 #ifndef SYSTEM_TYPE
-#define    SYSTEM_TYPE	    SERVER
+#define	   SYSTEM_TYPE		   SERVER
 //#define    SYSTEM_TYPE     DESKTOP
 //#define    SYSTEM_TYPE     MOBILE
 #endif

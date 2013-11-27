@@ -32,21 +32,21 @@ Scope (_SB) {
 */
 
 /* Some timing tables */
-Name(UDTT, Package(){                   /* Udma timing table */
-	120, 90, 60, 45, 30, 20, 15, 0      /* UDMA modes 0 -> 6 */
+Name(UDTT, Package(){			/* Udma timing table */
+	120, 90, 60, 45, 30, 20, 15, 0	     /* UDMA modes 0 -> 6 */
 })
 
-Name(MDTT, Package(){                   /* MWDma timing table */
-	480, 150, 120, 0                    /* Legacy DMA modes 0 -> 2 */
+Name(MDTT, Package(){			/* MWDma timing table */
+	480, 150, 120, 0		     /* Legacy DMA modes 0 -> 2 */
 })
 
-Name(POTT, Package(){                   /* Pio timing table */
-	600, 390, 270, 180, 120, 0          /* PIO modes 0 -> 4 */
+Name(POTT, Package(){			/* Pio timing table */
+	600, 390, 270, 180, 120, 0	     /* PIO modes 0 -> 4 */
 })
 
 /* Some timing register value tables */
-Name(MDRT, Package(){                   /* MWDma timing register table */
-	0x77, 0x21, 0x20, 0xFF              /* Legacy DMA modes 0 -> 2 */
+Name(MDRT, Package(){			/* MWDma timing register table */
+	0x77, 0x21, 0x20, 0xFF		     /* Legacy DMA modes 0 -> 2 */
 })
 
 Name(PORT, Package(){
@@ -56,21 +56,21 @@ Name(PORT, Package(){
 OperationRegion(ICRG, PCI_Config, 0x40, 0x20) /* ide control registers */
 	Field(ICRG, AnyAcc, NoLock, Preserve)
 {
-	PPTS, 8,                            /* Primary PIO Slave Timing */
-	PPTM, 8,                            /* Primary PIO Master Timing */
-	OFFSET(0x04), PMTS, 8,              /* Primary MWDMA Slave Timing */
-	PMTM, 8,                            /* Primary MWDMA Master Timing */
-	OFFSET(0x08), PPCR, 8,              /* Primary PIO Control */
-	OFFSET(0x0A), PPMM, 4,              /* Primary PIO master Mode */
-	PPSM, 4,                            /* Primary PIO slave Mode */
-	OFFSET(0x14), PDCR, 2,              /* Primary UDMA Control */
-	OFFSET(0x16), PDMM, 4,              /* Primary UltraDMA Mode */
-	PDSM, 4,                            /* Primary UltraDMA Mode */
+	PPTS, 8,			     /* Primary PIO Slave Timing */
+	PPTM, 8,			     /* Primary PIO Master Timing */
+	OFFSET(0x04), PMTS, 8,		     /* Primary MWDMA Slave Timing */
+	PMTM, 8,			     /* Primary MWDMA Master Timing */
+	OFFSET(0x08), PPCR, 8,		     /* Primary PIO Control */
+	OFFSET(0x0A), PPMM, 4,		     /* Primary PIO master Mode */
+	PPSM, 4,			     /* Primary PIO slave Mode */
+	OFFSET(0x14), PDCR, 2,		     /* Primary UDMA Control */
+	OFFSET(0x16), PDMM, 4,		     /* Primary UltraDMA Mode */
+	PDSM, 4,			     /* Primary UltraDMA Mode */
 }
 
-Method(GTTM, 1)                         /* get total time*/
+Method(GTTM, 1)				/* get total time*/
 {
-	Store(And(Arg0, 0x0F), Local0)      /* Recovery Width */
+	Store(And(Arg0, 0x0F), Local0)	     /* Recovery Width */
 	Increment(Local0)
 	Store(ShiftRight(Arg0, 4), Local1)  /* Command Width */
 	Increment(Local1)
@@ -82,7 +82,7 @@ Device(PRID)
 	Name (_ADR, Zero)
 	Method(_GTM, 0)
 	{
-		NAME(OTBF, Buffer(20) {         /* out buffer */
+		NAME(OTBF, Buffer(20) {	  /* out buffer */
 			0xFF, 0xFF, 0xFF, 0xFF,
 			0xFF, 0xFF, 0xFF, 0xFF,
 			0xFF, 0xFF, 0xFF, 0xFF,
@@ -96,7 +96,7 @@ Device(PRID)
 		CreateDwordField(OTBF, 16, BFFG) /* buffer flags */
 
 		/* Just return if the channel is disabled */
-		If(And(PPCR, 0x01)) {           /* primary PIO control */
+		If(And(PPCR, 0x01)) {		  /* primary PIO control */
 			Return(OTBF)
 		}
 
@@ -108,7 +108,7 @@ Device(PRID)
 		/* save total time of primary PIO slave Timing to PIO spd1 */
 		Store(GTTM(PPTS), PSD1)
 
-		If(And(PDCR, 0x01)) {           /* It's under UDMA mode */
+		If(And(PDCR, 0x01)) {		  /* It's under UDMA mode */
 			Or(BFFG, 0x01, BFFG)
 			Store(DerefOf(Index(UDTT, PDMM)), DSD0)
 		}
@@ -116,7 +116,7 @@ Device(PRID)
 			Store(GTTM(PMTM), DSD0)     /* Primary MWDMA Master Timing, DmaSpd0 */
 		}
 
-		If(And(PDCR, 0x02)) {           /* It's under UDMA mode */
+		If(And(PDCR, 0x02)) {		  /* It's under UDMA mode */
 			Or(BFFG, 0x04, BFFG)
 			Store(DerefOf(Index(UDTT, PDSM)), DSD1)
 		}
@@ -124,12 +124,12 @@ Device(PRID)
 			Store(GTTM(PMTS), DSD1)     /* Primary MWDMA Slave Timing,  DmaSpd0 */
 		}
 
-		Return(OTBF)                    /* out buffer */
-	}                                   /* End Method(_GTM) */
+		Return(OTBF)			  /* out buffer */
+	}				     /* End Method(_GTM) */
 
 	Method(_STM, 3, NotSerialized)
 	{
-		NAME(INBF, Buffer(20) {         /* in buffer */
+		NAME(INBF, Buffer(20) {	  /* in buffer */
 			0xFF, 0xFF, 0xFF, 0xFF,
 			0xFF, 0xFF, 0xFF, 0xFF,
 			0xFF, 0xFF, 0xFF, 0xFF,
@@ -143,14 +143,14 @@ Device(PRID)
 		CreateDwordField(INBF, 16, BFFG) /*buffer flag */
 
 		Store(Match(POTT, MLE, PSD0, MTR, 0, 0), Local0)
-		Divide(Local0, 5, PPMM,)        /* Primary PIO master Mode */
+		Divide(Local0, 5, PPMM,)	  /* Primary PIO master Mode */
 		Store(Match(POTT, MLE, PSD1, MTR, 0, 0), Local1)
-		Divide(Local1, 5, PPSM,)        /* Primary PIO slave Mode */
+		Divide(Local1, 5, PPSM,)	  /* Primary PIO slave Mode */
 
 		Store(DerefOf(Index(PORT, Local0)), PPTM) /* Primary PIO Master Timing */
 		Store(DerefOf(Index(PORT, Local1)), PPTS) /* Primary PIO Slave Timing */
 
-		If(And(BFFG, 0x01)) {           /* Drive 0 is under UDMA mode */
+		If(And(BFFG, 0x01)) {		  /* Drive 0 is under UDMA mode */
 			Store(Match(UDTT, MLE, DSD0, MTR, 0, 0), Local0)
 			Divide(Local0, 7, PDMM,)
 			Or(PDCR, 0x01, PDCR)
@@ -162,7 +162,7 @@ Device(PRID)
 			}
 		}
 
-		If(And(BFFG, 0x04)) {           /* Drive 1 is under UDMA mode */
+		If(And(BFFG, 0x04)) {		  /* Drive 1 is under UDMA mode */
 			Store(Match(UDTT, MLE, DSD1, MTR, 0, 0), Local0)
 			Divide(Local0, 7, PDSM,)
 			Or(PDCR, 0x02, PDCR)
@@ -201,15 +201,15 @@ Device(PRID)
 			}
 			Else {
 				Store(Match
-				      (MDTT, MLE, GTTM(PMTM),
-				       MTR, 0, 0), Local0)
+					  (MDTT, MLE, GTTM(PMTM),
+					   MTR, 0, 0), Local0)
 				If(LLess(Local0, 3)) {
 					Or(0x20, Local0, DMMD)
 				}
 			}
 			Return(CMBF)
 		}
-	}                                   /* End Device(MST) */
+	}				     /* End Device(MST) */
 
 	Device(SLAV)
 	{
@@ -237,14 +237,14 @@ Device(PRID)
 			}
 			Else {
 				Store(Match
-				      (MDTT, MLE, GTTM(PMTS),
-				       MTR, 0, 0), Local0)
+					  (MDTT, MLE, GTTM(PMTS),
+					   MTR, 0, 0), Local0)
 				If(LLess(Local0, 3)) {
 					Or(0x20, Local0, DMMD)
 				}
 			}
 			Return(CMBF)
 		}
-	}                                   /* End Device(SLAV) */
+	}				     /* End Device(SLAV) */
 }
 #endif

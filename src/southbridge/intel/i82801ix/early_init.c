@@ -56,9 +56,9 @@ void i82801ix_early_init(void)
 	pci_write_config8(d31f0, 0xac, reg8);
 
 	/* TODO: If RTC power failed, reset RTC state machine
-	         (set, then reset RTC 0x0b bit7) */
+		  (set, then reset RTC 0x0b bit7) */
 
 	/* TODO: Check power state bits in GEN_PMCON_2 (D31F0 0xa2)
-	         before they get cleared. */
+		  before they get cleared. */
 }
 

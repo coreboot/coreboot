@@ -66,7 +66,7 @@
 /**
  * Bitmap of ports that have slot or onboard device connected.
  * Example force PCIe Gen1 supporton port 2 and 4  (DEFAULT_PORT_ENABLE_MAP = BIT2 | BIT4)
- * #define DEFAULT_PORT_FORCE_GEN1        0x604
+ * #define DEFAULT_PORT_FORCE_GEN1	  0x604
  */
 #ifndef DEFAULT_PORT_FORCE_GEN1
 #define DEFAULT_PORT_FORCE_GEN1		0x0
@@ -107,12 +107,12 @@
 
 /**
  * Default GPP3a core configuraton on NB #0/1/2/3.
- * 4:2:0:0:0:0   - GPP_CONFIG_GPP420000, 0x1
- * 4:1:1:0:0:0   - GPP_CONFIG_GPP411000, 0x2
- * 2:2:2:0:0:0   - GPP_CONFIG_GPP222000, 0x3
- * 2:2:1:1:0:0   - GPP_CONFIG_GPP221100, 0x4
- * 2:1:1:1:1:0   - GPP_CONFIG_GPP211110, 0x5
- * 1:1:1:1:1:1   - GPP_CONFIG_GPP111111, 0x6
+ * 4:2:0:0:0:0	 - GPP_CONFIG_GPP420000, 0x1
+ * 4:1:1:0:0:0	 - GPP_CONFIG_GPP411000, 0x2
+ * 2:2:2:0:0:0	 - GPP_CONFIG_GPP222000, 0x3
+ * 2:2:1:1:0:0	 - GPP_CONFIG_GPP221100, 0x4
+ * 2:1:1:1:1:0	 - GPP_CONFIG_GPP211110, 0x5
+ * 1:1:1:1:1:1	 - GPP_CONFIG_GPP111111, 0x6
  */
 #ifndef DEFAULT_GPP3A_CONFIG
 #define DEFAULT_GPP3A_CONFIG		GPP_CONFIG_GPP111111
@@ -153,17 +153,17 @@
  * Platform configuration
  */
 typedef struct {
-	UINT16  PortEnableMap;            ///< Bitmap of enabled ports
-	UINT16  PortGen1Map;              ///< Bitmap of ports to disable Gen2
-	UINT16  PortHotplugMap;           ///< Bitmap of ports support hotplug
-	UINT8   PortHotplugDescriptors[8];///< Ports Hotplug descriptors
-	UINT32  TemporaryMmio;            ///< Temporary MMIO
-	UINT32  Gpp1Config;               ///< Default PCIe GFX core configuration
-	UINT32  Gpp2Config;               ///< Default PCIe GPP2 core configuration
-	UINT32  Gpp3aConfig;              ///< Default PCIe GPP3a core configuration
-	UINT8   NbTransmitterDeemphasis;  ///< HT transmitter de-emphasis level
-	//	HT_PATH NbHtPath;                 ///< HT path to NB
-	UINT8   GlobalApicInterruptBase;  ///< Global APIC interrupt base that is used in MADT table for IO APIC.
+	UINT16  PortEnableMap;		   ///< Bitmap of enabled ports
+	UINT16  PortGen1Map;		   ///< Bitmap of ports to disable Gen2
+	UINT16  PortHotplugMap;	   ///< Bitmap of ports support hotplug
+	UINT8	 PortHotplugDescriptors[8];///< Ports Hotplug descriptors
+	UINT32  TemporaryMmio;		   ///< Temporary MMIO
+	UINT32  Gpp1Config;		   ///< Default PCIe GFX core configuration
+	UINT32  Gpp2Config;		   ///< Default PCIe GPP2 core configuration
+	UINT32  Gpp3aConfig;		   ///< Default PCIe GPP3a core configuration
+	UINT8	 NbTransmitterDeemphasis;  ///< HT transmitter de-emphasis level
+	//	HT_PATH NbHtPath;		      ///< HT path to NB
+	UINT8	 GlobalApicInterruptBase;  ///< Global APIC interrupt base that is used in MADT table for IO APIC.
 } NB_PLATFORM_CONFIG;
 
 /**

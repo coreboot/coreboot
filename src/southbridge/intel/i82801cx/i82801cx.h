@@ -7,23 +7,23 @@ void i82801cx_enable(device_t dev);
 #endif
 
 
-#define PCI_DMA_CFG     0x90
-#define SERIRQ_CNTL     0x64
-#define GEN_CNTL        0xd0
-#define GEN_STS         0xd4
-#define RTC_CONF        0xd8
-#define GEN_PMCON_3     0xa4
+#define PCI_DMA_CFG	0x90
+#define SERIRQ_CNTL	0x64
+#define GEN_CNTL	0xd0
+#define GEN_STS		0xd4
+#define RTC_CONF	0xd8
+#define GEN_PMCON_3	0xa4
 
-#define PMBASE          0x40
-#define ACPI_CNTL       0x44
-#define BIOS_CNTL       0x4E
-#define GPIO_BASE       0x58
-#define GPIO_CNTL       0x5C
-#define PIRQA_ROUT      0x60
-#define PIRQE_ROUT      0x68
-#define COM_DEC         0xE0
-#define LPC_EN          0xE6
-#define FUNC_DIS        0xF2
+#define PMBASE		0x40
+#define ACPI_CNTL	0x44
+#define BIOS_CNTL	0x4E
+#define GPIO_BASE	0x58
+#define GPIO_CNTL	0x5C
+#define PIRQA_ROUT	0x60
+#define PIRQE_ROUT	0x68
+#define COM_DEC		0xE0
+#define LPC_EN		0xE6
+#define FUNC_DIS	0xF2
 
 // GEN_PMCON_3 bits
 #define RTC_BATTERY_DEAD		(1<<2)

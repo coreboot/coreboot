@@ -117,7 +117,7 @@ typedef struct {
 
 typedef struct {
 	unsigned int	card_type; /* 0x0: unpopulated,
-				      0xa - 0xf: raw card type A - F */
+					  0xa - 0xf: raw card type A - F */
 	chip_width_t	chip_width;
 	chip_capacity_t	chip_capacity;
 	unsigned int	page_size; /* of whole DIMM in Bytes (4096 or 8192) */
@@ -607,8 +607,8 @@ void report_platform_info(void);
 #endif /* !__SMM__ */
 
 
-#define MRC_DATA_ALIGN           0x1000
-#define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
+#define MRC_DATA_ALIGN		 0x1000
+#define MRC_DATA_SIGNATURE	 (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
 
 struct mrc_data_container {
 	u32	mrc_signature;	// "MRCD"

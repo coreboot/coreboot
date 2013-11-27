@@ -143,10 +143,10 @@ PCIe_DDI_DESCRIPTOR DdiList [] = {
 };
 
 PCIe_COMPLEX_DESCRIPTOR Trinity = {
-        DESCRIPTOR_TERMINATE_LIST,
-        0,
-        &PortList[0],
-        &DdiList[0]
+	DESCRIPTOR_TERMINATE_LIST,
+	0,
+	&PortList[0],
+	&DdiList[0]
 };
 
 /*---------------------------------------------------------------------------------------*/
@@ -161,7 +161,7 @@ PCIe_COMPLEX_DESCRIPTOR Trinity = {
  *    @param[in]      **PeiServices
  *    @param[in]      *InitEarly
  *
- *    @retval         VOID
+ *    @retval	      VOID
  *
  **/
 /*---------------------------------------------------------------------------------------*/
@@ -170,10 +170,10 @@ OemCustomizeInitEarly (
 	IN  OUT AMD_EARLY_PARAMS    *InitEarly
 	)
 {
-	AGESA_STATUS         Status;
-	VOID                 *TrinityPcieComplexListPtr;
-	VOID                 *TrinityPciePortPtr;
-	VOID                 *TrinityPcieDdiPtr;
+	AGESA_STATUS	      Status;
+	VOID		      *TrinityPcieComplexListPtr;
+	VOID		      *TrinityPciePortPtr;
+	VOID		      *TrinityPcieDdiPtr;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
 
@@ -196,25 +196,25 @@ OemCustomizeInitEarly (
 	TrinityPcieComplexListPtr  =  (PCIe_COMPLEX_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
 	AllocHeapParams.BufferPtr += sizeof(Trinity);
-	TrinityPciePortPtr         =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
+	TrinityPciePortPtr	    =  (PCIe_PORT_DESCRIPTOR *)AllocHeapParams.BufferPtr;
 
 	AllocHeapParams.BufferPtr += sizeof(PortList);
-	TrinityPcieDdiPtr          =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
+	TrinityPcieDdiPtr	    =  (PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
 	LibAmdMemFill (TrinityPcieComplexListPtr,
-		       0,
-		       sizeof(Trinity),
-		       &InitEarly->StdHeader);
+			 0,
+			 sizeof(Trinity),
+			 &InitEarly->StdHeader);
 
 	LibAmdMemFill (TrinityPciePortPtr,
-		       0,
-		       sizeof(PortList),
-		       &InitEarly->StdHeader);
+			 0,
+			 sizeof(PortList),
+			 &InitEarly->StdHeader);
 
 	LibAmdMemFill (TrinityPcieDdiPtr,
-		       0,
-		       sizeof(DdiList),
-		       &InitEarly->StdHeader);
+			 0,
+			 sizeof(DdiList),
+			 &InitEarly->StdHeader);
 
 	LibAmdMemCopy  (TrinityPcieComplexListPtr, &Trinity, sizeof(Trinity), &InitEarly->StdHeader);
 	LibAmdMemCopy  (TrinityPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);

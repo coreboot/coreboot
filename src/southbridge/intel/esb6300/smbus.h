@@ -34,10 +34,10 @@ static int smbus_wait_until_done(unsigned smbus_io_base)
 	unsigned loops = SMBUS_TIMEOUT;
 	unsigned char byte;
 	do {
-	        udelay(100);
-	        if (--loops == 0)
-	               break;
-	        byte = inb(smbus_io_base + SMBHSTSTAT);
+		 udelay(100);
+		 if (--loops == 0)
+			break;
+		 byte = inb(smbus_io_base + SMBHSTSTAT);
 	} while((byte & 1) || (byte & ~((1<<6)|(1<<0))) == 0);
 	return loops?0:-1;
 }
@@ -47,10 +47,10 @@ static inline int smbus_wait_until_blk_done(unsigned smbus_io_base)
 	unsigned loops = SMBUS_TIMEOUT;
 	unsigned char byte;
 	do {
-	        udelay(100);
-	        if (--loops == 0)
-	               break;
-	        byte = inb(smbus_io_base + SMBHSTSTAT);
+		 udelay(100);
+		 if (--loops == 0)
+			break;
+		 byte = inb(smbus_io_base + SMBHSTSTAT);
 	} while((byte&(1<<7)) == 0);
 	return loops?0:-1;
 }

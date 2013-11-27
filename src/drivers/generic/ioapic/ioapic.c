@@ -27,9 +27,9 @@ static void ioapic_init(device_t dev)
 	ioapic_id = config->apicid;
 
 	printk(BIOS_DEBUG, "IOAPIC: Initializing IOAPIC at 0x%08x\n",
-	       ioapic_base);
+		ioapic_base);
 	printk(BIOS_DEBUG, "IOAPIC: Bootstrap Processor Local APIC = 0x%02x\n",
-	       bsp_lapicid);
+		bsp_lapicid);
 
 	if (ioapic_id) {
 		printk(BIOS_DEBUG, "IOAPIC: ID = 0x%02x\n", ioapic_id);
@@ -52,7 +52,7 @@ static void ioapic_init(device_t dev)
 		 */
 		printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on FSB\n");
 		io_apic_write(ioapic_base, 0x03,
-		      io_apic_read(ioapic_base, 0x03) | (1 << 0));
+			io_apic_read(ioapic_base, 0x03) | (1 << 0));
 	} else {
 		printk(BIOS_DEBUG, "IOAPIC: Enabling interrupts on APIC serial bus\n");
 		io_apic_write(ioapic_base, 0x03, 0);
@@ -82,7 +82,7 @@ static void ioapic_init(device_t dev)
 		io_apic_write(ioapic_base, i * 2 + 0x11, high);
 
 		printk(BIOS_SPEW, "IOAPIC: reg 0x%08x value 0x%08x 0x%08x\n",
-		       i, high, low);
+			 i, high, low);
 	}
 }
 
@@ -106,10 +106,10 @@ static void ioapic_read_resources(device_t dev)
 }
 
 static struct device_operations ioapic_operations = {
-        .read_resources   = ioapic_read_resources,
-        .set_resources    = ioapic_nop,
-        .enable_resources = ioapic_enable_resources,
-        .init             = ioapic_init,
+	.read_resources	  = ioapic_read_resources,
+	.set_resources	  = ioapic_nop,
+	.enable_resources = ioapic_enable_resources,
+	.init		  = ioapic_init,
 };
 
 static void enable_dev(struct device *dev)

@@ -77,19 +77,19 @@ static void pwrmgt_enable(struct device *dev)
 	 * power-on default is 0x7fffbfffh */
 	if (gpo) {
 		/* only 8bit access allowed */
-		outb( gpo        & 0xff, DEFAULT_PMBASE + GPO0);
+		outb( gpo	   & 0xff, DEFAULT_PMBASE + GPO0);
 		outb((gpo >>  8) & 0xff, DEFAULT_PMBASE + GPO1);
 		outb((gpo >> 16) & 0xff, DEFAULT_PMBASE + GPO2);
 		outb((gpo >> 24) & 0xff, DEFAULT_PMBASE + GPO3);
 	} else {
 		printk(BIOS_SPEW,
-		       "%s: gpo default missing in devicetree.cb!\n", __func__);
+			 "%s: gpo default missing in devicetree.cb!\n", __func__);
 	}
 
 	/* Clear status events. */
-	outw(0xffff,     DEFAULT_PMBASE + PMSTS);
-	outw(0xffff,     DEFAULT_PMBASE + GPSTS);
-	outw(0xffff,     DEFAULT_PMBASE + GLBSTS);
+	outw(0xffff,	  DEFAULT_PMBASE + PMSTS);
+	outw(0xffff,	  DEFAULT_PMBASE + GPSTS);
+	outw(0xffff,	  DEFAULT_PMBASE + GLBSTS);
 	outl(0xffffffff, DEFAULT_PMBASE + DEVSTS);
 
 #if CONFIG_HAVE_ACPI_RESUME
@@ -113,14 +113,14 @@ static void pwrmgt_read_resources(struct device *dev)
 	res->size = 0x0040;
 	res->limit = 0xffff;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
-	             IORESOURCE_RESERVE;
+		      IORESOURCE_RESERVE;
 
 	res = new_resource(dev, 2);
 	res->base = SMBUS_IO_BASE;
 	res->size = 0x0010;
 	res->limit = 0xffff;
 	res->flags = IORESOURCE_IO | IORESOURCE_ASSIGNED | IORESOURCE_FIXED |
-	             IORESOURCE_RESERVE;
+		      IORESOURCE_RESERVE;
 }
 
 

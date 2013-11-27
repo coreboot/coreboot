@@ -34,13 +34,13 @@ endif
 # The --entry=0 is just here to suppress the LD warning. It does not affect the
 # final microcode file.
 $(obj)/cpu_microcode_blob.o: $$(cpu_microcode-objs)
-	@printf "    LD         $(subst $(obj)/,,$(@))\n"
+	@printf "    LD	 $(subst $(obj)/,,$(@))\n"
 	$(LD) -static --entry=0 $< -o $@
 
 # We have a lot of useless data in the large blob, and we are only interested in
 # the data section, so we only copy that part to the final microcode file
 $(obj)/cpu_microcode_blob.bin: $(obj)/cpu_microcode_blob.o
-	@printf "  MICROCODE    $(subst $(obj)/,,$(@))\n"
+	@printf "  MICROCODE	 $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -j .data -O binary $< $@
 
 ifeq ($(cbfs_include_ucode),y)

@@ -27,7 +27,7 @@ static void *smp_write_config_table(void *v)
 		/* 8111 */
 		dev = dev_find_slot(1, PCI_DEVFN(0x03,0));
 		if (dev) {
-                	bus_8111_0 = pci_read_config8(dev, PCI_PRIMARY_BUS);
+			bus_8111_0 = pci_read_config8(dev, PCI_PRIMARY_BUS);
 			bus_8111_1 = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		} else {
 			printk(BIOS_DEBUG, "ERROR - could not find PCI 1:03.0, using defaults\n");
@@ -82,39 +82,39 @@ static void *smp_write_config_table(void *v)
 
 	mptable_add_isa_interrupts(mc, bus_isa, 0x2, 0);
 
-	/* PCI Ints:	     Type	Polarity    	    Trigger		  	Bus ID      PCIDEVNUM|IRQ  APIC ID PIN# */
+	/* PCI Ints:		   Type	Polarity    		 Trigger		  	Bus ID	 PCIDEVNUM|IRQ  APIC ID PIN# */
 	/* Integrated SMBus 2.0 */
-        smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_0, (0x04<<2)|3, 0x2, 0x13);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_0, (0x04<<2)|3, 0x2, 0x13);
 	/* Integrated AMD AC97 Audio */
-        smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_0, (0x04<<2)|1, 0x2, 0x11);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_0, (0x04<<2)|1, 0x2, 0x11);
 
 	/* Integrated AMD USB */
-        smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x00<<2)|3, 0x2, 0x13);
+	smp_write_intsrc(mc, mp_INT,	MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x00<<2)|3, 0x2, 0x13);
 
 	/* On board ATI Rage XL */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|0, 0x2, 0x10);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8111_1, (0x05<<2)|0, 0x2, 0x10);
 
 	/* On board Broadcom nics */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|0, 0x3, 0x00);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|1, 0x3, 0x01);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|0, 0x3, 0x00);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x01<<2)|1, 0x3, 0x01);
 
 	/* On board LSI SCSI */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|0, 0x3, 0x02);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_1, (0x02<<2)|0, 0x3, 0x02);
 
 	/* PCI Slot 1 PCIX */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|0, 0x2, 0x10);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|1, 0x2, 0x11);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|2, 0x2, 0x12);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|3, 0x2, 0x13);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|0, 0x2, 0x10);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|1, 0x2, 0x11);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|2, 0x2, 0x12);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x03<<2)|3, 0x2, 0x13);
 
 	/* PCI Slot 2 PCIX */
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|0, 0x2, 0x11);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|1, 0x2, 0x12);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|2, 0x2, 0x13);
-	smp_write_intsrc(mc, mp_INT,    MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|3, 0x2, 0x10);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|0, 0x2, 0x11);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|1, 0x2, 0x12);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|2, 0x2, 0x13);
+	smp_write_intsrc(mc, mp_INT,	 MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, bus_8131_2, (0x04<<2)|3, 0x2, 0x10);
 
 	/* Standard local interrupt assignments:
-	 * 		      Type	 Polarity		Trigger			 Bus ID   IRQ	APIC ID	     PIN# */
+	 * 			    Type	 Polarity		Trigger			 Bus ID	IRQ	APIC ID		 PIN# */
 	mptable_lintsrc(mc, bus_isa);
 
 	/* There is no extension information... */

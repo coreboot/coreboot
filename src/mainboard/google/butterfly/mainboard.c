@@ -85,7 +85,7 @@ static int get_mac_address(u32 *high_dword, u32 *low_dword,
 			sizeof(key) - 1, search_length);
 	if (offset == search_length) {
 		printk(BIOS_DEBUG,
-		       "Error: Could not locate '%s' in VPD\n", key);
+			 "Error: Could not locate '%s' in VPD\n", key);
 		return 0;
 	}
 	printk(BIOS_DEBUG, "Located '%s' in VPD\n", key);
@@ -113,9 +113,9 @@ static int get_mac_address(u32 *high_dword, u32 *low_dword,
 	*low_dword = 0;
 	for (i = 0; i < 2; i++) {
 		*low_dword |= (get_hex_digit((char *)(search_address + offset))
-			       << (4 + (i * 8)));
+				  << (4 + (i * 8)));
 		*low_dword |= (get_hex_digit((char *)(search_address + offset + 1))
-			       << (i * 8));
+				  << (i * 8));
 		offset += 3;
 	}
 
@@ -197,7 +197,7 @@ static int int15_handler(void)
 	int res = 0;
 
 	printk(BIOS_DEBUG, "%s: INT15 function %04x!\n",
-	       __func__, X86_AX);
+		__func__, X86_AX);
 
 	switch (X86_AX) {
 	case 0x5f34:
@@ -206,7 +206,7 @@ static int int15_handler(void)
 		 *  bit 2 = Graphics Stretching
 		 *  bit 1 = Text Stretching
 		 *  bit 0 = Centering (do not set with bit1 or bit2)
-		 *  0     = video bios default
+		 *  0	    = video bios default
 		 */
 		X86_AX = 0x005f;
 		X86_CL = 0x00;	/* Use video bios default */
@@ -263,7 +263,7 @@ static int int15_handler(void)
 		default:
 			/* Interrupt was not handled */
 			printk(BIOS_DEBUG, "Unknown INT15 5f70 function: 0x%02x\n",
-			       X86_CH);
+				  X86_CH);
 			break;
 		}
 		break;
@@ -308,7 +308,7 @@ static void mainboard_init(device_t dev)
 
 	/* Get NIC's IO base address */
 	ethernet_dev = dev_find_device(BUTTERFLY_NIC_VENDOR_ID,
-				       BUTTERFLY_NIC_DEVICE_ID, dev);
+					   BUTTERFLY_NIC_DEVICE_ID, dev);
 	if (ethernet_dev != NULL) {
 		io_base = pci_read_config16(ethernet_dev, 0x10) & 0xfffe;
 
@@ -331,11 +331,11 @@ static void mainboard_init(device_t dev)
 		 * Section 5.6 LED Mode Configuration
 		 *
 		 * Step1: Write C0h to I/O register 0x50 via byte access to
-		 *        disable 'register protection'
+		 *	    disable 'register protection'
 		 * Step2: Write xx001111b to I/O register 0x52 via byte access
-		 *        (bit7 is LEDS1 and bit6 is LEDS0)
+		 *	    (bit7 is LEDS1 and bit6 is LEDS0)
 		 * Step3: Write 0x00 to I/O register 0x50 via byte access to
-		 *        enable 'register protection'
+		 *	    enable 'register protection'
 		 */
 		outb(0xc0, io_base + 0x50);	/* Disable protection */
 		outb((BUTTERFLY_NIC_LED_MODE << 6) | 0x0f, io_base + 0x52);

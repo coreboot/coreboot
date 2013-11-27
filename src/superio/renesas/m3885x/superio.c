@@ -54,13 +54,13 @@ static void m3885x_enable_resources(device_t dev)
 }
 
 static struct device_operations ops = {
-	.init             = m3885x_init,
+	.init		   = m3885x_init,
 	.read_resources   = m3885x_read_resources,
 	.enable_resources = m3885x_enable_resources
 };
 
 static struct pnp_info pnp_dev_info[] = {
-        { &ops, 0, 0, { 0, 0 }, }
+	{ &ops, 0, 0, { 0, 0 }, }
 };
 
 static void enable_dev(device_t dev)

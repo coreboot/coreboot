@@ -52,7 +52,7 @@ $(obj)/coreboot.pre: $(objcbfs)/bootblock.bin $(objcbfs)/romstage.elf $$(prebuil
 		-b $(CONFIG_BOOTBLOCK_ROM_OFFSET) \
 		-H $(CONFIG_CBFS_HEADER_ROM_OFFSET) \
 		-o $(CONFIG_CBFS_ROM_OFFSET)
-	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	@printf "    CBFS	 $(subst $(obj)/,,$(@))\n"
 	$(CBFSTOOL) $@.tmp add-stage \
 		-f $(objcbfs)/romstage.elf -b 0 \
 		-n $(CONFIG_CBFS_PREFIX)/romstage -c none
@@ -66,18 +66,18 @@ $(obj)/coreboot.pre: $(CBFSTOOL)
 endif
 
 $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE)
-	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	@printf "    CBFS	 $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
 	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
-	@printf "    PAYLOAD    none (as specified by user)\n"
+	@printf "    PAYLOAD	 none (as specified by user)\n"
 endif
 ifeq ($(CONFIG_PAYLOAD_ELF),y)
-	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
+	@printf "    PAYLOAD	 $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_NAME))\n"
 	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
-	@printf "    CONFIG     $(DOTCONFIG)\n"
+	@printf "    CONFIG	 $(DOTCONFIG)\n"
 	if [ -f $(DOTCONFIG) ]; then \
 	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
 	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
@@ -97,11 +97,11 @@ bootsplash.jpg-type := bootsplash
 # Common recipes for all stages
 
 $(objcbfs)/%.bin: $(objcbfs)/%.elf
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -O binary $< $@
 
 $(objcbfs)/%.elf: $(objcbfs)/%.debug
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	cp $< $@.tmp
 	$(NM) -n $@.tmp | sort > $(basename $@).map
 	$(OBJCOPY) --strip-debug $@.tmp
@@ -112,7 +112,7 @@ stages_c = $(src)/arch/armv7/stages.c
 stages_o = $(obj)/arch/armv7/stages.o
 
 $(stages_o): $(stages_c) $(obj)/config.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) -I. $(INCLUDES) -c -o $@ $< -marm
 
 
@@ -120,7 +120,7 @@ $(stages_o): $(stages_c) $(obj)/config.h
 # Build the coreboot_ram (stage 2)
 
 $(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/armv7/coreboot_ram.ld
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m armelf_linux_eabi -o $@ -L$(obj) $< -T $(src)/arch/armv7/coreboot_ram.ld
 else
@@ -128,7 +128,7 @@ else
 endif
 
 $(objgenerated)/coreboot_ram.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME)
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) --end-group
 else
@@ -156,7 +156,7 @@ crt0s += $(cpu_incs)
 crt0s += $(cpu_incs-y)
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
-	@printf "    CC         romstage.inc\n"
+	@printf "    CC	 romstage.inc\n"
 	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
 
 # Things that appear in every board
@@ -235,19 +235,19 @@ bootblock_custom = $(src)/$(call strip_quotes,$(CONFIG_BOOTBLOCK_CPU_INIT))
 bootblock_custom += $(src)/$(call strip_quotes,$(CONFIG_BOOTBLOCK_MAINBOARD_INIT))
 
 $(objgenerated)/bootblock.ld: $$(bootblock_lds) $(obj)/ldoptions
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach ldscript,ldoptions $(bootblock_lds),INCLUDE "$(ldscript)"\n)' > $@
 
 $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) $(bootblock-S-ccopts) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) $(bootblock-S-ccopts) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H) $(obj)/config.h
@@ -258,7 +258,7 @@ $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_S
 	$(CC) $(bootblock-c-ccopts) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
 
 $(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld $$(bootblock-objs) $(stages) $(obj)/config.h
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	@printf "    LINK	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m armelf_linux_eabi -include $(obj)/config.h -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
@@ -269,7 +269,7 @@ endif
 # Build the romstage
 
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(stages_o) $(objgenerated)/romstage.ld
-	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
+	@printf "    LINK	 $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage.ld
 else
@@ -277,20 +277,20 @@ else
 endif
 
 $(objgenerated)/romstage.ld: $$(ldscripts) $(obj)/ldoptions
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	rm -f $@
 	printf '$(foreach ldscript,ldoptions $(ldscripts),INCLUDE "$(ldscript:$(obj)/%=%)"\n)' >> $@.tmp
 	mv $@.tmp $@
 
 $(objgenerated)/crt0.romstage.S: $$(crt0s)
-	@printf "    GEN        $(subst $(obj)/,,$(@))\n"
+	@printf "    GEN	 $(subst $(obj)/,,$(@))\n"
 	printf '$(foreach crt0,$(crt0s),#include "$(crt0:$(obj)/%=%)"\n)' > $@
 
 $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
-	@printf "    CC         $(subst $(obj)/,,$(@))\n"
+	@printf "    CC	 $(subst $(obj)/,,$(@))\n"
 	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 

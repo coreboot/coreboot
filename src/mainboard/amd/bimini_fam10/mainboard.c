@@ -90,7 +90,7 @@ u8 is_dev3_present(void)
 	return 0;
 }
 
-#if 0	     /* not tested yet. */
+#if 0		   /* not tested yet. */
 /********************************************************
 * bimini uses SB800 GPIO9 to detect IDE_DMA66.
 * IDE_DMA66 is routed to GPIO 9. So we read Gpio 9 to

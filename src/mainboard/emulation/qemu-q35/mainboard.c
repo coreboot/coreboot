@@ -26,7 +26,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 
-#define Q35_PAM0            0x90
+#define Q35_PAM0	    0x90
 
 static const unsigned char qemu_q35_irqs[] = {
 	10, 10, 11, 11,
@@ -72,10 +72,10 @@ static void qemu_nb_read_resources(struct device *dev)
 
 static struct device_operations nb_operations = {
 	.read_resources   = qemu_nb_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = qemu_nb_init,
-	.ops_pci          = 0,
+	.init		   = qemu_nb_init,
+	.ops_pci	   = 0,
 };
 
 static const struct pci_driver nb_driver __pci_driver = {

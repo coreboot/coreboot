@@ -196,8 +196,8 @@ Device(PRID)
 			}
 			Else {
 				Store(Match
-				      (MDTT, MLE, GTTM(PMTM),
-				       MTR, 0, 0), Local0)
+					  (MDTT, MLE, GTTM(PMTM),
+					   MTR, 0, 0), Local0)
 				If(LLess(Local0, 3)) {
 					Or(0x20, Local0, DMMD)
 				}
@@ -232,8 +232,8 @@ Device(PRID)
 			}
 			Else {
 				Store(Match
-				      (MDTT, MLE, GTTM(PMTS),
-				       MTR, 0, 0), Local0)
+					  (MDTT, MLE, GTTM(PMTS),
+					   MTR, 0, 0), Local0)
 				If(LLess(Local0, 3)) {
 					Or(0x20, Local0, DMMD)
 				}

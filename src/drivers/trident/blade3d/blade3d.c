@@ -24,12 +24,12 @@
 #define inp inb
 #define outp(port,val) outb(val, port)
 
-#define WORD    unsigned int
-#define BYTE    unsigned char
-#define DWORD   unsigned long
+#define WORD	unsigned int
+#define BYTE	unsigned char
+#define DWORD	unsigned long
 
 #define SGRAMTimg   0x27
-#define CHIPREV     0x3		//1,RA 2,RB,3,RC
+#define CHIPREV	    0x3		//1,RA 2,RB,3,RC
 
 #define Port_SRX    0x3c4
 #define Port_CRX    0x3d4
@@ -37,7 +37,7 @@
 #define Port_BRX    0x3c0
 
 static BYTE Mem_Clk_Table[][2] = {
-	//For EDO, 3x5.2a.3:2=01            3x4.28.2:0
+	//For EDO, 3x5.2a.3:2=01	     3x4.28.2:0
 	{ 0x50, 0x46 },		//000, F_78
 	{ 0xCF, 0x51 },		//001, F_81 = 81.011Mhz
 	{ 0x30, 0x83 },		//010, F_40 = 40.006Mhz
@@ -69,7 +69,7 @@ typedef Def_Reg_struct* lpDef_Reg_struct;
 // , *pDef_Reg_struct, far * lpDef_Reg_struct;
 
 static Def_Reg_struct Mode3_temp[] = {	//mode3 temp
-	//port    index value  mask
+	//port	   index value  mask
 	{Port_CRX, 0x00, 0x5F, 0x00},
 	{Port_CRX, 0x01, 0x4F, 0x00},
 	{Port_CRX, 0x02, 0x50, 0x00},
@@ -100,7 +100,7 @@ static Def_Reg_struct Mode3_temp[] = {	//mode3 temp
 WORD Length_Mode3_temp = sizeof(Mode3_temp) / sizeof(Def_Reg_struct);
 
 Def_Reg_struct Mode3_reg[] = {	//mode3
-	//port   index   value   mask
+	//port	  index	  value	  mask
 	{Port_CRX, 0x00, 0x5F, 0x00},			//3d5
 	{Port_CRX, 0x01, 0x4F, 0x00},
 	{Port_CRX, 0x02, 0x50, 0x00},
@@ -187,7 +187,7 @@ Def_Reg_struct Mode3_reg[] = {	//mode3
 static WORD Length_Mode3_reg = sizeof(Mode3_reg) / sizeof(Def_Reg_struct);
 
 static Def_Reg_struct Init_reg[] = {
-	//port   index   value   mask
+	//port	  index	  value	  mask
 	{Port_GRX, 0x25, 0x00, 0x00},
 	{Port_GRX, 0x21, 0x00, 0x00},
 	{Port_GRX, 0x22, 0x00, 0x00},
@@ -856,7 +856,7 @@ static void config_OEM_regs(void)
 		Old_value = inp(lpMode3_temp[i].rPort + 1);
 		outp(lpMode3_temp[i].rPort + 1,
 		     lpMode3_temp[i].rValue | (Old_value & lpMode3_temp[i].
-					       rMask));
+						    rMask));
 	}
 	//screen off
 	outp(Port_SRX, 0x01);
@@ -867,7 +867,7 @@ static void config_OEM_regs(void)
 		Old_value = inp(lpInit_reg[i].rPort + 1);
 		outp(lpInit_reg[i].rPort + 1,
 		     lpInit_reg[i].rValue | (Old_value & lpInit_reg[i].
-					     rMask));
+						  rMask));
 	}
 	delay(10);
 	init_SGRAM();
@@ -933,7 +933,7 @@ static void init_SGRAM(void)
 			for (i = 0; i < 10; i++) {
 				outp(Port_CRX, 0x1c);
 				outp(Port_CRX + 1,
-				     inp(Port_CRX + 1) | 0x40);
+					 inp(Port_CRX + 1) | 0x40);
 			}
 			delay(100);
 			outp(Port_CRX, 0x1c);
@@ -971,8 +971,8 @@ static void set_video_mode(void)
 			outp(lpMode3_reg[i].rPort, lpMode3_reg[i].rIndex);
 			Old_value = inp(lpMode3_reg[i].rPort + 1);
 			outp(lpMode3_reg[i].rPort + 1,
-			     lpMode3_reg[i].
-			     rValue | (Old_value & lpMode3_reg[i].rMask));
+				lpMode3_reg[i].
+				rValue | (Old_value & lpMode3_reg[i].rMask));
 		}
 	}
 	//set_font();
@@ -1002,7 +1002,7 @@ static void clear_MEM(void)
 		"pop %di\n\t"
 		"pop %cx\n\t"
 		"pop %ax\n\t"
-	       );
+		);
 }
 
 
@@ -1014,15 +1014,15 @@ static void trident_blade3d_init(struct device *dev)
 
 static struct device_operations trident_blade3d_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = trident_blade3d_init,
-	.scan_bus         = 0,
+	.init		   = trident_blade3d_init,
+	.scan_bus	   = 0,
 };
 
 static const struct pci_driver trident_blade3d_driver __pci_driver = {
-        .ops    = &trident_blade3d_ops,
-        .vendor = 0x1023,
-        .device = 0x9880,
+	.ops	= &trident_blade3d_ops,
+	.vendor = 0x1023,
+	.device = 0x9880,
 };
 

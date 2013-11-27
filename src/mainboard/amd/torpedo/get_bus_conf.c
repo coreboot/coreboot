@@ -128,7 +128,7 @@ void get_bus_conf(void)
 	for (j = bus_sb900[2]; j < bus_isa; j++)
 		bus_type[j] = 1;
 
-	/* I/O APICs:   APIC ID Version State   Address */
+	/* I/O APICs:	 APIC ID Version State	 Address */
 	bus_isa = 10;
 
 	sb_Late_Post();

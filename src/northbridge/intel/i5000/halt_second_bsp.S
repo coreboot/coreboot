@@ -46,11 +46,11 @@ loop:	hlt
 	jmp	loop
 
 1:	/* set magic value for soft reset detection */
-	movl    $0x800080d0, %eax
-	movw    $0xcf8, %dx
-	outl    %eax, %dx
+	movl	 $0x800080d0, %eax
+	movw	 $0xcf8, %dx
+	outl	 %eax, %dx
 
-	addw    $4, %dx
+	addw	 $4, %dx
 	movl	$0x12345678, %eax
 	outl	%eax, %dx
 

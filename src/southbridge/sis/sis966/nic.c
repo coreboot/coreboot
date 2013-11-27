@@ -44,11 +44,11 @@ u8	SiS_SiS191_init[6][3]={
 };
 
 
-#define StatusReg       0x1
+#define StatusReg	0x1
 #define SMI_READ	0x0
 #define SMI_REQUEST	0x10
-#define TRUE            1
-#define FALSE           0
+#define TRUE		1
+#define FALSE		0
 
 u16 MacAddr[3];
 
@@ -79,7 +79,7 @@ static void readApcMacAddr(void)
     printk(BIOS_DEBUG, "MAC addr in APC = ");
     for(i = 0x9 ; i <=0xe ; i++)
     {
-        printk(BIOS_DEBUG, "%2.2x",readApcByte(i));
+	printk(BIOS_DEBUG, "%2.2x",readApcByte(i));
     }
     printk(BIOS_DEBUG, "\n");
 
@@ -96,7 +96,7 @@ static void set_apc(struct device *dev)
 {
     u16 addr;
     u16 i;
-    u8   bTmp;
+    u8	 bTmp;
 
     /* enable APC in south bridge sis966 D2F0 */
     outl(0x80001048,0xcf8);
@@ -107,7 +107,7 @@ static void set_apc(struct device *dev)
        addr=0x9+2*i;
        writeApcByte(addr,(u8)(MacAddr[i]&0xFF));
 	writeApcByte(addr+1L,(u8)((MacAddr[i]>>8)&0xFF));
-        // printf("%x - ",readMacAddrByte(0x59+i));
+	// printf("%x - ",readMacAddrByte(0x59+i));
     }
 
     /* Set APC Reload */
@@ -148,12 +148,12 @@ static  unsigned long ReadEEprom( struct device *dev,  u32 base,  u32 Reg)
 
     for(i=0 ; i <= LoopNum; i++)
     {
-        ulValue=read32(base+0x3c);
+	ulValue=read32(base+0x3c);
 
-        if(!(ulValue & 0x0080)) //BIT_7
-            break;
+	if(!(ulValue & 0x0080)) //BIT_7
+	    break;
 
-        mdelay(100);
+	mdelay(100);
     }
 
     mdelay(50);
@@ -169,29 +169,29 @@ static  unsigned long ReadEEprom( struct device *dev,  u32 base,  u32 Reg)
 
 static int phy_read(u32  base, unsigned phy_addr, unsigned phy_reg)
 {
-    u32   ulValue;
-    u32   Read_Cmd;
-    u16   usData;
+    u32	  ulValue;
+    u32	  Read_Cmd;
+    u16	  usData;
 
 
 
 	   Read_Cmd = ((phy_reg << 11) |
-                       (phy_addr << 6) |
-     		       SMI_READ |
-     		       SMI_REQUEST);
+		       (phy_addr << 6) |
+     			      SMI_READ |
+     			      SMI_REQUEST);
 
-           // SmiMgtInterface Reg is the SMI management interface register(offset 44h) of MAC
-          write32(base+0x44, Read_Cmd);
+	   // SmiMgtInterface Reg is the SMI management interface register(offset 44h) of MAC
+	  write32(base+0x44, Read_Cmd);
 
-           // Polling SMI_REQ bit to be deasserted indicated read command completed
-           do
-           {
-	       // Wait 20 usec before checking status
+	   // Polling SMI_REQ bit to be deasserted indicated read command completed
+	   do
+	   {
+		// Wait 20 usec before checking status
 		   mdelay(20);
-    	       ulValue = read32(base+0x44);
-           } while((ulValue & SMI_REQUEST) != 0);
-            //printk(BIOS_DEBUG, "base %x cmd %lx ret val %lx\n", tmp,Read_Cmd,ulValue);
-           usData=(ulValue>>16);
+    		    ulValue = read32(base+0x44);
+	   } while((ulValue & SMI_REQUEST) != 0);
+	    //printk(BIOS_DEBUG, "base %x cmd %lx ret val %lx\n", tmp,Read_Cmd,ulValue);
+	   usData=(ulValue>>16);
 
 
 
@@ -203,24 +203,24 @@ static int phy_read(u32  base, unsigned phy_addr, unsigned phy_reg)
 // If there exist a valid PHY then return TRUE, else return FALSE
 static int phy_detect(u32 base,u16 *PhyAddr) //BOOL PHY_Detect()
 {
-    int	              bFoundPhy = FALSE;
+    int		      bFoundPhy = FALSE;
     u16		usData;
-    int		       PhyAddress = 0;
+    int			PhyAddress = 0;
 
 
-        // Scan all PHY address(0 ~ 31) to find a valid PHY
-        for(PhyAddress = 0; PhyAddress < 32; PhyAddress++)
-        {
+	// Scan all PHY address(0 ~ 31) to find a valid PHY
+	for(PhyAddress = 0; PhyAddress < 32; PhyAddress++)
+	{
 		usData=phy_read(base,PhyAddress,StatusReg);  // Status register is a PHY's register(offset 01h)
 
-           // Found a valid PHY
+	   // Found a valid PHY
 
-           if((usData != 0x0) && (usData != 0xffff))
-           {
-               bFoundPhy = TRUE;
-               break;
-           }
-        }
+	   if((usData != 0x0) && (usData != 0xffff))
+	   {
+	       bFoundPhy = TRUE;
+	       break;
+	   }
+	}
 
 
 	if(!bFoundPhy)
@@ -236,31 +236,31 @@ static int phy_detect(u32 base,u16 *PhyAddr) //BOOL PHY_Detect()
 
 static void nic_init(struct device *dev)
 {
-        int val;
-        u16 PhyAddr;
-        u32 base;
-        struct resource *res;
+	int val;
+	u16 PhyAddr;
+	u32 base;
+	struct resource *res;
 
-        print_debug("NIC_INIT:---------->\n");
+	print_debug("NIC_INIT:---------->\n");
 
 //-------------- enable NIC (SiS19x) -------------------------
 {
-        u8  temp8;
-        int i=0;
-        while(SiS_SiS191_init[i][0] != 0)
+	u8  temp8;
+	int i=0;
+	while(SiS_SiS191_init[i][0] != 0)
 	{
-                temp8 = pci_read_config8(dev, SiS_SiS191_init[i][0]);
-                temp8 &= SiS_SiS191_init[i][1];
-                temp8 |= SiS_SiS191_init[i][2];
-                pci_write_config8(dev, SiS_SiS191_init[i][0], temp8);
-                i++;
+		temp8 = pci_read_config8(dev, SiS_SiS191_init[i][0]);
+		temp8 &= SiS_SiS191_init[i][1];
+		temp8 |= SiS_SiS191_init[i][2];
+		pci_write_config8(dev, SiS_SiS191_init[i][0], temp8);
+		i++;
 	};
 }
 //-----------------------------------------------------------
 
 {
-        unsigned long  i;
-        unsigned long ulValue;
+	unsigned long  i;
+	unsigned long ulValue;
 
 	res = find_resource(dev, 0x10);
 
@@ -270,22 +270,22 @@ static void nic_init(struct device *dev)
 		return;
 	}
 	base = res->base;
-        printk(BIOS_DEBUG, "NIC base address %x\n",base);
+	printk(BIOS_DEBUG, "NIC base address %x\n",base);
 
 	if(!(val=phy_detect(base,&PhyAddr)))
 	{
-	       printk(BIOS_DEBUG, "PHY detect fail !!!!\n");
+		printk(BIOS_DEBUG, "PHY detect fail !!!!\n");
 		return;
 	}
 
-        ulValue=read32(base + 0x38L);   //  check EEPROM existing
+	ulValue=read32(base + 0x38L);	//  check EEPROM existing
 
-        if((ulValue & 0x0002))
-        {
+	if((ulValue & 0x0002))
+	{
 
-          //	read MAC address from EEPROM at first
+	  //	read MAC address from EEPROM at first
 
-          //	if that is valid we will use that
+	  //	if that is valid we will use that
 
 			printk(BIOS_DEBUG, "EEPROM contents %lx \n",ReadEEprom( dev,  base,  0LL));
 			for(i=0;i<3;i++) {
@@ -296,35 +296,35 @@ static void nic_init(struct device *dev)
 				MacAddr[i] =ulValue & 0xFFFF;
 
 			}
-        }else{
-                 // read MAC address from firmware
+	}else{
+		 // read MAC address from firmware
 		 printk(BIOS_DEBUG, "EEPROM invalid!!\nReg 0x38h=%.8lx \n",ulValue);
 		 MacAddr[0]=read16(0xffffffc0); // mac address store at here
 		 MacAddr[1]=read16(0xffffffc2);
 		 MacAddr[2]=read16(0xffffffc4);
-        }
+	}
 
-        set_apc(dev);
+	set_apc(dev);
 
-        readApcMacAddr();
+	readApcMacAddr();
 
 #if DEBUG_NIC
 {
-        int i;
+	int i;
 
-        print_debug("****** NIC PCI config ******");
-        print_debug("\n    03020100  07060504  0B0A0908  0F0E0D0C");
+	print_debug("****** NIC PCI config ******");
+	print_debug("\n	   03020100  07060504  0B0A0908  0F0E0D0C");
 
-        for(i=0;i<0xff;i+=4){
-                if((i%16)==0){
-                        print_debug("\n");
-                        print_debug_hex8(i);
-                        print_debug(": ");
-                }
-                print_debug_hex32(pci_read_config32(dev,i));
-                print_debug("  ");
-        }
-        print_debug("\n");
+	for(i=0;i<0xff;i+=4){
+		if((i%16)==0){
+			print_debug("\n");
+			print_debug_hex8(i);
+			print_debug(": ");
+		}
+		print_debug_hex32(pci_read_config32(dev,i));
+		print_debug("  ");
+	}
+	print_debug("\n");
 }
 
 

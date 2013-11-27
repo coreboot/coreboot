@@ -42,7 +42,7 @@ $(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf
 	$(OBJCOPY) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smmstub.ramstage.o: $(obj)/cpu/x86/smm/smmstub
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
 
 # C-based SMM handler.
@@ -57,7 +57,7 @@ $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf
 	$(OBJCOPY) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smm.ramstage.o: $(obj)/cpu/x86/smm/smm
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	cd $(dir $@); $(OBJCOPY) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
 
 else # CONFIG_SMM_MODULES
@@ -92,7 +92,7 @@ $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_L
 # change to the target path because objcopy will use the path name in its
 # ELF symbol names.
 $(obj)/cpu/x86/smm/smm_wrap.ramstage.o: $(obj)/cpu/x86/smm/smm_wrap
-	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	@printf "    OBJCOPY	 $(subst $(obj)/,,$(@))\n"
 	cd $(obj)/cpu/x86/smm; $(OBJCOPY) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.o
 
 endif # CONFIG_SMM_MODULES

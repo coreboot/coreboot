@@ -36,7 +36,7 @@
  * @param len	Length of data.
  */
 static void cros_ec_dump_data(const char *name, int cmd, const uint8_t *data,
-			      int len)
+				 int len)
 {
 	int i;
 
@@ -91,7 +91,7 @@ static int create_proto3_request(const struct chromeec_command *cec_command,
 	/* Fail if output size is too big */
 	if (out_bytes > sizeof(*cmd)) {
 		printk(BIOS_ERR, "%s: Cannot send %d bytes\n", __func__,
-		       cec_command->cmd_size_in);
+			 cec_command->cmd_size_in);
 		return -EC_RES_REQUEST_TRUNCATED;
 	}
 
@@ -132,7 +132,7 @@ static int prepare_proto3_response_buffer(
 	/* Fail if input size is too big */
 	if (in_bytes > sizeof(*resp)) {
 		printk(BIOS_ERR, "%s: Cannot receive %d bytes\n", __func__,
-		       cec_command->cmd_size_out);
+			 cec_command->cmd_size_out);
 		return -EC_RES_RESPONSE_TOO_BIG;
 	}
 
@@ -184,7 +184,7 @@ static int handle_proto3_response(struct ec_response_v3 *resp,
 	csum = cros_ec_calc_checksum((const uint8_t *)resp, in_bytes);
 	if (csum) {
 		printk(BIOS_ERR, "%s: EC response checksum invalid: 0x%02x\n",
-		       __func__, csum);
+			 __func__, csum);
 		return -EC_RES_INVALID_CHECKSUM;
 	}
 
@@ -196,7 +196,7 @@ static int handle_proto3_response(struct ec_response_v3 *resp,
 	/* Return error result, if any */
 	if (rs->result) {
 		printk(BIOS_ERR, "%s: EC response with error code: %d\n",
-		       __func__, rs->result);
+			 __func__, rs->result);
 		return -(int)rs->result;
 	}
 
@@ -204,7 +204,7 @@ static int handle_proto3_response(struct ec_response_v3 *resp,
 }
 
 static int send_command_proto3(struct chromeec_command *cec_command,
-			       crosec_io_t crosec_io, void *context)
+				  crosec_io_t crosec_io, void *context)
 {
 	int out_bytes, in_bytes;
 	int rv;
@@ -224,10 +224,10 @@ static int send_command_proto3(struct chromeec_command *cec_command,
 	}
 
 	rv = crosec_io((uint8_t *)&cmd, out_bytes, (uint8_t *)&resp, in_bytes,
-		       context);
+			 context);
 	if (rv != 0) {
 		printk(BIOS_ERR, "%s: failed to complete I/O: Err = %#x.",
-		       __func__, rv >= 0 ? rv : -rv);
+			 __func__, rv >= 0 ? rv : -rv);
 		return -EC_RES_ERROR;
 	}
 

@@ -37,10 +37,10 @@ Device (BAT0)
 		0xFFFFFFFF,  // 0x06: Design Capacity of Low
 		0x00000001,  // 0x07: Capacity Granularity 1
 		0x00000001,  // 0x08: Capacity Granularity 2
-		"",          // 0x09: Model Number
-		"",          // 0x0a: Serial Number
+		"",	       // 0x09: Model Number
+		"",	       // 0x0a: Serial Number
 		"LION",      // 0x0b: Battery Type
-		""           // 0x0c: OEM Information
+		""	       // 0x0c: OEM Information
 	})
 
 	Name (PBIX, Package () {
@@ -60,10 +60,10 @@ Device (BAT0)
 		0xFFFFFFFF,  // 0x0d: Min Averaging Interval
 		0x00000001,  // 0x0e: Capacity Granularity 1
 		0x00000001,  // 0x0f: Capacity Granularity 2
-		"",          // 0x10 Model Number
-		"",          // 0x11: Serial Number
+		"",	       // 0x10 Model Number
+		"",	       // 0x11: Serial Number
 		"LION",      // 0x12: Battery Type
-		""           // 0x13: OEM Information
+		""	       // 0x13: OEM Information
 	})
 
 	Name (PBST, Package () {
@@ -213,7 +213,7 @@ Device (BAT0)
 			// See if within ~3% of full
 			ShiftRight (Local2, 5, Local3)
 			If (LAnd (LGreater (Local1, Subtract (Local2, Local3)),
-			          LLess (Local1, Add (Local2, Local3))))
+				     LLess (Local1, Add (Local2, Local3))))
 			{
 				Store (Local2, Local1)
 			}

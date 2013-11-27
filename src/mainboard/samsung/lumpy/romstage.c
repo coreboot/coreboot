@@ -74,18 +74,18 @@ static void rcba_config(void)
 	u32 reg32;
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
 	 * D28IP_P4IP  ETH0   INTB -> PIRQC (MSI)
-	 * D29IP_E1P   EHCI1  INTA -> PIRQD
-	 * D26IP_E2P   EHCI2  INTA -> PIRQB
-	 * D31IP_SIP   SATA   INTA -> PIRQA (MSI)
+	 * D29IP_E1P	EHCI1  INTA -> PIRQD
+	 * D26IP_E2P	EHCI2  INTA -> PIRQB
+	 * D31IP_SIP	SATA   INTA -> PIRQA (MSI)
 	 * D31IP_SMIP  SMBUS  INTC -> PIRQH
 	 * D31IP_TTIP  THRT   INTB -> PIRQG
-	 * D27IP_ZIP   HDA    INTA -> PIRQG (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQG (MSI)
 	 *
-	 * LIGHTSENSOR             -> PIRQE (Edge Triggered)
-	 * TRACKPAD                -> PIRQF (Edge Triggered)
+	 * LIGHTSENSOR		    -> PIRQE (Edge Triggered)
+	 * TRACKPAD		    -> PIRQF (Edge Triggered)
 	 */
 
 	/* Device interrupt pin register (board specific) */
@@ -164,18 +164,18 @@ void main(unsigned long bist)
 		dimm_channel1_disabled: 2,
 		max_ddr3_freq: 1333,
 		usb_port_config: {
-			{ 1, 0, 0x0080 }, /* P0: Port 0      (OC0) */
-			{ 1, 1, 0x0080 }, /* P1: Port 1      (OC1) */
-			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1   (no OC) */
-			{ 1, 0, 0x0040 }, /* P3: MMC         (no OC) */
+			{ 1, 0, 0x0080 }, /* P0: Port 0	(OC0) */
+			{ 1, 1, 0x0080 }, /* P1: Port 1	(OC1) */
+			{ 1, 0, 0x0040 }, /* P2: MINIPCIE1	(no OC) */
+			{ 1, 0, 0x0040 }, /* P3: MMC		(no OC) */
 			{ 0, 0, 0x0000 }, /* P4: Empty */
 			{ 0, 0, 0x0000 }, /* P5: Empty */
 			{ 0, 0, 0x0000 }, /* P6: Empty */
 			{ 0, 0, 0x0000 }, /* P7: Empty */
-			{ 1, 4, 0x0040 }, /* P8: MINIPCIE2   (no OC) */
+			{ 1, 4, 0x0040 }, /* P8: MINIPCIE2	(no OC) */
 			{ 0, 4, 0x0000 }, /* P9: Empty */
 			{ 0, 4, 0x0000 }, /* P10: Empty */
-			{ 1, 4, 0x0040 }, /* P11: Camera     (no OC) */
+			{ 1, 4, 0x0040 }, /* P11: Camera	(no OC) */
 			{ 0, 4, 0x0000 }, /* P12: Empty */
 			{ 0, 4, 0x0000 }, /* P13: Empty */
 		},

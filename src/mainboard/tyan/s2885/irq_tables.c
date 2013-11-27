@@ -16,18 +16,18 @@ static void write_pirq_info(struct irq_info *pirq_info, uint8_t bus, uint8_t dev
 		uint8_t link1, uint16_t bitmap1, uint8_t link2, uint16_t bitmap2,uint8_t link3, uint16_t bitmap3,
 		uint8_t slot, uint8_t rfu)
 {
-        pirq_info->bus = bus;
-        pirq_info->devfn = devfn;
-                pirq_info->irq[0].link = link0;
-                pirq_info->irq[0].bitmap = bitmap0;
-                pirq_info->irq[1].link = link1;
-                pirq_info->irq[1].bitmap = bitmap1;
-                pirq_info->irq[2].link = link2;
-                pirq_info->irq[2].bitmap = bitmap2;
-                pirq_info->irq[3].link = link3;
-                pirq_info->irq[3].bitmap = bitmap3;
-        pirq_info->slot = slot;
-        pirq_info->rfu = rfu;
+	pirq_info->bus = bus;
+	pirq_info->devfn = devfn;
+		pirq_info->irq[0].link = link0;
+		pirq_info->irq[0].bitmap = bitmap0;
+		pirq_info->irq[1].link = link1;
+		pirq_info->irq[1].bitmap = bitmap1;
+		pirq_info->irq[2].link = link2;
+		pirq_info->irq[2].bitmap = bitmap2;
+		pirq_info->irq[3].link = link3;
+		pirq_info->irq[3].bitmap = bitmap3;
+	pirq_info->slot = slot;
+	pirq_info->rfu = rfu;
 }
 
 extern  unsigned char bus_8131_0;
@@ -51,17 +51,17 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	unsigned slot_num;
 	uint8_t *v;
 
-        uint8_t sum=0;
-        int i;
+	uint8_t sum=0;
+	int i;
 
 	get_bus_conf(); // it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c
 
-        /* Align the table to be 16 byte aligned. */
-        addr += 15;
-        addr &= ~15;
+	/* Align the table to be 16 byte aligned. */
+	addr += 15;
+	addr &= ~15;
 
-        /* This table must be betweeen 0xf0000 & 0x100000 */
-        printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
+	/* This table must be betweeen 0xf0000 & 0x100000 */
+	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
 	v = (uint8_t *)(addr);
@@ -87,23 +87,23 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	write_pirq_info(pirq_info, bus_8111_0, ((sysconf.sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++; slot_num++;
 //pcix bridge
-//        write_pirq_info(pirq_info, bus_8131_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
-//        pirq_info++; slot_num++;
+//	  write_pirq_info(pirq_info, bus_8131_0, (sbdn3<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+//	  pirq_info++; slot_num++;
 //agp bridge
-        write_pirq_info(pirq_info, bus_8151_0, (sbdn5<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
+	write_pirq_info(pirq_info, bus_8151_0, (sbdn5<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 
-        pirq_info++; slot_num++;
+	pirq_info++; slot_num++;
 
 	pirq->size = 32 + 16 * slot_num;
 
-        for (i = 0; i < pirq->size; i++)
-                sum += v[i];
+	for (i = 0; i < pirq->size; i++)
+		sum += v[i];
 
 	sum = pirq->checksum - sum;
 
-        if (sum != pirq->checksum) {
-                pirq->checksum = sum;
-        }
+	if (sum != pirq->checksum) {
+		pirq->checksum = sum;
+	}
 
 	printk(BIOS_INFO, "done.\n");
 

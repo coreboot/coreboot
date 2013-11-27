@@ -92,7 +92,7 @@ static void phy_detect(u32 base)
 			continue;
 		id |= ((val & 0xffff) << 16);
 		printk(BIOS_DEBUG, "MCP55 MAC PHY ID 0x%08x PHY ADDR %d\n",
-		       id, i);
+			 id, i);
 //		if ((id == 0xe0180000) || (id == 0x0032cc00))
 			break;
 	}

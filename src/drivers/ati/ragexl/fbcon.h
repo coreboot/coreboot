@@ -14,39 +14,39 @@
 struct display {
     /* Filled in by the frame buffer device */
     struct fb_var_screeninfo var;   /* variable infos. yoffset and vmode */
-                                    /* are updated by fbcon.c */
-    struct fb_cmap cmap;            /* colormap */
-    char *screen_base;              /* pointer to top of virtual screen */
-                                    /* (virtual address) */
+				    /* are updated by fbcon.c */
+    struct fb_cmap cmap;	    /* colormap */
+    char *screen_base;		    /* pointer to top of virtual screen */
+				    /* (virtual address) */
     int visual;
-    int type;                       /* see FB_TYPE_* */
-    int type_aux;                   /* Interleave for interleaved Planes */
-    u16 ypanstep;               /* zero if no hardware ypan */
-    u16 ywrapstep;              /* zero if no hardware ywrap */
-    u32 line_length;             /* length of a line in bytes */
-    u16 can_soft_blank;         /* zero if no hardware blanking */
-    u16 inverse;                /* != 0 text black on white as default */
+    int type;			    /* see FB_TYPE_* */
+    int type_aux;		    /* Interleave for interleaved Planes */
+    u16 ypanstep;		/* zero if no hardware ypan */
+    u16 ywrapstep;		/* zero if no hardware ywrap */
+    u32 line_length;		 /* length of a line in bytes */
+    u16 can_soft_blank;		/* zero if no hardware blanking */
+    u16 inverse;		/* != 0 text black on white as default */
 
     /* Filled in by the low-level console driver */
 
-    struct vc_data *conp;           /* pointer to console data */
-    int vrows;                      /* number of virtual rows */
-    unsigned short cursor_x;        /* current cursor position */
+    struct vc_data *conp;	    /* pointer to console data */
+    int vrows;			    /* number of virtual rows */
+    unsigned short cursor_x;	    /* current cursor position */
     unsigned short cursor_y;
-    int fgcol;                      /* text colors */
+    int fgcol;			    /* text colors */
     int bgcol;
-    u32 next_line;               /* offset to one line below */
-    u32 next_plane;              /* offset to next plane */
-    u8 *fontdata;               /* Font associated to this display */
+    u32 next_line;		 /* offset to one line below */
+    u32 next_plane;		 /* offset to next plane */
+    u8 *fontdata;		/* Font associated to this display */
     unsigned short _fontheightlog;
     unsigned short _fontwidthlog;
     unsigned short _fontheight;
     unsigned short _fontwidth;
-    int userfont;                   /* != 0 if fontdata kmalloc()ed */
-    u16 scrollmode;             /* Scroll Method */
-    short yscroll;                  /* Hardware scrolling */
+    int userfont;		    /* != 0 if fontdata kmalloc()ed */
+    u16 scrollmode;		/* Scroll Method */
+    short yscroll;		    /* Hardware scrolling */
     unsigned char fgshift, bgshift;
-    unsigned short charmask;        /* 0xff or 0x1ff */
+    unsigned short charmask;	    /* 0xff or 0x1ff */
 };
 
 
@@ -80,9 +80,9 @@ struct display {
      */
 
 /* Color */
-#define attr_fgcol(p,s)    \
+#define attr_fgcol(p,s)	   \
 	(((s) >> ((p)->fgshift)) & 0x0f)
-#define attr_bgcol(p,s)    \
+#define attr_bgcol(p,s)	   \
 	(((s) >> ((p)->bgshift)) & 0x0f)
 #define	attr_bgcol_ec(p,conp) \
 	((conp) ? (((conp)->vc_video_erase_char >> ((p)->bgshift)) & 0x0f) : 0)

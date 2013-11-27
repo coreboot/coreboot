@@ -178,10 +178,10 @@ enum cb_err get_option(void *dest, const char *name);
 unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
 #else
 static inline enum cb_err set_option(const char *name __attribute__((unused)),
-				     void *val __attribute__((unused)))
+					 void *val __attribute__((unused)))
 				{ return CB_CMOS_OTABLE_DISABLED; };
 static inline enum cb_err get_option(void *dest __attribute__((unused)),
-				     const char *name __attribute__((unused)))
+					 const char *name __attribute__((unused)))
 				{ return CB_CMOS_OTABLE_DISABLED; }
 #define read_option_lowlevel(start, size, def) def
 #endif
@@ -209,13 +209,13 @@ static inline enum cb_err get_option(void *dest __attribute__((unused)),
  *  3-6 = BANK 0 Extra log
  * 7-10 = BANK 1 Extra log
  */
-#define CMOS_POST_BANK_OFFSET     (CMOS_POST_OFFSET)
-#define CMOS_POST_BANK_0_MAGIC    0x80
-#define CMOS_POST_BANK_0_OFFSET   (CMOS_POST_OFFSET + 1)
-#define CMOS_POST_BANK_0_EXTRA    (CMOS_POST_OFFSET + 3)
-#define CMOS_POST_BANK_1_MAGIC    0x81
-#define CMOS_POST_BANK_1_OFFSET   (CMOS_POST_OFFSET + 2)
-#define CMOS_POST_BANK_1_EXTRA    (CMOS_POST_OFFSET + 7)
+#define CMOS_POST_BANK_OFFSET	  (CMOS_POST_OFFSET)
+#define CMOS_POST_BANK_0_MAGIC	  0x80
+#define CMOS_POST_BANK_0_OFFSET	  (CMOS_POST_OFFSET + 1)
+#define CMOS_POST_BANK_0_EXTRA	  (CMOS_POST_OFFSET + 3)
+#define CMOS_POST_BANK_1_MAGIC	  0x81
+#define CMOS_POST_BANK_1_OFFSET	  (CMOS_POST_OFFSET + 2)
+#define CMOS_POST_BANK_1_EXTRA	  (CMOS_POST_OFFSET + 7)
 
 #define CMOS_POST_EXTRA_DEV_PATH  0x01
 

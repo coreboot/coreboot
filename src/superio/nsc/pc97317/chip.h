@@ -22,10 +22,10 @@
 #define SUPERIO_NSC_PC97317_CHIP_H
 
 #ifndef PNP_INDEX_REG
-#define PNP_INDEX_REG   0x15C
+#define PNP_INDEX_REG	0x15C
 #endif
 #ifndef PNP_DATA_REG
-#define PNP_DATA_REG    0x15D
+#define PNP_DATA_REG	0x15D
 #endif
 
 #include <pc80/keyboard.h>

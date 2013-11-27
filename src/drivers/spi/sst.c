@@ -187,7 +187,7 @@ sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 #endif
 
 		ret = spi_flash_cmd_write(flash->spi, cmd, cmd_len,
-		                          buf + actual, 2);
+					    buf + actual, 2);
 		if (ret) {
 			printk(BIOS_WARNING, "SF: SST word program failed\n");
 			break;

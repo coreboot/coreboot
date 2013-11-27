@@ -81,7 +81,7 @@ static unsigned long choose_top_of_stack(void)
 #if CONFIG_DYNAMIC_CBMEM
 	/* cbmem_add() does a find() before add(). */
 	stack_top = (unsigned long)cbmem_add(CBMEM_ID_ROMSTAGE_RAM_STACK,
-	                                     ROMSTAGE_RAM_STACK_SIZE);
+					      ROMSTAGE_RAM_STACK_SIZE);
 	stack_top += ROMSTAGE_RAM_STACK_SIZE;
 #else
 	stack_top = ROMSTAGE_STACK;
@@ -172,8 +172,8 @@ void * asmlinkage romstage_main(unsigned long bist)
 	const int num_guards = 4;
 	const u32 stack_guard = 0xdeadbeef;
 	u32 *stack_base = (void *)(CONFIG_DCACHE_RAM_BASE +
-	                           CONFIG_DCACHE_RAM_SIZE -
-	                           CONFIG_DCACHE_RAM_ROMSTAGE_STACK_SIZE);
+				    CONFIG_DCACHE_RAM_SIZE -
+				    CONFIG_DCACHE_RAM_ROMSTAGE_STACK_SIZE);
 
 	printk(BIOS_DEBUG, "Setting up stack guards.\n");
 	for (i = 0; i < num_guards; i++)
@@ -316,8 +316,8 @@ void romstage_after_car(void)
 
 #if CONFIG_RELOCATABLE_RAMSTAGE
 void cache_loaded_ramstage(struct romstage_handoff *handoff,
-                           const struct cbmem_entry *ramstage,
-                           void *entry_point)
+			   const struct cbmem_entry *ramstage,
+			   void *entry_point)
 {
 	struct ramstage_cache *cache;
 	uint32_t total_size;
@@ -333,7 +333,7 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 	total_size = sizeof(*cache) + ramstage_size;
 	if (total_size > RESERVED_SMM_SIZE) {
 		printk(BIOS_DEBUG, "0x%08x > RESERVED_SMM_SIZE (0x%08x)\n",
-		       total_size, RESERVED_SMM_SIZE);
+			 total_size, RESERVED_SMM_SIZE);
 		/* Nuke whatever may be there now just in case. */
 		cache->magic = ~RAMSTAGE_CACHE_MAGIC;
 		return;
@@ -356,7 +356,7 @@ void cache_loaded_ramstage(struct romstage_handoff *handoff,
 }
 
 void *load_cached_ramstage(struct romstage_handoff *handoff,
-                           const struct cbmem_entry *ramstage)
+			   const struct cbmem_entry *ramstage)
 {
 	struct ramstage_cache *cache;
 

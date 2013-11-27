@@ -447,7 +447,7 @@ static void set_max_ratio(void)
 	wrmsr(IA32_PERF_CTL, perf_ctl);
 
 	printk(BIOS_DEBUG, "model_x06ax: frequency set to %d\n",
-	       ((perf_ctl.lo >> 8) & 0xff) * SANDYBRIDGE_BCLK);
+		((perf_ctl.lo >> 8) & 0xff) * SANDYBRIDGE_BCLK);
 }
 
 static void set_energy_perf_bias(u8 policy)
@@ -461,7 +461,7 @@ static void set_energy_perf_bias(u8 policy)
 	wrmsr(IA32_ENERGY_PERFORMANCE_BIAS, msr);
 
 	printk(BIOS_DEBUG, "model_x06ax: energy policy set to %u\n",
-	       policy);
+		policy);
 }
 
 static void configure_mca(void)
@@ -496,8 +496,8 @@ static void intel_cores_init(device_t cpu)
 		return;
 
 	printk(BIOS_DEBUG, "CPU: %u has %u cores, %u threads per core\n",
-	       cpu->path.apic.apic_id, threads_per_package/threads_per_core,
-	       threads_per_core);
+		cpu->path.apic.apic_id, threads_per_package/threads_per_core,
+		threads_per_core);
 
 	for (i = 1; i < threads_per_package; ++i) {
 		struct device_path cpu_path;
@@ -518,15 +518,15 @@ static void intel_cores_init(device_t cpu)
 			continue;
 
 		printk(BIOS_DEBUG, "CPU: %u has core %u\n",
-		       cpu->path.apic.apic_id,
-		       new->path.apic.apic_id);
+			 cpu->path.apic.apic_id,
+			 new->path.apic.apic_id);
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
 		/* Start the new cpu */
 		if (!start_cpu(new)) {
 			/* Record the error in cpu? */
 			printk(BIOS_ERR, "CPU %u would not start!\n",
-			       new->path.apic.apic_id);
+				  new->path.apic.apic_id);
 		}
 #endif
 	}
@@ -591,7 +591,7 @@ static void model_206ax_init(device_t cpu)
 }
 
 static struct device_operations cpu_dev_ops = {
-	.init     = model_206ax_init,
+	.init	   = model_206ax_init,
 };
 
 static struct cpu_device_id cpu_table[] = {
@@ -609,7 +609,7 @@ static struct cpu_device_id cpu_table[] = {
 };
 
 static const struct cpu_driver driver __cpu_driver = {
-	.ops      = &cpu_dev_ops,
+	.ops	   = &cpu_dev_ops,
 	.id_table = cpu_table,
 	.cstates  = cstate_map,
 };

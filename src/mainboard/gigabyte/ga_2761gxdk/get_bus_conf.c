@@ -41,24 +41,24 @@ unsigned apicid_sis966;
 unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO that could be installed or not
 	//You may need to preset pci1234 for HTIO board, please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0
 };
 
 unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
-//      0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+//	0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
 };
 
 static unsigned get_bus_conf_done = 0;
@@ -102,8 +102,8 @@ void get_bus_conf(void)
 		bus_sis966[2]++;
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sbdn + 0x06);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sbdn + 0x06);
 
 		bus_sis966[1] = 2;
 		bus_sis966[2] = 3;

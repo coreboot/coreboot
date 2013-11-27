@@ -151,8 +151,8 @@ static void mcp55_early_pcie_setup(unsigned busnx, unsigned devnx,
 }
 
 static void mcp55_early_setup(unsigned mcp55_num, unsigned *busn,
-			      unsigned *devn, unsigned *io_base,
-			      unsigned *pci_e_x)
+				 unsigned *devn, unsigned *io_base,
+				 unsigned *pci_e_x)
 {
     static const unsigned int ctrl_conf_1[] = {
 	RES_PORT_IO_32, ACPICTRL_IO_BASE + 0x10, 0x0007ffff, 0xff78000,

@@ -84,34 +84,34 @@ Device (SATA)
     Name (_ADR, 0x000F0000)
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.SATA.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            If (LEqual (\_SB.PCI0.SATA.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	If (LNotEqual (\_SB.PCI0.SATA.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    If (LEqual (\_SB.PCI0.SATA.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 
     OperationRegion (SAPR, PCI_Config, 0x00, 0xC2)
     Field (SAPR, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x3C),
-        IDEI,   8,
-                Offset (0x49),
-            ,   6,
-        EPHY,   1
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x3C),
+	IDEI,	8,
+		Offset (0x49),
+	    ,	6,
+	EPHY,	1
     }
 }
 
@@ -123,35 +123,35 @@ Device (PATA)
     Name (REGF, 0x01)
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.PATA.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            PMEX ()
+	If (LNotEqual (\_SB.PCI0.PATA.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    PMEX ()
 			/* Check if the Interface is Enabled */
-            If (LEqual (\_SB.PCI0.PATA.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	    If (LEqual (\_SB.PCI0.PATA.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 
 	/* ACPI Spec says to check that regions are accessible */
-	/* before trying to access them                        */
+	/* before trying to access them			*/
     Method (_REG, 2, NotSerialized)
     {
 		/* Arg0 = Operating Region (0x02 == PCI_Config) */
-        If (LEqual (Arg0, 0x02))
-        {
+	If (LEqual (Arg0, 0x02))
+	{
 			/* Arg1 = Handler Connection Mode (0x01 == Connect) */
-            Store (Arg1, REGF)
-        }
+	    Store (Arg1, REGF)
+	}
     }
 
 	#include "pata_methods.asl"
@@ -160,175 +160,175 @@ Device (PATA)
     OperationRegion (PAPR, PCI_Config, 0x00, 0xC2)
     Field (PAPR, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x09),
-        ENAT,   4,
-                Offset (0x3C),
-        IDEI,   8,
-                Offset (0x40),
-        ESCH,   1,
-        EPCH,   1,
-                Offset (0x48),
-        SSPT,   8,
-        SMPT,   8,
-        PSPT,   8,
-        PMPT,   8,
-                Offset (0x50),
-        SSUT,   4,
-        SSCT,   1,
-        SSUE,   3,
-        SMUT,   4,
-        SMCT,   1,
-        SMUE,   3,
-        PSUT,   4,
-        PSCT,   1,
-        PSUE,   3,
-        PMUT,   4,
-        PMCT,   1,
-        PMUE,   3
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x09),
+	ENAT,	4,
+		Offset (0x3C),
+	IDEI,	8,
+		Offset (0x40),
+	ESCH,	1,
+	EPCH,	1,
+		Offset (0x48),
+	SSPT,	8,
+	SMPT,	8,
+	PSPT,	8,
+	PMPT,	8,
+		Offset (0x50),
+	SSUT,	4,
+	SSCT,	1,
+	SSUE,	3,
+	SMUT,	4,
+	SMCT,	1,
+	SMUE,	3,
+	PSUT,	4,
+	PSCT,	1,
+	PSUE,	3,
+	PMUT,	4,
+	PMCT,	1,
+	PMUE,	3
     }
 
 
     Device (CHN0)
     {
-        Name (_ADR, 0x00)
-        Method (_STA, 0, NotSerialized)
-        {
-            If (LNotEqual (\_SB.PCI0.PATA.EPCH, 0x01))
-            {
-                Return (0x00)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	Name (_ADR, 0x00)
+	Method (_STA, 0, NotSerialized)
+	{
+	    If (LNotEqual (\_SB.PCI0.PATA.EPCH, 0x01))
+	    {
+		Return (0x00)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
 
-        Device (DRV0)
-        {
-            Name (_ADR, 0x00)
-            Method (_GTF, 0, NotSerialized)
-            {
-                Return (GTF (0x00, PMUE, PMUT, PMPT))
-            }
-        }
+	Device (DRV0)
+	{
+	    Name (_ADR, 0x00)
+	    Method (_GTF, 0, NotSerialized)
+	    {
+		Return (GTF (0x00, PMUE, PMUT, PMPT))
+	    }
+	}
 
-        Device (DRV1)
-        {
-            Name (_ADR, 0x01)
-            Method (_GTF, 0, NotSerialized)
-            {
-                Return (GTF (0x01, PSUE, PSUT, PSPT))
-            }
-        }
+	Device (DRV1)
+	{
+	    Name (_ADR, 0x01)
+	    Method (_GTF, 0, NotSerialized)
+	    {
+		Return (GTF (0x01, PSUE, PSUT, PSPT))
+	    }
+	}
     }
 
     Device (CHN1)
     {
-        Name (_ADR, 0x01)
-        Method (_STA, 0, NotSerialized)
-        {
-            If (LNotEqual (ATFL, 0x02))
-            {
-                If (LEqual (\_SB.PCI0.SATA.EPHY, 0x01))
-                {
-                    Return (0x00)
-                }
-                Else
-                {
-                    If (LNotEqual (\_SB.PCI0.PATA.ESCH, 0x01))
-                    {
-                        Return (0x00)
-                    }
-                    Else
-                    {
-                        Return (0x0F)
-                    }
-                }
-            }
+	Name (_ADR, 0x01)
+	Method (_STA, 0, NotSerialized)
+	{
+	    If (LNotEqual (ATFL, 0x02))
+	    {
+		If (LEqual (\_SB.PCI0.SATA.EPHY, 0x01))
+		{
+		    Return (0x00)
+		}
+		Else
+		{
+		    If (LNotEqual (\_SB.PCI0.PATA.ESCH, 0x01))
+		    {
+			Return (0x00)
+		    }
+		    Else
+		    {
+			Return (0x0F)
+		    }
+		}
+	    }
 			Else
 			{
-               If (LEqual (ATFL, 0x02))
-               {
-                   If (LNotEqual (\_SB.PCI0.PATA.ESCH, 0x01))
-                   {
-                	   Return (0x00)
-                   }
-                   Else
-                   {
-                	   Return (0x0F)
-                   }
-               }
+	       If (LEqual (ATFL, 0x02))
+	       {
+		   If (LNotEqual (\_SB.PCI0.PATA.ESCH, 0x01))
+		   {
+			   Return (0x00)
+		   }
+		   Else
+		   {
+			   Return (0x0F)
+		   }
+	       }
 			   Else
 			   {
 			   		Return(0x00)
 			   }
 			}
-        }
+	}
 
-        Device (DRV0)
-        {
-            Name (_ADR, 0x00)
-            Method (_GTF, 0, NotSerialized)
-            {
-                Return (GTF (0x02, SMUE, SMUT, SMPT))
-            }
-        }
+	Device (DRV0)
+	{
+	    Name (_ADR, 0x00)
+	    Method (_GTF, 0, NotSerialized)
+	    {
+		Return (GTF (0x02, SMUE, SMUT, SMPT))
+	    }
+	}
 
-        Device (DRV1)
-        {
-            Name (_ADR, 0x01)
-            Method (_GTF, 0, NotSerialized)
-            {
-                Return (GTF (0x03, SSUE, SSUT, SSPT))
-            }
-        }
+	Device (DRV1)
+	{
+	    Name (_ADR, 0x01)
+	    Method (_GTF, 0, NotSerialized)
+	    {
+		Return (GTF (0x03, SSUE, SSUT, SSPT))
+	    }
+	}
     }
 } // End of PATA Device
 
 
 /* Implement Basic USB Presence detect and */
-/* Power Management Event mask             */
+/* Power Management Event mask		   */
 Device (USB0)
 {
     Name (_ADR, 0x00100000)
     Name (_PRW, Package (0x02)
     {
-        0x0E,
-        0x03
+	0x0E,
+	0x03
     })
 
     OperationRegion (U2F0, PCI_Config, 0x00, 0xC2)
     Field (U2F0, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x3C),
-        U0IR,   4,
-                Offset (0x84),
-        ECDX,   2
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x3C),
+	U0IR,	4,
+		Offset (0x84),
+	ECDX,	2
     }
 
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.USB0.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            If (LEqual (\_SB.PCI0.USB0.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	If (LNotEqual (\_SB.PCI0.USB0.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    If (LEqual (\_SB.PCI0.USB0.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 }
 
@@ -337,39 +337,39 @@ Device (USB1)
     Name (_ADR, 0x00100001)
     Name (_PRW, Package (0x02)
     {
-        0x0E,
-        0x03
+	0x0E,
+	0x03
     })
 
     OperationRegion (U2F1, PCI_Config, 0x00, 0xC2)
     Field (U2F1, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x3C),
-        U1IR,   4,
-                Offset (0x84),
-        ECDX,   2
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x3C),
+	U1IR,	4,
+		Offset (0x84),
+	ECDX,	2
     }
 
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.USB1.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            If (LEqual (\_SB.PCI0.USB1.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	If (LNotEqual (\_SB.PCI0.USB1.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    If (LEqual (\_SB.PCI0.USB1.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 }
 
@@ -378,39 +378,39 @@ Device (USB2)
     Name (_ADR, 0x00100002)
     Name (_PRW, Package (0x02)
     {
-        0x0E,
-        0x03
+	0x0E,
+	0x03
     })
 
     OperationRegion (U2F2, PCI_Config, 0x00, 0xC2)
     Field (U2F2, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x3C),
-        U2IR,   4,
-                Offset (0x84),
-        ECDX,   2
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x3C),
+	U2IR,	4,
+		Offset (0x84),
+	ECDX,	2
     }
 
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.USB2.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            If (LEqual (\_SB.PCI0.USB2.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	If (LNotEqual (\_SB.PCI0.USB2.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    If (LEqual (\_SB.PCI0.USB2.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 }
 
@@ -419,39 +419,39 @@ Device (USB3)
     Name (_ADR, 0x00100003)
     Name (_PRW, Package (0x02)
     {
-        0x0E,
-        0x03
+	0x0E,
+	0x03
     })
 
     OperationRegion (U2F3, PCI_Config, 0x00, 0xC2)
     Field (U2F3, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x3C),
-        U3IR,   4,
-                Offset (0x84),
-        ECDX,   2
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x3C),
+	U3IR,	4,
+		Offset (0x84),
+	ECDX,	2
     }
 
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.USB3.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            If (LEqual (\_SB.PCI0.USB3.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	If (LNotEqual (\_SB.PCI0.USB3.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    If (LEqual (\_SB.PCI0.USB3.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 }
 
@@ -460,39 +460,39 @@ Device (USB4)
     Name (_ADR, 0x00100004)
     Name (_PRW, Package (0x02)
     {
-        0x0E,
-        0x03
+	0x0E,
+	0x03
     })
 
     OperationRegion (U2F4, PCI_Config, 0x00, 0xC2)
     Field (U2F4, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x3C),
-        U4IR,   4,
-                Offset (0x84),
-        ECDX,   2
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x3C),
+	U4IR,	4,
+		Offset (0x84),
+	ECDX,	2
     }
 
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.USB4.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            If (LEqual (\_SB.PCI0.USB4.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	If (LNotEqual (\_SB.PCI0.USB4.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    If (LEqual (\_SB.PCI0.USB4.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 }
 
@@ -502,37 +502,37 @@ Device (NIC0)
     Name (_ADR, 0x00120000)
     Name (_PRW, Package (0x02)
     {
-        0x03,
-        0x05
+	0x03,
+	0x05
     })
 
     OperationRegion (NIC0, PCI_Config, 0x00, 0xC2)
     Field (NIC0, ByteAcc, NoLock, Preserve)
     {
-        VID,    16,
-                Offset (0x04),
-        CMDR,   3,
-                Offset (0x3C),
-        NIIR,   4,
+	VID,	16,
+		Offset (0x04),
+	CMDR,	3,
+		Offset (0x3C),
+	NIIR,	4,
     }
 
     Method (_STA, 0, NotSerialized)
     {
-        If (LNotEqual (\_SB.PCI0.NIC0.VID, 0x1106))
-        {
-            Return (0x00)
-        }
-        Else
-        {
-            If (LEqual (\_SB.PCI0.NIC0.CMDR, 0x00))
-            {
-                Return (0x0D)
-            }
-            Else
-            {
-                Return (0x0F)
-            }
-        }
+	If (LNotEqual (\_SB.PCI0.NIC0.VID, 0x1106))
+	{
+	    Return (0x00)
+	}
+	Else
+	{
+	    If (LEqual (\_SB.PCI0.NIC0.CMDR, 0x00))
+	    {
+		Return (0x0D)
+	    }
+	    Else
+	    {
+		Return (0x0F)
+	    }
+	}
     }
 }
 
@@ -542,7 +542,7 @@ Device (AC97)
     Name (_ADR, 0x00110005)
     Name (_PRW, Package (0x02)
     {
-        0x0D,
-        0x05
+	0x0D,
+	0x05
     })
 }

@@ -2,9 +2,9 @@
 *
 *						Realmode X86 Emulator Library
 *
-*            	Copyright (C) 1996-1999 SciTech Software, Inc.
-* 				     Copyright (C) David Mosberger-Tang
-* 					   Copyright (C) 1999 Egbert Eich
+*	     	Copyright (C) 1996-1999 SciTech Software, Inc.
+* 					   Copyright (C) David Mosberger-Tang
+* 						  Copyright (C) 1999 Egbert Eich
 *
 *  ========================================================================
 *
@@ -30,7 +30,7 @@
 *
 * Language:		ANSI C
 * Environment:	Any
-* Developer:    Kendall Bennett
+* Developer:	Kendall Bennett
 *
 * Description:  This file includes subroutines which are related to
 *				programmed I/O and memory access. Included in this module
@@ -71,7 +71,7 @@ static u8 *mem_ptr(u32 addr, int size)
 	}
 	if (addr < 0x200) {
 		//printf("%x:%x updating int vector 0x%x\n",
-		//       M.x86.R_CS, M.x86.R_IP, addr >> 2);
+		//	   M.x86.R_CS, M.x86.R_IP, addr >> 2);
 	}
 	retaddr = (u8 *) (M.mem_base + addr);
 
@@ -253,7 +253,7 @@ static u32 X86API p_inl(X86EMU_pioAddr addr)
 /****************************************************************************
 PARAMETERS:
 addr	- PIO address to write
-val     - Value to store
+val	- Value to store
 REMARKS:
 Default PIO byte write function. Doesn't perform real outb.
 ****************************************************************************/
@@ -268,7 +268,7 @@ static void X86API p_outb(X86EMU_pioAddr addr, u8 val)
 /****************************************************************************
 PARAMETERS:
 addr	- PIO address to write
-val     - Value to store
+val	- Value to store
 REMARKS:
 Default PIO word write function. Doesn't perform real outw.
 ****************************************************************************/
@@ -283,14 +283,14 @@ static void X86API p_outw(X86EMU_pioAddr addr, u16 val)
 /****************************************************************************
 PARAMETERS:
 addr	- PIO address to write
-val     - Value to store
+val	- Value to store
 REMARKS:
 Default PIO ;ong write function. Doesn't perform real outl.
 ****************************************************************************/
 static void X86API p_outl(X86EMU_pioAddr addr, u32 val)
 {
 	DB(if (DEBUG_IO_TRACE())
-	       printf("outl %#08x -> %#04x \n", val, addr);)
+		printf("outl %#08x -> %#04x \n", val, addr);)
 
 	outl(val, addr);
 	return;

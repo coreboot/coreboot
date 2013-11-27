@@ -468,7 +468,7 @@ struct {
 	enum mvl3 id0, id1;
 	enum board_config config;
 } id_map[] = {
-	/*  ID0      ID1         config */
+	/*  ID0      ID1	  config */
 	{ LOGIC_0, LOGIC_0, SNOW_CONFIG_SAMSUNG_MP },
 	{ LOGIC_0, LOGIC_1, SNOW_CONFIG_ELPIDA_MP },
 	{ LOGIC_1, LOGIC_0, SNOW_CONFIG_SAMSUNG_DVT },

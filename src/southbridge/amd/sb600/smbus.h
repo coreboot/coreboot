@@ -36,11 +36,11 @@
 
 #define AX_INDXC  0
 #define AX_INDXP  1
-#define AXCFG     2
-#define ABCFG     3
+#define AXCFG	  2
+#define ABCFG	  3
 
-#define AB_INDX   0xCD8
-#define AB_DATA   (AB_INDX+4)
+#define AB_INDX	  0xCD8
+#define AB_DATA	  (AB_INDX+4)
 
 /* Between 1-10 seconds, We should never timeout normally
  * Longer than this is just painful when a timeout condition occurs.

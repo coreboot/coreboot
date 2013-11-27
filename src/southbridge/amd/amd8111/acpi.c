@@ -224,21 +224,21 @@ static struct pci_operations lops_pci = {
 
 static struct device_operations acpi_ops  = {
 	.read_resources   = acpi_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = acpi_enable_resources,
-	.init             = acpi_init,
-	.scan_bus         = scan_static_bus,
+	.init		   = acpi_init,
+	.scan_bus	   = scan_static_bus,
 	/*  We don't need amd8111_enable, chip ops takes care of it.
 	 *  It could be useful if these devices were not
 	 *  enabled by default.
 	 */
-//	.enable           = amd8111_enable,
-	.ops_pci          = &lops_pci,
-	.ops_smbus_bus    = &lops_smbus_bus,
+//	.enable	     = amd8111_enable,
+	.ops_pci	   = &lops_pci,
+	.ops_smbus_bus	   = &lops_smbus_bus,
 };
 
 static const struct pci_driver acpi_driver __pci_driver = {
-	.ops    = &acpi_ops,
+	.ops	 = &acpi_ops,
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_ACPI,
 };

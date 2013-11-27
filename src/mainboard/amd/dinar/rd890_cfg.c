@@ -104,8 +104,8 @@ static void nb_platform_config(device_t nb_dev, AMD_NB_CONFIG *NbConfigPtr)
  *
  * prototype AGESA_STATUS (*CALLOUT_ENTRY) (UINT32 Param1, UINTN Param2, VOID* ConfigPtr);
  *
- * @param[in] u32 func               Northbridge CIMx CallBackId
- * @param[in] u32 data               Northbridge Input Data.
+ * @param[in] u32 func		     Northbridge CIMx CallBackId
+ * @param[in] u32 data		     Northbridge Input Data.
  * @param[in] AMD_NB_CONFIG *config  Northbridge configuration structure pointer.
  *
  */

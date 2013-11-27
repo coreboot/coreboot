@@ -1,6 +1,6 @@
 /*
-        Copyright 2006 Arastra, Inc.
-        Copyright 2001, 2002 Georges Menie (www.menie.org)
+	Copyright 2006 Arastra, Inc.
+	Copyright 2001, 2002 Georges Menie (www.menie.org)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by

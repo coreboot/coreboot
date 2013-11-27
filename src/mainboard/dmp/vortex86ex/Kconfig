@@ -184,7 +184,7 @@ config IDE_COMPATIBLE_SELECTION
 	depends on IDE_STANDARD_COMPATIBLE
 	hex "IDE Compatible Selection"
 	default 0x808624db
-        help
+	help
 	  IDE controller PCI vendor/device ID value setting.
 
 	  Higher 16-bit is vendor ID, lower 16-bit is device ID.

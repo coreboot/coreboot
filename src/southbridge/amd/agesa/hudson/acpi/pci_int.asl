@@ -470,4 +470,4 @@
 			}
 			Store(Local0, PIRH)
 		} /* End Method(_SB.INTH._SRS)  */
-	} /* End Device(INTH)   */
+	} /* End Device(INTH)	 */

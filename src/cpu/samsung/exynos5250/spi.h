@@ -93,6 +93,6 @@ int exynos_spi_close(struct exynos_spi *regs);
 
 /* Serve as CBFS media source */
 int initialize_exynos_spi_cbfs_media(struct cbfs_media *media,
-				     void *buffer_address,
-				     size_t buffer_size);
+					 void *buffer_address,
+					 size_t buffer_size);
 #endif

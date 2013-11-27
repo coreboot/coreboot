@@ -46,7 +46,7 @@ int bridge_silicon_revision(void)
 		uint8_t stepping = cpuid_eax(1) & 0xf;
 		uint8_t bridge_id =
 		    pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)),
-				      PCI_DEVICE_ID) & 0xf0;
+					  PCI_DEVICE_ID) & 0xf0;
 		bridge_revision_id = bridge_id | stepping;
 	}
 	return bridge_revision_id;
@@ -86,14 +86,14 @@ static void add_fixed_resources(struct device *dev, int index)
 	  IORESOURCE_FIXED | IORESOURCE_STORED | IORESOURCE_ASSIGNED;
 
 	mmio_resource(dev, index++, legacy_hole_base_k,
-		      (0xc0000 >> 10) - legacy_hole_base_k);
+			(0xc0000 >> 10) - legacy_hole_base_k);
 	reserved_ram_resource(dev, index++, 0xc0000 >> 10,
-			      (0x100000 - 0xc0000) >> 10);
+				 (0x100000 - 0xc0000) >> 10);
 
 #if CONFIG_CHROMEOS_RAMOOPS
 	reserved_ram_resource(dev, index++,
-			      CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
-			      CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
+				 CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
+				 CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
 #endif
 }
 

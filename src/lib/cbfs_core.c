@@ -32,20 +32,20 @@
  * target environment:
  *
  * CBFS_CORE_WITH_LZMA (must be #define)
- *      if defined, ulzma() must exist for decompression of data streams
+ *	if defined, ulzma() must exist for decompression of data streams
  *
  * CBFS_HEADER_ROM_ADDRESS
  *	ROM address (offset) of CBFS header. Underlying CBFS media may interpret
  *	it in other way so we call this "address".
  *
  * ERROR(x...)
- *      print an error message x (in printf format)
+ *	print an error message x (in printf format)
  *
  * LOG(x...)
- *      print a message x (in printf format)
+ *	print a message x (in printf format)
  *
  * DEBUG(x...)
- *      print a debug message x (in printf format)
+ *	print a debug message x (in printf format)
  *
  */
 
@@ -75,14 +75,14 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 
 	if (header == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
 		ERROR("Failed to load CBFS header from 0x%x\n",
-		      CBFS_HEADER_ROM_ADDRESS);
+			CBFS_HEADER_ROM_ADDRESS);
 		return CBFS_HEADER_INVALID_ADDRESS;
 	}
 
 	if (CBFS_HEADER_MAGIC != ntohl(header->magic)) {
 		ERROR("Could not find valid CBFS master header at %x: "
-		      "%x vs %x.\n", CBFS_HEADER_ROM_ADDRESS, CBFS_HEADER_MAGIC,
-		      ntohl(header->magic));
+			"%x vs %x.\n", CBFS_HEADER_ROM_ADDRESS, CBFS_HEADER_MAGIC,
+			ntohl(header->magic));
 		if (header->magic == 0xffffffff) {
 			ERROR("Maybe ROM is not mapped properly?\n");
 		}
@@ -126,21 +126,21 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	DEBUG("Looking for '%s' starting from 0x%x.\n", name, offset);
 	media->open(media);
 	while (offset < romsize &&
-	       media->read(media, &file, offset, sizeof(file)) == sizeof(file)) {
+		media->read(media, &file, offset, sizeof(file)) == sizeof(file)) {
 		if (memcmp(CBFS_FILE_MAGIC, file.magic,
 			   sizeof(file.magic)) != 0) {
 			uint32_t new_align = align;
 			if (offset % align)
 				new_align += align - (offset % align);
 			ERROR("ERROR: No file header found at 0x%x - "
-			      "try next aligned address: 0x%x.\n", offset,
-			      offset + new_align);
+				 "try next aligned address: 0x%x.\n", offset,
+				 offset + new_align);
 			offset += new_align;
 			continue;
 		}
 		name_len = ntohl(file.offset) - sizeof(file);
 		DEBUG(" - load entry 0x%x file name (%d bytes)...\n", offset,
-		      name_len);
+			name_len);
 
 		// load file name (arbitrary length).
 		file_name = (const char *)media->map(
@@ -154,12 +154,12 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 			    offset + file_offset, file_len);
 			media->unmap(media, file_name);
 			file_ptr = media->map(media, offset,
-					      file_offset + file_len);
+						   file_offset + file_len);
 			media->close(media);
 			return file_ptr;
 		} else {
 			DEBUG(" (unmatched file @0x%x: %s)\n", offset,
-			      file_name);
+				 file_name);
 			media->unmap(media, file_name);
 		}
 
@@ -184,7 +184,7 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name, int type
 
 	if (ntohl(file->type) != type) {
 		ERROR("File '%s' is of type %x, but we requested %x.\n", name,
-		      ntohl(file->type), type);
+			ntohl(file->type), type);
 		return NULL;
 	}
 
@@ -203,8 +203,8 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 #endif
 		default:
 			ERROR("tried to decompress %d bytes with algorithm #%x,"
-			      "but that algorithm id is unsupported.\n", len,
-			      algo);
+				 "but that algorithm id is unsupported.\n", len,
+				 algo);
 			return 0;
 	}
 }

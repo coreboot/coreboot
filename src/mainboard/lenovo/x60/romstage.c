@@ -251,7 +251,7 @@ void main(unsigned long bist)
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		printk(BIOS_DEBUG,
-		       "Soft reset detected, rebooting properly.\n");
+			 "Soft reset detected, rebooting properly.\n");
 		outb(0x6, 0xcf9);
 		while (1)
 			asm("hlt");
@@ -339,7 +339,7 @@ void main(unsigned long bist)
 		 */
 		if (resume_backup_memory)
 			memcpy(resume_backup_memory, (void *)CONFIG_RAMBASE,
-			       HIGH_MEMORY_SAVE);
+				  HIGH_MEMORY_SAVE);
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD,

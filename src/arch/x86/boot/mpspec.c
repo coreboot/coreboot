@@ -56,26 +56,26 @@ static unsigned char smp_compute_checksum(void *v, int len)
 
 static void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_physptr, unsigned int virtualwire)
 {
-        struct intel_mp_floating *mf;
-        void *v;
+	struct intel_mp_floating *mf;
+	void *v;
 
 	v = (void *)addr;
-        mf = v;
-        mf->mpf_signature[0] = '_';
-        mf->mpf_signature[1] = 'M';
-        mf->mpf_signature[2] = 'P';
-        mf->mpf_signature[3] = '_';
-        mf->mpf_physptr = mpf_physptr;
-        mf->mpf_length = 1;
-        mf->mpf_specification = 4;
-        mf->mpf_checksum = 0;
-        mf->mpf_feature1 = 0;
-        mf->mpf_feature2 = virtualwire?MP_FEATURE_VIRTUALWIRE:0;
-        mf->mpf_feature3 = 0;
-        mf->mpf_feature4 = 0;
-        mf->mpf_feature5 = 0;
-        mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
-        return v;
+	mf = v;
+	mf->mpf_signature[0] = '_';
+	mf->mpf_signature[1] = 'M';
+	mf->mpf_signature[2] = 'P';
+	mf->mpf_signature[3] = '_';
+	mf->mpf_physptr = mpf_physptr;
+	mf->mpf_length = 1;
+	mf->mpf_specification = 4;
+	mf->mpf_checksum = 0;
+	mf->mpf_feature1 = 0;
+	mf->mpf_feature2 = virtualwire?MP_FEATURE_VIRTUALWIRE:0;
+	mf->mpf_feature3 = 0;
+	mf->mpf_feature4 = 0;
+	mf->mpf_feature5 = 0;
+	mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
+	return v;
 }
 
 void *smp_write_floating_table(unsigned long addr, unsigned int virtualwire)
@@ -170,7 +170,7 @@ void smp_write_processors(struct mp_config_table *mc)
 			);
 			break;
 		}
-            }
+	    }
 	}
 }
 
@@ -351,12 +351,12 @@ void mptable_lintsrc(struct mp_config_table *mc, unsigned long bus_isa)
 
 void mptable_add_isa_interrupts(struct mp_config_table *mc, unsigned long bus_isa, unsigned long apicid, int external_int2)
 {
-/*I/O Ints:                   Type         Trigger            Polarity         Bus ID   IRQ  APIC ID   PIN# */
+/*I/O Ints:		      Type	   Trigger	      Polarity	       Bus ID	IRQ  APIC ID   PIN# */
 	smp_write_intsrc(mc, external_int2?mp_INT:mp_ExtINT,
-	                             MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x0);
+				      MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x1, apicid, 0x1);
 	smp_write_intsrc(mc, external_int2?mp_ExtINT:mp_INT,
-	                             MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x2);
+				      MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x0, apicid, 0x2);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x3, apicid, 0x3);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x4, apicid, 0x4);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_EDGE|MP_IRQ_POLARITY_HIGH,  bus_isa, 0x6, apicid, 0x6);
@@ -415,14 +415,14 @@ void *mptable_finalize(struct mp_config_table *mc)
 unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 {
 	struct drivers_generic_ioapic_config *ioapic_config;
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	int isa_bus, pin, parentpin;
 	device_t dev, parent, oldparent;
 	void *tmp, *v;
 	int isaioapic = -1, have_fixed_entries;
 
 	v = smp_write_floating_table(addr, 0);
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 
@@ -439,8 +439,8 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 			continue;
 		}
 		smp_write_ioapic(mc, dev->path.ioapic.ioapic_id,
-				     ioapic_config->version,
-				     ioapic_config->base);
+					 ioapic_config->version,
+					 ioapic_config->base);
 
 		if (ioapic_config->have_isa_interrupts) {
 			if (isaioapic >= 0)
@@ -465,9 +465,9 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 		for (pin = 0; pin < 4; pin++) {
 			if (dev->pci_irq_info[pin].ioapic_dst_id) {
 				printk(BIOS_DEBUG, "fixed IRQ entry for: %s: INT%c# -> IOAPIC %d PIN %d\n", dev_path(dev),
-				       pin + 'A',
-				       dev->pci_irq_info[pin].ioapic_dst_id,
-				       dev->pci_irq_info[pin].ioapic_irq_pin);
+					   pin + 'A',
+					   dev->pci_irq_info[pin].ioapic_dst_id,
+					   dev->pci_irq_info[pin].ioapic_irq_pin);
 				smp_write_intsrc(mc, mp_INT,
 						 dev->pci_irq_info[pin].ioapic_flags,
 						 dev->bus->secondary,
@@ -489,9 +489,9 @@ unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 
 				if (parent->pci_irq_info[parentpin].ioapic_dst_id) {
 					printk(BIOS_DEBUG, "automatic IRQ entry for %s: INT%c# -> IOAPIC %d PIN %d\n",
-					       dev_path(dev), pin + 'A',
-					       parent->pci_irq_info[parentpin].ioapic_dst_id,
-					       parent->pci_irq_info[parentpin].ioapic_irq_pin);
+						    dev_path(dev), pin + 'A',
+						    parent->pci_irq_info[parentpin].ioapic_dst_id,
+						    parent->pci_irq_info[parentpin].ioapic_irq_pin);
 					smp_write_intsrc(mc, mp_INT,
 							 parent->pci_irq_info[parentpin].ioapic_flags,
 							 dev->bus->secondary,

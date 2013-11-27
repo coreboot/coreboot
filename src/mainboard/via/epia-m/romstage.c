@@ -28,7 +28,7 @@ static void enable_mainboard_devices(void)
 	device_t dev;
 
 	dev = pci_locate_device_on_bus(PCI_ID(PCI_VENDOR_ID_VIA,
-				       PCI_DEVICE_ID_VIA_8235), 0);
+					   PCI_DEVICE_ID_VIA_8235), 0);
 
 	if (dev == PCI_DEV_INVALID) {
 		die("Southbridge not found!!!\n");
@@ -39,14 +39,14 @@ static void enable_mainboard_devices(void)
 	// This early setup switches IDE into compatibility mode before PCI gets
 	// a chance to assign I/Os
 	// movl    $CONFIG_ADDR(0, 0x89, 0x42), %eax
-	// //      movb    $0x09, %dl
+	// //	    movb    $0x09, %dl
 	// movb    $0x00, %dl
 	// PCI_WRITE_CONFIG_BYTE
 #endif
 	/* we do this here as in V2, we can not yet do raw operations
 	 * to pci!
 	 */
-        dev += 0x100; /* ICKY */
+	dev += 0x100; /* ICKY */
 
 	pci_write_config8(dev, 0x04, 7);
 	pci_write_config8(dev, 0x40, 3);

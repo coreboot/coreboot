@@ -103,7 +103,7 @@ struct exynos5_dsim {
 #define PLL_STABLE		(1 << 31)
 
 #define DSIM_STOP_STATE_DAT(x)  (((x) & 0xf) << 0)
-#define DSIM_STOP_STATE_CLK     (1 << 8)
-#define DSIM_TX_READY_HS_CLK    (1 << 10)
+#define DSIM_STOP_STATE_CLK	(1 << 8)
+#define DSIM_TX_READY_HS_CLK	(1 << 10)
 
 #endif

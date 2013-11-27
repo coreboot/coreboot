@@ -112,7 +112,7 @@ static int do_smbus_recv_byte(unsigned smbus_io_base, unsigned device)
 }
 
 static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device,
-			      unsigned char val)
+				 unsigned char val)
 {
 	unsigned global_status_register;
 
@@ -151,7 +151,7 @@ static int do_smbus_send_byte(unsigned smbus_io_base, unsigned device,
 #endif
 
 static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device,
-			      unsigned address)
+				 unsigned address)
 {
 	unsigned char global_status_register, byte;
 
@@ -191,7 +191,7 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device,
 }
 
 static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device,
-			       unsigned address, unsigned char val)
+				  unsigned address, unsigned char val)
 {
 	unsigned global_status_register;
 

@@ -27,28 +27,28 @@
 #include "i82801dx.h"
 
 #define NAMBAR		0x10
-#define   MASTER_VOL	0x02
-#define   PAGING	0x24
-#define   EXT_AUDIO	0x28
-#define   FUNC_SEL	0x66
-#define   INFO_IO	0x68
-#define   CONNECTOR	0x6a
-#define   VENDOR_ID1	0x7c
-#define   VENDOR_ID2	0x7e
-#define   SEC_VENDOR_ID1 0xfc
-#define   SEC_VENDOR_ID2 0xfe
+#define	  MASTER_VOL	0x02
+#define	  PAGING	0x24
+#define	  EXT_AUDIO	0x28
+#define	  FUNC_SEL	0x66
+#define	  INFO_IO	0x68
+#define	  CONNECTOR	0x6a
+#define	  VENDOR_ID1	0x7c
+#define	  VENDOR_ID2	0x7e
+#define	  SEC_VENDOR_ID1 0xfc
+#define	  SEC_VENDOR_ID2 0xfe
 
 #define NABMBAR		0x14
-#define   GLOB_CNT	0x2c
-#define   GLOB_STA	0x30
-#define   CAS		0x34
+#define	  GLOB_CNT	0x2c
+#define	  GLOB_STA	0x30
+#define	  CAS		0x34
 
 #define MMBAR		0x10
-#define   EXT_MODEM_ID1	0x3c
-#define   EXT_MODEM_ID2	0xbc
+#define	  EXT_MODEM_ID1	0x3c
+#define	  EXT_MODEM_ID2	0xbc
 
 #define MBAR		0x14
-#define   SEC_CODEC	0x40
+#define	  SEC_CODEC	0x40
 
 
 /* FIXME. This table is probably mainboard specific */
@@ -253,20 +253,20 @@ static void ac97_modem_init(struct device *dev)
 
 static struct device_operations ac97_audio_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.enable           = i82801dx_enable,
-	.init             = ac97_audio_init,
-	.scan_bus         = 0,
+	.enable	   = i82801dx_enable,
+	.init		   = ac97_audio_init,
+	.scan_bus	   = 0,
 };
 
 static struct device_operations ac97_modem_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.enable           = i82801dx_enable,
-	.init             = ac97_modem_init,
-	.scan_bus         = 0,
+	.enable	   = i82801dx_enable,
+	.init		   = ac97_modem_init,
+	.scan_bus	   = 0,
 };
 
 /* 82801DB/DBL/DBM (ICH4/ICH4-L/ICH4-M) */

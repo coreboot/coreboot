@@ -133,8 +133,8 @@ void timer_monotonic_get(struct mono_time *mt)
 		 * around occurs. */
 		if (timer_fsb > 200)
 			printk(BIOS_WARNING,
-			       "apic timer freq (%d) may be too fast.\n",
-			       timer_fsb);
+				  "apic timer freq (%d) may be too fast.\n",
+				  timer_fsb);
 		mono_counter.last_value = lapic_read(LAPIC_TMCCT);
 		mono_counter.initialized = 1;
 	}

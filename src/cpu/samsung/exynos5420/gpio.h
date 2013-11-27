@@ -479,7 +479,7 @@ void gpio_set_rate(int gpio, int mode);
  *
  * @param gpio		GPIO to read
  * @return -1 if the value cannot be determined. Otherwise returns
- *              the corresponding MVL3 enum value.
+ *		the corresponding MVL3 enum value.
  */
 int gpio_read_mvl3(unsigned gpio);
 
@@ -549,11 +549,11 @@ int gpio_set_value(unsigned gpio, int value);
  *
  *     Vpd | Vpu | MVL
  *    -----------------
- *      0  |  0  | 0
+ *	0  |  0  | 0
  *    -----------------
- *      0  |  1  | Z    <-- floating input will follow internal pull up/down
+ *	0  |  1  | Z	<-- floating input will follow internal pull up/down
  *    -----------------
- *      1  |  1  | 1
+ *	1  |  1  | 1
  */
 enum mvl3 {
 	LOGIC_0,

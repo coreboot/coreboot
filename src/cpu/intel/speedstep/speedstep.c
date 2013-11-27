@@ -171,9 +171,9 @@ void speedstep_gen_pstates(sst_table_t *const table)
 	/* Now, add all other normal states based on LFM (min). */
 	const int power_step	= (power_diff2 / states) / 2;
 	const int vid_step	= (vid_diff2 / states) / 2;
-	const int ratio_step    = step2 / 2;
+	const int ratio_step	 = step2 / 2;
 	int power   = params.min.power + (states - 1) * power_step;
-	int vid	    = params.min.vid   + (states - 1) * vid_step;
+	int vid	    = params.min.vid	+ (states - 1) * vid_step;
 	int ratio   = params.min.ratio + (states - 1) * ratio_step;
 	for (; states > 0; --states) {
 		table->states[table->num_states++] =

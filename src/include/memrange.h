@@ -62,7 +62,7 @@ static inline unsigned long range_entry_tag(const struct range_entry *r)
 }
 
 static inline void range_entry_update_tag(struct range_entry *r,
-                                          unsigned long new_tag)
+					  unsigned long new_tag)
 {
 	r->tag = new_tag;
 }
@@ -79,8 +79,8 @@ static inline void range_entry_update_tag(struct range_entry *r,
  * mask and match type for all memory resources. Tag each entry with the
  * specified type. */
 void memranges_init(struct memranges *ranges,
-                    unsigned long mask, unsigned long match,
-                    unsigned long tag);
+		    unsigned long mask, unsigned long match,
+		    unsigned long tag);
 
 /* Remove and free all entries within the memranges structure. */
 void memranges_teardown(struct memranges *ranges);
@@ -89,28 +89,28 @@ void memranges_teardown(struct memranges *ranges);
  * Each entry will be tagged with the provided tag. e.g.  To populate
  * all cacheable memory resources in the range:
  * memranges_add_resources(range, IORESOURCE_CACHEABLE,
- *                            IORESROUCE_CACHEABLE, my_cacheable_tag); */
+ *			      IORESROUCE_CACHEABLE, my_cacheable_tag); */
 void memranges_add_resources(struct memranges *ranges,
-                             unsigned long mask, unsigned long match,
-                             unsigned long tag);
+			     unsigned long mask, unsigned long match,
+			     unsigned long tag);
 
 /* Fill all address ranges up to limit (exclusive) not covered by an entry by
  * inserting new entries with the provided tag. */
 void memranges_fill_holes_up_to(struct memranges *ranges,
-                                resource_t limit, unsigned long tag);
+				resource_t limit, unsigned long tag);
 
 /* Create a hole in the range by deleting/modifying entries that overlap with
  * the region specified by base and size. */
 void memranges_create_hole(struct memranges *ranges,
-                           resource_t base, resource_t size);
+			   resource_t base, resource_t size);
 
 /* Insert a resource to the given memranges.  All existing ranges
  * covered by range specified by base and size will be removed before a
  * new one is added. */
 void memranges_insert(struct memranges *ranges,
-                      resource_t base, resource_t size, unsigned long tag);
+		      resource_t base, resource_t size, unsigned long tag);
 
 /* Returns next entry after the provided entry. NULL if r is last. */
 struct range_entry *memranges_next_entry(struct memranges *ranges,
-                                         const struct range_entry *r);
+					 const struct range_entry *r);
 #endif /* MEMRANGE_H_ */

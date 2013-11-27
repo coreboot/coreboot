@@ -44,22 +44,22 @@ unsigned pci1234x[] = {		//Here you only need to set value in pci1234 for HT-IO 
 	0x0000ff0,
 	0x0000ff0,
 	0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0,
-//        0x0000ff0
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0,
+//	  0x0000ff0
 };
 
 unsigned hcdnx[] = {		//HT Chain device num, actually it is unit id base of every ht device in chain, assume every chain only have 4 ht device at most
 	0x20202020,
 	0x20202020,
 	0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
-//        0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
+//	  0x20202020,
 };
 
 static unsigned get_bus_conf_done = 0;
@@ -101,8 +101,8 @@ void get_bus_conf(void)
 		m->bus_mcp55[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	} else {
 		printk(BIOS_DEBUG,
-		       "ERROR - could not find PCI 1:%02x.0, using defaults\n",
-		       sysconf.sbdn + 0x06);
+			 "ERROR - could not find PCI 1:%02x.0, using defaults\n",
+			 sysconf.sbdn + 0x06);
 	}
 
 	for (i = 2; i < 8; i++) {
@@ -114,12 +114,12 @@ void get_bus_conf(void)
 			    pci_read_config8(dev, PCI_SECONDARY_BUS);
 		} else {
 			printk(BIOS_DEBUG,
-			       "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
-			       m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2);
+				  "ERROR - could not find PCI %02x:%02x.0, using defaults\n",
+				  m->bus_mcp55[0], sysconf.sbdn + 0x0a + i - 2);
 		}
 	}
 
-/*I/O APICs:   APIC ID Version State           Address*/
+/*I/O APICs:   APIC ID Version State	       Address*/
 #if CONFIG_LOGICAL_CPUS
 	apicid_base = get_apicid_base(1);
 #else

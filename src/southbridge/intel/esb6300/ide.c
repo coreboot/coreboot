@@ -11,11 +11,11 @@ static void ide_init(struct device *dev)
 	/* Enable ide devices so the linux ide driver will work */
 
 	/* Enable IDE devices */
-        pci_write_config16(dev, 0x40, 0x0a307);
-        pci_write_config16(dev, 0x42, 0x0a307);
-        pci_write_config8(dev, 0x48, 0x05);
-        pci_write_config16(dev, 0x4a, 0x0101);
-        pci_write_config16(dev, 0x54, 0x5055);
+	pci_write_config16(dev, 0x40, 0x0a307);
+	pci_write_config16(dev, 0x42, 0x0a307);
+	pci_write_config8(dev, 0x48, 0x05);
+	pci_write_config16(dev, 0x4a, 0x0101);
+	pci_write_config16(dev, 0x54, 0x5055);
 
 #if 0
 	uint16_t word;
@@ -41,15 +41,15 @@ static struct pci_operations lops_pci = {
 };
 static struct device_operations ide_ops  = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = ide_init,
-	.scan_bus         = 0,
-	.ops_pci          = &lops_pci,
+	.init		   = ide_init,
+	.scan_bus	   = 0,
+	.ops_pci	   = &lops_pci,
 };
 
 static const struct pci_driver ide_driver __pci_driver = {
-	.ops    = &ide_ops,
+	.ops	 = &ide_ops,
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_IDE,
 };

@@ -1,22 +1,22 @@
 /* this setupcpu function comes from: */
 /*==============================================================================*/
-/* FILE   :  start16.asm*/
+/* FILE	  :  start16.asm*/
 /**/
-/* DESC   : A  16 bit mode assembly language startup program, intended for*/
-/*          use with on Aspen SC520 platforms.*/
+/* DESC	  : A  16 bit mode assembly language startup program, intended for*/
+/*	    use with on Aspen SC520 platforms.*/
 /**/
 /* 11/16/2000 Added support for the NetSC520*/
 /* 12/28/2000 Modified to boot linux image*/
 /**/
 /* =============================================================================*/
-/*                                                                             */
-/*  Copyright 2000 Advanced Micro Devices, Inc.                                */
-/*                                                                             */
+/*									       */
+/*  Copyright 2000 Advanced Micro Devices, Inc.				       */
+/*									       */
 /* This software is the property of Advanced Micro Devices, Inc  (AMD)  which */
 /* specifically grants the user the right to modify, use and distribute this */
 /* software provided this COPYRIGHT NOTICE is not removed or altered.  All */
-/* other rights are reserved by AMD.                                                       */
-/*                                                                            */
+/* other rights are reserved by AMD.							   */
+/*									      */
 /* THE MATERIALS ARE PROVIDED "AS IS" WITHOUT ANY EXPRESS OR IMPLIED WARRANTY */
 /* OF ANY KIND INCLUDING WARRANTIES OF MERCHANTABILITY, NONINFRINGEMENT OF */
 /* THIRD-PARTY INTELLECTUAL PROPERTY, OR FITNESS FOR ANY PARTICULAR PURPOSE.*/
@@ -36,26 +36,26 @@
 /* So that all may benefit from your experience, please report  any  problems */
 /* or suggestions about this software back to AMD.  Please include your name, */
 /* company,  telephone number,  AMD product requiring support and question or */
-/* problem encountered.                                                       */
-/*                                                                            */
-/* Advanced Micro Devices, Inc.         Worldwide support and contact           */
-/* Embedded Processor Division            information available at:               */
-/* Systems Engineering                       epd.support@amd.com*/
-/* 5204 E. Ben White Blvd.                          -or-*/
-/* Austin, TX 78741                http://www.amd.com/html/support/techsup.html*/
+/* problem encountered.							      */
+/*									      */
+/* Advanced Micro Devices, Inc.		Worldwide support and contact		*/
+/* Embedded Processor Division		  information available at:		  */
+/* Systems Engineering			     epd.support@amd.com*/
+/* 5204 E. Ben White Blvd.			    -or-*/
+/* Austin, TX 78741		   http://www.amd.com/html/support/techsup.html*/
 /* ============================================================================*/
 
 
 #define OUTC(addr, val) *(unsigned char *)(addr) = (val)
 
 /* sadly, romcc can't quite handle what we want, so we do this ugly thing */
-#define drcctl   (( volatile unsigned char *)0xfffef010)
-#define drcmctl   (( volatile unsigned char *)0xfffef012)
-#define drccfg   (( volatile unsigned char *)0xfffef014)
+#define drcctl	 (( volatile unsigned char *)0xfffef010)
+#define drcmctl	  (( volatile unsigned char *)0xfffef012)
+#define drccfg	 (( volatile unsigned char *)0xfffef014)
 
 #define drcbendadr   (( volatile unsigned long *)0xfffef018)
-#define eccctl   (( volatile unsigned char *)0xfffef020)
-#define dbctl   (( volatile unsigned char *)0xfffef040)
+#define eccctl	 (( volatile unsigned char *)0xfffef020)
+#define dbctl	(( volatile unsigned char *)0xfffef040)
 
 void setupsc520(void)
 {
@@ -341,7 +341,7 @@ int sizemem(void)
 	  if (*lp != 0xdeadbeef) {
 	    print_err(" no memory at bank ");
 	    // print_err_hex8(bank);
-	    //   print_err(" value "); print_err_hex32(*lp);
+	    //	  print_err(" value "); print_err_hex32(*lp);
 	    print_err("\n");
 	    //	    continue;
 	  }

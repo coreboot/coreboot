@@ -42,11 +42,11 @@ Device(P64B)
 		Package() { 0x0004ffff, 0, 0, 32 }, /* On-board GbE */
 	})
 
-	Name (_PRW, Package () { 0x0B, 0x05 })    /* PME# _STS */
+	Name (_PRW, Package () { 0x0B, 0x05 })	   /* PME# _STS */
 	OperationRegion (PBPC, PCI_Config, 0x00, 0xFF)
 	Field (PBPC, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0x3E), BCRL,   8,  BCRH,   8
+		Offset (0x3E), BCRL,	 8,  BCRH,   8
 	}
 
 
@@ -84,11 +84,11 @@ Device(P64A)
 		Package() { 0x0004ffff, 1, 0, 55 }, /* On-board SCSI, GSI not 57  */
 	})
 
-	Name (_PRW, Package () { 0x0B, 0x05 })    /* PME# _STS */
+	Name (_PRW, Package () { 0x0B, 0x05 })	   /* PME# _STS */
 	OperationRegion (PBPC, PCI_Config, 0x00, 0xFF)
 	Field (PBPC, ByteAcc, NoLock, Preserve)
 	{
-		Offset (0x3E), BCRL,   8,  BCRH,   8
+		Offset (0x3E), BCRL,	 8,  BCRH,   8
 	}
 
 	#include "acpi/scsi.asl"

@@ -48,7 +48,7 @@ static void nano_print_ucode_info(const nano_ucode_header *ucode)
 	printk(BIOS_SPEW, "Microcode update information:\n");
 	printk(BIOS_SPEW, "Name: %8s\n", ucode->name );
 	printk(BIOS_SPEW, "Date: %u/%u/%u\n", ucode->month,
-	       ucode->day, ucode->year );
+		ucode->day, ucode->year );
 }
 
 static ucode_validity nano_ucode_is_valid(const nano_ucode_header *ucode)

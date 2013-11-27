@@ -194,7 +194,7 @@ struct mei_header {
 #define MKHI_MDES_ENABLE	0x09
 
 #define MKHI_GET_FW_VERSION	0x02
-#define MKHI_SET_UMA  	        0x08
+#define MKHI_SET_UMA  		       0x08
 #define MKHI_END_OF_POST	0x0c
 #define MKHI_FEATURE_OVERRIDE	0x14
 
@@ -218,7 +218,7 @@ struct me_fw_version {
 } __attribute__ ((packed));
 
 
-#define HECI_EOP_STATUS_SUCCESS       0x0
+#define HECI_EOP_STATUS_SUCCESS	      0x0
 #define HECI_EOP_PERFORM_GLOBAL_RESET 0x1
 
 #define CBM_RR_GLOBAL_RESET	0x01
@@ -256,18 +256,18 @@ void intel_me_finalize_smm(void);
 void intel_me8_finalize_smm(void);
 #endif
 typedef struct {
-	u32       major_version  : 16;
-	u32       minor_version  : 16;
-	u32       hotfix_version : 16;
-	u32       build_version  : 16;
+	u32	   major_version  : 16;
+	u32	   minor_version  : 16;
+	u32	   hotfix_version : 16;
+	u32	   build_version  : 16;
 } __attribute__ ((packed)) mbp_fw_version_name;
 
 typedef struct {
-	u8        num_icc_profiles;
-	u8        icc_profile_soft_strap;
-	u8        icc_profile_index;
-	u8        reserved;
-	u32       register_lock_mask[3];
+	u8	   num_icc_profiles;
+	u8	   icc_profile_soft_strap;
+	u8	   icc_profile_index;
+	u8	   reserved;
+	u32	   register_lock_mask[3];
 } __attribute__ ((packed)) mbp_icc_profile;
 
 typedef struct {
@@ -297,16 +297,16 @@ typedef struct {
 	u16  lock_state		     : 1;
 	u16  authenticate_module     : 1;
 	u16  s3authentication  	     : 1;
-	u16  flash_wear_out          : 1;
+	u16  flash_wear_out	      : 1;
 	u16  flash_variable_security : 1;
-	u16  wwan3gpresent	     : 1;
+	u16  wwan3gpresent		 : 1;
 	u16  wwan3goob		     : 1;
 	u16  reserved		     : 9;
 } __attribute__ ((packed)) tdt_state_flag;
 
 typedef struct {
-	u8           state;
-	u8           last_theft_trigger;
+	u8	      state;
+	u8	      last_theft_trigger;
 	tdt_state_flag  flags;
 }  __attribute__ ((packed)) tdt_state_info;
 
@@ -322,39 +322,39 @@ typedef struct {
 
 typedef struct {
 	mefwcaps_sku fw_capabilities;
-	u8      available;
+	u8	 available;
 } mbp_fw_caps;
 
 typedef struct {
-	u16        device_id;
-	u16        fuse_test_flags;
-	u32        umchid[4];
+	u16	    device_id;
+	u16	    fuse_test_flags;
+	u32	    umchid[4];
 }  __attribute__ ((packed)) mbp_rom_bist_data;
 
 typedef struct {
-	u32        key[8];
+	u32	    key[8];
 } mbp_platform_key;
 
 typedef struct {
 	platform_type_rule_data rule_data;
-	u8	          available;
+	u8		      available;
 } mbp_plat_type;
 
 typedef struct {
 	mbp_fw_version_name fw_version_name;
-	mbp_fw_caps	    fw_caps_sku;
+	mbp_fw_caps		 fw_caps_sku;
 	mbp_rom_bist_data   rom_bist_data;
 	mbp_platform_key    platform_key;
-	mbp_plat_type	    fw_plat_type;
+	mbp_plat_type		   fw_plat_type;
 	mbp_icc_profile	    icc_profile;
 	tdt_state_info	    at_state;
-	u32		    mfsintegrity;
+	u32			  mfsintegrity;
 } me_bios_payload;
 
 typedef  struct {
 	u32  mbp_size	 : 8;
 	u32  num_entries : 8;
-	u32  rsvd      	 : 16;
+	u32  rsvd		 : 16;
 } __attribute__ ((packed)) mbp_header;
 
 typedef struct {

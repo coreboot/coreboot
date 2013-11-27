@@ -209,9 +209,9 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	fid_multiplier = 100;
 
 	/*
-	 * Formula1:    CPUFreq = FID * fid_multiplier + 800
-	 * Formula2:       CPUVolt = 1550 - VID * 25 (mv)
-	 * Formula3:       Power = (PwrLmt * P[N]Frequency*(P[N]Voltage^2))/(P[0]Frequency * P[0]Voltage^2))
+	 * Formula1:	 CPUFreq = FID * fid_multiplier + 800
+	 * Formula2:	    CPUVolt = 1550 - VID * 25 (mv)
+	 * Formula3:	    Power = (PwrLmt * P[N]Frequency*(P[N]Voltage^2))/(P[0]Frequency * P[0]Voltage^2))
 	 */
 
 	/* Construct P0(P[Max]) state */
@@ -310,8 +310,8 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 			    (unsigned long long)Pstate_power[0] *
 			    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] *
 			    Pstate_volt[Pstate_num] / (Pstate_feq[0] *
-						       Pstate_volt[0] *
-						       Pstate_volt[0]);
+							     Pstate_volt[0] *
+							     Pstate_volt[0]);
 		}
 		Pstate_num++;
 	}
@@ -327,7 +327,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		    (unsigned long long)Pstate_power[0] *
 		    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] *
 		    Pstate_volt[Pstate_num] / (Pstate_feq[0] * Pstate_volt[0] *
-					       Pstate_volt[0]);
+						    Pstate_volt[0]);
 		Pstate_num++;
 	} else {
 		Pstate_fid[Pstate_num] = Start_fid;
@@ -339,7 +339,7 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 		    (unsigned long long)Pstate_power[0] *
 		    Pstate_feq[Pstate_num] * Pstate_volt[Pstate_num] *
 		    Pstate_volt[Pstate_num] / (Pstate_feq[0] * Pstate_volt[0] *
-					       Pstate_volt[0]);
+						    Pstate_volt[0]);
 		Pstate_num++;
 	}
 
@@ -846,9 +846,9 @@ static int pstates_algorithm(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 
 	for (i=0;i<Pstate_num;i++)
 		printk(BIOS_DEBUG, "P#%d freq %d [MHz] voltage %d [mV] TDP %d [mW]\n", i,
-		       Pstate_feq[i],
-		       vid_from_reg(Pstate_vid[i]),
-		       Pstate_power[i]);
+			 Pstate_feq[i],
+			 vid_from_reg(Pstate_vid[i]),
+			 Pstate_power[i]);
 
 	/* Loop over all CPU's */
 	for (dev = 0x18; dev < 0x1c; dev++) {

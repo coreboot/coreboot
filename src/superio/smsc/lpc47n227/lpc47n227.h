@@ -25,10 +25,10 @@
  * space, these are arbitrary, but must match declarations in the mainboard
  * devicetree.cb.
  */
-#define LPC47N227_PP               1	/* Parallel Port */
-#define LPC47N227_SP1              2	/* COM1 */
-#define LPC47N227_SP2              3	/* COM2 */
-#define LPC47N227_KBDC             5	/* Keyboard */
+#define LPC47N227_PP		   1	/* Parallel Port */
+#define LPC47N227_SP1		   2	/* COM1 */
+#define LPC47N227_SP2		   3	/* COM2 */
+#define LPC47N227_KBDC		   5	/* Keyboard */
 
 #define LPC47N227_MAX_CONFIG_REGISTER	0x39
 

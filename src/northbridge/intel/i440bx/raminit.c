@@ -54,12 +54,12 @@ Macros and definitions.
 /* Map the JEDEC SPD refresh rates (array index) to 440BX refresh rates as
  * defined in DRAMC[2:0].
  *
- * [0] == Normal        15.625 us ->  15.6 us
- * [1] == Reduced(.25X)    3.9 us ->   7.8 ns
- * [2] == Reduced(.5X)     7.8 us ->   7.8 us
- * [3] == Extended(2x)    31.3 us ->  31.2 us
- * [4] == Extended(4x)    62.5 us ->  62.4 us
- * [5] == Extended(8x)     125 us -> 124.8 us
+ * [0] == Normal	15.625 us ->  15.6 us
+ * [1] == Reduced(.25X)	   3.9 us ->   7.8 ns
+ * [2] == Reduced(.5X)	   7.8 us ->   7.8 us
+ * [3] == Extended(2x)	  31.3 us ->  31.2 us
+ * [4] == Extended(4x)	  62.5 us ->  62.4 us
+ * [5] == Extended(8x)	   125 us -> 124.8 us
  */
 static const uint32_t refresh_rate_map[] = {
 	1, 5, 5, 2, 3, 4
@@ -71,60 +71,60 @@ static const u8 register_values[] = {
 	 * 0x50 - 0x53
 	 *
 	 * [31:24] SDRAM Row Without ECC
-	 *         0 = ECC components are populated in this row
-	 *         1 = ECC components are not populated in this row
+	 *	    0 = ECC components are populated in this row
+	 *	    1 = ECC components are not populated in this row
 	 * [23:19] Reserved
 	 * [18:18] Host Bus Fast Data Ready Enable (HBFDRE)
-	 *         Assertion of DRAM data on host bus occurs...
-	 *         0 = ...one clock after sampling snoop results (default)
-	 *         1 = ...on the same clock the snoop result is being sampled
-	 *             (this mode is faster by one clock cycle)
+	 *	    Assertion of DRAM data on host bus occurs...
+	 *	    0 = ...one clock after sampling snoop results (default)
+	 *	    1 = ...on the same clock the snoop result is being sampled
+	 *		(this mode is faster by one clock cycle)
 	 * [17:17] ECC - EDO static Drive mode
-	 *         0 = Normal mode (default)
-	 *         1 = ECC signals are always driven
+	 *	    0 = Normal mode (default)
+	 *	    1 = ECC signals are always driven
 	 * [16:16] IDSEL_REDIRECT
-	 *         0 = IDSEL1 is allocated to this bridge (default)
-	 *         1 = IDSEL7 is allocated to this bridge
+	 *	    0 = IDSEL1 is allocated to this bridge (default)
+	 *	    1 = IDSEL7 is allocated to this bridge
 	 * [15:15] WSC# Handshake Disable
-	 *         1 = Uni-processor mode
-	 *         0 = Dual-processor mode with external IOAPIC (default)
+	 *	    1 = Uni-processor mode
+	 *	    0 = Dual-processor mode with external IOAPIC (default)
 	 * [14:14] Intel Reserved
 	 * [13:12] Host/DRAM Frequency
-	 *         00 = 100 MHz
-	 *         01 = Reserved
-	 *         10 = 66 MHz
-	 *         11 = Reserved
+	 *	    00 = 100 MHz
+	 *	    01 = Reserved
+	 *	    10 = 66 MHz
+	 *	    11 = Reserved
 	 * [11:11] AGP to PCI Access Enable
-	 *         1 = Enable
-	 *         0 = Disable
+	 *	    1 = Enable
+	 *	    0 = Disable
 	 * [10:10] PCI Agent to Aperture Access Disable
-	 *         1 = Disable
-	 *         0 = Enable (default)
+	 *	    1 = Disable
+	 *	    0 = Enable (default)
 	 * [09:09] Aperture Access Global Enable
-	 *         1 = Enable
-	 *         0 = Disable
+	 *	    1 = Enable
+	 *	    0 = Disable
 	 * [08:07] DRAM Data Integrity Mode (DDIM)
-	 *         00 = Non-ECC
-	 *         01 = EC-only
-	 *         10 = ECC Mode
-	 *         11 = ECC Mode with hardware scrubbing enabled
+	 *	    00 = Non-ECC
+	 *	    01 = EC-only
+	 *	    10 = ECC Mode
+	 *	    11 = ECC Mode with hardware scrubbing enabled
 	 * [06:06] ECC Diagnostic Mode Enable (EDME)
-	 *         1 = Enable
-	 *         0 = Normal operation mode (default)
+	 *	    1 = Enable
+	 *	    0 = Normal operation mode (default)
 	 * [05:05] MDA Present (MDAP)
-	 *         Works in conjunction with the VGA_EN bit.
-	 *         VGA_EN MDAP
-	 *           0     x   All VGA cycles are sent to PCI
-	 *           1     0   All VGA cycles are sent to AGP
-	 *           1     1   All VGA cycles are sent to AGP, except for
-	 *                     cycles in the MDA range.
+	 *	    Works in conjunction with the VGA_EN bit.
+	 *	    VGA_EN MDAP
+	 *	      0	    x	All VGA cycles are sent to PCI
+	 *	      1	    0	All VGA cycles are sent to AGP
+	 *	      1	    1	All VGA cycles are sent to AGP, except for
+	 *			cycles in the MDA range.
 	 * [04:04] Reserved
 	 * [03:03] USWC Write Post During I/O Bridge Access Enable (UWPIO)
-	 *         1 = Enable
-	 *         0 = Disable
+	 *	    1 = Enable
+	 *	    0 = Disable
 	 * [02:02] In-Order Queue Depth (IOQD)
-	 *         1 = In-order queue = maximum
-	 *         0 = A7# is sampled asserted (i.e., 0)
+	 *	    1 = In-order queue = maximum
+	 *	    0 = A7# is sampled asserted (i.e., 0)
 	 * [01:00] Reserved
 	 */
 	NBXCFG + 0, 0x00, 0x0c,
@@ -138,27 +138,27 @@ static const u8 register_values[] = {
 	 *
 	 * [7:6] Reserved
 	 * [5:5] Module Mode Configuration (MMCONFIG)
-	 *       The combination of SDRAMPWR and this bit (which is set by an
-	 *       external strapping option) determine how CKE works.
-	 *       SDRAMPWR MMCONFIG
-	 *	 0        0         = 3 DIMM, CKE0[5:0] driven
-	 *	 X        1         = 3 DIMM, CKE0 only
-	 *	 1        0         = 4 DIMM, GCKE only
+	 *	  The combination of SDRAMPWR and this bit (which is set by an
+	 *	  external strapping option) determine how CKE works.
+	 *	  SDRAMPWR MMCONFIG
+	 *	 0	      0		= 3 DIMM, CKE0[5:0] driven
+	 *	 X	      1		= 3 DIMM, CKE0 only
+	 *	 1	      0		= 4 DIMM, GCKE only
 	 * [4:3] DRAM Type (DT)
-	 *       00 = EDO
-	 *       01 = SDRAM
-	 *       10 = Registered SDRAM
-	 *       11 = Reserved
-	 *       Note: EDO, SDRAM and Registered SDRAM cannot be mixed.
+	 *	  00 = EDO
+	 *	  01 = SDRAM
+	 *	  10 = Registered SDRAM
+	 *	  11 = Reserved
+	 *	  Note: EDO, SDRAM and Registered SDRAM cannot be mixed.
 	 * [2:0] DRAM Refresh Rate (DRR)
-	 *       000 = Refresh disabled
-	 *       001 = 15.6 us
-	 *       010 = 31.2 us
-	 *       011 = 62.4 us
-	 *       100 = 124.8 us
-	 *       101 = 249.6 us
-	 *       110 = Reserved
-	 *       111 = Reserved
+	 *	  000 = Refresh disabled
+	 *	  001 = 15.6 us
+	 *	  010 = 31.2 us
+	 *	  011 = 62.4 us
+	 *	  100 = 124.8 us
+	 *	  101 = 249.6 us
+	 *	  110 = Reserved
+	 *	  111 = Reserved
 	 */
 	/* Choose SDRAM (not registered), and disable refresh for now. */
 	DRAMC, 0x00, 0x08,
@@ -237,10 +237,10 @@ static const u8 register_values[] = {
 	 * Controls two fixed DRAM holes: 512 KB - 640 KB and 15 MB - 16 MB.
 	 *
 	 * [7:6] Hole Enable (HEN)
-	 *       00 = None
-	 *       01 = 512 KB - 640 KB (128 KB)
-	 *       10 = 15 MB - 16 MB (1 MB)
-	 *       11 = Reserved
+	 *	  00 = None
+	 *	  01 = 512 KB - 640 KB (128 KB)
+	 *	  10 = 15 MB - 16 MB (1 MB)
+	 *	  11 = Reserved
 	 * [5:0] Reserved
 	 */
 	/* No memory holes. */
@@ -253,10 +253,10 @@ static const u8 register_values[] = {
 	 * size is fixed at 2 KB.
 	 *
 	 * Bits[1:0] Page Size
-	 * 00        2 KB
-	 * 01        4 KB
-	 * 10        8 KB
-	 * 11        Reserved
+	 * 00	      2 KB
+	 * 01	      4 KB
+	 * 10	      8 KB
+	 * 11	      Reserved
 	 *
 	 * RPS bits Corresponding DRB register
 	 * [01:00]  DRB[0], row 0
@@ -277,33 +277,33 @@ static const u8 register_values[] = {
 	 *
 	 * [15:10] Reserved
 	 * [09:08] Idle/Pipeline DRAM Leadoff Timing (IPDLT)
-	 *         00 = Illegal
-	 *         01 = Add a clock delay to the lead-off clock count
-	 *         1x = Illegal
+	 *	    00 = Illegal
+	 *	    01 = Add a clock delay to the lead-off clock count
+	 *	    1x = Illegal
 	 * [07:05] SDRAM Mode Select (SMS)
-	 *         000 = Normal SDRAM Operation (default)
-	 *         001 = NOP Command Enable
-	 *         010 = All Banks Precharge Enable
-	 *         011 = Mode Register Set Enable
-	 *         100 = CBR Enable
-	 *         101 = Reserved
-	 *         110 = Reserved
-	 *         111 = Reserved
+	 *	    000 = Normal SDRAM Operation (default)
+	 *	    001 = NOP Command Enable
+	 *	    010 = All Banks Precharge Enable
+	 *	    011 = Mode Register Set Enable
+	 *	    100 = CBR Enable
+	 *	    101 = Reserved
+	 *	    110 = Reserved
+	 *	    111 = Reserved
 	 * [04:04] SDRAMPWR
-	 *         0 = 3 DIMM configuration
-	 *         1 = 4 DIMM configuration
+	 *	    0 = 3 DIMM configuration
+	 *	    1 = 4 DIMM configuration
 	 * [03:03] Leadoff Command Timing (LCT)
-	 *         0 = 4 CS# Clock
-	 *         1 = 3 CS# Clock
+	 *	    0 = 4 CS# Clock
+	 *	    1 = 3 CS# Clock
 	 * [02:02] CAS# Latency (CL)
-	 *         0 = 3 DCLK CAS# latency
-	 *         1 = 2 DCLK CAS# latency
+	 *	    0 = 3 DCLK CAS# latency
+	 *	    1 = 2 DCLK CAS# latency
 	 * [01:01] SDRAM RAS# to CAS# Delay (SRCD)
-	 *         0 = 3 clocks between a row activate and a read or write cmd.
-	 *         1 = 2 clocks between a row activate and a read or write cmd.
+	 *	    0 = 3 clocks between a row activate and a read or write cmd.
+	 *	    1 = 2 clocks between a row activate and a read or write cmd.
 	 * [00:00] SDRAM RAS# Precharge (SRP)
-	 *         0 = 3 clocks of RAS# precharge
-	 *         1 = 2 clocks of RAS# precharge
+	 *	    0 = 3 clocks of RAS# precharge
+	 *	    1 = 2 clocks of RAS# precharge
 	 */
 #if CONFIG_SDRAMPWR_4DIMM
 	SDRAMC + 0, 0x00, 0x10, /* The board has 4 DIMM slots. */
@@ -316,23 +316,23 @@ static const u8 register_values[] = {
 	 * 0x78 - 0x79
 	 *
 	 * [15:08] Banks per Row (BPR)
-	 *         Each bit in this field corresponds to one row of the memory
-	 *         array. Bit 15 corresponds to row 7 while bit 8 corresponds
-	 *         to row 0. Bits for empty rows are "don't care".
-	 *         0 = 2 banks
-	 *         1 = 4 banks
+	 *	    Each bit in this field corresponds to one row of the memory
+	 *	    array. Bit 15 corresponds to row 7 while bit 8 corresponds
+	 *	    to row 0. Bits for empty rows are "don't care".
+	 *	    0 = 2 banks
+	 *	    1 = 4 banks
 	 * [07:05] Reserved
 	 * [04:04] Intel Reserved
 	 * [03:00] DRAM Idle Timer (DIT)
-	 *         0000 = 0 clocks
-	 *         0001 = 2 clocks
-	 *         0010 = 4 clocks
-	 *         0011 = 8 clocks
-	 *         0100 = 10 clocks
-	 *         0101 = 12 clocks
-	 *         0110 = 16 clocks
-	 *         0111 = 32 clocks
-	 *         1xxx = Infinite (pages are not closed for idle condition)
+	 *	    0000 = 0 clocks
+	 *	    0001 = 2 clocks
+	 *	    0010 = 4 clocks
+	 *	    0011 = 8 clocks
+	 *	    0100 = 10 clocks
+	 *	    0101 = 12 clocks
+	 *	    0110 = 16 clocks
+	 *	    0111 = 32 clocks
+	 *	    1xxx = Infinite (pages are not closed for idle condition)
 	 */
 	PGPOL + 0, 0x00, 0x00,
 	PGPOL + 1, 0x00, 0xff,
@@ -341,28 +341,28 @@ static const u8 register_values[] = {
 	 * 0x7a
 	 *
 	 * [07:07] Power Down SDRAM Enable (PDSE)
-	 *         1 = Enable
-	 *         0 = Disable
+	 *	    1 = Enable
+	 *	    0 = Disable
 	 * [06:06] ACPI Control Register Enable (SCRE)
-	 *         1 = Enable
-	 *         0 = Disable (default)
+	 *	    1 = Enable
+	 *	    0 = Disable (default)
 	 * [05:05] Suspend Refresh Type (SRT)
-	 *         1 = Self refresh mode
-	 *         0 = CBR fresh mode
+	 *	    1 = Self refresh mode
+	 *	    0 = CBR fresh mode
 	 * [04:04] Normal Refresh Enable (NREF_EN)
-	 *         1 = Enable
-	 *         0 = Disable
+	 *	    1 = Enable
+	 *	    0 = Disable
 	 * [03:03] Quick Start Mode (QSTART)
-	 *         1 = Quick start mode for the processor is enabled
+	 *	    1 = Quick start mode for the processor is enabled
 	 * [02:02] Gated Clock Enable (GCLKEN)
-	 *         1 = Enable
-	 *         0 = Disable
+	 *	    1 = Enable
+	 *	    0 = Disable
 	 * [01:01] AGP Disable (AGP_DIS)
-	 *         1 = Disable
-	 *         0 = Enable
+	 *	    1 = Disable
+	 *	    0 = Enable
 	 * [00:00] CPU reset without PCIRST enable (CRst_En)
-	 *         1 = Enable
-	 *         0 = Disable
+	 *	    1 = Enable
+	 *	    0 = Disable
 	 */
 	/* Enable normal refresh and the gated clock. */
 	// TODO: Only do this later?
@@ -500,8 +500,8 @@ static void set_dram_buffer_strength(void)
 	 * MAB[12:11,9:0]#,MAB[13,10],WEB#,SRASB#,SCASB# -+|||||||||||||||||||||
 	 * MAA[13:0],WEA#,SRASA#,SCASA# -----------------+||||||||||||||||||||||
 	 * Reserved ------------------------------------+|||||||||||||||||||||||
-	 *                                              ||||||||||||||||||||||||
-	 *   3        32        21        10        0 * 2  21        10        0
+	 *						 ||||||||||||||||||||||||
+	 *   3	       32	 21	   10	     0 * 2  21	      10	0
 	 *   9876543210987654321098765432109876543210 * 321098765432109876543210
 	 * a 10------------------------1010---------- * -1---------------11-----  a
 	 *!a 11------------------------1111---------- * -0---------------00----- !a
@@ -611,7 +611,7 @@ static void spd_enable_refresh(void)
 			continue;
 		reg = (reg & 0xf8) | refresh_rate_map[(value & 0x7f)];
 
-		PRINT_DEBUG("    Enabling refresh (DRAMC = 0x%02x) for DIMM %02x\n", reg, i);
+		PRINT_DEBUG("	   Enabling refresh (DRAMC = 0x%02x) for DIMM %02x\n", reg, i);
 	}
 
 	pci_write_config8(NB, DRAMC, reg);
@@ -638,7 +638,7 @@ void sdram_set_registers(void)
 		reg |= register_values[i + 2] & ~(register_values[i + 1]);
 		pci_write_config8(NB, register_values[i], reg);
 #if 0
-		PRINT_DEBUG("    Set register 0x%02x to 0x%02x\n",
+		PRINT_DEBUG("	   Set register 0x%02x to 0x%02x\n",
 				register_values[i], reg);
 #endif
 	}

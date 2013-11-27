@@ -484,8 +484,8 @@ agesawrapper_amdinitlate (
 	AcpiAlib    = AmdLateParamsPtr->AcpiAlib;
 
 	printk(BIOS_DEBUG, "In %s, AGESA generated ACPI tables:\n"
-			"   DmiTable:%p\n   AcpiPstate: %p\n   AcpiSrat:%p\n   AcpiSlit:%p\n"
-			"   Mce:%p\n   Cmc:%p\n   Alib:%p\n",
+			"   DmiTable:%p\n   AcpiPstate: %p\n	  AcpiSrat:%p\n	  AcpiSlit:%p\n"
+			"   Mce:%p\n	  Cmc:%p\n   Alib:%p\n",
 			__func__, DmiTable, AcpiPstate, AcpiSrat, AcpiSlit,
 			AcpiWheaMce, AcpiWheaCmc, AcpiAlib);
 

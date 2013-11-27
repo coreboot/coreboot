@@ -122,8 +122,8 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 {
 	if (!(resource->flags & IORESOURCE_ASSIGNED)) {
 		printk(BIOS_ERR, "ERROR: %s %02lx %s size: 0x%010llx "
-		       "not assigned\n", dev_path(dev), resource->index,
-		       resource_type(resource), resource->size);
+			 "not assigned\n", dev_path(dev), resource->index,
+			 resource_type(resource), resource->size);
 		return;
 	}
 
@@ -136,7 +136,7 @@ static void pnp_set_resource(device_t dev, struct resource *resource)
 		pnp_set_irq(dev, resource->index, resource->base);
 	} else {
 		printk(BIOS_ERR, "ERROR: %s %02lx unknown resource type\n",
-		       dev_path(dev), resource->index);
+			 dev_path(dev), resource->index);
 		return;
 	}
 	resource->flags |= IORESOURCE_STORED;
@@ -188,9 +188,9 @@ void pnp_alt_enable(device_t dev)
 
 struct device_operations pnp_ops = {
 	.read_resources   = pnp_read_resources,
-	.set_resources    = pnp_set_resources,
+	.set_resources	   = pnp_set_resources,
 	.enable_resources = pnp_enable_resources,
-	.enable           = pnp_enable,
+	.enable	   = pnp_enable,
 };
 
 /* PNP chip operations */

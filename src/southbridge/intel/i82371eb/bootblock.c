@@ -36,7 +36,7 @@ static void i82371eb_enable_rom(void)
 	 * bus/device/function numbers) works on all boards.
 	 */
 	dev = pci_locate_device(PCI_ID(PCI_VENDOR_ID_INTEL,
-				       PCI_DEVICE_ID_INTEL_82371AB_ISA), 0);
+					   PCI_DEVICE_ID_INTEL_82371AB_ISA), 0);
 
 	/* Enable access to the whole ROM, disable ROM write access. */
 	reg16 = pci_read_config16(dev, XBCS);

@@ -126,7 +126,7 @@ static void copy_console_buffer(struct cbmem_console *new_cons_p)
 		old_cons_p->buffer_size : old_cons_p->buffer_cursor;
 
 	memcpy(new_cons_p->buffer_body + cursor, old_cons_p->buffer_body,
-	       copy_size);
+		copy_size);
 
 	cursor += copy_size;
 

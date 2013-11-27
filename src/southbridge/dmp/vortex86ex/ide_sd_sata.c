@@ -35,48 +35,48 @@
  * Primary ATA Timing Register (PATR) - Offset 40-41h
  * Secondary ATA Timing Register (PATR) - Offset 42-43h
  *
- * Bit     R/W     Default Description
- * 15      R/W     0h      ATA Decode Enable. Decode the I/O addressing ranges assigned to this controller.
- *                         1: Enabled.
- *                         0: Disabled.
- * 14      R/W     0b      Device 1 ATA Timing Register Enable
- *                         1: Enable the device 1 ATA timing.
- *                         0: Disable the device 1 ATA timing
- * 13-12   R/W     0h      IORDY Sample Mode. Sets the setup time before IORDY are sampled.
- *                         00: PIO-0
- *                         10: PIO-2, SW-2
- *                         10: PIO-3, PIO-4, MW-1, MW-2
- *                         11: Reserved
- * 11-10   RO      0h      Reserved
- * 9-8     R/W     0h      Recovery Mode. Sets the hold time after IORDY are sampled.
- *                         00: PIO-0, PIO-2, SW-2
- *                         10: PIO-3, MW-1
- *                         10: Reserved
- *                         11: PIO-4, MW-2
- * 7       R/W     0b      DMA Timing Enable Only Select 1
- *                         1: Enable the device timings for DMA operation for device 1
- *                         0: Disable the device timings for DMA operation for device 1
- * 6       R/W     0b      ATA/ATAPI Device Indicator 1
- *                         1: Indicate presence od an ATA device
- *                         0: Indicate presence od an ATAPI device
- * 5       R/W     0b      IORDY Sample Point Enabled Select 1
- *                         1: Enable IORDY sample for PIO transfers for device 1
- *                         0: Disable IORDY sample for PIO transfers for device 1
- * 4       R/W     0b      Fast Drive Timing Select 1
- *                         1: Enable faster than PIO-0 timing modes for device 1
- *                         0: Disable faster than PIO-0 timing modes for device 1
- * 3       R/W     0b      DMA Timing Enable Only Select 0
- *                         1: Enable the device timings for DMA operation for device 0
- *                         0: Disable the device timings for DMA operation for device 0
- * 2       R/W     0b      ATA/ATAPI Device Indicator 0
- *                         1: Indicate presence od an ATA device
- *                         0: Indicate presence od an ATAPI device
- * 1       R/W     0b      IORDY Sample Point Enabled Select 0
- *                         1: Enable IORDY sample for PIO transfers for device 0
- *                         0: Disable IORDY sample for PIO transfers for device 0
- * 0       R/W     0b      Fast Drive Timing Select 0
- *                         1: Enable faster than PIO-0 timing modes for device 0
- *                         0: Disable faster than PIO-0 timing modes for device 0
+ * Bit	   R/W	   Default Description
+ * 15	   R/W	   0h	   ATA Decode Enable. Decode the I/O addressing ranges assigned to this controller.
+ *			   1: Enabled.
+ *			   0: Disabled.
+ * 14	   R/W	   0b	   Device 1 ATA Timing Register Enable
+ *			   1: Enable the device 1 ATA timing.
+ *			   0: Disable the device 1 ATA timing
+ * 13-12   R/W	   0h	   IORDY Sample Mode. Sets the setup time before IORDY are sampled.
+ *			   00: PIO-0
+ *			   10: PIO-2, SW-2
+ *			   10: PIO-3, PIO-4, MW-1, MW-2
+ *			   11: Reserved
+ * 11-10   RO	   0h	   Reserved
+ * 9-8	   R/W	   0h	   Recovery Mode. Sets the hold time after IORDY are sampled.
+ *			   00: PIO-0, PIO-2, SW-2
+ *			   10: PIO-3, MW-1
+ *			   10: Reserved
+ *			   11: PIO-4, MW-2
+ * 7	   R/W	   0b	   DMA Timing Enable Only Select 1
+ *			   1: Enable the device timings for DMA operation for device 1
+ *			   0: Disable the device timings for DMA operation for device 1
+ * 6	   R/W	   0b	   ATA/ATAPI Device Indicator 1
+ *			   1: Indicate presence od an ATA device
+ *			   0: Indicate presence od an ATAPI device
+ * 5	   R/W	   0b	   IORDY Sample Point Enabled Select 1
+ *			   1: Enable IORDY sample for PIO transfers for device 1
+ *			   0: Disable IORDY sample for PIO transfers for device 1
+ * 4	   R/W	   0b	   Fast Drive Timing Select 1
+ *			   1: Enable faster than PIO-0 timing modes for device 1
+ *			   0: Disable faster than PIO-0 timing modes for device 1
+ * 3	   R/W	   0b	   DMA Timing Enable Only Select 0
+ *			   1: Enable the device timings for DMA operation for device 0
+ *			   0: Disable the device timings for DMA operation for device 0
+ * 2	   R/W	   0b	   ATA/ATAPI Device Indicator 0
+ *			   1: Indicate presence od an ATA device
+ *			   0: Indicate presence od an ATAPI device
+ * 1	   R/W	   0b	   IORDY Sample Point Enabled Select 0
+ *			   1: Enable IORDY sample for PIO transfers for device 0
+ *			   0: Disable IORDY sample for PIO transfers for device 0
+ * 0	   R/W	   0b	   Fast Drive Timing Select 0
+ *			   1: Enable faster than PIO-0 timing modes for device 0
+ *			   0: Disable faster than PIO-0 timing modes for device 0
  * */
 
 static void init_ide_ata_timing(struct device *dev)
@@ -146,26 +146,26 @@ static void vortex_ide_init(struct device *dev)
 
 static struct device_operations vortex_ide_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = vortex_ide_init,
-	.scan_bus         = 0,
+	.init		   = vortex_ide_init,
+	.scan_bus	   = 0,
 };
 
 static const struct pci_driver vortex_ide_driver_1010 __pci_driver = {
-	.ops    = &vortex_ide_ops,
+	.ops	 = &vortex_ide_ops,
 	.vendor = PCI_VENDOR_ID_RDC,
 	.device = 0x1010,
 };
 
 static const struct pci_driver vortex_ide_driver_1011 __pci_driver = {
-	.ops    = &vortex_ide_ops,
+	.ops	 = &vortex_ide_ops,
 	.vendor = PCI_VENDOR_ID_RDC,
 	.device = 0x1011,
 };
 
 static const struct pci_driver vortex_ide_driver_1012 __pci_driver = {
-	.ops    = &vortex_ide_ops,
+	.ops	 = &vortex_ide_ops,
 	.vendor = PCI_VENDOR_ID_RDC,
 	.device = 0x1012,
 };

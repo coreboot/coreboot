@@ -196,11 +196,11 @@ static void setup_default_resource_map(void)
 	 * [ 4: 4] VGA Enable
 	 *	   0 = VGA matches Disabled
 	 *	   1 = matches all address < 64K and where A[9:0] is in the
-	 *	       range 3B0-3BB or 3C0-3DF independen of the base & limit registers
+	 *		   range 3B0-3BB or 3C0-3DF independen of the base & limit registers
 	 * [ 5: 5] ISA Enable
 	 *	   0 = ISA matches Disabled
 	 *	   1 = Blocks address < 64K and in the last 768 bytes of eack 1K block
-	 *	       from matching agains this base/limit pair
+	 *		   from matching agains this base/limit pair
 	 * [11: 6] Reserved
 	 * [24:12] PCI I/O Base i
 	 *	   This field defines the start of PCI I/O region n

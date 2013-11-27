@@ -31,8 +31,8 @@ _secondary_start:
 	/* This will get filled in by C code. */
 _secondary_gdt_addr:
 gdtaddr:
-	.word   0	/* the table limit */
-	.long   0	/* we know the offset */
+	.word	 0	/* the table limit */
+	.long	 0	/* we know the offset */
 
 _secondary_start_end:
 

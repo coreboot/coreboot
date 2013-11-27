@@ -40,7 +40,7 @@ static void nic_init(struct device *dev)
 	base = (unsigned long)res->base;
 
 #define NvRegPhyInterface  0xC0
-#define PHY_RGMII          0x10000000
+#define PHY_RGMII	   0x10000000
 
 	write32(base + NvRegPhyInterface, PHY_RGMII);
 
@@ -56,7 +56,7 @@ static void nic_init(struct device *dev)
 		/* Read MAC address from EEPROM at first. */
 		struct device *dev_eeprom;
 		dev_eeprom = dev_find_slot_on_smbus(conf->mac_eeprom_smbus,
-					   conf->mac_eeprom_addr);
+						conf->mac_eeprom_addr);
 
 		if (dev_eeprom) {
 			/* If that is valid we will use that. */
@@ -115,22 +115,22 @@ static void nic_init(struct device *dev)
 
 static struct device_operations nic_ops = {
 	.read_resources   = pci_dev_read_resources,
-	.set_resources    = pci_dev_set_resources,
+	.set_resources	   = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = nic_init,
-	.scan_bus         = 0,
-	// .enable        = ck804_enable,
-	.ops_pci          = &ck804_pci_ops,
+	.init		   = nic_init,
+	.scan_bus	   = 0,
+	// .enable	   = ck804_enable,
+	.ops_pci	   = &ck804_pci_ops,
 };
 
 static const struct pci_driver nic_driver __pci_driver = {
-	.ops    = &nic_ops,
+	.ops	 = &nic_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_NIC,
 };
 
 static const struct pci_driver nic_bridge_driver __pci_driver = {
-	.ops    = &nic_ops,
+	.ops	 = &nic_ops,
 	.vendor = PCI_VENDOR_ID_NVIDIA,
 	.device = PCI_DEVICE_ID_NVIDIA_CK804_NIC_BRIDGE,
 };

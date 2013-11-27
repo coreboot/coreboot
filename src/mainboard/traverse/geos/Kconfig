@@ -27,7 +27,7 @@ config IRQ_SLOT_COUNT
 	default 6
 
 config PLLMSRlo
-        hex
-        default 0x00de602e
+	hex
+	default 0x00de602e
 
 endif # BOARD_TRAVERSE_GEOS

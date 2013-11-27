@@ -144,7 +144,7 @@ Device (MCHC)
 	 *
 	 * Format of _PSS:
 	 *   Name (_PSS, Package () {
-	 *     Package (6) { freq, power, tlat, blat, control, status }
+	 *	Package (6) { freq, power, tlat, blat, control, status }
 	 *   }
 	 */
 	External (\_PR.CPU0._PSS)
@@ -156,7 +156,7 @@ Device (MCHC)
 		While (LLess (Local0, Local1)) {
 			/* Store _PSS entry Control value to Local2 */
 			ShiftRight (DeRefOf (Index (DeRefOf (Index
-			      (\_PR.CPU0._PSS, Local0)), 4)), 8, Local2)
+				 (\_PR.CPU0._PSS, Local0)), 4)), 8, Local2)
 			If (LEqual (Local2, Arg0)) {
 				Return (Subtract (Local0, 1))
 			}

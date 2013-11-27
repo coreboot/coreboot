@@ -34,7 +34,7 @@ static void pl011_uart_tx_flush(void) {
 #if !defined(__PRE_RAM__)
 
 static const struct console_driver pl011_uart_console __console = {
-	.init     = pl011_init_dev,
+	.init	   = pl011_init_dev,
 	.tx_byte  = pl011_uart_tx_byte,
 	.tx_flush = pl011_uart_tx_flush,
 };

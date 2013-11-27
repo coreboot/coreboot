@@ -165,8 +165,8 @@ void print_apicid_nodeid_coreid(u32 apicid, struct node_core_id id,
 				const char *str)
 {
 	printk(BIOS_DEBUG,
-	       "%s --- { APICID = %02x NODEID = %02x COREID = %02x} ---\n", str,
-	       apicid, id.nodeid, id.coreid);
+		"%s --- { APICID = %02x NODEID = %02x COREID = %02x} ---\n", str,
+		apicid, id.nodeid, id.coreid);
 }
 
 static u32 wait_cpu_state(u32 apicid, u32 state)
@@ -308,7 +308,7 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 
 	if (cpu_init_detectedx) {
 		print_apicid_nodeid_coreid(apicid, id,
-					   "\n\n\nINIT detected from ");
+						"\n\n\nINIT detected from ");
 		printk(BIOS_DEBUG, "\nIssuing SOFT_RESET...\n");
 		soft_reset();
 	}
@@ -339,13 +339,13 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 			// check warm(bios) reset to call stage2 otherwise do stage1
 			if (warm_reset_detect(id.nodeid)) {
 				printk(BIOS_DEBUG,
-				       "init_fidvid_stage2 apicid: %02x\n",
-				       apicid);
+					   "init_fidvid_stage2 apicid: %02x\n",
+					   apicid);
 				init_fidvid_stage2(apicid, id.nodeid);
 			} else {
 				printk(BIOS_DEBUG,
-				       "init_fidvid_ap(stage1) apicid: %02x\n",
-				       apicid);
+					   "init_fidvid_ap(stage1) apicid: %02x\n",
+					   apicid);
 				init_fidvid_ap(apicid, id.nodeid, id.coreid);
 			}
 		}
@@ -357,8 +357,8 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		STOP_CAR_AND_CPU();
 
 		printk(BIOS_DEBUG,
-		       "\nAP %02x should be halted but you are reading this....\n",
-		       apicid);
+			 "\nAP %02x should be halted but you are reading this....\n",
+			 apicid);
 	}
 
 	return bsp_apicid;
@@ -480,7 +480,7 @@ static void AMD_Errata281(u8 node, u32 revision, u32 platform)
 		if (!(revision & (AMD_DR_B0 | AMD_DR_B1))) {
 			for (i = 0; i < nodes; i++) {
 				if (mctGetLogicalCPUID(i) &
-				    (AMD_DR_B0 | AMD_DR_B1)) {
+					(AMD_DR_B0 | AMD_DR_B1)) {
 					mixed = 1;
 					break;
 				}
@@ -822,9 +822,9 @@ static void cpuSetAMDPCI(u8 node)
 			val &= ~fam10_pci_default[i].mask;
 			val |= fam10_pci_default[i].data;
 			pci_write_config32(NODE_PCI(node,
-						    fam10_pci_default[i].
-						    function),
-					   fam10_pci_default[i].offset, val);
+							  fam10_pci_default[i].
+							  function),
+						fam10_pci_default[i].offset, val);
 		}
 	}
 
@@ -839,7 +839,7 @@ static void cpuSetAMDPCI(u8 node)
 			for (j = 0; j < 4; j++) {
 				if (AMD_CpuFindCapability(node, j, &offset)) {
 					if (AMD_checkLinkType(node, j, offset)
-					    & fam10_htphy_default[i].linktype) {
+						 & fam10_htphy_default[i].linktype) {
 						AMD_SetHtPhyRegister(node, j,
 								     i);
 					}

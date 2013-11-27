@@ -28,7 +28,7 @@
  * For Information about this file, see @ref platforminstall.
  *
  * @xrefitem bom "File Content Label" "Release Content"
- * @e project:      AGESA
+ * @e project:	    AGESA
  * @e sub-project:  Core
  * @e \$Revision: 23714 $   @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
@@ -318,7 +318,7 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #include "PlatformInstall.h"
 
 /*----------------------------------------------------------------------------------------
- *                        CUSTOMER OVERIDES MEMORY TABLE
+ *			  CUSTOMER OVERIDES MEMORY TABLE
  *----------------------------------------------------------------------------------------
  */
 
@@ -333,57 +333,57 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 	// The following macros are supported (use comma to separate macros):
 	//
 	// MEMCLK_DIS_MAP(SocketID, ChannelID, MemClkDisBit0CSMap,..., MemClkDisBit7CSMap)
-	//      The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
-	//      AGESA will base on this value to disable unused MemClk to save power.
-	//      Example:
-	//      BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
-	//           Bit AM3/S1g3 pin name
-	//           0   M[B,A]_CLK_H/L[0]
-	//           1   M[B,A]_CLK_H/L[1]
-	//           2   M[B,A]_CLK_H/L[2]
-	//           3   M[B,A]_CLK_H/L[3]
-	//           4   M[B,A]_CLK_H/L[4]
-	//           5   M[B,A]_CLK_H/L[5]
-	//           6   M[B,A]_CLK_H/L[6]
-	//           7   M[B,A]_CLK_H/L[7]
-	//      And platform has the following routing:
-	//           CS0   M[B,A]_CLK_H/L[4]
-	//           CS1   M[B,A]_CLK_H/L[2]
-	//           CS2   M[B,A]_CLK_H/L[3]
-	//           CS3   M[B,A]_CLK_H/L[5]
-	//      Then platform can specify the following macro:
-	//      MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
+	//	 The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
+	//	 AGESA will base on this value to disable unused MemClk to save power.
+	//	 Example:
+	//	 BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
+	//	      Bit AM3/S1g3 pin name
+	//	      0	  M[B,A]_CLK_H/L[0]
+	//	      1	  M[B,A]_CLK_H/L[1]
+	//	      2	  M[B,A]_CLK_H/L[2]
+	//	      3	  M[B,A]_CLK_H/L[3]
+	//	      4	  M[B,A]_CLK_H/L[4]
+	//	      5	  M[B,A]_CLK_H/L[5]
+	//	      6	  M[B,A]_CLK_H/L[6]
+	//	      7	  M[B,A]_CLK_H/L[7]
+	//	 And platform has the following routing:
+	//	      CS0   M[B,A]_CLK_H/L[4]
+	//	      CS1   M[B,A]_CLK_H/L[2]
+	//	      CS2   M[B,A]_CLK_H/L[3]
+	//	      CS3   M[B,A]_CLK_H/L[5]
+	//	 Then platform can specify the following macro:
+	//	 MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
 	//
 	// CKE_TRI_MAP(SocketID, ChannelID, CKETriBit0CSMap, CKETriBit1CSMap)
-	//      The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
-	//      AGESA will base on this value to tristate unused CKE to save power.
+	//	 The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
+	//	 AGESA will base on this value to tristate unused CKE to save power.
 	//
 	// ODT_TRI_MAP(SocketID, ChannelID, ODTTriBit0CSMap,..., ODTTriBit3CSMap)
-	//      The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
-	//      AGESA will base on this value to tristate unused ODT pins to save power.
+	//	 The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
+	//	 AGESA will base on this value to tristate unused ODT pins to save power.
 	//
 	// CS_TRI_MAP(SocketID, ChannelID, CSTriBit0CSMap,..., CSTriBit7CSMap)
-	//      The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
-	//      AGESA will base on this value to tristate unused Chip select to save power.
+	//	 The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
+	//	 AGESA will base on this value to tristate unused Chip select to save power.
 	//
 	// NUMBER_OF_DIMMS_SUPPORTED(SocketID, ChannelID, NumberOfDimmSlotsPerChannel)
-	//      Specifies the number of DIMM slots per channel.
+	//	 Specifies the number of DIMM slots per channel.
 	//
 	// NUMBER_OF_CHIP_SELECTS_SUPPORTED(SocketID, ChannelID, NumberOfChipSelectsPerChannel)
-	//      Specifies the number of Chip selects per channel.
+	//	 Specifies the number of Chip selects per channel.
 	//
 	// NUMBER_OF_CHANNELS_SUPPORTED(SocketID, NumberOfChannelsPerSocket)
-	//      Specifies the number of channels per socket.
+	//	 Specifies the number of channels per socket.
 	//
 	// OVERRIDE_DDR_BUS_SPEED(SocketID, ChannelID, USER_MEMORY_TIMING_MODE, MEMORY_BUS_SPEED)
-	//      Specifies DDR bus speed of channel ChannelID on socket SocketID.
+	//	 Specifies DDR bus speed of channel ChannelID on socket SocketID.
 	//
 	// DRAM_TECHNOLOGY(SocketID, TECHNOLOGY_TYPE)
-	//      Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
+	//	 Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
 	//
 	// WRITE_LEVELING_SEED(SocketID, ChannelID, Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed, Byte4Seed, Byte5Seed,
-	//      Byte6Seed, Byte7Seed, ByteEccSeed)
-	//      Specifies the write leveling seed for a channel of a socket.
+	//	 Byte6Seed, Byte7Seed, ByteEccSeed)
+	//	 Specifies the write leveling seed for a channel of a socket.
 	//
 	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
 	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
@@ -410,8 +410,8 @@ CONST UINT8 AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
 	//   with a particular DIMM configuration.  To hardcode your own values, uncomment the appropriate line in
 	//   the table and replace the byte lane values with your own.
 	//
-	//                                                                               ------------------ BYTE LANES ----------------------
-	//                                                                                BL0   BL1   BL2   BL3   BL4   BL5   BL6   Bl7   ECC
+	//										  ------------------ BYTE LANES ----------------------
+	//										   BL0	 BL1   BL2   BL3   BL4	 BL5   BL6   Bl7   ECC
 	// Write Data Timing
 	// DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM0, BFWrDatDly, MTOverride, 0x1D, 0x20, 0x26, 0x2B, 0x37, 0x3A, 0x3e, 0x3F, 0x30),// DCT0, DIMM0
 	// DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM1, BFWrDatDly, MTOverride, 0x1D, 0x00, 0x06, 0x0B, 0x17, 0x1A, 0x1E, 0x1F, 0x10),// DCT0, DIMM1
@@ -437,7 +437,7 @@ CONST UINT8 AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
 	// DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM1, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT1, DIMM1
 	//--------------------------------------------------------------------------------------------------------------------------------------------------
 	// TABLE END
-	NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
+	NBACCESS (MTEnd, 0,  0, 0, 0, 0),	// End of Table
 };
 CONST UINT8 SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABLE_ON[0]);
 
@@ -447,7 +447,7 @@ CONST UINT8 SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABL
  */
 //AGESA_STATUS
 //AgesaReadSpd (
-//  IN        UINTN                 FcnData,
+//  IN	      UINTN		    FcnData,
 //  IN OUT    AGESA_READ_SPD_PARAMS *ReadSpd
 //  )
 //{

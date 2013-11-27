@@ -28,9 +28,9 @@ void butterfly_ec_init(void)
 	/* Report EC info */
 	/* EC version: 6 bytes */
 	printk(BIOS_DEBUG,"  EC version: %c%c%c%c%c%c\n",
-	       ec_mem_read(EC_FW_VER0), ec_mem_read(EC_FW_VER1),
-	       ec_mem_read(EC_FW_VER2), ec_mem_read(EC_FW_VER3),
-	       ec_mem_read(EC_FW_VER4), ec_mem_read(EC_FW_VER5));
+		ec_mem_read(EC_FW_VER0), ec_mem_read(EC_FW_VER1),
+		ec_mem_read(EC_FW_VER2), ec_mem_read(EC_FW_VER3),
+		ec_mem_read(EC_FW_VER4), ec_mem_read(EC_FW_VER5));
 
 	/* Disable wake on USB, LAN & RTC */
 	/* Enable Wake from Keyboard */

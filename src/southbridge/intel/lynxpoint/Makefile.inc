@@ -62,20 +62,20 @@ ramstage-y += gpio.c
 endif
 
 lynxpoint_add_me: $(obj)/coreboot.pre $(IFDTOOL)
-	printf "    DD         Adding Intel Firmware Descriptor\n"
+	printf "    DD		Adding Intel Firmware Descriptor\n"
 	dd if=$(CONFIG_IFD_BIN_PATH) \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
-	printf "    IFDTOOL    me.bin -> coreboot.pre\n"
+	printf "    IFDTOOL	me.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \
 		-i ME:$(CONFIG_ME_BIN_PATH) \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
-	printf "    IFDTOOL    Locking Management Engine\n"
+	printf "    IFDTOOL	Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 else
-	printf "    IFDTOOL    Unlocking Management Engine\n"
+	printf "    IFDTOOL	Unlocking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool -u $(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
 endif

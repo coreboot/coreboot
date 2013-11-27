@@ -61,9 +61,9 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define SECSTS	0x1e
 #define INTR	0x3c
 #define BCTRL	0x3e
-#define   SBR	(1 << 6)
-#define   SEE	(1 << 1)
-#define   PERE	(1 << 0)
+#define	  SBR	(1 << 6)
+#define	  SEE	(1 << 1)
+#define	  PERE	(1 << 0)
 
 /* PCI Configuration Space (D31:F0): LPC */
 
@@ -80,7 +80,7 @@ int smbus_read_byte(unsigned device, unsigned address);
 
 #define PMBASE			0x40
 #define ACPI_CNTL		0x44
-#define   ACPI_EN		(1 << 7)
+#define	  ACPI_EN		(1 << 7)
 #define BIOS_CNTL		0xDC
 #define GPIO_BASE		0x48 /* LPC GPIO Base Address Register */
 #define GPIO_CNTL		0x4C /* LPC GPIO Control Register */
@@ -100,48 +100,48 @@ int smbus_read_byte(unsigned device, unsigned address);
 /* PCI Configuration Space (D31:F1): IDE */
 #define INTR_LN			0x3c
 #define IDE_TIM_PRI		0x40	/* IDE timings, primary */
-#define   IDE_DECODE_ENABLE	(1 << 15)
-#define   IDE_SITRE		(1 << 14)
-#define   IDE_ISP_5_CLOCKS	(0 << 12)
-#define   IDE_ISP_4_CLOCKS	(1 << 12)
-#define   IDE_ISP_3_CLOCKS	(2 << 12)
-#define   IDE_RCT_4_CLOCKS	(0 <<  8)
-#define   IDE_RCT_3_CLOCKS	(1 <<  8)
-#define   IDE_RCT_2_CLOCKS	(2 <<  8)
-#define   IDE_RCT_1_CLOCKS	(3 <<  8)
-#define   IDE_DTE1		(1 <<  7)
-#define   IDE_PPE1		(1 <<  6)
-#define   IDE_IE1		(1 <<  5)
-#define   IDE_TIME1		(1 <<  4)
-#define   IDE_DTE0		(1 <<  3)
-#define   IDE_PPE0		(1 <<  2)
-#define   IDE_IE0		(1 <<  1)
-#define   IDE_TIME0		(1 <<  0)
+#define	  IDE_DECODE_ENABLE	(1 << 15)
+#define	  IDE_SITRE		(1 << 14)
+#define	  IDE_ISP_5_CLOCKS	(0 << 12)
+#define	  IDE_ISP_4_CLOCKS	(1 << 12)
+#define	  IDE_ISP_3_CLOCKS	(2 << 12)
+#define	  IDE_RCT_4_CLOCKS	(0 <<  8)
+#define	  IDE_RCT_3_CLOCKS	(1 <<  8)
+#define	  IDE_RCT_2_CLOCKS	(2 <<  8)
+#define	  IDE_RCT_1_CLOCKS	(3 <<  8)
+#define	  IDE_DTE1		(1 <<  7)
+#define	  IDE_PPE1		(1 <<  6)
+#define	  IDE_IE1		(1 <<  5)
+#define	  IDE_TIME1		(1 <<  4)
+#define	  IDE_DTE0		(1 <<  3)
+#define	  IDE_PPE0		(1 <<  2)
+#define	  IDE_IE0		(1 <<  1)
+#define	  IDE_TIME0		(1 <<  0)
 #define IDE_TIM_SEC		0x42	/* IDE timings, secondary */
 
 #define IDE_SDMA_CNT		0x48	/* Synchronous DMA control */
-#define   IDE_SSDE1		(1 <<  3)
-#define   IDE_SSDE0		(1 <<  2)
-#define   IDE_PSDE1		(1 <<  1)
-#define   IDE_PSDE0		(1 <<  0)
+#define	  IDE_SSDE1		(1 <<  3)
+#define	  IDE_SSDE0		(1 <<  2)
+#define	  IDE_PSDE1		(1 <<  1)
+#define	  IDE_PSDE0		(1 <<  0)
 
 #define IDE_SDMA_TIM		0x4a
 
 #define IDE_CONFIG		0x54	/* IDE I/O Configuration Register */
-#define   SIG_MODE_SEC_NORMAL	(0 << 18)
-#define   SIG_MODE_SEC_TRISTATE	(1 << 18)
-#define   SIG_MODE_SEC_DRIVELOW	(2 << 18)
-#define   SIG_MODE_PRI_NORMAL	(0 << 16)
-#define   SIG_MODE_PRI_TRISTATE	(1 << 16)
-#define   SIG_MODE_PRI_DRIVELOW	(2 << 16)
-#define   FAST_SCB1		(1 << 15)
-#define   FAST_SCB0		(1 << 14)
-#define   FAST_PCB1		(1 << 13)
-#define   FAST_PCB0		(1 << 12)
-#define   SCB1			(1 <<  3)
-#define   SCB0			(1 <<  2)
-#define   PCB1			(1 <<  1)
-#define   PCB0			(1 <<  0)
+#define	  SIG_MODE_SEC_NORMAL	(0 << 18)
+#define	  SIG_MODE_SEC_TRISTATE	(1 << 18)
+#define	  SIG_MODE_SEC_DRIVELOW	(2 << 18)
+#define	  SIG_MODE_PRI_NORMAL	(0 << 16)
+#define	  SIG_MODE_PRI_TRISTATE	(1 << 16)
+#define	  SIG_MODE_PRI_DRIVELOW	(2 << 16)
+#define	  FAST_SCB1		(1 << 15)
+#define	  FAST_SCB0		(1 << 14)
+#define	  FAST_PCB1		(1 << 13)
+#define	  FAST_PCB0		(1 << 12)
+#define	  SCB1			(1 <<  3)
+#define	  SCB0			(1 <<  2)
+#define	  PCB1			(1 <<  1)
+#define	  PCB0			(1 <<  0)
 
 /* PCI Configuration Space (D31:F3): SMBus */
 #define SMB_BASE		0x20
@@ -296,26 +296,26 @@ int smbus_read_byte(unsigned device, unsigned address);
 
 /* ICH7 PMBASE */
 #define PM1_STS		0x00
-#define   WAK_STS	(1 << 15)
-#define   PCIEXPWAK_STS	(1 << 14)
-#define   PRBTNOR_STS	(1 << 11)
-#define   RTC_STS	(1 << 10)
-#define   PWRBTN_STS	(1 << 8)
-#define   GBL_STS	(1 << 5)
-#define   BM_STS	(1 << 4)
-#define   TMROF_STS	(1 << 0)
+#define	  WAK_STS	(1 << 15)
+#define	  PCIEXPWAK_STS	(1 << 14)
+#define	  PRBTNOR_STS	(1 << 11)
+#define	  RTC_STS	(1 << 10)
+#define	  PWRBTN_STS	(1 << 8)
+#define	  GBL_STS	(1 << 5)
+#define	  BM_STS	(1 << 4)
+#define	  TMROF_STS	(1 << 0)
 #define PM1_EN		0x02
-#define   PCIEXPWAK_DIS	(1 << 14)
-#define   RTC_EN	(1 << 10)
-#define   PWRBTN_EN	(1 << 8)
-#define   GBL_EN	(1 << 5)
-#define   TMROF_EN	(1 << 0)
+#define	  PCIEXPWAK_DIS	(1 << 14)
+#define	  RTC_EN	(1 << 10)
+#define	  PWRBTN_EN	(1 << 8)
+#define	  GBL_EN	(1 << 5)
+#define	  TMROF_EN	(1 << 0)
 #define PM1_CNT		0x04
-#define   SLP_EN	(1 << 13)
-#define   SLP_TYP	(7 << 10)
-#define   GBL_RLS	(1 << 2)
-#define   BM_RLD	(1 << 1)
-#define   SCI_EN	(1 << 0)
+#define	  SLP_EN	(1 << 13)
+#define	  SLP_TYP	(7 << 10)
+#define	  GBL_RLS	(1 << 2)
+#define	  BM_RLD	(1 << 1)
+#define	  SCI_EN	(1 << 0)
 #define PM1_TMR		0x08
 #define PROC_CNT	0x10
 #define LV2		0x14
@@ -323,39 +323,39 @@ int smbus_read_byte(unsigned device, unsigned address);
 #define LV4		0x16
 #define PM2_CNT		0x20 // mobile only
 #define GPE0_STS	0x28
-#define   USB4_STS	(1 << 14)
-#define   PME_B0_STS	(1 << 13)
-#define   USB3_STS	(1 << 12)
-#define   PME_STS	(1 << 11)
-#define   BATLOW_STS	(1 << 10)
-#define   PCI_EXP_STS	(1 << 9)
-#define   RI_STS	(1 << 8)
-#define   SMB_WAK_STS	(1 << 7)
-#define   TCOSCI_STS	(1 << 6)
-#define   AC97_STS	(1 << 5)
-#define   USB2_STS	(1 << 4)
-#define   USB1_STS	(1 << 3)
-#define   SWGPE_STS	(1 << 2)
-#define   HOT_PLUG_STS	(1 << 1)
-#define   THRM_STS	(1 << 0)
+#define	  USB4_STS	(1 << 14)
+#define	  PME_B0_STS	(1 << 13)
+#define	  USB3_STS	(1 << 12)
+#define	  PME_STS	(1 << 11)
+#define	  BATLOW_STS	(1 << 10)
+#define	  PCI_EXP_STS	(1 << 9)
+#define	  RI_STS	(1 << 8)
+#define	  SMB_WAK_STS	(1 << 7)
+#define	  TCOSCI_STS	(1 << 6)
+#define	  AC97_STS	(1 << 5)
+#define	  USB2_STS	(1 << 4)
+#define	  USB1_STS	(1 << 3)
+#define	  SWGPE_STS	(1 << 2)
+#define	  HOT_PLUG_STS	(1 << 1)
+#define	  THRM_STS	(1 << 0)
 #define GPE0_EN		0x2c
-#define   PME_B0_EN	(1 << 13)
-#define   PME_EN	(1 << 11)
+#define	  PME_B0_EN	(1 << 13)
+#define	  PME_EN	(1 << 11)
 #define SMI_EN		0x30
-#define   EL_SMI_EN	 (1 << 25) // Intel Quick Resume Technology
-#define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
-#define   LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
-#define   PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
-#define   TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
-#define   MCSMI_EN	 (1 << 11) // Trap microcontroller range access
-#define   BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
-#define   SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
-#define   APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
-#define   SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
-#define   LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
-#define   BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
-#define   EOS		 (1 <<  1) // End of SMI (deassert SMI#)
-#define   GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
+#define	  EL_SMI_EN	 (1 << 25) // Intel Quick Resume Technology
+#define	  INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
+#define	  LEGACY_USB2_EN (1 << 17) // Legacy USB2 SMI logic
+#define	  PERIODIC_EN	 (1 << 14) // SMI on PERIODIC_STS in SMI_STS
+#define	  TCO_EN	 (1 << 13) // Enable TCO Logic (BIOSWE et al)
+#define	  MCSMI_EN	 (1 << 11) // Trap microcontroller range access
+#define	  BIOS_RLS	 (1 <<  7) // asserts SCI on bit set
+#define	  SWSMI_TMR_EN	 (1 <<  6) // start software smi timer on bit set
+#define	  APMC_EN	 (1 <<  5) // Writes to APM_CNT cause SMI#
+#define	  SLP_SMI_EN	 (1 <<  4) // Write to SLP_EN in PM1_CNT asserts SMI#
+#define	  LEGACY_USB_EN  (1 <<  3) // Legacy USB circuit SMI logic
+#define	  BIOS_EN	 (1 <<  2) // Assert SMI# on setting GBL_RLS bit
+#define	  EOS		 (1 <<  1) // End of SMI (deassert SMI#)
+#define	  GBL_SMI_EN	 (1 <<  0) // SMI# generation at all?
 #define SMI_STS		0x34
 #define ALT_GP_SMI_EN	0x38
 #define ALT_GP_SMI_STS	0x3a

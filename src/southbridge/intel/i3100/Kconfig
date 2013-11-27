@@ -6,8 +6,8 @@ config SOUTHBRIDGE_INTEL_I3100
 if SOUTHBRIDGE_INTEL_I3100
 
 config HPET_MIN_TICKS
-        hex
-        default 0x90
+	hex
+	default 0x90
 
 endif
 

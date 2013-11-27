@@ -107,7 +107,7 @@ static void ide_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 }
 
 static struct pci_operations ide_pci_ops = {
-	.set_subsystem    = ide_set_subsystem,
+	.set_subsystem	   = ide_set_subsystem,
 };
 
 static struct device_operations ide_ops = {

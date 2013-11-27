@@ -40,34 +40,34 @@
 #define DBC	0x53 /* DRAM Row Type Register (0x83) */
 #define DRT	0x55 /* DRAM Row Type Register (0x0000) */
 #define DRAMC	0x57 /* DRAM Control (0x01) */
-#define DRAMT   0x58 /* DRAM Timing (0x00) */
-#define PAM     0x59 /* Programmable Attribute Map, 7 registers (0x00). */
-#define DRB     0x60 /* DRAM Row Boundary, 8 registers (0x01). */
-#define FDHC    0x68 /* Fixed SDRAM Hole Control (0x00). */
+#define DRAMT	0x58 /* DRAM Timing (0x00) */
+#define PAM	0x59 /* Programmable Attribute Map, 7 registers (0x00). */
+#define DRB	0x60 /* DRAM Row Boundary, 8 registers (0x01). */
+#define FDHC	0x68 /* Fixed SDRAM Hole Control (0x00). */
 #define DRAMXC	0x6A /* Dram Extended Control Register (0x0000) */
 #define MBSC	0x6C /* Memory Buffer Strength Control: (0x55555555) */
 
-#define SMRAM   0x72 /* System Management RAM Control (0x02). */
+#define SMRAM	0x72 /* System Management RAM Control (0x02). */
 #define ERRCMD  0x90 /* Error Command Register (0x80). */
 #define ERRSTS0 0x91 /* Error Status (0x0000). */
 #define ERRSTS1 0x92 /* Error Status (0x0000). */
 // TODO: AGP stuff.
 
 /* For convenience: */
-#define DRB0    0x60
-#define DRB1    0x61
-#define DRB2    0x62
-#define DRB3    0x63
-#define DRB4    0x64
-#define DRB5    0x65
-#define DRB6    0x66
-#define DRB7    0x67
+#define DRB0	0x60
+#define DRB1	0x61
+#define DRB2	0x62
+#define DRB3	0x63
+#define DRB4	0x64
+#define DRB5	0x65
+#define DRB6	0x66
+#define DRB7	0x67
 
-#define PAM0    0x59
-#define PAM1    0x5a
-#define PAM2    0x5b
-#define PAM3    0x5c
-#define PAM4    0x5d
-#define PAM5    0x5e
-#define PAM6    0x5f
+#define PAM0	0x59
+#define PAM1	0x5a
+#define PAM2	0x5b
+#define PAM3	0x5c
+#define PAM4	0x5d
+#define PAM5	0x5e
+#define PAM6	0x5f
 

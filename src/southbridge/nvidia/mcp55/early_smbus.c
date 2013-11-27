@@ -88,7 +88,7 @@ static inline int smbusx_read_byte(unsigned smb_index, unsigned device,
 }
 
 static inline int smbusx_write_byte(unsigned smb_index, unsigned device,
-				    unsigned address, unsigned char val)
+					unsigned address, unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS0_IO_BASE + (smb_index << 8),
 				   device, address, val);

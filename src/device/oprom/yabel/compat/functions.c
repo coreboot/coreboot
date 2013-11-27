@@ -53,8 +53,8 @@ u64 get_time(void)
 
     __asm__ __volatile__(
 	"rdtsc"
-        : "=a"(eax), "=d"(edx)
-        : /* no inputs, no clobber */);
+	: "=a"(eax), "=d"(edx)
+	: /* no inputs, no clobber */);
     act = ((u64) edx << 32) | eax;
 #endif
     return act;

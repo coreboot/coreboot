@@ -23,9 +23,9 @@
 #include <arch/smp/mpspec.h>
 /* uses 7-bit I2C address */
 /* must be set to edge triggered */
-#define BUTTERFLY_TRACKPAD_NAME         "trackpad"
-#define BUTTERFLY_TRACKPAD_I2C_ADDR     0x67
-#define BUTTERFLY_TRACKPAD_IRQ          22		/* PIRQG - 22 Edge triggered */
+#define BUTTERFLY_TRACKPAD_NAME		"trackpad"
+#define BUTTERFLY_TRACKPAD_I2C_ADDR	0x67
+#define BUTTERFLY_TRACKPAD_IRQ		22		/* PIRQG - 22 Edge triggered */
 
 /* defines for programming the MAC address */
 #define BUTTERFLY_NIC_VENDOR_ID		0x10EC

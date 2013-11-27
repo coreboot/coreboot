@@ -40,12 +40,12 @@ static void *smp_write_config_table(void *v)
 	smp_write_processors(mc);
 	mptable_write_buses(mc, NULL, &isa_bus);
 
-	/* I/O APICs:   APIC ID Version State Address */
+	/* I/O APICs:	 APIC ID Version State Address */
 	smp_write_ioapic(mc, 2, 17, IO_APIC_ADDR);
 
 	mptable_add_isa_interrupts(mc, isa_bus, 0x2, 0);
 
-	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
+	/* I/O Ints:	 Type	 Polarity    Trigger	 Bus ID	  IRQ	 APIC ID PIN# */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x40, 0x2, 0x14);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x41, 0x2, 0x16);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x0, 0x42, 0x2, 0x15);
@@ -54,7 +54,7 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x1, 0x0, 0x2, 0x11);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW, 0x2, 0x10, 0x2, 0x11);
 
-	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
+	/*Local Ints:	 Type	 Polarity    Trigger	 Bus ID	  IRQ	 APIC ID PIN# */
 	mptable_lintsrc(mc, 0x0);
 
 	/* Compute the checksums */

@@ -214,7 +214,7 @@ my_rdb(u32 addr)
 		return rval;
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __func__, addr);
+				__func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -256,7 +256,7 @@ my_rdw(u32 addr)
 				// unaligned access, read single bytes
 				set_ci();
 				rval = (*((u8 *) translated_addr)) |
-				    (*((u8 *) translated_addr + 1) << 8);
+					(*((u8 *) translated_addr + 1) << 8);
 				clr_ci();
 			}
 		}
@@ -265,7 +265,7 @@ my_rdw(u32 addr)
 		return rval;
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __func__, addr);
+				__func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -309,9 +309,9 @@ my_rdl(u32 addr)
 				// unaligned access, read single bytes
 				set_ci();
 				rval = (*((u8 *) translated_addr)) |
-				    (*((u8 *) translated_addr + 1) << 8) |
-				    (*((u8 *) translated_addr + 2) << 16) |
-				    (*((u8 *) translated_addr + 3) << 24);
+					(*((u8 *) translated_addr + 1) << 8) |
+					(*((u8 *) translated_addr + 2) << 16) |
+					(*((u8 *) translated_addr + 3) << 24);
 				clr_ci();
 			}
 		}
@@ -321,7 +321,7 @@ my_rdl(u32 addr)
 		return rval;
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __func__, addr);
+				__func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -356,7 +356,7 @@ my_wrb(u32 addr, u8 val)
 		clr_ci();
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __func__, addr);
+				__func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -394,15 +394,15 @@ my_wrw(u32 addr, u16 val)
 				// unaligned access, write single bytes
 				set_ci();
 				*((u8 *) translated_addr) =
-				    (u8) (val & 0x00FF);
+					(u8) (val & 0x00FF);
 				*((u8 *) translated_addr + 1) =
-				    (u8) ((val & 0xFF00) >> 8);
+					(u8) ((val & 0xFF00) >> 8);
 				clr_ci();
 			}
 		}
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __func__, addr);
+				__func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {
@@ -441,19 +441,19 @@ my_wrl(u32 addr, u32 val)
 				// unaligned access, write single bytes
 				set_ci();
 				*((u8 *) translated_addr) =
-				    (u8) (val & 0x000000FF);
+					(u8) (val & 0x000000FF);
 				*((u8 *) translated_addr + 1) =
-				    (u8) ((val & 0x0000FF00) >> 8);
+					(u8) ((val & 0x0000FF00) >> 8);
 				*((u8 *) translated_addr + 2) =
-				    (u8) ((val & 0x00FF0000) >> 16);
+					(u8) ((val & 0x00FF0000) >> 16);
 				*((u8 *) translated_addr + 3) =
-				    (u8) ((val & 0xFF000000) >> 24);
+					(u8) ((val & 0xFF000000) >> 24);
 				clr_ci();
 			}
 		}
 	} else if (addr > M.mem_size) {
 		DEBUG_PRINTF("%s(%08x): Memory Access out of range!\n",
-			     __func__, addr);
+				__func__, addr);
 		//disassemble_forward(M.x86.saved_cs, M.x86.saved_ip, 1);
 		HALT_SYS();
 	} else {

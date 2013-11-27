@@ -27,8 +27,8 @@ static void debugcon_init(void)
 {
 	readback = inb(CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
 	printk(BIOS_INFO, "QEMU debugcon %s [port 0x%x]\n",
-	       (readback == 0xe9) ? "detected" : "not found",
-	       CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
+		(readback == 0xe9) ? "detected" : "not found",
+		CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
 }
 
 static void debugcon_tx_byte(unsigned char data)

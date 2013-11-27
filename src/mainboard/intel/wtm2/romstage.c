@@ -30,15 +30,15 @@
 const struct rcba_config_instruction rcba_config[] = {
 
 	/*
-	 *             GFX    INTA -> PIRQA (MSI)
+	 *		GFX    INTA -> PIRQA (MSI)
 	 * D28IP_P1IP  WLAN   INTA -> PIRQB
 	 * D28IP_P4IP  ETH0   INTB -> PIRQC
-	 * D29IP_E1P   EHCI1  INTA -> PIRQD
+	 * D29IP_E1P	EHCI1  INTA -> PIRQD
 	 * D20IP_XHCI  XHCI   INTA -> PIRQA
-	 * D31IP_SIP   SATA   INTA -> PIRQF (MSI)
+	 * D31IP_SIP	SATA   INTA -> PIRQF (MSI)
 	 * D31IP_SMIP  SMBUS  INTB -> PIRQG
 	 * D31IP_TTIP  THRT   INTC -> PIRQH
-	 * D27IP_ZIP   HDA    INTA -> PIRQG (MSI)
+	 * D27IP_ZIP	HDA    INTA -> PIRQG (MSI)
 	 */
 
 	/* Device interrupt pin register (board specific) */

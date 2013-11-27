@@ -29,10 +29,6 @@
 #include <string.h>
 #include <kconfig.h>
 
-#if IS_ENABLED (CONFIG_BOARD_LENOVO_X201)
-#include "mainboard/lenovo/x201/dock.h"
-#endif
-
 static void h8_bluetooth_enable(int on)
 {
 	if (on)
@@ -187,12 +183,8 @@ static void h8_enable(device_t dev)
 	}
 	h8_set_audio_mute(0);
 
-#if IS_ENABLED (CONFIG_BOARD_LENOVO_X201)
-	if (dock_present()) {
-		printk(BIOS_DEBUG, "dock is connected\n");
-		dock_connect();
-	} else
-		printk(BIOS_DEBUG, "dock is not connected\n");
+#if !IS_ENABLED(CONFIG_H8_DOCK_EARLY_INIT)
+	h8_mainboard_init_dock ();
 #endif
 }
 

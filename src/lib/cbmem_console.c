@@ -113,27 +113,39 @@ void cbmemc_tx_byte(unsigned char data)
  */
 static void copy_console_buffer(struct cbmem_console *new_cons_p)
 {
-	u32 copy_size;
+	u32 copy_size, dropped_chars;
 	u32 cursor = new_cons_p->buffer_cursor;
 	struct cbmem_console *old_cons_p;
-	int overflow;
 
 	old_cons_p = current_console();
 
-	overflow = old_cons_p->buffer_cursor > old_cons_p->buffer_size;
+	if (old_cons_p->buffer_cursor < old_cons_p->buffer_size)
+		copy_size = old_cons_p->buffer_cursor;
+	else
+		copy_size = old_cons_p->buffer_size;
 
-	copy_size = overflow ?
-		old_cons_p->buffer_size : old_cons_p->buffer_cursor;
+	if (cursor > new_cons_p->buffer_size)
+		copy_size = 0;
+	else if (cursor + copy_size > new_cons_p->buffer_size)
+		copy_size = new_cons_p->buffer_size - cursor;
+
+	dropped_chars = old_cons_p->buffer_cursor - copy_size;
+	if (dropped_chars) {
+		/* Reserve 80 chars to report overflow, if possible. */
+		if (copy_size < 80)
+			return;
+		copy_size -= 80;
+		dropped_chars += 80;
+	}
 
 	memcpy(new_cons_p->buffer_body + cursor, old_cons_p->buffer_body,
 	       copy_size);
 
 	cursor += copy_size;
 
-	if (overflow) {
+	if (dropped_chars) {
 		const char loss_str1[] = "\n\n*** Log truncated, ";
 		const char loss_str2[] = " characters dropped. ***\n\n";
-		u32 dropped_chars = old_cons_p->buffer_cursor - copy_size;
 
 		/*
 		 * When running from ROM sprintf is not available, a simple

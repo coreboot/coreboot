@@ -17,35 +17,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __CHROMEOS_H__
-#define __CHROMEOS_H__
-
-#include <stdint.h>
 #include <console/bootmode.h>
 
-/* functions implemented per mainboard: */
-int get_write_protect_state(void);
-#ifdef __PRE_RAM__
-void save_chromeos_gpios(void);
-#endif
+int __attribute__((__weak__)) developer_mode_switch(void)
+{
+	return 0;
+}
 
-/* functions implemented in vbnv.c: */
-int get_recovery_mode_from_vbnv(void);
-int vboot_wants_oprom(void);
-extern int oprom_is_loaded;
+int __attribute__((__weak__)) recovery_mode_switch(void)
+{
+	return 0;
+}
 
-void read_vbnv(uint8_t *vbnv_copy);
-void save_vbnv(const uint8_t *vbnv_copy);
+int developer_mode_enabled(void)
+{
+	return developer_mode_switch();
+}
 
-/* functions implemented in vboot.c */
-void init_chromeos(int bootmode);
-
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-struct romstage_handoff;
-void vboot_verify_firmware(struct romstage_handoff *handoff);
-void *vboot_get_payload(int *len);
-/* Returns 0 on success < 0 on error. */
-int vboot_get_handoff_info(void **addr, uint32_t *size);
-#endif
-
-#endif
+int recovery_mode_enabled(void)
+{
+	return recovery_mode_switch();
+}

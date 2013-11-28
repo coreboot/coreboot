@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <console/bootmode.h>
 #include <string.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
@@ -30,12 +31,6 @@
 #include "raminit.h"
 #include "pei_data.h"
 #include "haswell.h"
-
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
-#else
-#define recovery_mode_enabled(x) 0
-#endif
 
 void save_mrc_data(struct pei_data *pei_data)
 {

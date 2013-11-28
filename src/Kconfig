@@ -286,6 +286,11 @@ config MMCONF_SUPPORT
 	bool
 	default n
 
+config BOOTMODE_STRAPS
+	bool
+	default y if CHROMEOS
+	default n
+
 source src/console/Kconfig
 
 # This should default to N and be set by SuperI/O drivers that have an UART

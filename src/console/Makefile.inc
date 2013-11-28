@@ -26,6 +26,10 @@ ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 ramstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon_console.c
 
+ifneq ($(CONFIG_CHROMEOS),y)
+romstage-$(CONFIG_BOOTMODE_STRAPS) += bootmode.c
+ramstage-$(CONFIG_BOOTMODE_STRAPS) += bootmode.c
+endif
 
 $(obj)/console/console.ramstage.o : $(obj)/build.h
 $(obj)/console/console.romstage.o : $(obj)/build.h

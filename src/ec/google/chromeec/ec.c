@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <console/console.h>
+#include <console/bootmode.h>
 #include <arch/io.h>
 #include <delay.h>
 #include <arch/hlt.h>
@@ -31,7 +32,6 @@
 #endif
 #include "ec.h"
 #include "ec_commands.h"
-#include <vendorcode/google/chromeos/chromeos.h>
 
 uint8_t google_chromeec_calc_checksum(const uint8_t *data, int size)
 {

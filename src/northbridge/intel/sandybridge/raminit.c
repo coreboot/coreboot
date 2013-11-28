@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <console/bootmode.h>
 #include <string.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
@@ -33,11 +34,6 @@
 
 /* Management Engine is in the southbridge */
 #include "southbridge/intel/bd82x6x/me.h"
-#if CONFIG_CHROMEOS
-#include <vendorcode/google/chromeos/chromeos.h>
-#else
-#define recovery_mode_enabled(x) 0
-#endif
 
 /*
  * MRC scrambler seed offsets should be reserved in

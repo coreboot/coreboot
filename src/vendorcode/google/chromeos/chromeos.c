@@ -27,7 +27,9 @@
 #include <console/console.h>
 
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-static int vboot_enable_developer(void)
+#include <payload_loader.h>
+
+int vboot_enable_developer(void)
 {
 	struct vboot_handoff *vbho;
 
@@ -42,7 +44,7 @@ static int vboot_enable_developer(void)
 	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_DEVELOPER);
 }
 
-static int vboot_enable_recovery(void)
+int vboot_enable_recovery(void)
 {
 	struct vboot_handoff *vbho;
 
@@ -53,36 +55,6 @@ static int vboot_enable_recovery(void)
 
 	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_RECOVERY);
 }
-#else
-static inline int vboot_enable_developer(void) { return 0; }
-static inline int vboot_enable_recovery(void) { return 0; }
-#endif
-
-int developer_mode_enabled(void)
-{
-	return get_developer_mode_switch() || vboot_enable_developer();
-}
-
-int recovery_mode_enabled(void)
-{
-	/*
-	 * This is called in multiple places and has to detect
-	 * recovery mode triggered from the EC and via shared
-	 * recovery reason set with crossystem.
-	 *
-	 * If shared recovery reason is set:
-	 * - before VbInit then get_recovery_mode_from_vbnv() is true
-	 * - after VbInit then vboot_enable_recovery() is true
-	 *
-	 * Otherwise the mainboard handler for get_recovery_mode_switch()
-	 * will detect recovery mode initiated by the EC.
-	 */
-	return get_recovery_mode_switch() || get_recovery_mode_from_vbnv() ||
-		vboot_enable_recovery();
-}
-
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-#include <payload_loader.h>
 
 static void *vboot_get_payload(size_t *len)
 {

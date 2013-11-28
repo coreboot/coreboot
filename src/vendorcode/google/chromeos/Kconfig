@@ -26,6 +26,7 @@ config CHROMEOS
 	bool "Build for ChromeOS"
 	default y
 	select TPM
+	select BOOTMODE_STRAPS
 	help
 	  Enable ChromeOS specific features like the GPIO sub table in
 	  the coreboot table. NOTE: Enabling this option on an unsupported

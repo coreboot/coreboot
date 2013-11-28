@@ -128,6 +128,9 @@ smm-y += gcc.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
 
+romstage-y += bootmode.c
+ramstage-y += bootmode.c
+
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c

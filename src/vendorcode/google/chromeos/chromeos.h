@@ -22,10 +22,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <bootmode.h>
 
 /* functions implemented per mainboard: */
-int get_developer_mode_switch(void);
-int get_recovery_mode_switch(void);
 int get_write_protect_state(void);
 #ifdef __PRE_RAM__
 void save_chromeos_gpios(void);
@@ -39,16 +38,14 @@ extern int oprom_is_loaded;
 void read_vbnv(uint8_t *vbnv_copy);
 void save_vbnv(const uint8_t *vbnv_copy);
 
-/* functions implemented in chromeos.c: */
-int developer_mode_enabled(void);
-int recovery_mode_enabled(void);
-
 /* functions implemented in vboot.c */
 void init_chromeos(int bootmode);
 
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 /* Returns 0 on success < 0 on error. */
 int vboot_get_handoff_info(void **addr, uint32_t *size);
+int vboot_enable_developer(void);
+int vboot_enable_recovery(void);
 #endif
 
 #include "gnvs.h"

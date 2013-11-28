@@ -300,6 +300,10 @@ config MMCONF_SUPPORT
 	bool
 	default n
 
+config BOOTMODE_STRAPS
+	bool
+	default n
+
 source src/console/Kconfig
 
 config HAVE_ACPI_RESUME

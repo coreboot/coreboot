@@ -39,7 +39,11 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/quanta/ene_kb3940q/ec.h>
+#if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>
+#else
+#include <cbfs.h>
+#endif
 
 static unsigned int search(char *p, char *a, unsigned int lengthp,
 			   unsigned int lengtha)
@@ -294,11 +298,21 @@ static void verb_setup(void)
 
 static void mainboard_init(device_t dev)
 {
-	char **vpd_region_ptr = NULL;
-	u32 search_length = find_fmap_entry("RO_VPD", (void **)vpd_region_ptr);
-	u32 search_address = (unsigned long)(*vpd_region_ptr);
+	u32 search_address = 0x0;
+	u32 search_length = -1;
 	u16 io_base = 0;
 	struct device *ethernet_dev = NULL;
+#if CONFIG_CHROMEOS
+	char **vpd_region_ptr = NULL;
+	search_length = find_fmap_entry("RO_VPD", (void **)vpd_region_ptr);
+	search_address = (unsigned long)(*vpd_region_ptr);
+#else
+	struct cbfs_file *vpd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "vpd.bin");
+	if (vpd_file) {
+		search_length = ntohl(vpd_file->len);
+		search_address = (unsigned long)CBFS_SUBHEADER(vpd_file);
+	}
+#endif
 
 	/* Initialize the Embedded Controller */
 	butterfly_ec_init();

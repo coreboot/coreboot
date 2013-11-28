@@ -41,7 +41,6 @@ static unsigned int graphics;
 static unsigned short addrport;
 static unsigned short dataport;
 static unsigned int physbase;
-extern int oprom_is_loaded;
 
 #define READ32(addr) io_i915_READ32(addr)
 #define WRITE32(val, addr) io_i915_WRITE32(val, addr)
@@ -278,6 +277,5 @@ int i915lightup(unsigned int pphysbase,
 	memset((void *)graphics, 0, 4520*4096);
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	i915_init_done = 1;
-	oprom_is_loaded = 1;
 	return 0;
 }

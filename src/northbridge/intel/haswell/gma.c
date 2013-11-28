@@ -27,6 +27,11 @@
 #include "chip.h"
 #include "haswell.h"
 
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/chromeos.h>
+int oprom_is_loaded = 0;
+#endif
+
 /* some vga option roms are used for several chipsets but they only have one
  * PCI ID in their header. If we encounter such an option rom, we need to do
  * the mapping ourselfes
@@ -185,9 +190,7 @@ static void gma_setup_panel(struct device *dev)
 
 static void gma_pm_init_post_vbios(struct device *dev)
 {
-	extern int oprom_is_loaded;
-
-	if (!oprom_is_loaded) {
+	if (!dev->oprom_is_loaded) {
 		/* Magic to force graphics into happy state for kernel */
 		gtt_write(0xc7204, 0xabcd000f); /* panel power up */
 		gtt_write(0x45400, 0x80000000); /* power well enable */
@@ -231,6 +234,8 @@ static void gma_func0_init(struct device *dev)
 
 	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
 	lightup_ok = i915lightup(physbase, iobase, mmiobase, graphics_base);
+	if (lightup_ok)
+		dev->oprom_is_loaded = 1;
 #endif
 	if (! lightup_ok) {
 		printk(BIOS_SPEW, "FUI did not run; using VBIOS\n");
@@ -239,6 +244,11 @@ static void gma_func0_init(struct device *dev)
 
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
+
+#if CONFIG_CHROMEOS
+	if (dev->oprom_is_loaded)
+		oprom_is_loaded = 1;
+#endif
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

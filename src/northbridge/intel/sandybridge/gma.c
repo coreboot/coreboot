@@ -30,6 +30,11 @@
 #include "chip.h"
 #include "sandybridge.h"
 
+#if CONFIG_CHROMEOS
+#include <vendorcode/google/chromeos/chromeos.h>
+int oprom_is_loaded = 0;
+#endif
+
 struct gt_powermeter {
 	u16 reg;
 	u32 value;
@@ -635,7 +640,6 @@ static void gma_func0_init(struct device *dev)
 	/* PCI Init, will run VBIOS */
 	pci_dev_init(dev);
 #endif
-
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
 
@@ -649,7 +653,13 @@ static void gma_func0_init(struct device *dev)
 	graphics_base = dev->resource_list[1].base;
 
 	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
-	i915lightup(physbase, iobase, mmiobase, graphics_base);
+	int lightup_ok = i915lightup(physbase, iobase, mmiobase, graphics_base);
+	if (lightup_ok)
+		dev->oprom_is_loaded = 1;
+#endif
+#if CONFIG_CHROMEOS
+	if (dev->oprom_is_loaded)
+		oprom_is_loaded = 1;
 #endif
 }
 

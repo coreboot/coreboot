@@ -655,10 +655,6 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
-#if CONFIG_CHROMEOS
-int oprom_is_loaded = 0;
-#endif
-
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
@@ -703,10 +699,9 @@ void pci_dev_init(struct device *dev)
 		return;
 
 	run_bios(dev, (unsigned long)ram);
-#if CONFIG_CHROMEOS
-	oprom_is_loaded = 1;
-	printk(BIOS_DEBUG, "VGA Option ROM has been loaded\n");
-#endif
+	dev->oprom_is_loaded = 1;
+	if ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
+		printk(BIOS_DEBUG, "VGA Option ROM has been loaded\n");
 #endif /* CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN */
 }
 

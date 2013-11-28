@@ -23,6 +23,9 @@
 int get_developer_mode_switch(void);
 int get_recovery_mode_switch(void);
 
+int gfx_get_init_done(void);
+void gfx_set_init_done(int done);
+
 #if CONFIG_BOOTMODE_STRAPS
 int developer_mode_enabled(void);
 int recovery_mode_enabled(void);

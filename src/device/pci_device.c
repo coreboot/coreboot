@@ -32,6 +32,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <bootmode.h>
 #include <delay.h>
 #if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
 #include <device/hypertransport.h>
@@ -660,10 +661,6 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 			   ((device & 0xffff) << 16) | (vendor & 0xffff));
 }
 
-#if CONFIG_CHROMEOS
-int oprom_is_loaded = 0;
-#endif
-
 #if CONFIG_VGA_ROM_RUN
 static int should_run_oprom(struct device *dev)
 {
@@ -733,10 +730,8 @@ void pci_dev_init(struct device *dev)
 		return;
 
 	run_bios(dev, (unsigned long)ram);
-#if CONFIG_CHROMEOS
-	oprom_is_loaded = 1;
-	printk(BIOS_DEBUG, "VGA Option ROM has been loaded\n");
-#endif
+	gfx_set_init_done(1);
+	printk(BIOS_DEBUG, "VGA Option ROM was run\n");
 #endif /* CONFIG_VGA_ROM_RUN */
 }
 

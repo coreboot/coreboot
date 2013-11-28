@@ -58,7 +58,6 @@ static unsigned int graphics;
 static unsigned short addrport;
 static unsigned short dataport;
 static unsigned int physbase;
-extern int oprom_is_loaded;
 static u32 htotal, hblank, hsync, vtotal, vblank, vsync;
 
 const u32 link_edid_data[] = {
@@ -379,6 +378,5 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	set_vbe_mode_info_valid(&edid, graphics);
 	i915_init_done = 1;
-	oprom_is_loaded = 1;
-	return 0;
+	return i915_init_done;
 }

@@ -70,7 +70,6 @@ static unsigned int graphics;
 static unsigned short addrport;
 static unsigned short dataport;
 static unsigned int physbase;
-extern int oprom_is_loaded;
 
 const u32 link_edid_data[] = {
 	0xffffff00, 0x00ffffff, 0x0379e430, 0x00000000,
@@ -220,8 +219,7 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	 */
 
 	i915_init_done = 1;
-	oprom_is_loaded = 1;
-	return 1;
+	return i915_init_done;
 
 fail:
 	printk(BIOS_SPEW, "Graphics could not be started;");

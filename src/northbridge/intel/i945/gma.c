@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <bootmode.h>
 #include <delay.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -63,7 +64,9 @@ static void gma_func0_init(struct device *dev)
 	);
 
 	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
-	i915lightup(uma_memory_base, iobase, mmiobase, graphics_base);
+	int lightup_ok = i915lightup(uma_memory_base, iobase, mmiobase, graphics_base);
+	if (lightup_ok)
+		gfx_set_init_done(1);
 #endif
 
 }

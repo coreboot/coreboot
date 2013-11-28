@@ -89,7 +89,6 @@ static unsigned int graphics;
 static unsigned short addrport;
 static unsigned short dataport;
 static unsigned int physbase;
-extern int oprom_is_loaded;
 
 static int ioread = 0, iowrite = 0;
 
@@ -462,10 +461,9 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	set_vbe_mode_info_valid(&dp->edid, graphics);
 	i915_init_done = 1;
-	oprom_is_loaded = 1;
 	//io_i915_write32( 0x80000000,BLC_PWM_CPU_CTL2);
 	//io_i915_write32( 0x80000000,BLC_PWM_PCH_CTL1);
-	return 1;
+	return i915_init_done;
 
 fail:
 	printk(BIOS_SPEW, "Graphics could not be started;");

@@ -83,7 +83,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Did we load the VGA Option ROM? */
 	gpios->gpios[5].port = -1; /* Indicate that this is a pseudo GPIO */
 	gpios->gpios[5].polarity = ACTIVE_HIGH;
-	gpios->gpios[5].value = oprom_is_loaded;
+	gpios->gpios[5].value = gfx_get_init_done();
 	strncpy((char *)gpios->gpios[5].name,"oprom", GPIO_MAX_NAME_LENGTH);
 }
 #endif

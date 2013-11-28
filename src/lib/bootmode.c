@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <rules.h>
 #include <bootmode.h>
 #if CONFIG_CHROMEOS || CONFIG_VBOOT_VERIFY_FIRMWARE
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -61,3 +62,19 @@ int recovery_mode_enabled(void)
 	return 0;
 }
 #endif /* CONFIG_BOOTMODE_STRAPS */
+
+#if ENV_RAMSTAGE
+static int gfx_init_done = -1;
+
+int gfx_get_init_done(void)
+{
+	if (gfx_init_done < 0)
+		return 0;
+	return gfx_init_done;
+}
+
+void gfx_set_init_done(int done)
+{
+	gfx_init_done = done;
+}
+#endif

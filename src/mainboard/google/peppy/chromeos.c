@@ -76,7 +76,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid",
 		     get_lid_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "power", 0);
-	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", oprom_is_loaded);
+	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "oprom", gfx_get_init_done());
 }
 #endif
 

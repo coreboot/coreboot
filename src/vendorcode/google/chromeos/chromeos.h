@@ -33,7 +33,6 @@ void save_chromeos_gpios(void);
 /* functions implemented in vbnv.c: */
 int get_recovery_mode_from_vbnv(void);
 int vboot_wants_oprom(void);
-extern int oprom_is_loaded;
 
 void read_vbnv(uint8_t *vbnv_copy);
 void save_vbnv(const uint8_t *vbnv_copy);

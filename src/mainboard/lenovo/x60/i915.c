@@ -369,5 +369,5 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	set_vbe_mode_info_valid(&edid, graphics);
 
-	return 0;
+	return 1;
 }

@@ -71,7 +71,7 @@ WriteECmsg (
     OpFlag = 0x03;
   }
 
-  for (Index = 0; Index <= OpFlag; Index++) {
+  for (Index = 0; Index < OpFlag; Index++) {
     /// EC_LDN9_MAILBOX_BASE_ADDRESS
     LibAmdIoWrite (AccessWidth8, MailBoxPort, &Address, StdHeader);
     Address++;
@@ -106,7 +106,7 @@ ReadECmsg (
     OpFlag = 0x03;
   }
 
-  for (Index = 0; Index <= OpFlag; Index++) {
+  for (Index = 0; Index < OpFlag; Index++) {
     /// EC_LDN9_MAILBOX_BASE_ADDRESS
     LibAmdIoWrite (AccessWidth8, MailBoxPort, &Address, StdHeader);
     Address++;

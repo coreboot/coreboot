@@ -127,6 +127,7 @@ endif
 ramstage-c-deps:=$$(OPTION_TABLE_H)
 romstage-c-deps:=$$(OPTION_TABLE_H)
 bootblock-c-deps:=$$(OPTION_TABLE_H)
+smm-c-deps:=$$(OPTION_TABLE_H)
 
 #######################################################################
 # Add handler to compile ACPI's ASL

@@ -131,14 +131,6 @@ smm-y += gcc.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
 
-OPTION_TABLE_H:=
-ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
-OPTION_TABLE_H:=$(obj)/option_table.h
-endif
-
-$(obj)/lib/uart8250mem.smm.o : $(OPTION_TABLE_H)
-$(obj)/lib/uart8250.smm.o : $(OPTION_TABLE_H)
-
 ifeq ($(CONFIG_RELOCATABLE_MODULES),y)
 ramstage-y += rmodule.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c

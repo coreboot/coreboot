@@ -192,8 +192,6 @@ romstage-y += memmove.S
 ramstage-y += memmove.S
 bootblock-y += memmove.S
 
-$(obj)/arch/armv7/coreboot_table.ramstage.o : $(OPTION_TABLE_H)
-
 romstage-srcs += $(objgenerated)/crt0.s
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)

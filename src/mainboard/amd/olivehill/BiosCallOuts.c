@@ -25,6 +25,7 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
+#include "imc.h"
 
 STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -127,23 +128,13 @@ static const CODEC_TBL_LIST OlivehillCodecTableList[] =
  *  if other software switch the I2C switch by mistake or intention.
  *  We recommend to using IMC to control Fans, instead of HWM.
  */
-#if 0
 static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
-	FCH_HWM_FAN_CTR oem_factl[5] = {
-		/*temperatuer input, fan mode, frequency, low_duty, med_duty, multiplier, lowtemp, medtemp, hightemp, LinearRange, LinearHoldCount */
-		/* Olivehill FanOUT0 Fan header J32 */
-		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
-		/* Olivehill FanOUT1 Fan header J31*/
-		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
-		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
-		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
-		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
-	};
-	LibAmdMemCopy ((VOID *)(FchParams->Hwm.HwmFanControl), &oem_factl, (sizeof (FCH_HWM_FAN_CTR) * 5), FchParams->StdHeader);
-
 	/* Enable IMC fan control. the recommand way */
 #if defined CONFIG_HUDSON_IMC_FWM && (CONFIG_HUDSON_IMC_FWM == 1)
+
+	imc_reg_init();
+
 	/* HwMonitorEnable = TRUE &&  HwmFchtsiAutoOpll ==FALSE to call FchECfancontrolservice */
 	FchParams->Hwm.HwMonitorEnable = TRUE;
 	FchParams->Hwm.HwmFchtsiAutoPoll = FALSE;/* 0 disable, 1 enable TSI Auto Polling */
@@ -157,100 +148,42 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 	/* Thermal Zone Parameter */
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x00; //BIT0 | BIT2 | BIT5;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x00;//6 | BIT3;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg2 = 0x3d; //BIT0 | BIT2 | BIT5;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg3 = 0x4e;//6 | BIT3;
 	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg4 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x98;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 2;
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0;	/* PWM steping rate in unit of PWM level percentage */
-	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg5 = 0x04;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg6 = 0x9a;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg7 = 0x01;
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg8 = 0x01;	/* PWM steping rate in unit of PWM level percentage */
+	FchParams->Imc.EcStruct.MsgFun81Zone0MsgReg9 = 0x00;
 
 	/* IMC Fan Policy temperature thresholds */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0;///80;	/*AC0 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0;	/*AC1 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0;	/*AC2 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0;	/*AC3 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0;	/*AC4 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0;	/*AC5 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0;	/*AC6 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0;	/*AC7 lowest threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0;	/*critical threshold* in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg2 = 0x46;///80;	/*AC0 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg3 = 0x3c;	/*AC1 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg4 = 0x32;	/*AC2 threshold in Celsius */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg5 = 0xff;	/*AC3 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg6 = 0xff;	/*AC4 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg7 = 0xff;	/*AC5 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg8 = 0xff;	/*AC6 threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgReg9 = 0xff;	/*AC7 lowest threshold in Celsius, 0xFF is not define */
+	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegA = 0x4b;	/*critical threshold* in Celsius, 0xFF is not define */
 	FchParams->Imc.EcStruct.MsgFun83Zone0MsgRegB = 0x00;
 
 	/* IMC Fan Policy PWM Settings */
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg0 = 0x00;
 	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg1 = 0x00;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 = 0;	/* AL0 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 = 0;	/* AL1 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 = 0;	/* AL2 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg5 = 0x00;	/* AL3 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg6 = 0x00;	/* AL4 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg7 = 0x00;	/* AL5 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg8 = 0x00;	/* AL6 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg9 = 0x00;	/* AL7 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg2 = 0x5a;	/* AL0 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg3 = 0x46;	/* AL1 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg4 = 0x28;	/* AL2 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg5 = 0xff;	/* AL3 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg6 = 0xff;	/* AL4 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg7 = 0xff;	/* AL5 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg8 = 0xff;	/* AL6 percentage */
+	FchParams->Imc.EcStruct.MsgFun85Zone0MsgReg9 = 0xff;	/* AL7 percentage */
 
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg1 = 0x01;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg2 = 0x55;//BIT0 | BIT2 | BIT5;
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg3 = 0x17;
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg4 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg5 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg6 = 0x90;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg7 = 0;
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg8 = 0;	/* PWM steping rate in unit of PWM level percentage */
-	FchParams->Imc.EcStruct.MsgFun81Zone1MsgReg9 = 0;
-
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg1 = 0x01;	/* zone */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg2 = 60;	/*AC0 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg3 = 40;	/*AC1 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg4 = 0;	/*AC2 threshold in Celsius */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg5 = 0;	/*AC3 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg6 = 0;	/*AC4 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg7 = 0;	/*AC5 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg8 = 0;	/*AC6 threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgReg9 = 0;	/*AC7 lowest threshold in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgRegA = 0;	/*critical threshold* in Celsius, 0xFF is not define */
-	FchParams->Imc.EcStruct.MsgFun83Zone1MsgRegB = 0x00;
-
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg1 = 0x01;	/*Zone */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg2 = 0;	/* AL0 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg3 = 0;	/* AL1 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg4 = 0;	/* AL2 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg5 = 0x00;	/* AL3 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg6 = 0x00;	/* AL4 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg7 = 0x00;	/* AL5 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg8 = 0x00;	/* AL6 percentage */
-	FchParams->Imc.EcStruct.MsgFun85Zone1MsgReg9 = 0x00;	/* AL7 percentage */
-
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg1 = 0x2;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg2 = 0x0;//BIT0 | BIT2 | BIT5;
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg3 = 0x0;
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg4 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg5 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg6 = 0x98;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg7 = 2;
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg8 = 5;	/* PWM steping rate in unit of PWM level percentage */
-	FchParams->Imc.EcStruct.MsgFun81Zone2MsgReg9 = 0;
-
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg0 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg1 = 0x3;	/* Zone */
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg2 = 0x0;//BIT0 | BIT2 | BIT5;
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg3 = 0x0;
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg4 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg5 = 0x00;
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg6 = 0x0;	/* SMBUS Address for SMBUS based temperature sensor such as SB-TSI and ADM1032 */
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg7 = 0;
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg8 = 0;	/* PWM steping rate in unit of PWM level percentage */
-	FchParams->Imc.EcStruct.MsgFun81Zone3MsgReg9 = 0;
-
-	/* IMC Function */
-	FchParams->Imc.EcStruct.IMCFUNSupportBitMap = 0x333;//BIT0 | BIT4 |BIT8;
+	FchParams->Imc.EcStruct.IMCFUNSupportBitMap = 0x111;//BIT0 | BIT4 |BIT8;
 
 	/* NOTE:
 	 * FchInitLateHwm will overwrite the EcStruct with EcDefaultMassege,
@@ -265,7 +198,6 @@ static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 
 #endif /* CONFIG_HUDSON_IMC_FWM */
 }
-#endif
 
 /**
  * Fch Oem setting callback
@@ -290,7 +222,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		/* Azalia Controller Front Panel OEM Table Pointer */
 
 		/* Fan Control */
-		//oem_fan_control(FchParams_env);
+		oem_fan_control(FchParams_env);
 
 		/* XHCI configuration */
 #if CONFIG_HUDSON_XHCI_ENABLE

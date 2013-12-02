@@ -63,7 +63,7 @@ static acpi_cstate_t cstate_map[] = {
 		.ctype = 2, /* ACPI C2 */
 		.latency = 500,
 		.power = 10,
-		.resource = MWAIT_RES(5, 8),
+		.resource = MWAIT_RES(5, 1),
 	},
 	{
 		/* C6FS with full L2 shrink */

@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+1: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Submitted-by: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Submitted-at: Mon, 02 Dec 2013 22:16:18 +0100
+Reviewed-on: http://review.coreboot.org/4294
+Project: coreboot
+Branch: refs/heads/master

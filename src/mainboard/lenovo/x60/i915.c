@@ -57,7 +57,6 @@ static unsigned int graphics;
 static unsigned short addrport;
 static unsigned short dataport;
 static unsigned int physbase;
-int oprom_is_loaded;
 
 #define PGETBL_CTL	0x2020
 #define PGETBL_ENABLED	0x00000001
@@ -396,6 +395,5 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
 	i915_init_done = 1;
-	oprom_is_loaded = 1;
 	return 0;
 }

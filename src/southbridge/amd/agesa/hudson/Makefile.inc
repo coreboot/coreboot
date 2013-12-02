@@ -19,6 +19,9 @@ romstage-y += early_setup.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += spi.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += resume.c
 
+romstage-y += imc.c
+ramstage-y += imc.c
+
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+
 # |0x55AA55AA |EC ROM Address |GEC ROM Address |USB3 ROM    |

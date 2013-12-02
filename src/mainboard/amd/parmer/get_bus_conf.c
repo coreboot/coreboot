@@ -25,6 +25,9 @@
 #include <stdlib.h>
 #include <cpu/amd/amdfam14.h>
 #include "agesawrapper.h"
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+#include "imc.h"
+#endif
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
  * and acpi_tables busnum is default.
@@ -134,4 +137,8 @@ void get_bus_conf(void)
 	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_hudson = apicid_base;
+
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+	enable_imc_thermal_zone();
+#endif
 }

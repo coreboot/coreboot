@@ -69,7 +69,7 @@ static uint32_t align_up(uint32_t value, uint32_t align)
 	return value;
 }
 
-uint32_t lookup_type_by_name(const struct typedesc_t *desc, const char *name,
+static uint32_t lookup_type_by_name(const struct typedesc_t *desc, const char *name,
 			     uint32_t default_value)
 {
 	int i;
@@ -79,7 +79,7 @@ uint32_t lookup_type_by_name(const struct typedesc_t *desc, const char *name,
 	return default_value;
 }
 
-const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t type,
+static const char *lookup_name_by_type(const struct typedesc_t *desc, uint32_t type,
 				const char *default_value)
 {
 	int i;
@@ -139,7 +139,7 @@ static int cbfs_fix_legacy_size(struct cbfs_image *image)
 }
 
 int cbfs_image_create(struct cbfs_image *image,
-		      uint32_t arch,
+		      uint32_t myarch,
 		      size_t size,
 		      uint32_t align,
 		      struct buffer *bootblock,
@@ -206,7 +206,7 @@ int cbfs_image_create(struct cbfs_image *image,
 	header->bootblocksize = htonl(bootblock->size);
 	header->align = htonl(align);
 	header->offset = htonl(entries_offset);
-	header->architecture = htonl(arch);
+	header->architecture = htonl(myarch);
 
 	// Prepare entries
 	if (align_up(entries_offset, align) != entries_offset) {
@@ -356,10 +356,10 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 
 	if (IS_TOP_ALIGNED_ADDRESS(content_offset)) {
 		// legacy cbfstool takes top-aligned address.
-		uint32_t romsize = ntohl(image->header->romsize);
+		uint32_t theromsize = ntohl(image->header->romsize);
 		INFO("Converting top-aligned address 0x%x to offset: 0x%x\n",
-		     content_offset, content_offset + romsize);
-		content_offset += romsize;
+		     content_offset, content_offset + theromsize);
+		content_offset += theromsize;
 	}
 
 	// Merge empty entries.
@@ -488,7 +488,7 @@ int cbfs_export_entry(struct cbfs_image *image, const char *entry_name,
 
 	buffer.data = CBFS_SUBHEADER(entry);
 	buffer.size = ntohl(entry->len);
-	buffer.name = "(cbfs_export_entry)";
+	buffer.name = (char *)"(cbfs_export_entry)";
 	if (buffer_write_file(&buffer, filename) != 0) {
 		ERROR("Failed to write %s into %s.\n",
 		      entry_name, filename);
@@ -791,16 +791,6 @@ int cbfs_is_valid_entry(struct cbfs_image *image, struct cbfs_file *entry)
 			image->buffer.data + image->buffer.size &&
 		memcmp(entry->magic, CBFS_FILE_MAGIC,
 		       sizeof(entry->magic)) == 0);
-}
-
-int cbfs_init_entry(struct cbfs_file *entry,
-		    struct buffer *buffer)
-{
-	memset(entry, 0, sizeof(*entry));
-	memcpy(entry->magic, CBFS_FILE_MAGIC, sizeof(entry->magic));
-	entry->len = htonl(buffer->size);
-	entry->offset = htonl(sizeof(*entry) + strlen(buffer->name) + 1);
-	return 0;
 }
 
 int cbfs_create_empty_entry(struct cbfs_image *image, struct cbfs_file *entry,

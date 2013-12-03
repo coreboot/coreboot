@@ -104,9 +104,9 @@ static inline int fit_entry_type(struct fit_entry *entry)
  * in the host address space at [4G - romsize -> 4G). It also assume all
  * pointers have values within this address range.
  */
-static inline int ptr_to_offset(uint32_t romsize, uint32_t host_ptr)
+static inline int ptr_to_offset(uint32_t theromsize, uint32_t host_ptr)
 {
-	return (int)(romsize + host_ptr);
+	return (int)(theromsize + host_ptr);
 }
 
 /*
@@ -114,9 +114,9 @@ static inline int ptr_to_offset(uint32_t romsize, uint32_t host_ptr)
  * in the host address space at [4G - romsize -> 4G). It also assume all
  * pointers have values within this address range.
  */
-static inline uint32_t offset_to_ptr(uint32_t romsize, int offset)
+static inline uint32_t offset_to_ptr(uint32_t theromsize, int offset)
 {
-	return -(romsize - (uint32_t )offset);
+	return -(theromsize - (uint32_t )offset);
 }
 
 static struct fit_table *locate_fit_table(struct cbfs_image *image)

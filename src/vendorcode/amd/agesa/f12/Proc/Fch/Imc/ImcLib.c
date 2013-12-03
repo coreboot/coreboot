@@ -55,7 +55,7 @@ WriteECmsg (
 {
   UINT8   Index;
 
-  OpFlag = OpFlag & 0x7f;
+  OpFlag = (OpFlag - 1) & 0x7f;
   if (OpFlag == 0x02) OpFlag = 0x03;
 
   for (Index = 0; Index <= OpFlag; Index++) {
@@ -77,7 +77,7 @@ ReadECmsg (
 {
   UINT8 Index;
 
-  OpFlag = OpFlag & 0x7f;
+  OpFlag = (OpFlag - 1) & 0x7f;
   if (OpFlag == 0x02) OpFlag = 0x03;
 
   for (Index = 0; Index <= OpFlag; Index++) {

@@ -144,10 +144,13 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 	return content;
 }
 
-static struct cbfs_header *master_header;
+/* N.B.: there are declarations here that were shadowed in functions.
+ * Hence the rather clumsy cbfstool_ prefixes.
+ */
+static struct cbfs_header *cbfstool_master_header;
 static uint32_t phys_start, phys_end, align;
 uint32_t romsize;
-void *offset;
+void *cbfstool_offset;
 uint32_t arch = CBFS_ARCHITECTURE_UNKNOWN;
 
 static struct {
@@ -194,19 +197,19 @@ int find_master_header(void *romarea, size_t size)
 {
 	size_t offset;
 
-	if (master_header)
+	if (cbfstool_master_header)
 		return 0;
 
 	for (offset = 0; offset < size - sizeof(struct cbfs_header); offset++) {
 		struct cbfs_header *tmp = romarea + offset;
 
 		if (tmp->magic == ntohl(CBFS_HEADER_MAGIC)) {
-			master_header = tmp;
+			cbfstool_master_header = tmp;
 			break;
 		}
 	}
 
-	return master_header ? 0 : 1;
+	return cbfstool_master_header ? 0 : 1;
 }
 
 void recalculate_rom_geometry(void *romarea)
@@ -217,25 +220,25 @@ void recalculate_rom_geometry(void *romarea)
 	}
 
 	/* Update old headers */
-	if (master_header->version == CBFS_HEADER_VERSION1 &&
-	    ntohl(master_header->architecture) == CBFS_ARCHITECTURE_UNKNOWN) {
+	if (cbfstool_master_header->version == CBFS_HEADER_VERSION1 &&
+	    ntohl(cbfstool_master_header->architecture) == CBFS_ARCHITECTURE_UNKNOWN) {
 		DEBUG("Updating CBFS master header to version 2\n");
-		master_header->architecture = htonl(CBFS_ARCHITECTURE_X86);
+		cbfstool_master_header->architecture = htonl(CBFS_ARCHITECTURE_X86);
 	}
 
-	arch = ntohl(master_header->architecture);
+	arch = ntohl(cbfstool_master_header->architecture);
 
 	switch (arch) {
 	case CBFS_ARCHITECTURE_ARMV7:
-		offset = romarea;
-		phys_start = (0 + ntohl(master_header->offset)) & 0xffffffff;
+		cbfstool_offset = romarea;
+		phys_start = (0 + ntohl(cbfstool_master_header->offset)) & 0xffffffff;
 		phys_end = romsize & 0xffffffff;
 		break;
 	case CBFS_ARCHITECTURE_X86:
-		offset = romarea + romsize - 0x100000000ULL;
-		phys_start = (0 - romsize + ntohl(master_header->offset)) &
+		cbfstool_offset = romarea + romsize - 0x100000000ULL;
+		phys_start = (0 - romsize + ntohl(cbfstool_master_header->offset)) &
 				0xffffffff;
-		phys_end = (0 - ntohl(master_header->bootblocksize) -
+		phys_end = (0 - ntohl(cbfstool_master_header->bootblocksize) -
 		     sizeof(struct cbfs_header)) & 0xffffffff;
 		break;
 	default:
@@ -243,7 +246,7 @@ void recalculate_rom_geometry(void *romarea)
 		exit(1);
 	}
 
-	align = ntohl(master_header->align);
+	align = ntohl(cbfstool_master_header->align);
 }
 
 void *loadrom(const char *filename)
@@ -351,8 +354,8 @@ void print_cbfs_directory(const char *filename)
 	printf
 		("%s: %d kB, bootblocksize %d, romsize %d, offset 0x%x\n"
 		 "alignment: %d bytes, architecture: %s\n\n",
-		 basename(name), romsize / 1024, ntohl(master_header->bootblocksize),
-		 romsize, ntohl(master_header->offset), align, arch_to_string(arch));
+		 basename(name), romsize / 1024, ntohl(cbfstool_master_header->bootblocksize),
+		 romsize, ntohl(cbfstool_master_header->offset), align, arch_to_string(arch));
 	free(name);
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	uint32_t current = phys_start;
@@ -364,12 +367,12 @@ void print_cbfs_directory(const char *filename)
 		struct cbfs_file *thisfile =
 			(struct cbfs_file *)phys_to_virt(current);
 		uint32_t length = ntohl(thisfile->len);
-		char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
+		const char *fname = (char *)(phys_to_virt(current) + sizeof(struct cbfs_file));
 		if (strlen(fname) == 0)
 			fname = "(empty)";
 
 		printf("%-30s 0x%-8x %-12s %d\n", fname,
-		       current - phys_start + ntohl(master_header->offset),
+		       current - phys_start + ntohl(cbfstool_master_header->offset),
 		       strfiletype(ntohl(thisfile->type)), length);
 
 		/* note the components of the subheader are in host order ... */
@@ -664,7 +667,7 @@ void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 }
 
 int create_cbfs_image(const char *romfile, uint32_t _romsize,
-		const char *bootblock, uint32_t align, uint32_t offs)
+		const char *bootblock, uint32_t create_align, uint32_t offs)
 {
 	uint32_t bootblocksize = 0;
 	struct cbfs_header *master_header;
@@ -679,8 +682,8 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 	}
 	memset(romarea, 0xff, romsize);
 
-	if (align == 0)
-		align = 64;
+	if (create_align == 0)
+		create_align = 64;
 
 	bootblk = loadfile(bootblock, &bootblocksize,
 				romarea + romsize, SEEK_END);
@@ -695,7 +698,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 	switch (arch) {
 	case CBFS_ARCHITECTURE_ARMV7:
 		/* Set up physical/virtual mapping */
-		offset = romarea;
+		cbfstool_offset = romarea;
 
 		/*
 		 * The initial jump instruction and bootblock will be placed
@@ -746,7 +749,7 @@ int create_cbfs_image(const char *romfile, uint32_t _romsize,
 
 	case CBFS_ARCHITECTURE_X86:
 		// Set up physical/virtual mapping
-		offset = romarea + romsize - 0x100000000ULL;
+		cbfstool_offset = romarea + romsize - 0x100000000ULL;
 
 		loadfile(bootblock, &bootblocksize, romarea + romsize,
 			 SEEK_END);

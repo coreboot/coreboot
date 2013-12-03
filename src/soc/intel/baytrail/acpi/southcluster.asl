@@ -192,7 +192,6 @@ Device (PDRC)
 		Memory32Fixed(ReadWrite, ABORT_BASE_ADDRESS, ABORT_BASE_SIZE)
 		Memory32Fixed(ReadWrite, MCFG_BASE_ADDRESS, MCFG_BASE_SIZE)
 		Memory32Fixed(ReadWrite, PMC_BASE_ADDRESS, PMC_BASE_SIZE)
-		Memory32Fixed(ReadWrite, IO_BASE_ADDRESS, IO_BASE_SIZE)
 		Memory32Fixed(ReadWrite, ILB_BASE_ADDRESS, ILB_BASE_SIZE)
 		Memory32Fixed(ReadWrite, SPI_BASE_ADDRESS, SPI_BASE_SIZE)
 		Memory32Fixed(ReadWrite, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE)
@@ -233,3 +232,6 @@ Method (_OSC, 4)
 
 // IRQ routing for each PCI device
 #include "irqroute.asl"
+
+// GPIO Devices
+#include "gpio.asl"

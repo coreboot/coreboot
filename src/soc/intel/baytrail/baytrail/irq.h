@@ -50,6 +50,9 @@
 #define SCC_EMMC_IRQ			45
 #define SCC_SDIO_IRQ			46
 #define SCC_SD_IRQ			47
+#define GPIO_NC_IRQ			48
+#define GPIO_SC_IRQ			49
+#define GPIO_SUS_IRQ			50
 /* GPIO direct / dedicated IRQs. */
 #define GPIO_S0_DED_IRQ_0		51
 #define GPIO_S0_DED_IRQ_1		52

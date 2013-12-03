@@ -39,6 +39,9 @@
 
 /* IO Memory */
 #define IO_BASE_ADDRESS			0xfed0c000
+#define  IO_BASE_OFFSET_GPSCORE		0x0000
+#define  IO_BASE_OFFSET_GPNCORE		0x1000
+#define  IO_BASE_OFFSET_GPSSUS		0x2000
 #define IO_BASE_SIZE			0x4000
 
 /* Intel Legacy Block */

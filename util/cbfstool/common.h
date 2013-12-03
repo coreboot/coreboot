@@ -62,7 +62,7 @@ int buffer_write_file(struct buffer *buffer, const char *filename);
 /* Destroys a memory buffer. */
 void buffer_delete(struct buffer *buffer);
 
-extern void *offset;
+extern void *cbfstool_offset;
 extern uint32_t romsize;
 extern int host_bigendian;
 extern uint32_t arch;
@@ -72,12 +72,12 @@ uint32_t string_to_arch(const char *arch_string);
 
 static inline void *phys_to_virt(uint32_t addr)
 {
-	return offset + addr;
+	return cbfstool_offset + addr;
 }
 
 static inline uint32_t virt_to_phys(void *addr)
 {
-	return (unsigned long)(addr - offset) & 0xffffffff;
+	return (unsigned long)(addr - cbfstool_offset) & 0xffffffff;
 }
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
@@ -124,7 +124,6 @@ int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location);
 int remove_file_from_cbfs(const char *filename);
 void print_cbfs_directory(const char *filename);
 int extract_file_from_cbfs(const char *filename, const char *payloadname, const char *outpath);
-int remove_file_from_cbfs(const char *filename);
 
 uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 			    const char *filename, uint32_t align);
@@ -132,5 +131,30 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 void print_supported_filetypes(void);
 
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
+/* lzma/lzma.c */
+void do_lzma_compress(char *in, int in_len, char *out, int *out_len);
+void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
+/* xdr.c */
+struct xdr {
+	uint16_t (*get16)(struct buffer *input);
+	uint32_t (*get32)(struct buffer *input);
+	uint64_t (*get64)(struct buffer *input);
+	void (*put16)(struct buffer *input, uint16_t val);
+	void (*put32)(struct buffer *input, uint32_t val);
+	void (*put64)(struct buffer *input, uint64_t val);
+};
+
+/* common.c */
+
+int find_master_header(void *romarea, size_t size);
+void recalculate_rom_geometry(void *romarea);
+const char *strfiletype(uint32_t number);
+
+/* cbfs_image.c */
+uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
+const char *get_cbfs_entry_type_name(uint32_t type);
+uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
+
+extern struct xdr xdr_le, xdr_be;
 
 #endif

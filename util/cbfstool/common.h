@@ -132,5 +132,20 @@ uint32_t cbfs_find_location(const char *romfile, uint32_t filesize,
 void print_supported_filetypes(void);
 
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
+/* lzma/lzma.c */
+void do_lzma_compress(char *in, int in_len, char *out, int *out_len);
+void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
+/* xdr.c */
+struct xdr {
+	uint16_t (*get16)(struct buffer *input);
+	uint32_t (*get32)(struct buffer *input);
+	uint64_t (*get64)(struct buffer *input);
+	void (*put16)(struct buffer *input, uint16_t val);
+	void (*put32)(struct buffer *input, uint32_t val);
+	void (*put64)(struct buffer *input, uint64_t val);
+};
+
+extern struct xdr xdr_le, xdr_be;
+>>>>>>> 4f819e8... cbfs: fix issues with word size and endianness.
 
 #endif

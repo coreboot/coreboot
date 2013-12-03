@@ -2,6 +2,20 @@ TAG-$(CONFIG_GRUB2_MASTER)=
 NAME-$(CONFIG_GRUB2_MASTER)=HEAD
 
 unexport KCONFIG_AUTOCONFIG
+unexport CFLAGS
+unexport CPPFLAGS
+unexport CCASFLAGS
+unexport CC
+unexport BUILD_CC
+unexport TARGET_CC
+unexport TARGET_CFLAGS
+unexport TARGET_CPPFLAGS
+unexport TARGET_STRIP
+unexport TARGET_OBJCOPY
+unexport HOST_CFLAGS
+unexport HOST_CPPFLAGS
+unexport HOST_CC
+
 
 all: grub2
 
@@ -27,12 +41,8 @@ config: checkout
 
 grub2: config
 	echo "    MAKE       GRUB2 $(NAME-y)"
-	$(MAKE) -C grub2/build BUILD_CC="$(HOSTCC)" CC="$(HOSTCC)" \
-	TARGET_CC="$(CC)" TARGET_OBJCOPY="$(OBJCOPY)" \
-	TARGET_STRIP="$(STRIP)" CFLAGS=-O2 TARGET_CFLAGS=-Os \
-	&& $(MAKE) -C grub2/build BUILD_CC="$(HOSTCC)" CC="$(HOSTCC)" \
-	TARGET_CC="$(CC)" TARGET_OBJCOPY="$(OBJCOPY)" TARGET_STRIP="$(STRIP)" \
-	CFLAGS=-O2 TARGET_CFLAGS=-Os default_payload.elf
+	$(MAKE) -C grub2/build CC="$(HOSTCC)"
+	$(MAKE) -C grub2/build default_payload.elf
 
 clean:
 	test -d grub2 && $(MAKE) -C grub2 clean || exit 0

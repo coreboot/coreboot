@@ -38,6 +38,9 @@ struct root_port_config {
 	u32 strpfusecfg1;
 	u32 strpfusecfg2;
 	u32 strpfusecfg3;
+	u32 b0d28f0_32c;
+	u32 b0d28f4_32c;
+	u32 b0d28f5_32c;
 	int coalesce;
 	int gbe_port;
 	int num_ports;
@@ -132,11 +135,14 @@ static void root_port_init_config(device_t dev)
 	switch (rp) {
 	case 1:
 		rpc.strpfusecfg1 = pci_read_config32(dev, 0xfc);
+		rpc.b0d28f0_32c = pci_read_config32(dev, 0x32c);
 		break;
 	case 5:
 		rpc.strpfusecfg2 = pci_read_config32(dev, 0xfc);
+		rpc.b0d28f4_32c = pci_read_config32(dev, 0x32c);
 		break;
 	case 6:
+		rpc.b0d28f5_32c = pci_read_config32(dev, 0x32c);
 		rpc.strpfusecfg3 = pci_read_config32(dev, 0xfc);
 		break;
 	default:
@@ -365,161 +371,211 @@ static void root_port_check_disable(device_t dev)
 	}
 }
 
-static void pch_pcie_pm_early(struct device *dev)
+static void pcie_update_cfg8(device_t dev, int reg, u8 mask, u8 or)
 {
-/* RPC has been moved. It is in PCI config space now.  */
-#if 0
-	u16 link_width_p0, link_width_p4;
-	u8 slot_power_limit = 10; /* 10W for x1 */
-	u32 reg32;
 	u8 reg8;
 
-	reg32 = RCBA32(RPC);
-
-	/* Port 0-3 link aggregation from PCIEPCS1[1:0] soft strap */
-	switch (reg32 & 3) {
-	case 3:
-		link_width_p0 = 4;
-		break;
-	case 1:
-	case 2:
-		link_width_p0 = 2;
-		break;
-	case 0:
-	default:
-		link_width_p0 = 1;
-	}
-
-	/* Port 4-7 link aggregation from PCIEPCS2[1:0] soft strap */
-	switch ((reg32 >> 2) & 3) {
-	case 3:
-		link_width_p4 = 4;
-		break;
-	case 1:
-	case 2:
-		link_width_p4 = 2;
-		break;
-	case 0:
-	default:
-		link_width_p4 = 1;
-	}
-
-	/* Enable dynamic clock gating where needed */
-	reg8 = pci_read_config8(dev, 0xe1);
-	switch (PCI_FUNC(dev->path.pci.devfn)) {
-	case 0: /* Port 0 */
-		if (link_width_p0 == 4)
-			slot_power_limit = 40; /* 40W for x4 */
-		else if (link_width_p0 == 2)
-			slot_power_limit = 20; /* 20W for x2 */
-		reg8 |= 0x3f;
-		break;
-	case 4: /* Port 4 */
-		if (link_width_p4 == 4)
-			slot_power_limit = 40; /* 40W for x4 */
-		else if (link_width_p4 == 2)
-			slot_power_limit = 20; /* 20W for x2 */
-		reg8 |= 0x3f;
-		break;
-	case 1: /* Port 1 only if Port 0 is x1 */
-		if (link_width_p0 == 1)
-			reg8 |= 0x3;
-		break;
-	case 2: /* Port 2 only if Port 0 is x1 or x2 */
-	case 3: /* Port 3 only if Port 0 is x1 or x2 */
-		if (link_width_p0 <= 2)
-			reg8 |= 0x3;
-		break;
-	case 5: /* Port 5 only if Port 4 is x1 */
-		if (link_width_p4 == 1)
-			reg8 |= 0x3;
-		break;
-	case 6: /* Port 7 only if Port 4 is x1 or x2 */
-	case 7: /* Port 7 only if Port 4 is x1 or x2 */
-		if (link_width_p4 <= 2)
-			reg8 |= 0x3;
-		break;
-	}
-	pci_write_config8(dev, 0xe1, reg8);
-
-	/* Set 0xE8[0] = 1 */
-	reg32 = pci_read_config32(dev, 0xe8);
-	reg32 |= 1;
-	pci_write_config32(dev, 0xe8, reg32);
-
-	/* Adjust Common Clock exit latency */
-	reg32 = pci_read_config32(dev, 0xd8);
-	reg32 &= ~(1 << 17);
-	reg32 |= (1 << 16) | (1 << 15);
-	reg32 &= ~(1 << 31); /* Disable PME# SCI for native PME handling */
-	pci_write_config32(dev, 0xd8, reg32);
-
-	/* Adjust ASPM L1 exit latency */
-	reg32 = pci_read_config32(dev, 0x4c);
-	reg32 &= ~((1 << 17) | (1 << 16) | (1 << 15));
-	if (RCBA32(0x2320) & (1 << 16)) {
-		/* If RCBA+2320[15]=1 set ASPM L1 to 8-16us */
-		reg32 |= (1 << 17);
-	} else {
-		/* Else set ASPM L1 to 2-4us */
-		reg32 |= (1 << 16);
-	}
-	pci_write_config32(dev, 0x4c, reg32);
-
-	/* Set slot power limit as configured above */
-	reg32 = pci_read_config32(dev, 0x54);
-	reg32 &= ~((1 << 15) | (1 << 16)); /* 16:15 = Slot power scale */
-	reg32 &= ~(0xff << 7);             /* 14:7  = Slot power limit */
-	reg32 |= (slot_power_limit << 7);
-	pci_write_config32(dev, 0x54, reg32);
-#endif
+	reg8 = pci_read_config8(dev, reg);
+	reg8 &= mask;
+	reg8 |= or;
+	pci_write_config8(dev, reg, reg8);
 }
 
-static void pch_pcie_pm_late(struct device *dev)
+static void pcie_update_cfg(device_t dev, int reg, u32 mask, u32 or)
 {
-	enum aspm_type apmc;
 	u32 reg32;
 
-	/* Set 0x314 = 0x743a361b */
-	pci_write_config32(dev, 0x314, 0x743a361b);
+	reg32 = pci_read_config32(dev, reg);
+	reg32 &= mask;
+	reg32 |= or;
+	pci_write_config32(dev, reg, reg32);
+}
 
-	/* Set 0x318[31:16] = 0x1414 */
-	reg32 = pci_read_config32(dev, 0x318);
-	reg32 &= 0x0000ffff;
-	reg32 |= 0x14140000;
-	pci_write_config32(dev, 0x318, reg32);
+static void pcie_add_0x0202000_iobp(u32 reg)
+{
+	u32 reg32;
 
-	/* Set 0x324[5] = 1 */
-	reg32 = pci_read_config32(dev, 0x324);
-	reg32 |= (1 << 5);
-	pci_write_config32(dev, 0x324, reg32);
+	reg32 = pch_iobp_read(reg);
+	reg32 += (0x2 << 16) | (0x2 << 8);
+	pch_iobp_write(reg, reg32);
+}
 
-	/* Set 0x330[7:0] = 0x40 */
-	reg32 = pci_read_config32(dev, 0x330);
-	reg32 &= ~(0xff);
-	reg32 |= 0x40;
-	pci_write_config32(dev, 0x330, reg32);
+static void pch_pcie_early(struct device *dev)
+{
+	int rp;
+	int do_aspm;
+	int is_lp;
 
-	/* Set 0x33C[24:0] = 0x854c74 */
-	reg32 = pci_read_config32(dev, 0x33c);
-	reg32 &= 0xff000000;
-	reg32 |= 0x00854c74;
-	pci_write_config32(dev, 0x33c, reg32);
+	rp = root_port_number(dev);
+	do_aspm = 0;
+	is_lp = pch_is_lp();
 
-	/* No IO-APIC, Disable EOI forwarding */
-	reg32 = pci_read_config32(dev, 0xd4);
-	reg32 |= (1 << 1);
-	pci_write_config32(dev, 0xd4, reg32);
-
-	/* Get configured ASPM state */
-	apmc = pci_read_config32(dev, 0x50) & 3;
-
-	/* If both L0s and L1 enabled then set root port 0xE8[1]=1 */
-	if (apmc == PCIE_ASPM_BOTH) {
-		reg32 = pci_read_config32(dev, 0xe8);
-		reg32 |= (1 << 1);
-		pci_write_config32(dev, 0xe8, reg32);
+	if (is_lp) {
+		switch (rp) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			/* Bits 31:28 of b0d28f0 0x32c register correspnd to
+			 * Root Ports 4:1. */
+			do_aspm = !!(rpc.b0d28f0_32c & (1 << (28 + rp - 1)));
+			break;
+		case 5:
+			/* Bit 28 of b0d28f4 0x32c register correspnd to
+			 * Root Ports 4:1. */
+			do_aspm = !!(rpc.b0d28f4_32c & (1 << 28));
+			break;
+		case 6:
+			/* Bit 28 of b0d28f5 0x32c register correspnd to
+			 * Root Ports 4:1. */
+			do_aspm = !!(rpc.b0d28f5_32c & (1 << 28));
+			break;
+		}
+	} else {
+		switch (rp) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			/* Bits 31:28 of b0d28f0 0x32c register correspnd to
+			 * Root Ports 4:1. */
+			do_aspm = !!(rpc.b0d28f0_32c & (1 << (28 + rp - 1)));
+			break;
+		case 5:
+		case 6:
+		case 7:
+		case 8:
+			/* Bit 31:28 of b0d28f4 0x32c register correspnd to
+			 * Root Ports 8:5. */
+			do_aspm = !!(rpc.b0d28f4_32c & (1 << (28 + rp - 5)));
+			break;
+		}
 	}
+
+	if (do_aspm) {
+		/* Set ASPM bits in MPC2 register. */
+		pcie_update_cfg(dev, 0xd4, ~(0x3 << 2), (1 << 4) | (0x2 << 2));
+
+		/* Set unique clock exit latency in MPC register. */
+		pcie_update_cfg(dev, 0xd8, ~(0x7 << 18), (0x7 << 18));
+
+		/* Set L1 exit latency in LCAP register. */
+		pcie_update_cfg(dev, 0x4c, ~(0x7 << 15), (0x4 << 15));
+
+		if (is_lp) {
+			switch (rp) {
+			case 1:
+				pcie_add_0x0202000_iobp(0xe9002440);
+				break;
+			case 2:
+				pcie_add_0x0202000_iobp(0xe9002640);
+				break;
+			case 3:
+				pcie_add_0x0202000_iobp(0xe9000840);
+				break;
+			case 4:
+				pcie_add_0x0202000_iobp(0xe9000a40);
+				break;
+			case 5:
+				pcie_add_0x0202000_iobp(0xe9000c40);
+				pcie_add_0x0202000_iobp(0xe9000e40);
+				pcie_add_0x0202000_iobp(0xe9001040);
+				pcie_add_0x0202000_iobp(0xe9001240);
+				break;
+			case 6:
+				/* Update IOBP based on lane ownership. */
+				if (rpc.pin_ownership & (1 << 4))
+					pcie_add_0x0202000_iobp(0xea002040);
+				if (rpc.pin_ownership & (1 << 5))
+					pcie_add_0x0202000_iobp(0xea002240);
+				if (rpc.pin_ownership & (1 << 6))
+					pcie_add_0x0202000_iobp(0xea002440);
+				if (rpc.pin_ownership & (1 << 7))
+					pcie_add_0x0202000_iobp(0xea002640);
+				break;
+			}
+		} else {
+			switch (rp) {
+			case 1:
+				if ((rpc.pin_ownership & 0x3) == 1)
+					pcie_add_0x0202000_iobp(0xe9002e40);
+				else
+					pcie_add_0x0202000_iobp(0xea002040);
+				break;
+			case 2:
+				if ((rpc.pin_ownership & 0xc) == 0x4)
+					pcie_add_0x0202000_iobp(0xe9002c40);
+				else
+					pcie_add_0x0202000_iobp(0xea002240);
+				break;
+			case 3:
+				pcie_add_0x0202000_iobp(0xe9002a40);
+				break;
+			case 4:
+				pcie_add_0x0202000_iobp(0xe9002840);
+				break;
+			case 5:
+				pcie_add_0x0202000_iobp(0xe9002640);
+				break;
+			case 6:
+				pcie_add_0x0202000_iobp(0xe9002440);
+				break;
+			case 7:
+				pcie_add_0x0202000_iobp(0xe9002240);
+				break;
+			case 8:
+				pcie_add_0x0202000_iobp(0xe9002040);
+				break;
+			}
+		}
+
+		pcie_update_cfg(dev, 0x338, ~(1 << 26), 0);
+	}
+
+	/* Enable LTR in Root Port. */
+	pcie_update_cfg(dev, 0x64, ~(1 << 11), (1 << 11));
+	pcie_update_cfg(dev, 0x68, ~(1 << 10), (1 << 10));
+
+	pcie_update_cfg(dev, 0x318, ~(0xffff << 16), (0x1414 << 16));
+
+	/* Set L1 exit latency in LCAP register. */
+	if (!do_aspm && (pci_read_config8(dev, 0xf5) & 0x1))
+		pcie_update_cfg(dev, 0x4c, ~(0x7 << 15), (0x4 << 15));
+	else
+		pcie_update_cfg(dev, 0x4c, ~(0x7 << 15), (0x2 << 15));
+
+	pcie_update_cfg(dev, 0x314, 0x0, 0x743a361b);
+
+	/* Set Common Clock Exit Latency in MPC register. */
+	pcie_update_cfg(dev, 0xd8, ~(0x7 << 15), (0x3 << 15));
+
+	pcie_update_cfg(dev, 0x33c, ~0x00ffffff, 0x854c74);
+
+	/* Set undocumented bits in MPC2 register. */
+	pcie_update_cfg(dev, 0xd4, ~0, (1 << 12) | (1 << 6));
+
+	/* Set Invalid Recieve Range Check Enable in MPC register. */
+	pcie_update_cfg(dev, 0xd8, ~0, (1 << 25));
+
+	pcie_update_cfg8(dev, 0xf5, 0x3f, 0);
+
+	if (rp == 1 || rp == 5 || (is_lp && rp == 6))
+		pcie_update_cfg8(dev, 0xf7, ~0xc, 0);
+
+	/* Set EOI forwarding disable. */
+	pcie_update_cfg(dev, 0xd4, ~0, (1 << 1));
+
+	/* Set something involving advanced error reporting. */
+	pcie_update_cfg(dev, 0x100, ~((1 << 20) - 1), 0x10001);
+
+	if (is_lp)
+		pcie_update_cfg(dev, 0x100, ~0, (1 << 29));
+
+	/* Read and write back write-once capability registers. */
+	pcie_update_cfg(dev, 0x34, ~0, 0);
+	pcie_update_cfg(dev, 0x40, ~0, 0);
+	pcie_update_cfg(dev, 0x80, ~0, 0);
+	pcie_update_cfg(dev, 0x90, ~0, 0);
 }
 
 static void pci_init(struct device *dev)
@@ -562,15 +618,9 @@ static void pci_init(struct device *dev)
 
 	/* Clear errors in status registers */
 	reg16 = pci_read_config16(dev, 0x06);
-	//reg16 |= 0xf900;
 	pci_write_config16(dev, 0x06, reg16);
-
 	reg16 = pci_read_config16(dev, 0x1e);
-	//reg16 |= 0xf900;
 	pci_write_config16(dev, 0x1e, reg16);
-
-	/* Power Management init after enumeration */
-	pch_pcie_pm_late(dev);
 }
 
 static void pch_pcie_enable(device_t dev)
@@ -583,7 +633,7 @@ static void pch_pcie_enable(device_t dev)
 
 	/* Power Management init before enumeration */
 	if (dev->enabled)
-		pch_pcie_pm_early(dev);
+		pch_pcie_early(dev);
 
 	/*
 	 * When processing the last PCIe root port we can now

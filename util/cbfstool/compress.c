@@ -26,8 +26,6 @@
 #include <stdio.h>
 #include "common.h"
 
-void do_lzma_compress(char *in, int in_len, char *out, int *out_len);
-
 static void lzma_compress(char *in, int in_len, char *out, int *out_len)
 {
 	do_lzma_compress(in, in_len, out, out_len);

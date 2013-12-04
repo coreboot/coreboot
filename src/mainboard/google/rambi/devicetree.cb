@@ -23,6 +23,10 @@ chip soc/intel/baytrail
 	register "usb2_per_port_lane3" = "0x00049a09"
 	register "usb2_per_port_rcomp_hs_pullup3" = "0x0300401d"
 
+	# LPE audio codec settings
+	register "lpe_codec_clk_freq" = "25" # 25MHz clock
+	register "lpe_codec_clk_num" = "0"   # PMC_PLT_CLK[0]
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

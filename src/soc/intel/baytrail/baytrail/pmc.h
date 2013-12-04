@@ -73,6 +73,17 @@
 #	define ROUTE_NONE	0
 #	define ROUTE_SMI	1
 #	define ROUTE_SCI	2
+#define PLT_CLK_CTL_0	0x60
+#define PLT_CLK_CTL_1	0x64
+#define PLT_CLK_CTL_2	0x68
+#define PLT_CLK_CTL_3	0x6c
+#define PLT_CLK_CTL_4	0x70
+#define PLT_CLK_CTL_5	0x74
+#	define CLK_FREQ_25MHZ	(0x0 << 2)
+#	define CLK_FREQ_19P2MHZ	(0x1 << 2)
+#	define CLK_CTL_D3_LPE	(0x0 << 0)
+#	define CLK_CTL_ON	(0x1 << 0)
+#	define CLK_CTL_OFF	(0x2 << 0)
 
 /* IO Mapped registers behind ACPI_BASE_ADDRESS */
 #define PM1_STS			0x00

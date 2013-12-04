@@ -17,23 +17,60 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 
-#include <baytrail/iosf.h>
+#include <baytrail/iomap.h>
+#include <baytrail/pci_devs.h>
+#include <baytrail/pmc.h>
 #include <baytrail/ramstage.h>
+#include "chip.h"
+
+
+static void setup_codec_clock(device_t dev)
+{
+	uint32_t reg;
+	int clk_reg;
+	struct soc_intel_baytrail_config *config;
+	const char *freq_str;
+
+	config = dev->chip_info;
+	switch (config->lpe_codec_clk_freq) {
+	case 19:
+		freq_str = "19.2";
+		reg = CLK_FREQ_19P2MHZ;
+		break;
+	case 25:
+		freq_str = "25";
+		reg = CLK_FREQ_25MHZ;
+		break;
+	default:
+		printk(BIOS_DEBUG, "LPE codec clock not required.\n");
+		return;
+	}
+
+	/* Default to always running. */
+	reg |= CLK_CTL_ON;
+
+	if (config->lpe_codec_clk_num < 0 || config->lpe_codec_clk_num > 5) {
+		printk(BIOS_DEBUG, "Invalid LPE codec clock number.\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "LPE Audio codec clock set to %sMHz.\n", freq_str);
+
+	clk_reg = PMC_BASE_ADDRESS + PLT_CLK_CTL_0;
+	clk_reg += 4 * config->lpe_codec_clk_num;
+
+	write32(clk_reg, (read32(clk_reg) & ~0x7) | reg);
+}
 
 static void lpe_init(device_t dev)
 {
-	uint32_t reg;
-
-	/* Work around for Audio Clock. */
-	reg = iosf_ccu_read(PLT_CLK_CTRL_3);
-	reg &= ~0xff;
-	reg |= PLT_CLK_CTRL_25MHZ_FREQ | PLT_CLK_CTRL_SELECT_FREQ;
-	iosf_ccu_write(PLT_CLK_CTRL_3, reg);
+	setup_codec_clock(dev);
 }
 
 static const struct device_operations device_ops = {

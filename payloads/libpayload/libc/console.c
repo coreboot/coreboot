@@ -53,7 +53,7 @@ void console_init(void)
 	video_console_init();
 #endif
 #ifdef CONFIG_LP_SERIAL_CONSOLE
-	serial_init();
+	serial_console_init();
 #endif
 #ifdef CONFIG_LP_PC_KEYBOARD
 	keyboard_init();

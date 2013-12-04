@@ -117,6 +117,15 @@ void serial_init(void)
 #ifdef CONFIG_LP_SERIAL_SET_SPEED
 	serial_hardware_init(CONFIG_LP_SERIAL_BAUD_RATE, 8, 0, 1);
 #endif
+}
+
+void serial_console_init(void)
+{
+	if (!lib_sysinfo.serial)
+		return;
+
+	serial_init();
+
 	console_add_input_driver(&consin);
 	console_add_output_driver(&consout);
 	serial_hardware_is_present = 1;

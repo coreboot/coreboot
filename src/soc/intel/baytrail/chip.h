@@ -47,6 +47,10 @@ struct soc_intel_baytrail_config {
 	uint32_t usb2_per_port_rcomp_hs_pullup2;
 	uint32_t usb2_per_port_lane3;
 	uint32_t usb2_per_port_rcomp_hs_pullup3;
+
+	/* LPE Audio Clock configuration. */
+	int lpe_codec_clk_freq; /* 19 or 25 are valid. */
+	int lpe_codec_clk_num; /* Platform clock pins. [0:5] are valid. */
 };
 
 extern struct chip_operations soc_intel_baytrail_ops;

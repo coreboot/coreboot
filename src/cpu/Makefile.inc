@@ -15,23 +15,17 @@ subdirs-$(CONFIG_CPU_QEMU_X86) += qemu-x86
 ## Rules for building the microcode blob in CBFS
 ################################################################################
 
-cpu_ucode_cbfs_name = cpu_microcode_blob.bin
-
 # External microcode file, or are we generating one ?
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_EXTERNAL), y)
-cpu_ucode_cbfs_file = $(call strip_quotes,$(CONFIG_CPU_MICROCODE_FILE))
-cbfs_include_ucode = y
+cbfs-files-y += cpu_microcode_blob.bin
+cpu_microcode_blob.bin-type = 0x53
+cpu_microcode_blob.bin-file = $(call strip_quotes,$(CONFIG_CPU_MICROCODE_FILE))
 endif
 
 ifeq ($(CONFIG_CPU_MICROCODE_CBFS_GENERATE), y)
-cpu_ucode_cbfs_file = $(obj)/cpu_microcode_blob.bin
-cbfs_include_ucode = y
-endif
-
-ifneq ($(CONFIG_CPU_MICROCODE_CBFS_LOC), 0)
-cpu_ucode_cbfs_offset = "-b $(CONFIG_CPU_MICROCODE_CBFS_LOC)"
-else
-cpu_ucode_cbfs_offset = "-b"
+cbfs-files-y += cpu_microcode_blob.bin
+cpu_microcode_blob.bin-type = 0x53
+cpu_microcode_blob.bin-file = $(obj)/cpu_microcode_blob.bin
 endif
 
 # In case we have more than one "source" (cough) files containing microcode, we
@@ -48,11 +42,3 @@ $(obj)/cpu_microcode_blob.o: $$(cpu_microcode-objs)
 $(obj)/cpu_microcode_blob.bin: $(obj)/cpu_microcode_blob.o
 	@printf "  MICROCODE    $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY) -j .data -O binary $< $@
-
-ifeq ($(cbfs_include_ucode),y)
-# Add CPU microcode to specified rom image $(1)
-add-cpu-microcode-to-cbfs = \
-	$(CBFSTOOL) $(1) locate -f $(cpu_ucode_cbfs_file) -n $(cpu_ucode_cbfs_name) -a 16 | xargs $(CBFSTOOL) $(1) add -n $(cpu_ucode_cbfs_name) -f $(cpu_ucode_cbfs_file) -t 0x53 $(cpu_ucode_cbfs_offset)
-else
-add-cpu-microcode-to-cbfs = true
-endif

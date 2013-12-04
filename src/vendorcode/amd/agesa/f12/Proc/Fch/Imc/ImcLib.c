@@ -55,7 +55,8 @@ WriteECmsg (
 {
   UINT8   Index;
 
-  OpFlag = OpFlag & 0x7f;
+  ASSERT (OpFlag < AccessWidth64); /* TODO: Add the assertion to make it not crash for now. */
+  OpFlag = (OpFlag & 0x7f) - 1;
   if (OpFlag == 0x02) OpFlag = 0x03;
 
   for (Index = 0; Index <= OpFlag; Index++) {
@@ -77,7 +78,8 @@ ReadECmsg (
 {
   UINT8 Index;
 
-  OpFlag = OpFlag & 0x7f;
+  ASSERT (OpFlag < AccessWidth64); /* TODO: Add the assertion to make it not crash for now. */
+  OpFlag = (OpFlag & 0x7f) - 1;
   if (OpFlag == 0x02) OpFlag = 0x03;
 
   for (Index = 0; Index <= OpFlag; Index++) {

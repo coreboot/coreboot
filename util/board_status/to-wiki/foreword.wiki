@@ -1,0 +1,9 @@
+= coreboot status by mainboard =
+
+This list contains reports of successful coreboot execution, ordered by date. It's shows which boards can actually run with current coreboot versions.
+
+By sorting it by date, we encourage developers and users to keep ports current and well-tested.
+
+Status data comes from the [http://review.coreboot.org/gitweb?p=board-status.git board status repository], which also contains the parser.
+The coreboot tree [http://review.coreboot.org/gitweb?p=coreboot.git;a=tree;f=util/board_status;hb=HEAD contains a tool] to generate and push suitable data.
+An account on review.coreboot.org is required for sending data.

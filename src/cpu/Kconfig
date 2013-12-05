@@ -162,12 +162,12 @@ config CPU_MICROCODE_FILE
 
 config CPU_MICROCODE_CBFS_LOC
 	  hex "Microcode address in CBFS"
-	  depends on CPU_MICROCODE_IN_CBFS
+	  depends on !CPU_MICROCODE_CBFS_NONE
 	  default 0
 
 config CPU_MICROCODE_CBFS_LEN
 	  hex "Microcode length in CBFS"
-	  depends on CPU_MICROCODE_IN_CBFS
+	  depends on !CPU_MICROCODE_CBFS_NONE
 	  default 0xC000
 	  help
 		The microcode needs a specific length to get correctly

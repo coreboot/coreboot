@@ -576,7 +576,7 @@ static void southbridge_smi_gpe0(unsigned int node, smm_state_save_area_t *state
 
 static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_save)
 {
-	void (*mainboard_gpi)(u16 gpi_sts) = mainboard_smi_gpi;
+	void (*mainboard_gpi)(u16 gpi_sts) = (void *)mainboard_smi_gpi;
 	u16 reg16;
 	reg16 = inw(pmbase + ALT_GP_SMI_STS);
 	outw(reg16, pmbase + ALT_GP_SMI_STS);

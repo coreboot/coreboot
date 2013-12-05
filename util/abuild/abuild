@@ -47,6 +47,9 @@ configureonly=0
 # Did any board fail to build?
 failed=0
 
+# default: single CPU build
+cpus=1
+
 # One might want to adjust these in case of cross compiling
 for i in make gmake gnumake nonexistant_make; do
 	$i --version 2>/dev/null |grep "GNU Make" >/dev/null && break
@@ -587,6 +590,7 @@ while true ; do
 		-T|--test)      shift; hwtest=true;;
 		-c|--cpus)	shift
 			export MAKEFLAGS="-j $1"
+			cpus=$1
 			test "$MAKEFLAGS" == "-j max" && export MAKEFLAGS="-j" && cpuconfig="in parallel"
 			test "$1" == "1" && cpuconfig="on 1 cpu"
 			expr "$1" : '-\?[0-9]\+$' > /dev/null && test 0$1 -gt 1 && cpuconfig="on $1 cpus in parallel"
@@ -633,10 +637,16 @@ fi
 
 USE_XARGS=0
 if [ "$cpus" != "1" ]; then
+	# Limit to 32 parallel builds for now.
+	# Thrashing all caches because we run
+	# 160 abuilds in parallel is no fun.
+	if [ "$cpus" = "max" ]; then
+		cpus=32
+	fi
 	if [ "$target" = "" ]; then
 		# Test if xargs supports the non-standard -P flag
 		# FIXME: disabled until we managed to eliminate all the make(1) quirks
-		echo | xargs -P 0$cpus -n 1 echo 2>/dev/null >/dev/null # && USE_XARGS=1
+		echo | xargs -P ${cpus:-0} -n 1 echo 2>/dev/null >/dev/null && USE_XARGS=1
 	fi
 fi
 
@@ -653,12 +663,6 @@ build_all_targets()
 	done
 }
 else
-# Limit to 32 parallel builds for now.
-# Thrashing all caches because we run
-# 160 abuilds in parallel is no fun.
-if [ "$cpus" = "" ]; then
-	cpus=32
-fi
 build_all_targets()
 {
 	# seed shared utils
@@ -672,7 +676,7 @@ build_all_targets()
 		for MAINBOARD in $( mainboards $VENDOR ); do
 			echo $VENDOR/$MAINBOARD
 		done
-	done | xargs -P 0$cpus -n 1 $0 $cmdline -t
+	done | xargs -P ${cpus:-0} -n 1 $0 $cmdline -t
 }
 fi
 

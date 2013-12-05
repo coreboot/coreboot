@@ -30,11 +30,11 @@
 #include <cpu/intel/microcode.h>
 
 #ifdef __PRE_RAM__
-#if CONFIG_CPU_MICROCODE_IN_CBFS
+#if CONFIG_SUPPORT_CPU_UCODE_IN_CBFS
 #include <arch/cbfs.h>
 #endif
 #else
-#if CONFIG_CPU_MICROCODE_IN_CBFS
+#if CONFIG_SUPPORT_CPU_UCODE_IN_CBFS
 #include <cbfs.h>
 #endif
 #include <smp/spinlock.h>
@@ -82,7 +82,7 @@ static inline u32 read_microcode_rev(void)
 	return msr.hi;
 }
 
-#if CONFIG_CPU_MICROCODE_IN_CBFS
+#if CONFIG_SUPPORT_CPU_UCODE_IN_CBFS
 
 #define MICROCODE_CBFS_FILE "cpu_microcode_blob.bin"
 
@@ -192,7 +192,7 @@ void intel_update_microcode_from_cbfs(void)
 #endif
 }
 
-#else /* !CONFIG_CPU_MICROCODE_IN_CBFS */
+#else /* !CONFIG_SUPPORT_CPU_UCODE_IN_CBFS */
 
 void intel_update_microcode(const void *microcode_updates)
 {

@@ -18,7 +18,7 @@
  */
 
 unsigned microcode[] = {
-#if IS_ENABLED(CONFIG_CPU_MICROCODE_IN_CBFS)
+#if IS_ENABLED(SUPPORT_CPU_UCODE_IN_CBFS)
 #include "microcode_blob.h"
 #endif
 };

@@ -160,8 +160,8 @@ Method (_CRS, 0, Serialized)
 		// PCI Memory Region (Top of memory-0xfeafffff)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,
 				Cacheable, ReadWrite,
-				0x00000000, 0x00000000, 0xfeafffff, 0x00000000,
-				0xfeb00000,,, PMEM)
+				0x00000000, 0xfea00000, 0xfeafffff, 0x00000000,
+				0x00100000,,, PMEM)
 
 		// TPM Area (0xfed40000-0xfed44fff)
 		DWordMemory (ResourceProducer, PosDecode, MinFixed, MaxFixed,

@@ -140,7 +140,7 @@ ifeq ($(CONFIG_PXE_ROM),y)
 	$(CBFSTOOL) $@.tmp add -f $(CONFIG_PXE_ROM_FILE) -n pci$(CONFIG_PXE_ROM_ID).rom -t raw
 endif
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
-ifeq ($(CONFIG_CPU_MICROCODE_IN_CBFS),y)
+ifeq ($(CONFIG_CPU_MICROCODE_ADDED_DURING_BUILD),y)
 	@printf "    UPDATE-FIT \n"
 	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
 endif

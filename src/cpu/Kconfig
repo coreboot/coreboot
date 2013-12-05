@@ -77,6 +77,17 @@ config CPU_MICROCODE_IN_CBFS
 	bool
 	default n
 
+# This variable is used to determine if we add CPU microcode to CBFS during the
+# build. Microcode can be added manually afterwars, or removed. As a result,
+# code should not rely on this to tell if a microcode update is present or not,
+# and should instead search CBFS.
+# This variable is useful in determining if certain automated post-processing
+# steps should be performed right after the build, such as automatically adding
+# a firmware interface table.
+config CPU_MICROCODE_ADDED_DURING_BUILD
+	bool
+	default y if CPU_MICROCODE_CBFS_GENERATE || CPU_MICROCODE_CBFS_EXTERNAL
+
 choice
 	prompt "Include CPU microcode in CBFS" if ARCH_X86
 	default CPU_MICROCODE_CBFS_GENERATE if CPU_MICROCODE_IN_CBFS

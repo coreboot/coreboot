@@ -76,7 +76,7 @@ static void lpe_init(device_t dev)
 static const struct device_operations device_ops = {
 	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
-	.enable_resources	= NULL,
+	.enable_resources	= pci_dev_enable_resources,
 	.init			= lpe_init,
 	.enable			= NULL,
 	.scan_bus		= NULL,

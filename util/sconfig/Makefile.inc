@@ -8,7 +8,10 @@ SCONFIGFLAGS += -I$(top)/util/sconfig -I$(objutil)/sconfig
 $(objutil)/sconfig:
 	mkdir -p $@
 
-$(objutil)/sconfig/%.o: util/sconfig/%.c
+$(objutil)/sconfig/.generated: $(objutil)/sconfig
+	touch $@
+
+$(objutil)/sconfig/%.o: util/sconfig/%.c | $(objutil)/sconfig/.generated
 	printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(SCONFIGFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
@@ -35,6 +38,6 @@ $(objutil)/sconfig/%: $(top)/util/sconfig/%_shipped
 	mkdir -p $(dir $@)
 	cp $< $@
 
-$(objutil)/sconfig/sconfig: $(objutil)/sconfig $(addprefix $(objutil)/sconfig/,$(sconfigobj))
+$(objutil)/sconfig/sconfig: $(addprefix $(objutil)/sconfig/,$(sconfigobj))
 	printf "    HOSTCC     $(subst $(obj)/,,$(@)) (link)\n"
 	$(HOSTCC) $(SCONFIGFLAGS) -o $@ $(addprefix $(objutil)/sconfig/,$(sconfigobj))

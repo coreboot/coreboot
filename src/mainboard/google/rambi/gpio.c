@@ -63,7 +63,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_FUNC1,	/* S0-SC004 - PCIE_CLKREQ_WLAN# */
 	GPIO_NC,	/* S0-SC005 - PCIE_CLKREQ_LAN# (NC) */
 	GPIO_NC,	/* S0-SC006 - PCIE_CLKREQ3# (NC) */
-	GPIO_NC,	/* S0-SC007 - SD3_WP (NC) */
+	GPIO_FUNC(2, PULL_DISABLE, 10K), /* S0-SC007 - SD3_WP external pull */
 	GPIO_NC,	/* S0-SC008 - ACZ_RST# (NC) */
 	GPIO_NC,	/* S0-SC009 - ACZ_SYNC (NC) */
 	GPIO_NC,	/* S0-SC010 - ACZ_BCLK (NC) */
@@ -89,15 +89,15 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_NC,	/* S0-SC030 - NC */
 	GPIO_NC,	/* S0-SC031 - NC */
 	GPIO_NC,	/* S0-SC032 - NC */
-	GPIO_NC,	/* S0-SC033 - SD3_CLK (NC) */
-	GPIO_NC,	/* S0-SC034 - SD3_D0 (NC) */
-	GPIO_NC,	/* S0-SC035 - SD3_D1 (NC) */
-	GPIO_NC,	/* S0-SC036 - SD3_D2 (NC) */
-	GPIO_NC,	/* S0-SC037 - SD3_D3 (NC) */
-	GPIO_NC,	/* S0-SC038 - SD3_CD# (NC) */
-	GPIO_NC,	/* S0-SC039 - SD3_CMD (NC) */
-	GPIO_NC,	/* S0-SC040 - SDMMC3_1P8_EN (NC) */
-	GPIO_NC,	/* S0-SC041 - SDIO3_PWR_EN# (NC)*/
+	GPIO_FUNC(1, PULL_DOWN, 2K),	/* S0-SC033 - SD3_CLK */
+	GPIO_FUNC(1, PULL_UP, 2K),	/* S0-SC034 - SD3_D0 */
+	GPIO_FUNC(1, PULL_UP, 2K),	/* S0-SC035 - SD3_D1 */
+	GPIO_FUNC(1, PULL_UP, 2K),	/* S0-SC036 - SD3_D2 */
+	GPIO_FUNC(1, PULL_UP, 2K),	/* S0-SC037 - SD3_D3 */
+	GPIO_FUNC(1, PULL_UP, 20K),	/* S0-SC038 - SD3_CD# */
+	GPIO_FUNC(1, PULL_UP, 2K),	/* S0-SC039 - SD3_CMD */
+	GPIO_NC,	/* S0-SC040 - SDMMC3_1P8_EN - TP3 */
+	GPIO_FUNC(1, PULL_UP, 20K),	/* S0-SC041 - SDIO3_PWR_EN# */
 	GPIO_FUNC1,	/* S0-SC042 - LPC_LAD0 */
 	GPIO_FUNC1,	/* S0-SC043 - LPC-LAD1 */
 	GPIO_FUNC1,	/* S0-SC044 - LPC_LAD2 */

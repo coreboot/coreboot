@@ -21,7 +21,7 @@
 #define __CPU__INTEL__MICROCODE__
 
 #ifndef __PRE_RAM__
-#if CONFIG_CPU_MICROCODE_IN_CBFS
+#if CONFIG_SUPPORT_CPU_UCODE_IN_CBFS
 void intel_update_microcode_from_cbfs(void);
 /* Find a microcode that matches the revision and platform family returning
  * NULL if none found. */

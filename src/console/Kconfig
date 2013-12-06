@@ -173,12 +173,18 @@ config USBDEBUG
 
 	  If unsure, say N.
 
-config USBDEBUG_IN_ROMSTAGE
-	bool
-	default y if USBDEBUG && EARLY_CBMEM_INIT && EARLY_CONSOLE
-	default n
-
 if USBDEBUG
+
+config USBDEBUG_IN_ROMSTAGE
+	bool "Enable early (pre-RAM) usbdebug console output."
+	default y
+	depends on EARLY_CBMEM_INIT && EARLY_CONSOLE
+	help
+	   Configuring USB controllers in system-agent binary may cause
+	   problems to usbdebug. Disabling this option delays usbdebug to
+	   be setup on entry to ramstage.
+
+	   If unsure, say Y.
 
 config USBDEBUG_HCD_INDEX
 	int

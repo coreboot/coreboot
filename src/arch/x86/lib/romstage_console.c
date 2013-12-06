@@ -49,7 +49,7 @@ void console_tx_byte(unsigned char byte)
 #if CONFIG_CONSOLE_SERIAL8250
 	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
 #endif
-#if CONFIG_USBDEBUG && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
+#if CONFIG_USBDEBUG && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
 	usbdebug_tx_byte(dbgp_console_output(), byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
@@ -74,7 +74,7 @@ void console_tx_flush(void)
 #if CONFIG_CONSOLE_NE2K
 	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
-#if CONFIG_USBDEBUG && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
+#if CONFIG_USBDEBUG && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
 	usbdebug_tx_flush(dbgp_console_output());
 #endif
 }

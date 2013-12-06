@@ -7,7 +7,7 @@ PDFLATEX=pdflatex -t a4
 
 FIGS=codeflow.pdf hypertransport.pdf
 
-all: LinuxBIOS-AMD64.pdf Kconfig.pdf
+all: CorebootPortingGuide.pdf Kconfig.pdf
 
 SVG2PDF=$(shell which svg2pdf)
 INKSCAPE=$(shell which inkscape)
@@ -31,13 +31,13 @@ else ifneq ($(strip $(CONVERT)),)
 	convert $< $@
 endif
 
-LinuxBIOS-AMD64.toc: $(FIGS) LinuxBIOS-AMD64.tex
+CorebootPortingGuide.toc: $(FIGS) CorebootPortingGuide.tex
 	# 2 times to make sure we have a current toc.
-	$(PDFLATEX) LinuxBIOS-AMD64.tex
-	$(PDFLATEX) LinuxBIOS-AMD64.tex
+	$(PDFLATEX) CorebootPortingGuide.tex
+	$(PDFLATEX) CorebootPortingGuide.tex
 
-LinuxBIOS-AMD64.pdf: $(FIGS) LinuxBIOS-AMD64.tex LinuxBIOS-AMD64.toc
-	$(PDFLATEX) LinuxBIOS-AMD64.tex
+CorebootPortingGuide.pdf: $(FIGS) CorebootPortingGuide.tex CorebootPortingGuide.toc
+	$(PDFLATEX) CorebootPortingGuide.tex
 
 Kconfig.pdf: Kconfig.tex mainboardkconfig.tex cpukconfig.tex socketfkconfig.tex
 	$(PDFLATEX) $<
@@ -67,5 +67,5 @@ clean:
 	rm -f *.aux *.idx *.log *.toc *.out $(FIGS) mainboardkconfig.tex skconfig.tex cpukconfig.tex socketfkconfig.tex
 
 distclean: clean
-	rm -f LinuxBIOS-AMD64.pdf Kconfig.pdf
+	rm -f CorebootPortingGuide.pdf Kconfig.pdf
 

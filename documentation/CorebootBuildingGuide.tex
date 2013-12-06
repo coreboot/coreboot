@@ -1,0 +1,659 @@
+%
+% This document is released under the GPL
+%
+% pdflatex -a t4 this.tex
+%
+
+
+
+\documentclass[titlepage,12pt]{article}
+\usepackage{a4}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{url}
+\usepackage{color}
+% \usepackage{geometry}
+\usepackage[pdftex]{hyperref}
+% \usepackage{makeidx}
+% \makeindex
+% \geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+
+\hypersetup{
+    urlbordercolor={1 1 1},
+    menubordercolor={1 1 1},
+    linkbordercolor={1 1 1},
+    colorlinks=false,
+    % pdfpagemode=None,  % PDF-Viewer starts without TOC
+    % pdfstartview=FitH,
+    pdftitle={Coreboot Porting Guide},
+    pdfauthor={Zheng Bao},
+    pdfsubject={coreboot configuration and build process},
+    pdfkeywords={coreboot, AMD, configuration, Build}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\hoffset}{0pt}
+
+\title{Coreboot from Scratch}
+\author{Stefan Reinauer $<$stepan@coresystems.de$>$\and Zheng Bao $<$zheng.bao@amd.com$>$}
+\date{Dec 4th, 2013}
+
+\begin{document}
+
+\maketitle
+
+\thispagestyle{empty}
+
+\tableofcontents
+
+\newpage
+
+\section{What is Coreboot}
+coreboot aims to replace the normal BIOS found on x86, AMD64, PPC,
+Alpha, and other machines with a Linux kernel that can boot Linux from a cold
+start. The startup code of an average coreboot port is about 500 lines of
+assembly and 5000 lines of C. It executes 16 instructions to get into 32bit
+protected mode and then performs DRAM and other hardware initializations
+required before Linux can take over.
+
+The projects primary motivation initially was maintenance of large
+clusters. Not surprisingly interest and contributions have come from
+people with varying backgrounds.  Nowadays a large and growing number of
+Systems can be booted with coreboot, including embedded systems,
+Desktop PCs and Servers.
+
+This document is used to build, modify, and port the CoreBoot code
+base on the AMD platform.
+
+
+\section{Changes}
+
+ \begin{itemize}
+ \item 2013/12/20 Add Git, Gerrit, toolchains building.
+ \item 2009/04/19 replace LinuxBIOS with coreboot
+ \item 2004/06/02 url and language fixes from Ken Fuchs $<$kfuchs@winternet.com$>$
+ \item 2004/02/10 acpi and option rom updates
+ \item 2003/11/18 initial release
+ \end{itemize}
+
+%
+% Build Requirements
+%
+
+\section{Build Requirements}
+To build coreboot for AMD64 from the sources you need a recent Linux.
+SUSE Linux 11.2, CentOS release 6.3, Fedora Core 16, Cygwin, FreeBSD,
+NetBSD are known to work fine.
+
+To build the toolchain, you need following host compilers:
+
+ \begin{itemize}
+ \item tar
+ \item GNUpatch
+ \item GNUmake
+ \item GCC
+ \item binutils
+ \item bison
+ \item flex
+ \item m4
+ \item wget
+ \end{itemize}
+
+Besides the tools above, you also need:
+
+ \begin{itemize}
+ \item git
+ \item libncurses-dev (or ncursesw, ncurses, curses, pdcursesw, pdcurses)
+ \item python
+ \item perl
+ \end{itemize}
+
+%
+% Getting Coreboot
+%
+
+\section{Getting Coreboot}
+The latest coreboot sources are available via GIT.
+For users who doesn't need to change and commit the code:
+{ \small
+\begin{verbatim}
+$ git clone http://review.coreboot.org/p/coreboot
+\end{verbatim}
+}
+For developers, you need to get a gerrit account which you can register
+at \url{http://review.coreboot.org}. Please refer section ~\ref{sec:gerrit}
+{ \small
+\begin{verbatim}
+$ git clone ssh://<username>@review.coreboot.org:29418/coreboot
+$ git clone http://[<username>:<password>@]review.coreboot.org/p/coreboot.git
+\end{verbatim}
+}
+
+%
+% Building the toolchain
+%
+
+\section{Building the toolchain}
+Coreboot recommends and guarantees the toolchain integrated with Coreboot.
+Linux distributions usually modify their compilers in ways incompatible with Coreboot.
+
+{ \small
+\begin{verbatim}
+$ cd coreboot
+$ make crossgcc
+\end{verbatim}
+}
+
+or
+
+{ \small
+\begin{verbatim}
+$ cd util/crossgcc
+$ buildgcc -j 8
+\end{verbatim}
+}
+
+The buildgcc will try to get packages from website. You need to make sure you can
+get access the internet. Or you can get the source.tar.gz and put it in util/crossgcc/tarballs.
+
+{ \small
+\textcolor{blue} {Welcome to the} \textcolor{red} {coreboot} \textcolor{blue} {cross toolchain builder v1.23 (September 20th, 2013)}
+
+Target arch is now i386-elf
+
+Will skip GDB ... ok
+
+Downloading tar balls ...
+
+ * gmp-5.1.2.tar.bz2 (cached)
+
+ * mpfr-3.1.2.tar.bz2 (cached)
+
+ * mpc-1.0.1.tar.gz (cached)
+
+ * libelf-0.8.13.tar.gz (cached)
+
+ * gcc-4.7.3.tar.bz2 (cached)
+
+ * binutils-2.23.2.tar.bz2 (cached)
+
+ * acpica-unix-20130626.tar.gz (cached)
+
+Downloaded tar balls ... \textcolor {green}{ok}
+
+Unpacking and patching ...
+
+ * gmp-5.1.2.tar.bz2
+
+ * mpfr-3.1.2.tar.bz2
+
+ * mpc-1.0.1.tar.gz
+
+ * libelf-0.8.13.tar.gz
+
+ * gcc-4.7.3.tar.bz2
+
+ * binutils-2.23.2.tar.bz2
+
+   o binutils-2.23.2\_arv7a.patch
+
+   o binutils-2.23.2\_no-bfd-doc.patch
+
+ * acpica-unix-20130626.tar.gz
+
+Unpacked and patched ... \textcolor {green}{ok}
+
+Building GMP 5.1.2 ... \textcolor {green}{ok}
+
+Building MPFR 3.1.2 ... \textcolor {green}{ok}
+
+Building MPC 1.0.1 ... \textcolor {green}{ok}
+
+Building libelf 0.8.13 ... \textcolor {green}{ok}
+
+Building binutils 2.23.2 ... \textcolor {green}{ok}
+
+Building GCC 4.7.3 ...  ok
+
+Skipping Expat (Python scripting not enabled)
+
+Skipping Python (Python scripting not enabled)
+
+Skipping GDB (GDB support not enabled)
+
+Building IASL 20130626 ... \textcolor {green}{ok}
+
+Cleaning up... \textcolor {green}{ok}
+
+\textcolor {green}{You can now run your i386-elf cross toolchain from /home/baozheng/x86/coreboot-gerrit/util/crossgcc/xgcc.}
+}
+If you are lucky, you can get toolchains located in util/crossgcc/xgcc.
+
+%
+% Build Coreboot
+%
+
+\section{Building Coreboot}
+\subsection{Build main module of Coreboot}
+{ \small
+\begin{verbatim}
+$ cd coreboot
+$ make menuconfig
+.config - coreboot v4.0-4895-gc5025a4-dirty Configuration
++------------------------ coreboot Configuration -------------------------+
+|  Arrow keys navigate the menu.  <Enter> selects submenus --->.          |
+|  Highlighted letters are hotkeys.  Pressing <Y> includes, <N> excludes, |
+|  <M> modularizes features.  Press <Esc><Esc> to exit, <?> for Help, </> |
+|  for Search.  Legend: [*] built-in  [ ] excluded  <M> module  < >       |
+| +---------------------------------------------------------------------+ |
+| |        General setup  --->                                          | |
+| |        Mainboard  --->                                              | |
+| |        Architecture (x86)  --->                                     | |
+| |        Chipset  --->                                                | |
+| |        Devices  --->                                                | |
+| |        VGA BIOS  --->                                               | |
+| |        Display  --->                                                | |
+| |        PXE ROM  --->                                                | |
+| |        Generic Drivers  --->                                        | |
+| |        Console  --->                                                | |
+| |    [ ] Relocatable Modules                                          | |
+| |        System tables  --->                                          | |
+| |        Payload  --->                                                | |
+| |        Debugging  --->                                              | |
+| |    ---                                                              | |
+| +----v(+)-------------------------------------------------------------+ |
++-------------------------------------------------------------------------+
+|                    <Select>    < Exit >    < Help >                     |
++-------------------------------------------------------------------------
+\end{verbatim}
+}
+Select Mainboard -$>$ Mainboard Vendor -$>$ AMD
+                 -$>$ Mainboard Model  -$>$ Olive Hill
+
+Save and exit.
+
+{ \small
+\begin{verbatim}
+$ make
+\end{verbatim}
+}
+\section{Programming coreboot to flash memory}
+The image resulting from a coreboot build can be directly programmed to
+a flash device, either using a hardware flash programmer or by using the
+Linux flash driver devbios or mtd. This document assumes that you use a
+hardware flash programmer. If you are interested in doing in-system
+software flash programming, find detailed information:
+
+\begin{itemize}
+\item \url{http://www.openbios.org/development/devbios.html} (/dev/bios)
+\item \url{http://www.linux-mtd.infradead.org/} (Memory Technology Device Subsystem MTD)
+\end{itemize}
+
+
+\subsection{Add modules and payload}
+
+\subsubsection{VGA BIOS}
+More Chance you need to get a VGA BIOS.
+{ \small
+\begin{verbatim}
+.config - coreboot v4.0 Configuration
+------------------------------------------------------------------------------
++-------------------------------- VGA BIOS --------------------------------+
+|  Arrow keys navigate the menu.  <Enter> selects submenus --->.           |
+|  Highlighted letters are hotkeys.  Pressing <Y> includes, <N> excludes,  |
+|  <M> modularizes features.  Press <Esc><Esc> to exit, <?> for Help, </>  |
+|  for Search.  Legend: [*] built-in  [ ] excluded  <M> module  < > module |
+| +----------------------------------------------------------------------+ |
+| |    [*] Add a VGA BIOS image                                          | |
+| |    (vgabios.bin) VGA BIOS path and filename                          | |
+| |    (1002,1306) VGA device PCI IDs                                    | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| +----------------------------------------------------------------------+ |
++--------------------------------------------------------------------------+
+|                     <Select>    < Exit >    < Help >                     |
++--------------------------------------------------------------------------+
+\end{verbatim}
+}
+Select VGA BIOS. ``The VGA device PCI IDs'' should be the same as your device. Get the
+Option ROM from Vendor's website.
+
+\subsubsection{Payload}
+coreboot in itself is "only" minimal code for initializing a mainboard
+with peripherals. After the initialization, it jumps to a payload.
+
+Currently, SeaBIOS is the most widely used payload. The best way to integrate SeaBIOS
+is setting it in menuconfig.
+{ \small
+\begin{verbatim}
++------------------------------- Payload ---------------------------------+
+|  Arrow keys navigate the menu.  <Enter> selects submenus --->.           |
+|  Highlighted letters are hotkeys.  Pressing <Y> includes, <N> excludes,  |
+|  <M> modularizes features.  Press <Esc><Esc> to exit, <?> for Help, </>  |
+|  for Search.  Legend: [*] built-in  [ ] excluded  <M> module  < > module |
+| +----------------------------------------------------------------------+ |
+| |        Add a payload (SeaBIOS)  --->                                 | |
+| |        SeaBIOS version (1.7.2.1)  --->                               | |
+| |    [*] Use LZMA compression for payloads (NEW)                       | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| |                                                                      | |
+| +----------------------------------------------------------------------+ |
++--------------------------------------------------------------------------+
+|                     <Select>    < Exit >    < Help >                     |
++--------------------------------------------------------------------------+
+\end{verbatim}
+The script in Makefile will automatically checkout, config, build the SeaBIOS source,
+and integrat the binary into the final image.
+
+%
+% Working with Git
+%
+
+\section{Working with Git}
+\subsection{Configuration of Git}
+Inside the checkout you should install a commit-msg hook that adds a
+Change-Id into commit messages, which uniquely identifies the logical
+change in Gerrit even across multiple iterations of the commit. The
+hook only needs to be installed once per clone, and installation can
+be done with:
+{ \small
+\begin{verbatim}
+$ cd coreboot
+$ cp ./util/gitconfig/* .git/hooks
+\end{verbatim}
+}
+configure your name and email in git.
+{ \small
+\begin{verbatim}
+$ git config --global user.name "Your Name Comes Here"
+$ git config --global user.email your.email@example.com'
+\end{verbatim}
+}
+The name~\ref{user name} and email~\ref{Contact Information} should be the same the settings in gerrit.
+Otherwise you can not push you code to community.
+
+Then run the following command once, to tell git that by default you
+want to submit all commits in the currently checked-out branch for
+review on gerrit:
+{ \small
+\begin{verbatim}
+$ git config remote.origin.push HEAD:refs/for/master
+\end{verbatim}
+}
+
+The above configurations for git has been integrated into Makefile. You can run
+{ \small
+\begin{verbatim}
+$ make gitconfig
+\end{verbatim}
+}
+
+\subsection{Work flow}
+
+It is recommended that you make a new branch when you start to work, not pushing changes to master.
+{ \small
+\begin{verbatim}
+$ git checkout master -b mybranch
+\end{verbatim}
+}
+After you have done your changes, run:
+{ \small
+\begin{verbatim}
+$ git add file_need_to_submit.c
+$ git commit -m "my first change."
+\end{verbatim}
+}
+
+% Does anyone have a better word to describe the phylosophy of spliting changes to patches?
+You need to realize that the changes you have made should be well devided into
+several commits. Each of them has one and only one meaning. You could use git rebase -i to
+split, squash, remove, rewrite you comment.
+
+Here is an example of a well-formatted commit message:
+
+{ \small
+\begin{verbatim}
+examplecomponent: Refactor duplicated setup into a function
+
+Setting up the demo device correctly requires the exact same register
+values to be written into each of the PCI device functions. Moving the
+writes into a function allows also otherexamplecomponent to use them.
+
+Signed-off-by: Joe Hacker <joe@hacker.email>
+\end{verbatim}
+}
+
+Then you can push the code.
+{ \small
+\begin{verbatim}
+$ git push
+\end{verbatim}
+}
+
+You can go to the ~\ref{sec:gerrit} gerrit to see if your changes is successfully pushed.
+
+Often it might happen that the patch you sent for approval is not good
+enough from the first attempt. Gerrit and git make it easy to track
+patch evolution during the review process until patches meet our
+quality standards and are ready for approval.
+
+You can easily modify a patch sent to gerrit by you or even by someone
+else. Just apply it locally using one of the possible ways to do it,
+make a new local commit that fixes the issues reported by the
+reviewers, then rebase the change by preserving the same Change-ID. We
+recommend you to use the git rebase command in interactive mode,
+
+Once your patch gets a +2 comment, your patch can be merged (cherry-pick, actually) to origin/master.
+
+%
+% Working with Gerrit
+%
+
+\section{Working with Gerrit}
+\label{sec:gerrit}
+If you are a coreboot user, not planning to contribute, you can skip this section.
+\subsection{Get gerrit account}
+You need to get an OpenID first. Currently Google account give you an OpenID. It means, if you have a gmail account, you have an OpenID. You can try to signed in.
+click \url{http://review.coreboot.org}
+
+%\includegraphics[width=6.00in,height=1.00in]{gerrit_signin.png}
+{ \small
+\begin{verbatim}
++-----------------------------------------------------------+
+|All    Projects  Documentation           Register  Sign In |
+|Open Merged   Abandoned                                    |
+|Search for status:open                                     |
++-----------------------------------------------------------+
+|Subject      Status   Owner  Project  Branch Updated CR V  |
+|cpu: Rename..      Alexandru coreboot master 1:20 PM +1    |
+|cpu: Only a..      Alexandru coreboot master 1:17 PM    X  |
+|arch/x86: D..      Alexandru coreboot master 1:09 PM       |
+|                                                           |
+|                                                  Next ->  |
+|Press '?' to view keyboard shortcuts | Powered by Gerrit   |
++-----------------------------------------------------------+
+\end{verbatim}
+}
+Click ``Sign In'', You will get
+
+%\includegraphics[width=6.00in,height=4.00in]{openid.png}
+
+You will be redirected to Google to get logging in.
+
+% \includegraphics[width=6.00in,height=1.50in]{login.png}
+{ \small
+\begin{verbatim}
+Sign In to Gerrit Code Review at review.coreboot.org
++--------------------------------------------------+
++--------------------------------------------------+
+[] Remember me
+Sign In Cancel
+Sign in with a Google Account
+Sign in with a Yahoo! ID
+What is OpenID?
+
+OpenID provides secure single-sign-on, without revealing your passwords to this website.
+
+There are many OpenID providers available. You may already be member of one!
+
+Get OpenID
+\end{verbatim}
+}
+
+\subsection{Configure account}
+Click the dropdown button near the user name and click ``Settings''
+
+% \includegraphics[width=6.00in,height=4.00in]{settings}
+% \epsfig{figure=keystroke_left}
+% \epstopdf {file=settings.eps}
+% \epsfig{file=settings.eps}
+
+\label{user name} In ``profile'' section, type the user name for git. This probably can be changed only once.
+{ \small
+\begin{verbatim}
+Profile               Username      zbao
+Preferences           Full Name     Zheng Bao
+Watched Projects      Email Address zheng.bao@amd.com
+Contact Information   Registered    Jun 28, 2011 4:33 PM
+SSH Public Keys       Account ID    1000034
+HTTP Password
+Identities
+Groups
+\end{verbatim}
+}
+
+\label{Contact Information} In ``Contact Information'', enter you full name and your Email, which should be configured in your .gitconfig
+{ \small
+\begin{verbatim}
+      Full Name  __________________________________
+Preferred Email  ______________   Registered Email
+
+Save Changes
+\end{verbatim}
+}
+
+In ``SSH Public Keys'' section, upload your public key.
+{ \small
+\begin{verbatim}
+Status  Algorithm   Key Comment
+
+Delete
+Add SSH Public Key
+ > How to Generate an SSH Key
++--------------------------+
+|                          |
+|                          |
+|                          |
+|                          |
+|                          |
+|                          |
+|                          |
+|                          |
+|                          |
++--------------------------+
+clear       Add  Close
+\end{verbatim}
+}
+
+Click ``Add Key ...''
+Go back to you linux command line and type:
+{ \small
+\begin{verbatim}
+$ ssh-keygen
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/zhengbao/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/zhengbao/.ssh/id_rsa.
+Your public key has been saved in /home/zhengbao/.ssh/id_rsa.pub.
+The key fingerprint is:
+xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx zhengb@host.domain
+The key's randomart image is:
++--[ RSA 2048]----+
+|                 |
+|                 |
+|                 |
+|                 |
+|                 |
+|                 |
+|                 |
+|                 |
+|                 |
++-----------------+
+\end{verbatim}
+}
+The data in ~/.ssh/id\_rsa.pub is your public key. Copy them to the box in the page of ``SSH Public Keys'' and click add.
+
+In ``HTTP Password'' section, click button ``Generate Password''. You will get the password for http checkout.
+{ \small
+\begin{verbatim}
+Username    XXX
+Password    XXXXXXXXXXXX
+
+Generate Password   Clear Password
+
+\end{verbatim}
+}
+
+\subsection{Reviewing Changes}
+For each listed changes in Gerrit, you can review, comment, evaluate,
+cherry-pick, and even re-submit them. For you own patches, only you can
+abandon them. Click in the file and commit message, you can add in-line comment.
+
+%
+% 14 Glossary
+%
+
+\section{Glossary}
+\begin{itemize}
+\item payload
+
+coreboot only cares about low level machine initialization, but also has
+very simple mechanisms to boot a file either from FLASHROM or IDE. That
+file, possibly a Linux Kernel, a boot loader or Etherboot, are called
+payload, since it is the first software executed that does not cope with
+pure initialization.
+
+\item flash device
+
+Flash devices are commonly used in all different computers since unlike
+ROMs they can be electronically erased and reprogrammed.
+\end{itemize}
+
+\newpage
+
+%
+% 14 Bibliography
+%
+
+\section{Bibliography}
+\subsection{Additional Papers on coreboot}
+
+\begin{itemize}
+ \item
+ \textit{\url{http://www.coreboot.org/Documentation}}
+ \item
+ \textit{\url{http://www.lysator.liu.se/upplysning/fa/linuxbios.pdf}}
+ \item
+ \textit{\url{http://portal.acm.org/citation.cfm?id=512627}}
+\end{itemize}
+
+\subsection {Links}
+
+\begin{itemize}
+ \item Etherboot: \textit{\url{http://www.etherboot.org/}}
+ \item Filo: \textit{\url{http://www.coreboot.org/FILO}}
+ \item OpenBIOS: \textit{\url{http://www.openbios.org/}}
+\end{itemize}
+
+
+\end{document}

@@ -69,3 +69,26 @@ void it8728f_enable_serial(device_t dev, u16 iobase)
 	/* (3) Exit the configuration state (MB PnP mode). */
 	it8728f_exit_conf(dev);
 }
+
+/*
+ * We need to set enable 3VSBSW#, this was documented only in IT8712F_V0.9.2!
+ *
+ * LDN 7, reg 0x2a - needed for S3, or memory power will be cut off.
+ *
+ * Enable 3VSBSW#. (For System Suspend-to-RAM)
+ * 0: 3VSBSW# will be always inactive.
+ * 1: 3VSBSW# enabled. It will be (NOT SUSB#) NAND SUSC#.
+ */
+void it8728f_enable_3vsbsw(device_t dev)
+{
+	it8728f_enter_conf(dev);
+	it8728f_sio_write(dev, IT8728F_CONFIG_REG_MFC, 0x80);
+	it8728f_exit_conf(dev);
+}
+
+void it8728f_kill_watchdog(device_t dev)
+{
+	it8728f_enter_conf(dev);
+	it8728f_sio_write(dev, IT8728F_CONFIG_REG_WATCHDOG, 0x00);
+	it8728f_exit_conf(dev);
+}

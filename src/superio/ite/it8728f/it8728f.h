@@ -38,5 +38,7 @@
 #define IT8728F_CONFIG_REG_CHIPVERS  0x22 /* Chip version */
 #define IT8728F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8728F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. 'Special register' */
+#define IT8728F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
+#define IT8728F_CONFIG_REG_MFC       0x2a /* Multi-function control */
 
 #endif

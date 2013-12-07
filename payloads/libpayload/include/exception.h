@@ -27,12 +27,11 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _ARCH_EXCEPTION_H
-#define _ARCH_EXCEPTION_H
+#ifndef _EXCEPTION_H
+#define _EXCEPTION_H
 
-#include <exception.h>
 #include <stdint.h>
 
-void set_vbar(uint32_t vbar);
+void exception_init(void);
 
 #endif

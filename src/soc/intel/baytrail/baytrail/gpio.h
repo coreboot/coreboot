@@ -59,7 +59,7 @@
 #define GPSSUS_COUNT		44
 
 /* GPIO legacy IO register settings */
-#define GPIO_USE_PAD 		0
+#define GPIO_USE_MMIO 		0
 #define GPIO_USE_LEGACY 	1
 
 #define GPIO_DIR_OUTPUT		0
@@ -155,32 +155,35 @@
  * if not set correctly, even if the pin isn't configured as GPIO. */
 #define PAD_VAL_DEFAULT		PAD_VAL_INPUT
 
-/* Configure GPIOs as legacy by default. GPNCORE doesn't support
- * legacy config -- so also configure the pad regs as GPIO. We rely upon
- * the fact that all GPNCORE pads are function 0 GPIO. */
+/* Configure GPIOs as MMIO by default */
 #define GPIO_INPUT_PU_10K \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT \
-		     | PAD_FUNC0, \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, \
-	  .use_sel   = GPIO_USE_LEGACY, \
-	  .io_sel    = GPIO_DIR_INPUT }
+	  .use_sel   = GPIO_USE_MMIO, \
+	  .is_gpio   = 1 }
 
 #define GPIO_INPUT_PD_10K \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DOWN | PAD_CONFIG0_DEFAULT \
-		     | PAD_FUNC0, \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DOWN | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, \
-	  .use_sel   = GPIO_USE_LEGACY, \
-	  .io_sel    = GPIO_DIR_INPUT }
+	  .use_sel   = GPIO_USE_MMIO, \
+	  .is_gpio   = 1 }
 
 #define GPIO_INPUT_NOPU \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
-		     | PAD_FUNC0, \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT, \
+	  .use_sel   = GPIO_USE_MMIO, \
+	  .is_gpio   = 1 }
+
+#define GPIO_INPUT_LEGACY_NOPU \
+	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_LEGACY, \
-	  .io_sel    = GPIO_DIR_INPUT }
+	  .io_sel    = GPIO_DIR_INPUT, \
+	  .is_gpio   = 1 }
 
 /* Direct / dedicated IRQ input - pass signal directly to apic */
 #define GPIO_DIRQ \
@@ -192,25 +195,25 @@
 
 #define GPIO_OUT_LOW \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
-		     | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_LOW, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
-	  .gp_lvl    = GPIO_LEVEL_LOW }
+	  .gp_lvl    = GPIO_LEVEL_LOW, \
+	  .is_gpio   = 1 }
 
 #define GPIO_OUT_HIGH \
-	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT \
-		     | PAD_FUNC0, \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_OUTPUT | PAD_VAL_HIGH, \
 	  .use_sel   = GPIO_USE_LEGACY, \
 	  .io_sel    = GPIO_DIR_OUTPUT, \
-	  .gp_lvl    = GPIO_LEVEL_HIGH }
+	  .gp_lvl    = GPIO_LEVEL_HIGH, \
+	  .is_gpio   = 1 }
 
 /* Define no-pull / PU / PD configs for each functional config option */
 #define GPIO_FUNC(_func, _pudir, _str) \
-	{ .use_sel   = GPIO_USE_PAD, \
+	{ .use_sel   = GPIO_USE_MMIO, \
 	  .pad_conf0 = PAD_FUNC##_func | PAD_##_pudir | PAD_PU_##_str | \
 		       PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
@@ -251,14 +254,28 @@
 	{  .pad_conf0 = GPIO_LIST_END }
 
 /* Common default GPIO settings */
-#define GPIO_INPUT 	GPIO_INPUT_NOPU
-#define GPIO_INPUT_PU	GPIO_INPUT_PU_10K
-#define GPIO_INPUT_PD 	GPIO_INPUT_PD_10K
-#define GPIO_NC		GPIO_INPUT_PU_10K
-#define GPIO_DEFAULT 	GPIO_FUNC0
+#define GPIO_INPUT 		GPIO_INPUT_NOPU
+#define GPIO_INPUT_LEGACY	GPIO_INPUT_LEGACY_NOPU
+#define GPIO_INPUT_PU		GPIO_INPUT_PU_10K
+#define GPIO_INPUT_PD 		GPIO_INPUT_PD_10K
+#define GPIO_NC			GPIO_INPUT_PU_10K
+#define GPIO_DEFAULT 		GPIO_FUNC0
 
 /* 16 DirectIRQs per supported bank */
 #define GPIO_MAX_DIRQS	16
+
+/* Most pins are GPIO function 0. Some banks have a range of pins with GPIO
+ * function 1. Indicate first / last GPIOs with function 1. */
+#define GPIO_NONE			255
+/* All NCORE GPIOs are function 0 */
+#define GPNCORE_GPIO_F1_RANGE_START	GPIO_NONE
+#define GPNCORE_GPIO_F1_RANGE_END	GPIO_NONE
+/* SCORE GPIO [92:93] are function 1 */
+#define GPSCORE_GPIO_F1_RANGE_START	92
+#define GPSCORE_GPIO_F1_RANGE_END	93
+/* SSUS GPIO [11:21] are function 1 */
+#define GPSSUS_GPIO_F1_RANGE_START	11
+#define GPSSUS_GPIO_F1_RANGE_END	21
 
 struct soc_gpio_map {
 	u32 pad_conf0;
@@ -271,6 +288,7 @@ struct soc_gpio_map {
 	u8  tne     : 1;
 	u8  wake_en : 1;
 	u8  smi     : 1;
+	u8  is_gpio : 1;
 } __attribute__ ((packed));
 
 struct soc_gpio_config {
@@ -288,6 +306,8 @@ struct gpio_bank {
 	const int legacy_base;
 	const unsigned long pad_base;
 	const u8 has_wake_en :1;
+	const u8 gpio_f1_range_start;
+	const u8 gpio_f1_range_end;
 };
 
 void setup_soc_gpios(struct soc_gpio_config *config);

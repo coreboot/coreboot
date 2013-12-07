@@ -189,3 +189,20 @@ void delay(unsigned int s)
 {
 	_delay((uint64_t)s * timer_hz());
 }
+
+u64 timer_us(u64 base)
+{
+	static u64 hz;
+
+	// Only check timer_hz once. Assume it doesn't change.
+	if (hz == 0) {
+		hz = timer_hz();
+		if (hz < 1000000) {
+			printf("Timer frequency %lld is too low, "
+			       "must be at least 1MHz.\n", hz);
+			halt();
+		}
+	}
+
+	return timer_raw_value() / (hz / 1000000) - base;
+}

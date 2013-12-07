@@ -423,6 +423,7 @@ int lib_get_sysinfo(void);
 unsigned int get_cpu_speed(void);
 uint64_t timer_hz(void);
 uint64_t timer_raw_value(void);
+uint64_t timer_us(uint64_t base);
 /* Generic. */
 void ndelay(unsigned int n);
 void udelay(unsigned int n);

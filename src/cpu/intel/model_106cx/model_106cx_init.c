@@ -31,22 +31,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
 
-static const uint32_t microcode_updates[] = {
-	#include "microcode-M01106C2217.h"
-	#include "microcode-M01106CA107.h"
-	#include "microcode-M04106C2218.h"
-	#include "microcode-M04106CA107.h"
-	#include "microcode-M08106C2219.h"
-	#include "microcode-M08106CA107.h"
-	#include "microcode-M10106CA107.h"
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
 #define IA32_FEATURE_CONTROL 0x003a
 
 #define CPUID_VMX (1 << 5)
@@ -135,7 +119,7 @@ static void model_106cx_init(device_t cpu)
 	x86_enable_cache();
 
 	/* Update the microcode */
-	intel_update_microcode(microcode_updates);
+	intel_update_microcode_from_cbfs();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);

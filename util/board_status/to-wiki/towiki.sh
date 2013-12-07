@@ -16,11 +16,12 @@ while read line; do
 		datetime_human=`LC_ALL=C TZ=UTC date --date="$datetime"`
 		upstream=`grep "^Upstream revision:" $vendor_board/$commit/$datetime/revision.txt |cut -d: -f2-`
 		upstream=`git log -1 --format=%H $upstream`
-		echo $vendor_board at $datetime_human
-		echo "[$CODE_GITWEB$upstream upstream tree]"
+		echo "[[Board:$vendor_board|$vendor_board]] at $datetime_human"
+		echo "[$CODE_GITWEB$upstream upstream tree] ("
 		ls $vendor_board/$commit/$datetime/* |grep -v '/revision.txt$' | while read file; do
-			echo "*  [$STATUS_GITWEB$file `basename $file`]"
+			echo "[$STATUS_GITWEB$file `basename $file`] "
 		done
+		echo ")"
 		echo
 	done
 done

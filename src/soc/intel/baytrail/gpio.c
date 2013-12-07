@@ -60,6 +60,8 @@ static const struct gpio_bank gpncore_bank = {
 	.legacy_base = GP_LEGACY_BASE_NONE,
 	.pad_base = GPNCORE_PAD_BASE,
 	.has_wake_en = 0,
+	.gpio_f1_range_start = GPNCORE_GPIO_F1_RANGE_START,
+	.gpio_f1_range_end = GPNCORE_GPIO_F1_RANGE_END,
 };
 
 static const struct gpio_bank gpscore_bank = {
@@ -68,6 +70,8 @@ static const struct gpio_bank gpscore_bank = {
 	.legacy_base = GPSCORE_LEGACY_BASE,
 	.pad_base = GPSCORE_PAD_BASE,
 	.has_wake_en = 0,
+	.gpio_f1_range_start = GPSCORE_GPIO_F1_RANGE_START,
+	.gpio_f1_range_end = GPSCORE_GPIO_F1_RANGE_END,
 };
 
 static const struct gpio_bank gpssus_bank = {
@@ -76,6 +80,8 @@ static const struct gpio_bank gpssus_bank = {
 	.legacy_base = GPSSUS_LEGACY_BASE,
 	.pad_base = GPSSUS_PAD_BASE,
 	.has_wake_en = 1,
+	.gpio_f1_range_start = GPSSUS_GPIO_F1_RANGE_START,
+	.gpio_f1_range_end = GPSSUS_GPIO_F1_RANGE_END,
 };
 
 static void setup_gpios(const struct soc_gpio_map *gpios,
@@ -83,7 +89,7 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 {
 	const struct soc_gpio_map *config;
 	int gpio = 0;
-	u32 reg;
+	u32 reg, pad_conf0;
 	u8 set, bit;
 
 	u32 use_sel[4] = {0};
@@ -120,13 +126,23 @@ static void setup_gpios(const struct soc_gpio_map *gpios,
 		/* Pad configuration registers */
 		reg = bank->pad_base + 16 * bank->gpio_to_pad[gpio];
 
+		/* Add correct func to GPIO pad config */
+		pad_conf0 = config->pad_conf0;
+		if (config->is_gpio)
+		{
+			if (gpio >= bank->gpio_f1_range_start &&
+			    gpio <= bank->gpio_f1_range_end)
+				pad_conf0 |= PAD_FUNC1;
+			else
+				pad_conf0 |= PAD_FUNC0;
+		}
+
 #ifdef GPIO_DEBUG
 		printk(BIOS_DEBUG, "Write Pad: Base(%x) - %x %x %x\n",
-		       reg, config->pad_conf0, config->pad_conf1,
-		       config->pad_val );
+		       reg, pad_conf0, config->pad_conf1, config->pad_val);
 #endif
 
-		write32(reg + PAD_CONF0_REG, config->pad_conf0);
+		write32(reg + PAD_CONF0_REG, pad_conf0);
 		write32(reg + PAD_CONF1_REG, config->pad_conf1);
 		write32(reg + PAD_VAL_REG, config->pad_val);
 	}

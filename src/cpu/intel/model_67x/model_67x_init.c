@@ -29,24 +29,10 @@
 #include <cpu/x86/msr.h>
 #include <cpu/intel/l2_cache.h>
 
-static const uint32_t microcode_updates[] = {
-	/* Include microcode updates here. */
-	#include "microcode-293-MU267114.h"
-	#include "microcode-530-MU16730e.h"
-	#include "microcode-531-MU26732e.h"
-	#include "microcode-539-MU167210.h"
-	#include "microcode-540-MU267238.h"
-	/* Dummy terminator */
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-};
-
 static void model_67x_init(device_t cpu)
 {
 	/* Update the microcode */
-	intel_update_microcode(microcode_updates);
+	intel_update_microcode_from_cbfs();
 
 	/* Initialize L2 cache */
 	p6_configure_l2_cache();

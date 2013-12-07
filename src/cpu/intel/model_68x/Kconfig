@@ -21,3 +21,4 @@
 config CPU_INTEL_MODEL_68X
 	bool
 	select SMP
+	select SUPPORT_CPU_UCODE_IN_CBFS

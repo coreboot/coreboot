@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Damien Zammit <damien@zamaudio.com>
+ * Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,27 +17,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-#ifndef SUPERIO_ITE_IT8728F_EARLY_SERIAL_H
-#define SUPERIO_ITE_IT8728F_EARLY_SERIAL_H
 
-#include <stdint.h>
-#include <arch/io.h>
-#include <device/pnp_def.h>
-#include "it8728f.h"
+#ifndef SUPERIO_ITE_IT8728F_CHIP_H
+#define SUPERIO_ITE_IT8728F_CHIP_H
 
-/*
- * Superio low level commands
- * Pass dev = PNP_DEV(superiobase, LDN)
- */
-void it8728f_reg_write(device_t dev, u8 index, u8 value);
+#include <device/device.h>
+#include <pc80/keyboard.h>
+#include <uart8250.h>
 
-/* Select 24MHz CLKIN (48MHz default). */
-void it8728f_24mhz_clkin(device_t dev);
+struct superio_ite_it8728f_config {
 
-/* Enable the serial port(s). */
-void it8728f_enable_serial(device_t dev, u16 iobase);
-
-void it8728f_kill_watchdog(device_t dev);
-void it8728f_enable_3vsbsw(device_t dev);
+	struct pc_keyboard keyboard;
+};
 
 #endif

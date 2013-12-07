@@ -310,6 +310,7 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 
 #define DFLT_SMBUS0_BASE_ADDRESS            0xB00
 #define DFLT_SMBUS1_BASE_ADDRESS            0xB20
+/* The AGESA likes to enable 512 bytes region on this base for LPC bus */
 #define DFLT_SIO_PME_BASE_ADDRESS           0xE00
 #define DFLT_ACPI_PM1_EVT_BLOCK_ADDRESS     0x800
 #define DFLT_ACPI_PM1_CNT_BLOCK_ADDRESS     0x804

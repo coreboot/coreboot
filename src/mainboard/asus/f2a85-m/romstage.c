@@ -34,11 +34,15 @@
 #include "cpu/x86/lapic.h"
 #include "southbridge/amd/agesa/hudson/hudson.h"
 #include "southbridge/amd/agesa/hudson/smbus.h"
-#include "superio/ite/it8712f/early_serial.c"
 #include "cpu/amd/agesa/s3_resume.h"
 #include "src/drivers/pc80/i8254.c"
 #include "src/drivers/pc80/i8259.c"
 #include "cbmem.h"
+/* Note that the IT8603E is a strip down version of this chip */
+#include "superio/ite/it8728f/early_serial.h"
+#define SERIAL_DEV PNP_DEV(0x2e, IT8728F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8728F_GPIO)
+
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void disable_cache_as_ram(void);
@@ -74,11 +78,16 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 
-		/* enable SIO decode */
+		/* enable SIO LPC decode */
 		dev = PCI_DEV(0, 0x14, 3);
 		byte = pci_read_config8(dev, 0x48);
 		byte |= 3;		/* 2e, 2f */
 		pci_write_config8(dev, 0x48, byte);
+
+		/* enable serial decode */
+		byte = pci_read_config8(dev, 0x44);
+		byte |= (1 << 6);  /* 0x3f8 */
+		pci_write_config8(dev, 0x44, byte);
 
 		post_code(0x30);
 
@@ -88,9 +97,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		/* enable SIO clock */
 		sbxxx_enable_48mhzout();
-		it8712f_kill_watchdog();
-		it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
-		it8712f_enable_3vsbsw();
+		it8728f_kill_watchdog(GPIO_DEV);
+		it8728f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		it8728f_enable_3vsbsw(GPIO_DEV);
 		console_init();
 
 		/* turn on secondary smbus at b20 */

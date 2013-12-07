@@ -29,14 +29,6 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 
-static u32 microcode_updates[] = {
-	/*  Dummy terminator  */
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-};
-
 static void ep80579_init(device_t dev)
 {
 	/* Turn on caching if we haven't already */
@@ -45,7 +37,7 @@ static void ep80579_init(device_t dev)
 	x86_mtrr_check();
 
 	/* Update the microcode */
-	intel_update_microcode(microcode_updates);
+	intel_update_microcode_from_cbfs();
 
 	/* Enable the local cpu apics */
 	setup_lapic();

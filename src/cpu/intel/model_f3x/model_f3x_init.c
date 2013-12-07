@@ -10,23 +10,6 @@
 #include <cpu/intel/hyperthreading.h>
 #include <cpu/x86/cache.h>
 
-static uint32_t microcode_updates[] = {
-	/* WARNING - Intel has a new data structure that has variable length
-	 * microcode update lengths.  They are encoded in int 8 and 9.  A
-	 * dummy header of nulls must terminate the list.
-	 */
-
-#include "microcode-1290-m0df320a.h"
-#include "microcode-1467-m0df330c.h"
-#include "microcode-1468-m1df3417.h"
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
 static void model_f3x_init(device_t cpu)
 {
 	/* Turn on caching if we haven't already */

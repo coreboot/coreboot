@@ -9,24 +9,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 
-/* 256KB cache */
-static uint32_t microcode_updates[] = {
-	/* WARNING - Intel has a new data structure that has variable length
-	 * microcode update lengths.  They are encoded in int 8 and 9.  A
-	 * dummy header of nulls must terminate the list.
-	 */
-	#include "microcode-1068-m01f122d.h"
-	#include "microcode-1069-m04f122e.h"
-	#include "microcode-1070-m02f122f.h"
-	#include "microcode-1072-m04f1305.h"
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
 static void model_f1x_init(device_t dev)
 {
 	/* Turn on caching if we haven't already */

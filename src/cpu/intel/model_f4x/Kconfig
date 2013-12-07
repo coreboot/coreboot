@@ -1,3 +1,4 @@
 config CPU_INTEL_MODEL_F4X
 	bool
 	select SMP
+	select SUPPORT_CPU_UCODE_IN_CBFS

@@ -9,16 +9,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 
-static uint32_t microcode_updates[] = {
-	#include "microcode-1355-m206d618.h"
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
 static void model_6dx_init(device_t dev)
 {
 	/* Turn on caching if we haven't already */
@@ -27,7 +17,7 @@ static void model_6dx_init(device_t dev)
 	x86_mtrr_check();
 
 	/* Update the microcode */
-	intel_update_microcode(microcode_updates);
+	intel_update_microcode_from_cbfs();
 
 	/* Enable the local cpu apics */
 	setup_lapic();

@@ -1,6 +1,7 @@
 = coreboot status by mainboard =
 
 This list contains reports of successful coreboot execution, ordered by date. It's shows which boards can actually run with current coreboot versions.
+Using the precise commit id and config.txt, it's possible to reproduce working coreboot builds (assuming no compiler bugs).
 
 By sorting it by date, we encourage developers and users to keep ports current and well-tested.
 

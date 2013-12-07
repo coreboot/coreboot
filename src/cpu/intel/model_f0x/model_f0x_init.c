@@ -9,21 +9,6 @@
 #include <cpu/intel/microcode.h>
 #include <cpu/x86/cache.h>
 
-/* 256KB cache */
-static uint32_t microcode_updates[] = {
-	#include "microcode-678-2f0708.h"
-	#include "microcode-965-m01f0a13.h"
-	#include "microcode-983-m02f0a15.h"
-	#include "microcode-964-m01f0712.h"
-	#include "microcode-966-m04f0a14.h"
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
 static void model_f0x_init(device_t dev)
 {
 	/* Turn on caching if we haven't already */
@@ -32,7 +17,7 @@ static void model_f0x_init(device_t dev)
 	x86_mtrr_check();
 
 	/* Update the microcode */
-	intel_update_microcode(microcode_updates);
+	intel_update_microcode_from_cbfs();
 
 	/* Enable the local cpu apics */
 	setup_lapic();

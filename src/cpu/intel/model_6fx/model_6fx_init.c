@@ -197,7 +197,7 @@ static void model_6fx_init(device_t cpu)
 	x86_enable_cache();
 
 	/* Update the microcode */
-	intel_update_microcode(microcode_updates);
+	intel_update_microcode_from_cbfs();
 
 	/* Print processor name */
 	fill_processor_name(processor_name);

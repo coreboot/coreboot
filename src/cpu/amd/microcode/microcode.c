@@ -21,6 +21,10 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/microcode.h>
+#include <cbfs.h>
+
+#define UCODE_DEBUG(fmt, args...)	\
+	do { printk(BIOS_DEBUG, "[microcode] "fmt, ##args); } while(0)
 
 struct microcode {
 	u32 date_code;
@@ -51,40 +55,60 @@ struct microcode {
 	u8 x86_code_entry[191];
 };
 
-void amd_update_microcode(void *microcode_updates, u32 equivalent_processor_rev_id)
+static void apply_microcode_patch(const struct microcode *m)
 {
-	u32 patch_id, new_patch_id;
-	struct microcode *m;
-	char *c;
+	uint32_t new_patch_id;
 	msr_t msr;
 
+	/* apply patch */
+	msr.hi = 0;
+	msr.lo = (uint32_t)m;
+
+	wrmsr(0xc0010020, msr);
+
+	UCODE_DEBUG("patch id to apply = 0x%08x\n", m->patch_id);
+
+	/* read the patch_id again */
 	msr = rdmsr(0x8b);
-	patch_id = msr.lo;
+	new_patch_id = msr.lo;
 
-	printk(BIOS_DEBUG, "microcode: equivalent rev id  = 0x%04x, current patch id = 0x%08x\n", equivalent_processor_rev_id, patch_id);
+	UCODE_DEBUG("updated to patch id = 0x%08x %s\n", new_patch_id ,
+		    (new_patch_id == m->patch_id) ? "success" : "fail");
+}
 
-	m = microcode_updates;
+static void amd_update_microcode(const void *ucode,  size_t ucode_len,
+				 uint32_t equivalent_processor_rev_id)
+{
+	const struct microcode *m;
+	const void *c;
 
-	for(c = microcode_updates; m->date_code;  m = (struct microcode *)c) {
-
+	for(m = c = ucode; m->date_code;  m = c) {
 		if (m->processor_rev_id == equivalent_processor_rev_id) {
-			//apply patch
-
-			msr.hi = 0;
-			msr.lo = (u32)m;
-
-			wrmsr(0xc0010020, msr);
-
-			printk(BIOS_DEBUG, "microcode: patch id to apply = 0x%08x\n", m->patch_id);
-
-			//read the patch_id again
-			msr = rdmsr(0x8b);
-			new_patch_id = msr.lo;
-
-			printk(BIOS_DEBUG, "microcode: updated to patch id = 0x%08x %s\n", new_patch_id , (new_patch_id == m->patch_id)?" success\n":" fail\n" );
+			apply_microcode_patch(m);
 			break;
 		}
 		c += 2048;
 	}
+}
 
+#define MICROCODE_CBFS_FILE "cpu_microcode_blob.bin"
+
+void amd_update_microcode_from_cbfs(u32 equivalent_processor_rev_id)
+{
+	const void *ucode;
+	size_t ucode_len;
+
+	if (equivalent_processor_rev_id == 0) {
+		UCODE_DEBUG("rev id not found. Skipping microcode patch!\n");
+		return;
+	}
+
+	ucode = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, MICROCODE_CBFS_FILE,
+				      CBFS_TYPE_MICROCODE, &ucode_len);
+	if (!ucode) {
+		UCODE_DEBUG("microcode file not found. Skipping updates.\n");
+		return;
+	}
+
+	amd_update_microcode(ucode, ucode_len, equivalent_processor_rev_id);
 }

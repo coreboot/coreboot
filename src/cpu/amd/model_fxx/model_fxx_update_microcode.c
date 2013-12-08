@@ -23,24 +23,6 @@
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
 
-static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
-
-#if !CONFIG_K8_REV_F_SUPPORT
-	#include "microcode_rev_c.h"
-	#include "microcode_rev_d.h"
-	#include "microcode_rev_e.h"
-#endif
-
-#if CONFIG_K8_REV_F_SUPPORT
-//	#include "microcode_rev_f.h"
-#endif
-        /*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
 struct id_mapping {
         uint32_t orig_id;
         uint16_t new_id;
@@ -95,12 +77,11 @@ static u16 get_equivalent_processor_rev_id(u32 orig_id) {
 	return new_id;
 }
 
-void model_fxx_update_microcode(unsigned cpu_deviceid)
+void update_microcode(uint32_t cpu_deviceid)
 {
-	unsigned equivalent_processor_rev_id;
+	uint32_t equivalent_rev_id;
 
         /* Update the microcode */
-	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid );
-	if(equivalent_processor_rev_id != 0)
-	        amd_update_microcode(microcode_updates, equivalent_processor_rev_id);
+	equivalent_rev_id = get_equivalent_processor_rev_id(cpu_deviceid);
+	amd_update_microcode_from_cbfs(equivalent_rev_id);
 }

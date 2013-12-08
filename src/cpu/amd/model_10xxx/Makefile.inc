@@ -4,3 +4,5 @@ ramstage-y += processor_name.c
 
 romstage-y += update_microcode.c
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += powernow_acpi.c
+
+cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE) += microcode_blob.c

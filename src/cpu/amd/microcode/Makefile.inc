@@ -1,2 +1,2 @@
-ramstage-y += microcode.c
-romstage-$(CONFIG_UPDATE_CPU_MICROCODE) += microcode.c
+ramstage-$(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS) += microcode.c
+romstage-$(CONFIG_SUPPORT_CPU_UCODE_IN_CBFS) += microcode.c

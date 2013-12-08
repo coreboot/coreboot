@@ -17,17 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-
-#ifndef __PRE_RAM__
+#include <stdint.h>
 #include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <string.h>
-#endif
-
-#ifndef __ROMCC__
 #include <cpu/amd/microcode.h>
-#endif
 
 static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
 

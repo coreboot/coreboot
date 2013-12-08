@@ -216,8 +216,8 @@ static int parse_microcode_blob(struct cbfs_image *image,
 
 		/* Proceed to next payload. */
 		current_offset += mcus[num_mcus].size;
-		num_mcus++;
 		file_length -= mcus[num_mcus].size;
+		num_mcus++;
 
 		/* Reached limit of FIT entries. */
 		if (num_mcus == *total_mcus)

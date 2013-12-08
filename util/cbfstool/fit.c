@@ -210,7 +210,7 @@ static int parse_microcode_blob(struct cbfs_image *image,
 		if (mcu_header->total_size < sizeof(*mcu_header))
 			break;
 
-		/* FIXME: Should the checksum be validated? */
+		/* FIXME: Should the checksum be validated? */ /* Yeah, you dumass */
 		mcus[num_mcus].offset = current_offset;
 		mcus[num_mcus].size = mcu_header->total_size;
 

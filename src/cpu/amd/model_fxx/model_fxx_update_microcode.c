@@ -22,24 +22,6 @@
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
 
-static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
-
-#if !CONFIG_K8_REV_F_SUPPORT
-	#include "microcode_rev_c.h"
-	#include "microcode_rev_d.h"
-	#include "microcode_rev_e.h"
-#endif
-
-#if CONFIG_K8_REV_F_SUPPORT
-//	#include "microcode_rev_f.h"
-#endif
-        /*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
-
 static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	static unsigned id_mapping_table[] = {
 	#if !CONFIG_K8_REV_F_SUPPORT
@@ -91,7 +73,10 @@ void model_fxx_update_microcode(unsigned cpu_deviceid)
 	unsigned equivalent_processor_rev_id;
 
         /* Update the microcode */
-	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid );
-	if(equivalent_processor_rev_id != 0)
-	        amd_update_microcode(microcode_updates, equivalent_processor_rev_id);
+	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid);
+	if (equivalent_processor_rev_id != 0) {
+		amd_update_microcode_from_cbfs(equivalent_processor_rev_id);
+	} else {
+		printk(BIOS_DEBUG, "microcode: rev id not found. Skipping microcode patch!\n");
+	}
 }

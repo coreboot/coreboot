@@ -21,9 +21,6 @@
 #include <console/console.h>
 #include <cpu/amd/microcode.h>
 
-static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
-
-#ifdef __PRE_RAM__
 
 /* From the Revision Guide :
  * Equivalent Processor Table for AMD Family 10h Processors
@@ -45,16 +42,6 @@ static const u8 microcode_updates[] __attribute__ ((aligned(16))) = {
  * 00100F81h (HY-D1)     1081h                  010000c4h
  * 00100FA0h (PH-E0)     10A0h                  010000bfh
  */
-
-#include CONFIG_AMD_UCODE_PATCH_FILE
-
-#endif
-	/*  Dummy terminator  */
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-	0x0, 0x0, 0x0, 0x0,
-};
 
 static u32 get_equivalent_processor_rev_id(u32 orig_id) {
 	static unsigned id_mapping_table[] = {
@@ -95,11 +82,10 @@ void update_microcode(u32 cpu_deviceid)
 	u32 equivalent_processor_rev_id;
 
 	/* Update the microcode */
-	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid );
+	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid);
 	if (equivalent_processor_rev_id != 0) {
-		amd_update_microcode((void *) microcode_updates, equivalent_processor_rev_id);
+		amd_update_microcode_from_cbfs(equivalent_processor_rev_id);
 	} else {
 		printk(BIOS_DEBUG, "microcode: rev id not found. Skipping microcode patch!\n");
 	}
-
 }

@@ -20,9 +20,6 @@
  */
 
 #include <console/console.h>
-#include <device/device.h>
-#include <device/pci.h>
-#include <string.h>
 #include <cpu/amd/microcode.h>
 
 static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {

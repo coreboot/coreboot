@@ -1,10 +1,5 @@
 /* 512KB cache */
 unsigned microcode_updates_f2x[] = {
-	/* WARNING - Intel has a new data structure that has variable length
-	 * microcode update lengths.  They are encoded in int 8 and 9.  A
-	 * dummy header of nulls must terminate the list.
-	 */
-
 	/* Old microcode file not present in Intel's microcode.dat. */
 #include "microcode_m02f2203.h"
 
@@ -24,10 +19,4 @@ unsigned microcode_updates_f2x[] = {
 #include "microcode-1104-m04f241e.h"
 #include "microcode-1342-m02f252a.h"
 #include "microcode-1106-m02f241f.h"
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
 };

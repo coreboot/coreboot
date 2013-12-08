@@ -109,7 +109,8 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 const void *intel_microcode_find(void)
 {
-	void *microcode_updates;
+	struct cbfs_file *microcode_updates;
+	void *microcode_data;
 	u32 eax;
 	u32 pf, rev, sig;
 	unsigned int x86_model, x86_family;
@@ -152,8 +153,10 @@ const void *intel_microcode_find(void)
 			sig, pf, rev);
 #endif
 
-	m = microcode_updates;
-	for(c = microcode_updates; m->hdrver; m = (const struct microcode *)c) {
+	microcode_data = CBFS_SUBHEADER(microcode_updates);
+
+	m = microcode_data;
+	for(c = microcode_data; m->hdrver; m = (const struct microcode *)c) {
 		if ((m->sig == sig) && (m->pf & pf))
 			return m;
 

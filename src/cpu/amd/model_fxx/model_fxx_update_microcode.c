@@ -19,26 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
+#include <stdint.h>
 #include <cpu/amd/microcode.h>
-
-static uint8_t microcode_updates[] __attribute__ ((aligned(16))) = {
-
-#if !CONFIG_K8_REV_F_SUPPORT
-	#include "microcode_rev_c.h"
-	#include "microcode_rev_d.h"
-	#include "microcode_rev_e.h"
-#endif
-
-#if CONFIG_K8_REV_F_SUPPORT
-//	#include "microcode_rev_f.h"
-#endif
-        /*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-};
 
 static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	static unsigned id_mapping_table[] = {
@@ -86,12 +68,8 @@ static unsigned get_equivalent_processor_rev_id(unsigned orig_id) {
 	return new_id;
 }
 
-void model_fxx_update_microcode(unsigned cpu_deviceid)
+void update_microcode(u32 cpu_deviceid)
 {
-	unsigned equivalent_processor_rev_id;
-
-        /* Update the microcode */
-	equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid );
-	if(equivalent_processor_rev_id != 0)
-	        amd_update_microcode(microcode_updates, equivalent_processor_rev_id);
+	u32 equivalent_processor_rev_id = get_equivalent_processor_rev_id(cpu_deviceid);
+	amd_update_microcode_from_cbfs(equivalent_processor_rev_id);
 }

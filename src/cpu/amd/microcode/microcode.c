@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/amd/microcode.h>
+#include <cbfs.h>
 
 struct microcode {
 	u32 date_code;
@@ -51,17 +52,12 @@ struct microcode {
 	u8 x86_code_entry[191];
 };
 
-void amd_update_microcode(void *microcode_updates, u32 equivalent_processor_rev_id)
+static void amd_update_microcode(const void *microcode_updates, u32 microcode_len, u32 equivalent_processor_rev_id)
 {
-	u32 patch_id, new_patch_id;
-	struct microcode *m;
-	char *c;
+	u32 new_patch_id;
+	const struct microcode *m;
+	const char *c;
 	msr_t msr;
-
-	msr = rdmsr(0x8b);
-	patch_id = msr.lo;
-
-	printk(BIOS_DEBUG, "microcode: equivalent rev id  = 0x%04x, current patch id = 0x%08x\n", equivalent_processor_rev_id, patch_id);
 
 	m = microcode_updates;
 
@@ -87,4 +83,31 @@ void amd_update_microcode(void *microcode_updates, u32 equivalent_processor_rev_
 		c += 2048;
 	}
 
+}
+
+#define MICROCODE_CBFS_FILE "cpu_microcode_blob.bin"
+
+void amd_update_microcode_from_cbfs(u32 equivalent_processor_rev_id)
+{
+	struct cbfs_file *microcode_file;
+	const void *microcode_updates;
+	u32 microcode_len, patch_id;
+	msr_t msr;
+
+	msr = rdmsr(0x8b);
+	patch_id = msr.lo;
+
+	printk(BIOS_DEBUG, "microcode: equivalent rev id  = 0x%04x, current patch id = 0x%08x\n", equivalent_processor_rev_id, patch_id);
+	if (equivalent_processor_rev_id == 0) {
+		printk(BIOS_DEBUG, "microcode: rev id not found. Skipping microcode patch!\n");
+		return;
+	}
+
+	microcode_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, MICROCODE_CBFS_FILE);
+	if (!microcode_file)
+		return;
+
+	microcode_updates = CBFS_SUBHEADER(microcode_file);
+	microcode_len = ntohl(microcode_file->len);
+	amd_update_microcode(microcode_updates, microcode_len, equivalent_processor_rev_id);
 }

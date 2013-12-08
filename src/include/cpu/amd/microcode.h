@@ -1,11 +1,9 @@
 #ifndef CPU_AMD_MICROCODE_H
 #define CPU_AMD_MICROCODE_H
 
-void amd_update_microcode(void *microcode_updates, unsigned processor_rev_id);
-void model_fxx_update_microcode(unsigned cpu_deviceid);
-
-#if CONFIG_UPDATE_CPU_MICROCODE
-void update_microcode(u32 processor_rev_id);
+#if CONFIG_UPDATE_CPU_MICROCODE || CONFIG_NORTHBRIDGE_AMD_AMDK8
+void update_microcode(u32 cpu_deviceid);
+void amd_update_microcode_from_cbfs(u32 equivalent_processor_rev_id);
 #else
 #define update_microcode(x)
 #endif

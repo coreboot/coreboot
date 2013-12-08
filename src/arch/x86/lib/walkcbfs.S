@@ -59,9 +59,7 @@ walker:
 	jnz tryharder
 
 	/* we found it! */
-	mov CBFS_FILE_OFFSET(%ebx), %eax
-	bswap %eax
-	add %ebx, %eax
+	mov %ebx, %eax
 	jmp *%esp
 
 tryharder:

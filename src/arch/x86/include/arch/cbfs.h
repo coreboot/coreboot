@@ -20,7 +20,9 @@
 #ifndef __INCLUDE_ARCH_CBFS__
 #define __INCLUDE_ARCH_CBFS__
 
-static void *walkcbfs(char *target)
+#include <cbfs_core.h>
+
+static struct cbfs_file *walkcbfs_head(char *target)
 {
 	void *entry;
 	asm volatile (
@@ -28,6 +30,16 @@ static void *walkcbfs(char *target)
 		"jmp walkcbfs_asm\n\t"
 		"1:\n\t" : "=a" (entry) : "S" (target) : "ebx", "ecx", "edi", "esp");
 	return entry;
+}
+
+static void *walkcbfs(char *target)
+{
+	struct cbfs_file *head = walkcbfs_head(target);
+	if ((u32)head != 0)
+		return CBFS_SUBHEADER(head);
+
+	/* We should never reach this if 'target' exists */
+	return (void *)0;
 }
 
 /* just enough to support findstage. copied because the original version doesn't easily pass through romcc */
@@ -38,7 +50,12 @@ struct cbfs_stage_restricted {
 
 static inline unsigned long findstage(char* target)
 {
-	return ((struct cbfs_stage_restricted *)walkcbfs(target))->entry;
+	struct cbfs_stage_restricted *stage = walkcbfs(target);
+	if ((u32)stage != 0)
+		return stage->entry;
+
+	/* We should never reach this if 'target' exists */
+	return 0;
 }
 
 static inline void call(unsigned long addr, unsigned long bist)

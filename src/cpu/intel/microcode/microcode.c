@@ -115,24 +115,26 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 const void *intel_microcode_find(void)
 {
+	struct cbfs_file *microcode_file;
 	void *microcode_updates;
-	u32 eax;
-	u32 pf, rev, sig;
+	u32 eax, microcode_len;
+	u32 pf, rev, sig, update_size;
 	unsigned int x86_model, x86_family;
 	const struct microcode *m;
-	const char *c;
 	msr_t msr;
 
 #ifdef __PRE_RAM__
-	microcode_updates = walkcbfs((char *) MICROCODE_CBFS_FILE);
+	microcode_file = walkcbfs_head((char *) MICROCODE_CBFS_FILE);
 #else
-	microcode_updates = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-					       MICROCODE_CBFS_FILE,
-					       CBFS_TYPE_MICROCODE);
+	microcode_file = cbfs_get_file(CBFS_DEFAULT_MEDIA,
+					  MICROCODE_CBFS_FILE);
 #endif
 
-	if (!microcode_updates)
+	if (!microcode_file)
 		return NULL;
+
+	microcode_updates = CBFS_SUBHEADER(microcode_file);
+	microcode_len = ntohl(microcode_file->len);
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;
@@ -158,19 +160,32 @@ const void *intel_microcode_find(void)
 			sig, pf, rev);
 #endif
 
-	m = microcode_updates;
-	for(c = microcode_updates; m->hdrver; m = (const struct microcode *)c) {
+	while (microcode_len >= sizeof(*m)) {
+		m = microcode_updates;
+		/* Newer microcode updates include a size field, whereas older
+		 * containers set it at 0 and are exactly 2048 bytes long */
+		if (m->total_size) {
+			update_size = m->total_size;
+		} else {
+			#if !defined(__ROMCC__)
+			printk(BIOS_WARNING, "Microcode has no valid size field!\n");
+			#endif
+			update_size = 2048;
+		}
+
+		/* Checkpoint 1: The microcode update falls within CBFS */
+		if(update_size > microcode_len) {
+#if !defined(__ROMCC__)
+			printk(BIOS_WARNING, "Microcode header corrupted!\n");
+#endif
+			break;
+		}
+
 		if ((m->sig == sig) && (m->pf & pf))
 			return m;
 
-		if (m->total_size) {
-			c += m->total_size;
-		} else {
-#if !defined(__ROMCC__)
-			printk(BIOS_WARNING, "Microcode has no valid size field!\n");
-#endif
-			c += 2048;
-		}
+		microcode_updates += update_size;
+		microcode_len -= update_size;
 	}
 
 	/* ROMCC doesn't like NULL. */

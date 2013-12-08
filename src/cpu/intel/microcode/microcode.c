@@ -109,8 +109,9 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 
 const void *intel_microcode_find(void)
 {
+	struct cbfs_file *microcode_file;
 	void *microcode_updates;
-	u32 eax;
+	u32 eax, microcode_end;
 	u32 pf, rev, sig;
 	unsigned int x86_model, x86_family;
 	const struct microcode *m;
@@ -118,15 +119,17 @@ const void *intel_microcode_find(void)
 	msr_t msr;
 
 #ifdef __PRE_RAM__
-	microcode_updates = walkcbfs((char *) MICROCODE_CBFS_FILE);
+	microcode_file = walkcbfs_head((char *) MICROCODE_CBFS_FILE);
 #else
-	microcode_updates = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-					       MICROCODE_CBFS_FILE,
-					       CBFS_TYPE_MICROCODE);
+	microcode_file = cbfs_get_file(CBFS_DEFAULT_MEDIA,
+					  MICROCODE_CBFS_FILE);
 #endif
 
-	if (!microcode_updates)
+	if (!microcode_file)
 		return NULL;
+
+	microcode_updates = CBFS_SUBHEADER(microcode_file);
+	microcode_end = (u32)microcode_updates + ntohl(microcode_file->len);
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
 	msr.lo = 0;
@@ -154,6 +157,14 @@ const void *intel_microcode_find(void)
 
 	m = microcode_updates;
 	for(c = microcode_updates; m->hdrver; m = (const struct microcode *)c) {
+		/* Checkpoint 1: The microcode update falls within CBFS */
+		if(m->total_size > (microcode_end - (u32)c)) {
+#if !defined(__ROMCC__)
+			printk(BIOS_WARNING, "Microcode header corrupted!\n");
+#endif
+			break;
+		}
+
 		if ((m->sig == sig) && (m->pf & pf))
 			return m;
 
@@ -165,6 +176,14 @@ const void *intel_microcode_find(void)
 #endif
 			c += 2048;
 		}
+
+		/* Checkpoint 2: The next header falls within CBFS */
+		if ((u32)c > (microcode_end - sizeof(*m)))
+			break;
+
+		/* Checkpoint 3: c didn't overflow, it should be close to 4G */
+		if ((((u32)c) & (1L << 31)) == 0)
+			break;
 	}
 
 	/* ROMCC doesn't like NULL. */

@@ -50,13 +50,10 @@ ramstage-y += dp.c dp_lowlevel.c fimd.c
 ramstage-y += usb.c
 ramstage-y += cbmem.c
 
-# Run an intermediate step when producing coreboot.rom
-# that adds additional components to the final firmware
-# image outside of CBFS
-.PHONY: exynos5420_add_bl1
-$(obj)/coreboot.rom: exynos5420_add_bl1
-exynos5420_add_bl1: $(obj)/coreboot.pre
-	printf "    DD         Adding Samsung Exynos5420 BL1\n"
-	# TODO(hungte) Change this 'cpu' to soc when build scripts are changed.
-	dd if=3rdparty/cpu/samsung/exynos5420/bl1.bin \
-		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
+$(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
+	cp $< $@
+
+$(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin
+	@printf "    BL1, CKSUM $(subst $(obj)/,,$(@))\n"
+	util/exynos/variable_cksum.py $< $<.cksum
+	cat 3rdparty/cpu/samsung/exynos5420/bl1.bin $<.cksum > $@

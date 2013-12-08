@@ -17,16 +17,16 @@ if CPU_SAMSUNG_EXYNOS5420
 # 0x0000: vendor-provided BL1 (8k).
 # 0x2000: variable length bootblock checksum header
 # 0x2010: bootblock
-#  0x2020-0x20A0: reserved for CBFS master header.
+#  0x9F80-0xA000: reserved for CBFS master header.
 # 0xA000: Free for CBFS data.
 
 config BOOTBLOCK_ROM_OFFSET
 	hex
-	default 0x2010
+	default 0
 
 config CBFS_HEADER_ROM_OFFSET
 	hex "offset of master CBFS header in ROM"
-	default 0x2020
+	default 0x9F80
 
 config CBFS_ROM_OFFSET
 	# Calculated by BOOTBLOCK_ROM_OFFSET + max bootblock size.

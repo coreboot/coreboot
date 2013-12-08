@@ -31,17 +31,7 @@
 
 .section ".start", "a", %progbits
 .globl _start
-_start: b	reset
-	.balignl 16,0xdeadbeef
-
-_cbfs_master_header:
-	/* The CBFS master header is inserted by cbfstool at the first
-	 * aligned offset after the above anchor string is found.
-	 * Hence, we leave some space for it.
-	 */
-	.skip 128			@ Assumes 64-byte alignment
-
-reset:
+_start:
 	/*
 	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
 	 * aborts may happen early and crash before the abort handlers are

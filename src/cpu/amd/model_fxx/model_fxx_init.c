@@ -466,7 +466,7 @@ static void model_fxx_init(device_t dev)
 	x86_mtrr_check();
 
 	/* Update the microcode */
-	model_fxx_update_microcode(dev->device);
+	update_microcode(dev->device);
 
 	disable_cache();
 

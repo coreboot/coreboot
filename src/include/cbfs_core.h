@@ -134,6 +134,15 @@ struct cbfs_file {
 	uint32_t offset;
 } __attribute__((packed));
 
+#define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
+#define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
+
+/*
+ * ROMCC does not understand uint64_t, so we hide future definitions as they are
+ * unlikely to be ever needed from ROMCC
+ */
+#ifndef __ROMCC__
+
 /*** Component sub-headers ***/
 
 /* Following are component sub-headers for the "standard"
@@ -176,9 +185,6 @@ struct cbfs_optionrom {
 	uint32_t compression;
 	uint32_t len;
 } __attribute__((packed));
-
-#define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
-#define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 
 #define CBFS_MEDIA_INVALID_MAP_ADDRESS	((void*)(0xffffffff))
 #define CBFS_DEFAULT_MEDIA		((void*)(0x0))
@@ -224,5 +230,7 @@ int cbfs_decompress(int algo, void *src, void *dst, int len);
 /* returns a pointer to CBFS master header, or CBFS_HEADER_INVALID_ADDRESS
  *  on failure */
 const struct cbfs_header *cbfs_get_header(struct cbfs_media *media);
+
+#endif /* __ROMCC__ */
 
 #endif

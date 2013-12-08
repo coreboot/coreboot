@@ -20,7 +20,9 @@
 #ifndef __INCLUDE_ARCH_CBFS__
 #define __INCLUDE_ARCH_CBFS__
 
-static void *walkcbfs(char *target)
+#include <cbfs_core.h>
+
+static struct cbfs_file *walkcbfs(char *target)
 {
 	void *entry;
 	asm volatile (

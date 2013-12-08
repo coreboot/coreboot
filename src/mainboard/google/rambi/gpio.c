@@ -116,7 +116,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_INPUT,	/* S0-SC056 - GPIO_S0_SC_56 - STRAP */
 	GPIO_FUNC1,	/* S0-SC057 - PCH_UART_TXD */
 	GPIO_INPUT,	/* S0-SC058 - SIM_DET_C */
-	GPIO_INPUT,	/* S0-SC059 - EC_IN_RW_C */
+	GPIO_INPUT_LEGACY,	/* S0-SC059 - EC_IN_RW_C */
 	GPIO_NC,	/* S0-SC060 - NC */
 	GPIO_FUNC1,	/* S0-SC061 - SOC_UART_RX */
 	GPIO_FUNC1,	/* S0-SC062 - I2S_BCLK */

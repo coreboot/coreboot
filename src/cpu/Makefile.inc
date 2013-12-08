@@ -41,7 +41,7 @@ endif
 # final microcode file.
 $(obj)/cpu_microcode_blob.o: $$(cpu_microcode-objs)
 	@printf "    LD         $(subst $(obj)/,,$(@))\n"
-	$(LD) -static --entry=0 $< -o $@
+	$(LD) -static --entry=0 $+ -o $@
 
 # We have a lot of useless data in the large blob, and we are only interested in
 # the data section, so we only copy that part to the final microcode file

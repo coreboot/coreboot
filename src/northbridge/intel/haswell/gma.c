@@ -278,18 +278,21 @@ static void gma_func0_init(struct device *dev)
 {
 	int lightup_ok = 0;
 	u32 reg32;
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	u32 graphics_base; //, graphics_size;
+#endif
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
 
-
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	/* the BAR for graphics space is a well known number for
 	 * sandy and ivy. And the resource code renumbers it.
 	 * So it's almost like having two hardcodes.
 	 */
 	graphics_base = dev->resource_list[1].base;
+#endif
 
 	/* Init graphics power management */
 	gma_pm_init_pre_vbios(dev);

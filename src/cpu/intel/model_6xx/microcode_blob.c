@@ -1,9 +1,4 @@
 unsigned microcode_updates_6xx[] = {
-	/* WARNING - Intel has a new data structure that has variable length
-	 * microcode update lengths.  They are encoded in int 8 and 9.  A
-	 * dummy header of nulls must terminate the list.
-	 */
-
 #include "microcode-99-B_c6_612.h"
 #include "microcode-43-B_c6_617.h"
 #include "microcode-51-B_c6_616.h"
@@ -24,10 +19,4 @@ unsigned microcode_updates_6xx[] = {
 #include "microcode-566-mu26a003.h"
 #include "microcode-588-mu26a101.h"
 #include "microcode-620-MU26a401.h"
-
-	/*  Dummy terminator  */
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
-        0x0, 0x0, 0x0, 0x0,
 };

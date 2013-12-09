@@ -30,6 +30,13 @@
 #include "chip.h"
 
 
+/* The LPE audio devices needs 1MiB of memory reserved aligned to a 512MiB
+ * address. Just take 1MiB @ 512MiB. */
+#define FIRMWARE_PHYS_BASE (512 << 20)
+#define FIRMWARE_PHYS_LENGTH (1 << 20)
+#define FIRMWARE_REG_BASE 0xa8
+#define FIRMWARE_REG_LENGTH 0xac
+
 static void setup_codec_clock(device_t dev)
 {
 	uint32_t reg;
@@ -73,9 +80,33 @@ static void lpe_init(device_t dev)
 	setup_codec_clock(dev);
 }
 
+static void lpe_read_resources(device_t dev)
+{
+	pci_dev_read_resources(dev);
+
+	reserved_ram_resource(dev, FIRMWARE_REG_BASE,
+			      FIRMWARE_PHYS_BASE >> 10,
+			      FIRMWARE_PHYS_LENGTH >> 10);
+}
+
+static void lpe_set_resources(device_t dev)
+{
+	struct resource *res;
+
+	pci_dev_set_resources(dev);
+
+	res = find_resource(dev, FIRMWARE_REG_BASE);
+	if (res == NULL) {
+		printk(BIOS_DEBUG, "LPE Firmware memory not found.\n");
+		return;
+	}
+	pci_write_config32(dev, FIRMWARE_REG_BASE, res->base);
+	pci_write_config32(dev, FIRMWARE_REG_LENGTH, res->size);
+}
+
 static const struct device_operations device_ops = {
-	.read_resources		= pci_dev_read_resources,
-	.set_resources		= pci_dev_set_resources,
+	.read_resources		= lpe_read_resources,
+	.set_resources		= lpe_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= lpe_init,
 	.enable			= NULL,

@@ -266,8 +266,9 @@ for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
 	    $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
-	test -f tarballs/$FILE && printf "(cached)" || (
+	test -f tarballs/$FILE && $TAR tf tarballs/$FILE >/dev/null 2>/dev/null && printf "(cached)" || (
 		printf "(downloading)"
+		rm -f tarballs/$FILE
 		cd tarballs
 		wget --no-check-certificate -q $ARCHIVE
 	)

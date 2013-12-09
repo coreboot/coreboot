@@ -30,6 +30,8 @@
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
 
+#include "chip.h"
+
 #define GFX_TIMEOUT 100000 /* 100ms */
 
 /*
@@ -288,6 +290,77 @@ static void gfx_post_vbios_init(device_t dev)
 	gfx_run_script(dev, gfx_post_vbios_script);
 }
 
+static void gfx_panel_setup(device_t dev)
+{
+	struct soc_intel_baytrail_config *config = dev->chip_info;
+	struct reg_script gfx_pipea_init[] = {
+		REG_SCRIPT_SET_DEV(dev),
+		/* CONTROL */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_CONTROL),
+				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
+		/* HOTPLUG */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(HOTPLUG_CTRL),
+				0x1 | (config->gpu_pipea_hotplug << 2)),
+		/* POWER ON */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_ON_DELAYS),
+				(config->gpu_pipea_port_select << 30 |
+				 config->gpu_pipea_power_on_delay << 16 |
+				 config->gpu_pipea_light_on_delay)),
+		/* POWER OFF */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_OFF_DELAYS),
+				(config->gpu_pipea_power_off_delay << 16 |
+				 config->gpu_pipea_light_off_delay)),
+		/* DIVISOR */
+		REG_RES_RMW32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_DIVISOR),
+			      ~0x1f, config->gpu_pipea_power_cycle_delay),
+		/* BACKLIGHT */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(BACKLIGHT_CTL),
+				(config->gpu_pipea_backlight_pwm << 16) |
+				(config->gpu_pipea_backlight_pwm >> 1)),
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(BACKLIGHT_CTL2),
+				BACKLIGHT_ENABLE),
+		REG_SCRIPT_END
+	};
+	struct reg_script gfx_pipeb_init[] = {
+		REG_SCRIPT_SET_DEV(dev),
+		/* CONTROL */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_CONTROL),
+				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
+		/* HOTPLUG */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(HOTPLUG_CTRL),
+				0x1 | (config->gpu_pipeb_hotplug << 2)),
+		/* POWER ON */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_ON_DELAYS),
+				(config->gpu_pipeb_port_select << 30 |
+				 config->gpu_pipeb_power_on_delay << 16 |
+				 config->gpu_pipeb_light_on_delay)),
+		/* POWER OFF */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_OFF_DELAYS),
+				(config->gpu_pipeb_power_off_delay << 16 |
+				 config->gpu_pipeb_light_off_delay)),
+		/* DIVISOR */
+		REG_RES_RMW32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_DIVISOR),
+			      ~0x1f, config->gpu_pipeb_power_cycle_delay),
+		/* BACKLIGHT */
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(BACKLIGHT_CTL),
+				(config->gpu_pipeb_backlight_pwm << 16) |
+				(config->gpu_pipeb_backlight_pwm >> 1)),
+		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(BACKLIGHT_CTL2),
+				BACKLIGHT_ENABLE),
+		REG_SCRIPT_END
+	};
+
+	if (config->gpu_pipea_port_select) {
+		printk(BIOS_INFO, "GFX: Initialize PIPEA\n");
+		reg_script_run(gfx_pipea_init);
+	}
+
+	if (config->gpu_pipeb_port_select) {
+		printk(BIOS_INFO, "GFX: Initialize PIPEB\n");
+		reg_script_run(gfx_pipeb_init);
+	}
+}
+
 static void gfx_init(device_t dev)
 {
 	/* Pre VBIOS Init */
@@ -295,6 +368,8 @@ static void gfx_init(device_t dev)
 
 	/* Power Management Init */
 	gfx_pm_init(dev);
+
+	gfx_panel_setup(dev);
 
 	/* Run VBIOS */
 	pci_dev_init(dev);

@@ -50,12 +50,12 @@ typedef struct {
 	u32	cmem; /* 0x30 - CBMEM TOC */
 	u32	tolm; /* 0x34 - Top of Low Memory */
 	u32	cbmc; /* 0x38 - coreboot memconsole */
-	u8	rsvd5[39];
+	u8	rsvd5[36];
 
 	/* Serial IO device BARs */
 	u32	s0b[8]; /* 0x60 - 0x7f - BAR0 */
 	u32	s1b[8]; /* 0x80 - 0x9f - BAR1 */
-	u8	rsvd6[95];
+	u8	rsvd6[96];
 
 	/* ChromeOS specific (starts at 0x100)*/
 	chromeos_acpi_t chromeos;

@@ -58,8 +58,8 @@ struct exynos5_power {
 	uint32_t	inform0;		/* 0x0800 */
 	uint32_t	inform1;		/* 0x0804 */
 	uint8_t		reserved6[0x1f8];
-	uint32_t	pmu_debug;		/* 0x0A00*/
-	uint8_t         reserved7[0x2728];
+	uint32_t	pmu_debug;		/* 0x0a00 */
+	uint8_t         reserved7[0x2724];
         uint32_t        padret_uart_opt;        /* 0x3128 */
         uint8_t         reserved8[0x1e0];
 	uint32_t	ps_hold_ctrl;		/* 0x330c */

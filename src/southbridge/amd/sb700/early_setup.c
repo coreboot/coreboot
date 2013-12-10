@@ -21,13 +21,13 @@
 #define _SB700_EARLY_SETUP_C_
 
 #include <stdint.h>
+#include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 
 #include <reset.h>
-#include <arch/cpu.h>
 #include <cbmem.h>
 #include "sb700.h"
 #include "smbus.h"

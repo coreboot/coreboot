@@ -19,6 +19,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#if !defined(__ROMCC__)
+#include <arch/acpi.h>
+#endif
 #include <device/pci_ids.h>
 #include <spd.h>
 #include <stdlib.h>
@@ -328,7 +331,8 @@ void enable_rom_decode(void)
 }
 
 #if CONFIG_HAVE_ACPI_RESUME
-static int acpi_is_wakeup_early(void) {
+int acpi_is_wakeup_early(void)
+{
 	device_t dev;
 	u16 tmp;
 

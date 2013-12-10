@@ -8,6 +8,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
 #include <stdlib.h>
+#include <arch/acpi.h>
 #include <reset.h>
 #include "raminit.h"
 #include "amdk8.h"

@@ -19,6 +19,7 @@
 
 #include "agesawrapper.h"
 
+#include <arch/acpi.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/stages.h>

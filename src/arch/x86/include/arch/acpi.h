@@ -560,6 +560,8 @@ extern u8 acpi_slp_type;
 
 int acpi_is_wakeup(void);
 int acpi_is_wakeup_s3(void);
+int acpi_is_wakeup_early(void);
+
 void acpi_fail_wakeup(void);
 void acpi_resume(void *wake_vec);
 void __attribute__((weak)) mainboard_suspend_resume(void);
@@ -591,6 +593,7 @@ static inline int acpi_s3_resume_allowed(void)
 #define acpi_slp_type 0
 static inline int acpi_is_wakeup(void) { return 0; }
 static inline int acpi_is_wakeup_s3(void) { return 0; }
+static inline int acpi_is_wakeup_early(void) { return 0; }
 #endif
 
 #endif  /* __ASM_ACPI_H */

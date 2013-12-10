@@ -260,14 +260,24 @@ USE_GOLD=""
 GCC_OPTIONS="--enable-lto"
 
 printf "Downloading tar balls ... \n"
+CHECKSUM=sha1sum
 mkdir -p tarballs
 for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
 	    $GCC_ARCHIVE $BINUTILS_ARCHIVE $GDB_ARCHIVE \
 	    $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
-	test -f tarballs/$FILE && printf "(cached)" || (
+
+	#create the sum
+	#test -f sum/$FILE.$CHECKSUM || (
+	#	$CHECKSUM -b tarballs/$FILE > sum/$FILE.$CHECKSUM
+	#)
+
+	test -f tarballs/$FILE && \
+			$CHECKSUM -c sum/$FILE.$CHECKSUM >/dev/null 2>/dev/null && \
+			printf "(cached)" || (
 		printf "(downloading)"
+		rm -f tarballs/$FILE
 		cd tarballs
 		wget --no-check-certificate -q $ARCHIVE
 	)

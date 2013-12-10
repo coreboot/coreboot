@@ -25,6 +25,7 @@
 
 // Mainboard specific throttle handler
 External (\_TZ.THRT, MethodObj)
+External (\_SB.DPTF.TEVT, MethodObj)
 
 Device (EC0)
 {
@@ -47,6 +48,7 @@ Device (EC0)
 		TSTB, 8,	// Test Byte
 		TSTC, 8,	// Complement of Test Byte
 		KBLV, 8,	// Keyboard Backlight
+		FAND, 8,	// Set Fan Duty Cycle
 	}
 
 	OperationRegion (EMEM, SystemIO, EC_LPC_ADDR_MEMMAP, EC_MEMMAP_SIZE)
@@ -89,6 +91,8 @@ Device (EC0)
 		BMOD, 64,	// Battery Model String
 		BSER, 64,	// Battery Serial String
 		BTYP, 64,	// Battery Type String
+		Offset (0x80),
+		ALS0, 16,	// ALS reading 0 in lux
 	}
 
 	Method (TINS, 1, Serialized)
@@ -132,6 +136,40 @@ Device (EC0)
 
 		// Initialize LID switch state
 		Store (LIDS, \LIDS)
+	}
+
+	/* Read requested temperature and check against EC error values */
+	Method (TSRD, 1, Serialized)
+	{
+		Store (\_SB.PCI0.LPCB.EC0.TINS (Arg0), Local0)
+
+		/* Check for sensor not calibrated */
+		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNCA)) {
+			Return (Zero)
+		}
+
+		/* Check for sensor not present */
+		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNPR)) {
+			Return (Zero)
+		}
+
+		/* Check for sensor not powered */
+		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TNOP)) {
+			Return (Zero)
+		}
+
+		/* Check for sensor bad reading */
+		If (LEqual (Local0, \_SB.PCI0.LPCB.EC0.TBAD)) {
+			Return (Zero)
+		}
+
+		/* Adjust by offset to get Kelvin */
+		Add (\_SB.PCI0.LPCB.EC0.TOFS, Local0, Local0)
+
+		/* Convert to 1/10 Kelvin */
+		Multiply (Local0, 10, Local0)
+
+		Return (Local0)
 	}
 
 	// Lid Closed Event
@@ -244,6 +282,39 @@ Device (EC0)
 		Store ("EC: THROTTLE STOP", Debug)
 		If (CondRefOf (\_TZ.THRT, Local0)) {
 			\_TZ.THRT (0)
+		}
+	}
+
+	/*
+	 * Dynamic Platform Thermal Framework support
+	 */
+
+	/*
+	 * Set Aux Trip Point 0
+	 *   Arg0 = Temp Sensor ID
+	 *   Arg1 = Value to set
+	 */
+	Method (PAT0, 2, Serialized)
+	{
+	}
+
+	/*
+	 * Set Aux Trip Point 1
+	 *   Arg0 = Temp Sensor ID
+	 *   Arg1 = Value to set
+	 */
+	Method (PAT1, 2, Serialized)
+	{
+	}
+
+	/*
+	 * DPTF Thermal Threshold Event
+	  */
+	Method (_Q14, 0, Serialized)
+	{
+		Store ("EC: DPTF THERMAL THRESHOLD", Debug)
+		If (CondRefOf (\_SB.DPTF.TEVT, Local0)) {
+			\_SB.DPTF.TEVT ()
 		}
 	}
 

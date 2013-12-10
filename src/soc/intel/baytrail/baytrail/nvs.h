@@ -37,14 +37,19 @@ typedef struct {
 	u8	pcnt; /* 0x11 - Processor Count */
 	u8	tpmp; /* 0x12 - TPM Present and Enabled */
 	u8	tlvl; /* 0x13 - Throttle Level */
-	u8	rsvd1[12];
+	u8	ppcm; /* 0x14 - Maximum P-state usable by OS */
+	u8	rsvd1[11];
 
 	/* Device Config */
 	u8	s5u0; /* 0x20 - Enable USB0 in S5 */
 	u8	s5u1; /* 0x21 - Enable USB1 in S5 */
 	u8	s3u0; /* 0x22 - Enable USB0 in S3 */
 	u8	s3u1; /* 0x23 - Enable USB1 in S3 */
-	u8	rsvd2[12];
+	u8	tact; /* 0x24 - Thermal Active trip point */
+	u8	tpsv; /* 0x25 - Thermal Passive trip point */
+	u8	tcrt; /* 0x26 - Thermal Critical trip point */
+	u8	dpte; /* 0x27 - Enable DPTF */
+	u8	rsvd2[8];
 
 	/* Base Addresses */
 	u32	cmem; /* 0x30 - CBMEM TOC */

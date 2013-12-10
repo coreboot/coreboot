@@ -27,6 +27,10 @@ chip soc/intel/baytrail
 	register "lpe_codec_clk_freq" = "25" # 25MHz clock
 	register "lpe_codec_clk_num" = "0"   # PMC_PLT_CLK[0]
 
+	# SD Card controller
+	register "sdcard_cap_low" = "0x036864b2"
+	register "sdcard_cap_high" = "0x0"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

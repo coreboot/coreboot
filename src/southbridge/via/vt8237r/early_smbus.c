@@ -20,6 +20,9 @@
  */
 
 #include <device/pci_ids.h>
+#if CONFIG_HAVE_ACPI_RESUME
+#include <arch/acpi.h>
+#endif
 #include <spd.h>
 #include <stdlib.h>
 #include "vt8237r.h"
@@ -328,7 +331,7 @@ void enable_rom_decode(void)
 }
 
 #if CONFIG_HAVE_ACPI_RESUME
-static int acpi_is_wakeup_early(void) {
+int acpi_is_wakeup_early(void) {
 	device_t dev;
 	u16 tmp;
 

@@ -23,6 +23,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <arch/stages.h>
 #include <device/pnp_def.h>
 #include <arch/cpu.h>

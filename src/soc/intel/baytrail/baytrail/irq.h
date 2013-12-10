@@ -45,9 +45,9 @@
 #define LPSS_HSUART1_IRQ		39
 #define LPSS_HSUART2_IRQ		40
 #define LPSS_SPI_IRQ			41
-#define LPSS_DMA2_IRQ			42
-#define LPSS_DMA1_IRQ			43
-#define SCC_EMMC_IRQ			45
+#define LPSS_DMA1_IRQ			42
+#define LPSS_DMA2_IRQ			43
+#define SCC_EMMC_IRQ			44
 #define SCC_SDIO_IRQ			46
 #define SCC_SD_IRQ			47
 #define GPIO_NC_IRQ			48

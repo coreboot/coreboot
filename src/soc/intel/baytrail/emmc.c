@@ -26,8 +26,10 @@
 #include <reg_script.h>
 
 #include <baytrail/iosf.h>
+#include <baytrail/nvs.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
+#include "chip.h"
 
 static const struct reg_script emmc_ops[] = {
 	/* Enable 2ms card stable feature. */
@@ -49,6 +51,7 @@ static const struct reg_script emmc_ops[] = {
 
 static void emmc_init(device_t dev)
 {
+	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script ops[] = {
 		REG_SCRIPT_SET_DEV(dev),
 		REG_SCRIPT_NEXT(emmc_ops),
@@ -56,6 +59,9 @@ static void emmc_init(device_t dev)
 	};
 	printk(BIOS_DEBUG, "eMMC init\n");
 	reg_script_run(ops);
+
+	if (config->scc_acpi_mode)
+		scc_enable_acpi_mode(dev, SCC_MMC_CTL, SCC_NVS_MMC);
 }
 
 static struct device_operations device_ops = {

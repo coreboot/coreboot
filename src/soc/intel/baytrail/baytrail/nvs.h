@@ -18,7 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "vendorcode/google/chromeos/gnvs.h"
+#include <vendorcode/google/chromeos/gnvs.h>
+#include <baytrail/device_nvs.h>
+
 typedef struct {
 	/* Miscellaneous */
 	u16	osys; /* 0x00 - Operating System */
@@ -55,15 +57,13 @@ typedef struct {
 	u32	cmem; /* 0x30 - CBMEM TOC */
 	u32	tolm; /* 0x34 - Top of Low Memory */
 	u32	cbmc; /* 0x38 - coreboot memconsole */
-	u8	rsvd5[36];
+	u8	rsvd3[196];
 
-	/* Serial IO device BARs */
-	u32	s0b[8]; /* 0x60 - 0x7f - BAR0 */
-	u32	s1b[8]; /* 0x80 - 0x9f - BAR1 */
-	u8	rsvd6[96];
-
-	/* ChromeOS specific (starts at 0x100)*/
+	/* ChromeOS specific (0x100-0xfff)*/
 	chromeos_acpi_t chromeos;
+
+	/* Baytrail LPSS (0x1000) */
+	device_nvs_t dev;
 } __attribute__((packed)) global_nvs_t;
 
 #ifdef __SMM__

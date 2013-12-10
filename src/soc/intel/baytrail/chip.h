@@ -56,6 +56,11 @@ struct soc_intel_baytrail_config {
 	uint32_t sdcard_cap_low;
 	uint32_t sdcard_cap_high;
 
+	/* Enable devices in ACPI mode */
+	int lpss_acpi_mode;
+	int scc_acpi_mode;
+	int lpe_acpi_mode;
+
 	/*
 	 * Digital Port Hotplug Enable:
 	 *  0x04 = Enabled, 2ms short pulse

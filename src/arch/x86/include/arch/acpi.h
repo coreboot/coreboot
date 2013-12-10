@@ -565,6 +565,8 @@ void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
 int acpi_get_sleep_type(void);
+int acpi_is_wakeup_early(void);
+
 #else	/* CONFIG_HAVE_ACPI_RESUME */
 #define acpi_slp_type 0
 #endif	/* CONFIG_HAVE_ACPI_RESUME */

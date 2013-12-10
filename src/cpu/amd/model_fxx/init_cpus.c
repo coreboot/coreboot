@@ -1,3 +1,5 @@
+#include "cpu/amd/car/post_cache_as_ram.c"
+
 #if CONFIG_HAVE_OPTION_TABLE
 #include "option_table.h"
 #endif

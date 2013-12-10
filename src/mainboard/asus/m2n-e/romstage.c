@@ -67,7 +67,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/nvidia/mcp55/early_setup_ss.h"
 #include "southbridge/nvidia/mcp55/early_setup_car.c"
-#include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"
 #include "northbridge/amd/amdk8/early_ht.c"

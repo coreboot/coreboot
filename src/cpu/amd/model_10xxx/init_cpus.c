@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "cpu/amd/car/post_cache_as_ram.c"
 #include "defaults.h"
 #include <stdlib.h>
 #include <cpu/x86/lapic.h>

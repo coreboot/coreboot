@@ -81,7 +81,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
-#include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 
 #define RC0 ((1<<1)<<8)

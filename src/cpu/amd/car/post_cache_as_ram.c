@@ -77,7 +77,7 @@ static void vErrata343(void)
 
 void cache_as_ram_switch_stack(void *resume_backup_memory);
 
-static void post_cache_as_ram(void)
+void post_cache_as_ram(void)
 {
 	void *resume_backup_memory = NULL;
 #if 1

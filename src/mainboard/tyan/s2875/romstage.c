@@ -52,7 +52,6 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "lib/generic_sdram.c"
 #include "northbridge/amd/amdk8/resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
-#include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)

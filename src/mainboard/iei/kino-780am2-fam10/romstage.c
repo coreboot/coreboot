@@ -63,7 +63,6 @@ static int spd_read_byte(u32 device, u32 address)
 #include "northbridge/amd/amdfam10/pci.c"
 #include "resourcemap.c"
 #include "cpu/amd/quadcore/quadcore.c"
-#include "cpu/amd/car/post_cache_as_ram.c"
 #include "cpu/amd/microcode.h"
 
 #include "cpu/amd/model_10xxx/init_cpus.c"

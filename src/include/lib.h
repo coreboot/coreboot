@@ -54,6 +54,7 @@ void cache_as_ram_main(void);
 #else
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 #endif
+void post_cache_as_ram(void);
 
 /* Defined in src/lib/hexdump.c */
 void hexdump(unsigned long memory, int length);

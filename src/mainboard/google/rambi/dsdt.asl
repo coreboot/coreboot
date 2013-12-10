@@ -46,6 +46,9 @@ DefinitionBlock(
 			//#include <soc/intel/baytrail/acpi/northcluster.asl>
 			#include <soc/intel/baytrail/acpi/southcluster.asl>
 		}
+
+		/* Dynamic Platform Thermal Framework */
+		#include "acpi/dptf.asl"
 	}
 
 	#include "acpi/chromeos.asl"

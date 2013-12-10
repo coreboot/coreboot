@@ -338,8 +338,8 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	/* Write _PCT indicating use of FFixedHW */
 	len = acpigen_write_empty_PCT();
 
-	/* Write _PPC with no limit on supported P-state */
-	len += acpigen_write_PPC(0);
+	/* Write _PPC with NVS specified limit on supported P-state */
+	len += acpigen_write_PPC_NVS();
 
 	/* Write PSD indicating configured coordination type */
 	len += acpigen_write_PSD_package(core, 1, coord_type);

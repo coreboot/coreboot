@@ -211,6 +211,15 @@ void iosf_scc_write(int reg, uint32_t val);
 # define LPSS_CTL_PM_CAP_PRSNT			(1 <<  1)
 
 /*
+ * SCC Registers
+ */
+#define SCC_SD_CTL			0x504
+#define SCC_SDIO_CTL			0x508
+#define SCC_MMC_CTL			0x50c
+# define SCC_CTL_PCI_CFG_DIS			(1 << 0)
+# define SCC_CTL_ACPI_INT_EN			(1 << 1)
+
+/*
  * CCU Registers
  */
 

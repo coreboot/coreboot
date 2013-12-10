@@ -20,6 +20,7 @@
  */
 
 #include <soc/intel/baytrail/baytrail/iomap.h>
+#include <soc/intel/baytrail/baytrail/irq.h>
 
 Scope(\)
 {
@@ -233,5 +234,14 @@ Method (_OSC, 4)
 // IRQ routing for each PCI device
 #include "irqroute.asl"
 
-// GPIO Devices
-#include "gpio.asl"
+Scope (\_SB)
+{
+	// GPIO Devices
+	#include "gpio.asl"
+
+	// LPSS Devices
+	#include "lpss.asl"
+
+	// SCC Devices
+	#include "scc.asl"
+}

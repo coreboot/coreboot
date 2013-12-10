@@ -28,6 +28,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <device/pnp_def.h>
 #include <arch/hlt.h>
 #include <console/console.h>

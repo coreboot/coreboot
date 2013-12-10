@@ -65,8 +65,6 @@ void hudson_clk_output_48Mhz(void);
 int s3_save_nvram_early(u32 dword, int size, int  nvram_pos);
 int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos);
 
-int acpi_is_wakeup_early(void);
-
 #else
 void hudson_enable(device_t dev);
 void __attribute__((weak)) hudson_setup_sata_phys(struct device *dev);

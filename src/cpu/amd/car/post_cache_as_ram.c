@@ -5,6 +5,7 @@
 #include <arch/stages.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
+#include <arch/acpi.h>
 #include "cbmem.h"
 #include "cpu/amd/car/disable_cache_as_ram.c"
 

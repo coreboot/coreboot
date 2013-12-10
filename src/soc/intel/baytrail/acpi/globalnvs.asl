@@ -51,6 +51,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	PCNT,	 8,	// 0x11 - Processor count
 	TPMP,	 8,	// 0x12 - TPM Present and Enabled
 	TLVL,	 8,	// 0x13 - Throttle Level
+	PPCM,	 8,	// 0x14 - Maximum P-state usable by OS
 
 	/* Device Config */
 	Offset (0x20),
@@ -58,6 +59,10 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	S5U1,	 8,	// 0x21 - Enable USB1 in S5
 	S3U0,	 8,	// 0x22 - Enable USB0 in S3
 	S3U1,	 8,	// 0x23 - Enable USB1 in S3
+	TACT,	 8,	// 0x24 - Thermal Active trip point
+	TPSV,	 8,	// 0x25 - Thermal Passive trip point
+	TCRT,	 8,	// 0x26 - Thermal Critical trip point
+	DPTE,	 8,	// 0x27 - Enable DPTF
 
 	/* Base addresses */
 	Offset (0x30),

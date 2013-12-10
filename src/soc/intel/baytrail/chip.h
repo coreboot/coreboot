@@ -51,6 +51,10 @@ struct soc_intel_baytrail_config {
 	/* LPE Audio Clock configuration. */
 	int lpe_codec_clk_freq; /* 19 or 25 are valid. */
 	int lpe_codec_clk_num; /* Platform clock pins. [0:5] are valid. */
+
+	/* Native SD Card controller - override controller capabilities. */
+	uint32_t sdcard_cap_low;
+	uint32_t sdcard_cap_high;
 };
 
 extern struct chip_operations soc_intel_baytrail_ops;

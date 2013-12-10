@@ -26,6 +26,7 @@
 #include <arch/stages.h>
 #include <device/pnp_def.h>
 #include <arch/cpu.h>
+#include <arch/acpi.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <console/loglevel.h>

@@ -21,12 +21,6 @@
 #ifndef CPU_SAMSUNG_EXYNOS5420_UART_H
 #define CPU_SAMSUNG_EXYNOS5420_UART_H
 
-/* baudrate rest value */
-union br_rest {
-	unsigned short	slot;		/* udivslot */
-	unsigned char	value;		/* ufracval */
-};
-
 struct s5p_uart {
 	unsigned int	ulcon;
 	unsigned int	ucon;
@@ -41,8 +35,8 @@ struct s5p_uart {
 	unsigned char	urxh;
 	unsigned char	res2[3];
 	unsigned int	ubrdiv;
-	union br_rest	rest;
 	unsigned char	res3[0xffd0];
 };
+check_member(s5p_uart, ubrdiv, 0x28);
 
 #endif

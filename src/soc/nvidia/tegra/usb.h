@@ -44,6 +44,7 @@ struct utmip_ctlr {
 	u32 misc_sts;
 	u32 pmc_wakeup;
 };
+check_member(utmip_ctlr, pmc_wakeup, 0x84c - 0x800);
 
 struct usb_ctlr {
 	u32 id;
@@ -108,6 +109,7 @@ struct usb_ctlr {
 	u32 _rsv14[207];
 	struct utmip_ctlr utmip;	/* 0x800 */
 };
+check_member(usb_ctlr, utmip, 0x800);
 
 enum usb_phy_type {		/* For use in lpm_ctrl[31:29] */
 	USB_PHY_UTMIP = 0,

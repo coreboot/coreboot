@@ -36,6 +36,7 @@ struct flow_ctlr {
 	u32 mpid;		/* offset 0x3c */
 	u32 ram_repair;		/* offset 0x40 */
 };
+check_member(flow_ctlr, ram_repair, 0x40);
 
 enum {
 	FLOW_MODE_SHIFT = 29,

@@ -28,6 +28,10 @@ typedef unsigned int wint_t;
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
+#define check_member(structure, member, offset) _Static_assert( \
+	offsetof(struct structure, member) == offset, \
+	"`struct " #structure "` offset for `" #member "` is not " #offset )
+
 #ifdef __PRE_RAM__
 #define ROMSTAGE_CONST const
 #else

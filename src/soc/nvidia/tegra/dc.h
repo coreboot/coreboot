@@ -89,6 +89,7 @@ struct dc_cmd_reg {
 	u32 disp_win_header;		/* _CMD_DISPLAY_WINDOW_HEADER_0 */
 	u32 reg_act_ctrl;		/* _CMD_REG_ACT_CONTROL_0 */
 };
+check_member(dc_cmd_reg, reg_act_ctrl, 0x43 * 4);
 
 enum {
 	PIN_REG_COUNT		= 4,
@@ -137,6 +138,7 @@ struct dc_com_reg {
 	u32 gpio_debounce_cnt;		/* _COM_GPIO_DEBOUNCE_COUNTER_0 */
 	u32 crc_checksum_latched;	/* _COM_CRC_CHECKSUM_LATCHED_0 */
 };
+check_member(dc_com_reg, crc_checksum_latched, (0x329 - 0x300) * 4);
 
 enum dc_disp_h_pulse_pos {
 	H_PULSE0_POSITION_A,
@@ -272,6 +274,7 @@ struct dc_disp_reg {
 	u32 dac_crt_ctrl;		/* _DISP_DAC_CRT_CTRL_0 */
 	u32 disp_misc_ctrl;		/* _DISP_DISP_MISC_CONTROL_0 */
 };
+check_member(dc_disp_reg, disp_misc_ctrl, (0x4c1 - 0x400) * 4);
 
 enum dc_winc_filter_p {
 	WINC_FILTER_COUNT	= 0x10,
@@ -305,6 +308,7 @@ struct dc_winc_reg {
 	/* Address 0x619 ~ 0x628: _WINC_V_FILTER_P00~0F_0 */
 	u32 v_filter_p[WINC_FILTER_COUNT];
 };
+check_member(dc_winc_reg, v_filter_p, (0x619 - 0x500) * 4);
 
 /* WIN A/B/C Register 0x700 ~ 0x714*/
 struct dc_win_reg {
@@ -331,6 +335,7 @@ struct dc_win_reg {
 	u32 blend_3win_xy;		/* _WIN_BLEND_3WIN_XY_0 */
 	u32 hp_fetch_ctrl;		/* _WIN_HP_FETCH_CONTROL_0 */
 };
+check_member(dc_win_reg, hp_fetch_ctrl, (0x714 - 0x700) * 4);
 
 /* WINBUF A/B/C Register 0x800 ~ 0x80a */
 struct dc_winbuf_reg {
@@ -347,6 +352,7 @@ struct dc_winbuf_reg {
 	u32 addr_v_offset_ns;		/* _WINBUF_ADDR_V_OFFSET_NS_0 */
 	u32 uflow_status;		/* _WINBUF_UFLOW_STATUS_0 */
 };
+check_member(dc_winbuf_reg, uflow_status, (0x80a - 0x800) * 4);
 
 /* Display Controller (DC_) regs */
 struct display_controller {
@@ -367,6 +373,7 @@ struct display_controller {
 
 	struct dc_winbuf_reg winbuf;	/* WINBUF A/B/C 0x800 ~ 0x80a */
 };
+check_member(display_controller, winbuf, 0x800 * 4);
 
 #define BIT(pos)	(1U << pos)
 

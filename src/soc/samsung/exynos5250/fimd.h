@@ -61,6 +61,7 @@ struct exynos5_fimd {
 	unsigned char res9[0x18];
 	unsigned int dpclkcon;
 };
+check_member(exynos5_fimd, dpclkcon, 0x27c);
 
 static struct exynos5_fimd * const exynos_fimd = (void *)EXYNOS5_FIMD_BASE;
 
@@ -109,6 +110,7 @@ struct exynos5_disp_ctrl {
 	unsigned char res2[0x184];
 	unsigned int trigcon;
 };
+check_member(exynos5_disp_ctrl, trigcon, 0x1a4);
 
 static struct exynos5_disp_ctrl * const exynos_disp_ctrl =
 		(void *)EXYNOS5_DISP1_CTRL_BASE;

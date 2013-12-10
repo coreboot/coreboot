@@ -115,6 +115,7 @@ struct exynos5_dmc {
 	unsigned char res34[0xc];
 	unsigned int pmcnt3_ppc_a;
 };
+check_member(exynos5_dmc, pmcnt3_ppc_a, 0xe140);
 
 static struct exynos5_dmc * const exynos_dmc = (void *)EXYNOS5_DMC_CTRL_BASE;
 
@@ -136,7 +137,7 @@ struct exynos5_phy_control {
 	unsigned int phy_con14;
 	unsigned int phy_con15;
 	unsigned int phy_con16;
-	unsigned char res4[4];
+	unsigned char res4[4];	/* NOT a mistake. Yes, it doesn't make sense. */
 	unsigned int phy_con17;
 	unsigned int phy_con18;
 	unsigned int phy_con19;
@@ -164,6 +165,7 @@ struct exynos5_phy_control {
 	unsigned int phy_con41;
 	unsigned int phy_con42;
 };
+check_member(exynos5_phy_control, phy_con42, 0xac);
 
 static struct exynos5_phy_control * const exynos_phy0_control =
 		(void *)EXYNOS5_DMC_PHY0_BASE;

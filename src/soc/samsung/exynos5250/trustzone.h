@@ -75,6 +75,7 @@ struct exynos_tzpc {
 	u32 pcellid2;
 	u32 pcellid3;
 };
+check_member(exynos_tzpc, pcellid3, 0xffc);
 
 void trustzone_init(void);
 

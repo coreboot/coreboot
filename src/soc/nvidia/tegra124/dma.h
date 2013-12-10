@@ -70,6 +70,7 @@ struct apb_dma {
 	u32 chan_wr_reg3;	/* 0x50 */
 	u32 channel_swid1;	/* 0x54 */
 } __attribute__((packed));
+check_member(apb_dma, channel_swid1, 0x54);
 
 /*
  * Naming in the doc included a superfluous _CHANNEL_n_ for
@@ -167,6 +168,7 @@ struct apb_dma_channel_regs {
 	u32 wcount;		/* 0x20 */
 	u32 word_transfer;	/* 0x24 */
 } __attribute__((packed));
+check_member(apb_dma_channel_regs, word_transfer, 0x24);
 
 struct apb_dma_channel {
 	const int num;

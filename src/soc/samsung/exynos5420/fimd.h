@@ -61,6 +61,7 @@ struct exynos5_fimd {
 	u8 res9[0x18];
 	u32 dpclkcon;
 };
+check_member(exynos5_fimd, dpclkcon, 0x27c);
 
 #define W0_SHADOW_PROTECT	(0x1 << 10)
 #define COMPKEY_F		0xffffff
@@ -107,6 +108,7 @@ struct exynos5_disp_ctrl {
 	u8 res2[0x184];
 	u32 trigcon;
 };
+check_member(exynos5_disp_ctrl, trigcon, 0x1a4);
 
 #define VCLK_RISING_EDGE		(1 << 7)
 #define VCLK_RUNNING			(1 << 9)

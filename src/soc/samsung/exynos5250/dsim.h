@@ -48,6 +48,7 @@ struct exynos5_dsim {
 	unsigned int phyacchr;
 	unsigned int phyacchr1;
 };
+check_member(exynos5_dsim, phyacchr1, 0x54);
 
 #define ENABLE		1
 #define DISABLE		0

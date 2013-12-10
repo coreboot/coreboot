@@ -596,6 +596,7 @@ struct exynos5420_clock {
 	uint8_t		res148[0x1fdc];
 	uint32_t	cmu_kfc_version;	/* 0x1003bff0 */
 };
+check_member(exynos5420_clock, cmu_kfc_version, 0x2bff0);
 
 static struct exynos5420_clock * const exynos_clock =
 		(void *)EXYNOS5_CLOCK_BASE;
@@ -657,6 +658,7 @@ struct exynos5_mct {
 	uint8_t		reserved14[0x8];
 	uint32_t	l1_wstat;
 };
+check_member(exynos5_mct, l1_wstat, 0x440);
 
 static struct exynos5_mct * const exynos_mct =
 		(void *)EXYNOS5_MULTI_CORE_TIMER_BASE;

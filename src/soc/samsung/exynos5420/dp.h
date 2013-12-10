@@ -210,6 +210,7 @@ struct exynos_dp {
 	u32	test_pattern_gen_en;
 	u32	test_pattern_gen_ctrl;
 };
+check_member(exynos_dp, phy_ctrl, 0x924);
 
 static struct exynos_dp * const exynos_dp0 = (void *)EXYNOS5_DP0_BASE;
 static struct exynos_dp * const exynos_dp1 = (void *)EXYNOS5_DP1_BASE;
@@ -882,7 +883,7 @@ struct exynos_fb {
 	u8 res16[16];
 	u32 dp_mie_clkcon;
 };
-
+/* TODO: can't decipher this, someone add a check_member() please */
 
 /* LCD IF register offset */
 #define EXYNOS5_LCD_IF_BASE_OFFSET			0x20000

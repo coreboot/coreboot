@@ -32,6 +32,7 @@ struct exynos5_sysreg {
 	unsigned char	res2[0x18];
 	unsigned int	usb20_phy_cfg;
 };
+check_member(exynos5_sysreg, usb20_phy_cfg, 0x230);
 
 static struct exynos5_sysreg * const exynos_sysreg =
 		(void *)EXYNOS5_SYSREG_BASE;

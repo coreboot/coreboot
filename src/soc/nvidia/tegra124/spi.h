@@ -39,6 +39,7 @@ struct tegra_spi_regs {
 	u32 rx_fifo;		/* 0x188: SPI_FIFO2 */
 	u32 spare_ctl;		/* 0x18c: SPI_SPARE_CTRL */
 } __attribute__((packed));
+check_member(tegra_spi_regs, spare_ctl, 0x18c);
 
 enum spi_xfer_mode {
 	XFER_MODE_NONE = 0,

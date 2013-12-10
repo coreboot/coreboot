@@ -58,6 +58,7 @@ struct exynos5_usb_host_phy {
         uint8_t reserved4[4];
         uint32_t usbotgtune;
 };
+check_member(exynos5_usb_host_phy, usbotgtune, 0x40);
 
 static struct exynos5_usb_host_phy * const exynos_usb_host_phy =
 		(void *)EXYNOS5_USB_HOST_PHY_BASE;
@@ -81,6 +82,7 @@ struct exynos5_usb_drd_phy {
 	uint32_t linkhcbelt;
 	uint32_t linkport;
 };
+check_member(exynos5_usb_drd_phy, linkport, 0x44);
 
 static struct exynos5_usb_drd_phy * const exynos_usb_drd_phy =
 		(void *)EXYNOS5_USB_DRD_PHY_BASE;
@@ -121,6 +123,7 @@ struct exynos5_usb_drd_dwc3 {
 	uint32_t usb3pipectl;
 	uint8_t reserved6[60];
 };
+check_member(exynos5_usb_drd_dwc3, usb3pipectl, 0x1c0);
 
 static struct exynos5_usb_drd_dwc3 * const exynos_usb_drd_dwc3 =
 		(void *)EXYNOS5_USB_DRD_DWC3_BASE;

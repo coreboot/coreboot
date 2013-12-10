@@ -295,6 +295,7 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 clk_src_emc_latency;	/* _CLK_SOURCE_EMC_LATENCY  0x640 */
 	u32 clk_src_soc_therm;		/* _CLK_SOURCE_SOC_THERM    0x644 */
 };
+check_member(clk_rst_ctlr, clk_src_soc_therm, 0x644);
 
 #define TEGRA_DEV_L			0
 #define TEGRA_DEV_H			1

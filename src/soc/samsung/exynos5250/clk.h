@@ -431,7 +431,7 @@ struct exynos5_clock {
 	unsigned int	clkout_cmu_r1x_div_stat;
 	unsigned char	res98[0x3608];
 
-	unsigned int	bpll_lock;		/* base + 0x2000c */
+	unsigned int	bpll_lock;		/* base + 0x20010 */
 	unsigned char	res99[0xfc];
 	unsigned int	bpll_con0;
 	unsigned int	bpll_con1;
@@ -461,6 +461,7 @@ struct exynos5_clock {
 	unsigned int	pll_div2_sel;
 	unsigned char	res109b[0xf5e4];
 };
+check_member(exynos5_clock, pll_div2_sel, 0x20a24);
 
 static struct exynos5_clock * const exynos_clock = (void *)EXYNOS5_CLOCK_BASE;
 
@@ -521,6 +522,7 @@ struct exynos5_mct {
 	uint8_t		reserved14[0x8];
 	uint32_t	l1_wstat;
 };
+check_member(exynos5_mct, l1_wstat, 0x440);
 
 static struct exynos5_mct * const exynos_mct =
 		(void *)EXYNOS5_MULTI_CORE_TIMER_BASE;

@@ -163,6 +163,7 @@ struct exynos5_dp {
 	u8	res21[0x3c];
 	u32	soc_general_ctl;
 };
+check_member(exynos5_dp, soc_general_ctl, 0x800);
 
 static struct exynos5_dp * const exynos_dp0 = (void *)EXYNOS5_DP0_BASE;
 static struct exynos5_dp * const exynos_dp1 = (void *)EXYNOS5_DP1_BASE;

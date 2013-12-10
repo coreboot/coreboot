@@ -77,6 +77,7 @@ struct exynos5_power {
 	uint8_t         reservedC[0x120];
 	uint32_t	ps_hold_ctrl;		/* 0x330c */
 } __attribute__ ((__packed__));
+check_member(exynos5_power, ps_hold_ctrl, 0x330c);
 
 static struct exynos5_power * const exynos_power = (void*)EXYNOS5_POWER_BASE;
 

@@ -156,6 +156,7 @@ struct tegra_pmc_regs {
 	u32 secure_scratch8[24 - 8];
 	u32 scratch56[120 - 56];
 };
+check_member(tegra_pmc_regs, scratch56, 0x340);
 
 enum {
 	PMC_PWRGATE_TOGGLE_PARTID_MASK = 0x1f,

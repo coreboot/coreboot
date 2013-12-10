@@ -39,6 +39,7 @@ struct exynos_spi {
 	unsigned int		fb_clk;		/* 0x2c */
 	unsigned char		padding[0xffd0];
 };
+check_member(exynos_spi, fb_clk, 0x2c);
 
 #define EXYNOS_SPI_MAX_FREQ	50000000
 

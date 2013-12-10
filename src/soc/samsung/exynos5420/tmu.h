@@ -57,6 +57,7 @@ struct tmu_reg {
 	unsigned rsvd15;
 	unsigned emul_con;
 };
+check_member(tmu_reg, emul_con, 0x80);
 
 enum tmu_status_t {
 	TMU_STATUS_INIT = 0,

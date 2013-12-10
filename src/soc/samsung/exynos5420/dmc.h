@@ -206,6 +206,7 @@ struct exynos5_dmc {
 	uint8_t res41[0xc];
 	uint32_t pmcnt3_ppc;	/* 0xe140 */
 } __attribute__((packed));
+check_member(exynos5_dmc, pmcnt3_ppc, 0xe140);
 
 static struct exynos5_dmc * const exynos_drex0 = (void *)EXYNOS5420_DMC_DREXI_0;
 static struct exynos5_dmc * const exynos_drex1 = (void *)EXYNOS5420_DMC_DREXI_1;
@@ -228,7 +229,7 @@ struct exynos5_phy_control {
 	uint32_t phy_con14;
 	uint32_t phy_con15;
 	uint32_t phy_con16;
-	uint8_t res4[4];
+	uint8_t res4[4];	/* NOT a mistake. Yes, it doesn't make sense. */
 	uint32_t phy_con17;
 	uint32_t phy_con18;
 	uint32_t phy_con19;
@@ -256,6 +257,7 @@ struct exynos5_phy_control {
 	uint32_t phy_con41;
 	uint32_t phy_con42;
 } __attribute__((packed));
+check_member(exynos5_phy_control, phy_con42, 0xac);
 
 static struct exynos5_phy_control * const exynos_phy0_control =
 		(void *)EXYNOS5_DMC_PHY0_BASE;

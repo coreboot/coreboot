@@ -50,5 +50,6 @@ struct sysctr_regs {
 	uint32_t counterid10;
 	uint32_t counterid11;
 };
+check_member(sysctr_regs, counterid11, 0xffc);
 
 #endif	/* __SOC_NVIDIA_TEGRA124_SYSCTR_H__ */

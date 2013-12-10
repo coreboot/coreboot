@@ -61,6 +61,7 @@ struct exynos5_hsi2c {
 	u32	usi_timing_sla;
 	u32	i2c_addr;
 } __attribute__ ((packed));
+check_member(exynos5_hsi2c, i2c_addr, 0x70);
 
 struct s3c24x0_i2c_bus {
 	int bus_num;

@@ -149,5 +149,6 @@ struct tegra_i2c_regs {
 	uint32_t bus_clear_status;
 	uint32_t spare;
 };
+check_member(tegra_i2c_regs, bus_clear_status, 0x88);
 
 #endif	/* __SOC_NVIDIA_TEGRA_I2C_H__ */

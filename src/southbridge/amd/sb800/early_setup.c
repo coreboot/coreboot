@@ -22,6 +22,7 @@
 
 #include <reset.h>
 #include <arch/cpu.h>
+#include <arch/acpi.h>
 #include <cbmem.h>
 #include "sb800.h"
 #include "smbus.c"
@@ -666,7 +667,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 }
 
 #if CONFIG_HAVE_ACPI_RESUME
-static int acpi_is_wakeup_early(void)
+int acpi_is_wakeup_early(void)
 {
 	u16 tmp;
 	tmp = inw(ACPI_PM1_CNT_BLK);

@@ -24,6 +24,8 @@
 #include <device/pci_ids.h>
 #include <reg_script.h>
 
+#include <baytrail/iosf.h>
+#include <baytrail/nvs.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
 #include "chip.h"
@@ -46,6 +48,9 @@ static void sd_init(device_t dev)
 		pci_write_config32(dev, CAP_OVERRIDE_HIGH,
 		                   config->sdcard_cap_high | USE_CAP_OVERRIDES);
 	}
+
+	if (config->scc_acpi_mode)
+		scc_enable_acpi_mode(dev, SCC_SD_CTL, SCC_NVS_SD);
 }
 
 static const struct device_operations device_ops = {

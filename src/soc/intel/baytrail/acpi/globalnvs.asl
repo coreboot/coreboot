@@ -30,7 +30,7 @@ Name(\PICM, 0)		// IOAPIC/8259
  */
 
 
-OperationRegion (GNVS, SystemMemory, 0xC0DEBABE, 0xf00)
+OperationRegion (GNVS, SystemMemory, 0xC0DEBABE, 0x2000)
 Field (GNVS, ByteAcc, NoLock, Preserve)
 {
 	/* Miscellaneous */
@@ -70,28 +70,12 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TOLM,	 32,	// 0x34 - Top of Low Memory
 	CBMC,	 32,	// 0x38 - coreboot mem console pointer
 
-	/* Serial IO device BARs */
-	Offset (0x60),
-	S0B0,	32,	// 0x60 - D21:F0 Serial IO SDMA BAR0
-	S1B0,	32,	// 0x64 - D21:F1 Serial IO I2C0 BAR0
-	S2B0,	32,	// 0x68 - D21:F2 Serial IO I2C1 BAR0
-	S3B0,	32,	// 0x6c - D21:F3 Serial IO SPI0 BAR0
-	S4B0,	32,	// 0x70 - D21:F4 Serial IO SPI1 BAR0
-	S5B0,	32,	// 0x74 - D21:F5 Serial IO UAR0 BAR0
-	S6B0,	32,	// 0x78 - D21:F6 Serial IO UAR1 BAR0
-	S7B0,	32,	// 0x7c - D23:F0 Serial IO SDIO BAR0
-	S0B1,	32,	// 0x80 - D21:F0 Serial IO SDMA BAR1
-	S1B1,	32,	// 0x84 - D21:F1 Serial IO I2C0 BAR1
-	S2B1,	32,	// 0x88 - D21:F2 Serial IO I2C1 BAR1
-	S3B1,	32,	// 0x8c - D21:F3 Serial IO SPI0 BAR1
-	S4B1,	32,	// 0x90 - D21:F4 Serial IO SPI1 BAR1
-	S5B1,	32,	// 0x94 - D21:F5 Serial IO UAR0 BAR1
-	S6B1,	32,	// 0x98 - D21:F6 Serial IO UAR1 BAR1
-	S7B1,	32,	// 0x9c - D23:F0 Serial IO SDIO BAR1
-
 	/* ChromeOS specific */
 	Offset (0x100),
 	#include <vendorcode/google/chromeos/acpi/gnvs.asl>
+
+	Offset (0x1000),
+	#include <soc/intel/baytrail/acpi/device_nvs.asl>
 }
 
 /* Set flag to enable USB charging in S3 */

@@ -58,7 +58,7 @@ typedef struct {
 	u8	vdat[3072];	// 19a
 	u32	vbt10;		// d9a smbios bios version
 	u32	mehh[8];	// d9e management engine hash
-				// dbe
+	u8	pad[322];	// dbe-eff
 } __attribute__((packed)) chromeos_acpi_t;
 
 extern chromeos_acpi_t *vboot_data;

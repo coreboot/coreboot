@@ -34,6 +34,7 @@ void baytrail_run_reference_code(void);
 static inline void baytrail_run_reference_code(void) {}
 #endif
 void baytrail_init_scc(void);
+void scc_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index);
 
 extern struct pci_operations soc_pci_ops;
 

@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -26,9 +27,49 @@
 #include <reg_script.h>
 
 #include <baytrail/iosf.h>
+#include <baytrail/nvs.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/ramstage.h>
 
+#include "chip.h"
+
+static void dev_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
+{
+	struct reg_script ops[] = {
+		REG_SCRIPT_SET_DEV(dev),
+		/* Disable PCI interrupt, enable Memory and Bus Master */
+		REG_PCI_OR32(PCI_COMMAND,
+			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | (1<<10)),
+		/* Enable ACPI mode */
+		REG_IOSF_OR(IOSF_PORT_LPSS, iosf_reg,
+			    LPSS_CTL_PCI_CFG_DIS | LPSS_CTL_ACPI_INT_EN),
+		REG_SCRIPT_END
+	};
+	struct resource *bar;
+	global_nvs_t *gnvs;
+
+	/* Find ACPI NVS to update BARs */
+	gnvs = (global_nvs_t *)cbmem_find(CBMEM_ID_ACPI_GNVS);
+	if (!gnvs) {
+		printk(BIOS_ERR, "Unable to locate Global NVS\n");
+		return;
+	}
+
+	/* Save BAR0 and BAR1 to ACPI NVS */
+	bar = find_resource(dev, PCI_BASE_ADDRESS_0);
+	if (bar)
+		gnvs->dev.lpss_bar0[nvs_index] = (u32)bar->base;
+
+	bar = find_resource(dev, PCI_BASE_ADDRESS_1);
+	if (bar)
+		gnvs->dev.lpss_bar1[nvs_index] = (u32)bar->base;
+
+	/* Device is enabled in ACPI mode */
+	gnvs->dev.lpss_en[nvs_index] = 1;
+
+	/* Put device in ACPI mode */
+	reg_script_run(ops);
+}
 
 static void dev_enable_snoop_and_pm(device_t dev, int iosf_reg)
 {
@@ -43,12 +84,14 @@ static void dev_enable_snoop_and_pm(device_t dev, int iosf_reg)
 	reg_script_run(ops);
 }
 
-static int dev_ctl_reg(device_t dev)
+static void dev_ctl_reg(device_t dev, int *iosf_reg, int *nvs_index)
 {
-	int iosf_reg = -1;
+	*iosf_reg = -1;
+	*nvs_index = -1;
 #define SET_IOSF_REG(name_) \
 	case PCI_DEVFN(name_ ## _DEV, name_ ## _FUNC): \
-		iosf_reg = LPSS_ ## name_ ## _CTL
+		*iosf_reg = LPSS_ ## name_ ## _CTL; \
+		*nvs_index = LPSS_NVS_ ## name_
 
 	switch (dev->path.pci.devfn) {
 	SET_IOSF_REG(SIO_DMA1);
@@ -80,7 +123,6 @@ static int dev_ctl_reg(device_t dev)
 	SET_IOSF_REG(SPI);
 		break;
 	}
-	return iosf_reg;
 }
 
 static void i2c_disable_resets(device_t dev)
@@ -113,7 +155,10 @@ static void i2c_disable_resets(device_t dev)
 
 static void lpss_init(device_t dev)
 {
-	int iosf_reg = dev_ctl_reg(dev);
+	struct soc_intel_baytrail_config *config = dev->chip_info;
+	int iosf_reg, nvs_index;
+
+	dev_ctl_reg(dev, &iosf_reg, &nvs_index);
 
 	if (iosf_reg < 0) {
 		int slot = PCI_SLOT(dev->path.pci.devfn);
@@ -123,6 +168,9 @@ static void lpss_init(device_t dev)
 		return;
 	}
 	dev_enable_snoop_and_pm(dev, iosf_reg);
+
+	if (config->lpss_acpi_mode)
+		dev_enable_acpi_mode(dev, iosf_reg, nvs_index);
 
 	i2c_disable_resets(dev);
 }

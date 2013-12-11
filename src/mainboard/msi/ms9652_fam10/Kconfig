@@ -89,10 +89,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x00
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_01000096.h"
-
 config HT3_SUPPORT
 	bool
 	default y

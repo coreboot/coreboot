@@ -64,10 +64,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 15
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_01000095.h"
-
 config BOOTBLOCK_MAINBOARD_INIT
 	string
 	default "mainboard/hp/dl165_g6_fam10/bootblock.c"

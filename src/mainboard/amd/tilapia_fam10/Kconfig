@@ -57,10 +57,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_010000b6.h"
-
 config VGA_BIOS
         bool
         default n

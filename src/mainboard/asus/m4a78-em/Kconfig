@@ -56,8 +56,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_010000b6.h"
-
 endif

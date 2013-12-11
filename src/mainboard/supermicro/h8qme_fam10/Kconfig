@@ -62,8 +62,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_0100009f.h"
-
 endif # BOARD_SUPERMICRO_H8QME_FAM10

@@ -72,10 +72,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 13
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_01000095.h"
-
 config CK804_PCI_E_X
 	int
 	default 1

@@ -58,8 +58,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_01000095.h"
-
 endif # BOARD_AMD_SERENGETI_CHEETAH_FAM10

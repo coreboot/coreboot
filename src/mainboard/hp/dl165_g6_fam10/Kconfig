@@ -68,10 +68,6 @@ config IRQ_SLOT_COUNT
 	int
 	default 15
 
-config AMD_UCODE_PATCH_FILE
-	string
-	default "mc_patch_01000095.h"
-
 config RAMBASE
 	hex
 	default 0x200000

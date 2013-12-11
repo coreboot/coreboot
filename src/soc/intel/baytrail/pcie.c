@@ -90,7 +90,6 @@ static const struct reg_script init_static_after_exit_latency[] = {
 static void byt_pcie_init(device_t dev)
 {
 	struct reg_script init_script[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		REG_SCRIPT_NEXT(init_static_before_exit_latency),
 		/* Exit latency configuration based on
 		 * PHYCTL2_IOSFBCTL[PLL_OFF_EN] set in root port 1*/
@@ -108,7 +107,7 @@ static void byt_pcie_init(device_t dev)
 		REG_SCRIPT_END,
 	};
 
-	reg_script_run(init_script);
+	reg_script_run_on_dev(dev, init_script);
 
 	if (is_first_port(dev)) {
 		struct soc_intel_baytrail_config *config = dev->chip_info;
@@ -157,19 +156,13 @@ static void check_port_enabled(device_t dev)
 
 static void check_device_present(device_t dev)
 {
-	struct reg_script no_dev[] = {
-		REG_SCRIPT_SET_DEV(dev),
-		REG_SCRIPT_NEXT(no_dev_behind_port),
-		REG_SCRIPT_END,
-	};
-
 	/* Set slot implemented. */
 	pci_write_config32(dev, XCAP, pci_read_config32(dev, XCAP) | SI);
 
 	/* No device present. */
 	if (!(pci_read_config32(dev, SLCTL_SLSTS) & PDS)) {
 		printk(BIOS_DEBUG, "No PCIe device present.\n");
-		reg_script_run(no_dev);
+		reg_script_run_on_dev(dev, no_dev_behind_port);
 		dev->enabled = 0;
 	} else if(!dev->enabled) {
 		/* Port is disabled, but device present. Disable link. */

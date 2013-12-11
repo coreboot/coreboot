@@ -259,14 +259,9 @@ static const struct reg_script gfx_post_vbios_script[] = {
 	REG_SCRIPT_END
 };
 
-static void gfx_run_script(device_t dev, const struct reg_script *ops)
+static inline void gfx_run_script(device_t dev, const struct reg_script *ops)
 {
-	struct reg_script steps[] = {
-		REG_SCRIPT_SET_DEV(dev),
-		REG_SCRIPT_NEXT(ops),
-		REG_SCRIPT_END,
-	};
-	reg_script_run(&steps[0]);
+	reg_script_run_on_dev(dev, ops);
 }
 
 static void gfx_pre_vbios_init(device_t dev)
@@ -294,7 +289,6 @@ static void gfx_panel_setup(device_t dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script gfx_pipea_init[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		/* CONTROL */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_CONTROL),
 				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
@@ -322,7 +316,6 @@ static void gfx_panel_setup(device_t dev)
 		REG_SCRIPT_END
 	};
 	struct reg_script gfx_pipeb_init[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		/* CONTROL */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_CONTROL),
 				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
@@ -352,12 +345,12 @@ static void gfx_panel_setup(device_t dev)
 
 	if (config->gpu_pipea_port_select) {
 		printk(BIOS_INFO, "GFX: Initialize PIPEA\n");
-		reg_script_run(gfx_pipea_init);
+		reg_script_run_on_dev(dev, gfx_pipea_init);
 	}
 
 	if (config->gpu_pipeb_port_select) {
 		printk(BIOS_INFO, "GFX: Initialize PIPEB\n");
-		reg_script_run(gfx_pipeb_init);
+		reg_script_run_on_dev(dev, gfx_pipeb_init);
 	}
 }
 

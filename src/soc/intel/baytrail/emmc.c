@@ -52,16 +52,11 @@ static const struct reg_script emmc_ops[] = {
 static void emmc_init(device_t dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
-	struct reg_script ops[] = {
-		REG_SCRIPT_SET_DEV(dev),
-		REG_SCRIPT_NEXT(emmc_ops),
-		REG_SCRIPT_END,
-	};
-	printk(BIOS_DEBUG, "eMMC init\n");
-	reg_script_run(ops);
 
 	if (config->scc_acpi_mode)
 		scc_enable_acpi_mode(dev, SCC_MMC_CTL, SCC_NVS_MMC);
+	printk(BIOS_DEBUG, "eMMC init\n");
+	reg_script_run_on_dev(dev, emmc_ops);
 }
 
 static struct device_operations device_ops = {

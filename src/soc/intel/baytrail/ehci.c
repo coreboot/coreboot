@@ -34,7 +34,7 @@
 
 #include "chip.h"
 
-const struct reg_script ehci_init_script[] = {
+static const struct reg_script ehci_init_script[] = {
 	/* Enable S0 PLL shutdown
 	 * D29:F0:7A[12,10,7,6,4,3,2,1]=11111111b */
 	REG_PCI_OR16(0x7a, 0x14de),
@@ -60,7 +60,7 @@ const struct reg_script ehci_init_script[] = {
 	REG_SCRIPT_END
 };
 
-const struct reg_script ehci_clock_gating_script[] = {
+static const struct reg_script ehci_clock_gating_script[] = {
 	/* Enable SB local clock gating */
 	REG_PCI_OR32(0x7c, 0x00004000),
 	/* RCBA + 0x284=0xbe (step B0+) */
@@ -68,7 +68,7 @@ const struct reg_script ehci_clock_gating_script[] = {
 	REG_SCRIPT_END
 };
 
-const struct reg_script ehci_disable_script[] = {
+static const struct reg_script ehci_disable_script[] = {
 	/* Clear Run/Stop Bit */
 	REG_RES_RMW32(PCI_BASE_ADDRESS_0, USB2CMD, ~USB2CMD_RS, 0),
 	/* Wait for HC Halted */
@@ -83,6 +83,11 @@ const struct reg_script ehci_disable_script[] = {
 	REG_PCI_RMW32(EHCI_SBRN_FLA_PWC, ~(PORTWKIMP | PORTWKCAPMASK), 0),
 	/* Set Function Disable bit in RCBA */
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + RCBA_FUNC_DIS, RCBA_EHCI_DIS),
+	REG_SCRIPT_END
+};
+
+static const struct reg_script ehci_hc_reset[] = {
+	REG_RES_OR16(PCI_BASE_ADDRESS_0, USB2CMD, USB2CMD_HCRESET),
 	REG_SCRIPT_END
 };
 
@@ -121,18 +126,7 @@ static void usb2_phy_init(device_t dev)
 static void ehci_init(device_t dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
-	struct reg_script ehci_hc_reset[] = {
-		REG_SCRIPT_SET_DEV(dev),
-		REG_RES_OR16(PCI_BASE_ADDRESS_0, USB2CMD, USB2CMD_HCRESET),
-		REG_SCRIPT_END
-	};
-	struct reg_script ehci_hc_disable[] = {
-		REG_SCRIPT_SET_DEV(dev),
-		REG_SCRIPT_NEXT(ehci_disable_script),
-		REG_SCRIPT_END
-	};
 	struct reg_script ehci_hc_init[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		/* Controller init */
 		REG_SCRIPT_NEXT(ehci_init_script),
 		/* Enable clock gating */
@@ -150,19 +144,19 @@ static void ehci_init(device_t dev)
 
 	/* Don't reset controller in S3 resume path */
 	if (acpi_slp_type != 3)
-		reg_script_run(ehci_hc_reset);
+		reg_script_run_on_dev(dev, ehci_hc_reset);
 
 	/* Disable controller if ports are routed to XHCI */
 	if (config->usb_route_to_xhci) {
 		/* Disable controller */
-		reg_script_run(ehci_hc_disable);
+		reg_script_run_on_dev(dev, ehci_disable_script);
 
 		/* Hide device with southcluster function */
 		dev->enabled = 0;
 		southcluster_enable_dev(dev);
 	} else {
 		/* Initialize EHCI controller */
-		reg_script_run(ehci_hc_init);
+		reg_script_run_on_dev(dev, ehci_hc_init);
 	}
 
 	/* Setup USB2 PHY based on board config */

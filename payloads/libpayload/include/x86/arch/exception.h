@@ -32,20 +32,49 @@
 
 #include <stdint.h>
 
-void set_vbar(uint32_t vbar);
+void exception_dispatch(void);
+void exception_init_asm(void);
 
 struct exception_state
 {
-	uint32_t regs[16];
+	uint32_t eax;
+	uint32_t ecx;
+	uint32_t edx;
+	uint32_t ebx;
+	uint32_t esp;
+	uint32_t ebp;
+	uint32_t esi;
+	uint32_t edi;
+	uint32_t eip;
+	uint32_t eflags;
+	uint32_t cs;
+	uint32_t ss;
+	uint32_t ds;
+	uint32_t es;
+	uint32_t fs;
+	uint32_t gs;
 } __attribute__((packed));
 
 enum {
-	EXC_UNDEF = 1,
-	EXC_SWI = 2,
-	EXC_PABORT = 3,
-	EXC_DABORT = 4,
-	EXC_IRQ = 6,
-	EXC_FIQ = 7,
+	EXC_DE = 0, /* Divide by zero */
+	EXC_DB = 1, /* Debug */
+	EXC_NMI = 2, /* Non maskable interrupt */
+	EXC_BP = 3, /* Breakpoint */
+	EXC_OF = 4, /* Overflow */
+	EXC_BR = 5, /* Bound range */
+	EXC_UD = 6, /* Invalid opcode */
+	EXC_NM = 7, /* Device not available */
+	EXC_DF = 8, /* Double fault */
+	EXC_TS = 10, /* Invalid TSS */
+	EXC_NP = 11, /* Segment not present */
+	EXC_SS = 12, /* Stack */
+	EXC_GP = 13, /* General protection */
+	EXC_PF = 14, /* Page fault */
+	EXC_MF = 16, /* x87 floating point */
+	EXC_AC = 17, /* Alignment check */
+	EXC_MC = 18, /* Machine check */
+	EXC_XF = 19, /* SIMD floating point */
+	EXC_SX = 30, /* Security */
 	EXC_COUNT
 };
 

@@ -30,8 +30,11 @@
 #ifndef _EXCEPTION_H
 #define _EXCEPTION_H
 
-#include <stdint.h>
+#include <arch/exception.h>
+
+typedef void (*exception_hook)(int type, struct exception_state *state);
 
 void exception_init(void);
+void exception_install_hook(int type, exception_hook hook);
 
 #endif

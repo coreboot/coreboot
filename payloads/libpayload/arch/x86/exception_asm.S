@@ -31,6 +31,9 @@
 	.global exception_stack_end
 exception_stack_end:
 	.long 0
+	.global exception_handler_state_handoff
+exception_handler_state_handoff:
+	.long 0
 
 /* Some temporary variables which are used while saving exception state. */
 vector:
@@ -134,11 +137,13 @@ exception_common:
 	pushl	old_eax
 
 	/*
-	 * Call the C exception handler. It will find the exception state on
-	 * the exception stack. Not passing parameters means we don't have to
-	 * worry about what ABI is being used.
+	 * Call the C exception handler. It will find the exception state
+	 * using the exception_handler_state_handoff global pointer. Not
+	 * passing parameters means we don't have to worry about what ABI
+	 * is being used.
 	 */
-	call	exception_handler
+	mov	%esp, exception_handler_state_handoff
+	call	exception_dispatch
 
 	/*
 	 * Restore state from the exception state structure, including any

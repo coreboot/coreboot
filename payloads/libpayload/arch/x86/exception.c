@@ -27,39 +27,27 @@
  * SUCH DAMAGE.
  */
 
+#include <arch/exception.h>
 #include <exception.h>
 #include <libpayload.h>
 #include <stdint.h>
 
 uint8_t exception_stack[0x1000] __attribute__((aligned(8)));
 extern void *exception_stack_end;
+extern struct exception_handler_state *exception_handler_state_handoff;
 
-struct exception_state
+struct exception_handler_state
 {
-	u32 eax;
-	u32 ecx;
-	u32 edx;
-	u32 ebx;
-	u32 esp;
-	u32 ebp;
-	u32 esi;
-	u32 edi;
-	u32 eip;
-	u32 eflags;
-	u32 cs;
-	u32 ss;
-	u32 ds;
-	u32 es;
-	u32 fs;
-	u32 gs;
+	struct exception_state regs;
 	u32 error_code;
 	u32 vector;
 } __attribute__((packed));
 
-struct exception_info
+struct exception_handler_info
 {
 	const char *name;
 	void (*error_code_printer)(u32 code);
+	exception_hook hook;
 };
 
 static void print_segment_error_code(u32 code)
@@ -105,34 +93,34 @@ static void print_raw_error_code(u32 code)
 	printf("%#x", code);
 }
 
-static struct exception_info exceptions[] = {
-	[0] =  { .name = "divide by zero" },
-	[1] =  { .name = "debug" },
-	[2] =  { .name = "non-maskable-interrupt" },
-	[3] =  { .name = "breakpoint" },
-	[4] =  { .name = "overflow" },
-	[5] =  { .name = "bound range" },
-	[6] =  { .name = "invalid opcode" },
-	[7] =  { .name = "device not available" },
-	[8] =  { .name = "double fault",
-		 .error_code_printer = &print_raw_error_code },
-	[10] = { .name = "invalid tss",
-		 .error_code_printer = &print_segment_error_code },
-	[11] = { .name = "segment not present",
-		 .error_code_printer = &print_segment_error_code },
-	[12] = { .name = "stack",
-		 .error_code_printer = &print_segment_error_code },
-	[13] = { .name = "general protection",
-		 .error_code_printer = &print_segment_error_code },
-	[14] = { .name = "page fault",
-		 .error_code_printer = &print_page_fault_error_code },
-	[16] = { .name = "x87 floating point" },
-	[17] = { .name = "alignment check",
-		 .error_code_printer = &print_raw_error_code },
-	[18] = { .name = "machine check" },
-	[19] = { .name = "SIMD floating point" },
-	[30] = { .name = "security",
-		 .error_code_printer = &print_raw_error_code },
+static struct exception_handler_info exceptions[EXC_COUNT] = {
+	[EXC_DE] =  { .name = "divide by zero" },
+	[EXC_DB] =  { .name = "debug" },
+	[EXC_NMI] =  { .name = "non-maskable-interrupt" },
+	[EXC_BP] =  { .name = "breakpoint" },
+	[EXC_OF] =  { .name = "overflow" },
+	[EXC_BR] =  { .name = "bound range" },
+	[EXC_UD] =  { .name = "invalid opcode" },
+	[EXC_NM] =  { .name = "device not available" },
+	[EXC_DF] =  { .name = "double fault",
+		      .error_code_printer = &print_raw_error_code },
+	[EXC_TS] = { .name = "invalid tss",
+		     .error_code_printer = &print_segment_error_code },
+	[EXC_NP] = { .name = "segment not present",
+		     .error_code_printer = &print_segment_error_code },
+	[EXC_SS] = { .name = "stack",
+		     .error_code_printer = &print_segment_error_code },
+	[EXC_GP] = { .name = "general protection",
+		     .error_code_printer = &print_segment_error_code },
+	[EXC_PF] = { .name = "page fault",
+		     .error_code_printer = &print_page_fault_error_code },
+	[EXC_MF] = { .name = "x87 floating point" },
+	[EXC_AC] = { .name = "alignment check",
+		     .error_code_printer = &print_raw_error_code },
+	[EXC_MC] = { .name = "machine check" },
+	[EXC_XF] = { .name = "SIMD floating point" },
+	[EXC_SX] = { .name = "security",
+		     .error_code_printer = &print_raw_error_code },
 };
 
 static void dump_stack(uintptr_t addr, size_t bytes)
@@ -150,16 +138,9 @@ static void dump_stack(uintptr_t addr, size_t bytes)
 	}
 }
 
-void exception_handler(void);
-void exception_handler(void)
+static void dump_exception_state(struct exception_handler_state *state,
+				 struct exception_handler_info *info)
 {
-	struct exception_state *state =
-		(void *)((u8 *)exception_stack_end - sizeof(*state));
-
-	struct exception_info *info = NULL;
-	if (state->vector < ARRAY_SIZE(exceptions))
-		info = &exceptions[state->vector];
-
 	if (info)
 		printf("Exception %d (%s)\n", state->vector, info->name);
 	else
@@ -169,31 +150,50 @@ void exception_handler(void)
 		info->error_code_printer(state->error_code);
 		printf("\n");
 	}
-	printf("EIP:    0x%08x\n", state->eip);
-	printf("CS:     0x%04x\n", state->cs);
-	printf("EFLAGS: 0x%08x\n", state->eflags);
-	printf("EAX:    0x%08x\n", state->eax);
-	printf("ECX:    0x%08x\n", state->ecx);
-	printf("EDX:    0x%08x\n", state->edx);
-	printf("EBX:    0x%08x\n", state->ebx);
-	printf("ESP:    0x%08x\n", state->esp);
-	printf("EBP:    0x%08x\n", state->ebp);
-	printf("ESI:    0x%08x\n", state->esi);
-	printf("EDI:    0x%08x\n", state->edi);
-	printf("DS:     0x%04x\n", state->ds);
-	printf("ES:     0x%04x\n", state->es);
-	printf("SS:     0x%04x\n", state->ss);
-	printf("FS:     0x%04x\n", state->fs);
-	printf("GS:     0x%04x\n", state->gs);
-
-	dump_stack(state->esp, 512);
-
-	halt();
+	printf("EIP:    0x%08x\n", state->regs.eip);
+	printf("CS:     0x%04x\n", state->regs.cs);
+	printf("EFLAGS: 0x%08x\n", state->regs.eflags);
+	printf("EAX:    0x%08x\n", state->regs.eax);
+	printf("ECX:    0x%08x\n", state->regs.ecx);
+	printf("EDX:    0x%08x\n", state->regs.edx);
+	printf("EBX:    0x%08x\n", state->regs.ebx);
+	printf("ESP:    0x%08x\n", state->regs.esp);
+	printf("EBP:    0x%08x\n", state->regs.ebp);
+	printf("ESI:    0x%08x\n", state->regs.esi);
+	printf("EDI:    0x%08x\n", state->regs.edi);
+	printf("DS:     0x%04x\n", state->regs.ds);
+	printf("ES:     0x%04x\n", state->regs.es);
+	printf("SS:     0x%04x\n", state->regs.ss);
+	printf("FS:     0x%04x\n", state->regs.fs);
+	printf("GS:     0x%04x\n", state->regs.gs);
 }
 
-void exception_init_asm(void);
+void exception_dispatch(void)
+{
+	struct exception_handler_state *state =
+		exception_handler_state_handoff;
+
+	struct exception_handler_info *info = NULL;
+	if (state->vector < EXC_COUNT)
+		info = &exceptions[state->vector];
+
+	if (info && info->hook) {
+		info->hook(state->vector, &state->regs);
+	} else {
+		dump_exception_state(state, info);
+		dump_stack(state->regs.esp, 512);
+		halt();
+	}
+}
+
 void exception_init(void)
 {
 	exception_stack_end = exception_stack + sizeof(exception_stack);
 	exception_init_asm();
+}
+
+void exception_install_hook(int type, exception_hook hook)
+{
+	die_if(type >= EXC_COUNT, "Out of bound exception type %d.\n", type);
+	exceptions[type].hook = hook;
 }

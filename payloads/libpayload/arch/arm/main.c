@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  */
 
-#include <arch/exception.h>
+#include <exception.h>
 #include <libpayload.h>
 
 unsigned int main_argc;    /**< The argc value to pass to main() */

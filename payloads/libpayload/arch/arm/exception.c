@@ -29,19 +29,27 @@
 
 #include <arch/cache.h>
 #include <arch/exception.h>
+#include <exception.h>
 #include <libpayload.h>
 #include <stdint.h>
 
-uint8_t exception_stack[0x100] __attribute__((aligned(8)));
+uint8_t exception_stack[0x1000] __attribute__((aligned(8)));
 extern void *exception_stack_end;
 
-void exception_undefined_instruction(uint32_t *);
-void exception_software_interrupt(uint32_t *);
-void exception_prefetch_abort(uint32_t *);
-void exception_data_abort(uint32_t *);
-void exception_not_used(uint32_t *);
-void exception_irq(uint32_t *);
-void exception_fiq(uint32_t *);
+struct exception_handler_info
+{
+	const char *name;
+	exception_hook hook;
+};
+
+static struct exception_handler_info exceptions[EXC_COUNT] = {
+	[EXC_UNDEF]  = { "_undefined_instruction" },
+	[EXC_SWI]    = { "_software_interrupt" },
+	[EXC_PABORT] = { "_prefetch_abort" },
+	[EXC_DABORT] = { "_data_abort" },
+	[EXC_IRQ]    = { "_irq" },
+	[EXC_FIQ]    = { "_fiq" },
+};
 
 static void dump_stack(uintptr_t addr, size_t bytes)
 {
@@ -77,59 +85,25 @@ static void print_regs(uint32_t *regs)
 	}
 }
 
-void exception_undefined_instruction(uint32_t *regs)
+void exception_dispatch(struct exception_state *state, int idx);
+void exception_dispatch(struct exception_state *state, int idx)
 {
-	printf("exception _undefined_instruction\n");
-	print_regs(regs);
-	dump_stack(regs[13], 512);
-	halt();
-}
+	if (idx >= EXC_COUNT) {
+		printf("Bad exception index %d.\n", idx);
+	} else {
+		struct exception_handler_info *info = &exceptions[idx];
+		if (info->hook) {
+			info->hook(idx, state);
+			return;
+		}
 
-void exception_software_interrupt(uint32_t *regs)
-{
-	printf("exception _software_interrupt\n");
-	print_regs(regs);
-	dump_stack(regs[13], 512);
-	halt();
-}
-
-void exception_prefetch_abort(uint32_t *regs)
-{
-	printf("exception _prefetch_abort\n");
-	print_regs(regs);
-	dump_stack(regs[13], 512);
-	halt();
-}
-
-void exception_data_abort(uint32_t *regs)
-{
-	printf("exception _data_abort\n");
-	print_regs(regs);
-	dump_stack(regs[13], 512);
-	halt();
-}
-
-void exception_not_used(uint32_t *regs)
-{
-	printf("exception _not_used\n");
-	print_regs(regs);
-	dump_stack(regs[13], 512);
-	halt();
-}
-
-void exception_irq(uint32_t *regs)
-{
-	printf("exception _irq\n");
-	print_regs(regs);
-	dump_stack(regs[13], 512);
-	halt();
-}
-
-void exception_fiq(uint32_t *regs)
-{
-	printf("exception _fiq\n");
-	print_regs(regs);
-	dump_stack(regs[13], 512);
+		if (info->name)
+			printf("exception %s\n", info->name);
+		else
+			printf("exception _not_used.\n");
+	}
+	print_regs(state->regs);
+	dump_stack(state->regs[13], 512);
 	halt();
 }
 
@@ -145,4 +119,10 @@ void exception_init(void)
 	extern uint32_t exception_table[];
 	set_vbar((uintptr_t)exception_table);
 	exception_stack_end = exception_stack + sizeof(exception_stack);
+}
+
+void exception_install_hook(int type, exception_hook hook)
+{
+	die_if(type >= EXC_COUNT, "Out of bounds exception index %d.\n", type);
+	exceptions[type].hook = hook;
 }

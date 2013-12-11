@@ -43,59 +43,51 @@ exception_table:
 	b	8f
 
 1:
-	ldr	sp, _not_used
+	mov	sp, $0
 	b	exception_common
 2:
-	ldr	sp, _undefined_instruction
+	mov	sp, $1
 	b	exception_common
 3:
-	ldr	sp, _software_interrupt
+	mov	sp, $2
 	b	exception_common
 4:
-	ldr	sp, _prefetch_abort
+	mov	sp, $3
 	b	exception_common
 5:
-	ldr	sp, _data_abort
+	mov	sp, $4
 	b	exception_common
 6:
-	ldr	sp, _not_used
+	mov	sp, $5
 	b	exception_common
 7:
-	ldr	sp, _irq
+	mov	sp, $6
 	b	exception_common
 8:
-	ldr	sp, _fiq
+	mov	sp, $7
 	b	exception_common
 
 exception_common:
-	str	sp, exception_handler
+	str	sp, exception_idx
 	ldr	sp, exception_stack_end
 	push	{ lr }
 	stmfd	sp, { sp, lr }^
 	sub	sp, sp, $8
 	push	{ r0 - r12 }
 	mov	r0, sp
-	mov	lr, pc
-	ldr	pc, exception_handler
+	ldr	r1, exception_idx
+	blx	exception_dispatch
 	pop	{ r0 - r12 }
 	add	sp, sp, $8
 	ldmfd	sp!, { pc }^
 
 
 	.align 2
-_undefined_instruction:	.word exception_undefined_instruction
-_software_interrupt:	.word exception_software_interrupt
-_prefetch_abort:	.word exception_prefetch_abort
-_data_abort:		.word exception_data_abort
-_not_used:		.word exception_not_used
-_irq:			.word exception_irq
-_fiq:			.word exception_fiq
-
 	.global exception_stack_end
 exception_stack_end:
 	.word 0
 
-exception_handler:
+exception_idx:
 	.word 0
 
 	.thumb

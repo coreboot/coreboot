@@ -62,6 +62,8 @@ config VENDOR_GETAC
 	bool "Getac"
 config VENDOR_GIGABYTE
 	bool "GIGABYTE"
+config VENDOR_GIZMOSPHERE
+	bool "GIZMOSPHERE"
 config VENDOR_GOOGLE
 	bool "Google"
 config VENDOR_HP
@@ -168,6 +170,7 @@ source "src/mainboard/ecs/Kconfig"
 source "src/mainboard/emulation/Kconfig"
 source "src/mainboard/getac/Kconfig"
 source "src/mainboard/gigabyte/Kconfig"
+source "src/mainboard/gizmosphere/Kconfig"
 source "src/mainboard/google/Kconfig"
 source "src/mainboard/hp/Kconfig"
 source "src/mainboard/ibase/Kconfig"

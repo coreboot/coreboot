@@ -1,0 +1,126 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2011 Advanced Micro Devices, Inc.
+# Copyright (C) 2013 Sage Electronic Engineering, LLC
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+
+if BOARD_GIZMOSPHERE_GIZMO
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_AMD_AGESA_FAMILY14
+	select NORTHBRIDGE_AMD_AGESA_FAMILY14
+	select SOUTHBRIDGE_AMD_CIMX_SB800
+	select HAVE_OPTION_TABLE
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_RESUME
+	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
+	select LIFT_BSP_APIC_ID
+	select SERIAL_CPU_INIT
+	select AMDMCT
+	select HAVE_ACPI_TABLES
+	select BOARD_ROMSIZE_KB_2048
+	select GFXUMA
+
+config MAINBOARD_DIR
+	string
+	default gizmosphere/gizmo
+
+config USER_DEFINED_SPD
+	bool
+	default y
+	help
+	  If set the SPD will be read from a file
+
+config PATH_TO_USERS_SPD
+	string
+	default "../../src/mainboard/gizmosphere/gizmo/ddr3_spd.h"
+	help
+	  This defines where the spd file is. The path is relative to where
+	  the SPD file is being used/built to where it is located.
+
+config DDR3_CHANNEL_MAX
+	int
+	default 0
+
+config APIC_ID_OFFSET
+	hex
+	default 0x0
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Gizmo"
+
+config HW_MEM_HOLE_SIZEK
+	hex
+	default 0x200000
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+
+config HW_MEM_HOLE_SIZE_AUTO_INC
+	bool
+	default n
+
+config MEM_TRAIN_SEQ
+	int
+	default 2
+
+config IRQ_SLOT_COUNT
+	int
+	default 11
+
+config RAMTOP
+	hex
+	default 0x1000000
+
+config HEAP_SIZE
+	hex
+	default 0xc0000
+
+config RAMBASE
+	hex
+	default 0x200000
+
+config ONBOARD_VGA_IS_PRIMARY
+	bool
+	default y
+
+config VGA_BIOS
+	bool
+	default n
+
+config VGA_BIOS_ID
+	string
+	default "1002,9804"
+
+config SB800_AHCI_ROM
+	bool
+	default n
+
+config DRIVERS_PS2_KEYBOARD
+	bool
+	default n
+
+endif # BOARD_GIZMOSPHERE_GIZMO

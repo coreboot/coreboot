@@ -36,7 +36,6 @@
 static void dev_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 {
 	struct reg_script ops[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		/* Disable PCI interrupt, enable Memory and Bus Master */
 		REG_PCI_OR32(PCI_COMMAND,
 			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | (1<<10)),
@@ -68,20 +67,19 @@ static void dev_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 	gnvs->dev.lpss_en[nvs_index] = 1;
 
 	/* Put device in ACPI mode */
-	reg_script_run(ops);
+	reg_script_run_on_dev(dev, ops);
 }
 
 static void dev_enable_snoop_and_pm(device_t dev, int iosf_reg)
 {
 	struct reg_script ops[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		REG_IOSF_RMW(IOSF_PORT_LPSS, iosf_reg,
 		             ~(LPSS_CTL_SNOOP | LPSS_CTL_NOSNOOP),
 		             LPSS_CTL_SNOOP | LPSS_CTL_PM_CAP_PRSNT),
 		REG_SCRIPT_END,
 	};
 
-	reg_script_run(ops);
+	reg_script_run_on_dev(dev, ops);
 }
 
 static void dev_ctl_reg(device_t dev, int *iosf_reg, int *nvs_index)
@@ -128,8 +126,7 @@ static void dev_ctl_reg(device_t dev, int *iosf_reg, int *nvs_index)
 static void i2c_disable_resets(device_t dev)
 {
 	/* Release the I2C devices from reset. */
-	struct reg_script ops[] = {
-		REG_SCRIPT_SET_DEV(dev),
+	static const struct reg_script ops[] = {
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0x804, 0x3),
 		REG_SCRIPT_END,
 	};
@@ -146,7 +143,7 @@ static void i2c_disable_resets(device_t dev)
 	CASE_I2C(I2C6):
 	CASE_I2C(I2C7):
 		printk(BIOS_DEBUG, "Releasing I2C device from reset.\n");
-		reg_script_run(ops);
+		reg_script_run_on_dev(dev, ops);
 		break;
 	default:
 		return;

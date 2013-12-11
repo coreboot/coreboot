@@ -132,7 +132,6 @@ const struct reg_script xhci_clock_gating_script[] = {
 static void xhci_reset_port_usb3(device_t dev, int port)
 {
 	struct reg_script reset_port_usb3_script[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		/* Issue Warm Port Rest to the port */
 		REG_RES_OR32(PCI_BASE_ADDRESS_0, XHCI_USB3_PORTSC(port),
 			     XHCI_USB3_PORTSC_WPR),
@@ -145,14 +144,13 @@ static void xhci_reset_port_usb3(device_t dev, int port)
 			      ~XHCI_USB3_PORTSC_PED, XHCI_USB3_PORTSC_CHST),
 		REG_SCRIPT_END
 	};
-	reg_script_run(reset_port_usb3_script);
+	reg_script_run_on_dev(dev, reset_port_usb3_script);
 }
 
 /* Prepare ports to be routed to EHCI or XHCI */
 static void xhci_route_all(device_t dev)
 {
-	struct reg_script xhci_route_all_script[] = {
-		REG_SCRIPT_SET_DEV(dev),
+	static const struct reg_script xhci_route_all_script[] = {
 		/* USB3 SuperSpeed Enable */
 		REG_PCI_WRITE32(XHCI_USB3PR, BYTM_USB3_PORT_MAP),
 		/* USB2 Port Route to XHCI */
@@ -165,7 +163,7 @@ static void xhci_route_all(device_t dev)
 	printk(BIOS_INFO, "USB: Route ports to XHCI controller\n");
 
 	/* Route ports to XHCI controller */
-	reg_script_run(xhci_route_all_script);
+	reg_script_run_on_dev(dev, xhci_route_all_script);
 
 	/* Reset enabled USB3 ports */
 	port_disabled = pci_read_config32(dev, XHCI_USB3PDO);
@@ -180,7 +178,6 @@ static void xhci_init(device_t dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script xhci_hc_init[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		/* Setup USB3 phy */
 		REG_SCRIPT_NEXT(usb3_phy_script),
 		/* Initialize host controller */
@@ -207,7 +204,7 @@ static void xhci_init(device_t dev)
 	};
 
 	/* Initialize XHCI controller */
-	reg_script_run(xhci_hc_init);
+	reg_script_run_on_dev(dev, xhci_hc_init);
 
 	/* Route all ports to XHCI if requested */
 	if (config->usb_route_to_xhci)

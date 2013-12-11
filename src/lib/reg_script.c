@@ -468,11 +468,16 @@ static void reg_script_run_next(struct reg_script_context *prev_ctx,
 	reg_script_run_with_context(&ctx);
 }
 
-void reg_script_run(const struct reg_script *step)
+void reg_script_run_on_dev(device_t dev, const struct reg_script *step)
 {
 	struct reg_script_context ctx;
 
-	reg_script_set_dev(&ctx, EMPTY_DEV);
+	reg_script_set_dev(&ctx, dev);
 	reg_script_set_step(&ctx, step);
 	reg_script_run_with_context(&ctx);
+}
+
+void reg_script_run(const struct reg_script *step)
+{
+	reg_script_run_on_dev(EMPTY_DEV, step);
 }

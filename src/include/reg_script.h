@@ -334,5 +334,6 @@ struct reg_script {
 	_REG_SCRIPT_ENCODE_RAW(REG_SCRIPT_COMMAND_END, 0, 0, 0, 0, 0, 0, 0)
 
 void reg_script_run(const struct reg_script *script);
+void reg_script_run_on_dev(device_t dev, const struct reg_script *step);
 
 #endif /* REG_SCRIPT_H */

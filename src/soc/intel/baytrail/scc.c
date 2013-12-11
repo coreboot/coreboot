@@ -90,7 +90,6 @@ void baytrail_init_scc(void)
 void scc_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 {
 	struct reg_script ops[] = {
-		REG_SCRIPT_SET_DEV(dev),
 		/* Disable PCI interrupt, enable Memory and Bus Master */
 		REG_PCI_OR32(PCI_COMMAND,
 			     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER | (1<<10)),
@@ -122,5 +121,5 @@ void scc_enable_acpi_mode(device_t dev, int iosf_reg, int nvs_index)
 	gnvs->dev.scc_en[nvs_index] = 1;
 
 	/* Put device in ACPI mode */
-	reg_script_run(ops);
+	reg_script_run_on_dev(dev, ops);
 }

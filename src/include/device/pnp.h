@@ -48,7 +48,8 @@ struct pnp_info {
 #define PNP_EN   0x100
 #define PNP_MSC0 0x200
 #define PNP_MSC1 0x400
-#define PNP_MSC10 0x800
+#define PNP_MSC4 0x800
+#define PNP_MSC10 0x1000
 	struct io_info io0, io1, io2, io3;
 };
 struct resource *pnp_get_resource(device_t dev, unsigned index);

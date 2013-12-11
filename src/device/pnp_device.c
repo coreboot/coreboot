@@ -300,6 +300,11 @@ static void get_resources(device_t dev, struct pnp_info *info)
 		resource->size = 1;
 		resource->flags |= IORESOURCE_IRQ;
 	}
+	if (info->flags & PNP_MSC4) {
+		resource = new_resource(dev, PNP_IDX_MSC4);
+		resource->size = 1;
+		resource->flags |= IORESOURCE_IRQ;
+	}
 	if (info->flags & PNP_MSC10) {
 		resource = new_resource(dev, PNP_IDX_MSC10);
 		resource->size = 1;

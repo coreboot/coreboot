@@ -25,7 +25,6 @@
 #include <northbridge/amd/amdht/AsPsDefs.h>
 #include <northbridge/amd/amdht/porting.h>
 
-#include <cpu/x86/mtrr/earlymtrr.c>
 #include <northbridge/amd/amdfam10/raminit_amdmct.c>
 #include <reset.h>
 

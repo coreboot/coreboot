@@ -45,6 +45,8 @@ ramstage-y += lpss.c
 ramstage-y += pcie.c
 ramstage-y += sd.c
 ramstage-y += perf_power.c
+ramstage-y += stage_cache.c
+romstage-y += stage_cache.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

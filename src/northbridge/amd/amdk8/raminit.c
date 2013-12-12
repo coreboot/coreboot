@@ -6,6 +6,7 @@
 
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/amd/mtrr.h>
 #include <stdlib.h>
 #include <reset.h>
 #include "raminit.h"

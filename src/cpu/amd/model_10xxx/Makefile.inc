@@ -1,3 +1,4 @@
+romstage-y += ../../x86/mtrr/earlymtrr.c
 ramstage-y += model_10xxx_init.c
 ramstage-y += processor_name.c
 

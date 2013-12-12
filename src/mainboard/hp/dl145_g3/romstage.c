@@ -49,7 +49,6 @@
 #include "superio/nsc/pc87417/early_serial.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/broadcom/bcm5785/early_setup.c"
 

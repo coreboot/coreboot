@@ -22,7 +22,6 @@
 #include <arch/io.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "drivers/pc80/i8254.c"
 #include "northbridge/dmp/vortex86ex/northbridge.h"
 #include "southbridge/dmp/vortex86ex/southbridge.h"

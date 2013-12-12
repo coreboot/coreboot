@@ -264,7 +264,8 @@ static void add_cbmem_pointers(struct lb_header *header)
 		int table_tag;
 	} section_ids[] = {
 		{CBMEM_ID_TIMESTAMP, LB_TAG_TIMESTAMPS},
-		{CBMEM_ID_CONSOLE, LB_TAG_CBMEM_CONSOLE}
+		{CBMEM_ID_CONSOLE, LB_TAG_CBMEM_CONSOLE},
+		{CBMEM_ID_ACPI_GNVS, LB_TAG_ACPI_GNVS},
 	};
 	int i;
 

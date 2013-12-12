@@ -79,7 +79,7 @@ void *load_cached_ramstage(struct romstage_handoff *handoff,
 
 	cache = ramstage_cache_location(&size);
 
-	if (cache == NULL || cache->magic != RAMSTAGE_CACHE_MAGIC) {
+	if (!ramstage_cache_is_valid(cache)) {
 		printk(BIOS_DEBUG, "Invalid ramstage cache found.\n");
 		ramstage_cache_invalid(cache);
 		return NULL;

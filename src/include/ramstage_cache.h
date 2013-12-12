@@ -20,9 +20,8 @@
 #ifndef _RAMSTAGE_CACHE_
 #define _RAMSTAGE_CACHE_
 
-#if !defined(__PRE_RAM__)
-#error "ramstage_cache only used in romstage for loading ramstage."
-#endif
+#include <stddef.h>
+#include <stdint.h>
 
 /* This structure is saved along with the relocated ramstage program when
  * CONFIG_RELOCATED_RAMSTAGE is employed.  For x86, it can used to protect
@@ -45,5 +44,10 @@ struct ramstage_cache {
 struct ramstage_cache *ramstage_cache_location(long *size);
 /* Chipset/Board function called when cache is invalid on resume. */
 void ramstage_cache_invalid(struct ramstage_cache *cache);
+
+static inline int ramstage_cache_is_valid(const struct ramstage_cache *c)
+{
+	return (c != NULL && c->magic == RAMSTAGE_CACHE_MAGIC);
+}
 
 #endif  /* _RAMSTAGE_CACHE_ */

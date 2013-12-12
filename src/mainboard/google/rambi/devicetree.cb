@@ -31,6 +31,9 @@ chip soc/intel/baytrail
 	register "sdcard_cap_low" = "0x036864b2"
 	register "sdcard_cap_high" = "0x0"
 
+	# Enable devices in ACPI mode
+	register "scc_acpi_mode" = "1"
+
 	# Enable PIPEA as DP_C
 	register "gpu_pipea_hotplug" = "6"		# 6ms Pulse
 	register "gpu_pipea_port_select" = "2"		# DP_C

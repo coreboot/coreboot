@@ -51,32 +51,6 @@ struct microcode {
 	u8 x86_code_entry[191];
 };
 
-static int need_apply_patch(struct microcode *m, u32 equivalent_processor_rev_id)
-{
-
-	if (m->processor_rev_id != equivalent_processor_rev_id) {
-		printk(BIOS_ERR, "microcode: rev id (%x) does not match this patch.\n", m->processor_rev_id);
-		printk(BIOS_ERR, "microcode: Not updated! Fix microcode_updates[] \n");
-		return 0;
-	}
-	if (m->nb_dev_id) {
-		  //look at the device id, if not found return;
-		  //if(m->nb_rev_id != installed_nb_rev_id) return 0;
-	}
-
-	if (m->ht_io_hub_dev_id) {
-		  //look at the device id, if not found return;
-		  //if(m->ht_io_hub_rev_id != installed_ht_io_bub_rev_id) return 0;
-	}
-
-	if (m->x86_code_present) {
-		  //if(!x86_code_execute()) return 0;
-	}
-
-	return 1;
-}
-
-
 void amd_update_microcode(void *microcode_updates, u32 equivalent_processor_rev_id)
 {
 	u32 patch_id, new_patch_id;
@@ -93,7 +67,7 @@ void amd_update_microcode(void *microcode_updates, u32 equivalent_processor_rev_
 
 	for(c = microcode_updates; m->date_code;  m = (struct microcode *)c) {
 
-		if( need_apply_patch(m, equivalent_processor_rev_id) ) {
+		if (m->processor_rev_id == equivalent_processor_rev_id) {
 			//apply patch
 
 			msr.hi = 0;

@@ -59,25 +59,24 @@ static void iosf_write_port(uint32_t cr, int reg, uint32_t val)
 	write_iosf_reg(MCR_REG, cr);
 }
 
+#define IOSF_READ(port) \
+	IOSF_OPCODE(IOSF_OP_READ_##port) | IOSF_PORT(IOSF_PORT_##port)
+#define IOSF_WRITE(port) \
+	IOSF_OPCODE(IOSF_OP_WRITE_##port) | IOSF_PORT(IOSF_PORT_##port)
+
 uint32_t iosf_bunit_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_BUNIT) |
-	              IOSF_PORT(IOSF_PORT_BUNIT);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(BUNIT), reg);
 }
 
 void iosf_bunit_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_BUNIT) |
-	              IOSF_PORT(IOSF_PORT_BUNIT);
-	iosf_write_port(cr, reg, val);
+	iosf_write_port(IOSF_WRITE(BUNIT), reg, val);
 }
 
 uint32_t iosf_dunit_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_SYSMEMC) |
-	              IOSF_PORT(IOSF_PORT_SYSMEMC);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(SYSMEMC), reg);
 }
 
 uint32_t iosf_dunit_ch0_read(int reg)
@@ -94,105 +93,75 @@ uint32_t iosf_dunit_ch1_read(int reg)
 
 void iosf_dunit_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_SYSMEMC) |
-	              IOSF_PORT(IOSF_PORT_SYSMEMC);
-	iosf_write_port(cr, reg, val);
+	iosf_write_port(IOSF_WRITE(SYSMEMC), reg, val);
 }
 
 uint32_t iosf_punit_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_PMC) |
-	              IOSF_PORT(IOSF_PORT_PMC);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(PMC), reg);
 }
 
 void iosf_punit_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_PMC) |
-	              IOSF_PORT(IOSF_PORT_PMC);
-	iosf_write_port(cr, reg, val);
+	iosf_write_port(IOSF_WRITE(PMC), reg, val);
 }
 
 uint32_t iosf_usbphy_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_USBPHY) |
-	              IOSF_PORT(IOSF_PORT_USBPHY);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(USBPHY), reg);
 }
 
 void iosf_usbphy_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_USBPHY) |
-	              IOSF_PORT(IOSF_PORT_USBPHY);
-	return iosf_write_port(cr, reg, val);
+	return iosf_write_port(IOSF_WRITE(USBPHY), reg, val);
 }
 
 uint32_t iosf_ushphy_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_USHPHY) |
-	              IOSF_PORT(IOSF_PORT_USHPHY);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(USHPHY), reg);
 }
 
 void iosf_ushphy_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_USHPHY) |
-	              IOSF_PORT(IOSF_PORT_USHPHY);
-	return iosf_write_port(cr, reg, val);
+	return iosf_write_port(IOSF_WRITE(USHPHY), reg, val);
 }
 
 uint32_t iosf_lpss_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_LPSS) |
-	              IOSF_PORT(IOSF_PORT_LPSS);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(LPSS), reg);
 }
 
 void iosf_lpss_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_LPSS) |
-	              IOSF_PORT(IOSF_PORT_LPSS);
-	return iosf_write_port(cr, reg, val);
+	return iosf_write_port(IOSF_WRITE(LPSS), reg, val);
 }
 
 uint32_t iosf_ccu_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_CCU) |
-	              IOSF_PORT(IOSF_PORT_CCU);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(CCU), reg);
 }
 
 void iosf_ccu_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_CCU) |
-	              IOSF_PORT(IOSF_PORT_CCU);
-	return iosf_write_port(cr, reg, val);
+	return iosf_write_port(IOSF_WRITE(CCU), reg, val);
 }
 
 uint32_t iosf_score_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_SCORE) |
-	              IOSF_PORT(IOSF_PORT_SCORE);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(SCORE), reg);
 }
 
 void iosf_score_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_SCORE) |
-	              IOSF_PORT(IOSF_PORT_SCORE);
-	return iosf_write_port(cr, reg, val);
+	return iosf_write_port(IOSF_WRITE(SCORE), reg, val);
 }
 
 uint32_t iosf_scc_read(int reg)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_READ_SCC) |
-	              IOSF_PORT(IOSF_PORT_SCC);
-	return iosf_read_port(cr, reg);
+	return iosf_read_port(IOSF_READ(SCC), reg);
 }
 
 void iosf_scc_write(int reg, uint32_t val)
 {
-	uint32_t cr = IOSF_OPCODE(IOSF_OP_WRITE_SCC) |
-	              IOSF_PORT(IOSF_PORT_SCC);
-	return iosf_write_port(cr, reg, val);
+	return iosf_write_port(IOSF_WRITE(SCC), reg, val);
 }

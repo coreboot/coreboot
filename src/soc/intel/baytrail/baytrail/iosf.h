@@ -55,6 +55,10 @@
 #define MDR_REG 0xd4
 #define MCRX_REG 0xd8
 
+uint32_t iosf_aunit_read(int reg);
+void iosf_aunit_write(int reg, uint32_t val);
+uint32_t iosf_cpu_bus_read(int reg);
+void iosf_cpu_bus_write(int reg, uint32_t val);
 uint32_t iosf_bunit_read(int reg);
 void iosf_bunit_write(int reg, uint32_t val);
 uint32_t iosf_dunit_read(int reg);
@@ -68,6 +72,22 @@ uint32_t iosf_usbphy_read(int reg);
 void iosf_usbphy_write(int reg, uint32_t val);
 uint32_t iosf_ushphy_read(int reg);
 void iosf_ushphy_write(int reg, uint32_t val);
+uint32_t iosf_sec_read(int reg);
+void iosf_sec_write(int reg, uint32_t val);
+uint32_t iosf_port45_read(int reg);
+void iosf_port45_write(int reg, uint32_t val);
+uint32_t iosf_port46_read(int reg);
+void iosf_port46_write(int reg, uint32_t val);
+uint32_t iosf_port47_read(int reg);
+void iosf_port47_write(int reg, uint32_t val);
+uint32_t iosf_port55_read(int reg);
+void iosf_port55_write(int reg, uint32_t val);
+uint32_t iosf_port58_read(int reg);
+void iosf_port58_write(int reg, uint32_t val);
+uint32_t iosf_port59_read(int reg);
+void iosf_port59_write(int reg, uint32_t val);
+uint32_t iosf_port5a_read(int reg);
+void iosf_port5a_write(int reg, uint32_t val);
 uint32_t iosf_lpss_read(int reg);
 void iosf_lpss_write(int reg, uint32_t val);
 uint32_t iosf_ccu_read(int reg);
@@ -76,6 +96,10 @@ uint32_t iosf_score_read(int reg);
 void iosf_score_write(int reg, uint32_t val);
 uint32_t iosf_scc_read(int reg);
 void iosf_scc_write(int reg, uint32_t val);
+uint32_t iosf_porta2_read(int reg);
+void iosf_porta2_write(int reg, uint32_t val);
+uint32_t iosf_ssus_read(int reg);
+void iosf_ssus_write(int reg, uint32_t val);
 
 /* IOSF ports. */
 #define IOSF_PORT_AUNIT		0x00 /* IO Arbiter unit */
@@ -88,12 +112,22 @@ void iosf_scc_write(int reg, uint32_t val);
 #define IOSF_PORT_DUNIT_CH1	0x07 /* DUNIT Channel 1 */
 #define IOSF_PORT_SYSMEMIO	0x0c /* System Memory IO */
 #define IOSF_PORT_USBPHY	0x43 /* USB PHY */
+#define IOSF_PORT_SEC		0x44 /* SEC */
+#define IOSF_PORT_0x45		0x45
+#define IOSF_PORT_0x46		0x46
+#define IOSF_PORT_0x47		0x47
 #define IOSF_PORT_SCORE		0x48 /* SCORE */
+#define IOSF_PORT_0x55		0x55
+#define IOSF_PORT_0x58		0x58
+#define IOSF_PORT_0x59		0x59
+#define IOSF_PORT_0x5a		0x5a
 #define IOSF_PORT_USHPHY	0x61 /* USB XHCI PHY */
 #define IOSF_PORT_SCC		0x63 /* Storage Control Cluster */
 #define IOSF_PORT_LPSS		0xa0 /* LPSS - Low Power Subsystem */
+#define IOSF_PORT_0xa2		0xa2
 #define IOSF_PORT_SATAPHY	0xa3 /* SATA PHY */
 #define IOSF_PORT_PCIEPHY	0xa3 /* PCIE PHY */
+#define IOSF_PORT_SSUS		0xa8 /* SUS */
 #define IOSF_PORT_CCU		0xa9 /* Clock control unit. */
 
 /* Read and write opcodes differ per port. */
@@ -113,21 +147,40 @@ void iosf_scc_write(int reg, uint32_t val);
 #define IOSF_OP_WRITE_SYSMEMIO	(IOSF_OP_READ_SYSMEMIO | 1)
 #define IOSF_OP_READ_USBPHY	0x06
 #define IOSF_OP_WRITE_USBPHY	(IOSF_OP_READ_USBPHY | 1)
+#define IOSF_OP_READ_SEC	0x04
+#define IOSF_OP_WRITE_SEC	(IOSF_OP_READ_SEC | 1)
+#define IOSF_OP_READ_0x45	0x06
+#define IOSF_OP_WRITE_0x45	(IOSF_OP_READ_0x45 | 1)
+#define IOSF_OP_READ_0x46	0x06
+#define IOSF_OP_WRITE_0x46	(IOSF_OP_READ_0x46 | 1)
+#define IOSF_OP_READ_0x47	0x06
+#define IOSF_OP_WRITE_0x47	(IOSF_OP_READ_0x47 | 1)
 #define IOSF_OP_READ_SCORE	0x06
 #define IOSF_OP_WRITE_SCORE	(IOSF_OP_READ_SCORE | 1)
+#define IOSF_OP_READ_0x55	0x04
+#define IOSF_OP_WRITE_0x55	(IOSF_OP_READ_0x55 | 1)
+#define IOSF_OP_READ_0x58	0x06
+#define IOSF_OP_WRITE_0x58	(IOSF_OP_READ_0x58 | 1)
+#define IOSF_OP_READ_0x59	0x06
+#define IOSF_OP_WRITE_0x59	(IOSF_OP_READ_0x59 | 1)
+#define IOSF_OP_READ_0x5a	0x04
+#define IOSF_OP_WRITE_0x5a	(IOSF_OP_READ_0x5a | 1)
 #define IOSF_OP_READ_USHPHY	0x06
 #define IOSF_OP_WRITE_USHPHY	(IOSF_OP_READ_USHPHY | 1)
 #define IOSF_OP_READ_SCC	0x06
 #define IOSF_OP_WRITE_SCC	(IOSF_OP_READ_SCC | 1)
 #define IOSF_OP_READ_LPSS	0x06
 #define IOSF_OP_WRITE_LPSS	(IOSF_OP_READ_LPSS | 1)
+#define IOSF_OP_READ_0xa2	0x06
+#define IOSF_OP_WRITE_0xa2	(IOSF_OP_READ_0xa2 | 1)
 #define IOSF_OP_READ_SATAPHY	0x00
 #define IOSF_OP_WRITE_SATAPHY	(IOSF_OP_READ_SATAPHY | 1)
 #define IOSF_OP_READ_PCIEPHY	0x00
 #define IOSF_OP_WRITE_PCIEPHY	(IOSF_OP_READ_PCIEPHY | 1)
+#define IOSF_OP_READ_SSUS	0x10
+#define IOSF_OP_WRITE_SSUS	(IOSF_OP_READ_SSUS | 1)
 #define IOSF_OP_READ_CCU	0x06
 #define IOSF_OP_WRITE_CCU	(IOSF_OP_READ_CCU | 1)
-
 
 /*
  * BUNIT Registers.

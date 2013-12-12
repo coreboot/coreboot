@@ -249,6 +249,10 @@ static uint32_t reg_script_read_iosf(struct reg_script_context *ctx)
 	const struct reg_script *step = reg_script_get_step(ctx);
 
 	switch (step->id) {
+	case IOSF_PORT_AUNIT:
+		return iosf_aunit_read(step->reg);
+	case IOSF_PORT_CPU_BUS:
+		return iosf_cpu_bus_read(step->reg);
 	case IOSF_PORT_BUNIT:
 		return iosf_bunit_read(step->reg);
 	case IOSF_PORT_DUNIT_CH0:
@@ -257,16 +261,40 @@ static uint32_t reg_script_read_iosf(struct reg_script_context *ctx)
 		return iosf_punit_read(step->reg);
 	case IOSF_PORT_USBPHY:
 		return iosf_usbphy_read(step->reg);
+	case IOSF_PORT_SEC:
+		return iosf_sec_read(step->reg);
+	case IOSF_PORT_0x45:
+		return iosf_port45_read(step->reg);
+	case IOSF_PORT_0x46:
+		return iosf_port46_read(step->reg);
+	case IOSF_PORT_0x47:
+		return iosf_port47_read(step->reg);
 	case IOSF_PORT_SCORE:
 		return iosf_score_read(step->reg);
+	case IOSF_PORT_0x55:
+		return iosf_port55_read(step->reg);
+	case IOSF_PORT_0x58:
+		return iosf_port58_read(step->reg);
+	case IOSF_PORT_0x59:
+		return iosf_port59_read(step->reg);
+	case IOSF_PORT_0x5a:
+		return iosf_port5a_read(step->reg);
 	case IOSF_PORT_USHPHY:
 		return iosf_ushphy_read(step->reg);
 	case IOSF_PORT_SCC:
 		return iosf_scc_read(step->reg);
 	case IOSF_PORT_LPSS:
 		return iosf_lpss_read(step->reg);
+	case IOSF_PORT_0xa2:
+		return iosf_porta2_read(step->reg);
 	case IOSF_PORT_CCU:
 		return iosf_ccu_read(step->reg);
+	case IOSF_PORT_SSUS:
+		return iosf_ssus_read(step->reg);
+	default:
+		printk(BIOS_DEBUG, "No read support for IOSF port 0x%x.\n",
+		       step->id);
+		break;
 	}
 #endif
 	return 0;
@@ -278,6 +306,12 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 	const struct reg_script *step = reg_script_get_step(ctx);
 
 	switch (step->id) {
+	case IOSF_PORT_AUNIT:
+		iosf_aunit_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_CPU_BUS:
+		iosf_cpu_bus_write(step->reg, step->value);
+		break;
 	case IOSF_PORT_BUNIT:
 		iosf_bunit_write(step->reg, step->value);
 		break;
@@ -290,8 +324,32 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 	case IOSF_PORT_USBPHY:
 		iosf_usbphy_write(step->reg, step->value);
 		break;
+	case IOSF_PORT_SEC:
+		iosf_sec_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_0x45:
+		iosf_port45_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_0x46:
+		iosf_port46_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_0x47:
+		iosf_port47_write(step->reg, step->value);
+		break;
 	case IOSF_PORT_SCORE:
 		iosf_score_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_0x55:
+		iosf_port55_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_0x58:
+		iosf_port58_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_0x59:
+		iosf_port59_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_0x5a:
+		iosf_port5a_write(step->reg, step->value);
 		break;
 	case IOSF_PORT_USHPHY:
 		iosf_ushphy_write(step->reg, step->value);
@@ -302,8 +360,18 @@ static void reg_script_write_iosf(struct reg_script_context *ctx)
 	case IOSF_PORT_LPSS:
 		iosf_lpss_write(step->reg, step->value);
 		break;
+	case IOSF_PORT_0xa2:
+		iosf_porta2_write(step->reg, step->value);
+		break;
 	case IOSF_PORT_CCU:
 		iosf_ccu_write(step->reg, step->value);
+		break;
+	case IOSF_PORT_SSUS:
+		iosf_ssus_write(step->reg, step->value);
+		break;
+	default:
+		printk(BIOS_DEBUG, "No write support for IOSF port 0x%x.\n",
+		       step->id);
 		break;
 	}
 #endif

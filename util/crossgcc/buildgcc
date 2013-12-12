@@ -114,6 +114,20 @@ searchgnu()
 			fi
 		fi
 	fi
+	if [ "`echo $1 | cut -b -3`" = "sha" ]; then
+		if [ $UNAME = "FreeBSD" ]; then
+			if test -x "`which shasum 2>/dev/null`"; then
+				echo shasum -a `echo $1 | sed -e 's,sha,,' -e 's,sum,,'`
+				return
+			fi
+		fi
+		if [ $UNAME = "NetBSD" ]; then
+			if test -x "`which cksum 2>/dev/null`"; then
+				echo cksum -a `echo $1 | sed -e 's,sum,,'`
+				return
+			fi
+		fi
+	fi
 	printf "${RED}ERROR:${red} Missing toolchain: $1${NC}\n" >&2
 	exit 1
 }
@@ -121,6 +135,9 @@ searchgnu()
 TAR=`searchgnu tar` || exit $?
 PATCH=`searchgnu patch` || exit $?
 MAKE=`searchgnu make` || exit $?
+SHA1SUM=`searchgnu sha1sum`
+SHA512SUM=`searchgnu sha512sum`
+CHECKSUM=$SHA1SUM
 
 searchgnu m4 > /dev/null
 searchgnu bison > /dev/null
@@ -266,10 +283,24 @@ for ARCHIVE in $GMP_ARCHIVE $MPFR_ARCHIVE $MPC_ARCHIVE $LIBELF_ARCHIVE  \
 	    $IASL_ARCHIVE $PYTHON_ARCHIVE $EXPAT_ARCHIVE; do
 	FILE=`basename $ARCHIVE`
 	printf " * $FILE "
-	test -f tarballs/$FILE && printf "(cached)" || (
+
+	##create the sum
+	#test -f sum/$FILE.cksum || (
+	#	$CHECKSUM tarballs/$FILE > sum/$FILE.cksum
+	#	continue
+	#)
+
+	test -f tarballs/$FILE && \
+			cat sum/$FILE.cksum 2>/dev/null | $CHECKSUM -c >/dev/null 2>/dev/null && \
+			printf "(cached)" || (
 		printf "(downloading)"
+		rm -f tarballs/$FILE
 		cd tarballs
 		wget --no-check-certificate -q $ARCHIVE
+		cd ..
+		test ! -f sum/$FILE.cksum && \
+			$CHECKSUM tarballs/$FILE > sum/$FILE.cksum && \
+			printf "(checksum created. ${RED}Note. Please upload sum/$FILE.cksum if the corresponding archive is upgraded.${NC})"
 	)
 	test -f tarballs/$FILE || \
 		printf "\n${RED}Failed to download $FILE.${NC}\n"

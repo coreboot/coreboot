@@ -195,6 +195,7 @@ struct cb_vdat {
 #define CB_TAG_TIMESTAMPS	0x0016
 #define CB_TAG_CBMEM_CONSOLE	0x0017
 #define CB_TAG_MRC_CACHE	0x0018
+#define CB_TAG_ACPI_GNVS	0x0024
 struct cb_cbmem_tab {
 	uint32_t tag;
 	uint32_t size;

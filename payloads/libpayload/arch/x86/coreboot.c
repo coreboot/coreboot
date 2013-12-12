@@ -135,6 +135,12 @@ static void cb_parse_mrc_cache(unsigned char *ptr, struct sysinfo_t *info)
 	info->mrc_cache = phys_to_virt(cbmem->cbmem_tab);
 }
 
+static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_cbmem_tab *const cbmem = (struct cb_cbmem_tab *)ptr;
+	info->acpi_gnvs = phys_to_virt(cbmem->cbmem_tab);
+}
+
 #ifdef CONFIG_NVRAM
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
@@ -287,6 +293,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_MRC_CACHE:
 			cb_parse_mrc_cache(ptr, info);
+			break;
+		case CB_TAG_ACPI_GNVS:
+			cb_parse_acpi_gnvs(ptr, info);
 			break;
 		case CB_TAG_X86_ROM_MTRR:
 			cb_parse_x86_rom_var_mtrr(ptr, info);

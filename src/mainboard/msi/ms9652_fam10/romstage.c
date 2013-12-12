@@ -42,7 +42,6 @@
 #include "superio/winbond/w83627ehg/early_serial.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdfam10/debug.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 

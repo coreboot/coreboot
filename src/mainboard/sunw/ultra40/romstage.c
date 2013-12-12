@@ -17,7 +17,6 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/smsc/lpc47b397/early_serial.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/lpc47b397/early_gpio.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"

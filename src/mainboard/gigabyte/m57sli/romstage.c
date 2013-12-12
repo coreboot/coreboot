@@ -43,7 +43,6 @@
 #include "superio/ite/it8716f/early_init.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 

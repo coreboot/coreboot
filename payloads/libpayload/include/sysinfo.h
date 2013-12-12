@@ -107,6 +107,7 @@ struct sysinfo_t {
 	void	*tstamp_table;
 	void	*cbmem_cons;
 	void	*mrc_cache;
+	void	*acpi_gnvs;
 };
 
 extern struct sysinfo_t lib_sysinfo;

@@ -45,7 +45,6 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "superio/ite/it8712f/early_serial.c"
 
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 
 #include "northbridge/amd/amdk8/setup_resource_map.c"

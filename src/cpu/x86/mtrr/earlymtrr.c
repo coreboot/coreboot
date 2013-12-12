@@ -1,13 +1,12 @@
-#ifndef EARLYMTRR_C
-#define EARLYMTRR_C
 #include <cpu/x86/cache.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
-#include <cpu/amd/mtrr.h>
 
-static void set_var_mtrr(
+#ifdef __ROMCC__
+static
+#endif
+void set_var_mtrr(
 	unsigned reg, unsigned base, unsigned size, unsigned type)
-
 {
 	/* Bit Bit 32-35 of MTRRphysMask should be set to 1 */
 	/* FIXME: It only support 4G less range */
@@ -104,5 +103,3 @@ static inline int early_mtrr_init_detected(void)
 	return msr.lo & MTRRdefTypeEn;
 }
 #endif
-
-#endif /* EARLYMTRR_C */

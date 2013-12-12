@@ -20,7 +20,6 @@
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
 #include <cpu/amd/mtrr.h>
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B397_SP1)

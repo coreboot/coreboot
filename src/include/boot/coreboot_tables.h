@@ -225,6 +225,7 @@ struct lb_vdat {
 #define LB_TAG_TIMESTAMPS	0x0016
 #define LB_TAG_CBMEM_CONSOLE	0x0017
 #define LB_TAG_MRC_CACHE	0x0018
+#define LB_TAG_ACPI_GNVS	0x0024
 struct lb_cbmem_ref {
 	uint32_t tag;
 	uint32_t size;

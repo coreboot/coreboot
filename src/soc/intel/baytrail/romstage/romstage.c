@@ -30,7 +30,6 @@
 #endif
 #include <elog.h>
 #include <ramstage_cache.h>
-#include <ramstage_cache.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -357,19 +356,6 @@ static void *setup_stack_and_mttrs(void)
 	slot = stack_push(slot, num_mtrrs);
 
 	return slot;
-}
-
-struct ramstage_cache *ramstage_cache_location(long *size)
-{
-	char *smm_base;
-	/* 1MiB cache size */
-	const long cache_size = CONFIG_SMM_RESERVED_SIZE;
-
-	/* Ramstage cache lives in TSEG region which is the definition of
-	 * cbmem_top(). */
-	smm_base = cbmem_top();
-	*size = cache_size;
-	return (void *)&smm_base[smm_region_size() - cache_size];
 }
 
 void ramstage_cache_invalid(struct ramstage_cache *cache)

@@ -92,6 +92,10 @@ static inline long x86_mtrr_rom_cache_var_index(void) { return -1; }
 
 #endif
 
+#if !defined(__ASSEMBLER__) && defined(__PRE_RAM__) && !defined(__ROMCC__)
+void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
+#endif
+
 #if !defined(CONFIG_RAMTOP)
 # error "CONFIG_RAMTOP not defined"
 #endif

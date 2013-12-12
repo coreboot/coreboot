@@ -38,7 +38,6 @@
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
 #include "superio/winbond/w83627ehg/early_serial.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>
 #include "northbridge/amd/amdk8/setup_resource_map.c"

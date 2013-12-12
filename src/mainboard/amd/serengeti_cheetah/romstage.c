@@ -18,7 +18,6 @@
 #include "cpu/x86/bist.h"
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "superio/winbond/w83627hf/early_serial.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"

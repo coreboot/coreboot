@@ -42,7 +42,6 @@
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
 #include "superio/winbond/w83627hf/early_serial.c"
-#include "cpu/x86/mtrr/earlymtrr.c"
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"

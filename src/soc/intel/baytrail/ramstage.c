@@ -159,6 +159,9 @@ void baytrail_init_pre_device(void)
 	/* Allow for SSE instructions to be executed. */
 	write_cr4(read_cr4() | CR4_OSFXSR | CR4_OSXMMEXCPT);
 
+	/* Indicate S3 resume to rest of ramstage. */
+	s3_resume_prepare();
+
 	/* Run reference code. */
 	baytrail_run_reference_code();
 
@@ -167,7 +170,4 @@ void baytrail_init_pre_device(void)
 	setup_soc_gpios(config);
 
 	baytrail_init_scc();
-
-	/* Indicate S3 resume to rest of ramstage. */
-	s3_resume_prepare();
 }

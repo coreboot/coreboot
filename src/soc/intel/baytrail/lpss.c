@@ -165,11 +165,10 @@ static void lpss_init(device_t dev)
 		return;
 	}
 	dev_enable_snoop_and_pm(dev, iosf_reg);
+	i2c_disable_resets(dev);
 
 	if (config->lpss_acpi_mode)
 		dev_enable_acpi_mode(dev, iosf_reg, nvs_index);
-
-	i2c_disable_resets(dev);
 }
 
 static struct device_operations device_ops = {

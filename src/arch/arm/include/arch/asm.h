@@ -23,9 +23,14 @@
 #if defined __arm__
 #  define ARM(x...)	x
 #  define THUMB(x...)
+#  define W(instr)	instr
 #elif defined __thumb__
 #  define ARM(x...)
 #  define THUMB(x...)	x
+#  define W(instr)	instr.w
+#  if __COREBOOT_ARM_ARCH__ < 7
+#    error thumb mode has not been tested with ARM < v7!
+#  endif
 #else
 #  error Not in ARM or thumb mode!
 #endif

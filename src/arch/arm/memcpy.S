@@ -10,9 +10,8 @@
  *  published by the Free Software Foundation.
  */
 
-#include <assembler.h>
-
-#define W(instr)	instr
+#include <arch/asm.h>
+#include "asmlib.h"
 
 #define LDR1W_SHIFT	0
 #define STR1W_SHIFT	0
@@ -57,12 +56,7 @@
 
 /* Prototype: void *memcpy(void *dest, const void *src, size_t n); */
 
-.type memcpy, function
-.globl memcpy
-memcpy:
-
-		cmp	r0, r1
-		moveq	pc, lr
+ENTRY(memcpy)
 
 		enter	r4, lr
 
@@ -242,3 +236,4 @@ memcpy:
 17:		forward_copy_shift	pull=16	push=16
 
 18:		forward_copy_shift	pull=24	push=8
+ENDPROC(memcpy)

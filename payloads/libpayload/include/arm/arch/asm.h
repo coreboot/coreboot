@@ -23,9 +23,11 @@
 #if defined __arm__
 #  define ARM(x...)	x
 #  define THUMB(x...)
+#  define W(instr)	instr
 #elif defined __thumb__
 #  define ARM(x...)
 #  define THUMB(x...)	x
+#  define W(instr)	instr.w
 #else
 #  error Not in ARM or thumb mode!
 #endif

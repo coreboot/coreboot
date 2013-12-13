@@ -1,5 +1,7 @@
 /*
- *  arch/arm/include/asm/assembler.h
+ *  arch/arm/asmlib.h
+ *
+ *  Adapted from Linux arch/arm/include/assembler.h
  *
  *  Copyright (C) 1996-2000 Russell King
  *
@@ -13,6 +15,16 @@
  *  Do not include any C declarations in this file - it is included by
  *  assembler source.
  */
+
+/*
+ * WARNING: This file is *only* meant for memcpy.S and friends which were copied
+ * from Linux and require some weird macros. It does unspeakable things like
+ * redefining "push", so do *not* try to turn it into a general assembly macro
+ * file, and keep it out of global include directories.
+ */
+
+#ifndef __ARM_ASMLIB_H__
+#define __ARM_ASMLIB_H__
 
 /*
  * Endian independent macros for shifting bytes within registers.
@@ -44,17 +56,17 @@
 /*
  * Data preload for architectures that support it
  */
-#if defined(__ARM_ARCH_5E__) || defined(__ARM_ARCH_5TE__) || \
-	defined(__ARM_ARCH_6__) || defined(__ARM_ARCH_6J__) || \
-	defined(__ARM_ARCH_6T2__) || defined(__ARM_ARCH_6Z__) || \
-	defined(__ARM_ARCH_6ZK__) || defined(__ARM_ARCH_7A__) || \
-	defined(__ARM_ARCH_7R__)
+#if __COREBOOT_ARM_ARCH__ >= 5
 #define PLD(code...)	code
 #else
 #define PLD(code...)
 #endif
 
 /*
- * Cache alligned
+ * This can be used to enable code to cacheline align the destination
+ * pointer when bulk writing to memory. Linux doesn't enable this except
+ * for the "Feroceon" processor, so we better just leave it out.
  */
-#define CALGN(code...) code
+#define CALGN(code...)
+
+#endif	/* __ARM_ASMLIB_H */

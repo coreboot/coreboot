@@ -286,7 +286,7 @@ for PACKAGE in GMP MPFR MPC LIBELF GCC BINUTILS $PYTHON_PACKAGE \
 	archive="`eval echo '$'$archive`"
 	dir=$PACKAGE"_DIR"
 	dir="`eval echo '$'${dir}`"
-	test -d ${dir} && test -f ${dir}/.unpack_sucess || (
+	test -d ${dir} && test -f ${dir}/.unpack_success || (
 		printf " * `basename $archive`\n"
 		FLAGS=zxf
 		suffix=`echo $archive | sed 's,.*\.,,'`

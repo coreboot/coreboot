@@ -24,6 +24,7 @@
 #include <cpu/x86/tsc.h>
 #include <rmodule.h>
 #include <ramstage_cache.h>
+#include <vendorcode/google/chromeos/vboot_handoff.h>
 
 #include <baytrail/ramstage.h>
 #include <baytrail/efi_wrapper.h>
@@ -105,20 +106,63 @@ static void cache_refcode(const struct rmod_stage_load *rsl)
 	memcpy(&c->program[0], (void *)c->load_address, c->size);
 }
 
-static efi_wrapper_entry_t load_refcode_from_cbfs(void)
+static int load_refcode_from_vboot(struct rmod_stage_load *refcode,
+				    struct cbfs_stage *stage)
 {
+	printk(BIOS_DEBUG, "refcode loading from vboot rw area.\n");
+
+	if (rmodule_stage_load(refcode, stage) || refcode->entry == NULL) {
+		printk(BIOS_DEBUG, "Error loading reference code.\n");
+		return -1;
+	}
+	return 0;
+}
+
+static int load_refcode_from_cbfs(struct rmod_stage_load *refcode)
+{
+	printk(BIOS_DEBUG, "refcode loading from cbfs.\n");
+
+	if (rmodule_stage_load_from_cbfs(refcode) || refcode->entry == NULL) {
+		printk(BIOS_DEBUG, "Error loading reference code.\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static efi_wrapper_entry_t load_reference_code(void)
+{
+	struct vboot_handoff *vboot_handoff;
+	const struct firmware_component *fwc;
 	struct rmod_stage_load refcode = {
 		.cbmem_id = CBMEM_ID_REFCODE,
 		.name = CONFIG_CBFS_PREFIX "/refcode",
 	};
+	int ret;
 
-	printk(BIOS_DEBUG, "refcode loading from cbfs.\n");
-
-	if (rmodule_stage_load_from_cbfs(&refcode) || refcode.entry == NULL) {
-		printk(BIOS_DEBUG, "Error loading reference code.\n");
-		return NULL;
+	if (is_s3_resume()) {
+		return load_refcode_from_cache();
 	}
 
+	vboot_handoff = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+	fwc = &vboot_handoff->components[CONFIG_VBOOT_REFCODE_INDEX];
+
+	if (vboot_handoff == NULL ||
+	    vboot_handoff->selected_firmware == VB_SELECT_FIRMWARE_READONLY ||
+	    CONFIG_VBOOT_REFCODE_INDEX >= MAX_PARSED_FW_COMPONENTS ||
+	    fwc->size == 0 || fwc->address == 0) {
+		ret = load_refcode_from_cbfs(&refcode);
+	} else {
+		ret = load_refcode_from_vboot(&refcode, (void *)fwc->address);
+
+		if (ret < 0)
+			ret = load_refcode_from_cbfs(&refcode);
+	}
+
+	if (ret < 0)
+		return NULL;
+
+	/* Cache loaded reference code. */
 	cache_refcode(&refcode);
 
 	return refcode.entry;
@@ -133,11 +177,7 @@ void baytrail_run_reference_code(void)
 		.console_out = send_to_console,
 	};
 
-	if (is_s3_resume()) {
-		entry = load_refcode_from_cache();
-	} else {
-		entry = load_refcode_from_cbfs();
-	}
+	entry = load_reference_code();
 
 	if (entry == NULL)
 		return;

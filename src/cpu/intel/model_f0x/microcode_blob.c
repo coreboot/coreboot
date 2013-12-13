@@ -1,8 +1,4 @@
 /* 256KB cache */
 unsigned microcode_updates_f0x[] = {
-	#include "microcode-678-2f0708.h"
-	#include "microcode-965-m01f0a13.h"
-	#include "microcode-983-m02f0a15.h"
-	#include "microcode-964-m01f0712.h"
-	#include "microcode-966-m04f0a14.h"
+	#include "../../../../3rdparty/cpu/intel/model_f0x/microcode.h"
 };

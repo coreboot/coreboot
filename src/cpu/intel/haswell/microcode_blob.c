@@ -18,5 +18,13 @@
  */
 
 unsigned microcode[] = {
-#include "microcode_blob.h"
+	/*
+	 * FIXME: Can we just include both microcodes regardless, or is there
+	 * a very good reason why we only use one at a time?
+	 */
+	#if CONFIG_INTEL_LYNXPOINT_LP
+	#include "../../../../3rdparty/cpu/intel/model_4065x/microcode.h"
+	#else
+	#include "../../../../3rdparty/cpu/intel/model_306cx/microcode.h"
+	#endif
 };

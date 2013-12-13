@@ -18,5 +18,5 @@
  */
 
 unsigned microcode[] = {
-#include "microcode_blob.h"
+	#include "../../../../3rdparty/cpu/intel/model_206ax/microcode.h"
 };

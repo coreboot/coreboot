@@ -110,6 +110,14 @@ config VBOOT_RAMSTAGE_INDEX
 	  This is the index of the ramstage component in the verified
 	  firmware block.
 
+config VBOOT_REFCODE_INDEX
+	hex "Reference code firmware index"
+	default 1
+	depends on VBOOT_VERIFY_FIRMWARE
+	help
+	  This is the index of the reference code component in the verified
+	  firmware block.
+
 config NO_TPM_RESUME
 	bool
 	default n

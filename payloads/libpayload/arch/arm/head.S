@@ -27,17 +27,16 @@
  * SUCH DAMAGE.
  */
 
-	.global _entry, _leave
-	.text
-	.align 4
+#include <arch/asm.h>
 
 1:
+.align 4
 .word	_stack
 
 /*
  * Our entry point
  */
-_entry:
+ENTRY(_entry)
 
 	/* TODO: disable interrupts */
 
@@ -46,14 +45,15 @@ _entry:
 	/* Setup new stack */
 	ldr sp, 1b
 
-	/* TODO: Save old stack pointer */
+	/* TODO: Save old stack pointer and link register */
 
 	/* Let's rock. */
-	b start_main
+	bl start_main
 
-	/* %eax has the return value - pass it on unmolested */
-_leave:
-	/* TODO: restore old stack pointer. */
+	/* %r0 has the return value - pass it on unmolested */
+
+	/* TODO: restore old stack pointer and link register */
 
 	/* Return to the original context. */
-	mov pc, lr
+	bx lr
+ENDPROC(_entry)

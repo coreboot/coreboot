@@ -19,7 +19,8 @@
 ##
 ###############################################################################
 
-armv4_flags = -marm -march=armv4t -I$(src)/arch/arm/include/armv4/
+armv4_flags = -marm -march=armv4t -I$(src)/arch/arm/include/armv4/ \
+	-D__COREBOOT_ARM_ARCH__=4
 
 ###############################################################################
 # bootblock

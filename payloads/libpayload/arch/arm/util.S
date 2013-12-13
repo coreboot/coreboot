@@ -27,11 +27,9 @@
  * SUCH DAMAGE.
  */
 
-	.global halt
-	.text
-	.align 4
+#include <arch/asm.h>
 
 /* This function puts the system into a halt. */
-	.type halt, function
-halt:
+ENTRY(halt)
 	b halt
+ENDPROC(halt)

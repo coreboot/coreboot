@@ -20,7 +20,7 @@
 ###############################################################################
 
 armv7_flags = -march=armv7-a -mthumb -mthumb-interwork \
-	-I$(src)/arch/arm/include/armv7/
+	-I$(src)/arch/arm/include/armv7/ -D__COREBOOT_ARM_ARCH__=7
 
 ###############################################################################
 # bootblock

@@ -55,4 +55,7 @@ void cache_as_ram_main(void);
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 #endif
 
+/* Defined in src/lib/spd_from_file.c */
+int Read_SPD_from_file(void *infoptr);
+
 #endif /* __LIB_H__ */

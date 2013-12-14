@@ -50,6 +50,7 @@ romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 romstage-$(CONFIG_SPKMODEM) += spkmodem.c
 romstage-$(CONFIG_USBDEBUG_IN_ROMSTAGE) += usbdebug.c
+romstage-$(CONFIG_READ_SPD_FROM_FILE) += spd_from_file.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c

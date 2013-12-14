@@ -1,0 +1,115 @@
+config CPU_ALLWINNER_A10
+	bool
+	default n
+
+if CPU_ALLWINNER_A10
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select HAVE_MONOTONIC_TIMER
+	select HAVE_UART_SPECIAL
+	select HAVE_UART_MEMORY_MAPPED
+	select BOOTBLOCK_CONSOLE
+	select EARLY_CONSOLE
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "cpu/allwinner/a10/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code. This is useful if the
+	  bootblock must load microcode or copy data from ROM before
+	  searching for the bootblock.
+
+# The "eGON.BT0" header takes 32 bytes
+config BOOTBLOCK_BASE
+	hex
+	default 0x20
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x00
+
+config CBFS_HEADER_ROM_OFFSET
+	hex
+	default 0x10
+
+config CBFS_ROM_OFFSET
+	# Calculated by BL1 + max bootblock size.
+	default 0x4c00
+
+# FIXME: untested
+config ROMSTAGE_BASE
+	hex
+	default SYS_SDRAM_BASE
+
+# Keep the stack in SRAM
+config STACK_TOP
+	hex
+	default 0x00008000
+
+config STACK_BOTTOM
+	hex
+	default 0x00004000
+
+config STACK_SIZE
+	hex
+	default 0x00004000
+
+## TODO Change this to some better address not overlapping bootblock when
+## cbfstool supports creating header in arbitrary location.
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x40
+
+config SYS_SDRAM_BASE
+	hex
+	default 0x40000000
+
+choice CONSOLE_SERIAL_UART_CHOICES
+	prompt "Serial Console UART"
+	default CONSOLE_SERIAL_UART0
+	depends on CONSOLE_SERIAL_UART
+
+config CONSOLE_SERIAL_UART0
+	bool "UART0"
+	help
+	  Serial console on UART0
+
+config CONSOLE_SERIAL_UART1
+	bool "UART1"
+	help
+	  Serial console on UART1
+
+config CONSOLE_SERIAL_UART2
+	bool "UART2"
+	help
+	  Serial console on UART2
+
+config CONSOLE_SERIAL_UART3
+	bool "UART3"
+	help
+	  Serial console on UART3
+
+config CONSOLE_SERIAL_UART4
+	bool "UART4"
+	help
+	  Serial console on UART4
+
+config CONSOLE_SERIAL_UART5
+	bool "UART5"
+	help
+	  Serial console on UART5
+
+config CONSOLE_SERIAL_UART6
+	bool "UART6"
+	help
+	  Serial console on UART6
+
+config CONSOLE_SERIAL_UART7
+	bool "UART7"
+	help
+	  Serial console on UART7
+
+endchoice
+
+endif # if CPU_ALLWINNER_A10

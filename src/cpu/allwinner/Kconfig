@@ -1,0 +1,10 @@
+config CPU_ALLWINNER_A10
+	depends on ARCH_ARMV7
+	select HAVE_MONOTONIC_TIMER
+	select HAVE_UART_SPECIAL
+	select BOOTBLOCK_CONSOLE
+	select EARLY_CONSOLE
+	bool
+	default n
+
+source src/cpu/allwinner/a10/Kconfig

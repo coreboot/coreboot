@@ -228,6 +228,27 @@ Method (_OSC, 4)
 	}
 }
 
+/* IOSF MBI Interface for kernel access */
+Device (IOSF)
+{
+	Name (_HID, "INT33BD")
+	Name (_CID, "INT33BD")
+	Name (_UID, 1)
+
+	Name (RBUF, ResourceTemplate ()
+	{
+		/* MCR / MDR / MCRX */
+		Memory32Fixed (ReadWrite, 0, 12, RBAR)
+	})
+
+	Method (_CRS)
+	{
+		CreateDwordField (^RBUF, ^RBAR._BAS, RBAS)
+		Store (Add (MCFG_BASE_ADDRESS, 0xD0), RBAS)
+		Return (^RBUF)
+	}
+}
+
 // LPC Bridge 0:1f.0
 #include "lpc.asl"
 

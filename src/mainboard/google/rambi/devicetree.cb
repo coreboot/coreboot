@@ -75,8 +75,8 @@ chip soc/intel/baytrail
 		device pci 1e.1 off end # PWM1
 		device pci 1e.2 off end # PWM2
 		device pci 1e.3 off end # HSUART1
-		device pci 1e.4 on  end # HSUART2
-		device pci 1e.5 on  end # SPI
+		device pci 1e.4 off end # HSUART2
+		device pci 1e.5 off end # SPI
 		device pci 1f.0 on
 			chip ec/google/chromeec
 				# We only have one init function that

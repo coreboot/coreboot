@@ -1,0 +1,1 @@
+romstage-y += romstage.c

@@ -1,0 +1,29 @@
+if BOARD_CUBIETECH_CUBIEBOARD
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARMV7
+	select CPU_ALLWINNER_A10
+	select BOARD_ROMSIZE_KB_4096
+
+config MAINBOARD_DIR
+	string
+	default cubietech/cubieboard
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Cubieboard A10"
+
+config MAX_CPUS
+	int
+	default 1
+
+config BOOTBLOCK_MAINBOARD_INIT
+	string
+	default "mainboard/cubietech/cubieboard/bootblock.c"
+
+config DRAM_SIZE_MB
+	int
+	default 1024
+
+endif # BOARD_CUBIETECH_CUBIEBOARD

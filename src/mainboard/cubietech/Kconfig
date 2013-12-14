@@ -1,0 +1,18 @@
+if VENDOR_CUBIETECH
+
+# Auto select common options
+choice
+	prompt "Mainboard model"
+
+config BOARD_CUBIETECH_CUBIEBOARD
+	bool "Cubieboard"
+
+endchoice
+
+source "src/mainboard/cubietech/cubieboard/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Cubietech"
+
+endif # VENDOR_CUBIETECH

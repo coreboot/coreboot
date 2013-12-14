@@ -47,6 +47,16 @@
 /** @} */
 
 /**
+ * \brief Convenience definition for SPD related values
+ * @{
+ */
+#define SPD_SIZE        256
+#define SPD_CRC_SIZE    128
+#define SPD_CRC_LO      126
+#define SPD_CRC_HI      127
+/** @} */
+
+/**
  * \brief Convenience macro for enabling printk with CONFIG_DEBUG_RAM_SETUP
  *
  * Use this macro instead of printk(); for verbose RAM initialization messages.
@@ -174,6 +184,7 @@ u16 spd_ddr3_calc_crc(u8 *spd, int len);
 int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd_data);
 int dimm_is_registered(enum spd_dimm_type type);
 void dram_print_spd_ddr3(const dimm_attr * dimm);
+int fill_users_spd(unsigned char *spd_ptr);
 
 /**
  * \brief Read double word from specified address

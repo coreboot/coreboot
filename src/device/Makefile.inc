@@ -14,6 +14,7 @@ ramstage-$(CONFIG_PCI) += pci_ops.c
 ramstage-y += smbus_ops.c
 
 romstage-y+= device_romstage.c
+romstage-$(CONFIG_USER_DEFINED_SPD) += dram/ddr3.c
 
 subdirs-y += oprom
 

@@ -609,3 +609,34 @@ mrs_cmd_t ddr3_mrs_mirror_pins(mrs_cmd_t cmd)
 	cmd |= (downshift >> 1) | (upshift << 1);
 	return cmd;
 }
+
+/**
+ * \brief Fill SPD array with user data and calculate the CRC.
+ *
+ * The spd_num allows the user to specify a position in a
+ * input array that contains multiple SPDs.
+ */
+#if IS_ENABLED(CONFIG_USER_DEFINED_SPD)
+int fill_users_spd(unsigned char *spd_ptr)
+{
+	extern const u8 user_ddr3_spd[256];
+	u16 index, crc;
+
+	for (index = 0; index < 256; index++)
+		spd_ptr[index] = user_ddr3_spd[index];
+
+	/* If CRC bytes are zeroes, calculate and store the CRC of the fake table */
+	if ((spd_ptr[126] == 0) && (spd_ptr[127] == 0)) {
+		crc = spd_ddr3_calc_crc(spd_ptr, 128);
+		spd_ptr[126] = (unsigned char)(crc & 0xff);
+		spd_ptr[127] = (unsigned char)(crc >> 8);
+	}
+	printk(BIOS_SPEW, "\nDisplay the SPD");
+	for (index = 0; index < 256; index++) {
+		if((index&0x0F)==0x00) printk(BIOS_SPEW, "\n%02x:  ",index);
+		printk(BIOS_SPEW, "%02x ", spd_ptr[index]);
+	}
+	printk(BIOS_SPEW, "\n");
+	return 0;
+}
+#endif

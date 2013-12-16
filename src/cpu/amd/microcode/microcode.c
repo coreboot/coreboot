@@ -55,23 +55,19 @@ struct microcode {
 static void amd_update_microcode(const void *microcode_updates, u32 microcode_len, u32 equivalent_processor_rev_id)
 {
 	u32 new_patch_id;
-	const struct microcode *m;
-	const char *c;
 	msr_t msr;
+	const void *c = microcode_updates;
+	const void *ucode_end = microcode_updates + microcode_len;
 
-	m = microcode_updates;
-
-	for(c = microcode_updates; m->date_code;  m = (struct microcode *)c) {
-
+	while ((c < ucode_end) && (c + 2048 <= ucode_end)) {
+		const struct microcode *m = c;
 		if (m->processor_rev_id == equivalent_processor_rev_id) {
 			//apply patch
 
+			printk(BIOS_DEBUG, "microcode: patch id to apply = 0x%08x\n", m->patch_id);
 			msr.hi = 0;
 			msr.lo = (u32)m;
-
 			wrmsr(0xc0010020, msr);
-
-			printk(BIOS_DEBUG, "microcode: patch id to apply = 0x%08x\n", m->patch_id);
 
 			//read the patch_id again
 			msr = rdmsr(0x8b);

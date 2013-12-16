@@ -80,9 +80,11 @@ static void amd_update_microcode(const void *ucode,  size_t ucode_len,
 				 uint32_t equivalent_processor_rev_id)
 {
 	const struct microcode *m;
-	const void *c;
+	const uint8_t *c = ucode;
+	const uint8_t *ucode_end = (uint8_t*)ucode + ucode_len;
 
-	for(m = c = ucode; m->date_code;  m = c) {
+	while (c <= (ucode_end - 2048)) {
+		m = (struct microcode *)c;
 		if (m->processor_rev_id == equivalent_processor_rev_id) {
 			apply_microcode_patch(m);
 			break;

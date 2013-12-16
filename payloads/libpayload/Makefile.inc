@@ -53,7 +53,7 @@ subdirs-$(CONFIG_LP_CBFS) += libcbfs
 subdirs-$(CONFIG_LP_LZMA) += liblzma
 
 INCLUDES := -Iinclude -Iinclude/$(ARCHDIR-y) -I$(obj)
-CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc
+CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer
 CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs

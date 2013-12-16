@@ -106,6 +106,9 @@ static void bochs_init(device_t dev)
 	/* setup coreboot framebuffer */
 	edid.ha = width;
 	edid.va = height;
+	edid.x_resolution = width;
+	edid.y_resolution = height;
+	edid.bytes_per_line = width * 4;
 	edid.bpp = 32;
 	set_vbe_mode_info_valid(&edid, addr);
 }

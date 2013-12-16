@@ -74,9 +74,13 @@ exception_common:
 	stmfd	sp, { sp, lr }^
 	sub	sp, sp, $8
 	push	{ r0 - r12 }
+	mrs	r0, SPSR
+	push	{ r0 }
 	mov	r0, sp
 	ldr	r1, exception_idx
 	blx	exception_dispatch
+	pop	{ r0 }
+	msr	SPSR_cxsf, r0
 	pop	{ r0 - r12 }
 	add	sp, sp, $8
 	ldmfd	sp!, { pc }^

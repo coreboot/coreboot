@@ -66,7 +66,7 @@ static void dump_stack(uintptr_t addr, size_t bytes)
 	}
 }
 
-static void print_regs(uint32_t *regs)
+static void print_regs(struct exception_state *state)
 {
 	int i;
 
@@ -81,8 +81,9 @@ static void print_regs(uint32_t *regs)
 			printf("IP");
 		else
 			printf("R%d", i);
-		printf(" = 0x%08x\n", regs[i]);
+		printf(" = 0x%08x\n", state->regs[i]);
 	}
+	printf("CPSR = 0x%08x\n", state->cpsr);
 }
 
 void exception_dispatch(struct exception_state *state, int idx);
@@ -102,7 +103,7 @@ void exception_dispatch(struct exception_state *state, int idx)
 		else
 			printf("exception _not_used.\n");
 	}
-	print_regs(state->regs);
+	print_regs(state);
 	dump_stack(state->regs[13], 512);
 	halt();
 }

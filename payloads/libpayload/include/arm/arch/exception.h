@@ -36,6 +36,7 @@ void set_vbar(uint32_t vbar);
 
 struct exception_state
 {
+	uint32_t cpsr;
 	uint32_t regs[16];
 } __attribute__((packed));
 

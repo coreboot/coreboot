@@ -188,9 +188,6 @@ int panel_lightup(struct intel_dp *dp, unsigned int init_fb)
 	/* These values are used for training the link */
 	dp->lane_count = 2;
 	dp->link_bw = DP_LINK_BW_2_7;
-	dp->panel_power_down_delay = 600;
-	dp->panel_power_up_delay = 200;
-	dp->panel_power_cycle_delay = 600;
 	dp->pipe = PIPE_A;
 	dp->port = PORT_A;
 	dp->plane = PLANE_A;

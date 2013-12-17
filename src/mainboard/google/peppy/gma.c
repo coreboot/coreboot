@@ -214,11 +214,6 @@ int panel_lightup(struct intel_dp *dp, unsigned int init_fb)
 	dp->aux_clock_divider = 0xe1;
 	dp->precharge = 3;
 
-	/* CRAP -- needs to be done elsewhere from the device tree. */
-	dp->panel_power_down_delay = 600;
-	dp->panel_power_up_delay = 200;
-	dp->panel_power_cycle_delay = 600;
-
 	/* 1. Normal mode: Set the first page to zero and make
 	   all GTT entries point to the same page
 	   2. Developer/Recovery mode: Set up a tasteful color

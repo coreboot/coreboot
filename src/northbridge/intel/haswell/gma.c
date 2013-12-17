@@ -460,7 +460,6 @@ static void gma_func0_init(struct device *dev)
 	dp.panel_power_up_delay = conf->gpu_panel_power_up_delay;
 	dp.panel_power_cycle_delay = conf->gpu_panel_power_cycle_delay;
 
-	dp.physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 #ifdef CONFIG_CHROMEOS
 	init_fb = developer_mode_enabled() || recovery_mode_enabled();
 #endif

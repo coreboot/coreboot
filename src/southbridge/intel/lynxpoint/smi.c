@@ -64,14 +64,14 @@ void southbridge_smm_enable_smi(void)
 	disable_gpe(PME_B0_EN);
 
 	/* Enable SMI generation:
-	 *  - on TCO events
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)
 	 *  - on writes to GBL_RLS (bios commands)
 	 * No SMIs:
 	 *  - on microcontroller writes (io 0x62/0x66)
+	 *  - on TCO events
 	 */
-	enable_smi(TCO_EN | APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
 }
 
 void southbridge_trigger_smi(void)

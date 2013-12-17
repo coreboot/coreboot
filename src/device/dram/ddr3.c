@@ -49,6 +49,46 @@ int dimm_is_registered(enum spd_dimm_type type)
 }
 
 /**
+ * \brief Calculate the CRC of a DDR3 SPD
+ *
+ * @param spd pointer to raw SPD data
+ * @param len length of data in SPD
+ *
+ * @return the CRC of the SPD data, or 0 when spd data is truncated.
+ */
+u16 spd_ddr3_calc_crc(u8 *spd, int len)
+{
+	int n_crc, i;
+	u8 *ptr;
+	u16 crc;
+
+	/* Find the number of bytes covered by CRC */
+	if (spd[0] & 0x80) {
+		n_crc = 117;
+	} else {
+		n_crc = 126;
+	}
+
+	if (len < n_crc)
+		/* Not enough bytes available to get the CRC */
+		return 0;
+
+	/* Compute the CRC */
+	crc = 0;
+	ptr = spd;
+	while (--n_crc >= 0) {
+		crc = crc ^ (int)*ptr++ << 8;
+		for (i = 0; i < 8; ++i)
+			if (crc & 0x8000) {
+				crc = crc << 1 ^ 0x1021;
+			} else {
+				crc = crc << 1;
+			}
+	}
+	return crc;
+}
+
+/**
  * \brief Decode the raw SPD data
  *
  * Decodes a raw SPD data from a DDR3 DIMM, and organizes it into a
@@ -68,9 +108,8 @@ int dimm_is_registered(enum spd_dimm_type type)
  */
 int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 {
-	int nCRC, i, ret;
+	int ret;
 	u16 crc, spd_crc;
-	u8 *ptr = spd;
 	u8 ftb_divisor, ftb_dividend, capacity_shift, bus_width, sdram_width;
 	u8 reg8;
 	u32 mtb;		/* medium time base */
@@ -88,24 +127,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	}
 	dimm->dram_type = SPD_MEMORY_TYPE_SDRAM_DDR3;
 
-	/* Find the number of bytes covered by CRC */
-	if (spd[0] & 0x80) {
-		nCRC = 117;
-	} else {
-		nCRC = 126;
-	}
-
-	/* Compute the CRC */
-	crc = 0;
-	while (--nCRC >= 0) {
-		crc = crc ^ (int)*ptr++ << 8;
-		for (i = 0; i < 8; ++i)
-			if (crc & 0x8000) {
-				crc = crc << 1 ^ 0x1021;
-			} else {
-				crc = crc << 1;
-			}
-	}
+	crc = spd_ddr3_calc_crc(spd, sizeof(spd));
 	/* Compare with the CRC in the SPD */
 	spd_crc = (spd[127] << 8) + spd[126];
 	/* Verify the CRC is correct */

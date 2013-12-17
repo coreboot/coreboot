@@ -26,12 +26,12 @@
 #define EC_THROTTLE_POWER_LIMIT		12	/* 12W */
 
 /* Temperature which OS will shutdown at */
-#define CRITICAL_TEMPERATURE		104
+#define CRITICAL_TEMPERATURE		99
 
 /* Temperature which OS will throttle CPU */
-#define PASSIVE_TEMPERATURE		100
+#define PASSIVE_TEMPERATURE		95
 
 /* Tj_max value for calculating PECI CPU temperature */
-#define MAX_TEMPERATURE			105
+#define MAX_TEMPERATURE			100
 
 #endif

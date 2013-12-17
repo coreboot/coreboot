@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Aaron Durbin <adurbin@google.com>
+Code-Review+1: Vladimir Serbinenko <phcoder@gmail.com>
+Submitted-by: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Submitted-at: Tue, 17 Dec 2013 22:59:19 +0100
+Reviewed-on: http://review.coreboot.org/4505
+Project: coreboot
+Branch: refs/heads/master

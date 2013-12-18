@@ -41,6 +41,12 @@ static const struct pci_bus_operations *pci_bus_ops(struct bus *bus, device_t de
 	if (bus && bus->dev && bus->dev->ops && bus->dev->ops->ops_pci_bus) {
 		bops = bus->dev->ops->ops_pci_bus(dev);
 	}
+#if CONFIG_CPU_AMD_MODEL_10XXX
+	if (!bops) {
+		bops = &pci_cf8_conf1;
+		printk(BIOS_DEBUG, "Switched MMCONF to IO on %s\n", dev_path(dev));
+	}
+#endif
 	if (!bops)
 		bops = pci_bus_default_ops(dev);
 	return bops;

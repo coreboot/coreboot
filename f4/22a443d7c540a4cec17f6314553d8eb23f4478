@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+1: David Hendricks <dhendrix@chromium.org>
+Code-Review+2: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Submitted-by: Vladimir Serbinenko <phcoder@gmail.com>
+Submitted-at: Thu, 19 Dec 2013 08:58:16 +0100
+Reviewed-on: http://review.coreboot.org/4516
+Project: coreboot
+Branch: refs/heads/master

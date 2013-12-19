@@ -89,11 +89,11 @@ static void setup_pinmux(void)
 
 	// SPI1 MOSI
 	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
-						 PINMUX_PULL_UP |
+						 PINMUX_PULL_NONE |
 						 PINMUX_INPUT_ENABLE);
 	// SPI1 MISO
 	pinmux_set_config(PINMUX_ULPI_DIR_INDEX, PINMUX_ULPI_DIR_FUNC_SPI1 |
-						 PINMUX_PULL_UP |
+						 PINMUX_PULL_NONE |
 						 PINMUX_INPUT_ENABLE);
 	// SPI1 SCLK
 	pinmux_set_config(PINMUX_ULPI_NXT_INDEX, PINMUX_ULPI_NXT_FUNC_SPI1 |
@@ -216,9 +216,9 @@ static void setup_kernel_info(void)
 
 	// Not strictly info, but kernel graphics driver needs this region locked down
 	struct tegra_mc_regs *mc = (void *)TEGRA_MC_BASE;
-	writel(0, &mc->mc_vpr_bom);
-	writel(0, &mc->mc_vpr_size);
-	writel(1, &mc->mc_vpr_ctrl);
+	writel(0, &mc->video_protect_bom);
+	writel(0, &mc->video_protect_size_mb);
+	writel(1, &mc->video_protect_reg_ctrl);
 }
 
 static void setup_ec_spi(void)
@@ -243,14 +243,17 @@ static void mainboard_init(device_t dev)
 	 * conntected to AHUB (AUDIO, APBIF, I2S, DAM, AMX, ADX, SPDIF, AFC) out
 	 * of reset and clock-enabled, otherwise reading AHUB devices (In our
 	 * case, I2S/APBIF/AUDIO<XBAR>) will hang.
+	 *
+	 * Note that CLK_H_MEM (MC) and CLK_H_EMC should be already either
+	 * initialized by BootROM, or in romstage SDRAM initialization.
 	 */
 	clock_enable_clear_reset(CLK_L_GPIO | CLK_L_I2C1 | CLK_L_SDMMC4 |
 				 CLK_L_I2S0 | CLK_L_I2S1 | CLK_L_I2S2 |
 				 CLK_L_SPDIF | CLK_L_USBD | CLK_L_DISP1 |
 				 CLK_L_HOST1X,
 
-				 CLK_H_EMC | CLK_H_I2C2 | CLK_H_SBC1 |
-				 CLK_H_PMC | CLK_H_MEM | CLK_H_USB3,
+				 CLK_H_I2C2 | CLK_H_SBC1 | CLK_H_PMC |
+				 CLK_H_USB3,
 
 				 CLK_U_I2C3 | CLK_U_CSITE | CLK_U_SDMMC3,
 

@@ -352,9 +352,19 @@ check_member(clk_rst_ctlr, clk_src_soc_therm, 0x644);
 #define PLL_BASE_DIVM_MASK		(0x1f << PLL_BASE_DIVM_SHIFT)
 
 /* SPECIAL CASE: PLLM, PLLC and PLLX use different-sized fields here */
-#define PLLCMX_BASE_DIVP_MASK		(0xfU << PLL_BASE_DIVP_SHIFT)
+#define PLLCX_BASE_DIVP_MASK		(0xfU << PLL_BASE_DIVP_SHIFT)
+#define PLLM_BASE_DIVP_MASK		(0x1U << PLL_BASE_DIVP_SHIFT)
 #define PLLCMX_BASE_DIVN_MASK		(0xffU << PLL_BASE_DIVN_SHIFT)
 #define PLLCMX_BASE_DIVM_MASK		(0xffU << PLL_BASE_DIVM_SHIFT)
+
+/* PLLM specific registers */
+#define PLLM_MISC1_SETUP_SHIFT			0
+#define PLLM_MISC1_PD_LSHIFT_PH45_SHIFT		28
+#define PLLM_MISC1_PD_LSHIFT_PH90_SHIFT		29
+#define PLLM_MISC1_PD_LSHIFT_PH135_SHIFT	30
+#define PLLM_MISC2_KCP_SHIFT			1
+#define PLLM_MISC2_KVCO_SHIFT			0
+#define PLLM_OUT1_RSTN_RESET_DISABLE		(1 << 0)
 
 /* Generic, indiscriminate divisor mask. May catch some innocent bystander bits
  * on the side that we don't particularly care about. */
@@ -413,6 +423,8 @@ check_member(clk_rst_ctlr, clk_src_soc_therm, 0x644);
 
 #define CLK_SOURCE_SHIFT		29
 #define CLK_SOURCE_MASK			(0x7 << CLK_SOURCE_SHIFT)
+
+#define CLK_SOURCE_EMC_MC_EMC_SAME_FREQ (1 << 16)
 
 #define CLK_UART_DIV_OVERRIDE		(1 << 24)
 
@@ -523,6 +535,17 @@ enum {
 	CRC_RST_CPUG_CLR_L2 = 0x1 << 24,
 	CRC_RST_CPUG_CLR_NONCPU = 0x1 << 29,
 	CRC_RST_CPUG_CLR_PDBG = 0x1 << 30,
+};
+
+// RST_CPULP_CMPLX_CLR
+enum {
+	CRC_RST_CPULP_CLR_CPU0 = 0x1 << 0,
+	CRC_RST_CPULP_CLR_DBG0 = 0x1 << 12,
+	CRC_RST_CPULP_CLR_CORE0 = 0x1 << 16,
+	CRC_RST_CPULP_CLR_CX0 = 0x1 << 20,
+	CRC_RST_CPULP_CLR_L2 = 0x1 << 24,
+	CRC_RST_CPULP_CLR_NONCPU = 0x1 << 29,
+	CRC_RST_CPULP_CLR_PDBG = 0x1 << 30,
 };
 
 #endif	/* _TEGRA124_CLK_RST_H_ */

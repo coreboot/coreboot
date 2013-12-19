@@ -46,11 +46,6 @@ void debug_dpaux_print(u32 addr, u32 size);
 int dpaux_write(u32 addr, u32 size, u32 data);
 int dpaux_read(u32 addr, u32 size, u8 * data);
 
-void init_dca_regs(void)
-{
-	printk(BIOS_SPEW, "%s: entry\n", __func__);
-
-#if 1
 #define DCA_WRITE(reg, val) \
 	{ \
 		WRITEL(val, (void *)(TEGRA_ARM_DISPLAYA + (reg<<2)));	\
@@ -63,17 +58,31 @@ void init_dca_regs(void)
 	_reg_val |= val; \
 	WRITEL(_reg_val,  (void *)(TEGRA_ARM_DISPLAYA + (reg<<2))); \
 	}
-#else // read back
-#define DCA_WRITE(reg, val) \
-	{ \
-	printk(BIOS_SPEW,"DCA_WRITE: addr %#x = %#x\n",
-	(unsigned int) (TEGRA_ARM_DISPLAYA + (reg<<2)), val);  \
-	WRITEL(val,  (void *)(TEGRA_ARM_DISPLAYA + (reg<<2))); \
-	printk(BIOS_SPEW,"reads as %#x\n",  \
-		(unsigned int)READL( (void *)(TEGRA_ARM_DISPLAYA + (reg<<2)))); \
-	}
-#endif
 
+#define SOR_WRITE(reg, val) \
+	{ \
+	WRITEL(val,  (void *)(TEGRA_ARM_SOR + (reg<<2))); \
+	}
+
+#define SOR_READ(reg) READL((void *)(TEGRA_ARM_SOR + (reg<<2)))
+
+#define SOR_READ_M_WRITE(reg, mask, val) \
+	{	\
+	u32 _reg_val; \
+	_reg_val = READL((void *)(TEGRA_ARM_SOR + (reg<<2))); \
+	_reg_val &= ~mask;	\
+	_reg_val |= val;		\
+	WRITEL(_reg_val,  (void *)(TEGRA_ARM_SOR + (reg<<2))); \
+	}
+
+#define DPAUX_WRITE(reg, val) \
+	{ \
+	WRITEL(val,  (void *)(TEGRA_ARM_DPAUX + (reg<<2))); \
+	}
+#define DPAUX_READ(reg) READL((void *)(TEGRA_ARM_DPAUX + (reg<<2)))
+
+void init_dca_regs(void)
+{
 	DCA_WRITE (DC_CMD_DISPLAY_WINDOW_HEADER_0, 0x000000F0);
 	DCA_WRITE (DC_WIN_A_WIN_OPTIONS_0, 0x00000000);
 	DCA_WRITE (DC_WIN_A_BYTE_SWAP_0, 0x00000000);
@@ -105,86 +114,20 @@ void init_dca_regs(void)
 	DCA_WRITE (DC_COM_PIN_OUTPUT_ENABLE1_0, 0x00000000);
 	DCA_WRITE (DC_COM_PIN_OUTPUT_ENABLE2_0, 0x00510104);
 	DCA_WRITE (DC_COM_PIN_OUTPUT_ENABLE3_0, 0x00000555);
-
-	printk(BIOS_SPEW, "initial DCA done\n");
-}
-
-void init_sor_regs(void)
-{
-
-	printk(BIOS_SPEW, "JZ: %s: entry\n", __func__);
-
-#if 1
-#define SOR_WRITE(reg, val) \
-	{ \
-	WRITEL(val,  (void *)(TEGRA_ARM_SOR + (reg<<2))); \
-	}
-
-#define SOR_READ(reg) READL( (void *)(TEGRA_ARM_SOR + (reg<<2)))
-
-#else // read back
-#define SOR_WRITE(reg, val) \
-	{ \
-	printk(BIOS_SPEW,"SOR_WRITE: addr %#x = %#x\n",
-	(unsigned int) (TEGRA_ARM_SOR + (reg<<2)), val);  \
-	WRITEL(val,  (void *)(TEGRA_ARM_SOR + (reg<<2))); \
-	printk(BIOS_SPEW,"= %#x\n",  \
-		(unsigned int)READL( (void *)(TEGRA_ARM_SOR + (reg<<2)))); \
-	}
-#endif
-#define SOR_READ_M_WRITE(reg, mask, val) \
-	{	\
-	u32 _reg_val; \
-	_reg_val = READL( (void *)(TEGRA_ARM_SOR + (reg<<2))); \
-	_reg_val &= ~mask;	\
-	_reg_val |= val;		\
-	WRITEL(_reg_val,  (void *)(TEGRA_ARM_SOR + (reg<<2))); \
-	}
-
-	printk(BIOS_SPEW, "initial SOR done\n");
-}
-
-void init_dpaux_regs(void)
-{
-
-	printk(BIOS_SPEW, "%s: entry\n", __func__);
-
-#if 1
-#define DPAUX_WRITE(reg, val) \
-	{ \
-	WRITEL(val,  (void *)(TEGRA_ARM_DPAUX + (reg<<2))); \
-	}
-#define DPAUX_READ(reg) READL( (void *)(TEGRA_ARM_DPAUX + (reg<<2)))
-
-#else // read back
-#define DPAUX_WRITE(reg, val) \
-	{ \
-	printk(BIOS_SPEW,"DPAUX_WRITE: addr %#x = %#x\n", (unsigned int)
-	(TEGRA_ARM_DPAUX + (reg<<2)), val);		    \
-	WRITEL(val,  (void *)(TEGRA_ARM_DPAUX + (reg<<2))); \
-	printk(BIOS_SPEW,"= %#x\n",  \
-		(unsigned int)READL( (void *)(TEGRA_ARM_DPAUX + (reg<<2)))); \
-	}
-#endif
-
-	printk(BIOS_SPEW, "initial DPAUX done\n");
 }
 
 static int dp_poll_register(void *addr, u32 exp_val, u32 mask, u32 timeout_ms)
 {
-
 	u32 reg_val = 0;
 
-	printk(BIOS_SPEW, "JZ: %s: enter, addr %#x: exp_val: %#x, mask: %#x\n",
-		   __func__, (unsigned int)addr, exp_val, mask);
 	do {
-		udelay(1);
+		udelay(1000);
 		reg_val = READL(addr);
 	} while (((reg_val & mask) != exp_val) && (--timeout_ms > 0));
 
 	if ((reg_val & mask) == exp_val)
 		return 0;	/* success */
-	printk(BIOS_SPEW, "poll_register %p: timeout\n", addr);
+	printk(BIOS_WARNING, "poll_register %p: timeout\n", addr);
 	return timeout_ms;
 }
 
@@ -196,15 +139,10 @@ static void dp_io_set_dpd(u32 power_down)
 	 *  1: into deep power down
 	 */
 	u32 val_reg;
-#define DP_LVDS_SHIFT	25
-#define DP_LVDS		(1 << DP_LVDS_SHIFT)
 
 	val_reg = READL((void *)(0x7000e400 + 0x1c4));	/* APBDEV_PMC_IO_DPD2_STATUS_0 */
-	printk(BIOS_SPEW, "JZ: %s: enter, into dpd %d, cur_status: %#x\n",
-		   __func__, power_down, val_reg);
-
 	if ((((val_reg & DP_LVDS) >> DP_LVDS_SHIFT) & 1) == power_down) {
-		printk(BIOS_SPEW, "PAD already POWER=%d\n", 1 - power_down);
+		printk(BIOS_DEBUG, "PAD already POWER=%d\n", 1 - power_down);
 		return;
 	}
 
@@ -212,14 +150,11 @@ static void dp_io_set_dpd(u32 power_down)
 	WRITEL((DP_LVDS | ((1 + power_down) << 30)), (void *)(0x7000e400 + 0x1c0));
 
 	dp_poll_register((void *)(0x7000e400 + 0x1C4), 0, DP_LVDS, 1000);
-	//APBDEV_PMC_IO_DPD2_STATUS_0
+	/* APBDEV_PMC_IO_DPD2_STATUS_0 */
 }
 
 void dp_io_powerup(void)
 {
-
-	printk(BIOS_SPEW, "%s: entry\n", __func__);
-
 	SOR_WRITE(SOR_NV_PDISP_SOR_CLK_CNTRL_0, (6 << 2) | 2);//select PLLDP,  lowest speed(6x)
 	SOR_WRITE(SOR_NV_PDISP_SOR_DP_PADCTL0_0, 0x00800000);	//set PDCAL
 	SOR_WRITE(SOR_NV_PDISP_SOR_PLL0_0, 0x050003D5);	//set PWR,VCOPD
@@ -227,14 +162,21 @@ void dp_io_powerup(void)
 	SOR_WRITE(SOR_NV_PDISP_SOR_PLL2_0, 0x01C20000);	//set AUX1,6,7,8; clr AUX2
 	SOR_WRITE(SOR_NV_PDISP_SOR_PLL3_0, 0x38002220);
 
+	/* Deassert E_DPD to enable core logic circuits, and wait for > 5us */
 	dp_io_set_dpd(0);
-	udelay(1);	//Deassert E_DPD to enable core logic circuits, and wait for > 5us
+	udelay(10);
 
+	/* Deassert PDBG to enable bandgap, and wait for > 20us. */
 	SOR_READ_M_WRITE(SOR_NV_PDISP_SOR_PLL2_0,
 					 SOR_NV_PDISP_SOR_PLL2_0_AUX6_FIELD,
 					 (0 << SOR_NV_PDISP_SOR_PLL2_0_AUX6_SHIFT));
-	udelay(20);	//Deassert PDBG to enable bandgap, and wait for > 20us.
+	udelay(25);
 
+	/*
+	 * Enable the PLL/charge-pump/VCO, and wait for >200us for the PLL to
+	 * lock. Input Clock must be running and stable before PDPLL
+	 * de-assertion.
+	 */
 	SOR_READ_M_WRITE(SOR_NV_PDISP_SOR_PLL0_0,
 					 SOR_NV_PDISP_SOR_PLL0_0_PWR_FIELD,
 					 (0 << SOR_NV_PDISP_SOR_PLL0_0_PWR_SHIFT));
@@ -244,10 +186,8 @@ void dp_io_powerup(void)
 	SOR_READ_M_WRITE(SOR_NV_PDISP_SOR_PLL2_0,
 					 SOR_NV_PDISP_SOR_PLL2_0_AUX8_FIELD,
 					 (0 << SOR_NV_PDISP_SOR_PLL2_0_AUX8_SHIFT));
-	udelay(200);
-	//Enable the PLL/charge-pump/VCO, and wait for >200us for the PLL to
-	//lock. Input Clock must be running and stable before PDPLL
-	//de-assertion.
+	udelay(210);
+
 	SOR_READ_M_WRITE(SOR_NV_PDISP_SOR_PLL2_0,
 					 SOR_NV_PDISP_SOR_PLL2_0_AUX7_FIELD,
 					 (0 << SOR_NV_PDISP_SOR_PLL2_0_AUX7_SHIFT));
@@ -256,7 +196,6 @@ void dp_io_powerup(void)
 					 (1 << SOR_NV_PDISP_SOR_PLL2_0_AUX9_SHIFT));
 	udelay(100);
 
-	printk(BIOS_SPEW, "%s: exit\n", __func__);
 }
 
 static int dpaux_check(u32 bytes, u32 data, u32 mask)
@@ -268,18 +207,19 @@ static int dpaux_check(u32 bytes, u32 data, u32 mask)
 	DPAUX_WRITE(DPAUX_DP_AUXDATA_READ_W0, 0);
 	status = dpaux_read(0x202, bytes, buf);
 	if (status != 0)
-		printk(BIOS_SPEW, "******AuxRead Error:%04x: status %08x\n", 0x202,
-			   status);
+		printk(BIOS_ERR, "******AuxRead Error:%04x: status %08x\n",
+				 0x202, status);
 	else {
 		temp = DPAUX_READ(DPAUX_DP_AUXDATA_READ_W0);
 		if ((temp & mask) != (data & mask)) {
-			printk(BIOS_SPEW, "AuxCheck ERROR:(r_data) %08x & (mask) %08x != "
-				   "(data) %08x & (mask) %08x\n", temp, mask, data, mask);
+			printk(BIOS_ERR, "AuxCheck ERROR:(r_data) %08x &"
+				" (mask) %08x != (data) %08x & (mask) %08x\n",
+				temp, mask, data, mask);
 			return -1;
 		} else {
-			printk(BIOS_SPEW,
-				   "AuxCheck PASS:(bytes=%d,data=%08x,mask=%08x):0x%08x\n",
-				   bytes, data, mask, temp);
+			printk(BIOS_DEBUG, "AuxCheck PASS:(bytes=%d, "
+				"data=%08x, mask=%08x):0x%08x\n",
+				bytes, data, mask, temp);
 			return 0;
 		}
 	}
@@ -304,8 +244,6 @@ static int dpaux_check(u32 bytes, u32 data, u32 mask)
  */
 static void pattern_level(u32 current, u32 preemph, u32 postcur)
 {
-	printk(BIOS_SPEW, "set level:%d %d %d\n", current, preemph, postcur);
-
 	//calibrating required
 	if (current == 0)
 		SOR_WRITE(SOR_NV_PDISP_SOR_LANE_DRIVE_CURRENT0_0, 0x20202020);
@@ -355,7 +293,7 @@ static int dp_training(u32 level, u32 check, u32 speed)
 			wcfg = wcfg | 0x20;
 		wcfg = wcfg | (wcfg << 8) | (wcfg << 16) | (wcfg << 24);
 		dpaux_write(0x103, 4, wcfg);
-		udelay(50);	//100us
+		udelay(100);
 		DPAUX_WRITE(DPAUX_DP_AUXDATA_READ_W0, 0);
 		if (!dpaux_check(2, check, check))
 			cnt = 100;
@@ -366,7 +304,7 @@ static int dp_training(u32 level, u32 check, u32 speed)
 			if (cfg == cfg_d) {
 				++cnt;
 				if (cnt > 5)
-					printk(BIOS_SPEW, "link training FAILED\n");
+					printk(BIOS_ERR, "Error: link training FAILED\n");
 			} else {
 				cnt = 0;
 				cfg_d = cfg;
@@ -396,10 +334,7 @@ void dp_link_training(u32 lanes, u32 speed)
 	u32 mask, level;
 	u32 reg_val;
 
-	printk(BIOS_SPEW, "%s: entry, lanes: %d, speed: %d\n", __func__, lanes,
-		   speed);
-
-	printk(BIOS_SPEW, "\nLink training start\n");
+	printk(BIOS_DEBUG, "\nLink training start\n");
 
 	switch (lanes) {
 		case 1:
@@ -412,21 +347,22 @@ void dp_link_training(u32 lanes, u32 speed)
 			lane_on = 0x0f;
 			break;
 		default:
-			printk(BIOS_SPEW, "dp: invalid lane count: %d\n", lanes);
+			printk(BIOS_DEBUG, "dp: invalid lane count: %d\n",
+				lanes);
 			return;
 	}
 
 	SOR_WRITE(SOR_NV_PDISP_SOR_DP_PADCTL0_0, (0x008000000 | lane_on));
 	SOR_READ_M_WRITE(SOR_NV_PDISP_SOR_DP_PADCTL0_0,
-			 SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_VALUE_FIELD,
-			 (6 << SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_VALUE_SHIFT));
+		 SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_VALUE_FIELD,
+		 (6 << SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_VALUE_SHIFT));
 	SOR_READ_M_WRITE(SOR_NV_PDISP_SOR_DP_PADCTL0_0,
-			 SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_FIELD,
-			 (1 << SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_SHIFT));
+		 SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_FIELD,
+		 (1 << SOR_NV_PDISP_SOR_DP_PADCTL0_0_TX_PU_SHIFT));
 	SOR_WRITE(SOR_NV_PDISP_SOR_LVDS_0, 0);
 
 	SOR_WRITE(SOR_NV_PDISP_SOR_CLK_CNTRL_0, ((speed << 2) | 2));
-	udelay(100);
+	udelay(100 * 1000);
 
 	sor_clock_start();
 
@@ -434,34 +370,34 @@ void dp_link_training(u32 lanes, u32 speed)
 			  (((0xF >> (4 - lanes)) << 16) | 1));
 
 	SOR_WRITE(SOR_NV_PDISP_SOR_LANE_SEQ_CTL_0, 0x80100000);
-	printk(BIOS_SPEW, "Polling SOR_NV_PDISP_SOR_LANE_SEQ_CTL_0.DONE\n");
+	printk(BIOS_DEBUG, "Polling SOR_NV_PDISP_SOR_LANE_SEQ_CTL_0.DONE\n");
 
 	dp_poll_register((void *)0x54540084, 0x00000000, 0x80000000, 1000);
 
 	debug_dpaux_print(0x202, 4);
 
-	printk(BIOS_SPEW, "set link rate and lane number: %dMHz, %d lanes\n",
+	printk(BIOS_DEBUG, "set link rate and lane number: %dMHz, %d lanes\n",
 		   (speed * 27), lanes);
 
 	dpaux_write(0x100, 2, ((lanes << 8) | speed));
-	printk(BIOS_SPEW, "precharge lane 10us\n");
+	printk(BIOS_DEBUG, "precharge lane 10us\n");
 	reg_val = SOR_READ(SOR_NV_PDISP_SOR_DP_PADCTL0_0);
 	SOR_WRITE(SOR_NV_PDISP_SOR_DP_PADCTL0_0, (0x000000f0 | reg_val));
-	udelay(100);
+	udelay(100 * 1000);
 	SOR_WRITE(SOR_NV_PDISP_SOR_DP_PADCTL0_0, reg_val);
 
-	printk(BIOS_SPEW, "link training cr start\n");
+	printk(BIOS_DEBUG, "link training cr start\n");
 	SOR_WRITE(SOR_NV_PDISP_SOR_DP_TPG_0, 0x41414141);
 	dpaux_write(0x102, 1, 0x21);
 
 	mask = 0x0000ffff >> ((4 - lanes) * 4);
 	level = 0;
 	level = dp_training(level, 0x1111 & mask, speed);
-	printk(BIOS_SPEW, "level:%x\n", level);
+	printk(BIOS_DEBUG, "level:%x\n", level);
 
 	debug_dpaux_print(0x210, 16);
 
-	printk(BIOS_SPEW, "link training eq start\n");
+	printk(BIOS_DEBUG, "link training eq start\n");
 	if (speed == 20) {
 		SOR_WRITE(SOR_NV_PDISP_SOR_DP_TPG_0, 0x43434343);
 		dpaux_write(0x102, 1, 0x23);
@@ -471,7 +407,7 @@ void dp_link_training(u32 lanes, u32 speed)
 	}
 
 	level = dp_training(level, (0x7777 & mask) | 0x10000, speed);
-	printk(BIOS_SPEW, "level:%x\n", level);
+	printk(BIOS_DEBUG, "level:%x\n", level);
 
 	debug_dpaux_print(0x210, 16);
 
@@ -482,8 +418,7 @@ void dp_link_training(u32 lanes, u32 speed)
 	debug_dpaux_print(0x200, 16);
 	debug_dpaux_print(0x210, 16);
 
-	printk(BIOS_SPEW, "Link training done\n\n");
-	printk(BIOS_SPEW, "%s: exit\n", __func__);
+	printk(BIOS_DEBUG, "Link training done\n\n");
 }
 
 static u32 div_f(u32 a, u32 b, u32 one)
@@ -492,22 +427,9 @@ static u32 div_f(u32 a, u32 b, u32 one)
 	return (d);
 }
 
-u32 dp_setup_timing(u32 panel_id, u32 width, u32 height);
-u32 dp_setup_timing(u32 panel_id, u32 width, u32 height)
+u32 dp_setup_timing(u32 width, u32 height)
 {
 	u32 pclk_freq = 0;
-
-	///////////////////////////////////////////
-	// set up clocks, using PLLD2
-	// format: pclk  , PLL  ,  panel
-	//2560x1440:  241.5  , 483/2,  dp   VESA.red.
-	//1920x1080:  148.5  , 594/4,  dp   CEA
-	//1600x1200:  161.0  , 483/3,  dp   VESA
-	//1280x 720:   74.25 , 594/8,  dp   CEA
-	// 1024x768:   63.5  , 508/8,  dp   VESA
-	//  800x600:   38.25 , 459/12, dp   VESA
-	//  720x480:   27.00 , 594/22, dp   CEA
-	//  640x480:   23.75 , 475/20, dp   VESA
 
 	u32 PLL_FREQ = (12 / 12 * 283) / 1 / 2;	/* 141.5 */
 	u32 PLL_DIV = 2;
@@ -529,14 +451,6 @@ u32 dp_setup_timing(u32 panel_id, u32 width, u32 height)
 	u32 PCLK_FREQ_I, PCLK_FREQ_F;
 	u32 FRATE_I, FRATE_F;
 
-	printk(BIOS_SPEW, "%s: entry\n", __func__);
-
-	if (panel_id != 5) {
-		printk(BIOS_SPEW, "%s: Unsupported panel_id: %d, format=%dx%d\n",
-			   __func__, panel_id, width, height);
-		return pclk_freq;
-	}
-
 	PLL_FREQ = PLL_FREQ * 1000000;
 	pclk_freq = PLL_FREQ / PLL_DIV;
 	PLL_FREQ_I = PLL_FREQ / 1000000;
@@ -545,19 +459,19 @@ u32 dp_setup_timing(u32 panel_id, u32 width, u32 height)
 	PCLK_FREQ_F = div_f(PLL_FREQ, PLL_DIV * 1000000, 100);
 	FRATE_I = PLL_FREQ / (PLL_DIV * TOTAL_PIXELS);
 	FRATE_F = div_f(PLL_FREQ, (PLL_DIV * TOTAL_PIXELS), 100);
-	//bug 1021453
+	/* nv_bug 1021453 */
 	BACK_PORCH = BACK_PORCH - 0x10000;
 	FRONT_PORCH = FRONT_PORCH + 0x10000;
 
-	printk(BIOS_SPEW, "ACTIVE:            %dx%d\n", (DISP_ACTIVE & 0xFFFF),
+	printk(BIOS_DEBUG, "ACTIVE:      %dx%d\n", (DISP_ACTIVE & 0xFFFF),
 		   (DISP_ACTIVE >> 16));
-	printk(BIOS_SPEW, "TOTAL:             %dx%d\n", (DISP_TOTAL & 0xffff),
+	printk(BIOS_DEBUG, "TOTAL:       %dx%d\n", (DISP_TOTAL & 0xffff),
 		   (DISP_TOTAL >> 16));
-	printk(BIOS_SPEW, "PLL Freq:          %d.%d MHz\n", PLL_FREQ_I, PLL_FREQ_F);
-	printk(BIOS_SPEW, "Pclk Freq:         %d.%d MHz\n", PCLK_FREQ_I,
+	printk(BIOS_DEBUG, "PLL Freq:    %d.%d MHz\n", PLL_FREQ_I, PLL_FREQ_F);
+	printk(BIOS_DEBUG, "Pclk Freq:   %d.%d MHz\n", PCLK_FREQ_I,
 		   PCLK_FREQ_F);
-	printk(BIOS_SPEW, "Frame Rate:        %d.%d Hz\n", FRATE_I, FRATE_F);
-	printk(BIOS_SPEW, "\n");
+	printk(BIOS_DEBUG, "Frame Rate:  %d.%d Hz\n", FRATE_I, FRATE_F);
+	printk(BIOS_DEBUG, "\n");
 
 	DCA_WRITE(DC_CMD_STATE_ACCESS_0, 0x00000004);
 	DCA_WRITE(DC_DISP_DISP_CLOCK_CONTROL_0, SHIFT_CLK_DIVIDER);
@@ -569,9 +483,6 @@ u32 dp_setup_timing(u32 panel_id, u32 width, u32 height)
 	DCA_WRITE(DC_DISP_DISP_ACTIVE_0, DISP_ACTIVE);
 	DCA_WRITE(DC_DISP_FRONT_PORCH_0, FRONT_PORCH);
 
-	printk(BIOS_SPEW,
-		   "JZ: sync_width: %d, back_porch: %d, disp_active: %d, front_porch: %d\n",
-		   SYNC_WIDTH, BACK_PORCH, DISP_ACTIVE, FRONT_PORCH);
 	//REG(DC_DISP_DISP_WIN_OPTIONS_0, SOR_ENABLE , 1)
 	DCA_READ_M_WRITE(DC_DISP_DISP_WIN_OPTIONS_0,
 					 DC_DISP_DISP_WIN_OPTIONS_0_SOR_ENABLE_FIELD,
@@ -611,7 +522,6 @@ u32 dp_setup_timing(u32 panel_id, u32 width, u32 height)
 					 SOR_NV_PDISP_SOR_STATE1_0_ASY_OWNER_FIELD,
 					 (SOR_NV_PDISP_SOR_STATE1_0_ASY_OWNER_HEAD0 <<
 					  SOR_NV_PDISP_SOR_STATE1_0_ASY_OWNER_SHIFT));
-	printk(BIOS_SPEW, "%s: exit\n", __func__);
 	return pclk_freq;
 }
 
@@ -623,7 +533,9 @@ static u32 calc_config(u32 ts, u32 a, u32 b, u32 bpp)
 	u32 act_frac;
 	u32 err;
 	u32 water_mark;
-	printk(BIOS_SPEW, "calc_config ts %d a %d b %d bpp %d\n", ts, a, b, bpp);
+
+	printk(BIOS_DEBUG, "calc_config ts %d a %d b %d bpp %d\n",
+			ts, a, b, bpp);
 	if (diff != 0) {
 		if (diff > (b / 2)) {
 			diff = b - diff;
@@ -669,7 +581,7 @@ static u32 calc_config(u32 ts, u32 a, u32 b, u32 bpp)
 				 (water_mark <<
 				  SOR_NV_PDISP_SOR_DP_CONFIG0_0_WATERMARK_SHIFT));
 
-		printk(BIOS_SPEW,
+		printk(BIOS_DEBUG,
 		       "SOR_DP_CONFIG0:TU,CNT,POL,FRAC,WMK,ERR=%d,%d,%d,%d,%d,%d/%d\n",
 		       ts, act_cnt, act_pol, act_frac, water_mark, err, b);
 	}
@@ -687,7 +599,8 @@ static u32 dp_buf_config(u32 pclkfreq, u32 linkfreq, u32 lanes, u32 bpp)
 	u32 min_err = 1000000000;
 	u32 ts = 64;
 	u32 c_err;
-	printk(BIOS_SPEW, "dp buf config pclkfreq %d linkfreq %d lanes %d bpp %d\n",
+
+	printk(BIOS_DEBUG, "dp buf config pclkfreq %d linkfreq %d lanes %d bpp %d\n",
 		   pclkfreq, linkfreq, lanes, bpp);
 	for (i = 2; i <= 7; ++i) {
 		while (((pf / i * i) == pf) && ((lf / i * i) == lf)) {
@@ -698,9 +611,9 @@ static u32 dp_buf_config(u32 pclkfreq, u32 linkfreq, u32 lanes, u32 bpp)
 
 	a = pf * bpp / 8;
 	b = lf * lanes;
-	printk(BIOS_SPEW, "ratio:%d/%d\n", a, b);
+	printk(BIOS_DEBUG, "ratio:%d/%d\n", a, b);
 	if (a > (b * 98 / 100))
-		printk(BIOS_SPEW, "Error:link speed not enough\n");
+		printk(BIOS_ERR, "Error:link speed not enough\n");
 
 	//search best tusize
 	//min_err = 1000000000;
@@ -727,10 +640,11 @@ static u32 dp_buf_config(u32 pclkfreq, u32 linkfreq, u32 lanes, u32 bpp)
 	return (tusize);
 }
 
+/*
 void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 		     u32 lane_count, u32 enhanced_framing, u32 panel_edp,
 		     u32 pclkfreq, u32 linkfreq);
-
+*/
 void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 		     u32 lane_count, u32 enhanced_framing, u32 panel_edp,
 		     u32 pclkfreq, u32 linkfreq)
@@ -738,8 +652,8 @@ void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 	u32 tusize;
 	u32 linkctl;
 
-	printk(BIOS_SPEW, "%s: entry, winb: 0x%08x ", __func__, winb_addr);
-	printk(BIOS_SPEW, " panel_bpp %d\n", panel_bpp);
+	printk(BIOS_DEBUG, "%s: winb: 0x%08x, panel_bpp %d ",
+			__func__, winb_addr, panel_bpp);
 
 	if (panel_bpp == 18) {
 		//0x54540010
@@ -755,36 +669,24 @@ void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 				  SOR_NV_PDISP_SOR_STATE1_0_ASY_PIXELDEPTH_SHIFT));
 	}
 
-#define SRC_BPP		16
-#define COLORDEPTH	0x6
-
-#define BLUE	0xFF0000
-#define GREEN	0x00FF00
-#define RED	0x0000FF
-#define YELLOW	0x00FFFF
-#define BLACK	0x000000
-#define WHITE	0xFFFFFF
-#define GREY	0x55aa00
-
-	DCA_WRITE(DC_B_WIN_BD_SIZE_0, ((height << 16) | width));
-	DCA_WRITE(DC_B_WIN_BD_PRESCALED_SIZE_0,
+	DCA_WRITE(DC_CMD_DISPLAY_WINDOW_HEADER_0, 0x00000010);
+	DCA_WRITE(DC_WIN_A_SIZE_0, ((height << 16) | width));
+	DCA_WRITE(DC_WIN_A_PRESCALED_SIZE_0,
 			  ((height << 16) | (width * SRC_BPP / 8)));
-	DCA_WRITE(DC_B_WIN_BD_LINE_STRIDE_0,
+	DCA_WRITE(DC_WIN_A_LINE_STRIDE_0,
 			  ((width * SRC_BPP / 8 + 31) / 32 * 32));
-	DCA_WRITE(DC_B_WIN_BD_COLOR_DEPTH_0, COLORDEPTH);
-	DCA_WRITE(DC_B_WINBUF_BD_START_ADDR_0, winb_addr);
-	DCA_WRITE(DC_B_WIN_BD_DDA_INCREMENT_0, 0x10001000);
+	DCA_WRITE(DC_WIN_A_COLOR_DEPTH_0, COLORDEPTH);
+	DCA_WRITE(DC_WINBUF_A_START_ADDR_LO_0, winb_addr);
+	DCA_WRITE(DC_WIN_A_DDA_INCREMENT_0, 0x10001000);
 
 	SOR_WRITE(SOR_NV_PDISP_SOR_CRC_CNTRL_0, 0x00000001);
 	DCA_WRITE(DC_COM_CRC_CONTROL_0, 0x00000009);	//CRC_ALWAYS+CRC_ENABLE
 	DCA_WRITE(DC_COM_PIN_OUTPUT_ENABLE2_0, 0x00000000);
 	DCA_WRITE(DC_COM_PIN_OUTPUT_ENABLE3_0, 0x00000000);
 	DCA_WRITE(DC_DISP_DISP_SIGNAL_OPTIONS0_0, 0x00000000);
-	//  DCA_WRITE (DC_DISP_BLEND_BACKGROUND_COLOR_0                ,WHITE     );
-	DCA_WRITE(DC_DISP_BLEND_BACKGROUND_COLOR_0, YELLOW);
+	DCA_WRITE(DC_DISP_BLEND_BACKGROUND_COLOR_0, COLOR_WHITE);
 	DCA_WRITE(DC_CMD_DISPLAY_COMMAND_0, 0x00000020);
 	SOR_WRITE(SOR_NV_PDISP_SOR_DP_AUDIO_VBLANK_SYMBOLS_0, 0x00000e48);
-
 
 	dpaux_write(0x101, 1, (enhanced_framing << 7) | lane_count);
 	if (panel_edp)
@@ -792,8 +694,6 @@ void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 
 	tusize =
 		dp_buf_config(pclkfreq, (linkfreq * 1000000), lane_count, panel_bpp);
-
-	printk(BIOS_SPEW, "JZ, after dp_buf_config, tusize: 0x%08x\n", tusize);
 
 	linkctl =
 		((0xF >> (4 - lane_count)) << 16) | (enhanced_framing << 14) | (tusize
@@ -804,7 +704,7 @@ void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 	SOR_WRITE(SOR_NV_PDISP_SOR_DP_SPARE0_0, ((panel_edp << 1) | 0x05));
 
 	SOR_WRITE(SOR_NV_PDISP_SOR_PWR_0, 0x80000001);
-	printk(BIOS_SPEW, "Polling SOR_NV_PDISP_SOR_PWR_0.DONE\n");
+	printk(BIOS_DEBUG, "Polling SOR_NV_PDISP_SOR_PWR_0.DONE\n");
 	dp_poll_register((void *)0x54540054, 0x00000000, 0x80000000, 1000);
 	//SOR_NV_PDISP_SOR_PWR_0
 	//sor_update
@@ -815,7 +715,7 @@ void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 	SOR_WRITE(SOR_NV_PDISP_SOR_SUPER_STATE1_0, 0x0000000e);
 	//sor_super_update
 	SOR_WRITE(SOR_NV_PDISP_SOR_SUPER_STATE0_0, 0x00000000);
-	printk(BIOS_SPEW, "Polling SOR_NV_PDISP_SOR_TEST_0.ATTACHED\n");
+	printk(BIOS_DEBUG, "Polling SOR_NV_PDISP_SOR_TEST_0.ATTACHED\n");
 	dp_poll_register((void *)0x54540058, 0x00000400, 0x00000400, 1000);
 	//SOR_NV_PDISP_SOR_TEST_0
 
@@ -823,21 +723,16 @@ void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
 	DCA_WRITE(DC_CMD_STATE_CONTROL_0, 0x0000009f);
 	DCA_WRITE(DC_CMD_DISPLAY_POWER_CONTROL_0, 0x00050155);
 
-	printk(BIOS_SPEW, "Polling SOR_NV_PDISP_SOR_TEST_0.AWAKE\n");
+	printk(BIOS_DEBUG, "Polling SOR_NV_PDISP_SOR_TEST_0.AWAKE\n");
 	dp_poll_register((void *)0x54540058, 0x00000200, 0x00000300, 1000);
 	//SOR_NV_PDISP_SOR_TEST_0
 
 	//  DCA_WRITE (DC_CMD_STATE_ACCESS_0   ,0);
 	DCA_WRITE(DC_CMD_STATE_ACCESS_0, 4);
 	DCA_WRITE(DC_CMD_STATE_CONTROL_0, 0x0000ffff);
-	/* enable win_b */
 
-	DCA_READ_M_WRITE(DC_B_WIN_BD_WIN_OPTIONS_0,
-			 DC_B_WIN_BD_WIN_OPTIONS_0_BD_WIN_ENABLE_FIELD,
-			 (DC_B_WIN_BD_WIN_OPTIONS_0_BD_WIN_ENABLE_ENABLE <<
-			  DC_B_WIN_BD_WIN_OPTIONS_0_BD_WIN_ENABLE_SHIFT));
-
-
-	printk(BIOS_SPEW, "JZ: %s: f_ret @ line %d\n", __func__, __LINE__);
+	DCA_READ_M_WRITE(DC_WIN_A_WIN_OPTIONS_0,
+			 DC_WIN_A_WIN_OPTIONS_0_A_WIN_ENABLE_FIELD,
+			 (DC_WIN_A_WIN_OPTIONS_0_A_WIN_ENABLE_ENABLE <<
+			  DC_WIN_A_WIN_OPTIONS_0_A_WIN_ENABLE_SHIFT));
 }
-

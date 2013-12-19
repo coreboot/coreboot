@@ -44,6 +44,9 @@
 
 /* ardisplay_a.h */
 #define DC_WIN_A_WIN_OPTIONS_0			0x700
+#define DC_WIN_A_WIN_OPTIONS_0_A_WIN_ENABLE_SHIFT	30
+#define DC_WIN_A_WIN_OPTIONS_0_A_WIN_ENABLE_FIELD	(0x1 << DC_WIN_A_WIN_OPTIONS_0_A_WIN_ENABLE_SHIFT)
+#define DC_WIN_A_WIN_OPTIONS_0_A_WIN_ENABLE_ENABLE	(1)
 #define DC_WIN_A_BYTE_SWAP_0			0x701
 #define DC_WIN_A_BUFFER_CONTROL_0		0x702
 #define DC_WIN_A_COLOR_DEPTH_0			0x703
@@ -59,6 +62,7 @@
 #define DC_WIN_A_BLEND_MATCH_SELECT_0		0x717
 #define DC_WIN_A_BLEND_NOMATCH_SELECT_0		0x718
 #define DC_WIN_A_BLEND_ALPHA_1BIT_0		0x719
+#define DC_WINBUF_A_START_ADDR_LO_0		0x800
 #define DC_WINBUF_A_START_ADDR_HI_0		0x80d
 #define DC_WINBUF_A_ADDR_H_OFFSET_0		0x806
 #define DC_WINBUF_A_ADDR_V_OFFSET_0		0x808
@@ -177,9 +181,18 @@
 /* ardpaux.h */
 #define DPAUX_DP_AUXDATA_READ_W0				0x19
 
+#define DP_LVDS_SHIFT	25
+#define DP_LVDS		(1 << DP_LVDS_SHIFT)
+
+#define SRC_BPP		16
+#define COLORDEPTH	0x6
+#define COLOR_WHITE	0xFFFFFF
+
 void setup_display(struct soc_nvidia_tegra124_config *config);
 void init_dca_regs(void);
-void init_dpaux_regs(void);
-void init_sor_regs(void);
 void dp_io_powerup(void);
+u32 dp_setup_timing(u32 width, u32 height);
+void dp_misc_setting(u32 panel_bpp, u32 width, u32 height, u32 winb_addr,
+		     u32 lane_count, u32 enhanced_framing, u32 panel_edp,
+		     u32 pclkfreq, u32 linkfreq);
 #endif /* __SOC_NVIDIA_TEGRA124_INCLUDE_SOC_DISPLAY_H__ */

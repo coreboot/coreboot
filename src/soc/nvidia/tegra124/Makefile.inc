@@ -20,10 +20,12 @@ endif
 
 romstage-y += cbfs.c
 romstage-y += cbmem.c
+romstage-y += clock.c
 romstage-y += early_display.c
 romstage-y += dma.c
 romstage-y += i2c.c
 romstage-y += monotonic_timer.c
+romstage-y += sdram.c
 romstage-y += spi.c
 romstage-y += ../tegra/gpio.c
 romstage-y += ../tegra/i2c.c

@@ -25,6 +25,8 @@ TARGET=coreboot-builds
 XMLFILE=$TOP/abuild.xml
 REAL_XMLFILE=$XMLFILE
 
+export KCONFIG_OVERWRITECONFIG=1
+
 # path to payload. Should be more generic
 PAYLOAD=/dev/null
 
@@ -301,8 +303,8 @@ function build_target
  	HOSTCC='gcc'
 
 	printf "Building $VENDOR/$MAINBOARD; "
-	mkdir -p $TOP/$TARGET/${VENDOR}_${MAINBOARD}
-	XMLFILE=$TOP/$TARGET/${VENDOR}_${MAINBOARD}/abuild.xml
+	mkdir -p $TOP/$TARGET/${VENDOR}_${MAINBOARD} $TOP/$TARGET/abuild
+	XMLFILE=$TOP/$TARGET/abuild/${VENDOR}_${MAINBOARD}.xml
 
 	if [ "$ARCH" = "$TARCH" -o $found_crosscompiler = true ]; then
 		printf "$TARCH: ok$CROSS_TEXT\n"
@@ -639,7 +641,8 @@ if [ "$target" != "" ]; then
 	else
 		build_target $VENDOR $MAINBOARD $CONFIG
 		test_target $VENDOR $MAINBOARD
-		test "$mode" != "text" && cat $TARGET/${VENDOR}_${MAINBOARD}/abuild.xml >> $REAL_XMLFILE
+		remove_target $VENDOR $MAINBOARD
+		test "$mode" != "text" && cat $TARGET/abuild/${VENDOR}_${MAINBOARD}.xml >> $REAL_XMLFILE
 		XMLFILE=$REAL_XMLFILE
 	fi
 else
@@ -649,7 +652,7 @@ else
 	junit '<?xml version="1.0" encoding="utf-8"?>'
 	junit '<testsuite>'
 	if [ "$mode" != "text" ]; then
-		for xmlfile in $TARGET/*_*/abuild.xml; do
+		for xmlfile in $TARGET/abuild/*_*.xml; do
 			cat $xmlfile >> $REAL_XMLFILE
 		done
 	fi

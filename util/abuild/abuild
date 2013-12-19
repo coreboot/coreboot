@@ -21,7 +21,7 @@ ABUILD_VERSION="0.9.2"
 TOP=$PWD
 
 # Where shall we place all the build trees?
-TARGET=coreboot-builds
+TARGET=${COREBOOT_BUILD_DIR:-coreboot-builds}
 XMLFILE=$TOP/abuild.xml
 REAL_XMLFILE=$XMLFILE
 
@@ -278,7 +278,7 @@ function build_target
 	CONFIG=$3
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
-	if [ "`cat $TOP/$TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
+	if [ "`cat $TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
 		"$buildall" = "false" ]; then
 		printf "Skipping $VENDOR/$MAINBOARD; (already successful)\n"
 		return
@@ -303,8 +303,8 @@ function build_target
  	HOSTCC='gcc'
 
 	printf "Building $VENDOR/$MAINBOARD; "
-	mkdir -p $TOP/$TARGET/${VENDOR}_${MAINBOARD} $TOP/$TARGET/abuild
-	XMLFILE=$TOP/$TARGET/abuild/${VENDOR}_${MAINBOARD}.xml
+	mkdir -p $TARGET/${VENDOR}_${MAINBOARD} $TARGET/abuild
+	XMLFILE=$TARGET/abuild/${VENDOR}_${MAINBOARD}.xml
 
 	if [ "$ARCH" = "$TARCH" -o $found_crosscompiler = true ]; then
 		printf "$TARCH: ok$CROSS_TEXT\n"
@@ -613,8 +613,8 @@ build_all_targets()
 	if [ "$enable_blobs" = "true" ]; then
 		echo "CONFIG_USE_BLOBS=y" > $TMPCFG
 	fi
-	make -j $cpus DOTCONFIG=$TMPCFG obj=coreboot-builds/temp objutil=coreboot-builds/sharedutils tools
-	rm -rf coreboot-builds/temp $TMPCFG
+	make -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools
+	rm -rf $TARGET/temp $TMPCFG
 	for VENDOR in $( vendors ); do
 		for MAINBOARD in $( mainboards $VENDOR ); do
 			echo $VENDOR/$MAINBOARD

@@ -208,7 +208,7 @@ while true ; do
         case "$1" in
 		-V|--version)	shift; myversion; exit 0;;
 		-h|--help)	shift; myhelp; exit 0;;
-		-c|--clean)	shift; cleanup;;
+		-c|--clean)	shift; clean=1;;
 		-t|--savetemps)	shift; SAVETEMPS=1;;
 		-d|--directory)	shift; TARGETDIR="$1"; shift;;
 		-p|--platform)	shift; TARGETARCH="$1"; shift;;
@@ -234,6 +234,10 @@ esac
 
 echo "Target arch is now $TARGETARCH"
 BUILDDIRPREFIX=build-${TARGETARCH}
+
+if [ "$clean" = "1" ]; then
+	cleanup
+fi
 
 GDB_PACKAGE="GDB"
 PYTHON_PACKAGE="PYTHON"

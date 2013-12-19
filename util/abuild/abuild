@@ -22,7 +22,7 @@ ABUILD_VERSION="0.9.3"
 TOP=$PWD
 
 # Where shall we place all the build trees?
-TARGET=coreboot-builds
+TARGET=${COREBOOT_BUILD_DIR:-coreboot-builds}
 XMLFILE=$TOP/abuild.xml
 REAL_XMLFILE=$XMLFILE
 

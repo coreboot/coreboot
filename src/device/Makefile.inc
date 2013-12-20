@@ -17,9 +17,5 @@ romstage-y+= device_romstage.c
 
 subdirs-y += oprom
 
-ifeq ($(CONFIG_PCI_ROM_RUN),y)
-ramstage-y += pci_rom.c
-else
 ramstage-$(CONFIG_VGA_ROM_RUN) += pci_rom.c
-endif
 

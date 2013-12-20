@@ -61,9 +61,6 @@ static void ide_init(struct device *dev)
 	dword = pci_read_config32(dev, 0xf8);
 	dword |= 12;
 	pci_write_config32(dev, 0xf8, dword);
-#if CONFIG_PCI_ROM_RUN
-	pci_dev_init(dev);
-#endif
 }
 
 static struct device_operations ide_ops = {

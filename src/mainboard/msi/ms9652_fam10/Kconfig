@@ -101,10 +101,6 @@ config CONSOLE_SERIAL8250
 	bool
 	default y
 
-config PCI_ROM_RUN
-	bool
-	default y
-
 config USBDEBUG
 	bool
 	default n

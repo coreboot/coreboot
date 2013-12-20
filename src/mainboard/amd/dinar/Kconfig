@@ -169,10 +169,6 @@ config ONBOARD_LIGHTSENSOR
 	bool
 	default n
 
-config PCI_ROM_RUN
-	bool
-	default n
-
 config UDELAY_IO
 	bool
 	default n

@@ -662,15 +662,11 @@ int oprom_is_loaded = 0;
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
-#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
+#if CONFIG_VGA_ROM_RUN
 	struct rom_header *rom, *ram;
 
-	if (CONFIG_PCI_ROM_RUN != 1 && /* Only execute VGA ROMs. */
-	    ((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
-		return;
-
-	if (CONFIG_VGA_ROM_RUN != 1 && /* Only execute non-VGA ROMs. */
-	    ((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
+	/* Only execute VGA ROMs. */
+	if (((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
 		return;
 
 #if CONFIG_CHROMEOS
@@ -707,7 +703,7 @@ void pci_dev_init(struct device *dev)
 	oprom_is_loaded = 1;
 	printk(BIOS_DEBUG, "VGA Option ROM has been loaded\n");
 #endif
-#endif /* CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN */
+#endif /* CONFIG_VGA_ROM_RUN */
 }
 
 /** Default device operation for PCI devices */

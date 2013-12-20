@@ -66,23 +66,6 @@ config S3_VGA_ROM_RUN
 
 	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
 
-config PCI_ROM_RUN
-	bool "Run non-VGA Option ROMs"
-	default n if PAYLOAD_SEABIOS
-	default y if !PAYLOAD_SEABIOS
-	depends on PCI && !PAYLOAD_SEABIOS || EXPERT
-	help
-	  Execute non-VGA PCI Option ROMs in coreboot if found.
-
-	  Examples include IDE/SATA controller Option ROMs and Option ROMs
-	  for network cards (NICs).
-
-	  When using a SeaBIOS payload it runs all option ROMs with much
-	  more complete BIOS interrupt services available than coreboot,
-	  which some option ROMs require in order to function correctly.
-
-	  If unsure, say N when using SeaBIOS as payload, Y otherwise.
-
 config ON_DEVICE_ROM_RUN
 	bool "Run Option ROMs on PCI devices"
 	default n if PAYLOAD_SEABIOS
@@ -106,7 +89,7 @@ choice
 	prompt "Option ROM execution type"
 	default PCI_OPTION_ROM_RUN_YABEL if !ARCH_X86
 	default PCI_OPTION_ROM_RUN_REALMODE if ARCH_X86
-	depends on PCI_ROM_RUN || VGA_ROM_RUN || GEODE_VSA
+	depends on VGA_ROM_RUN || GEODE_VSA
 
 config PCI_OPTION_ROM_RUN_REALMODE
 	prompt "Native mode"

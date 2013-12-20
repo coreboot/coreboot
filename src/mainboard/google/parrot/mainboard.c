@@ -24,7 +24,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
+#if CONFIG_VGA_ROM_RUN
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -49,7 +49,7 @@ void mainboard_suspend_resume(void)
 	outb(0xe1, 0xb2);
 }
 
-#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
+#if CONFIG_VGA_ROM_RUN
 static int int15_handler(void)
 {
 	int res = 0;
@@ -191,7 +191,7 @@ static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = parrot_onboard_smbios_data;
-#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
+#if CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif

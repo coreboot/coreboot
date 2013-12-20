@@ -25,7 +25,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <console/console.h>
-#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
+#if CONFIG_VGA_ROM_RUN
 #include <x86emu/x86emu.h>
 #endif
 #include <pc80/mc146818rtc.h>
@@ -44,7 +44,7 @@ void mainboard_suspend_resume(void)
 }
 #endif
 
-#if CONFIG_PCI_ROM_RUN || CONFIG_VGA_ROM_RUN
+#if CONFIG_VGA_ROM_RUN
 static int int15_handler(void)
 {
 	int res=0;

@@ -24,13 +24,6 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 
-static void nic_init(struct device *dev)
-{
-#if CONFIG_PCI_ROM_RUN
-	pci_dev_init(dev);// it will init option rom
-#endif
-
-}
 
 static void lpci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
@@ -46,7 +39,7 @@ static struct device_operations nic_ops  = {
 	.read_resources   = pci_dev_read_resources,
 	.set_resources    = pci_dev_set_resources,
 	.enable_resources = pci_dev_enable_resources,
-	.init             = nic_init,
+	.init             = pci_dev_init,
 	.scan_bus         = 0,
 	.ops_pci          = &lops_pci,
 };

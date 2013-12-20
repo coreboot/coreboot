@@ -107,10 +107,6 @@ static void nic_init(struct device *dev)
 #endif
 
 	nic_index++;
-
-#if CONFIG_PCI_ROM_RUN
-	pci_dev_init(dev);	/* It will init Option ROM. */
-#endif
 }
 
 static struct device_operations nic_ops = {

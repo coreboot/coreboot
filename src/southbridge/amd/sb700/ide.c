@@ -59,10 +59,6 @@ static void ide_init(struct device *dev)
 		byte |= 1 << 4;
 		pci_write_config8(sm_dev, 0xAD, byte);
 	}
-
-#if CONFIG_PCI_ROM_RUN
-	pci_dev_init(dev);
-#endif
 }
 
 static struct pci_operations lops_pci = {

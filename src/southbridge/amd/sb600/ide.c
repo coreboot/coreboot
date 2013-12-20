@@ -44,11 +44,6 @@ static void ide_init(struct device *dev)
 	dword = pci_read_config16(dev, 0x4);
 	dword |= 1 << 2;
 	pci_write_config16(dev, 0x4, dword);
-
-#if CONFIG_PCI_ROM_RUN
-	pci_dev_init(dev);
-#endif
-
 }
 
 static struct pci_operations lops_pci = {

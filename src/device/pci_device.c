@@ -669,20 +669,18 @@ static int should_run_oprom(struct device *dev)
 	if (should_run >= 0)
 		return should_run;
 
-#if CONFIG_CHROMEOS
-	/* In ChromeOS we want to boot blazingly fast. Therefore
-	 * we don't run (VGA) option ROMs, unless we have to print
+	/* Don't run VGA option ROMs, unless we have to print
 	 * something on the screen before the kernel is loaded.
 	 */
-	if (!developer_mode_enabled() && !recovery_mode_enabled() &&
-	    !vboot_wants_oprom()) {
-		printk(BIOS_DEBUG, "Not running VGA Option ROM\n");
-		should_run = 0;
-		return should_run;
-	}
-#endif
-	should_run = 1;
+	should_run = !IS_ENABLED(CONFIG_BOOTMODE_STRAPS) ||
+		developer_mode_enabled() || recovery_mode_enabled();
 
+#if CONFIG_CHROMEOS
+	if (!should_run)
+		should_run = vboot_wants_oprom();
+#endif
+	if (!should_run)
+		printk(BIOS_DEBUG, "Not running VGA Option ROM\n");
 	return should_run;
 }
 

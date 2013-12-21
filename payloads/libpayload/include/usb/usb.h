@@ -119,6 +119,7 @@ typedef enum { OHCI = 0, UHCI = 1, EHCI = 2, XHCI = 3} hc_type;
 struct usbdev_hc {
 	hci_t *next;
 	u32 reg_base;
+	pcidev_t pcidev; // 0 if not used (eg on ARM)
 	hc_type type;
 	usbdev_t *devices[128];	// dev 0 is root hub, 127 is last addressable
 

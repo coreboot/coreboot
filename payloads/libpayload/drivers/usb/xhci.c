@@ -303,16 +303,15 @@ hci_t *
 xhci_pci_init (pcidev_t addr)
 {
 	u32 reg_addr;
-	hci_t controller;
+	hci_t *controller;
 
 	reg_addr = (u32)phys_to_virt(pci_read_config32 (addr, 0x10) & ~0xf);
-	//controller->reg_base = pci_read_config32 (addr, 0x14) & ~0xf;
 	if (pci_read_config32 (addr, 0x14) > 0) {
 		fatal("We don't do 64bit addressing.\n");
 	}
 
 	controller = xhci_init((void *)(unsigned long)reg_addr);
-	controller->bus_address = addr;
+	controller->pcidev = addr;
 
 	xhci_switch_ppt_ports(addr);
 
@@ -414,7 +413,8 @@ xhci_shutdown(hci_t *const controller)
 
 	xhci_stop(controller);
 
-	xhci_switchback_ppt_ports(controller->bus_address);
+        if (controller->pcidev)
+		xhci_switchback_ppt_ports(controller->pcidev);
 
 	if (xhci->sp_ptrs) {
 		const size_t max_sp_bufs = xhci->capreg->Max_Scratchpad_Bufs;

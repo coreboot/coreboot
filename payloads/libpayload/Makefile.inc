@@ -117,3 +117,25 @@ clean-for-update-target:
 
 clean-target:
 prepare:
+
+junit.xml:
+	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
+	for i in $(filter-out %.old,$(wildcard configs/*)); do \
+		$(MAKE) clean; \
+		yes | $(MAKE) oldconfig DOTCONFIG=$$i 2>/dev/null >/dev/null; \
+		echo "<testcase classname='libpayload' name='$$i'>" >> $@.tmp; \
+		$(MAKE) CONFIG_CCACHE=$(CONFIG_CCACHE) DOTCONFIG=$$i >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+		if [ $$type = "failure" ]; then \
+			echo "<failure type='buildFailed'>" >> $@.tmp; \
+		else \
+			echo "<$$type>" >> $@.tmp; \
+		fi; \
+		echo '<![CDATA[' >> $@.tmp; \
+		cat $@.tmp.2 >> $@.tmp; \
+		echo "]]></$$type>" >>$@.tmp; \
+		rm -f $@.tmp.2; \
+		echo "</testcase>" >> $@.tmp; \
+	done
+	echo "</testsuite>" >> $@.tmp
+	mv $@.tmp $@
+

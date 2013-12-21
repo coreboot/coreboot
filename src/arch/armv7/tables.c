@@ -29,12 +29,14 @@
 
 #define MAX_COREBOOT_TABLE_SIZE (8 * 1024)
 
+#if !CONFIG_DYNAMIC_CBMEM
 void __attribute__((weak)) get_cbmem_table(uint64_t *base, uint64_t *size)
 {
 	printk(BIOS_WARNING, "WARNING: you need to define get_cbmem_table for your board\n");
 	*base = 0;
 	*size = 0;
 }
+#endif
 
 void cbmem_arch_init(void)
 {
@@ -44,7 +46,9 @@ struct lb_memory *write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;
 
+#if !CONFIG_DYNAMIC_CBMEM
 	cbmem_base_check();
+#endif
 
 	post_code(0x9d);
 

@@ -180,7 +180,7 @@ CB_STATUS GetInfoFromSPD(DRAM_SYS_ATTR *DramAttr)
 				DramAttr->DimmNumChB++;
 				DramAttr->LoadNumChB =
 				    (u8) (DramAttr->LoadNumChB * LoadNum *
-					  RankNum);;
+					  RankNum);
 			}
 			RankNum |= 1; /* Set rank map. */
 			DramAttr->RankPresentMap |= (RankNum << (Sockets * 2));

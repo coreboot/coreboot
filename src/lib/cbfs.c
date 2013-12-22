@@ -312,7 +312,7 @@ void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 void *cbfs_simple_buffer_map(struct cbfs_simple_buffer *buffer,
 			     struct cbfs_media *media,
 			     size_t offset, size_t count) {
-	void *address = buffer->buffer + buffer->allocated;;
+	void *address = buffer->buffer + buffer->allocated;
 	DEBUG("simple_buffer_map(offset=%zd, count=%zd): "
 	      "allocated=%zd, size=%zd, last_allocate=%zd\n",
 	    offset, count, buffer->allocated, buffer->size,

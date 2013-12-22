@@ -151,7 +151,7 @@ static void sm_init(device_t dev)
 	pm_iowrite(0x55, byte);
 
 	byte = pm_ioread(0xD7);
-	byte |= 1 << 6 | 1 << 1;;
+	byte |= 1 << 6 | 1 << 1;
 	pm_iowrite(0xD7, byte);
 
 	/* 2.15 */

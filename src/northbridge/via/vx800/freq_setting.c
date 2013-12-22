@@ -65,7 +65,7 @@ void DRAMFreqSetting(DRAM_SYS_ATTR * DramAttr)
 		Data = (u8) ((Data & 0xf8) | 6);
 		break;
 	default:
-		Data = (u8) ((Data & 0xf8) | 1);;
+		Data = (u8) ((Data & 0xf8) | 1);
 	}
 	pci_write_config8(MEMCTRL, 0x90, Data);
 

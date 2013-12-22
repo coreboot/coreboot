@@ -293,11 +293,12 @@ static u32 init_cpus(u32 cpu_init_detectedx)
 		}
 		lapic_write(LAPIC_MSG_REG, (apicid << 24) | 0x44);	// bsp can not check it before stop_this_cpu
 		set_var_mtrr(0, 0x00000000, CONFIG_RAMTOP, MTRR_TYPE_WRBACK);
+#if CONFIG_K8_REV_F_SUPPORT
 #if CONFIG_MEM_TRAIN_SEQ == 1
 		train_ram_on_node(id.nodeid, id.coreid, sysinfo,
 				  (unsigned)STOP_CAR_AND_CPU);
 #endif
-
+#endif
 		STOP_CAR_AND_CPU();
 	}
 

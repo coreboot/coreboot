@@ -37,10 +37,6 @@ config WAIT_BEFORE_CPUS_INIT
 	bool
 	default n
 
-config MEM_TRAIN_SEQ
-	int
-	default 0
-
 # Force 2T DRAM timing (vendor BIOS does it even for single DIMM setups and
 # single DIMM is indeed unreliable without it).
 config K8_FORCE_2T_DRAM_TIMING
@@ -98,6 +94,10 @@ if DIMM_DDR2
 		default 0x0004
 	endif
 endif #DIMM_DDR2
+
+config MEM_TRAIN_SEQ
+	int
+	default 0
 
 endif #K8_REV_F_SUPPORT
 

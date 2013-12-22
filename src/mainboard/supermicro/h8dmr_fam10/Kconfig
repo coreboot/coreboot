@@ -49,10 +49,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x0
 
-config MEM_TRAIN_SEQ
-	int
-	default 2
-
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2

@@ -38,10 +38,6 @@ config AMDMCT
 	bool
 	default y
 
-config MEM_TRAIN_SEQ
-	int
-	default 0
-
 config HW_MEM_HOLE_SIZEK
 	hex
 	default 0x100000

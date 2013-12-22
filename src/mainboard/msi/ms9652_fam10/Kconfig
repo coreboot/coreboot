@@ -137,10 +137,6 @@ config RAMTOP
 	hex
 	default 0x1000000
 
-config MEM_TRAIN_SEQ
-	int
-	default 2
-
 config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_01000096.h"

@@ -64,6 +64,8 @@ static void sbxxx_enable_48mhzout(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
+	hudson_pci_port80();
+
 	u32 val;
 	u8 byte;
 	device_t dev;

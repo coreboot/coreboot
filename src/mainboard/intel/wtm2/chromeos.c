@@ -32,21 +32,6 @@
 #include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6
-#define ACTIVE_LOW	0
-#define ACTIVE_HIGH	1
-
-static void fill_lb_gpio(struct lb_gpio *gpio, int num,
-			 int polarity, const char *name, int force)
-{
-	memset(gpio, 0, sizeof(*gpio));
-	gpio->port = num;
-	gpio->polarity = polarity;
-	if (force >= 0)
-		gpio->value = force;
-	else if (num >= 0)
-		gpio->value = get_gpio(num);
-	strncpy((char *)gpio->name, name, GPIO_MAX_NAME_LENGTH);
-}
 
 void fill_lb_gpios(struct lb_gpios *gpios)
 {

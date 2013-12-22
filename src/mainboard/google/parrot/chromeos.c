@@ -28,8 +28,6 @@
 #include <ec/compal/ene932/ec.h>
 #include "ec.h"
 
-#define ACTIVE_LOW	0
-#define ACTIVE_HIGH	1
 
 #ifndef __PRE_RAM__
 #include <boot/coreboot_tables.h>

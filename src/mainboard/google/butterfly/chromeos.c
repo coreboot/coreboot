@@ -28,8 +28,6 @@
 #include <ec/quanta/ene_kb3940q/ec.h>
 #include "ec.h"
 
-#define ACTIVE_LOW	0
-#define ACTIVE_HIGH	1
 #define WP_GPIO		6
 #define DEVMODE_GPIO	54
 #define FORCE_RECOVERY_MODE	0

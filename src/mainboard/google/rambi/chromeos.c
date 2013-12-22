@@ -36,8 +36,6 @@
 #include <boot/coreboot_tables.h>
 
 #define GPIO_COUNT	6
-#define ACTIVE_LOW	0
-#define ACTIVE_HIGH	1
 
 static int get_lid_switch(void)
 {
@@ -49,17 +47,6 @@ static int get_lid_switch(void)
 	/* Default to force open. */
 	return 1;
 #endif
-}
-
-static void fill_lb_gpio(struct lb_gpio *gpio, int port, int polarity,
-			 const char *name, int force)
-{
-	memset(gpio, 0, sizeof(*gpio));
-	gpio->port = port;
-	gpio->polarity = polarity;
-	if (force >= 0)
-		gpio->value = force;
-	strncpy((char *)gpio->name, name, GPIO_MAX_NAME_LENGTH);
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

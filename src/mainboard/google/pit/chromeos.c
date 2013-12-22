@@ -26,11 +26,6 @@
 #include <cpu/samsung/exynos5420/cpu.h>
 #include <cpu/samsung/exynos5420/gpio.h>
 
-enum {
-	ACTIVE_LOW = 0,
-	ACTIVE_HIGH = 1
-};
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	int count = 0;

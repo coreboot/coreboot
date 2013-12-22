@@ -1793,6 +1793,7 @@ static void clear_mtrr_dqs(unsigned tom2_k)
 	}
 }
 
+#if CONFIG_MEM_TRAIN_SEQ == 1
 static void set_htic_bit(unsigned i, unsigned val, unsigned bit)
 {
 	uint32_t dword;
@@ -1802,8 +1803,6 @@ static void set_htic_bit(unsigned i, unsigned val, unsigned bit)
 	pci_write_config32(PCI_DEV(0, 0x18+i, 0), HT_INIT_CONTROL, dword);
 }
 
-
-#if CONFIG_MEM_TRAIN_SEQ == 1
 static unsigned get_htic_bit(unsigned i, unsigned bit)
 {
 	uint32_t dword;
@@ -1822,7 +1821,9 @@ static void wait_till_sysinfo_in_ram(void)
 
 static void set_sysinfo_in_ram(unsigned val)
 {
+#if CONFIG_MEM_TRAIN_SEQ == 1
 	set_htic_bit(0, val, 9);
+#endif
 }
 
 #if CONFIG_HAVE_ACPI_RESUME

@@ -160,9 +160,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
 	printk(BIOS_DEBUG, "bsp_apicid=%02x\n", bsp_apicid);
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
 	set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
-#endif
 	setup_coherent_ht_domain();
 
 	wait_all_core0_started();

@@ -141,10 +141,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_debug_hex8(bsp_apicid);
 	print_debug("\n");
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
 	/* In BSP so could hold all AP until sysinfo is in RAM. */
 	set_sysinfo_in_ram(0);
-#endif
 
 	setup_coherent_ht_domain(); /* Routing table and start other core0. */
 	wait_all_core0_started();

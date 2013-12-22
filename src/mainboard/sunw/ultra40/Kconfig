@@ -32,10 +32,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x10
 
-config K8_REV_F_SUPPORT
-	bool
-	default n
-
 config CK804_NUM
 	int
 	default 2

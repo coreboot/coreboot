@@ -30,18 +30,22 @@ config ROMSTAGE_BASE
 	hex
 	default SYS_SDRAM_BASE
 
-# Keep the stack in SRAM
+# Keep the stack in SRAM block A2.
+# SRAM blocks A1 (0-16KiB) and A2 (16KiB-32KiB) are always accessible to the
+# CPU. This gives us 32KiB of SRAM to boot with. The BROM bootloader will use up
+# to 24KiB to load our bootblock, which leaves us the area from 24KiB to 32 KiB
+# to use however we see fit.
 config STACK_TOP
 	hex
 	default 0x00008000
 
 config STACK_BOTTOM
 	hex
-	default 0x00004000
+	default 0x00006000
 
 config STACK_SIZE
 	hex
-	default 0x00004000
+	default 0x00002000
 
 ## TODO Change this to some better address not overlapping bootblock when
 ## cbfstool supports creating header in arbitrary location.

@@ -531,7 +531,7 @@ PcieTopologyInitSrbmReset (
   )
 {
   UINT32 pcireg;
-  UINT32 regmask = 0x7030;;
+  UINT32 regmask = 0x7030;
   pcireg = PcieRegisterRead (
                                Wrapper,
                                WRAP_SPACE (Wrapper->WrapId, 0x8063),

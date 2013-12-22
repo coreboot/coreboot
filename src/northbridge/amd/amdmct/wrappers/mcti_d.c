@@ -48,7 +48,7 @@ static u16 mctGet_NVbits(u8 index)
 		//val =  200;	/* 200MHz(DDR400) */
 		//val =  266;	/* 266MHz(DDR533) */
 		//val =  333;	/* 333MHz(DDR667) */
-		val =  MEM_MAX_LOAD_FREQ;;	/* 400MHz(DDR800) */
+		val =  MEM_MAX_LOAD_FREQ;	/* 400MHz(DDR800) */
 		break;
 	case NV_ECC_CAP:
 #if SYSTEM_TYPE == SERVER

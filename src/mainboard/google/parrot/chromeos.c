@@ -72,7 +72,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Lid switch GPIO active high (open). */
 	gpios->gpios[3].port = 15;
 	gpios->gpios[3].polarity = ACTIVE_HIGH;
-	gpios->gpios[3].value = ((gp_lvl >> 15) & 1);;
+	gpios->gpios[3].value = ((gp_lvl >> 15) & 1);
 	strncpy((char *)gpios->gpios[3].name,"lid", GPIO_MAX_NAME_LENGTH);
 
 	/* Power Button */

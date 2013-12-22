@@ -294,7 +294,7 @@ const struct cbmem_entry *cbmem_entry_add(u32 id, u64 size64)
 {
 	struct cbmem_root *root;
 	const struct cbmem_entry *entry;
-	unsigned long base;;
+	unsigned long base;
 	u32 size;
 	u32 aligned_size;
 

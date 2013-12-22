@@ -1283,8 +1283,8 @@ static void i5000_setup_interleave(struct i5000_fbd_setup *setup)
 	}
 
 	printk(BIOS_DEBUG, "MIR0: %04x\n", mir0);
-	printk(BIOS_DEBUG, "MIR1: %04x\n", mir1);;
-	printk(BIOS_DEBUG, "MIR2: %04x\n", mir2);;
+	printk(BIOS_DEBUG, "MIR1: %04x\n", mir1);
+	printk(BIOS_DEBUG, "MIR2: %04x\n", mir2);
 
 	pci_write_config16(dev16, I5000_MIR0, mir0);
 	pci_write_config16(dev16, I5000_MIR1, mir1);

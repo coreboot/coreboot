@@ -21,15 +21,16 @@ get_bootblock_size= \
 					sed 's/[^0-9 ]//g')) \
 	$(shell echo $$(($(word 2, $(strip $(bb_s))))))
 
-# The boot ROM in the SoC will start loading code if a special boot0 header is
+# The boot ROM in the SoC will start loading code if a special BOOT0 header is
 # found (at an offset of 8KiB in either NAND or SD), and the checksum is
-# correct. this header is normally added by the 'mxsunxiboot' tool. The file
-# passed to mksunxiboot should only include the bootblock due to size
-# limitations.
-# FIXME: Figure out how to safely integrate in coreboot.rom. For now, only copy
-# the first 15 KiB of coreboot.rom (This will not collide with stack)
+# correct. This header is normally added by the 'mxsunxiboot' tool. The boot ROM
+# will load at most 24KiB of data to SRAM, so limit the file size accordingly.
+# The BOOT0 header takes 32 bytes, so limit our file to 24KiB - 32 bytes.
+# FIXME: Figure out how to safely integrate in coreboot.rom.
+# FIXME: The file passed to mksunxiboot should only include the bootblock due
+#	 to size limitations.
 $(obj)/BOOT0: $(obj)/coreboot.rom
 	@printf "    BOOT0      $(subst $(obj)/,,$(^))\n"
 	touch $@
-	dd if=$^ of=$^.tmp bs=1024 count=15
+	dd if=$^ of=$^.tmp bs=24544 count=1
 	-mksunxiboot $^.tmp $@

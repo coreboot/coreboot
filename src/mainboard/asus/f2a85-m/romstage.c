@@ -64,7 +64,9 @@ static void sbxxx_enable_48mhzout(void)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
+#if CONFIG_IO_POST_PORT
 	hudson_pci_port80();
+#endif
 
 	u32 val;
 	u8 byte;

@@ -1038,13 +1038,7 @@ struct nodes_info_t {
 
 //#define MEM_CS_COPY 1
 #define MEM_CS_COPY NODE_NUMS
-
-#if CONFIG_MEM_TRAIN_SEQ == 0
-	#define DQS_DELAY_COPY NODE_NUMS
-#else
-//	#define DQS_DELAY_COPY 1
-	#define DQS_DELAY_COPY NODE_NUMS
-#endif
+#define DQS_DELAY_COPY NODE_NUMS
 #endif
 
 

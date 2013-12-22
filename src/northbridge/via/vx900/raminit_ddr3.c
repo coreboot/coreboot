@@ -426,7 +426,7 @@ static void vx900_dram_phys_bank_range(const dimm_info * dimms,
 		} else {
 			/* Otherwise, everything is held in the first bank */
 			ranks->phys_rank_size_mb[i << 1] = size;
-			ranks->phys_rank_size_mb[(i << 1) | 1] = 0;;
+			ranks->phys_rank_size_mb[(i << 1) | 1] = 0;
 		}
 	}
 }
@@ -1294,7 +1294,7 @@ static void vx900_dram_calibrate_transmit_delays(delay_range * tx_dq,
 {
 	/* Same timeout reasoning as in receive delays */
 	size_t n_tries = 0;
-	int dq_tries = 0, dqs_tries = 0;;
+	int dq_tries = 0, dqs_tries = 0;
 	const size_t max_tries = 100;
 	for (;;) {
 		if (n_tries++ >= max_tries) {

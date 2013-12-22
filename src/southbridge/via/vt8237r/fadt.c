@@ -163,7 +163,7 @@ void acpi_create_fadt(acpi_fadt_t *fadt, acpi_facs_t *facs, void *dsdt)
 	fadt->x_gpe0_blk.addrh = 0x0;
 
 	fadt->x_gpe1_blk.space_id = 1;
-	fadt->x_gpe1_blk.bit_width = fadt->gpe1_blk_len * 8;;
+	fadt->x_gpe1_blk.bit_width = fadt->gpe1_blk_len * 8;
 	fadt->x_gpe1_blk.bit_offset = 0;
 	fadt->x_gpe1_blk.resv = 0;
 	fadt->x_gpe1_blk.addrl = fadt->gpe1_blk;

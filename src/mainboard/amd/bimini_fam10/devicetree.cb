@@ -92,18 +92,4 @@ chip northbridge/amd/amdfam10/root_complex
 #		end
 #	end #domain
 
-#	  chip drivers/generic/debug
-#		 device pnp 0.0 off end # chip name
-#		  device pnp 0.1 on end # pci_regs_all
-#		  device pnp 0.2 off end # mem
-#		  device pnp 0.3 off end # cpuid
-#		  device pnp 0.4 off end # smbus_regs_all
-#		  device pnp 0.5 off end # dual core msr
-#		  device pnp 0.6 off end # cache size
-#		  device pnp 0.7 off end # tsc
-#		  device pnp 0.8 off end # hard reset
-#		  device pnp 0.9 off end # mcp55
-#		  device pnp 0.a on end # GH ext table
-#	 end
-
 end

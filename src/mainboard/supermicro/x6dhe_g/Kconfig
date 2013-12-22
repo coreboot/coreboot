@@ -14,7 +14,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
 	select BOARD_ROMSIZE_KB_1024
-	select DRIVERS_GENERIC_DEBUG
 
 config MAINBOARD_DIR
 	string

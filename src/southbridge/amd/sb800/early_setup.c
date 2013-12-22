@@ -276,7 +276,7 @@ void sb800_pci_port80(void)
 	pci_write_config8(dev, 0x04, byte);
 
 	/* LPC controller */
-	dev = PCI_DEV(0, 0x14, 3);;//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
+	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
 
 	byte = pci_read_config8(dev, 0x4A);
 	byte &= ~(1 << 5);	/* disable lpc port 80 */

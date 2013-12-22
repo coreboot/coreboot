@@ -40,7 +40,7 @@ static int input_buffer_empty(u16 status_reg)
 	u32 timeout;
 	for(timeout = KBC_TIMEOUT_IN_MS; timeout && (inb(status_reg) & KBD_IBF);
 	    timeout--) {
-		udelay(1000);;
+		udelay(1000);
 	}
 
 	if (!timeout) {
@@ -56,7 +56,7 @@ static int output_buffer_full(u16 status_reg)
 	u32 timeout;
 	for(timeout = KBC_TIMEOUT_IN_MS; timeout && ((inb(status_reg)
 	    & KBD_OBF) == 0); timeout--) {
-		udelay(1000);;
+		udelay(1000);
 	}
 
 	if (!timeout) {

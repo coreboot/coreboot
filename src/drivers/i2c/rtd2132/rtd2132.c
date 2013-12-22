@@ -181,7 +181,7 @@ static void rtd2132_lvds_swap(device_t dev,
 	if (cfg->lvds_swap & RTD2132_LVDS_SWAP_CFG_DUAL)
 		swap_value |= RTD2132_LVDS_SWAP_DUAL;
 
-	printk(BIOS_INFO, "RTD2132: LVDS Swap 0x%02x\n", swap_value);;
+	printk(BIOS_INFO, "RTD2132: LVDS Swap 0x%02x\n", swap_value);
 
 	rtd2132_write_reg(dev, RTD2132_COMMAND_LVDS_SWAP, swap_value);
 }

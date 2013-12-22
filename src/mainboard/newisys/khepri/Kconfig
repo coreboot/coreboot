@@ -31,10 +31,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x0
 
-config K8_REV_F_SUPPORT
-	bool
-	default n
-
 config SB_HT_CHAIN_ON_BUS0
 	int
 	default 0

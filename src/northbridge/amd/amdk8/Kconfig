@@ -71,6 +71,10 @@ config K8_ALLOCATE_IO_RANGE
 	bool
 	default n
 
+config K8_REV_F_SUPPORT
+	bool
+	default n
+
 if K8_REV_F_SUPPORT
 
 config DIMM_DDR2

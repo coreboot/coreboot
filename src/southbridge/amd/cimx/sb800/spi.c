@@ -117,7 +117,7 @@ static void ImcSleep(void)
 static void ImcWakeup(void)
 {
 	u8	cmd_val = 0x96;		/* Kick off IMC Mailbox command 96 */
-	u8	reg0_val = 0;;		/* clear response register */
+	u8	reg0_val = 0;		/* clear response register */
 	u8	reg1_val = 0xB5;	/* release ownership flag */
 
 	WriteECmsg (MSG_REG0, AccWidthUint8, &reg0_val);

@@ -62,10 +62,6 @@ config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool
 	default n
 
-config MEM_TRAIN_SEQ
-	int
-	default 2
-
 config IRQ_SLOT_COUNT
 	int
 	default 11

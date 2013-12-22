@@ -1,10 +1,4 @@
 chip northbridge/intel/e7520  # MCH
-	chip drivers/generic/debug  # DEBUGGING
-		device pnp 00.0 on end
-		device pnp 00.1 off end
-		device pnp 00.2 off end
-		device pnp 00.3 off end
-	end
 	device domain 0 on
 		subsystemid 0x15d9 0x6080 inherit
 		chip southbridge/intel/esb6300	# ESB6300

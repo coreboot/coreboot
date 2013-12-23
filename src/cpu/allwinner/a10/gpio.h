@@ -46,6 +46,7 @@ struct a10_gpio {
 	u32 sdr_pad_pul;
 } __attribute__ ((packed));
 
-void gpio_set_func(u8 port, u8 pin, u8 pad_func);
+void gpio_set_pin_func(u8 port, u8 pin, u8 pad_func);
+void gpio_set_multipin_func(u8 port, u32 pin_mask, u8 pad_func);
 
 #endif				/* __CPU_ALLWINNER_A10_PINMUX_H */

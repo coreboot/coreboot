@@ -18,8 +18,8 @@
 	 | AHB_DIV_1			\
 	 | AXI_DIV_1
 
-#define GPB22_UART0_TX_FUNC		2
-#define GPB23_UART0_RX_FUNC		2
+#define GPB_UART0_FUNC			2
+#define GPB_UART0_PINS			((1 << 22) | (1 << 23))
 
 static void cubieboard_set_sys_clock(void)
 {
@@ -57,8 +57,7 @@ static void cubieboard_setup_clocks(void)
 static void cubieboard_setup_gpios(void)
 {
 	/* Mux UART pins */
-	gpio_set_func(GPB, 22, GPB22_UART0_TX_FUNC);
-	gpio_set_func(GPB, 23, GPB23_UART0_RX_FUNC);
+	gpio_set_multipin_func(GPB, GPB_UART0_PINS, GPB_UART0_FUNC);
 }
 
 static void cubieboard_enable_uart(void)

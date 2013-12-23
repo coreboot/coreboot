@@ -467,9 +467,6 @@ static void InitDQSPos4RcvrEn(const struct mem_controller *ctrl)
 
 
 }
-#ifndef K8_REV_F_SUPPORT_F0_F1_WORKAROUND
-#define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 1
-#endif
 
 static unsigned TrainRcvrEn(const struct mem_controller *ctrl, unsigned Pass, struct sys_info *sysinfo)
 {

@@ -3,6 +3,9 @@
 #define AMDK8_H
 
 #if CONFIG_K8_REV_F_SUPPORT
+
+#define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
+
         #include "f.h"
 #else
         #include "pre_f.h"

@@ -50,6 +50,11 @@ config ID_SECTION_OFFSET
 	hex
 	default 0x4800
 
+# SPI I/O base address control.
+config I2C_BASE
+	hex
+	default 0xfb00
+
 # ROM Strap PLL config setting :
 
 choice

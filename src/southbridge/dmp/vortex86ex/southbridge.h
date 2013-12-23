@@ -36,6 +36,7 @@
 #define	SB_REG_IPFCR		0xc0
 #define	SB_REG_FRWPR		0xc4
 #define	SB_REG_STRAP		0xce
+#define	SB_REG_II2CCR		0xd4
 
 #define	SB1			PCI_DEV(0, 7, 1)
 #define	SB1_REG_EXT_PIRQ_ROUTE2	0xb4

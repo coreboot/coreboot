@@ -88,10 +88,6 @@ config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
 
-config COREBOOT_TABLES_SIZE
-	hex
-	default 0x4000000
-
 choice CONSOLE_SERIAL_UART_CHOICES
 	prompt "Serial Console UART"
 	default CONSOLE_SERIAL_UART3

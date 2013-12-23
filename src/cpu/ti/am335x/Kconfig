@@ -47,8 +47,3 @@ config CBFS_HEADER_ROM_OFFSET
 config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
-
-# FIXME: this can probably be smaller
-config COREBOOT_TABLES_SIZE
-	hex
-	default 0x800

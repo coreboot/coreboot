@@ -2493,10 +2493,6 @@ static void sdram_enable(int controllers, const struct mem_controller *ctrl)
 
 }
 
-static void set_sysinfo_in_ram(unsigned val)
-{
-}
-
 void fill_mem_ctrl(int controllers, struct mem_controller *ctrl_a,
 			  const uint16_t *spd_addr)
 {

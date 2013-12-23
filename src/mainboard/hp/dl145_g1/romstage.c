@@ -119,9 +119,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	setup_dl145g1_resource_map();
 	//setup_default_resource_map();
 
-#if CONFIG_MEM_TRAIN_SEQ == 1
-	set_sysinfo_in_ram(0); // in BSP so could hold all ap until sysinfo is in ram
-#endif
 	setup_coherent_ht_domain();
 	wait_all_core0_started();
 #if CONFIG_LOGICAL_CPUS

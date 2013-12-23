@@ -1,7 +1,3 @@
-#if CONFIG_K8_REV_F_SUPPORT
-#define K8_REV_F_SUPPORT_F0_F1_WORKAROUND 0
-#endif
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

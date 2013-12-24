@@ -62,12 +62,7 @@ static void cubieboard_setup_gpios(void)
 
 static void cubieboard_enable_uart(void)
 {
-	u32 reg32;
-	struct a10_ccm *ccm = (void *)A1X_CCM_BASE;
-	/* Enable clock to UART0 */
-	reg32 = read32(&ccm->apb1_gate);
-	reg32 |= APB1_GATE_UART(0);
-	write32(reg32, &ccm->apb1_gate);
+	a1x_periph_clock_enable(A1X_CLKEN_UART0);
 }
 
 void bootblock_mainboard_init(void);

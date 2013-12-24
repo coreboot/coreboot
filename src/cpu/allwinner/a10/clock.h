@@ -43,19 +43,108 @@
 #define APB1_RAT_M_MASK			0x1f << 0)
 #define  APB1_RAT_M(n)			(((n) & 0x1f) << 0)
 
-/* APB0_GATING values */
-#define APB0_GATE_KEYPAD		(1 << 10)
-#define APB0_GATE_IR(x)			(((1 << (x)) & 0x3) << 6)
-#define APB0_GATE_PIO			(1 << 5)
-#define APB0_GATE_IIS			(1 << 3)
-#define APB0_GATE_AC97			(1 << 2)
-#define APB0_GATE_CODEC			(1 << 0)
+/**
+ * \brief Clock gating definitions
+ *
+ * The definitions are specified in the form:
+ * 31:5 register offset from A1X_CCM_BASE for the clock register
+ * 4:0  bit offset for the given peripheral
+ *
+ * The names have the form [periph_type][periph_number]
+ *
+ * These definitions are meant to be used with @ref a1x_periph_clock_enable and
+ * @ref a1x_periph_clock_disable
+ */
 
-/* APB1_GATING values */
-#define APB1_GATE_UART(x)		(((1 << (x)) & 0xff) << 16)
-#define APB1_GATE_PS2(x)		(((1 << (x)) & 0x3) << 6)
-#define APB1_GATE_CAN			(1 << 4)
-#define APB1_GATE_TWI(x)		(((1 << (x)) & 0x7) << 0)
+enum a1x_clken {
+	/* AXI module clocK gating */
+	A1X_CLKEN_DRAM_AXI = (0x5C << 5),
+	/* AHB0 module clock gating */
+	A1X_CLKEN_USB0 = (0x60 << 5),
+	A1X_CLKEN_EHCI0,
+	RSVD_0x60_2,
+	A1X_CLKEN_EHCI1,
+	RSVD_0x60_4,
+	A1X_CLKEN_SS,
+	A1X_CLKEN_DMA,
+	A1X_CLKEN_BIST,
+	A1X_CLKEN_MMC0,
+	A1X_CLKEN_MMC1,
+	A1X_CLKEN_MMC2,
+	A1X_CLKEN_MMC3,
+	A1X_CLKEN_NC,
+	A1X_CLKEN_NAND,
+	A1X_CLKEN_SDRAM,
+	RSVD_0x60_15,
+	A1X_CLKEN_ACE,
+	A1X_CLKEN_EMAC,
+	A1X_CLKEN_TS,
+	RSVD_0x60_19,
+	A1X_CLKEN_SPI0,
+	A1X_CLKEN_SPI1,
+	A1X_CLKEN_SPI2,
+	A1X_CLKEN_SPI3,
+	A1X_CLKEN_PATA,
+	/* AHB1 module clock gating */
+	A1X_CLKEN_DRAM_VE = (0x64 << 5),
+	A1X_CLKEN_TVD,
+	A1X_CLKEN_TVE0,
+	A1X_CLKEN_TVE1,
+	A1X_CLKEN_LCD0,
+	A1X_CLKEN_LCD1,
+	RSVD_0x64_6,
+	RSVD_0x64_7,
+	A1X_CLKEN_CSI0,
+	A1X_CLKEN_CSI1,
+	RSVD_0x64_10,
+	A1X_CLKEN_HDMI,
+	A1X_CLKEN_DE_BE0,
+	A1X_CLKEN_DE_BE1,
+	A1X_CLKEN_DE_FE0,
+	A1X_CLKEN_DE_FE1,
+	RSVD_0x64_16,
+	RSVD_0x64_17,
+	A1X_CLKEN_MP,
+	RSVD_0x64_19,
+	A1X_CLKEN_MALI400,
+	/* APB0 module clock gating */
+	A1X_CLKEN_CODEC = (0x68 << 5),
+	A1X_CLKEN_NC_APB,
+	A1X_CLKEN_AC97,
+	A1X_CLKEN_IIS,
+	RSVD_0x68_4,
+	A1X_CLKEN_PIO,
+	A1X_CLKEN_IR0,
+	A1X_CLKEN_IR1,
+	RSVD_0x68_8,
+	RSVD_0x68_9,
+	A1X_CLKEN_KEYPAD,
+	/* APB1 module clock gating */
+	A1X_CLKEN_TWI0 = (0x6C << 5),
+	A1X_CLKEN_TWI1,
+	A1X_CLKEN_TWI2,
+	RSVD_0x6C_3,
+	A1X_CLKEN_CAN,
+	A1X_CLKEN_SCR,
+	A1X_CLKEN_PS20,
+	A1X_CLKEN_PS21,
+	RSVD_0x6C_8,
+	RSVD_0x6C_9,
+	RSVD_0x6C_10,
+	RSVD_0x6C_11,
+	RSVD_0x6C_12,
+	RSVD_0x6C_13,
+	RSVD_0x6C_14,
+	RSVD_0x6C_15,
+	A1X_CLKEN_UART0,
+	A1X_CLKEN_UART1,
+	A1X_CLKEN_UART2,
+	A1X_CLKEN_UART3,
+	A1X_CLKEN_UART4,
+	A1X_CLKEN_UART5,
+	A1X_CLKEN_UART6,
+	A1X_CLKEN_UART7,
+};
 
 struct a10_ccm {
 	u32 pll1_cfg;		/* 0x00 pll1 control */
@@ -133,5 +222,8 @@ struct a10_ccm {
 	u8 res7[0x4];
 	u32 mbus_clk_cfg;	/* 0x15c */
 } __attribute__ ((packed));
+
+void a1x_periph_clock_enable(enum a1x_clken periph);
+void a1x_periph_clock_disable(enum a1x_clken periph);
 
 #endif				/* CPU_ALLWINNER_A10_CLOCK_H */

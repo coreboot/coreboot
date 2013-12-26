@@ -15,7 +15,7 @@
 #define CPU_AHB_APB0_DEFAULT 		\
 	 CPU_CLK_SRC_OSC24M	 	\
 	 | APB0_DIV_1			\
-	 | AHB_DIV_1			\
+	 | AHB_DIV_2			\
 	 | AXI_DIV_1
 
 #define GPH_STATUS_LEDS			(1 << 20) | (1 << 21)
@@ -33,7 +33,9 @@ static void cubieboard_set_sys_clock(void)
 	/* Switch CPU clock to main oscillator */
 	write32(CPU_AHB_APB0_DEFAULT, &ccm->cpu_ahb_apb0_cfg);
 
-	/* Configure the PLL1. The value is the same one used by u-boot */
+	/* Configure the PLL1. The value is the same one used by u-boot
+	 * P = 1, N = 16, K = 1, M = 1 --> Output = 384 MHz
+	 */
 	write32(0xa1005000, &ccm->pll1_cfg);
 
 	/* FIXME: Delay to wait for PLL to lock */

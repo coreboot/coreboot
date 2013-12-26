@@ -68,22 +68,22 @@ static void w83627uhg_init(device_t dev)
 
 	switch(dev->path.pnp.device) {
 	case W83627UHG_SP1:
-		/* set_uart_clock_source(dev, 0); */
+		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_SP2:
-		/* set_uart_clock_source(dev, 0); */
+		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_SP3:
-		/* set_uart_clock_source(dev, 0); */
+		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_SP4:
-		/* set_uart_clock_source(dev, 0); */
+		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_SP5:
-		/* set_uart_clock_source(dev, 0); */
+		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_SP6:
-		/* set_uart_clock_source(dev, 0); */
+		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_KBC:
 		pc_keyboard_init(&conf->keyboard);

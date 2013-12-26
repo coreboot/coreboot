@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Marc Jones <marc.jones@se-eng.com>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Code-Review+1: Andrew Wu <arw@dmp.com.tw>
+Submitted-by: Kyösti Mälkki <kyosti.malkki@gmail.com>
+Submitted-at: Thu, 26 Dec 2013 23:18:28 +0100
+Reviewed-on: http://review.coreboot.org/4572
+Project: coreboot
+Branch: refs/heads/master

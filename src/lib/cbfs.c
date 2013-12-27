@@ -256,36 +256,44 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
-	struct cbfs_stage *stage = (struct cbfs_stage *)
+	struct cbfs_stage stage;
+	struct cbfs_stage *mm_stage = (struct cbfs_stage *)
 		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
 	/* this is a mess. There is no ntohll. */
 	/* for now, assume compatible byte order until we solve this. */
 	uint32_t entry;
 	uint32_t final_size;
 
-	if (stage == NULL)
+	if (mm_stage == NULL)
 		return (void *) -1;
+
+	/* Copy the stage header to the stack. On ARM SoCs, the memory region
+	 * returned by cbfs_get_file_content() may be in the CBFS cache, and if
+	 * the stage is to be copied to the same region, the header can be
+	 * overwritten by cbfs_decompress().
+	 */
+	memcpy(&stage, mm_stage, sizeof(stage));
 
 	LOG("loading stage %s @ 0x%x (%d bytes), entry @ 0x%llx\n",
 			name,
-			(uint32_t) stage->load, stage->memlen,
-			stage->entry);
+			(uint32_t) stage.load, stage.memlen,
+			stage.entry);
 
-	final_size = cbfs_decompress(stage->compression,
-				     ((unsigned char *) stage) +
+	final_size = cbfs_decompress(stage.compression,
+				     ((unsigned char *) mm_stage) +
 				     sizeof(struct cbfs_stage),
-				     (void *) (uint32_t) stage->load,
-				     stage->len);
+				     (void *) (uint32_t) stage.load,
+				     stage.len);
 	if (!final_size)
 		return (void *) -1;
 
 	/* Stages rely the below clearing so that the bss is initialized. */
-	memset((void *)((uintptr_t)stage->load + final_size), 0,
-	       stage->memlen - final_size);
+	memset((void *)((uintptr_t)stage.load + final_size), 0,
+	       stage.memlen - final_size);
 
 	DEBUG("stage loaded.\n");
 
-	entry = stage->entry;
+	entry = stage.entry;
 	// entry = ntohll(stage->entry);
 
 	return (void *) entry;

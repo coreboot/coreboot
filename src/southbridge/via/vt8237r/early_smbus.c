@@ -274,7 +274,7 @@ void vt8237_sb_enable_fid_vid(void)
 	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
 	pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
 
-	/* Enable ACPI accessm RTC signal gated with PSON. */
+	/* Enable ACPI access RTC signal gated with PSON. */
 	pci_write_config8(dev, 0x81, 0x84);
 
 	/* chipset-specific parts */
@@ -342,7 +342,7 @@ static int acpi_is_wakeup_early(void) {
 	/* Set ACPI base address to I/O VT8237R_ACPI_IO_BASE. */
 	pci_write_config16(dev, 0x88, VT8237R_ACPI_IO_BASE | 0x1);
 
-	/* Enable ACPI accessm RTC signal gated with PSON. */
+	/* Enable ACPI access RTC signal gated with PSON. */
 	pci_write_config8(dev, 0x81, 0x84);
 
 	tmp = inw(VT8237R_ACPI_IO_BASE + 0x04);

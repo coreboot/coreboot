@@ -215,7 +215,7 @@ static void setup_pm(device_t dev)
 	/* Disable GP3 timer. */
 	pci_write_config8(dev, 0x98, 0);
 
-	/* Enable ACPI accessm RTC signal gated with PSON. */
+	/* Enable ACPI access RTC signal gated with PSON. */
 	pci_write_config8(dev, 0x81, 0x84);
 
 	/* Clear status events. */

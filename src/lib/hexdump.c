@@ -28,54 +28,54 @@ static int isprint(int c)
 	return (c >= 32 && c <= 126);
 }
 
-void hexdump(const void* memory, size_t length)
+void hexdump(const void *memory, size_t length)
 {
-        int i;
-        uint8_t *m;
-        int all_zero = 0;
+	int i;
+	uint8_t *m;
+	int all_zero = 0;
 
-        m = (uint8_t *)memory;
+	m = (uint8_t *) memory;
 
-        for (i = 0; i < length; i += 16) {
-                int j;
+	for (i = 0; i < length; i += 16) {
+		int j;
 
-                all_zero++;
-                for (j = 0; j < 16; j++) {
-                        if(m[i+j] != 0) {
-                                all_zero = 0;
-                                break;
-                        }
-                }
+		all_zero++;
+		for (j = 0; j < 16; j++) {
+			if (m[i + j] != 0) {
+				all_zero = 0;
+				break;
+			}
+		}
 
-                if (all_zero < 2) {
-                        printk(BIOS_DEBUG, "%p:", memory + i);
-                        for (j = 0; j < 16; j++)
-                                printk(BIOS_DEBUG, " %02x", m[i+j]);
-                        printk(BIOS_DEBUG, "  ");
-                        for (j = 0; j < 16; j++)
-                                printk(BIOS_DEBUG, "%c",
-					isprint(m[i+j]) ? m[i+j] : '.');
-                        printk(BIOS_DEBUG, "\n");
-                } else if (all_zero == 2) {
-                        printk(BIOS_DEBUG, "...\n");
-                }
-        }
+		if (all_zero < 2) {
+			printk(BIOS_DEBUG, "%p:", memory + i);
+			for (j = 0; j < 16; j++)
+				printk(BIOS_DEBUG, " %02x", m[i + j]);
+			printk(BIOS_DEBUG, "  ");
+			for (j = 0; j < 16; j++)
+				printk(BIOS_DEBUG, "%c",
+				       isprint(m[i + j]) ? m[i + j] : '.');
+			printk(BIOS_DEBUG, "\n");
+		} else if (all_zero == 2) {
+			printk(BIOS_DEBUG, "...\n");
+		}
+	}
 }
 
 void hexdump32(char LEVEL, const void *d, int len)
 {
-	int count=0;
+	int count = 0;
 
 	while (len > 0) {
 		if (count % 8 == 0) {
-			printk(LEVEL,"\n");
+			printk(LEVEL, "\n");
 			printk(LEVEL, "%p:", d);
 		}
-		printk(LEVEL, " 0x%08lx", *(unsigned long*)d);
+		printk(LEVEL, " 0x%08lx", *(unsigned long *)d);
 		count++;
 		len--;
 		d += 4;
 	}
 
-	printk(LEVEL,"\n\n");
+	printk(LEVEL, "\n\n");
 }

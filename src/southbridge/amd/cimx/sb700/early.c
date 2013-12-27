@@ -27,7 +27,6 @@
 #include <console/loglevel.h>
 #include "smbus.h"
 
-#if CONFIG_RAMINIT_SYSINFO
 /**
  * @brief Get SouthBridge device number
  * @param[in] bus target bus number
@@ -45,7 +44,6 @@ u32 get_sbdn(u32 bus)
 	printk(BIOS_SPEW, "SB700 - Early.c - %s - End.\n", __func__);
 	return (dev >> 15) & 0x1f;
 }
-#endif
 
 /**
  * @brief Enable A-Link Express Configuration DMA Access.

@@ -26,7 +26,6 @@
 #include "cfg.h"		/*sb800_cimx_config*/
 #include "cbmem.h"
 
-#if CONFIG_RAMINIT_SYSINFO
 /**
  * @brief Get SouthBridge device number
  * @param[in] bus target bus number
@@ -45,8 +44,6 @@ u32 get_sbdn(u32 bus)
 	printk(BIOS_DEBUG, "SB800 - %s - %s - End.\n", __FILE__, __func__);
 	return (dev >> 15) & 0x1f;
 }
-#endif
-
 
 /**
  * @brief South Bridge CIMx romstage entry,

@@ -28,7 +28,7 @@ static int isprint(int c)
 	return (c >= 32 && c <= 126);
 }
 
-void hexdump(unsigned long memory, int length)
+void hexdump(void* memory, size_t length)
 {
         int i;
         uint8_t *m;
@@ -48,7 +48,7 @@ void hexdump(unsigned long memory, int length)
                 }
 
                 if (all_zero < 2) {
-                        printk(BIOS_DEBUG, "%08lx:", memory + i);
+                        printk(BIOS_DEBUG, "%p:", memory + i);
                         for (j = 0; j < 16; j++)
                                 printk(BIOS_DEBUG, " %02x", m[i+j]);
                         printk(BIOS_DEBUG, "  ");

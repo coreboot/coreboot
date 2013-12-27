@@ -22,6 +22,7 @@
 #ifndef __LIB_H__
 #define __LIB_H__
 #include <stdint.h>
+#include <types.h>
 
 #if !defined(__ROMCC__) /* Conflicts with inline function in arch/io.h */
 /* Defined in src/lib/clog2.c */
@@ -57,6 +58,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void post_cache_as_ram(void);
 
 /* Defined in src/lib/hexdump.c */
-void hexdump(unsigned long memory, int length);
+void hexdump(const void *memory, size_t length);
 
 #endif /* __LIB_H__ */

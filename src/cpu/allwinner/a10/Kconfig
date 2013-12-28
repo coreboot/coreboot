@@ -34,14 +34,16 @@ config CBFS_HEADER_ROM_OFFSET
 	hex
 	default 0x10
 
+# This is the maximum size bootblock that the BROM will load. If the bootblock
+# gets larger, this will generate a build failure, rather than a silent
+# "coreboot won't run" failure.
 config CBFS_ROM_OFFSET
-	# Calculated by BL1 + max bootblock size.
-	default 0x4c00
+	default 0x5fe0
 
-# FIXME: untested
+# 16 MiB above ramstage, so there is no overlap
 config ROMSTAGE_BASE
 	hex
-	default SYS_SDRAM_BASE
+	default 0x41000000
 
 # Keep the stack in SRAM block A2.
 # SRAM blocks A1 (0-16KiB) and A2 (16KiB-32KiB) are always accessible to the

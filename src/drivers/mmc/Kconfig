@@ -1,0 +1,15 @@
+config DRIVER_MMC
+	bool
+	default n
+	help
+	  Generic MMC and SD card driver
+
+if DRIVER_MMC
+
+config DRIVER_MMC_BOOTBLOCK
+	bool
+	default n
+	help
+	  Include MMC driver in the bootblock.
+
+endif # DRIVER_MMC

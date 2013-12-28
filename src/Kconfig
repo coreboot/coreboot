@@ -721,6 +721,13 @@ config DEBUG_CBFS
 	help
 	  This option enables additional CBFS related debug messages.
 
+config DEBUG_MMC
+	bool "Output verbose MMC/SD card debug messages"
+	default n
+	depends on DRIVER_MMC
+	help
+	  This option enables additional MMC related debug messages.
+
 config HAVE_DEBUG_RAM_SETUP
 	def_bool n
 

@@ -41,6 +41,13 @@ enum cb_err {
 	CB_CMOS_OPTION_NOT_FOUND = -102,	/**< Option string not found */
 	CB_CMOS_ACCESS_ERROR = -103,		/**< CMOS access error */
 	CB_CMOS_CHECKSUM_INVALID = -104,	/**< CMOS checksum is invalid */
+
+	/* MMC/SD card errors */
+	CB_MMC_NO_CARD = -200,			/* No SD/MMC card inserted */
+	CB_MMC_UNUSABLE = -201,			/* Unusable Card */
+	CB_MMC_COMM_ERROR = -202,		/* Communications Error */
+	CB_MMC_TIMEOUT = -203,
+	CB_MMC_IN_PROGRESS = -204,		/* operation is in progress */
 };
 
 #endif /* __TYPES_H */

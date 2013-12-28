@@ -66,6 +66,16 @@
 /* DRAM_CLK values*/
 #define DRAM_CTRL_DCLK_OUT		(1 << 15)
 
+/* SDx_CLK values */
+#define SDx_CLK_GATE			(1 << 31)
+#define SDx_CLK_SRC_MASK		(3 << 24)
+#define  SDx_CLK_SRC_OSC24M		(0 << 24)
+#define  SDx_CLK_SRC_PLL6		(1 << 24)
+#define  SDx_CLK_SRC_PLL5		(2 << 24)
+#define SDx_RAT_EXP_N_MASK		(3 << 16)
+#define  SDx_RAT_EXP_N(n)		(((n) << 16) & SDx_RAT_EXP_N_MASK)
+#define SDx_RAT_M_MASK			(0xf << 0)
+#define  SDx_RAT_M(m)			((((m) - 1) << 0) & SDx_RAT_M_MASK)
 /**
  * \brief Clock gating definitions
  *

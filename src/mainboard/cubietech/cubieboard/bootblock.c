@@ -27,6 +27,10 @@
 #define GPB_UART0_FUNC			2
 #define GPB_UART0_PINS			((1 << 22) | (1 << 23))
 
+#define GPF_SD0_FUNC			2
+#define GPF_SD0_PINS			0x3f	/* PF0 thru PF5 */
+#define GPH1_SD0_DET_FUNC		5
+
 static void cubieboard_set_sys_clock(void)
 {
 	u32 reg32;
@@ -60,6 +64,13 @@ static void cubieboard_setup_clocks(void)
 	write32(APB1_CLK_SRC_OSC24M | APB1_RAT_N(0) | APB1_RAT_M(0),
 		&ccm->apb1_clk_div_cfg);
 
+	/* Configure the clock for SD0 */
+	write32(SDx_CLK_GATE | SDx_CLK_SRC_OSC24M | SDx_RAT_EXP_N(0)
+		| SDx_RAT_M(1), &ccm->sd0_clk_cfg);
+
+	/* Enable clock to SD0 */
+	a1x_periph_clock_enable(A1X_CLKEN_MMC0);
+
 }
 
 static void cubieboard_setup_gpios(void)
@@ -71,6 +82,10 @@ static void cubieboard_setup_gpios(void)
 
 	/* Mux UART pins */
 	gpio_set_multipin_func(GPB, GPB_UART0_PINS, GPB_UART0_FUNC);
+
+	/* Mux SD pins */
+	gpio_set_multipin_func(GPF, GPF_SD0_PINS, GPF_SD0_FUNC);
+	gpio_set_pin_func(GPH, 1, GPH1_SD0_DET_FUNC);
 }
 
 static void cubieboard_enable_uart(void)

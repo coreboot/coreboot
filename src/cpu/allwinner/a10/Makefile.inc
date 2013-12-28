@@ -7,17 +7,20 @@ bootblock-y	+= bootblock_media.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart_console.c
 
+romstage-y	+= clock.c
 romstage-y	+= uart.c
 romstage-y	+= uart_console.c
 romstage-y	+= bootblock_media.c
+romstage-y	+= timer.c
+romstage-y	+= mmc-generic.c
 
+ramstage-y	+= clock.c
 ramstage-y	+= uart.c
 ramstage-y	+= uart_console.c
 ramstage-y	+= timer.c
-ramstage-y	+= twi.c
 ramstage-y	+= monotonic_timer.c
 ramstage-y	+= bootblock_media.c
-
+ramstage-y	+= mmc-generic.c
 
 real-target: $(obj)/BOOT0
 

@@ -11,6 +11,7 @@ romstage-y	+= bootblock_media.c
 ramstage-y	+= uart.c
 ramstage-y	+= uart_console.c
 ramstage-y	+= timer.c
+ramstage-y	+= twi.c
 ramstage-y	+= monotonic_timer.c
 ramstage-y	+= bootblock_media.c
 

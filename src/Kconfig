@@ -79,6 +79,16 @@ config COMPILER_LLVM_CLANG
 
 endchoice
 
+config ANY_TOOLCHAIN
+	bool "Allow building with any toolchain"
+	default n
+	depends on COMPILER_GCC
+	help
+	  Many toolchains break when building coreboot since it uses quite
+	  unusual linker features. Unless developers explicitely request it,
+	  we'll have to assume that they use their distro compiler by mistake.
+	  Make sure that using patched compilers is a conscious decision.
+
 config SCANBUILD_ENABLE
 	bool "Build with scan-build for static code analysis"
 	default n

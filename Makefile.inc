@@ -24,6 +24,18 @@ export KERNELVERSION := $(shell if [ -d "$(top)/.git" -a -f "`which git`" ]; \
        else echo 4.0$(KERNELREVISION); fi)
 
 #######################################################################
+# Test for coreboot toolchain (except when explicitely not requested)
+ifneq ($(NOCOMPILE),1)
+# only run if we're doing a build (not for tests, kconfig, ...)
+ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
+_toolchain=$(shell $(CC) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" && echo coreboot)
+ifneq ($(_toolchain),coreboot)
+$(error Please use the coreboot toolchain (or prove that your toolchain works))
+endif
+endif
+endif
+
+#######################################################################
 # Basic component discovery
 MAINBOARDDIR=$(call strip_quotes,$(CONFIG_MAINBOARD_DIR))
 export MAINBOARDDIR

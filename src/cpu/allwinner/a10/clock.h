@@ -256,4 +256,7 @@ void a1x_pll5_enable_dram_clock_output(void);
 void a1x_ungate_dram_clock_output(void);
 void a1x_gate_dram_clock_output(void);
 
+/* Not available in bootblock */
+void a1x_set_cpu_clock(u16 cpu_clk_mhz);
+
 #endif				/* CPU_ALLWINNER_A10_CLOCK_H */

@@ -19,7 +19,6 @@
 
 #include <console/console.h>
 #include <uart8250.h>
-#include <pc80/mc146818rtc.h>
 
 static u32 uart_bar = 0;
 

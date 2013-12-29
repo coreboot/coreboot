@@ -424,10 +424,9 @@ CAR_FAM10_ap_out:
 cache_as_ram_switch_stack:
 	/* Return address.  */
 	popl	%eax
-	/* Resume memory.  */
+	/* New stack.  */
 	popl	%eax
-	subl	$(( (CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE)- (CONFIG_RAMTOP) )), %esp
-	pushl	%eax
+	movl	%eax, %esp
 	call	cache_as_ram_new_stack
 
 all_mtrr_msrs:

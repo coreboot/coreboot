@@ -20,8 +20,6 @@
 #ifndef UART8250_H
 #define UART8250_H
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
-
 /* Data */
 #define UART_RBR 0x00
 #define UART_TBR 0x00
@@ -143,7 +141,5 @@ extern int oxford_oxpcie_present;
 void oxford_init(void);
 #endif
 #endif
-
-#endif /* CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM */
 
 #endif /* UART8250_H */

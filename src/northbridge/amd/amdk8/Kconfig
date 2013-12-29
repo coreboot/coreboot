@@ -33,6 +33,10 @@ config K8_HT_FREQ_1G_SUPPORT
 	bool
 	default n
 
+config RAMINIT_SYSINFO
+	bool
+	default n
+
 config WAIT_BEFORE_CPUS_INIT
 	bool
 	default n
@@ -73,6 +77,7 @@ config K8_ALLOCATE_IO_RANGE
 
 config K8_REV_F_SUPPORT
 	bool
+	select RAMINIT_SYSINFO
 	default n
 
 if K8_REV_F_SUPPORT

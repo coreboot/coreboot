@@ -1040,10 +1040,6 @@ config DEBUG_COVERAGE
 endmenu
 
 # These probably belong somewhere else, but they are needed somewhere.
-config RAMINIT_SYSINFO
-	bool
-	default n
-
 config ENABLE_APIC_EXT_ID
 	bool
 	default n

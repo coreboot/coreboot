@@ -34,4 +34,5 @@ subdirs-y += spi
 subdirs-y += ti
 subdirs-y += ipmi
 subdirs-y += elog
+subdirs-y += xpowers
 subdirs-$(CONFIG_ARCH_X86) += pc80

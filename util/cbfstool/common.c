@@ -23,9 +23,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
+#include "elf.h"
 #include "common.h"
 #include "cbfs.h"
-#include "elf.h"
 
 /* Utilities */
 

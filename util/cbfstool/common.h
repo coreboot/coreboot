@@ -144,17 +144,7 @@ struct xdr {
 	void (*put64)(struct buffer *input, uint64_t val);
 };
 
-/* common.c */
-
-int find_master_header(void *romarea, size_t size);
-void recalculate_rom_geometry(void *romarea);
-const char *strfiletype(uint32_t number);
-
-/* cbfs_image.c */
-uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
-const char *get_cbfs_entry_type_name(uint32_t type);
-uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
-
+/* xdr.c */
 extern struct xdr xdr_le, xdr_be;
 
 #endif

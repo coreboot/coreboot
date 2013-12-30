@@ -20,6 +20,18 @@
 #define __CBFS_H
 
 #include <stdint.h>
+#include "elf.h"
+
+/* create a magic number in host-byte order.
+ * b3 is the high order byte.
+ * in the coreboot tools, we go with the 32-bit
+ * magic number convention.
+ * This was an inline func but that breaks anything
+ * that uses it in a case statement.
+ */
+
+#define makemagic(b3, b2, b1, b0)\
+	(((b3)<<24) | ((b2) << 16) | ((b1) << 8) | (b0))
 
 #define CBFS_HEADER_MAGIC  0x4F524243
 #define CBFS_HEADPTR_ADDR_X86 0xFFFFFFFC
@@ -60,11 +72,11 @@ struct cbfs_stage {
 	uint32_t memlen;
 } __attribute__ ((packed));
 
-#define PAYLOAD_SEGMENT_CODE	0x45444F43
-#define PAYLOAD_SEGMENT_DATA	0x41544144
-#define PAYLOAD_SEGMENT_BSS	0x20535342
-#define PAYLOAD_SEGMENT_PARAMS	0x41524150
-#define PAYLOAD_SEGMENT_ENTRY	0x52544E45
+#define PAYLOAD_SEGMENT_CODE	makemagic('C', 'O', 'D', 'E')
+#define PAYLOAD_SEGMENT_DATA	makemagic('D', 'A', 'T', 'A')
+#define PAYLOAD_SEGMENT_BSS     makemagic(' ', 'B', 'S', 'S')
+#define PAYLOAD_SEGMENT_PARAMS	makemagic('P', 'A', 'R', 'A')
+#define PAYLOAD_SEGMENT_ENTRY	makemagic('E', 'N', 'T', 'R')
 
 struct cbfs_payload_segment {
 	uint32_t type;
@@ -110,7 +122,22 @@ struct cbfs_payload {
 int cbfs_file_header(unsigned long physaddr);
 #define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
+/* cbfs_image.c */
+uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
+const char *get_cbfs_entry_type_name(uint32_t type);
+uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
 
+/* common.c */
+int find_master_header(void *romarea, size_t size);
+void recalculate_rom_geometry(void *romarea);
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size);
+const char *strfiletype(uint32_t number);
+
+/* elfheaders.c */
+int
+elf_headers(const struct buffer *pinput,
+	    Elf64_Ehdr *ehdr,
+	    Elf64_Phdr **pphdr,
+	    Elf64_Shdr **pshdr);
 
 #endif

@@ -1,0 +1,1 @@
+subdirs-$(CONFIG_DRIVER_XPOWERS_AXP209) += axp209

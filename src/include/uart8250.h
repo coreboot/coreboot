@@ -20,6 +20,8 @@
 #ifndef UART8250_H
 #define UART8250_H
 
+#include <types.h>
+
 /* Data */
 #define UART_RBR 0x00
 #define UART_TBR 0x00
@@ -130,13 +132,8 @@ void uart8250_mem_tx_byte(unsigned base_port, unsigned char data);
 void uart8250_mem_tx_flush(unsigned base_port);
 void uart8250_mem_init(unsigned base_port, unsigned divisor);
 u32 uart_mem_init(void);
+u32 uart8250_mem_get_baseaddr(void);
 
-#if defined(__PRE_RAM__) && CONFIG_DRIVERS_OXFORD_OXPCIE
-/* and special init for OXPCIe based cards */
-extern int oxford_oxpcie_present;
-
-void oxford_init(void);
-#endif
 #endif
 
 #endif /* UART8250_H */

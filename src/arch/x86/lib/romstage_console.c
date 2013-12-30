@@ -40,10 +40,7 @@ void console_tx_byte(unsigned char byte)
 		console_tx_byte('\r');
 
 #if CONFIG_CONSOLE_SERIAL8250MEM
-	if (oxford_oxpcie_present) {
-		uart8250_mem_tx_byte(
-			CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000, byte);
-	}
+	uart8250_mem_tx_byte(uart8250_mem_get_baseaddr(), byte);
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
 	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);

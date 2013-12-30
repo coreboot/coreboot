@@ -228,18 +228,6 @@ static void dump_tco_status(u32 tco_sts)
 
 int southbridge_io_trap_handler(int smif)
 {
-	switch (smif) {
-	case 0x32:
-		printk(BIOS_DEBUG, "OS Init\n");
-		/* gnvs->smif:
-		 *  On success, the IO Trap Handler returns 0
-		 *  On failure, the IO Trap Handler returns a value != 0
-		 */
-		gnvs->smif = 0;
-		return 1; /* IO trap handled */
-	}
-
-	/* Not handled */
 	return 0;
 }
 
@@ -644,19 +632,6 @@ static void southbridge_smi_gpi(unsigned int node, smm_state_save_area_t *state_
 	outw(reg16, pmbase + ALT_GP_SMI_STS);
 }
 
-static void southbridge_smi_mc(unsigned int node, smm_state_save_area_t *state_save)
-{
-	u32 reg32;
-
-	reg32 = inl(pmbase + SMI_EN);
-
-	/* Are periodic SMIs enabled? */
-	if ((reg32 & MCSMI_EN) == 0)
-		return;
-
-	printk(BIOS_DEBUG, "Microcontroller SMI.\n");
-}
-
 
 
 static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_save)
@@ -696,73 +671,6 @@ static void southbridge_smi_tco(unsigned int node, smm_state_save_area_t *state_
 	}
 }
 
-static void southbridge_smi_periodic(unsigned int node, smm_state_save_area_t *state_save)
-{
-	u32 reg32;
-
-	reg32 = inl(pmbase + SMI_EN);
-
-	/* Are periodic SMIs enabled? */
-	if ((reg32 & PERIODIC_EN) == 0)
-		return;
-
-	printk(BIOS_DEBUG, "Periodic SMI.\n");
-}
-
-static void southbridge_smi_monitor(unsigned int node, smm_state_save_area_t *state_save)
-{
-#define IOTRAP(x) (trap_sts & (1 << x))
-	u32 trap_sts, trap_cycle;
-	u32 data, mask = 0;
-	int i;
-
-	trap_sts = RCBA32(0x1e00); // TRSR - Trap Status Register
-	RCBA32(0x1e00) = trap_sts; // Clear trap(s) in TRSR
-
-	trap_cycle = RCBA32(0x1e10);
-	for (i=16; i<20; i++) {
-		if (trap_cycle & (1 << i))
-			mask |= (0xff << ((i - 16) << 2));
-	}
-
-
-	/* IOTRAP(3) SMI function call */
-	if (IOTRAP(3)) {
-		if (gnvs && gnvs->smif)
-			io_trap_handler(gnvs->smif); // call function smif
-		return;
-	}
-
-	/* IOTRAP(2) currently unused
-	 * IOTRAP(1) currently unused */
-
-	/* IOTRAP(0) SMIC */
-	if (IOTRAP(0)) {
-		if (!(trap_cycle & (1 << 24))) { // It's a write
-			printk(BIOS_DEBUG, "SMI1 command\n");
-			data = RCBA32(0x1e18);
-			data &= mask;
-			// if (smi1)
-			// 	southbridge_smi_command(data);
-			// return;
-		}
-		// Fall through to debug
-	}
-
-	printk(BIOS_DEBUG, "  trapped io address = 0x%x\n", trap_cycle & 0xfffc);
-	for (i=0; i < 4; i++) if(IOTRAP(i)) printk(BIOS_DEBUG, "  TRAP = %d\n", i);
-	printk(BIOS_DEBUG, "  AHBE = %x\n", (trap_cycle >> 16) & 0xf);
-	printk(BIOS_DEBUG, "  MASK = 0x%08x\n", mask);
-	printk(BIOS_DEBUG, "  read/write: %s\n", (trap_cycle & (1 << 24)) ? "read" : "write");
-
-	if (!(trap_cycle & (1 << 24))) {
-		/* Write Cycle */
-		data = RCBA32(0x1e18);
-		printk(BIOS_DEBUG, "  iotrap written data = 0x%08x\n", data);
-	}
-#undef IOTRAP
-}
-
 typedef void (*smi_handler_t)(unsigned int node,
 		smm_state_save_area_t *state_save);
 
@@ -778,17 +686,17 @@ static smi_handler_t southbridge_smi[32] = {
 	southbridge_smi_pm1,	  //  [8] PM1_STS
 	southbridge_smi_gpe0,	  //  [9] GPE0_STS
 	southbridge_smi_gpi,	  // [10] GPI_STS
-	southbridge_smi_mc,	  // [11] MCSMI_STS
+	NULL,	                  // [11] MCSMI_STS
 	NULL,			  // [12] DEVMON_STS
 	southbridge_smi_tco,	  // [13] TCO_STS
-	southbridge_smi_periodic, // [14] PERIODIC_STS
+	NULL,                     // [14] PERIODIC_STS
 	NULL,			  // [15] SERIRQ_SMI_STS
 	NULL,			  // [16] SMBUS_SMI_STS
 	NULL,			  // [17] LEGACY_USB2_STS
 	NULL,			  // [18] INTEL_USB2_STS
 	NULL,			  // [19] reserved
 	NULL,			  // [20] PCI_EXP_SMI_STS
-	southbridge_smi_monitor,  // [21] MONITOR_STS
+	NULL,                     // [21] MONITOR_STS
 	NULL,			  // [22] reserved
 	NULL,			  // [23] reserved
 	NULL,			  // [24] reserved

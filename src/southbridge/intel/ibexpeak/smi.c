@@ -290,21 +290,9 @@ static void smm_relocate(void)
 
 	smi_en = 0; /* reset SMI enables */
 
-#if 0
-	smi_en |= LEGACY_USB2_EN | LEGACY_USB_EN;
-#endif
 	smi_en |= TCO_EN;
 	smi_en |= APMC_EN;
-#if DEBUG_PERIODIC_SMIS
-	/* Set DEBUG_PERIODIC_SMIS in pch.h to debug using
-	 * periodic SMIs.
-	 */
-	smi_en |= PERIODIC_EN;
-#endif
 	smi_en |= SLP_SMI_EN;
-#if 0
-	smi_en |= BIOS_EN;
-#endif
 
 	/* The following need to be on for SMIs to happen */
 	smi_en |= EOS | GBL_SMI_EN;

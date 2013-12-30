@@ -1,0 +1,15 @@
+config DRIVER_XPOWERS_AXP209
+	bool
+	default n
+	help
+	  X-Powers AXP902 Power Management Unit
+
+if DRIVER_XPOWERS_AXP209
+
+config DRIVER_XPOWERS_AXP209_BOOTBLOCK
+	bool
+	default n
+	help
+	  Make AXP209 functionality available in he bootblock.
+
+endif # DRIVER_XPOWERS_AXP209

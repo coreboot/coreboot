@@ -28,6 +28,7 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <console/loglevel.h>
+#include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/winbond/w83627hf/early_serial.c"
@@ -37,7 +38,6 @@
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
 
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 #define SERIAL_DEV PNP_DEV(CONFIG_SIO_PORT, W83627HF_SP1)
 

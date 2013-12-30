@@ -8,6 +8,7 @@
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/lxdef.h>
+#include <cpu/amd/car.h>
 #include "southbridge/amd/cs5536/cs5536.h"
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
@@ -75,6 +76,5 @@ void main(unsigned long bist)
 	/* we are finding the return does not work on this board. Explicitly call the label that is
 	 * after the call to us. This is gross, but sometimes at this level it is the only way out
 	 */
-	void done_cache_as_ram_main(void);
 	done_cache_as_ram_main();
 }

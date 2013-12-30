@@ -27,6 +27,7 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <console/loglevel.h>
+#include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/kbc1100/kbc1100_early_init.c"
@@ -38,7 +39,6 @@
 #include <arch/cpu.h>
 #include "platform_cfg.h"
 
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

@@ -38,7 +38,12 @@
 #if defined(__PRE_RAM__)
 int oxford_oxpcie_present CAR_GLOBAL;
 
-void oxford_init(void)
+u32 uart8250_mem_get_baseaddr(void)
+{
+	return CONFIG_OXFORD_OXPCIE_BASE_ADDRESS  + 0x1000;
+}
+
+u32 uart_mem_init(void)
 {
 	u16 reg16;
 	oxford_oxpcie_present = 1;
@@ -92,7 +97,7 @@ void oxford_init(void)
 		 */
 		id = pci_read_config32(OXPCIE_DEVICE_3, PCI_VENDOR_ID);
 		if (id != 0xc11b1415)
-			return;
+			return -1;
 		device = OXPCIE_DEVICE_3;
 		break;
 	case 0xc1581415: /* e.g. Startech MPEX2S952 */
@@ -101,7 +106,7 @@ void oxford_init(void)
 	default:
 		/* No UART here. */
 		oxford_oxpcie_present = 0;
-		return;
+		return -1;
 	}
 
 	/* Setup base address on device */
@@ -117,6 +122,8 @@ void oxford_init(void)
 	u32 uart0_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000;
 
 	uart8250_mem_init(uart0_base, (4000000 / CONFIG_TTYS0_BAUD));
+
+	return uart0_base;
 }
 
 #endif

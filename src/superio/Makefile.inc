@@ -23,7 +23,6 @@ subdirs-y += ite
 subdirs-y += nsc
 subdirs-y += nuvoton
 subdirs-y += renesas
-#subdirs-y += serverengines
 subdirs-y += smsc
 subdirs-y += via
 subdirs-y += winbond

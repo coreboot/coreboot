@@ -43,6 +43,29 @@
 #define APB1_RAT_M_MASK			0x1f << 0)
 #define  APB1_RAT_M(n)			(((n) & 0x1f) << 0)
 
+/* PLL5_CFG values */
+#define PLL5_PLL_ENABLE			(1 << 31)
+#define PLL5_OUT_BYPASS_EN		(1 << 30)
+#define PLL5_DDR_CLK_OUT_EN		(1 << 29)
+#define PLL5_DIV_EXP_P_MASK		(0x3 << 16)
+#define PLL5_DIV_EXP_P(ep)		((ep << 16) & PLL5_DIV_EXP_P_MASK)
+#define  PLL5_DIV_P_1			(0x0 << 16)
+#define  PLL5_DIV_P_2			(0x1 << 16)
+#define  PLL5_DIV_P_4			(0x2 << 16)
+#define  PLL5_DIV_P_8			(0x3 << 16)
+#define PLL5_FACTOR_N_MASK		(0x1f << 8)
+#define PLL5_FACTOR_N(n)		((n << 8) & PLL5_FACTOR_N_MASK)
+#define PLL5_LDO_EN			(1 << 7)
+#define PLL5_FACTOR_K_MASK		(0x3 << 4)
+#define PLL5_FACTOR_K(k)		((((k) - 1) << 4) & PLL5_FACTOR_K_MASK)
+#define PLL5_FACTOR_M1_MASK		(0x3 << 2)
+#define PLL5_FACTOR_M1(m1)		(((m1) << 2) & PLL5_FACTOR_M1_MASK)
+#define PLL5_FACTOR_M_MASK		(0x3 << 0)
+#define PLL5_FACTOR_M(m)		((((m) - 1) << 0) & PLL5_FACTOR_M_MASK)
+
+/* DRAM_CLK values*/
+#define DRAM_CTRL_DCLK_OUT		(1 << 15)
+
 /**
  * \brief Clock gating definitions
  *
@@ -227,5 +250,10 @@ struct a10_ccm {
 
 void a1x_periph_clock_enable(enum a1x_clken periph);
 void a1x_periph_clock_disable(enum a1x_clken periph);
+
+void a1x_pll5_configure(u8 mul_n, u8 mul_k, u8 div_m, u8 exp_div_p);
+void a1x_pll5_enable_dram_clock_output(void);
+void a1x_ungate_dram_clock_output(void);
+void a1x_gate_dram_clock_output(void);
 
 #endif				/* CPU_ALLWINNER_A10_CLOCK_H */

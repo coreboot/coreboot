@@ -1,6 +1,8 @@
 bootblock-y	+= clock.c
+bootblock-y	+= raminit.c
 bootblock-y	+= gpio.c
 bootblock-y	+= pinmux.c
+bootblock-y	+= timer.c
 bootblock-y	+= bootblock_media.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart_console.c

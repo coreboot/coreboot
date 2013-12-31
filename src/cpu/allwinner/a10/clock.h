@@ -85,6 +85,8 @@ enum a1x_clken {
 	A1X_CLKEN_SPI2,
 	A1X_CLKEN_SPI3,
 	A1X_CLKEN_PATA,
+	RSVD_0x60_25,
+	A1X_CLKEN_GPS,
 	/* AHB1 module clock gating */
 	A1X_CLKEN_DRAM_VE = (0x64 << 5),
 	A1X_CLKEN_TVD,

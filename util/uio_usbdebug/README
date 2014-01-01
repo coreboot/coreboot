@@ -1,0 +1,77 @@
+
+uio_usbdebug - Run coreboot's usbdebug driver in userspace
+==========================================================
+
+
+## Purpose
+
+uio_usbdebug enables you to debug coreboot's usbdebug driver inside a
+running operating system (only Linux at this time). This comes very
+handy if you're hacking the usbdebug driver and don't have any other
+debug output from coreboot itself.
+
+
+## State
+
+Currently only Intel chipsets are supported. Support for other chipsets
+should be straightforward (normally just some port-enable code has to
+be implemented).
+
+The Linux kernel driver (see linux/uio_ehci_pci.c) has only one PCI ID
+hardcoded (for ICH7). The whole setup has been developed and tested on
+a ThinkPad T60.
+
+### Files
+
+uio_usbdebug.c       -	The userspace part of the uio interface.
+
+uio_usbdebug_intel.c -	Port enable code for Intel chipsets.
+
+linux/uio_ehci_pci.c -	Kernel part of the uio interface.
+
+console/printk.c     -	A do_printk() implementation so you can see debug
+			output with CONFIG_DEBUG_USBDEBUG enabled.
+
+device/*.c lib/*.c   -	Some stubs for (hopefully) unneeded functions for
+			proper linking.
+
+
+## Usage
+
+### Preparations
+
+The MMIO space has to be a whole 4K page in size and alignment to be
+mapped into userspace. This is very uncommon, so you'll most probably
+have to remap the MMIO space. The Linux kernel does that for you with
+the `pci=resource_alignment=<pci address>` kernel parameter (e.g.
+`pci=resource_alignment=0:1d.7` for ICH7).
+
+If your PCI device isn't listed in the kernel driver yet, you might want
+to add it to the `ehci_pci_ids` table in `linux/uio_ehci_pci.c` (or do
+some module alias magic if you know how to).
+
+### Build / Install
+
+Somehow like this:
+
+$ # Configure coreboot for your board and enable CONFIG_USBDEBUG
+$ make menuconfig
+$ cd util/uio_usbdebug/
+$ make -Clinux/
+$ sudo make -Clinux/ install
+$ make
+
+### Run
+
+$ # Unload Linux' EHCI driver (high-speed devices will stop working)
+$ sudo modprobe -r ehci-pci
+$ # Load the uio driver
+$ sudo modprobe uio-ehci-pci
+$ # Find your uio device
+$ ls /sys/module/uio_ehci_pci/drivers/*/*/uio/
+uio0
+$ # Run uio_usbdebug on this device
+$ sudo ./uio_usbdebug /dev/uio0
+
+Sadly, uio_usbdebug has to be run with root privileges since there are
+port-80 writes in the usbdebug driver.

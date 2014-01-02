@@ -16,10 +16,12 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1);
 #endif
 
 #define __cpu_driver __attribute__ ((used,__section__(".rodata.cpu_driver")))
+#ifndef __SIMPLE_DEVICE__
 /** start of compile time generated pci driver array */
 extern struct cpu_driver cpu_drivers[];
 /** end of compile time generated pci driver array */
 extern struct cpu_driver ecpu_drivers[];
+#endif
 #endif /* !__PRE_RAM__ && !__SMM__ */
 
 #endif /* CPU_CPU_H */

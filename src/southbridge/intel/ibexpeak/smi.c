@@ -19,6 +19,7 @@
  * MA 02110-1301 USA
  */
 
+#define __SIMPLE_DEVICE__
 
 #include <device/device.h>
 #include <device/pci.h>
@@ -246,8 +247,8 @@ static void smm_relocate(void)
 
 	printk(BIOS_DEBUG, "Initializing SMM handler...");
 
-	pmbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
-							PMBASE) & 0xff80;
+	pmbase = pci_read_config32(PCI_DEV(0, 0x1f, 0),
+				   PMBASE) & 0xff80;
 
 	printk(BIOS_SPEW, " ... pmbase = 0x%04x\n", pmbase);
 
@@ -332,7 +333,7 @@ static int smm_handler_copied = 0;
 
 static void smm_install(void)
 {
-	device_t dev = dev_find_slot(0, PCI_DEVFN(0, 0));
+	device_t dev = PCI_DEV(0, 0, 0);
 	u32 smm_base = 0xa0000;
 	struct ied_header ied = {
 		.signature = "INTEL RSVD",
@@ -397,7 +398,7 @@ void smm_lock(void)
 	 * make the SMM registers writable again.
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
+	pci_write_config8(PCI_DEV(0, 0, 0), SMRAM,
 			D_LCK | G_SMRAME | C_BASE_SEG);
 }
 

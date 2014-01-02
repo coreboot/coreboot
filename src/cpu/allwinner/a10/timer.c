@@ -11,6 +11,7 @@
 #include <delay.h>
 #include <timer.h>
 
+struct a1x_timer_module *const timer_module = (void *)A1X_TIMER_BASE;
 struct a1x_timer *const tmr0 =
 		&((struct a1x_timer_module *)A1X_TIMER_BASE)->timer[0];
 
@@ -52,4 +53,14 @@ void udelay(unsigned usec)
 		last_tick = curr_tick;
 	}
 
+}
+
+/*
+ * This function has nothing to do with timers; however, the chip revision
+ * register is in the timer module, so keep this function here.
+ */
+u8 a1x_get_cpu_chip_revision(void)
+{
+	write32(0, &timer_module->cpu_cfg);
+	return (read32(&timer_module->cpu_cfg) >> 6) & 0x3;
 }

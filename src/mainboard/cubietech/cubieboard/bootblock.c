@@ -18,6 +18,10 @@
 	 | AHB_DIV_1			\
 	 | AXI_DIV_1
 
+#define GPH_STATUS_LEDS			(1 << 20) | (1 << 21)
+#define GPH_LED1_PIN_NO			21
+#define GPH_LED2_PIN_NO			20
+
 #define GPB_UART0_FUNC			2
 #define GPB_UART0_PINS			((1 << 22) | (1 << 23))
 
@@ -56,6 +60,11 @@ static void cubieboard_setup_clocks(void)
 
 static void cubieboard_setup_gpios(void)
 {
+	/* Mux Status LED pins */
+	gpio_set_multipin_func(GPH, GPH_STATUS_LEDS, GPIO_PIN_FUNC_OUTPUT);
+	/* Turn on green LED to let user know we're executing coreboot code */
+	gpio_set(GPH, GPH_LED2_PIN_NO);
+
 	/* Mux UART pins */
 	gpio_set_multipin_func(GPB, GPB_UART0_PINS, GPB_UART0_FUNC);
 }

@@ -219,8 +219,6 @@ enum {
 #define QPD0F1_PAM(x) (0x40+(x)) /* 0-6*/
 #define D0F0_REMAPBASE 0x98
 #define D0F0_REMAPLIMIT 0x9a
-#define D0F0_SMRAM 0x9d
-#define D0F0_ESMRAMC 0x9e
 #define D0F0_TOM 0xa0
 #define D0F0_TOUUD 0xa2
 #define D0F0_IGD_BASE 0xa4
@@ -477,7 +475,7 @@ void init_iommu(void);
 #define X60BAR		0x60
 
 #define LAC		0x87	/* Legacy Access Control */
-#define SMRAM		0x88	/* System Management RAM Control */
+#define QPD0F1_SMRAM		0x4d	/* System Management RAM Control */
 #define  D_OPEN		(1 << 6)
 #define  D_CLS		(1 << 5)
 #define  D_LCK		(1 << 4)

@@ -334,6 +334,7 @@ static int smm_handler_copied = 0;
 static void smm_install(void)
 {
 	device_t dev = PCI_DEV(0, 0, 0);
+	device_t qpdev = PCI_DEV(QUICKPATH_BUS, 0, 1);
 	u32 smm_base = 0xa0000;
 	struct ied_header ied = {
 		.signature = "INTEL RSVD",
@@ -349,7 +350,7 @@ static void smm_install(void)
 	smm_handler_copied = 1;
 
 	/* enable the SMM memory window */
-	pci_write_config8(dev, SMRAM, D_OPEN | G_SMRAME | C_BASE_SEG);
+	pci_write_config8(qpdev, QPD0F1_SMRAM, D_OPEN | G_SMRAME | C_BASE_SEG);
 
 #if CONFIG_SMM_TSEG
 	smm_base = pci_read_config32(dev, TSEG) & ~1;
@@ -371,7 +372,7 @@ static void smm_install(void)
 	wbinvd();
 
 	/* close the SMM memory window and enable normal SMM */
-	pci_write_config8(dev, SMRAM, G_SMRAME | C_BASE_SEG);
+	pci_write_config8(qpdev, QPD0F1_SMRAM, G_SMRAME | C_BASE_SEG);
 }
 
 void smm_init(void)
@@ -398,7 +399,7 @@ void smm_lock(void)
 	 * make the SMM registers writable again.
 	 */
 	printk(BIOS_DEBUG, "Locking SMM.\n");
-	pci_write_config8(PCI_DEV(0, 0, 0), SMRAM,
+	pci_write_config8(PCI_DEV(QUICKPATH_BUS, 0, 1), QPD0F1_SMRAM,
 			D_LCK | G_SMRAME | C_BASE_SEG);
 }
 

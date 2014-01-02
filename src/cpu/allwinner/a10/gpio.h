@@ -50,6 +50,14 @@ struct a10_gpio {
 	u32 sdr_pad_pul;
 } __attribute__ ((packed));
 
+/* gpio.c */
+void gpio_set(u8 port, u8 pin);
+void gpio_clear(u8 port, u8 pin);
+int gpio_get(u8 port, u8 pin);
+void gpio_write(u8 port, u32 val);
+u32 gpio_read(u8 port);
+
+/* pinmux.c */
 void gpio_set_pin_func(u8 port, u8 pin, u8 pad_func);
 void gpio_set_multipin_func(u8 port, u32 pin_mask, u8 pad_func);
 

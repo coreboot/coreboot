@@ -24,6 +24,13 @@
 #define TIMER_CTRL_RELOAD		(1 << 1)
 #define TIMER_CTRL_TMR_EN		(1 << 0)
 
+/* Chip revision definitions (found in CPU_CFG register) */
+#define A1X_CHIP_REV_A			0x0
+#define A1X_CHIP_REV_C1			0x1
+#define A1X_CHIP_REV_C2			0x2
+#define A1X_CHIP_REV_B			0x3
+
+
 /* General purpose timer */
 struct a1x_timer {
 	u32 ctrl;
@@ -86,5 +93,7 @@ struct a1x_timer_module {
 	u8 res5[8];
 	u32 cpu_cfg;
 } __attribute__ ((packed));
+
+u8 a1x_get_cpu_chip_revision(void);
 
 #endif				/* CPU_ALLWINNER_A10_TIMER_H */

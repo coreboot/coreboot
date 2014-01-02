@@ -21,6 +21,8 @@
  * MA 02110-1301 USA
  */
 
+#define __SIMPLE_DEVICE__
+
 #include <types.h>
 #include <string.h>
 #include <console/console.h>
@@ -38,10 +40,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	u32 pciexbar_reg;
 	int max_buses;
 
-	/* Quickpath bus is not in standard coreboot device tree,
-	   so read register directly.  */
-	pciexbar_reg = read32(DEFAULT_PCIEXBAR
-			      | (QUICKPATH_BUS << 20) | 0x1050);
+	pciexbar_reg = pci_read_config32 (PCI_DEV (QUICKPATH_BUS, 0, 1), 0x50);
 
 	// MMCFG not supported or not enabled.
 	if (!(pciexbar_reg & (1 << 0)))
@@ -173,7 +172,7 @@ int init_igd_opregion(igd_opregion_t * opregion)
 	/* TODO This needs to happen in S3 resume, too.
 	 * Maybe it should move to the finalize handler
 	 */
-	igd = dev_find_slot(0, PCI_DEVFN(0x2, 0));
+	igd = PCI_DEV (0, 0x2, 0);
 
 	pci_write_config32(igd, ASLS, (u32) opregion);
 	reg16 = pci_read_config16(igd, SWSCI);

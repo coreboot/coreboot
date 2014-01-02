@@ -23,6 +23,10 @@
 #define GPI			8
 #define GPS			9
 
+/* GPIO pad functions valid for all pins */
+#define GPIO_PIN_FUNC_INPUT	0
+#define GPIO_PIN_FUNC_OUTPUT	1
+
 struct a10_gpio_port {
 	u32 cfg[4];
 	u32 dat;

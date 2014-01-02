@@ -1,4 +1,5 @@
 bootblock-y	+= clock.c
+bootblock-y	+= gpio.c
 bootblock-y	+= pinmux.c
 bootblock-y	+= bootblock_media.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c

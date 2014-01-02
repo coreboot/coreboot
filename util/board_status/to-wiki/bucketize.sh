@@ -4,7 +4,7 @@
 #   into buckets of the given granularity
 
 weekly() {
-	date --date="$1" +%YW%V
+	date --date="$1" +%GW%V
 }
 
 monthly() {

@@ -32,7 +32,7 @@ config MAINBOARD_DO_NATIVE_VGA_INIT
 	help
 	  Some mainboards, such as the Google Link, allow initializing the display
 	  without the need of a binary only VGA OPROM. Enabling this option may be
-	  faster, but also lack flexibility in setting modes.
+	  faster, but also lacks flexibility in setting modes.
 
 	  If unsure, say N.
 

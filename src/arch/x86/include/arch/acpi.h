@@ -558,6 +558,8 @@ void acpi_save_gnvs(u32 gnvs_address);
 /* 0 = S0, 1 = S1 ...*/
 extern u8 acpi_slp_type;
 
+int acpi_is_wakeup(void);
+void acpi_fail_wakeup(void);
 void acpi_resume(void *wake_vec);
 void __attribute__((weak)) mainboard_suspend_resume(void);
 void *acpi_find_wakeup_vector(void);

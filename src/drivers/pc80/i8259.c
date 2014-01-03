@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2009 coresystems GmbH
+ * Copyright (C) 2013 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,40 +22,44 @@
 #include <pc80/i8259.h>
 #include <console/console.h>
 
-#define MASTER_PIC_ICW1		0x20
-#define SLAVE_PIC_ICW1		0xa0
-#define   ICW_SELECT		(1 << 4)
-#define   OCW_SELECT		(0 << 4)
-#define   ADI			(1 << 2)
-#define   SNGL			(1 << 1)
-#define   IC4			(1 << 0)
+/* Read the current PIC IRQ mask */
+u16 pic_read_irq_mask(void)
+{
+	u16 mask;
+	int i;
 
-#define MASTER_PIC_ICW2		0x21
-#define SLAVE_PIC_ICW2		0xa1
-#define   INT_VECTOR_MASTER	0x20
-#define   IRQ0			0x00
-#define   IRQ1			0x01
-#define   INT_VECTOR_SLAVE	0x28
-#define   IRQ8			0x00
-#define   IRQ9			0x01
+	mask = inb(MASTER_PIC_OCW1) | (inb(SLAVE_PIC_OCW1) << 8);
 
-#define MASTER_PIC_ICW3		0x21
-#define   CASCADED_PIC		(1 << 2)
+	printk(BIOS_DEBUG, "8259 PIC: OCW1 IRQ Mask: 0x%x\n", mask);
+	printk(BIOS_SPEW, "\tEnabled IRQs (0 = Unmasked, 1 = Masked off):\n"
+			"\t\tMaster\t\tSlave\n");
+	for(i = 0; i <= 7; i++) {
+		printk(BIOS_SPEW, "\t\tIRQ%X: %x\t\tIRQ%X: %x\n",
+				i, (mask >> i) & 1, i + 8, (mask >> (i + 8)) & 1);
+	}
+	return mask;
+}
 
-#define MASTER_PIC_ICW4		0x21
-#define SLAVE_PIC_ICW4		0xa1
-#define   MICROPROCESSOR_MODE	(1 << 0)
+/*
+ * Write an IRQ mask to the PIC:
+ * IRQA is bit 0xA in the 16 bit bitmask (OCW1)
+ */
+void pic_write_irq_mask(u16 mask)
+{
+	outb(mask, MASTER_PIC_OCW1);
+	outb(mask >> 8, SLAVE_PIC_OCW1);
+}
 
-#define SLAVE_PIC_ICW3		0xa1
-#define    SLAVE_ID		0x02
-
-#define MASTER_PIC_OCW1 	0x21
-#define SLAVE_PIC_OCW1		0xa1
-#define    IRQ2			(1 << 2)
-#define    ALL_IRQS		0xff
-
-#define ELCR1			0x4d0
-#define ELCR2			0x4d1
+/*
+ * The PIC IRQs default to masked off
+ * Allow specific IRQs to be enabled (1)
+ * or disabled by (0) the user
+ */
+void pic_irq_enable(u8 int_num, u8 mask)
+{
+    pic_write_irq_mask(pic_read_irq_mask() & ~(mask << int_num));
+    pic_read_irq_mask();
+}
 
 void setup_i8259(void)
 {
@@ -113,14 +118,12 @@ void i8259_configure_irq_trigger(int int_num, int is_level_triggered)
 {
 	u16 int_bits = inb(ELCR1) | (((u16)inb(ELCR2)) << 8);
 
-	printk(BIOS_SPEW, "%s: current interrupts are 0x%x\n", __func__, int_bits);
 	if (is_level_triggered)
 		int_bits |= (1 << int_num);
 	else
 		int_bits &= ~(1 << int_num);
 
 	/* Write new values */
-	printk(BIOS_SPEW, "%s: try to set interrupts 0x%x\n", __func__, int_bits);
 	outb((u8)(int_bits & 0xff), ELCR1);
 	outb((u8)(int_bits >> 8), ELCR2);
 

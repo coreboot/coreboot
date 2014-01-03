@@ -31,7 +31,7 @@ romstage-y += pm.c
 romstage-y += ram_calc.c
 romstage-$(CONFIG_IOMMU) += iommu.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c

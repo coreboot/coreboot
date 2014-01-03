@@ -21,7 +21,7 @@
 ramstage-y += northbridge.c
 ramstage-y += gma.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 ramstage-y += fsp_util.c
 ramstage-$(CONFIG_ENABLE_FAST_BOOT) += mrccache.c
 

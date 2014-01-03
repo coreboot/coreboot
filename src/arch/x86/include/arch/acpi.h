@@ -27,7 +27,7 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 
 #include <stdint.h>
 
@@ -575,11 +575,11 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(void);
 
-#else // CONFIG_GENERATE_ACPI_TABLES
+#else // CONFIG_HAVE_ACPI_TABLES
 
 #define write_acpi_tables(start) (start)
 #define acpi_slp_type 0
 
-#endif	/* CONFIG_GENERATE_ACPI_TABLES */
+#endif	/* CONFIG_HAVE_ACPI_TABLES */
 
 #endif  /* __ASM_ACPI_H */

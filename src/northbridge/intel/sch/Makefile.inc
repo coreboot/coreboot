@@ -20,4 +20,4 @@
 ramstage-y += northbridge.c
 ramstage-y += gma.c
 ramstage-y += port_access.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c

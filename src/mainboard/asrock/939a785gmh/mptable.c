@@ -99,7 +99,7 @@ static void *smp_write_config_table(void *v)
 	/* PCI interrupts are level triggered, and are
 	 * associated with a specific bus/device/function tuple.
 	 */
-#if !CONFIG_GENERATE_ACPI_TABLES
+#if !CONFIG_HAVE_ACPI_TABLES
 #define PCI_INT(bus, dev, fn, pin) \
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sb700, (pin))
 #else

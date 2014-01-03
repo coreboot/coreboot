@@ -19,7 +19,7 @@
 
 ramstage-y += northbridge.c
 ramstage-y += gma.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 
 romstage-y += raminit.c
 romstage-y += early_init.c

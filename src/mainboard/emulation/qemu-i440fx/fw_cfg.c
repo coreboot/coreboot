@@ -20,7 +20,7 @@
 #include <smbios.h>
 #include <console/console.h>
 #include <arch/io.h>
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 # include <arch/acpigen.h>
 #endif
 
@@ -123,7 +123,7 @@ int fw_cfg_max_cpus(void)
 
 /* ---------------------------------------------------------------------- */
 
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 
 /*
  * Starting with release 1.7 qemu provides acpi tables via fw_cfg.
@@ -314,7 +314,7 @@ err:
 	return 0;
 }
 
-#endif /* CONFIG_GENERATE_ACPI_TABLES */
+#endif /* CONFIG_HAVE_ACPI_TABLES */
 
 /* ---------------------------------------------------------------------- */
 /* pick up smbios information from fw_cfg                                 */

@@ -228,12 +228,8 @@ int cbmem_initialize(void)
 
 	/* We expect the romstage to always initialize it. */
 	if (!cbmem_reinit()) {
-#if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
-		/* Something went wrong, our high memory area got wiped */
-		if (acpi_slp_type == 3 || acpi_slp_type == 2)
-			acpi_slp_type = 0;
-#endif
 		cbmem_init();
+		cbmem_fail_resume();
 		rv = 1;
 	}
 #ifndef __PRE_RAM__

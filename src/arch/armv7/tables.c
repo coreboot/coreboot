@@ -42,6 +42,10 @@ void cbmem_arch_init(void)
 {
 }
 
+void cbmem_fail_resume(void)
+{
+}
+
 struct lb_memory *write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;

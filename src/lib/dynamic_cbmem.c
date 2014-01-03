@@ -32,19 +32,6 @@
 #define UINT_MAX 4294967295U
 #endif
 
-/* ACPI resume needs to be cleared in the fail-to-recover case, but that
- * condition is only handled during ramstage. */
-#if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
-static inline void cbmem_handle_acpi_resume(void)
-{
-	/* Something went wrong, our high memory area got wiped */
-	if (acpi_slp_type == 3 || acpi_slp_type == 2)
-		acpi_slp_type = 0;
-}
-#else
-static inline void cbmem_handle_acpi_resume(void) {}
-#endif
-
 /*
  * The dynamic cbmem code uses a root region. The root region boundary
  * addresses are determined by cbmem_top() and ROOT_MIN_SIZE. Just below
@@ -191,7 +178,7 @@ void cbmem_initialize_empty(void)
 static inline int cbmem_fail_recovery(void)
 {
 	cbmem_initialize_empty();
-	cbmem_handle_acpi_resume();
+	cbmem_fail_resume();
 	/* Migrate cache-as-ram variables. */
 	car_migrate_variables();
 	return 1;

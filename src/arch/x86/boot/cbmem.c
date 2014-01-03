@@ -17,6 +17,7 @@
 
 #include <console/console.h>
 #include <cbmem.h>
+#include <arch/acpi.h>
 
 #if !CONFIG_DYNAMIC_CBMEM
 void get_cbmem_table(uint64_t *base, uint64_t *size)
@@ -64,3 +65,17 @@ void *cbmem_top(void)
 }
 
 #endif /* DYNAMIC_CBMEM */
+
+#if !defined(__PRE_RAM__)
+
+/* ACPI resume needs to be cleared in the fail-to-recover case, but that
+ * condition is only handled during ramstage. */
+void cbmem_fail_resume(void)
+{
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Something went wrong, our high memory area got wiped */
+	acpi_fail_wakeup();
+#endif
+}
+
+#endif /* !__PRE_RAM__ */

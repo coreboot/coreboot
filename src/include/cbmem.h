@@ -166,8 +166,10 @@ void cbmem_add_lb_mem(struct lb_memory *mem);
 void cbmem_list(void);
 void cbmem_arch_init(void);
 void cbmem_print_entry(int n, u32 id, u64 start, u64 size);
+void cbmem_fail_resume(void);
 #else
 static inline void cbmem_arch_init(void) {}
+static inline void cbmem_fail_resume(void) {}
 #endif /* __PRE_RAM__ */
 
 #endif /* __ASSEMBLER__ */

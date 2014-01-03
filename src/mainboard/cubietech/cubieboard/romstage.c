@@ -1,10 +1,17 @@
 /*
- * Placeholder for Cubieboard romstage
+ * Basic romstage for Cubieboard
+ *
+ * Set up system voltages, then increase the CPU clock, before turning control
+ * to ramstage. The CPU VDD needs to be properly set before it can run at full
+ * speed. Setting the CPU at full speed helps lzma-decompress ramstage a lot
+ * faster.
  *
  * Copyright (C) 2013  Alexandru Gagniuc <mr.nuke.me@gmail.com>
  * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
+#include <arch/stages.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <cpu/allwinner/a10/clock.h>
 #include <cpu/allwinner/a10/gpio.h>
@@ -63,10 +70,25 @@ static enum cb_err cubieboard_setup_power(void)
 
 void main(void)
 {
+	void *entry;
+	enum cb_err err;
+
 	console_init();
-	printk(BIOS_INFO, "You have managed to succesfully load romstage.\n");
 
 	/* Configure power rails */
-	cubieboard_setup_power();
+	err = cubieboard_setup_power();
 
+	if (err == CB_SUCCESS) {
+		/* TODO: Get this clock from devicetree.cb */
+		a1x_set_cpu_clock(1008);
+	} else {
+		/* cubieboard_setup_power() prints more details */
+		printk(BIOS_WARNING, "Will run CPU at reduced speed\n");
+		a1x_set_cpu_clock(384);
+	}
+
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
+	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
+
+	stage_exit(entry);
 }

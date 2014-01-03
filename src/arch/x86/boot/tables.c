@@ -108,7 +108,7 @@ struct lb_memory *write_tables(void)
 	}
 #endif /* CONFIG_GENERATE_MP_TABLE */
 
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 #define MAX_ACPI_SIZE (45 * 1024)
 	post_code(0x9c);
 

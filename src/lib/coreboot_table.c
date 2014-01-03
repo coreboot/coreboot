@@ -31,7 +31,7 @@
 #include <cbmem.h>
 #include <memrange.h>
 #if CONFIG_CHROMEOS
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 #include <arch/acpi.h>
 #endif
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -191,7 +191,7 @@ static void lb_gpios(struct lb_header *header)
 
 static void lb_vdat(struct lb_header *header)
 {
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 	struct lb_vdat* vdat;
 
 	vdat = (struct lb_vdat *)lb_new_record(header);

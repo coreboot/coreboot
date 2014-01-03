@@ -66,9 +66,7 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 	if (!pciexbar)
 		return current;
 
-#if CONFIG_GENERATE_ACPI_TABLES
 	current += acpi_create_mcfg_mmconfig((acpi_mcfg_mmconfig_t *) current,
 					     pciexbar, 0x0, 0x0, max_buses - 1);
-#endif
 	return current;
 }

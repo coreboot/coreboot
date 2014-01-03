@@ -200,7 +200,7 @@ endif
 ifeq ($(CONFIG_BOARD_HAS_HARD_RESET),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/reset.c
 endif
-ifeq ($(CONFIG_GENERATE_ACPI_TABLES),y)
+ifeq ($(CONFIG_HAVE_ACPI_TABLES),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/acpi_tables.c
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/dsdt.asl
 # make doesn't have arithmetic operators or greater-than comparisons

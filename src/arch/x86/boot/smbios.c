@@ -164,7 +164,7 @@ static int smbios_write_type0(unsigned long *current, int handle)
 		BIOS_CHARACTERISTICS_SELECTABLE_BOOT |
 		BIOS_CHARACTERISTICS_UPGRADEABLE;
 
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 	t->bios_characteristics_ext1 = BIOS_EXT1_CHARACTERISTICS_ACPI;
 #endif
 	t->bios_characteristics_ext2 = BIOS_EXT2_CHARACTERISTICS_TARGET;

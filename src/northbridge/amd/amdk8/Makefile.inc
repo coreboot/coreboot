@@ -1,7 +1,7 @@
 ramstage-y += northbridge.c
 ramstage-y += misc_control.c
 ramstage-y += get_sblk_pci1234.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi.c
 
 # Enable this if you want to check the values of the PCI routing registers.
 # Call show_all_routes() anywhere amdk8.h is included.

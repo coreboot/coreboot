@@ -20,7 +20,7 @@
 ramstage-y += model_406dx_init.c
 subdirs-y += ../../x86/name
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-y += acpi.c
 
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 

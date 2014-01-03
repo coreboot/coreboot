@@ -22,7 +22,7 @@ subdirs-y += fsp
 ramstage-y += northbridge.c
 ramstage-y += gma.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-y += acpi.c
 
 romstage-y += raminit.c
 romstage-y += early_init.c

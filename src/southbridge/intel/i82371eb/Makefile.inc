@@ -24,8 +24,8 @@ ramstage-y +=  ide.c
 ramstage-y +=  usb.c
 ramstage-y +=  smbus.c
 ramstage-y +=  reset.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi_tables.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += acpi_tables.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.c
 
 romstage-y += early_pm.c

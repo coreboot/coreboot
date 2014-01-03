@@ -24,4 +24,4 @@ ramstage-y += northbridge.c
 ramstage-y += fam12_callouts.c
 ramstage-y += dimmSpd.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt.asl
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ssdt.asl

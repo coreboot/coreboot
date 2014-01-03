@@ -93,7 +93,7 @@ static struct smbus_bus_operations lops_smbus_bus = {
 	.write_byte	= lsmbus_write_byte,
 };
 
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 unsigned pm_base;
 #endif
 
@@ -112,7 +112,7 @@ static void mcp55_sm_read_resources(device_t dev)
 
 static void mcp55_sm_init(device_t dev)
 {
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 	struct resource *res;
 
 	res = find_resource(dev, 0x60);

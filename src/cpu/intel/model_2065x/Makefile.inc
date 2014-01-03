@@ -13,7 +13,7 @@ ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += tsc_freq.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-y += acpi.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 

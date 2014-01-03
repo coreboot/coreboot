@@ -108,7 +108,7 @@ void write_tables(void)
 	}
 #endif /* CONFIG_GENERATE_MP_TABLE */
 
-#if CONFIG_GENERATE_ACPI_TABLES
+#if CONFIG_HAVE_ACPI_TABLES
 #if CONFIG_DYNAMIC_CBMEM
 #define MAX_ACPI_SIZE (144 * 1024)
 #else

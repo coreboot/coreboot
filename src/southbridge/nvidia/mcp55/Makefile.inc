@@ -11,7 +11,7 @@ ramstage-y += smbus.c
 ramstage-y += usb2.c
 ramstage-y += usb.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 
 ramstage-y += reset.c
 

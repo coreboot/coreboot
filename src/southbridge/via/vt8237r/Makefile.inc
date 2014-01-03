@@ -24,6 +24,6 @@ ramstage-y += lpc.c
 ramstage-y += sata.c
 ramstage-y += usb.c
 ramstage-$(CONFIG_PIRQ_ROUTE) += pirq.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += fadt.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += fadt.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c

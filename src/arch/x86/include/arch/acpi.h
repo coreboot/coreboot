@@ -27,8 +27,6 @@
 #ifndef __ASM_ACPI_H
 #define __ASM_ACPI_H
 
-#if CONFIG_GENERATE_ACPI_TABLES
-
 #include <stdint.h>
 
 #define RSDP_SIG		"RSD PTR "  /* RSDT pointer signature */
@@ -580,12 +578,6 @@ unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
 
 /* cpu/intel/speedstep/acpi.c */
 void generate_cpu_entries(void);
-
-#else // CONFIG_GENERATE_ACPI_TABLES
-
-#define write_acpi_tables(start) (start)
-
-#endif	/* CONFIG_GENERATE_ACPI_TABLES */
 
 static inline int acpi_s3_resume_allowed(void)
 {

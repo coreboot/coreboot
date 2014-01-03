@@ -29,7 +29,7 @@ ramstage-y += reset.c
 ramstage-y += watchdog.c
 ramstage-y += spi.c
 ramstage-y += smbus.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-y += acpi.c
 
 romstage-y += early_usb.c early_smbus.c gpio.c reset.c early_spi.c early_init.c
 romstage-y += romstage.c

@@ -4,4 +4,4 @@ romstage-y += ../../x86/mtrr/earlymtrr.c
 ramstage-y += model_fxx_init.c
 ramstage-y += model_fxx_update_microcode.c
 ramstage-y += processor_name.c
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += powernow_acpi.c
+ramstage-$(CONFIG_HAVE_ACPI_TABLES) += powernow_acpi.c

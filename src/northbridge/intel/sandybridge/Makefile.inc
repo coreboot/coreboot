@@ -23,7 +23,7 @@ ramstage-y += gma.c
 ramstage-$(CONFIG_IVYBRIDGE_LVDS) += gma_ivybridge_lvds.c
 ramstage-$(CONFIG_SANDYBRIDGE_LVDS) += gma_sandybridge_lvds.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-y += acpi.c
 ramstage-y += mrccache.c
 
 romstage-y += ram_calc.c

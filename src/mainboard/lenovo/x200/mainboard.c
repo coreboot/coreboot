@@ -33,11 +33,8 @@
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
 
-
-#if CONFIG_GENERATE_ACPI_TABLES
 #include "cstates.c" /* Include it, as the linker won't find
 			the overloaded weak function in there. */
-#endif
 
 const char *smbios_mainboard_bios_version(void)
 {

@@ -107,28 +107,6 @@ static void *smp_write_config_table(void *v)
 
 	mptable_add_isa_interrupts(mc, bus_isa, apicid_sp5100, 0);
 
-	/* PCI interrupts are level triggered, and are
-	 * associated with a specific bus/device/function tuple.
-	 */
-#if !CONFIG_GENERATE_ACPI_TABLES
-#define PCI_INT(bus, dev, fn, pin) \
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sp5100, (pin))
-#else
-#define PCI_INT(bus, dev, fn, pin)
-#endif
-	/* usb */
-	PCI_INT(0x0, 0x12, 0x0, 0x10); /* USB */
-	PCI_INT(0x0, 0x12, 0x1, 0x11);
-	PCI_INT(0x0, 0x13, 0x0, 0x12);
-	PCI_INT(0x0, 0x13, 0x1, 0x13);
-	//PCI_INT(0x0, 0x14, 0x0, 0x10);
-
-	/* sata */
-	PCI_INT(0x0, 0x11, 0x0, 0x16);
-
-	/* HD Audio: b0:d20:f1:reg63 should be 0. */
-	PCI_INT(0x0, 0x14, 0x2, 0x10);
-
 	/* on board NIC & Slot PCIE.  */
 	/* configuration B doesnt need dev 5,6,7 */
 	/*
@@ -148,25 +126,6 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[11], (((0)<<2)|(1)), apicid_sp5100+1, 9); /* card behind dev11 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[12], (((0)<<2)|(0)), apicid_sp5100+1, 12);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[12], (((0)<<2)|(1)), apicid_sp5100+1, 13); /* card behind dev12 */
-
-	/* PCI slots */
-	/* PCI_SLOT 0. */
-	PCI_INT(bus_sp5100[1], 0x5, 0x0, 0x14);
-	PCI_INT(bus_sp5100[1], 0x5, 0x1, 0x15);
-	PCI_INT(bus_sp5100[1], 0x5, 0x2, 0x16);
-	PCI_INT(bus_sp5100[1], 0x5, 0x3, 0x17);
-
-	/* PCI_SLOT 1. */
-	PCI_INT(bus_sp5100[1], 0x6, 0x0, 0x15);
-	PCI_INT(bus_sp5100[1], 0x6, 0x1, 0x16);
-	PCI_INT(bus_sp5100[1], 0x6, 0x2, 0x17);
-	PCI_INT(bus_sp5100[1], 0x6, 0x3, 0x14);
-
-	/* PCI_SLOT 2. */
-	PCI_INT(bus_sp5100[1], 0x7, 0x0, 0x16);
-	PCI_INT(bus_sp5100[1], 0x7, 0x1, 0x17);
-	PCI_INT(bus_sp5100[1], 0x7, 0x2, 0x14);
-	PCI_INT(bus_sp5100[1], 0x7, 0x3, 0x15);
 
 	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 	IO_LOCAL_INT(mp_ExtINT, 0x0, MP_APIC_ALL, 0x0);

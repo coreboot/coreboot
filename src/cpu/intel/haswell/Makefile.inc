@@ -5,7 +5,7 @@ ramstage-y += tsc_freq.c
 romstage-y += romstage.c
 romstage-y += tsc_freq.c
 
-ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+ramstage-y += acpi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smmrelocate.c
 ramstage-$(CONFIG_MONOTONIC_TIMER_MSR) += monotonic_timer.c
 

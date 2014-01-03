@@ -548,10 +548,12 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
 
+#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 static void fake_vbios(void)
 {
 #include "fake_vbios.c"
 }
+#endif
 
 static void gma_pm_init_post_vbios(struct device *dev)
 {
@@ -635,8 +637,8 @@ static void gma_func0_init(struct device *dev)
 	pci_dev_init(dev);
 #else
 	printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
-#endif
 	fake_vbios();
+#endif
 
 	/* Linux relies on VBT for panel info.  */
 	if (read16(0xc0000) != 0xaa55) {
@@ -670,18 +672,6 @@ static void gma_func0_init(struct device *dev)
 
 	/* Post VBIOS init */
 	gma_pm_init_post_vbios(dev);
-
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-	/* This should probably run before post VBIOS init. */
-	u32 iobase, mmiobase, physbase, graphics_base;
-	iobase = dev->resource_list[2].base;
-	mmiobase = dev->resource_list[0].base;
-	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
-	graphics_base = dev->resource_list[1].base;
-
-	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
-	i915lightup(physbase, iobase, mmiobase, graphics_base);
-#endif
 }
 
 static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)

@@ -34,8 +34,8 @@
 #endif
 
 /* convert a pointer to flash area into the offset inside the flash */
-static inline u32 to_flash_offset(void *p) {
-	return ((u32)p + CONFIG_ROM_SIZE);
+static inline u32 to_flash_offset(struct spi_flash *flash, void *p) {
+	return ((u32)p + flash->size);
 }
 
 static struct mrc_data_container *next_mrc_block(
@@ -212,7 +212,7 @@ static void update_mrc_cache(void *unused)
 		       "Need to erase the MRC cache region of %d bytes at %p\n",
 		       cache_size, cache_base);
 
-		flash->erase(flash, to_flash_offset(cache_base), cache_size);
+		flash->erase(flash, to_flash_offset(flash, cache_base), cache_size);
 
 		/* we will start at the beginning again */
 		cache = cache_base;
@@ -220,7 +220,7 @@ static void update_mrc_cache(void *unused)
 	//  4. write mrc data with flash->write()
 	printk(BIOS_DEBUG, "Finally: write MRC cache update to flash at %p\n",
 	       cache);
-	flash->write(flash, to_flash_offset(cache),
+	flash->write(flash, to_flash_offset(flash, cache),
 		     current->mrc_data_size + sizeof(*current), current);
 }
 

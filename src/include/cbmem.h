@@ -145,8 +145,6 @@ void backup_top_of_ram(uint64_t ramtop);
 void cbmem_late_set_table(uint64_t base, uint64_t size);
 #endif
 
-int cbmem_reinit(void);
-
 void get_cbmem_table(uint64_t *base, uint64_t *size);
 struct cbmem_entry *get_cbmem_toc(void);
 

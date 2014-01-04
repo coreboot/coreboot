@@ -30,6 +30,7 @@ struct sys_info {
 } __attribute__ ((packed));
 
 void sdram_initialize(struct pei_data *pei_data);
+void save_mrc_data(struct pei_data *pei_data);
 int fixup_sandybridge_errata(void);
 
 #endif				/* RAMINIT_H */

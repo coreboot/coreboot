@@ -267,6 +267,13 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 		goto err_claim_bus;
 	}
 
+	if (spi->force_programmer_specific && spi->programmer_specific_probe) {
+		flash = spi->programmer_specific_probe (spi);
+		if (!flash)
+			goto err_read_id;
+		goto flash_detected;
+	}
+
 	/* Read the ID codes */
 	ret = spi_flash_cmd(spi, CMD_READ_ID, idcode, sizeof(idcode));
 	if (ret)
@@ -295,11 +302,15 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
 				break;
 		}
 
+	if (!flash && spi->programmer_specific_probe)
+		flash = spi->programmer_specific_probe (spi);
+
 	if (!flash) {
 		printk(BIOS_WARNING, "SF: Unsupported manufacturer %02x\n", *idp);
 		goto err_manufacturer_probe;
 	}
 
+flash_detected:
 #if CONFIG_SMM_TSEG && defined(__SMM__)
 	/* Ensure flash handlers are valid for TSEG */
 	tseg_relocate((void **)&flash->read);

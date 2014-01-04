@@ -43,6 +43,10 @@ config EHCI_DEBUG_OFFSET
 	hex
 	default 0xa0
 
+config DRAM_GATE_GPIO
+	int
+	default 60
+
 config BOOTBLOCK_SOUTHBRIDGE_INIT
 	string
 	default "southbridge/intel/bd82x6x/bootblock.c"

@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2007-2008 coresystems GmbH
+## Copyright (C) 2011 The ChromiumOS Authors.  All rights reserved.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,9 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += dock.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-romstage-y += dock.c
-ramstage-y += dock.c
-ramstage-y += gma.c
-

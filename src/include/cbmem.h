@@ -21,13 +21,6 @@
 #ifndef _CBMEM_H_
 #define _CBMEM_H_
 
-/* Reserve 128k for ACPI and other tables */
-#if CONFIG_CONSOLE_CBMEM
-#define HIGH_MEMORY_DEF_SIZE	( 256 * 1024 )
-#else
-#define HIGH_MEMORY_DEF_SIZE	( 128 * 1024 )
-#endif
-
 #if CONFIG_HAVE_ACPI_RESUME
 #if CONFIG_RELOCATABLE_RAMSTAGE
 #define HIGH_MEMORY_SAVE	0
@@ -35,16 +28,11 @@
 #define HIGH_MEMORY_SAVE	(CONFIG_RAMTOP - CONFIG_RAMBASE)
 #endif
 
-#define HIGH_MEMORY_SIZE	(HIGH_MEMORY_SAVE + CONFIG_HIGH_SCRATCH_MEMORY_SIZE + HIGH_MEMORY_DEF_SIZE)
-
 /* Delegation of resume backup memory so we don't have to
  * (slowly) handle backing up OS memory in romstage.c
  */
 #define CBMEM_BOOT_MODE		0x610
 #define CBMEM_RESUME_BACKUP	0x614
-
-#else /* CONFIG_HAVE_ACPI_RESUME */
-#define HIGH_MEMORY_SIZE	HIGH_MEMORY_DEF_SIZE
 #endif /* CONFIG_HAVE_ACPI_RESUME */
 
 #define CBMEM_ID_FREESPACE	0x46524545
@@ -77,6 +65,7 @@
 
 #ifndef __ASSEMBLER__
 #include <stdint.h>
+#include <stdlib.h>
 
 struct cbmem_entry;
 
@@ -129,6 +118,24 @@ u64 cbmem_entry_size(const struct cbmem_entry *entry);
 
 
 #else /* !CONFIG_DYNAMIC_CBMEM */
+
+/* Allocation with static CBMEM is resolved at build time. We start
+ * with 128kB and conditionally add some of the most greedy CBMEM
+ * table entries.
+ */
+#define _CBMEM_SZ_MINIMAL	( 128 * 1024 )
+
+#if CONFIG_HAVE_ACPI_RESUME
+#define _CBMEM_SZ_RESUME	(HIGH_MEMORY_SAVE + CONFIG_HIGH_SCRATCH_MEMORY_SIZE)
+#else
+#define _CBMEM_SZ_RESUME	0
+#endif
+
+#define _CBMEM_SZ_TOTAL	\
+	(_CBMEM_SZ_MINIMAL + _CBMEM_SZ_RESUME + CONFIG_CONSOLE_CBMEM_BUFFER_SIZE)
+
+#define HIGH_MEMORY_SIZE	ALIGN_UP(_CBMEM_SZ_TOTAL, 0x10000)
+
 
 #ifndef __PRE_RAM__
 void set_top_of_ram(uint64_t ramtop);

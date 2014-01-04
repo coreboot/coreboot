@@ -64,6 +64,8 @@ struct spi_slave {
 	unsigned int	bus;
 	unsigned int	cs;
 	unsigned int	rw;
+	int force_programmer_specific;
+	struct spi_flash * (*programmer_specific_probe) (struct spi_slave *spi);
 };
 
 /*-----------------------------------------------------------------------

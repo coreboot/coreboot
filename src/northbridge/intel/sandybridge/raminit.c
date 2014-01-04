@@ -54,7 +54,7 @@
 #define CMOS_OFFSET_MRC_SEED_CHK 160
 #endif
 
-static void save_mrc_data(struct pei_data *pei_data)
+void save_mrc_data(struct pei_data *pei_data)
 {
 	u16 c1, c2, checksum;
 
@@ -63,7 +63,6 @@ static void save_mrc_data(struct pei_data *pei_data)
 	int output_len = ALIGN(pei_data->mrc_output_len, 16);
 
 	/* Save the MRC S3 restore data to cbmem */
-	cbmem_initialize();
 	mrcdata = cbmem_add
 		(CBMEM_ID_MRCDATA,
 		 output_len + sizeof(struct mrc_data_container));
@@ -297,8 +296,4 @@ void sdram_initialize(struct pei_data *pei_data)
 
 	post_system_agent_init(pei_data);
 	report_memory_config();
-
-	/* S3 resume: don't save scrambler seed or MRC data */
-	if (pei_data->boot_mode != 2)
-		save_mrc_data(pei_data);
 }

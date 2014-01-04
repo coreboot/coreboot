@@ -119,7 +119,7 @@ static void cbmem_initialize_empty(void)
 	};
 }
 
-int cbmem_reinit(void)
+static int cbmem_check_toc(void)
 {
 	uint64_t baseaddr, size;
 	struct cbmem_entry *cbmem_toc;
@@ -220,7 +220,7 @@ void *cbmem_find(u32 id)
 /* Returns True if it was not initialized before. */
 int cbmem_recovery(int is_wakeup)
 {
-	int found = cbmem_reinit();
+	int found = cbmem_check_toc();
 	int wipe = 0;
 
 	/* CBMEM TOC is wiped clean when we are not waking up from S3

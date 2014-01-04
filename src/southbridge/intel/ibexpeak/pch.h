@@ -59,6 +59,14 @@ void intel_pch_finalize_smm(void);
 
 #if !defined(__ASSEMBLER__)
 #if !defined(__PRE_RAM__)
+int spi_is_multichip(void);
+struct spi_flash *spi_flash_hwseq(unsigned int bus, unsigned int cs,
+				  unsigned int max_hz, unsigned int spi_mode);
+#endif
+#endif
+
+#if !defined(__ASSEMBLER__)
+#if !defined(__PRE_RAM__)
 #if !defined(__SMM__)
 #include "chip.h"
 void pch_enable(device_t dev);

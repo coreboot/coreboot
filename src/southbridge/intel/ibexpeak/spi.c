@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2011 The Chromium OS Authors.
+ * Copyright (C) 2009, 2010 Carl-Daniel Hailfinger
+ * Copyright (C) 2011 Stefan Tauner
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -28,10 +30,19 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/pci_ids.h>
+#include <device/pci.h>
+#include <spi_flash.h>
 
 #include <spi-generic.h>
+#include "pch.h"
 
 #define min(a, b) ((a)<(b)?(a):(b))
+
+#define HSFC_FCYCLE_OFF		1	/* 1-2: FLASH Cycle */
+#define HSFC_FCYCLE		(0x3 << HSFC_FCYCLE_OFF)
+#define HSFC_FDBC_OFF		8	/* 8-13: Flash Data Byte Count */
+#define HSFC_FDBC		(0x3f << HSFC_FDBC_OFF)
+
 
 #ifdef __SMM__
 #include <arch/pci_mmio_cfg.h>
@@ -115,7 +126,11 @@ typedef struct ich9_spi_regs {
 
 typedef struct ich_spi_controller {
 	int locked;
+	int revision;
+	uint32_t flmap0;
+	uint32_t hsfs;
 
+	ich9_spi_regs *ich9_spi;
 	uint8_t *opmenu;
 	int menubytes;
 	uint16_t *preop;
@@ -357,6 +372,7 @@ void spi_init(void)
 	pci_read_config_dword(dev, 0xf0, &rcba);
 	/* Bits 31-14 are the base address, 13-1 are reserved, 0 is enable. */
 	rcrb = (uint8_t *)(rcba & 0xffffc000);
+	cntlr.revision = ich_version;
 	switch (ich_version) {
 	case 7:
 		{
@@ -382,7 +398,11 @@ void spi_init(void)
 			const uint16_t ich9_spibar_offset = 0x3800;
 			ich9_spi_regs *ich9_spi =
 				(ich9_spi_regs *)(rcrb + ich9_spibar_offset);
-			ichspi_lock = readw_(&ich9_spi->hsfs) & HSFS_FLOCKDN;
+			uint16_t hsfs;
+			cntlr.ich9_spi = ich9_spi;
+			hsfs = readw_(&ich9_spi->hsfs);
+			ichspi_lock = hsfs & HSFS_FLOCKDN;
+			cntlr.hsfs = hsfs;
 			cntlr.opmenu = ich9_spi->opmenu;
 			cntlr.menubytes = sizeof(ich9_spi->opmenu);
 			cntlr.optype = &ich9_spi->optype;
@@ -393,6 +413,12 @@ void spi_init(void)
 			cntlr.control = (uint16_t *)ich9_spi->ssfc;
 			cntlr.bbar = &ich9_spi->bbar;
 			cntlr.preop = &ich9_spi->preop;
+
+			if (cntlr.hsfs & HSFS_FDV)
+			{
+				writel_ (4, &ich9_spi->fdoc);
+				cntlr.flmap0 = readl_(&ich9_spi->fdod);
+			}
 			break;
 		}
 	default:
@@ -592,6 +618,15 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 	return -1;
 }
 
+int spi_is_multichip (void)
+{
+	if (cntlr.revision != 9)
+		return 0;
+	if (!(cntlr.hsfs & HSFS_FDV))
+		return 0;
+	return !!((cntlr.flmap0 >> 8) & 3);
+}
+
 int spi_xfer(struct spi_slave *slave, const void *dout,
 		unsigned int bitsout, void *din, unsigned int bitsin)
 {
@@ -743,4 +778,321 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	writew_(0, cntlr.preop);
 
 	return 0;
+}
+
+/* Sets FLA in FADDR to (addr & 0x01FFFFFF) without touching other bits. */
+static void ich_hwseq_set_addr(uint32_t addr)
+{
+	uint32_t addr_old = readl_(&cntlr.ich9_spi->faddr) & ~0x01FFFFFF;
+	writel_((addr & 0x01FFFFFF) | addr_old, &cntlr.ich9_spi->faddr);
+}
+
+/* Polls for Cycle Done Status, Flash Cycle Error or timeout in 8 us intervals.
+   Resets all error flags in HSFS.
+   Returns 0 if the cycle completes successfully without errors within
+   timeout us, 1 on errors. */
+static int ich_hwseq_wait_for_cycle_complete(unsigned int timeout,
+					     unsigned int len)
+{
+	uint16_t hsfs;
+	uint32_t addr;
+
+	timeout /= 8; /* scale timeout duration to counter */
+	while ((((hsfs = readw_(&cntlr.ich9_spi->hsfs)) &
+		 (HSFS_FDONE | HSFS_FCERR)) == 0) &&
+	       --timeout) {
+		udelay(8);
+	}
+	writew_(readw_(&cntlr.ich9_spi->hsfs), &cntlr.ich9_spi->hsfs);
+
+	if (!timeout) {
+		uint16_t hsfc;
+		addr = readl_(&cntlr.ich9_spi->faddr) & 0x01FFFFFF;
+		hsfc = readw_(&cntlr.ich9_spi->hsfc);
+		printk(BIOS_ERR, "Transaction timeout between offset 0x%08x and "
+		       "0x%08x (= 0x%08x + %d) HSFC=%x HSFS=%x!\n",
+		       addr, addr + len - 1, addr, len - 1,
+		       hsfc, hsfs);
+		return 1;
+	}
+
+	if (hsfs & HSFS_FCERR) {
+		uint16_t hsfc;
+		addr = readl_(&cntlr.ich9_spi->faddr) & 0x01FFFFFF;
+		hsfc = readw_(&cntlr.ich9_spi->hsfc);
+		printk(BIOS_ERR, "Transaction error between offset 0x%08x and "
+		       "0x%08x (= 0x%08x + %d) HSFC=%x HSFS=%x!\n",
+		       addr, addr + len - 1, addr, len - 1,
+		       hsfc, hsfs);
+		return 1;
+	}
+	return 0;
+}
+
+
+static int ich_hwseq_erase(struct spi_flash *flash, u32 offset, size_t len)
+{
+	u32 start, end, erase_size;
+	int ret;
+	uint16_t hsfc;
+	uint16_t timeout = 1000 * 60;
+
+	erase_size = flash->sector_size;
+	if (offset % erase_size || len % erase_size) {
+		printk(BIOS_ERR, "SF: Erase offset/length not multiple of erase size\n");
+		return -1;
+	}
+
+	flash->spi->rw = SPI_WRITE_FLAG;
+	ret = spi_claim_bus(flash->spi);
+	if (ret) {
+		printk(BIOS_ERR, "SF: Unable to claim SPI bus\n");
+		return ret;
+	}
+
+	start = offset;
+	end = start + len;
+
+	while (offset < end) {
+		/* make sure FDONE, FCERR, AEL are cleared by writing 1 to them */
+		writew_(readw_(&cntlr.ich9_spi->hsfs), &cntlr.ich9_spi->hsfs);
+
+		ich_hwseq_set_addr(offset);
+
+		offset += erase_size;
+
+		hsfc = readw_(&cntlr.ich9_spi->hsfc);
+		hsfc &= ~HSFC_FCYCLE; /* clear operation */
+		hsfc |= (0x3 << HSFC_FCYCLE_OFF); /* set erase operation */
+		hsfc |= HSFC_FGO; /* start */
+		writew_(hsfc, &cntlr.ich9_spi->hsfc);
+		if (ich_hwseq_wait_for_cycle_complete(timeout, len))
+		{
+			printk(BIOS_ERR, "SF: Erase failed at %x\n", offset - erase_size);
+			ret = -1;
+			goto out;
+		}
+	}
+
+	printk(BIOS_DEBUG, "SF: Successfully erased %zu bytes @ %#x\n", len, start);
+
+out:
+	spi_release_bus(flash->spi);
+	return ret;
+}
+
+static void ich_read_data(uint8_t *data, int len)
+{
+	int i;
+	uint32_t temp32 = 0;
+
+	for (i = 0; i < len; i++) {
+		if ((i % 4) == 0)
+			temp32 = readl_(cntlr.data + i);
+
+		data[i] = (temp32 >> ((i % 4) * 8)) & 0xff;
+	}
+}
+
+static int ich_hwseq_read(struct spi_flash *flash,
+			  u32 addr, size_t len, void *buf)
+{
+	uint16_t hsfc;
+	uint16_t timeout = 100 * 60;
+	uint8_t block_len;
+
+	if (addr + len > flash->size) {
+		printk (BIOS_ERR,
+			"Attempt to read %x-%x which is out of chip\n",
+			(unsigned) addr,
+			(unsigned) addr+(unsigned) len);
+		return -1;
+	}
+
+	/* clear FDONE, FCERR, AEL by writing 1 to them (if they are set) */
+	writew_(readw_(&cntlr.ich9_spi->hsfs), &cntlr.ich9_spi->hsfs);
+
+	while (len > 0) {
+		block_len = min(len, cntlr.databytes);
+		if (block_len > (~addr & 0xff))
+			block_len = (~addr & 0xff) + 1;
+		ich_hwseq_set_addr(addr);
+		hsfc = readw_(&cntlr.ich9_spi->hsfc);
+		hsfc &= ~HSFC_FCYCLE; /* set read operation */
+		hsfc &= ~HSFC_FDBC; /* clear byte count */
+		/* set byte count */
+		hsfc |= (((block_len - 1) << HSFC_FDBC_OFF) & HSFC_FDBC);
+		hsfc |= HSFC_FGO; /* start */
+		writew_(hsfc, &cntlr.ich9_spi->hsfc);
+
+		if (ich_hwseq_wait_for_cycle_complete(timeout, block_len))
+			return 1;
+		ich_read_data(buf, block_len);
+		addr += block_len;
+		buf += block_len;
+		len -= block_len;
+	}
+	return 0;
+}
+
+/* Fill len bytes from the data array into the fdata/spid registers.
+ *
+ * Note that using len > flash->pgm->spi.max_data_write will trash the registers
+ * following the data registers.
+ */
+static void ich_fill_data(const uint8_t *data, int len)
+{
+	uint32_t temp32 = 0;
+	int i;
+
+	if (len <= 0)
+		return;
+
+	for (i = 0; i < len; i++) {
+		if ((i % 4) == 0)
+			temp32 = 0;
+
+		temp32 |= ((uint32_t) data[i]) << ((i % 4) * 8);
+
+		if ((i % 4) == 3) /* 32 bits are full, write them to regs. */
+			writel_(temp32, cntlr.data + (i - (i % 4)));
+	}
+	i--;
+	if ((i % 4) != 3) /* Write remaining data to regs. */
+		writel_(temp32, cntlr.data + (i - (i % 4)));
+}
+
+static int ich_hwseq_write(struct spi_flash *flash,
+			   u32 addr, size_t len, const void *buf)
+{
+	uint16_t hsfc;
+	uint16_t timeout = 100 * 60;
+	uint8_t block_len;
+	uint32_t start = addr;
+
+	if (addr + len > flash->size) {
+		printk (BIOS_ERR,
+			"Attempt to write 0x%x-0x%x which is out of chip\n",
+			(unsigned)addr, (unsigned) (addr+len));
+		return -1;
+	}
+
+	/* clear FDONE, FCERR, AEL by writing 1 to them (if they are set) */
+	writew_(readw_(&cntlr.ich9_spi->hsfs), &cntlr.ich9_spi->hsfs);
+
+	while (len > 0) {
+		block_len = min(len, cntlr.databytes);
+		if (block_len > (~addr & 0xff))
+			block_len = (~addr & 0xff) + 1;
+
+		ich_hwseq_set_addr(addr);
+
+		ich_fill_data(buf, block_len);
+		hsfc = readw_(&cntlr.ich9_spi->hsfc);
+		hsfc &= ~HSFC_FCYCLE; /* clear operation */
+		hsfc |= (0x2 << HSFC_FCYCLE_OFF); /* set write operation */
+		hsfc &= ~HSFC_FDBC; /* clear byte count */
+		/* set byte count */
+		hsfc |= (((block_len - 1) << HSFC_FDBC_OFF) & HSFC_FDBC);
+		hsfc |= HSFC_FGO; /* start */
+		writew_(hsfc, &cntlr.ich9_spi->hsfc);
+
+		if (ich_hwseq_wait_for_cycle_complete(timeout, block_len))
+		{
+			printk (BIOS_ERR, "SF: write failure at %x\n",
+				addr);
+			return -1;
+		}
+		addr += block_len;
+		buf += block_len;
+		len -= block_len;
+	}
+	printk(BIOS_DEBUG, "SF: Successfully written %u bytes @ %#x\n",
+	       (unsigned) (addr - start), start);
+	return 0;
+}
+
+
+struct spi_flash *spi_flash_hwseq(unsigned int bus, unsigned int cs,
+		unsigned int max_hz, unsigned int spi_mode)
+{
+	struct spi_slave *spi;
+	struct spi_flash *flash = NULL;
+	int ret;
+
+	if (cntlr.revision != 9) {
+		printk(BIOS_WARNING, "SF: Unsupported revision %x\n",
+			cntlr.revision);
+		return NULL;
+	}
+
+	flash = malloc(sizeof(*flash));
+	if (!flash) {
+		printk(BIOS_WARNING, "SF: Failed to allocate memory\n");
+		return NULL;
+	}
+
+	spi = spi_setup_slave(bus, cs, max_hz, spi_mode);
+	if (!spi) {
+		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
+		free (flash);
+		return NULL;
+	}
+
+	spi->rw = SPI_READ_FLAG;
+	ret = spi_claim_bus(spi);
+	if (ret) {
+		printk(BIOS_WARNING, "SF: Failed to claim SPI bus: %d\n", ret);
+		free (flash);
+		return NULL;
+	}
+
+	flash->spi = spi;
+	flash->name = "Opaque HW-sequencing";
+
+	flash->write = ich_hwseq_write;
+	flash->erase = ich_hwseq_erase;
+	flash->read = ich_hwseq_read;
+	ich_hwseq_set_addr (0);
+	switch ((cntlr.hsfs >> 3) & 3)
+	{
+	case 0:
+		flash->sector_size = 256;
+		break;
+	case 1:
+		flash->sector_size = 4096;
+		break;
+	case 2:
+		flash->sector_size = 8192;
+		break;
+	case 3:
+		flash->sector_size = 65536;
+		break;
+	}
+
+	uint32_t flcomp;
+
+	writel_ (0x1000, &cntlr.ich9_spi->fdoc);
+	flcomp = readl_(&cntlr.ich9_spi->fdod);
+
+	flash->size = 1 << (19 + (flcomp & 7));
+
+	if ((cntlr.hsfs & HSFS_FDV) && ((cntlr.flmap0 >> 8) & 3))
+		flash->size += 1 << (19 + ((flcomp >> 3) & 7));
+	printk (BIOS_DEBUG, "flash size 0x%x bytes\n", flash->size);
+
+#if CONFIG_SMM_TSEG && defined(__SMM__)
+	/* Ensure flash handlers are valid for TSEG */
+	tseg_relocate((void **)&flash->read);
+	tseg_relocate((void **)&flash->write);
+	tseg_relocate((void **)&flash->erase);
+	tseg_relocate((void **)&flash->name);
+#endif
+
+	printk(BIOS_INFO, "SF: Detected %s with page size %x, total %x\n",
+			flash->name, flash->sector_size, flash->size);
+
+	spi_release_bus(spi);
+
+	return flash;
 }

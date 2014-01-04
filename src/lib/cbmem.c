@@ -104,13 +104,10 @@ static void cbmem_init(void)
 	cbmem_locate_table(&baseaddr, &size);
 	cbmem_trace_location(baseaddr, size, __FUNCTION__);
 
+	if (!(baseaddr && size))
+		return;
+
 	cbmem_toc = (struct cbmem_entry *)(unsigned long)baseaddr;
-
-	if (size < (64 * 1024)) {
-		printk(BIOS_DEBUG, "Increase CBMEM size!\n");
-		for (;;) ;
-	}
-
 	memset(cbmem_toc, 0, CBMEM_TOC_RESERVED);
 
 	cbmem_toc[0] = (struct cbmem_entry) {

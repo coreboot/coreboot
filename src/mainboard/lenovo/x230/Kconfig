@@ -1,0 +1,70 @@
+if BOARD_LENOVO_X230
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_RPGA989
+	select NORTHBRIDGE_INTEL_IVYBRIDGE
+	select SOUTHBRIDGE_INTEL_C216
+	select EC_LENOVO_PMH7
+	select EC_LENOVO_H8
+	select BOARD_ROMSIZE_KB_8192
+	select HAVE_ACPI_TABLES
+	select HAVE_OPTION_TABLE
+	select HAVE_ACPI_RESUME
+	select HAVE_SMI_HANDLER
+	select GFXUMA
+	select EARLY_CBMEM_INIT
+
+	# Workaround for EC/KBC IRQ1.
+	select SERIRQ_CONTINUOUS_MODE
+
+config HAVE_IFD_BIN
+	bool
+	default n
+
+config HAVE_ME_BIN
+	bool
+	default n
+
+config MAINBOARD_DIR
+	string
+	default lenovo/x230
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "2325TLU"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 8
+
+config USBDEBUG_HCD_INDEX
+       int
+       default 2
+
+config VGA_BIOS_FILE
+	string
+	default "pci8086,0106.rom"
+
+config MAINBOARD_PCI_SUBSYSTEM_VENDOR_ID
+	hex
+	default 0x17aa
+
+config MAINBOARD_PCI_SUBSYSTEM_DEVICE_ID
+	hex
+	default 0x21fa
+
+config MAINBOARD_VENDOR
+	string
+	default "LENOVO"
+
+endif # BOARD_LENOVO_X230

@@ -1,0 +1,15 @@
+--- src/mainboard/lenovo/x201/smihandler.c
++++ src/mainboard/lenovo/x201/smihandler.c
+@@ -109,12 +109,10 @@
+ 	case 0x14:
+ 		/* brightness up */
+ 		mainboard_smi_brightness_up();
+-		mainboard_smi_save_cmos();
+ 		break;
+ 	case 0x15:
+ 		/* brightness down */
+ 		mainboard_smi_brightness_down();
+-		mainboard_smi_save_cmos();
+ 		break;
+ 	case 0x18:
+ 		/* Fn-F9 key */

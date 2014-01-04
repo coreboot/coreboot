@@ -42,3 +42,21 @@ distclean: clean
 .PHONY: all clean distclean
 
 -include .dependencies
+
+junit.xml:
+	echo '<?xml version="1.0" encoding="utf-8"?><testsuite>' > $@.tmp
+	$(MAKE) clean; \
+	echo "<testcase classname='cbmem' name='cbmem'>" >> $@.tmp; \
+	$(MAKE) >> $@.tmp.2 2>&1 && type="system-out" || type="failure"; \
+	if [ $$type = "failure" ]; then \
+		echo "<failure type='buildFailed'>" >> $@.tmp; \
+	else \
+		echo "<$$type>" >> $@.tmp; \
+	fi; \
+	echo '<![CDATA[' >> $@.tmp; \
+	cat $@.tmp.2 >> $@.tmp; \
+	echo "]]></$$type>" >>$@.tmp; \
+	rm -f $@.tmp.2; \
+	echo "</testcase>" >> $@.tmp; \
+	echo "</testsuite>" >> $@.tmp
+	mv $@.tmp $@

@@ -104,6 +104,8 @@ u8 recv_ec_data(void)
 		// return -1;
 	}
 
+	udelay(10);
+
 	data = inb(ec_data_reg);
 	printk(BIOS_SPEW, "recv_ec_data: 0x%02x\n", data);
 

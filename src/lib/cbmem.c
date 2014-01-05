@@ -256,17 +256,6 @@ BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 	                      init_cbmem_post_device, NULL),
 };
 
-int cbmem_base_check(void)
-{
-	if (!cbmem_base) {
-		printk(BIOS_ERR, "ERROR: CBMEM Base is not set.\n");
-		// Are there any boards without?
-		// Stepan thinks we should die() here!
-	}
-	printk(BIOS_DEBUG, "CBMEM Base is %llx.\n", cbmem_base);
-	return !!cbmem_base;
-}
-
 void cbmem_add_lb_mem(struct lb_memory *mem)
 {
 	lb_add_memory_range(mem, LB_MEM_TABLE, cbmem_base, cbmem_size);

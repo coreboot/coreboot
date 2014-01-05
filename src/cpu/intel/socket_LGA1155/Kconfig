@@ -1,0 +1,27 @@
+config CPU_INTEL_SOCKET_LGA1155
+	bool
+
+if CPU_INTEL_SOCKET_LGA1155
+
+# Northbridge config automatically selects the appropriate processor model,
+# since the CPU and NB come on the same die. However, we select them here
+# explicitly for consistency with other socket configs and to document the
+# intention.
+
+config SOCKET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select MMX
+	select SSE
+	select CACHE_AS_RAM
+	# 2nd Gen Core processors
+	select CPU_INTEL_MODEL_206AX
+	select NORTHBRIDGE_INTEL_SANDYBRIDGE
+	# 3rd Gen Core processors
+	select CPU_INTEL_MODEL_306AX
+	select NORTHBRIDGE_INTEL_IVYBRIDGE
+
+config CACHE_MRC_BIN
+	bool
+	default n
+
+endif # CPU_INTEL_SOCKET_LGA1155

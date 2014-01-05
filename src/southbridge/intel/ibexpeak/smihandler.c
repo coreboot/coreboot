@@ -290,6 +290,31 @@ static void busmaster_disable_on_bus(int bus)
         }
 }
 
+static void southbridge_gate_memory_reset_real(int offset,
+					       u16 use, u16 io, u16 lvl)
+{
+	u32 reg32;
+
+	/* Make sure it is set as GPIO */
+	reg32 = inl(use);
+	if (!(reg32 & (1 << offset))) {
+		reg32 |= (1 << offset);
+		outl(reg32, use);
+	}
+
+	/* Make sure it is set as output */
+	reg32 = inl(io);
+	if (reg32 & (1 << offset)) {
+		reg32 &= ~(1 << offset);
+		outl(reg32, io);
+	}
+
+	/* Drive the output low */
+	reg32 = inl(lvl);
+	reg32 &= ~(1 << offset);
+	outl(reg32, lvl);
+}
+
 /*
  * Drive GPIO 60 low to gate memory reset in S3.
  *
@@ -298,31 +323,22 @@ static void busmaster_disable_on_bus(int bus)
  */
 static void southbridge_gate_memory_reset(void)
 {
-	u32 reg32;
 	u16 gpiobase;
 
 	gpiobase = pci_read_config16(PCI_DEV(0, 0x1f, 0), GPIOBASE) & 0xfffc;
 	if (!gpiobase)
 		return;
 
-	/* Make sure it is set as GPIO */
-	reg32 = inl(gpiobase + GPIO_USE_SEL2);
-	if (!(reg32 & (1 << 28))) {
-		reg32 |= (1 << 28);
-		outl(reg32, gpiobase + GPIO_USE_SEL2);
-	}
-
-	/* Make sure it is set as output */
-	reg32 = inl(gpiobase + GP_IO_SEL2);
-	if (reg32 & (1 << 28)) {
-		reg32 &= ~(1 << 28);
-		outl(reg32, gpiobase + GP_IO_SEL2);
-	}
-
-	/* Drive the output low */
-	reg32 = inl(gpiobase + GP_LVL2);
-	reg32 &= ~(1 << 28);
-	outl(reg32, gpiobase + GP_LVL2);
+	if (CONFIG_DRAM_RESET_GATE_GPIO >= 32)
+		southbridge_gate_memory_reset_real(CONFIG_DRAM_RESET_GATE_GPIO & 31,
+						   gpiobase + GPIO_USE_SEL2,
+						   gpiobase + GP_IO_SEL2,
+						   gpiobase + GP_LVL2);
+	else
+		southbridge_gate_memory_reset_real(CONFIG_DRAM_RESET_GATE_GPIO & 31,
+						   gpiobase + GPIO_USE_SEL,
+						   gpiobase + GP_IO_SEL,
+						   gpiobase + GP_LVL);
 }
 
 static void xhci_sleep(u8 slp_typ)

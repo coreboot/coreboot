@@ -190,8 +190,8 @@ static struct memranges *get_physical_address_space(void)
 		 * when CONFIG_CACHE_ROM is enabled. The ROM is assumed
 		 * to be located at 4GiB - rom size. */
 		resource_t rom_base = RANGE_TO_PHYS_ADDR(
-			RANGE_4GB - PHYS_TO_RANGE_ADDR(CONFIG_ROM_SIZE));
-		memranges_insert(addr_space, rom_base, CONFIG_ROM_SIZE,
+			RANGE_4GB - PHYS_TO_RANGE_ADDR(CONFIG_ALIGNED_ROM_SIZE));
+		memranges_insert(addr_space, rom_base, CONFIG_ALIGNED_ROM_SIZE,
 		                 MTRR_TYPE_WRPROT);
 #endif
 

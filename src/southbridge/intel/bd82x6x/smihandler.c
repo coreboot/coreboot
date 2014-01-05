@@ -305,24 +305,34 @@ static void southbridge_gate_memory_reset(void)
 	if (!gpiobase)
 		return;
 
+#if CONFIG_DRAM_GATE_GPIO >= 32
+#define SUFFIX(x) x ## 2
+#define OFFSET (CONFIG_DRAM_GATE_GPIO - 32)
+#else
+#define SUFFIX(x) x
+#define OFFSET (CONFIG_DRAM_GATE_GPIO)
+#endif
+
 	/* Make sure it is set as GPIO */
-	reg32 = inl(gpiobase + GPIO_USE_SEL2);
-	if (!(reg32 & (1 << 28))) {
-		reg32 |= (1 << 28);
-		outl(reg32, gpiobase + GPIO_USE_SEL2);
+	reg32 = inl(gpiobase + SUFFIX(GPIO_USE_SEL));
+	if (!(reg32 & (1 << OFFSET))) {
+		reg32 |= (1 << OFFSET);
+		outl(reg32, gpiobase + SUFFIX(GPIO_USE_SEL));
 	}
 
 	/* Make sure it is set as output */
-	reg32 = inl(gpiobase + GP_IO_SEL2);
-	if (reg32 & (1 << 28)) {
-		reg32 &= ~(1 << 28);
-		outl(reg32, gpiobase + GP_IO_SEL2);
+	reg32 = inl(gpiobase + SUFFIX(GP_IO_SEL));
+	if (reg32 & (1 << OFFSET)) {
+		reg32 &= ~(1 << OFFSET);
+		outl(reg32, gpiobase + SUFFIX(GP_IO_SEL));
 	}
 
 	/* Drive the output low */
-	reg32 = inl(gpiobase + GP_LVL2);
-	reg32 &= ~(1 << 28);
-	outl(reg32, gpiobase + GP_LVL2);
+	reg32 = inl(gpiobase + SUFFIX(GP_LVL));
+	reg32 &= ~(1 << OFFSET);
+	outl(reg32, gpiobase + SUFFIX(GP_LVL));
+#undef OFFSET
+#undef SUFFIX
 }
 
 static void xhci_sleep(u8 slp_typ)

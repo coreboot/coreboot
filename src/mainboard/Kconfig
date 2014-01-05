@@ -225,6 +225,8 @@ config BOARD_ROMSIZE_KB_4096
 	bool
 config BOARD_ROMSIZE_KB_8192
 	bool
+config BOARD_ROMSIZE_KB_12288
+	bool
 config BOARD_ROMSIZE_KB_16384
 	bool
 
@@ -239,6 +241,7 @@ choice
 	default COREBOOT_ROMSIZE_KB_2048 if BOARD_ROMSIZE_KB_2048
 	default COREBOOT_ROMSIZE_KB_4096 if BOARD_ROMSIZE_KB_4096
 	default COREBOOT_ROMSIZE_KB_8192 if BOARD_ROMSIZE_KB_8192
+	default COREBOOT_ROMSIZE_KB_12288 if BOARD_ROMSIZE_KB_12288
 	default COREBOOT_ROMSIZE_KB_16384 if BOARD_ROMSIZE_KB_16384
 	help
 	  Select the size of the ROM chip you intend to flash coreboot on.
@@ -286,6 +289,11 @@ config COREBOOT_ROMSIZE_KB_8192
 	help
 	  Choose this option if you have a 8192 KB (8 MB) ROM chip.
 
+config COREBOOT_ROMSIZE_KB_12288
+	bool "12288 KB (12 MB)"
+	help
+	  Choose this option if you have a 12288 KB (12 MB) ROM chip.
+
 config COREBOOT_ROMSIZE_KB_16384
 	bool "16384 KB (16 MB)"
 	help
@@ -304,6 +312,7 @@ config COREBOOT_ROMSIZE_KB
 	default 2048 if COREBOOT_ROMSIZE_KB_2048
 	default 4096 if COREBOOT_ROMSIZE_KB_4096
 	default 8192 if COREBOOT_ROMSIZE_KB_8192
+	default 12288 if COREBOOT_ROMSIZE_KB_12288
 	default 16384 if COREBOOT_ROMSIZE_KB_16384
 
 # Map the config names to a hex value (bytes).
@@ -317,6 +326,7 @@ config ROM_SIZE
 	default 0x200000 if COREBOOT_ROMSIZE_KB_2048
 	default 0x400000 if COREBOOT_ROMSIZE_KB_4096
 	default 0x800000 if COREBOOT_ROMSIZE_KB_8192
+	default 0xc00000 if COREBOOT_ROMSIZE_KB_12288
 	default 0x1000000 if COREBOOT_ROMSIZE_KB_16384
 
 config ENABLE_POWER_BUTTON

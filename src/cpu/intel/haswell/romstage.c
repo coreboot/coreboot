@@ -124,9 +124,9 @@ static void *setup_romstage_stack_after_car(void)
 
 	/* Cache the ROM as WP just below 4GiB. */
 	slot = stack_push(slot, mtrr_mask_upper); /* upper mask */
-	slot = stack_push(slot, ~(CONFIG_ROM_SIZE - 1) | MTRRphysMaskValid);
+	slot = stack_push(slot, ~(CONFIG_ALIGNED_ROM_SIZE - 1) | MTRRphysMaskValid);
 	slot = stack_push(slot, 0); /* upper base */
-	slot = stack_push(slot, ~(CONFIG_ROM_SIZE - 1) | MTRR_TYPE_WRPROT);
+	slot = stack_push(slot, ~(CONFIG_ALIGNED_ROM_SIZE - 1) | MTRR_TYPE_WRPROT);
 	num_mtrrs++;
 
 	/* Cache RAM as WB from 0 -> CONFIG_RAMTOP. */

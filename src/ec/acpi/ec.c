@@ -73,6 +73,8 @@ int send_ec_data(u8 data)
 		// return -1;
 	}
 
+	udelay(10);
+
 	outb(data, ec_data_reg);
 
 	return 0;
@@ -103,6 +105,8 @@ u8 recv_ec_data(void)
 		printk(BIOS_DEBUG, "\nTimeout while receiving data from EC!\n");
 		// return -1;
 	}
+
+	udelay(10);
 
 	data = inb(ec_data_reg);
 	printk(BIOS_SPEW, "recv_ec_data: 0x%02x\n", data);

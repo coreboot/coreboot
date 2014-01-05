@@ -50,10 +50,6 @@ struct lb_memory *write_tables(void)
 	 */
 	unsigned long high_table_pointer;
 
-#if !CONFIG_DYNAMIC_CBMEM
-	cbmem_base_check();
-#endif
-
 	rom_table_start = 0xf0000;
 	rom_table_end =   0xf0000;
 

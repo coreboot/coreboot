@@ -50,10 +50,6 @@ struct lb_memory *write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;
 
-#if !CONFIG_DYNAMIC_CBMEM
-	cbmem_base_check();
-#endif
-
 	post_code(0x9d);
 
 	table_pointer = (unsigned long)cbmem_add(CBMEM_ID_CBTABLE,

@@ -96,6 +96,12 @@ static inline long x86_mtrr_rom_cache_var_index(void) { return -1; }
 void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
 #endif
 
+/* Align up to next power of 2, suitable for ROMCC and assembler too.
+ * Range of result 256kB to 128MB is good enough here.
+ */
+#define _POW2_MASK(x)		((x>>1)|(x>>2)|(x>>3)|(x>>4)|(x>>5)|(x>>6)|(x>>7)|(x>>8)|((1<<18)-1))
+#define _ALIGN_UP_POW2(x)	((x + _POW2_MASK(x)) & ~_POW2_MASK(x))
+
 #if !defined(CONFIG_RAMTOP)
 # error "CONFIG_RAMTOP not defined"
 #endif
@@ -104,11 +110,25 @@ void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
 # error "CONFIG_XIP_ROM_SIZE is not a power of 2"
 #endif
 
-#if ((CONFIG_CACHE_ROM_SIZE & (CONFIG_CACHE_ROM_SIZE -1)) != 0)
-# error "CONFIG_CACHE_ROM_SIZE is not a power of 2"
+/* Align ROM_SIZE to power of 2 to use with MTRR setup. */
+#if ((CONFIG_ROM_SIZE & (CONFIG_ROM_SIZE-1)) == 0)
+#define CACHE_ROM_SIZE	CONFIG_ROM_SIZE
+#else
+#define CACHE_ROM_SIZE	_ALIGN_UP_POW2(CONFIG_ROM_SIZE)
 #endif
 
-#define CACHE_ROM_BASE	(((1<<20) - (CONFIG_CACHE_ROM_SIZE>>12))<<12)
+#if ((CACHE_ROM_SIZE & (CACHE_ROM_SIZE-1)) != 0)
+# error "CACHE_ROM_SIZE is not a power of 2."
+#endif
+#if (CACHE_ROM_SIZE < CONFIG_ROM_SIZE) | (CACHE_ROM_SIZE >= (2 * CONFIG_ROM_SIZE))
+# error "CACHE_ROM_SIZE is not optimal."
+#endif
+
+#define CACHE_ROM_BASE	(((1<<20) - (CACHE_ROM_SIZE>>12))<<12)
+
+#if ((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) > CACHE_ROM_BASE)
+# error "CAR region (WB) and flash (WP) regions overlap."
+#endif
 
 #if (CONFIG_RAMTOP & (CONFIG_RAMTOP - 1)) != 0
 # error "CONFIG_RAMTOP must be a power of 2"

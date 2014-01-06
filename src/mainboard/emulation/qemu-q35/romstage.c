@@ -50,7 +50,7 @@ void main(unsigned long bist)
 	//print_pci_devices();
 	//dump_pci_devices();
 
-	cbmem_was_initted = !cbmem_initialize();
+	cbmem_was_initted = !cbmem_recovery(0);
 
 	timestamp_init(rdtsc());
 	timestamp_add_now(TS_START_ROMSTAGE);

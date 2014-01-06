@@ -238,7 +238,7 @@ before_romstage:
 	movl	$CPU_PHYSMASK_HI, %edx	// 36bit address space
 	wrmsr
 
-#if CONFIG_CACHE_ROM_SIZE
+#if CACHE_ROM_SIZE
 	/* Enable Caching and speculative Reads for the
 	 * complete ROM now that we actually have RAM.
 	 */
@@ -247,7 +247,7 @@ before_romstage:
 	xorl	%edx, %edx
 	wrmsr
 	movl	$MTRRphysMask_MSR(1), %ecx
-	movl	$(~(CONFIG_CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	movl	$CPU_PHYSMASK_HI, %edx
 	wrmsr
 #endif

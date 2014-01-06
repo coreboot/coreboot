@@ -385,9 +385,9 @@ config CBFS_SIZE
 	hex
 	default ROM_SIZE
 
-config CACHE_ROM_SIZE
+config CACHE_ROM_SIZE_OVERRIDE
 	hex
-	default CBFS_SIZE
+	default 0
 
 # TODO: Can probably be removed once all chipsets have kconfig options for it.
 config VIDEO_MB

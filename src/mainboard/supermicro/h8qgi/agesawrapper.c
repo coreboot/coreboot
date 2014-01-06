@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <cpu/x86/mtrr.h>
 #include "agesawrapper.h"
 #include "BiosCallOuts.h"
 #include "cpuRegisters.h"
@@ -192,9 +193,9 @@ UINT32 agesawrapper_amdinitmmio(VOID)
 	LibAmdMsrWrite(0xC001001F, &MsrReg, &StdHeader);
 
 	/* Set ROM cache onto WP to decrease post time */
-	MsrReg = (0x0100000000 - CONFIG_ROM_SIZE) | 5;
+	MsrReg = (0x0100000000 - CACHE_ROM_SIZE) | 5;
 	LibAmdMsrWrite (0x20C, &MsrReg, &StdHeader);
-	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CONFIG_ROM_SIZE) | 0x800ull;
+	MsrReg = ((1ULL << CONFIG_CPU_ADDR_BITS) - CACHE_ROM_SIZE) | 0x800ull;
 	LibAmdMsrWrite(0x20D, &MsrReg, &StdHeader);
 
 	Status = AGESA_SUCCESS;

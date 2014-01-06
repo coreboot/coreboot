@@ -286,7 +286,7 @@ void main(unsigned long bist)
 	post_code(0x3e);
 
 	MCHBAR16(SSKPD) = 0xCAFE;
-	cbmem_was_initted = !cbmem_initialize();
+	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
 	if (boot_mode!=2)
 		save_mrc_data(&pei_data)
 

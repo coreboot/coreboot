@@ -322,7 +322,7 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	quick_ram_check();
 	post_code(0x4e);
 
-	cbmem_was_initted = !cbmem_initialize();
+	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
 
 	if(cbmem_was_initted) {
 		reset_system();

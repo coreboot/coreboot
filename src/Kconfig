@@ -470,7 +470,7 @@ config MAX_PIRQ_LINKS
 menu "System tables"
 
 config MULTIBOOT
-	bool "Generate Multiboot tables (for GRUB2)"
+	bool "Generate Multiboot tables"
 	default y
 	depends on ARCH_X86
 

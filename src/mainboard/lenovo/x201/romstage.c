@@ -230,6 +230,7 @@ static inline u16 read_acpi16(u32 addr)
 void main(unsigned long bist)
 {
 	u32 reg32;
+	int cbmem_initted;
 	int s3resume = 0;
 
 	timestamp_init(rdtsc ());
@@ -329,11 +330,14 @@ void main(unsigned long bist)
 		reg32 = inl(DEFAULT_PMBASE + 0x04);
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 	}
+
+	cbmem_initted = !cbmem_initialize();
+
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
-	if (s3resume && cbmem_reinit()) {
+	if (s3resume && cbmem_initted) {
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption

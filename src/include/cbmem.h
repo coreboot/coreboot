@@ -90,6 +90,9 @@ struct cbmem_entry;
 
 #define DYN_CBMEM_ALIGN_SIZE (4096)
 
+/* By default cbmem is attempted to be recovered. Returns 0 if cbmem was
+ * recovered or 1 if cbmem had to be reinitialized. */
+int cbmem_initialize(void);
 /* Initialize cbmem to be empty. */
 void cbmem_initialize_empty(void);
 
@@ -153,9 +156,9 @@ struct cbmem_entry *get_cbmem_toc(void);
 
 unsigned long get_top_of_ram(void);
 
-/* By default cbmem is attempted to be recovered. Returns 0 if cbmem was
- * recovered or 1 if cbmem had to be reinitialized. */
-int cbmem_initialize(void);
+/* Returns 0 if old cbmem was recovered. Recovery is only attempted if
+ * s3resume is non-zero. */
+int cbmem_recovery(int s3resume);
 /* Add a cbmem entry of a given size and id. These return NULL on failure. The
  * add function performs a find first and do not check against the original
  * size. */

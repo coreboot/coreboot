@@ -256,6 +256,16 @@ int cbmem_initialize(void)
 	return 0;
 }
 
+int cbmem_recovery(int is_wakeup)
+{
+	int rv = 0;
+	if (!is_wakeup)
+		cbmem_initialize_empty();
+	else
+		rv = cbmem_initialize();
+	return rv;
+}
+
 static void *cbmem_base(void)
 {
 	struct cbmem_root *root;

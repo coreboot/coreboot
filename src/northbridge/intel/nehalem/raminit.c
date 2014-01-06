@@ -1699,7 +1699,7 @@ static void save_timings(struct raminfo *info)
 	train.reg_10b = read_1d0(0x10b, 6);
 
 	/* Save the MRC S3 restore data to cbmem */
-	cbmem_initialize();
+	cbmem_recovery(0);
 	mrcdata = cbmem_add
 	    (CBMEM_ID_MRCDATA, output_len + sizeof(struct mrc_data_container));
 

@@ -331,7 +331,11 @@ void main(unsigned long bist)
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 	}
 
-	cbmem_initted = !cbmem_initialize();
+	/* FIXME: If not in s3resume, raminit() calls cbmem_recovery(0),
+	 * clears all of CBMEM region and puts in MRC training results.
+	 * Tell here were are doing resume to avoid wiping CBMEM region
+	 * again. */
+	cbmem_initted = !cbmem_recovery(1);
 
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so

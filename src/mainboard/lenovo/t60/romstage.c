@@ -321,7 +321,7 @@ void main(unsigned long bist)
 
 	MCHBAR16(SSKPD) = 0xCAFE;
 
-	cbmem_was_initted = !cbmem_initialize();
+	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
 
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so

@@ -49,6 +49,9 @@ Device (EC0)
 		TSTC, 8,	// Complement of Test Byte
 		KBLV, 8,	// Keyboard Backlight
 		FAND, 8,	// Set Fan Duty Cycle
+		PATI, 8,	// Programmable Auxiliary Trip Sensor ID
+		PATT, 8,	// Programmable Auxiliary Trip Threshold
+		PATC, 8,	// Programmable Auxiliary Trip Commit
 	}
 
 	OperationRegion (EMEM, SystemIO, EC_LPC_ADDR_MEMMAP, EC_MEMMAP_SIZE)
@@ -234,13 +237,6 @@ Device (EC0)
 		Notify (BAT0, 0x81)
 	}
 
-	// Thermal Treshold Event
-	Method (_Q09, 0, NotSerialized)
-	{
-		Store ("EC: THERMAL THRESHOLD", Debug)
-		Notify (\_TZ, 0x80)
-	}
-
 	// Thermal Overload Event
 	Method (_Q0A, 0, NotSerialized)
 	{
@@ -289,6 +285,9 @@ Device (EC0)
 	 * Dynamic Platform Thermal Framework support
 	 */
 
+	/* Mutex for EC PAT interface */
+	Mutex (PATM, 1)
+
 	/*
 	 * Set Aux Trip Point 0
 	 *   Arg0 = Temp Sensor ID
@@ -296,6 +295,23 @@ Device (EC0)
 	 */
 	Method (PAT0, 2, Serialized)
 	{
+		If (Acquire (^PATM, 1000)) {
+			Return (0)
+		}
+
+		Store ("EC: PAT0", Debug)
+
+		/* Set sensor ID */
+		Store (ToInteger (Arg0), ^PATI)
+
+		/* Adjust by offset to get Kelvin and set Threshold */
+		Add (ToInteger (Arg1), ^TOFS, ^PATT)
+
+		/* Set commit value with SELECT=0 and ENABLE=1 */
+		Store (0x02, ^PATC)
+
+		Release (^PATM)
+		Return (1)
 	}
 
 	/*
@@ -305,17 +321,69 @@ Device (EC0)
 	 */
 	Method (PAT1, 2, Serialized)
 	{
+		If (Acquire (^PATM, 1000)) {
+			Return (0)
+		}
+
+		Store ("EC: PAT1", Debug)
+
+		/* Set sensor ID */
+		Store (ToInteger (Arg0), ^PATI)
+
+		/* Adjust by offset to get Kelvin and set Threshold */
+		Add (ToInteger (Arg1), ^TOFS, ^PATT)
+
+		/* Set commit value with SELECT=1 and ENABLE=1 */
+		Store (0x03, ^PATC)
+
+		Release (^PATM)
+		Return (1)
+	}
+
+	/* Disable Aux Trip Points */
+	Method (PATD)
+	{
+		If (Acquire (^PATM, 1000)) {
+			Return (0)
+		}
+
+		Store ("EC: PAT Disable", Debug)
+
+		Store (0x00, ^PATI)
+		Store (0x00, ^PATT)
+
+		/* Disable PAT0 */
+		Store (0x00, ^PATC)
+
+		/* Disable PAT1 */
+		Store (0x01, ^PATC)
+
+		Release (^PATM)
+		Return (1)
 	}
 
 	/*
-	 * DPTF Thermal Threshold Event
+	 * Thermal Threshold Event
 	  */
-	Method (_Q14, 0, Serialized)
+	Method (_Q09, 0, Serialized)
 	{
-		Store ("EC: DPTF THERMAL THRESHOLD", Debug)
-		If (CondRefOf (\_SB.DPTF.TEVT, Local0)) {
-			\_SB.DPTF.TEVT ()
+		If (Acquire (^PATM, 1000)) {
+			Return ()
 		}
+
+		Store ("EC: THERMAL THRESHOLD", Debug)
+
+		/* Read sensor ID for event */
+		Store (^PATI, Local0)
+
+		/* When sensor ID returns 0xFF then no more events */
+		While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
+		{
+			/* Keep reaading sensor ID for event */
+			Store (^PATI, Local0)
+		}
+
+		Release (^PATM)
 	}
 
 	#include "ac.asl"

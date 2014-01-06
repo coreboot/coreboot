@@ -392,7 +392,7 @@ no_msr_11e:
 	movl	$(~(CONFIG_RAMTOP - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 
-#if CONFIG_CACHE_ROM_SIZE
+#if CACHE_ROM_SIZE
 	/* Enable caching and Speculative Reads for Flash ROM device. */
 	movl	$MTRRphysBase_MSR(1), %ecx
 	movl	$(CACHE_ROM_BASE | MTRR_TYPE_WRPROT), %eax
@@ -400,7 +400,7 @@ no_msr_11e:
 	wrmsr
 	movl	$MTRRphysMask_MSR(1), %ecx
 	rdmsr
-	movl	$(~(CONFIG_CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
+	movl	$(~(CACHE_ROM_SIZE - 1) | MTRRphysMaskValid), %eax
 	wrmsr
 #endif
 

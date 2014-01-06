@@ -29,6 +29,51 @@
 #include <cbmem.h>
 #include "hudson.h"
 
+void hudson_pci_port80(void)
+{
+	u8 byte;
+	device_t dev;
+
+	/* P2P Bridge */
+	dev = PCI_DEV(0, 0x14, 4);
+
+	/* Chip Control: Enable subtractive decoding */
+	byte = pci_read_config8(dev, 0x40);
+	byte |= 1 << 5;
+	pci_write_config8(dev, 0x40, byte);
+
+	/* Misc Control: Enable subtractive decoding if 0x40 bit 5 is set */
+	byte = pci_read_config8(dev, 0x4B);
+	byte |= 1 << 7;
+	pci_write_config8(dev, 0x4B, byte);
+
+	/* The same IO Base and IO Limit here is meaningful because we set the
+	 * bridge to be subtractive. During early setup stage, we have to make
+	 * sure that data can go through port 0x80.
+	 */
+	/* IO Base: 0xf000 */
+	byte = pci_read_config8(dev, 0x1C);
+	byte |= 0xF << 4;
+	pci_write_config8(dev, 0x1C, byte);
+
+	/* IO Limit: 0xf000 */
+	byte = pci_read_config8(dev, 0x1D);
+	byte |= 0xF << 4;
+	pci_write_config8(dev, 0x1D, byte);
+
+	/* PCI Command: Enable IO response */
+	byte = pci_read_config8(dev, 0x04);
+	byte |= 1 << 0;
+	pci_write_config8(dev, 0x04, byte);
+
+	/* LPC controller */
+	dev = PCI_DEV(0, 0x14, 3);
+
+	byte = pci_read_config8(dev, 0x4A);
+	byte &= ~(1 << 5); /* disable lpc port 80 */
+	pci_write_config8(dev, 0x4A, byte);
+}
+
 void hudson_lpc_port80(void)
 {
 	u8 byte;
@@ -42,9 +87,9 @@ void hudson_lpc_port80(void)
 	outb(byte, 0xCD7);
 
 	/* Enable port 80 LPC decode in pci function 3 configuration space. */
-	dev = PCI_DEV(0, 0x14, 3);//pci_locate_device(PCI_ID(0x1002, 0x439D), 0);
+	dev = PCI_DEV(0, 0x14, 3);
 	byte = pci_read_config8(dev, 0x4a);
-	byte |= 1 << 5;		/* enable port 80 */
+	byte |= 1 << 5; /* enable port 80 */
 	pci_write_config8(dev, 0x4a, byte);
 }
 

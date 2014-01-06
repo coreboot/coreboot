@@ -29,6 +29,7 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <console/loglevel.h>
+#include <cpu/x86/mtrr.h>
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "drivers/pc80/i8254.c"
@@ -60,12 +61,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	 * All cores: allow caching of flash chip code and data
 	 * (there are no cache-as-ram reliability concerns with family 14h)
 	 */
-	msr.lo = ((0x0100000000ull - CONFIG_ROM_SIZE) | 5) & 0xFFFFFFFF;
-	msr.hi = ((0x0100000000ull - CONFIG_ROM_SIZE) | 5) >> 32;
+	msr.lo = ((0x0100000000ull - CACHE_ROM_SIZE) | 5) & 0xFFFFFFFF;
+	msr.hi = ((0x0100000000ull - CACHE_ROM_SIZE) | 5) >> 32;
 	wrmsr (MSR_MTRR_VARIABLE_BASE6, msr);
 
-	msr.lo = ((0x1000000000ull - CONFIG_ROM_SIZE) | 0x800) & 0xFFFFFFFF;
-	msr.hi = ((0x1000000000ull - CONFIG_ROM_SIZE) | 0x800) >> 32;
+	msr.lo = ((0x1000000000ull - CACHE_ROM_SIZE) | 0x800) & 0xFFFFFFFF;
+	msr.hi = ((0x1000000000ull - CACHE_ROM_SIZE) | 0x800) >> 32;
 	wrmsr (MSR_MTRR_VARIABLE_MASK6, msr);
 
 	/* All cores: set pstate 0 (1600 MHz) early to save a few ms of boot time */

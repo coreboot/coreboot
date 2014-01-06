@@ -139,6 +139,21 @@ static int cbfs_fix_legacy_size(struct cbfs_image *image)
 	return 0;
 }
 
+void cbfs_put_header(void *dest, struct cbfs_header *header)
+{
+	struct buffer outheader;
+
+	outheader.data = dest;
+	outheader.size = 0;
+
+	xdr_be.put32(&outheader, header->magic);
+	xdr_be.put32(&outheader, header->version);
+	xdr_be.put32(&outheader, header->romsize);
+	xdr_be.put32(&outheader, header->bootblocksize);
+	xdr_be.put32(&outheader, header->align);
+	xdr_be.put32(&outheader, header->offset);
+	xdr_be.put32(&outheader, header->architecture);
+}
 int cbfs_image_create(struct cbfs_image *image,
 		      uint32_t myarch,
 		      size_t size,
@@ -148,7 +163,7 @@ int cbfs_image_create(struct cbfs_image *image,
 		      int32_t header_offset,
 		      int32_t entries_offset)
 {
-	struct cbfs_header *header;
+	struct cbfs_header header;
 	struct cbfs_file *entry;
 	uint32_t cbfs_len;
 	size_t entry_header_len;
@@ -156,7 +171,7 @@ int cbfs_image_create(struct cbfs_image *image,
 	DEBUG("cbfs_image_create: bootblock=0x%x+0x%zx, "
 	      "header=0x%x+0x%zx, entries_offset=0x%x\n",
 	      bootblock_offset, bootblock->size,
-	      header_offset, sizeof(*header), entries_offset);
+	      header_offset, sizeof(header), entries_offset);
 
 	if (buffer_create(&image->buffer, size, "(new)") != 0)
 		return -1;
@@ -194,20 +209,20 @@ int cbfs_image_create(struct cbfs_image *image,
 	       bootblock->size);
 
 	// Prepare header
-	if (header_offset + sizeof(*header) > size) {
+	if (header_offset + sizeof(header) > size) {
 		ERROR("Header (0x%x+0x%zx) exceed ROM size (0x%zx)\n",
-		      header_offset, sizeof(*header), size);
+		      header_offset, sizeof(header), size);
 		return -1;
 	}
-	header = (struct cbfs_header *)(image->buffer.data + header_offset);
-	image->header = header;
-	header->magic = htonl(CBFS_HEADER_MAGIC);
-	header->version = htonl(CBFS_HEADER_VERSION);
-	header->romsize = htonl(size);
-	header->bootblocksize = htonl(bootblock->size);
-	header->align = htonl(align);
-	header->offset = htonl(entries_offset);
-	header->architecture = htonl(myarch);
+	image->header = (struct cbfs_header *)(image->buffer.data + header_offset);
+	header.magic = CBFS_HEADER_MAGIC;
+	header.version = CBFS_HEADER_VERSION;
+	header.romsize = size;
+	header.bootblocksize = bootblock->size;
+	header.align = align;
+	header.offset = entries_offset;
+	header.architecture = myarch;
+	cbfs_put_header(image->header, &header);
 
 	// Prepare entries
 	if (align_up(entries_offset, align) != entries_offset) {

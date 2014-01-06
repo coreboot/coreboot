@@ -95,8 +95,7 @@ void cbmem_late_set_table(uint64_t base, uint64_t size)
  *  - suspend/resume backup memory
  */
 
-#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
-static void cbmem_init(void)
+static void cbmem_initialize_empty(void)
 {
 	uint64_t baseaddr, size;
 	struct cbmem_entry *cbmem_toc;
@@ -119,7 +118,6 @@ static void cbmem_init(void)
 		.size	= size - CBMEM_TOC_RESERVED
 	};
 }
-#endif
 
 int cbmem_reinit(void)
 {
@@ -219,32 +217,40 @@ void *cbmem_find(u32 id)
 	return (void *)NULL;
 }
 
-#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
 /* Returns True if it was not initialized before. */
-int cbmem_initialize(void)
+int cbmem_recovery(int is_wakeup)
 {
-	int rv = 0;
+	int found = cbmem_reinit();
+	int wipe = 0;
 
-	/* We expect the romstage to always initialize it. */
-	if (!cbmem_reinit()) {
-		cbmem_init();
+#if defined(__PRE_RAM__) && CONFIG_EARLY_CBMEM_INIT
+	wipe = 1;
+#endif
+#if !defined(__PRE_RAM__) && !CONFIG_EARLY_CBMEM_INIT
+	wipe = 1;
+#endif
+
+	if (!is_wakeup && wipe)
+		cbmem_initialize_empty();
+
+	if (is_wakeup && !found) {
+		cbmem_initialize_empty();
 		cbmem_fail_resume();
-		rv = 1;
 	}
-#ifndef __PRE_RAM__
-	cbmem_arch_init();
-#endif
-	/* Migrate cache-as-ram variables. */
-	car_migrate_variables();
 
-	return rv;
+	cbmem_arch_init();
+	car_migrate_variables();
+	return !found;
 }
-#endif
 
 #ifndef __PRE_RAM__
 static void init_cbmem_post_device(void *unused)
 {
-	cbmem_initialize();
+#if CONFIG_HAVE_ACPI_RESUME
+	cbmem_recovery(acpi_is_wakeup());
+#else
+	cbmem_recovery(0);
+#endif
 #if CONFIG_CONSOLE_CBMEM
 	cbmemc_reinit();
 #endif

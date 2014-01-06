@@ -2,7 +2,6 @@
 #include <arch/stages.h>
 #include <ip_checksum.h>
 #include <string.h>
-#include <cpu/x86/multiboot.h>
 
 #if CONFIG_RELOCATABLE_RAMSTAGE
 /* When the ramstage is relocatable the elf loading ensures an elf image cannot
@@ -21,9 +20,6 @@ void jmp_to_elf_entry(void *entry, unsigned long unused1, unsigned long unused2)
 
 		::
 		"r" (entry)
-#if CONFIG_MULTIBOOT
-		, "b"(mbi), "a" (MB_MAGIC2)
-#endif
 		);
 }
 #else
@@ -123,11 +119,7 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 		::
 		"ri" (lb_start), "ri" (buffer), "ri" (lb_size),
 		"ri" (entry),
-#if CONFIG_MULTIBOOT
-		"ri"(mbi), "ri" (MB_MAGIC2)
-#else
 		"ri"(0), "ri" (0)
-#endif
 		);
 }
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */

@@ -469,11 +469,6 @@ config MAX_PIRQ_LINKS
 
 menu "System tables"
 
-config MULTIBOOT
-	bool "Generate Multiboot tables (for GRUB2)"
-	default y
-	depends on ARCH_X86
-
 config GENERATE_ACPI_TABLES
 	prompt "Generate ACPI tables" if HAVE_ACPI_TABLES
 	bool

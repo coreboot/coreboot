@@ -27,7 +27,6 @@
 #include <arch/smp/mpspec.h>
 #include <arch/acpi.h>
 #include <string.h>
-#include <cpu/x86/multiboot.h>
 #include <cbmem.h>
 #include <lib.h>
 #include <smbios.h>
@@ -58,7 +57,7 @@ struct lb_memory *write_tables(void)
 	rom_table_end =   0xf0000;
 
 	/* Start low addr at 0x500, so we don't run into conflicts with the BDA
-	 * in case our data structures grow beyond 0x400. Only multiboot, GDT
+	 * in case our data structures grow beyond 0x400. Only GDT
 	 * and the coreboot table use low_tables.
 	 */
 	low_table_start = 0;
@@ -246,13 +245,6 @@ struct lb_memory *write_tables(void)
 				     low_table_start, low_table_end,
 				     rom_table_start, rom_table_end);
 	}
-
-#if CONFIG_MULTIBOOT
-	post_code(0x9d);
-
-	/* The Multiboot information structure */
-	write_multiboot_info(rom_table_end);
-#endif
 
 	/* Print CBMEM sections */
 	cbmem_list();

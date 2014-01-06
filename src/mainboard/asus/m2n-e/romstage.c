@@ -58,7 +58,6 @@ static inline int spd_read_byte(unsigned int device, unsigned int address)
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit_f.c"
-#include "lib/generic_sdram.c"
 #include "resourcemap.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "southbridge/nvidia/mcp55/early_setup_ss.h"

@@ -79,7 +79,6 @@ void soft_reset(void)
 #include "northbridge/amd/amdk8/incoherent_ht.c"
 #include "northbridge/amd/amdk8/coherent_ht.c"
 #include "northbridge/amd/amdk8/raminit.c"
-#include "lib/generic_sdram.c"
 #include "cpu/amd/dualcore/dualcore.c"
 #include "cpu/amd/model_fxx/init_cpus.c"
 #include "cpu/amd/model_fxx/fidvid.c"

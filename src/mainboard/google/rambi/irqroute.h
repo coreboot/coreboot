@@ -53,4 +53,4 @@
 /* Corresponding SCORE GPIO pins */
 #define TPAD_IRQ_GPIO		55
 #define TOUCH_IRQ_GPIO		72
-#define I8042_IRQ_GPIO		50
+#define I8042_IRQ_GPIO		101

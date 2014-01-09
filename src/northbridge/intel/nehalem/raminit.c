@@ -1990,8 +1990,6 @@ static int have_match_ranks(struct raminfo *info, int channel, int ranks)
 	return 1;
 }
 
-#define WTF1 1
-
 static void read_4090(struct raminfo *info)
 {
 	int i, channel, slot, rank, lane;
@@ -3763,6 +3761,7 @@ static void dmi_setup(void)
 }
 #endif
 
+#if REAL
 static void
 set_fsb_frequency (void)
 {
@@ -3774,21 +3773,13 @@ set_fsb_frequency (void)
 
 	smbus_block_write(0x69, 0, 5, block);
 }
-
-#if REAL
-void raminit(const int s3resume)
-#else
-void raminit(int s3resume)
 #endif
+
+void raminit(const int s3resume)
 {
 	unsigned channel, slot, lane, rank;
 	int i;
 	struct raminfo info;
-
-#if !REAL
-	pre_raminit1();
-#endif
-
 	if (s3resume) {
 		read_mchbar32(0x1e8);
 		write_mchbar32(0x1e8, 0x6);
@@ -3796,9 +3787,6 @@ void raminit(int s3resume)
 		write_mchbar32(0x1e8, 0x4);
 	}
 
-#if !REAL
-	pre_raminit_2();
-#endif
 	u8 x2ca8;
 
 	gav(x2ca8 = read_mchbar8(0x2ca8));
@@ -3819,10 +3807,7 @@ void raminit(int s3resume)
 	if (!s3resume) {
 		pre_raminit_3(x2ca8);
 	}
-#endif
-
-#if !REAL
-	pre_raminit_4a();
+	pre_raminit_4a(x2ca8);
 #endif
 
 	dmi_setup();
@@ -5010,10 +4995,3 @@ unsigned long get_top_of_ram(void)
 }
 #endif
 
-#if !REAL
-int main(void)
-{
-	raminit(0);
-	return 0;
-}
-#endif

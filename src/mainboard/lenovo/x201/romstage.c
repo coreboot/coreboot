@@ -240,17 +240,12 @@ void main(unsigned long bist)
 	if (bist == 0)
 		enable_lapic();
 
-	/* Force PCIRST# */
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, SBR);
-	pci_write_config16(PCI_DEV(0, 0, 0), BCTRL, SBR);
-	udelay(200 * 1000);
-	pci_write_config16(PCI_DEV(0, 0x1e, 0), BCTRL, 0);
-	pci_write_config16(PCI_DEV(0, 0, 0), BCTRL, 0);
+	nehalem_early_initialization(NEHALEM_MOBILE);
+
+	pch_enable_lpc();
 
 	/* Enable USB Power. We need to do it early for usbdebug to work. */
 	ec_set_bit(0x3b, 4);
-
-	pch_enable_lpc();
 
 	/* Enable GPIOs */
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
@@ -258,7 +253,6 @@ void main(unsigned long bist)
 
 	setup_pch_gpios(&x201_gpio_map);
 
-	nehalem_early_initialization(NEHALEM_MOBILE);
 
 	/* This should probably go away. Until now it is required
 	 * and mainboard specific

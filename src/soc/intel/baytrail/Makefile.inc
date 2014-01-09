@@ -47,6 +47,7 @@ ramstage-y += sd.c
 ramstage-y += perf_power.c
 ramstage-y += stage_cache.c
 romstage-y += stage_cache.c
+ramstage-$(CONFIG_ELOG) += elog.c
 
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c

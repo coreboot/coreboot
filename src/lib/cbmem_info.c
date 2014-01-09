@@ -52,6 +52,7 @@ static struct cbmem_id_to_name {
 	{ CBMEM_ID_REFCODE,		"REFCODE    " },
 	{ CBMEM_ID_SMM_SAVE_SPACE,	"SMM BACKUP " },
 	{ CBMEM_ID_REFCODE_CACHE,	"REFCODE $  " },
+	{ CBMEM_ID_POWER_STATE,		"POWER STATE" },
 	{ CBMEM_ID_RAM_OOPS,		"RAMOOPS    " },
 };
 

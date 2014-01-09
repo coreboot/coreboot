@@ -24,11 +24,51 @@
 #define IOCOM1		0x3f8
 
 /* Memory mapped IO registers behind PMC_BASE_ADDRESS */
+#define PRSTS		0x00
+#	define PMC_WDT_STS	(1 << 15)
+#	define SEC_GBLRST_STS	(1 <<  7)
+#	define SEC_WDT_STS	(1 <<  6)
+#	define WOL_OVR_WK_STS	(1 <<  5)
+#	define PMC_WAKE_STS	(1 <<  4)
+#define PMC_CFG		0x08
+#	define SPS		(1 <<  5)
+#	define NO_REBOOT	(1 <<  4)
+#	define SX_ENT_TO_EN	(1 <<  3)
+#	define TIMING_T581_SHIFT (0)
+#	define TIMING_T581_MASK	(3 <<  TIMING_T581_SHIFT)
+#	define TIMING_T581_10uS  (0 << TIMING_T581_SHIFT)
+#	define TIMING_T581_100uS (1 << TIMING_T581_SHIFT)
+#	define TIMING_T581_1mS   (2 << TIMING_T581_SHIFT)
+#	define TIMING_T581_10mS  (3 << TIMING_T581_SHIFT)
+#define VLV_PM_STS	0x0c
+#	define PMC_MSG_FULL_STS		(1 << 24)
+#	define PMC_MSG_4_FULL_STS	(1 << 23)
+#	define PMC_MSG_3_FULL_STS	(1 << 22)
+#	define PMC_MSG_2_FULL_STS	(1 << 21)
+#	define PMC_MSG_1_FULL_STS	(1 << 20)
+#	define CODE_REQ			(1 <<  8)
+#	define HPR_ENT_TO		(1 <<  2)
+#	define SX_ENT_TO		(1 <<  1)
 #define GEN_PMCON1	0x20
-#	define AFTERG3_EN	(1 <<  0)
 #	define UART_EN		(1 << 24)
+#	define DISB		(1 << 23)
+#	define MEM_SR		(1 << 21)
+#	define SRS		(1 << 20)
+#	define CTS		(1 << 19)
+#	define MS4V		(1 << 18)
 #	define PWR_FLR		(1 << 16)
+#	define PME_B0_S5_DIS	(1 << 15)
 #	define SUS_PWR_FLR	(1 << 14)
+#	define WOL_EN_OVRD	(1 << 13)
+#	define DIS_SLP_X_STRCH_SUS_UP (1 << 12)
+#	define GEN_RST_STS	(1 <<  9)
+#	define RPS		(1 <<  2)
+#	define AFTERG3_EN	(1 <<  0)
+#define GEN_PMCON2	0x24
+#	define SLPSX_STR_POL_LOCK	(1 << 18)
+#	define BIOS_PCI_EXP_EN		(1 << 10)
+#	define PWRBTN_LVL		(1 <<  9)
+#	define SMI_LOCK			(1 <<  4)
 #define ETR			0x48
 #	define CF9LOCK		(1 << 31)
 #	define LTR_DEF		(1 << 22)
@@ -84,6 +124,14 @@
 #	define CLK_CTL_D3_LPE	(0x0 << 0)
 #	define CLK_CTL_ON	(0x1 << 0)
 #	define CLK_CTL_OFF	(0x2 << 0)
+#define PME_STS		0xc0
+#define GPE_LEVEL_EDGE  0xc4
+#	define GPE_EDGE		0
+#	define GPE_LEVEL	1
+#define GPE_POLARITY	0xc8
+#	define GPE_ACTIVE_HIGH	1
+#	define GPE_ACTIVE_LOW	0
+#define LOCK		0xcc
 
 /* IO Mapped registers behind ACPI_BASE_ADDRESS */
 #define PM1_STS			0x00
@@ -202,6 +250,18 @@
 #	define RST_CPU		(1 << 2)
 #	define SYS_RST		(1 << 1)
 
+/* Track power state from reset to log events. */
+struct chipset_power_state {
+	uint16_t pm1_sts;
+	uint16_t pm1_en;
+	uint32_t pm1_cnt;
+	uint32_t gpe0_sts;
+	uint32_t gpe0_en;
+	uint32_t tco_sts;
+	uint32_t prsts;
+	uint32_t gen_pmcon1;
+	uint32_t gen_pmcon2;
+} __attribute__((packed));
 
 /* Power Management Utility Functions. */
 uint16_t get_pmbase(void);
@@ -219,6 +279,10 @@ void enable_gpe(uint32_t mask);
 void disable_gpe(uint32_t mask);
 void disable_all_gpe(void);
 
+#if CONFIG_ELOG
+void southcluster_log_state(void);
+#else
 static inline void southcluster_log_state(void) {}
+#endif
 
 #endif /* _BAYTRAIL_PMC_H_ */

@@ -100,8 +100,7 @@ u32 google_chromeec_get_events_b(void)
 }
 
 #ifndef __SMM__
-/* Check for recovery mode and ensure EC is in RO */
-void google_chromeec_early_init(void)
+void google_chromeec_check_ec_image(int expected_type)
 {
 	struct chromeec_command cec_cmd;
 	struct ec_response_get_version cec_resp = {{0}};
@@ -113,9 +112,7 @@ void google_chromeec_early_init(void)
 	cec_cmd.cmd_size_out = sizeof(cec_resp);
 	google_chromeec_command(&cec_cmd);
 
-	if (cec_cmd.cmd_code ||
-	    (recovery_mode_enabled() &&
-	     (cec_resp.current_image != EC_IMAGE_RO))) {
+	if (cec_cmd.cmd_code || cec_resp.current_image != expected_type) {
 		struct ec_params_reboot_ec reboot_ec;
 		/* Reboot the EC and make it come back in RO mode */
 		reboot_ec.cmd = EC_REBOOT_COLD;
@@ -130,6 +127,15 @@ void google_chromeec_early_init(void)
 		udelay(1000);
 		hard_reset();
 		hlt();
+	}
+}
+
+/* Check for recovery mode and ensure EC is in RO */
+void google_chromeec_early_init(void)
+{
+	/* If in recovery ensure EC is running RO firmware. */
+	if (recovery_mode_enabled()) {
+		google_chromeec_check_ec_image(EC_IMAGE_RO);
 	}
 }
 

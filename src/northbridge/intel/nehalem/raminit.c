@@ -102,6 +102,10 @@ struct ram_training {
 	u16 timing_offset[2][2][2][9];
 	u16 timing2_offset[2][2][2][9];
 	u16 timing2_bounds[2][2][2][9][2];
+	u8 reg274265[2][3];	/* [CHANNEL][REGISTER] */
+	u8 reg2ca9_bit0;
+	u32 reg_6dc;
+	u32 reg_6e8;
 };
 
 #if !REAL
@@ -259,8 +263,6 @@ struct raminfo {
 	struct ram_training training;
 	u32 last_500_command[2];
 
-	u8 reg2ca9_bit0;
-	u8 reg274265[2][3];	/* [CHANNEL][REGISTER] */
 	u32 delay46_ps[2];
 	u32 delay54_ps[2];
 	u8 revision_flag_1;
@@ -1680,6 +1682,9 @@ static void dump_timings(struct raminfo *info)
 #endif
 }
 
+/* Read timings and other registers that need to be restored verbatim and
+   put them to CBMEM.
+ */
 static void save_timings(struct raminfo *info)
 {
 #if CONFIG_EARLY_CBMEM_INIT
@@ -1697,6 +1702,20 @@ static void save_timings(struct raminfo *info)
 							      rank), 9);
 	train.reg_178 = read_1d0(0x178, 7);
 	train.reg_10b = read_1d0(0x10b, 6);
+
+	for (channel = 0; channel < NUM_CHANNELS; channel++) {
+		u32 reg32;
+		reg32 = read_mchbar32 ((channel << 10) + 0x274);
+		train.reg274265[channel][0] = reg32 >> 16;
+		train.reg274265[channel][1] = reg32 & 0xffff;
+		train.reg274265[channel][2] = read_mchbar16 ((channel << 10) + 0x265) >> 8;
+	}
+	train.reg2ca9_bit0 = read_mchbar8(0x2ca9) & 1;
+	train.reg_6dc = read_mchbar32 (0x6dc);
+	train.reg_6e8 = read_mchbar32 (0x6e8);
+
+	printk (BIOS_ERR, "[6dc] = %x\n", train.reg_6dc);
+	printk (BIOS_ERR, "[6e8] = %x\n", train.reg_6e8);
 
 	/* Save the MRC S3 restore data to cbmem */
 	cbmem_initialize();
@@ -3491,6 +3510,13 @@ set_6d_reg(struct raminfo *info, u16 reg, u16 freq1, u16 freq2,
 				 0, 1, &ratios2);
 	compute_frequence_ratios(info, freq1, freq2, num_cycles_3, num_cycles_4,
 				 0, 1, &ratios1);
+	printk (BIOS_ERR, "[%x] <= %x\n", reg,
+		       ratios1.freq4_to_max_remainder | (ratios2.
+							 freq4_to_max_remainder
+							 << 8)
+		       | (ratios1.divisor_f4_to_fmax << 16) | (ratios2.
+							       divisor_f4_to_fmax
+							       << 20));
 	write_mchbar32(reg,
 		       ratios1.freq4_to_max_remainder | (ratios2.
 							 freq4_to_max_remainder
@@ -3553,7 +3579,7 @@ set_2dx8_reg(struct raminfo *info, u16 reg, u8 mode, u16 freq1, u16 freq2,
 	}
 }
 
-static void set_2dxx_series(struct raminfo *info)
+static void set_2dxx_series(struct raminfo *info, int s3resume)
 {
 	set_2dx8_reg(info, 0x2d00, 0, 0x78, frequency_11(info) / 2, 1359, 1005,
 		     0, 1);
@@ -3581,14 +3607,24 @@ static void set_2dxx_series(struct raminfo *info)
 	set_2dx8_reg(info, 0x6d8, 2, info->fsb_frequency,
 		     frequency_11(info) / 2, 4000, 4000, 0, 0);
 
-	set_6d_reg(info, 0x6dc, 2 * info->fsb_frequency, frequency_11(info), 0,
-		   info->delay46_ps[0], 0, info->delay54_ps[0]);
+	if (s3resume) {
+		printk (BIOS_ERR, "[6dc] <= %x\n", info->cached_training->reg_6dc);
+		write_mchbar32(0x6dc, info->cached_training->reg_6dc);
+	} else
+		set_6d_reg(info, 0x6dc, 2 * info->fsb_frequency, frequency_11(info), 0,
+			   info->delay46_ps[0], 0,
+			   info->delay54_ps[0]);
 	set_2dx8_reg(info, 0x6e0, 1, 2 * info->fsb_frequency,
 		     frequency_11(info), 2500, 0, 0, 0);
 	set_2dx8_reg(info, 0x6e4, 1, 2 * info->fsb_frequency,
 		     frequency_11(info) / 2, 3500, 0, 0, 0);
-	set_6d_reg(info, 0x6e8, 2 * info->fsb_frequency, frequency_11(info), 0,
-		   info->delay46_ps[1], 0, info->delay54_ps[1]);
+	if (s3resume) {
+		printk (BIOS_ERR, "[6e8] <= %x\n", info->cached_training->reg_6e8);
+		write_mchbar32(0x6e8, info->cached_training->reg_6e8);
+	} else
+		set_6d_reg(info, 0x6e8, 2 * info->fsb_frequency, frequency_11(info), 0,
+			   info->delay46_ps[1], 0,
+			   info->delay54_ps[1]);
 	set_2d5x_reg(info, 0x2d58, 0x78, 0x78, 864, 1195, 762, 786, 0);
 	set_2d5x_reg(info, 0x2d60, 0x195, info->fsb_frequency, 1352, 725, 455,
 		     470, 0);
@@ -3639,7 +3675,7 @@ static void set_274265(struct raminfo *info)
 	int channel;
 
 	delay_a_ps = 4 * halfcycle_ps(info) + 6 * fsbcycle_ps(info);
-	info->reg2ca9_bit0 = 0;
+	info->training.reg2ca9_bit0 = 0;
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		cycletime_ps =
 		    900000 / lcm(2 * info->fsb_frequency, frequency_11(info));
@@ -3690,7 +3726,7 @@ static void set_274265(struct raminfo *info)
 
 		if (info->delay46_ps[channel] < 2500) {
 			info->delay46_ps[channel] = 2500;
-			info->reg2ca9_bit0 = 1;
+			info->training.reg2ca9_bit0 = 1;
 		}
 		delay_b_ps = halfcycle_ps(info) + delay_c_ps;
 		if (delay_b_ps <= delay_a_ps)
@@ -3703,25 +3739,24 @@ static void set_274265(struct raminfo *info)
 		    2 * halfcycle_ps(info) * delay_e_cycles;
 		if (info->delay54_ps[channel] < 2500)
 			info->delay54_ps[channel] = 2500;
-		info->reg274265[channel][0] = delay_e_cycles;
+		info->training.reg274265[channel][0] = delay_e_cycles;
 		if (delay_d_ps + 7 * halfcycle_ps(info) <=
 		    24 * halfcycle_ps(info))
-			info->reg274265[channel][1] = 0;
+			info->training.reg274265[channel][1] = 0;
 		else
-			info->reg274265[channel][1] =
+			info->training.reg274265[channel][1] =
 			    div_roundup(delay_d_ps + 7 * halfcycle_ps(info),
 					4 * halfcycle_ps(info)) - 6;
 		write_mchbar32((channel << 10) + 0x274,
-			       info->reg274265[channel][1] | (info->
-							      reg274265[channel]
-							      [0] << 16));
-		info->reg274265[channel][2] =
+			       info->training.reg274265[channel][1]
+			       | (info->training.reg274265[channel][0] << 16));
+		info->training.reg274265[channel][2] =
 		    div_roundup(delay_c_ps + 3 * fsbcycle_ps(info),
 				4 * halfcycle_ps(info)) + 1;
 		write_mchbar16((channel << 10) + 0x265,
-			       info->reg274265[channel][2] << 8);
+			       info->training.reg274265[channel][2] << 8);
 	}
-	if (info->reg2ca9_bit0)
+	if (info->training.reg2ca9_bit0)
 		write_mchbar8(0x2ca9, read_mchbar8(0x2ca9) | 1);
 	else
 		write_mchbar8(0x2ca9, read_mchbar8(0x2ca9) & ~1);
@@ -3733,12 +3768,12 @@ static void restore_274265(struct raminfo *info)
 
 	for (channel = 0; channel < NUM_CHANNELS; channel++) {
 		write_mchbar32((channel << 10) + 0x274,
-			       (info->reg274265[channel][0] << 16) | info->
-			       reg274265[channel][1]);
+			       (info->cached_training->reg274265[channel][0] << 16)
+			       | info->cached_training->reg274265[channel][1]);
 		write_mchbar16((channel << 10) + 0x265,
-			       info->reg274265[channel][2] << 8);
+			       info->cached_training->reg274265[channel][2] << 8);
 	}
-	if (info->reg2ca9_bit0)
+	if (info->cached_training->reg2ca9_bit0)
 		write_mchbar8(0x2ca9, read_mchbar8(0x2ca9) | 1);
 	else
 		write_mchbar8(0x2ca9, read_mchbar8(0x2ca9) & ~1);
@@ -4145,50 +4180,29 @@ void raminit(const int s3resume)
 
 	udelay(1000);
 
-	if (x2ca8 == 0) {
-		if (s3resume) {
-#if REAL && 0
-			info.reg2ca9_bit0 = 0;
-			info.reg274265[0][0] = 5;
-			info.reg274265[0][1] = 5;
-			info.reg274265[0][2] = 0xe;
-			info.reg274265[1][0] = 5;
-			info.reg274265[1][1] = 5;
-			info.reg274265[1][2] = 0xe;
-			info.delay46_ps[0] = 0xa86;
-			info.delay46_ps[1] = 0xa86;
-			info.delay54_ps[0] = 0xdc6;
-			info.delay54_ps[1] = 0xdc6;
-#else
-			info.reg2ca9_bit0 = 0;
-			info.reg274265[0][0] = 3;
-			info.reg274265[0][1] = 5;
-			info.reg274265[0][2] = 0xd;
-			info.reg274265[1][0] = 4;
-			info.reg274265[1][1] = 5;
-			info.reg274265[1][2] = 0xd;
-			info.delay46_ps[0] = 0x110a;
-			info.delay46_ps[1] = 0xb58;
-			info.delay54_ps[0] = 0x144a;
-			info.delay54_ps[1] = 0xe98;
-#endif
-			restore_274265(&info);
-		} else
-			set_274265(&info);
-		int j;
-		printk(BIOS_DEBUG, "reg2ca9_bit0 = %x\n", info.reg2ca9_bit0);
-		for (i = 0; i < 2; i++)
-			for (j = 0; j < 3; j++)
-				printk(BIOS_DEBUG, "reg274265[%d][%d] = %x\n",
-				       i, j, info.reg274265[i][j]);
-		for (i = 0; i < 2; i++)
-			printk(BIOS_DEBUG, "delay46_ps[%d] = %x\n", i,
-			       info.delay46_ps[i]);
-		for (i = 0; i < 2; i++)
-			printk(BIOS_DEBUG, "delay54_ps[%d] = %x\n", i,
-			       info.delay54_ps[i]);
+	info.cached_training = get_cached_training();
 
-		set_2dxx_series(&info);
+	if (x2ca8 == 0) {
+		int j;
+		if (s3resume && info.cached_training) {
+			restore_274265(&info);
+			printk(BIOS_DEBUG, "reg2ca9_bit0 = %x\n",
+			       info.cached_training->reg2ca9_bit0);
+			for (i = 0; i < 2; i++)
+				for (j = 0; j < 3; j++)
+					printk(BIOS_DEBUG, "reg274265[%d][%d] = %x\n",
+					       i, j, info.cached_training->reg274265[i][j]);
+		} else {
+			set_274265(&info);
+			printk(BIOS_DEBUG, "reg2ca9_bit0 = %x\n",
+			       info.training.reg2ca9_bit0);
+			for (i = 0; i < 2; i++)
+				for (j = 0; j < 3; j++)
+					printk(BIOS_DEBUG, "reg274265[%d][%d] = %x\n",
+					       i, j, info.training.reg274265[i][j]);
+		}
+
+		set_2dxx_series(&info, s3resume);
 
 		if (!(deven & 8)) {
 			read_mchbar32(0x2cb0);
@@ -4503,8 +4517,6 @@ void raminit(const int s3resume)
 		}
 
 	udelay(1000);
-
-	info.cached_training = get_cached_training();
 
 	if (s3resume) {
 		if (info.cached_training == NULL) {

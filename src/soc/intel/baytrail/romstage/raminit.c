@@ -31,6 +31,8 @@
 #include <baytrail/pci_devs.h>
 #include <baytrail/reset.h>
 #include <baytrail/romstage.h>
+#include <ec/google/chromeec/ec.h>
+#include <ec/google/chromeec/ec_commands.h>
 
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -138,6 +140,12 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 		reset_system();
 	} else {
 		printk(BIOS_DEBUG, "No MRC cache found.\n");
+#if CONFIG_EC_GOOGLE_CHROMEEC
+		if (prev_sleep_state == 0) {
+			/* Ensure EC is running RO firmware. */
+			google_chromeec_check_ec_image(EC_IMAGE_RO);
+		}
+#endif
 	}
 
 	mrc_entry = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab,

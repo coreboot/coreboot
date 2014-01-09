@@ -3815,13 +3815,6 @@ void raminit(const int s3resume)
 	unsigned channel, slot, lane, rank;
 	int i;
 	struct raminfo info;
-	if (s3resume) {
-		read_mchbar32(0x1e8);
-		write_mchbar32(0x1e8, 0x6);
-		read_mchbar32(0x1e8);
-		write_mchbar32(0x1e8, 0x4);
-	}
-
 	u8 x2ca8;
 
 	gav(x2ca8 = read_mchbar8(0x2ca8));

@@ -166,4 +166,10 @@ void nehalem_early_initialization(int chipset_type)
 	pci_write_config32(PCI_DEV(0, 0x16, 0), 0x10, DEFAULT_HECIBAR);
 	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_COMMAND,
 			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+
+	/* Magic for S3 resume. Must be done early.  */
+	if (((inl(DEFAULT_PMBASE + PM1_CNT) >> 10) & 7) == SLP_TYP_S3) {
+		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~1) | 6;
+		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~3) | 4;
+	}
 }

@@ -31,17 +31,17 @@ static const u32 mainboard_cim_verb_data[] = {
 
 	/* Pin Widget Verb Table */
 
-	/* Pin Complex (NID 0x12) DMIC - interior mobile lid */
-	0x01271c10,
-	0x01271d10,
-	0x01271ea6,
-	0x01271fb7,
+	/* Pin Complex (NID 0x12) DMIC */
+	0x01271cf0,
+	0x01271d11,
+	0x01271e11,
+	0x01271f41,
 
 	/* Pin Complex (NID 0x14) SPKR-OUT PORTD */
-	0x01471c10, // group 1, front left/right
-	0x01471d01, // no connector, no jack detect
-	0x01471e17, // speaker out, analog
-	0x01471f90, // fixed function, internal
+	0x01471cf0,
+	0x01471d11,
+	0x01471e11,
+	0x01471f40,
 
 	/* Pin Complex (NID 0x17)  */
 	0x01771cf0,

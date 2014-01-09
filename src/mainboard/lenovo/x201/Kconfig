@@ -43,7 +43,7 @@ config IRQ_SLOT_COUNT
 	int
 	default 18
 
-config CONFIG_DRAM_GATE_GPIO
+config DRAM_GATE_GPIO
 	int
 	default 10
 

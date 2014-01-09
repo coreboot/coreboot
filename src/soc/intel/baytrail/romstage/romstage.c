@@ -22,6 +22,7 @@
 #include <arch/io.h>
 #include <arch/cbfs.h>
 #include <arch/stages.h>
+#include <arch/early_variables.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <cpu/x86/mtrr.h>
@@ -151,20 +152,56 @@ void * asmlinkage romstage_main(unsigned long bist,
 	return setup_stack_and_mttrs();
 }
 
-/* Return 0, 3, or 5 to indicate the previous sleep state. */
-static int chipset_prev_sleep_state(void)
+static struct chipset_power_state power_state CAR_GLOBAL;
+
+static void migrate_power_state(void)
 {
-	uint16_t pm1_sts;
-	uint32_t pm1_cnt;
-	uint32_t gen_pmcon1;
+	struct chipset_power_state *ps_cbmem;
+	struct chipset_power_state *ps_car;
+
+	ps_car = car_get_var_ptr(&power_state);
+	ps_cbmem = cbmem_add(CBMEM_ID_POWER_STATE, sizeof(*ps_cbmem));
+
+	if (ps_cbmem == NULL) {
+		printk(BIOS_DEBUG, "Not adding power state to cbmem!\n");
+		return;
+	}
+	memcpy(ps_cbmem, ps_car, sizeof(*ps_cbmem));
+}
+CAR_MIGRATE(migrate_power_state);
+
+static struct chipset_power_state *fill_power_state(void)
+{
+	struct chipset_power_state *ps = car_get_var_ptr(&power_state);
+
+	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
+	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);
+	ps->pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
+	ps->gpe0_sts = inl(ACPI_BASE_ADDRESS + GPE0_STS);
+	ps->gpe0_en = inl(ACPI_BASE_ADDRESS + GPE0_EN);
+	ps->tco_sts = inl(ACPI_BASE_ADDRESS + TCO_STS);
+	ps->prsts = read32(PMC_BASE_ADDRESS + PRSTS);
+	ps->gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
+	ps->gen_pmcon2 = read32(PMC_BASE_ADDRESS + GEN_PMCON2);
+
+	printk(BIOS_DEBUG, "pm1_sts: %04x pm1_en: %04x pm1_cnt: %08x\n",
+		ps->pm1_sts, ps->pm1_en, ps->pm1_cnt);
+	printk(BIOS_DEBUG, "gpe0_sts: %08x gpe0_en: %08x tco_sts: %08x\n",
+		ps->gpe0_sts, ps->gpe0_en, ps->tco_sts);
+	printk(BIOS_DEBUG, "prsts: %08x gen_pmcon1: %08x gen_pmcon2: %08x\n",
+		ps->prsts, ps->gen_pmcon1, ps->gen_pmcon2);
+
+	return ps;
+}
+
+/* Return 0, 3, or 5 to indicate the previous sleep state. */
+static int chipset_prev_sleep_state(struct chipset_power_state *ps)
+{
 	/* Default to S0. */
 	int prev_sleep_state = 0;
 
-	pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
-	pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
-
-	if (pm1_sts & WAK_STS) {
-		switch ((pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
+	if (ps->pm1_sts & WAK_STS) {
+		switch ((ps->pm1_cnt & SLP_TYP) >> SLP_TYP_SHIFT) {
 	#if CONFIG_HAVE_ACPI_RESUME
 		case SLP_TYP_S3:
 			prev_sleep_state = 3;
@@ -172,38 +209,32 @@ static int chipset_prev_sleep_state(void)
 	#endif
 		case SLP_TYP_S5:
 			prev_sleep_state = 5;
+			break;
 		}
 		/* Clear SLP_TYP. */
-		outl(pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
+		outl(ps->pm1_cnt & ~(SLP_TYP), ACPI_BASE_ADDRESS + PM1_CNT);
 	}
 
-	gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
-	if (gen_pmcon1 & (PWR_FLR | SUS_PWR_FLR)) {
-		/* Clear power failure bits. */
-		write32(PMC_BASE_ADDRESS + GEN_PMCON1, gen_pmcon1);
+	if (ps->gen_pmcon1 & (PWR_FLR | SUS_PWR_FLR)) {
 		prev_sleep_state = 5;
 	}
-
-	printk(BIOS_DEBUG, "pm1_sts = %04x pm1_cnt = %08x gen_pmcon1 = %08x\n",
-	       pm1_sts, pm1_cnt, gen_pmcon1);
 
 	return prev_sleep_state;
 }
 
-#if CONFIG_CHROMEOS
 static inline void chromeos_init(int prev_sleep_state)
 {
+#if CONFIG_CHROMEOS
 	/* Normalize the sleep state to what init_chromeos() wants for S3: 2. */
 	init_chromeos(prev_sleep_state == 3 ? 2 : 0);
-}
-#else
-static inline void chromeos_init(int prev_sleep_state) {}
 #endif
+}
 
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
 	struct romstage_handoff *handoff;
+	struct chipset_power_state *ps;
 	int prev_sleep_state;
 
 	mark_ts(params, timestamp_get());
@@ -212,7 +243,8 @@ void romstage_common(struct romstage_params *params)
 	boot_count_increment();
 #endif
 
-	prev_sleep_state = chipset_prev_sleep_state();
+	ps = fill_power_state();
+	prev_sleep_state = chipset_prev_sleep_state(ps);
 
 	printk(BIOS_DEBUG, "prev_sleep_state = S%d\n", prev_sleep_state);
 

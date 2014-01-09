@@ -78,6 +78,7 @@ int smbus_write_byte(unsigned device, unsigned address, u8 data);
 int smbus_block_read(unsigned device, unsigned cmd, u8 bytes, u8 *buf);
 int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf);
 int early_spi_read(u32 offset, u32 size, u8 *buffer);
+void early_thermal_init(void);
 #endif
 #endif
 

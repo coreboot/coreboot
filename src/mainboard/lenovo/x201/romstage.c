@@ -315,6 +315,8 @@ void main(unsigned long bist)
 				  pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3) | 2);
 	}
 
+	early_thermal_init();
+
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	raminit(s3resume);

@@ -299,13 +299,14 @@ Device (EC0)
 			Return (0)
 		}
 
-		Store ("EC: PAT0", Debug)
-
 		/* Set sensor ID */
 		Store (ToInteger (Arg0), ^PATI)
 
-		/* Adjust by offset to get Kelvin and set Threshold */
-		Add (ToInteger (Arg1), ^TOFS, ^PATT)
+		/* Temperature is passed in 1/10 Kelvin */
+		Divide (ToInteger (Arg1), 10, Local0, Local1)
+
+		/* Adjust by EC temperature offset */
+		Subtract (Local1, ^TOFS, ^PATT)
 
 		/* Set commit value with SELECT=0 and ENABLE=1 */
 		Store (0x02, ^PATC)
@@ -325,13 +326,14 @@ Device (EC0)
 			Return (0)
 		}
 
-		Store ("EC: PAT1", Debug)
-
 		/* Set sensor ID */
 		Store (ToInteger (Arg0), ^PATI)
 
-		/* Adjust by offset to get Kelvin and set Threshold */
-		Add (ToInteger (Arg1), ^TOFS, ^PATT)
+		/* Temperature is passed in 1/10 Kelvin */
+		Divide (ToInteger (Arg1), 10, Local0, Local1)
+
+		/* Adjust by EC temperature offset */
+		Subtract (Local1, ^TOFS, ^PATT)
 
 		/* Set commit value with SELECT=1 and ENABLE=1 */
 		Store (0x03, ^PATC)
@@ -340,16 +342,16 @@ Device (EC0)
 		Return (1)
 	}
 
-	/* Disable Aux Trip Points */
-	Method (PATD)
+	/* Disable Aux Trip Points
+	 *   Arg0 = Temp Sensor ID
+	 */
+	Method (PATD, 1, Serialized)
 	{
 		If (Acquire (^PATM, 1000)) {
 			Return (0)
 		}
 
-		Store ("EC: PAT Disable", Debug)
-
-		Store (0x00, ^PATI)
+		Store (ToInteger (Arg0), ^PATI)
 		Store (0x00, ^PATT)
 
 		/* Disable PAT0 */
@@ -365,13 +367,11 @@ Device (EC0)
 	/*
 	 * Thermal Threshold Event
 	  */
-	Method (_Q09, 0, Serialized)
+	Method (_Q09, 0, NotSerialized)
 	{
 		If (Acquire (^PATM, 1000)) {
 			Return ()
 		}
-
-		Store ("EC: THERMAL THRESHOLD", Debug)
 
 		/* Read sensor ID for event */
 		Store (^PATI, Local0)

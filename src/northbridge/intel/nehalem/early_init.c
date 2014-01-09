@@ -166,4 +166,9 @@ void nehalem_early_initialization(int chipset_type)
 	pci_write_config32(PCI_DEV(0, 0x16, 0), 0x10, DEFAULT_HECIBAR);
 	pci_write_config32(PCI_DEV(0, 0x16, 0), PCI_COMMAND,
 			   PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY);
+
+	if (((inl(DEFAULT_PMBASE + 0x04) >> 10) & 7) == 5) {
+		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~1) | 6;
+		MCHBAR32 (0x1e8) = (MCHBAR32(0x1e8) & ~3) | 4;
+	}
 }

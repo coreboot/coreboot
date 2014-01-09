@@ -102,14 +102,14 @@ void southcluster_smm_enable_smi(void)
 	southcluster_smm_route_gpios();
 
 	/* Enable SMI generation:
-	 *  - on TCO events
 	 *  - on APMC writes (io 0xb2)
 	 *  - on writes to SLP_EN (sleep states)
 	 *  - on writes to GBL_RLS (bios commands)
 	 * No SMIs:
+	 *  - on TCO events
 	 *  - on microcontroller writes (io 0x62/0x66)
 	 */
-	enable_smi(TCO_EN | APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
+	enable_smi(APMC_EN | SLP_SMI_EN | GBL_SMI_EN | EOS);
 }
 
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)

@@ -62,6 +62,7 @@ void southcluster_smm_clear_state(void)
 	clear_tco_status();
 	clear_gpe_status();
 	clear_alt_status();
+	clear_pmc_status();
 }
 
 static void southcluster_smm_route_gpios(void)

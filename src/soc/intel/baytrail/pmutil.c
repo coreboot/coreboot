@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 
+#include <baytrail/iomap.h>
 #include <baytrail/lpc.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/pmc.h>
@@ -347,4 +348,17 @@ static uint32_t print_alt_sts(uint32_t alt_gpio_smi)
 uint32_t clear_alt_status(void)
 {
 	return print_alt_sts(reset_alt_status());
+}
+
+void clear_pmc_status(void)
+{
+	uint32_t prsts;
+	uint32_t gen_pmcon1;
+
+	prsts = read32(PMC_BASE_ADDRESS + PRSTS);
+	gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
+
+	/* Clear the status bits. */
+	write32(PMC_BASE_ADDRESS + GEN_PMCON1, gen_pmcon1);
+	write32(PMC_BASE_ADDRESS + PRSTS, prsts);
 }

@@ -167,6 +167,17 @@ Device (RP04)
 	{
 		Return (IRQM (RPPN))
 	}
+
+#ifdef RP04_IS_EXPRESSCARD
+	Device (SLOT)
+	{
+		Name (_ADR, 0x00)
+		Method (_RMV, 0, NotSerialized)
+		{
+			Return (0x01)
+		}
+	}
+#endif
 }
 
 Device (RP05)

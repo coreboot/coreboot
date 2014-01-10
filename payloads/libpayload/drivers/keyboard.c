@@ -258,6 +258,16 @@ int keyboard_getchar(void)
 	return ret;
 }
 
+static int keyboard_wait_write(void)
+{
+	int retries = 10000;
+
+	while(retries-- && (inb(0x64) & 0x02))
+		udelay(50);
+
+	return (retries <= 0) ? -1 : 0;
+}
+
 /**
  * Set keyboard layout
  * @param country string describing the keyboard layout language.

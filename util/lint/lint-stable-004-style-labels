@@ -19,4 +19,4 @@
 # DESCR: Check that C labels begin at start-of-line
 
 LC_ALL=C export LC_ALL
-find src -name '*.[scS]' -exec grep '^[[:space:]][[:space:]]*[a-z][a-z]*:[[:space:]]*$' {} + |grep -v "[^a-z_]default:"
+git diff --name-status |grep -v "^D" |cut -c3- |grep "^src/.*\.[csS]" | xargs grep -Hn '^[[:space:]][[:space:]]*[a-z][a-z]*:[[:space:]]*$' |grep -v "[^a-z_]default:"

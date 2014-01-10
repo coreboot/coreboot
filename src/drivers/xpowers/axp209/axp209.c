@@ -11,8 +11,12 @@
 #include "axp209.h"
 #include "chip.h"
 
+#include <console/console.h>
 #include <device/device.h>
 #include <device/i2c.h>
+
+#define ERROR(x...) printk(BIOS_ERR, "[axp209] " x)
+#define DEBUG(x...) printk(BIOS_DEBUG, "[axp209] " x)
 
 /* Hide these definitions from the rest of the source, so keep them here */
 enum registers {
@@ -226,11 +230,80 @@ enum cb_err axp209_set_ldo4_voltage(u8 bus, u16 millivolts)
 	reg8 |= REG_LDO24_VOLTAGE_LDO4_VAL(val);
 
 	if (axp209_write(bus, REG_LDO24_VOLTAGE, reg8) != 1)
-			return CB_ERR;
+		return CB_ERR;
 
 	return CB_SUCCESS;
 }
- 
+
+static const struct {
+	enum cb_err (*set_voltage) (u8 bus, u16 mv);
+	const char *name;
+} vtable[] = { {
+		.set_voltage = axp209_set_dcdc2_voltage,
+		.name = "DCDC2",
+	}, {
+		.set_voltage = axp209_set_dcdc3_voltage,
+		.name = "DCDC3",
+	}, {
+		.set_voltage = axp209_set_ldo2_voltage,
+		.name = "LDO2",
+	}, {
+		.set_voltage = axp209_set_ldo3_voltage,
+		.name = "LDO3",
+	}, {
+		.set_voltage = axp209_set_ldo4_voltage,
+		.name = "LDO4",
+	}
+};
+
+static enum cb_err set_rail(u8 bus, int idx, u16 mv)
+{
+	enum cb_err err;
+	const char *name = vtable[idx].name;
+
+	/* If voltage isn't specified, don't touch the rail */
+	if (mv == 0) {
+		DEBUG("Skipping %s configuration\n", name);
+		return CB_SUCCESS;
+	}
+
+	if ((err = vtable[idx].set_voltage(bus, mv) != CB_SUCCESS)) {
+		ERROR("Failed to set %s to %u mv\n", name, mv);
+		return err;
+	}
+
+	return CB_SUCCESS;
+}
+
+/**
+ * \brief Configure all voltage rails
+ *
+ * Configure all converters and regulators from devicetree config. If any of the
+ * voltages are not declared (i.e. are zero), the respective rail will not be
+ * reconfigured, and retain its powerup voltage.
+ *
+ * @param[in] cfg pointer to @ref drivers_xpowers_axp209_config structure
+ * @param[in] bus I²C bus to which the AXP209 is connected
+ * @return CB_SUCCES on success, or an error code otherwise.
+ */
+enum cb_err axp209_set_voltages(u8 bus, const struct
+				drivers_xpowers_axp209_config *cfg)
+{
+	enum cb_err err;
+
+	/* Don't worry about what the error is. Console prints that */
+	err = set_rail(bus, 0, cfg->dcdc2_voltage_mv);
+	err |= set_rail(bus, 1, cfg->dcdc3_voltage_mv);
+	err |= set_rail(bus, 2, cfg->ldo2_voltage_mv);
+	err |= set_rail(bus, 3, cfg->ldo3_voltage_mv);
+	err |= set_rail(bus, 4, cfg->ldo4_voltage_mv);
+
+	if (err != CB_SUCCESS)
+		return CB_ERR;
+
+	return CB_SUCCESS;
+}
+
 /*
  * Usually, the AXP209 is enabled and configured in romstage, so there is no
  * need for a full ramstage driver. Hence .enable_dev is NULL.

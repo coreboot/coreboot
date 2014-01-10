@@ -129,6 +129,11 @@ chip northbridge/intel/nehalem
 			device pci 1b.0 on # Audio Controller
 				subsystemid 0x17aa 0x215e
 			end
+
+			device pci 1c.0 on end # PCIe Port #1
+			device pci 1c.3 on end # PCIe Port #4 (Expresscard)
+			device pci 1c.4 on end # PCIe Port #4 (wlan)
+
 			device pci 1d.0 on # USB2 EHCI
 				subsystemid 0x17aa 0x2163
 			end

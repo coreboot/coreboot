@@ -106,7 +106,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_FUNC1,	/* S0-SC047 - PCLK_TPM */
 	GPIO_FUNC1,	/* S0-SC048 - CLK_PCI_EC */
 	GPIO_FUNC1,	/* S0-SC049 - LPC_CLKRUN_L */
-	GPIO_FUNC(1, PULL_UP, 10K),	/* S0-SC050 - IRQ_SERIRQ */
+	GPIO_NC,	/* S0-SC050 - IRQ_SERIRQ */
 	GPIO_NC,	/* S0-SC051 - SMB_SOC_DATA (XDP) */
 	GPIO_NC,	/* S0-SC052 - SMB_SOC_CLK (XDP) */
 	GPIO_NC,	/* S0-SC053 - SMB_SOC_ALERTB (NC) */

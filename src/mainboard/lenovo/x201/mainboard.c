@@ -37,6 +37,7 @@
 
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
+#include "hda_verb.h"
 #include <arch/x86/include/arch/acpigen.h>
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 #include <x86emu/regs.h>
@@ -90,6 +91,17 @@ static int int15_handler(void)
 const char *smbios_mainboard_version(void)
 {
 	return "Lenovo X201";
+}
+
+/* Audio Setup */
+
+extern const u32 *cim_verb_data;
+extern u32 cim_verb_data_size;
+
+static void verb_setup(void)
+{
+	cim_verb_data = mainboard_cim_verb_data;
+	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
 }
 
 static void mainboard_enable(device_t dev)
@@ -150,6 +162,7 @@ static void mainboard_enable(device_t dev)
 	   connected to anything and hence we don't init it.
 	 */
 	pc_keyboard_init(0);
+	verb_setup();
 }
 
 struct chip_operations mainboard_ops = {

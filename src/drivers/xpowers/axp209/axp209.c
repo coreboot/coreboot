@@ -9,7 +9,9 @@
  */
 
 #include "axp209.h"
+#include "chip.h"
 
+#include <device/device.h>
 #include <device/i2c.h>
 
 /* Hide these definitions from the rest of the source, so keep them here */
@@ -228,3 +230,14 @@ enum cb_err axp209_set_ldo4_voltage(u8 bus, u16 millivolts)
 
 	return CB_SUCCESS;
 }
+
+/*
+ * Usually, the AXP209 is enabled and configured in romstage, so there is no
+ * need for a full ramstage driver. Hence .enable_dev is NULL.
+ */
+#ifndef __PRE_RAM__
+struct chip_operations drivers_xpowers_axp209_config = {
+	CHIP_NAME("X-Powers AXP 209 Power Management Unit")
+	.enable_dev = NULL,
+};
+#endif /* __PRE_RAM__ */

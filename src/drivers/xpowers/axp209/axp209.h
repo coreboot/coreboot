@@ -6,6 +6,7 @@
  */
 
 #include <types.h>
+#include "chip.h"
 
 #define AXP209_I2C_ADDR (0x68 >> 1)
 
@@ -15,3 +16,5 @@ enum cb_err axp209_set_dcdc3_voltage(u8 bus, u16 millivolts);
 enum cb_err axp209_set_ldo2_voltage(u8 bus, u16 millivolts);
 enum cb_err axp209_set_ldo3_voltage(u8 bus, u16 millivolts);
 enum cb_err axp209_set_ldo4_voltage(u8 bus, u16 millivolts);
+enum cb_err axp209_set_voltages(u8 bus, const struct
+				drivers_xpowers_axp209_config *cfg);

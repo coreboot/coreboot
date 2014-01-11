@@ -13,3 +13,4 @@ tft_brightness=0xff
 first_battery=Primary
 bluetooth=Enable
 fn_ctrl_swap=Disable
+locking_fn=Disable

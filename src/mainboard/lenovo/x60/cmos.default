@@ -12,3 +12,4 @@ volume=0x3
 tft_brightness=0xff
 first_battery=Primary
 bluetooth=Enable
+wlan=Enable

@@ -168,8 +168,16 @@ static void h8_enable(device_t dev)
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);
 
-	ec_write(H8_SOUND_ENABLE0, conf->beepmask0);
-	ec_write(H8_SOUND_ENABLE1, conf->beepmask1);
+	if (get_option(&val, "power_management_beeps") != CB_SUCCESS)
+		val = 1;
+
+	if (val) {
+		ec_write(H8_SOUND_ENABLE0, conf->beepmask0);
+		ec_write(H8_SOUND_ENABLE1, conf->beepmask1);
+	} else  {
+		ec_write(H8_SOUND_ENABLE0, 0x00);
+		ec_write(H8_SOUND_ENABLE1, 0x00);
+	}
 	ec_write(H8_SOUND_REPEAT, 0x00);
 
 	ec_write(0x10, conf->event0_enable);

@@ -58,6 +58,7 @@ chip northbridge/intel/nehalem
 
 		register "beepmask0" = "0xfe"
 		register "beepmask1" = "0x96"
+		register "has_power_management_beeps" = "1"
 
 		register "event2_enable" = "0xff"
 		register "event3_enable" = "0xff"

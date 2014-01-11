@@ -50,5 +50,7 @@ struct ec_lenovo_h8_config {
 	u8 trackpoint_enable;
 	u8 wlan_enable;
 	u8 wwan_enable;
+
+	u8 has_power_management_beeps;
 };
 #endif

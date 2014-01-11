@@ -112,6 +112,7 @@ entries
 1080         1       e       9        first_battery
 1081         1       e       1        bluetooth
 1082         1       e       1        wwan
+1083         1       e       1        wlan
 1085         1       e       1        fn_ctrl_swap
 1086         1       e       1        sticky_fn
 1087         1       e       1        power_management_beeps

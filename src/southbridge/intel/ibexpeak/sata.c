@@ -25,6 +25,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "pch.h"
+#include <pc80/mc146818rtc.h>
 
 typedef struct southbridge_intel_ibexpeak_config config_t;
 
@@ -46,6 +47,7 @@ static void sata_init(struct device *dev)
 	u16 reg16;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
+	u8 sata_mode;
 
 	printk(BIOS_DEBUG, "SATA: Initializing...\n");
 
@@ -54,48 +56,16 @@ static void sata_init(struct device *dev)
 		return;
 	}
 
+	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
+		sata_mode = 0;
+
 	/* SATA configuration */
 
 	/* Enable BARs */
 	pci_write_config16(dev, PCI_COMMAND, 0x0007);
 
-	if (config->ide_legacy_combined) {
-		printk(BIOS_DEBUG, "SATA: Controller in combined mode.\n");
-
-		/* No AHCI: clear AHCI base */
-		pci_write_config32(dev, 0x24, 0x00000000);
-		/* And without AHCI BAR no memory decoding */
-		reg16 = pci_read_config16(dev, PCI_COMMAND);
-		reg16 &= ~PCI_COMMAND_MEMORY;
-		pci_write_config16(dev, PCI_COMMAND, reg16);
-
-		pci_write_config8(dev, 0x09, 0x80);
-
-		/* Set timings */
-		pci_write_config16(dev, IDE_TIM_PRI, IDE_DECODE_ENABLE |
-				   IDE_ISP_5_CLOCKS | IDE_RCT_4_CLOCKS);
-		pci_write_config16(dev, IDE_TIM_SEC, IDE_DECODE_ENABLE |
-				   IDE_ISP_5_CLOCKS | IDE_RCT_4_CLOCKS);
-
-		/* Sync DMA */
-		pci_write_config16(dev, IDE_SDMA_CNT, 0);
-		pci_write_config16(dev, IDE_SDMA_TIM, 0);
-
-		/* Set IDE I/O Configuration */
-		reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
-		pci_write_config32(dev, IDE_CONFIG, reg32);
-
-		/* Port enable */
-		reg16 = pci_read_config16(dev, 0x92);
-		reg16 &= ~0x3f;
-		reg16 |= config->sata_port_map;
-		pci_write_config16(dev, 0x92, reg16);
-
-		/* SATA Initialization register */
-		pci_write_config32(dev, 0x94,
-				   ((config->
-				     sata_port_map ^ 0x3f) << 24) | 0x183);
-	} else if (config->sata_ahci) {
+	if (sata_mode == 0) {
+		/* AHCI */
 		u32 abar;
 
 		printk(BIOS_DEBUG, "SATA: Controller in AHCI mode.\n");
@@ -158,6 +128,7 @@ static void sata_init(struct device *dev)
 		reg32 &= ~0x00000005;
 		write32(abar + 0xa0, reg32);
 	} else {
+                /* IDE */
 		printk(BIOS_DEBUG, "SATA: Controller in plain mode.\n");
 
 		/* No AHCI: clear AHCI base */
@@ -245,15 +216,19 @@ static void sata_enable(device_t dev)
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
 	u16 map = 0;
+	u8 sata_mode;
 
 	if (!config)
 		return;
+
+	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
+		sata_mode = 0;
 
 	/*
 	 * Set SATA controller mode early so the resource allocator can
 	 * properly assign IO/Memory resources for the controller.
 	 */
-	if (config->sata_ahci)
+	if (sata_mode == 0)
 		map = 0x0060;
 
 	map |= (config->sata_port_map ^ 0x3f) << 8;

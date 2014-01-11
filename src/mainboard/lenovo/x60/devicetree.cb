@@ -121,7 +121,6 @@ chip northbridge/intel/i945
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
 
-					register "wlan_enable" = "0x01"
 					register "trackpoint_enable" = "0x03"
 				end
 				chip superio/nsc/pc87382

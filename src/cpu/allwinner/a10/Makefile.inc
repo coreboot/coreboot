@@ -30,16 +30,25 @@ get_bootblock_size= \
 					sed 's/[^0-9 ]//g')) \
 	$(shell echo $$(($(word 2, $(strip $(bb_s))))))
 
+# This tool is used to prepend a header to coreboot.rom to trick the SoC into
+# loading out bootblock
+#
+MKSUNXIBOOT:=$(objutil)/mksunxiboot
+$(MKSUNXIBOOT): $(top)/util/arm_boot_tools/mksunxiboot/mksunxiboot.c
+	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
+	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
+
 # The boot ROM in the SoC will start loading code if a special BOOT0 header is
 # found (at an offset of 8KiB in either NAND or SD), and the checksum is
-# correct. This header is normally added by the 'mxsunxiboot' tool. The boot ROM
-# will load at most 24KiB of data to SRAM, so limit the file size accordingly.
-# The BOOT0 header takes 32 bytes, so limit our file to 24KiB - 32 bytes.
-# FIXME: Figure out how to safely integrate in coreboot.rom.
-# FIXME: The file passed to mksunxiboot should only include the bootblock due
-#	 to size limitations.
-$(obj)/BOOT0: $(obj)/coreboot.rom
+# correct. This header is added by the 'mxsunxiboot' tool, which is provided
+# under util/arm_boot_tools/mksunxiboot. The boot ROM will load at most 24KiB of
+# data to SRAM. The BOOT0 header takes 32 bytes, so bootblock is limited to
+# 24KiB - 32 bytes.
+# TODO: make mksunxiboot take the bootblock size as a parameter
+# TODO: print an error if bootblock is too large (maybe place ROMSTAGE at the
+#	exact offset needed to collide with the bootblock)
+# FIXME: A10 loads 24KiB. According to Oliver other chips load a little more
+#
+$(obj)/BOOT0: $(obj)/coreboot.rom $(MKSUNXIBOOT)
 	@printf "    BOOT0      $(subst $(obj)/,,$(^))\n"
-	touch $@
-	dd if=$^ of=$^.tmp bs=24544 count=1
-	-mksunxiboot $^.tmp $@
+	$(MKSUNXIBOOT) $(word 1, $^) $@

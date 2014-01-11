@@ -59,8 +59,6 @@ chip northbridge/intel/sandybridge
 			register "gpi1_routing" = "1"
 			register "gpi7_routing" = "2"
 
-			register "ide_legacy_combined" = "0x0"
-			register "sata_ahci" = "0x1"
 			register "sata_port_map" = "0x1"
 
 			# EC range is 0xa00-0xa3f

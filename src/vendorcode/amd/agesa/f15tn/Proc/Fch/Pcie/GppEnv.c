@@ -65,9 +65,25 @@ FchInitEnvGpp (
 {
   FCH_DATA_BLOCK         *LocalCfgPtr;
   AMD_CONFIG_PARAMS      *StdHeader;
+  UINT8                  GppS3Data;
+  UINT8                  PortId;
 
   LocalCfgPtr = (FCH_DATA_BLOCK *) FchDataPtr;
   StdHeader = LocalCfgPtr->StdHeader;
+
+  /*
+   *  The romstage will force link, but re-read the GPP params from CMOS,
+   *  otherwise the late init will powerdown all ports including
+   *  those which were just taken out of S3
+   */
+  if (ReadFchSleepType (StdHeader) == ACPI_SLPTYP_S3) {
+    ReadMem ( ACPI_MMIO_BASE + CMOS_RAM_BASE + 0x0D, AccessWidth8, &GppS3Data);
+    for ( PortId = 0; PortId < MAX_GPP_PORTS; PortId++ ) {
+      if ( GppS3Data & (1 << (PortId + 4))) {
+        LocalCfgPtr->Gpp.PortCfg[PortId].PortDetected = TRUE;
+      }
+    }
+  }
 
   if ( !LocalCfgPtr->Gpp.NewGppAlgorithm) {
     ProgramFchGppInitReset (&LocalCfgPtr->Gpp, StdHeader);

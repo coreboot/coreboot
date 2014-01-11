@@ -281,6 +281,9 @@ FchInitLateGpp (
     RwAlink (0x310  | (UINT32) (ABCFG << 29), 0xFFFFFFFF, BIT7, StdHeader);
     RwAlink (FCH_RCINDXC_REGC0, 0xFFFFFFFF, BIT9, StdHeader);
   }
-  RwMem (ACPI_MMIO_BASE + CMOS_RAM_BASE + 0x0D, AccessWidth8, 0, GppS3Data);
+
+  if (ReadFchSleepType (StdHeader) != ACPI_SLPTYP_S3) {
+      RwMem (ACPI_MMIO_BASE + CMOS_RAM_BASE + 0x0D, AccessWidth8, 0, GppS3Data);
+  }
 }
 

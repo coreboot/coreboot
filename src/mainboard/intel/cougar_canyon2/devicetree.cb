@@ -41,8 +41,6 @@ chip northbridge/intel/fsp_sandybridge
 			register "pirqg_routing" = "0x80"
 			register "pirqh_routing" = "0x80"
 
-			register "ide_legacy_combined" = "0x0"
-			register "sata_ahci" = "0x1"
 			register "sata_port_map" = "0x3f"
 
 			device pci 14.0 on end # XHCI

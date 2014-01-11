@@ -61,8 +61,6 @@ chip northbridge/intel/sandybridge
 			register "gpi8_routing" = "1"
 			register "gpi15_routing" = "1" #lid switch gpe
 
-			register "ide_legacy_combined" = "0x0"
-			register "sata_ahci" = "0x1"
 			register "sata_port_map" = "0x1"
 
 			# EC range is 0xFD60 (EC_IO) and 0x68/0x6C

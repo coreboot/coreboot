@@ -9,3 +9,4 @@ first_battery=Primary
 bluetooth=Enable
 wwan=Enable
 touchpad=Enable
+sata_mode=AHCI

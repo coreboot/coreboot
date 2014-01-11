@@ -70,6 +70,14 @@ static void h8_fn_ctrl_swap(int on)
 		ec_clr_bit(0xce, 4);
 }
 
+static void h8_sticky_fn(int on)
+{
+	if (on)
+		ec_set_bit(0x0, 3);
+	else
+		ec_clr_bit(0x0, 3);
+}
+
 static void h8_log_ec_version(void)
 {
 	char ecfw[17];
@@ -201,6 +209,10 @@ static void h8_enable(device_t dev)
 	if (get_option(&val, "fn_ctrl_swap") != CB_SUCCESS)
 		val = 0;
 	h8_fn_ctrl_swap(val);
+
+	if (get_option(&val, "sticky_fn") != CB_SUCCESS)
+		val = 0;
+	h8_sticky_fn(val);
 
 	if (get_option(&val, "first_battery") != CB_SUCCESS)
 		val = 1;

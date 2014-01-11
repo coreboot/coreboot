@@ -91,6 +91,7 @@ entries
 413         1       e       1        wwan
 414         1       e       1        touchpad
 417         1       e       1        fn_ctrl_swap
+418         1       e       1        sticky_fn
 #419        565     r       0        unused
 
 # coreboot config options: check sums

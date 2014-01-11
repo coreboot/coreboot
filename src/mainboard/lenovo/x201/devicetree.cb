@@ -73,8 +73,6 @@ chip northbridge/intel/nehalem
 		register "eventb_enable" = "0xff"
 		register "eventc_enable" = "0xff"
 		register "eventd_enable" = "0xff"
-
-		register "trackpoint_enable" = "0x03"
 	end
 
 	device cpu_cluster 0 on

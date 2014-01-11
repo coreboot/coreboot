@@ -121,8 +121,6 @@ chip northbridge/intel/i945
 					register "eventb_enable" = "0xff"
 					register "eventc_enable" = "0xff"
 					register "eventd_enable" = "0xff"
-
-					register "trackpoint_enable" = "0x03"
 				end
 				chip superio/nsc/pc87382
 					device pnp 164e.2 on # IR

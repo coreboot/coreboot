@@ -47,7 +47,6 @@ struct ec_lenovo_h8_config {
 	u8 evente_enable;
 	u8 eventf_enable;
 
-	u8 trackpoint_enable;
 	u8 has_power_management_beeps;
 };
 #endif

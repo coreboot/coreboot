@@ -48,7 +48,5 @@ struct ec_lenovo_h8_config {
 	u8 eventf_enable;
 
 	u8 trackpoint_enable;
-	u8 wlan_enable;
-	u8 wwan_enable;
 };
 #endif

@@ -12,3 +12,4 @@ touchpad=Enable
 fn_ctrl_swap=Disable
 locking_fn=Disable
 power_management_beeps=Enable
+low_battery_beep=Enable

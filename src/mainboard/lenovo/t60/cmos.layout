@@ -113,6 +113,7 @@ entries
 1063         1       e       1        wlan
 1064         8       h       0        volume
 1072         1       e       9        first_battery
+1073         1       e       1        trackpoint
 # -----------------------------------------------------------------
 
 enumerations

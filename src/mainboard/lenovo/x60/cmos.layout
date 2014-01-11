@@ -113,6 +113,7 @@ entries
 1081         1       e       1        bluetooth
 1082         1       e       1        wwan
 1083         1       e       1        wlan
+1084         1       e       1        trackpoint
 # -----------------------------------------------------------------
 
 enumerations

@@ -14,3 +14,4 @@ first_battery=Primary
 bluetooth=Enable
 wlan=Enable
 wwan=Enable
+trackpoint=Enable

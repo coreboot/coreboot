@@ -8,6 +8,7 @@ volume=0x3
 first_battery=Primary
 bluetooth=Enable
 wwan=Enable
+wlan=Enable
 touchpad=Enable
 fn_ctrl_swap=Disable
 sticky_fn=Disable

@@ -115,6 +115,7 @@ entries
 1074         1       e       1        fn_ctrl_swap
 1075         1       e       1        sticky_fn
 1076         1       e       1        power_management_beeps
+1077         1       e       1        low_battery_beep
 # -----------------------------------------------------------------
 
 enumerations

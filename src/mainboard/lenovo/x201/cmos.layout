@@ -93,6 +93,7 @@ entries
 417         1       e       1        fn_ctrl_swap
 418         1       e       1        sticky_fn
 419         1       e       1        power_management_beeps
+420         1       e       1        low_battery_beep
 421         1       e       9        sata_mode
 #422        562     r       0        unused
 

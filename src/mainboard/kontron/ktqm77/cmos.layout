@@ -85,7 +85,8 @@ entries
 # coreboot config options: southbridge
 408          1       e       1        nmi
 409          2       e       7        power_on_after_fail
-#411          5       r       0        unused
+411          1       e       11       sata_mode
+#412          4       r       0        unused
 
 # coreboot config options: additional mainboard options
 416          4       e      10        systemp_type
@@ -162,6 +163,8 @@ enumerations
 10    2     LM75@90
 10    3     GPIO16
 10    4     LM75@9e
+11    0     AHCI
+11    1     Compatible
 # -----------------------------------------------------------------
 checksums
 

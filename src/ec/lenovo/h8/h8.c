@@ -160,6 +160,7 @@ static void h8_enable(device_t dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val, tmp;
+	u8 beepmask0, beepmask1;
 
 	h8_log_ec_version();
 
@@ -168,8 +169,18 @@ static void h8_enable(device_t dev)
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);
 
-	ec_write(H8_SOUND_ENABLE0, conf->beepmask0);
-	ec_write(H8_SOUND_ENABLE1, conf->beepmask1);
+	beepmask0 = conf->beepmask0;
+	beepmask1 = conf->beepmask1;
+
+	if (conf->has_power_management_beeps
+	    && get_option(&val, "power_management_beeps") == CB_SUCCESS
+	    && val == 0) {
+		beepmask0 = 0x00;
+		beepmask1 = 0x00;
+	}
+	ec_write(H8_SOUND_ENABLE0, beepmask0);
+	ec_write(H8_SOUND_ENABLE1, beepmask1);
+
 	ec_write(H8_SOUND_REPEAT, 0x00);
 
 	ec_write(0x10, conf->event0_enable);

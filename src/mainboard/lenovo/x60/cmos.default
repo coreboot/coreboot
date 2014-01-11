@@ -14,3 +14,4 @@ first_battery=Primary
 bluetooth=Enable
 fn_ctrl_swap=Disable
 sticky_fn=Disable
+power_management_beeps=Enable

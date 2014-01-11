@@ -66,16 +66,30 @@ static int is_mrc_cache(struct mrc_data_container *mrc_cache)
  */
 static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
-	u32 region_size;
 #if CONFIG_CHROMEOS
-	region_size =  find_fmap_entry("RW_MRC_CACHE", (void **)mrc_region_ptr);
+	return find_fmap_entry("RW_MRC_CACHE", (void **)mrc_region_ptr);
 #else
-	region_size = CONFIG_MRC_CACHE_SIZE;
-	*mrc_region_ptr = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-			"mrc.cache", 0xac);
-#endif
+	struct cbfs_file *file;
 
-	return region_size;
+	*mrc_region_ptr = NULL;
+	file = cbfs_get_file(CBFS_DEFAULT_MEDIA,
+			     "mrc.cache");
+
+	if (file == NULL) {
+		printk(BIOS_ERR, "Could not find file '%s'.\n", "mrc.cache");
+		return 0;
+	}
+
+	if (ntohl(file->type) != 0xac) {
+		printk(BIOS_ERR,
+		       "File '%s' is of type %x, but we requested %x.\n",
+		       "mrc.cache",
+		       ntohl(file->type), 0xac);
+		return 0;
+	}
+	*mrc_region_ptr = (void *)CBFS_SUBHEADER(file);
+	return ntohl(file->len);
+#endif
 }
 
 /*

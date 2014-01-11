@@ -10,3 +10,4 @@ bluetooth=Enable
 wwan=Enable
 wlan=Enable
 touchpad=Enable
+trackpoint=Enable

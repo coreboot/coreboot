@@ -91,6 +91,7 @@ entries
 413         1       e       1        wwan
 414         1       e       1        touchpad
 415         1       e       1        wlan
+416         1       e       1        trackpoint
 417         1       e       1        fn_ctrl_swap
 418         1       e       1        sticky_fn
 419         1       e       1        power_management_beeps

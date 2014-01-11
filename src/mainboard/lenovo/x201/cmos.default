@@ -10,3 +10,4 @@ bluetooth=Enable
 wwan=Enable
 touchpad=Enable
 fn_ctrl_swap=Disable
+sticky_fn=Disable

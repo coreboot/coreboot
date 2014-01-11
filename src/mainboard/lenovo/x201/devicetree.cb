@@ -109,6 +109,10 @@ chip northbridge/intel/nehalem
 
 			register "gpe0_en" = "0x20022046"
 			register "alt_gp_smi_en" = "0x0000"
+			register "gen1_dec" = "0x7c1601"
+			register "gen2_dec" = "0x0c15e1"
+			register "gen3_dec" = "0x1c1681"
+			register "gen4_dec" = "0x040069"
 
 			device pci 16.2 on # IDE/SATA
 				subsystemid 0x17aa 0x2161

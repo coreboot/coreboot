@@ -10,6 +10,7 @@ bluetooth=Enable
 wwan=Enable
 wlan=Enable
 touchpad=Enable
+trackpoint=Enable
 fn_ctrl_swap=Disable
 sticky_fn=Disable
 power_management_beeps=Enable

@@ -55,6 +55,14 @@ void pmh7_touchpad_enable(int onoff)
 		pmh7_register_set_bit(0x51, 2);
 }
 
+void pmh7_trackpoint_enable(int onoff)
+{
+	if (onoff)
+		pmh7_register_clear_bit(0x51, 0);
+	else
+		pmh7_register_set_bit(0x51, 0);
+}
+
 void pmh7_ultrabay_power_enable(int onoff)
 {
 	if (onoff)
@@ -116,6 +124,10 @@ static void enable_dev(device_t dev)
 	if (get_option(&val, "touchpad") != CB_SUCCESS)
 		val = 1;
 	pmh7_touchpad_enable(val);
+
+	if (get_option(&val, "trackpoint") != CB_SUCCESS)
+		val = 1;
+	pmh7_trackpoint_enable(val);
 }
 
 struct chip_operations ec_lenovo_pmh7_ops = {

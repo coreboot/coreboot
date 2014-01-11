@@ -179,7 +179,7 @@ static void h8_enable(device_t dev)
 		val = 1;
 	h8_wlan_enable(val);
 
-	h8_trackpoint_enable(conf->trackpoint_enable);
+	h8_trackpoint_enable(1);
 	h8_usb_power_enable(1);
 
 	if (get_option(&val, "volume") == CB_SUCCESS)

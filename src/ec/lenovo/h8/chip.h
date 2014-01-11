@@ -46,7 +46,5 @@ struct ec_lenovo_h8_config {
 	u8 eventd_enable;
 	u8 evente_enable;
 	u8 eventf_enable;
-
-	u8 trackpoint_enable;
 };
 #endif

@@ -64,8 +64,6 @@ struct southbridge_intel_bd82x6x_config {
 	uint16_t alt_gp_smi_en;
 
 	/* IDE configuration */
-	uint32_t ide_legacy_combined;
-	uint32_t sata_ahci;
 	uint8_t sata_port_map;
 	uint32_t sata_port0_gen3_tx;
 	uint32_t sata_port1_gen3_tx;

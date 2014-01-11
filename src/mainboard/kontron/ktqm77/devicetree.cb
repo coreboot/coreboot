@@ -36,8 +36,6 @@ chip northbridge/intel/sandybridge
 			register "pirqg_routing" = "0x8b"
 			register "pirqh_routing" = "0x8b"
 
-			register "ide_legacy_combined" = "0x0" # TODO: Does nothing since generations, remove from sb code?
-			register "sata_ahci" = "0x1"
 			# Enable all SATA ports 0-5
 			register "sata_port_map" = "0x3f"
 			# Set max SATA speed to 6.0 Gb/s (should be the default, anyway)

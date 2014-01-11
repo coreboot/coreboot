@@ -93,7 +93,8 @@ entries
 417         1       e       1        fn_ctrl_swap
 418         1       e       1        sticky_fn
 419         1       e       1        power_management_beeps
-#420        564     r       0        unused
+420         1       e       1        low_battery_beep
+#421        563     r       0        unused
 
 # coreboot config options: check sums
 984         16       h       0        check_sum

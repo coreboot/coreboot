@@ -178,6 +178,16 @@ static void h8_enable(device_t dev)
 		beepmask0 = 0x00;
 		beepmask1 = 0x00;
 	}
+
+	if (conf->has_power_management_beeps) {
+		if (get_option(&val, "low_battery_beep") != CB_SUCCESS)
+			val = 1;
+		if (val)
+			beepmask0 |= 2;
+		else
+			beepmask0 &= ~2;
+	}
+
 	ec_write(H8_SOUND_ENABLE0, beepmask0);
 	ec_write(H8_SOUND_ENABLE1, beepmask1);
 

@@ -61,7 +61,7 @@ Scope (\_TZ)
 			Return (\PPKG ())
 		}
 
-		Method (_TMP, 0, Serialized)
+		Method (TCHK, 0, Serialized)
 		{
 			// Get CPU Temperature from PECI via SuperIO TMPIN3
 			Store (\_SB.PCI0.LPCB.SIO.ENVC.TIN3, Local0)
@@ -82,6 +82,31 @@ Scope (\_TZ)
 			// Subtract from Tj_max to get temperature
 			Subtract (\TMAX, Local1, Local0)
 			Return (CTOK (Local0))
+		}
+
+		Method (_TMP, 0, Serialized)
+		{
+			// Get temperature from SuperIO in deci-kelvin
+			Store (TCHK (), Local0)
+
+			// Critical temperature in deci-kelvin
+			Store (CTOK (\TMAX), Local1)
+
+			If (LGreaterEqual (Local0, Local1)) {
+				Store ("CRITICAL TEMPERATURE", Debug)
+				Store (Local0, Debug)
+
+				// Wait 1 second for SuperIO to re-poll
+				Sleep (1000)
+
+				// Re-read temperature from SuperIO
+				Store (TCHK (), Local0)
+
+				Store ("RE-READ TEMPERATURE", Debug)
+				Store (Local0, Debug)
+			}
+
+			Return (Local0)
 		}
 
 		Method (_AC0) {

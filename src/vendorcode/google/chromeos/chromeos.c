@@ -82,7 +82,7 @@ int recovery_mode_enabled(void)
 }
 
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-void *vboot_get_payload(int *len)
+void *vboot_get_payload(size_t *len)
 {
 	struct vboot_handoff *vboot_handoff;
 	struct firmware_component *fwc;

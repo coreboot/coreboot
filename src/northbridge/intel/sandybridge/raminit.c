@@ -219,7 +219,7 @@ static void post_system_agent_init(struct pei_data *pei_data)
 void sdram_initialize(struct pei_data *pei_data)
 {
 	struct sys_info sysinfo;
-	unsigned long entry;
+	int (*entry) (struct pei_data *pei_data) __attribute__ ((regparm(1)));
 
 	report_platform_info();
 
@@ -252,13 +252,11 @@ void sdram_initialize(struct pei_data *pei_data)
 
 	/* Locate and call UEFI System Agent binary. */
 	/* TODO make MRC blob (0xab?) defined in cbfs_core.h. */
-	entry = (unsigned long)cbfs_get_file_content(
-			CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab);
+	entry = cbfs_get_file_content(
+		CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab, NULL);
 	if (entry) {
 		int rv;
-		asm volatile (
-			      "call *%%ecx\n\t"
-			      :"=a" (rv) : "c" (entry), "a" (pei_data));
+		rv = entry (pei_data);
 		if (rv) {
 			switch (rv) {
 			case -1:

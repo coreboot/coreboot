@@ -28,7 +28,7 @@
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 #include <vendorcode/google/chromeos/chromeos.h>
 #else
-static inline void *vboot_get_payload(int *len) { return NULL; }
+static inline void *vboot_get_payload(size_t *len) { return NULL; }
 #endif
 
 #define CACHELINE_SIZE 64
@@ -73,26 +73,18 @@ static inline void *spi_mirror(void *file_start, int file_len)
 
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 {
-	int file_len;
+	size_t file_len;
 	void *file_start;
-	struct cbfs_file *file;
 
 	file_start = vboot_get_payload(&file_len);
 
 	if (file_start != NULL)
 		return spi_mirror(file_start, file_len);
 
-	file = cbfs_get_file(media, name);
+	file_start = cbfs_get_file_content(media, name, CBFS_TYPE_PAYLOAD, &file_len);
 
-	if (file == NULL)
+	if (file_start == NULL)
 		return NULL;
-
-	if (ntohl(file->type) != CBFS_TYPE_PAYLOAD)
-		return NULL;
-
-	file_len = ntohl(file->len);
-
-	file_start = CBFS_SUBHEADER(file);
 
 	return spi_mirror(file_start, file_len);
 }

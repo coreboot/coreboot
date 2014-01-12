@@ -182,8 +182,8 @@ void main(unsigned long bist)
 	};
 
 	typedef const uint8_t spd_blob[256];
-	struct cbfs_file *spd_file;
 	spd_blob *spd_data;
+	size_t spd_file_len;
 
 
 	timestamp_init(get_initial_timestamp());
@@ -289,12 +289,12 @@ void main(unsigned long bist)
 		break;
 	}
 
-	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
-	if (!spd_file)
+	spd_data = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin", 0xab,
+					 &spd_file_len);
+	if (!spd_data)
 		die("SPD data not found.");
-	if (spd_file->len < (spd_index + 1) * 256)
+	if (spd_file_len < (spd_index + 1) * 256)
 		die("Missing SPD data.");
-	spd_data = (spd_blob *)CBFS_SUBHEADER(spd_file);
 	// leave onboard dimm address at f0, and copy spd data there.
 	memcpy(pei_data.spd_data[0], spd_data[spd_index], 256);
 

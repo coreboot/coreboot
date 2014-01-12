@@ -222,7 +222,7 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name);
 
 /* returns pointer to file content inside CBFS after if type is correct */
 void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
-			    int type);
+			    int type, size_t *sz);
 
 /* returns decompressed size on success, 0 on failure */
 int cbfs_decompress(int algo, void *src, void *dst, int len);

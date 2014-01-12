@@ -173,9 +173,13 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 	return NULL;
 }
 
-void *cbfs_get_file_content(struct cbfs_media *media, const char *name, int type)
+void *cbfs_get_file_content(struct cbfs_media *media, const char *name,
+			    int type, size_t *sz)
 {
 	struct cbfs_file *file = cbfs_get_file(media, name);
+
+	if (sz)
+		*sz = 0;
 
 	if (file == NULL) {
 		ERROR("Could not find file '%s'.\n", name);
@@ -187,6 +191,9 @@ void *cbfs_get_file_content(struct cbfs_media *media, const char *name, int type
 		      ntohl(file->type), type);
 		return NULL;
 	}
+
+	if (sz)
+		*sz = ntohl(file->len);
 
 	return (void *)CBFS_SUBHEADER(file);
 }

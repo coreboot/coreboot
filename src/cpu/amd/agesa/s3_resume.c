@@ -111,7 +111,7 @@ inline void *backup_resume(void)
 {
 	void *resume_backup_memory;
 
-	if (!cbmem_reinit())
+	if (cbmem_recovery(1))
 		return NULL;
 
 	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);

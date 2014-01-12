@@ -505,7 +505,7 @@ unsigned long write_coreboot_table(
 	{
 		struct cmos_option_table *option_table = cbfs_get_file_content(
 				CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
-				CBFS_COMPONENT_CMOS_LAYOUT);
+				CBFS_COMPONENT_CMOS_LAYOUT, NULL);
 		if (option_table) {
 			struct lb_record *rec_dest = lb_new_record(head);
 			/* Copy the option config table, it's already a lb_record... */

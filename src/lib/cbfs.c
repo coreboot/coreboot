@@ -96,7 +96,7 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	tohex16(device, name+8);
 
 	orom = (struct cbfs_optionrom *)
-		cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM);
+	  cbfs_get_file_content(media, name, CBFS_TYPE_OPTIONROM, NULL);
 
 	if (orom == NULL)
 		return NULL;
@@ -187,7 +187,7 @@ static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
 	const struct cbmem_entry *ramstage_entry;
 
 	stage = (struct cbfs_stage *)
-		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
+	  cbfs_get_file_content(media, name, CBFS_TYPE_STAGE, NULL);
 
 	if (stage == NULL)
 		return (void *) -1;
@@ -257,7 +257,7 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
-		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE);
+		cbfs_get_file_content(media, name, CBFS_TYPE_STAGE, NULL);
 	/* this is a mess. There is no ntohll. */
 	/* for now, assume compatible byte order until we solve this. */
 	uint32_t entry;
@@ -302,7 +302,7 @@ void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 		return payload;
 
 	payload = (struct cbfs_payload *)cbfs_get_file_content(
-			media, name, CBFS_TYPE_PAYLOAD);
+		media, name, CBFS_TYPE_PAYLOAD, NULL);
 	return payload;
 }
 #endif

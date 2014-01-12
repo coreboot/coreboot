@@ -24,6 +24,7 @@
 #include <spd.h>
 #include <string.h>
 #include <arch/io.h>
+#include <lib.h>
 #include "raminit.h"
 #include "i945.h"
 #include <cbmem.h>

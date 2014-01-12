@@ -6,6 +6,7 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <device/hypertransport_def.h>
+#include <lib.h>
 
 // Do we need allocate MMIO? Current We direct last 64M to sblink only, We can not lose access to last 4M range to ROM
 #ifndef K8_ALLOCATE_MMIO_RANGE

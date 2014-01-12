@@ -32,21 +32,9 @@
 static void vga_init(device_t dev)
 {
 	printk(BIOS_INFO, "Starting Graphics Initialization\n");
-	struct cbfs_file *file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "mbi.bin");
-	void *mbi = NULL;
-	unsigned int mbi_len = 0;
-
-	if (file) {
-		if (ntohl(file->type) != CBFS_TYPE_MBI) {
-			printk(BIOS_INFO,  "CBFS:  MBI binary is of type %x instead of"
-			       "type %x\n", file->type, CBFS_TYPE_MBI);
-		} else {
-			mbi = (void *) CBFS_SUBHEADER(file);
-			mbi_len = ntohl(file->len);
-		}
-	} else {
-		printk(BIOS_INFO,  "Could not find MBI.\n");
-	}
+	size_t mbi_len;
+	void *mbi = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "mbi.bin",
+					  CBFS_TYPE_MBI, &mbi_len);
 
 	if (mbi && mbi_len) {
 		/* The GDT or coreboot table is going to live here. But

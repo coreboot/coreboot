@@ -299,7 +299,7 @@ static void verb_setup(void)
 static void mainboard_init(device_t dev)
 {
 	u32 search_address = 0x0;
-	u32 search_length = -1;
+	size_t search_length = -1;
 	u16 io_base = 0;
 	struct device *ethernet_dev = NULL;
 #if CONFIG_CHROMEOS
@@ -307,10 +307,12 @@ static void mainboard_init(device_t dev)
 	search_length = find_fmap_entry("RO_VPD", (void **)vpd_region_ptr);
 	search_address = (unsigned long)(*vpd_region_ptr);
 #else
-	struct cbfs_file *vpd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "vpd.bin");
+	void *vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin", &search_length);
 	if (vpd_file) {
-		search_length = ntohl(vpd_file->len);
-		search_address = (unsigned long)CBFS_SUBHEADER(vpd_file);
+		search_address = (unsigned long)vpd_file;
+	} else {
+		search_length = -1;
+		search_address = 0;
 	}
 #endif
 

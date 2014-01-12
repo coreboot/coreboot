@@ -444,16 +444,18 @@ AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	if (info->DimmId != 0)
 		return AGESA_UNSUPPORTED;
 
-	struct cbfs_file *spd_file;
+	char *spd_file;
+	size_t spd_file_len;
 
 	printk(BIOS_DEBUG, "read SPD\n");
-	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
+	spd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin", 0xab,
+					 &spd_file_len);
 	if (!spd_file)
 		die("file [spd.bin] not found in CBFS");
-	if (spd_file->len < SPD_SIZE)
+	if (spd_file_len < SPD_SIZE)
 		die("Missing SPD data.");
 
-	memcpy((char*)info->Buffer, (char*)CBFS_SUBHEADER(spd_file), SPD_SIZE);
+	memcpy((char*)info->Buffer, spd_file, SPD_SIZE);
 
 	u16 crc = spd_ddr3_calc_crc(info->Buffer, SPD_SIZE);
 

@@ -727,7 +727,8 @@ void vbe_set_graphics(void)
 
 	unsigned char *jpeg = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
 						    "bootsplash.jpg",
-						    CBFS_TYPE_BOOTSPLASH);
+						    CBFS_TYPE_BOOTSPLASH,
+						    NULL);
 	if (!jpeg) {
 		DEBUG_PRINTF_VBE("Could not find bootsplash.jpg\n");
 		return;

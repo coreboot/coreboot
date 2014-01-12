@@ -66,16 +66,15 @@ static int is_mrc_cache(struct mrc_data_container *mrc_cache)
  */
 static u32 get_mrc_cache_region(struct mrc_data_container **mrc_region_ptr)
 {
-	u32 region_size;
 #if CONFIG_CHROMEOS
-	region_size =  find_fmap_entry("RW_MRC_CACHE", (void **)mrc_region_ptr);
+	return find_fmap_entry("RW_MRC_CACHE", (void **)mrc_region_ptr);
 #else
-	region_size = CONFIG_MRC_CACHE_SIZE;
+	size_t region_size;
 	*mrc_region_ptr = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
-			"mrc.cache", 0xac);
+						"mrc.cache", 0xac, &region_size);
+	return region_size;
 #endif
 
-	return region_size;
 }
 
 /*

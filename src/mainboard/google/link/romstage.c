@@ -125,24 +125,26 @@ static void rcba_config(void)
 static void copy_spd(struct pei_data *peid)
 {
 	const int gpio_vector[] = {41, 42, 43, 10, -1};
-	struct cbfs_file *spd_file;
+	char *spd_file;
+	size_t spd_file_len;
 	int spd_index = get_gpios(gpio_vector);
 
 	printk(BIOS_DEBUG, "spd index %d\n", spd_index);
-	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
+	spd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin", 0xab,
+					 &spd_file_size);
 	if (!spd_file)
 		die("SPD data not found.");
 
-	if (ntohl(spd_file->len) < ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
+	if (spd_file_len < ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
 		printk(BIOS_ERR, "spd index override to 0 - old hardware?\n");
 		spd_index = 0;
 	}
 
-	if (spd_file->len < sizeof(peid->spd_data[0]))
+	if (spd_file_len < sizeof(peid->spd_data[0]))
 		die("Missing SPD data.");
 
 	memcpy(peid->spd_data[0],
-	       ((char*)CBFS_SUBHEADER(spd_file)) +
+	       spd_file +
 	       spd_index * sizeof(peid->spd_data[0]),
 	       sizeof(peid->spd_data[0]));
 }

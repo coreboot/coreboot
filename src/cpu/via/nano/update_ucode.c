@@ -102,23 +102,22 @@ unsigned int nano_update_ucode(void)
 {
 	size_t i;
 	unsigned int n_updates = 0;
-	const struct cbfs_file *cbfs_ucode;
 	u32 fms = cpuid_eax(0x1);
-
-	cbfs_ucode = cbfs_get_file(CBFS_DEFAULT_MEDIA, "cpu_microcode_blob.bin");
-	/* Oops, did you forget to include the microcode ? */
-	if(cbfs_ucode == NULL) {
-		printk(BIOS_ALERT, "WARNING: No microcode file found in CBFS. "
-				   "Aborting microcode updates\n");
-		return 0;
-	}
-
 	/* Considering we are running with eXecute-In-Place (XIP), there's no
 	 * need to worry that accessing data from ROM will slow us down.
 	 * Microcode data should be aligned to a 4-byte boundary, but CBFS
 	 * already does that for us (Do you, CBFS?) */
-	const u32 *ucode_data = CBFS_SUBHEADER(cbfs_ucode);
-	const u32 ucode_len = ntohl(cbfs_ucode->len);
+	u32 *ucode_data;
+	size_t ucode_len;
+
+	ucode_data = cbfs_get_file(CBFS_DEFAULT_MEDIA, "cpu_microcode_blob.bin",
+				   CBFS_TYPE_MICROCODE, &ucode_len);
+	/* Oops, did you forget to include the microcode ? */
+	if(ucode_data == NULL) {
+		printk(BIOS_ALERT, "WARNING: No microcode file found in CBFS. "
+				   "Aborting microcode updates\n");
+		return 0;
+	}
 
 	/* We might do a lot of loops searching for the microcode updates, but
 	 * keep in mind, nano_ucode_is_valid searches for the signature before

@@ -75,20 +75,22 @@ static void copy_spd(struct pei_data *peid)
 {
 	const int gpio_vector[] = {13, 9, 47, -1};
 	int spd_index = get_gpios(gpio_vector);
-	struct cbfs_file *spd_file;
+	char *spd_file;
+	size_t spd_file_len;
 
 	printk(BIOS_DEBUG, "SPD index %d\n", spd_index);
-	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
+	spd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "spd.bin", 0xab,
+					 &spd_file_size);
 	if (!spd_file)
 		die("SPD data not found.");
 
-	if (ntohl(spd_file->len) <
+	if (spd_file_len <
 	    ((spd_index + 1) * sizeof(peid->spd_data[0]))) {
 		printk(BIOS_ERR, "SPD index override to 0 - old hardware?\n");
 		spd_index = 0;
 	}
 
-	if (spd_file->len < sizeof(peid->spd_data[0]))
+	if (spd_file_len < sizeof(peid->spd_data[0]))
 		die("Missing SPD data.");
 
 	/* Index 0-2 are 4GB config with both CH0 and CH1
@@ -98,7 +100,7 @@ static void copy_spd(struct pei_data *peid)
 		peid->dimm_channel1_disabled = 3;
 
 	memcpy(peid->spd_data[0],
-	       ((char*)CBFS_SUBHEADER(spd_file)) +
+	       spd_file +
 	       spd_index * sizeof(peid->spd_data[0]),
 	       sizeof(peid->spd_data[0]));
 }

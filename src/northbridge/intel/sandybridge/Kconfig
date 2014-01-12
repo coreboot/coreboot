@@ -70,6 +70,10 @@ config HAVE_MRC
 
 	  Note: Without this binary coreboot will not work
 
+config HAVE_MRC_CACHE
+       bool
+       default HAVE_MRC
+
 config MRC_FILE
 	string "Intel System Agent path and filename"
 	depends on HAVE_MRC

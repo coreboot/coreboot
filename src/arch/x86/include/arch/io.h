@@ -167,7 +167,8 @@ static inline __attribute__((always_inline)) void write32(unsigned long addr, ui
 	*((volatile uint32_t *)(addr)) = value;
 }
 
-#if defined(__PRE_RAM__) || defined(__SMM__)
+/* Conflicts with definition in lib.h */
+#if defined(__ROMCC__) || defined(__SMM__)
 static inline int log2(int value)
 {
         unsigned int r = 0;
@@ -180,6 +181,9 @@ static inline int log2(int value)
         return r;
 
 }
+#endif
+
+#if defined(__PRE_RAM__) || defined(__SMM__)
 static inline int log2f(int value)
 {
         unsigned int r = 0;

@@ -23,7 +23,7 @@
 #define __LIB_H__
 #include <stdint.h>
 
-#ifndef __PRE_RAM__ /* Conflicts with inline function in arch/io.h */
+#if !defined(__ROMCC__) /* Conflicts with inline function in arch/io.h */
 /* Defined in src/lib/clog2.c */
 unsigned long log2(unsigned long x);
 #endif

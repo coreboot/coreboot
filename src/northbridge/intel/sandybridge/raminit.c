@@ -216,7 +216,7 @@ static void post_system_agent_init(struct pei_data *pei_data)
  *
  * @param pei_data: configuration data for UEFI PEI reference code
  */
-void sdram_initialize(struct pei_data *pei_data)
+void sdram_initialize(struct pei_data *pei_data, int skip_cache)
 {
 	struct sys_info sysinfo;
 	unsigned long entry;
@@ -237,7 +237,7 @@ void sdram_initialize(struct pei_data *pei_data)
 	 * Do not pass MRC data in for recovery mode boot,
 	 * Always pass it in for S3 resume.
 	 */
-	if (!recovery_mode_enabled() || pei_data->boot_mode == 2)
+	if ((!recovery_mode_enabled() || pei_data->boot_mode == 2) && !skip_cache)
 		prepare_mrc_cache(pei_data);
 
 	/* If MRC data is not found we cannot continue S3 resume. */

@@ -274,7 +274,7 @@ void main(unsigned long bist)
 	post_code(0x3a);
 	pei_data.boot_mode = boot_mode;
 	timestamp_add_now(TS_BEFORE_INITRAM);
-	sdram_initialize(&pei_data);
+	sdram_initialize(&pei_data, 0);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 	post_code(0x3c);

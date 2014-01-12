@@ -29,7 +29,7 @@ struct sys_info {
 #define BOOT_PATH_RESUME	2
 } __attribute__ ((packed));
 
-void sdram_initialize(struct pei_data *pei_data);
+void sdram_initialize(struct pei_data *pei_data, int skip_cache);
 int fixup_sandybridge_errata(void);
 
 #endif				/* RAMINIT_H */

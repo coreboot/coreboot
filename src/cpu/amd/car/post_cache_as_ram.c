@@ -38,7 +38,7 @@ static inline void *backup_resume(void) {
 	if (!suspend)
 		return NULL;
 
-	if (!cbmem_reinit())
+	if (cbmem_recovery(1))
 		return NULL;
 
 	resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);

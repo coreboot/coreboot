@@ -160,12 +160,19 @@ static void h8_enable(device_t dev)
 {
 	struct ec_lenovo_h8_config *conf = dev->chip_info;
 	u8 val, tmp;
-	u8 beepmask0, beepmask1;
+	u8 beepmask0, beepmask1, config1;
 
 	h8_log_ec_version();
 
 	ec_write(H8_CONFIG0, conf->config0);
-	ec_write(H8_CONFIG1, conf->config1);
+	config1 = conf->config1;
+
+	if (conf->has_keyboard_backlight) {
+		if (get_option(&val, "backlight") != CB_SUCCESS)
+			val = 0; /* Both backlights.  */
+		config1 = (config1 & 0xf3) | ((val & 0x3) << 2);
+	}
+	ec_write(H8_CONFIG1, config1);
 	ec_write(H8_CONFIG2, conf->config2);
 	ec_write(H8_CONFIG3, conf->config3);
 

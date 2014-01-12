@@ -193,7 +193,7 @@ enum cb_err get_option(void *dest, const char *name)
 
 	/* find the requested entry record */
 	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
-				   CBFS_COMPONENT_CMOS_LAYOUT);
+				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
 	if (!ct) {
 		printk(BIOS_ERR, "RTC: cmos_layout.bin could not be found. "
 						"Options are disabled\n");
@@ -272,7 +272,7 @@ enum cb_err set_option(const char *name, void *value)
 
 	/* find the requested entry record */
 	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
-				   CBFS_COMPONENT_CMOS_LAYOUT);
+				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
 	if (!ct) {
 		printk(BIOS_ERR, "cmos_layout.bin could not be found. Options are disabled\n");
 		return CB_CMOS_LAYOUT_NOT_FOUND;

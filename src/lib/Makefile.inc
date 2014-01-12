@@ -88,6 +88,7 @@ ramstage-y += lzma.c
 ramstage-y += stack.c
 ramstage-$(CONFIG_ARCH_X86) += gcc.c
 ramstage-y += clog2.c
+romstage-y += clog2.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c

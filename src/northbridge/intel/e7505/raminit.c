@@ -16,6 +16,7 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <arch/cpu.h>
+#include <lib.h>
 #include <stdlib.h>
 #include <console/console.h>
 

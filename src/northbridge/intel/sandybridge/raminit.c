@@ -253,7 +253,7 @@ void sdram_initialize(struct pei_data *pei_data, int skip_cache)
 	/* Locate and call UEFI System Agent binary. */
 	/* TODO make MRC blob (0xab?) defined in cbfs_core.h. */
 	entry = (unsigned long)cbfs_get_file_content(
-			CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab);
+		CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab, NULL);
 	if (entry) {
 		int rv;
 		asm volatile (

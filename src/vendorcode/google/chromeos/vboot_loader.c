@@ -48,7 +48,7 @@ static void vboot_run_stub(struct vboot_context *context)
 
 	stage = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
 	                              CONFIG_CBFS_PREFIX "/vboot",
-	                              CBFS_TYPE_STAGE);
+	                              CBFS_TYPE_STAGE, NULL);
 
 	if (stage == NULL)
 		return;

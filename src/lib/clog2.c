@@ -27,3 +27,18 @@ unsigned long log2(unsigned long x)
 
         return pow;
 }
+
+unsigned long log2_ceil(unsigned long x)
+{
+	unsigned long pow;
+
+	if (! x)
+		return -1;
+
+	pow = log2(x);
+
+	if (x > (1ULL << pow))
+		pow++;
+
+	return pow;
+}

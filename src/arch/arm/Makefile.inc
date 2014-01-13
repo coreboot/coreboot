@@ -66,7 +66,7 @@ $(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(boo
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_bootblock) -m armelf_linux_eabi --gc-sections -static -o $@ -L$(obj) $< -T $(src)/arch/arm/bootblock.ld
 else
-	$(CC_bootblock) $(CFLAGS_bootblock) -nostartfiles -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm/bootblock.ld -Wl,--start-group $(bootblock-objs) -Wl,--end-group
+	$(CC_bootblock) $(CFLAGS_bootblock) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm/bootblock.ld -Wl,--start-group $(bootblock-objs) -Wl,--end-group
 endif
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARM
@@ -89,9 +89,9 @@ VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm.o
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(src)/arch/arm/romstage.ld $(obj)/ldoptions
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_romstage) -nostdlib -nostartfiles --gc-sections -static -o $@ -L$(obj) $(romstage-objs) -T $(src)/arch/arm/romstage.ld
+	$(LD_romstage) -nostdlib --gc-sections -static -o $@ -L$(obj) $(romstage-objs) -T $(src)/arch/arm/romstage.ld
 else
-	$(CC_romstage) $(CFLAGS_romstage) -nostartfiles -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm/romstage.ld -Wl,--start-group $(romstage-objs) -Wl,--end-group
+	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -T $(src)/arch/arm/romstage.ld -Wl,--start-group $(romstage-objs) -Wl,--end-group
 endif
 
 endif # CONFIG_ARCH_ROMSTAGE_ARM
@@ -116,7 +116,7 @@ ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 $(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/arm/ramstage.ld $(obj)/ldoptions
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -m armelf_linux_eabi --gc-sections -o $@ -L$(obj) $< -T $(src)/arch/arm/ramstage.ld
+	$(LD_ramstage) -nostdlib -m armelf_linux_eabi --gc-sections -o $@ -L$(obj) $< -T $(src)/arch/arm/ramstage.ld
 else
 	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -Wl,--gc-sections -static -o $@ -L$(obj) -Wl,--start-group $(ramstage-objs) -Wl,--end-group -T $(src)/arch/arm/ramstage.ld
 endif
@@ -124,7 +124,7 @@ endif
 $(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -m -m armelf_linux_eabi --gc-sections -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) --end-group
+	$(LD_ramstage) -nostdlib -m armelf_linux_eabi --gc-sections -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) --end-group
 else
 	$(CC_ramstage) $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) -nostdlib -Wl,--gc-sections -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) -Wl,--end-group
 endif

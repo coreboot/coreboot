@@ -27,7 +27,8 @@
 ## SUCH DAMAGE.
 ##
 
-CFLAGS += -mfloat-abi=hard -marm -mabi=aapcs-linux -march=armv7-a
+CFLAGS += -mthumb -march=armv7-a
+arm_asm_flags = -Wa,-mthumb -Wa,-mimplicit-it=always -Wa,-mno-warn-deprecated
 
 head.o-y += head.S
 libc-y += main.c sysinfo.c
@@ -37,3 +38,7 @@ libc-y += memcpy.S memset.S memmove.S
 libc-y += exception_asm.S exception.c
 libc-y += cache.c cpu.S
 libcbfs-$(CONFIG_LP_CBFS) += dummy_media.c
+
+# Add other classes here when you put assembly files into them!
+head.o-S-ccopts += $(arm_asm_flags)
+libc-S-ccopts += $(arm_asm_flags)

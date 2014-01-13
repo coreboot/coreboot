@@ -32,6 +32,7 @@
 #include <arch/asm.h>
 
 .section ".start", "a", %progbits
+.arm
 ENTRY(_start)
 	/*
 	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
@@ -40,7 +41,11 @@ ENTRY(_start)
 	 * causes it.
 	 */
 	msr	cpsr_cxf, #0xdf
+	bl	_thumb_start
+ENDPROC(_start)
 
+.thumb
+ENTRY(_thumb_start)
 	/*
 	 * From Cortex-A Series Programmer's Guide:
 	 * Only CPU 0 performs initialization. Other CPUs go into WFI
@@ -72,25 +77,17 @@ call_bootblock:
 	ldr	sp, .Stack /* Set up stack pointer */
 	ldr	r0,=0x00000000
 	 /*
-	  * The current design of cpu_info places the
-	  * struct at the top of the stack. The number of
-	  * words pushed must be at least as large as that
-	  * struct.
+	  * The current design of cpu_info places the struct at the top of the
+	  * stack. Free enough space to accomodate for that, but make sure it's
+	  * 8-byte aligned for ABI compliance.
 	  */
-	push	{r0-r2}
-	bic	sp, sp, #7 /* 8-byte alignment for ABI compliance */
-	/*
-	 * Use "bl" instead of "b" even though we do not intend to return.
-	 * "bl" gets compiled to "blx" if we're transitioning from ARM to
-	 * Thumb. However, "b" will not and GCC may attempt to create a
-	 * wrapper which is currently broken.
-	 */
+	sub	sp, sp, #16
 	bl	main
 
 wait_for_interrupt:
 	wfi
 	mov	pc, lr			@ back to my caller
-ENDPROC(_start)
+ENDPROC(_thumb_start)
 
 /* we do it this way because it's a 32-bit constant and
  * in some cases too far away to be loaded as just an offset

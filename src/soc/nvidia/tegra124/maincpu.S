@@ -27,8 +27,9 @@
  * SUCH DAMAGE.
  */
 
+#include <arch/asm.h>
+
 	.align 2
-	.arm
 
 	.global maincpu_stack_pointer
 maincpu_stack_pointer:
@@ -38,10 +39,8 @@ maincpu_stack_pointer:
 maincpu_entry_point:
 	.word 0
 
-	.global maincpu_setup
-	.type maincpu_setup, function
-	maincpu_setup:
-
+.arm
+ENTRY(maincpu_setup)
 	/*
 	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
 	 * aborts may happen early and crash before the abort handlers are
@@ -54,3 +53,4 @@ maincpu_entry_point:
 	eor	lr, lr
 	ldr	r0, maincpu_entry_point
 	bx	r0
+ENDPROC(maincpu_setup)

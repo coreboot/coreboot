@@ -55,8 +55,12 @@ Q_1	.req	r1
 R_0	.req	r2
 R_1	.req	r3
 
+THUMB(
+TMP	.req	r8
+)
+
 ENTRY(__aeabi_uldivmod)
-	stmfd	sp!, {r4, r5, r6, r7, lr}
+	stmfd	sp!, {r4, r5, r6, r7, THUMB(TMP,) lr}
 	@ Test if B == 0
 	orrs	ip, B_0, B_1		@ Z set -> B == 0
 	beq	L_div_by_0
@@ -92,12 +96,16 @@ L_div_64_64:
 	subs	D_1, D_0, #32
 	rsb	ip, D_0, #32
 	movmi	B_1, B_1, lsl D_0
-	orrmi	B_1, B_1, B_0, lsr ip
+ARM(	orrmi	B_1, B_1, B_0, lsr ip	)
+THUMB(	lsrmi	TMP, B_0, ip		)
+THUMB(	orrmi	B_1, B_1, TMP		)
 	movpl	B_1, B_0, lsl D_1
 	mov	B_0, B_0, lsl D_0
 	@ C = 1 << (clz B - clz A)
 	movmi	C_1, C_1, lsl D_0
-	orrmi	C_1, C_1, C_0, lsr ip
+ARM(	orrmi	C_1, C_1, C_0, lsr ip	)
+THUMB(	lsrmi	TMP, C_0, ip		)
+THUMB(	orrmi	C_1, C_1, TMP		)
 	movpl	C_1, C_0, lsl D_1
 	mov	C_0, C_0, lsl D_0
 L_done_shift:
@@ -170,7 +178,7 @@ L_exit:
 	mov	R_1, A_1
 	mov	Q_0, D_0
 	mov	Q_1, D_1
-	ldmfd	sp!, {r4, r5, r6, r7, pc}
+	ldmfd	sp!, {r4, r5, r6, r7, THUMB(TMP,) pc}
 
 L_div_32_32:
 	@ Note:	A_0 &	r0 are aliases
@@ -180,7 +188,7 @@ L_div_32_32:
 	mov	R_0, r1
 	mov	R_1, #0
 	mov	Q_1, #0
-	ldmfd	sp!, {r4, r5, r6, r7, pc}
+	ldmfd	sp!, {r4, r5, r6, r7, THUMB(TMP,) pc}
 
 L_pow2:
 /* CLZ only exists in ARM architecture version 5 and above. */
@@ -201,12 +209,14 @@ L_pow2:
 	add	D_0, D_0, #32
 L_1:
 	movpl	A_0, A_0, lsr D_0
-	orrpl	A_0, A_0, A_1, lsl D_1
+ARM(	orrpl	A_0, A_0, A_1, lsl D_1	)
+THUMB(	lslpl	TMP, A_1, D_1		)
+THUMB(	orrpl	A_0, A_0, TMP		)
 	mov	A_1, A_1, lsr D_0
 	@ Mov back C to R
 	mov	R_0, C_0
 	mov	R_1, C_1
-	ldmfd	sp!, {r4, r5, r6, r7, pc}
+	ldmfd	sp!, {r4, r5, r6, r7, THUMB(TMP,) pc}
 #else
 	@ Note: A, B and Q, R are aliases
 	@ R = A & (B - 1)
@@ -244,7 +254,7 @@ L_1:
 	@ Move C to R
 	mov	R_0, C_0
 	mov	R_1, C_1
-	ldmfd	sp!, {r4, r5, r6, r7, pc}
+	ldmfd	sp!, {r4, r5, r6, r7, THUMB(TMP,) pc}
 #endif
 
 L_div_by_0:
@@ -254,5 +264,5 @@ L_div_by_0:
 	mov	Q_1, #0
 	mov	R_0, #0
 	mov	R_1, #0
-	ldmfd	sp!, {r4, r5, r6, r7, pc}
+	ldmfd	sp!, {r4, r5, r6, r7, THUMB(TMP,) pc}
 ENDPROC(__aeabi_uldivmod)

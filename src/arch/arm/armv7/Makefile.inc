@@ -19,8 +19,10 @@
 ##
 ###############################################################################
 
-armv7_flags = -march=armv7-a -mthumb -mthumb-interwork \
+armv7_flags = -march=armv7-a -mthumb \
 	-I$(src)/arch/arm/include/armv7/ -D__COREBOOT_ARM_ARCH__=7
+armv7_asm_flags = $(armv7_flags) -Wa,-mthumb -Wa,-mimplicit-it=always \
+	-Wa,-mno-warn-deprecated
 
 ###############################################################################
 # bootblock
@@ -40,7 +42,7 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += exception_asm.S
 bootblock-y += mmu.c
 
 bootblock-c-ccopts += $(armv7_flags)
-bootblock-S-ccopts += $(armv7_flags)
+bootblock-S-ccopts += $(armv7_asm_flags)
 
 endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 
@@ -57,7 +59,7 @@ romstage-y += exception_asm.S
 romstage-y += mmu.c
 
 romstage-c-ccopts += $(armv7_flags)
-romstage-S-ccopts += $(armv7_flags)
+romstage-S-ccopts += $(armv7_asm_flags)
 
 endif # CONFIG_ARCH_ROMSTAGE_ARMV7
 
@@ -74,6 +76,6 @@ ramstage-y += exception_asm.S
 ramstage-y += mmu.c
 
 ramstage-c-ccopts += $(armv7_flags)
-ramstage-S-ccopts += $(armv7_flags)
+ramstage-S-ccopts += $(armv7_asm_flags)
 
 endif # CONFIG_ARCH_RAMSTAGE_ARMV7

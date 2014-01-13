@@ -20,16 +20,17 @@
 #ifndef __ARM_ASM_H
 #define __ARM_ASM_H
 
-#if defined __arm__
-#  define ARM(x...)	x
-#  define THUMB(x...)
-#  define W(instr)	instr
-#elif defined __thumb__
+/* __arm__ is defined regardless of Thumb mode, so need to order this right */
+#if defined __thumb2__
 #  define ARM(x...)
 #  define THUMB(x...)	x
 #  define W(instr)	instr.w
+#elif defined __thumb__
+#  error You are not compiling Thumb2, this won't work!
 #else
-#  error Not in ARM or thumb mode!
+#  define ARM(x...)	x
+#  define THUMB(x...)
+#  define W(instr)	instr
 #endif
 
 #define ALIGN .align 0
@@ -45,5 +46,11 @@
 
 #define END(name) \
 	.size name, .-name
+
+/* Everything should go into the text section by default. */
+	.text
+
+/* Thumb code uses the (new) unified assembly syntax. */
+THUMB(	.syntax unified )
 
 #endif	/* __ARM_ASM_H */

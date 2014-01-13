@@ -54,10 +54,11 @@ static inline uint32_t to_flash_offset(void *p)
 
 int nvm_is_erased(const void *start, size_t size)
 {
-	const char *cur = start;
+	const uint8_t *cur = start;
+	const uint8_t erased_value = 0xff;
 
 	while (size > 0) {
-		if (*cur != 0xff)
+		if (*cur != erased_value)
 			return 0;
 		cur++;
 		size--;

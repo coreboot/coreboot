@@ -27,6 +27,7 @@
 /* Defined in src/lib/clog2.c */
 unsigned long log2(unsigned long x);
 #endif
+unsigned long log2_ceil(unsigned long x);
 
 /* Defined in src/lib/lzma.c */
 unsigned long ulzma(unsigned char *src, unsigned char *dst);

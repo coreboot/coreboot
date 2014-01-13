@@ -279,9 +279,12 @@ static void update_mrc_cache(void *unused)
 	next_slot = mrc_cache_next_slot(&region, current_saved);
 
 	if (!mrc_slot_valid(&region, next_slot, current_boot)) {
-		if (nvm_erase(region.base, region.size) < 0) {
-			printk(BIOS_DEBUG, "Could not erase MRC region.\n");
-			return;
+		printk(BIOS_DEBUG, "Slot @ %p is invalid.\n", next_slot);
+		if (!nvm_is_erased(region.base, region.size)) {
+			if (nvm_erase(region.base, region.size) < 0) {
+				printk(BIOS_DEBUG, "Failure erasing region.\n");
+				return;
+			}
 		}
 		next_slot = region.base;
 	}

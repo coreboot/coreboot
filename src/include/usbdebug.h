@@ -49,7 +49,7 @@ void pci_ehci_read_resources(struct device *dev);
 
 struct dbgp_pipe;
 
-int usbdebug_init(void);
+int usbdebug_init(unsigned ehci_bar);
 
 struct dbgp_pipe *dbgp_console_output(void);
 struct dbgp_pipe *dbgp_console_input(void);

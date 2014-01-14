@@ -122,7 +122,7 @@ void console_init(void)
 	spkmodem_init();
 #endif
 #if CONFIG_USBDEBUG_IN_ROMSTAGE && !defined(__BOOT_BLOCK__)
-	usbdebug_init();
+	usbdebug_init(CONFIG_EHCI_BAR);
 #endif
 
 	static const char console_test[] =

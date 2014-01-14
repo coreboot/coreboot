@@ -24,7 +24,7 @@
 
 static void dbgp_init(void)
 {
-	usbdebug_init();
+	usbdebug_init(CONFIG_EHCI_BAR);
 }
 
 static void dbgp_tx_byte(unsigned char data)

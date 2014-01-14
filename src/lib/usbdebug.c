@@ -1030,7 +1030,7 @@ struct dbgp_pipe *dbgp_console_input(void)
 	return &dbgp_ehci_info()->ep_pipe[DBGP_CONSOLE_EPIN];
 }
 
-int usbdebug_init(void)
+int usbdebug_init(unsigned ehci_bar)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 
@@ -1039,5 +1039,5 @@ int usbdebug_init(void)
 		return 0;
 #endif
 	enable_usbdebug();
-	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
+	return usbdebug_init_(ehci_bar, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }

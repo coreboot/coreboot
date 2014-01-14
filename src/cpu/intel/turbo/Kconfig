@@ -1,0 +1,6 @@
+
+config CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED
+	def_bool n
+	help
+	  This option indicates that the turbo mode setting is not package
+	  scoped. i.e. enable_turbo() needs to be called on not just the bsp

@@ -41,5 +41,6 @@
 #define dcache_invalidate_by_mva(addr, len)
 #define dcache_clean_invalidate_all()
 #define dcache_clean_invalidate_by_mva(addr, len)
+#define icache_invalidate_all()
 
 #endif

@@ -252,6 +252,9 @@ Device (IOSF)
 // LPC Bridge 0:1f.0
 #include "lpc.asl"
 
+// USB XHCI 0:14.0
+#include "xhci.asl"
+
 // IRQ routing for each PCI device
 #include "irqroute.asl"
 

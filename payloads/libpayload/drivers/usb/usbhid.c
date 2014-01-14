@@ -391,7 +391,8 @@ usb_hid_set_protocol (usbdev_t *dev, interface_descriptor_t *interface, hid_prot
 
 static struct console_input_driver cons = {
 	.havekey = usbhid_havechar,
-	.getchar = usbhid_getchar
+	.getchar = usbhid_getchar,
+	.input_type = CONSOLE_INPUT_TYPE_USB,
 };
 
 

@@ -247,12 +247,18 @@ int set_option_from_string(const struct nvram_accessor *nvram, struct cb_cmos_op
  * @defgroup console Console functions
  * @{
  */
+typedef enum {
+	CONSOLE_INPUT_TYPE_UNKNOWN = 0,
+	CONSOLE_INPUT_TYPE_USB,
+} console_input_type;
+
 void console_init(void);
 int putchar(unsigned int c);
 int puts(const char *s);
 int havekey(void);
 int getchar(void);
 int getchar_timeout(int *ms);
+console_input_type last_key_input_type(void);
 
 extern int last_putchar;
 
@@ -261,6 +267,7 @@ struct console_input_driver {
 	struct console_input_driver *next;
 	int (*havekey) (void);
 	int (*getchar) (void);
+	console_input_type input_type;
 };
 
 struct console_output_driver;

@@ -33,6 +33,7 @@
 
 struct console_output_driver *console_out;
 struct console_input_driver *console_in;
+static console_input_type last_getchar_input_type;
 
 void console_add_output_driver(struct console_output_driver *out)
 {
@@ -115,8 +116,10 @@ int getchar(void)
 #endif
 		struct console_input_driver *in;
 		for (in = console_in; in != 0; in = in->next)
-			if (in->havechar())
+			if (in->havechar()) {
+				last_getchar_input_type = in->input_type;
 				return in->getchar();
+			}
 	}
 }
 
@@ -134,4 +137,9 @@ int getchar_timeout(int *ms)
 		*ms = 0;
 
 	return 0;
+}
+
+console_input_type last_key_input_type(void)
+{
+	return last_getchar_input_type;
 }

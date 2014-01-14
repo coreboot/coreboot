@@ -195,6 +195,7 @@ static void pch_power_options(device_t dev)
 	 * If the option is not existent (Laptops), use Kconfig setting.
 	 */
 	get_option(&pwr_on, "power_on_after_fail");
+        pwr_on = MAINBOARD_POWER_KEEP;
 
 	reg16 = pci_read_config16(dev, GEN_PMCON_3);
 	reg16 &= 0xfffe;

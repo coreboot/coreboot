@@ -205,6 +205,86 @@ Scope (\_SB.I2C1)
 	}
 }
 
+Scope (\_SB.I2C2)
+{
+	Device (CODC)
+	{
+		/*
+		 * TODO(dlaurie): Need official HID.
+		 *
+		 * The current HID is created from the Maxim Integrated
+		 * PCI Vendor ID 193Ch and a shortened device identifier.
+		 */
+		Name (_HID, "193C9890")
+		Name (_DDN, "Maxim 98090 Codec")
+		Name (_UID, 1)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x10,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\_SB.I2C2",              // ResourceSource
+			)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				BOARD_CODEC_IRQ
+			}
+		})
+
+		Method (_STA)
+		{
+			If (LEqual (\S2EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
+	}
+}
+
+Scope (\_SB.I2C5)
+{
+	Device (ALSI)
+	{
+		/*
+		 * TODO(dlaurie): Need official HID.
+		 *
+		 * The current HID is created from the Intersil PNP
+		 * Vendor ID "LSD" and a shortened device identifier.
+		 */
+		Name (_HID, EisaId ("LSD2918"))
+		Name (_DDN, "Intersil 29018 Ambient Light Sensor")
+		Name (_UID, 1)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x44,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\_SB.I2C5",              // ResourceSource
+			)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				BOARD_ALS_IRQ
+			}
+		})
+
+		Method (_STA)
+		{
+			If (LEqual (\S5EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
+	}
+}
+
 Scope (\_SB.I2C6)
 {
 	Device (ATSB)

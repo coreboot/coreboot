@@ -50,7 +50,14 @@
 #define TPAD_IRQ_OFFSET		0
 #define TOUCH_IRQ_OFFSET	1
 #define I8042_IRQ_OFFSET	2
+#define ALS_IRQ_OFFSET		3
 /* Corresponding SCORE GPIO pins */
 #define TPAD_IRQ_GPIO		55
 #define TOUCH_IRQ_GPIO		72
 #define I8042_IRQ_GPIO		101
+#define ALS_IRQ_GPIO		70
+
+/* SUS bank DIRQs - up to 16 supported */
+#define CODEC_IRQ_OFFSET	0
+/* Corresponding SUS GPIO pins */
+#define CODEC_IRQ_GPIO		9

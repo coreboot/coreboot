@@ -92,7 +92,7 @@ void baytrail_init_cpus(device_t dev)
 	/* Set package MSRs */
 	reg_script_run(package_msr_script);
 
-	/* Enable Turbo/Burst Mode */
+	/* Enable Turbo Mode on BSP and siblings of the BSP's building block. */
 	enable_turbo();
 
 	if (mp_init(cpu_bus, &mp_params)) {
@@ -103,6 +103,13 @@ void baytrail_init_cpus(device_t dev)
 static void baytrail_core_init(device_t cpu)
 {
 	printk(BIOS_DEBUG, "Init BayTrail core.\n");
+
+	/* On bay trail the turbo disable bit is actually scoped at building
+	 * block level -- not package. For non-bsp cores that are within a
+	 * building block enable turbo. The cores within the BSP's building
+	 * block will just see it already enabled and move on. */
+	if (lapicid())
+		enable_turbo();
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);

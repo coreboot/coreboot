@@ -934,3 +934,9 @@ int usbdebug_init(void)
 	ehci_debug_hw_enable();
 	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }
+
+int usbdebug_simple_init_at(unsigned ehci_bar)
+{
+	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+	return usbdebug_init_(ehci_bar, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
+}

@@ -24,6 +24,7 @@
 struct dbgp_pipe;
 
 int usbdebug_init(void);
+int usbdebug_simple_init_at(unsigned ehci_bar);
 
 struct dbgp_pipe *dbgp_console_output(void);
 struct dbgp_pipe *dbgp_console_input(void);

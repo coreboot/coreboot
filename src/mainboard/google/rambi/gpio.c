@@ -126,7 +126,7 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 	GPIO_FUNC1,	/* S0-SC067 - SIO_SPI_MISO */
 	GPIO_FUNC1,	/* S0-SC068 - SIO_SPI_MOSI */
 	GPIO_FUNC1,	/* S0-SC069 - SIO_SPI_CLK */
-	GPIO_INPUT,	/* S0-SC070 - ALS_INT_L - INT */
+	GPIO_DIRQ,	/* S0-SC070 - ALS_INT_L - INT */
 	GPIO_NC,	/* S0-SC071 - NC */
 	GPIO_DIRQ,	/* S0-SC072 - TOUCH_INT_L_DX */
 	GPIO_NC,	/* S0-SC073 - NC */
@@ -172,7 +172,7 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_INPUT_PU,	/* S506 - PCH_SPI_WP */
 	GPIO_ACPI_SMI,	/* S507 - SOC_KBC_SMI - INT */
 	GPIO_NC,	/* S508 - NC */
-	GPIO_NC,	/* S509 - MUX_AUD_INT1# (NC) */
+	GPIO_DIRQ,	/* S509 - MUX_AUD_INT1# */
 	GPIO_OUT_HIGH,	/* S510 - WIFI_DISABLE_L */
 	GPIO_FUNC0,	/* S511 - SUSPWRDNACK */
 	GPIO_FUNC0,	/* S512 - WIFI_SUSCLK */
@@ -214,9 +214,11 @@ static const u8 core_dedicated_irq[GPIO_MAX_DIRQS] = {
 	[TPAD_IRQ_OFFSET] = TPAD_IRQ_GPIO,
 	[TOUCH_IRQ_OFFSET] = TOUCH_IRQ_GPIO,
 	[I8042_IRQ_OFFSET] = I8042_IRQ_GPIO,
+	[ALS_IRQ_OFFSET] = ALS_IRQ_GPIO,
 };
 
 static const u8 sus_dedicated_irq[GPIO_MAX_DIRQS] = {
+	[CODEC_IRQ_OFFSET] = CODEC_IRQ_GPIO,
 };
 
 static struct soc_gpio_config gpio_config = {

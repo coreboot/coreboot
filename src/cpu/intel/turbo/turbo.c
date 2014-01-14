@@ -24,7 +24,28 @@
 #include <cpu/x86/msr.h>
 #include <arch/cpu.h>
 
-static int turbo_state = TURBO_UNKNOWN;
+#if CONFIG_CPU_INTEL_TURBO_NOT_PACKAGE_SCOPED
+static inline int get_global_turbo_state(void)
+{
+	return TURBO_UNKNOWN;
+}
+
+static inline void set_global_turbo_state(int state)
+{
+}
+#else
+static int g_turbo_state = TURBO_UNKNOWN;
+
+static inline int get_global_turbo_state(void)
+{
+	return g_turbo_state;
+}
+
+static inline void set_global_turbo_state(int state)
+{
+	g_turbo_state = state;
+}
+#endif
 
 static const char *turbo_state_desc[] = {
 	[TURBO_UNKNOWN]		= "unknown",
@@ -43,6 +64,7 @@ int get_turbo_state(void)
 	struct cpuid_result cpuid_regs;
 	int turbo_en, turbo_cap;
 	msr_t msr;
+	int turbo_state = get_global_turbo_state();
 
 	/* Return cached state if available */
 	if (turbo_state != TURBO_UNKNOWN)
@@ -65,6 +87,7 @@ int get_turbo_state(void)
 		turbo_state = TURBO_ENABLED;
 	}
 
+	set_global_turbo_state(turbo_state);
 	printk(BIOS_INFO, "Turbo is %s\n", turbo_state_desc[turbo_state]);
 	return turbo_state;
 }
@@ -84,7 +107,7 @@ void enable_turbo(void)
 		wrmsr(MSR_IA32_MISC_ENABLES, msr);
 
 		/* Update cached turbo state */
-		turbo_state = TURBO_ENABLED;
+		set_global_turbo_state(TURBO_ENABLED);
 		printk(BIOS_INFO, "Turbo has been enabled\n");
 	}
 }

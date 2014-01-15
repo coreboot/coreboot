@@ -34,12 +34,7 @@ static void dbgp_tx_byte(unsigned char data)
 
 static unsigned char dbgp_rx_byte(void)
 {
-	unsigned char data = 0xff;
-
-	if (dbgp_ep_is_active(dbgp_console_input()))
-		dbgp_bulk_read_x(dbgp_console_input(), &data, 1);
-
-	return data;
+	return usbdebug_rx_byte(dbgp_console_input());
 }
 
 static void dbgp_tx_flush(void)

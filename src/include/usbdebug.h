@@ -58,4 +58,5 @@ int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size);
 int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size);
 void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data);
 void usbdebug_tx_flush(struct dbgp_pipe *pipe);
+unsigned char usbdebug_rx_byte(struct dbgp_pipe *pipe);
 #endif

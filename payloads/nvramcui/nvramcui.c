@@ -232,6 +232,10 @@ int main()
 	for (i = 0; i < numopts; i++) {
 		char *name = field_buffer(fields[2*i], 0);
 		char *value = field_buffer(fields[2*i+1], 0);
+		char *ptr;
+		for (ptr = value + strlen (value) - 1;
+		     ptr >= value && *ptr == ' '; ptr--);
+		ptr[1] = '\0';
 		set_option_from_string(use_nvram, opttbl, value, name);
 	}
 

@@ -247,7 +247,8 @@ int main()
 	unpost_form(form);
 	free_form(form);
 
-	/* TODO: reboot */
+	/* reboot */
+	outb (0x6, 0xcf9);
 	halt();
 }
 

@@ -245,7 +245,8 @@ int main()
 	refresh();
 
 	endwin();
-	/* TODO: reboot */
+	/* reboot */
+	outb (0x6, 0xcf9);
 	halt();
 }
 

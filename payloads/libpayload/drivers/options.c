@@ -310,6 +310,10 @@ int get_option_as_string(const struct nvram_accessor *nvram, struct cb_cmos_opti
 		return 1;
 	int cmos_length = (cmos_entry->length+7)/8;
 
+	/* ensure we have enough space for u64 */
+	if (cmos_length < 8)
+		cmos_length = 8;
+
 	/* extra byte to ensure 0-terminated strings */
 	raw = malloc(cmos_length+1);
 	memset(raw, 0, cmos_length+1);

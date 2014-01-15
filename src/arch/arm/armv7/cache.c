@@ -35,21 +35,6 @@
 
 #include <arch/cache.h>
 
-#define bitmask(high, low) ((1UL << (high)) + \
-			((1UL << (high)) - 1) - ((1UL << (low)) - 1))
-
-/* Basic log2() implementation. Note: log2(0) is 0 for our purposes. */
-/* FIXME: src/include/lib.h is difficult to work with due to romcc */
-static unsigned long log2(unsigned long u)
-{
-	int i = 0;
-
-	while (u >>= 1)
-		i++;
-
-	return i;
-}
-
 void tlb_invalidate_all(void)
 {
 	/*
@@ -83,116 +68,6 @@ enum dcache_op {
 	OP_DCCMVAC,
 	OP_DCIMVAC,
 };
-
-/*
- * Do a dcache operation on entire cache by set/way. This is done for
- * portability because mapping of memory address to cache location is
- * implementation defined (See note on "Requirements for operations by
- * set/way" in arch ref. manual).
- */
-static void dcache_op_set_way(enum dcache_op op)
-{
-	uint32_t ccsidr;
-	unsigned int associativity, num_sets, linesize_bytes;
-	unsigned int set, way;
-	unsigned int level;
-
-	level = (read_csselr() >> 1) & 0x7;
-
-	/*
-	 * dcache must be invalidated by set/way for portability since virtual
-	 * memory mapping is system-defined. The number of sets and
-	 * associativity is given by CCSIDR. We'll use DCISW to invalidate the
-	 * dcache.
-	 */
-	ccsidr = read_ccsidr();
-
-	/* FIXME: rounding up required here? */
-	num_sets = ((ccsidr & bitmask(27, 13)) >> 13) + 1;
-	associativity = ((ccsidr & bitmask(12, 3)) >> 3) + 1;
-	/* FIXME: do we need to use CTR.DminLine here? */
-	linesize_bytes = (1 << ((ccsidr & 0x7) + 2)) * 4;
-
-	dsb();
-
-	/*
-	 * Set/way operations require an interesting bit packing. See section
-	 * B4-35 in the ARMv7 Architecture Reference Manual:
-	 *
-	 * A: Log2(associativity)
-	 * B: L+S
-	 * L: Log2(linesize)
-	 * S: Log2(num_sets)
-	 *
-	 * The bits are packed as follows:
-	 *  31  31-A        B B-1    L L-1   4 3   1 0
-	 * |---|-------------|--------|-------|-----|-|
-	 * |Way|    zeros    |   Set  | zeros |level|0|
-	 * |---|-------------|--------|-------|-----|-|
-	 */
-	for (way = 0; way < associativity; way++) {
-		for (set = 0; set < num_sets; set++) {
-			uint32_t val = 0;
-			val |= way << (32 - log2(associativity));
-			val |= set << log2(linesize_bytes);
-			val |= level << 1;
-			switch(op) {
-			case OP_DCCISW:
-				dccisw(val);
-				break;
-			case OP_DCISW:
-				dcisw(val);
-				break;
-			case OP_DCCSW:
-				dccsw(val);
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	isb();
-}
-
-static void dcache_foreach(enum dcache_op op)
-{
-	uint32_t clidr;
-	int level;
-
-	clidr = read_clidr();
-	for (level = 0; level < 7; level++) {
-		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
-		uint32_t csselr;
-
-		switch(ctype) {
-		case 0x2:
-		case 0x3:
-		case 0x4:
-			csselr = level << 1;
-			write_csselr(csselr);
-			dcache_op_set_way(op);
-			break;
-		default:
-			/* no cache, icache only, or reserved */
-			break;
-		}
-	}
-}
-
-void dcache_clean_all(void)
-{
-	dcache_foreach(OP_DCCSW);
-}
-
-void dcache_clean_invalidate_all(void)
-{
-	dcache_foreach(OP_DCCISW);
-}
-
-void dcache_invalidate_all(void)
-{
-	dcache_foreach(OP_DCISW);
-}
 
 unsigned int dcache_line_bytes(void)
 {

@@ -35,5 +35,5 @@ libc-y += timer.c coreboot.c util.S
 libc-y += virtual.c
 libc-y += memcpy.S memset.S memmove.S
 libc-y += exception_asm.S exception.c
-libc-y += cache.c
+libc-y += cache.c cpu.S
 libcbfs-$(CONFIG_LP_CBFS) += dummy_media.c

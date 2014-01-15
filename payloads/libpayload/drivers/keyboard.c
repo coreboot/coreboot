@@ -315,7 +315,6 @@ void keyboard_disconnect(void)
 
 	/* Send keyboard disconnect command */
 	outb(I8042_CMD_DIS_KB, 0x64);
-	keyboard_wait_write();
 
 	/* Hand off with empty buffer */
 	while (keyboard_havechar())

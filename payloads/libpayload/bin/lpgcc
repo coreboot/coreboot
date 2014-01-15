@@ -133,7 +133,7 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-_CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$BASE/../build -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
+_CFLAGS="$_ARCHEXTRA -nostdinc -nostdlib -I$BASE/../build -I$BASE/../curses -I$_INCDIR -I$_ARCHINCDIR -D__LIBPAYLOAD__=1"
 
 # Check for the -fno-stack-protector silliness
 

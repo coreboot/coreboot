@@ -307,7 +307,8 @@ static void mainboard_init(device_t dev)
 	search_length = find_fmap_entry("RO_VPD", (void **)vpd_region_ptr);
 	search_address = (unsigned long)(*vpd_region_ptr);
 #else
-	void *vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin", &search_length);
+	void *vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin",
+					       CBFS_TYPE_RAW, &search_length);
 	if (vpd_file) {
 		search_address = (unsigned long)vpd_file;
 	} else {

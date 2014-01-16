@@ -240,6 +240,24 @@ void iosf_ssus_write(int reg, uint32_t val);
 #define PUNIT_PWRGT_STATUS		0x61
 #define PUNIT_GPU_EC_VIRUS		0xd2
 
+#define PUNIT_SOC_POWER_BUDGET		0x02
+#define PUNIT_SOC_ENERGY_CREDIT		0x03
+#define PUNIT_PTMC			0x80
+#define PUNIT_GFXT			0x88
+#define PUNIT_VEDT			0x89
+#define PUNIT_ISPT			0x8c
+#define PUNIT_PTPS			0xb2
+#define PUNIT_TE_AUX0			0xb5
+#define PUNIT_TE_AUX1			0xb6
+#define PUNIT_TE_AUX2			0xb7
+#define PUNIT_TE_AUX3			0xb8
+#define PUNIT_TTE_VRIccMax		0xb9
+#define PUNIT_TTE_VRHot			0xba
+#define PUNIT_TTE_XXPROCHOT		0xbb
+#define PUNIT_TTE_SLM0			0xbc
+#define PUNIT_TTE_SLM1			0xbd
+#define PUNIT_TTE_SWT			0xbf
+
 /*
  * LPSS Registers
  */

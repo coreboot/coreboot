@@ -142,7 +142,7 @@ static const struct reg_script gfx_init_script[] = {
 
 	/* Program PUNIT_GPU_EC_VIRUS based on DPTF SDP */
 	/* SDP Profile 4 == 0x11940, others 0xcf08 */
-	REG_IOSF_WRITE(IOSF_PORT_PMC, PUNIT_GPU_EC_VIRUS, 0xcf08),
+	REG_IOSF_WRITE(IOSF_PORT_PMC, PUNIT_GPU_EC_VIRUS, 0x11940),
 
 	/* GfxPause */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa000, 0x00071388),

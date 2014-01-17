@@ -1,7 +1,6 @@
-Board name: IP530IP530
+Board name: IP530
 Category: server
-Board URL: [Nokia
-Board page: Nokia IP530
+Board page: Nokia_IP530
 ROM package: TSOP48
 ROM protocol: Parallel
 ROM socketed: n

@@ -1,0 +1,4 @@
+Board name: QEMU x86 i440fx/piix4
+Category: misc
+Board URL: http://fabrice.bellard.free.fr/qemu/
+Board page: QEMU_Build_Tutorial

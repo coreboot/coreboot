@@ -1,0 +1,6 @@
+Board name: Cool FrontRunner
+Category: half
+Board URL: http://www.lippertembedded.com/en/productoverview/products-in-detail/85-lipperts-cool-frontrunner.html
+ROM package: PLCC
+ROM protocol: FWH
+ROM socketed: y

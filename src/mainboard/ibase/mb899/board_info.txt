@@ -1,0 +1,8 @@
+Board name: mb899
+Category: mini
+Board URL: http://www.ibase.com.tw/mb899.htm
+Board page: ibase mp899
+ROM package: PLCC
+ROM protocol: FWH
+ROM socketed: y
+Flashrom support: y

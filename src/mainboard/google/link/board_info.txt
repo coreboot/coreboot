@@ -1,0 +1,4 @@
+Board name: Chromebook Pixel
+Category: laptop
+Board URL: http://www.google.com/intl/en/chrome/devices/chromebooks.html#pixel
+Board page: Google_Chromebook_Pixel

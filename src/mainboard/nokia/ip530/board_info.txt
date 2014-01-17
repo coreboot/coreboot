@@ -1,0 +1,7 @@
+Category: server
+Board URL: [Nokia
+Board page: Nokia IP530
+ROM package: TSOP48
+ROM protocol: Parallel
+ROM socketed: n
+Flashrom support: y

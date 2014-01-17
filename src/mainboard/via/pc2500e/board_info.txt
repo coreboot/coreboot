@@ -1,0 +1,7 @@
+Board name: pc2500e
+Category: mini
+Board URL: http://www.idot.com.tw/en/products/mb-pc2500e/
+Board page: VIA pc2500e
+ROM package: PLCC
+ROM socketed: y
+Flashrom support: y

@@ -1,0 +1,4 @@
+Board name: ProLiant DL145 G3
+Category: server
+Board URL: http://h20000.www2.hp.com/bizsupport/TechSupport/Document.jsp?objectID=c00816835&lang=en&cc=us&taskId=101&prodSeriesId=3219755&prodTypeId=15351
+Board page: HP DL145 G3

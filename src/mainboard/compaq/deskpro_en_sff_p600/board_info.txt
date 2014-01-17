@@ -1,0 +1,4 @@
+Board name: Deskpro EN SFF P600
+Category: desktop
+ROM package: DIP32
+ROM protocol: Parallel

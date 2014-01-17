@@ -1,0 +1,4 @@
+Board name: IEI PCISA-LX-800-R10
+Category: half
+Board URL: http://www.ieiworld.com/en/product_IPC.asp?model=PCISA-LX
+Board page: IEI LX 800

@@ -1,0 +1,6 @@
+Board name: DBFT1-00-EVAL-KT (Persimmon)
+Category: eval
+Board page: AMD PERSIMMON 
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

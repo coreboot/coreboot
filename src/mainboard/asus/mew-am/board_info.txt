@@ -1,0 +1,7 @@
+Board name: MEW-AM
+Category: desktop
+Board URL: ftp://ftp.asus.com.tw/pub/ASUS/mb/sock370/810/mew-am/
+Board page: ASUS MEW-AM
+ROM package: PLCC
+ROM socketed: y
+Flashrom support: n

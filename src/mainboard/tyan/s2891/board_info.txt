@@ -1,0 +1,4 @@
+Board name: Thunder K8SRE (S2891)
+Category: server
+Board URL: http://www.tyan.com/archive/products/html/thunderk8sre.html
+Board page: Tyan S2891

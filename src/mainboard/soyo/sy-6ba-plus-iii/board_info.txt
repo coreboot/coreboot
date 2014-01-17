@@ -1,0 +1,7 @@
+Board name: Soyo SY-6BA+ III
+Category: desktop
+Board page: Soyo SY-6BA Plus III
+ROM package: DIP32
+ROM protocol: Parallel
+ROM socketed: y
+Flashrom support: y

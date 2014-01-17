@@ -1,0 +1,2 @@
+Board name: Serengeti Cheetah
+Category: server

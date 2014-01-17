@@ -20,10 +20,12 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <pc80/mc146818rtc.h>
 #include <romstage_handoff.h>
 
 #include <baytrail/iomap.h>
@@ -117,6 +119,27 @@ static void sc_read_resources(device_t dev)
 	sc_add_io_resources(dev);
 }
 
+static void sc_rtc_init(void)
+{
+	uint32_t gen_pmcon1;
+	int rtc_fail;
+	struct chipset_power_state *ps = cbmem_find(CBMEM_ID_POWER_STATE);
+
+	if (ps != NULL) {
+		gen_pmcon1 = ps->gen_pmcon1;
+	} else {
+		gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
+	}
+
+	rtc_fail = !!(gen_pmcon1 & RPS);
+
+	if (rtc_fail) {
+		printk(BIOS_DEBUG, "RTC failure.\n");
+	}
+
+	rtc_init(rtc_fail);
+}
+
 static void sc_init(device_t dev)
 {
 	int i;
@@ -136,6 +159,8 @@ static void sc_init(device_t dev)
 
 	/* Route SCI to IRQ9 */
 	write32(actl, (read32(actl) & ~SCIS_MASK) | SCIS_IRQ9);
+
+	sc_rtc_init();
 }
 
 /*

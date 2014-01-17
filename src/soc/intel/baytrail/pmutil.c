@@ -358,7 +358,7 @@ void clear_pmc_status(void)
 	prsts = read32(PMC_BASE_ADDRESS + PRSTS);
 	gen_pmcon1 = read32(PMC_BASE_ADDRESS + GEN_PMCON1);
 
-	/* Clear the status bits. */
-	write32(PMC_BASE_ADDRESS + GEN_PMCON1, gen_pmcon1);
+	/* Clear the status bits. The RPS field is cleared on a 0 write. */
+	write32(PMC_BASE_ADDRESS + GEN_PMCON1, gen_pmcon1 & ~RPS);
 	write32(PMC_BASE_ADDRESS + PRSTS, prsts);
 }

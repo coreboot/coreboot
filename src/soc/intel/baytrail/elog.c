@@ -42,6 +42,10 @@ static void log_power_and_resets(const struct chipset_power_state *ps)
 		elog_add_event(ELOG_TYPE_SUS_POWER_FAIL);
 	}
 
+	if (ps->gen_pmcon1 & RPS) {
+		elog_add_event(ELOG_TYPE_RTC_RESET);
+	}
+
 	if (ps->tco_sts & SECOND_TO_STS) {
 		elog_add_event(ELOG_TYPE_TCO_RESET);
 	}

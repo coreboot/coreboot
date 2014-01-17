@@ -1,0 +1,4 @@
+Category: desktop
+Board URL: http://web.tiscali.it/acorp/?http://web.archive.org/web/20050426181911/http://web.tiscali.it/acorp/mobo_spec/azza/pt-6ibd/pt-6ibd.htm
+ROM package: DIP32
+ROM protocol: Parallel

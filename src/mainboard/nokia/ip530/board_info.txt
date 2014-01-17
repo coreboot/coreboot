@@ -1,0 +1,6 @@
+Category: server
+Board URL: [Nokia
+ROM package: TSOP48
+ROM protocol: Parallel
+ROM socketed: n
+Flashrom support: y

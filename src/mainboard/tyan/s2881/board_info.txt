@@ -1,0 +1,4 @@
+Board name: Thunder K8SR (S2881)
+Category: server
+Board URL: http://www.tyan.com/archive/products/html/thunderk8sr.html
+Flashrom support: y

@@ -1,0 +1,5 @@
+Board name: IP1000
+Category: settop
+Board URL: http://www.settoplinux.org/index.php?title=Thomson_IP1000
+Board page: Thomson IP1000
+Flashrom support: y

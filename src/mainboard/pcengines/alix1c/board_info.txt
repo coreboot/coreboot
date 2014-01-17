@@ -1,0 +1,5 @@
+Category: half
+Board URL: http://pcengines.ch/alix1c.htm
+Flashrom support: y
+Vendor cooperation score: 4
+Vendor cooperation page: PC Engines ALIX.1C Vendor Cooperation Score

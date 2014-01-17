@@ -1,0 +1,4 @@
+Board name: Thunder K8S Pro (S2882)
+Category: server
+Board URL: http://www.tyan.com/archive/products/html/thunderk8spro.html
+Flashrom support: y

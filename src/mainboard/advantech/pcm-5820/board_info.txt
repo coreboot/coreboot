@@ -1,0 +1,5 @@
+Category: half
+Board URL: http://taiwan.advantech.com.tw/products/Model_Detail.asp?model_id=1-1TGZL8
+ROM package: PLCC32
+ROM socketed: y
+Flashrom support: y

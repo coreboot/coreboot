@@ -1,0 +1,2 @@
+Board name: 3100 devkit (Mt. Arvon)
+Category: eval

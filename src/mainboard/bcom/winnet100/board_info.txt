@@ -1,0 +1,5 @@
+Board name: WinNET100
+Category: settop
+Board URL: http://web.archive.org/web/20031207003521/http://www.igel.co.za/igel_316_compact.htm
+Board page: BCOM WINNET100
+Flashrom support: y

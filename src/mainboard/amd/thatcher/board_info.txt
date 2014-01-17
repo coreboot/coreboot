@@ -1,0 +1,6 @@
+Board name: DB-FP2 (Thatcher)
+Category: eval
+Board page: AMD Thatcher 
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n

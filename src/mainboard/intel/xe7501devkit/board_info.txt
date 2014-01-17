@@ -1,0 +1,2 @@
+Board name: XE7501devkit
+Category: eval

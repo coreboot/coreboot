@@ -1,0 +1,7 @@
+Board name: Union Station
+Category: eval
+Board page: AMD UNION STATION 
+ROM package: SOIC8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

@@ -1,0 +1,2 @@
+Board name: VT8454c
+Category: eval

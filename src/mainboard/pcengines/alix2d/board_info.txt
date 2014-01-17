@@ -1,0 +1,5 @@
+Board name: ALIX.2D
+Category: half
+Board URL: http://pcengines.ch/alix2d0.htm
+Board page: PC Engines ALIX.2D
+Flashrom support: y

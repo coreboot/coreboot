@@ -1,0 +1,7 @@
+Board name: Cool SpaceRunner-LX
+Category: half
+Board URL: http://www.adlinktech.com/PD/web/PD_detail.php?pid=1148
+ROM package: SOIC8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n

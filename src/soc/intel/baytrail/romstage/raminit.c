@@ -121,6 +121,11 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 	mp->console_out = &send_to_console;
 	mp->prev_sleep_state = prev_sleep_state;
 	mp->rmt_enabled = IS_ENABLED(CONFIG_MRC_RMT);
+
+	/* Default to 2GiB IO hole. */
+	if (!mp->io_hole_mb)
+		mp->io_hole_mb = 2048;
+
 	if (recovery_mode_enabled()) {
 		printk(BIOS_DEBUG, "Recovery mode: not using MRC cache.\n");
 	} else if (!mrc_cache_get_current(&cache)) {

@@ -52,6 +52,7 @@ Field (GNVS, ByteAcc, NoLock, Preserve)
 	TPMP,	 8,	// 0x12 - TPM Present and Enabled
 	TLVL,	 8,	// 0x13 - Throttle Level
 	PPCM,	 8,	// 0x14 - Maximum P-state usable by OS
+	PM1I,	 32,	// 0x15 - System Wake Source - PM1 Index
 
 	/* Device Config */
 	Offset (0x20),

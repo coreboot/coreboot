@@ -28,7 +28,7 @@
 #ifndef _MRC_WRAPPER_H_
 #define _MRC_WRAPPER_H_
 
-#define MRC_PARAMS_VER  2
+#define MRC_PARAMS_VER  3
 
 #define NUM_CHANNELS 2
 
@@ -79,6 +79,7 @@ struct mrc_params {
 
 	int txe_size_mb; /* TXE memory size in megabytes. */
 	int rmt_enabled; /* Enable RMT training + prints. */
+	int io_hole_mb;  /* Size of IO hole in MiB. */
 
 	/* Outputs */
 	void *txe_base_address;

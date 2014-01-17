@@ -30,19 +30,15 @@
 #include <device/pci_ids.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
-#include <ec/google/chromeec/ec.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <baytrail/acpi.h>
 #include <baytrail/nvs.h>
 #include <baytrail/iomap.h>
-
-#include "thermal.h"
 
 extern const unsigned char AmlCode[];
 
 static void acpi_create_gnvs(global_nvs_t *gnvs)
 {
-	gnvs->pcnt = dev_count_cpu();
+	acpi_init_gnvs(gnvs);
 
 	/* Enable USB ports in S3 */
 	gnvs->s3u0 = 1;
@@ -52,26 +48,11 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u0 = 0;
 	gnvs->s5u1 = 0;
 
-	/* Top of Low Memory (start of resource allocation) */
-	gnvs->tolm = nc_read_top_of_low_memory();
-
 	/* TPM Present */
 	gnvs->tpmp = 1;
 
 	/* Enable DPTF */
-	gnvs->tcrt = CRITICAL_TEMPERATURE;
-	gnvs->tpsv = PASSIVE_TEMPERATURE;
-	gnvs->tact = ACTIVE_TEMPERATURE;
 	gnvs->dpte = 1;
-
-#if CONFIG_CHROMEOS
-	chromeos_init_vboot(&(gnvs->chromeos));
-	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
-		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
-#endif
-
-	/* Update the mem console pointer. */
-	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

@@ -35,8 +35,6 @@ DefinitionBlock(
 	// global NVS and variables
 	#include <soc/intel/baytrail/acpi/globalnvs.asl>
 
-	//#include "acpi/thermal.asl"
-
 	#include <soc/intel/baytrail/acpi/cpu.asl>
 
 	Scope (\_SB) {

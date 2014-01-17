@@ -231,6 +231,8 @@ void iosf_ssus_write(int reg, uint32_t val);
 # define  SB_BIOS_CONFIG_PDM_MODE		(1 << 16)
 # define  SB_BIOS_CONFIG_DDRIO_PWRGATE		(1 << 8)
 # define  SB_BIOS_CONFIG_GFX_TURBO_DIS		(1 << 7)
+# define  SB_BIOS_CONFIG_PS2_EN_VNN		(1 << 3)
+# define  SB_BIOS_CONFIG_PS2_EN_VCC		(1 << 2)
 # define  SB_BIOS_CONFIG_PCIE_PLLOFFOK		(1 << 1)
 # define  SB_BIOS_CONFIG_USB_CACHING_EN		(1 << 0)
 #define BIOS_RESET_CPL			0x05
@@ -328,5 +330,12 @@ void iosf_ssus_write(int reg, uint32_t val);
 #define USHPHY_VGA_GAIN_CONFIG_DIAG		0x8080
 #define USHPHY_REE_DAC_CONTROL			0x80b8
 #define USHPHY_CDN_U1_POWER_STATE_DEF		0x0000
+
+/*
+ * LPE Registers
+ */
+#define LPE_PCICFGCTR1			0x0500
+# define LPE_PCICFGCTR1_PCI_CFG_DIS		(1 << 0)
+# define LPE_PCICFGCTR1_ACPI_INT_EN		(1 << 1)
 
 #endif /* _BAYTRAIL_IOSF_H_ */

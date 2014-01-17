@@ -36,6 +36,7 @@
 
 #define RID_A_STEPPING_START 1
 #define RID_B_STEPPING_START 5
+#define RID_C_STEPPING_START 0xe
 enum baytrail_stepping {
 	STEP_A0,
 	STEP_A1,
@@ -43,6 +44,7 @@ enum baytrail_stepping {
 	STEP_B1,
 	STEP_B2,
 	STEP_B3,
+	STEP_C0,
 };
 
 #endif /* _BAYTRAIL_LPC_H_ */

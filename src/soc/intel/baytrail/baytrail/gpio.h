@@ -229,8 +229,17 @@
 #define GPIO_FUNC6		GPIO_FUNC(6, PULL_DISABLE, 10K)
 
 /* ACPI GPIO routing. Assume everything is externally pulled and negative edge
- * triggered. */
+ * triggered. SCI implies WAKE, but WAKE doesn't imply SCI. */
 #define GPIO_ACPI_SCI \
+	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT | PAD_FUNC0, \
+	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
+	  .pad_val   = PAD_VAL_INPUT, \
+	  .use_sel   = GPIO_USE_LEGACY, \
+	  .io_sel    = GPIO_DIR_INPUT, \
+	  .tne       = 1, \
+	  .sci       = 1, \
+	  .wake_en   = 1, }
+#define GPIO_ACPI_WAKE \
 	{ .pad_conf0 = PAD_PULL_DISABLE | PAD_CONFIG0_DEFAULT | PAD_FUNC0, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, \
@@ -281,14 +290,15 @@ struct soc_gpio_map {
 	u32 pad_conf0;
 	u32 pad_conf1;
 	u32 pad_val;
-	u8  use_sel : 1;
-	u8  io_sel  : 1;
-	u8  gp_lvl  : 1;
-	u8  tpe     : 1;
-	u8  tne     : 1;
-	u8  wake_en : 1;
-	u8  smi     : 1;
-	u8  is_gpio : 1;
+	u32 use_sel : 1;
+	u32 io_sel  : 1;
+	u32 gp_lvl  : 1;
+	u32 tpe     : 1;
+	u32 tne     : 1;
+	u32 wake_en : 1;
+	u32 smi     : 1;
+	u32 is_gpio : 1;
+	u32 sci     : 1;
 } __attribute__ ((packed));
 
 struct soc_gpio_config {

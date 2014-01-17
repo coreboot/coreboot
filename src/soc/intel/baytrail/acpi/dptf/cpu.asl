@@ -123,4 +123,39 @@ Device (TCPU)
 			Return (0)
 		}
 	}
+
+	Name (PPCC, Package ()
+	{
+		0x2,		// Revision
+		Package () {	// Power Limit 1
+			0,	// PowerLimitIndex, 0 for Power Limit 1
+			1600,	// PowerLimitMinimum
+			6200,	// PowerLimitMaximum
+			1000,	// TimeWindowMinimum
+			1000,	// TimeWindowMaximum
+			200	// StepSize
+		},
+		Package () {	// Power Limit 2
+			1,	// PowerLimitIndex, 1 for Power Limit 2
+			8000,	// PowerLimitMinimum
+			8000,	// PowerLimitMaximum
+			1000,	// TimeWindowMinimum
+			1000,	// TimeWindowMaximum
+			1000	// StepSize
+		}
+	})
+
+#ifdef DPTF_CPU_CRITICAL
+	Method (_CRT)
+	{
+		Return (^^CTOK (DPTF_CPU_CRITICAL))
+	}
+#endif
+
+#ifdef DPTF_CPU_PASSIVE
+	Method (_PSV)
+	{
+		Return (^^CTOK (DPTF_CPU_PASSIVE))
+	}
+#endif
 }

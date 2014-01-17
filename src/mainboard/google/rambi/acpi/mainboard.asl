@@ -360,3 +360,17 @@ Scope (\_SB.I2C6)
 		Name (_PRW, Package() { BOARD_TOUCHSCREEN_WAKE_GPIO, 0x3 })
 	}
 }
+
+Scope (\_SB.LPEA)
+{
+	Name (GBUF, ResourceTemplate ()
+	{
+		/* Jack Detect (index 0) */
+		GpioInt (Edge, ActiveHigh, Exclusive, PullNone,,
+			 "\\_SB.GPSC") { 14 }
+
+		/* Mic Detect (index 1) */
+		GpioInt (Edge, ActiveHigh, Exclusive, PullNone,,
+			 "\\_SB.GPSC") { 15 }
+	})
+}

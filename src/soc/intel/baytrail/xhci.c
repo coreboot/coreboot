@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/acpi.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -86,10 +87,6 @@ const struct reg_script xhci_init_script[] = {
 	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x8058, ~0x00000100, 0x00110000),
 	/* BAR + 0x8060[25]=1b */
 	REG_RES_OR32(PCI_BASE_ADDRESS_0,  0x8060, 0x02000000),
-	/* BAR + 0x80e0[16,9,6]=001b, toggle bit 24=1 */
-	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x00010200, 0x01000040),
-	/* BAR + 0x80e0 toggle bit 24=0 */
-	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x01000000, 0),
 	/* BAR + 0x80f0[20]=0b */
 	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80f0, ~0x00100000, 0),
 	/* BAR + 0x8008[19]=1b (to enable LPM) */
@@ -107,6 +104,28 @@ const struct reg_script xhci_init_script[] = {
 	REG_PCI_RMW8(0x46, ~0x0f, 0x0f),
 	/* BAR + 0x8140 = 0xff00f03c */
 	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x8140, 0, 0xff00f03c),
+	REG_SCRIPT_END
+};
+
+const struct reg_script xhci_init_boot_script[] = {
+	/* Setup USB3 phy */
+	REG_SCRIPT_NEXT(usb3_phy_script),
+	/* Initialize host controller */
+	REG_SCRIPT_NEXT(xhci_init_script),
+	/* BAR + 0x80e0[16,9,6]=001b, toggle bit 24=1 */
+	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x00010200, 0x01000040),
+	/* BAR + 0x80e0 toggle bit 24=0 */
+	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x01000000, 0),
+	REG_SCRIPT_END
+};
+
+const struct reg_script xhci_init_resume_script[] = {
+	/* Setup USB3 phy */
+	REG_SCRIPT_NEXT(usb3_phy_script),
+	/* Initialize host controller */
+	REG_SCRIPT_NEXT(xhci_init_script),
+	/* BAR + 0x80e0[16,9,6]=001b, leave bit 24=0 to prevent HC reset */
+	REG_RES_RMW32(PCI_BASE_ADDRESS_0, 0x80e0, ~0x01010200, 0x00000040),
 	REG_SCRIPT_END
 };
 
@@ -165,6 +184,9 @@ static void xhci_route_all(device_t dev)
 	/* Route ports to XHCI controller */
 	reg_script_run_on_dev(dev, xhci_route_all_script);
 
+	if (acpi_slp_type == 3)
+		return;
+
 	/* Reset enabled USB3 ports */
 	port_disabled = pci_read_config32(dev, XHCI_USB3PDO);
 	for (port = 0; port < BYTM_USB3_PORT_COUNT; port++) {
@@ -178,10 +200,6 @@ static void xhci_init(device_t dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script xhci_hc_init[] = {
-		/* Setup USB3 phy */
-		REG_SCRIPT_NEXT(usb3_phy_script),
-		/* Initialize host controller */
-		REG_SCRIPT_NEXT(xhci_init_script),
 		/* Initialize clock gating */
 		REG_SCRIPT_NEXT(xhci_clock_gating_script),
 		/* Finalize XHCC1 and XHCC2 */
@@ -203,7 +221,13 @@ static void xhci_init(device_t dev)
 		REG_SCRIPT_END
 	};
 
-	/* Initialize XHCI controller */
+	/* Initialize XHCI controller for boot or resume path */
+	if (acpi_slp_type == 3)
+		reg_script_run_on_dev(dev, xhci_init_resume_script);
+	else
+		reg_script_run_on_dev(dev, xhci_init_boot_script);
+
+	/* Finalize Initialization */
 	reg_script_run_on_dev(dev, xhci_hc_init);
 
 	/* Route all ports to XHCI if requested */

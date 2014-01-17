@@ -19,6 +19,7 @@
 
 #include <soc/intel/baytrail/baytrail/irq.h>
 #include <soc/intel/baytrail/baytrail/pci_devs.h>
+#include <soc/intel/baytrail/baytrail/pmc.h>
 
 #define PCI_DEV_PIRQ_ROUTES \
 	PCI_DEV_PIRQ_ROUTE(GFX_DEV,  A, B, C, D), \

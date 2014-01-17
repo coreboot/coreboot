@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef _BAYTRAIL_NVS_H_
+#define _BAYTRAIL_NVS_H_
+
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <baytrail/device_nvs.h>
 
@@ -40,7 +43,8 @@ typedef struct {
 	u8	tpmp; /* 0x12 - TPM Present and Enabled */
 	u8	tlvl; /* 0x13 - Throttle Level */
 	u8	ppcm; /* 0x14 - Maximum P-state usable by OS */
-	u8	rsvd1[11];
+	u32	pm1i; /* 0x15 - System Wake Source - PM1 Index */
+	u8	rsvd1[7];
 
 	/* Device Config */
 	u8	s5u0; /* 0x20 - Enable USB0 in S5 */
@@ -70,3 +74,5 @@ typedef struct {
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
 #endif
+
+#endif /* _BAYTRAIL_NVS_H_ */

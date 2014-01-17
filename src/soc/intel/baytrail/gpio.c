@@ -182,13 +182,13 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 		/* SMI takes precedence and wake_en implies SCI. */
 		if (sus[i].smi) {
 			route_reg |= ROUTE_SMI << (2 * i);
-		} else if (sus[i].wake_en) {
+		} else if (sus[i].sci) {
 			route_reg |= ROUTE_SCI << (2 * i);
 		}
 
 		if (core[i].smi) {
 			route_reg |= ROUTE_SMI << (2 * (i + 8));
-		} else if (core[i].wake_en) {
+		} else if (core[i].sci) {
 			route_reg |= ROUTE_SCI << (2 * (i + 8));
 		}
 	}

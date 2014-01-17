@@ -17,16 +17,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef BAYLEYBAY_THERMAL_H
-#define BAYLEYBAY_THERMAL_H
+#ifndef BAYTRAIL_HDA_VERB_H
+#define BAYTRAIL_HDA_VERB_H
 
-/* Temperature which OS will shutdown at */
-#define CRITICAL_TEMPERATURE	95
+#include <stdint.h>
 
-/* Passive cooling policy threshold */
-#define PASSIVE_TEMPERATURE	0
+#define HDA_GCAP_REG		0x00
+#define HDA_GCTL_REG		0x08
+#define   HDA_GCTL_CRST		(1 << 0)
+#define HDA_STATESTS_REG	0x0e
+#define HDA_IC_REG		0x60
+#define HDA_IR_REG		0x64
+#define HDA_ICII_REG		0x68
+#define   HDA_ICII_BUSY		(1 << 0)
+#define   HDA_ICII_VALID	(1 << 1)
 
-/* Temperature which OS will throttle CPU (when using a Fan) */
-#define ACTIVE_TEMPERATURE	80
+int hda_codec_detect(u32 base);
+int hda_codec_write(u32 base, u32 size, const u32 *data);
+int hda_codec_init(u32 base, int addr, int verb_size, const u32 *verb_data);
 
 #endif

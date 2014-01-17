@@ -1,0 +1,4 @@
+Board name: QEMU x86 q35/ich9
+Category: misc
+Board URL: http://fabrice.bellard.free.fr/qemu/
+Board page: QEMU_Build_Tutorial

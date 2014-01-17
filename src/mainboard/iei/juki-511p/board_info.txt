@@ -1,4 +1,9 @@
 Board name: JUKI-511P
-Category: half
 Board URL: http://www.ieiworld.com/en/news_content.asp?id=erbium/projectOBJ00150613
-Board page: IEI JUKI 511P
+Board page: IEI_JUKI_511P
+
+Board name: ROCKY 512
+Board URL: http://www.ieiworld.com/en/product_IPC.asp?model=ROCKY-512
+Board page: IEI_ROCKY_512
+
+Category: half

@@ -1,0 +1,4 @@
+Category: mini
+Board name: EPIA-CN10000EG / EPIA-CN13000G
+Board page: VIA_EPIA-CN
+Board URL: http://www.via.com.tw/en/products/mainboards/motherboards.jsp?motherboard_id=400

@@ -1,0 +1,4 @@
+Category: settop
+Board URL: http://www.hojerteknik.com/winnet.htm
+Board page: ASI MB-5BLMP
+Flashrom support: y

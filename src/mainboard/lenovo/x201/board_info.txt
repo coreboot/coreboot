@@ -1,0 +1,7 @@
+Board name: X201
+Category: laptop
+Board page: Board:lenovo/x201
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: n

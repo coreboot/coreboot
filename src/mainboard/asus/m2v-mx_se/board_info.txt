@@ -1,0 +1,7 @@
+Category: desktop
+Board URL: http://www.asus.com/Motherboards/AMD_AM2/M2VMX_SE/
+Board page: ASUS M2V-MX SE
+ROM package: DIP8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

@@ -1,0 +1,4 @@
+Board name: DB780E (Mahogany)
+Category: eval
+Board page: AMD DB780E
+ROM protocol: SPI

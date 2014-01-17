@@ -1,0 +1,6 @@
+Category: desktop
+Board URL: http://www.asus.com/Motherboards/AMD_Socket_939/A8VE_Deluxe/
+Board page: ASUS A8V-E Deluxe
+ROM package: PLCC
+ROM socketed: y
+Flashrom support: y

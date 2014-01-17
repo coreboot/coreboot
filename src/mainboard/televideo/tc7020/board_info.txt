@@ -1,0 +1,3 @@
+Category: settop
+Board URL: http://www.televideo.com/TeleVideo/TC7000_WinCE_Series.htm
+Board page: TeleVideo TC7020

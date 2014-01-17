@@ -1,0 +1,6 @@
+Board name: DB-FS1r2 (Parmer)
+Category: eval
+Board page: AMD Parmer 
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n

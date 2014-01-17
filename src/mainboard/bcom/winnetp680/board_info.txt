@@ -1,0 +1,2 @@
+Category: settop
+Board page: BCOM WinNET P680

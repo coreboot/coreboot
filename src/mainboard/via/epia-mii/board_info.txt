@@ -1,0 +1,5 @@
+Board page: VIA_EPIA-MII
+Board URL: http://www.via.com.tw/en/products/mainboards/motherboards.jsp?motherboard_id=202
+
+Flashrom support: y
+Category: mini

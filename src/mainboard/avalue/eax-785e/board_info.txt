@@ -1,0 +1,7 @@
+Board name: EAX-785E
+Category: desktop
+Board URL: http://www.avalue.com.tw/en/product/detail.aspx?ccid=2&cid=9&id=68&zid=245
+Board page: Avalue_EAX_785E
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n

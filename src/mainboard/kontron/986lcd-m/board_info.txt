@@ -1,0 +1,8 @@
+Board name: 986LCD-M/mITX
+Category: mini
+Board URL: http://de.kontron.com/products/boards+and+mezzanines/embedded+motherboards/miniitx+motherboards/986lcdmmitx.html
+Board page: Kontron 986LCD-M mITX
+ROM package: PLCC
+ROM protocol: FWH
+ROM socketed: y
+Flashrom support: y

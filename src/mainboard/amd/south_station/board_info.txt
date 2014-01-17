@@ -1,0 +1,7 @@
+Board name: South Station
+Category: eval
+Board page: AMD SOUTH STATION 
+ROM package: SOIC8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

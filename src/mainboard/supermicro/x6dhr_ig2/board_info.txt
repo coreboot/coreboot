@@ -1,0 +1,2 @@
+Category: server
+Board URL: http://www.supermicro.com/products/motherboard/Xeon800/E7520/X6DHR-iG2.cfm

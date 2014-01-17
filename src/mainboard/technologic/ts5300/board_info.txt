@@ -1,0 +1,2 @@
+Category: half
+Board URL: http://www.embeddedarm.com/epc/ts5300-spec-h.html

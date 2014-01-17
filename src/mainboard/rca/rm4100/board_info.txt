@@ -1,0 +1,4 @@
+Category: settop
+Board URL: http://www.settoplinux.org/index.php?title=RCA_RM4100
+Board page: RCA RM4100
+Flashrom support: y

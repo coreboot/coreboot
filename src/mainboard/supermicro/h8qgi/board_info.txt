@@ -1,0 +1,6 @@
+Board name: H8QGI+-F
+Category: server
+Board URL: http://www.supermicro.com/Aplus/motherboard/Opteron6100/SR56x0/H8QGi_-F.cfm
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n

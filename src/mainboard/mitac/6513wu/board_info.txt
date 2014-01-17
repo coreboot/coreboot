@@ -1,0 +1,4 @@
+Category: desktop
+Board URL: http://web.archive.org/web/20050313054828/http://www.mitac.com/micweb/products/tyan/6513wu/6513wu.htm
+ROM package: PLCC
+Flashrom support: y

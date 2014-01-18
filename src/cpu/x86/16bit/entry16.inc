@@ -105,7 +105,7 @@ _start:
 	lidt	%cs:(%bx)
 	movw	$gdtptr16_offset, %bx
 	subw	%ax, %bx
-	data32  lgdt %cs:(%bx)
+	lgdtl	%cs:(%bx)
 
 	movl	%cr0, %eax
 	andl	$0x7FFAFFD1, %eax /* PG,AM,WP,NE,TS,EM,MP = 0 */
@@ -116,7 +116,7 @@ _start:
 	movl	%ebp, %eax
 
 	/* Now that we are in protected mode jump to a 32 bit code segment. */
-	data32	ljmp	$ROM_CODE_SEG, $__protected_start
+	ljmpl	$ROM_CODE_SEG, $__protected_start
 
 	/**
 	 * The gdt is defined in entry32.inc, it has a 4 Gb code segment

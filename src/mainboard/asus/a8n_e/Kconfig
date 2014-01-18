@@ -1,4 +1,4 @@
-if BOARD_ASUS_A8N_E
+if BOARD_ASUS_A8N_E || BOARD_ASUS_A8N_SLI
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -35,9 +35,11 @@ config SB_HT_CHAIN_ON_BUS0
 	int
 	default 2
 
+if BOARD_ASUS_A8N_E
 config MAINBOARD_PART_NUMBER
 	string
 	default "A8N-E"
+endif
 
 config MAX_CPUS
 	int

@@ -16,7 +16,7 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
-if BOARD_IEI_JUKI_511P
+if BOARD_IEI_JUKI_511P || BOARD_IEI_ROCKY_512
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -35,9 +35,11 @@ config MAINBOARD_DIR
 	string
 	default iei/juki-511p
 
+if BOARD_IEI_JUKI_511P
 config MAINBOARD_PART_NUMBER
 	string
 	default "JUKI-511P"
+endif
 
 config IRQ_SLOT_COUNT
 	int

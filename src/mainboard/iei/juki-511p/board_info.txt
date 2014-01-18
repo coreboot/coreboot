@@ -1,3 +1,13 @@
+<<<<<<< HEAD
 Category: half
+=======
+Board name: JUKI-511P
+>>>>>>> 894f982... board-status: Add board_info.txt manually for irregular wiki entries
 Board URL: http://www.ieiworld.com/en/news_content.asp?id=erbium/projectOBJ00150613
-Board page: IEI JUKI 511P
+Board page: IEI_JUKI_511P
+
+Board name: ROCKY 512
+Board URL: http://www.ieiworld.com/en/product_IPC.asp?model=ROCKY-512
+Board page: IEI_ROCKY_512
+
+Category: half

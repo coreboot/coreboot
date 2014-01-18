@@ -157,6 +157,7 @@ EOF
 			vendor_cooperation_score="$(sed -n "/^[[:space:]]*Vendor cooperation score:/ s,^[[:space:]]*Vendor cooperation score:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			vendor_cooperation_page="$(sed -n "/^[[:space:]]*Vendor cooperation page:/ s,^[[:space:]]*Vendor cooperation page:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			board_url="$(sed -n "/^[[:space:]]*Board URL:/ s,^[[:space:]]*Board URL:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
+			clone_of="$(sed -n "/^[[:space:]]*Clone of:/ s,^[[:space:]]*Clone of:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 		else
 			board_nice=
 			rom_package=
@@ -166,6 +167,7 @@ EOF
 			vendor_cooperation_score=
 			vendor_cooperation_page=
 			board_url=
+			clone_of=
 		fi
 		if [ "$last_vendor" != "$vendor" ]; then
 			last_vendor="$vendor"
@@ -189,6 +191,10 @@ EOF
 		fi
 
 		lastgood="$(echo "$have"| sed -n "/^$vendor\/$board:/ s,^[^:]*:,,gp")"
+
+		if ! [ -z "$clone_of" ]; then
+		    vendor_board_dir="$COREBOOT_DIR"/src/mainboard/"$clone_of";
+		fi
 
 		northbridge="$(sed -n "/^[[:space:]]*select NORTHBRIDGE_/ s,^[[:space:]]*select NORTHBRIDGE_,,p" "$vendor_board_dir/Kconfig")"
 		northbridge_nice="$(echo "$northbridge"|sed 's,AMD_AGESA_FAMILY\(.*\),AMD Family \1h (AGESA),g;s,AMD_FAMILY\(.*\),AMD Family \1h,g;s,AMD_AMDFAM\(.*\),AMD Family \1h,g;s,_, ,g;s,INTEL,Intel®,g;')"

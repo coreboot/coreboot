@@ -41,7 +41,7 @@ static int set_timer_fsb(void)
 	return 0;
 }
 #else
-static u32 timer_fsb CAR_GLOBAL = 0;
+u32 timer_fsb CAR_GLOBAL = 0;
 
 static int set_timer_fsb(void)
 {

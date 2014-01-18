@@ -1,0 +1,10 @@
+if BOARD_VIA_EPIA_MII
+
+# Dummy for abuild
+#select ARCH_X86
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "EPIA-MII"
+
+endif

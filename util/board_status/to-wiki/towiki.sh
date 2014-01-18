@@ -156,7 +156,6 @@ EOF
 			flashrom_support="$(sed -n "/^[[:space:]]*Flashrom support:/ s,^[[:space:]]*Flashrom support:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			vendor_cooperation_score="$(sed -n "/^[[:space:]]*Vendor cooperation score:/ s,^[[:space:]]*Vendor cooperation score:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			vendor_cooperation_page="$(sed -n "/^[[:space:]]*Vendor cooperation page:/ s,^[[:space:]]*Vendor cooperation page:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
-			board_page="$(sed -n "/^[[:space:]]*Board page:/ s,^[[:space:]]*Board page:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			board_url="$(sed -n "/^[[:space:]]*Board URL:/ s,^[[:space:]]*Board URL:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 		else
 			board_nice=
@@ -166,7 +165,6 @@ EOF
 			flashrom_support=
 			vendor_cooperation_score=
 			vendor_cooperation_page=
-			board_page=
 			board_url=
 		fi
 		if [ "$last_vendor" != "$vendor" ]; then
@@ -359,12 +357,7 @@ EOF
 
 		echo "|- bgcolor=\"#$color\""
 		echo "| $vendor_nice"
-		echo -n "| "
-		if [ -z "$board_page" ]; then
-			echo -n "$board_nice"
-		else
-			echo -n "[[$board_page|$board_nice]]"
-		fi
+		echo -n "| [[Board:$vendor/$board|$board_nice]]"
 		if [ -z "$board_url" ]; then
 			echo
 		else

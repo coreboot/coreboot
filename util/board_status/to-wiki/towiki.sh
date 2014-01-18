@@ -184,6 +184,9 @@ EOF
 			vendor_nice="$(echo "$vendor" |sed -e "s/\(.\)/\u\1/g")";
 		fi
 		if [ -z "$board_nice" ]; then
+			board_nice="$(grep -A2 -i "config MAINBOARD_PART_NUMBER" "$COREBOOT_DIR"/src/mainboard/$vendor/$board/Kconfig|tail -n1|sed -n 's,^[[:space:]]*default[[:space:]]*"\(.*\)"[[:space:]]*$,\1,p')"
+		fi
+		if [ -z "$board_nice" ]; then
 			board_nice="$(echo "$board" |sed -e "s,_, ,g;s/\(.\)/\u\1/g")";
 		fi
 

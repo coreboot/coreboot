@@ -23,6 +23,8 @@ choice
 
 config BOARD_ASUS_A8N_E
 	bool "A8N-E"
+config BOARD_ASUS_A8N_SLI
+	bool "A8N-SLI"
 config BOARD_ASUS_A8V_E_SE
 	bool "A8V-E SE"
 config BOARD_ASUS_A8V_E_DELUXE

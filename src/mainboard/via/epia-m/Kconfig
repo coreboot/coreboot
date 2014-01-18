@@ -1,4 +1,4 @@
-if BOARD_VIA_EPIA_M
+if BOARD_VIA_EPIA_M || BOARD_VIA_EPIA_MII || BOARD_VIA_EPIA_ML
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -18,9 +18,13 @@ config MAINBOARD_DIR
 	string
 	default via/epia-m
 
+if BOARD_VIA_EPIA_M
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "EPIA-M"
+
+endif
 
 config IRQ_SLOT_COUNT
 	int

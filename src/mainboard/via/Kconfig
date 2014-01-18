@@ -16,6 +16,10 @@ config BOARD_VIA_EPIA_M850
 	  Read http://www.coreboot.org/VIA_EPIA-M850 before you proceed.
 config BOARD_VIA_EPIA_M
 	bool "EPIA-M"
+config BOARD_VIA_EPIA_MII
+	bool "EPIA-MII"
+config BOARD_VIA_EPIA_ML
+	bool "EPIA-ML"
 config BOARD_VIA_EPIA_N
 	bool "EPIA-N"
 config BOARD_VIA_PC2500E
@@ -30,6 +34,8 @@ source "src/mainboard/via/epia-cn/Kconfig"
 source "src/mainboard/via/epia-m700/Kconfig"
 source "src/mainboard/via/epia-m850/Kconfig"
 source "src/mainboard/via/epia-m/Kconfig"
+source "src/mainboard/via/epia-mii/Kconfig"
+source "src/mainboard/via/epia-ml/Kconfig"
 source "src/mainboard/via/epia-n/Kconfig"
 source "src/mainboard/via/pc2500e/Kconfig"
 source "src/mainboard/via/vt8454c/Kconfig"

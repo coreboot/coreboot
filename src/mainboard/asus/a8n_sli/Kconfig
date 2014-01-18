@@ -1,0 +1,10 @@
+if BOARD_ASUS_A8N_SLI
+
+# Dummy for abuild
+#select ARCH_X86
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "A8N-SLI"
+
+endif

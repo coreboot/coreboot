@@ -64,8 +64,6 @@ void pci_ehci_dbg_set_port(pci_devfn_t dev, unsigned int port)
 
 void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
 {
-	u32 dbgctl;
-
 	/* Bail out. No console to complain in. */
 	if (!dev)
 		return;
@@ -75,9 +73,4 @@ void pci_ehci_dbg_enable(pci_devfn_t dev, unsigned long base)
 
 	/* Enable access to the EHCI memory space registers. */
 	pci_write_config8(dev, PCI_COMMAND, PCI_COMMAND_MEMORY);
-
-	/* Force ownership of the Debug Port to the EHCI controller. */
-	dbgctl = read32(base + CONFIG_EHCI_DEBUG_OFFSET);
-	dbgctl |= (1 << 30);
-	write32(base + CONFIG_EHCI_DEBUG_OFFSET, dbgctl);
 }

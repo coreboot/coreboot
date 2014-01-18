@@ -27,6 +27,12 @@ subdirs-y += boot
 subdirs-y += lib
 subdirs-y += smp
 
+ifeq ($(CONFIG_COMPILER_GCC),y)
+DISASSEMBLY=-Wa,-acdlns
+else
+DISASSEMBLY=
+endif
+
 OPTION_TABLE_H:=
 ifeq ($(CONFIG_HAVE_OPTION_TABLE),y)
 cbfs-files-y += cmos_layout.bin
@@ -362,7 +368,7 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
+	$(CC) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -377,7 +383,7 @@ $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOC
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -m elf_i386 -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
+	$(LD) -m elf_i386 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
 	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
 endif
@@ -431,7 +437,7 @@ $(objgenerated)/crt0.romstage.S: $$(crt0s)
 
 $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
+	$(CC) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"

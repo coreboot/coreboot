@@ -1,0 +1,2 @@
+Category: misc
+Board URL: http://fabrice.bellard.free.fr/qemu/

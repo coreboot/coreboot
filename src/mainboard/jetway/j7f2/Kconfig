@@ -1,5 +1,4 @@
-# FIXME: There is no such board, "J7F24" is probably too generic and/or wrong.
-if BOARD_JETWAY_J7F24
+if BOARD_JETWAY_J7F2
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -14,14 +13,14 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config MAINBOARD_DIR
 	string
-	default jetway/j7f24
+	default jetway/j7f2
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "J7f24"
+	default "J7f2"
 
 config IRQ_SLOT_COUNT
 	int
 	default 10
 
-endif # BOARD_JETWAY_J7F24
+endif # BOARD_JETWAY_J7F2

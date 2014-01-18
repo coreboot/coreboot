@@ -360,25 +360,16 @@ EOF
 		echo "|- bgcolor=\"#$color\""
 		echo "| $vendor_nice"
 		echo -n "| "
-		num_boards="$(echo "$board_nice"|wc -l)"
-		boardn=1
-		while [ $boardn -le $num_boards ]; do
-			cur_board_name="$(echo "$board_nice" | head -n $boardn |tail -n 1)"
-			cur_board_page="$(echo "$board_page" | head -n $boardn |tail -n 1)"
-			cur_board_url="$(echo "$board_url" | head -n $boardn |tail -n 1)"
-
-			if [ -z "$cur_board_page" ]; then
-				echo -n "$cur_board_name"
-			else
-				echo -n "[[$cur_board_page|$cur_board_name]]"
-			fi
-			if [ -z "$cur_board_url" ]; then
-				echo
-			else
-				echo " [$cur_board_url vendor page]"
-			fi
-			boardn="$((boardn+1))"
-		done
+		if [ -z "$board_page" ]; then
+			echo -n "$board_nice"
+		else
+			echo -n "[[$board_page|$board_nice]]"
+		fi
+		if [ -z "$board_url" ]; then
+			echo
+		else
+			echo " [$board_url vendor page]"
+		fi
 		if [ -z "$lastgood" ]; then
 			echo "| style=\"background:red\" | Unknown"
 		else

@@ -543,14 +543,14 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 static int
 do_checksum(unsigned char *x)
 {
-	printk(BIOS_SPEW, "Checksum: 0x%hx", x[0x7f]);
+	printk(BIOS_SPEW, "Checksum: 0x%hhx", x[0x7f]);
 	{
 		unsigned char sum = 0;
 		int i;
 		for (i = 0; i < 128; i++)
 			sum += x[i];
 		if (sum) {
-			printk(BIOS_SPEW, " (should be 0x%hx)", (unsigned char)(x[0x7f] - sum));
+			printk(BIOS_SPEW, " (should be 0x%hhx)", (unsigned char)(x[0x7f] - sum));
 			has_valid_checksum = 0;
 		} else {
 			has_valid_checksum = 1;
@@ -1009,7 +1009,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			if (edid[0x11] > 0x0f) {
 				if (edid[0x10] == 0xff) {
 					has_valid_year = 1;
-					printk(BIOS_SPEW, "Made week %hd of model year %hd\n", edid[0x10],
+					printk(BIOS_SPEW, "Made week %hhu of model year %hhu\n", edid[0x10],
 					       edid[0x11]);
 					out->week = edid[0x10];
 					out->year = edid[0x11];
@@ -1017,7 +1017,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 					/* we know it's at least 2013, when this code was written */
 					if (edid[0x11] + 90 <= 2013) {
 						has_valid_year = 1;
-						printk(BIOS_SPEW, "Made week %hd of %hd\n",
+						printk(BIOS_SPEW, "Made week %hhu of %d\n",
 						       edid[0x10], edid[0x11] + 1990);
 						out->week = edid[0x10];
 						out->year = edid[0x11] + 1990;
@@ -1027,7 +1027,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		}
 
 
-	printk(BIOS_SPEW, "EDID version: %hd.%hd\n", edid[0x12], edid[0x13]);
+	printk(BIOS_SPEW, "EDID version: %hhu.%hhu\n", edid[0x12], edid[0x13]);
 	out->version[0] = edid[0x12];
 	out->version[1] = edid[0x13];
 

@@ -500,7 +500,7 @@ static void pass1(FILE *fil, struct device *ptr)
 	}
 	if ((ptr->type == chip) && (ptr->chiph_exists)) {
 		if (ptr->reg) {
-			fprintf(fil, "ROMSTAGE_CONST struct %s_config ROMSTAGE_CONST %s_info_%d = {\n",
+			fprintf(fil, "ROMSTAGE_CONST struct %s_config %s_info_%d = {\n",
 				ptr->name_underscore, ptr->name_underscore,
 				ptr->id);
 			struct reg *r = ptr->reg;
@@ -510,7 +510,7 @@ static void pass1(FILE *fil, struct device *ptr)
 			}
 			fprintf(fil, "};\n\n");
 		} else {
-			fprintf(fil, "ROMSTAGE_CONST struct %s_config ROMSTAGE_CONST %s_info_%d = { };\n",
+			fprintf(fil, "ROMSTAGE_CONST struct %s_config %s_info_%d = { };\n",
 				ptr->name_underscore, ptr->name_underscore, ptr->id);
 		}
 	}

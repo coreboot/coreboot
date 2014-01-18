@@ -74,10 +74,22 @@ void *car_get_var_ptr(void *var)
 	return &migrated_base[offset];
 }
 
+void run_migrations(car_migration_func_t *start, car_migration_func_t *end) __attribute__((noinline));
+void run_migrations(car_migration_func_t *start, car_migration_func_t *end)
+{
+	car_migration_func_t *migrate_func;
+
+	/* Call all the migration functions. */
+	migrate_func = start;
+	while (migrate_func != end) {
+		(*migrate_func)();
+		migrate_func++;
+	}
+}
+
 void car_migrate_variables(void)
 {
 	void *migrated_base;
-	car_migration_func_t *migrate_func;
 	size_t car_data_size = &_car_data_end[0] - &_car_data_start[0];
 
 	/* Check if already migrated. */
@@ -96,10 +108,5 @@ void car_migrate_variables(void)
 	/* Mark that the data has been moved. */
 	car_migrated = ~0;
 
-	/* Call all the migration functions. */
-	migrate_func = &_car_migrate_start;
-	while (migrate_func != &_car_migrate_end) {
-		(*migrate_func)();
-		migrate_func++;
-	}
+	run_migrations(&_car_migrate_start, &_car_migrate_end);
 }

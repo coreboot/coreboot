@@ -129,7 +129,7 @@ int vtxprintf(void (*tx_byte)(unsigned char byte), const char *fmt, va_list args
 	int field_width;	/* width of output field */
 	int precision;		/* min. # of digits for integers; max
 				   number of chars for from string */
-	int qualifier;		/* 'h', 'l', or 'L' for integer fields */
+	int qualifier;		/* 'h', 'H', 'l', or 'L' for integer fields */
 
 	int count;
 
@@ -192,6 +192,10 @@ repeat:
 			++fmt;
 			if (*fmt == 'l') {
 				qualifier = 'L';
+				++fmt;
+			}
+			if (*fmt == 'h') {
+				qualifier = 'H';
 				++fmt;
 			}
 		}
@@ -287,6 +291,10 @@ repeat:
 			num = (unsigned short) va_arg(args, int);
 			if (flags & SIGN)
 				num = (short) num;
+		} else if (qualifier == 'H') {
+			num = (unsigned char) va_arg(args, int);
+			if (flags & SIGN)
+				num = (signed char) num;
 		} else if (flags & SIGN) {
 			num = va_arg(args, int);
 		} else {

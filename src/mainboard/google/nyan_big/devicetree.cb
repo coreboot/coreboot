@@ -1,0 +1,80 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2014 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+chip soc/nvidia/tegra124
+	device cpu_cluster 0 on end
+# N.B. We ae not using the device tree in an effective way.
+# We need to change this in future such that the on-soc
+# devices are 'chips', which will allow us to go at them
+# in parallel. This is even easier on the ARM SOCs since there
+# are no single-access resources such as the infamous
+# cf8/cfc registers found on PCs.
+	register "display_controller" = "TEGRA_ARM_DISPLAYA"
+	register "xres" = "1366"
+	register "yres" = "768"
+	# this setting is what nvidia does; it makes no sense
+	# and does not agree with hardware. Why'd they do it?
+	register "framebuffer_bits_per_pixel" = "18"
+	register "cache_policy" = "DCACHE_WRITETHROUGH"
+
+	# With some help from the mainbaord designer
+	register "backlight_en_gpio" = "GPIO(H2)"
+	register "lvds_shutdown_gpio" = "0"
+	register "backlight_vdd_gpio" = "GPIO(P2)"
+	register "panel_vdd_gpio" = "0"
+	register "pwm" = "GPIO(H1)"
+
+# taken from u-boot; these look wrong however.
+	register "vdd_delay" = "400"
+	register "vdd_data_delay" = "4"
+	register "data_backlight_delay" = "203"
+	register "backlight_pwm_delay" = "17"
+	register "pwm_backlight_en_delay" = "15"
+
+# How to compute these: xrandr --verbose will give you this:
+#Detailed mode: Clock 285.250 MHz, 272 mm x 181 mm
+#               2560 2608 2640 2720 hborder 0
+#               1700 1703 1713 1749 vborder 0
+#Then you can compute your values:
+#H front porch = 2608 - 2560 = 48
+#H sync = 2640 - 2608 = 32
+#H back porch = 2720 - 2640 = 80
+#V front porch = 1703 - 1700 = 3
+#V sync = 1713 - 1703 = 10
+#V back porch = 1749 - 1713 = 36
+#href_to_sync and vref_to_sync are from the vendor
+#this is just an example for a Pixel panel; other panels differ.
+# Here is a peppy panel:
+#  1366x768 (0x45)   76.4MHz -HSync -VSync *current +preferred
+#        h: width  1366 start 1502 end 1532 total 1592
+#        v: height  768 start  776 end  788 total  800
+# These numbers were provided by Nvidia.
+	register "href_to_sync" = "1"
+	register "hfront_porch" = "44"
+	register "hsync_width" = "46"
+	register "hback_porch" = "44"
+
+	register "vref_to_sync" = "1"
+	register "vfront_porch" = "6"
+	register "vsync_width" = "8"
+	register "vback_porch" = "6"
+
+	# we *know* the pixel clock for this system.
+	register "pixel_clock" = "71"
+end

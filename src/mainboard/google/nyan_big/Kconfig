@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright 2013 Google Inc.
+## Copyright 2014 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-if BOARD_GOOGLE_NYAN
+if BOARD_GOOGLE_NYAN_BIG
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -31,13 +31,14 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH
 	select SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B
 
+
 config MAINBOARD_DIR
 	string
-	default google/nyan
+	default google/nyan_big
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Nyan"
+	default "Nyan Big"
 
 config DRAM_SIZE_MB
 	int
@@ -53,16 +54,16 @@ config DRAM_DMA_SIZE
 
 choice
 	prompt "BCT boot media"
-	default NYAN_BCT_CFG_SPI
+	default NYAN_BIG_BCT_CFG_SPI
 	help
 	  Which boot media to configure the BCT for.
 
-config NYAN_BCT_CFG_SPI
+config NYAN_BIG_BCT_CFG_SPI
 	bool "SPI"
 	help
 	  Configure the BCT for booting from SPI.
 
-config NYAN_BCT_CFG_EMMC
+config NYAN_BIG_BCT_CFG_EMMC
 	bool "eMMC"
 	help
 	  Configure the BCT for booting from eMMC.
@@ -72,7 +73,7 @@ endchoice
 config BOOT_MEDIA_SPI_BUS
 	int "SPI bus with boot media ROM"
 	range 1 6
-	depends on NYAN_BCT_CFG_SPI
+	depends on NYAN_BIG_BCT_CFG_SPI
 	default 4
 	help
 	  Which SPI bus the boot media is connected to.
@@ -80,7 +81,7 @@ config BOOT_MEDIA_SPI_BUS
 config BOOT_MEDIA_SPI_CHIP_SELECT
 	int "Chip select for SPI boot media"
 	range 0 3
-	depends on NYAN_BCT_CFG_SPI
+	depends on NYAN_BIG_BCT_CFG_SPI
 	default 0
 	help
 	  Which chip select to use for boot media.
@@ -91,16 +92,16 @@ config EC_GOOGLE_CHROMEEC_SPI_BUS
 
 choice
 	prompt "BCT sdram configuration"
-	default NYAN_BCT_SDRAM_792
+	default NYAN_BIG_BCT_SDRAM_792
 	help
 	  The SDRAM configuration to put in the BCT.
 
-config NYAN_BCT_SDRAM_792
+config NYAN_BIG_BCT_SDRAM_792
 	bool "792 MHz"
 
-config NYAN_BCT_SDRAM_924
+config NYAN_BIG_BCT_SDRAM_924
 	bool "924 MHz"
 
 endchoice
 
-endif # BOARD_GOOGLE_NYAN
+endif # BOARD_GOOGLE_NYAN_BIG

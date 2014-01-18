@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright 2013 Google Inc.
+## Copyright 2014 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,8 +17,22 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-bct-cfg-$(CONFIG_NYAN_BCT_CFG_EMMC) += emmc.cfg
-bct-cfg-$(CONFIG_NYAN_BCT_CFG_SPI) += spi.cfg
-bct-cfg-y += odmdata.cfg
-bct-cfg-$(CONFIG_NYAN_BCT_SDRAM_924) += sdram-924.cfg
-bct-cfg-$(CONFIG_NYAN_BCT_SDRAM_792) += sdram-792.cfg
+# Add a handler for BCT config files
+$(call add-special-class,bct-cfg)
+bct-cfg-handler= $(eval $(obj)/generated/bct.cfg: $(1)$(2))
+
+$(obj)/generated/bct.cfg:
+	@printf "    CAT        $(subst $(obj)/,,$(@))\n"
+	cat $^ > $@
+
+subdirs-y += bct
+
+bootblock-y += boardid.c
+bootblock-y += bootblock.c
+bootblock-y += pmic.c
+
+romstage-y += romstage.c
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
+
+ramstage-y += mainboard.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c

@@ -1,5 +1,14 @@
 Board name: EPIA-M
-Category: mini
 Board URL: http://www.via.com.tw/en/products/mainboards/motherboards.jsp?motherboard_id=81
 Board page: VIA EPIA-M
+
+Board name: EPIA-MII
+Board page: VIA_EPIA-MII
+Board URL: http://www.via.com.tw/en/products/mainboards/motherboards.jsp?motherboard_id=202
+
+Board name: EPIA-ML
+Board page: VIA_EPIA-ML
+Board URL: http://www.via.com.tw/en/products/mainboards/motherboards.jsp?motherboard_id=301
+
 Flashrom support: y
+Category: mini

@@ -5,12 +5,18 @@ choice
 
 config BOARD_JETWAY_J7F2
 	bool "J7F2"
+config BOARD_JETWAY_J7F4K1G2E
+	bool "J7F4K1G2E"
+config BOARD_JETWAY_J7F4K1G5D
+	bool "J7F4K1G5D"
 config BOARD_JETWAY_PA78VM5
 	bool "PA78VM5 (Fam10)"
 
 endchoice
 
 source "src/mainboard/jetway/j7f2/Kconfig"
+source "src/mainboard/jetway/j7f4k1g2e/Kconfig"
+source "src/mainboard/jetway/j7f4k1g5d/Kconfig"
 source "src/mainboard/jetway/pa78vm5/Kconfig"
 
 config MAINBOARD_VENDOR

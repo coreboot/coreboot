@@ -1,0 +1,5 @@
+if BOARD_JETWAY_J7F4K1G2E
+config MAINBOARD_PART_NUMBER
+	string
+	default "J7f4K1G2E"
+endif

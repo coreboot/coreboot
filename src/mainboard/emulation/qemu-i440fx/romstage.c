@@ -33,6 +33,7 @@
 
 #include "memory.c"
 
+void main(unsigned long bist);
 void main(unsigned long bist)
 {
 	int cbmem_was_initted;

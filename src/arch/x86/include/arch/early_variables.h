@@ -21,8 +21,12 @@
 #define ARCH_EARLY_VARIABLES_H
 
 #ifdef __PRE_RAM__
-#define CAR_GLOBAL __attribute__((section(".car.global_data,\"w\",@nobits#")))
-#define CAR_CBMEM __attribute__((section(".car.cbmem_console,\"w\",@nobits#")))
+asm(".section .car.global_data,\"w\",@nobits");
+asm(".previous");
+asm(".section .car.cbmem_console,\"w\",@nobits");
+asm(".previous");
+#define CAR_GLOBAL __attribute__((section(".car.global_data")))
+#define CAR_CBMEM __attribute__((section(".car.cbmem_console")))
 #else
 #define CAR_GLOBAL
 #define CAR_CBMEM

@@ -1,12 +1,26 @@
 = coreboot status by mainboard =
 
-This list contains reports of successful coreboot execution, ordered by date. It's shows which boards can actually run with current coreboot versions.
-Using the precise commit id and config.txt, it's possible to reproduce working coreboot builds (assuming no compiler bugs).
+* This list contains reports of successful coreboot execution, ordered by date. It's shows which boards can actually run with current coreboot versions.
 
-By sorting it by date, we encourage developers and users to keep ports current and well-tested.
+* Using the precise commit id and config.txt, it's possible to reproduce working coreboot builds (assuming no compiler bugs).
 
-Status data comes from the [http://review.coreboot.org/gitweb?p=board-status.git board status repository].
-The coreboot tree [http://review.coreboot.org/gitweb?p=coreboot.git;a=tree;f=util/board_status;hb=HEAD contains a tool] to generate and push suitable data
+* By sorting it by date, we encourage developers and users to keep ports current and well-tested.
+
+* Status data comes from the [http://review.coreboot.org/gitweb?p=board-status.git board status repository].
+
+* The coreboot tree [http://review.coreboot.org/gitweb?p=coreboot.git;a=tree;f=util/board_status;hb=HEAD contains a tool] to generate and push suitable data
 as well as the scripts that present the data in wiki format.
 
-An account on review.coreboot.org is required for sending data.
+* Board info is automatically generated from Kconfig anf board_info.txt files. All boards present in the tree will appear here with varying amount of details.
+
+* An account on review.coreboot.org is required for sending data.
+
+* Sometimes the same board is sold under different names, we've tried to list all known names but some names might be missing.
+
+* Some boards have been removed for various reasons, may be brought back if someone works on them. Consult [[Graveyard]] for details.
+
+* If the board is not found in the corebootv4's source code, there might be some form of support that is not ready yet for inclusion in coreboot, usually people willing to send their patches to coreboot goes trough [http://review.coreboot.org gerrit], so looking there could find some code for boards that are not yet merged.
+* some vendors have their own coreboot trees/fork, like for instance:
+** [http://git.xivo.fr/?p=official/xioh/coreboot.git;a=summary xivo's tree]
+** [http://git.chromium.org/gitweb/?p=chromiumos/third_party/coreboot.git;a=summary chrome/chromium's tree]
+** The gizmosphere has a git somewhere, probably hosted by Sage Electronic Engineering.

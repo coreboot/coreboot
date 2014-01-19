@@ -88,9 +88,17 @@ config CBFS_ROM_OFFSET
 	hex
 	default 0x0110000
 
-config IRAM_STACK
+config STACK_TOP
 	hex
 	default 0x0007ff00
+
+config STACK_BOTTOM
+	hex
+	default 0x00040000
+
+config STACK_SIZE
+	hex
+	default 0x0003ff00
 
 config XIP_ROM_SIZE
 	hex

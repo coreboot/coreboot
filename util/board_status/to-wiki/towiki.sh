@@ -317,8 +317,8 @@ EOF
 						cpu_nice="Intel® 2nd Gen (Sandybridge) Core i3/i5/i7"
 						socket_nice="Socket RPGA989";;
 					*)
-						echo "unknown northbridge $northbridge" >&2;
-						exit 1;;
+						cpu_nice="$northbridge"
+						socket_nice="$northbridge";;
 				esac
 				;;
 			INTEL_SOCKET_441)
@@ -366,13 +366,13 @@ EOF
 						cpu_nice="?"
 						socket_nice="?";;
 					*)
-						echo "unknown northbridge $northbridge ($vendor/$board)" >&2;
-						exit 1;;
+						cpu_nice="$northbridge"
+						socket_nice="$northbridge";;
 				esac
 				;;
 			*)
-				echo "unknown CPU $cpu" >&2;
-				exit 1;;
+				cpu_nice="$cpu"
+				socket_nice="$cpu";;
 		esac
 
 		echo "|- bgcolor=\"#$color\""

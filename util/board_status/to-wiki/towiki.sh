@@ -55,7 +55,7 @@ cat <<EOF
 ! align="left" | <span title="Vendor Cooperation Score">VCS<sup>5</sup></span>
 EOF
 
-for category in desktop server laptop half mini settop "eval" misc unclass; do
+for category in desktop server laptop half mini settop "eval" emulation misc unclass; do
 	last_vendor=
 	color=eeeeee
 	case "$category" in
@@ -105,6 +105,13 @@ EOF
 			cat <<EOF
 |- bgcolor="#6699ff"
 | colspan="13" | <h4>Devel/Eval Boards</h4>
+
+EOF
+			;;
+		emulation)
+			cat <<EOF
+|- bgcolor="#6699ff"
+| colspan="13" | <h4>Emulation</h4>
 
 EOF
 			;;

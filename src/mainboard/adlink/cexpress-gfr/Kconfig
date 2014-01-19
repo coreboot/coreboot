@@ -1,0 +1,10 @@
+if BOARD_ADLINK_CEXPRESS_GFR
+
+# Dummy for abuild
+#select ARCH_X86
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "cExpress-GFR"
+
+endif

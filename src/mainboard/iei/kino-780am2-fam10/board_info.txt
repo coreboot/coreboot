@@ -1,4 +1,4 @@
 Board name: Kino-780AM2
 Category: half
-Board URL: http://www.google.com/url?sa=t&source=web&cd=1&sqi=2&ved=0CBkQFjAA&url=http%3A%2F%2Fwww.ieiworld.com%2Fproduct_groups%2Findustrial%2Fcontent.aspx%3Fgid%3D00001000010000000001%26cid%3D09050652111816087425%26id%3D09069696333360342284&ei=EG6XTYTrDJO8sQP82cHUBQ&usg=AFQjCNE0MTdh1PdU68MhsfFeVMTV7qYTPw
+Board URL: http://web.archive.org/web/20111208234719/http://ieiworld.com/product_groups/industrial/content.aspx?gid=00001000010000000001&cid=09050652111816087425&id=09069696333360342284
 ROM protocol: SPI

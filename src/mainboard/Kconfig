@@ -335,6 +335,43 @@ config ROM_SIZE
 	default 0xc00000 if COREBOOT_ROMSIZE_KB_12288
 	default 0x1000000 if COREBOOT_ROMSIZE_KB_16384
 
+config BOARD_TYPE_DESKTOP
+	bool
+
+config BOARD_TYPE_LAPTOP
+	bool
+
+config BOARD_TYPE_SERVER
+	bool
+
+config BOARD_TYPE_HALF
+	bool
+
+config BOARD_TYPE_MINI
+	bool
+
+config BOARD_TYPE_SETTOP
+	bool
+
+config BOARD_TYPE_EMULATION
+	bool
+
+config BOARD_TYPE_SBC
+	bool
+
+config BOARD_TYPE_EVAL
+	bool
+
+config BOARD_TYPE_MISC
+	bool
+
+config SMBIOS_SYSTEM_ENCLOSURE_TYPE
+	hex
+	default 0x3 if BOARD_TYPE_DESKTOP
+	default 0xa if BOARD_TYPE_LAPTOP
+	default 0x11 if BOARD_TYPE_SERVER
+	default 0x3 if !BOARD_TYPE_DESKTOP && !BOARD_TYPE_LAPTOP && !BOARD_TYPE_SERVER
+
 config ENABLE_POWER_BUTTON
 	bool "Enable the power button" if POWER_BUTTON_IS_OPTIONAL
 	default y if POWER_BUTTON_DEFAULT_ENABLE

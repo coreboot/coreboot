@@ -36,7 +36,7 @@ while read line; do
 done
 
 cat <<EOF
-== Motherboards supported in coreboot v4 ==
+== Motherboards supported in coreboot ==
 
 {| border="0" style="font-size: smaller"
 |- bgcolor="#6699ff"

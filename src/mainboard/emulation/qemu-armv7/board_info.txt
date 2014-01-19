@@ -1,3 +1,2 @@
 Board name: QEMU armv7 (vexpress-a9)
-Category: emulation
 Board URL: http://fabrice.bellard.free.fr/qemu/

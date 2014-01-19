@@ -1,2 +1,1 @@
-Category: server
 Board URL: http://h20000.www2.hp.com/bizsupport/TechSupport/Document.jsp?lang=en&cc=us&objectID=c01765799

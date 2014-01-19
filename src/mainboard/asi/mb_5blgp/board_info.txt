@@ -1,2 +1,1 @@
 Board name: MB-5BLGP (Neoware Eon 4000s thin client)
-Category: settop

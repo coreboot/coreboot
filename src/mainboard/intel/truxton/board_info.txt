@@ -1,2 +1,1 @@
 Board name: EP80579 devkit (Truxton)
-Category: eval

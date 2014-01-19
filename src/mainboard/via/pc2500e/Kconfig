@@ -3,6 +3,7 @@ if BOARD_VIA_PC2500E
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select BOARD_TYPE_MINI
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CN700
 	select SOUTHBRIDGE_VIA_VT8237R

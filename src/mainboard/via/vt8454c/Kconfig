@@ -3,6 +3,7 @@ if BOARD_VIA_VT8454C
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select BOARD_TYPE_EVAL
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_CX700
 	select SUPERIO_VIA_VT1211

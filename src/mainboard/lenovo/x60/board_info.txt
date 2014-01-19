@@ -1,5 +1,4 @@
 Board name: X60/X60s
-Category: laptop
 ROM package: SOIC-8
 ROM protocol: SPI
 ROM socketed: n

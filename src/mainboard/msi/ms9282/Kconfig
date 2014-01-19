@@ -3,6 +3,7 @@ if BOARD_MSI_MS9282
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select BOARD_TYPE_SERVER
 	select CPU_AMD_SOCKET_F
 	select DIMM_DDR2
 	select DIMM_REGISTERED

@@ -1,4 +1,3 @@
-Category: half
 Board name: cExpress-GFR (+W83627DHG SIO)
 Board URL: http://www.adlinktech.com/PD/web/PD_detail.php?pid=1132
 ROM package: SOIC8

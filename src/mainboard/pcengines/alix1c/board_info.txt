@@ -1,4 +1,3 @@
-Category: half
 Board URL: http://pcengines.ch/alix1c.htm
 Flashrom support: y
 Vendor cooperation score: 4

@@ -1,3 +1,2 @@
 Board name: Tomcat K8S (S2850)
-Category: server
 Board URL: http://www.tyan.com/archive/products/html/tomcatk8s.html

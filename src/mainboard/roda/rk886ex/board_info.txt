@@ -1,3 +1,2 @@
 Board name: RK886EX (Rocky III+)
-Category: laptop
 Board URL: http://www.roda-computer.com/en/products/notebooks/rocky-iii-rk886ex.html

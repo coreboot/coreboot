@@ -211,7 +211,7 @@ EOF
 		fi
 
 		northbridge="$(sed -n "/^[[:space:]]*select NORTHBRIDGE_/ s,^[[:space:]]*select NORTHBRIDGE_,,p" "$vendor_board_dir/Kconfig")"
-		northbridge_nice="$(echo "$northbridge"|sed 's,AMD_AGESA_FAMILY\(.*\),AMD Family \1h (AGESA),g;s,AMD_FAMILY\(.*\),AMD Family \1h,g;s,AMD_AMDFAM\(.*\),AMD Family \1h,g;s,_, ,g;s,INTEL,Intel®,g;')"
+		northbridge_nice="$(echo "$northbridge"|sed 's,AMD_AGESA_FAMILY\([0-9a-fA-F]*\)\(.*\),AMD Family \1h\2 (AGESA),g;s,AMD_FAMILY\([0-9a-fA-F]*\),AMD Family \1h,g;s,AMD_AMDFAM\([0-9a-fA-F]*\),AMD Family \1h,g;s,_, ,g;s,INTEL,Intel®,g;')"
 
 		southbridge="$(sed -n "/	select SOUTHBRIDGE_/ s,	select SOUTHBRIDGE_,,p" "$vendor_board_dir/Kconfig"|grep -v SKIP_ISA_DMA_INIT)"
 		southbridge_nice="$(echo "$southbridge"|sed 's,_, ,g;s,INTEL,Intel®,g')"

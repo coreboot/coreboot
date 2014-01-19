@@ -90,6 +90,8 @@ config VENDOR_LANNER
 	bool "Lanner"
 config VENDOR_LENOVO
 	bool "Lenovo"
+config VENDOR_LINUTOP
+	bool "Linutop"
 config VENDOR_LIPPERT
 	bool "LiPPERT"
 config VENDOR_MITAC

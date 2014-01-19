@@ -1,0 +1,4 @@
+Category: settop
+Board URL: http://www.linutop.com
+Flashrom support: y
+Clone of: artecgroup/dbe61

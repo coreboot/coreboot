@@ -1,4 +1,4 @@
-if BOARD_ARTECGROUP_DBE61
+if BOARD_ARTECGROUP_DBE61 || BOARD_LINUTOP_LINUTOP1
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -16,9 +16,11 @@ config MAINBOARD_DIR
 	string
 	default artecgroup/dbe61
 
+if BOARD_ARTECGROUP_DBE61
 config MAINBOARD_PART_NUMBER
 	string
 	default "DBE61"
+endif
 
 config IRQ_SLOT_COUNT
 	int

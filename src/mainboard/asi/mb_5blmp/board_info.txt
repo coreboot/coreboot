@@ -1,3 +1,4 @@
+Board name: MB-5BLMP (IGEL WinNET III thin client)
 Category: settop
 Board URL: http://www.hojerteknik.com/winnet.htm
 Flashrom support: y

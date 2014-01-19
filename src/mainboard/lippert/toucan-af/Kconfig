@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-if BOARD_LIPPERT_TOUCAN_AF
+if BOARD_LIPPERT_TOUCAN_AF || BOARD_ADLINK_CEXPRESS_GFR
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -52,9 +52,13 @@ config APIC_ID_OFFSET
 	hex
 	default 0x0
 
+if BOARD_LIPPERT_TOUCAN_AF
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "Toucan-AF"
+
+endif
 
 config HW_MEM_HOLE_SIZEK
 	hex

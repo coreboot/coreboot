@@ -40,6 +40,10 @@ void broadcom_init(void);
 #define be16(x)		cpu_to_be16(x)	//a little easier to type
 #define be(x)		cpu_to_be32(x)	//this is used a lot!
 
+#if defined (CONFIG_BOARD_ADLINK_COREMODULE2_GF) && !defined (CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF)
+#define CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF CONFIG_BOARD_ADLINK_COREMODULE2_GF
+#endif
+
 /* C forces us to specify these before defining struct selfboot_patch  :-( */
 #if !CONFIG_BOARD_LIPPERT_FRONTRUNNER_AF
 #define INIT1_LENGTH		9

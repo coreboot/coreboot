@@ -23,15 +23,20 @@ config BOARD_LIPPERT_TOUCAN_AF
 endchoice
 
 source "src/mainboard/lippert/frontrunner/Kconfig"
-source "src/mainboard/lippert/frontrunner-af/Kconfig"
 source "src/mainboard/lippert/hurricane-lx/Kconfig"
 source "src/mainboard/lippert/literunner-lx/Kconfig"
 source "src/mainboard/lippert/roadrunner-lx/Kconfig"
 source "src/mainboard/lippert/spacerunner-lx/Kconfig"
-source "src/mainboard/lippert/toucan-af/Kconfig"
 
 config MAINBOARD_VENDOR
 	string
 	default "LiPPERT"
 
 endif # VENDOR_LIPPERT
+
+if VENDOR_LIPPERT || VENDOR_ADLINK
+
+source "src/mainboard/lippert/frontrunner-af/Kconfig"
+source "src/mainboard/lippert/toucan-af/Kconfig"
+
+endif

@@ -1,0 +1,10 @@
+if BOARD_ADLINK_COREMODULE2_GF
+
+# Dummy for abuild
+#select ARCH_X86
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "CoreModule2-GF"
+
+endif

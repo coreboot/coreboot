@@ -3,8 +3,21 @@ if VENDOR_ADLINK
 comment "see under vendor LiPPERT"
 # any further boards will then be ADLINK
 
+choice
+	prompt "Mainboard model"
+
+config BOARD_ADLINK_COREMODULE2_GF
+	bool "CoreModule2-GF aka LiPPPERT FrontRunner-AF"
+config BOARD_ADLINK_CEXPRESS_GFR
+	bool "cExpress-GFR (+W83627DHG SIO) aka LiPPERT Toucan-AF"
+
+endchoice
+
 config MAINBOARD_VENDOR
 	string
 	default "ADLINK"
+
+source "src/mainboard/adlink/cexpress-gfr/Kconfig"
+source "src/mainboard/adlink/coremodule2-gf/Kconfig"
 
 endif # VENDOR_ADLINK

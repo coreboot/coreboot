@@ -147,8 +147,31 @@ EOF
 
 		if [ -f "$vendor_board_dir/board_info.txt" ]; then
 			cur_category="$(sed -n "/^[[:space:]]*Category:/ s,^[[:space:]]*Category:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
+			clone_of="$(sed -n "/^[[:space:]]*Clone of:/ s,^[[:space:]]*Clone of:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 		else
 			cur_category=
+			clone_of=
+		fi
+		if [ -z "$cur_category" ]; then
+		        # eval board may be of other type as well. Prefer "eval"
+		        # desktop is pretty generic, keep it for last
+			for candidate in "eval" server laptop half mini settop emulation sbc misc desktop; do
+				if grep -i BOARD_TYPE_"$candidate" "$vendor_board_dir/Kconfig" > /dev/null ; then
+					cur_category="$candidate"
+					break
+				fi
+			done
+		fi
+
+		if [ -z "$cur_category" ] && ! [ -z "$clone_of" ]; then
+		        # eval board may be of other type as well. Prefer "eval"
+		        # desktop is pretty generic, keep it for last
+			for candidate in "eval" server laptop half mini settop emulation sbc misc desktop; do
+				if grep -i BOARD_TYPE_"$candidate" "$COREBOOT_DIR"/src/mainboard/"$clone_of"/Kconfig > /dev/null ; then
+					cur_category="$candidate"
+					break
+				fi
+			done
 		fi
 
 		case "$cur_category" in
@@ -171,7 +194,6 @@ EOF
 			vendor_cooperation_score="$(sed -n "/^[[:space:]]*Vendor cooperation score:/ s,^[[:space:]]*Vendor cooperation score:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			vendor_cooperation_page="$(sed -n "/^[[:space:]]*Vendor cooperation page:/ s,^[[:space:]]*Vendor cooperation page:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			board_url="$(sed -n "/^[[:space:]]*Board URL:/ s,^[[:space:]]*Board URL:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
-			clone_of="$(sed -n "/^[[:space:]]*Clone of:/ s,^[[:space:]]*Clone of:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 		else
 			board_nice=
 			rom_package=
@@ -181,7 +203,6 @@ EOF
 			vendor_cooperation_score=
 			vendor_cooperation_page=
 			board_url=
-			clone_of=
 		fi
 		if [ "$last_vendor" != "$vendor" ]; then
 			last_vendor="$vendor"

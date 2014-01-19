@@ -1,4 +1,3 @@
-Category: desktop
 Board URL: http://www.asus.com/Motherboards/AMD_AM3Plus/M5A88V_EVO/
 ROM package: DIP8
 ROM protocol: SPI

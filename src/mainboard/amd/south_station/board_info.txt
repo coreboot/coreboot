@@ -1,5 +1,4 @@
 Board name: South Station
-Category: eval
 ROM package: SOIC8
 ROM protocol: SPI
 ROM socketed: n

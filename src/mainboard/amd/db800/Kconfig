@@ -3,6 +3,7 @@ if BOARD_AMD_DB800
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select BOARD_TYPE_EVAL
 	select CPU_AMD_GEODE_LX
 	select NORTHBRIDGE_AMD_LX
 	select SOUTHBRIDGE_AMD_CS5536

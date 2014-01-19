@@ -1,4 +1,3 @@
-Category: server
 Board URL: http://www.supermicro.com/products/motherboard/xeon1333/5000p/x7db8_.cfm
 ROM package: PLCC32
 ROM protocol: FWH

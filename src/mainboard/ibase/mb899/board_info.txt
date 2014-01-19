@@ -1,4 +1,3 @@
-Category: mini
 Board URL: http://www.ibase.com.tw/mb899.htm
 ROM package: PLCC
 ROM protocol: FWH

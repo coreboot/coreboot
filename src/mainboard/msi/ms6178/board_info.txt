@@ -1,4 +1,3 @@
-Category: desktop
 Board URL: http://no.msi.com/product/mb/MS-6178.html
 ROM package: PLCC
 ROM socketed: y

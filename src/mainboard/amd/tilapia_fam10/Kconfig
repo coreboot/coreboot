@@ -3,6 +3,7 @@ if BOARD_AMD_TILAPIA_FAM10
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select BOARD_TYPE_EVAL
 	select CPU_AMD_SOCKET_AM3
 	select DIMM_DDR3
 	select DIMM_REGISTERED

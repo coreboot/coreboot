@@ -3,6 +3,7 @@ if BOARD_VIA_EPIA_M700
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select BOARD_TYPE_MINI
 	select CPU_VIA_C7
 	select NORTHBRIDGE_VIA_VX800
 	select SUPERIO_WINBOND_W83697HF

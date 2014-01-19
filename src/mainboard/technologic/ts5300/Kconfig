@@ -3,6 +3,7 @@ if BOARD_TECHNOLOGIC_TS5300
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
+	select BOARD_TYPE_HALF
 	select CPU_AMD_SC520
 	select ROMCC
 	select HAVE_OPTION_TABLE

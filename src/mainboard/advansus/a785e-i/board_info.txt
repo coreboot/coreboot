@@ -1,4 +1,3 @@
-Category: mini
 Board URL: http://www.advansus.com.tw/products/247/A785E-I
 ROM package: SOIC-8
 ROM protocol: SPI

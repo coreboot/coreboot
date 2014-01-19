@@ -1,4 +1,3 @@
-Category: server
 ROM package: TSOP48
 ROM protocol: Parallel
 ROM socketed: n

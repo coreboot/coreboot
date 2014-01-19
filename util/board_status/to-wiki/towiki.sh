@@ -146,22 +146,20 @@ EOF
 		fi
 
 		if [ -f "$vendor_board_dir/board_info.txt" ]; then
-			cur_category="$(sed -n "/^[[:space:]]*Category:/ s,^[[:space:]]*Category:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			clone_of="$(sed -n "/^[[:space:]]*Clone of:/ s,^[[:space:]]*Clone of:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 		else
-			cur_category=
 			clone_of=
 		fi
-		if [ -z "$cur_category" ]; then
-		        # eval board may be of other type as well. Prefer "eval"
-		        # desktop is pretty generic, keep it for last
-			for candidate in "eval" server laptop half mini settop emulation sbc misc desktop; do
-				if grep -i BOARD_TYPE_"$candidate" "$vendor_board_dir/Kconfig" > /dev/null ; then
-					cur_category="$candidate"
-					break
-				fi
-			done
-		fi
+
+		cur_category=
+		# eval board may be of other type as well. Prefer "eval"
+		# desktop is pretty generic, keep it for last
+		for candidate in "eval" server laptop half mini settop emulation sbc misc desktop; do
+			if grep -i BOARD_TYPE_"$candidate" "$vendor_board_dir/Kconfig" > /dev/null ; then
+				cur_category="$candidate"
+				break
+			fi
+		done
 
 		if [ -z "$cur_category" ] && ! [ -z "$clone_of" ]; then
 		        # eval board may be of other type as well. Prefer "eval"

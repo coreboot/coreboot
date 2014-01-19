@@ -55,7 +55,7 @@ cat <<EOF
 ! align="left" | <span title="Vendor Cooperation Score">VCS<sup>5</sup></span>
 EOF
 
-for category in desktop server laptop half mini settop "eval" emulation misc unclass; do
+for category in desktop server laptop half mini settop "eval" sbc emulation misc unclass; do
 	last_vendor=
 	color=eeeeee
 	case "$category" in
@@ -83,7 +83,7 @@ EOF
 		half)
 			cat <<EOF
 |- bgcolor="#6699ff"
-| colspan="13" | <h4>Embedded / SBC / PC/104 / Half-size boards</h4>
+| colspan="13" | <h4>Embedded / PC/104 / Half-size boards</h4>
 
 EOF
 			;;
@@ -105,6 +105,13 @@ EOF
 			cat <<EOF
 |- bgcolor="#6699ff"
 | colspan="13" | <h4>Devel/Eval Boards</h4>
+
+EOF
+			;;
+		sbc)
+			cat <<EOF
+|- bgcolor="#6699ff"
+| colspan="13" | <h4>Single-Board computer</h4>
 
 EOF
 			;;
@@ -145,7 +152,7 @@ EOF
 		fi
 
 		case "$cur_category" in
-			desktop|server|laptop|half|mini|settop|"eval"|emulation|misc)
+			desktop|server|laptop|half|mini|settop|"eval"|emulation|sbc|misc)
 				;;
 			*)
 				cur_category=unclass

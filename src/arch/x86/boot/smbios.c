@@ -99,6 +99,7 @@ static int smbios_processor_name(char *start)
 {
 	char tmp[49] = "Unknown Processor Name";
 	u32  *_tmp = (u32 *)tmp;
+	char *ptr;
 	struct cpuid_result res;
 	int i;
 
@@ -115,7 +116,10 @@ static int smbios_processor_name(char *start)
 			tmp[48] = 0;
 		}
 	}
-	return smbios_add_string(start, tmp);
+
+	for (ptr = tmp; *ptr == ' '; ptr++);
+
+	return smbios_add_string(start, ptr);
 }
 
 static int smbios_write_type0(unsigned long *current, int handle)

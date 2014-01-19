@@ -1,2 +1,1 @@
-Board name: em8510
 Category: desktop

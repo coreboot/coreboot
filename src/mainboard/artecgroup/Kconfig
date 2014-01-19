@@ -8,10 +8,12 @@ config BOARD_ARTECGROUP_DBE61
 
 endchoice
 
-source "src/mainboard/artecgroup/dbe61/Kconfig"
-
 config MAINBOARD_VENDOR
 	string
 	default "Artec Group"
 
 endif # VENDOR_ARTECGROUP
+
+if VENDOR_ARTECGROUP || VENDOR_LINUTOP
+source "src/mainboard/artecgroup/dbe61/Kconfig"
+endif

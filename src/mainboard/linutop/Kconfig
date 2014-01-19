@@ -1,0 +1,17 @@
+if VENDOR_LINUTOP
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_LINUTOP_LINUTOP1
+	bool "Linutop-1"
+
+endchoice
+
+config MAINBOARD_VENDOR
+	string
+	default "Linutop"
+
+source "src/mainboard/linutop/linutop1/Kconfig"
+
+endif

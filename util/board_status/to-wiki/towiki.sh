@@ -28,7 +28,10 @@ while read line; do
 
 		detailed="$detailed[[Board:$vendor_board|$vendor_board]] at $datetime_human$nl"
 		detailed="$detailed[$CODE_GITWEB$upstream upstream tree] ($nl"
-		ls $vendor_board/$commit/$datetime/* |grep -v '/revision.txt$' | while read file; do
+		for file in "$vendor_board/$commit/$datetime/"*; do
+			if [ "$file" = "$vendor_board/$commit/$datetime/revision.txt" ]; then
+				continue
+			fi
 			detailed="$detailed[$STATUS_GITWEB$file `basename $file`] $nl"
 		done
 		detailed="$detailed)$nl$nl"

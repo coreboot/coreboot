@@ -58,8 +58,6 @@ chip northbridge/intel/sandybridge
 
 			# Enable SATA ports 0 & 1
 			register "sata_port_map" = "0x3"
-			# Set max SATA speed to 3.0 Gb/s
-			register "sata_interface_speed_support" = "0x2"
 
 			# Enable EC Port 0x68/0x6C
 			register "gen1_dec" = "0x00040069"

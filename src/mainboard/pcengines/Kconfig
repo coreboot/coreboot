@@ -14,6 +14,7 @@ endchoice
 
 source "src/mainboard/pcengines/alix1c/Kconfig"
 source "src/mainboard/pcengines/alix2d/Kconfig"
+source "src/mainboard/pcengines/alix6/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

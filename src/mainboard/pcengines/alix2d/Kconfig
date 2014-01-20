@@ -16,10 +16,13 @@ config MAINBOARD_DIR
 	string
 	default pcengines/alix2d
 
+if BOARD_PCENGINES_ALIX2D
+
 config MAINBOARD_PART_NUMBER
 	string
-	default "ALIX.2D" if BOARD_PCENGINES_ALIX2D
-	default "ALIX.6" if BOARD_PCENGINES_ALIX6
+	default "ALIX.2D"
+
+endif
 
 config IRQ_SLOT_COUNT
 	int

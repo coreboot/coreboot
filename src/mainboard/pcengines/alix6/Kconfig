@@ -1,0 +1,7 @@
+if BOARD_PCENGINES_ALIX6
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ALIX.6"
+
+endif

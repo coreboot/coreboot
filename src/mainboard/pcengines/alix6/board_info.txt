@@ -1,0 +1,5 @@
+Category: half
+Board URL: http://pcengines.ch/alix6f2.htm
+Flashrom support: y
+Clone of: pcengines/alix2d
+

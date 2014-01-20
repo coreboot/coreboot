@@ -1,0 +1,10 @@
+if BOARD_PCENGINES_ALIX6
+
+# Dummy for abuild
+#select ARCH_X86
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ALIX.6"
+
+endif

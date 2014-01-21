@@ -38,6 +38,7 @@
 #include <device/pci.h>
 #include <cbfs.h>
 #include <pc80/keyboard.h>
+#include "drivers/i2c/lenovo/eeprom.h"
 
 void mainboard_suspend_resume(void)
 {
@@ -132,6 +133,8 @@ static int int15_handler(void)
 
 const char *smbios_mainboard_version(void)
 {
+	/* Is available from SMBUS as well but why read it if we know
+	   what we'll find?  */
 	return "ThinkPad X230";
 }
 
@@ -153,6 +156,8 @@ static void verb_setup(void)
 
 static void mainboard_init(device_t dev)
 {
+	lenovo_eeprom_lock();
+
 	RCBA32(0x38c8) = 0x00002005;
 	RCBA32(0x38c4) = 0x00802005;
 	RCBA32(0x38c0) = 0x00000007;

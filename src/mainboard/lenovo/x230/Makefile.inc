@@ -18,3 +18,4 @@
 ##
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+ramstage-y += ../../../drivers/i2c/lenovo/eeprom.c

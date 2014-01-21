@@ -558,6 +558,11 @@ int print_gpios(struct pci_dev *sb, int show_all, int show_diffs)
 
 	printf("GPIOBASE = 0x%04x (IO)\n\n", gpiobase);
 
+	outw(inw (gpiobase +0x30) | 0x400, gpiobase + 0x30);
+	outw(inw (gpiobase +0x34) & ~0x400, gpiobase + 0x34);
+
+	outw(inw (gpiobase +0x38) | 0x400, gpiobase + 0x38);
+
 	j = 0;
 	for (i = 0; i < size; i++) {
 		if (show_all)

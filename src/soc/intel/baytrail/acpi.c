@@ -80,6 +80,9 @@ static acpi_cstate_t cstate_map[] = {
 
 void acpi_init_gnvs(global_nvs_t *gnvs)
 {
+	/* Set unknown wake source */
+	gnvs->pm1i = -1;
+
 	/* CPU core count */
 	gnvs->pcnt = dev_count_cpu();
 

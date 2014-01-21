@@ -71,3 +71,8 @@ Method(_WAK,1)
 	Return(Package(){0,0})
 }
 
+Method (_SWS)
+{
+	/* Index into PM1 for device that caused wake */
+	Return (\PM1I)
+}

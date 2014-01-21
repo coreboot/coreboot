@@ -33,6 +33,7 @@
 #include <northbridge/intel/i945/i945.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
+#include "drivers/i2c/lenovo/eeprom.h"
 
 static acpi_cstate_t cst_entries[] = {
 	{ 1,  1, 1000, { 0x7f, 1, 2, { 0 }, 1, 0 } },
@@ -46,11 +47,18 @@ int get_cst_entries(acpi_cstate_t **entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
+static void mainboard_init(device_t dev)
+{
+	lenovo_eeprom_lock();
+}
+
 static void mainboard_enable(device_t dev)
 {
 	struct southbridge_intel_i82801gx_config *config;
 	device_t dev0, idedev;
 	u8 defaults_loaded = 0;
+
+	dev->ops->init = mainboard_init;
 
 	/* If we're resuming from suspend, blink suspend LED */
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));

@@ -34,6 +34,7 @@
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <string.h>
 
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
@@ -46,6 +47,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <smbios.h>
+#include "drivers/i2c/lenovo/eeprom.h"
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -89,13 +91,14 @@ static int int15_handler(void)
 
 const char *smbios_mainboard_version(void)
 {
+	/* Is available from SMBUS as well but why read it if we know
+	   what we'll find?  */
 	return "Lenovo X201";
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_init(device_t dev)
 {
-	device_t dev0;
-	u16 pmbase;
+	lenovo_eeprom_lock();
 
 	printk(BIOS_SPEW, "starting SPI configuration\n");
 
@@ -122,6 +125,18 @@ static void mainboard_enable(device_t dev)
 	RCBA32(0x3804) = 0x3f04e008;
 
 	printk(BIOS_SPEW, "SPI configured\n");
+	/* This sneaked in here, because X201 SuperIO chip isn't really
+	   connected to anything and hence we don't init it.
+	 */
+	pc_keyboard_init(0);
+}
+
+static void mainboard_enable(device_t dev)
+{
+	device_t dev0;
+	u16 pmbase;
+
+	dev->ops->init = mainboard_init;
 
 	pmbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
 				   PMBASE) & 0xff80;
@@ -145,11 +160,6 @@ static void mainboard_enable(device_t dev)
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
-
-	/* This sneaked in here, because X201 SuperIO chip isn't really
-	   connected to anything and hence we don't init it.
-	 */
-	pc_keyboard_init(0);
 }
 
 struct chip_operations mainboard_ops = {

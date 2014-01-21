@@ -52,6 +52,8 @@ static void mainboard_enable(device_t dev)
 	device_t dev0, idedev;
 	u8 defaults_loaded = 0;
 
+	lenovo_eeprom_lock();
+
 	/* If we're resuming from suspend, blink suspend LED */
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));
 	if (dev0 && pci_read_config32(dev0, SKPAD) == SKPAD_ACPI_S3_MAGIC)

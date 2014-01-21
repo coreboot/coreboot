@@ -58,6 +58,22 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
+int smbus_read_byte_main(u8 dev, u8 addr)
+{
+	device_t controller = dev_find_slot(0, PCI_DEVFN(0x1f, 3));
+	struct resource *res = find_resource(controller, 0x20);
+
+	return do_smbus_read_byte(res->base, dev, addr);
+}
+
+int smbus_write_byte_main(u8 dev, u8 addr, u8 val)
+{
+	device_t controller = dev_find_slot(0, PCI_DEVFN(0x1f, 3));
+	struct resource *res = find_resource(controller, 0x20);
+
+	return do_smbus_write_byte(res->base, dev, addr, val);
+}
+
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
 };

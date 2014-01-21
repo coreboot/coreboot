@@ -380,7 +380,7 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 
 		DEBUG("cbfs_add_entry: space at 0x%x+0x%x(%d) bytes\n",
 		      addr, addr_next - addr, addr_next - addr);
-		if (addr + need_size > addr_next)
+		if (addr + need_size > addr_next - cbfs_calculate_file_header_size("") - sizeof(*entry))
 			continue;
 
 		// Can we simply put object here?

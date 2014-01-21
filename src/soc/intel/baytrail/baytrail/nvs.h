@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef _BAYTRAIL_NVS_H_
+#define _BAYTRAIL_NVS_H_
+
 #include <vendorcode/google/chromeos/gnvs.h>
 #include <baytrail/device_nvs.h>
 
@@ -70,3 +73,5 @@ typedef struct {
 /* Used in SMM to find the ACPI GNVS address */
 global_nvs_t *smm_get_gnvs(void);
 #endif
+
+#endif /* _BAYTRAIL_NVS_H_ */

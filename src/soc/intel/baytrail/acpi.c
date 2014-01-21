@@ -22,6 +22,7 @@
 #include <arch/acpigen.h>
 #include <arch/io.h>
 #include <arch/smp/mpspec.h>
+#include <cbmem.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
@@ -38,6 +39,9 @@
 #include <baytrail/msr.h>
 #include <baytrail/pattrs.h>
 #include <baytrail/pmc.h>
+
+#include <ec/google/chromeec/ec.h>
+#include <vendorcode/google/chromeos/gnvs.h>
 
 #define MWAIT_RES(state, sub_state)                         \
 	{                                                   \
@@ -73,6 +77,29 @@ static acpi_cstate_t cstate_map[] = {
 		.resource = MWAIT_RES(5, 2),
 	}
 };
+
+void acpi_init_gnvs(global_nvs_t *gnvs)
+{
+	/* CPU core count */
+	gnvs->pcnt = dev_count_cpu();
+
+	/* Top of Low Memory (start of resource allocation) */
+	gnvs->tolm = nc_read_top_of_low_memory();
+
+#if CONFIG_CONSOLE_CBMEM
+	/* Update the mem console pointer. */
+	gnvs->cbmc = (u32)cbmem_find(CBMEM_ID_CONSOLE);
+#endif
+
+#if CONFIG_CHROMEOS
+	/* Initialize Verified Boot data */
+	chromeos_init_vboot(&(gnvs->chromeos));
+#if CONFIG_EC_GOOGLE_CHROMEEC
+	gnvs->chromeos.vbt2 = google_ec_running_ro() ?
+		ACTIVE_ECFW_RO : ACTIVE_ECFW_RW;
+#endif
+#endif
+}
 
 static int acpi_sci_irq(void)
 {

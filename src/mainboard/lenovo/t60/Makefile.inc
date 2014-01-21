@@ -19,3 +19,4 @@
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += dock.c
 romstage-y += dock.c
+ramstage-y += ../../../drivers/i2c/lenovo/eeprom.c

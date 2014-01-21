@@ -34,6 +34,8 @@
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <southbridge/intel/bd82x6x/smbus.h>
+#include <string.h>
 
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
@@ -46,6 +48,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <smbios.h>
+#include "drivers/i2c/lenovo/eeprom.h"
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -89,6 +92,8 @@ static int int15_handler(void)
 
 const char *smbios_mainboard_version(void)
 {
+	/* Is available from SMBUS as well but why read it if we know
+	   what we'll find?  */
 	return "Lenovo X201";
 }
 
@@ -96,6 +101,8 @@ static void mainboard_enable(device_t dev)
 {
 	device_t dev0;
 	u16 pmbase;
+
+	lenovo_eeprom_lock();
 
 	printk(BIOS_SPEW, "starting SPI configuration\n");
 

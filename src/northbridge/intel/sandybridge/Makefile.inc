@@ -47,7 +47,7 @@ $(obj)/mrc.cache:
 
 cbfs-files-$(CONFIG_HAVE_MRC_CACHE) += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
-mrc.cache-position := 0xfff80000
+mrc.cache-position := 0xfffd0000
 mrc.cache-type := 0xac
 
 $(obj)/northbridge/intel/sandybridge/acpi.ramstage.o : $(obj)/build.h

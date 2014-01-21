@@ -49,7 +49,7 @@ void hexdump(void *memory, int length)
 		}
 
 		if (all_zero < 2) {
-			printf("%08lx:", memory + i);
+			printf("%p:", memory + i);
 			for (j = 0; j < 16; j++)
 				printf(" %02x", m[i + j]);
 			printf("  ");

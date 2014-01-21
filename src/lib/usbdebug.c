@@ -203,8 +203,7 @@ host_retry:
 
 	/* If I get an ACK or in-sync DATA PID, we are done. */
 	if ((lpid == USB_PID_ACK) || (lpid == pipe->pid)) {
-		if (DBGP_LEN(rd_ctrl))
-			pipe->pid ^= USB_PID_DATA_TOGGLE;
+		pipe->pid ^= USB_PID_DATA_TOGGLE;
 	}
 
 	/* If the port is getting full or it has dropped data

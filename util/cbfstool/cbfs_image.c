@@ -380,6 +380,10 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 
 		DEBUG("cbfs_add_entry: space at 0x%x+0x%x(%d) bytes\n",
 		      addr, addr_next - addr, addr_next - addr);
+
+		/* Will the file fit? Don't yet worry if we have space for a new
+		 * "empty" entry. We take care of that later.
+		 */
 		if (addr + need_size > addr_next)
 			continue;
 
@@ -399,6 +403,16 @@ int cbfs_add_entry(struct cbfs_image *image, struct buffer *buffer,
 			entry = cbfs_find_next_entry(image, entry);
 			new_size = (cbfs_get_entry_addr(image, next) -
 				    cbfs_get_entry_addr(image, entry));
+
+			/* Entry was added and no space for new "empty" entry */
+			if (new_size < cbfs_calculate_file_header_size("")) {
+				DEBUG("No need for new \"empty\" entry\n");
+				/* No need to increase the size of the just
+				 * stored file to extend to next file. Alignment
+				 * of next file takes care of this.
+				 */
+				return 0;
+			}
 			new_size -= cbfs_calculate_file_header_size("");
 			DEBUG("new size: %d\n", new_size);
 			cbfs_create_empty_entry(image, entry, new_size, "");

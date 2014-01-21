@@ -302,7 +302,7 @@ long int labs(long int j);
 long long int llabs(long long int j);
 u8 bin2hex(u8 b);
 u8 hex2bin(u8 h);
-void hexdump(void *memory, int length);
+void hexdump(void *memory, size_t length);
 void fatal(const char *msg) __attribute__ ((noreturn));
 /** @} */
 

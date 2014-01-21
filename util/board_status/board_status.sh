@@ -30,7 +30,7 @@ test_cmd()
 		return
 	fi
 
-	if [[ $1 -eq $REMOTE && -n "$REMOTE_HOST" ]]; then
+	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
 		ssh root@${REMOTE_HOST} which "$2" >/dev/null
 		rc=$?
 	else
@@ -52,7 +52,7 @@ _cmd()
 		return $EXIT_FAILURE
 	fi
 
-	if [[ $1 -eq $REMOTE && -n "$REMOTE_HOST" ]]; then
+	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
 		ssh root@${REMOTE_HOST} "$2" > "${3}" 2>&1
 	else
 		$2 > "${3}" 2>&1

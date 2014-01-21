@@ -183,30 +183,6 @@ static void rcba_config(void)
 	}
 }
 
-static void setup_smbus_5c(void)
-{
-	u16 t3;
-
-	/* We have a muxed bus, hence all the GPIO accesses.  */
-	if (MCHBAR8(0x2ca8) == 0) {
-		t3 = inw(DEFAULT_GPIOBASE | 0x38);
-		outw(t3 & ~0x400, DEFAULT_GPIOBASE | 0x38);
-		smbus_read_byte(0x5c, 0x06);
-		smbus_write_byte(0x5c, 0x06, 0x8f);
-
-		smbus_read_byte(0x5c, 0x07);
-		smbus_write_byte(0x5c, 0x07, 0x8f);
-
-		outw(t3 | 0x400, DEFAULT_GPIOBASE | 0x38);
-	}
-
-	t3 = inw(DEFAULT_GPIOBASE | 0x38);
-	outw(t3 & ~0x400, DEFAULT_GPIOBASE | 0x38);
-
-	smbus_read_byte(0x57, 0x55);
-	outw(t3 | 0x400, DEFAULT_GPIOBASE | 0x38);
-}
-
 static inline void write_acpi32(u32 addr, u32 val)
 {
 	outl(val, DEFAULT_PMBASE | addr);
@@ -293,8 +269,6 @@ void main(unsigned long bist)
 
 	/* Enable SMBUS. */
 	enable_smbus();
-
-	setup_smbus_5c();
 
 	outb((inb(DEFAULT_GPIOBASE | 0x3a) & ~0x2) | 0x20,
 	     DEFAULT_GPIOBASE | 0x3a);

@@ -48,6 +48,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <smbios.h>
+#include "drivers/i2c/lenovo/eeprom.h"
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -96,86 +97,12 @@ const char *smbios_mainboard_version(void)
 	return "Lenovo X201";
 }
 
-static void smbus_read_string(u8 addr, u8 start, u8 len, char *result)
-{
-	int i;
-
-	for (i = 0; i < len; i++) {
-		int t = do_smbus_read_byte(SMBUS_IO_BASE, addr, start + i);
-		if (t < 0x20 || t > 0x7f) {
-			memcpy(result, "*INVALID*", sizeof ("*INVALID*"));
-			return;
-		}
-		result[i] = t;
-	}
-}
-
-const char *smbios_mainboard_serial_number(void)
-{
-	static char result[12];
-	static int already_read;
-
-	if (already_read)
-		return result;
-
-	memset(result, 0, sizeof (result));
-
-	smbus_read_string(0x54, 0x2e, 7, result);
-	already_read = 1;
-	return result;
-}
-
-const char *smbios_mainboard_product_name(void)
-{
-	static char result[12];
-	static int already_read;
-
-	if (already_read)
-		return result;
-	memset (result, 0, sizeof (result));
-
-	smbus_read_string(0x54, 0x27, 7, result);
-
-	already_read = 1;
-	return result;
-}
-
-void smbios_mainboard_set_uuid(u8 *uuid)
-{
-	static char result[16];
-	unsigned i;
-	static int already_read;
-	const int remap[16] = {
-		/* UUID byteswap.  */
-		3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15
-	};
-
-
-	if (already_read) {
-		memcpy (uuid, result, 16);
-		return;
-	}
-
-	memset (result, 0, sizeof (result));
-
-	for (i = 0; i < 16; i++) {
-		int t = do_smbus_read_byte(SMBUS_IO_BASE, 0x56, 0x12 + i);
-		if (t < 0) {
-			memset (result, 0, sizeof (result));
-			break;
-		}
-		result[remap[i]] = t;
-	}
-
-	already_read = 1;
-
-	memcpy (uuid, result, 16);
-}
-
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0;
 	u16 pmbase;
+
+	lenovo_eeprom_lock();
 
 	printk(BIOS_SPEW, "starting SPI configuration\n");
 

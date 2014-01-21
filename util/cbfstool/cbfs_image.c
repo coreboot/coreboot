@@ -748,8 +748,15 @@ struct cbfs_header *cbfs_find_header(char *data, size_t size)
 struct cbfs_file *cbfs_find_first_entry(struct cbfs_image *image)
 {
 	assert(image && image->header);
-	return (struct cbfs_file *)(image->buffer.data +
+	if (ntohl(image->header->offset) == 0)  {
+		if (image->buffer.size > ntohl(image->header->romsize)) {
+			return (struct  cbfs_file *)(image->buffer.data + image->buffer.size - ntohl(image->header->romsize + ntohl(image->header->offset)));
+		}
+	} else {
+		return (struct cbfs_file *)(image->buffer.data +
 				   ntohl(image->header->offset));
+	}
+	return NULL;
 }
 
 struct cbfs_file *cbfs_find_next_entry(struct cbfs_image *image,

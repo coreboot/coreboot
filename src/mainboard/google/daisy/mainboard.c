@@ -334,7 +334,6 @@ static void mainboard_enable(device_t dev)
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
 	mmu_config_range(DMA_START >> 20, DMA_SIZE >> 20, DCACHE_OFF);
 	mmu_config_range(DRAM_END, 4096 - DRAM_END, DCACHE_OFF);
-	dcache_invalidate_all();
 	dcache_mmu_enable();
 
 	const unsigned epll_hz = 192000000;

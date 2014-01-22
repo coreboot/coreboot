@@ -93,18 +93,6 @@ static inline void isb(void)
  * Low-level TLB maintenance operations
  */
 
-/* invalidate entire data TLB */
-static inline void dtlbiall(void)
-{
-	asm volatile ("mcr p15, 0, %0, c8, c6, 0" : : "r" (0) : "memory");
-}
-
-/* invalidate entire instruction TLB */
-static inline void itlbiall(void)
-{
-	asm volatile ("mcr p15, 0, %0, c8, c5, 0" : : "r" (0));
-}
-
 /* invalidate entire unified TLB */
 static inline void tlbiall(void)
 {
@@ -313,8 +301,8 @@ void dcache_mmu_disable(void);
 /* dcache and MMU enable */
 void dcache_mmu_enable(void);
 
-/* icache invalidate all (on current level given by CSSELR) */
-void icache_invalidate_all(void);
+/* perform all icache/dcache maintenance needed after loading new code */
+void cache_sync_instructions(void);
 
 /* tlb invalidate all */
 void tlb_invalidate_all(void);
@@ -322,9 +310,6 @@ void tlb_invalidate_all(void);
 /*
  * Generalized setup/init functions
  */
-
-/* invalidate all caches on ARM */
-void arm_invalidate_caches(void);
 
 /* mmu initialization (set page table address, set permissions, etc) */
 void mmu_init(void);

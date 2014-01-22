@@ -106,11 +106,18 @@ void mmu_config_range(unsigned long start_mb, unsigned long size_mb,
 	for (i = start_mb; i < start_mb + size_mb; i++)
 		writel((i << 20) | attr, &ttb_entry[i]);
 
-	/* Flush the page table entries, and old translations from the TLB. */
-	for (i = start_mb; i < start_mb + size_mb; i++) {
+	/* Flush the page table entries from the dcache. */
+	for (i = start_mb; i < start_mb + size_mb; i++)
 		dccmvac((uintptr_t)&ttb_entry[i]);
+
+	dsb();
+
+	/* Invalidate the TLB entries. */
+	for (i = start_mb; i < start_mb + size_mb; i++)
 		tlbimvaa(i*MiB);
-	}
+
+	dsb();
+	isb();
 }
 
 void mmu_init(void)

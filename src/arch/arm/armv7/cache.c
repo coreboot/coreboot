@@ -37,26 +37,9 @@
 
 void tlb_invalidate_all(void)
 {
-	/*
-	 * FIXME: ARMv7 Architecture Ref. Manual claims that the distinction
-	 * instruction vs. data TLBs is deprecated in ARMv7, however this does
-	 * not seem to be the case as of Cortex-A15.
-	 */
+	/* TLBIALL includes dTLB and iTLB on systems that have them. */
 	tlbiall();
-	dtlbiall();
-	itlbiall();
-	isb();
 	dsb();
-}
-
-void icache_invalidate_all(void)
-{
-	/*
-	 * icache can be entirely invalidated with one operation.
-	 * Note: If branch predictors are architecturally-visible, ICIALLU
-	 * also performs a BPIALL operation (B2-1283 in arch manual)
-	 */
-	iciallu();
 	isb();
 }
 
@@ -133,6 +116,11 @@ void dcache_invalidate_by_mva(void const *addr, size_t len)
 	dcache_op_mva(addr, len, OP_DCIMVAC);
 }
 
+/*
+ * CAUTION: This implementation assumes that coreboot never uses non-identity
+ * page tables for pages containing executed code. If you ever want to violate
+ * this assumption, have fun figuring out the associated problems on your own.
+ */
 void dcache_mmu_disable(void)
 {
 	uint32_t sctlr;
@@ -143,64 +131,19 @@ void dcache_mmu_disable(void)
 	write_sctlr(sctlr);
 }
 
-
 void dcache_mmu_enable(void)
 {
 	uint32_t sctlr;
 
 	sctlr = read_sctlr();
-	dcache_clean_invalidate_all();
 	sctlr |= SCTLR_C | SCTLR_M;
 	write_sctlr(sctlr);
 }
 
-void arm_invalidate_caches(void)
+void cache_sync_instructions(void)
 {
-	uint32_t clidr;
-	int level;
-
-	/* Invalidate branch predictor */
-	bpiall();
-
-	/* Iterate thru each cache identified in CLIDR and invalidate */
-	clidr = read_clidr();
-	for (level = 0; level < 7; level++) {
-		unsigned int ctype = (clidr >> (level * 3)) & 0x7;
-		uint32_t csselr;
-
-		switch(ctype) {
-		case 0x0:
-			/* no cache */
-			break;
-		case 0x1:
-			/* icache only */
-			csselr = (level << 1) | 1;
-			write_csselr(csselr);
-			icache_invalidate_all();
-			break;
-		case 0x2:
-		case 0x4:
-			/* dcache only or unified cache */
-			csselr = level << 1;
-			write_csselr(csselr);
-			dcache_invalidate_all();
-			break;
-		case 0x3:
-			/* separate icache and dcache */
-			csselr = (level << 1) | 1;
-			write_csselr(csselr);
-			icache_invalidate_all();
-
-			csselr = level << 1;
-			write_csselr(csselr);
-			dcache_invalidate_all();
-			break;
-		default:
-			/* reserved */
-			break;
-		}
-	}
-
-	/* Invalidate TLB */
-	tlb_invalidate_all();
+	dcache_clean_all();	/* includes trailing DSB (in assembly) */
+	iciallu();		/* includes BPIALLU (architecturally) */
+	dsb();
+	isb();
 }

@@ -39,10 +39,6 @@ void tlb_invalidate_all(void)
 {
 }
 
-void icache_invalidate_all(void)
-{
-}
-
 void dcache_clean_all(void)
 {
 }
@@ -82,11 +78,10 @@ void dcache_mmu_disable(void)
 {
 }
 
-
 void dcache_mmu_enable(void)
 {
 }
 
-void arm_invalidate_caches(void)
+void cache_sync_instructions(void)
 {
 }

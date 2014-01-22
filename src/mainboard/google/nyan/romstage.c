@@ -69,25 +69,12 @@ static void configure_l2actlr(void)
    write_l2actlr(val);
 }
 
-void main(void)
+static void __attribute__((noinline)) romstage(void)
 {
 	int dram_size_mb;
 #if CONFIG_COLLECT_TIMESTAMPS
 	uint64_t romstage_start_time = timestamp_get();
 #endif
-
-	// Globally disable MMU, caches and branch prediction (these should
-	// already be disabled by default on reset).
-	uint32_t sctlr = read_sctlr();
-	sctlr &= ~(SCTLR_M | SCTLR_C | SCTLR_Z | SCTLR_I);
-	write_sctlr(sctlr);
-
-	arm_invalidate_caches();
-
-	// Renable icache and branch prediction.
-	sctlr = read_sctlr();
-	sctlr |= SCTLR_Z | SCTLR_I;
-	write_sctlr(sctlr);
 
 	configure_l2ctlr();
 	configure_l2actlr();
@@ -110,7 +97,6 @@ void main(void)
 			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
 	mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
 	mmu_disable_range(0, 1);
-	dcache_invalidate_all();
 	dcache_mmu_enable();
 
 	/* For quality of the user experience, it's important to get
@@ -145,4 +131,11 @@ void main(void)
 	timestamp_add(TS_END_COPYRAM, timestamp_get());
 #endif
 	stage_exit(entry);
+}
+
+/* Stub to force arm_init_caches to the top, before any stack/memory accesses */
+void main(void)
+{
+	asm ("bl arm_init_caches" ::: "r0","r1","r2","r3","r4","r5","ip");
+	romstage();
 }

@@ -32,23 +32,6 @@ void main(void)
 {
 	const char *stage_name = "fallback/romstage";
 	void *entry;
-	uint32_t sctlr;
-
-	/* Globally disable MMU, caches, and branch prediction (these should
-	 * be disabled by default on reset) */
-	sctlr = read_sctlr();
-	sctlr &= ~(SCTLR_M | SCTLR_C | SCTLR_Z | SCTLR_I);
-	write_sctlr(sctlr);
-
-	arm_invalidate_caches();
-
-	/*
-	 * Re-enable icache and branch prediction. MMU and dcache will be
-	 * set up later.
-	 */
-	sctlr = read_sctlr();
-	sctlr |= SCTLR_Z | SCTLR_I;
-	write_sctlr(sctlr);
 
 	bootblock_cpu_init();
 	bootblock_mainboard_init();

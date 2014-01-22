@@ -29,7 +29,6 @@ void wakeup(void)
 
 	power_init();  /* Ensure ps_hold_setup() for early wakeup. */
 	dcache_mmu_disable();
-	icache_invalidate_all();
 	power_exit_wakeup();
 	/* Should never return. If we do, reset. */
 	power_reset();

@@ -46,6 +46,8 @@ ENDPROC(_start)
 
 .thumb
 ENTRY(_thumb_start)
+	bl	arm_init_caches
+
 	/*
 	 * From Cortex-A Series Programmer's Guide:
 	 * Only CPU 0 performs initialization. Other CPUs go into WFI

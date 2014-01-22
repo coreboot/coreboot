@@ -469,7 +469,6 @@ static void mainboard_enable(device_t dev)
 	/* set up caching for the DRAM */
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
 	mmu_config_range(DMA_START >> 20, DMA_SIZE >> 20, DCACHE_OFF);
-	tlb_invalidate_all();
 
 	const unsigned epll_hz = 192000000;
 	const unsigned sample_rate = 48000;

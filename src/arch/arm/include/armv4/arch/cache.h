@@ -66,8 +66,8 @@ void dcache_mmu_disable(void);
 /* dcache and MMU enable */
 void dcache_mmu_enable(void);
 
-/* icache invalidate all (on current level given by CSSELR) */
-void icache_invalidate_all(void);
+/* perform all icache/dcache maintenance needed after loading new code */
+void cache_sync_instructions(void);
 
 /* tlb invalidate all */
 void tlb_invalidate_all(void);
@@ -75,9 +75,6 @@ void tlb_invalidate_all(void);
 /*
  * Generalized setup/init functions
  */
-
-/* invalidate all caches on ARM */
-void arm_invalidate_caches(void);
 
 /* mmu initialization (set page table address, set permissions, etc) */
 void mmu_init(void);

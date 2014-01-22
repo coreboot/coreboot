@@ -20,12 +20,7 @@
 /*
  * This file contains entry/exit functions for each stage during coreboot
  * execution (bootblock entry and ramstage exit will depend on external
- * loading.
- *
- * Unlike other files, this one should be compiled with a -m option to
- * specify a pre-determined instruction set. This is to ensure consistency
- * in the CPU operating mode (ARM or Thumb) when hand-off between stages
- * occurs.
+ * loading).
  *
  * Entry points must be placed at the location the previous stage jumps
  * to (the lowest address in the stage image). This is done by giving
@@ -49,13 +44,10 @@ void stage_entry(void)
 void stage_exit(void *addr)
 {
 	void (*doit)(void) = addr;
-	/* make sure any code we installed is written to memory. Not all ARM have
-	 * unified caches.
+	/*
+	 * Most stages load code so we need to sync caches here. Should maybe
+	 * go into cbfs_load_stage() instead...
 	 */
-	dcache_clean_all();
-	/* Because most stages copy code to memory, it's a safe and hygienic thing
-	 * to flush the icache here.
-	 */
-	icache_invalidate_all();
+	cache_sync_instructions();
 	doit();
 }

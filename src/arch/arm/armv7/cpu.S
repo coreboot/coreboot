@@ -104,6 +104,37 @@
 	bx	lr
 .endm
 
+/*
+ * Bring an ARM processor we just gained control of (e.g. from IROM) into a
+ * known state regarding caches/SCTLR. Completely cleans and invalidates
+ * icache/dcache, disables MMU and dcache (if active), and enables unaligned
+ * accesses, icache and branch prediction (if inactive). Clobbers r4 and r5.
+ */
+ENTRY(arm_init_caches)
+	/* r4: SCTLR, return address: r5 (stay valid for the whole function) */
+	mov	r5, lr
+	mrc	p15, 0, r4, c1, c0, 0
+
+	/* Activate ICache (12) and Branch Prediction (11) already for speed */
+	orr	r4, # (1 << 11) | (1 << 12)
+	mcr	p15, 0, r4, c1, c0, 0
+
+	/* Flush and invalidate dcache in ascending order */
+	bl	dcache_clean_invalidate_all
+
+	/* Deactivate MMU (0), Alignment Check (1) and DCache (2) */
+	and	r4, # ~(1 << 0) & ~(1 << 1) & ~(1 << 2)
+	mcr	p15, 0, r4, c1, c0, 0
+
+	/* Invalidate icache and TLB for good measure */
+	mcr	p15, 0, r0, c7, c5, 0
+	mcr	p15, 0, r0, c8, c7, 0
+	dsb
+	isb
+
+	bx	r5
+ENDPROC(arm_init_caches)
+
 ENTRY(dcache_invalidate_all)
 	dcache_apply_all crm=c6
 ENDPROC(dcache_invalidate_all)

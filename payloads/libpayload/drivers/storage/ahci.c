@@ -189,7 +189,7 @@ static void ahci_prdbuf_finalize(ahci_dev_t *const dev)
 	dev->buflen = 0;
 }
 
-static ssize_t ahci_cmdslot_exec(ahci_dev_t *const dev)
+ssize_t ahci_cmdslot_exec(ahci_dev_t *const dev)
 {
 	const int slotnum = 0; /* We always use the first slot. */
 
@@ -221,7 +221,7 @@ static ssize_t ahci_cmdslot_exec(ahci_dev_t *const dev)
 	}
 }
 
-static size_t ahci_cmdslot_prepare(ahci_dev_t *const dev,
+size_t ahci_cmdslot_prepare(ahci_dev_t *const dev,
 				   u8 *const user_buf, size_t buf_len,
 				   const int out)
 {
@@ -266,108 +266,6 @@ static size_t ahci_cmdslot_prepare(ahci_dev_t *const dev,
 	}
 
 	return read_count;
-}
-
-static ssize_t ahci_ata_read_sectors(ata_dev_t *const ata_dev,
-				     const lba_t start, size_t count,
-				     u8 *const buf)
-{
-	ahci_dev_t *const dev = (ahci_dev_t *)ata_dev;
-
-	if (count == 0)
-		return 0;
-
-	if (ata_dev->read_cmd == ATA_READ_DMA) {
-		if (start >= (1 << 28)) {
-		       printf("ahci: Sector is not 28-bit addressable.\n");
-		       return -1;
-		} else if (count > 256) {
-		       printf("ahci: Sector count too high (max. 256).\n");
-		       count = 256;
-		}
-#ifdef CONFIG_STORAGE_64BIT_LBA
-	} else if (ata_dev->read_cmd == ATA_READ_DMA_EXT) {
-		if (start >= (1ULL << 48)) {
-			printf("ahci: Sector is not 48-bit addressable.\n");
-			return -1;
-		} else if (count > (64 * 1024)) {
-		       printf("ahci: Sector count too high (max. 65536).\n");
-		       count = 64 * 1024;
-		}
-#endif
-	} else {
-		printf("ahci: Unsupported ATA read command (0x%x).\n",
-			ata_dev->read_cmd);
-		return -1;
-	}
-
-	const size_t bytes = count << ata_dev->sector_size_shift;
-	const size_t bytes_feasible = ahci_cmdslot_prepare(dev, buf, bytes, 0);
-	const size_t sectors = bytes_feasible >> ata_dev->sector_size_shift;
-
-	dev->cmdtable->fis[ 0] = FIS_HOST_TO_DEVICE;
-	dev->cmdtable->fis[ 1] = FIS_H2D_CMD;
-	dev->cmdtable->fis[ 2] = ata_dev->read_cmd;
-	dev->cmdtable->fis[ 4] = (start >>  0) & 0xff;
-	dev->cmdtable->fis[ 5] = (start >>  8) & 0xff;
-	dev->cmdtable->fis[ 6] = (start >> 16) & 0xff;
-	dev->cmdtable->fis[ 7] = FIS_H2D_DEV_LBA;
-	dev->cmdtable->fis[ 8] = (start >> 24) & 0xff;
-#ifdef CONFIG_STORAGE_64BIT_LBA
-	if (ata_dev->read_cmd == ATA_READ_DMA_EXT) {
-		dev->cmdtable->fis[ 9] = (start >> 32) & 0xff;
-		dev->cmdtable->fis[10] = (start >> 40) & 0xff;
-	}
-#endif
-	dev->cmdtable->fis[12] = (sectors >>  0) & 0xff;
-	dev->cmdtable->fis[13] = (sectors >>  8) & 0xff;
-
-	if (ahci_cmdslot_exec(dev) < 0)
-		return -1;
-	else
-		return dev->cmdlist->prd_bytes >> ata_dev->sector_size_shift;
-}
-
-static ssize_t ahci_packet_read_cmd(atapi_dev_t *const _dev,
-				    const u8 *const cmd, const size_t cmdlen,
-				    u8 *const buf, const size_t buflen)
-{
-	ahci_dev_t *const dev = (ahci_dev_t *)_dev;
-
-	if ((cmdlen != 12) && (cmdlen != 16)) {
-		printf("ahci: Only 12- and 16-byte packet commands allowed.\n");
-		return -1;
-	}
-
-	const size_t len = ahci_cmdslot_prepare(dev, buf, buflen, 0);
-	u16 byte_limit = MIN(len, 63 * 1024); /* like Linux */
-	if (byte_limit & 1) ++byte_limit; /* even limit */
-
-	dev->cmdlist[0].cmd |= CMD_ATAPI;
-	dev->cmdtable->fis[0] = FIS_HOST_TO_DEVICE;
-	dev->cmdtable->fis[1] = FIS_H2D_CMD;
-	dev->cmdtable->fis[2] = ATA_PACKET;
-	dev->cmdtable->fis[5] = byte_limit & 0xff;
-	dev->cmdtable->fis[6] = byte_limit >> 8;
-	memcpy((void *)dev->cmdtable->atapi_cmd, cmd, cmdlen);
-
-	return ahci_cmdslot_exec(dev);
-}
-
-static int ahci_identify_device(ata_dev_t *const ata_dev, u8 *const buf)
-{
-	ahci_dev_t *const dev = (ahci_dev_t *)ata_dev;
-
-	ahci_cmdslot_prepare(dev, buf, 512, 0);
-
-	dev->cmdtable->fis[0] = FIS_HOST_TO_DEVICE;
-	dev->cmdtable->fis[1] = FIS_H2D_CMD;
-	dev->cmdtable->fis[2] = ata_dev->identify_cmd;
-
-	if ((ahci_cmdslot_exec(dev) < 0) || (dev->cmdlist->prd_bytes != 512))
-		return -1;
-	else
-		return 0;
 }
 
 static int ahci_dev_init(hba_ctrl_t *const ctrl,

@@ -1,7 +1,8 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright 2013 Google Inc.
+ * Copyright (C) 2012 secunet Security Networks AG
+ * Copyright (C) 2013 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,38 +28,40 @@
  * SUCH DAMAGE.
  */
 
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 #include <libpayload.h>
+#include <pci.h>
+#include <storage/ata.h>
+#include <storage/ahci.h>
 
-void hexdump(void *memory, int length)
+
+#include "ahci_private.h"
+
+
+ssize_t ahci_packet_read_cmd(atapi_dev_t *const _dev,
+				    const u8 *const cmd, const size_t cmdlen,
+				    u8 *const buf, const size_t buflen)
 {
-	int i;
-	uint8_t *m;
-	int all_zero = 0;
+	ahci_dev_t *const dev = (ahci_dev_t *)_dev;
 
-	m = (uint8_t *) memory;
-
-	for (i = 0; i < length; i += 16) {
-		int j;
-
-		all_zero++;
-		for (j = 0; j < 16; j++) {
-			if (m[i + j] != 0) {
-				all_zero = 0;
-				break;
-			}
-		}
-
-		if (all_zero < 2) {
-			printf("%08lx:", (long unsigned int)memory + i);
-			for (j = 0; j < 16; j++)
-				printf(" %02x", m[i + j]);
-			printf("  ");
-			for (j = 0; j < 16; j++)
-				printf("%c",
-				       isprint(m[i + j]) ? m[i + j] : '.');
-			printf("\n");
-		} else if (all_zero == 2) {
-			printf("...\n");
-		}
+	if ((cmdlen != 12) && (cmdlen != 16)) {
+		printf("ahci: Only 12- and 16-byte packet commands allowed.\n");
+		return -1;
 	}
+
+	const size_t len = ahci_cmdslot_prepare(dev, buf, buflen, 0);
+	u16 byte_limit = MIN(len, 63 * 1024); /* like Linux */
+	if (byte_limit & 1) ++byte_limit; /* even limit */
+
+	dev->cmdlist[0].cmd |= CMD_ATAPI;
+	dev->cmdtable->fis[0] = FIS_HOST_TO_DEVICE;
+	dev->cmdtable->fis[1] = FIS_H2D_CMD;
+	dev->cmdtable->fis[2] = ATA_PACKET;
+	dev->cmdtable->fis[5] = byte_limit & 0xff;
+	dev->cmdtable->fis[6] = byte_limit >> 8;
+	memcpy((void *)dev->cmdtable->atapi_cmd, cmd, cmdlen);
+
+	return ahci_cmdslot_exec(dev);
 }

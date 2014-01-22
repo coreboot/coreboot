@@ -54,10 +54,14 @@ libc-$(CONFIG_GEODELX_VIDEO_CONSOLE) += video/font8x16.c
 libc-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += video/corebootfb.c
 libc-$(CONFIG_COREBOOT_VIDEO_CONSOLE) += video/font8x16.c
 
+# AHCI/ATAPI driver
 libc-$(CONFIG_STORAGE) += storage/storage.c
 libc-$(CONFIG_STORAGE_ATA) += storage/ata.c
 libc-$(CONFIG_STORAGE_ATAPI) += storage/atapi.c
 libc-$(CONFIG_STORAGE_AHCI) += storage/ahci.c
+libc-$(CONFIG_STORAGE_AHCI) += storage/ahci_ata_read_sectors.c
+libc-$(CONFIG_STORAGE_AHCI) += storage/ahci_identify_device.c
+libc-$(CONFIG_STORAGE_AHCI) += storage/ahci_packet_read_cmd.c
 
 # USB stack
 libc-$(CONFIG_USB) += usb/usbinit.c

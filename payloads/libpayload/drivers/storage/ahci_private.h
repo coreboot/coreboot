@@ -2,6 +2,7 @@
  * This file is part of the libpayload project.
  *
  * Copyright (C) 2012 secunet Security Networks AG
+ * Copyright (C) 2013 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -198,4 +199,22 @@ typedef struct {
 	size_t buflen;
 } ahci_dev_t;
 
-#endif
+ssize_t ahci_cmdslot_exec(ahci_dev_t *const dev);
+
+size_t ahci_cmdslot_prepare(ahci_dev_t *const dev,
+		   u8 *const user_buf, size_t buf_len,
+		   const int out);
+
+
+ssize_t ahci_ata_read_sectors(ata_dev_t *const ata_dev,
+		     const lba_t start, size_t count,
+		     u8 *const buf);
+
+ssize_t ahci_packet_read_cmd(atapi_dev_t *const _dev,
+		    const u8 *const cmd, const size_t cmdlen,
+		    u8 *const buf, const size_t buflen);
+
+int ahci_identify_device(ata_dev_t *const ata_dev, u8 *const buf);
+
+
+#endif /* _AHCI_PRIVATE_H */

@@ -1,7 +1,8 @@
 /*
  * This file is part of the libpayload project.
  *
- * Copyright 2013 Google Inc.
+ * Copyright (C) 2012 secunet Security Networks AG
+ * Copyright (C) 2013 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -27,38 +28,29 @@
  * SUCH DAMAGE.
  */
 
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
 #include <libpayload.h>
+#include <pci.h>
+#include <storage/ata.h>
+#include <storage/ahci.h>
 
-void hexdump(void *memory, int length)
+#include "ahci_private.h"
+
+
+int ahci_identify_device(ata_dev_t *const ata_dev, u8 *const buf)
 {
-	int i;
-	uint8_t *m;
-	int all_zero = 0;
+	ahci_dev_t *const dev = (ahci_dev_t *)ata_dev;
 
-	m = (uint8_t *) memory;
+	ahci_cmdslot_prepare(dev, buf, 512, 0);
 
-	for (i = 0; i < length; i += 16) {
-		int j;
+	dev->cmdtable->fis[0] = FIS_HOST_TO_DEVICE;
+	dev->cmdtable->fis[1] = FIS_H2D_CMD;
+	dev->cmdtable->fis[2] = ata_dev->identify_cmd;
 
-		all_zero++;
-		for (j = 0; j < 16; j++) {
-			if (m[i + j] != 0) {
-				all_zero = 0;
-				break;
-			}
-		}
-
-		if (all_zero < 2) {
-			printf("%8p:", memory + i);
-			for (j = 0; j < 16; j++)
-				printf(" %02x", m[i + j]);
-			printf("  ");
-			for (j = 0; j < 16; j++)
-				printf("%c",
-				       isprint(m[i + j]) ? m[i + j] : '.');
-			printf("\n");
-		} else if (all_zero == 2) {
-			printf("...\n");
-		}
-	}
+	if ((ahci_cmdslot_exec(dev) < 0) || (dev->cmdlist->prd_bytes != 512))
+		return -1;
+	else
+		return 0;
 }

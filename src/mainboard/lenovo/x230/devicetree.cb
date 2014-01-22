@@ -58,7 +58,7 @@ chip northbridge/intel/sandybridge
 			# Enable SATA ports 0 (HDD bay) & 1 (dock) & 2 (msata)
 			register "sata_port_map" = "0x7"
 			# Set max SATA speed to 6.0 Gb/s
-			register "sata_interface_speed_support" = "0x3"
+			register "sata_interface_speed_limit" = "0x3"
 
 			register "gen1_dec" = "0x7c1601"
 			register "gen2_dec" = "0x0c15e1"

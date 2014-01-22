@@ -39,7 +39,7 @@ chip northbridge/intel/sandybridge
 			# Enable all SATA ports 0-5
 			register "sata_port_map" = "0x3f"
 			# Set max SATA speed to 6.0 Gb/s (should be the default, anyway)
-			register "sata_interface_speed_support" = "0x3"
+			register "sata_interface_speed_limit" = "0x3"
 
 			# TODO: Enable generic LPC decodes...
 			register "gen1_dec" = "0x001c02e1"

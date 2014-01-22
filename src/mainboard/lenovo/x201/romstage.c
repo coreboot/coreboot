@@ -230,7 +230,6 @@ static inline u16 read_acpi16(u32 addr)
 void main(unsigned long bist)
 {
 	u32 reg32;
-	int cbmem_initted;
 	int s3resume = 0;
 
 	timestamp_init(rdtsc ());
@@ -325,18 +324,24 @@ void main(unsigned long bist)
 		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 	}
 
-	/* FIXME: If not in s3resume, raminit() calls cbmem_recovery(0),
-	 * clears all of CBMEM region and puts in MRC training results.
-	 * Tell here we are doing resume to avoid wiping CBMEM region
-	 * again. */
-	cbmem_initted = !cbmem_recovery(1);
-
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
 	 * this is not a resume. In that case we just create the cbmem toc.
 	 */
-	if (s3resume && cbmem_initted) {
-		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
+	if (s3resume) {
+		void *resume_backup_memory;
+
+		/* For non-S3-resume, CBMEM is inited in raminit code.  */
+		if (cbmem_recovery(1)) {
+			printk(BIOS_ERR, "Failed S3 resume.\n");
+			ram_check(0x100000, 0x200000);
+
+			/* Failed S3 resume, reset to come up cleanly */
+			outb(0xe, 0xcf9);
+			hlt();
+		}
+
+		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
 		 * through stage 2. We could keep stuff like stack and heap in high tables
@@ -349,13 +354,6 @@ void main(unsigned long bist)
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
-	} else if (s3resume) {
-		printk(BIOS_ERR, "Failed S3 resume.\n");
-		ram_check(0x100000, 0x200000);
-
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0xe, 0xcf9);
-		hlt();
 	} else {
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
 		quick_ram_check();

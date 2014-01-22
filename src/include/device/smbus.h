@@ -46,5 +46,9 @@ int smbus_write_word(device_t dev, u8 addr, u16 val);
 int smbus_process_call(device_t dev, u8 cmd, u16 data);
 int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer);
 int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer);
+/* Functions to access main bus simply by the address. Convenient for boards
+   which have only one bus.  */
+int smbus_read_byte_main_bus(u8 dev, u8 addr);
+int smbus_write_byte_main_bus(u8 dev, u8 addr, u8 val);
 
 #endif /* DEVICE_SMBUS_H */

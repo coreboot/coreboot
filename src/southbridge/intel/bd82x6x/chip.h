@@ -69,15 +69,21 @@ struct southbridge_intel_bd82x6x_config {
 	uint32_t sata_port1_gen3_tx;
 
 	/**
-	 * SATA Interface Speed Support Configuration
+	 * SATA Interface Speed Support Configuration (ISS)
+	 *
+	 * This option limits the maximum SATA link speed on all SATA ports.
+	 * For systems with a mix of 6G and 3G ports, each port will operate up
+	 * to its capability, but not any higher than the limit set here. This
+	 * option should only be used if the SATA port cannot operate at its
+	 * full speed due to hardware bugs, such as board mis-routing.
 	 *
 	 * Only the lower two bits have a meaning:
 	 * 00 - No effect (leave as chip default)
-	 * 01 - 1.5 Gb/s maximum speed
-	 * 10 - 3.0 Gb/s maximum speed
-	 * 11 - 6.0 Gb/s maximum speed
+	 * 01 - 1.5 Gb/s maximum speed (Gen 1)
+	 * 10 - 3.0 Gb/s maximum speed (Gen 2)
+	 * 11 - 6.0 Gb/s maximum speed (Gen 3)
 	 */
-	uint8_t sata_interface_speed_support;
+	uint8_t sata_interface_speed_limit;
 
 	uint32_t gen1_dec;
 	uint32_t gen2_dec;

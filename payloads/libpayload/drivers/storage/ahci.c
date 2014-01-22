@@ -328,6 +328,8 @@ static ssize_t ahci_ata_read_sectors(ata_dev_t *const ata_dev,
 		return dev->cmdlist->prd_bytes >> ata_dev->sector_size_shift;
 }
 
+/* XXX: Currently defined but unused function */
+#if 0
 static ssize_t ahci_packet_read_cmd(atapi_dev_t *const _dev,
 				    const u8 *const cmd, const size_t cmdlen,
 				    u8 *const buf, const size_t buflen)
@@ -353,6 +355,7 @@ static ssize_t ahci_packet_read_cmd(atapi_dev_t *const _dev,
 
 	return ahci_cmdslot_exec(dev);
 }
+#endif /* XXX */
 
 static int ahci_identify_device(ata_dev_t *const ata_dev, u8 *const buf)
 {

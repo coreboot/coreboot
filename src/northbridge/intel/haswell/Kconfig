@@ -107,4 +107,13 @@ config CBFS_SIZE
 	  This option allows to limit the size of the CBFS portion in the
 	  firmware image.
 
+config PRE_GRAPHICS_DELAY
+	int
+	default 0
+	help
+	  On some systems, coreboot boots so fast that connected monitors
+	  (mostly TVs) won't be able to wake up fast enough to talk to the
+	  VBIOS. On those systems we need to wait for a bit before executing
+	  the VBIOS.
+
 endif

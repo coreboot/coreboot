@@ -177,12 +177,28 @@ static void mainboard_init(device_t dev)
 			   0x42, 0x142);
 }
 
+static int mainboard_smbios_data(device_t dev, int *handle, unsigned long *current)
+{
+	int len;
+	char tpec[] = "IBM ThinkPad Embedded Controller -[                 ]-";
+	const char *oem_strings[] = {
+		tpec,
+	};
+
+	h8_build_id_and_function_spec_version(tpec + 35, 17);
+	len = smbios_write_type11(current, (*handle)++, oem_strings, ARRAY_SIZE(oem_strings));
+
+	return len;
+}
+
 // mainboard_enable is executed as first thing after
 // enumerate_buses().
 
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	dev->ops->get_smbios_data = mainboard_smbios_data;
+
 #if CONFIG_VGA_ROM_RUN
 	/* Install custom int15 handler for VGA OPROM */
 	mainboard_interrupt_handlers(0x15, &int15_handler);

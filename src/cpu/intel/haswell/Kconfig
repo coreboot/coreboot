@@ -39,10 +39,6 @@ config SMM_RESERVED_SIZE
 	hex
 	default 0x100000
 
-config MICROCODE_INCLUDE_PATH
-	string
-	default "src/cpu/intel/haswell"
-
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."
 	default n

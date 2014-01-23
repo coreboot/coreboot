@@ -7,3 +7,4 @@ subdirs-y += lm63
 subdirs-y += rtd2132
 subdirs-y += w83795
 subdirs-y += w83793
+subdirs-y += lenovo

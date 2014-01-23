@@ -448,7 +448,7 @@ static void mainboard_init(device_t dev)
 
 	/* this might get more dynamic in future ... */
 	memset(&device_info, 0, sizeof(device_info));
-	device_info.disp_info.name = (char *)"Pit display";
+	device_info.disp_info.name = (char *)"Peach Pit display";
 	device_info.disp_info.h_total = 1366;
 	device_info.disp_info.v_total = 768;
 	device_info.video_info = dp_video_info;

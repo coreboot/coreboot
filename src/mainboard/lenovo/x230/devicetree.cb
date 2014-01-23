@@ -127,7 +127,33 @@ chip northbridge/intel/sandybridge
 				end
 			end # LPC bridge
 			device pci 1f.2 on end # SATA Controller 1
-			device pci 1f.3 on end # SMBus
+			device pci 1f.3 on
+			        # eeprom, 8 virtual devices, same chip
+				chip drivers/i2c/lenovo
+					device i2c 54 on end
+				end
+				chip drivers/i2c/lenovo
+					device i2c 55 on end
+				end
+				chip drivers/i2c/lenovo
+					device i2c 56 on end
+				end
+				chip drivers/i2c/lenovo
+					device i2c 57 on end
+				end
+				chip drivers/i2c/lenovo
+					device i2c 5c on end
+				end
+				chip drivers/i2c/lenovo
+					device i2c 5d on end
+				end
+				chip drivers/i2c/lenovo
+					device i2c 5e on end
+				end
+				chip drivers/i2c/lenovo
+					device i2c 5f on end
+				end
+			end # SMBus
 			device pci 1f.5 off end # SATA Controller 2
 			device pci 1f.6 on end # Thermal
 		end

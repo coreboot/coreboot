@@ -40,6 +40,8 @@
 #include <smbios.h>
 #include <build.h>
 #include <x86emu/x86emu.h>
+#include "drivers/i2c/lenovo/eeprom.h"
+
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
 int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
@@ -91,6 +93,8 @@ int get_cst_entries(acpi_cstate_t **entries)
 static void mainboard_init(device_t dev)
 {
 	device_t dev0, idedev, sdhci_dev;
+
+	lenovo_eeprom_lock();
 
 	ec_clr_bit(0x03, 2);
 

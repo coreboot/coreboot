@@ -1,0 +1,16 @@
+diff -ur acpica-unix-20130626/source/include/platform/acfreebsd.h acpica-unix-20130626.patched/source/include/platform/acfreebsd.h
+--- acpica-unix-20130626/source/include/platform/acfreebsd.h	2013-06-26 19:59:47.000000000 +0200
++++ acpica-unix-20130626.patched/source/include/platform/acfreebsd.h	2014-01-23 14:20:38.225400877 +0100
+@@ -123,6 +123,12 @@
+ #include <sys/types.h>
+ #include <machine/acpica_machdep.h>
+ 
++#ifdef _LP64
++#define ACPI_MACHINE_WIDTH      64
++#else
++#define ACPI_MACHINE_WIDTH      32
++#endif
++
+ #define ACPI_UINTPTR_T      uintptr_t
+ 
+ #define ACPI_USE_DO_WHILE_0

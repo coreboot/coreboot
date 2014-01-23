@@ -94,8 +94,10 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 		*iflags |= VB_INIT_FLAG_WP_ENABLED;
 	if (CONFIG_VIRTUAL_DEV_SWITCH)
 		*iflags |= VB_INIT_FLAG_VIRTUAL_DEV_SWITCH;
-	if (CONFIG_EC_SOFTWARE_SYNC)
+	if (CONFIG_EC_SOFTWARE_SYNC) {
 		*iflags |= VB_INIT_FLAG_EC_SOFTWARE_SYNC;
+		*iflags |= VB_INIT_FLAG_VIRTUAL_REC_SWITCH;
+	}
 
 	context.handoff = vboot_handoff;
 	context.cparams = &cparams;

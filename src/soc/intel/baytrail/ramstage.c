@@ -72,7 +72,9 @@ static inline void fill_in_msr(msr_t *msr, int idx)
 	}
 }
 
-static const char *stepping_str[] = { "A0", "A1", "B0", "B1", "B2", "B3" };
+static const char *stepping_str[] = {
+	"A0", "A1", "B0", "B1", "B2", "B3", "C0"
+};
 
 static void fill_in_pattrs(void)
 {
@@ -84,7 +86,10 @@ static void fill_in_pattrs(void)
 	dev = dev_find_slot(0, PCI_DEVFN(LPC_DEV, LPC_FUNC));
 	attrs->revid = pci_read_config8(dev, REVID);
 	/* The revision to stepping IDs have two values per metal stepping. */
-	if (attrs->revid >= RID_B_STEPPING_START) {
+	if (attrs->revid >= RID_C_STEPPING_START) {
+		attrs->stepping = (attrs->revid - RID_C_STEPPING_START) / 2;
+		attrs->stepping += STEP_C0;
+	} else if (attrs->revid >= RID_B_STEPPING_START) {
 		attrs->stepping = (attrs->revid - RID_B_STEPPING_START) / 2;
 		attrs->stepping += STEP_B0;
 	} else {

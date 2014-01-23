@@ -40,10 +40,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Nyan Big"
 
-config DRAM_SIZE_MB
-	int
-	default 2048
-
 config DRAM_DMA_START
 	hex
 	default 0x90000000
@@ -89,19 +85,5 @@ config BOOT_MEDIA_SPI_CHIP_SELECT
 config EC_GOOGLE_CHROMEEC_SPI_BUS
 	hex
 	default 1
-
-choice
-	prompt "BCT sdram configuration"
-	default NYAN_BIG_BCT_SDRAM_792
-	help
-	  The SDRAM configuration to put in the BCT.
-
-config NYAN_BIG_BCT_SDRAM_792
-	bool "792 MHz"
-
-config NYAN_BIG_BCT_SDRAM_924
-	bool "924 MHz"
-
-endchoice
 
 endif # BOARD_GOOGLE_NYAN_BIG

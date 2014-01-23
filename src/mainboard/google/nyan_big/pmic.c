@@ -83,10 +83,7 @@ void pmic_init(unsigned bus)
 	pmic_slam_defaults(bus);
 
 	/* First set VDD_CPU to 1.2V, then enable the VDD_CPU regulator. */
-	if (board_id() == 0)
-		pmic_write_reg(bus, 0x00, 0x3c);
-	else
-		pmic_write_reg(bus, 0x00, 0x50);
+	pmic_write_reg(bus, 0x00, 0x50);
 
 	/* First set VDD_GPU to 1.0V, then enable the VDD_GPU regulator. */
 	pmic_write_reg(bus, 0x06, 0x28);

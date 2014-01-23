@@ -72,17 +72,19 @@ void bootblock_mainboard_init(void)
 	pmic_init(4);
 
 	/* SPI4 data out (MOSI) */
-	pinmux_set_config(PINMUX_SDMMC1_CMD_INDEX,
-			  PINMUX_SDMMC1_CMD_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_GPIO_PG6_INDEX,
+			  PINMUX_GPIO_PG6_FUNC_SPI4 | PINMUX_INPUT_ENABLE |
+			  PINMUX_PULL_UP);
 	/* SPI4 data in (MISO) */
-	pinmux_set_config(PINMUX_SDMMC1_DAT1_INDEX,
-			  PINMUX_SDMMC1_DAT1_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_GPIO_PG7_INDEX,
+			  PINMUX_GPIO_PG7_FUNC_SPI4 | PINMUX_INPUT_ENABLE |
+			  PINMUX_PULL_UP);
 	/* SPI4 clock */
-	pinmux_set_config(PINMUX_SDMMC1_DAT2_INDEX,
-			  PINMUX_SDMMC1_DAT2_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_GPIO_PG5_INDEX,
+			  PINMUX_GPIO_PG5_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
 	/* SPI4 chip select 0 */
-	pinmux_set_config(PINMUX_SDMMC1_DAT3_INDEX,
-			  PINMUX_SDMMC1_DAT3_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
+	pinmux_set_config(PINMUX_GPIO_PI3_INDEX,
+			  PINMUX_GPIO_PI3_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
 
 	tegra_spi_init(4);
 }

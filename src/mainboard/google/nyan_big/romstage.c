@@ -25,14 +25,11 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include "sdram_configs.h"
 #include "soc/nvidia/tegra124/chip.h"
+#include "soc/nvidia/tegra124/sdram.h"
 #include <soc/display.h>
 #include <timestamp.h>
-
-// Convenient shorthand (in MB)
-#define DRAM_START	(CONFIG_SYS_SDRAM_BASE >> 20)
-#define DRAM_SIZE	CONFIG_DRAM_SIZE_MB
-#define DRAM_END	(DRAM_START + DRAM_SIZE)	/* plus one... */
 
 enum {
 	L2CTLR_ECC_PARITY = 0x1 << 21,
@@ -74,6 +71,7 @@ static void configure_l2actlr(void)
 
 void main(void)
 {
+	int dram_size_mb;
 #if CONFIG_COLLECT_TIMESTAMPS
 	uint64_t romstage_start_time = timestamp_get();
 #endif
@@ -97,12 +95,20 @@ void main(void)
 	console_init();
 	exception_init();
 
+	sdram_init(get_sdram_config());
+
+	/* used for MMU and CBMEM setup */
+	dram_size_mb = sdram_size_mb();
+
+	u32 dram_start = (CONFIG_SYS_SDRAM_BASE >> 20);
+	u32 dram_end = dram_start + dram_size_mb;	/* plus one... */
+
 	mmu_init();
-	mmu_config_range(0, DRAM_START, DCACHE_OFF);
-	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
+	mmu_config_range(0, dram_start, DCACHE_OFF);
+	mmu_config_range(dram_start, dram_size_mb, DCACHE_WRITEBACK);
 	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
 			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
-	mmu_config_range(DRAM_END, 4096 - DRAM_END, DCACHE_OFF);
+	mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
 	mmu_disable_range(0, 1);
 	dcache_invalidate_all();
 	dcache_mmu_enable();

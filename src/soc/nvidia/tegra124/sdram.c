@@ -568,6 +568,13 @@ void sdram_init(const struct sdram_params *param)
 	struct tegra_mc_regs *mc = (struct tegra_mc_regs*)TEGRA_MC_BASE;
 	struct tegra_emc_regs *emc = (struct tegra_emc_regs*)TEGRA_EMC_BASE;
 
+	printk(BIOS_DEBUG, "Initializing SDRAM of type %d with %dKHz\n",
+		param->MemoryType, clock_get_osc_khz() *
+		param->PllMFeedbackDivider / param->PllMInputDivider /
+		(1 + param->PllMSelectDiv2));
+	if (param->MemoryType != NvBootMemoryType_Ddr3)
+		die("Unsupported memory type!\n");
+
 	sdram_configure_pmc(param, pmc);
 	sdram_patch(param->EmcBctSpare0, param->EmcBctSpare1);
 
@@ -600,6 +607,8 @@ void sdram_init(const struct sdram_params *param)
 	sdram_set_refresh(param, emc);
 	sdram_enable_arbiter(param);
 	sdram_lock_carveouts(param, mc);
+
+	sdram_lp0_save_params(param);
 }
 
 uint32_t sdram_get_ram_code(void)
@@ -608,4 +617,25 @@ uint32_t sdram_get_ram_code(void)
 	return ((readl(&pmc->strapping_opt_a) &
 		 PMC_STRAPPING_OPT_A_RAM_CODE_MASK) >>
 		PMC_STRAPPING_OPT_A_RAM_CODE_SHIFT);
+}
+
+/* returns total amount of DRAM (in MB) from memory controller registers */
+int sdram_size_mb(void)
+{
+	struct tegra_mc_regs *mc = (struct tegra_mc_regs *)TEGRA_MC_BASE;
+	static int total_size = 0;
+
+	if (total_size)
+		return total_size;
+
+	/*
+	 * This obtains memory size from the External Memory Aperture
+	 * Configuration register. Nvidia confirmed that it is safe to assume
+	 * this value represents the total physical DRAM size.
+	 */
+	total_size = (read32(&mc->emem_cfg) >>
+			MC_EMEM_CFG_SIZE_MB_SHIFT) & MC_EMEM_CFG_SIZE_MB_MASK;
+
+	printk(BIOS_DEBUG, "%s: Total SDRAM (MB): %u\n", __func__, total_size);
+	return total_size;
 }

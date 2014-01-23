@@ -26,17 +26,15 @@ config BOOTBLOCK_CPU_INIT
 # 0x18080 Free for CBFS data.
 #
 # iRAM (256k) layout.
-# 0x4000_0000 BootROM runtime data/stack area, can be reclaimed after BootROM.
-#       +0000 (BootROM) Boot Information Table.
-#       +0100 (BootROM) BCT.
-#       ---------------------------------------------------------------------
-#       +0000 (Coreboot) TTB 16KB.
-#       +4000 (Coreboot) Stack.
-# 0x4000_E000 Valid for anything to be executed after BootROM (effective entry
-#             point address specified in BCT).
-#       +0000 (Coreboot) Bootblock (max 36k).
-#       +9000 (Coreboot) ROM stage (max 36k).
-# 0x4002_0000 (Coreboot) Cache of CBFS.
+# (Note: The BootROM uses the address range [0x4000_0000:0x4000_E000) itself,
+#  so the bootblock loading address must be placed after that. After the
+#  handoff that area may be reclaimed for other uses, e.g. CBFS cache.)
+#
+# 0x4000_0000 TTB (16KB).
+# 0x4000_4000 CBFS mapping cache (96KB).
+# 0x4001_C000 Stack (16KB... don't reduce without comparing LZMA scratchpad!).
+# 0x4002_0000 Bootblock (max 48KB).
+# 0x4002_C000 ROM stage (max 80KB).
 # 0x4003_FFFF End of iRAM.
 
 config BOOTBLOCK_ROM_OFFSET
@@ -57,11 +55,11 @@ config SYS_SDRAM_BASE
 
 config BOOTBLOCK_BASE
 	hex
-	default 0x4000e000
+	default 0x40020000
 
 config ROMSTAGE_BASE
 	hex
-	default 0x40017000
+	default 0x4002c000
 
 config RAMSTAGE_BASE
 	hex
@@ -69,12 +67,13 @@ config RAMSTAGE_BASE
 
 config STACK_TOP
 	hex
-	default 0x4000c000
+	default 0x40020000
 
 config STACK_BOTTOM
 	hex
-	default 0x40004000
+	default 0x4001c000
 
+# This is the ramstage thread stack, *not* the same as above! Currently unused.
 config STACK_SIZE
 	hex
 	default 0x800
@@ -86,10 +85,10 @@ config TTB_BUFFER
 
 config CBFS_CACHE_ADDRESS
 	hex "memory address to put CBFS cache data"
-	default 0x40020000
+	default 0x40004000
 
 config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x00020000
+	default 0x00018000
 
 endif

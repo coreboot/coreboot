@@ -33,25 +33,27 @@
 
 enum {
 	/* Specifies the memory type to be undefined */
-	MEMORY_TYPE_NONE = 0,
+	NvBootMemoryType_None = 0,
 
 	/* Specifies the memory type to be DDR SDRAM */
-	MEMORY_TYPE_DDR = 0,
+	NvBootMemoryType_Ddr = 0,
 
 	/* Specifies the memory type to be LPDDR SDRAM */
-	MEMORY_TYPE_LPDDR = 0,
+	NvBootMemoryType_LpDdr = 0,
 
 	/* Specifies the memory type to be DDR2 SDRAM */
-	MEMORY_TYPE_DDR2 = 0,
+	NvBootMemoryType_Ddr2 = 0,
 
 	/* Specifies the memory type to be LPDDR2 SDRAM */
-	MEMORY_TYPE_LPDDR2,
+	NvBootMemoryType_LpDdr2,
 
 	/* Specifies the memory type to be DDR3 SDRAM */
-	MEMORY_TYPE_DDR3,
+	NvBootMemoryType_Ddr3,
 
-	MEMORY_TYPE_NUM,
-	MEMORY_TYPE_FORCE32 = 0X7FFFFFF
+	NvBootMemoryType_Num,
+
+	/* Specifies an entry in the ram_code table that's not in use */
+	NvBootMemoryType_Unused = 0X7FFFFFF,
 };
 
 enum {
@@ -69,7 +71,7 @@ enum {
 struct sdram_params {
 
 	/* Specifies the type of memory device */
-	uint32_t memory_type;
+	uint32_t MemoryType;
 
 	/* MC/EMC clock source configuration */
 

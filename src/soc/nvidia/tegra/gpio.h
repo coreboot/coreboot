@@ -81,6 +81,7 @@ void gpio_set_out_value(gpio_t gpio, int value);
 int gpio_get_out_value(gpio_t gpio);
 
 int gpio_get_in_value(gpio_t gpio);
+int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int value[]);
 
 int gpio_get_int_status(gpio_t gpio);
 

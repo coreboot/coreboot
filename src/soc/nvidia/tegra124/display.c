@@ -33,6 +33,7 @@
 #include <edid.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/dc.h>
+#include <soc/nvidia/tegra124/sdram.h>
 #include "chip.h"
 #include <soc/display.h>
 
@@ -225,6 +226,11 @@ static void update_window(struct display_controller *dc,
 	WRITEL(val, &dc->cmd.state_ctrl);
 }
 
+uint32_t fb_base_mb(void)
+{
+	return CONFIG_SYS_SDRAM_BASE/MiB + (sdram_size_mb() - FB_SIZE_MB);
+}
+
 /* this is really aimed at the lcd panel. That said, there are two display
  * devices on this part and we may someday want to extend it for other boards.
  */
@@ -279,7 +285,7 @@ void display_startup(device_t dev)
 	}
 
 	if (! framebuffer_base_mb)
-		framebuffer_base_mb = FB_BASE_MB;
+		framebuffer_base_mb = fb_base_mb();
 
 	mmu_config_range(framebuffer_base_mb, framebuffer_size_mb,
 		config->cache_policy);

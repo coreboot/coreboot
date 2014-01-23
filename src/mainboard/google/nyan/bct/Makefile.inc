@@ -20,5 +20,7 @@
 bct-cfg-$(CONFIG_NYAN_BCT_CFG_EMMC) += emmc.cfg
 bct-cfg-$(CONFIG_NYAN_BCT_CFG_SPI) += spi.cfg
 bct-cfg-y += odmdata.cfg
-bct-cfg-$(CONFIG_NYAN_BCT_SDRAM_924) += sdram-924.cfg
-bct-cfg-$(CONFIG_NYAN_BCT_SDRAM_792) += sdram-792.cfg
+
+# Note when SDRAM config (sdram-*.cfg) files are changed, we have to regenerate
+# the include files (sdram-*.inc) by running "./cfg2inc.sh sdram-*.cfg".
+# TODO(hungte) Change cfg2inc.sh to NVIDIA's official tool in cbootimage.

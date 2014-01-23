@@ -17,29 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <soc/nvidia/tegra124/gpio.h>
-#include <stdlib.h>
+#ifndef __MAINBOARD_GOOGLE_NYAN_BIG_SDRAM_CONFIG_H__
+#define __MAINBOARD_GOOGLE_NYAN_BIG_SDRAM_CONFIG_H__
 
-#include "boardid.h"
+#include <soc/nvidia/tegra124/sdram_param.h>
 
-uint8_t board_id(void)
-{
-	static int id = -1;
+/* Loads SDRAM configurations for current system. */
+const struct sdram_params *get_sdram_config(void);
 
-	if (id < 0) {
-		gpio_t gpio[] = {GPIO(Q3), GPIO(T1), GPIO(X1), GPIO(X4)};
-		int value[ARRAY_SIZE(gpio)];
-
-		gpio_get_in_tristate_values(gpio, ARRAY_SIZE(gpio), value);
-
-		/* A gpio state is encoded in every two-bit */
-		id = value[0] << 0 |
-		     value[1] << 2 |
-		     value[2] << 4 |
-		     value[3] << 6;
-		printk(BIOS_SPEW, "Board TRISTATE ID: %#x.\n", id);
-	}
-
-	return id;
-}
+#endif  /* __MAINBOARD_GOOGLE_NYAN_BIG_SDRAM_CONFIG_H__ */

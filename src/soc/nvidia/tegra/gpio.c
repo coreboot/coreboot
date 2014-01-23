@@ -22,6 +22,7 @@
 #include <soc/addressmap.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <delay.h>
 
 #include "gpio.h"
 #include "pinmux.h"
@@ -172,6 +173,58 @@ int gpio_get_in_value(gpio_t gpio)
 	u32 port = gpio_read_port(gpio & ((1 << GPIO_PINMUX_SHIFT) - 1),
 				  offsetof(struct gpio_bank, in_value));
 	return (port & (1 << bit)) != 0;
+}
+
+int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int value[])
+{
+	/*
+	 * GPIOs which are tied to stronger external pull up or pull down
+	 * will stay there regardless of the internal pull up or pull
+	 * down setting.
+	 *
+	 * GPIOs which are floating will go to whatever level they're
+	 * internally pulled to.
+	 */
+
+	int temp;
+	int index;
+
+	/* Enable internal pull up */
+	for (index = 0; index < num_gpio; ++index)
+		gpio_input_pullup(gpio[index]);
+
+	/* Wait until signals become stable */
+	udelay(10);
+
+	/* Get gpio values at internal pull up */
+	for (index = 0; index < num_gpio; ++index)
+		value[index] = gpio_get_in_value(gpio[index]);
+
+	/* Enable internal pull down */
+	for (index = 0; index < num_gpio; ++index)
+		gpio_input_pulldown(gpio[index]);
+
+	/* Wait until signals become stable */
+	udelay(10);
+
+	/*
+	 * Get gpio values at internal pull down.
+	 * Compare with gpio pull up value and then
+	 * determine a gpio final value/state:
+	 *  0: pull down
+	 *  1: pull up
+	 *  2: floating
+	 */
+	for (index = 0; index < num_gpio; ++index) {
+		temp = gpio_get_in_value(gpio[index]);
+		value[index] = ((value[index] ^ temp) << 1) | temp;
+	}
+
+	/* Disable pull up / pull down to conserve power */
+	for (index = 0; index < num_gpio; ++index)
+		gpio_input(gpio[index]);
+
+	return 0;
 }
 
 int gpio_get_int_status(gpio_t gpio)

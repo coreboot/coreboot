@@ -18,10 +18,11 @@
  */
 
 #include <cbmem.h>
-#include <soc/addressmap.h>
+#include <soc/display.h>
+#include <soc/nvidia/tegra124/sdram.h>
 
 void *cbmem_top(void)
 {
 	return (void *)(CONFIG_SYS_SDRAM_BASE +
-		((CONFIG_DRAM_SIZE_MB - FB_SIZE_MB)<< 20UL));
+		((sdram_size_mb() - FB_SIZE_MB)<< 20UL));
 }

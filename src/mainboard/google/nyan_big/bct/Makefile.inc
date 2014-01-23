@@ -20,5 +20,7 @@
 bct-cfg-$(CONFIG_NYAN_BIG_BCT_CFG_EMMC) += emmc.cfg
 bct-cfg-$(CONFIG_NYAN_BIG_BCT_CFG_SPI) += spi.cfg
 bct-cfg-y += odmdata.cfg
-bct-cfg-$(CONFIG_NYAN_BIG_BCT_SDRAM_924) += sdram-924.cfg
-bct-cfg-$(CONFIG_NYAN_BIG_BCT_SDRAM_792) += sdram-792.cfg
+
+# Note when SDRAM config (sdram-*.cfg) files are changed, we have to regenerate
+# the include files (sdram-*.inc). See ../../nyan/bct/Makefile.inc for more
+# information.

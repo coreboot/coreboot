@@ -156,12 +156,27 @@ static void mainboard_init(device_t dev)
 			   0x42, 0x142);
 }
 
+static int mainboard_smbios_data(device_t dev, int *handle, unsigned long *current)
+{
+	int len;
+	char tpec[] = "IBM ThinkPad Embedded Controller -[                 ]-";
+	const char *oem_strings[] = {
+		tpec,
+	};
+
+	h8_build_id_and_function_spec_version(tpec + 35, 17);
+	len = smbios_write_type11(current, (*handle)++, oem_strings, ARRAY_SIZE(oem_strings));
+
+	return len;
+}
+
 static void mainboard_enable(device_t dev)
 {
 	device_t dev0;
 	u16 pmbase;
 
 	dev->ops->init = mainboard_init;
+	dev->ops->get_smbios_data = mainboard_smbios_data;
 
 	pmbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
 				   PMBASE) & 0xff80;

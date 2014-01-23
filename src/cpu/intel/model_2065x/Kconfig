@@ -32,10 +32,6 @@ config ENABLE_VMX
 	bool "Enable VMX for virtualization"
 	default n
 
-config MICROCODE_INCLUDE_PATH
-	string
-	default "3rdparty/mainboard/lenovo/x201"
-
 config XIP_ROM_SIZE
 	hex
 	default 0x20000

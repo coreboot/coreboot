@@ -25,6 +25,8 @@ config BOARD_GOOGLE_BOLT
 	bool "Bolt"
 config BOARD_GOOGLE_BUTTERFLY
 	bool "Butterfly"
+config BOARD_GOOGLE_DAISY
+	bool "Daisy"
 config BOARD_GOOGLE_FALCO
 	bool "Falco"
 config BOARD_GOOGLE_LINK
@@ -47,8 +49,6 @@ config BOARD_GOOGLE_SAMUS
 	bool "Samus"
 config BOARD_GOOGLE_SLIPPY
 	bool "Slippy"
-config BOARD_GOOGLE_SNOW
-	bool "Snow"
 config BOARD_GOOGLE_STOUT
 	bool "Stout"
 
@@ -56,6 +56,7 @@ endchoice
 
 source "src/mainboard/google/bolt/Kconfig"
 source "src/mainboard/google/butterfly/Kconfig"
+source "src/mainboard/google/daisy/Kconfig"
 source "src/mainboard/google/falco/Kconfig"
 source "src/mainboard/google/link/Kconfig"
 source "src/mainboard/google/nyan/Kconfig"
@@ -67,7 +68,6 @@ source "src/mainboard/google/peppy/Kconfig"
 source "src/mainboard/google/rambi/Kconfig"
 source "src/mainboard/google/samus/Kconfig"
 source "src/mainboard/google/slippy/Kconfig"
-source "src/mainboard/google/snow/Kconfig"
 source "src/mainboard/google/stout/Kconfig"
 
 config MAINBOARD_VENDOR

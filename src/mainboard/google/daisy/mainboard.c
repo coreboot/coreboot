@@ -135,7 +135,7 @@ static void backlight_en(void)
 	gpio_direction_output(GPIO_X30, 1);
 }
 
-#define TPS65090_BUS	4	/* Snow-specific */
+#define TPS65090_BUS	4	/* Daisy-specific */
 
 #define FET1_CTRL	0x0f
 #define FET4_CTRL	0x12

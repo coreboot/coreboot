@@ -154,7 +154,7 @@ void main(unsigned long bist)
 			{ 1, 1, 0x0080 }, /* P1 (left touchpad side), OC 1 */
 			{ 1, 3, 0x0080 }, /* P2: dock, OC 3 */
 			{ 1, 0, 0x0040 }, /* P3: wwan, no OC */
-			{ 0, 0, 0x0000 }, /* P4: Empty */
+			{ 1, 0, 0x0080 }, /* P4: Wacom tablet on X230t, otherwise empty */
 			{ 1, 0, 0x0080 }, /* P5: Expresscard, no OC */
 			{ 0, 0, 0x0000 }, /* P6: Empty */
 			{ 1, 0, 0x0080 }, /* P7: dock, no OC */

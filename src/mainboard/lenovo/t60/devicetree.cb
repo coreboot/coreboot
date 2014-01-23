@@ -213,6 +213,17 @@ chip northbridge/intel/i945
 					register "reg11" = "0x07"
 					device i2c 69 on end
 				end
+			        # eeprom, 8 virtual devices, same chip
+				chip drivers/i2c/at24rf08c
+					device i2c 54 on end
+					device i2c 55 on end
+					device i2c 56 on end
+					device i2c 57 on end
+					device i2c 5c on end
+					device i2c 5d on end
+					device i2c 5e on end
+					device i2c 5f on end
+				end
 			end
 		end
 	end

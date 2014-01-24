@@ -231,6 +231,8 @@ void iosf_ssus_write(int reg, uint32_t val);
 # define  SB_BIOS_CONFIG_PDM_MODE		(1 << 16)
 # define  SB_BIOS_CONFIG_DDRIO_PWRGATE		(1 << 8)
 # define  SB_BIOS_CONFIG_GFX_TURBO_DIS		(1 << 7)
+# define  SB_BIOS_CONFIG_PS2_EN_VNN		(1 << 3)
+# define  SB_BIOS_CONFIG_PS2_EN_VCC		(1 << 2)
 # define  SB_BIOS_CONFIG_PCIE_PLLOFFOK		(1 << 1)
 # define  SB_BIOS_CONFIG_USB_CACHING_EN		(1 << 0)
 #define BIOS_RESET_CPL			0x05

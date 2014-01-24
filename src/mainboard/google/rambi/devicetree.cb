@@ -48,6 +48,9 @@ chip soc/intel/baytrail
 	register "vnn_ps2_enable" = "1"
 	register "vcc_ps2_enable" = "1"
 
+	# Disable SLP_X stretching after SUS power well fail.
+	register "disable_slp_x_stretch_sus_fail" = "1"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

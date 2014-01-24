@@ -164,8 +164,8 @@ static const struct soc_gpio_map gpscore_gpio_map[] = {
 /* SSUS GPIOs */
 static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_ACPI_SCI,	/* S500 - PCH_WAKE# */
-	GPIO_FUNC6,	/* S501 - TRACKPAD_INT# - INT */
-	GPIO_FUNC6,	/* S502 - TOUCH_INT# - INT */
+	GPIO_ACPI_SCI,	/* S501 - TRACKPAD_INT# - INT */
+	GPIO_ACPI_SCI,	/* S502 - TOUCH_INT# - INT */
 	GPIO_FUNC6,	/* S503 - LTE_WAKE_L# - INT */
 	GPIO_NC,	/* S504 - SOC_JTAG2_TDO (NC/PU) */
 	GPIO_FUNC1,	/* S505 - SUS_CLK_WLAN (NC) */

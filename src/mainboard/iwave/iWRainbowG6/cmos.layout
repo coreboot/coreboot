@@ -101,14 +101,6 @@ entries
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
-#1000        24       r       0        amd_reserved
-
-# ram initialization internal data
-1024         8       r       0        C0WL0REOST
-1032         8       r       0        C1WL0REOST
-1040         8       r       0        RCVENMT
-1048         4       r       0        C0DRT1
-1052         4       r       0        C1DRT1
 
 # -----------------------------------------------------------------
 

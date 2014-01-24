@@ -50,6 +50,7 @@ typedef enum {
 	CMOS_ENTRY_HEX = 'h',
 	CMOS_ENTRY_STRING = 's',
 	CMOS_ENTRY_RESERVED = 'r',
+	CMOS_ENTRY_VERSION = 'v',
 } cmos_entry_config_t;
 
 /* This represents a CMOS parameter. */

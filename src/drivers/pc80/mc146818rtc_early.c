@@ -20,11 +20,29 @@ static int cmos_error(void)
 	return (reg_d & RTC_VRT) == 0;
 }
 
+unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
+{
+#if CONFIG_USE_OPTION_TABLE
+	unsigned byte;
+	byte = cmos_read(start/8);
+	return (byte >> (start & 7U)) & ((1U << size) - 1U);
+#else
+	return def;
+#endif
+}
+
 static int cmos_chksum_valid(void)
 {
 #if CONFIG_USE_OPTION_TABLE
 	unsigned char addr;
 	u16 sum, old_sum;
+	unsigned version;
+
+	version = read_option_lowlevel(CMOS_VSTART_version, CMOS_VLEN_version,
+				       0);
+	if (version != CMOS_version_expected)
+		return 0;
+
 	sum = 0;
 	/* Compute the cmos checksum */
 	for(addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
@@ -90,15 +108,4 @@ static inline int do_normal_boot(void)
 	cmos_write(byte, RTC_BOOT_BYTE);
 
 	return (byte & (1<<1));
-}
-
-unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def)
-{
-#if CONFIG_USE_OPTION_TABLE
-	unsigned byte;
-	byte = cmos_read(start/8);
-	return (byte >> (start & 7U)) & ((1U << size) - 1U);
-#else
-	return def;
-#endif
 }

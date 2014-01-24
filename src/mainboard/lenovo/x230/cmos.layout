@@ -65,6 +65,8 @@ entries
 # -----------------------------------------------------------------
 0          120       r       0        reserved_memory
 #120        264       r       0        unused
+120         16       v       0        version
+#136        248       r       0        unused
 
 # -----------------------------------------------------------------
 # RTC_BOOT_BYTE (coreboot hardcoded)
@@ -101,7 +103,7 @@ entries
 # coreboot config options: cpu
 424          1       e       2        hyper_threading
 
-#425        559       r       0        unused
+#425        558       r       0        unused
 
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed

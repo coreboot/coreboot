@@ -71,6 +71,7 @@ int prepare_cmos_read(const cmos_entry_t * e)
 	switch (e->config) {
 	case CMOS_ENTRY_ENUM:
 	case CMOS_ENTRY_HEX:
+	case CMOS_ENTRY_VERSION:
 	case CMOS_ENTRY_STRING:
 		break;
 
@@ -140,6 +141,9 @@ int prepare_cmos_write(const cmos_entry_t * e, const char value_str[],
 		if (negative)
 			return CMOS_OP_NEGATIVE_INT;
 
+		break;
+	case CMOS_ENTRY_VERSION:
+		out = e->config_id;
 		break;
 
 	case CMOS_ENTRY_STRING:

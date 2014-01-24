@@ -200,14 +200,22 @@
 #define   CORE_GPIO_EN2	(1 << 26)
 #define   CORE_GPIO_EN1	(1 << 25)
 #define   CORE_GPIO_EN0	(1 << 24)
-#define   SUS_GPIO_EN7		(1 << 23)
-#define   SUS_GPIO_EN6		(1 << 22)
-#define   SUS_GPIO_EN5		(1 << 21)
-#define   SUS_GPIO_EN4		(1 << 20)
-#define   SUS_GPIO_EN3		(1 << 19)
-#define   SUS_GPIO_EN2		(1 << 18)
-#define   SUS_GPIO_EN1		(1 << 17)
-#define   SUS_GPIO_EN0		(1 << 16)
+#define   SUS_GPIO_EN7_BIT	23
+#define   SUS_GPIO_EN7		(1 << SUS_GPIO_EN7_BIT)
+#define   SUS_GPIO_EN6_BIT	22
+#define   SUS_GPIO_EN6		(1 << SUS_GPIO_EN6_BIT)
+#define   SUS_GPIO_EN5_BIT	21
+#define   SUS_GPIO_EN5		(1 << SUS_GPIO_EN5_BIT)
+#define   SUS_GPIO_EN4_BIT	20
+#define   SUS_GPIO_EN4		(1 << SUS_GPIO_EN4_BIT)
+#define   SUS_GPIO_EN3_BIT	19
+#define   SUS_GPIO_EN3		(1 << SUS_GPIO_EN3_BIT)
+#define   SUS_GPIO_EN2_BIT	18
+#define   SUS_GPIO_EN2		(1 << SUS_GPIO_EN2_BIT)
+#define   SUS_GPIO_EN1_BIT	17
+#define   SUS_GPIO_EN1		(1 << SUS_GPIO_EN1_BIT)
+#define   SUS_GPIO_EN0_BIT	16
+#define   SUS_GPIO_EN0		(1 << SUS_GPIO_EN0_BIT)
 #define   PME_B0_EN		(1 << 13)
 #define   BATLOW_EN		(1 << 10)
 #define   PCI_EXP_EN		(1 << 9)
@@ -217,6 +225,8 @@
 #define   PCIE_WAKE0_EN		(1 << 3)
 #define   SWGPE_EN		(1 << 2)
 #define   HOT_PLUG_EN		(1 << 1)
+#define   _ACPI_ENABLE_WAKE_SUS_GPIO(x) SUS_GPIO_EN##x##_BIT
+#define   ACPI_ENABLE_WAKE_SUS_GPIO(x) _ACPI_ENABLE_WAKE_SUS_GPIO(x)
 #define SMI_EN			0x30
 #define   INTEL_USB2_EN	 (1 << 18) // Intel-Specific USB2 SMI logic
 #define   USB_EN	 (1 << 17) // Legacy USB2 SMI logic
@@ -249,6 +259,8 @@
 #	define FULL_RST		(1 << 3)
 #	define RST_CPU		(1 << 2)
 #	define SYS_RST		(1 << 1)
+
+#if !defined(__ASSEMBLER__) && !defined(__ACPI__)
 
 /* Track power state from reset to log events. */
 struct chipset_power_state {
@@ -285,5 +297,7 @@ void southcluster_log_state(void);
 #else
 static inline void southcluster_log_state(void) {}
 #endif
+
+#endif /* !defined(__ASSEMBLER__) && !defined(__ACPI__) */
 
 #endif /* _BAYTRAIL_PMC_H_ */

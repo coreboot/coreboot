@@ -433,6 +433,41 @@ int is_checksum_name(const char name[])
 		&& !strcmp(name, version_param_name);
 }
 
+static int
+should_be_checksummed(const char *name)
+{
+	if (strcmp (name, "check_sum") == 0)
+		return 0;
+	/* clock & co. Shouldn't be checksummed.  */
+	if (strcmp (name, "reserved_memory") == 0)
+		return 0;
+
+	if (strcmp (name, "amd_reserved") == 0)
+		return 0;
+
+	/* i945 S3 registers. Should be checksummed eventually.  */
+	if (strcmp (name, "C0WL0REOST") == 0
+		|| strcmp (name, "C1WL0REOST") == 0
+		|| strcmp (name, "RCVENMT") == 0
+		|| strcmp (name, "C0DRT1") == 0
+		|| strcmp (name, "C1DRT1") == 0)
+		return 0;
+
+	/* Same for ivy/sandy.  */
+	if (strcmp (name, "mrc_scrambler_seed") == 0
+	    || strcmp (name, "mrc_scrambler_seed_s3") == 0
+	    || strcmp (name, "mrc_scrambler_seed_chk") == 0)
+		return 0;
+
+	if (strcmp (name, "read_training_results") == 0)
+		return 0;
+
+	/* ChromeOS.  */
+	if (strcmp (name, "vbnv") == 0)
+		return 0;
+	return 1;
+}
+
 /****************************************************************************
  * checksum_layout_to_bytes
  *
@@ -444,6 +479,8 @@ int is_checksum_name(const char name[])
 int checksum_layout_to_bytes(cmos_checksum_layout_t * layout)
 {
 	unsigned start, end, index;
+	struct cmos_entry_item_t *item;
+	int not_checksummed_options = 0;
 
 	start = layout->summed_area_start;
 	end = layout->summed_area_end;
@@ -475,6 +512,21 @@ int checksum_layout_to_bytes(cmos_checksum_layout_t * layout)
 	/* checksum occupies 16 bits */
 	if (areas_overlap(start, end - start + 1, index, index + 1))
 		return LAYOUT_CHECKSUM_OVERLAPS_SUMMED_AREA;
+
+	for (item = cmos_entry_list;
+	     (item != NULL);
+	     item = item->next) {
+		int expected = should_be_checksummed(item->item.name);
+		if (expected != areas_overlap(start,end-start+1, item->item.bit / 8,
+				   (item->item.bit + item->item.length) / 8)) {
+			fprintf (stderr, "option %s is%s checksummed\n",
+				 item->item.name,
+				 expected ? " not" : "");
+			not_checksummed_options = 1;
+		}
+	}
+	if (not_checksummed_options)
+		exit(1);
 
 	layout->summed_area_start = start;
 	layout->summed_area_end = end;

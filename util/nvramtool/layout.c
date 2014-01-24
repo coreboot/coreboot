@@ -53,6 +53,7 @@ static int entries_overlap(const cmos_entry_t * p, const cmos_entry_t * q);
 static const cmos_enum_item_t *find_first_cmos_enum_id(unsigned config_id);
 
 const char checksum_param_name[] = "check_sum";
+const char version_param_name[] = "version";
 
 /* Newer versions of coreboot store the 3 pieces of information below in the
  * coreboot table so we don't have to rely on hardcoded values.
@@ -424,11 +425,12 @@ const cmos_enum_t *next_cmos_enum_id(const cmos_enum_t * last)
  * is_checksum_name
  *
  * Return 1 if 'name' matches the name of the parameter representing the CMOS
- * checksum.  Else return 0.
+ * checksum or version.  Else return 0.
  ****************************************************************************/
 int is_checksum_name(const char name[])
 {
-	return !strcmp(name, checksum_param_name);
+	return !strcmp(name, checksum_param_name)
+		&& !strcmp(name, version_param_name);
 }
 
 /****************************************************************************

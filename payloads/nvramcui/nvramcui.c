@@ -97,7 +97,7 @@ int main()
 	int maxlength=0;
 	struct cb_cmos_entries *option = first_cmos_entry(opttbl);
 	while (option) {
-		if ((option->config != 'r') && (strcmp("check_sum", option->name) != 0)) {
+		if ((option->config != 'r') && (option->config != 'v') && (strcmp("check_sum", option->name) != 0)) {
 			maxlength = max(maxlength, strlen(option->name));
 			numopts++;
 		}
@@ -113,7 +113,7 @@ int main()
 	/* walk over options, fetch details */
 	option = first_cmos_entry(opttbl);
 	for (i=0;i<numopts;i++) {
-		while ((option->config == 'r') || (strcmp("check_sum", option->name) == 0)) {
+		while ((option->config == 'r') || (option->config == 'v') || (strcmp("check_sum", option->name) == 0)) {
 			option = next_cmos_entry(option);
 		}
 		fields[2*i] = new_field(1, strlen(option->name), i*2, 1, 0, 0);

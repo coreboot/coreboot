@@ -258,6 +258,9 @@ void write_cmos_layout_header(const char *header_filename)
 				cmos_entry->name, cmos_entry->bit);
 		fprintf(fp, "#define CMOS_VLEN_%s\t%d\n",
 				cmos_entry->name, cmos_entry->length);
+		if (strcmp (cmos_entry->name, "version") == 0)
+			fprintf(fp, "#define CMOS_version_expected\t%d\n",
+				cmos_entry->config_id);
 	}
 
 	layout.summed_area_start = cmos_checksum_start;
@@ -625,6 +628,10 @@ static void create_entry(cmos_entry_t * cmos_entry,
 		cmos_entry->config = CMOS_ENTRY_HEX;
 		break;
 
+	case 'v':
+		cmos_entry->config = CMOS_ENTRY_VERSION;
+		break;
+
 	case 's':
 		cmos_entry->config = CMOS_ENTRY_STRING;
 		break;
@@ -852,6 +859,9 @@ static char cmos_entry_char_value(cmos_entry_config_t config)
 
 	case CMOS_ENTRY_HEX:
 		return 'h';
+
+	case CMOS_ENTRY_VERSION:
+		return 'v';
 
 	case CMOS_ENTRY_RESERVED:
 		return 'r';

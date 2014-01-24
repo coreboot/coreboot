@@ -187,6 +187,7 @@ enum cb_err get_option(void *dest, const char *name)
 	struct cmos_entries *ce;
 	size_t namelen;
 	int found=0;
+	u16 version;
 
 	/* Figure out how long name is */
 	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
@@ -215,6 +216,10 @@ enum cb_err get_option(void *dest, const char *name)
 	if(get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS)
 		return CB_CMOS_ACCESS_ERROR;
 	if(!rtc_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END,LB_CKS_LOC))
+		return CB_CMOS_CHECKSUM_INVALID;
+	if(get_cmos_value(CMOS_VSTART_version, CMOS_VLEN_version, &version) != CB_SUCCESS)
+		return CB_CMOS_ACCESS_ERROR;
+	if(version != CMOS_version_expected)
 		return CB_CMOS_CHECKSUM_INVALID;
 	return CB_SUCCESS;
 }

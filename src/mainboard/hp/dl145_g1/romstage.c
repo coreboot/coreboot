@@ -159,5 +159,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	//dump_pci_devices();
 
-	post_cache_as_ram();
 }

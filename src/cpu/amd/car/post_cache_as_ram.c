@@ -13,8 +13,9 @@ static inline void print_debug_pcar(const char *strval, uint32_t val)
 	printk(BIOS_DEBUG, "%s%08x\n", strval, val);
 }
 
-/* from linux kernel 2.6.32 asm/string_32.h */
+#if CONFIG_HAVE_ACPI_RESUME
 
+/* from linux kernel 2.6.32 asm/string_32.h */
 static void inline __attribute__((always_inline))  memcopy(void *dest, const void *src, unsigned long bytes)
 {
 	int d0, d1, d2;
@@ -28,8 +29,6 @@ static void inline __attribute__((always_inline))  memcopy(void *dest, const voi
 			: "0" (bytes / 4), "g" (bytes), "1" ((long)dest), "2" ((long)src)
 			: "memory", "cc");
 }
-
-#if CONFIG_HAVE_ACPI_RESUME
 
 static inline void *backup_resume(void) {
 	void *resume_backup_memory;
@@ -75,9 +74,9 @@ static void vErrata343(void)
 #endif
 }
 
-void cache_as_ram_switch_stack(void *resume_backup_memory);
+void *cache_as_ram_finalize(void);
 
-void post_cache_as_ram(void)
+void *cache_as_ram_finalize(void)
 {
 	void *resume_backup_memory = NULL;
 #if 1
@@ -92,30 +91,19 @@ void post_cache_as_ram(void)
 	}
 #endif
 
-	/* copy data from cache as ram to
-		ram need to set CONFIG_RAMTOP to 2M and use var mtrr instead.
-	 */
-#if CONFIG_RAMTOP <= 0x100000
-	#error "You need to set CONFIG_RAMTOP greater than 1M"
-#endif
-
 #if CONFIG_HAVE_ACPI_RESUME
  	resume_backup_memory = backup_resume();
 #endif
 
-	print_debug("Copying data from cache to RAM -- switching to use RAM as stack... ");
-
-	/* from here don't store more data in CAR */
 	vErrata343();
 
-	memcopy((void *)((CONFIG_RAMTOP)-CONFIG_DCACHE_RAM_SIZE), (void *)CONFIG_DCACHE_RAM_BASE, CONFIG_DCACHE_RAM_SIZE); //inline
-	cache_as_ram_switch_stack(resume_backup_memory);
+	return resume_backup_memory;
 }
 
-void
+void __attribute__ ((regparm(1)))
 cache_as_ram_new_stack (void *resume_backup_memory);
 
-void
+void __attribute__ ((regparm(1)))
 cache_as_ram_new_stack (void *resume_backup_memory __attribute__ ((unused)))
 {
 	/* We can put data to stack again */

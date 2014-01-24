@@ -163,5 +163,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	/* BSP switch stack to RAM and copy sysinfo RAM now. */
-	post_cache_as_ram();
 }

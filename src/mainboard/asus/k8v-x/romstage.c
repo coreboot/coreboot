@@ -208,5 +208,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	smbus_write_byte(0x4a, 0x03, 0x04 | mask);
 
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
-	post_cache_as_ram();
 }

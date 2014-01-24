@@ -186,5 +186,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 	enable_smbus();
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
-	post_cache_as_ram();
 }

@@ -229,9 +229,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "raminit_amdmct()\n");
 	raminit_amdmct(sysinfo);
 	post_code(0x41);
-
-	post_cache_as_ram(); // BSP switch stack to ram, copy + execute stage 2
-	post_code(0x42);     // Should never see this post code.
 }
 
 /**

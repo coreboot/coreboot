@@ -151,5 +151,4 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	rs690_before_pci_init();
 	sb600_before_pci_init();
 
-	post_cache_as_ram();
 }

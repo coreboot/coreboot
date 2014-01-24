@@ -279,9 +279,6 @@ post_code(0x40);
  printk(BIOS_DEBUG, "raminit_amdmct()\n");
  raminit_amdmct(sysinfo);
  post_code(0x41);
-
- post_cache_as_ram();  // BSP switch stack to ram, copy then execute LB.
- post_code(0x42);  // Should never see this post code.
 }
 
 /**

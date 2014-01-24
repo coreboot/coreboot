@@ -273,6 +273,10 @@ static void process_cmos_table(void)
 			cmos_entry.config = CMOS_ENTRY_HEX;
 			break;
 
+		case 'v':
+			cmos_entry.config = CMOS_ENTRY_VERSION;
+			break;
+
 		case 'r':
 			cmos_entry.config = CMOS_ENTRY_RESERVED;
 			break;

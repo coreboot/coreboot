@@ -775,6 +775,10 @@ static void print_option_record(const struct cmos_entries *cmos_entry)
 		strcpy(s, "HEX");
 		break;
 
+	case 'v':
+		strcpy(s, "VERSION");
+		break;
+
 	case 'r':
 		strcpy(s, "RESERVED");
 		break;

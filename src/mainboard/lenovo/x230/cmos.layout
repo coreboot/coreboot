@@ -101,14 +101,18 @@ entries
 # coreboot config options: cpu
 424          1       e       2        hyper_threading
 
-#425        559       r       0        unused
+#425        7       r       0        unused
+
+432          16       v       0        version
+
+#448        535       r       0        unused
 
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
 928         32        r       0        mrc_scrambler_seed_s3
 960         16        r       0        mrc_scrambler_seed_chk
 
-# coreboot config options: check sums
+# coreboot config options: check sums and versions
 984         16       h       0        check_sum
 
 # -----------------------------------------------------------------

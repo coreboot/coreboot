@@ -157,6 +157,14 @@ cmos_write_t *process_input_file(FILE * f)
 void do_cmos_writes(cmos_write_t * list)
 {
 	cmos_write_t *item;
+	const cmos_entry_t *ev;
+
+	ev = find_cmos_entry("version");
+	if (ev == NULL) {
+		fprintf(stderr, "%s: CMOS parameter %s not found.", prog_name,
+			"version");
+		exit(1);
+	}
 
 	set_iopl(3);
 
@@ -171,6 +179,7 @@ void do_cmos_writes(cmos_write_t * list)
 		free(item);
 	}
 
+	cmos_write(ev, ev->config_id);
 	cmos_checksum_write(cmos_checksum_compute());
 	set_iopl(0);
 }

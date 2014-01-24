@@ -101,7 +101,11 @@ entries
 # coreboot config options: cpu
 424          1       e       2        hyper_threading
 
-#425        559       r       0        unused
+#425        7       r       0        unused
+
+432          16       v       0        version
+
+#448        535       r       0        unused
 
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed

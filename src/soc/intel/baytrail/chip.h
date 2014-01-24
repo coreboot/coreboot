@@ -35,6 +35,9 @@ struct soc_intel_baytrail_config {
 	int vnn_ps2_enable;
 	int vcc_ps2_enable;
 
+	/* Disable SLP_X stretching after SUS power well loss. */
+	int disable_slp_x_stretch_sus_fail;
+
 	/* USB Port Disable mask */
 	uint16_t usb2_port_disable_mask;
 	uint16_t usb3_port_disable_mask;

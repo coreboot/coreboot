@@ -35,6 +35,7 @@
 #include <baytrail/pci_devs.h>
 #include <baytrail/pmc.h>
 #include <baytrail/ramstage.h>
+#include "chip.h"
 
 static inline void
 add_mmio_resource(device_t dev, int i, unsigned long addr, unsigned long size)
@@ -145,8 +146,10 @@ static void sc_init(device_t dev)
 	int i;
 	const unsigned long pr_base = ILB_BASE_ADDRESS + 0x08;
 	const unsigned long ir_base = ILB_BASE_ADDRESS + 0x20;
+	const unsigned long gen_pmcon1 = PMC_BASE_ADDRESS + GEN_PMCON1;
 	const unsigned long actl = ILB_BASE_ADDRESS + ACTL;
 	const struct baytrail_irq_route *ir = &global_baytrail_irq_route;
+	struct soc_intel_baytrail_config *config = dev->chip_info;
 
 	/* Set up the PIRQ PIC routing based on static config. */
 	for (i = 0; i < NUM_PIRQS; i++) {
@@ -161,6 +164,15 @@ static void sc_init(device_t dev)
 	write32(actl, (read32(actl) & ~SCIS_MASK) | SCIS_IRQ9);
 
 	sc_rtc_init();
+
+	if (config->disable_slp_x_stretch_sus_fail) {
+		printk(BIOS_DEBUG, "Disabling slp_x stretching.\n");
+		write32(gen_pmcon1,
+			read32(gen_pmcon1) | DIS_SLP_X_STRCH_SUS_UP);
+	} else {
+		write32(gen_pmcon1,
+			read32(gen_pmcon1) & ~DIS_SLP_X_STRCH_SUS_UP);
+	}
 }
 
 /*

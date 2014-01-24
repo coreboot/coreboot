@@ -522,7 +522,8 @@ static int list_one_param(const char name[], int show_name)
 		exit(1);
 	}
 
-	if (e->config == CMOS_ENTRY_RESERVED) {
+	if (e->config == CMOS_ENTRY_RESERVED
+	    || e->config == CMOS_ENTRY_VERSION) {
 		fprintf(stderr, "%s: Parameter %s is reserved.\n", prog_name,
 			name);
 		exit(1);
@@ -546,6 +547,7 @@ static int list_all_params(void)
 
 	for (e = first_cmos_entry(); e != NULL; e = next_cmos_entry(e)) {
 		if ((e->config == CMOS_ENTRY_RESERVED)
+		    || (e->config == CMOS_ENTRY_VERSION)
 		    || is_checksum_name(e->name))
 			continue;
 
@@ -591,6 +593,7 @@ static void list_param_enums(const char name[])
 		break;
 
 	case CMOS_ENTRY_RESERVED:
+	case CMOS_ENTRY_VERSION:
 		printf("Parameter %s is reserved.\n", name);
 		break;
 
@@ -611,8 +614,8 @@ static void list_param_enums(const char name[])
  ****************************************************************************/
 static void set_one_param(const char name[], const char value[])
 {
-	const cmos_entry_t *e;
-	unsigned long long n;
+	const cmos_entry_t *e, *ev;
+	unsigned long long n, nv;
 
 	if (is_checksum_name(name) || (e = find_cmos_entry(name)) == NULL) {
 		fprintf(stderr, "%s: CMOS parameter %s not found.", prog_name,
@@ -686,9 +689,18 @@ static void set_one_param(const char name[], const char value[])
 		goto fail;
 	}
 
+	if ((ev = find_cmos_entry("version")) == NULL) {
+		fprintf(stderr, "%s: CMOS parameter %s not found.", prog_name,
+			"version");
+		exit(1);
+	}
+
+	prepare_cmos_write(ev, 0, &nv);
+
 	/* write the value to nonvolatile RAM */
 	set_iopl(3);
 	cmos_write(e, n);
+	cmos_write(ev, nv);
 	cmos_checksum_write(cmos_checksum_compute());
 	set_iopl(0);
 	return;

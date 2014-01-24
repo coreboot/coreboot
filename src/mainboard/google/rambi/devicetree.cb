@@ -44,6 +44,10 @@ chip soc/intel/baytrail
 	register "gpu_pipea_light_off_delay" = "2000"	# 200ms
 	register "gpu_pipea_backlight_pwm" = "0x400"
 
+	# VR PS2 control
+	register "vnn_ps2_enable" = "1"
+	register "vcc_ps2_enable" = "1"
+
 	device cpu_cluster 0 on
 		device lapic 0 on end
 	end

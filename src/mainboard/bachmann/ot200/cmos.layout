@@ -29,6 +29,9 @@ entries
 384          3       e       1        baud_rate
 387          4       e       2        debug_level
 
+387          4       e       2        debug_level
+448         16       v       0        version
+
 # -----------------------------------------------------------------
 # coreboot config options: check sums
 1008         16      h       0        check_sum

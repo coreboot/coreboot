@@ -78,12 +78,13 @@ entries
 436          4       e       14       chassis_t_min
 440          4       e       14       chassis_t_max
 444          4       e       15       chassis_dutycycle_min
-448          4       e       15       chassis_dutycycle_max
-#452          4       r       9        unused
-456          4       e       10       boot_delay
-460		     4       e       11       lcd_panel_id
+448         16       v       0        version
 #===========================================================
-464          512     s       0        boot_devices
+464          4       e       15       chassis_dutycycle_max
+468          4       e       10       boot_delay
+472	     4       e       11       lcd_panel_id
+#476	     4       r       0        unused
+480          496     s       0        boot_devices
 976          8       h       0        boot_default
 984         16       h       0        check_sum
 # Reserve the extended AMD configuration registers

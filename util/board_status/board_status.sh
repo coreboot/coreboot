@@ -173,6 +173,9 @@ cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
 cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 
 cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
+cmd_nonfatal $REMOTE "lspci -vvnnxxx" "${tmpdir}/${results}/lspci.txt"
+cmd_nonfatal $REMOTE "lsusb" "${tmpdir}/${results}/lsusb.txt"
+cmd_nonfatal $REMOTE "lsusb -t" "${tmpdir}/${results}/lsusb_tree.txt"
 
 #
 # Finish up.

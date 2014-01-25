@@ -64,7 +64,7 @@
 CODE_GROUP (G1_PEICC)
 RDATA_GROUP (G1_PEICC)
 
-#define FILECODE PROC_MEM_TECH_MTTRDDQS2DEYERIMSEARCH_FILECODE
+#define FILECODE PROC_MEM_TECH_MTRRDDQS2DEYERIMSEARCH_FILECODE
 /*----------------------------------------------------------------------------
  *                          DEFINITIONS AND MACROS
  *

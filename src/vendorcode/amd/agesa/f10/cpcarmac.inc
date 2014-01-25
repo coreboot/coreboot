@@ -187,7 +187,7 @@ SetupDramMap:
         inc     cl
     .endw
 
-    ; setup MTTR for stacks
+    ; setup MTRR for stacks
     mov ebx, WB_DRAM_TYPE
     .if (di == 0)    ;core 0
         .if (si > 3)    ; node 0 to 3 located at 40000h, node 4 to 7 located at 50000h
@@ -198,7 +198,7 @@ SetupDramMap:
         or edx, ebx
         _WRMSR
     .else    ;core 1 to core 7 start at 60000h
-        .if (si < 4)    ; node 0 to 3 using AMD_MTRR_FIX64K_6000 and AMD_MTRR_FIX64K_7000 MTTR
+        .if (si < 4)    ; node 0 to 3 using AMD_MTRR_FIX64K_6000 and AMD_MTRR_FIX64K_7000 MTRR
             shl ebx, 16
             .if (si > 1)
                 shl ebx, 8
@@ -207,7 +207,7 @@ SetupDramMap:
             _RDMSR
             or edx, ebx
             _WRMSR
-        .else           ; node 4 to 7 uses AMD_MTRR_FIX16K_80000 and AMD_MTRR_FIX16K_9000 MTTR
+        .else           ; node 4 to 7 uses AMD_MTRR_FIX16K_80000 and AMD_MTRR_FIX16K_9000 MTRR
             mov ecx, AMD_MTRR_FIX16k_80000
             _RDMSR
             .if (si < 6)   ; node 4 and node 5

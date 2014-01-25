@@ -1,0 +1,4 @@
+boot_option=Fallback
+last_boot=Fallback
+baud_rate=115200
+debug_level=Spew

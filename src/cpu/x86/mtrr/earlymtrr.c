@@ -30,7 +30,7 @@ static void cache_ramstage(void)
 
 const int addr_det = 0;
 
-/* the fixed and variable MTTRs are power-up with random values,
+/* the fixed and variable MTRRs are power-up with random values,
  * clear them to MTRR_TYPE_UNCACHEABLE for safety.
  */
 static void do_early_mtrr_init(const unsigned long *mtrr_msrs)

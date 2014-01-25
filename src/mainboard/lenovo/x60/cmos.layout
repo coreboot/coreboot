@@ -108,6 +108,7 @@ entries
 960         1       e       1        power_management_beeps
 961         1       e       1        low_battery_beep
 962         1       e       1        sticky_fn
+963         1       e       1        touchpad
 
 #964         20       r       0        unused
 

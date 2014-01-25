@@ -19,14 +19,26 @@
 #ifndef _CONSOLE_CBMEM_CONSOLE_H_
 #define _CONSOLE_CBMEM_CONSOLE_H_
 
-#if CONFIG_CACHE_AS_RAM || !defined(__PRE_RAM__)
+#include <console/streams.h>
+
 void cbmemc_init(void);
-void cbmemc_reinit(void);
 void cbmemc_tx_byte(unsigned char data);
+
+#if CONFIG_CONSOLE_CBMEM
+void cbmemc_reinit(void);
 #else
-#define cbmemc_init()
 #define cbmemc_reinit()
-#define cbmemc_tx_byte(x)
+#endif
+
+#define __CBMEM_CONSOLE_ENABLE__	CONFIG_CONSOLE_CBMEM && \
+	(ENV_ROMSTAGE && CONFIG_EARLY_CBMEM_INIT || ENV_RAMSTAGE)
+
+#if __CBMEM_CONSOLE_ENABLE__
+#define __cbmemc_init()		cbmemc_init()
+#define __cbmemc_tx_byte(x)	cbmemc_tx_byte(x)
+#else
+#define __cbmemc_init()
+#define __cbmemc_tx_byte(x)
 #endif
 
 #endif

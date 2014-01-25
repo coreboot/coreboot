@@ -19,6 +19,9 @@
 
 #ifndef _NE2K_H__
 #define _NE2K_H__
+
+#include <console/streams.h>
+
 void ne2k_append_data(unsigned char *d, int len, unsigned int base);
 int ne2k_init(unsigned int eth_nic_base);
 void ne2k_transmit(unsigned int eth_nic_base);
@@ -26,4 +29,15 @@ void ne2k_transmit(unsigned int eth_nic_base);
 #ifndef __ROMCC__
 #define ne2k_append_data_byte(d, base) ne2k_append_data(&d, 1, base)
 #endif
+
+#if CONFIG_CONSOLE_NE2K && (ENV_ROMSTAGE || ENV_RAMSTAGE)
+#define __ne2k_init()		ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT)
+#define __ne2k_tx_byte(x)	ne2k_append_data_byte(x, CONFIG_CONSOLE_NE2K_IO_PORT)
+#define __ne2k_tx_flush()	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT)
+#else
+#define __ne2k_init()
+#define __ne2k_tx_byte(x)
+#define __ne2k_tx_flush()
+#endif
+
 #endif /* _NE2K_H */

@@ -297,10 +297,12 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	depends on CONSOLE_CBMEM
 	hex "Room allocated for console output in CBMEM"
 	default 0x10000
+	default 0x20000 if DEFAULT_CONSOLE_LOGLEVEL_7 || DEFAULT_CONSOLE_LOGLEVEL_8
 	help
-	  Space allocated for console output storage in CBMEM. The default
-	  value (64K or 0x10000 bytes) is large enough to accommodate
-	  even the BIOS_SPEW level.
+	  Space allocated for console output storage in CBMEM.
+
+	  The default value is 64K or 0x10000 bytes and for console log
+	  level BIOS_DEBUG or BIOS_SPEW it is 128K or 0x20000 bytes.
 
 config CONSOLE_CAR_BUFFER_SIZE
 	depends on CONSOLE_CBMEM

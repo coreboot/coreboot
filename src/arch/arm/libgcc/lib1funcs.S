@@ -206,7 +206,8 @@ Boston, MA 02111-1307, USA.  */
 
 
 ENTRY(__udivsi3)
-ENTRY(__aeabi_uidiv)
+.global __aeabi_uidiv
+__aeabi_uidiv:
 
 	subs	r2, r1, #1
 	moveq	pc, lr
@@ -230,8 +231,9 @@ ENTRY(__aeabi_uidiv)
 	mov	r0, r0, lsr r2
 	mov	pc, lr
 
+.type __aeabi_uidiv, %function
+.size __aeabi_uidiv, .-__aeabi_uidiv
 ENDPROC(__udivsi3)
-ENDPROC(__aeabi_uidiv)
 
 ENTRY(__umodsi3)
 
@@ -250,7 +252,8 @@ ENTRY(__umodsi3)
 ENDPROC(__umodsi3)
 
 ENTRY(__divsi3)
-ENTRY(__aeabi_idiv)
+.global __aeabi_idiv
+__aeabi_idiv:
 
 	cmp	r1, #0
 	eor	ip, r0, r1			@ save the sign of the result.
@@ -287,8 +290,9 @@ ENTRY(__aeabi_idiv)
 	rsbmi	r0, r0, #0
 	mov	pc, lr
 
+.type __aeabi_idiv, %function
+.size __aeabi_idiv, .-__aeabi_idiv
 ENDPROC(__divsi3)
-ENDPROC(__aeabi_idiv)
 
 ENTRY(__modsi3)
 

@@ -39,7 +39,8 @@ Boston, MA 02110-1301, USA.  */
 #endif
 
 ENTRY(__ashldi3)
-ENTRY(__aeabi_llsl)
+.global __aeabi_llsl
+__aeabi_llsl:
 
 	subs	r3, r2, #32
 	rsb	ip, r2, #32
@@ -51,7 +52,8 @@ ENTRY(__aeabi_llsl)
 	mov	al, al, lsl r2
 	mov	pc, lr
 
+.type __aeabi_llsl, %function
+.size __aeabi_llsl, .-__aeabi_llsl
 ENDPROC(__ashldi3)
-ENDPROC(__aeabi_llsl)
 
 #endif

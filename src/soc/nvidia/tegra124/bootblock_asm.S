@@ -31,7 +31,6 @@
 
 #include <arch/asm.h>
 
-.section ".start", "a", %progbits
 ENTRY(_start)
 	/*
 	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data

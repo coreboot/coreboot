@@ -13,9 +13,6 @@
 #include <arch/asm.h>
 #include "asmlib.h"
 
-	.text
-	.align	5
-
 ENTRY(memset)
 	ands	r3, r0, #3		@ 1 unaligned?
 	mov	ip, r0			@ preserve r0 as return value

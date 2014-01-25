@@ -29,16 +29,6 @@
 
 #include <arch/asm.h>
 
-	.align 2
-
-	.global maincpu_stack_pointer
-maincpu_stack_pointer:
-	.word 0
-
-	.global maincpu_entry_point
-maincpu_entry_point:
-	.word 0
-
 .arm
 ENTRY(maincpu_setup)
 	/*
@@ -54,3 +44,13 @@ ENTRY(maincpu_setup)
 	ldr	r0, maincpu_entry_point
 	bx	r0
 ENDPROC(maincpu_setup)
+
+	.align 2
+
+	.global maincpu_stack_pointer
+maincpu_stack_pointer:
+	.word 0
+
+	.global maincpu_entry_point
+maincpu_entry_point:
+	.word 0

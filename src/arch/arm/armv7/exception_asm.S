@@ -27,13 +27,7 @@
  * SUCH DAMAGE.
  */
 
-	.global exception_stack_end
-exception_stack_end:
-	.word 0
-
-exception_handler:
-	.word 0
-
+	.text
 
 	.align 6
 	.arm
@@ -88,6 +82,7 @@ exception_common:
 	ldmfd	sp!, { pc }^
 
 
+	.align 2
 _undefined_instruction:	.word exception_undefined_instruction
 _software_interrupt:	.word exception_software_interrupt
 _prefetch_abort:	.word exception_prefetch_abort
@@ -95,6 +90,13 @@ _data_abort:		.word exception_data_abort
 _not_used:		.word exception_not_used
 _irq:			.word exception_irq
 _fiq:			.word exception_fiq
+
+	.global exception_stack_end
+exception_stack_end:
+	.word 0
+
+exception_handler:
+	.word 0
 
 	.thumb
 	.global set_vbar

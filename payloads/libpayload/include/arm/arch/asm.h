@@ -40,15 +40,13 @@
 	END(name)
 
 #define ENTRY(name) \
-	.globl name; \
+	.section .text.name, "ax", %progbits; \
+	.global name; \
 	ALIGN; \
 	name:
 
 #define END(name) \
 	.size name, .-name
-
-/* Everything should go into the text section by default. */
-	.text
 
 /* Thumb code uses the (new) unified assembly syntax. */
 THUMB(	.syntax unified )

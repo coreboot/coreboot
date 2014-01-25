@@ -27,7 +27,8 @@
 #endif
 
 ENTRY(__muldi3)
-ENTRY(__aeabi_lmul)
+.global __aeabi_lmul
+__aeabi_lmul:
 
 	mul	xh, yl, xh
 	mla	xh, xl, yh, xh
@@ -45,7 +46,8 @@ ENTRY(__aeabi_lmul)
 	adc	xh, xh, ip, lsr #16
 	mov	pc, lr
 
+.type __aeabi_lmul, %function
+.size __aeabi_lmul, .-__aeabi_lmul
 ENDPROC(__muldi3)
-ENDPROC(__aeabi_lmul)
 
 #endif

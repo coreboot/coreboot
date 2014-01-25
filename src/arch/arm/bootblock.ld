@@ -35,7 +35,7 @@ SECTIONS
 	. = CONFIG_BOOTBLOCK_BASE;
 
 	.bootblock . : {
-		*(.start);
+		*(.text._start);
 		KEEP(*(.id));
 		*(.text);
 		*(.text.*);

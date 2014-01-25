@@ -29,10 +29,6 @@
 
 #include <arch/asm.h>
 
-1:
-.align 4
-.word	_stack
-
 /*
  * Our entry point
  */
@@ -43,7 +39,7 @@ ENTRY(_entry)
 	/* TODO: Clear BSS */
 
 	/* Setup new stack */
-	ldr sp, 1b
+	ldr sp, 1f
 
 	/* TODO: Save old stack pointer and link register */
 
@@ -57,3 +53,7 @@ ENTRY(_entry)
 	/* Return to the original context. */
 	bx lr
 ENDPROC(_entry)
+
+.align 4
+1:
+.word	_stack

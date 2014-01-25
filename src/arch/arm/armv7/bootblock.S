@@ -31,7 +31,6 @@
 
 #include <arch/asm.h>
 
-.section ".start", "a", %progbits
 .arm
 ENTRY(_start)
 	/*

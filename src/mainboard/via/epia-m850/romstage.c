@@ -33,11 +33,11 @@
 #include <string.h>
 #include <timestamp.h>
 #include <console/cbmem_console.h>
+#include <superio/fintek/f81865f/f81865f.h>
 
 #include "northbridge/via/vx900/early_vx900.h"
 #include "northbridge/via/vx900/raminit.h"
-/* FIXME: This is the only .c include we couldn't get rid of */
-#include "superio/fintek/f81865f/f81865f_early_serial.c"
+
 
 #define SERIAL_DEV PNP_DEV(0x4e, 0x10)
 

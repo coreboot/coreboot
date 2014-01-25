@@ -20,7 +20,7 @@
 #ifndef CONSOLE_UART_H
 #define CONSOLE_UART_H
 
-#include <stdint.h>
+#include <console/streams.h>
 
 /* Return the clock frequency UART uses as reference clock for
  * baudrate generator. */
@@ -47,5 +47,18 @@ unsigned char uart_rx_byte(void);
 unsigned int uart_platform_base(int idx);
 
 void oxford_remap(unsigned int new_base);
+
+#define __CONSOLE_SERIAL_ENABLE__	CONFIG_CONSOLE_SERIAL && \
+	(ENV_ROMSTAGE || ENV_RAMSTAGE || ENV_SMM && CONFIG_DEBUG_SMI)
+
+#if __CONSOLE_SERIAL_ENABLE__
+#define __uart_init()		uart_init()
+#define __uart_tx_byte(x)	uart_tx_byte(x);
+#define __uart_tx_flush()	uart_tx_flush()
+#else
+#define __uart_init()
+#define __uart_tx_byte(x)
+#define __uart_tx_flush()
+#endif
 
 #endif /* CONSOLE_UART_H */

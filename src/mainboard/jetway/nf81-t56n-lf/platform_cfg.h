@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +27,13 @@
  * @def BIOS_SIZE_2M
  * @def BIOS_SIZE_4M
  * @def BIOS_SIZE_8M
+ * @def BIOS_SIZE_16M
  */
 #define BIOS_SIZE_1M			0
 #define BIOS_SIZE_2M			1
 #define BIOS_SIZE_4M			3
 #define BIOS_SIZE_8M			7
+#define BIOS_SIZE_16M			15
 
 /* In SB800, default ROM size is 1M Bytes, if your platform ROM
  * bigger than 1M you have to set the ROM size outside CIMx module and
@@ -45,6 +48,8 @@
   #define BIOS_SIZE BIOS_SIZE_4M
 #elif CONFIG_COREBOOT_ROMSIZE_KB_8192 == 1
   #define BIOS_SIZE BIOS_SIZE_8M
+#elif CONFIG_COREBOOT_ROMSIZE_KB_16484 == 1
+  #define BIOS_SIZE BIOS_SIZE_16M
 #endif
 #endif
 
@@ -227,6 +232,7 @@
  */
 #define GEC_CONFIG			0
 
+/* XXX: Fix this for sound to work! */
 static const CODECENTRY persimmon_codec_alc269[] =
 {
 	/* NID, PinConfig */
@@ -244,6 +250,7 @@ static const CODECENTRY persimmon_codec_alc269[] =
 	{0xff, 0xffffffff} /* end of table */
 };
 
+/* XXX: Fix this for sound to work! */
 static const CODECTBLLIST codec_tablelist[] =
 {
 	{0x010ec0269, (CODECENTRY*)&persimmon_codec_alc269[0]},

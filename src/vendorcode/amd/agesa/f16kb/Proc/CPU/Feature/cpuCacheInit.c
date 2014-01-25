@@ -281,7 +281,7 @@ AllocateExecutionCache (
     RequestSize = AmdExeAddrMapPtr[i].ExeCacheSize;
 
     if (RequestStartAddr < 0x100000) {
-      // Region starts below 1MB - Fixed MTTR region,
+      // Region starts below 1MB - Fixed MTRR region,
       // turn on modification bit: MtrrFixDramModEn
       LibAmdMsrRead (MSR_SYS_CFG, &MsrData, StdHeader);
       MsrData |= 0x80000;
@@ -299,7 +299,7 @@ AllocateExecutionCache (
                      i, RequestStartAddr, RequestSize, 0, StdHeader);
       }
 
-      // Find start MTTR and end MTTR for the requested region
+      // Find start MTRR and end MTRR for the requested region
       StartFixMtrr = AMD_MTRR_FIX4K_BASE + ((RequestStartAddr >> 15) & 0x7);
       EndFixMtrr = AMD_MTRR_FIX4K_BASE + ((((RequestStartAddr + RequestSize) - 1) >> 15) & 0x7);
 
@@ -325,7 +325,7 @@ AllocateExecutionCache (
 
 
     } else {
-      // Region above 1MB -  Variable MTTR region
+      // Region above 1MB -  Variable MTRR region
       //    Need to check both VarMTRRs for each requested region for match or overlap
       //
 

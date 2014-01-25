@@ -31,7 +31,7 @@
 #include <cpu/x86/mtrr.h>
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "superio/fintek/f81865f/f81865f_early_serial.c"
+#include <superio/fintek/f81865f/f81865f.h>
 #include "cpu/x86/lapic.h"
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"

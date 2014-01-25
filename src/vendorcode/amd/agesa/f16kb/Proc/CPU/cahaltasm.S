@@ -179,7 +179,7 @@ EFLoop:
 
     AMD_DISABLE_STACK_FAMILY_HOOK
 
-    /* restore variable MTTR6 and MTTR7 to default states */
+    /* restore variable MTRR6 and MTRR7 to default states */
     bt $FLAG_IS_PRIMARY, %esi                     /* .if (esi & 1h) */
     jz  6f
       movl $AMD_MTRR_VARIABLE_MASK7,  %ecx  /* clear MTRRPhysBase6 MTRRPhysMask6 */

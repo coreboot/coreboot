@@ -173,7 +173,7 @@ EFLoop:
       .endw
     .endif
 
-    ; restore variable MTTR6 and MTTR7 to default states
+    ; restore variable MTRR6 and MTRR7 to default states
     mov ecx,  AMD_MTRR_VARIABLE_BASE6     ; clear MTRRPhysBase6 MTRRPhysMask6
     xor eax,  eax                         ;  and MTRRPhysBase7 MTRRPhysMask7
     xor edx,  edx

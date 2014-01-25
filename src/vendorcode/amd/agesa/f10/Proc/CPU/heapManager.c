@@ -153,7 +153,7 @@ HeapManagerInit (
   MsrData = (UINT64) (AMD_TEMP_TOM);
   LibAmdMsrWrite (TOP_MEM, &MsrData, StdHeader);
 
-  // Enable variable MTTRs
+  // Enable variable MTRRs
   LibAmdMsrRead (SYS_CFG, &MsrData, StdHeader);
   MsrData |= AMD_VAR_MTRR_ENABLE_BIT;
   LibAmdMsrWrite (SYS_CFG, &MsrData, StdHeader);

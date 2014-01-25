@@ -208,7 +208,7 @@ AllocateExecutionCache (
   GetCpuServicesOfCurrentCore (&FamilySpecificServices, StdHeader);
   FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (CONST VOID **)&CacheInfoPtr, &Ignored, StdHeader);
 
-  // Setup MTTRs for region 0 to region 2
+  // Setup MTRRs for region 0 to region 2
   VariableMttrBase = AMD_MTRR_VARIABLE_BASE6;
   for (i = 0; i < 3; i++) {
     // Exit if no more cache available
@@ -265,7 +265,7 @@ AllocateExecutionCache (
 
     if (StartAddr < 0x100000) {
       // Region below 1MB
-      // Fixed MTTR region
+      // Fixed MTRR region
       if ((StartAddr + ExeCacheSize) > 0xFFFFF) {
         ExeCacheSize = 0xFFFFF - StartAddr;
         AgesaStatus = AGESA_WARNING;
@@ -276,7 +276,7 @@ AllocateExecutionCache (
                      i, StartAddr, ExeCacheSize, 0, StdHeader);
       }
 
-      // Find start and end of MTTR
+      // Find start and end of MTRR
       StartFixMtrr = AMD_MTRR_FIX4K_BASE + ((StartAddr >> 15) & 0x7);
       EndFixMtrr = AMD_MTRR_FIX4K_BASE + (((StartAddr + ExeCacheSize) >> 15) & 0x7);
 
@@ -290,14 +290,14 @@ AllocateExecutionCache (
         }
       }
 
-      // Setup MTTRs
+      // Setup MTRRs
       MsrData = WP_IO;
       for (CurrentMtrr = StartFixMtrr; CurrentMtrr <= EndFixMtrr; CurrentMtrr++) {
         LibAmdMsrWrite (CurrentMtrr, &MsrData, StdHeader);
       }
     } else {
       // Region above 1MB
-      // Variable MTTR region
+      // Variable MTRR region
       if (VariableMttrBase > AMD_MTRR_VARIABLE_BASE7) {
         AgesaStatus = AGESA_ERROR;
         AgesaInfo = AGESA_THREE_CACHE_REGIONS_ABOVE_1MB;
@@ -373,7 +373,7 @@ AllocateExecutionCache (
     }
   }
 
-  // Turn on MTTR enable bit and turn off modification bit
+  // Turn on MTRR enable bit and turn off modification bit
   LibAmdMsrRead (MSR_SYS_CFG, &MsrData, StdHeader);
   MsrData &= 0xFFFFFFFFFFF7FFFFull;
   LibAmdMsrWrite (MSR_SYS_CFG, &MsrData, StdHeader);

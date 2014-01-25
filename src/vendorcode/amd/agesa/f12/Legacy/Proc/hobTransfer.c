@@ -137,7 +137,7 @@ CopyHeapToTempRamAtPost (
   //
   if (AmdHeapRamAddress < 0x100000) {
     // Region below 1MB
-    // Fixed MTTR region
+    // Fixed MTRR region
     // turn on modification bit
     LibAmdMsrRead (MSR_SYS_CFG, &MsrData, StdHeader);
     MsrData |= 0x80000;
@@ -168,14 +168,14 @@ CopyHeapToTempRamAtPost (
       LibAmdMsrWrite (AMD_MTRR_FIX64k_00000, &MsrData, StdHeader);
     }
 
-    // Turn on MTTR enable bit and turn off modification bit
+    // Turn on MTRR enable bit and turn off modification bit
     LibAmdMsrRead (MSR_SYS_CFG, &MsrData, StdHeader);
     MsrData |= 0x40000;
     MsrData &= 0xFFFFFFFFFFF7FFFFull;
     LibAmdMsrWrite (MSR_SYS_CFG, &MsrData, StdHeader);
   } else {
     // Region above 1MB
-    // Variable MTTR region
+    // Variable MTRR region
     // Get family specific cache Info
     GetCpuServicesOfCurrentCore ((const CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, StdHeader);
     FamilySpecificServices->GetCacheInfo (FamilySpecificServices, (const VOID **) &CacheInfoPtr, &Ignored, StdHeader);

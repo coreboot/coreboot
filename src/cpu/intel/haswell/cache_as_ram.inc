@@ -185,7 +185,7 @@ before_romstage:
 	call	romstage_main
 	/* Save return value from romstage_main. It contains the stack to use
 	 * after cache-as-ram is torn down. It also contains the information
-	 * for setting up MTTRs. */
+	 * for setting up MTRRs. */
 	movl	%eax, %ebx
 
 	post_code(0x2f)
@@ -249,23 +249,23 @@ before_romstage:
 	/* Setup stack as indicated by return value from ramstage_main(). */
 	movl	%ebx, %esp
 
-	/* Get number of MTTRs. */
+	/* Get number of MTRRs. */
 	popl	%ebx
 	movl	$MTRRphysBase_MSR(0), %ecx
 1:
 	testl	%ebx, %ebx
 	jz	1f
 
-	/* Low 32 bits of MTTR base. */
+	/* Low 32 bits of MTRR base. */
 	popl	%eax
-	/* Upper 32 bits of MTTR base. */
+	/* Upper 32 bits of MTRR base. */
 	popl	%edx
 	/* Write MTRR base. */
 	wrmsr
 	inc	%ecx
-	/* Low 32 bits of MTTR mask. */
+	/* Low 32 bits of MTRR mask. */
 	popl	%eax
-	/* Upper 32 bits of MTTR mask. */
+	/* Upper 32 bits of MTRR mask. */
 	popl	%edx
 	/* Write MTRR mask. */
 	wrmsr

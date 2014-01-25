@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,6 +212,7 @@
  */
 #define GEC_CONFIG			0
 
+/* FIXME: Verify this for sound to work! */
 static const CODECENTRY persimmon_codec_alc269[] =
 {
 	/* NID, PinConfig */
@@ -228,6 +230,7 @@ static const CODECENTRY persimmon_codec_alc269[] =
 	{0xff, 0xffffffff} /* end of table */
 };
 
+/* FIXME: Verify this for sound to work! */
 static const CODECTBLLIST codec_tablelist[] =
 {
 	{0x010ec0269, (CODECENTRY*)&persimmon_codec_alc269[0]},

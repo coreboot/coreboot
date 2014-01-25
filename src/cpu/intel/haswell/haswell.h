@@ -175,14 +175,14 @@ void romstage_common(const struct romstage_params *params);
  * torn down. The following values are pushed onto the stack to setup the
  * MTRRs:
  *   +0: Number of MTRRs
- *   +4: MTTR base 0 31:0
- *   +8: MTTR base 0 63:32
- *  +12: MTTR mask 0 31:0
- *  +16: MTTR mask 0 63:32
- *  +20: MTTR base 1 31:0
- *  +24: MTTR base 1 63:32
- *  +28: MTTR mask 1 31:0
- *  +32: MTTR mask 1 63:32
+ *   +4: MTRR base 0 31:0
+ *   +8: MTRR base 0 63:32
+ *  +12: MTRR mask 0 31:0
+ *  +16: MTRR mask 0 63:32
+ *  +20: MTRR base 1 31:0
+ *  +24: MTRR base 1 63:32
+ *  +28: MTRR mask 1 31:0
+ *  +32: MTRR mask 1 63:32
  *  ...
  */
 void * asmlinkage romstage_main(unsigned long bist);

@@ -454,7 +454,7 @@ static void write_var_mtrr(struct var_mtrr_state *var_state,
 	if (var_state->mtrr_index >= bios_mtrrs)
 		printk(BIOS_WARNING, "Taking a reserved OS MTRR.\n");
 	if (var_state->mtrr_index >= total_mtrrs) {
-		printk(BIOS_ERR, "ERROR: Not enough MTTRs available!\n");
+		printk(BIOS_ERR, "ERROR: Not enough MTRRs available!\n");
 		return;
 	}
 
@@ -670,7 +670,7 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 	struct var_mtrr_state var_state;
 
 	/* The default MTRR cacheability type is determined by calculating
-	 * the number of MTTRs required for each MTTR type as if it was the
+	 * the number of MTRRs required for each MTRR type as if it was the
 	 * default. */
 	var_state.addr_space = addr_space;
 	var_state.above4gb = above4gb;
@@ -776,7 +776,7 @@ static void commit_var_mtrrs(struct memranges *addr_space, int def_type,
 			calc_var_mtrrs_without_hole(&var_state, r);
 	}
 
-	/* Clear all remaining variable MTTRs. */
+	/* Clear all remaining variable MTRRs. */
 	for (i = var_state.mtrr_index; i < total_mtrrs; i++)
 		clear_var_mtrr(i);
 }

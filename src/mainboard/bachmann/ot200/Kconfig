@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select PLL_MANUAL_CONFIG
 	select CORE_GLIU_500_266
 	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
 
 config MAINBOARD_DIR
 	string

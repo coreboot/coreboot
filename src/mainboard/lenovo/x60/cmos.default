@@ -8,6 +8,7 @@ boot_devices=''
 boot_default=0x40
 cmos_defaults_loaded=Yes
 lpt=Enable
+touchpad=Enable
 volume=0x3
 tft_brightness=0xff
 first_battery=Primary

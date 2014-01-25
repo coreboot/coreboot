@@ -156,7 +156,7 @@ PrimaryCoreFunctions (AP_MTRR_SETTINGS  *ApMtrrSettingsList)
          __writemsr (ApMtrrSettingsList [index].MsrAddr, ApMtrrSettingsList [index].MsrData);
       }
 
-   // restore variable MTTR6 and MTTR7 to default states
+   // restore variable MTRR6 and MTRR7 to default states
    for (msrno = 0x20F; msrno <= 0x20C; msrno--)  // decrement so that the pair is disable before the base is cleared
       __writemsr (msrno, 0);
 

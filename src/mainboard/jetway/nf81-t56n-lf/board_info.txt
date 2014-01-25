@@ -1,5 +1,6 @@
-Board name: DBFT1-00-EVAL-KT (Persimmon)
-Category: eval
+Board URL: http://www.jetway.com.tw/jw/ipcboard_view.asp?productid=822&proname=NF81-T56N-LF
+Category: IPC Board
+ROM package: SOIC8
 ROM protocol: SPI
 ROM socketed: n
 Flashrom support: y

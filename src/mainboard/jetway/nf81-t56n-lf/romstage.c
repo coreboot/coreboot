@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +32,6 @@
 #include <cpu/x86/mtrr.h>
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "superio/fintek/f81865f/f81865f_early_serial.c"
 #include "cpu/x86/lapic.h"
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
@@ -45,7 +45,7 @@
 void disable_cache_as_ram(void); /* cache_as_ram.inc */
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
-#define SERIAL_DEV PNP_DEV(0x4e, F81865F_SP1)
+#define SERIAL_DEV PNP_DEV(0x4e, F71869AD_SP1)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -70,7 +70,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 
 		post_code(0x31);
-		f81865f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		f71869ad_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 

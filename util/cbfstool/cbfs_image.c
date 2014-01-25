@@ -25,6 +25,7 @@
 
 #include "common.h"
 #include "cbfs_image.h"
+#include "cbfs_partition.h"
 
 /* The file name align is not defined in CBFS spec -- only a preference by
  * (old) cbfstool. */
@@ -145,10 +146,12 @@ int cbfs_image_create(struct cbfs_image *image,
 		      struct buffer *bootblock,
 		      int32_t bootblock_offset,
 		      int32_t header_offset,
+		      int32_t ptable_offset,
 		      int32_t entries_offset)
 {
 	struct cbfs_header *header;
 	struct cbfs_file *entry;
+	struct cbfs_partition part;
 	uint32_t cbfs_len;
 	size_t entry_header_len;
 
@@ -158,6 +161,8 @@ int cbfs_image_create(struct cbfs_image *image,
 	      header_offset, sizeof(*header), entries_offset);
 
 	if (buffer_create(&image->buffer, size, "(new)") != 0)
+		return -1;
+	if ((image->ptable = malloc(sizeof(part) * 11)) == NULL)
 		return -1;
 	image->header = NULL;
 	memset(image->buffer.data, CBFS_CONTENT_DEFAULT_VALUE, size);
@@ -229,6 +234,33 @@ int cbfs_image_create(struct cbfs_image *image,
 	if (header_offset > entries_offset && header_offset < cbfs_len)
 		cbfs_len = header_offset;
 	cbfs_len -= entries_offset + align + entry_header_len;
+
+	/*
+	 * Now find space for the partition table.
+	 * Pre-allocate 10 entries for now. This should be sufficient for most
+	 * use-cases, and makes sure we don't have to reduce the final entry.
+	 * FIXME: Only works for bootblock on top. We really should listen to
+	 * the wisdom of the caller and put this where requested.
+	 */
+	ptable_offset = header_offset - cbfs_ptable_calc_size(10);
+	/* Align down */
+	ptable_offset &= ~(CBFS_PARTITION_ENTRY_ALIGN - 1);
+	cbfs_len -= (bootblock_offset - ptable_offset);
+	if (IS_TOP_ALIGNED_ADDRESS(header_offset))
+		header_offset += (int32_t) size;
+	header->ptable_offset = ntohl(ptable_offset);
+
+	LOG("pizdatable offset 0x%x\n", ptable_offset);
+
+	/* No, don't use ntohl shit here */
+	cbfs_partition_entry_init(&image->ptable[0],
+				  "coreboot", entries_offset, cbfs_len, 0);
+	/* Terminate ptable list */
+	image->ptable[1].magic = 0xFFFFFFFF;
+
+	cbfs_ptable_serialize(image->buffer.data + ptable_offset,
+			      image->ptable);
+
 	cbfs_create_empty_entry(image, entry, cbfs_len, "");
 	LOG("Created CBFS image (capacity = %d bytes)\n", cbfs_len);
 	return 0;
@@ -236,6 +268,9 @@ int cbfs_image_create(struct cbfs_image *image,
 
 int cbfs_image_from_file(struct cbfs_image *image, const char *filename)
 {
+	uint32_t ptable_offset;
+	size_t parts;
+
 	if (buffer_from_file(&image->buffer, filename) != 0)
 		return -1;
 	DEBUG("read_cbfs_image: %s (%zd bytes)\n", image->buffer.name,
@@ -247,6 +282,24 @@ int cbfs_image_from_file(struct cbfs_image *image, const char *filename)
 		cbfs_image_delete(image);
 		return -1;
 	}
+
+	ptable_offset = ntohl(image->header->ptable_offset);
+	if (ptable_offset == 0xffffffff) {
+		LOG("No partition table found. Old image format?\n");
+		image->ptable = NULL;
+	} else {
+		/* Make this a debug. We'll print more info later */
+		DEBUG("Partition table found at 0x" PRIu32 "\n", ptable_offset);
+		parts = cbfs_ptable_find_num_entries(image->buffer.data + ptable_offset,
+					     image->buffer.size - ptable_offset);
+		DEBUG("Found %lu entries\n", parts);
+		if (parts) {
+			image->ptable = malloc(CBFS_PARTITION_ENTRY_LEN * parts);
+			cbfs_ptable_deserialize(image->ptable, image->buffer.data + ptable_offset);
+		}
+
+	}
+
 	cbfs_fix_legacy_size(image);
 
 	return 0;
@@ -261,7 +314,10 @@ int cbfs_image_write_file(struct cbfs_image *image, const char *filename)
 int cbfs_image_delete(struct cbfs_image *image)
 {
 	buffer_delete(&image->buffer);
+	if (image->ptable)
+		free(image->ptable);
 	image->header = NULL;
+	image->ptable = NULL;
 	return 0;
 }
 
@@ -658,6 +714,8 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 int cbfs_print_directory(struct cbfs_image *image)
 {
 	cbfs_print_header_info(image);
+	printf("%-30s %-10s Size\n", "Partition name", "Offset");
+	cbfs_print_partitions(image->ptable);
 	printf("%-30s %-10s %-12s Size\n", "Name", "Offset", "Type");
 	cbfs_walk(image, cbfs_print_entry_info, NULL);
 	return 0;

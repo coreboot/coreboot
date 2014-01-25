@@ -29,6 +29,7 @@
 struct cbfs_image {
 	struct buffer buffer;
 	struct cbfs_header *header;
+	struct cbfs_partition *ptable;
 };
 
 /* Creates an empty CBFS image by given size, and description to its content
@@ -43,6 +44,7 @@ int cbfs_image_create(struct cbfs_image *image,
 		      struct buffer *bootblock,
 		      int32_t bootblock_offset,
 		      int32_t header_offset,
+		      int32_t ptable_offset,
 		      int32_t entries_offset);
 
 /* Loads a CBFS image from file. Returns 0 on success, otherwise non-zero. */

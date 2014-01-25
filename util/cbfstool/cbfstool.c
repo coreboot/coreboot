@@ -55,6 +55,7 @@ static struct param {
 	uint32_t pagesize;
 	uint32_t offset;
 	uint32_t top_aligned;
+	uint32_t ptable_offset;
 	int fit_empty_entries;
 	comp_algo algo;
 	/* for linux payloads */
@@ -373,6 +374,7 @@ static int cbfs_create(void)
 			      &bootblock,
 			      param.baseaddress,
 			      param.headeroffset,
+			      param.ptable_offset,
 			      param.offset) != 0) {
 		ERROR("Failed to create %s.\n", param.cbfs_name);
 		return 1;

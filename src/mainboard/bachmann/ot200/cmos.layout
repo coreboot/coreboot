@@ -24,10 +24,14 @@ entries
 # RTC reserved
 0          384       r       0        reserved_memory
 
+384          1       e       4        boot_option
+385          1       e       4        last_boot
+388          4       r       0        reboot_bits
+
 # -----------------------------------------------------------------
 # coreboot config options: console
-384          3       e       1        baud_rate
-387          4       e       2        debug_level
+392          3       e       1        baud_rate
+395          4       e       2        debug_level
 
 448         16       v       0        version
 
@@ -55,9 +59,10 @@ enumerations
 2     6     Info
 2     7     Debug
 2     8     Spew
-
+4     0     Fallback
+4     1     Normal
 checksums
 
-checksum 400 1007 1008
+checksum 392 1007 1008
 
 

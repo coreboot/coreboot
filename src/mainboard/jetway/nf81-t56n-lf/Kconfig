@@ -2,6 +2,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2011 Advanced Micro Devices, Inc.
+# Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,7 +18,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-if BOARD_AMD_PERSIMMON
+if BOARD_JETWAY_NF81-T56N-LF
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -25,22 +26,23 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select CPU_AMD_AGESA_FAMILY14
 	select NORTHBRIDGE_AMD_AGESA_FAMILY14
 	select SOUTHBRIDGE_AMD_CIMX_SB800
-	select SUPERIO_FINTEK_F81865F
+	select SUPERIO_FINTEK_F71869AD
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
-	select HAVE_ACPI_RESUME
+# Disable S3 for now. Leave here for now (WIP)
+# select HAVE_ACPI_RESUME
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select LIFT_BSP_APIC_ID
 	select SERIAL_CPU_INIT
 	select AMDMCT
 	select HAVE_ACPI_TABLES
-	select BOARD_ROMSIZE_KB_4096
+	select BOARD_ROMSIZE_KB_16484
 	select GFXUMA
 
 config MAINBOARD_DIR
 	string
-	default amd/persimmon
+	default jetway/nf81-t56n-lf
 
 config APIC_ID_OFFSET
 	hex
@@ -48,7 +50,7 @@ config APIC_ID_OFFSET
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "Persimmon"
+	default "NF81-T56N-LF"
 
 config HW_MEM_HOLE_SIZEK
 	hex
@@ -101,7 +103,7 @@ config VGA_BIOS
 
 config VGA_BIOS_ID
 	string
-	default "1002,9802"
+	default "1002,9806" # FUSION_G_T56N
 
 config SB800_AHCI_ROM
 	bool
@@ -111,4 +113,4 @@ config DRIVERS_PS2_KEYBOARD
 	bool
 	default n
 
-endif # BOARD_AMD_PERSIMMON
+endif # BOARD_JETWAY_NF81-T56N-LF

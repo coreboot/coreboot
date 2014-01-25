@@ -35,12 +35,25 @@ struct cbfs_header {
 	uint32_t align;
 	uint32_t offset;
 	uint32_t architecture;	/* Version 2 */
-	uint32_t pad[1];
+	uint32_t ptable_offset;
 } __attribute__ ((packed));
 
 #define CBFS_ARCHITECTURE_UNKNOWN  0xFFFFFFFF
 #define CBFS_ARCHITECTURE_X86      0x00000001
 #define CBFS_ARCHITECTURE_ARMV7    0x00000010
+
+#define CBFS_PARTITION_MAGIC		0x43425054	/* "CBPT" in ASCII */
+#define CBFS_PARTITION_NAME_LEN		32
+#define CBFS_PARTITION_ENTRY_LEN	0x30
+#define CBFS_PARTITION_ENTRY_ALIGN	0x10
+
+struct cbfs_partition {
+	uint32_t magic;
+	uint32_t offset;
+	uint32_t size;
+	uint32_t flags;
+	char name[32];
+}; /* Don't fucking pack this. If you need this packed, you have a bug */
 
 #define CBFS_FILE_MAGIC "LARCHIVE"
 

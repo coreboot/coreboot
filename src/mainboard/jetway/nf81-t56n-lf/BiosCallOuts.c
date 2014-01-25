@@ -452,6 +452,8 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	// Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
 	// Make sure the right speed settings are selected.
 	((MEM_DATA_STRUCT*)ConfigPtr)->ParameterListPtr->DDR3Voltage = VOLT1_5;
+    printk(BIOS_INFO, "Setting DDR3 voltage: ");
+    printk(BIOS_INFO, "Fixing to 1.5 V\n");
 	return AGESA_SUCCESS;
 }
 

@@ -121,7 +121,9 @@ void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime)
 		smm_runtime = runtime;
 
 	if (cpu >= CONFIG_MAX_CPUS) {
+#if CONFIG_DEBUG_SMI
 		console_init();
+#endif
 		printk(BIOS_CRIT,
 		       "Invalid CPU number assigned in SMM stub: %d\n", cpu);
 		return;
@@ -141,7 +143,9 @@ void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime)
 
 	smi_backup_pci_address();
 
+if CONFIG_DEBUG_SMI
 	console_init();
+#endif
 
 	printk(BIOS_SPEW, "\nSMI# #%d\n", cpu);
 

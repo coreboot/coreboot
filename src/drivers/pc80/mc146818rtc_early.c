@@ -8,10 +8,6 @@
 #endif
 #include <boot/coreboot_tables.h>
 
-#if CONFIG_USE_OPTION_TABLE
-#include "option_table.h"
-#endif
-
 #ifndef CONFIG_MAX_REBOOT_CNT
 #error "CONFIG_MAX_REBOOT_CNT not defined"
 #endif
@@ -27,20 +23,75 @@ static int cmos_error(void)
 	return (reg_d & RTC_VRT) == 0;
 }
 
+#ifdef __ROMCC__
+#define const_pointer uint32_t
+#else
+#define const_pointer const void *
+#endif
+
+#if CONFIG_USE_OPTION_TABLE
+static const_pointer find_first_entry(void)
+{
+	const struct cmos_option_table *ct;
+#ifdef __ROMCC__
+	ct = walkcbfs("cmos_layout.bin");
+#else
+	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
+				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
+#endif
+	if (!ct)
+		return 0;
+	return (const_pointer) ((const unsigned char *) ct + ct->header_length);
+}
+
+static const_pointer find_entry(const char *name)
+{
+	const struct cmos_entries *ce;
+
+	ce = (struct cmos_entries *) find_first_entry();
+	if (!ce)
+		return 0;
+	for(;ce->tag==LB_TAG_OPTION;
+		ce=(const struct cmos_entries*)((const unsigned char *)ce + ce->size)) {
+		unsigned i;
+		for (i = 0; ; i++) {
+			if (!(name[i] && i < CMOS_MAX_NAME_LENGTH))
+				return (const_pointer) ce;
+			if (name[i] != ce->name[i])
+				break;
+		}
+	}
+	return 0;
+}
+#endif
+
 static int cmos_chksum_valid(void)
 {
 #if CONFIG_USE_OPTION_TABLE
 	unsigned char addr;
 	u16 sum, old_sum;
+	const struct cmos_checksum *cc;
+
+	cc = (struct cmos_checksum *) find_first_entry();
+
+	if (!cc)
+		return 0;
+
+	for(;cc->tag==LB_TAG_OPTION || cc->tag==LB_TAG_OPTION_ENUM
+		    || cc->tag == LB_TAG_OPTION_DEFAULTS;
+	    cc=(struct cmos_checksum*)((unsigned char *)cc + cc->size));
+	if (cc->tag != LB_TAG_OPTION_CHECKSUM)
+		return 0;
+
 	sum = 0;
 	/* Compute the cmos checksum */
-	for(addr = LB_CKS_RANGE_START; addr <= LB_CKS_RANGE_END; addr++) {
+	for(addr = cc->range_start; addr <= cc->range_end; addr++) {
 		sum += cmos_read(addr);
 	}
 
 	/* Read the stored checksum */
-	old_sum = cmos_read(LB_CKS_LOC) << 8;
-	old_sum |=  cmos_read(LB_CKS_LOC+1);
+	old_sum = cmos_read(cc->location) << 8;
+	old_sum |=  cmos_read(cc->location+1);
 
 	return sum == old_sum;
 #else
@@ -102,34 +153,18 @@ static inline int do_normal_boot(void)
 unsigned read_option(const char *name, unsigned def)
 {
 #if CONFIG_USE_OPTION_TABLE
-	struct cmos_option_table *ct;
-	struct cmos_entries *ce;
+	const struct cmos_entries *ce;
+	unsigned byte;
 
-#ifdef __ROMCC__
-	ct = (struct cmos_option_table *)walkcbfs("cmos_layout.bin");
-#else
-	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
-				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
-#endif
+	ce = (struct cmos_entries *)find_entry(name);
 
-	if (!ct)
+	if (!ce)
 		return def;
+	
+	byte = cmos_read(ce->bit/8);
+	byte >>= (ce->bit & 7U);
 
-	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
-	for(;ce->tag==LB_TAG_OPTION;
-		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {
-		unsigned byte;
-		unsigned i;
-		for (i = 0; name[i] && i < CMOS_MAX_NAME_LENGTH; i++)
-			if (name[i] != ce->name[i])
-				goto next_option;
-		byte = cmos_read(ce->bit/8);
-		byte >>= (ce->bit & 7U);
-
-		return (byte) & ((1U << ce->length) - 1U);
-	next_option:;
-	}
-	return def;
+	return (byte) & ((1U << ce->length) - 1U);
 #else
 	return def;
 #endif

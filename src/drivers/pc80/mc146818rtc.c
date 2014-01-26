@@ -5,7 +5,6 @@
 #include <boot/coreboot_tables.h>
 #include <string.h>
 #if CONFIG_USE_OPTION_TABLE
-#include "option_table.h"
 #include <cbfs.h>
 #endif
 #if CONFIG_HAVE_ACPI_RESUME
@@ -27,28 +26,69 @@ static void rtc_update_cmos_date(u8 has_century)
 }
 
 #if CONFIG_USE_OPTION_TABLE
-static int rtc_checksum_valid(int range_start, int range_end, int cks_loc)
+static struct cmos_checksum *get_cmos_checksum_range(void)
+{
+	struct cmos_option_table *ct;
+	struct cmos_checksum *cc;
+
+	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
+				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
+	if (!ct)
+		return 0;
+	cc=(struct cmos_checksum*)((unsigned char *)ct + ct->header_length);
+	for(;cc->tag==LB_TAG_OPTION || cc->tag==LB_TAG_OPTION_ENUM
+		    || cc->tag == LB_TAG_OPTION_DEFAULTS;
+	    cc=(struct cmos_checksum*)((unsigned char *)cc + cc->size));
+	if (cc->tag != LB_TAG_OPTION_CHECKSUM)
+		return 0;
+	return cc;
+}
+
+static int overlaps_checksum(u8 byte)
+{
+	struct cmos_checksum *cc;
+
+	cc = get_cmos_checksum_range();
+	if (!cc)
+		return 0;
+
+	return (cc->range_start <= byte) && (byte <= cc->range_end);
+}
+
+static int rtc_checksum_valid(void)
 {
 	int i;
 	u16 sum, old_sum;
+	struct cmos_checksum *cc;
+
+	cc = get_cmos_checksum_range();
+	if (!cc)
+		return 0;
+
 	sum = 0;
-	for(i = range_start; i <= range_end; i++) {
+	for(i = cc->range_start; i <= cc->range_end; i++) {
 		sum += cmos_read(i);
 	}
-	old_sum = ((cmos_read(cks_loc)<<8) | cmos_read(cks_loc+1))&0x0ffff;
+	old_sum = ((cmos_read(cc->location)<<8) | cmos_read(cc->location+1))&0x0ffff;
 	return sum == old_sum;
 }
 
-static void rtc_set_checksum(int range_start, int range_end, int cks_loc)
+static void rtc_set_checksum(void)
 {
 	int i;
 	u16 sum;
+	struct cmos_checksum *cc;
+
+	cc = get_cmos_checksum_range();
+	if (!cc)
+		return;
+
 	sum = 0;
-	for(i = range_start; i <= range_end; i++) {
+	for(i = cc->range_start; i <= cc->range_end; i++) {
 		sum += cmos_read(i);
 	}
-	cmos_write(((sum >> 8) & 0x0ff), cks_loc);
-	cmos_write(((sum >> 0) & 0x0ff), cks_loc+1);
+	cmos_write(((sum >> 8) & 0x0ff), cc->location);
+	cmos_write(((sum >> 0) & 0x0ff), cc->location+1);
 }
 #endif
 
@@ -90,8 +130,7 @@ void rtc_init(int invalid)
 	cmos_invalid = !(x & RTC_VRT);
 
 	/* See if there is a CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid(PC_CKS_RANGE_START,
-			PC_CKS_RANGE_END,PC_CKS_LOC);
+	checksum_invalid = !rtc_checksum_valid();
 
 #define CLEAR_CMOS 0
 #else
@@ -129,14 +168,12 @@ void rtc_init(int invalid)
 
 #if CONFIG_USE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid(LB_CKS_RANGE_START,
-			LB_CKS_RANGE_END,LB_CKS_LOC);
+	checksum_invalid = !rtc_checksum_valid();
 	if(checksum_invalid)
 		printk(BIOS_DEBUG, "RTC: coreboot checksum invalid\n");
 
 	/* Make certain we have a valid checksum */
-	rtc_set_checksum(PC_CKS_RANGE_START,
-                        PC_CKS_RANGE_END,PC_CKS_LOC);
+	rtc_set_checksum();
 #endif
 
 	/* Clear any pending interrupts */
@@ -214,7 +251,7 @@ enum cb_err get_option(void *dest, const char *name)
 
 	if(get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS)
 		return CB_CMOS_ACCESS_ERROR;
-	if(!rtc_checksum_valid(LB_CKS_RANGE_START, LB_CKS_RANGE_END,LB_CKS_LOC))
+	if(!rtc_checksum_valid())
 		return CB_CMOS_CHECKSUM_INVALID;
 	return CB_SUCCESS;
 }
@@ -239,21 +276,21 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 		uchar &= ~mask;
 		uchar |= (ret[0] << byte_bit);
 		cmos_write(uchar, byte);
-		if (byte >= LB_CKS_RANGE_START && byte <= LB_CKS_RANGE_END)
+		if (overlaps_checksum (byte))
 			chksum_update_needed = 1;
 	} else {			/* more that one byte so transfer the whole bytes */
 		if (byte_bit || length % 8)
 			return CB_ERR_ARG;
 
-		for(i=0; length; i++, length-=8, byte++)
+		for(i=0; length; i++, length-=8, byte++) {
 			cmos_write(ret[i], byte);
-			if (byte >= LB_CKS_RANGE_START && byte <= LB_CKS_RANGE_END)
+			if (overlaps_checksum (byte))
 				chksum_update_needed = 1;
+		}
 	}
 
 	if (chksum_update_needed) {
-		rtc_set_checksum(LB_CKS_RANGE_START,
-			LB_CKS_RANGE_END,LB_CKS_LOC);
+		rtc_set_checksum();
 	}
 	return CB_SUCCESS;
 }

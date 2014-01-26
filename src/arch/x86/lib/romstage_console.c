@@ -17,8 +17,10 @@
  * MA 02110-1301 USA
  */
 
+#include <smp/node.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
+
 #if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
 #endif
@@ -30,9 +32,6 @@
 #endif
 #if CONFIG_SPKMODEM
 #include <console/spkmodem.h>
-#endif
-#if CONFIG_SQUELCH_EARLY_SMP
-#include <cpu/x86/lapic.h>
 #endif
 
 void console_tx_byte(unsigned char byte)

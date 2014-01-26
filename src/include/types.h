@@ -41,6 +41,10 @@ enum cb_err {
 	CB_CMOS_OPTION_NOT_FOUND = -102,	/**< Option string not found */
 	CB_CMOS_ACCESS_ERROR = -103,		/**< CMOS access error */
 	CB_CMOS_CHECKSUM_INVALID = -104,	/**< CMOS checksum is invalid */
+
+	/* Keyboard test failures */
+	CB_KBD_CONTROLLER_FAILURE = -200,
+	CB_KBD_INTERFACE_FAILURE = -201
 };
 
 #endif /* __TYPES_H */

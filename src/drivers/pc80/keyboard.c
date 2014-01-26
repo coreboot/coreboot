@@ -24,6 +24,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <types.h>
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
 #endif
@@ -111,7 +112,7 @@ static int kbc_cleanup_buffers(void)
 	return !!timeout;
 }
 
-static int kbc_self_test(void)
+static enum cb_err kbc_self_test(void)
 {
 	u8 self_test;
 
@@ -119,7 +120,7 @@ static int kbc_self_test(void)
 	 * Both input and output buffers must be empty.
 	 */
 	if (!kbc_cleanup_buffers())
-		return 0;
+		return CB_KBD_CONTROLLER_FAILURE;
 
 	/* reset/self test 8042 - send cmd 0xAA */
 	outb(KBC_CMD_SELF_TEST, KBD_COMMAND);
@@ -127,7 +128,7 @@ static int kbc_self_test(void)
 	if (!kbc_output_buffer_full()) {
 		/* There probably is no keyboard controller. */
 		printk(BIOS_ERR, "Could not reset keyboard controller.\n");
-		return 0;
+		return CB_KBD_CONTROLLER_FAILURE;
 	}
 
 	/* read self-test result, 0x55 is returned in the output buffer */
@@ -136,7 +137,7 @@ static int kbc_self_test(void)
 	if (self_test != 0x55) {
 		printk(BIOS_ERR, "Keyboard Controller self-test failed: 0x%x\n",
 		       self_test);
-		return 0;
+		return CB_KBD_CONTROLLER_FAILURE;
 	}
 
 	/* ensure the buffers are empty */
@@ -147,7 +148,7 @@ static int kbc_self_test(void)
 
 	if (!kbc_output_buffer_full()) {
 		printk(BIOS_ERR, "Keyboard Interface test timed out.\n");
-		return 0;
+		return CB_KBD_CONTROLLER_FAILURE;
 	}
 
 	/* read test result, 0x00 should be returned in case of no failures */
@@ -156,10 +157,10 @@ static int kbc_self_test(void)
 	if (self_test != 0x00) {
 		printk(BIOS_ERR, "Keyboard Interface test failed: 0x%x\n",
 		       self_test);
-		return 0;
+		return CB_KBD_INTERFACE_FAILURE;
 	}
 
-	return 1;
+	return CB_SUCCESS;
 }
 
 static u8 send_keyboard(u8 command)
@@ -196,6 +197,8 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 {
 	u8 retries;
 	u8 regval;
+	enum cb_err err;
+
 	if (!CONFIG_DRIVERS_PS2_KEYBOARD)
 		return;
 
@@ -207,7 +210,9 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
 	printk(BIOS_DEBUG, "Keyboard init...\n");
 
 	/* Run a keyboard controller self-test */
-	if (!kbc_self_test())
+	err = kbc_self_test();
+	/* Ignore iterface failure as it's non-fatal.  */
+	if (err != CB_SUCCESS && err != CB_KBD_INTERFACE_FAILURE)
 		return;
 
 	/* Enable keyboard interface - No IRQ */
@@ -308,8 +313,12 @@ void pc_keyboard_init(struct pc_keyboard *keyboard)
  */
 void set_kbc_ps2_mode(void)
 {
+	enum cb_err err;
+
 	/* Run a keyboard controller self-test */
-	if (!kbc_self_test())
+	err = kbc_self_test();
+	/* Ignore iterface failure as it's non-fatal.  */
+	if (err != CB_SUCCESS && err != CB_KBD_INTERFACE_FAILURE)
 		return;
 
 	/* Support PS/2 mode */

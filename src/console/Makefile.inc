@@ -5,8 +5,7 @@ ramstage-y += vsprintf.c
 ramstage-y += post.c
 ramstage-y += die.c
 
-smm-y += printk.c
-smm-y += vtxprintf.c
+smm-$(CONFIG_DEBUG_SMI) += vtxprintf.c printk.c
 smm-$(CONFIG_SMM_TSEG) += die.c
 
 romstage-$(CONFIG_EARLY_CONSOLE) += vtxprintf.c

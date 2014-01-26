@@ -54,6 +54,30 @@ void console_tx_flush(void)
 	__usb_tx_flush();
 }
 
+
+#if CONFIG_GDB_STUB && !defined(__SMM__)
+void gdb_hw_init(void)
+{
+	__gdb_hw_init();
+}
+
+void gdb_tx_byte(unsigned char byte)
+{
+	__gdb_tx_byte(byte);
+}
+
+void gdb_tx_flush(void)
+{
+	__gdb_tx_flush();
+}
+
+unsigned char gdb_rx_byte(void)
+{
+	return __gdb_rx_byte();
+}
+#endif
+
+
 void console_tx_nibble(unsigned nibble)
 {
 	unsigned char digit;

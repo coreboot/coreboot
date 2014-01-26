@@ -19,13 +19,10 @@
  * MA 02110-1301 USA
  */
 
-#include <arch/io.h>
-#include <cpu/x86/cache.h>
-#include <cpu/x86/smm.h>
 #include <console/console.h>
 #include <console/uart.h>
-#include <console/vtxprintf.h>
 
+#if CONFIG_DEBUG_SMI
 void console_tx_flush(void)
 {
 }
@@ -42,6 +39,7 @@ void console_tx_byte(unsigned char byte)
 	uart_tx_byte(byte);
 #endif
 }
+#endif
 
 void console_init(void)
 {
@@ -53,8 +51,6 @@ void console_init(void)
 #if CONFIG_CONSOLE_SERIAL8250MEM
 	uart_init();
 #endif
-#else
-	console_loglevel = 1;
 #endif
 }
 

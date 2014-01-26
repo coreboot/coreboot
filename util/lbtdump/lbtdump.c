@@ -9,7 +9,7 @@
 #include <sys/mman.h>
 #include "../../src/include/boot/coreboot_tables.h"
 
-void print_lb_records(struct lb_record *rec, struct lb_record *last, unsigned long addr);
+uint64_t print_lb_records(struct lb_record *rec, struct lb_record *last, unsigned long addr);
 
 unsigned long compute_checksum(void *addr, unsigned long length)
 {
@@ -239,6 +239,14 @@ void print_option_checksum(struct lb_record *ptr, unsigned long addr)
 		rec->range_start, rec->range_end, rec->location, rec->type);
 }
 
+void print_forward(struct lb_record *ptr, unsigned long addr)
+{
+	struct lb_forward *rec;
+	rec = (struct lb_forward *)ptr;
+	printf("forward %d, rec len %d, forward: 0x%llx\n",
+	       rec->tag, rec->size, (unsigned long long) rec->forward);
+}
+
 struct {
 	uint32_t type;
 	char *type_name;
@@ -263,6 +271,7 @@ struct {
 	{ LB_TAG_OPTION_ENUM,       "Option Enumeration", print_option_enumeration },
 	{ LB_TAG_OPTION_DEFAULTS,   "Option Defaults",    nop_print },
 	{ LB_TAG_OPTION_CHECKSUM,   "Option Checksum",    print_option_checksum },
+	{ LB_TAG_FORWARD,           "Forward link",       print_forward },
 	{ -1, "Unknown", 0 }
 };
 
@@ -271,12 +280,13 @@ static struct lb_record *next_record(struct lb_record *rec)
 	return (struct lb_record *)(((char *)rec) + rec->size);
 }
 
-void print_lb_records(struct lb_record *rec, struct lb_record *last,
+uint64_t print_lb_records(struct lb_record *rec, struct lb_record *last,
 	unsigned long addr)
 {
 	struct lb_record *next;
 	int i;
 	int count;
+	uint64_t forward = 0;
 	count = 0;
 
 	for(next = next_record(rec); (rec < last) && (next <= last);
@@ -293,12 +303,43 @@ void print_lb_records(struct lb_record *rec, struct lb_record *last,
 		if (lb_types[i].print) {
 			lb_types[i].print(rec, addr);
 		}
+		if (rec->tag == LB_TAG_FORWARD)
+			forward = ((struct lb_forward *) rec)->forward;
 	}
+	return forward;
 }
 
-void print_lb_table(struct lb_header *head, unsigned long addr)
+static void *do_map(int fd, uint64_t addr, uint32_t len, void **mpaddr_out, size_t *mplen)
+{
+	uint64_t mpaddr, mpaddrend;
+	uint8_t *ret;
+	mpaddrend = (addr + len + 4095) & ~4095ULL;
+	mpaddr = addr & ~4095ULL;
+	ret = mmap(0, mpaddrend - mpaddr, PROT_READ, MAP_SHARED, fd, mpaddr);
+	if (ret == ((void *) -1)) {
+		fprintf(stderr, "Can not mmap /dev/mem at %08lx-%08lx errno(%d):%s\n",
+			mpaddr, mpaddrend, errno, strerror(errno));
+		exit(-2);
+	}
+	*mpaddr_out = ret;
+	*mplen = mpaddrend - mpaddr;
+	return ret + addr - mpaddr;
+}
+
+uint64_t print_lb_table(int fd, uint64_t addr)
 {
 	struct lb_record *rec, *last;
+	struct lb_header *head;
+	void *mp;
+	size_t mplen;
+	uint32_t bytes;
+	uint64_t forward;
+
+	head = do_map(fd, addr, sizeof (*head), &mp, &mplen);
+	bytes = head->table_bytes;
+	munmap (mp, mplen);
+
+	head = do_map(fd, addr, bytes, &mp, &mplen);
 
 	rec  = (struct lb_record *)(((char *)head) + head->header_bytes);
 	last = (struct lb_record *)(((char *)rec) + head->table_bytes);
@@ -306,7 +347,9 @@ void print_lb_table(struct lb_header *head, unsigned long addr)
 	printf("Coreboot header(%d) checksum: %04x table(%d) checksum: %04x entries: %d\n",
 		head->header_bytes, head->header_checksum,
 		head->table_bytes, head->table_checksum, head->table_entries);
-	print_lb_records(rec, last, addr + head->header_bytes);
+	forward = print_lb_records(rec, last, addr + head->header_bytes);
+	munmap (mp, mplen);
+	return forward;
 }
 
 int main(int argc, char **argv)
@@ -333,7 +376,9 @@ int main(int argc, char **argv)
 	if (lb_table) {
 		unsigned long addr;
 		addr = ((char *)lb_table) - ((char *)low_1MB);
-		print_lb_table(lb_table, addr);
+
+		while (addr)
+			addr = print_lb_table(fd, addr);
 	}
 	else {
 		printf("lb_table not found\n");

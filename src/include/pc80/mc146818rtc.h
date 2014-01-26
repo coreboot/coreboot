@@ -188,8 +188,12 @@ static inline enum cb_err get_option(void *dest __attribute__((unused)),
 #else
 #include <drivers/pc80/mc146818rtc_early.c>
 #endif
-#define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
 
+#if defined(__ROMCC__)
+#define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
+#endif
+
+#if defined(__ROMCC__)
 #if CONFIG_CMOS_POST
 #if CONFIG_USE_OPTION_TABLE
 # include "option_table.h"
@@ -200,6 +204,7 @@ static inline enum cb_err get_option(void *dest __attribute__((unused)),
 # else
 #  error "Must define CONFIG_CMOS_POST_OFFSET"
 # endif
+#endif
 #endif
 
 /*

@@ -48,13 +48,6 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
 
-/* Stumpy USB Reset Disable defined in cmos.layout */
-#if CONFIG_USE_OPTION_TABLE
-#include "option_table.h"
-#define CMOS_USB_RESET_DISABLE  (CMOS_VSTART_stumpy_usb_reset_disable >> 3)
-#else
-#define CMOS_USB_RESET_DISABLE  (400 >> 3)
-#endif
 #define USB_RESET_DISABLE_MAGIC (0xdd) /* Disable if set to this */
 
 static void pch_enable_lpc(void)
@@ -295,6 +288,10 @@ void main(unsigned long bist)
 		 */
 		u8 magic = cmos_read(CMOS_USB_RESET_DISABLE);
 
+		if (get_option (&magic, "stumpy_usb_reset_disable")
+		    != CB_SUCCESS)
+			magic = 0;
+
 		if (magic == USB_RESET_DISABLE_MAGIC) {
 			printk(BIOS_DEBUG, "USB Controller Reset Disabled\n");
 			enable_usb_bar();
@@ -303,7 +300,7 @@ void main(unsigned long bist)
 		}
 	} else {
 		/* Ensure USB reset on resume is enabled at boot */
-		cmos_write(0, CMOS_USB_RESET_DISABLE);
+		set_option("stumpy_usb_reset_disable", &(u8[]){ 0x00 });
 	}
 
 	post_code(0x39);

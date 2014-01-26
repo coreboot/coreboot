@@ -29,7 +29,6 @@
 #include <cpu/x86/lapic.h>
 #include "superio/winbond/w83627thg/w83627thg.h"
 #include <pc80/mc146818rtc.h>
-#include "option_table.h"
 #include <console/console.h>
 #include <cpu/x86/bist.h>
 #include "superio/winbond/w83627thg/early_serial.c"
@@ -58,7 +57,12 @@ void setup_ich7_gpios(void)
 static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
-	if (read_option(lpt, 0) != 0) {
+	u8 val;
+
+	if (get_option(&val, "lpt") != CB_SUCCESS)
+		val = 0;
+
+	if (val != 0) {
 		lpt_en = 1<<2; // enable LPT
 	}
 	// Enable Serial IRQ
@@ -222,23 +226,35 @@ static void rcba_config(void)
 	 * routing.
 	 */
 	int port_shuffle = 0;
+	u8 val;
 
 	/* Disable unused devices */
 	reg32 = FD_ACMOD|FD_ACAUD|FD_PATA;
 	reg32 |= FD_PCIE6|FD_PCIE5|FD_PCIE4;
 
-	if (read_option(ethernet1, 0) != 0) {
+	if (get_option(&val, "ethernet1") != CB_SUCCESS)
+		val = 0;
+
+	if (val != 0) {
 		printk(BIOS_DEBUG, "Disabling ethernet adapter 1.\n");
 		reg32 |= FD_PCIE1;
 	}
-	if (read_option(ethernet2, 0) != 0) {
+
+	if (get_option(&val, "ethernet2") != CB_SUCCESS)
+		val = 0;
+
+	if (val != 0) {
 		printk(BIOS_DEBUG, "Disabling ethernet adapter 2.\n");
 		reg32 |= FD_PCIE2;
 	} else {
 		if (reg32 & FD_PCIE1)
 			port_shuffle = 1;
 	}
-	if (read_option(ethernet3, 0) != 0) {
+
+	if (get_option(&val, "ethernet3") != CB_SUCCESS)
+		val = 0;
+
+	if (val != 0) {
 		printk(BIOS_DEBUG, "Disabling ethernet adapter 3.\n");
 		reg32 |= FD_PCIE3;
 	} else {

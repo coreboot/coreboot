@@ -1598,8 +1598,12 @@ static void coherent_ht_finalize(unsigned nodes)
 #endif
 #if CONFIG_LOGICAL_CPUS
 	unsigned total_cpus;
+	u8 multi_core;
 
-	if (read_option(multi_core, 0) == 0) { /* multi_core */
+	if (get_option(&multi_core, "multi_core") != CB_SUCCESS)
+		multi_core = 0; /* Enabled.  */
+
+	if (multi_core == 0) { /* multi_core */
 		total_cpus = verify_dualcore(nodes);
 	}
 	else {

@@ -80,9 +80,13 @@ static void start_other_cores(void)
 {
 	u32 nodes;
 	u32 nodeid;
+	u8 multi_core;
+
+	if (get_option(&multi_core, "multi_core") != CB_SUCCESS)
+		multi_core = 0; /* Enabled.  */
 
 	// disable multi_core
-	if (read_option(multi_core, 0) != 0)  {
+	if (multi_core != 0)  {
 		printk(BIOS_DEBUG, "Skip additional core init\n");
 		return;
 	}

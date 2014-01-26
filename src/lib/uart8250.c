@@ -23,10 +23,6 @@
 #include <pc80/mc146818rtc.h>
 #include <trace.h>
 
-#if CONFIG_USE_OPTION_TABLE
-#include "option_table.h"
-#endif
-
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 
 /* Expected character delay at 1200bps is 9ms for a working UART
@@ -119,7 +115,7 @@ void uart_init(void)
 	static const unsigned char divisor[8] = { 1, 2, 3, 6, 12, 24, 48, 96 };
 	unsigned b_index = 0;
 #if defined(__PRE_RAM__)
-	b_index = read_option(baud_rate, 0);
+	b_index = read_option("baud_rate", 0);
 	b_index &= 7;
 	div = divisor[b_index];
 #else

@@ -43,6 +43,7 @@
  * See also: util/lbtdump/lbtdump.c
  */
 
+#ifndef __ROMCC__
 struct lb_uint64 {
 	uint32_t lo;
 	uint32_t hi;
@@ -63,6 +64,8 @@ static inline struct lb_uint64 pack_lb64(uint64_t value)
 	result.hi = (value >> 32) & 0xffffffff;
 	return result;
 }
+
+#endif
 
 struct lb_header
 {
@@ -89,6 +92,8 @@ struct lb_record {
 
 #define LB_TAG_MEMORY		0x0001
 
+#ifndef __ROMCC__
+
 struct lb_memory_range {
 	struct lb_uint64 start;
 	struct lb_uint64 size;
@@ -114,6 +119,8 @@ struct lb_hwrpb {
 	uint32_t size;
 	uint64_t hwrpb;
 };
+
+#endif
 
 #define LB_TAG_MAINBOARD	0x0003
 struct lb_mainboard {
@@ -168,6 +175,8 @@ struct lb_console {
 #define LB_TAG_CONSOLE_EHCI		5
 #define LB_TAG_CONSOLE_SERIAL8250MEM	6
 
+#ifndef __ROMCC__
+
 #define LB_TAG_FORWARD		0x0011
 struct lb_forward {
 	uint32_t tag;
@@ -195,6 +204,8 @@ struct lb_framebuffer {
 	uint8_t reserved_mask_size;
 };
 
+#endif
+
 #define LB_TAG_GPIO	0x0013
 
 struct lb_gpio {
@@ -212,6 +223,8 @@ struct lb_gpios {
 	uint32_t count;
 	struct lb_gpio gpios[0];
 };
+
+#ifndef __ROMCC__
 
 #define LB_TAG_VDAT	0x0015
 struct lb_vdat {
@@ -249,6 +262,8 @@ struct lb_vboot_handoff {
 	uint64_t vboot_handoff_addr;
 	uint32_t vboot_handoff_size;
 };
+
+#endif
 
 #define LB_TAG_X86_ROM_MTRR	0x0021
 struct lb_x86_rom_mtrr {
@@ -333,6 +348,8 @@ struct	cmos_checksum {
 
 /* function prototypes for building the coreboot table */
 
+#ifndef __ROMCC__
+
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end);
@@ -346,5 +363,7 @@ void lb_add_memory_range(struct lb_memory *mem,
 struct lb_memory *get_lb_mem(void);
 
 void fill_lb_gpios(struct lb_gpios *gpios);
+
+#endif
 
 #endif /* COREBOOT_TABLES_H */

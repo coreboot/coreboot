@@ -21,9 +21,6 @@
 #include <arch/io.h>
 #include <uart8250.h>
 #include <pc80/mc146818rtc.h>
-#if CONFIG_USE_OPTION_TABLE
-#include "option_table.h"
-#endif
 #include <device/device.h>
 #include <delay.h>
 
@@ -114,7 +111,7 @@ u32 uart_mem_init(void)
 	static const unsigned baud[8] = { 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1200 };
 	unsigned b_index = 0;
 #if defined(__PRE_RAM__)
-	b_index = read_option(baud_rate, 0);
+	b_index = read_option("baud_rate", 0);
 	b_index &= 7;
 	uart_baud = baud[b_index];
 #else

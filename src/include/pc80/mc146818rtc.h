@@ -175,7 +175,7 @@ void rtc_check_update_cmos_date(u8 has_century);
 #if CONFIG_USE_OPTION_TABLE
 enum cb_err set_option(const char *name, void *val);
 enum cb_err get_option(void *dest, const char *name);
-unsigned read_option_lowlevel(unsigned start, unsigned size, unsigned def);
+unsigned read_option(const char *name, unsigned def);
 #else
 static inline enum cb_err set_option(const char *name __attribute__((unused)),
 				     void *val __attribute__((unused)))
@@ -183,12 +183,11 @@ static inline enum cb_err set_option(const char *name __attribute__((unused)),
 static inline enum cb_err get_option(void *dest __attribute__((unused)),
 				     const char *name __attribute__((unused)))
 				{ return CB_CMOS_OTABLE_DISABLED; }
-#define read_option_lowlevel(start, size, def) def
+#define read_option(name, def) def
 #endif
 #else
 #include <drivers/pc80/mc146818rtc_early.c>
 #endif
-#define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
 
 #if CONFIG_CMOS_POST
 #if CONFIG_USE_OPTION_TABLE

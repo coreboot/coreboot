@@ -4,6 +4,7 @@
 #include <cpu/x86/lapic_def.h>
 #include <cpu/x86/msr.h>
 #include <arch/hlt.h>
+#include <smp/node.h>
 
 /* See if I need to initialize the local apic */
 #if CONFIG_SMP || CONFIG_IOAPIC
@@ -152,11 +153,5 @@ int start_cpu(struct device *cpu);
 #endif /* CONFIG_SMP */
 
 #endif /* !__PRE_RAM__ */
-
-#if CONFIG_SMP
-int boot_cpu(void);
-#else
-#define boot_cpu(x) 1
-#endif
 
 #endif /* CPU_X86_LAPIC_H */

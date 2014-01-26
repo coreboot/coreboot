@@ -1,4 +1,4 @@
-#include <cpu/x86/lapic.h>
+#include <smp/node.h>
 #include <cpu/x86/msr.h>
 
 #if CONFIG_SMP

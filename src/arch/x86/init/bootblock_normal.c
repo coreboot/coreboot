@@ -1,3 +1,4 @@
+#include <smp/node.h>
 #include <bootblock_common.h>
 #include <pc80/mc146818rtc.h>
 

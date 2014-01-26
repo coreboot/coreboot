@@ -62,4 +62,20 @@ void hexdump(const void* memory, size_t length)
         }
 }
 
+void hexdump32(char LEVEL, const void *d, int len)
+{
+	int count=0;
 
+	while (len > 0) {
+		if (count % 8 == 0) {
+			printk(LEVEL,"\n");
+			printk(LEVEL, "%p:", d);
+		}
+		printk(LEVEL, " 0x%08lx", *(unsigned long*)d);
+		count++;
+		len--;
+		d += 4;
+	}
+
+	printk(LEVEL,"\n\n");
+}

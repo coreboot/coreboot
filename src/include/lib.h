@@ -60,5 +60,6 @@ void post_cache_as_ram(void);
 
 /* Defined in src/lib/hexdump.c */
 void hexdump(const void *memory, size_t length);
+void hexdump32(char LEVEL, const void *d, int len);
 
 #endif /* __LIB_H__ */

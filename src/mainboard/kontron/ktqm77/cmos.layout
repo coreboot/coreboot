@@ -86,7 +86,8 @@ entries
 408          1       e       1        nmi
 409          2       e       7        power_on_after_fail
 411          1       e       11       sata_mode
-#412          4       r       0        unused
+412          2       e       12       sata_speed_limit
+#414          2       r       0        unused
 
 # coreboot config options: additional mainboard options
 416          4       e      10        systemp_type
@@ -165,6 +166,10 @@ enumerations
 10    4     LM75@9e
 11    0     AHCI
 11    1     Compatible
+12     0     None
+12     1     Gen1
+12     2     Gen2
+12     3     Gen3
 # -----------------------------------------------------------------
 checksums
 

@@ -4,3 +4,4 @@ debug_level = Spew
 nmi = Enable
 power_on_after_fail = Enable
 sata_mode = AHCI
+sata_speed_limit = Gen2

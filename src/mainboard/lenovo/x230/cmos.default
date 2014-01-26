@@ -11,6 +11,7 @@ wwan=Enable
 wlan=Enable
 touchpad=Enable
 sata_mode=AHCI
+sata_speed_limit=None
 fn_ctrl_swap=Disable
 sticky_fn=Disable
 trackpoint=Enable

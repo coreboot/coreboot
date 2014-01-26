@@ -48,8 +48,12 @@ static inline void start_other_cores(void)
 {
 	unsigned nodes;
 	unsigned nodeid;
+	u8 multi_core;
 
-	if (read_option(multi_core, 0))  {
+	if (get_option(&multi_core, "multi_core") != CB_SUCCESS)
+		multi_core = 0; /* Enabled.  */
+
+	if (multi_core)  {
 		return; // disable multi_core
 	}
 

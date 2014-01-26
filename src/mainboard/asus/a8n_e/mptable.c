@@ -92,6 +92,10 @@ static void *smp_write_config_table(void *v)
 			 bus_ck804[0], ((sbdn + 2) << 2) | 1, apicid_ck804,
 			 0x14);
 
+	/* Onboard audio  */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
+			 bus_ck804[0], ((sbdn + 4) << 2) | 0, apicid_ck804, 0x3);
+
 	// Onboard ck804 SATA 0
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_LOW,
 			 bus_ck804[0], ((sbdn + 7) << 2) | 0, apicid_ck804,

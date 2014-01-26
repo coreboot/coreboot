@@ -74,12 +74,14 @@ entries
 
 # -----------------------------------------------------------------
 # coreboot config options: console
-392          3       e       5        baud_rate
+# No serial port on this motherboard
+#392          3       e       5        baud_rate
 395          4       e       6        debug_level
 #399          1       r       0        unused
 
 # coreboot config options: cpu
-400          1       e       2        hyper_threading
+# hyper_threading not supported by the Celeron 847 on this board
+#400          1       e       2        hyper_threading
 #401          7       r       0        unused
 
 # coreboot config options: southbridge
@@ -96,6 +98,7 @@ entries
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
 928         32        r       0        mrc_scrambler_seed_s3
+960         16        r       0        mrc_scrambler_seed_chk
 
 # coreboot config options: check sums
 984         16       h       0        check_sum

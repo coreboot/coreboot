@@ -156,7 +156,8 @@ static int kbc_self_test(void)
 	if (self_test != 0x00) {
 		printk(BIOS_ERR, "Keyboard Interface test failed: 0x%x\n",
 		       self_test);
-		return 0;
+		/* Ignore this error. It's not always fatal.  */
+		return 1;
 	}
 
 	return 1;

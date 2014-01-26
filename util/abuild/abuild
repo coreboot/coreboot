@@ -647,6 +647,7 @@ if [ "$target" != "" ]; then
 	fi
 else
 	build_all_targets
+	sync
 	rm -f $REAL_XMLFILE
 	XMLFILE=$REAL_XMLFILE
 	junit '<?xml version="1.0" encoding="utf-8"?>'

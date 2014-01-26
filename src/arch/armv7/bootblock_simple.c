@@ -25,18 +25,9 @@
 #include <arch/stages.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <smp/node.h>
 
 #include "stages.c"
-
-static int boot_cpu(void)
-{
-	/*
-	 * FIXME: This is a stub for now. All non-boot CPUs should be
-	 * waiting for an interrupt. We could move the chunk of assembly
-	 * which puts them to sleep in here...
-	 */
-	return 1;
-}
 
 void main(void)
 {

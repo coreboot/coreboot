@@ -1,3 +1,4 @@
+#include <smp/node.h>
 #include <bootblock_common.h>
 
 static void main(unsigned long bist)

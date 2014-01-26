@@ -23,7 +23,7 @@
 #include <cbmem.h>
 #include <timestamp.h>
 #include <arch/early_variables.h>
-#include <cpu/x86/lapic.h>
+#include <smp/node.h>
 
 #define MAX_TIMESTAMPS 30
 

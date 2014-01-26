@@ -48,6 +48,8 @@ chip northbridge/amd/amdk8/root_complex		# Root complex
               end
               device pnp 2e.7 on		# GPIO config
                 io 0x60 = 0x0800
+		io 0x62 = 0x0808
+		io 0x64 = 0x0810
                 # Set GPIO 1 & 2
                 io 0x25 = 0x0000
                 # Set GPIO 3 & 4

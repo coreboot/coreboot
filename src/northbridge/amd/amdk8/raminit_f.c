@@ -29,9 +29,6 @@
 #include "raminit.h"
 #include "f.h"
 #include <spd_ddr2.h>
-#if CONFIG_HAVE_OPTION_TABLE
-#include "option_table.h"
-#endif
 
 #if CONFIG_DEBUG_RAM_SETUP
 #define printk_raminit(args...) printk(BIOS_DEBUG, args)
@@ -1112,7 +1109,12 @@ static unsigned long interleave_chip_selects(const struct mem_controller *ctrl, 
 	 * and if so count them.
 	 */
 #if defined(CMOS_VSTART_interleave_chip_selects)
-	if (read_option(interleave_chip_selects, 1) == 0)
+	u8 val;
+
+	if (get_option(&val, "interleave_chip_selects") != CB_SUCCESS)
+		val = 1;
+
+	if (val == 0)
 		return 0;
 #else
 #if !defined(CONFIG_INTERLEAVE_CHIP_SELECTS) || !CONFIG_INTERLEAVE_CHIP_SELECTS
@@ -1808,17 +1810,18 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 
 	value = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	min_cycle_time = min_cycle_times[(value >> NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK];
-	bios_cycle_time = min_cycle_times[
-#ifdef CMOS_VSTART_max_mem_clock
-		read_option(max_mem_clock, 0)
-#else
+
+	u8 max_mem_clock;
+
+	if (get_option(&max_mem_clock, "max_mem_clock") != CB_SUCCESS) {
 #if defined(CONFIG_MAX_MEM_CLOCK)
-		CONFIG_MAX_MEM_CLOCK
+		max_mem_clock = CONFIG_MAX_MEM_CLOCK;
 #else
-		0 // use DDR400 as default
+		max_mem_clock = 0; /* use DDR400 as default */
 #endif
-#endif
-	];
+	}
+
+	bios_cycle_time = min_cycle_times[max_mem_clock];
 
 	if (bios_cycle_time > min_cycle_time) {
 		min_cycle_time = bios_cycle_time;
@@ -2370,6 +2373,7 @@ static void set_ecc(const struct mem_controller *ctrl,
 {
 	int i;
 	int value;
+	u8 ecc_memory;
 
 	uint32_t dcl, nbcap;
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
@@ -2378,15 +2382,12 @@ static void set_ecc(const struct mem_controller *ctrl,
 	if (nbcap & NBCAP_ECC) {
 		dcl |= DCL_DimmEccEn;
 	}
-#ifdef CMOS_VSTART_ECC_memory
-	if (read_option(ECC_memory, 1) == 0) {
+	if (get_option(&ecc_memory, "ECC_memory") != CB_SUCCESS)
+		ecc_memory = 1;
+
+	if (ecc_memory == 0) {
 		dcl &= ~DCL_DimmEccEn;
 	}
-#else // CMOS_VSTART_ECC_memory not defined
-#if !CONFIG_ECC_MEMORY
-	dcl &= ~DCL_DimmEccEn;
-#endif
-#endif
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
 
 	meminfo->is_ecc = 1;

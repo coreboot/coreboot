@@ -11,9 +11,6 @@
 #include <reset.h>
 #include "raminit.h"
 #include "amdk8.h"
-#if CONFIG_HAVE_OPTION_TABLE
-#include "option_table.h"
-#endif
 
 #include <arch/early_variables.h>
 struct sys_info sysinfo_car CAR_GLOBAL;
@@ -546,13 +543,17 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 static void hw_enable_ecc(const struct mem_controller *ctrl)
 {
 	uint32_t dcl, nbcap;
+	u8 ecc_memory;
 	nbcap = pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP);
 	dcl = pci_read_config32(ctrl->f2, DRAM_CONFIG_LOW);
 	dcl &= ~DCL_DimmEccEn;
 	if (nbcap & NBCAP_ECC) {
 		dcl |= DCL_DimmEccEn;
 	}
-	if (read_option(ECC_memory, 1) == 0) {
+	if (get_option(&ecc_memory, "ECC_memory") != CB_SUCCESS)
+		ecc_memory = 1;
+
+	if (ecc_memory == 0) {
 		dcl &= ~DCL_DimmEccEn;
 	}
 	pci_write_config32(ctrl->f2, DRAM_CONFIG_LOW, dcl);
@@ -1103,8 +1104,12 @@ static unsigned long memory_end_k(const struct mem_controller *ctrl, int max_nod
 static void order_dimms(const struct mem_controller *ctrl)
 {
 	unsigned long tom_k, base_k;
+	u8 val;
 
-	if (read_option(interleave_chip_selects, 1) != 0) {
+	if (get_option(&val, "interleave_chip_selects") != CB_SUCCESS)
+		val = 1;
+
+	if (val != 0) {
 		tom_k = interleave_chip_selects(ctrl);
 	} else {
 		printk(BIOS_DEBUG, "Interleaving disabled\n");
@@ -1582,6 +1587,7 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	unsigned char cl_at_freq[NBCAP_MEMCLK_MASK + 1];
 	int dimm, freq, max_freq_bios, max_freq_dloading, max_freq_1t;
 	uint32_t value;
+	u8 val;
 
 	static const uint8_t spd_min_cycle_time_indices[] = { 9, 23, 25 };
 	static const unsigned char cycle_time_at_freq[] = {
@@ -1603,7 +1609,11 @@ static struct spd_set_memclk_result spd_set_memclk(const struct mem_controller *
 	memset(cl_at_freq, 0x00,
 		(pci_read_config32(ctrl->f3, NORTHBRIDGE_CAP) >>
 		 NBCAP_MEMCLK_SHIFT) & NBCAP_MEMCLK_MASK);
-	max_freq_bios = read_option(max_mem_clock, 0);
+
+	if (get_option(&val, "max_mem_clock") != CB_SUCCESS)
+		val = 0;
+
+	max_freq_bios = val;
 	if (max_freq_bios <= NBCAP_MEMCLK_100MHZ)
 		memset(cl_at_freq, 0x00, max_freq_bios);
 	for (dimm = 0; dimm < DIMM_SOCKETS; dimm++) {

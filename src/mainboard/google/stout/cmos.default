@@ -1,0 +1,6 @@
+boot_option = Fallback
+last_boot = Fallback
+debug_level = Spew
+nmi = Enable
+power_on_after_fail = Enable
+sata_mode = AHCI

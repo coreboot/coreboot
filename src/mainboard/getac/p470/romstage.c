@@ -82,7 +82,12 @@ void setup_ich7_gpios(void)
 static void ich7_enable_lpc(void)
 {
 	int lpt_en = 0;
-	if (read_option(lpt, 0) != 0) {
+	u8 val;
+
+	if (get_option(&val, "lpt") != CB_SUCCESS)
+		val = 0;
+
+	if (val != 0) {
 	       lpt_en = 1<<2; // enable LPT
 	}
 	// Enable Serial IRQ

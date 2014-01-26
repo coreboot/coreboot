@@ -69,7 +69,10 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 static void ms7135_set_ram_voltage(void)
 {
 	u8 b;
-	b = read_option(ram_voltage, 0);
+
+	if (get_option(&b, "ram_voltage") != CB_SUCCESS)
+		b = 0;
+
 	if (b > 4) /* default if above 2.70v */
 		b = 0;
 	printk(BIOS_INFO, "setting RAM voltage %08x\n", b);
@@ -79,7 +82,9 @@ static void ms7135_set_ram_voltage(void)
 static void ms7135_set_nf4_voltage(void)
 {
 	u8 b;
-	b = read_option(nf4_voltage, 0);
+	if (get_option(&b, "nf4_voltage") != CB_SUCCESS)
+		b = 0;
+
 	if (b > 2) /* default if above 1.60v */
 		b = 0;
 	b |= 0x10;

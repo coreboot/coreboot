@@ -22,12 +22,15 @@ static void for_each_ap(u32 bsp_apicid, u32 core_range, process_ap_t process_ap,
 	u32 e0_later_single_core;
 	u32 nb_cfg_54;
 	int i, j;
+	u8 multi_core;
+
+	if (get_option(&multi_core, "multi_core") != CB_SUCCESS)
+		multi_core = 0; /* Enabled.  */
 
 	/* get_nodes define in in_coherent_ht.c */
 	nodes = get_nodes();
 
-	if (!CONFIG_LOGICAL_CPUS ||
-	    read_option(multi_core, 0) != 0) {	// 0 means multi core
+	if (!CONFIG_LOGICAL_CPUS || multi_core != 0) {	// 0 means multi core
 		disable_siblings = 1;
 	} else {
 		disable_siblings = 0;

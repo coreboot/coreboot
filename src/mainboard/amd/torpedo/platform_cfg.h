@@ -25,29 +25,15 @@
 
 
 /**
- *   @section BIOSSize BIOSSize
- *    @li <b>0</b> - 1M
- *    @li <b>1</b> - 2M
- *    @li <b>3</b> - 4M
- *    @li <b>7</b> - 8M
- *    In Hudson-2, default ROM size is 1M Bytes, if your platform
- *  ROM bigger then 1M you have to set the ROM size outside CIMx
- *  module and before AGESA module get call.
+ * @def BIOS_SIZE -> BIOS_SIZE_{1,2,4,8,16}M
+ *
+ * In Hudson-2, default ROM size is 1M Bytes, if your platform ROM
+ * bigger than 1M you have to set the ROM size outside CIMx module and
+ * before AGESA module get call.
  */
-#define BIOS_SIZE_1M			0
-#define BIOS_SIZE_2M			1
-#define BIOS_SIZE_4M			3
-#define BIOS_SIZE_8M			7
-
-#if CONFIG_COREBOOT_ROMSIZE_KB_1024
-  #define BIOS_SIZE BIOS_SIZE_1M
-#elif CONFIG_COREBOOT_ROMSIZE_KB_2048 == 1
-  #define BIOS_SIZE BIOS_SIZE_2M
-#elif CONFIG_COREBOOT_ROMSIZE_KB_4096 == 1
-  #define BIOS_SIZE BIOS_SIZE_4M
-#elif CONFIG_COREBOOT_ROMSIZE_KB_8192 == 1
-  #define BIOS_SIZE BIOS_SIZE_8M
-#endif
+#ifndef BIOS_SIZE
+#define BIOS_SIZE ((CONFIG_COREBOOT_ROMSIZE_KB >> 10) - 1)
+#endif /* BIOS_SIZE */
 
 /**
  *   @section SBCIMx_LEGACY_FREE SBCIMx_LEGACY_FREE

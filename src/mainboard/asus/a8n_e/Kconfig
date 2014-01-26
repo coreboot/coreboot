@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select CK804_USE_NIC
 	select CK804_USE_ACI
 	select QRANK_DIMM_SUPPORT
+	select HAVE_ACPI_TABLES
 
 config MAINBOARD_DIR
 	string

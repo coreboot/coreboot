@@ -1,4 +1,5 @@
 #include <console/console.h>
+#include <console/streams.h>
 #include <string.h>
 
 #if CONFIG_GDB_STUB
@@ -217,12 +218,17 @@ static char out_buffer[BUFMAX];
 
 static inline void stub_putc(int ch)
 {
-	console_tx_byte(ch);
+	gdb_tx_byte(ch);
+}
+
+static inline void stub_flush(void)
+{
+	gdb_tx_flush();
 }
 
 static inline int stub_getc(void)
 {
-	return console_rx_byte();
+	return gdb_rx_byte();
 }
 
 static int hex(char ch)
@@ -322,9 +328,11 @@ static int get_packet(char *buffer)
 
 			if (checksum != xmitcsum) {
 				stub_putc('-');	/* failed checksum */
+				stub_flush();
 			}
 			else {
 				stub_putc('+');	/* successful transfer */
+				stub_flush();
 			}
 		}
 	} while(checksum != xmitcsum);
@@ -353,6 +361,7 @@ static void put_packet(char *buffer)
 		stub_putc('#');
 		stub_putc(hexchars[checksum >> 4]);
 		stub_putc(hexchars[checksum % 16]);
+		stub_flush();
 
 	} while ((stub_getc() & 0x7f) != '+');
 

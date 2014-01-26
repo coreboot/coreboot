@@ -61,4 +61,11 @@ void oxford_remap(unsigned int new_base);
 #define __uart_tx_flush()
 #endif
 
+#if 0 /* CONFIG_GDB_STUB_SERIAL && (ENV_ROMSTAGE || ENV_RAMSTAGE) */
+#define __gdb_hw_init()		uart_init(CONFIG_GDB_PORT)
+#define __gdb_tx_byte(x)	uart_tx_byte(CONFIG_GDB_PORT, x);
+#define __gdb_tx_flush()	uart_tx_flush(CONFIG_GDB_PORT)
+#define __gdb_rx_byte()		uart_rx_byte(CONFIG_GDB_PORT)
+#endif
+
 #endif /* CONSOLE_UART_H */

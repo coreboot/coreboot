@@ -33,6 +33,9 @@ int usb_can_rx_byte(int idx);
 #define __CONSOLE_USB_ENABLE__	CONFIG_CONSOLE_USB && \
 	(ENV_ROMSTAGE && CONFIG_USBDEBUG_IN_ROMSTAGE || ENV_RAMSTAGE)
 
+#define __GDB_STUB_USB_ENABLE__	0 /* CONFIG_GDB_STUB_USB */ && \
+	(ENV_ROMSTAGE && CONFIG_USBDEBUG_IN_ROMSTAGE || ENV_RAMSTAGE)
+
 #if __CONSOLE_USB_ENABLE__
 #define __usbdebug_init()	usbdebug_init()
 #define __usb_tx_byte(x)	usb_tx_byte(0, x)
@@ -41,6 +44,13 @@ int usb_can_rx_byte(int idx);
 #define __usbdebug_init()
 #define __usb_tx_byte(x)
 #define __usb_tx_flush()
+#endif
+
+#if __GDB_STUB_USB_ENABLE__
+#define __gdb_hw_init()		usbdebug_init()
+#define __gdb_tx_byte(x)	usb_tx_byte(0, x)
+#define __gdb_tx_flush()	usb_tx_flush(0)
+#define __gdb_rx_byte()		usb_rx_byte(0)
 #endif
 
 #endif /* _CONSOLE_USB_H_ */

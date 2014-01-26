@@ -84,6 +84,7 @@ _start:
 	post_code(POST_PRE_HARDWAREMAIN)	/* post fe */
 
 #if CONFIG_GDB_WAIT
+	call gdb_hw_init
 	call gdb_stub_breakpoint
 #endif
 	call	main

@@ -86,7 +86,8 @@ entries
 408          1       e       1        nmi
 #409          2       e       7        power_on_after_fail
 411          1       e       8        sata_mode
-#412          4       r       0        unused
+412          2       e       9        sata_speed_limit
+#414          2       r       0        unused
 
 # coreboot config options: bootloader
 #Used by ChromeOS:
@@ -134,6 +135,10 @@ enumerations
 7     2     Keep
 8     0     AHCI
 8     1     Compatible
+9     0     None
+9     1     Gen1
+9     2     Gen2
+9     3     Gen3
 # -----------------------------------------------------------------
 checksums
 

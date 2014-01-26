@@ -46,7 +46,7 @@ static void sata_init(struct device *dev)
 	u16 reg16;
 	/* Get the chip configuration */
 	config_t *config = dev->chip_info;
-	u8 sata_mode;
+	u8 sata_mode, sata_limit;
 
 	printk(BIOS_DEBUG, "SATA: Initializing...\n");
 
@@ -106,12 +106,26 @@ static void sata_init(struct device *dev)
 		reg32 = read32(abar + 0x00);
 		reg32 |= 0x0c006000;  // set PSC+SSC+SALP+SSS
 		reg32 &= ~0x00020060; // clear SXS+EMS+PMS
-		/* Set ISS, if available */
+		/* Set ISS, if available
+		 * Try devicetree.cb first, for hard limit, otherwise look in
+		 * CMOS for user-selectable limit
+		 */
 		if (config->sata_interface_speed_limit)
 		{
+			printk(BIOS_INFO, "Applying hard limit on SATA speed");
+			sata_limit = config->sata_interface_speed_limit;
+		} else {
+			/* Default to no limit if not configured in CMOS */
+			if (get_option(&sata_limit, "sata_speed_limit")
+			    != CB_SUCCESS)
+				sata_limit = 0;
+		}
+		sata_limit &= 0x03;
+		if (sata_limit) {
+			printk(BIOS_INFO, "Limiting SATA speed to Gen%d\n",
+					  sata_limit);
 			reg32 &= ~0x00f00000;
-			reg32 |= (config->sata_interface_speed_limit & 0x03)
-			  << 20;
+			reg32 |= sata_limit << 20;
 		}
 		write32(abar + 0x00, reg32);
 		/* PI (Ports implemented) */

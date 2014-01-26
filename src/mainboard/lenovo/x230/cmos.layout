@@ -94,9 +94,10 @@ entries
 416         1       e       1        trackpoint
 417         1       e       1        fn_ctrl_swap
 418         1       e       1        sticky_fn
-#419        2       r       0        unused
+419         2       e       11       sata_speed_limit
 421         1       e       9        sata_mode
 422	    2	    e	    10	     backlight
+
 
 # coreboot config options: cpu
 424          1       e       2        hyper_threading
@@ -150,6 +151,10 @@ enumerations
 10    1     Keyboard only
 10    2	    Thinklight only
 10    3	    None
+11     0     None
+11     1     Gen1
+11     2     Gen2
+11     3     Gen3
 # -----------------------------------------------------------------
 checksums
 

@@ -30,9 +30,6 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <memrange.h>
-#if CONFIG_USE_OPTION_TABLE
-#include <option_table.h>
-#endif
 #if CONFIG_CHROMEOS
 #if CONFIG_GENERATE_ACPI_TABLES
 #include <arch/acpi.h>
@@ -314,26 +311,6 @@ static struct lb_mainboard *lb_mainboard(struct lb_header *header)
 	return mainboard;
 }
 
-#if CONFIG_USE_OPTION_TABLE
-static struct cmos_checksum *lb_cmos_checksum(struct lb_header *header)
-{
-	struct lb_record *rec;
-	struct cmos_checksum *cmos_checksum;
-	rec = lb_new_record(header);
-	cmos_checksum = (struct cmos_checksum *)rec;
-	cmos_checksum->tag = LB_TAG_OPTION_CHECKSUM;
-
-	cmos_checksum->size = (sizeof(*cmos_checksum));
-
-	cmos_checksum->range_start = LB_CKS_RANGE_START * 8;
-	cmos_checksum->range_end = ( LB_CKS_RANGE_END * 8 ) + 7;
-	cmos_checksum->location = LB_CKS_LOC * 8;
-	cmos_checksum->type = CHECKSUM_PCBIOS;
-
-	return cmos_checksum;
-}
-#endif
-
 static void lb_strings(struct lb_header *header)
 {
 	static const struct {
@@ -510,8 +487,6 @@ unsigned long write_coreboot_table(
 			struct lb_record *rec_dest = lb_new_record(head);
 			/* Copy the option config table, it's already a lb_record... */
 			memcpy(rec_dest,  option_table, option_table->size);
-			/* Create cmos checksum entry in coreboot table */
-			lb_cmos_checksum(head);
 		} else {
 			printk(BIOS_ERR, "cmos_layout.bin could not be found!\n");
 		}

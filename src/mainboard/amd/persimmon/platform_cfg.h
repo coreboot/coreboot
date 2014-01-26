@@ -26,11 +26,13 @@
  * @def BIOS_SIZE_2M
  * @def BIOS_SIZE_4M
  * @def BIOS_SIZE_8M
+ * @def BIOS_SIZE_16M
  */
 #define BIOS_SIZE_1M			0
 #define BIOS_SIZE_2M			1
 #define BIOS_SIZE_4M			3
 #define BIOS_SIZE_8M			7
+#define BIOS_SIZE_16M			15
 
 /* In SB800, default ROM size is 1M Bytes, if your platform ROM
  * bigger than 1M you have to set the ROM size outside CIMx module and
@@ -45,8 +47,10 @@
   #define BIOS_SIZE BIOS_SIZE_4M
 #elif CONFIG_COREBOOT_ROMSIZE_KB_8192 == 1
   #define BIOS_SIZE BIOS_SIZE_8M
+#elif CONFIG_COREBOOT_ROMSIZE_KB_16484 == 1
+  #define BIOS_SIZE BIOS_SIZE_16M
 #endif
-#endif
+#endif /* BIOS_SIZE */
 
 /**
  * @def SPREAD_SPECTRUM
@@ -270,4 +274,4 @@ static const CODECTBLLIST codec_tablelist[] =
  */
 #define FADT_PM_PROFILE 1
 
-#endif
+#endif /* _PLATFORM_CFG_H_ */

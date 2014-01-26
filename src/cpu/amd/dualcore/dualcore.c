@@ -2,9 +2,6 @@
 
 #include "cpu/amd/dualcore/dualcore_id.c"
 #include <pc80/mc146818rtc.h>
-#if CONFIG_HAVE_OPTION_TABLE
-#include "option_table.h"
-#endif
 
 static inline unsigned get_core_num_in_bsp(unsigned nodeid)
 {
@@ -48,8 +45,12 @@ static inline void start_other_cores(void)
 {
 	unsigned nodes;
 	unsigned nodeid;
+	u8 multi_core;
 
-	if (read_option(multi_core, 0))  {
+	if (get_option(&multi_core, "multi_core") != CB_SUCCESS)
+		multi_core = 0; /* Enabled.  */
+
+	if (multi_core)  {
 		return; // disable multi_core
 	}
 

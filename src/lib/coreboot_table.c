@@ -30,9 +30,6 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <memrange.h>
-#if CONFIG_USE_OPTION_TABLE
-#include <option_table.h>
-#endif
 #if CONFIG_CHROMEOS
 #if CONFIG_GENERATE_ACPI_TABLES
 #include <arch/acpi.h>

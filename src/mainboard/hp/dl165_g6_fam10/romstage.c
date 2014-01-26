@@ -35,7 +35,6 @@
 #include <arch/io.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-#include "option_table.h"
 #include <console/console.h>
 #include <cpu/amd/model_10xxx_rev.h>
 #include "southbridge/broadcom/bcm5785/early_smbus.c"

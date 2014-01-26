@@ -94,7 +94,6 @@ entries
 # coreboot config options: bootloader
 416        512       s       0        boot_devices
 928         8       h       0        boot_default
-937         1       e       1        lpt
 938         1       e       9        first_battery
 939         1       e       1        bluetooth
 940         1       e       1        wwan

@@ -23,7 +23,7 @@
 #include <pc80/mc146818rtc.h>
 #include <trace.h>
 
-#if CONFIG_USE_OPTION_TABLE
+#if CONFIG_USE_OPTION_TABLE && defined(__ROMCC__)
 #include "option_table.h"
 #endif
 
@@ -118,7 +118,7 @@ void uart_init(void)
 #if !defined(__SMM__) && CONFIG_USE_OPTION_TABLE
 	static const unsigned char divisor[8] = { 1, 2, 3, 6, 12, 24, 48, 96 };
 	unsigned b_index = 0;
-#if defined(__PRE_RAM__)
+#if defined(__ROMCC__)
 	b_index = read_option(baud_rate, 0);
 	b_index &= 7;
 	div = divisor[b_index];

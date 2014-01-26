@@ -38,7 +38,6 @@
 #include <arch/cpu.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
-#include "option_table.h"
 #include "gpio.h"
 #if CONFIG_CONSOLE_SERIAL8250
 #include "superio/smsc/lpc47n207/lpc47n207.h"

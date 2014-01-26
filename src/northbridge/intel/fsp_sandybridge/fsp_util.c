@@ -21,6 +21,7 @@
 #include <string.h>
 #include <cpu/x86/stack.h>
 #include <console/console.h>
+#include <lib.h>
 #include "fsp_util.h"
 
 #if CONFIG_ENABLE_FAST_BOOT

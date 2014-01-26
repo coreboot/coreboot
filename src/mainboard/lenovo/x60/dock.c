@@ -237,7 +237,10 @@ int dock_connect(void)
 
 	dock_write_register(0x07, 0x03);
 	dock_write_register(0x30, 0x01);
+#if !defined(__SMM__) || CONFIG_DEBUG_SMI
+	/* FIXME: Do not touch consoles outside the dock. */
 	console_init();
+#endif
 	return 0;
 }
 

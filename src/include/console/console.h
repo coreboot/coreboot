@@ -89,6 +89,7 @@ int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf,
 void hexdump32(char LEVEL, const void *d, int len);
 
 #if defined(__BOOT_BLOCK__) && !CONFIG_BOOTBLOCK_CONSOLE || \
+    defined(__SMM__) && !CONFIG_DEBUG_SMI || \
     (defined(__PRE_RAM__) && !defined(__BOOT_BLOCK__)) && !CONFIG_EARLY_CONSOLE
 
 static inline void printk(int LEVEL, const char *fmt, ...);

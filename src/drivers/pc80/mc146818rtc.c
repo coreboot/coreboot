@@ -26,15 +26,10 @@ static void rtc_update_cmos_date(u8 has_century)
 }
 
 #if CONFIG_USE_OPTION_TABLE
-static struct cmos_checksum *get_cmos_checksum_range(void)
+static struct cmos_checksum *get_cmos_checksum_range(struct cmos_option_table *ct)
 {
-	struct cmos_option_table *ct;
 	struct cmos_checksum *cc;
 
-	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
-				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
-	if (!ct)
-		return 0;
 	cc=(struct cmos_checksum*)((unsigned char *)ct + ct->header_length);
 	for(;cc->tag==LB_TAG_OPTION || cc->tag==LB_TAG_OPTION_ENUM
 		    || cc->tag == LB_TAG_OPTION_DEFAULTS;
@@ -44,24 +39,52 @@ static struct cmos_checksum *get_cmos_checksum_range(void)
 	return cc;
 }
 
-static int overlaps_checksum(u8 byte)
+static int overlaps_checksum(struct cmos_option_table *ct, u8 byte)
 {
 	struct cmos_checksum *cc;
 
-	cc = get_cmos_checksum_range();
+	cc = get_cmos_checksum_range(ct);
 	if (!cc)
 		return 0;
 
 	return (cc->range_start <= byte) && (byte <= cc->range_end);
 }
 
-static int rtc_checksum_valid(void)
+static struct cmos_entries *find_cmos_entry(struct cmos_option_table *ct, const char *name)
+{
+	size_t namelen;
+	struct cmos_entries *ce;
+
+	/* Figure out how long name is */
+	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
+
+	/* find the requested entry record */
+	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
+	for(;ce->tag==LB_TAG_OPTION;
+		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {
+		if (memcmp(ce->name, name, namelen) == 0) {
+			return ce;
+		}
+	}
+	return NULL;
+}
+
+static int rtc_checksum_valid(struct cmos_option_table *ct)
 {
 	int i;
 	u16 sum, old_sum;
 	struct cmos_checksum *cc;
+	struct cmos_entries *ce;
 
-	cc = get_cmos_checksum_range();
+	ce = find_cmos_entry(ct, "version");
+	if(!ce)
+		return 0;
+	if (cmos_read (ce->bit / 8) != (ce->config_id & 0xff))
+		return 0;
+	if (cmos_read (ce->bit / 8 + 1) != ((ce->config_id >> 8) & 0xff))
+		return 0;
+
+	cc = get_cmos_checksum_range(ct);
 	if (!cc)
 		return 0;
 
@@ -73,13 +96,13 @@ static int rtc_checksum_valid(void)
 	return sum == old_sum;
 }
 
-static void rtc_set_checksum(void)
+static void rtc_set_checksum(struct cmos_option_table *ct)
 {
 	int i;
 	u16 sum;
 	struct cmos_checksum *cc;
 
-	cc = get_cmos_checksum_range();
+	cc = get_cmos_checksum_range(ct);
 	if (!cc)
 		return;
 
@@ -109,6 +132,10 @@ void rtc_init(int invalid)
 	int checksum_invalid = 0;
 #if CONFIG_USE_OPTION_TABLE
 	unsigned char x;
+	struct cmos_option_table *ct = 0;
+
+	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
+				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
 #endif
 
 #if CONFIG_HAVE_ACPI_RESUME
@@ -130,7 +157,7 @@ void rtc_init(int invalid)
 	cmos_invalid = !(x & RTC_VRT);
 
 	/* See if there is a CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid();
+	checksum_invalid = !ct || !rtc_checksum_valid(ct);
 
 #define CLEAR_CMOS 0
 #else
@@ -168,12 +195,13 @@ void rtc_init(int invalid)
 
 #if CONFIG_USE_OPTION_TABLE
 	/* See if there is a LB CMOS checksum error */
-	checksum_invalid = !rtc_checksum_valid();
+	checksum_invalid = !ct || !rtc_checksum_valid(ct);
 	if(checksum_invalid)
 		printk(BIOS_DEBUG, "RTC: coreboot checksum invalid\n");
 
 	/* Make certain we have a valid checksum */
-	rtc_set_checksum();
+	if (ct)
+		rtc_set_checksum(ct);
 #endif
 
 	/* Clear any pending interrupts */
@@ -222,13 +250,7 @@ enum cb_err get_option(void *dest, const char *name)
 {
 	struct cmos_option_table *ct;
 	struct cmos_entries *ce;
-	size_t namelen;
-	int found=0;
 
-	/* Figure out how long name is */
-	namelen = strnlen(name, CMOS_MAX_NAME_LENGTH);
-
-	/* find the requested entry record */
 	ct = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "cmos_layout.bin",
 				   CBFS_COMPONENT_CMOS_LAYOUT, NULL);
 	if (!ct) {
@@ -236,27 +258,21 @@ enum cb_err get_option(void *dest, const char *name)
 						"Options are disabled\n");
 		return CB_CMOS_LAYOUT_NOT_FOUND;
 	}
-	ce=(struct cmos_entries*)((unsigned char *)ct + ct->header_length);
-	for(;ce->tag==LB_TAG_OPTION;
-		ce=(struct cmos_entries*)((unsigned char *)ce + ce->size)) {
-		if (memcmp(ce->name, name, namelen) == 0) {
-			found=1;
-			break;
-		}
-	}
-	if(!found) {
+
+	ce = find_cmos_entry(ct, name);
+	if(!ce) {
 		printk(BIOS_DEBUG, "WARNING: No CMOS option '%s'.\n", name);
 		return CB_CMOS_OPTION_NOT_FOUND;
 	}
-
 	if(get_cmos_value(ce->bit, ce->length, dest) != CB_SUCCESS)
 		return CB_CMOS_ACCESS_ERROR;
-	if(!rtc_checksum_valid())
+	if(!rtc_checksum_valid(ct))
 		return CB_CMOS_CHECKSUM_INVALID;
 	return CB_SUCCESS;
 }
 
-static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
+static enum cb_err set_cmos_value(struct cmos_option_table *ct,
+				  unsigned long bit, unsigned long length,
 				  void *vret)
 {
 	unsigned char *ret;
@@ -276,7 +292,7 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 		uchar &= ~mask;
 		uchar |= (ret[0] << byte_bit);
 		cmos_write(uchar, byte);
-		if (overlaps_checksum (byte))
+		if (overlaps_checksum (ct, byte))
 			chksum_update_needed = 1;
 	} else {			/* more that one byte so transfer the whole bytes */
 		if (byte_bit || length % 8)
@@ -284,13 +300,13 @@ static enum cb_err set_cmos_value(unsigned long bit, unsigned long length,
 
 		for(i=0; length; i++, length-=8, byte++) {
 			cmos_write(ret[i], byte);
-			if (overlaps_checksum (byte))
+			if (overlaps_checksum (ct, byte))
 				chksum_update_needed = 1;
 		}
 	}
 
 	if (chksum_update_needed) {
-		rtc_set_checksum();
+		rtc_set_checksum(ct);
 	}
 	return CB_SUCCESS;
 }
@@ -331,12 +347,12 @@ enum cb_err set_option(const char *name, void *value)
 	if (ce->config == 's') {
 		length = MAX(strlen((const char *)value) * 8, ce->length - 8);
 		/* make sure the string is null terminated */
-		if (set_cmos_value(ce->bit + ce->length - 8, 8, &(u8[]){0})
+		if (set_cmos_value(ct, ce->bit + ce->length - 8, 8, &(u8[]){0})
 		    != CB_SUCCESS)
 			return (CB_CMOS_ACCESS_ERROR);
 	}
 
-	if (set_cmos_value(ce->bit, length, value) != CB_SUCCESS)
+	if (set_cmos_value(ct, ce->bit, length, value) != CB_SUCCESS)
 		return (CB_CMOS_ACCESS_ERROR);
 
 	return CB_SUCCESS;

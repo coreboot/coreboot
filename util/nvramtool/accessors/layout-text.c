@@ -192,6 +192,9 @@ static int line_num;
 
 static const char *layout_filename = NULL;
 
+static unsigned int layout_checksum;
+static int version_bit = -1;
+
 /****************************************************************************
  * set_layout_filename
  *
@@ -311,6 +314,26 @@ void write_cmos_layout(FILE * f)
 		layout.summed_area_end, layout.checksum_at);
 }
 
+static void process_layout_checksum(void)
+{
+	cmos_entry_t cmos_entry;
+
+	if (version_bit < 0) {
+		fprintf(stderr,
+			"%s: version field not found.\n", prog_name);
+		exit(1);
+	}
+
+	memset (&cmos_entry, 0, sizeof (cmos_entry));
+
+	cmos_entry.bit = version_bit;
+	cmos_entry.length = 16;
+	cmos_entry.config_id = layout_checksum;
+	cmos_entry.config = 'v';
+	strcpy (cmos_entry.name, "version");
+	try_add_layout_file_entry(&cmos_entry);
+}
+
 /****************************************************************************
  * process_layout_file
  *
@@ -369,6 +392,8 @@ static void process_layout_file(FILE * f)
 
 	/* Skip past all enums.  They have already been processed. */
 	while (!process_enum(f, 1)) ;
+
+	process_layout_checksum();
 
 	/* Process CMOS checksum info. */
 	process_checksum_info(f);
@@ -471,6 +496,31 @@ static int process_entry(FILE * f, int skip_add)
 		create_entry(&cmos_entry, &line[match[1].rm_so],
 			     &line[match[2].rm_so], &line[match[3].rm_so],
 			     &line[match[4].rm_so], &line[match[5].rm_so]);
+
+
+		/* Special case of universal hashing. Small primes,
+		   different, chosen at random.
+		 */
+		layout_checksum = (layout_checksum * 307) % 0xffff;
+		layout_checksum += cmos_entry.bit * 43
+			+ cmos_entry.length * 257
+			+ cmos_entry.config_id * 313
+			+ cmos_entry.config * 509;
+		layout_checksum %= 0xffff;
+		layout_checksum += compute_ip_checksum(cmos_entry.name,
+						       strlen (cmos_entry.name))
+			* 89;
+		layout_checksum %= 0xffff;
+
+		if (cmos_entry.config == 'v') {
+			if (cmos_entry.length != 16) {
+				fprintf(stderr,
+					"%s: version is not 16-bit long.\n", prog_name);
+				exit(1);
+			}
+			version_bit = cmos_entry.bit;
+			break;
+		}
 		try_add_layout_file_entry(&cmos_entry);
 		break;
 	}
@@ -623,6 +673,10 @@ static void create_entry(cmos_entry_t * cmos_entry,
 
 	case 'h':
 		cmos_entry->config = CMOS_ENTRY_HEX;
+		break;
+
+	case 'v':
+		cmos_entry->config = CMOS_ENTRY_VERSION;
 		break;
 
 	case 's':
@@ -852,6 +906,9 @@ static char cmos_entry_char_value(cmos_entry_config_t config)
 
 	case CMOS_ENTRY_HEX:
 		return 'h';
+
+	case CMOS_ENTRY_VERSION:
+		return 'v';
 
 	case CMOS_ENTRY_RESERVED:
 		return 'r';

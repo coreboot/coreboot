@@ -71,6 +71,15 @@ static int cmos_chksum_valid(void)
 	unsigned char addr;
 	u16 sum, old_sum;
 	const struct cmos_checksum *cc;
+	const struct cmos_entries *ce;
+
+	ce = (const struct cmos_entries *) find_entry("version");
+	if (!ce)
+		return 0;
+	if (cmos_read (ce->bit / 8) != (ce->config_id & 0xff))
+		return 0;
+	if (cmos_read (ce->bit / 8 + 1) != ((ce->config_id >> 8) & 0xff))
+		return 0;
 
 	cc = (struct cmos_checksum *) find_first_entry();
 

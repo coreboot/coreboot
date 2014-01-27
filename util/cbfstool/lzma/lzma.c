@@ -186,9 +186,9 @@ void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
 	size_t destlen = out_sizemax;
 	size_t srclen = src_len - (LZMA_PROPS_SIZE + 8);
 
-	int res = LzmaDecode((Byte *) dst, &destlen,
-			     (Byte *) &src[LZMA_PROPS_SIZE + 8], &srclen,
-			     (Byte *) &src[0], LZMA_PROPS_SIZE,
+	int res = LzmaDecode((uint8_t *) dst, &destlen,
+			     (uint8_t *) &src[LZMA_PROPS_SIZE + 8], &srclen,
+			     (uint8_t *) &src[0], LZMA_PROPS_SIZE,
 			     LZMA_FINISH_END,
 			     &status,
 			     &LZMAalloc);

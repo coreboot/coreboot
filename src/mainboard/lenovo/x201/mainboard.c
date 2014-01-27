@@ -104,11 +104,8 @@ static void verb_setup(void)
 	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_init(device_t dev)
 {
-	device_t dev0;
-	u16 pmbase;
-
 	printk(BIOS_SPEW, "starting SPI configuration\n");
 
 	/* Configure SPI.  */
@@ -134,6 +131,26 @@ static void mainboard_enable(device_t dev)
 	RCBA32(0x3804) = 0x3f04e008;
 
 	printk(BIOS_SPEW, "SPI configured\n");
+	/* This sneaked in here, because X201 SuperIO chip isn't really
+	   connected to anything and hence we don't init it.
+	 */
+	pc_keyboard_init(0);
+
+	/* Enable expresscard hotplug events.  */
+	pci_write_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 3)),
+			   0xd8,
+			   pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 3)), 0xd8)
+			   | (1 << 30));
+	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x1c, 3)),
+			   0x42, 0x142);
+}
+
+static void mainboard_enable(device_t dev)
+{
+	device_t dev0;
+	u16 pmbase;
+
+	dev->ops->init = mainboard_init;
 
 	pmbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1f, 0)),
 				   PMBASE) & 0xff80;
@@ -158,19 +175,7 @@ static void mainboard_enable(device_t dev)
 	mainboard_interrupt_handlers(0x15, &int15_handler);
 #endif
 
-	/* This sneaked in here, because X201 SuperIO chip isn't really
-	   connected to anything and hence we don't init it.
-	 */
-	pc_keyboard_init(0);
 	verb_setup();
-
-	/* Enable expresscard hotplug events.  */
-	pci_write_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 3)),
-			   0xd8,
-			   pci_read_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 3)), 0xd8)
-			   | (1 << 30));
-	pci_write_config16(dev_find_slot(0, PCI_DEVFN(0x1c, 3)),
-			   0x42, 0x142);
 }
 
 struct chip_operations mainboard_ops = {

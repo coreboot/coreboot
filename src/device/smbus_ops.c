@@ -81,57 +81,123 @@ int smbus_set_link(device_t dev)
 
 int smbus_quick_read(device_t dev)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->quick_read) {
+		printk(BIOS_ERR, "%s missing quick_read\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->quick_read(dev);
 }
 
 int smbus_quick_write(device_t dev)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->quick_write) {
+		printk(BIOS_ERR, "%s missing quick_write\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->quick_write(dev);
 }
 
 int smbus_recv_byte(device_t dev)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->recv_byte) {
+		printk(BIOS_ERR, "%s missing recv_byte\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->recv_byte(dev);
 }
 
 int smbus_send_byte(device_t dev, u8 byte)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->send_byte) {
+		printk(BIOS_ERR, "%s missing send_byte\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->send_byte(dev, byte);
 }
 
 int smbus_read_byte(device_t dev, u8 addr)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->read_byte) {
+		printk(BIOS_ERR, "%s missing read_byte\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_byte(dev, addr);
 }
 
 int smbus_write_byte(device_t dev, u8 addr, u8 val)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->write_byte) {
+		printk(BIOS_ERR, "%s missing write_byte\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_byte(dev, addr, val);
 }
 
 int smbus_read_word(device_t dev, u8 addr)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->read_word) {
+		printk(BIOS_ERR, "%s missing read_word\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_word(dev, addr);
 }
 
 int smbus_write_word(device_t dev, u8 addr, u16 val)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->write_word) {
+		printk(BIOS_ERR, "%s missing write_word\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_word(dev, addr, val);
 }
 
 int smbus_process_call(device_t dev, u8 cmd, u16 data)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->process_call) {
+		printk(BIOS_ERR, "%s missing process_call\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->process_call(dev, cmd, data);
 }
 
 int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->block_read) {
+		printk(BIOS_ERR, "%s missing block_read\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_read(dev, cmd,
 							      bytes, buffer);
 }
 
 int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer)
 {
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->block_write) {
+		printk(BIOS_ERR, "%s missing block_write\n",
+		       dev_path(dev));
+		return -1;
+	}
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_write(dev, cmd,
 							       bytes, buffer);
 }

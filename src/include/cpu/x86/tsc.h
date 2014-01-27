@@ -1,6 +1,8 @@
 #ifndef CPU_X86_TSC_H
 #define CPU_X86_TSC_H
 
+#include <stdint.h>
+
 #if CONFIG_TSC_SYNC_MFENCE
 #define TSC_SYNC "mfence\n"
 #elif CONFIG_TSC_SYNC_LFENCE

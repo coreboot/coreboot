@@ -5,13 +5,11 @@
  *
  */
 
+#include <smp/node.h>
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>
 #include <console/console.h>
 #include <trace.h>
-
-int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-int default_console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
 DECLARE_SPIN_LOCK(console_lock)
 
@@ -23,6 +21,11 @@ int do_printk(int msg_level, const char *fmt, ...)
 	if (msg_level > console_loglevel) {
 		return 0;
 	}
+
+#if CONFIG_SQUELCH_EARLY_SMP && defined(__PRE_RAM__)
+	if (!boot_cpu())
+		return 0;
+#endif
 
 	DISABLE_TRACE;
 	spin_lock(&console_lock);

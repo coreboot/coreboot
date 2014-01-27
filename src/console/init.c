@@ -29,6 +29,10 @@
 #include <device/pci.h>
 #endif
 
+#if !defined(__PRE_RAM__)
+int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+#endif
+
 void console_init(void)
 {
 #if !defined(__PRE_RAM__)

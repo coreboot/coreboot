@@ -20,7 +20,6 @@
 #include <console/console.h>
 #include <console/cbmem_console.h>
 #include <console/uart.h>
-#include <console/vtxprintf.h>
 
 /* FIXME: need to make console driver more generic */
 void console_tx_byte(unsigned char byte)
@@ -36,27 +35,9 @@ void console_tx_byte(unsigned char byte)
 #endif
 }
 
-static void _console_tx_flush(void)
+void console_tx_flush(void)
 {
 #if CONFIG_CONSOLE_SERIAL
 	uart_tx_flush();
 #endif
-}
-
-int do_printk(int msg_level, const char *fmt, ...)
-{
-	va_list args;
-	int i;
-
-	if (msg_level > console_loglevel) {
-		return 0;
-	}
-
-	va_start(args, fmt);
-	i = vtxprintf(console_tx_byte, fmt, args);
-	va_end(args);
-
-	_console_tx_flush();
-
-	return i;
 }

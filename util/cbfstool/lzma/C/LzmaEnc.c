@@ -506,7 +506,7 @@ static void RangeEnc_FlushStream(CRangeEnc *p)
   p->buf = p->bufBase;
 }
 
-static void MY_FAST_CALL RangeEnc_ShiftLow(CRangeEnc *p)
+static void RangeEnc_ShiftLow(CRangeEnc *p)
 {
   if ((uint32_t)p->low < (uint32_t)0xFF000000 || (int)(p->low >> 32) != 0)
   {
@@ -776,7 +776,7 @@ static void LenEnc_SetPrices(CLenEnc *p, uint32_t posState, uint32_t numSymbols,
     prices[i] = b1 + RcTree_GetPrice(p->high, kLenNumHighBits, i - kLenNumLowSymbols - kLenNumMidSymbols, ProbPrices);
 }
 
-static void MY_FAST_CALL LenPriceEnc_UpdateTable(CLenPriceEnc *p, uint32_t posState, uint32_t *ProbPrices)
+static void LenPriceEnc_UpdateTable(CLenPriceEnc *p, uint32_t posState, uint32_t *ProbPrices)
 {
   LenEnc_SetPrices(&p->p, posState, p->tableSize, p->prices[posState], ProbPrices);
   p->counters[posState] = p->tableSize;

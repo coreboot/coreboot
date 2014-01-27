@@ -17,14 +17,12 @@
  * MA 02110-1301 USA
  */
 
-#include <smp/node.h>
 #include <console/console.h>
 #include <console/cbmem_console.h>
 #include <console/uart.h>
 #include <console/usb.h>
 #include <console/ne2k.h>
 #include <console/spkmodem.h>
-#include <console/vtxprintf.h>
 
 void console_tx_byte(unsigned char byte)
 {
@@ -59,27 +57,4 @@ void console_tx_flush(void)
 #if CONFIG_CONSOLE_USB && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
 	usb_tx_flush(0);
 #endif
-}
-
-int do_printk(int msg_level, const char *fmt, ...)
-{
-	va_list args;
-	int i;
-
-	if (msg_level > console_loglevel) {
-		return 0;
-	}
-
-#if CONFIG_SQUELCH_EARLY_SMP
-	if (!boot_cpu())
-		return 0;
-#endif
-
-	va_start(args, fmt);
-	i = vtxprintf(console_tx_byte, fmt, args);
-	va_end(args);
-
-	console_tx_flush();
-
-	return i;
 }

@@ -6,10 +6,6 @@
 
 #include "Types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define LZMA_PROPS_SIZE 5
 
 typedef struct _CLzmaEncProps
@@ -72,9 +68,5 @@ Return code:
 SRes LzmaEncode(uint8_t *dest, size_t *destLen, const uint8_t *src, size_t srcLen,
     const CLzmaEncProps *props, uint8_t *propsEncoded, size_t *propsSize, int writeEndMark,
     ICompressProgress *progress, ISzAlloc *alloc, ISzAlloc *allocBig);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

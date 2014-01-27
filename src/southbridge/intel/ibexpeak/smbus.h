@@ -99,8 +99,6 @@ static int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned add
 	return byte;
 }
 
-#ifdef __PRE_RAM__
-
 static  int do_smbus_write_byte(unsigned smbus_base, unsigned device, unsigned address, unsigned data)
 {
 	unsigned char global_status_register;
@@ -143,6 +141,8 @@ static  int do_smbus_write_byte(unsigned smbus_base, unsigned device, unsigned a
 
 	return 0;
 }
+
+#ifdef __PRE_RAM__
 
 static int do_smbus_block_write(unsigned smbus_base, unsigned device,
 			      unsigned cmd, unsigned bytes, const u8 *buf)

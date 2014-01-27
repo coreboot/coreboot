@@ -6,10 +6,6 @@
 
 #include "Types.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef uint32_t CLzRef;
 
 typedef struct _CMatchFinder
@@ -107,9 +103,5 @@ uint32_t Bt3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances);
 uint32_t Hc3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances);
 void Bt3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num);
 void Hc3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

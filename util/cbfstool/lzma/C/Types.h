@@ -12,18 +12,6 @@
 #include <windows.h>
 #endif
 
-#ifndef EXTERN_C_BEGIN
-#ifdef __cplusplus
-#define EXTERN_C_BEGIN extern "C" {
-#define EXTERN_C_END }
-#else
-#define EXTERN_C_BEGIN
-#define EXTERN_C_END
-#endif
-#endif
-
-EXTERN_C_BEGIN
-
 #define SZ_OK 0
 
 #define SZ_ERROR_DATA 1
@@ -97,9 +85,6 @@ typedef struct ISeqInStream
   SRes (*Read)(void *p, void *buf, size_t *size);
     /* if (input(*size) != 0 && output(*size) == 0) means end_of_stream.
        (output(*size) < input(*size)) is allowed */
-#ifdef __cplusplus
-  ISeqInStream(): Read() { } // -Weffc++
-#endif
 } ISeqInStream;
 
 /* it can return SZ_ERROR_INPUT_EOF */
@@ -112,9 +97,6 @@ typedef struct ISeqOutStream
   size_t (*Write)(void *p, const void *buf, size_t size);
     /* Returns: result - the number of actually written bytes.
        (result < size) means error */
-#ifdef __cplusplus
-  ISeqOutStream(): Write() { } // -Weffc++
-#endif
 } ISeqOutStream;
 
 typedef enum
@@ -196,7 +178,5 @@ typedef struct
 
 #define IAlloc_Alloc(p, size) (p)->Alloc((p), size)
 #define IAlloc_Free(p, a) (p)->Free((p), a)
-
-EXTERN_C_END
 
 #endif

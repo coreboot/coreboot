@@ -5,6 +5,8 @@
 #define __7Z_TYPES_H
 
 #include <stddef.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -52,48 +54,6 @@ typedef int WRes;
 #define RINOK(x) { int __result__ = (x); if (__result__ != 0) return __result__; }
 #endif
 
-typedef unsigned char Byte;
-typedef short Int16;
-typedef unsigned short UInt16;
-
-#ifdef _LZMA_UINT32_IS_ULONG
-typedef long Int32;
-typedef unsigned long UInt32;
-#else
-typedef int Int32;
-typedef unsigned int UInt32;
-#endif
-
-#ifdef _SZ_NO_INT_64
-
-/* define _SZ_NO_INT_64, if your compiler doesn't support 64-bit integers.
-   NOTES: Some code will work incorrectly in that case! */
-
-typedef long Int64;
-typedef unsigned long UInt64;
-
-#else
-
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-typedef __int64 Int64;
-typedef unsigned __int64 UInt64;
-#else
-typedef long long int Int64;
-typedef unsigned long long int UInt64;
-#endif
-
-#endif
-
-#ifdef _LZMA_NO_SYSTEM_SIZE_T
-typedef UInt32 SizeT;
-#else
-typedef size_t SizeT;
-#endif
-
-typedef int Bool;
-#define True 1
-#define False 0
-
 
 #ifdef _WIN32
 #define MY_STD_CALL __stdcall
@@ -124,12 +84,12 @@ typedef int Bool;
 
 typedef struct
 {
-  Byte (*Read)(void *p); /* reads one byte, returns 0 in case of EOF or error */
+  uint8_t (*Read)(void *p); /* reads one byte, returns 0 in case of EOF or error */
 } IByteIn;
 
 typedef struct
 {
-  void (*Write)(void *p, Byte b);
+  void (*Write)(void *p, uint8_t b);
 } IByteOut;
 
 typedef struct ISeqInStream
@@ -145,7 +105,7 @@ typedef struct ISeqInStream
 /* it can return SZ_ERROR_INPUT_EOF */
 SRes SeqInStream_Read(ISeqInStream *stream, void *buf, size_t size);
 SRes SeqInStream_Read2(ISeqInStream *stream, void *buf, size_t size, SRes errorType);
-SRes SeqInStream_ReadByte(ISeqInStream *stream, Byte *buf);
+SRes SeqInStream_ReadByte(ISeqInStream *stream, uint8_t *buf);
 
 typedef struct ISeqOutStream
 {
@@ -167,7 +127,7 @@ typedef enum
 typedef struct
 {
   SRes (*Read)(void *p, void *buf, size_t *size);  /* same as ISeqInStream::Read */
-  SRes (*Seek)(void *p, Int64 *pos, ESzSeek origin);
+  SRes (*Seek)(void *p, int64_t *pos, ESzSeek origin);
 } ISeekInStream;
 
 typedef struct
@@ -181,11 +141,11 @@ typedef struct
 
   SRes (*Read)(void *p, void *buf, size_t *size);
     /* reads directly (without buffer). It's same as ISeqInStream::Read */
-  SRes (*Seek)(void *p, Int64 *pos, ESzSeek origin);
+  SRes (*Seek)(void *p, int64_t *pos, ESzSeek origin);
 } ILookInStream;
 
 SRes LookInStream_LookRead(ILookInStream *stream, void *buf, size_t *size);
-SRes LookInStream_SeekTo(ILookInStream *stream, UInt64 offset);
+SRes LookInStream_SeekTo(ILookInStream *stream, uint64_t offset);
 
 /* reads via ILookInStream::Read */
 SRes LookInStream_Read2(ILookInStream *stream, void *buf, size_t size, SRes errorType);
@@ -199,7 +159,7 @@ typedef struct
   ISeekInStream *realStream;
   size_t pos;
   size_t size;
-  Byte buf[LookToRead_BUF_SIZE];
+  uint8_t buf[LookToRead_BUF_SIZE];
 } CLookToRead;
 
 void LookToRead_CreateVTable(CLookToRead *p, int lookahead);
@@ -223,9 +183,9 @@ void SecToRead_CreateVTable(CSecToRead *p);
 
 typedef struct
 {
-  SRes (*Progress)(void *p, UInt64 inSize, UInt64 outSize);
+  SRes (*Progress)(void *p, uint64_t inSize, uint64_t outSize);
     /* Returns: result. (result != SZ_OK) means break.
-       Value (UInt64)(Int64)-1 for size means unknown value. */
+       Value (uint64_t)(int64_t)-1 for size means unknown value. */
 } ICompressProgress;
 
 typedef struct

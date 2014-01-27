@@ -128,7 +128,7 @@ Out:
     = kMatchSpecLenStart + 2 : State Init Marker
 */
 
-static int MY_FAST_CALL LzmaDec_DecodeReal(CLzmaDec *p, size_t limit_parm, const uint8_t *bufLimit)
+static int LzmaDec_DecodeReal(CLzmaDec *p, size_t limit_parm, const uint8_t *bufLimit)
 {
   CLzmaProb *probs = p->probs;
 
@@ -425,7 +425,7 @@ static int MY_FAST_CALL LzmaDec_DecodeReal(CLzmaDec *p, size_t limit_parm, const
   return SZ_OK;
 }
 
-static void MY_FAST_CALL LzmaDec_WriteRem(CLzmaDec *p, size_t limit)
+static void LzmaDec_WriteRem(CLzmaDec *p, size_t limit)
 {
   if (p->remainLen != 0 && p->remainLen < kMatchSpecLenStart)
   {
@@ -451,7 +451,7 @@ static void MY_FAST_CALL LzmaDec_WriteRem(CLzmaDec *p, size_t limit)
   }
 }
 
-static int MY_FAST_CALL LzmaDec_DecodeReal2(CLzmaDec *p, size_t limit, const uint8_t *bufLimit)
+static int LzmaDec_DecodeReal2(CLzmaDec *p, size_t limit, const uint8_t *bufLimit)
 {
   do
   {

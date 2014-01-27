@@ -134,10 +134,6 @@ void set_var_mtrr(unsigned reg, unsigned base, unsigned size, unsigned type);
 
 #define CACHE_ROM_BASE	(((1<<20) - (CACHE_ROM_SIZE>>12))<<12)
 
-#if ((CONFIG_DCACHE_RAM_BASE + CONFIG_DCACHE_RAM_SIZE) * 1UL > CACHE_ROM_BASE * 1UL)
-# error "CAR region (WB) and flash (WP) regions overlap."
-#endif
-
 #if (CONFIG_RAMTOP & (CONFIG_RAMTOP - 1)) != 0
 # error "CONFIG_RAMTOP must be a power of 2"
 #endif

@@ -1,19 +1,17 @@
-ramstage-y += printk.c
+ramstage-y += vtxprintf.c printk.c vsprintf.c
 ramstage-y += init.c console.c
-ramstage-y += vtxprintf.c
-ramstage-y += vsprintf.c
 ramstage-y += post.c
 ramstage-y += die.c
 
 smm-$(CONFIG_DEBUG_SMI) += vtxprintf.c printk.c
 smm-$(CONFIG_SMM_TSEG) += die.c
 
-romstage-$(CONFIG_EARLY_CONSOLE) += vtxprintf.c
+romstage-$(CONFIG_EARLY_CONSOLE) += vtxprintf.c printk.c
 romstage-$(CONFIG_EARLY_CONSOLE) += init.c console.c
 romstage-y += post.c
 romstage-y += die.c
 
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c printk.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += init.c console.c
 bootblock-y += die.c
 

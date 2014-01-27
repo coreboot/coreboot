@@ -1,4 +1,5 @@
 last_boot=Fallback
+boot_option=Fallback
 baud_rate=115200
 debug_level=Spew
 power_on_after_fail=Enable

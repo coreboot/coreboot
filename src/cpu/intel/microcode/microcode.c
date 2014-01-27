@@ -110,11 +110,10 @@ void intel_microcode_load_unlocked(const void *microcode_patch)
 const void *intel_microcode_find(void)
 {
 	struct cbfs_file *microcode_file;
-	void *microcode_updates;
+	const struct microcode *ucode_updates;
 	u32 eax, microcode_len;
 	u32 pf, rev, sig, update_size;
 	unsigned int x86_model, x86_family;
-	const struct microcode *m;
 	msr_t msr;
 
 #ifdef __PRE_RAM__
@@ -127,7 +126,7 @@ const void *intel_microcode_find(void)
 	if (!microcode_file)
 		return NULL;
 
-	microcode_updates = CBFS_SUBHEADER(microcode_file);
+	ucode_updates = CBFS_SUBHEADER(microcode_file);
 	microcode_len = ntohl(microcode_file->len);
 
 	/* CPUID sets MSR 0x8B iff a microcode update has been loaded. */
@@ -154,12 +153,11 @@ const void *intel_microcode_find(void)
 			sig, pf, rev);
 #endif
 
-	while (microcode_len >= sizeof(*m)) {
-		m = microcode_updates;
+	while (microcode_len >= sizeof(*ucode_updates)) {
 		/* Newer microcode updates include a size field, whereas older
 		 * containers set it at 0 and are exactly 2048 bytes long */
-		if (m->total_size) {
-			update_size = m->total_size;
+		if (ucode_updates->total_size) {
+			update_size = ucode_updates->total_size;
 		} else {
 			#if !defined(__ROMCC__)
 			printk(BIOS_SPEW, "Microcode size field is 0\n");
@@ -175,10 +173,10 @@ const void *intel_microcode_find(void)
 			break;
 		}
 
-		if ((m->sig == sig) && (m->pf & pf))
-			return m;
+		if ((ucode_updates->sig == sig) && (ucode_updates->pf & pf))
+			return ucode_updates;
 
-		microcode_updates += update_size;
+		ucode_updates = (void *)((char *)ucode_updates + update_size);
 		microcode_len -= update_size;
 	}
 

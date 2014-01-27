@@ -1,6 +1,6 @@
 obj ?= $(shell pwd)
 
-HOSTCC ?= gcc
+HOSTCC ?= $(CC)
 CFLAGS ?= -g
 CFLAGS += -D_7ZIP_ST
 CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes

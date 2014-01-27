@@ -20,6 +20,7 @@
 #ifndef __CHROMEOS_H__
 #define __CHROMEOS_H__
 
+#include <stddef.h>
 #include <stdint.h>
 
 /* functions implemented per mainboard: */

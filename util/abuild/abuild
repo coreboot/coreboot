@@ -660,4 +660,6 @@ else
 fi
 junit '</testsuite>'
 
+du -sch coreboot-builds
+
 exit $failed

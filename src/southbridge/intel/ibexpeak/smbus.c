@@ -58,8 +58,22 @@ static int lsmbus_read_byte(device_t dev, u8 address)
 	return do_smbus_read_byte(res->base, device, address);
 }
 
+static int lsmbus_write_byte(device_t dev, u8 address, u8 val)
+{
+	u16 device;
+	struct resource *res;
+	struct bus *pbus;
+
+	device = dev->path.i2c.device;
+	pbus = get_pbus_smbus(dev);
+	res = find_resource(pbus->dev, 0x20);
+
+	return do_smbus_write_byte(res->base, device, address, val);
+}
+
 static struct smbus_bus_operations lops_smbus_bus = {
 	.read_byte	= lsmbus_read_byte,
+	.write_byte	= lsmbus_write_byte,
 };
 
 static void smbus_set_subsystem(device_t dev, unsigned vendor, unsigned device)

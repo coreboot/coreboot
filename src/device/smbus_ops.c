@@ -79,59 +79,89 @@ int smbus_set_link(device_t dev)
 	return pbus_num;
 }
 
+#define CHECK_PRESENCE(x)				       \
+	if (!ops_smbus_bus(get_pbus_smbus(dev))->x) {	       \
+		printk(BIOS_ERR, "%s missing " #x "\n",	       \
+		       dev_path(dev));			       \
+		return -1;				       \
+	}
+
+
 int smbus_quick_read(device_t dev)
 {
+	CHECK_PRESENCE(quick_read);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->quick_read(dev);
 }
 
 int smbus_quick_write(device_t dev)
 {
+	CHECK_PRESENCE(quick_write);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->quick_write(dev);
 }
 
 int smbus_recv_byte(device_t dev)
 {
+	CHECK_PRESENCE(recv_byte);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->recv_byte(dev);
 }
 
 int smbus_send_byte(device_t dev, u8 byte)
 {
+	CHECK_PRESENCE(send_byte);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->send_byte(dev, byte);
 }
 
 int smbus_read_byte(device_t dev, u8 addr)
 {
+	CHECK_PRESENCE(read_byte);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_byte(dev, addr);
 }
 
 int smbus_write_byte(device_t dev, u8 addr, u8 val)
 {
+	CHECK_PRESENCE(write_byte);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_byte(dev, addr, val);
 }
 
 int smbus_read_word(device_t dev, u8 addr)
 {
+	CHECK_PRESENCE(read_word);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->read_word(dev, addr);
 }
 
 int smbus_write_word(device_t dev, u8 addr, u16 val)
 {
+	CHECK_PRESENCE(write_word);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->write_word(dev, addr, val);
 }
 
 int smbus_process_call(device_t dev, u8 cmd, u16 data)
 {
+	CHECK_PRESENCE(process_call);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->process_call(dev, cmd, data);
 }
 
 int smbus_block_read(device_t dev, u8 cmd, u8 bytes, u8 *buffer)
 {
+	CHECK_PRESENCE(block_read);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_read(dev, cmd,
 							      bytes, buffer);
 }
 
 int smbus_block_write(device_t dev, u8 cmd, u8 bytes, const u8 *buffer)
 {
+	CHECK_PRESENCE(block_write);
+
 	return ops_smbus_bus(get_pbus_smbus(dev))->block_write(dev, cmd,
 							       bytes, buffer);
 }

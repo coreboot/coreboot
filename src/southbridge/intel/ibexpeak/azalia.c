@@ -278,25 +278,9 @@ static void azalia_init(struct device *dev)
 	reg8 |= (1 << 6);
 	pci_write_config8(dev, 0x43, reg8);
 
-	/* Additional programming steps */
-	reg32 = pci_read_config32(dev, 0xc4);
-	reg32 |= (1 << 13);
-	pci_write_config32(dev, 0xc4, reg32);
-
-	reg32 = pci_read_config32(dev, 0xc4);
-	reg32 |= (1 << 10);
-	pci_write_config32(dev, 0xc4, reg32);
-
 	reg32 = pci_read_config32(dev, 0xd0);
 	reg32 &= ~(1 << 31);
 	pci_write_config32(dev, 0xd0, reg32);
-
-	if (dev->device == 0x1e20) {
-		/* Additional step on Panther Point */
-		reg32 = pci_read_config32(dev, 0xc4);
-		reg32 |= (1 << 17);
-		pci_write_config32(dev, 0xc4, reg32);
-	}
 
 	/* Set Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);

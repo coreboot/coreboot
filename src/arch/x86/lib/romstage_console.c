@@ -33,7 +33,7 @@ void console_tx_byte(unsigned char byte)
 	usb_tx_byte(0, byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
-	ne2k_append_data(&byte, 1, CONFIG_CONSOLE_NE2K_IO_PORT);
+	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
 #if CONFIG_CONSOLE_CBMEM && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
 	cbmemc_tx_byte(byte);

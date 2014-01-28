@@ -22,4 +22,8 @@
 void ne2k_append_data(unsigned char *d, int len, unsigned int base);
 int ne2k_init(unsigned int eth_nic_base);
 void ne2k_transmit(unsigned int eth_nic_base);
+
+#ifndef __ROMCC__
+#define ne2k_append_data_byte(d, base) ne2k_append_data(&d, 1, base)
+#endif
 #endif /* _NE2K_H */

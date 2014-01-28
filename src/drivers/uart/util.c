@@ -18,7 +18,7 @@
 #include <console/console.h>
 #include <uart.h>
 #if CONFIG_USE_OPTION_TABLE
-#include <pc80/mc146818rtc.h>
+#include <option.h>
 #include "option_table.h"
 #endif
 

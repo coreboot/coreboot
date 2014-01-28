@@ -82,7 +82,7 @@ install: $(PROGRAM)
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	$(INSTALL) $(PROGRAM) $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man8
-	$(INSTALL) $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
+	$(INSTALL) -p -m644 $(PROGRAM).8 $(DESTDIR)$(PREFIX)/share/man/man8
 
 .PHONY: all clean distclean dep pciutils
 

@@ -20,7 +20,7 @@
 
 #include <arch/io.h>
 #include <uart8250.h>
-#include <pc80/mc146818rtc.h>
+#include <nvram.h>
 #include <trace.h>
 
 #if CONFIG_USE_OPTION_TABLE

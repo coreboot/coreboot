@@ -57,17 +57,17 @@ static void SzFree(void *unused, void *address)
 	free(address);
 }
 
-static ISzAlloc LZMAalloc = { SzAlloc, SzFree };
+static struct ISzAlloc LZMAalloc = { SzAlloc, SzFree };
 
 /* Streaming API */
 
-typedef struct {
+struct vector_t {
 	char *p;
 	size_t pos;
 	size_t size;
-} vector_t;
+};
 
-static vector_t instream, outstream;
+static struct vector_t instream, outstream;
 
 static SRes Read(void *unused, void *buf, size_t *size)
 {
@@ -87,8 +87,8 @@ static size_t Write(void *unused, const void *buf, size_t size)
 	return size;
 }
 
-static ISeqInStream is = { Read };
-static ISeqOutStream os = { Write };
+static struct ISeqInStream is = { Read };
+static struct ISeqOutStream os = { Write };
 
 /**
  * Compress a buffer with lzma
@@ -106,7 +106,7 @@ void do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 		return;
 	}
 
-	CLzmaEncProps props;
+	struct CLzmaEncProps props;
 	LzmaEncProps_Init(&props);
 	props.dictSize = in_len;
 	props.pb = 0; /* PosStateBits, default: 2, range: 0..4 */
@@ -181,7 +181,7 @@ void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
 		return;
 	}
 
-	ELzmaStatus status;
+	enum ELzmaStatus status;
 
 	size_t destlen = out_sizemax;
 	size_t srclen = src_len - (LZMA_PROPS_SIZE + 8);

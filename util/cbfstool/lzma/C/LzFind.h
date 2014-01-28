@@ -8,7 +8,7 @@
 
 typedef uint32_t CLzRef;
 
-typedef struct _CMatchFinder
+struct CMatchFinder
 {
   uint8_t *buffer;
   uint32_t pos;
@@ -26,7 +26,7 @@ typedef struct _CMatchFinder
   uint32_t cutValue;
 
   uint8_t *bufferBase;
-  ISeqInStream *stream;
+  struct ISeqInStream *stream;
   int streamEndWasReached;
 
   uint32_t blockSize;
@@ -44,30 +44,30 @@ typedef struct _CMatchFinder
   uint32_t numSons;
   SRes result;
   uint32_t crc[256];
-} CMatchFinder;
+};
 
 #define Inline_MatchFinder_GetPointerToCurrentPos(p) ((p)->buffer)
 #define Inline_MatchFinder_GetIndexByte(p, index) ((p)->buffer[(int32_t)(index)])
 
 #define Inline_MatchFinder_GetNumAvailableBytes(p) ((p)->streamPos - (p)->pos)
 
-int MatchFinder_NeedMove(CMatchFinder *p);
-uint8_t *MatchFinder_GetPointerToCurrentPos(CMatchFinder *p);
-void MatchFinder_MoveBlock(CMatchFinder *p);
-void MatchFinder_ReadIfRequired(CMatchFinder *p);
+int MatchFinder_NeedMove(struct CMatchFinder *p);
+uint8_t *MatchFinder_GetPointerToCurrentPos(struct CMatchFinder *p);
+void MatchFinder_MoveBlock(struct CMatchFinder *p);
+void MatchFinder_ReadIfRequired(struct CMatchFinder *p);
 
-void MatchFinder_Construct(CMatchFinder *p);
+void MatchFinder_Construct(struct CMatchFinder *p);
 
 /* Conditions:
      historySize <= 3 GB
      keepAddBufferBefore + matchMaxLen + keepAddBufferAfter < 511MB
 */
-int MatchFinder_Create(CMatchFinder *p, uint32_t historySize,
+int MatchFinder_Create(struct CMatchFinder *p, uint32_t historySize,
     uint32_t keepAddBufferBefore, uint32_t matchMaxLen, uint32_t keepAddBufferAfter,
-    ISzAlloc *alloc);
-void MatchFinder_Free(CMatchFinder *p, ISzAlloc *alloc);
+    struct ISzAlloc *alloc);
+void MatchFinder_Free(struct CMatchFinder *p, struct ISzAlloc *alloc);
 void MatchFinder_Normalize3(uint32_t subValue, CLzRef *items, uint32_t numItems);
-void MatchFinder_ReduceOffsets(CMatchFinder *p, uint32_t subValue);
+void MatchFinder_ReduceOffsets(struct CMatchFinder *p, uint32_t subValue);
 
 uint32_t * GetMatchesSpec1(uint32_t lenLimit, uint32_t curMatch, uint32_t pos, const uint8_t *buffer, CLzRef *son,
     uint32_t _cyclicBufferPos, uint32_t _cyclicBufferSize, uint32_t _cutValue,
@@ -86,7 +86,7 @@ typedef const uint8_t * (*Mf_GetPointerToCurrentPos_Func)(void *object);
 typedef uint32_t (*Mf_GetMatches_Func)(void *object, uint32_t *distances);
 typedef void (*Mf_Skip_Func)(void *object, uint32_t);
 
-typedef struct _IMatchFinder
+struct IMatchFinder
 {
   Mf_Init_Func Init;
   Mf_GetIndexByte_Func GetIndexByte;
@@ -94,14 +94,14 @@ typedef struct _IMatchFinder
   Mf_GetPointerToCurrentPos_Func GetPointerToCurrentPos;
   Mf_GetMatches_Func GetMatches;
   Mf_Skip_Func Skip;
-} IMatchFinder;
+};
 
-void MatchFinder_CreateVTable(CMatchFinder *p, IMatchFinder *vTable);
+void MatchFinder_CreateVTable(struct CMatchFinder *p, struct IMatchFinder *vTable);
 
-void MatchFinder_Init(CMatchFinder *p);
-uint32_t Bt3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances);
-uint32_t Hc3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances);
-void Bt3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num);
-void Hc3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num);
+void MatchFinder_Init(struct CMatchFinder *p);
+uint32_t Bt3Zip_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances);
+uint32_t Hc3Zip_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances);
+void Bt3Zip_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num);
+void Hc3Zip_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num);
 
 #endif

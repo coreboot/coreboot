@@ -21,11 +21,11 @@
 
 #define LZMA_PROPS_SIZE 5
 
-typedef struct _CLzmaProps
+struct CLzmaProps
 {
   unsigned lc, lp, pb;
   uint32_t dicSize;
-} CLzmaProps;
+};
 
 /* LzmaProps_Decode - decodes properties
 Returns:
@@ -33,7 +33,7 @@ Returns:
   SZ_ERROR_UNSUPPORTED - Unsupported properties
 */
 
-SRes LzmaProps_Decode(CLzmaProps *p, const uint8_t *data, unsigned size);
+SRes LzmaProps_Decode(struct CLzmaProps *p, const uint8_t *data, unsigned size);
 
 
 /* ---------- LZMA Decoder state ---------- */
@@ -43,9 +43,9 @@ SRes LzmaProps_Decode(CLzmaProps *p, const uint8_t *data, unsigned size);
 
 #define LZMA_REQUIRED_INPUT_MAX 20
 
-typedef struct
+struct CLzmaDec
 {
-  CLzmaProps prop;
+	struct CLzmaProps prop;
   CLzmaProb *probs;
   uint8_t *dic;
   const uint8_t *buf;
@@ -62,21 +62,21 @@ typedef struct
   uint32_t numProbs;
   unsigned tempBufSize;
   uint8_t tempBuf[LZMA_REQUIRED_INPUT_MAX];
-} CLzmaDec;
+};
 
 #define LzmaDec_Construct(p) { (p)->dic = 0; (p)->probs = 0; }
 
-void LzmaDec_Init(CLzmaDec *p);
+void LzmaDec_Init(struct CLzmaDec *p);
 
 /* There are two types of LZMA streams:
      0) Stream with end mark. That end mark adds about 6 bytes to compressed size.
      1) Stream without end mark. You must know exact uncompressed size to decompress such stream. */
 
-typedef enum
+enum ELzmaFinishMode
 {
   LZMA_FINISH_ANY,   /* finish at any point */
   LZMA_FINISH_END    /* block must be finished at the end */
-} ELzmaFinishMode;
+};
 
 /* ELzmaFinishMode has meaning only if the decoding reaches output limit !!!
 
@@ -93,14 +93,14 @@ typedef enum
      3) Check that output(srcLen) = compressedSize, if you know real compressedSize.
         You must use correct finish mode in that case. */
 
-typedef enum
+enum ELzmaStatus
 {
   LZMA_STATUS_NOT_SPECIFIED,               /* use main error code instead */
   LZMA_STATUS_FINISHED_WITH_MARK,          /* stream was finished with end mark. */
   LZMA_STATUS_NOT_FINISHED,                /* stream was not finished */
   LZMA_STATUS_NEEDS_MORE_INPUT,            /* you must provide more input bytes */
   LZMA_STATUS_MAYBE_FINISHED_WITHOUT_MARK  /* there is probability that stream was finished without end mark */
-} ELzmaStatus;
+};
 
 /* ELzmaStatus is used only as output value for function call */
 
@@ -127,11 +127,11 @@ LzmaDec_Allocate* can return:
   SZ_ERROR_UNSUPPORTED - Unsupported properties
 */
 
-SRes LzmaDec_AllocateProbs(CLzmaDec *p, const uint8_t *props, unsigned propsSize, ISzAlloc *alloc);
-void LzmaDec_FreeProbs(CLzmaDec *p, ISzAlloc *alloc);
+SRes LzmaDec_AllocateProbs(struct CLzmaDec *p, const uint8_t *props, unsigned propsSize, struct ISzAlloc *alloc);
+void LzmaDec_FreeProbs(struct CLzmaDec *p, struct ISzAlloc *alloc);
 
-SRes LzmaDec_Allocate(CLzmaDec *state, const uint8_t *prop, unsigned propsSize, ISzAlloc *alloc);
-void LzmaDec_Free(CLzmaDec *state, ISzAlloc *alloc);
+SRes LzmaDec_Allocate(struct CLzmaDec *state, const uint8_t *prop, unsigned propsSize, struct ISzAlloc *alloc);
+void LzmaDec_Free(struct CLzmaDec *state, struct ISzAlloc *alloc);
 
 /* ---------- Dictionary Interface ---------- */
 
@@ -174,8 +174,8 @@ Returns:
   SZ_ERROR_DATA - Data error
 */
 
-SRes LzmaDec_DecodeToDic(CLzmaDec *p, size_t dicLimit,
-    const uint8_t *src, size_t *srcLen, ELzmaFinishMode finishMode, ELzmaStatus *status);
+SRes LzmaDec_DecodeToDic(struct CLzmaDec *p, size_t dicLimit,
+    const uint8_t *src, size_t *srcLen, enum ELzmaFinishMode finishMode, enum ELzmaStatus *status);
 
 
 /* ---------- Buffer Interface ---------- */
@@ -191,8 +191,8 @@ finishMode:
   LZMA_FINISH_END - Stream must be finished after (*destLen).
 */
 
-SRes LzmaDec_DecodeToBuf(CLzmaDec *p, uint8_t *dest, size_t *destLen,
-    const uint8_t *src, size_t *srcLen, ELzmaFinishMode finishMode, ELzmaStatus *status);
+SRes LzmaDec_DecodeToBuf(struct CLzmaDec *p, uint8_t *dest, size_t *destLen,
+    const uint8_t *src, size_t *srcLen, enum ELzmaFinishMode finishMode, enum ELzmaStatus *status);
 
 
 /* ---------- One Call Interface ---------- */
@@ -217,7 +217,7 @@ Returns:
 */
 
 SRes LzmaDecode(uint8_t *dest, size_t *destLen, const uint8_t *src, size_t *srcLen,
-    const uint8_t *propData, unsigned propSize, ELzmaFinishMode finishMode,
-    ELzmaStatus *status, ISzAlloc *alloc);
+    const uint8_t *propData, unsigned propSize, enum ELzmaFinishMode finishMode,
+    enum ELzmaStatus *status, struct ISzAlloc *alloc);
 
 #endif

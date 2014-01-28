@@ -14,7 +14,7 @@
 
 #define kStartMaxLen 3
 
-static void LzInWindow_Free(CMatchFinder *p, ISzAlloc *alloc)
+static void LzInWindow_Free(struct CMatchFinder *p, struct ISzAlloc *alloc)
 {
   if (!p->directInput)
   {
@@ -25,7 +25,7 @@ static void LzInWindow_Free(CMatchFinder *p, ISzAlloc *alloc)
 
 /* keepSizeBefore + keepSizeAfter + keepSizeReserv must be < 4G) */
 
-static int LzInWindow_Create(CMatchFinder *p, uint32_t keepSizeReserv, ISzAlloc *alloc)
+static int LzInWindow_Create(struct CMatchFinder *p, uint32_t keepSizeReserv, struct ISzAlloc *alloc)
 {
   uint32_t blockSize = p->keepSizeBefore + p->keepSizeAfter + keepSizeReserv;
   if (p->directInput)
@@ -42,19 +42,19 @@ static int LzInWindow_Create(CMatchFinder *p, uint32_t keepSizeReserv, ISzAlloc 
   return (p->bufferBase != 0);
 }
 
-uint8_t *MatchFinder_GetPointerToCurrentPos(CMatchFinder *p) { return p->buffer; }
-static uint8_t MatchFinder_GetIndexByte(CMatchFinder *p, int32_t bindex) { return p->buffer[bindex]; }
+uint8_t *MatchFinder_GetPointerToCurrentPos(struct CMatchFinder *p) { return p->buffer; }
+static uint8_t MatchFinder_GetIndexByte(struct CMatchFinder *p, int32_t bindex) { return p->buffer[bindex]; }
 
-static uint32_t MatchFinder_GetNumAvailableBytes(CMatchFinder *p) { return p->streamPos - p->pos; }
+static uint32_t MatchFinder_GetNumAvailableBytes(struct CMatchFinder *p) { return p->streamPos - p->pos; }
 
-void MatchFinder_ReduceOffsets(CMatchFinder *p, uint32_t subValue)
+void MatchFinder_ReduceOffsets(struct CMatchFinder *p, uint32_t subValue)
 {
   p->posLimit -= subValue;
   p->pos -= subValue;
   p->streamPos -= subValue;
 }
 
-static void MatchFinder_ReadBlock(CMatchFinder *p)
+static void MatchFinder_ReadBlock(struct CMatchFinder *p)
 {
   if (p->streamEndWasReached || p->result != SZ_OK)
     return;
@@ -89,7 +89,7 @@ static void MatchFinder_ReadBlock(CMatchFinder *p)
   }
 }
 
-void MatchFinder_MoveBlock(CMatchFinder *p)
+void MatchFinder_MoveBlock(struct CMatchFinder *p)
 {
   memmove(p->bufferBase,
     p->buffer - p->keepSizeBefore,
@@ -97,7 +97,7 @@ void MatchFinder_MoveBlock(CMatchFinder *p)
   p->buffer = p->bufferBase + p->keepSizeBefore;
 }
 
-int MatchFinder_NeedMove(CMatchFinder *p)
+int MatchFinder_NeedMove(struct CMatchFinder *p)
 {
   if (p->directInput)
     return 0;
@@ -105,7 +105,7 @@ int MatchFinder_NeedMove(CMatchFinder *p)
   return ((size_t)(p->bufferBase + p->blockSize - p->buffer) <= p->keepSizeAfter);
 }
 
-void MatchFinder_ReadIfRequired(CMatchFinder *p)
+void MatchFinder_ReadIfRequired(struct CMatchFinder *p)
 {
   if (p->streamEndWasReached)
     return;
@@ -113,14 +113,14 @@ void MatchFinder_ReadIfRequired(CMatchFinder *p)
     MatchFinder_ReadBlock(p);
 }
 
-static void MatchFinder_CheckAndMoveAndRead(CMatchFinder *p)
+static void MatchFinder_CheckAndMoveAndRead(struct CMatchFinder *p)
 {
   if (MatchFinder_NeedMove(p))
     MatchFinder_MoveBlock(p);
   MatchFinder_ReadBlock(p);
 }
 
-static void MatchFinder_SetDefaultSettings(CMatchFinder *p)
+static void MatchFinder_SetDefaultSettings(struct CMatchFinder *p)
 {
   p->cutValue = 32;
   p->btMode = 1;
@@ -130,7 +130,7 @@ static void MatchFinder_SetDefaultSettings(CMatchFinder *p)
 
 #define kCrcPoly 0xEDB88320
 
-void MatchFinder_Construct(CMatchFinder *p)
+void MatchFinder_Construct(struct CMatchFinder *p)
 {
   uint32_t i;
   p->bufferBase = 0;
@@ -148,19 +148,19 @@ void MatchFinder_Construct(CMatchFinder *p)
   }
 }
 
-static void MatchFinder_FreeThisClassMemory(CMatchFinder *p, ISzAlloc *alloc)
+static void MatchFinder_FreeThisClassMemory(struct CMatchFinder *p, struct ISzAlloc *alloc)
 {
   alloc->Free(alloc, p->hash);
   p->hash = 0;
 }
 
-void MatchFinder_Free(CMatchFinder *p, ISzAlloc *alloc)
+void MatchFinder_Free(struct CMatchFinder *p, struct ISzAlloc *alloc)
 {
   MatchFinder_FreeThisClassMemory(p, alloc);
   LzInWindow_Free(p, alloc);
 }
 
-static CLzRef* AllocRefs(uint32_t num, ISzAlloc *alloc)
+static CLzRef* AllocRefs(uint32_t num, struct ISzAlloc *alloc)
 {
   size_t sizeInuint8_ts = (size_t)num * sizeof(CLzRef);
   if (sizeInuint8_ts / sizeof(CLzRef) != num)
@@ -168,9 +168,9 @@ static CLzRef* AllocRefs(uint32_t num, ISzAlloc *alloc)
   return (CLzRef *)alloc->Alloc(alloc, sizeInuint8_ts);
 }
 
-int MatchFinder_Create(CMatchFinder *p, uint32_t historySize,
+int MatchFinder_Create(struct CMatchFinder *p, uint32_t historySize,
     uint32_t keepAddBufferBefore, uint32_t matchMaxLen, uint32_t keepAddBufferAfter,
-    ISzAlloc *alloc)
+    struct ISzAlloc *alloc)
 {
   uint32_t sizeReserv;
   if (historySize > kMaxHistorySize)
@@ -243,7 +243,7 @@ int MatchFinder_Create(CMatchFinder *p, uint32_t historySize,
   return 0;
 }
 
-static void MatchFinder_SetLimits(CMatchFinder *p)
+static void MatchFinder_SetLimits(struct CMatchFinder *p)
 {
   uint32_t limit = kMaxValForNormalize - p->pos;
   uint32_t limit2 = p->cyclicBufferSize - p->cyclicBufferPos;
@@ -268,7 +268,7 @@ static void MatchFinder_SetLimits(CMatchFinder *p)
   p->posLimit = p->pos + limit;
 }
 
-void MatchFinder_Init(CMatchFinder *p)
+void MatchFinder_Init(struct CMatchFinder *p)
 {
   uint32_t i;
   for (i = 0; i < p->hashSizeSum; i++)
@@ -282,7 +282,7 @@ void MatchFinder_Init(CMatchFinder *p)
   MatchFinder_SetLimits(p);
 }
 
-static uint32_t MatchFinder_GetSubValue(CMatchFinder *p)
+static uint32_t MatchFinder_GetSubValue(struct CMatchFinder *p)
 {
   return (p->pos - p->historySize - 1) & kNormalizeMask;
 }
@@ -301,14 +301,14 @@ void MatchFinder_Normalize3(uint32_t subValue, CLzRef *items, uint32_t numItems)
   }
 }
 
-static void MatchFinder_Normalize(CMatchFinder *p)
+static void MatchFinder_Normalize(struct CMatchFinder *p)
 {
   uint32_t subValue = MatchFinder_GetSubValue(p);
   MatchFinder_Normalize3(subValue, p->hash, p->hashSizeSum + p->numSons);
   MatchFinder_ReduceOffsets(p, subValue);
 }
 
-static void MatchFinder_CheckLimits(CMatchFinder *p)
+static void MatchFinder_CheckLimits(struct CMatchFinder *p)
 {
   if (p->pos == kMaxValForNormalize)
     MatchFinder_Normalize(p);
@@ -462,7 +462,7 @@ static void SkipMatchesSpec(uint32_t lenLimit, uint32_t curMatch, uint32_t pos, 
 
 #define MOVE_POS_RET MOVE_POS return offset;
 
-static void MatchFinder_MovePos(CMatchFinder *p) { MOVE_POS; }
+static void MatchFinder_MovePos(struct CMatchFinder *p) { MOVE_POS; }
 
 #define GET_MATCHES_HEADER2(minLen, ret_op) \
   uint32_t lenLimit; uint32_t hashValue; const uint8_t *cur; uint32_t curMatch; \
@@ -481,7 +481,7 @@ static void MatchFinder_MovePos(CMatchFinder *p) { MOVE_POS; }
 #define SKIP_FOOTER \
   SkipMatchesSpec(lenLimit, curMatch, MF_PARAMS(p)); MOVE_POS;
 
-static uint32_t Bt2_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
+static uint32_t Bt2_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances)
 {
   uint32_t offset;
   GET_MATCHES_HEADER(2)
@@ -492,7 +492,7 @@ static uint32_t Bt2_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
   GET_MATCHES_FOOTER(offset, 1)
 }
 
-uint32_t Bt3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
+uint32_t Bt3Zip_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances)
 {
   uint32_t offset;
   GET_MATCHES_HEADER(3)
@@ -503,7 +503,7 @@ uint32_t Bt3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
   GET_MATCHES_FOOTER(offset, 2)
 }
 
-static uint32_t Bt3_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
+static uint32_t Bt3_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances)
 {
   uint32_t hash2Value, delta2, maxLen, offset;
   GET_MATCHES_HEADER(3)
@@ -536,7 +536,7 @@ static uint32_t Bt3_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
   GET_MATCHES_FOOTER(offset, maxLen)
 }
 
-static uint32_t Bt4_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
+static uint32_t Bt4_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances)
 {
   uint32_t hash2Value, hash3Value, delta2, delta3, maxLen, offset;
   GET_MATCHES_HEADER(4)
@@ -583,7 +583,7 @@ static uint32_t Bt4_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
   GET_MATCHES_FOOTER(offset, maxLen)
 }
 
-static uint32_t Hc4_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
+static uint32_t Hc4_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances)
 {
   uint32_t hash2Value, hash3Value, delta2, delta3, maxLen, offset;
   GET_MATCHES_HEADER(4)
@@ -632,7 +632,7 @@ static uint32_t Hc4_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
   MOVE_POS_RET
 }
 
-uint32_t Hc3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
+uint32_t Hc3Zip_MatchFinder_GetMatches(struct CMatchFinder *p, uint32_t *distances)
 {
   uint32_t offset;
   GET_MATCHES_HEADER(3)
@@ -644,7 +644,7 @@ uint32_t Hc3Zip_MatchFinder_GetMatches(CMatchFinder *p, uint32_t *distances)
   MOVE_POS_RET
 }
 
-static void Bt2_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
+static void Bt2_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num)
 {
   do
   {
@@ -657,7 +657,7 @@ static void Bt2_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
   while (--num != 0);
 }
 
-void Bt3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
+void Bt3Zip_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num)
 {
   do
   {
@@ -670,7 +670,7 @@ void Bt3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
   while (--num != 0);
 }
 
-static void Bt3_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
+static void Bt3_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num)
 {
   do
   {
@@ -685,7 +685,7 @@ static void Bt3_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
   while (--num != 0);
 }
 
-static void Bt4_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
+static void Bt4_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num)
 {
   do
   {
@@ -701,7 +701,7 @@ static void Bt4_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
   while (--num != 0);
 }
 
-static void Hc4_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
+static void Hc4_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num)
 {
   do
   {
@@ -718,7 +718,7 @@ static void Hc4_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
   while (--num != 0);
 }
 
-void Hc3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
+void Hc3Zip_MatchFinder_Skip(struct CMatchFinder *p, uint32_t num)
 {
   do
   {
@@ -732,7 +732,7 @@ void Hc3Zip_MatchFinder_Skip(CMatchFinder *p, uint32_t num)
   while (--num != 0);
 }
 
-void MatchFinder_CreateVTable(CMatchFinder *p, IMatchFinder *vTable)
+void MatchFinder_CreateVTable(struct CMatchFinder *p, struct IMatchFinder *vTable)
 {
   vTable->Init = (Mf_Init_Func)MatchFinder_Init;
   vTable->GetIndexByte = (Mf_GetIndexByte_Func)MatchFinder_GetIndexByte;

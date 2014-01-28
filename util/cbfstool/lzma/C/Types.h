@@ -36,49 +36,49 @@ typedef int WRes; /* This was DWORD for _WIN32. That's uint32_t */
 
 /* The following interfaces use first parameter as pointer to structure */
 
-typedef struct
+struct IByteIn
 {
   uint8_t (*Read)(void *p); /* reads one byte, returns 0 in case of EOF or error */
-} IByteIn;
+};
 
-typedef struct
+struct IByteOut
 {
   void (*Write)(void *p, uint8_t b);
-} IByteOut;
+};
 
-typedef struct ISeqInStream
+struct ISeqInStream
 {
   SRes (*Read)(void *p, void *buf, size_t *size);
     /* if (input(*size) != 0 && output(*size) == 0) means end_of_stream.
        (output(*size) < input(*size)) is allowed */
-} ISeqInStream;
+};
 
 /* it can return SZ_ERROR_INPUT_EOF */
-SRes SeqInStream_Read(ISeqInStream *stream, void *buf, size_t size);
-SRes SeqInStream_Read2(ISeqInStream *stream, void *buf, size_t size, SRes errorType);
-SRes SeqInStream_ReadByte(ISeqInStream *stream, uint8_t *buf);
+SRes SeqInStream_Read(struct ISeqInStream *stream, void *buf, size_t size);
+SRes SeqInStream_Read2(struct ISeqInStream *stream, void *buf, size_t size, SRes errorType);
+SRes SeqInStream_ReadByte(struct ISeqInStream *stream, uint8_t *buf);
 
-typedef struct ISeqOutStream
+struct ISeqOutStream
 {
   size_t (*Write)(void *p, const void *buf, size_t size);
     /* Returns: result - the number of actually written bytes.
        (result < size) means error */
-} ISeqOutStream;
+};
 
-typedef enum
+enum ESzSeek
 {
   SZ_SEEK_SET = 0,
   SZ_SEEK_CUR = 1,
   SZ_SEEK_END = 2
-} ESzSeek;
+};
 
-typedef struct
+struct ISeekInStream
 {
   SRes (*Read)(void *p, void *buf, size_t *size);  /* same as ISeqInStream::Read */
-  SRes (*Seek)(void *p, int64_t *pos, ESzSeek origin);
-} ISeekInStream;
+  SRes (*Seek)(void *p, int64_t *pos, enum ESzSeek origin);
+};
 
-typedef struct
+struct ILookInStream
 {
   SRes (*Look)(void *p, const void **buf, size_t *size);
     /* if (input(*size) != 0 && output(*size) == 0) means end_of_stream.
@@ -89,58 +89,58 @@ typedef struct
 
   SRes (*Read)(void *p, void *buf, size_t *size);
     /* reads directly (without buffer). It's same as ISeqInStream::Read */
-  SRes (*Seek)(void *p, int64_t *pos, ESzSeek origin);
-} ILookInStream;
+  SRes (*Seek)(void *p, int64_t *pos, enum ESzSeek origin);
+};
 
-SRes LookInStream_LookRead(ILookInStream *stream, void *buf, size_t *size);
-SRes LookInStream_SeekTo(ILookInStream *stream, uint64_t offset);
+SRes LookInStream_LookRead(struct ILookInStream *stream, void *buf, size_t *size);
+SRes LookInStream_SeekTo(struct ILookInStream *stream, uint64_t offset);
 
 /* reads via ILookInStream::Read */
-SRes LookInStream_Read2(ILookInStream *stream, void *buf, size_t size, SRes errorType);
-SRes LookInStream_Read(ILookInStream *stream, void *buf, size_t size);
+SRes LookInStream_Read2(struct ILookInStream *stream, void *buf, size_t size, SRes errorType);
+SRes LookInStream_Read(struct ILookInStream *stream, void *buf, size_t size);
 
 #define LookToRead_BUF_SIZE (1 << 14)
 
-typedef struct
+struct CLookToRead
 {
-  ILookInStream s;
-  ISeekInStream *realStream;
+  struct ILookInStream s;
+  struct ISeekInStream *realStream;
   size_t pos;
   size_t size;
   uint8_t buf[LookToRead_BUF_SIZE];
-} CLookToRead;
+};
 
-void LookToRead_CreateVTable(CLookToRead *p, int lookahead);
-void LookToRead_Init(CLookToRead *p);
+void LookToRead_CreateVTable(struct CLookToRead *p, int lookahead);
+void LookToRead_Init(struct CLookToRead *p);
 
-typedef struct
+struct CSecToLook
 {
-  ISeqInStream s;
-  ILookInStream *realStream;
-} CSecToLook;
+  struct ISeqInStream s;
+  struct ILookInStream *realStream;
+};
 
-void SecToLook_CreateVTable(CSecToLook *p);
+void SecToLook_CreateVTable(struct CSecToLook *p);
 
-typedef struct
+struct CSecToRead
 {
-  ISeqInStream s;
-  ILookInStream *realStream;
-} CSecToRead;
+  struct ISeqInStream s;
+  struct ILookInStream *realStream;
+};
 
-void SecToRead_CreateVTable(CSecToRead *p);
+void SecToRead_CreateVTable(struct CSecToRead *p);
 
-typedef struct
+struct ICompressProgress
 {
   SRes (*Progress)(void *p, uint64_t inSize, uint64_t outSize);
     /* Returns: result. (result != SZ_OK) means break.
        Value (uint64_t)(int64_t)-1 for size means unknown value. */
-} ICompressProgress;
+};
 
-typedef struct
+struct ISzAlloc
 {
   void *(*Alloc)(void *p, size_t size);
   void (*Free)(void *p, void *address); /* address can be 0 */
-} ISzAlloc;
+};
 
 #define IAlloc_Alloc(p, size) (p)->Alloc((p), size)
 #define IAlloc_Free(p, a) (p)->Free((p), a)

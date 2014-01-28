@@ -8,7 +8,7 @@
 
 #define LZMA_PROPS_SIZE 5
 
-typedef struct _CLzmaEncProps
+struct CLzmaEncProps
 {
   int level;       /*  0 <= level <= 9 */
   uint32_t dictSize; /* (1 << 12) <= dictSize <= (1 << 27) for 32-bit version
@@ -24,11 +24,11 @@ typedef struct _CLzmaEncProps
   uint32_t mc;        /* 1 <= mc <= (1 << 30), default = 32 */
   unsigned writeEndMark;  /* 0 - do not write EOPM, 1 - write EOPM, default = 0 */
   int numThreads;  /* 1 or 2, default = 2 */
-} CLzmaEncProps;
+};
 
-void LzmaEncProps_Init(CLzmaEncProps *p);
-void LzmaEncProps_Normalize(CLzmaEncProps *p);
-uint32_t LzmaEncProps_GetDictSize(const CLzmaEncProps *props2);
+void LzmaEncProps_Init(struct CLzmaEncProps *p);
+void LzmaEncProps_Normalize(struct CLzmaEncProps *p);
+uint32_t LzmaEncProps_GetDictSize(const struct CLzmaEncProps *props2);
 
 
 /* ---------- CLzmaEncHandle Interface ---------- */
@@ -45,14 +45,14 @@ Returns:
 
 typedef void * CLzmaEncHandle;
 
-CLzmaEncHandle LzmaEnc_Create(ISzAlloc *alloc);
-void LzmaEnc_Destroy(CLzmaEncHandle p, ISzAlloc *alloc, ISzAlloc *allocBig);
-SRes LzmaEnc_SetProps(CLzmaEncHandle p, const CLzmaEncProps *props);
+CLzmaEncHandle LzmaEnc_Create(struct ISzAlloc *alloc);
+void LzmaEnc_Destroy(CLzmaEncHandle p, struct ISzAlloc *alloc, struct ISzAlloc *allocBig);
+SRes LzmaEnc_SetProps(CLzmaEncHandle p, const struct CLzmaEncProps *props);
 SRes LzmaEnc_WriteProperties(CLzmaEncHandle p, uint8_t *properties, size_t *size);
-SRes LzmaEnc_Encode(CLzmaEncHandle p, ISeqOutStream *outStream, ISeqInStream *inStream,
-    ICompressProgress *progress, ISzAlloc *alloc, ISzAlloc *allocBig);
+SRes LzmaEnc_Encode(CLzmaEncHandle p, struct ISeqOutStream *outStream, struct ISeqInStream *inStream,
+    struct ICompressProgress *progress, struct ISzAlloc *alloc, struct ISzAlloc *allocBig);
 SRes LzmaEnc_MemEncode(CLzmaEncHandle p, uint8_t *dest, size_t *destLen, const uint8_t *src, size_t srcLen,
-    int writeEndMark, ICompressProgress *progress, ISzAlloc *alloc, ISzAlloc *allocBig);
+    int writeEndMark, struct ICompressProgress *progress, struct ISzAlloc *alloc, struct ISzAlloc *allocBig);
 
 /* ---------- One Call Interface ---------- */
 
@@ -66,7 +66,7 @@ Return code:
 */
 
 SRes LzmaEncode(uint8_t *dest, size_t *destLen, const uint8_t *src, size_t srcLen,
-    const CLzmaEncProps *props, uint8_t *propsEncoded, size_t *propsSize, int writeEndMark,
-    ICompressProgress *progress, ISzAlloc *alloc, ISzAlloc *allocBig);
+    const struct CLzmaEncProps *props, uint8_t *propsEncoded, size_t *propsSize, int writeEndMark,
+    struct ICompressProgress *progress, struct ISzAlloc *alloc, struct ISzAlloc *allocBig);
 
 #endif

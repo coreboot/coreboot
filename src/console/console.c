@@ -25,18 +25,7 @@
 #ifndef __PRE_RAM__
 #include <string.h>
 #include <types.h>
-
-/*
- * FIXME: get_option() needs to be abstracted better so that other non-volatile
- * storage can be used. This will benefit machines without CMOS as well as those
- * without a battery-backed CMOS (e.g. some laptops).
- */
-#if CONFIG_USE_OPTION_TABLE
-#include <pc80/mc146818rtc.h>
-#else
-static inline enum cb_err get_option(void *dest, const char *name)
-				{ return CB_CMOS_OTABLE_DISABLED; }
-#endif
+#include <nvram.h>
 
 /* initialize the console */
 void console_init(void)

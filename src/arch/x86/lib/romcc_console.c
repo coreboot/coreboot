@@ -41,6 +41,16 @@ static void __console_tx_byte(unsigned char byte)
 #endif
 }
 
+static void __console_tx_flush(void)
+{
+#if CONFIG_CONSOLE_SERIAL
+	uart_tx_flush();
+#endif
+#if CONFIG_CONSOLE_NE2K
+	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
+#endif
+}
+
 static void __console_tx_nibble(unsigned nibble)
 {
 	unsigned char digit;
@@ -54,13 +64,8 @@ static void __console_tx_nibble(unsigned nibble)
 static void __console_tx_char(int loglevel, unsigned char byte)
 {
 	if (console_show(loglevel)) {
-#if CONFIG_CONSOLE_SERIAL
-		uart_tx_byte(byte);
-#endif
-#if CONFIG_CONSOLE_NE2K
-		ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
-		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
+		__console_tx_byte(byte);
+		__console_tx_flush();
 	}
 }
 
@@ -69,10 +74,8 @@ static void __console_tx_hex8(int loglevel, unsigned char value)
 	if (console_show(loglevel)) {
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
+		__console_tx_flush();
 	}
-#if CONFIG_CONSOLE_NE2K
-		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
 }
 
 static void __console_tx_hex16(int loglevel, unsigned short value)
@@ -82,10 +85,8 @@ static void __console_tx_hex16(int loglevel, unsigned short value)
 		__console_tx_nibble((value >>  8U) & 0x0fU);
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
+		__console_tx_flush();
 	}
-#if CONFIG_CONSOLE_NE2K
-		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
 }
 
 static void __console_tx_hex32(int loglevel, unsigned int value)
@@ -99,10 +100,8 @@ static void __console_tx_hex32(int loglevel, unsigned int value)
 		__console_tx_nibble((value >>  8U) & 0x0fU);
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
+		__console_tx_flush();
 	}
-#if CONFIG_CONSOLE_NE2K
-		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
 }
 
 static void __console_tx_string(int loglevel, const char *str)
@@ -114,9 +113,7 @@ static void __console_tx_string(int loglevel, const char *str)
 				__console_tx_byte('\r');
 			__console_tx_byte(ch);
 		}
-#if CONFIG_CONSOLE_NE2K
-		ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
+		__console_tx_flush();
 	}
 }
 

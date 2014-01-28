@@ -19,7 +19,6 @@
 
 #include <console/console.h>
 #include <uart8250.h>
-#include <pc80/mc146818rtc.h>
 
 static void ttyS0_init(void)
 {

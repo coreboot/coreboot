@@ -1,4 +1,5 @@
 #include <device/pnp_def.h>
+#include <pc80/mc146818rtc.h>
 
 #define NSC_WD_DEV PNP_DEV(0x2e, 0xa)
 #define NSC_WDBASE 0x600

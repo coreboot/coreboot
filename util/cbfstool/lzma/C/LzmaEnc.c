@@ -2080,7 +2080,7 @@ static void LzmaEnc_Finish(CLzmaEncHandle pp)
   if (p->mtMode)
     MatchFinderMt_ReleaseStream(&p->matchFinderMt);
   #else
-  pp = pp;
+  (void)pp;
   #endif
 }
 

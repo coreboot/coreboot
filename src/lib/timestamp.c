@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <cbmem.h>
 #include <timestamp.h>
+#include <cpu/x86/tsc.h>
 #include <arch/early_variables.h>
 #include <cpu/x86/lapic.h>
 

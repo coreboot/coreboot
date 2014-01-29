@@ -2,7 +2,6 @@ obj ?= $(shell pwd)
 
 HOSTCC ?= $(CC)
 CFLAGS ?= -g
-CFLAGS += -D_7ZIP_ST
 CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Werror

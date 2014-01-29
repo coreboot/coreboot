@@ -16,7 +16,7 @@ cbfsobj += LzmaEnc.o
 cbfsobj += linux_trampoline.o
 cbfsobj += cbfs-payload-linux.o
 
-CBFSTOOLFLAGS=-D_7ZIP_ST -g
+CBFSTOOLFLAGS= -g
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 CBFSTOOLFLAGS+=-mno-ms-bitfields

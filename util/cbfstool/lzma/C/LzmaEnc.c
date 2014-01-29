@@ -3,23 +3,9 @@
 
 #include <string.h>
 
-/* #define SHOW_STAT */
-/* #define SHOW_STAT2 */
-
-#if defined(SHOW_STAT) || defined(SHOW_STAT2)
-#include <stdio.h>
-#endif
-
 #include "LzmaEnc.h"
 
 #include "LzFind.h"
-#ifndef _7ZIP_ST
-#include "LzFindMt.h"
-#endif
-
-#ifdef SHOW_STAT
-static int ttt = 0;
-#endif
 
 #define kBlockSizeMax ((1 << LZMA_NUM_BLOCK_SIZE_BITS) - 1)
 
@@ -65,12 +51,7 @@ void LzmaEncProps_Normalize(struct CLzmaEncProps *p)
   if (p->numHashBytes < 0) p->numHashBytes = 4;
   if (p->mc == 0)  p->mc = (16 + (p->fb >> 1)) >> (p->btMode ? 0 : 1);
   if (p->numThreads < 0)
-    p->numThreads =
-      #ifndef _7ZIP_ST
-      ((p->btMode && p->algo) ? 2 : 1);
-      #else
-      1;
-      #endif
+    p->numThreads = 1;
 }
 
 uint32_t LzmaEncProps_GetDictSize(const struct CLzmaEncProps *props2)
@@ -79,27 +60,6 @@ uint32_t LzmaEncProps_GetDictSize(const struct CLzmaEncProps *props2)
   LzmaEncProps_Normalize(&props);
   return props.dictSize;
 }
-
-/* #define LZMA_LOG_BSR */
-/* Define it for Intel's CPU */
-
-
-#ifdef LZMA_LOG_BSR
-
-#define kDicLogSizeMaxCompress 30
-
-#define BSR2_RET(pos, res) { unsigned long i; _BitScanReverse(&i, (pos)); res = (i + i) + ((pos >> (i - 1)) & 1); }
-
-uint32_t GetPosSlot1(uint32_t pos)
-{
-  uint32_t res;
-  BSR2_RET(pos, res);
-  return res;
-}
-#define GetPosSlot2(pos, res) { BSR2_RET(pos, res); }
-#define GetPosSlot(pos, res) { if (pos < 2) res = pos; else BSR2_RET(pos, res); }
-
-#else
 
 #define kNumLogBits (9 + (int)sizeof(size_t) / 2)
 #define kDicLogSizeMaxCompress ((kNumLogBits - 1) * 2 + 7)
@@ -131,9 +91,6 @@ static void LzmaEnc_FastPosInit(uint8_t *g_FastPos)
 #define GetPosSlot1(pos) p->g_FastPos[pos]
 #define GetPosSlot2(pos, res) { BSR2_RET(pos, res); }
 #define GetPosSlot(pos, res) { if (pos < kNumFullDistances) res = p->g_FastPos[pos]; else BSR2_RET(pos, res); }
-
-#endif
-
 
 #define LZMA_NUM_REPS 4
 
@@ -259,16 +216,7 @@ struct CLzmaEnc
   struct IMatchFinder matchFinder;
   void *matchFinderObj;
 
-  #ifndef _7ZIP_ST
-  bool mtMode;
-  CMatchFinderMt matchFinderMt;
-  #endif
-
   struct CMatchFinder matchFinderBase;
-
-  #ifndef _7ZIP_ST
-  uint8_t pad[128];
-  #endif
 
   uint32_t optimumEndIndex;
   uint32_t optimumCurrentIndex;
@@ -427,17 +375,6 @@ SRes LzmaEnc_SetProps(CLzmaEncHandle pp, const struct CLzmaEncProps *props2)
   p->matchFinderBase.cutValue = props.mc;
 
   p->writeEndMark = props.writeEndMark;
-
-  #ifndef _7ZIP_ST
-  /*
-  if (newMultiThread != _multiThread)
-  {
-    ReleaseMatchFinder();
-    _multiThread = newMultiThread;
-  }
-  */
-  p->multiThread = (props.numThreads > 1);
-  #endif
 
   return SZ_OK;
 }
@@ -802,10 +739,6 @@ static void LenEnc_Encode2(struct CLenPriceEnc *p, struct CRangeEnc *rc, uint32_
 
 static void MovePos(struct CLzmaEnc *p, uint32_t num)
 {
-  #ifdef SHOW_STAT
-  ttt += num;
-  printf("\n MovePos %d", num);
-  #endif
   if (num != 0)
   {
     p->additionalOffset += num;
@@ -818,15 +751,6 @@ static uint32_t ReadMatchDistances(struct CLzmaEnc *p, uint32_t *numDistancePair
   uint32_t lenRes = 0, numPairs;
   p->numAvail = p->matchFinder.GetNumAvailableBytes(p->matchFinderObj);
   numPairs = p->matchFinder.GetMatches(p->matchFinderObj, p->matches);
-  #ifdef SHOW_STAT
-  printf("\n i = %d numPairs = %d    ", ttt, numPairs / 2);
-  ttt++;
-  {
-    uint32_t i;
-    for (i = 0; i < numPairs; i += 2)
-      printf("%2d %6d   | ", p->matches[i], p->matches[i + 1]);
-  }
-  #endif
   if (numPairs > 0)
   {
     lenRes = p->matches[numPairs - 2];
@@ -1110,16 +1034,6 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
   }
 
   cur = 0;
-
-    #ifdef SHOW_STAT2
-    if (position >= 0)
-    {
-      unsigned i;
-      printf("\n pos = %4X", position);
-      for (i = cur; i <= lenEnd; i++)
-      printf("\nprice[%4X] = %d", position - cur + i, p->opt[i].price);
-    }
-    #endif
 
   for (;;)
   {
@@ -1672,10 +1586,6 @@ static void LzmaEnc_Construct(struct CLzmaEnc *p)
 {
   RangeEnc_Construct(&p->rc);
   MatchFinder_Construct(&p->matchFinderBase);
-  #ifndef _7ZIP_ST
-  MatchFinderMt_Construct(&p->matchFinderMt);
-  p->matchFinderMt.MatchFinder = &p->matchFinderBase;
-  #endif
 
   {
     struct CLzmaEncProps props;
@@ -1711,9 +1621,6 @@ static void LzmaEnc_FreeLits(struct CLzmaEnc *p, struct ISzAlloc *alloc)
 
 static void LzmaEnc_Destruct(struct CLzmaEnc *p, struct ISzAlloc *alloc, struct ISzAlloc *allocBig)
 {
-  #ifndef _7ZIP_ST
-  MatchFinderMt_Destruct(&p->matchFinderMt, allocBig);
-  #endif
   MatchFinder_Free(&p->matchFinderBase, allocBig);
   LzmaEnc_FreeLits(p, alloc);
   RangeEnc_Free(&p->rc, alloc);
@@ -1765,10 +1672,6 @@ static SRes LzmaEnc_CodeOneBlock(struct CLzmaEnc *p, bool useLimits, uint32_t ma
       len = GetOptimumFast(p, &pos);
     else
       len = GetOptimum(p, nowPos32, &pos);
-
-    #ifdef SHOW_STAT2
-    printf("\n pos = %4X,   len = %d   pos = %d", nowPos32, len, pos);
-    #endif
 
     posState = nowPos32 & p->pbMask;
     if (len == 1 && pos == (uint32_t)-1)
@@ -1892,15 +1795,8 @@ static SRes LzmaEnc_CodeOneBlock(struct CLzmaEnc *p, bool useLimits, uint32_t ma
 static SRes LzmaEnc_Alloc(struct CLzmaEnc *p, uint32_t keepWindowSize, struct ISzAlloc *alloc, struct ISzAlloc *allocBig)
 {
   uint32_t beforeSize = kNumOpts;
-  #ifndef _7ZIP_ST
-  bool btMode;
-  #endif
   if (!RangeEnc_Alloc(&p->rc, alloc))
     return SZ_ERROR_MEM;
-  #ifndef _7ZIP_ST
-  btMode = (p->matchFinderBase.btMode != 0);
-  p->mtMode = (p->multiThread && !p->fastMode && btMode);
-  #endif
 
   {
     unsigned lclp = p->lc + p->lp;
@@ -1923,15 +1819,6 @@ static SRes LzmaEnc_Alloc(struct CLzmaEnc *p, uint32_t keepWindowSize, struct IS
   if (beforeSize + p->dictSize < keepWindowSize)
     beforeSize = keepWindowSize - p->dictSize;
 
-  #ifndef _7ZIP_ST
-  if (p->mtMode)
-  {
-    RINOK(MatchFinderMt_Create(&p->matchFinderMt, p->dictSize, beforeSize, p->numFastuint8_ts, LZMA_MATCH_LEN_MAX, allocBig));
-    p->matchFinderObj = &p->matchFinderMt;
-    MatchFinderMt_CreateVTable(&p->matchFinderMt, &p->matchFinder);
-  }
-  else
-  #endif
   {
     if (!MatchFinder_Create(&p->matchFinderBase, p->dictSize, beforeSize, p->numFastuint8_ts, LZMA_MATCH_LEN_MAX, allocBig))
       return SZ_ERROR_MEM;
@@ -2070,13 +1957,7 @@ static SRes LzmaEnc_MemPrepare(CLzmaEncHandle pp, const uint8_t *src, size_t src
 
 static void LzmaEnc_Finish(CLzmaEncHandle pp)
 {
-  #ifndef _7ZIP_ST
-  CLzmaEnc *p = (CLzmaEnc *)pp;
-  if (p->mtMode)
-    MatchFinderMt_ReleaseStream(&p->matchFinderMt);
-  #else
   (void)pp;
-  #endif
 }
 
 struct CSeqOutStreamBuf
@@ -2151,13 +2032,6 @@ static size_t MyWrite(void *pp, const void *data, size_t size)
 static SRes LzmaEnc_Encode2(struct CLzmaEnc *p, struct ICompressProgress *progress)
 {
   SRes res = SZ_OK;
-
-  #ifndef _7ZIP_ST
-  uint8_t allocaDummy[0x300];
-  int i = 0;
-  for (i = 0; i < 16; i++)
-    allocaDummy[i] = (uint8_t)i;
-  #endif
 
   for (;;)
   {

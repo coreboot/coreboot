@@ -137,5 +137,5 @@ const unsigned char trampoline[] = {
 0x02, 0x09, 0x00, 0xf4, 0xeb, 0xfd
 };
 
-void * const trampoline_start = &trampoline;
+const void * const trampoline_start = &trampoline;
 const unsigned long trampoline_size = sizeof trampoline;

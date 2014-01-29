@@ -6,16 +6,7 @@
 
 #include "Types.h"
 
-/* #define _LZMA_PROB32 */
-/* _LZMA_PROB32 can increase the speed on some CPUs,
-   but memory usage for CLzmaDec::probs will be doubled in that case */
-
-#ifdef _LZMA_PROB32
-#define CLzmaProb uint32_t
-#else
-#define CLzmaProb uint16_t
-#endif
-
+typedef uint16_t CLzmaProb;
 
 /* ---------- LZMA Properties ---------- */
 

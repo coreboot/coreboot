@@ -28,11 +28,6 @@
 #define TREE_DECODE(probs, limit, i) \
   { i = 1; do { TREE_GET_BIT(probs, i); } while (i < limit); i -= limit; }
 
-/* #define _LZMA_SIZE_OPT */
-
-#ifdef _LZMA_SIZE_OPT
-#define TREE_6_DECODE(probs, i) TREE_DECODE(probs, (1 << 6), i)
-#else
 #define TREE_6_DECODE(probs, i) \
   { i = 1; \
   TREE_GET_BIT(probs, i); \
@@ -42,7 +37,6 @@
   TREE_GET_BIT(probs, i); \
   TREE_GET_BIT(probs, i); \
   i -= 0x40; }
-#endif
 
 #define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_ERROR; range <<= 8; code = (code << 8) | (*buf++); }
 

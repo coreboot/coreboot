@@ -131,11 +131,8 @@ struct COptimal
 
 #define kNumFullDistances (1 << (kEndPosModelIndex >> 1))
 
-#ifdef _LZMA_PROB32
-#define CLzmaProb uint32_t
-#else
-#define CLzmaProb uint16_t
-#endif
+typedef uint16_t CLzmaProb;
+
 
 #define LZMA_PB_MAX 4
 #define LZMA_LC_MAX 8

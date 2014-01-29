@@ -7,7 +7,7 @@ CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Werror
 # You're going to have to fix the LzmaEnc.c first -- it's horrible.
-# CFLAGS += -Wshadow
+CFLAGS += -Wshadow
 LDFLAGS += -g
 
 BINARY:=$(obj)/cbfstool

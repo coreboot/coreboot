@@ -6,33 +6,18 @@
 #include "C/LzmaDec.h"
 #include "C/LzmaEnc.h"
 
-/* Endianness / unaligned memory access handling */
-
-#if defined(__x86_64__) || defined(__i386__)
-#define LITTLE_ENDIAN_AND_UNALIGNED_ACCESS_OK
-#else
-#undef LITTLE_ENDIAN_AND_UNALIGNED_ACCESS_OK
-#endif
-
 #define L (uint64_t)
 
 static inline uint64_t get_64(const void *p)
 {
-#ifdef LITTLE_ENDIAN_AND_UNALIGNED_ACCESS_OK
-	return *(const uint64_t *)p;
-#else
 	const unsigned char *data = (const unsigned char *)p;
 	return (L data[0]) | (L data[1] << 8) | (L data[2] << 16) |
 		(L data[3] << 24) | (L data [4] << 32) | (L data[5] << 40) |
 		(L data[6] << 48) | (L data[7] << 56);
-#endif
 }
 
 static void put_64(void *p, uint64_t value)
 {
-#ifdef LITTLE_ENDIAN_AND_UNALIGNED_ACCESS_OK
-	*(uint64_t *) p = value;
-#else
 	unsigned char *data = (unsigned char *)p;
 	data[0] = value & 0xff;
 	data[1] = (value >> 8) & 0xff;
@@ -42,7 +27,6 @@ static void put_64(void *p, uint64_t value)
 	data[5] = (value >> 40) & 0xff;
 	data[6] = (value >> 48) & 0xff;
 	data[7] = (value >> 56) & 0xff;
-#endif
 }
 
 /* Memory Allocation API */

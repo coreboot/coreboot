@@ -119,9 +119,9 @@ static void LzmaEnc_FastPosInit(uint8_t *g_FastPos)
   }
 }
 
-#define BSR2_RET(pos, res) { uint32_t i = 6 + ((kNumLogBits - 1) & \
+#define BSR2_RET(pos, res) { uint32_t macro_i = 6 + ((kNumLogBits - 1) & \
   (0 - (((((uint32_t)1 << (kNumLogBits + 6)) - 1) - pos) >> 31))); \
-  res = p->g_FastPos[pos >> i] + (i * 2); }
+  res = p->g_FastPos[pos >> macro_i] + (macro_i * 2); }
 /*
 #define BSR2_RET(pos, res) { res = (pos < (1 << (kNumLogBits + 6))) ? \
   p->g_FastPos[pos >> 6] + 12 : \
@@ -1123,11 +1123,9 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
 
   for (;;)
   {
-    uint32_t numAvailFull, newLen, numPairs, posPrev, state, posState, startLen;
-    uint32_t curPrice, curAnd1Price, matchPrice, repMatchPrice;
+    uint32_t numAvailFull, newLen, posPrev, state, startLen;
+    uint32_t curPrice, curAnd1Price;
     bool nextIsChar;
-    uint8_t curuint8_t, matchuint8_t;
-    const uint8_t *data;
     struct COptimal *curOpt;
     struct COptimal *nextOpt;
 
@@ -1190,7 +1188,6 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
       prevOpt = &p->opt[posPrev];
       if (pos < LZMA_NUM_REPS)
       {
-        uint32_t i;
         reps[0] = prevOpt->backs[pos];
         for (i = 1; i <= pos; i++)
           reps[i] = prevOpt->backs[i - 1];
@@ -1199,7 +1196,6 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
       }
       else
       {
-        uint32_t i;
         reps[0] = (pos - LZMA_NUM_REPS);
         for (i = 1; i < LZMA_NUM_REPS; i++)
           reps[i] = prevOpt->backs[i - 1];
@@ -1396,9 +1392,11 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
     }
     if (newLen >= startLen)
     {
-      uint32_t normalMatchPrice = matchPrice + GET_PRICE_0(p->isRep[state]);
       uint32_t offs, curBack, posSlot;
       uint32_t lenTest;
+
+      normalMatchPrice = matchPrice + GET_PRICE_0(p->isRep[state]);
+
       while (lenEnd < cur + newLen)
         p->opt[++lenEnd].price = kInfinityPrice;
 
@@ -1454,8 +1452,6 @@ static uint32_t GetOptimum(struct CLzmaEnc *p, uint32_t position, uint32_t *back
             /* for (; lenTest2 >= 2; lenTest2--) */
             {
               uint32_t offset = cur + lenTest + 1 + lenTest2;
-              uint32_t curAndLenPrice;
-              struct COptimal *opt;
               while (lenEnd < offset)
                 p->opt[++lenEnd].price = kInfinityPrice;
               curAndLenPrice = nextRepMatchPrice + GetRepPrice(p, 0, lenTest2, state2, posStateNext);
@@ -1663,7 +1659,6 @@ static void FillDistancesPrices(struct CLzmaEnc *p)
 
     {
       uint32_t *distancesPrices = p->distancesPrices[lenToPosState];
-      uint32_t i;
       for (i = 0; i < kStartPosModelIndex; i++)
         distancesPrices[i] = posSlotPrices[i];
       for (; i < kNumFullDistances; i++)

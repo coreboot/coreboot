@@ -24,4 +24,12 @@
 
 void asmlinkage copy_and_run(void);
 void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size);
+
+static inline void stage_exit(void *entry)
+{
+	__asm__ volatile (
+		"jmp  *%%edi\n"
+		:: "D"(entry)
+	);
+}
 #endif

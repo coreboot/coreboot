@@ -309,8 +309,6 @@ void romstage_after_car(void)
 
 	prepare_for_resume(handoff);
 
-	vboot_verify_firmware(handoff);
-
 	/* Load the ramstage. */
 	copy_and_run();
 }

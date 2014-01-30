@@ -28,7 +28,6 @@
 #include <ramstage_cache.h>
 #include <romstage_handoff.h>
 #include <timestamp.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <baytrail/gpio.h>
 #include <baytrail/iomap.h>
 #include <baytrail/lpc.h>
@@ -171,9 +170,6 @@ void asmlinkage romstage_after_car(void)
 	open_up_spi();
 
 	timestamp_add_now(TS_END_ROMSTAGE);
-
-	/* Run vboot verification if configured. */
-	vboot_verify_firmware(romstage_handoff_find_or_add());
 
 	/* Load the ramstage. */
 	copy_and_run();

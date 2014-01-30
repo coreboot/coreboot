@@ -22,7 +22,6 @@
 
 #include <device/device.h>
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_smsc_lpc47n227_config {
 

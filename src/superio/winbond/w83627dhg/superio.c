@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
-#include <uart8250.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "chip.h"

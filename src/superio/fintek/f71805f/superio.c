@@ -24,7 +24,6 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <stdlib.h>
-#include <uart8250.h>
 #include "f71805f.h"
 
 static void f71805f_init(device_t dev)

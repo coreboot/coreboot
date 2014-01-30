@@ -23,7 +23,6 @@
 
 #include <device/device.h>
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_ite_it8772f_config {
 	struct pc_keyboard keyboard;

@@ -21,10 +21,8 @@
 #define SUPERIO_SMSC_SIO1036_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_smsc_sio1036_config {
-	struct uart8250 com1;
 };
 
 #endif //SUPERIO_SMSC_SIO1036_CHIP_H

@@ -23,7 +23,6 @@
 
 #include <pc80/keyboard.h>
 #include <device/device.h>
-#include <uart8250.h>
 
 struct superio_fintek_f71863fg_config {
 

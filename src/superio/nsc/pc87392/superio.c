@@ -23,7 +23,6 @@
 #include <device/pnp.h>
 #include <console/console.h>
 #include <string.h>
-#include <uart8250.h>
 #include <stdlib.h>
 #include "pc87392.h"
 

@@ -24,7 +24,6 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <stdlib.h>
-#include <uart8250.h>
 
 #include "chip.h"
 #include "f71869ad.h"

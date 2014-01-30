@@ -21,7 +21,6 @@
 #define SUPERIO_SCH_4037_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_smsc_sch4037_config {
 

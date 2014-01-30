@@ -22,7 +22,6 @@
 #define SUPERIO_NUVOTON_WPCM450_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_nuvoton_wpcm450_config {
 

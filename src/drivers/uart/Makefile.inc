@@ -5,6 +5,18 @@ bootblock-y += util.c
 smm-y += util.c
 endif
 
+ifeq ($(CONFIG_CONSOLE_SERIAL8250),y)
+romstage-y += uart8250io.c
+ramstage-y += uart8250io.c
+smm-y += uart8250io.c
+endif
+
+ifeq ($(CONFIG_CONSOLE_SERIAL8250MEM),y)
+romstage-y += uart8250mem.c
+ramstage-y += uart8250mem.c
+smm-y += uart8250mem.c
+endif
+
 ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
 
 ifeq ($(CONFIG_DRIVERS_UART_PL011),y)

@@ -150,6 +150,10 @@ void cbmem_late_set_table(uint64_t base, uint64_t size);
 void get_cbmem_table(uint64_t *base, uint64_t *size);
 struct cbmem_entry *get_cbmem_toc(void);
 
+static inline const struct cbmem_entry *cbmem_entry_find(u32 id)
+{
+	return NULL;
+}
 #endif /* CONFIG_DYNAMIC_CBMEM */
 
 /* Common API between cbmem and dynamic cbmem. */

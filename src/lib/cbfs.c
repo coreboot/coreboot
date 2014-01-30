@@ -123,58 +123,6 @@ void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 	return dest;
 }
 
-#if CONFIG_RELOCATABLE_RAMSTAGE && defined(__PRE_RAM__)
-
-#include <rmodule.h>
-#include <romstage_handoff.h>
-static void *load_stage_from_cbfs(struct cbfs_media *media, const char *name,
-                                  struct romstage_handoff *handoff)
-{
-	struct rmod_stage_load rmod_ram = {
-		.cbmem_id = CBMEM_ID_RAMSTAGE,
-		.name = name,
-	};
-
-	if (rmodule_stage_load_from_cbfs(&rmod_ram)) {
-		printk(BIOS_DEBUG, "Could not load ramstage.\n");
-		return (void *) -1;
-	}
-
-	cache_loaded_ramstage(handoff, rmod_ram.cbmem_entry, rmod_ram.entry);
-
-	return rmod_ram.entry;
-}
-
-void * cbfs_load_stage(struct cbfs_media *media, const char *name)
-{
-	struct romstage_handoff *handoff;
-	const struct cbmem_entry *ramstage;
-	void *entry;
-
-	handoff = romstage_handoff_find_or_add();
-
-	if (handoff == NULL) {
-		LOG("Couldn't find or allocate romstage handoff.\n");
-		return load_stage_from_cbfs(media, name, handoff);
-	} else if (!handoff->s3_resume)
-		return load_stage_from_cbfs(media, name, handoff);
-
-	ramstage = cbmem_entry_find(CBMEM_ID_RAMSTAGE);
-
-	if (ramstage == NULL)
-		return load_stage_from_cbfs(media, name, handoff);
-
-	/* S3 resume path. Load a cached copy of the loaded ramstage. If
-	 * return value is NULL load from cbfs. */
-	entry = load_cached_ramstage(handoff, ramstage);
-	if (entry == NULL)
-		return load_stage_from_cbfs(media, name, handoff);
-
-	return entry;
-}
-
-#else
-
 void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_stage *stage = (struct cbfs_stage *)
@@ -211,7 +159,6 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 
 	return (void *) entry;
 }
-#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 #if !CONFIG_ALT_CBFS_LOAD_PAYLOAD
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)

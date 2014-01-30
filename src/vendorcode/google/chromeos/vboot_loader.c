@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include <arch/stages.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <cbfs.h>
@@ -180,11 +181,7 @@ static void vboot_load_ramstage(struct vboot_handoff *vboot_handoff,
 
 	timestamp_add_now(TS_END_COPYRAM);
 
-	__asm__ volatile (
-		"movl $0, %%ebp\n"
-		"jmp  *%%edi\n"
-		:: "D"(rmod_load.entry)
-	);
+	stage_exit(rmod_load.entry);
 }
 
 void vboot_verify_firmware(struct romstage_handoff *handoff)

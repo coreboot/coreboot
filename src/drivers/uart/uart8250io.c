@@ -20,8 +20,8 @@
 
 #include <arch/io.h>
 #include <console/uart.h>
-#include <uart8250.h>
 #include <trace.h>
+#include "uart8250reg.h"
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 

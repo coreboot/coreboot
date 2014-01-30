@@ -8,7 +8,7 @@
 #include "uart.h"
 #include <arch/io.h>
 #include <console/uart.h>
-#include <uart8250.h>
+#include <drivers/uart/uart8250reg.h>
 
 /**
  * \brief Configure line control settings for UART

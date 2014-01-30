@@ -46,8 +46,6 @@ romstage-y += cbfs.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c
 #romstage-y += lzmadecode.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
-romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
-romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
@@ -88,8 +86,6 @@ ramstage-y += stack.c
 ramstage-$(CONFIG_ARCH_X86) += gcc.c
 ramstage-y += clog2.c
 romstage-y += clog2.c
-ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
-ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 ramstage-$(CONFIG_BOOTSPLASH) += jpeg.c
 ramstage-$(CONFIG_TRACE) += trace.c
@@ -126,8 +122,6 @@ ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
 smm-y += memmove.c
 endif
 smm-y += cbfs.c memcmp.c
-smm-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
-smm-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
 smm-y += gcc.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h

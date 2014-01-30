@@ -34,10 +34,7 @@ static void cbfs_and_run_core(const char *filename)
 
 	timestamp_add_now(TS_END_COPYRAM);
 	print_debug("Jumping to image.\n");
-	__asm__ volatile (
-		"jmp  *%%edi\n"
-		:: "D"(dst)
-	);
+	stage_exit(dst);
 }
 
 void asmlinkage copy_and_run(void)

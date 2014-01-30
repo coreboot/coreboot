@@ -32,7 +32,7 @@
 
 #if CONFIG_CONSOLE_SERIAL8250
 #include "drivers/uart/util.c"
-#include "lib/uart8250.c"
+#include "drivers/uart/uart8250io.c"
 #endif
 #if CONFIG_CONSOLE_NE2K
 #include "drivers/net/ne2k.c"

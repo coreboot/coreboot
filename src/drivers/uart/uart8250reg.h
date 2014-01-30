@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef UART8250_H
-#define UART8250_H
+#ifndef UART8250REG_H
+#define UART8250REG_H
 
 /* Data */
 #define UART_RBR 0x00
@@ -105,4 +105,4 @@
 #define UART_SCR 0x07
 #define UART_SPR 0x07
 
-#endif /* UART8250_H */
+#endif /* UART8250REG_H */

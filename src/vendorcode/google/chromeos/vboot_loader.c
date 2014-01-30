@@ -26,6 +26,7 @@
 #include <console/vtxprintf.h>
 #include <pc80/tpm.h>
 #include <reset.h>
+#include <ramstage_loader.h>
 #include <romstage_handoff.h>
 #include <rmodule.h>
 #include <string.h>
@@ -141,56 +142,16 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 	vboot_run_stub(&context);
 }
 
-static void vboot_load_ramstage(struct vboot_handoff *vboot_handoff,
-                                struct romstage_handoff *handoff)
+static void *vboot_load_ramstage(uint32_t cbmem_id, const char *name,
+				const struct cbmem_entry **cbmem_entry)
 {
+	struct vboot_handoff *vboot_handoff;
 	struct cbfs_stage *stage;
 	const struct firmware_component *fwc;
 	struct rmod_stage_load rmod_load = {
-		.cbmem_id = CBMEM_ID_RAMSTAGE,
-		.name = CONFIG_CBFS_PREFIX "/coreboot_ram",
+		.cbmem_id = cbmem_id,
+		.name = name,
 	};
-
-	if (CONFIG_VBOOT_RAMSTAGE_INDEX >= MAX_PARSED_FW_COMPONENTS) {
-		printk(BIOS_ERR, "Invalid ramstage index: %d\n",
-		       CONFIG_VBOOT_RAMSTAGE_INDEX);
-		return;
-	}
-
-	/* Check for invalid address. */
-	fwc = &vboot_handoff->components[CONFIG_VBOOT_RAMSTAGE_INDEX];
-	if (fwc->address == 0) {
-		printk(BIOS_DEBUG, "RW ramstage image address invalid.\n");
-		return;
-	}
-
-	printk(BIOS_DEBUG, "RW ramstage image at 0x%08x, 0x%08x bytes.\n",
-	       fwc->address, fwc->size);
-
-	stage = (void *)fwc->address;
-
-	timestamp_add_now(TS_START_COPYRAM);
-
-	if (rmodule_stage_load(&rmod_load, stage)) {
-		vboot_handoff->selected_firmware = VB_SELECT_FIRMWARE_READONLY;
-		printk(BIOS_DEBUG, "Could not load ramstage region.\n");
-		return;
-	}
-
-	cache_loaded_ramstage(handoff, rmod_load.cbmem_entry, rmod_load.entry);
-
-	timestamp_add_now(TS_END_COPYRAM);
-
-	stage_exit(rmod_load.entry);
-}
-
-void vboot_verify_firmware(struct romstage_handoff *handoff)
-{
-	struct vboot_handoff *vboot_handoff;
-
-	/* Don't go down verified boot path on S3 resume. */
-	if (handoff != NULL && handoff->s3_resume)
-		return;
 
 	timestamp_add_now(TS_START_VBOOT);
 
@@ -199,7 +160,7 @@ void vboot_verify_firmware(struct romstage_handoff *handoff)
 
 	if (vboot_handoff == NULL) {
 		printk(BIOS_DEBUG, "Could not add vboot_handoff structure.\n");
-		return;
+		return NULL;
 	}
 
 	memset(vboot_handoff, 0, sizeof(*vboot_handoff));
@@ -213,9 +174,39 @@ void vboot_verify_firmware(struct romstage_handoff *handoff)
 	    vboot_handoff->selected_firmware != VB_SELECT_FIRMWARE_B) {
 		printk(BIOS_DEBUG, "No RW firmware selected: 0x%08x\n",
 		       vboot_handoff->selected_firmware);
-		return;
+		return NULL;
 	}
 
-	/* Load ramstage from the vboot_handoff structure. */
-	vboot_load_ramstage(vboot_handoff, handoff);
+	if (CONFIG_VBOOT_RAMSTAGE_INDEX >= MAX_PARSED_FW_COMPONENTS) {
+		printk(BIOS_ERR, "Invalid ramstage index: %d\n",
+		       CONFIG_VBOOT_RAMSTAGE_INDEX);
+		return NULL;
+	}
+
+	/* Check for invalid address. */
+	fwc = &vboot_handoff->components[CONFIG_VBOOT_RAMSTAGE_INDEX];
+	if (fwc->address == 0) {
+		printk(BIOS_DEBUG, "RW ramstage image address invalid.\n");
+		return NULL;
+	}
+
+	printk(BIOS_DEBUG, "RW ramstage image at 0x%08x, 0x%08x bytes.\n",
+	       fwc->address, fwc->size);
+
+	stage = (void *)fwc->address;
+
+	if (rmodule_stage_load(&rmod_load, stage)) {
+		vboot_handoff->selected_firmware = VB_SELECT_FIRMWARE_READONLY;
+		printk(BIOS_DEBUG, "Could not load ramstage region.\n");
+		return NULL;
+	}
+
+	*cbmem_entry = rmod_load.cbmem_entry;
+
+	return rmod_load.entry;
 }
+
+const struct ramstage_loader_ops vboot_ramstage_loader = {
+	.name = "VBOOT",
+	.load = vboot_load_ramstage,
+};

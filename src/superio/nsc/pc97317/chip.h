@@ -29,7 +29,6 @@
 #endif
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_nsc_pc97317_config {
 

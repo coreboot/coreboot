@@ -25,7 +25,6 @@
 #include <console/console.h>
 #include <string.h>
 #include <lib.h>
-#include <uart8250.h>
 #include <pc80/mc146818rtc.h>
 #include <stdlib.h>
 #include "chip.h"

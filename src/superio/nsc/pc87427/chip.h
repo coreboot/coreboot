@@ -23,7 +23,6 @@
 #define SUPERIO_NSC_PC87427_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_nsc_pc87427_config {
 

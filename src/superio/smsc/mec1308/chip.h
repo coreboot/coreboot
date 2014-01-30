@@ -21,7 +21,6 @@
 #define SUPERIO_SMSC_MEC1308_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_smsc_mec1308_config {
 	struct pc_keyboard keyboard;

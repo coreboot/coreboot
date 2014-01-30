@@ -21,7 +21,6 @@
 #ifndef SUPERIO_WINBOND_W83697HF_CHIP_H
 #define SUPERIO_WINBOND_W83697HF_CHIP_H
 
-#include <uart8250.h>
 
 struct superio_winbond_w83697hf_config {
 	unsigned int hwmon_fan1_divisor;

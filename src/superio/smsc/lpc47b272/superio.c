@@ -30,7 +30,6 @@
 #include <console/console.h>
 #include <device/smbus.h>
 #include <string.h>
-#include <uart8250.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "chip.h"

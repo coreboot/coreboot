@@ -20,7 +20,6 @@
 
 #include <device/device.h>
 #include <device/pnp.h>
-#include <uart8250.h>
 #include <stdlib.h>
 #include "it8661f.h"
 

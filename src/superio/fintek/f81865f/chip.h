@@ -22,7 +22,6 @@
 #define SUPERIO_FINTEK_F81865_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 /* This chip doesn't have keyboard and mouse support. */
 

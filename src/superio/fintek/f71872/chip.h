@@ -22,7 +22,6 @@
 #define SUPERIO_FINTEK_F71872_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <uart8250.h>
 
 struct superio_fintek_f71872_config {
 

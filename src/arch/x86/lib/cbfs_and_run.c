@@ -17,27 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <cbfs.h>
-#include <arch/stages.h>
-#include <timestamp.h>
-
-static void cbfs_and_run_core(const char *filename)
-{
-	u8 *dst;
-
-	timestamp_add_now(TS_START_COPYRAM);
-	print_debug("Loading image.\n");
-	dst = cbfs_load_stage(CBFS_DEFAULT_MEDIA, filename);
-	if ((void *)dst == (void *) -1)
-		die("FATAL: Essential component is missing.\n");
-
-	timestamp_add_now(TS_END_COPYRAM);
-	print_debug("Jumping to image.\n");
-	stage_exit(dst);
-}
+#include <ramstage_loader.h>
 
 void asmlinkage copy_and_run(void)
 {
-	cbfs_and_run_core(CONFIG_CBFS_PREFIX "/coreboot_ram");
+	run_ramstage();
 }

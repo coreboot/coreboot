@@ -21,7 +21,7 @@
 #include <arch/io.h>
 #include <console/uart.h>
 #include <delay.h>
-#include "drivers/uart/uart8250reg.h"
+#include "uart8250reg.h"
 
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 

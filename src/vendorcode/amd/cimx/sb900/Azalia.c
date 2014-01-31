@@ -282,7 +282,7 @@ azaliaInitAfterPciEnum (
 
   if ( pConfig->AzaliaController != 1 ) {
     RWPCI ((AZALIA_BUS_DEV_FUN << 16) + SB_AZ_REG04, AccWidthUint8 | S3_SAVE, ~BIT1, BIT1);
-    if ( pConfig->BuildParameters.AzaliaSsid != NULL ) {
+    if ( pConfig->BuildParameters.AzaliaSsid != 0 ) {
       RWPCI ((AZALIA_BUS_DEV_FUN << 16) + SB_AZ_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.AzaliaSsid);
     }
     ReadPCI ((AZALIA_BUS_DEV_FUN << 16) + SB_AZ_REG10, AccWidthUint32, &ddBAR0);

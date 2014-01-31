@@ -258,7 +258,7 @@ sataInitBeforePciEnum (
   UINT16    i;
   SATAPHYSETTING  *pPhyTable;
 
-  ddTempVar = NULL;
+  ddTempVar = 0;
   // BIT0 Enable write access to PCI header (reg 08h-0Bh) by setting SATA PCI register 40h
   // BIT4: Disable fast boot
   RWPCI (((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG40), AccWidthUint8 | S3_SAVE, 0xff, BIT0 + BIT2 + BIT4);
@@ -292,17 +292,17 @@ sataInitBeforePciEnum (
     //Set PATA controller to native mode
     RWPCI (((IDE_BUS_DEV_FUN << 16) + SB_IDE_REG09), AccWidthUint8 | S3_SAVE, 0x00, 0x08F);
   }
-  if (pConfig->BuildParameters.IdeSsid != NULL ) {
+  if (pConfig->BuildParameters.IdeSsid != 0 ) {
     RWPCI ((IDE_BUS_DEV_FUN << 16) + SB_IDE_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.IdeSsid);
   }
   // SATA Controller Class ID & SSID
   pDeviceIdptr = (UINT16 *) FIXUP_PTR (&sataDeviceIDTable[0]);
-  if ( pConfig->BuildParameters.SataIDESsid != NULL ) {
+  if ( pConfig->BuildParameters.SataIDESsid != 0 ) {
     ddTempVar = pConfig->BuildParameters.SataIDESsid;
   }
   dwDeviceId = pDeviceIdptr[dbValue];
   if ( pConfig->SataClass == RAID_MODE) {
-    if ( pConfig->BuildParameters.SataRAID5Ssid != NULL ) {
+    if ( pConfig->BuildParameters.SataRAID5Ssid != 0 ) {
       ddTempVar = pConfig->BuildParameters.SataRAID5Ssid;
     }
     dwDeviceId = V_SB_SATA_RAID5_DID;
@@ -310,19 +310,19 @@ sataInitBeforePciEnum (
     getEfuseStatus (&pValue);
     if (( pValue & SATA_EFUSE_BIT ) || ( pConfig->SataForceRaid == 1 )) {
       dwDeviceId = V_SB_SATA_RAID_DID;
-      if ( pConfig->BuildParameters.SataRAIDSsid != NULL ) {
+      if ( pConfig->BuildParameters.SataRAIDSsid != 0 ) {
         ddTempVar = pConfig->BuildParameters.SataRAIDSsid;
       }
     }
   }
   if ( ((pConfig->SataClass) == AHCI_MODE) || ((pConfig->SataClass) == IDE_TO_AHCI_MODE) ||
     ((pConfig->SataClass) == AHCI_MODE_4394) || ((pConfig->SataClass) == IDE_TO_AHCI_MODE_4394) ) {
-    if ( pConfig->BuildParameters.SataAHCISsid != NULL ) {
+    if ( pConfig->BuildParameters.SataAHCISsid != 0 ) {
       ddTempVar = pConfig->BuildParameters.SataAHCISsid;
     }
   }
   RWPCI (((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG02), AccWidthUint16 | S3_SAVE, 0, dwDeviceId);
-  if ( ddTempVar != NULL ) {
+  if ( ddTempVar != 0 ) {
     RWPCI ((SATA_BUS_DEV_FUN << 16) + SB_SATA_REG2C, AccWidthUint32 | S3_SAVE, 0x00, ddTempVar);
   }
   // SATA IRQ Resource

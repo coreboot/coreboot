@@ -24,11 +24,7 @@
 #ifndef  _AMD_SBPLATFORM_H_
 #define  _AMD_SBPLATFORM_H_
 
-//#include "cbtypes.h"
-#ifdef NULL
-  #undef NULL
-#endif
-#define NULL            0
+#include <stddef.h>
 
 typedef unsigned long long PLACEHOLDER;
 

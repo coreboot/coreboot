@@ -109,7 +109,7 @@ gecInitAfterPciEnum (
   VOID* GecRomAddress;
   VOID* GecShadowRomAddress;
   UINT32 ddTemp;
-  if ( !pConfig->DYNAMICGECROM.DynamicGecRomAddress_Ptr == NULL ) {
+  if ( pConfig->DYNAMICGECROM.DynamicGecRomAddress_Ptr != NULL ) {
     GecRomAddress = pConfig->DYNAMICGECROM.DynamicGecRomAddress_Ptr;
     GecShadowRomAddress = (VOID*) (UINTN) pConfig->BuildParameters.GecShadowRomBase;
     AmdSbCopyMem (GecShadowRomAddress, GecRomAddress, 0x100);

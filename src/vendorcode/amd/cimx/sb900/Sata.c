@@ -458,7 +458,7 @@ sataInitBeforePciEnum (
     //Set PATA controller to native mode
     RWPCI (((IDE_BUS_DEV_FUN << 16) + SB_IDE_REG09), AccWidthUint8 | S3_SAVE, 0x00, 0x08F);
   }
-  if (pConfig->BuildParameters.IdeSsid != NULL ) {
+  if (pConfig->BuildParameters.IdeSsid != 0 ) {
     RWPCI ((IDE_BUS_DEV_FUN << 16) + SB_IDE_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.IdeSsid);
   }
   // SATA Controller Class ID & SSID

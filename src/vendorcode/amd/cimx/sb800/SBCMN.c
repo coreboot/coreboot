@@ -378,7 +378,7 @@ commonInitEarlyBoot (
   RWMEM (ACPI_MMIO_BASE + PMIO_BASE + SB_PMIOA_REGC8 + 1, AccWidthUint8, ~BIT6, 0);
   //Early post initialization of pci config space
   programPciByteTable ((REG8MASK*) FIXUP_PTR (&sbEarlyPostByteInitTable[0]), sizeof (sbEarlyPostByteInitTable) / sizeof (REG8MASK) );
-  if ( pConfig->BuildParameters.SmbusSsid != NULL ) {
+  if ( pConfig->BuildParameters.SmbusSsid != 0 ) {
     RWPCI ((SMBUS_BUS_DEV_FUN << 16) + SB_CFG_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.SmbusSsid);
   }
   //Make BAR registers of smbus invisible.
@@ -388,7 +388,7 @@ commonInitEarlyBoot (
   // LPC CFG programming
   //
   // SSID for LPC Controller
-  if (pConfig->BuildParameters.LpcSsid != NULL ) {
+  if (pConfig->BuildParameters.LpcSsid != 0 ) {
     RWPCI ((LPC_BUS_DEV_FUN << 16) + SB_LPC_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.LpcSsid);
   }
   // LPC MSI

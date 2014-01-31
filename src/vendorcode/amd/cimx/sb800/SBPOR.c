@@ -150,7 +150,7 @@ sbPowerOnInit (
   cimNbSbGen2 = pConfig->NbSbGen2;
   cimSataMode = pConfig->SATAMODE.SataModeReg;
 // Adding Fast Read Function support
-  if (pConfig->BuildParameters.SpiFastReadEnable != NULL ) {
+  if (pConfig->BuildParameters.SpiFastReadEnable != 0 ) {
     cimSpiFastReadEnable = (UINT8) pConfig->BuildParameters.SpiFastReadEnable;
   } else {
     cimSpiFastReadEnable = cimSpiFastReadEnableDefault;

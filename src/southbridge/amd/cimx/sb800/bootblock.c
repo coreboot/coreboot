@@ -66,7 +66,6 @@ static void enable_prefetch(void)
 
 static void enable_spi_fast_mode(void)
 {
-	u8 byte;
 	u32 dword;
 	device_t dev = PCI_DEV(0, 0x14, 0x03);
 
@@ -76,8 +75,8 @@ static void enable_spi_fast_mode(void)
 	pci_io_write_config32(dev, 0xa0, (u32) spi_base | 2);
 
 	// early enable of SPI 33 MHz fast mode read
-	byte = spi_base[3];
-	spi_base[3] = (byte & ~(3 << 14)) | (1 << 14);
+	dword = spi_base[3];
+	spi_base[3] = (dword & ~(3 << 14)) | (1 << 14);
 	spi_base[0] = spi_base[0] | (1 << 18);	// fast read enable
 
 	pci_io_write_config32(dev, 0xa0, save);

@@ -47,7 +47,6 @@ romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250.c
 romstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem.c
-romstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
@@ -112,8 +111,6 @@ ramstage-y += cbmem_info.c
 
 ramstage-y += hexdump.c
 romstage-y += hexdump.c
-
-ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k.c
 
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += ramstage_cache.c
 

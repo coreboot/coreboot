@@ -35,7 +35,7 @@
 #include "lib/uart8250.c"
 #endif
 #if CONFIG_CONSOLE_NE2K
-#include "lib/ne2k.c"
+#include "drivers/net/ne2k.c"
 #endif
 
 static void __console_tx_byte(unsigned char byte)

@@ -196,7 +196,7 @@ EhciInitAfterPciInit (
   if ( (ddBarAddress != - 1) && (ddBarAddress != 0) ) {
     //Enable Memory access
     RWPCI ((UINT32) Value + SB_EHCI_REG04, AccWidthUint8, 0, BIT1);
-    if (pConfig->BuildParameters.EhciSsid != NULL ) {
+    if (pConfig->BuildParameters.EhciSsid != 0 ) {
       RWPCI ((UINT32) Value + SB_EHCI_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.EhciSsid);
     }
     //USB Common PHY CAL & Control Register setting
@@ -308,7 +308,7 @@ usb4OhciInitAfterPciInit (
   UINT32  ddDeviceId;
   ddDeviceId = (USB4_OHCI_BUS_DEV_FUN << 16);
   OhciInitAfterPciInit (ddDeviceId, pConfig);
-  if (pConfig->BuildParameters.Ohci4Ssid != NULL ) {
+  if (pConfig->BuildParameters.Ohci4Ssid != 0 ) {
     RWPCI ((USB4_OHCI_BUS_DEV_FUN << 16) + SB_OHCI_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.Ohci4Ssid);
   }
 }
@@ -327,7 +327,7 @@ OhciInitAfterPciInit (
   // SB02186
   RWPCI ((UINT32) Value + SB_OHCI_REG50 + 1, AccWidthUint8 | S3_SAVE, 0xFC, 0x00);
   if (Value != (USB4_OHCI_BUS_DEV_FUN << 16)) {
-    if ( pConfig->BuildParameters.OhciSsid != NULL ) {
+    if ( pConfig->BuildParameters.OhciSsid != 0 ) {
       RWPCI ((UINT32) Value + SB_OHCI_REG2C, AccWidthUint32 | S3_SAVE, 0x00, pConfig->BuildParameters.OhciSsid);
     }
   }

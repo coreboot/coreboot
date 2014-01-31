@@ -113,7 +113,8 @@ gecInitAfterPciEnum (
     ReadPCI ((GEC_BUS_DEV_FUN << 16) + SB_GEC_REG04, AccWidthUint8, &dbVar);
     dbTemp = 0x07;
     WritePCI ((GEC_BUS_DEV_FUN << 16) + SB_GEC_REG04, AccWidthUint8, &dbTemp);
-    if ( !pConfig->DYNAMICGECROM.DynamicGecRomAddress_Ptr == NULL ) {
+    if ( !pConfig->DYNAMICGECROM.DynamicGecRomAddress_Ptr ==
+         (typeof(pConfig->DYNAMICGECROM.DynamicGecRomAddress_Ptr))NULL ) {
       GecRomAddress = pConfig->DYNAMICGECROM.DynamicGecRomAddress_Ptr;
       GecShadowRomAddress = (VOID*) (UINTN) pConfig->BuildParameters.GecShadowRomBase;
       AmdSbCopyMem (GecShadowRomAddress, GecRomAddress, 0x100);

@@ -178,8 +178,8 @@ void sb900_cimx_config(AMDSBCFG *sb_config)
 	// sb_config->HpetMsiDis							= 0;								// Field Retired
 	// sb_config->ResetCpuOnSyncFlood					= 0;								// Field Retired
 	// sb_config->PcibAutoClkCtr						= 0;								// Field Retired
-	sb_config->OEMPROGTBL.OemProgrammingTablePtr	= NULL;							// Board Level
-	sb_config->PORTCONFIG[0].PortCfg.PortPresent	= SB_GPP_PORT0;					// Board Level
+	sb_config->OEMPROGTBL.OemProgrammingTablePtr	= (typeof(sb_config->OEMPROGTBL.OemProgrammingTablePtr))NULL;							// Board Level
+	sb_config->PORTCONFIG[0].PortCfg.PortPresent	= typeof(SB_GPP_PORT0;					// Board Level
 	sb_config->PORTCONFIG[0].PortCfg.PortDetected	= 0;							// CIMx Internal Used
 	sb_config->PORTCONFIG[0].PortCfg.PortIsGen2		= 0;							// CIMx Internal Used
 	sb_config->PORTCONFIG[0].PortCfg.PortHotPlug	= 0;							// CIMx Internal Used
@@ -213,7 +213,7 @@ void sb900_cimx_config(AMDSBCFG *sb_config)
 	sb_config->GppHardwareDowngrade					= INCHIP_GPP_HARDWARE_DOWNGRADE;// Internal Option
 	sb_config->GppToggleReset						= INCHIP_GPP_TOGGLE_RESET;		// External Option
 	sb_config->sdbEnable							= 0;							// CIMx Internal Used
-	sb_config->TempMMIO								= NULL;							// CIMx Internal Used
+	sb_config->TempMMIO								= (typeof(sb_config->TempMMIO))NULL;							// CIMx Internal Used
 	// sb_config->GecPhyStatus							= INCHIP_GEC_PHY_STATUS;		// Field Retired
 	sb_config->SBGecPwr								= INCHIP_GEC_POWER_POLICY;		// Internal Option
 	sb_config->SBGecDebugBus						= INCHIP_GEC_DEBUGBUS;			// Internal Option
@@ -296,7 +296,7 @@ void SbPowerOnInit_Config(AMDSBCFG *sb_config)
     sb_config->SATAMODE.SataMode.SataClkMode		= SATA_CLK_RESERVED;			// Internal Option
     sb_config->NbSbGen2								= NB_SB_GEN2;					// External Option
     sb_config->SataInternal100Spread				= INCHIP_SATA_INTERNAL_100_SPREAD;	// External Option
-    sb_config->OEMPROGTBL.OemProgrammingTablePtr	= NULL;							// Board Level
+    sb_config->OEMPROGTBL.OemProgrammingTablePtr	= (typeof(sb_config->OEMPROGTBL.OemProgrammingTablePtr))NULL;							// Board Level
     sb_config->sdbEnable							= 0;							// CIMx Internal Used
     sb_config->Cg2Pll								= INCHIP_CG2_PLL;				// Internal Option
 

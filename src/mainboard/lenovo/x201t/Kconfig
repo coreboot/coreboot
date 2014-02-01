@@ -1,0 +1,22 @@
+if BOARD_LENOVO_X201T
+
+config TABLET_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select SUPERIO_NSC_PC87382
+	# Following ones are for scripts benefit
+	select ARCH_X86
+	select NORTHBRIDGE_INTEL_NEHALEM
+	select SOUTHBRIDGE_INTEL_IBEXPEAK
+	select EC_LENOVO_PMH7
+	select EC_LENOVO_H8
+	select DRIVERS_ICS_954309
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "0831CTO"
+
+config MAINBOARD_VERSION
+	string
+	default "ThinkPad X201 Tablet"
+
+endif

@@ -1,10 +1,11 @@
-if BOARD_LENOVO_X201
+if BOARD_LENOVO_X201 || BOARD_LENOVO_X201T
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_X86
 	select NORTHBRIDGE_INTEL_NEHALEM
 	select SOUTHBRIDGE_INTEL_IBEXPEAK
+	select SUPERIO_NSC_PC87382
 	select EC_LENOVO_PMH7
 	select EC_LENOVO_H8
 	select DRIVERS_ICS_954309
@@ -23,6 +24,8 @@ config MAINBOARD_DIR
 	string
 	default lenovo/x201
 
+if BOARD_LENOVO_X201
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "3626EN1"
@@ -30,6 +33,8 @@ config MAINBOARD_PART_NUMBER
 config MAINBOARD_VERSION
 	string
 	default "ThinkPad X201"
+
+endif
 
 config MAINBOARD_VENDOR
 	string

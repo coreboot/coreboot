@@ -227,7 +227,7 @@ Device(EC)
 	    ^HKEY.RHK (0x18)
        }
 
-#if CONFIG_BOARD_LENOVO_X201
+#if CONFIG_BOARD_LENOVO_X201 || CONFIG_BOARD_LENOVO_X201T
        Method (_Q1C, 0, NotSerialized)
        {
 	    ^HKEY.RHK (0x19)

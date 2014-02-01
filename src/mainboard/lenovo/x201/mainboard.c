@@ -90,7 +90,11 @@ static int int15_handler(void)
 
 const char *smbios_mainboard_version(void)
 {
-	return "Lenovo X201";
+#if IS_ENABLED(CONFIG_BOARD_LENOVO_X201T)
+	return "ThinkPad X201 Tablet";
+#else
+	return "ThinkPad X201";
+#endif
 }
 
 /* Audio Setup */
@@ -106,7 +110,7 @@ static void verb_setup(void)
 
 static void mainboard_enable(device_t dev)
 {
-	device_t dev0;
+	device_t dev0, devwacom;
 	u16 pmbase;
 
 	printk(BIOS_SPEW, "starting SPI configuration\n");
@@ -152,6 +156,10 @@ static void mainboard_enable(device_t dev)
 	dev0 = dev_find_slot(0, PCI_DEVFN(0, 0));
 	if (dev0 && pci_read_config32(dev0, SKPAD) == SKPAD_ACPI_S3_MAGIC)
 		ec_write(0x0c, 0xc7);
+
+	devwacom = dev_find_slot_pnp (0x164e, 3);
+	if (devwacom)
+		devwacom->enabled = IS_ENABLED(CONFIG_BOARD_LENOVO_X201T);
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 	/* Install custom int15 handler for VGA OPROM */

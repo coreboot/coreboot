@@ -1,6 +1,6 @@
 Scope(\_TZ)
 {
-#if defined (CONFIG_BOARD_LENOVO_X201) && CONFIG_BOARD_LENOVO_X201
+#if IS_ENABLED(CONFIG_BOARD_LENOVO_X201) || IS_ENABLED(CONFIG_BOARD_LENOVO_X201T)
 	Name (MEBT, 0)
 #endif
 
@@ -24,7 +24,7 @@ Scope(\_TZ)
 			Return (C2K(127))
 		}
 		Method(_TMP) {
-#if defined (CONFIG_BOARD_LENOVO_X201) && CONFIG_BOARD_LENOVO_X201
+#if IS_ENABLED(CONFIG_BOARD_LENOVO_X201) || IS_ENABLED (CONFIG_BOARD_LENOVO_X201T)
 		        /* Avoid tripping alarm if ME isn't booted at all yet */
 		        If (LAnd (LNot (MEBT), LEqual (\_SB.PCI0.LPCB.EC.TMP0, 128))) {
                             Return (C2K(40))

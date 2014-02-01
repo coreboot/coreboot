@@ -139,6 +139,14 @@ chip northbridge/intel/nehalem
 			end
 			device pci 1f.0 on # PCI-LPC bridge
 				subsystemid 0x17aa 0x2166
+				chip superio/nsc/pc87382
+					device pnp 164e.3 on # Digitizer
+						io 0x60 = 0x200
+						irq 0x29 = 0xb0
+						irq 0x70 = 0x5
+						irq 0xf0 = 0x82
+					end
+				end
 			end
 			device pci 1f.2 on # IDE/SATA
 				subsystemid 0x17aa 0x2168

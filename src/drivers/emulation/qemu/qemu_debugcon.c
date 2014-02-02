@@ -20,18 +20,22 @@
 
 #include <console/console.h>
 #include <console/qemu_debugcon.h>
+#include <arch/io.h>
+#include <arch/early_variables.h>
 
-static void debugcon_init(void)
+static int qemu_debugcon_detected CAR_GLOBAL;
+
+void qemu_debugcon_init(void)
 {
-	qemu_debugcon_init();
+	int detected = (inb(CONFIG_CONSOLE_QEMU_DEBUGCON_PORT) == 0xe9);
+	car_set_var(qemu_debugcon_detected, detected);
+	printk(BIOS_INFO, "QEMU debugcon %s [port 0x%x]\n",
+	       detected ? "detected" : "not found",
+	       CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
 }
 
-static void debugcon_tx_byte(unsigned char data)
+void qemu_debugcon_tx_byte(unsigned char data)
 {
-	qemu_debugcon_tx_byte(data);
+	if (car_get_var(qemu_debugcon_detected) != 0)
+		outb(data, CONFIG_CONSOLE_QEMU_DEBUGCON_PORT);
 }
-
-static const struct console_driver debugcon_console __console = {
-	.init = debugcon_init,
-	.tx_byte = debugcon_tx_byte,
-};

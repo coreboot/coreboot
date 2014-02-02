@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2011,2014, Oskar Enoksson <enok@lysator.liu.se>
+ * Subject to the GNU GPL v2, or (at your option) any later version.
+ */
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>
@@ -44,18 +48,6 @@ static void memreset(int controllers, const struct mem_controller *ctrl)
 
 #define SMBUS_HUB 0x18
 
-static inline void activate_spd_rom(const struct mem_controller *ctrl)
-{
-	int ret,i;
-	unsigned device=(ctrl->channel0[0])>>8;
-	/* the very first write always get COL_STS=1 and ABRT_STS=1, so try another time*/
-	i=2;
-	do {
-		ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-	} while ((ret!=0) && (i-->0));
-	smbus_write_byte(SMBUS_HUB, 0x03, 0);
-}
-
 static inline void change_i2c_mux(unsigned device)
 {
 	int ret, i;
@@ -67,6 +59,11 @@ static inline void change_i2c_mux(unsigned device)
 	} while ((ret!=0) && (i-->0));
 	ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
 	print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\n");
+}
+
+static inline void activate_spd_rom(const struct mem_controller *ctrl)
+{
+	change_i2c_mux(ctrl->channel0[0]>>8);
 }
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -82,22 +79,12 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 #include "cpu/amd/model_fxx/init_cpus.c"
-
-#define RC0 ((1<<1)<<8)
-#define RC1 ((1<<2)<<8)
+#if CONFIG_SET_FIDVID
+#include "cpu/amd/model_fxx/fidvid.c"
+#endif
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
-	static const uint16_t spd_addr [] = {
-		//first node
-		RC0|DIMM0, RC0|DIMM2, 0, 0,
-		RC0|DIMM1, RC0|DIMM3, 0, 0,
-#if CONFIG_MAX_PHYSICAL_CPUS > 1
-		//second node
-		RC1|DIMM0, RC1|DIMM2, 0, 0,
-		RC1|DIMM1, RC1|DIMM3, 0, 0,
-#endif
-	};
 	struct sys_info *sysinfo = &sysinfo_car;
 
 	int needs_reset = 0;
@@ -126,6 +113,33 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
 	ht_setup_chains_x(sysinfo);
+#if CONFIG_SET_FIDVID
+	/* Check to see if processor is capable of changing FIDVID */
+	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
+	struct cpuid_result cpuid1 = cpuid(0x80000007);
+	if ((cpuid1.edx & 0x6) == 0x6) {
+		{
+		/* Read FIDVID_STATUS */
+			msr_t msr;
+			msr=rdmsr(0xc0010042);
+			print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+		}
+
+		enable_fid_change();
+		enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
+		init_fidvid_bsp(bsp_apicid);
+
+		// show final fid and vid
+		{
+			msr_t msr;
+			msr=rdmsr(0xc0010042);
+			print_debug("end msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+		}
+
+	} else {
+		print_debug("Changing FIDVID not supported\n");
+	}
+#endif
 
 	needs_reset |= optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
@@ -138,6 +152,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_smbus();
 
 	int i;
+
+#define RC0 ((1 << 1) << 8)
+#define RC1 ((1 << 2) << 8)
+
 	for(i=0;i<2;i++) {
 		activate_spd_rom(&sysinfo->ctrl[i]);
 	}
@@ -152,9 +170,22 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	allow_all_aps_stop(bsp_apicid);
 
 	//It's the time to set ctrl now;
+	static const uint16_t spd_addr [] = {
+		//first node
+		RC0|DIMM0, RC0|DIMM2, 0, 0,
+		RC0|DIMM1, RC0|DIMM3, 0, 0,
+#if CONFIG_MAX_PHYSICAL_CPUS > 1
+		//second node
+		RC1|DIMM0, RC1|DIMM2, 0, 0,
+		RC1|DIMM1, RC1|DIMM3, 0, 0,
+#endif
+	};
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	memreset_setup();
+#if CONFIG_SET_FIDVID
+	init_timer(); // Need to use TMICT to synchronize FID/VID
+#endif
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	//dump_pci_devices();

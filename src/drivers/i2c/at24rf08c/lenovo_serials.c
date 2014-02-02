@@ -35,7 +35,7 @@ static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
 		printk(BIOS_WARNING, "EEPROM not found\n");
 		memcpy(result, "*INVALID*", sizeof ("*INVALID*"));
 		return;
-	} 
+	}
 
 	for (i = 0; i < len; i++) {
 		int t;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2014, Oskar Enoksson <enok@lysator.liu.se>
+ * Subject to the GNU GPL v2, or (at your option) any later version.
+ */
 #include <console/console.h>
 #include <arch/smp/mpspec.h>
 #include <arch/ioapic.h>
@@ -53,26 +57,26 @@ static void *smp_write_config_table(void *v)
 	//
 /*I/O Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN# */
 	// Integrated SMBus 2.0
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ( 0x4 <<2)|3, apicid_8111  , 0x15);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_0, ( 0x4 <<2)|3, apicid_8111  , 0x15);
 	// Integrated AMD AC97 Audio
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ( 0x4 <<2)|1, apicid_8111  , 0x11);
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_0, ( 0x4 <<2)|2, apicid_8111  , 0x12);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_0, ( 0x4 <<2)|1, apicid_8111  , 0x11);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_0, ( 0x4 <<2)|2, apicid_8111  , 0x12);
 	// Integrated AMD USB
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, ( 0x4 <<2)|0, m->apicid_8111  , 0x10);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, ( 0x0 <<2)|3, m->apicid_8111  , 0x13);
 	// On board ATI Rage XL
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8111_1, ( 0x5 <<2)|0, apicid_8111  , 0x14);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8111_1, ( 0x5 <<2)|0, apicid_8111  , 0x14);
 	// On board Broadcom nics
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_2, ( 0x3 <<2)|0, m->apicid_8131_2, 0x03);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_2, ( 0x3 <<2)|1, m->apicid_8131_2, 0x00);
 	// On board LSI SCSI
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_2, ( 0x2 <<2)|0, apicid_8131_2, 0x02);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_2, ( 0x2 <<2)|0, apicid_8131_2, 0x02);
 
 	// PCIX-133 Slot
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_1, ( 0x1 <<2)|0, m->apicid_8131_1, 0x01);
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, ( 0x1 <<2)|1, apicid_8131_1, 0x02);
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, ( 0x1 <<2)|2, apicid_8131_1, 0x03);
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_8131_1, ( 0x1 <<2)|3, apicid_8131_1, 0x04);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_1, ( 0x1 <<2)|1, apicid_8131_1, 0x02);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_1, ( 0x1 <<2)|2, apicid_8131_1, 0x03);
+	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_8131_1, ( 0x1 <<2)|3, apicid_8131_1, 0x04);
 
 /*Local Ints:	Type	Polarity    Trigger	Bus ID	 IRQ	APIC ID	PIN#*/
 	mptable_lintsrc(mc, bus_isa);

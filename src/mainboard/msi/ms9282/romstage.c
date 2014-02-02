@@ -158,7 +158,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
         ht_setup_chains_x(sysinfo); // it will init sblnk and sbbusn, nodes, sbdn
 
-	init_timer(); /* Need to use TMICT to synconize FID/VID. */
+	init_timer(); /* Need to use TMICT to synchronize FID/VID. */
 
 	needs_reset = optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);

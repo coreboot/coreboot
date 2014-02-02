@@ -33,7 +33,7 @@ static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
 	dev = dev_find_slot_on_smbus(1, 0x54 | bank);
 	if (dev == 0) {
 		printk(BIOS_WARNING, "EEPROM not found\n");
-		memcpy(result, "*INVALID*", sizeof ("*INVALID*"));
+		memcpy(result, "*INVALID*", sizeof("*INVALID*"));
 		return;
 	}
 
@@ -42,14 +42,14 @@ static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
 		int j;
 		/* After a register write AT24RF08C (which we issued in init function) sometimes stops responding.
 		   Retry several times in case of failure.
-		*/
+		 */
 		for (j = 0; j < 100; j++) {
 			t = smbus_read_byte(dev, start + i);
 			if (t >= 0)
 				break;
 		}
 		if (t < 0x20 || t > 0x7f) {
-			memcpy(result, "*INVALID*", sizeof ("*INVALID*"));
+			memcpy(result, "*INVALID*", sizeof("*INVALID*"));
 			return;
 		}
 		result[i] = t;
@@ -64,7 +64,7 @@ const char *smbios_mainboard_serial_number(void)
 	if (already_read)
 		return result;
 
-	memset(result, 0, sizeof (result));
+	memset(result, 0, sizeof(result));
 	at24rf08c_read_string(0, 0x2e, 7, result);
 
 	already_read = 1;
@@ -79,14 +79,14 @@ const char *smbios_mainboard_product_name(void)
 	if (already_read)
 		return result;
 
-	memset (result, 0, sizeof (result));
+	memset(result, 0, sizeof(result));
 	at24rf08c_read_string(0, 0x27, 7, result);
 
 	already_read = 1;
 	return result;
 }
 
-void smbios_mainboard_set_uuid(u8 *uuid)
+void smbios_mainboard_set_uuid(u8 * uuid)
 {
 	static char result[16];
 	unsigned i;
@@ -97,19 +97,18 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 		3, 2, 1, 0, 5, 4, 7, 6, 8, 9, 10, 11, 12, 13, 14, 15
 	};
 
-
 	if (already_read) {
-		memcpy (uuid, result, 16);
+		memcpy(uuid, result, 16);
 		return;
 	}
 
-	memset (result, 0, sizeof (result));
+	memset(result, 0, sizeof(result));
 
 	dev = dev_find_slot_on_smbus(1, 0x56);
 	if (dev == 0) {
 		printk(BIOS_WARNING, "eeprom not found\n");
 		already_read = 1;
-		memset (uuid, 0, 16);
+		memset(uuid, 0, 16);
 		return;
 	}
 
@@ -118,14 +117,14 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 		int j;
 		/* After a register write AT24RF08C (which we issued in init function) sometimes stops responding.
 		   Retry several times in case of failure.
-		*/
+		 */
 		for (j = 0; j < 100; j++) {
 			t = smbus_read_byte(dev, 0x12 + i);
 			if (t >= 0)
 				break;
 		}
 		if (t < 0) {
-			memset (result, 0, sizeof (result));
+			memset(result, 0, sizeof(result));
 			break;
 		}
 		result[remap[i]] = t;
@@ -133,5 +132,5 @@ void smbios_mainboard_set_uuid(u8 *uuid)
 
 	already_read = 1;
 
-	memcpy (uuid, result, 16);
+	memcpy(uuid, result, 16);
 }

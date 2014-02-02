@@ -32,15 +32,14 @@ static void at24rf08c_init(device_t dev)
 	if (!dev->enabled)
 		return;
 
-        /* Ensure that EEPROM/RFID chip is not accessible through RFID.
+	/* Ensure that EEPROM/RFID chip is not accessible through RFID.
 	   Need to do it only on 5c.  */
 	if (dev->path.type != DEVICE_PATH_I2C || dev->path.i2c.device != 0x5c)
 		return;
 
-	printk (BIOS_DEBUG, "Locking EEPROM RFID\n");
+	printk(BIOS_DEBUG, "Locking EEPROM RFID\n");
 
-	for (i = 0; i < 8; i++)
-	{
+	for (i = 0; i < 8; i++) {
 		/* After a register write AT24RF08C sometimes stops responding.
 		   Retry several times in case of failure.
 		 */
@@ -49,7 +48,7 @@ static void at24rf08c_init(device_t dev)
 				break;
 	}
 
-	printk (BIOS_DEBUG, "init EEPROM done\n");
+	printk(BIOS_DEBUG, "init EEPROM done\n");
 }
 
 static void at24rf08c_noop(device_t dummy)
@@ -70,5 +69,5 @@ static void enable_dev(device_t dev)
 
 struct chip_operations drivers_i2c_at24rf08c_ops = {
 	CHIP_NAME("AT24RF08C")
-	.enable_dev = enable_dev,
+	    .enable_dev = enable_dev,
 };

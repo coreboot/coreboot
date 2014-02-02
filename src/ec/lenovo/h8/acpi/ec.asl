@@ -227,7 +227,6 @@ Device(EC)
 	    ^HKEY.RHK (0x18)
        }
 
-#if CONFIG_BOARD_LENOVO_X201
        Method (_Q1C, 0, NotSerialized)
        {
 	    ^HKEY.RHK (0x19)
@@ -237,7 +236,12 @@ Device(EC)
        {
 	    ^HKEY.RHK (0x1A)
        }
-#endif
+
+       /* Mute */
+       Method (_Q1D, 0, NotSerialized)
+       {
+	    ^HKEY.RHK (0x17)
+       }
 
        Device (HKEY)
        {

@@ -119,19 +119,12 @@ struct cbfs_payload {
  */
 #define CBFS_COMPONENT_NULL 0xFFFFFFFF
 
-int cbfs_file_header(unsigned long physaddr);
 #define CBFS_NAME(_c) (((char *) (_c)) + sizeof(struct cbfs_file))
 #define CBFS_SUBHEADER(_p) ( (void *) ((((uint8_t *) (_p)) + ntohl((_p)->offset))) )
 /* cbfs_image.c */
 uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
 const char *get_cbfs_entry_type_name(uint32_t type);
 uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
-
-/* common.c */
-int find_master_header(void *romarea, size_t size);
-void recalculate_rom_geometry(void *romarea);
-struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size);
-const char *strfiletype(uint32_t number);
 
 /* elfheaders.c */
 int

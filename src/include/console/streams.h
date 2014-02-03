@@ -22,4 +22,11 @@ void console_hw_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 
+/* Helpers for ROMCC console. */
+void console_tx_nibble(unsigned nibble);
+void console_tx_hex8(unsigned char value);
+void console_tx_hex16(unsigned short value);
+void console_tx_hex32(unsigned int value);
+void console_tx_string(const char *str);
+
 #endif /* _CONSOLE_STREAMS_H_ */

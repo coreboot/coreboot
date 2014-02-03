@@ -56,10 +56,6 @@ SECTIONS
 	.rodata : {
 		_rodata = .;
 		. = ALIGN(4);
-		console_drivers = .;
-		*(.rodata.console_drivers)
-		econsole_drivers = . ;
-		. = ALIGN(4);
 		pci_drivers = . ;
 		*(.rodata.pci_driver)
 		epci_drivers = . ;

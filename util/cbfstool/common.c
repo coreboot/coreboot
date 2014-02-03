@@ -150,8 +150,18 @@ void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
 static struct cbfs_header *cbfstool_master_header;
 static uint32_t phys_start, phys_end, align;
 uint32_t romsize;
-void *cbfstool_offset;
+static void *cbfstool_offset;
 uint32_t arch = CBFS_ARCHITECTURE_UNKNOWN;
+
+static inline void *phys_to_virt(uint32_t addr)
+{
+	return cbfstool_offset + addr;
+}
+
+static inline uint32_t virt_to_phys(void *addr)
+{
+	return (unsigned long)(addr - cbfstool_offset) & 0xffffffff;
+}
 
 static struct {
 	uint32_t arch;

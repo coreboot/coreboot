@@ -641,6 +641,11 @@ choice
 	default GRUB2_MASTER
 	depends on PAYLOAD_GRUB2
 
+config GRUB2_STABLE
+	bool "grub-2.02-beta2"
+	help
+	  Stable GRUB2 version
+
 config GRUB2_MASTER
 	bool "HEAD"
 	help

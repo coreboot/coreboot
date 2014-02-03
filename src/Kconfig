@@ -638,8 +638,13 @@ config SEABIOS_PS2_TIMEOUT
 
 choice
 	prompt "GRUB2 version"
-	default GRUB2_MASTER
+	default GRUB2_STABLE
 	depends on PAYLOAD_GRUB2
+
+config GRUB2_STABLE
+	bool "grub-2.02-beta2"
+	help
+	  Stable GRUB2 version
 
 config GRUB2_MASTER
 	bool "HEAD"

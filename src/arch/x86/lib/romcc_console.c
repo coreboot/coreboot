@@ -17,11 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/streams.h>
+#include <console/early_print.h>
 
-/* While in romstage, console loglevel is built-time constant. */
-#define console_show(msg_level) (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= msg_level)
-
+/* Include the sources. */
 #if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO
 #include "drivers/uart/util.c"
 #include "drivers/uart/uart8250io.c"
@@ -31,76 +29,6 @@
 #endif
 
 #include <console/console.c>
-#define __console_tx_byte	console_tx_byte
-#define __console_tx_flush	console_tx_flush
-
-static void __console_tx_nibble(unsigned nibble)
-{
-	unsigned char digit;
-	digit = nibble + '0';
-	if (digit > '9') {
-		digit += 39;
-	}
-	__console_tx_byte(digit);
-}
-
-static void __console_tx_char(int loglevel, unsigned char byte)
-{
-	if (console_show(loglevel)) {
-		__console_tx_byte(byte);
-		__console_tx_flush();
-	}
-}
-
-static void __console_tx_hex8(int loglevel, unsigned char value)
-{
-	if (console_show(loglevel)) {
-		__console_tx_nibble((value >>  4U) & 0x0fU);
-		__console_tx_nibble(value & 0x0fU);
-		__console_tx_flush();
-	}
-}
-
-static void __console_tx_hex16(int loglevel, unsigned short value)
-{
-	if (console_show(loglevel)) {
-		__console_tx_nibble((value >> 12U) & 0x0fU);
-		__console_tx_nibble((value >>  8U) & 0x0fU);
-		__console_tx_nibble((value >>  4U) & 0x0fU);
-		__console_tx_nibble(value & 0x0fU);
-		__console_tx_flush();
-	}
-}
-
-static void __console_tx_hex32(int loglevel, unsigned int value)
-{
-	if (console_show(loglevel)) {
-		__console_tx_nibble((value >> 28U) & 0x0fU);
-		__console_tx_nibble((value >> 24U) & 0x0fU);
-		__console_tx_nibble((value >> 20U) & 0x0fU);
-		__console_tx_nibble((value >> 16U) & 0x0fU);
-		__console_tx_nibble((value >> 12U) & 0x0fU);
-		__console_tx_nibble((value >>  8U) & 0x0fU);
-		__console_tx_nibble((value >>  4U) & 0x0fU);
-		__console_tx_nibble(value & 0x0fU);
-		__console_tx_flush();
-	}
-}
-
-static void __console_tx_string(int loglevel, const char *str)
-{
-	if (console_show(loglevel)) {
-		unsigned char ch;
-		while((ch = *str++) != '\0') {
-			if (ch == '\n')
-				__console_tx_byte('\r');
-			__console_tx_byte(ch);
-		}
-		__console_tx_flush();
-	}
-}
-
-/* if included by romcc, include the sources, too. romcc can't use prototypes */
 #include <console/init.c>
 #include <console/post.c>
 #include <console/die.c>

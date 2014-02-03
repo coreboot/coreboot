@@ -62,23 +62,12 @@ int buffer_write_file(struct buffer *buffer, const char *filename);
 /* Destroys a memory buffer. */
 void buffer_delete(struct buffer *buffer);
 
-extern void *cbfstool_offset;
 extern uint32_t romsize;
 extern int host_bigendian;
 extern uint32_t arch;
 
 const char *arch_to_string(uint32_t a);
 uint32_t string_to_arch(const char *arch_string);
-
-static inline void *phys_to_virt(uint32_t addr)
-{
-	return cbfstool_offset + addr;
-}
-
-static inline uint32_t virt_to_phys(void *addr)
-{
-	return (unsigned long)(addr - cbfstool_offset) & 0xffffffff;
-}
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
 

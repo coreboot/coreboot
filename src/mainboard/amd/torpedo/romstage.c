@@ -62,7 +62,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		kbc1100_early_init(CONFIG_SIO_PORT);
 
 		post_code(0x32);
-		uart_init();
 		post_code(0x33);
 		console_init();
 	}

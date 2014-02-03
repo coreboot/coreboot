@@ -58,7 +58,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb7xx_51xx_disable_wideio(0);
 	post_code(0x34);
 
-	uart_init();
 	post_code(0x35);
 	console_init();
 

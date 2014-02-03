@@ -237,8 +237,7 @@ struct lb_memory *write_tables(void)
 				new_high_table_pointer - high_table_pointer);
 	} else {
 		/* The coreboot table must be in 0-4K or 960K-1M */
-		rom_table_end = write_coreboot_table(
-				     low_table_start, low_table_end,
+		write_coreboot_table(low_table_start, low_table_end,
 				     rom_table_start, rom_table_end);
 	}
 

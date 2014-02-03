@@ -33,7 +33,7 @@
  * works for all elf files, not just the restricted set.
  */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       comp_algo algo, uint32_t *location)
+		       uint32_t arch, comp_algo algo, uint32_t *location)
 {
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr ehdr;
@@ -50,7 +50,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 
 	DEBUG("start: parse_elf_to_stage(location=0x%x)\n", *location);
 
-	if (elf_headers(input, &ehdr, &phdr, NULL) < 0)
+	if (elf_headers(input, arch, &ehdr, &phdr, NULL) < 0)
 		return -1;
 
 	headers = ehdr.e_phnum;

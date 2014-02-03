@@ -62,8 +62,6 @@ int buffer_write_file(struct buffer *buffer, const char *filename);
 /* Destroys a memory buffer. */
 void buffer_delete(struct buffer *buffer);
 
-extern uint32_t arch;
-
 uint32_t string_to_arch(const char *arch_string);
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
@@ -79,7 +77,7 @@ uint64_t intfiletype(const char *name);
 
 /* cbfs-mkpayload.c */
 int parse_elf_to_payload(const struct buffer *input,
-			 struct buffer *output, comp_algo algo);
+			 struct buffer *output, uint32_t arch, comp_algo algo);
 int parse_fv_to_payload(const struct buffer *input,
 			 struct buffer *output, comp_algo algo);
 int parse_bzImage_to_payload(const struct buffer *input,
@@ -92,7 +90,7 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 				 comp_algo algo);
 /* cbfs-mkstage.c */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       comp_algo algo, uint32_t *location);
+		       uint32_t arch, comp_algo algo, uint32_t *location);
 
 void print_supported_filetypes(void);
 

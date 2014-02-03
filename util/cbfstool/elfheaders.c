@@ -241,6 +241,7 @@ elf_shdr(struct buffer *pinput, Elf64_Shdr *shdr,
  */
 int
 elf_headers(const struct buffer *pinput,
+	    uint32_t arch,
 	    Elf64_Ehdr *ehdr,
 	    Elf64_Phdr **pphdr,
 	    Elf64_Shdr **pshdr)

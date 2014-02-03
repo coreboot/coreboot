@@ -106,9 +106,6 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 		       uint32_t type, uint32_t * location);
 
-int create_cbfs_image(const char *romfile, uint32_t romsize,
-		      const char *bootblock, uint32_t align, uint32_t offs);
-
 int add_file_to_cbfs(void *content, uint32_t contentsize, uint32_t location);
 int remove_file_from_cbfs(const char *filename);
 void print_cbfs_directory(const char *filename);

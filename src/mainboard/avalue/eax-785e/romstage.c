@@ -102,7 +102,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	w83627hf_set_clksel_48(PNP_DEV(CONFIG_SIO_PORT, 0));
 	w83627hf_enable_serial(0, CONFIG_TTYS0_BASE);
 
-	uart_init();
 	console_init();
 	printk(BIOS_DEBUG, "\n");
 

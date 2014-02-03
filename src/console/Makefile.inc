@@ -15,14 +15,6 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c printk.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += init.c console.c
 bootblock-y += die.c
 
-ramstage-$(CONFIG_CONSOLE_SERIAL) += uart_console.c
-ramstage-$(CONFIG_SPKMODEM) += spkmodem_console.c
-ramstage-$(CONFIG_CONSOLE_USB) += usbdebug_console.c
-ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c
-ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
-ramstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon_console.c
-
-
 $(obj)/console/init.ramstage.o : $(obj)/build.h
 $(obj)/console/init.romstage.o : $(obj)/build.h
 $(obj)/console/init.bootblock.o : $(obj)/build.h

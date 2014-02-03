@@ -129,11 +129,6 @@ unsigned char uart_rx_byte(void)
 	return uart8250_rx_byte(bases[0]);
 }
 
-int uart_can_rx_byte(void)
-{
-	return uart8250_can_rx_byte(bases[0]);
-}
-
 void uart_tx_flush(void)
 {
 	uart8250_tx_flush(bases[0]);

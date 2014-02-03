@@ -116,14 +116,6 @@ unsigned char uart_rx_byte(void)
 	return uart8250_mem_rx_byte(base);
 }
 
-int uart_can_rx_byte(void)
-{
-	u32 base = uart_platform_base(0);
-	if (!base)
-		return 0;
-	return uart8250_mem_can_rx_byte(base);
-}
-
 void uart_tx_flush(void)
 {
 	u32 base = uart_platform_base(0);

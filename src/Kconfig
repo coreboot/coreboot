@@ -695,6 +695,21 @@ config PAYLOAD_FILE
 	help
 	  The result of a corebootPkg build
 
+config INCLUDE_GRUB2_CONFIG_FILE
+	bool "Include the GRUB2 grub.cfg file into the ROM image"
+	depends on PAYLOAD_GRUB2
+	default n
+	help
+	  Include the GRUB2 grub.cfg configuration file.
+	  This configuration may need to be coreboot specific.
+
+config GRUB2_CONFIG_FILE
+	string "Path and filename to grub.cfg"
+	depends on INCLUDE_GRUB2_CONFIG_FILE
+	default "grub.cfg"
+	help
+	  The path and filename to the file to be added to cbfs.
+
 # TODO: Defined if no payload? Breaks build?
 config COMPRESSED_PAYLOAD_LZMA
 	bool "Use LZMA compression for payloads"

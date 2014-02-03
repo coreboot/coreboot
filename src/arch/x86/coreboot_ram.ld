@@ -54,10 +54,6 @@ SECTIONS
 		/* If any changes are made to the driver start/symbols or the
 		 * section names the equivalent changes need to made to
 		 * rmodule.ld. */
-		console_drivers = .;
-		*(.rodata.console_drivers)
-		econsole_drivers = . ;
-		. = ALIGN(4);
 		pci_drivers = . ;
 		*(.rodata.pci_driver)
 		epci_drivers = . ;

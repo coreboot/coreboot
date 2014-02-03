@@ -24,24 +24,6 @@
 #include <console/loglevel.h>
 #include <console/post_codes.h>
 
-#ifndef __PRE_RAM__
-unsigned char console_rx_byte(void);
-int console_tst_byte(void);
-struct console_driver {
-	void (*init)(void);
-	void (*tx_byte)(unsigned char byte);
-	void (*tx_flush)(void);
-	unsigned char (*rx_byte)(void);
-	int (*tst_byte)(void);
-};
-
-#define __console	__attribute__((used, __section__ (".rodata.console_drivers")))
-
-/* Defined by the linker... */
-extern struct console_driver console_drivers[];
-extern struct console_driver econsole_drivers[];
-#endif
-
 #ifndef __ROMCC__
 int console_log_level(int msg_level);
 void console_init(void);

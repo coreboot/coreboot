@@ -24,62 +24,6 @@
 #include <console/ne2k.h>
 #include <console/spkmodem.h>
 
-#ifndef __PRE_RAM__
-
-/* initialize the console */
-void console_hw_init(void)
-{
-	struct console_driver *driver;
-
-	for(driver = console_drivers; driver < econsole_drivers; driver++) {
-		if (!driver->init)
-			continue;
-		driver->init();
-	}
-}
-
-void console_tx_flush(void)
-{
-	struct console_driver *driver;
-	for(driver = console_drivers; driver < econsole_drivers; driver++) {
-		if (!driver->tx_flush)
-			continue;
-		driver->tx_flush();
-	}
-}
-
-void console_tx_byte(unsigned char byte)
-{
-	struct console_driver *driver;
-	for(driver = console_drivers; driver < econsole_drivers; driver++) {
-		driver->tx_byte(byte);
-	}
-}
-
-unsigned char console_rx_byte(void)
-{
-	struct console_driver *driver;
-	for(driver = console_drivers; driver < econsole_drivers; driver++) {
-		if (driver->tst_byte)
-			break;
-	}
-	if (driver == econsole_drivers)
-		return 0;
-	while (!driver->tst_byte());
-	return driver->rx_byte();
-}
-
-int console_tst_byte(void)
-{
-	struct console_driver *driver;
-	for(driver = console_drivers; driver < econsole_drivers; driver++)
-		if (driver->tst_byte)
-			return driver->tst_byte();
-	return 0;
-}
-
-#else // __PRE_RAM__   ^^^ NOT defined   vvv defined
-
 void console_hw_init(void)
 {
 #if CONFIG_CONSOLE_SERIAL
@@ -97,5 +41,14 @@ void console_hw_init(void)
 #if CONFIG_CONSOLE_USB && CONFIG_USBDEBUG_IN_ROMSTAGE && !defined(__BOOT_BLOCK__)
 	usbdebug_init();
 #endif
+}
+
+#ifndef __PRE_RAM__
+void console_tx_byte(unsigned char byte)
+{
+}
+
+void console_tx_flush(void)
+{
 }
 #endif

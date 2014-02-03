@@ -56,6 +56,7 @@ static struct param {
 	uint32_t pagesize;
 	uint32_t offset;
 	uint32_t top_aligned;
+	uint32_t arch;
 	int fit_empty_entries;
 	comp_algo algo;
 	/* for linux payloads */
@@ -63,6 +64,7 @@ static struct param {
 	char *cmdline;
 } param = {
 	/* All variables not listed are initialized as zero. */
+	.arch = CBFS_ARCHITECTURE_UNKNOWN,
 	.algo = CBFS_COMPRESS_NONE,
 };
 
@@ -178,9 +180,13 @@ static int cbfs_add_component(const char *cbfs_name,
 	return 0;
 }
 
-static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset) {
+static int cbfstool_convert_mkstage(struct buffer *buffer, uint32_t *offset)
+{
 	struct buffer output;
-	if (parse_elf_to_stage(buffer, &output, param.algo, offset) != 0)
+	int ret;
+	ret = parse_elf_to_stage(buffer, &output, param.arch, param.algo,
+				 offset);
+	if (ret != 0)
 		return -1;
 	buffer_delete(buffer);
 	// direct assign, no dupe.
@@ -192,7 +198,7 @@ static int cbfstool_convert_mkpayload(struct buffer *buffer, uint32_t *offset) {
 	struct buffer output;
 	int ret;
 	/* per default, try and see if payload is an ELF binary */
-	ret = parse_elf_to_payload(buffer, &output, param.algo);
+	ret = parse_elf_to_payload(buffer, &output, param.arch, param.algo);
 
 	/* If it's not an ELF, see if it's a UEFI FV */
 	if (ret != 0)
@@ -334,8 +340,7 @@ static int cbfs_create(void)
 		return 1;
 	}
 
-	// TODO Remove arch or pack into param.
-	if (arch == CBFS_ARCHITECTURE_UNKNOWN) {
+	if (param.arch == CBFS_ARCHITECTURE_UNKNOWN) {
 		ERROR("You need to specify -m/--machine arch.\n");
 		return 1;
 	}
@@ -368,7 +373,7 @@ static int cbfs_create(void)
 	}
 
 	if (cbfs_image_create(&image,
-			      arch,
+			      param.arch,
 			      param.size,
 			      param.alignment,
 			      &bootblock,
@@ -701,7 +706,7 @@ int main(int argc, char **argv)
 				verbose++;
 				break;
 			case 'm':
-				arch = string_to_arch(optarg);
+				param.arch = string_to_arch(optarg);
 				break;
 			case 'I':
 				param.initrd = optarg;

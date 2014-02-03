@@ -103,9 +103,6 @@ void buffer_delete(struct buffer *buffer) {
 	buffer->size = 0;
 }
 
-/* FIXME: This global is more difficult to just remove */
-uint32_t arch = CBFS_ARCHITECTURE_UNKNOWN;
-
 static struct {
 	uint32_t arch;
 	const char *name;

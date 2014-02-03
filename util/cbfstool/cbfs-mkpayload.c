@@ -51,7 +51,7 @@ static void xdr_segs(struct buffer *output,
 	}
 }
 int parse_elf_to_payload(const struct buffer *input,
-			 struct buffer *output, comp_algo algo)
+			 struct buffer *output, uint32_t arch, comp_algo algo)
 {
 	Elf64_Phdr *phdr;
 	Elf64_Ehdr ehdr;
@@ -69,7 +69,7 @@ int parse_elf_to_payload(const struct buffer *input,
 	if (!compress)
 		return -1;
 
-	if (elf_headers(input, &ehdr, &phdr, &shdr) < 0)
+	if (elf_headers(input, arch, &ehdr, &phdr, &shdr) < 0)
 		return -1;
 
 	DEBUG("start: parse_elf_to_payload\n");

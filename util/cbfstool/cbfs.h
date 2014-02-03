@@ -136,6 +136,7 @@ const char *strfiletype(uint32_t number);
 /* elfheaders.c */
 int
 elf_headers(const struct buffer *pinput,
+	    uint32_t arch,
 	    Elf64_Ehdr *ehdr,
 	    Elf64_Phdr **pphdr,
 	    Elf64_Shdr **pshdr);

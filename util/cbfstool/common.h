@@ -62,12 +62,6 @@ int buffer_write_file(struct buffer *buffer, const char *filename);
 /* Destroys a memory buffer. */
 void buffer_delete(struct buffer *buffer);
 
-extern void *cbfstool_offset;
-extern uint32_t romsize;
-extern int host_bigendian;
-extern uint32_t arch;
-
-const char *arch_to_string(uint32_t a);
 uint32_t string_to_arch(const char *arch_string);
 
 static inline void *phys_to_virt(uint32_t addr)
@@ -99,7 +93,7 @@ uint64_t intfiletype(const char *name);
 
 /* cbfs-mkpayload.c */
 int parse_elf_to_payload(const struct buffer *input,
-			 struct buffer *output, comp_algo algo);
+			 struct buffer *output, uint32_t arch, comp_algo algo);
 int parse_fv_to_payload(const struct buffer *input,
 			 struct buffer *output, comp_algo algo);
 int parse_bzImage_to_payload(const struct buffer *input,
@@ -112,7 +106,7 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 				 comp_algo algo);
 /* cbfs-mkstage.c */
 int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
-		       comp_algo algo, uint32_t *location);
+		       uint32_t arch, comp_algo algo, uint32_t *location);
 
 void *create_cbfs_file(const char *filename, void *data, uint32_t * datasize,
 		       uint32_t type, uint32_t * location);

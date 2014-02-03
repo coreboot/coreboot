@@ -103,56 +103,6 @@ void buffer_delete(struct buffer *buffer) {
 	buffer->size = 0;
 }
 
-size_t getfilesize(const char *filename)
-{
-	size_t size;
-	FILE *file = fopen(filename, "rb");
-	if (file == NULL)
-		return -1;
-
-	fseek(file, 0, SEEK_END);
-	size = ftell(file);
-	fclose(file);
-	return size;
-}
-
-void *loadfile(const char *filename, uint32_t * romsize_p, void *content,
-	       int place)
-{
-	FILE *file = fopen(filename, "rb");
-	if (file == NULL)
-		return NULL;
-
-	fseek(file, 0, SEEK_END);
-	*romsize_p = ftell(file);
-	fseek(file, 0, SEEK_SET);
-	if (!content) {
-		content = malloc(*romsize_p);
-		if (!content) {
-			ERROR("Could not get %d bytes for file %s\n",
-			      *romsize_p, filename);
-			exit(1);
-		}
-	} else if (place == SEEK_END)
-		content -= *romsize_p;
-
-	if (!fread(content, *romsize_p, 1, file)) {
-		ERROR("Failed to read %s\n", filename);
-		return NULL;
-	}
-	fclose(file);
-	return content;
-}
-
-/* N.B.: there are declarations here that were shadowed in functions.
- * Hence the rather clumsy cbfstool_ prefixes.
- */
-static struct cbfs_header *cbfstool_master_header;
-static uint32_t phys_start, phys_end, align;
-uint32_t romsize;
-void *cbfstool_offset;
-uint32_t arch = CBFS_ARCHITECTURE_UNKNOWN;
-
 static struct {
 	uint32_t arch;
 	const char *name;

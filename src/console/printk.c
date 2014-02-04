@@ -5,6 +5,7 @@
  *
  */
 
+#include <stddef.h>
 #include <smp/node.h>
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>
@@ -18,6 +19,11 @@ void do_putchar(unsigned char byte)
 	if (byte == '\n')
 		console_tx_byte('\r');
 	console_tx_byte(byte);
+}
+
+void wrap_putchar(unsigned char byte, void *data)
+{
+	do_putchar(byte);
 }
 
 int do_printk(int msg_level, const char *fmt, ...)
@@ -37,7 +43,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	spin_lock(&console_lock);
 
 	va_start(args, fmt);
-	i = vtxprintf(do_putchar, fmt, args);
+	i = vtxprintf(wrap_putchar, fmt, args, NULL);
 	va_end(args);
 
 	console_tx_flush();
@@ -51,7 +57,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 #if CONFIG_CHROMEOS
 void do_vtxprintf(const char *fmt, va_list args)
 {
-	vtxprintf(do_putchar, fmt, args, NULL);
+	vtxprintf(wrap_putchar, fmt, args, NULL);
 	console_tx_flush();
 }
 #endif

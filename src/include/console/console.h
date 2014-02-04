@@ -75,7 +75,6 @@ static inline void do_putchar(unsigned char byte) {}
 
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void do_putchar(unsigned char byte);
-void wrap_putchar(unsigned char byte, void *data);
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\

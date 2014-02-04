@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Marc Jones <marc.jones@se-eng.com>
+Code-Review+1: Kevin O'Connor <kevin@koconnor.net>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Submitted-by: Marc Jones <marc.jones@se-eng.com>
+Submitted-at: Tue, 04 Feb 2014 01:43:31 +0100
+Reviewed-on: http://review.coreboot.org/5089
+Project: coreboot
+Branch: refs/heads/master

@@ -12,6 +12,11 @@ config BOARD_LENOVO_X60
 	    ThinkPad X60s (Model 1702, 1703)
 	    ThinkPad X60  (Model 1709)
 
+config BOARD_LENOVO_X60T
+	bool "ThinkPad X60 Tablet"
+	help
+	  Lenovo X60 convertible tablet
+
 config BOARD_LENOVO_X201
 	bool "ThinkPad X201"
 	help
@@ -38,6 +43,7 @@ config BOARD_LENOVO_T60
 endchoice
 
 source "src/mainboard/lenovo/x60/Kconfig"
+source "src/mainboard/lenovo/x60t/Kconfig"
 source "src/mainboard/lenovo/x201/Kconfig"
 source "src/mainboard/lenovo/x201t/Kconfig"
 source "src/mainboard/lenovo/x230/Kconfig"

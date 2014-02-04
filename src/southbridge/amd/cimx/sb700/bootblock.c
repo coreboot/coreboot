@@ -20,38 +20,6 @@
 
 #include <arch/io.h>
 
-#if CONFIG_CONSOLE_POST
-
-/* Data */
-#define UART_RBR 0x00
-#define UART_TBR 0x00
-
-/* Control */
-#define UART_IER 0x01
-#define UART_IIR 0x02
-#define UART_FCR 0x02
-#define UART_LCR 0x03
-#define UART_MCR 0x04
-#define UART_DLL 0x00
-#define UART_DLM 0x01
-
-/* Status */
-#define UART_LSR 0x05
-#define UART_MSR 0x06
-#define UART_SCR 0x07
-
-#ifndef CONFIG_TTYS0_DIV
-#if ((115200%CONFIG_TTYS0_BAUD) != 0)
-#error Bad ttys0 baud rate
-#endif
-#define CONFIG_TTYS0_DIV	(115200/CONFIG_TTYS0_BAUD)
-#endif // CONFIG_TTYS0_DIV
-
-#define UART_LCS	CONFIG_TTYS0_LCS
-
-#endif // CONFIG_CONSOLE_POST == 1
-
-
 static void sb700_enable_rom(void)
 {
 	u32 word;

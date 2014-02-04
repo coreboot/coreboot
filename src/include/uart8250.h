@@ -111,9 +111,6 @@
 #error Bad ttyS0 baud rate
 #endif
 
-/* Line Control Settings */
-#define UART_LCS	CONFIG_TTYS0_LCS
-
 #if CONFIG_CONSOLE_SERIAL8250
 unsigned char uart8250_rx_byte(unsigned base_port);
 int uart8250_can_rx_byte(unsigned base_port);

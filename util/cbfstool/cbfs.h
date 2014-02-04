@@ -134,4 +134,8 @@ elf_headers(const struct buffer *pinput,
 	    Elf64_Phdr **pphdr,
 	    Elf64_Shdr **pshdr);
 
+/* cbfs-mkpayload.c */
+void xdr_segs(struct buffer *output,
+	      struct cbfs_payload_segment *segs, int nseg);
+
 #endif

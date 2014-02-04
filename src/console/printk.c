@@ -16,6 +16,8 @@ DECLARE_SPIN_LOCK(console_lock)
 
 static void wrap_putchar(unsigned char byte, void *data)
 {
+	if (byte == '\n')
+		console_tx_byte('\r');
 	console_tx_byte(byte);
 }
 
@@ -53,3 +55,9 @@ void do_vtxprintf(const char *fmt, va_list args)
 	console_tx_flush();
 }
 
+void do_putchar(unsigned char byte)
+{
+	if (byte == '\n')
+		console_tx_byte('\r');
+	console_tx_byte(byte);
+}

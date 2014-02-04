@@ -72,11 +72,13 @@ void __attribute__ ((noreturn)) die(const char *msg);
 /* Do nothing. */
 static inline void printk(int LEVEL, const char *fmt, ...) {}
 static inline void do_vtxprintf(const char *fmt, va_list args) {}
+static inline void do_putchar(unsigned char byte) {}
 
 #else
 
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void do_vtxprintf(const char *fmt, va_list args);
+void do_putchar(unsigned char byte);
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\

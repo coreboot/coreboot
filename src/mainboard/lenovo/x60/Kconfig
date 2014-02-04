@@ -1,4 +1,4 @@
-if BOARD_LENOVO_X60
+if BOARD_LENOVO_X60 || BOARD_LENOVO_X60T
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -39,9 +39,13 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x8000
 
+if BOARD_LENOVO_X60
+
 config MAINBOARD_PART_NUMBER
 	string
 	default "ThinkPad X60 / X60s"
+
+endif
 
 config MMCONF_BASE_ADDRESS
 	hex

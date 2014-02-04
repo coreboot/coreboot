@@ -64,8 +64,7 @@ out:
 /* Helper routines for the vboot stub. */
 static void log_msg(const char *fmt, va_list args)
 {
-	vtxprintf(console_tx_byte, fmt, args);
-	console_tx_flush();
+	do_vtxprintf(fmt, args);
 }
 
 static void fatal_error(void)

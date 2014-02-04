@@ -5,6 +5,7 @@
  *
  */
 
+#include <stddef.h>
 #include <smp/node.h>
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>
@@ -12,6 +13,11 @@
 #include <trace.h>
 
 DECLARE_SPIN_LOCK(console_lock)
+
+void wrap_putchar(unsigned char byte, void *data)
+{
+	console_tx_byte(byte);
+}
 
 int do_printk(int msg_level, const char *fmt, ...)
 {
@@ -30,7 +36,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	spin_lock(&console_lock);
 
 	va_start(args, fmt);
-	i = vtxprintf(console_tx_byte, fmt, args);
+	i = vtxprintf(wrap_putchar, fmt, args, NULL);
 	va_end(args);
 
 	console_tx_flush();
@@ -40,3 +46,10 @@ int do_printk(int msg_level, const char *fmt, ...)
 
 	return i;
 }
+
+void do_vtxprintf(const char *fmt, va_list args)
+{
+	vtxprintf(wrap_putchar, fmt, args, NULL);
+	console_tx_flush();
+}
+

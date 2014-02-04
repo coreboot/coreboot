@@ -62,25 +62,29 @@ void post_log_clear(void);
 /* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
 void __attribute__ ((noreturn)) die(const char *msg);
-int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+
+#include <console/vtxprintf.h>
 
 #if defined(__BOOT_BLOCK__) && !CONFIG_BOOTBLOCK_CONSOLE || \
     defined(__SMM__) && !CONFIG_DEBUG_SMI || \
     (defined(__PRE_RAM__) && !defined(__BOOT_BLOCK__)) && !CONFIG_EARLY_CONSOLE
 
-static inline void printk(int LEVEL, const char *fmt, ...);
-static inline void printk(int LEVEL, const char *fmt, ...) {
-	/* Do nothing. */
-}
+/* Do nothing. */
+static inline void printk(int LEVEL, const char *fmt, ...) {}
+static inline void do_vtxprintf(const char *fmt, va_list args) {}
 
-#else /* defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE */
+#else
+
+int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
+void do_vtxprintf(const char *fmt, va_list args);
+void wrap_putchar(char byte, void *data);
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\
 		do_printk(LEVEL, fmt, ##args);		\
 	} while(0)
 
-#endif /* defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE */
+#endif
 
 #define print_emerg(STR)         printk(BIOS_EMERG,  "%s", (STR))
 #define print_alert(STR)         printk(BIOS_ALERT,  "%s", (STR))

@@ -5,6 +5,8 @@ choice
 
 config BOARD_PCENGINES_ALIX1C
 	bool "ALIX.1C"
+config BOARD_PCENGINES_ALIX2C
+	bool "ALIX.2C2 or 2C3"
 config BOARD_PCENGINES_ALIX2D
 	bool "ALIX.2D2 or 2D3"
 config BOARD_PCENGINES_ALIX6
@@ -13,6 +15,7 @@ config BOARD_PCENGINES_ALIX6
 endchoice
 
 source "src/mainboard/pcengines/alix1c/Kconfig"
+source "src/mainboard/pcengines/alix2c/Kconfig"
 source "src/mainboard/pcengines/alix2d/Kconfig"
 source "src/mainboard/pcengines/alix6/Kconfig"
 

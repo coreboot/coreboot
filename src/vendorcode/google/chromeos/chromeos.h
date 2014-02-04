@@ -42,6 +42,11 @@ int vboot_enable_developer(void);
 int vboot_enable_recovery(void);
 #else
 static inline void vboot_verify_firmware(struct romstage_handoff *h) {}
+static inline void *vboot_get_payload(int *len) { return NULL; }
+static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
+{
+	return -1;
+}
 #endif
 
 #include "gnvs.h"

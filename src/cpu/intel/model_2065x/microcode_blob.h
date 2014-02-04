@@ -17,4 +17,5 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+	#include "microcode-m1220652_0000000d.h"
 	#include "microcode-m9220655_00000003.h"

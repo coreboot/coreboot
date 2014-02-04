@@ -48,7 +48,7 @@ static int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 
 	ctx.str_buf = buf;
 	ctx.buf_limit = size ? size - 1 : 0;
-	i = vtxdprintf(str_tx_byte, fmt, args, &ctx);
+	i = vtxprintf(str_tx_byte, fmt, args, &ctx);
 	if (size)
 		*ctx.str_buf = '\0';
 

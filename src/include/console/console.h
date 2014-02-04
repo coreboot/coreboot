@@ -62,7 +62,6 @@ void post_log_clear(void);
 /* this function is weak and can be overridden by a mainboard function. */
 void mainboard_post(u8 value);
 void __attribute__ ((noreturn)) die(const char *msg);
-int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 
 #if defined(__BOOT_BLOCK__) && !CONFIG_BOOTBLOCK_CONSOLE || \
     defined(__SMM__) && !CONFIG_DEBUG_SMI || \
@@ -76,6 +75,7 @@ static inline void do_putchar(unsigned char byte) {}
 
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void do_putchar(unsigned char byte);
+void wrap_putchar(unsigned char byte, void *data);
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\

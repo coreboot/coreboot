@@ -23,7 +23,6 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "pch.h"
-#include <usbdebug.h>
 #include <arch/io.h>
 
 static void thermal_init(struct device *dev)

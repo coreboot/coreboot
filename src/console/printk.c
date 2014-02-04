@@ -14,7 +14,7 @@
 
 DECLARE_SPIN_LOCK(console_lock)
 
-void wrap_putchar(unsigned char byte, void *data)
+static void wrap_putchar(unsigned char byte, void *data)
 {
 	console_tx_byte(byte);
 }

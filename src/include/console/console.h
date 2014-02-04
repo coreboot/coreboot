@@ -77,7 +77,6 @@ static inline void do_vtxprintf(const char *fmt, va_list args) {}
 
 int do_printk(int msg_level, const char *fmt, ...) __attribute__((format(printf, 2, 3)));
 void do_vtxprintf(const char *fmt, va_list args);
-void wrap_putchar(char byte, void *data);
 
 #define printk(LEVEL, fmt, args...)				\
 	do {							\

@@ -156,29 +156,29 @@ int parse_bzImage_to_payload(const struct buffer *input,
 		return -1;
 	memset(output->data, 0, output->size);
 
-	segs = (struct cbfs_payload_segment *)output->data;
+	segs = calloc(num_segments, sizeof(*segs));
 
 	/* parameter block */
 	segs[0].type = PAYLOAD_SEGMENT_DATA;
-	segs[0].load_addr = htonll(LINUX_PARAM_LOC);
-	segs[0].mem_len = htonl(sizeof(params));
-	segs[0].offset = htonl(doffset);
+	segs[0].load_addr = LINUX_PARAM_LOC;
+	segs[0].mem_len = sizeof(params);
+	segs[0].offset = doffset;
 
 	compress((void*)&params, sizeof(params), output->data + doffset, &cur_len);
-	segs[0].compression = htonl(algo);
-	segs[0].len = htonl(cur_len);
+	segs[0].compression = algo;
+	segs[0].len = cur_len;
 
 	doffset += cur_len;
 
 	/* code block */
 	segs[1].type = PAYLOAD_SEGMENT_CODE;
-	segs[1].load_addr = htonll(kernel_base);
-	segs[1].mem_len = htonl(kernel_size);
-	segs[1].offset = htonl(doffset);
+	segs[1].load_addr = kernel_base;
+	segs[1].mem_len = kernel_size;
+	segs[1].offset = doffset;
 
 	compress(kernel_data, kernel_size, output->data + doffset, &cur_len);
-	segs[1].compression = htonl(algo);
-	segs[1].len = htonl(cur_len);
+	segs[1].compression = algo;
+	segs[1].len = cur_len;
 
 	doffset += cur_len;
 
@@ -189,26 +189,26 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	unsigned int entrypoint = 0x40000; /* TODO: any better place? */
 
 	segs[2].type = PAYLOAD_SEGMENT_CODE;
-	segs[2].load_addr = htonll(entrypoint);
-	segs[2].mem_len = htonl(trampoline_size);
-	segs[2].offset = htonl(doffset);
+	segs[2].load_addr = entrypoint;
+	segs[2].mem_len = trampoline_size;
+	segs[2].offset = doffset;
 
 	compress(trampoline_start, trampoline_size, output->data + doffset, &cur_len);
-	segs[2].compression = htonl(algo);
-	segs[2].len = htonl(cur_len);
+	segs[2].compression = algo;
+	segs[2].len = cur_len;
 
 	doffset += cur_len;
 
 	if (cmdline_size > 0) {
 		/* command line block */
 		segs[3].type = PAYLOAD_SEGMENT_DATA;
-		segs[3].load_addr = htonll(COMMAND_LINE_LOC);
-		segs[3].mem_len = htonl(cmdline_size);
-		segs[3].offset = htonl(doffset);
+		segs[3].load_addr = COMMAND_LINE_LOC;
+		segs[3].mem_len = cmdline_size;
+		segs[3].offset = doffset;
 
 		compress(cmdline, cmdline_size, output->data + doffset, &cur_len);
-		segs[3].compression = htonl(algo);
-		segs[3].len = htonl(cur_len);
+		segs[3].compression = algo;
+		segs[3].len = cur_len;
 
 		doffset += cur_len;
 	}
@@ -216,22 +216,22 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	if (initrd_size > 0) {
 		/* setup block */
 		segs[num_segments-1].type = PAYLOAD_SEGMENT_DATA;
-		segs[num_segments-1].load_addr = htonll(initrd_base);
-		segs[num_segments-1].mem_len = htonl(initrd_size);
-		segs[num_segments-1].offset = htonl(doffset);
+		segs[num_segments-1].load_addr = initrd_base;
+		segs[num_segments-1].mem_len = initrd_size;
+		segs[num_segments-1].offset = doffset;
 
 		compress(initrd_data, initrd_size, output->data + doffset, &cur_len);
-		segs[num_segments-1].compression = htonl(algo);
-		segs[num_segments-1].len = htonl(cur_len);
+		segs[num_segments-1].compression = algo;
+		segs[num_segments-1].len = cur_len;
 
 		doffset += cur_len;
 	}
 
 	/* prepare entry point segment */
 	segs[num_segments].type = PAYLOAD_SEGMENT_ENTRY;
-	segs[num_segments].load_addr = htonll(entrypoint);
+	segs[num_segments].load_addr = entrypoint;
 	output->size = doffset;
-
+	xdr_segs(output, segs, num_segments);
 	return 0;
 }
 

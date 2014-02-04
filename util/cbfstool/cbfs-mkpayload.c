@@ -32,7 +32,7 @@
 /* serialize the seg array into the buffer.
  * The buffer is assumed to be large enough.
  */
-static void xdr_segs(struct buffer *output,
+void xdr_segs(struct buffer *output,
 	struct cbfs_payload_segment *segs, int nseg)
 {
 	struct buffer outheader;

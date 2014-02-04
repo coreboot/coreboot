@@ -121,11 +121,6 @@ int vtxprintf(void (*tx_byte)(unsigned char byte, void *data),
 
 	int count;
 
-#if defined(__SMM__) && CONFIG_SMM_TSEG
-	/* Fix pointer in TSEG */
-	tx_byte = wrap_putchar;
-#endif
-
 	for (count=0; *fmt ; ++fmt) {
 		if (*fmt != '%') {
 			call_tx(*fmt), count++;

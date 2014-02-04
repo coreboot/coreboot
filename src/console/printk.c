@@ -21,7 +21,7 @@ void do_putchar(unsigned char byte)
 	console_tx_byte(byte);
 }
 
-void wrap_putchar(unsigned char byte, void *data)
+static void wrap_putchar(unsigned char byte, void *data)
 {
 	do_putchar(byte);
 }
@@ -61,4 +61,3 @@ void do_vtxprintf(const char *fmt, va_list args)
 	console_tx_flush();
 }
 #endif
-

@@ -48,19 +48,12 @@ void console_tx_flush(void)
 	}
 }
 
-static void __console_tx_byte(unsigned char byte)
+void console_tx_byte(unsigned char byte)
 {
 	struct console_driver *driver;
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		driver->tx_byte(byte);
 	}
-}
-
-void console_tx_byte(unsigned char byte)
-{
-	if (byte == '\n')
-		__console_tx_byte('\r');
-	__console_tx_byte(byte);
 }
 
 unsigned char console_rx_byte(void)

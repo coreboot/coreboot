@@ -13,6 +13,13 @@
 
 DECLARE_SPIN_LOCK(console_lock)
 
+void do_putchar(unsigned char byte)
+{
+	if (byte == '\n')
+		console_tx_byte('\r');
+	console_tx_byte(byte);
+}
+
 int do_printk(int msg_level, const char *fmt, ...)
 {
 	va_list args;
@@ -30,7 +37,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	spin_lock(&console_lock);
 
 	va_start(args, fmt);
-	i = vtxprintf(console_tx_byte, fmt, args);
+	i = vtxprintf(do_putchar, fmt, args);
 	va_end(args);
 
 	console_tx_flush();
@@ -44,7 +51,8 @@ int do_printk(int msg_level, const char *fmt, ...)
 #if CONFIG_CHROMEOS
 void do_vtxprintf(const char *fmt, va_list args)
 {
-	vtxprintf(console_tx_byte, fmt, args);
+	vtxprintf(do_putchar, fmt, args);
 	console_tx_flush();
 }
 #endif
+

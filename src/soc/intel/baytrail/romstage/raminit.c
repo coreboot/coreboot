@@ -55,7 +55,7 @@ static void enable_smbus(void)
 
 static void ABI_X86 send_to_console(unsigned char b)
 {
-	console_tx_byte(b);
+	do_putchar(b);
 }
 
 static void print_dram_info(void)

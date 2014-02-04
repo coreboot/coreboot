@@ -248,7 +248,7 @@ void sdram_initialize(struct pei_data *pei_data)
 	}
 
 	/* Pass console handler in pei_data */
-	pei_data->tx_byte = console_tx_byte;
+	pei_data->tx_byte = do_putchar;
 
 	/* Locate and call UEFI System Agent binary. */
 	/* TODO make MRC blob (0xab?) defined in cbfs_core.h. */

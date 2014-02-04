@@ -1,0 +1,10 @@
+if BOARD_LENOVO_X60T
+
+# Dummy for abuild
+#select ARCH_X86
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "ThinkPad X60 Tablet"
+
+endif

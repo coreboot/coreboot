@@ -74,7 +74,7 @@ Device (LPEA)
 
 		/* Append any Mainboard defined GPIOs */
 		If (CondRefOf (^GBUF, Local0)) {
-			ConcatenateResTemplate (^RBUF, Local0, Local1)
+			ConcatenateResTemplate (^RBUF, ^GBUF, Local1)
 			Return (Local1)
 		}
 

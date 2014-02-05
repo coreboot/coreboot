@@ -20,8 +20,10 @@
 
 #include <stdint.h>
 #include <arch/io.h>
+#include <bootstate.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <cpu/x86/smm.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -35,6 +37,7 @@
 #include <baytrail/pci_devs.h>
 #include <baytrail/pmc.h>
 #include <baytrail/ramstage.h>
+#include <baytrail/spi.h>
 #include "chip.h"
 
 static inline void
@@ -481,4 +484,53 @@ static const struct pci_driver southcluster __pci_driver = {
 	.ops		= &device_ops,
 	.vendor		= PCI_VENDOR_ID_INTEL,
 	.device		= LPC_DEVID,
+};
+
+int __attribute__((weak)) mainboard_get_spi_config(struct spi_config *cfg)
+{
+	return -1;
+}
+
+static void finalize_chipset(void *unused)
+{
+	const unsigned long bcr = SPI_BASE_ADDRESS + BCR;
+	const unsigned long gcs = RCBA_BASE_ADDRESS + GCS;
+	const unsigned long gen_pmcon2 = PMC_BASE_ADDRESS + GEN_PMCON2;
+	const unsigned long etr = PMC_BASE_ADDRESS + ETR;
+	const unsigned long spi = SPI_BASE_ADDRESS;
+	struct spi_config cfg;
+
+	/* Set the lock enable on the BIOS control register. */
+	write32(bcr, read32(bcr) | BCR_LE);
+
+	/* Set BIOS lock down bit controlling boot block size and swapping. */
+	write32(gcs, read32(gcs) | BILD);
+
+	/* Lock sleep stretching policy and set SMI lock. */
+	write32(gen_pmcon2, read32(gen_pmcon2) | SLPSX_STR_POL_LOCK | SMI_LOCK);
+
+	/*  Set the CF9 lock. */
+	write32(etr, read32(etr) | CF9LOCK);
+
+	if (mainboard_get_spi_config(&cfg) < 0) {
+		printk(BIOS_DEBUG, "No SPI lockdown configuration.\n");
+	} else {
+		write16(spi + PREOP, cfg.preop);
+		write16(spi + OPTYPE, cfg.optype);
+		write32(spi + OPMENU0, cfg.opmenu[0]);
+		write32(spi + OPMENU1, cfg.opmenu[1]);
+		write16(spi + HSFSTS, read16(spi + HSFSTS) | FLOCKDN);
+		write32(spi + UVSCC, cfg.uvscc);
+		write32(spi + LVSCC, cfg.lvscc | VCL);
+	}
+
+	printk(BIOS_DEBUG, "Finalizing SMM.\n");
+	outb(APM_CNT_FINALIZE, APM_CNT);
+}
+
+BOOT_STATE_INIT_ENTRIES(finalize_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
+	                      finalize_chipset, NULL),
+	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT,
+	                      finalize_chipset, NULL),
 };

@@ -28,7 +28,7 @@
 #ifndef _MRC_WRAPPER_H_
 #define _MRC_WRAPPER_H_
 
-#define MRC_PARAMS_VER  3
+#define MRC_PARAMS_VER  4
 
 #define NUM_CHANNELS 2
 
@@ -60,6 +60,7 @@ enum mrc_wrapper_error {
 struct mrc_mainboard_params {
 	int dram_type;
 	int dram_info_location; /* DRAM_INFO_* */
+	int weaker_odt_settings; /* Apply weaker on-die-termination settings. */
 	int spd_addrs[NUM_CHANNELS];
 	void *dram_data[NUM_CHANNELS]; /* SPD or Timing specific data. */
 } __attribute__((packed));

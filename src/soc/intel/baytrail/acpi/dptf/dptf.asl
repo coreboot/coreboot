@@ -36,6 +36,11 @@ Device (DPTF)
 		If (LEqual (DeRefOf (Index (IDSP, 0)), Arg0)) {
 			/* Initialize Thermal Devices */
 			^TINI ()
+
+#ifdef DPTF_ENABLE_CHARGER
+			/* Initialize Charger Device */
+			^TCHG.INIT ()
+#endif
 		}
 
 		Return (Arg3)

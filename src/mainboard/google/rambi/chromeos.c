@@ -96,6 +96,17 @@ int get_recovery_mode_switch(void)
 
 int get_write_protect_state(void)
 {
+	/*
+	 * The vboot loader queries this function in romstage. The GPIOs have
+	 * not been set up yet as that configuration is done in ramstage. The
+	 * hardware defaults to an input but there is a 20K pulldown. Externally
+	 * there is a 10K pullup. Disable the internal pull in romstage so that
+	 * there isn't any ambiguity in the reading.
+	 */
+#if defined(__PRE_RAM__)
+	ssus_disable_internal_pull(WP_STATUS_PAD);
+#endif
+
 	/* WP is enabled when the pin is reading high. */
 	return ssus_get_gpio(WP_STATUS_PAD);
 }

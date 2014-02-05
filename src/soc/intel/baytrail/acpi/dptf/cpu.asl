@@ -115,7 +115,10 @@ Device (TCPU)
 
 	Method (_PDL)
 	{
-		If (CondRefOf (\_PR.CPU0._PSS)) {
+		/* Check for mainboard specific _PDL override */
+		If (CondRefOf (\_SB.MPDL)) {
+			Return (\_SB.MPDL)
+		} ElseIf (CondRefOf (\_PR.CPU0._PSS)) {
 			Store (SizeOf (\_PR.CPU0._PSS ()), Local0)
 			Decrement (Local0)
 			Return (Local0)

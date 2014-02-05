@@ -70,8 +70,7 @@ int nvm_erase(void *start, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	flash->erase(flash, to_flash_offset(start), size);
-	return 0;
+	return flash->erase(flash, to_flash_offset(start), size);
 }
 
 /* Write data to NVM. Returns 0 on success < 0 on error.  */
@@ -79,6 +78,5 @@ int nvm_write(void *start, const void *data, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	flash->write(flash, to_flash_offset(start), size, data);
-	return 0;
+	return flash->write(flash, to_flash_offset(start), size, data);
 }

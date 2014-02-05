@@ -378,4 +378,10 @@ static inline int ssus_get_gpio(int pad)
 	return read32(val_addr) & PAD_VAL_HIGH;
 }
 
+static inline void ssus_disable_internal_pull(int pad)
+{
+	const uint32_t pull_mask = ~(0xf << 7);
+	write32(ssus_pconf0(pad), read32(ssus_pconf0(pad)) & pull_mask);
+}
+
 #endif /* _BAYTRAIL_GPIO_H_ */

@@ -481,7 +481,7 @@ static int spi_setup_offset(spi_transaction *trans)
  */
 static int ich_status_poll(u16 bitmask, int wait_til_set)
 {
-	int timeout = 6000; /* This will result in 60 ms */
+	int timeout = 40000; /* This will result in 400 ms */
 	u16 status = 0;
 
 	while (timeout--) {

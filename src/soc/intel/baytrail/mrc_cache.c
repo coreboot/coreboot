@@ -174,8 +174,8 @@ int mrc_cache_stash_data(void *data, size_t size)
 		return -1;
 	}
 
-	/* Clear alignment padding bytes. */
-	memset(&cache->data[size], 0, cbmem_size - size);
+	/* Clear alignment padding bytes at end of data. */
+	memset(&cache->data[size], 0, cbmem_size - size - sizeof(*cache));
 
 	printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%zu bytes)\n",
 	       data, cache, size);
@@ -206,7 +206,7 @@ static int mrc_slot_valid(const struct mrc_data_region *region,
 	size = to_save->size + sizeof(*to_save);
 	slot_end = slot_begin + size;
 
-	if (slot_begin < region_begin || slot_begin > region_end)
+	if (slot_begin < region_begin || slot_begin >= region_end)
 		return 0;
 
 	if (size > region->size)
@@ -285,8 +285,11 @@ static void update_mrc_cache(void *unused)
 		next_slot = region.base;
 	}
 
-	nvm_write((void *)next_slot, current_boot,
-	          current_boot->size + sizeof(*current_boot));
+	if (nvm_write((void *)next_slot, current_boot,
+	               current_boot->size + sizeof(*current_boot))) {
+		printk(BIOS_DEBUG, "Failure writing MRC cache to %p.\n",
+		       next_slot);
+	}
 }
 
 BOOT_STATE_INIT_ENTRIES(mrc_cache_update) = {

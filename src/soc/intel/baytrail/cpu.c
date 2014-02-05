@@ -55,9 +55,13 @@ static int adjust_apic_id(int index, int apic_id)
 const struct reg_script package_msr_script[] = {
 	/* Set Package TDP to ~7W */
 	REG_MSR_WRITE(MSR_PKG_POWER_LIMIT, 0x3880fa),
+	REG_MSR_RMW(MSR_PP1_POWER_LIMIT, ~(0x7f << 17), 0),
 	REG_MSR_WRITE(MSR_PKG_TURBO_CFG1, 0x702),
 	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG1, 0x200b),
 	REG_MSR_WRITE(MSR_CPU_TURBO_WKLD_CFG2, 0),
+	REG_MSR_WRITE(MSR_CPU_THERM_CFG1, 0x00000305),
+	REG_MSR_WRITE(MSR_CPU_THERM_CFG2, 0x0405500d),
+	REG_MSR_WRITE(MSR_CPU_THERM_SENS_CFG, 0x27),
 	REG_SCRIPT_END
 };
 
@@ -70,6 +74,29 @@ const struct reg_script core_msr_script[] = {
 	REG_MSR_OR(MSR_POWER_MISC, 0x44),
 	REG_SCRIPT_END
 };
+
+/* Enable hardware coordination for 2-core, disable for 4-core */
+static void baytrail_set_pstate_coord(void)
+{
+	const struct pattrs *pattrs = pattrs_get();
+	msr_t pmg_cst = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	msr_t power_misc = rdmsr(MSR_POWER_MISC);
+
+	if (pattrs->num_cpus > 2) {
+		/* Disable hardware coordination */
+		pmg_cst.lo |= SINGLE_PCTL;
+		power_misc.lo &= ~(ENABLE_ULFM_AUTOCM_MASK |
+				   ENABLE_INDP_AUTOCM_MASK);
+	} else {
+		/* Enable hardware coordination */
+		pmg_cst.lo &= ~SINGLE_PCTL;
+		power_misc.lo |= (ENABLE_ULFM_AUTOCM_MASK |
+				  ENABLE_INDP_AUTOCM_MASK);
+	}
+
+	wrmsr(MSR_PMG_CST_CONFIG_CONTROL, pmg_cst);
+	wrmsr(MSR_POWER_MISC, power_misc);
+}
 
 void baytrail_init_cpus(device_t dev)
 {
@@ -113,6 +140,9 @@ static void baytrail_core_init(device_t cpu)
 
 	/* Set core MSRs */
 	reg_script_run(core_msr_script);
+
+	/* Set P-State coordination */
+	baytrail_set_pstate_coord();
 
 	/* Set this core to max frequency ratio */
 	set_max_freq();

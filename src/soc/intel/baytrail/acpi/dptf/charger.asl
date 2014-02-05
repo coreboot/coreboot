@@ -14,23 +14,46 @@ Device (TCHG)
 		}
 	}
 
-	Name (PPSS, Package ()
+	/* Return charger performance states defined by mainboard */
+	Method (PPSS)
 	{
-		Package () { 0, 0, 0, 0, 0, 0x880, "mA", 0 }, /* 2.1A */
-		Package () { 0, 0, 0, 0, 1, 0x800, "mA", 0 }, /* 2.0A */
-		Package () { 0, 0, 0, 0, 2, 0x600, "mA", 0 }, /* 1.5A */
-		Package () { 0, 0, 0, 0, 3, 0x400, "mA", 0 }, /* 1.0A */
-		Package () { 0, 0, 0, 0, 4, 0x200, "mA", 0 }, /* 0.5A */
-		Package () { 0, 0, 0, 0, 5, 0x000, "mA", 0 }, /* 0.0A */
-	})
+		Return (\_SB.CHPS)
+	}
 
+	/* Return maximum charger current limit */
 	Method (PPPC)
 	{
+		/* Convert size of PPSS table to index */
+		Store (SizeOf (\_SB.CHPS), Local0)
+		Decrement (Local0)
+
+		/* Check if charging is disabled (AC removed) */
+		If (LEqual (\PWRS, Zero)) {
+			/* Return last power state */
+			Return (Local0)
+		} Else {
+			/* Return highest power state */
+			Return (0)
+		}
+
 		Return (0)
 	}
 
-	Method (SPPC, 1, Serialized)
+	/* Set charger current limit */
+	Method (SPPC, 1)
 	{
-		/* TODO: Tell EC to limit battery charging */
+		/* Retrieve Control (index 4) for specified PPSS level */
+		Store (DeRefOf (Index (DeRefOf (Index
+			(\_SB.CHPS, ToInteger (Arg0))), 4)), Local0)
+
+		/* Pass Control value to EC to limit charging */
+		\_SB.PCI0.LPCB.EC0.CHGS (Local0)
+	}
+
+	/* Initialize charger participant */
+	Method (INIT)
+	{
+		/* Disable charge limit */
+		\_SB.PCI0.LPCB.EC0.CHGD ()
 	}
 }

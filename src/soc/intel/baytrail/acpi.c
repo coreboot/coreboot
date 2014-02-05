@@ -73,7 +73,7 @@ static acpi_cstate_t cstate_map[] = {
 		/* C6FS with full L2 shrink */
 		.ctype = 3, /* ACPI C3 */
 		.latency = 1500, /* 1.5ms worst case */
-		.power = 10,
+		.power = 1,
 		.resource = MWAIT_RES(5, 2),
 	}
 };
@@ -353,8 +353,9 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	vid_max = pattrs->iacore_vids[IACORE_MAX];
 	vid_min = pattrs->iacore_vids[IACORE_LFM];
 
-	/* Hardware coordination of P-states */
-	coord_type = HW_ALL;
+	/* Set P-states coordination type based on MSR disable bit */
+	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	coord_type = (msr.lo & SINGLE_PCTL) ? SW_ALL : HW_ALL;
 
 	/* Max Non-Turbo Frequency */
 	clock_max = (ratio_max * pattrs->bclk_khz) / 1000;

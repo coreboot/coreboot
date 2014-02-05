@@ -47,4 +47,8 @@ enum baytrail_stepping {
 	STEP_C0,
 };
 
+/* Registers behind the RCBA_BASE_ADDRESS bar. */
+#define GCS		0x00
+# define BILD		(1 << 0)
+
 #endif /* _BAYTRAIL_LPC_H_ */

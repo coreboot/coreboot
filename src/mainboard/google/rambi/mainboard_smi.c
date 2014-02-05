@@ -126,21 +126,9 @@ void mainboard_smi_sleep(uint8_t slp_typ)
 	while (google_chromeec_get_event() != 0);
 }
 
-#define APMC_FINALIZE 0xcb
-
-static int mainboard_finalized = 0;
-
 int mainboard_smi_apmc(uint8_t apmc)
 {
 	switch (apmc) {
-	case APMC_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-
-		mainboard_finalized = 1;
-		break;
 	case APM_CNT_ACPI_ENABLE:
 		google_chromeec_set_smi_mask(0);
 		/* Clear all pending events */

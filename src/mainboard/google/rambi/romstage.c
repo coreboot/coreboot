@@ -42,12 +42,6 @@ static const uint32_t dual_channel_config =
 #define GPIO_SSUS_38_PAD 50
 #define GPIO_SSUS_39_PAD 58
 
-static inline void disable_internal_pull(int pad)
-{
-	const int pull_mask = ~(0xf << 7);
-	write32(ssus_pconf0(pad), read32(ssus_pconf0(pad)) & pull_mask);
-}
-
 static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 {
 	int ram_id = 0;
@@ -55,9 +49,9 @@ static void *get_spd_pointer(char *spd_file_content, int total_spds, int *dual)
 	/* The ram_id[2:0] pullups on rambi are too large for the default 20K
 	 * pulldown on the pad. Therefore, disable the internal pull resistor to
 	 * read high values correctly. */
-	disable_internal_pull(GPIO_SSUS_37_PAD);
-	disable_internal_pull(GPIO_SSUS_38_PAD);
-	disable_internal_pull(GPIO_SSUS_39_PAD);
+	ssus_disable_internal_pull(GPIO_SSUS_37_PAD);
+	ssus_disable_internal_pull(GPIO_SSUS_38_PAD);
+	ssus_disable_internal_pull(GPIO_SSUS_39_PAD);
 
 	ram_id |= (ssus_get_gpio(GPIO_SSUS_37_PAD) << 0);
 	ram_id |= (ssus_get_gpio(GPIO_SSUS_38_PAD) << 1);
@@ -85,6 +79,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 		.mainboard = {
 			.dram_type = DRAM_DDR3L,
 			.dram_info_location = DRAM_INFO_SPD_MEM,
+			.weaker_odt_settings = 1,
 		},
 	};
 

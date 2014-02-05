@@ -258,6 +258,9 @@ static void collect_ranges(void *gp, struct device *dev, struct resource *res)
 {
 	struct collect_context *ctx = gp;
 
+	if (res->size == 0)
+		return;
+
 	memranges_insert(ctx->ranges, res->base, res->size, ctx->tag);
 }
 

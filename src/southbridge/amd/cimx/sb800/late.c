@@ -26,7 +26,7 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>	/* printk */
 #include <arch/acpi.h>
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 #include "lpc.h"		/* lpc_read_resources */
 #include "SBPLATFORM.h" 	/* Platfrom Specific Definitions */
 #include "cfg.h"		/* sb800 Cimx configuration */

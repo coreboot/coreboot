@@ -23,7 +23,7 @@
 #include <uart8250.h>
 #endif
 #if CONFIG_USBDEBUG
-#include <usbdebug.h>
+#include <console/usb.h>
 #endif
 #if CONFIG_CONSOLE_NE2K
 #include <console/ne2k.h>

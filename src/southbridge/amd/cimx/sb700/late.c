@@ -25,7 +25,7 @@
 #include <device/smbus.h>       /* smbus_bus_operations */
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>    /* printk */
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 #include "lpc.h"                /* lpc_read_resources */
 #include "Platform.h"   /* Platfrom Specific Definitions */
 #include "sb_cimx.h"

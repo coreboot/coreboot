@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <arch/io.h>
 #include <console/console.h>
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 #include <device/pci_def.h>
 
 pci_devfn_t pci_ehci_dbg_dev(unsigned int hcd_idx)

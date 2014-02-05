@@ -597,8 +597,11 @@ static void pch_lpc_read_resources(device_t dev)
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(io_index++, 0));
-	res->base = 0xff800000;
-	res->size = 0x00800000; /* 8 MB for flash */
+	res->base = 0xff000000;
+	/* Some systems (e.g. X230) have 12 MiB flash.
+	   SPI controller supports up to 2 x 16 MiB of flash but
+	   address map limits this to 16MiB.  */
+	res->size = 0x01000000; /* 16 MB for flash */
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 

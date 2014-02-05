@@ -20,7 +20,7 @@
 
 #include <string.h>
 #include <console/console.h>
-#include <usbdebug.h>
+#include <console/usb.h>
 
 static void dbgp_init(void)
 {

@@ -24,7 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 #include "i82801dx.h"
 
 static void usb2_init(struct device *dev)

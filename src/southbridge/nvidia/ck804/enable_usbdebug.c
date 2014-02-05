@@ -26,7 +26,7 @@
 
 #include <stdint.h>
 #include <arch/io.h>
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 #include <device/pci_def.h>
 #include "ck804.h"
 

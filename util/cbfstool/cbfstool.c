@@ -436,7 +436,7 @@ static int cbfs_locate(void)
 	}
 
 	if (param.top_aligned)
-		address = address - ntohl(image.header->romsize);
+		address = address - image.header->romsize;
 
 	cbfs_image_delete(&image);
 	printf("0x%x\n", address);

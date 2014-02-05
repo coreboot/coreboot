@@ -366,6 +366,12 @@ EOF
 				socket_nice="?"
 				;;
 			QEMU_X86)
+				case "$southbridge" in
+				    INTEL_I82371EB)
+					northbridge_nice="Intel® I440FX";;
+				    INTEL_I82801IX)
+					northbridge_nice="Intel® Q35";;
+				esac
 				cpu_nice="QEMU x86";
 				socket_nice="—"
 				;;

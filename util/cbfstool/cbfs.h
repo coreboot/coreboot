@@ -126,6 +126,9 @@ uint32_t get_cbfs_entry_type(const char *name, uint32_t default_value);
 const char *get_cbfs_entry_type_name(uint32_t type);
 uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
 
+/* common.c */
+void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file);
+
 /* elfheaders.c */
 int
 elf_headers(const struct buffer *pinput,

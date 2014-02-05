@@ -246,7 +246,7 @@ EOF
 				cpu_nice="AMD Opteron™ Magny-Cours/Interlagos";
 				socket_nice="Socket C32";;
 			AMD_SOCKET_AM2)
-				cpu_nice="?";
+				cpu_nice="AMD Athlon™ 64 / X2 / FX, Sempron™";
 				socket_nice="Socket AM2"
 				;;
 			AMD_SOCKET_AM3)

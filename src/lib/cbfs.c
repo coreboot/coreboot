@@ -213,7 +213,6 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 }
 #endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
-#if !CONFIG_ALT_CBFS_LOAD_PAYLOAD
 void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_payload *payload;
@@ -226,7 +225,6 @@ void *cbfs_load_payload(struct cbfs_media *media, const char *name)
 		media, name, CBFS_TYPE_PAYLOAD, NULL);
 	return payload;
 }
-#endif
 
 /* Simple buffer */
 

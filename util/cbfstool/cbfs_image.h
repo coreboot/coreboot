@@ -34,6 +34,8 @@ struct cbfs_image {
 /* Given a pointer, serialize the header from host-native byte format
  * to cbfs format, i.e. big-endian. */
 void cbfs_put_header(void *dest, const struct cbfs_header *header);
+/* Or deserialize into host-native format */
+void cbfs_get_header(struct cbfs_header *header, const void *src);
 
 /* Creates an empty CBFS image by given size, and description to its content
  * (bootblock, align, header location, starting offset of CBFS entries.

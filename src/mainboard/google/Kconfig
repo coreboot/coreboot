@@ -18,11 +18,6 @@
 ##
 if VENDOR_GOOGLE
 
-# Auto select common options
-config VENDOR_SPECIFIC_OPTIONS
-	def_bool y
-	select CACHE_ROM
-
 choice
 	prompt "Mainboard model"
 

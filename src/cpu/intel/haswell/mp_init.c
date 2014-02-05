@@ -143,14 +143,6 @@ void release_aps_for_smm_relocation(int do_parallel)
 		printk(BIOS_DEBUG, "Timed out waiting for AP SMM relocation\n");
 }
 
-/* The mtrr code sets up ROM caching on the BSP, but not the others. However,
- * the boot loader payload disables this. In order for Linux not to complain
- * ensure the caching is disabled for the APs before going to sleep. */
-static void cleanup_rom_caching(void)
-{
-	x86_mtrr_disable_rom_caching();
-}
-
 /* By the time APs call ap_init() caching has been setup, and microcode has
  * been loaded. */
 static void asmlinkage ap_init(unsigned int cpu, void *microcode_ptr)
@@ -183,13 +175,6 @@ static void asmlinkage ap_init(unsigned int cpu, void *microcode_ptr)
 
 	/* After SMM relocation a 2nd microcode load is required. */
 	intel_microcode_load_unlocked(microcode_ptr);
-
-	/* The MTRR resources are core scoped. Therefore, there is no need
-	 * to do the same work twice. Additionally, this check keeps the
-	 * ROM cache enabled on the BSP since its hyperthread sibling won't
-	 * call cleanup_rom_caching(). */
-	if ((lapicid() & 1) == 0)
-		cleanup_rom_caching();
 
 	/* FIXME(adurbin): park CPUs properly -- preferably somewhere in a
 	 * reserved part of memory that the OS cannot get to. */

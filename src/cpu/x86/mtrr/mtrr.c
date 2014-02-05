@@ -184,16 +184,6 @@ static struct memranges *get_physical_address_space(void)
 		memranges_add_resources(addr_space, mask, match,
 		                        MTRR_TYPE_WRCOMB);
 
-#if CONFIG_CACHE_ROM
-		/* Add a write-protect region covering the ROM size
-		 * when CONFIG_CACHE_ROM is enabled. The ROM is assumed
-		 * to be located at 4GiB - rom size. */
-		resource_t rom_base = RANGE_TO_PHYS_ADDR(
-			RANGE_4GB - PHYS_TO_RANGE_ADDR(CACHE_ROM_SIZE));
-		memranges_insert(addr_space, rom_base, CACHE_ROM_SIZE,
-		                 MTRR_TYPE_WRPROT);
-#endif
-
 		/* The address space below 4GiB is special. It needs to be
 		 * covered entirly by range entries so that MTRR calculations
 		 * can be properly done for the full 32-bit address space.
@@ -365,61 +355,6 @@ void x86_setup_fixed_mtrrs(void)
 	enable_fixed_mtrr();
 }
 
-/* Keep track of the MTRR that covers the ROM for caching purposes. */
-#if CONFIG_CACHE_ROM
-static long rom_cache_mtrr = -1;
-
-long x86_mtrr_rom_cache_var_index(void)
-{
-	return rom_cache_mtrr;
-}
-
-void x86_mtrr_enable_rom_caching(void)
-{
-	msr_t msr_val;
-	unsigned long index;
-
-	if (rom_cache_mtrr < 0)
-		return;
-
-	index = rom_cache_mtrr;
-	disable_cache();
-	msr_val = rdmsr(MTRRphysBase_MSR(index));
-	msr_val.lo &= ~0xff;
-	msr_val.lo |= MTRR_TYPE_WRPROT;
-	wrmsr(MTRRphysBase_MSR(index), msr_val);
-	enable_cache();
-}
-
-void x86_mtrr_disable_rom_caching(void)
-{
-	msr_t msr_val;
-	unsigned long index;
-
-	if (rom_cache_mtrr < 0)
-		return;
-
-	index = rom_cache_mtrr;
-	disable_cache();
-	msr_val = rdmsr(MTRRphysBase_MSR(index));
-	msr_val.lo &= ~0xff;
-	wrmsr(MTRRphysBase_MSR(index), msr_val);
-	enable_cache();
-}
-
-static void disable_cache_rom(void *unused)
-{
-	x86_mtrr_disable_rom_caching();
-}
-
-BOOT_STATE_INIT_ENTRIES(disable_rom_cache_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_OS_RESUME, BS_ON_ENTRY,
-	                      disable_cache_rom, NULL),
-	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_LOAD, BS_ON_EXIT,
-	                      disable_cache_rom, NULL),
-};
-#endif
-
 struct var_mtrr_state {
 	struct memranges *addr_space;
 	int above4gb;
@@ -466,17 +401,6 @@ static void write_var_mtrr(struct var_mtrr_state *var_state,
 
 	mask = (1ULL << var_state->address_bits) - 1;
 	rsize = rsize & mask;
-
-#if CONFIG_CACHE_ROM
-	/* CONFIG_CACHE_ROM allocates an MTRR specifically for allowing
-	 * one to turn on caching for faster ROM access. However, it is
-	 * left to the MTRR callers to enable it. */
-	if (mtrr_type == MTRR_TYPE_WRPROT) {
-		mtrr_type = MTRR_TYPE_UNCACHEABLE;
-		if (rom_cache_mtrr < 0)
-			rom_cache_mtrr = var_state->mtrr_index;
-	}
-#endif
 
 	printk(BIOS_DEBUG, "MTRR: %d base 0x%016llx mask 0x%016llx type %d\n",
 	       var_state->mtrr_index, rbase, rsize, mtrr_type);

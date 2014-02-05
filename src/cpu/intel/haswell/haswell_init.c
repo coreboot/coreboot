@@ -782,9 +782,6 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 
 	/* After SMM relocation a 2nd microcode load is required. */
 	intel_microcode_load_unlocked(microcode_patch);
-
-	/* Enable ROM caching if option was selected. */
-	x86_mtrr_enable_rom_caching();
 }
 
 static struct device_operations cpu_dev_ops = {

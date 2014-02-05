@@ -52,10 +52,6 @@
  *    of the nature of the global MTRR enable flag. Therefore, all direct
  *    or indirect callers of enable_fixed_mtrr() should ensure that the
  *    variable MTRR MSRs do not contain bad ranges.
- * 3. If CONFIG_CACHE_ROM is selected an MTRR is allocated for enabling
- *    the caching of the ROM. However, it is set to uncacheable (UC). It
- *    is the responsibility of the caller to enable it by calling
- *    x86_mtrr_enable_rom_caching().
  */
 void x86_setup_mtrrs(void);
 /*
@@ -71,24 +67,12 @@ void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);
 int x86_mtrr_check(void);
-/* ROM caching can be used after variable MTRRs are set up. Beware that
- * enabling CONFIG_CACHE_ROM will eat through quite a few MTRRs based on
- * one's IO hole size and WRCOMB resources. Be sure to check the console
- * log when enabling CONFIG_CACHE_ROM or adding WRCOMB resources. Beware that
+/* ROM caching can be used after variable MTRRs are set up. 
+ * Be sure to check the console log when adding WRCOMB resources. Beware that
  * on CPUs with core-scoped MTRR registers such as hyperthreaded CPUs the
  * rom caching will be disabled if all threads run the MTRR code. Therefore,
  * one needs to call x86_mtrr_enable_rom_caching() after all threads of the
  * same core have run the MTRR code. */
-#if CONFIG_CACHE_ROM
-void x86_mtrr_enable_rom_caching(void);
-void x86_mtrr_disable_rom_caching(void);
-/* Return the variable range MTRR index of the ROM cache. */
-long x86_mtrr_rom_cache_var_index(void);
-#else
-static inline void x86_mtrr_enable_rom_caching(void) {}
-static inline void x86_mtrr_disable_rom_caching(void) {}
-static inline long x86_mtrr_rom_cache_var_index(void) { return -1; }
-#endif /* CONFIG_CACHE_ROM */
 
 #endif
 

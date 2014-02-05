@@ -383,9 +383,19 @@ EOF
 					RDC_R8610)
 						cpu_nice="RDC 8610"
 						socket_nice="—";;
-					AMD_AGESA_FAMILY14|AMD_AGESA_FAMILY15_TN|AMD_AGESA_FAMILY15_KB|AMD_AGESA_FAMILY16_KB|AMD_AGESA_FAMILY12)
-						cpu_nice="?"
-						socket_nice="?";;
+					AMD_AGESA_FAMILY15_TN|AMD_AGESA_FAMILY15_KB)
+						cpu_nice="AMD Phenom II / Athlon II / FX"
+						socket_nice="AM3+";;
+
+					AMD_AGESA_FAMILY14)
+						cpu_nice="AMD APU (Bobcat)";
+						socket_nice="FT1 BGA";;
+					AMD_AGESA_FAMILY16_KB)
+						cpu_nice="Kabini / Temash";
+						socket_nice="FT3";;
+					AMD_AGESA_FAMILY12)
+						cpu_nice="AMD APU (Llano)";
+						socket_nice="FM1";;
 					*)
 						cpu_nice="$northbridge"
 						socket_nice="$northbridge";;

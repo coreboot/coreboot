@@ -789,9 +789,6 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 
 	/* Restore the default SMM region. */
 	restore_default_smm_area(smm_save_area);
-
-	/* Enable ROM caching if option was selected. */
-	x86_mtrr_enable_rom_caching();
 }
 
 static struct device_operations cpu_dev_ops = {

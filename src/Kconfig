@@ -47,15 +47,6 @@ config CBFS_PREFIX
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.
 
-config ALT_CBFS_LOAD_PAYLOAD
-	bool "Use alternative cbfs_load_payload() implementation."
-	default n
-	help
-	 Either board or southbridge provide an alternative cbfs_load_payload()
-	 implementation. This may be used, for example, if accessing the ROM
-	 through memory-mapped I/O is slow and a faster alternative can be
-	 provided.
-
 choice
 	prompt "Compiler to use"
 	default COMPILER_GCC

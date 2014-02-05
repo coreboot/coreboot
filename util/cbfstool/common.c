@@ -103,6 +103,15 @@ void buffer_delete(struct buffer *buffer) {
 	buffer->size = 0;
 }
 
+void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file)
+{
+	bgets(buf, &file->magic, sizeof(file->magic));
+	file->len = xdr_be.get32(buf);
+	file->type = xdr_be.get32(buf);
+	file->checksum = xdr_be.get32(buf);
+	file->offset = xdr_be.get32(buf);
+}
+
 static struct {
 	uint32_t arch;
 	const char *name;

@@ -202,6 +202,12 @@ int cbfs_decompress(int algo, void *src, void *dst, int len)
 {
 	switch (algo) {
 		case CBFS_COMPRESS_NONE:
+			/* Reads need to be aligned at 4 bytes to avoid
+			   poor flash performance.  */
+			while (len && ((u32)src & 3)) {
+				*(u8*)dst++ = *(u8*)src++;
+				len--;
+			}
 			memmove(dst, src, len);
 			return len;
 #ifdef CBFS_CORE_WITH_LZMA

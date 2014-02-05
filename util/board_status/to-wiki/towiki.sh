@@ -372,7 +372,7 @@ EOF
 			"")
 				case $northbridge in
 					INTEL_NEHALEM)
-						cpu_nice="Intel® 1st Gen (Haswell) Core i3/i5/i7"
+						cpu_nice="Intel® 1st Gen (Nehalem) Core i3/i5/i7"
 						socket_nice="?";;
 					RDC_R8610)
 						cpu_nice="RDC 8610"

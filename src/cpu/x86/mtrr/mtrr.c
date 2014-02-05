@@ -178,9 +178,8 @@ static struct memranges *get_physical_address_space(void)
 		                        MTRR_TYPE_UNCACHEABLE);
 
 		/* Handle any write combining resources. Only prefetchable
-		 * resources with the IORESOURCE_WRCOMB flag are appropriate
-		 * for this MTRR type. */
-		match = IORESOURCE_PREFETCH | IORESOURCE_WRCOMB;
+		 * resources are appropriate for this MTRR type. */
+		match = IORESOURCE_PREFETCH;
 		mask |= match;
 		memranges_add_resources(addr_space, mask, match,
 		                        MTRR_TYPE_WRCOMB);

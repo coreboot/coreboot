@@ -28,7 +28,10 @@
 #define kBitModelTotal (1 << kNumBitModelTotalBits)
 #define kNumMoveBits 5
 
-#define RC_READ_BYTE (*Buffer++)
+/* Use 32-bit reads whenever possible to avoid bad flash performance.  */
+#define RC_READ_BYTE (look_ahead_ptr < 4 ? look_ahead.raw[look_ahead_ptr++] \
+		      : ((((UInt32) Buffer & 3) || ((unsigned long long) (BufferLim - Buffer) < 4)) ? (*Buffer++) \
+	   : ((look_ahead.dw = *(UInt32 *)Buffer), (Buffer += 4), (look_ahead_ptr = 1), look_ahead.raw[0])))
 
 #define RC_INIT2 Code = 0; Range = 0xFFFFFFFF; \
   { int i; for(i = 0; i < 5; i++) { RC_TEST; Code = (Code << 8) | RC_READ_BYTE; }}
@@ -149,6 +152,12 @@ int LzmaDecode(CLzmaDecoderState *vs,
   int len = 0;
   const Byte *Buffer;
   const Byte *BufferLim;
+  int look_ahead_ptr = 4;
+  union
+  {
+	  Byte raw[4];
+	  UInt32 dw;
+  } look_ahead;
   UInt32 Range;
   UInt32 Code;
 

@@ -154,18 +154,21 @@ static inline int range_entry_mtrr_type(struct range_entry *r)
 	return range_entry_tag(r) & MTRR_TAG_MASK;
 }
 
-static struct memranges *get_physical_address_space(void)
+static struct memranges *get_physical_address_space(int skip_wrcomb)
 {
 	static struct memranges *addr_space;
 	static struct memranges addr_space_storage;
+	static int saved_skip_wrcomb = 0;
 
 	/* In order to handle some chipsets not being able to pre-determine
 	 *  uncacheable ranges, such as graphics memory, at resource insertion
 	 * time remove uncacheable regions from the cacheable ones. */
-	if (addr_space == NULL) {
+	if (addr_space == NULL || skip_wrcomb != saved_skip_wrcomb) {
 		struct range_entry *r;
 		unsigned long mask;
 		unsigned long match;
+
+		saved_skip_wrcomb = skip_wrcomb;
 
 		addr_space = &addr_space_storage;
 
@@ -180,10 +183,12 @@ static struct memranges *get_physical_address_space(void)
 		/* Handle any write combining resources. Only prefetchable
 		 * resources with the IORESOURCE_WRCOMB flag are appropriate
 		 * for this MTRR type. */
-		match = IORESOURCE_PREFETCH | IORESOURCE_WRCOMB;
-		mask |= match;
-		memranges_add_resources(addr_space, mask, match,
-		                        MTRR_TYPE_WRCOMB);
+		if (!skip_wrcomb) {
+			match = IORESOURCE_PREFETCH | IORESOURCE_WRCOMB;
+			mask |= match;
+			memranges_add_resources(addr_space, mask, match,
+						MTRR_TYPE_WRCOMB);
+		}
 
 		/* The address space below 4GiB is special. It needs to be
 		 * covered entirly by range entries so that MTRR calculations
@@ -244,7 +249,7 @@ static void calc_fixed_mtrrs(void)
 	if (fixed_mtrr_types_initialized)
 		return;
 
-	phys_addr_space = get_physical_address_space();
+	phys_addr_space = get_physical_address_space(0);
 
 	/* Set all fixed ranges to uncacheable first. */
 	memset(&fixed_mtrr_types[0], MTRR_TYPE_UNCACHEABLE, NUM_FIXED_RANGES);
@@ -586,7 +591,7 @@ static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
 }
 
 static int calc_var_mtrrs(struct memranges *addr_space,
-                          int above4gb, int address_bits)
+                          int above4gb, int address_bits, int *need_mtrr)
 {
 	int wb_deftype_count;
 	int uc_deftype_count;
@@ -668,9 +673,11 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 
 	if (wb_deftype_count < uc_deftype_count) {
 		printk(BIOS_DEBUG, "MTRR: WB selected as default type.\n");
+		*need_mtrr = wb_deftype_count;
 		return MTRR_TYPE_WRBACK;
 	}
 	printk(BIOS_DEBUG, "MTRR: UC selected as default type.\n");
+	*need_mtrr = uc_deftype_count;
 	return MTRR_TYPE_UNCACHEABLE;
 }
 
@@ -708,15 +715,28 @@ static void commit_var_mtrrs(struct memranges *addr_space, int def_type,
 void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 {
 	static int mtrr_default_type = -1;
+	static int skip_wrcomb = 0;
 	struct memranges *addr_space;
 
-	addr_space = get_physical_address_space();
+	addr_space = get_physical_address_space(skip_wrcomb);
 
 	if (mtrr_default_type == -1) {
+		int need_mtrr = 0;
 		if (above4gb == 2)
 			detect_var_mtrrs();
 		mtrr_default_type =
-			calc_var_mtrrs(addr_space, !!above4gb, address_bits);
+			calc_var_mtrrs(addr_space, !!above4gb, address_bits,
+				&need_mtrr);
+		/* Not enough MTRRs, make WRCOMB into UC.  */
+		if (need_mtrr > bios_mtrrs) {
+			printk(BIOS_ERR, "not enough MTRRs, degrading WRCOMB"
+			       " to UC\n");
+			skip_wrcomb = 1;
+			addr_space = get_physical_address_space(1);
+			mtrr_default_type =
+				calc_var_mtrrs(addr_space, !!above4gb,
+					       address_bits, &need_mtrr);
+		}	
 	}
 
 	disable_cache();

@@ -63,7 +63,7 @@ static void pch_enable_lpc(void)
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 
 	pci_write_config32(PCH_LPC_DEV, 0xd0, 0x0);
-	pci_write_config32(PCH_LPC_DEV, 0xdc, 0x0);
+	pci_write_config32(PCH_LPC_DEV, 0xdc, 0x8);
 
 	pci_write_config8(PCH_LPC_DEV, GEN_PMCON_3,
 			  (pci_read_config8(PCH_LPC_DEV, GEN_PMCON_3) & ~2) | 1);

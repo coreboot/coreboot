@@ -32,7 +32,6 @@ config SOUTH_BRIDGE_OPTIONS # dummy
 	select PCIEXP_ASPM
 	select PCIEXP_COMMON_CLOCK
 	select SPI_FLASH
-	select ALT_CBFS_LOAD_PAYLOAD
 
 config INTEL_LYNXPOINT_LP
 	bool

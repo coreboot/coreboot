@@ -666,10 +666,9 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 
 static void gma_read_resources(struct device *dev)
 {
-	pci_dev_read_resources(dev);
-
-#if CONFIG_MARK_GRAPHICS_MEM_WRCOMB
 	struct resource *res;
+
+	pci_dev_read_resources(dev);
 
 	/* Set the graphics memory to write combining. */
 	res = find_resource(dev, PCI_BASE_ADDRESS_2);
@@ -678,7 +677,6 @@ static void gma_read_resources(struct device *dev)
 		return;
 	}
 	res->flags |= IORESOURCE_WRCOMB;
-#endif
 }
 
 static struct pci_operations gma_pci_ops = {

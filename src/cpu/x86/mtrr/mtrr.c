@@ -181,10 +181,9 @@ static struct memranges *get_physical_address_space(int skip_wrcomb)
 		                        MTRR_TYPE_UNCACHEABLE);
 
 		/* Handle any write combining resources. Only prefetchable
-		 * resources with the IORESOURCE_WRCOMB flag are appropriate
-		 * for this MTRR type. */
+		 * resources are appropriate for this MTRR type. */
 		if (!skip_wrcomb) {
-			match = IORESOURCE_PREFETCH | IORESOURCE_WRCOMB;
+			match = IORESOURCE_PREFETCH;
 			mask |= match;
 			memranges_add_resources(addr_space, mask, match,
 						MTRR_TYPE_WRCOMB);
@@ -736,7 +735,7 @@ void x86_setup_var_mtrrs(unsigned int address_bits, unsigned int above4gb)
 			mtrr_default_type =
 				calc_var_mtrrs(addr_space, !!above4gb,
 					       address_bits, &need_mtrr);
-		}	
+		}
 	}
 
 	disable_cache();

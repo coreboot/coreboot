@@ -204,6 +204,19 @@ static void merge_add_memranges(struct memranges *ranges,
 	merge_neighbor_entries(ranges);
 }
 
+void memranges_update_tag(struct memranges *ranges, unsigned long old_tag,
+                          unsigned long new_tag)
+{
+	struct range_entry *r;
+
+	memranges_each_entry(r, ranges) {
+		if (range_entry_tag(r) == old_tag)
+			range_entry_update_tag(r, new_tag);
+	}
+
+	merge_neighbor_entries(ranges);
+}
+
 typedef void (*range_action_t)(struct memranges *ranges,
                                resource_t begin, resource_t end,
                                unsigned long tag);

@@ -661,8 +661,9 @@ static void calc_var_mtrrs_without_hole(struct var_mtrr_state *var_state,
 	calc_var_mtrr_range(var_state, c1, c2 - c1, mtrr_type);
 }
 
-static int calc_var_mtrrs(struct memranges *addr_space,
-                          int above4gb, int address_bits)
+static void __calc_var_mtrrs(struct memranges *addr_space,
+                             int above4gb, int address_bits,
+                             int *num_def_wb_mtrrs, int *num_def_uc_mtrrs)
 {
 	int wb_deftype_count;
 	int uc_deftype_count;
@@ -737,6 +738,28 @@ static int calc_var_mtrrs(struct memranges *addr_space,
 			calc_var_mtrrs_without_hole(&var_state, r);
 			wb_deftype_count += var_state.mtrr_index;
 		}
+	}
+	*num_def_wb_mtrrs = wb_deftype_count;
+	*num_def_uc_mtrrs = uc_deftype_count;
+}
+
+static int calc_var_mtrrs(struct memranges *addr_space,
+                          int above4gb, int address_bits)
+{
+	int wb_deftype_count = 0;
+	int uc_deftype_count = 0;
+
+	__calc_var_mtrrs(addr_space, above4gb, address_bits, &wb_deftype_count,
+	                 &uc_deftype_count);
+
+	if (wb_deftype_count > bios_mtrrs && uc_deftype_count > bios_mtrrs) {
+		printk(BIOS_DEBUG, "MTRR: Removing WRCOMB type. "
+		       "WB/UC MTRR counts: %d/%d > %d.\n",
+		       wb_deftype_count, uc_deftype_count, bios_mtrrs);
+		memranges_update_tag(addr_space, MTRR_TYPE_WRCOMB,
+		                     MTRR_TYPE_UNCACHEABLE);
+		__calc_var_mtrrs(addr_space, above4gb, address_bits,
+		                 &wb_deftype_count, &uc_deftype_count);
 	}
 
 	printk(BIOS_DEBUG, "MTRR: default type WB/UC MTRR counts: %d/%d.\n",

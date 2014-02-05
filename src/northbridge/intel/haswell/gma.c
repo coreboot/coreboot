@@ -429,27 +429,12 @@ static void gma_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 	}
 }
 
-static void gma_read_resources(struct device *dev)
-{
-	struct resource *res;
-
-	pci_dev_read_resources(dev);
-
-	/* Set the graphics memory to write combining. */
-	res = find_resource(dev, PCI_BASE_ADDRESS_2);
-	if (res == NULL) {
-		printk(BIOS_DEBUG, "gma: memory resource not found.\n");
-		return;
-	}
-	res->flags |= IORESOURCE_WRCOMB;
-}
-
 static struct pci_operations gma_pci_ops = {
 	.set_subsystem    = gma_set_subsystem,
 };
 
 static struct device_operations gma_func0_ops = {
-	.read_resources		= gma_read_resources,
+	.read_resources		= pci_dev_read_resources,
 	.set_resources		= pci_dev_set_resources,
 	.enable_resources	= pci_dev_enable_resources,
 	.init			= gma_func0_init,

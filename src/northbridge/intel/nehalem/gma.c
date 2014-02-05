@@ -703,7 +703,6 @@ static void gma_read_resources(struct device *dev)
 			   0xd0000001);
 	pci_write_config32(dev, PCI_BASE_ADDRESS_2 + 4,
 			   0);
-	res->flags |= IORESOURCE_WRCOMB;
 	res->base = (resource_t) 0xd0000000;
 	res->size = (resource_t) 0x10000000;
 }

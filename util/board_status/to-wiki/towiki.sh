@@ -216,7 +216,7 @@ EOF
 		northbridge="$(sed -n "/^[[:space:]]*select NORTHBRIDGE_/ s,^[[:space:]]*select NORTHBRIDGE_,,p" "$vendor_board_dir/Kconfig")"
 		northbridge_nice="$(echo "$northbridge"|sed 's,AMD_AGESA_FAMILY\([0-9a-fA-F]*\)\(.*\),AMD Family \1h\2 (AGESA),g;s,AMD_FAMILY\([0-9a-fA-F]*\),AMD Family \1h,g;s,AMD_AMDFAM\([0-9a-fA-F]*\),AMD Family \1h,g;s,_, ,g;s,INTEL,Intel®,g;')"
 
-		southbridge="$(sed -n "/[[:space:]]*select SOUTHBRIDGE_/ s,[[:space:]]*select SOUTHBRIDGE_,,p" "$vendor_board_dir/Kconfig"|grep -v SKIP_ISA_DMA_INIT)"
+		southbridge="$(sed -n "/[[:space:]]*select SOUTHBRIDGE_/ s,[[:space:]]*select SOUTHBRIDGE_\([^ ]*\).*$,\1,p" "$vendor_board_dir/Kconfig"|grep -v SKIP_ISA_DMA_INIT)"
 		southbridge_nice="$(echo "$southbridge"|sed 's,_, ,g;s,INTEL,Intel®,g')"
 		superio="$(sed -n "/[[:space:]]*select SUPERIO_/ s,[[:space:]]*select SUPERIO_,,p" "$vendor_board_dir/Kconfig")"
 		superio_nice="$(echo "$superio"|sed 's,_, ,g;s,WINBOND,Winbond™,g;s,ITE,ITE™,g;s,SMSC,SMSC®,g')"

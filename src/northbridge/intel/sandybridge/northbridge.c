@@ -476,8 +476,6 @@ static const struct pci_driver mc_driver_1 __pci_driver = {
 static void cpu_bus_init(device_t dev)
 {
 	initialize_cpus(dev->link_list);
-	/* Enable ROM caching if option was selected. */
-	x86_mtrr_enable_rom_caching();
 }
 
 static void cpu_bus_noop(device_t dev)

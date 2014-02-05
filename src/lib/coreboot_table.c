@@ -235,24 +235,6 @@ static inline void lb_vboot_handoff(struct lb_header *header) {}
 #endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
 #endif /* CONFIG_CHROMEOS */
 
-static void lb_x86_rom_cache(struct lb_header *header)
-{
-#if CONFIG_ARCH_X86
-	long mtrr_index;
-	struct lb_x86_rom_mtrr *lb_x86_rom_mtrr;
-
-	mtrr_index = x86_mtrr_rom_cache_var_index();
-
-	if (mtrr_index < 0)
-		return;
-
-	lb_x86_rom_mtrr = (struct lb_x86_rom_mtrr *)lb_new_record(header);
-	lb_x86_rom_mtrr->tag = LB_TAG_X86_ROM_MTRR;
-	lb_x86_rom_mtrr->size = sizeof(struct lb_x86_rom_mtrr);
-	lb_x86_rom_mtrr->index = mtrr_index;
-#endif
-}
-
 static void add_cbmem_pointers(struct lb_header *header)
 {
 	/*
@@ -529,8 +511,6 @@ unsigned long write_coreboot_table(
 	lb_strings(head);
 	/* Record our framebuffer */
 	lb_framebuffer(head);
-	/* Communicate x86 variable MTRR ROM cache information. */
-	lb_x86_rom_cache(head);
 
 #if CONFIG_CHROMEOS
 	/* Record our GPIO settings (ChromeOS specific) */

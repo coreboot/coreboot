@@ -87,13 +87,9 @@ config CBFS_SIZE
 config ENABLE_FAST_BOOT
 	bool "Enable Fast Boot"
 	default y if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_BD82X6X
-	depends on !CACHE_ROM
 	help
 	  Enabling this feature will cause MRC data to be cached in NV storage
 	  which will speed up boot time on future reboots and/or power cycles.
-
-	  WARNING: This feature combined with the CACHE_ROM may result in undefined
-	  behavior.
 
 config MRC_CACHE_SIZE
 	hex "MRC Data Cache Size"

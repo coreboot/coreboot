@@ -24,7 +24,7 @@
 #include <device/smbus.h>	/* smbus_bus_operations */
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>	/* printk */
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 #include "lpc.h"		/* lpc_read_resources */
 #include "SbPlatform.h" 	/* Platfrom Specific Definitions */
 #include "chip.h" 		/* struct southbridge_amd_cimx_sb900_config */

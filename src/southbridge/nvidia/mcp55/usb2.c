@@ -27,7 +27,7 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include "mcp55.h"
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 
 static void usb2_init(struct device *dev)
 {

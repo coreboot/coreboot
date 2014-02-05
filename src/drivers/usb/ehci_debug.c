@@ -20,6 +20,8 @@
 
 #include <stddef.h>
 #include <console/console.h>
+#include <console/usb.h>
+#include <device/pci_ehci.h>
 #include <arch/io.h>
 #include <device/pci.h>
 #include <device/pci_def.h>
@@ -28,9 +30,8 @@
 #include <string.h>
 #include <cbmem.h>
 
-#include <usb_ch9.h>
-#include <ehci.h>
-#include <usbdebug.h>
+#include "usb_ch9.h"
+#include "ehci.h"
 
 
 #define DBGP_EP_VALID		(1<<0)

@@ -3,7 +3,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 #include "i82801ex.h"
 
 static void ehci_init(struct device *dev)

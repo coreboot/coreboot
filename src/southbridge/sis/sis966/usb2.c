@@ -30,7 +30,7 @@
 #include <device/pci_ops.h>
 #include <arch/io.h>
 #include "sis966.h"
-#include <usbdebug.h>
+#include <device/pci_ehci.h>
 
 static const u8 SiS_SiS7002_init[22][3]={
 	{0x04, 0x00, 0x06},

@@ -25,6 +25,15 @@
 #include <stdint.h>
 #include "common.h"
 
+int bgets(struct buffer *input, void *output, size_t len)
+{
+	len = input->size < len ? input->size : len;
+	memmove(output, input->data, len);
+	input->data += len;
+	input->size -= len;
+	return len;
+}
+
 /* The assumption in all this code is that we're given a pointer to enough data.
  * Hence, we do not check for underflow.
  */

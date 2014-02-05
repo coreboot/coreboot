@@ -132,7 +132,7 @@ int find_master_header(void *romarea, size_t size);
 void recalculate_rom_geometry(void *romarea);
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size);
 const char *strfiletype(uint32_t number);
-
+void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file);
 /* elfheaders.c */
 int
 elf_headers(const struct buffer *pinput,

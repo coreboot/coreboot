@@ -143,5 +143,6 @@ struct xdr {
 
 /* xdr.c */
 extern struct xdr xdr_le, xdr_be;
+int bgets(struct buffer *input, void *output, size_t len);
 
 #endif

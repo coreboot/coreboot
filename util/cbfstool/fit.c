@@ -188,17 +188,28 @@ static void add_microcodde_entries(struct cbfs_image *image,
 	}
 }
 
+static int fit_header(void *ptr, uint32_t *current_offset, uint32_t *file_length)
+{
+	struct buffer buf;
+	struct cbfs_file header;
+	buf.data = ptr;
+	buf.size = sizeof(header);
+	cbfs_file_get_header(&buf, &header);
+	*current_offset = header.offset;
+	*file_length = header.len;
+	return 0;
+}
+
 static int parse_microcode_blob(struct cbfs_image *image,
                                 struct cbfs_file *mcode_file,
                                 struct microcode_entry *mcus, int *total_mcus)
 {
 	int num_mcus;
-	int current_offset;
-	int file_length;
+	uint32_t current_offset;
+	uint32_t file_length;
 
 	current_offset = (int)((char *)mcode_file - image->buffer.data);
-	current_offset += ntohl(mcode_file->offset);
-	file_length = ntohl(mcode_file->len);
+	fit_header(mcode_file, &current_offset, &file_length);
 
 	num_mcus = 0;
 	while (file_length > sizeof(struct microcode_header))

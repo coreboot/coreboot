@@ -283,6 +283,15 @@ int cbfs_file_header(unsigned long physaddr)
 	return (strncmp(phys_to_virt(physaddr), "LARCHIVE", 8) == 0);
 }
 
+void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file)
+{
+	bgets(buf, &file->magic, sizeof(file->magic));
+	file->len = xdr_be.get32(buf);
+	file->type = xdr_be.get32(buf);
+	file->checksum = xdr_be.get32(buf);
+	file->offset = xdr_be.get32(buf);
+}
+
 struct cbfs_file *cbfs_create_empty_file(uint32_t physaddr, uint32_t size)
 {
 	struct cbfs_file *nextfile = (struct cbfs_file *)phys_to_virt(physaddr);

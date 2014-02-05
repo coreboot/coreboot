@@ -110,6 +110,10 @@ void memranges_create_hole(struct memranges *ranges,
 void memranges_insert(struct memranges *ranges,
                       resource_t base, resource_t size, unsigned long tag);
 
+/* Update all entries with old_tag to new_tag. */
+void memranges_update_tag(struct memranges *ranges, unsigned long old_tag,
+                          unsigned long new_tag);
+
 /* Returns next entry after the provided entry. NULL if r is last. */
 struct range_entry *memranges_next_entry(struct memranges *ranges,
                                          const struct range_entry *r);

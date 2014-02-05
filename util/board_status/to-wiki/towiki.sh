@@ -218,7 +218,7 @@ EOF
 
 		southbridge="$(sed -n "/[[:space:]]*select SOUTHBRIDGE_/ s,[[:space:]]*select SOUTHBRIDGE_\([^ ]*\).*$,\1,p" "$vendor_board_dir/Kconfig"|grep -v SKIP_ISA_DMA_INIT)"
 		southbridge_nice="$(echo "$southbridge"|sed 's,_, ,g;s,INTEL,Intel®,g')"
-		superio="$(sed -n "/[[:space:]]*select SUPERIO_/ s,[[:space:]]*select SUPERIO_,,p" "$vendor_board_dir/Kconfig")"
+		superio="$(sed -n "/[[:space:]]*select SUPERIO_/ s,[[:space:]]*select SUPERIO_,,p" "$vendor_board_dir/Kconfig"|grep -v OVERRIDE_FANCTL)"
 		superio_nice="$(echo "$superio"|sed 's,_, ,g;s,WINBOND,Winbond™,g;s,ITE,ITE™,g;s,SMSC,SMSC®,g')"
 		cpu="$(sed -n "/	select CPU_/ s,	select CPU_,,p" "$vendor_board_dir/Kconfig"|grep -v "AMD_AGESA_FAMILY")"
 		case "$cpu" in

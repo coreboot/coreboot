@@ -43,6 +43,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include <spd.h>
+#include <timestamp.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 #define WATCHDOG_DEV PNP_DEV(0x2e, IT8712F_GPIO)
@@ -135,6 +136,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	printk(BIOS_INFO, "now booting... \n");
 
+	timestamp_init(get_initial_timestamp());
+	timestamp_add_now(TS_START_ROMSTAGE);
+
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
@@ -187,4 +191,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_smbus();
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 	post_cache_as_ram();
+
+	timestamp_add_now(TS_END_ROMSTAGE);
 }

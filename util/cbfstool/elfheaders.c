@@ -610,6 +610,7 @@ elf_headers(const struct buffer *pinput,
 
 	// The tool may work in architecture-independent way.
 	if (arch != CBFS_ARCHITECTURE_UNKNOWN &&
+	    !((ehdr->e_machine == EM_AARCH64) && (arch == CBFS_ARCHITECTURE_AARCH64)) &&
 	    !((ehdr->e_machine == EM_ARM) && (arch == CBFS_ARCHITECTURE_ARM)) &&
 	    !((ehdr->e_machine == EM_RISCV) && (arch == CBFS_ARCHITECTURE_RISCV)) &&
 	    !((ehdr->e_machine == EM_386) && (arch == CBFS_ARCHITECTURE_X86))) {

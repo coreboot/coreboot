@@ -85,9 +85,9 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 	if (stage == NULL)
 		return (void *) -1;
 
-	LOG("loading stage %s @ 0x%x (%d bytes), entry @ 0x%llx\n",
+	LOG("loading stage %s @ 0x%llx (%d bytes), entry @ 0x%llx\n",
 			name,
-			(uint32_t) stage->load, stage->memlen,
+			stage->load, stage->memlen,
 			stage->entry);
 
 	final_size = cbfs_decompress(stage->compression,

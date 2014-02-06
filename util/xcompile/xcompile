@@ -161,6 +161,10 @@ TCLIST_x86="i386 x86_64"
 TWIDTH_x86="32"
 XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
 
+if [ ! -d "$XGCCPATH" ]; then
+	printf "Warning: crossgcc seems to not have been built: can't find ${XGCCPATH}\n" >&2
+fi
+
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURE; do
 	GCCPREFIX="invalid"

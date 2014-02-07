@@ -21,15 +21,13 @@
 #include <stddef.h>
 #include <console/console.h>
 #include <console/usb.h>
-#include <device/pci_ehci.h>
 #include <arch/io.h>
-#include <device/pci.h>
-#include <device/pci_def.h>
 #include <arch/byteorder.h>
 #include <arch/early_variables.h>
 #include <string.h>
 #include <cbmem.h>
 
+#include "ehci_debug.h"
 #include "usb_ch9.h"
 #include "ehci.h"
 
@@ -107,8 +105,6 @@ static int dbgp_enabled(void);
 #define USB_PID_DATA_TOGGLE	0x88
 #define DBGP_CLAIM (DBGP_OWNER | DBGP_ENABLED | DBGP_INUSE)
 
-#define PCI_CAP_ID_EHCI_DEBUG	0xa
-
 #define HUB_ROOT_RESET_TIME	50	/* times are in msec */
 #define HUB_SHORT_RESET_TIME	10
 #define HUB_LONG_RESET_TIME	200
@@ -119,10 +115,6 @@ static int dbgp_enabled(void);
 #define DBGP_MAX_PACKET		8
 
 static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
-#if !defined(__PRE_RAM__) && !defined(__SMM__)
-static struct device_operations *ehci_drv_ops;
-static struct device_operations ehci_dbg_ops;
-#endif
 
 static inline struct ehci_debug_info *dbgp_ehci_info(void)
 {
@@ -580,19 +572,6 @@ err:
 }
 #endif /* CONFIG_USBDEBUG_OPTIONAL_HUB_PORT */
 
-static void enable_usbdebug(void)
-{
-#if defined(__PRE_RAM__) || !CONFIG_USBDEBUG_IN_ROMSTAGE
-	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
-	pci_ehci_dbg_enable(dbg_dev, CONFIG_EHCI_BAR);
-#endif
-}
-
-static void set_debug_port(unsigned int port)
-{
-	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
-	pci_ehci_dbg_set_port(dbg_dev, port);
-}
 
 static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_info *info)
 {
@@ -617,9 +596,9 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 	memset(&info->ep_pipe, 0, sizeof (info->ep_pipe));
 
 	if (CONFIG_USBDEBUG_DEFAULT_PORT > 0)
-		set_debug_port(CONFIG_USBDEBUG_DEFAULT_PORT);
+		ehci_debug_select_port(CONFIG_USBDEBUG_DEFAULT_PORT);
 	else
-		set_debug_port(1);
+		ehci_debug_select_port(1);
 
 try_next_time:
 	port_map_tried = 0;
@@ -640,7 +619,7 @@ try_next_port:
 
 	if(port_map_tried && (new_debug_port != debug_port)) {
 		if(--playtimes) {
-			set_debug_port(debug_port);
+			ehci_debug_select_port(debug_port);
 			goto try_next_time;
 		}
 		return -1;
@@ -847,11 +826,11 @@ next_debug_port:
 	port_map_tried |= (1 << (debug_port - 1));
 	new_debug_port = ((debug_port-1 + 1) % n_ports) + 1;
 	if (port_map_tried != ((1 << n_ports) - 1)) {
-		set_debug_port(new_debug_port);
+		ehci_debug_select_port(new_debug_port);
 		goto try_next_port;
 	}
 	if (--playtimes) {
-		set_debug_port(new_debug_port);
+		ehci_debug_select_port(new_debug_port);
 		goto try_next_time;
 	}
 #else
@@ -930,7 +909,7 @@ unsigned char usbdebug_rx_byte(struct dbgp_pipe *pipe)
 }
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
-static void usbdebug_re_enable(unsigned ehci_base)
+void usbdebug_re_enable(unsigned ehci_base)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	unsigned diff;
@@ -948,7 +927,7 @@ static void usbdebug_re_enable(unsigned ehci_base)
 		dbg_info->ep_pipe[i].status |= DBGP_EP_ENABLED;
 }
 
-static void usbdebug_disable(void)
+void usbdebug_disable(void)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
 	int i;
@@ -956,40 +935,6 @@ static void usbdebug_disable(void)
 		dbg_info->ep_pipe[i].status &= ~DBGP_EP_ENABLED;
 }
 
-static void pci_ehci_set_resources(struct device *dev)
-{
-	struct resource *res;
-
-	printk(BIOS_DEBUG, "%s EHCI Debug Port hook triggered\n", dev_path(dev));
-	usbdebug_disable();
-
-	if (ehci_drv_ops->set_resources)
-		ehci_drv_ops->set_resources(dev);
-	res = find_resource(dev, EHCI_BAR_INDEX);
-	if (!res)
-		return;
-
-	usbdebug_re_enable((u32)res->base);
-	report_resource_stored(dev, res, "");
-	printk(BIOS_DEBUG, "%s EHCI Debug Port relocated\n", dev_path(dev));
-}
-
-void pci_ehci_read_resources(struct device *dev)
-{
-	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
-
-	if (!ehci_drv_ops && pci_match_simple_dev(dev, dbg_dev)) {
-		memcpy(&ehci_dbg_ops, dev->ops, sizeof(ehci_dbg_ops));
-		ehci_drv_ops = dev->ops;
-		ehci_dbg_ops.set_resources = pci_ehci_set_resources;
-		dev->ops = &ehci_dbg_ops;
-		printk(BIOS_DEBUG, "%s EHCI BAR hook registered\n", dev_path(dev));
-	} else {
-		printk(BIOS_DEBUG, "More than one caller of %s from %s\n", __func__, dev_path(dev));
-	}
-
-	pci_dev_read_resources(dev);
-}
 #endif
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
@@ -1022,17 +967,6 @@ static void migrate_ehci_debug(void)
 CAR_MIGRATE(migrate_ehci_debug);
 #endif
 
-unsigned long pci_ehci_base_regs(pci_devfn_t sdev)
-{
-#ifdef __SIMPLE_DEVICE__
-	unsigned long base = pci_read_config32(sdev, EHCI_BAR_INDEX) & ~0x0f;
-#else
-	device_t dev = dev_find_slot(PCI_DEV2SEGBUS(sdev), PCI_DEV2DEVFN(sdev));
-	unsigned long base = pci_read_config32(dev, EHCI_BAR_INDEX) & ~0x0f;
-#endif
-	return base + HC_LENGTH(read32(base));
-}
-
 int dbgp_ep_is_active(struct dbgp_pipe *pipe)
 {
 	return (pipe->status & DBGP_EP_STATMASK) == (DBGP_EP_VALID | DBGP_EP_ENABLED);
@@ -1056,6 +990,6 @@ int usbdebug_init(void)
 	if (!get_usbdebug_from_cbmem(dbg_info))
 		return 0;
 #endif
-	enable_usbdebug();
+	ehci_debug_hw_enable();
 	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
 }

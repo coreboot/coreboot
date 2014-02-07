@@ -181,6 +181,7 @@
 #define  PCI_CAP_ID_CHSWP	0x06	/* CompactPCI HotSwap */
 #define  PCI_CAP_ID_PCIX	0x07	/* PCIX  */
 #define  PCI_CAP_ID_HT          0x08	/* Hypertransport */
+#define  PCI_CAP_ID_EHCI_DEBUG	0x0A	/* EHCI debug port */
 #define  PCI_CAP_ID_SHPC 	0x0C	/* PCI Standard Hot-Plug Controller */
 #define  PCI_CAP_ID_PCIE	0x10	/* PCI Express */
 #define  PCI_CAP_ID_MSIX	0x11	/* MSI-X */

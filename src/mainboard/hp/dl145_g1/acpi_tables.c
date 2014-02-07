@@ -21,6 +21,7 @@
 #include <cpu/amd/amdk8_sysconf.h>
 #include "northbridge/amd/amdk8/acpi.h"
 #include "mb_sysconf.h"
+#include <cpu/amd/model_fxx_powernow.h>
 
 #define DUMP_ACPI_TABLES 0
 
@@ -163,6 +164,10 @@ unsigned long acpi_fill_madt(unsigned long current)
 
 unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id) {
 	k8acpi_write_vars();
+#if CONFIG_SET_FIDVID
+	amd_model_fxx_generate_powernow(pm_base+0x10, 6, 1);
+	acpigen_write_mainboard_resources("\\_SB.PCI0.MBRS", "_CRS");
+#endif
 	return (unsigned long) (acpigen_get_current());
 }
 

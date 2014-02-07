@@ -249,6 +249,8 @@ config HAVE_ARCH_MEMMOVE
 	bool
 	default n
 
+source src/vendorcode/Kconfig
+
 menu "Chipset"
 
 comment "CPU"
@@ -1108,5 +1110,3 @@ config POWER_BUTTON_IS_OPTIONAL
 	default n if !(POWER_BUTTON_DEFAULT_ENABLE || POWER_BUTTON_DEFAULT_DISABLE)
 	help
 	  Internal option that controls ENABLE_POWER_BUTTON visibility.
-
-source src/vendorcode/Kconfig

@@ -712,7 +712,7 @@ Device(SIO) {
 				IRQNoFlags (IRQX) {}
 			})
 			CreateWordField (Arg0, IO0._MIN, IOA0)
-			CreateByteField (Arg0, IRQX._INT, IRQL)
+			CreateWordField (Arg0, IRQX._INT, IRQL)
 
 			Divide(IOA0, 256, Local0, Local1)
 
@@ -1153,7 +1153,7 @@ Device(SIO) {
 			})
 			CreateWordField (Arg0, IO0._MIN, IOA0)
 			CreateWordField (Arg0, IO1._MIN, IOA1)
-			CreateByteField (Arg0, IRQX._INT, IRQL)
+			CreateWordField (Arg0, IRQX._INT, IRQL)
 
 			Divide(IOA0, 256, Local0, Local1)
 			Divide(IOA1, 256, Local2, Local3)
@@ -1235,7 +1235,7 @@ Device(SIO) {
 			Name (TMPL, ResourceTemplate () {
 				IRQNoFlags (IRQX) {}
 			})
-			CreateByteField (Arg0, IRQX._INT, IRQL)
+			CreateWordField (Arg0, IRQX._INT, IRQL)
 
 			Subtract(FindSetLeftBit (IRQL), 1, Local0)
 

@@ -1,3 +1,5 @@
+AGESA_INC = -Isrc/vendorcode/amd/agesa
+
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY10) += f10
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY12) += f12
 subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY14) += f14

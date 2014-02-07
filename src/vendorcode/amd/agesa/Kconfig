@@ -1,0 +1,203 @@
+if CPU_AMD_AGESA
+menu "AGESA"
+
+config VENDORCODE_AMD_AGESA_F10
+	def_bool y if CPU_AMD_AGESA_FAMILY10
+
+config VENDORCODE_AMD_AGESA_F12
+	def_bool y if CPU_AMD_AGESA_FAMILY12
+
+config VENDORCODE_AMD_AGESA_F14
+	def_bool y if CPU_AMD_AGESA_FAMILY14
+
+config VENDORCODE_AMD_AGESA_F15
+	def_bool y if CPU_AMD_AGESA_FAMILY15
+
+config VENDORCODE_AMD_AGESA_F15TN
+	def_bool y if CPU_AMD_AGESA_FAMILY15_TN
+
+config VENDORCODE_AMD_AGESA_F16KB
+	def_bool y if CPU_AMD_AGESA_FAMILY16_KB
+
+config VENDORCODE_AMD_AGESA_R12067
+	def_bool y if VENDORCODE_AMD_AGESA_F10
+
+config VENDORCODE_AMD_AGESA_R38300
+	def_bool y if CPU_AMD_AGESA_FAMILY14
+	select VENDORCODE_AMD_AGESA_R12067
+
+config VENDORCODE_AMD_AGESA_R44324
+	def_bool y if VENDORCODE_AMD_AGESA_F12 || VENDORCODE_AMD_AGESA_F15
+	select VENDORCODE_AMD_AGESA_R38300
+
+config VENDORCODE_AMD_AGESA_R63425
+	def_bool y if VENDORCODE_AMD_AGESA_F15TN
+	select VENDORCODE_AMD_AGESA_R44324
+
+config VENDORCODE_AMD_AGESA_R84150
+	def_bool y if VENDORCODE_AMD_AGESA_F16KB
+	select VENDORCODE_AMD_AGESA_R63425
+
+
+config IDSOPT_IDS_ENABLED
+	bool "Integrated Debug Support"
+	default n
+	help
+	  Integrated Debug Support Module is used to debug AGESA events.
+
+config IDSOPT_CONTROL_ENABLED
+	def_bool n
+	depends on IDSOPT_IDS_ENABLED
+	help
+	  This IDS option is dead code in the current coreboot AGESA sources.
+
+	  Support *skip* hooks for IDS options.
+
+config IDSOPT_CONTROL_NV_TO_CMOS
+	def_bool n
+	depends on IDSOPT_IDS_ENABLED && VENDORCODE_AMD_AGESA_R44324
+	help
+	  This IDS option is dead code in the current coreboot AGESA sources.
+
+config IDS_OPT_CMOS_INDEX_PORT
+	hex "IDS NVRAM index I/O port"
+	default 0x70
+	depends on IDSOPT_CONTROL_NV_TO_CMOS
+
+config IDS_OPT_CMOS_DATA_PORT
+	hex "IDS NVRAM data I/O port"
+	default 0x71
+	depends on IDSOPT_CONTROL_NV_TO_CMOS
+
+config IDS_OPT_CMOS_REGION_START
+	hex "IDS NVRAM region start"
+	default 0x20
+	depends on IDSOPT_CONTROL_NV_TO_CMOS
+
+config IDS_OPT_CMOS_REGION_END
+	hex "IDS NVRAM region end"
+	default 0x7f
+	depends on IDSOPT_CONTROL_NV_TO_CMOS
+
+config IDSOPT_TRACING_ENABLED
+	bool "Enable trace messages"
+	default y
+	depends on IDSOPT_IDS_ENABLED
+	help
+	  This option enables trace message output by AGESA at runtime.
+
+config IDSOPT_CUSTOMIZE_TRACING_SERVICE
+	def_bool n
+	depends on IDSOPT_TRACING_ENABLED && VENDORCODE_AMD_AGESA_R63425
+	help
+	  This IDS option is dead code in the current coreboot AGESA sources.
+
+	  The option allows to create custom trace handlers which would
+	  replace the AGESA-internal tracing support.
+
+choice
+	prompt "Output trace messages to"
+	default IDSOPT_TRACING_CONSOLE_SERIALPORT
+	depends on IDSOPT_TRACING_ENABLED && VENDORCODE_AMD_AGESA_R63425
+
+config REDIRECT_IDS_HDT_CONSOLE_TO_SERIAL
+	bool "coreboot console"
+	depends on VENDORCODE_AMD_AGESA_F10 || VENDORCODE_AMD_AGESA_F15
+	help
+	  Output trace messages to the coreboot console.
+
+config IDSOPT_TRACING_CONSOLE_HDTOUT
+	bool "hardware debug tool"
+	depends on VENDORCODE_AMD_AGESA_R63425
+	help
+	  Output trace messages to a Hardware Debug Tool.
+
+config IDSOPT_TRACING_CONSOLE_SERIALPORT
+	bool "serial port"
+	depends on VENDORCODE_AMD_AGESA_R63425
+	help
+	  Output trace messages to a 16550-compatible UART.
+
+config IDSOPT_TRACING_CONSOLE_REDIRECT_IO
+	bool "I/O port"
+	depends on VENDORCODE_AMD_AGESA_R63425
+	help
+	  Output trace messages to a custom I/O port.
+
+endchoice
+
+config IDSOPT_SERIAL_PORT
+	hex "Serial port I/O port"
+	default 0x3f8
+	depends on IDSOPT_TRACING_ENABLED && IDSOPT_TRACING_CONSOLE_SERIALPORT
+
+config IDSOPT_DEBUG_PRINT_IO_PORT
+	hex "I/O port"
+	default 0x80
+	depends on IDSOPT_TRACING_ENABLED && IDSOPT_TRACING_CONSOLE_REDIRECT_IO
+
+config IDSOPT_C_OPTIMIZATION_DISABLED
+	def_bool n if IDSOPT_TRACING_ENABLED
+	def_bool y if !IDSOPT_TRACING_ENABLED
+	depends on IDSOPT_TRACING_ENABLED && VENDORCODE_AMD_AGESA_F14
+	help
+	  Disable printk(BIOS_DEBUG) for IDS_HDT_CONSOLE messages.
+
+config IDSOPT_PERF_ANALYSIS
+	def_bool n
+	depends on IDSOPT_IDS_ENABLED
+	help
+	  This IDS option is dead code in the current coreboot AGESA sources.
+
+	  The option enables collection and analysis of performance timestamps.
+
+config IDSOPT_ERROR_TRAP_ENABLED
+	bool "Trap Error events with stop code display"
+	default n
+	depends on IDSOPT_IDS_ENABLED
+	help
+	  This option makes IDS trap and stop execution on an AGESA Error event.
+
+config IDSOPT_ASSERT_ENABLED
+	bool "Trap ASSERT failures with stop code display"
+	default y
+	depends on IDSOPT_IDS_ENABLED
+	help
+	  This option makes IDS trap and stop execution if an ASSERT() is false.
+
+	  ASSERT is used in AGESA code for testing for fatal errors that must
+	  be resolved before production. This is used to do parameter checks,
+	  bounds checking, range checks and 'sanity' checks.
+
+config IDS_DEBUG_PORT
+	hex "AGESA_TESTPOINT I/O port"
+	default 0x80
+	depends on IDSOPT_IDS_ENABLED
+	help
+	  This configures the AGESA_TESTPOINT I/O port, usually the POST port.
+
+config IDSOPT_CAR_CORRUPTION_CHECK_ENABLED
+	def_bool n
+	depends on IDSOPT_IDS_ENABLED
+	select IDSOPT_ERROR_TRAP_ENABLED
+	help
+	  This IDS option is dead code in the current coreboot AGESA sources.
+
+config IDSOPT_DEBUG_CODE_ENABLED
+	def_bool n
+	depends on IDSOPT_IDS_ENABLED && VENDORCODE_AMD_AGESA_R38300
+	help
+	  This IDS option is dead code in the current coreboot AGESA sources.
+
+config IDSOPT_IDT_EXCEPTION_TRAP
+	bool "Trap exceptions with a 'jmp $' infinite loop"
+	default n
+	depends on IDSOPT_IDS_ENABLED && EXPERT && VENDORCODE_AMD_AGESA_F15TN
+	help
+	  This option adds a 'jmp $' into every exception handler.
+
+	  Technically this option is available already with F12 but in the
+	  coreboot AGESA sources the option only does something for F15TN.
+
+endmenu
+endif

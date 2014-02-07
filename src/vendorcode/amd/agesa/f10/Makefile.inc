@@ -20,7 +20,7 @@
 ## ABSOLUTE AGESA V5 ROOT PATH ##
 AGESA_ROOT = src/vendorcode/amd/agesa/f10
 
-AGESA_INC ?= -I$(src)/mainboard/$(MAINBOARDDIR)
+AGESA_INC += -I$(src)/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/Include
 AGESA_INC += -I$(AGESA_ROOT)/Lib

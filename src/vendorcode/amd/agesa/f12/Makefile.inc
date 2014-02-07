@@ -30,7 +30,7 @@
 # AGESA V5 Files
 AGESA_ROOT = src/vendorcode/amd/agesa/f12
 
-AGESA_INC = -Isrc/mainboard/$(MAINBOARDDIR)
+AGESA_INC += -Isrc/mainboard/$(MAINBOARDDIR)
 AGESA_INC += -I$(AGESA_ROOT)
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU
 AGESA_INC += -I$(AGESA_ROOT)/Proc/CPU/Family

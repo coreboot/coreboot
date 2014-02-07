@@ -22,6 +22,8 @@ bootblock-y += timer.c
 romstage-y += timer.c
 ramstage-y += timer.c
 
+ifeq ($(CONFIG_CONSOLE_QEMU_DEBUGCON),y)
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 ramstage-y += uart.c
+endif

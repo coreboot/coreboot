@@ -314,19 +314,25 @@ config CONSOLE_CAR_BUFFER_SIZE
 
 config CONSOLE_QEMU_DEBUGCON
 	bool "QEMU debug console output"
-	depends on BOARD_EMULATION_QEMU_X86
+	depends on BOARD_EMULATION_QEMU_X86 || BOARD_EMULATION_QEMU_ARMV7
 	default y
 	help
-	  Send coreboot debug output to QEMU's isa-debugcon device:
+	  Send coreboot debug output to QEMU debug console.
 
+	  For qemu-x86:
 	  qemu-system-x86_64 \
 	    -chardev file,id=debugcon,path=/dir/file.log \
 	    -device isa-debugcon,iobase=0x402,chardev=debugcon
 
+	  For qemu-armv7:
+	  qemu-system-arm -M vexpress-a9 \
+	    -m 1024M -serial stdio -kernel build/coreboot.rom
+
 config CONSOLE_QEMU_DEBUGCON_PORT
 	hex "QEMU debug console port"
 	depends on CONSOLE_QEMU_DEBUGCON
-	default 0x402
+	default 0x402 if BOARD_EMULATION_QEMU_X86
+	default 0x10009000 if BOARD_EMULATION_QEMU_ARMV7
 
 choice
 	prompt "Default console log level"

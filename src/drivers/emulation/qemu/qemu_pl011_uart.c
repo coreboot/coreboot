@@ -17,23 +17,21 @@
 #include <console/qemu_debugcon.h>
 #include <uart.h>
 
-void uart_init(void)
+void qemu_debugcon_init(void)
 {
 }
 
-void uart_tx_byte(unsigned char data)
+void qemu_debugcon_tx_byte(unsigned char data)
 {
-	qemu_debugcon_tx_byte(data);
-}
+	volatile unsigned int *uart0_address =
+		(unsigned int *)CONFIG_CONSOLE_QEMU_DEBUGCON_PORT;
 
-void uart_tx_flush(void)
-{
+	*uart0_address = (unsigned int)data;
 }
 
 #if !defined(__PRE_RAM__)
-static const struct console_driver pl011_uart_console __console = {
-	.init     = uart_init,
-	.tx_byte  = uart_tx_byte,
-	.tx_flush = uart_tx_flush,
-};
+uint32_t uartmem_getbaseaddr(void)
+{
+	return CONFIG_CONSOLE_QEMU_DEBUGCON_PORT;
+}
 #endif

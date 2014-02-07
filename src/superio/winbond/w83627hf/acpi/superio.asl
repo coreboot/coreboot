@@ -655,7 +655,7 @@ Device(SIO) {
 			EXCM ()
 		}
 
-		Method (_CRS)
+		Method (_CRS, 0, Serialized)
 		{
 			Name (CRS, ResourceTemplate () {
 				IO (Decode16, 0x0000, 0x0000, 0x01, 0x08, IO0)
@@ -1099,7 +1099,7 @@ Device(SIO) {
 			Notify(PS2M, 1)
 		}
 
-		Method (_CRS)
+		Method (_CRS, 0, Serialized)
 		{
 			Name (CRS, ResourceTemplate () {
 				IRQNoFlags (IRQX) {}
@@ -1203,7 +1203,7 @@ Device(SIO) {
 			EXCM ()
 		}
 
-		Method (_CRS)
+		Method (_CRS, 0, Serialized)
 		{
 			Name (CRS, ResourceTemplate () {
 				IRQNoFlags (IRQX) {}
@@ -1425,7 +1425,7 @@ Device(SIO) {
 			EXCM ()
 		}
 
-		Method (_CRS)
+		Method (_CRS, 0, Serialized)
 		{
 			Name (CRS, ResourceTemplate () {
 				IO (Decode16, 0x0000, 0x0000, 0x08, 0x02, IO0)

@@ -109,7 +109,7 @@ Scope (\_SB)
 	}
 
 	/* GetBusResources(Node, Link) */
-	Method (GWBN, 2, NotSerialized)
+	Method (GWBN, 2, Serialized)
 	{
 		Name (BUF0, ResourceTemplate ()
 		{
@@ -149,7 +149,7 @@ Scope (\_SB)
 	}
 
 	/* GetMemoryResources(Node, Link) */
-	Method (GMEM, 2, NotSerialized)
+	Method (GMEM, 2, Serialized)
 	{
 		Name (BUF0, ResourceTemplate ()
 		{
@@ -214,7 +214,7 @@ Scope (\_SB)
 	}
 
 	/* GetIOResources(Node, Link) */
-	Method (GIOR, 2, NotSerialized)
+	Method (GIOR, 2, Serialized)
 	{
 		Name (BUF0, ResourceTemplate ()
 		{

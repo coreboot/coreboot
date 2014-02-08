@@ -100,7 +100,7 @@ struct device *dev_find_slot_on_smbus(unsigned int bus, unsigned int addr)
  * @param device Logical device number.
  * @return Pointer to the device structure (if found), 0 otherwise.
  */
-struct device *dev_find_slot_pnp(u16 port, u8 device)
+struct device *dev_find_slot_pnp(u16 port, u16 device)
 {
 	struct device *dev;
 

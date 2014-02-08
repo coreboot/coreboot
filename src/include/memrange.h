@@ -94,6 +94,19 @@ void memranges_add_resources(struct memranges *ranges,
                              unsigned long mask, unsigned long match,
                              unsigned long tag);
 
+/* Add memory resources that match with the corresponding mask and match but
+ * also provide filter as additional check. The filter will return non-zero
+ * to add the resource or zero to not add the resource. Each entry will be
+ * tagged with the provided tag. e.g.  To populate all cacheable memory
+ * resources in the range with a filter:
+ * memranges_add_resources_filter(range, IORESOURCE_CACHEABLE,
+ *                         IORESROUCE_CACHEABLE, my_cacheable_tag, filter); */
+typedef int (*memrange_filter_t)(struct device *dev, struct resource *res);
+void memranges_add_resources_filter(struct memranges *ranges,
+                                    unsigned long mask, unsigned long match,
+                                    unsigned long tag,
+                                    memrange_filter_t filter);
+
 /* Fill all address ranges up to limit (exclusive) not covered by an entry by
  * inserting new entries with the provided tag. */
 void memranges_fill_holes_up_to(struct memranges *ranges,

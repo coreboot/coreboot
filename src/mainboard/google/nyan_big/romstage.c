@@ -136,6 +136,7 @@ static void __attribute__((noinline)) romstage(void)
 /* Stub to force arm_init_caches to the top, before any stack/memory accesses */
 void main(void)
 {
-	asm ("bl arm_init_caches" ::: "r0","r1","r2","r3","r4","r5","ip");
+	asm volatile ("bl arm_init_caches"
+		      ::: "r0","r1","r2","r3","r4","r5","ip");
 	romstage();
 }

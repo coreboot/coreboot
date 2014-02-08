@@ -252,6 +252,7 @@ void memranges_insert(struct memranges *ranges,
 struct collect_context {
 	struct memranges *ranges;
 	unsigned long tag;
+	memrange_filter_t filter;
 };
 
 static void collect_ranges(void *gp, struct device *dev, struct resource *res)
@@ -261,12 +262,14 @@ static void collect_ranges(void *gp, struct device *dev, struct resource *res)
 	if (res->size == 0)
 		return;
 
-	memranges_insert(ctx->ranges, res->base, res->size, ctx->tag);
+	if (ctx->filter == NULL || ctx->filter(dev, res))
+		memranges_insert(ctx->ranges, res->base, res->size, ctx->tag);
 }
 
-void memranges_add_resources(struct memranges *ranges,
-                                 unsigned long mask, unsigned long match,
-                                 unsigned long tag)
+void memranges_add_resources_filter(struct memranges *ranges,
+                                    unsigned long mask, unsigned long match,
+                                    unsigned long tag,
+                                    memrange_filter_t filter)
 {
 	struct collect_context context;
 
@@ -276,7 +279,15 @@ void memranges_add_resources(struct memranges *ranges,
 
 	context.ranges = ranges;
 	context.tag = tag;
+	context.filter = filter;
 	search_global_resources(mask, match, collect_ranges, &context);
+}
+
+void memranges_add_resources(struct memranges *ranges,
+                                 unsigned long mask, unsigned long match,
+                                 unsigned long tag)
+{
+	memranges_add_resources_filter(ranges, mask, match, tag, NULL);
 }
 
 void memranges_init(struct memranges *ranges,

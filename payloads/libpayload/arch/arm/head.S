@@ -34,12 +34,16 @@
  */
 ENTRY(_entry)
 
+	/* Save off the location of the coreboot tables */
+	ldr r1, 1f
+	str r0, [r1]
+
 	/* TODO: disable interrupts */
 
 	/* TODO: Clear BSS */
 
 	/* Setup new stack */
-	ldr sp, 1f
+	ldr sp, 2f
 
 	/* TODO: Save old stack pointer and link register */
 
@@ -56,4 +60,6 @@ ENDPROC(_entry)
 
 .align 4
 1:
+.word	cb_header_ptr
+2:
 .word	_stack

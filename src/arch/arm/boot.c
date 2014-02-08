@@ -17,12 +17,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
+#include <arch/cache.h>
 #include <arch/stages.h>
+#include <cbmem.h>
+#include <console/console.h>
 #include <payload_loader.h>
 
 void arch_payload_run(const struct payload *payload)
 {
+	void (*doit)(void *) = payload->entry;
+	void *cb_tables = cbmem_find(CBMEM_ID_CBTABLE);
+
 	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
-	stage_exit(payload->entry);
+	cache_sync_instructions();
+	doit(cb_tables);
 }

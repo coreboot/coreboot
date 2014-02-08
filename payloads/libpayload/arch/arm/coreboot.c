@@ -32,6 +32,9 @@
 #include <libpayload.h>
 #include <coreboot_tables.h>
 
+/* This pointer gets set in head.S and is passed in from coreboot. */
+void *cb_header_ptr;
+
 /*
  * Some of this is x86 specific, and the rest of it is generic. Right now,
  * since we only support x86, we'll avoid trying to make lots of infrastructure
@@ -169,22 +172,16 @@ static void cb_parse_string(unsigned char *ptr, char **info)
 	*info = (char *)((struct cb_string *)ptr)->string;
 }
 
-static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
+static int cb_parse_header(void *addr, struct sysinfo_t *info)
 {
-	struct cb_header *header;
+	struct cb_header *header = addr;
 	unsigned char *ptr = addr;
 	void *forward;
 	int i;
 
-	for (i = 0; i < len; i += 16, ptr += 16) {
-		header = (struct cb_header *)ptr;
-		if (!strncmp((const char *)header->signature, "LBIO", 4))
-			break;
-	}
-
-	/* We walked the entire space and didn't find anything. */
-	if (i >= len)
-		return -1;
+	/* No signature found. */
+	if (strncmp((const char *)header->signature, "LBIO", 4))
+			return -1;
 
 	if (!header->table_bytes)
 		return 0;
@@ -209,7 +206,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		switch (rec->tag) {
 		case CB_TAG_FORWARD:
 			forward = phys_to_virt((void *)(unsigned long)((struct cb_forward *)rec)->forward);
-			return cb_parse_header(forward, len, info);
+			return cb_parse_header(forward, info);
 			continue;
 		case CB_TAG_MEMORY:
 			cb_parse_memory(ptr, info);
@@ -304,9 +301,7 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 
 int get_coreboot_info(struct sysinfo_t *info)
 {
-	int ret = cb_parse_header(
-		phys_to_virt(CONFIG_LP_COREBOOT_INFO_RANGE_BASE),
-		CONFIG_LP_COREBOOT_INFO_RANGE_SIZE, info);
+	int ret = cb_parse_header(cb_header_ptr, info);
 
 	return (ret == 1) ? 0 : -1;
 }

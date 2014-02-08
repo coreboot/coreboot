@@ -146,6 +146,15 @@ chip northbridge/intel/nehalem
 			device pci 1f.3 on # SMBUS
 				subsystemid 0x17aa 0x2167
 			        # eeprom, 8 virtual devices, same chip
+				chip drivers/generic/ioapic
+					register "have_isa_interrupts" = "1"
+					register "irq_on_fsb" = "1"
+					register "enable_virtual_wire" = "1"
+					register "base" = "0xfec00000"
+					register "version" = "0x20"
+					device ioapic 2 on end
+				end
+
 				chip drivers/i2c/at24rf08c
 					device i2c 54 on end
 					device i2c 55 on end

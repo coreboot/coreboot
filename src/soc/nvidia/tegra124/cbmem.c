@@ -23,6 +23,5 @@
 
 void *cbmem_top(void)
 {
-	return (void *)(CONFIG_SYS_SDRAM_BASE +
-		((sdram_size_mb() - FB_SIZE_MB)<< 20UL));
+	return (void *)((sdram_max_addressable_mb() - FB_SIZE_MB) << 20UL);
 }

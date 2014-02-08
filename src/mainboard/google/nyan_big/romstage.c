@@ -71,7 +71,6 @@ static void configure_l2actlr(void)
 
 static void __attribute__((noinline)) romstage(void)
 {
-	int dram_size_mb;
 #if CONFIG_COLLECT_TIMESTAMPS
 	uint64_t romstage_start_time = timestamp_get();
 #endif
@@ -84,15 +83,14 @@ static void __attribute__((noinline)) romstage(void)
 
 	sdram_init(get_sdram_config());
 
-	/* used for MMU and CBMEM setup */
-	dram_size_mb = sdram_size_mb();
-
+	/* used for MMU and CBMEM setup, in MB */
 	u32 dram_start = (CONFIG_SYS_SDRAM_BASE >> 20);
-	u32 dram_end = dram_start + dram_size_mb;	/* plus one... */
+	u32 dram_end = sdram_max_addressable_mb();	/* plus one... */
+	u32 dram_size = dram_end - dram_start;
 
 	mmu_init();
 	mmu_config_range(0, dram_start, DCACHE_OFF);
-	mmu_config_range(dram_start, dram_size_mb, DCACHE_WRITEBACK);
+	mmu_config_range(dram_start, dram_size, DCACHE_WRITEBACK);
 	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
 			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
 	mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);

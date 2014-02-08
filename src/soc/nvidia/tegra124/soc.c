@@ -35,8 +35,15 @@ static void soc_enable(device_t dev)
 	unsigned long fb_size = FB_SIZE_MB;
 
 	ram_resource(dev, 0, CONFIG_SYS_SDRAM_BASE/KiB,
-		(sdram_size_mb() - fb_size)*KiB);
+		(sdram_max_addressable_mb() - fb_size)*KiB -
+		CONFIG_SYS_SDRAM_BASE/KiB);
 	mmio_resource(dev, 1, lcdbase*KiB, fb_size*KiB);
+
+	u32 sdram_end_mb = sdram_size_mb() + CONFIG_SYS_SDRAM_BASE/MiB;
+
+	if (sdram_end_mb > sdram_max_addressable_mb())
+		ram_resource(dev, 2, sdram_max_addressable_mb()*KiB,
+			(sdram_end_mb - sdram_max_addressable_mb())*KiB);
 }
 
 static void soc_init(device_t dev)

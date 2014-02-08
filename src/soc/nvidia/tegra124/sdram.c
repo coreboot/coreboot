@@ -22,6 +22,7 @@
 #include <delay.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <stdlib.h>
 
 #include "emc.h"
 #include "mc.h"
@@ -638,4 +639,9 @@ int sdram_size_mb(void)
 
 	printk(BIOS_DEBUG, "%s: Total SDRAM (MB): %u\n", __func__, total_size);
 	return total_size;
+}
+
+uintptr_t sdram_max_addressable_mb(void)
+{
+	return MIN((CONFIG_SYS_SDRAM_BASE/MiB) + sdram_size_mb(), 4096);
 }

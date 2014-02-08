@@ -228,7 +228,7 @@ static void update_window(struct display_controller *dc,
 
 uint32_t fb_base_mb(void)
 {
-	return CONFIG_SYS_SDRAM_BASE/MiB + (sdram_size_mb() - FB_SIZE_MB);
+	return sdram_max_addressable_mb() - FB_SIZE_MB;
 }
 
 /* this is really aimed at the lcd panel. That said, there are two display

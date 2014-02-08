@@ -7,6 +7,14 @@ config X86_ARCH_OPTIONS
 	select HAVE_ARCH_MEMCPY
 	select HAVE_ARCH_MEMMOVE
 
+config MARK_GRAPHICS_MEM_WRCOMB
+	bool "Mark graphics memory as write-combining."
+	default n
+	help
+	 The graphics performance may increase if the graphics
+	 memory is set as write-combining cache type. This option
+	 enables marking the graphics memory as write-combining.
+
 # This is an SMP option. It relates to starting up APs.
 # It is usually set in mainboard/*/Kconfig.
 # TODO: Improve description.

@@ -30,6 +30,7 @@
 #include <bootstate.h>
 #include <console/console.h>
 #include <device/device.h>
+#include <device/pci_ids.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
@@ -154,6 +155,22 @@ static inline int range_entry_mtrr_type(struct range_entry *r)
 	return range_entry_tag(r) & MTRR_TAG_MASK;
 }
 
+static void add_vga_wrcomb(void *gp, struct device *dev, struct resource *res)
+{
+	struct memranges *addr_space = gp;
+
+	/* Only handle PCI devices. */
+	if (dev->path.type != DEVICE_PATH_PCI)
+		return;
+
+	/* Only handle VGA class devices. */
+	if (((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
+		return;
+
+	/* Add resource as write-combining in the address space. */
+	memranges_insert(addr_space, res->base, res->size, MTRR_TYPE_WRCOMB);
+}
+
 static struct memranges *get_physical_address_space(void)
 {
 	static struct memranges *addr_space;
@@ -181,8 +198,7 @@ static struct memranges *get_physical_address_space(void)
 		 * resources are appropriate for this MTRR type. */
 		match = IORESOURCE_PREFETCH;
 		mask |= match;
-		memranges_add_resources(addr_space, mask, match,
-		                        MTRR_TYPE_WRCOMB);
+		search_global_resources(mask, match, add_vga_wrcomb, addr_space);
 
 #if CONFIG_CACHE_ROM
 		/* Add a write-protect region covering the ROM size

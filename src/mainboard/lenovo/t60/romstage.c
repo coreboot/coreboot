@@ -79,7 +79,7 @@ static void ich7_enable_lpc(void)
 	// decode range
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x80, 0x0210);
 	// decode range
-	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x1f0d);
+	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x1f0f);
 
 	/* range 0x1600 - 0x167f */
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x84, 0x1601);

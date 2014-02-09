@@ -224,8 +224,6 @@ EOF
 		case "$cpu" in
 			ALLWINNER_A10)
 				cpu_nice="Allwinner A10"
-				northbridge_nice="Allwinner A10"
-				southbridge_nice="Allwinner A10"
 				socket_nice="?";;
 			AMD_GEODE_*)
 				cpu_nice="AMD Geode™ ${cpu#AMD_GEODE_}";
@@ -274,32 +272,22 @@ EOF
 				socket_nice="Socket 939"
 				;;
 			AMD_SC520)
-				cpu_nice="AMD Élan™ SC520";
-				northbridge_nice="AMD Élan™ SC520";
-				southbridge_nice="AMD Élan™ SC520";
+				cpu_nice="AMD Élan™SC520";
 				socket_nice="—";;
 			ARMLTD_CORTEX_A9)
 				cpu_nice="ARM Cortex A9";
-				northbridge_nice="ARM Cortex A9";
-				southbridge_nice="ARM Cortex A9";
 				socket_nice="?";;
 			DMP_VORTEX86EX)
 				cpu_nice="DMP VORTEX86EX";
 				socket_nice="?";;
 			SAMSUNG_EXYNOS5420)
 				cpu_nice="Samsung Exynos 5420";
-				northbridge_nice="Samsung Exynos 5420";
-				southbridge_nice="Samsung Exynos 5420";
 				socket_nice="?";;
 			SAMSUNG_EXYNOS5250)
 				cpu_nice="Samsung Exynos 5250";
-				northbridge_nice="Samsung Exynos 5250";
-				southbridge_nice="Samsung Exynos 5250";
 				socket_nice="?";;
 			TI_AM335X)
 				cpu_nice="TI AM335X";
-				southbridge_nice="TI AM335X";
-				northbridge_nice="TI AM335X";
 				socket_nice="?";;
 			INTEL_SLOT_1)
 				cpu_nice="Intel® Pentium® II/III, Celeron®";
@@ -389,16 +377,6 @@ EOF
 				cpu_nice="$cpu"
 				socket_nice="$cpu";;
 		esac
-
-		if [ x"$northbridge_nice" = x ]; then
-		    if grep 'select SOC_INTEL_BAYTRAIL' "$vendor_board_dir/Kconfig" > /dev/null ; then
-			southbridge_nice="Intel® Baytrail"
-			northbridge_nice="Intel® Baytrail"
-			cpu_nice="Intel® Baytrail"
-			socket_nice="—"
-		    fi
-		fi
-
 
 		echo "|- bgcolor=\"#$color\""
 		echo "| $vendor_nice"

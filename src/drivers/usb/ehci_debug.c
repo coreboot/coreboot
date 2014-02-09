@@ -31,25 +31,6 @@
 #include "usb_ch9.h"
 #include "ehci.h"
 
-
-#define DBGP_EP_VALID		(1<<0)
-#define DBGP_EP_ENABLED		(1<<1)
-#define DBGP_EP_BUSY		(1<<2)
-#define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
-
-struct dbgp_pipe
-{
-	u8 devnum;
-	u8 endpoint;
-	u8 pid;
-	u8 status;
-	int timeout;
-
-	u8 bufidx;
-	u8 buflen;
-	char buf[8];
-};
-
 #define DBGP_MAX_ENDPOINTS	4
 #define DBGP_SETUP_EP0		0	/* Compulsory endpoint 0. */
 #define DBGP_CONSOLE_EPOUT	1
@@ -852,7 +833,7 @@ static int dbgp_enabled(void)
 }
 #endif
 
-static int dbgp_try_get(struct dbgp_pipe *pipe)
+int dbgp_try_get(struct dbgp_pipe *pipe)
 {
 	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
 	if (!dbgp_ep_is_active(pipe) || (globals->status & DBGP_EP_BUSY))
@@ -862,51 +843,11 @@ static int dbgp_try_get(struct dbgp_pipe *pipe)
 	return 1;
 }
 
-static void dbgp_put(struct dbgp_pipe *pipe)
+void dbgp_put(struct dbgp_pipe *pipe)
 {
 	struct dbgp_pipe *globals = &dbgp_ehci_info()->ep_pipe[DBGP_SETUP_EP0];
 	globals->status &= ~DBGP_EP_BUSY;
 	pipe->status &= ~DBGP_EP_BUSY;
-}
-
-void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data)
-{
-	if (!dbgp_try_get(pipe))
-		return;
-	pipe->buf[pipe->bufidx++] = data;
-	if (pipe->bufidx >= 8) {
-		dbgp_bulk_write_x(pipe, pipe->buf, pipe->bufidx);
-		pipe->bufidx = 0;
-	}
-	dbgp_put(pipe);
-}
-
-void usbdebug_tx_flush(struct dbgp_pipe *pipe)
-{
-	if (!dbgp_try_get(pipe))
-		return;
-	if (pipe->bufidx > 0) {
-		dbgp_bulk_write_x(pipe, pipe->buf, pipe->bufidx);
-		pipe->bufidx = 0;
-	}
-	dbgp_put(pipe);
-}
-
-unsigned char usbdebug_rx_byte(struct dbgp_pipe *pipe)
-{
-	unsigned char data = 0xff;
-	if (!dbgp_try_get(pipe))
-		return 0xff;
-	while (pipe->bufidx >= pipe->buflen) {
-		pipe->buflen = 0;
-		pipe->bufidx = 0;
-		int count = dbgp_bulk_read_x(pipe, pipe->buf, 8);
-		if (count>0)
-			pipe->buflen = count;
-	}
-	data = pipe->buf[pipe->bufidx++];
-	dbgp_put(pipe);
-	return data;
 }
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)

@@ -34,12 +34,40 @@ static struct device_operations *ehci_drv_ops;
 static struct device_operations ehci_dbg_ops;
 #endif
 
-void ehci_debug_hw_enable(void)
+int ehci_debug_hw_enable(unsigned int *base, unsigned int *dbg_offset)
 {
-#if defined(__PRE_RAM__) || !CONFIG_USBDEBUG_IN_ROMSTAGE
 	pci_devfn_t dbg_dev = pci_ehci_dbg_dev(CONFIG_USBDEBUG_HCD_INDEX);
 	pci_ehci_dbg_enable(dbg_dev, CONFIG_EHCI_BAR);
+
+#ifdef __SIMPLE_DEVICE__
+	pci_devfn_t dev = dbg_dev;
+#else
+	device_t dev = dev_find_slot(PCI_DEV2SEGBUS(dbg_dev), PCI_DEV2DEVFN(dbg_dev));
 #endif
+
+	u16 status = pci_read_config16(dev, PCI_STATUS);
+	if (!(status & PCI_STATUS_CAP_LIST))
+		return 1;
+
+	/* Scan capabilities list. */
+	u8 pos = pci_read_config8(dev, PCI_CAPABILITY_LIST);
+	int i;
+	for (i=0; pos >= 0x40 && i < 48; i++) {
+		u32 cap = pci_read_config32(dev, pos);
+		if ((u8) cap != PCI_CAP_ID_EHCI_DEBUG) {
+			pos = (cap >> 8) & 0xfc;
+			continue;
+		}
+
+		/* FIXME: We should remove static EHCI_BAR_INDEX. */
+		u8 dbg_bar = 0x10 + 4 * ((cap >> 29) - 1);
+		if (dbg_bar != EHCI_BAR_INDEX)
+			break;
+		*base = CONFIG_EHCI_BAR;
+		*dbg_offset = (cap>>16) & 0x1ffc;
+		return 0;
+	}
+	return 1;
 }
 
 void ehci_debug_select_port(unsigned int port)

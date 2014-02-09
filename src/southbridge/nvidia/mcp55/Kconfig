@@ -14,10 +14,6 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0x98
-
 config MCP55_USE_NIC
 	bool
 	default n

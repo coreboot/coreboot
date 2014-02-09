@@ -588,6 +588,8 @@ static int usbdebug_init_(unsigned ehci_bar, unsigned offset, struct ehci_debug_
 	int port_map_tried;
 	int playtimes = 3;
 
+	dprintk(BIOS_INFO, "ehci_bar: 0x%x debug_offset 0x%x\n", ehci_bar, offset);
+
 	ehci_caps  = (struct ehci_caps *)ehci_bar;
 	ehci_regs  = (struct ehci_regs *)(ehci_bar +
 			HC_LENGTH(read32((unsigned long)&ehci_caps->hc_capbase)));
@@ -608,7 +610,6 @@ try_next_port:
 	debug_port = HCS_DEBUG_PORT(hcs_params);
 	n_ports    = HCS_N_PORTS(hcs_params);
 
-	dprintk(BIOS_INFO, "ehci_bar: 0x%x\n", ehci_bar);
 	dprintk(BIOS_INFO, "debug_port: %d\n", debug_port);
 	dprintk(BIOS_INFO, "n_ports:    %d\n", n_ports);
 
@@ -985,11 +986,13 @@ struct dbgp_pipe *dbgp_console_input(void)
 int usbdebug_init(void)
 {
 	struct ehci_debug_info *dbg_info = dbgp_ehci_info();
+	unsigned int ehci_base, dbg_offset;
 
 #if !defined(__PRE_RAM__) && !defined(__SMM__)
 	if (!get_usbdebug_from_cbmem(dbg_info))
 		return 0;
 #endif
-	ehci_debug_hw_enable();
-	return usbdebug_init_(CONFIG_EHCI_BAR, CONFIG_EHCI_DEBUG_OFFSET, dbg_info);
+	if (ehci_debug_hw_enable(&ehci_base, &dbg_offset))
+		return -1;
+	return usbdebug_init_(ehci_base, dbg_offset, dbg_info);
 }

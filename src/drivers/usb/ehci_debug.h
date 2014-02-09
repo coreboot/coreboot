@@ -24,7 +24,7 @@
 void usbdebug_re_enable(unsigned ehci_base);
 void usbdebug_disable(void);
 
-void ehci_debug_hw_enable(void);
+int ehci_debug_hw_enable(unsigned *base, unsigned *dbg_offset);
 void ehci_debug_select_port(unsigned int port);
 
 #endif /* _EHCI_DEBUG_H_ */

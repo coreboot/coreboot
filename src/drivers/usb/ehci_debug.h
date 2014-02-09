@@ -27,4 +27,26 @@ void usbdebug_disable(void);
 void ehci_debug_hw_enable(void);
 void ehci_debug_select_port(unsigned int port);
 
+
+#define DBGP_EP_VALID		(1<<0)
+#define DBGP_EP_ENABLED		(1<<1)
+#define DBGP_EP_BUSY		(1<<2)
+#define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
+
+struct dbgp_pipe
+{
+	u8 devnum;
+	u8 endpoint;
+	u8 pid;
+	u8 status;
+	int timeout;
+
+	u8 bufidx;
+	u8 buflen;
+	char buf[8];
+};
+
+void dbgp_put(struct dbgp_pipe *pipe);
+int dbgp_try_get(struct dbgp_pipe *pipe);
+
 #endif /* _EHCI_DEBUG_H_ */

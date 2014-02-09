@@ -29,22 +29,22 @@ static void dbgp_init(void)
 
 static void dbgp_tx_byte(unsigned char data)
 {
-	usbdebug_tx_byte(dbgp_console_output(), data);
+	usb_tx_byte(0, data);
 }
 
 static unsigned char dbgp_rx_byte(void)
 {
-	return usbdebug_rx_byte(dbgp_console_input());
+	return usb_rx_byte(0);
 }
 
 static void dbgp_tx_flush(void)
 {
-	usbdebug_tx_flush(dbgp_console_output());
+	usb_tx_flush(0);
 }
 
 static int dbgp_tst_byte(void)
 {
-	return dbgp_ep_is_active(dbgp_console_input());
+	return usb_can_rx_byte(0);
 }
 
 static const struct console_driver usbdebug_direct_console __console = {

@@ -187,7 +187,7 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 		# FIXME: the board-status directory might get big over time.
 		# Is there a way we can push the results without fetching the
 		# whole repo?
-		git clone "ssh://${username}@review.coreboot.org:29418/board-status"
+		git clone --depth 1 "ssh://${username}@review.coreboot.org:29418/board-status"
 		if [ $? -ne 0 ]; then
 			"Error cloning board-status repo, aborting."
 			exit $EXIT_FAILURE

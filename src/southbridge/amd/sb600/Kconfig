@@ -32,10 +32,6 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xe0
-
 choice
 	prompt "SATA Mode"
 	default SATA_MODE_IDE

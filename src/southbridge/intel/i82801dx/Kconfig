@@ -33,8 +33,4 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0x80
-
 endif

@@ -32,10 +32,6 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xa0
-
 config BOOTBLOCK_SOUTHBRIDGE_INIT
         string
 	default "southbridge/intel/i82801gx/bootblock.c"

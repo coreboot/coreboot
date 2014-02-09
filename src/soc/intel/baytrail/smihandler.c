@@ -26,6 +26,7 @@
 #include <device/pci_def.h>
 #include <elog.h>
 #include <halt.h>
+#include <spi-generic.h>
 
 #include <baytrail/pci_devs.h>
 #include <baytrail/pmc.h>
@@ -232,6 +233,23 @@ static void southbridge_smi_gsmi(void)
 	*ret = gsmi_exec(sub_command, param);
 }
 #endif
+
+static void finalize(void)
+{
+	static int finalize_done;
+
+	if (finalize_done) {
+		printk(BIOS_DEBUG, "SMM already finalized.\n");
+		return;
+	}
+	finalize_done = 1;
+
+#if CONFIG_SPI_FLASH_SMM
+	/* Re-init SPI driver to handle locked BAR */
+	spi_init();
+#endif
+}
+
 static void southbridge_smi_apmc(void)
 {
 	uint8_t reg8;
@@ -282,6 +300,9 @@ static void southbridge_smi_apmc(void)
 		southbridge_smi_gsmi();
 		break;
 #endif
+	case APM_CNT_FINALIZE:
+		finalize();
+		break;
 	}
 
 	mainboard_smi_apmc(reg8);

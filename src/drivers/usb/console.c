@@ -18,12 +18,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
-#include <stddef.h>
-#include <console/console.h>
 #include <console/usb.h>
 #include "ehci_debug.h"
 
-void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data)
+static void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data)
 {
 	if (!dbgp_try_get(pipe))
 		return;
@@ -35,7 +33,7 @@ void usbdebug_tx_byte(struct dbgp_pipe *pipe, unsigned char data)
 	dbgp_put(pipe);
 }
 
-void usbdebug_tx_flush(struct dbgp_pipe *pipe)
+static void usbdebug_tx_flush(struct dbgp_pipe *pipe)
 {
 	if (!dbgp_try_get(pipe))
 		return;
@@ -46,7 +44,7 @@ void usbdebug_tx_flush(struct dbgp_pipe *pipe)
 	dbgp_put(pipe);
 }
 
-unsigned char usbdebug_rx_byte(struct dbgp_pipe *pipe)
+static unsigned char usbdebug_rx_byte(struct dbgp_pipe *pipe)
 {
 	unsigned char data = 0xff;
 	if (!dbgp_try_get(pipe))
@@ -61,4 +59,24 @@ unsigned char usbdebug_rx_byte(struct dbgp_pipe *pipe)
 	data = pipe->buf[pipe->bufidx++];
 	dbgp_put(pipe);
 	return data;
+}
+
+void usb_tx_byte(int idx, unsigned char data)
+{
+	usbdebug_tx_byte(dbgp_console_output(), data);
+}
+
+void usb_tx_flush(int idx)
+{
+	usbdebug_tx_flush(dbgp_console_output());
+}
+
+unsigned char usb_rx_byte(int idx)
+{
+	return usbdebug_rx_byte(dbgp_console_input());
+}
+
+int usb_can_rx_byte(int idx)
+{
+	return dbgp_ep_is_active(dbgp_console_input());
 }

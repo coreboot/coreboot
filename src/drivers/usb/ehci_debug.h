@@ -21,6 +21,8 @@
 #ifndef _EHCI_DEBUG_H_
 #define _EHCI_DEBUG_H_
 
+#include <types.h>
+
 void usbdebug_re_enable(unsigned ehci_base);
 void usbdebug_disable(void);
 
@@ -50,5 +52,11 @@ struct dbgp_pipe
 
 void dbgp_put(struct dbgp_pipe *pipe);
 int dbgp_try_get(struct dbgp_pipe *pipe);
+
+struct dbgp_pipe *dbgp_console_output(void);
+struct dbgp_pipe *dbgp_console_input(void);
+int dbgp_ep_is_active(struct dbgp_pipe *pipe);
+int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size);
+int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size);
 
 #endif /* _EHCI_DEBUG_H_ */

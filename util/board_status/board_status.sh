@@ -202,7 +202,7 @@ if [ $UPLOAD_RESULTS -eq 1 ]; then
 
 	echo "Uploading results"
 	git add "${vendor}"
-	git commit -a -am "${mainboard_dir}/${tagged_version}/${timestamp}"
+	git commit -a -m "${mainboard_dir}/${tagged_version}/${timestamp}"
 	git push origin
 
 	# Results have been uploaded so it's pointless to keep the

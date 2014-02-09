@@ -148,6 +148,9 @@ chip northbridge/intel/i945
 				chip superio/nsc/pc87382
 					device pnp 164e.2 on # IR
 						io 0x60 = 0x2f8
+						irq 0x29 = 0xb0
+						irq 0x70 = 0x3
+						irq 0xf0 = 0x82
 					end
 
 					device pnp 164e.3 off # Serial Port

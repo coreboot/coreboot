@@ -30,10 +30,6 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xa0
-
 config HAVE_CMC
 	bool "Add a CMC state machine binary"
 	help

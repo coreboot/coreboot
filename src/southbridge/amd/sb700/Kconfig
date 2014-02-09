@@ -45,8 +45,4 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xe0
-
 endif # SOUTHBRIDGE_AMD_SB700

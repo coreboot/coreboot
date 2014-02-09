@@ -43,10 +43,6 @@ config EHCI_BAR
 	hex
 	default 0xfef00000
 
-config EHCI_DEBUG_OFFSET
-	hex
-	default 0xe0
-
 config HUDSON_XHCI_ENABLE
 	bool "Enable Hudson XHCI Controller"
 	default y

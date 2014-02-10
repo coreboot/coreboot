@@ -16,19 +16,11 @@
 #include <console/console.h>
 #include <console/uart.h>
 
-#define VEXPRESS_UART0_IO_ADDRESS	(0x10009000)
+static const uint32_t uart_base = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 
-static void pl011_init_dev(void) {
-}
-
-static void pl011_uart_tx_byte(unsigned char data) {
-	static volatile unsigned int *uart0_address =
-			(unsigned int *)VEXPRESS_UART0_IO_ADDRESS;
-
-	*uart0_address = (unsigned int)data;
-}
-
-static void pl011_uart_tx_flush(void) {
+static void pl011_uart_tx_byte(unsigned int *tx_fifo, unsigned char data)
+{
+	*tx_fifo = (unsigned int)data;
 }
 
 #if !defined(__PRE_RAM__)
@@ -46,15 +38,14 @@ uint32_t uartmem_getbaseaddr(void)
 #else
 void uart_init(void)
 {
-	pl011_init_dev();
 }
 
 void uart_tx_byte(unsigned char data)
 {
-	pl011_uart_tx_byte(data);
+	pl011_uart_tx_byte((unsigned int *)uart_base, data);
 }
 
-void uart_tx_flush(void) {
-	pl011_uart_tx_flush();
+void uart_tx_flush(void)
+{
 }
 #endif

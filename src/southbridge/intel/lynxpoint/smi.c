@@ -19,7 +19,7 @@
  * MA 02110-1301 USA
  */
 
-
+#include <bootstate.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <console/console.h>
@@ -124,3 +124,20 @@ void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 		  "d" (APM_CNT)
 	);
 }
+
+/*
+ * Finalize system before payload boot if not in ChromeOS environment.
+ */
+#if !CONFIG_CHROMEOS
+
+static void finalize_boot(void *unused)
+{
+	outb(0xcb, 0xb2);
+}
+
+BOOT_STATE_INIT_ENTRIES(finalize) = {
+	BOOT_STATE_INIT_ENTRY(BS_PAYLOAD_BOOT, BS_ON_ENTRY,
+			      finalize_boot, NULL),
+};
+
+#endif

@@ -25,9 +25,9 @@ void dump_south(device_t dev0)
 	int i,j;
 
 	for(i = 0; i < 256; i += 16) {
-		printk(BIOS_DEBUG, "0x%x: ", i);
+		printk(BIOS_DEBUG, "0x%x:", i);
 		for(j = 0; j < 16; j++) {
-			printk(BIOS_DEBUG, "%02x ", pci_read_config8(dev0, i+j));
+			printk(BIOS_DEBUG, " %02x", pci_read_config8(dev0, i+j));
 		}
 		printk(BIOS_DEBUG, "\n");
 	}

@@ -165,8 +165,10 @@ void sdram_initialize(struct pei_data *pei_data)
 		}
 	}
 
+#if CONFIG_EARLY_CONSOLE
 	/* Pass console handler in pei_data */
 	pei_data->tx_byte = console_tx_byte;
+#endif
 
 	/* Locate and call UEFI System Agent binary. */
 	entry = (unsigned long)cbfs_get_file_content(

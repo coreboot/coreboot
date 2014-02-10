@@ -68,7 +68,41 @@ static struct device_operations ops = {
  *
  *  i.e., 0x07F8 = [00000][11111111][000]
  *
- * TODO: verify flags and masks are correct & move this information to Wiki.
+ * NOTE: Be sure to set these in your devicetree.cb, i.e.
+ *
+ *			chip superio/fintek/f71869ad
+ *				device pnp 4e.00 off        # Floppy
+ *					io 0x60 = 0x3f0
+ *					irq 0x70 = 6
+ *					drq 0x74 = 2
+ *				end
+ *				device pnp 4e.01 on         # COM1
+ *					io 0x60 = 0x3f8
+ *					irq 0x70 = 4
+ *				end
+ *					device pnp 4e.02 off    # COM2
+ *					io 0x60 = 0x2f8
+ *					irq 0x70 = 3
+ *				end
+ *				device pnp 4e.03 off        # Parallel Port
+ *					io 0x60 = 0x378
+ *					irq 0x70 = 7
+ *					drq 0x74 = 3
+ *				end
+ *				device pnp 4e.04 on         # Hardware Monitor
+ *					io 0x60 = 0x295
+ *					irq 0x70 = 0
+ *				end
+ *				device pnp 4e.05 on         # KBC
+ *					io 0x60 = 0x060
+ *					irq 0x70 = 1            # Keyboard IRQ
+ *					irq 0x72 = 12           # Mouse IRQ
+ *				end
+ *				device pnp 4e.06 off end    # GPIO
+ *				device pnp 4e.07 on end     # BSEL
+ *				device pnp 4e.0a off end    # PME
+ *			end # f71869ad
+ *
  */
 static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71869AD_FDC,  PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },

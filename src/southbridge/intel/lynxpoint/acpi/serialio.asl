@@ -542,7 +542,7 @@ Device (GPIO)
 			0x00000000,  // AddressMinimum
 			0x00000000,  // AddressMaximum
 			0x00000000,  // AddressTranslation
-			0x00000000,  // RangeLength
+			0x00000001,  // RangeLength
 			,            // ResourceSourceIndex
 			,            // ResourceSource
 			BAR0)

@@ -10,6 +10,7 @@ EXIT_FAILURE=1
 
 # Stuff from command-line switches
 REMOTE_HOST=""
+CONSOLE_LOG=""
 CLOBBER_OUTPUT=0
 UPLOAD_RESULTS=0
 
@@ -103,6 +104,9 @@ show_help() {
 Options
     -h
         Show this message.
+    -c  <filename>
+        Use <filename> as console log instead of content from cbmem. Useful if
+        target does not support CBMEM.
     -C
         Clobber temporary output when finished. Useful for debugging.
     -r  <host>
@@ -117,6 +121,9 @@ while getopts "Chr:u" opt; do
 		h)
 			show_help
 			exit $EXIT_SUCCESS
+			;;
+		c)
+			CONSOLE_LOG="$OPTARG"
 			;;
 		C)
 			CLOBBER_OUTPUT=1
@@ -169,7 +176,11 @@ printf "Upstream URL: %s\n" $($getrevision -U)>> ${tmpdir}/${results}/revision.t
 printf "Timestamp: %s\n" "$timestamp" >> ${tmpdir}/${results}/revision.txt
 
 test_cmd $REMOTE "cbmem"
-cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
+if [ -f "$CONSOLE_LOG" ]; then
+	cp "$CONSOLE_LOG" "${tmpdir}/${results}/coreboot_console.txt"
+else
+	cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
+fi
 cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
 
 cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"

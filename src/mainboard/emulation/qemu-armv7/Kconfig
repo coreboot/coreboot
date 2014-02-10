@@ -25,8 +25,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select ARCH_ARMV7
 	select CPU_ARMLTD_CORTEX_A9
-	select HAVE_UART_MEMORY_MAPPED
-	select HAVE_UART_SPECIAL
+	select DRIVERS_UART_PL011
 	select BOARD_ROMSIZE_KB_4096
 
 config MAINBOARD_DIR
@@ -48,6 +47,11 @@ config MAINBOARD_VENDOR
 config DRAM_SIZE_MB
 	int
 	default 1024
+
+config CONSOLE_SERIAL_UART_ADDRESS
+	hex
+	depends on CONSOLE_SERIAL_UART
+	default 0x10009000
 
 # Memory map for qemu vexpress-a9:
 #

@@ -12,3 +12,7 @@ config HAVE_UART_SPECIAL
 	bool
 	default n
 
+config DRIVERS_UART_PL011
+	bool
+	default n
+	select HAVE_UART_SPECIAL

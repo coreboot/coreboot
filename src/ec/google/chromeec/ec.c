@@ -113,6 +113,7 @@ void google_chromeec_early_init(void)
 	cec_cmd.cmd_size_out = sizeof(cec_resp);
 	google_chromeec_command(&cec_cmd);
 
+#if CONFIG_CHROMEOS
 	if (cec_cmd.cmd_code ||
 	    (recovery_mode_enabled() &&
 	     (cec_resp.current_image != EC_IMAGE_RO))) {
@@ -131,6 +132,7 @@ void google_chromeec_early_init(void)
 		hard_reset();
 		hlt();
 	}
+#endif
 }
 
 u16 google_chromeec_get_board_version(void)
@@ -394,6 +396,7 @@ void google_chromeec_init(void)
 		ec_image_type = cec_resp.current_image;
 	}
 
+#if CONFIG_CHROMEOS
 	if (cec_cmd.cmd_code ||
 	    (recovery_mode_enabled() &&
 	     (cec_resp.current_image != EC_IMAGE_RO))) {
@@ -412,7 +415,7 @@ void google_chromeec_init(void)
 		hard_reset();
 		hlt();
 	}
-
+#endif
 }
 
 int google_ec_running_ro(void)

@@ -309,7 +309,9 @@ void romstage_after_car(void)
 
 	prepare_for_resume(handoff);
 
+#if CONFIG_CHROMEOS
 	vboot_verify_firmware(handoff);
+#endif
 
 	/* Load the ramstage. */
 	copy_and_run();

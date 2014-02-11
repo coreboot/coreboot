@@ -13,7 +13,8 @@ ramstage-$(CONFIG_ARCH_X86) += pnp_device.c
 ramstage-$(CONFIG_PCI) += pci_ops.c
 ramstage-y += smbus_ops.c
 
-romstage-y+= device_romstage.c
+romstage-y += device_romstage.c
+romstage-$(CONFIG_PCI) += pci_early.c
 
 subdirs-y += oprom
 

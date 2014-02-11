@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <arch/rules.h>
+#include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/resource.h>
 #include <device/device.h>
@@ -76,8 +77,6 @@ unsigned int pci_scan_bus(struct bus *bus, unsigned min_devfn, unsigned max_devf
 uint8_t pci_moving_config8(struct device *dev, unsigned reg);
 uint16_t pci_moving_config16(struct device *dev, unsigned reg);
 uint32_t pci_moving_config32(struct device *dev, unsigned reg);
-unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
-unsigned pci_find_capability(device_t dev, unsigned cap);
 struct resource *pci_get_resource(struct device *dev, unsigned long index);
 void pci_dev_set_subsystem(device_t dev, unsigned vendor, unsigned device);
 void pci_dev_init(struct device *dev);
@@ -100,6 +99,9 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 }
 
 #endif /* ! __SIMPLE_DEVICE__ */
+
+unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
+unsigned pci_find_capability(device_t dev, unsigned cap);
 
 #endif /* CONFIG_PCI */
 

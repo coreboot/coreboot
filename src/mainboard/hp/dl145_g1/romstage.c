@@ -86,6 +86,9 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/dualcore/dualcore.c"
 #include <spd.h>
 #include "cpu/amd/model_fxx/init_cpus.c"
+#if CONFIG_SET_FIDVID
+#include "cpu/amd/model_fxx/fidvid.c"
+#endif
 
 #define RC0 ((1<<1)<<8)
 #define RC1 ((1<<2)<<8)
@@ -130,6 +133,33 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 #endif
 
 	ht_setup_chains_x(sysinfo);
+#if CONFIG_SET_FIDVID
+	/* Check to see if processor is capable of changing FIDVID */
+	/* otherwise it will throw a GP# when reading FIDVID_STATUS */
+	struct cpuid_result cpuid1 = cpuid(0x80000007);
+	if ((cpuid1.edx & 0x6) == 0x6) {
+		{
+		/* Read FIDVID_STATUS */
+			msr_t msr;
+			msr=rdmsr(0xc0010042);
+			print_debug("begin msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+		}
+
+		enable_fid_change();
+		enable_fid_change_on_sb(sysinfo->sbbusn, sysinfo->sbdn);
+		init_fidvid_bsp(bsp_apicid);
+
+		// show final fid and vid
+		{
+			msr_t msr;
+			msr=rdmsr(0xc0010042);
+			print_debug("end msr fid, vid "); print_debug_hex32( msr.hi ); print_debug_hex32(msr.lo); print_debug("\n");
+		}
+
+	} else {
+		print_debug("Changing FIDVID not supported\n");
+	}
+#endif
 
 	needs_reset |= optimize_link_coherent_ht();
 	needs_reset |= optimize_link_incoherent_ht(sysinfo);
@@ -159,6 +189,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	fill_mem_ctrl(sysinfo->nodes, sysinfo->ctrl, spd_addr);
 
 	memreset_setup();
+#if CONFIG_SET_FIDVID
+	init_timer(); // Need to use TMICT to synchronize FID/VID
+#endif
 	sdram_initialize(sysinfo->nodes, sysinfo->ctrl, sysinfo);
 
 	//dump_pci_devices();

@@ -249,6 +249,11 @@ enum host_event_code {
 	/* Suggest that the AP resume normal speed */
 	EC_HOST_EVENT_THROTTLE_STOP = 19,
 
+	/* Hang detect logic detected a hang and host event timeout expired */
+	EC_HOST_EVENT_HANG_DETECT = 20,
+	/* Hang detect logic detected a hang and warm rebooted the AP */
+	EC_HOST_EVENT_HANG_REBOOT = 21,
+
 	/*
 	 * The high bit of the event mask is not used as a host event code.  If
 	 * it reads back as set, then the entire event mask should be
@@ -1707,6 +1712,60 @@ struct ec_response_i2c_passthru {
 	uint8_t data[];		/* Data read by messages concatenated here */
 } __packed;
 
+/*****************************************************************************/
+/* Power button hang detect */
+
+#define EC_CMD_HANG_DETECT 0x9f
+
+/* Reasons to start hang detection timer */
+/* Power button pressed */
+#define EC_HANG_START_ON_POWER_PRESS  (1 << 0)
+
+/* Lid closed */
+#define EC_HANG_START_ON_LID_CLOSE    (1 << 1)
+
+ /* Lid opened */
+#define EC_HANG_START_ON_LID_OPEN     (1 << 2)
+
+/* Start of AP S3->S0 transition (booting or resuming from suspend) */
+#define EC_HANG_START_ON_RESUME       (1 << 3)
+
+/* Reasons to cancel hang detection */
+
+/* Power button released */
+#define EC_HANG_STOP_ON_POWER_RELEASE (1 << 8)
+
+/* Any host command from AP received */
+#define EC_HANG_STOP_ON_HOST_COMMAND  (1 << 9)
+
+/* Stop on end of AP S0->S3 transition (suspending or shutting down) */
+#define EC_HANG_STOP_ON_SUSPEND       (1 << 10)
+
+/*
+ * If this flag is set, all the other fields are ignored, and the hang detect
+ * timer is started.  This provides the AP a way to start the hang timer
+ * without reconfiguring any of the other hang detect settings.  Note that
+ * you must previously have configured the timeouts.
+ */
+#define EC_HANG_START_NOW             (1 << 30)
+
+/*
+ * If this flag is set, all the other fields are ignored (including
+ * EC_HANG_START_NOW).  This provides the AP a way to stop the hang timer
+ * without reconfiguring any of the other hang detect settings.
+ */
+#define EC_HANG_STOP_NOW              (1 << 31)
+
+struct ec_params_hang_detect {
+	/* Flags; see EC_HANG_* */
+	uint32_t flags;
+
+	/* Timeout in msec before generating host event, if enabled */
+	uint16_t host_event_timeout_msec;
+
+	/* Timeout in msec before generating warm reboot, if enabled */
+	uint16_t warm_reboot_timeout_msec;
+} __packed;
 
 /*****************************************************************************/
 /* Debug commands for battery charging */
@@ -1911,6 +1970,14 @@ struct ec_params_reboot_ec {
  *   write 2 to [0x05]      --  select temp sensor 2
  *   write 0x1 to [0x07]    --  disable threshold 1
  */
+
+/* DPTF battery charging current limit */
+#define EC_ACPI_MEM_CHARGING_LIMIT     0x08
+
+/* Charging limit is specified in 64 mA steps */
+#define EC_ACPI_MEM_CHARGING_LIMIT_STEP_MA   64
+/* Value to disable DPTF battery charging limit */
+#define EC_ACPI_MEM_CHARGING_LIMIT_DISABLED  0xff
 
 /* Current version of ACPI memory address space */
 #define EC_ACPI_MEM_VERSION_CURRENT 1

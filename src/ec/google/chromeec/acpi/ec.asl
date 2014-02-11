@@ -52,6 +52,7 @@ Device (EC0)
 		PATI, 8,	// Programmable Auxiliary Trip Sensor ID
 		PATT, 8,	// Programmable Auxiliary Trip Threshold
 		PATC, 8,	// Programmable Auxiliary Trip Commit
+		CHGL, 8,	// Charger Current Limit
 	}
 
 	OperationRegion (EMEM, SystemIO, EC_LPC_ADDR_MEMMAP, EC_MEMMAP_SIZE)
@@ -380,7 +381,7 @@ Device (EC0)
 
 	/*
 	 * Thermal Threshold Event
-	  */
+	 */
 	Method (_Q09, 0, NotSerialized)
 	{
 		If (Acquire (^PATM, 1000)) {
@@ -402,6 +403,23 @@ Device (EC0)
 		}
 
 		Release (^PATM)
+	}
+
+	/*
+	 * Set Charger Current Limit
+	 *   Arg0 = Current Limit in 64mA steps
+	 */
+	Method (CHGS, 1, Serialized)
+	{
+		Store (ToInteger (Arg0), ^CHGL)
+	}
+
+	/*
+	 * Disable Charger Current Limit
+	 */
+	Method (CHGD, 0, Serialized)
+	{
+		Store (0xFF, ^CHGL)
 	}
 
 	#include "ac.asl"

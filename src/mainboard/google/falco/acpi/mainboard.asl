@@ -108,3 +108,37 @@ Scope (\_SB)
 		}
 	}
 }
+
+Scope (\_SB.PCI0.I2C0)
+{
+	Device (CYPA)
+	{
+		Name (_HID, "CYPA0000")
+		Name (_DDN, "Cypress Touchpad")
+		Name (_UID, 1)
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				BOARD_TRACKPAD_I2C_ADDR,  // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\\_SB.PCI0.I2C0",        // ResourceSource
+			)
+			Interrupt (ResourceConsumer, Edge, ActiveLow)
+			{
+				BOARD_TRACKPAD_IRQ
+			}
+		})
+
+		Method (_STA)
+		{
+			If (LEqual (\S1EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
+	}
+}

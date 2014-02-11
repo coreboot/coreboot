@@ -38,7 +38,7 @@ chip soc/nvidia/tegra124
 	register "lvds_shutdown_gpio" = "0"
 	register "backlight_vdd_gpio" = "GPIO(P2)"
 	register "panel_vdd_gpio" = "0"
-	register "pwm" = "GPIO(H1)"
+	register "pwm" = "1"
 
 # taken from u-boot; these look wrong however.
 	register "vdd_delay" = "400"

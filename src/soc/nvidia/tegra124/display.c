@@ -33,6 +33,7 @@
 #include <edid.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/dc.h>
+#include <soc/nvidia/tegra/pwm.h>
 #include <soc/nvidia/tegra124/sdram.h>
 #include "chip.h"
 #include <soc/display.h>
@@ -240,6 +241,7 @@ void display_startup(device_t dev)
 	int i;
 	struct soc_nvidia_tegra124_config *config = dev->chip_info;
 	struct display_controller *dc = (void *)config->display_controller;
+	struct pwm_controller *pwm = (void *)TEGRA_PWM_BASE;
 	struct disp_ctl_win window;
 
 	/* should probably just make it all MiB ... in future */
@@ -270,11 +272,15 @@ void display_startup(device_t dev)
 			__func__, config->backlight_en_gpio, 1);
 	}
 
-	if (config->pwm){
-		gpio_output(config->pwm, 1);
-		printk(BIOS_SPEW,"%s: pwm setting gpio %08x to %d\n",
-			__func__, config->pwm, 1);
-	}
+	/* Set up Tegra PWM n (where n is specified in config->pwm) to drive the
+	 * panel backlight.
+	 */
+	printk(BIOS_SPEW, "%s: enable panel backlight pwm\n", __func__);
+	WRITEL(((1 << NV_PWM_CSR_ENABLE_SHIFT) |
+		(220 << NV_PWM_CSR_PULSE_WIDTH_SHIFT) | /* 220/256 */
+		0x02e), /* frequency divider */
+	       &pwm->pwm[config->pwm].csr);
+
 	printk(BIOS_SPEW,
 		"%s: xres %d yres %d framebuffer_bits_per_pixel %d\n",
 		__func__,

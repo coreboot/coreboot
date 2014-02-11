@@ -1,0 +1,8 @@
+Code-Review+2: Patrick Georgi <patrick@georgi-clan.de>
+Verified+1: build bot (Jenkins)
+Code-Review+1: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Submitted-by: Aaron Durbin <adurbin@google.com>
+Submitted-at: Tue, 11 Feb 2014 22:18:48 +0100
+Reviewed-on: http://review.coreboot.org/4867
+Project: coreboot
+Branch: refs/heads/master

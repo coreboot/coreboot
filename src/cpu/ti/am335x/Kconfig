@@ -1,3 +1,14 @@
+config CPU_TI_AM335X
+	depends on ARCH_ARMV7
+	select HAVE_MONOTONIC_TIMER
+	select HAVE_UART_SPECIAL
+	select BOOTBLOCK_CONSOLE
+	select EARLY_CONSOLE
+	bool
+	default n
+
+if CPU_TI_AM335X
+
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/ti/am335x/bootblock.c"
@@ -47,3 +58,5 @@ config CBFS_HEADER_ROM_OFFSET
 config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
+
+endif

@@ -29,14 +29,6 @@
 #include "pch.h"
 #include "nvs.h"
 
-/* Set D3Hot Power State in ACPI mode */
-static void serialio_enable_d3hot(struct device *dev)
-{
-	u32 reg32 = pci_read_config32(dev, PCH_PCS);
-	reg32 |= PCH_PCS_PS_D3HOT;
-	pci_write_config32(dev, PCH_PCS, reg32);
-}
-
 /* Enable clock in PCI mode */
 static void serialio_enable_clock(struct resource *bar0)
 {
@@ -178,8 +170,6 @@ static void serialio_init(struct device *dev)
 
 	if (!config->sio_acpi_mode)
 		serialio_enable_clock(bar0);
-	else if (dev->path.pci.devfn != PCI_DEVFN(21, 0))
-		serialio_enable_d3hot(dev); /* all but SDMA */
 
 	switch (dev->path.pci.devfn) {
 	case PCI_DEVFN(21, 0): /* SDMA */

@@ -211,6 +211,28 @@ Device (I2C0)
 			Return (0xF)
 		}
 	}
+
+	// Access to PCI Config in ACPI mode
+	OperationRegion (KEYS, SystemMemory, \S1B1, 0x100)
+	Field (KEYS, DWordAcc, NoLock, Preserve)
+	{
+		Offset (0x84),
+		PSAT, 32,
+	}
+
+	// Put controller in D0 state
+	Method (_PS0, 0, Serialized)
+	{
+		And (^PSAT, 0xfffffffc, ^PSAT)
+		Store (^PSAT, Local0)
+	}
+
+	// Put controller in D3Hot state
+	Method (_PS3, 0, Serialized)
+	{
+		Or (^PSAT, 0x00000003, ^PSAT)
+		Store (^PSAT, Local0)
+	}
 }
 
 Device (I2C1)
@@ -261,6 +283,28 @@ Device (I2C1)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	// Access to PCI Config in ACPI mode
+	OperationRegion (KEYS, SystemMemory, \S2B1, 0x100)
+	Field (KEYS, DWordAcc, NoLock, Preserve)
+	{
+		Offset (0x84),
+		PSAT, 32,
+	}
+
+	// Put controller in D0 state
+	Method (_PS0, 0, Serialized)
+	{
+		And (^PSAT, 0xfffffffc, ^PSAT)
+		Store (^PSAT, Local0)
+	}
+
+	// Put controller in D3Hot state
+	Method (_PS3, 0, Serialized)
+	{
+		Or (^PSAT, 0x00000003, ^PSAT)
+		Store (^PSAT, Local0)
 	}
 }
 

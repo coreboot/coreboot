@@ -1,6 +1,9 @@
 /*
  * DL145G1 needs a different resource map
- * This file may need more tweaking, it is copied from the Tyan S2881 mainboard
+ * This file was originally copied from the tyan/s2881 coreboot mainboard.
+ *
+ * Copyright (c) 2011,2014 Oskar Enoksson <enok@lysator.liu.se>
+ * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
 static void setup_dl145g1_resource_map(void)

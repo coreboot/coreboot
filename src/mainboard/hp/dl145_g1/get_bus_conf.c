@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2011,2014 Oskar Enoksson <enok@lysator.liu.se>
+ * Subject to the GNU GPL v2, or (at your option) any later version.
+ */
 #include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

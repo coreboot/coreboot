@@ -25,6 +25,12 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select CPU_ARMLTD_CORTEX_A9
 	select DRIVERS_UART_PL011
+	select BOOTBLOCK_CONSOLE
+	select EARLY_CONSOLE
+	select CONSOLE_SERIAL
+	select ARM_BOOTBLOCK_ARMV7
+	select ARM_ROMSTAGE_ARMV7
+	select ARM_RAMSTAGE_ARMV7
 	select BOARD_ROMSIZE_KB_4096
 
 config MAINBOARD_DIR
@@ -61,6 +67,14 @@ config DRAM_SIZE_MB
 # 0x0011_0000: CBFS data
 # 0x0100_0000: reserved for ramstage
 # 0x1000_0000: I/O map address
+#
+config STACK_TOP
+	hex
+	default 0x00100000
+
+config STACK_BOTTOM
+	hex
+	default 0x0007FF00
 
 config BOOTBLOCK_BASE
 	hex
@@ -85,17 +99,5 @@ config CBFS_HEADER_ROM_OFFSET
 config CBFS_ROM_OFFSET
 	hex
 	default 0x0110000
-
-config STACK_TOP
-	hex
-	default 0x0007ff00
-
-config STACK_BOTTOM
-	hex
-	default 0x00040000
-
-config STACK_SIZE
-	hex
-	default 0x0003ff00
 
 endif #  BOARD_EMULATION_QEMU_ARMV7

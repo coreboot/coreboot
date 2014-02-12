@@ -32,8 +32,4 @@ config HAVE_ME_BIN
 	bool
 	default n
 
-config SPD_CBFS_ADDRESS
-	hex "Location of SPD in CBFS"
-	default 0xfffec000
-
 endif # BOARD_INTEL_BAYLEYBAY

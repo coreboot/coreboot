@@ -40,7 +40,8 @@ mrc.bin-file := $(call strip_quotes,$(CONFIG_MRC_FILE))
 mrc.bin-position := 0xfffa0000
 mrc.bin-type := 0xab
 
-$(obj)/mrc.cache:
+ifneq ($(CONFIG_CHROMEOS),y)
+$(obj)/mrc.cache: $(obj)/config.h
 	dd if=/dev/zero count=1 \
 	bs=$(shell printf "%d" $(CONFIG_MRC_CACHE_SIZE) ) | \
 	tr '\000' '\377' > $@
@@ -49,5 +50,6 @@ cbfs-files-$(CONFIG_HAVE_MRC_CACHE) += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
 mrc.cache-position := 0xfffd0000
 mrc.cache-type := 0xac
+endif
 
 $(obj)/northbridge/intel/sandybridge/acpi.ramstage.o : $(obj)/build.h

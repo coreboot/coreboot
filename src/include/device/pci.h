@@ -15,6 +15,8 @@
 #ifndef PCI_H
 #define PCI_H
 
+#if CONFIG_PCI
+
 #include <stdint.h>
 #include <stddef.h>
 #include <arch/rules.h>
@@ -98,4 +100,7 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 }
 
 #endif /* ! __SIMPLE_DEVICE__ */
+
+#endif /* CONFIG_PCI */
+
 #endif /* PCI_H */

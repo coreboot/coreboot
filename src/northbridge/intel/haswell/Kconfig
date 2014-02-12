@@ -108,7 +108,7 @@ config CBFS_SIZE
 	  firmware image.
 
 config PRE_GRAPHICS_DELAY
-	int
+	int "Graphics initialization delay in ms"
 	default 0
 	help
 	  On some systems, coreboot boots so fast that connected monitors

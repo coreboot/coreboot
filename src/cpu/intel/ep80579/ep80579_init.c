@@ -19,7 +19,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <string.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>

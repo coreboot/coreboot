@@ -20,7 +20,6 @@
 
 #include <stdint.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>

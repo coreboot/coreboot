@@ -29,7 +29,6 @@
 #include <cpu/intel/speedstep.h>
 #include <cpu/intel/turbo.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include "haswell.h"
 #include "chip.h"
 

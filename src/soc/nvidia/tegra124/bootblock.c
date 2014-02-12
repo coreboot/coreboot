@@ -23,6 +23,7 @@
 #include <cbfs.h>
 #include <console/console.h>
 #include <soc/clock.h>
+#include <soc/nvidia/tegra/apbmisc.h>
 
 #include "pinmux.h"
 #include "power.h"
@@ -30,6 +31,9 @@
 void main(void)
 {
 	void *entry;
+
+	// enable JTAG at the earliest stage
+	enable_jtag();
 
 	clock_early_uart();
 

@@ -70,6 +70,19 @@ int hda_codec_detect(u8 *base)
 	/* Write back the value once reset bit is set. */
 	write16(base + HDA_GCAP_REG, read16(base + HDA_GCAP_REG));
 
+	/* Clear the "State Change Status Register" STATESTS bits
+	 * for each of the "SDIN Stat Change Status Flag"
+	*/
+	write8(base + HDA_STATESTS_REG, 0xf);
+
+	/* Turn off the link and poll RESET# bit until it reads back as 0 */
+	if (set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, ~HDA_GCTL_CRST) < 0)
+		goto no_codec;
+
+	/* Turn on the link and poll RESET# bit until it reads back as 1 */
+	if (set_bits(base + HDA_GCTL_REG, HDA_GCTL_CRST, HDA_GCTL_CRST) < 0)
+		goto no_codec;
+
 	/* Read in Codec location (BAR + 0xe)[2..0]*/
 	reg8 = read8(base + HDA_STATESTS_REG);
 	reg8 &= 0x0f;

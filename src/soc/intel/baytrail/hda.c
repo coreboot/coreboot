@@ -31,11 +31,6 @@
 #include <baytrail/ramstage.h>
 
 static const struct reg_script init_ops[] = {
-	/* Set up VC0 and VC1. */
-	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + 0x24, 0x80000019),
-	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + 0x28, 0x81000022),
-	/* Enable VCi */
-	REG_PCI_WRITE32(0x120, 0x81000022),
 	/* Enable no snoop traffic. */
 	REG_PCI_OR16(0x78, 1 << 11),
 	/* Configure HDMI codec connection. */

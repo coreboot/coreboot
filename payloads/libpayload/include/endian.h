@@ -69,7 +69,7 @@ static inline uint64_t swap_bytes64(uint64_t in)
 
 #error Cant tell if the CPU is little or big endian.
 
-#endif
+#endif /* CONFIG_*_ENDIAN */
 
 #define be16toh(in) htobe16(in)
 #define be32toh(in) htobe32(in)
@@ -87,6 +87,43 @@ static inline uint64_t swap_bytes64(uint64_t in)
 #define ntohl(in) be32toh(in)
 #define ntohll(in) be64toh(in)
 
+/*
+ * Alignment-agnostic encode/decode bytestream to/from little/big endian.
+ */
+
+static inline uint16_t le16dec(const void *pp)
+{
+	unsigned char const *p = (unsigned char const *)pp;
+
+	return ((p[1] << 8) | p[0]);
+}
+
+static inline uint32_t le32dec(const void *pp)
+{
+	unsigned char const *p = (unsigned char const *)pp;
+
+	return ((p[3] << 24) | (p[2] << 16) | (p[1] << 8) | p[0]);
+}
+
+static inline void leXXenc(void *pp, uint16_t u, uint8_t b)
+{
+  unsigned char *p = (unsigned char *)pp;
+
+  for(int i=0; i < b; i++)
+    p[i] = (u >> i*8) & 0xFF;
+}
+
+
+static inline void le16enc(void *pp, uint16_t u)
+{
+  leXXenc(pp, u, 2);
+}
+
+static inline void le32enc(void *pp, uint32_t u)
+{
+  leXXenc(pp, u, 4);
+}
+
 /* Deprecated names (not in glibc / BSD) */
 #define htobew(in) htobe16(in)
 #define htobel(in) htobe32(in)
@@ -101,4 +138,4 @@ static inline uint64_t swap_bytes64(uint64_t in)
 #define letohl(in) le32toh(in)
 #define letohll(in) le64toh(in)
 
-#endif
+#endif /* _ENDIAN_H_ */

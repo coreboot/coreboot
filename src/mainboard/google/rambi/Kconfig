@@ -31,4 +31,11 @@ config HAVE_ME_BIN
 	bool
 	default n
 
+# Positioning spd.bin at a fixed address is useful during manufacturing, but
+# offers no benefit otherwise, hence only present the option with ChromeOS
+config SPD_CBFS_ADDRESS
+	depends on CHROMEOS
+	hex "Location of SPD in CBFS"
+	default 0xfffec000
+
 endif # BOARD_INTEL_BAYLEYBAY

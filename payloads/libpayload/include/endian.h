@@ -69,7 +69,7 @@ static inline uint64_t swap_bytes64(uint64_t in)
 
 #error Cant tell if the CPU is little or big endian.
 
-#endif
+#endif /* CONFIG_*_ENDIAN */
 
 #define be16toh(in) htobe16(in)
 #define be32toh(in) htobe32(in)
@@ -87,6 +87,76 @@ static inline uint64_t swap_bytes64(uint64_t in)
 #define ntohl(in) be32toh(in)
 #define ntohll(in) be64toh(in)
 
+/*
+ * Alignment-agnostic encode/decode bytestream to/from little/big endian.
+ */
+
+static inline uint16_t be16dec(const void *pp)
+{
+	uint8_t const *p = (uint8_t const *)pp;
+
+	return ((p[0] << 8) | p[1]);
+}
+
+static inline uint32_t be32dec(const void *pp)
+{
+	uint8_t const *p = (uint8_t const *)pp;
+
+	return (((unsigned)p[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3]);
+}
+
+static inline uint16_t le16dec(const void *pp)
+{
+	uint8_t const *p = (uint8_t const *)pp;
+
+	return ((p[1] << 8) | p[0]);
+}
+
+static inline uint32_t le32dec(const void *pp)
+{
+	uint8_t const *p = (uint8_t const *)pp;
+
+	return ((p[3] << 24) | (p[2] << 16) | (p[1] << 8) | p[0]);
+}
+
+static inline void bebitenc(void *pp, uint32_t u, uint8_t b)
+{
+	 uint8_t *p = (uint8_t *)pp;
+	 int i;
+
+	 for(i=(b-1); i >= 0; i++)
+	   p[i] = (u >> i*8) & 0xFF;
+}
+
+static inline void be16enc(void *pp, uint16_t u)
+{
+	 bebitenc(pp, u, 2);
+}
+
+static inline void be32enc(void *pp, uint32_t u)
+{
+	 bebitenc(pp, u, 4);
+}
+
+static inline void lebitenc(void *pp, uint32_t u, uint8_t b)
+{
+	 uint8_t *p = (uint8_t *)pp;
+	 int i;
+
+	 for(i=0; i < b; i++)
+	   p[i] = (u >> i*8) & 0xFF;
+}
+
+static inline void le16enc(void *pp, uint16_t u)
+{
+	 lebitenc(pp, u, 2);
+}
+
+static inline void le32enc(void *pp, uint32_t u)
+{
+	 lebitenc(pp, u, 4);
+}
+
 /* Deprecated names (not in glibc / BSD) */
 #define htobew(in) htobe16(in)
 #define htobel(in) htobe32(in)
@@ -101,4 +171,4 @@ static inline uint64_t swap_bytes64(uint64_t in)
 #define letohl(in) le32toh(in)
 #define letohll(in) le64toh(in)
 
-#endif
+#endif /* _ENDIAN_H_ */

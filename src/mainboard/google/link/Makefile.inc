@@ -42,3 +42,4 @@ $(SPD_BIN): $(SPD_DEPS)
 cbfs-files-y += spd.bin
 spd.bin-file := $(SPD_BIN)
 spd.bin-type := 0xab
+spd.bin-position := 0xfffec000

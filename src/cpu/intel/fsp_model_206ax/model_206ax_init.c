@@ -22,7 +22,6 @@
 
 #include <console/console.h>
 #include <device/device.h>
-#include <device/pci.h>
 #include <string.h>
 #include <arch/acpi.h>
 #include <cpu/cpu.h>

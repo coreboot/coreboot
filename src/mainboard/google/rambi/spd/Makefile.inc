@@ -43,3 +43,7 @@ $(SPD_BIN): $(SPD_DEPS)
 cbfs-files-y += spd.bin
 spd.bin-file := $(SPD_BIN)
 spd.bin-type := 0xab
+# See comment in rambi/Kconfig for why this is done like this
+ifeq ($(CONFIG_CHROMEOS),y)
+spd.bin-position := $(CONFIG_SPD_CBFS_ADDRESS)
+endif

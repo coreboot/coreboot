@@ -33,6 +33,7 @@
 #include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
+#include <cpu/x86/smm.h>
 #include <delay.h>
 #include <pc80/mc146818rtc.h>
 #include <northbridge/intel/haswell/haswell.h>
@@ -753,6 +754,7 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 	int max_cpus;
 	int num_aps;
 	const void *microcode_patch;
+	void *smm_save_area;
 
 	/* Perform any necessary BSP initialization before APs are brought up.
 	 * This call also allows the BSP to prepare for any secondary effects
@@ -760,6 +762,9 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 	bsp_init_before_ap_bringup(cpu_bus);
 
 	microcode_patch = intel_microcode_find();
+
+	/* Save default SMM area before relocation occurs. */
+	smm_save_area = backup_default_smm_area();
 
 	/* This needs to be called after the mtrr setup so the BSP mtrrs
 	 * can be mirrored by the APs. */
@@ -781,6 +786,9 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 
 	/* After SMM relocation a 2nd microcode load is required. */
 	intel_microcode_load_unlocked(microcode_patch);
+
+	/* Restore the default SMM region. */
+	restore_default_smm_area(smm_save_area);
 
 	/* Enable ROM caching if option was selected. */
 	x86_mtrr_enable_rom_caching();

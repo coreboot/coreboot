@@ -122,3 +122,9 @@ config PARALLEL_MP
 	 This option uses common MP infrastructure for bringing up APs
 	 in parallel. It additionally provides a more flexible mechanism
 	 for sequencing the steps of bringing up the APs.
+
+config BACKUP_DEFAULT_SMM_REGION
+	def_bool n
+	help
+	 The cpu support will select this option if the default SMM region
+	 needs to be backed up for suspend/resume purposes.

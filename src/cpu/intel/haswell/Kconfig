@@ -6,6 +6,7 @@ if CPU_INTEL_HASWELL
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
+	select BACKUP_DEFAULT_SMM_REGION
 	select SMP
 	select SSE2
 	select UDELAY_TSC

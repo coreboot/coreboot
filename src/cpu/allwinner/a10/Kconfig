@@ -76,7 +76,7 @@ config SYS_SDRAM_BASE
 choice CONSOLE_SERIAL_UART_CHOICES
 	prompt "Serial Console UART"
 	default CONSOLE_SERIAL_UART0
-	depends on CONSOLE_SERIAL_UART
+	depends on CONSOLE_SERIAL
 
 config CONSOLE_SERIAL_UART0
 	bool "UART0"

@@ -43,7 +43,7 @@ static unsigned char uartmem_rx_byte(void)
 /* This only relevant with x86 with GDB_STUB enabled.*/
 static int uartmem_tst_byte(void)
 {
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
+#if CONFIG_DRIVERS_UART_8250IO || CONFIG_DRIVERS_UART_8250MEM
 	return uart_can_rx_byte();
 #else
 	return 0;

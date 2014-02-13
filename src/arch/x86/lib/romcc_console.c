@@ -30,7 +30,7 @@
  */
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
 
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO
 #include "drivers/uart/util.c"
 #include "drivers/uart/uart8250io.c"
 #endif
@@ -40,7 +40,7 @@
 
 static void __console_tx_byte(unsigned char byte)
 {
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL
 	uart_tx_byte(byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
@@ -61,7 +61,7 @@ static void __console_tx_nibble(unsigned nibble)
 static void __console_tx_char(int loglevel, unsigned char byte)
 {
 	if (console_loglevel >= loglevel) {
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL
 		uart_tx_byte(byte);
 #endif
 #if CONFIG_CONSOLE_NE2K

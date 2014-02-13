@@ -1,16 +1,19 @@
 bootblock-y	+= dmtimer.c
 bootblock-y	+= bootblock_media.c
 bootblock-y	+= pinmux.c
-bootblock-$(CONFIG_EARLY_CONSOLE) += uart.c
 
 romstage-y	+= nand.c
-romstage-y	+= uart.c
 
 ramstage-y	+= dmtimer.c
 ramstage-y	+= monotonic_timer.c
 ramstage-y	+= nand.c
 ramstage-y	+= timer.c
+
+ifeq ($(CONFIG_DRIVERS_UART),y)
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
+romstage-y	+= uart.c
 ramstage-y	+= uart.c
+endif
 
 $(call add-class,omap-header)
 

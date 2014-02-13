@@ -28,7 +28,7 @@ void console_tx_byte(unsigned char byte)
 	if (byte == '\n')
 		console_tx_byte('\r');
 
-#if CONFIG_CONSOLE_SERIAL_UART
+#if CONFIG_CONSOLE_SERIAL
 	uart_tx_byte(byte);
 #endif
 #if CONFIG_CONSOLE_CBMEM && !defined(__BOOT_BLOCK__)
@@ -38,7 +38,7 @@ void console_tx_byte(unsigned char byte)
 
 static void _console_tx_flush(void)
 {
-#if CONFIG_CONSOLE_SERIAL_UART
+#if CONFIG_CONSOLE_SERIAL
 	uart_tx_flush();
 #endif
 }

@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+ramstage-$(CONFIG_BACKUP_DEFAULT_SMM_REGION) += backup_default_smm.c
+
 ifeq ($(CONFIG_SMM_MODULES),y)
 smmstub-y += smm_stub.S
 smmstub-y += smm_module_header.c

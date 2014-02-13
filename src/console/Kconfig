@@ -29,37 +29,29 @@ config SQUELCH_EARLY_SMP
 config CONSOLE_SERIAL
 	bool "Serial port console output"
 	default y
+	depends on DRIVERS_UART_8250IO || DRIVERS_UART_8250MEM || HAVE_UART_SPECIAL
 	help
-	  Send coreboot debug output to a serial port (should be one or more of
-	  CONSOLE_SERIAL8250, CONSOLE_SERIAL8250MEM, CONSOLE_SERIAL_UART)
+	  Send coreboot debug output to a serial port.
 
-config CONSOLE_SERIAL8250
-	bool "Serial port console output (I/O mapped, 8250-compatible)"
-	depends on CONSOLE_SERIAL
-	depends on HAVE_UART_IO_MAPPED
-	default y
-	help
-	  Send coreboot debug output to an I/O mapped serial port console.
+	  The type of serial port driver selected based on your configuration is
+	  shown on the following menu line. Supporting multiple different types
+	  of UARTs in one build is not supported.
 
-config CONSOLE_SERIAL8250MEM
-	bool "Serial port console output (memory mapped, 8250-compatible)"
-	depends on CONSOLE_SERIAL
-	depends on HAVE_UART_MEMORY_MAPPED
-	help
-	  Send coreboot debug output to a memory mapped serial port console.
+if CONSOLE_SERIAL
 
-config CONSOLE_SERIAL_UART
-	bool "Serial port console output (device-specific UART)"
-	depends on CONSOLE_SERIAL
+	comment "I/O mapped, 8250-compatible"
+	depends on DRIVERS_UART_8250IO
+
+	comment "memory mapped, 8250-compatible"
+	depends on DRIVERS_UART_8250MEM
+
+	comment "device-specific UART"
 	depends on HAVE_UART_SPECIAL
-	default y
-	help
-	  Send coreboot debug output to a device-specific serial port console.
 
 choice
 	prompt "Serial port for 8250"
 	default CONSOLE_SERIAL_COM1
-	depends on CONSOLE_SERIAL8250
+	depends on DRIVERS_UART_8250IO
 
 config CONSOLE_SERIAL_COM1
 	bool "COM1/ttyS0, I/O port 0x3f8"
@@ -82,7 +74,7 @@ endchoice
 
 config TTYS0_BASE
 	hex
-	depends on CONSOLE_SERIAL8250
+	depends on DRIVERS_UART_8250IO
 	default 0x3f8 if CONSOLE_SERIAL_COM1
 	default 0x2f8 if CONSOLE_SERIAL_COM2
 	default 0x3e8 if CONSOLE_SERIAL_COM3
@@ -93,7 +85,6 @@ config TTYS0_BASE
 choice
 	prompt "Baud rate"
 	default CONSOLE_SERIAL_115200
-	depends on CONSOLE_SERIAL
 
 config CONSOLE_SERIAL_115200
 	bool "115200"
@@ -133,7 +124,9 @@ config TTYS0_BAUD
 config TTYS0_LCS
 	int
 	default 3
-	depends on CONSOLE_SERIAL8250 || CONSOLE_SERIAL8250MEM
+	depends on DRIVERS_UART_8250IO || DRIVERS_UART_8250MEM
+
+endif # CONSOLE_SERIAL
 
 config SPKMODEM
 	bool "spkmodem (console on speaker) console output"

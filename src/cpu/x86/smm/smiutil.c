@@ -32,10 +32,7 @@ void console_tx_byte(unsigned char byte)
 	if (byte == '\n')
 		console_tx_byte('\r');
 
-#if CONFIG_CONSOLE_SERIAL8250MEM
-	uart_tx_byte(byte);
-#endif
-#if CONFIG_CONSOLE_SERIAL8250
+#if CONFIG_CONSOLE_SERIAL
 	uart_tx_byte(byte);
 #endif
 }
@@ -45,10 +42,7 @@ void console_init(void)
 {
 #if CONFIG_DEBUG_SMI
 	console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
-#if CONFIG_CONSOLE_SERIAL8250
-	uart_init();
-#endif
-#if CONFIG_CONSOLE_SERIAL8250MEM
+#if CONFIG_CONSOLE_SERIAL
 	uart_init();
 #endif
 #endif

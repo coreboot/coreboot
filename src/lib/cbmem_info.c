@@ -50,6 +50,7 @@ static struct cbmem_id_to_name {
 	{ CBMEM_ID_AGESA_RUNTIME,	"AGESA RSVD " },
 	{ CBMEM_ID_EHCI_DEBUG,	"USBDEBUG   " },
 	{ CBMEM_ID_REFCODE,		"REFCODE    " },
+	{ CBMEM_ID_SMM_SAVE_SPACE,	"SMM BACKUP " },
 	{ CBMEM_ID_REFCODE_CACHE,	"REFCODE $  " },
 };
 

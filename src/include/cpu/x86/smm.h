@@ -571,4 +571,8 @@ int smm_load_module(void *smram, int size, struct smm_loader_params *params);
 #endif /* __SMM__ */
 #endif /* CONFIG_SMM_MODULES */
 
+/* Backup and restore default SMM region. */
+void *backup_default_smm_area(void);
+void restore_default_smm_area(void *smm_save_area);
+
 #endif

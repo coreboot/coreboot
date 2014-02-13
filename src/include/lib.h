@@ -39,6 +39,9 @@ int ram_check_nodie(unsigned long start, unsigned long stop);
 int ram_check_noprint_nodie(unsigned long start, unsigned long stop);
 void quick_ram_check(void);
 
+/* Defined in primitive_memtest.c */
+int primitive_memtest(uintptr_t base, uintptr_t size);
+
 /* Defined in src/lib/stack.c */
 int checkstack(void *top_of_stack, int core);
 

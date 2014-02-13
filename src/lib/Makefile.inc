@@ -33,6 +33,8 @@ romstage-$(CONFIG_I2C_TPM) += delay.c
 romstage-y += cbfs.c cbfs_core.c
 romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
+romstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
+ramstage-$(CONFIG_PRIMITIVE_MEMTEST) += primitive_memtest.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 
 ifeq ($(CONFIG_EARLY_CBMEM_INIT),y)

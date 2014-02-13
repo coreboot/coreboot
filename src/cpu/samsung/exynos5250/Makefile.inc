@@ -9,7 +9,7 @@ bootblock-y += pinmux.c mct.c power.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock_init.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += clock.c
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += monotonic_timer.c
-ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
+ifeq ($(CONFIG_DRIVERS_UART),y)
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += uart.c
 endif
 bootblock-y += wakeup.c
@@ -25,7 +25,7 @@ romstage-y += dmc_init_ddr3.c
 romstage-y += power.c
 romstage-y += mct.c
 romstage-y += monotonic_timer.c
-ifeq ($(CONFIG_CONSOLE_SERIAL_UART),y)
+ifeq ($(CONFIG_DRIVERS_UART),y)
 romstage-$(CONFIG_EARLY_CONSOLE) += uart.c
 endif
 romstage-y += wakeup.c
@@ -40,7 +40,7 @@ ramstage-y += clock.c
 ramstage-y += clock_init.c
 ramstage-y += pinmux.c
 ramstage-y += power.c
-ramstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
+ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += cpu.c
 ramstage-y += tmu.c
 ramstage-y += mct.c

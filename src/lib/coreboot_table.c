@@ -489,7 +489,7 @@ unsigned long write_coreboot_table(
 	lb_mainboard(head);
 
 	/* Record the serial ports and consoles */
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || CONFIG_CONSOLE_SERIAL_UART
+#if CONFIG_CONSOLE_SERIAL
 	uart_fill_lb(head);
 #endif
 #if CONFIG_CONSOLE_USB

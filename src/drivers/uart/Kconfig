@@ -1,10 +1,19 @@
-# This should default to N and be set by SuperI/O drivers that have an UART
-config HAVE_UART_IO_MAPPED
+config DRIVERS_UART
 	bool
+	default y if CONSOLE_SERIAL
+	default n
+
+config DRIVERS_UART_8250IO
+	bool "Serial port on SuperIO"
 	depends on !ARCH_ARMV7
+	default n if NO_UART_ON_SUPERIO
 	default y if ARCH_X86
 
-config HAVE_UART_MEMORY_MAPPED
+# Select this for mainboard without SuperIO serial port.
+config NO_UART_ON_SUPERIO
+	def_bool n
+
+config DRIVERS_UART_8250MEM
 	bool
 	default n
 

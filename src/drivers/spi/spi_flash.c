@@ -243,6 +243,10 @@ static struct {
 #if CONFIG_SPI_FLASH_STMICRO
 	{ 0, 0xff, spi_flash_probe_stmicro, },
 #endif
+
+#if CONFIG_SPI_FLASH_ADESTO
+	{ 0, 0x1f, spi_flash_probe_adesto, },
+#endif
 };
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 

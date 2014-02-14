@@ -53,6 +53,7 @@ extern int console_loglevel;
 
 #ifndef __ROMCC__
 void console_init(void);
+void console_hw_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 void post_code(u8 value);

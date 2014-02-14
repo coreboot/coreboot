@@ -24,30 +24,13 @@
 #include <console/ne2k.h>
 #include <console/spkmodem.h>
 
-#include <build.h>
-#include <arch/hlt.h>
-#include <arch/io.h>
-
-#if CONFIG_EARLY_PCI_BRIDGE
-/* FIXME: ROMCC chokes on PCI headers. */
-#include <device/pci.h>
-#endif
-
 #ifndef __PRE_RAM__
-#include <string.h>
-#include <types.h>
-#include <option.h>
 
 /* initialize the console */
-void console_init(void)
+void console_hw_init(void)
 {
 	struct console_driver *driver;
-	if(get_option(&console_loglevel, "debug_level") != CB_SUCCESS)
-		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
-#if CONFIG_EARLY_PCI_BRIDGE
-	pci_early_bridge_init();
-#endif
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (!driver->init)
 			continue;
@@ -104,14 +87,8 @@ int console_tst_byte(void)
 
 #else // __PRE_RAM__   ^^^ NOT defined   vvv defined
 
-void console_init(void)
+void console_hw_init(void)
 {
-#if defined(__BOOT_BLOCK__) && CONFIG_BOOTBLOCK_CONSOLE || \
-    !defined(__BOOT_BLOCK__) && CONFIG_EARLY_CONSOLE
-
-#if CONFIG_EARLY_PCI_BRIDGE
-	pci_early_bridge_init();
-#endif
 #if CONFIG_CONSOLE_SERIAL
 	uart_init();
 #endif
@@ -127,16 +104,5 @@ void console_init(void)
 #if CONFIG_CONSOLE_USB && CONFIG_USBDEBUG_IN_ROMSTAGE && !defined(__BOOT_BLOCK__)
 	usbdebug_init();
 #endif
-
-	static const char console_test[] =
-		"\n\ncoreboot-"
-		COREBOOT_VERSION
-		COREBOOT_EXTRA_VERSION
-		" "
-		COREBOOT_BUILD
-		" starting...\n";
-	print_info(console_test);
-
-#endif /* CONFIG_EARLY_CONSOLE */
 }
 #endif

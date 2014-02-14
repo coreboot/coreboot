@@ -56,7 +56,7 @@ void main(void)
 		bootblock_mainboard_init();
 	}
 
-#ifdef CONFIG_BOOTBLOCK_CONSOLE
+#if CONFIG_BOOTBLOCK_CONSOLE
 	console_init();
 #endif
 

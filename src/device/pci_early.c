@@ -1,6 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
+ * Copyright (C) 2011 Google Inc
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -65,4 +67,47 @@ unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last)
 unsigned pci_find_capability(device_t dev, unsigned cap)
 {
 	return pci_find_next_capability(dev, cap, 0);
+}
+
+void pci_bridge_reset_secondary(device_t p2p_bridge)
+{
+	u16 reg16;
+	/* Disable all access through bridge. */
+	reg16 = pci_read_config16(p2p_bridge, PCI_COMMAND);
+	reg16 &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+	pci_write_config16(p2p_bridge, PCI_COMMAND, reg16);
+
+	/* First we reset the secondary bus. */
+	reg16 = pci_read_config16(p2p_bridge, PCI_BRIDGE_CONTROL);
+	reg16 |= (1 << 6); /* SRESET */
+	pci_write_config16(p2p_bridge, PCI_BRIDGE_CONTROL, reg16);
+
+	/* Assume we don't have to wait here forever */
+
+	/* Read back and clear reset bit. */
+	reg16 = pci_read_config16(p2p_bridge, PCI_BRIDGE_CONTROL);
+	reg16 &= ~(1 << 6); /* SRESET */
+	pci_write_config16(p2p_bridge, PCI_BRIDGE_CONTROL, reg16);
+}
+
+void pci_bridge_set_secondary(device_t p2p_bridge, u8 secondary)
+{
+	/* Disable config transaction forwarding. */
+	pci_write_config8(p2p_bridge, PCI_SUBORDINATE_BUS, 0x00);
+	pci_write_config8(p2p_bridge, PCI_SECONDARY_BUS, 0x00);
+	/* Enable config transaction forwarding. */
+	pci_write_config8(p2p_bridge, PCI_SECONDARY_BUS, secondary);
+	pci_write_config8(p2p_bridge, PCI_SUBORDINATE_BUS, secondary);
+}
+
+void pci_bridge_enable_mmio(device_t p2p_bridge, u32 base)
+{
+	/* MMIO window behind the bridge. */
+	pci_write_config32(p2p_bridge, PCI_MEMORY_BASE,
+			((base & 0xffff0000) | ((base >> 16) & 0xff00)));
+
+	/* Enable memory access through bridge */
+	reg16 = pci_read_config16(p2p_bridge, PCI_COMMAND);
+	reg16 |= PCI_COMMAND_MEMORY;
+	pci_write_config16(p2p_bridge, PCI_COMMAND, reg16);
 }

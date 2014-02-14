@@ -25,94 +25,43 @@
 #include <device/pci_def.h>
 
 static unsigned int oxpcie_present CAR_GLOBAL;
-static ROMSTAGE_CONST u32 uart0_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000;
-static ROMSTAGE_CONST u32 uart1_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x2000;
+static ROMSTAGE_CONST u32 uart0_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x1000;
+static ROMSTAGE_CONST u32 uart1_base = CONFIG_EARLY_PCI_MMIO_BASE + 0x2000;
 
-#define PCIE_BRIDGE \
-	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_BUS, \
-		CONFIG_OXFORD_OXPCIE_BRIDGE_DEVICE, \
-		CONFIG_OXFORD_OXPCIE_BRIDGE_FUNCTION)
-
-#define OXPCIE_DEVICE \
-	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 0)
-
-#define OXPCIE_DEVICE_3 \
-	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 3)
-
-static void oxpcie_init_bridge(void)
+static int oxpcie_probe(u8 bus, u8 dev, u32 mmio_base, u16 io_base)
 {
-	u16 reg16;
+	pci_devfn_t device = PCI_DEV(bus, dev, 0);
 
-	/* First we reset the secondary bus */
-	reg16 = pci_read_config16(PCIE_BRIDGE, PCI_BRIDGE_CONTROL);
-	reg16 |= (1 << 6); /* SRESET */
-	pci_write_config16(PCIE_BRIDGE, PCI_BRIDGE_CONTROL, reg16);
-
-	/* Assume we don't have to wait here forever */
-
-	/* Read back and clear reset bit. */
-	reg16 = pci_read_config16(PCIE_BRIDGE, PCI_BRIDGE_CONTROL);
-	reg16 &= ~(1 << 6); /* SRESET */
-	pci_write_config16(PCIE_BRIDGE, PCI_BRIDGE_CONTROL, reg16);
-
-	/* Set up subordinate bus number */
-	pci_write_config8(PCIE_BRIDGE, PCI_SECONDARY_BUS, 0x00);
-	pci_write_config8(PCIE_BRIDGE, PCI_SUBORDINATE_BUS, 0x00);
-	pci_write_config8(PCIE_BRIDGE, PCI_SECONDARY_BUS,
-			CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE);
-	pci_write_config8(PCIE_BRIDGE, PCI_SUBORDINATE_BUS,
-			CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE);
-
-	/* Memory window for the OXPCIe952 card */
-	// XXX is the calculation of base and limit correct?
-	pci_write_config32(PCIE_BRIDGE, PCI_MEMORY_BASE,
-			((CONFIG_OXFORD_OXPCIE_BASE_ADDRESS & 0xffff0000) |
-			((CONFIG_OXFORD_OXPCIE_BASE_ADDRESS >> 16) & 0xff00)));
-
-	/* Enable memory access through bridge */
-	reg16 = pci_read_config16(PCIE_BRIDGE, PCI_COMMAND);
-	reg16 |= PCI_COMMAND_MEMORY;
-	pci_write_config16(PCIE_BRIDGE, PCI_COMMAND, reg16);
-
-	u32 timeout = 20000; // Timeout in 10s of microseconds.
-	u32 id = 0;
-	for (;;) {
-		id = pci_read_config32(OXPCIE_DEVICE, PCI_VENDOR_ID);
-		if (!timeout-- || (id != 0 && id != 0xffffffff))
-			break;
-		udelay(10);
-	}
-
-	u32 device = OXPCIE_DEVICE; /* unknown default */
+	u32 id = pci_read_config32(device, PCI_VENDOR_ID);
 	switch (id) {
-	case 0xc1181415: /* e.g. Startech PEX1S1PMINI */
+	case 0xc1181415: /* e.g. Startech PEX1S1PMINI function 0 */
 		/* On this device function 0 is the parallel port, and
 		 * function 3 is the serial port. So let's go look for
 		 * the UART.
 		 */
-		id = pci_read_config32(OXPCIE_DEVICE_3, PCI_VENDOR_ID);
+		device = PCI_DEV(bus, dev, 3);
+		id = pci_read_config32(device, PCI_VENDOR_ID);
 		if (id != 0xc11b1415)
-			return;
-		device = OXPCIE_DEVICE_3;
+			return -1;
 		break;
+	case 0xc11b1415: /* e.g. Startech PEX1S1PMINI function 3 */
 	case 0xc1581415: /* e.g. Startech MPEX2S952 */
-		device = OXPCIE_DEVICE;
 		break;
 	default:
 		/* No UART here. */
-		return;
+		return -1;
 	}
 
 	/* Setup base address on device */
-	pci_write_config32(device, PCI_BASE_ADDRESS_0,
-				CONFIG_OXFORD_OXPCIE_BASE_ADDRESS);
+	pci_write_config32(device, PCI_BASE_ADDRESS_0, mmio_base);
 
 	/* Enable memory on device */
-	reg16 = pci_read_config16(device, PCI_COMMAND);
+	u16 reg16 = pci_read_config16(device, PCI_COMMAND);
 	reg16 |= PCI_COMMAND_MEMORY;
 	pci_write_config16(device, PCI_COMMAND, reg16);
 
 	car_set_var(oxpcie_present, 1);
+	return 0;
 }
 
 static int oxpcie_uart_active(void)
@@ -149,6 +98,6 @@ uint32_t uartmem_getbaseaddr(void)
 
 void oxford_init(void)
 {
-	oxpcie_init_bridge();
+	pci_bridge_early_init(&oxpcie_probe);
 	uart_init();
 }

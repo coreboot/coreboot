@@ -19,7 +19,7 @@
 
 #include <arch/io.h>
 #include <types.h>
-#include <uart.h>
+#include <console/uart.h>
 #include <console/console.h>
 #include <cpu/ti/am335x/pinmux.h>
 

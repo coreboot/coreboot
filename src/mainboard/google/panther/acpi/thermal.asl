@@ -61,6 +61,14 @@ Scope (\_TZ)
 			Return (\PPKG ())
 		}
 
+		// Start fan at state 4 = lowest temp state
+		Method (_INI)
+		{
+			Store (4, \FLVL)
+			Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+			Notify (\_TZ.THRM, 0x81)
+		}
+
 		Method (TCHK, 0, Serialized)
 		{
 			// Get CPU Temperature from PECI via SuperIO TMPIN3
@@ -170,14 +178,20 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				Store (0, \FLVL)
-				Store (\F0PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (LNot (_STA ())) {
+					Store (0, \FLVL)
+					Store (\F0PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 			Method (_OFF) {
-				Store (1, \FLVL)
-				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (_STA ()) {
+					Store (1, \FLVL)
+					Store (\F1PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 		}
 
@@ -191,14 +205,20 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				Store (1, \FLVL)
-				Store (\F1PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (LNot (_STA ())) {
+					Store (1, \FLVL)
+					Store (\F1PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 			Method (_OFF) {
-				Store (2, \FLVL)
-				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (_STA ()) {
+					Store (2, \FLVL)
+					Store (\F2PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 		}
 
@@ -212,14 +232,20 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				Store (2, \FLVL)
-				Store (\F2PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (LNot (_STA ())) {
+					Store (2, \FLVL)
+					Store (\F2PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 			Method (_OFF) {
-				Store (3, \FLVL)
-				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (_STA ()) {
+					Store (3, \FLVL)
+					Store (\F3PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 		}
 
@@ -233,14 +259,20 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				Store (3, \FLVL)
-				Store (\F3PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (LNot (_STA ())) {
+					Store (3, \FLVL)
+					Store (\F3PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 			Method (_OFF) {
-				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (_STA ()) {
+					Store (4, \FLVL)
+					Store (\F4PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 		}
 
@@ -254,14 +286,20 @@ Scope (\_TZ)
 				}
 			}
 			Method (_ON)  {
-				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (LNot (_STA ())) {
+					Store (4, \FLVL)
+					Store (\F4PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 			Method (_OFF) {
-				Store (4, \FLVL)
-				Store (\F4PW, \_SB.PCI0.LPCB.SIO.ENVC.F2PS)
-				Notify (\_TZ.THRM, 0x81)
+				If (_STA ()) {
+					Store (4, \FLVL)
+					Store (\F4PW,
+						\_SB.PCI0.LPCB.SIO.ENVC.F2PS)
+					Notify (\_TZ.THRM, 0x81)
+				}
 			}
 		}
 

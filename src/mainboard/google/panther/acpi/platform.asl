@@ -68,5 +68,8 @@ Method(_PTS,1)
 
 Method(_WAK,1)
 {
+	/* Initialize thermal defaults */
+	\_TZ.THRM._INI ()
+
 	Return(Package(){0,0})
 }

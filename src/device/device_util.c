@@ -796,7 +796,7 @@ void print_resource_tree(struct device *root, int debug_level, const char *msg)
 
 void show_devs_tree(struct device *dev, int debug_level, int depth, int linknum)
 {
-	char depth_str[20] = "";
+	char depth_str[20];
 	int i;
 	struct device *sibling;
 	struct bus *link;

@@ -2,6 +2,7 @@
 ramstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 
 # drivers
+ramstage-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
 ramstage-$(CONFIG_SPI_FLASH_AMIC) += amic.c
 ramstage-$(CONFIG_SPI_FLASH_EON) += eon.c
 ramstage-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c
@@ -17,6 +18,7 @@ ifeq ($(CONFIG_SPI_FLASH_SMM),y)
 smm-$(CONFIG_SPI_FLASH) += spi_flash.c
 
 # drivers
+smm-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
 smm-$(CONFIG_SPI_FLASH_AMIC) += amic.c
 smm-$(CONFIG_SPI_FLASH_EON) += eon.c
 smm-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c

@@ -11,7 +11,6 @@
 #include <console/uart.h>
 #include <arch/io.h>
 
-#include <console/console.h>
 #include <cpu/allwinner/a10/uart.h>
 
 static void *get_console_uart_base_addr(void)
@@ -44,7 +43,7 @@ unsigned int uart_platform_refclk(void)
 	return 24000000;
 }
 
-static void a10_uart_init_dev(void)
+void uart_init(void)
 {
 	void *uart_base = get_console_uart_base_addr();
 
@@ -54,46 +53,24 @@ static void a10_uart_init_dev(void)
 	a10_uart_enable_fifos(uart_base);
 }
 
-static unsigned char a10_uart_rx_byte(void)
+unsigned char uart_rx_byte(void)
 {
 	return a10_uart_rx_blocking(get_console_uart_base_addr());
 }
 
-static void a10_uart_tx_byte(unsigned char data)
+void uart_tx_byte(unsigned char data)
 {
 	a10_uart_tx_blocking(get_console_uart_base_addr(), data);
 }
 
+#if !defined(__PRE_RAM__)
 uint32_t uartmem_getbaseaddr(void)
 {
 	return (uint32_t) get_console_uart_base_addr();
 }
-
-#if !defined(__PRE_RAM__)
-static const struct console_driver a10_uart_console __console = {
-	.init = a10_uart_init_dev,
-	.tx_byte = a10_uart_tx_byte,
-	.rx_byte = a10_uart_rx_byte,
-};
-#else
-
-void uart_init(void)
-{
-	a10_uart_init_dev();
-}
-
-unsigned char uart_rx_byte(void)
-{
-	return a10_uart_rx_byte();
-}
-
-void uart_tx_byte(unsigned char data)
-{
-	a10_uart_tx_byte(data);
-}
+#endif
 
 void uart_tx_flush(void)
 {
 }
 
-#endif

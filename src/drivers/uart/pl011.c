@@ -13,7 +13,6 @@
  * GNU General Public License for more details.
  */
 
-#include <console/console.h>
 #include <console/uart.h>
 
 static void pl011_uart_tx_byte(unsigned char data)
@@ -25,16 +24,12 @@ static void pl011_uart_tx_byte(unsigned char data)
 }
 
 #if !defined(__PRE_RAM__)
-
-static const struct console_driver pl011_uart_console __console = {
-	.tx_byte  = pl011_uart_tx_byte,
-};
-
 uint32_t uartmem_getbaseaddr(void)
 {
 	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }
-#else
+#endif
+
 void uart_init(void)
 {
 }
@@ -47,4 +42,8 @@ void uart_tx_byte(unsigned char data)
 void uart_tx_flush(void)
 {
 }
-#endif
+
+unsigned char uart_rx_byte(void)
+{
+	return 0;
+}

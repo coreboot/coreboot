@@ -20,35 +20,40 @@
 #include <console/console.h>
 #include <console/uart.h>
 
-static void ttyS0_init(void)
+static void uartmem_init(void)
 {
 	uart_init();
 }
 
-static void ttyS0_tx_byte(unsigned char data)
+static void uartmem_tx_byte(unsigned char data)
 {
 	uart_tx_byte(data);
 }
 
-static void ttyS0_tx_flush(void)
+static void uartmem_tx_flush(void)
 {
 	uart_tx_flush();
 }
 
-static unsigned char ttyS0_rx_byte(void)
+static unsigned char uartmem_rx_byte(void)
 {
 	return uart_rx_byte();
 }
 
-static int ttyS0_tst_byte(void)
+/* This only relevant with x86 with GDB_STUB enabled.*/
+static int uartmem_tst_byte(void)
 {
+#if CONFIG_DRIVERS_UART_8250IO || CONFIG_DRIVERS_UART_8250MEM
 	return uart_can_rx_byte();
+#else
+	return 0;
+#endif
 }
 
-static const struct console_driver uart8250_console __console = {
-	.init     = ttyS0_init,
-	.tx_byte  = ttyS0_tx_byte,
-	.tx_flush = ttyS0_tx_flush,
-	.rx_byte  = ttyS0_rx_byte,
-	.tst_byte = ttyS0_tst_byte,
+static const struct console_driver uart_console __console = {
+	.init     = uartmem_init,
+	.tx_byte  = uartmem_tx_byte,
+	.tx_flush = uartmem_tx_flush,
+	.rx_byte  = uartmem_rx_byte,
+	.tst_byte = uartmem_tst_byte,
 };

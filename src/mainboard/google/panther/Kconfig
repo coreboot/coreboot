@@ -20,7 +20,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 
 config VBOOT_RAMSTAGE_INDEX
 	hex
-	default 0x2
+	default 0x1
 
 config MAINBOARD_DIR
 	string

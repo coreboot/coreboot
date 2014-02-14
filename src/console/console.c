@@ -18,6 +18,12 @@
  */
 
 #include <console/console.h>
+#include <console/cbmem_console.h>
+#include <console/uart.h>
+#include <console/usb.h>
+#include <console/ne2k.h>
+#include <console/spkmodem.h>
+
 #include <build.h>
 #include <arch/hlt.h>
 #include <arch/io.h>

@@ -20,9 +20,6 @@
 #include <types.h>
 #include <console/uart.h>
 #include <arch/io.h>
-
-#include <console/console.h>	/* for __console definition */
-
 #include <cpu/ti/am335x/uart.h>
 
 #define EFR_ENHANCED_EN		(1 << 4)
@@ -162,28 +159,18 @@ unsigned int uart_platform_refclk(void)
 	return 48000000;
 }
 
-static void am335x_uart_init_dev(void)
-{
-	uint16_t div = (uint16_t) uart_baudrate_divisor(
-		default_baudrate(), uart_platform_refclk(), 16);
-	am335x_uart_init(div);
-}
-
 #if !defined(__PRE_RAM__)
 uint32_t uartmem_getbaseaddr(void)
 {
 	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }
+#endif
 
-static const struct console_driver exynos5_uart_console __console = {
-	.init     = am335x_uart_init_dev,
-	.tx_byte  = am335x_uart_tx_byte,
-	.rx_byte  = am335x_uart_rx_byte,
-};
-#else
 void uart_init(void)
 {
-	am335x_uart_init_dev();
+	uint16_t div = (uint16_t) uart_baudrate_divisor(
+		default_baudrate(), uart_platform_refclk(), 16);
+	am335x_uart_init(div);
 }
 
 unsigned char uart_rx_byte(void)
@@ -196,6 +183,6 @@ void uart_tx_byte(unsigned char data)
 	am335x_uart_tx_byte(data);
 }
 
-void uart_tx_flush(void) {
+void uart_tx_flush(void)
+{
 }
-#endif

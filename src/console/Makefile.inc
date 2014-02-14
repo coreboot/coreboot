@@ -17,8 +17,7 @@ bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c
 bootblock-y += console.c
 bootblock-y += die.c
 
-ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.c
-ramstage-$(CONFIG_CONSOLE_SERIAL8250MEM) += uart8250mem_console.c
+ramstage-$(CONFIG_CONSOLE_SERIAL) += uart_console.c
 ramstage-$(CONFIG_SPKMODEM) += spkmodem_console.c
 ramstage-$(CONFIG_CONSOLE_USB) += usbdebug_console.c
 ramstage-$(CONFIG_CONSOLE_NE2K) += ne2k_console.c

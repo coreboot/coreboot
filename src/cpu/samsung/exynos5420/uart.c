@@ -17,7 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>	/* for __console definition */
 #include <console/uart.h>
 #include <arch/io.h>
 #include "uart.h"
@@ -159,21 +158,11 @@ static void exynos5_uart_tx_byte(unsigned char data)
 }
 
 #if !defined(__PRE_RAM__)
-
-static const struct console_driver exynos5_uart_console __console = {
-	.init     = exynos5_init_dev,
-	.tx_byte  = exynos5_uart_tx_byte,
-//	.tx_flush = exynos5_uart_tx_flush,
-	.rx_byte  = exynos5_uart_rx_byte,
-//	.tst_byte = exynos5_uart_tst_byte,
-};
-
 uint32_t uartmem_getbaseaddr(void)
 {
 	return base_port;
 }
-
-#else
+#endif
 
 void uart_init(void)
 {
@@ -193,5 +182,3 @@ void uart_tx_byte(unsigned char data)
 void uart_tx_flush(void)
 {
 }
-
-#endif

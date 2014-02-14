@@ -25,6 +25,7 @@ romstage-$(CONFIG_ARCH_X86) += vboot.c
 ramstage-y += gnvs.c
 romstage-y += fmap.c
 ramstage-y += fmap.c
+ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c
 smm-y += fmap.c
 ifneq ($(wildcard src/mainboard/$(MAINBOARDDIR)/chromeos.c),)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/chromeos.c

@@ -107,3 +107,5 @@ Device (CRHW)
 		Return (TSLM)
 	}
 }
+
+#include "ramoops.asl"

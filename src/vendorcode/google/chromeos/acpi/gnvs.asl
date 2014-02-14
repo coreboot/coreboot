@@ -34,4 +34,6 @@ VBT9,   32,	// 0x196 - FMAP base address
 CHVD, 24576,	// 0x19a - VDAT space filled by verified boot
 VBTA,	32,	// 0xd9a - pointer to smbios FWID
 MEHH,  256,	// 0xd9e - Management Engine Hash
-		// 0xdbe
+RMOB,   32,	// 0xdbe - RAM oops base address
+RMOL,   32,	// 0xdc2 - RAM oops length
+		// 0xdc6

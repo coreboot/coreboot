@@ -59,11 +59,30 @@ static void report_cpu_info(void)
 	       mode[aes], mode[txt], mode[vt]);
 }
 
-/* The PCI id name match comes from Intel document 472178 */
 static struct {
 	u16 dev_id;
 	const char *dev_name;
 } pch_table [] = {
+	/* 6-series PCI ids from Intel document 440377 */
+	{0x1C41, "SFF Sample"},
+	{0x1C42, "Desktop Sample"},
+	{0x1C43, "Mobile Sample"},
+	{0x1C44, "Z68"},
+	{0x1C46, "P67"},
+	{0x1C47, "UM67"},
+	{0x1C49, "HM65"},
+	{0x1C4A, "H67"},
+	{0x1C4B, "HM67"},
+	{0x1C4C, "Q65"},
+	{0x1C4D, "QS67"},
+	{0x1C4E, "Q67"},
+	{0x1C4F, "QM67"},
+	{0x1C50, "B65"},
+	{0x1C52, "C202"},
+	{0x1C54, "C204"},
+	{0x1C56, "C206"},
+	{0x1C5C, "H61"},
+	/* 7-series PCI ids from Intel document 472178 */
 	{0x1E41, "Desktop Sample"},
 	{0x1E42, "Mobile Sample"},
 	{0x1E43, "SFF Sample"},

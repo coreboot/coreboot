@@ -20,6 +20,8 @@
 #ifndef CONSOLE_UART_H
 #define CONSOLE_UART_H
 
+#include <stdint.h>
+
 /* Return the clock frequency UART uses as reference clock for
  * baudrate generator. */
 unsigned int uart_platform_refclk(void);

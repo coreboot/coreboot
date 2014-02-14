@@ -1,5 +1,5 @@
 ramstage-y += printk.c
-ramstage-y += console.c
+ramstage-y += init.c console.c
 ramstage-y += vtxprintf.c
 ramstage-y += vsprintf.c
 ramstage-y += post.c
@@ -9,12 +9,12 @@ smm-$(CONFIG_DEBUG_SMI) += vtxprintf.c printk.c
 smm-$(CONFIG_SMM_TSEG) += die.c
 
 romstage-$(CONFIG_EARLY_CONSOLE) += vtxprintf.c
-romstage-y += console.c
+romstage-$(CONFIG_EARLY_CONSOLE) += init.c console.c
 romstage-y += post.c
 romstage-y += die.c
 
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c
-bootblock-y += console.c
+bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += init.c console.c
 bootblock-y += die.c
 
 ramstage-$(CONFIG_CONSOLE_SERIAL) += uart_console.c
@@ -25,6 +25,6 @@ ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 ramstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon_console.c
 
 
-$(obj)/console/console.ramstage.o : $(obj)/build.h
-$(obj)/console/console.romstage.o : $(obj)/build.h
-$(obj)/console/console.bootblock.o : $(obj)/build.h
+$(obj)/console/init.ramstage.o : $(obj)/build.h
+$(obj)/console/init.romstage.o : $(obj)/build.h
+$(obj)/console/init.bootblock.o : $(obj)/build.h

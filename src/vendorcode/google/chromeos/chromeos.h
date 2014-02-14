@@ -52,4 +52,19 @@ void *vboot_get_payload(size_t *len);
 int vboot_get_handoff_info(void **addr, uint32_t *size);
 #endif
 
+#if CONFIG_CHROMEOS_RAMOOPS
+#include "gnvs.h"
+struct device;
+
+#if CONFIG_CHROMEOS_RAMOOPS_DYNAMIC
+static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
+void chromeos_reserve_ram_oops_dynamic(chromeos_acpi_t *chromeos);
+#else /* CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
+void chromeos_reserve_ram_oops(struct device *dev, int idx);
+static inline void chromeos_reserve_ram_oops_dynamic(chromeos_acpi_t *chromeos)
+{
+}
+#endif /* CONFIG_CHROMEOS_RAMOOPS_DYNAMIC */
+#endif
+
 #endif

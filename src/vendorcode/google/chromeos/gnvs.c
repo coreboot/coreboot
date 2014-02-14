@@ -72,6 +72,8 @@ void chromeos_init_vboot(chromeos_acpi_t *chromeos)
 			    reason ? reason : ELOG_CROS_RECOVERY_MODE_BUTTON);
 	}
 #endif
+
+	chromeos_reserve_ram_oops_dynamic(chromeos);
 }
 
 void chromeos_set_me_hash(u32 *hash, int len)

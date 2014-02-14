@@ -9,6 +9,7 @@ ramstage-$(CONFIG_SPI_FLASH_SST) += sst.c
 ramstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 ramstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
 ramstage-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
+ramstage-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
 ramstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 
 ifeq ($(CONFIG_SPI_FLASH_SMM),y)
@@ -22,6 +23,7 @@ smm-$(CONFIG_SPI_FLASH_SPANSION) += spansion.c
 smm-$(CONFIG_SPI_FLASH_SST) += sst.c
 smm-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
 smm-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
+smm-$(CONFIG_SPI_FLASH_ADESTO) += adesto.c
 smm-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
 smm-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
 endif

@@ -7,12 +7,7 @@
 
 #include "uart.h"
 #include <arch/io.h>
-
-/* Give me my 8250 UART definitions!!!! */
-/* TODO: Clean this up when uart8250mem works on ARM */
-#undef CONFIG_CONSOLE_SERIAL8250MEM
-#define CONFIG_CONSOLE_SERIAL8250MEM 1
-#include <uart8250.h>
+#include "drivers/uart8250/uart8250reg.h"
 
 /**
  * \brief Configure line control settings for UART

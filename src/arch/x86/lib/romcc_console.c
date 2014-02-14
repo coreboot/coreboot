@@ -129,7 +129,6 @@ static void __console_tx_string(int loglevel, const char *str)
 
 /* if included by romcc, include the sources, too. romcc can't use prototypes */
 #include <console/console.c>
+#include <console/init.c>
 #include <console/post.c>
 #include <console/die.c>
-
-

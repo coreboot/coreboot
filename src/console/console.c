@@ -27,6 +27,7 @@
 #include <build.h>
 #include <arch/hlt.h>
 #include <arch/io.h>
+#include <device/pci.h>
 
 #ifndef __PRE_RAM__
 #include <string.h>
@@ -101,8 +102,8 @@ void console_init(void)
 #if defined(__BOOT_BLOCK__) && CONFIG_BOOTBLOCK_CONSOLE || \
     !defined(__BOOT_BLOCK__) && CONFIG_EARLY_CONSOLE
 
-#if CONFIG_DRIVERS_OXFORD_OXPCIE
-	oxford_init();
+#if CONFIG_EARLY_PCI_BRIDGE
+	pci_early_bridge_init();
 #endif
 #if CONFIG_CONSOLE_SERIAL
 	uart_init();

@@ -98,6 +98,12 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 	return pops;
 }
 
+#else
+
+void pci_bridge_reset_secondary(device_t p2p_bridge);
+void pci_bridge_enable_mmio(device_t p2p_bridge, u32 base);
+void pci_bridge_set_secondary(device_t p2p_bridge, u8 secondary);
+
 #endif /* ! __SIMPLE_DEVICE__ */
 
 unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);

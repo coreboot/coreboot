@@ -1,0 +1,31 @@
+config EARLY_PCI_BRIDGE
+	bool "Early PCI bridge"
+	depends on PCI
+	default n
+	help
+	  While coreboot is executing code from ROM, the coreboot resource
+	  allocator has not been running yet. Hence PCI devices living behind
+	  a bridge are not yet visible to the system.
+
+	  This option enables static configuration for a single pre-defined
+	  PCI bridge function on bus 0.
+
+if EARLY_PCI_BRIDGE
+
+config EARLY_PCI_BRIDGE_DEVICE
+	hex "bridge device"
+	default 0x0
+
+config EARLY_PCI_BRIDGE_FUNCTION
+	hex "bridge function"
+	default 0x0
+
+config EARLY_PCI_MMIO_BASE
+	hex "MMIO window base"
+	default 0x0
+
+config EARLY_PCI_BRIDGE_SECONDARY
+	hex "Early PCI bridge secondary bus"
+	default 0x0
+
+endif # EARLY_PCI_BRIDGE

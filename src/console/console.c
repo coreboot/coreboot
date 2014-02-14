@@ -28,6 +28,11 @@
 #include <arch/hlt.h>
 #include <arch/io.h>
 
+#if CONFIG_EARLY_PCI_BRIDGE
+/* FIXME: ROMCC chokes on PCI headers. */
+#include <device/pci.h>
+#endif
+
 #ifndef __PRE_RAM__
 #include <string.h>
 #include <types.h>
@@ -40,6 +45,9 @@ void console_init(void)
 	if(get_option(&console_loglevel, "debug_level") != CB_SUCCESS)
 		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 
+#if CONFIG_EARLY_PCI_BRIDGE
+	pci_early_bridge_init();
+#endif
 	for(driver = console_drivers; driver < econsole_drivers; driver++) {
 		if (!driver->init)
 			continue;
@@ -101,8 +109,8 @@ void console_init(void)
 #if defined(__BOOT_BLOCK__) && CONFIG_BOOTBLOCK_CONSOLE || \
     !defined(__BOOT_BLOCK__) && CONFIG_EARLY_CONSOLE
 
-#if CONFIG_DRIVERS_OXFORD_OXPCIE
-	oxford_init();
+#if CONFIG_EARLY_PCI_BRIDGE
+	pci_early_bridge_init();
 #endif
 #if CONFIG_CONSOLE_SERIAL
 	uart_init();

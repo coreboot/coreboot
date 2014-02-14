@@ -46,4 +46,20 @@ config MAINBOARD_POWER_ON_AFTER_POWER_FAIL
 	bool
 	default n
 
+if EARLY_PCI_BRIDGE
+
+config EARLY_PCI_BRIDGE_DEVICE
+	hex
+	default 0x1c
+
+config EARLY_PCI_BRIDGE_FUNCTION
+	hex
+	default 0x0
+
+config EARLY_PCI_MMIO_BASE
+	hex
+	default 0xe0400000
+
+endif
+
 endif # BOARD_SAMSUNG_LUMPY

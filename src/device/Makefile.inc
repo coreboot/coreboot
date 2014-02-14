@@ -11,6 +11,7 @@ ramstage-$(CONFIG_CARDBUS_PLUGIN_SUPPORT) += cardbus_device.c
 ramstage-$(CONFIG_AZALIA_PLUGIN_SUPPORT) += azalia_device.c
 ramstage-$(CONFIG_ARCH_X86) += pnp_device.c
 ramstage-$(CONFIG_PCI) += pci_ops.c
+ramstage-$(CONFIG_PCI) += pci_early.c
 ramstage-y += smbus_ops.c
 
 romstage-y += device_romstage.c

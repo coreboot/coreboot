@@ -102,6 +102,8 @@ static inline const struct pci_operations *ops_pci(device_t dev)
 
 unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last);
 unsigned pci_find_capability(device_t dev, unsigned cap);
+void pci_early_bridge_init(void);
+int pci_early_device_probe(u8 bus, u8 dev, u32 mmio_base);
 
 #endif /* CONFIG_PCI */
 

@@ -54,7 +54,6 @@ static inline void *uart_platform_baseptr(int idx)
 }
 #endif
 
-void oxford_init(void);
 void oxford_remap(unsigned int new_base);
 
 #endif /* CONSOLE_UART_H */

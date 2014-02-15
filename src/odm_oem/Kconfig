@@ -1,3 +1,5 @@
 menu "OEM / ODM"
 
+source "src/odm_oem/lenovo/Kconfig"
+
 endmenu

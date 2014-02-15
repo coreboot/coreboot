@@ -26,6 +26,9 @@
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "pc87382.h"
+#if IS_ENABLED(CONFIG_DRIVERS_LENOVO_WACOM)
+#include "odm_oem/lenovo/lenovo.h"
+#endif
 
 static void init(device_t dev)
 {
@@ -58,6 +61,12 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
+#if IS_ENABLED(CONFIG_DRIVERS_LENOVO_WACOM)
+	if (dev->path.type == DEVICE_PATH_PNP &&
+	    dev->path.pnp.device == 3)
+		dev->enabled = drivers_lenovo_is_wacom_present();
+#endif
+
 	pnp_enable_devices(dev, &pnp_ops,
 		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }

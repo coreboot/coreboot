@@ -18,7 +18,7 @@
  */
 
 #include <console/console.h>
-#include <uart8250.h>
+#include <console/uart.h>
 
 static void ttyS0_init(void)
 {
@@ -27,22 +27,22 @@ static void ttyS0_init(void)
 
 static void ttyS0_tx_byte(unsigned char data)
 {
-	uart8250_tx_byte(CONFIG_TTYS0_BASE, data);
+	uart_tx_byte(data);
 }
 
 static void ttyS0_tx_flush(void)
 {
-	uart8250_tx_flush(CONFIG_TTYS0_BASE);
+	uart_tx_flush();
 }
 
 static unsigned char ttyS0_rx_byte(void)
 {
-	return uart8250_rx_byte(CONFIG_TTYS0_BASE);
+	return uart_rx_byte();
 }
 
 static int ttyS0_tst_byte(void)
 {
-	return uart8250_can_rx_byte(CONFIG_TTYS0_BASE);
+	return uart_can_rx_byte();
 }
 
 static const struct console_driver uart8250_console __console = {

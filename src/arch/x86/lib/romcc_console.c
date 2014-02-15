@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <console/loglevel.h>
 #include <console/post_codes.h>
+#include <console/uart.h>
 #include <console/ne2k.h>
 
 /* __PRE_RAM__ */
@@ -28,9 +29,6 @@
  * we could use the same code on all architectures.
  */
 #define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
-#if CONFIG_CONSOLE_SERIAL8250
-#include <uart8250.h>
-#endif
 
 #if CONFIG_CONSOLE_SERIAL8250
 #include "drivers/uart/util.c"
@@ -43,7 +41,7 @@
 static void __console_tx_byte(unsigned char byte)
 {
 #if CONFIG_CONSOLE_SERIAL8250
-	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
+	uart_tx_byte(byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
@@ -64,7 +62,7 @@ static void __console_tx_char(int loglevel, unsigned char byte)
 {
 	if (console_loglevel >= loglevel) {
 #if CONFIG_CONSOLE_SERIAL8250
-		uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
+		uart_tx_byte(byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
 		ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);

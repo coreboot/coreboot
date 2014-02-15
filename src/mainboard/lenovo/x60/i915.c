@@ -177,8 +177,6 @@ static unsigned long globalmicroseconds(void)
 extern struct iodef iodefs[];
 extern int niodefs;
 
-static int i915_init_done = 0;
-
 /* fill the palette. This runs when the P opcode is hit. */
 static void palette(void)
 {
@@ -187,32 +185,6 @@ static void palette(void)
 
 	for (i = 0; i < 256; i++, color += 0x010101)
 		io_i915_WRITE32(color, _LGC_PALETTE_A + (i<<2));
-}
-
-int vbe_mode_info_valid(void);
-int vbe_mode_info_valid(void)
-{
-	return i915_init_done;
-}
-
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer);
-void fill_lb_framebuffer(struct lb_framebuffer *framebuffer)
-{
-	printk(BIOS_SPEW, "fill_lb_framebuffer: graphics is %p\n",
-	       (void *)graphics);
-	framebuffer->physical_address = graphics;
-	framebuffer->x_resolution = 1024;
-	framebuffer->y_resolution = 768;
-	framebuffer->bytes_per_line = 4096;
-	framebuffer->bits_per_pixel = 32;
-	framebuffer->red_mask_pos = 16;
-	framebuffer->red_mask_size = 8;
-	framebuffer->green_mask_pos = 8;
-	framebuffer->green_mask_size = 8;
-	framebuffer->blue_mask_pos = 0;
-	framebuffer->blue_mask_size = 8;
-	framebuffer->reserved_mask_pos = 24;
-	framebuffer->reserved_mask_size = 8;
 }
 
 static unsigned long times[4096];
@@ -394,6 +366,8 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 	memset((void *)graphics, 0x00, FRAME_BUFFER_BYTES);
 
 	printk(BIOS_SPEW, "%ld microseconds\n", globalmicroseconds());
-	i915_init_done = 1;
+
+	set_vbe_mode_info_valid(&edid, graphics);
+
 	return 0;
 }

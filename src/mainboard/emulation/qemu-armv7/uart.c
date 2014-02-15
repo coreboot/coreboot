@@ -14,7 +14,7 @@
  */
 
 #include <console/console.h>
-#include <uart.h>
+#include <console/uart.h>
 
 #define VEXPRESS_UART0_IO_ADDRESS	(0x10009000)
 

@@ -18,6 +18,9 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_ACPI_RESUME
 	select EARLY_CBMEM_INIT
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select DRIVERS_LENOVO_WACOM
+	select SUPERIO_NSC_PC87382
+	select DRIVERS_LENOVO_WACOM
 
 config MAINBOARD_DIR
 	string
@@ -29,7 +32,7 @@ config MAINBOARD_PART_NUMBER
 
 config MAINBOARD_VERSION
 	string
-	default "ThinkPad X201"
+	default "ThinkPad X201 / X201s / X201t"
 
 config MAINBOARD_VENDOR
 	string

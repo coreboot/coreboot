@@ -29,7 +29,10 @@ unsigned char uart_rx_byte(void);
 unsigned uart_divisor(unsigned basefreq);
 unsigned uart_platform_divisor(void);
 
-
+unsigned uart_platform_base(int idx);
 uint32_t uartmem_getbaseaddr(void);
+
+void oxford_init(void);
+void oxford_remap(u32 new_base):
 
 #endif /* CONSOLE_UART_H */

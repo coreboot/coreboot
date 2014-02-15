@@ -21,8 +21,12 @@
 #include <arch/io.h>
 #include <arch/early_variables.h>
 #include <delay.h>
-#include <uart8250.h>
+#include <console/uart.h>
 #include <device/pci_def.h>
+
+static unsigned int oxpcie_present CAR_GLOBAL;
+static ROMSTAGE_CONST u32 uart0_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000;
+static ROMSTAGE_CONST u32 uart1_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x2000;
 
 #define PCIE_BRIDGE \
 	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_BUS, \
@@ -35,13 +39,9 @@
 #define OXPCIE_DEVICE_3 \
 	PCI_DEV(CONFIG_OXFORD_OXPCIE_BRIDGE_SUBORDINATE, 0, 3)
 
-#if defined(__PRE_RAM__)
-int oxford_oxpcie_present CAR_GLOBAL;
-
-void oxford_init(void)
+static void oxpcie_init_bridge(void)
 {
 	u16 reg16;
-	oxford_oxpcie_present = 1;
 
 	/* First we reset the secondary bus */
 	reg16 = pci_read_config16(PCIE_BRIDGE, PCI_BRIDGE_CONTROL);
@@ -100,7 +100,6 @@ void oxford_init(void)
 		break;
 	default:
 		/* No UART here. */
-		oxford_oxpcie_present = 0;
 		return;
 	}
 
@@ -113,16 +112,43 @@ void oxford_init(void)
 	reg16 |= PCI_COMMAND_MEMORY;
 	pci_write_config16(device, PCI_COMMAND, reg16);
 
-	/* Now the UART initialization */
-	u32 uart0_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000;
-
-	unsigned div = uart_platform_divisor();
-	uart8250_mem_init(uart0_base, div);
+	car_set_var(oxpcie_present, 1);
 }
 
+static int oxpcie_uart_active(void)
+{
+	return (car_get_var(oxpcie_present));
+}
+
+#ifndef __PRE_RAM__
+void oxford_remap(u32 new_base)
+{
+	uart0_base = new_base + 0x1000;
+	uart1_base = new_base + 0x2000;
+}
 #endif
+
+unsigned uart_platform_base(int idx)
+{
+	if (idx == 0 && oxpcie_uart_active())
+		return uart0_base;
+	if (idx == 1 && oxpcie_uart_active())
+		return uart1_base;
+	return 0;
+}
 
 unsigned uart_platform_divisor(void)
 {
 	return uart_divisor(4000000);
+}
+
+uint32_t uartmem_getbaseaddr(void)
+{
+	return uart_platform_base(0);
+}
+
+void oxford_init(void)
+{
+	oxpcie_init_bridge();
+	uart_init();
 }

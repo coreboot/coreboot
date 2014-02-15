@@ -24,6 +24,7 @@
 #include <device/smbus.h>
 #include <smbios.h>
 #include <console/console.h>
+#include "lenovo.h"
 
 static void at24rf08c_read_string(u8 bank, u8 start, u8 len, char *result)
 {
@@ -71,7 +72,7 @@ const char *smbios_mainboard_serial_number(void)
 	return result;
 }
 
-const char *smbios_mainboard_product_name(void)
+const char *lenovo_mainboard_partnumber(void)
 {
 	static char result[12];
 	static int already_read;
@@ -84,6 +85,11 @@ const char *smbios_mainboard_product_name(void)
 
 	already_read = 1;
 	return result;
+}
+
+const char *smbios_mainboard_product_name(void)
+{
+	return lenovo_mainboard_partnumber();
 }
 
 void smbios_mainboard_set_uuid(u8 *uuid)

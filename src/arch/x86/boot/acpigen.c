@@ -623,6 +623,21 @@ int acpigen_write_register(acpi_addr_t *addr)
 	return 15;
 }
 
+int acpigen_write_irq(u16 mask)
+{
+	/*
+	 * acpi 4.0 section 6.4.2.6: I/O Port Descriptor
+	 * Byte 0:
+	 *   Bit7  : 0 => small item
+	 *   Bit6-3: 0100 (0x4) => IRQ port descriptor
+	 *   Bit2-0: 010 (0x2) => 2 Bytes long
+	 */
+	acpigen_emit_byte(0x22);
+	acpigen_emit_byte(mask & 0xff);
+	acpigen_emit_byte((mask >> 8) & 0xff);
+	return 3;
+}
+
 int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
 {
 	/*
@@ -738,4 +753,32 @@ int acpigen_write_mainboard_resources(const char *scope, const char *name)
 	len += acpigen_write_mainboard_resource_template();
 	acpigen_patch_len(len - 1);
 	return len;
+}
+
+static int hex2bin(char c)
+{
+	if (c >= 'A' && c <= 'F')
+		return c - 'A' + 10;
+	if (c >= 'a' && c <= 'f')
+		return c - 'a' + 10;
+	return c - '0';
+}
+
+int acpigen_emit_eisaid(const char *eisaid)
+{
+	u32 compact = 0;
+	compact |= (eisaid[0] - 'A' + 1) << 26;
+	compact |= (eisaid[1] - 'A' + 1) << 21;
+	compact |= (eisaid[2] - 'A' + 1) << 16;
+	compact |= hex2bin (eisaid[3]) << 12;
+	compact |= hex2bin (eisaid[4]) << 8;
+	compact |= hex2bin (eisaid[5]) << 4;
+	compact |= hex2bin (eisaid[6]);
+
+	acpigen_emit_byte(0xc);
+	acpigen_emit_byte((compact >> 24) & 0xff);
+	acpigen_emit_byte((compact >> 16) & 0xff);
+	acpigen_emit_byte((compact >> 8) & 0xff);
+	acpigen_emit_byte(compact & 0xff);
+	return 5;
 }

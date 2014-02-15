@@ -26,9 +26,18 @@
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "pc87382.h"
+#if IS_ENABLED(CONFIG_DRIVERS_LENOVO_WACOM)
+#include "odm_oem/lenovo/lenovo.h"
+#endif
 
 static void init(device_t dev)
 {
+#if IS_ENABLED(CONFIG_DRIVERS_LENOVO_WACOM)
+	if (dev->path.type == DEVICE_PATH_PNP &&
+	    dev->path.pnp.device == 3)
+		dev->enabled = drivers_lenovo_is_wacom_present();
+#endif
+
 	if (!dev->enabled)
 		return;
 

@@ -62,6 +62,8 @@ int acpigen_write_resourcetemplate_header(void);
 int acpigen_write_resourcetemplate_footer(int len);
 int acpigen_write_mainboard_resource_template(void);
 int acpigen_write_mainboard_resources(const char *scope, const char *name);
+int acpigen_emit_eisaid(const char *eisaid);
+int acpigen_write_irq(u16 mask, u8 flags);
 
 int get_cst_entries(acpi_cstate_t **);
 

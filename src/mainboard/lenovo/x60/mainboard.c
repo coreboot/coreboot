@@ -150,8 +150,13 @@ static int mainboard_smbios_data(device_t dev, int *handle, unsigned long *curre
 
 static void mainboard_enable(device_t dev)
 {
+	device_t devwacom;
 	dev->ops->init = mainboard_init;
 	dev->ops->get_smbios_data = mainboard_smbios_data;
+
+	devwacom = dev_find_slot_pnp (0x164e, 3);
+	if (devwacom)
+		devwacom->enabled = IS_ENABLED(CONFIG_BOARD_LENOVO_X60T);
 }
 
 struct chip_operations mainboard_ops = {

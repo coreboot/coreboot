@@ -93,7 +93,8 @@ static void __attribute__((noinline)) romstage(void)
 	mmu_config_range(dram_start, dram_size, DCACHE_WRITEBACK);
 	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
 			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
-	mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
+	if (dram_end < 4096)
+		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
 	mmu_disable_range(0, 1);
 	dcache_mmu_enable();
 

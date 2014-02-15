@@ -42,3 +42,5 @@ config SUPERIO_NSC_PC97307
 	bool
 config SUPERIO_NSC_PC97317
 	bool
+
+source "src/superio/nsc/pc87382/Kconfig"

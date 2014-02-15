@@ -111,8 +111,8 @@
 #error Bad ttyS0 baud rate
 #endif
 
-unsigned uart_platform_divisor(void);
-unsigned uart_divisor(unsigned basefreq);
+/* Quick hack to build. */
+#include <console/uart.h>
 
 #if CONFIG_CONSOLE_SERIAL8250
 unsigned char uart8250_rx_byte(unsigned base_port);
@@ -123,7 +123,6 @@ void uart8250_tx_flush(unsigned base_port);
  * have three different sets of uart code, so it's an improvement.
  */
 void uart8250_init(unsigned base_port, unsigned divisor);
-void uart_init(void);
 #endif
 #if CONFIG_CONSOLE_SERIAL8250MEM
 void uartmem_init(void);
@@ -139,8 +138,6 @@ u32 uart_mem_init(void);
 #if defined(__PRE_RAM__) && CONFIG_DRIVERS_OXFORD_OXPCIE
 /* and special init for OXPCIe based cards */
 extern int oxford_oxpcie_present;
-
-void oxford_init(void);
 #endif
 #endif
 

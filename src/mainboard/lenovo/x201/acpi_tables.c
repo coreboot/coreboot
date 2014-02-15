@@ -31,6 +31,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "southbridge/intel/ibexpeak/nvs.h"
+#include "odm_oem/lenovo/lenovo.h"
 
 extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
@@ -93,6 +94,7 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current,
 				       const char *oem_table_id)
 {
 	generate_cpu_entries();
+	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 0);
 	return (unsigned long)(acpigen_get_current());
 }
 

@@ -143,4 +143,6 @@ void oxford_init(void);
 
 #endif /* CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM */
 
+#include <console/uart.h>
+
 #endif /* UART8250_H */

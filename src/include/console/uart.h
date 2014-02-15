@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2003 Eric Biederman
+ * Copyright (C) 2012 The ChromiumOS Authors.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,38 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <uart8250.h>
+#ifndef CONSOLE_UART_H
+#define CONSOLE_UART_H
 
-static void ttyS0_init(void)
-{
-	uart_init();
-}
+unsigned uart_divisor(unsigned basefreq);
+unsigned uart_platform_divisor(void);
 
-static void ttyS0_tx_byte(unsigned char data)
-{
-	uart8250_tx_byte(CONFIG_TTYS0_BASE, data);
-}
-
-static void ttyS0_tx_flush(void)
-{
-	uart8250_tx_flush(CONFIG_TTYS0_BASE);
-}
-
-static unsigned char ttyS0_rx_byte(void)
-{
-	return uart8250_rx_byte(CONFIG_TTYS0_BASE);
-}
-
-static int ttyS0_tst_byte(void)
-{
-	return uart8250_can_rx_byte(CONFIG_TTYS0_BASE);
-}
-
-static const struct console_driver uart8250_console __console = {
-	.init     = ttyS0_init,
-	.tx_byte  = ttyS0_tx_byte,
-	.tx_flush = ttyS0_tx_flush,
-	.rx_byte  = ttyS0_rx_byte,
-	.tst_byte = ttyS0_tst_byte,
-};
+#endif /* CONSOLE_UART_H */

@@ -1,5 +1,5 @@
 ramstage-y += printk.c
-ramstage-y += console.c
+ramstage-y += util.c console.c
 ramstage-y += vtxprintf.c
 ramstage-y += vsprintf.c
 ramstage-y += post.c
@@ -9,12 +9,12 @@ smm-$(CONFIG_DEBUG_SMI) += vtxprintf.c printk.c
 smm-$(CONFIG_SMM_TSEG) += die.c
 
 romstage-$(CONFIG_EARLY_CONSOLE) += vtxprintf.c
-romstage-y += console.c
+romstage-y += util.c console.c
 romstage-y += post.c
 romstage-y += die.c
 
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += vtxprintf.c
-bootblock-y += console.c
+bootblock-y += util.c console.c
 bootblock-y += die.c
 
 ramstage-$(CONFIG_CONSOLE_SERIAL8250) += uart8250_console.c

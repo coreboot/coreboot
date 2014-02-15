@@ -623,6 +623,21 @@ int acpigen_write_register(acpi_addr_t *addr)
 	return 15;
 }
 
+int acpigen_write_irq(u16 mask)
+{
+	/*
+	 * acpi 3.0b section 6.4.2.1: IRQ Descriptor
+	 * Byte 0:
+	 *   Bit7  : 0 => small item
+	 *   Bit6-3: 0100 (0x4) => IRQ port descriptor
+	 *   Bit2-0: 010 (0x2) => 2 Bytes long
+	 */
+	acpigen_emit_byte(0x22);
+	acpigen_emit_byte(mask & 0xff);
+	acpigen_emit_byte((mask >> 8) & 0xff);
+	return 3;
+}
+
 int acpigen_write_io16(u16 min, u16 max, u8 align, u8 len, u8 decode16)
 {
 	/*

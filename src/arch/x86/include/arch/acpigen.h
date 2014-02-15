@@ -34,6 +34,7 @@ int acpigen_write_byte(unsigned int data);
 int acpigen_emit_byte(unsigned char data);
 int acpigen_emit_stream(const char *data, int size);
 int acpigen_emit_namestring(const char *namepath);
+int acpigen_emit_eisaid(const char *eisaid);
 int acpigen_write_dword(unsigned int data);
 int acpigen_write_qword(uint64_t data);
 int acpigen_write_name(const char *name);

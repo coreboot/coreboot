@@ -739,3 +739,31 @@ int acpigen_write_mainboard_resources(const char *scope, const char *name)
 	acpigen_patch_len(len - 1);
 	return len;
 }
+
+static int hex2bin(char c)
+{
+	if (c >= 'A' && c <= 'F')
+		return c - 'A' + 10;
+	if (c >= 'a' && c <= 'f')
+		return c - 'a' + 10;
+	return c - '0';
+}
+
+int acpigen_emit_eisaid(const char *eisaid)
+{
+	u32 compact = 0;
+	compact |= (eisaid[0] - 'A' + 1) << 26;
+	compact |= (eisaid[1] - 'A' + 1) << 21;
+	compact |= (eisaid[2] - 'A' + 1) << 16;
+	compact |= hex2bin(eisaid[3]) << 12;
+	compact |= hex2bin(eisaid[4]) << 8;
+	compact |= hex2bin(eisaid[5]) << 4;
+	compact |= hex2bin(eisaid[6]);
+
+	acpigen_emit_byte(0xc);
+	acpigen_emit_byte((compact >> 24) & 0xff);
+	acpigen_emit_byte((compact >> 16) & 0xff);
+	acpigen_emit_byte((compact >> 8) & 0xff);
+	acpigen_emit_byte(compact & 0xff);
+	return 5;
+}

@@ -19,47 +19,30 @@
 
 #include <console/console.h>
 #include <console/uart.h>
-#include <uart8250.h>
 
-static u32 uart_bar = 0;
-
-void uartmem_init(void)
+static void uartmem_init(void)
 {
-	uart_bar = uart_mem_init();
-}
-
-u32 uartmem_getbaseaddr(void)
-{
-	return uart_bar;
+	uart_init();
 }
 
 static void uartmem_tx_byte(unsigned char data)
 {
-	if (!uart_bar)
-		return;
-
-	uart8250_mem_tx_byte(uart_bar, data);
+	uart_tx_byte(data);
 }
 
 static void uartmem_tx_flush(void)
 {
-	uart8250_mem_tx_flush(uart_bar);
+	uart_tx_flush();
 }
 
 static unsigned char uartmem_rx_byte(void)
 {
-	if (!uart_bar)
-		return 0;
-
-	return uart8250_mem_rx_byte(uart_bar);
+	return uart_rx_byte();
 }
 
 static int uartmem_tst_byte(void)
 {
-	if (!uart_bar)
-		return 0;
-
-	return uart8250_mem_can_rx_byte(uart_bar);
+	return uart_can_rx_byte();
 }
 
 static const struct console_driver uart8250mem_console __console = {

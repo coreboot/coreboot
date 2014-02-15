@@ -90,7 +90,8 @@ drivers_lenovo_is_wacom_present(void)
 
 void
 drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
-					  int have_dock_serial)
+					  int have_dock_serial,
+					  int have_infrared)
 {
 	int scopelen, devicelen, reslen, methodlen;
 
@@ -126,6 +127,47 @@ drivers_lenovo_serial_ports_ssdt_generate(const char *scope,
 		methodlen += acpigen_write_byte(0xf);
 
 		acpigen_patch_len(methodlen);
+		devicelen += methodlen;
+
+		acpigen_patch_len(devicelen - 1);
+		scopelen += devicelen;
+	}
+
+	if (have_infrared) {
+		/* Device op. */
+		scopelen += acpigen_emit_byte(0x5b);
+		scopelen += acpigen_emit_byte(0x82);
+		devicelen = acpigen_write_len_f();
+		devicelen += acpigen_emit_namestring("FIR");
+
+		devicelen += acpigen_write_name("_HID");
+		devicelen += acpigen_emit_eisaid("IBM0071");
+		devicelen += acpigen_write_name("_CID");
+		devicelen += acpigen_emit_eisaid("PNP0511");
+		devicelen += acpigen_write_name("_UID");
+
+		/* One */
+		devicelen += acpigen_write_byte(0x1);
+		devicelen += acpigen_write_name("_CRS");
+
+		reslen = acpigen_write_resourcetemplate_header();
+		reslen += acpigen_write_io16(0x2f8, 0x2f8, 1, 8, 1);
+		reslen += acpigen_write_irq(0x08);
+
+		devicelen += reslen;
+		devicelen += acpigen_write_resourcetemplate_footer(reslen);
+
+		/* method op */
+		devicelen += acpigen_emit_byte(0x14);
+		methodlen = acpigen_write_len_f();
+		methodlen += acpigen_emit_namestring("_STA");
+		/* no fnarg */
+		methodlen += acpigen_emit_byte(0x00);
+		/* return */
+		methodlen += acpigen_emit_byte(0xa4);
+		methodlen += acpigen_write_byte(0xf);
+		acpigen_patch_len(methodlen);
+
 		devicelen += methodlen;
 
 		acpigen_patch_len(devicelen - 1);

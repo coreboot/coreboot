@@ -87,7 +87,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
 {
 	generate_cpu_entries();
-	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 1);
+	drivers_lenovo_serial_ports_ssdt_generate("\\_SB.PCI0.LPCB", 1, 1);
 	return (unsigned long) (acpigen_get_current());
 }
 

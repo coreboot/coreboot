@@ -19,4 +19,5 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_NSC_PC87382) += superio.c
+ramstage-$(CONFIG_DRIVERS_LENOVO_WACOM) += wacom.c
 

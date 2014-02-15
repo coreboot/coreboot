@@ -26,20 +26,13 @@
 #include <console/spkmodem.h>
 #include <console/vtxprintf.h>
 
-#if CONFIG_CONSOLE_SERIAL8250MEM
-#include <uart8250.h>
-#endif
-
 void console_tx_byte(unsigned char byte)
 {
 	if (byte == '\n')
 		console_tx_byte('\r');
 
 #if CONFIG_CONSOLE_SERIAL8250MEM
-	if (oxford_oxpcie_present) {
-		uart8250_mem_tx_byte(
-			CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000, byte);
-	}
+	uart_tx_byte(byte);
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
 	uart_tx_byte(byte);
@@ -61,7 +54,7 @@ void console_tx_byte(unsigned char byte)
 void console_tx_flush(void)
 {
 #if CONFIG_CONSOLE_SERIAL8250MEM
-	uart8250_mem_tx_flush(CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000);
+	uart_tx_flush();
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
 	uart_tx_flush();

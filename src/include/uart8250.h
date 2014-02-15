@@ -105,21 +105,4 @@
 #define UART_SCR 0x07
 #define UART_SPR 0x07
 
-#if CONFIG_CONSOLE_SERIAL8250MEM
-void uartmem_init(void);
-
-/* and the same for memory mapped uarts */
-unsigned char uart8250_mem_rx_byte(unsigned base_port);
-int uart8250_mem_can_rx_byte(unsigned base_port);
-void uart8250_mem_tx_byte(unsigned base_port, unsigned char data);
-void uart8250_mem_tx_flush(unsigned base_port);
-void uart8250_mem_init(unsigned base_port, unsigned divisor);
-u32 uart_mem_init(void);
-
-#if defined(__PRE_RAM__) && CONFIG_DRIVERS_OXFORD_OXPCIE
-/* and special init for OXPCIe based cards */
-extern int oxford_oxpcie_present;
-#endif
-#endif
-
 #endif /* UART8250_H */

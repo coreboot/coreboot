@@ -30,6 +30,7 @@ subdirs-y += parade
 subdirs-y += realtek
 subdirs-y += sil
 subdirs-y += trident
+subdirs-y += uart
 subdirs-y += usb
 subdirs-y += ics
 subdirs-y += spi

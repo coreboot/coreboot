@@ -1,0 +1,14 @@
+# This should default to N and be set by SuperI/O drivers that have an UART
+config HAVE_UART_IO_MAPPED
+	bool
+	depends on !ARCH_ARMV7
+	default y if ARCH_X86
+
+config HAVE_UART_MEMORY_MAPPED
+	bool
+	default n
+
+config HAVE_UART_SPECIAL
+	bool
+	default n
+

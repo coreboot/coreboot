@@ -23,6 +23,7 @@ subdirs-y += emulation
 subdirs-y += generic
 subdirs-y += i2c
 subdirs-y += intel
+subdirs-y += lenovo
 subdirs-y += maxim
 subdirs-y += net
 subdirs-y += oxford

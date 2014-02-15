@@ -54,7 +54,7 @@ static void pch_enable_lpc(void)
 	/* Enable EC, PS/2 Keyboard/Mouse */
 	pci_write_config16(PCH_LPC_DEV, LPC_EN,
 			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
-			   COMA_LPC_EN);
+			   COMA_LPC_EN | GAMEL_LPC_EN);
 
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x7c1601);
 	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, 0xc15e1);

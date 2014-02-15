@@ -26,6 +26,7 @@ source src/drivers/i2c/Kconfig
 source src/drivers/ics/Kconfig
 source src/drivers/intel/Kconfig
 source src/drivers/ipmi/Kconfig
+source src/drivers/lenovo/Kconfig
 source src/drivers/maxim/Kconfig
 source src/drivers/parade/Kconfig
 if PC80_SYSTEM

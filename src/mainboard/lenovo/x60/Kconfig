@@ -23,6 +23,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select USE_OPTION_TABLE
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select H8_DOCK_EARLY_INIT
+	select DRIVERS_LENOVO_WACOM
 
 config MAINBOARD_DIR
 	string
@@ -38,7 +39,7 @@ config DCACHE_RAM_SIZE
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "ThinkPad X60 / X60s"
+	default "ThinkPad X60 / X60s / X60t"
 
 config MMCONF_BASE_ADDRESS
 	hex

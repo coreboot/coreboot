@@ -1,0 +1,29 @@
+config DRIVERS_LENOVO_WACOM
+       bool
+       default n
+
+if DRIVERS_LENOVO_WACOM
+
+choice
+	prompt "Digitizer"
+	default DIGITIZER_AUTODETECT
+
+config DIGITIZER_AUTODETECT
+	bool "Autodetect"
+	help
+	  The presence of digitizer is inferred from model number stored in
+	  AT24RF chip.
+
+config DIGITIZER_PRESENT
+	bool "Present"
+	help
+	  The digitizer is assumed to be present.
+
+config DIGITIZER_ABSENT
+	bool "Absent"
+	help
+	  The digitizer is assumed to be absent.
+
+endchoice
+
+endif

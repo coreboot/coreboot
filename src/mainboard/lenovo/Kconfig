@@ -4,7 +4,7 @@ choice
 	prompt "Mainboard model"
 
 config BOARD_LENOVO_X60
-	bool "ThinkPad X60 / X60s"
+	bool "ThinkPad X60 / X60s / X60t"
 	help
 	  The following X60 series ThinkPad machines have been verified to
 	  work correctly:
@@ -13,7 +13,7 @@ config BOARD_LENOVO_X60
 	    ThinkPad X60  (Model 1709)
 
 config BOARD_LENOVO_X201
-	bool "ThinkPad X201"
+	bool "ThinkPad X201 / X201s / X201t"
 	help
 	  Lenovo X201 laptop. Consult wiki for details.
 

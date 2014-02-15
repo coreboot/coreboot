@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
-#include <uart8250.h>
+#include <console/uart.h>
 #include <arch/io.h>
 
 static void oxford_oxpcie_enable(device_t dev)
@@ -47,10 +47,9 @@ static void oxford_oxpcie_set_resources(struct device *dev)
 {
 	pci_dev_set_resources(dev);
 
-#if CONFIG_CONSOLE_SERIAL8250MEM
 	/* Re-initialize OXPCIe base address after set_resources */
-	uartmem_init();
-#endif
+	u32 mmio_base = pci_read_config32(dev, PCI_BASE_ADDRESS_0);
+	oxford_remap(mmio_base & ~0xf);
 }
 
 static struct device_operations oxford_oxpcie_ops = {

@@ -111,6 +111,9 @@
 #error Bad ttyS0 baud rate
 #endif
 
+unsigned uart_platform_divisor(void);
+unsigned uart_divisor(unsigned basefreq);
+
 #if CONFIG_CONSOLE_SERIAL8250
 unsigned char uart8250_rx_byte(unsigned base_port);
 int uart8250_can_rx_byte(unsigned base_port);

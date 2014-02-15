@@ -31,6 +31,8 @@
 #include <uart8250.h>
 #endif
 
+#include <console/util.c>
+
 #if CONFIG_CONSOLE_SERIAL8250
 #include "lib/uart8250.c"
 #endif

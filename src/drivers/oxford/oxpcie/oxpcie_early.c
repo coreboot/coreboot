@@ -116,7 +116,13 @@ void oxford_init(void)
 	/* Now the UART initialization */
 	u32 uart0_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000;
 
-	uart8250_mem_init(uart0_base, (4000000 / CONFIG_TTYS0_BAUD));
+	unsigned div = uart_platform_divisor();
+	uart8250_mem_init(uart0_base, div);
 }
 
 #endif
+
+unsigned uart_platform_divisor(void)
+{
+	return uart_divisor(4000000);
+}

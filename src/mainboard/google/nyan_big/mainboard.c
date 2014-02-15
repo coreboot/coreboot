@@ -201,6 +201,10 @@ static void setup_pinmux(void)
 			  PINMUX_DAP2_FS_FUNC_I2S1 | PINMUX_INPUT_ENABLE);
 	pinmux_set_config(PINMUX_DAP2_SCLK_INDEX,
 			  PINMUX_DAP2_SCLK_FUNC_I2S1 | PINMUX_INPUT_ENABLE);
+
+	/* PWM1 */
+	pinmux_set_config(PINMUX_GPIO_PH1_INDEX,
+			  PINMUX_GPIO_PH1_FUNC_PWM1 | PINMUX_PULL_NONE);
 }
 
 static void setup_kernel_info(void)
@@ -247,7 +251,7 @@ static void mainboard_init(device_t dev)
 	clock_enable_clear_reset(CLK_L_GPIO | CLK_L_I2C1 | CLK_L_SDMMC4 |
 				 CLK_L_I2S0 | CLK_L_I2S1 | CLK_L_I2S2 |
 				 CLK_L_SPDIF | CLK_L_USBD | CLK_L_DISP1 |
-				 CLK_L_HOST1X,
+				 CLK_L_HOST1X | CLK_L_PWM,
 
 				 CLK_H_EMC | CLK_H_I2C2 | CLK_H_SBC1 |
 				 CLK_H_PMC | CLK_H_MEM | CLK_H_USB3,

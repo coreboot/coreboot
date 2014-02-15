@@ -215,6 +215,7 @@ config COVERAGE
 endmenu
 
 source src/mainboard/Kconfig
+source src/odm_oem/Kconfig
 
 # This option is used to set the architecture of a mainboard to X86.
 # It is usually set in mainboard/*/Kconfig.

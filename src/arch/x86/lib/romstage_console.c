@@ -26,7 +26,7 @@
 #include <console/spkmodem.h>
 #include <console/vtxprintf.h>
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
+#if CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
 #endif
 
@@ -42,7 +42,7 @@ void console_tx_byte(unsigned char byte)
 	}
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
-	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
+	uart_tx_byte(byte);
 #endif
 #if CONFIG_USBDEBUG && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
 	usb_tx_byte(0, byte);
@@ -64,7 +64,7 @@ void console_tx_flush(void)
 	uart8250_mem_tx_flush(CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000);
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
-	uart8250_tx_flush(CONFIG_TTYS0_BASE);
+	uart_tx_flush();
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);

@@ -45,7 +45,7 @@ void console_tx_byte(unsigned char byte)
 		uart8250_mem_tx_byte(serial8250mem_base_address, byte);
 #endif
 #if CONFIG_CONSOLE_SERIAL8250
-	uart8250_tx_byte(CONFIG_TTYS0_BASE, byte);
+	uart_tx_byte(byte);
 #endif
 }
 

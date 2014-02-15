@@ -37,10 +37,11 @@ unsigned int uart_baudrate_divisor(unsigned int baudrate,
 	unsigned int refclk, unsigned int oversample);
 
 
-unsigned char uart_rx_byte(void);
+void uart_init(void);
 void uart_tx_byte(unsigned char data);
 void uart_tx_flush(void);
-void uart_init(void);
+unsigned char uart_rx_byte(void);
+int uart_can_rx_byte(void);
 
 uint32_t uartmem_getbaseaddr(void);
 

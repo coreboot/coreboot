@@ -25,7 +25,7 @@
 #include <console/post_codes.h>
 
 #if CONFIG_CONSOLE_SERIAL
-#include <uart.h>
+#include <console/uart.h>
 #endif
 #if CONFIG_USBDEBUG && !defined(__ROMCC__)
 #include <console/usb.h>

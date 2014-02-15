@@ -40,40 +40,30 @@
 #define SINGLE_CHAR_TIMEOUT	(50 * 1000)
 #define FIFO_TIMEOUT		(16 * SINGLE_CHAR_TIMEOUT)
 
-static inline int uart8250_can_tx_byte(unsigned base_port)
+static int uart8250_can_tx_byte(unsigned base_port)
 {
 	return inb(base_port + UART_LSR) & UART_LSR_THRE;
 }
 
-static inline void uart8250_wait_to_tx_byte(unsigned base_port)
+static void uart8250_tx_byte(unsigned base_port, unsigned char data)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_can_tx_byte(base_port));
+	outb(data, base_port + UART_TBR);
 }
 
-static inline void uart8250_wait_until_sent(unsigned base_port)
+static void uart8250_tx_flush(unsigned base_port)
 {
 	unsigned long int i = FIFO_TIMEOUT;
 	while (i-- && !(inb(base_port + UART_LSR) & UART_LSR_TEMT));
 }
 
-void uart8250_tx_byte(unsigned base_port, unsigned char data)
-{
-	uart8250_wait_to_tx_byte(base_port);
-	outb(data, base_port + UART_TBR);
-}
-
-void uart8250_tx_flush(unsigned base_port)
-{
-	uart8250_wait_until_sent(base_port);
-}
-
-int uart8250_can_rx_byte(unsigned base_port)
+static int uart8250_can_rx_byte(unsigned base_port)
 {
 	return inb(base_port + UART_LSR) & UART_LSR_DR;
 }
 
-unsigned char uart8250_rx_byte(unsigned base_port)
+static unsigned char uart8250_rx_byte(unsigned base_port)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while (i-- && !uart8250_can_rx_byte(base_port));
@@ -84,7 +74,7 @@ unsigned char uart8250_rx_byte(unsigned base_port)
 		return 0x0;
 }
 
-void uart8250_init(unsigned base_port, unsigned divisor)
+static void uart8250_init(unsigned base_port, unsigned divisor)
 {
 	DISABLE_TRACE;
 	/* Disable interrupts */
@@ -107,10 +97,35 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 	ENABLE_TRACE;
 }
 
+/* FIXME: Needs uart index from Kconfig.
+ * Already use array as a work-around for ROMCC.
+ */
+static const unsigned bases[1] = { CONFIG_TTYS0_BASE };
+
 void uart_init(void)
 {
 	unsigned int div;
 	div = uart_baudrate_divisor(default_baudrate(), BAUDRATE_REFCLK,
 		BAUDRATE_OVERSAMPLE);
-	uart8250_init(CONFIG_TTYS0_BASE, div);
+	uart8250_init(bases[0], div);
+}
+
+void uart_tx_byte(unsigned char data)
+{
+	uart8250_tx_byte(bases[0], data);
+}
+
+unsigned char uart_rx_byte(void)
+{
+	return uart8250_rx_byte(bases[0]);
+}
+
+int uart_can_rx_byte(void)
+{
+	return uart8250_can_rx_byte(bases[0]);
+}
+
+void uart_tx_flush(void)
+{
+	uart8250_tx_flush(bases[0]);
 }

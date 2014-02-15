@@ -105,16 +105,6 @@
 #define UART_SCR 0x07
 #define UART_SPR 0x07
 
-#if CONFIG_CONSOLE_SERIAL8250
-unsigned char uart8250_rx_byte(unsigned base_port);
-int uart8250_can_rx_byte(unsigned base_port);
-void uart8250_tx_byte(unsigned base_port, unsigned char data);
-void uart8250_tx_flush(unsigned base_port);
-/* Yes it is silly to have three different uart init functions. But we used to
- * have three different sets of uart code, so it's an improvement.
- */
-void uart8250_init(unsigned base_port, unsigned divisor);
-#endif
 #if CONFIG_CONSOLE_SERIAL8250MEM
 void uartmem_init(void);
 

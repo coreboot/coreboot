@@ -33,42 +33,32 @@
 #define SINGLE_CHAR_TIMEOUT	(50 * 1000)
 #define FIFO_TIMEOUT		(16 * SINGLE_CHAR_TIMEOUT)
 
-static inline int uart8250_mem_can_tx_byte(unsigned base_port)
+static int uart8250_mem_can_tx_byte(unsigned base_port)
 {
 	return read8(base_port + UART_LSR) & UART_LSR_THRE;
 }
 
-static inline void uart8250_mem_wait_to_tx_byte(unsigned base_port)
+static void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while(i-- && !uart8250_mem_can_tx_byte(base_port))
 		udelay(1);
+	write8(base_port + UART_TBR, data);
 }
 
-static inline void uart8250_mem_wait_until_sent(unsigned base_port)
+static void uart8250_mem_tx_flush(unsigned base_port)
 {
 	unsigned long int i = FIFO_TIMEOUT;
 	while(i-- && !(read8(base_port + UART_LSR) & UART_LSR_TEMT))
 		udelay(1);
 }
 
-void uart8250_mem_tx_byte(unsigned base_port, unsigned char data)
-{
-	uart8250_mem_wait_to_tx_byte(base_port);
-	write8(base_port + UART_TBR, data);
-}
-
-void uart8250_mem_tx_flush(unsigned base_port)
-{
-	uart8250_mem_wait_until_sent(base_port);
-}
-
-int uart8250_mem_can_rx_byte(unsigned base_port)
+static int uart8250_mem_can_rx_byte(unsigned base_port)
 {
 	return read8(base_port + UART_LSR) & UART_LSR_DR;
 }
 
-unsigned char uart8250_mem_rx_byte(unsigned base_port)
+static unsigned char uart8250_mem_rx_byte(unsigned base_port)
 {
 	unsigned long int i = SINGLE_CHAR_TIMEOUT;
 	while(i-- && !uart8250_mem_can_rx_byte(base_port))
@@ -79,7 +69,7 @@ unsigned char uart8250_mem_rx_byte(unsigned base_port)
 		return 0x0;
 }
 
-void uart8250_mem_init(unsigned base_port, unsigned divisor)
+static void uart8250_mem_init(unsigned base_port, unsigned divisor)
 {
 	/* Disable interrupts */
 	write8(base_port + UART_IER, 0x0);
@@ -99,36 +89,45 @@ void uart8250_mem_init(unsigned base_port, unsigned divisor)
 	write8(base_port + UART_LCR, CONFIG_TTYS0_LCS);
 }
 
-u32 uart_mem_init(void)
+void uart_init(void)
 {
-	u32 uart_bar = 0;
-	unsigned div;
+	u32 base = uart_platform_base(0);
+	if (!base)
+		return;
 
-	/* Now find the UART base address and calculate the divisor */
-#if CONFIG_DRIVERS_OXFORD_OXPCIE
-#if defined(MORE_TESTING) && !defined(__SIMPLE_DEVICE__)
-	device_t dev = dev_find_device(0x1415, 0xc158, NULL);
-	if (!dev)
-		dev = dev_find_device(0x1415, 0xc11b, NULL);
-
-	if (dev) {
-		struct resource *res = find_resource(dev, 0x10);
-
-		if (res) {
-			uart_bar = res->base + 0x1000; // for 1st UART
-			// uart_bar = res->base + 0x2000; // for 2nd UART
-		}
-	}
-
-	if (!uart_bar)
-#endif
-	uart_bar = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000; // 1st UART
-	// uart_bar = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x2000; // 2nd UART
-#endif
-
+	unsigned int div;
 	div = uart_baudrate_divisor(default_baudrate(), uart_platform_refclk(), 16);
-	if (uart_bar)
-		uart8250_mem_init(uart_bar, div);
+	uart8250_mem_init(base, div);
+}
 
-	return uart_bar;
+void uart_tx_byte(unsigned char data)
+{
+	u32 base = uart_platform_base(0);
+	if (!base)
+		return;
+	uart8250_mem_tx_byte(base, data);
+}
+
+unsigned char uart_rx_byte(void)
+{
+	u32 base = uart_platform_base(0);
+	if (!base)
+		return 0xff;
+	return uart8250_mem_rx_byte(base);
+}
+
+int uart_can_rx_byte(void)
+{
+	u32 base = uart_platform_base(0);
+	if (!base)
+		return 0;
+	return uart8250_mem_can_rx_byte(base);
+}
+
+void uart_tx_flush(void)
+{
+	u32 base = uart_platform_base(0);
+	if (!base)
+		return;
+	uart8250_mem_tx_flush(base);
 }

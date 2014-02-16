@@ -72,6 +72,7 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
 
 /* Manufacturer-specific probe functions */
 struct spi_flash *spi_flash_probe_spansion(struct spi_slave *spi, u8 *idcode);
+struct spi_flash *spi_flash_probe_amic(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_flash_probe_atmel(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_flash_probe_eon(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_flash_probe_macronix(struct spi_slave *spi, u8 *idcode);

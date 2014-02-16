@@ -28,6 +28,8 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <drivers/intel/gma/edid.h>
+#include <drivers/intel/gma/i915.h>
 
 #include "chip.h"
 #include "nehalem.h"
@@ -549,6 +551,21 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 #include <pc80/vga_io.h>
 
 #if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
+
+/* The mainboard must provide these functions. */
+unsigned long io_i915_read32(unsigned long addr)
+{
+	outl(addr, 0x1040);
+	return inl(0x1044);
+}
+void io_i915_write32(unsigned long val, unsigned long addr)
+{
+	outl(addr, 0x1040);
+	inl(0x1044);
+	outl(val, 0x1044);
+}
+
+
 static void fake_vbios(void)
 {
 #include "fake_vbios.c"

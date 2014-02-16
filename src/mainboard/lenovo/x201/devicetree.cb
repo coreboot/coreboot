@@ -76,7 +76,7 @@ chip northbridge/intel/nehalem
 	end
 
 	device cpu_cluster 0 on
-		chip cpu/intel/model_206ax
+		chip cpu/intel/model_2065x
 			device lapic 0 on end
 		end
 	end

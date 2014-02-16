@@ -39,8 +39,8 @@ ramstage-y += ../bd82x6x/reset.c
 ramstage-y += ../bd82x6x/watchdog.c
 
 ramstage-$(CONFIG_ELOG) += ../bd82x6x/elog.c
-ramstage-y += spi.c
-smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
+ramstage-y += ../bd82x6x/spi.c
+smm-$(CONFIG_SPI_FLASH_SMM) += ../bd82x6x/spi.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c ../bd82x6x/me_8.x.c ../bd82x6x/finalize.c ../bd82x6x/pch.c

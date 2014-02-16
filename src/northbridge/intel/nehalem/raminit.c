@@ -3810,7 +3810,7 @@ set_fsb_frequency (void)
 }
 #endif
 
-void raminit(const int s3resume)
+void raminit(const int s3resume, const u8 *spd_addrmap)
 {
 	unsigned channel, slot, lane, rank;
 	int i;
@@ -3956,10 +3956,10 @@ void raminit(const int s3resume)
 					    0x8f, 0x90, 0x91, 0x92, 0x93, 0x94,
 					    0x95
 				};
-				if (slot)
+				if (!spd_addrmap[2 * channel + slot])
 					continue;
 				for (try = 0; try < 5; try++) {
-					v = smbus_read_byte(0x50 + channel,
+					v = smbus_read_byte(spd_addrmap[2 * channel + slot],
 							    DEVICE_TYPE);
 					if (v >= 0)
 						break;
@@ -3973,7 +3973,7 @@ void raminit(const int s3resume)
 					gav(info.
 					    spd[channel][0][useful_addresses
 							    [addr]] =
-					    smbus_read_byte(0x50 + channel,
+					    smbus_read_byte(spd_addrmap[2 * channel + slot],
 							    useful_addresses
 							    [addr]));
 				if (info.spd[channel][0][DEVICE_TYPE] != 11)

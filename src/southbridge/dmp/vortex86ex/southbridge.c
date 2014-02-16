@@ -18,7 +18,6 @@
  */
 
 #include <console/console.h>
-#include <uart8250.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ops.h>
@@ -387,8 +386,7 @@ static u32 make_uart_config(u16 base, u8 irq)
 
 #define SETUP_UART(n) \
 	uart_cfg = make_uart_config(CONFIG_UART##n##_IO, CONFIG_UART##n##_IRQ);\
-	outl(uart_cfg, base + (n - 1) * 4);\
-	uart8250_init(CONFIG_UART##n##_IO, 115200 / CONFIG_UART##n##_BAUD);
+	outl(uart_cfg, base + (n - 1) * 4);
 
 static void ex_sb_uart_init(struct device *dev)
 {

@@ -218,6 +218,9 @@ static struct {
 	struct spi_flash *(*probe) (struct spi_slave *spi, u8 *idcode);
 } flashes[] = {
 	/* Keep it sorted by define name */
+#if CONFIG_SPI_FLASH_AMIC
+	{ 0, 0x37, spi_flash_probe_amic, },
+#endif
 #if CONFIG_SPI_FLASH_EON
 	{ 0, 0x1c, spi_flash_probe_eon, },
 #endif

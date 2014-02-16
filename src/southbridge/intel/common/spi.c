@@ -34,7 +34,6 @@
 #include <spi_flash.h>
 
 #include <spi-generic.h>
-#include "pch.h"
 
 #define min(a, b) ((a)<(b)?(a):(b))
 
@@ -129,7 +128,6 @@ typedef struct ich9_spi_regs {
 
 typedef struct ich_spi_controller {
 	int locked;
-	int revision;
 	uint32_t flmap0;
 	uint32_t hsfs;
 
@@ -317,133 +315,57 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 
 	slave->bus = bus;
 	slave->cs = cs;
-	if (cntlr.revision == 9) {
-		slave->force_programmer_specific = spi_is_multichip ();
-		slave->programmer_specific_probe = spi_flash_hwseq;
-	}
+	slave->force_programmer_specific = spi_is_multichip ();
+	slave->programmer_specific_probe = spi_flash_hwseq;
 	return slave;
-}
-
-/*
- * Check if this device ID matches one of supported Intel PCH devices.
- *
- * Return the ICH version if there is a match, or zero otherwise.
- */
-static inline int get_ich_version(uint16_t device_id)
-{
-	if (device_id == PCI_DEVICE_ID_INTEL_TGP_LPC)
-		return 7;
-
-	if ((device_id >= PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MIN &&
-	     device_id <= PCI_DEVICE_ID_INTEL_COUGARPOINT_LPC_MAX) ||
-	    (device_id >= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MIN &&
-	     device_id <= PCI_DEVICE_ID_INTEL_PANTHERPOINT_LPC_MAX))
-		return 9;
-
-	return 0;
 }
 
 void spi_init(void)
 {
-	int ich_version = 0;
-
 	uint8_t *rcrb; /* Root Complex Register Block */
 	uint32_t rcba; /* Root Complex Base Address */
 	uint8_t bios_cntl;
 	device_t dev;
-	uint32_t ids;
-	uint16_t vendor_id, device_id;
+	ich9_spi_regs *ich9_spi;
+	uint16_t hsfs;
 
 #ifdef __SMM__
 	dev = PCI_DEV(0, 31, 0);
 #else
 	dev = dev_find_slot(0, PCI_DEVFN(31, 0));
 #endif
-	pci_read_config_dword(dev, 0, &ids);
-	vendor_id = ids;
-	device_id = (ids >> 16);
-
-	if (vendor_id != PCI_VENDOR_ID_INTEL) {
-		printk(BIOS_DEBUG, "ICH SPI: No ICH found.\n");
-		return;
-	}
-
-	ich_version = get_ich_version(device_id);
-
-	if (!ich_version) {
-		printk(BIOS_DEBUG, "ICH SPI: No known ICH found.\n");
-		return;
-	}
 
 	pci_read_config_dword(dev, 0xf0, &rcba);
 	/* Bits 31-14 are the base address, 13-1 are reserved, 0 is enable. */
 	rcrb = (uint8_t *)(rcba & 0xffffc000);
-	cntlr.revision = ich_version;
-	switch (ich_version) {
-	case 7:
-		{
-			const uint16_t ich7_spibar_offset = 0x3020;
-			ich7_spi_regs *ich7_spi =
-				(ich7_spi_regs *)(rcrb + ich7_spibar_offset);
+	ich9_spi = (ich9_spi_regs *)(rcrb + 0x3800);
+	cntlr.ich9_spi = ich9_spi;
+	hsfs = readw_(&ich9_spi->hsfs);
+	ichspi_lock = hsfs & HSFS_FLOCKDN;
+	cntlr.hsfs = hsfs;
+	cntlr.opmenu = ich9_spi->opmenu;
+	cntlr.menubytes = sizeof(ich9_spi->opmenu);
+	cntlr.optype = &ich9_spi->optype;
+	cntlr.addr = &ich9_spi->faddr;
+	cntlr.data = (uint8_t *)ich9_spi->fdata;
+	cntlr.databytes = sizeof(ich9_spi->fdata);
+	cntlr.status = &ich9_spi->ssfs;
+	cntlr.control = (uint16_t *)ich9_spi->ssfc;
+	cntlr.bbar = &ich9_spi->bbar;
+	cntlr.preop = &ich9_spi->preop;
 
-			ichspi_lock = readw_(&ich7_spi->spis) & SPIS_LOCK;
-			cntlr.opmenu = ich7_spi->opmenu;
-			cntlr.menubytes = sizeof(ich7_spi->opmenu);
-			cntlr.optype = &ich7_spi->optype;
-			cntlr.addr = &ich7_spi->spia;
-			cntlr.data = (uint8_t *)ich7_spi->spid;
-			cntlr.databytes = sizeof(ich7_spi->spid);
-			cntlr.status = (uint8_t *)&ich7_spi->spis;
-			cntlr.control = &ich7_spi->spic;
-			cntlr.bbar = &ich7_spi->bbar;
-			cntlr.preop = &ich7_spi->preop;
-			break;
-		}
-	case 9:
-		{
-			const uint16_t ich9_spibar_offset = 0x3800;
-			ich9_spi_regs *ich9_spi =
-				(ich9_spi_regs *)(rcrb + ich9_spibar_offset);
-			uint16_t hsfs;
-			cntlr.ich9_spi = ich9_spi;
-			hsfs = readw_(&ich9_spi->hsfs);
-			ichspi_lock = hsfs & HSFS_FLOCKDN;
-			cntlr.hsfs = hsfs;
-			cntlr.opmenu = ich9_spi->opmenu;
-			cntlr.menubytes = sizeof(ich9_spi->opmenu);
-			cntlr.optype = &ich9_spi->optype;
-			cntlr.addr = &ich9_spi->faddr;
-			cntlr.data = (uint8_t *)ich9_spi->fdata;
-			cntlr.databytes = sizeof(ich9_spi->fdata);
-			cntlr.status = &ich9_spi->ssfs;
-			cntlr.control = (uint16_t *)ich9_spi->ssfc;
-			cntlr.bbar = &ich9_spi->bbar;
-			cntlr.preop = &ich9_spi->preop;
-
-			if (cntlr.hsfs & HSFS_FDV)
-			{
-				writel_ (4, &ich9_spi->fdoc);
-				cntlr.flmap0 = readl_(&ich9_spi->fdod);
-			}
-			break;
-		}
-	default:
-		printk(BIOS_DEBUG, "ICH SPI: Unrecognized ICH version %d.\n", ich_version);
+	if (cntlr.hsfs & HSFS_FDV)
+	{
+		writel_ (4, &ich9_spi->fdoc);
+		cntlr.flmap0 = readl_(&ich9_spi->fdod);
 	}
 
 	ich_set_bbar(0);
 
 	/* Disable the BIOS write protect so write commands are allowed. */
 	pci_read_config_byte(dev, 0xdc, &bios_cntl);
-	switch (ich_version) {
-	case 9:
-		/* Deassert SMM BIOS Write Protect Disable. */
-		bios_cntl &= ~(1 << 5);
-		break;
-
-	default:
-		break;
-	}
+	/* Deassert SMM BIOS Write Protect Disable. */
+	bios_cntl &= ~(1 << 5);
 	pci_write_config_byte(dev, 0xdc, bios_cntl | 0x1);
 }
 
@@ -626,8 +548,6 @@ static int ich_status_poll(u16 bitmask, int wait_til_set)
 
 static int spi_is_multichip (void)
 {
-	if (cntlr.revision != 9)
-		return 0;
 	if (!(cntlr.hsfs & HSFS_FDV))
 		return 0;
 	return !!((cntlr.flmap0 >> 8) & 3);

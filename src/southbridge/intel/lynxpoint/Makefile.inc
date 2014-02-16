@@ -44,8 +44,8 @@ ramstage-y += acpi.c
 ramstage-$(CONFIG_ALT_CBFS_LOAD_PAYLOAD) += spi_loading.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
-ramstage-y += spi.c
-smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
+ramstage-y += ../spi.c
+smm-$(CONFIG_SPI_FLASH_SMM) += ../spi.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c pmutil.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me_9.x.c finalize.c pch.c

@@ -39,8 +39,8 @@ ramstage-y += reset.c
 ramstage-y += watchdog.c
 
 ramstage-$(CONFIG_ELOG) += elog.c
-ramstage-y += spi.c
-smm-$(CONFIG_SPI_FLASH_SMM) += spi.c
+ramstage-y += ../spi.c
+smm-$(CONFIG_SPI_FLASH_SMM) += ../spi.c
 
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c pch.c

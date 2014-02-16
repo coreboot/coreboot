@@ -207,6 +207,7 @@ void main(unsigned long bist)
 {
 	u32 reg32;
 	int s3resume = 0;
+	const u8 spd_addrmap[4] = { 0x50, 0, 0x51, 0 };
 
 	timestamp_init(rdtsc ());
 
@@ -286,7 +287,7 @@ void main(unsigned long bist)
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	raminit(s3resume);
+	raminit(s3resume, spd_addrmap);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 

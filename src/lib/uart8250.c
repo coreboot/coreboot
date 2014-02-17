@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <uart.h>
 #include <uart8250.h>
 #include <pc80/mc146818rtc.h>
 #include <trace.h>

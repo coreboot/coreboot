@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <console/loglevel.h>
 #include <console/post_codes.h>
+#include <console/ne2k.h>
 
 /* __PRE_RAM__ */
 /* Using a global varible can cause problems when we reset the stack

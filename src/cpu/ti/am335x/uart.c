@@ -18,7 +18,7 @@
 
 #include <config.h>
 #include <types.h>
-#include <uart.h>
+#include <console/uart.h>
 #include <arch/io.h>
 
 #include <console/console.h>	/* for __console definition */

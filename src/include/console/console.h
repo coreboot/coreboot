@@ -24,22 +24,6 @@
 #include <console/loglevel.h>
 #include <console/post_codes.h>
 
-#if CONFIG_CONSOLE_SERIAL
-#include <uart.h>
-#endif
-#if CONFIG_USBDEBUG && !defined(__ROMCC__)
-#include <console/usb.h>
-#endif
-#if CONFIG_CONSOLE_NE2K
-#include <console/ne2k.h>
-#endif
-#if CONFIG_CONSOLE_CBMEM
-#include <console/cbmem_console.h>
-#endif
-#if CONFIG_SPKMODEM
-#include <console/spkmodem.h>
-#endif
-
 #ifndef __PRE_RAM__
 unsigned char console_rx_byte(void);
 int console_tst_byte(void);

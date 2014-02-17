@@ -19,19 +19,15 @@
 
 #include <smp/node.h>
 #include <console/console.h>
+#include <console/cbmem_console.h>
+#include <console/uart.h>
+#include <console/usb.h>
+#include <console/ne2k.h>
+#include <console/spkmodem.h>
 #include <console/vtxprintf.h>
 
 #if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
-#endif
-#if CONFIG_USBDEBUG
-#include <console/usb.h>
-#endif
-#if CONFIG_CONSOLE_NE2K
-#include <console/ne2k.h>
-#endif
-#if CONFIG_SPKMODEM
-#include <console/spkmodem.h>
 #endif
 
 void console_tx_byte(unsigned char byte)

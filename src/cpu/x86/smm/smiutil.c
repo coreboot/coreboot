@@ -23,7 +23,7 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 #include <console/console.h>
-#include <uart.h>
+#include <console/uart.h>
 #include <uart8250.h>
 #include <console/vtxprintf.h>
 

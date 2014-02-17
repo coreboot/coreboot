@@ -105,10 +105,6 @@
 #define UART_SCR 0x07
 #define UART_SPR 0x07
 
-#if ((115200 % CONFIG_TTYS0_BAUD) != 0)
-#error Bad ttyS0 baud rate
-#endif
-
 #if CONFIG_CONSOLE_SERIAL8250
 unsigned char uart8250_rx_byte(unsigned base_port);
 int uart8250_can_rx_byte(unsigned base_port);

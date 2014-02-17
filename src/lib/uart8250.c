@@ -19,15 +19,17 @@
  */
 
 #include <arch/io.h>
+#include <uart.h>
 #include <uart8250.h>
-#include <pc80/mc146818rtc.h>
 #include <trace.h>
 
-#if CONFIG_USE_OPTION_TABLE
-#include "option_table.h"
-#endif
-
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
+
+/* Nominal values only, good for the range of choices Kconfig offers for
+ * set of standard baudrates.
+ */
+#define BAUDRATE_REFCLK		(115200)
+#define BAUDRATE_OVERSAMPLE	(1)
 
 /* Expected character delay at 1200bps is 9ms for a working UART
  * and no flow-control. Assume UART as stuck if shift register
@@ -107,26 +109,8 @@ void uart8250_init(unsigned base_port, unsigned divisor)
 
 void uart_init(void)
 {
-	/* TODO the divisor calculation is hard coded to standard UARTs. Some
-	 * UARTs won't work with these values. This should be a property of the
-	 * UART used, worst case a Kconfig variable. For now live with hard
-	 * codes as the only devices that might be different are the iWave
-	 * iRainbowG6 and the OXPCIe952 card (and the latter is memory mapped)
-	 */
-	unsigned int div = (115200 / CONFIG_TTYS0_BAUD);
-
-#if !defined(__SMM__) && CONFIG_USE_OPTION_TABLE
-	static const unsigned char divisor[8] = { 1, 2, 3, 6, 12, 24, 48, 96 };
-	unsigned b_index = 0;
-#if defined(__PRE_RAM__)
-	b_index = read_option(baud_rate, 0);
-	b_index &= 7;
-	div = divisor[b_index];
-#else
-	if (get_option(&b_index, "baud_rate") == CB_SUCCESS)
-		div = divisor[b_index];
-#endif
-#endif
-
+	unsigned int div;
+	div = get_uart_divisor(default_baudrate(), BAUDRATE_REFCLK,
+		BAUDRATE_OVERSAMPLE);
 	uart8250_init(CONFIG_TTYS0_BASE, div);
 }

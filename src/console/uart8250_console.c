@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <console/uart.h>
 #include <uart8250.h>
 
 static void ttyS0_init(void)

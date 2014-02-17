@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <console/usb.h>
 #include <string.h>
 #include <arch/hlt.h>
 #include <arch/io.h>

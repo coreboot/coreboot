@@ -19,7 +19,7 @@
  */
 
 #include <arch/io.h>
-#include <uart.h>
+#include <console/uart.h>
 #include <uart8250.h>
 #include <device/device.h>
 #include <delay.h>

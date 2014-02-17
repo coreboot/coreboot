@@ -18,6 +18,8 @@
  */
 
 #include <console/console.h>
+#include <console/cbmem_console.h>
+#include <console/uart.h>
 #include <console/vtxprintf.h>
 
 /* FIXME: need to make console driver more generic */

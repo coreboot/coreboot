@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <console/uart.h>
 #include <uart8250.h>
 
 static u32 uart_bar = 0;

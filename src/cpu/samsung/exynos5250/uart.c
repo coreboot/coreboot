@@ -18,7 +18,7 @@
  */
 
 #include <console/console.h>	/* for __console definition */
-#include <uart.h>
+#include <console/uart.h>
 #include <arch/io.h>
 #include "uart.h"
 #include "clk.h"

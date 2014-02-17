@@ -21,7 +21,7 @@
 #include <arch/io.h>
 #include <arch/early_variables.h>
 #include <delay.h>
-#include <uart.h>
+#include <console/uart.h>
 #include <uart8250.h>
 #include <device/pci_def.h>
 

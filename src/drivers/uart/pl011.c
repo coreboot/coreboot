@@ -14,7 +14,7 @@
  */
 
 #include <console/console.h>
-#include <uart.h>
+#include <console/uart.h>
 
 static void pl011_uart_tx_byte(unsigned char data)
 {

@@ -21,6 +21,7 @@
  */
 
 #include <console/console.h>
+#include <console/uart.h>
 #include <ip_checksum.h>
 #include <boot/coreboot_tables.h>
 #include <string.h>

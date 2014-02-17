@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <console/cbmem_console.h>
 
 static void cbmemc_init_(void)
 {

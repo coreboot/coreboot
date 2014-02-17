@@ -129,8 +129,6 @@ u32 uart_mem_init(void);
 #if defined(__PRE_RAM__) && CONFIG_DRIVERS_OXFORD_OXPCIE
 /* and special init for OXPCIe based cards */
 extern int oxford_oxpcie_present;
-
-void oxford_init(void);
 #endif
 #endif
 

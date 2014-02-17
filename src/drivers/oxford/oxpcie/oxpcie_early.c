@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <arch/early_variables.h>
 #include <delay.h>
+#include <uart.h>
 #include <uart8250.h>
 #include <device/pci_def.h>
 
@@ -116,7 +117,14 @@ void oxford_init(void)
 	/* Now the UART initialization */
 	u32 uart0_base = CONFIG_OXFORD_OXPCIE_BASE_ADDRESS + 0x1000;
 
-	uart8250_mem_init(uart0_base, (4000000 / CONFIG_TTYS0_BAUD));
+	unsigned int refclk = uart_platform_refclk();
+	unsigned int div = uart_baudrate_divisor(refclk);
+	uart8250_mem_init(uart0_base, div);
 }
 
 #endif
+
+unsigned int uart_platform_refclk(void)
+{
+	return 4000000;
+}

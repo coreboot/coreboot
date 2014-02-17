@@ -26,6 +26,16 @@
 #ifndef UART_H
 #define UART_H
 
+/* Return the clock frequency UART uses as reference clock for
+ * baudrate generator. */
+unsigned int uart_platform_refclk(void);
+
+/* Return the divisor that configures UART for baudrate detemined
+ * from option_table, or when that is not used, CONFIG_TTYS0_BAUD.
+ */
+unsigned int uart_baudrate_divisor(unsigned int refclk);
+
+
 #if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
 #include <uart8250.h>
 #endif

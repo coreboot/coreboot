@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef UART_H
-#define UART_H
+#ifndef CONSOLE_UART_H
+#define CONSOLE_UART_H
 
 /* Return the clock frequency UART uses as reference clock for
  * baudrate generator. */
@@ -44,4 +44,6 @@ void uart_init(void);
 
 uint32_t uartmem_getbaseaddr(void);
 
-#endif /* UART_H */
+void oxford_init(void);
+
+#endif /* CONSOLE_UART_H */

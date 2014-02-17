@@ -22,6 +22,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <console/console.h>
+#include <uart8250.h>
 #include <arch/io.h>
 
 static void oxford_oxpcie_enable(device_t dev)

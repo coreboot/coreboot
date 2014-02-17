@@ -20,8 +20,6 @@
 #ifndef UART8250_H
 #define UART8250_H
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM
-
 /* Data */
 #define UART_RBR 0x00
 #define UART_TBR 0x00
@@ -116,7 +114,6 @@ void uart8250_tx_flush(unsigned base_port);
  * have three different sets of uart code, so it's an improvement.
  */
 void uart8250_init(unsigned base_port, unsigned divisor);
-void uart_init(void);
 #endif
 #if CONFIG_CONSOLE_SERIAL8250MEM
 void uartmem_init(void);
@@ -136,7 +133,5 @@ extern int oxford_oxpcie_present;
 void oxford_init(void);
 #endif
 #endif
-
-#endif /* CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM */
 
 #endif /* UART8250_H */

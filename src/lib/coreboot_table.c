@@ -102,63 +102,28 @@ static struct lb_memory *lb_memory(struct lb_header *header)
 	return mem;
 }
 
-static struct lb_serial *lb_serial(struct lb_header *header)
+void lb_add_serial(struct lb_serial *new_serial, void *data)
 {
-#if CONFIG_CONSOLE_SERIAL8250
-	struct lb_record *rec;
+	struct lb_header *header = (struct lb_header *)data;
 	struct lb_serial *serial;
-	rec = lb_new_record(header);
-	serial = (struct lb_serial *)rec;
+
+	serial = (struct lb_serial *)lb_new_record(header);
 	serial->tag = LB_TAG_SERIAL;
 	serial->size = sizeof(*serial);
-	serial->type = LB_SERIAL_TYPE_IO_MAPPED;
-	serial->baseaddr = CONFIG_TTYS0_BASE;
-	serial->baud = CONFIG_TTYS0_BAUD;
-	return serial;
-#elif CONFIG_CONSOLE_SERIAL8250MEM || CONFIG_CONSOLE_SERIAL_UART
-	if (uartmem_getbaseaddr()) {
-		struct lb_record *rec;
-		struct lb_serial *serial;
-		rec = lb_new_record(header);
-		serial = (struct lb_serial *)rec;
-		serial->tag = LB_TAG_SERIAL;
-		serial->size = sizeof(*serial);
-		serial->type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-		serial->baseaddr = uartmem_getbaseaddr();
-		serial->baud = CONFIG_TTYS0_BAUD;
-		return serial;
-	} else {
-		return NULL;
-	}
-#else
-	return NULL;
-#endif
+	serial->type = new_serial->type;
+	serial->baseaddr = new_serial->baseaddr;
+	serial->baud = new_serial->baud;
 }
 
-#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || \
-	CONFIG_CONSOLE_SERIAL_UART || CONFIG_CONSOLE_USB
-static void add_console(struct lb_header *header, u16 consoletype)
+void lb_add_console(uint16_t consoletype, void *data)
 {
+	struct lb_header *header = (struct lb_header *)data;
 	struct lb_console *console;
 
 	console = (struct lb_console *)lb_new_record(header);
 	console->tag = LB_TAG_CONSOLE;
 	console->size = sizeof(*console);
 	console->type = consoletype;
-}
-#endif
-
-static void lb_console(struct lb_header *header)
-{
-#if CONFIG_CONSOLE_SERIAL8250
-	add_console(header, LB_TAG_CONSOLE_SERIAL8250);
-#endif
-#if CONFIG_CONSOLE_SERIAL8250MEM || CONFIG_CONSOLE_SERIAL_UART
-	add_console(header, LB_TAG_CONSOLE_SERIAL8250MEM);
-#endif
-#if CONFIG_CONSOLE_USB
-	add_console(header, LB_TAG_CONSOLE_EHCI);
-#endif
 }
 
 static void lb_framebuffer(struct lb_header *header)
@@ -522,10 +487,15 @@ unsigned long write_coreboot_table(
 
 	/* Record our motherboard */
 	lb_mainboard(head);
-	/* Record the serial port, if present */
-	lb_serial(head);
-	/* Record our console setup */
-	lb_console(head);
+
+	/* Record the serial ports and consoles */
+#if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || CONFIG_CONSOLE_SERIAL_UART
+	uart_fill_lb(head);
+#endif
+#if CONFIG_CONSOLE_USB
+	lb_add_console(LB_TAG_CONSOLE_EHCI, head);
+#endif
+
 	/* Record our various random string information */
 	lb_strings(head);
 	/* Record our framebuffer */

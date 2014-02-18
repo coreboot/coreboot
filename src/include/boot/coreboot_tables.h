@@ -348,4 +348,8 @@ struct lb_memory *get_lb_mem(void);
 
 void fill_lb_gpios(struct lb_gpios *gpios);
 
+void uart_fill_lb(void *data);
+void lb_add_serial(struct lb_serial *serial, void *data);
+void lb_add_console(u16 consoletype, void *data);
+
 #endif /* COREBOOT_TABLES_H */

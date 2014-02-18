@@ -24,7 +24,9 @@
 #include <arch/io.h>
 #include <arch/early_variables.h>
 #include <delay.h>
+#include <boot/coreboot_tables.h>
 #include <console/uart.h>
+#include <device/pci.h>
 #include <device/pci_def.h>
 
 static unsigned int oxpcie_present CAR_GLOBAL;
@@ -139,9 +141,15 @@ void oxford_remap(u32 new_base)
 	uart1_base = new_base + 0x2000;
 }
 
-uint32_t uartmem_getbaseaddr(void)
+void uart_fill_lb(void *data)
 {
-	return uart_platform_base(0);
+	struct lb_serial serial;
+	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial.baseaddr = uart_platform_base(0);
+	serial.baud = default_baudrate();
+	lb_add_serial(&serial, data);
+
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
 }
 #endif
 

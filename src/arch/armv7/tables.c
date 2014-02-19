@@ -46,7 +46,7 @@ void cbmem_fail_resume(void)
 {
 }
 
-struct lb_memory *write_tables(void)
+void write_tables(void)
 {
 	unsigned long table_pointer, new_table_pointer;
 
@@ -56,7 +56,7 @@ struct lb_memory *write_tables(void)
 						MAX_COREBOOT_TABLE_SIZE);
 	if (!table_pointer) {
 		printk(BIOS_ERR, "Could not add CBMEM for coreboot table.\n");
-		return NULL;
+		return;
 	}
 
 	new_table_pointer = write_coreboot_table(0UL, 0UL,
@@ -74,6 +74,4 @@ struct lb_memory *write_tables(void)
 
 	/* Print CBMEM sections */
 	cbmem_list();
-
-	return get_lb_mem();
 }

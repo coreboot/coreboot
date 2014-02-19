@@ -35,10 +35,10 @@
 #define LSR_TXFIFOE		(1 << 5)
 
 /*
- * Initialise the serial port with the given baudrate. The settings
+ * Initialise the serial port with the given baudrate divisor. The settings
  * are always 8 data bits, no parity, 1 stop bit, no start bits.
  */
-static void am335x_uart_init_dev(void)
+static void am335x_uart_init(uint16_t div)
 {
 	struct am335x_uart *uart = (struct am335x_uart *)
 					CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
@@ -107,24 +107,8 @@ static void am335x_uart_init_dev(void)
 	write16(0xbf, &uart->lcr);
 
 	/* 7. Set dll and dlh to the desired values (table 19-25) */
-	if (CONFIG_CONSOLE_SERIAL_9600) {
-		write16(0x01, &uart->dlh);
-		write16(0x38, &uart->dll);
-	} else if (CONFIG_CONSOLE_SERIAL_19200) {
-		write16(0x00, &uart->dlh);
-		write16(0x9c, &uart->dll);
-	} else if (CONFIG_CONSOLE_SERIAL_38400) {
-		write16(0x00, &uart->dlh);
-		write16(0x4e, &uart->dll);
-	} else if (CONFIG_CONSOLE_SERIAL_57600) {
-		write16(0x00, &uart->dlh);
-		write16(0x34, &uart->dll);
-	} else if (CONFIG_CONSOLE_SERIAL_115200) {
-		write16(0x00, &uart->dlh);
-		write16(0x1a, &uart->dll);
-	} else {
-		/* Unrecognized baud rate? */
-	}
+	write16((div >> 8), &uart->dlh);
+	write16((div & 0xff), &uart->dll);
 
 	/* 8. Switch to operational mode to access ier */
 	write16(0x0, &uart->lcr);
@@ -173,12 +157,24 @@ static void am335x_uart_tx_byte(unsigned char data)
 	return write8(data, &uart->thr);
 }
 
+unsigned int uart_platform_refclk(void)
+{
+	return 48000000;
+}
+
+static void am335x_uart_init_dev(void)
+{
+	uint16_t div = (uint16_t) uart_baudrate_divisor(
+		default_baudrate(), uart_platform_refclk(), 16);
+	am335x_uart_init(div);
+}
+
+#if !defined(__PRE_RAM__)
 uint32_t uartmem_getbaseaddr(void)
 {
 	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }
 
-#if !defined(__PRE_RAM__)
 static const struct console_driver exynos5_uart_console __console = {
 	.init     = am335x_uart_init_dev,
 	.tx_byte  = am335x_uart_tx_byte,

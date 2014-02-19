@@ -16,6 +16,7 @@
 # Architecture Options
 #
 # CONFIG_LP_ARCH_ARM is not set
+# CONFIG_LP_ARCH_ARM64 is not set
 CONFIG_LP_ARCH_X86=y
 # CONFIG_LP_MEMMAP_RAM_ONLY is not set
 # CONFIG_LP_MULTIBOOT is not set

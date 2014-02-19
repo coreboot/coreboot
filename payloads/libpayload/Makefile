@@ -92,6 +92,7 @@ include util/kconfig/Makefile
 include $(HAVE_DOTCONFIG)
 
 ARCHDIR-$(CONFIG_LP_ARCH_ARM)     := arm
+ARCHDIR-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCHDIR-$(CONFIG_LP_ARCH_X86)     := x86
 
 ARCH-y := $(ARCHDIR-y)
@@ -99,6 +100,7 @@ ARCH-y := $(ARCHDIR-y)
 # If architecture folder name is different from GCC binutils architecture name,
 # override here.
 ARCH-$(CONFIG_LP_ARCH_ARM)     := arm
+ARCH-$(CONFIG_LP_ARCH_ARM64)   := arm64
 ARCH-$(CONFIG_LP_ARCH_X86)     := i386
 
 CC := $(CC_$(ARCH-y))

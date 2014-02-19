@@ -74,7 +74,12 @@ if [ "$CONFIG_LP_ARCH_ARM" = "y" ]; then
   _ARCHEXTRA=""
   _ARCH=arm
 fi
-
+if [ "$CONFIG_LP_ARCH_ARM64" = "y" ]; then
+  _ARCHINCDIR=$_INCDIR/arm64
+  _ARCHLIBDIR=$_LIBDIR/arm64
+  _ARCHEXTRA=""
+  _ARCH=arm64
+fi
 if [ "$CONFIG_LP_ARCH_X86" = "y" ]; then
   _ARCHINCDIR=$_INCDIR/x86
   _ARCHLIBDIR=$_LIBDIR/x86

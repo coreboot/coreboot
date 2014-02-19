@@ -111,6 +111,11 @@ detect_special_flags() {
 			#	CFLAGS="$CFLAGS -mcpu=cortex-a9"
 			;;
 	esac
+
+	case "$architecture" in
+		arm64-generic )
+			;;
+	esac
 }
 
 report_arch_toolchain() {
@@ -135,13 +140,19 @@ touch "$TMPFILE"
 trap clean_up EXIT
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 arm"
+SUPPORTED_ARCHITECTURE="x86 arm arm64"
 
 # ARM Architecture
 TARCH_arm="arm"
 TBFDARCH_arm="littlearm"
 TCLIST_arm="armv7a armv7-a"
 TWIDTH_arm="32"
+
+# ARM64 Architecture
+TARCH_arm64="arm64"
+TBFDARCH_arm64="littleaarch64"
+TCLIST_arm64="aarch64"
+TWIDTH_arm64="64"
 
 # X86 Architecture
 TARCH_x86="i386"

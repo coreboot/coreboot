@@ -77,6 +77,11 @@ config ARCH_X86
         help
           Support the x86 architecture
 
+config ARCH_ARM64
+        bool "ARM64"
+        help
+          Support the ARM64 architecture
+
 endchoice
 
 config MEMMAP_RAM_ONLY

@@ -27,6 +27,10 @@
 ## SUCH DAMAGE.
 ##
 
-source "arch/arm/Config.in"
-source "arch/x86/Config.in"
-source "arch/arm64/Config.in"
+if ARCH_ARM64
+
+config ARCH_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select LITTLE_ENDIAN
+
+endif

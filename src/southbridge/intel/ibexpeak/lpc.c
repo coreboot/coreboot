@@ -675,16 +675,7 @@ static struct device_operations device_ops = {
 };
 
 
-/* IDs for LPC device of Intel 6 Series Chipset, Intel 7 Series Chipset, and
- * Intel C200 Series Chipset
- */
-
-static const unsigned short pci_device_ids[] = { 0x1c46, 0x1c47, 0x1c49, 0x1c4a,
-						 0x1c4b, 0x1c4c, 0x1c4d, 0x1c4e,
-						 0x1c4f, 0x1c50, 0x1c52, 0x1c54,
-						 0x1e55, 0x1c56, 0x1e57, 0x1c5c,
-						 0x1e5d, 0x1e5e, 0x1e5f, 0x3b07,
-						 0 };
+static const unsigned short pci_device_ids[] = { 0x3b07, 0x3b09, 0 };
 
 static const struct pci_driver pch_lpc __pci_driver = {
 	.ops	 = &device_ops,

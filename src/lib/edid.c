@@ -1253,7 +1253,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		}
 
 		printk(BIOS_SPEW, "Checksum\n");
-		vbe_valid = do_checksum(edid);
+		do_checksum(edid);
 		for(i = 0; i < size; i += 128)
 			nonconformant_extension = parse_extension(out, &edid[i]);
 /*

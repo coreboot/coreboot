@@ -174,9 +174,8 @@ void *cbmem_find(u32 id);
 
 #ifndef __PRE_RAM__
 /* Ramstage only functions. */
-/* Add the cbmem memory used to the memory tables. */
-struct lb_memory;
-void cbmem_add_lb_mem(struct lb_memory *mem);
+/* Add the cbmem memory used to the memory map at boot. */
+void cbmem_add_bootmem(void);
 void cbmem_list(void);
 void cbmem_arch_init(void);
 void cbmem_print_entry(int n, u32 id, u64 start, u64 size);

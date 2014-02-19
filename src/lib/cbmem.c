@@ -19,9 +19,9 @@
 
 #include <types.h>
 #include <string.h>
+#include <bootmem.h>
 #include <bootstate.h>
 #include <cbmem.h>
-#include <boot/coreboot_tables.h>
 #include <console/console.h>
 #include <arch/early_variables.h>
 #if CONFIG_HAVE_ACPI_RESUME && !defined(__PRE_RAM__)
@@ -265,9 +265,9 @@ BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 	                      init_cbmem_post_device, NULL),
 };
 
-void cbmem_add_lb_mem(struct lb_memory *mem)
+void cbmem_add_bootmem(void)
 {
-	lb_add_memory_range(mem, LB_MEM_TABLE, cbmem_base, cbmem_size);
+	bootmem_add_range(cbmem_base, cbmem_size, LB_MEM_TABLE);
 }
 
 void cbmem_list(void)

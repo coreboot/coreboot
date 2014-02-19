@@ -63,12 +63,11 @@ static void serial_setbrg_dev(void)
 {
 	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 	u32 uclk;
-	u32 baudrate = CONFIG_TTYS0_BAUD;
 	u32 val;
 
 	// All UARTs share the same clock.
 	uclk = clock_get_periph_rate(PERIPH_ID_UART3);
-	val = uclk / baudrate;
+	val = uclk / default_baudrate();
 
 	writel(val / 16 - 1, &uart->ubrdiv);
 

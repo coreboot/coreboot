@@ -28,6 +28,7 @@
 #include <device/pci_ops.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <drivers/intel/gma/init.h>
 
 #include "chip.h"
 #include "nehalem.h"
@@ -545,16 +546,6 @@ static void gma_pm_init_pre_vbios(struct device *dev)
 	gtt_write(0x6c024, reg32);
 }
 
-#include <pc80/vga.h>
-#include <pc80/vga_io.h>
-
-#if CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
-static void fake_vbios(void)
-{
-#include "fake_vbios.c"
-}
-#endif
-
 static void gma_pm_init_post_vbios(struct device *dev)
 {
 	struct northbridge_intel_nehalem_config *conf = dev->chip_info;
@@ -636,8 +627,18 @@ static void gma_func0_init(struct device *dev)
 	/* PCI Init, will run VBIOS */
 	pci_dev_init(dev);
 #else
-	printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
-	fake_vbios();
+	u32 physbase, gttbase;
+	struct northbridge_intel_nehalem_config *conf = dev->chip_info;
+
+	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
+	gttbase = pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)),
+				    D0F0_GTT_BASE);
+
+	if (gtt_res && gtt_res->base && physbase && gttbase) {
+		printk(BIOS_SPEW, "Initializing VGA without OPROM. MMIO 0x%llx\n",
+		       gtt_res->base);
+		intel_gma_init(&conf->gma, gtt_res->base, physbase, gttbase);
+	}
 #endif
 
 	/* Linux relies on VBT for panel info.  */

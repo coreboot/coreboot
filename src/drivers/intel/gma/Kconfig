@@ -28,3 +28,7 @@ config INTEL_DDI
 	default n
 	help
 	  helper functions for intel DDI operations
+
+config INTEL_GFX_INIT
+	bool
+	default n

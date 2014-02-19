@@ -7,6 +7,7 @@
 
 #include "uart.h"
 #include <arch/io.h>
+#include <uart.h>
 #include <uart8250.h>
 
 /**
@@ -19,11 +20,11 @@ void a10_uart_configure(void *uart_base, u32 baud_rate, u8 data_bits,
 	u16 div;
 	struct a10_uart *uart = uart_base;
 
+	div = (u16) uart_baudrate_divisor(baud_rate,
+		uart_platform_refclk(), 16);
 	/* Enable access to Divisor Latch register */
 	write32(UART_LCR_DLAB, &uart->lcr);
 	/* Set baudrate */
-	/* FIXME: We assume clock is 24MHz, which may not be the case */
-	div = 24000000 / 16 / baud_rate;
 	write32((div >> 8) & 0xff, &uart->dlh);
 	write32(div & 0xff, &uart->dll);
 	/* Set line control */

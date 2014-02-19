@@ -3796,32 +3796,15 @@ static void dmi_setup(void)
 }
 #endif
 
-#if REAL
-static void
-set_fsb_frequency (void)
+void chipset_init(const int s3resume)
 {
-	u8 block[5];
-	u16 fsbfreq = 62879;
-	smbus_block_read(0x69, 0, 5, block);
-	block[0] = fsbfreq;
-	block[1] = fsbfreq >> 8;
-
-	smbus_block_write(0x69, 0, 5, block);
-}
-#endif
-
-void raminit(const int s3resume)
-{
-	unsigned channel, slot, lane, rank;
-	int i;
-	struct raminfo info;
 	u8 x2ca8;
 
-	gav(x2ca8 = read_mchbar8(0x2ca8));
+	x2ca8 = read_mchbar8(0x2ca8);
 	if ((x2ca8 & 1) || (x2ca8 == 8 && !s3resume)) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		write_mchbar8(0x2ca8, 0);
-		outb(0xe, 0xcf9);
+		outb(0x6, 0xcf9);
 #if REAL
 		while (1) {
 			asm volatile ("hlt");
@@ -3879,12 +3862,18 @@ void raminit(const int s3resume)
 	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, 0xb50);
 	gav(read32(DEFAULT_RCBA | 0x3428));
 	write32(DEFAULT_RCBA | 0x3428, 0x1d);
+}
 
-#if !REAL
-	pre_raminit_5(s3resume);
-#else
-	set_fsb_frequency();
-#endif
+void raminit(const int s3resume, const u8 *spd_addrmap)
+{
+	unsigned channel, slot, lane, rank;
+	int i;
+	struct raminfo info;
+	u8 x2ca8;
+	u16 deven;
+
+	x2ca8 = read_mchbar8(0x2ca8);
+	deven = pcie_read_config16(NORTHBRIDGE, D0F0_DEVEN);
 
 	memset(&info, 0x5a, sizeof(info));
 
@@ -3956,10 +3945,10 @@ void raminit(const int s3resume)
 					    0x8f, 0x90, 0x91, 0x92, 0x93, 0x94,
 					    0x95
 				};
-				if (slot)
+				if (!spd_addrmap[2 * channel + slot])
 					continue;
 				for (try = 0; try < 5; try++) {
-					v = smbus_read_byte(0x50 + channel,
+					v = smbus_read_byte(spd_addrmap[2 * channel + slot],
 							    DEVICE_TYPE);
 					if (v >= 0)
 						break;
@@ -3973,7 +3962,7 @@ void raminit(const int s3resume)
 					gav(info.
 					    spd[channel][0][useful_addresses
 							    [addr]] =
-					    smbus_read_byte(0x50 + channel,
+					    smbus_read_byte(spd_addrmap[2 * channel + slot],
 							    useful_addresses
 							    [addr]));
 				if (info.spd[channel][0][DEVICE_TYPE] != 11)
@@ -4981,7 +4970,7 @@ void raminit(const int s3resume)
 	pcie_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
 		      pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) & ~0x80);
 	udelay(10000);
-	write_mchbar16(0x2ca8, 0x0);
+	write_mchbar16(0x2ca8, 0x8);
 
 #if REAL
 	udelay(1000);

@@ -263,7 +263,7 @@ static struct device_operations sata_ops = {
 	.ops_pci = &sata_pci_ops,
 };
 
-static const unsigned short pci_device_ids[] = { 0x3b2e, 0 };
+static const unsigned short pci_device_ids[] = { 0x3b28, 0x3b29, 0x3b2e, 0 };
 
 static const struct pci_driver pch_sata __pci_driver = {
 	.ops = &sata_ops,

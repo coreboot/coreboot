@@ -39,7 +39,6 @@
 #include <cbmem.h>
 
 #include "gpio.h"
-#include "dock.h"
 #include "arch/early_variables.h"
 #include "southbridge/intel/ibexpeak/pch.h"
 #include "northbridge/intel/nehalem/nehalem.h"
@@ -55,10 +54,7 @@ static void pch_enable_lpc(void)
 			   CNF2_LPC_EN | CNF1_LPC_EN | MC_LPC_EN | KBC_LPC_EN |
 			   COMA_LPC_EN);
 
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, 0x7c1601);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN2_DEC, 0xc15e1);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN3_DEC, 0x1c1681);
-	pci_write_config32(PCH_LPC_DEV, LPC_GEN4_DEC, (0x68 & ~3) | 0x00040001);
+	pci_write_config32(PCH_LPC_DEV, LPC_GEN1_DEC, (0x68 & ~3) | 0x00040001);
 
 	pci_write_config16(PCH_LPC_DEV, LPC_IO_DEC, 0x10);
 
@@ -125,7 +121,7 @@ static void rcba_config(void)
 		/* 33e0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 		/* 33f0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 		/* 3400 */ 0x0000001c, 0x00000080, 0x00000000, 0x00000000,
-		/* 3410 */ 0x00000c61, 0x00000000, 0x16e61fe1, 0xbf4f001f,
+		/* 3410 */ 0x00000c61, 0x00000000, 0x16fc1fe1, 0xbf4f001f,
 		/* 3420 */ 0x00000000, 0x00060010, 0x0000001d, 0x00000000,
 		/* 3430 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
 		/* 3440 */ 0xdeaddeed, 0x00000000, 0x00000000, 0x00000000,
@@ -203,25 +199,17 @@ static inline u16 read_acpi16(u32 addr)
 	return inw(DEFAULT_PMBASE | addr);
 }
 
-static void
-set_fsb_frequency (void)
-{
-	u8 block[5];
-	u16 fsbfreq = 62879;
-	smbus_block_read(0x69, 0, 5, block);
-	block[0] = fsbfreq;
-	block[1] = fsbfreq >> 8;
-
-	smbus_block_write(0x69, 0, 5, block);
-}
-
 void main(unsigned long bist)
 {
 	u32 reg32;
 	int s3resume = 0;
-	const u8 spd_addrmap[4] = { 0x50, 0, 0x51, 0 };
+	const u8 spd_addrmap[4] = { 0x50, 0, 0x52, 0 };
 
 	timestamp_init(rdtsc ());
+
+	/* SERR pin is confused on reset. Clear NMI.  */
+	outb(4, 0x61);
+	outb(0, 0x61);
 
 	timestamp_add_now(TS_START_ROMSTAGE);
 
@@ -232,14 +220,18 @@ void main(unsigned long bist)
 
 	pch_enable_lpc();
 
-	/* Enable USB Power. We need to do it early for usbdebug to work. */
-	ec_set_bit(0x3b, 4);
-
 	/* Enable GPIOs */
 	pci_write_config32(PCH_LPC_DEV, GPIO_BASE, DEFAULT_GPIOBASE | 1);
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
-
-	setup_pch_gpios(&x201_gpio_map);
+	outl (0x796bd9c3, DEFAULT_GPIOBASE);
+	outl (0x86fec7c2, DEFAULT_GPIOBASE + 4);
+	outl (0xe4e8d7fe, DEFAULT_GPIOBASE + 0xc);
+	outl (0, DEFAULT_GPIOBASE + 0x18);
+	outl (0x00004182, DEFAULT_GPIOBASE + 0x2c);
+	outl (0x123360f8, DEFAULT_GPIOBASE + 0x30);
+	outl (0x1f47bfa8, DEFAULT_GPIOBASE + 0x34);
+	outl (0xfffe7fb6, DEFAULT_GPIOBASE + 0x38);
+//	setup_pch_gpios(&easynote_gpio_map);
 
 
 	/* This should probably go away. Until now it is required
@@ -263,23 +255,13 @@ void main(unsigned long bist)
 			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 			printk(BIOS_DEBUG, "Bad resume from S3 detected.\n");
 		} else {
-#if CONFIG_HAVE_ACPI_RESUME
 			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
 			s3resume = 1;
-#else
-			printk(BIOS_DEBUG,
-			       "Resume from S3 detected, but disabled.\n");
-#endif
 		}
 	}
 
 	/* Enable SMBUS. */
 	enable_smbus();
-
-	outb((inb(DEFAULT_GPIOBASE | 0x3a) & ~0x2) | 0x20,
-	     DEFAULT_GPIOBASE | 0x3a);
-	outb(0x50, 0x15ec);
-	outb(inb(0x15ee) & 0x70, 0x15ee);
 
 	write_acpi16(0x2, 0x0);
 	write_acpi32(0x28, 0x0);
@@ -300,9 +282,6 @@ void main(unsigned long bist)
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
 	chipset_init(s3resume);
-
-	set_fsb_frequency();
-
 	raminit(s3resume, spd_addrmap);
 
 	timestamp_add_now(TS_AFTER_INITRAM);

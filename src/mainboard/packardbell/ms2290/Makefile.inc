@@ -17,6 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += dock.c
-romstage-y += dock.c
-ramstage-y += dock.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
+ramstage-y += gma.c
+

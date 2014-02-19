@@ -371,11 +371,8 @@ static void intel_cores_init(device_t cpu)
 		/* Build the cpu device path */
 		cpu_path.type = DEVICE_PATH_APIC;
 		cpu_path.apic.apic_id =
-		  cpu->path.apic.apic_id + (i & 1) + ((i & 2) << 1);
-
-		/* Update APIC ID if no hyperthreading */
-		if (threads_per_core == 1)
-			cpu_path.apic.apic_id <<= 1;
+		  cpu->path.apic.apic_id + (i % threads_per_core)
+			+ ((i / threads_per_core) << 2);
 
 		/* Allocate the new cpu device structure */
 		new = alloc_dev(cpu->bus, &cpu_path);

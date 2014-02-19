@@ -26,6 +26,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MAINBOARD_HAS_NATIVE_VGA_INIT
 	select EARLY_CBMEM_INIT
 	select H8_DOCK_EARLY_INIT
+	select INTEL_EDID
+	select VGA
 
 config MAINBOARD_DIR
 	string

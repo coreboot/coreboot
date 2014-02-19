@@ -22,6 +22,10 @@
 
 chip northbridge/intel/i945
 
+	register "gma.use_spread_spectrum_clock" = "1"
+	register "gma.lvds_dual_channel" = "0"
+	register "gma.link_frequency_270_mhz" = "1"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_mFCPGA478
 			device lapic 0 on end

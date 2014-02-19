@@ -19,4 +19,5 @@
 
 ramstage-$(CONFIG_INTEL_DP) += intel_dp.c drm_dp_helper.c
 ramstage-$(CONFIG_INTEL_DDI) += intel_ddi.c
-
+ramstage-$(CONFIG_INTEL_GFX_INIT) += edid.c
+ramstage-$(CONFIG_INTEL_GFX_INIT) += init.c

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "drivers/intel/gma/init.h"
+
 /*
  * Digital Port Hotplug Enable:
  *  0x04 = Enabled, 2ms short pulse
@@ -38,5 +40,7 @@ struct northbridge_intel_nehalem_config {
 
 	u32 gpu_cpu_backlight;	/* CPU Backlight PWM value */
 	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
+
+	struct intel_gma_info gma;
 };
 

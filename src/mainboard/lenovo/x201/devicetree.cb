@@ -35,6 +35,9 @@ chip northbridge/intel/nehalem
 	register "gpu_panel_power_backlight_off_delay" = "2500"
 	register "gpu_cpu_backlight" = "0x58d"
 	register "gpu_pch_backlight" = "0x061a061a"
+	register "gma.use_spread_spectrum_clock" = "1"
+	register "gma.lvds_dual_channel" = "0"
+	register "gma.link_frequency_270_mhz" = "1"
 
 	chip ec/lenovo/pmh7
 		device pnp ff.1 on # dummy

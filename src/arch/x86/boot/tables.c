@@ -38,7 +38,7 @@ void cbmem_arch_init(void)
 	move_gdt();
 }
 
-struct lb_memory *write_tables(void)
+void write_tables(void)
 {
 	unsigned long low_table_start, low_table_end;
 	unsigned long rom_table_start, rom_table_end;
@@ -244,6 +244,4 @@ struct lb_memory *write_tables(void)
 
 	/* Print CBMEM sections */
 	cbmem_list();
-
-	return get_lb_mem();
 }

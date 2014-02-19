@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <cbfs.h>
 #include <cbmem.h>
-#include <memrange.h>
+#include <bootmem.h>
 #if CONFIG_CHROMEOS
 #if CONFIG_GENERATE_ACPI_TABLES
 #include <arch/acpi.h>
@@ -366,78 +366,11 @@ struct lb_memory *get_lb_mem(void)
 	return mem_ranges;
 }
 
-/* This structure keeps track of the coreboot table memory ranges. */
-static struct memranges lb_ranges;
-
-static struct lb_memory *build_lb_mem(struct lb_header *head)
-{
-	struct lb_memory *mem;
-
-	/* Record where the lb memory ranges will live */
-	mem = lb_memory(head);
-	mem_ranges = mem;
-
-	/* Fill the memory map out. The order of operations is important in
-	 * that each overlapping range will take over the next. Therefore,
-	 * add cacheable resources as RAM then add the reserved resources. */
-	memranges_init(&lb_ranges, IORESOURCE_CACHEABLE,
-	               IORESOURCE_CACHEABLE, LB_MEM_RAM);
-	memranges_add_resources(&lb_ranges, IORESOURCE_RESERVE,
-	                        IORESOURCE_RESERVE, LB_MEM_RESERVED);
-
-	return mem;
-}
-
-static void commit_lb_memory(struct lb_memory *mem)
-{
-	struct range_entry *r;
-	struct lb_memory_range *lb_r;
-	int i;
-
-	lb_r = &mem->map[0];
-	i = 0;
-
-	memranges_each_entry(r, &lb_ranges) {
-		const char *entry_type;
-
-		switch (range_entry_tag(r)) {
-		case LB_MEM_RAM: entry_type="RAM"; break;
-		case LB_MEM_RESERVED: entry_type="RESERVED"; break;
-		case LB_MEM_ACPI: entry_type="ACPI"; break;
-		case LB_MEM_NVS: entry_type="NVS"; break;
-		case LB_MEM_UNUSABLE: entry_type="UNUSABLE"; break;
-		case LB_MEM_VENDOR_RSVD: entry_type="VENDOR RESERVED"; break;
-		case LB_MEM_TABLE: entry_type="CONFIGURATION TABLES"; break;
-		default: entry_type="UNKNOWN!"; break;
-		}
-
-		printk(BIOS_DEBUG, "%2d. %016llx-%016llx: %s\n",
-			i, range_entry_base(r), range_entry_end(r)-1,
-			entry_type);
-
-		lb_r->start = pack_lb64(range_entry_base(r));
-		lb_r->size = pack_lb64(range_entry_size(r));
-		lb_r->type = range_entry_tag(r);
-
-		i++;
-		lb_r++;
-		mem->size += sizeof(struct lb_memory_range);
-	}
-}
-
-void lb_add_memory_range(struct lb_memory *mem,
-	uint32_t type, uint64_t start, uint64_t size)
-{
-	memranges_insert(&lb_ranges, start, size, type);
-}
-
-
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end)
 {
 	struct lb_header *head;
-	struct lb_memory *mem;
 
 	if (low_table_start || low_table_end) {
 		printk(BIOS_DEBUG, "Writing table forward entry at 0x%08lx\n",
@@ -476,30 +409,29 @@ unsigned long write_coreboot_table(
 	}
 #endif
 
-	/* The Linux kernel assumes this region is reserved */
-	/* Record where RAM is located */
-	mem = build_lb_mem(head);
+	/* Initialize the memory map at boot time. */
+	bootmem_init();
 
 	if (low_table_start || low_table_end) {
+		uint64_t size = low_table_end - low_table_start;
 		/* Record the mptable and the the lb_table.
 		 * (This will be adjusted later)  */
-		lb_add_memory_range(mem, LB_MEM_TABLE,
-			low_table_start, low_table_end - low_table_start);
+		bootmem_add_range(low_table_start, size, LB_MEM_TABLE);
 	}
 
 	/* Record the pirq table, acpi tables, and maybe the mptable. However,
 	 * these only need to be added when the rom_table is sitting below
 	 * 1MiB. If it isn't that means high tables are being written.
 	 * The code below handles high tables correctly. */
-	if (rom_table_end <= (1 << 20))
-		lb_add_memory_range(mem, LB_MEM_TABLE,
-			rom_table_start, rom_table_end - rom_table_start);
-
-	cbmem_add_lb_mem(mem);
+	if (rom_table_end <= (1 << 20)) {
+		uint64_t size = rom_table_end - rom_table_start;
+		bootmem_add_range(rom_table_start, size, LB_MEM_TABLE);
+	}
 
 	/* No other memory areas can be added after the memory table has been
 	 * committed as the entries won't show up in the serialize mem table. */
-	commit_lb_memory(mem);
+	mem_ranges = lb_memory(head);
+	bootmem_write_memory_table(mem_ranges);
 
 	/* Record our motherboard */
 	lb_mainboard(head);

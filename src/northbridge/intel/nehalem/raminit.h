@@ -22,6 +22,7 @@
 
 #include "nehalem.h"
 
+void chipset_init(const int s3resume);
 void raminit(const int s3resume, const u8 *spd_addrmap);
 
 #endif				/* RAMINIT_H */

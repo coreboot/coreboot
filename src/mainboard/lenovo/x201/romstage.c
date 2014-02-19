@@ -203,6 +203,18 @@ static inline u16 read_acpi16(u32 addr)
 	return inw(DEFAULT_PMBASE | addr);
 }
 
+static void
+set_fsb_frequency (void)
+{
+	u8 block[5];
+	u16 fsbfreq = 62879;
+	smbus_block_read(0x69, 0, 5, block);
+	block[0] = fsbfreq;
+	block[1] = fsbfreq >> 8;
+
+	smbus_block_write(0x69, 0, 5, block);
+}
+
 void main(unsigned long bist)
 {
 	u32 reg32;
@@ -286,6 +298,10 @@ void main(unsigned long bist)
 	early_thermal_init();
 
 	timestamp_add_now(TS_BEFORE_INITRAM);
+
+	chipset_init(s3resume);
+
+	set_fsb_frequency();
 
 	raminit(s3resume, spd_addrmap);
 

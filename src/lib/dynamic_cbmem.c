@@ -18,7 +18,7 @@
  */
 
 #include <bootstate.h>
-#include <boot/tables.h>
+#include <bootmem.h>
 #include <console/console.h>
 #include <cbmem.h>
 #include <string.h>
@@ -431,14 +431,14 @@ BOOT_STATE_INIT_ENTRIES(cbmem_bscb) = {
 	                      init_cbmem_pre_device, NULL),
 };
 
-void cbmem_add_lb_mem(struct lb_memory *mem)
+void cbmem_add_bootmem(void)
 {
 	unsigned long base;
 	unsigned long top;
 
 	base = (unsigned long)cbmem_base();
 	top = (unsigned long)get_top_aligned();
-	lb_add_memory_range(mem, LB_MEM_TABLE, base, top - base);
+	bootmem_add_range(base, top - base, LB_MEM_TABLE);
 }
 
 void cbmem_list(void)

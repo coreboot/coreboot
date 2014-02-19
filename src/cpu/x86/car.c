@@ -98,7 +98,7 @@ void car_migrate_variables(void)
 
 	/* Call all the migration functions. */
 	migrate_func = &_car_migrate_start;
-	while (migrate_func != &_car_migrate_end) {
+	while (*migrate_func != NULL) {
 		(*migrate_func)();
 		migrate_func++;
 	}

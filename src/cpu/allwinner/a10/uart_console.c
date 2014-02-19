@@ -38,29 +38,19 @@ static void *get_console_uart_base_addr(void)
 	return (void *)A1X_UART0_BASE;
 }
 
-static u32 get_console_uart_baud(void)
+/* FIXME: We assume clock is 24MHz, which may not be the case. */
+unsigned int uart_platform_refclk(void)
 {
-	if (CONFIG_CONSOLE_SERIAL_115200)
-		return 115200;
-	else if (CONFIG_CONSOLE_SERIAL_57600)
-		return 57600;
-	else if (CONFIG_CONSOLE_SERIAL_38400)
-		return 34800;
-	else if (CONFIG_CONSOLE_SERIAL_19200)
-		return 19200;
-	else if (CONFIG_CONSOLE_SERIAL_9600)
-		return 9600;
-
-	/* Default to 115200 if selection is invalid */
-	return 115200;
+	return 24000000;
 }
 
 static void a10_uart_init_dev(void)
 {
 	void *uart_base = get_console_uart_base_addr();
+
 	/* Use default 8N1 encoding */
-	a10_uart_configure(uart_base, get_console_uart_baud(),
-			   8, UART_PARITY_NONE, 1);
+	a10_uart_configure(uart_base, default_baudrate(),
+		8, UART_PARITY_NONE, 1);
 	a10_uart_enable_fifos(uart_base);
 }
 

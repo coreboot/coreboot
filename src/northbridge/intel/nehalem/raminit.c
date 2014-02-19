@@ -3804,7 +3804,7 @@ void chipset_init(const int s3resume)
 	if ((x2ca8 & 1) || (x2ca8 == 8 && !s3resume)) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		write_mchbar8(0x2ca8, 0);
-		outb(0xe, 0xcf9);
+		outb(0x6, 0xcf9);
 #if REAL
 		while (1) {
 			asm volatile ("hlt");

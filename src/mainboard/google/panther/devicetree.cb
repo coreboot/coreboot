@@ -61,6 +61,9 @@ chip northbridge/intel/haswell
 			register "sio_i2c0_voltage" = "0" # 3.3V
 			register "sio_i2c1_voltage" = "0" # 3.3V
 
+			# Force enable ASPM for PCIe Port 4
+			register "pcie_port_force_aspm" = "0x10"
+
 			# Enable port coalescing
 			register "pcie_port_coalesce" = "1"
 

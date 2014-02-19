@@ -26,7 +26,6 @@
 typedef void (* const car_migration_func_t)(void);
 
 extern car_migration_func_t _car_migrate_start;
-extern car_migration_func_t _car_migrate_end;
 
 extern char _car_data_start[];
 extern char _car_data_end[];
@@ -98,7 +97,7 @@ void car_migrate_variables(void)
 
 	/* Call all the migration functions. */
 	migrate_func = &_car_migrate_start;
-	while (migrate_func != &_car_migrate_end) {
+	while (*migrate_func != NULL) {
 		(*migrate_func)();
 		migrate_func++;
 	}

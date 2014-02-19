@@ -4970,7 +4970,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	pcie_write_config8(SOUTHBRIDGE, GEN_PMCON_2,
 		      pcie_read_config8(SOUTHBRIDGE, GEN_PMCON_2) & ~0x80);
 	udelay(10000);
-	write_mchbar16(0x2ca8, 0x0);
+	write_mchbar16(0x2ca8, 0x8);
 
 #if REAL
 	udelay(1000);

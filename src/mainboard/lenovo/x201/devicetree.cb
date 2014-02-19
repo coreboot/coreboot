@@ -35,6 +35,10 @@ chip northbridge/intel/nehalem
 	register "gpu_panel_power_backlight_off_delay" = "2500"
 	register "gpu_cpu_backlight" = "0x58d"
 	register "gpu_pch_backlight" = "0x061a061a"
+	register "gpu_use_spread_spectrum_clock" = "1"
+	register "gpu_lvds_dual_channel" = "0"
+	register "gpu_link_frequency_270_mhz" = "1"
+	register "gpu_lvds_num_lanes" = "4"
 
 	chip ec/lenovo/pmh7
 		device pnp ff.1 on # dummy

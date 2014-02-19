@@ -37,7 +37,7 @@ SECTIONS
 		. = ALIGN(16);
 		_car_migrate_start = .;
 		*(.car.migrate);
-		_car_migrate_end = .;
+		LONG(0);
 		. = ALIGN(16);
 		_erom = .;
 	}

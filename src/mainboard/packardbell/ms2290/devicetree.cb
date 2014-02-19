@@ -1,0 +1,104 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2007-2009 coresystems GmbH
+## Copyright (C) 2011 Sven Schnelle <svens@stackframe.org>
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License as
+## published by the Free Software Foundation; version 2 of
+## the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+## MA 02110-1301 USA
+##
+
+chip northbridge/intel/nehalem
+
+	register "gpu_dp_b_hotplug" = "0x04"
+	register "gpu_dp_c_hotplug" = "0x04"
+	register "gpu_dp_d_hotplug" = "0x04"
+
+	# Enable Panel as LVDS and configure power delays
+	register "gpu_panel_port_select" = "0"			# LVDS
+	register "gpu_panel_power_cycle_delay" = "6"
+	register "gpu_panel_power_up_delay" = "300"
+	register "gpu_panel_power_down_delay" = "300"
+	register "gpu_panel_power_backlight_on_delay" = "3000"
+	register "gpu_panel_power_backlight_off_delay" = "3000"
+	register "gpu_cpu_backlight" = "0x58d"
+	register "gpu_pch_backlight" = "0x061a061a"
+	register "gpu_use_spread_spectrum_clock" = "0"
+	register "gpu_lvds_dual_channel" = "1"
+	register "gpu_link_frequency_270_mhz" = "1"
+	register "gpu_lvds_n_lanes" = "4"
+
+	device cpu_cluster 0 on
+		chip cpu/intel/model_2065x
+			device lapic 0 on end
+		end
+	end
+
+	device domain 0 on
+		device pci 00.0 on # Host bridge
+			subsystemid 0x1025 0x0379
+		end
+		device pci 02.0 on # VGA controller
+			subsystemid 0x1025 0x0379
+		end
+		chip southbridge/intel/ibexpeak
+			register "pirqa_routing" = "0x0b"
+			register "pirqb_routing" = "0x0b"
+			register "pirqc_routing" = "0x0b"
+			register "pirqd_routing" = "0x0b"
+			register "pirqe_routing" = "0x0b"
+			register "pirqf_routing" = "0x0b"
+			register "pirqg_routing" = "0x0b"
+			register "pirqh_routing" = "0x0b"
+
+			# GPI routing
+			#  0 No effect (default)
+			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
+			#  2 SCI (if corresponding GPIO_EN bit is also set)
+			register "gpi7_routing" = "2"
+			register "gpi8_routing" = "2"
+
+			register "sata_port_map" = "0x11"
+
+			register "gpe0_en" = "0x01800046"
+			register "alt_gp_smi_en" = "0x0000"
+			register "gen1_dec" = "0x040069"
+
+			device pci 1a.0 on # USB2 EHCI
+				subsystemid 0x1025 0x0379
+			end
+
+			device pci 1b.0 on # Audio Controller
+				subsystemid 0x1025 0x0379
+			end
+
+			device pci 1c.0 on end # PCIe Port #1
+			device pci 1c.1 on end # PCIe Port #1
+
+			device pci 1d.0 on # USB2 EHCI
+				subsystemid 0x1025 0x0379
+			end
+			device pci 1f.0 on # PCI-LPC bridge
+				subsystemid 0x1025 0x0379
+			end
+			device pci 1f.2 on # IDE/SATA
+				subsystemid 0x1025 0x0379
+			end
+			device pci 1f.3 on # SMBUS
+				subsystemid 0x1025 0x0379
+			end
+		end
+	end
+end

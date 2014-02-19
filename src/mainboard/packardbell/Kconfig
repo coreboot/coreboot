@@ -1,0 +1,19 @@
+if VENDOR_PACKARDBELL
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_PACKARDBELL_MS2290
+	bool "EasyNote LM85 (MS2290)"
+	help
+	  EasyNote LM85 laptop
+
+endchoice
+
+source "src/mainboard/packardbell/ms2290/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Packard Bell"
+
+endif # VENDOR_PACKARDBELL

@@ -37,9 +37,6 @@ static void thermal_init(struct device *dev)
 
 	write32(res->base + 4, 0x3a2b);
 	write8(res->base + 0xe, 0x40);
-	write32(res->base + 0x12, 0x1a40);
-	write16(res->base + 0x16, 0x7746);
-	write16(res->base + 0x1a, 0x10f0);
 	write16(res->base + 0x56, 0xffff);
 	write16(res->base + 0x64, 0xffff);
 	write16(res->base + 0x66, 0xffff);

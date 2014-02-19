@@ -3796,28 +3796,11 @@ static void dmi_setup(void)
 }
 #endif
 
-#if REAL
-static void
-set_fsb_frequency (void)
+void chipset_init(const int s3resume)
 {
-	u8 block[5];
-	u16 fsbfreq = 62879;
-	smbus_block_read(0x69, 0, 5, block);
-	block[0] = fsbfreq;
-	block[1] = fsbfreq >> 8;
-
-	smbus_block_write(0x69, 0, 5, block);
-}
-#endif
-
-void raminit(const int s3resume, const u8 *spd_addrmap)
-{
-	unsigned channel, slot, lane, rank;
-	int i;
-	struct raminfo info;
 	u8 x2ca8;
 
-	gav(x2ca8 = read_mchbar8(0x2ca8));
+	x2ca8 = read_mchbar8(0x2ca8);
 	if ((x2ca8 & 1) || (x2ca8 == 8 && !s3resume)) {
 		printk(BIOS_DEBUG, "soft reset detected, rebooting properly\n");
 		write_mchbar8(0x2ca8, 0);
@@ -3879,12 +3862,18 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, 0xb50);
 	gav(read32(DEFAULT_RCBA | 0x3428));
 	write32(DEFAULT_RCBA | 0x3428, 0x1d);
+}
 
-#if !REAL
-	pre_raminit_5(s3resume);
-#else
-	set_fsb_frequency();
-#endif
+void raminit(const int s3resume, const u8 *spd_addrmap)
+{
+	unsigned channel, slot, lane, rank;
+	int i;
+	struct raminfo info;
+	u8 x2ca8;
+	u16 deven;
+
+	x2ca8 = read_mchbar8(0x2ca8);
+	deven = pcie_read_config16(NORTHBRIDGE, D0F0_DEVEN);
 
 	memset(&info, 0x5a, sizeof(info));
 

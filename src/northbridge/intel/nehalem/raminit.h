@@ -22,6 +22,7 @@
 
 #include "nehalem.h"
 
+void chipset_init(const int s3resume);
 /* spd_addrmap is array of 4 elements:
    Channel 0 Slot 0
    Channel 0 Slot 1

@@ -25,8 +25,8 @@ asm(".section .car.global_data,\"w\",@nobits");
 asm(".previous");
 asm(".section .car.cbmem_console,\"w\",@nobits");
 asm(".previous");
-#define CAR_GLOBAL __attribute__((section(".car.global_data")))
-#define CAR_CBMEM __attribute__((section(".car.cbmem_console")))
+#define CAR_GLOBAL __attribute__((section(".car.global_data"))) __attribute__((visibility ("hidden")))
+#define CAR_CBMEM __attribute__((section(".car.cbmem_console"))) __attribute__((visibility ("hidden")))
 #else
 #define CAR_GLOBAL
 #define CAR_CBMEM

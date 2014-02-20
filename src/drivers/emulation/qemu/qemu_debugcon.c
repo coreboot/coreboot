@@ -23,7 +23,7 @@
 #include <arch/io.h>
 #include <arch/early_variables.h>
 
-static int qemu_debugcon_detected CAR_GLOBAL;
+int qemu_debugcon_detected CAR_GLOBAL;
 
 void qemu_debugcon_init(void)
 {

@@ -156,7 +156,7 @@ static const struct vendor_name vendor_names[] = {
  * Cached vendor/device ID pair to indicate that the device has been already
  * discovered
  */
-static u32 vendor_dev_id CAR_GLOBAL;
+u32 vendor_dev_id CAR_GLOBAL;
 
 static inline u8 tpm_read_status(int locality)
 {

@@ -1,3 +1,5 @@
+CFLAGS += -Wno-attributes
+
 romstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon.c
 ramstage-$(CONFIG_CONSOLE_QEMU_DEBUGCON) += qemu_debugcon.c
 

@@ -2870,7 +2870,7 @@ static struct triple *do_farg(struct compile_state *state,
 	unsigned i;
 
 	ftype = func->type;
-	if((index < 0) || (index >= (ftype->elements + 2))) {
+	if(index >= (ftype->elements + 2)) {
 		internal_error(state, func, "bad argument index: %d", index);
 	}
 	first = RHS(func, 0);
@@ -18328,7 +18328,7 @@ static void print_interference_block(
 		}
 		/* Do a bunch of sanity checks */
 		valid_ins(state, ptr);
-		if ((ptr->id < 0) || (ptr->id > rstate->defs)) {
+		if (ptr->id > rstate->defs) {
 			internal_error(state, ptr, "Invalid triple id: %d",
 				ptr->id);
 		}
@@ -18943,7 +18943,7 @@ static void graph_ins(
 	 */
 	for(entry = live; entry; entry = entry->next) {
 		struct live_range *lr;
-		if ((entry->member->id < 0) || (entry->member->id > rstate->defs)) {
+		if (entry->member->id > rstate->defs) {
 			internal_error(state, 0, "bad entry?");
 		}
 		lr = rstate->lrd[entry->member->id].lr;
@@ -19915,7 +19915,7 @@ static void verify_colors(struct compile_state *state, struct reg_state *rstate)
 	ins = first;
 	do {
 		if (triple_is_def(state, ins)) {
-			if ((ins->id < 0) || (ins->id > rstate->defs)) {
+			if (ins->id > rstate->defs) {
 				internal_error(state, ins,
 					"triple without a live range def");
 			}
@@ -19950,7 +19950,7 @@ static void color_triples(struct compile_state *state, struct reg_state *rstate)
 	first = state->first;
 	ins = first;
 	do {
-		if ((ins->id < 0) || (ins->id > rstate->defs)) {
+		if (ins->id > rstate->defs) {
 			internal_error(state, ins,
 				"triple without a live range");
 		}

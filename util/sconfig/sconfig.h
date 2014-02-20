@@ -100,3 +100,23 @@ void alias_siblings(struct device *d);
 void add_resource(struct device *dev, int type, int index, int base);
 void add_register(struct device *dev, char *name, char *val);
 void add_pci_subsystem_ids(struct device *dev, int vendor, int device, int inherit);
+
+void add_ioapic_info(struct device *, int, const char *, int);
+
+void yyerror (const char *);
+void yyrestart (FILE *input_file  );
+
+/* Prevent warnings from -Wmissing-prototypes.  */
+#ifdef YYPARSE_PARAM
+#if defined __STDC__ || defined __cplusplus
+int yyparse (void *YYPARSE_PARAM);
+#else
+int yyparse ();
+#endif
+#else /* ! YYPARSE_PARAM */
+#if defined __STDC__ || defined __cplusplus
+int yyparse (void);
+#else
+int yyparse ();
+#endif
+#endif /* ! YYPARSE_PARAM */

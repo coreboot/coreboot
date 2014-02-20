@@ -3925,7 +3925,7 @@ void raminit(const int s3resume)
 
 		info.use_ecc = 1;
 		for (channel = 0; channel < NUM_CHANNELS; channel++)
-			for (slot = 0; slot < NUM_CHANNELS; slot++) {
+			for (slot = 0; slot < NUM_SLOTS; slot++) {
 				int v;
 				int try;
 				int addr;

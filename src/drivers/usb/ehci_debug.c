@@ -95,7 +95,7 @@ static int dbgp_enabled(void);
 #define DBGP_MICROFRAME_RETRIES		10
 #define DBGP_MAX_PACKET		8
 
-static struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
+struct ehci_debug_info glob_dbg_info CAR_GLOBAL;
 
 static inline struct ehci_debug_info *dbgp_ehci_info(void)
 {

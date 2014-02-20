@@ -34,7 +34,7 @@ struct cbmem_console {
 	u8  buffer_body[0];
 }  __attribute__ ((__packed__));
 
-static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
+struct cbmem_console *cbmem_console_p CAR_GLOBAL;
 
 #ifdef __PRE_RAM__
 /*
@@ -43,7 +43,7 @@ static struct cbmem_console *cbmem_console_p CAR_GLOBAL;
  * the area are defined in the config.
  */
 
-static struct cbmem_console car_cbmem_console CAR_CBMEM;
+struct cbmem_console car_cbmem_console CAR_CBMEM;
 
 #else
 

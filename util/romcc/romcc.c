@@ -5648,6 +5648,7 @@ static struct type *invalid_type(struct compile_state *state, struct type *type)
 
 #define MASK_UCHAR(X)    ((X) & ((ulong_t)0xff))
 #define MASK_USHORT(X)   ((X) & (((ulong_t)1 << (SIZEOF_SHORT)) - 1))
+static inline ulong_t mask_uint(ulong_t x) __attribute__((unused));
 static inline ulong_t mask_uint(ulong_t x)
 {
 	if (SIZEOF_INT < SIZEOF_LONG) {

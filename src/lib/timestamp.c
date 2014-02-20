@@ -27,8 +27,8 @@
 
 #define MAX_TIMESTAMPS 30
 
-static struct timestamp_table* ts_table_p CAR_GLOBAL = NULL;
-static tsc_t ts_basetime CAR_GLOBAL = { .lo = 0, .hi =0 };
+struct timestamp_table* ts_table_p CAR_GLOBAL = NULL;
+tsc_t ts_basetime CAR_GLOBAL = { .lo = 0, .hi =0 };
 
 static void timestamp_stash(enum timestamp_id id, tsc_t ts_time);
 
@@ -89,7 +89,7 @@ struct timestamp_cache {
 	tsc_t time;
 } timestamp_cache[MAX_TIMESTAMP_CACHE] CAR_GLOBAL;
 
-static int timestamp_entries CAR_GLOBAL = 0;
+int timestamp_entries CAR_GLOBAL = 0;
 
 /**
  * timestamp_stash() allows to temporarily cache timestamps.

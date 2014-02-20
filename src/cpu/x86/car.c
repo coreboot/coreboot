@@ -39,7 +39,7 @@ extern char _car_data_end[];
  * Based on these 2 attributes there is the ability to tell when the
  * cache-as-ram region has been migrated.
  */
-static int car_migrated CAR_GLOBAL;
+int car_migrated CAR_GLOBAL;
 
 
 void *car_get_var_ptr(void *var)

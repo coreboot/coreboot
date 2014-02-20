@@ -52,8 +52,8 @@
 #define KERNEL_FIELD_OFFSET         11
 #define CRC_OFFSET                  15
 
-static int vbnv_initialized CAR_GLOBAL;
-static uint8_t vbnv[CONFIG_VBNV_SIZE] CAR_GLOBAL;
+int vbnv_initialized CAR_GLOBAL;
+uint8_t vbnv[CONFIG_VBNV_SIZE] CAR_GLOBAL;
 
 /* Wrappers for accessing the variables marked as CAR_GLOBAL. */
 static inline int is_vbnv_initialized(void)

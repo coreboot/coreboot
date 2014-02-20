@@ -5646,19 +5646,6 @@ static struct type *invalid_type(struct compile_state *state, struct type *type)
 
 }
 
-#define MASK_UCHAR(X)    ((X) & ((ulong_t)0xff))
-#define MASK_USHORT(X)   ((X) & (((ulong_t)1 << (SIZEOF_SHORT)) - 1))
-static inline ulong_t mask_uint(ulong_t x)
-{
-	if (SIZEOF_INT < SIZEOF_LONG) {
-		ulong_t mask = (1ULL << ((ulong_t)(SIZEOF_INT))) -1;
-		x &= mask;
-	}
-	return x;
-}
-#define MASK_UINT(X)      (mask_uint(X))
-#define MASK_ULONG(X)    (X)
-
 static struct type void_type    = { .type  = TYPE_VOID };
 static struct type char_type    = { .type  = TYPE_CHAR };
 static struct type uchar_type   = { .type  = TYPE_UCHAR };

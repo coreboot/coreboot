@@ -20,6 +20,8 @@
 #ifndef __ASSERT_H__
 #define __ASSERT_H__
 
+#include <console/console.h>
+
 #if defined(__PRE_RAM__) && !CONFIG_CACHE_AS_RAM
 
 /* ROMCC versions */
@@ -59,6 +61,8 @@
 	/* die(""); */						\
 }
 
-#endif
+#endif /* defined(__PRE_RAM__) && !CONFIG_CACHE_AS_RAM */
+
+#define assert(statement)	ASSERT(statement)
 
 #endif // __ASSERT_H__

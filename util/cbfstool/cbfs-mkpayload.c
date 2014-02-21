@@ -206,26 +206,24 @@ int parse_elf_to_payload(const struct buffer *input,
 			segs[segments].type = PAYLOAD_SEGMENT_DATA;
 		segs[segments].load_addr = phdr[i].p_paddr;
 		segs[segments].mem_len = phdr[i].p_memsz;
-		segs[segments].compression = algo;
 		segs[segments].offset = doffset;
+
+		/* If the compression failed or made the section is larger,
+		   use the original stuff */
 
 		int len;
 		if (compress((char *)&header[phdr[i].p_offset],
-			     phdr[i].p_filesz, output->data + doffset, &len)) {
-			buffer_delete(output);
-			ret = -1;
-			goto out;
-		}
-		segs[segments].len = len;
-
-		/* If the compressed section is larger, then use the
-		   original stuff */
-
-		if ((unsigned int)len > phdr[i].p_filesz) {
+			     phdr[i].p_filesz, output->data + doffset, &len) ||
+		    (unsigned int)len > phdr[i].p_filesz) {
+			WARN("Compression failed or would make the data bigger "
+			     "- disabled.\n");
 			segs[segments].compression = 0;
 			segs[segments].len = phdr[i].p_filesz;
 			memcpy(output->data + doffset,
 			       &header[phdr[i].p_offset], phdr[i].p_filesz);
+		} else {
+			segs[segments].compression = algo;
+			segs[segments].len = len;
 		}
 
 		doffset += segs[segments].len;
@@ -275,15 +273,13 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 	segs[0].mem_len = input->size;
 	segs[0].offset = doffset;
 
-	if (compress(input->data, input->size, output->data + doffset, &len)) {
-		buffer_delete(output);
-		return -1;
-	}
-	segs[0].compression = algo;
-	segs[0].len = len;
-
-	if ((unsigned int)len >= input->size) {
-		WARN("Compressing data would make it bigger - disabled.\n");
+	if (!compress(input->data, input->size, output->data + doffset, &len) &&
+	    (unsigned int)len < input->size) {
+		segs[0].compression = algo;
+		segs[0].len = len;
+	} else {
+		WARN("Compression failed or would make the data bigger "
+		     "- disabled.\n");
 		segs[0].compression = 0;
 		segs[0].len = input->size;
 		memcpy(output->data + doffset, input->data, input->size);
@@ -404,15 +400,13 @@ int parse_fv_to_payload(const struct buffer *input,
 	segs[0].mem_len = input->size;
 	segs[0].offset = doffset;
 
-	if (compress(input->data, input->size, output->data + doffset, &len)) {
-		buffer_delete(output);
-		return -1;
-	}
-	segs[0].compression = algo;
-	segs[0].len = len;
-
-	if ((unsigned int)len >= input->size) {
-		WARN("Compressing data would make it bigger - disabled.\n");
+	if (!compress(input->data, input->size, output->data + doffset, &len) &&
+	    (unsigned int)len < input->size) {
+		segs[0].compression = algo;
+		segs[0].len = len;
+	} else {
+		WARN("Compression failed or would make the data bigger "
+		     "- disabled.\n");
 		segs[0].compression = 0;
 		segs[0].len = input->size;
 		memcpy(output->data + doffset, input->data, input->size);

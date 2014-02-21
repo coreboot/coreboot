@@ -155,12 +155,17 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	 * to fill out the header. This seems backward but it works because
 	 * - the output header is a known size (not always true in many xdr's)
 	 * - we do need to know the compressed output size first
+	 * If compression fails or makes the data bigger, we'll warn about it
+	 * and use the original data.
 	 */
 	if (compress(buffer, data_end - data_start,
 		     (output->data + sizeof(struct cbfs_stage)),
-		     &outlen) < 0) {
-		free(buffer);
-		return -1;
+		     &outlen) < 0 || outlen > data_end - data_start) {
+		WARN("Compression failed or would make the data bigger "
+		     "- disabled.\n");
+		memcpy(output->data + sizeof(struct cbfs_stage),
+		       buffer, data_end - data_start);
+		algo = CBFS_COMPRESS_NONE;
 	}
 	free(buffer);
 

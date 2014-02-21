@@ -28,6 +28,8 @@ romstage-y += fmap.c
 ramstage-y += fmap.c
 ramstage-$(CONFIG_CHROMEOS_RAMOOPS) += ramoops.c
 smm-y += fmap.c
+romstage-y += vpd_decode.c cros_vpd.c
+ramstage-y += vpd_decode.c cros_vpd.c
 
 ifeq ($(MOCK_TPM),1)
 CFLAGS_common += -DMOCK_TPM=1

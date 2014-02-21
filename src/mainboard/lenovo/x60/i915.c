@@ -43,6 +43,7 @@
 #include <cpu/x86/msr.h>
 #include <edid.h>
 #include "i915io.h"
+#include <drivers/intel/gma/edid.h>
 
 enum {
 	vmsg = 1, vio = 2, vspin = 4,
@@ -64,16 +65,6 @@ static unsigned int physbase;
 
 static u32 htotal, hblank, hsync, vtotal, vblank, vsync;
 
-const u8 x60_edid_data[] = {
-	0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x30, 0xae, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x0f, 0x01, 0x03, 0x80, 0x19, 0x12, 0x78, 0xea, 0xed, 0x75, 0x91, 0x57, 0x4f, 0x8b, 0x26,
-	0x21, 0x50, 0x54, 0x21, 0x08, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-	0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x28, 0x15, 0x00, 0x40, 0x41, 0x00, 0x26, 0x30, 0x18, 0x88,
-	0x36, 0x00, 0xf6, 0xb9, 0x00, 0x00, 0x00, 0x18, 0xed, 0x10, 0x00, 0x40, 0x41, 0x00, 0x26, 0x30,
-	0x18, 0x88, 0x36, 0x00, 0xf6, 0xb9, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x61,
-	0x43, 0x32, 0x61, 0x43, 0x28, 0x0f, 0x01, 0x00, 0x4c, 0xa3, 0x58, 0x4a, 0x00, 0x00, 0x00, 0xfe,
-	0x00, 0x4c, 0x54, 0x4e, 0x31, 0x32, 0x31, 0x58, 0x4a, 0x2d, 0x4c, 0x30, 0x37, 0x0a, 0x00, 0x00,
-};
 #define READ32(addr) io_i915_READ32(addr)
 #define WRITE32(val, addr) io_i915_WRITE32(val, addr)
 
@@ -279,9 +270,11 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 		unsigned int pmmio, unsigned int pgfx)
 {
 	static struct edid edid;
-
+	u8 x60_edid_data[256];
 	int index;
 	unsigned long temp;
+	int i;
+
 	mmio = (void *)pmmio;
 	addrport = piobase;
 	dataport = addrport + 4;
@@ -292,8 +285,19 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 		(void *)graphics, mmio, addrport, physbase);
 	globalstart = rdtscll();
 
+	WRITE32(0, 0x5100);
+	WRITE32(0, PP_ON_DELAYS);
+	WRITE32(0, PP_OFF_DELAYS);
+	WRITE32(MI_ARB_C3_LP_WRITE_ENABLE | 0x08000800, INSTPM+0x24);
 
-	decode_edid((unsigned char *)&x60_edid_data,
+	for (i = 0; i < 8; i++)
+		WRITE32(0, RENDER_RING_BASE + i * 4);
+	for (i = 0; i < 8; i++)
+		WRITE32(0, FENCE_REG_965_0 + i * 4);
+	WRITE32(VGA_DISP_DISABLE | 0x80000000, VGACNTRL);
+
+	intel_gmbus_read_edid(pmmio, 3, 0x50, x60_edid_data);
+	decode_edid(x60_edid_data,
 		    sizeof(x60_edid_data), &edid);
 
 	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl - 1) << 16);
@@ -320,6 +324,28 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	index = run(0);
 	printk(BIOS_SPEW, "Run returns %d\n", index);
+
+	for (i = 0; i < 0x100; i++)
+		WRITE32(i * 0x10101, _PALETTE_B + i * 4);
+	WRITE32(2, BLC_PWM_CTL);
+
+        WRITE32(PANEL_UNLOCK_REGS | PANEL_POWER_OFF, PCH_PP_CONTROL);
+        WRITE32(PANEL_UNLOCK_REGS | PANEL_POWER_RESET, PCH_PP_CONTROL);
+        mdelay(1);
+        WRITE32(PANEL_UNLOCK_REGS
+                | PANEL_POWER_ON | PANEL_POWER_RESET, PCH_PP_CONTROL);
+
+        printk (BIOS_DEBUG, "waiting for panel powerup\n");
+        while (1)
+        {
+                u32 reg32;
+                reg32 = READ32(PCH_PP_STATUS);
+                if (((reg32 >> 28) & 3) == 0)
+                        break;
+        }
+        printk (BIOS_DEBUG, "panel powered up\n");
+
+        WRITE32(PANEL_POWER_ON | PANEL_POWER_RESET, PCH_PP_CONTROL);
 
 	verbose = 0;
 	/* GTT is the Global Translation Table for the graphics pipeline.

@@ -1,1 +1,1 @@
-subdirs-$(CONFIG_INTEL_DP) += gma
+subdirs-y += gma

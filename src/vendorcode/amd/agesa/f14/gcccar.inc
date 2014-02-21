@@ -835,7 +835,7 @@ fam14_disable_stack_hook_exit:
 
     LOCAL   node_core_f14_exit
 
-    cmp     $0x-1, %si                      # Has node/core already been discovered?
+    cmp     $-0x1, %si                  # Has node/core already been discovered?
     jnz     node_core_f14_exit          # Br if yes
 
     AMD_CPUID   $CPUID_MODEL

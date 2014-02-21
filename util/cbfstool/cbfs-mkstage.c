@@ -156,9 +156,12 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 	 * - the output header is a known size (not always true in many xdr's)
 	 * - we do need to know the compressed output size first
 	 */
-	compress(buffer, data_end - data_start,
-		 (output->data + sizeof(struct cbfs_stage)),
-		 &outlen);
+	if (compress(buffer, data_end - data_start,
+		     (output->data + sizeof(struct cbfs_stage)),
+		     &outlen) < 0) {
+		free(buffer);
+		return -1;
+	}
 	free(buffer);
 
 	/* Set up for output marshaling. */

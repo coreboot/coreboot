@@ -117,7 +117,7 @@ uint32_t string_to_arch(const char *arch_string);
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
 
-typedef void (*comp_func_ptr) (char *, int, char *, int *);
+typedef int (*comp_func_ptr) (char *, int, char *, int *);
 typedef enum { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 } comp_algo;
 
 comp_func_ptr compression_function(comp_algo algo);
@@ -145,8 +145,8 @@ void print_supported_filetypes(void);
 
 #define ARRAY_SIZE(a) (int)(sizeof(a) / sizeof((a)[0]))
 /* lzma/lzma.c */
-void do_lzma_compress(char *in, int in_len, char *out, int *out_len);
-void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
+int do_lzma_compress(char *in, int in_len, char *out, int *out_len);
+int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len);
 /* xdr.c */
 struct xdr {
 	uint8_t (*get8)(struct buffer *input);

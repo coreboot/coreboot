@@ -83,11 +83,11 @@ static struct ISeqOutStream os = { Write };
  * @param out_len a pointer to the compressed length of in
  */
 
-void do_lzma_compress(char *in, int in_len, char *out, int *out_len)
+int do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 {
 	if (in_len == 0) {
 		ERROR("LZMA: Input length is zero.\n");
-		return;
+		return -1;
 	}
 
 	struct CLzmaEncProps props;
@@ -119,7 +119,7 @@ void do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 	int res = LzmaEnc_SetProps(p, &props);
 	if (res != SZ_OK) {
 		ERROR("LZMA: LzmaEnc_SetProps failed.\n");
-		return;
+		return -1;
 	}
 
 	unsigned char propsEncoded[LZMA_PROPS_SIZE + 8];
@@ -127,7 +127,7 @@ void do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 	res = LzmaEnc_WriteProperties(p, propsEncoded, &propsSize);
 	if (res != SZ_OK) {
 		ERROR("LZMA: LzmaEnc_WriteProperties failed.\n");
-		return;
+		return -1;
 	}
 
 	instream.p = in;
@@ -144,17 +144,18 @@ void do_lzma_compress(char *in, int in_len, char *out, int *out_len)
 	res = LzmaEnc_Encode(p, &os, &is, 0, &LZMAalloc, &LZMAalloc);
 	if (res != SZ_OK) {
 		ERROR("LZMA: LzmaEnc_Encode failed %d.\n", res);
-		return;
+		return -1;
 	}
 
 	*out_len = outstream.pos;
+	return 0;
 }
 
-void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
+int do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
 {
 	if (src_len <= LZMA_PROPS_SIZE + 8) {
 		ERROR("LZMA: Input length is too small.\n");
-		return;
+		return -1;
 	}
 
 	uint64_t out_sizemax = get_64(&src[LZMA_PROPS_SIZE]);
@@ -162,7 +163,7 @@ void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
 	if (out_sizemax > (size_t) dst_len) {
 		ERROR("Not copying %d bytes to %d-byte buffer!\n",
 			(unsigned int)out_sizemax, dst_len);
-		return;
+		return -1;
 	}
 
 	enum ELzmaStatus status;
@@ -179,6 +180,8 @@ void do_lzma_uncompress(char *dst, int dst_len, char *src, int src_len)
 
 	if (res != SZ_OK) {
 		ERROR("Error while decompressing.\n");
-		return;
+		return -1;
 	}
+
+	return 0;
 }

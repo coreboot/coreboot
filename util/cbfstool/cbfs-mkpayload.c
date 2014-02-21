@@ -205,8 +205,11 @@ int parse_elf_to_payload(const struct buffer *input,
 		segs[segments].offset = doffset;
 
 		int len;
-		compress((char *)&header[phdr[i].p_offset],
-			 phdr[i].p_filesz, output->data + doffset, &len);
+		if (compress((char *)&header[phdr[i].p_offset],
+			     phdr[i].p_filesz, output->data + doffset, &len)) {
+			buffer_delete(output);
+			return -1;
+		}
 		segs[segments].len = len;
 
 		/* If the compressed section is larger, then use the
@@ -261,7 +264,10 @@ int parse_flat_binary_to_payload(const struct buffer *input,
 	segs[0].mem_len = input->size;
 	segs[0].offset = doffset;
 
-	compress(input->data, input->size, output->data + doffset, &len);
+	if (compress(input->data, input->size, output->data + doffset, &len)) {
+		buffer_delete(output);
+		return -1;
+	}
 	segs[0].compression = algo;
 	segs[0].len = len;
 
@@ -387,7 +393,10 @@ int parse_fv_to_payload(const struct buffer *input,
 	segs[0].mem_len = input->size;
 	segs[0].offset = doffset;
 
-	compress(input->data, input->size, output->data + doffset, &len);
+	if (compress(input->data, input->size, output->data + doffset, &len)) {
+		buffer_delete(output);
+		return -1;
+	}
 	segs[0].compression = algo;
 	segs[0].len = len;
 

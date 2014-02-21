@@ -26,15 +26,16 @@
 #include <stdio.h>
 #include "common.h"
 
-static void lzma_compress(char *in, int in_len, char *out, int *out_len)
+static int lzma_compress(char *in, int in_len, char *out, int *out_len)
 {
-	do_lzma_compress(in, in_len, out, out_len);
+	return do_lzma_compress(in, in_len, out, out_len);
 }
 
-static void none_compress(char *in, int in_len, char *out, int *out_len)
+static int none_compress(char *in, int in_len, char *out, int *out_len)
 {
 	memcpy(out, in, in_len);
 	*out_len = in_len;
+	return 0;
 }
 
 comp_func_ptr compression_function(comp_algo algo)

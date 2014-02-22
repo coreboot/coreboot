@@ -20,6 +20,7 @@
 ramstage-y += ram_calc.c
 ramstage-y += northbridge.c
 ramstage-y += gma.c
+ramstage-$(CONFIG_IVYBRIDGE_LVDS) += gma_ivybridge_lvds.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-y += mrccache.c

@@ -650,7 +650,9 @@ static void gma_func0_init(struct device *dev)
 	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 	graphics_base = dev->resource_list[1].base;
 
-	i915lightup(conf, physbase, iobase, mmiobase, graphics_base);
+	int lightup_ok = i915lightup(conf, physbase, iobase, mmiobase, graphics_base);
+	if (lightup_ok)
+		gfx_set_init_done(1);
 #endif
 }
 

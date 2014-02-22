@@ -51,6 +51,10 @@ config CACHE_MRC_SIZE_KB
 	int
 	default 512
 
+config IVYBRIDGE_LVDS
+	bool
+	default n
+
 config MRC_CACHE_SIZE
 	hex
 	depends on !CHROMEOS

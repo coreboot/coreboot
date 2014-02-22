@@ -28,7 +28,7 @@
 #ifndef _MRC_WRAPPER_H_
 #define _MRC_WRAPPER_H_
 
-#define MRC_PARAMS_VER  4
+#define MRC_PARAMS_VER  5
 
 #define NUM_CHANNELS 2
 
@@ -55,12 +55,25 @@ enum mrc_wrapper_error {
 	PLATFORM_SETTINGS_FAIL = -4,
 	DIMM_DETECTION_FAILURE = -5,
 	MEMORY_CONFIG_FAILURE = -6,
+	INVALID_CPU_ODT_SETTING = -7,
+	INVALID_DRAM_ODT_SETTING = -8,
 };
 
 struct mrc_mainboard_params {
 	int dram_type;
 	int dram_info_location; /* DRAM_INFO_* */
-	int weaker_odt_settings; /* Apply weaker on-die-termination settings. */
+	int dram_is_slotted; /* mobo has DRAM slots. */
+	/*
+	 * The below ODT settings are only honored when !dram_is_slotted.
+	 * Aditionally, weaker_odt_settings being non-zero causes
+	 * cpu_odt_value to not be honored as weaker_odt_settings have a
+	 * special training path.
+	 */
+	int weaker_odt_settings;
+	/* Allowed settings: 60, 80, 100, 120, and 150. */
+	int cpu_odt_value;
+	/* Allowed settings: 60 and 120. */
+	int dram_odt_value;
 	int spd_addrs[NUM_CHANNELS];
 	void *dram_data[NUM_CHANNELS]; /* SPD or Timing specific data. */
 } __attribute__((packed));

@@ -198,10 +198,6 @@ Device (PDRC)
 		Memory32Fixed(ReadWrite, MPHY_BASE_ADDRESS, MPHY_BASE_SIZE)
 		Memory32Fixed(ReadWrite, PUNIT_BASE_ADDRESS, PUNIT_BASE_SIZE)
 		Memory32Fixed(ReadWrite, RCBA_BASE_ADDRESS, RCBA_BASE_SIZE)
-#if CONFIG_CHROMEOS_RAMOOPS
-		Memory32Fixed(ReadWrite, CONFIG_CHROMEOS_RAMOOPS_RAM_START,
-					 CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE)
-#endif
 	})
 
 	// Current Resource Settings

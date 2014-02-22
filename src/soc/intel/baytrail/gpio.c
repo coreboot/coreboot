@@ -192,7 +192,7 @@ static void setup_gpio_route(const struct soc_gpio_map *sus,
 			route_reg |= ROUTE_SCI << (2 * (i + 8));
 		}
 	}
-	southcluster_smm_save_gpio_route(route_reg);
+	southcluster_smm_save_param(SMM_SAVE_PARAM_GPIO_ROUTE, route_reg);
 }
 
 static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
@@ -214,7 +214,7 @@ static void setup_dirqs(const u8 dirq[GPIO_MAX_DIRQS],
 	}
 }
 
-void setup_soc_gpios(struct soc_gpio_config *config)
+void setup_soc_gpios(struct soc_gpio_config *config, u8 enable_xdp_tap)
 {
 	if (config) {
 		setup_gpios(config->ncore, &gpncore_bank);
@@ -228,6 +228,14 @@ void setup_soc_gpios(struct soc_gpio_config *config)
 			setup_dirqs(*config->sus_dirq, &gpssus_bank);
 	}
 
+	/* Set on die termination feature with pull up value and
+	 * drive the pad high for TAP_TDO and TAP_TMS
+	 */
+	if (!enable_xdp_tap) {
+		printk(BIOS_DEBUG, "Tri-state TDO and TMS\n");
+		write32(GPSSUS_PAD_BASE + 0x2fc, 0xc);
+		write32(GPSSUS_PAD_BASE + 0x2cc, 0xc);
+	}
 }
 
 struct soc_gpio_config* __attribute__((weak)) mainboard_get_gpios(void)

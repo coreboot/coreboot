@@ -184,9 +184,9 @@ static void s3_resume_prepare(void)
 	s3_save_acpi_wake_source(gnvs);
 }
 
-void baytrail_init_pre_device(void)
+void baytrail_init_pre_device(struct soc_intel_baytrail_config *config)
 {
-	struct soc_gpio_config *config;
+	struct soc_gpio_config *gpio_config;
 
 	fill_in_pattrs();
 
@@ -200,8 +200,8 @@ void baytrail_init_pre_device(void)
 	baytrail_run_reference_code();
 
 	/* Get GPIO initial states from mainboard */
-	config = mainboard_get_gpios();
-	setup_soc_gpios(config);
+	gpio_config = mainboard_get_gpios();
+	setup_soc_gpios(gpio_config, config->enable_xdp_tap);
 
 	baytrail_init_scc();
 }

@@ -32,8 +32,12 @@ chip soc/intel/baytrail
 	register "sdcard_cap_high" = "0x0"
 
 	# Enable devices in ACPI mode
-	register "scc_acpi_mode" = "1"
+	register "lpe_acpi_mode" = "1"
 	register "lpss_acpi_mode" = "1"
+	register "scc_acpi_mode" = "1"
+
+	# Allow PCIe devices to wake system from suspend
+	register "pcie_wake_enable" = "1"
 
 	# Enable PIPEA as DP_C
 	register "gpu_pipea_hotplug" = "6"		# 6ms Pulse

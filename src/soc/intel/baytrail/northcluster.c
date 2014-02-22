@@ -22,6 +22,7 @@
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #include <baytrail/iomap.h>
 #include <baytrail/iosf.h>
@@ -88,14 +89,8 @@ static void nc_read_resources(device_t dev)
 	mmconf = iosf_bunit_read(BUNIT_MMCONF_REG) & ~((1 << 28) - 1);
 	mmio_resource(dev, BUNIT_MMCONF_REG, RES_IN_KiB(mmconf), 256 * 1024);
 
-	/* 0 -> SMM_DEFAULT_BASE cacheable ram. */
-	ram_resource(dev, index++, 0, RES_IN_KiB(SMM_DEFAULT_BASE));
-	/* Default SMM region is cacheable but reserved for coreboot */
-	reserved_ram_resource(dev, index++, RES_IN_KiB(SMM_DEFAULT_BASE),
-	                      RES_IN_KiB(SMM_DEFAULT_SIZE));
-
-	/* SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE - > 0xa0000 */
-	base_k = RES_IN_KiB(SMM_DEFAULT_BASE + SMM_DEFAULT_SIZE);
+	/* 0 -> 0xa0000 */
+	base_k = RES_IN_KiB(0);
 	size_k = RES_IN_KiB(0xa0000) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
@@ -132,11 +127,8 @@ static void nc_read_resources(device_t dev)
 	mmio_resource(dev, index++, (0xa0000 >> 10), (0xc0000 - 0xa0000) >> 10);
 	reserved_ram_resource(dev, index++, (0xc0000 >> 10),
 	                      (0x100000 - 0xc0000) >> 10);
-#if CONFIG_CHROMEOS_RAMOOPS
-	reserved_ram_resource(dev, index++,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_START >> 10,
-			CONFIG_CHROMEOS_RAMOOPS_RAM_SIZE >> 10);
-#endif
+
+	chromeos_reserve_ram_oops(dev, index++);
 }
 
 static struct device_operations nc_ops = {

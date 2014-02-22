@@ -197,9 +197,17 @@ void iosf_ssus_write(int reg, uint32_t val);
 #define BUNIT_BMBOUND_HI	0x26
 #define BUNIT_MMCONF_REG	0x27
 /* The SMMRR registers define the SMM region in MiB granularity. */
+#define BUNIT_SMRCP		0x2b
+#define BUNIT_SMRRAC		0x2c
+#define BUNIT_SMRWAC		0x2d
 #define BUNIT_SMRRL		0x2e
 #define BUNIT_SMRRH		0x2f
 # define BUNIT_SMRR_ENABLE	(1 << 31)
+
+/* SA ID bits. */
+#define SAI_IA_UNTRUSTED	(1 << 0)
+#define SAI_IA_SMM		(1 << 2)
+#define SAI_IA_BOOT		(1 << 4)
 
 /*
  * DUNIT Registers.

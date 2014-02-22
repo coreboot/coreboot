@@ -70,7 +70,7 @@ static void enable_dev(device_t dev)
 /* Called at BS_DEV_INIT_CHIPS time -- very early. Just after BS_PRE_DEVICE. */
 static void soc_init(void *chip_info)
 {
-	baytrail_init_pre_device();
+	baytrail_init_pre_device(chip_info);
 }
 
 struct chip_operations soc_intel_baytrail_ops = {

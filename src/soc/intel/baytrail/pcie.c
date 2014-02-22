@@ -27,6 +27,7 @@
 #include <baytrail/pci_devs.h>
 #include <baytrail/pcie.h>
 #include <baytrail/ramstage.h>
+#include <baytrail/smm.h>
 
 #include "chip.h"
 
@@ -174,10 +175,15 @@ static void check_device_present(device_t dev)
 static void byt_pcie_enable(device_t dev)
 {
 	if (is_first_port(dev)) {
+		struct soc_intel_baytrail_config *config = dev->chip_info;
 		uint32_t reg = pci_read_config32(dev, PHYCTL2_IOSFBCTL);
 		pll_en_off = !!(reg & PLL_OFF_EN);
 
 		strpfusecfg = pci_read_config32(dev, STRPFUSECFG);
+
+		if (config && config->pcie_wake_enable)
+			southcluster_smm_save_param(
+				SMM_SAVE_PARAM_PCIE_WAKE_ENABLE, 1);
 	}
 
 	/* Check if device is enabled in strapping. */

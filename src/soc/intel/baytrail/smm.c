@@ -31,13 +31,12 @@
 #include <baytrail/pmc.h>
 #include <baytrail/smm.h>
 
-/* Save the gpio route register. The settings are committed from
- * southcluster_smm_enable_smi(). */
-static uint32_t gpio_route;
+/* Save settings which will be committed in SMI functions. */
+static uint32_t smm_save_params[SMM_SAVE_PARAM_COUNT];
 
-void southcluster_smm_save_gpio_route(uint32_t route)
+void southcluster_smm_save_param(int param, uint32_t data)
 {
-	gpio_route = route;
+	smm_save_params[param] = data;
 }
 
 void southcluster_smm_clear_state(void)
@@ -70,7 +69,7 @@ static void southcluster_smm_route_gpios(void)
 	const unsigned long gpio_rout = PMC_BASE_ADDRESS + GPIO_ROUT;
 	const unsigned short alt_gpio_smi = ACPI_BASE_ADDRESS + ALT_GPIO_SMI;
 	uint32_t alt_gpio_reg = 0;
-	uint32_t route_reg = gpio_route;
+	uint32_t route_reg = smm_save_params[SMM_SAVE_PARAM_GPIO_ROUTE];
 	int i;
 
 	printk(BIOS_DEBUG, "GPIO_ROUT = %08x\n", route_reg);
@@ -92,10 +91,12 @@ static void southcluster_smm_route_gpios(void)
 
 void southcluster_smm_enable_smi(void)
 {
+	uint16_t pm1_events = PWRBTN_EN | GBL_EN;
 
 	printk(BIOS_DEBUG, "Enabling SMIs.\n");
-	/* Configure events Disable pcie wake. */
-	enable_pm1(PWRBTN_EN | GBL_EN | PCIEXPWAK_DIS);
+	if (!smm_save_params[SMM_SAVE_PARAM_PCIE_WAKE_ENABLE])
+		pm1_events |= PCIEXPWAK_DIS;
+	enable_pm1(pm1_events);
 	disable_gpe(PME_B0_EN);
 
 	/* Set up the GPIO route. */

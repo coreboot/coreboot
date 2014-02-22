@@ -37,7 +37,13 @@ void *smm_region_start(void);
 #include <stdint.h>
 void southcluster_smm_clear_state(void);
 void southcluster_smm_enable_smi(void);
-void southcluster_smm_save_gpio_route(uint32_t route);
+void southcluster_smm_save_param(int param, uint32_t data);
 #endif
+
+enum {
+	SMM_SAVE_PARAM_GPIO_ROUTE = 0,
+	SMM_SAVE_PARAM_PCIE_WAKE_ENABLE,
+	SMM_SAVE_PARAM_COUNT
+};
 
 #endif /* _BAYTRAIL_SMM_H_ */

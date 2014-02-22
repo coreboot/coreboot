@@ -67,15 +67,15 @@ static int int15_handler(void)
 		 * Boot Display Device Hook:
 		 *  bit 0 = CRT
 		 *  bit 1 = TV (eDP) *
-		 *  bit 2 = EFP *
+		 *  bit 2 = EFP
 		 *  bit 3 = LFP
 		 *  bit 4 = CRT2
-		 *  bit 5 = TV2 (eDP) *
-		 *  bit 6 = EFP2 *
+		 *  bit 5 = TV2 (eDP)
+		 *  bit 6 = EFP2
 		 *  bit 7 = LFP2
 		 */
 		X86_AX = 0x005f;
-		X86_CX = 0x0006;
+		X86_CX = 0x0002;
 		res = 1;
 		break;
 	case 0x5f51:

@@ -26,9 +26,10 @@
 #include <stdint.h>
 
 struct soc_intel_baytrail_config {
-        uint8_t sata_port_map;
-        uint8_t sata_ahci;
-        uint8_t ide_legacy_combined;
+	uint8_t enable_xdp_tap;
+	uint8_t sata_port_map;
+	uint8_t sata_ahci;
+	uint8_t ide_legacy_combined;
 	uint8_t clkreq_enable;
 
 	/* VR low power settings -- enable PS2 mode for gfx and core */
@@ -67,6 +68,9 @@ struct soc_intel_baytrail_config {
 	int lpss_acpi_mode;
 	int scc_acpi_mode;
 	int lpe_acpi_mode;
+
+	/* Allow PCIe devices to wake system from suspend. */
+	int pcie_wake_enable;
 
 	/*
 	 * Digital Port Hotplug Enable:

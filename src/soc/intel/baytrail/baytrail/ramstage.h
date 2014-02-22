@@ -21,10 +21,11 @@
 #define _BAYTRAIL_RAMSTAGE_H_
 
 #include <device/device.h>
+#include <chip.h>
 
 /* The baytrail_init_pre_device() function is called prior to device
  * initialization, but it's after console and cbmem has been reinitialized. */
-void baytrail_init_pre_device(void);
+void baytrail_init_pre_device(struct soc_intel_baytrail_config *config);
 void baytrail_init_cpus(device_t dev);
 void set_max_freq(void);
 void southcluster_enable_dev(device_t dev);

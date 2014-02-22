@@ -49,5 +49,26 @@ Name (DTRT, Package () {
 	Package () { \_SB.DPTF.TCPU, \_SB.DPTF.TSR2, 100, 600, 0, 0, 0, 0 },
 })
 
+Name (MPPC, Package ()
+{
+	0x2,		// Revision
+	Package () {	// Power Limit 1
+		0,	// PowerLimitIndex, 0 for Power Limit 1
+		1600,	// PowerLimitMinimum
+		6200,	// PowerLimitMaximum
+		1000,	// TimeWindowMinimum
+		1000,	// TimeWindowMaximum
+		200	// StepSize
+	},
+	Package () {	// Power Limit 2
+		1,	// PowerLimitIndex, 1 for Power Limit 2
+		8000,	// PowerLimitMinimum
+		8000,	// PowerLimitMaximum
+		1000,	// TimeWindowMinimum
+		1000,	// TimeWindowMaximum
+		1000	// StepSize
+	}
+})
+
 /* Include Baytrail DPTF */
 #include <soc/intel/baytrail/acpi/dptf/dptf.asl>

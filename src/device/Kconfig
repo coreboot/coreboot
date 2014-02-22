@@ -24,6 +24,9 @@ menu "Devices"
 config MAINBOARD_HAS_NATIVE_VGA_INIT
 	bool
 	default n
+config MAINBOARD_NATIVE_VGA_INIT_TEXTMODECFG
+	bool
+	default n
 
 config MAINBOARD_DO_NATIVE_VGA_INIT
 	bool "Use native graphics initialization"
@@ -431,7 +434,7 @@ config FRAMEBUFFER_VESA_MODE
 config FRAMEBUFFER_KEEP_VESA_MODE
 	prompt "Keep VESA framebuffer"
 	bool
-	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || !MAINBOARD_DO_NATIVE_VGA_INIT
+	depends on PCI_OPTION_ROM_RUN_YABEL || PCI_OPTION_ROM_RUN_REALMODE || MAINBOARD_NATIVE_VGA_INIT_TEXTMODECFG
 	help
 	  This option keeps the framebuffer mode set after coreboot finishes
 	  execution. If this option is enabled, coreboot will pass a

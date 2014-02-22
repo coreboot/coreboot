@@ -38,5 +38,10 @@ struct northbridge_intel_sandybridge_config {
 
 	u32 gpu_cpu_backlight;	/* CPU Backlight PWM value */
 	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
+
+	int gpu_use_spread_spectrum_clock;
+	int gpu_lvds_dual_channel;
+	int gpu_link_frequency_270_mhz;
+	int gpu_lvds_num_lanes;
 };
 

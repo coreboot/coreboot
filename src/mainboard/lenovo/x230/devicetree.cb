@@ -10,6 +10,12 @@ chip northbridge/intel/sandybridge
 	register "gpu_panel_power_down_delay" = "100"		# T5+T6: 10ms
 	register "gpu_panel_power_backlight_on_delay" = "2100"	# T3: 210ms
 	register "gpu_panel_power_backlight_off_delay" = "2100"	# T4: 210ms
+	register "gpu_use_spread_spectrum_clock" = "1"
+	register "gpu_lvds_dual_channel" = "0"
+	register "gpu_link_frequency_270_mhz" = "1"
+	register "gpu_lvds_num_lanes" = "1"
+	register "gpu_cpu_backlight" = "0x1155"
+	register "gpu_pch_backlight" = "0x11551155"
 
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_rPGA989

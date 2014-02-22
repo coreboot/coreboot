@@ -643,13 +643,13 @@ static void gma_func0_init(struct device *dev)
 	/* This should probably run before post VBIOS init. */
 	printk(BIOS_SPEW, "Initializing VGA without OPROM.\n");
 	u32 iobase, mmiobase, physbase, graphics_base;
+	struct northbridge_intel_sandybridge_config *conf = dev->chip_info;
 	iobase = dev->resource_list[2].base;
 	mmiobase = dev->resource_list[0].base;
 	physbase = pci_read_config32(dev, 0x5c) & ~0xf;
 	graphics_base = dev->resource_list[1].base;
 
-	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
-	i915lightup(physbase, iobase, mmiobase, graphics_base);
+	i915lightup(conf, physbase, iobase, mmiobase, graphics_base);
 #endif
 }
 

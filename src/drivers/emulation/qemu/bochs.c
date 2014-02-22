@@ -11,6 +11,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <pc80/vga.h>
+#include <pc80/vga_io.h>
 
 /* VGA init. We use the Bochs VESA VBE extensions  */
 #define VBE_DISPI_IOPORT_INDEX          0x01CE
@@ -39,6 +41,7 @@
 #define VBE_DISPI_LFB_ENABLED           0x40
 #define VBE_DISPI_NOCLEARMEM            0x80
 
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 static int width  = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_XRES;
 static int height = CONFIG_DRIVERS_EMULATION_QEMU_BOCHS_YRES;
 
@@ -53,9 +56,11 @@ static int bochs_read(int index)
 	outw(index, VBE_DISPI_IOPORT_INDEX);
 	return inw(VBE_DISPI_IOPORT_DATA);
 }
+#endif
 
 static void bochs_init(device_t dev)
 {
+#if IS_ENABLED(CONFIG_FRAMEBUFFER_KEEP_VESA_MODE)
 	struct edid edid;
 	int id, mem, bar;
 	u32 addr;
@@ -111,6 +116,10 @@ static void bochs_init(device_t dev)
 	edid.bytes_per_line = width * 4;
 	edid.bpp = 32;
 	set_vbe_mode_info_valid(&edid, addr);
+#else
+	vga_misc_write(0x1);
+	vga_textmode_init();
+#endif
 }
 
 static struct device_operations qemu_graph_ops = {

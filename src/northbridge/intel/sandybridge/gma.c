@@ -21,6 +21,7 @@
 #include <console/console.h>
 #include <bootmode.h>
 #include <delay.h>
+#include <string.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>

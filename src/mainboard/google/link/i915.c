@@ -35,6 +35,7 @@
 #include "onboard.h"
 #include "ec.h"
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <northbridge/intel/sandybridge/gma.h>
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
@@ -235,11 +236,8 @@ static int run(int index)
 	return i+1;
 }
 
-int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-		unsigned int gfx);
-
-int i915lightup(unsigned int pphysbase, unsigned int piobase,
-		unsigned int pmmio, unsigned int pgfx)
+int i915lightup(const struct northbridge_intel_sandybridge_config *info,
+		u32 pphysbase, u16 piobase, u32 pmmio, u32 pgfx)
 {
 	static struct edid edid;
 	int edid_ok;

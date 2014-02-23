@@ -43,6 +43,17 @@
 #include <cpu/x86/msr.h>
 #include <edid.h>
 #include "i915io.h"
+#include <drivers/intel/gma/edid.h>
+#include <drivers/intel/gma/i915_reg.h>
+
+#define  LVDS_DETECTED	(1 << 1)
+#define  LVDS_BORDER_ENABLE	(1 << 15)
+#define  LVDS_PORT_ENABLE	(1 << 31)
+#define  LVDS_CLOCK_A_POWERUP_ALL	(3 << 8)
+#define  LVDS_CLOCK_B_POWERUP_ALL	(3 << 4)
+#define  LVDS_CLOCK_BOTH_POWERUP_ALL	(3 << 2)
+#define   DISPPLANE_BGRX888			(0x6<<26)
+#define   DPLLB_LVDS_P2_CLOCK_DIV_7	(1 << 24) /* i915 */
 
 enum {
 	vmsg = 1, vio = 2, vspin = 4,
@@ -64,16 +75,6 @@ static unsigned int physbase;
 
 static u32 htotal, hblank, hsync, vtotal, vblank, vsync;
 
-const u8 x60_edid_data[] = {
-	0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x30, 0xae, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00,
-	0x00, 0x0f, 0x01, 0x03, 0x80, 0x19, 0x12, 0x78, 0xea, 0xed, 0x75, 0x91, 0x57, 0x4f, 0x8b, 0x26,
-	0x21, 0x50, 0x54, 0x21, 0x08, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-	0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x28, 0x15, 0x00, 0x40, 0x41, 0x00, 0x26, 0x30, 0x18, 0x88,
-	0x36, 0x00, 0xf6, 0xb9, 0x00, 0x00, 0x00, 0x18, 0xed, 0x10, 0x00, 0x40, 0x41, 0x00, 0x26, 0x30,
-	0x18, 0x88, 0x36, 0x00, 0xf6, 0xb9, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x61,
-	0x43, 0x32, 0x61, 0x43, 0x28, 0x0f, 0x01, 0x00, 0x4c, 0xa3, 0x58, 0x4a, 0x00, 0x00, 0x00, 0xfe,
-	0x00, 0x4c, 0x54, 0x4e, 0x31, 0x32, 0x31, 0x58, 0x4a, 0x2d, 0x4c, 0x30, 0x37, 0x0a, 0x00, 0x00,
-};
 #define READ32(addr) io_i915_READ32(addr)
 #define WRITE32(val, addr) io_i915_WRITE32(val, addr)
 
@@ -278,10 +279,23 @@ int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
 int i915lightup(unsigned int pphysbase, unsigned int piobase,
 		unsigned int pmmio, unsigned int pgfx)
 {
-	static struct edid edid;
+	struct edid edid;
+	u8 x60_edid_data[256];
+	int i, j;
 
 	int index;
 	unsigned long temp;
+	int hpolarity, vpolarity;
+	u32 candp1, candn;
+	u32 best_delta = 0xffffffff;
+	u32 target_frequency;
+	u32 pixel_p1 = 1;
+	u32 pixel_n = 1;
+	u32 pixel_m1 = 1;
+	u32 pixel_m2 = 1;
+	u32 hactive, vactive, right_border, bottom_border;
+	u32 hfront_porch, vfront_porch;
+
 	mmio = (void *)pmmio;
 	addrport = piobase;
 	dataport = addrport + 4;
@@ -292,9 +306,18 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 		(void *)graphics, mmio, addrport, physbase);
 	globalstart = rdtscll();
 
-
-	decode_edid((unsigned char *)&x60_edid_data,
+	intel_gmbus_read_edid(pmmio, 3, 0x50, x60_edid_data);
+	decode_edid(x60_edid_data,
 		    sizeof(x60_edid_data), &edid);
+
+	hpolarity = (edid.phsync == '-');
+	vpolarity = (edid.pvsync == '-');
+	hactive = edid.x_resolution;
+	vactive = edid.y_resolution;
+	right_border = edid.hborder;
+	bottom_border = edid.vborder;
+	hfront_porch = edid.hso;
+	vfront_porch = edid.vso;
 
 	htotal = (edid.ha - 1) | ((edid.ha + edid.hbl - 1) << 16);
 	printk(BIOS_SPEW, "I915_WRITE(HTOTAL(pipe), %08x)\n", htotal);
@@ -318,8 +341,148 @@ int i915lightup(unsigned int pphysbase, unsigned int piobase,
 
 	printk(BIOS_SPEW, "Table has %d elements\n", niodefs);
 
+	for (i = 0; i < 2; i++)
+		for (j = 0; j < 0x100; j++)
+			write32(pmmio + PALETTE(i) + 4 * j, 0x10101 * j);
+
+
 	index = run(0);
 	printk(BIOS_SPEW, "Run returns %d\n", index);
+
+#define IS_DUAL_CHANNEL 0
+#define USE_SSC 1
+
+	target_frequency = IS_DUAL_CHANNEL ? edid.pixel_clock
+		: (2 * edid.pixel_clock);
+
+	/* Find suitable divisors.  */
+	for (candp1 = 1; candp1 <= 8; candp1++) {
+		for (candn = 5; candn <= 10; candn++) {
+			u32 cur_frequency;
+			u32 m; /* 77 - 131.  */
+			u32 denom; /* 35 - 560.  */
+			u32 current_delta;
+
+			denom = candn * candp1 * 7;
+			/* Doesnt overflow for up to
+			   5000000 kHz = 5 GHz.  */
+			m = (target_frequency * denom + 60000) / 120000;
+
+			if (m < 77 || m > 131)
+				continue;
+
+			cur_frequency = (120000 * m) / denom;
+			if (target_frequency > cur_frequency)
+				current_delta = target_frequency - cur_frequency;
+			else
+				current_delta = cur_frequency - target_frequency;
+
+
+			if (best_delta > current_delta) {
+				best_delta = current_delta;
+				pixel_n = candn;
+				pixel_p1 = candp1;
+				pixel_m2 = ((m + 3) % 5) + 7;
+				pixel_m1 = (m - pixel_m2) / 5;
+			}
+		}
+	}
+
+	if (best_delta == 0xffffffff) {
+		printk (BIOS_ERR, "Couldn't find GFX clock divisors\n");
+		return -1;
+	}
+
+	write32(pmmio + PIPECONF(1), PIPECONF_DISABLE);
+
+	write32(pmmio + PIPESRC(0), ((hactive - 1) << 16) | (vactive - 1));
+	write32(pmmio + PF_CTL(0),0);
+	write32(pmmio + PF_WIN_SZ(0), 0);
+	write32(pmmio + PF_WIN_POS(0), 0);
+
+	write32(pmmio + HTOTAL(1),
+		((hactive + right_border + hblank - 1) << 16)
+		| (hactive - 1));
+	write32(pmmio + HBLANK(1),
+		((hactive + right_border + hblank - 1) << 16)
+		| (hactive + right_border - 1));
+	write32(pmmio + HSYNC(1),
+		((hactive + right_border + hfront_porch + hsync - 1) << 16)
+		| (hactive + right_border + hfront_porch - 1));
+
+	write32(pmmio + VTOTAL(1), ((vactive + bottom_border + vblank - 1) << 16)
+		| (vactive - 1));
+	write32(pmmio + VBLANK(1), ((vactive + bottom_border + vblank - 1) << 16)
+		| (vactive + bottom_border - 1));
+	write32(pmmio + VSYNC(1),
+		(vactive + bottom_border + vfront_porch + vsync - 1)
+		| (vactive + bottom_border + vfront_porch - 1));
+
+	write32(pmmio + DSPCNTR(0), DISPPLANE_BGRX888
+		| DISPPLANE_SEL_PIPE_B | DISPPLANE_GAMMA_ENABLE);
+
+	mdelay(1);
+	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS
+		| (read32(pmmio + PP_CONTROL) & ~PANEL_UNLOCK_MASK));
+	write32(pmmio + FP0(1),
+		((pixel_n - 2) << 16)
+		| ((pixel_m1 - 2) << 8) | pixel_m2);
+	write32(pmmio + DPLL(1),
+		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
+		| (IS_DUAL_CHANNEL ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
+		| (0x10000 << (pixel_p1 - 1))
+		| ((USE_SSC ? 3 : 0) << 13)
+		| (0x1 << (pixel_p1 - 1)));
+	mdelay(1);
+	write32(pmmio + DPLL(1),
+		DPLL_VCO_ENABLE | DPLLB_MODE_LVDS
+		| (IS_DUAL_CHANNEL ? DPLLB_LVDS_P2_CLOCK_DIV_7
+		   : DPLLB_LVDS_P2_CLOCK_DIV_14)
+		| (0x10000 << (pixel_p1 - 1))
+		| ((USE_SSC ? 3 : 0) << 13)
+		| (0x1 << (pixel_p1 - 1)));
+
+	edid.bytes_per_line = (edid.bytes_per_line + 63) & ~63;
+	write32(pmmio + DSPADDR(0), 0x20000);
+	write32(pmmio + DSPSURF(0), 0);
+	write32(pmmio + DSPSIZE(0), (hactive - 1) | ((vactive - 1) << 16));
+	write32(pmmio + DSPSTRIDE(0), edid.bytes_per_line);
+	write32(pmmio + DSPSTRIDE(0) + 4, 0);
+	write32(pmmio + DSPCNTR(0), DISPLAY_PLANE_ENABLE | DISPPLANE_BGRX888
+		| DISPPLANE_SEL_PIPE_B | DISPPLANE_GAMMA_ENABLE);
+	mdelay(1);
+
+	write32(pmmio + PIPECONF(1), (1 << 31));
+	write32(pmmio + LVDS,
+		LVDS_PORT_ENABLE
+		| (hpolarity << 20) | (vpolarity << 21)
+		| (IS_DUAL_CHANNEL ? LVDS_CLOCK_B_POWERUP_ALL
+		   | LVDS_CLOCK_BOTH_POWERUP_ALL : 0)
+		| LVDS_CLOCK_A_POWERUP_ALL | (1 << 30));
+
+	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_OFF);
+	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS | PANEL_POWER_RESET);
+	mdelay(1);
+	write32(pmmio + PP_CONTROL, PANEL_UNLOCK_REGS
+		| PANEL_POWER_ON | PANEL_POWER_RESET);
+
+	printk (BIOS_DEBUG, "waiting for panel powerup\n");
+	while (1) {
+		u32 reg32;
+		reg32 = read32(pmmio + PP_STATUS);
+		if (((reg32 >> 28) & 3) == 0)
+			break;
+	}
+	printk (BIOS_DEBUG, "panel powered up\n");
+
+	write32(pmmio + PP_CONTROL, PANEL_POWER_ON | PANEL_POWER_RESET);
+
+	/* Clear interrupts. */
+	write32(pmmio + DEIIR, 0xffffffff);
+	write32(pmmio + SDEIIR, 0xffffffff);
+	write32(pmmio + IIR, 0xffffffff);
+	write32(pmmio + IMR, 0xffffffff);
 
 	verbose = 0;
 	/* GTT is the Global Translation Table for the graphics pipeline.

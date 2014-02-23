@@ -49,11 +49,11 @@ intel_gmbus_read_edid(u32 mmio, u8 bus, u8 slave, u8 *edid)
 	wait_rdy(mmio);
 	/* Ensure index bits are disabled.  */
 	write32(mmio + PCH_GMBUS5, 0);
-	write32(mmio + PCH_GMBUS1, 0x46000000 | (slave << 1));
+	write32(mmio + PCH_GMBUS1, 0x46000000 | 0x10000 | (slave << 1));
 	wait_rdy(mmio);
 	/* Ensure index bits are disabled.  */
 	write32(mmio + PCH_GMBUS5, 0);
-	write32(mmio + PCH_GMBUS1, 0x4a800001 | (slave << 1));
+	write32(mmio + PCH_GMBUS1, 0x46800001 | (slave << 1));
 	for (i = 0; i < 128 / 4; i++) {
 		u32 reg32;
 		wait_rdy(mmio);

@@ -40,8 +40,8 @@ static void gma_func0_init(struct device *dev)
 
 	/* IGD needs to be Bus Master */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
-	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER);
-
+	pci_write_config32(dev, PCI_COMMAND, reg32 | PCI_COMMAND_MASTER
+		 | PCI_COMMAND_IO | PCI_COMMAND_MEMORY);
 
 #if !CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT
 	/* PCI Init, will run VBIOS */
@@ -92,7 +92,7 @@ static void gma_func1_init(struct device *dev)
 	/* IGD needs to be Bus Master, also enable IO accesss */
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	pci_write_config32(dev, PCI_COMMAND, reg32 |
-			PCI_COMMAND_MASTER | PCI_COMMAND_IO);
+			PCI_COMMAND_MASTER | PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
 
 	if (get_option(&val, "tft_brightness") == CB_SUCCESS)
 		pci_write_config8(dev, 0xf4, val);

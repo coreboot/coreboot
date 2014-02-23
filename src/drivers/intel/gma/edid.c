@@ -32,7 +32,7 @@ wait_rdy(u32 mmio)
 	unsigned try = 100;
 
 	while (try--) {
-		if (read32(mmio + PCH_GMBUS2) & (1 << 11))
+		if (read32(mmio + GMBUS2) & (1 << 11))
 			return;
 		udelay(10);
 	}
@@ -45,29 +45,29 @@ intel_gmbus_read_edid(u32 mmio, u8 bus, u8 slave, u8 *edid)
 
 	wait_rdy(mmio);
 	/* 100 KHz, hold 0ns,  */
-	write32(mmio + PCH_GMBUS0, bus);
+	write32(mmio + GMBUS0, bus);
 	wait_rdy(mmio);
 	/* Ensure index bits are disabled.  */
-	write32(mmio + PCH_GMBUS5, 0);
-	write32(mmio + PCH_GMBUS1, 0x46000000 | (slave << 1));
+	write32(mmio + GMBUS5, 0);
+	write32(mmio + GMBUS1, 0x46000000 | (slave << 1));
 	wait_rdy(mmio);
 	/* Ensure index bits are disabled.  */
-	write32(mmio + PCH_GMBUS5, 0);
-	write32(mmio + PCH_GMBUS1, 0x4a800001 | (slave << 1));
+	write32(mmio + GMBUS5, 0);
+	write32(mmio + GMBUS1, 0x4a800001 | (slave << 1));
 	for (i = 0; i < 128 / 4; i++) {
 		u32 reg32;
 		wait_rdy(mmio);
-		reg32 = read32(mmio + PCH_GMBUS3);
+		reg32 = read32(mmio + GMBUS3);
 		edid[4 * i] = reg32 & 0xff;
 		edid[4 * i + 1] = (reg32 >> 8) & 0xff;
 		edid[4 * i + 2] = (reg32 >> 16) & 0xff;
 		edid[4 * i + 3] = (reg32 >> 24) & 0xff;
 	}
 	wait_rdy(mmio);
-	write32(mmio + PCH_GMBUS1, 0x4a800000 | (slave << 1));
+	write32(mmio + GMBUS1, 0x4a800000 | (slave << 1));
 	wait_rdy(mmio);
-	write32(mmio + PCH_GMBUS0, 0x48000000);
-	write32(mmio + PCH_GMBUS2, 0x00008000);
+	write32(mmio + GMBUS0, 0x48000000);
+	write32(mmio + GMBUS2, 0x00008000);
 
 	printk (BIOS_INFO, "EDID:\n");
 	for (i = 0; i < 128; i++) {

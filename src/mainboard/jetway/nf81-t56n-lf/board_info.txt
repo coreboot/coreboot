@@ -1,5 +1,5 @@
 Board URL: http://www.jetway.com.tw/jw/ipcboard_view.asp?productid=822&proname=NF81-T56N-LF
-Category: Mini-ITX
+Category: mini
 ROM package: SOIC8
 ROM protocol: SPI
 ROM socketed: n

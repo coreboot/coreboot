@@ -26,13 +26,16 @@
 #include "i915_reg.h"
 #include "edid.h"
 
+unsigned long io_i915_READ32(unsigned long addr);
+void io_i915_WRITE32(unsigned long val, unsigned long addr);
+
 static void
 wait_rdy(u32 mmio)
 {
 	unsigned try = 100;
 
 	while (try--) {
-		if (read32(mmio + PCH_GMBUS2) & (1 << 11))
+		if (io_i915_READ32(GMBUS2) & (1 << 11))
 			return;
 		udelay(10);
 	}
@@ -45,29 +48,29 @@ intel_gmbus_read_edid(u32 mmio, u8 bus, u8 slave, u8 *edid)
 
 	wait_rdy(mmio);
 	/* 100 KHz, hold 0ns,  */
-	write32(mmio + PCH_GMBUS0, bus);
+	io_i915_WRITE32(bus, GMBUS0);
 	wait_rdy(mmio);
 	/* Ensure index bits are disabled.  */
-	write32(mmio + PCH_GMBUS5, 0);
-	write32(mmio + PCH_GMBUS1, 0x46000000 | (slave << 1));
+	io_i915_WRITE32(0, GMBUS5);
+	io_i915_WRITE32((0x46000000 | 0x10000 | (slave << 1)), GMBUS1);
 	wait_rdy(mmio);
 	/* Ensure index bits are disabled.  */
-	write32(mmio + PCH_GMBUS5, 0);
-	write32(mmio + PCH_GMBUS1, 0x4a800001 | (slave << 1));
+	io_i915_WRITE32(0, GMBUS5);
+	io_i915_WRITE32((0x46800001 | (slave << 1)), GMBUS1);
 	for (i = 0; i < 128 / 4; i++) {
 		u32 reg32;
 		wait_rdy(mmio);
-		reg32 = read32(mmio + PCH_GMBUS3);
+		reg32 = io_i915_READ32(GMBUS3);
 		edid[4 * i] = reg32 & 0xff;
 		edid[4 * i + 1] = (reg32 >> 8) & 0xff;
 		edid[4 * i + 2] = (reg32 >> 16) & 0xff;
 		edid[4 * i + 3] = (reg32 >> 24) & 0xff;
 	}
 	wait_rdy(mmio);
-	write32(mmio + PCH_GMBUS1, 0x4a800000 | (slave << 1));
+	io_i915_WRITE32((0x4a800000 | (slave << 1)), GMBUS1);
 	wait_rdy(mmio);
-	write32(mmio + PCH_GMBUS0, 0x48000000);
-	write32(mmio + PCH_GMBUS2, 0x00008000);
+	io_i915_WRITE32(0x48000000, GMBUS0);
+	io_i915_WRITE32(0x00008000, GMBUS2);
 
 	printk (BIOS_INFO, "EDID:\n");
 	for (i = 0; i < 128; i++) {

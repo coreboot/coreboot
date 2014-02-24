@@ -1,0 +1,19 @@
+if VENDOR_APPLE
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_APPLE_MACBOOK21
+	bool "Macbook2,1 ICH7 TESTING"
+	help
+	  Testing coreboot port for Macbook2,1
+
+endchoice
+
+source "src/mainboard/apple/macbook21/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Apple"
+
+endif # VENDOR_APPLE

@@ -35,10 +35,8 @@
  * Initialise the serial port with the given baudrate divisor. The settings
  * are always 8 data bits, no parity, 1 stop bit, no start bits.
  */
-static void am335x_uart_init(uint16_t div)
+static void am335x_uart_init(struct am335x_uart *uart, uint16_t div)
 {
-	struct am335x_uart *uart = (struct am335x_uart *)
-					CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 	uint16_t lcr_orig, efr_orig, mcr_orig;
 
 	/* reset the UART */
@@ -131,11 +129,8 @@ static void am335x_uart_init(uint16_t div)
  * otherwise. When the function is successful, the character read is
  * written into its argument c.
  */
-static unsigned char am335x_uart_rx_byte(void)
+static unsigned char am335x_uart_rx_byte(struct am335x_uart *uart)
 {
-	struct am335x_uart *uart =
-		(struct am335x_uart *)CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
-
 	while (!(read16(&uart->lsr) & LSR_RXFIFOE));
 
 	return read8(&uart->rhr);
@@ -144,11 +139,8 @@ static unsigned char am335x_uart_rx_byte(void)
 /*
  * Output a single byte to the serial port.
  */
-static void am335x_uart_tx_byte(unsigned char data)
+static void am335x_uart_tx_byte(struct am335x_uart *uart, unsigned char data)
 {
-	struct am335x_uart *uart =
-		(struct am335x_uart *)CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
-
 	while (!(read16(&uart->lsr) & LSR_TXFIFOE));
 
 	return write8(data, &uart->thr);
@@ -159,28 +151,36 @@ unsigned int uart_platform_refclk(void)
 	return 48000000;
 }
 
+unsigned int uart_platform_base(int idx)
+{
+	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+}
+
 #if !defined(__PRE_RAM__)
 uint32_t uartmem_getbaseaddr(void)
 {
-	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+	return uart_platform_base(0);
 }
 #endif
 
 void uart_init(void)
 {
+	struct am335x_uart *uart = uart_platform_baseptr(0);
 	uint16_t div = (uint16_t) uart_baudrate_divisor(
 		default_baudrate(), uart_platform_refclk(), 16);
-	am335x_uart_init(div);
+	am335x_uart_init(uart, div);
 }
 
 unsigned char uart_rx_byte(void)
 {
-	return am335x_uart_rx_byte();
+	struct am335x_uart *uart = uart_platform_baseptr(0);
+	return am335x_uart_rx_byte(uart);
 }
 
 void uart_tx_byte(unsigned char data)
 {
-	am335x_uart_tx_byte(data);
+	struct am335x_uart *uart = uart_platform_baseptr(0);
+	am335x_uart_tx_byte(uart, data);
 }
 
 void uart_tx_flush(void)

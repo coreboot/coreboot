@@ -48,6 +48,13 @@ int uart_can_rx_byte(void);
 unsigned int uart_platform_base(int idx);
 uint32_t uartmem_getbaseaddr(void);
 
+#if !defined(__ROMCC__)
+static inline void *uart_platform_baseptr(int idx)
+{
+	return (void *)uart_platform_base(idx);
+}
+#endif
+
 void oxford_init(void);
 void oxford_remap(unsigned int new_base);
 

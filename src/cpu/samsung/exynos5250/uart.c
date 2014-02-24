@@ -28,9 +28,6 @@
 #define RX_FIFO_FULL_MASK	(1 << 8)
 #define TX_FIFO_FULL_MASK	(1 << 24)
 
-/* FIXME(dhendrix): exynos5 has 4 UARTs and its functions in u-boot take a
-   base_port argument. However console_driver functions do not. */
-static uint32_t base_port = CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 
 /*
  * The coefficient, used to calculate the baudrate on S5P UARTs is
@@ -58,9 +55,8 @@ static const int udivslot[] = {
 	0xffdf,
 };
 
-static void serial_setbrg_dev(void)
+static void serial_setbrg_dev(struct s5p_uart *uart)
 {
-	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 	u32 uclk;
 	u32 val;
 
@@ -87,10 +83,8 @@ static void serial_setbrg_dev(void)
  * Initialise the serial port with the given baudrate. The settings
  * are always 8 data bits, no parity, 1 stop bit, no start bits.
  */
-static void exynos5_init_dev(void)
+static void exynos5_init_dev(struct s5p_uart *uart)
 {
-	struct s5p_uart *uart = (struct s5p_uart *)base_port;
-
 	// TODO initialize with correct peripheral id by base_port.
 	exynos_pinmux_uart3();
 
@@ -102,12 +96,11 @@ static void exynos5_init_dev(void)
 	/* No interrupts, no DMA, pure polling */
 	writel(0x245, &uart->ucon);
 
-	serial_setbrg_dev();
+	serial_setbrg_dev(uart);
 }
 
-static int exynos5_uart_err_check(int op)
+static int exynos5_uart_err_check(struct s5p_uart *uart, int op)
 {
-	struct s5p_uart *uart = (struct s5p_uart *)base_port;
 	unsigned int mask;
 
 	/*
@@ -130,14 +123,12 @@ static int exynos5_uart_err_check(int op)
  * otherwise. When the function is successful, the character read is
  * written into its argument c.
  */
-static unsigned char exynos5_uart_rx_byte(void)
+static unsigned char exynos5_uart_rx_byte(struct s5p_uart *uart)
 {
-	struct s5p_uart *uart = (struct s5p_uart *)base_port;
-
 	/* wait for character to arrive */
 	while (!(readl(&uart->ufstat) & (RX_FIFO_COUNT_MASK |
 					 RX_FIFO_FULL_MASK))) {
-		if (exynos5_uart_err_check(0))
+		if (exynos5_uart_err_check(uart, 0))
 			return 0;
 	}
 
@@ -147,49 +138,54 @@ static unsigned char exynos5_uart_rx_byte(void)
 /*
  * Output a single byte to the serial port.
  */
-static void exynos5_uart_tx_byte(unsigned char data)
+static void exynos5_uart_tx_byte(struct s5p_uart *uart, unsigned char data)
 {
-	struct s5p_uart *uart = (struct s5p_uart *)base_port;
-
 	/* wait for room in the tx FIFO */
 	while ((readl(&uart->ufstat) & TX_FIFO_FULL_MASK)) {
-		if (exynos5_uart_err_check(1))
+		if (exynos5_uart_err_check(uart, 1))
 			return;
 	}
 
 	writeb(data, &uart->utxh);
 }
 
-static void exynos5_uart_tx_flush(void)
+static void exynos5_uart_tx_flush(struct s5p_uart *uart)
 {
-	struct s5p_uart *uart = (struct s5p_uart *)base_port;
-
 	while (readl(&uart->ufstat) & 0x1ff0000);
+}
+
+unsigned int uart_platform_base(int idx)
+{
+	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }
 
 #if !defined(__PRE_RAM__)
 uint32_t uartmem_getbaseaddr(void)
 {
-	return base_port;
+	return uart_platform_base(0);
 }
 #endif
 
 void uart_init(void)
 {
-	exynos5_init_dev();
+	struct s5p_uart *uart = uart_platform_baseptr(0);
+	exynos5_init_dev(uart);
 }
 
 unsigned char uart_rx_byte(void)
 {
-	return exynos5_uart_rx_byte();
+	struct s5p_uart *uart = uart_platform_baseptr(0);
+	return exynos5_uart_rx_byte(uart);
 }
 
 void uart_tx_byte(unsigned char data)
 {
-	exynos5_uart_tx_byte(data);
+	struct s5p_uart *uart = uart_platform_baseptr(0);
+	exynos5_uart_tx_byte(uart, data);
 }
 
 void uart_tx_flush(void)
 {
-	exynos5_uart_tx_flush();
+	struct s5p_uart *uart = uart_platform_baseptr(0);
+	exynos5_uart_tx_flush(uart);
 }

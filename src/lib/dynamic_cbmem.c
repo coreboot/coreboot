@@ -189,7 +189,7 @@ static inline int cbmem_fail_recovery(void)
 static int validate_entries(struct cbmem_root *root)
 {
 	unsigned int i;
-	u32 current_end;
+	uintptr_t current_end;
 
 	current_end = (uintptr_t)get_top_aligned();
 

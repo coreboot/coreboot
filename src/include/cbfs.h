@@ -54,7 +54,6 @@
 
 void *cbfs_load_optionrom(struct cbfs_media *media, uint16_t vendor,
 			  uint16_t device, void * dest);
-void *cbfs_load_payload(struct cbfs_media *media, const char *name);
 void *cbfs_load_stage(struct cbfs_media *media, const char *name);
 
 /* Simple buffer for streaming media. */
@@ -74,11 +73,6 @@ void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
 
 // Utility functions
 int run_address(void *f);
-
-/* Defined in src/lib/selfboot.c */
-struct lb_memory;
-void *selfload(struct lb_memory *mem, struct cbfs_payload *payload);
-void selfboot(void *entry);
 
 /* Defined in individual arch / board implementation. */
 int init_default_cbfs_media(struct cbfs_media *media);

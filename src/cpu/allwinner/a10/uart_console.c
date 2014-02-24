@@ -43,9 +43,14 @@ unsigned int uart_platform_refclk(void)
 	return 24000000;
 }
 
+unsigned int uart_platform_base(int idx)
+{
+	return (unsigned int)get_console_uart_base_addr();
+}
+
 void uart_init(void)
 {
-	void *uart_base = get_console_uart_base_addr();
+	void *uart_base = (void *) uart_platform_base(0);
 
 	/* Use default 8N1 encoding */
 	a10_uart_configure(uart_base, default_baudrate(),
@@ -55,18 +60,20 @@ void uart_init(void)
 
 unsigned char uart_rx_byte(void)
 {
-	return a10_uart_rx_blocking(get_console_uart_base_addr());
+	void *uart_base = (void *) uart_platform_base(0);
+	return a10_uart_rx_blocking(uart_base);
 }
 
 void uart_tx_byte(unsigned char data)
 {
-	a10_uart_tx_blocking(get_console_uart_base_addr(), data);
+	void *uart_base = (void *) uart_platform_base(0);
+	a10_uart_tx_blocking(uart_base, data);
 }
 
 #if !defined(__PRE_RAM__)
 uint32_t uartmem_getbaseaddr(void)
 {
-	return (uint32_t) get_console_uart_base_addr();
+	return uart_platform_base(0);
 }
 #endif
 

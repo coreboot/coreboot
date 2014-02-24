@@ -32,6 +32,7 @@
 #if CONFIG_COLLECT_TIMESTAMPS
 #include <timestamp.h>
 #endif
+#include <payload_loader.h>
 
 /* Maximum physical address we can use for the coreboot bounce buffer. */
 #ifndef MAX_ADDR

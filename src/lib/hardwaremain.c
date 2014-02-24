@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <reset.h>
 #include <boot/tables.h>
-#include <cbfs.h>
+#include <payload_loader.h>
 #include <lib.h>
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
@@ -226,30 +226,26 @@ static boot_state_t bs_write_tables(void *arg)
 
 static boot_state_t bs_payload_load(void *arg)
 {
-	void *payload;
-	void *entry;
+	struct payload *payload;
 
 	timestamp_add_now(TS_LOAD_PAYLOAD);
 
-	payload = cbfs_load_payload(CBFS_DEFAULT_MEDIA,
-				    CONFIG_CBFS_PREFIX "/payload");
+	payload = payload_load();
+
 	if (! payload)
-		die("Could not find a payload\n");
-
-	entry = selfload(get_lb_mem(), payload);
-
-	if (! entry)
 		die("Could not load payload\n");
 
 	/* Pass the payload to the next state. */
-	boot_states[BS_PAYLOAD_BOOT].arg = entry;
+	boot_states[BS_PAYLOAD_BOOT].arg = payload;
 
 	return BS_PAYLOAD_BOOT;
 }
 
-static boot_state_t bs_payload_boot(void *entry)
+static boot_state_t bs_payload_boot(void *arg)
 {
-	selfboot(entry);
+	struct payload *payload = arg;
+
+	payload_run(payload);
 
 	printk(BIOS_EMERG, "Boot failed");
 	/* Returning from this state will fail because the following signals

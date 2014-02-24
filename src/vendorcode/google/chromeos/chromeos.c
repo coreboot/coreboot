@@ -82,7 +82,9 @@ int recovery_mode_enabled(void)
 }
 
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
-void *vboot_get_payload(size_t *len)
+#include <payload_loader.h>
+
+static void *vboot_get_payload(size_t *len)
 {
 	struct vboot_handoff *vboot_handoff;
 	struct firmware_component *fwc;
@@ -108,6 +110,27 @@ void *vboot_get_payload(size_t *len)
 
 	return (void *)fwc->address;
 }
+
+static int vboot_locate_payload(struct payload *payload)
+{
+	void *buffer;
+	size_t size;
+
+	buffer = vboot_get_payload(&size);
+
+	if (buffer == NULL)
+		return -1;
+
+	payload->backing_store.data = buffer;
+	payload->backing_store.size = size;
+
+	return 0;
+}
+
+const struct payload_loader_ops vboot_payload_loader = {
+	.name = "VBOOT",
+	.locate = vboot_locate_payload,
+};
 
 int vboot_get_handoff_info(void **addr, uint32_t *size)
 {

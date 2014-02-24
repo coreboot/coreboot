@@ -15,12 +15,14 @@
 
 #include <console/uart.h>
 
-static void pl011_uart_tx_byte(unsigned char data)
+static void pl011_uart_tx_byte(unsigned int *uart_base, unsigned char data)
 {
-	static volatile unsigned int *uart0_address =
-		(unsigned int *) CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+	*uart_base = (unsigned int)data;
+}
 
-	*uart0_address = (unsigned int)data;
+unsigned int uart_platform_base(int idx)
+{
+	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }
 
 #if !defined(__PRE_RAM__)
@@ -36,7 +38,8 @@ void uart_init(void)
 
 void uart_tx_byte(unsigned char data)
 {
-	pl011_uart_tx_byte(data);
+	unsigned int *uart_base = (unsigned int *) uart_platform_base(0);
+	pl011_uart_tx_byte(uart_base, data);
 }
 
 void uart_tx_flush(void)

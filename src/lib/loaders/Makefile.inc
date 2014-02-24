@@ -19,3 +19,5 @@
 
 romstage-y += cbfs_ramstage_loader.c
 romstage-y += load_and_run_ramstage.c
+ramstage-y += cbfs_payload_loader.c
+ramstage-y += load_and_run_payload.c

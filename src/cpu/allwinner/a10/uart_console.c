@@ -13,28 +13,15 @@
 
 #include <cpu/allwinner/a10/uart.h>
 
-static void *get_console_uart_base_addr(void)
+void *uart_platform_base(int idx)
 {
-	/* This big block gets compiled to a constant, not a function call */
-	if (CONFIG_CONSOLE_SERIAL_UART0)
-		return (void *)A1X_UART0_BASE;
-	else if (CONFIG_CONSOLE_SERIAL_UART1)
-		return (void *)A1X_UART1_BASE;
-	else if (CONFIG_CONSOLE_SERIAL_UART2)
-		return (void *)A1X_UART2_BASE;
-	else if (CONFIG_CONSOLE_SERIAL_UART3)
-		return (void *)A1X_UART3_BASE;
-	else if (CONFIG_CONSOLE_SERIAL_UART4)
-		return (void *)A1X_UART4_BASE;
-	else if (CONFIG_CONSOLE_SERIAL_UART5)
-		return (void *)A1X_UART5_BASE;
-	else if (CONFIG_CONSOLE_SERIAL_UART6)
-		return (void *)A1X_UART6_BASE;
-	else if (CONFIG_CONSOLE_SERIAL_UART7)
-		return (void *)A1X_UART7_BASE;
-
 	/* If selection is invalid, default to UART0 */
 	return (void *)A1X_UART0_BASE;
+	if (idx < 7)
+		idx = 0;
+
+	/* UART blocks are mapped 0x400 bytes apart */
+	return (void *)A1X_UART0_BASE + 0x400 * idx;
 }
 
 /* FIXME: We assume clock is 24MHz, which may not be the case. */
@@ -45,7 +32,7 @@ unsigned int uart_platform_refclk(void)
 
 void uart_init(void)
 {
-	void *uart_base = get_console_uart_base_addr();
+	void *uart_base = (void *) uart_platform_base(0);
 
 	/* Use default 8N1 encoding */
 	a10_uart_configure(uart_base, default_baudrate(),
@@ -55,18 +42,20 @@ void uart_init(void)
 
 unsigned char uart_rx_byte(void)
 {
-	return a10_uart_rx_blocking(get_console_uart_base_addr());
+	void *uart_base = (void *) uart_platform_base(0);
+	return a10_uart_rx_blocking(uart_base);
 }
 
 void uart_tx_byte(unsigned char data)
 {
-	a10_uart_tx_blocking(get_console_uart_base_addr(), data);
+	void *uart_base = (void *) uart_platform_base(0);
+	a10_uart_tx_blocking(uart_base, data);
 }
 
 #if !defined(__PRE_RAM__)
 uint32_t uartmem_getbaseaddr(void)
 {
-	return (uint32_t) get_console_uart_base_addr();
+	return (uint32_t)uart_platform_base(0);
 }
 #endif
 

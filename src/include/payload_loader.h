@@ -44,6 +44,9 @@ struct payload *payload_load(void);
 /* Run the loaded payload. */
 void payload_run(const struct payload *payload);
 
+/* architecture specific function to run payload. */
+void arch_payload_run(const struct payload *payload);
+
 /* Payload loading operations. */
 struct payload_loader_ops {
 	const char *name;
@@ -57,6 +60,5 @@ struct payload_loader_ops {
 /* Defined in src/lib/selfboot.c */
 struct lb_memory;
 void *selfload(struct lb_memory *mem, struct payload *payload);
-void selfboot(void *entry);
 
 #endif  /* PAYLOAD_LOADER_H */

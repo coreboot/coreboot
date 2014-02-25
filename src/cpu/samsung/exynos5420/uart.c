@@ -149,28 +149,33 @@ static void exynos5_uart_tx_byte(struct s5p_uart *uart, unsigned char data)
 
 unsigned int uart_platform_base(int idx)
 {
-	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+	const unsigned int bases[] = {
+		0x12c00000, 0x12c10000, 0x12c20000, 0x12c30000
+	};
+	if (idx < sizeof(bases)/sizeof(bases[0]))
+		return bases[idx];
+	return 0;
 }
 
-void uart_init(void)
+void uart_init(int idx)
 {
-	struct s5p_uart *uart = (struct s5p_uart *) uart_platform_base(0);
+	struct s5p_uart *uart = (struct s5p_uart *) uart_platform_base(idx);
 	exynos5_init_dev(uart);
 }
 
-unsigned char uart_rx_byte(void)
+unsigned char uart_rx_byte(int idx)
 {
-	struct s5p_uart *uart = (struct s5p_uart *) uart_platform_base(0);
+	struct s5p_uart *uart = (struct s5p_uart *) uart_platform_base(idx);
 	return exynos5_uart_rx_byte(uart);
 }
 
-void uart_tx_byte(unsigned char data)
+void uart_tx_byte(int idx, unsigned char data)
 {
-	struct s5p_uart *uart = (struct s5p_uart *) uart_platform_base(0);
+	struct s5p_uart *uart = (struct s5p_uart *) uart_platform_base(idx);
 	exynos5_uart_tx_byte(uart, data);
 }
 
-void uart_tx_flush(void)
+void uart_tx_flush(int idx)
 {
 	/* Exynos5250 implements this too. */
 }

@@ -21,3 +21,7 @@ ramstage-y += media.c
 bootblock-y += timer.c
 romstage-y += timer.c
 ramstage-y += timer.c
+
+bootblock-y += iomap.c
+romstage-y += iomap.c
+ramstage-y += iomap.c

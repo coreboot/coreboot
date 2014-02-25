@@ -22,16 +22,12 @@
 #include <arch/stages.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
-#include <fallback.h>
 #include <boot/coreboot_tables.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cbfs.h>
 #include <lib.h>
-#if CONFIG_COLLECT_TIMESTAMPS
-#include <timestamp.h>
-#endif
 #include <payload_loader.h>
 
 /* Maximum physical address we can use for the coreboot bounce buffer. */
@@ -527,21 +523,6 @@ out:
 
 void selfboot(void *entry)
 {
-	/* Reset to booting from this image as late as possible */
-	boot_successful();
-
-	printk(BIOS_DEBUG, "Jumping to boot code at %p\n", entry);
-	post_code(POST_ENTER_ELF_BOOT);
-
-#if CONFIG_COLLECT_TIMESTAMPS
-	timestamp_add_now(TS_SELFBOOT_JUMP);
-#endif
-
-	/* Before we go off to run the payload, see if
-	 * we stayed within our bounds.
-	 */
-	checkstack(_estack, 0);
-
 	/* Jump to kernel */
 	jmp_to_elf_entry(entry, bounce_buffer, bounce_size);
 }

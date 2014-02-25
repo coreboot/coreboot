@@ -37,6 +37,8 @@ void ehci_debug_select_port(unsigned int port);
 #define DBGP_EP_BUSY		(1<<2)
 #define DBGP_EP_STATMASK	(DBGP_EP_VALID | DBGP_EP_ENABLED)
 
+struct ehci_dbg_port;
+
 struct dbgp_pipe
 {
 	u8 devnum;
@@ -58,5 +60,11 @@ struct dbgp_pipe *dbgp_console_input(void);
 int dbgp_ep_is_active(struct dbgp_pipe *pipe);
 int dbgp_bulk_write_x(struct dbgp_pipe *pipe, const char *bytes, int size);
 int dbgp_bulk_read_x(struct dbgp_pipe *pipe, void *data, int size);
+
+int dbgp_control_msg(struct ehci_dbg_port *ehci_debug, unsigned devnum,
+	int requesttype, int request, int value, int index, void *data, int size);
+void dbgp_mdelay(int ms);
+
+int dbgp_probe_gadget(struct ehci_dbg_port *ehci_debug, struct dbgp_pipe *pipe);
 
 #endif /* _EHCI_DEBUG_H_ */

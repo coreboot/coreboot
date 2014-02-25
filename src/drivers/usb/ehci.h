@@ -197,4 +197,7 @@ struct ehci_dbg_port {
 	u32	address;
 #define DBGP_EPADDR(dev, ep)	(((dev)<<8)|(ep))
 } __attribute__ ((packed));
+
+#define USB_DEBUG_DEVNUM 127
+
 #endif

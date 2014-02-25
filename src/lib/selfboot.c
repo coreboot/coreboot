@@ -302,14 +302,16 @@ static int relocate_segment(unsigned long buffer, struct segment *seg)
 static int build_self_segment_list(
 	struct segment *head,
 	struct lb_memory *mem,
-	struct cbfs_payload *payload, uintptr_t *entry)
+	struct payload *payload, uintptr_t *entry)
 {
 	struct segment *new;
 	struct segment *ptr;
 	struct cbfs_payload_segment *segment, *first_segment;
+	struct cbfs_payload *cbfs_payload;
+	cbfs_payload = payload->backing_store.data;
 	memset(head, 0, sizeof(*head));
 	head->next = head->prev = head;
-	first_segment = segment = &payload->segments;
+	first_segment = segment = &cbfs_payload->segments;
 
 	while(1) {
 		printk(BIOS_DEBUG, "Loading segment from rom address 0x%p\n", segment);
@@ -394,7 +396,7 @@ static int build_self_segment_list(
 static int load_self_segments(
 	struct segment *head,
 	struct lb_memory *mem,
-	struct cbfs_payload *payload)
+	struct payload *payload)
 {
 	struct segment *ptr;
 
@@ -500,7 +502,7 @@ static int load_self_segments(
 	return 1;
 }
 
-void *selfload(struct lb_memory *mem, struct cbfs_payload *payload)
+void *selfload(struct lb_memory *mem, struct payload *payload)
 {
 	uintptr_t entry = 0;
 	struct segment head;

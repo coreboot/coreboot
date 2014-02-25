@@ -22,14 +22,16 @@
 #include <stdint.h>
 #include <stddef.h>
 
-struct payload_backing_store {
+struct buffer_area {
 	void *data;
 	size_t size;
 };
 
 struct payload {
 	const char *name;
-	struct payload_backing_store backing_store;
+	struct buffer_area backing_store;
+	/* Used when payload wants memory coreboot ramstage is running at. */
+	struct buffer_area bounce;
 	void *entry;
 };
 

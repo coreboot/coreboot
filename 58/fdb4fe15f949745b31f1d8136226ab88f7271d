@@ -1,0 +1,8 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Kyösti Mälkki <kyosti.malkki@gmail.com>
+Code-Review+2: Aaron Durbin <adurbin@google.com>
+Submitted-by: Vladimir Serbinenko <phcoder@gmail.com>
+Submitted-at: Tue, 25 Feb 2014 20:03:34 +0100
+Reviewed-on: http://review.coreboot.org/5131
+Project: coreboot
+Branch: refs/heads/master

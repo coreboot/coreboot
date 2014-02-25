@@ -19,7 +19,6 @@
  */
 
 #include <arch/byteorder.h>
-#include <arch/stages.h>
 #include <console/console.h>
 #include <cpu/cpu.h>
 #include <boot/coreboot_tables.h>
@@ -525,10 +524,4 @@ void *selfload(struct lb_memory *mem, struct payload *payload)
 
 out:
 	return NULL;
-}
-
-void selfboot(void *entry)
-{
-	/* Jump to kernel */
-	jmp_to_elf_entry(entry, bounce_buffer, bounce_size);
 }

@@ -93,5 +93,5 @@ void payload_run(const struct payload *payload)
 	 */
 	checkstack(_estack, 0);
 
-	selfboot(payload->entry);
+	arch_payload_run(payload);
 }

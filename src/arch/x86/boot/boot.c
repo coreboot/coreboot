@@ -1,12 +1,12 @@
 #include <console/console.h>
 #include <arch/stages.h>
+#include <payload_loader.h>
 #include <ip_checksum.h>
 #include <string.h>
 
-#if CONFIG_RELOCATABLE_RAMSTAGE
 /* When the ramstage is relocatable the elf loading ensures an elf image cannot
  * be loaded over the ramstage code. */
-void jmp_to_elf_entry(void *entry, unsigned long unused1, unsigned long unused2)
+static void jmp_payload_no_bounce_buffer(void *entry)
 {
 	/* Jump to kernel */
 	__asm__ __volatile__(
@@ -22,8 +22,8 @@ void jmp_to_elf_entry(void *entry, unsigned long unused1, unsigned long unused2)
 		"r" (entry)
 		);
 }
-#else
-void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
+
+static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 {
 	extern unsigned char _ram_seg, _eram_seg;
 	unsigned long lb_start, lb_size;
@@ -122,6 +122,13 @@ void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
 		"ri"(0), "ri" (0)
 		);
 }
-#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
-
+void arch_payload_run(const struct payload *payload)
+{
+	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+		jmp_payload_no_bounce_buffer(payload->entry);
+	} else {
+		jmp_payload(payload->entry, (uintptr_t)payload->bounce.data,
+				payload->bounce.size);
+	}
+}

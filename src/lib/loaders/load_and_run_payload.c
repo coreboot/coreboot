@@ -21,7 +21,10 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <boot/coreboot_tables.h>
+#include <fallback.h>
+#include <lib.h>
 #include <payload_loader.h>
+#include <timestamp.h>
 
 extern const struct payload_loader_ops vboot_payload_loader;
 extern const struct payload_loader_ops cbfs_payload_loader;
@@ -76,6 +79,19 @@ void payload_run(const struct payload *payload)
 {
 	if (payload == NULL)
 		return;
+
+	/* Reset to booting from this image as late as possible */
+	boot_successful();
+
+	printk(BIOS_DEBUG, "Jumping to boot code at %p\n", payload->entry);
+	post_code(POST_ENTER_ELF_BOOT);
+
+	timestamp_add_now(TS_SELFBOOT_JUMP);
+
+	/* Before we go off to run the payload, see if
+	 * we stayed within our bounds.
+	 */
+	checkstack(_estack, 0);
 
 	selfboot(payload->entry);
 }

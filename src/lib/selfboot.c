@@ -74,22 +74,22 @@ struct segment {
 
 static unsigned long bounce_size, bounce_buffer;
 
-#if CONFIG_RELOCATABLE_RAMSTAGE
-static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
-{
-	/* When the ramstage is relocatable there is no need for a bounce
-	 * buffer. All payloads should not overlap the ramstage.
-	 */
-	bounce_buffer = ~0UL;
-	bounce_size = 0;
-}
-#else
 static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
 {
 	unsigned long lb_size;
 	unsigned long mem_entries;
 	unsigned long buffer;
 	int i;
+
+	/* When the ramstage is relocatable there is no need for a bounce
+	 * buffer. All payloads should not overlap the ramstage.
+	 */
+	if (IS_ENABLED(CONFIG_RELOCATABLE_RAMSTAGE)) {
+		bounce_buffer = ~0UL;
+		bounce_size = 0;
+		return;
+	}
+
 	lb_size = lb_end - lb_start;
 	/* Plus coreboot size so I have somewhere
 	 * to place a copy to return to.
@@ -120,7 +120,6 @@ static void get_bounce_buffer(struct lb_memory *mem, unsigned long req_size)
 	bounce_buffer = buffer;
 	bounce_size = req_size;
 }
-#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
 
 static int valid_area(struct lb_memory *mem, unsigned long buffer,
 	unsigned long start, unsigned long len)
@@ -417,6 +416,11 @@ static int load_self_segments(
 		printk(BIOS_ERR, "Could not find a bounce buffer...\n");
 		return 0;
 	}
+
+	/* Update the payload's bounce buffer data used when loading. */
+	payload->bounce.data = (void *)(uintptr_t)bounce_buffer;
+	payload->bounce.size = bounce_size;
+
 	for(ptr = head->next; ptr != head; ptr = ptr->next) {
 		/* Verify the memory addresses in the segment are valid */
 		if (!valid_area(mem, bounce_buffer, ptr->s_dstaddr, ptr->s_memsz))

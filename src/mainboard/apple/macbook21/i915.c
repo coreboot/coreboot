@@ -34,7 +34,6 @@
 #include <southbridge/intel/bd82x6x/pch.h>
 #include <smbios.h>
 #include <device/pci.h>
-#include <ec/google/chromeec/ec.h>
 #include <cbfs_core.h>
 
 #include <cpu/x86/tsc.h>

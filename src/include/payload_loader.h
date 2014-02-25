@@ -54,8 +54,7 @@ struct payload_loader_ops {
 
 /* Defined in src/lib/selfboot.c */
 struct lb_memory;
-struct cbfs_payload;
-void *selfload(struct lb_memory *mem, struct cbfs_payload *payload);
+void *selfload(struct lb_memory *mem, struct payload *payload);
 void selfboot(void *entry);
 
 #endif  /* PAYLOAD_LOADER_H */

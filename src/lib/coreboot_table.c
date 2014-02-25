@@ -136,7 +136,7 @@ static struct lb_serial *lb_serial(struct lb_header *header)
 }
 
 #if CONFIG_CONSOLE_SERIAL8250 || CONFIG_CONSOLE_SERIAL8250MEM || \
-	CONFIG_CONSOLE_SERIAL_UART || CONFIG_USBDEBUG
+	CONFIG_CONSOLE_SERIAL_UART || CONFIG_CONSOLE_USB
 static void add_console(struct lb_header *header, u16 consoletype)
 {
 	struct lb_console *console;
@@ -156,7 +156,7 @@ static void lb_console(struct lb_header *header)
 #if CONFIG_CONSOLE_SERIAL8250MEM || CONFIG_CONSOLE_SERIAL_UART
 	add_console(header, LB_TAG_CONSOLE_SERIAL8250MEM);
 #endif
-#if CONFIG_USBDEBUG
+#if CONFIG_CONSOLE_USB
 	add_console(header, LB_TAG_CONSOLE_EHCI);
 #endif
 }

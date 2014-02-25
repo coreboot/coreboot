@@ -116,7 +116,7 @@ void console_init(void)
 #if CONFIG_SPKMODEM
 	spkmodem_init();
 #endif
-#if CONFIG_USBDEBUG_IN_ROMSTAGE && !defined(__BOOT_BLOCK__)
+#if CONFIG_CONSOLE_USB && CONFIG_USBDEBUG_IN_ROMSTAGE && !defined(__BOOT_BLOCK__)
 	usbdebug_init();
 #endif
 

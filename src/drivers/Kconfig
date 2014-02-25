@@ -38,4 +38,5 @@ source src/drivers/spi/Kconfig
 source src/drivers/ti/Kconfig
 source src/drivers/trident/Kconfig
 source src/drivers/uart/Kconfig
+source src/drivers/usb/Kconfig
 source src/drivers/xpowers/Kconfig

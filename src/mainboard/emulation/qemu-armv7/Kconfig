@@ -48,11 +48,6 @@ config DRAM_SIZE_MB
 	int
 	default 1024
 
-config CONSOLE_SERIAL_UART_ADDRESS
-	hex
-	depends on CONSOLE_SERIAL
-	default 0x10009000
-
 # Memory map for qemu vexpress-a9:
 #
 # 0x0000_0000: jump instruction (by qemu)

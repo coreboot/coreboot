@@ -48,39 +48,21 @@ if CONSOLE_SERIAL
 	comment "device-specific UART"
 	depends on HAVE_UART_SPECIAL
 
-choice
-	prompt "Serial port for 8250"
-	default CONSOLE_SERIAL_COM1
-	depends on DRIVERS_UART_8250IO
+config CONSOLE_PORT
+	prompt "Index for UART port to use for console"
+	default 0
 
-config CONSOLE_SERIAL_COM1
-	bool "COM1/ttyS0, I/O port 0x3f8"
-	help
-	  Serial console on COM1/ttyS0 at I/O port 0x3f8.
-config CONSOLE_SERIAL_COM2
-	bool "COM2/ttyS1, I/O port 0x2f8"
-	help
-	  Serial console on COM2/ttyS1 at I/O port 0x2f8.
-config CONSOLE_SERIAL_COM3
-	bool "COM3/ttyS2, I/O port 0x3e8"
-	help
-	  Serial console on COM3/ttyS2 at I/O port 0x3e8.
-config CONSOLE_SERIAL_COM4
-	bool "COM4/ttyS3, I/O port 0x2e8"
-	help
-	  Serial console on COM4/ttyS3 at I/O port 0x2e8.
-
-endchoice
-
+# FIXME: Early programming in romstage is incorrect as we should
+# program different LDN to actually change the physical port.
 config TTYS0_BASE
 	hex
 	depends on DRIVERS_UART_8250IO
-	default 0x3f8 if CONSOLE_SERIAL_COM1
-	default 0x2f8 if CONSOLE_SERIAL_COM2
-	default 0x3e8 if CONSOLE_SERIAL_COM3
-	default 0x2e8 if CONSOLE_SERIAL_COM4
+	default 0x3f8 if CONSOLE_PORT = 0
+	default 0x2f8 if CONSOLE_PORT = 1
+	default 0x3e8 if CONSOLE_PORT = 2
+	default 0x2e8 if CONSOLE_PORT = 3
 	help
-	  Map the COM port names to the respective I/O port.
+	  Map the COM port number to the respective I/O port.
 
 choice
 	prompt "Baud rate"

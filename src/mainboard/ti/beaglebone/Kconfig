@@ -61,54 +61,9 @@ config CBFS_HEADER_ROM_OFFSET
 	hex
 	default 0x10
 
-choice CONSOLE_SERIAL_UART_CHOICES
-	prompt "Serial Console UART"
-	default CONSOLE_SERIAL_UART0
-	depends on CONSOLE_SERIAL
-
-config CONSOLE_SERIAL_UART0
-	bool "UART0"
-	help
-	  Serial console on UART0
-
-config CONSOLE_SERIAL_UART1
-	bool "UART1"
-	help
-	  Serial console on UART1
-
-config CONSOLE_SERIAL_UART2
-	bool "UART2"
-	help
-	  Serial console on UART2
-
-config CONSOLE_SERIAL_UART3
-	bool "UART3"
-	help
-	  Serial console on UART3
-
-config CONSOLE_SERIAL_UART4
-	bool "UART4"
-	help
-	  Serial console on UART4
-
-config CONSOLE_SERIAL_UART5
-	bool "UART5"
-	help
-	  Serial console on UART5
-
-endchoice
-
-config CONSOLE_SERIAL_UART_ADDRESS
-	hex
-	depends on CONSOLE_SERIAL
-	default 0x44e09000 if CONSOLE_SERIAL_UART0
-	default 0x48022000 if CONSOLE_SERIAL_UART1
-	default 0x48024000 if CONSOLE_SERIAL_UART2
-	default 0x481a6000 if CONSOLE_SERIAL_UART3
-	default 0x481a8000 if CONSOLE_SERIAL_UART4
-	default 0x481aa000 if CONSOLE_SERIAL_UART5
-	help
-	  Map the UART names to the respective MMIO address.
+config CONSOLE_PORT
+	int
+	default 0
 
 #################################################################
 #   stuff from smdk5250.h                                       #

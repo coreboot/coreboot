@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include <boot/coreboot_tables.h>
 #include <fallback.h>
 #include <lib.h>
 #include <payload_loader.h>
@@ -44,7 +43,6 @@ struct payload *payload_load(void)
 {
 	int i;
 	void *entry;
-	struct lb_memory *mem;
 	const struct payload_loader_ops *ops;
 	struct payload *payload = &global_payload;
 
@@ -64,8 +62,7 @@ struct payload *payload_load(void)
 	if (i == ARRAY_SIZE(payload_ops))
 		return NULL;
 
-	mem = get_lb_mem();
-	entry = selfload(mem, payload);
+	entry = selfload(payload);
 
 	if (entry == NULL)
 		return NULL;

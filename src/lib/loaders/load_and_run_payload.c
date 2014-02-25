@@ -65,7 +65,7 @@ struct payload *payload_load(void)
 		return NULL;
 
 	mem = get_lb_mem();
-	entry = selfload(mem, payload->backing_store.data);
+	entry = selfload(mem, payload);
 
 	if (entry == NULL)
 		return NULL;

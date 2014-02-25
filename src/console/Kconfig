@@ -141,100 +141,14 @@ config SPKMODEM
 	help
 	  Send coreboot debug output through speaker
 
-# Use "select HAVE_USBDEBUG" on southbridges which have Debug Port code.
-config HAVE_USBDEBUG
-	bool
-	default y if HAVE_USBDEBUG_OPTIONS
+config CONSOLE_USB
+	bool "USB dongle console output"
+	depends on USBDEBUG
 	default n
-
-# Use "select HAVE_USBDEBUG_OPTIONS" on southbridges with multiple
-# EHCI controllers or multiple ports with Debug Port capability
-config HAVE_USBDEBUG_OPTIONS
-	def_bool n
-
-config USBDEBUG
-	bool "USB 2.0 EHCI debug dongle support"
-	default n
-	depends on HAVE_USBDEBUG
 	help
-	  This option allows you to use a so-called USB EHCI Debug device
-	  (such as the Ajays NET20DC, AMIDebug RX, or a system using the
-	  Linux "EHCI Debug Device gadget" driver found in recent kernel)
-	  to retrieve the coreboot debug messages (instead, or in addition
-	  to, a serial port).
+	  Send coreboot debug output to USB.
 
-	  This feature is NOT supported on all chipsets in coreboot!
-
-	  It also requires a USB2 controller which supports the EHCI
-	  Debug Port capability.
-
-	  See http://www.coreboot.org/EHCI_Debug_Port for an up-to-date list
-	  of supported controllers.
-
-	  If unsure, say N.
-
-if USBDEBUG
-
-config USBDEBUG_IN_ROMSTAGE
-	bool "Enable early (pre-RAM) usbdebug console output."
-	default y
-	depends on EARLY_CBMEM_INIT && EARLY_CONSOLE
-	help
-	   Configuring USB controllers in system-agent binary may cause
-	   problems to usbdebug. Disabling this option delays usbdebug to
-	   be setup on entry to ramstage.
-
-	   If unsure, say Y.
-
-config USBDEBUG_HCD_INDEX
-	int
-	default 0
-	prompt "Index for EHCI controller to use with usbdebug" if HAVE_USBDEBUG_OPTIONS
-	help
-	   Some boards have multiple EHCI controllers with possibly only
-	   one having the Debug Port capability on an external USB port.
-
-	   Mapping of this index to PCI device functions is southbridge
-	   specific and mainboard level Kconfig should already provide
-	   a working default value here.
-
-config USBDEBUG_DEFAULT_PORT
-	int
-	default 0
-	prompt "Default USB port to use as Debug Port" if HAVE_USBDEBUG_OPTIONS
-	help
-	  Selects which physical USB port usbdebug dongle is connected to.
-	  Setting of 0 means to scan possible ports starting from 1.
-
-	  Intel platforms have hardwired the debug port location and this
-	  setting makes no difference there.
-
-	  Hence, if you select the correct port here, you can speed up
-	  your boot time. Which USB port number refers to which actual
-	  port on your mainboard (potentially also USB pin headers on
-	  your mainboard) is highly board-specific, and you'll likely
-	  have to find out by trial-and-error.
-
-choice
-	prompt "Type of dongle"
-	default USBDEBUG_DONGLE_STD
-
-config USBDEBUG_DONGLE_STD
-	bool "Net20DC or compatible"
-
-config USBDEBUG_DONGLE_BEAGLEBONE
-	bool "BeagleBone"
-	help
-	  Use this to configure the USB hub on BeagleBone board.
-
-endchoice
-
-config USBDEBUG_OPTIONAL_HUB_PORT
-	int
-	default 2 if USBDEBUG_DONGLE_BEAGLEBONE
-	default 0
-
-endif # USBDEBUG
+	  Configuration for USB hardware is under menu Generic Drivers.
 
 # TODO: Deps?
 # TODO: Improve description.

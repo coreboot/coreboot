@@ -37,7 +37,7 @@ void console_tx_byte(unsigned char byte)
 #if CONFIG_CONSOLE_SERIAL8250
 	uart_tx_byte(byte);
 #endif
-#if CONFIG_USBDEBUG && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
+#if CONFIG_CONSOLE_USB && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
 	usb_tx_byte(0, byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
@@ -62,7 +62,7 @@ void console_tx_flush(void)
 #if CONFIG_CONSOLE_NE2K
 	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
 #endif
-#if CONFIG_USBDEBUG && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
+#if CONFIG_CONSOLE_USB && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
 	usb_tx_flush(0);
 #endif
 }

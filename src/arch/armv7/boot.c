@@ -19,9 +19,10 @@
 
 #include <console/console.h>
 #include <arch/stages.h>
+#include <payload_loader.h>
 
-void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size)
+void arch_payload_run(const struct payload *payload)
 {
-	printk(BIOS_SPEW, "entry    = %p\n", entry);
-	stage_exit(entry);
+	printk(BIOS_SPEW, "entry    = %p\n", payload->entry);
+	stage_exit(payload->entry);
 }

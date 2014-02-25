@@ -354,18 +354,6 @@ static unsigned long lb_table_fini(struct lb_header *head)
 	return (unsigned long)rec + rec->size;
 }
 
-/* Routines to extract part so the coreboot table or
- * information from the coreboot table after we have written it.
- * Currently get_lb_mem relies on a global we can change the
- * implementation.
- */
-static struct lb_memory *mem_ranges = NULL;
-
-struct lb_memory *get_lb_mem(void)
-{
-	return mem_ranges;
-}
-
 unsigned long write_coreboot_table(
 	unsigned long low_table_start, unsigned long low_table_end,
 	unsigned long rom_table_start, unsigned long rom_table_end)
@@ -430,8 +418,7 @@ unsigned long write_coreboot_table(
 
 	/* No other memory areas can be added after the memory table has been
 	 * committed as the entries won't show up in the serialize mem table. */
-	mem_ranges = lb_memory(head);
-	bootmem_write_memory_table(mem_ranges);
+	bootmem_write_memory_table(lb_memory(head));
 
 	/* Record our motherboard */
 	lb_mainboard(head);

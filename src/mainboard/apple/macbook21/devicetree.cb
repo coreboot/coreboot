@@ -30,7 +30,7 @@ chip northbridge/intel/i945
 
 	device domain 0 on
 		device pci 00.0 on # Host bridge
-			subsystemid 0x8086 0x7270 
+			subsystemid 0x8086 0x7270
 		end
 		device pci 02.0 on # VGA controller
 			subsystemid 0x8086 0x7270

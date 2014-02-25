@@ -29,35 +29,43 @@ Method(_PRT)
 {
 	If (PICM) {
 		Return (Package() {
-			Package() { 0x0002ffff, 0, 0, 0x10 }, // VGA
-			Package() { 0x001bffff, 1, 0, 0x11 }, // Audio
-			Package() { 0x001cffff, 0, 0, 0x14 }, // PCI bridge
-			Package() { 0x001cffff, 1, 0, 0x15 }, // PCI bridge
-			Package() { 0x001cffff, 2, 0, 0x16 }, // PCI bridge
-			Package() { 0x001cffff, 3, 0, 0x17 }, // PCI bridge
-			Package() { 0x001dffff, 0, 0, 0x10 }, // USB
-			Package() { 0x001dffff, 1, 0, 0x11 }, // USB
-			Package() { 0x001dffff, 2, 0, 0x12 }, // USB
-			Package() { 0x001dffff, 3, 0, 0x13 }, // USB
-			Package() { 0x001fffff, 0, 0, 0x17 }, // LPC
-			Package() { 0x001fffff, 1, 0, 0x10 }, // IDE
-			Package() { 0x001fffff, 2, 0, 0x10 }  // SATA
+			Package() { 0x0001FFFF, 0, 0, 0x10 },
+			Package() { 0x0002FFFF, 0, 0, 0x10 },
+			Package() { 0x0007FFFF, 0, 0, 0x10 },
+			Package() { 0x001BFFFF, 0, 0, 0x16 },
+			Package() { 0x001CFFFF, 0, 0, 0x11 },
+			Package() { 0x001CFFFF, 1, 0, 0x10 },
+			Package() { 0x001CFFFF, 2, 0, 0x12 },
+			Package() { 0x001CFFFF, 3, 0, 0x13 },
+			Package() { 0x001DFFFF, 0, 0, 0x15 },
+			Package() { 0x001DFFFF, 1, 0, 0x13 },
+			Package() { 0x001DFFFF, 2, 0, 0x12 },
+			Package() { 0x001DFFFF, 3, 0, 0x10 },
+			Package() { 0x001EFFFF, 0, 0, 0x16 },
+			Package() { 0x001EFFFF, 1, 0, 0x14 },
+			Package() { 0x001FFFFF, 0, 0, 0x12 },
+			Package() { 0x001FFFFF, 1, 0, 0x13 },
+			Package() { 0x001FFFFF, 3, 0, 0x10 }
 		})
 	} Else {
 		Return (Package() {
-			Package() { 0x0002ffff, 0, \_SB.PCI0.LPCB.LNKA, 0 }, // VGA
-			Package() { 0x001bffff, 1, \_SB.PCI0.LPCB.LNKB, 0 }, // Audio
-			Package() { 0x001cffff, 0, \_SB.PCI0.LPCB.LNKE, 0 }, // PCI
-			Package() { 0x001cffff, 1, \_SB.PCI0.LPCB.LNKF, 0 }, // PCI
-			Package() { 0x001cffff, 2, \_SB.PCI0.LPCB.LNKG, 0 }, // PCI
-			Package() { 0x001cffff, 3, \_SB.PCI0.LPCB.LNKH, 0 }, // PCI
-			Package() { 0x001dffff, 0, \_SB.PCI0.LPCB.LNKA, 0 }, // USB
-			Package() { 0x001dffff, 1, \_SB.PCI0.LPCB.LNKB, 0 }, // USB
-			Package() { 0x001dffff, 2, \_SB.PCI0.LPCB.LNKC, 0 }, // USB
-			Package() { 0x001dffff, 3, \_SB.PCI0.LPCB.LNKD, 0 }, // USB
-			Package() { 0x001fffff, 0, \_SB.PCI0.LPCB.LNKH, 0 }, // LPC
-			Package() { 0x001fffff, 1, \_SB.PCI0.LPCB.LNKA, 0 }, // IDE
-			Package() { 0x001fffff, 2, \_SB.PCI0.LPCB.LNKA, 0 }  // SATA
+			Package() { 0x0001FFFF, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			Package() { 0x0002FFFF, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			Package() { 0x0007FFFF, 0, \_SB.PCI0.LPCB.LNKA, 0 },
+			Package() { 0x001BFFFF, 0, \_SB.PCI0.LPCB.LNKG, 0 },
+			Package() { 0x001CFFFF, 0, \_SB.PCI0.LPCB.LNKB, 0 },
+			Package() { 0x001CFFFF, 1, \_SB.PCI0.LPCB.LNKA, 0 },
+			Package() { 0x001CFFFF, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+			Package() { 0x001CFFFF, 3, \_SB.PCI0.LPCB.LNKD, 0 },
+			Package() { 0x001DFFFF, 0, \_SB.PCI0.LPCB.LNKH, 0 },
+			Package() { 0x001DFFFF, 1, \_SB.PCI0.LPCB.LNKD, 0 },
+			Package() { 0x001DFFFF, 2, \_SB.PCI0.LPCB.LNKC, 0 },
+			Package() { 0x001DFFFF, 3, \_SB.PCI0.LPCB.LNKA, 0 },
+			Package() { 0x001EFFFF, 0, \_SB.PCI0.LPCB.LNKG, 0 },
+			Package() { 0x001EFFFF, 1, \_SB.PCI0.LPCB.LNKE, 0 },
+			Package() { 0x001FFFFF, 0, \_SB.PCI0.LPCB.LNKC, 0 },
+			Package() { 0x001FFFFF, 1, \_SB.PCI0.LPCB.LNKD, 0 },
+			Package() { 0x001FFFFF, 3, \_SB.PCI0.LPCB.LNKA, 0 }
 		})
 	}
 }

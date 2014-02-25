@@ -50,21 +50,19 @@ static void *smp_write_config_table(void *v)
 	smp_write_intsrc(mc, mp_NMI, MP_IRQ_TRIGGER_DEFAULT|MP_IRQ_POLARITY_DEFAULT, isa_bus, 0x00, MP_APIC_ALL, 0x01);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x01 << 2),       0x02, 0x10);  /* PCIe root 0.02.0 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x02 << 2),       0x02, 0x10);  /* VGA       0.02.0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1b << 2),       0x02, 0x11);  /* HD Audio  0:1b.0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2),       0x02, 0x14);  /* PCIe      0:1c.0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2) | 0x01, 0x02, 0x15); /* PCIe      0:1c.1 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2) | 0x02, 0x02, 0x16); /* PCIe      0:1c.2 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2) | 0x03, 0x02, 0x17); /* PCIe      0:1c.3 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1d << 2)       , 0x02, 0x10); /* USB       0:1d.0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1d << 2) | 0x01, 0x02, 0x11); /* USB       0:1d.1 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1b << 2),       0x02, 0x16);  /* HD Audio  0:1b.0 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2),       0x02, 0x11);  /* PCIe      0:1c.0 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2) | 0x01, 0x02, 0x10); /* PCIe      0:1c.1 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2) | 0x02, 0x02, 0x12); /* PCIe      0:1c.2 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1c << 2) | 0x03, 0x02, 0x13); /* PCIe      0:1c.3 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1d << 2)       , 0x02, 0x15); /* USB       0:1d.0 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1d << 2) | 0x01, 0x02, 0x13); /* USB       0:1d.1 */
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1d << 2) | 0x02, 0x02, 0x12); /* USB       0:1d.2 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1d << 2) | 0x03, 0x02, 0x13); /* USB       0:1d.3 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1f << 2)       , 0x02, 0x17); /* LPC       0:1f.0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1f << 2) | 0x01, 0x02, 0x10); /* IDE       0:1f.1 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1f << 2) | 0x02, 0x02, 0x10); /* SATA      0:1f.2 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x05, (0x00 << 2) | 0x00, 0x02, 0x10); /* Cardbus   5:00.0 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x05, (0x00 << 2) | 0x01, 0x02, 0x11); /* Firewire  5:00.1 */
-	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x05, (0x00 << 2) | 0x02, 0x02, 0x12); /* SDHC      5:00.2 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1d << 2) | 0x03, 0x02, 0x10); /* USB       0:1d.3 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1f << 2)       , 0x02, 0x12); /* LPC       0:1f.0 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1f << 2) | 0x01, 0x02, 0x13); /* IDE       0:1f.1 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x00, (0x1f << 2) | 0x03, 0x02, 0x10); /* SATA      0:1f.3 */
+	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0x03, (0x03 << 2)       , 0x02, 0x13); /* Firewire   3:03.0 */
 
 	mptable_lintsrc(mc, isa_bus);
 	return mptable_finalize(mc);

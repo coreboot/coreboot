@@ -44,6 +44,9 @@ struct payload *payload_load(void);
 /* Run the loaded payload. */
 void payload_run(const struct payload *payload);
 
+/* Mirror the payload to be loaded. */
+void mirror_payload(struct payload *payload);
+
 /* architecture specific function to run payload. */
 void arch_payload_run(const struct payload *payload);
 

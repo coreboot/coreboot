@@ -39,6 +39,11 @@ static struct payload global_payload = {
 	.name = CONFIG_CBFS_PREFIX "/payload",
 };
 
+void __attribute__((weak)) mirror_payload(struct payload *payload)
+{
+	return;
+}
+
 struct payload *payload_load(void)
 {
 	int i;
@@ -61,6 +66,8 @@ struct payload *payload_load(void)
 
 	if (i == ARRAY_SIZE(payload_ops))
 		return NULL;
+
+	mirror_payload(payload);
 
 	entry = selfload(payload);
 

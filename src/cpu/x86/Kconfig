@@ -121,3 +121,13 @@ config BACKUP_DEFAULT_SMM_REGION
 	help
 	 The cpu support will select this option if the default SMM region
 	 needs to be backed up for suspend/resume purposes.
+
+config MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING
+	bool "Copy payload contents to ram before loading to final destination."
+	default n
+	help
+	  On certain platforms a boot speed gain can be realized if mirroring
+	  the payload data stored in non-volatile storage. On x86 systems the
+	  payload would typically live in a memory-mapped SPI part. Copying
+	  the SPI contents to ram before performing the load can speed up
+	  the boot process.

@@ -18,6 +18,31 @@
 #ifndef _CONSOLE_STREAMS_H_
 #define _CONSOLE_STREAMS_H_
 
+
+#if defined(__BOOTBLOCK__) || defined(__PRE_RAM__) && defined(__ROMCC__)
+#define ENV_BOOTBLOCK 1
+#else
+#define ENV_BOOTBLOCK 0
+#endif
+
+#if defined(__PRE_RAM__) && !defined(__ROMCC__)
+#define ENV_ROMSTAGE 1
+#else
+#define ENV_ROMSTAGE 0
+#endif
+
+#if !defined(__PRE_RAM__) && !defined(__SMM__)
+#define ENV_RAMSTAGE 1
+#else
+#define ENV_RAMSTAGE 0
+#endif
+
+#if defined(__SMM__)
+#define ENV_SMM 1
+#else
+#define ENV_SMM 0
+#endif
+
 void console_hw_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);

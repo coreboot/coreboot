@@ -3,6 +3,7 @@ romstage-$(CONFIG_HAVE_ACPI_RESUME) += car.c
 
 subdirs-$(CONFIG_PARALLEL_MP) += name
 ramstage-$(CONFIG_PARALLEL_MP) += mp_init.c
+ramstage-y += mirror_payload.c
 
 SIPI_ELF=$(obj)/cpu/x86/sipi_vector.elf
 SIPI_BIN=$(SIPI_ELF:.elf=)

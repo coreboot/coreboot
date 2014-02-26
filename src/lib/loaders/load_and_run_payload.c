@@ -19,7 +19,9 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 #include <console/console.h>
+#include <bootmem.h>
 #include <fallback.h>
 #include <lib.h>
 #include <payload_loader.h>
@@ -38,6 +40,52 @@ static const struct payload_loader_ops *payload_ops[] = {
 static struct payload global_payload = {
 	.name = CONFIG_CBFS_PREFIX "/payload",
 };
+
+static void mirror_payload(struct payload *payload)
+{
+	char *buffer;
+	size_t size;
+	char *src;
+	uintptr_t alignment_diff;
+	const unsigned long cacheline_size = 64;
+	const uintptr_t intra_cacheline_mask = cacheline_size - 1;
+	const uintptr_t cacheline_mask = ~intra_cacheline_mask;
+
+	src = payload->backing_store.data;
+	size = payload->backing_store.size;
+
+	/*
+	 * Adjust size so that the start and end points are aligned to a
+	 * cacheline. The SPI hardware controllers on Intel machines should
+	 * cache full length cachelines as well as prefetch data.  Once the
+	 * data is mirrored in memory all accesses should hit the CPU's cache.
+	 */
+	alignment_diff = (intra_cacheline_mask & (uintptr_t)src);
+	size += alignment_diff;
+
+	size = ALIGN(size, cacheline_size);
+
+	printk(BIOS_DEBUG, "Payload aligned size: 0x%zx\n", size);
+
+	buffer = bootmem_allocate_buffer(size);
+
+	if (buffer == NULL) {
+		printk(BIOS_DEBUG, "No buffer for mirroring payload.\n");
+		return;
+	}
+
+	src = (void *)(cacheline_mask & (uintptr_t)src);
+
+	/*
+	 * Note that if mempcy is not using 32-bit moves the performance will
+	 * degrade because the SPI hardware prefetchers look for
+	 * cacheline-aligned 32-bit accesses to kick in.
+	 */
+	memcpy(buffer, src, size);
+
+	/* Update the payload's backing store. */
+	payload->backing_store.data = &buffer[alignment_diff];
+}
 
 struct payload *payload_load(void)
 {
@@ -61,6 +109,10 @@ struct payload *payload_load(void)
 
 	if (i == ARRAY_SIZE(payload_ops))
 		return NULL;
+
+	if (IS_ENABLED(CONFIG_MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING)) {
+		mirror_payload(payload);
+	}
 
 	entry = selfload(payload);
 

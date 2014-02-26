@@ -20,6 +20,7 @@
 #ifndef CONSOLE_UART_H
 #define CONSOLE_UART_H
 
+#include <rules.h>
 #include <stdint.h>
 
 /* Return the clock frequency UART uses as reference clock for
@@ -51,8 +52,23 @@ static inline void *uart_platform_baseptr(int idx)
 {
 	return (void *)uart_platform_base(idx);
 }
-#endif
 
 void oxford_remap(unsigned int new_base);
+
+#define __CONSOLE_SERIAL_ENABLE__	CONFIG_CONSOLE_SERIAL && \
+	(ENV_BOOTBLOCK || ENV_ROMSTAGE || ENV_RAMSTAGE || \
+	(ENV_SMM && CONFIG_DEBUG_SMI))
+
+#if __CONSOLE_SERIAL_ENABLE__
+static inline void __uart_init(void)		{ uart_init(); }
+static inline void __uart_tx_byte(u8 data)	{ uart_tx_byte(data); }
+static inline void __uart_tx_flush(void)	{ uart_tx_flush(); }
+#else
+static inline void __uart_init(void)		{}
+static inline void __uart_tx_byte(u8 data)	{}
+static inline void __uart_tx_flush(void)	{}
+#endif
+
+#endif /* __ROMCC__ */
 
 #endif /* CONSOLE_UART_H */

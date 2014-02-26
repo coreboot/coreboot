@@ -27,57 +27,29 @@
 
 void console_hw_init(void)
 {
-#if CONFIG_CONSOLE_SERIAL
-	uart_init();
-#endif
-#if CONFIG_CONSOLE_NE2K
-	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
-#if CONFIG_CONSOLE_CBMEM && !defined(__BOOT_BLOCK__) && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
-	cbmemc_init();
-#endif
-#if CONFIG_SPKMODEM
-	spkmodem_init();
-#endif
-#if CONFIG_CONSOLE_USB && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
-	usbdebug_init();
-#endif
-#if CONFIG_CONSOLE_QEMU_DEBUGCON
-	qemu_debugcon_init();
-#endif
+	__cbmemc_init();
+	__spkmodem_init();
+	__qemu_debugcon_init();
+
+	__uart_init();
+	__ne2k_init();
+	__usbdebug_init();
 }
 
 void console_tx_byte(unsigned char byte)
 {
-#if CONFIG_CONSOLE_SERIAL
-	uart_tx_byte(byte);
-#endif
-#if CONFIG_CONSOLE_USB && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
-	usb_tx_byte(0, byte);
-#endif
-#if CONFIG_CONSOLE_NE2K
-	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
-#if CONFIG_CONSOLE_CBMEM && !defined(__BOOT_BLOCK__) && (CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__))
-	cbmemc_tx_byte(byte);
-#endif
-#if CONFIG_SPKMODEM
-	spkmodem_tx_byte(byte);
-#endif
-#if CONFIG_CONSOLE_QEMU_DEBUGCON
-	qemu_debugcon_tx_byte(byte);
-#endif
+	__cbmemc_tx_byte(byte);
+	__spkmodem_tx_byte(byte);
+	__qemu_debugcon_tx_byte(byte);
+
+	__uart_tx_byte(byte);
+	__ne2k_tx_byte(byte);
+	__usb_tx_byte(byte);
 }
 
 void console_tx_flush(void)
 {
-#if CONFIG_CONSOLE_SERIAL
-	uart_tx_flush();
-#endif
-#if CONFIG_CONSOLE_NE2K
-	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
-#if CONFIG_CONSOLE_USB && (CONFIG_USBDEBUG_IN_ROMSTAGE || !defined(__PRE_RAM__))
-	usb_tx_flush(0);
-#endif
+	__uart_tx_flush();
+	__ne2k_tx_flush();
+	__usb_tx_flush();
 }

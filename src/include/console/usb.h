@@ -21,11 +21,27 @@
 #ifndef _CONSOLE_USB_H_
 #define _CONSOLE_USB_H_
 
+#include <rules.h>
+#include <stdint.h>
+
 int usbdebug_init(void);
 
 void usb_tx_byte(int idx, unsigned char data);
 void usb_tx_flush(int idx);
 unsigned char usb_rx_byte(int idx);
 int usb_can_rx_byte(int idx);
+
+#define __CONSOLE_USB_ENABLE__	CONFIG_CONSOLE_USB && \
+	((ENV_ROMSTAGE && CONFIG_USBDEBUG_IN_ROMSTAGE) || ENV_RAMSTAGE)
+
+#if __CONSOLE_USB_ENABLE__
+static inline void __usbdebug_init(void)	{ usbdebug_init(); }
+static inline void __usb_tx_byte(u8 data)	{ usb_tx_byte(0, data); }
+static inline void __usb_tx_flush(void)	{ usb_tx_flush(0); }
+#else
+static inline void __usbdebug_init(void)	{}
+static inline void __usb_tx_byte(u8 data)	{}
+static inline void __usb_tx_flush(void)	{}
+#endif
 
 #endif /* _CONSOLE_USB_H_ */

@@ -129,6 +129,13 @@ static void dump_region(int num, frba_t *frba)
 		       region.size < 1 ? "(unused)" : "");
 }
 
+static void dump_region_layout(char *buf, size_t bufsize, int num, frba_t *frba)
+{
+	region_t region = get_region(frba, num);
+	snprintf(buf, bufsize, "%08x:%08x %s\n",
+		region.base, region.limit, region_name(num));
+}
+
 static void dump_frba(frba_t * frba)
 {
 	printf("Found Region Section\n");
@@ -142,6 +149,30 @@ static void dump_frba(frba_t * frba)
 	dump_region(3, frba);
 	printf("FLREG4:    0x%08x\n", frba->flreg4);
 	dump_region(4, frba);
+}
+
+static void dump_frba_layout(frba_t * frba, char *layout_fname)
+{
+	char buf[LAYOUT_LINELEN];
+	size_t bufsize = LAYOUT_LINELEN;
+	int i;
+
+	int layout_fd = open(layout_fname, O_WRONLY | O_CREAT | O_TRUNC,
+			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (layout_fd == -1) {
+		perror("Could not open file");
+		exit(EXIT_FAILURE);
+	}
+
+	for (i=0; i<=4; i++) {
+		dump_region_layout(buf, bufsize, i, frba);
+		if (write(layout_fd, buf, strlen(buf)) < 0) {
+			perror("Coult not write to file");
+			exit(EXIT_FAILURE);
+		}
+	}
+	close(layout_fd);
+	printf("Wrote layout to %s\n", layout_fname);
 }
 
 static void decode_spi_frequency(unsigned int freq)
@@ -422,6 +453,18 @@ static void dump_fd(char *image, int size)
 	dump_fmsba((fmsba_t *) (image + (((fdb->flmap2) & 0xff) << 4)));
 }
 
+
+static void dump_layout(char *image, int size, char *layout_fname)
+{
+	fdbar_t *fdb = find_fd(image, size);
+	if (!fdb)
+		exit(EXIT_FAILURE);
+
+	dump_frba_layout((frba_t *)
+			(image + (((fdb->flmap0 >> 16) & 0xff) << 4)),
+			layout_fname);
+}
+
 static void write_regions(char *image, int size)
 {
 	int i;
@@ -608,6 +651,7 @@ static void print_usage(const char *name)
 	printf("usage: %s [-vhdix?] <filename>\n", name);
 	printf("\n"
 	       "   -d | --dump:                      dump intel firmware descriptor\n"
+	       "   -f | --layout <filename>          dump regions in flashrom layout\n"
 	       "   -x | --extract:                   extract intel fd modules\n"
 	       "   -i | --inject <region>:<module>   inject file <module> into region <region>\n"
 	       "   -s | --spifreq <20|33|50>         set the SPI frequency\n"
@@ -626,12 +670,14 @@ int main(int argc, char *argv[])
 	int opt, option_index = 0;
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0;
-	char *region_type_string = NULL, *region_fname = NULL;
+	int mode_layout = 0;
+	char *region_type_string = NULL, *region_fname = NULL, *layout_fname = NULL;
 	int region_type = -1, inputfreq = 0;
 	enum spi_frequency spifreq = SPI_FREQUENCY_20MHZ;
 
 	static struct option long_options[] = {
 		{"dump", 0, NULL, 'd'},
+		{"layout", 1, NULL, 'f'},
 		{"extract", 0, NULL, 'x'},
 		{"inject", 1, NULL, 'i'},
 		{"spifreq", 1, NULL, 's'},
@@ -643,11 +689,15 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "dxi:s:eluvh?",
+	while ((opt = getopt_long(argc, argv, "dfxi:s:eluvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
 			mode_dump = 1;
+			break;
+		case 'f':
+			mode_layout = 1;
+			layout_fname = strdup(optarg);
 			break;
 		case 'x':
 			mode_extract = 1;
@@ -733,7 +783,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((mode_dump + mode_extract + mode_inject +
+	if ((mode_dump + mode_layout + mode_extract + mode_inject +
 		(mode_spifreq | mode_em100 | mode_unlocked |
 		 mode_locked)) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
@@ -741,8 +791,9 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	if ((mode_dump + mode_extract + mode_inject + mode_spifreq +
-	     mode_em100 + mode_locked + mode_unlocked) == 0) {
+	if ((mode_dump + mode_layout + mode_extract + mode_inject +
+	     mode_spifreq + mode_em100 + mode_locked +
+	     mode_unlocked) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		print_usage(argv[0]);
 		exit(EXIT_FAILURE);
@@ -784,6 +835,9 @@ int main(int argc, char *argv[])
 
 	if (mode_dump)
 		dump_fd(image, size);
+
+	if (mode_layout)
+		dump_layout(image, size, layout_fname);
 
 	if (mode_extract)
 		write_regions(image, size);

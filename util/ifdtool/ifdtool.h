@@ -20,6 +20,8 @@
 #include <stdint.h>
 #define IFDTOOL_VERSION "1.1"
 
+#define LAYOUT_LINELEN 80
+
 enum spi_frequency {
 	SPI_FREQUENCY_20MHZ = 0,
 	SPI_FREQUENCY_33MHZ = 1,
@@ -109,3 +111,8 @@ typedef struct {
 typedef struct {
 	int base, limit, size;
 } region_t;
+
+struct region_name {
+	char *pretty;
+	char *terse;
+};

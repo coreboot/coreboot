@@ -2,7 +2,7 @@
 #define _ASM_IO_H
 
 #include <stdint.h>
-#include <arch/rules.h>
+#include <rules.h>
 
 /*
  * This file contains the definitions for the x86 IO instructions

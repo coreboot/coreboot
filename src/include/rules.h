@@ -16,8 +16,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _ARCH_RULES_H
-#define _ARCH_RULES_H
+#ifndef _RULES_H
+#define _RULES_H
+
+/* Useful helpers to tell whether the code is executing in bootblock,
+ * romstage, ramstage or SMM.
+ */
+
+#if defined(__BOOT_BLOCK__)
+#define ENV_BOOTBLOCK 1
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 0
+#define ENV_SMM 0
+
+#elif defined(__PRE_RAM__)
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 1
+#define ENV_RAMSTAGE 0
+#define ENV_SMM 0
+
+#elif defined(__SMM__)
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 0
+#define ENV_SMM 1
+#else
+
+#define ENV_BOOTBLOCK 0
+#define ENV_ROMSTAGE 0
+#define ENV_RAMSTAGE 1
+#define ENV_SMM 0
+#endif
 
 /* For romstage and ramstage always build with simple device model, ie.
  * PCI, PNP and CPU functions operate without use of devicetree.
@@ -31,4 +60,4 @@
 #define __SIMPLE_DEVICE__
 #endif
 
-#endif /* _ARCH_RULES_H */
+#endif /* _RULES_H */

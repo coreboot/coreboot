@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <arch/rules.h>
+#include <rules.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/resource.h>

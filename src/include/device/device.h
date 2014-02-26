@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <arch/rules.h>
+#include <rules.h>
 #include <device/resource.h>
 #include <device/path.h>
 

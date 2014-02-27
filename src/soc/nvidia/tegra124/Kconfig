@@ -1,4 +1,6 @@
 config SOC_NVIDIA_TEGRA124
+	bool
+	default n
 	select ARCH_BOOTBLOCK_ARMV4
 	select ARCH_ROMSTAGE_ARMV7
 	select ARCH_RAMSTAGE_ARMV7
@@ -6,8 +8,8 @@ config SOC_NVIDIA_TEGRA124
 	select BOOTBLOCK_CONSOLE
 	select DYNAMIC_CBMEM
 	select ARM_BOOTBLOCK_CUSTOM
-	bool
-	default n
+	select ARM_LPAE
+
 
 if SOC_NVIDIA_TEGRA124
 
@@ -31,8 +33,7 @@ config BOOTBLOCK_CPU_INIT
 #  handoff that area may be reclaimed for other uses, e.g. CBFS cache.)
 #
 # 0x4000_0000 TTB (16K+32B). 32B is for L1 table of LPAE.
-# 0x4000_4020 CBMEM console area (8K-32B)
-# 0x4000_6000 CBFS mapping cache (88K)
+# 0x4000_4020 CBFS mapping cache (96K-32B)
 # 0x4001_C000 Stack (16KB... don't reduce without comparing LZMA scratchpad!).
 # 0x4002_0000 Bootblock (max 48KB).
 # 0x4002_C000 ROM stage (max 80KB).
@@ -86,15 +87,11 @@ config TTB_BUFFER
 
 config CBFS_CACHE_ADDRESS
 	hex "memory address to put CBFS cache data"
-	default 0x40006000
+	default 0x40004020
 
 config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x00016000
-
-config CBMEM_CONSOLE_PRERAM_BASE
-	hex "memory address of the CBMEM console buffer"
-	default 0x40004020
+	default 0x00017fe0
 
 config TEGRA124_MODEL_TD570D
 	bool "TD570D"

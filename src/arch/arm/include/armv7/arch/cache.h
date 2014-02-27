@@ -111,10 +111,34 @@ static inline void write_dacr(uint32_t val)
 	asm volatile ("mcr p15, 0, %0, c3, c0, 0" : : "r" (val));
 }
 
+/* read memory model feature register 0 (MMFR0) */
+static inline uint32_t read_mmfr0(void)
+{
+	uint32_t mmfr;
+	asm volatile ("mrc p15, 0, %0, c0, c1, 4" : "=r" (mmfr));
+	return mmfr;
+}
+/* read MAIR0 (memory address indirection register 0) */
+static inline uint32_t read_mair0(void)
+{
+	uint32_t mair;
+	asm volatile ("mrc p15, 0, %0, c10, c2, 0" : "=r" (mair));
+	return mair;
+}
+/* write MAIR0 (memory address indirection register 0) */
+static inline void write_mair0(uint32_t val)
+{
+	asm volatile ("mcr p15, 0, %0, c10, c2, 0" : : "r" (val));
+}
 /* write translation table base register 0 (TTBR0) */
 static inline void write_ttbr0(uint32_t val)
 {
+#if CONFIG_ARM_LPAE
+	asm volatile ("mcrr p15, 0, %[val], %[zero], c2" : :
+			[val] "r" (val), [zero] "r" (0));
+#else
 	asm volatile ("mcr p15, 0, %0, c2, c0, 0" : : "r" (val) : "memory");
+#endif
 }
 
 /* read translation table base control register (TTBCR) */

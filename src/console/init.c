@@ -22,6 +22,7 @@
 #include <build.h>
 #include <console/console.h>
 #include <console/uart.h>
+#include <console/streams.h>
 #include <option.h>
 
 #if CONFIG_EARLY_PCI_BRIDGE

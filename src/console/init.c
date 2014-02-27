@@ -23,6 +23,7 @@
 #include <device/pci.h>
 #include <console/console.h>
 #include <console/uart.h>
+#include <console/streams.h>
 #include <option.h>
 
 #if !defined(__ROMCC__)

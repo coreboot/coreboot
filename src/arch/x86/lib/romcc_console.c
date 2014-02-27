@@ -17,8 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/uart.h>
-#include <console/ne2k.h>
+#include <console/streams.h>
 
 /* While in romstage, console loglevel is built-time constant. */
 #define console_show(msg_level) (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= msg_level)
@@ -31,25 +30,9 @@
 #include "drivers/net/ne2k.c"
 #endif
 
-static void __console_tx_byte(unsigned char byte)
-{
-#if CONFIG_CONSOLE_SERIAL
-	uart_tx_byte(byte);
-#endif
-#if CONFIG_CONSOLE_NE2K
-	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
-}
-
-static void __console_tx_flush(void)
-{
-#if CONFIG_CONSOLE_SERIAL
-	uart_tx_flush();
-#endif
-#if CONFIG_CONSOLE_NE2K
-	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);
-#endif
-}
+#include <console/console.c>
+#define __console_tx_byte	console_tx_byte
+#define __console_tx_flush	console_tx_flush
 
 static void __console_tx_nibble(unsigned nibble)
 {
@@ -118,7 +101,6 @@ static void __console_tx_string(int loglevel, const char *str)
 }
 
 /* if included by romcc, include the sources, too. romcc can't use prototypes */
-#include <console/console.c>
 #include <console/init.c>
 #include <console/post.c>
 #include <console/die.c>

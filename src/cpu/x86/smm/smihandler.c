@@ -148,7 +148,9 @@ void smi_handler(u32 smm_revision)
 
 	node=nodeid();
 
+#if CONFIG_DEBUG_SMI
 	console_init();
+#endif
 
 	printk(BIOS_SPEW, "\nSMI# #%d\n", node);
 

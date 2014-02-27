@@ -27,9 +27,6 @@
 #ifndef __ROMCC__
 int console_show(int msg_level);
 void console_init(void);
-void console_hw_init(void);
-void console_tx_byte(unsigned char byte);
-void console_tx_flush(void);
 void post_code(u8 value);
 #if CONFIG_CMOS_POST_EXTRA
 void post_log_extra(u32 value);

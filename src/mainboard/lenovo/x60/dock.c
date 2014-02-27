@@ -237,7 +237,11 @@ int dock_connect(void)
 
 	dock_write_register(0x07, 0x03);
 	dock_write_register(0x30, 0x01);
+#if !defined(__SMM__) || CONFIG_DEBUG_SMI
+	/* FIXME: This probably belongs elsewhere and it should not
+	 * touch consoles other than UART. */
 	console_init();
+#endif
 	return 0;
 }
 

@@ -95,6 +95,35 @@ static region_t get_region(frba_t *frba, int region_type)
 	return region;
 }
 
+static void set_region(frba_t *frba, int region_type, region_t region)
+{
+	switch (region_type) {
+	case 0:
+		frba->flreg0 = (((region.limit >> 12) & 0x7fff) << 16)
+			| ((region.base >> 12) & 0x7fff);
+		break;
+	case 1:
+		frba->flreg1 = (((region.limit >> 12) & 0x7fff) << 16)
+			| ((region.base >> 12) & 0x7fff);
+		break;
+	case 2:
+		frba->flreg2 = (((region.limit >> 12) & 0x7fff) << 16)
+			| ((region.base >> 12) & 0x7fff);
+		break;
+	case 3:
+		frba->flreg3 = (((region.limit >> 12) & 0x7fff) << 16)
+			| ((region.base >> 12) & 0x7fff);
+		break;
+	case 4:
+		frba->flreg4 = (((region.limit >> 12) & 0x7fff) << 16)
+			| ((region.base >> 12) & 0x7fff);
+		break;
+	default:
+		fprintf(stderr, "Invalid region type.\n");
+		exit (EXIT_FAILURE);
+	}
+}
+
 static const char *region_name(int region_type)
 {
 	if (region_type < 0 || region_type > 4) {
@@ -113,6 +142,20 @@ static const char *region_name_short(int region_type)
 	}
 
 	return region_names[region_type].terse;
+}
+
+static int region_num(const char *name)
+{
+	int i;
+
+	for (i = 0; i < 5; i++) {
+		if (strcasecmp(name, region_names[i].pretty) == 0)
+			return i;
+		if (strcasecmp(name, region_names[i].terse) == 0)
+			return i;
+	}
+
+	return -1;
 }
 
 static const char *region_filename(int region_type)
@@ -641,6 +684,179 @@ void inject_region(char *filename, char *image, int size, int region_type,
 	write_image(filename, image, size);
 }
 
+unsigned int next_pow2(unsigned int x)
+{
+	unsigned int y = 1;
+	if (x == 0)
+		return 0;
+	while (y <= x)
+		y = y << 1;
+
+	return y;
+}
+
+/**
+ * Determine if two memory regions overlap.
+ *
+ * @param r1, r2 Memory regions to compare.
+ * @return 0 if the two regions are seperate
+ * @return 1 if the two regions overlap
+ */
+static int regions_collide(region_t r1, region_t r2)
+{
+	if ((r1.size == 0) || (r2.size == 0))
+		return 0;
+
+	if ( ((r1.base >= r2.base) && (r1.base <= r2.limit)) ||
+	     ((r1.limit >= r2.base) && (r1.limit <= r2.limit)) )
+		return 1;
+
+	return 0;
+}
+
+void new_layout(char *filename, char *image, int size, char *layout_fname)
+{
+	FILE *romlayout;
+	char tempstr[256];
+	char layout_region_name[256];
+	int i, j;
+	int region_number;
+	region_t current_regions[5];
+	region_t new_regions[5];
+	int new_extent = 0;
+	char *new_image;
+
+	/* load current descriptor map and regions */
+	fdbar_t *fdb = find_fd(image, size);
+	if (!fdb)
+		exit(EXIT_FAILURE);
+
+	frba_t *frba =
+	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
+
+	for (i = 0; i < 5; i++) {
+		current_regions[i] = get_region(frba, i);
+		new_regions[i] = get_region(frba, i);
+	}
+
+	/* read new layout */
+	romlayout = fopen(layout_fname, "r");
+
+	if (!romlayout) {
+		perror("Could not read layout file.\n");
+		exit(EXIT_FAILURE);
+	}
+
+	while (!feof(romlayout)) {
+		char *tstr1, *tstr2;
+
+		if (2 != fscanf(romlayout, "%s %s\n", tempstr,
+					layout_region_name))
+			continue;
+
+		region_number = region_num(layout_region_name);
+		if (region_number < 0)
+			continue;
+
+		tstr1 = strtok(tempstr, ":");
+		tstr2 = strtok(NULL, ":");
+		if (!tstr1 || !tstr2) {
+			fprintf(stderr, "Could not parse layout file.\n");
+			exit(EXIT_FAILURE);
+		}
+		new_regions[region_number].base = strtol(tstr1,
+				(char **)NULL, 16);
+		new_regions[region_number].limit = strtol(tstr2,
+				(char **)NULL, 16);
+		new_regions[region_number].size =
+			new_regions[region_number].limit -
+			new_regions[region_number].base + 1;
+
+		if (new_regions[region_number].size < 0)
+			new_regions[region_number].size = 0;
+	}
+	fclose(romlayout);
+
+	/* check new layout */
+	for (i = 0; i < 5; i++) {
+		if (new_regions[i].size == 0)
+			continue;
+
+		if (new_regions[i].size < current_regions[i].size) {
+			printf("DANGER: Region %s is shrinking.\n",
+					region_name(i));
+			printf("    The region will be truncated to fit.\n");
+			printf("    This may result in an unusable image.\n");
+		}
+
+		for (j = i + 1; j < 5; j++) {
+			if (regions_collide(new_regions[i], new_regions[j])) {
+				fprintf(stderr, "Regions would overlap.\n");
+				exit(EXIT_FAILURE);
+			}
+		}
+
+		/* detect if the image size should grow */
+		if (new_extent < new_regions[i].limit)
+			new_extent = new_regions[i].limit;
+	}
+
+	new_extent = next_pow2(new_extent - 1);
+	if (new_extent != size) {
+		printf("The image has changed in size.\n");
+		printf("The old image is %d bytes.\n", size);
+		printf("The new image is %d bytes.\n", new_extent);
+	}
+
+	/* copy regions to a new image */
+	new_image = malloc(new_extent);
+	memset(new_image, 0xff, new_extent);
+	for (i = 0; i < 5; i++) {
+		int copy_size = new_regions[i].size;
+		int offset_current = 0, offset_new = 0;
+		region_t current = current_regions[i];
+		region_t new = new_regions[i];
+
+		if (new.size == 0)
+			continue;
+
+		if (new.size > current.size) {
+			/* copy from the end of the current region */
+			copy_size = current.size;
+			offset_new = new.size - current.size;
+		}
+
+		if (new.size < current.size) {
+			/* copy to the end of the new region */
+			offset_current = current.size - new.size;
+		}
+
+		printf("Copy Descriptor %d (%s) (%d bytes)\n", i,
+				region_name(i), copy_size);
+		printf("   from %08x+%08x:%08x (%10d)\n", current.base,
+				offset_current, current.limit, current.size);
+		printf("     to %08x+%08x:%08x (%10d)\n", new.base,
+				offset_new, new.limit, new.size);
+
+		memcpy(new_image + new.base + offset_new,
+				image + current.base + offset_current,
+				copy_size);
+	}
+
+	/* update new descriptor regions */
+	fdb = find_fd(new_image, new_extent);
+	if (!fdb)
+		exit(EXIT_FAILURE);
+
+	frba = (frba_t *) (new_image + (((fdb->flmap0 >> 16) & 0xff) << 4));
+	for (i = 1; i < 5; i++) {
+		set_region(frba, i, new_regions[i]);
+	}
+
+	write_image(filename, new_image, new_extent);
+	free(new_image);
+}
+
 static void print_version(void)
 {
 	printf("ifdtool v%s -- ", IFDTOOL_VERSION);
@@ -665,6 +881,7 @@ static void print_usage(const char *name)
 	       "   -f | --layout <filename>          dump regions into a flashrom layout file\n"
 	       "   -x | --extract:                   extract intel fd modules\n"
 	       "   -i | --inject <region>:<module>   inject file <module> into region <region>\n"
+	       "   -n | --newlayout <filename>       update regions using a flashrom layout file\n"
 	       "   -s | --spifreq <20|33|50>         set the SPI frequency\n"
 	       "   -e | --em100                      set SPI frequency to 20MHz and disable\n"
 	       "                                     Dual Output Fast Read Support\n"
@@ -681,7 +898,7 @@ int main(int argc, char *argv[])
 	int opt, option_index = 0;
 	int mode_dump = 0, mode_extract = 0, mode_inject = 0, mode_spifreq = 0;
 	int mode_em100 = 0, mode_locked = 0, mode_unlocked = 0;
-	int mode_layout = 0;
+	int mode_layout = 0, mode_newlayout = 0;
 	char *region_type_string = NULL, *region_fname = NULL, *layout_fname = NULL;
 	int region_type = -1, inputfreq = 0;
 	enum spi_frequency spifreq = SPI_FREQUENCY_20MHZ;
@@ -691,6 +908,7 @@ int main(int argc, char *argv[])
 		{"layout", 1, NULL, 'f'},
 		{"extract", 0, NULL, 'x'},
 		{"inject", 1, NULL, 'i'},
+		{"newlayout", 1, NULL, 'n'},
 		{"spifreq", 1, NULL, 's'},
 		{"em100", 0, NULL, 'e'},
 		{"lock", 0, NULL, 'l'},
@@ -700,7 +918,7 @@ int main(int argc, char *argv[])
 		{0, 0, 0, 0}
 	};
 
-	while ((opt = getopt_long(argc, argv, "df:xi:s:eluvh?",
+	while ((opt = getopt_long(argc, argv, "df:xi:n:s:eluvh?",
 				  long_options, &option_index)) != EOF) {
 		switch (opt) {
 		case 'd':
@@ -747,6 +965,15 @@ int main(int argc, char *argv[])
 				exit(EXIT_FAILURE);
 			}
 			mode_inject = 1;
+			break;
+		case 'n':
+			mode_newlayout = 1;
+			layout_fname = strdup(optarg);
+			if (!layout_fname) {
+				fprintf(stderr, "No layout file specified\n");
+				print_usage(argv[0]);
+				exit(EXIT_FAILURE);
+			}
 			break;
 		case 's':
 			// Parse the requested SPI frequency
@@ -800,7 +1027,7 @@ int main(int argc, char *argv[])
 	}
 
 	if ((mode_dump + mode_layout + mode_extract + mode_inject +
-		(mode_spifreq | mode_em100 | mode_unlocked |
+		mode_newlayout + (mode_spifreq | mode_em100 | mode_unlocked |
 		 mode_locked)) > 1) {
 		fprintf(stderr, "You may not specify more than one mode.\n\n");
 		print_usage(argv[0]);
@@ -808,7 +1035,7 @@ int main(int argc, char *argv[])
 	}
 
 	if ((mode_dump + mode_layout + mode_extract + mode_inject +
-	     mode_spifreq + mode_em100 + mode_locked +
+	     mode_newlayout + mode_spifreq + mode_em100 + mode_locked +
 	     mode_unlocked) == 0) {
 		fprintf(stderr, "You need to specify a mode.\n\n");
 		print_usage(argv[0]);
@@ -861,6 +1088,9 @@ int main(int argc, char *argv[])
 	if (mode_inject)
 		inject_region(filename, image, size, region_type,
 				region_fname);
+
+	if (mode_newlayout)
+		new_layout(filename, image, size, layout_fname);
 
 	if (mode_spifreq)
 		set_spi_frequency(filename, image, size, spifreq);

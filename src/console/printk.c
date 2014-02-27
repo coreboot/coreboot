@@ -10,6 +10,7 @@
 #include <smp/spinlock.h>
 #include <console/vtxprintf.h>
 #include <console/console.h>
+#include <console/streams.h>
 #include <trace.h>
 
 DECLARE_SPIN_LOCK(console_lock)

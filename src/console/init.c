@@ -22,6 +22,7 @@
 #include <build.h>
 #include <console/console.h>
 #include <console/uart.h>
+#include <console/streams.h>
 #include <option.h>
 
 #if CONFIG_EARLY_PCI_BRIDGE
@@ -46,7 +47,7 @@ void console_init(void)
 		console_loglevel=CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
 #endif
 
-#if CONFIG_EARLY_PCI_BRIDGE
+#if CONFIG_EARLY_PCI_BRIDGE && !defined(__SMM__)
 	pci_early_bridge_init();
 #endif
 

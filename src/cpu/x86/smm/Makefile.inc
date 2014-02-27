@@ -23,7 +23,6 @@ ifeq ($(CONFIG_SMM_MODULES),y)
 smmstub-y += smm_stub.S
 smmstub-y += smm_module_header.c
 
-smm-y += smiutil.c
 smm-y += smm_module_header.c
 smm-y += smm_module_handler.c
 
@@ -81,7 +80,6 @@ SMM_LDSCRIPT := smm.ld
 endif
 
 smm-y += smihandler.c
-smm-y += smiutil.c
 
 $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME)
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group

@@ -163,12 +163,10 @@ $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDD
 ramstage-y += exception.c
 ramstage-y += exception_asm.S
 
-bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += early_console.c
 bootblock-y += cache.c
 
 romstage-y += cache.c
 romstage-y += div0.c
-romstage-$(CONFIG_EARLY_CONSOLE) += early_console.c
 
 ramstage-y += div0.c
 #ramstage-y += interrupts.c

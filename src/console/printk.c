@@ -18,9 +18,8 @@ int do_printk(int msg_level, const char *fmt, ...)
 	va_list args;
 	int i;
 
-	if (msg_level > console_loglevel) {
+	if (!console_show(msg_level))
 		return 0;
-	}
 
 #if CONFIG_SQUELCH_EARLY_SMP && defined(__PRE_RAM__)
 	if (!boot_cpu())

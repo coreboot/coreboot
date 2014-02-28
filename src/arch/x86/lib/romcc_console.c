@@ -17,18 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <console/loglevel.h>
-#include <console/post_codes.h>
 #include <console/uart.h>
 #include <console/ne2k.h>
 
-/* __PRE_RAM__ */
-/* Using a global varible can cause problems when we reset the stack
- * from cache as ram to ram. If we make this a define USE_SHARED_STACK
- * we could use the same code on all architectures.
- */
-#define console_loglevel CONFIG_DEFAULT_CONSOLE_LOGLEVEL
+/* While in romstage, console loglevel is built-time constant. */
+#define console_show(msg_level) (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= msg_level)
 
 #if CONFIG_CONSOLE_SERIAL && CONFIG_DRIVERS_UART_8250IO
 #include "drivers/uart/util.c"
@@ -70,7 +63,7 @@ static void __console_tx_nibble(unsigned nibble)
 
 static void __console_tx_char(int loglevel, unsigned char byte)
 {
-	if (console_loglevel >= loglevel) {
+	if (console_show(loglevel)) {
 		__console_tx_byte(byte);
 		__console_tx_flush();
 	}
@@ -78,7 +71,7 @@ static void __console_tx_char(int loglevel, unsigned char byte)
 
 static void __console_tx_hex8(int loglevel, unsigned char value)
 {
-	if (console_loglevel >= loglevel) {
+	if (console_show(loglevel)) {
 		__console_tx_nibble((value >>  4U) & 0x0fU);
 		__console_tx_nibble(value & 0x0fU);
 		__console_tx_flush();
@@ -87,7 +80,7 @@ static void __console_tx_hex8(int loglevel, unsigned char value)
 
 static void __console_tx_hex16(int loglevel, unsigned short value)
 {
-	if (console_loglevel >= loglevel) {
+	if (console_show(loglevel)) {
 		__console_tx_nibble((value >> 12U) & 0x0fU);
 		__console_tx_nibble((value >>  8U) & 0x0fU);
 		__console_tx_nibble((value >>  4U) & 0x0fU);
@@ -98,7 +91,7 @@ static void __console_tx_hex16(int loglevel, unsigned short value)
 
 static void __console_tx_hex32(int loglevel, unsigned int value)
 {
-	if (console_loglevel >= loglevel) {
+	if (console_show(loglevel)) {
 		__console_tx_nibble((value >> 28U) & 0x0fU);
 		__console_tx_nibble((value >> 24U) & 0x0fU);
 		__console_tx_nibble((value >> 20U) & 0x0fU);
@@ -113,7 +106,7 @@ static void __console_tx_hex32(int loglevel, unsigned int value)
 
 static void __console_tx_string(int loglevel, const char *str)
 {
-	if (console_loglevel >= loglevel) {
+	if (console_show(loglevel)) {
 		unsigned char ch;
 		while((ch = *str++) != '\0') {
 			if (ch == '\n')

@@ -263,6 +263,9 @@ static int build_self_segment_list(
 				 	ntohl(segment->mem_len));
 			new = malloc(sizeof(*new));
 			new->s_filesz = 0;
+			new->s_srcaddr = (uintptr_t)
+				((unsigned char *)first_segment)
+				+ ntohl(segment->offset);
 			new->s_dstaddr = ntohll(segment->load_addr);
 			new->s_memsz = ntohl(segment->mem_len);
 			break;

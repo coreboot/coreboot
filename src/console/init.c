@@ -29,8 +29,14 @@
 #include <device/pci.h>
 #endif
 
-#if !defined(__PRE_RAM__)
-int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+#if !defined(__ROMCC__)
+/* While in romstage, console loglevel is built-time constant. */
+static ROMSTAGE_CONST int console_loglevel = CONFIG_DEFAULT_CONSOLE_LOGLEVEL;
+
+int console_log_level(int msg_level)
+{
+	return (console_loglevel >= msg_level);
+}
 #endif
 
 void console_init(void)

@@ -27,7 +27,9 @@
 #include <sys/stat.h>
 #include "ifdtool.h"
 
-static const struct region_name region_names[5] = {
+#define NUM_REGIONS 5
+
+static const struct region_name region_names[NUM_REGIONS] = {
 	{ "Flash Descriptor", "fd" },
 	{ "BIOS", "bios" },
 	{ "Intel ME", "me" },
@@ -126,7 +128,7 @@ static void set_region(frba_t *frba, int region_type, region_t region)
 
 static const char *region_name(int region_type)
 {
-	if (region_type < 0 || region_type > 4) {
+	if (region_type < 0 || region_type >= NUM_REGIONS) {
 		fprintf(stderr, "Invalid region type.\n");
 		exit (EXIT_FAILURE);
 	}
@@ -136,7 +138,7 @@ static const char *region_name(int region_type)
 
 static const char *region_name_short(int region_type)
 {
-	if (region_type < 0 || region_type > 4) {
+	if (region_type < 0 || region_type >= NUM_REGIONS) {
 		fprintf(stderr, "Invalid region type.\n");
 		exit (EXIT_FAILURE);
 	}
@@ -148,7 +150,7 @@ static int region_num(const char *name)
 {
 	int i;
 
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < NUM_REGIONS; i++) {
 		if (strcasecmp(name, region_names[i].pretty) == 0)
 			return i;
 		if (strcasecmp(name, region_names[i].terse) == 0)
@@ -160,7 +162,7 @@ static int region_num(const char *name)
 
 static const char *region_filename(int region_type)
 {
-	static const char *region_filenames[5] = {
+	static const char *region_filenames[NUM_REGIONS] = {
 		"flashregion_0_flashdescriptor.bin",
 		"flashregion_1_bios.bin",
 		"flashregion_2_intel_me.bin",
@@ -168,7 +170,7 @@ static const char *region_filename(int region_type)
 		"flashregion_4_platform_data.bin"
 	};
 
-	if (region_type < 0 || region_type > 4) {
+	if (region_type < 0 || region_type >= NUM_REGIONS) {
 		fprintf(stderr, "Invalid region type.\n");
 		exit (EXIT_FAILURE);
 	}
@@ -219,7 +221,7 @@ static void dump_frba_layout(frba_t * frba, char *layout_fname)
 		exit(EXIT_FAILURE);
 	}
 
-	for (i = 0; i <= 4; i++) {
+	for (i = 0; i < NUM_REGIONS; i++) {
 		dump_region_layout(buf, bufsize, i, frba);
 		if (write(layout_fd, buf, strlen(buf)) < 0) {
 			perror("Could not write to file");
@@ -530,7 +532,7 @@ static void write_regions(char *image, int size)
 	frba_t *frba =
 	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
 
-	for (i = 0; i<5; i++) {
+	for (i = 0; i < NUM_REGIONS; i++) {
 		region_t region = get_region(frba, i);
 		dump_region(i, frba);
 		if (region.size > 0) {
@@ -721,8 +723,8 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	char layout_region_name[256];
 	int i, j;
 	int region_number;
-	region_t current_regions[5];
-	region_t new_regions[5];
+	region_t current_regions[NUM_REGIONS];
+	region_t new_regions[NUM_REGIONS];
 	int new_extent = 0;
 	char *new_image;
 
@@ -734,7 +736,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	frba_t *frba =
 	    (frba_t *) (image + (((fdb->flmap0 >> 16) & 0xff) << 4));
 
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < NUM_REGIONS; i++) {
 		current_regions[i] = get_region(frba, i);
 		new_regions[i] = get_region(frba, i);
 	}
@@ -778,7 +780,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	fclose(romlayout);
 
 	/* check new layout */
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < NUM_REGIONS; i++) {
 		if (new_regions[i].size == 0)
 			continue;
 
@@ -789,7 +791,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 			printf("    This may result in an unusable image.\n");
 		}
 
-		for (j = i + 1; j < 5; j++) {
+		for (j = i + 1; j < NUM_REGIONS; j++) {
 			if (regions_collide(new_regions[i], new_regions[j])) {
 				fprintf(stderr, "Regions would overlap.\n");
 				exit(EXIT_FAILURE);
@@ -811,7 +813,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	/* copy regions to a new image */
 	new_image = malloc(new_extent);
 	memset(new_image, 0xff, new_extent);
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < NUM_REGIONS; i++) {
 		int copy_size = new_regions[i].size;
 		int offset_current = 0, offset_new = 0;
 		region_t current = current_regions[i];
@@ -849,7 +851,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 		exit(EXIT_FAILURE);
 
 	frba = (frba_t *) (new_image + (((fdb->flmap0 >> 16) & 0xff) << 4));
-	for (i = 1; i < 5; i++) {
+	for (i = 1; i < NUM_REGIONS; i++) {
 		set_region(frba, i, new_regions[i]);
 	}
 

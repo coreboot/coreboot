@@ -25,7 +25,6 @@ subdirs-y += i2c
 subdirs-y += intel
 subdirs-y += maxim
 subdirs-y += net
-subdirs-y += oxford
 subdirs-y += parade
 subdirs-y += realtek
 subdirs-y += sil

@@ -18,6 +18,11 @@ ramstage-y += uart8250mem.c
 smm-$(CONFIG_DEBUG_SMI) += uart8250mem.c
 endif
 
+ifeq ($(CONFIG_DRIVERS_UART_OXPCIE),y)
+ramstage-y += oxpcie_early.c oxpcie.c
+romstage-y += oxpcie_early.c
+endif
+
 ifeq ($(CONFIG_DRIVERS_UART_PL011),y)
 bootblock-$(CONFIG_BOOTBLOCK_CONSOLE) += pl011.c
 romstage-$(CONFIG_EARLY_CONSOLE) += pl011.c

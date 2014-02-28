@@ -21,6 +21,17 @@ config HAVE_UART_SPECIAL
 	bool
 	default n
 
+config DRIVERS_UART_OXPCIE
+	bool "Oxford OXPCIe952"
+	default n
+	depends on PCI
+	select DRIVERS_UART_8250MEM
+	select EARLY_PCI_BRIDGE
+	help
+	  Support for Oxford OXPCIe952 serial port PCIe cards.
+	  Currently only devices with the vendor ID 0x1415 and device ID
+	  0xc158 or 0xc11b will work.
+
 config DRIVERS_UART_PL011
 	bool
 	default n

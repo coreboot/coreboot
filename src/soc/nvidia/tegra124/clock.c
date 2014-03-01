@@ -97,18 +97,18 @@ struct {
 	[OSC_FREQ_OSC12]{
 		.khz = 12000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
-		.pllp = {.n =  34, .m =  1, .p = 0, .cpcon = 2},
+		.pllp = {.n = 408, .m = 12, .p = 0, .cpcon = 8},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.plld = {.n = 283, .m = 12, .p = 0, .cpcon = 8}, /* 283 MHz */
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
-		.plldp = {.n = 90, .m =  1, .p = 3},		/* 270 MHz */
-		.plld2 = {.n = 95, .m =  1, .p = 1},		/* 570 MHz */
+		.plldp = {.n = 90, .m =  1, .p = 3},
+		.plld2 = {.n = 95, .m =  1, .p = 1},
 	},
 	[OSC_FREQ_OSC13]{
 		.khz = 13000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 13000, .m =  1, .p = 0},
 		.pllp = {.n = 408, .m = 13, .p = 0, .cpcon = 8},
-		.pllc = {.n = 231, .m =  5, .p = 0},		 /* 600.6 MHz */
+		.pllc = {.n = 231, .m =  5, .p = 0},		/* 600.6 MHz */
 		.plld = {.n = 283, .m = 13, .p = 0, .cpcon = 8}, /* 283 MHz*/
 		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  1, .p = 3},		/* 269.75 MHz */
@@ -132,7 +132,7 @@ struct {
 		.plld = {.n = 251, .m = 17, .p = 0, .cpcon = 8}, /* 283.5 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  1, .p = 3},		/* 270.75 MHz */
-		.plld2 = {.n = 59, .m =  1, .p = 1},		/* 570 MHz */
+		.plld2 = {.n = 59, .m =  1, .p = 1},		/* 566.4 MHz */
 	},
 	[OSC_FREQ_OSC26]{
 		.khz = 26000,
@@ -142,7 +142,7 @@ struct {
 		.plld = {.n = 283, .m = 26, .p = 0, .cpcon = 8}, /* 283 MHz */
 		.pllu = {.n = 960, .m = 26, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  2, .p = 3},		/* 266.50 MHz */
-		.plld2 = {.n = 88, .m =  2, .p = 1},		/* 570 MHz */
+		.plld2 = {.n = 88, .m =  2, .p = 1},		/* 572 MHz */
 	},
 	[OSC_FREQ_OSC38P4]{
 		.khz = 38400,
@@ -170,7 +170,7 @@ struct {
 		.plld = {.n = 71, .m = 12, .p = 0, .cpcon = 8}, /* 284 MHz */
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  4, .p = 3},		/* 264 MHz */
-		.plld2 = {.n = 95, .m =  4, .p = 1},		/* 570 MHz */
+		.plld2 = {.n = 95, .m =  4, .p = 1},
 	},
 };
 
@@ -221,7 +221,7 @@ void sor_clock_start(void)
 	setbits_le32(&clk_rst->clk_src_sor, SOR0_CLK_SEL0);
 }
 
-static void init_pll(u32 *base, u32 *misc, const union pll_fields pll)
+static void init_pll(u32 *base, u32 *misc, const union pll_fields pll, u32 lock)
 {
 	u32 dividers =  pll.div.n << PLL_BASE_DIVN_SHIFT |
 			pll.div.m << PLL_BASE_DIVM_SHIFT |
@@ -232,14 +232,16 @@ static void init_pll(u32 *base, u32 *misc, const union pll_fields pll)
 	/* Write dividers but BYPASS the PLL while we're messing with it. */
 	writel(dividers | PLL_BASE_BYPASS, base);
 	/*
-	 * Set CPCON and LFCON fields (default to 0 if it doesn't exist for
-	 * this PLL)
+	 * Set Lock bit, CPCON and LFCON fields (default to 0 if it doesn't
+	 * exist for this PLL)
 	 */
-	writel(misc_con, misc);
+	writel(lock | misc_con, misc);
 
-	/* enable PLL and take it back out of BYPASS (we don't wait for lock
-	 * because we assume that to be done by the time we start using it). */
+	/* Enable PLL and take it back out of BYPASS */
 	writel(dividers | PLL_BASE_ENABLE, base);
+
+	/* Wait for lock ready */
+	while (!(readl(base) & PLL_BASE_LOCK));
 }
 
 static void init_utmip_pll(void)
@@ -293,19 +295,16 @@ static void graphics_pll(void)
 	 */
 	u32 scfg = (1<<28) | (1<<24) | (1<<22);
 	writel(scfg, cfg);
-	init_pll(&clk_rst->plldp_base, &clk_rst->plldp_misc, osc_table[osc].plldp);
+	init_pll(&clk_rst->plldp_base, &clk_rst->plldp_misc,
+		osc_table[osc].plldp, PLLDPD2_MISC_LOCK_ENABLE);
 	/* leave dither and undoc bits set, release clamp */
 	scfg = (1<<28) | (1<<24);
 	writel(scfg, cfg);
-	/* set lock bit */
-	setbits_le32(&clk_rst->plldp_misc, PLLDPD2_MISC_LOCK_ENABLE);
 
-	/* init clock source for disp1 */
-	/* init plld (the actual output is plld_out0 that is 1/2 of plld. */
-	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, osc_table[osc].plld);
-	setbits_le32(&clk_rst->plld_misc, PLLUD_MISC_LOCK_ENABLE);
-	setbits_le32(&clk_rst->plld_misc, PLLD_MISC_CLK_ENABLE);
-	udelay(10);	/* wait for plld ready */
+	/* Init clock source for disp1: plld (actually plld_out0) */
+	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc,
+		osc_table[osc].plld,
+		(PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
 }
 
 /* Initialize the UART and put it on CLK_M so we can use it during clock_init().
@@ -474,11 +473,8 @@ void clock_init(void)
 	writel(0x2b << 17 | 0xb << 9, &clk_rst->pllc_misc2);
 
 	/* Max out the AVP clock before everything else (need PLLC for that). */
-	init_pll(&clk_rst->pllc_base, &clk_rst->pllc_misc, osc_table[osc].pllc);
-
-	/* Be more careful with processor clock, wait for the lock. (~10us) */
-	setbits_le32(&clk_rst->pllc_misc, PLLC_MISC_LOCK_ENABLE);
-	while (!(read32(&clk_rst->pllc_base) & PLL_BASE_LOCK)) /* wait */;
+	init_pll(&clk_rst->pllc_base, &clk_rst->pllc_misc,
+		osc_table[osc].pllc, PLLC_MISC_LOCK_ENABLE);
 
 	/* Typical ratios are 1:2:2 or 1:2:3 sclk:hclk:pclk (See: APB DMA
 	 * features section in the TRM). */
@@ -517,9 +513,20 @@ void clock_init(void)
 		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
 		&clk_rst->pllp_outb);
 
-	init_pll(&clk_rst->pllx_base, &clk_rst->pllx_misc, osc_table[osc].pllx);
-	init_pll(&clk_rst->pllp_base, &clk_rst->pllp_misc, osc_table[osc].pllp);
-	init_pll(&clk_rst->pllu_base, &clk_rst->pllu_misc, osc_table[osc].pllu);
+	/* init pllx */
+	init_pll(&clk_rst->pllx_base, &clk_rst->pllx_misc,
+		osc_table[osc].pllx, PLLPAXS_MISC_LOCK_ENABLE);
+
+	/* init pllp */
+	init_pll(&clk_rst->pllp_base, &clk_rst->pllp_misc,
+		osc_table[osc].pllp, PLLPAXS_MISC_LOCK_ENABLE);
+	/* Set additional bit for pllp: enable override */
+	setbits_le32(&clk_rst->pllp_base, PLL_BASE_OVRRIDE);
+
+	/* init pllu */
+	init_pll(&clk_rst->pllu_base, &clk_rst->pllu_misc,
+		osc_table[osc].pllu, PLLUD_MISC_LOCK_ENABLE);
+
 	init_utmip_pll();
 	graphics_pll();
 }

@@ -89,10 +89,16 @@ static void __attribute__((noinline)) romstage(void)
 	u32 dram_size = dram_end - dram_start;
 
 	mmu_init();
+	/* Device memory below DRAM is uncached. */
 	mmu_config_range(0, dram_start, DCACHE_OFF);
+	/* SRAM is cached. Round the size up to 2MB, the LPAE page size. */
+	mmu_config_range(0x40000000 >> 20, 2, DCACHE_WRITEBACK);
+	/* DRAM is cached. */
 	mmu_config_range(dram_start, dram_size, DCACHE_WRITEBACK);
+	/* A window for DMA is uncached. */
 	mmu_config_range(CONFIG_DRAM_DMA_START >> 20,
 			 CONFIG_DRAM_DMA_SIZE >> 20, DCACHE_OFF);
+	/* The space above DRAM is uncached. */
 	if (dram_end < 4096)
 		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
 	mmu_disable_range(0, 1);

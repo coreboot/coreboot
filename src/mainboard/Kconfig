@@ -18,6 +18,8 @@ config VENDOR_AMD
 	bool "AMD"
 config VENDOR_AOPEN
 	bool "AOpen"
+config VENDOR_APPLE
+	bool "Apple"
 config VENDOR_ARIMA
 	bool "Arima"
 config VENDOR_ARTECGROUP
@@ -153,6 +155,7 @@ source "src/mainboard/advansus/Kconfig"
 source "src/mainboard/advantech/Kconfig"
 source "src/mainboard/amd/Kconfig"
 source "src/mainboard/aopen/Kconfig"
+source "src/mainboard/apple/Kconfig"
 source "src/mainboard/arima/Kconfig"
 source "src/mainboard/artecgroup/Kconfig"
 source "src/mainboard/asi/Kconfig"

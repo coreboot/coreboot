@@ -959,6 +959,12 @@
 #define DVOC_ON			(1<<31)
 #define LVDS			0x61180
 #define LVDS_ON			(1<<31)
+#define  LVDS_CLOCK_A_POWERUP_ALL	(3 << 8)
+#define  LVDS_CLOCK_B_POWERUP_ALL	(3 << 4)
+#define  LVDS_CLOCK_BOTH_POWERUP_ALL	(3 << 2)
+#define  LVDS_BORDER_ENABLE	(1 << 15)
+#define  LVDS_PORT_ENABLE	(1 << 31)
+#define  LVDS_DETECTED	(1 << 1)
 
 /* Scratch pad debug 0 reg:
  */

@@ -217,6 +217,24 @@ static int smbios_write_type1(unsigned long *current, int handle)
 	return len;
 }
 
+static int smbios_write_type2(unsigned long *current, int handle)
+{
+	struct smbios_type2 *t = (struct smbios_type2 *)*current;
+	int len = sizeof(struct smbios_type2);
+
+	memset(t, 0, sizeof(struct smbios_type2));
+	t->type = SMBIOS_BOARD_INFORMATION;
+	t->handle = handle;
+	t->length = len - 2;
+	t->manufacturer = smbios_add_string(t->eos, smbios_mainboard_manufacturer());
+	t->product_name = smbios_add_string(t->eos, smbios_mainboard_product_name());
+	t->serial_number = smbios_add_string(t->eos, smbios_mainboard_serial_number());
+	t->version = smbios_add_string(t->eos, smbios_mainboard_version());
+	len = t->length + smbios_string_table_len(t->eos);
+	*current += len;
+	return len;
+}
+
 static int smbios_write_type3(unsigned long *current, int handle)
 {
 	struct smbios_type3 *t = (struct smbios_type3 *)*current;
@@ -372,6 +390,7 @@ unsigned long smbios_write_tables(unsigned long current)
 	tables = current;
 	len = smbios_write_type0(&current, handle++);
 	len += smbios_write_type1(&current, handle++);
+	len += smbios_write_type2(&current, handle++);
 	len += smbios_write_type3(&current, handle++);
 	len += smbios_write_type4(&current, handle++);
 #if CONFIG_ELOG

@@ -57,9 +57,8 @@ chip northbridge/intel/i945
 			#  0 No effect (default)
 			#  1 SMI# (if corresponding ALT_GPI_SMI_EN bit is also set)
 			#  2 SCI (if corresponding GPIO_EN bit is also set)
-			register "gpi13_routing" = "2"
-			register "gpi12_routing" = "1"
-			register "gpi8_routing" = "2"
+			register "gpi1_routing" = "2"
+			register "gpi7_routing" = "2"
 
 			register "sata_ahci" = "0x1"
 			register "sata_ports_implemented" = "0x04"

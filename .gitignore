@@ -1,6 +1,7 @@
 .config
 .config.old
 .xcompile
+.ccwrap
 build/
 coreboot-builds/
 payloads/external/FILO/filo/

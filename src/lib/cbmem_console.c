@@ -18,6 +18,7 @@
  */
 
 #include <console/console.h>
+#include <console/cbmem_console.h>
 #include <cbmem.h>
 #include <arch/early_variables.h>
 #include <string.h>

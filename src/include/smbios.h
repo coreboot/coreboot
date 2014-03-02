@@ -37,6 +37,7 @@ void smbios_mainboard_set_uuid(u8 *uuid);
 typedef enum {
 	SMBIOS_BIOS_INFORMATION=0,
 	SMBIOS_SYSTEM_INFORMATION=1,
+	SMBIOS_BOARD_INFORMATION=2,
 	SMBIOS_SYSTEM_ENCLOSURE=3,
 	SMBIOS_PROCESSOR_INFORMATION=4,
 	SMBIOS_CACHE_INFORMATION=7,
@@ -99,6 +100,17 @@ struct smbios_type1 {
 	u8 wakeup_type;
 	u8 sku;
 	u8 family;
+	char eos[2];
+} __attribute__((packed));
+
+struct smbios_type2 {
+	u8 type;
+	u8 length;
+	u16 handle;
+	u8 manufacturer;
+	u8 product_name;
+	u8 version;
+	u8 serial_number;
 	char eos[2];
 } __attribute__((packed));
 

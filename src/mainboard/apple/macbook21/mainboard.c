@@ -34,10 +34,11 @@
 #include <arch/x86/include/arch/acpigen.h>
 #include <smbios.h>
 #include <x86emu/x86emu.h>
+#include "hda_verb.h"
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
-int i915lightup(unsigned int physbase, unsigned int iobase, unsigned int mmio,
-	unsigned int gfx);
+extern const u32 *cim_verb_data;
+extern u32 cim_verb_data_size;
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 static int int15_handler(void)
@@ -86,6 +87,8 @@ static void mainboard_init(device_t dev)
 static void mainboard_enable(device_t dev)
 {
 	dev->ops->init = mainboard_init;
+	cim_verb_data = mainboard_cim_verb_data;
+	cim_verb_data_size = sizeof(mainboard_cim_verb_data);
 }
 
 struct chip_operations mainboard_ops = {

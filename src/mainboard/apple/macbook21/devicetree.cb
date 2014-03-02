@@ -67,7 +67,7 @@ chip northbridge/intel/i945
 
 			register "c4onc3_enable" = "1"
 			device pci 1b.0 on # Audio Cnotroller
-				subsystemid 0x17aa 0x2010
+				subsystemid 0x8384 0x7680
 			end
 			device pci 1c.0 on end # Ethernet
 			device pci 1c.1 on end # Atheros WLAN

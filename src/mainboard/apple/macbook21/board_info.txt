@@ -1,0 +1,6 @@
+Board name: Macbook2,1
+Category: laptop
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

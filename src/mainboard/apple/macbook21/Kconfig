@@ -1,0 +1,61 @@
+if BOARD_APPLE_MACBOOK21
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_X86
+	select CPU_INTEL_SOCKET_MFCPGA478
+	select NORTHBRIDGE_INTEL_I945
+	select NORTHBRIDGE_INTEL_SUBTYPE_I945GM
+	select SOUTHBRIDGE_INTEL_I82801GX
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_PIRQ_TABLE
+	select HAVE_MP_TABLE
+	select GFXUMA
+	select BOARD_ROMSIZE_KB_2048
+	select CHANNEL_XOR_RANDOMIZATION
+	select HAVE_ACPI_TABLES
+	select HAVE_ACPI_RESUME
+	select USE_OPTION_TABLE
+	select MAINBOARD_HAS_NATIVE_VGA_INIT
+	select MAINBOARD_DO_EDID
+	select EARLY_CBMEM_INIT
+	select INTEL_EDID
+
+config MAINBOARD_DIR
+	string
+	default apple/macbook21
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xffdf8000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x8000
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Macbook2,1 ICH7 TESTING"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 2
+
+config MAINBOARD_SMBIOS_MANUFACTURER
+	string
+	default "APPLE"
+
+config SEABIOS_PS2_TIMEOUT
+	int
+	default 3000
+
+endif

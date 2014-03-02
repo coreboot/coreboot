@@ -1,0 +1,20 @@
+if VENDOR_APPLE
+
+choice
+	prompt "Mainboard model"
+
+config BOARD_APPLE_MACBOOK21
+	bool "MacBook2,1 Mid-2007 A1181 EMC 2139"
+	help
+	  Known working models:
+	  - MacBook2,1 (Mid 2007) 2.0 GHz Core 2 Duo, Model No: A1181 (EMC 2139) with GRUB2 payload
+
+endchoice
+
+source "src/mainboard/apple/macbook21/Kconfig"
+
+config MAINBOARD_VENDOR
+	string
+	default "Apple"
+
+endif # VENDOR_APPLE

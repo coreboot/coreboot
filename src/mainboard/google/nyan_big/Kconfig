@@ -47,7 +47,7 @@ config DRAM_DMA_START
 
 config DRAM_DMA_SIZE
 	hex
-	default 0x00100000
+	default 0x00200000
 
 choice
 	prompt "BCT boot media"

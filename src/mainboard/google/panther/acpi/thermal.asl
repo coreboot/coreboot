@@ -76,12 +76,12 @@ Scope (\_TZ)
 
 			// Check for "no reading available"
 			If (LEqual (Local0, 0x80)) {
-				Return (CTOK (\F2ON))
+				Return (CTOK (\F0ON))
 			}
 
 			// Check for invalid readings
 			If (LOr (LEqual (Local0, 255), LEqual (Local0, 0))) {
-				Return (CTOK (\F2ON))
+				Return (CTOK (\F0ON))
 			}
 
 			// PECI raw value is an offset from Tj_max

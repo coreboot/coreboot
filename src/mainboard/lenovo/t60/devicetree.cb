@@ -71,7 +71,7 @@ chip northbridge/intel/i945
 
 			register "c4onc3_enable" = "1"
 
-			device pci 1b.0 on # Audio Cnotroller
+			device pci 1b.0 on # Audio Controller
 				subsystemid 0x17aa 0x2010
 			end
 			device pci 1c.0 on # Ethernet

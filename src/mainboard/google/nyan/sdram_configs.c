@@ -22,7 +22,7 @@
 #include "sdram_configs.h"
 
 static struct sdram_params sdram_configs[] = {
-#include "bct/sdram-hynix-2GB-792.inc"			/* ram_code = 0000 */
+#include "bct/sdram-hynix-2GB-924.inc"			/* ram_code = 0000 */
 #include "bct/sdram-hynix-4GB-792.inc"			/* ram_code = 0001 */
 #include "bct/sdram-unused.inc"				/* ram_code = 0010 */
 #include "bct/sdram-unused.inc"				/* ram_code = 0011 */

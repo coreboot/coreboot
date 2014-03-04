@@ -34,14 +34,48 @@
 #include <northbridge/intel/i945/i945.h>
 #include <pc80/mc146818rtc.h>
 #include <arch/x86/include/arch/acpigen.h>
+#include <arch/interrupt.h>
 #include <smbios.h>
 #include <build.h>
+#include <x86emu/x86emu.h>
+#define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
 
 static acpi_cstate_t cst_entries[] = {
 	{ 1,  1, 1000, { 0x7f, 1, 2, { 0 }, 1, 0 } },
 	{ 2,  1,  500, { 0x01, 8, 0, { 0 }, DEFAULT_PMBASE + LV2, 0 } },
 	{ 2, 17,  250, { 0x01, 8, 0, { 0 }, DEFAULT_PMBASE + LV3, 0 } },
 };
+
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+static int int15_handler(void)
+{
+	/* The right way to do this is to move this handler code into
+	 * the mainboard or northbridge code.
+	 * TODO: completely move to mainboards / chipsets.
+	 */
+	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
+	       __func__, X86_AX, X86_BX, X86_CX, X86_DX);
+
+	switch (X86_AX) {
+	case 0x5f35: /* Boot Display */
+		X86_AX = 0x005f; // Success
+		X86_CL = PANEL;
+		break;
+	case 0x5f40: /* Boot Panel Type */
+		X86_AX = 0x005f; // Success
+		X86_CL = 3;
+		printk(BIOS_DEBUG, "DISPLAY=%x\n", X86_CL);
+		break;
+	default:
+		/* Interrupt was not handled */
+		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
+		return 0;
+	}
+
+	/* Interrupt handled */
+	return 1;
+}
+#endif
 
 int get_cst_entries(acpi_cstate_t **entries)
 {
@@ -62,6 +96,11 @@ static void mainboard_enable(device_t dev)
 {
 	struct southbridge_intel_i82801gx_config *config;
 	device_t dev0, idedev;
+
+#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
+	/* Install custom int15 handler for VGA OPROM */
+	mainboard_interrupt_handlers(0x15, &int15_handler);
+#endif
 
 	/* If we're resuming from suspend, blink suspend LED */
 	dev0 = dev_find_slot(0, PCI_DEVFN(0,0));

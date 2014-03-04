@@ -35,8 +35,9 @@ struct pll_dividers {
 	u32	n : 10;
 	u32	m : 8;
 	u32	p : 4;
-	u32	cpcon: 4;
-	u32	: 6;
+	u32	cpcon : 4;
+	u32	lfcon : 4;
+	u32	: 2;
 };
 
 /* Some PLLs have more restrictive divider bit lengths or are missing some
@@ -66,7 +67,8 @@ struct pllu_dividers {
 	u32	p : 1;
 	u32	: 3;
 	u32	cpcon : 4;
-	u32	: 6;
+	u32	lfcon : 4;
+	u32	: 2;
 };
 
 union __attribute__((transparent_union)) pll_fields {
@@ -98,7 +100,7 @@ struct {
 		.pllp = {.n =  34, .m =  1, .p = 0, .cpcon = 2},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.plld = {.n = 283, .m = 12, .p = 0, .cpcon = 8}, /* 283 MHz */
-		.pllu = {.n =  80, .m =  1, .p = 0, .cpcon = 3},
+		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  1, .p = 3},		/* 270 MHz */
 		.plld2 = {.n = 95, .m =  1, .p = 1},		/* 570 MHz */
 	},
@@ -108,7 +110,7 @@ struct {
 		.pllp = {.n = 408, .m = 13, .p = 0, .cpcon = 8},
 		.pllc = {.n = 231, .m =  5, .p = 0},		 /* 600.6 MHz */
 		.plld = {.n = 283, .m = 13, .p = 0, .cpcon = 8}, /* 283 MHz*/
-		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12},
+		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  1, .p = 3},		/* 269.75 MHz */
 		.plld2 = {.n = 88, .m =  1, .p = 1},		/* 572 MHz */
 	},
@@ -118,7 +120,7 @@ struct {
 		.pllp = {.n = 170, .m =  7, .p = 0, .cpcon = 4},
 		.pllc = {.n = 250, .m =  7, .p = 0},
 		.plld = {.n = 286, .m = 17, .p = 0, .cpcon = 8}, /* 282.6 MHz*/
-		.pllu = {.n = 400, .m =  7, .p = 0, .cpcon = 8},
+		.pllu = {.n = 400, .m =  7, .p = 0, .cpcon = 5, .lfcon = 2},
 		.plldp = {.n = 64, .m =  1, .p = 3},		/* 268.8 MHz */
 		.plld2 = {.n = 68, .m =  1, .p = 1},		/* 571.2  MHz */
 	},
@@ -128,7 +130,7 @@ struct {
 		.pllp = {.n =  85, .m =  4, .p = 0, .cpcon = 3},
 		.pllc = {.n = 125, .m =  4, .p = 0},
 		.plld = {.n = 251, .m = 17, .p = 0, .cpcon = 8}, /* 283.5 MHz */
-		.pllu = {.n =  50, .m =  1, .p = 0, .cpcon = 2},
+		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  1, .p = 3},		/* 270.75 MHz */
 		.plld2 = {.n = 59, .m =  1, .p = 1},		/* 570 MHz */
 	},
@@ -138,7 +140,7 @@ struct {
 		.pllp = {.n = 204, .m = 13, .p = 0, .cpcon = 5},
 		.pllc = {.n =  23, .m =  1, .p = 0},		   /* 598 MHz */
 		.plld = {.n = 283, .m = 26, .p = 0, .cpcon = 8}, /* 283 MHz */
-		.pllu = {.n = 480, .m = 13, .p = 0, .cpcon = 8},
+		.pllu = {.n = 960, .m = 26, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  2, .p = 3},		/* 266.50 MHz */
 		.plld2 = {.n = 88, .m =  2, .p = 1},		/* 570 MHz */
 	},
@@ -152,7 +154,7 @@ struct {
 		.pllp = {.n =  85, .m =  4, .p = 0, .cpcon = 3},
 		.pllc = {.n = 125, .m =  4, .p = 0},
 		.plld = {.n = 125, .m = 17, .p = 0, .cpcon = 8}, /* 282.4 MHz */
-		.pllu = {.n =  50, .m =  1, .p = 0, .cpcon = 2},
+		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  2, .p = 3},		/* 268 MHz */
 		.plld2 = {.n = 59, .m =  2, .p = 1},		/* 566 MHz */
 	},
@@ -166,7 +168,7 @@ struct {
 		.pllp = {.n =  24, .m =  1, .p = 0, .cpcon = 2},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.plld = {.n = 71, .m = 12, .p = 0, .cpcon = 8}, /* 284 MHz */
-		.pllu = {.n =  80, .m =  1, .p = 0, .cpcon = 3},
+		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  4, .p = 3},		/* 264 MHz */
 		.plld2 = {.n = 95, .m =  4, .p = 1},		/* 570 MHz */
 	},
@@ -224,11 +226,16 @@ static void init_pll(u32 *base, u32 *misc, const union pll_fields pll)
 	u32 dividers =  pll.div.n << PLL_BASE_DIVN_SHIFT |
 			pll.div.m << PLL_BASE_DIVM_SHIFT |
 			pll.div.p << PLL_BASE_DIVP_SHIFT;
+	u32 misc_con = pll.div.cpcon << PLL_MISC_CPCON_SHIFT |
+		       pll.div.lfcon << PLL_MISC_LFCON_SHIFT;
 
 	/* Write dividers but BYPASS the PLL while we're messing with it. */
 	writel(dividers | PLL_BASE_BYPASS, base);
-	/* Set CPCON field (defaults to 0 if it doesn't exist for this PLL) */
-	writel(pll.div.cpcon << PLL_MISC_CPCON_SHIFT, misc);
+	/*
+	 * Set CPCON and LFCON fields (default to 0 if it doesn't exist for
+	 * this PLL)
+	 */
+	writel(misc_con, misc);
 
 	/* enable PLL and take it back out of BYPASS (we don't wait for lock
 	 * because we assume that to be done by the time we start using it). */

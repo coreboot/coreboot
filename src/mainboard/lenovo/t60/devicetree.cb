@@ -24,6 +24,10 @@ chip northbridge/intel/i945
 	register "gfx.ndid" = "3"
 	register "gfx.did" = "{ 0x80000100, 0x80000240, 0x80000410, 0x80000410, 0x00000005 }"
 
+	register "gpu_hotplug" = "0x00000220"
+	register "gpu_lvds_use_spread_spectrum_clock" = "1"
+	register "gpu_backlight" = "0x1280128"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_mFCPGA478
 			device lapic 0 on end

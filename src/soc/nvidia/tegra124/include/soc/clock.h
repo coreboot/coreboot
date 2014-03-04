@@ -238,7 +238,7 @@ enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 
 /* soc-specific */
 #define TEGRA_CLK_M_KHZ	 clock_get_osc_khz()
-#define TEGRA_PLLX_KHZ   (1900000)
+#define TEGRA_PLLX_KHZ   CONFIG_PLLX_KHZ
 #define TEGRA_PLLP_KHZ   (408000)
 #define TEGRA_PLLC_KHZ   (600000)
 #define TEGRA_PLLD_KHZ   (925000)

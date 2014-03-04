@@ -91,4 +91,25 @@ config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
 	default 0x00018000
 
+config TEGRA124_MODEL_TD570D
+	bool "TD570D"
+
+config TEGRA124_MODEL_TD580D
+	bool "TD580D"
+
+config TEGRA124_MODEL_CD570M
+	bool "CD570M"
+
+config TEGRA124_MODEL_CD580M
+	bool "CD580M"
+
+# Default to 2GHz, the lowest maximum frequency.
+config PLLX_KHZ
+	int
+	default 2000000 if TEGRA124_MODEL_TD570D
+	default 2300000 if TEGRA124_MODEL_TD580D
+	default 2100000 if TEGRA124_MODEL_CD570M
+	default 2300000 if TEGRA124_MODEL_CD580M
+	default 2000000
+
 endif

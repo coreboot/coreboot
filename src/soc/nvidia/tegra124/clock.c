@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -83,7 +84,7 @@ union __attribute__((transparent_union)) pll_fields {
  * Yes, it really is one equation with three unknowns ... */
 struct {
 	int khz;
-	struct pllcx_dividers	pllx;	/* target: 1900 MHz */
+	struct pllcx_dividers	pllx;	/* target:  CONFIG_PLLX_KHZ */
 	struct pllpad_dividers	pllp;	/* target:  408 MHz */
 	struct pllcx_dividers	pllc;	/* target:  600 MHz */
 	struct pllpad_dividers	plld;	/* target:  925 MHz */
@@ -93,7 +94,7 @@ struct {
 } static const osc_table[16] = {
 	[OSC_FREQ_OSC12]{
 		.khz = 12000,
-		.pllx = {.n = 158, .m =  1, .p = 0},		  /* 1896 MHz */
+		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllp = {.n =  34, .m =  1, .p = 0, .cpcon = 2},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.plld = {.n = 283, .m = 12, .p = 0, .cpcon = 8}, /* 283 MHz */
@@ -103,7 +104,7 @@ struct {
 	},
 	[OSC_FREQ_OSC13]{
 		.khz = 13000,
-		.pllx = {.n = 146, .m =  1, .p = 0},		  /* 1898 MHz */
+		.pllx = {.n = TEGRA_PLLX_KHZ / 13000, .m =  1, .p = 0},
 		.pllp = {.n = 408, .m = 13, .p = 0, .cpcon = 8},
 		.pllc = {.n = 231, .m =  5, .p = 0},		 /* 600.6 MHz */
 		.plld = {.n = 283, .m = 13, .p = 0, .cpcon = 8}, /* 283 MHz*/
@@ -113,7 +114,7 @@ struct {
 	},
 	[OSC_FREQ_OSC16P8]{
 		.khz = 16800,
-		.pllx = {.n = 113, .m =  1, .p = 0},		/* 1898.4 MHz */
+		.pllx = {.n = TEGRA_PLLX_KHZ / 16800, .m =  1, .p = 0},
 		.pllp = {.n = 170, .m =  7, .p = 0, .cpcon = 4},
 		.pllc = {.n = 250, .m =  7, .p = 0},
 		.plld = {.n = 286, .m = 17, .p = 0, .cpcon = 8}, /* 282.6 MHz*/
@@ -123,7 +124,7 @@ struct {
 	},
 	[OSC_FREQ_OSC19P2]{
 		.khz = 19200,
-		.pllx = {.n =  98, .m =  1, .p = 0},		/* 1881.6 MHz */
+		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllp = {.n =  85, .m =  4, .p = 0, .cpcon = 3},
 		.pllc = {.n = 125, .m =  4, .p = 0},
 		.plld = {.n = 251, .m = 17, .p = 0, .cpcon = 8}, /* 283.5 MHz */
@@ -133,7 +134,7 @@ struct {
 	},
 	[OSC_FREQ_OSC26]{
 		.khz = 26000,
-		.pllx = {.n =  73, .m =  1, .p = 0},		  /* 1898 MHz */
+		.pllx = {.n = TEGRA_PLLX_KHZ / 26000, .m =  1, .p = 0},
 		.pllp = {.n = 204, .m = 13, .p = 0, .cpcon = 5},
 		.pllc = {.n =  23, .m =  1, .p = 0},		   /* 598 MHz */
 		.plld = {.n = 283, .m = 26, .p = 0, .cpcon = 8}, /* 283 MHz */
@@ -143,7 +144,11 @@ struct {
 	},
 	[OSC_FREQ_OSC38P4]{
 		.khz = 38400,
-		.pllx = {.n =  98, .m =  1, .p = 0},		/* 1881.6 MHz */
+		/*
+		 * There is a predivide by 2 before this PLL. Its values
+		 * should match the 19.2MHz values.
+		 */
+		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllp = {.n =  85, .m =  4, .p = 0, .cpcon = 3},
 		.pllc = {.n = 125, .m =  4, .p = 0},
 		.plld = {.n = 125, .m = 17, .p = 0, .cpcon = 8}, /* 282.4 MHz */
@@ -153,7 +158,11 @@ struct {
 	},
 	[OSC_FREQ_OSC48]{
 		.khz = 48000,
-		.pllx = {.n = 158, .m =  1, .p = 0},		  /* 1896 MHz */
+		/*
+		 * There is a predivide by 4 before this PLL. Its values
+		 * should match the 12MHz values.
+		 */
+		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllp = {.n =  24, .m =  1, .p = 0, .cpcon = 2},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.plld = {.n = 71, .m = 12, .p = 0, .cpcon = 8}, /* 284 MHz */

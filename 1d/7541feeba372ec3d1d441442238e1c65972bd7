@@ -1,0 +1,9 @@
+Verified+1: build bot (Jenkins)
+Code-Review+2: Stefan Reinauer <stefan.reinauer@coreboot.org>
+Code-Review+1: Paul Menzel <paulepanter@users.sourceforge.net>
+Code-Review+1: Edward O'Callaghan <eocallaghan@alterapraxis.com>
+Submitted-by: Kyösti Mälkki <kyosti.malkki@gmail.com>
+Submitted-at: Tue, 04 Mar 2014 15:26:08 +0100
+Reviewed-on: http://review.coreboot.org/5232
+Project: coreboot
+Branch: refs/heads/master

@@ -31,9 +31,9 @@ chip northbridge/amd/agesa/family14/root_complex
 						device pci 0.0 on end # Root Complex
 						device pci 1.0 on end # Internal Graphics P2P bridge 0x980[2456]
 #						device pci 1.1 on end # Internal Audio P2P bridge 0x1314
-						device pci 4.0 off end
+						device pci 4.0 on end # PCIE P2P bridge PCIe slot
 						device pci 5.0 off end # PCIE P2P bridge
-						device pci 6.0 on end # PCIE P2P bridge PCIe slot
+						device pci 6.0 on end # GbE MAC: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 (10ec:8168)
 						device pci 7.0 off end # PCIE P2P bridge
 						device pci 8.0 off end # NB/SB Link P2P bridge
 					end # agesa northbridge
@@ -92,7 +92,7 @@ chip northbridge/amd/agesa/family14/root_complex
 # TODO: Verify BSEL register content with vendor BIOS using
 # $ sudo isadump 0x4e 0x4f 0x7
 # which select logical device (LDN) 7. Then read that we have in 0x27, bit1
-						device pnp 2e.07 on end		# BSEL
+						device pnp 2e.07 off end	# BSEL
 						device pnp 2e.0a off end	# PME
 					end # f71869ad
 				end #LPC
@@ -100,12 +100,12 @@ chip northbridge/amd/agesa/family14/root_complex
 				device pci 14.5 on end # OHCI FS/LS USB (0x4399)
 				device pci 14.6 off end # Hudson-E1 GbE MAC: Broadcom BCM5785 (14E4:1699)
 				device pci 15.0 on end # PCIe PortA (0x43a0) GbE MAC: Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 (10ec:8168)
-				device pci 15.1 off end # PCIe PortB
+				device pci 15.1 on end # PCIe PortB
 				device pci 15.2 off end # PCIe PortC
 				device pci 15.3 off end # PCIe PortD
 				device pci 16.0 on end # OHCI USB 10-13 (0x4397)
 				device pci 16.2 on end # EHCI USB 10-13 (0x4396)
-				register "gpp_configuration" = "0" #4:0:0:0 (really need to disable all 4 somehow)
+				register "gpp_configuration" = "4" # GPP_CFGMODE_X1111 - PortA-D on 15.0-3 are each x1 lanes.
 				register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
 
 				# Set up SB800 Fan control registers and IMC fan controls

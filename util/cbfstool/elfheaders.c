@@ -430,6 +430,69 @@ static int strtab_read(const struct buffer *in, struct parsed_elf *pelf)
 	return 0;
 }
 
+static int
+symtab_read(const struct buffer *in, struct parsed_elf *pelf,
+            struct xdr *xdr, int bit64)
+{
+	Elf64_Ehdr *ehdr;
+	Elf64_Shdr *shdr;
+	Elf64_Half i;
+	Elf64_Xword nsyms;
+	Elf64_Sym *sym;
+	struct buffer b;
+
+	ehdr = &pelf->ehdr;
+
+	shdr = NULL;
+	for (i = 0; i < ehdr->e_shnum; i++) {
+		if (pelf->shdr[i].sh_type != SHT_SYMTAB)
+			continue;
+
+		if (shdr != NULL) {
+			ERROR("Multiple symbol sections found. %u and %u\n",
+			      (unsigned int)(shdr - pelf->shdr), i);
+			return -1;
+		}
+
+		shdr = &pelf->shdr[i];
+	}
+
+	if (shdr == NULL) {
+		ERROR("No symbol table found.\n");
+		return -1;
+	}
+
+	buffer_splice(&b, in, shdr->sh_offset, shdr->sh_size);
+	if (check_size(in, shdr->sh_offset, buffer_size(&b), "symtab"))
+		return -1;
+
+	nsyms = shdr->sh_size / shdr->sh_entsize;
+
+	pelf->syms = calloc(nsyms, sizeof(Elf64_Sym));
+
+	for (i = 0; i < nsyms; i++) {
+		sym = &pelf->syms[i];
+
+		if (bit64) {
+			sym->st_name = xdr->get32(&b);
+			sym->st_info = xdr->get8(&b);
+			sym->st_other = xdr->get8(&b);
+			sym->st_shndx = xdr->get16(&b);
+			sym->st_value = xdr->get64(&b);
+			sym->st_size = xdr->get64(&b);
+		} else {
+			sym->st_name = xdr->get32(&b);
+			sym->st_value = xdr->get32(&b);
+			sym->st_size = xdr->get32(&b);
+			sym->st_info = xdr->get8(&b);
+			sym->st_other = xdr->get8(&b);
+			sym->st_shndx = xdr->get16(&b);
+		}
+	}
+
+	return 0;
+}
+
 int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 {
 	struct xdr *xdr = &xdr_le;
@@ -467,6 +530,10 @@ int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 	if (flags & ELF_PARSE_STRTAB)
 		flags |= ELF_PARSE_SHDR;
 
+	/* Symbole table processing requires section header parsing. */
+	if (flags & ELF_PARSE_SYMTAB)
+		flags |= ELF_PARSE_SHDR;
+
 	if ((flags & ELF_PARSE_PHDR) && phdr_read(pinput, pelf, xdr, bit64))
 		goto fail;
 
@@ -477,6 +544,9 @@ int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 		goto fail;
 
 	if ((flags & ELF_PARSE_STRTAB) && strtab_read(pinput, pelf))
+		goto fail;
+
+	if ((flags & ELF_PARSE_SYMTAB) && symtab_read(pinput, pelf, xdr, bit64))
 		goto fail;
 
 	return 0;
@@ -503,6 +573,7 @@ void parsed_elf_destroy(struct parsed_elf *pelf)
 			free(pelf->strtabs[i]);
 	}
 	free(pelf->strtabs);
+	free(pelf->syms);
 }
 
 /* Get the headers from the buffer.

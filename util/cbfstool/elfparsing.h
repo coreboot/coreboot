@@ -22,6 +22,31 @@
 
 struct buffer;
 
+struct parsed_elf {
+	Elf64_Ehdr ehdr;
+	Elf64_Phdr *phdr;
+	Elf64_Shdr *shdr;
+};
+
+#define ELF_PARSE_PHDR		(1 << 0)
+#define ELF_PARSE_SHDR		(1 << 1)
+
+#define ELF_PARSE_ALL		(-1)
+
+/*
+ * Parse an ELF file contained within provide struct buffer. The ELF header
+ * is always parsed while the flags value containing the ELF_PARSE_* values
+ * determine if other parts of the ELF file will be parsed as well.
+ * Returns 0 on success, < 0 error.
+ */
+int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags);
+
+/*
+ * Clean up memory associated with parsed_elf.
+ */
+void parsed_elf_destroy(struct parsed_elf *pelf);
+
+
 int
 elf_headers(const struct buffer *pinput,
 	    uint32_t arch,

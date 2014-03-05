@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
-#include "elf.h"
 #include "common.h"
 #include "cbfs.h"
 
@@ -135,12 +134,6 @@ uint32_t string_to_arch(const char *arch_string)
 	}
 
 	return ret;
-}
-
-int iself(unsigned char *input)
-{
-	Elf32_Ehdr *ehdr = (Elf32_Ehdr *) input;
-	return !memcmp(ehdr->e_ident, ELFMAG, 4);
 }
 
 static struct filetypes_t {

@@ -109,8 +109,6 @@ uint32_t string_to_arch(const char *arch_string);
 
 #define ALIGN(val, by) (((val) + (by)-1)&~((by)-1))
 
-int iself(unsigned char *input);
-
 typedef void (*comp_func_ptr) (char *, int, char *, int *);
 typedef enum { CBFS_COMPRESS_NONE = 0, CBFS_COMPRESS_LZMA = 1 } comp_algo;
 

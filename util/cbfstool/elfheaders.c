@@ -121,6 +121,13 @@
  * in the buffer struct.
  */
 
+
+static int iself(const void *input)
+{
+	const Elf32_Ehdr *ehdr = input;
+	return !memcmp(ehdr->e_ident, ELFMAG, 4);
+}
+
 /* Get the ident array, so we can figure out
  * endian-ness, word size, and in future other useful
  * parameters

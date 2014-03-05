@@ -28,6 +28,7 @@
 #include "cbfs.h"
 
 /* Utilities */
+int verbose = 0;
 
 /* Small, OS/libc independent runtime check for endianess */
 int is_big_endian(void)

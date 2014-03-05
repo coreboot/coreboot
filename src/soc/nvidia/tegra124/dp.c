@@ -2,6 +2,7 @@
  * drivers/video/tegra/dc/dp.c
  *
  * Copyright (c) 2011-2013, NVIDIA Corporation.
+ * Copyright 2014 Google Inc.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -319,6 +320,46 @@ static int tegra_dc_dp_dpcd_write(struct tegra_dc_dp_data *dp, u32 cmd,
 		printk(BIOS_ERR,
 		       "dp: Failed to write DPCD data. CMD 0x%x, Status 0x%x\n",
 		       cmd, status);
+	return ret;
+}
+
+/* TODO(hungte) Change this to static when EDID parsing functions are ready. */
+int tegra_dc_i2c_aux_read(struct tegra_dc_dp_data *dp, u32 i2c_addr,
+			  u8 addr, u8 *data, u32 *size, u32 *aux_stat);
+int tegra_dc_i2c_aux_read(struct tegra_dc_dp_data *dp, u32 i2c_addr,
+			  u8 addr, u8 *data, u32 *size, u32 *aux_stat)
+{
+	u32 finished = 0;
+	int ret = 0;
+
+	do {
+		u32 cur_size = MIN(DP_AUX_MAX_BYTES, *size - finished);
+
+		u32 len = 1;
+		ret = tegra_dc_dpaux_write_chunk(
+				dp, DPAUX_DP_AUXCTL_CMD_I2CWR, i2c_addr,
+				&addr, &len, aux_stat);
+		if (ret) {
+			printk(BIOS_ERR, "%s: error sending address to read.\n",
+			       __func__);
+			break;
+		}
+
+		ret = tegra_dc_dpaux_read_chunk(
+				dp, DPAUX_DP_AUXCTL_CMD_I2CRD, i2c_addr,
+				data, &cur_size, aux_stat);
+		if (ret) {
+			printk(BIOS_ERR, "%s: error reading data.\n", __func__);
+			break;
+		}
+
+		/* cur_size should be the real size returned */
+		addr += cur_size;
+		data += cur_size;
+		finished += cur_size;
+	} while (*size > finished);
+
+	*size = finished;
 	return ret;
 }
 

@@ -251,13 +251,16 @@ elf_shdr(struct buffer *pinput, Elf64_Shdr *shdr,
 	buffer_seek(pinput, entsize);
 }
 
-static Elf64_Phdr *
-phdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
+static int
+phdr_read(const struct buffer *in, struct parsed_elf *pelf,
+          struct xdr *xdr, int bit64)
 {
 	struct buffer b;
 	Elf64_Phdr *phdr;
+	Elf64_Ehdr *ehdr;
 	int i;
 
+	ehdr = &pelf->ehdr;
 	/* cons up an input buffer for the headers.
 	 * Note that the program headers can be anywhere,
 	 * per the ELF spec, You'd be surprised how many ELF
@@ -265,7 +268,7 @@ phdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 	 */
 	buffer_splice(&b, in, ehdr->e_phoff, ehdr->e_phentsize * ehdr->e_phnum);
 	if (check_size(in, ehdr->e_phoff, buffer_size(&b), "program headers"))
-		return NULL;
+		return -1;
 
 	/* gather up all the phdrs.
 	 * We do them all at once because there is more
@@ -279,18 +282,24 @@ phdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 		/* Ensure the contents are valid within the elf file. */
 		if (check_size(in, phdr[i].p_offset, phdr[i].p_filesz,
 	                  "segment contents"))
-			return NULL;
+			return -1;
 	}
 
-	return phdr;
+	pelf->phdr = phdr;
+
+	return 0;
 }
 
-static Elf64_Shdr *
-shdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
+static int
+shdr_read(const struct buffer *in, struct parsed_elf *pelf,
+          struct xdr *xdr, int bit64)
 {
 	struct buffer b;
 	Elf64_Shdr *shdr;
+	Elf64_Ehdr *ehdr;
 	int i;
+
+	ehdr = &pelf->ehdr;
 
 	/* cons up an input buffer for the section headers.
 	 * Note that the section headers can be anywhere,
@@ -299,7 +308,7 @@ shdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 	 */
 	buffer_splice(&b, in, ehdr->e_shoff, ehdr->e_shentsize * ehdr->e_shnum);
 	if (check_size(in, ehdr->e_shoff, buffer_size(&b), "section headers"))
-		return NULL;
+		return -1;
 
 	/* gather up all the shdrs. */
 	shdr = calloc(ehdr->e_shnum, sizeof(*shdr));
@@ -310,10 +319,60 @@ shdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 		/* Ensure the contents are valid within the elf file. */
 		if (check_size(in, shdr[i].sh_offset, shdr[i].sh_size,
 		               "section contents"))
-			return NULL;
+			return -1;
 	}
 
-	return shdr;
+	pelf->shdr = shdr;
+
+	return 0;
+}
+
+int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
+{
+	struct xdr *xdr = &xdr_le;
+	int bit64 = 0;
+	struct buffer input;
+	Elf64_Ehdr *ehdr;
+
+	/* Zero out the parsed elf structure. */
+	memset(pelf, 0, sizeof(*pelf));
+
+	if (!iself(buffer_get(pinput))) {
+		ERROR("The stage file is not in ELF format!\n");
+		return -1;
+	}
+
+	buffer_clone(&input, pinput);
+	ehdr = &pelf->ehdr;
+	elf_eident(&input, ehdr);
+	bit64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
+	/* Assume LE unless we are sure otherwise.
+	 * We're not going to take on the task of
+	 * fully validating the ELF file. That way
+	 * lies madness.
+	 */
+	if (ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
+		xdr = &xdr_be;
+
+	elf_ehdr(&input, ehdr, xdr, bit64);
+
+	if ((flags & ELF_PARSE_PHDR) && phdr_read(pinput, pelf, xdr, bit64))
+		goto fail;
+
+	if ((flags & ELF_PARSE_SHDR) && shdr_read(pinput, pelf, xdr, bit64))
+		goto fail;
+
+	return 0;
+
+fail:
+	parsed_elf_destroy(pelf);
+	return -1;
+}
+
+void parsed_elf_destroy(struct parsed_elf *pelf)
+{
+	free(pelf->phdr);
+	free(pelf->shdr);
 }
 
 /* Get the headers from the buffer.
@@ -330,28 +389,20 @@ elf_headers(const struct buffer *pinput,
 	    Elf64_Phdr **pphdr,
 	    Elf64_Shdr **pshdr)
 {
-	struct xdr *xdr = &xdr_le;
-	int bit64 = 0;
-	struct buffer input;
 
-	buffer_clone(&input, pinput);
+	struct parsed_elf pelf;
+	int flags;
 
-	if (!iself(buffer_get(pinput))) {
-		ERROR("The stage file is not in ELF format!\n");
+	flags = ELF_PARSE_PHDR;
+
+	if (pshdr != NULL)
+		flags |= ELF_PARSE_SHDR;
+
+	if (parse_elf(pinput, &pelf, flags))
 		return -1;
-	}
 
-	elf_eident(&input, ehdr);
-	bit64 = ehdr->e_ident[EI_CLASS] == ELFCLASS64;
-	/* Assume LE unless we are sure otherwise.
-	 * We're not going to take on the task of
-	 * fully validating the ELF file. That way
-	 * lies madness.
-	 */
-	if (ehdr->e_ident[EI_DATA] == ELFDATA2MSB)
-		xdr = &xdr_be;
-
-	elf_ehdr(&input, ehdr, xdr, bit64);
+	/* Copy out the parsed elf header. */
+	memcpy(ehdr, &pelf.ehdr, sizeof(*ehdr));
 
 	// The tool may work in architecture-independent way.
 	if (arch != CBFS_ARCHITECTURE_UNKNOWN &&
@@ -361,16 +412,15 @@ elf_headers(const struct buffer *pinput,
 		return -1;
 	}
 
-	*pphdr = phdr_read(pinput, ehdr, xdr, bit64);
-	if (*pphdr == NULL)
-		return -1;
+	*pphdr = calloc(ehdr->e_phnum, sizeof(Elf64_Phdr));
+	memcpy(*pphdr, pelf.phdr, ehdr->e_phnum * sizeof(Elf64_Phdr));
 
-	if (!pshdr)
-		return 0;
+	if (pshdr != NULL) {
+		*pshdr = calloc(ehdr->e_shnum, sizeof(Elf64_Shdr));
+		memcpy(*pshdr, pelf.shdr, ehdr->e_shnum * sizeof(Elf64_Shdr));
+	}
 
-	*pshdr = shdr_read(pinput, ehdr, xdr, bit64);
-	if (*pshdr == NULL)
-		return -1;
+	parsed_elf_destroy(&pelf);
 
 	return 0;
 }

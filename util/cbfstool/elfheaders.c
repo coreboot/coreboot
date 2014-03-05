@@ -400,6 +400,41 @@ reloc_read(const struct buffer *in, struct parsed_elf *pelf,
 	return 0;
 }
 
+static int strtab_read(const struct buffer *in, struct parsed_elf *pelf)
+{
+	Elf64_Ehdr *ehdr;
+	Elf64_Word i;
+
+	ehdr = &pelf->ehdr;
+
+	if (ehdr->e_shstrndx >= ehdr->e_shnum) {
+		ERROR("Section header string table index out of range: %d\n",
+		      ehdr->e_shstrndx);
+		return -1;
+	}
+
+	/* For each section of type SHT_STRTAB create a symtab buffer. */
+	pelf->strtabs = calloc(ehdr->e_shnum, sizeof(struct buffer *));
+
+	for (i = 0; i < ehdr->e_shnum; i++) {
+		struct buffer *b;
+		Elf64_Shdr *shdr = &pelf->shdr[i];
+
+		if (shdr->sh_type != SHT_STRTAB)
+			continue;
+
+		b = calloc(1, sizeof(*b));
+		buffer_splice(b, in, shdr->sh_offset, shdr->sh_size);
+		if (check_size(in, shdr->sh_offset, buffer_size(b), "strtab")) {
+			ERROR("STRTAB section not within bounds: %d\n", i);
+			return -1;
+		}
+		pelf->strtabs[i] = b;
+	}
+
+	return 0;
+}
+
 int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 {
 	struct xdr *xdr = &xdr_le;
@@ -433,6 +468,10 @@ int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 	if (flags & ELF_PARSE_RELOC)
 		flags |= ELF_PARSE_SHDR;
 
+	/* String table processing requires section header parsing. */
+	if (flags & ELF_PARSE_STRTAB)
+		flags |= ELF_PARSE_SHDR;
+
 	if ((flags & ELF_PARSE_PHDR) && phdr_read(pinput, pelf, xdr, bit64))
 		goto fail;
 
@@ -440,6 +479,9 @@ int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 		goto fail;
 
 	if ((flags & ELF_PARSE_RELOC) && reloc_read(pinput, pelf, xdr, bit64))
+		goto fail;
+
+	if ((flags & ELF_PARSE_STRTAB) && strtab_read(pinput, pelf))
 		goto fail;
 
 	return 0;
@@ -451,15 +493,21 @@ fail:
 
 void parsed_elf_destroy(struct parsed_elf *pelf)
 {
+	Elf64_Half i;
+
 	free(pelf->phdr);
 	free(pelf->shdr);
 	if (pelf->relocs != NULL) {
-		Elf64_Half i;
-
 		for (i = 0; i < pelf->ehdr.e_shnum; i++)
 			free(pelf->relocs[i]);
 	}
 	free(pelf->relocs);
+
+	if (pelf->strtabs != NULL) {
+		for (i = 0; i < pelf->ehdr.e_shnum; i++)
+			free(pelf->strtabs[i]);
+	}
+	free(pelf->strtabs);
 }
 
 /* Get the headers from the buffer.

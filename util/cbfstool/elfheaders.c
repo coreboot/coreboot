@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "elf.h"
+#include "elfparsing.h"
 #include "common.h"
 #include "cbfs.h"
 

@@ -23,7 +23,6 @@
 #include <stdio.h>
 
 #include "common.h"
-#include "elf.h"
 #include "cbfs.h"
 #include "cbfs_image.h"
 #include "fit.h"

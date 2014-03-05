@@ -24,7 +24,6 @@
 #include <string.h>
 
 #include "common.h"
-#include "elf.h"
 #include "cbfs_image.h"
 
 /* The file name align is not defined in CBFS spec -- only a preference by

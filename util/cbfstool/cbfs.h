@@ -20,7 +20,6 @@
 #define __CBFS_H
 
 #include <stdint.h>
-#include "elf.h"
 
 /* create a magic number in host-byte order.
  * b3 is the high order byte.
@@ -128,14 +127,6 @@ uint32_t get_cbfs_compression(const char *name, uint32_t unknown);
 
 /* common.c */
 void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file);
-
-/* elfheaders.c */
-int
-elf_headers(const struct buffer *pinput,
-	    uint32_t arch,
-	    Elf64_Ehdr *ehdr,
-	    Elf64_Phdr **pphdr,
-	    Elf64_Shdr **pshdr);
 
 /* cbfs-mkpayload.c */
 void xdr_segs(struct buffer *output,

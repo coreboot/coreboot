@@ -327,6 +327,79 @@ shdr_read(const struct buffer *in, struct parsed_elf *pelf,
 	return 0;
 }
 
+static int
+reloc_read(const struct buffer *in, struct parsed_elf *pelf,
+           struct xdr *xdr, int bit64)
+{
+	struct buffer b;
+	Elf64_Word i;
+	Elf64_Ehdr *ehdr;
+
+	ehdr = &pelf->ehdr;
+	pelf->relocs = calloc(ehdr->e_shnum, sizeof(Elf64_Rela *));
+
+	/* Allocate array for each section that contains relocation entries. */
+	for (i = 0; i < ehdr->e_shnum; i++) {
+		Elf64_Shdr *shdr;
+		Elf64_Rela *rela;
+		Elf64_Xword j;
+		Elf64_Xword nrelocs;
+		int is_rela;
+
+		shdr = &pelf->shdr[i];
+
+		/* Only process REL and RELA sections. */
+		if (shdr->sh_type != SHT_REL && shdr->sh_type != SHT_RELA)
+			continue;
+
+		DEBUG("Checking relocation section %u\n", i);
+
+		/* Ensure the section that relocations apply is a valid. */
+		if (shdr->sh_info >= ehdr->e_shnum ||
+		    shdr->sh_info == SHN_UNDEF) {
+			ERROR("Relocations apply to an invalid section: %u\n",
+			      shdr[i].sh_info);
+			return -1;
+		}
+
+		is_rela = shdr->sh_type == SHT_RELA;
+
+		/* Determine the number relocations in this section. */
+		nrelocs = shdr->sh_size / shdr->sh_entsize;
+
+		pelf->relocs[i] = calloc(nrelocs, sizeof(Elf64_Rela));
+
+		buffer_splice(&b, in, shdr->sh_offset, shdr->sh_size);
+		if (check_size(in, shdr->sh_offset, buffer_size(&b),
+		               "relocation section")) {
+			ERROR("Relocation section %u failed.\n", i);
+			return -1;
+		}
+
+		rela = pelf->relocs[i];
+		for (j = 0; j < nrelocs; j++) {
+			if (bit64) {
+				rela->r_offset = xdr->get64(&b);
+				rela->r_info = xdr->get64(&b);
+				if (is_rela)
+					rela->r_addend = xdr->get64(&b);
+			} else {
+				uint32_t r_info;
+
+				rela->r_offset = xdr->get32(&b);
+				r_info = xdr->get32(&b);
+				rela->r_info = ELF64_R_INFO(ELF32_R_SYM(r_info),
+				                          ELF32_R_TYPE(r_info));
+				if (is_rela)
+					rela->r_addend = xdr->get32(&b);
+			}
+			rela++;
+		}
+	}
+
+	return 0;
+}
+
 int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 {
 	struct xdr *xdr = &xdr_le;
@@ -356,10 +429,17 @@ int parse_elf(const struct buffer *pinput, struct parsed_elf *pelf, int flags)
 
 	elf_ehdr(&input, ehdr, xdr, bit64);
 
+	/* Relocation processing requires section header parsing. */
+	if (flags & ELF_PARSE_RELOC)
+		flags |= ELF_PARSE_SHDR;
+
 	if ((flags & ELF_PARSE_PHDR) && phdr_read(pinput, pelf, xdr, bit64))
 		goto fail;
 
 	if ((flags & ELF_PARSE_SHDR) && shdr_read(pinput, pelf, xdr, bit64))
+		goto fail;
+
+	if ((flags & ELF_PARSE_RELOC) && reloc_read(pinput, pelf, xdr, bit64))
 		goto fail;
 
 	return 0;
@@ -373,6 +453,13 @@ void parsed_elf_destroy(struct parsed_elf *pelf)
 {
 	free(pelf->phdr);
 	free(pelf->shdr);
+	if (pelf->relocs != NULL) {
+		Elf64_Half i;
+
+		for (i = 0; i < pelf->ehdr.e_shnum; i++)
+			free(pelf->relocs[i]);
+	}
+	free(pelf->relocs);
 }
 
 /* Get the headers from the buffer.

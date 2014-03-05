@@ -26,10 +26,20 @@ struct parsed_elf {
 	Elf64_Ehdr ehdr;
 	Elf64_Phdr *phdr;
 	Elf64_Shdr *shdr;
+	/*
+	 * The relocs array contains pointers to arrays of relocation
+	 * structures.  Each index into the relocs array corresponds to its
+	 * corresponding section index. i.e. if a section i is of type SHT_REL
+	 * or SHT_RELA then the corresponding index into the relocs array will
+	 * contain the associated relocations. Otherwise thee entry will be
+	 * NULL.
+	 */
+	Elf64_Rela **relocs;
 };
 
 #define ELF_PARSE_PHDR		(1 << 0)
 #define ELF_PARSE_SHDR		(1 << 1)
+#define ELF_PARSE_RELOC		(1 << 2)
 
 #define ELF_PARSE_ALL		(-1)
 

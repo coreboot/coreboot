@@ -41,12 +41,15 @@ struct parsed_elf {
 	 * entry.
 	 */
 	struct buffer **strtabs;
+	/* Parsed symbols. */
+	Elf64_Sym *syms;
 };
 
 #define ELF_PARSE_PHDR		(1 << 0)
 #define ELF_PARSE_SHDR		(1 << 1)
 #define ELF_PARSE_RELOC		(1 << 2)
 #define ELF_PARSE_STRTAB	(1 << 3)
+#define ELF_PARSE_SYMTAB	(1 << 4)
 
 #define ELF_PARSE_ALL		(-1)
 

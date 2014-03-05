@@ -271,7 +271,7 @@ phdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 	 * We do them all at once because there is more
 	 * than one loop over all the phdrs.
 	 */
-	phdr = calloc(sizeof(*phdr), ehdr->e_phnum);
+	phdr = calloc(ehdr->e_phnum, sizeof(*phdr));
 	for (i = 0; i < ehdr->e_phnum; i++)
 		elf_phdr(&b, &phdr[i], ehdr->e_phentsize, xdr, bit64);
 
@@ -295,7 +295,7 @@ shdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 		return NULL;
 
 	/* gather up all the shdrs. */
-	shdr = calloc(sizeof(*shdr), ehdr->e_shnum);
+	shdr = calloc(ehdr->e_shnum, sizeof(*shdr));
 	for (i = 0; i < ehdr->e_shnum; i++)
 		elf_shdr(&b, &shdr[i], ehdr->e_shentsize, xdr, bit64);
 

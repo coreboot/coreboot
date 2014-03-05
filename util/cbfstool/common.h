@@ -48,6 +48,49 @@ struct buffer {
 	size_t size;
 };
 
+static inline void *buffer_get(const struct buffer *b)
+{
+	return b->data;
+}
+
+static inline size_t buffer_size(const struct buffer *b)
+{
+	return b->size;
+}
+
+static inline void buffer_set_size(struct buffer *b, size_t size)
+{
+	b->size = size;
+}
+
+/*
+ * Splice a buffer into another buffer. If size is zero the entire buffer
+ * is spliced while if size is non-zero the buffer is spliced starting at
+ * offset for size bytes. Note that it's up to caller to bounds check.
+ */
+static inline void buffer_splice(struct buffer *dest, const struct buffer *src,
+                                 size_t offset, size_t size)
+{
+	dest->name = src->name;
+	dest->data = src->data;
+	dest->size = src->size;
+	if (size != 0) {
+		dest->data += offset;
+		buffer_set_size(dest, size);
+	}
+}
+
+static inline void buffer_clone(struct buffer *dest, const struct buffer *src)
+{
+	buffer_splice(dest, src, 0, 0);
+}
+
+static inline void buffer_seek(struct buffer *b, size_t size)
+{
+	b->size -= size;
+	b->data += size;
+}
+
 /* Creates an empty memory buffer with given size.
  * Returns 0 on success, otherwise non-zero. */
 int buffer_create(struct buffer *buffer, size_t size, const char *name);

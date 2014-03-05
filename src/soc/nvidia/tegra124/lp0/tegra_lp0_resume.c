@@ -326,7 +326,7 @@ static void config_oscillator(void)
 		    PMC_XOFS_MASK) >> PMC_XOFS_SHIFT;
 
 	uint32_t osc_ctrl = read32(clk_rst_osc_ctrl_ptr);
-	osc_ctrl &= OSC_XOFS_MASK;
+	osc_ctrl &= ~OSC_XOFS_MASK;
 	osc_ctrl |= (xofs << OSC_XOFS_SHIFT);
 	osc_ctrl |= OSC_XOE;
 	write32(osc_ctrl, clk_rst_osc_ctrl_ptr);

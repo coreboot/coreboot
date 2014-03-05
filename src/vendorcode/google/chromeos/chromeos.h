@@ -51,10 +51,10 @@ void init_chromeos(int bootmode);
 int vboot_get_handoff_info(void **addr, uint32_t *size);
 #endif
 
-#if CONFIG_CHROMEOS_RAMOOPS
 #include "gnvs.h"
 struct device;
 
+#if CONFIG_CHROMEOS_RAMOOPS
 void chromeos_ram_oops_init(chromeos_acpi_t *chromeos);
 #if CONFIG_CHROMEOS_RAMOOPS_DYNAMIC
 static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}

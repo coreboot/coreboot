@@ -139,11 +139,11 @@ static void put64le(struct buffer *input, uint64_t val)
 }
 
 struct xdr xdr_be = {
-	get16be, get32be, get64be,
-	put16be, put32be, put64be
+	get8, get16be, get32be, get64be,
+	put8, put16be, put32be, put64be
 };
 
 struct xdr xdr_le = {
-	get16le, get32le, get64le,
-	put16le, put32le, put64le
+	get8, get16le, get32le, get64le,
+	put8, put16le, put32le, put64le
 };

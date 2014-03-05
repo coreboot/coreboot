@@ -117,6 +117,15 @@ static inline void write_ttbr0(uint32_t val)
 	asm volatile ("mcr p15, 0, %0, c2, c0, 0" : : "r" (val) : "memory");
 }
 
+/* read translation table base register 0 (TTBR0) */
+static inline uint64_t read_ttbr0(void)
+{
+	uint32_t low, high;
+	asm volatile ("mrrc p15, 0, %[low], %[high], c2" :
+			[low] "=r" (low), [high] "=r" (high));
+	return ((uint64_t)high << 32) | low;
+}
+
 /* read translation table base control register (TTBCR) */
 static inline uint32_t read_ttbcr(void)
 {

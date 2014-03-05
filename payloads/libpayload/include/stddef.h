@@ -15,3 +15,7 @@ typedef __SIZE_TYPE__ ssize_t;
 
 #define offsetof(TYPE, MEMBER)	((size_t) &((TYPE *) 0)->MEMBER)
 
+/* Standard units. */
+#define KiB (1<<10)
+#define MiB (1<<20)
+#define GiB (1<<30)

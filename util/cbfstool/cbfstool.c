@@ -37,7 +37,6 @@ struct command {
 	int (*function) (void);
 };
 
-int verbose = 0;
 static struct param {
 	char *cbfs_name;
 	char *name;

@@ -19,8 +19,7 @@
 #define ELFPARSING_H
 
 #include "elf.h"
-
-struct buffer;
+#include "common.h"
 
 struct parsed_elf {
 	Elf64_Ehdr ehdr;
@@ -35,11 +34,19 @@ struct parsed_elf {
 	 * NULL.
 	 */
 	Elf64_Rela **relocs;
+	/*
+	 * Similarly to the relocs array the strtabs array consists of an
+	 * array of pointers where each entry represents a potential struct
+	 * buffer pointer. Only setions of type SHT_STRTAB will have a non-NULL
+	 * entry.
+	 */
+	struct buffer **strtabs;
 };
 
 #define ELF_PARSE_PHDR		(1 << 0)
 #define ELF_PARSE_SHDR		(1 << 1)
 #define ELF_PARSE_RELOC		(1 << 2)
+#define ELF_PARSE_STRTAB	(1 << 3)
 
 #define ELF_PARSE_ALL		(-1)
 

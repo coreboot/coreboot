@@ -128,11 +128,24 @@
 static void
 elf_eident(struct buffer *input, Elf64_Ehdr *ehdr)
 {
-	memmove(ehdr->e_ident, input->data, sizeof(ehdr->e_ident));
-	input->data += sizeof(ehdr->e_ident);
-	input->size -= sizeof(ehdr->e_ident);
+	bgets(input, ehdr->e_ident, sizeof(ehdr->e_ident));
 }
 
+
+static int
+check_size(const struct buffer *b, size_t offset, size_t size, const char *desc)
+{
+	if (size == 0)
+		return 0;
+
+	if (offset >= buffer_size(b) || (offset + size) > buffer_size(b)) {
+		ERROR("The file is not large enough for the '%s'. "
+		      "%ld bytes @ offset %zu, input %zu bytes.\n",
+		      desc, size, offset, buffer_size(b));
+		return -1;
+	}
+	return 0;
+}
 
 static void
 elf_ehdr(struct buffer *input, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
@@ -169,7 +182,8 @@ elf_phdr(struct buffer *pinput, Elf64_Phdr *phdr,
 	 * pointer the full entsize; rather than get tricky
 	 * we just advance it below.
 	 */
-	struct buffer input = *pinput;
+	struct buffer input;
+	buffer_clone(&input, pinput);
 	if (bit64){
 		phdr->p_type = xdr->get32(&input);
 		phdr->p_flags = xdr->get32(&input);
@@ -189,8 +203,7 @@ elf_phdr(struct buffer *pinput, Elf64_Phdr *phdr,
 		phdr->p_flags = xdr->get32(&input);
 		phdr->p_align = xdr->get32(&input);
 	}
-	pinput->size -= entsize;
-	pinput->data += entsize;
+	buffer_seek(pinput, entsize);
 }
 
 static void
@@ -228,8 +241,58 @@ elf_shdr(struct buffer *pinput, Elf64_Shdr *shdr,
 		shdr->sh_addralign = xdr->get32(&input);
 		shdr->sh_entsize = xdr->get32(&input);
 	}
-	pinput->size -= entsize;
-	pinput->data += entsize;
+	buffer_seek(pinput, entsize);
+}
+
+static Elf64_Phdr *
+phdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
+{
+	struct buffer b;
+	Elf64_Phdr *phdr;
+	int i;
+
+	/* cons up an input buffer for the headers.
+	 * Note that the program headers can be anywhere,
+	 * per the ELF spec, You'd be surprised how many ELF
+	 * readers miss this little detail.
+	 */
+	buffer_splice(&b, in, ehdr->e_phoff, ehdr->e_phentsize * ehdr->e_phnum);
+	if (check_size(in, ehdr->e_phoff, buffer_size(&b), "program headers"))
+		return NULL;
+
+	/* gather up all the phdrs.
+	 * We do them all at once because there is more
+	 * than one loop over all the phdrs.
+	 */
+	phdr = calloc(sizeof(*phdr), ehdr->e_phnum);
+	for (i = 0; i < ehdr->e_phnum; i++)
+		elf_phdr(&b, &phdr[i], ehdr->e_phentsize, xdr, bit64);
+
+	return phdr;
+}
+
+static Elf64_Shdr *
+shdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
+{
+	struct buffer b;
+	Elf64_Shdr *shdr;
+	int i;
+
+	/* cons up an input buffer for the section headers.
+	 * Note that the section headers can be anywhere,
+	 * per the ELF spec, You'd be surprised how many ELF
+	 * readers miss this little detail.
+	 */
+	buffer_splice(&b, in, ehdr->e_shoff, ehdr->e_shentsize * ehdr->e_shnum);
+	if (check_size(in, ehdr->e_shoff, buffer_size(&b), "section headers"))
+		return NULL;
+
+	/* gather up all the shdrs. */
+	shdr = calloc(sizeof(*shdr), ehdr->e_shnum);
+	for (i = 0; i < ehdr->e_shnum; i++)
+		elf_shdr(&b, &shdr[i], ehdr->e_shentsize, xdr, bit64);
+
+	return shdr;
 }
 
 /* Get the headers from the buffer.
@@ -246,16 +309,13 @@ elf_headers(const struct buffer *pinput,
 	    Elf64_Phdr **pphdr,
 	    Elf64_Shdr **pshdr)
 {
-	int i;
 	struct xdr *xdr = &xdr_le;
 	int bit64 = 0;
-	struct buffer input = *(struct buffer *)pinput;
-	struct buffer phdr_buf;
-	struct buffer shdr_buf;
-	Elf64_Phdr *phdr;
-	Elf64_Shdr *shdr;
+	struct buffer input;
 
-	if (!iself((unsigned char *)pinput->data)) {
+	buffer_clone(&input, pinput);
+
+	if (!iself(buffer_get(pinput))) {
 		ERROR("The stage file is not in ELF format!\n");
 		return -1;
 	}
@@ -280,65 +340,16 @@ elf_headers(const struct buffer *pinput,
 		return -1;
 	}
 
-	if (pinput->size < ehdr->e_phoff){
-		ERROR("The program header offset is greater than "
-		      "the remaining file size."
-		      "%ld bytes left, program header offset is %ld \n",
-		      pinput->size, ehdr->e_phoff);
+	*pphdr = phdr_read(pinput, ehdr, xdr, bit64);
+	if (*pphdr == NULL)
 		return -1;
-	}
-	/* cons up an input buffer for the headers.
-	 * Note that the program headers can be anywhere,
-	 * per the ELF spec, You'd be surprised how many ELF
-	 * readers miss this little detail.
-	 */
-	phdr_buf.data = &pinput->data[ehdr->e_phoff];
-	phdr_buf.size = ehdr->e_phentsize * ehdr->e_phnum;
-	if (phdr_buf.size > (pinput->size - ehdr->e_phoff)){
-		ERROR("The file is not large enough for the program headers."
-		      "%ld bytes left, %ld bytes of headers\n",
-		      pinput->size - ehdr->e_phoff, phdr_buf.size);
-		return -1;
-	}
-	/* gather up all the phdrs.
-	 * We do them all at once because there is more
-	 * than one loop over all the phdrs.
-	 */
-	phdr = calloc(sizeof(*phdr), ehdr->e_phnum);
-	for (i = 0; i < ehdr->e_phnum; i++)
-		elf_phdr(&phdr_buf, &phdr[i], ehdr->e_phentsize, xdr, bit64);
-	*pphdr = phdr;
 
 	if (!pshdr)
 		return 0;
 
-	if (pinput->size < ehdr->e_shoff){
-		ERROR("The section header offset is greater than "
-		      "the remaining file size."
-		      "%ld bytes left, program header offset is %ld \n",
-		      pinput->size, ehdr->e_shoff);
+	*pshdr = shdr_read(pinput, ehdr, xdr, bit64);
+	if (*pshdr == NULL)
 		return -1;
-	}
-	/* cons up an input buffer for the section headers.
-	 * Note that the section headers can be anywhere,
-	 * per the ELF spec, You'd be surprised how many ELF
-	 * readers miss this little detail.
-	 */
-	shdr_buf.data = &pinput->data[ehdr->e_shoff];
-	shdr_buf.size = ehdr->e_shentsize * ehdr->e_shnum;
-	if (shdr_buf.size > (pinput->size - ehdr->e_shoff)){
-		ERROR("The file is not large enough for the section headers."
-		      "%ld bytes left, %ld bytes of headers\n",
-		      pinput->size - ehdr->e_shoff, shdr_buf.size);
-		return -1;
-	}
-	/* gather up all the shdrs. */
-
-	shdr = calloc(sizeof(*shdr), ehdr->e_shnum);
-	for (i = 0; i < ehdr->e_shnum; i++)
-		elf_shdr(&shdr_buf, &shdr[i], ehdr->e_shentsize, xdr, bit64);
-	*pshdr = shdr;
 
 	return 0;
 }
-

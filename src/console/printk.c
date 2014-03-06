@@ -40,3 +40,11 @@ int do_printk(int msg_level, const char *fmt, ...)
 
 	return i;
 }
+
+#if CONFIG_CHROMEOS
+void do_vtxprintf(const char *fmt, va_list args)
+{
+	vtxprintf(console_tx_byte, fmt, args, NULL);
+	console_tx_flush();
+}
+#endif

@@ -82,6 +82,16 @@ static inline void printk(int LEVEL, const char *fmt, ...) {
 
 #endif /* defined(__PRE_RAM__) && !CONFIG_EARLY_CONSOLE */
 
+#if CONFIG_CHROMEOS
+/* FIXME: Collision of varargs with AMD headers without guard. */
+#include <console/vtxprintf.h>
+#if !defined(__PRE_RAM__) || CONFIG_EARLY_CONSOLE
+void do_vtxprintf(const char *fmt, va_list args);
+#else
+static inline void do_vtxprintf(const char *fmt, va_list args) {};
+#endif
+#endif
+
 #define print_emerg(STR)         printk(BIOS_EMERG,  "%s", (STR))
 #define print_alert(STR)         printk(BIOS_ALERT,  "%s", (STR))
 #define print_crit(STR)          printk(BIOS_CRIT,   "%s", (STR))

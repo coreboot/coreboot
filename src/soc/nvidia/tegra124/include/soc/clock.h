@@ -225,6 +225,17 @@ enum {
 #define clock_configure_source(device, src, freq) \
 	clock_configure_irregular_source(device, src, freq, src)
 
+/* The I2C divisors are not 7.1 divisors like the others, they divide by n + 1
+ * directly. Also, there are internal divisors in the I2C controller itself.
+ * We can deal with those here and make it easier to select what the actual
+ * bus frequency will be. The 0x19 value is the default divisor in the
+ * clk_divisor register in the controller, and 8 is just a magic number in the
+ * documentation. Multiplying by 2 compensates for the different format of the
+ * divisor.
+ */
+#define clock_configure_i2c_scl_freq(device, src, freq) \
+	clock_configure_source(device, src, (freq) * (0x19 + 1) * 8 * 2)
+
 enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 	PLLP = 0,
 	PLLC2 = 1,

@@ -40,8 +40,8 @@ static void set_clock_sources(void)
 
 	clock_configure_source(mselect, PLLP, 102000);
 
-	/* TODO: is the 1.333MHz correct? This may have always been bogus... */
-	clock_configure_source(i2c5, CLK_M, 1333);
+	/* The PMIC is on I2C5 and can run at 400 KHz. */
+	clock_configure_i2c_scl_freq(i2c5, PLLP, 400);
 
 	/* TODO: We should be able to set this to 50MHz, but that did not seem
 	 * reliable. */

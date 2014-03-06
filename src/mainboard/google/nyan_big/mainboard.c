@@ -34,10 +34,17 @@ static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 
 static void set_clock_sources(void)
 {
-	clock_configure_source(i2c1, CLK_M, 1333);
-	clock_configure_source(i2c2, CLK_M, 1333);
-	clock_configure_source(i2c3, CLK_M, 1333);
-	clock_configure_source(i2c4, CLK_M, 1333);
+	/*
+	 * The max98090 codec and the temperature sensor are on I2C1. These
+	 * can both run at 400 KHz, but the kernel sets the bus to 100 KHz.
+	 */
+	clock_configure_i2c_scl_freq(i2c1, PLLP, 100);
+	/*
+	 * The TPM is on I2C3 and can theoretically run at 400 KHz but doesn't
+	 * seem to work above around 40 KHz. It's set to run at 100 KHz in the
+	 * kernel.
+	 */
+	clock_configure_i2c_scl_freq(i2c3, PLLP, 40);
 
 	clock_configure_source(sbc1, PLLP, 5000);
 

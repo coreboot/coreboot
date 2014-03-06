@@ -102,4 +102,8 @@ static void main(unsigned long bist)
 	dump_pci_device(PCI_DEV(0, 0x00, 0));
 	dump_bar14(PCI_DEV(0, 0x00, 0));
 #endif
+	/* NOTE: ROMCC dies with an internal compiler error if the
+	 * following line is removed.
+	 */
+	print_debug("SDRAM is up.\n");
 }

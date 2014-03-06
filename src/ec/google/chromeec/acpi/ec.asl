@@ -26,6 +26,7 @@
 // Mainboard specific throttle handler
 External (\_TZ.THRT, MethodObj)
 External (\_SB.DPTF.TEVT, MethodObj)
+External (\_SB.DPTF.TCHG, DeviceObj)
 
 Device (EC0)
 {
@@ -205,6 +206,9 @@ Device (EC0)
 		Store ("EC: AC CONNECTED", Debug)
 		Store (ACEX, \PWRS)
 		Notify (AC, 0x80)
+		If (CondRefOf (\_SB.DPTF.TCHG)) {
+			Notify (\_SB.DPTF.TCHG, 0x80)
+		}
 		\PNOT ()
 	}
 
@@ -214,6 +218,9 @@ Device (EC0)
 		Store ("EC: AC DISCONNECTED", Debug)
 		Store (ACEX, \PWRS)
 		Notify (AC, 0x80)
+		If (CondRefOf (\_SB.DPTF.TCHG)) {
+			Notify (\_SB.DPTF.TCHG, 0x80)
+		}
 		\PNOT ()
 	}
 

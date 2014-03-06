@@ -1,4 +1,5 @@
 /*
+ * Copyright 2014 Google Inc.
  * Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -192,7 +193,7 @@ enum {
  * and voila, upper 7 bits are (ref/freq-1), and lowest bit is h. Since you
  * will assign this to a u8, it gets nicely truncated for you.
  */
-#define CLK_DIVIDER(REF, FREQ)	((((REF) * 2) / FREQ) - 2)
+#define CLK_DIVIDER(REF, FREQ)	((((REF) * 2) / (FREQ)) - 2)
 
 /* Calculate clock frequency value from reference and clock divider value
  * The discussion in the book is pretty lacking.
@@ -211,18 +212,18 @@ enum {
  * Since you multiply denominator * 2 (by NOT shifting it),
  * you multiply numerator * 2 to cancel it out.
  */
-#define CLK_FREQUENCY(REF, REG)	(((REF) * 2) / (REG + 2))
+#define CLK_FREQUENCY(REF, REG)	(((REF) * 2) / ((REG) + 2))
 
 #define clock_configure_irregular_source(device, src, freq, src_id) \
 	clrsetbits_le32(&clk_rst->clk_src_##device, \
 		CLK_SOURCE_MASK | CLK_DIVISOR_MASK, \
 		src_id << CLK_SOURCE_SHIFT | \
-		CLK_DIVIDER(TEGRA_##src##_KHZ, freq));
+		CLK_DIVIDER(TEGRA_##src##_KHZ, freq))
 
 /* Warning: Some devices just use different bits for the same sources for no
  * apparent reason. *Always* double-check the TRM before trusting this macro. */
 #define clock_configure_source(device, src, freq) \
-	clock_configure_irregular_source(device, src, freq, src);
+	clock_configure_irregular_source(device, src, freq, src)
 
 enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 	PLLP = 0,

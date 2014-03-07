@@ -272,8 +272,15 @@ phdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 	 * than one loop over all the phdrs.
 	 */
 	phdr = calloc(ehdr->e_phnum, sizeof(*phdr));
-	for (i = 0; i < ehdr->e_phnum; i++)
+	for (i = 0; i < ehdr->e_phnum; i++) {
+		DEBUG("Parsing segment %d\n", i);
 		elf_phdr(&b, &phdr[i], ehdr->e_phentsize, xdr, bit64);
+
+		/* Ensure the contents are valid within the elf file. */
+		if (check_size(in, phdr[i].p_offset, phdr[i].p_filesz,
+	                  "segment contents"))
+			return NULL;
+	}
 
 	return phdr;
 }
@@ -296,8 +303,15 @@ shdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 
 	/* gather up all the shdrs. */
 	shdr = calloc(ehdr->e_shnum, sizeof(*shdr));
-	for (i = 0; i < ehdr->e_shnum; i++)
+	for (i = 0; i < ehdr->e_shnum; i++) {
+		DEBUG("Parsing section %d\n", i);
 		elf_shdr(&b, &shdr[i], ehdr->e_shentsize, xdr, bit64);
+
+		/* Ensure the contents are valid within the elf file. */
+		if (check_size(in, shdr[i].sh_offset, shdr[i].sh_size,
+		               "section contents"))
+			return NULL;
+	}
 
 	return shdr;
 }

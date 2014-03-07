@@ -169,6 +169,11 @@ static void main(unsigned long bist)
 		print_err("HI THERE!\n");
 		//			sizemem();
 	staticmem();
+
+/* Void warranty when label is removed. */
+dummy_romcc_workaround_label:
+	do { } while (0);
+
 	print_err("c60 is "); print_err_hex16(*(unsigned short *)0xfffefc60);
 	print_err("\n");
 

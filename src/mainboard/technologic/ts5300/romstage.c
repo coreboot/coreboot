@@ -153,6 +153,11 @@ static void main(unsigned long bist)
 
 	print_err("Technologic Systems TS5300 - http://www.embeddedx86.com/\n");
 	staticmem();
+
+/* Void warranty when label is removed. */
+dummy_romcc_workaround_label:
+	do { } while (0);
+
 	print_err("Memory initialized: 32MB\n");
 
 #if 1

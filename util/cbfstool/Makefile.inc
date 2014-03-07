@@ -17,10 +17,16 @@ cbfsobj += LzmaEnc.o
 cbfsobj += linux_trampoline.o
 cbfsobj += cbfs-payload-linux.o
 
-CBFSTOOLFLAGS= -g
+rmodobj += rmodtool.o
+rmodobj += rmodule.o
+rmodobj += common.o
+rmodobj += elfheaders.o
+rmodobj += xdr.o
+
+TOOLFLAGS= -g
 
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
-CBFSTOOLFLAGS+=-mno-ms-bitfields
+TOOLFLAGS+=-mno-ms-bitfields
 endif
 
 $(objutil)/cbfstool:
@@ -28,17 +34,21 @@ $(objutil)/cbfstool:
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
-	$(HOSTCC) $(CBFSTOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
+	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
 $(objutil)/cbfstool/cbfstool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
-	$(HOSTCC) $(CBFSTOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+	$(HOSTCC) $(TOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+
+$(objutil)/cbfstool/rmodtool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(rmodobj))
+	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
+	$(HOSTCC) $(TOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 

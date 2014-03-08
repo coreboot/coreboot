@@ -202,7 +202,8 @@ config CONSOLE_NE2K_IO_PORT
 
 config CONSOLE_CBMEM
 	bool "Send console output to a CBMEM buffer"
-	default n
+	default n if ARCH_ARMV7
+	default y if !ARCH_ARMV7
 	help
 	  Enable this to save the console output in a CBMEM buffer. This would
 	  allow to see coreboot console output from Linux space.

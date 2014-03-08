@@ -21,6 +21,7 @@
 #include <bootmem.h>
 #include <console/console.h>
 #include <cbmem.h>
+#include <console/cbmem_console.h>
 #include <string.h>
 #include <stdlib.h>
 #include <arch/early_variables.h>

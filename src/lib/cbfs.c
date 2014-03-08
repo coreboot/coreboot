@@ -139,18 +139,23 @@ void * cbfs_load_stage(struct cbfs_media *media, const char *name)
 				     sizeof(struct cbfs_stage),
 				     (void *) (uint32_t) stage->load,
 				     stage->len);
+	LOG("done., final_size is %d\n", final_size);
 	if (!final_size)
 		return (void *) -1;
 
 	/* Stages rely the below clearing so that the bss is initialized. */
 	memset((void *)((uintptr_t)stage->load + final_size), 0,
 	       stage->memlen - final_size);
+	ERROR("memset(%p, 0, %d)\n", (void *)((uintptr_t)stage->load + final_size),
+	       stage->memlen - final_size);
+	LOG("memset done\n");
 
 	DEBUG("stage loaded.\n");
 
 	entry = stage->entry;
 	// entry = ntohll(stage->entry);
 
+	ERROR("CALL %p\n", (void *)entry);
 	return (void *) entry;
 }
 

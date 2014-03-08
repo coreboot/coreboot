@@ -1,4 +1,5 @@
 #include <cpu/x86/post_code.h>
+#include <cpu/x86/cr.h>
 
 /* Place the stack in the bss section. It's not necessary to define it in the
  * the linker script. */
@@ -31,6 +32,28 @@ _start:
 	movl	%eax, %gs
 
 	post_code(POST_ENTRY_C_START)		/* post 13 */
+	jmp code
+#if CONFIG_PGE==1
+
+#include "pagetables.S"
+
+code:
+	movl	$pagetables, %ecx		/* load address of page directory */
+	movl	%ecx, %cr3
+	jmp	1f
+1:
+	movl	%cr4, %edx
+	orl	$CR4_PSE, %edx			/* 4m pages */
+	movl	%edx, %cr4
+
+	movl	%cr0, %edx
+	orl	$CR0_PG, %edx
+
+	movl	$paging, %eax
+	movl	%edx, %cr0
+	jmp	*%eax
+paging:
+#endif
 
 	cld
 

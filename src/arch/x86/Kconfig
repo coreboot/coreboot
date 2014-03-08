@@ -78,6 +78,17 @@ config UPDATE_IMAGE
 	  is a suitable file for further processing.
 	  The bootblock will not be modified.
 
+config PGE
+	bool "Enable x86 page tables."
+	default n
+	help
+	  In original coreboot we did not use page tables. The
+	  MTRR code just keeps getting messier and if we turn
+	  on paging it gets very easy. We can enable disable
+	  caching on anything down to a 4k boundary. We can
+	  control cache disable and write-back/writethrough
+	  on each page. For now, this code creates an identity
+	  map for 4G using 4M pages.
 config ROMCC
 	bool
 	default n

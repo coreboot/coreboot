@@ -22,7 +22,7 @@
 #include <string.h>
 
 /* Control debugging of the boot state machine. */
-#define BOOT_STATE_DEBUG 0
+#define BOOT_STATE_DEBUG 1
 
 /*
  * The boot state machine provides a mechanism for calls to be made through-

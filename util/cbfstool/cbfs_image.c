@@ -300,6 +300,9 @@ int cbfs_image_write_file(struct cbfs_image *image, const char *filename)
 
 int cbfs_image_delete(struct cbfs_image *image)
 {
+	if (image == NULL)
+		return 0;
+
 	buffer_delete(&image->buffer);
 	image->header = NULL;
 	return 0;

@@ -344,6 +344,9 @@ bootblock_inc = $(src)/arch/x86/init/prologue.inc
 bootblock_inc += $(src)/cpu/x86/16bit/entry16.inc
 bootblock_inc += $(src)/cpu/x86/16bit/reset16.inc
 bootblock_inc += $(src)/cpu/x86/32bit/entry32.inc
+ifeq ($(CONFIG_PGE),y)
+bootblock_inc += $(src)/arch/x86/lib/paging.S
+endif
 bootblock_inc += $(src)/arch/x86/lib/id.inc
 ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
 bootblock_inc += $(src)/cpu/intel/fit/fit.inc

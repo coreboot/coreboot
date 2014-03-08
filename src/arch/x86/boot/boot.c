@@ -11,6 +11,12 @@ static void jmp_payload_no_bounce_buffer(void *entry)
 	/* Jump to kernel */
 	__asm__ __volatile__(
 		"	cld	\n\t"
+		/* Paging might have been on. We need to turn it off
+		 * right before we jump
+		 */
+		"	movl	%%cr0, %%eax\n\t"
+		"	andl	$0x7fffffff, %%eax\n\t"
+		"	movl	%%edx, %%cr0\n\t"
 		/* Now jump to the loaded image */
 		"	call	*%0\n\t"
 
@@ -73,6 +79,16 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		"	jmp	*%%eax\n\t"
 		"1:	\n\t"
 
+		/* Paging might have been on. It's ok,
+		 * the bounce buffer runs at same VA and PA.
+		 * So we can turn paging off now.
+		 */
+		"	movl	%%cr0, %%eax\n\t"
+		"	andl	$0x7fffffff, %%eax\n\t"
+		"	movl	%%eax, %%cr0\n\t"
+		"	jmp 1f\n\t"
+		"1:\n\t"
+
 		/* Copy the coreboot bounce buffer over coreboot */
 		/* Move ``longs'' the coreboot size is 4 byte aligned */
 		"	movl	16(%%esp), %%edi\n\t"
@@ -85,6 +101,7 @@ static void jmp_payload(void *entry, unsigned long buffer, unsigned long size)
 		"	movl	%5, %%eax\n\t"
 		"	movl	 0(%%esp), %%ebx\n\t"
 		"	call	*4(%%esp)\n\t"
+		"1: jmp 1b\n\t"
 
 		/* The loaded image returned? */
 		"	cli	\n\t"

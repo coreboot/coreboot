@@ -31,7 +31,8 @@ _start:
 	movl	%eax, %gs
 
 	post_code(POST_ENTRY_C_START)		/* post 13 */
-
+	/* turn on paging (conditional on CONFIG_PGE) */
+#include "paging.S"
 	cld
 
 	/** poison the stack. Code should not count on the

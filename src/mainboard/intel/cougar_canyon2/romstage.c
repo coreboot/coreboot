@@ -340,10 +340,6 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	timestamp_add(TS_AFTER_INITRAM, after_initram_time);
 	timestamp_add_now(TS_END_ROMSTAGE);
 #endif
-#if CONFIG_CONSOLE_CBMEM
-	/* Keep this the last thing this function does. */
-	cbmemc_reinit();
-#endif
 
 /*
  * FSP returns to this function instead of main, so we can't return back

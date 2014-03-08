@@ -474,7 +474,7 @@ static int cbfs_extract(void)
 	if (cbfs_image_from_file(&image, param.cbfs_name) != 0) {
 		ERROR("Could not load ROM image '%s'.\n",
 			param.cbfs_name);
-		result = 1;
+		return 1;
 	} else if (cbfs_export_entry(&image, param.name,
 				     param.filename) != 0) {
 		result = 1;

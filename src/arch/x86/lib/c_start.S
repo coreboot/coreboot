@@ -31,6 +31,26 @@ _start:
 	movl	%eax, %gs
 
 	post_code(POST_ENTRY_C_START)		/* post 13 */
+#ifdef CONFIG_PGE
+	jmp code
+
+#include "pagetables.S"
+
+code:
+	movl	$pagetables, %ecx		/* load address of page directory */
+	movl	%ecx, %cr3
+	jmp	1f
+1:
+
+	movl	%cr0, %edx
+	orl	$0x80010000, %edx			/* PG|WP */
+	andl	$~0x6000000A, %edx		/* ~(CD|NW|TS|MP) */
+
+	movl	$paging, %eax
+	movl	%edx, %cr0
+	jmp	*%eax
+paging:
+#endif
 
 	cld
 

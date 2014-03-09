@@ -65,11 +65,11 @@ static void mainboard_enable(device_t dev)
 	acpi_slp_type = acpi_get_sleep_type();
 #endif
 
-	/* enable GPP CLK0 thru CLK1 */
-	/* disable GPP CLK2 thru SLT_GFX_CLK */
+	/* enable GPP CLK0 thru CLK3 (interleaved) */
+	/* disable GPP CLK4 thru SLT_GFX_CLK */
 	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);
 	*(misc_mem_clk_cntrl + 0) = 0xFF;
-	*(misc_mem_clk_cntrl + 1) = 0x00;
+	*(misc_mem_clk_cntrl + 1) = 0xFF;
 	*(misc_mem_clk_cntrl + 2) = 0x00;
 	*(misc_mem_clk_cntrl + 3) = 0x00;
 	*(misc_mem_clk_cntrl + 4) = 0x00;

@@ -19,7 +19,7 @@
 #ifndef _CONSOLE_CBMEM_CONSOLE_H_
 #define _CONSOLE_CBMEM_CONSOLE_H_
 
-#if CONFIG_CACHE_AS_RAM || !defined(__PRE_RAM__)
+#if CONFIG_EARLY_CBMEM_INIT || !defined(__PRE_RAM__)
 void cbmemc_init(void);
 void cbmemc_reinit(void);
 void cbmemc_tx_byte(unsigned char data);

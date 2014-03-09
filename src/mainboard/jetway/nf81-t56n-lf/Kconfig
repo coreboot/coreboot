@@ -111,6 +111,6 @@ config SB800_AHCI_ROM
 
 config DRIVERS_PS2_KEYBOARD
 	bool
-	default n
+	default y
 
 endif # BOARD_JETWAY_NF81_T56N_LF

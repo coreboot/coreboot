@@ -51,7 +51,7 @@ xhci_rh_port_status_changed(usbdev_t *const dev, const int port)
 	xhci_t *const xhci = XHCI_INST(dev->controller);
 	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
 
-	const int changed = !!(*portsc & PORTSC_CSC);
+	const int changed = !!(*portsc & (PORTSC_CSC | PORTSC_PRC));
 	/* always clear all the status change bits */
 	*portsc = (*portsc & PORTSC_RW_MASK) | 0x00ef0000;
 	return changed;

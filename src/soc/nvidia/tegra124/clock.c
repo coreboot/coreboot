@@ -88,10 +88,9 @@ struct {
 	int khz;
 	struct pllcx_dividers	pllx;	/* target:  CONFIG_PLLX_KHZ */
 	struct pllcx_dividers	pllc;	/* target:  600 MHz */
-	struct pllpad_dividers	plld;	/* target:  925 MHz */
+	struct pllpad_dividers	plld;	/* target:  306 MHz */
 	struct pllu_dividers	pllu;	/* target;  960 MHz */
 	struct pllcx_dividers	plldp;	/* target;  270 MHz */
-	struct pllcx_dividers	plld2;	/* target;  570 MHz */
 	/* Based on T124 TRM (to be updatd), PLLP is set to 408MHz in HW.
 	 * Unless configuring PLLP to a frequency other than 408MHz,
 	 * software configuration on PLLP is unneeded. */
@@ -100,46 +99,41 @@ struct {
 		.khz = 12000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},
-		.plld = {.n = 283, .m = 12, .p = 0, .cpcon = 8}, /* 283 MHz */
+		.plld = {.n = 306, .m = 12, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  1, .p = 3},
-		.plld2 = {.n = 95, .m =  1, .p = 1},
 	},
 	[OSC_FREQ_OSC13]{
 		.khz = 13000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 13000, .m =  1, .p = 0},
 		.pllc = {.n = 231, .m =  5, .p = 0},		/* 600.6 MHz */
-		.plld = {.n = 283, .m = 13, .p = 0, .cpcon = 8}, /* 283 MHz*/
+		.plld = {.n = 306, .m = 13, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  1, .p = 3},		/* 269.75 MHz */
-		.plld2 = {.n = 88, .m =  1, .p = 1},		/* 572 MHz */
 	},
 	[OSC_FREQ_OSC16P8]{
 		.khz = 16800,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 16800, .m =  1, .p = 0},
 		.pllc = {.n = 250, .m =  7, .p = 0},
-		.plld = {.n = 286, .m = 17, .p = 0, .cpcon = 8}, /* 282.6 MHz*/
+		.plld = {.n = 309, .m = 17, .p = 0, .cpcon = 8}, /* 305.4 MHz*/
 		.pllu = {.n = 400, .m =  7, .p = 0, .cpcon = 5, .lfcon = 2},
 		.plldp = {.n = 64, .m =  1, .p = 3},		/* 268.8 MHz */
-		.plld2 = {.n = 68, .m =  1, .p = 1},		/* 571.2  MHz */
 	},
 	[OSC_FREQ_OSC19P2]{
 		.khz = 19200,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllc = {.n = 125, .m =  4, .p = 0},
-		.plld = {.n = 251, .m = 17, .p = 0, .cpcon = 8}, /* 283.5 MHz */
+		.plld = {.n = 271, .m = 17, .p = 0, .cpcon = 8}, /* 306.1 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  1, .p = 3},		/* 270.75 MHz */
-		.plld2 = {.n = 59, .m =  1, .p = 1},		/* 566.4 MHz */
 	},
 	[OSC_FREQ_OSC26]{
 		.khz = 26000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 26000, .m =  1, .p = 0},
 		.pllc = {.n =  23, .m =  1, .p = 0},		   /* 598 MHz */
-		.plld = {.n = 283, .m = 26, .p = 0, .cpcon = 8}, /* 283 MHz */
+		.plld = {.n = 306, .m = 26, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 26, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  2, .p = 3},		/* 266.50 MHz */
-		.plld2 = {.n = 88, .m =  2, .p = 1},		/* 572 MHz */
 	},
 	[OSC_FREQ_OSC38P4]{
 		.khz = 38400,
@@ -149,10 +143,9 @@ struct {
 		 */
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllc = {.n = 125, .m =  4, .p = 0},
-		.plld = {.n = 125, .m = 17, .p = 0, .cpcon = 8}, /* 282.4 MHz */
+		.plld = {.n = 271, .m = 17, .p = 0, .cpcon = 8}, /* 306.1 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  2, .p = 3},		/* 268 MHz */
-		.plld2 = {.n = 59, .m =  2, .p = 1},		/* 566 MHz */
 	},
 	[OSC_FREQ_OSC48]{
 		.khz = 48000,
@@ -162,10 +155,9 @@ struct {
 		 */
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},
-		.plld = {.n = 71, .m = 12, .p = 0, .cpcon = 8}, /* 284 MHz */
+		.plld = {.n = 306, .m = 12, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  4, .p = 3},		/* 264 MHz */
-		.plld2 = {.n = 95, .m =  4, .p = 1},
 	},
 };
 

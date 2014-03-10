@@ -38,17 +38,25 @@
 #include "chip.h"
 #include <soc/display.h>
 
+struct tegra_dc dc_data;
+
 int dump = 0;
-unsigned long READL(void * p);
-void WRITEL(unsigned long value, void * p);
 unsigned long READL(void * p)
 {
-        unsigned long value = readl(p);
+        unsigned long value;
+
+	/*
+	 * In case of hard hung on readl(p), we can set dump > 1 to print out
+	 * the address accessed.
+	 */
+        if (dump > 1)
+		printk(BIOS_SPEW, "readl %p\n", p);
+
+        value = readl(p);
         if (dump)
 		printk(BIOS_SPEW, "readl %p %08lx\n", p, value);
         return value;
 }
-
 
 void WRITEL(unsigned long value, void * p)
 {
@@ -57,174 +65,133 @@ void WRITEL(unsigned long value, void * p)
         writel(value, p);
 }
 
-static const u32 rgb_enb_tab[PIN_REG_COUNT] = {
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-};
+/* return in 1000ths of a Hertz */
+static int tegra_dc_calc_refresh(const struct soc_nvidia_tegra124_config *config)
+{
+	int h_total, v_total, refresh;
+	int pclk = config->pixel_clock;
 
-static const u32 rgb_polarity_tab[PIN_REG_COUNT] = {
-	0x00000000,
-	0x01000000,
-	0x00000000,
-	0x00000000,
-};
+	h_total = config->xres + config->hfront_porch + config->hback_porch +
+		config->hsync_width;
+	v_total = config->yres + config->vfront_porch + config->vback_porch +
+		config->vsync_width;
+	if (!pclk || !h_total || !v_total)
+		return 0;
+	refresh = pclk / h_total;
+	refresh *= 1000;
+	refresh /= v_total;
+	return refresh;
+}
 
-static const u32 rgb_data_tab[PIN_REG_COUNT] = {
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-};
+static void print_mode(const struct soc_nvidia_tegra124_config *config)
+{
+	if (config) {
+		int refresh = tegra_dc_calc_refresh(config);
+		printk(BIOS_ERR,
+			"MODE:%dx%d@%d.%03uHz pclk=%d\n",
+			config->xres, config->yres,
+			refresh / 1000, refresh % 1000,
+			config->pixel_clock);
+	}
+}
 
-static const u32 rgb_sel_tab[PIN_OUTPUT_SEL_COUNT] = {
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00000000,
-	0x00210222,
-	0x00002200,
-	0x00020000,
-};
-
-static int update_display_mode(struct dc_disp_reg *disp,
+static int update_display_mode(struct display_controller *disp_ctrl,
 			       struct soc_nvidia_tegra124_config *config)
 {
-	u32 val;
-	u32 rate;
-	u32 div;
+	unsigned long div = config->pll_div;
 
-	WRITEL(0x0, &disp->disp_timing_opt);
+	print_mode(config);
+
+	WRITEL(0x1, &disp_ctrl->disp.disp_timing_opt);
 
 	WRITEL(config->vref_to_sync << 16 | config->href_to_sync,
-		   &disp->ref_to_sync);
-	WRITEL(config->vsync_width << 16 | config->hsync_width, &disp->sync_width);
-	WRITEL(config->vback_porch << 16 | config->hback_porch, &disp->back_porch);
-	WRITEL(config->vfront_porch << 16 | config->hfront_porch,
-		   &disp->front_porch);
+		&disp_ctrl->disp.ref_to_sync);
 
-	WRITEL(config->xres | (config->yres << 16), &disp->disp_active);
+	WRITEL(config->vsync_width << 16 | config->hsync_width,
+		&disp_ctrl->disp.sync_width);
 
-	val = DE_SELECT_ACTIVE << DE_SELECT_SHIFT;
-	val |= DE_CONTROL_NORMAL << DE_CONTROL_SHIFT;
-	WRITEL(val, &disp->data_enable_opt);
+	WRITEL(((config->vback_porch - config->vref_to_sync) << 16) | config->hback_porch,
+		&disp_ctrl->disp.back_porch);
 
-	val = DATA_FORMAT_DF1P1C << DATA_FORMAT_SHIFT;
-	val |= DATA_ALIGNMENT_MSB << DATA_ALIGNMENT_SHIFT;
-	val |= DATA_ORDER_RED_BLUE << DATA_ORDER_SHIFT;
-	WRITEL(val, &disp->disp_interface_ctrl);
+	WRITEL(((config->vfront_porch + config->vref_to_sync) << 16) | config->hfront_porch,
+		&disp_ctrl->disp.front_porch);
 
-	/*
-	 * The pixel clock divider is in 7.1 format (where the bottom bit
-	 * represents 0.5). Here we calculate the divider needed to get from
-	 * the display clock (typically 600MHz) to the pixel clock. We round
-	 * up or down as requried.
-	 * We use pllp for now.
-	 */
-	rate = 600 * 1000000;
-	div = ((rate * 2 + config->pixel_clock / 2) / config->pixel_clock) - 2;
-	printk(BIOS_SPEW, "Display clock %d, divider %d\n", rate, div);
+	WRITEL(config->xres | (config->yres << 16),
+		&disp_ctrl->disp.disp_active);
 
-	WRITEL(0x00010001, &disp->shift_clk_opt);
-
-	val = PIXEL_CLK_DIVIDER_PCD1 << PIXEL_CLK_DIVIDER_SHIFT;
-	val |= div << SHIFT_CLK_DIVIDER_SHIFT;
-	WRITEL(val, &disp->disp_clk_ctrl);
-
+	WRITEL((PIXEL_CLK_DIVIDER_PCD1 << PIXEL_CLK_DIVIDER_SHIFT) |
+		SHIFT_CLK_DIVIDER(div),
+		&disp_ctrl->disp.disp_clk_ctrl);
 	return 0;
 }
 
-static int setup_window(struct disp_ctl_win *win,
-						struct soc_nvidia_tegra124_config *config)
+static void update_window(struct display_controller *disp_ctrl,
+			  struct soc_nvidia_tegra124_config *config)
 {
-	int log2_bpp = log2(config->framebuffer_bits_per_pixel);
-	win->x = 0;
-	win->y = 0;
-	win->w = config->xres;
-	win->h = config->yres;
-	win->out_x = 0;
-	win->out_y = 0;
-	win->out_w = config->xres;
-	win->out_h = config->yres;
-	win->phys_addr = config->framebuffer_base;
-	win->stride = config->xres * (1 << log2_bpp) / 8;
-	printk(BIOS_SPEW, "%s: depth = %d\n", __func__, log2_bpp);
-	switch (log2_bpp) {
-		case 5:
-		case 24:
-			win->fmt = COLOR_DEPTH_R8G8B8A8;
-			win->bpp = 32;
-			break;
-		case 4:
-			win->fmt = COLOR_DEPTH_B5G6R5;
-			win->bpp = 16;
-			break;
-
-		default:
-			printk(BIOS_SPEW, "Unsupported LCD bit depth");
-			return -1;
-	}
-
-	return 0;
-}
-
-static void update_window(struct display_controller *dc,
-						  struct disp_ctl_win *win,
-						  struct soc_nvidia_tegra124_config *config)
-{
-	u32 h_dda, v_dda;
 	u32 val;
 
-	val = READL(&dc->cmd.disp_win_header);
-	val |= WINDOW_A_SELECT;
-	WRITEL(val, &dc->cmd.disp_win_header);
+	WRITEL(WINDOW_A_SELECT, &disp_ctrl->cmd.disp_win_header);
 
-	WRITEL(win->fmt, &dc->win.color_depth);
+	WRITEL(((config->yres << 16) | config->xres), &disp_ctrl->win.size);
+	WRITEL(((config->yres << 16) |
+		(config->xres * config->framebuffer_bits_per_pixel / 8)),
+		&disp_ctrl->win.prescaled_size);
+	WRITEL(((config->xres * config->framebuffer_bits_per_pixel / 8 + 31) /
+		32 * 32), &disp_ctrl->win.line_stride);
 
-	clrsetbits_le32(&dc->win.byte_swap, BYTE_SWAP_MASK,
-					BYTE_SWAP_NOSWAP << BYTE_SWAP_SHIFT);
+	WRITEL(config->color_depth, &disp_ctrl->win.color_depth);
 
-	val = win->out_x << H_POSITION_SHIFT;
-	val |= win->out_y << V_POSITION_SHIFT;
-	WRITEL(val, &dc->win.pos);
+	WRITEL(config->framebuffer_base, &disp_ctrl->winbuf.start_addr);
+	WRITEL((V_DDA_INC(0x1000) | H_DDA_INC(0x1000)), &disp_ctrl->win.dda_increment);
 
-	val = win->out_w << H_SIZE_SHIFT;
-	val |= win->out_h << V_SIZE_SHIFT;
-	WRITEL(val, &dc->win.size);
+	WRITEL(COLOR_WHITE, &disp_ctrl->disp.blend_background_color);
+	WRITEL(DISP_CTRL_MODE_C_DISPLAY, &disp_ctrl->cmd.disp_cmd);
 
-	val = (win->w * win->bpp / 8) << H_PRESCALED_SIZE_SHIFT;
-	val |= win->h << V_PRESCALED_SIZE_SHIFT;
-	WRITEL(val, &dc->win.prescaled_size);
-
-	WRITEL(0, &dc->win.h_initial_dda);
-	WRITEL(0, &dc->win.v_initial_dda);
-
-	h_dda = (win->w * 0x1000) / MAX(win->out_w - 1, 1);
-	v_dda = (win->h * 0x1000) / MAX(win->out_h - 1, 1);
-
-	val = h_dda << H_DDA_INC_SHIFT;
-	val |= v_dda << V_DDA_INC_SHIFT;
-	WRITEL(val, &dc->win.dda_increment);
-
-	WRITEL(win->stride, &dc->win.line_stride);
-	WRITEL(0, &dc->win.buf_stride);
-
-	val = WIN_ENABLE;
-	if (win->bpp < 24)
-		val |= COLOR_EXPAND;
-	WRITEL(val, &dc->win.win_opt);
-
-	WRITEL((u32) win->phys_addr, &dc->winbuf.start_addr);
-	WRITEL(win->x, &dc->winbuf.addr_h_offset);
-	WRITEL(win->y, &dc->winbuf.addr_v_offset);
-
-	WRITEL(0xff00, &dc->win.blend_nokey);
-	WRITEL(0xff00, &dc->win.blend_1win);
+	WRITEL(WRITE_MUX_ACTIVE, &disp_ctrl->cmd.state_access);
 
 	val = GENERAL_ACT_REQ | WIN_A_ACT_REQ;
 	val |= GENERAL_UPDATE | WIN_A_UPDATE;
-	WRITEL(val, &dc->cmd.state_ctrl);
+	WRITEL(val, &disp_ctrl->cmd.state_ctrl);
+
+	// Enable win_a
+	val = READL(&disp_ctrl->win.win_opt);
+	WRITEL(val | WIN_ENABLE, &disp_ctrl->win.win_opt);
+}
+
+static int tegra_dc_init(struct display_controller *disp_ctrl)
+{
+	/* do not accept interrupts during initialization */
+	WRITEL(0x00000000, &disp_ctrl->cmd.int_mask);
+	WRITEL(WRITE_MUX_ASSEMBLY | READ_MUX_ASSEMBLY,
+		&disp_ctrl->cmd.state_access);
+	WRITEL(WINDOW_A_SELECT, &disp_ctrl->cmd.disp_win_header);
+	WRITEL(0x00000000, &disp_ctrl->win.win_opt);
+	WRITEL(0x00000000, &disp_ctrl->win.byte_swap);
+	WRITEL(0x00000000, &disp_ctrl->win.buffer_ctrl);
+
+	WRITEL(0x00000000, &disp_ctrl->win.pos);
+	WRITEL(0x00000000, &disp_ctrl->win.h_initial_dda);
+	WRITEL(0x00000000, &disp_ctrl->win.v_initial_dda);
+	WRITEL(0x00000000, &disp_ctrl->win.dda_increment);
+	WRITEL(0x00000000, &disp_ctrl->win.dv_ctrl);
+
+	WRITEL(0x01000000, &disp_ctrl->win.blend_layer_ctrl);
+	WRITEL(0x00000000, &disp_ctrl->win.blend_match_select);
+	WRITEL(0x00000000, &disp_ctrl->win.blend_nomatch_select);
+	WRITEL(0x00000000, &disp_ctrl->win.blend_alpha_1bit);
+
+	WRITEL(0x00000000, &disp_ctrl->winbuf.start_addr_hi);
+	WRITEL(0x00000000, &disp_ctrl->winbuf.addr_h_offset);
+	WRITEL(0x00000000, &disp_ctrl->winbuf.addr_v_offset);
+
+	WRITEL(0x00000000, &disp_ctrl->com.crc_checksum);
+	WRITEL(0x00000000, &disp_ctrl->com.pin_output_enb[0]);
+	WRITEL(0x00000000, &disp_ctrl->com.pin_output_enb[1]);
+	WRITEL(0x00000000, &disp_ctrl->com.pin_output_enb[2]);
+	WRITEL(0x00000000, &disp_ctrl->com.pin_output_enb[3]);
+	WRITEL(0x00000000, &disp_ctrl->disp.disp_signal_opt0);
+
+	return 0;
 }
 
 uint32_t fb_base_mb(void)
@@ -237,16 +204,22 @@ uint32_t fb_base_mb(void)
  */
 void display_startup(device_t dev)
 {
-	u32 val;
-	int i;
 	struct soc_nvidia_tegra124_config *config = dev->chip_info;
-	struct display_controller *dc = (void *)config->display_controller;
-	struct pwm_controller *pwm = (void *)TEGRA_PWM_BASE;
-	struct disp_ctl_win window;
+	struct display_controller *disp_ctrl = (void *)config->display_controller;
+	struct pwm_controller 	*pwm = (void *)TEGRA_PWM_BASE;
+	struct tegra_dc		*dc = &dc_data;
 
 	/* should probably just make it all MiB ... in future */
 	u32 framebuffer_size_mb = config->framebuffer_size / MiB;
 	u32 framebuffer_base_mb= config->framebuffer_base / MiB;
+
+	/* init dc */
+	dc->base = (void *)TEGRA_ARM_DISPLAYA;
+	dc->config = config;
+	config->dc_data = dc;
+
+	dp_init(config);
+
 	/* light it all up */
 	/* This one may have been done in romstage but that's ok for now. */
 	if (config->panel_vdd_gpio){
@@ -254,13 +227,12 @@ void display_startup(device_t dev)
 		printk(BIOS_SPEW,"%s: panel_vdd setting gpio %08x to %d\n",
 			__func__, config->panel_vdd_gpio, 1);
 	}
-	delay(1);
+	udelay(config->vdd_delay_ms * 1000);
 	if (config->backlight_vdd_gpio){
 		gpio_output(config->backlight_vdd_gpio, 1);
 		printk(BIOS_SPEW,"%s: backlight vdd setting gpio %08x to %d\n",
 			__func__, config->backlight_vdd_gpio, 1);
 	}
-	delay(1);
 	if (config->lvds_shutdown_gpio){
 		gpio_output(config->lvds_shutdown_gpio, 0);
 		printk(BIOS_SPEW,"%s: lvds shutdown setting gpio %08x to %d\n",
@@ -281,10 +253,6 @@ void display_startup(device_t dev)
 		0x02e), /* frequency divider */
 	       &pwm->pwm[config->pwm].csr);
 
-	printk(BIOS_SPEW,
-		"%s: xres %d yres %d framebuffer_bits_per_pixel %d\n",
-		__func__,
-	       config->xres, config->yres, config->framebuffer_bits_per_pixel);
 	if (framebuffer_size_mb == 0){
 		framebuffer_size_mb = ALIGN_UP(config->xres * config->yres *
 			(config->framebuffer_bits_per_pixel / 8), MiB)/MiB;
@@ -293,13 +261,12 @@ void display_startup(device_t dev)
 	if (! framebuffer_base_mb)
 		framebuffer_base_mb = fb_base_mb();
 
+	config->framebuffer_size = framebuffer_size_mb * MiB;
+	config->framebuffer_base = framebuffer_base_mb * MiB;
+
 	mmu_config_range(framebuffer_base_mb, framebuffer_size_mb,
 		config->cache_policy);
 
-	/* Enable flushing after LCD writes if requested */
-	/* I don't understand this part yet.
-	   lcd_set_flush_dcache(config.cache_type & FDT_LCD_CACHE_FLUSH);
-	 */
 	printk(BIOS_SPEW, "LCD frame buffer at %dMiB to %dMiB\n", framebuffer_base_mb,
 		   framebuffer_base_mb + framebuffer_size_mb);
 
@@ -311,63 +278,34 @@ void display_startup(device_t dev)
 	 * light things up here once we're sure it's all working.
 	 */
 
-	/* init dc_a */
-	init_dca_regs();
+	/* Init dc */
+	if (tegra_dc_init(disp_ctrl)) {
+		printk(BIOS_ERR, "dc: init failed\n");
+		return;
+	}
 
-	/* power up perip */
-	dp_io_powerup();
+	/* Configure dc mode */
+	update_display_mode(disp_ctrl, config);
 
-	/* bringup dp */
-	dp_bringup(framebuffer_base_mb*MiB);
+	/* Enable dp */
+	dp_enable(dc->out);
 
-	/* init frame buffer */
+	/* Init frame buffer */
 	memset((void *)(framebuffer_base_mb*MiB), 0x00,
 			framebuffer_size_mb*MiB);
+
+	update_window(disp_ctrl, config);
+
+	printk(BIOS_INFO, "%s: display init done.\n", __func__);
 
 	/* tell depthcharge ...
 	 */
 	struct edid edid;
-	edid.x_resolution = 1376;
-	edid.y_resolution = 768;
-	edid.bytes_per_line = 1376 * 2;
-	edid.framebuffer_bits_per_pixel = 16;
+	edid.bytes_per_line = ((config->xres * config->framebuffer_bits_per_pixel / 8 + 31) /
+				32 * 32);
+	edid.x_resolution = edid.bytes_per_line / (config->framebuffer_bits_per_pixel / 8);
+	edid.y_resolution = config->yres;
+	edid.framebuffer_bits_per_pixel = config->framebuffer_bits_per_pixel;
 	set_vbe_mode_info_valid(&edid, (uintptr_t)(framebuffer_base_mb*MiB));
-
-	if (0){
-/* do we still need these? */
-	WRITEL(0x00000100, &dc->cmd.gen_incr_syncpt_ctrl);
-	WRITEL(0x0000011a, &dc->cmd.cont_syncpt_vsync);
-	WRITEL(0x00000000, &dc->cmd.int_type);
-	WRITEL(0x00000000, &dc->cmd.int_polarity);
-	WRITEL(0x00000000, &dc->cmd.int_mask);
-	WRITEL(0x00000000, &dc->cmd.int_enb);
-
-	val = PW0_ENABLE | PW1_ENABLE | PW2_ENABLE;
-	val |= PW3_ENABLE | PW4_ENABLE | PM0_ENABLE;
-	val |= PM1_ENABLE;
-	WRITEL(val, &dc->cmd.disp_pow_ctrl);
-
-	val = READL(&dc->cmd.disp_cmd);
-	val |= CTRL_MODE_C_DISPLAY << CTRL_MODE_SHIFT;
-	WRITEL(val, &dc->cmd.disp_cmd);
-
-	WRITEL(0x00000020, &dc->disp.mem_high_pri);
-	WRITEL(0x00000001, &dc->disp.mem_high_pri_timer);
-
-	for (i = 0; i < PIN_REG_COUNT; i++) {
-		WRITEL(rgb_enb_tab[i], &dc->com.pin_output_enb[i]);
-		WRITEL(rgb_polarity_tab[i], &dc->com.pin_output_polarity[i]);
-		WRITEL(rgb_data_tab[i], &dc->com.pin_output_data[i]);
-	}
-
-	for (i = 0; i < PIN_OUTPUT_SEL_COUNT; i++)
-		WRITEL(rgb_sel_tab[i], &dc->com.pin_output_sel[i]);
-
-	if (config->pixel_clock)
-		update_display_mode(&dc->disp, config);
-
-	if (!setup_window(&window, config))
-		update_window(dc, &window, config);
-	}
 }
 

@@ -1,7 +1,7 @@
 /*
  * drivers/video/tegra/dc/dpaux_regs.h
  *
- * Copyright (c) 2011, NVIDIA Corporation.
+ * Copyright (c) 2014, NVIDIA Corporation.
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -121,6 +121,8 @@
 #define DPAUX_HYBRID_SPARE_PAD_PWR_POWERUP		(0)
 #define DPAUX_HYBRID_SPARE_PAD_PWR_POWERDOWN		(1)
 
+#define	DPAUX_HPD_CONFIG_UNPLUG_MIN_TIME_SHIFT		(16)
+
 /* TODO: figure out which of the NV_ constants are the same as all the other
  * display port standard constants.
  */
@@ -133,7 +135,6 @@
 
 #define DP_AUX_MAX_BYTES		16
 
-#define DP_LCDVCC_TO_HPD_DELAY_MS	200
 #define DP_AUX_TIMEOUT_MS		40
 #define DP_DPCP_RETRY_SLEEP_NS		400
 
@@ -171,9 +172,12 @@ enum {
 #define EDP_PWR_OFF_TO_ON_TIME_MS	    (500+10)
 
 struct tegra_dc_dp_data {
+	struct tegra_dc			*dc;
 	struct tegra_dc_sor_data	sor;
 	void				*aux_base;
-	struct tegra_dc_dp_link_config	 link_cfg;
+	struct tegra_dc_dp_link_config	link_cfg;
+	u8				revision;
+	int				enabled;
 };
 
 
@@ -304,11 +308,4 @@ struct tegra_dc_dp_data {
 #define NV_DPCD_HDCP_BINFO_OFFSET			(0x0006802A)
 #define NV_DPCD_HDCP_KSV_FIFO_OFFSET			(0x0006802C)
 #define NV_DPCD_HDCP_AINFO_OFFSET			(0x0006803B)
-
-int tegra_dc_dpaux_read(struct tegra_dc_dp_data *dp, u32 cmd, u32 addr,
-			u8 *data, u32 *size, u32 *aux_stat);
-int dpaux_write(u32 addr, u32 size, u32 data);
-int dpaux_read(u32 addr, u32 size, u8 *data);
-void debug_dpaux_print(u32 addr, u32 size);
-void dp_link_training(u32 lanes, u32 speed);
 #endif /* __SOC_NVIDIA_TEGRA_DISPLAYPORT_H__ */

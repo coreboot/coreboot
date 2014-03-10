@@ -21,8 +21,10 @@
 
 #include <console/console.h>
 #include <device/device.h>
+#include <arch/io.h>
 #include <soc/nvidia/tegra/dc.h>
 #include <soc/nvidia/tegra124/sdram.h>
+#include "chip.h"
 #include <soc/display.h>
 
 /* this sucks, but for now, fb size/location are hardcoded.

@@ -28,9 +28,14 @@ chip soc/nvidia/tegra124
 	register "display_controller" = "TEGRA_ARM_DISPLAYA"
 	register "xres" = "1366"
 	register "yres" = "768"
-	# this setting is what nvidia does; it makes no sense
-	# and does not agree with hardware. Why'd they do it?
-	register "framebuffer_bits_per_pixel" = "18"
+
+	# bits per pixel and color depth
+	register "framebuffer_bits_per_pixel" = "16"
+	register "color_depth" = "6"
+	# "6" is defined as COLOR_DEPTH_B5G6R5 in dc_reg.h
+
+	register "panel_bits_per_pixel" = "18"
+
 	register "cache_policy" = "DCACHE_WRITETHROUGH"
 
 	# With some help from the mainbaord designer
@@ -40,12 +45,12 @@ chip soc/nvidia/tegra124
 	register "panel_vdd_gpio" = "0"
 	register "pwm" = "1"
 
-# taken from u-boot; these look wrong however.
-	register "vdd_delay" = "400"
-	register "vdd_data_delay" = "4"
-	register "data_backlight_delay" = "203"
-	register "backlight_pwm_delay" = "17"
-	register "pwm_backlight_en_delay" = "15"
+	# various panel delay time
+	register "vdd_delay_ms" = "200"
+	register "vdd_to_hpd_delay_ms" = "200"
+	register "hpd_unplug_min_us" = "2000"
+	register "hpd_plug_min_us" = "250"
+	register "hpd_irq_min_us" = "250"
 
 # How to compute these: xrandr --verbose will give you this:
 #Detailed mode: Clock 285.250 MHz, 272 mm x 181 mm
@@ -64,17 +69,33 @@ chip soc/nvidia/tegra124
 #  1366x768 (0x45)   76.4MHz -HSync -VSync *current +preferred
 #        h: width  1366 start 1502 end 1532 total 1592
 #        v: height  768 start  776 end  788 total  800
-# These numbers were provided by Nvidia.
-	register "href_to_sync" = "1"
-	register "hfront_porch" = "44"
-	register "hsync_width" = "46"
-	register "hback_porch" = "44"
+	register "href_to_sync" = "68"
+	register "hfront_porch" = "136"
+	register "hsync_width" = "30"
+	register "hback_porch" = "60"
 
-	register "vref_to_sync" = "1"
-	register "vfront_porch" = "6"
-	register "vsync_width" = "8"
-	register "vback_porch" = "6"
+	register "vref_to_sync" = "4"
+	register "vfront_porch" = "8"
+	register "vsync_width" = "12"
+	register "vback_porch" = "12"
 
 	# we *know* the pixel clock for this system.
-	register "pixel_clock" = "71"
+	# 1592 x 800 x 60Hz = 76416000
+	register "pixel_clock" = "76416000"
+	register "pll_div" = "2"
+
+	# use plld_out0 (ie, plld/2) as clock source
+	#  plld -> plld_out0 -> pclk
+	#  plld = plld_out0 * 2 = (pclk * pll_div) * 2
+	#       = 305664000Hz
+
+	# link configurations
+	register "lane_count" = "1"
+	register "enhanced_framing" = "1"
+	register "link_bw" = "10"
+	# "10" is defined as SOR_LINK_SPEED_G2_7 in sor.h
+
+	register "drive_current" = "0x13131313"
+	register "preemphasis" = "0x00000000"
+	register "postcursor" = "0"
 end

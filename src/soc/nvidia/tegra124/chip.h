@@ -23,14 +23,19 @@
 #include <soc/addressmap.h>
 #include "gpio.h"
 
+#define EFAULT  1
+#define EINVAL  2
+
 /* this is a misuse of the device tree. We're going to let it go for now but
  * we should at minimum have a struct for the display controller, since
  * the chip supports two.
  */
 struct soc_nvidia_tegra124_config {
-	int xres;
-	int yres;
-	int framebuffer_bits_per_pixel;
+	u32 xres;
+	u32 yres;
+	u32 framebuffer_bits_per_pixel;
+	u32 color_depth;
+	u32 panel_bits_per_pixel;
 	int cache_policy;
 	/* there are two. It's not unimaginable that we might someday
 	 * have two of these structs in a single mainboard.
@@ -60,32 +65,41 @@ struct soc_nvidia_tegra124_config {
 	 * This is stated to be four timings in the
 	 * u-boot docs. In any event, in coreboot, we generally
 	 * only delay long enough to let the panel wake up and then
-	 * do the control operations -- meaming, for *coreboot*
+	 * do the control operations -- meaning, for *coreboot*
 	 * we probably only need the vdd_delay, but payloads may
 	 * need the other info.
 	 */
 	/* Delay before from power on asserting vdd */
-	int vdd_delay;
-        /* delay between panel_vdd-rise and data-rise*/
-	int vdd_data_delay;
-	/* delay between data-rise and backlight_vdd-rise */
-	int data_backlight_delay;
-	/* delay between backlight_vdd and pwm-rise */
-	int backlight_pwm_delay;
-	/* delay between pwm-rise and backlight_en-rise */
-	int pwm_backlight_en_delay;
-	/* display timing.
-	 * we have not found a dts in which these are set */
-	int href_to_sync; /* u-boot code says 'set to 1' */
+	int vdd_delay_ms;
+
+	/* Delay before HPD high */
+	int vdd_to_hpd_delay_ms;
+
+	int hpd_unplug_min_us;
+	int hpd_plug_min_us;
+        int hpd_irq_min_us;
+
+	int href_to_sync;
 	int hsync_width;
 	int hback_porch;
 	int hfront_porch;
-	int vref_to_sync; /* u-boot code says 'set to 1' */
+	int vref_to_sync;
 	int vsync_width;
 	int vback_porch;
 	int vfront_porch;
 
 	int pixel_clock;
+	int pll_div;;
+
+	/* The minimum link configuraton settings */
+	u32 lane_count;
+	u32 enhanced_framing;
+	u32 link_bw;
+	u32 drive_current;
+	u32 preemphasis;
+	u32 postcursor;
+
+	void *dc_data;
 };
 
 #endif /* __SOC_NVIDIA_TEGRA124_CHIP_H__ */

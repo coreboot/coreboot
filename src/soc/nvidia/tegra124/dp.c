@@ -24,12 +24,11 @@
 #include <soc/addressmap.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra/dc.h>
+#include "chip.h"
 #include "sor.h"
 #include <soc/nvidia/tegra/displayport.h>
 
-extern int dump;
-unsigned long READL(void *p);
-void WRITEL(unsigned long value, void *p);
+struct tegra_dc_dp_data dp_data;
 
 static inline u32 tegra_dpaux_readl(struct tegra_dc_dp_data *dp, u32 reg)
 {
@@ -182,35 +181,6 @@ static int tegra_dc_dpaux_write_chunk(struct tegra_dc_dp_data *dp, u32 cmd,
 	return -1;
 }
 
-static int tegra_dc_dpaux_write(struct tegra_dc_dp_data *dp, u32 cmd, u32 addr,
-					u8 *data, u32 *size, u32 *aux_stat)
-{
-	u32 cur_size = 0;
-	u32 finished = 0;
-	u32 cur_left;
-	int ret = 0;
-
-	do {
-		cur_size = *size - finished;
-		if (cur_size > DP_AUX_MAX_BYTES)
-			cur_size = DP_AUX_MAX_BYTES;
-		cur_left = cur_size;
-		ret = tegra_dc_dpaux_write_chunk(dp, cmd, addr,
-						 data, &cur_left, aux_stat);
-
-		cur_size -= cur_left;
-		finished += cur_size;
-		addr += cur_size;
-		data += cur_size;
-
-		if (ret)
-			break;
-	} while (*size > finished);
-
-	*size = finished;
-	return ret;
-}
-
 static int tegra_dc_dpaux_read_chunk(struct tegra_dc_dp_data *dp, u32 cmd,
 					 u32 addr, u8 *data, u32 *size,
 					 u32 *aux_stat)
@@ -235,12 +205,10 @@ static int tegra_dc_dpaux_read_chunk(struct tegra_dc_dp_data *dp, u32 cmd,
 			return -1;
 	}
 
-	if (0) {
-		*aux_stat = tegra_dpaux_readl(dp, DPAUX_DP_AUXSTAT);
-		if (!(*aux_stat & DPAUX_DP_AUXSTAT_HPD_STATUS_PLUGGED)) {
-			printk(BIOS_SPEW, "dp: HPD is not detected\n");
-			//return EFAULT;
-		}
+	*aux_stat = tegra_dpaux_readl(dp, DPAUX_DP_AUXSTAT);
+	if (!(*aux_stat & DPAUX_DP_AUXSTAT_HPD_STATUS_PLUGGED)) {
+		printk(BIOS_SPEW, "dp: HPD is not detected\n");
+		return -1;
 	}
 
 	tegra_dpaux_writel(dp, DPAUX_DP_AUXADDR, addr);
@@ -262,8 +230,6 @@ static int tegra_dc_dpaux_read_chunk(struct tegra_dc_dp_data *dp, u32 cmd,
 			printk(BIOS_INFO, "dp: aux read transaction timeout\n");
 
 		*aux_stat = tegra_dpaux_readl(dp, DPAUX_DP_AUXSTAT);
-		printk(BIOS_DEBUG, "dp: %s: aux stat: 0x%08x\n", __func__,
-				*aux_stat);
 
 		if ((*aux_stat & DPAUX_DP_AUXSTAT_TIMEOUT_ERROR_PENDING) ||
 			(*aux_stat & DPAUX_DP_AUXSTAT_RX_ERROR_PENDING) ||
@@ -309,8 +275,6 @@ static int tegra_dc_dpaux_read_chunk(struct tegra_dc_dp_data *dp, u32 cmd,
 						DPAUX_DP_AUXDATA_READ_W(i));
 
 			*size = ((*aux_stat) & DPAUX_DP_AUXSTAT_REPLY_M_MASK);
-			printk(BIOS_INFO, "dp: aux read data %d bytes\n",
-					*size);
 			memcpy(data, temp_data, *size);
 
 			return 0;
@@ -325,230 +289,407 @@ static int tegra_dc_dpaux_read_chunk(struct tegra_dc_dp_data *dp, u32 cmd,
 	return -1;
 }
 
-int tegra_dc_dpaux_read(struct tegra_dc_dp_data *dp, u32 cmd, u32 addr,
-						u8 * data, u32 * size, u32 * aux_stat)
-{
-	u32 finished = 0;
-	u32 cur_size;
-	int ret = 0;
-
-	do {
-		cur_size = *size - finished;
-		if (cur_size > DP_AUX_MAX_BYTES)
-			cur_size = DP_AUX_MAX_BYTES;
-
-		ret = tegra_dc_dpaux_read_chunk(dp, cmd, addr,
-						data, &cur_size, aux_stat);
-
-		/* cur_size should be the real size returned */
-		addr += cur_size;
-		data += cur_size;
-		finished += cur_size;
-
-		if (ret)
-			break;
-
-	} while (*size > finished);
-
-	*size = finished;
-	return ret;
-}
-
 static int tegra_dc_dp_dpcd_read(struct tegra_dc_dp_data *dp, u32 cmd,
-								 u8 * data_ptr)
+				 u8 * data_ptr)
 {
 	u32 size = 1;
 	u32 status = 0;
 	int ret;
 
 	ret = tegra_dc_dpaux_read_chunk(dp, DPAUX_DP_AUXCTL_CMD_AUXRD,
-									cmd, data_ptr, &size, &status);
+					cmd, data_ptr, &size, &status);
 	if (ret)
 		printk(BIOS_ERR,
-			   "dp: Failed to read DPCD data. CMD 0x%x, Status 0x%x\n", cmd,
-			   status);
+			"dp: Failed to read DPCD data. CMD 0x%x, Status 0x%x\n",
+			cmd, status);
 
 	return ret;
 }
 
-static int tegra_dc_dp_init_max_link_cfg(struct tegra_dc_dp_data *dp,
-					 struct tegra_dc_dp_link_config *cfg)
+static int tegra_dc_dp_dpcd_write(struct tegra_dc_dp_data *dp, u32 cmd,
+				u8 data)
+{
+	u32 size = 1;
+	u32 status = 0;
+	int ret;
+
+	ret = tegra_dc_dpaux_write_chunk(dp, DPAUX_DP_AUXCTL_CMD_AUXWR,
+					cmd, &data, &size, &status);
+	if (ret)
+		printk(BIOS_ERR,
+		       "dp: Failed to write DPCD data. CMD 0x%x, Status 0x%x\n",
+		       cmd, status);
+	return ret;
+}
+
+static void tegra_dc_dpaux_enable(struct tegra_dc_dp_data *dp)
+{
+	/* clear interrupt */
+	tegra_dpaux_writel(dp, DPAUX_INTR_AUX, 0xffffffff);
+	/* do not enable interrupt for now. Enable them when Isr in place */
+	tegra_dpaux_writel(dp, DPAUX_INTR_EN_AUX, 0x0);
+
+	tegra_dpaux_writel(dp, DPAUX_HYBRID_PADCTL,
+		DPAUX_HYBRID_PADCTL_AUX_DRVZ_OHM_50 |
+		DPAUX_HYBRID_PADCTL_AUX_CMH_V0_70 |
+		0x18 << DPAUX_HYBRID_PADCTL_AUX_DRVI_SHIFT |
+		DPAUX_HYBRID_PADCTL_AUX_INPUT_RCV_ENABLE);
+
+	tegra_dpaux_writel(dp, DPAUX_HYBRID_SPARE,
+			DPAUX_HYBRID_SPARE_PAD_PWR_POWERUP);
+}
+
+static void tegra_dc_dp_dump_link_cfg(struct tegra_dc_dp_data *dp,
+	const struct tegra_dc_dp_link_config *link_cfg)
+{
+	printk(BIOS_INFO, "DP config: cfg_name               "
+		"cfg_value\n");
+	printk(BIOS_INFO, "           Lane Count             %d\n",
+		link_cfg->max_lane_count);
+	printk(BIOS_INFO, "           SupportEnhancedFraming %s\n",
+		link_cfg->support_enhanced_framing ? "Y" : "N");
+	printk(BIOS_INFO, "           Bandwidth              %d\n",
+		link_cfg->max_link_bw);
+	printk(BIOS_INFO, "           bpp                    %d\n",
+		link_cfg->bits_per_pixel);
+	printk(BIOS_INFO, "           EnhancedFraming        %s\n",
+		link_cfg->enhanced_framing ? "Y" : "N");
+	printk(BIOS_INFO, "           Scramble_enabled       %s\n",
+		link_cfg->scramble_ena ? "Y" : "N");
+	printk(BIOS_INFO, "           LinkBW                 %d\n",
+		link_cfg->link_bw);
+	printk(BIOS_INFO, "           lane_count             %d\n",
+		link_cfg->lane_count);
+	printk(BIOS_INFO, "           activespolarity        %d\n",
+		link_cfg->activepolarity);
+	printk(BIOS_INFO, "           active_count           %d\n",
+		link_cfg->active_count);
+	printk(BIOS_INFO, "           tu_size                %d\n",
+		link_cfg->tu_size);
+	printk(BIOS_INFO, "           active_frac            %d\n",
+		link_cfg->active_frac);
+	printk(BIOS_INFO, "           watermark              %d\n",
+		link_cfg->watermark);
+	printk(BIOS_INFO, "           hblank_sym             %d\n",
+		link_cfg->hblank_sym);
+	printk(BIOS_INFO, "           vblank_sym             %d\n",
+		link_cfg->vblank_sym);
+};
+
+/* Calcuate if given cfg can meet the mode request. */
+/* Return true if mode is possible, false otherwise. */
+static int tegra_dc_dp_calc_config(struct tegra_dc_dp_data *dp,
+	const struct soc_nvidia_tegra124_config *config,
+	struct tegra_dc_dp_link_config *link_cfg)
+{
+	const u32	link_rate = 27 * link_cfg->link_bw * 1000 * 1000;
+	const u64	f	  = 100000;	/* precision factor */
+
+	u32	num_linkclk_line; /* Number of link clocks per line */
+	u64	ratio_f; /* Ratio of incoming to outgoing data rate */
+
+	u64	frac_f;
+	u64	activesym_f;	/* Activesym per TU */
+	u64	activecount_f;
+	u32	activecount;
+	u32	activepolarity;
+	u64	approx_value_f;
+	u32	activefrac		  = 0;
+	u64	accumulated_error_f	  = 0;
+	u32	lowest_neg_activecount	  = 0;
+	u32	lowest_neg_activepolarity = 0;
+	u32	lowest_neg_tusize	  = 64;
+	u32	num_symbols_per_line;
+	u64	lowest_neg_activefrac	  = 0;
+	u64	lowest_neg_error_f	  = 64 * f;
+	u64	watermark_f;
+
+	int	i;
+	int	neg;
+
+	if (!link_rate || !link_cfg->lane_count || !config->pixel_clock ||
+		!link_cfg->bits_per_pixel)
+		return -1;
+
+	if ((u64)config->pixel_clock * link_cfg->bits_per_pixel >=
+		(u64)link_rate * 8 * link_cfg->lane_count)
+		return -1;
+
+	num_linkclk_line = (u32)((u64)link_rate * (u64)config->xres / config->pixel_clock);
+
+	ratio_f = (u64)config->pixel_clock * link_cfg->bits_per_pixel * f;
+	ratio_f /= 8;
+	ratio_f = (u64)(ratio_f / (link_rate * link_cfg->lane_count));
+
+	for (i = 64; i >= 32; --i) {
+		activesym_f	= ratio_f * i;
+		activecount_f	= (u64)(activesym_f / (u32)f) * f;
+		frac_f		= activesym_f - activecount_f;
+		activecount	= (u32)((u64)(activecount_f / (u32)f));
+
+		if (frac_f < (f / 2)) /* fraction < 0.5 */
+			activepolarity = 0;
+		else {
+			activepolarity = 1;
+			frac_f = f - frac_f;
+		}
+
+		if (frac_f != 0) {
+			frac_f = (u64)((f * f) / frac_f); /* 1/fraction */
+			if (frac_f > (15 * f))
+				activefrac = activepolarity ? 1 : 15;
+			else
+				activefrac = activepolarity ?
+					(u32)((u64)(frac_f / (u32)f)) + 1 :
+					(u32)((u64)(frac_f / (u32)f));
+		}
+
+		if (activefrac == 1)
+			activepolarity = 0;
+
+		if (activepolarity == 1)
+			approx_value_f = activefrac ? (u64)(
+				(activecount_f + (activefrac * f - f) * f) /
+				(activefrac * f)) :
+				activecount_f + f;
+		else
+			approx_value_f = activefrac ?
+				activecount_f + (u64)(f / activefrac) :
+				activecount_f;
+
+		if (activesym_f < approx_value_f) {
+			accumulated_error_f = num_linkclk_line *
+				(u64)((approx_value_f - activesym_f) / i);
+			neg = 1;
+		} else {
+			accumulated_error_f = num_linkclk_line *
+				(u64)((activesym_f - approx_value_f) / i);
+			neg = 0;
+		}
+
+		if ((neg && (lowest_neg_error_f > accumulated_error_f)) ||
+			(accumulated_error_f == 0)) {
+			lowest_neg_error_f = accumulated_error_f;
+			lowest_neg_tusize = i;
+			lowest_neg_activecount = activecount;
+			lowest_neg_activepolarity = activepolarity;
+			lowest_neg_activefrac = activefrac;
+
+			if (accumulated_error_f == 0)
+				break;
+		}
+	}
+
+	if (lowest_neg_activefrac == 0) {
+		link_cfg->activepolarity = 0;
+		link_cfg->active_count   = lowest_neg_activepolarity ?
+			lowest_neg_activecount : lowest_neg_activecount - 1;
+		link_cfg->tu_size	      = lowest_neg_tusize;
+		link_cfg->active_frac    = 1;
+	} else {
+		link_cfg->activepolarity = lowest_neg_activepolarity;
+		link_cfg->active_count   = (u32)lowest_neg_activecount;
+		link_cfg->tu_size	      = lowest_neg_tusize;
+		link_cfg->active_frac    = (u32)lowest_neg_activefrac;
+	}
+
+	watermark_f = (u64)((ratio_f * link_cfg->tu_size * (f - ratio_f)) / f);
+	link_cfg->watermark = (u32)((u64)((watermark_f + lowest_neg_error_f) /
+		f)) + link_cfg->bits_per_pixel / 4 - 1;
+	num_symbols_per_line = (config->xres * link_cfg->bits_per_pixel) /
+		(8 * link_cfg->lane_count);
+
+	if (link_cfg->watermark > 30) {
+		printk(BIOS_INFO,
+			"dp: sor setting: unable to get a good tusize, "
+			"force watermark to 30.\n");
+		link_cfg->watermark = 30;
+		return -1;
+	} else if (link_cfg->watermark > num_symbols_per_line) {
+		printk(BIOS_INFO,
+			"dp: sor setting: force watermark to the number "
+			"of symbols in the line.\n");
+		link_cfg->watermark = num_symbols_per_line;
+		return -1;
+	}
+
+	/* Refer to dev_disp.ref for more information. */
+	/* # symbols/hblank = ((SetRasterBlankEnd.X + SetRasterSize.Width - */
+	/*                      SetRasterBlankStart.X - 7) * link_clk / pclk) */
+	/*                      - 3 * enhanced_framing - Y */
+	/* where Y = (# lanes == 4) 3 : (# lanes == 2) ? 6 : 12 */
+	link_cfg->hblank_sym = (int)((u64)(((u64)(config->hback_porch +
+			config->hfront_porch + config->hsync_width - 7) *
+			link_rate) / config->pixel_clock)) -
+			3 * link_cfg->enhanced_framing -
+			(12 / link_cfg->lane_count);
+
+	if (link_cfg->hblank_sym < 0)
+		link_cfg->hblank_sym = 0;
+
+
+	/* Refer to dev_disp.ref for more information. */
+	/* # symbols/vblank = ((SetRasterBlankStart.X - */
+	/*                      SetRasterBlankEen.X - 25) * link_clk / pclk) */
+	/*                      - Y - 1; */
+	/* where Y = (# lanes == 4) 12 : (# lanes == 2) ? 21 : 39 */
+	link_cfg->vblank_sym = (int)((u64)((u64)(config->xres - 25)
+			* link_rate / config->pixel_clock)) - (36 /
+			link_cfg->lane_count) - 4;
+
+	if (link_cfg->vblank_sym < 0)
+		link_cfg->vblank_sym = 0;
+
+	link_cfg->is_valid = 1;
+	tegra_dc_dp_dump_link_cfg(dp, link_cfg);
+
+	return 0;
+}
+
+static int tegra_dc_dp_init_link_cfg(
+			struct soc_nvidia_tegra124_config *config,
+			struct tegra_dc_dp_data *dp,
+			struct tegra_dc_dp_link_config *link_cfg)
 {
 	u8 dpcd_data;
 	int ret;
 
-	ret = tegra_dc_dp_dpcd_read(dp, NV_DPCD_MAX_LANE_COUNT, &dpcd_data);
-	if (ret)
-		return ret;
+	link_cfg->max_lane_count = config->lane_count;
+	link_cfg->support_enhanced_framing = config->enhanced_framing;
+	link_cfg->max_link_bw = config->link_bw;
+	link_cfg->drive_current = config->drive_current;
+	link_cfg->preemphasis = config->preemphasis;
+	link_cfg->postcursor = config->postcursor;
+	link_cfg->bits_per_pixel = config->panel_bits_per_pixel;
 
-	cfg->max_lane_count = dpcd_data & NV_DPCD_MAX_LANE_COUNT_MASK;
-	printk(BIOS_INFO, "%s: max_lane_count: %d\n", __func__,
-		   cfg->max_lane_count);
+	CHECK_RET(tegra_dc_dp_dpcd_read(dp, NV_DPCD_EDP_CONFIG_CAP,
+			&dpcd_data));
+	link_cfg->alt_scramber_reset_cap =
+		(dpcd_data & NV_DPCD_EDP_CONFIG_CAP_ASC_RESET_YES) ?
+		1 : 0;
+	link_cfg->only_enhanced_framing =
+		(dpcd_data & NV_DPCD_EDP_CONFIG_CAP_FRAMING_CHANGE_YES) ?
+		1 : 0;
 
-	cfg->support_enhanced_framing =
-		(dpcd_data & NV_DPCD_MAX_LANE_COUNT_ENHANCED_FRAMING_YES) ? 1 : 0;
-	printk(BIOS_INFO, "%s: enh-framing: %d\n", __func__,
-		   cfg->support_enhanced_framing);
+	link_cfg->lane_count = link_cfg->max_lane_count;
+	link_cfg->link_bw = link_cfg->max_link_bw;
+	link_cfg->enhanced_framing = link_cfg->support_enhanced_framing;
 
-	ret = tegra_dc_dp_dpcd_read(dp, NV_DPCD_MAX_DOWNSPREAD, &dpcd_data);
-	if (ret)
-		return ret;
-	cfg->downspread = (dpcd_data & NV_DPCD_MAX_DOWNSPREAD_VAL_0_5_PCT) ? 1 : 0;
-	printk(BIOS_INFO, "%s: downspread: %d\n", __func__, cfg->downspread);
-
-	ret = tegra_dc_dp_dpcd_read(dp, NV_DPCD_MAX_LINK_BANDWIDTH,
-								&cfg->max_link_bw);
-	if (ret)
-		return ret;
-	printk(BIOS_INFO, "%s: max_link_bw: %d\n", __func__, cfg->max_link_bw);
-
-	// cfg->bits_per_pixel = dp->dc->pdata->default_out->depth;
-	cfg->bits_per_pixel = 18;
-
-	/* TODO: need to come from the board file */
-	/* Venice2 settings */
-	cfg->drive_current = 0x20202020;
-	cfg->preemphasis = 0;
-	cfg->postcursor = 0;
-
-	ret = tegra_dc_dp_dpcd_read(dp, NV_DPCD_EDP_CONFIG_CAP, &dpcd_data);
-	if (ret)
-		return ret;
-	cfg->alt_scramber_reset_cap =
-		(dpcd_data & NV_DPCD_EDP_CONFIG_CAP_ASC_RESET_YES) ? 1 : 0;
-	cfg->only_enhanced_framing =
-		(dpcd_data & NV_DPCD_EDP_CONFIG_CAP_FRAMING_CHANGE_YES) ? 1 : 0;
-	printk(BIOS_DEBUG, "%s: alt_reset_cap: %d, only_enh_framing: %d\n",
-		   __func__, cfg->alt_scramber_reset_cap, cfg->only_enhanced_framing);
-
-	cfg->lane_count = cfg->max_lane_count;
-	cfg->link_bw = NV_SOR_LINK_SPEED_G1_62;
-	cfg->enhanced_framing = cfg->support_enhanced_framing;
+	tegra_dc_dp_calc_config(dp, config, link_cfg);
 	return 0;
 }
 
-struct tegra_dc_dp_data dp_data;
-
-static int tegra_dc_dpcd_read_rev(struct tegra_dc_dp_data *dp, u8 * rev)
+void dp_init(void * _config)
 {
-	u32 size;
-	int ret;
-	u32 status = 0;
-
-	size = 3;
-	ret = tegra_dc_dpaux_read(dp, DPAUX_DP_AUXCTL_CMD_AUXRD,
-							  NV_DPCD_REV, rev, &size, &status);
-	if (ret) {
-		printk(BIOS_WARNING, "dp: Failed to read NV_DPCD_REV\n");
-		return ret;
-	}
-	return 0;
-}
-
-u32 dp_setup_timing(u32 width, u32 height);
-void dp_bringup(u32 winb_addr)
-{
+	struct soc_nvidia_tegra124_config *config = (void *)_config;
+	struct tegra_dc *dc = config->dc_data;
 	struct tegra_dc_dp_data *dp = &dp_data;
 
-	u32 dpcd_rev;
-	u32 pclk_freq;
+        // set up links among config, dc, dp and sor
+        dp->dc = dc;
+        dc->out = dp;
+        dp->sor.dc = dc;
 
-	u32 xres = 1366;	/* norrin display */
-	u32 yres = 768;
-
+	dp->sor.power_is_up = 0;
 	dp->sor.base = (void *)TEGRA_ARM_SOR;
+	dp->sor.pmc_base = (void *)TEGRA_PMC_BASE;
 	dp->sor.portnum = 0;
-
+	dp->sor.link_cfg = &dp->link_cfg;
 	dp->aux_base = (void *)TEGRA_ARM_DPAUX;
+	dp->link_cfg.is_valid = 0;
+	dp->enabled = 0;
+}
 
-	/* read panel info */
-	if (!tegra_dc_dpcd_read_rev(dp, (u8 *)&dpcd_rev)) {
-		printk(BIOS_INFO, "PANEL info:\n");
-		printk(BIOS_INFO, "--DPCP version(%#x): %d.%d\n",
-				dpcd_rev, (dpcd_rev >> 4) & 0x0f,
-				(dpcd_rev & 0x0f));
+static void tegra_dp_hpd_config(struct tegra_dc_dp_data *dp,
+				struct soc_nvidia_tegra124_config *config)
+{
+	u32 val;
+
+	val = config->hpd_plug_min_us |
+		(config->hpd_unplug_min_us <<
+		DPAUX_HPD_CONFIG_UNPLUG_MIN_TIME_SHIFT);
+	tegra_dpaux_writel(dp, DPAUX_HPD_CONFIG, val);
+
+	tegra_dpaux_writel(dp, DPAUX_HPD_IRQ_CONFIG, config->hpd_irq_min_us);
+}
+
+static int tegra_dp_hpd_plug(struct tegra_dc_dp_data *dp, int timeout_ms)
+{
+	u32 val;
+	u32 timeout = timeout_ms * 1000;
+	do {
+		val = tegra_dpaux_readl(dp, DPAUX_DP_AUXSTAT);
+		if (val & DPAUX_DP_AUXSTAT_HPD_STATUS_PLUGGED)
+			return 0;
+		udelay(100);
+		timeout -= 100;
+	} while (timeout > 0);
+	return -1;
+}
+
+void dp_enable(void * _dp)
+{
+	struct tegra_dc_dp_data *dp = _dp;
+	struct tegra_dc *dc = dp->dc;
+	struct soc_nvidia_tegra124_config *config = dc->config;
+
+	u8      data;
+	u32     retry;
+	int     ret;
+
+	tegra_dc_dpaux_enable(dp);
+
+	tegra_dp_hpd_config(dp, config);
+	if (tegra_dp_hpd_plug(dp, config->vdd_to_hpd_delay_ms) < 0) {
+		printk(BIOS_ERR, "dp: hpd plug failed\n");
+		goto error_enable;
 	}
 
-	if (tegra_dc_dp_init_max_link_cfg(dp, &dp->link_cfg))
+	if (tegra_dc_dp_init_link_cfg(config, dp, &dp->link_cfg)) {
 		printk(BIOS_ERR, "dp: failed to init link configuration\n");
+		goto error_enable;
+        }
 
-	dp_link_training((u32) (dp->link_cfg.lane_count),
-					 (u32) (dp->link_cfg.link_bw));
+	tegra_dc_sor_enable_dp(&dp->sor);
 
-	pclk_freq = dp_setup_timing(xres, yres);
-	printk(BIOS_DEBUG, "%s: pclk_freq: %d\n", __func__, pclk_freq);
+	tegra_dc_sor_set_panel_power(&dp->sor, 1);
 
+	/* Write power on to DPCD */
+	data = NV_DPCD_SET_POWER_VAL_D0_NORMAL;
+	retry = 0;
+	do {
+		ret = tegra_dc_dp_dpcd_write(dp,
+			NV_DPCD_SET_POWER, data);
+	} while ((retry++ < DP_POWER_ON_MAX_TRIES) && ret);
 
-	void dp_misc_setting(u32 panel_bpp, u32 width, u32 height,
-				u32 winb_addr, u32 lane_count,
-				u32 enhanced_framing, u32 panel_edp,
-				u32 pclkfreq, u32 linkfreq);
-
-	dp_misc_setting(dp->link_cfg.bits_per_pixel,
-				xres, yres, winb_addr,
-				(u32) dp->link_cfg.lane_count,
-				(u32) dp->link_cfg.enhanced_framing,
-				(u32) dp->link_cfg.alt_scramber_reset_cap,
-				pclk_freq, dp->link_cfg.link_bw * 27);
-}
-
-void debug_dpaux_print(u32 addr, u32 size)
-{
-	struct tegra_dc_dp_data *dp = &dp_data;
-	u32 status = 0;
-	u8 buf[16];
-	int i;
-
-	if ((size == 0) || (size > 16)) {
-		printk(BIOS_ERR, "dp: %s: invalid size %d\n", __func__, size);
-		return;
+	if (ret || retry >= DP_POWER_ON_MAX_TRIES) {
+		printk(BIOS_ERR,
+			"dp: failed to power on panel (0x%x)\n", ret);
+		goto error_enable;
 	}
 
-	if (tegra_dc_dpaux_read(dp, DPAUX_DP_AUXCTL_CMD_AUXRD,
-				addr, buf, &size, &status)) {
-		printk(BIOS_ERR, "******AuxRead Error: 0x%04x: status 0x%08x\n",
-				addr, status);
-		return;
-	}
-	printk(BIOS_DEBUG, "%s: addr: 0x%04x, size: %d\n", __func__,
-			addr, size);
-	for (i = 0; i < size; ++i)
-		printk(BIOS_DEBUG, " %02x", buf[i]);
-
-	printk(BIOS_DEBUG, "\n");
-}
-
-int dpaux_read(u32 addr, u32 size, u8 * data)
-{
-
-	struct tegra_dc_dp_data *dp = &dp_data;
-	u32 status = 0;
-
-	if ((size == 0) || (size > 16)) {
-		printk(BIOS_ERR, "dp: %s: invalid size %d\n", __func__, size);
-		return -1;
+	/* Confirm DP is plugging status */
+	if (!(tegra_dpaux_readl(dp, DPAUX_DP_AUXSTAT) &
+			DPAUX_DP_AUXSTAT_HPD_STATUS_PLUGGED)) {
+		printk(BIOS_ERR, "dp: could not detect HPD\n");
+		goto error_enable;
 	}
 
-	if (tegra_dc_dpaux_read(dp, DPAUX_DP_AUXCTL_CMD_AUXRD,
-					addr, data, &size, &status)) {
-		printk(BIOS_ERR, "dp: Failed to read reg %#x, status: %#x\n",
-				addr, status);
-		return -1;
-	}
+	/* Check DP version */
+	if (tegra_dc_dp_dpcd_read(dp, NV_DPCD_REV, &dp->revision))
+		printk(BIOS_ERR,
+			"dp: failed to read the revision number from sink\n");
 
-	return 0;
-}
+	tegra_dc_sor_set_power_state(&dp->sor, 1);
+	tegra_dc_sor_attach(&dp->sor);
 
-int dpaux_write(u32 addr, u32 size, u32 data)
-{
-	struct tegra_dc_dp_data *dp = &dp_data;
-	u32 status = 0;
-	int ret;
+	/*
+	 * Power down the unused lanes to save power
+	 * (about hundreds milli-watts, varies from boards).
+	 */
+	tegra_dc_sor_power_down_unused_lanes(&dp->sor);
 
-	ret = tegra_dc_dpaux_write(dp, DPAUX_DP_AUXCTL_CMD_AUXWR,
-							   addr, (u8 *) & data, &size, &status);
-	if (ret)
-		printk(BIOS_ERR, "dp: Failed to write to reg %#x, status: 0x%x\n",
-			   addr, status);
-	return ret;
+	dp->enabled = 1;
+error_enable:
+	return;
 }

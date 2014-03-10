@@ -85,7 +85,7 @@ struct dc_cmd_reg {
 
 	/* Address 0x040 ~ 0x043 */
 	u32 state_access;		/* _CMD_STATE_ACCESS_0 */
-	u32 state_ctrl;		/* _CMD_STATE_CONTROL_0 */
+	u32 state_ctrl;			/* _CMD_STATE_CONTROL_0 */
 	u32 disp_win_header;		/* _CMD_DISPLAY_WINDOW_HEADER_0 */
 	u32 reg_act_ctrl;		/* _CMD_REG_ACT_CONTROL_0 */
 };
@@ -195,14 +195,13 @@ enum dc_disp_pp_select {
 struct dc_disp_reg {
 	/* Address 0x400 ~ 0x40a */
 	u32 disp_signal_opt0;		/* _DISP_DISP_SIGNAL_OPTIONS0_0 */
-	u32 disp_signal_opt1;		/* _DISP_DISP_SIGNAL_OPTIONS1_0 */
+	u32 rsvd_401;
 	u32 disp_win_opt;		/* _DISP_DISP_WIN_OPTIONS_0 */
-	u32 mem_high_pri;		/* _DISP_MEM_HIGH_PRIORITY_0 */
-	u32 mem_high_pri_timer;	/* _DISP_MEM_HIGH_PRIORITY_TIMER_0 */
+	u32 rsvd_403[2];		/* 403 - 404 */
 	u32 disp_timing_opt;		/* _DISP_DISP_TIMING_OPTIONS_0 */
 	u32 ref_to_sync;		/* _DISP_REF_TO_SYNC_0 */
-	u32 sync_width;		/* _DISP_SYNC_WIDTH_0 */
-	u32 back_porch;		/* _DISP_BACK_PORCH_0 */
+	u32 sync_width;			/* _DISP_SYNC_WIDTH_0 */
+	u32 back_porch;			/* _DISP_BACK_PORCH_0 */
 	u32 disp_active;		/* _DISP_DISP_ACTIVE_0 */
 	u32 front_porch;		/* _DISP_FRONT_PORCH_0 */
 
@@ -217,64 +216,49 @@ struct dc_disp_reg {
 	struct _disp_v_pulse2 v_pulse3;	/* _DISP_V_PULSE2_ */
 	struct _disp_v_pulse2 v_pulse4;	/* _DISP_V_PULSE3_ */
 
-	/* Address 0x426 ~ 0x429 */
-	u32 m0_ctrl;			/* _DISP_M0_CONTROL_0 */
-	u32 m1_ctrl;			/* _DISP_M1_CONTROL_0 */
-	u32 di_ctrl;			/* _DISP_DI_CONTROL_0 */
-	u32 pp_ctrl;			/* _DISP_PP_CONTROL_0 */
+	u32 rsvd_426[8];		/* 426 - 42d */
 
-	/* Address 0x42a ~ 0x42d: _DISP_PP_SELECT_A/B/C/D_0 */
-	u32 pp_select[PP_SELECT_COUNT];
-
-	/* Address 0x42e ~ 0x435 */
+	/* Address 0x42e ~ 0x430 */
 	u32 disp_clk_ctrl;		/* _DISP_DISP_CLOCK_CONTROL_0 */
 	u32 disp_interface_ctrl;	/* _DISP_DISP_INTERFACE_CONTROL_0 */
 	u32 disp_color_ctrl;		/* _DISP_DISP_COLOR_CONTROL_0 */
-	u32 shift_clk_opt;		/* _DISP_SHIFT_CLOCK_OPTIONS_0 */
-	u32 data_enable_opt;		/* _DISP_DATA_ENABLE_OPTIONS_0 */
-	u32 serial_interface_opt;	/* _DISP_SERIAL_INTERFACE_OPTIONS_0 */
-	u32 lcd_spi_opt;		/* _DISP_LCD_SPI_OPTIONS_0 */
-	u32 border_color;		/* _DISP_BORDER_COLOR_0 */
 
-	/* Address 0x436 ~ 0x439 */
-	u32 color_key0_lower;		/* _DISP_COLOR_KEY0_LOWER_0 */
+	u32 rsvd_431[6];		/* 431 - 436 */
+
+	/* Address 0x437 ~ 0x439 */
 	u32 color_key0_upper;		/* _DISP_COLOR_KEY0_UPPER_0 */
 	u32 color_key1_lower;		/* _DISP_COLOR_KEY1_LOWER_0 */
 	u32 color_key1_upper;		/* _DISP_COLOR_KEY1_UPPER_0 */
 
-	u32 reserved0[2];		/* reserved_0[2] */
+	u32 reserved0[2];		/* 43a - 43b */
 
-	/* Address 0x43c ~ 0x442 */
+	/* Address 0x43c ~ 0x441 */
 	u32 cursor_foreground;		/* _DISP_CURSOR_FOREGROUND_0 */
 	u32 cursor_background;		/* _DISP_CURSOR_BACKGROUND_0 */
 	u32 cursor_start_addr;		/* _DISP_CURSOR_START_ADDR_0 */
 	u32 cursor_start_addr_ns;	/* _DISP_CURSOR_START_ADDR_NS_0 */
 	u32 cursor_pos;		/* _DISP_CURSOR_POSITION_0 */
 	u32 cursor_pos_ns;		/* _DISP_CURSOR_POSITION_NS_0 */
-	u32 seq_ctrl;			/* _DISP_INIT_SEQ_CONTROL_0 */
 
-	/* Address 0x442 ~ 0x446 */
-	u32 spi_init_seq_data_a;	/* _DISP_SPI_INIT_SEQ_DATA_A_0 */
-	u32 spi_init_seq_data_b;	/* _DISP_SPI_INIT_SEQ_DATA_B_0 */
-	u32 spi_init_seq_data_c;	/* _DISP_SPI_INIT_SEQ_DATA_C_0 */
-	u32 spi_init_seq_data_d;	/* _DISP_SPI_INIT_SEQ_DATA_D_0 */
+	u32 rsvd_442[62];		/* 442 - 47f */
 
-	u32 reserved1[0x39];		/* reserved1[0x39], */
-
-	/* Address 0x480 ~ 0x484 */
+	/* Address 0x480 ~ 0x483 */
 	u32 dc_mccif_fifoctrl;		/* _DISP_DC_MCCIF_FIFOCTRL_0 */
 	u32 mccif_disp0a_hyst;		/* _DISP_MCCIF_DISPLAY0A_HYST_0 */
 	u32 mccif_disp0b_hyst;		/* _DISP_MCCIF_DISPLAY0B_HYST_0 */
 	u32 mccif_disp0c_hyst;		/* _DISP_MCCIF_DISPLAY0C_HYST_0 */
-	u32 mccif_disp1b_hyst;		/* _DISP_MCCIF_DISPLAY1B_HYST_0 */
 
-	u32 reserved2[0x3b];		/* reserved2[0x3b] */
+	u32 rsvd_484[61];		/* 484 - 4c0 */
 
-	/* Address 0x4c0 ~ 0x4c1 */
-	u32 dac_crt_ctrl;		/* _DISP_DAC_CRT_CTRL_0 */
+	/* Address 0x4c1 */
 	u32 disp_misc_ctrl;		/* _DISP_DISP_MISC_CONTROL_0 */
+
+	u32 rsvd_4c2[34];		/* 4c2 - 4e3 */
+
+	/* Address 0x4e4 */
+	u32 blend_background_color;	/* _DISP_BLEND_BACKGROUND_COLOR_0 */
 };
-check_member(dc_disp_reg, disp_misc_ctrl, (0x4c1 - 0x400) * 4);
+check_member(dc_disp_reg, blend_background_color, (0x4e4 - 0x400) * 4);
 
 enum dc_winc_filter_p {
 	WINC_FILTER_COUNT	= 0x10,
@@ -310,9 +294,9 @@ struct dc_winc_reg {
 };
 check_member(dc_winc_reg, v_filter_p, (0x619 - 0x500) * 4);
 
-/* WIN A/B/C Register 0x700 ~ 0x714*/
+/* WIN A/B/C Register 0x700 ~ 0x719*/
 struct dc_win_reg {
-	/* Address 0x700 ~ 0x714 */
+	/* Address 0x700 ~ 0x719 */
 	u32 win_opt;			/* _WIN_WIN_OPTIONS_0 */
 	u32 byte_swap;			/* _WIN_BYTE_SWAP_0 */
 	u32 buffer_ctrl;		/* _WIN_BUFFER_CONTROL_0 */
@@ -324,22 +308,27 @@ struct dc_win_reg {
 	u32 v_initial_dda;		/* _WIN_V_INITIAL_DDA_0 */
 	u32 dda_increment;		/* _WIN_DDA_INCREMENT_0 */
 	u32 line_stride;		/* _WIN_LINE_STRIDE_0 */
-	u32 buf_stride;		/* _WIN_BUF_STRIDE_0 */
+	u32 buf_stride;			/* _WIN_BUF_STRIDE_0 */
 	u32 uv_buf_stride;		/* _WIN_UV_BUF_STRIDE_0 */
 	u32 buffer_addr_mode;		/* _WIN_BUFFER_ADDR_MODE_0 */
 	u32 dv_ctrl;			/* _WIN_DV_CONTROL_0 */
 	u32 blend_nokey;		/* _WIN_BLEND_NOKEY_0 */
-	u32 blend_1win;		/* _WIN_BLEND_1WIN_0 */
+	u32 blend_1win;			/* _WIN_BLEND_1WIN_0 */
 	u32 blend_2win_x;		/* _WIN_BLEND_2WIN_X_0 */
 	u32 blend_2win_y;		/* _WIN_BLEND_2WIN_Y_0 */
 	u32 blend_3win_xy;		/* _WIN_BLEND_3WIN_XY_0 */
 	u32 hp_fetch_ctrl;		/* _WIN_HP_FETCH_CONTROL_0 */
+	u32 global_alpha;		/* _WIN_GLOBAL_ALPHA */
+	u32 blend_layer_ctrl;		/* _WINBUF_BLEND_LAYER_CONTROL_0 */
+	u32 blend_match_select;		/* _WINBUF_BLEND_MATCH_SELECT_0 */
+	u32 blend_nomatch_select;	/* _WINBUF_BLEND_NOMATCH_SELECT_0 */
+	u32 blend_alpha_1bit;		/* _WINBUF_BLEND_ALPHA_1BIT_0 */
 };
-check_member(dc_win_reg, hp_fetch_ctrl, (0x714 - 0x700) * 4);
+check_member(dc_win_reg, blend_alpha_1bit, (0x719 - 0x700) * 4);
 
-/* WINBUF A/B/C Register 0x800 ~ 0x80a */
+/* WINBUF A/B/C Register 0x800 ~ 0x80d */
 struct dc_winbuf_reg {
-	/* Address 0x800 ~ 0x80a */
+	/* Address 0x800 ~ 0x80d */
 	u32 start_addr;		/* _WINBUF_START_ADDR_0 */
 	u32 start_addr_ns;		/* _WINBUF_START_ADDR_NS_0 */
 	u32 start_addr_u;		/* _WINBUF_START_ADDR_U_0 */
@@ -351,8 +340,11 @@ struct dc_winbuf_reg {
 	u32 addr_v_offset;		/* _WINBUF_ADDR_V_OFFSET_0 */
 	u32 addr_v_offset_ns;		/* _WINBUF_ADDR_V_OFFSET_NS_0 */
 	u32 uflow_status;		/* _WINBUF_UFLOW_STATUS_0 */
+	u32 buffer_surface_kind;	/* DC_WIN_BUFFER_SURFACE_KIND */
+	u32 rsvd_80c;
+	u32 start_addr_hi;		/* DC_WINBUF_START_ADDR_HI_0 */
 };
-check_member(dc_winbuf_reg, uflow_status, (0x80a - 0x800) * 4);
+check_member(dc_winbuf_reg, start_addr_hi, (0x80d - 0x800) * 4);
 
 /* Display Controller (DC_) regs */
 struct display_controller {
@@ -362,55 +354,28 @@ struct display_controller {
 	struct dc_com_reg com;		/* COM register 0x300 ~ 0x329 */
 	u32 reserved1[0xd6];
 
-	struct dc_disp_reg disp;	/* DISP register 0x400 ~ 0x4c1 */
-	u32 reserved2[0x3e];
+	struct dc_disp_reg disp;	/* DISP register 0x400 ~ 0x4e4 */
+	u32 reserved2[0x1b];
 
 	struct dc_winc_reg winc;	/* Window A/B/C 0x500 ~ 0x628 */
 	u32 reserved3[0xd7];
 
-	struct dc_win_reg win;		/* WIN A/B/C 0x700 ~ 0x714*/
-	u32 reserved4[0xeb];
+	struct dc_win_reg win;		/* WIN A/B/C 0x700 ~ 0x719*/
+	u32 reserved4[0xe6];
 
-	struct dc_winbuf_reg winbuf;	/* WINBUF A/B/C 0x800 ~ 0x80a */
+	struct dc_winbuf_reg winbuf;	/* WINBUF A/B/C 0x800 ~ 0x80d */
 };
 check_member(display_controller, winbuf, 0x800 * 4);
 
-#define BIT(pos)	(1U << pos)
+#define	BIT(pos)	(1U << pos)
 
 /* DC_CMD_DISPLAY_COMMAND 0x032 */
-#define CTRL_MODE_SHIFT		5
-#define CTRL_MODE_MASK		(0x3 << CTRL_MODE_SHIFT)
-enum {
-	CTRL_MODE_STOP,
-	CTRL_MODE_C_DISPLAY,
-	CTRL_MODE_NC_DISPLAY,
-};
-
-/* _WIN_COLOR_DEPTH_0 */
-enum win_color_depth_id {
-	COLOR_DEPTH_P1,
-	COLOR_DEPTH_P2,
-	COLOR_DEPTH_P4,
-	COLOR_DEPTH_P8,
-	COLOR_DEPTH_B4G4R4A4,
-	COLOR_DEPTH_B5G5R5A,
-	COLOR_DEPTH_B5G6R5,
-	COLOR_DEPTH_AB5G5R5,
-	COLOR_DEPTH_B8G8R8A8 = 12,
-	COLOR_DEPTH_R8G8B8A8,
-	COLOR_DEPTH_B6x2G6x2R6x2A8,
-	COLOR_DEPTH_R6x2G6x2B6x2A8,
-	COLOR_DEPTH_YCbCr422,
-	COLOR_DEPTH_YUV422,
-	COLOR_DEPTH_YCbCr420P,
-	COLOR_DEPTH_YUV420P,
-	COLOR_DEPTH_YCbCr422P,
-	COLOR_DEPTH_YUV422P,
-	COLOR_DEPTH_YCbCr422R,
-	COLOR_DEPTH_YUV422R,
-	COLOR_DEPTH_YCbCr422RA,
-	COLOR_DEPTH_YUV422RA,
-};
+#define  DISP_COMMAND_RAISE			(1 << 0)
+#define  DISP_CTRL_MODE_STOP			(0 << 5)
+#define  DISP_CTRL_MODE_C_DISPLAY		(1 << 5)
+#define  DISP_CTRL_MODE_NC_DISPLAY		(2 << 5)
+#define  DISP_COMMAND_RAISE_VECTOR(x)		(((x) & 0x1f) << 22)
+#define  DISP_COMMAND_RAISE_CHANNEL_ID(x)	(((x) & 0xf) << 27)
 
 /* DC_CMD_DISPLAY_POWER_CONTROL 0x036 */
 #define PW0_ENABLE		BIT(0)
@@ -423,20 +388,45 @@ enum win_color_depth_id {
 #define SPI_ENABLE		BIT(24)
 #define HSPI_ENABLE		BIT(25)
 
+/* DC_CMD_STATE_ACCESS 0x040 */
+#define  READ_MUX_ASSEMBLY	(0 << 0)
+#define  READ_MUX_ACTIVE	(1 << 0)
+#define  WRITE_MUX_ASSEMBLY	(0 << 2)
+#define  WRITE_MUX_ACTIVE	(1 << 2)
+
 /* DC_CMD_STATE_CONTROL 0x041 */
 #define GENERAL_ACT_REQ		BIT(0)
 #define WIN_A_ACT_REQ		BIT(1)
 #define WIN_B_ACT_REQ		BIT(2)
 #define WIN_C_ACT_REQ		BIT(3)
+#define WIN_D_ACT_REQ		BIT(4)
+#define WIN_H_ACT_REQ		BIT(5)
+#define CURSOR_ACT_REQ		BIT(7)
 #define GENERAL_UPDATE		BIT(8)
 #define WIN_A_UPDATE		BIT(9)
 #define WIN_B_UPDATE		BIT(10)
 #define WIN_C_UPDATE		BIT(11)
+#define WIN_D_UPDATE		BIT(12)
+#define WIN_H_UPDATE		BIT(13)
+#define CURSOR_UPDATE		BIT(15)
+#define NC_HOST_TRIG		BIT(24)
 
 /* DC_CMD_DISPLAY_WINDOW_HEADER 0x042 */
 #define WINDOW_A_SELECT		BIT(4)
 #define WINDOW_B_SELECT		BIT(5)
 #define WINDOW_C_SELECT		BIT(6)
+#define	WINDOW_D_SELECT		BIT(7)
+#define	WINDOW_H_SELECT		BIT(8)
+
+/* DC_DISP_DISP_WIN_OPTIONS 0x402 */
+#define	CURSOR_ENABLE		BIT(16)
+#define	SOR_ENABLE		BIT(25)
+#define	TVO_ENABLE		BIT(28)
+#define	DSI_ENABLE		BIT(29)
+#define	HDMI_ENABLE		BIT(30)
+
+/* DC_DISP_DISP_TIMING_OPTIONS 0x405 */
+#define	VSYNC_H_POSITION(x)	((x) & 0xfff)
 
 /* DC_DISP_DISP_CLOCK_CONTROL 0x42e */
 #define SHIFT_CLK_DIVIDER_SHIFT	0
@@ -458,118 +448,61 @@ enum {
 	PIXEL_CLK_DIVIDER_PCD24,
 	PIXEL_CLK_DIVIDER_PCD13,
 };
-
-/* DC_DISP_DISP_INTERFACE_CONTROL 0x42f */
-#define DATA_FORMAT_SHIFT	0
-#define DATA_FORMAT_MASK	(0xf << DATA_FORMAT_SHIFT)
-enum {
-	DATA_FORMAT_DF1P1C,
-	DATA_FORMAT_DF1P2C24B,
-	DATA_FORMAT_DF1P2C18B,
-	DATA_FORMAT_DF1P2C16B,
-	DATA_FORMAT_DF2S,
-	DATA_FORMAT_DF3S,
-	DATA_FORMAT_DFSPI,
-	DATA_FORMAT_DF1P3C24B,
-	DATA_FORMAT_DF1P3C18B,
-};
-#define DATA_ALIGNMENT_SHIFT	8
-enum {
-	DATA_ALIGNMENT_MSB,
-	DATA_ALIGNMENT_LSB,
-};
-#define DATA_ORDER_SHIFT	9
-enum {
-	DATA_ORDER_RED_BLUE,
-	DATA_ORDER_BLUE_RED,
-};
-
-/* DC_DISP_DATA_ENABLE_OPTIONS 0x432 */
-#define DE_SELECT_SHIFT		0
-#define DE_SELECT_MASK		(0x3 << DE_SELECT_SHIFT)
-#define DE_SELECT_ACTIVE_BLANK	0x0
-#define DE_SELECT_ACTIVE	0x1
-#define DE_SELECT_ACTIVE_IS	0x2
-#define DE_CONTROL_SHIFT	2
-#define DE_CONTROL_MASK		(0x7 << DE_CONTROL_SHIFT)
-enum {
-	DE_CONTROL_ONECLK,
-	DE_CONTROL_NORMAL,
-	DE_CONTROL_EARLY_EXT,
-	DE_CONTROL_EARLY,
-	DE_CONTROL_ACTIVE_BLANK,
-};
+#define  SHIFT_CLK_DIVIDER(x)		((x) & 0xff)
 
 /* DC_WIN_WIN_OPTIONS 0x700 */
-#define H_DIRECTION		BIT(0)
+#define  H_DIRECTION_DECREMENT(x)	((x) << 0)
+#define  V_DIRECTION_DECREMENT(x)	((x) << 2)
+#define  WIN_SCAN_COLUMN		BIT(4)
+#define  COLOR_EXPAND			BIT(6)
+#define  H_FILTER_ENABLE(x)		((x) << 8)
+#define  V_FILTER_ENABLE(x)		((x) << 10)
+#define  CP_ENABLE			BIT(16)
+#define  CSC_ENABLE			BIT(18)
+#define  DV_ENABLE			BIT(20)
+#define  INTERLACE_ENABLE		BIT(23)
+#define  INTERLACE_DISABLE		(0 << 23)
+#define  WIN_ENABLE			BIT(30)
+
+/* _WIN_COLOR_DEPTH_0 0x703 */
 enum {
-	H_DIRECTION_INCREMENT,
-	H_DIRECTION_DECREMENT,
+	COLOR_DEPTH_P8 = 3,
+	COLOR_DEPTH_B4G4R4A4,
+	COLOR_DEPTH_B5G5R5A,
+	COLOR_DEPTH_B5G6R5,
+	COLOR_DEPTH_AB5G5R5,
+	COLOR_DEPTH_B8G8R8A8 = 12,
+	COLOR_DEPTH_R8G8B8A8,
+	COLOR_DEPTH_YCbCr422 = 16,
+	COLOR_DEPTH_YUV422,
+	COLOR_DEPTH_YCbCr420P,
+	COLOR_DEPTH_YUV420P,
+	COLOR_DEPTH_YCbCr422P,
+	COLOR_DEPTH_YUV422P,
+	COLOR_DEPTH_N422R,
+	COLOR_DEPTH_YCbCr422R = COLOR_DEPTH_N422R,
+	COLOR_DEPTH_N422R_TRUE,
+	COLOR_DEPTH_YUV422R = COLOR_DEPTH_N422R_TRUE,
+	COLOR_DEPTH_CrYCbY422,
+	COLOR_DEPTH_VYUY422,
 };
-#define V_DIRECTION		BIT(2)
-enum {
-	V_DIRECTION_INCREMENT,
-	V_DIRECTION_DECREMENT,
-};
-#define COLOR_EXPAND		BIT(6)
-#define CP_ENABLE		BIT(16)
-#define DV_ENABLE		BIT(20)
-#define WIN_ENABLE		BIT(30)
-
-/* DC_WIN_BYTE_SWAP 0x701 */
-#define BYTE_SWAP_SHIFT		0
-#define BYTE_SWAP_MASK		(3 << BYTE_SWAP_SHIFT)
-enum {
-	BYTE_SWAP_NOSWAP,
-	BYTE_SWAP_SWAP2,
-	BYTE_SWAP_SWAP4,
-	BYTE_SWAP_SWAP4HW
-};
-
-/* DC_WIN_POSITION 0x704 */
-#define H_POSITION_SHIFT	0
-#define H_POSITION_MASK		(0x1FFF << H_POSITION_SHIFT)
-#define V_POSITION_SHIFT	16
-#define V_POSITION_MASK		(0x1FFF << V_POSITION_SHIFT)
-
-/* DC_WIN_SIZE 0x705 */
-#define H_SIZE_SHIFT		0
-#define H_SIZE_MASK		(0x1FFF << H_SIZE_SHIFT)
-#define V_SIZE_SHIFT		16
-#define V_SIZE_MASK		(0x1FFF << V_SIZE_SHIFT)
-
-/* DC_WIN_PRESCALED_SIZE 0x706 */
-#define H_PRESCALED_SIZE_SHIFT	0
-#define H_PRESCALED_SIZE_MASK	(0x7FFF << H_PRESCALED_SIZE)
-#define V_PRESCALED_SIZE_SHIFT	16
-#define V_PRESCALED_SIZE_MASK	(0x1FFF << V_PRESCALED_SIZE)
 
 /* DC_WIN_DDA_INCREMENT 0x709 */
-#define H_DDA_INC_SHIFT		0
-#define H_DDA_INC_MASK		(0xFFFF << H_DDA_INC_SHIFT)
-#define V_DDA_INC_SHIFT		16
-#define V_DDA_INC_MASK		(0xFFFF << V_DDA_INC_SHIFT)
+#define	H_DDA_INC(x)		(((x) & 0xffff) << 0)
+#define	V_DDA_INC(x)		(((x) & 0xffff) << 16)
 
-/* This holds information about a window which can be displayed */
-/* TODO: do we really need this for basic setup? Not sure yet. */
-struct disp_ctl_win {
-	enum win_color_depth_id fmt;	/* Color depth/format */
-	u32	bpp;		/* Bits per pixel */
-	u32	phys_addr;	/* Physical address in memory */
-	u32	x;		/* Horizontal address offset (bytes) */
-	u32	y;		/* Veritical address offset (bytes) */
-	u32	w;		/* Width of source window */
-	u32	h;		/* Height of source window */
-	u32	stride;		/* Number of bytes per line */
-	u32	out_x;		/* Left edge of output window (col) */
-	u32	out_y;		/* Top edge of output window (row) */
-	u32	out_w;		/* Width of output window in pixels */
-	u32	out_h;		/* Height of output window in pixels */
+struct tegra_dc {
+	void				*config;
+	void				*out;
+	void				*base;
 };
 
-void display_startup(device_t dev);
-void dp_bringup(u32 winb_addr);
+unsigned long READL(void * p);
+void WRITEL(unsigned long value, void * p);
 
+void display_startup(device_t dev);
+void dp_init(void * _config);
+void dp_enable(void * _dp);
 unsigned int fb_base_mb(void);
 
 #endif /* __SOC_NVIDIA_TEGRA_DC_H */

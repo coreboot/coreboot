@@ -17,7 +17,6 @@
 #ifndef __TEGRA124_SOR_H__
 #define __TEGRA124_SOR_H__
 
-
 #define NV_SOR_SUPER_STATE0					(0x1)
 #define NV_SOR_SUPER_STATE0_UPDATE_SHIFT			(0)
 #define NV_SOR_SUPER_STATE0_UPDATE_DEFAULT_MASK			(0x1)
@@ -830,11 +829,11 @@
 #define NV_SOR_DP_TPG_LANE0_PATTERN_HBR2_COMPLIANCE		(8)
 
 enum {
-	trainingPattern_Disabled	= 0,
-	trainingPattern_1		= 1,
-	trainingPattern_2		= 2,
-	trainingPattern_3		= 3,
-	trainingPattern_None		= 0xff
+	training_pattern_disabled	= 0,
+	training_pattern_1		= 1,
+	training_pattern_2		= 2,
+	training_pattern_3		= 3,
+	training_pattern_none		= 0xff
 };
 
 enum tegra_dc_sor_protocol {
@@ -842,10 +841,10 @@ enum tegra_dc_sor_protocol {
 	SOR_LVDS,
 };
 
-#define NV_SOR_LINK_SPEED_G1_62	6
-#define NV_SOR_LINK_SPEED_G2_7	10
-#define NV_SOR_LINK_SPEED_G5_4	20
-#define NV_SOR_LINK_SPEED_LVDS	7
+#define SOR_LINK_SPEED_G1_62	6
+#define SOR_LINK_SPEED_G2_7	10
+#define SOR_LINK_SPEED_G5_4	20
+#define SOR_LINK_SPEED_LVDS	7
 
 /* todo: combine this and the intel_dp struct into one struct. */
 struct tegra_dc_dp_link_config {
@@ -885,21 +884,37 @@ struct tegra_dc_dp_link_config {
  * having two channels.
  */
 struct tegra_dc_sor_data {
-	void	*base;
-	u8					 portnum;	/* 0 or 1 */
+	struct tegra_dc			*dc;
+	void				*base;
+	void				*pmc_base;
+	u8				 portnum;	/* 0 or 1 */
+	struct tegra_dc_dp_link_config *link_cfg;
 	int   power_is_up;
 };
 
 #define TEGRA_SOR_TIMEOUT_MS		1000
 #define TEGRA_SOR_ATTACH_TIMEOUT_MS	100000
 
-void tegra_dc_sor_set_dp_linkctl(struct tegra_dc_sor_data *sor,
-				 int ena,
-				 u8 training_pattern,
-				 const struct tegra_dc_dp_link_config *cfg);
-void tegra_dc_sor_set_dp_lanedata(struct tegra_dc_sor_data *sor,
-				  u32 lane, u32 pre_emphasis,
-				  u32 drive_current, u32 tx_pu);
+#define CHECK_RET(x)			\
+	do {				\
+		ret = (x);		\
+		if (ret != 0)		\
+			return ret;	\
+	} while (0)
 
-
+void tegra_dc_sor_enable_dp(struct tegra_dc_sor_data *sor);
+int tegra_dc_sor_set_power_state(struct tegra_dc_sor_data *sor, int pu_pd);
+void tegra_dc_sor_set_dp_linkctl(struct tegra_dc_sor_data *sor, int ena,
+	u8 training_pattern, const struct tegra_dc_dp_link_config *link_cfg);
+void tegra_dc_sor_set_link_bandwidth(struct tegra_dc_sor_data *sor, u8 link_bw);
+void tegra_dc_sor_set_lane_count(struct tegra_dc_sor_data *sor, u8 lane_count);
+void tegra_dc_sor_set_panel_power(struct tegra_dc_sor_data *sor,
+				  int power_up);
+void tegra_dc_sor_set_internal_panel(struct tegra_dc_sor_data *sor, int is_int);
+void tegra_dc_sor_read_link_config(struct tegra_dc_sor_data *sor, u8 *link_bw,
+				   u8 *lane_count);
+void tegra_dc_sor_attach(struct tegra_dc_sor_data *sor);
+void tegra_dc_sor_set_lane_parm(struct tegra_dc_sor_data *sor,
+			const struct tegra_dc_dp_link_config *link_cfg);
+void tegra_dc_sor_power_down_unused_lanes(struct tegra_dc_sor_data *sor);
 #endif /*__TEGRA124_SOR_H__ */

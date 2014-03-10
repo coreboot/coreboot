@@ -291,6 +291,7 @@ agesawrapper_amdinitpost (
 
 	AmdCreateStruct (&AmdParamStruct);
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
+	PostParams->MemConfig.BottomIo = 0xC0;
 	status = AmdInitPost (PostParams);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(PostParams->StdHeader.HeapStatus);
 	AmdReleaseStruct (&AmdParamStruct);

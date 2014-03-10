@@ -21,10 +21,8 @@ ramstage-$(CONFIG_BACKUP_DEFAULT_SMM_REGION) += backup_default_smm.c
 
 ifeq ($(CONFIG_SMM_MODULES),y)
 smmstub-y += smm_stub.S
-smmstub-y += smm_module_header.c
 
 smm-y += smiutil.c
-smm-y += smm_module_header.c
 smm-y += smm_module_handler.c
 
 ramstage-y += smm_module_loader.c
@@ -40,7 +38,7 @@ $(obj)/cpu/x86/smm/smmstub.o: $$(smmstub-objs)
 # Link the SMM stub module with a 0-byte heap.
 $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/smmstub.o, 0))
 
-$(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf
+$(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf.rmod
 	$(OBJCOPY) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smmstub.ramstage.o: $(obj)/cpu/x86/smm/smmstub
@@ -55,7 +53,7 @@ $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME)
 
 $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE)))
 
-$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf
+$(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf.rmod
 	$(OBJCOPY) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smm.ramstage.o: $(obj)/cpu/x86/smm/smm

@@ -58,6 +58,8 @@ apic_to_cpu_num:
 .text
 .code16
 .global ap_start
+.global __rmodule_entry
+__rmodule_entry:
 ap_start:
 	cli
 	xorl	%eax, %eax

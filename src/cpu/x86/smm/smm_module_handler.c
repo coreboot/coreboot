@@ -20,6 +20,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
+#include <rmodule.h>
 
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
@@ -113,8 +114,16 @@ void *smm_get_save_state(int cpu)
 	return base;
 }
 
-void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime)
+void asmlinkage smm_handler_start(void *arg)
 {
+	const struct smm_module_params *p;
+	const struct smm_runtime *runtime;
+	int cpu;
+
+	p = arg;
+	runtime = p->runtime;
+	cpu = p->cpu;
+
 	/* Make sure to set the global runtime. It's OK to race as the value
 	 * will be the same across CPUs as well as multiple SMIs. */
 	if (smm_runtime == NULL)
@@ -156,6 +165,8 @@ void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime)
 	/* De-assert SMI# signal to allow another SMI */
 	smi_set_eos();
 }
+
+RMODULE_ENTRY(smm_handler_start);
 
 /* Provide a default implementation for all weak handlers so that relocation
  * entries in the modules make sense. Without default implementations the

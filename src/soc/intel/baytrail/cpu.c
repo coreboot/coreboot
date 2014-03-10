@@ -112,11 +112,17 @@ static void adjust_apic_id_map(struct smm_loader_params *smm_params)
 		runtime->apic_id_to_cpu[i] = mp_get_apic_id(i);
 }
 
-static void asmlinkage
-cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
+static void asmlinkage cpu_smm_do_relocation(void *arg)
 {
 	msr_t smrr;
 	em64t100_smm_state_save_area_t *smm_state;
+	const struct smm_module_params *p;
+	const struct smm_runtime *runtime;
+	int cpu;
+
+	p = arg;
+	runtime = p->runtime;
+	cpu = p->cpu;
 
 	if (cpu >= CONFIG_MAX_CPUS) {
 		printk(BIOS_CRIT,

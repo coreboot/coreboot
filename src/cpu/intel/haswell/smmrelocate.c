@@ -164,11 +164,18 @@ static int bsp_setup_msr_save_state(struct smm_relocation_params *relo_params)
 /* The relocation work is actually performed in SMM context, but the code
  * resides in the ramstage module. This occurs by trampolining from the default
  * SMRAM entry point to here. */
-static void asmlinkage
-cpu_smm_do_relocation(void *arg, int cpu, const struct smm_runtime *runtime)
+static void asmlinkage cpu_smm_do_relocation(void *arg)
 {
 	msr_t mtrr_cap;
-	struct smm_relocation_params *relo_params = arg;
+	struct smm_relocation_params *relo_params;
+	const struct smm_module_params *p;
+	const struct smm_runtime *runtime;
+	int cpu;
+
+	p = arg;
+	runtime = p->runtime;
+	relo_params = p->arg;
+	cpu = p->cpu;
 
 	if (cpu >= CONFIG_MAX_CPUS) {
 		printk(BIOS_CRIT,

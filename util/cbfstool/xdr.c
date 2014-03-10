@@ -25,12 +25,19 @@
 #include <stdint.h>
 #include "common.h"
 
-int bgets(struct buffer *input, void *output, size_t len)
+size_t bgets(struct buffer *input, void *output, size_t len)
 {
 	len = input->size < len ? input->size : len;
 	memmove(output, input->data, len);
 	input->data += len;
 	input->size -= len;
+	return len;
+}
+
+size_t bputs(struct buffer *b, const void *data, size_t len)
+{
+	memmove(&b->data[b->size], data, len);
+	b->size += len;
 	return len;
 }
 

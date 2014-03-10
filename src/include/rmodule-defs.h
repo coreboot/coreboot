@@ -25,30 +25,6 @@
 #define RMODULE_MAGIC 0xf8fe
 #define RMODULE_VERSION_1 1
 
-#define FIELD_ENTRY(x_) ((uint32_t)&x_)
-#define RMODULE_HEADER(entry_, type_)					\
-{									\
-	.magic = RMODULE_MAGIC,						\
-	.version = RMODULE_VERSION_1,					\
-	.type = type_,							\
-	.payload_begin_offset = FIELD_ENTRY(_payload_begin_offset),	\
-	.payload_end_offset = FIELD_ENTRY(_payload_end_offset),		\
-	.relocations_begin_offset  =					\
-		FIELD_ENTRY(_relocations_begin_offset),			\
-	.relocations_end_offset =					\
-		FIELD_ENTRY(_relocations_end_offset),			\
-	.module_link_start_address =					\
-		FIELD_ENTRY(_module_link_start_addr),			\
-	.module_program_size = FIELD_ENTRY(_module_program_size),	\
-	.module_entry_point = FIELD_ENTRY(entry_),			\
-	.parameters_begin = FIELD_ENTRY(_module_params_begin),		\
-	.parameters_end = FIELD_ENTRY(_module_params_end),		\
-	.bss_begin = FIELD_ENTRY(_bss),					\
-	.bss_end = FIELD_ENTRY(_ebss),					\
-}
-
-/* Private data structures below should not be used directly. */
-
 /* All fields with '_offset' in the name are byte offsets into the flat blob.
  * The linker and the linker script takes are of assigning the values.  */
 struct rmodule_header {

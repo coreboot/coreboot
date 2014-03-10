@@ -93,7 +93,7 @@ generic_hub_debounce(usbdev_t *const dev, const int port)
 	return 0; /* ignore timeouts, try to always go on */
 }
 
-static int
+int
 generic_hub_wait_for_port(usbdev_t *const dev, const int port,
 			  const int wait_for,
 			  int (*const port_op)(usbdev_t *, int),
@@ -132,38 +132,6 @@ generic_hub_resetport(usbdev_t *const dev, const int port)
 	else if (!ret)
 		usb_debug("generic_hub: Reset timed out at port %d\n", port);
 
-	return 0; /* ignore timeouts, try to always go on */
-}
-
-int
-generic_hub_rh_resetport(usbdev_t *const dev, const int port)
-{
-	generic_hub_t *const hub = GEN_HUB(dev);
-
-	/*
-	 * Resetting a root hub port should hold 50ms with pulses of at
-	 * least 10ms and gaps of at most 3ms (usb20 spec 7.1.7.5).
-	 * After reset, the port will be enabled automatically.
-	 */
-	int total = 500; /* 500 * 100us = 50ms */
-	while (total > 0) {
-		if (hub->ops->start_port_reset(dev, port) < 0)
-			return -1;
-
-		/* wait 100ms for the hub to finish the reset pulse */
-		const int timeout = generic_hub_wait_for_port(
-				/* time out after 1000 * 100us = 100ms */
-				dev, port, 0, hub->ops->port_in_reset, 1000, 100);
-		const int reset_time = 1000 - timeout;
-		if (timeout < 0)
-			return -1;
-		else if (!timeout)
-			usb_debug("generic_hub: Reset timed out at port %d\n",
-				  port);
-		else if (reset_time < 100) /* i.e. < 100 * 100us */
-			usb_debug("generic_hub: Port reset too short\n");
-		total -= reset_time;
-	}
 	return 0; /* ignore timeouts, try to always go on */
 }
 

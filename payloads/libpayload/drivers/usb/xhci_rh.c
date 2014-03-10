@@ -100,12 +100,22 @@ xhci_rh_port_speed(usbdev_t *const dev, const int port)
 }
 
 static int
-xhci_rh_start_port_reset(usbdev_t *const dev, const int port)
+xhci_rh_reset_port(usbdev_t *const dev, const int port)
 {
 	xhci_t *const xhci = XHCI_INST(dev->controller);
 	volatile u32 *const portsc = &xhci->opreg->prs[port - 1].portsc;
 
+	/* Trigger port reset. */
 	*portsc = (*portsc & PORTSC_RW_MASK) | PORTSC_PR;
+
+	/* Wait for port_in_reset == 0, up to 150 * 1000us = 150ms */
+	if (generic_hub_wait_for_port(dev, port, 0, xhci_rh_port_in_reset,
+				      150, 1000) == 0)
+		usb_debug("xhci_rh: Reset timed out at port %d\n", port);
+	else
+		/* Clear reset status bits, since port is out of reset. */
+		*portsc = (*portsc & PORTSC_RW_MASK) | PORTSC_PRC | PORTSC_WRC;
+
 	return 0;
 }
 
@@ -118,8 +128,8 @@ static const generic_hub_ops_t xhci_rh_ops = {
 	.port_speed		= xhci_rh_port_speed,
 	.enable_port		= NULL,
 	.disable_port		= NULL,
-	.start_port_reset	= xhci_rh_start_port_reset,
-	.reset_port		= generic_hub_rh_resetport,
+	.start_port_reset	= NULL,
+	.reset_port		= xhci_rh_reset_port,
 };
 
 void

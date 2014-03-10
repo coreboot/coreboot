@@ -72,8 +72,11 @@ typedef struct generic_hub {
 } generic_hub_t;
 
 void generic_hub_destroy(usbdev_t *);
+int generic_hub_wait_for_port(usbdev_t *const dev, const int port,
+			      const int wait_for,
+			      int (*const port_op)(usbdev_t *, int),
+			      int timeout_steps, const int step_us);
 int  generic_hub_resetport(usbdev_t *, int port);
-int  generic_hub_rh_resetport(usbdev_t *, int port); /* root hubs have different timing requirements */
 int  generic_hub_scanport(usbdev_t *, int port);
 /* the provided generic_hub_ops struct has to be static */
 int generic_hub_init(usbdev_t *, int num_ports, const generic_hub_ops_t *);

@@ -24,10 +24,6 @@
 #include "vboot_context.h"
 #include "vboot_handoff.h"
 
-static void vboot_wrapper(struct vboot_context *context);
-
-DEFINE_RMODULE_HEADER(vboot_wrapper_header, vboot_wrapper, RMODULE_TYPE_VBOOT);
-
 /* Keep a global context pointer around for the callbacks to use. */
 static struct vboot_context *gcontext;
 
@@ -63,12 +59,14 @@ static void parse_component(const struct components *components, int num,
 	fw->size = (uint32_t)components->entries[num].size;
 }
 
-static void vboot_wrapper(struct vboot_context *context)
+static void vboot_wrapper(void *arg)
 {
 	int i;
 	VbError_t res;
 	const struct components *components;
+	struct vboot_context *context;
 
+	context = arg;
 	gcontext = context;
 
 	VbExDebug("Calling VbInit()\n");
@@ -266,3 +264,4 @@ VbError_t VbExTpmSendReceive(const uint8_t *request, uint32_t request_length,
 	return VBERROR_SUCCESS;
 }
 
+RMODULE_ENTRY(vboot_wrapper);

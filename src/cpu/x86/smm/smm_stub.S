@@ -61,6 +61,8 @@ fallback_stack_top:
 .text
 .code16
 .global smm_handler_start
+.global __rmodule_entry
+__rmodule_entry:
 smm_handler_start:
 	movl	$(smm_relocate_gdt), %ebx
 	data32	lgdt (%ebx)
@@ -132,11 +134,13 @@ smm_trampoline32:
 2:
 	/* Call into the c-based SMM relocation function with the platform
 	 * parameters. Equivalent to:
-	 *   c_handler(c_handler_params, cpu_num, smm_runtime);
+	 *   struct arg = { c_handler_params, cpu_num, smm_runtime {;
+	 *   c_handler(&arg)
 	 */
 	push	$(smm_runtime)
 	push	%ecx
 	push	c_handler_arg
+	push	%esp
 	mov	c_handler, %eax
 	call	*%eax
 

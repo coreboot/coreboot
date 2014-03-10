@@ -133,17 +133,21 @@ ramstage-y += rmodule.c
 romstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += rmodule.c
 
 RMODULE_LDSCRIPT := $(src)/lib/rmodule.ld
-RMODULE_LDFLAGS  := -nostartfiles -shared -z defs -nostdlib -Bsymbolic -T $(RMODULE_LDSCRIPT)
+RMODULE_LDFLAGS  := -nostartfiles -Wl,--emit-relocs -Wl,-z,defs -Wl,-Bsymbolic -Wl,-T,$(RMODULE_LDSCRIPT)
 
 # rmodule_link_rules is a function that should be called with:
 # (1) the object name to link
 # (2) the dependencies
 # (3) heap size of the relocatable module
-# It will create the necessary Make rules.
+# It will create the necessary Make rules to create a rmodule. The resulting
+# rmdoule is named $(1).rmod
 define rmodule_link
-$(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(obj)/ldoptions
-	$$(LD) $$(RMODULE_LDFLAGS) --defsym=__heap_size=$(strip $(3)) -o $$@ $(strip $(2))
+$(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(obj)/ldoptions $$(RMODTOOL)
+	$$(CC) $$(CFLAGS) $$(RMODULE_LDFLAGS) -Wl,--defsym=__heap_size=$(strip $(3)) -o $$@ -Wl,--start-group $(strip $(2)) $$(LIBGCC_FILE_NAME) -Wl,--end-group
 	$$(NM) -n $$@ > $$(basename $$@).map
+
+$(strip $(1)).rmod: $(strip $(1))
+	$$(RMODTOOL) -i $$^ -o $$@
 endef
 
 endif

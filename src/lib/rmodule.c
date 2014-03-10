@@ -26,44 +26,6 @@
 /* Change this define to get more verbose debugging for module loading. */
 #define PK_ADJ_LEVEL BIOS_NEVER
 
-#if CONFIG_ARCH_X86
-/*
- * On X86, the only relocations currently allowed are R_386_RELATIVE which
- * have '0' for the symbol info in the relocation metadata (in r_info).
- * The reason is that the module is fully linked and just has the relocations'
- * locations.
- */
-typedef struct {
-	uint32_t r_offset;
-	uint32_t r_info;
-} Elf32_Rel;
-
-#define R_386_RELATIVE 8
-
-#define RELOCTION_ENTRY_SIZE sizeof(Elf32_Rel)
-static inline int rmodule_reloc_offset(const void *reloc)
-{
-	const Elf32_Rel *rel = reloc;
-	return rel->r_offset;
-}
-
-static inline int rmodule_reloc_valid(const void *reloc)
-{
-	const Elf32_Rel *rel = reloc;
-	return (rel->r_info == R_386_RELATIVE);
-}
-
-static inline void *remodule_next_reloc(const void *reloc)
-{
-	const Elf32_Rel *rel = reloc;
-	rel++;
-	return (void *)rel;
-}
-
-#else
-#error Arch needs to add relocation information support for RMODULE
-#endif
-
 static inline int rmodule_is_loaded(const struct rmodule *module)
 {
 	return module->location != NULL;
@@ -71,7 +33,7 @@ static inline int rmodule_is_loaded(const struct rmodule *module)
 
 /* Calculate a loaded program address based on the blob address. */
 static inline void *rmodule_load_addr(const struct rmodule *module,
-                                      uint32_t blob_addr)
+                                      uintptr_t blob_addr)
 {
 	char *loc = module->location;
 	return &loc[blob_addr - module->header->module_link_start_address];
@@ -151,13 +113,13 @@ static void rmodule_clear_bss(struct rmodule *module)
 	memset(begin, 0, size);
 }
 
-static inline int rmodule_number_relocations(const struct rmodule *module)
+static inline size_t rmodule_number_relocations(const struct rmodule *module)
 {
-	int r;
+	size_t r;
 
 	r = module->header->relocations_end_offset;
 	r -= module->header->relocations_begin_offset;
-	r /= RELOCTION_ENTRY_SIZE;
+	r /= sizeof(uintptr_t);
 	return r;
 }
 
@@ -176,51 +138,33 @@ static void rmodule_copy_payload(const struct rmodule *module)
 	memcpy(module->location, module->payload, module->payload_size);
 }
 
-static inline uint32_t *rmodule_adjustment_location(const struct rmodule *module,
-                                               const void *reloc)
-{
-	int reloc_offset;
-
-	/* Don't relocate header field entries -- only program relocations. */
-	reloc_offset = rmodule_reloc_offset(reloc);
-	if (reloc_offset < module->header->module_link_start_address)
-		return NULL;
-
-	return rmodule_load_addr(module, reloc_offset);
-}
-
 static int rmodule_relocate(const struct rmodule *module)
 {
-	int num_relocations;
-	const void *reloc;
-	uint32_t adjustment;
+	size_t num_relocations;
+	const uintptr_t *reloc;
+	uintptr_t adjustment;
 
 	/* Each relocation needs to be adjusted relative to the beginning of
 	 * the loaded program. */
-	adjustment = (uint32_t)rmodule_load_addr(module, 0);
+	adjustment = (uintptr_t)rmodule_load_addr(module, 0);
 
 	reloc = module->relocations;
 	num_relocations = rmodule_number_relocations(module);
 
-	printk(BIOS_DEBUG, "Processing %d relocs with adjust value of 0x%08x\n",
+	printk(BIOS_DEBUG, "Processing %zu relocs. Offset value of 0x%08x\n",
 	       num_relocations, adjustment);
 
 	while (num_relocations > 0) {
-		uint32_t *adjust_loc;
-
-		if (!rmodule_reloc_valid(reloc))
-			return -1;
+		uintptr_t *adjust_loc;
 
 		/* If the adjustment location is non-NULL adjust it. */
-		adjust_loc = rmodule_adjustment_location(module, reloc);
-		if (adjust_loc != NULL) {
-			printk(PK_ADJ_LEVEL, "Adjusting %p: 0x%08x -> 0x%08x\n",
+		adjust_loc = rmodule_load_addr(module, *reloc);
+		printk(PK_ADJ_LEVEL, "Adjusting %p: 0x%08x -> 0x%08x\n",
 			       adjust_loc, *adjust_loc,
 			       *adjust_loc + adjustment);
 			*adjust_loc += adjustment;
-		}
 
-		reloc = remodule_next_reloc(reloc);
+		reloc++;
 		num_relocations--;
 	}
 
@@ -232,8 +176,8 @@ int rmodule_load_alignment(const struct rmodule *module)
 	/* The load alignment is the start of the program's linked address.
 	 * The base address where the program is loaded needs to be a multiple
 	 * of the program's starting link address. That way all data alignment
-	 * in the program is preserved. */
-	return module->header->module_link_start_address;
+	 * in the program is preserved. Default to 4KiB. */
+	return 4096;
 }
 
 int rmodule_load(void *base, struct rmodule *module)

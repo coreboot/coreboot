@@ -25,12 +25,12 @@ ramstage-srcs += $(SIPI_BIN)
 rmodules-y += sipi_vector.S
 rmodules-y += sipi_header.c
 
-$(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules.o $(dir $(SIPI_ELF))sipi_header.rmodules.o
+$(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules.o
 	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
 
-$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0))
+$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_DOTO), 0))
 
-$(SIPI_BIN): $(SIPI_ELF)
+$(SIPI_BIN): $(SIPI_ELF).rmod
 	$(OBJCOPY) -O binary $< $@
 
 $(SIPI_BIN).ramstage.o: $(SIPI_BIN)

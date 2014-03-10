@@ -11,7 +11,6 @@ ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-$(CONFIG_GENERATE_SMBIOS_TABLES) += smbios.c
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpigen.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += wakeup.S
-ramstage-$(CONFIG_RELOCATABLE_RAMSTAGE) += ramstage_module_header.c
 
 $(obj)/arch/x86/boot/smbios.ramstage.o: $(obj)/build.h
 

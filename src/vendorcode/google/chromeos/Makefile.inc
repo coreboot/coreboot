@@ -51,6 +51,7 @@ VB_INCLUDES += -I$(VB_SOURCE)/firmware/include
 INCLUDES += $(VB_INCLUDES)
 
 VBOOT_STUB_ELF = $(obj)/vendorcode/google/chromeos/vbootstub.elf
+VBOOT_STUB = $(VBOOT_STUB_ELF).rmod
 VBOOT_STUB_DOTO = $(VBOOT_STUB_ELF:.elf=.o)
 
 # Dependency for the vboot rmodules. Ordering matters.

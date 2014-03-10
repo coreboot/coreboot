@@ -19,6 +19,8 @@ thread_stacks:
 	.section ".textfirst", "ax", @progbits
 	.code32
 	.globl _start
+	.globl __rmodule_entry
+__rmodule_entry:
 _start:
 	cli
 	lgdt	%cs:gdtaddr

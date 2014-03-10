@@ -21,6 +21,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
 #include <rmodule-defs.h>
 
 enum {
@@ -49,11 +50,6 @@ int rmodule_load_alignment(const struct rmodule *m);
  * region_alignment must be a power of 2. */
 int rmodule_calc_region(unsigned int region_alignment, size_t rmodule_size,
                         size_t *region_size, int *load_offset);
-
-#define DEFINE_RMODULE_HEADER(name_, entry_, type_) \
-	struct rmodule_header name_ \
-	__attribute__ ((section (".module_header"))) = \
-	RMODULE_HEADER(entry_, type_)
 
 /* Support for loading rmodule stages. This API is only available when
  * using dynamic cbmem because it uses the dynamic cbmem API to obtain
@@ -84,17 +80,12 @@ struct rmodule {
 	void *relocations;
 };
 
-/* These are the symbols assumed that every module contains. The linker script
- * provides these symbols. */
-extern char _relocations_begin_offset[];
-extern char _relocations_end_offset[];
-extern char _payload_end_offset[];
-extern char _payload_begin_offset[];
-extern char _bss[];
-extern char _ebss[];
-extern char _module_program_size[];
-extern char _module_link_start_addr[];
-extern char _module_params_begin[];
-extern char _module_params_end[];
+#if IS_ENABLED(CONFIG_RELOCATABLE_MODULES)
+/* Rmodules have an entry point of named __rmodule_entry. */
+#define RMODULE_ENTRY(entry_) \
+	void __rmodule_entry(void *) __attribute__((alias (STRINGIFY(entry_))))
+#else
+#define RMODULE_ENTRY(entry_)
+#endif
 
 #endif /* RMODULE_H */

@@ -517,14 +517,20 @@ struct smm_runtime {
 	u8 apic_id_to_cpu[CONFIG_MAX_CPUS];
 } __attribute__ ((packed));
 
-typedef void asmlinkage (*smm_handler_t)(void *arg, int cpu,
-                                         const struct smm_runtime *runtime);
+struct smm_module_params {
+	void *arg;
+	int cpu;
+	const struct smm_runtime *runtime;
+};
+
+/* smm_handler_t is called with arg of smm_module_params pointer. */
+typedef void asmlinkage (*smm_handler_t)(void *);
 
 #ifdef __SMM__
 /* SMM Runtime helpers. */
 
 /* Entry point for SMM modules. */
-void smm_handler_start(void *arg, int cpu, const struct smm_runtime *runtime);
+void asmlinkage smm_handler_start(void *params);
 
 /* Retrieve SMM save state for a given CPU. WARNING: This does not take into
  * account CPUs which are configured to not save their state to RAM. */

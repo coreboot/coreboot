@@ -34,8 +34,8 @@
  * locations.
  */
 typedef struct {
-	u32 r_offset;
-	u32 r_info;
+	uint32_t r_offset;
+	uint32_t r_info;
 } Elf32_Rel;
 
 #define R_386_RELATIVE 8
@@ -71,7 +71,7 @@ static inline int rmodule_is_loaded(const struct rmodule *module)
 
 /* Calculate a loaded program address based on the blob address. */
 static inline void *rmodule_load_addr(const struct rmodule *module,
-                                      u32 blob_addr)
+                                      uint32_t blob_addr)
 {
 	char *loc = module->location;
 	return &loc[blob_addr - module->header->module_link_start_address];
@@ -176,7 +176,7 @@ static void rmodule_copy_payload(const struct rmodule *module)
 	memcpy(module->location, module->payload, module->payload_size);
 }
 
-static inline u32 *rmodule_adjustment_location(const struct rmodule *module,
+static inline uint32_t *rmodule_adjustment_location(const struct rmodule *module,
                                                const void *reloc)
 {
 	int reloc_offset;
@@ -193,11 +193,11 @@ static int rmodule_relocate(const struct rmodule *module)
 {
 	int num_relocations;
 	const void *reloc;
-	u32 adjustment;
+	uint32_t adjustment;
 
 	/* Each relocation needs to be adjusted relative to the beginning of
 	 * the loaded program. */
-	adjustment = (u32)rmodule_load_addr(module, 0);
+	adjustment = (uint32_t)rmodule_load_addr(module, 0);
 
 	reloc = module->relocations;
 	num_relocations = rmodule_number_relocations(module);
@@ -206,7 +206,7 @@ static int rmodule_relocate(const struct rmodule *module)
 	       num_relocations, adjustment);
 
 	while (num_relocations > 0) {
-		u32 *adjust_loc;
+		uint32_t *adjust_loc;
 
 		if (!rmodule_reloc_valid(reloc))
 			return -1;

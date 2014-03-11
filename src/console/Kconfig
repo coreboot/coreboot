@@ -303,16 +303,6 @@ config NO_POST
 	bool "Don't show any POST codes"
 	default n
 
-
-config CONSOLE_POST
-	bool "Show POST codes on the debug console"
-	depends on !NO_POST
-	default n
-	help
-	  If enabled, coreboot will additionally print POST codes (which are
-	  usually displayed using a so-called "POST card" ISA/PCI/PCI-E
-	  device) on the debug console.
-
 config CMOS_POST
 	bool "Store post codes in CMOS for debugging"
 	depends on !NO_POST && PC80_SYSTEM
@@ -339,15 +329,42 @@ config CMOS_POST_EXTRA
 	  This will enable extra logging of work that happens between post
 	  codes into CMOS for debug.  This uses an additional 8 bytes of CMOS.
 
-config IO_POST
+config POST_IO
+	bool "Show POST codes on the debug console"
+	depends on !NO_POST
+	default n
+	help
+	  If enabled, coreboot will additionally print POST codes (which are
+	  usually displayed using a so-called "POST card" ISA/PCI/PCI-E
+	  device) on the debug console.
+
+config POST_DEVICE
+	bool "Send POST codes to an external device"
+	depends on !NO_POST
+	default y
+
+choice
+	prompt "Device to send POST codes to"
+	depends on POST_DEVICE
+	default POST_DEVICE_NONE
+
+config POST_DEVICE_NONE
+	bool "None"
+config POST_DEVICE_LPC
+	bool "LPC"
+config POST_DEVICE_PCI_PCIE
+	bool "PCI/PCIe"
+endchoice
+
+config POST_IO
 	bool "Send POST codes to an IO port"
-	depends on PC80_SYSTEM
+	depends on PC80_SYSTEM && !NO_POST
 	default y
 	help
 	  If enabled, POST codes will be written to an IO port.
 
-config IO_POST_PORT
-	depends on IO_POST
+config POST_IO_PORT
+	depends on POST_IO
 	hex "IO port for POST codes"
 	default 0x80
 	help

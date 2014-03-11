@@ -74,4 +74,35 @@ elf_headers(const struct buffer *pinput,
 	    Elf64_Phdr **pphdr,
 	    Elf64_Shdr **pshdr);
 
+/* ELF writing support. */
+struct elf_writer;
+
+/*
+ * Initialize a new ELF writer. Deafult machine type, endianness, etc is
+ * copied from the passed in Elf64_Ehdr. Returns NULL on failure, valid
+ * pointer on success.
+ */
+struct elf_writer *elf_writer_init(const Elf64_Ehdr *ehdr);
+
+/*
+ * Clean up any internal state represented by ew. Aftewards the elf_writer
+ * is invalid.
+ */
+void elf_writer_destroy(struct elf_writer *ew);
+
+/*
+ * Add a section to the ELF file. Section type, flags, and memsize are
+ * maintained from the passed in Elf64_Shdr. The buffer represents the
+ * content of the section while the name is the name of section itself.
+ * Returns < 0 on error, 0 on success.
+ */
+int elf_writer_add_section(struct elf_writer *ew, const Elf64_Shdr *shdr,
+                           struct buffer *contents, const char *name);
+
+/*
+ * Serialize the ELF file to the output buffer. Return < 0 on error,
+ * 0 on success.
+ */
+int elf_writer_serialize(struct elf_writer *ew, struct buffer *out);
+
 #endif /* ELFPARSING_H */

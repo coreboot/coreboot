@@ -625,3 +625,322 @@ elf_headers(const struct buffer *pinput,
 
 	return 0;
 }
+
+/* ELF Writing  Support
+ *
+ * The ELF file is written according to the following layout:
+ * +------------------+
+ * |    ELF Header    |
+ * +------------------+
+ * | Section  Headers |
+ * +------------------+
+ * | Program  Headers |
+ * +------------------+
+ * |   String table   |
+ * +------------------+ <- 4KiB Aligned
+ * |     Code/Data    |
+ * +------------------+
+ */
+
+/* Arbitray maximum number of sections. */
+#define MAX_SECTIONS 16
+struct elf_writer_section {
+	Elf64_Shdr shdr;
+	struct buffer content;
+	const char *name;
+};
+
+struct elf_writer
+{
+	Elf64_Ehdr ehdr;
+	struct xdr *xdr;
+	size_t num_secs;
+	struct elf_writer_section sections[MAX_SECTIONS];
+	Elf64_Phdr *phdrs;
+	struct elf_writer_section *shstrtab;
+	int bit64;
+};
+
+struct elf_writer *elf_writer_init(const Elf64_Ehdr *ehdr)
+{
+	struct elf_writer *ew;
+	Elf64_Shdr shdr;
+	struct buffer empty_buffer;
+
+	if (!iself(ehdr))
+		return NULL;
+
+	ew = calloc(1, sizeof(*ew));
+
+	memcpy(&ew->ehdr, ehdr, sizeof(ew->ehdr));
+
+	ew->bit64 = ew->ehdr.e_ident[EI_CLASS] == ELFCLASS64;
+
+	/* Set the endinan ops. */
+	if (ew->ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
+		ew->xdr = &xdr_be;
+	else
+		ew->xdr = &xdr_le;
+
+	/* Reset count and offsets */
+	ew->ehdr.e_phoff = 0;
+	ew->ehdr.e_shoff = 0;
+	ew->ehdr.e_shnum = 0;
+	ew->ehdr.e_phnum = 0;
+
+	memset(&empty_buffer, 0, sizeof(empty_buffer));
+	memset(&shdr, 0, sizeof(shdr));
+
+	/* Add SHT_NULL section header. */
+	shdr.sh_type = SHT_NULL;
+	elf_writer_add_section(ew, &shdr, &empty_buffer, NULL);
+
+	/* Add section header string table and maintain reference to it.  */
+	shdr.sh_type = SHT_STRTAB;
+	elf_writer_add_section(ew, &shdr, &empty_buffer, ".shstrtab");
+	ew->ehdr.e_shstrndx = ew->num_secs - 1;
+	ew->shstrtab = &ew->sections[ew->ehdr.e_shstrndx];
+
+	return ew;
+}
+
+/*
+ * Clean up any internal state represented by ew. Aftewards the elf_writer
+ * is invalid.
+ */
+void elf_writer_destroy(struct elf_writer *ew)
+{
+	if (ew->phdrs != NULL)
+		free(ew->phdrs);
+	free(ew);
+}
+
+/*
+ * Add a section to the ELF file. Section type, flags, and memsize are
+ * maintained from the passed in Elf64_Shdr. The buffer represents the
+ * content of the section while the name is the name of section itself.
+ * Returns < 0 on error, 0 on success.
+ */
+int elf_writer_add_section(struct elf_writer *ew, const Elf64_Shdr *shdr,
+                           struct buffer *contents, const char *name)
+{
+	struct elf_writer_section *newsh;
+
+	if (ew->num_secs == MAX_SECTIONS)
+		return -1;
+
+	newsh = &ew->sections[ew->num_secs];
+	ew->num_secs++;
+
+	memcpy(&newsh->shdr, shdr, sizeof(newsh->shdr));
+	newsh->shdr.sh_offset = 0;
+
+	newsh->name = name;
+	if (contents != NULL)
+		buffer_clone(&newsh->content, contents);
+
+	return 0;
+}
+
+static void ehdr_write(struct elf_writer *ew, struct buffer *m)
+{
+	int i;
+
+	for (i = 0; i < EI_NIDENT; i++)
+		ew->xdr->put8(m, ew->ehdr.e_ident[i]);
+	ew->xdr->put16(m, ew->ehdr.e_type);
+	ew->xdr->put16(m, ew->ehdr.e_machine);
+	ew->xdr->put32(m, ew->ehdr.e_version);
+	if (ew->bit64) {
+		ew->xdr->put64(m, ew->ehdr.e_entry);
+		ew->xdr->put64(m, ew->ehdr.e_phoff);
+		ew->xdr->put64(m, ew->ehdr.e_shoff);
+	} else {
+		ew->xdr->put32(m, ew->ehdr.e_entry);
+		ew->xdr->put32(m, ew->ehdr.e_phoff);
+		ew->xdr->put32(m, ew->ehdr.e_shoff);
+	}
+	ew->xdr->put32(m, ew->ehdr.e_flags);
+	ew->xdr->put16(m, ew->ehdr.e_ehsize);
+	ew->xdr->put16(m, ew->ehdr.e_phentsize);
+	ew->xdr->put16(m, ew->ehdr.e_phnum);
+	ew->xdr->put16(m, ew->ehdr.e_shentsize);
+	ew->xdr->put16(m, ew->ehdr.e_shnum);
+	ew->xdr->put16(m, ew->ehdr.e_shstrndx);
+}
+
+static void shdr_write(struct elf_writer *ew, size_t n, struct buffer *m)
+{
+	struct xdr *xdr = ew->xdr;
+	int bit64 = ew->bit64;
+	struct elf_writer_section *sec = &ew->sections[n];
+	Elf64_Shdr *shdr = &sec->shdr;
+
+	xdr->put32(m, shdr->sh_name);
+	xdr->put32(m, shdr->sh_type);
+	xdr->put32(m, shdr->sh_flags);
+	if (bit64) {
+		xdr->put64(m, shdr->sh_addr);
+		xdr->put64(m, shdr->sh_offset);
+		xdr->put64(m, shdr->sh_size);
+		xdr->put32(m, shdr->sh_link);
+		xdr->put32(m, shdr->sh_info);
+		xdr->put64(m, shdr->sh_addralign);
+		xdr->put64(m, shdr->sh_entsize);
+	} else {
+		xdr->put32(m, shdr->sh_addr);
+		xdr->put32(m, shdr->sh_offset);
+		xdr->put32(m, shdr->sh_size);
+		xdr->put32(m, shdr->sh_link);
+		xdr->put32(m, shdr->sh_info);
+		xdr->put32(m, shdr->sh_addralign);
+		xdr->put32(m, shdr->sh_entsize);
+	}
+}
+
+static void
+phdr_write(struct elf_writer *ew, struct buffer *m, Elf64_Phdr *phdr)
+{
+	if (ew->bit64) {
+		ew->xdr->put32(m, phdr->p_type);
+		ew->xdr->put32(m, phdr->p_flags);
+		ew->xdr->put64(m, phdr->p_offset);
+		ew->xdr->put64(m, phdr->p_vaddr);
+		ew->xdr->put64(m, phdr->p_paddr);
+		ew->xdr->put64(m, phdr->p_filesz);
+		ew->xdr->put64(m, phdr->p_memsz);
+		ew->xdr->put64(m, phdr->p_align);
+	} else {
+		ew->xdr->put32(m, phdr->p_type);
+		ew->xdr->put32(m, phdr->p_offset);
+		ew->xdr->put32(m, phdr->p_vaddr);
+		ew->xdr->put32(m, phdr->p_paddr);
+		ew->xdr->put32(m, phdr->p_filesz);
+		ew->xdr->put32(m, phdr->p_memsz);
+		ew->xdr->put32(m, phdr->p_flags);
+		ew->xdr->put32(m, phdr->p_align);
+	}
+
+}
+
+/*
+ * Serialize the ELF file to the output buffer. Return < 0 on error,
+ * 0 on success.
+ */
+int elf_writer_serialize(struct elf_writer *ew, struct buffer *out)
+{
+	Elf64_Half i;
+	Elf64_Xword metadata_size;
+	Elf64_Xword program_size;
+	Elf64_Off shstroffset;
+	size_t shstrlen;
+	struct buffer metadata;
+	struct buffer phdrs;
+	struct buffer data;
+	struct buffer *strtab;
+
+	INFO("Writing %zu sections.\n", ew->num_secs);
+
+	/* Determine size of sections to be written. */
+	program_size = 0;
+	/* Start with 1 byte for first byte of section header string table. */
+	shstrlen = 1;
+	for (i = 0; i < ew->num_secs; i++) {
+		struct elf_writer_section *sec = &ew->sections[i];
+
+		if (sec->shdr.sh_flags & SHF_ALLOC)
+			ew->ehdr.e_phnum++;
+
+		program_size += buffer_size(&sec->content);
+
+		/* Keep track of the length sections' names. */
+		if (sec->name != NULL) {
+			sec->shdr.sh_name = shstrlen;
+			shstrlen += strlen(sec->name) + 1;
+		}
+	}
+	ew->ehdr.e_shnum = ew->num_secs;
+	metadata_size = 0;
+	metadata_size += ew->ehdr.e_ehsize;
+	metadata_size += ew->ehdr.e_shnum * ew->ehdr.e_shentsize;
+	metadata_size += ew->ehdr.e_phnum * ew->ehdr.e_phentsize;
+	shstroffset = metadata_size;
+	/* Align up section header string size and metadata size to 4KiB */
+	metadata_size = ALIGN(metadata_size + shstrlen, 4096);
+
+	if (buffer_create(out, metadata_size + program_size, "elfout")) {
+		ERROR("Could not create output buffer for ELF.\n");
+		return -1;
+	}
+
+	INFO("Created %zu output buffer for ELF file.\n", buffer_size(out));
+
+	/*
+	 * Write out ELF header. Section headers come right after ELF header
+	 * followed by the program headers. Buffers need to be created first
+	 * to do the writing.
+	 */
+	ew->ehdr.e_shoff = ew->ehdr.e_ehsize;
+	ew->ehdr.e_phoff = ew->ehdr.e_shoff +
+	                   ew->ehdr.e_shnum * ew->ehdr.e_shentsize;
+
+	buffer_splice(&metadata, out, 0, metadata_size);
+	buffer_splice(&phdrs, out, ew->ehdr.e_phoff,
+	              ew->ehdr.e_phnum * ew->ehdr.e_phentsize);
+	buffer_splice(&data, out, metadata_size, program_size);
+	/* Set up the section header string table contents. */
+	strtab = &ew->shstrtab->content;
+	buffer_splice(strtab, out, shstroffset, shstrlen);
+	ew->shstrtab->shdr.sh_size = shstrlen;
+
+	/* Reset current locations. */
+	buffer_set_size(&metadata, 0);
+	buffer_set_size(&data, 0);
+	buffer_set_size(&phdrs, 0);
+	buffer_set_size(strtab, 0);
+
+	/* ELF Header */
+	ehdr_write(ew, &metadata);
+
+	/* Write out section headers, section strings, section content, and
+	 * program headers. */
+	ew->xdr->put8(strtab, 0);
+	for (i = 0; i < ew->num_secs; i++) {
+		Elf64_Phdr phdr;
+		struct elf_writer_section *sec = &ew->sections[i];
+
+		/* Update section offsets. Be sure to not update SHT_NULL. */
+		if (sec == ew->shstrtab)
+			sec->shdr.sh_offset = shstroffset;
+		else if (i != 0)
+			sec->shdr.sh_offset = buffer_size(&data) +
+			                      metadata_size;
+		shdr_write(ew, i, &metadata);
+
+		/* Add section name to string table. */
+		if (sec->name != NULL)
+			bputs(strtab, sec->name, strlen(sec->name) + 1);
+
+		if (!(sec->shdr.sh_flags & SHF_ALLOC))
+			continue;
+
+		bputs(&data, buffer_get(&sec->content),
+		      buffer_size(&sec->content));
+
+		phdr.p_type = PT_LOAD;
+		phdr.p_offset = sec->shdr.sh_offset;
+		phdr.p_vaddr = sec->shdr.sh_addr;
+		phdr.p_paddr = sec->shdr.sh_addr;
+		phdr.p_filesz = buffer_size(&sec->content);
+		phdr.p_memsz = sec->shdr.sh_size;
+		phdr.p_flags = 0;
+		if (sec->shdr.sh_flags & SHF_EXECINSTR)
+			phdr.p_flags |= PF_X | PF_R;
+		if (sec->shdr.sh_flags & SHF_WRITE)
+			phdr.p_flags |= PF_W;
+		phdr.p_align = sec->shdr.sh_addralign;
+		phdr_write(ew, &phdrs, &phdr);
+	}
+
+	return 0;
+}

@@ -67,6 +67,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 val;
 	u8 byte;
 	device_t dev;
+
+#if IS_ENABLED(CONFIG_POST_DEVICE_PCI_PCIE)
+	hudson_pci_port80();
+#endif
+#if IS_ENABLED(CONFIG_POST_DEVICE_LPC)
+	hudson_lpc_port80();
+#endif
+
 #if CONFIG_HAVE_ACPI_RESUME
 	void *resume_backup_memory;
 #endif

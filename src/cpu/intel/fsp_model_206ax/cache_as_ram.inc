@@ -251,8 +251,8 @@ halt2:
 
 .Lhlt:
 	xchg %al, %ah
-#if CONFIG_IO_POST
-	outb    %al, $CONFIG_IO_POST_PORT
+#if CONFIG_POST_IO
+	outb    %al, $CONFIG_POST_IO_PORT
 #else
 	post_code(POST_DEAD_CODE)
 #endif

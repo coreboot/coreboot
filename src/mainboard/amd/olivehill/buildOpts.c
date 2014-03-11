@@ -231,6 +231,9 @@
 // #define BLDCFG_FCH_GPP_PORT2_HOTPLUG          FALSE
 // #define BLDCFG_FCH_GPP_PORT3_HOTPLUG          FALSE
 
+/* disable GfxSamuInit */
+#define CFG_SAMU_PATCH_ENABLED      FALSE
+
 CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 {
   { AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1E },

@@ -80,7 +80,7 @@ chip northbridge/amd/agesa/family14/root_complex
 							drq 0x74 = 3
 						end
 						device pnp 2e.04 on			# Hardware Monitor
-							io 0x60 = 0x295
+							io 0x60 = 0x225 # datasheet says 0x295.
 							irq 0x70 = 0
 						end
 						device pnp 2e.05 on # KBC
@@ -88,7 +88,18 @@ chip northbridge/amd/agesa/family14/root_complex
 							irq 0x70 = 1 # Keyboard IRQ
 							irq 0x72 = 12 # Mouse IRQ
 						end
-						device pnp 2e.06 off end	# GPIO
+						device pnp 2e.06 on			# GPIO Configuration
+							io 0x30 = 0x01
+							io 0x60 = 0x0a
+							irq 0x70 = 0
+							io 0xe0 = 0x20
+							io 0xe1 = 0xdf
+							io 0xd2 = 0xa7
+							io 0xc0 = 0xff
+							io 0xc1 = 0x00
+							io 0xc2 = 0x00
+							io 0xb2 = 0x73
+                        end
 # TODO: Verify BSEL register content with vendor BIOS using
 # $ sudo isadump 0x4e 0x4f 0x7
 # which select logical device (LDN) 7. Then read that we have in 0x27, bit1

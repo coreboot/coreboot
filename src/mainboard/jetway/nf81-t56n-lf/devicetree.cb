@@ -108,55 +108,6 @@ chip northbridge/amd/agesa/family14/root_complex
 				register "gpp_configuration" = "4" # GPP_CFGMODE_X1111 - PortA-D on 15.0-3 are each x1 lanes.
 				register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
 
-				# Set up SB800 Fan control registers and IMC fan controls
-                # TODO: verify SB handles the HW monitor and not the super io (PME)
-				register "imc_port_address" = "0x6E"	# 0x2E and 0x6E are common
-				register "fan0_enabled" = "1"
-				register "fan1_enabled" = "1"
-				register "imc_fan_zone0_enabled" = "1"
-				register "imc_fan_zone1_enabled" = "1"
-
-				register "fan0_config_vals" = "{ \
-					FAN_INPUT_INTERNAL_DIODE, FAN_POLARITY_HIGH, \
-					FREQ_25KHZ, 0x08, 0x00, 0x00, 0x00, 0x00,\
-					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }"
-				register "fan1_config_vals" = "{ \
-					FAN_INPUT_INTERNAL_DIODE, FAN_POLARITY_HIGH, \
-					FREQ_25KHZ, 0x10, 0x00, 0x00, 0x00, 0x00, \
-					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }"
-
-				register "imc_zone0_mode1" = " \
-					IMC_MODE1_FAN_ENABLED | IMC_MODE1_FAN_IMC_CONTROLLED | \
-					IMC_MODE1_FAN_STEP_MODE | IMC_MODE1_FANOUT0"
-				register "imc_zone0_mode2" = " IMC_MODE2_TEMPIN_SB_TSI | \
-					IMC_MODE2_FANIN0 | IMC_MODE2_TEMP_AVERAGING_DISABLED"
-				register "imc_zone0_temp_offset" = "0x00"	# No temp offset
-				register "imc_zone0_hysteresis" = "0x05"	# Degrees C Hysteresis
-				register "imc_zone0_smbus_addr" = "0x98"	# Temp Sensor SMBus address
-				register "imc_zone0_smbus_num" = "IMC_TEMP_SENSOR_ON_SMBUS_3"	# SMBUS number
-				register "imc_zone0_pwm_step" = "0x01"		# Fan PWM stepping rate
-				register "imc_zone0_ramping" = "0x00"		# Disable Fan PWM ramping and stepping
-
-				register "imc_zone1_mode1" = " \
-					IMC_MODE1_FAN_ENABLED | IMC_MODE1_FAN_IMC_CONTROLLED | \
-					IMC_MODE1_FAN_STEP_MODE | IMC_MODE1_FANOUT1"
-				register "imc_zone1_mode2" = " IMC_MODE2_TEMPIN_SB_TSI | \
-					IMC_MODE2_FANIN1 | IMC_MODE2_TEMP_AVERAGING_DISABLED"
-				register "imc_zone1_temp_offset" = "0x00"	# No temp offset
-				register "imc_zone1_hysteresis" = "0x05"	# Degrees C Hysteresis
-				register "imc_zone1_smbus_addr" = "0x98"	# Temp Sensor SMBus address
-				register "imc_zone1_smbus_num" = "IMC_TEMP_SENSOR_ON_SMBUS_3"	# SMBUS number
-				register "imc_zone1_pwm_step" = "0x01"		# Fan PWM stepping rate
-				register "imc_zone1_ramping" = "0x00"		# Disable Fan PWM ramping and stepping
-
-				# T56N has a Maximum operating temperature  of 90C
-				# ZONEX_THRESHOLDS - _AC0 - _AC7, _CRT - Temp Threshold in degrees C
-				# ZONEX_FANSPEEDS - Fan speeds as a "percentage"
-				register "imc_zone0_thresholds" = "{ 87, 82, 77, 72, 65, 1, 0, 0, 90 }"
-				register "imc_zone0_fanspeeds"  = "{100,  7,  5,  4,  3, 2, 0, 0 }"
-				register "imc_zone1_thresholds" = "{ 85, 80, 75, 65,  1, 0, 0, 0, 90 }"
-				register "imc_zone1_fanspeeds"  = "{100, 10,  6,  4,  3, 0, 0, 0 }"
-
 			end	#southbridge/amd/cimx/sb800
 #			end #  device pci 18.0
 # These seem unnecessary

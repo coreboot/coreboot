@@ -80,7 +80,7 @@ chip northbridge/amd/agesa/family14/root_complex
 							drq 0x74 = 3
 						end
 						device pnp 2e.04 on			# Hardware Monitor
-							io 0x60 = 0x295
+							io 0x60 = 0x225 # Fintek datasheet says 0x295.
 							irq 0x70 = 0
 						end
 						device pnp 2e.05 on # KBC

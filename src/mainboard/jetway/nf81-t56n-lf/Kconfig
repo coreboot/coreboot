@@ -86,7 +86,7 @@ config RAMBASE
 
 config SIO_PORT
 	hex
-	default 0x4e
+	default 0x2e
 
 config ONBOARD_VGA_IS_PRIMARY
 	bool

@@ -1,0 +1,6 @@
+config SUPERIO_HWM
+	bool "Super I/O HWM"
+	default n
+	help
+	  Just enough of a driver to make coreboot control system fans.
+	  No configuration is necessary for the OS to pick up the device.

@@ -40,3 +40,4 @@ source src/drivers/trident/Kconfig
 source src/drivers/uart/Kconfig
 source src/drivers/usb/Kconfig
 source src/drivers/xpowers/Kconfig
+source src/drivers/hwm/Kconfig

@@ -306,11 +306,6 @@ shdr_read(const struct buffer *in, Elf64_Ehdr *ehdr, struct xdr *xdr, int bit64)
 	for (i = 0; i < ehdr->e_shnum; i++) {
 		DEBUG("Parsing section %d\n", i);
 		elf_shdr(&b, &shdr[i], ehdr->e_shentsize, xdr, bit64);
-
-		/* Ensure the contents are valid within the elf file. */
-		if (check_size(in, shdr[i].sh_offset, shdr[i].sh_size,
-		               "section contents"))
-			return NULL;
 	}
 
 	return shdr;

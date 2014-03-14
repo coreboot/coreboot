@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
+#include <stdlib.h>
 #include <config.h>
 #include <types.h>
 #include <console/uart.h>
@@ -154,30 +155,36 @@ unsigned int uart_platform_refclk(void)
 
 unsigned int uart_platform_base(int idx)
 {
-	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+	const unsigned int bases[] = {
+		0x44e09000, 0x48022000, 0x48024000,
+		0x481a6000, 0x481a8000, 0x481aa000
+	};
+	if (idx < ARRAY_SIZE(bases))
+		return bases[idx];
+	return 0;
 }
 
-void uart_init(void)
+void uart_init(int idx)
 {
-	struct am335x_uart *uart = uart_platform_baseptr(0);
+	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	uint16_t div = (uint16_t) uart_baudrate_divisor(
 		default_baudrate(), uart_platform_refclk(), 16);
 	am335x_uart_init(uart, div);
 }
 
-unsigned char uart_rx_byte(void)
+unsigned char uart_rx_byte(int idx)
 {
-	struct am335x_uart *uart = uart_platform_baseptr(0);
+	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	return am335x_uart_rx_byte(uart);
 }
 
-void uart_tx_byte(unsigned char data)
+void uart_tx_byte(int idx, unsigned char data)
 {
-	struct am335x_uart *uart = uart_platform_baseptr(0);
+	struct am335x_uart *uart = uart_platform_baseptr(idx);
 	am335x_uart_tx_byte(uart, data);
 }
 
-void uart_tx_flush(void)
+void uart_tx_flush(int idx)
 {
 }
 
@@ -186,7 +193,7 @@ void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = uart_platform_base(0);
+	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	serial.baud = default_baudrate();
 	lb_add_serial(&serial, data);
 

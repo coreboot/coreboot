@@ -157,30 +157,33 @@ static void exynos5_uart_tx_flush(struct s5p_uart *uart)
 
 unsigned int uart_platform_base(int idx)
 {
-	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
+	if (idx < 4)
+		return 0x12c00000 + idx * 0x10000;
+	else
+		return 0;
 }
 
-void uart_init(void)
+void uart_init(int idx)
 {
-	struct s5p_uart *uart = uart_platform_baseptr(0);
+	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	exynos5_init_dev(uart);
 }
 
-unsigned char uart_rx_byte(void)
+unsigned char uart_rx_byte(int idx)
 {
-	struct s5p_uart *uart = uart_platform_baseptr(0);
+	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	return exynos5_uart_rx_byte(uart);
 }
 
-void uart_tx_byte(unsigned char data)
+void uart_tx_byte(int idx, unsigned char data)
 {
-	struct s5p_uart *uart = uart_platform_baseptr(0);
+	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	exynos5_uart_tx_byte(uart, data);
 }
 
-void uart_tx_flush(void)
+void uart_tx_flush(int idx)
 {
-	struct s5p_uart *uart = uart_platform_baseptr(0);
+	struct s5p_uart *uart = uart_platform_baseptr(idx);
 	exynos5_uart_tx_flush(uart);
 }
 
@@ -189,7 +192,7 @@ void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = uart_platform_base(0);
+	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	serial.baud = default_baudrate();
 	lb_add_serial(&serial, data);
 

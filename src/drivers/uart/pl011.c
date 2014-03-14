@@ -21,26 +21,21 @@ static void pl011_uart_tx_byte(unsigned int *uart_base, unsigned char data)
 	*uart_base = (unsigned int)data;
 }
 
-unsigned int uart_platform_base(int idx)
-{
-	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
-}
-
-void uart_init(void)
+void uart_init(int idx)
 {
 }
 
-void uart_tx_byte(unsigned char data)
+void uart_tx_byte(int idx, unsigned char data)
 {
-	unsigned int *uart_base = uart_platform_baseptr(0);
+	unsigned int *uart_base = uart_platform_baseptr(idx);
 	pl011_uart_tx_byte(uart_base, data);
 }
 
-void uart_tx_flush(void)
+void uart_tx_flush(int idx)
 {
 }
 
-unsigned char uart_rx_byte(void)
+unsigned char uart_rx_byte(int idx)
 {
 	return 0;
 }
@@ -50,7 +45,7 @@ void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
-	serial.baseaddr = uart_platform_base(0);
+	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	serial.baud = default_baudrate();
 	lb_add_serial(&serial, data);
 

@@ -19,6 +19,7 @@
  */
 
 #include <rules.h>
+#include <stdlib.h>
 #include <arch/io.h>
 #include <console/uart.h>
 #include <trace.h>
@@ -102,37 +103,36 @@ static void uart8250_init(unsigned base_port, unsigned divisor)
 	ENABLE_TRACE;
 }
 
-/* FIXME: Needs uart index from Kconfig.
- * Already use array as a work-around for ROMCC.
- */
-static const unsigned bases[1] = { CONFIG_TTYS0_BASE };
+static const unsigned bases[] = { 0x3f8, 0x2f8, 0x3e8, 0x2e8 };
 
 unsigned int uart_platform_base(int idx)
 {
-	return bases[idx];
+	if (idx < ARRAY_SIZE(bases))
+		return bases[idx];
+	return 0;
 }
 
-void uart_init(void)
+void uart_init(int idx)
 {
 	unsigned int div;
 	div = uart_baudrate_divisor(default_baudrate(), BAUDRATE_REFCLK,
 		BAUDRATE_OVERSAMPLE);
-	uart8250_init(bases[0], div);
+	uart8250_init(uart_platform_base(idx), div);
 }
 
-void uart_tx_byte(unsigned char data)
+void uart_tx_byte(int idx, unsigned char data)
 {
-	uart8250_tx_byte(bases[0], data);
+	uart8250_tx_byte(uart_platform_base(idx), data);
 }
 
-unsigned char uart_rx_byte(void)
+unsigned char uart_rx_byte(int idx)
 {
-	return uart8250_rx_byte(bases[0]);
+	return uart8250_rx_byte(uart_platform_base(idx));
 }
 
-void uart_tx_flush(void)
+void uart_tx_flush(int idx)
 {
-	uart8250_tx_flush(bases[0]);
+	uart8250_tx_flush(uart_platform_base(idx));
 }
 
 #if ENV_RAMSTAGE
@@ -140,7 +140,7 @@ void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;
 	serial.type = LB_SERIAL_TYPE_IO_MAPPED;
-	serial.baseaddr = uart_platform_base(0);
+	serial.baseaddr = uart_platform_base(CONFIG_UART_FOR_CONSOLE);
 	serial.baud = default_baudrate();
 	lb_add_serial(&serial, data);
 

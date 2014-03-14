@@ -40,10 +40,10 @@ unsigned int uart_baudrate_divisor(unsigned int baudrate,
 	unsigned int refclk, unsigned int oversample);
 
 
-void uart_init(void);
-void uart_tx_byte(unsigned char data);
-void uart_tx_flush(void);
-unsigned char uart_rx_byte(void);
+void uart_init(int idx);
+void uart_tx_byte(int idx, unsigned char data);
+void uart_tx_flush(int idx);
+unsigned char uart_rx_byte(int idx);
 
 unsigned int uart_platform_base(int idx);
 
@@ -60,9 +60,9 @@ void oxford_remap(unsigned int new_base);
 	(ENV_SMM && CONFIG_DEBUG_SMI))
 
 #if __CONSOLE_SERIAL_ENABLE__
-static inline void __uart_init(void)		{ uart_init(); }
-static inline void __uart_tx_byte(u8 data)	{ uart_tx_byte(data); }
-static inline void __uart_tx_flush(void)	{ uart_tx_flush(); }
+static inline void __uart_init(void)		{ uart_init(CONFIG_UART_FOR_CONSOLE); }
+static inline void __uart_tx_byte(u8 data)	{ uart_tx_byte(CONFIG_UART_FOR_CONSOLE, data); }
+static inline void __uart_tx_flush(void)	{ uart_tx_flush(CONFIG_UART_FOR_CONSOLE); }
 #else
 static inline void __uart_init(void)		{}
 static inline void __uart_tx_byte(u8 data)	{}

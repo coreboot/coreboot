@@ -32,7 +32,7 @@
 void console_hw_init(void)
 {
 #if CONFIG_CONSOLE_SERIAL
-	uart_init();
+	uart_init(CONFIG_UART_FOR_CONSOLE);
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_init(CONFIG_CONSOLE_NE2K_IO_PORT);
@@ -42,7 +42,7 @@ void console_hw_init(void)
 void console_tx_byte(unsigned char byte)
 {
 #if CONFIG_CONSOLE_SERIAL
-	uart_tx_byte(byte);
+	uart_tx_byte(CONFIG_UART_FOR_CONSOLE, byte);
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_append_data_byte(byte, CONFIG_CONSOLE_NE2K_IO_PORT);
@@ -52,7 +52,7 @@ void console_tx_byte(unsigned char byte)
 void console_tx_flush(void)
 {
 #if CONFIG_CONSOLE_SERIAL
-	uart_tx_flush();
+	uart_tx_flush(CONFIG_UART_FOR_CONSOLE);
 #endif
 #if CONFIG_CONSOLE_NE2K
 	ne2k_transmit(CONFIG_CONSOLE_NE2K_IO_PORT);

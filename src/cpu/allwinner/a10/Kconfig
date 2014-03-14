@@ -72,51 +72,8 @@ config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
 
-choice CONSOLE_SERIAL_UART_CHOICES
-	prompt "Serial Console UART"
-	default CONSOLE_SERIAL_UART0
-	depends on CONSOLE_SERIAL
-
-config CONSOLE_SERIAL_UART0
-	bool "UART0"
-	help
-	  Serial console on UART0
-
-config CONSOLE_SERIAL_UART1
-	bool "UART1"
-	help
-	  Serial console on UART1
-
-config CONSOLE_SERIAL_UART2
-	bool "UART2"
-	help
-	  Serial console on UART2
-
-config CONSOLE_SERIAL_UART3
-	bool "UART3"
-	help
-	  Serial console on UART3
-
-config CONSOLE_SERIAL_UART4
-	bool "UART4"
-	help
-	  Serial console on UART4
-
-config CONSOLE_SERIAL_UART5
-	bool "UART5"
-	help
-	  Serial console on UART5
-
-config CONSOLE_SERIAL_UART6
-	bool "UART6"
-	help
-	  Serial console on UART6
-
-config CONSOLE_SERIAL_UART7
-	bool "UART7"
-	help
-	  Serial console on UART7
-
-endchoice
+config UART_FOR_CONSOLE
+	int
+	default 0
 
 endif # if CPU_ALLWINNER_A10

@@ -340,4 +340,8 @@ unsigned long write_coreboot_table(
 
 void fill_lb_gpios(struct lb_gpios *gpios);
 
+void uart_fill_lb(void *data);
+void lb_add_serial(struct lb_serial *serial, void *data);
+void lb_add_console(uint16_t consoletype, void *data);
+
 #endif /* COREBOOT_TABLES_H */

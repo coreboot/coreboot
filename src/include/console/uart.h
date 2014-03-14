@@ -46,7 +46,6 @@ unsigned char uart_rx_byte(void);
 int uart_can_rx_byte(void);
 
 unsigned int uart_platform_base(int idx);
-uint32_t uartmem_getbaseaddr(void);
 
 #if !defined(__ROMCC__)
 static inline void *uart_platform_baseptr(int idx)

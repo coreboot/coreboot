@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 
+#include <boot/coreboot_tables.h>
 #include <console/uart.h>
 
 static void pl011_uart_tx_byte(unsigned int *uart_base, unsigned char data)
@@ -24,13 +25,6 @@ unsigned int uart_platform_base(int idx)
 {
 	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }
-
-#if !defined(__PRE_RAM__)
-uint32_t uartmem_getbaseaddr(void)
-{
-	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
-}
-#endif
 
 void uart_init(void)
 {
@@ -50,3 +44,16 @@ unsigned char uart_rx_byte(void)
 {
 	return 0;
 }
+
+#ifndef __PRE_RAM__
+void uart_fill_lb(void *data)
+{
+	struct lb_serial serial;
+	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial.baseaddr = uart_platform_base(0);
+	serial.baud = default_baudrate();
+	lb_add_serial(&serial, data);
+
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+}
+#endif

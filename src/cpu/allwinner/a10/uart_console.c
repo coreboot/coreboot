@@ -10,6 +10,7 @@
 #include <types.h>
 #include <console/uart.h>
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 
 #include <cpu/allwinner/a10/uart.h>
 
@@ -43,6 +44,11 @@ unsigned int uart_platform_refclk(void)
 	return 24000000;
 }
 
+unsigned int uart_platform_base(int idx)
+{
+	return (unsigned int)get_console_uart_base_addr();
+}
+
 void uart_init(void)
 {
 	void *uart_base = get_console_uart_base_addr();
@@ -63,14 +69,19 @@ void uart_tx_byte(unsigned char data)
 	a10_uart_tx_blocking(get_console_uart_base_addr(), data);
 }
 
-#if !defined(__PRE_RAM__)
-uint32_t uartmem_getbaseaddr(void)
-{
-	return (uint32_t) get_console_uart_base_addr();
-}
-#endif
-
 void uart_tx_flush(void)
 {
 }
 
+#ifndef __PRE_RAM__
+void uart_fill_lb(void *data)
+{
+	struct lb_serial serial;
+	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial.baseaddr = uart_platform_base(0);
+	serial.baud = default_baudrate();
+	lb_add_serial(&serial, data);
+
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+}
+#endif

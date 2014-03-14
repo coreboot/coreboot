@@ -20,6 +20,7 @@
 #include <types.h>
 #include <console/uart.h>
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <cpu/ti/am335x/uart.h>
 
 #define EFR_ENHANCED_EN		(1 << 4)
@@ -156,13 +157,6 @@ unsigned int uart_platform_base(int idx)
 	return CONFIG_CONSOLE_SERIAL_UART_ADDRESS;
 }
 
-#if !defined(__PRE_RAM__)
-uint32_t uartmem_getbaseaddr(void)
-{
-	return uart_platform_base(0);
-}
-#endif
-
 void uart_init(void)
 {
 	struct am335x_uart *uart = uart_platform_baseptr(0);
@@ -186,3 +180,16 @@ void uart_tx_byte(unsigned char data)
 void uart_tx_flush(void)
 {
 }
+
+#ifndef __PRE_RAM__
+void uart_fill_lb(void *data)
+{
+	struct lb_serial serial;
+	serial.type = LB_SERIAL_TYPE_MEMORY_MAPPED;
+	serial.baseaddr = uart_platform_base(0);
+	serial.baud = default_baudrate();
+	lb_add_serial(&serial, data);
+
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250MEM, data);
+}
+#endif

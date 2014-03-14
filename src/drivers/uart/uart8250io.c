@@ -23,6 +23,10 @@
 #include <trace.h>
 #include "uart8250reg.h"
 
+#ifndef __ROMCC__
+#include <boot/coreboot_tables.h>
+#endif
+
 /* Should support 8250, 16450, 16550, 16550A type UARTs */
 
 /* Nominal values only, good for the range of choices Kconfig offers for
@@ -102,6 +106,11 @@ static void uart8250_init(unsigned base_port, unsigned divisor)
  */
 static const unsigned bases[1] = { CONFIG_TTYS0_BASE };
 
+unsigned int uart_platform_base(int idx)
+{
+	return bases[idx];
+}
+
 void uart_init(void)
 {
 	unsigned int div;
@@ -129,3 +138,16 @@ void uart_tx_flush(void)
 {
 	uart8250_tx_flush(bases[0]);
 }
+
+#ifndef __PRE_RAM__
+void uart_fill_lb(void *data)
+{
+	struct lb_serial serial;
+	serial.type = LB_SERIAL_TYPE_IO_MAPPED;
+	serial.baseaddr = uart_platform_base(0);
+	serial.baud = default_baudrate();
+	lb_add_serial(&serial, data);
+
+	lb_add_console(LB_TAG_CONSOLE_SERIAL8250, data);
+}
+#endif

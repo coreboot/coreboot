@@ -393,3 +393,12 @@ void ramstage_cache_invalid(struct ramstage_cache *cache)
 	cold_reset();
 #endif
 }
+
+#if CONFIG_CHROMEOS
+int vboot_get_sw_write_protect(void)
+{
+	u8 status;
+	/* Return unprotected status if status read fails. */
+	return (early_spi_read_wpsr(&status) ? 0 : !!(status & 0x80));
+}
+#endif

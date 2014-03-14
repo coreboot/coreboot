@@ -50,6 +50,7 @@ void gfx_init(void);
 void tco_disable(void);
 void punit_init(void);
 void set_max_freq(void);
+int early_spi_read_wpsr(u8 *sr);
 
 #if CONFIG_ENABLE_BUILTIN_COM1
 void byt_config_com1_and_enable(void);

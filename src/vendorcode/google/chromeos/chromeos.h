@@ -35,6 +35,9 @@ void save_vbnv(const uint8_t *vbnv_copy);
 void init_chromeos(int bootmode);
 
 struct romstage_handoff;
+
+/* TODO(shawnn): Remove these CONFIGs and define default weak functions
+ * that can be overridden in the platform / MB code. */
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
 /*
  * This is a dual purpose routine. If dest is non-NULL the region at
@@ -57,6 +60,7 @@ static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
 }
 static inline int vboot_skip_display_init(void) { return 0; }
 #endif
+int vboot_get_sw_write_protect(void);
 
 #include "gnvs.h"
 struct device;

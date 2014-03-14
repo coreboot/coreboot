@@ -93,6 +93,12 @@ void *vboot_get_region(uintptr_t offset_addr, size_t size, void *dest)
        }
 }
 
+int __attribute((weak)) vboot_get_sw_write_protect(void)
+{
+	// Can be implemented by a platform / mainboard
+	return 0;
+}
+
 static void *vboot_get_payload(size_t *len)
 {
 	struct vboot_handoff *vboot_handoff;

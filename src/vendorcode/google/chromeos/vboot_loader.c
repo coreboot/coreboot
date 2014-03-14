@@ -249,6 +249,8 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 		*iflags |= VB_INIT_FLAG_REC_BUTTON_PRESSED;
 	if (get_write_protect_state())
 		*iflags |= VB_INIT_FLAG_WP_ENABLED;
+	if (vboot_get_sw_write_protect())
+		*iflags |= VB_INIT_FLAG_SW_WP_ENABLED;
 	if (CONFIG_VIRTUAL_DEV_SWITCH)
 		*iflags |= VB_INIT_FLAG_VIRTUAL_DEV_SWITCH;
 	if (CONFIG_EC_SOFTWARE_SYNC) {

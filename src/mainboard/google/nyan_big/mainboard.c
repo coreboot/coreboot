@@ -111,6 +111,14 @@ static void setup_pinmux(void)
 						 PINMUX_PULL_NONE |
 						 PINMUX_INPUT_ENABLE);
 
+	// switch unused pin to GPIO
+	gpio_set_mode(GPIO(X3), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X4), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X5), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X6), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X7), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(W3), GPIO_MODE_GPIO);
+
 	// I2C1 clock.
 	pinmux_set_config(PINMUX_GEN1_I2C_SCL_INDEX,
 			  PINMUX_GEN1_I2C_SCL_FUNC_I2C1 | PINMUX_INPUT_ENABLE);

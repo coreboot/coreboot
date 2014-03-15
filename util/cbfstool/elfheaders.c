@@ -147,7 +147,7 @@ check_size(const struct buffer *b, size_t offset, size_t size, const char *desc)
 
 	if (offset >= buffer_size(b) || (offset + size) > buffer_size(b)) {
 		ERROR("The file is not large enough for the '%s'. "
-		      "%ld bytes @ offset %zu, input %zu bytes.\n",
+		      "%zu bytes @ offset %zu, input %zu bytes.\n",
 		      desc, size, offset, buffer_size(b));
 		return -1;
 	}

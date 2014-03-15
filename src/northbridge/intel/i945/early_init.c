@@ -310,7 +310,6 @@ static void ich7_setup_dmi_rcrb(void)
 
 	RCBA32(V0CTL) = 0x80000001;
 	RCBA32(V1CAP) = 0x03128010;
-	RCBA32(ESD) = 0x00000810;
 	RCBA32(RP1D) = 0x01000003;
 	RCBA32(RP2D) = 0x02000002;
 	RCBA32(RP3D) = 0x03000002;
@@ -331,8 +330,6 @@ static void ich7_setup_dmi_rcrb(void)
 	reg32 &= ~( (0x7f << 1) | (7 << 17) | (7 << 24) );
 	reg32 |= (0x40 << 1) | (4 << 17) | (1 << 24) | (1 << 31);
 	RCBA32(V1CTL) = reg32;
-
-	RCBA32(ESD) |= (2 << 16);
 
 	RCBA32(ULD) |= (1 << 24) | (1 << 16);
 
@@ -845,7 +842,7 @@ static void i945_setup_root_complex_topology(void)
 
 static void ich7_setup_root_complex_topology(void)
 {
-	RCBA32(0x104) = 0x00000802;
+	RCBA32(ESD) |= (2 << 16);
 	RCBA32(0x110) = 0x00000001;
 	RCBA32(0x114) = 0x00000000;
 	RCBA32(0x118) = 0x00000000;

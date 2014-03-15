@@ -132,7 +132,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 			continue;
 		if (input->size < (phdr[i].p_offset + phdr[i].p_filesz)){
 			ERROR("Underflow copying out the segment."
-			      "File has %ld bytes left, segment end is %ld\n",
+			      "File has %zd bytes left, segment end is %zd\n",
 			      input->size, phdr[i].p_offset + phdr[i].p_filesz);
 			return -1;
 		}

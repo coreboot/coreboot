@@ -22,6 +22,11 @@ config BOARD_LENOVO_X230
 	help
 	  Lenovo X230 laptop. Consult wiki for details.
 
+config BOARD_LENOVO_T530
+	bool "ThinkPad T530"
+	help
+	  Lenovo T530 laptop. Consult wiki for details.
+
 config BOARD_LENOVO_T60
 	bool "ThinkPad T60 / T60p"
 	help
@@ -35,6 +40,7 @@ endchoice
 source "src/mainboard/lenovo/x60/Kconfig"
 source "src/mainboard/lenovo/x201/Kconfig"
 source "src/mainboard/lenovo/x230/Kconfig"
+source "src/mainboard/lenovo/t530/Kconfig"
 source "src/mainboard/lenovo/t60/Kconfig"
 
 config MAINBOARD_VENDOR

@@ -1,4 +1,4 @@
-if BOARD_LENOVO_X230
+if BOARD_LENOVO_T530
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
@@ -34,11 +34,11 @@ config HAVE_ME_BIN
 
 config MAINBOARD_DIR
 	string
-	default lenovo/x230
+	default lenovo/t530
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "2325TLU"
+	default "2359CTO"
 
 config MMCONF_BASE_ADDRESS
 	hex
@@ -80,4 +80,4 @@ config MAINBOARD_VENDOR
 	string
 	default "LENOVO"
 
-endif # BOARD_LENOVO_X230
+endif # BOARD_LENOVO_T530

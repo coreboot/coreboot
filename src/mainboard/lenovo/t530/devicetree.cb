@@ -101,10 +101,10 @@ chip northbridge/intel/sandybridge
 						io 0x66 = 0x1604
 					end
 
-					register "config0" = "0xa6"
+					register "config0" = "0xa7"
 					register "config1" = "0x09"
 					register "config2" = "0xa0"
-					register "config3" = "0xe0"
+					register "config3" = "0xc2"
 
 					register "has_keyboard_backlight" = "1"
 

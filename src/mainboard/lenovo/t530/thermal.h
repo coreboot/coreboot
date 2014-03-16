@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef X230_THERMAL_H
-#define X230_THERMAL_H
+#ifndef T530_THERMAL_H
+#define T530_THERMAL_H
 
 	/* Temperature which OS will shutdown at */
 	#define CRITICAL_TEMPERATURE	100
@@ -27,4 +27,4 @@
 	/* Temperature which OS will throttle CPU */
 	#define PASSIVE_TEMPERATURE	90
 
-#endif
+#endif /* T530_THERMAL_H */

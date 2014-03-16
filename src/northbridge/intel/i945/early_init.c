@@ -310,7 +310,9 @@ static void ich7_setup_dmi_rcrb(void)
 
 	RCBA32(V0CTL) = 0x80000001;
 	RCBA32(V1CAP) = 0x03128010;
+	printk(BIOS_DEBUG, "ESD (before write No 2): %08x\n", RCBA32(ESD));
 	RCBA32(ESD) = 0x00000810;
+	printk(BIOS_DEBUG, "ESD (after write No 2): %08x\n", RCBA32(ESD));
 	RCBA32(RP1D) = 0x01000003;
 	RCBA32(RP2D) = 0x02000002;
 	RCBA32(RP3D) = 0x03000002;
@@ -332,9 +334,13 @@ static void ich7_setup_dmi_rcrb(void)
 	reg32 |= (0x40 << 1) | (4 << 17) | (1 << 24) | (1 << 31);
 	RCBA32(V1CTL) = reg32;
 
+	printk(BIOS_DEBUG, "ESD (before write No 3): %08x\n", RCBA32(ESD));
 	RCBA32(ESD) |= (2 << 16);
+	printk(BIOS_DEBUG, "ESD (after write No 3): %08x\n", RCBA32(ESD));
 
+	printk(BIOS_DEBUG, "ULD (before write No 2): %08x\n", RCBA32(ULD));
 	RCBA32(ULD) |= (1 << 24) | (1 << 16);
+	printk(BIOS_DEBUG, "ULD (after write No 2): %08x\n", RCBA32(ULD));
 
 	RCBA32(ULBA) = DEFAULT_DMIBAR;
 
@@ -845,8 +851,12 @@ static void i945_setup_root_complex_topology(void)
 
 static void ich7_setup_root_complex_topology(void)
 {
+	printk(BIOS_DEBUG, "ESD (default/before write No 1): %08x\n", RCBA32(ESD));
 	RCBA32(0x104) = 0x00000802;
+	printk(BIOS_DEBUG, "ESD (after write No 1): %08x\n", RCBA32(ESD));
+	printk(BIOS_DEBUG, "ULD (default/before write No 1): %08x\n", RCBA32(ULD));
 	RCBA32(0x110) = 0x00000001;
+	printk(BIOS_DEBUG, "ULD (after write No 1): %08x\n", RCBA32(ULD));
 	RCBA32(0x114) = 0x00000000;
 	RCBA32(0x118) = 0x00000000;
 }

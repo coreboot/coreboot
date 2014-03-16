@@ -111,7 +111,7 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71869AD_PP,   PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x07f8, 0}, },
 	{ &ops, F71869AD_HWM,  PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 	{ &ops, F71869AD_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, },
-	{ &ops, F71869AD_GPIO, },
+	{ &ops, F71869AD_GPIO, PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, {0x07fe, 4}, },
 	{ &ops, F71869AD_BSEL,  PNP_IO0, {0x07f8, 0}, },
 	{ &ops, F71869AD_PME, },
 };

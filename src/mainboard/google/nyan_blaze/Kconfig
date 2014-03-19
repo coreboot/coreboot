@@ -1,0 +1,91 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright 2014 Google Inc.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+if BOARD_GOOGLE_NYAN_BLAZE
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select ARCH_ARM
+	select CHROMEOS
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_SPI
+	select SOC_NVIDIA_TEGRA124
+	select TEGRA124_MODEL_CD570M
+	select MAINBOARD_HAS_BOOTBLOCK_INIT
+	select MAINBOARD_DO_NATIVE_VGA_INIT
+	select BOARD_ROMSIZE_KB_1024
+	select SPI_FLASH
+	select SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B
+
+
+config MAINBOARD_DIR
+	string
+	default google/nyan_blaze
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "Nyan Blaze"
+
+config DRAM_DMA_START
+	hex
+	default 0x90000000
+
+config DRAM_DMA_SIZE
+	hex
+	default 0x00200000
+
+choice
+	prompt "BCT boot media"
+	default NYAN_BLAZE_BCT_CFG_SPI
+	help
+	  Which boot media to configure the BCT for.
+
+config NYAN_BLAZE_BCT_CFG_SPI
+	bool "SPI"
+	help
+	  Configure the BCT for booting from SPI.
+
+config NYAN_BLAZE_BCT_CFG_EMMC
+	bool "eMMC"
+	help
+	  Configure the BCT for booting from eMMC.
+
+endchoice
+
+config BOOT_MEDIA_SPI_BUS
+	int "SPI bus with boot media ROM"
+	range 1 6
+	depends on NYAN_BLAZE_BCT_CFG_SPI
+	default 4
+	help
+	  Which SPI bus the boot media is connected to.
+
+config BOOT_MEDIA_SPI_CHIP_SELECT
+	int "Chip select for SPI boot media"
+	range 0 3
+	depends on NYAN_BLAZE_BCT_CFG_SPI
+	default 0
+	help
+	  Which chip select to use for boot media.
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 1
+
+endif # BOARD_GOOGLE_NYAN_BLAZE

@@ -35,6 +35,8 @@ config BOARD_GOOGLE_NYAN
 	bool "Nyan"
 config BOARD_GOOGLE_NYAN_BIG
 	bool "Nyan Big"
+config BOARD_GOOGLE_NYAN_BLAZE
+	bool "Nyan Blaze"
 config BOARD_GOOGLE_PANTHER
 	bool "Panther"
 config BOARD_GOOGLE_PARROT
@@ -63,6 +65,7 @@ source "src/mainboard/google/falco/Kconfig"
 source "src/mainboard/google/link/Kconfig"
 source "src/mainboard/google/nyan/Kconfig"
 source "src/mainboard/google/nyan_big/Kconfig"
+source "src/mainboard/google/nyan_blaze/Kconfig"
 source "src/mainboard/google/panther/Kconfig"
 source "src/mainboard/google/parrot/Kconfig"
 source "src/mainboard/google/peach_pit/Kconfig"

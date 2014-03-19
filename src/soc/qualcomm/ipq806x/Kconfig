@@ -1,0 +1,22 @@
+config SOC_QC_IPQ806X
+	select ARCH_BOOTBLOCK_ARMV4
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
+	bool
+	default n
+
+if SOC_QC_IPQ806X
+
+config BOOTBLOCK_ROM_OFFSET
+	hex
+	default 0x0
+
+config CBFS_HEADER_ROM_OFFSET
+	hex "offset of master CBFS header in ROM"
+	default 0x18000
+
+config CBFS_ROM_OFFSET
+	hex "offset of CBFS data in ROM"
+	default 0x18080
+
+endif

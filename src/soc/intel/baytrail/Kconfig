@@ -113,7 +113,7 @@ endif # HAVE_MRC
 
 config DCACHE_RAM_BASE
 	hex
-	default 0xff800000
+	default 0xfe000000
 
 config DCACHE_RAM_SIZE
 	hex

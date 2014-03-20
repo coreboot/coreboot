@@ -82,11 +82,37 @@ static int should_emit_386(struct rmod_context *ctx, Elf64_Rela *rel)
 	return (type == R_386_32);
 }
 
+static int valid_reloc_arm(struct rmod_context *ctx, Elf64_Rela *rel)
+{
+	int type;
+
+	type = ELF64_R_TYPE(rel->r_info);
+
+	/* Only these 3 relocations are expected to be found. */
+	return (type == R_ARM_ABS32 || type == R_ARM_THM_PC22 ||
+                type == R_ARM_THM_JUMP24);
+}
+
+static int should_emit_arm(struct rmod_context *ctx, Elf64_Rela *rel)
+{
+	int type;
+
+	type = ELF64_R_TYPE(rel->r_info);
+
+	/* R_ARM_ABS32 relocations are absolute. Must emit these. */
+	return (type == R_ARM_ABS32);
+}
+
 static struct arch_ops reloc_ops[] = {
 	{
 		.arch = EM_386,
 		.valid_type = valid_reloc_386,
 		.should_emit = should_emit_386,
+	},
+	{
+		.arch = EM_ARM,
+		.valid_type = valid_reloc_arm,
+		.should_emit = should_emit_arm,
 	},
 };
 

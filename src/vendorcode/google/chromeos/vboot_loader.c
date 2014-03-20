@@ -141,6 +141,7 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 	vboot_run_stub(&context);
 }
 
+#if CONFIG_RELOCATABLE_RAMSTAGE
 static void *vboot_load_ramstage(uint32_t cbmem_id, const char *name,
 				const struct cbmem_entry **cbmem_entry)
 {
@@ -204,6 +205,62 @@ static void *vboot_load_ramstage(uint32_t cbmem_id, const char *name,
 
 	return rmod_load.entry;
 }
+#else /* CONFIG_RELOCATABLE_RAMSTAGE */
+static void vboot_load_ramstage(struct vboot_handoff *vboot_handoff,
+                                struct romstage_handoff *handoff)
+{
+	struct cbfs_stage *stage;
+	const struct firmware_component *fwc;
+
+	if (CONFIG_VBOOT_RAMSTAGE_INDEX >= MAX_PARSED_FW_COMPONENTS) {
+		printk(BIOS_ERR, "Invalid ramstage index: %d\n",
+		       CONFIG_VBOOT_RAMSTAGE_INDEX);
+		return;
+	}
+
+	/* Check for invalid address. */
+	fwc = &vboot_handoff->components[CONFIG_VBOOT_RAMSTAGE_INDEX];
+	if (fwc->address == 0) {
+		printk(BIOS_DEBUG, "RW ramstage image address invalid.\n");
+		return;
+	}
+
+	printk(BIOS_DEBUG, "RW ramstage image at 0x%08x, 0x%08x bytes.\n",
+	       fwc->address, fwc->size);
+
+	stage = vboot_get_region(fwc->address, fwc->size);
+
+	if (stage == NULL) {
+		printk(BIOS_DEBUG, "Unable to get RW ramstage region.\n");
+		return;
+	}
+
+	timestamp_add_now(TS_START_COPYRAM);
+
+	/* Stages rely the below clearing so that the bss is initialized. */
+	memset((void *) (uintptr_t) stage->load, 0, stage->memlen);
+
+	if (cbfs_decompress(stage->compression,
+			     ((unsigned char *) stage) +
+			     sizeof(struct cbfs_stage),
+			     (void *) (uintptr_t) stage->load,
+			     stage->len))
+		return;
+
+	timestamp_add_now(TS_END_COPYRAM);
+
+#if CONFIG_ARCH_X86
+	__asm__ volatile (
+		"movl $0, %%ebp\n"
+		"jmp  *%%edi\n"
+		:: "D"(stage->entry)
+	);
+#elif CONFIG_ARCH_ARM
+	stage_exit((void *)(uintptr_t)stage->entry);
+#endif
+}
+#endif /* CONFIG_RELOCATABLE_RAMSTAGE */
+
 
 const struct ramstage_loader_ops vboot_ramstage_loader = {
 	.name = "VBOOT",

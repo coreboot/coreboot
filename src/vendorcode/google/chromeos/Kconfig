@@ -80,6 +80,7 @@ config FLASHMAP_OFFSET
 config VBOOT_VERIFY_FIRMWARE
 	bool "Verify firmware with vboot."
 	default n
+	select RELOCATABLE_MODULES
 	help
 	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the ramstage
 	  and boot loader.

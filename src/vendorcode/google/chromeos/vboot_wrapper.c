@@ -31,43 +31,9 @@
 /* Keep a global context pointer around for the callbacks to use. */
 static struct vboot_context *gcontext;
 
-/* The FW areas consist of multiple components. At the beginning of
- * each area is the number of total compoments as well as the size and
- * offset for each component. One needs to caculate the total size of the
- * signed firmware region based off of the embedded metadata. */
-#define MAX_NUM_COMPONENTS 20
-
-struct component_entry {
-	uint32_t offset;
-	uint32_t size;
-} __attribute__((packed));
-
-struct components {
-	uint32_t num_components;
-	struct component_entry entries[0];
-} __attribute__((packed));
-
-
-static void parse_component(const struct components *components, int num,
-                            struct firmware_component *fw)
-{
-	const char *base;
-
-	if (num >= components->num_components)
-		return;
-
-	/* Offsets are relative to the stat of the book keeping structure. */
-	base = (void *)components;
-
-	fw->address = (uint32_t)&base[components->entries[num].offset];
-	fw->size = (uint32_t)components->entries[num].size;
-}
-
 static void vboot_wrapper(void *arg)
 {
-	int i;
 	VbError_t res;
-	const struct components *components;
 	struct vboot_context *context;
 
 	context = arg;
@@ -86,23 +52,6 @@ static void vboot_wrapper(void *arg)
 
 	if (res != VBERROR_SUCCESS)
 		return;
-
-	/* Fix up the handoff structure. */
-	context->handoff->selected_firmware =
-		context->fparams->selected_firmware;
-
-	/* Parse out the components for downstream consumption. */
-	if (context->handoff->selected_firmware == VB_SELECT_FIRMWARE_A)
-		components = (void *)context->fw_a;
-	else if  (context->handoff->selected_firmware == VB_SELECT_FIRMWARE_B)
-		components = (void *)context->fw_b;
-	else
-		return;
-
-	for (i = 0; i < MAX_PARSED_FW_COMPONENTS; i++) {
-		parse_component(components, i,
-		                &context->handoff->components[i]);
-	}
 }
 
 void VbExError(const char *format, ...)
@@ -203,43 +152,51 @@ void *Memset(void *dest, const uint8_t c, uint64_t n)
 	return memset(dest, c, n);
 }
 
+static inline size_t get_hash_block_size(size_t requested_size)
+{
+	if (!IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED)) {
+		const size_t block_size = 64 * 1024;
+		if (requested_size > block_size)
+			return block_size;
+	}
+	return requested_size;
+}
+
 VbError_t VbExHashFirmwareBody(VbCommonParams *cparams, uint32_t firmware_index)
 {
 	uint8_t *data;
-	uint32_t size;
-	uint32_t data_size;
-	struct components *components;
-	uint32_t i;
+	struct vboot_region *region;
+	struct vboot_context *ctx;
+	size_t data_size;
+	uintptr_t offset_addr;
+
+	ctx = cparams->caller_context;
 
 	switch (firmware_index) {
 	case VB_SELECT_FIRMWARE_A:
-		data = gcontext->fw_a;
-		size = gcontext->fw_a_size;
+		region = &ctx->fw_a;
 		break;
 	case VB_SELECT_FIRMWARE_B:
-		data = gcontext->fw_b;
-		size = gcontext->fw_b_size;
+		region = &ctx->fw_b;
 		break;
 	default:
 		return VBERROR_UNKNOWN;
 	}
 
-	components = (void *)data;
-	data_size = sizeof(struct components);
+	data_size = region->size;
+	offset_addr = region->offset_addr;
+	while (data_size) {
+		size_t block_size;
 
-	if (components->num_components > MAX_NUM_COMPONENTS)
-		return VBERROR_UNKNOWN;
-
-	data_size +=
-		components->num_components * sizeof(struct component_entry);
-
-	for (i = 0; i < components->num_components; i++)
-		data_size += ALIGN(components->entries[i].size, 4);
-
-	if (size < data_size)
+		block_size = get_hash_block_size(data_size);
+		data = ctx->get_region(offset_addr, block_size, NULL);
+		if (data == NULL)
 			return VBERROR_UNKNOWN;
+		VbUpdateFirmwareBodyHash(cparams, data, block_size);
 
-	VbUpdateFirmwareBodyHash(cparams, data, data_size);
+		data_size -= block_size;
+		offset_addr += block_size;
+	}
 
 	return VBERROR_SUCCESS;
 }
@@ -273,5 +230,28 @@ VbError_t VbExTpmSendReceive(const uint8_t *request, uint32_t request_length,
 		return VBERROR_UNKNOWN;
 	return VBERROR_SUCCESS;
 }
+
+#if !CONFIG_SPI_FLASH_MEMORY_MAPPED
+VbError_t VbExRegionRead(VbCommonParams *cparams,
+                         enum vb_firmware_region region, uint32_t offset,
+                         uint32_t size, void *buf)
+{
+	struct vboot_context *ctx;
+	VbExDebug("VbExRegionRead: offset=%x size=%x, buf=%p\n",
+	          offset, size, buf);
+	ctx = cparams->caller_context;
+
+	if (region == VB_REGION_GBB) {
+		if (offset + size > cparams->gbb_size)
+			return VBERROR_REGION_READ_INVALID;
+		offset += ctx->gbb.offset_addr;
+		if (ctx->get_region(offset, size, buf) == NULL)
+			return VBERROR_REGION_READ_INVALID;
+		return VBERROR_SUCCESS;
+	}
+
+	return VBERROR_UNSUPPORTED_REGION;
+}
+#endif /* CONFIG_SPI_FLASH_MEMORY_MAPPED */
 
 RMODULE_ENTRY(vboot_wrapper);

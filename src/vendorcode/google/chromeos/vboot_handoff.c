@@ -18,8 +18,10 @@
  */
 
 #include <stddef.h>
+#include <string.h>
 #include "chromeos.h"
 #include <boot/coreboot_tables.h>
+#include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <payload_loader.h>
@@ -50,6 +52,33 @@ int vboot_enable_recovery(void)
 		return 0;
 
 	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_RECOVERY);
+}
+
+void *vboot_get_region(uintptr_t offset_addr, size_t size, void *dest)
+{
+      if (IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED)) {
+               if (dest != NULL)
+                       return memcpy(dest, (void *)offset_addr, size);
+               else
+                       return (void *)offset_addr;
+       } else {
+               struct cbfs_media default_media, *media = &default_media;
+               void *cache;
+
+               init_default_cbfs_media(media);
+               media->open(media);
+               if (dest != NULL) {
+                       cache = dest;
+                       if (media->read(media, dest, offset_addr, size) != size)
+                               cache = NULL;
+               } else {
+                       cache = media->map(media, offset_addr, size);
+                       if (cache == CBFS_MEDIA_INVALID_MAP_ADDRESS)
+                               cache = NULL;
+               }
+               media->close(media);
+               return cache;
+       }
 }
 
 static void *vboot_get_payload(size_t *len)

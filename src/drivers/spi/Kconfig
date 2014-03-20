@@ -26,6 +26,13 @@ config SPI_FLASH
 
 if SPI_FLASH
 
+config SPI_FLASH_MEMORY_MAPPED
+	bool
+	default y if ARCH_X86
+	default n if !ARCH_X86
+	help
+	  Inform system if SPI is memory-mapped or not.
+
 config SPI_FLASH_SMM
 	bool "SPI flash driver support in SMM"
 	default n

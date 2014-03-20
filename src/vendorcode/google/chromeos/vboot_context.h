@@ -22,17 +22,30 @@
 #include <stdint.h>
 #include <vboot_api.h>
 
+struct cbmem_entry;
+
 /* The vboot context structure provides all the necessary data for invoking
  * vboot. The vboot loader sets everything up for vboot module to use. */
+
+struct vboot_region {
+	/*
+	 * The offset_addr field may be an offset or an address. It depends
+	 * on the capabilities of the underlying architecture.
+	 */
+	uintptr_t offset_addr;
+	int32_t size;
+};
 
 struct vboot_context {
 	struct vboot_handoff *handoff;
 	VbCommonParams *cparams;
 	VbSelectFirmwareParams *fparams;
-	uint8_t *fw_a;
-	uint32_t fw_a_size;
-	uint8_t *fw_b;
-	uint32_t fw_b_size;
+	struct vboot_region gbb;
+	struct vboot_region vblock_a;
+	struct vboot_region fw_a;
+	struct vboot_region vblock_b;
+	struct vboot_region fw_b;
+	const struct cbmem_entry *vblocks;
 	/* Callback implementations living in romstage. */
 	void (*read_vbnv)(uint8_t *vbnv_copy);
 	void (*save_vbnv)(const uint8_t *vbnv_copy);
@@ -43,6 +56,7 @@ struct vboot_context {
 	                    size_t *recv_len);
 	void (*log_msg)(const char *fmt, va_list args);
 	void (*fatal_error)(void);
+	void *(*get_region)(uintptr_t offset_addr, size_t size, void *dest);
 };
 
 #endif /* VBOOT_CONTEXT_H */

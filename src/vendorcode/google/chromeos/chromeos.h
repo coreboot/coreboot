@@ -36,6 +36,13 @@ void init_chromeos(int bootmode);
 
 struct romstage_handoff;
 #if CONFIG_VBOOT_VERIFY_FIRMWARE
+/*
+ * This is a dual purpose routine. If dest is non-NULL the region at
+ * offset_addr will be read into the area pointed to by dest.  If dest
+ * is NULL,the region will be mapped to a memory location. NULL is
+ * returned on error else the location of the requested region.
+ */
+void *vboot_get_region(uintptr_t offset_addr, size_t size, void *dest);
 /* Returns 0 on success < 0 on error. */
 int vboot_get_handoff_info(void **addr, uint32_t *size);
 int vboot_enable_developer(void);

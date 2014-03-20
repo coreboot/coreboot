@@ -43,6 +43,10 @@ ramstage-y += vboot_handoff.c
 romstage-y += vboot_loader.c
 rmodules_$(ARCH-romstage-y)-y += vboot_wrapper.c
 
+ifneq ($(CONFIG_SPI_FLASH_MEMORY_MAPPED),y)
+VBOOT_MAKEFLAGS = REGION_READ=1
+endif
+
 VB_LIB = $(obj)/external/vboot_reference/vboot_fw.a
 # Currently, vboot comes into picture only during the romstage, thus
 # is compiled for being used in romstage only. Since, we are splitting
@@ -83,6 +87,7 @@ $(VB_LIB):
 		CC="$(CC_romstage)" \
 		CFLAGS="$(VBOOT_CFLAGS)" \
 		make -C $(VB_SOURCE) \
+		$(VBOOT_MAKEFLAGS) \
 		BUILD=../$(dir $(VB_LIB)) \
 		V=$(V) \
 		fwlib

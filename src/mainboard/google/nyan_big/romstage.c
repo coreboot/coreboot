@@ -26,6 +26,8 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <romstage_handoff.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include "sdram_configs.h"
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra124/chip.h>
@@ -195,11 +197,8 @@ static void __attribute__((noinline)) romstage(void)
 
 	cbmem_initialize_empty();
 
-#if CONFIG_COLLECT_TIMESTAMPS
 	timestamp_init(0);
 	timestamp_add(TS_START_ROMSTAGE, romstage_start_time);
-	timestamp_add(TS_START_COPYRAM, timestamp_get());
-#endif
 
 	// Enable additional peripherals we need for ROM stage.
 	clock_enable_clear_reset(0, CLK_H_SBC1, CLK_U_I2C3, 0, 0, 0);
@@ -209,11 +208,13 @@ static void __attribute__((noinline)) romstage(void)
 	configure_ec_spi_bus();
 	configure_tpm_i2c_bus();
 
+	vboot_verify_firmware(romstage_handoff_find_or_add());
+
+	timestamp_add(TS_START_COPYRAM, timestamp_get());
 	void *entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 				      "fallback/coreboot_ram");
-#if CONFIG_COLLECT_TIMESTAMPS
 	timestamp_add(TS_END_COPYRAM, timestamp_get());
-#endif
+
 	stage_exit(entry);
 }
 

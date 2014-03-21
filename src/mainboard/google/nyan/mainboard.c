@@ -19,6 +19,7 @@
 
 #include <arch/io.h>
 #include <device/device.h>
+#include <elog.h>
 #include <boot/coreboot_tables.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
@@ -239,6 +240,9 @@ static void mainboard_init(device_t dev)
 	setup_kernel_info();
 	clock_init_arm_generic_timer();
 	setup_ec_spi();
+#if CONFIG_ELOG
+	elog_init();
+#endif
 }
 
 static void mainboard_enable(device_t dev)

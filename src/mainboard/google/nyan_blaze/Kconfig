@@ -35,7 +35,6 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SPI_FLASH_FAST_READ_DUAL_OUTPUT_3B
 	select VIRTUAL_DEV_SWITCH
 
-
 config MAINBOARD_DIR
 	string
 	default google/nyan_blaze

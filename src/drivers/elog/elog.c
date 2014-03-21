@@ -17,10 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA, 02110-1301 USA
  */
 
+#if CONFIG_HAVE_ACPI_RESUME == 1
 #include <arch/acpi.h>
+#endif
 #include <cbmem.h>
 #include <console/console.h>
+#if CONFIG_ARCH_X86
 #include <pc80/mc146818rtc.h>
+#endif
 #include <smbios.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
@@ -29,12 +33,12 @@
 #include <elog.h>
 #include "elog_internal.h"
 
+#if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>
 
 #if CONFIG_ELOG_FLASH_BASE == 0
 #error "CONFIG_ELOG_FLASH_BASE is invalid"
 #endif
-
 #if CONFIG_ELOG_FULL_THRESHOLD >= CONFIG_ELOG_AREA_SIZE
 #error "CONFIG_ELOG_FULL_THRESHOLD is larger than CONFIG_ELOG_AREA_SIZE"
 #endif
@@ -92,6 +96,8 @@ static inline u32 get_rom_size(void)
  */
 static inline u32 elog_flash_address_to_offset(u8 *address)
 {
+#if CONFIG_ARCH_X86
+	/* For x86, assume address is memory-mapped near 4GB */
 	u32 rom_size;
 
 	if (!elog_spi)
@@ -100,6 +106,9 @@ static inline u32 elog_flash_address_to_offset(u8 *address)
 	rom_size = get_rom_size();
 
 	return (u32)address - ((u32)~0UL - rom_size + 1);
+#else
+	return (u32)address;
+#endif
 }
 
 /*
@@ -607,12 +616,18 @@ int elog_init(void)
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */
-	if (CONFIG_ELOG_BOOT_COUNT && !acpi_is_wakeup_s3())
+#if CONFIG_ELOG_BOOT_COUNT == 1
+#if CONFIG_HAVE_ACPI_RESUME == 1
+		if (!acpi_is_wakeup_s3())
+#endif
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
+#endif
 
+#if CONFIG_ARCH_X86
 	/* Check and log POST codes from previous boot */
 	if (CONFIG_CMOS_POST)
 		cmos_post_log();
+#endif
 #endif
 
 	return 0;
@@ -623,12 +638,20 @@ int elog_init(void)
  */
 static void elog_fill_timestamp(struct event_header *event)
 {
+#if CONFIG_ARCH_X86
 	event->second = cmos_read(RTC_CLK_SECOND);
 	event->minute = cmos_read(RTC_CLK_MINUTE);
 	event->hour   = cmos_read(RTC_CLK_HOUR);
 	event->day    = cmos_read(RTC_CLK_DAYOFMONTH);
 	event->month  = cmos_read(RTC_CLK_MONTH);
 	event->year   = cmos_read(RTC_CLK_YEAR);
+#else
+	/*
+	 * FIXME: We need to abstract the CMOS stuff on non-x86 platforms.
+	 * Until then, use bogus data here to force the values to 0.
+	 */
+	event->month  = 0xff;
+#endif
 
 	/* Basic sanity check of expected ranges */
 	if (event->month > 0x12 || event->day > 0x31 || event->hour > 0x23 ||

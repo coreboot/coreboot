@@ -285,7 +285,10 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 		goto err_read_id;
 
 #if CONFIG_DEBUG_SPI_FLASH
-	printk(BIOS_SPEW, "SF: Got idcodes\n");
+	printk(BIOS_SPEW, "SF: Got idcode: ");
+	for (i = 0; i < sizeof(idcode); i++)
+		printk(BIOS_SPEW, "%02x ", idcode[i]);
+	printk(BIOS_SPEW, "\n");
 #endif
 
 	/* count the number of continuation bytes */

@@ -25,9 +25,50 @@ static void spi_flash_addr(u32 addr, u8 *cmd)
 	cmd[3] = addr >> 0;
 }
 
+/*
+ * If atomic sequencing is used, the cycle type is known to the SPI
+ * controller so that it can perform consecutive transfers and arbitrate
+ * automatically. Otherwise the SPI controller transfers whatever the
+ * user requests immediately, without regard to sequence. Atomic
+ * sequencing is commonly used on x86 platforms.
+ *
+ * SPI flash commands are simple two-step sequences. The command byte is
+ * always written first and may be followed by an address. Then data is
+ * either read or written. For atomic sequencing we'll pass everything into
+ * spi_xfer() at once and let the controller handle the details. Otherwise
+ * we will write all output bytes first and then read if necessary.
+ *
+ * FIXME: This really should be abstracted better, but that will
+ * require overhauling the entire SPI infrastructure.
+ */
+static int do_spi_flash_cmd(struct spi_slave *spi, const void *dout,
+		unsigned int bytes_out, void *din, unsigned int bytes_in)
+{
+	int ret = 1;
+
+#if CONFIG_SPI_ATOMIC_SEQUENCING == 1
+	if (spi_xfer(spi, dout, bytes_out, din, bytes_in) < 0)
+		goto done;
+#else
+	if (dout && bytes_out) {
+		if (spi_xfer(spi, dout, bytes_out, NULL, 0) < 0)
+			goto done;
+	}
+
+	if (din && bytes_in) {
+		if (spi_xfer(spi, NULL, 0, din, bytes_in) < 0)
+			goto done;
+	}
+#endif
+
+	ret = 0;
+done:
+	return ret;
+}
+
 int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len)
 {
-	int ret = spi_xfer(spi, &cmd, sizeof(cmd), response, len);
+	int ret = do_spi_flash_cmd(spi, &cmd, sizeof(cmd), response, len);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Failed to send command %02x: %d\n", cmd, ret);
 
@@ -37,7 +78,7 @@ int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len)
 int spi_flash_cmd_read(struct spi_slave *spi, const u8 *cmd,
 		size_t cmd_len, void *data, size_t data_len)
 {
-	int ret = spi_xfer(spi, cmd, cmd_len, data, data_len);
+	int ret = do_spi_flash_cmd(spi, cmd, cmd_len, data, data_len);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Failed to send read command (%zu bytes): %d\n",
 				data_len, ret);
@@ -54,7 +95,7 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 	memcpy(buff, cmd, cmd_len);
 	memcpy(buff + cmd_len, data, data_len);
 
-	ret = spi_xfer(spi, buff, cmd_len + data_len, NULL, 0);
+	ret = do_spi_flash_cmd(spi, buff, cmd_len + data_len, NULL, 0);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Failed to send write command (%zu bytes): %d\n",
 				data_len, ret);

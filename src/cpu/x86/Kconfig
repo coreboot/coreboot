@@ -137,3 +137,10 @@ config MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING
 	  payload would typically live in a memory-mapped SPI part. Copying
 	  the SPI contents to RAM before performing the load can speed up
 	  the boot process.
+
+config BOOT_MEDIA_SPI_BUS
+	int
+	default 0
+	depends on SPI_FLASH
+	help
+	 Most x86 systems which boot from SPI flash boot using bus 0.

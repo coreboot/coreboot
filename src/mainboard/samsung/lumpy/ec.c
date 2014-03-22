@@ -18,7 +18,6 @@
  */
 
 #include <arch/acpi.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <types.h>
 #include <console/console.h>
 #include <ec/smsc/mec1308/ec.h>

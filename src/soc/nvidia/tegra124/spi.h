@@ -54,9 +54,6 @@ struct tegra_spi_channel {
 	struct spi_slave slave;
 	unsigned int req_sel;
 
-	/* stuff that is specific to the attached device */
-	int rx_frame_header_enable;
-	u8 frame_header;
 	int dual_mode;		/* for x2 transfers with bit interleaving */
 
 	/* context (used internally) */

@@ -188,13 +188,7 @@ static void setup_kernel_info(void)
 
 static void setup_ec_spi(void)
 {
-	struct tegra_spi_channel *spi;
-
-	spi = tegra_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
-
-	/* Set frame header for use by CrOS EC */
-	spi->frame_header = 0xec;
-	spi->rx_frame_header_enable = 1;
+	tegra_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
 }
 
 static void mainboard_init(device_t dev)

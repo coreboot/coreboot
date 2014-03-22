@@ -57,8 +57,12 @@ check_member(exynos_spi, fb_clk, 0x2c);
 #define SPI_TX_CH_ON		(1 << 0)
 
 /* SPI_MODECFG */
-#define SPI_MODE_CH_WIDTH_WORD	(0x2 << 29)
+#define SPI_MODE_BUS_WIDTH_BYTE	(0x0 << 17)
 #define SPI_MODE_BUS_WIDTH_WORD	(0x2 << 17)
+#define SPI_MODE_BUS_WIDTH_MASK	(0x3 << 17)
+#define SPI_MODE_CH_WIDTH_BYTE	(0x0 << 29)
+#define SPI_MODE_CH_WIDTH_WORD	(0x2 << 29)
+#define SPI_MODE_CH_WIDTH_MASK	(0x3 << 29)
 
 /* SPI_CSREG */
 #define SPI_SLAVE_SIG_INACT	(1 << 0)

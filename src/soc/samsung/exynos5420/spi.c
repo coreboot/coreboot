@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <spi_flash.h>
+#include <string.h>
 
 #include "cpu.h"
 #include "spi.h"
@@ -38,9 +39,7 @@
 struct exynos_spi_slave {
 	struct spi_slave slave;
 	struct exynos_spi *regs;
-	unsigned int fifo_size;
-	uint8_t half_duplex;
-	uint8_t frame_header;  /* header byte to detect in half-duplex mode. */
+	int initialized;
 };
 
 /* TODO(hungte) Move the SPI param list to per-board configuration, probably
@@ -55,17 +54,12 @@ static struct exynos_spi_slave exynos_spi_slaves[3] = {
 	{
 		.slave = { .bus = 1, .rw = SPI_READ_FLAG, },
 		.regs = (void *)EXYNOS5_SPI1_BASE,
-		.fifo_size = 64,
-		.half_duplex = 0,
 	},
 	// SPI 2
 	{
 		.slave = { .bus = 2,
 			   .rw = SPI_READ_FLAG | SPI_WRITE_FLAG, },
 		.regs = (void *)EXYNOS5_SPI2_BASE,
-		.fifo_size = 64,
-		.half_duplex = 1,
-		.frame_header = 0xec,
 	},
 };
 
@@ -74,15 +68,69 @@ static inline struct exynos_spi_slave *to_exynos_spi(struct spi_slave *slave)
 	return container_of(slave, struct exynos_spi_slave, slave);
 }
 
+static void spi_sw_reset(struct exynos_spi *regs, int word)
+{
+	const uint32_t orig_mode_cfg = readl(&regs->mode_cfg);
+	uint32_t mode_cfg = orig_mode_cfg;
+	const uint32_t orig_swap_cfg = readl(&regs->swap_cfg);
+	uint32_t swap_cfg = orig_swap_cfg;
+
+	mode_cfg &= ~(SPI_MODE_CH_WIDTH_MASK | SPI_MODE_BUS_WIDTH_MASK);
+	if (word) {
+		mode_cfg |= SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD;
+		swap_cfg |= SPI_RX_SWAP_EN |
+			    SPI_RX_BYTE_SWAP |
+			    SPI_RX_HWORD_SWAP |
+			    SPI_TX_SWAP_EN |
+			    SPI_TX_BYTE_SWAP |
+			    SPI_TX_HWORD_SWAP;
+	} else {
+		mode_cfg |= SPI_MODE_CH_WIDTH_BYTE | SPI_MODE_BUS_WIDTH_BYTE;
+		swap_cfg = 0;
+	}
+
+	if (mode_cfg != orig_mode_cfg)
+		writel(mode_cfg, &regs->mode_cfg);
+	if (swap_cfg != orig_swap_cfg)
+		writel(swap_cfg, &regs->swap_cfg);
+
+	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
+	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+}
+
 void spi_init(void)
 {
-	printk(BIOS_INFO, "Exynos SPI driver initiated.\n");
+}
+
+static void exynos_spi_init(struct exynos_spi *regs)
+{
+	// Set FB_CLK_SEL.
+	writel(SPI_FB_DELAY_180, &regs->fb_clk);
+	// CPOL: Active high.
+	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L);
+
+	// Clear rx and tx channel if set priveously.
+	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
+
+	setbits_le32(&regs->swap_cfg,
+		     SPI_RX_SWAP_EN | SPI_RX_BYTE_SWAP | SPI_RX_HWORD_SWAP);
+	clrbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
+
+	// Do a soft reset, which will also enable both channels.
+	spi_sw_reset(regs, 1);
 }
 
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	ASSERT(bus >= 0 && bus < 3);
-	return &(exynos_spi_slaves[bus].slave);
+	struct exynos_spi_slave *eslave = &exynos_spi_slaves[bus];
+	if (!eslave->initialized) {
+		exynos_spi_init(eslave->regs);
+		eslave->initialized = 1;
+	}
+	return &eslave->slave;
 }
 
 int spi_cs_is_valid(unsigned int bus, unsigned int cs)
@@ -103,237 +151,111 @@ void spi_cs_deactivate(struct spi_slave *slave)
 	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
 }
 
-static inline void exynos_spi_soft_reset(struct exynos_spi *regs)
-{
-	/* The soft reset clears only FIFO and status register.
-	 * All special function registers are not changed. */
-	setbits_le32(&regs->ch_cfg, SPI_CH_RST);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_RST);
-}
-
-static inline void exynos_spi_flush_fifo(struct exynos_spi *regs)
-{
-	/*
-	 * Flush spi tx, rx fifos and reset the SPI controller
-	 * and clear rx/tx channel
-	 */
-	clrbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
-	clrbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
-	exynos_spi_soft_reset(regs);
-	setbits_le32(&regs->ch_cfg, SPI_RX_CH_ON | SPI_TX_CH_ON);
-}
-
-static void exynos_spi_request_bytes(struct exynos_spi *regs, int count,
-				     int width)
-{
-	uint32_t mode_word = SPI_MODE_CH_WIDTH_WORD | SPI_MODE_BUS_WIDTH_WORD,
-		 swap_word = (SPI_TX_SWAP_EN | SPI_RX_SWAP_EN |
-			      SPI_TX_BYTE_SWAP | SPI_RX_BYTE_SWAP |
-			      SPI_TX_HWORD_SWAP | SPI_RX_HWORD_SWAP);
-
-	/* For word address we need to swap bytes */
-	if (width == sizeof(uint32_t)) {
-		setbits_le32(&regs->mode_cfg, mode_word);
-		setbits_le32(&regs->swap_cfg, swap_word);
-		count /= width;
-	} else {
-		/* Select byte access and clear the swap configuration */
-		clrbits_le32(&regs->mode_cfg, mode_word);
-		writel(0, &regs->swap_cfg);
-	}
-
-	exynos_spi_soft_reset(regs);
-
-	if (count) {
-		ASSERT(count < (1 << 16));
-		writel(count | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
-	} else {
-		writel(0, &regs->pkt_cnt);
-	}
-}
-
-static int spi_rx_tx(struct spi_slave *slave, uint8_t *rxp, int rx_bytes,
-		     const uint8_t *txp, int tx_bytes)
-{
-	struct exynos_spi_slave *espi = to_exynos_spi(slave);
-	struct exynos_spi *regs = espi->regs;
-
-	int step;
-	int todo = MAX(rx_bytes, tx_bytes);
-	int wait_for_frame_header = espi->half_duplex;
-
-	ASSERT(todo < EXYNOS_SPI_MAX_TRANSFER_BYTES);
-
-	/* Select transfer mode. */
-	if (espi->half_duplex) {
-		step = 1;
-	} else if ((rx_bytes | tx_bytes | (uintptr_t)rxp |(uintptr_t)txp) & 3) {
-		printk(BIOS_CRIT, "%s: WARNING: transfer mode decreased to 1B\n",
-		       __func__);
-		step = 1;
-	} else {
-		step = sizeof(uint32_t);
-	}
-
-	exynos_spi_request_bytes(regs, espi->half_duplex ? 0 : todo, step);
-
-	/* Note: Some device, like ChromeOS EC, tries to work in half-duplex
-	 * mode and sends a large amount of data (larger than FIFO size).
-	 * Printing lots of debug messages or doing extra delay in the loop
-	 * below may cause rx buffer to overflow and getting unexpected data
-	 * error.
-	 */
-	while (rx_bytes || tx_bytes) {
-		int temp;
-		uint32_t spi_sts = readl(&regs->spi_sts);
-		int rx_lvl = (spi_sts >> SPI_RX_LVL_OFFSET) & SPI_FIFO_LVL_MASK,
-		    tx_lvl = (spi_sts >> SPI_TX_LVL_OFFSET) & SPI_FIFO_LVL_MASK;
-		int min_tx = ((tx_bytes || !espi->half_duplex) ?
-			      (espi->fifo_size / 2) : 1);
-
-		// TODO(hungte) Abort if timeout happens in half-duplex mode.
-
-		/*
-		 * Don't completely fill the txfifo, since we don't want our
-		 * rxfifo to overflow, and it may already contain data.
-		 */
-		while (tx_lvl < min_tx) {
-			if (tx_bytes) {
-				if (step == sizeof(uint32_t)) {
-					temp = *((uint32_t *)txp);
-					txp += sizeof(uint32_t);
-				} else {
-					temp = *txp++;
-				}
-				tx_bytes -= step;
-			} else {
-				temp = -1;
-			}
-			writel(temp, &regs->tx_data);
-			tx_lvl += step;
-		}
-
-		while ((rx_lvl >= step) && rx_bytes) {
-			temp = readl(&regs->rx_data);
-			rx_lvl -= step;
-			if (wait_for_frame_header) {
-				if ((temp & 0xff) == espi->frame_header) {
-					wait_for_frame_header = 0;
-				}
-				break;  /* Restart the outer loop. */
-			}
-			if (step == sizeof(uint32_t)) {
-				*((uint32_t *)rxp) = temp;
-				rxp += sizeof(uint32_t);
-			} else {
-				*rxp++ = temp;
-			}
-			rx_bytes -= step;
-		}
-	}
-	return 0;
-}
-
 int spi_claim_bus(struct spi_slave *slave)
 {
-	struct exynos_spi_slave *espi = to_exynos_spi(slave);
-	struct exynos_spi *regs = espi->regs;
-
-	exynos_spi_flush_fifo(regs);
-
-	// Select Active High Clock, Format A (SCP 30.2.1.8).
-	clrbits_le32(&regs->ch_cfg, SPI_CH_CPOL_L | SPI_CH_CPHA_B);
-
-	// Set FeedBack Clock Selection.
-	writel(SPI_FB_DELAY_180, &regs->fb_clk);
-
-	// HIGH speed is required for Tx/Rx to work in 50MHz (SCP 30.2.1.6).
-	if (espi->half_duplex) {
-		clrbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
-		printk(BIOS_DEBUG, "%s: LOW speed.\n", __func__);
-	} else {
-		setbits_le32(&regs->ch_cfg, SPI_CH_HS_EN);
-		printk(BIOS_DEBUG, "%s: HIGH speed.\n", __func__);
-	}
+	spi_cs_activate(slave);
 	return 0;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int out_bytes,
-	     void *din, unsigned int in_bytes)
+static void spi_transfer(struct exynos_spi *regs, void *in, const void *out,
+			 u32 size)
 {
-	uint8_t *out_ptr = (uint8_t *)dout, *in_ptr = (uint8_t *)din;
-	int offset, todo, len;
-	int ret = 0;
+	u8 *inb = in;
+	const u8 *outb = out;
 
-	len = MAX(out_bytes, in_bytes);
+	int width = (size % 4) ? 1 : 4;
 
-	/*
-	 * Exynos SPI limits each transfer to (2^16-1=65535) bytes. To keep
-	 * things simple (especially for word-width transfer mode), allow a
-	 * maximum of (2^16-4=65532) bytes. We could allow more in word mode,
-	 * but the performance difference is small.
-	 */
-	spi_cs_activate(slave);
-	for (offset = 0; !ret && (offset < len); offset += todo) {
-		todo = min(len - offset, (1 << 16) - 4);
-		ret = spi_rx_tx(slave, in_ptr, MIN(in_bytes, todo), out_ptr,
-				MIN(out_bytes, todo));
-		// Adjust remaining bytes and pointers.
-		if (in_bytes >= todo) {
-			in_bytes -= todo;
-			in_ptr += todo;
-		} else {
-			in_bytes = 0;
-			in_ptr = NULL;
+	while (size) {
+		int packets = size / width;
+		// The packet count field is 16 bits wide.
+		packets = MIN(packets, (1 << 16) - 1);
+
+		int out_bytes, in_bytes;
+		out_bytes = in_bytes = packets * width;
+
+		spi_sw_reset(regs, width == 4);
+		writel(packets | SPI_PACKET_CNT_EN, &regs->pkt_cnt);
+
+		while (out_bytes || in_bytes) {
+			uint32_t spi_sts = readl(&regs->spi_sts);
+			int rx_lvl = ((spi_sts >> 15) & 0x1ff);
+			int tx_lvl = ((spi_sts >> 6) & 0x1ff);
+
+			if (tx_lvl < 32 && tx_lvl < out_bytes) {
+				uint32_t data = 0xffffffff;
+
+				if (outb) {
+					memcpy(&data, outb, width);
+					outb += width;
+				}
+				writel(data, &regs->tx_data);
+
+				out_bytes -= width;
+			}
+
+			if (rx_lvl >= width) {
+				uint32_t data = readl(&regs->rx_data);
+
+				if (inb) {
+					memcpy(inb, &data, width);
+					inb += width;
+				}
+
+				in_bytes -= width;
+			}
 		}
-		if (out_bytes >= todo) {
-			out_bytes -= todo;
-			out_ptr += todo;
-		} else {
-			out_bytes = 0;
-			out_ptr = NULL;
-		}
+
+		size -= packets * width;
 	}
-	spi_cs_deactivate(slave);
+}
 
-	return ret;
+int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytes_out,
+	     void *din, unsigned int bytes_in)
+{
+	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
+
+	if (bytes_out && bytes_in) {
+		u32 min_size = MIN(bytes_out, bytes_in);
+
+		spi_transfer(regs, din, dout, min_size);
+
+		bytes_out -= min_size;
+		bytes_in -= min_size;
+
+		din = (uint8_t *)din + min_size;
+		dout = (const uint8_t *)dout + min_size;
+	}
+
+	if (bytes_in)
+		spi_transfer(regs, din, NULL, bytes_in);
+	else if (bytes_out)
+		spi_transfer(regs, NULL, dout, bytes_out);
+
+	return 0;
+}
+
+void spi_release_bus(struct spi_slave *slave)
+{
+	spi_cs_deactivate(slave);
 }
 
 static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,
 			   uint32_t off)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
-	int rv;
+	u32 command;
+	spi_claim_bus(slave);
 
-	// TODO(hungte) Merge the "read address" command into spi_xfer calls
-	// (full-duplex mode).
-
-	spi_cs_activate(slave);
-
-	// Specify read address (in word-width mode).
+	// Send address.
 	ASSERT(off < (1 << 24));
-	exynos_spi_request_bytes(regs, sizeof(off), sizeof(off));
-	writel(htonl((SF_READ_DATA_CMD << 24) | off), &regs->tx_data);
-	while (!(readl(&regs->spi_sts) & SPI_ST_TX_DONE)) {
-		/* Wait for TX done */
-	}
+	command = htonl(SF_READ_DATA_CMD << 24 | off);
+	spi_transfer(regs, NULL, &command, sizeof(command));
 
-	// Now, safe to transfer.
-	rv = spi_xfer(slave, NULL, 0, dest, len * 8);
-	spi_cs_deactivate(slave);
+	// Read the data.
+	spi_transfer(regs, dest, NULL, len);
+	spi_release_bus(slave);
 
-	return (rv == 0) ? len : -1;
-}
-
-void spi_release_bus(struct spi_slave *slave)
-{
-	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
-	/* Reset swap mode to make sure no one relying on default values (Ex,
-	 * payload or kernel) will go wrong. */
-	clrbits_le32(&regs->mode_cfg, (SPI_MODE_CH_WIDTH_WORD |
-				       SPI_MODE_BUS_WIDTH_WORD));
-	writel(0, &regs->swap_cfg);
-	exynos_spi_flush_fifo(regs);
+	return len;
 }
 
 // SPI as CBFS media.

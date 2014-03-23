@@ -29,7 +29,7 @@
 
 #include <libpayload.h>
 
-void hexdump(void *memory, size_t length)
+void hexdump(const void *memory, size_t length)
 {
 	int i;
 	uint8_t *m;

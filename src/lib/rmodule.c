@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <arch/cache.h>
 #include <console/console.h>
 #include <rmodule.h>
 
@@ -196,6 +197,9 @@ int rmodule_load(void *base, struct rmodule *module)
 	if (rmodule_relocate(module))
 		return -1;
 	rmodule_clear_bss(module);
+
+	cache_sync_instructions();
+
 	return 0;
 }
 

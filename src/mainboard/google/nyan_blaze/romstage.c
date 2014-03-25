@@ -20,16 +20,23 @@
 #include <arch/cache.h>
 #include <arch/cpu.h>
 #include <arch/exception.h>
+#include <arch/io.h>
 #include <arch/stages.h>
 #include <device/device.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include "sdram_configs.h"
-#include "soc/nvidia/tegra124/chip.h"
-#include "soc/nvidia/tegra124/sdram.h"
+#include <soc/nvidia/tegra/i2c.h>
+#include <soc/nvidia/tegra124/chip.h>
+#include <soc/nvidia/tegra124/clk_rst.h>
+#include <soc/nvidia/tegra124/sdram.h>
+#include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <soc/display.h>
 #include <timestamp.h>
+
+static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 
 enum {
 	L2CTLR_ECC_PARITY = 0x1 << 21,
@@ -67,6 +74,74 @@ static void configure_l2actlr(void)
 	   L2ACTLR_ENABLE_HAZARD_DETECT_TIMEOUT |
 	   L2ACTLR_FORCE_L2_LOGIC_CLOCK_ENABLE_ACTIVE);
    write_l2actlr(val);
+}
+
+static void setup_pinmux(void)
+{
+	// Write protect.
+	gpio_input_pullup(GPIO(R1));
+	// Recovery mode.
+	gpio_input_pullup(GPIO(Q7));
+	// Lid switch.
+	gpio_input_pullup(GPIO(R4));
+	// Power switch.
+	gpio_input_pullup(GPIO(Q0));
+	// Developer mode.
+	gpio_input_pullup(GPIO(Q6));
+	// EC in RW.
+	gpio_input_pullup(GPIO(U4));
+
+	// SOC and TPM reset GPIO, active low.
+	gpio_output(GPIO(I5), 1);
+
+	// SPI1 MOSI
+	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 MISO
+	pinmux_set_config(PINMUX_ULPI_DIR_INDEX, PINMUX_ULPI_DIR_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 SCLK
+	pinmux_set_config(PINMUX_ULPI_NXT_INDEX, PINMUX_ULPI_NXT_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 CS0
+	pinmux_set_config(PINMUX_ULPI_STP_INDEX, PINMUX_ULPI_STP_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+
+	// I2C3 (cam) clock.
+	pinmux_set_config(PINMUX_CAM_I2C_SCL_INDEX,
+			  PINMUX_CAM_I2C_SCL_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
+	// I2C3 (cam) data.
+	pinmux_set_config(PINMUX_CAM_I2C_SDA_INDEX,
+			  PINMUX_CAM_I2C_SDA_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
+
+	// switch unused pin to GPIO
+	gpio_set_mode(GPIO(X3), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X4), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X5), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X6), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(X7), GPIO_MODE_GPIO);
+	gpio_set_mode(GPIO(W3), GPIO_MODE_GPIO);
+}
+
+static void configure_ec_spi_bus(void)
+{
+	clock_configure_source(sbc1, PLLP, 5000);
+}
+
+static void configure_tpm_i2c_bus(void)
+{
+	/*
+	 * The TPM is on I2C3 and can theoretically run at 400 KHz but doesn't
+	 * seem to work above around 40 KHz. It's set to run at 100 KHz in the
+	 * kernel.
+	 */
+	clock_configure_i2c_scl_freq(i2c3, PLLP, 40);
+
+	i2c_init(2);
 }
 
 static void __attribute__((noinline)) romstage(void)
@@ -130,6 +205,15 @@ static void __attribute__((noinline)) romstage(void)
 	timestamp_add(TS_START_ROMSTAGE, romstage_start_time);
 	timestamp_add(TS_START_COPYRAM, timestamp_get());
 #endif
+
+	// Enable additional peripherals we need for ROM stage.
+	clock_enable_clear_reset(0, CLK_H_SBC1, CLK_U_I2C3, 0, 0, 0);
+
+	setup_pinmux();
+
+	configure_ec_spi_bus();
+	configure_tpm_i2c_bus();
+
 	void *entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 				      "fallback/coreboot_ram");
 #if CONFIG_COLLECT_TIMESTAMPS

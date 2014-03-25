@@ -39,14 +39,6 @@ static void set_clock_sources(void)
 	 * can both run at 400 KHz, but the kernel sets the bus to 100 KHz.
 	 */
 	clock_configure_i2c_scl_freq(i2c1, PLLP, 100);
-	/*
-	 * The TPM is on I2C3 and can theoretically run at 400 KHz but doesn't
-	 * seem to work above around 40 KHz. It's set to run at 100 KHz in the
-	 * kernel.
-	 */
-	clock_configure_i2c_scl_freq(i2c3, PLLP, 40);
-
-	clock_configure_source(sbc1, PLLP, 5000);
 
 	/*
 	 * MMC3 and MMC4: Set base clock frequency for SD Clock to Tegra MMC's
@@ -78,47 +70,6 @@ static void set_clock_sources(void)
 
 static void setup_pinmux(void)
 {
-	// Write protect.
-	gpio_input_pullup(GPIO(R1));
-	// Recovery mode.
-	gpio_input_pullup(GPIO(Q7));
-	// Lid switch.
-	gpio_input_pullup(GPIO(R4));
-	// Power switch.
-	gpio_input_pullup(GPIO(Q0));
-	// Developer mode.
-	gpio_input_pullup(GPIO(Q6));
-	// EC in RW.
-	gpio_input_pullup(GPIO(U4));
-
-	// SOC and TPM reset GPIO, active low.
-	gpio_output(GPIO(I5), 1);
-
-	// SPI1 MOSI
-	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 MISO
-	pinmux_set_config(PINMUX_ULPI_DIR_INDEX, PINMUX_ULPI_DIR_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 SCLK
-	pinmux_set_config(PINMUX_ULPI_NXT_INDEX, PINMUX_ULPI_NXT_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 CS0
-	pinmux_set_config(PINMUX_ULPI_STP_INDEX, PINMUX_ULPI_STP_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-
-	// switch unused pin to GPIO
-	gpio_set_mode(GPIO(X3), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X4), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X5), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X6), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(X7), GPIO_MODE_GPIO);
-	gpio_set_mode(GPIO(W3), GPIO_MODE_GPIO);
-
 	// I2C1 clock.
 	pinmux_set_config(PINMUX_GEN1_I2C_SCL_INDEX,
 			  PINMUX_GEN1_I2C_SCL_FUNC_I2C1 | PINMUX_INPUT_ENABLE);
@@ -131,12 +82,6 @@ static void setup_pinmux(void)
 	// I2C2 data.
 	pinmux_set_config(PINMUX_GEN2_I2C_SDA_INDEX,
 			  PINMUX_GEN2_I2C_SDA_FUNC_I2C2 | PINMUX_INPUT_ENABLE);
-	// I2C3 (cam) clock.
-	pinmux_set_config(PINMUX_CAM_I2C_SCL_INDEX,
-			  PINMUX_CAM_I2C_SCL_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
-	// I2C3 (cam) data.
-	pinmux_set_config(PINMUX_CAM_I2C_SDA_INDEX,
-			  PINMUX_CAM_I2C_SDA_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
 	// I2C4 (DDC) clock.
 	pinmux_set_config(PINMUX_DDC_SCL_INDEX,
 			  PINMUX_DDC_SCL_FUNC_I2C4 | PINMUX_INPUT_ENABLE);
@@ -271,10 +216,9 @@ static void mainboard_init(device_t dev)
 				 CLK_L_SPDIF | CLK_L_USBD | CLK_L_DISP1 |
 				 CLK_L_HOST1X | CLK_L_PWM,
 
-				 CLK_H_I2C2 | CLK_H_SBC1 | CLK_H_PMC |
-				 CLK_H_USB3,
+				 CLK_H_I2C2 | CLK_H_PMC | CLK_H_USB3,
 
-				 CLK_U_I2C3 | CLK_U_CSITE | CLK_U_SDMMC3,
+				 CLK_U_CSITE | CLK_U_SDMMC3,
 
 				 CLK_V_I2C4 | CLK_V_EXTPERIPH1 | CLK_V_APBIF |
 				 CLK_V_AUDIO | CLK_V_I2S3 | CLK_V_I2S4 |
@@ -295,7 +239,6 @@ static void mainboard_init(device_t dev)
 
 	i2c_init(0);
 	i2c_init(1);
-	i2c_init(2);
 	i2c_init(3);
 
 	setup_kernel_info();

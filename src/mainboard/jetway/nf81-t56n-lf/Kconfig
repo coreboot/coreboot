@@ -30,8 +30,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
-#	FIXME: Disable S3 for now. Enable by default once stabilised.
-#	select HAVE_ACPI_RESUME
+	select HAVE_ACPI_RESUME
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select LIFT_BSP_APIC_ID
 	select SERIAL_CPU_INIT

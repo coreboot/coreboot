@@ -62,6 +62,7 @@ SECTIONS
 		/* Data section. */
 		_sdata = .;
 		*(.data);
+		*(.data.*);
 		. = ALIGN(4);
 		_edata = .;
 
@@ -72,7 +73,9 @@ SECTIONS
 		/* C uninitialized data of the module. */
 		_bss = .;
 		*(.bss);
-		*(.sbss);
+		*(.bss.*)
+		*(.sbss)
+		*(.sbss.*)
 		*(COMMON);
 		. = ALIGN(8);
 		_ebss = .;

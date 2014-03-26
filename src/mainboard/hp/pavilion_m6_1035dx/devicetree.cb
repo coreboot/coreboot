@@ -1,0 +1,90 @@
+#
+# This file is part of the coreboot project.
+#
+# Copyright (C) 2012 Advanced Micro Devices, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+#
+chip northbridge/amd/agesa/family15tn/root_complex
+
+	device cpu_cluster 0 on
+		chip cpu/amd/agesa/family15tn
+			device lapic 10 on end
+		end
+	end
+
+	device domain 0 on
+		subsystemid 0x1022 0x1410 inherit
+		chip northbridge/amd/agesa/family15tn # CPU side of HT root complex
+
+			chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
+				device pci 0.0 on  end # Root Complex
+				device pci 1.0 on  end # Internal Graphics P2P bridge 0x99XX
+				device pci 1.1 on  end # Internal Multimedia
+				device pci 2.0 on  end # PCIE SLOT0 x16
+				device pci 3.0 off end
+				device pci 4.0 on  end # PCIE MINI0
+				device pci 5.0 on  end # PCIE MINI1
+				device pci 6.0 on  end # PCIE Slot1 x1
+				device pci 7.0 on  end # LAN
+				device pci 8.0 off end # NB/SB Link P2P bridge
+			end	#chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
+
+			chip southbridge/amd/agesa/hudson # it is under NB/SB Link, but on the same pci bus
+				device pci 10.0 on  end # XHCI HC0
+				device pci 10.1 on  end # XHCI HC1
+				device pci 11.0 on  end # SATA
+				device pci 12.0 on  end # USB
+				device pci 12.2 on  end # USB
+				device pci 13.0 on  end # USB
+				device pci 13.2 on  end # USB
+				device pci 14.0 on      # SMBUS
+					chip drivers/generic/generic #dimm 0
+						device i2c 50 on end # 7-bit SPD address
+					end
+					chip drivers/generic/generic #dimm 1
+						device i2c 51 on end # 7-bit SPD address
+					end
+				end # SM
+				device pci 14.1 on  end # IDE	0x439c
+				device pci 14.2 on  end # HDA	0x4383
+				device pci 14.3 on  end # LPC	0x439d
+				device pci 14.4 on  end # PCI	0x4384 # PCI-b conflict with GPIO.
+				device pci 14.5 on  end # USB 2
+				device pci 14.6 off end # Gec
+				device pci 14.7 on  end # SD
+				device pci 15.0 off end # PCIe 0
+				device pci 15.1 off end # PCIe 1
+				device pci 15.2 off end # PCIe 2
+				device pci 15.3 off end # PCIe 3
+				register "boot_switch_sata_ide" = "0"	# 0: boot from SATA. 1: IDE
+				register "gpp_configuration" = "4"
+			end	#chip southbridge/amd/hudson
+
+			device pci 18.0 on end
+			device pci 18.1 on end
+			device pci 18.2 on end
+			device pci 18.3 on end
+			device pci 18.4 on end
+			device pci 18.5 on end
+
+			register "spdAddrLookup" = "
+			{
+				{ {0xA0, 0x00}, {0xA2, 0x00}, }, // socket 0 - Channel 0 & 1 - 8-bit SPD addresses
+				{ {0x00, 0x00}, {0x00, 0x00}, }, // socket 1 - Channel 0 & 1 - 8-bit SPD addresses
+			}"
+
+		end	#chip northbridge/amd/agesa/family15tn # CPU side of HT root complex
+	end	#domain
+end	#chip northbridge/amd/agesa/family15tn/root_complex

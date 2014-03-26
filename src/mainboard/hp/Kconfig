@@ -11,6 +11,9 @@ config BOARD_HP_DL165_G6_FAM10
 	bool "ProLiant DL165 G6 Fam10"
 config BOARD_HP_E_VECTRA_P2706T
 	bool "e-Vectra P2706T"
+config BOARD_HP_PAVILION_M6_1035DX
+	bool "Pavilion m6 1035dx"
+
 
 endchoice
 
@@ -18,6 +21,7 @@ source "src/mainboard/hp/dl145_g1/Kconfig"
 source "src/mainboard/hp/dl145_g3/Kconfig"
 source "src/mainboard/hp/dl165_g6_fam10/Kconfig"
 source "src/mainboard/hp/e_vectra_p2706t/Kconfig"
+source "src/mainboard/hp/pavilion_m6_1035dx/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

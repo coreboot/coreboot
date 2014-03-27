@@ -134,12 +134,7 @@ static void configure_ec_spi_bus(void)
 
 static void configure_tpm_i2c_bus(void)
 {
-	/*
-	 * The TPM is on I2C3 and can theoretically run at 400 KHz but doesn't
-	 * seem to work above around 40 KHz. It's set to run at 100 KHz in the
-	 * kernel.
-	 */
-	clock_configure_i2c_scl_freq(i2c3, PLLP, 40);
+	clock_configure_i2c_scl_freq(i2c3, PLLP, 400);
 
 	i2c_init(2);
 }

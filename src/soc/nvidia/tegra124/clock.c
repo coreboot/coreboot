@@ -531,3 +531,45 @@ void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
 	if (w) writel(w, &clk_rst->rst_dev_w_clr);
 	if (x) writel(x, &clk_rst->rst_dev_x_clr);
 }
+
+void clock_reset_l(u32 bit)
+{
+	writel(bit, &clk_rst->rst_dev_l_set);
+	udelay(1);
+	writel(bit, &clk_rst->rst_dev_l_clr);
+}
+
+void clock_reset_h(u32 bit)
+{
+	writel(bit, &clk_rst->rst_dev_h_set);
+	udelay(1);
+	writel(bit, &clk_rst->rst_dev_h_clr);
+}
+
+void clock_reset_u(u32 bit)
+{
+	writel(bit, &clk_rst->rst_dev_u_set);
+	udelay(1);
+	writel(bit, &clk_rst->rst_dev_u_clr);
+}
+
+void clock_reset_v(u32 bit)
+{
+	writel(bit, &clk_rst->rst_dev_v_set);
+	udelay(1);
+	writel(bit, &clk_rst->rst_dev_v_clr);
+}
+
+void clock_reset_w(u32 bit)
+{
+	writel(bit, &clk_rst->rst_dev_w_set);
+	udelay(1);
+	writel(bit, &clk_rst->rst_dev_w_clr);
+}
+
+void clock_reset_x(u32 bit)
+{
+	writel(bit, &clk_rst->rst_dev_x_set);
+	udelay(1);
+	writel(bit, &clk_rst->rst_dev_x_clr);
+}

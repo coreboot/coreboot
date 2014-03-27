@@ -18,6 +18,8 @@
 #ifndef __SOC_NVIDIA_TEGRA124_CLOCK_H__
 #define __SOC_NVIDIA_TEGRA124_CLOCK_H__
 
+#include <stdint.h>
+
 enum {
 	CLK_L_CPU = 0x1 << 0,
 	CLK_L_COP = 0x1 << 1,
@@ -265,6 +267,12 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 void clock_cpu0_config_and_reset(void * entry);
 void clock_halt_avp(void);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
+void clock_reset_l(u32 l);
+void clock_reset_h(u32 h);
+void clock_reset_u(u32 u);
+void clock_reset_v(u32 v);
+void clock_reset_w(u32 w);
+void clock_reset_x(u32 x);
 void clock_init(void);
 void clock_init_arm_generic_timer(void);
 void sor_clock_stop(void);

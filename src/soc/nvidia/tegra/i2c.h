@@ -110,7 +110,13 @@ enum {
 		0xf << I2C_FIFO_STATUS_RX_FIFO_FULL_CNT_SHIFT
 };
 
-extern void * const tegra_i2c_bases[];
+struct tegra_i2c_bus_info {
+	void *base;
+	uint32_t reset_bit;
+	void (*reset_func)(u32 bit);
+};
+
+extern struct tegra_i2c_bus_info tegra_i2c_info[];
 
 struct tegra_i2c_regs {
 	uint32_t cnfg;

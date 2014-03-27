@@ -26,10 +26,13 @@
 
 #include "i2c.h"
 
-static int tegra_i2c_send_recv(struct tegra_i2c_regs *regs, int read,
+static int tegra_i2c_send_recv(int bus, int read,
 			       uint32_t *headers, int header_words,
 			       uint8_t *data, int data_len)
 {
+	struct tegra_i2c_bus_info *info = &tegra_i2c_info[bus];
+	struct tegra_i2c_regs * const regs = info->base;
+
 	while (data_len) {
 		uint32_t status = read32(&regs->fifo_status);
 		int tx_empty = status & I2C_FIFO_STATUS_TX_FIFO_EMPTY_CNT_MASK;
@@ -75,16 +78,19 @@ static int tegra_i2c_send_recv(struct tegra_i2c_regs *regs, int read,
 			printk(BIOS_ERR,
 			       "%s: The address was not acknowledged.\n",
 			       __func__);
+			info->reset_func(info->reset_bit);
 			return -1;
 		} else if (transfer_status & I2C_PKT_STATUS_NOACK_DATA) {
 			printk(BIOS_ERR,
 			       "%s: The data was not acknowledged.\n",
 			       __func__);
+			info->reset_func(info->reset_bit);
 			return -1;
 		} else if (transfer_status & I2C_PKT_STATUS_ARB_LOST) {
 			printk(BIOS_ERR,
 			       "%s: Lost arbitration.\n",
 			       __func__);
+			info->reset_func(info->reset_bit);
 			return -1;
 		}
 	}
@@ -95,7 +101,6 @@ static int tegra_i2c_send_recv(struct tegra_i2c_regs *regs, int read,
 static int tegra_i2c_request(int bus, unsigned chip, int cont, int restart,
 			     int read, void *data, int data_len)
 {
-	struct tegra_i2c_regs * const regs = tegra_i2c_bases[bus];
 	uint32_t headers[3];
 
 	if (restart && cont) {
@@ -121,7 +126,7 @@ static int tegra_i2c_request(int bus, unsigned chip, int cont, int restart,
 	if (cont)
 		headers[2] |= IOHEADER_I2C_REQ_CONTINUE_XFER;
 
-	return tegra_i2c_send_recv(regs, read, headers, ARRAY_SIZE(headers),
+	return tegra_i2c_send_recv(bus, read, headers, ARRAY_SIZE(headers),
 				   data, data_len);
 }
 
@@ -166,7 +171,7 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 
 void i2c_init(unsigned bus)
 {
-	struct tegra_i2c_regs * const regs = tegra_i2c_bases[bus];
+	struct tegra_i2c_regs * const regs = tegra_i2c_info[bus].base;
 
 	write32(I2C_CNFG_PACKET_MODE_EN, &regs->cnfg);
 }

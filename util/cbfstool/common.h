@@ -63,6 +63,15 @@ static inline void buffer_set_size(struct buffer *b, size_t size)
 	b->size = size;
 }
 
+/* Initialize a buffer with the given constraints. */
+static inline void buffer_init(struct buffer *b, char *name, void *data,
+                               size_t size)
+{
+	b->name = name;
+	b->data = data;
+	b->size = size;
+}
+
 /*
  * Splice a buffer into another buffer. If size is zero the entire buffer
  * is spliced while if size is non-zero the buffer is spliced starting at
@@ -71,9 +80,7 @@ static inline void buffer_set_size(struct buffer *b, size_t size)
 static inline void buffer_splice(struct buffer *dest, const struct buffer *src,
                                  size_t offset, size_t size)
 {
-	dest->name = src->name;
-	dest->data = src->data;
-	dest->size = src->size;
+	buffer_init(dest, src->name, src->data, src->size);
 	if (size != 0) {
 		dest->data += offset;
 		buffer_set_size(dest, size);

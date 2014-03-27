@@ -25,6 +25,165 @@
 #include "cbfs.h"
 #include "linux.h"
 
+/* trampoline */
+extern void *trampoline_start;
+extern long trampoline_size;
+
+/*
+ * Current max number of segments include:
+ *
+ * 1. parameters
+ * 2. kernel
+ * 3. trampoline
+ * 4. optional cmdline
+ * 5. optional initrd
+ * 6. terminating entry segment
+ */
+#define MAX_NUM_SEGMENTS 6
+
+struct bzpayload {
+	/* Input variables. */
+	int num_segments;
+	struct cbfs_payload_segment segs[MAX_NUM_SEGMENTS];
+	struct buffer parameters;
+	struct buffer kernel;
+	struct buffer trampoline;
+	struct buffer cmdline;
+	struct buffer initrd;
+	/* Output variables. */
+	comp_algo algo;
+	comp_func_ptr compress;
+	struct buffer output;
+	size_t offset;
+	struct cbfs_payload_segment *out_seg;
+};
+
+static int bzp_init(struct bzpayload *bzp, comp_algo algo)
+{
+	memset(bzp, 0, sizeof(*bzp));
+
+	/*
+	 * Need at least the terminating entry segment.
+	 */
+	bzp->num_segments = 1;
+
+	buffer_init(&bzp->trampoline, NULL, trampoline_start, trampoline_size);
+
+	bzp->algo = algo;
+	bzp->compress = compression_function(algo);
+	if (bzp->compress == NULL) {
+		ERROR("Invalid compression algorithm specified.\n");
+		return -1;
+	}
+
+	return 0;
+}
+
+static int bzp_add_initrd(struct bzpayload *bzp, const char *fname)
+{
+	if (fname == NULL)
+		return 0;
+
+	if (buffer_from_file(&bzp->initrd, fname)) {
+		ERROR("could not open initrd.\n");
+		return -1;
+	}
+
+	bzp->num_segments++;
+
+	return 0;
+}
+
+static void bzp_add_segment(struct bzpayload *bzp, struct buffer *b, void *data,
+                            size_t size)
+{
+	buffer_init(b, NULL, data, size);
+	bzp->num_segments++;
+}
+
+
+static int bzp_add_cmdline(struct bzpayload *bzp, char *cmdline)
+{
+	if (cmdline == NULL)
+		return 0;
+
+	bzp_add_segment(bzp, &bzp->cmdline, cmdline, strlen(cmdline) + 1);
+
+	return 0;
+}
+
+static int bzp_add_params(struct bzpayload *bzp, struct linux_params *params)
+{
+	bzp_add_segment(bzp, &bzp->parameters, params, sizeof(*params));
+
+	return 0;
+}
+
+static int bzp_add_kernel(struct bzpayload *bzp, const struct buffer *in,
+                          size_t setup_size)
+{
+	char *input = buffer_get(in);
+	size_t kern_sz = buffer_size(in) - setup_size;
+
+	bzp_add_segment(bzp, &bzp->kernel, &input[setup_size], kern_sz);
+
+	return 0;
+}
+
+static int bzp_init_output(struct bzpayload *bzp, const char *name)
+{
+	size_t sz = 0;
+
+	sz += buffer_size(&bzp->parameters);
+	sz += buffer_size(&bzp->kernel);
+	sz += buffer_size(&bzp->trampoline);
+	sz += buffer_size(&bzp->cmdline);
+	sz += buffer_size(&bzp->initrd);
+
+	bzp->offset = bzp->num_segments * sizeof(struct cbfs_payload_segment);
+	sz += bzp->offset;
+
+	if (buffer_create(&bzp->output, sz, name) != 0)
+		return -1;
+
+	bzp->out_seg = &bzp->segs[0];
+
+	return 0;
+}
+
+static void bzp_output_segment(struct bzpayload *bzp, struct buffer *b,
+                               uint32_t type, uint64_t load_addr)
+{
+	struct buffer out;
+	struct cbfs_payload_segment *seg;
+	int len = 0;
+
+	/* Don't process empty buffers. */
+	if (b != NULL && buffer_size(b) == 0)
+		return;
+
+	seg = bzp->out_seg;
+	seg->type = type;
+	seg->load_addr = load_addr;
+	bzp->out_seg++;
+
+	/* No buffer associated with segment. */
+	if (b == NULL)
+		return;
+
+	/* Use a temp buffer for easier management. */
+	buffer_splice(&out, &bzp->output, bzp->offset, buffer_size(b));
+
+	seg->mem_len = buffer_size(b);
+	seg->offset = bzp->offset;
+	bzp->compress(buffer_get(b), buffer_size(b), buffer_get(&out), &len);
+	seg->compression = bzp->algo;
+	seg->len = len;
+
+	/* Update output offset. */
+	bzp->offset += len;
+}
+
 /* TODO:
  *   handle special arguments
  *     mem= argument - only affects loading decisions (kernel + initrd), not e820 -> build time
@@ -42,47 +201,20 @@ int parse_bzImage_to_payload(const struct buffer *input,
 			     struct buffer *output, const char *initrd_name,
 			     char *cmdline, comp_algo algo)
 {
-	int cur_len = 0;
-	int num_segments = 3; /* parameter block, real kernel, and trampoline */
-
-	comp_func_ptr compress = compression_function(algo);
-	if (!compress)
-		return -1;
-
+	struct bzpayload bzp;
 	unsigned int initrd_base = 64*1024*1024;
-	unsigned int initrd_size = 0;
-	void *initrd_data = NULL;
-	if (initrd_name != NULL) {
-		/* TODO: load initrd, set initrd_size */
-		num_segments++;
-		FILE *initrd_file = fopen(initrd_name, "rb");
-		if (!initrd_file) {
-			ERROR("could not open initrd.\n");
-			return -1;
-		}
-		fseek(initrd_file, 0, SEEK_END);
-		initrd_size = ftell(initrd_file);
-		fseek(initrd_file, 0, SEEK_SET);
-		initrd_data = malloc(initrd_size);
-		if (!initrd_data) {
-			ERROR("could not allocate memory for initrd.\n");
-			return -1;
-		}
-		if (fread(initrd_data, initrd_size, 1, initrd_file) != 1) {
-			ERROR("could not load initrd.\n");
-			return -1;
-		}
-		fclose(initrd_file);
-	}
-
-	unsigned int cmdline_size = 0;
-	if (cmdline != NULL) {
-		num_segments++;
-		cmdline_size = strlen(cmdline) + 1;
-	}
-
 	struct linux_header *hdr = (struct linux_header *)input->data;
 	unsigned int setup_size = 4 * 512;
+
+	if (bzp_init(&bzp, algo) != 0)
+		return -1;
+
+	if (bzp_add_initrd(&bzp, initrd_name) != 0)
+		return -1;
+
+	if (bzp_add_cmdline(&bzp, cmdline) != 0)
+		return -1;
+
 	if (hdr->setup_sects != 0) {
 		setup_size = (hdr->setup_sects + 1) * 512;
 	}
@@ -132,106 +264,59 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	 * this information for its jump to real Linux. */
 	params.kernel_start = kernel_base;
 
-	void *kernel_data = input->data + setup_size;
-	unsigned int kernel_size = input->size - setup_size;
+	if (bzp_add_kernel(&bzp, input, setup_size) != 0)
+		return -1;
 
-	if (initrd_data != NULL) {
+	if (buffer_size(&bzp.initrd) != 0) {
 		/* TODO: this is a bit of a hack. Linux recommends to store
 		 * initrd near to end-of-mem, but that's hard to do on build
 		 * time. It definitely fails to read the image if it's too
 		 * close to the kernel, so give it some room.
 		 */
-		initrd_base = ALIGN(kernel_base + kernel_size, 16*1024*1024);
+		initrd_base = kernel_base + buffer_size(&bzp.kernel);
+		initrd_base = ALIGN(initrd_base, 16*1024*1024);
 
 		params.initrd_start = initrd_base;
-		params.initrd_size = initrd_size;
+		params.initrd_size = buffer_size(&bzp.initrd);
 	}
 
-	struct cbfs_payload_segment *segs;
-	unsigned long doffset = (num_segments + 1) * sizeof(*segs);
-
-	/* Allocate a block of memory to store the data in */
-	int isize = sizeof(params) + kernel_size + cmdline_size + initrd_size;
-	if (buffer_create(output, doffset + isize, input->name) != 0)
+	if (bzp_add_params(&bzp, &params) != 0)
 		return -1;
-	memset(output->data, 0, output->size);
 
-	segs = calloc(num_segments, sizeof(*segs));
+	if (bzp_init_output(&bzp, input->name) != 0)
+		return -1;
 
 	/* parameter block */
-	segs[0].type = PAYLOAD_SEGMENT_DATA;
-	segs[0].load_addr = LINUX_PARAM_LOC;
-	segs[0].mem_len = sizeof(params);
-	segs[0].offset = doffset;
-
-	compress((void*)&params, sizeof(params), output->data + doffset, &cur_len);
-	segs[0].compression = algo;
-	segs[0].len = cur_len;
-
-	doffset += cur_len;
+	bzp_output_segment(&bzp, &bzp.parameters,
+	                   PAYLOAD_SEGMENT_DATA, LINUX_PARAM_LOC);
 
 	/* code block */
-	segs[1].type = PAYLOAD_SEGMENT_CODE;
-	segs[1].load_addr = kernel_base;
-	segs[1].mem_len = kernel_size;
-	segs[1].offset = doffset;
-
-	compress(kernel_data, kernel_size, output->data + doffset, &cur_len);
-	segs[1].compression = algo;
-	segs[1].len = cur_len;
-
-	doffset += cur_len;
+	bzp_output_segment(&bzp, &bzp.kernel,
+	                   PAYLOAD_SEGMENT_CODE, kernel_base);
 
 	/* trampoline */
-	extern void *trampoline_start;
-	extern long trampoline_size;
+	uint64_t entrypoint = 0x40000; /*TODO: any better place? */
+	bzp_output_segment(&bzp, &bzp.trampoline,
+	                   PAYLOAD_SEGMENT_CODE, entrypoint);
 
-	unsigned int entrypoint = 0x40000; /* TODO: any better place? */
+	/* cmdline */
+	bzp_output_segment(&bzp, &bzp.cmdline,
+	                   PAYLOAD_SEGMENT_DATA, COMMAND_LINE_LOC);
 
-	segs[2].type = PAYLOAD_SEGMENT_CODE;
-	segs[2].load_addr = entrypoint;
-	segs[2].mem_len = trampoline_size;
-	segs[2].offset = doffset;
+	/* initrd */
+	bzp_output_segment(&bzp, &bzp.initrd,
+	                   PAYLOAD_SEGMENT_DATA, initrd_base);
 
-	compress(trampoline_start, trampoline_size, output->data + doffset, &cur_len);
-	segs[2].compression = algo;
-	segs[2].len = cur_len;
+	/* Terminating entry segment. */
+	bzp_output_segment(&bzp, NULL, PAYLOAD_SEGMENT_ENTRY, entrypoint);
 
-	doffset += cur_len;
+	/* Set size of buffer taking into account potential compression. */
+	buffer_set_size(&bzp.output, bzp.offset);
+	/* Make passed-in output buffer be valid. */
+	buffer_clone(output, &bzp.output);
 
-	if (cmdline_size > 0) {
-		/* command line block */
-		segs[3].type = PAYLOAD_SEGMENT_DATA;
-		segs[3].load_addr = COMMAND_LINE_LOC;
-		segs[3].mem_len = cmdline_size;
-		segs[3].offset = doffset;
-
-		compress(cmdline, cmdline_size, output->data + doffset, &cur_len);
-		segs[3].compression = algo;
-		segs[3].len = cur_len;
-
-		doffset += cur_len;
-	}
-
-	if (initrd_size > 0) {
-		/* setup block */
-		segs[num_segments-1].type = PAYLOAD_SEGMENT_DATA;
-		segs[num_segments-1].load_addr = initrd_base;
-		segs[num_segments-1].mem_len = initrd_size;
-		segs[num_segments-1].offset = doffset;
-
-		compress(initrd_data, initrd_size, output->data + doffset, &cur_len);
-		segs[num_segments-1].compression = algo;
-		segs[num_segments-1].len = cur_len;
-
-		doffset += cur_len;
-	}
-
-	/* prepare entry point segment */
-	segs[num_segments].type = PAYLOAD_SEGMENT_ENTRY;
-	segs[num_segments].load_addr = entrypoint;
-	output->size = doffset;
-	xdr_segs(output, segs, num_segments);
+	/* Serialize the segments with the correct encoding. */
+	xdr_segs(output, bzp.segs, bzp.num_segments);
 	return 0;
 }
 

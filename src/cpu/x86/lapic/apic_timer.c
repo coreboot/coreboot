@@ -34,14 +34,17 @@
  */
 
 #if CONFIG_UDELAY_LAPIC_FIXED_FSB
-static const u32 timer_fsb = CONFIG_UDELAY_LAPIC_FIXED_FSB;
+static inline u32 get_timer_fsb(void)
+{
+	return CONFIG_UDELAY_LAPIC_FIXED_FSB;
+}
 
 static int set_timer_fsb(void)
 {
 	return 0;
 }
 #else
-static u32 timer_fsb CAR_GLOBAL = 0;
+static u32 g_timer_fsb CAR_GLOBAL;
 
 static int set_timer_fsb(void)
 {
@@ -56,24 +59,29 @@ static int set_timer_fsb(void)
 	switch (c.x86_model) {
 	case 0xe:  /* Core Solo/Duo */
 	case 0x1c: /* Atom */
-		timer_fsb = core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
+		car_set_var(g_timer_fsb, core_fsb[rdmsr(MSR_FSB_FREQ).lo & 7]);
 		break;
 	case 0xf:  /* Core 2 or Xeon */
 	case 0x17: /* Enhanced Core */
-		timer_fsb = core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7];
+		car_set_var(g_timer_fsb, core2_fsb[rdmsr(MSR_FSB_FREQ).lo & 7]);
 		break;
 	case 0x2a: /* SandyBridge BCLK fixed at 100MHz*/
 	case 0x3a: /* IvyBridge BCLK fixed at 100MHz*/
 	case 0x3c: /* Haswell BCLK fixed at 100MHz */
 	case 0x45: /* Haswell-ULT BCLK fixed at 100MHz */
-		timer_fsb = 100;
+		car_set_var(g_timer_fsb, 100);
 		break;
 	default:
-		timer_fsb = 200;
+		car_set_var(g_timer_fsb, 200);
 		break;
 	}
 
 	return 0;
+}
+
+static inline u32 get_timer_fsb(void)
+{
+	return car_get_var(g_timer_fsb);
 }
 #endif
 
@@ -94,15 +102,18 @@ void init_timer(void)
 
 void udelay(u32 usecs)
 {
-	u32 start, value, ticks;
+	u32 start, value, ticks, timer_fsb;
 
 	if (!thread_yield_microseconds(usecs))
 		return;
 
+	timer_fsb = get_timer_fsb();
 	if (!timer_fsb || (lapic_read(LAPIC_LVTT) &
 		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED)) !=
-		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED))
+		(LAPIC_LVT_TIMER_PERIODIC | LAPIC_LVT_MASKED)) {
 		init_timer();
+		timer_fsb = get_timer_fsb();
+	}
 
 	/* Calculate the number of ticks to run, our FSB runs at timer_fsb Mhz */
 	ticks = usecs * timer_fsb;
@@ -125,9 +136,11 @@ void timer_monotonic_get(struct mono_time *mt)
 {
 	uint32_t current_tick;
 	uint32_t usecs_elapsed;
+	uint32_t timer_fsb;
 
 	if (!mono_counter.initialized) {
 		init_timer();
+		timer_fsb = get_timer_fsb();
 		/* An FSB frequency of 200Mhz provides a 20 second polling
 		 * interval between timer_monotonic_get() calls before wrap
 		 * around occurs. */
@@ -139,6 +152,7 @@ void timer_monotonic_get(struct mono_time *mt)
 		mono_counter.initialized = 1;
 	}
 
+	timer_fsb = get_timer_fsb();
 	current_tick = lapic_read(LAPIC_TMCCT);
 	/* Note that the APIC timer counts down. */
 	usecs_elapsed = (mono_counter.last_value - current_tick) / timer_fsb;

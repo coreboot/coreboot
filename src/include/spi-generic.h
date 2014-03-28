@@ -84,14 +84,11 @@ void spi_init(void);
  *
  *   bus:     Bus ID of the slave chip.
  *   cs:      Chip select ID of the slave chip on the specified bus.
- *   max_hz:  Maximum SCK rate in Hz.
- *   mode:    Clock polarity, clock phase and other parameters.
  *
  * Returns: A spi_slave reference that can be used in subsequent SPI
  * calls, or NULL if one or more of the parameters are not supported.
  */
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
-		unsigned int max_hz, unsigned int mode);
+struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs);
 
 /*-----------------------------------------------------------------------
  * Claim the bus and prepare it for communication with a given slave.

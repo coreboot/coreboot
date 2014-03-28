@@ -79,8 +79,7 @@ void spi_init(void)
 	printk(BIOS_INFO, "Exynos SPI driver initiated.\n");
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
-				  unsigned int max_hz, unsigned int mode)
+struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	ASSERT(bus >= 0 && bus < 3);
 	return &(exynos_spi_slaves[bus].slave);

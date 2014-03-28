@@ -37,7 +37,7 @@ static int nvm_init(void)
 		return 0;
 
 	spi_init();
-	flash = spi_flash_probe(0, 0, 1000000, SPI_MODE_3);
+	flash = spi_flash_probe(0, 0);
 	if (!flash) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		return -1;

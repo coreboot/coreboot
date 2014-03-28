@@ -172,8 +172,7 @@ void spi_cs_deactivate(struct spi_slave *slave)
 {
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
-		unsigned int max_hz, unsigned int mode)
+struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	struct spi_slave *slave = malloc(sizeof(*slave));
 

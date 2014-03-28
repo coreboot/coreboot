@@ -270,8 +270,7 @@ int spi_cs_is_valid(unsigned int bus, unsigned int cs)
 	return 0;
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
-		unsigned int max_hz, unsigned int mode)
+struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	ich_spi_slave *slave = malloc(sizeof(*slave));
 

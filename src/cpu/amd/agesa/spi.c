@@ -28,7 +28,7 @@ void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 	struct spi_flash *flash;
 
 	spi_init();
-	flash = spi_flash_probe(0, 0, 0, 0);
+	flash = spi_flash_probe(0, 0);
 	if (!flash) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		/* Dont make flow stop. */

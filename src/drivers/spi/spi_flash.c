@@ -250,15 +250,14 @@ static struct {
 };
 #define IDCODE_LEN (IDCODE_CONT_LEN + IDCODE_PART_LEN)
 
-struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs,
-		unsigned int max_hz, unsigned int spi_mode)
+struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 {
 	struct spi_slave *spi;
 	struct spi_flash *flash = NULL;
 	int ret, i, shift;
 	u8 idcode[IDCODE_LEN], *idp;
 
-	spi = spi_setup_slave(bus, cs, max_hz, spi_mode);
+	spi = spi_setup_slave(bus, cs);
 	if (!spi) {
 		printk(BIOS_WARNING, "SF: Failed to set up slave\n");
 		return NULL;

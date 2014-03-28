@@ -191,7 +191,7 @@ static void update_mrc_cache(void *unused)
 
 	//  1. use spi_flash_probe() to find the flash, then
 	spi_init();
-	struct spi_flash *flash = spi_flash_probe(0, 0, 1000000, SPI_MODE_3);
+	struct spi_flash *flash = spi_flash_probe(0, 0);
 	if (!flash) {
 		printk(BIOS_DEBUG, "Could not find SPI device\n");
 		return;

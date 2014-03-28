@@ -54,7 +54,12 @@ chip northbridge/amd/agesa/family15tn/root_complex
 					end
 				end # SM
 				device pci 14.2 on  end # HDA	0x4383
-				device pci 14.3 on  end # LPC	0x439d
+				device pci 14.3 on  # LPC	0x439d
+					chip ec/compal/ene932
+						# 60/64 KBC
+						device pnp ff.1 on end # dummy address
+					end
+				end
 				device pci 14.4 on  end # PCI	0x4384 # PCI-b conflict with GPIO.
 				device pci 14.5 on  end # USB 2
 				device pci 14.6 off end # Gec

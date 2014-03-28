@@ -17,16 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <arch/smp/mpspec.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include <string.h>
-#include <stdint.h>
-#include <cpu/amd/amdfam15.h>
 #include <arch/cpu.h>
+#include <arch/io.h>
+#include <arch/smp/mpspec.h>
+#include <console/console.h>
+#include <cpu/amd/amdfam15.h>
 #include <cpu/x86/lapic.h>
-#include "southbridge/amd/agesa/hudson/hudson.h" /* pm_ioread() */
+#include <device/pci.h>
+#include <stdint.h>
+#include <string.h>
+#include <southbridge/amd/agesa/hudson/hudson.h> /* pm_ioread() */
 
 //-#define IO_APIC_ID    CONFIG_MAX_PHYSICAL_CPUS + 1
 #define IO_APIC_ID    CONFIG_MAX_CPUS

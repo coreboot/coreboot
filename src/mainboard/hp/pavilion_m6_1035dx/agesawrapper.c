@@ -22,30 +22,22 @@
  *----------------------------------------------------------------------------------------
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <cpu/x86/mtrr.h>
 #include "agesawrapper.h"
 #include "BiosCallOuts.h"
-#include "cpuRegisters.h"
-#include "cpuCacheInit.h"
-#include "cpuApicUtilities.h"
-#include "cpuEarlyInit.h"
-#include "cpuLateInit.h"
-#include "Dispatcher.h"
-#include "cpuCacheInit.h"
-#include "amdlib.h"
 #include "PlatformGnbPcieComplex.h"
-#include "Filecode.h"
-#include "heapManager.h"
-#include "FchPlatform.h"
-#include "Fch.h"
-#include <cpu/amd/agesa/s3_resume.h>
-#include <cbmem.h>
+
 #include <arch/acpi.h>
 #include <arch/io.h>
+#include <cbmem.h>
+#include <cpu/x86/mtrr.h>
 #include <device/device.h>
-#include "hudson.h"
+#include <string.h>
+#include <stdint.h>
+
+#include <cpu/amd/agesa/s3_resume.h>
+#include <southbridge/amd/agesa/hudson/hudson.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/Fch/FchPlatform.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
 
 VOID FchInitS3LateRestore (IN FCH_DATA_BLOCK *FchDataPtr);
 VOID FchInitS3EarlyRestore (IN FCH_DATA_BLOCK *FchDataPtr);

@@ -33,9 +33,21 @@
  * @e \$Revision: 23714 $   @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
-#include "AGESA.h"
-//#include "CommonReturns.h"
-#include "Filecode.h"
+#include <vendorcode/amd/agesa/f15tn/AGESA.h>
+
+/*  Include the files that instantiate the configuration definitions.  */
+#include <vendorcode/amd/agesa/f15tn/Include/AdvancedApi.h>
+#include <vendorcode/amd/agesa/f15tn/Include/CommonReturns.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/CPU/cpuFamilyTranslation.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/CPU/Feature/cpuFeatures.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
+/* AGESA nonesense: the next two headers depend on heapManager.h */
+#include <vendorcode/amd/agesa/f15tn/Proc/Common/CreateStruct.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/CPU/cpuEarlyInit.h>
+/* These tables are optional and may be used to adjust memory timing settings */
+#include <vendorcode/amd/agesa/f15tn/Proc/Mem/mm.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/Mem/mn.h>
+
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 /*  Select the cpu family.  */
@@ -250,22 +262,6 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &TrinityApMtrrSettingsList
 
-//#include  "VirgoInstall.h"
-
-/*  Include the files that instantiate the configuration definitions.  */
-#include "cpuRegisters.h"
-#include "cpuFamRegisters.h"
-#include "cpuFamilyTranslation.h"
-#include "AdvancedApi.h"
-#include "heapManager.h"
-#include "CreateStruct.h"
-#include "cpuFeatures.h"
-#include "Table.h"
-#include "CommonReturns.h"
-#include "cpuEarlyInit.h"
-#include "cpuLateInit.h"
-#include "GnbInterface.h"
-
                   // This is the delivery package title, "BrazosPI"
                   // This string MUST be exactly 8 characters long
 #define AGESA_PACKAGE_STRING  {'c', 'b', '_', 'A', 'g', 'e', 's', 'a'}
@@ -363,7 +359,8 @@ GPIO_CONTROL   parmer_gpio[] = {
 #define DFLT_MEMORY_QUADRANK_TYPE       QUADRANK_UNBUFFERED
 #define DFLT_VRM_SLEW_RATE              (5000)
 
-#include "PlatformInstall.h"
+/* AGESA nonsense: this header depends on the definitions above */
+#include <vendorcode/amd/agesa/f15tn/Include/PlatformInstall.h>
 
 /*----------------------------------------------------------------------------------------
  *                        CUSTOMER OVERIDES MEMORY TABLE
@@ -446,12 +443,6 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 
   PSO_END
 };
-
-/*
- * These tables are optional and may be used to adjust memory timing settings
- */
-#include "mm.h"
-#include "mn.h"
 
 // Customer table
 UINT8 AGESA_MEM_TABLE_TN[][sizeof (MEM_TABLE_ALIAS)] =

@@ -17,25 +17,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <device/pci_def.h>
-#include <device/pci_ids.h>
+#include "agesawrapper.h"
+
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/stages.h>
-#include <device/pnp_def.h>
-#include <arch/cpu.h>
-#include <cpu/x86/lapic.h>
+#include <cbmem.h>
 #include <console/console.h>
-#include <console/loglevel.h>
-#include "agesawrapper.h"
-#include "cpu/x86/bist.h"
-#include "cpu/x86/lapic.h"
-#include "southbridge/amd/agesa/hudson/hudson.h"
-#include "cpu/amd/agesa/s3_resume.h"
+#include <cpu/amd/agesa/s3_resume.h>
+#include <cpu/x86/bist.h>
+#include <cpu/x86/lapic.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <stdint.h>
+#include <string.h>
+#include <southbridge/amd/agesa/hudson/hudson.h>
+
 #include "src/drivers/pc80/i8254.c"
 #include "src/drivers/pc80/i8259.c"
-#include "cbmem.h"
+
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void disable_cache_as_ram(void);

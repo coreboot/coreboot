@@ -17,19 +17,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <string.h>
+#include "agesawrapper.h"
+
 #include <arch/acpi.h>
 #include <arch/acpigen.h>
 #include <arch/ioapic.h>
+#include <cpu/amd/amdfam15.h>
+#include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/x86/msr.h>
-#include "agesawrapper.h"
-#include <cpu/amd/mtrr.h>
-#include <cpu/amd/amdfam15.h>
-
-#include "agesawrapper.h"
+#include <string.h>
 
 #define DUMP_ACPI_TABLES 0
 

@@ -18,16 +18,12 @@
  */
 
 #include "agesawrapper.h"
-#include "amdlib.h"
 #include "BiosCallOuts.h"
-#include "Ids.h"
 #include "OptionsIds.h"
-#include "heapManager.h"
-#include "FchPlatform.h"
-#include "cbfs.h"
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-#include "imc.h"
-#endif
+
+#include <cbfs.h>
+#include <southbridge/amd/agesa/hudson/imc.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/Fch/FchPlatform.h>
 
 STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {

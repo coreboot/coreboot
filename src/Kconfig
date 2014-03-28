@@ -170,6 +170,15 @@ config EARLY_CBMEM_INIT
 	  some, for instance, execution timestamps. It needs support in
 	  romstage.c and should be enabled by the board's Kconfig.
 
+config BROKEN_CAR_MIGRATE
+	bool
+	default y if !EARLY_CBMEM_INIT && HAVE_ACPI_RESUME
+	default n
+	help
+	  Many boards use CAR_GLOBAL but have no EARLY_CBMEM_INIT and
+	  manage CAR migration on S3 resume path only. Couple boards use
+	  CAR_GLOBAL and never do CAR migration.
+
 config DYNAMIC_CBMEM
 	bool "The CBMEM space is dynamically grown."
 	default n

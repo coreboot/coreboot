@@ -1,5 +1,5 @@
 romstage-$(CONFIG_EARLY_CBMEM_INIT) += cbmem.c
-romstage-$(CONFIG_HAVE_ACPI_RESUME) += cbmem.c
+romstage-$(CONFIG_BROKEN_CAR_MIGRATE) += cbmem.c
 
 ramstage-y += boot.c
 ramstage-y += gdt.c

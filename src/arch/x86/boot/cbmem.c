@@ -49,13 +49,15 @@ void set_top_of_ram(uint64_t ramtop)
 	backup_top_of_ram(ramtop);
 	cbmem_late_set_table(ramtop - HIGH_MEMORY_SIZE, HIGH_MEMORY_SIZE);
 }
+#endif /* !__PRE_RAM__ */
 
+#if CONFIG_BROKEN_CAR_MIGRATE || !defined(__PRE_RAM__)
 unsigned long __attribute__((weak)) get_top_of_ram(void)
 {
 	printk(BIOS_WARNING, "WARNING: you need to define get_top_of_ram() for your chipset\n");
 	return 0;
 }
-#endif /* !__PRE_RAM__ */
+#endif
 
 #else
 

@@ -1,5 +1,5 @@
 romstage-$(CONFIG_EARLY_CBMEM_INIT) += car.c
-romstage-$(CONFIG_HAVE_ACPI_RESUME) += car.c
+romstage-$(CONFIG_BROKEN_CAR_MIGRATE) += car.c
 
 subdirs-$(CONFIG_PARALLEL_MP) += name
 ramstage-$(CONFIG_PARALLEL_MP) += mp_init.c

@@ -117,23 +117,6 @@ int  spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytesout,
 		void *din, unsigned int bytesin);
 
 
-/*-----------------------------------------------------------------------
- * Activate a SPI chipselect.
- * This function is provided by the board code when using a driver
- * that can't control its chipselects automatically (e.g.
- * common/soft_spi.c). When called, it should activate the chip select
- * to the device identified by "slave".
- */
-void spi_cs_activate(struct spi_slave *slave);
-
-/*-----------------------------------------------------------------------
- * Deactivate a SPI chipselect.
- * This function is provided by the board code when using a driver
- * that can't control its chipselects automatically (e.g.
- * common/soft_spi.c). When called, it should deactivate the chip
- * select to the device identified by "slave".
- */
-void spi_cs_deactivate(struct spi_slave *slave);
 
 unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len);
 

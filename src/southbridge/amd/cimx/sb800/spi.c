@@ -174,14 +174,6 @@ void spi_release_bus(struct spi_slave *slave)
 #endif
 }
 
-void spi_cs_activate(struct spi_slave *slave)
-{
-}
-
-void spi_cs_deactivate(struct spi_slave *slave)
-{
-}
-
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	struct spi_slave *slave = malloc(sizeof(*slave));

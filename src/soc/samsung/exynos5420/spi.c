@@ -133,22 +133,11 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return &eslave->slave;
 }
 
-void spi_cs_activate(struct spi_slave *slave)
+int spi_claim_bus(struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
 	// TODO(hungte) Add some delay if too many transactions happen at once.
 	clrbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
-}
-
-void spi_cs_deactivate(struct spi_slave *slave)
-{
-	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
-	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
-}
-
-int spi_claim_bus(struct spi_slave *slave)
-{
-	spi_cs_activate(slave);
 	return 0;
 }
 
@@ -231,7 +220,8 @@ int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bytes_out,
 
 void spi_release_bus(struct spi_slave *slave)
 {
-	spi_cs_deactivate(slave);
+	struct exynos_spi *regs = to_exynos_spi(slave)->regs;
+	setbits_le32(&regs->cs_reg, SPI_SLAVE_SIG_INACT);
 }
 
 static int exynos_spi_read(struct spi_slave *slave, void *dest, uint32_t len,

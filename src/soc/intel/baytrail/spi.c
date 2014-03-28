@@ -327,16 +327,6 @@ void spi_release_bus(struct spi_slave *slave)
 	/* Handled by ICH automatically. */
 }
 
-void spi_cs_activate(struct spi_slave *slave)
-{
-	/* Handled by ICH automatically. */
-}
-
-void spi_cs_deactivate(struct spi_slave *slave)
-{
-	/* Handled by ICH automatically. */
-}
-
 typedef struct spi_transaction {
 	const uint8_t *out;
 	uint32_t bytesout;

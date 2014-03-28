@@ -212,10 +212,12 @@ static unsigned int tegra_spi_speed(unsigned int bus)
 	return 50000000;
 }
 
-void spi_cs_activate(struct spi_slave *slave)
+int spi_claim_bus(struct spi_slave *slave)
 {
 	struct tegra_spi_regs *regs = to_tegra_spi(slave->bus)->regs;
 	u32 val;
+
+	tegra_spi_init(slave->bus);
 
 	val = read32(&regs->command1);
 
@@ -230,9 +232,10 @@ void spi_cs_activate(struct spi_slave *slave)
 		val |= SPI_CMD1_CS_SW_VAL;
 
 	write32(val, &regs->command1);
+	return 0;
 }
 
-void spi_cs_deactivate(struct spi_slave *slave)
+void spi_release_bus(struct spi_slave *slave)
 {
 	struct tegra_spi_regs *regs = to_tegra_spi(slave->bus)->regs;
 	u32 val;
@@ -848,8 +851,7 @@ static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
 	spi_read_cmd[2] = (offset >> 8) & 0xff;
 	spi_read_cmd[3] = offset & 0xff;
 
-	/* assert /CS */
-	spi_cs_activate(spi->slave);
+	spi_claim_bus(spi->slave);
 
 	if (spi_xfer(spi->slave, spi_read_cmd,
 			read_cmd_bytes, NULL, 0) < 0) {
@@ -872,7 +874,7 @@ static size_t tegra_spi_cbfs_read(struct cbfs_media *media, void *dest,
 
 tegra_spi_cbfs_read_exit:
 	/* de-assert /CS */
-	spi_cs_deactivate(spi->slave);
+	spi_release_bus(spi->slave);
 	return (ret < 0) ? 0 : ret;
 }
 
@@ -932,16 +934,4 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 		return NULL;
 
 	return &channel->slave;
-}
-
-int spi_claim_bus(struct spi_slave *slave)
-{
-	tegra_spi_init(slave->bus);
-	spi_cs_activate(slave);
-	return 0;
-}
-
-void spi_release_bus(struct spi_slave *slave)
-{
-	spi_cs_deactivate(slave);
 }

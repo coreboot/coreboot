@@ -354,8 +354,7 @@ static int generate_P_state_entries(int core, int cores_per_package)
 	vid_min = pattrs->iacore_vids[IACORE_LFM];
 
 	/* Set P-states coordination type based on MSR disable bit */
-	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
-	coord_type = (msr.lo & SINGLE_PCTL) ? SW_ALL : HW_ALL;
+	coord_type = (pattrs->num_cpus > 2) ? SW_ALL : HW_ALL;
 
 	/* Max Non-Turbo Frequency */
 	clock_max = (ratio_max * pattrs->bclk_khz) / 1000;

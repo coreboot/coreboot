@@ -133,11 +133,6 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 	return &eslave->slave;
 }
 
-int spi_cs_is_valid(unsigned int bus, unsigned int cs)
-{
-	return bus > 0 && bus < 3;
-}
-
 void spi_cs_activate(struct spi_slave *slave)
 {
 	struct exynos_spi *regs = to_exynos_spi(slave)->regs;

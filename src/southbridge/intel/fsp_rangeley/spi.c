@@ -329,12 +329,6 @@ static void ich_set_bbar(uint32_t minaddr)
 	writel_(ichspi_bbar, cntlr.bbar);
 }
 
-int spi_cs_is_valid(unsigned int bus, unsigned int cs)
-{
-	printk(BIOS_DEBUG, "spi_cs_is_valid used but not implemented\n");
-	return 0;
-}
-
 struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
 	ich_spi_slave *slave = malloc(sizeof(*slave));

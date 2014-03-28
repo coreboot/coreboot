@@ -583,12 +583,12 @@ void lp0_resume(void)
 
 	config_tsc();
 
-	power_on_main_cpu();
-
 	// Disable VPR.
 	write32(0, mc_video_protect_size_mb_ptr);
 	write32(VIDEO_PROTECT_WRITE_ACCESS_DISABLE,
 		mc_video_protect_reg_ctrl_ptr);
+
+	power_on_main_cpu();
 
 	// Halt the AVP.
 	while (1)

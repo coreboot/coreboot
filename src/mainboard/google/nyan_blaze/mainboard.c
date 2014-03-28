@@ -53,10 +53,11 @@ static void set_clock_sources(void)
 	clock_configure_irregular_source(extperiph1, CLK_M, 12000, 3);
 
 	/*
-	 * I2S1 can use either PLLP or PLLA. Using PLLP is sufficient now since
-	 * we only need 4.8MHz. Note the source id of PLLP for I2S is 4.
+	 * We need 1.5MHz. So, we use CLK_M. CLK_DIVIDER macro returns a divisor
+	 * (0xe) a little bit off from the ideal value (0xd) but it's good
+	 * enough for beeps. The source id of CLK_M for I2S is 6.
 	 */
-	clock_configure_irregular_source(i2s1, PLLP, 4800, 4);
+	clock_configure_irregular_source(i2s1, CLK_M, 1500, 6);
 
 	/* Note source id of PLLP for HOST1x is 4. */
 	clock_configure_irregular_source(host1x, PLLP, 408000, 4);

@@ -28,7 +28,7 @@ static void spi_flash_addr(u32 addr, u8 *cmd)
 
 int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len)
 {
-	int ret = spi_xfer(spi, &cmd, 8, response, len * 8);
+	int ret = spi_xfer(spi, &cmd, sizeof(cmd), response, len);
 	if (ret)
 		printk(BIOS_WARNING, "SF: Failed to send command %02x: %d\n", cmd, ret);
 
@@ -38,7 +38,7 @@ int spi_flash_cmd(struct spi_slave *spi, u8 cmd, void *response, size_t len)
 int spi_flash_cmd_read(struct spi_slave *spi, const u8 *cmd,
 		size_t cmd_len, void *data, size_t data_len)
 {
-	int ret = spi_xfer(spi, cmd, cmd_len * 8, data, data_len * 8);
+	int ret = spi_xfer(spi, cmd, cmd_len, data, data_len);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Failed to send read command (%zu bytes): %d\n",
 				data_len, ret);
@@ -55,7 +55,7 @@ int spi_flash_cmd_write(struct spi_slave *spi, const u8 *cmd, size_t cmd_len,
 	memcpy(buff, cmd, cmd_len);
 	memcpy(buff + cmd_len, data, data_len);
 
-	ret = spi_xfer(spi, buff, (cmd_len + data_len) * 8, NULL, 0);
+	ret = spi_xfer(spi, buff, cmd_len + data_len, NULL, 0);
 	if (ret) {
 		printk(BIOS_WARNING, "SF: Failed to send write command (%zu bytes): %d\n",
 				data_len, ret);

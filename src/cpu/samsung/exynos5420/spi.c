@@ -258,15 +258,13 @@ int spi_claim_bus(struct spi_slave *slave)
 	return 0;
 }
 
-int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int bitsout,
-	     void *din, unsigned int bitsin)
+int spi_xfer(struct spi_slave *slave, const void *dout, unsigned int out_bytes,
+	     void *din, unsigned int in_bytes)
 {
-	unsigned int out_bytes = bitsout / 8, in_bytes = bitsin / 8;
 	uint8_t *out_ptr = (uint8_t *)dout, *in_ptr = (uint8_t *)din;
 	int offset, todo, len;
 	int ret = 0;
 
-	ASSERT(bitsout % 8 == 0 && bitsin % 8 == 0);
 	len = MAX(out_bytes, in_bytes);
 
 	/*

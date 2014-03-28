@@ -87,21 +87,14 @@ void spi_init(void)
 }
 
 int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bitsout, void *din, unsigned int bitsin)
+		unsigned int bytesout, void *din, unsigned int bytesin)
 {
 	/* First byte is cmd which can not being sent through FIFO. */
-	uint8_t cmd = *(uint8_t *)dout++;
-	uint8_t readoffby1;
-#if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
-	uint8_t readwrite;
-#endif
-	uint8_t bytesout, bytesin;
-	uint8_t count;
+	u8 cmd = *(u8 *)dout++;
+	u8 readoffby1;
+	u8 count;
 
-	bitsout -= 8;
-	bytesout = bitsout / 8;
-	bytesin  = bitsin / 8;
-
+	bytesout--;
 	readoffby1 = bytesout ? 0 : 1;
 
 #if CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
@@ -110,7 +103,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	spi_write(0x1E, 6);
 	spi_write(0x1F, bytesin);  /* SpiExtRegIndx [6] - RxByteCount */
 #else
-	readwrite = (bytesin + readoffby1) << 4 | bytesout;
+	u8 readwrite = (bytesin + readoffby1) << 4 | bytesout;
 	spi_write(SPI_REG_CNTRL01, readwrite);
 #endif
 	spi_write(SPI_REG_OPCODE, cmd);

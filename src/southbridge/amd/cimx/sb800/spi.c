@@ -57,18 +57,15 @@ void spi_init()
 }
 
 int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bitsout, void *din, unsigned int bitsin)
+		unsigned int bytesout, void *din, unsigned int bytesin)
 {
 	/* First byte is cmd which can not being sent through FIFO. */
 	u8 cmd = *(u8 *)dout++;
 	u8 readoffby1;
 	u8 readwrite;
-	u8 bytesout, bytesin;
 	u8 count;
 
-	bitsout -= 8;
-	bytesout = bitsout / 8;
-	bytesin  = bitsin / 8;
+	bytesout--;
 
 	readoffby1 = bytesout ? 0 : 1;
 

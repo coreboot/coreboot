@@ -31,8 +31,8 @@ static int crosec_spi_io(uint8_t *write_bytes, size_t write_size,
 	int rv;
 
 	spi_claim_bus(slave);
-	rv = spi_xfer(slave, write_bytes, write_size * 8, read_bytes,
-		      read_size * 8);
+	rv = spi_xfer(slave, write_bytes, write_size, read_bytes,
+		      read_size);
 	spi_release_bus(slave);
 
 	if (rv != 0) {

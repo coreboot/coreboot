@@ -551,7 +551,7 @@ static int spi_is_multichip (void)
 }
 
 int spi_xfer(struct spi_slave *slave, const void *dout,
-		unsigned int bitsout, void *din, unsigned int bitsin)
+		unsigned int bytesout, void *din, unsigned int bytesin)
 {
 	uint16_t control;
 	int16_t opcode_index;
@@ -559,24 +559,19 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	int status;
 
 	spi_transaction trans = {
-		dout, bitsout / 8,
-		din, bitsin / 8,
+		dout, bytesout,
+		din, bytesin,
 		0xff, 0xff, 0
 	};
 
 	/* There has to always at least be an opcode. */
-	if (!bitsout || !dout) {
+	if (!bytesout || !dout) {
 		printk(BIOS_DEBUG, "ICH SPI: No opcode for transfer\n");
 		return -1;
 	}
 	/* Make sure if we read something we have a place to put it. */
-	if (bitsin != 0 && !din) {
+	if (bytesin != 0 && !din) {
 		printk(BIOS_DEBUG, "ICH SPI: Read but no target buffer\n");
-		return -1;
-	}
-	/* Right now we don't support writing partial bytes. */
-	if (bitsout % 8 || bitsin % 8) {
-		printk(BIOS_DEBUG, "ICH SPI: Accessing partial bytes not supported\n");
 		return -1;
 	}
 

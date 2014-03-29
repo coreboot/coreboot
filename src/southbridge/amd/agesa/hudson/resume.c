@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "FchPlatform.h"
-#include "Fch.h"
+#include <Proc/Fch/FchPlatform.h>
+#include <Proc/Fch/Fch.h>
 #include <cpu/amd/agesa/s3_resume.h>
 #include <device/device.h>
 #include "hudson.h"

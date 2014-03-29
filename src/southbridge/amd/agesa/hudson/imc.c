@@ -22,10 +22,10 @@
 #include <delay.h>
 #include "Porting.h"
 #include "AGESA.h"
-#include "amdlib.h"
-#include "Fch.h"
-#include "FchCommonCfg.h"
-#include "FchPlatform.h"
+#include <Lib/amdlib.h>
+#include <Proc/Fch/Fch.h>
+#include <Proc/Fch/Common/FchCommonCfg.h>
+#include <Proc/Fch/FchPlatform.h>
 
 void imc_reg_init(void)
 {

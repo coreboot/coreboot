@@ -26,7 +26,7 @@
 #include <device/pci_ops.h>
 
 #if defined (CONFIG_HUDSON_IMC_FWM)
-#include "FchPlatform.h"
+#include <Proc/Fch/FchPlatform.h>
 
 static int bus_claimed = 0;
 #endif

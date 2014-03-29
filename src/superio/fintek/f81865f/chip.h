@@ -30,4 +30,4 @@ struct superio_fintek_f81865f_config {
 	struct pc_keyboard keyboard;
 };
 
-#endif
+#endif /* SUPERIO_FINTEK_F81865_CHIP_H */

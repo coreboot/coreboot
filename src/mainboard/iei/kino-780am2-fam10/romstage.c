@@ -41,7 +41,7 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-#include "superio/fintek/f71859/early_serial.c"
+#include <superio/fintek/f71859/f71859.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"

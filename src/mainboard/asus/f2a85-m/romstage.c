@@ -18,27 +18,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <device/pci_def.h>
-#include <device/pci_ids.h>
+#include "agesawrapper.h"
+
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/stages.h>
-#include <device/pnp_def.h>
-#include <arch/cpu.h>
-#include <cpu/x86/lapic.h>
+#include <cbmem.h>
 #include <console/console.h>
-#include <console/loglevel.h>
-#include "agesawrapper.h"
-#include "cpu/x86/bist.h"
-#include "cpu/x86/lapic.h"
-#include "southbridge/amd/agesa/hudson/hudson.h"
-#include "southbridge/amd/agesa/hudson/smbus.h"
-#include "superio/ite/it8712f/early_serial.c"
-#include "cpu/amd/agesa/s3_resume.h"
-#include "src/drivers/pc80/i8254.c"
-#include "src/drivers/pc80/i8259.c"
-#include "cbmem.h"
+#include <cpu/amd/agesa/s3_resume.h>
+#include <cpu/x86/bist.h>
+#include <cpu/x86/lapic.h>
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <device/pnp_def.h>
+#include <southbridge/amd/agesa/hudson/hudson.h>
+#include <southbridge/amd/agesa/hudson/smbus.h>
+#include <stdint.h>
+#include <string.h>
+/* TODO: remove .c includes */
+#include <drivers/pc80/i8254.c>
+#include <drivers/pc80/i8259.c>
+#include <superio/ite/it8712f/early_serial.c>
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 void disable_cache_as_ram(void);

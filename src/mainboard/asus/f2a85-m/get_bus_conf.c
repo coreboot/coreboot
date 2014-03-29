@@ -17,14 +17,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "agesawrapper.h"
+
 #include <console/console.h>
+#include <cpu/amd/amdfam15.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cpu/amd/amdfam14.h>
-#include "agesawrapper.h"
+#include <string.h>
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
  * and acpi_tables busnum is default.

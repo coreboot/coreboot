@@ -17,12 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "AGESA.h"
-#include "amdlib.h"
-#include "Ids.h"
-#include "heapManager.h"
 #include "PlatformGnbPcieComplex.h"
-#include "Filecode.h"
+
+#include <vendorcode/amd/agesa/f15tn/Proc/CPU/heapManager.h>
 
 #define FILECODE PROC_GNB_PCIE_FAMILY_0X15_F15PCIECOMPLEXCONFIG_FILECODE
 

@@ -18,13 +18,11 @@
  */
 
 #include "agesawrapper.h"
-#include "amdlib.h"
 #include "BiosCallOuts.h"
-#include "Ids.h"
 #include "OptionsIds.h"
-#include "heapManager.h"
-#include "FchPlatform.h"
-#include "cbfs.h"
+
+#include <cbfs.h>
+#include <vendorcode/amd/agesa/f15tn/Proc/Fch/FchPlatform.h>
 
 STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {

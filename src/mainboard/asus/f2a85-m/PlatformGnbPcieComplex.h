@@ -20,9 +20,8 @@
 #ifndef _PLATFORM_GNB_PCIE_COMPLEX_H
 #define _PLATFORM_GNB_PCIE_COMPLEX_H
 
-#include "Porting.h"
-#include "AGESA.h"
-#include "amdlib.h"
+#include <vendorcode/amd/agesa/f15tn/AGESA.h>
+#include <vendorcode/amd/agesa/f15tn/Lib/amdlib.h>
 
 VOID
 OemCustomizeInitEarly (

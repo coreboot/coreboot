@@ -45,11 +45,11 @@
 #define _OPTION_MEMORY_H_
 
 /* Memory Includes */
-#include "mm.h"
-#include "mn.h"
-#include "mt.h"
-#include "ma.h"
-#include "mp.h"
+#include <Proc/Mem/mm.h>
+#include <Proc/Mem/mn.h>
+#include <Proc/Mem/mt.h>
+#include <Proc/Mem/ma.h>
+#include <Proc/Mem/mp.h>
 /*----------------------------------------------------------------------------------------
  *          M I X E D   (Definitions And Macros / Typedefs, Structures, Enums)
  *----------------------------------------------------------------------------------------

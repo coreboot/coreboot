@@ -43,7 +43,7 @@
 #ifndef _OPTION_FAMILY_15H_INSTALL_H_
 #define _OPTION_FAMILY_15H_INSTALL_H_
 
-#include "cpuFamilyTranslation.h"
+#include <Proc/CPU/cpuFamilyTranslation.h>
 
 /*
  * Pull in family specific services based on entry point

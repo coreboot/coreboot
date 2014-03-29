@@ -43,9 +43,9 @@
 #ifndef _IDS_LIB_H_
 #define _IDS_LIB_H_
 #include "OptionsIds.h"
-#include "cpuRegisters.h"
-#include "cpuApicUtilities.h"
-#include "Table.h"
+#include <Proc/CPU/cpuRegisters.h>
+#include <Proc/CPU/cpuApicUtilities.h>
+#include <Proc/CPU/Table.h>
 ///Specific time stamp performance analysis which need ids control support
 #if IDSOPT_CONTROL_ENABLED == TRUE
   #define PERF_SPEC_TS_ANALYSE(StdHeader)  IdsPerfSpecTsAnalyse(StdHeader)

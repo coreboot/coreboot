@@ -44,7 +44,7 @@
 #ifndef _OPTION_C6_STATE_INSTALL_H_
 #define _OPTION_C6_STATE_INSTALL_H_
 
-#include "cpuC6State.h"
+#include <Proc/CPU/Feature/cpuC6State.h>
 
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.

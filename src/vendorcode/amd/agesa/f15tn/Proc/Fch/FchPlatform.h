@@ -106,12 +106,12 @@
 #endif
 
 #include "Fch.h"
-#include "amdlib.h"
-#include "FchCommonCfg.h"
-#include "AcpiLib.h"
-#include "FchDef.h"
-#include "FchBiosRamUsage.h"
-#include "AmdFch.h"
+#include <Lib/amdlib.h>
+#include "Common/FchCommonCfg.h"
+#include "Common/AcpiLib.h"
+#include "Common/FchDef.h"
+#include "Common/FchBiosRamUsage.h"
+#include <Proc/Common/AmdFch.h>
 
 extern BUILD_OPT_CFG    UserOptions;
 

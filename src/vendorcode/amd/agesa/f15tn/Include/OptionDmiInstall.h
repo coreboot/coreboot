@@ -44,7 +44,7 @@
 #ifndef _OPTION_DMI_INSTALL_H_
 #define _OPTION_DMI_INSTALL_H_
 
-#include "cpuLateInit.h"
+#include <Proc/CPU/cpuLateInit.h>
 
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.

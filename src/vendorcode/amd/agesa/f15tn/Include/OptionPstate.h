@@ -44,7 +44,7 @@
 #ifndef _OPTION_PSTATE_H_
 #define _OPTION_PSTATE_H_
 
-#include "cpuPstateTables.h"
+#include <Proc/CPU/Feature/cpuPstateTables.h>
 
 /*----------------------------------------------------------------------------------------
  *          M I X E D   (Definitions And Macros / Typedefs, Structures, Enums)

@@ -42,7 +42,7 @@
 #ifndef _OPTION_FCH_INSTALL_H_
 #define _OPTION_FCH_INSTALL_H_
 
-#include "AmdFch.h"
+#include <Proc/Common/AmdFch.h>
 
 #ifndef  FCH_SUPPORT
   #define  FCH_SUPPORT   FALSE

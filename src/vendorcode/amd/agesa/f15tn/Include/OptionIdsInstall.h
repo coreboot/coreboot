@@ -43,8 +43,8 @@
 #define _OPTION_IDS_INSTALL_H_
 #include "Ids.h"
 #include "IdsHt.h"
-#include "IdsLib.h"
-#include "IdsDebugPrint.h"
+#include <Proc/IDS/IdsLib.h>
+#include <Proc/IDS/Debug/IdsDebugPrint.h>
 #ifdef __IDS_EXTENDED__
   #include OPTION_IDS_EXT_INSTALL_FILE
 #endif

@@ -44,7 +44,7 @@
 #ifndef _OPTION_APM_INSTALL_H_
 #define _OPTION_APM_INSTALL_H_
 
-#include "cpuApm.h"
+#include <Proc/CPU/Feature/cpuApm.h>
 
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.

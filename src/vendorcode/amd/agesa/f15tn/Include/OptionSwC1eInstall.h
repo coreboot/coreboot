@@ -44,7 +44,7 @@
 #ifndef _OPTION_SW_C1E_INSTALL_H_
 #define _OPTION_SW_C1E_INSTALL_H_
 
-#include "cpuSwC1e.h"
+#include <Proc/CPU/Feature/cpuSwC1e.h>
 
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.

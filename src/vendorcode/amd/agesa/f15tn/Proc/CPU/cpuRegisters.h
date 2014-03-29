@@ -45,7 +45,7 @@
 #ifndef _CPU_REGISTERS_H_
 #define _CPU_REGISTERS_H_
 
-#include "cpuFamRegisters.h"
+#include "Family/cpuFamRegisters.h"
 /*
  *--------------------------------------------------------------
  *

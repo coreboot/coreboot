@@ -44,7 +44,7 @@
 #ifndef _OPTION_CPU_CACHEFLUSHONHALT_INSTALL_H_
 #define _OPTION_CPU_CACHEFLUSHONHALT_INSTALL_H_
 
-#include "cpuPostInit.h"
+#include "Proc/CPU/cpuPostInit.h"
 
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.

@@ -44,7 +44,7 @@
 #ifndef _OPTION_GNB_INSTALL_H_
 #define _OPTION_GNB_INSTALL_H_
 
-#include "S3SaveState.h"
+#include <Proc/Common/S3SaveState.h>
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.
  *  Check to validate the definition
@@ -82,13 +82,13 @@
 // Service installation
 //---------------------------------------------------------------------------------------------------
 
-  #include "Gnb.h"
-  #include "GnbPcie.h"
-  #include "GnbGfx.h"
+  #include <Proc/GNB/Common/Gnb.h>
+  #include <Proc/GNB/Common/GnbPcie.h>
+  #include <Proc/GNB/Common/GnbGfx.h>
 
   #define SERVICES_POINTER  NULL
   #if (GNB_TYPE_TN == TRUE)
-    #include "GnbInitTNInstall.h"
+    #include <Proc/GNB/Modules/GnbInitTN/GnbInitTNInstall.h>
   #endif
   GNB_SERVICE   *ServiceTable = SERVICES_POINTER;
 

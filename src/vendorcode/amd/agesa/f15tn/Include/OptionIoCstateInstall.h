@@ -44,7 +44,7 @@
 #ifndef _OPTION_IO_CSTATE_INSTALL_H_
 #define _OPTION_IO_CSTATE_INSTALL_H_
 
-#include "cpuIoCstate.h"
+#include <Proc/CPU/Feature/cpuIoCstate.h>
 
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.

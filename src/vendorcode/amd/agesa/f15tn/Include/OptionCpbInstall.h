@@ -44,7 +44,7 @@
 #ifndef _OPTION_CPB_INSTALL_H_
 #define _OPTION_CPB_INSTALL_H_
 
-#include "cpuCpb.h"
+#include <Proc/CPU/Feature/cpuCpb.h>
 
 /*  This option is designed to be included into the platform solution install
  *  file. The platform solution install file will define the options status.

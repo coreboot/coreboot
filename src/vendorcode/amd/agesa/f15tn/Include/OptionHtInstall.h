@@ -45,10 +45,10 @@
 #define _OPTION_HT_INSTALL_H_
 
 #include "Topology.h"
-#include "htFeat.h"
-#include "htInterface.h"
-#include "htNb.h"
-#include "htTopologies.h"
+#include <Proc/HT/htFeat.h>
+#include <Proc/HT/htInterface.h>
+#include <Proc/HT/htNb.h>
+#include <Proc/HT/htTopologies.h>
 /*
  * Advanced Option only, hardware socket naming is the preferred method.
  */

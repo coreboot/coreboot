@@ -50,9 +50,9 @@
 // Specify definition used by module services
 //-----------------------------------------------------------------------
 
-#include  "GnbPcie.h"
-#include  "GnbPcieFamServices.h"
-#include  "GnbFamServices.h"
+#include  <Proc/GNB/Common/GnbPcie.h>
+#include  <Proc/GNB/Common/GnbPcieFamServices.h>
+#include  <Proc/GNB/Common/GnbFamServices.h>
 
 //-----------------------------------------------------------------------
 // Export services

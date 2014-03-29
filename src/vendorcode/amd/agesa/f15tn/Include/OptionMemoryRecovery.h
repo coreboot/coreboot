@@ -44,9 +44,9 @@
 #ifndef _OPTION_MEMORY_RECOVERY_H_
 #define _OPTION_MEMORY_RECOVERY_H_
 
-#include "mm.h"
-#include "mn.h"
-#include "mt.h"
+#include <Proc/Mem/mm.h>
+#include <Proc/Mem/mn.h>
+#include <Proc/Mem/mt.h>
 
 typedef BOOLEAN MEM_REC_NB_CONSTRUCTOR (
   IN OUT   MEM_NB_BLOCK *NBPtr,

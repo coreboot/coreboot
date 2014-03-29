@@ -18,11 +18,12 @@
  */
 
 #include "agesawrapper.h"
-#include "amdlib.h"
 #include "BiosCallOuts.h"
-#include "heapManager.h"
-#include "SB800.h"
+
+#include <Lib/amdlib.h>
 #include <northbridge/amd/agesa/family14/dimmSpd.h>
+#include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
+#include <vendorcode/amd/cimx/sb800/SB800.h>
 
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {

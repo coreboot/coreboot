@@ -22,25 +22,19 @@
  *-----------------------------------------------------------------------------
  */
 
-#include <stdint.h>
-#include <string.h>
 #include "agesawrapper.h"
 #include "BiosCallOuts.h"
-#include "cpuRegisters.h"
-#include "cpuCacheInit.h"
-#include "cpuApicUtilities.h"
-#include "cpuEarlyInit.h"
-#include "cpuLateInit.h"
-#include "Dispatcher.h"
-#include "cpuCacheInit.h"
-#include "heapManager.h"
-#include "amdlib.h"
 #include "PlatformGnbPcieComplex.h"
-#include "Filecode.h"
-#include <arch/io.h>
-#include <cpu/amd/agesa/s3_resume.h>
-#include <cbmem.h>
+
 #include <arch/acpi.h>
+#include <arch/io.h>
+#include <cbmem.h>
+#include <cpu/x86/mtrr.h>
+#include <stdint.h>
+#include <string.h>
+
+#include <cpu/amd/agesa/s3_resume.h>
+#include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 

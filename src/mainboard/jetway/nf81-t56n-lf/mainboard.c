@@ -17,18 +17,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "BiosCallOuts.h"
+
+#include <arch/acpi.h>
+#include <arch/io.h>
 #include <console/console.h>
+#include <cpu/x86/msr.h>
+#include <cpu/amd/agesa/s3_resume.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <arch/io.h>
-#include <cpu/x86/msr.h>
 #include <device/pci_def.h>
+
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <southbridge/amd/sb800/sb800.h>
-#include <arch/acpi.h>
-#include "BiosCallOuts.h"
-#include <cpu/amd/agesa/s3_resume.h>
-#include <cpu/amd/mtrr.h>
-#include "SBPLATFORM.h"
 
 void set_pcie_reset(void);
 void set_pcie_dereset(void);

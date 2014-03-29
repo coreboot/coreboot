@@ -17,17 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "agesawrapper.h"
+
 #include <console/console.h>
+#include <cpu/amd/amdfam14.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <cpu/amd/amdfam14.h>
-#include "agesawrapper.h"
-#if CONFIG_AMD_SB_CIMX
-#include <sb_cimx.h>
-#endif
+#include <string.h>
+
+#include <southbridge/amd/cimx/sb800/sb_cimx.h>
 
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable

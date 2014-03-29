@@ -33,7 +33,21 @@
  * @e \$Revision: 23714 $	 @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
-#include "Filecode.h"
+#include <vendorcode/amd/agesa/f14/AGESA.h>
+
+/* Include the files that instantiate the configuration definitions. */
+#include <vendorcode/amd/agesa/f14/Include/AdvancedApi.h>
+#include <vendorcode/amd/agesa/f14/Include/CommonReturns.h>
+#include <vendorcode/amd/agesa/f14/Proc/CPU/cpuFamilyTranslation.h>
+#include <vendorcode/amd/agesa/f14/Proc/CPU/Feature/cpuFeatures.h>
+#include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
+/* AGESA nonesense: the next two headers depend on heapManager.h */
+#include <vendorcode/amd/agesa/f14/Proc/Common/CreateStruct.h>
+#include <vendorcode/amd/agesa/f14/Proc/CPU/cpuEarlyInit.h>
+/* These tables are optional and may be used to adjust memory timing settings */
+#include <vendorcode/amd/agesa/f14/Proc/Mem/mm.h>
+#include <vendorcode/amd/agesa/f14/Proc/Mem/mn.h>
+
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
 
@@ -224,8 +238,6 @@
  * Uncomment and specify the value for the configuration options
  * needed by the system.
  */
-#include "AGESA.h"
-#include "CommonReturns.h"
 
 /* The fixed MTRR values to be set after memory initialization. */
 CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
@@ -243,20 +255,6 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 	{ AMD_AP_MTRR_FIX4k_F8000, 0x1E1E1E1E1E1E1E1Eull },
 	{ CPU_LIST_TERMINAL }
 };
-
-/*	Include the files that instantiate the configuration definitions.	*/
-
-#include "cpuRegisters.h"
-#include "cpuFamRegisters.h"
-#include "cpuFamilyTranslation.h"
-#include "AdvancedApi.h"
-#include "heapManager.h"
-#include "CreateStruct.h"
-#include "cpuFeatures.h"
-#include "Table.h"
-#include "cpuEarlyInit.h"
-#include "cpuLateInit.h"
-#include "GnbInterface.h"
 
 /*****************************************************************************
  *	 Define the RELEASE VERSION string
@@ -314,8 +312,9 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 #define DFLT_MEMORY_QUADRANK_TYPE		QUADRANK_UNBUFFERED
 #define DFLT_VRM_SLEW_RATE				(5000)
 
-// Instantiate all solution relevant data.
-#include "PlatformInstall.h"
+/* AGESA nonsense: this header depends on the definitions above */
+/* Instantiate all solution relevant data. */
+#include <vendorcode/amd/agesa/f14/Include/PlatformInstall.h>
 
 /*----------------------------------------------------------------------------------------
  *						CUSTOMER OVERIDES MEMORY TABLE
@@ -390,11 +389,6 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 	PSO_END
 };
 
-/*
- * These tables are optional and may be used to adjust memory timing settings
- */
-#include "mm.h"
-#include "mn.h"
 
 //DA Customer table
 CONST UINT8 AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
@@ -454,5 +448,3 @@ CONST UINT8 SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABL
 //	/* platform code to read an SPD...	*/
 //	return Status;
 //}
-
-

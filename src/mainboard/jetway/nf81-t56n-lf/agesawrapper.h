@@ -26,8 +26,8 @@
 #define _AGESAWRAPPER_H_
 
 #include <stdint.h>
-#include "Porting.h"
-#include "AGESA.h"
+#include <vendorcode/amd/agesa/f14/AGESA.h>
+
 
 /*----------------------------------------------------------------------------------------
  *					 D E F I N I T I O N S		A N D		M A C R O S

@@ -18,14 +18,15 @@
  */
 
 
-#include <console/console.h>
-#include <arch/smp/mpspec.h>
-#include <device/pci.h>
 #include <arch/io.h>
-#include <string.h>
-#include <stdint.h>
+#include <arch/smp/mpspec.h>
+#include <console/console.h>
 #include <cpu/amd/amdfam14.h>
-#include <SBPLATFORM.h>
+#include <device/pci.h>
+#include <stdint.h>
+#include <string.h>
+
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
 extern u8 bus_sb800[6];
 

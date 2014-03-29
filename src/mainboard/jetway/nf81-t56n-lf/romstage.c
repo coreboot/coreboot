@@ -18,30 +18,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <device/pci_def.h>
-#include <device/pci_ids.h>
+#include "agesawrapper.h"
+
+#include <arch/cpu.h>
 #include <arch/io.h>
 #include <arch/stages.h>
-#include <device/pnp_def.h>
-#include <arch/cpu.h>
-#include <cpu/x86/lapic.h>
+#include <cbmem.h>
 #include <console/console.h>
+#include <cpu/amd/agesa/s3_resume.h>
+#include <cpu/x86/lapic.h>
+#include <cpu/x86/bist.h>
+
+#include <device/pci_def.h>
+#include <device/pci_ids.h>
+#include <stdint.h>
+#include <string.h>
+
 #include <console/loglevel.h>
 #include <cpu/x86/mtrr.h>
-#include "agesawrapper.h"
-#include "cpu/x86/bist.h"
+#include <cpu/x86/cache.h>
+#include <cpu/amd/mtrr.h>
+#include <sb_cimx.h>
+#include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include "superio/fintek/f71869ad/f71869ad.h"
-#include "cpu/x86/lapic.h"
+
+/* FIXME: should not include .c files */
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
-#include <cpu/x86/cache.h>
-#include <sb_cimx.h>
-#include "SBPLATFORM.h"
-#include "cbmem.h"
-#include "cpu/amd/mtrr.h"
-#include "cpu/amd/agesa/s3_resume.h"
 
 void disable_cache_as_ram(void); /* cache_as_ram.inc */
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);

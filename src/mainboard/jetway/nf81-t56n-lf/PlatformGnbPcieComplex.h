@@ -20,10 +20,8 @@
 #ifndef _PLATFORM_GNB_PCIE_COMPLEX_H
 #define _PLATFORM_GNB_PCIE_COMPLEX_H
 
-#include "Porting.h"
-#include "AGESA.h"
-#include "amdlib.h"
-#include <cpu/amd/agesa/s3_resume.h>
+#include <vendorcode/amd/agesa/f14/AGESA.h>
+#include <vendorcode/amd/agesa/f14/Lib/amdlib.h>
 
 //GNB GPP Port4
 #define GNB_GPP_PORT4_PORT_PRESENT		1	//0:Disable 1:Enable

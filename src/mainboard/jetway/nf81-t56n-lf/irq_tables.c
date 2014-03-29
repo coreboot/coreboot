@@ -18,12 +18,11 @@
  */
 
 
+#include <arch/pirq_routing.h>
 #include <console/console.h>
-#include <device/pci.h>
+#include <cpu/amd/amdfam14.h>
 #include <string.h>
 #include <stdint.h>
-#include <arch/pirq_routing.h>
-#include <cpu/amd/amdfam14.h>
 
 
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,

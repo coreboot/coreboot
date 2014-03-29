@@ -24,6 +24,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/smm.h>
@@ -435,25 +436,25 @@ int smm_initialize(void)
 	/* Run the relocation handler. */
 	smm_initiate_relocation();
 
-	/* If smm_save_state_in_msrs is non-zero then parallel SMM relocation
-	 * shall take place. Run the relocation handler a second time to do
-	 * the final move. */
 	if (smm_reloc_params.smm_save_state_in_msrs) {
 		printk(BIOS_DEBUG, "Doing parallel SMM relocation.\n");
-		release_aps_for_smm_relocation(1);
-		smm_initiate_relocation_parallel();
-	} else {
-		release_aps_for_smm_relocation(0);
 	}
 
-	/* Now that all APs have been relocated as well as the BSP let SMIs
-	 * start flowing. */
-	southbridge_smm_enable_smi();
-
-	/* Lock down the SMRAM space. */
-	smm_lock();
-
 	return 0;
+}
+
+void smm_relocate(void)
+{
+	/*
+	 * If smm_save_state_in_msrs is non-zero then parallel SMM relocation
+	 * shall take place. Run the relocation handler a second time on the
+	 * BSP to do * the final move. For APs, a relocation handler always
+	 * needs to be run.
+	 */
+	if (smm_reloc_params.smm_save_state_in_msrs)
+		smm_initiate_relocation_parallel();
+	else if (!boot_cpu())
+		smm_initiate_relocation();
 }
 
 void smm_init(void)

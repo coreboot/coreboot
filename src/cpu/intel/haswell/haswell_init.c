@@ -27,6 +27,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/mp.h>
 #include <cpu/x86/lapic.h>
 #include <cpu/intel/microcode.h>
 #include <cpu/intel/speedstep.h>
@@ -679,28 +680,6 @@ static void configure_mca(void)
 
 static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 {
-	struct device_path cpu_path;
-	struct cpu_info *info;
-	char processor_name[49];
-
-	/* Print processor name */
-	fill_processor_name(processor_name);
-	printk(BIOS_INFO, "CPU: %s.\n", processor_name);
-
-	/* Ensure the local apic is enabled */
-	enable_lapic();
-
-	/* Set the device path of the boot cpu. */
-	cpu_path.type = DEVICE_PATH_APIC;
-	cpu_path.apic.apic_id = lapicid();
-
-	/* Find the device structure for the boot cpu. */
-	info = cpu_info();
-	info->cpu = alloc_find_dev(cpu_bus, &cpu_path);
-
-	if (info->index != 0)
-		printk(BIOS_CRIT, "BSP index(%d) != 0!\n", info->index);
-
 	/* Setup MTRRs based on physical address size. */
 	x86_setup_fixed_mtrrs();
 	x86_setup_var_mtrrs(cpuid_eax(0x80000008) & 0xff, 2);
@@ -712,9 +691,6 @@ static void bsp_init_before_ap_bringup(struct bus *cpu_bus)
 		calibrate_24mhz_bclk();
 		configure_pch_power_sharing();
 	}
-
-	/* Call through the cpu driver's initialization. */
-	cpu_initialize(0);
 }
 
 /* All CPUs including BSP will run the following function. */
@@ -749,12 +725,57 @@ static void haswell_init(device_t cpu)
 	enable_turbo();
 }
 
+/* MP initialization support. */
+static const void *microcode_patch;
+int ht_disabled;
+
+static int adjust_apic_id_ht_disabled(int index, int apic_id)
+{
+	return 2 * index;
+}
+
+static void relocate_and_load_microcode(void *unused)
+{
+	/* Relocate the SMM handler. */
+	smm_relocate();
+
+	/* After SMM relocation a 2nd microcode load is required. */
+	intel_microcode_load_unlocked(microcode_patch);
+}
+
+static void enable_smis(void *unused)
+{
+	/* Now that all APs have been relocated as well as the BSP let SMIs
+	 * start flowing. */
+	southbridge_smm_enable_smi();
+
+	/* Lock down the SMRAM space. */
+	smm_lock();
+}
+
+static struct mp_flight_record mp_steps[] = {
+	MP_FR_NOBLOCK_APS(relocate_and_load_microcode, NULL,
+	                  relocate_and_load_microcode, NULL),
+	MP_FR_BLOCK_APS(mp_initialize_cpu, NULL, mp_initialize_cpu, NULL),
+	/* Wait for APs to finish initialization before proceeding. */
+	MP_FR_BLOCK_APS(NULL, NULL, enable_smis, NULL),
+};
+
 void bsp_init_and_start_aps(struct bus *cpu_bus)
 {
-	int max_cpus;
-	int num_aps;
-	const void *microcode_patch;
 	void *smm_save_area;
+	int num_threads;
+	int num_cores;
+	msr_t msr;
+	struct mp_params mp_params;
+
+	msr = rdmsr(CORE_THREAD_COUNT_MSR);
+	num_threads = (msr.lo >> 0) & 0xffff;
+	num_cores = (msr.lo >> 16) & 0xffff;
+	printk(BIOS_DEBUG, "CPU has %u cores, %u threads enabled.\n",
+	       num_cores, num_threads);
+
+	ht_disabled = num_threads == num_cores;
 
 	/* Perform any necessary BSP initialization before APs are brought up.
 	 * This call also allows the BSP to prepare for any secondary effects
@@ -766,26 +787,23 @@ void bsp_init_and_start_aps(struct bus *cpu_bus)
 	/* Save default SMM area before relocation occurs. */
 	smm_save_area = backup_default_smm_area();
 
-	/* This needs to be called after the mtrr setup so the BSP mtrrs
-	 * can be mirrored by the APs. */
-	if (setup_ap_init(cpu_bus, &max_cpus, microcode_patch)) {
-		printk(BIOS_CRIT, "AP setup initialization failed. "
-		       "No APs will be brought up.\n");
-		return;
-	}
+	mp_params.num_cpus = num_threads;
+	mp_params.parallel_microcode_load = 1;
+	if (ht_disabled)
+		mp_params.adjust_apic_id = adjust_apic_id_ht_disabled;
+	else
+		mp_params.adjust_apic_id = NULL;
+	mp_params.flight_plan = &mp_steps[0];
+	mp_params.num_records = ARRAY_SIZE(mp_steps);
+	mp_params.microcode_pointer = microcode_patch;
 
-	num_aps = max_cpus - 1;
-	if (start_aps(cpu_bus, num_aps)) {
-		printk(BIOS_CRIT, "AP startup failed. Trying to continue.\n");
-	}
+	/* Load relocation and permeanent handlers. Then initiate relocation. */
+	if (smm_initialize())
+		printk(BIOS_CRIT, "SMM Initialiazation failed...\n");
 
-	if (smm_initialize()) {
-		printk(BIOS_CRIT, "SMM Initialization failed...\n");
-		return;
+	if (mp_init(cpu_bus, &mp_params)) {
+		printk(BIOS_ERR, "MP initialization failure.\n");
 	}
-
-	/* After SMM relocation a 2nd microcode load is required. */
-	intel_microcode_load_unlocked(microcode_patch);
 
 	/* Restore the default SMM region. */
 	restore_default_smm_area(smm_save_area);

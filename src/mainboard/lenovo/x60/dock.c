@@ -237,7 +237,6 @@ int dock_connect(void)
 
 	dock_write_register(0x07, 0x03);
 	dock_write_register(0x30, 0x01);
-	console_init();
 	return 0;
 }
 

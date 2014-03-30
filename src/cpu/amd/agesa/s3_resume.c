@@ -103,7 +103,7 @@ void restore_mtrr(void)
 	wrmsr(SYS_CFG, msr_data);
 }
 
-inline void *backup_resume(void)
+void *backup_resume(void)
 {
 	void *resume_backup_memory;
 

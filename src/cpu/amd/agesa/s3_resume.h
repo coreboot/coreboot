@@ -41,7 +41,7 @@ typedef enum {
 
 void restore_mtrr(void);
 void s3_resume(void);
-inline void *backup_resume(void);
+void *backup_resume(void);
 void set_resume_cache(void);
 void move_stack_high_mem(void);
 

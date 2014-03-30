@@ -160,7 +160,7 @@ CAR_FAM10_out:
    #else
 	#error "bad MMCONF_BUS_NUMBER value"
    #endif
-	movl	$(0xc0010058), %ecx
+	movl	$MSR_MCFG_BASE, %ecx
 	wrmsr
 #endif
 

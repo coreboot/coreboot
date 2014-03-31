@@ -79,19 +79,45 @@ static u16 ipchcksum(const void *addr, unsigned size)
  * functions always maps 1MB at a time and can only map one area at once.
  */
 static void *mapped_virtual;
-static void *map_memory(u64 physical)
+static size_t mapped_size;
+
+static inline size_t size_to_mib(size_t sz)
+{
+	return sz >> 20;
+}
+
+static void unmap_memory(void)
+{
+	if (mapped_virtual == NULL) {
+		fprintf(stderr, "Error unmapping memory\n");
+		return;
+	}
+	debug("Unmapping %zuMB of virtual memory at %p.\n",
+	      size_to_mib(mapped_size), mapped_virtual);
+	munmap(mapped_virtual, mapped_size);
+	mapped_virtual = NULL;
+	mapped_size = 0;
+}
+
+static void *map_memory_size(u64 physical, size_t size)
 {
 	void *v;
 	off_t p;
 	u64 page = getpagesize();
-	int padding;
+	size_t padding;
+
+	if (mapped_virtual != NULL)
+		unmap_memory();
 
 	/* Mapped memory must be aligned to page size */
 	p = physical & ~(page - 1);
+	padding = physical & (page-1);
+	size += padding;
 
-	debug("Mapping 1MB of physical memory at 0x%jx.\n", (intmax_t)p);
+	debug("Mapping %zuMB of physical memory at 0x%jx.\n",
+	      size_to_mib(size), (intmax_t)p);
 
-	v = mmap(NULL, MAP_BYTES, PROT_READ, MAP_SHARED, fd, p);
+	v = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, p);
 
 	if (v == MAP_FAILED) {
 		fprintf(stderr, "Failed to mmap /dev/mem: %s\n",
@@ -101,26 +127,20 @@ static void *map_memory(u64 physical)
 
 	/* Remember what we actually mapped ... */
 	mapped_virtual = v;
+	mapped_size = size;
 
 	/* ... but return address to the physical memory that was requested */
-	padding = physical & (page-1);
 	if (padding)
-		debug("  ... padding virtual address with 0x%x bytes.\n",
+		debug("  ... padding virtual address with 0x%zx bytes.\n",
 			padding);
 	v += padding;
 
 	return v;
 }
 
-static void unmap_memory(void)
+static void *map_memory(u64 physical)
 {
-	if (mapped_virtual == NULL) {
-		fprintf(stderr, "Error unmapping memory\n");
-		return;
-	}
-	debug("Unmapping 1MB of virtual memory at %p.\n", mapped_virtual);
-	munmap(mapped_virtual, MAP_BYTES);
-	mapped_virtual = NULL;
+	return map_memory_size(physical, MAP_BYTES);
 }
 
 /*
@@ -464,6 +484,8 @@ static void dump_console(void)
 		exit(1);
 	}
 
+	console_p = map_memory_size((unsigned long)console.cbmem_addr,
+	                            size + sizeof(size) + sizeof(cursor));
 	memcpy(console_c, console_p + 8, size);
 	console_c[size] = 0;
 

@@ -32,4 +32,6 @@
 #define F71872_VID	0x07	/* VID */
 #define F71872_PM	0x0a	/* ACPI/PME */
 
-#endif
+void f71872_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_FINTEK_F71872_F71872_H */

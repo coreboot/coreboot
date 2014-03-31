@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
 #include <arch/io.h>
+#include <device/pnp.h>
 #include "f71889.h"
 
 static void pnp_enter_conf_state(device_t dev)
@@ -35,7 +35,7 @@ static void pnp_exit_conf_state(device_t dev)
 	outb(0xaa, port);
 }
 
-static void f71889_enable_serial(device_t dev, u16 iobase)
+void f71889_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

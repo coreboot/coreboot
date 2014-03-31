@@ -21,6 +21,7 @@
 /* Pre-RAM driver for the Fintek F71805F/FG Super I/O chip. */
 
 #include <arch/io.h>
+#include <device/pnp.h>
 #include "f71805f.h"
 
 static void pnp_enter_conf_state(device_t dev)
@@ -36,7 +37,7 @@ static void pnp_exit_conf_state(device_t dev)
 	outb(0xaa, port);
 }
 
-static void f71805f_enable_serial(device_t dev, u16 iobase)
+void f71805f_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

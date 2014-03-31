@@ -33,4 +33,6 @@
 #define	F71863FG_SPI	0x08	/* SPI */
 #define	F71863FG_PME	0x0a	/* Power Management Events (PME) and ACPI */
 
-#endif
+void f71863fg_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_FINTEK_F71863FG_F71863FG_H */

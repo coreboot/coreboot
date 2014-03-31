@@ -35,9 +35,28 @@
 	Name(OSV, Ones) /* Assume nothing */
 	Name(PMOD, One) /* Assume APIC */
 
+	/* Variables used by EC */
+	/* TODO: These may belong in global non-volatile storage */
+	Name(PWRS, Zero)
+	Name(LIDS, Zero)
+
 	/* AcpiGpe0Blk */
 	OperationRegion(GP0B, SystemMemory, 0xfed80814, 0x04)
 		Field(GP0B, ByteAcc, NoLock, Preserve) {
 		, 11,
 		USBS, 1,
+	}
+
+	/*
+	 * Used by EC code on certain events
+	 *
+	 * From ec/compal/ene932/acpi/ec.asl:
+	 * The mainboard must define a PNOT method to handle power state
+	 * notifications and Notify CPU device objects to re-evaluate their
+	 * _PPC and _CST tables.
+	 */
+	Method (PNOT)
+	{
+		Store("Received PNOT call (probably from EC)", Debug)
+		/* TODO: Implement this */
 	}

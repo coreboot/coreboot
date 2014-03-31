@@ -19,12 +19,6 @@
 
 Scope(\_GPE) {	/* Start Scope GPE */
 
-	/*  General event 3  */
-	Method(_L03) {
-		/* DBGO("\\_GPE\\_L00\n") */
-		Notify(\_SB.PCI0.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
-	}
-
 	/*  Legacy PM event  */
 	Method(_L08) {
 		/* DBGO("\\_GPE\\_L08\n") */

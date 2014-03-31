@@ -69,6 +69,10 @@ DefinitionBlock (
 
 	}   /* End Scope(_SB)  */
 
+	Scope(\_SB.PCI0.LIBR) {
+		#include "acpi/ec.asl"
+	}
+
 	/* Describe SMBUS for the Southbridge */
 	#include <southbridge/amd/agesa/hudson/acpi/smbus.asl>
 

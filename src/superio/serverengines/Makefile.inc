@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,15 +17,4 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-subdirs-y += fintek
-subdirs-y += intel
-subdirs-y += ite
-subdirs-y += nsc
-subdirs-y += nuvoton
-subdirs-y += renesas
-subdirs-y += serverengines
-subdirs-y += smsc
-subdirs-y += via
-subdirs-y += winbond
-
-ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += common/conf_mode.c
+subdirs-y += pilot

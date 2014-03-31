@@ -30,4 +30,13 @@
 #define PILOT_LD5 0x05 /* Logical device 5 */
 #define PILOT_LD7 0x07 /* Logical device 7 */
 
-#endif
+/* should not expose these however early_init needs love */
+void pnp_enter_ext_func_mode(device_t dev);
+void pnp_exit_ext_func_mode(device_t dev);
+
+void pilot_early_init(device_t dev);
+
+void pilot_enable_serial(device_t dev, u16 iobase);
+void pilot_disable_serial(device_t dev);
+
+#endif /* SUPERIO_SERVERENGINES_PILOT_PILOT_H */

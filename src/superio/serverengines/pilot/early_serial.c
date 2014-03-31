@@ -22,23 +22,24 @@
 /* PILOT Super I/O is only based on LPC observation done on factory system. */
 
 #include <arch/io.h>
+#include <device/pnp.h>
 #include "pilot.h"
 
 /* Pilot uses 0x5A/0xA5 pattern to actiavte deactivate config access. */
-static void pnp_enter_ext_func_mode(device_t dev)
+void pnp_enter_ext_func_mode(device_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x5A, port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+void pnp_exit_ext_func_mode(device_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xA5, port);
 }
 
 /* Serial config is a fairly standard procedure. */
-static void __attribute__((unused)) pilot_enable_serial(device_t dev, u16 iobase)
+void pilot_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);
@@ -47,7 +48,7 @@ static void __attribute__((unused)) pilot_enable_serial(device_t dev, u16 iobase
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void __attribute__((unused)) pilot_disable_serial(device_t dev)
+void pilot_disable_serial(device_t dev)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

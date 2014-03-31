@@ -23,11 +23,16 @@
 
 #define BLUBB_DEV PNP_DEV(port, 0x04)
 
+#include <arch/io.h>
+#include <console/console.h>
+#include <device/pnp.h>
+#include "pilot.h"
+
 /*
  * Logical device 4, 5 and 7 are being deactivated. Logical Device 1 seems to
  * be another serial (?), it is also deactivated on the HP machine.
  */
-static void pilot_early_init(device_t dev)
+void pilot_early_init(device_t dev)
 {
 	u16 port = dev >> 8;
 

@@ -1,0 +1,23 @@
+
+Accessing the EC space
+======================
+
+The ACPI implementation uses the standard I/O ports 0x62 and 0x66 to access the
+EC functionality. Accesses to these ports must be directed to the LPC bus to
+which the EC is connected.
+
+
+Interfacing with the ASL files
+==============================
+
+The mainboard code must define several variables for the ASL files.
+
+* EC_SCI
+  Defines the General Purpose Event (GPE) corresponding to the EC's SCI line.
+* EC_ACPI_LID_SWITCH_OBJECT
+  Defines the APCI object which reads the state of the lid, with 0 = open, and
+  1 = closed. This is usually the bit which reads the GPIO input corresponding
+  to the lid switch.
+* PNOT()
+  The mainboard must define a PNOT method to handle power state notifications
+  and Notify CPU device objects to re-evaluate their _PPC and _CST tables.

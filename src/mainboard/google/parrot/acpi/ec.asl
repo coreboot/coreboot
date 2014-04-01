@@ -21,5 +21,8 @@
 #include "../ec.h"
 #define EC_SCI 23      // GPIO7 << 16 to GPE bit for Runtime SCI
 
+/* GP15 is defined in the southbridge's ASL */
+#define EC_ACPI_LID_SWITCH_OBJECT	GP15
+
 /* ACPI code for EC functions */
 #include "../../../../ec/compal/ene932/acpi/ec.asl"

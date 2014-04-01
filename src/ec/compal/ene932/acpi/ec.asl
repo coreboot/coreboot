@@ -273,7 +273,7 @@ Device (EC0)
 		Store (ADPT, \PWRS)
 
 		// Initialize LID switch state
-		Store (GP15, \LIDS)
+		Store (EC_ACPI_LID_SWITCH_OBJECT, \LIDS)
 
 		// Force a read of CPU temperature
 		Store (CTML, Local0)

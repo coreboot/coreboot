@@ -624,6 +624,17 @@ config SEABIOS_PS2_TIMEOUT
 	  after powering on. This specifies how long SeaBIOS will wait for the
 	  keyboard controller to become ready before giving up.
 
+config SEABIOS_THREAD_OPTIONROMS
+	prompt "Hardware init during option ROM execution" if PAYLOAD_SEABIOS
+	default n
+	bool
+	help
+	  Allow hardware init to run in parallel with optionrom execution.
+
+	  This can reduce boot time, but can cause some timing
+	  variations during option ROM code execution. It is not
+	  known if all option ROMs will behave properly with this option.
+
 choice
 	prompt "GRUB2 version"
 	default GRUB2_MASTER

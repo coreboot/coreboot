@@ -21,12 +21,16 @@ config: checkout
 	echo "    CONFIG     SeaBIOS $(TAG-y)"
 	$(MAKE) -C $(OUT)/seabios defconfig OUT=$(OUT)/seabios/out/
 	echo "CONFIG_COREBOOT=y" >> $(OUT)/seabios/.config
+ifeq ($(CONFIG_SEABIOS_THREAD_OPTIONROMS),y)
+	echo "CONFIG_THREAD_OPTIONROMS=y" >> $(OUT)/seabios/.config
+endif
 	echo "CONFIG_DEBUG_SERIAL=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_DEBUG_SERIAL_PORT=0x3f8" >> $(OUT)/seabios/.config
 	echo "CONFIG_COREBOOT_FLASH=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_LZMA=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_FLASH_FLOPPY=y" >> $(OUT)/seabios/.config
 	echo "CONFIG_VGAHOOKS=y" >> $(OUT)/seabios/.config
+	echo "CONFIG_DEBUG_COREBOOT=y" >> $(OUT)/seabios/.config
 	# This shows how to force a previously set .config option *off*
 	#echo "# CONFIG_SMBIOS is not set" >> $(OUT)/seabios/.config
 

@@ -26,6 +26,7 @@
 #include <soc/nvidia/tegra124/sdram.h>
 #include "chip.h"
 #include <soc/display.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 /* this sucks, but for now, fb size/location are hardcoded.
  * Will break if we get 2. Sigh.
@@ -50,7 +51,10 @@ static void soc_enable(device_t dev)
 
 static void soc_init(device_t dev)
 {
-	display_startup(dev);
+	if (vboot_skip_display_init())
+		printk(BIOS_INFO, "Skipping display init.\n");
+	else
+		display_startup(dev);
 	printk(BIOS_INFO, "CPU: Tegra124\n");
 }
 

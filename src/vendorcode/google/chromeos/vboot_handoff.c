@@ -54,6 +54,18 @@ int vboot_enable_recovery(void)
 	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_RECOVERY);
 }
 
+int vboot_skip_display_init(void)
+{
+	struct vboot_handoff *vbho;
+
+	vbho = cbmem_find(CBMEM_ID_VBOOT_HANDOFF);
+
+	if (vbho == NULL)
+		return 0;
+
+	return !(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_DISPLAY);
+}
+
 void *vboot_get_region(uintptr_t offset_addr, size_t size, void *dest)
 {
       if (IS_ENABLED(CONFIG_SPI_FLASH_MEMORY_MAPPED)) {

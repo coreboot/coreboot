@@ -47,6 +47,7 @@ void *vboot_get_region(uintptr_t offset_addr, size_t size, void *dest);
 int vboot_get_handoff_info(void **addr, uint32_t *size);
 int vboot_enable_developer(void);
 int vboot_enable_recovery(void);
+int vboot_skip_display_init(void);
 #else
 static inline void vboot_verify_firmware(struct romstage_handoff *h) {}
 static inline void *vboot_get_payload(int *len) { return NULL; }
@@ -54,6 +55,7 @@ static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
 {
 	return -1;
 }
+static inline int vboot_skip_display_init(void) { return 0; }
 #endif
 
 #include "gnvs.h"

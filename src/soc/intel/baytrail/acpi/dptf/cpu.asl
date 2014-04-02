@@ -2,7 +2,6 @@ External (\_PR.CPU0._TSS, MethodObj)
 External (\_PR.CPU0._TPC, MethodObj)
 External (\_PR.CPU0._PTC, PkgObj)
 External (\_PR.CPU0._TSD, PkgObj)
-External (\_PR.CPU0._PPC, MethodObj)
 External (\_PR.CPU0._PSS, MethodObj)
 
 Device (TCPU)
@@ -86,11 +85,7 @@ Device (TCPU)
 
 	Method (_PPC)
 	{
-		If (CondRefOf (\_PR.CPU0._PPC)) {
-			Return (\_PR.CPU0._PPC)
-		} Else {
-			Return (0)
-		}
+		Return (0)
 	}
 
 	Method (SPPC, 1)

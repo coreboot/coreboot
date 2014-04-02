@@ -20,4 +20,3 @@
 
 romstage-$(CONFIG_SUPERIO_NUVOTON_NCT5104D) += early_init.c
 ramstage-$(CONFIG_SUPERIO_NUVOTON_NCT5104D) += superio.c
-

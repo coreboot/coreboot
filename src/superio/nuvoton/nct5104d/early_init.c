@@ -19,8 +19,7 @@
  */
 
 #include <arch/io.h>
-#include <arch/romcc_io.h>
-#include <device/pnp_def.h>
+#include <device/pnp.h>
 #include "nct5104d.h"
 
 static void pnp_enter_extended_mode(device_t dev)
@@ -36,7 +35,7 @@ static void pnp_exit_extended_mode(device_t dev)
 	outb(0xaa,port);
 }
 
-static void nct5104d_enable_serial(device_t dev, u16 iobase)
+void nct5104d_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_extended_mode(dev);
 	pnp_set_logical_device(dev);

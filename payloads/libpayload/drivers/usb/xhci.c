@@ -461,8 +461,7 @@ xhci_stop (hci_t *controller)
 }
 
 static int
-xhci_reset_endpoint(usbdev_t *const dev, endpoint_t *const ep,
-		    const int clear_halt)
+xhci_reset_endpoint(usbdev_t *const dev, endpoint_t *const ep)
 {
 	xhci_t *const xhci = XHCI_INST(dev->controller);
 	const int slot_id = dev->address;
@@ -486,10 +485,6 @@ xhci_reset_endpoint(usbdev_t *const dev, endpoint_t *const ep,
 	if (hub && dev->speed < HIGH_SPEED &&
 			dev->controller->devices[hub]->speed == HIGH_SPEED)
 		/* TODO */;
-
-	/* Try clearing the device' halt condition on non-control endpoints */
-	if (clear_halt && ep)
-		clear_stall(ep);
 
 	/* Reset transfer ring if the endpoint is in the right state */
 	const unsigned ep_state = EC_GET(STATE, epctx);
@@ -602,7 +597,7 @@ xhci_control(usbdev_t *const dev, const direction_t dir,
 	/* Reset endpoint if it's not running */
 	const unsigned ep_state = EC_GET(STATE, epctx);
 	if (ep_state > 1) {
-		if (xhci_reset_endpoint(dev, NULL, 0))
+		if (xhci_reset_endpoint(dev, NULL))
 			return -1;
 	}
 
@@ -713,7 +708,7 @@ xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
 	/* Reset endpoint if it's not running */
 	const unsigned ep_state = EC_GET(STATE, epctx);
 	if (ep_state > 1) {
-		if (xhci_reset_endpoint(ep->dev, ep, 0))
+		if (xhci_reset_endpoint(ep->dev, ep))
 			return -1;
 	}
 
@@ -730,8 +725,6 @@ xhci_bulk(endpoint_t *const ep, const int size, u8 *const src,
 			xhci_debug("Stopping ID %d EP %d\n",
 				   ep->dev->address, ep_id);
 			xhci_cmd_stop_endpoint(xhci, ep->dev->address, ep_id);
-		} else if (ret == -CC_STALL_ERROR) {
-			xhci_reset_endpoint(ep->dev, ep, 1);
 		}
 		xhci_debug("Bulk transfer failed: %d\n"
 			   "  ep state: %d -> %d\n"

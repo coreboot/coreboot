@@ -222,16 +222,17 @@ void display_startup(device_t dev)
 	struct pwm_controller 	*pwm = (void *)TEGRA_PWM_BASE;
 	struct tegra_dc		*dc = &dc_data;
 
-	/* should probably just make it all MiB ... in future */
-	u32 framebuffer_size_mb = config->framebuffer_size / MiB;
-	u32 framebuffer_base_mb= config->framebuffer_base / MiB;
-
 	/* init dc */
 	dc->base = (void *)TEGRA_ARM_DISPLAYA;
 	dc->config = config;
 	config->dc_data = dc;
 
+	/* Note dp_init may read EDID and change some config values. */
 	dp_init(config);
+
+	/* should probably just make it all MiB ... in future */
+	u32 framebuffer_size_mb = config->framebuffer_size / MiB;
+	u32 framebuffer_base_mb= config->framebuffer_base / MiB;
 
 	/* light it all up */
 	/* This one may have been done in romstage but that's ok for now. */

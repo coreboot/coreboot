@@ -19,6 +19,7 @@
 #include <console/console.h>
 #include <device/device.h>
 #include <device/i2c.h>
+#include <edid.h>
 #include <stdlib.h>
 #include <string.h>
 #include <delay.h>
@@ -323,11 +324,8 @@ static int tegra_dc_dp_dpcd_write(struct tegra_dc_dp_data *dp, u32 cmd,
 	return ret;
 }
 
-/* TODO(hungte) Change this to static when EDID parsing functions are ready. */
-int tegra_dc_i2c_aux_read(struct tegra_dc_dp_data *dp, u32 i2c_addr,
-			  u8 addr, u8 *data, u32 *size, u32 *aux_stat);
-int tegra_dc_i2c_aux_read(struct tegra_dc_dp_data *dp, u32 i2c_addr,
-			  u8 addr, u8 *data, u32 *size, u32 *aux_stat)
+static int tegra_dc_i2c_aux_read(struct tegra_dc_dp_data *dp, u32 i2c_addr,
+				 u8 addr, u8 *data, u32 *size, u32 *aux_stat)
 {
 	u32 finished = 0;
 	int ret = 0;
@@ -620,6 +618,53 @@ static int tegra_dc_dp_init_link_cfg(
 	return 0;
 }
 
+static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
+				   struct soc_nvidia_tegra124_config *config)
+{
+	struct edid edid;
+	u8 buf[128] = {0};
+	u32 size = sizeof(buf), aux_stat = 0;
+
+	tegra_dc_dpaux_enable(dp);
+	if (tegra_dc_i2c_aux_read(dp, TEGRA_EDID_I2C_ADDRESS, 0, buf, &size,
+				  &aux_stat)) {
+		printk(BIOS_ERR, "%s: Failed to read EDID. Use defaults.\n",
+		       __func__);
+		return;
+	}
+
+	if (decode_edid(buf, sizeof(buf), &edid)) {
+		printk(BIOS_ERR, "%s: Failed to decode EDID. Use defaults.\n",
+		       __func__);
+		return;
+	}
+
+	config->xres = edid.ha;
+	config->yres = edid.va;
+	config->pixel_clock = edid.pixel_clock * 1000;
+
+	config->hfront_porch = edid.hso;
+	config->hsync_width = edid.hspw;
+	config->hback_porch = edid.hbl - edid.hso - edid.hspw;
+
+	config->vfront_porch = edid.vso;
+	config->vsync_width = edid.vspw;
+	config->vback_porch = edid.vbl - edid.vso - edid.vspw;
+
+	/**
+	 * Note edid->framebuffer_bits_per_pixel is currently hard-coded as 32,
+	 * so we should keep the default value in device config.
+	 *
+	 * EDID v1.3 panels may not have color depth info, so we need to check
+	 * if these values are zero before updating config.
+	 */
+	if (edid.panel_bits_per_pixel)
+		config->panel_bits_per_pixel = edid.panel_bits_per_pixel;
+	if (edid.panel_bits_per_color)
+		config->color_depth = edid.panel_bits_per_color;
+	printk(BIOS_SPEW, "%s: configuration updated by EDID.\n", __func__);
+}
+
 void dp_init(void * _config)
 {
 	struct soc_nvidia_tegra124_config *config = (void *)_config;
@@ -639,6 +684,8 @@ void dp_init(void * _config)
 	dp->aux_base = (void *)TEGRA_ARM_DPAUX;
 	dp->link_cfg.is_valid = 0;
 	dp->enabled = 0;
+
+	tegra_dp_update_config(dp, config);
 }
 
 static void tegra_dp_hpd_config(struct tegra_dc_dp_data *dp,

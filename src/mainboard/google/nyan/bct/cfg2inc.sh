@@ -23,7 +23,7 @@ bct_cfg2inc() {
 	echo "{ /* generated from ${in_file}; do not edit. */" >"${out_file}"
 	# Note currently we can only handle DDR3 type memory, even in C
 	# implementation.
-	sed "/^#.*$/d; s/^SDRAM.0./  /; s/;$/,/;" \
+	sed "/^#.*$/d; s/^SDRAM.0./  /; s/\r$//; s/;$/,/;" \
 		"${in_file}" >> "${out_file}"
 	echo "}," >>"${out_file}"
 }

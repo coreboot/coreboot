@@ -1261,8 +1261,14 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 	printk(BIOS_SPEW, "Checksum\n");
 	do_checksum(edid);
-	for(i = 0; i < size; i += 128)
-		nonconformant_extension = parse_extension(out, &edid[i]);
+
+	/* EDID v2.0 has a larger blob (256 bytes) and may have some problem in
+	 * the extension parsing loop below.  Since v2.0 was quickly deprecated
+	 * by v1.3 and we are unlikely to use any EDID 2.0 panels, we ignore
+	 * that case now and can fix it when we need to use a real 2.0 panel.
+	 */
+	for(i = 128; i < size; i += 128)
+		nonconformant_extension += parse_extension(out, &edid[i]);
 	/*
 	 * x = edid;
 	 * for (edid_lines /= 8; edid_lines > 1; edid_lines--) {

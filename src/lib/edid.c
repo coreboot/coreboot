@@ -1008,29 +1008,29 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	       (unsigned short)(edid[0x0A] + (edid[0x0B] << 8)),
 	       (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
 			      + (edid[0x0E] << 16) + (edid[0x0F] << 24)));
-		/* XXX need manufacturer ID table */
+	/* XXX need manufacturer ID table */
 
-		if (edid[0x10] < 55 || edid[0x10] == 0xff) {
-			has_valid_week = 1;
-			if (edid[0x11] > 0x0f) {
-				if (edid[0x10] == 0xff) {
+	if (edid[0x10] < 55 || edid[0x10] == 0xff) {
+		has_valid_week = 1;
+		if (edid[0x11] > 0x0f) {
+			if (edid[0x10] == 0xff) {
+				has_valid_year = 1;
+				printk(BIOS_SPEW, "Made week %hhu of model year %hhu\n", edid[0x10],
+				       edid[0x11]);
+				out->week = edid[0x10];
+				out->year = edid[0x11];
+			} else {
+				/* we know it's at least 2013, when this code was written */
+				if (edid[0x11] + 90 <= 2013) {
 					has_valid_year = 1;
-					printk(BIOS_SPEW, "Made week %hhu of model year %hhu\n", edid[0x10],
-					       edid[0x11]);
+					printk(BIOS_SPEW, "Made week %hhu of %d\n",
+					       edid[0x10], edid[0x11] + 1990);
 					out->week = edid[0x10];
-					out->year = edid[0x11];
-				} else {
-					/* we know it's at least 2013, when this code was written */
-					if (edid[0x11] + 90 <= 2013) {
-						has_valid_year = 1;
-						printk(BIOS_SPEW, "Made week %hhu of %d\n",
-						       edid[0x10], edid[0x11] + 1990);
-						out->week = edid[0x10];
-						out->year = edid[0x11] + 1990;
-					}
+					out->year = edid[0x11] + 1990;
 				}
 			}
 		}
+	}
 
 
 	printk(BIOS_SPEW, "EDID version: %hhu.%hhu\n", edid[0x12], edid[0x13]);
@@ -1081,7 +1081,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			case 0x04: printk(BIOS_SPEW, "MDDI interface\n"); break;
 			case 0x05: printk(BIOS_SPEW, "DisplayPort interface\n"); break;
 			default:
-				nonconformant_digital_display = 1;
+				   nonconformant_digital_display = 1;
 			}
 			out->type = edid[0x14] & 0x0f;
 		} else 	if (claims_one_point_two) {
@@ -1129,242 +1129,242 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	}
 
 
-		if (edid[0x15] && edid[0x16]) {
-			printk(BIOS_SPEW, "Maximum image size: %d cm x %d cm\n",
-			       edid[0x15], edid[0x16]);
-			out->xsize_cm = edid[0x15];
-			out->ysize_cm = edid[0x16];
-		} else if (claims_one_point_four && (edid[0x15] || edid[0x16])) {
-			if (edid[0x15]) {
-				printk(BIOS_SPEW, "Aspect ratio is %f (landscape)\n",
-				       100.0/(edid[0x16] + 99));
-				/* truncated to integer %. We try to avoid floating point */
-				out->aspect_landscape = 10000 /(edid[0x16] + 99);
-			} else {
-				printk(BIOS_SPEW, "Aspect ratio is %f (portrait)\n",
-				       100.0/(edid[0x15] + 99));
-				out->aspect_portrait = 10000 /(edid[0x16] + 99);
-			}
+	if (edid[0x15] && edid[0x16]) {
+		printk(BIOS_SPEW, "Maximum image size: %d cm x %d cm\n",
+		       edid[0x15], edid[0x16]);
+		out->xsize_cm = edid[0x15];
+		out->ysize_cm = edid[0x16];
+	} else if (claims_one_point_four && (edid[0x15] || edid[0x16])) {
+		if (edid[0x15]) {
+			printk(BIOS_SPEW, "Aspect ratio is %f (landscape)\n",
+			       100.0/(edid[0x16] + 99));
+			/* truncated to integer %. We try to avoid floating point */
+			out->aspect_landscape = 10000 /(edid[0x16] + 99);
 		} else {
-			/* Either or both can be zero for 1.3 and before */
-			printk(BIOS_SPEW, "Image size is variable\n");
+			printk(BIOS_SPEW, "Aspect ratio is %f (portrait)\n",
+			       100.0/(edid[0x15] + 99));
+			out->aspect_portrait = 10000 /(edid[0x16] + 99);
 		}
+	} else {
+		/* Either or both can be zero for 1.3 and before */
+		printk(BIOS_SPEW, "Image size is variable\n");
+	}
 
-		if (edid[0x17] == 0xff) {
-			if (claims_one_point_four)
-				printk(BIOS_SPEW, "Gamma is defined in an extension block\n");
-			else
-				/* XXX Technically 1.3 doesn't say this... */
-				printk(BIOS_SPEW, "Gamma: 1.0\n");
-		} else printk(BIOS_SPEW, "Gamma: %d%%\n", ((edid[0x17] + 100)));
-		printk(BIOS_SPEW, "Check DPMS levels\n");
-		if (edid[0x18] & 0xE0) {
-			printk(BIOS_SPEW, "DPMS levels:");
-			if (edid[0x18] & 0x80) printk(BIOS_SPEW, " Standby");
-			if (edid[0x18] & 0x40) printk(BIOS_SPEW, " Suspend");
-			if (edid[0x18] & 0x20) printk(BIOS_SPEW, " Off");
-			printk(BIOS_SPEW, "\n");
-		}
+	if (edid[0x17] == 0xff) {
+		if (claims_one_point_four)
+			printk(BIOS_SPEW, "Gamma is defined in an extension block\n");
+		else
+			/* XXX Technically 1.3 doesn't say this... */
+			printk(BIOS_SPEW, "Gamma: 1.0\n");
+	} else printk(BIOS_SPEW, "Gamma: %d%%\n", ((edid[0x17] + 100)));
+	printk(BIOS_SPEW, "Check DPMS levels\n");
+	if (edid[0x18] & 0xE0) {
+		printk(BIOS_SPEW, "DPMS levels:");
+		if (edid[0x18] & 0x80) printk(BIOS_SPEW, " Standby");
+		if (edid[0x18] & 0x40) printk(BIOS_SPEW, " Suspend");
+		if (edid[0x18] & 0x20) printk(BIOS_SPEW, " Off");
+		printk(BIOS_SPEW, "\n");
+	}
 
-/* FIXME: this is from 1.4 spec, check earlier */
-		if (analog) {
-			switch (edid[0x18] & 0x18) {
+	/* FIXME: this is from 1.4 spec, check earlier */
+	if (analog) {
+		switch (edid[0x18] & 0x18) {
 			case 0x00: printk(BIOS_SPEW, "Monochrome or grayscale display\n"); break;
 			case 0x08: printk(BIOS_SPEW, "RGB color display\n"); break;
 			case 0x10: printk(BIOS_SPEW, "Non-RGB color display\n"); break;
 			case 0x18: printk(BIOS_SPEW, "Undefined display color type\n");
-			}
-		} else {
-			printk(BIOS_SPEW, "Supported color formats: RGB 4:4:4");
-			if (edid[0x18] & 0x10)
-				printk(BIOS_SPEW, ", YCrCb 4:4:4");
-			if (edid[0x18] & 0x08)
-				printk(BIOS_SPEW, ", YCrCb 4:2:2");
-			printk(BIOS_SPEW, "\n");
 		}
-
-		if (edid[0x18] & 0x04)
-			printk(BIOS_SPEW, "Default (sRGB) color space is primary color space\n");
-		if (edid[0x18] & 0x02) {
-			printk(BIOS_SPEW, "First detailed timing is preferred timing\n");
-			has_preferred_timing = 1;
-		}
-		if (edid[0x18] & 0x01)
-			printk(BIOS_SPEW, "Supports GTF timings within operating range\n");
-
-		/* XXX color section */
-
-		printk(BIOS_SPEW, "Established timings supported:\n");
-		/* it's not yet clear we want all this stuff in the edid struct.
-		 * Let's wait.
-		 */
-		for (i = 0; i < 17; i++) {
-			if (edid[0x23 + i / 8] & (1 << (7 - i % 8))) {
-				printk(BIOS_SPEW, "  %dx%d@%dHz\n", established_timings[i].x,
-				       established_timings[i].y, established_timings[i].refresh);
-			}
-		}
-
-		printk(BIOS_SPEW, "Standard timings supported:\n");
-		for (i = 0; i < 8; i++) {
-			uint8_t b1 = edid[0x26 + i * 2], b2 = edid[0x26 + i * 2 + 1];
-			unsigned int x, y = 0, refresh;
-
-			if (b1 == 0x01 && b2 == 0x01)
-				continue;
-
-			if (b1 == 0) {
-				printk(BIOS_SPEW, "non-conformant standard timing (0 horiz)\n");
-				continue;
-			}
-			x = (b1 + 31) * 8;
-			switch ((b2 >> 6) & 0x3) {
-			case 0x00:
-				if (claims_one_point_three)
-					y = x * 10 / 16;
-				else
-					y = x;
-				break;
-			case 0x01:
-				y = x * 3 / 4;
-				break;
-			case 0x02:
-				y = x * 4 / 5;
-				break;
-			case 0x03:
-				y = x * 9 / 16;
-				break;
-			}
-			refresh = 60 + (b2 & 0x3f);
-
-			printk(BIOS_SPEW, "  %dx%d@%dHz\n", x, y, refresh);
-		}
-
-		/* detailed timings */
-		printk(BIOS_SPEW, "Detailed timings\n");
-		has_valid_detailed_blocks = detailed_block(out, edid + 0x36, 0);
-		if (has_preferred_timing && !did_detailed_timing)
-			has_preferred_timing = 0; /* not really accurate... */
-		has_valid_detailed_blocks &= detailed_block(out, edid + 0x48, 0);
-		has_valid_detailed_blocks &= detailed_block(out, edid + 0x5A, 0);
-		has_valid_detailed_blocks &= detailed_block(out, edid + 0x6C, 0);
-
-		/* check this, 1.4 verification guide says otherwise */
-		if (edid[0x7e]) {
-			printk(BIOS_SPEW, "Has %d extension blocks\n", edid[0x7e]);
-			/* 2 is impossible because of the block map */
-			if (edid[0x7e] != 2)
-				has_valid_extension_count = 1;
-		} else {
-			has_valid_extension_count = 1;
-		}
-
-		printk(BIOS_SPEW, "Checksum\n");
-		do_checksum(edid);
-		for(i = 0; i < size; i += 128)
-			nonconformant_extension = parse_extension(out, &edid[i]);
-/*
-		x = edid;
-		for (edid_lines /= 8; edid_lines > 1; edid_lines--) {
-			x += 128;
-			nonconformant_extension += parse_extension(x);
-		}
-*/
-
-		if (claims_one_point_three) {
-			if (nonconformant_digital_display ||
-			    !has_valid_string_termination ||
-			    !has_valid_descriptor_pad ||
-			    !has_name_descriptor ||
-			    !name_descriptor_terminated ||
-			    !has_preferred_timing ||
-			    !has_range_descriptor)
-				conformant = 0;
-			if (!conformant)
-				printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.3!\n");
-			if (nonconformant_digital_display)
-				printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
-				       nonconformant_digital_display);
-			if (!has_name_descriptor)
-				printk(BIOS_ERR, "\tMissing name descriptor\n");
-			else if (!name_descriptor_terminated)
-				printk(BIOS_ERR, "\tName descriptor not terminated with a newline\n");
-			if (!has_preferred_timing)
-				printk(BIOS_ERR, "\tMissing preferred timing\n");
-			if (!has_range_descriptor)
-				printk(BIOS_ERR, "\tMissing monitor ranges\n");
-			if (!has_valid_descriptor_pad) /* Might be more than just 1.3 */
-				printk(BIOS_ERR, "\tInvalid descriptor block padding\n");
-			if (!has_valid_string_termination) /* Likewise */
-				printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
-		} else if (claims_one_point_two) {
-			if (nonconformant_digital_display ||
-			    (has_name_descriptor && !name_descriptor_terminated))
-				conformant = 0;
-			if (!conformant)
-				printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.2!\n");
-			if (nonconformant_digital_display)
-				printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
-				       nonconformant_digital_display);
-			if (has_name_descriptor && !name_descriptor_terminated)
-				printk(BIOS_ERR, "\tName descriptor not terminated with a newline\n");
-		} else if (claims_one_point_oh) {
-			if (seen_non_detailed_descriptor)
-				conformant = 0;
-			if (!conformant)
-				printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.0!\n");
-			if (seen_non_detailed_descriptor)
-				printk(BIOS_ERR, "\tHas descriptor blocks other than detailed timings\n");
-		}
-
-		if (nonconformant_extension ||
-		    !has_valid_checksum ||
-		    !has_valid_cvt ||
-		    !has_valid_year ||
-		    !has_valid_week ||
-		    !has_valid_detailed_blocks ||
-		    !has_valid_dummy_block ||
-		    !has_valid_extension_count ||
-		    !has_valid_descriptor_ordering ||
-		    !has_valid_range_descriptor ||
-		    !manufacturer_name_well_formed) {
-			conformant = 0;
-			printk(BIOS_ERR, "EDID block does not conform at all!\n");
-			if (nonconformant_extension)
-				printk(BIOS_ERR, "\tHas %d nonconformant extension block(s)\n",
-				       nonconformant_extension);
-			if (!has_valid_checksum)
-				printk(BIOS_ERR, "\tBlock has broken checksum\n");
-			if (!has_valid_cvt)
-				printk(BIOS_ERR, "\tBroken 3-byte CVT blocks\n");
-			if (!has_valid_year)
-				printk(BIOS_ERR, "\tBad year of manufacture\n");
-			if (!has_valid_week)
-				printk(BIOS_ERR, "\tBad week of manufacture\n");
-			if (!has_valid_detailed_blocks)
-				printk(BIOS_ERR, "\tDetailed blocks filled with garbage\n");
-			if (!has_valid_dummy_block)
-				printk(BIOS_ERR, "\tDummy block filled with garbage\n");
-			if (!has_valid_extension_count)
-				printk(BIOS_ERR, "\tImpossible extension block count\n");
-			if (!manufacturer_name_well_formed)
-				printk(BIOS_ERR, "\tManufacturer name field contains garbage\n");
-			if (!has_valid_descriptor_ordering)
-				printk(BIOS_ERR, "\tInvalid detailed timing descriptor ordering\n");
-			if (!has_valid_range_descriptor)
-				printk(BIOS_ERR, "\tRange descriptor contains garbage\n");
-			if (!has_valid_max_dotclock)
-				printk(BIOS_ERR, "\tEDID 1.4 block does not set max dotclock\n");
-		}
-
-		if (warning_excessive_dotclock_correction)
-			printk(BIOS_ERR,
-			       "Warning: CVT block corrects dotclock by more than 9.75MHz\n");
-		if (warning_zero_preferred_refresh)
-			printk(BIOS_ERR,
-			       "Warning: CVT block does not set preferred refresh rate\n");
-		return !conformant;
+	} else {
+		printk(BIOS_SPEW, "Supported color formats: RGB 4:4:4");
+		if (edid[0x18] & 0x10)
+			printk(BIOS_SPEW, ", YCrCb 4:4:4");
+		if (edid[0x18] & 0x08)
+			printk(BIOS_SPEW, ", YCrCb 4:2:2");
+		printk(BIOS_SPEW, "\n");
 	}
+
+	if (edid[0x18] & 0x04)
+		printk(BIOS_SPEW, "Default (sRGB) color space is primary color space\n");
+	if (edid[0x18] & 0x02) {
+		printk(BIOS_SPEW, "First detailed timing is preferred timing\n");
+		has_preferred_timing = 1;
+	}
+	if (edid[0x18] & 0x01)
+		printk(BIOS_SPEW, "Supports GTF timings within operating range\n");
+
+	/* XXX color section */
+
+	printk(BIOS_SPEW, "Established timings supported:\n");
+	/* it's not yet clear we want all this stuff in the edid struct.
+	 * Let's wait.
+	 */
+	for (i = 0; i < 17; i++) {
+		if (edid[0x23 + i / 8] & (1 << (7 - i % 8))) {
+			printk(BIOS_SPEW, "  %dx%d@%dHz\n", established_timings[i].x,
+			       established_timings[i].y, established_timings[i].refresh);
+		}
+	}
+
+	printk(BIOS_SPEW, "Standard timings supported:\n");
+	for (i = 0; i < 8; i++) {
+		uint8_t b1 = edid[0x26 + i * 2], b2 = edid[0x26 + i * 2 + 1];
+		unsigned int x, y = 0, refresh;
+
+		if (b1 == 0x01 && b2 == 0x01)
+			continue;
+
+		if (b1 == 0) {
+			printk(BIOS_SPEW, "non-conformant standard timing (0 horiz)\n");
+			continue;
+		}
+		x = (b1 + 31) * 8;
+		switch ((b2 >> 6) & 0x3) {
+		case 0x00:
+			if (claims_one_point_three)
+				y = x * 10 / 16;
+			else
+				y = x;
+			break;
+		case 0x01:
+			y = x * 3 / 4;
+			break;
+		case 0x02:
+			y = x * 4 / 5;
+			break;
+		case 0x03:
+			y = x * 9 / 16;
+			break;
+		}
+		refresh = 60 + (b2 & 0x3f);
+
+		printk(BIOS_SPEW, "  %dx%d@%dHz\n", x, y, refresh);
+	}
+
+	/* detailed timings */
+	printk(BIOS_SPEW, "Detailed timings\n");
+	has_valid_detailed_blocks = detailed_block(out, edid + 0x36, 0);
+	if (has_preferred_timing && !did_detailed_timing)
+		has_preferred_timing = 0; /* not really accurate... */
+	has_valid_detailed_blocks &= detailed_block(out, edid + 0x48, 0);
+	has_valid_detailed_blocks &= detailed_block(out, edid + 0x5A, 0);
+	has_valid_detailed_blocks &= detailed_block(out, edid + 0x6C, 0);
+
+	/* check this, 1.4 verification guide says otherwise */
+	if (edid[0x7e]) {
+		printk(BIOS_SPEW, "Has %d extension blocks\n", edid[0x7e]);
+		/* 2 is impossible because of the block map */
+		if (edid[0x7e] != 2)
+			has_valid_extension_count = 1;
+	} else {
+		has_valid_extension_count = 1;
+	}
+
+	printk(BIOS_SPEW, "Checksum\n");
+	do_checksum(edid);
+	for(i = 0; i < size; i += 128)
+		nonconformant_extension = parse_extension(out, &edid[i]);
+	/*
+	 * x = edid;
+	 * for (edid_lines /= 8; edid_lines > 1; edid_lines--) {
+	 *	x += 128;
+	 *	nonconformant_extension += parse_extension(x);
+	 * }
+	 */
+
+	if (claims_one_point_three) {
+		if (nonconformant_digital_display ||
+		    !has_valid_string_termination ||
+		    !has_valid_descriptor_pad ||
+		    !has_name_descriptor ||
+		    !name_descriptor_terminated ||
+		    !has_preferred_timing ||
+		    !has_range_descriptor)
+			conformant = 0;
+		if (!conformant)
+			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.3!\n");
+		if (nonconformant_digital_display)
+			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
+			       nonconformant_digital_display);
+		if (!has_name_descriptor)
+			printk(BIOS_ERR, "\tMissing name descriptor\n");
+		else if (!name_descriptor_terminated)
+			printk(BIOS_ERR, "\tName descriptor not terminated with a newline\n");
+		if (!has_preferred_timing)
+			printk(BIOS_ERR, "\tMissing preferred timing\n");
+		if (!has_range_descriptor)
+			printk(BIOS_ERR, "\tMissing monitor ranges\n");
+		if (!has_valid_descriptor_pad) /* Might be more than just 1.3 */
+			printk(BIOS_ERR, "\tInvalid descriptor block padding\n");
+		if (!has_valid_string_termination) /* Likewise */
+			printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
+	} else if (claims_one_point_two) {
+		if (nonconformant_digital_display ||
+		    (has_name_descriptor && !name_descriptor_terminated))
+			conformant = 0;
+		if (!conformant)
+			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.2!\n");
+		if (nonconformant_digital_display)
+			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
+			       nonconformant_digital_display);
+		if (has_name_descriptor && !name_descriptor_terminated)
+			printk(BIOS_ERR, "\tName descriptor not terminated with a newline\n");
+	} else if (claims_one_point_oh) {
+		if (seen_non_detailed_descriptor)
+			conformant = 0;
+		if (!conformant)
+			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.0!\n");
+		if (seen_non_detailed_descriptor)
+			printk(BIOS_ERR, "\tHas descriptor blocks other than detailed timings\n");
+	}
+
+	if (nonconformant_extension ||
+	    !has_valid_checksum ||
+	    !has_valid_cvt ||
+	    !has_valid_year ||
+	    !has_valid_week ||
+	    !has_valid_detailed_blocks ||
+	    !has_valid_dummy_block ||
+	    !has_valid_extension_count ||
+	    !has_valid_descriptor_ordering ||
+	    !has_valid_range_descriptor ||
+	    !manufacturer_name_well_formed) {
+		conformant = 0;
+		printk(BIOS_ERR, "EDID block does not conform at all!\n");
+		if (nonconformant_extension)
+			printk(BIOS_ERR, "\tHas %d nonconformant extension block(s)\n",
+			       nonconformant_extension);
+		if (!has_valid_checksum)
+			printk(BIOS_ERR, "\tBlock has broken checksum\n");
+		if (!has_valid_cvt)
+			printk(BIOS_ERR, "\tBroken 3-byte CVT blocks\n");
+		if (!has_valid_year)
+			printk(BIOS_ERR, "\tBad year of manufacture\n");
+		if (!has_valid_week)
+			printk(BIOS_ERR, "\tBad week of manufacture\n");
+		if (!has_valid_detailed_blocks)
+			printk(BIOS_ERR, "\tDetailed blocks filled with garbage\n");
+		if (!has_valid_dummy_block)
+			printk(BIOS_ERR, "\tDummy block filled with garbage\n");
+		if (!has_valid_extension_count)
+			printk(BIOS_ERR, "\tImpossible extension block count\n");
+		if (!manufacturer_name_well_formed)
+			printk(BIOS_ERR, "\tManufacturer name field contains garbage\n");
+		if (!has_valid_descriptor_ordering)
+			printk(BIOS_ERR, "\tInvalid detailed timing descriptor ordering\n");
+		if (!has_valid_range_descriptor)
+			printk(BIOS_ERR, "\tRange descriptor contains garbage\n");
+		if (!has_valid_max_dotclock)
+			printk(BIOS_ERR, "\tEDID 1.4 block does not set max dotclock\n");
+	}
+
+	if (warning_excessive_dotclock_correction)
+		printk(BIOS_ERR,
+		       "Warning: CVT block corrects dotclock by more than 9.75MHz\n");
+	if (warning_zero_preferred_refresh)
+		printk(BIOS_ERR,
+		       "Warning: CVT block does not set preferred refresh rate\n");
+	return !conformant;
+}
 
 /*
  * Notes on panel extensions: (TODO, implement me in the code)

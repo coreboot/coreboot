@@ -47,7 +47,6 @@ static int nonconformant_digital_display = 0;
 static int nonconformant_extension = 0;
 static int did_detailed_timing = 0;
 static int has_name_descriptor = 0;
-static int name_descriptor_terminated = 0;
 static int has_range_descriptor = 0;
 static int has_preferred_timing = 0;
 static int has_valid_checksum = 0;
@@ -146,18 +145,9 @@ detailed_cvt_descriptor(struct edid *out, unsigned char *x, int first)
 	return valid;
 }
 
-static int isalnum(char x)
-{
-	if (x >= 'a' && x <= 'z')
-		return 1;
-	if (x >= 'A' && x <= 'Z')
-		return 1;
-	if (x >= '0' && x <= '9')
-		return 1;
-	return 0;
-
-}
-/* extract a string from a detailed subblock, checking for termination */
+/* extract a CP437 string from a detailed subblock, checking for termination (if
+ * less than len of bytes) with LF and padded with SP.
+ */
 static char *
 extract_string(unsigned char *x, int *valid_termination, int len)
 {
@@ -167,20 +157,16 @@ extract_string(unsigned char *x, int *valid_termination, int len)
 	memset(ret, 0, sizeof(ret));
 
 	for (i = 0; i < len; i++) {
-		if (isalnum(x[i])) {
-			ret[i] = x[i];
-		} else if (!seen_newline) {
-			if (x[i] == 0x0a) {
-				seen_newline = 1;
-			} else {
-				*valid_termination = 0;
-				return ret;
-			}
-		} else {
+		if (seen_newline) {
 			if (x[i] != 0x20) {
 				*valid_termination = 0;
 				return ret;
 			}
+		} else if (x[i] == 0x0a) {
+			seen_newline = 1;
+		} else {
+			/* normal characters */
+			ret[i] = x[i];
 		}
 	}
 
@@ -191,7 +177,6 @@ extract_string(unsigned char *x, int *valid_termination, int len)
 static int
 detailed_block(struct edid *out, unsigned char *x, int in_extension)
 {
-	static unsigned char name[53];
 	int i;
 #if 1
 	printk(BIOS_SPEW, "Hex of detail: ");
@@ -262,21 +247,10 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			printk(BIOS_SPEW, "Color point\n");
 			return 0;
 		case 0xFC:
-			/* XXX should check for spaces after the \n */
-			/* XXX check: terminated with 0x0A, padded with 0x20 */
-			has_name_descriptor = 1;
-			if (strchr((char *)name, '\n')) return 0;
-			/* avoid strncat
-			strncat((char *)name, (char *)x + 5, 13);
-			*/
-			if (strchr((char *)name, '\n') || strchr((char *)x+5, '\n')) {
-				name_descriptor_terminated = 1;
-				/* later.
-				printk(BIOS_SPEW, "Monitor name: %s\n",
-				       extract_string(name, &has_valid_string_termination,
-						      strlen((char *)name)));
-				*/
-			}
+			printk(BIOS_SPEW, "Monitor name: %s\n",
+			       extract_string(x + 5,
+					      &has_valid_string_termination,
+					      13));
 			return 0;
 		case 0xFD:
 		{
@@ -1282,7 +1256,6 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		    !has_valid_string_termination ||
 		    !has_valid_descriptor_pad ||
 		    !has_name_descriptor ||
-		    !name_descriptor_terminated ||
 		    !has_preferred_timing ||
 		    !has_range_descriptor)
 			conformant = 0;
@@ -1293,8 +1266,6 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			       nonconformant_digital_display);
 		if (!has_name_descriptor)
 			printk(BIOS_ERR, "\tMissing name descriptor\n");
-		else if (!name_descriptor_terminated)
-			printk(BIOS_ERR, "\tName descriptor not terminated with a newline\n");
 		if (!has_preferred_timing)
 			printk(BIOS_ERR, "\tMissing preferred timing\n");
 		if (!has_range_descriptor)
@@ -1305,15 +1276,15 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
 	} else if (claims_one_point_two) {
 		if (nonconformant_digital_display ||
-		    (has_name_descriptor && !name_descriptor_terminated))
+		    !has_valid_string_termination)
 			conformant = 0;
 		if (!conformant)
 			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.2!\n");
 		if (nonconformant_digital_display)
 			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
 			       nonconformant_digital_display);
-		if (has_name_descriptor && !name_descriptor_terminated)
-			printk(BIOS_ERR, "\tName descriptor not terminated with a newline\n");
+		if (!has_valid_string_termination)
+			printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
 	} else if (claims_one_point_oh) {
 		if (seen_non_detailed_descriptor)
 			conformant = 0;

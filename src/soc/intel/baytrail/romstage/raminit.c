@@ -146,13 +146,20 @@ void raminit(struct mrc_params *mp, int prev_sleep_state)
 #endif
 	}
 
-	mrc_entry = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab,
-					  NULL);
-
-	if (mrc_entry == NULL) {
+	/* Determine if mrc.bin is in the cbfs. */
+	if (cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "mrc.bin", 0xab, NULL) ==
+	    NULL) {
 		printk(BIOS_DEBUG, "Couldn't find mrc.bin\n");
 		return;
 	}
+
+	/*
+	 * The entry point is currently the first instruction. Handle the
+	 * case of an ELF file being put in the cbfs by setting the entry
+	 * to the CONFIG_MRC_BIN_ADDRESS.
+	 */
+	mrc_entry = (void *)(uintptr_t)CONFIG_MRC_BIN_ADDRESS;
+
 	if (mp->mainboard.dram_info_location == DRAM_INFO_SPD_SMBUS)
 		enable_smbus();
 

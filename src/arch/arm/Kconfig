@@ -20,6 +20,10 @@ config ARM_BOOTBLOCK_CUSTOM
 	bool
 	default n
 
+config CBMEM_CONSOLE_PRERAM_BASE
+	hex
+	depends on CONSOLE_CBMEM
+
 config CPU_HAS_BOOTBLOCK_INIT
 	bool
 	default n

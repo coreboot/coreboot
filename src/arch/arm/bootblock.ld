@@ -49,6 +49,8 @@ SECTIONS
 		*(.sbss.*);
 	} : to_load = 0xff
 
+	preram_cbmem_console = CONFIG_CBMEM_CONSOLE_PRERAM_BASE;
+
 	/DISCARD/ : {
 		*(.comment)
 		*(.note)

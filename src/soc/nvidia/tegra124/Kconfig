@@ -30,8 +30,9 @@ config BOOTBLOCK_CPU_INIT
 #  so the bootblock loading address must be placed after that. After the
 #  handoff that area may be reclaimed for other uses, e.g. CBFS cache.)
 #
-# 0x4000_0000 TTB (16KB).
-# 0x4000_4000 CBFS mapping cache (96KB).
+# 0x4000_0000 TTB (16K+32B). 32B is for L1 table of LPAE.
+# 0x4000_4020 CBMEM console area (8K-32B)
+# 0x4000_6000 CBFS mapping cache (88K)
 # 0x4001_C000 Stack (16KB... don't reduce without comparing LZMA scratchpad!).
 # 0x4002_0000 Bootblock (max 48KB).
 # 0x4002_C000 ROM stage (max 80KB).
@@ -85,11 +86,15 @@ config TTB_BUFFER
 
 config CBFS_CACHE_ADDRESS
 	hex "memory address to put CBFS cache data"
-	default 0x40004000
+	default 0x40006000
 
 config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
-	default 0x00018000
+	default 0x00016000
+
+config CBMEM_CONSOLE_PRERAM_BASE
+	hex "memory address of the CBMEM console buffer"
+	default 0x40004020
 
 config TEGRA124_MODEL_TD570D
 	bool "TD570D"

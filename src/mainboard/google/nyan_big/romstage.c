@@ -25,6 +25,7 @@
 #include <device/device.h>
 #include <cbfs.h>
 #include <cbmem.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <romstage_handoff.h>
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -215,6 +216,9 @@ static void __attribute__((noinline)) romstage(void)
 				      "fallback/coreboot_ram");
 	timestamp_add(TS_END_COPYRAM, timestamp_get());
 
+#if CONFIG_CONSOLE_CBMEM
+	cbmemc_reinit();
+#endif
 	stage_exit(entry);
 }
 

@@ -26,10 +26,8 @@ asm(".previous");
 asm(".section .car.cbmem_console,\"w\",@nobits");
 asm(".previous");
 #define CAR_GLOBAL __attribute__((section(".car.global_data")))
-#define CAR_CBMEM __attribute__((section(".car.cbmem_console")))
 #else
 #define CAR_GLOBAL
-#define CAR_CBMEM
 #endif
 
 #if defined(__PRE_RAM__)

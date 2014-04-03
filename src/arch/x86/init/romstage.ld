@@ -55,15 +55,15 @@ SECTIONS
 	.car.data . (NOLOAD) : {
 		_car_data_start = .;
 		*(.car.global_data);
-		/* The cbmem_console section comes last to take advantage of
-		 * a zero-sized array to hold the memconsole contents that
-		 * grows to a bound of CONFIG_CONSOLE_CAR_BUFFER_SIZE. However,
-		 * collisions within the cache-as-ram region cannot be
+		_car_data_end = .;
+		/* The preram cbmem console area comes last to take advantage
+		 * of a zero-sized array to hold the memconsole contents that
+		 * grows to a bound of CONFIG_CONSOLE_PRERAM_BUFFER_SIZE.
+		 * However, collisions within the cache-as-ram region cannot be
 		 * statically checked because the cache-as-ram region usage is
 		 * cpu/chipset dependent. */
-		*(.car.cbmem_console);
-		_car_data_end = .;
+		preram_cbmem_console = .;
 	}
 
-	_bogus = ASSERT((SIZEOF(.car.data) <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
+	_bogus = ASSERT((SIZEOF(.car.data) + CONFIG_CONSOLE_PRERAM_BUFFER_SIZE <= CONFIG_DCACHE_RAM_SIZE), "Cache as RAM area is too full");
 }

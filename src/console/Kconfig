@@ -184,15 +184,15 @@ config CONSOLE_CBMEM_BUFFER_SIZE
 	  value (128K or 0x20000 bytes) is large enough to accommodate
 	  even the BIOS_SPEW level.
 
-config CONSOLE_CAR_BUFFER_SIZE
+config CONSOLE_PRERAM_BUFFER_SIZE
 	depends on CONSOLE_CBMEM
-	hex "Room allocated for console output in Cache as RAM"
+	hex "Room allocated for console output before RAM is initialized"
 	default 0xc00
 	help
 	  Console is used before RAM is initialized. This is the room reserved
-	  in the DCACHE based RAM to keep console output before it can be
-	  saved in a CBMEM buffer. 3K bytes should be enough even for the
-	  BIOS_SPEW level.
+	  in the DCACHE based RAM, SRAM, etc. to keep console output before it
+	  can be saved in a CBMEM buffer. 3K bytes should be enough even for
+	  the BIOS_SPEW level.
 
 config CONSOLE_QEMU_DEBUGCON
 	bool "QEMU debug console output"

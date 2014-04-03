@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
 #include <arch/io.h>
+#include <device/pnp.h>
 #include "w83627ehg.h"
 
 void w83627ehg_disable_dev(device_t dev)

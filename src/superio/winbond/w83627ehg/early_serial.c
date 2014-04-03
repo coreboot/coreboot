@@ -20,16 +20,17 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp.h>
 #include "w83627ehg.h"
 
-static void pnp_enter_ext_func_mode(device_t dev)
+void pnp_enter_ext_func_mode(device_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x87, port);
 	outb(0x87, port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+void pnp_exit_ext_func_mode(device_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xaa, port);

@@ -60,4 +60,7 @@ void w83627ehg_disable_dev(device_t dev);
 void w83627ehg_enable_serial(device_t dev, u16 iobase);
 #endif
 
-#endif
+void pnp_enter_ext_func_mode(device_t dev);
+void pnp_exit_ext_func_mode(device_t dev);
+
+#endif /* SUPERIO_WINBOND_W83627EHG_W83627EHG_H */

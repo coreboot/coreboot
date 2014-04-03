@@ -32,7 +32,7 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <southbridge/amd/cs5536/early_smbus.c>
 #include <southbridge/amd/cs5536/early_setup.c>
-#include <superio/winbond/w83627ehg/early_serial.c>
+#include <superio/winbond/w83627ehg/w83627ehg.h>
 #include <northbridge/amd/lx/raminit.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627EHG_SP1)

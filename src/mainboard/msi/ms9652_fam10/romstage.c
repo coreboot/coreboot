@@ -39,7 +39,7 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include "superio/winbond/w83627ehg/early_serial.c"
+#include <superio/winbond/w83627ehg/w83627ehg.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdfam10/debug.c"
 #include "northbridge/amd/amdfam10/setup_resource_map.c"

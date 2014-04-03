@@ -1251,7 +1251,24 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	 * }
 	 */
 
-	if (claims_one_point_three) {
+	if (claims_one_point_four) {
+		if (nonconformant_digital_display ||
+		    !has_valid_string_termination ||
+		    !has_valid_descriptor_pad ||
+		    !has_preferred_timing)
+			conformant = 0;
+		if (!conformant)
+			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.4!\n");
+		if (nonconformant_digital_display)
+			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
+			       nonconformant_digital_display);
+		if (!has_valid_string_termination)
+			printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
+		if (!has_valid_descriptor_pad)
+			printk(BIOS_ERR, "\tInvalid descriptor block padding\n");
+		if (!has_preferred_timing)
+			printk(BIOS_ERR, "\tMissing preferred timing\n");
+	} else if (claims_one_point_three) {
 		if (nonconformant_digital_display ||
 		    !has_valid_string_termination ||
 		    !has_valid_descriptor_pad ||

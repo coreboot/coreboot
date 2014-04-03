@@ -34,7 +34,7 @@
 #include "southbridge/intel/i82801dx/i82801dx.h"
 #include "northbridge/intel/i855/raminit.h"
 #include "northbridge/intel/i855/debug.c"
-#include "superio/winbond/w83627thg/early_serial.c"
+#include <superio/winbond/w83627thg/w83627thg.h>
 #include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)

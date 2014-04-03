@@ -30,4 +30,4 @@ struct superio_winbond_w83627thg_config {
 	struct pc_keyboard keyboard;
 };
 
-#endif
+#endif /* SUPERIO_WINBOND_W83627THG_CHIP_H */

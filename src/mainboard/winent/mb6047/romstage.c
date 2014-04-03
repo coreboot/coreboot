@@ -16,7 +16,7 @@
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/winbond/w83627thg/early_serial.c"
+#include <superio/winbond/w83627thg/w83627thg.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 

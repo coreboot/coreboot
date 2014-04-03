@@ -34,6 +34,10 @@
 #define W83627THG_ACPI            10
 #define W83627THG_HWM             11   /* Hardware monitor */
 
-void w83627thg_set_clksel_48(device_t dev);
+void pnp_enter_ext_func_mode(device_t dev);
+void pnp_exit_ext_func_mode(device_t dev);
 
-#endif
+void w83627thg_set_clksel_48(device_t dev);
+void w83627thg_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_WINBOND_W83627THG_W83627THG_H */

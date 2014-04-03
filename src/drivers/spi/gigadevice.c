@@ -106,7 +106,15 @@ static const struct gigadevice_spi_flash_params gigadevice_spi_flash_table[] = {
 		.pages_per_sector	= 16,
 		.sectors_per_block	= 16,
 		.nr_blocks		= 128,
-		.name			= "GD25Q64(B)",
+		.name			= "GD25Q64B/GD25B64C",
+	},
+	{
+		.id			= 0x6017,
+		.l2_page_size		= 8,
+		.pages_per_sector	= 16,
+		.sectors_per_block	= 16,
+		.nr_blocks		= 128,
+		.name			= "GD25LQ64C/GD25LB64C",
 	},
 	{
 		.id			= 0x4018,

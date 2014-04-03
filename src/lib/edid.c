@@ -1272,12 +1272,22 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		if (nonconformant_digital_display ||
 		    !has_valid_string_termination ||
 		    !has_valid_descriptor_pad ||
-		    !has_name_descriptor ||
-		    !has_preferred_timing ||
-		    !has_range_descriptor)
+		    !has_preferred_timing) {
 			conformant = 0;
+		}
+		/**
+		 * According to E-EDID (EDIDv1.3), has_name_descriptor and
+		 * has_range_descriptor are both required. These fields are
+		 * optional in v1.4. However some v1.3 panels (Ex, B133XTN01.3)
+		 * don't have them. As a workaround, we only print warning
+		 * messages.
+		 */
 		if (!conformant)
 			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.3!\n");
+		else if (!has_name_descriptor || !has_range_descriptor)
+			printk(BIOS_WARNING, "WARNING: EDID block does NOT "
+			       "fully conform to EDID 1.3.\n");
+
 		if (nonconformant_digital_display)
 			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
 			       nonconformant_digital_display);

@@ -168,7 +168,6 @@ config CONSOLE_NE2K_IO_PORT
 	  boundary, qemu needs broader align)
 
 config CONSOLE_CBMEM
-	depends on ARCH_X86
 	bool "Send console output to a CBMEM buffer"
 	default n
 	help

@@ -208,7 +208,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			 * 0x0e is used by EPI: http://www.epi-standard.org/
 			 */
 			printk(BIOS_SPEW, "Manufacturer-specified data, tag %d\n", x[3]);
-			return 0;
+			return 1;
 		}
 		switch (x[3]) {
 		case 0x10:
@@ -216,11 +216,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			for (i = 5; i < 18; i++)
 				if (x[i] != 0x00)
 					has_valid_dummy_block = 0;
-			return 0;
+			return 1;
 		case 0xF7:
 			/* TODO */
 			printk(BIOS_SPEW, "Established timings III\n");
-			return 0;
+			return 1;
 		case 0xF8:
 		{
 			int valid_cvt = 1; /* just this block */
@@ -232,26 +232,26 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			for (i = 0; i < 4; i++)
 				valid_cvt &= detailed_cvt_descriptor(out, x + 6 + (i * 3), (i == 0));
 			has_valid_cvt &= valid_cvt;
-			return 0;
+			return 1;
 		}
 		case 0xF9:
 			/* TODO */
 			printk(BIOS_SPEW, "Color management data\n");
-			return 0;
+			return 1;
 		case 0xFA:
 			/* TODO */
 			printk(BIOS_SPEW, "More standard timings\n");
-			return 0;
+			return 1;
 		case 0xFB:
 			/* TODO */
 			printk(BIOS_SPEW, "Color point\n");
-			return 0;
+			return 1;
 		case 0xFC:
 			printk(BIOS_SPEW, "Monitor name: %s\n",
 			       extract_string(x + 5,
 					      &has_valid_string_termination,
 					      13));
-			return 0;
+			return 1;
 		case 0xFD:
 		{
 			int h_max_offset = 0, h_min_offset = 0;
@@ -396,7 +396,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			 * Slightly weird to return a global, but I've never seen any
 			 * EDID block wth two range descriptors, so it's harmless.
 			 */
-			return 0;
+			return 1;
 		}
 		case 0xFE:
 			/*
@@ -405,11 +405,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			 */
 			printk(BIOS_SPEW, "ASCII string: %s\n",
 			       extract_string(x + 5, &has_valid_string_termination, 13));
-			return 0;
+			return 1;
 		case 0xFF:
 			printk(BIOS_SPEW, "Serial number: %s\n",
 			       extract_string(x + 5, &has_valid_string_termination, 13));
-			return 0;
+			return 1;
 		default:
 			printk(BIOS_SPEW, "Unknown monitor description type %d\n", x[3]);
 			return 0;

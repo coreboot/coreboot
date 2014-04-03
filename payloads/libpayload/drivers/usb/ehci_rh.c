@@ -98,8 +98,8 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 		 */
 		RH_INST(dev)->ports[port] = (RH_INST(dev)->ports[port] & ~P_PORT_ENABLE) | P_PORT_RESET;
 
-		/* Wait a bit while reset is active. */
-		mdelay(50); // usb20 spec 7.1.7.5 (TDRSTR)
+		/* Wait a bit while reset is active (+1 to avoid Tegra race). */
+		mdelay(50 + 1); // usb20 spec 7.1.7.5 (TDRSTR)
 
 		/* Deassert reset. */
 		RH_INST(dev)->ports[port] &= ~P_PORT_RESET;
@@ -112,6 +112,8 @@ ehci_rh_scanport (usbdev_t *dev, int port)
 			usb_debug("Error: ehci_rh: port reset timed out.\n");
 			return;
 		}
+
+		mdelay(10); /* TRSTRCY (USB 2.0 spec 7.1.7.5) */
 
 		/* If the host controller enabled the port, it's a high-speed
 		 * device, otherwise it's full-speed.

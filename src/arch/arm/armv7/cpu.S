@@ -60,7 +60,7 @@
 
 	add	r2, r3, r3, lsr #1	@ r2 = (level << 1) * 3 / 2
 	mov	r1, r0, lsr r2		@ r1 = cache type
-	bfc	r1, #3, #28
+	and	r1, r1, #7
 	cmp	r1, #2			@ is it data or i&d?
 	blt	1b @next_level		@ nope, skip level
 

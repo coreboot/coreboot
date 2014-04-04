@@ -24,7 +24,7 @@ chip soc/intel/baytrail
 	register "usb2_per_port_rcomp_hs_pullup3" = "0x0300401d"
 
 	# LPE audio codec settings
-	register "lpe_codec_clk_freq" = "19" # 19.2MHz clock
+	register "lpe_codec_clk_freq" = "25" # 25MHz clock
 	register "lpe_codec_clk_num" = "0"   # PMC_PLT_CLK[0]
 
 	# SD Card controller

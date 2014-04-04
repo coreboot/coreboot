@@ -22,6 +22,12 @@ void console_hw_init(void);
 void console_tx_byte(unsigned char byte);
 void console_tx_flush(void);
 
+/* For remote GDB debugging. */
+void gdb_hw_init(void);
+void gdb_tx_byte(unsigned char byte);
+void gdb_tx_flush(void);
+unsigned char gdb_rx_byte(void);
+
 /* Helpers for ROMCC console. */
 void console_tx_nibble(unsigned nibble);
 void console_tx_hex8(unsigned char value);

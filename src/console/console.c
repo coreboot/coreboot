@@ -17,6 +17,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <rules.h>
 #include <console/streams.h>
 #include <console/cbmem_console.h>
 #include <console/uart.h>
@@ -53,3 +54,26 @@ void console_tx_flush(void)
 	__ne2k_tx_flush();
 	__usb_tx_flush();
 }
+
+
+#if CONFIG_GDB_STUB && (ENV_ROMSTAGE || ENV_RAMSTAGE)
+void gdb_hw_init(void)
+{
+	__gdb_hw_init();
+}
+
+void gdb_tx_byte(unsigned char byte)
+{
+	__gdb_tx_byte(byte);
+}
+
+void gdb_tx_flush(void)
+{
+	__gdb_tx_flush();
+}
+
+unsigned char gdb_rx_byte(void)
+{
+	return __gdb_rx_byte();
+}
+#endif

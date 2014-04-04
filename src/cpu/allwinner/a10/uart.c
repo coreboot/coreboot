@@ -13,12 +13,11 @@
 /**
  * \brief Configure line control settings for UART
  */
-void a10_uart_configure(void *uart_base, u32 baud_rate, u8 data_bits,
+static void a10_uart_configure(struct a10_uart *uart, u32 baud_rate, u8 data_bits,
 			enum uart_parity parity, u8 stop_bits)
 {
 	u32 reg32;
 	u16 div;
-	struct a10_uart *uart = uart_base;
 
 	div = (u16) uart_baudrate_divisor(baud_rate,
 		uart_platform_refclk(), 16);
@@ -44,10 +43,8 @@ void a10_uart_configure(void *uart_base, u32 baud_rate, u8 data_bits,
 	write32(reg32, &uart->lcr);
 }
 
-void a10_uart_enable_fifos(void *uart_base)
+static void a10_uart_enable_fifos(struct a10_uart *uart)
 {
-	struct a10_uart *uart = uart_base;
-
 	write32(UART_FCR_FIFO_EN, &uart->fcr);
 }
 
@@ -70,10 +67,8 @@ static int rx_fifo_empty(struct a10_uart *uart)
  *
  * Blocks until at least a byte is available.
  */
-u8 a10_uart_rx_blocking(void *uart_base)
+static u8 a10_uart_rx_blocking(struct a10_uart *uart)
 {
-	struct a10_uart *uart = uart_base;
-
 	while (rx_fifo_empty(uart)) ;
 
 	return read32(&uart->rbr);
@@ -84,11 +79,34 @@ u8 a10_uart_rx_blocking(void *uart_base)
  *
  * Blocks until there is space in the FIFO.
  */
-void a10_uart_tx_blocking(void *uart_base, u8 data)
+static void a10_uart_tx_blocking(struct a10_uart *uart, u8 data)
 {
-	struct a10_uart *uart = uart_base;
-
 	while (tx_fifo_full(uart)) ;
 
 	return write32(data, &uart->thr);
+}
+
+
+void uart_init(int idx)
+{
+	struct a10_uart *uart_base = uart_platform_baseptr(idx);
+
+	/* Use default 8N1 encoding */
+	a10_uart_configure(uart_base, default_baudrate(),
+		8, UART_PARITY_NONE, 1);
+	a10_uart_enable_fifos(uart_base);
+}
+
+unsigned char uart_rx_byte(int idx)
+{
+	return a10_uart_rx_blocking(uart_platform_baseptr(idx));
+}
+
+void uart_tx_byte(int idx, unsigned char data)
+{
+	a10_uart_tx_blocking(uart_platform_baseptr(idx), data);
+}
+
+void uart_tx_flush(int idx)
+{
 }

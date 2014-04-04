@@ -6,13 +6,11 @@
  * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
-#include <config.h>
 #include <types.h>
 #include <console/uart.h>
-#include <arch/io.h>
 #include <boot/coreboot_tables.h>
 
-#include <cpu/allwinner/a10/uart.h>
+#include "memmap.h"
 
 unsigned int uart_platform_base(int idx)
 {
@@ -27,30 +25,6 @@ unsigned int uart_platform_base(int idx)
 unsigned int uart_platform_refclk(void)
 {
 	return 24000000;
-}
-
-void uart_init(int idx)
-{
-	void *uart_base = uart_platform_baseptr(idx);
-
-	/* Use default 8N1 encoding */
-	a10_uart_configure(uart_base, default_baudrate(),
-		8, UART_PARITY_NONE, 1);
-	a10_uart_enable_fifos(uart_base);
-}
-
-unsigned char uart_rx_byte(int idx)
-{
-	return a10_uart_rx_blocking(uart_platform_baseptr(idx));
-}
-
-void uart_tx_byte(int idx, unsigned char data)
-{
-	a10_uart_tx_blocking(uart_platform_baseptr(idx), data);
-}
-
-void uart_tx_flush(int idx)
-{
 }
 
 #ifndef __PRE_RAM__

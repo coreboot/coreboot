@@ -13,7 +13,6 @@
 #ifndef CPU_ALLWINNER_A10_UART_H
 #define CPU_ALLWINNER_A10_UART_H
 
-#include "memmap.h"
 #include <types.h>
 
 struct a10_uart {
@@ -67,11 +66,5 @@ enum uart_parity {
 	UART_PARITY_EVEN,
 	UART_PARITY_ODD,
 };
-
-void a10_uart_configure(void *uart_base, u32 baud_rate, u8 data_bits,
-			enum uart_parity parity, u8 stop_bits);
-void a10_uart_enable_fifos(void *uart_base);
-u8 a10_uart_rx_blocking(void *uart_base);
-void a10_uart_tx_blocking(void *uart_base, u8 data);
 
 #endif				/* CPU_ALLWINNER_A10_UART_H */

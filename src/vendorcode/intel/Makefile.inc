@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright (C) 2013 Sage Electronic Engineering, LLC.
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,8 +17,11 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-ifneq ($(CONFIG_FSP_VENDORCODE_HEADER_PATH),) 
+ifneq ($(CONFIG_FSP_VENDORCODE_HEADER_PATH),)
 FSP_PATH := $(call strip_quotes,$(CONFIG_FSP_VENDORCODE_HEADER_PATH))
-ramstage-y += $(FSP_PATH)srx/fsphob.c
+FSP_SRC_FILES := $(wildcard src/vendorcode/intel/$(FSP_PATH)srx/*.c)
+FSP_C_INPUTS := $(foreach file, $(FSP_SRC_FILES), $(FSP_PATH)srx/$(notdir $(file)))
+ramstage-y += $(FSP_C_INPUTS)
+
 CC := $(CC) -Isrc/vendorcode/intel/$(FSP_PATH)include
 endif

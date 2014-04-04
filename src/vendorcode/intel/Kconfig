@@ -20,3 +20,4 @@
 config FSP_VENDORCODE_HEADER_PATH
 	string
 	default "fsp/ivybridge_bd82x6x/" if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_BD82X6X
+	default "fsp/ivybridge_i89xx/" if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_I89XX

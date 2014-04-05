@@ -796,6 +796,12 @@ DefinitionBlock (
 	Scope(\_SB) { /* Start \_SB scope */
 		#include <arch/x86/acpi/globutil.asl> /* global utility methods expected within the \_SB scope */
 
+		/* Primary (and only) IDE channel */
+		Device(IDEC) {
+			Name(_ADR, 0x00140001)
+			#include "acpi/ide.asl"
+		} /* end IDEC */
+
 		/*  _SB.PCI0 */
 		/* Note: Only need HID on Primary Bus */
 		Device(PCI0) {

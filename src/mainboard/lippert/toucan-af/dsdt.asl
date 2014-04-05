@@ -1354,12 +1354,6 @@ DefinitionBlock (
 				Name(_ADR, 0x00140000)
 			} /* end SBUS */
 
-			/* Primary (and only) IDE channel */
-			Device(IDEC) {
-				Name(_ADR, 0x00140001)
-				#include "acpi/ide.asl"
-			} /* end IDEC */
-
 			Device(AZHD) {
 				Name(_ADR, 0x00140002)
 				OperationRegion(AZPD, PCI_Config, 0x00, 0x100)

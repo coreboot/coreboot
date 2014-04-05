@@ -47,6 +47,12 @@ DefinitionBlock (
 			/* Describe the AMD Fusion Controller Hub Southbridge */
 			#include <southbridge/amd/cimx/sb800/acpi/fch.asl>
 
+			/* Primary (and only) IDE channel */
+			Device(IDEC) {
+				Name(_ADR, 0x00140001)
+				#include "acpi/ide.asl"
+			} /* end IDEC */
+
 		}
 	}   /* End Scope(_SB)  */
 

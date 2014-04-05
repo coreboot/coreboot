@@ -33,6 +33,8 @@
  * @e \$Revision: 23714 $   @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
+#include "mainboard.h"
+
 #include <vendorcode/amd/agesa/f15tn/AGESA.h>
 
 /*  Include the files that instantiate the configuration definitions.  */
@@ -370,6 +372,15 @@ GPIO_CONTROL pavilion_m6_1035dx_gpio[] = {
 	{-1}
 };
 #define BLDCFG_FCH_GPIO_CONTROL_LIST           (&pavilion_m6_1035dx_gpio[0])
+
+
+#define GEVENT_PIN(gpe)		((gpe) + 0x40)
+
+SCI_MAP_CONTROL m6_1035dx_sci_map[] = {
+	{GEVENT_PIN( EC_SCI_GEVENT ), EC_SCI_GPE},
+	{GEVENT_PIN( EC_LID_GEVENT ), EC_LID_GPE},	/* EC_SMI - GPE23 */
+};
+#define BLDCFG_FCH_SCI_MAP_LIST			(&m6_1035dx_sci_map[0])
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product

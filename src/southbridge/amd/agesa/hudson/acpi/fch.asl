@@ -67,11 +67,6 @@ Device(SDCN) {
 } /* end SDCN */
 
 #if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
-/* 0:14.1 - Primary (and only) IDE channel */
-Device(IDEC) {
-	Name(_ADR, 0x00140001)
-	#include "acpi/ide.asl"
-} /* end IDEC */
 
 /* 0:14.4 - PCI slot 1, 2, 3 */
 Device(PIBR) {

@@ -32,18 +32,14 @@ chip northbridge/amd/agesa/family15tn/root_complex
 				device pci 0.0 on  end # Root Complex
 				device pci 1.0 on  end # Internal Graphics P2P bridge 0x99XX
 				device pci 1.1 on  end # Internal Multimedia
-				device pci 2.0 on  end # PCIE SLOT0 x16
 				device pci 3.0 off end
 				device pci 4.0 on  end # PCIE MINI0
 				device pci 5.0 on  end # PCIE MINI1
-				device pci 6.0 on  end # PCIE Slot1 x1
-				device pci 7.0 on  end # LAN
 				device pci 8.0 off end # NB/SB Link P2P bridge
 			end	#chip northbridge/amd/agesa/family15tn # PCI side of HT root complex
 
 			chip southbridge/amd/agesa/hudson # it is under NB/SB Link, but on the same pci bus
 				device pci 10.0 on  end # XHCI HC0
-				device pci 10.1 on  end # XHCI HC1
 				device pci 11.0 on  end # SATA
 				device pci 12.0 on  end # USB
 				device pci 12.2 on  end # USB
@@ -57,7 +53,6 @@ chip northbridge/amd/agesa/family15tn/root_complex
 						device i2c 51 on end # 7-bit SPD address
 					end
 				end # SM
-				device pci 14.1 on  end # IDE	0x439c
 				device pci 14.2 on  end # HDA	0x4383
 				device pci 14.3 on  end # LPC	0x439d
 				device pci 14.4 on  end # PCI	0x4384 # PCI-b conflict with GPIO.

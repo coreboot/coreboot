@@ -298,12 +298,12 @@ static void graphics_pll(void)
  * Will later move it to PLLP in clock_config(). The divisor must be very small
  * to accomodate 12KHz OSCs, so we override the 16.0 UART divider with the 15.1
  * CLK_SOURCE divider to get more precision. (This might still not be enough for
- * some OSCs... if you use 13KHz, be prepared to have a bad time.) The 1800 has
+ * some OSCs... if you use 13KHz, be prepared to have a bad time.) The 1900 has
  * been determined through trial and error (must lead to div 13 at 24MHz). */
 void clock_early_uart(void)
 {
 	write32(CLK_M << CLK_SOURCE_SHIFT | CLK_UART_DIV_OVERRIDE |
-		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1800), &clk_rst->clk_src_uarta);
+		CLK_DIVIDER(TEGRA_CLK_M_KHZ, 1900), &clk_rst->clk_src_uarta);
 	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_UARTA);
 	udelay(2);
 	clrbits_le32(&clk_rst->rst_dev_l, CLK_L_UARTA);

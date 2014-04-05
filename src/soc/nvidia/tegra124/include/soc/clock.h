@@ -19,6 +19,7 @@
 #define __SOC_NVIDIA_TEGRA124_CLOCK_H__
 
 #include <stdint.h>
+#include <stdlib.h>
 
 enum {
 	CLK_L_CPU = 0x1 << 0,
@@ -174,6 +175,7 @@ enum {
 #define CLOCK_PLL_STABLE_DELAY_US 300
 
 #define IO_STABILIZATION_DELAY (2)
+
 /* Calculate clock fractional divider value from ref and target frequencies.
  * This is for a U7.1 format. This is not well written up in the book and
  * there have been some questions about this macro, so here we go.
@@ -195,7 +197,7 @@ enum {
  * and voila, upper 7 bits are (ref/freq-1), and lowest bit is h. Since you
  * will assign this to a u8, it gets nicely truncated for you.
  */
-#define CLK_DIVIDER(REF, FREQ)	((((REF) * 2) / (FREQ)) - 2)
+#define CLK_DIVIDER(REF, FREQ)	(div_round_up(((REF) * 2), (FREQ)) - 2)
 
 /* Calculate clock frequency value from reference and clock divider value
  * The discussion in the book is pretty lacking.
@@ -232,11 +234,14 @@ enum {
  * We can deal with those here and make it easier to select what the actual
  * bus frequency will be. The 0x19 value is the default divisor in the
  * clk_divisor register in the controller, and 8 is just a magic number in the
- * documentation. Multiplying by 2 compensates for the different format of the
- * divisor.
+ * documentation.
  */
 #define clock_configure_i2c_scl_freq(device, src, freq) \
-	clock_configure_source(device, src, (freq) * (0x19 + 1) * 8 * 2)
+	clrsetbits_le32(&clk_rst->clk_src_##device, \
+		CLK_SOURCE_MASK | CLK_DIVISOR_MASK, \
+		src << CLK_SOURCE_SHIFT | \
+		(div_round_up((TEGRA_##src##_KHZ), \
+			      ((freq) * (0x19 + 1) * 8)) - 1))
 
 enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 	PLLP = 0,

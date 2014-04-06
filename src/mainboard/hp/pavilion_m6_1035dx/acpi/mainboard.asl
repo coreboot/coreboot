@@ -47,6 +47,17 @@
 		USBS, 1,
 	}
 
+	/* GPIO control block -- hardcoded to 0xfed80100 by AGESA */
+	OperationRegion (GPIO, SystemMemory, 0xfed80100, 0x100)
+	Field (GPIO, ByteAcc, NoLock, Preserve) {
+		Offset (0x39),
+		, 6,
+		GP57, 1,	/* out: WLAN control (rf-kill) */
+		Offset (0x76),
+		, 7,
+		GE22, 1,	/* General event 22 - connected to lid switch */
+	}
+
 	/*
 	 * Used by EC code on certain events
 	 *

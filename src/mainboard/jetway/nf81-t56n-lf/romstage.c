@@ -51,6 +51,20 @@
 /* Ensure Super I/O config address (i.e., 0x2e or 0x4e) matches that of devicetree.cb */
 #define SERIAL_DEV PNP_DEV(0x2e, F71869AD_SP1)
 
+/*
+ * Possible AGESA_STATUS values:
+ *
+ * 0x0 = AGESA_SUCCESS
+ * 0x1 = AGESA_UNSUPPORTED
+ * 0x2 = AGESA_BOUNDS_CHK
+ * 0x3 = AGESA_ALERT
+ * 0x4 = AGESA_WARNING
+ * 0x5 = AGESA_ERROR
+ * 0x6 = AGESA_CRITICAL
+ * 0x7 = AGESA_FATAL
+ */
+
+
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
@@ -91,7 +105,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "agesawrapper_amdinitmmio ");
 	val = agesawrapper_amdinitmmio();
 	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
+		printk(BIOS_DEBUG, "AGESA_STATUS: %x \n", val);
 	else
 		printk(BIOS_DEBUG, "passed.\n");
 
@@ -99,7 +113,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "agesawrapper_amdinitreset ");
 	val = agesawrapper_amdinitreset();
 	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
+		printk(BIOS_DEBUG, "AGESA_STATUS: %x \n", val);
 	else
 		printk(BIOS_DEBUG, "passed.\n");
 
@@ -107,7 +121,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "agesawrapper_amdinitearly ");
 	val = agesawrapper_amdinitearly ();
 	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
+		printk(BIOS_DEBUG, "AGESA_STATUS: %x \n", val);
 	else
 		printk(BIOS_DEBUG, "passed.\n");
 
@@ -118,7 +132,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitpost ");
 		val = agesawrapper_amdinitpost ();
 		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
+			printk(BIOS_DEBUG, "AGESA_STATUS: %x \n", val);
 		else
 			printk(BIOS_DEBUG, "passed.\n");
 
@@ -126,7 +140,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitenv ");
 		val = agesawrapper_amdinitenv ();
 		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
+			printk(BIOS_DEBUG, "AGESA_STATUS: %x \n", val);
 		else
 			printk(BIOS_DEBUG, "passed.\n");
 
@@ -138,14 +152,14 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitresume ");
 		val = agesawrapper_amdinitresume();
 		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
+			printk(BIOS_DEBUG, "AGESA_STATUS: %x \n", val);
 		else
 			printk(BIOS_DEBUG, "passed.\n");
 
 		printk(BIOS_DEBUG, "agesawrapper_amds3laterestore ");
 		val = agesawrapper_amds3laterestore ();
 		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
+			printk(BIOS_DEBUG, "AGESA_STATUS: %x \n", val);
 		else
 			printk(BIOS_DEBUG, "passed.\n");
 

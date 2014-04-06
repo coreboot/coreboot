@@ -71,3 +71,15 @@
 		Store("Received PNOT call (probably from EC)", Debug)
 		/* TODO: Implement this */
 	}
+
+Scope (\_SB) {
+	Device (LID0)
+	{
+		Name(_HID, EisaId("PNP0C0D"))
+		Method(_LID, 0)
+		{
+			Store (GE22, \LIDS)
+			Return (\LIDS)
+		}
+	}
+}

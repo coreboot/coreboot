@@ -99,8 +99,6 @@ FchInitResetLpcProgram (
   //
   RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REGBA, AccessWidth16, 0xFFFF, BIT8, StdHeader);
 
-  RwPci ((LPC_BUS_DEV_FUN << 16) + FCH_LPC_REG6C, AccessWidth32, 0xFFFFFF00, 0, StdHeader);
-
   ProgramPciByteTable ( (REG8_MASK*) (&FchInitHudson2ResetLpcPciTable[0]), sizeof (FchInitHudson2ResetLpcPciTable) / sizeof (REG8_MASK), StdHeader);
 
   //

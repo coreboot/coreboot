@@ -81,7 +81,7 @@ UINT32 agesawrapper_amdinitpost (void);
 UINT32 agesawrapper_amdinitmid (void);
 UINT32 agesawrapper_amdreadeventlog (UINT8 HeapStatus);
 UINT32 agesawrapper_amdinitmmio (void);
-UINT32 agesawrapper_amdinitcpuio (void);
+uint32_t agesawrapper_amdinitcpuio (void);
 void *agesawrapper_getlateinitptr (int pick);
 UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, void *ConfigPtr);
 UINT32 agesawrapper_amdS3Save(VOID);

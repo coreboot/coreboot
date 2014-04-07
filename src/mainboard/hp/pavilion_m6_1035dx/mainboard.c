@@ -19,6 +19,7 @@
 
 #include "agesawrapper.h"
 #include "BiosCallOuts.h"
+#include "ec.h"
 
 #include <arch/acpi.h>
 #include <arch/io.h>
@@ -35,6 +36,9 @@
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
+
+	pavilion_m6_1035dx_ec_init();
+
 	/*
 	 * The mainboard is the first place that we get control in ramstage. Check
 	 * for S3 resume and call the approriate AGESA/CIMx resume functions.

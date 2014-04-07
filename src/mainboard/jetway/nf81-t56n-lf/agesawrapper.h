@@ -82,7 +82,7 @@ UINT32 agesawrapper_amdinitmid (void);
 
 UINT32 agesawrapper_amdreadeventlog (void);
 
-UINT32 agesawrapper_amdinitcpuio (void);
+uint32_t agesawrapper_amdinitcpuio (void);
 UINT32 agesawrapper_amdinitmmio (void);
 UINT32 agesawrapper_amdinitresume (void);
 UINT32 agesawrapper_amdS3Save (void);

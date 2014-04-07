@@ -129,7 +129,7 @@ static void setup_pinmux(void)
 
 static void configure_ec_spi_bus(void)
 {
-	clock_configure_source(sbc1, PLLP, 5000);
+	clock_configure_source(sbc1, CLK_M, 3000);
 }
 
 static void configure_tpm_i2c_bus(void)

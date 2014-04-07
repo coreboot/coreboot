@@ -402,6 +402,8 @@ static void tegra_spi_pio_start(struct tegra_spi_channel *spi)
 {
 	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
 	setbits_le32(&spi->regs->command1, SPI_CMD1_GO);
+	/* Make sure the write to command1 completes. */
+	read32(&spi->regs->command1);
 }
 
 static inline u32 rx_fifo_count(struct tegra_spi_channel *spi)

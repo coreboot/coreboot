@@ -69,12 +69,12 @@ chip soc/nvidia/tegra124
 #  1366x768 (0x45)   76.4MHz -HSync -VSync *current +preferred
 #        h: width  1366 start 1502 end 1532 total 1592
 #        v: height  768 start  776 end  788 total  800
-	register "href_to_sync" = "68"
+	register "href_to_sync" = "1"
 	register "hfront_porch" = "136"
 	register "hsync_width" = "30"
 	register "hback_porch" = "60"
 
-	register "vref_to_sync" = "4"
+	register "vref_to_sync" = "1"
 	register "vfront_porch" = "8"
 	register "vsync_width" = "12"
 	register "vback_porch" = "12"

@@ -19,4 +19,22 @@ config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
 	default 0x18080
 
+config MBN_ENCAPSULATION
+	depends on USE_BLOBS
+	bool "bootblock encapsulation for ipq8064"
+	default y
+
+config SBL_BLOB
+	depends on USE_BLOBS
+	string "file name of the Qualcomm SBL blob"
+	default "3rdparty/cpu/qualcomm/ipq8064/sbls.bin"
+	help
+	  The path and filename of the binary blob containing
+	  ipq806x early initialization code, as supplied by the
+	  vendor.
+
+config BOOTBLOCK_BASE
+	hex "64K bytes left for TZBSP"
+	default 0x2a010000
+
 endif

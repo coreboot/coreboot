@@ -18,6 +18,10 @@
 #ifndef __SOC_NVIDIA_TEGRA124_CLOCK_H__
 #define __SOC_NVIDIA_TEGRA124_CLOCK_H__
 
+#include <arch/hlt.h>
+#include <arch/io.h>
+#include <console/console.h>
+#include <soc/nvidia/tegra124/clk_rst.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -218,11 +222,23 @@ enum {
  */
 #define CLK_FREQUENCY(REF, REG)	(((REF) * 2) / ((REG) + 2))
 
+static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
+				  u32 div_mask, u32 src)
+{
+	// The I2C and UART divisors are 16 bit while all the others are 8 bit.
+	// The I2C clocks are handled by the specialized macro below, but the
+	// UART clocks aren't. Don't use this function on UART clocks.
+	if (div & ~div_mask) {
+		printk(BIOS_ERR, "%s clock divisor overflow!", name);
+		hlt();
+	}
+	clrsetbits_le32(reg, CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
+			src << CLK_SOURCE_SHIFT | div);
+}
+
 #define clock_configure_irregular_source(device, src, freq, src_id) \
-	clrsetbits_le32(&clk_rst->clk_src_##device, \
-		CLK_SOURCE_MASK | CLK_DIVISOR_MASK, \
-		src_id << CLK_SOURCE_SHIFT | \
-		CLK_DIVIDER(TEGRA_##src##_KHZ, freq))
+	_clock_set_div(&clk_rst->clk_src_##device, #device, \
+		CLK_DIVIDER(TEGRA_##src##_KHZ, freq), 0xff, src_id)
 
 /* Warning: Some devices just use different bits for the same sources for no
  * apparent reason. *Always* double-check the TRM before trusting this macro. */
@@ -237,11 +253,9 @@ enum {
  * documentation.
  */
 #define clock_configure_i2c_scl_freq(device, src, freq) \
-	clrsetbits_le32(&clk_rst->clk_src_##device, \
-		CLK_SOURCE_MASK | CLK_DIVISOR_MASK, \
-		src << CLK_SOURCE_SHIFT | \
-		(div_round_up((TEGRA_##src##_KHZ), \
-			      ((freq) * (0x19 + 1) * 8)) - 1))
+	_clock_set_div(&clk_rst->clk_src_##device, #device, \
+		div_round_up(TEGRA_##src##_KHZ, (freq) * (0x19 + 1) * 8) - 1, \
+		0xffff, src)
 
 enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 	PLLP = 0,

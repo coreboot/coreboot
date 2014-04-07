@@ -24,6 +24,8 @@
 #ifndef _EC_COMPAL_ENE932_EC_H
 #define _EC_COMPAL_ENE932_EC_H
 
+#include <stdint.h>
+
 #define EC_IO 0xfd60 /* Mainboard specific. Could be Kconfig option */
 #define EC_IO_HIGH EC_IO + 1
 #define EC_IO_LOW  EC_IO + 2

@@ -48,6 +48,17 @@ typedef struct {
 static void
 ehci_rh_destroy (usbdev_t *dev)
 {
+	int port;
+
+	/* Tear down all devices below the root hub (in bottom-up order). */
+	for (port = 0; port < RH_INST(dev)->n_ports; port++) {
+		if (RH_INST(dev)->devices[port] != -1) {
+			usb_detach_device(dev->controller,
+					  RH_INST(dev)->devices[port]);
+			RH_INST(dev)->devices[port] = -1;
+		}
+	}
+
         free (RH_INST(dev)->devices);
         free (RH_INST(dev));
 }
@@ -156,10 +167,10 @@ ehci_rh_init (usbdev_t *dev)
 	dev->destroy = ehci_rh_destroy;
 	dev->poll = ehci_rh_poll;
 
-	dev->data = malloc(sizeof(rh_inst_t));
-
+	dev->data = xmalloc(sizeof(rh_inst_t));
 	RH_INST(dev)->n_ports = EHCI_INST(dev->controller)->capabilities->hcsparams & HCS_NPORTS_MASK;
 	RH_INST(dev)->ports = EHCI_INST(dev->controller)->operation->portsc;
+	RH_INST(dev)->devices = xmalloc(RH_INST(dev)->n_ports * sizeof(int));
 
 	usb_debug("root hub has %x ports\n", RH_INST(dev)->n_ports);
 
@@ -175,7 +186,6 @@ ehci_rh_init (usbdev_t *dev)
 	}
 	mdelay(20); // ehci spec 2.3.9
 
-	RH_INST(dev)->devices = malloc(RH_INST(dev)->n_ports * sizeof(int));
 	for (i=0; i < RH_INST(dev)->n_ports; i++) {
 		RH_INST(dev)->devices[i] = -1;
 		ehci_rh_scanport(dev, i);

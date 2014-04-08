@@ -172,16 +172,8 @@ ohci_init (unsigned long physical_bar)
 	int i;
 
 	hci_t *controller = new_controller ();
-
-	if (!controller)
-		fatal("Could not create USB controller instance.\n");
-
-	controller->instance = malloc (sizeof (ohci_t));
-	if(!controller->instance)
-		fatal("Not enough memory creating USB controller instance.\n");
-
+	controller->instance = xzalloc(sizeof (ohci_t));
 	controller->type = OHCI;
-
 	controller->start = ohci_start;
 	controller->stop = ohci_stop;
 	controller->reset = ohci_reset;
@@ -195,9 +187,6 @@ ohci_init (unsigned long physical_bar)
 	controller->create_intr_queue = ohci_create_intr_queue;
 	controller->destroy_intr_queue = ohci_destroy_intr_queue;
 	controller->poll_intr_queue = ohci_poll_intr_queue;
-	for (i = 0; i < 128; i++) {
-		controller->devices[i] = 0;
-	}
 	init_device_entry (controller, 0);
 	OHCI_INST (controller)->roothub = controller->devices[0];
 
@@ -279,8 +268,7 @@ ohci_shutdown (hci_t *controller)
 		return;
 	detach_controller (controller);
 	ohci_stop(controller);
-	OHCI_INST (controller)->roothub->destroy (OHCI_INST (controller)->
-						  roothub);
+	free (OHCI_INST (controller)->hcca);
 	free ((void *)OHCI_INST (controller)->periodic_ed);
 	free (OHCI_INST (controller));
 	free (controller);
@@ -289,13 +277,13 @@ ohci_shutdown (hci_t *controller)
 static void
 ohci_start (hci_t *controller)
 {
-// TODO: turn on all operation of OHCI, but assume that it's initialized.
+	OHCI_INST (controller)->opreg->HcControl |= PeriodicListEnable;
 }
 
 static void
 ohci_stop (hci_t *controller)
 {
-// TODO: turn off all operation of OHCI
+	OHCI_INST (controller)->opreg->HcControl &= ~PeriodicListEnable;
 }
 
 static int

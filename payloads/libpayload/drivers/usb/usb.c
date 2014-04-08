@@ -39,15 +39,9 @@ hci_t *usb_hcs = 0;
 hci_t *
 new_controller (void)
 {
-	hci_t *controller = malloc (sizeof (hci_t));
-
-	if (controller) {
-		/* atomic */
-		controller->next = usb_hcs;
-		usb_hcs = controller;
-		/* atomic end */
-	}
-
+	hci_t *controller = xzalloc(sizeof (hci_t));
+	controller->next = usb_hcs;
+	usb_hcs = controller;
 	return controller;
 }
 
@@ -56,6 +50,9 @@ detach_controller (hci_t *controller)
 {
 	if (controller == NULL)
 		return;
+
+	usb_detach_device(controller, 0);	/* tear down root hub tree */
+
 	if (usb_hcs == controller) {
 		usb_hcs = controller->next;
 	} else {

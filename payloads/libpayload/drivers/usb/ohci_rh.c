@@ -83,6 +83,11 @@ ohci_rh_enable_port (usbdev_t *dev, int port)
 static void
 ohci_rh_disable_port (usbdev_t *dev, int port)
 {
+	if (RH_INST (dev)->port[port] != -1) {
+		usb_detach_device(dev->controller, RH_INST (dev)->port[port]);
+		RH_INST (dev)->port[port] = -1;
+	}
+
 	OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port] = ClearPortEnable; // disable port
 	int timeout = 50; /* timeout after 50 * 100us == 5ms */
 	while ((OHCI_INST (dev->controller)->opreg->HcRhPortStatus[port]
@@ -180,12 +185,9 @@ ohci_rh_init (usbdev_t *dev)
 	dev->destroy = ohci_rh_destroy;
 	dev->poll = ohci_rh_poll;
 
-	dev->data = malloc (sizeof (rh_inst_t));
-	if (!dev->data)
-		fatal("Not enough memory for OHCI RH.\n");
-
+	dev->data = xmalloc (sizeof (rh_inst_t));
 	RH_INST (dev)->numports = OHCI_INST (dev->controller)->opreg->HcRhDescriptorA & NumberDownstreamPortsMask;
-	RH_INST (dev)->port = malloc(sizeof(int) * RH_INST (dev)->numports);
+	RH_INST (dev)->port = xmalloc(sizeof(int) * RH_INST (dev)->numports);
 	usb_debug("%d ports registered\n", RH_INST (dev)->numports);
 
 	for (i = 0; i < RH_INST (dev)->numports; i++) {

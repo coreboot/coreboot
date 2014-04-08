@@ -153,16 +153,8 @@ uhci_pci_init (pcidev_t addr)
 	u16 reg16;
 
 	hci_t *controller = new_controller ();
-
-	if (!controller)
-		fatal("Could not create USB controller instance.\n");
-
-	controller->instance = malloc (sizeof (uhci_t));
-	if(!controller->instance)
-		fatal("Not enough memory creating USB controller instance.\n");
-
+	controller->instance = xzalloc(sizeof (uhci_t));
 	controller->type = UHCI;
-
 	controller->start = uhci_start;
 	controller->stop = uhci_stop;
 	controller->reset = uhci_reset;
@@ -176,9 +168,6 @@ uhci_pci_init (pcidev_t addr)
 	controller->create_intr_queue = uhci_create_intr_queue;
 	controller->destroy_intr_queue = uhci_destroy_intr_queue;
 	controller->poll_intr_queue = uhci_poll_intr_queue;
-	for (i = 0; i < 128; i++) {
-		controller->devices[i] = 0;
-	}
 	init_device_entry (controller, 0);
 	UHCI_INST (controller)->roothub = controller->devices[0];
 
@@ -257,8 +246,6 @@ uhci_shutdown (hci_t *controller)
 	if (controller == 0)
 		return;
 	detach_controller (controller);
-	UHCI_INST (controller)->roothub->destroy (UHCI_INST (controller)->
-						  roothub);
 	uhci_reg_write16(controller, USBCMD,
 			 uhci_reg_read16(controller, USBCMD) & 0);	// stop work
 	free (UHCI_INST (controller)->framelistptr);

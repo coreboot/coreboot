@@ -176,16 +176,17 @@ static int ehci_set_periodic_schedule(ehci_t *ehcic, int enable)
 static void ehci_shutdown (hci_t *controller)
 {
 	detach_controller(controller);
+
 	/* Make sure periodic schedule is disabled */
 	ehci_set_periodic_schedule(EHCI_INST(controller), 0);
-	/* Free periodic frame list */
-	free(phys_to_virt(EHCI_INST(controller)->operation->periodiclistbase));
 
-	/* Free dummy QH */
-	free((void *)EHCI_INST(controller)->dummy_qh);
-
+	/* Give all ports back to companion controller */
 	EHCI_INST(controller)->operation->configflag = 0;
 
+	/* Free all dynamic allocations */
+	free(EHCI_INST(controller)->dma_buffer);
+	free(phys_to_virt(EHCI_INST(controller)->operation->periodiclistbase));
+	free((void *)EHCI_INST(controller)->dummy_qh);
 	free(EHCI_INST(controller));
 	free(controller);
 }
@@ -788,16 +789,8 @@ ehci_init (unsigned long physical_bar)
 {
 	int i;
 	hci_t *controller = new_controller ();
-
-	if (!controller)
-		fatal("Could not create USB controller instance.\n");
-
-	controller->instance = malloc (sizeof (ehci_t));
-	if(!controller->instance)
-		fatal("Not enough memory creating USB controller instance.\n");
-
+	controller->instance = xzalloc(sizeof (ehci_t));
 	controller->type = EHCI;
-
 	controller->start = ehci_start;
 	controller->stop = ehci_stop;
 	controller->reset = ehci_reset;
@@ -811,13 +804,10 @@ ehci_init (unsigned long physical_bar)
 	controller->create_intr_queue = ehci_create_intr_queue;
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;
-	for (i = 0; i < 128; i++) {
-		controller->devices[i] = 0;
-	}
 	init_device_entry (controller, 0);
 
-	EHCI_INST(controller)->capabilities = phys_to_virt(physical_bar);
-	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(physical_bar) + EHCI_INST(controller)->capabilities->caplength);
+	EHCI_INST(controller)->capabilities = phys_to_virt(controller->reg_base);
+	EHCI_INST(controller)->operation = (hc_op_t *)(phys_to_virt(controller->reg_base) + EHCI_INST(controller)->capabilities->caplength);
 
 	/* Set the high address word (aka segment) if controller is 64-bit */
 	if (EHCI_INST(controller)->capabilities->hccparams & 1)

@@ -176,6 +176,8 @@ uhci_rh_report_port_changes (usbdev_t *dev)
 static void
 uhci_rh_destroy (usbdev_t *dev)
 {
+	usb_detach_device (dev->controller, 1);
+	usb_detach_device (dev->controller, 2);
 	uhci_rh_disable_port (dev, 1);
 	uhci_rh_disable_port (dev, 2);
 	free (RH_INST (dev));
@@ -197,9 +199,7 @@ uhci_rh_init (usbdev_t *dev)
 
 	uhci_rh_enable_port (dev, 1);
 	uhci_rh_enable_port (dev, 2);
-	dev->data = malloc (sizeof (rh_inst_t));
-	if (!dev->data)
-		fatal("Not enough memory for UHCI RH.\n");
+	dev->data = xmalloc (sizeof (rh_inst_t));
 
 	RH_INST (dev)->port[0] = -1;
 	RH_INST (dev)->port[1] = -1;

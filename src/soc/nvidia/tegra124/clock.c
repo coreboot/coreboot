@@ -88,7 +88,6 @@ struct {
 	int khz;
 	struct pllcx_dividers	pllx;	/* target:  CONFIG_PLLX_KHZ */
 	struct pllcx_dividers	pllc;	/* target:  600 MHz */
-	struct pllpad_dividers	plld;	/* target:  306 MHz */
 	struct pllu_dividers	pllu;	/* target;  960 MHz */
 	struct pllcx_dividers	plldp;	/* target;  270 MHz */
 	/* Based on T124 TRM (to be updatd), PLLP is set to 408MHz in HW.
@@ -99,7 +98,6 @@ struct {
 		.khz = 12000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},
-		.plld = {.n = 306, .m = 12, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  1, .p = 3},
 	},
@@ -107,7 +105,6 @@ struct {
 		.khz = 13000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 13000, .m =  1, .p = 0},
 		.pllc = {.n = 231, .m =  5, .p = 0},		/* 600.6 MHz */
-		.plld = {.n = 306, .m = 13, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  1, .p = 3},		/* 269.75 MHz */
 	},
@@ -115,7 +112,6 @@ struct {
 		.khz = 16800,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 16800, .m =  1, .p = 0},
 		.pllc = {.n = 250, .m =  7, .p = 0},
-		.plld = {.n = 309, .m = 17, .p = 0, .cpcon = 8}, /* 305.4 MHz*/
 		.pllu = {.n = 400, .m =  7, .p = 0, .cpcon = 5, .lfcon = 2},
 		.plldp = {.n = 64, .m =  1, .p = 3},		/* 268.8 MHz */
 	},
@@ -123,7 +119,6 @@ struct {
 		.khz = 19200,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllc = {.n = 125, .m =  4, .p = 0},
-		.plld = {.n = 271, .m = 17, .p = 0, .cpcon = 8}, /* 306.1 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  1, .p = 3},		/* 270.75 MHz */
 	},
@@ -131,7 +126,6 @@ struct {
 		.khz = 26000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 26000, .m =  1, .p = 0},
 		.pllc = {.n =  23, .m =  1, .p = 0},		   /* 598 MHz */
-		.plld = {.n = 306, .m = 26, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 26, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 83, .m =  2, .p = 3},		/* 266.50 MHz */
 	},
@@ -143,7 +137,6 @@ struct {
 		 */
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
 		.pllc = {.n = 125, .m =  4, .p = 0},
-		.plld = {.n = 271, .m = 17, .p = 0, .cpcon = 8}, /* 306.1 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
 		.plldp = {.n = 56, .m =  2, .p = 3},		/* 268 MHz */
 	},
@@ -155,7 +148,6 @@ struct {
 		 */
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},
-		.plld = {.n = 306, .m = 12, .p = 0, .cpcon = 8},
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  4, .p = 3},		/* 264 MHz */
 	},
@@ -288,10 +280,86 @@ static void graphics_pll(void)
 	scfg = (1<<28) | (1<<24);
 	writel(scfg, cfg);
 
-	/* Init clock source for disp1: plld (actually plld_out0) */
-	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc,
-		osc_table[osc].plld,
-		(PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
+	/* disp1 will be set when panel information (pixel clock) is
+	 * retrieved (clock_display).
+	 */
+}
+
+/* Init PLLD clock source. */
+int
+clock_display(u32 frequency)
+{
+	/**
+	 * plld (fo) = vco >> p, where 500MHz < vco < 1000MHz
+	 *           = (cf * n) >> p, where 1MHz < cf < 6MHz
+	 *           = ((ref / m) * n) >> p
+	 *
+	 * Assume p = 0, find (m, n). since m has only 5 bits, we can iterate
+	 * all possible values.  Note Tegra 124 supports 11 bits for n, but our
+	 * pll_fields has only 10 bits for n.
+	 *
+	 * Note values undershoot or overshoot target output frequency may not
+	 * work if the value is not in "safe" range in panel specification, so
+	 * we want exact match.
+	 */
+
+	struct pllpad_dividers plld = { 0 };
+	u32 ref = clock_get_osc_khz() * 1000, m, n;
+	u32 cf, vco = frequency;
+	const u32 max_m = 1 << 5, max_n = 1 << 10, mhz = 1000 * 1000,
+		  min_vco = 500 * mhz, max_vco = 1000 * mhz,
+		  min_cf = 1 * mhz, max_cf = 6 * mhz;
+
+	/* TODO(hungte) Replace this by clock_get_pll_input_khz */
+	switch (clock_get_osc_bits()) {
+	case OSC_FREQ_OSC48:
+		ref /= 4;
+		break;
+	case OSC_FREQ_OSC38P4:
+		ref /= 2;
+		break;
+	}
+
+	if (vco < min_vco || vco > max_vco) {
+		printk(BIOS_ERR, "%s: VCO (%d) out of range. Cannot support.\n",
+		       __func__, vco);
+		return -1;
+	}
+
+	for (m = 1; m < max_m; m++) {
+		cf = ref / m;
+		if (cf < min_cf)
+			break;
+
+		n = vco / cf;
+		if (vco != cf * n || n >= max_n || cf > max_cf)
+			continue;
+
+		plld.m = m;
+		plld.n = n;
+
+		if (n < 50)
+			plld.cpcon = 2;
+		else if (n < 300)
+			plld.cpcon = 3;
+		else if (n < 600)
+			plld.cpcon = 8;
+		else
+			plld.cpcon = 12;
+
+		printk(BIOS_DEBUG, "%s: PLLD=%u ref=%u, m/n/p/cpcon="
+		       "%u/%u/%u/%u\n", __func__,
+		       (ref / plld.m * plld.n) >> plld.p, ref,
+		       plld.m, plld.n, plld.p, plld.cpcon);
+
+		init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, plld,
+			 (PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
+		return 0;
+	}
+
+	printk(BIOS_ERR, "%s: Failed to match output frequency %u.\n",
+	       __func__, frequency);
+	return -1;
 }
 
 /* Initialize the UART and put it on CLK_M so we can use it during clock_init().

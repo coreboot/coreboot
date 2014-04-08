@@ -278,6 +278,7 @@ enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 #define TEGRA_PLLU_KHZ   (960000)
 
 int clock_get_osc_khz(void);
+int clock_display(u32 frequency);
 void clock_early_uart(void);
 void clock_external_output(int clk_id);
 void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,

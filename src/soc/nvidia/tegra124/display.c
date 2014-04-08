@@ -98,8 +98,6 @@ static void print_mode(const struct soc_nvidia_tegra124_config *config)
 static int update_display_mode(struct display_controller *disp_ctrl,
 			       struct soc_nvidia_tegra124_config *config)
 {
-	unsigned long div = config->pll_div;
-
 	print_mode(config);
 
 	WRITEL(0x1, &disp_ctrl->disp.disp_timing_opt);
@@ -119,10 +117,25 @@ static int update_display_mode(struct display_controller *disp_ctrl,
 	WRITEL(config->xres | (config->yres << 16),
 		&disp_ctrl->disp.disp_active);
 
+	/**
+	 * We want to use PLLD_out0, which is PLLD / 2:
+	 *   PixelClock = (PLLD / 2) / ShiftClockDiv / PixelClockDiv.
+	 *
+	 * Currently most panels work inside clock range 50MHz~100MHz, and PLLD
+	 * has some requirements to have VCO in range 500MHz~1000MHz (see
+	 * clock.c for more detail). To simplify calculation, we set
+	 * PixelClockDiv to 1 and ShiftClockDiv to 5. In future these values
+	 * may be calculated by clock_display, to allow wider frequency range.
+	 *
+	 * Note ShiftClockDiv is a 7.1 format value.
+	 */
+	const u32 shift_clock_div = 5;
 	WRITEL((PIXEL_CLK_DIVIDER_PCD1 << PIXEL_CLK_DIVIDER_SHIFT) |
-		SHIFT_CLK_DIVIDER(div),
-		&disp_ctrl->disp.disp_clk_ctrl);
-	return 0;
+	       ((shift_clock_div - 1) * 2) << SHIFT_CLK_DIVIDER_SHIFT,
+	       &disp_ctrl->disp.disp_clk_ctrl);
+	printk(BIOS_DEBUG, "%s: PixelClock=%u, ShiftClockDiv=%u\n",
+	       __func__, config->pixel_clock, shift_clock_div);
+	return clock_display(config->pixel_clock * shift_clock_div * 2);
 }
 
 static void update_window(struct display_controller *disp_ctrl,
@@ -285,7 +298,10 @@ void display_startup(device_t dev)
 	}
 
 	/* Configure dc mode */
-	update_display_mode(disp_ctrl, config);
+	if (update_display_mode(disp_ctrl, config)) {
+		printk(BIOS_ERR, "dc: failed to configure display mode.\n");
+		return;
+	}
 
 	/* Enable dp */
 	dp_enable(dc->out);

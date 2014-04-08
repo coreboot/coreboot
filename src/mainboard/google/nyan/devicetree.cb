@@ -79,15 +79,7 @@ chip soc/nvidia/tegra124
 	register "vsync_width" = "12"
 	register "vback_porch" = "12"
 
-	# we *know* the pixel clock for this system.
-	# 1592 x 800 x 60Hz = 76416000
-	register "pixel_clock" = "76416000"
-	register "pll_div" = "2"
-
-	# use plld_out0 (ie, plld/2) as clock source
-	#  plld -> plld_out0 -> pclk
-	#  plld = plld_out0 * 2 = (pclk * pll_div) * 2
-	#       = 305664000Hz
+	register "pixel_clock" = "76400000"
 
 	# link configurations
 	register "lane_count" = "1"

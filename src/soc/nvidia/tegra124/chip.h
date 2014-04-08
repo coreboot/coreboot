@@ -89,7 +89,6 @@ struct soc_nvidia_tegra124_config {
 	int vfront_porch;
 
 	int pixel_clock;
-	int pll_div;;
 
 	/* The minimum link configuraton settings */
 	u32 lane_count;

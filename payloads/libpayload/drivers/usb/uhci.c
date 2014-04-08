@@ -452,8 +452,6 @@ uhci_bulk (endpoint_t *ep, int size, u8 *data, int finalize)
 		size -= maxpsize;
 	}
 	if (run_schedule (ep->dev, tds) == 1) {
-		usb_debug("Stalled. Trying to clean up.\n");
-		clear_stall (ep);
 		free (tds);
 		return -1;
 	}

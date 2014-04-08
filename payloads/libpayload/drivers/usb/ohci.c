@@ -602,8 +602,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *src, int finalize)
 		result = dalen - result;
 		if (ep->direction == IN && data != src)
 			memcpy(src, data, result);
-	} else
-		clear_stall(ep);
+	}
 
 	return result;
 }

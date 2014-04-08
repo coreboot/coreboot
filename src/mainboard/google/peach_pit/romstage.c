@@ -97,13 +97,10 @@ static int setup_power(int is_resume)
 		uint8_t reg = pmic_writes[i].reg;
 
 		if (pmic_writes[i].or_orig)
-			error |= i2c_read(4, MAX77802_I2C_ADDR,
-					  reg, sizeof(reg),
-					  &data, sizeof(data));
+			error |= i2c_readb(4, MAX77802_I2C_ADDR, reg, &data);
+
 		data |= pmic_writes[i].val;
-		error |= i2c_write(4, MAX77802_I2C_ADDR,
-				   reg, sizeof(reg),
-				   &data, sizeof(data));
+		error |= i2c_writeb(4, MAX77802_I2C_ADDR, reg, data);
 	}
 
 	return error;

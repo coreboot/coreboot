@@ -59,7 +59,7 @@ static struct as3722_init_reg init_list[] = {
 
 static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int do_delay)
 {
-	i2c_write(bus, AS3722_I2C_ADDR, reg, 1, &val, 1);
+	i2c_writeb(bus, AS3722_I2C_ADDR, reg, val);
 	if (do_delay)
 		udelay(500);
 }

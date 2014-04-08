@@ -109,8 +109,8 @@ static void i2c_send_stop(struct a1x_twi *twi)
 	write32(reg32, &twi->ctl);
 }
 
-int i2c_read(unsigned bus, unsigned chip, unsigned addr,
-	     unsigned alen, uint8_t *buf, unsigned len)
+static int i2c_read(unsigned bus, unsigned chip, unsigned addr,
+	     uint8_t *buf, unsigned len)
 {
 	unsigned count = len;
 	enum twi_status expected_status;
@@ -169,8 +169,8 @@ int i2c_read(unsigned bus, unsigned chip, unsigned addr,
 	return len;
 }
 
-int i2c_write(unsigned bus, unsigned chip, unsigned addr,
-	      unsigned alen, const uint8_t *buf, unsigned len)
+static int i2c_write(unsigned bus, unsigned chip, unsigned addr,
+	      const uint8_t *buf, unsigned len)
 {
 	unsigned count = len;
 	struct a1x_twi *twi = (void *)TWI_BASE(bus);
@@ -203,4 +203,36 @@ int i2c_write(unsigned bus, unsigned chip, unsigned addr,
 	i2c_send_stop(twi);
 
 	return len;
+}
+
+
+/*
+ * This transfer function is not complete or correct, but it provides
+ * the basic support that the above read and write functions previously
+ * provided directly. It is extremely limited and not useful for
+ * advanced drivers like TPM.
+ *
+ * TODO: Rewite the i2c_transfer and supporting functions
+ *
+ */
+int i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+{
+	struct i2c_seg *seg = segments;
+
+	if (seg->read) {
+		/* Read has one buf for the addr and one for the data */
+		if (count !=  2)
+			return -1;
+
+		if(i2c_read(bus, seg->chip, *seg->buf, seg[1].buf, seg[1].len) < 0)
+			return -1;
+	} else {
+		/* Write buf has adder and data. */
+		if (count !=  1)
+			return -1;
+
+		if(i2c_write(bus, seg->chip, *seg->buf, seg->buf+1, seg->len-1) < 0)
+			return -1;
+	}
+	return 0;
 }

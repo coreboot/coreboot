@@ -31,7 +31,6 @@ void parade_ps8625_bridge_setup(unsigned bus, unsigned chip_base,
 
 	for (i = 0; i < parade_write_count; i++) {
 		const struct parade_write *w = &parade_writes[i];
-		i2c_write(bus, chip_base + w->offset, w->reg, sizeof(w->reg),
-			  &w->val, sizeof(w->val));
+		i2c_writeb(bus, chip_base + w->offset, w->reg, w->val);
 	}
 }

@@ -20,22 +20,6 @@
 #ifndef CPU_SAMSUNG_EXYNOS5250_I2C_H
 #define CPU_SAMSUNG_EXYNOS5250_I2C_H
 
-#include "periph.h"
-
-struct s3c24x0_i2c {
-	u32	iiccon;
-	u32	iicstat;
-	u32	iicadd;
-	u32	iicds;
-	u32	iiclc;
-};
-
-struct s3c24x0_i2c_bus {
-	int bus_num;
-	struct s3c24x0_i2c *regs;
-	enum periph_id periph_id;
-};
-
 void i2c_init(unsigned bus, int speed, int slaveadd);
 
 #endif /* CPU_SAMSUNG_EXYNOS5250_I2C_H */

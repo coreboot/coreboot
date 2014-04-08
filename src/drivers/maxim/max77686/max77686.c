@@ -93,7 +93,7 @@ struct max77686_para max77686_param[] = {/*{vol_addr, vol_bitpos,
 static inline int max77686_i2c_write(unsigned int bus, unsigned char chip_addr,
 					unsigned int reg, unsigned char val)
 {
-	return i2c_write(bus, chip_addr, reg, 1, &val, 1);
+	return i2c_writeb(bus, chip_addr, reg, val);
 }
 
 /*
@@ -107,7 +107,7 @@ static inline int max77686_i2c_write(unsigned int bus, unsigned char chip_addr,
 static inline int max77686_i2c_read(unsigned int bus, unsigned char chip_addr,
 					unsigned int reg, unsigned char *val)
 {
-	return i2c_read(bus, chip_addr, reg, 1, val, 1);
+	return i2c_readb(bus, chip_addr, reg, (uint8_t *)val);
 }
 
 /*

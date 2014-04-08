@@ -120,8 +120,7 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 	if ((tpm_dev.chip_type == SLB9635) || (tpm_dev.chip_type == UNKNOWN)) {
 		/* slb9635 protocol should work in both cases */
 		for (count = 0; count < MAX_COUNT; count++) {
-			rc = i2c_write(tpm_dev.bus, tpm_dev.addr,
-						0, 0, &addr, 1);
+			rc = i2c_write_raw(tpm_dev.bus, tpm_dev.addr, &addr, 1);
 			if (rc == 0)
 				break;  /* success, break to skip sleep */
 
@@ -137,8 +136,8 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 		 */
 		for (count = 0; count < MAX_COUNT; count++) {
 			udelay(SLEEP_DURATION);
-			rc = i2c_read(tpm_dev.bus, tpm_dev.addr,
-					       0, 0, buffer, len);
+			rc = i2c_read_raw(tpm_dev.bus, tpm_dev.addr,
+					  buffer, len);
 			if (rc == 0)
 				break;  /* success, break to skip sleep */
 
@@ -150,9 +149,13 @@ static int iic_tpm_read(uint8_t addr, uint8_t *buffer, size_t len)
 		 * retries should usually not be needed, but are kept just to
 		 * be safe on the safe side.
 		 */
+		struct i2c_seg aseg = { .read = 0, .chip = tpm_dev.addr,
+					.buf = &addr, .len = 1 };
+		struct i2c_seg dseg = { .read = 1, .chip = tpm_dev.addr,
+					.buf = buffer, .len = len };
 		for (count = 0; count < MAX_COUNT; count++) {
-			rc = i2c_read(tpm_dev.bus, tpm_dev.addr,
-					       addr, 1, buffer, len);
+			rc = i2c_transfer(tpm_dev.bus, &aseg, 1) ||
+			     i2c_transfer(tpm_dev.bus, &dseg, 1);
 			if (rc == 0)
 				break;  /* break here to skip sleep */
 			udelay(SLEEP_DURATION);
@@ -186,8 +189,8 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 	if (!tpm_dev.bus)
 		return -1;
 	for (count = 0; count < max_count; count++) {
-		rc = i2c_write(tpm_dev.bus, tpm_dev.addr, 0, 0,
-					tpm_dev.buf, len + 1);
+		rc = i2c_write_raw(tpm_dev.bus, tpm_dev.addr,
+				   tpm_dev.buf, len + 1);
 		if (rc == 0)
 			break;  /* success, break to skip sleep */
 

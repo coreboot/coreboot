@@ -32,6 +32,7 @@
 #include <soc/samsung/exynos5420/cpu.h>
 #include <soc/samsung/exynos5420/gpio.h>
 #include <soc/samsung/exynos5420/power.h>
+#include <soc/samsung/exynos5420/periph.h>
 #include <soc/samsung/exynos5420/i2c.h>
 #include <soc/samsung/exynos5420/dp.h>
 #include <soc/samsung/exynos5420/fimd.h>

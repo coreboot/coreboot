@@ -34,6 +34,7 @@
 #include <soc/samsung/exynos5250/i2c.h>
 #include <soc/samsung/exynos5250/dp-core.h>
 #include <soc/samsung/exynos5250/dp.h>
+#include <soc/samsung/exynos5250/periph.h>
 #include <soc/samsung/exynos5250/usb.h>
 
 #include "exynos5250.h"

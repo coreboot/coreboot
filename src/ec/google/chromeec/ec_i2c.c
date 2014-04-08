@@ -116,13 +116,13 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 
 	/* Start I2C communication */
 	i2c_dump(bus, chip, (const uint8_t *)&cmd, size_i2c_cmd);
-	if (i2c_write(bus, chip, 0, 0, (uint8_t *)&cmd, size_i2c_cmd) != 0) {
+	if (i2c_write_raw(bus, chip, (uint8_t *)&cmd, size_i2c_cmd) != 0) {
 		printk(BIOS_ERR, "%s: Cannot complete write to i2c-%d:%#x\n",
 		       __func__, bus, chip);
 		cec_command->cmd_code = EC_RES_ERROR;
 		return 1;
 	}
-	if (i2c_read(bus, chip, 0, 0, (uint8_t *)&resp, size_i2c_resp) != 0) {
+	if (i2c_read_raw(bus, chip, (uint8_t *)&resp, size_i2c_resp) != 0) {
 		printk(BIOS_ERR, "%s: Cannot complete read from i2c-%d:%#x\n",
 		       __func__, bus, chip);
 		cec_command->cmd_code = EC_RES_ERROR;

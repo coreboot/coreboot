@@ -130,43 +130,35 @@ static int tegra_i2c_request(int bus, unsigned chip, int cont, int restart,
 				   data, data_len);
 }
 
-static int i2c_readwrite(unsigned bus, unsigned chip, unsigned addr,
-			 unsigned alen, uint8_t *buf, unsigned len, int read)
+static int i2c_transfer_segment(unsigned bus, unsigned chip, int restart,
+				int read, void *buf, int len)
 {
 	const uint32_t max_payload =
 		(IOHEADER_PAYLOADSIZE_MASK + 1) >> IOHEADER_PAYLOADSIZE_SHIFT;
-	uint8_t abuf[sizeof(addr)];
-
-	int i;
-	for (i = 0; i < alen; i++)
-		abuf[i] = addr >> ((alen - i - 1) * 8);
-
-	if (tegra_i2c_request(bus, chip, !read, 0, 0, abuf, alen))
-		return -1;
 
 	while (len) {
 		int todo = MIN(len, max_payload);
 		int cont = (todo < len);
-		if (tegra_i2c_request(bus, chip, cont, 0, read, buf, todo)) {
-			// We should reset the controller here.
+		if (tegra_i2c_request(bus, chip, cont, restart,
+				      read, buf, todo))
 			return -1;
-		}
 		len -= todo;
 		buf += todo;
 	}
 	return 0;
 }
 
-int i2c_read(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, uint8_t *buf, unsigned len)
+int i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 {
-	return i2c_readwrite(bus, chip, addr, alen, buf, len, 1);
-}
+	struct i2c_seg *seg = segments;
 
-int i2c_write(unsigned bus, unsigned chip, unsigned addr,
-		unsigned alen, const uint8_t *buf, unsigned len)
-{
-	return i2c_readwrite(bus, chip, addr, alen, (void *)buf, len, 0);
+	int i;
+	for (i = 0; i < count; seg++, i++) {
+		if (i2c_transfer_segment(bus, seg->chip, i < count - 1,
+					 seg->read, seg->buf, seg->len))
+			return -1;
+	}
+	return 0;
 }
 
 void i2c_init(unsigned bus)

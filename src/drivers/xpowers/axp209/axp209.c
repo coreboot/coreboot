@@ -47,12 +47,12 @@ enum registers {
  */
 static int axp209_read(u8 bus, u8 reg, u8 *val)
 {
-	return i2c_read(bus, AXP209_I2C_ADDR, reg, 1, val, 1);
+	return i2c_readb(bus, AXP209_I2C_ADDR, reg, val);
 }
 
 static int axp209_write(u8 bus, u8 reg, u8 val)
 {
-	return i2c_write(bus, AXP209_I2C_ADDR, reg, 1, &val, 1);
+	return i2c_writeb(bus, AXP209_I2C_ADDR, reg, val);
 }
 
 /**

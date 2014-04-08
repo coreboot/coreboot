@@ -79,10 +79,7 @@ int tis_init(void)
 	 * Probe TPM twice; the first probing might fail because TPM is asleep,
 	 * and the probing can wake up TPM.
 	 */
-	uint8_t tmp = 0;
-
-	if (i2c_write(bus, chip, 0, 1, &tmp, sizeof(tmp)) &&
-			i2c_write(bus, chip, 0, 1, &tmp, sizeof(tmp)))
+	if (i2c_writeb(bus, chip, 0, 0) && i2c_writeb(bus, chip, 0, 0))
 		return -1;
 
 	return 0;

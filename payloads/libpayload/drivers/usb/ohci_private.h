@@ -257,6 +257,8 @@
 		hcca_t *hcca;
 		usbdev_t *roothub;
 		ed_t *periodic_ed;
+#define DMA_SIZE (64 * 1024)
+		void *dma_buffer;
 	} ohci_t;
 
 	typedef enum { OHCI_SETUP=0, OHCI_OUT=1, OHCI_IN=2, OHCI_FROM_TD=3 } ohci_pid_t;

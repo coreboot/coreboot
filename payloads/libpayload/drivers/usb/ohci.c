@@ -221,12 +221,18 @@ ohci_init (unsigned long physical_bar)
 	OHCI_INST (controller)->opreg->HcCommandStatus = HostControllerReset;
 	udelay (10); /* at most 10us for reset to complete. State must be set to Operational within 2ms (5.1.1.4) */
 	OHCI_INST (controller)->opreg->HcFmInterval = interval;
-	OHCI_INST (controller)->hcca = memalign(256, 256);
+	OHCI_INST (controller)->hcca = dma_memalign(256, 256);
 	memset((void*)OHCI_INST (controller)->hcca, 0, 256);
+
+	if (dma_initialized()) {
+		OHCI_INST(controller)->dma_buffer = dma_memalign(4096, DMA_SIZE);
+		if (!OHCI_INST(controller)->dma_buffer)
+			fatal("Not enough DMA memory for OHCI bounce buffer.\n");
+	}
 
 	/* Initialize interrupt table. */
 	u32 *const intr_table = OHCI_INST(controller)->hcca->HccaInterruptTable;
-	ed_t *const periodic_ed = memalign(sizeof(ed_t), sizeof(ed_t));
+	ed_t *const periodic_ed = dma_memalign(sizeof(ed_t), sizeof(ed_t));
 	memset((void *)periodic_ed, 0, sizeof(*periodic_ed));
 	for (i = 0; i < 32; ++i)
 		intr_table[i] = virt_to_phys(periodic_ed);
@@ -352,11 +358,27 @@ ohci_free_ed (ed_t *const head)
 }
 
 static int
-ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen,
-	      unsigned char *data)
+ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *setup, int dalen,
+	      unsigned char *src)
 {
+	u8 *data = src;
+	u8 *devreq = setup;
 	int remaining = dalen;
 	td_t *cur;
+
+	if (!dma_coherent(devreq)) {
+		devreq = OHCI_INST(dev->controller)->dma_buffer;
+		memcpy(devreq, setup, drlen);
+	}
+	if (dalen > 0 && !dma_coherent(src)) {
+		data = OHCI_INST(dev->controller)->dma_buffer + drlen;
+		if (drlen + dalen > DMA_SIZE) {
+			usb_debug("OHCI control transfer too large for DMA buffer: %d\n", drlen + dalen);
+			return -1;
+		}
+		if (dir == OUT)
+			memcpy(data, src, dalen);
+	}
 
 	// pages are specified as 4K in OHCI, so don't use getpagesize()
 	int first_page = (unsigned long)data / 4096;
@@ -365,7 +387,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	int pages = (dalen==0)?0:(last_page - first_page + 1);
 
 	/* First TD. */
-	td_t *const first_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	td_t *const first_td = (td_t *)dma_memalign(sizeof(td_t), sizeof(td_t));
 	memset((void *)first_td, 0, sizeof(*first_td));
 	cur = first_td;
 
@@ -379,7 +401,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 
 	while (pages > 0) {
 		/* One more TD. */
-		td_t *const next = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+		td_t *const next = (td_t *)dma_memalign(sizeof(td_t), sizeof(td_t));
 		memset((void *)next, 0, sizeof(*next));
 		/* Linked to the previous. */
 		cur->next_td = virt_to_phys(next);
@@ -413,7 +435,7 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	}
 
 	/* One more TD. */
-	td_t *const next_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	td_t *const next_td = (td_t *)dma_memalign(sizeof(td_t), sizeof(td_t));
 	memset((void *)next_td, 0, sizeof(*next_td));
 	/* Linked to the previous. */
 	cur->next_td = virt_to_phys(next_td);
@@ -428,13 +450,13 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	cur->buffer_end = 0;
 
 	/* Final dummy TD. */
-	td_t *const final_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	td_t *const final_td = (td_t *)dma_memalign(sizeof(td_t), sizeof(td_t));
 	memset((void *)final_td, 0, sizeof(*final_td));
 	/* Linked to the previous. */
 	cur->next_td = virt_to_phys(final_td);
 
 	/* Data structures */
-	ed_t *head = memalign(sizeof(ed_t), sizeof(ed_t));
+	ed_t *head = dma_memalign(sizeof(ed_t), sizeof(ed_t));
 	memset((void*)head, 0, sizeof(*head));
 	head->config = (dev->address << ED_FUNC_SHIFT) |
 		(0 << ED_EP_SHIFT) |
@@ -465,21 +487,34 @@ ohci_control (usbdev_t *dev, direction_t dir, int drlen, void *devreq, int dalen
 	/* free memory */
 	ohci_free_ed(head);
 
-	if (result >= 0)
+	if (result >= 0) {
 		result = dalen - result;
+		if (dir == IN && data != src)
+			memcpy(src, data, result);
+	}
 
 	return result;
 }
 
 /* finalize == 1: if data is of packet aligned size, add a zero length packet */
 static int
-ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
+ohci_bulk (endpoint_t *ep, int dalen, u8 *src, int finalize)
 {
 	int i;
-	int remaining = dalen;
-	usb_debug("bulk: %x bytes from %x, finalize: %x, maxpacketsize: %x\n", dalen, data, finalize, ep->maxpacketsize);
-
 	td_t *cur, *next;
+	int remaining = dalen;
+	u8 *data = src;
+	usb_debug("bulk: %x bytes from %x, finalize: %x, maxpacketsize: %x\n", dalen, src, finalize, ep->maxpacketsize);
+
+	if (!dma_coherent(src)) {
+		data = OHCI_INST(ep->dev->controller)->dma_buffer;
+		if (dalen > DMA_SIZE) {
+			usb_debug("OHCI bulk transfer too large for DMA buffer: %d\n", dalen);
+			return -1;
+		}
+		if (ep->direction == OUT)
+			memcpy(data, src, dalen);
+	}
 
 	// pages are specified as 4K in OHCI, so don't use getpagesize()
 	int first_page = (unsigned long)data / 4096;
@@ -493,7 +528,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	}
 
 	/* First TD. */
-	td_t *const first_td = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+	td_t *const first_td = (td_t *)dma_memalign(sizeof(td_t), sizeof(td_t));
 	memset((void *)first_td, 0, sizeof(*first_td));
 	cur = next = first_td;
 
@@ -531,7 +566,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 			data += second_page_size;
 		}
 		/* One more TD. */
-		next = (td_t *)memalign(sizeof(td_t), sizeof(td_t));
+		next = (td_t *)dma_memalign(sizeof(td_t), sizeof(td_t));
 		memset((void *)next, 0, sizeof(*next));
 		/* Linked to the previous. */
 		cur->next_td = virt_to_phys(next);
@@ -543,7 +578,7 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	cur = next;
 
 	/* Data structures */
-	ed_t *head = memalign(sizeof(ed_t), sizeof(ed_t));
+	ed_t *head = dma_memalign(sizeof(ed_t), sizeof(ed_t));
 	memset((void*)head, 0, sizeof(*head));
 	head->config = (ep->dev->address << ED_FUNC_SHIFT) |
 		((ep->endpoint & 0xf) << ED_EP_SHIFT) |
@@ -575,9 +610,11 @@ ohci_bulk (endpoint_t *ep, int dalen, u8 *data, int finalize)
 	/* free memory */
 	ohci_free_ed(head);
 
-	if (result >= 0)
+	if (result >= 0) {
 		result = dalen - result;
-	else
+		if (ep->direction == IN && data != src)
+			memcpy(src, data, result);
+	} else
 		clear_stall(ep);
 
 	return result;
@@ -638,16 +675,16 @@ ohci_create_intr_queue(endpoint_t *const ep, const int reqsize,
 		return NULL;
 
 	intr_queue_t *const intrq =
-		(intr_queue_t *)memalign(sizeof(intrq->ed), sizeof(*intrq));
+		(intr_queue_t *)dma_memalign(sizeof(intrq->ed), sizeof(*intrq));
 	memset(intrq, 0, sizeof(*intrq));
-	intrq->data = (u8 *)malloc(reqcount * reqsize);
+	intrq->data = (u8 *)dma_malloc(reqcount * reqsize);
 	intrq->reqsize = reqsize;
 	intrq->endp = ep;
 
 	/* Create #reqcount TDs. */
 	u8 *cur_data = intrq->data;
 	for (i = 0; i < reqcount; ++i) {
-		intrq_td_t *const td = memalign(sizeof(td->td), sizeof(*td));
+		intrq_td_t *const td = dma_memalign(sizeof(td->td), sizeof(*td));
 		++intrq->remaining_tds;
 		ohci_fill_intrq_td(td, intrq, cur_data);
 		cur_data += reqsize;
@@ -659,7 +696,7 @@ ohci_create_intr_queue(endpoint_t *const ep, const int reqsize,
 	}
 
 	/* Create last, dummy TD. */
-	intrq_td_t *dummy_td = memalign(sizeof(dummy_td->td), sizeof(*dummy_td));
+	intrq_td_t *dummy_td = dma_memalign(sizeof(dummy_td->td), sizeof(*dummy_td));
 	memset(dummy_td, 0, sizeof(*dummy_td));
 	dummy_td->intrq = intrq;
 	if (last_td)

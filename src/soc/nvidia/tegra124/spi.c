@@ -561,6 +561,7 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 			;	/* this shouldn't take long, no udelay */
 		dma_stop(spi->dma_in);
 		clrbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
+		dma_release(spi->dma_in);
 	}
 
 	if (spi->dma_out) {
@@ -569,6 +570,7 @@ static int tegra_spi_dma_finish(struct tegra_spi_channel *spi)
 			spi_delay(spi, todo - spi_byte_count(spi));
 		clrbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
 		dma_stop(spi->dma_out);
+		dma_release(spi->dma_out);
 	}
 
 	if (fifo_error(spi)) {

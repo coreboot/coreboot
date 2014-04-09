@@ -30,6 +30,8 @@
 #include <device/pci.h>
 #include <device/pci_def.h>
 
+#include <southbridge/amd/agesa/hudson/smi.h>
+
 /*************************************************
  * enable the dedicated function in parmer board.
  *************************************************/
@@ -38,6 +40,9 @@ static void mainboard_enable(device_t dev)
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
 	pavilion_m6_1035dx_ec_init();
+
+	hudson_enable_gevent_smi(EC_SMI_GEVENT);
+	hudson_enable_smi_generation();
 
 	/*
 	 * The mainboard is the first place that we get control in ramstage. Check

@@ -72,30 +72,19 @@ struct soc_intel_baytrail_config {
 	/* Allow PCIe devices to wake system from suspend. */
 	int pcie_wake_enable;
 
-	/*
-	 * Digital Port Hotplug Enable:
-	 *  0x04 = Enabled, 2ms short pulse
-	 *  0x05 = Enabled, 4.5ms short pulse
-	 *  0x06 = Enabled, 6ms short pulse
-	 *  0x07 = Enabled, 100ms short pulse
-	 */
-	int gpu_pipea_hotplug;
 	int gpu_pipea_port_select;	/* Port select: 1=DP_B 2=DP_C */
 	uint16_t gpu_pipea_power_on_delay;
 	uint16_t gpu_pipea_light_on_delay;
 	uint16_t gpu_pipea_power_off_delay;
 	uint16_t gpu_pipea_light_off_delay;
 	uint16_t gpu_pipea_power_cycle_delay;
-	uint32_t gpu_pipea_backlight_pwm;
 
-	int gpu_pipeb_hotplug;
 	int gpu_pipeb_port_select;	/* Port select: 1=DP_B 2=DP_C */
 	uint16_t gpu_pipeb_power_on_delay;
 	uint16_t gpu_pipeb_light_on_delay;
 	uint16_t gpu_pipeb_power_off_delay;
 	uint16_t gpu_pipeb_light_off_delay;
 	uint16_t gpu_pipeb_power_cycle_delay;
-	uint32_t gpu_pipeb_backlight_pwm;
 };
 
 extern struct chip_operations soc_intel_baytrail_ops;

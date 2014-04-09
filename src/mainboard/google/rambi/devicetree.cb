@@ -40,14 +40,12 @@ chip soc/intel/baytrail
 	register "pcie_wake_enable" = "1"
 
 	# Enable PIPEA as DP_C
-	register "gpu_pipea_hotplug" = "6"		# 6ms Pulse
 	register "gpu_pipea_port_select" = "2"		# DP_C
 	register "gpu_pipea_power_cycle_delay" = "5"	# 400ms
 	register "gpu_pipea_power_on_delay" = "2000"	# 200ms
 	register "gpu_pipea_light_on_delay" = "10"	# 1ms
 	register "gpu_pipea_power_off_delay" = "500"	# 50ms
 	register "gpu_pipea_light_off_delay" = "2000"	# 200ms
-	register "gpu_pipea_backlight_pwm" = "0x400"
 
 	# VR PS2 control
 	register "vnn_ps2_enable" = "1"

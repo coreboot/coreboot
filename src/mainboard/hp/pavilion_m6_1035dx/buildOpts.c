@@ -342,11 +342,34 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 #define DFLT_FCH_GPP_PORT3_HOTPLUG          FALSE
 //#define BLDCFG_IR_PIN_CONTROL	0x33
 
-GPIO_CONTROL   parmer_gpio[] = {
-	{183, Function1, GpioIn | GpioOutEnB | PullUpB},
+/*
+ * The GPIO control is not well documented in AGESA, but is in the BKDG
+ *
+ * Eg. FANIN1/GPIO57 on datasheet means power-on default (Function0) is to route
+ * from this ball to hardware monitor as FAN1 tacho input. Selecting Function1
+ * routes this to the GPIO block instead. Seems ACPI GPIOs and related GEVENTs
+ * are mostly in Function1, sometimes Function2.
+ *
+ * Note that the GpioOut bit does not mean that the GPIO is an output. That bit
+ * actually controls the output value, so GpioOut means "default to set".
+ * PullUpB is an inverted logic, so setting this bit means we're actually
+ * disabling the internal pull-up. The PullDown bit is NOT inverted logic.
+ * The output driver can be disabled with the GpioOutEnB bit, which is again,
+ * inverted logic. To make the list more readable, we define a few local macros
+ * to state what we mean.
+ */
+#define OUTPUT_HIGH	(GpioOut)
+#define OUTPUT_LOW	(0)
+#define INPUT		(GpioOutEnB)
+#define PULL_UP		(0)
+#define PULL_DOWN	(PullDown | PullUpB)
+#define PULL_NONE	(PullUpB)
+
+GPIO_CONTROL pavilion_m6_1035dx_gpio[] = {
+	{57, Function1, OUTPUT_HIGH | PULL_NONE},	/* WLAN enable */
 	{-1}
 };
-#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&parmer_gpio[0])
+#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&pavilion_m6_1035dx_gpio[0])
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product

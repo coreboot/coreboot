@@ -296,9 +296,6 @@ static void gfx_panel_setup(device_t dev)
 		/* CONTROL */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_CONTROL),
 				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
-		/* HOTPLUG */
-		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(HOTPLUG_CTRL),
-				0x1 | (config->gpu_pipea_hotplug << 2)),
 		/* POWER ON */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_ON_DELAYS),
 				(config->gpu_pipea_port_select << 30 |
@@ -311,21 +308,12 @@ static void gfx_panel_setup(device_t dev)
 		/* DIVISOR */
 		REG_RES_RMW32(PCI_BASE_ADDRESS_0, PIPEA_REG(PP_DIVISOR),
 			      ~0x1f, config->gpu_pipea_power_cycle_delay),
-		/* BACKLIGHT */
-		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(BACKLIGHT_CTL),
-				(config->gpu_pipea_backlight_pwm << 16) |
-				(config->gpu_pipea_backlight_pwm >> 1)),
-		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEA_REG(BACKLIGHT_CTL2),
-				BACKLIGHT_ENABLE),
 		REG_SCRIPT_END
 	};
 	struct reg_script gfx_pipeb_init[] = {
 		/* CONTROL */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_CONTROL),
 				PP_CONTROL_UNLOCK | PP_CONTROL_EDP_FORCE_VDD),
-		/* HOTPLUG */
-		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(HOTPLUG_CTRL),
-				0x1 | (config->gpu_pipeb_hotplug << 2)),
 		/* POWER ON */
 		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_ON_DELAYS),
 				(config->gpu_pipeb_port_select << 30 |
@@ -338,12 +326,6 @@ static void gfx_panel_setup(device_t dev)
 		/* DIVISOR */
 		REG_RES_RMW32(PCI_BASE_ADDRESS_0, PIPEB_REG(PP_DIVISOR),
 			      ~0x1f, config->gpu_pipeb_power_cycle_delay),
-		/* BACKLIGHT */
-		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(BACKLIGHT_CTL),
-				(config->gpu_pipeb_backlight_pwm << 16) |
-				(config->gpu_pipeb_backlight_pwm >> 1)),
-		REG_RES_WRITE32(PCI_BASE_ADDRESS_0, PIPEB_REG(BACKLIGHT_CTL2),
-				BACKLIGHT_ENABLE),
 		REG_SCRIPT_END
 	};
 

@@ -453,7 +453,7 @@ static void setup_dma_params(struct tegra_spi_channel *spi,
 {
 	/* APB bus width = 8-bits, address wrap for each word */
 	clrbits_le32(&dma->regs->apb_seq,
-			AHB_BUS_WIDTH_MASK << AHB_BUS_WIDTH_SHIFT);
+			APB_BUS_WIDTH_MASK << APB_BUS_WIDTH_SHIFT);
 	/* AHB 1 word burst, bus width = 32 bits (fixed in hardware),
 	 * no address wrapping */
 	clrsetbits_le32(&dma->regs->ahb_seq,

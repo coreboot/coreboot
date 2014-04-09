@@ -24,3 +24,12 @@ int init_default_cbfs_media(struct cbfs_media *media)
 {
 	return 0;
 }
+
+/*
+ * Temporary change to make sure storm code still builds. Will be dropped
+ * shortly.
+ */
+#include <delay.h>  /* This driver serves as a CBFS media source. */
+void init_timer(void)
+{
+}

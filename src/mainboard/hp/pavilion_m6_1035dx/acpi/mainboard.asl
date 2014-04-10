@@ -93,7 +93,10 @@ Scope (\_SB) {
 		/* Switch display */
 		Method (DSPS) { /* Stub */ }
 		/* Toggle wireless */
-		Method (WLTG) { /* Stub */ }
+		Method (WLTG)
+		{
+			Store( Not(GP57), GP57 )
+		}
 		/* Return lid state */
 		Method (LIDS) { /* Stub */ }
 	}

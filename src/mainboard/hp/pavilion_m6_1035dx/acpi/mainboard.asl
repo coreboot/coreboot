@@ -98,6 +98,9 @@ Scope (\_SB) {
 			Store( Not(GP57), GP57 )
 		}
 		/* Return lid state */
-		Method (LIDS) { /* Stub */ }
+		Method (LIDS)
+		{
+			Return(GE22)
+		}
 	}
 }

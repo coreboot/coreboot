@@ -35,44 +35,12 @@
 #include <libpayload.h>
 #include <arch/rdtsc.h>
 
-/**
- * @ingroup arch
- * Global variable containing the speed of the processor in KHz.
- */
-uint32_t cpu_khz;
-
-/**
- * Calculate the speed of the processor for use in delays.
- *
- * @return The CPU speed in kHz.
- */
-unsigned int get_cpu_speed(void)
+uint64_t timer_hz(void)
 {
-	unsigned long long start, end;
-	const uint32_t clock_rate = 1193182; // 1.193182 MHz
-	const uint16_t interval = (2 * clock_rate) / 1000; // 2 ms
+	return lib_sysinfo.cpu_khz * 1000;
+}
 
-	/* Set up the PPC port - disable the speaker, enable the T2 gate. */
-	outb((inb(0x61) & ~0x02) | 0x01, 0x61);
-
-	/* Set the PIT to Mode 0, counter 2, word access. */
-	outb(0xB0, 0x43);
-
-	/* Load the interval into the counter. */
-	outb(interval & 0xff, 0x42);
-	outb((interval >> 8) & 0xff, 0x42);
-
-	/* Read the number of ticks during the period. */
-	start = rdtsc();
-	while (!(inb(0x61) & 0x20)) ;
-	end = rdtsc();
-
-	/*
-	 * The number of milliseconds for a period is
-	 * clock_rate / (interval * 1000). Multiply that by the number of
-	 * measured clocks to get the kHz value.
-	 */
-	cpu_khz = (end - start) * clock_rate / (1000 * interval);
-
-	return cpu_khz;
+uint64_t timer_raw_value(void)
+{
+	return rdtsc();
 }

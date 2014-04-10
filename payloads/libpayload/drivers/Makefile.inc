@@ -44,6 +44,11 @@ libc-$(CONFIG_LP_CBMEM_CONSOLE) += cbmem_console.c
 libc-$(CONFIG_LP_NVRAM) += nvram.c
 libc-$(CONFIG_LP_NVRAM) += options.c
 
+# Timer drivers
+libc-$(CONFIG_LP_TIMER_MCT) += timer/mct.c
+libc-$(CONFIG_LP_TIMER_RDTSC) += timer/rdtsc.c
+libc-$(CONFIG_LP_TIMER_TEGRA_1US) += timer/tegra_1us.c
+
 # Video console drivers
 libc-$(CONFIG_LP_VIDEO_CONSOLE) += video/video.c
 libc-$(CONFIG_LP_VGA_VIDEO_CONSOLE) += video/vga.c

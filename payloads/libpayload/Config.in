@@ -327,6 +327,44 @@ config STORAGE_AHCI_ONLY_TESTED
 	  If this option is selected only AHCI controllers which are known
 	  to work will be used.
 
+config TIMER_RDTSC
+	bool
+	default y
+	depends on ARCH_X86
+
+choice
+	prompt "Timer driver"
+	default TIMER_NONE
+	depends on !ARCH_X86
+
+config TIMER_NONE
+	bool "None"
+	help
+	  The timer driver is provided by the payload itself.
+
+config TIMER_MCT
+	bool "Exynos MCT"
+
+config TIMER_TEGRA_1US
+	bool "Tegra 1us"
+
+endchoice
+
+config TIMER_MCT_HZ
+	int "Exynos MCT frequency"
+	depends on TIMER_MCT
+	default 24000000
+
+config TIMER_MCT_ADDRESS
+	hex "Exynos MCT base address"
+	depends on TIMER_MCT
+	default 0x101c0000
+
+config TIMER_TEGRA_1US_ADDRESS
+	hex "Tegra u1s timer base address"
+	depends on TIMER_TEGRA_1US
+	default 0x60005010
+
 config USB
 	bool "USB Support"
 	default n

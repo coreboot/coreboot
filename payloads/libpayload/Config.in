@@ -168,6 +168,16 @@ config 8250_SERIAL_CONSOLE
 	default y if ARCH_X86
 	default n if !ARCH_X86
 
+config S5P_SERIAL_CONSOLE
+	bool "Exynos SOC, S5P compatible serial port driver"
+	depends on SERIAL_CONSOLE
+	default n
+
+config TEGRA_SERIAL_CONSOLE
+	bool "Tegra SOC compatible serial port driver"
+	depends on SERIAL_CONSOLE
+	default n
+
 config SERIAL_IOBASE
 	## This default is currently not used on non-x86 systems.
 	hex "Default I/O base for the serial port (default 0x3f8)"

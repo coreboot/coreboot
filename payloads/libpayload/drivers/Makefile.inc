@@ -33,7 +33,9 @@ libc-$(CONFIG_LP_PCI) += pci.c
 
 libc-$(CONFIG_LP_SPEAKER) += speaker.c
 
-libc-$(CONFIG_LP_8250_SERIAL_CONSOLE) += serial.c
+libc-$(CONFIG_LP_8250_SERIAL_CONSOLE) += serial/8250.c
+libc-$(CONFIG_LP_S5P_SERIAL_CONSOLE) += serial/s5p.c
+libc-$(CONFIG_LP_TEGRA_SERIAL_CONSOLE) += serial/tegra.c
 
 libc-$(CONFIG_LP_PC_KEYBOARD) += keyboard.c
 

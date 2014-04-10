@@ -2,11 +2,8 @@
  * Copyright (c) 2012 - 2013 The Linux Foundation. All rights reserved.
  */
 
-#include <common.h>
-#include <asm/arch-ipq806x/clock.h>
-#include <asm/arch-ipq806x/nss/clock.h>
-#include <asm/arch-ipq806x/iomap.h>
-#include <asm/io.h>
+#include <delay.h>
+#include <clock.h>
 
 /**
  * uart_pll_vote_clk_enable - enables PLL8

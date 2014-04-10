@@ -30,10 +30,11 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __PLATFORM_IPQ860X_CLOCK_H_
-#define __PLATFORM_IPQ860X_CLOCK_H_
+#ifndef __IPQ860X_CLOCK_H_
+#define __IPQ860X_CLOCK_H_
 
-#include <asm/io.h>
+#include <iomap.h>
+
 /* UART clock @ 7.3728 MHz */
 #define UART_DM_CLK_RX_TX_BIT_RATE 0xCC
 
@@ -51,7 +52,7 @@
 #define GSBIn_HCLK_CTL_REG(n)               REG(0x29C0+(0x20*((n)-1)))
 #define BB_PLL_ENA_SC0_REG                  REG(0x34C0)
 #define BB_PLL8_STATUS_REG                  REG(0x3158)
-#define REG(off)        (MSM_CLK_CTL_BASE + (off))
+#define REG(off)        ((void *)(MSM_CLK_CTL_BASE + (off)))
 #define PLL8_STATUS_BIT                     16
 
 #define PLL_LOCK_DET_STATUS_REG             REG(0x03420)

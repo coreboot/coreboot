@@ -1,10 +1,13 @@
 bootblock-y += cbfs.c
+bootblock-y += clock.c
 bootblock-y += gpio.c
 
 romstage-y += cbfs.c
+romstage-y += clock.c
 romstage-y += gpio.c
 
 ramstage-y += cbfs.c
+ramstage-y += clock.c
 ramstage-y += gpio.c
 ramstage-y += timer.c
 

@@ -31,14 +31,10 @@
  * SUCH DAMAGE.
  */
 
-#include <asm/arch-ipq806x/iomap.h>
-#include <asm/io.h>
-#include <common.h>
-#include <asm/types.h>
-#include <asm/arch-ipq806x/timer.h>
-
-static ulong timestamp;
-static ulong lastinc;
+#include <delay.h>
+#include <iomap.h>
+#include <ipq_timer.h>
+#include <timer.h>
 
 #define GPT_FREQ_KHZ    32
 #define GPT_FREQ	(GPT_FREQ_KHZ * 1000)	/* 32 KHz */
@@ -46,36 +42,24 @@ static ulong lastinc;
 /**
  * timer_init - initialize timer
  */
-int timer_init(void)
+void init_timer(void)
 {
 	writel(0, GPT_ENABLE);
 	writel(GPT_ENABLE_EN, GPT_ENABLE);
-	return 0;
 }
 
 /**
- * get_timer - returns time lapsed
- * @base: base/start time
- *
- * Returns time lapsed, since the specified base time value.
- */
-ulong get_timer(ulong base)
-{
-	return get_timer_masked() - base;
-}
-
-/**
- * __udelay -  generates micro second delay.
+ * udelay -  generates micro second delay.
  * @usec: delay duration in microseconds
  *
  * With 32KHz clock, minimum possible delay is 31.25 Micro seconds and
  * its multiples. In Rumi GPT clock is 32 KHz
  */
-void __udelay(unsigned long usec)
+void udelay(unsigned usec)
 {
-	unsigned int val;
-	ulong now, last;
-	ulong runcount;
+	unsigned val;
+	unsigned now, last;
+	unsigned runcount;
 
 	usec = (usec + GPT_FREQ_KHZ - 1) / GPT_FREQ_KHZ;
 	last = readl(GPT_COUNT_VAL);
@@ -92,6 +76,15 @@ void __udelay(unsigned long usec)
 	} while (runcount < val);
 }
 
+#if 0
+
+/*
+ * TODO(vbendeb) clean it up later.
+ * Compile out the below code but leave it for now in case it will become
+ * necessary later in order to make the platform fully functional.
+ */
+static unsigned long timestamp;
+static unsigned long lastinc;
 
 inline ulong gpt_to_sys_freq(unsigned int gpt)
 {
@@ -137,3 +130,4 @@ ulong get_tbclk(void)
 {
         return GPT_FREQ;
 }
+#endif

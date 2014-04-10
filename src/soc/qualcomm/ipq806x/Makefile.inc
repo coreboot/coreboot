@@ -6,6 +6,7 @@ romstage-y += gpio.c
 
 ramstage-y += cbfs.c
 ramstage-y += gpio.c
+ramstage-y += timer.c
 
 ifeq ($(CONFIG_USE_BLOBS),y)
 

@@ -43,6 +43,8 @@
  */
 #define readl_i(a)           read32((const void *)(a))
 #define writel_i(v,a)        write32(v,(void *)a)
+#include <arch/io.h>
+#include <cdp.h>
 
 #define MSM_CLK_CTL_BASE    0x00900000
 
@@ -50,7 +52,7 @@
 #define MSM_GPT_BASE        (MSM_TMR_BASE + 0x04)
 #define MSM_DGT_BASE        (MSM_TMR_BASE + 0x24)
 
-#define GPT_REG(off)        (MSM_GPT_BASE + (off))
+#define GPT_REG(off)        (((uint8_t *)(MSM_GPT_BASE)) + (off))
 #define DGT_REG(off)        (MSM_DGT_BASE + (off))
 
 #define APCS_WDT0_EN        (MSM_TMR_BASE + 0x0040)

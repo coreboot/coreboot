@@ -4,9 +4,23 @@
 #ifndef  _IPQ806X_CDP_H_
 #define  _IPQ806X_CDP_H_
 
-#include <phy.h>
+unsigned smem_get_board_machtype(void);
 
-unsigned int smem_get_board_machtype(void);
+typedef enum {
+        PHY_INTERFACE_MODE_MII,
+        PHY_INTERFACE_MODE_GMII,
+        PHY_INTERFACE_MODE_SGMII,
+        PHY_INTERFACE_MODE_QSGMII,
+        PHY_INTERFACE_MODE_TBI,
+        PHY_INTERFACE_MODE_RMII,
+        PHY_INTERFACE_MODE_RGMII,
+        PHY_INTERFACE_MODE_RGMII_ID,
+        PHY_INTERFACE_MODE_RGMII_RXID,
+        PHY_INTERFACE_MODE_RGMII_TXID,
+        PHY_INTERFACE_MODE_RTBI,
+        PHY_INTERFACE_MODE_XGMII,
+        PHY_INTERFACE_MODE_NONE /* Must be last */
+} phy_interface_t;
 
 typedef struct {
 	unsigned int gpio;
@@ -73,17 +87,17 @@ typedef struct {
 } spinorflash_params_t;
 
 typedef struct {
-	uint count;
-	u8 addr[7];
+	unsigned count;
+	uint8_t addr[7];
 } ipq_gmac_phy_addr_t;
 
 typedef struct {
-	uint base;
+	unsigned base;
 	int unit;
-	uint is_macsec;
-	uint mac_pwr0;
-	uint mac_pwr1;
-	uint mac_conn_to_phy;
+	unsigned is_macsec;
+	unsigned mac_pwr0;
+	unsigned mac_pwr1;
+	unsigned mac_conn_to_phy;
 	phy_interface_t phy;
 	ipq_gmac_phy_addr_t phy_addr;
 } ipq_gmac_board_cfg_t;
@@ -98,6 +112,7 @@ typedef struct {
 	unsigned int uart_gsbi_base;
 	unsigned int uart_dm_base;
 	unsigned int clk_dummy;
+#if 0
 	uart_clk_mnd_t mnd_value;
 	unsigned int gmac_gpio_count;
 	gpio_func_data_t *gmac_gpio;
@@ -105,10 +120,12 @@ typedef struct {
 	flash_desc flashdesc;
 	spinorflash_params_t flash_param;
 	gpio_func_data_t dbg_uart_gpio[NO_OF_DBG_UART_GPIOS];
+#endif
 } __attribute__ ((__packed__)) board_ipq806x_params_t;
 
 extern board_ipq806x_params_t *gboard_param;
 
+#if 0
 static inline int gmac_cfg_is_valid(ipq_gmac_board_cfg_t *cfg)
 {
 	/*
@@ -121,7 +138,8 @@ static inline int gmac_cfg_is_valid(ipq_gmac_board_cfg_t *cfg)
 		(cfg < &gboard_param->gmac_cfg[IPQ_GMAC_NMACS]) &&
 		(cfg->unit >= 0) && (cfg->unit < IPQ_GMAC_NMACS));
 }
+#endif
 
-unsigned int get_board_index(unsigned int machid);
-void ipq_configure_gpio(gpio_func_data_t *gpio, uint count);
+unsigned int get_board_index(unsigned machid);
+void ipq_configure_gpio(gpio_func_data_t *gpio, unsigned count);
 #endif

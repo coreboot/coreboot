@@ -68,4 +68,24 @@ Scope (\_SB) {
 		})
 	}
 
+	Device (MB) {
+		/* Lid open */
+		Method (LIDO) { /* Not needed on this board */ }
+		/* Lid closed */
+		Method (LIDC) { /* Not needed on this board */ }
+		/* Increase brightness */
+		Method (BRTU) { /* Not needed on this board */ }
+		/* Decrease brightness */
+		Method (BRTD) { /* Not needed on this board */ }
+		/* Switch display */
+		Method (DSPS) { /* Not needed on this board */ }
+		/* Toggle wireless */
+		Method (WLTG) { /* Not needed on this board */ }
+		/* Return lid state */
+		Method (LIDS)
+		{
+			Return (GP15)
+		}
+	}
+
 }

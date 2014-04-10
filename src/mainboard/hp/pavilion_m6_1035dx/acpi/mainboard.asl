@@ -38,7 +38,6 @@
 	/* Variables used by EC */
 	/* TODO: These may belong in global non-volatile storage */
 	Name(PWRS, Zero)
-	Name(LIDS, Zero)
 
 	/* AcpiGpe0Blk */
 	OperationRegion(GP0B, SystemMemory, 0xfed80814, 0x04)
@@ -78,8 +77,24 @@ Scope (\_SB) {
 		Name(_HID, EisaId("PNP0C0D"))
 		Method(_LID, 0)
 		{
-			Store (GE22, \LIDS)
-			Return (\LIDS)
+			Return (GE22)	/* GE pin 22 */
 		}
+	}
+
+	Device (MB) {
+		/* Lid open */
+		Method (LIDO) { /* Stub */ }
+		/* Lid closed */
+		Method (LIDC) { /* Stub */ }
+		/* Increase brightness */
+		Method (BRTU) { /* Stub */ }
+		/* Decrease brightness */
+		Method (BRTD) { /* Stub */ }
+		/* Switch display */
+		Method (DSPS) { /* Stub */ }
+		/* Toggle wireless */
+		Method (WLTG) { /* Stub */ }
+		/* Return lid state */
+		Method (LIDS) { /* Stub */ }
 	}
 }

@@ -27,7 +27,7 @@ Device (EC0)
 {
 	Name (_HID, EISAID ("PNP0C09"))
 	Name (_UID, 1)
-	Name (_GPE, EC_SCI)	// GPE for Runtime SCI
+	Name (_GPE, EC_SCI_GPE)	// GPE for Runtime SCI
 
 	OperationRegion (ERAM, EmbeddedControl, 0x00, 0xff)
 	Field (ERAM, ByteAcc, Lock, Preserve)
@@ -272,9 +272,6 @@ Device (EC0)
 		// Initialize AC power state
 		Store (ADPT, \PWRS)
 
-		// Initialize LID switch state
-		Store (EC_ACPI_LID_SWITCH_OBJECT, \LIDS)
-
 		// Force a read of CPU temperature
 		Store (CTML, Local0)
 	}
@@ -308,6 +305,36 @@ Device (EC0)
  * Hotkey break Function     46h
  */
 
+	/* Decrease brightness hotkey */
+	Method (_Q11, 0, NotSerialized)
+	{
+		\_SB.MB.BRTD()
+	}
+
+	/* Increase brightness hotkey */
+	Method (_Q12, 0, NotSerialized)
+	{
+		\_SB.MB.BRTU()
+	}
+
+	/* Lid opened */
+	Method (_Q15, 0, NotSerialized)
+	{
+		\_SB.MB.LIDO()
+	}
+
+	/* Lid closed */
+	Method (_Q16, 0, NotSerialized)
+	{
+		\_SB.MB.LIDC()
+	}
+
+	/* Switch display hotkey */
+	Method (_Q1C, 0, NotSerialized)
+	{
+		\_SB.MB.DSPS()
+	}
+
 	// AC Power Connected
 	Method (_Q37, 0, NotSerialized)
 	{
@@ -326,6 +353,12 @@ Device (EC0)
 		Notify (BATX, 0x80)
 		// TODO ADD CPU power profile
 		\PNOT ()
+	}
+
+	/* Wireless toggle hotkey */
+	Method (_Q40, 0, NotSerialized)
+	{
+		\_SB.MB.WLTG()
 	}
 
 	// Battery at critical low state

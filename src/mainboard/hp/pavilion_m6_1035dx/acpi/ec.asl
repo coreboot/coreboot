@@ -6,9 +6,7 @@
 /*
  * EC bits specific to the mainboard
  */
-#define EC_SCI 3
-/* TODO: We do not yet know how the LID is connected to the platform */
-#define EC_ACPI_LID_SWITCH_OBJECT	Zero
+#define EC_SCI_GPE 3
 
 /* ACPI code for EC functions */
 #include <ec/compal/ene932/acpi/ec.asl>

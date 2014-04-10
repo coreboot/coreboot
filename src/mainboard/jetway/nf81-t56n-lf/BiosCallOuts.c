@@ -401,13 +401,13 @@ AGESA_STATUS BiosReset (uint32_t Func, uint32_t Data, void *ConfigPtr)
 	ResetType = Data;
 	StdHeader = ConfigPtr;
 
-	//
-	// Perform the RESET based upon the ResetType. In case of
-	// WARM_RESET_WHENVER and COLD_RESET_WHENEVER, the request will go to
-	// AmdResetManager. During the critical condition, where reset is required
-	// immediately, the reset will be invoked directly by writing 0x04 to port
-	// 0xCF9 (Reset Port).
-	//
+	/*
+	 * Perform the RESET based upon the ResetType. In case of
+	 * WARM_RESET_WHENEVER and COLD_RESET_WHENEVER, the request will go to
+	 * AmdResetManager. During the critical condition, where reset is required
+	 * immediately, the reset will be invoked directly by writing 0x04 to port
+	 * 0xCF9 (Reset Port).
+	 */
 	switch (ResetType) {
 	case WARM_RESET_WHENEVER:
 	case COLD_RESET_WHENEVER:
@@ -453,8 +453,9 @@ AGESA_STATUS BiosHookBeforeDQSTraining (uint32_t Func, uint32_t Data, void *Conf
 /* Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeDramInit (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
-	// Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
-	// Make sure the right speed settings are selected.
+	/* Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
+	 * Make sure the right speed settings are selected.
+	 */
 	((MEM_DATA_STRUCT*)ConfigPtr)->ParameterListPtr->DDR3Voltage = VOLT1_5;
 	return AGESA_SUCCESS;
 }
@@ -470,6 +471,7 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (uint32_t Func, uint32_t Data, void *
 {
 	return AGESA_SUCCESS;
 }
+
 /* PCIE slot reset control */
 AGESA_STATUS BiosGnbPcieSlotReset (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
@@ -484,7 +486,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (uint32_t Func, uint32_t Data, void *ConfigPtr
 
 	FcnData = Data;
 	ResetInfo = ConfigPtr;
-	// Get SB800 MMIO Base (AcpiMmioAddr)
+	/* Get SB800 MMIO Base (AcpiMmioAddr) */
 	WriteIo8(0xCD6, 0x27);
 	Data8 = ReadIo8(0xCD7);
 	Data16=Data8<<8;
@@ -496,7 +498,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (uint32_t Func, uint32_t Data, void *ConfigPtr
 	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
 	switch (ResetInfo->ResetId)
 	{
-	case 46:	// GPIO50 = SBGPIO_PCIE_RST# affects LAN0, LAN1, PCIe slot
+	case 46:	/* GPIO50 = SBGPIO_PCIE_RST# affects LAN0, LAN1, PCIe slot */
 		switch (ResetInfo->ResetControl) {
 		case AssertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);

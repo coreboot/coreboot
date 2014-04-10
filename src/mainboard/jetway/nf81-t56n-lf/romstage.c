@@ -173,7 +173,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
 	}
-#endif
+#endif /* CONFIG_HAVE_ACPI_RESUME */
 
 	/* Initialize i8259 pic */
 	post_code(0x43);

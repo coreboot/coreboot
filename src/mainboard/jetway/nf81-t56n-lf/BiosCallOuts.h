@@ -40,13 +40,12 @@ typedef struct _BIOS_BUFFER_NODE {
 	uint32_t BufferSize;
 	uint32_t NextNodeOffset;
 } BIOS_BUFFER_NODE;
-/*
- * CALLOUTS
- */
+
+/* Callouts */
 AGESA_STATUS GetBiosCallout (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
-/* REQUIRED CALLOUTS
- * AGESA ADVANCED CALLOUTS - CPU
+/* Required Callouts
+ * AGESA Advanced Callouts - CPU
  */
 AGESA_STATUS BiosAllocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr);
 AGESA_STATUS BiosDeallocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr);
@@ -56,7 +55,7 @@ AGESA_STATUS BiosReset (uint32_t Func, uint32_t Data, void *ConfigPtr);
 AGESA_STATUS BiosGetIdsInitData (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
 /* AGESA Advanced Callouts - Memory */
-AGESA_STATUS BiosReadSpd (uint32_t Func,uint32_t	Data,void *ConfigPtr);
+AGESA_STATUS BiosReadSpd (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
 /* BIOS default RET */
 AGESA_STATUS BiosDefaultRet (uint32_t Func, uint32_t Data, void *ConfigPtr);
@@ -72,4 +71,4 @@ AGESA_STATUS BiosHookBeforeExitSelfRefresh (uint32_t Func, uint32_t Data, void *
 /* PCIE slot reset control */
 AGESA_STATUS BiosGnbPcieSlotReset (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
-#endif //_BIOS_CALLOUT_H_
+#endif /* _BIOS_CALLOUT_H_ */

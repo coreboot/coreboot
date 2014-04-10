@@ -44,6 +44,7 @@ unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_ta
 	lens += acpigen_write_name_dword("TOM1", msr.lo);
 	msr = rdmsr(TOP_MEM2);
 	/*
+	 * FIXME: remove this work-around and url.. WinXP is EOL'ed any way.
 	 * Since XP only implements parts of ACPI 2.0, we can't use a qword
 	 * here.
 	 * See http://www.acpi.info/presentations/S01USMOBS169_OS%2520new.ppt
@@ -108,7 +109,7 @@ unsigned long acpi_fill_hest(acpi_hest_t *hest)
 
 unsigned long acpi_fill_slit(unsigned long current)
 {
-	// Not implemented
+	/* Not implemented */
 	return current;
 }
 
@@ -164,7 +165,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	memcpy(dsdt, &AmlCode, dsdt->length);
 	printk(BIOS_DEBUG, "ACPI:  * DSDT @ %p Length %x\n",dsdt,dsdt->length);
 
-	/* FACS */ // it needs 64 bit alignment
+	/* FACS - it needs 64 bit alignment */
 	current = ALIGN(current, 8);
 	printk(BIOS_DEBUG, "ACPI:  * FACS at %lx\n", current);
 	facs = (acpi_facs_t *) current;

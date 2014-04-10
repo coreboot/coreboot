@@ -26,9 +26,9 @@
 
 
 static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
-			    u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
-			    u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
-			    u8 slot, u8 rfu)
+			u8 link0, u16 bitmap0, u8 link1, u16 bitmap1,
+			u8 link2, u16 bitmap2, u8 link3, u16 bitmap3,
+			u8 slot, u8 rfu)
 {
 	pirq_info->bus = bus;
 	pirq_info->devfn = devfn;
@@ -58,15 +58,17 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	u8 sum = 0;
 	int i;
 
+	/* Find all Bus num and APIC's that are share with
+	 * mptable.c and acpi_tables.c
+	 */
+	get_bus_conf();
 
-	get_bus_conf();		/* it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c */
 
-
-	/* Align the table to be 16 byte aligned. */
+	/* Align table on 16 byte boundary. */
 	addr += 15;
 	addr &= ~15;
 
-	/* This table must be betweeen 0xf0000 & 0x100000 */
+	/* This table must be between 0xf0000 & 0x100000 */
 	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);
@@ -90,18 +92,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	pirq_info = (void *)(&pirq->checksum + 1);
 	slot_num = 0;
 
-
-	/* pci bridge */
+	/* PCI Bridge */
 	write_pirq_info(pirq_info, bus_sb800[0], ((sbdn_sb800 + 0x14) << 3) | 4,
 			0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0,
 			0);
 	pirq_info++;
 
-
-
 	slot_num++;
-
-
 
 	pirq->size = 32 + 16 * slot_num;
 
@@ -117,5 +114,4 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	printk(BIOS_INFO, "write_pirq_routing_table done.\n");
 
 	return (unsigned long)pirq_info;
-
 }

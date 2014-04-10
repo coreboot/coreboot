@@ -95,7 +95,6 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);
 	PCI_INT(0x0, 0x01, 0x1, intr_data[0x03]);
 
-	//PCI_INT(0x0, 0x14, 0x1, 0x11); /* IDE. */
 	PCI_INT(0x0, 0x14, 0x0, 0x10);
 	/* Southbridge HD Audio: */
 	PCI_INT(0x0, 0x14, 0x2, 0x12);
@@ -107,10 +106,10 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0x0, 0x16, 0x0, intr_data[0x34]);
 	PCI_INT(0x0, 0x16, 0x1, intr_data[0x35]);
 
-	/* sata */
+	/* SATA */
 	PCI_INT(0x0, 0x11, 0x0, intr_data[0x41]);
 
-	/* on board NIC & Slot PCIE.	*/
+	/* On-board NIC & Slot PCIE. */
 
 	/* PCI slots */
 	/* PCI_SLOT 0. */
@@ -119,7 +118,7 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(bus_sb800[1], 0x5, 0x2, 0x16);
 	PCI_INT(bus_sb800[1], 0x5, 0x3, 0x17);
 
-	/* PCI_SLOT 1. */
+	/* On-board Realtek NIC 1. */
 	PCI_INT(bus_sb800[1], 0x6, 0x0, 0x15);
 	PCI_INT(bus_sb800[1], 0x6, 0x1, 0x16);
 	PCI_INT(bus_sb800[1], 0x6, 0x2, 0x17);
@@ -135,7 +134,7 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(bus_sb800[2], 0x0, 0x1, 0x13);
 	PCI_INT(bus_sb800[2], 0x0, 0x2, 0x14);
 
-	/* PCIe PortA */
+	/* On-board Realtek NIC 2. (PCIe PortA) */
 	PCI_INT(0x0, 0x15, 0x0, 0x10);
 	/* PCIe PortB */
 	PCI_INT(0x0, 0x15, 0x1, 0x11);
@@ -144,7 +143,9 @@ static void *smp_write_config_table(void *v)
 	/* PCIe PortD */
 	PCI_INT(0x0, 0x15, 0x3, 0x13);
 
-	/*Local Ints:	 Type	Polarity	Trigger	 Bus ID	 IRQ	APIC ID PIN# */
+	/* Local Ints:
+	 * Type | Polarity | Trigger | Bus ID | IRQ | APIC ID PIN#
+	 */
 	IO_LOCAL_INT(mp_ExtINT, 0x0, MP_APIC_ALL, 0x0);
 	IO_LOCAL_INT(mp_NMI, 0x0, MP_APIC_ALL, 0x1);
 	/* There is no extension information... */

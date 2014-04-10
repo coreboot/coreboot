@@ -50,14 +50,13 @@
 
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
-
-/*	Select the cpu family.	*/
+/* Select the cpu family. */
 #define INSTALL_FAMILY_10_SUPPORT FALSE
 #define INSTALL_FAMILY_12_SUPPORT FALSE
 #define INSTALL_FAMILY_14_SUPPORT TRUE
 #define INSTALL_FAMILY_15_SUPPORT FALSE
 
-/*	Select the cpu socket type.	*/
+/* Select the cpu socket type. */
 #define INSTALL_G34_SOCKET_SUPPORT	FALSE
 #define INSTALL_C32_SOCKET_SUPPORT	FALSE
 #define INSTALL_S1G3_SOCKET_SUPPORT FALSE
@@ -69,8 +68,8 @@
 #define INSTALL_FT1_SOCKET_SUPPORT	TRUE
 #define INSTALL_AM3_SOCKET_SUPPORT	FALSE
 
-/*
- * Agesa optional capabilities selection.
+/**
+ * AGESA optional capabilities selection.
  * Uncomment and mark FALSE those features you wish to include in the build.
  * Comment out or mark TRUE those features you want to REMOVE from the build.
  */
@@ -102,13 +101,13 @@
 #define BLDOPT_REMOVE_DQS_TRAINING				FALSE
 #define BLDOPT_REMOVE_ONLINE_SPARE_SUPPORT		TRUE
 #define BLDOPT_REMOVE_MULTISOCKET_SUPPORT		TRUE
-#define BLDOPT_REMOVE_ACPI_PSTATES				FALSE
-	#define BLDCFG_REMOVE_ACPI_PSTATES_PPC			FALSE
-	#define BLDCFG_REMOVE_ACPI_PSTATES_PCT			FALSE
-	#define BLDCFG_REMOVE_ACPI_PSTATES_PSD			FALSE
-	#define BLDCFG_REMOVE_ACPI_PSTATES_PSS			FALSE
-	#define BLDCFG_REMOVE_ACPI_PSTATES_XPSS			FALSE
-	#define BLDCFG_FORCE_INDEPENDENT_PSD_OBJECT		FALSE
+		#define BLDOPT_REMOVE_ACPI_PSTATES				FALSE
+		#define BLDCFG_REMOVE_ACPI_PSTATES_PPC			FALSE
+		#define BLDCFG_REMOVE_ACPI_PSTATES_PCT			FALSE
+		#define BLDCFG_REMOVE_ACPI_PSTATES_PSD			FALSE
+		#define BLDCFG_REMOVE_ACPI_PSTATES_PSS			FALSE
+		#define BLDCFG_REMOVE_ACPI_PSTATES_XPSS			FALSE
+		#define BLDCFG_FORCE_INDEPENDENT_PSD_OBJECT		FALSE
 #define BLDOPT_REMOVE_SRAT						FALSE
 #define BLDOPT_REMOVE_SLIT						FALSE
 #define BLDOPT_REMOVE_WHEA						FALSE
@@ -123,7 +122,7 @@
 #define BLDOPT_REMOVE_EARLY_SAMPLES				TRUE
 
 /*
- * Agesa entry points used in this implementation.
+ * AGESA entry points used in this implementation.
  */
 #define AGESA_ENTRY_INIT_RESET					TRUE
 #define AGESA_ENTRY_INIT_RECOVERY				FALSE
@@ -233,8 +232,8 @@
 #define BLDCFG_HEAP_DRAM_ADDRESS				0xB0000
 #define BLDCFG_CFG_TEMP_PCIE_MMIO_BASE_ADDRESS	0xD0000000
 
-/*
- * Agesa configuration values selection.
+/**
+ * AGESA configuration values selection.
  * Uncomment and specify the value for the configuration options
  * needed by the system.
  */
@@ -256,8 +255,8 @@ const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 	{ CPU_LIST_TERMINAL }
 };
 
-/*****************************************************************************
- *	 Define the RELEASE VERSION string
+/**
+ * @brief Define the RELEASE VERSION string
  *
  * The Release Version string should identify the next planned release.
  * When a branch is made in preparation for a release, the release manager
@@ -268,42 +267,48 @@ const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
  * The release manager will need to remove the trailing 'X' and update the
  * version string as appropriate for the release. The trunk copy of this file
  * should also be updated/incremented for the next expected version, + trailing 'X'
- ****************************************************************************/
-// This is the delivery package title, "BrazosPI"
-// This string MUST be exactly 8 characters long
+ */
+
+/*
+ * This is the delivery package title, "BrazosPI"
+ * This string MUST be exactly 8 characters long
+ */
 #define AGESA_PACKAGE_STRING	{'c', 'b', '_', 'A', 'g', 'e', 's', 'a'}
 
-// This is the release version number of the AGESA component
-// This string MUST be exactly 12 characters long
+/* This is the release version number of the AGESA component
+ * This string MUST be exactly 12 characters long
+ */
 #define AGESA_VERSION_STRING	{'V', '1', '.', '1', '.', '0', '.', '3', ' ', ' ', ' ', ' '}
 
 /* MEMORY_BUS_SPEED */
-#define DDR400_FREQUENCY				200 ///< DDR 400
-#define DDR533_FREQUENCY				266 ///< DDR 533
-#define DDR667_FREQUENCY				333 ///< DDR 667
-#define DDR800_FREQUENCY				400 ///< DDR 800
-#define DDR1066_FREQUENCY				533 ///< DDR 1066
-#define DDR1333_FREQUENCY				667 ///< DDR 1333
-#define DDR1600_FREQUENCY				800 ///< DDR 1600
-#define DDR1866_FREQUENCY				933 ///< DDR 1866
-#define UNSUPPORTED_DDR_FREQUENCY		934 ///< Highest limit of DDR frequency
+#define DDR400_FREQUENCY				200 /**< DDR 400 */
+#define DDR533_FREQUENCY				266 /**< DDR 533 */
+#define DDR667_FREQUENCY				333 /**< DDR 667 */
+#define DDR800_FREQUENCY				400 /**< DDR 800 */
+#define DDR1066_FREQUENCY				533 /**< DDR 1066 */
+#define DDR1333_FREQUENCY				667 /**< DDR 1333 */
+#define DDR1600_FREQUENCY				800 /**< DDR 1600 */
+#define DDR1866_FREQUENCY				933 /**< DDR 1866 */
+#define UNSUPPORTED_DDR_FREQUENCY		934 /**< Max limit of DDR frequency */
 
 /* QUANDRANK_TYPE*/
-#define QUADRANK_REGISTERED				0 ///< Quadrank registered DIMM
-#define QUADRANK_UNBUFFERED				1 ///< Quadrank unbuffered DIMM
+#define QUADRANK_REGISTERED				0 /**< Quadrank registered DIMM */
+#define QUADRANK_UNBUFFERED				1 /**< Quadrank unbuffered DIMM */
 
 /* USER_MEMORY_TIMING_MODE */
-#define TIMING_MODE_AUTO				0 ///< Use best rate possible
-#define TIMING_MODE_LIMITED				1 ///< Set user top limit
-#define TIMING_MODE_SPECIFIC			2 ///< Set user specified speed
+#define TIMING_MODE_AUTO				0 /**< Use best rate possible */
+#define TIMING_MODE_LIMITED				1 /**< Set user top limit */
+#define TIMING_MODE_SPECIFIC			2 /**< Set user specified speed */
 
 /* POWER_DOWN_MODE */
-#define POWER_DOWN_BY_CHANNEL			0 ///< Channel power down mode
-#define POWER_DOWN_BY_CHIP_SELECT		1 ///< Chip select power down mode
+#define POWER_DOWN_BY_CHANNEL			0 /**< Channel power down mode */
+#define POWER_DOWN_BY_CHIP_SELECT		1 /**< Chip select power down mode */
 
-// The following definitions specify the default values for various parameters in which there are
-// no clearly defined defaults to be used in the common file.	The values below are based on product
-// and BKDG content, please consult the AGESA Memory team for consultation.
+/**
+ * The following definitions specify the default values for various parameters
+ * in which there are no clearly defined defaults to be used in the common
+ * file. The values below are based on product and BKDG content.
+ */
 #define DFLT_SCRUB_DRAM_RATE			(0)
 #define DFLT_SCRUB_L2_RATE				(0)
 #define DFLT_SCRUB_L3_RATE				(0)
@@ -316,121 +321,25 @@ const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 /* Instantiate all solution relevant data. */
 #include <vendorcode/amd/agesa/f14/Include/PlatformInstall.h>
 
-/*----------------------------------------------------------------------------------------
- *						CUSTOMER OVERIDES MEMORY TABLE
- *----------------------------------------------------------------------------------------
- */
-
-/*
- *	Platform Specific Overriding Table allows IBV/OEM to pass in platform information to AGESA
- *	(e.g. MemClk routing, the number of DIMM slots per channel,...). If PlatformSpecificTable
- *	is populated, AGESA will base its settings on the data from the table. Otherwise, it will
- *	use its default conservative settings.
+/**
+ * @brief Customer Overides Memory Table
+ *
+ * Platform Specific Overriding Table allows IBV/OEM to pass in platform
+ * information to AGESA
+ * (e.g. MemClk routing, the number of DIMM slots per channel,...).
+ * If PlatformSpecificTable is populated, AGESA will base its settings on the
+ * data from the table. Otherwise, it will use its default conservative settings.
  */
 const PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
-	//
-	// The following macros are supported (use comma to separate macros):
-	//
-	// MEMCLK_DIS_MAP(SocketID, ChannelID, MemClkDisBit0CSMap,..., MemClkDisBit7CSMap)
-	//			The MemClk pins are identified based on BKDG definition of Fn2x88[MemClkDis] bitmap.
-	//			AGESA will base on this value to disable unused MemClk to save power.
-	//			Example:
-	//			BKDG definition of Fn2x88[MemClkDis] bitmap for AM3 package is like below:
-	//					 Bit AM3/S1g3 pin name
-	//					 0	 M[B,A]_CLK_H/L[0]
-	//					 1	 M[B,A]_CLK_H/L[1]
-	//					 2	 M[B,A]_CLK_H/L[2]
-	//					 3	 M[B,A]_CLK_H/L[3]
-	//					 4	 M[B,A]_CLK_H/L[4]
-	//					 5	 M[B,A]_CLK_H/L[5]
-	//					 6	 M[B,A]_CLK_H/L[6]
-	//					 7	 M[B,A]_CLK_H/L[7]
-	//			And platform has the following routing:
-	//					 CS0	 M[B,A]_CLK_H/L[4]
-	//					 CS1	 M[B,A]_CLK_H/L[2]
-	//					 CS2	 M[B,A]_CLK_H/L[3]
-	//					 CS3	 M[B,A]_CLK_H/L[5]
-	//			Then platform can specify the following macro:
-	//			MEMCLK_DIS_MAP(ANY_SOCKET, ANY_CHANNEL, 0x00, 0x00, 0x02, 0x04, 0x01, 0x08, 0x00, 0x00)
-	//
-	// CKE_TRI_MAP(SocketID, ChannelID, CKETriBit0CSMap, CKETriBit1CSMap)
-	//			The CKE pins are identified based on BKDG definition of Fn2x9C_0C[CKETri] bitmap.
-	//			AGESA will base on this value to tristate unused CKE to save power.
-	//
-	// ODT_TRI_MAP(SocketID, ChannelID, ODTTriBit0CSMap,..., ODTTriBit3CSMap)
-	//			The ODT pins are identified based on BKDG definition of Fn2x9C_0C[ODTTri] bitmap.
-	//			AGESA will base on this value to tristate unused ODT pins to save power.
-	//
-	// CS_TRI_MAP(SocketID, ChannelID, CSTriBit0CSMap,..., CSTriBit7CSMap)
-	//			The Chip select pins are identified based on BKDG definition of Fn2x9C_0C[ChipSelTri] bitmap.
-	//			AGESA will base on this value to tristate unused Chip select to save power.
-	//
-	// NUMBER_OF_DIMMS_SUPPORTED(SocketID, ChannelID, NumberOfDimmSlotsPerChannel)
-	//			Specifies the number of DIMM slots per channel.
-	//
-	// NUMBER_OF_CHIP_SELECTS_SUPPORTED(SocketID, ChannelID, NumberOfChipSelectsPerChannel)
-	//			Specifies the number of Chip selects per channel.
-	//
-	// NUMBER_OF_CHANNELS_SUPPORTED(SocketID, NumberOfChannelsPerSocket)
-	//			Specifies the number of channels per socket.
-	//
-	// OVERRIDE_DDR_BUS_SPEED(SocketID, ChannelID, USER_MEMORY_TIMING_MODE, MEMORY_BUS_SPEED)
-	//			Specifies DDR bus speed of channel ChannelID on socket SocketID.
-	//
-	// DRAM_TECHNOLOGY(SocketID, TECHNOLOGY_TYPE)
-	//			Specifies the DRAM technology type of socket SocketID (DDR2, DDR3,...)
-	//
-	// WRITE_LEVELING_SEED(SocketID, ChannelID, Byte0Seed, Byte1Seed, Byte2Seed, Byte3Seed, Byte4Seed, Byte5Seed,
-	//			Byte6Seed, Byte7Seed, ByteEccSeed)
-	//			Specifies the write leveling seed for a channel of a socket.
-	//
 	NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
 	NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
 	PSO_END
 };
 
 
-//DA Customer table
+/* DA Customer table */
 const uint8_t AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
 {
- // Hardcoded Memory Training Values
-
- // The following macro should be used to override training values for your platform
- //
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNodes, MTDcts, MTDIMMs, BFRdDqsDly, MTOverride, 0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x1c, 0x20),
- //
- //	 NOTE:
- //	 The following training hardcode values are example values that were taken from a tilapia motherboard
- //	 with a particular DIMM configuration.	To hardcode your own values, uncomment the appropriate line in
- //	 the table and replace the byte lane values with your own.
- //
- //	 ------------------ BYTE LANES ----------------------
- //	BL0	 BL1	 BL2	 BL3	 BL4	 BL5	 BL6	 Bl7	 ECC
- // Write Data Timing
- // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM0, BFWrDatDly, MTOverride, 0x1D, 0x20, 0x26, 0x2B, 0x37, 0x3A, 0x3e, 0x3F, 0x30),// DCT0, DIMM0
- // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct0, MTDIMM1, BFWrDatDly, MTOverride, 0x1D, 0x00, 0x06, 0x0B, 0x17, 0x1A, 0x1E, 0x1F, 0x10),// DCT0, DIMM1
- // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct1, MTDIMM0, BFWrDatDly, MTOverride, 0x18, 0x1D, 0x27, 0x2B, 0x3B, 0x3B, 0x3E, 0x3E, 0x30),// DCT1, DIMM0
- // DQSACCESS(MTAfterHwWLTrnP2, MTNode0, MTDct1, MTDIMM1, BFWrDatDly, MTOverride, 0x18, 0x1D, 0x1C, 0x0B, 0x17, 0x1A, 0x1D, 0x1C, 0x10),// DCT1, DIMM1
-
- // DQS Receiver Enable
- // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct0, MTDIMM0, BFRcvEnDly, MTOverride, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),// DCT0, DIMM0
- // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct0, MTDIMM1, BFRcvEnDly, MTOverride, 0x7C, 0x7D, 0x7E, 0x81, 0x88, 0x8F, 0x96, 0x9F, 0x84),// DCT0, DIMM1
- // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct1, MTDIMM0, BFRcvEnDly, MTOverride, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),// DCT1, DIMM0
- // DQSACCESS(MTAfterSwRxEnTrn, MTNode0, MTDct1, MTDIMM1, BFRcvEnDly, MTOverride, 0x1C, 0x1D, 0x1E, 0x01, 0x08, 0x0F, 0x16, 0x1F, 0x04),// DCT1, DIMM1
-
- // Write DQS Delays
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM0, BFWrDqsDly, MTOverride, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),// DCT0, DIMM0
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM1, BFWrDqsDly, MTOverride, 0x06, 0x0D, 0x12, 0x1A, 0x25, 0x28, 0x2C, 0x2C, 0x44),// DCT0, DIMM1
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM0, BFWrDqsDly, MTOverride, 0x07, 0x0E, 0x14, 0x1B, 0x24, 0x29, 0x2B, 0x2C, 0x1F),// DCT1, DIMM0
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM1, BFWrDqsDly, MTOverride, 0x07, 0x0C, 0x14, 0x19, 0x25, 0x28, 0x2B, 0x2B, 0x1A),// DCT1, DIMM1
-
- // Read DQS Delays
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM0, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x0E, 0x10),// DCT0, DIMM0
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct0, MTDIMM1, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT0, DIMM1
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM0, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT1, DIMM0
- // DQSACCESS(MTAfterDqsRwPosTrn, MTNode0, MTDct1, MTDIMM1, BFRdDqsDly, MTOverride, 0x10, 0x10, 0x0E, 0x10, 0x10, 0x10, 0x10, 0x1E, 0x10),// DCT1, DIMM1
- //--------------------------------------------------------------------------------------------------------------------------------------------------
- // TABLE END
-	NBACCESS (MTEnd, 0,	0, 0, 0, 0),			// End of Table
+	NBACCESS (MTEnd, 0,	0, 0, 0, 0), /* End of Table */
 };
 const uint8_t SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABLE_ON[0]);

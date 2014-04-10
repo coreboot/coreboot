@@ -64,7 +64,7 @@ static void mainboard_enable(device_t dev)
  */
 #if CONFIG_HAVE_ACPI_RESUME
 	acpi_slp_type = acpi_get_sleep_type();
-#endif
+#endif /* CONFIG_HAVE_ACPI_RESUME */
 
 	/* enable GPP CLK0 thru CLK3 (interleaved) */
 	/* disable GPP CLK4 thru SLT_GFX_CLK */
@@ -77,7 +77,7 @@ static void mainboard_enable(device_t dev)
 
 	/*
 	 * Initialize ASF registers to an arbitrary address because someone
-	 * long ago set things up this way inside the SPD read code.  The
+	 * long ago set things up this way inside the SPD read code. The
 	 * SPD read code has been made generic and moved out of the board
 	 * directory, so the ASF init is being done here.
 	 */

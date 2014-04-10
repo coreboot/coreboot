@@ -30,18 +30,19 @@
 #include <southbridge/amd/cimx/sb800/sb_cimx.h>
 
 
-/* Global variables for MB layouts and these will be shared by irqtable mptable
-* and acpi_tables busnum is default.
-*/
+/**
+ * Global variables for mainboard layouts. These are shared by irqtable,
+ * mptable and acpi_tables where busnum is default.
+ */
 u8 bus_isa;
 u8 bus_sb800[6];
 u32 apicid_sb800;
 
-/*
-* Here you only need to set value in pci1234 for HT-IO that could be installed or not
-* You may need to preset pci1234 for HTIO board,
-* please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-*/
+/**
+ * Here you only need to set value in pci1234 for HT-IO that could be
+ * installed or not. You may need to preset pci1234 for HTIO board,
+ * please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
+ */
 u32 pci1234x[] = {
 	0x0000ff0,
 };
@@ -53,7 +54,7 @@ static u32 get_bus_conf_done = 0;
 
 #if CONFIG_HAVE_ACPI_RESUME
 extern u8 acpi_slp_type;
-#endif
+#endif /* CONFIG_HAVE_ACPI_RESUME */
 
 void get_bus_conf(void)
 {
@@ -63,26 +64,31 @@ void get_bus_conf(void)
 	device_t dev;
 	int i, j;
 
+	/* Be sure func is called exactly once */
 	if (get_bus_conf_done == 1)
-		return;	 /* do it only once */
+		return;
 
 	get_bus_conf_done = 1;
 
-/*
- * This is the call to AmdInitLate.	It is really in the wrong place, conceptually,
- * but functionally within the coreboot model, this is the best place to make the
- * call.	The logically correct place to call AmdInitLate is after PCI scan is done,
- * after the decision about S3 resume is made, and before the system tables are
- * written into RAM.	The routine that is responsible for writing the tables is
- * "write_tables", called near the end of "main".	There is no platform
- * specific entry point between the S3 resume decision point and the call to
- * "write_tables", and the next platform specific entry points are the calls to
- * the ACPI table write functions.	The first of ose would seem to be the right
- * place, but other table write functions, e.g. the PIRQ table write function, are
- * called before the ACPI tables are written.	This routine is called at the beginning
- * of each of the write functions called prior to the ACPI write functions, so this
- * becomes the best place for this call.
- */
+	/*
+	 * This is the call to AmdInitLate. It is really in the wrong place,
+	 * conceptually, but functionally within the coreboot model, this is the
+	 * best place to make the call. The logically correct place to call
+	 * AmdInitLate is after PCI scan is done, after the decision about S3
+	 * resume is made, and before the system tables are written into RAM. The
+	 * routine that is
+	 * responsible for writing the tables is "write_tables", called near the
+	 * end of "main". There is no platform specific entry point between the S3
+	 * resume decision point and the call to "write_tables", and the next
+	 * platform specific entry points are the calls to the ACPI table write
+	 * functions. The first of ose would seem to be the right place, but other
+	 * table write
+	 * functions, e.g. the PIRQ table write function, are called before the
+	 * ACPI tables are written. This routine is called at the beginning of each
+	 * of the write functions called prior to the ACPI write functions, so this
+	 * becomes the best place for this call.
+	 */
+
 #if CONFIG_HAVE_ACPI_RESUME
 	if (acpi_slp_type != 3) {
 		status = agesawrapper_amdinitlate();
@@ -96,7 +102,8 @@ void get_bus_conf(void)
 	status = agesawrapper_amdinitlate();
 	if(status)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
-#endif
+#endif /* CONFIG_HAVE_ACPI_RESUME */
+
 	sbdn_sb800 = 0;
 
 	memset(bus_sb800, 0, sizeof(bus_sb800));
@@ -142,5 +149,5 @@ void get_bus_conf(void)
 
 #if CONFIG_AMD_SB_CIMX
 	sb_Late_Post();
-#endif
+#endif /* CONFIG_AMD_SB_CIMX */
 }

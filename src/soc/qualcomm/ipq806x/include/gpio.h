@@ -30,8 +30,10 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef __PLATFORM_AKRONITE_GPIO_H_
-#define __PLATFORM_AKRONITE_GPIO_H_
+#ifndef __SOC_QUALCOMM_IPQ806X_GPIO_H_
+#define __SOC_QUALCOMM_IPQ806X_GPIO_H_
+
+typedef unsigned int gpio_t;
 
 /* GPIO TLMM: Direction */
 #define GPIO_INPUT      0
@@ -57,7 +59,37 @@
 #define GPIO_ENABLE     0
 #define GPIO_DISABLE    1
 
-void gpio_tlmm_config(unsigned int gpio, unsigned int func,
-                      unsigned int dir, unsigned int pull,
-                      unsigned int drvstr, unsigned int enable);
-#endif
+/* GPIO MAX Valid # */
+#define GPIO_MAX_NUM  68
+
+/* GPIO TLMM: Mask */
+#define GPIO_CFG_PULL_MASK    0x3
+#define GPIO_CFG_FUNC_MASK    0xF
+#define GPIO_CFG_DRV_MASK     0x7
+#define GPIO_CFG_OE_MASK      0x1
+
+/* GPIO TLMM: Shift */
+#define GPIO_CFG_PULL_SHIFT   0
+#define GPIO_CFG_FUNC_SHIFT   2
+#define GPIO_CFG_DRV_SHIFT    6
+#define GPIO_CFG_OE_SHIFT     9
+
+/* GPIO IO: Mask */
+#define GPIO_IO_IN_MASK       0x1
+#define GPIO_IO_OUT_MASK      0x1
+
+/* GPIO IO: Shift */
+#define GPIO_IO_IN_SHIFT      0
+#define GPIO_IO_OUT_SHIFT     1
+
+void gpio_tlmm_config_set(gpio_t gpio, unsigned int func,
+			  unsigned int pull, unsigned int drvstr,
+			  unsigned int enable);
+
+void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
+			  unsigned int *pull, unsigned int *drvstr,
+			  unsigned int *enable);
+
+void gpio_io_config_set(gpio_t gpio, unsigned int out);
+void gpio_io_config_get(gpio_t gpio, unsigned int *in, unsigned int *out);
+#endif // __SOC_QUALCOMM_IPQ806X_GPIO_H_

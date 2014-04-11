@@ -33,10 +33,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _PLATFORM_MSM8960_IOMAP_H_
-#define _PLATFORM_MSM8960_IOMAP_H_
-
-#include <configs/ipq806x_cdp.h>
+#ifndef __SOC_QUALCOMM_IPQ806X_IOMAP_H_
+#define __SOC_QUALCOMM_IPQ806X_IOMAP_H_
 
 /* Typecast to allow integers being passed as address
    This needs to be included because vendor code is not compliant with our
@@ -96,4 +94,4 @@
 #define UART2_DM_BASE           0x12490000
 #define UART_GSBI2_BASE         0x12480000
 
-#endif
+#endif // __SOC_QUALCOMM_IPQ806X_IOMAP_H_

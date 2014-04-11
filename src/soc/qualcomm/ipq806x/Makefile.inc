@@ -1,8 +1,11 @@
 bootblock-y += cbfs.c
+bootblock-y += gpio.c
 
 romstage-y += cbfs.c
+romstage-y += gpio.c
 
 ramstage-y += cbfs.c
+ramstage-y += gpio.c
 
 ifeq ($(CONFIG_USE_BLOBS),y)
 
@@ -27,4 +30,4 @@ $(objcbfs)/bootblock.bin: ./$(call strip_quotes,$(CONFIG_SBL_BLOB)) \
 
 endif
 
-INCLUDES += -Isrc/soc/qualcomm/ipq806x/include
+CPPFLAGS_common += -Isrc/soc/qualcomm/ipq806x/include

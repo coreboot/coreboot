@@ -26,3 +26,5 @@ $(objcbfs)/bootblock.bin: ./$(call strip_quotes,$(CONFIG_SBL_BLOB)) \
 	@mv $@.tmp $@
 
 endif
+
+INCLUDES += -Isrc/soc/qualcomm/ipq806x/include

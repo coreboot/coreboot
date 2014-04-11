@@ -24,6 +24,7 @@
 #include <northbridge/amd/agesa/family14/dimmSpd.h>
 #include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
 #include <vendorcode/amd/cimx/sb800/SB800.h>
+#include <stdint.h>
 
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
@@ -76,11 +77,11 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	},
 };
 
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS GetBiosCallout (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
-	UINTN i;
+	size_t i;
 	AGESA_STATUS CalloutStatus;
-	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
+	size_t CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
 
 	/*
 	 * printk(BIOS_SPEW,"%s function: %x\n", __func__, (u32) Func);
@@ -98,16 +99,16 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return CalloutStatus;
 }
 
-AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosAllocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
-	UINT32              AvailableHeapSize;
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              CurrNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              BestFitNodeOffset;
-	UINT32              BestFitPrevNodeOffset;
-	UINT32              NextFreeOffset;
+	uint32_t              AvailableHeapSize;
+	uint8_t               *BiosHeapBaseAddr;
+	uint32_t              CurrNodeOffset;
+	uint32_t              PrevNodeOffset;
+	uint32_t              FreedNodeOffset;
+	uint32_t              BestFitNodeOffset;
+	uint32_t              BestFitPrevNodeOffset;
+	uint32_t              NextFreeOffset;
 	BIOS_BUFFER_NODE   *CurrNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
 	BIOS_BUFFER_NODE   *BestFitNodePtr;
@@ -120,7 +121,7 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AllocParams->BufferPointer = NULL;
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = (uint8_t *) GetHeapBase(&(AllocParams->StdHeader));
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	printk(BIOS_SPEW, "%s BiosHeapBaseAddr: %x\n", __func__, (u32) BiosHeapBaseAddr);
@@ -132,7 +133,7 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		CurrNodePtr->BufferHandle = AllocParams->BufferHandle;
 		CurrNodePtr->BufferSize = AllocParams->BufferLength;
 		CurrNodePtr->NextNodeOffset = 0;
-		AllocParams->BufferPointer = (UINT8 *) CurrNodePtr + sizeof (BIOS_BUFFER_NODE);
+		AllocParams->BufferPointer = (uint8_t *) CurrNodePtr + sizeof (BIOS_BUFFER_NODE);
 
 		/* Update the remaining free space */
 		FreedNodeOffset = CurrNodeOffset + CurrNodePtr->BufferSize + sizeof (BIOS_BUFFER_NODE);
@@ -222,22 +223,22 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 			BestFitNodePtr->NextNodeOffset = 0;
 
 			/* Remove BestFitNode from list of Freed nodes */
-			AllocParams->BufferPointer = (UINT8 *) BestFitNodePtr + sizeof (BIOS_BUFFER_NODE);
+			AllocParams->BufferPointer = (uint8_t *) BestFitNodePtr + sizeof (BIOS_BUFFER_NODE);
 		}
 	}
 
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosDeallocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 
-	UINT8               *BiosHeapBaseAddr;
-	UINT32              AllocNodeOffset;
-	UINT32              PrevNodeOffset;
-	UINT32              NextNodeOffset;
-	UINT32              FreedNodeOffset;
-	UINT32              EndNodeOffset;
+	uint8_t               *BiosHeapBaseAddr;
+	uint32_t              AllocNodeOffset;
+	uint32_t              PrevNodeOffset;
+	uint32_t              NextNodeOffset;
+	uint32_t              FreedNodeOffset;
+	uint32_t              EndNodeOffset;
 	BIOS_BUFFER_NODE   *AllocNodePtr;
 	BIOS_BUFFER_NODE   *PrevNodePtr;
 	BIOS_BUFFER_NODE   *FreedNodePtr;
@@ -247,7 +248,7 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = (uint8_t *) GetHeapBase(&(AllocParams->StdHeader));
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	/* Find target node to deallocate in list of allocated nodes.
@@ -271,7 +272,7 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	PrevNodePtr->NextNodeOffset = AllocNodePtr->NextNodeOffset;
 
 	/* Zero out the buffer, and clear the BufferHandle */
-	LibAmdMemFill ((UINT8 *)AllocNodePtr + sizeof (BIOS_BUFFER_NODE), 0, AllocNodePtr->BufferSize, &(AllocParams->StdHeader));
+	LibAmdMemFill ((uint8_t *)AllocNodePtr + sizeof (BIOS_BUFFER_NODE), 0, AllocNodePtr->BufferSize, &(AllocParams->StdHeader));
 	AllocNodePtr->BufferHandle = 0;
 	AllocNodePtr->BufferSize += sizeof (BIOS_BUFFER_NODE);
 
@@ -348,17 +349,17 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosLocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
-	UINT32				AllocNodeOffset;
-	UINT8				*BiosHeapBaseAddr;
+	uint32_t				AllocNodeOffset;
+	uint8_t				*BiosHeapBaseAddr;
 	BIOS_BUFFER_NODE	*AllocNodePtr;
 	BIOS_HEAP_MANAGER	*BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS	*AllocParams;
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = (uint8_t *) GetHeapBase(&(AllocParams->StdHeader));
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
@@ -375,14 +376,14 @@ AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		}
 	}
 
-	AllocParams->BufferPointer = (UINT8 *) ((UINT8 *) AllocNodePtr + sizeof (BIOS_BUFFER_NODE));
+	AllocParams->BufferPointer = (uint8_t *) ((uint8_t *) AllocNodePtr + sizeof (BIOS_BUFFER_NODE));
 	AllocParams->BufferLength = AllocNodePtr->BufferSize;
 
 	return AGESA_SUCCESS;
 
 }
 
-AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosRunFuncOnAp (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	AGESA_STATUS		Status;
 
@@ -390,11 +391,11 @@ AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosReset (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	AGESA_STATUS		Status;
-	UINT8				 Value;
-	UINTN				 ResetType;
+	uint8_t			Value;
+	uint32_t		ResetType;
 	AMD_CONFIG_PARAMS	 *StdHeader;
 
 	ResetType = Data;
@@ -426,7 +427,7 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosReadSpd (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	AGESA_STATUS Status;
 #ifdef __PRE_RAM__
@@ -438,17 +439,19 @@ AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosDefaultRet (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	return AGESA_UNSUPPORTED;
 }
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDQSTraining (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDramInit (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	// Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
 	// Make sure the right speed settings are selected.
@@ -456,28 +459,28 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDramInitRecovery (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeExitSelfRefresh (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 /* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS BiosGnbPcieSlotReset (uint32_t Func, uint32_t Data, void *ConfigPtr)
 {
 	AGESA_STATUS Status;
-	UINTN					FcnData;
+	uint32_t 		FcnData;
 	PCIe_SLOT_RESET_INFO	*ResetInfo;
 
-	UINT32	GpioMmioAddr;
-	UINT32	AcpiMmioAddr;
-	UINT8	 Data8;
-	UINT16	Data16;
+	uint32_t	GpioMmioAddr;
+	uint32_t	AcpiMmioAddr;
+	uint8_t	 Data8;
+	uint16_t	Data16;
 
 	FcnData = Data;
 	ResetInfo = ConfigPtr;
@@ -488,7 +491,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	WriteIo8(0xCD6, 0x26);
 	Data8 = ReadIo8(0xCD7);
 	Data16|=Data8;
-	AcpiMmioAddr = (UINT32)Data16 << 16;
+	AcpiMmioAddr = (uint32_t)Data16 << 16;
 	Status = AGESA_UNSUPPORTED;
 	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
 	switch (ResetInfo->ResetId)
@@ -497,7 +500,7 @@ AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		switch (ResetInfo->ResetControl) {
 		case AssertSlotReset:
 			Data8 = Read64Mem8(GpioMmioAddr+SB_GPIO_REG50);
-			Data8 &= ~(UINT8)BIT6 ;
+			Data8 &= ~(uint8_t)BIT6 ;
 			Write64Mem8(GpioMmioAddr+SB_GPIO_REG50, Data8);
 			Status = AGESA_SUCCESS;
 			break;

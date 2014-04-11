@@ -63,9 +63,6 @@
 											 //3:Half-swing(-3.5db) 4:extended length (-6db) 5:extended length(-8db)
 #define GNB_GPP_PORT8_HOTPLUG_SUPPORT	0	//0:Disable 1:Basic 3:Enhanced
 
-VOID
-OemCustomizeInitEarly (
-	IN	OUT AMD_EARLY_PARAMS	*InitEarly
-	);
+void OemCustomizeInitEarly (IN OUT AMD_EARLY_PARAMS *InitEarly);
 
 #endif //_PLATFORM_GNB_PCIE_COMPLEX_H

@@ -49,14 +49,14 @@
 #define MMCONF_ENABLE 1
 
 /* ACPI table pointers returned by AmdInitLate */
-VOID *DmiTable		= NULL;
-VOID *AcpiPstate	= NULL;
-VOID *AcpiSrat		= NULL;
-VOID *AcpiSlit		= NULL;
+void *DmiTable		= NULL;
+void *AcpiPstate	= NULL;
+void *AcpiSrat		= NULL;
+void *AcpiSlit		= NULL;
 
-VOID *AcpiWheaMce	= NULL;
-VOID *AcpiWheaCmc	= NULL;
-VOID *AcpiAlib		= NULL;
+void *AcpiWheaMce	= NULL;
+void *AcpiWheaCmc	= NULL;
+void *AcpiAlib		= NULL;
 
 /*------------------------------------------------------------------------------
  *				T Y P E D E F S		 A N D		 S T R U C T U R E S
@@ -77,7 +77,7 @@ VOID *AcpiAlib		= NULL;
  *						L O C A L		F U N C T I O N S
  *------------------------------------------------------------------------------
  */
-uint32_t agesawrapper_amdinitcpuio(void)
+AGESA_STATUS agesawrapper_amdinitcpuio(void)
 {
 	pci_devfn_t dev;
 	msr_t msr;
@@ -112,25 +112,21 @@ uint32_t agesawrapper_amdinitcpuio(void)
 	return AGESA_SUCCESS;
 }
 
-UINT32
-agesawrapper_amdinitmmio (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitmmio(void)
 {
-	AGESA_STATUS		Status;
-	UINT64				MsrReg;
-	UINT32				PciData;
+	uint64_t			MsrReg;
+	uint32_t			PciData;
 	PCI_ADDR			PciAddress;
 	AMD_CONFIG_PARAMS	StdHeader;
 
-	UINT8				BusRangeVal = 0;
-	UINT8				BusNum;
-	UINT8				Index;
+	uint8_t				BusRangeVal = 0;
+	uint8_t				BusNum;
+	uint8_t				Index;
 
 	/*
-	 Set the MMIO Configuration Base Address and Bus Range onto MMIO configuration base
-	 Address MSR register.
-	*/
+	 * Set the MMIO Configuration Base Address and Bus Range onto MMIO
+	 * configuration base Address MSR register.
+	 */
 
 	for (Index = 0; Index < 8; Index++) {
 		BusNum = CONFIG_MMCONF_BUS_NUMBER >> Index;
@@ -140,7 +136,7 @@ agesawrapper_amdinitmmio (
 		}
 	}
 
-	MsrReg = (CONFIG_MMCONF_BASE_ADDRESS | (UINT64)(BusRangeVal << 2) | MMCONF_ENABLE);
+	MsrReg = (CONFIG_MMCONF_BASE_ADDRESS | (uint64_t)(BusRangeVal << 2) | MMCONF_ENABLE);
 	LibAmdMsrWrite (0xC0010058, &MsrReg, &StdHeader);
 
 	/*
@@ -158,14 +154,10 @@ agesawrapper_amdinitmmio (
 	PciData = (AMD_APU_SSID<<0x10)|AMD_APU_SVID;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
-	Status = AGESA_SUCCESS;
-	return (UINT32)Status;
+	return AGESA_SUCCESS;
 }
 
-UINT32
-agesawrapper_amdinitreset (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -188,17 +180,15 @@ agesawrapper_amdinitreset (
 	status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
-	return (UINT32)status;
+
+	return status;
 }
 
-UINT32
-agesawrapper_amdinitearly (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitearly(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
-	AMD_EARLY_PARAMS		 *AmdEarlyParamsPtr;
+	AMD_EARLY_PARAMS *AmdEarlyParamsPtr;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -217,19 +207,19 @@ agesawrapper_amdinitearly (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32 GetHeapBase(
+uint32_t GetHeapBase(
 	AMD_CONFIG_PARAMS *StdHeader
 	)
 {
-	UINT32 heap;
+	uint32_t heap;
 
 #if CONFIG_HAVE_ACPI_RESUME
 	/* Both romstage and ramstage has this S3 detect. */
 	if (acpi_get_sleep_type() == 3)
-		heap = (UINT32)cbmem_find(CBMEM_ID_RESUME_SCRATCH) + (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE); /* himem_heap_base + high_stack_size */
+		heap = (uint32_t)cbmem_find(CBMEM_ID_RESUME_SCRATCH) + (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE); /* himem_heap_base + high_stack_size */
 	else
 #endif
 		heap = BIOS_HEAP_START_ADDRESS; /* low mem */
@@ -237,14 +227,11 @@ UINT32 GetHeapBase(
 	return heap;
 }
 
-UINT32
-agesawrapper_amdinitpost (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitpost(void)
 {
 	AGESA_STATUS status;
-	UINT16					i;
-	UINT32					*HeadPtr;
+	uint16_t					i;
+	uint32_t					*HeadPtr;
 	AMD_INTERFACE_PARAMS	AmdParamStruct;
 	BIOS_HEAP_MANAGER		*BiosManagerPtr;
 
@@ -265,7 +252,7 @@ agesawrapper_amdinitpost (
 	/* Initialize heap space */
 	BiosManagerPtr = (BIOS_HEAP_MANAGER *)GetHeapBase(&AmdParamStruct.StdHeader);
 
-	HeadPtr = (UINT32 *) ((UINT8 *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
+	HeadPtr = (uint32_t *) ((uint8_t *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
 	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++) {
 		*HeadPtr = 0x00000000;
 		HeadPtr++;
@@ -273,18 +260,15 @@ agesawrapper_amdinitpost (
 	BiosManagerPtr->StartOfAllocatedNodes = 0;
 	BiosManagerPtr->StartOfFreedNodes = 0;
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32
-agesawrapper_amdinitenv (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitenv(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	PCI_ADDR			 PciAddress;
-	UINT32				 PciValue;
+	uint32_t				 PciValue;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -371,13 +355,10 @@ agesawrapper_amdinitenv (
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct (&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-VOID *
-agesawrapper_getlateinitptr (
-	int pick
-	)
+void * agesawrapper_getlateinitptr(int pick)
 {
 	switch (pick) {
 		case PICK_DMI:
@@ -399,10 +380,7 @@ agesawrapper_getlateinitptr (
 	}
 }
 
-UINT32
-agesawrapper_amdinitmid (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -425,15 +403,12 @@ agesawrapper_amdinitmid (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32
-agesawrapper_amdinitlate (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitlate(void)
 {
-	AGESA_STATUS Status;
+	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
 	AMD_LATE_PARAMS * AmdLateParamsPtr;
 
@@ -451,10 +426,10 @@ agesawrapper_amdinitlate (
 
 	printk (BIOS_DEBUG, "agesawrapper_amdinitlate: AmdLateParamsPtr = %X\n", (u32)AmdLateParamsPtr);
 
-	Status = AmdInitLate (AmdLateParamsPtr);
-	if (Status != AGESA_SUCCESS) {
+	status = AmdInitLate (AmdLateParamsPtr);
+	if (status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(status == AGESA_SUCCESS);
 	}
 
 	DmiTable    = AmdLateParamsPtr->DmiTable;
@@ -475,14 +450,11 @@ agesawrapper_amdinitlate (
 	 * AmdReleaseStruct (&AmdLateParams);
 	 */
 
-	return (UINT32)Status;
+	return status;
 }
 
 #if CONFIG_HAVE_ACPI_RESUME
-UINT32
-agesawrapper_amdinitresume (
-  VOID
-  )
+AGESA_STATUS agesawrapper_amdinitresume(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -514,15 +486,12 @@ agesawrapper_amdinitresume (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32
-agesawrapper_amds3laterestore (
-  VOID
-  )
+AGESA_STATUS agesawrapper_amds3laterestore(void)
 {
-	AGESA_STATUS Status;
+	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS    AmdInterfaceParams;
 	AMD_S3LATE_PARAMS       AmdS3LateParams;
 	AMD_S3LATE_PARAMS       *AmdS3LateParamsPtr;
@@ -547,22 +516,19 @@ agesawrapper_amds3laterestore (
 			   (u32 *) &AmdS3LateParamsPtr->S3DataBlock.VolatileStorageSize,
 			   (void **) &AmdS3LateParamsPtr->S3DataBlock.VolatileStorage);
 
-	Status = AmdS3LateRestore (AmdS3LateParamsPtr);
-	if (Status != AGESA_SUCCESS) {
+	status = AmdS3LateRestore (AmdS3LateParamsPtr);
+	if (status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(status == AGESA_SUCCESS);
 	}
 
-	return (UINT32)Status;
+	return status;
 }
 
 #ifndef __PRE_RAM__
-UINT32
-agesawrapper_amdS3Save (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdS3Save(void)
 {
-	AGESA_STATUS Status;
+	AGESA_STATUS status;
 	AMD_S3SAVE_PARAMS *AmdS3SaveParamsPtr;
 	AMD_INTERFACE_PARAMS  AmdInterfaceParams;
 	S3_DATA_TYPE          S3DataType;
@@ -581,15 +547,15 @@ agesawrapper_amdS3Save (
 	AmdS3SaveParamsPtr = (AMD_S3SAVE_PARAMS *)AmdInterfaceParams.NewStructPtr;
 	AmdS3SaveParamsPtr->StdHeader = AmdInterfaceParams.StdHeader;
 
-	Status = AmdS3Save (AmdS3SaveParamsPtr);
-	if (Status != AGESA_SUCCESS) {
+	status = AmdS3Save (AmdS3SaveParamsPtr);
+	if (status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(status == AGESA_SUCCESS);
 	}
 
 	S3DataType = S3DataTypeNonVolatile;
 
-	Status = OemAgesaSaveS3Info (
+	status = OemAgesaSaveS3Info (
 		S3DataType,
 		AmdS3SaveParamsPtr->S3DataBlock.NvStorageSize,
 		AmdS3SaveParamsPtr->S3DataBlock.NvStorage);
@@ -597,7 +563,7 @@ agesawrapper_amdS3Save (
 	if (AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize != 0) {
 		S3DataType = S3DataTypeVolatile;
 
-		Status = OemAgesaSaveS3Info (
+		status = OemAgesaSaveS3Info (
 			S3DataType,
 			AmdS3SaveParamsPtr->S3DataBlock.VolatileStorageSize,
 			AmdS3SaveParamsPtr->S3DataBlock.VolatileStorage
@@ -607,19 +573,18 @@ agesawrapper_amdS3Save (
 	OemAgesaSaveMtrr();
 	AmdReleaseStruct (&AmdInterfaceParams);
 
-	return (UINT32)Status;
+	return status;
 }
 #endif	/* #ifndef __PRE_RAM__ */
 #endif	/* CONFIG_HAVE_ACPI_RESUME */
 
-UINT32
-agesawrapper_amdlaterunaptask (
-	UINT32 Func,
-	UINT32 Data,
-	VOID *ConfigPtr
+AGESA_STATUS agesawrapper_amdlaterunaptask (
+	uint32_t Func,
+	uint32_t Data,
+	void *ConfigPtr
 	)
 {
-	AGESA_STATUS Status;
+	AGESA_STATUS status;
 	AP_EXE_PARAMS ApExeParams;
 
 	memset(&ApExeParams, 0, sizeof(AP_EXE_PARAMS));
@@ -631,21 +596,18 @@ agesawrapper_amdlaterunaptask (
 	ApExeParams.FunctionNumber = Func;
 	ApExeParams.RelatedDataBlock = ConfigPtr;
 
-	Status = AmdLateRunApTask (&ApExeParams);
-	if (Status != AGESA_SUCCESS) {
+	status = AmdLateRunApTask (&ApExeParams);
+	if (status != AGESA_SUCCESS) {
 		agesawrapper_amdreadeventlog();
-		ASSERT(Status == AGESA_SUCCESS);
+		ASSERT(status == AGESA_SUCCESS);
 	}
 
-	return (UINT32)Status;
+	return status;
 }
 
-UINT32
-agesawrapper_amdreadeventlog (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdreadeventlog(void)
 {
-	AGESA_STATUS Status;
+	AGESA_STATUS status;
 	EVENT_PARAMS AmdEventParams;
 
 	memset(&AmdEventParams, 0, sizeof(EVENT_PARAMS));
@@ -654,13 +616,13 @@ agesawrapper_amdreadeventlog (
 	AmdEventParams.StdHeader.CalloutPtr = NULL;
 	AmdEventParams.StdHeader.Func = 0;
 	AmdEventParams.StdHeader.ImageBasePtr = 0;
-	Status = AmdReadEventLog (&AmdEventParams);
+	status = AmdReadEventLog (&AmdEventParams);
 	while (AmdEventParams.EventClass != 0) {
 		printk(BIOS_DEBUG,"\nEventLog:	EventClass = %lx, EventInfo = %lx.\n",AmdEventParams.EventClass,AmdEventParams.EventInfo);
 		printk(BIOS_DEBUG,"	Param1 = %lx, Param2 = %lx.\n",AmdEventParams.DataParam1,AmdEventParams.DataParam2);
 		printk(BIOS_DEBUG,"	Param3 = %lx, Param4 = %lx.\n",AmdEventParams.DataParam3,AmdEventParams.DataParam4);
-		Status = AmdReadEventLog (&AmdEventParams);
+		status = AmdReadEventLog (&AmdEventParams);
 	}
 
-	return (UINT32)Status;
+	return status;
 }

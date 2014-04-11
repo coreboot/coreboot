@@ -23,51 +23,53 @@
 #include "Porting.h"
 #include "AGESA.h"
 
+#include <stdint.h>
+
 #define BIOS_HEAP_START_ADDRESS			0x10000 /* HEAP during cold boot */
 #define BIOS_HEAP_SIZE				0x20000
 #define BSP_STACK_BASE_ADDR			0x30000
 
 typedef struct _BIOS_HEAP_MANAGER {
-	//UINT32 AvailableSize;
-	UINT32 StartOfAllocatedNodes;
-	UINT32 StartOfFreedNodes;
+	//uint32_t AvailableSize;
+	uint32_t StartOfAllocatedNodes;
+	uint32_t StartOfFreedNodes;
 } BIOS_HEAP_MANAGER;
 
 typedef struct _BIOS_BUFFER_NODE {
-	UINT32 BufferHandle;
-	UINT32 BufferSize;
-	UINT32 NextNodeOffset;
+	uint32_t BufferHandle;
+	uint32_t BufferSize;
+	uint32_t NextNodeOffset;
 } BIOS_BUFFER_NODE;
 /*
  * CALLOUTS
  */
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS GetBiosCallout (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
 /* REQUIRED CALLOUTS
  * AGESA ADVANCED CALLOUTS - CPU
  */
-AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS BiosAllocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr);
+AGESA_STATUS BiosDeallocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr);
+AGESA_STATUS BiosLocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr);
+AGESA_STATUS BiosRunFuncOnAp (uint32_t Func, uint32_t Data, void *ConfigPtr);
+AGESA_STATUS BiosReset (uint32_t Func, uint32_t Data, void *ConfigPtr);
+AGESA_STATUS BiosGetIdsInitData (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
-/* AGESA ADVANCED CALLOUTS - MEMORY */
-AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
+/* AGESA Advanced Callouts - Memory */
+AGESA_STATUS BiosReadSpd (uint32_t Func,uint32_t	Data,void *ConfigPtr);
 
-/* BIOS DEFAULT RET */
-AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+/* BIOS default RET */
+AGESA_STATUS BiosDefaultRet (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDQSTraining (uint32_t Func, uint32_t Data, void *ConfigPtr);
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDramInit (uint32_t Func, uint32_t Data, void *ConfigPtr);
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeDramInitRecovery (uint32_t Func, uint32_t Data, void *ConfigPtr);
+/* Call the host environment interface to provide a user hook opportunity. */
+AGESA_STATUS BiosHookBeforeExitSelfRefresh (uint32_t Func, uint32_t Data, void *ConfigPtr);
 /* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS BiosGnbPcieSlotReset (uint32_t Func, uint32_t Data, void *ConfigPtr);
 
 #endif //_BIOS_CALLOUT_H_

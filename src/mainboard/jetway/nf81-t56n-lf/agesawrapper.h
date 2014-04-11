@@ -54,8 +54,8 @@ enum {
  */
 
 typedef struct {
-	UINT32 CalloutName;
-	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
+	uint32_t CalloutName;
+	AGESA_STATUS (*CalloutPtr) (uint32_t Func, uint32_t Data, void* ConfigPtr);
 } BIOS_CALLOUT_STRUCT;
 
 /*----------------------------------------------------------------------------------------
@@ -73,23 +73,23 @@ typedef struct {
  *---------------------------------------------------------------------------------------
  */
 
-UINT32 agesawrapper_amdinitreset (void);
-UINT32 agesawrapper_amdinitearly (void);
-UINT32 agesawrapper_amdinitenv (void);
-UINT32 agesawrapper_amdinitlate (void);
-UINT32 agesawrapper_amdinitpost (void);
-UINT32 agesawrapper_amdinitmid (void);
+AGESA_STATUS agesawrapper_amdinitreset(void);
+AGESA_STATUS agesawrapper_amdinitearly(void);
+AGESA_STATUS agesawrapper_amdinitenv(void);
+AGESA_STATUS agesawrapper_amdinitlate(void);
+AGESA_STATUS agesawrapper_amdinitpost(void);
+AGESA_STATUS agesawrapper_amdinitmid(void);
 
-UINT32 agesawrapper_amdreadeventlog (void);
+AGESA_STATUS agesawrapper_amdreadeventlog(void);
 
-uint32_t agesawrapper_amdinitcpuio (void);
-UINT32 agesawrapper_amdinitmmio (void);
-UINT32 agesawrapper_amdinitresume (void);
-UINT32 agesawrapper_amdS3Save (void);
-UINT32 agesawrapper_amds3laterestore (void);
-UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-void *agesawrapper_getlateinitptr (int pick);
+AGESA_STATUS agesawrapper_amdinitcpuio(void);
+AGESA_STATUS agesawrapper_amdinitmmio(void);
+AGESA_STATUS agesawrapper_amdinitresume(void);
+AGESA_STATUS agesawrapper_amdS3Save(void);
+AGESA_STATUS agesawrapper_amds3laterestore(void);
+AGESA_STATUS agesawrapper_amdlaterunaptask(uint32_t, uint32_t, void *);
+void * agesawrapper_getlateinitptr(int);
 
-UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
+uint32_t GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
 
 #endif

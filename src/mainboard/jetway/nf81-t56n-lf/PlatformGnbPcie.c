@@ -38,19 +38,13 @@
  *	@param[in]		**PeiServices
  *	@param[in]		*InitEarly
  *
- *	@retval		 VOID
- *
  **/
-/*---------------------------------------------------------------------------------------*/
-VOID
-OemCustomizeInitEarly (
-	IN	OUT AMD_EARLY_PARAMS	*InitEarly
-	)
+void OemCustomizeInitEarly (IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
-	AGESA_STATUS		 Status;
-	VOID				 *BrazosPcieComplexListPtr;
-	VOID				 *BrazosPciePortPtr;
-	VOID				 *BrazosPcieDdiPtr;
+	AGESA_STATUS	 Status;
+	void	*BrazosPcieComplexListPtr;
+	void	*BrazosPciePortPtr;
+	void	*BrazosPcieDdiPtr;
 
 	ALLOCATE_HEAP_PARAMS AllocHeapParams;
 

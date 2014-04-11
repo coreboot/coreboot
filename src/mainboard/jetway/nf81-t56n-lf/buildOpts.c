@@ -240,7 +240,7 @@
  */
 
 /* The fixed MTRR values to be set after memory initialization. */
-CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
+const AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
 {
 	{ AMD_AP_MTRR_FIX64k_00000, 0x1E1E1E1E1E1E1E1Eull },
 	{ AMD_AP_MTRR_FIX16k_80000, 0x1E1E1E1E1E1E1E1Eull },
@@ -327,7 +327,7 @@ CONST AP_MTRR_SETTINGS ROMDATA OntarioApMtrrSettingsList[] =
  *	is populated, AGESA will base its settings on the data from the table. Otherwise, it will
  *	use its default conservative settings.
  */
-CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
+const PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 	//
 	// The following macros are supported (use comma to separate macros):
 	//
@@ -391,7 +391,7 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 
 
 //DA Customer table
-CONST UINT8 AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
+const uint8_t AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
 {
  // Hardcoded Memory Training Values
 
@@ -433,18 +433,4 @@ CONST UINT8 AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
  // TABLE END
 	NBACCESS (MTEnd, 0,	0, 0, 0, 0),			// End of Table
 };
-CONST UINT8 SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABLE_ON[0]);
-
-/* ***************************************************************************
- *	 Optional User code to be included into the AGESA build
- *		These may be 32-bit call-out routines...
- */
-//AGESA_STATUS
-//AgesaReadSpd (
-//	IN				UINTN								 FcnData,
-//	IN OUT		AGESA_READ_SPD_PARAMS *ReadSpd
-//	)
-//{
-//	/* platform code to read an SPD...	*/
-//	return Status;
-//}
+const uint8_t SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABLE_ON[0]);

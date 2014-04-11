@@ -113,11 +113,11 @@ unsigned long acpi_fill_hest(acpi_hest_t *hest)
 
 	addr = agesawrapper_getlateinitptr(PICK_WHEA_MCE);
 	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+		current += acpi_create_hest_error_source(hest, current, 0, (void *)((u32)addr + 2), *(uint16_t *)addr - 2);
 
 	addr = agesawrapper_getlateinitptr(PICK_WHEA_CMC);
 	if (addr != NULL)
-		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(UINT16 *)addr - 2);
+		current += acpi_create_hest_error_source(hest, current, 1, (void *)((u32)addr + 2), *(uint16_t *)addr - 2);
 
 	return (unsigned long)current;
 }

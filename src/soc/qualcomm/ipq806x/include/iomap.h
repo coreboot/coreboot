@@ -37,6 +37,15 @@
 #define _PLATFORM_MSM8960_IOMAP_H_
 
 #include <configs/ipq806x_cdp.h>
+
+/* Typecast to allow integers being passed as address
+   This needs to be included because vendor code is not compliant with our
+   macros for read/write. Hence, special macros for readl_i and writel_i are
+   included to do this in one place for all occurrences in vendor code
+ */
+#define readl_i(a)           read32((const void *)(a))
+#define writel_i(v,a)        write32(v,(void *)a)
+
 #define MSM_CLK_CTL_BASE    0x00900000
 
 #define MSM_TMR_BASE        0x0200A000

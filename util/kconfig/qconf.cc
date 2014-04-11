@@ -3,24 +3,43 @@
  * Released under the terms of the GNU GPL v2.0.
  */
 
-#include <qapplication.h>
+#include <qglobal.h>
+
+#if QT_VERSION < 0x040000
+#include <stddef.h>
 #include <qmainwindow.h>
+#include <qvbox.h>
+#include <qvaluelist.h>
+#include <qtextbrowser.h>
+#include <qaction.h>
+#include <qheader.h>
+#include <qfiledialog.h>
+#include <qdragobject.h>
+#include <qpopupmenu.h>
+#else
+#include <q3mainwindow.h>
+#include <q3vbox.h>
+#include <q3valuelist.h>
+#include <q3textbrowser.h>
+#include <q3action.h>
+#include <q3header.h>
+#include <q3filedialog.h>
+#include <q3dragobject.h>
+#include <q3popupmenu.h>
+#endif
+
+#include <qapplication.h>
+#include <qdesktopwidget.h>
 #include <qtoolbar.h>
 #include <qlayout.h>
-#include <qvbox.h>
 #include <qsplitter.h>
-#include <qlistview.h>
-#include <qtextbrowser.h>
 #include <qlineedit.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qmenubar.h>
 #include <qmessagebox.h>
-#include <qaction.h>
-#include <qheader.h>
-#include <qfiledialog.h>
-#include <qdragobject.h>
 #include <qregexp.h>
+#include <qevent.h>
 
 #include <stdlib.h>
 
@@ -38,7 +57,7 @@
 static QApplication *configApp;
 static ConfigSettings *configSettings;
 
-QAction *ConfigMainWindow::saveAction;
+Q3Action *ConfigMainWindow::saveAction;
 
 static inline QString qgettext(const char* str)
 {
@@ -50,18 +69,22 @@ static inline QString qgettext(const QString& str)
 	return QString::fromLocal8Bit(gettext(str.latin1()));
 }
 
+ConfigSettings::ConfigSettings()
+	: QSettings("kernel.org", "qconf")
+{
+}
+
 /**
  * Reads a list of integer values from the application settings.
  */
-QValueList<int> ConfigSettings::readSizes(const QString& key, bool *ok)
+Q3ValueList<int> ConfigSettings::readSizes(const QString& key, bool *ok)
 {
-	QValueList<int> result;
+	Q3ValueList<int> result;
 	QStringList entryList = readListEntry(key, ok);
-	if (ok) {
-		QStringList::Iterator it;
-		for (it = entryList.begin(); it != entryList.end(); ++it)
-			result.push_back((*it).toInt());
-	}
+	QStringList::Iterator it;
+
+	for (it = entryList.begin(); it != entryList.end(); ++it)
+		result.push_back((*it).toInt());
 
 	return result;
 }
@@ -69,10 +92,10 @@ QValueList<int> ConfigSettings::readSizes(const QString& key, bool *ok)
 /**
  * Writes a list of integer values to the application settings.
  */
-bool ConfigSettings::writeSizes(const QString& key, const QValueList<int>& value)
+bool ConfigSettings::writeSizes(const QString& key, const Q3ValueList<int>& value)
 {
 	QStringList stringList;
-	QValueList<int>::ConstIterator it;
+	Q3ValueList<int>::ConstIterator it;
 
 	for (it = value.begin(); it != value.end(); ++it)
 		stringList.push_back(QString::number(*it));
@@ -80,7 +103,6 @@ bool ConfigSettings::writeSizes(const QString& key, const QValueList<int>& value
 }
 
 
-#if QT_VERSION >= 300
 /*
  * set the new data
  * TODO check the value
@@ -91,7 +113,6 @@ void ConfigItem::okRename(int col)
 	sym_set_string_value(menu->sym, text(dataColIdx).latin1());
 	listView()->updateList(this);
 }
-#endif
 
 /*
  * update the displayed of a menu entry
@@ -148,7 +169,7 @@ void ConfigItem::updateMenu(void)
 	case S_TRISTATE:
 		char ch;
 
-		if (!sym_is_changable(sym) && !list->showAll) {
+		if (!sym_is_changable(sym) && list->optMode == normalOpt) {
 			setPixmap(promptColIdx, 0);
 			setText(noColIdx, QString::null);
 			setText(modColIdx, QString::null);
@@ -195,11 +216,9 @@ void ConfigItem::updateMenu(void)
 
 		data = sym_get_string_value(sym);
 
-#if QT_VERSION >= 300
 		int i = list->mapIdx(dataColIdx);
 		if (i >= 0)
 			setRenameEnabled(i, TRUE);
-#endif
 		setText(dataColIdx, data);
 		if (type == S_STRING)
 			prompt = QString("%1: %2").arg(prompt).arg(data);
@@ -297,10 +316,10 @@ void ConfigLineEdit::show(ConfigItem* i)
 void ConfigLineEdit::keyPressEvent(QKeyEvent* e)
 {
 	switch (e->key()) {
-	case Key_Escape:
+	case Qt::Key_Escape:
 		break;
-	case Key_Return:
-	case Key_Enter:
+	case Qt::Key_Return:
+	case Qt::Key_Enter:
 		sym_set_string_value(item->menu->sym, text().latin1());
 		parent()->updateList(item);
 		break;
@@ -319,7 +338,7 @@ ConfigList::ConfigList(ConfigView* p, const char *name)
 	  symbolYesPix(xpm_symbol_yes), symbolModPix(xpm_symbol_mod), symbolNoPix(xpm_symbol_no),
 	  choiceYesPix(xpm_choice_yes), choiceNoPix(xpm_choice_no),
 	  menuPix(xpm_menu), menuInvPix(xpm_menu_inv), menuBackPix(xpm_menuback), voidPix(xpm_void),
-	  showAll(false), showName(false), showRange(false), showData(false),
+	  showName(false), showRange(false), showData(false), optMode(normalOpt),
 	  rootEntry(0), headerPopup(0)
 {
 	int i;
@@ -336,10 +355,10 @@ ConfigList::ConfigList(ConfigView* p, const char *name)
 
 	if (name) {
 		configSettings->beginGroup(name);
-		showAll = configSettings->readBoolEntry("/showAll", false);
 		showName = configSettings->readBoolEntry("/showName", false);
 		showRange = configSettings->readBoolEntry("/showRange", false);
 		showData = configSettings->readBoolEntry("/showData", false);
+		optMode = (enum optionMode)configSettings->readNumEntry("/optionMode", false);
 		configSettings->endGroup();
 		connect(configApp, SIGNAL(aboutToQuit()), SLOT(saveSettings()));
 	}
@@ -349,6 +368,17 @@ ConfigList::ConfigList(ConfigView* p, const char *name)
 	addColumn(promptColIdx, _("Option"));
 
 	reinit();
+}
+
+bool ConfigList::menuSkip(struct menu *menu)
+{
+	if (optMode == normalOpt && menu_is_visible(menu))
+		return false;
+	if (optMode == promptOpt && menu_has_prompt(menu))
+		return false;
+	if (optMode == allOpt)
+		return false;
+	return true;
 }
 
 void ConfigList::reinit(void)
@@ -379,7 +409,7 @@ void ConfigList::saveSettings(void)
 		configSettings->writeEntry("/showName", showName);
 		configSettings->writeEntry("/showRange", showRange);
 		configSettings->writeEntry("/showData", showData);
-		configSettings->writeEntry("/showAll", showAll);
+		configSettings->writeEntry("/optionMode", (int)optMode);
 		configSettings->endGroup();
 	}
 }
@@ -421,7 +451,7 @@ void ConfigList::updateList(ConfigItem* item)
 	if (!rootEntry) {
 		if (mode != listMode)
 			goto update;
-		QListViewItemIterator it(this);
+		Q3ListViewItemIterator it(this);
 		ConfigItem* item;
 
 		for (; it.current(); ++it) {
@@ -516,11 +546,9 @@ void ConfigList::changeValue(ConfigItem* item)
 	case S_INT:
 	case S_HEX:
 	case S_STRING:
-#if QT_VERSION >= 300
 		if (colMap[dataColIdx] >= 0)
 			item->startRename(colMap[dataColIdx]);
 		else
-#endif
 			parent()->lineEdit->show(item);
 		break;
 	}
@@ -552,7 +580,7 @@ void ConfigList::setParentMenu(void)
 		return;
 	setRootMenu(menu_get_parent_menu(rootEntry->parent));
 
-	QListViewItemIterator it(this);
+	Q3ListViewItemIterator it(this);
 	for (; (item = (ConfigItem*)it.current()); it++) {
 		if (item->menu == oldroot) {
 			setCurrentItem(item);
@@ -605,7 +633,7 @@ void ConfigList::updateMenuList(P* parent, struct menu* menu)
 		}
 
 		visible = menu_is_visible(child);
-		if (showAll || visible) {
+		if (!menuSkip(child)) {
 			if (!child->sym && !child->list && !child->prompt)
 				continue;
 			if (!item || item->menu != child)
@@ -634,12 +662,12 @@ void ConfigList::updateMenuList(P* parent, struct menu* menu)
 
 void ConfigList::keyPressEvent(QKeyEvent* ev)
 {
-	QListViewItem* i = currentItem();
+	Q3ListViewItem* i = currentItem();
 	ConfigItem* item;
 	struct menu *menu;
 	enum prop_type type;
 
-	if (ev->key() == Key_Escape && mode != fullMode && mode != listMode) {
+	if (ev->key() == Qt::Key_Escape && mode != fullMode && mode != listMode) {
 		emit parentSelected();
 		ev->accept();
 		return;
@@ -652,8 +680,8 @@ void ConfigList::keyPressEvent(QKeyEvent* ev)
 	item = (ConfigItem*)i;
 
 	switch (ev->key()) {
-	case Key_Return:
-	case Key_Enter:
+	case Qt::Key_Return:
+	case Qt::Key_Enter:
 		if (item->goParent) {
 			emit parentSelected();
 			break;
@@ -667,16 +695,16 @@ void ConfigList::keyPressEvent(QKeyEvent* ev)
 			emit menuSelected(menu);
 			break;
 		}
-	case Key_Space:
+	case Qt::Key_Space:
 		changeValue(item);
 		break;
-	case Key_N:
+	case Qt::Key_N:
 		setValue(item, no);
 		break;
-	case Key_M:
+	case Qt::Key_M:
 		setValue(item, mod);
 		break;
-	case Key_Y:
+	case Qt::Key_Y:
 		setValue(item, yes);
 		break;
 	default:
@@ -800,10 +828,10 @@ void ConfigList::contextMenuEvent(QContextMenuEvent *e)
 {
 	if (e->y() <= header()->geometry().bottom()) {
 		if (!headerPopup) {
-			QAction *action;
+			Q3Action *action;
 
-			headerPopup = new QPopupMenu(this);
-			action = new QAction(NULL, _("Show Name"), 0, this);
+			headerPopup = new Q3PopupMenu(this);
+			action = new Q3Action(NULL, _("Show Name"), 0, this);
 			  action->setToggleAction(TRUE);
 			  connect(action, SIGNAL(toggled(bool)),
 				  parent(), SLOT(setShowName(bool)));
@@ -811,7 +839,7 @@ void ConfigList::contextMenuEvent(QContextMenuEvent *e)
 				  action, SLOT(setOn(bool)));
 			  action->setOn(showName);
 			  action->addTo(headerPopup);
-			action = new QAction(NULL, _("Show Range"), 0, this);
+			action = new Q3Action(NULL, _("Show Range"), 0, this);
 			  action->setToggleAction(TRUE);
 			  connect(action, SIGNAL(toggled(bool)),
 				  parent(), SLOT(setShowRange(bool)));
@@ -819,7 +847,7 @@ void ConfigList::contextMenuEvent(QContextMenuEvent *e)
 				  action, SLOT(setOn(bool)));
 			  action->setOn(showRange);
 			  action->addTo(headerPopup);
-			action = new QAction(NULL, _("Show Data"), 0, this);
+			action = new Q3Action(NULL, _("Show Data"), 0, this);
 			  action->setToggleAction(TRUE);
 			  connect(action, SIGNAL(toggled(bool)),
 				  parent(), SLOT(setShowData(bool)));
@@ -834,7 +862,10 @@ void ConfigList::contextMenuEvent(QContextMenuEvent *e)
 		e->ignore();
 }
 
-ConfigView* ConfigView::viewList;
+ConfigView*ConfigView::viewList;
+QAction *ConfigView::showNormalAction;
+QAction *ConfigView::showAllAction;
+QAction *ConfigView::showPromptAction;
 
 ConfigView::ConfigView(QWidget* parent, const char *name)
 	: Parent(parent, name)
@@ -859,13 +890,16 @@ ConfigView::~ConfigView(void)
 	}
 }
 
-void ConfigView::setShowAll(bool b)
+void ConfigView::setOptionMode(QAction *act)
 {
-	if (list->showAll != b) {
-		list->showAll = b;
-		list->updateListAll();
-		emit showAllChanged(b);
-	}
+	if (act == showNormalAction)
+		list->optMode = normalOpt;
+	else if (act == showAllAction)
+		list->optMode = allOpt;
+	else
+		list->optMode = promptOpt;
+
+	list->updateListAll();
 }
 
 void ConfigView::setShowName(bool b)
@@ -897,7 +931,7 @@ void ConfigView::setShowData(bool b)
 
 void ConfigList::setAllOpen(bool open)
 {
-	QListViewItemIterator it(this);
+	Q3ListViewItemIterator it(this);
 
 	for (; it.current(); it++)
 		it.current()->setOpen(open);
@@ -920,7 +954,7 @@ void ConfigView::updateListAll(void)
 }
 
 ConfigInfoView::ConfigInfoView(QWidget* parent, const char *name)
-	: Parent(parent, name), menu(0), sym(0)
+	: Parent(parent, name), sym(0), _menu(0)
 {
 	if (name) {
 		configSettings->beginGroup(name);
@@ -943,7 +977,7 @@ void ConfigInfoView::setShowDebug(bool b)
 {
 	if (_showDebug != b) {
 		_showDebug = b;
-		if (menu)
+		if (_menu)
 			menuInfo();
 		else if (sym)
 			symbolInfo();
@@ -953,42 +987,14 @@ void ConfigInfoView::setShowDebug(bool b)
 
 void ConfigInfoView::setInfo(struct menu *m)
 {
-	if (menu == m)
+	if (_menu == m)
 		return;
-	menu = m;
+	_menu = m;
 	sym = NULL;
-	if (!menu)
+	if (!_menu)
 		clear();
 	else
 		menuInfo();
-}
-
-void ConfigInfoView::setSource(const QString& name)
-{
-	const char *p = name.latin1();
-
-	menu = NULL;
-	sym = NULL;
-
-	switch (p[0]) {
-	case 'm':
-		struct menu *m;
-
-		if (sscanf(p, "m%p", &m) == 1 && menu != m) {
-			menu = m;
-			menuInfo();
-			emit menuSelected(menu);
-		}
-		break;
-	case 's':
-		struct symbol *s;
-
-		if (sscanf(p, "s%p", &s) == 1 && sym != s) {
-			sym = s;
-			symbolInfo();
-		}
-		break;
-	}
 }
 
 void ConfigInfoView::symbolInfo(void)
@@ -1012,11 +1018,11 @@ void ConfigInfoView::menuInfo(void)
 	struct symbol* sym;
 	QString head, debug, help;
 
-	sym = menu->sym;
+	sym = _menu->sym;
 	if (sym) {
-		if (menu->prompt) {
+		if (_menu->prompt) {
 			head += "<big><b>";
-			head += print_filter(_(menu->prompt->text));
+			head += print_filter(_(_menu->prompt->text));
 			head += "</b></big>";
 			if (sym->name) {
 				head += " (";
@@ -1041,26 +1047,24 @@ void ConfigInfoView::menuInfo(void)
 		if (showDebug())
 			debug = debug_info(sym);
 
-		help = menu_get_help(menu);
-		/* Gettextize if the help text not empty */
-		if (help.isEmpty())
-			help = print_filter(menu_get_help(menu));
-		else
-			help = print_filter(_(menu_get_help(menu)));
-	} else if (menu->prompt) {
+		struct gstr help_gstr = str_new();
+		menu_get_ext_help(_menu, &help_gstr);
+		help = print_filter(str_get(&help_gstr));
+		str_free(&help_gstr);
+	} else if (_menu->prompt) {
 		head += "<big><b>";
-		head += print_filter(_(menu->prompt->text));
+		head += print_filter(_(_menu->prompt->text));
 		head += "</b></big><br><br>";
 		if (showDebug()) {
-			if (menu->prompt->visible.expr) {
+			if (_menu->prompt->visible.expr) {
 				debug += "&nbsp;&nbsp;dep: ";
-				expr_print(menu->prompt->visible.expr, expr_print_help, &debug, E_NONE);
+				expr_print(_menu->prompt->visible.expr, expr_print_help, &debug, E_NONE);
 				debug += "<br><br>";
 			}
 		}
 	}
 	if (showDebug())
-		debug += QString().sprintf("defined at %s:%d<br><br>", menu->file->name, menu->lineno);
+		debug += QString().sprintf("defined at %s:%d<br><br>", _menu->file->name, _menu->lineno);
 
 	setText(head + debug + help);
 }
@@ -1163,10 +1167,10 @@ void ConfigInfoView::expr_print_help(void *data, struct symbol *sym, const char 
 		*text += str2;
 }
 
-QPopupMenu* ConfigInfoView::createPopupMenu(const QPoint& pos)
+Q3PopupMenu* ConfigInfoView::createPopupMenu(const QPoint& pos)
 {
-	QPopupMenu* popup = Parent::createPopupMenu(pos);
-	QAction* action = new QAction(NULL, _("Show Debug Info"), 0, popup);
+	Q3PopupMenu* popup = Parent::createPopupMenu(pos);
+	Q3Action* action = new Q3Action(NULL, _("Show Debug Info"), 0, popup);
 	  action->setToggleAction(TRUE);
 	  connect(action, SIGNAL(toggled(bool)), SLOT(setShowDebug(bool)));
 	  connect(this, SIGNAL(showDebugChanged(bool)), action, SLOT(setOn(bool)));
@@ -1199,7 +1203,7 @@ ConfigSearchWindow::ConfigSearchWindow(ConfigMainWindow* parent, const char *nam
 	layout1->addLayout(layout2);
 
 	split = new QSplitter(this);
-	split->setOrientation(QSplitter::Vertical);
+	split->setOrientation(Qt::Vertical);
 	list = new ConfigView(split, name);
 	list->list->mode = listMode;
 	info = new ConfigInfoView(split, name);
@@ -1223,7 +1227,7 @@ ConfigSearchWindow::ConfigSearchWindow(ConfigMainWindow* parent, const char *nam
 			y = configSettings->readNumEntry("/window y", 0, &ok);
 		if (ok)
 			move(x, y);
-		QValueList<int> sizes = configSettings->readSizes("/split", &ok);
+		Q3ValueList<int> sizes = configSettings->readSizes("/split", &ok);
 		if (ok)
 			split->setSizes(sizes);
 		configSettings->endGroup();
@@ -1275,9 +1279,15 @@ ConfigMainWindow::ConfigMainWindow(void)
 	int x, y, width, height;
 	char title[256];
 
-	QWidget *d = configApp->desktop();
-	snprintf(title, sizeof(title), _("coreboot v%s Configuration"),
-		getenv("KERNELVERSION"));
+	QDesktopWidget *d = configApp->desktop();
+	snprintf(title, sizeof(title), "%s%s",
+		rootmenu.prompt->text,
+#if QT_VERSION < 0x040000
+		" (Qt3)"
+#else
+		""
+#endif
+		);
 	setCaption(title);
 
 	width = configSettings->readNumEntry("/window width", d->width() - 64);
@@ -1290,14 +1300,14 @@ ConfigMainWindow::ConfigMainWindow(void)
 		move(x, y);
 
 	split1 = new QSplitter(this);
-	split1->setOrientation(QSplitter::Horizontal);
+	split1->setOrientation(Qt::Horizontal);
 	setCentralWidget(split1);
 
 	menuView = new ConfigView(split1, "menu");
 	menuList = menuView->list;
 
 	split2 = new QSplitter(split1);
-	split2->setOrientation(QSplitter::Vertical);
+	split2->setOrientation(Qt::Vertical);
 
 	// create config tree
 	configView = new ConfigView(split2, "config");
@@ -1310,60 +1320,79 @@ ConfigMainWindow::ConfigMainWindow(void)
 	configList->setFocus();
 
 	menu = menuBar();
-	toolBar = new QToolBar("Tools", this);
+	toolBar = new Q3ToolBar("Tools", this);
 
-	backAction = new QAction("Back", QPixmap(xpm_back), _("Back"), 0, this);
+	backAction = new Q3Action("Back", QPixmap(xpm_back), _("Back"), 0, this);
 	  connect(backAction, SIGNAL(activated()), SLOT(goBack()));
 	  backAction->setEnabled(FALSE);
-	QAction *quitAction = new QAction("Quit", _("&Quit"), CTRL+Key_Q, this);
+	Q3Action *quitAction = new Q3Action("Quit", _("&Quit"), Qt::CTRL + Qt::Key_Q, this);
 	  connect(quitAction, SIGNAL(activated()), SLOT(close()));
-	QAction *loadAction = new QAction("Load", QPixmap(xpm_load), _("&Load"), CTRL+Key_L, this);
+	Q3Action *loadAction = new Q3Action("Load", QPixmap(xpm_load), _("&Load"), Qt::CTRL + Qt::Key_L, this);
 	  connect(loadAction, SIGNAL(activated()), SLOT(loadConfig()));
-	saveAction = new QAction("Save", QPixmap(xpm_save), _("&Save"), CTRL+Key_S, this);
+	saveAction = new Q3Action("Save", QPixmap(xpm_save), _("&Save"), Qt::CTRL + Qt::Key_S, this);
 	  connect(saveAction, SIGNAL(activated()), SLOT(saveConfig()));
 	conf_set_changed_callback(conf_changed);
 	// Set saveAction's initial state
 	conf_changed();
-	QAction *saveAsAction = new QAction("Save As...", _("Save &As..."), 0, this);
+	Q3Action *saveAsAction = new Q3Action("Save As...", _("Save &As..."), 0, this);
 	  connect(saveAsAction, SIGNAL(activated()), SLOT(saveConfigAs()));
-	QAction *searchAction = new QAction("Find", _("&Find"), CTRL+Key_F, this);
+	Q3Action *searchAction = new Q3Action("Find", _("&Find"), Qt::CTRL + Qt::Key_F, this);
 	  connect(searchAction, SIGNAL(activated()), SLOT(searchConfig()));
-	QAction *singleViewAction = new QAction("Single View", QPixmap(xpm_single_view), _("Single View"), 0, this);
+	Q3Action *singleViewAction = new Q3Action("Single View", QPixmap(xpm_single_view), _("Single View"), 0, this);
 	  connect(singleViewAction, SIGNAL(activated()), SLOT(showSingleView()));
-	QAction *splitViewAction = new QAction("Split View", QPixmap(xpm_split_view), _("Split View"), 0, this);
+	Q3Action *splitViewAction = new Q3Action("Split View", QPixmap(xpm_split_view), _("Split View"), 0, this);
 	  connect(splitViewAction, SIGNAL(activated()), SLOT(showSplitView()));
-	QAction *fullViewAction = new QAction("Full View", QPixmap(xpm_tree_view), _("Full View"), 0, this);
+	Q3Action *fullViewAction = new Q3Action("Full View", QPixmap(xpm_tree_view), _("Full View"), 0, this);
 	  connect(fullViewAction, SIGNAL(activated()), SLOT(showFullView()));
 
-	QAction *showNameAction = new QAction(NULL, _("Show Name"), 0, this);
+	Q3Action *showNameAction = new Q3Action(NULL, _("Show Name"), 0, this);
 	  showNameAction->setToggleAction(TRUE);
 	  connect(showNameAction, SIGNAL(toggled(bool)), configView, SLOT(setShowName(bool)));
 	  connect(configView, SIGNAL(showNameChanged(bool)), showNameAction, SLOT(setOn(bool)));
 	  showNameAction->setOn(configView->showName());
-	QAction *showRangeAction = new QAction(NULL, _("Show Range"), 0, this);
+	Q3Action *showRangeAction = new Q3Action(NULL, _("Show Range"), 0, this);
 	  showRangeAction->setToggleAction(TRUE);
 	  connect(showRangeAction, SIGNAL(toggled(bool)), configView, SLOT(setShowRange(bool)));
 	  connect(configView, SIGNAL(showRangeChanged(bool)), showRangeAction, SLOT(setOn(bool)));
 	  showRangeAction->setOn(configList->showRange);
-	QAction *showDataAction = new QAction(NULL, _("Show Data"), 0, this);
+	Q3Action *showDataAction = new Q3Action(NULL, _("Show Data"), 0, this);
 	  showDataAction->setToggleAction(TRUE);
 	  connect(showDataAction, SIGNAL(toggled(bool)), configView, SLOT(setShowData(bool)));
 	  connect(configView, SIGNAL(showDataChanged(bool)), showDataAction, SLOT(setOn(bool)));
 	  showDataAction->setOn(configList->showData);
-	QAction *showAllAction = new QAction(NULL, _("Show All Options"), 0, this);
-	  showAllAction->setToggleAction(TRUE);
-	  connect(showAllAction, SIGNAL(toggled(bool)), configView, SLOT(setShowAll(bool)));
-	  connect(showAllAction, SIGNAL(toggled(bool)), menuView, SLOT(setShowAll(bool)));
-	  showAllAction->setOn(configList->showAll);
-	QAction *showDebugAction = new QAction(NULL, _("Show Debug Info"), 0, this);
+
+	QActionGroup *optGroup = new QActionGroup(this);
+	optGroup->setExclusive(TRUE);
+	connect(optGroup, SIGNAL(selected(QAction *)), configView,
+		SLOT(setOptionMode(QAction *)));
+	connect(optGroup, SIGNAL(selected(QAction *)), menuView,
+		SLOT(setOptionMode(QAction *)));
+
+#if QT_VERSION >= 0x040000
+	configView->showNormalAction = new QAction(_("Show Normal Options"), optGroup);
+	configView->showAllAction = new QAction(_("Show All Options"), optGroup);
+	configView->showPromptAction = new QAction(_("Show Prompt Options"), optGroup);
+#else
+	configView->showNormalAction = new QAction(_("Show Normal Options"), 0, optGroup);
+	configView->showAllAction = new QAction(_("Show All Options"), 0, optGroup);
+	configView->showPromptAction = new QAction(_("Show Prompt Options"), 0, optGroup);
+#endif
+	configView->showNormalAction->setToggleAction(TRUE);
+	configView->showNormalAction->setOn(configList->optMode == normalOpt);
+	configView->showAllAction->setToggleAction(TRUE);
+	configView->showAllAction->setOn(configList->optMode == allOpt);
+	configView->showPromptAction->setToggleAction(TRUE);
+	configView->showPromptAction->setOn(configList->optMode == promptOpt);
+
+	Q3Action *showDebugAction = new Q3Action(NULL, _("Show Debug Info"), 0, this);
 	  showDebugAction->setToggleAction(TRUE);
 	  connect(showDebugAction, SIGNAL(toggled(bool)), helpText, SLOT(setShowDebug(bool)));
 	  connect(helpText, SIGNAL(showDebugChanged(bool)), showDebugAction, SLOT(setOn(bool)));
 	  showDebugAction->setOn(helpText->showDebug());
 
-	QAction *showIntroAction = new QAction(NULL, _("Introduction"), 0, this);
+	Q3Action *showIntroAction = new Q3Action(NULL, _("Introduction"), 0, this);
 	  connect(showIntroAction, SIGNAL(activated()), SLOT(showIntro()));
-	QAction *showAboutAction = new QAction(NULL, _("About"), 0, this);
+	Q3Action *showAboutAction = new Q3Action(NULL, _("About"), 0, this);
 	  connect(showAboutAction, SIGNAL(activated()), SLOT(showAbout()));
 
 	// init tool bar
@@ -1377,7 +1406,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 	fullViewAction->addTo(toolBar);
 
 	// create config menu
-	QPopupMenu* config = new QPopupMenu(this);
+	Q3PopupMenu* config = new Q3PopupMenu(this);
 	menu->insertItem(_("&File"), config);
 	loadAction->addTo(config);
 	saveAction->addTo(config);
@@ -1386,22 +1415,22 @@ ConfigMainWindow::ConfigMainWindow(void)
 	quitAction->addTo(config);
 
 	// create edit menu
-	QPopupMenu* editMenu = new QPopupMenu(this);
+	Q3PopupMenu* editMenu = new Q3PopupMenu(this);
 	menu->insertItem(_("&Edit"), editMenu);
 	searchAction->addTo(editMenu);
 
 	// create options menu
-	QPopupMenu* optionMenu = new QPopupMenu(this);
+	Q3PopupMenu* optionMenu = new Q3PopupMenu(this);
 	menu->insertItem(_("&Option"), optionMenu);
 	showNameAction->addTo(optionMenu);
 	showRangeAction->addTo(optionMenu);
 	showDataAction->addTo(optionMenu);
 	optionMenu->insertSeparator();
-	showAllAction->addTo(optionMenu);
-	showDebugAction->addTo(optionMenu);
+	optGroup->addTo(optionMenu);
+	optionMenu->insertSeparator();
 
 	// create help menu
-	QPopupMenu* helpMenu = new QPopupMenu(this);
+	Q3PopupMenu* helpMenu = new Q3PopupMenu(this);
 	menu->insertSeparator();
 	menu->insertItem(_("&Help"), helpMenu);
 	showIntroAction->addTo(helpMenu);
@@ -1436,7 +1465,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 		showSplitView();
 
 	// UI setup done, restore splitter positions
-	QValueList<int> sizes = configSettings->readSizes("/split1", &ok);
+	Q3ValueList<int> sizes = configSettings->readSizes("/split1", &ok);
 	if (ok)
 		split1->setSizes(sizes);
 
@@ -1447,7 +1476,7 @@ ConfigMainWindow::ConfigMainWindow(void)
 
 void ConfigMainWindow::loadConfig(void)
 {
-	QString s = QFileDialog::getOpenFileName(".config", NULL, this);
+	QString s = Q3FileDialog::getOpenFileName(conf_get_configname(), NULL, this);
 	if (s.isNull())
 		return;
 	if (conf_read(QFile::encodeName(s)))
@@ -1455,23 +1484,21 @@ void ConfigMainWindow::loadConfig(void)
 	ConfigView::updateListAll();
 }
 
-void ConfigMainWindow::saveConfig(void)
+bool ConfigMainWindow::saveConfig(void)
 {
-	if (conf_write(NULL))
+	if (conf_write(NULL)) {
 		QMessageBox::information(this, "qconf", _("Unable to save configuration!"));
-	if (conf_write_autoconf())
-		QMessageBox::information(this, "qconf", _("Unable to save configuration!"));
+		return false;
+	}
+	return true;
 }
 
 void ConfigMainWindow::saveConfigAs(void)
 {
-	QString s = QFileDialog::getSaveFileName(".config", NULL, this);
+	QString s = Q3FileDialog::getSaveFileName(conf_get_configname(), NULL, this);
 	if (s.isNull())
 		return;
-	if (conf_write(QFile::encodeName(s)))
-		QMessageBox::information(this, "qconf", _("Unable to save configuration!"));
-	if (conf_write_autoconf())
-		QMessageBox::information(this, "qconf", _("Unable to save configuration!"));
+	saveConfig();
 }
 
 void ConfigMainWindow::searchConfig(void)
@@ -1496,7 +1523,7 @@ void ConfigMainWindow::setMenuLink(struct menu *menu)
 	ConfigList* list = NULL;
 	ConfigItem* item;
 
-	if (!menu_is_visible(menu) && !configView->showAll())
+	if (configList->menuSkip(menu))
 		return;
 
 	switch (configList->mode) {
@@ -1527,6 +1554,8 @@ void ConfigMainWindow::setMenuLink(struct menu *menu)
 		break;
 	case fullMode:
 		list = configList;
+		break;
+	default:
 		break;
 	}
 
@@ -1622,8 +1651,11 @@ void ConfigMainWindow::closeEvent(QCloseEvent* e)
 	mb.setButtonText(QMessageBox::Cancel, _("Cancel Exit"));
 	switch (mb.exec()) {
 	case QMessageBox::Yes:
-		conf_write(NULL);
-		conf_write_autoconf();
+		if (saveConfig())
+			e->accept();
+		else
+			e->ignore();
+		break;
 	case QMessageBox::No:
 		e->accept();
 		break;
@@ -1635,7 +1667,7 @@ void ConfigMainWindow::closeEvent(QCloseEvent* e)
 
 void ConfigMainWindow::showIntro(void)
 {
-	static const QString str = _("Welcome to the qconf graphical configuration tool for coreboot.\n\n"
+	static const QString str = _("Welcome to the qconf graphical configuration tool.\n\n"
 		"For each option, a blank box indicates the feature is disabled, a check\n"
 		"indicates it is enabled, and a dot indicates that it is to be compiled\n"
 		"as a module.  Clicking on the box will cycle through the three states.\n\n"
@@ -1677,6 +1709,9 @@ void ConfigMainWindow::saveSettings(void)
 
 	case fullMode :
 		entry = "full";
+		break;
+
+	default:
 		break;
 	}
 	configSettings->writeEntry("/listMode", entry);
@@ -1722,10 +1757,6 @@ int main(int ac, char** av)
 
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
-
-#ifndef LKC_DIRECT_LINK
-	kconfig_load();
-#endif
 
 	progname = av[0];
 	configApp = new QApplication(ac, av);

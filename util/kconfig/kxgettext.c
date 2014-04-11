@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LKC_DIRECT_LINK
 #include "lkc.h"
 
 static char *escape(const char* text, char *bf, int len)
@@ -43,6 +42,10 @@ static char *escape(const char* text, char *bf, int len)
 			++text;
 			goto next;
 		}
+		else if (*text == '\\') {
+			*bfp++ = '\\';
+			len--;
+		}
 		*bfp++ = *text++;
 next:
 		--len;
@@ -59,11 +62,11 @@ next:
 
 struct file_line {
 	struct file_line *next;
-	char*		 file;
-	int		 lineno;
+	const char *file;
+	int lineno;
 };
 
-static struct file_line *file_line__new(char *file, int lineno)
+static struct file_line *file_line__new(const char *file, int lineno)
 {
 	struct file_line *self = malloc(sizeof(*self));
 
@@ -86,7 +89,8 @@ struct message {
 
 static struct message *message__list;
 
-static struct message *message__new(const char *msg, char *option, char *file, int lineno)
+static struct message *message__new(const char *msg, char *option,
+				    const char *file, int lineno)
 {
 	struct message *self = malloc(sizeof(*self));
 
@@ -126,7 +130,8 @@ static struct message *mesage__find(const char *msg)
 	return m;
 }
 
-static int message__add_file_line(struct message *self, char *file, int lineno)
+static int message__add_file_line(struct message *self, const char *file,
+				  int lineno)
 {
 	int rc = -1;
 	struct file_line *fl = file_line__new(file, lineno);
@@ -141,7 +146,8 @@ out:
 	return rc;
 }
 
-static int message__add(const char *msg, char *option, char *file, int lineno)
+static int message__add(const char *msg, char *option, const char *file,
+			int lineno)
 {
 	int rc = 0;
 	char bf[16384];
@@ -162,7 +168,7 @@ static int message__add(const char *msg, char *option, char *file, int lineno)
 	return rc;
 }
 
-void menu_build_message_list(struct menu *menu)
+static void menu_build_message_list(struct menu *menu)
 {
 	struct menu *child;
 
@@ -207,7 +213,7 @@ static void message__print_gettext_msgid_msgstr(struct message *self)
 	       "msgstr \"\"\n", self->msg);
 }
 
-void menu__xgettext(void)
+static void menu__xgettext(void)
 {
 	struct message *m = message__list;
 

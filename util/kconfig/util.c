@@ -5,6 +5,8 @@
  * Released under the terms of the GNU GPL v2.0.
  */
 
+#include <stdarg.h>
+#include <stdlib.h>
 #include <string.h>
 #include "lkc.h"
 
@@ -12,15 +14,18 @@
 struct file *file_lookup(const char *name)
 {
 	struct file *file;
+	const char *file_name = sym_expand_string_value(name);
 
 	for (file = file_list; file; file = file->next) {
-		if (!strcmp(name, file->name))
+		if (!strcmp(name, file->name)) {
+			free((void *)file_name);
 			return file;
+		}
 	}
 
-	file = malloc(sizeof(*file));
+	file = xmalloc(sizeof(*file));
 	memset(file, 0, sizeof(*file));
-	file->name = strdup(name);
+	file->name = file_name;
 	file->next = file_list;
 	file_list = file;
 	return file;
@@ -33,10 +38,14 @@ int file_write_dep(const char *name)
 	struct expr *e;
 	struct file *file;
 	FILE *out;
+	int i;
 
 	if (!name)
 		name = ".kconfig.d";
-	out = fopen("..config.tmp", "w");
+	char *config_tmp_name = strdup("..config.tmp.XXXXXX");
+	if ((i = mkstemp(config_tmp_name)) == -1)
+		return 1;
+	out = fdopen(i, "w");
 	if (!out)
 		return 1;
 	fprintf(out, "deps_config := \\\n");
@@ -46,8 +55,8 @@ int file_write_dep(const char *name)
 		else
 			fprintf(out, "\t%s\n", file->name);
 	}
-	fprintf(out, "\nbuild/auto.conf: \\\n"
-		     "\t$(deps_config)\n\n");
+	fprintf(out, "\n%s: \\\n"
+		     "\t$(deps_config)\n\n", conf_get_autoconfig_name());
 
 	expr_list_for_each_sym(sym_env_list, e, sym) {
 		struct property *prop;
@@ -61,23 +70,24 @@ int file_write_dep(const char *name)
 		if (!value)
 			value = "";
 		fprintf(out, "ifneq \"$(%s)\" \"%s\"\n", env_sym->name, value);
-		fprintf(out, "build/auto.conf: FORCE\n");
+		fprintf(out, "%s: FORCE\n", conf_get_autoconfig_name());
 		fprintf(out, "endif\n");
 	}
 
 	fprintf(out, "\n$(deps_config): ;\n");
 	fclose(out);
-	rename("..config.tmp", name);
+	rename(config_tmp_name, name);
 	return 0;
 }
 
 
-/* Allocate initial growable sting */
+/* Allocate initial growable string */
 struct gstr str_new(void)
 {
 	struct gstr gs;
-	gs.s = malloc(sizeof(char) * 64);
-	gs.len = 16;
+	gs.s = xmalloc(sizeof(char) * 64);
+	gs.len = 64;
+	gs.max_width = 0;
 	strcpy(gs.s, "\0");
 	return gs;
 }
@@ -88,6 +98,7 @@ struct gstr str_assign(const char *s)
 	struct gstr gs;
 	gs.s = strdup(s);
 	gs.len = strlen(s) + 1;
+	gs.max_width = 0;
 	return gs;
 }
 
@@ -130,4 +141,23 @@ const char *str_get(struct gstr *gs)
 {
 	return gs->s;
 }
+
+void *xmalloc(size_t size)
+{
+	void *p = malloc(size);
+	if (p)
+		return p;
+	fprintf(stderr, "Out of memory.\n");
+	exit(1);
+}
+
+void *xcalloc(size_t nmemb, size_t size)
+{
+	void *p = calloc(nmemb, size);
+	if (p)
+		return p;
+	fprintf(stderr, "Out of memory.\n");
+	exit(1);
+}
+
 

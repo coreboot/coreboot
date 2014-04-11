@@ -53,6 +53,10 @@ export objk := $(objutil)/kconfig
 
 export KCONFIG_AUTOHEADER := $(obj)/config.h
 export KCONFIG_AUTOCONFIG := $(obj)/auto.conf
+export KCONFIG_DEPENDENCIES := $(obj)/auto.conf.cmd
+export KCONFIG_SPLITCONFIG := $(obj)/config
+export KCONFIG_TRISTATE := $(obj)/tristate.conf
+export KCONFIG_NEGATIVES := 1
 
 # directory containing the toplevel Makefile.inc
 TOPLEVEL := .
@@ -265,7 +269,7 @@ printall:
 endif
 
 ifndef NOMKDIR
-$(shell mkdir -p $(obj) $(objutil)/kconfig/lxdialog $(additional-dirs) $(alldirs))
+$(shell mkdir -p $(KCONFIG_SPLITCONFIG) $(objutil)/kconfig/lxdialog $(additional-dirs) $(alldirs))
 endif
 
 cscope:

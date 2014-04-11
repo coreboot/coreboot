@@ -540,6 +540,7 @@ build_all_targets()
 	if [ "$enable_blobs" = "true" ]; then
 		echo "CONFIG_USE_BLOBS=y" > $TMPCFG
 	fi
+	make -j $cpus DOTCONFIG=$TMPCFG obj=coreboot-builds/temp objutil=coreboot-builds/sharedutils allnoconfig
 	make -j $cpus DOTCONFIG=$TMPCFG obj=coreboot-builds/temp objutil=coreboot-builds/sharedutils tools || exit 1
 	rm -rf coreboot-builds/temp $TMPCFG
 	for VENDOR in $( vendors ); do

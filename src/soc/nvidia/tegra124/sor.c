@@ -633,55 +633,57 @@ void tegra_dc_sor_enable_dp(struct tegra_dc_sor_data *sor)
 
 void tegra_dc_sor_attach(struct tegra_dc_sor_data *sor)
 {
-
 	u32 reg_val;
 	struct display_controller *disp_ctrl = (void *)sor->dc->base;
 
 	tegra_dc_sor_enable_dc(sor);
 	tegra_dc_sor_config_panel(sor, 0);
 
-	WRITEL(SOR_ENABLE, &disp_ctrl->disp.disp_win_opt);
-
-	reg_val = tegra_sor_readl(sor, NV_SOR_TEST);
-	if (reg_val & NV_SOR_TEST_ATTACHED_TRUE) {
-		printk(BIOS_INFO, "sor: Attached\n");
-		return;
-	}
-
-	/* Attach head */
-	tegra_dc_sor_update(sor);
-	reg_val = NV_SOR_SUPER_STATE1_ASY_HEAD_OP_AWAKE |
-		NV_SOR_SUPER_STATE1_ASY_ORMODE_NORMAL |
-		NV_SOR_SUPER_STATE1_ATTACHED_NO;
-	tegra_sor_writel(sor, NV_SOR_SUPER_STATE1, reg_val);
-	tegra_dc_sor_super_update(sor);
-
-	reg_val |= NV_SOR_SUPER_STATE1_ATTACHED_YES;
-	tegra_sor_writel(sor, NV_SOR_SUPER_STATE1, reg_val);
-	tegra_dc_sor_super_update(sor);
-
-	if (tegra_dc_sor_poll_register(sor, NV_SOR_TEST,
-			NV_SOR_TEST_ATTACHED_DEFAULT_MASK,
-			NV_SOR_TEST_ATTACHED_TRUE,
-			100, TEGRA_SOR_ATTACH_TIMEOUT_MS * 1000)) {
-		printk(BIOS_ERR,
-			"dc timeout waiting for ATTACHED = TRUE\n");
-	}
-
-	/* Enable dc after attaching head */
 	WRITEL(0x9f00, &disp_ctrl->cmd.state_ctrl);
 	WRITEL(0x9f, &disp_ctrl->cmd.state_ctrl);
+
 	WRITEL(PW0_ENABLE | PW1_ENABLE | PW2_ENABLE |
 		PW3_ENABLE | PW4_ENABLE | PM0_ENABLE | PM1_ENABLE,
 		&disp_ctrl->cmd.disp_pow_ctrl);
 
+	reg_val = tegra_sor_readl(sor, NV_SOR_TEST);
+	if (reg_val & NV_SOR_TEST_ATTACHED_TRUE)
+		return;
+
+	tegra_sor_writel(sor, NV_SOR_SUPER_STATE1,
+			NV_SOR_SUPER_STATE1_ATTACHED_NO);
+
+	/*
+	 * Enable display2sor clock at least 2 cycles before DC start,
+	 * to clear sor internal valid signal.
+	 */
+	WRITEL(SOR_ENABLE, &disp_ctrl->disp.disp_win_opt);
+	WRITEL(GENERAL_ACT_REQ, &disp_ctrl->cmd.state_ctrl);
+	WRITEL(0, &disp_ctrl->disp.disp_win_opt);
+	WRITEL(GENERAL_ACT_REQ, &disp_ctrl->cmd.state_ctrl);
+
+	/* Attach head */
+	tegra_dc_sor_update(sor);
+	tegra_sor_writel(sor, NV_SOR_SUPER_STATE1,
+			NV_SOR_SUPER_STATE1_ATTACHED_YES);
+	tegra_sor_writel(sor, NV_SOR_SUPER_STATE1,
+		NV_SOR_SUPER_STATE1_ATTACHED_YES |
+		NV_SOR_SUPER_STATE1_ASY_HEAD_OP_AWAKE |
+		NV_SOR_SUPER_STATE1_ASY_ORMODE_NORMAL);
+	tegra_dc_sor_super_update(sor);
+
+	/* Enable dc */
+	WRITEL(DISP_CTRL_MODE_C_DISPLAY, &disp_ctrl->cmd.disp_cmd);
+	WRITEL(SOR_ENABLE, &disp_ctrl->disp.disp_win_opt);
+	WRITEL(GENERAL_ACT_REQ, &disp_ctrl->cmd.state_ctrl);
+
 	if (tegra_dc_sor_poll_register(sor, NV_SOR_TEST,
 			NV_SOR_TEST_ACT_HEAD_OPMODE_DEFAULT_MASK,
 			NV_SOR_TEST_ACT_HEAD_OPMODE_AWAKE,
-			100, TEGRA_SOR_ATTACH_TIMEOUT_MS * 1000)) {
-		printk(BIOS_ERR,
-			"dc timeout waiting for OPMOD = AWAKE\n");
-	}
+			100, TEGRA_SOR_ATTACH_TIMEOUT_MS * 1000))
+		printk(BIOS_ERR, "dc timeout waiting for OPMOD = AWAKE\n");
+	else
+		printk(BIOS_INFO, "%s: sor is attached\n", __func__);
 }
 
 void tegra_dc_sor_set_lane_parm(struct tegra_dc_sor_data *sor,

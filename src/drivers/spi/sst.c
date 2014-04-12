@@ -146,15 +146,10 @@ static int
 sst_write(struct spi_flash *flash, u32 offset, size_t len, const void *buf)
 {
 	size_t actual, cmd_len;
-	int ret;
+	int ret = 0;
 	u8 cmd[4];
 
 	flash->spi->rw = SPI_WRITE_FLAG;
-	ret = spi_claim_bus(flash->spi);
-	if (ret) {
-		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");
-		return ret;
-	}
 
 	/* If the data is not word aligned, write out leading single byte */
 	actual = offset % 2;
@@ -209,7 +204,6 @@ done:
 	printk(BIOS_SPEW, "SF: SST: program %s %zu bytes @ 0x%lx\n",
 	      ret ? "failure" : "success", len, (unsigned long)offset - actual);
 #endif
-	spi_release_bus(flash->spi);
 	return ret;
 }
 

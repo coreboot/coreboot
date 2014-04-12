@@ -167,18 +167,13 @@ static int stmicro_write(struct spi_flash *flash,
 	unsigned long page_size;
 	size_t chunk_len;
 	size_t actual;
-	int ret;
+	int ret = 0;
 	u8 cmd[4];
 
 	page_size = stm->params->page_size;
 	byte_addr = offset % page_size;
 
 	flash->spi->rw = SPI_WRITE_FLAG;
-	ret = spi_claim_bus(flash->spi);
-	if (ret) {
-		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");
-		return ret;
-	}
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);

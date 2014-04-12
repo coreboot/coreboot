@@ -46,6 +46,9 @@ static int do_spi_flash_cmd(struct spi_slave *spi, const void *dout,
 {
 	int ret = 1;
 
+	if (spi_claim_bus(spi))
+		return ret;
+
 #if CONFIG_SPI_ATOMIC_SEQUENCING == 1
 	if (spi_xfer(spi, dout, bytes_out, din, bytes_in) < 0)
 		goto done;
@@ -63,6 +66,7 @@ static int do_spi_flash_cmd(struct spi_slave *spi, const void *dout,
 
 	ret = 0;
 done:
+	spi_release_bus(spi);
 	return ret;
 }
 
@@ -111,9 +115,7 @@ int spi_flash_read_common(struct spi_flash *flash, const u8 *cmd,
 	int ret;
 
 	spi->rw = SPI_READ_FLAG;
-	spi_claim_bus(spi);
 	ret = spi_flash_cmd_read(spi, cmd, cmd_len, data, data_len);
-	spi_release_bus(spi);
 
 	return ret;
 }
@@ -188,11 +190,6 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
 	}
 
 	flash->spi->rw = SPI_WRITE_FLAG;
-	ret = spi_claim_bus(flash->spi);
-	if (ret) {
-		printk(BIOS_WARNING, "SF: Unable to claim SPI bus\n");
-		return ret;
-	}
 
 	cmd[0] = erase_cmd;
 	start = offset;
@@ -222,7 +219,6 @@ int spi_flash_cmd_erase(struct spi_flash *flash, u8 erase_cmd,
 	printk(BIOS_DEBUG, "SF: Successfully erased %zu bytes @ %#x\n", len, start);
 
 out:
-	spi_release_bus(flash->spi);
 	return ret;
 }
 
@@ -307,11 +303,6 @@ struct spi_flash *spi_flash_probe(unsigned int bus, unsigned int cs)
 	}
 
 	spi->rw = SPI_READ_FLAG;
-	ret = spi_claim_bus(spi);
-	if (ret) {
-		printk(BIOS_WARNING, "SF: Failed to claim SPI bus: %d\n", ret);
-		goto err_claim_bus;
-	}
 
 	if (spi->force_programmer_specific && spi->programmer_specific_probe) {
 		flash = spi->programmer_specific_probe (spi);
@@ -375,13 +366,9 @@ flash_detected:
 	printk(BIOS_INFO, "SF: Detected %s with page size %x, total %x\n",
 			flash->name, flash->sector_size, flash->size);
 
-	spi_release_bus(spi);
-
 	return flash;
 
 err_manufacturer_probe:
 err_read_id:
-	spi_release_bus(spi);
-err_claim_bus:
 	return NULL;
 }

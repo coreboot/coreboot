@@ -126,19 +126,13 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 	unsigned long page_size;
 	size_t chunk_len;
 	size_t actual;
-	int ret;
+	int ret = 0;
 	u8 cmd[4];
 
 	page_size = 1 << stm->params->l2_page_size;
 	byte_addr = offset % page_size;
 
 	flash->spi->rw = SPI_WRITE_FLAG;
-	ret = spi_claim_bus(flash->spi);
-	if (ret) {
-		printk(BIOS_WARNING,
-		       "SF gigadevice.c: Unable to claim SPI bus\n");
-		return ret;
-	}
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
@@ -187,7 +181,6 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 	ret = 0;
 
 out:
-	spi_release_bus(flash->spi);
 	return ret;
 }
 

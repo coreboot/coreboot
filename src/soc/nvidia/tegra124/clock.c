@@ -81,75 +81,77 @@ union __attribute__((transparent_union)) pll_fields {
 
 /* This table defines the frequency dividers for every PLL to turn the external
  * OSC clock into the frequencies defined by TEGRA_PLL*_KHZ in soc/clock.h.
- * All PLLs have three dividers (N, M and P), with the governing formula for
- * the output frequency being OUT = (IN / m) * N / (2^P).
- * Yes, it really is one equation with three unknowns ... */
+ * All PLLs have three dividers (n, m and p), with the governing formula for
+ * the output frequency being CF = (IN / m), VCO = CF * n and OUT = VCO / (2^p).
+ * All divisor configurations must meet the PLL's constraints for VCO and CF:
+ * PLLX:  12 MHz < CF < 50 MHz, 700 MHz < VCO < 3000 MHz
+ * PLLC:  12 MHz < CF < 50 MHz, 600 MHz < VCO < 1400 MHz
+ * PLLM:  12 MHz < CF < 50 MHz, 400 MHz < VCO < 1066 MHz
+ * PLLP:   1 MHz < CF <  6 MHz, 200 MHz < VCO <  700 MHz
+ * PLLD:   1 MHz < CF <  6 MHz, 500 MHz < VCO < 1000 MHz
+ * PLLU:   1 MHz < CF <  6 MHz, 480 MHz < VCO <  960 MHz
+ * PLLDP: 12 MHz < CF < 38 MHz, 600 MHz < VCO < 1200 MHz
+ * (values taken from Linux' drivers/clk/tegra/clk-tegra124.c). */
 struct {
 	int khz;
 	struct pllcx_dividers	pllx;	/* target:  CONFIG_PLLX_KHZ */
 	struct pllcx_dividers	pllc;	/* target:  600 MHz */
+	/* PLLM is set up dynamically by clock_sdram(). */
+	/* PLLP is hardwired to 408 MHz in HW (unless we set BASE_OVRD). */
 	struct pllu_dividers	pllu;	/* target;  960 MHz */
 	struct pllcx_dividers	plldp;	/* target;  270 MHz */
-	/* Based on T124 TRM (to be updatd), PLLP is set to 408MHz in HW.
-	 * Unless configuring PLLP to a frequency other than 408MHz,
-	 * software configuration on PLLP is unneeded. */
+	/* PLLDP treats p differently (OUT = VCO / (p + 1) for p < 6). */
 } static const osc_table[16] = {
-	[OSC_FREQ_OSC12]{
+	[OSC_FREQ_12]{
 		.khz = 12000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
 		.plldp = {.n = 90, .m =  1, .p = 3},
 	},
-	[OSC_FREQ_OSC13]{
+	[OSC_FREQ_13]{
 		.khz = 13000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 13000, .m =  1, .p = 0},
-		.pllc = {.n = 231, .m =  5, .p = 0},		/* 600.6 MHz */
+		.pllc = {.n =  46, .m =  1, .p = 0},		 /* 598.0 MHz */
 		.pllu = {.n = 960, .m = 13, .p = 0, .cpcon = 12, .lfcon = 2},
-		.plldp = {.n = 83, .m =  1, .p = 3},		/* 269.75 MHz */
+		.plldp = {.n = 83, .m =  1, .p = 3},		 /* 269.8 MHz */
 	},
-	[OSC_FREQ_OSC16P8]{
+	[OSC_FREQ_16P8]{
 		.khz = 16800,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 16800, .m =  1, .p = 0},
-		.pllc = {.n = 250, .m =  7, .p = 0},
+		.pllc = {.n =  71, .m =  1, .p = 1},		 /* 596.4 MHz */
 		.pllu = {.n = 400, .m =  7, .p = 0, .cpcon = 5, .lfcon = 2},
-		.plldp = {.n = 64, .m =  1, .p = 3},		/* 268.8 MHz */
+		.plldp = {.n = 64, .m =  1, .p = 3},		 /* 268.8 MHz */
 	},
-	[OSC_FREQ_OSC19P2]{
+	[OSC_FREQ_19P2]{
 		.khz = 19200,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
-		.pllc = {.n = 125, .m =  4, .p = 0},
+		.pllc = {.n =  62, .m =  1, .p = 1},		 /* 595.2 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
-		.plldp = {.n = 56, .m =  1, .p = 3},		/* 270.75 MHz */
+		.plldp = {.n = 56, .m =  1, .p = 3},		 /* 268.8 MHz */
 	},
-	[OSC_FREQ_OSC26]{
+	[OSC_FREQ_26]{
 		.khz = 26000,
 		.pllx = {.n = TEGRA_PLLX_KHZ / 26000, .m =  1, .p = 0},
-		.pllc = {.n =  23, .m =  1, .p = 0},		   /* 598 MHz */
+		.pllc = {.n =  23, .m =  1, .p = 0},		 /* 598.0 MHz */
 		.pllu = {.n = 960, .m = 26, .p = 0, .cpcon = 12, .lfcon = 2},
-		.plldp = {.n = 83, .m =  2, .p = 3},		/* 266.50 MHz */
+		.plldp = {.n = 83, .m =  2, .p = 3},		 /* 269.8 MHz */
 	},
-	[OSC_FREQ_OSC38P4]{
+	/* These oscillators get predivided as PLL inputs... n/m/p divisors for
+	 * 38.4 should always match 19.2, and 48 should always match 12. */
+	[OSC_FREQ_38P4]{
 		.khz = 38400,
-		/*
-		 * There is a predivide by 2 before this PLL. Its values
-		 * should match the 19.2MHz values.
-		 */
 		.pllx = {.n = TEGRA_PLLX_KHZ / 19200, .m =  1, .p = 0},
-		.pllc = {.n = 125, .m =  4, .p = 0},
+		.pllc = {.n =  62, .m =  1, .p = 1},		 /* 595.2 MHz */
 		.pllu = {.n = 200, .m =  4, .p = 0, .cpcon = 3, .lfcon = 2},
-		.plldp = {.n = 56, .m =  2, .p = 3},		/* 268 MHz */
+		.plldp = {.n = 56, .m =  1, .p = 3},		 /* 268.8 MHz */
 	},
-	[OSC_FREQ_OSC48]{
+	[OSC_FREQ_48]{
 		.khz = 48000,
-		/*
-		 * There is a predivide by 4 before this PLL. Its values
-		 * should match the 12MHz values.
-		 */
 		.pllx = {.n = TEGRA_PLLX_KHZ / 12000, .m =  1, .p = 0},
 		.pllc = {.n =  50, .m =  1, .p = 0},
 		.pllu = {.n = 960, .m = 12, .p = 0, .cpcon = 12, .lfcon = 2},
-		.plldp = {.n = 90, .m =  4, .p = 3},		/* 264 MHz */
+		.plldp = {.n = 90, .m =  1, .p = 3},
 	},
 };
 
@@ -159,12 +161,20 @@ struct {
  */
 static u32 clock_get_osc_bits(void)
 {
-	return readl(&clk_rst->osc_ctrl) >> OSC_CTRL_OSC_FREQ_SHIFT;
+	return (readl(&clk_rst->osc_ctrl) & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
 }
 
 int clock_get_osc_khz(void)
 {
 	return osc_table[clock_get_osc_bits()].khz;
+}
+
+int clock_get_pll_input_khz(void)
+{
+	u32 osc_ctrl = readl(&clk_rst->osc_ctrl);
+	u32 osc_bits = (osc_ctrl & OSC_FREQ_MASK) >> OSC_FREQ_SHIFT;
+	u32 pll_ref_div = (osc_ctrl & OSC_PREDIV_MASK) >> OSC_PREDIV_SHIFT;
+	return osc_table[osc_bits].khz >> pll_ref_div;
 }
 
 void clock_init_arm_generic_timer(void)
@@ -225,7 +235,7 @@ static void init_pll(u32 *base, u32 *misc, const union pll_fields pll, u32 lock)
 
 static void init_utmip_pll(void)
 {
-	int khz = clock_get_osc_khz();
+	int khz = clock_get_pll_input_khz();
 
 	/* Shut off PLL crystal clock while we mess with it */
 	clrbits_le32(&clk_rst->utmip_pll_cfg2, 1 << 30); /* PHY_XTAL_CLKEN */
@@ -304,21 +314,11 @@ clock_display(u32 frequency)
 	 */
 
 	struct pllpad_dividers plld = { 0 };
-	u32 ref = clock_get_osc_khz() * 1000, m, n;
+	u32 ref = clock_get_pll_input_khz() * 1000, m, n;
 	u32 cf, vco = frequency;
 	const u32 max_m = 1 << 5, max_n = 1 << 10, mhz = 1000 * 1000,
 		  min_vco = 500 * mhz, max_vco = 1000 * mhz,
 		  min_cf = 1 * mhz, max_cf = 6 * mhz;
-
-	/* TODO(hungte) Replace this by clock_get_pll_input_khz */
-	switch (clock_get_osc_bits()) {
-	case OSC_FREQ_OSC48:
-		ref /= 4;
-		break;
-	case OSC_FREQ_OSC38P4:
-		ref /= 2;
-		break;
-	}
 
 	if (vco < min_vco || vco > max_vco) {
 		printk(BIOS_ERR, "%s: VCO (%d) out of range. Cannot support.\n",

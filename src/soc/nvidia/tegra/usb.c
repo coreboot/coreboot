@@ -28,7 +28,7 @@
 void usb_setup_utmip(struct usb_ctlr *usb)
 {
 	/* KHz formulas were guessed from U-Boot constants. Formats unclear. */
-	int khz = clock_get_osc_khz();
+	int khz = clock_get_pll_input_khz();
 
 	/* Stop UTMI+ crystal clock while we mess with its settings */
 	clrbits_le32(&usb->utmip.misc1, 1 << 30);	/* PHY_XTAL_CLKEN */

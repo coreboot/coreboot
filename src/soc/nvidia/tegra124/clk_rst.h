@@ -325,15 +325,25 @@ check_member(clk_rst_ctlr, clk_src_soc_therm, 0x644);
 #define CPU0_CLK_STP_MASK		(1U << CPU0_CLK_STP_SHIFT)
 
 /* CRC_OSC_CTRL_0 0x50 */
-#define OSC_CTRL_OSC_FREQ		(0xf << 28)
-#define OSC_CTRL_OSC_FREQ_SHIFT		28
-#define OSC_FREQ_OSC13			0	/* 13.0MHz */
-#define OSC_FREQ_OSC19P2		4	/* 19.2MHz */
-#define OSC_FREQ_OSC12			8	/* 12.0MHz */
-#define OSC_FREQ_OSC26			12	/* 26.0MHz */
-#define OSC_FREQ_OSC16P8		1	/* 16.8MHz */
-#define OSC_FREQ_OSC38P4		5	/* 38.4MHz */
-#define OSC_FREQ_OSC48			9	/* 48.0MHz */
+#define OSC_FREQ_SHIFT			28
+#define OSC_FREQ_MASK			(0xf << OSC_FREQ_SHIFT)
+#define OSC_PREDIV_SHIFT		26
+#define OSC_PREDIV_MASK			(0x3 << OSC_PREDIV_SHIFT)
+#define OSC_XOFS_SHIFT			4
+#define OSC_XOFS_MASK			(0x3F << OSC_XOFS_SHIFT)
+#define OSC_DRIVE_STRENGTH		7
+#define OSC_XOBP			(1 << 1)
+#define OSC_XOE				(1 << 0)
+
+enum {
+	OSC_FREQ_12	= 8,	/* 12.0MHz */
+	OSC_FREQ_13	= 0,	/* 13.0MHz */
+	OSC_FREQ_16P8	= 1,	/* 16.8MHz */
+	OSC_FREQ_19P2	= 4,	/* 19.2MHz */
+	OSC_FREQ_26	= 12,	/* 26.0MHz */
+	OSC_FREQ_38P4	= 5,	/* 38.4MHz */
+	OSC_FREQ_48	= 9,	/* 48.0MHz */
+};
 
 /* CLK_RST_CONTROLLER_PLL*_BASE_0 */
 #define PLL_BASE_BYPASS			(1U << 31)
@@ -408,16 +418,6 @@ check_member(clk_rst_ctlr, clk_src_soc_therm, 0x644);
 /* CLK_RST_CONTROLLER_PLLX_MISC_3 */
 #define PLLX_IDDQ_SHIFT			3
 #define PLLX_IDDQ_MASK			(1U << PLLX_IDDQ_SHIFT)
-
-/* CLK_RST_CONTROLLER_OSC_CTRL_0 0x50 */
-#define OSC_XOE_SHIFT			0
-#define OSC_XOE_MASK			(1 << OSC_XOE_SHIFT)
-#define OSC_XOE_ENABLE			(1 << OSC_XOE_SHIFT)
-#define OSC_XOBP_SHIFT			1
-#define OSC_XOBP_MASK			(1U << OSC_XOBP_SHIFT)
-#define OSC_XOFS_SHIFT			4
-#define OSC_XOFS_MASK			(0x3F << OSC_XOFS_SHIFT)
-#define OSC_DRIVE_STRENGTH		7
 
 #define CLK_DIVISOR_MASK		(0xffff)
 

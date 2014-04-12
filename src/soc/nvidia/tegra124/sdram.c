@@ -570,7 +570,7 @@ void sdram_init(const struct sdram_params *param)
 	struct tegra_emc_regs *emc = (struct tegra_emc_regs*)TEGRA_EMC_BASE;
 
 	printk(BIOS_DEBUG, "Initializing SDRAM of type %d with %dKHz\n",
-		param->MemoryType, clock_get_osc_khz() *
+		param->MemoryType, clock_get_pll_input_khz() *
 		param->PllMFeedbackDivider / param->PllMInputDivider /
 		(1 + param->PllMSelectDiv2));
 	if (param->MemoryType != NvBootMemoryType_Ddr3)

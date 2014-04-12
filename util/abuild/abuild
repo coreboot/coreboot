@@ -191,7 +191,7 @@ function create_config
 		printf "$configoptions" >> ${build_dir}/config.build
 	fi
 
-	yes "" 2>/dev/null | $MAKE oldconfig DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
+	yes "" 2>/dev/null | $MAKE oldconfig $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils &> ${build_dir}/config.log
 	ret=$?
 	if [ $ret -eq 0 ]; then
 		printf "ok; "

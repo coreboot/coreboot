@@ -62,6 +62,7 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 	default 0x10000
+endif # CPU_AMD_AGESA
 
 source src/cpu/amd/agesa/family10/Kconfig
 source src/cpu/amd/agesa/family12/Kconfig
@@ -70,4 +71,3 @@ source src/cpu/amd/agesa/family15/Kconfig
 source src/cpu/amd/agesa/family15tn/Kconfig
 source src/cpu/amd/agesa/family16kb/Kconfig
 
-endif # CPU_AMD_AGESA

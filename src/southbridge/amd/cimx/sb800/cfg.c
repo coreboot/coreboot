@@ -31,7 +31,7 @@ int acpi_get_sleep_type(void)
 {
 	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);
 	tmp = ((tmp & (7 << 10)) >> 10);
-	printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp);
+	/* printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp); */
 	return (int)tmp;
 }
 #endif

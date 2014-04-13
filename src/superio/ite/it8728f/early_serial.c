@@ -18,7 +18,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-#include "early_serial.h"
+
+#include <arch/io.h>
+#include <device/pnp.h>
+#include "it8728f.h"
 
 /* Superio raw commands */
 static void it8728f_sio_write(device_t dev, u8 index, u8 value)

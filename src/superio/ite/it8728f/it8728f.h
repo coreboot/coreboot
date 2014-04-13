@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_ITE_IT8728F_IT8728F_H
-#define SUPERIO_ITE_IT8728F_IT8728F_H
+#ifndef SUPERIO_ITE_IT8728F_H
+#define SUPERIO_ITE_IT8728F_H
 
 #define IT8728F_FDC  0x00 /* Floppy */
 #define IT8728F_SP1  0x01 /* Com1 */
@@ -39,4 +39,16 @@
 #define IT8728F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8728F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. 'Special register' */
 
-#endif
+/*
+ * Superio low level commands
+ * Pass dev = PNP_DEV(superiobase, LDN)
+ */
+void it8728f_reg_write(device_t dev, u8 index, u8 value);
+
+/* Select 24MHz CLKIN (48MHz default). */
+void it8728f_24mhz_clkin(device_t dev);
+
+/* Enable the serial port(s). */
+void it8728f_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_ITE_IT8728F_H */

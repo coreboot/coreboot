@@ -148,6 +148,7 @@ struct elog_event_data_me_extended {
 /* CPU Thermal Trip */
 #define ELOG_TYPE_THERM_TRIP              0xa7
 
+/* Eventlog backing storage must be initialized before calling elog_init(). */
 extern int elog_init(void);
 extern int elog_clear(void);
 extern void elog_add_event_raw(u8 event_type, void *data, u8 data_size);

@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <bootstate.h>
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -315,6 +316,17 @@ void spi_init(void)
 	cntlr.preop = &ich9_spi->preop;
 	ich_set_bbar(0);
 }
+
+#ifndef __SMM__
+static void spi_init_cb(void *unused)
+{
+	spi_init();
+}
+
+BOOT_STATE_INIT_ENTRIES(spi_init_bscb) = {
+        BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, spi_init_cb, NULL),
+};
+#endif
 
 int spi_claim_bus(struct spi_slave *slave)
 {

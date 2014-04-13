@@ -26,6 +26,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <bootstate.h>
 #include <delay.h>
 #include <arch/io.h>
 #include <console/console.h>
@@ -359,6 +360,14 @@ void spi_init(void)
 	bios_cntl &= ~(1 << 5);
 	pci_write_config_byte(dev, 0xdc, bios_cntl | 0x1);
 }
+static void spi_init_cb(void *unused)
+{
+	spi_init();
+}
+
+BOOT_STATE_INIT_ENTRIES(spi_init_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_ENTRY, spi_init_cb, NULL),
+};
 
 int spi_claim_bus(struct spi_slave *slave)
 {

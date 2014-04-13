@@ -23,6 +23,8 @@
 #include <cpu/x86/msr.h>
 
 #define MCI_STATUS			0x00000401
+#define MSR_SMM_BASE			0xC0010111
+#define MSR_SMM_MASK			0xC0010113
 #define HWCR_MSR			0xC0010015
 #define NB_CFG_MSR			0xC001001f
 

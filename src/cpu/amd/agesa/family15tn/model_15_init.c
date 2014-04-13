@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <cpu/x86/msr.h>
+#include <cpu/x86/smm.h>
 #include <cpu/amd/mtrr.h>
 #include <device/device.h>
 #include <string.h>
@@ -43,6 +44,7 @@ static void model_15_init(device_t dev)
 	u8 i;
 	msr_t msr;
 	int msrno;
+	unsigned int cpu_idx;
 #if CONFIG_LOGICAL_CPUS
 	u32 siblings;
 #endif
@@ -110,6 +112,20 @@ static void model_15_init(device_t dev)
 	msr.hi &= ~(1 << (46 - 32));
 	wrmsr(NB_CFG_MSR, msr);
 
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		cpu_idx = cpu_info()->index;
+		printk(BIOS_INFO, "Initializing SMM for CPU %u\n", cpu_idx);
+
+		/* Set SMM base address for this CPU */
+		msr = rdmsr(MSR_SMM_BASE);
+		msr.lo = SMM_BASE - (cpu_idx * 0x400);
+		wrmsr(MSR_SMM_BASE, msr);
+
+		/* Enable the SMM memory window */
+		msr = rdmsr(MSR_SMM_MASK);
+		msr.lo |= (1 << 0); /* Enable ASEG SMRAM Range */
+		wrmsr(MSR_SMM_MASK, msr);
+	}
 
 	/* Write protect SMM space with SMMLOCK. */
 	msr = rdmsr(HWCR_MSR);

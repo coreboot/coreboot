@@ -23,7 +23,8 @@
 #define __PRE_RAM__
 
 /* On AMD's platforms we can set SMBASE by writing an MSR */
-#if !CONFIG_NORTHBRIDGE_AMD_AMDK8 && !CONFIG_NORTHBRIDGE_AMD_AMDFAM10
+#if !CONFIG_NORTHBRIDGE_AMD_AMDK8 && !CONFIG_NORTHBRIDGE_AMD_AMDFAM10 \
+	&& !CONFIG_CPU_AMD_AGESA_FAMILY15_TN
 
 // FIXME: Is this piece of code southbridge specific, or
 // can it be cleaned up so this include is not required?

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2013 Google Inc.
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +93,10 @@ static void setup_pinmux(void)
 	gpio_input_pullup(GPIO(Q6));
 	// EC in RW.
 	gpio_input_pullup(GPIO(U4));
+
+	// route PU4/5 to GMI to remove conflict w/PWM1/2.
+	pinmux_set_config(PINMUX_GPIO_PU4_INDEX, PINMUX_GPIO_PU4_FUNC_NOR);        //s/b GMI
+	pinmux_set_config(PINMUX_GPIO_PU5_INDEX, PINMUX_GPIO_PU5_FUNC_NOR);        //s/b GMI
 
 	// SOC and TPM reset GPIO, active low.
 	gpio_output(GPIO(I5), 1);

@@ -27,6 +27,7 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include "hudson.h"
+#include "smi.h"
 
 #if CONFIG_HUDSON_LEGACY_FREE
 	#define FADT_BOOT_ARCH ACPI_FADT_LEGACY_FREE
@@ -63,26 +64,41 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->model = 0;		/* reserved, should be 0 ACPI 3.0 */
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* HUDSON - IRQ 09 – ACPI SCI */
-	fadt->smi_cmd = 0;		/* disable system management mode */
-	fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
-	fadt->acpi_disable = 0;	/* unused if SMI_CMD = 0 */
-	fadt->s4bios_req = 0;	/* unused if SMI_CMD = 0 */
-	fadt->pstate_cnt = 0;	/* unused if SMI_CMD = 0 */
+
+	/* We write to this port further down; configure it first */
+	pm_write16(0x62, ACPI_PM1_CNT_BLK);
+
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
+		fadt->acpi_enable = ACPI_SMI_CMD_ENABLE;
+		fadt->acpi_disable = ACPI_SMI_CMD_DISABLE;
+		fadt->s4bios_req = 0;	/* Not supported */
+		fadt->pstate_cnt = 0;	/* Not supported */
+		fadt->cst_cnt = 0;	/* Not supported */
+		hudson_enable_acpi_cmd_smi();
+		outl(0x0, ACPI_PM1_CNT_BLK);	/* clear SCI_EN */
+	} else {
+		fadt->smi_cmd = 0;	/* disable system management mode */
+		fadt->acpi_enable = 0;	/* unused if SMI_CMD = 0 */
+		fadt->acpi_disable = 0;	/* unused if SMI_CMD = 0 */
+		fadt->s4bios_req = 0;	/* unused if SMI_CMD = 0 */
+		fadt->pstate_cnt = 0;	/* unused if SMI_CMD = 0 */
+		fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
+		outl(0x1, ACPI_PM1_CNT_BLK);	/* set SCI_EN */
+	}
 
 	pm_write16(0x60, ACPI_PM_EVT_BLK);
-	pm_write16(0x62, ACPI_PM1_CNT_BLK);
 	pm_write16(0x64, ACPI_PM_TMR_BLK);
 	pm_write16(0x68, ACPI_GPE0_BLK);
 	/* CpuControl is in \_PR.CPU0, 6 bytes */
 	pm_write16(0x66, ACPI_CPU_CONTROL);
-	pm_write16(0x6A, 0);	/* AcpiSmiCmd */
+	pm_write16(0x6a, fadt->smi_cmd);
 
 	pm_write8(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
 					* the contents of the PM registers at
 					* index 60-6B to decode ACPI I/O address.
 					* AcpiSmiEn & SmiCmdEn*/
-	/* RTC_En_En, TMR_En_En, GBL_EN_EN */
-	outl(0x1, ACPI_PM1_CNT_BLK);			/* set SCI_EN */
+
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
 	fadt->pm1b_evt_blk = 0x0000;
 	fadt->pm1a_cnt_blk = ACPI_PM1_CNT_BLK;
@@ -100,7 +116,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->gpe1_blk_len = 0;
 	fadt->gpe1_base = 0;
 
-	fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
 	fadt->p_lvl2_lat = ACPI_FADT_C2_NOT_SUPPORTED;
 	fadt->p_lvl3_lat = ACPI_FADT_C3_NOT_SUPPORTED;
 	fadt->flush_size = 0;	/* set to 0 if WBINVD is 1 in flags */

@@ -5,12 +5,14 @@
  * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
+#include "hudson.h"
 #include "smi.h"
 
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
 
+#define SMI_0x88_ACPI_COMMAND		(1 << 11)
 
 enum smi_source {
 	SMI_SOURCE_SCI = (1 << 0),
@@ -20,6 +22,28 @@ enum smi_source {
 	SMI_SOURCE_IRQ_TRAP = (1 << 4),
 	SMI_SOURCE_0x90 = (1 << 5)
 };
+
+static void hudson_apmc_smi_handler(void)
+{
+	u32 reg32;
+	const uint8_t cmd = inb(ACPI_SMI_CTL_PORT);
+
+	switch (cmd) {
+	case ACPI_SMI_CMD_ENABLE:
+		reg32 = inl(ACPI_PM1_CNT_BLK);
+		reg32 |= (1 << 0);	/* SCI_EN */
+		outl(reg32, ACPI_PM1_CNT_BLK);
+		break;
+	case ACPI_SMI_CMD_DISABLE:
+		reg32 = inl(ACPI_PM1_CNT_BLK);
+		reg32 &= ~(1 << 0);	/* clear SCI_EN */
+		outl(ACPI_PM1_CNT_BLK, reg32);
+		break;
+	}
+
+	if (mainboard_smi_apmc)
+		mainboard_smi_apmc(cmd);
+}
 
 int southbridge_io_trap_handler(int smif)
 {
@@ -62,6 +86,10 @@ static void process_smi_0x88(void)
 {
 	const uint32_t status = smi_read32(0x88);
 
+	if (status & SMI_0x88_ACPI_COMMAND) {
+		/* Command received via ACPI SMI command port */
+		hudson_apmc_smi_handler();
+	}
 	/* Clear events to prevent re-entering SMI if event isn't handled */
 	smi_write32(0x88, status);
 }

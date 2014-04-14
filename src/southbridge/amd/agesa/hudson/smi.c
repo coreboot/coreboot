@@ -10,6 +10,8 @@
 #include <console/console.h>
 #include <cpu/cpu.h>
 
+#define HUDSON_SMI_ACPI_COMMAND		75
+
 void smm_setup_structures(void *gnvs, void *tcg, void *smi1)
 {
 	printk(BIOS_DEBUG, "smm_setup_structures STUB!!!\n");
@@ -57,4 +59,10 @@ void hudson_enable_gevent_smi(uint8_t gevent)
 
 	/* SMI0 source is GEVENT0 and so on */
 	enable_smi(gevent);
+}
+
+/** Enable SMIs on writes to ACPI SMI command port */
+void hudson_enable_acpi_cmd_smi(void)
+{
+	enable_smi(HUDSON_SMI_ACPI_COMMAND);
 }

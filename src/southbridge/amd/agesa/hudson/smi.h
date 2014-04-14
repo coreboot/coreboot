@@ -52,6 +52,7 @@ static inline void smi_write16(uint8_t offset, uint16_t value)
 #ifndef __SMM__
 void hudson_enable_smi_generation(void);
 void hudson_enable_gevent_smi(uint8_t gevent);
+void hudson_enable_acpi_cmd_smi(void);
 #endif
 
 #endif /* _SOUTHBRIDGE_AMD_AGESA_HUDSON_SMI_H */

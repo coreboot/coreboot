@@ -29,6 +29,8 @@
 #define BIOSRAM_DATA	0xcd5
 #define PM_INDEX	0xcd6
 #define PM_DATA		0xcd7
+#define PM2_INDEX	0xcd0
+#define PM2_DATA	0xcd1
 
 #define HUDSON_ACPI_IO_BASE 0x800
 
@@ -46,8 +48,16 @@
 #define PM1_TMR_BLK_ADDRESS                     0x808                           //      AcpiPmTmrBlkAddr;
 #define CPU_CNT_BLK_ADDRESS                     0x810                           //      CpuControlBlkAddr;
 #define GPE0_BLK_ADDRESS                        0x820                           //  AcpiGpe0BlkAddr;
-#define SMI_CMD_PORT                            0xB0                            //      SmiCmdPortAddr;
 #define SPIROM_BASE_ADDRESS_REGISTER    0xA0
+
+#define ACPI_SMI_CTL_PORT		0xb2
+#define ACPI_SMI_CMD_CST_CONTROL	0xde
+#define ACPI_SMI_CMD_PST_CONTROL	0xad
+#define ACPI_SMI_CMD_DISABLE		0xbe
+#define ACPI_SMI_CMD_ENABLE		0xef
+#define ACPI_SMI_CMD_S4_REQ		0xc0
+
+#ifndef __SMM__
 
 void pm_write8(u8 reg, u8 value);
 u8 pm_read8(u8 reg);
@@ -70,6 +80,7 @@ void hudson_enable(device_t dev);
 void __attribute__((weak)) hudson_setup_sata_phys(struct device *dev);
 void s3_resume_init_data(void *FchParams);
 
-#endif
+#endif /* __PRE_RAM__ */
+#endif /* __SMM__ */
 
 #endif /* HUDSON_H */

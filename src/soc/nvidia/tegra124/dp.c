@@ -618,6 +618,22 @@ static int tegra_dc_dp_init_link_cfg(
 	return 0;
 }
 
+static int tegra_dc_dp_set_assr(struct tegra_dc_dp_data *dp, int ena)
+{
+	int ret;
+
+	u8 dpcd_data = ena ?
+		NV_DPCD_EDP_CONFIG_SET_ASC_RESET_ENABLE :
+		NV_DPCD_EDP_CONFIG_SET_ASC_RESET_DISABLE;
+
+	CHECK_RET(tegra_dc_dp_dpcd_write(dp, NV_DPCD_EDP_CONFIG_SET,
+			dpcd_data));
+
+	/* Also reset the scrambler to 0xfffe */
+	tegra_dc_sor_set_internal_panel(&dp->sor, ena);
+	return 0;
+}
+
 static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
 				   struct soc_nvidia_tegra124_config *config)
 {
@@ -735,6 +751,12 @@ void dp_enable(void * _dp)
 
 	if (tegra_dc_dp_init_link_cfg(config, dp, &dp->link_cfg)) {
 		printk(BIOS_ERR, "dp: failed to init link configuration\n");
+		goto error_enable;
+        }
+
+	/* enable ASSR */
+	if (tegra_dc_dp_set_assr(dp, dp->link_cfg.scramble_ena)) {
+		printk(BIOS_ERR, "dp: failed to enable ASSR\n");
 		goto error_enable;
         }
 

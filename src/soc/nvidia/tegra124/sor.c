@@ -35,6 +35,8 @@
 #include "chip.h"
 #include <soc/display.h>
 
+#define DEBUG_SOR 0
+
 #define APBDEV_PMC_DPD_SAMPLE				(0x20)
 #define APBDEV_PMC_DPD_SAMPLE_ON_DISABLE		(0)
 #define APBDEV_PMC_DPD_SAMPLE_ON_ENABLE			(1)
@@ -503,6 +505,80 @@ static void tegra_dc_sor_power_up(struct tegra_dc_sor_data *sor,
 	sor->power_is_up = 1;
 }
 
+#if DEBUG_SOR
+static void dump_sor_reg(struct tegra_dc_sor_data *sor)
+{
+#define DUMP_REG(a) printk(BIOS_INFO, "%-32s  %03x  %08x\n",		\
+		#a, a, tegra_sor_readl(sor, a));
+
+	DUMP_REG(NV_SOR_SUPER_STATE0);
+	DUMP_REG(NV_SOR_SUPER_STATE1);
+	DUMP_REG(NV_SOR_STATE0);
+	DUMP_REG(NV_SOR_STATE1);
+	DUMP_REG(NV_HEAD_STATE0(0));
+	DUMP_REG(NV_HEAD_STATE0(1));
+	DUMP_REG(NV_HEAD_STATE1(0));
+	DUMP_REG(NV_HEAD_STATE1(1));
+	DUMP_REG(NV_HEAD_STATE2(0));
+	DUMP_REG(NV_HEAD_STATE2(1));
+	DUMP_REG(NV_HEAD_STATE3(0));
+	DUMP_REG(NV_HEAD_STATE3(1));
+	DUMP_REG(NV_HEAD_STATE4(0));
+	DUMP_REG(NV_HEAD_STATE4(1));
+	DUMP_REG(NV_HEAD_STATE5(0));
+	DUMP_REG(NV_HEAD_STATE5(1));
+	DUMP_REG(NV_SOR_CRC_CNTRL);
+	DUMP_REG(NV_SOR_CLK_CNTRL);
+	DUMP_REG(NV_SOR_CAP);
+	DUMP_REG(NV_SOR_PWR);
+	DUMP_REG(NV_SOR_TEST);
+	DUMP_REG(NV_SOR_PLL0);
+	DUMP_REG(NV_SOR_PLL1);
+	DUMP_REG(NV_SOR_PLL2);
+	DUMP_REG(NV_SOR_PLL3);
+	DUMP_REG(NV_SOR_CSTM);
+	DUMP_REG(NV_SOR_LVDS);
+	DUMP_REG(NV_SOR_CRCA);
+	DUMP_REG(NV_SOR_CRCB);
+	DUMP_REG(NV_SOR_SEQ_CTL);
+	DUMP_REG(NV_SOR_LANE_SEQ_CTL);
+	DUMP_REG(NV_SOR_SEQ_INST(0));
+	DUMP_REG(NV_SOR_SEQ_INST(1));
+	DUMP_REG(NV_SOR_SEQ_INST(2));
+	DUMP_REG(NV_SOR_SEQ_INST(3));
+	DUMP_REG(NV_SOR_SEQ_INST(4));
+	DUMP_REG(NV_SOR_SEQ_INST(5));
+	DUMP_REG(NV_SOR_SEQ_INST(6));
+	DUMP_REG(NV_SOR_SEQ_INST(7));
+	DUMP_REG(NV_SOR_SEQ_INST(8));
+	DUMP_REG(NV_SOR_PWM_DIV);
+	DUMP_REG(NV_SOR_PWM_CTL);
+	DUMP_REG(NV_SOR_MSCHECK);
+	DUMP_REG(NV_SOR_XBAR_CTRL);
+	DUMP_REG(NV_SOR_DP_LINKCTL(0));
+	DUMP_REG(NV_SOR_DP_LINKCTL(1));
+	DUMP_REG(NV_SOR_DC(0));
+	DUMP_REG(NV_SOR_DC(1));
+	DUMP_REG(NV_SOR_LANE_DRIVE_CURRENT(0));
+	DUMP_REG(NV_SOR_PR(0));
+	DUMP_REG(NV_SOR_LANE4_PREEMPHASIS(0));
+	DUMP_REG(NV_SOR_POSTCURSOR(0));
+	DUMP_REG(NV_SOR_DP_CONFIG(0));
+	DUMP_REG(NV_SOR_DP_CONFIG(1));
+	DUMP_REG(NV_SOR_DP_MN(0));
+	DUMP_REG(NV_SOR_DP_MN(1));
+	DUMP_REG(NV_SOR_DP_PADCTL(0));
+	DUMP_REG(NV_SOR_DP_PADCTL(1));
+	DUMP_REG(NV_SOR_DP_DEBUG(0));
+	DUMP_REG(NV_SOR_DP_DEBUG(1));
+	DUMP_REG(NV_SOR_DP_SPARE(0));
+	DUMP_REG(NV_SOR_DP_SPARE(1));
+	DUMP_REG(NV_SOR_DP_TPG);
+
+	return;
+}
+#endif
+
 static void tegra_dc_sor_config_panel(struct tegra_dc_sor_data *sor,
 	int is_lvds)
 {
@@ -696,6 +772,10 @@ void tegra_dc_sor_attach(struct tegra_dc_sor_data *sor)
 		printk(BIOS_ERR, "dc timeout waiting for OPMOD = AWAKE\n");
 	else
 		printk(BIOS_INFO, "%s: sor is attached\n", __func__);
+
+#if DEBUG_SOR
+	dump_sor_reg(sor);
+#endif
 }
 
 void tegra_dc_sor_set_lane_parm(struct tegra_dc_sor_data *sor,

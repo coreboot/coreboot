@@ -248,6 +248,23 @@ void tegra_dc_sor_set_panel_power(struct tegra_dc_sor_data *sor,
 	tegra_sor_writel(sor, NV_SOR_DP_PADCTL(sor->portnum), reg_val);
 }
 
+static void tegra_dc_sor_config_pwm(struct tegra_dc_sor_data *sor, u32 pwm_div,
+	u32 pwm_dutycycle)
+{
+	tegra_sor_writel(sor, NV_SOR_PWM_DIV, pwm_div);
+	tegra_sor_writel(sor, NV_SOR_PWM_CTL,
+		(pwm_dutycycle & NV_SOR_PWM_CTL_DUTY_CYCLE_MASK) |
+		NV_SOR_PWM_CTL_SETTING_NEW_TRIGGER);
+
+	if (tegra_dc_sor_poll_register(sor, NV_SOR_PWM_CTL,
+			NV_SOR_PWM_CTL_SETTING_NEW_SHIFT,
+			NV_SOR_PWM_CTL_SETTING_NEW_DONE,
+			100, TEGRA_SOR_TIMEOUT_MS * 1000)) {
+		printk(BIOS_ERR,
+			"dp: timeout while waiting for SOR PWM setting\n");
+	}
+}
+
 static void tegra_dc_sor_set_dp_mode(struct tegra_dc_sor_data *sor,
 	const struct tegra_dc_dp_link_config *link_cfg)
 {
@@ -273,11 +290,6 @@ static void tegra_dc_sor_set_dp_mode(struct tegra_dc_sor_data *sor,
 		NV_SOR_DP_CONFIG_RD_RESET_VAL_NEGATIVE);
 
 	tegra_sor_writel(sor, NV_SOR_DP_CONFIG(sor->portnum), reg_val);
-
-	/* enable CRC */
-	reg_val = NV_SOR_CRC_CNTRL_ARM_CRC_ENABLE_EN <<
-		NV_SOR_CRC_CNTRL_ARM_CRC_ENABLE_SHIFT;
-	tegra_sor_writel(sor, NV_SOR_CRC_CNTRL, reg_val);
 
 	/* program h/vblank sym */
 	tegra_sor_write_field(sor, NV_SOR_DP_AUDIO_HBLANK_SYMBOLS,
@@ -558,6 +570,7 @@ static void tegra_dc_sor_config_panel(struct tegra_dc_sor_data *sor,
 		2 << NV_SOR_CSTM_ROTCLK_SHIFT |
 		(is_lvds ? NV_SOR_CSTM_LVDS_EN_ENABLE :
 		NV_SOR_CSTM_LVDS_EN_DISABLE));
+	 tegra_dc_sor_config_pwm(sor, 1024, 1024);
 }
 
 static void tegra_dc_sor_enable_dc(struct tegra_dc_sor_data *sor)
@@ -571,7 +584,6 @@ static void tegra_dc_sor_enable_dc(struct tegra_dc_sor_data *sor)
 	WRITEL(VSYNC_H_POSITION(1), &disp_ctrl->disp.disp_timing_opt);
 
 	/* Enable DC */
-	WRITEL(DISP_CTRL_MODE_C_DISPLAY, &disp_ctrl->cmd.disp_cmd);
 	WRITEL(reg_val, &disp_ctrl->cmd.state_access);
 }
 

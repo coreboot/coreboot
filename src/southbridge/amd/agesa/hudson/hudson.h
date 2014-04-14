@@ -29,8 +29,6 @@
 #define BIOSRAM_DATA	0xcd5
 #define PM_INDEX	0xcd6
 #define PM_DATA		0xcd7
-#define PM2_INDEX	0xcd0
-#define PM2_DATA	0xcd1
 
 #define HUDSON_ACPI_IO_BASE 0x800
 
@@ -39,12 +37,6 @@
 #define ACPI_PM_TMR_BLK		(HUDSON_ACPI_IO_BASE + 0x18) /* 4 bytes */
 #define ACPI_GPE0_BLK		(HUDSON_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(HUDSON_ACPI_IO_BASE + 0x08) /* 6 bytes */
-
-void pm_iowrite(u8 reg, u8 value);
-u8 pm_ioread(u8 reg);
-void pm2_iowrite(u8 reg, u8 value);
-u8 pm2_ioread(u8 reg);
-void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 #define REV_HUDSON_A11	0x11
 #define REV_HUDSON_A12	0x12
@@ -56,6 +48,12 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 #define GPE0_BLK_ADDRESS                        0x820                           //  AcpiGpe0BlkAddr;
 #define SMI_CMD_PORT                            0xB0                            //      SmiCmdPortAddr;
 #define SPIROM_BASE_ADDRESS_REGISTER    0xA0
+
+void pm_write8(u8 reg, u8 value);
+u8 pm_read8(u8 reg);
+void pm_write16(u8 reg, u16 value);
+u16 pm_read16(u16 reg);
+void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 #ifdef __PRE_RAM__
 void hudson_lpc_port80(void);

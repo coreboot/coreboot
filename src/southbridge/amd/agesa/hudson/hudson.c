@@ -30,6 +30,13 @@
 #include "hudson.h"
 #include "smbus.h"
 
+/* Offsets from ACPI_MMIO_BASE
+ * This is defined by AGESA, but we don't include AGESA headers to avoid
+ * polluting the namesace.
+ */
+#define PM_MMIO_BASE 0xfed80300
+
+
 #if CONFIG_HAVE_ACPI_RESUME
 int acpi_get_sleep_type(void)
 {
@@ -64,38 +71,25 @@ void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-static void pmio_write_index(u16 port_base, u8 reg, u8 value)
+void pm_write8(u8 reg, u8 value)
 {
-	outb(reg, port_base);
-	outb(value, port_base + 1);
+	write8(PM_MMIO_BASE + reg, value);
 }
 
-static u8 pmio_read_index(u16 port_base, u8 reg)
+u8 pm_read8(u8 reg)
 {
-	outb(reg, port_base);
-	return inb(port_base + 1);
+	return read8(PM_MMIO_BASE + reg);
 }
 
-void pm_iowrite(u8 reg, u8 value)
+void pm_write16(u8 reg, u16 value)
 {
-	pmio_write_index(PM_INDEX, reg, value);
+	write16(PM_MMIO_BASE + reg, value);
 }
 
-u8 pm_ioread(u8 reg)
+u16 pm_read16(u16 reg)
 {
-	return pmio_read_index(PM_INDEX, reg);
+	return read16(PM_MMIO_BASE + reg);
 }
-
-void pm2_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM2_INDEX, reg, value);
-}
-
-u8 pm2_ioread(u8 reg)
-{
-	return pmio_read_index(PM2_INDEX, reg);
-}
-
 
 void hudson_enable(device_t dev)
 {
@@ -107,24 +101,21 @@ void hudson_enable(device_t dev)
 			device_t sd_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 7));
 			u32 sd_device_id = pci_read_config32( sd_dev, 0) >> 16;
 			/* turn off the SDHC controller in the PM reg */
-			u8 sd_tmp;
+			u8 reg8;
 			if (sd_device_id == PCI_DEVICE_ID_AMD_HUDSON_SD) {
-				outb(0xE7, PM_INDEX);
-				sd_tmp = inb(PM_DATA);
-				sd_tmp &= ~(1 << 0);
-				outb(sd_tmp, PM_DATA);
+				reg8 = pm_read8(0xe7);
+				reg8 &= ~(1 << 0);
+				pm_write8(0xe7, reg8);
 			}
 			else if (sd_device_id == PCI_DEVICE_ID_AMD_YANGTZE_SD) {
-				outb(0xE8, PM_INDEX);
-				sd_tmp = inb(PM_DATA);
-				sd_tmp &= ~(1 << 0);
-				outb(sd_tmp, PM_DATA);
+				reg8 = pm_read8(0xe8);
+				reg8 &= ~(1 << 0);
+				pm_write8(0xe8, reg8);
 			}
 			/* remove device 0:14.7 from PCI space */
-			outb(0xD3, PM_INDEX);
-			sd_tmp = inb(PM_DATA);
-			sd_tmp &= ~(1 << 6);
-			outb(sd_tmp, PM_DATA);
+			reg8 = pm_read8(0xd3);
+			reg8 &= ~(1 << 6);
+			pm_write8(0xd3, reg8);
 		}
 		break;
 	default:

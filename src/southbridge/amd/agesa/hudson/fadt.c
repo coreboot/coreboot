@@ -69,23 +69,15 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->s4bios_req = 0;	/* unused if SMI_CMD = 0 */
 	fadt->pstate_cnt = 0;	/* unused if SMI_CMD = 0 */
 
-	pm_iowrite(0x60, ACPI_PM_EVT_BLK & 0xFF);
-	pm_iowrite(0x61, ACPI_PM_EVT_BLK >> 8);
-	pm_iowrite(0x62, ACPI_PM1_CNT_BLK & 0xFF);
-	pm_iowrite(0x63, ACPI_PM1_CNT_BLK >> 8);
-	pm_iowrite(0x64, ACPI_PM_TMR_BLK & 0xFF);
-	pm_iowrite(0x65, ACPI_PM_TMR_BLK >> 8);
-	pm_iowrite(0x68, ACPI_GPE0_BLK & 0xFF);
-	pm_iowrite(0x69, ACPI_GPE0_BLK >> 8);
-
+	pm_write16(0x60, ACPI_PM_EVT_BLK);
+	pm_write16(0x62, ACPI_PM1_CNT_BLK);
+	pm_write16(0x64, ACPI_PM_TMR_BLK);
+	pm_write16(0x68, ACPI_GPE0_BLK);
 	/* CpuControl is in \_PR.CPU0, 6 bytes */
-	pm_iowrite(0x66, ACPI_CPU_CONTROL & 0xFF);
-	pm_iowrite(0x67, ACPI_CPU_CONTROL >> 8);
+	pm_write16(0x66, ACPI_CPU_CONTROL);
+	pm_write16(0x6A, 0);	/* AcpiSmiCmd */
 
-	pm_iowrite(0x6A, 0);	/* AcpiSmiCmdLo */
-	pm_iowrite(0x6B, 0);	/* AcpiSmiCmdHi */
-
-	pm_iowrite(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
+	pm_write8(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
 					* the contents of the PM registers at
 					* index 60-6B to decode ACPI I/O address.
 					* AcpiSmiEn & SmiCmdEn*/

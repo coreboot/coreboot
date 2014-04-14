@@ -95,10 +95,10 @@ static void *smp_write_config_table(void *v)
 	/* I/O APICs:   APIC ID Version State   Address */
 
 	dword = 0;
-	dword = pm_ioread(0x34) & 0xF0;
-	dword |= (pm_ioread(0x35) & 0xFF) << 8;
-	dword |= (pm_ioread(0x36) & 0xFF) << 16;
-	dword |= (pm_ioread(0x37) & 0xFF) << 24;
+	dword = pm_read8(0x34) & 0xF0;
+	dword |= (pm_read8(0x35) & 0xFF) << 8;
+	dword |= (pm_read8(0x36) & 0xFF) << 16;
+	dword |= (pm_read8(0x37) & 0xFF) << 24;
 	/* Set IO APIC ID onto IO_APIC_ID */
 	write32 (dword, 0x00);
 	write32 (dword + 0x10, IO_APIC_ID << 24);

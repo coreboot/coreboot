@@ -37,6 +37,14 @@ static void process_smi_sci(void)
 static void process_gpe_smi(void)
 {
 	const uint32_t status = smi_read32(0x80);
+	const uint32_t gevent_mask = (1 << 24) - 1;
+
+	/* Only Bits [23:0] indicate GEVENT SMIs. */
+	if (status & gevent_mask) {
+		/* A GEVENT SMI occured */
+		if (mainboard_smi_gpi)
+			mainboard_smi_gpi(status & gevent_mask);
+	}
 
 	/* Clear events to prevent re-entering SMI if event isn't handled */
 	smi_write32(0x80, status);

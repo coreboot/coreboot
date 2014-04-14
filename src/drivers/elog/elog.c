@@ -548,7 +548,7 @@ int elog_init(void)
 
 	/* Prepare SPI */
 	spi_init();
-	elog_spi = spi_flash_probe(0, 0);
+	elog_spi = spi_flash_probe(CONFIG_BOOT_MEDIA_SPI_BUS, 0);
 	if (!elog_spi) {
 		printk(BIOS_ERR, "ELOG: Unable to find SPI flash\n");
 		return -1;

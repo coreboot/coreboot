@@ -41,3 +41,5 @@ $(objutil)/sconfig/%: $(top)/util/sconfig/%_shipped
 $(objutil)/sconfig/sconfig: $(addprefix $(objutil)/sconfig/,$(sconfigobj))
 	printf "    HOSTCC     $(subst $(obj)/,,$(@)) (link)\n"
 	$(HOSTCC) $(SCONFIGFLAGS) -o $@ $(addprefix $(objutil)/sconfig/,$(sconfigobj))
+
+$(addprefix $(objutil)/sconfig/,$(sconfigobj)) : $(objutil)/sconfig/sconfig.tab.h $(objutil)/sconfig/sconfig.tab.c $(objutil)/sconfig/lex.yy.c

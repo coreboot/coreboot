@@ -28,8 +28,7 @@
 #include <device/pci_ids.h>
 #include <string.h>
 
-#define DUMP_ACPI_TABLES 0
-#include <lib.h> /* used for hexdump for DUMP_ACPI_TABLES */
+#include <lib.h> /* used for hexdump for CONFIG_DEBUG_ACPI */
 
 extern const unsigned char AmlCode[];
 
@@ -268,7 +267,7 @@ unsigned long write_acpi_tables(unsigned long start)
 	current += ssdt2->length;
 	acpi_add_table(rsdp,ssdt2);
 
-#if DUMP_ACPI_TABLES == 1
+#if defined(CONFIG_DEBUG_ACPI)
 	printk(BIOS_DEBUG, "rsdp\n");
 	hexdump(rsdp, sizeof(acpi_rsdp_t));
 
@@ -298,7 +297,7 @@ unsigned long write_acpi_tables(unsigned long start)
 
 	printk(BIOS_DEBUG, "hest\n");
 	hexdump(hest, hest->header.length);
-#endif /* DUMP_ACPI_TABLES */
+#endif /* CONFIG_DEBUG_ACPI */
 
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;

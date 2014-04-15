@@ -35,7 +35,7 @@ if USBDEBUG
 config USBDEBUG_IN_ROMSTAGE
 	bool "Enable early (pre-RAM) usbdebug"
 	default y
-	depends on EARLY_CBMEM_INIT && EARLY_CONSOLE
+	depends on EARLY_CBMEM_INIT
 	help
 	   Configuring USB controllers in system-agent binary may cause
 	   problems to usbdebug. Disabling this option delays usbdebug to

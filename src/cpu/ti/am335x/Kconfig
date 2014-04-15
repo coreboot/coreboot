@@ -3,7 +3,6 @@ config CPU_TI_AM335X
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
 	select BOOTBLOCK_CONSOLE
-	select EARLY_CONSOLE
 	bool
 	default n
 

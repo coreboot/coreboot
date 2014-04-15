@@ -42,8 +42,7 @@ void __attribute__ ((noreturn)) die(const char *msg);
 
 #define __CONSOLE_ENABLE__ \
 	((ENV_BOOTBLOCK && CONFIG_BOOTBLOCK_CONSOLE) || \
-	 (ENV_ROMSTAGE && CONFIG_EARLY_CONSOLE) || \
-	 ENV_RAMSTAGE || (ENV_SMM && CONFIG_DEBUG_SMI))
+	ENV_ROMSTAGE || ENV_RAMSTAGE || (ENV_SMM && CONFIG_DEBUG_SMI))
 
 #if __CONSOLE_ENABLE__
 void console_init(void);

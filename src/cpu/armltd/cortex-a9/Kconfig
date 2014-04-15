@@ -1,7 +1,6 @@
 config CPU_ARMLTD_CORTEX_A9
 	depends on ARCH_ARMV7
 	bool
-	select EARLY_CONSOLE
 	default n
 
 if CPU_ARMLTD_CORTEX_A9

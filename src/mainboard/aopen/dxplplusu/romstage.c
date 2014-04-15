@@ -70,7 +70,7 @@ void main(unsigned long bist)
 		 * scrub_ecc() are recovered to stack via xmm0-xmm3.
 		 */
 #if CONFIG_HW_SCRUBBER
-#if ! ( CONFIG_USBDEBUG && CONFIG_EARLY_CONSOLE )
+#if !CONFIG_USBDEBUG_IN_ROMSTAGE
 		unsigned long ret_addr = (unsigned long)((unsigned long*)&bist - 1);
 		e7505_mch_scrub_ecc(ret_addr);
 #endif

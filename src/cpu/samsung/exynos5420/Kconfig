@@ -2,7 +2,6 @@ config CPU_SAMSUNG_EXYNOS5420
 	depends on ARCH_ARMV7
 	select HAVE_MONOTONIC_TIMER
 	select HAVE_UART_SPECIAL
-	select EARLY_CONSOLE
 	select DYNAMIC_CBMEM
 	bool
 	default n

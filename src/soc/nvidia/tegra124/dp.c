@@ -337,7 +337,7 @@ int tegra_dc_i2c_aux_read(struct tegra_dc_dp_data *dp, u32 i2c_addr,
 
 		u32 len = 1;
 		ret = tegra_dc_dpaux_write_chunk(
-				dp, DPAUX_DP_AUXCTL_CMD_I2CWR, i2c_addr,
+				dp, DPAUX_DP_AUXCTL_CMD_MOTWR, i2c_addr,
 				&addr, &len, aux_stat);
 		if (ret) {
 			printk(BIOS_ERR, "%s: error sending address to read.\n",

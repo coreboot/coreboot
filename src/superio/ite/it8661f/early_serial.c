@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp.h>
 #include "it8661f.h"
 
 /* Perform MB PnP setup to put the SIO chip at 0x3f0. */
@@ -68,7 +69,7 @@ static void it8661f_set_clkin(device_t dev, u8 clkin)
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void it8661f_enable_serial(device_t dev, u16 iobase)
+void it8661f_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

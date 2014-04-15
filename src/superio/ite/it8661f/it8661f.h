@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_ITE_IT8661F_IT8661F_H
-#define SUPERIO_ITE_IT8661F_IT8661F_H
+#ifndef SUPERIO_ITE_IT8661F_H
+#define SUPERIO_ITE_IT8661F_H
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8661_2.asp */
 
@@ -52,4 +52,6 @@ static const u8 init_values[] = {
 	0xe8, 0x74, 0x3a, 0x9d, /**/ 0xce, 0xe7, 0x73, 0x39,
 };
 
-#endif
+void it8661f_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_ITE_IT8661F_H */

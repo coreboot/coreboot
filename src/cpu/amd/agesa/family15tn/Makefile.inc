@@ -20,6 +20,8 @@
 ramstage-y += chip_name.c
 ramstage-y += model_15_init.c
 
+smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c
+
 subdirs-y += ../../mtrr
 subdirs-y += ../../smm
 subdirs-y += ../../../x86/tsc

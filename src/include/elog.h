@@ -162,7 +162,9 @@ extern u32 gsmi_exec(u8 command, u32 *param);
 #if CONFIG_ELOG_BOOT_COUNT
 u32 boot_count_read(void);
 u32 boot_count_increment(void);
-#endif
+#else
+static inline u32 boot_count_read(void) { return 0; }
+#endif /* CONFIG_ELOG_BOOT_COUNT */
 
 #endif /* !CONFIG_ELOG */
 

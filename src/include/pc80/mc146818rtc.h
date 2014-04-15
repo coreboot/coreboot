@@ -220,6 +220,8 @@ static inline enum cb_err get_option(void *dest __attribute__((unused)),
 #define CMOS_POST_EXTRA_DEV_PATH  0x01
 
 void cmos_post_log(void);
+#else
+static inline void cmos_post_log(void) {}
 #endif /* CONFIG_CMOS_POST */
 
 #endif /*  PC80_MC146818RTC_H */

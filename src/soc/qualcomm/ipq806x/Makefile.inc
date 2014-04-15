@@ -22,7 +22,7 @@ $(objcbfs)/bootblock.mbn: $(objcbfs)/bootblock.raw
 	@mv $@.tmp $@
 
 # Create a complete bootblock which will start up the system
-$(objcbfs)/bootblock.bin: ./$(call strip_quotes,$(CONFIG_SBL_BLOB)) \
+$(objcbfs)/bootblock.bin: $(call strip_quotes,$(CONFIG_SBL_BLOB)) \
 			   $(objcbfs)/bootblock.mbn
 	@printf "    CAT    $(subst $(obj)/,,$(@))\n"
 	@cat $^  >  $@.tmp

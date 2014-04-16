@@ -37,8 +37,4 @@ config MAX_CPUS
 	int
 	default 2
 
-config MAX_PHYSICAL_CPUS
-	int
-	default 1
-
 endif # BOARD_RODA_RK9

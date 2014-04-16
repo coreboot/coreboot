@@ -218,22 +218,15 @@ static void sb700_enable(device_t dev)
 
 		case (0x14 << 3) | 0: /* 0:14:0 SMBUS */
 			{
-#if 1
 				u32 ioapic_base;
 				printk(BIOS_DEBUG, "sm_init().\n");
 				ioapic_base = IO_APIC_ADDR;
 				clear_ioapic(ioapic_base);
 				/* I/O APIC IDs are normally limited to 4-bits. Enforce this limit. */
-#if (CONFIG_APIC_ID_OFFSET == 0 && CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS >= 1)
-				/* Assign the ioapic ID the next available number after the processor core local APIC IDs */
-				setup_ioapic(ioapic_base, (UINT8) (CONFIG_MAX_CPUS * CONFIG_MAX_PHYSICAL_CPUS));
-#elif (CONFIG_APIC_ID_OFFSET > 0)
-				/* Assign the ioapic ID the value 0. Processor APIC IDs follow. */
-				setup_ioapic(ioapic_base, 0);
-#else
-#error "The processor APIC IDs must be lifted to make room for the I/O APIC ID"
-#endif
-#endif
+				if (CONFIG_MAX_CPUS >= 16)
+					setup_ioapic(ioapic_base, 0);
+				else
+					setup_ioapic(ioapic_base, CONFIG_MAX_CPUS + 1);
 			}
 			break;
 

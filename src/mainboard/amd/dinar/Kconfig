@@ -42,10 +42,6 @@ config MAINBOARD_DIR
 	string
 	default amd/dinar
 
-config APIC_ID_OFFSET
-	hex
-	default 0x0
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "Dinar"
@@ -57,10 +53,6 @@ config HW_MEM_HOLE_SIZEK
 config MAX_CPUS
 	int
 	default 64
-
-config MAX_PHYSICAL_CPUS
-	int
-	default 16
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
 	bool

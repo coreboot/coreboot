@@ -58,11 +58,10 @@ static void *smp_write_config_table(void *v)
 	 * For systems with < 16 APICs, put the Local-APICs at 0..n and
 	 * put the IO-APICs at (n + 1)..z
 	 */
-#if CONFIG_MAX_CPUS >= 16
-	apicid_sp5100 = 0x0;
-#else
-	apicid_sp5100 = CONFIG_MAX_CPUS + 1
-#endif
+	if (CONFIG_MAX_CPUS >= 16)
+		apicid_sp5100 = 0x0;
+	else
+		apicid_sp5100 = CONFIG_MAX_CPUS + 1;
 	apicid_sr5650 = apicid_sp5100 + 1;
 
 	dev = dev_find_slot(0, PCI_DEVFN(sbdn_sp5100 + 0x14, 0));

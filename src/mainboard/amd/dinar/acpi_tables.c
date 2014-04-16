@@ -73,12 +73,11 @@ unsigned long acpi_fill_madt(unsigned long current)
 	 * For systems with < 16 APICs, put the Local-APICs at 0..n and
 	 * put the IO-APICs at (n + 1)..z
 	 */
-#if CONFIG_MAX_CPUS >= 16
-	apicid_sb700 = 0x0;
-#else
-	apicid_sb700 = CONFIG_MAX_CPUS + 1
-#endif
-		apicid_rd890 = apicid_sb700 + 1;
+	if (CONFIG_MAX_CPUS >= 16)
+		apicid_sb700 = 0x0;
+	else
+		apicid_sb700 = CONFIG_MAX_CPUS + 1;
+	apicid_rd890 = apicid_sb700 + 1;
 
 	/* create all subtables for processors */
 	current = acpi_create_madt_lapics(current);

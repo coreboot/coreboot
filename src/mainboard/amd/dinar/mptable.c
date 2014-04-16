@@ -58,12 +58,11 @@ static void *smp_write_config_table(void *v)
 	 * For systems with < 16 APICs, put the Local-APICs at 0..n and
 	 * put the IO-APICs at (n + 1)..z
 	 */
-#if CONFIG_MAX_CPUS >= 16
-	apicid_sb700 = 0x0;
-#else
-	apicid_sb700 = CONFIG_MAX_CPUS + 1
-#endif
-		apicid_rd890 = apicid_sb700 + 1;
+	if (CONFIG_MAX_CPUS >= 16)
+		apicid_sb700 = 0x0;
+	else
+		apicid_sb700 = CONFIG_MAX_CPUS + 1;
+	apicid_rd890 = apicid_sb700 + 1;
 
 	//bus_sb700[0], TODO: why bus_sb700[0] use same value of bus_rd890[0] assigned by get_pci1234(), instead of 0.
 	dev = dev_find_slot(0, PCI_DEVFN(sbdn_sb700 + 0x14, 0));

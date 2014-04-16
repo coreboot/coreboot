@@ -53,10 +53,6 @@ config MAX_CPUS
 	int
 	default 64
 
-config MAX_PHYSICAL_CPUS
-	int
-	default 16
-
 config CPU_ADDR_BITS
 	int
 	default 36  # TODO: Set it conservatively to match both fam10 & 15

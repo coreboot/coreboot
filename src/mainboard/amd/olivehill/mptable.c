@@ -28,7 +28,6 @@
 #include <cpu/x86/lapic.h>
 #include "southbridge/amd/agesa/hudson/hudson.h" /* pm_ioread() */
 
-//-#define IO_APIC_ID    CONFIG_MAX_PHYSICAL_CPUS + 1
 #define IO_APIC_ID    CONFIG_MAX_CPUS
 extern u8 bus_yangtze[6];
 

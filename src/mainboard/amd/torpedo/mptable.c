@@ -29,7 +29,6 @@
 #include <cpu/amd/amdfam12.h>
 #include "SbPlatform.h"
 
-//-#define IO_APIC_ID    CONFIG_MAX_PHYSICAL_CPUS + 1
 #define IO_APIC_ID    CONFIG_MAX_CPUS
 extern u8 bus_sb900[6];
 

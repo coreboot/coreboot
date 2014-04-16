@@ -26,11 +26,7 @@
 #define HT_INIT_CONTROL		0x6C
 #define HTIC_BIOSR_Detect	(1<<5)
 
-#if CONFIG_MAX_PHYSICAL_CPUS > 32
-#define NODE_PCI(x, fn)	((x<32)?(PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)):(PCI_DEV((CONFIG_CBB-1),(CONFIG_CDB+x-32),fn)))
-#else
-#define NODE_PCI(x, fn)	PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)
-#endif
+#define NODE_PCI(x, fn)	(((CONFIG_CDB+x)<32)?(PCI_DEV(CONFIG_CBB,(CONFIG_CDB+x),fn)):(PCI_DEV((CONFIG_CBB-1),(CONFIG_CDB+x-32),fn)))
 
 static inline void set_bios_reset(void)
 {

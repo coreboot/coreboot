@@ -82,11 +82,34 @@ u16 pm_read16(u16 reg)
 	return read16(PM_MMIO_BASE + reg);
 }
 
+#define PM_REG_USB_ENABLE	0xef
+
+enum usb_enable {
+	USB_EN_DEVFN_12_0 = (1 << 0),
+	USB_EN_DEVFN_12_2 = (1 << 1),
+	USB_EN_DEVFN_13_0 = (1 << 2),
+	USB_EN_DEVFN_13_2 = (1 << 3),
+	USB_EN_DEVFN_16_0 = (1 << 4),
+	USB_EN_DEVFN_16_2 = (1 << 5),
+};
+
+static void hudson_disable_usb(u8 disable)
+{
+	u8 reg8;
+
+	/* Bit 7 handles routing, 6 is reserved. we don't mess with those */
+	disable &= 0x3f;
+
+	reg8 = pm_read8(PM_REG_USB_ENABLE);
+	reg8 &= ~disable;
+	pm_write8(PM_REG_USB_ENABLE, reg8);
+}
+
 void hudson_enable(device_t dev)
 {
 	printk(BIOS_DEBUG, "hudson_enable()\n");
 	switch (dev->path.pci.devfn) {
-	case (0x14 << 3) | 7: /* 0:14.7  SD */
+	case PCI_DEVFN(0x14, 7):
 		if (dev->enabled == 0) {
 			// read the VENDEV ID
 			device_t sd_dev = dev_find_slot( 0, PCI_DEVFN( 0x14, 7));
@@ -108,6 +131,29 @@ void hudson_enable(device_t dev)
 			reg8 &= ~(1 << 6);
 			pm_write8(0xd3, reg8);
 		}
+		break;
+
+	/* Make sure to disable other functions if function 0 is disabled */
+	case PCI_DEVFN(0x12, 0):
+		if (dev->enabled == 0)
+			hudson_disable_usb(USB_EN_DEVFN_12_0);
+	case PCI_DEVFN(0x12, 2):	/* Fall through */
+		if (dev->enabled == 0)
+			hudson_disable_usb(USB_EN_DEVFN_12_2);
+		break;
+	case PCI_DEVFN(0x13, 0):
+		if (dev->enabled == 0)
+			hudson_disable_usb(USB_EN_DEVFN_13_0);
+	case PCI_DEVFN(0x13, 2):	/* Fall through */
+		if (dev->enabled == 0)
+			hudson_disable_usb(USB_EN_DEVFN_13_2);
+		break;
+	case PCI_DEVFN(0x16, 0):
+		if (dev->enabled == 0)
+			hudson_disable_usb(USB_EN_DEVFN_16_0);
+	case PCI_DEVFN(0x16, 2):	/* Fall through */
+		if (dev->enabled == 0)
+			hudson_disable_usb(USB_EN_DEVFN_16_2);
 		break;
 	default:
 		break;

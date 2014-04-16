@@ -636,4 +636,9 @@ usb_generic_init (usbdev_t *dev)
 
 	if (usb_generic_create)
 		usb_generic_create(dev);
+
+	if (dev->data == NULL) {
+		usb_debug("Detaching device not used by payload\n");
+		usb_detach_device(dev->controller, dev->address);
+	}
 }

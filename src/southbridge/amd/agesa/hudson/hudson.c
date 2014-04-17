@@ -60,17 +60,6 @@ void backup_top_of_ram(uint64_t ramtop)
 	}
 }
 
-void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val)
-{
-	u32 reg_old, reg;
-	reg = reg_old = pci_read_config32(sm_dev, reg_pos);
-	reg &= ~mask;
-	reg |= val;
-	if (reg != reg_old) {
-		pci_write_config32(sm_dev, reg_pos, reg);
-	}
-}
-
 void pm_write8(u8 reg, u8 value)
 {
 	write8(PM_MMIO_BASE + reg, value);

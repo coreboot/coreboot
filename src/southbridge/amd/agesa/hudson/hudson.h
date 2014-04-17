@@ -63,7 +63,6 @@ void pm_write8(u8 reg, u8 value);
 u8 pm_read8(u8 reg);
 void pm_write16(u8 reg, u16 value);
 u16 pm_read16(u16 reg);
-void set_sm_enable_bits(device_t sm_dev, u32 reg_pos, u32 mask, u32 val);
 
 #ifdef __PRE_RAM__
 void hudson_lpc_port80(void);

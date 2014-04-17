@@ -659,7 +659,8 @@ static void tegra_dc_sor_enable_dc(struct tegra_dc_sor_data *sor)
 	WRITEL(reg_val | WRITE_MUX_ACTIVE, &disp_ctrl->cmd.state_access);
 	WRITEL(VSYNC_H_POSITION(1), &disp_ctrl->disp.disp_timing_opt);
 
-	/* Enable DC */
+	/* Enable DC now - otherwise pure text console may not show. */
+	WRITEL(DISP_CTRL_MODE_C_DISPLAY, &disp_ctrl->cmd.disp_cmd);
 	WRITEL(reg_val, &disp_ctrl->cmd.state_access);
 }
 

@@ -73,7 +73,7 @@ struct cbfs_stage {
 
 #define PAYLOAD_SEGMENT_CODE	makemagic('C', 'O', 'D', 'E')
 #define PAYLOAD_SEGMENT_DATA	makemagic('D', 'A', 'T', 'A')
-#define PAYLOAD_SEGMENT_BSS     makemagic(' ', 'B', 'S', 'S')
+#define PAYLOAD_SEGMENT_BSS	makemagic('B', 'S', 'S', ' ')
 #define PAYLOAD_SEGMENT_PARAMS	makemagic('P', 'A', 'R', 'A')
 #define PAYLOAD_SEGMENT_ENTRY	makemagic('E', 'N', 'T', 'R')
 

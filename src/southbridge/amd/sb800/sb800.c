@@ -354,15 +354,6 @@ void sb800_enable(device_t dev)
 				     (dev->enabled ? 1 : 0) << index);
 		break;
 	case (0x14 << 3) | 6:
-		/* From linux-2.6.32 to 2.6.34, the broadcom has problems
-		 * about the sequence of installing drivers. The solution is
-		 * modifying the file "/etc/rc.local", or just running:
-		 *
-		 * touch /var/lock/subsys/local
-		 * modprobe -r tg3
-		 * modprobe broadcom
-		 * modprobe tg3
-		 */
 		index = 0;
 		set_pmio_enable_bits(0xF6, 1 << index,
 				     (dev->enabled ? 0 : 1) << index);

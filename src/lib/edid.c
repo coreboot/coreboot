@@ -39,35 +39,35 @@
 #include <boot/coreboot_tables.h>
 #include <vbe.h>
 
-static int claims_one_point_oh = 0;
-static int claims_one_point_two = 0;
-static int claims_one_point_three = 0;
-static int claims_one_point_four = 0;
-static int nonconformant_digital_display = 0;
-static int nonconformant_extension = 0;
-static int did_detailed_timing = 0;
-static int has_name_descriptor = 0;
-static int has_range_descriptor = 0;
-static int has_preferred_timing = 0;
-static int has_valid_checksum = 0;
-static int has_valid_cvt = 1;
-static int has_valid_dummy_block = 1;
-static int has_valid_week = 0;
-static int has_valid_year = 0;
-static int has_valid_detailed_blocks = 0;
-static int has_valid_extension_count = 0;
-static int has_valid_descriptor_ordering = 1;
-static int has_valid_descriptor_pad = 1;
-static int has_valid_range_descriptor = 1;
-static int has_valid_max_dotclock = 1;
-static int has_valid_string_termination = 1;
-static int manufacturer_name_well_formed = 0;
-static int seen_non_detailed_descriptor = 0;
-
-static int warning_excessive_dotclock_correction = 0;
-static int warning_zero_preferred_refresh = 0;
-
-static int conformant = 1;
+struct edid_context {
+	int claims_one_point_oh;
+	int claims_one_point_two;
+	int claims_one_point_three;
+	int claims_one_point_four;
+	int nonconformant_digital_display;
+	int nonconformant_extension;
+	int did_detailed_timing;
+	int has_name_descriptor;
+	int has_range_descriptor;
+	int has_preferred_timing;
+	int has_valid_checksum;
+	int has_valid_cvt;
+	int has_valid_dummy_block;
+	int has_valid_week;
+	int has_valid_year;
+	int has_valid_detailed_blocks;
+	int has_valid_extension_count;
+	int has_valid_descriptor_ordering;
+	int has_valid_descriptor_pad;
+	int has_valid_range_descriptor;
+	int has_valid_max_dotclock;
+	int has_valid_string_termination;
+	int manufacturer_name_well_formed;
+	int seen_non_detailed_descriptor;
+	int warning_excessive_dotclock_correction;
+	int warning_zero_preferred_refresh;
+	int conformant;
+};
 
 static int vbe_valid;
 static struct lb_framebuffer edid_fb;
@@ -82,9 +82,9 @@ static char *manufacturer_name(struct edid *out, unsigned char *x)
 	if (isupper(out->manuf_name[0]) &&
 	    isupper(out->manuf_name[1]) &&
 	    isupper(out->manuf_name[2]))
-		manufacturer_name_well_formed = 1;
+		return out->manuf_name;
 
-	return out->manuf_name;
+	return NULL;
 }
 
 static int
@@ -175,7 +175,8 @@ extract_string(unsigned char *x, int *valid_termination, int len)
 
 /* 1 means valid data */
 static int
-detailed_block(struct edid *out, unsigned char *x, int in_extension)
+detailed_block(struct edid *out, unsigned char *x, int in_extension,
+	       struct edid_context *c)
 {
 	int i;
 #if 1
@@ -191,16 +192,16 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			/* 1.3, 3.10.3 */
 			printk(BIOS_SPEW, "Monitor descriptor block has byte 2 nonzero (0x%02x)\n",
 			       x[2]);
-			has_valid_descriptor_pad = 0;
+			c->has_valid_descriptor_pad = 0;
 		}
 		if (x[3] != 0xfd && x[4] != 0x00) {
 			/* 1.3, 3.10.3 */
 			printk(BIOS_SPEW, "Monitor descriptor block has byte 4 nonzero (0x%02x)\n",
 			       x[4]);
-			has_valid_descriptor_pad = 0;
+			c->has_valid_descriptor_pad = 0;
 		}
 
-		seen_non_detailed_descriptor = 1;
+		c->seen_non_detailed_descriptor = 1;
 		if (x[3] <= 0xF) {
 			/*
 			 * in principle we can decode these, if we know what they are.
@@ -215,7 +216,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			printk(BIOS_SPEW, "Dummy block\n");
 			for (i = 5; i < 18; i++)
 				if (x[i] != 0x00)
-					has_valid_dummy_block = 0;
+					c->has_valid_dummy_block = 0;
 			return 1;
 		case 0xF7:
 			/* TODO */
@@ -226,12 +227,12 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			int valid_cvt = 1; /* just this block */
 			printk(BIOS_SPEW, "CVT 3-byte code descriptor:\n");
 			if (x[5] != 0x01) {
-				has_valid_cvt = 0;
+				c->has_valid_cvt = 0;
 				return 0;
 			}
 			for (i = 0; i < 4; i++)
 				valid_cvt &= detailed_cvt_descriptor(out, x + 6 + (i * 3), (i == 0));
-			has_valid_cvt &= valid_cvt;
+			c->has_valid_cvt &= valid_cvt;
 			return 1;
 		}
 		case 0xF9:
@@ -249,7 +250,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 		case 0xFC:
 			printk(BIOS_SPEW, "Monitor name: %s\n",
 			       extract_string(x + 5,
-					      &has_valid_string_termination,
+					      &c->has_valid_string_termination,
 					      13));
 			return 1;
 		case 0xFD:
@@ -257,13 +258,13 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			int h_max_offset = 0, h_min_offset = 0;
 			int v_max_offset = 0, v_min_offset = 0;
 			int is_cvt = 0;
-			has_range_descriptor = 1;
+			c->has_range_descriptor = 1;
 			out->range_class = "";
 			/*
 			 * XXX todo: implement feature flags, vtd blocks
 			 * XXX check: ranges are well-formed; block termination if no vtd
 			 */
-			if (claims_one_point_four) {
+			if (c->claims_one_point_four) {
 				if (x[4] & 0x02) {
 					v_max_offset = 255;
 					if (x[4] & 0x01) {
@@ -277,7 +278,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 					}
 				}
 			} else if (x[4]) {
-				has_valid_range_descriptor = 0;
+				c->has_valid_range_descriptor = 0;
 			}
 
 			/*
@@ -289,8 +290,8 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 				break;
 			case 0x01: /* range limits only */
 				out->range_class = "bare limits";
-				if (!claims_one_point_four)
-					has_valid_range_descriptor = 0;
+				if (!c->claims_one_point_four)
+					c->has_valid_range_descriptor = 0;
 				break;
 			case 0x02: /* secondary gtf curve */
 				out->range_class = "GTF with icing";
@@ -298,19 +299,19 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			case 0x04: /* cvt */
 				out->range_class = "CVT";
 				is_cvt = 1;
-				if (!claims_one_point_four)
-					has_valid_range_descriptor = 0;
+				if (!c->claims_one_point_four)
+					c->has_valid_range_descriptor = 0;
 				break;
 			default: /* invalid */
-				has_valid_range_descriptor = 0;
+				c->has_valid_range_descriptor = 0;
 				out->range_class = "invalid";
 				break;
 			}
 
 			if (x[5] + v_min_offset > x[6] + v_max_offset)
-				has_valid_range_descriptor = 0;
+				c->has_valid_range_descriptor = 0;
 			if (x[7] + h_min_offset > x[8] + h_max_offset)
-				has_valid_range_descriptor = 0;
+				c->has_valid_range_descriptor = 0;
 			printk(BIOS_SPEW, "Monitor ranges (%s): %d-%dHz V, %d-%dkHz H",
 			       out->range_class,
 			       x[5] + v_min_offset, x[6] + v_max_offset,
@@ -318,8 +319,8 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			if (x[9])
 				printk(BIOS_SPEW, ", max dotclock %dMHz\n", x[9] * 10);
 			else {
-				if (claims_one_point_four)
-					has_valid_max_dotclock = 0;
+				if (c->claims_one_point_four)
+					c->has_valid_max_dotclock = 0;
 				printk(BIOS_SPEW, "\n");
 			}
 
@@ -333,7 +334,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 					printk(BIOS_SPEW, "Real max dotclock: %dKHz\n",
 					       (x[9] * 10000) - (raw_offset * 250));
 					if (raw_offset >= 40)
-						warning_excessive_dotclock_correction = 1;
+						c->warning_excessive_dotclock_correction = 1;
 				}
 
 				max_h_pixels = x[12] & 0x03;
@@ -350,7 +351,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 				       x[14] & 0x10 ? "5:4" : "",
 				       x[14] & 0x08 ? "15:9" : "");
 				if (x[14] & 0x07)
-					has_valid_range_descriptor = 0;
+					c->has_valid_range_descriptor = 0;
 
 				printk(BIOS_SPEW, "Preferred aspect ratio: ");
 				switch((x[15] & 0xe0) >> 5) {
@@ -369,7 +370,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 					printk(BIOS_SPEW, "Supports CVT reduced blanking\n");
 
 				if (x[15] & 0x07)
-					has_valid_range_descriptor = 0;
+					c->has_valid_range_descriptor = 0;
 
 				if (x[16] & 0xf0) {
 					printk(BIOS_SPEW, "Supported display scaling:\n");
@@ -384,12 +385,12 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 				}
 
 				if (x[16] & 0x0f)
-					has_valid_range_descriptor = 0;
+					c->has_valid_range_descriptor = 0;
 
 				if (x[17])
 					printk(BIOS_SPEW, "Preferred vertical refresh: %d Hz\n", x[17]);
 				else
-					warning_zero_preferred_refresh = 1;
+					c->warning_zero_preferred_refresh = 1;
 			}
 
 			/*
@@ -404,11 +405,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 			 * seems to be specified by SPWG: http://www.spwg.org/
 			 */
 			printk(BIOS_SPEW, "ASCII string: %s\n",
-			       extract_string(x + 5, &has_valid_string_termination, 13));
+			       extract_string(x + 5, &c->has_valid_string_termination, 13));
 			return 1;
 		case 0xFF:
 			printk(BIOS_SPEW, "Serial number: %s\n",
-			       extract_string(x + 5, &has_valid_string_termination, 13));
+			       extract_string(x + 5, &c->has_valid_string_termination, 13));
 			return 1;
 		default:
 			printk(BIOS_SPEW, "Unknown monitor description type %d\n", x[3]);
@@ -416,11 +417,11 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 		}
 	}
 
-	if (seen_non_detailed_descriptor && !in_extension) {
-		has_valid_descriptor_ordering = 0;
+	if (c->seen_non_detailed_descriptor && !in_extension) {
+		c->has_valid_descriptor_ordering = 0;
 	}
 
-	if (! did_detailed_timing){
+	if (! c->did_detailed_timing){
 		/* Edid contains pixel clock in terms of 10KHz */
 		out->pixel_clock = (x[0] + (x[1] << 8)) * 10;
 		out->x_mm = (x[12] + ((x[14] & 0xF0) << 4));
@@ -461,7 +462,7 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 					    64);
 		printk(BIOS_SPEW, "Did detailed timing\n");
 	}
-	did_detailed_timing = 1;
+	c->did_detailed_timing = 1;
 	switch ((x[17] & 0x18) >> 3) {
 	case 0x00:
 		out->syncmethod = " analog composite";
@@ -523,22 +524,22 @@ detailed_block(struct edid *out, unsigned char *x, int in_extension)
 static int
 do_checksum(unsigned char *x)
 {
-	printk(BIOS_SPEW, "Checksum: 0x%hhx", x[0x7f]);
+	int valid = 0;
+	printk(BIOS_SPEW, "Checksum: 0x%hx", x[0x7f]);
 	{
 		unsigned char sum = 0;
 		int i;
 		for (i = 0; i < 128; i++)
 			sum += x[i];
 		if (sum) {
-			printk(BIOS_SPEW, " (should be 0x%hhx)", (unsigned char)(x[0x7f] - sum));
-			has_valid_checksum = 0;
+			printk(BIOS_SPEW, " (should be 0x%hx)", (unsigned char)(x[0x7f] - sum));
 		} else {
-			has_valid_checksum = 1;
+			valid = 1;
 			printk(BIOS_SPEW, " (valid)");
 		}
 	}
 	printk(BIOS_SPEW, "\n");
-	return has_valid_checksum;
+	return valid;
 }
 
 /* CEA extension */
@@ -812,7 +813,7 @@ cea_block(struct edid *out, unsigned char *x)
 }
 
 static int
-parse_cea(struct edid *out, unsigned char *x)
+parse_cea(struct edid *out, unsigned char *x, struct edid_context *c)
 {
 	int ret = 0;
 	int version = x[1];
@@ -852,11 +853,10 @@ parse_cea(struct edid *out, unsigned char *x)
 
 			for (detailed = x + offset; detailed + 18 < x + 127; detailed += 18)
 				if (detailed[0])
-					detailed_block(out, detailed, 1);
+					detailed_block(out, detailed, 1, c);
 		} while (0);
 
-	do_checksum(x);
-
+	c->has_valid_checksum &= do_checksum(x);
 	return ret;
 }
 
@@ -869,7 +869,7 @@ extension_version(struct edid *out, unsigned char *x)
 }
 
 static int
-parse_extension(struct edid *out, unsigned char *x)
+parse_extension(struct edid *out, unsigned char *x, struct edid_context *c)
 {
 	int conformant_extension = 0;
 	printk(BIOS_SPEW, "\n");
@@ -878,14 +878,14 @@ parse_extension(struct edid *out, unsigned char *x)
 	case 0x02:
 		printk(BIOS_SPEW, "CEA extension block\n");
 		extension_version(out, x);
-		conformant_extension = parse_cea(out, x);
+		conformant_extension = parse_cea(out, x, c);
 		break;
 	case 0x10: printk(BIOS_SPEW, "VTB extension block\n"); break;
 	case 0x40: printk(BIOS_SPEW, "DI extension block\n"); break;
 	case 0x50: printk(BIOS_SPEW, "LS extension block\n"); break;
 	case 0x60: printk(BIOS_SPEW, "DPVL extension block\n"); break;
 	case 0xF0: printk(BIOS_SPEW, "Block map\n"); break;
-	case 0xFF: printk(BIOS_SPEW, "Manufacturer-specific extension block\n"); break;
+	case 0xFF: printk(BIOS_SPEW, "Manufacturer-specific extension block\n");
 	default:
 		printk(BIOS_SPEW, "Unknown extension block\n");
 		break;
@@ -964,6 +964,16 @@ static void dump_breakdown(unsigned char *edid)
 int decode_edid(unsigned char *edid, int size, struct edid *out)
 {
 	int analog, i;
+	struct edid_context c = {
+	    .has_valid_cvt = 1,
+	    .has_valid_dummy_block = 1,
+	    .has_valid_descriptor_ordering = 1,
+	    .has_valid_descriptor_pad = 1,
+	    .has_valid_range_descriptor = 1,
+	    .has_valid_max_dotclock = 1,
+	    .has_valid_string_termination = 1,
+	    .conformant = 1,
+	};
 
 	dump_breakdown(edid);
 
@@ -971,8 +981,11 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		printk(BIOS_SPEW, "No header found\n");
 		return 1;
 	}
+
 	memset(out, 0, sizeof(*out));
-	manufacturer_name(out, edid + 0x08);
+	if (manufacturer_name(out, edid + 0x08))
+		c.manufacturer_name_well_formed = 1;
+
 	out->model = (unsigned short)(edid[0x0A] + (edid[0x0B] << 8));
 	out->serial = (unsigned int)(edid[0x0C] + (edid[0x0D] << 8)
 				     + (edid[0x0E] << 16) + (edid[0x0F] << 24));
@@ -985,19 +998,19 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	/* XXX need manufacturer ID table */
 
 	if (edid[0x10] < 55 || edid[0x10] == 0xff) {
-		has_valid_week = 1;
+		c.has_valid_week = 1;
 		if (edid[0x11] > 0x0f) {
 			if (edid[0x10] == 0xff) {
-				has_valid_year = 1;
-				printk(BIOS_SPEW, "Made week %hhu of model year %hhu\n", edid[0x10],
+				c.has_valid_year = 1;
+				printk(BIOS_SPEW, "Made week %hd of model year %hd\n", edid[0x10],
 				       edid[0x11]);
 				out->week = edid[0x10];
 				out->year = edid[0x11];
 			} else {
 				/* we know it's at least 2013, when this code was written */
 				if (edid[0x11] + 90 <= 2013) {
-					has_valid_year = 1;
-					printk(BIOS_SPEW, "Made week %hhu of %d\n",
+					c.has_valid_year = 1;
+					printk(BIOS_SPEW, "Made week %hd of %hd\n",
 					       edid[0x10], edid[0x11] + 1990);
 					out->week = edid[0x10];
 					out->year = edid[0x11] + 1990;
@@ -1006,8 +1019,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		}
 	}
 
-
-	printk(BIOS_SPEW, "EDID version: %hhu.%hhu\n", edid[0x12], edid[0x13]);
+	printk(BIOS_SPEW, "EDID version: %hd.%hd\n", edid[0x12], edid[0x13]);
 	out->version[0] = edid[0x12];
 	out->version[1] = edid[0x13];
 
@@ -1018,29 +1030,28 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		}
 		switch (edid[0x13]) {
 		case 4:
-			claims_one_point_four = 1;
+			c.claims_one_point_four = 1;
 		case 3:
-			claims_one_point_three = 1;
+			c.claims_one_point_three = 1;
 		case 2:
-			claims_one_point_two = 1;
+			c.claims_one_point_two = 1;
 		default:
 			break;
 		}
-		claims_one_point_oh = 1;
+		c.claims_one_point_oh = 1;
 	}
 
 	/* display section */
-
 	if (edid[0x14] & 0x80) {
 		int conformance_mask;
 		analog = 0;
 		printk(BIOS_SPEW, "Digital display\n");
-		if (claims_one_point_four) {
+		if (c.claims_one_point_four) {
 			conformance_mask = 0;
 			if ((edid[0x14] & 0x70) == 0x00)
 				printk(BIOS_SPEW, "Color depth is undefined\n");
 			else if ((edid[0x14] & 0x70) == 0x70)
-				nonconformant_digital_display = 1;
+				c.nonconformant_digital_display = 1;
 			else
 				printk(BIOS_SPEW, "%d bits per primary color channel\n",
 				       ((edid[0x14] & 0x70) >> 3) + 4);
@@ -1055,10 +1066,10 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 			case 0x04: printk(BIOS_SPEW, "MDDI interface\n"); break;
 			case 0x05: printk(BIOS_SPEW, "DisplayPort interface\n"); break;
 			default:
-				   nonconformant_digital_display = 1;
+				   c.nonconformant_digital_display = 1;
 			}
 			out->type = edid[0x14] & 0x0f;
-		} else 	if (claims_one_point_two) {
+		} else 	if (c.claims_one_point_two) {
 			conformance_mask = 0x7E;
 			if (edid[0x14] & 0x01) {
 				printk(BIOS_SPEW, "DFP 1.x compatible TMDS\n");
@@ -1066,9 +1077,9 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		} else
 			conformance_mask = 0x7F;
 
-		if (!nonconformant_digital_display)
-			nonconformant_digital_display = edid[0x14] & conformance_mask;
-		out->nonconformant = nonconformant_digital_display;
+		if (!c.nonconformant_digital_display)
+			c.nonconformant_digital_display = edid[0x14] & conformance_mask;
+		out->nonconformant = c.nonconformant_digital_display;
 	} else {
 		analog = 1;
 		int voltage = (edid[0x14] & 0x60) >> 5;
@@ -1082,7 +1093,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		       voltage == 1 ? "0.714/0.286" :
 		       "0.7/0.3");
 
-		if (claims_one_point_four) {
+		if (c.claims_one_point_four) {
 			if (edid[0x14] & 0x10)
 				printk(BIOS_SPEW, "Blank-to-black setup/pedestal\n");
 			else
@@ -1108,7 +1119,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		       edid[0x15], edid[0x16]);
 		out->xsize_cm = edid[0x15];
 		out->ysize_cm = edid[0x16];
-	} else if (claims_one_point_four && (edid[0x15] || edid[0x16])) {
+	} else if (c.claims_one_point_four && (edid[0x15] || edid[0x16])) {
 		if (edid[0x15]) { /* edid[0x15] != 0 && edid[0x16] == 0 */
 			unsigned int ratio = 100000/(edid[0x15] + 99);
 			printk(BIOS_SPEW, "Aspect ratio is %u.%03u (landscape)\n",
@@ -1126,7 +1137,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	}
 
 	if (edid[0x17] == 0xff) {
-		if (claims_one_point_four)
+		if (c.claims_one_point_four)
 			printk(BIOS_SPEW, "Gamma is defined in an extension block\n");
 		else
 			/* XXX Technically 1.3 doesn't say this... */
@@ -1162,7 +1173,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		printk(BIOS_SPEW, "Default (sRGB) color space is primary color space\n");
 	if (edid[0x18] & 0x02) {
 		printk(BIOS_SPEW, "First detailed timing is preferred timing\n");
-		has_preferred_timing = 1;
+		c.has_preferred_timing = 1;
 	}
 	if (edid[0x18] & 0x01)
 		printk(BIOS_SPEW, "Supports GTF timings within operating range\n");
@@ -1195,7 +1206,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		x = (b1 + 31) * 8;
 		switch ((b2 >> 6) & 0x3) {
 		case 0x00:
-			if (claims_one_point_three)
+			if (c.claims_one_point_three)
 				y = x * 10 / 16;
 			else
 				y = x;
@@ -1217,25 +1228,28 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 
 	/* detailed timings */
 	printk(BIOS_SPEW, "Detailed timings\n");
-	has_valid_detailed_blocks = detailed_block(out, edid + 0x36, 0);
-	if (has_preferred_timing && !did_detailed_timing)
-		has_preferred_timing = 0; /* not really accurate... */
-	has_valid_detailed_blocks &= detailed_block(out, edid + 0x48, 0);
-	has_valid_detailed_blocks &= detailed_block(out, edid + 0x5A, 0);
-	has_valid_detailed_blocks &= detailed_block(out, edid + 0x6C, 0);
+	for (i = 0; i < 4; i++) {
+		c.has_valid_detailed_blocks &= detailed_block(
+				out, edid + 0x36 + i * 18, 0, &c);
+		if (i == 0 && c.has_preferred_timing && !c.did_detailed_timing)
+		{
+			/* not really accurate... */
+			c.has_preferred_timing = 0;
+		}
+	}
 
 	/* check this, 1.4 verification guide says otherwise */
 	if (edid[0x7e]) {
 		printk(BIOS_SPEW, "Has %d extension blocks\n", edid[0x7e]);
 		/* 2 is impossible because of the block map */
 		if (edid[0x7e] != 2)
-			has_valid_extension_count = 1;
+			c.has_valid_extension_count = 1;
 	} else {
-		has_valid_extension_count = 1;
+		c.has_valid_extension_count = 1;
 	}
 
 	printk(BIOS_SPEW, "Checksum\n");
-	do_checksum(edid);
+	c.has_valid_checksum = do_checksum(edid);
 
 	/* EDID v2.0 has a larger blob (256 bytes) and may have some problem in
 	 * the extension parsing loop below.  Since v2.0 was quickly deprecated
@@ -1243,38 +1257,32 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	 * that case now and can fix it when we need to use a real 2.0 panel.
 	 */
 	for(i = 128; i < size; i += 128)
-		nonconformant_extension += parse_extension(out, &edid[i]);
-	/*
-	 * x = edid;
-	 * for (edid_lines /= 8; edid_lines > 1; edid_lines--) {
-	 *	x += 128;
-	 *	nonconformant_extension += parse_extension(x);
-	 * }
-	 */
+		c.nonconformant_extension +=
+				parse_extension(out, &edid[i], &c);
 
-	if (claims_one_point_four) {
-		if (nonconformant_digital_display ||
-		    !has_valid_string_termination ||
-		    !has_valid_descriptor_pad ||
-		    !has_preferred_timing)
-			conformant = 0;
-		if (!conformant)
+	if (c.claims_one_point_four) {
+		if (c.nonconformant_digital_display ||
+		    !c.has_valid_string_termination ||
+		    !c.has_valid_descriptor_pad ||
+		    !c.has_preferred_timing)
+			c.conformant = 0;
+		if (!c.conformant)
 			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.4!\n");
-		if (nonconformant_digital_display)
+		if (c.nonconformant_digital_display)
 			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
-			       nonconformant_digital_display);
-		if (!has_valid_string_termination)
+			       c.nonconformant_digital_display);
+		if (!c.has_valid_string_termination)
 			printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
-		if (!has_valid_descriptor_pad)
+		if (!c.has_valid_descriptor_pad)
 			printk(BIOS_ERR, "\tInvalid descriptor block padding\n");
-		if (!has_preferred_timing)
+		if (!c.has_preferred_timing)
 			printk(BIOS_ERR, "\tMissing preferred timing\n");
-	} else if (claims_one_point_three) {
-		if (nonconformant_digital_display ||
-		    !has_valid_string_termination ||
-		    !has_valid_descriptor_pad ||
-		    !has_preferred_timing) {
-			conformant = 0;
+	} else if (c.claims_one_point_three) {
+		if (c.nonconformant_digital_display ||
+		    !c.has_valid_string_termination ||
+		    !c.has_valid_descriptor_pad ||
+		    !c.has_preferred_timing) {
+			c.conformant = 0;
 		}
 		/**
 		 * According to E-EDID (EDIDv1.3), has_name_descriptor and
@@ -1283,92 +1291,92 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 		 * don't have them. As a workaround, we only print warning
 		 * messages.
 		 */
-		if (!conformant)
+		if (!c.conformant)
 			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.3!\n");
-		else if (!has_name_descriptor || !has_range_descriptor)
+		else if (!c.has_name_descriptor || !c.has_range_descriptor)
 			printk(BIOS_WARNING, "WARNING: EDID block does NOT "
 			       "fully conform to EDID 1.3.\n");
 
-		if (nonconformant_digital_display)
+		if (c.nonconformant_digital_display)
 			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
-			       nonconformant_digital_display);
-		if (!has_name_descriptor)
+			       c.nonconformant_digital_display);
+		if (!c.has_name_descriptor)
 			printk(BIOS_ERR, "\tMissing name descriptor\n");
-		if (!has_preferred_timing)
+		if (!c.has_preferred_timing)
 			printk(BIOS_ERR, "\tMissing preferred timing\n");
-		if (!has_range_descriptor)
+		if (!c.has_range_descriptor)
 			printk(BIOS_ERR, "\tMissing monitor ranges\n");
-		if (!has_valid_descriptor_pad) /* Might be more than just 1.3 */
+		if (!c.has_valid_descriptor_pad) /* Might be more than just 1.3 */
 			printk(BIOS_ERR, "\tInvalid descriptor block padding\n");
-		if (!has_valid_string_termination) /* Likewise */
+		if (!c.has_valid_string_termination) /* Likewise */
 			printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
-	} else if (claims_one_point_two) {
-		if (nonconformant_digital_display ||
-		    !has_valid_string_termination)
-			conformant = 0;
-		if (!conformant)
+	} else if (c.claims_one_point_two) {
+		if (c.nonconformant_digital_display ||
+		    !c.has_valid_string_termination)
+			c.conformant = 0;
+		if (!c.conformant)
 			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.2!\n");
-		if (nonconformant_digital_display)
+		if (c.nonconformant_digital_display)
 			printk(BIOS_ERR, "\tDigital display field contains garbage: %x\n",
-			       nonconformant_digital_display);
-		if (!has_valid_string_termination)
+			       c.nonconformant_digital_display);
+		if (!c.has_valid_string_termination)
 			printk(BIOS_ERR, "\tDetailed block string not properly terminated\n");
-	} else if (claims_one_point_oh) {
-		if (seen_non_detailed_descriptor)
-			conformant = 0;
-		if (!conformant)
+	} else if (c.claims_one_point_oh) {
+		if (c.seen_non_detailed_descriptor)
+			c.conformant = 0;
+		if (!c.conformant)
 			printk(BIOS_ERR, "EDID block does NOT conform to EDID 1.0!\n");
-		if (seen_non_detailed_descriptor)
+		if (c.seen_non_detailed_descriptor)
 			printk(BIOS_ERR, "\tHas descriptor blocks other than detailed timings\n");
 	}
 
-	if (nonconformant_extension ||
-	    !has_valid_checksum ||
-	    !has_valid_cvt ||
-	    !has_valid_year ||
-	    !has_valid_week ||
-	    !has_valid_detailed_blocks ||
-	    !has_valid_dummy_block ||
-	    !has_valid_extension_count ||
-	    !has_valid_descriptor_ordering ||
-	    !has_valid_range_descriptor ||
-	    !manufacturer_name_well_formed) {
-		conformant = 0;
+	if (c.nonconformant_extension ||
+	    !c.has_valid_checksum ||
+	    !c.has_valid_cvt ||
+	    !c.has_valid_year ||
+	    !c.has_valid_week ||
+	    !c.has_valid_detailed_blocks ||
+	    !c.has_valid_dummy_block ||
+	    !c.has_valid_extension_count ||
+	    !c.has_valid_descriptor_ordering ||
+	    !c.has_valid_range_descriptor ||
+	    !c.manufacturer_name_well_formed) {
+		c.conformant = 0;
 		printk(BIOS_ERR, "EDID block does not conform at all!\n");
-		if (nonconformant_extension)
+		if (c.nonconformant_extension)
 			printk(BIOS_ERR, "\tHas %d nonconformant extension block(s)\n",
-			       nonconformant_extension);
-		if (!has_valid_checksum)
+			       c.nonconformant_extension);
+		if (!c.has_valid_checksum)
 			printk(BIOS_ERR, "\tBlock has broken checksum\n");
-		if (!has_valid_cvt)
+		if (!c.has_valid_cvt)
 			printk(BIOS_ERR, "\tBroken 3-byte CVT blocks\n");
-		if (!has_valid_year)
+		if (!c.has_valid_year)
 			printk(BIOS_ERR, "\tBad year of manufacture\n");
-		if (!has_valid_week)
+		if (!c.has_valid_week)
 			printk(BIOS_ERR, "\tBad week of manufacture\n");
-		if (!has_valid_detailed_blocks)
+		if (!c.has_valid_detailed_blocks)
 			printk(BIOS_ERR, "\tDetailed blocks filled with garbage\n");
-		if (!has_valid_dummy_block)
+		if (!c.has_valid_dummy_block)
 			printk(BIOS_ERR, "\tDummy block filled with garbage\n");
-		if (!has_valid_extension_count)
+		if (!c.has_valid_extension_count)
 			printk(BIOS_ERR, "\tImpossible extension block count\n");
-		if (!manufacturer_name_well_formed)
+		if (!c.manufacturer_name_well_formed)
 			printk(BIOS_ERR, "\tManufacturer name field contains garbage\n");
-		if (!has_valid_descriptor_ordering)
+		if (!c.has_valid_descriptor_ordering)
 			printk(BIOS_ERR, "\tInvalid detailed timing descriptor ordering\n");
-		if (!has_valid_range_descriptor)
+		if (!c.has_valid_range_descriptor)
 			printk(BIOS_ERR, "\tRange descriptor contains garbage\n");
-		if (!has_valid_max_dotclock)
+		if (!c.has_valid_max_dotclock)
 			printk(BIOS_ERR, "\tEDID 1.4 block does not set max dotclock\n");
 	}
 
-	if (warning_excessive_dotclock_correction)
+	if (c.warning_excessive_dotclock_correction)
 		printk(BIOS_ERR,
 		       "Warning: CVT block corrects dotclock by more than 9.75MHz\n");
-	if (warning_zero_preferred_refresh)
+	if (c.warning_zero_preferred_refresh)
 		printk(BIOS_ERR,
 		       "Warning: CVT block does not set preferred refresh rate\n");
-	return !conformant;
+	return !c.conformant;
 }
 
 /*
@@ -1447,14 +1455,10 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 	 * I'm not sure with grahpics you ever can.
 	 */
 	edid_fb.bits_per_pixel = edid->framebuffer_bits_per_pixel;
-	edid_fb.reserved_mask_pos = 0;
-	edid_fb.reserved_mask_size = 0;
 	switch(edid->framebuffer_bits_per_pixel){
 	case 32:
 	case 24:
 		/* packed into 4-byte words */
-		edid_fb.reserved_mask_pos = 24;
-		edid_fb.reserved_mask_size = 8;
 		edid_fb.red_mask_pos = 16;
 		edid_fb.red_mask_size = 8;
 		edid_fb.green_mask_pos = 8;
@@ -1477,6 +1481,8 @@ void set_vbe_mode_info_valid(struct edid *edid, uintptr_t fb_addr)
 		return;
 	}
 
+	edid_fb.reserved_mask_pos = 0;
+	edid_fb.reserved_mask_size = 0;
 	vbe_valid = 1;
 }
 

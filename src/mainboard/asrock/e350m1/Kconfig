@@ -39,10 +39,6 @@ config MAINBOARD_DIR
         string
         default asrock/e350m1
 
-config APIC_ID_OFFSET
-        hex
-        default 0x0
-
 config MAINBOARD_PART_NUMBER
         string
         default "E350M1"
@@ -54,10 +50,6 @@ config HW_MEM_HOLE_SIZEK
 config MAX_CPUS
         int
         default 2
-
-config MAX_PHYSICAL_CPUS
-        int
-        default 1
 
 config HW_MEM_HOLE_SIZE_AUTO_INC
         bool

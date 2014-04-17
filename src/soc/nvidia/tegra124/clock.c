@@ -304,18 +304,17 @@ clock_display(u32 frequency)
 	 *           = (cf * n) >> p, where 1MHz < cf < 6MHz
 	 *           = ((ref / m) * n) >> p
 	 *
-	 * Assume p = 0, find (m, n). since m has only 5 bits, we can iterate
-	 * all possible values.  Note Tegra 124 supports 11 bits for n, but our
-	 * pll_fields has only 10 bits for n.
+	 * Assume p = 0, find best (m, n). since m has only 5 bits, we can
+	 * iterate all possible values.  Note Tegra 124 supports 11 bits for n,
+	 * but our pll_fields has only 10 bits for n.
 	 *
 	 * Note values undershoot or overshoot target output frequency may not
-	 * work if the value is not in "safe" range in panel specification, so
-	 * we want exact match.
+	 * work if the values are not in "safe" range by panel specification.
 	 */
-
 	struct pllpad_dividers plld = { 0 };
 	u32 ref = clock_get_pll_input_khz() * 1000, m, n;
 	u32 cf, vco = frequency;
+	u32 diff, best_diff = vco;
 	const u32 max_m = 1 << 5, max_n = 1 << 10, mhz = 1000 * 1000,
 		  min_vco = 500 * mhz, max_vco = 1000 * mhz,
 		  min_cf = 1 * mhz, max_cf = 6 * mhz;
@@ -326,40 +325,53 @@ clock_display(u32 frequency)
 		return -1;
 	}
 
-	for (m = 1; m < max_m; m++) {
+	for (m = 1; m < max_m && best_diff; m++) {
 		cf = ref / m;
 		if (cf < min_cf)
 			break;
-
-		n = vco / cf;
-		if (vco != cf * n || n >= max_n || cf > max_cf)
+		if (cf > max_cf)
 			continue;
 
+		n = vco / cf;
+		if (n >= max_n)
+			continue;
+
+		diff = vco - n * cf;
+		if (n + 1 < max_n && diff > cf / 2) {
+			n++;
+			diff = cf - diff;
+		}
+
+		if (diff >= best_diff)
+			continue;
+
+		best_diff = diff;
 		plld.m = m;
 		plld.n = n;
-
-		if (n < 50)
-			plld.cpcon = 2;
-		else if (n < 300)
-			plld.cpcon = 3;
-		else if (n < 600)
-			plld.cpcon = 8;
-		else
-			plld.cpcon = 12;
-
-		printk(BIOS_DEBUG, "%s: PLLD=%u ref=%u, m/n/p/cpcon="
-		       "%u/%u/%u/%u\n", __func__,
-		       (ref / plld.m * plld.n) >> plld.p, ref,
-		       plld.m, plld.n, plld.p, plld.cpcon);
-
-		init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, plld,
-			 (PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
-		return 0;
 	}
 
-	printk(BIOS_ERR, "%s: Failed to match output frequency %u.\n",
-	       __func__, frequency);
-	return -1;
+	if (plld.n < 50)
+		plld.cpcon = 2;
+	else if (plld.n < 300)
+		plld.cpcon = 3;
+	else if (plld.n < 600)
+		plld.cpcon = 8;
+	else
+		plld.cpcon = 12;
+
+	if (best_diff) {
+		printk(BIOS_ERR, "%s: Failed to match output frequency %u, "
+		       "best difference is %u.\n", __func__, frequency,
+		       best_diff);
+	}
+
+	printk(BIOS_DEBUG, "%s: PLLD=%u ref=%u, m/n/p/cpcon=%u/%u/%u/%u\n",
+	       __func__, (ref / plld.m * plld.n) >> plld.p, ref, plld.m, plld.n,
+	       plld.p, plld.cpcon);
+
+	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, plld,
+		 (PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
+	return 0;
 }
 
 /* Initialize the UART and put it on CLK_M so we can use it during clock_init().

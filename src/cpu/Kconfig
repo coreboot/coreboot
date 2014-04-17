@@ -29,13 +29,6 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 
-# FIXME MAX_PHYSICAL_CPUS should move to AMD specific code, or better
-# yet be dropped completely.
-config MAX_PHYSICAL_CPUS
-	int
-	depends on CPU_AMD_MODEL_10XXX || CPU_AMD_MODEL_FXX || CPU_AMD_AGESA
-	default 1
-
 config SMP
 	bool
 	default y if MAX_CPUS != 1

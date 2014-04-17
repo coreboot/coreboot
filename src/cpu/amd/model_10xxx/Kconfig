@@ -32,6 +32,10 @@ config SET_FIDVID
 	bool
 	default y
 
+config MAX_PHYSICAL_CPUS
+	int
+	default 1
+
 config LIFT_BSP_APIC_ID
 	bool
 	default n

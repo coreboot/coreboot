@@ -31,24 +31,6 @@
 
 #include "agesawrapper.h"
 
-#define DUMP_ACPI_TABLES 0
-
-#if DUMP_ACPI_TABLES == 1
-
-static void dump_mem(u32 start, u32 end)
-{
-	u32 i;
-	print_debug("dump_mem:");
-	for (i = start; i < end; i++) {
-		if ((i & 0xf) == 0) {
-			printk(BIOS_DEBUG, "\n%08x:", i);
-		}
-		printk(BIOS_DEBUG, " %02x", (u8)*((u8 *)i));
-	}
-	print_debug("\n");
-}
-#endif
-
 extern const unsigned char AmlCode[];
 
 unsigned long acpi_fill_mcfg(unsigned long current)
@@ -297,32 +279,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_ssdt_generator(ssdt, ACPI_TABLE_CREATOR);
 	current += ssdt->length;
 	acpi_add_table(rsdp, ssdt);
-
-#if DUMP_ACPI_TABLES == 1
-	printk(BIOS_DEBUG, "rsdp\n");
-	dump_mem(rsdp, ((void *)rsdp) + sizeof(acpi_rsdp_t));
-
-	printk(BIOS_DEBUG, "rsdt\n");
-	dump_mem(rsdt, ((void *)rsdt) + sizeof(acpi_rsdt_t));
-
-	printk(BIOS_DEBUG, "madt\n");
-	dump_mem(madt, ((void *)madt) + madt->header.length);
-
-	printk(BIOS_DEBUG, "srat\n");
-	dump_mem(srat, ((void *)srat) + srat->header.length);
-
-	printk(BIOS_DEBUG, "slit\n");
-	dump_mem(slit, ((void *)slit) + slit->header.length);
-
-	printk(BIOS_DEBUG, "ssdt\n");
-	dump_mem(ssdt, ((void *)ssdt) + ssdt->length);
-
-	printk(BIOS_DEBUG, "fadt\n");
-	dump_mem(fadt, ((void *)fadt) + fadt->header.length);
-
-	printk(BIOS_DEBUG, "hest\n");
-	dump_mem(hest, ((void *)hest) + hest->header.length);
-#endif
 
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;

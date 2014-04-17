@@ -28,8 +28,6 @@
 #include <device/pci_ids.h>
 #include <string.h>
 
-#include <lib.h> /* used for hexdump for CONFIG_DEBUG_ACPI */
-
 extern const unsigned char AmlCode[];
 
 unsigned long acpi_fill_ssdt_generator(unsigned long current, const char *oem_table_id)
@@ -266,38 +264,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_create_ssdt_generator(ssdt2, ACPI_TABLE_CREATOR);
 	current += ssdt2->length;
 	acpi_add_table(rsdp,ssdt2);
-
-#if defined(CONFIG_DEBUG_ACPI)
-	printk(BIOS_DEBUG, "rsdp\n");
-	hexdump(rsdp, sizeof(acpi_rsdp_t));
-
-	printk(BIOS_DEBUG, "rsdt\n");
-	hexdump(rsdt, sizeof(acpi_rsdt_t));
-
-	printk(BIOS_DEBUG, "madt\n");
-	hexdump(madt, madt->header.length);
-
-	printk(BIOS_DEBUG, "srat\n");
-	hexdump(srat, srat->header.length);
-
-	printk(BIOS_DEBUG, "slit\n");
-	hexdump(slit, slit->header.length);
-
-	printk(BIOS_DEBUG, "alib\n");
-	hexdump(ssdt, alib->length);
-
-	printk(BIOS_DEBUG, "ssdt\n");
-	hexdump(ssdt, ssdt->length);
-
-	printk(BIOS_DEBUG, "ssdt2\n");
-	hexdump(ssdt2, ssdt2->length);
-
-	printk(BIOS_DEBUG, "fadt\n");
-	hexdump(fadt, fadt->header.length);
-
-	printk(BIOS_DEBUG, "hest\n");
-	hexdump(hest, hest->header.length);
-#endif /* CONFIG_DEBUG_ACPI */
 
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;

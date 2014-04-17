@@ -34,8 +34,6 @@
 #include <cpu/amd/model_fxx_powernow.h>
 #include <southbridge/amd/rs690/rs690.h>
 
-#define DUMP_ACPI_TABLES 0
-
 extern u16 pm_base;
 
 /*
@@ -71,21 +69,6 @@ static void acpi_write_gvars(global_vars_t *gvars)
 
 	gvars->mpen = 1;
 }
-
-#if DUMP_ACPI_TABLES == 1
-static void dump_mem(u32 start, u32 end)
-{
-	u32 i;
-	print_debug("dump_mem:");
-	for (i = start; i < end; i++) {
-		if ((i & 0xf) == 0) {
-			printk(BIOS_DEBUG, "\n%08x:", i);
-		}
-		printk(BIOS_DEBUG, " %02x", (u8)*((u8 *)i));
-	}
-	print_debug("\n");
-}
-#endif
 
 extern const unsigned char AmlCode[];
 

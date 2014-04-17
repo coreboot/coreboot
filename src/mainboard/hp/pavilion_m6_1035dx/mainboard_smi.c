@@ -6,14 +6,26 @@
  */
 #include "ec.h"
 
+#include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
 #include <delay.h>
 #include <ec/compal/ene932/ec.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
 
+#define ACPI_PM1_CNT_SLEEP(state) ((1 << 13) | (state & 0x7) << 10)
+
+enum sleep_states {
+	S0 = 0,
+	S1 = 1,
+	S3 = 3,
+	S4 = 4,
+	S5 = 5,
+};
+
 enum ec_smi_event {
 	EC_SMI_EVENT_IDLE = 0x80,
+	EC_SMI_BATTERY_LOW = 0xb3,
 };
 
 /* Tell EC to operate in APM mode. Events generate SMIs instead of SCIs */
@@ -37,12 +49,18 @@ static uint8_t ec_get_smi_event(void)
 
 static void ec_process_smi(uint8_t src)
 {
-	/*
-	 * Stub: We aren't processing any events yet, but reading the SMI source
-	 * satisfies the EC in terms of responding to the event.
+	/* Reading the SMI source satisfies the EC in terms of responding to
+	 * the event, regardless of whether we take an action or not.
 	 */
 
-	printk(BIOS_DEBUG, "EC_SMI event 0x%x\n", src);
+	switch (src) {
+	case EC_SMI_BATTERY_LOW:
+		printk(BIOS_DEBUG, "Battery low. Shutting down\n");
+		outl(ACPI_PM1_CNT_SLEEP(S5), ACPI_PM1_CNT_BLK);
+		break;
+	default:
+		printk(BIOS_DEBUG, "EC_SMI event 0x%x\n", src);
+	}
 }
 
 static void handle_ec_smi(void)

@@ -12,6 +12,7 @@
 #include <delay.h>
 #include <ec/compal/ene932/ec.h>
 #include <southbridge/amd/agesa/hudson/hudson.h>
+#include <southbridge/amd/agesa/hudson/smi.h>
 
 #define ACPI_PM1_CNT_SLEEP(state) ((1 << 13) | (state & 0x7) << 10)
 
@@ -71,16 +72,25 @@ static void handle_ec_smi(void)
 		ec_process_smi(src);
 }
 
+static void handle_lid_smi(void)
+{
+	/* Only triggered in non-ACPI mode on lid close. */
+	outl(ACPI_PM1_CNT_SLEEP(S4), ACPI_PM1_CNT_BLK);
+}
+
 int mainboard_smi_apmc(uint8_t data)
 {
 	switch (data) {
 	case ACPI_SMI_CMD_ENABLE:
 		printk(BIOS_DEBUG, "Enable ACPI mode\n");
 		ec_enter_acpi_mode();
+		hudson_disable_gevent_smi(EC_LID_GEVENT);
 		break;
 	case ACPI_SMI_CMD_DISABLE:
 		printk(BIOS_DEBUG, "Disable ACPI mode\n");
 		ec_enter_apm_mode();
+		hudson_configure_gevent_smi(EC_LID_GEVENT, SMI_MODE_SMI,
+					    SMI_LVL_LOW);
 		break;
 	default:
 		printk(BIOS_DEBUG, "Unhandled ACPI command: 0x%x\n", data);
@@ -92,4 +102,6 @@ void mainboard_smi_gpi(uint32_t gpi_sts)
 {
 	if (gpi_sts & (1 << EC_SMI_GEVENT))
 		handle_ec_smi();
+	if (gpi_sts & (1 << EC_LID_GEVENT))
+		handle_lid_smi();
 }

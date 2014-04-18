@@ -7,6 +7,7 @@
 #define _MAINBOARD_HP_PAVILION_M6_1035DX_EC_H
 
 #define EC_SMI_GEVENT		23
+#define EC_LID_GEVENT		22
 
 #ifndef __SMM__
 void pavilion_m6_1035dx_ec_init(void);

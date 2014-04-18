@@ -42,6 +42,7 @@ static void mainboard_enable(device_t dev)
 	pavilion_m6_1035dx_ec_init();
 
 	hudson_configure_gevent_smi(EC_SMI_GEVENT, SMI_MODE_SMI, SMI_LVL_HIGH);
+	hudson_configure_gevent_smi(EC_LID_GEVENT, SMI_MODE_SMI, SMI_LVL_LOW);
 	hudson_enable_smi_generation();
 
 	/*

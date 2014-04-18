@@ -73,7 +73,7 @@
 	}
 
 Scope (\_SB) {
-	Device (LID0)
+	Device (LID)
 	{
 		Name(_HID, EisaId("PNP0C0D"))
 		Method(_LID, 0)

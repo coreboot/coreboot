@@ -37,6 +37,7 @@ static console_input_type last_getchar_input_type;
 
 void console_add_output_driver(struct console_output_driver *out)
 {
+	die_if(!out->putchar && !out->write, "Need at least one output func\n");
 	out->next = console_out;
 	console_out = out;
 }
@@ -63,33 +64,33 @@ void console_init(void)
 #endif
 }
 
-static void device_putchar(unsigned char c)
+void console_write(const void *buffer, size_t count)
 {
+	const char *ptr;
 	struct console_output_driver *out;
 	for (out = console_out; out != 0; out = out->next)
-		out->putchar(c);
+		if (out->write)
+			out->write(buffer, count);
+		else
+			for (ptr = buffer; (void *)ptr < buffer + count; ptr++)
+				out->putchar(*ptr);
 }
 
-int putchar(unsigned int c)
+int putchar(unsigned int i)
 {
-	c &= 0xff;
-	if (c == '\n')
-		device_putchar('\r');
-	device_putchar(c);
-	return c;
+	unsigned char c = (unsigned char)i;
+	console_write(&c, 1);
+	return (int)c;
 }
 
 int puts(const char *s)
 {
-	int n = 0;
+	size_t size = strlen(s);
 
-	while (*s) {
-		putchar(*s++);
-		n++;
-	}
+	console_write(s, size);
 
 	putchar('\n');
-	return n + 1;
+	return size + 1;
 }
 
 int havekey(void)

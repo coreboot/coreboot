@@ -212,7 +212,7 @@ void video_console_set_cursor(unsigned int cursorx, unsigned int cursory);
  * @{
  */
 void cbmem_console_init(void);
-void cbmem_console_putc(unsigned int data);
+void cbmem_console_write(const void *buffer, size_t count);
 /** @} */
 
 /* drivers/option.c */
@@ -255,6 +255,7 @@ typedef enum {
 } console_input_type;
 
 void console_init(void);
+void console_write(const void *buffer, size_t count);
 int putchar(unsigned int c);
 int puts(const char *s);
 int havekey(void);
@@ -276,6 +277,7 @@ struct console_output_driver;
 struct console_output_driver {
 	struct console_output_driver *next;
 	void (*putchar) (unsigned int);
+	void (*write) (const void *, size_t);
 };
 
 void console_add_output_driver(struct console_output_driver *out);

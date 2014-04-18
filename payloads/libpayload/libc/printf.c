@@ -69,11 +69,10 @@ struct printf_spec {
 #define __PRINTF_FLAG_NEGATIVE		0x00000100
 
 /**
- * Buffer big enough for 64-bit number printed in base 2, sign, prefix and 0
- * to terminate string (last one is only for better testing end of buffer by
- * zero-filling subroutine).
+ * Buffer big enough for 64-bit number printed in base 2, sign, and prefix.
+ * Add some more to support sane amounts of zero-padding.
  */
-#define PRINT_NUMBER_BUFFER_SIZE	(64 + 5)
+#define PRINT_BUFFER_SIZE		(64 + 1 + 2 + 13)
 
 /** Enumeration of possible arguments types. */
 typedef enum {
@@ -128,6 +127,26 @@ static int printf_putchar(int c, struct printf_spec *ps)
 	return ps->write(&ch, 1, ps->data);
 }
 
+/* Print spaces for padding. Ignores negative counts. */
+static int print_spaces(int count, struct printf_spec *ps)
+{
+	int tmp, ret;
+	char buffer[PRINT_BUFFER_SIZE];
+
+	if (count <= 0)
+		return 0;
+
+	memset(buffer, ' ', MIN(PRINT_BUFFER_SIZE, count));
+	for (tmp = count; tmp > PRINT_BUFFER_SIZE; tmp -= PRINT_BUFFER_SIZE)
+		if ((ret = printf_putnchars(buffer, PRINT_BUFFER_SIZE, ps)) < 0)
+			return ret;
+
+	if ((ret = printf_putnchars(buffer, tmp, ps)) < 0)
+		return ret;
+
+	return count;
+}
+
 /**
  * Print one formatted character.
  *
@@ -139,21 +158,24 @@ static int printf_putchar(int c, struct printf_spec *ps)
  */
 static int print_char(char c, int width, uint64_t flags, struct printf_spec *ps)
 {
-	int counter = 0;
+	int retval;
+	int counter = 1;
 
 	if (!(flags & __PRINTF_FLAG_LEFTALIGNED)) {
-		while (--width > 0) {
-			if (printf_putchar(' ', ps) > 0)
-				++counter;
-		}
+		if ((retval = print_spaces(width - 1, ps)) < 0)
+			return retval;
+		else
+			counter += retval;
 	}
 
-	if (printf_putchar(c, ps) > 0)
-		counter++;
+	if ((retval = printf_putchar(c, ps)) < 0)
+		return retval;
 
-	while (--width > 0) {
-		if (printf_putchar(' ', ps) > 0)
-			++counter;
+	if (flags & __PRINTF_FLAG_LEFTALIGNED) {
+		if ((retval = print_spaces(width - 1, ps)) < 0)
+			return retval;
+		else
+			counter += retval;
 	}
 
 	return counter;
@@ -185,19 +207,21 @@ static int print_string(char *s, int width, unsigned int precision,
 	width -= precision;
 
 	if (!(flags & __PRINTF_FLAG_LEFTALIGNED)) {
-		while (width-- > 0) {
-			if (printf_putchar(' ', ps) == 1)
-				counter++;
-		}
+		if ((retval = print_spaces(width, ps)) < 0)
+			return retval;
+		else
+			counter += retval;
 	}
 
 	if ((retval = printf_putnchars(s, MIN(size, precision), ps)) < 0)
-		return -counter;
+		return retval;
 	counter += retval;
 
-	while (width-- > 0) {
-		if (printf_putchar(' ', ps) == 1)
-			++counter;
+	if (flags & __PRINTF_FLAG_LEFTALIGNED) {
+		if ((retval = print_spaces(width, ps)) < 0)
+			return retval;
+		else
+			counter += retval;
 	}
 
 	return counter;
@@ -209,7 +233,7 @@ static int print_string(char *s, int width, unsigned int precision,
  * Print significant digits of a number in given base.
  *
  * @param num		Number to print.
- * @param width		Width modifier.h
+ * @param width		Width modifier.
  * @param precision	Precision modifier.
  * @param base		Base to print the number in (must be between 2 and 16).
  * @param flags		Flags that modify the way the number is printed.
@@ -220,49 +244,34 @@ static int print_number(uint64_t num, int width, int precision, int base,
 			uint64_t flags, struct printf_spec *ps)
 {
 	const char *digits = digits_small;
-	char d[PRINT_NUMBER_BUFFER_SIZE];
-	char *ptr = &d[PRINT_NUMBER_BUFFER_SIZE - 1];
-	int size = 0;		/* Size of number with all prefixes and signs. */
-	int number_size;	/* Size of plain number. */
+	char d[PRINT_BUFFER_SIZE];
+	char *ptr = &d[PRINT_BUFFER_SIZE];
+	int size = 0;			/* Size of the string in ptr */
+	int counter = 0;		/* Amount of actually printed bytes. */
 	char sgn;
 	int retval;
-	int counter = 0;
 
 	if (flags & __PRINTF_FLAG_BIGCHARS)
 		digits = digits_big;
 
-	*ptr-- = 0;		/* Put zero at end of string. */
-
 	if (num == 0) {
-		*ptr-- = '0';
+		*--ptr = '0';
 		size++;
 	} else {
 		do {
-			*ptr-- = digits[num % base];
+			*--ptr = digits[num % base];
 			size++;
 		} while (num /= base);
 	}
 
-	number_size = size;
+	/* Both precision and LEFTALIGNED overrule ZEROPADDED. */
+	if ((flags & __PRINTF_FLAG_LEFTALIGNED) || precision)
+		flags &= ~__PRINTF_FLAG_ZEROPADDED;
 
-	/*
-	 * Collect the sum of all prefixes/signs/... to calculate padding and
-	 * leading zeroes.
-	 */
-	if (flags & __PRINTF_FLAG_PREFIX) {
-		switch (base) {
-		case 2:	/* Binary formating is not standard, but useful. */
-			size += 2;
-			break;
-		case 8:
-			size++;
-			break;
-		case 16:
-			size += 2;
-			break;
-		}
-	}
+	/* Fix precision now since it doesn't count prefixes/signs. */
+	precision -= size;
 
+	/* Reserve size for prefixes/signs before filling up padding. */
 	sgn = 0;
 	if (flags & __PRINTF_FLAG_SIGNED) {
 		if (flags & __PRINTF_FLAG_NEGATIVE) {
@@ -276,87 +285,75 @@ static int print_number(uint64_t num, int width, int precision, int base,
 			size++;
 		}
 	}
-
-	if (flags & __PRINTF_FLAG_LEFTALIGNED)
-		flags &= ~__PRINTF_FLAG_ZEROPADDED;
-
-	/*
-	 * If the number is left-aligned or precision is specified then
-	 * zero-padding is ignored.
-	 */
-	if (flags & __PRINTF_FLAG_ZEROPADDED) {
-		if ((precision == 0) && (width > size))
-			precision = width - size + number_size;
-	}
-
-	/* Print leading spaces. */
-	if (number_size > precision) {
-		/* Print the whole number not only a part. */
-		precision = number_size;
-	}
-
-	width -= precision + size - number_size;
-
-	if (!(flags & __PRINTF_FLAG_LEFTALIGNED)) {
-		while (width-- > 0) {
-			if (printf_putchar(' ', ps) == 1)
-				counter++;
-		}
-	}
-
-	/* Print sign. */
-	if (sgn) {
-		if (printf_putchar(sgn, ps) == 1)
-			counter++;
-	}
-
-	/* Print prefix. */
 	if (flags & __PRINTF_FLAG_PREFIX) {
 		switch (base) {
 		case 2:	/* Binary formating is not standard, but useful. */
-			if (printf_putchar('0', ps) == 1)
-				counter++;
-			if (flags & __PRINTF_FLAG_BIGCHARS) {
-				if (printf_putchar('B', ps) == 1)
-					counter++;
-			} else {
-				if (printf_putchar('b', ps) == 1)
-					counter++;
-			}
+			size += 2;
 			break;
 		case 8:
-			if (printf_putchar('o', ps) == 1)
-				counter++;
+			size++;
 			break;
 		case 16:
-			if (printf_putchar('0', ps) == 1)
-				counter++;
-			if (flags & __PRINTF_FLAG_BIGCHARS) {
-				if (printf_putchar('X', ps) == 1)
-					counter++;
-			} else {
-				if (printf_putchar('x', ps) == 1)
-					counter++;
-			}
+			size += 2;
 			break;
 		}
 	}
 
-	/* Print leading zeroes. */
-	precision -= number_size;
-	while (precision-- > 0) {
-		if (printf_putchar('0', ps) == 1)
-			counter++;
+	/* If this is still set we didn't have a precision, so repurpose it */
+	if (flags & __PRINTF_FLAG_ZEROPADDED)
+		precision = width - size;
+
+	/* Pad smaller numbers with 0 (larger numbers lead to precision < 0). */
+	if (precision > 0) {
+		precision = MIN(precision, PRINT_BUFFER_SIZE - size);
+		ptr -= precision;
+		size += precision;
+		memset(ptr, '0', precision);
 	}
 
-	/* Print number itself. */
-	if ((retval = printf_putstr(++ptr, ps)) > 0)
-		counter += retval;
+	/* Add sign and prefix (we adjusted size for this beforehand). */
+	if (flags & __PRINTF_FLAG_PREFIX) {
+		switch (base) {
+		case 2:	/* Binary formating is not standard, but useful. */
+			*--ptr = (flags & __PRINTF_FLAG_BIGCHARS) ? 'B' : 'b';
+			*--ptr = '0';
+			break;
+		case 8:
+			*--ptr = '0';
+			break;
+		case 16:
+			*--ptr = (flags & __PRINTF_FLAG_BIGCHARS) ? 'X' : 'x';
+			*--ptr = '0';
+			break;
+		}
+	}
+	if (sgn)
+		*--ptr = sgn;
 
-	/* Print ending spaces. */
-	while (width-- > 0) {
-		if (printf_putchar(' ', ps) == 1)
-			counter++;
+	/* Pad with spaces up to width, try to avoid extra putnchar if we can */
+	width -= size;
+	if (width > 0 && !(flags & __PRINTF_FLAG_LEFTALIGNED)) {
+		int tmp = MIN(width, PRINT_BUFFER_SIZE - size);
+		ptr -= tmp;
+		size += tmp;
+		memset(ptr, ' ', tmp);
+		if ((retval = print_spaces(width - tmp, ps)) < 0)
+			return retval;
+		else
+			counter += retval;
+	}
+
+	/* Now print the whole thing at once. */
+	if ((retval = printf_putnchars(ptr, size, ps)) < 0)
+		return retval;
+	counter += retval;
+
+	/* Edge case: left-aligned with width (should be rare). */
+	if (flags & __PRINTF_FLAG_LEFTALIGNED) {
+		if ((retval = print_spaces(width, ps)) < 0)
+			return retval;
+		else
+			counter += retval;
 	}
 
 	return counter;
@@ -468,10 +465,8 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 			/* Print common characters if any processed. */
 			if (i > j) {
 				if ((retval = printf_putnchars(&fmt[j],
-				    (size_t) (i - j), ps)) < 0) {
-					counter = -counter;
-					goto out;	/* Error */
-				}
+				    (size_t) (i - j), ps)) < 0)
+				    	return retval;
 				counter += retval;
 			}
 
@@ -574,20 +569,15 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 			/* String and character conversions */
 			case 's':
 				if ((retval = print_string(va_arg(ap, char *),
-				    width, precision, flags, ps)) < 0) {
-					counter = -counter;
-					goto out;
-				};
+				    width, precision, flags, ps)) < 0)
+				    	return retval;
 				counter += retval;
 				j = i + 1;
 				goto next_char;
 			case 'c':
 				c = va_arg(ap, unsigned int);
-				retval = print_char(c, width, flags, ps);
-				if (retval < 0) {
-					counter = -counter;
-					goto out;
-				};
+				if ((retval = print_char(c, width, flags, ps)) < 0)
+					return retval;
 				counter += retval;
 				j = i + 1;
 				goto next_char;
@@ -654,9 +644,6 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 				size = sizeof(void *);
 				number = (uint64_t) (unsigned long)va_arg(ap, void *);
 				break;
-			default:	/* Unknown qualifier */
-				counter = -counter;
-				goto out;
 			}
 
 			if (flags & __PRINTF_FLAG_SIGNED) {
@@ -674,10 +661,8 @@ static int printf_core(const char *fmt, struct printf_spec *ps, va_list ap)
 			}
 
 			if ((retval = print_number(number, width, precision,
-						   base, flags, ps)) < 0) {
-				counter = -counter;
-				goto out;
-			}
+						   base, flags, ps)) < 0)
+				return retval;
 
 			counter += retval;
 			j = i + 1;
@@ -688,15 +673,11 @@ next_char:
 
 	if (i > j) {
 		if ((retval = printf_putnchars(&fmt[j],
-		    (u64) (i - j), ps)) < 0) {
-			counter = -counter;
-			goto out;	/* Error */
-
-		}
+		    (u64) (i - j), ps)) < 0)
+		    	return retval;
 		counter += retval;
 	}
 
-out:
 	return counter;
 }
 
@@ -830,12 +811,8 @@ int printf(const char *fmt, ...)
 
 static int vprintf_write(const char *str, size_t count, void *unused)
 {
-	size_t i;
-
-	for (i = 0; i < count; i++)
-		putchar(str[i]);
-
-	return i;
+	console_write(str, count);
+	return count;
 }
 
 int vprintf(const char *fmt, va_list ap)

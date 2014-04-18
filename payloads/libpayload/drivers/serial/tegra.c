@@ -65,6 +65,8 @@ void serial_putchar(unsigned int c)
 {
 	while (!(readb(&uart_regs->lsr) & TEGRA_UART_LSR_THRE));
 	writeb(c, &uart_regs->thr);
+	if (c == '\n')
+		serial_putchar('\r');
 }
 
 int serial_havechar(void)

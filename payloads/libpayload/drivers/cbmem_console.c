@@ -40,7 +40,7 @@ static struct cbmem_console *cbmem_console_p;
 
 static struct console_output_driver cbmem_console_driver =
 {
-	.putchar = &cbmem_console_putc
+	.write = &cbmem_console_write,
 };
 
 void cbmem_console_init(void)
@@ -50,11 +50,11 @@ void cbmem_console_init(void)
 		console_add_output_driver(&cbmem_console_driver);
 }
 
-void cbmem_console_putc(unsigned int data)
+void cbmem_console_write(const void *buffer, size_t count)
 {
-	// Bail out if the buffer is full.
-	if (cbmem_console_p->cursor >= cbmem_console_p->size)
+	if (cbmem_console_p->cursor + count >= cbmem_console_p->size)
 		return;
 
-	cbmem_console_p->body[cbmem_console_p->cursor++] = data;
+	memcpy(cbmem_console_p->body + cbmem_console_p->cursor, buffer, count);
+	cbmem_console_p->cursor += count;
 }

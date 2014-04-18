@@ -141,6 +141,7 @@ void video_console_putchar(unsigned int ch)
 		break;
 
 	case '\n':
+		cursorx = 0;
 		cursory++;
 		break;
 

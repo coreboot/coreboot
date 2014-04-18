@@ -21,6 +21,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SB_HT_CHAIN_UNITID_OFFSET_ONLY
 	select QRANK_DIMM_SUPPORT
 	select LIFT_BSP_APIC_ID
+	select IOAPIC
+	select SMP
 
 config MAINBOARD_DIR
 	string
@@ -49,14 +51,6 @@ config MAX_PHYSICAL_CPUS
 	default 2
 
 config LOGICAL_CPUS
-	bool
-	default y
-
-config IOAPIC
-	bool
-	default y
-
-config SMP
 	bool
 	default y
 

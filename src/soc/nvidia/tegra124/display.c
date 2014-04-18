@@ -124,12 +124,12 @@ static int update_display_mode(struct display_controller *disp_ctrl,
 	 * Currently most panels work inside clock range 50MHz~100MHz, and PLLD
 	 * has some requirements to have VCO in range 500MHz~1000MHz (see
 	 * clock.c for more detail). To simplify calculation, we set
-	 * PixelClockDiv to 1 and ShiftClockDiv to 5. In future these values
+	 * PixelClockDiv to 1 and ShiftClockDiv to 1. In future these values
 	 * may be calculated by clock_display, to allow wider frequency range.
 	 *
 	 * Note ShiftClockDiv is a 7.1 format value.
 	 */
-	const u32 shift_clock_div = 5;
+	const u32 shift_clock_div = 1;
 	WRITEL((PIXEL_CLK_DIVIDER_PCD1 << PIXEL_CLK_DIVIDER_SHIFT) |
 	       ((shift_clock_div - 1) * 2) << SHIFT_CLK_DIVIDER_SHIFT,
 	       &disp_ctrl->disp.disp_clk_ctrl);

@@ -304,7 +304,8 @@ clock_display(u32 frequency)
 	 *           = (cf * n) >> p, where 1MHz < cf < 6MHz
 	 *           = ((ref / m) * n) >> p
 	 *
-	 * Assume p = 0, find best (m, n). since m has only 5 bits, we can
+	 * Iterate the possible values of p (3 bits, 2^7) to find out a minimum
+	 * safe vco, then find best (m, n). since m has only 5 bits, we can
 	 * iterate all possible values.  Note Tegra 124 supports 11 bits for n,
 	 * but our pll_fields has only 10 bits for n.
 	 *
@@ -312,18 +313,24 @@ clock_display(u32 frequency)
 	 * work if the values are not in "safe" range by panel specification.
 	 */
 	struct pllpad_dividers plld = { 0 };
-	u32 ref = clock_get_pll_input_khz() * 1000, m, n;
-	u32 cf, vco = frequency;
-	u32 diff, best_diff = vco;
-	const u32 max_m = 1 << 5, max_n = 1 << 10, mhz = 1000 * 1000,
-		  min_vco = 500 * mhz, max_vco = 1000 * mhz,
+	u32 ref = clock_get_pll_input_khz() * 1000, m, n, p = 0;
+	u32 cf, vco;
+	u32 diff, best_diff;
+	const u32 max_m = 1 << 5, max_n = 1 << 10, max_p = 1 << 3,
+		  mhz = 1000 * 1000, min_vco = 500 * mhz, max_vco = 1000 * mhz,
 		  min_cf = 1 * mhz, max_cf = 6 * mhz;
 
+	for (vco = frequency; vco < min_vco && p < max_p; p++)
+		vco <<= 1;
+
 	if (vco < min_vco || vco > max_vco) {
-		printk(BIOS_ERR, "%s: VCO (%d) out of range. Cannot support.\n",
-		       __func__, vco);
+		printk(BIOS_ERR, "%s: Cannot find out a supported VCO"
+			" for Frequency (%u).\n", __func__, frequency);
 		return -1;
 	}
+
+	plld.p = p;
+	best_diff = vco;
 
 	for (m = 1; m < max_m && best_diff; m++) {
 		cf = ref / m;

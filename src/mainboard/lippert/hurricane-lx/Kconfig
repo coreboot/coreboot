@@ -15,6 +15,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select BOARD_ROMSIZE_KB_512
 	select PLL_MANUAL_CONFIG
 	select CORE_GLIU_500_333
+	select POWER_BUTTON_FORCE_ENABLE if !BOARD_OLD_REVISION
 
 config MAINBOARD_DIR
 	string
@@ -41,9 +42,6 @@ config BOARD_OLD_REVISION
 	  power on automatically.  You may enable the button only after this
 	  jumper has been removed.  New revision boards are not restricted
 	  in this way, and always have the power button enabled.
-
-config POWER_BUTTON_FORCE_ENABLE
-	def_bool y if !BOARD_OLD_REVISION
 
 config ONBOARD_UARTS_RS485
 	bool "Switch on-board serial ports to RS485"

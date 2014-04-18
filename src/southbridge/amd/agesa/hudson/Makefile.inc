@@ -22,8 +22,8 @@ ramstage-$(CONFIG_HAVE_ACPI_RESUME) += resume.c
 romstage-y += imc.c
 ramstage-y += imc.c
 
-smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
+smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c smi_util.c
+ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c smi_util.c
 
 # ROMSIG At ROMBASE + 0x20000:
 # +-----------+---------------+----------------+------------+

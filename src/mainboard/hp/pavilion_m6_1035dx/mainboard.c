@@ -32,19 +32,21 @@
 
 #include <southbridge/amd/agesa/hudson/smi.h>
 
-/*************************************************
- * enable the dedicated function in parmer board.
- *************************************************/
+
+static void pavilion_cold_boot_init(void)
+{
+	/* Lid SMI is only used in non-ACPI mode; leave it off in S3 resume */
+	hudson_configure_gevent_smi(EC_LID_GEVENT, SMI_MODE_SMI, SMI_LVL_LOW);
+	/* EC is not powered off during S3 sleep */
+	pavilion_m6_1035dx_ec_init();
+}
+
 static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-	pavilion_m6_1035dx_ec_init();
-
 	hudson_configure_gevent_smi(EC_SMI_GEVENT, SMI_MODE_SMI, SMI_LVL_HIGH);
-	hudson_configure_gevent_smi(EC_LID_GEVENT, SMI_MODE_SMI, SMI_LVL_LOW);
 	hudson_enable_smi_generation();
-
 	/*
 	 * The mainboard is the first place that we get control in ramstage. Check
 	 * for S3 resume and call the approriate AGESA/CIMx resume functions.
@@ -53,7 +55,10 @@ static void mainboard_enable(device_t dev)
 	acpi_slp_type = acpi_get_sleep_type();
 	if (acpi_slp_type == 3)
 		agesawrapper_fchs3earlyrestore();
+	else
 #endif
+		pavilion_cold_boot_init();
+
 }
 
 struct chip_operations mainboard_ops = {

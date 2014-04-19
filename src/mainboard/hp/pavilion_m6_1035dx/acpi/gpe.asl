@@ -65,12 +65,10 @@ Scope(\_GPE) {	/* Start Scope GPE */
 
 	/*  GPIO0 or GEvent8 event  */
 	Method(_L18) {
-		/* DBGO("\\_GPE\\_L18\n") */
-		Notify(\_SB.PCI0.PBR4, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.PBR5, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.PBR6, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.PBR7, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
+		Store("PCI bridge wake event", Debug)
+		/* Notify PCI bridges of wake event */
+		Notify(\_SB.PCI0.PBR4, 0x02)
+		Notify(\_SB.PCI0.PBR5, 0x02)
 	}
 
 	/*  Azalia SCI event  */

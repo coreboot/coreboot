@@ -32,15 +32,15 @@ Scope(\_GPE) {	/* Start Scope GPE */
 
 	/*  USB controller PME#  */
 	Method(_L0B) {
-		/* DBGO("\\_GPE\\_L0B\n") */
-		Notify(\_SB.PCI0.UOH1, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.UOH2, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.UOH3, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.UOH4, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.UOH5, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.UOH6, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PCI0.UEH1, 0x02) /* NOTIFY_DEVICE_WAKE */
-		Notify(\_SB.PWRB, 0x02) /* NOTIFY_DEVICE_WAKE */
+		Store("USB PME", Debug)
+		/* Notify devices of wake event */
+		Notify(\_SB.PCI0.UOH1, 0x02)
+		Notify(\_SB.PCI0.UOH2, 0x02)
+		Notify(\_SB.PCI0.UOH3, 0x02)
+		Notify(\_SB.PCI0.UOH4, 0x02)
+		Notify(\_SB.PCI0.XHC0, 0x02)
+		Notify(\_SB.PCI0.UEH1, 0x02)
+		Notify(\_SB.PWRB, 0x02)
 	}
 
 	/*  ExtEvent0 SCI event  */

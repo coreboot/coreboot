@@ -374,11 +374,22 @@ GPIO_CONTROL pavilion_m6_1035dx_gpio[] = {
 #define BLDCFG_FCH_GPIO_CONTROL_LIST           (&pavilion_m6_1035dx_gpio[0])
 
 
+/* These definitions could be moved to a common Hudson header, should we decide
+ * to provide our own, saner SCI mapping function
+ */
 #define GEVENT_PIN(gpe)		((gpe) + 0x40)
+#define SCI_MAP_OHCI_12_0	0x58
+#define SCI_MAP_OHCI_13_0	0x59
+#define SCI_MAP_XHCI_10_0	0x78
+#define SCI_MAP_PWRBTN		0x73
 
 SCI_MAP_CONTROL m6_1035dx_sci_map[] = {
 	{GEVENT_PIN( EC_SCI_GEVENT ), EC_SCI_GPE},
-	{GEVENT_PIN( EC_LID_GEVENT ), EC_LID_GPE},	/* EC_SMI - GPE23 */
+	{GEVENT_PIN( EC_LID_GEVENT ), EC_LID_GPE},
+	{SCI_MAP_OHCI_12_0, PME_GPE},
+	{SCI_MAP_OHCI_13_0, PME_GPE},
+	{SCI_MAP_XHCI_10_0, PME_GPE},
+	{SCI_MAP_PWRBTN, PME_GPE},
 };
 #define BLDCFG_FCH_SCI_MAP_LIST			(&m6_1035dx_sci_map[0])
 

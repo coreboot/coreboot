@@ -18,5 +18,6 @@
  */
 #define EC_SCI_GPE 		EC_SCI_GEVENT
 #define EC_LID_GPE		EC_LID_GEVENT
+#define PME_GPE			0x0b
 
 #endif /* _MAINBOARD_HP_PAVILION_M6_1035DX_MAINBOARD_H   */

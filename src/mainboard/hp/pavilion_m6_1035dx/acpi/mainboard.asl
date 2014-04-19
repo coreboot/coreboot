@@ -57,6 +57,14 @@
 		GE22, 1,	/* General event 22 - connected to lid switch */
 	}
 
+	/* SMI/SCI control block -- hardcoded to 0xfed80200 by AGESA */
+	OperationRegion (SMIX, SystemMemory, 0xfed80200, 0x100)
+	Field (SMIX, AnyAcc, NoLock, Preserve) {
+		Offset (0x08),	/* SCI level: 0 = active low, 1 = active high */
+		, 22,
+		LPOL, 1,	/* SCI22 trigger polarity - lid switch */
+	}
+
 	/*
 	 * Used by EC code on certain events
 	 *
@@ -75,9 +83,18 @@ Scope (\_SB) {
 	Device (LID)
 	{
 		Name(_HID, EisaId("PNP0C0D"))
+		Name(_PRW, Package () {EC_LID_GPE, 0x04}) /* wake from S1-S4 */
 		Method(_LID, 0)
 		{
 			Return (GE22)	/* GE pin 22 */
+		}
+
+		Method (_INI, 0)
+		{
+			/* Make sure lid trigger polarity is set so that we
+			 * trigger an SCI when lid status changes.
+			 */
+			Not(GE22, LPOL)
 		}
 	}
 

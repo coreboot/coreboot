@@ -54,6 +54,15 @@ Scope(\_GPE) {	/* Start Scope GPE */
 		/* DBGO("\\_GPE\\_L11\n") */
 	}
 
+	/* Lid switch opened or closed */
+	Method(_L16) {
+		Store("Lid status changed", Debug)
+		/* Flip trigger polarity */
+		Not(LPOL, LPOL)
+		/* Notify lid object of status change */
+		Notify(\_SB.LID, 0x80)
+	}
+
 	/*  GPIO0 or GEvent8 event  */
 	Method(_L18) {
 		/* DBGO("\\_GPE\\_L18\n") */

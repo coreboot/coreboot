@@ -3,10 +3,8 @@
  * Subject to the GNU GPL v2, or (at your option) any later version.
  */
 
-/*
- * EC bits specific to the mainboard
- */
-#define EC_SCI_GPE 3
+/* Defines EC bits specific to the mainboard, needed by EC ASL */
+#include "mainboard.h"
 
 /* ACPI code for EC functions */
 #include <ec/compal/ene932/acpi/ec.asl>

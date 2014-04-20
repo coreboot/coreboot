@@ -31,23 +31,54 @@
 static int bus_claimed = 0;
 #endif
 
+#define SPI_REG_OPCODE		0x0
+#define SPI_REG_CNTRL01		0x1
+#define SPI_REG_CNTRL02		0x2
+ #define CNTRL02_FIFO_RESET	(1 << 4)
+ #define CNTRL02_EXEC_OPCODE	(1 << 0)
+#define SPI_REG_CNTRL03		0x3
+ #define CNTRL03_SPIBUSY	(1 << 7)
+#define SPI_REG_FIFO		0xc
+#define SPI_REG_CNTRL11		0xd
+ #define CNTRL11_FIFOPTR_MASK	0x07
+
+
 static u32 spibar;
+
+static inline uint8_t spi_read(uint8_t reg)
+{
+	return read8(spibar + reg);
+}
+
+static inline void spi_write(uint8_t reg, uint8_t val)
+{
+	write8(spibar + reg, val);
+}
 
 static void reset_internal_fifo_pointer(void)
 {
+	uint8_t reg8;
+
 	do {
-		write8(spibar + 2, read8(spibar + 2) | 0x10);
-	} while (read8(spibar + 0xD) & 0x7);
+		reg8 = spi_read(SPI_REG_CNTRL02);
+		reg8 |= CNTRL02_FIFO_RESET;
+		spi_write(SPI_REG_CNTRL02, reg8);
+	} while (spi_read(SPI_REG_CNTRL11) & CNTRL11_FIFOPTR_MASK);
 }
 
 static void execute_command(void)
 {
-	write8(spibar + 2, read8(spibar + 2) | 1);
+	uint8_t reg8;
 
-	while ((read8(spibar + 2) & 1) && (read8(spibar+3) & 0x80));
+	reg8 = spi_read(SPI_REG_CNTRL02);
+	reg8 |= CNTRL02_EXEC_OPCODE;
+	spi_write(SPI_REG_CNTRL02, reg8);
+
+	while ((spi_read(SPI_REG_CNTRL02) & CNTRL02_EXEC_OPCODE) &&
+	       (spi_read(SPI_REG_CNTRL03) & CNTRL03_SPIBUSY));
 }
 
-void spi_init()
+void spi_init(void)
 {
 	device_t dev;
 
@@ -59,13 +90,13 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 		unsigned int bitsout, void *din, unsigned int bitsin)
 {
 	/* First byte is cmd which can not being sent through FIFO. */
-	u8 cmd = *(u8 *)dout++;
-	u8 readoffby1;
+	uint8_t cmd = *(uint8_t *)dout++;
+	uint8_t readoffby1;
 #if !CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
-	u8 readwrite;
+	uint8_t readwrite;
 #endif
-	u8 bytesout, bytesin;
-	u8 count;
+	uint8_t bytesout, bytesin;
+	uint8_t count;
 
 	bitsout -= 8;
 	bytesout = bitsout / 8;
@@ -74,19 +105,19 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	readoffby1 = bytesout ? 0 : 1;
 
 #if CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE
-	write8(spibar + 0x1E, 5);
-	write8(spibar + 0x1F, bytesout); /* SpiExtRegIndx [5] - TxByteCount */
-	write8(spibar + 0x1E, 6);
-	write8(spibar + 0x1F, bytesin);  /* SpiExtRegIndx [6] - RxByteCount */
+	spi_write(0x1E, 5);
+	spi_write(0x1F, bytesout); /* SpiExtRegIndx [5] - TxByteCount */
+	spi_write(0x1E, 6);
+	spi_write(0x1F, bytesin);  /* SpiExtRegIndx [6] - RxByteCount */
 #else
 	readwrite = (bytesin + readoffby1) << 4 | bytesout;
-	write8(spibar + 1, readwrite);
+	spi_write(SPI_REG_CNTRL01, readwrite);
 #endif
-	write8(spibar + 0, cmd);
+	spi_write(SPI_REG_OPCODE, cmd);
 
 	reset_internal_fifo_pointer();
 	for (count = 0; count < bytesout; count++, dout++) {
-		write8(spibar + 0x0C, *(u8 *)dout);
+		spi_write(SPI_REG_FIFO, *(uint8_t *)dout);
 	}
 
 	reset_internal_fifo_pointer();
@@ -95,12 +126,12 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	reset_internal_fifo_pointer();
 	/* Skip the bytes we sent. */
 	for (count = 0; count < bytesout; count++) {
-		cmd = read8(spibar + 0x0C);
+		cmd = spi_read(SPI_REG_FIFO);
 	}
 
 	reset_internal_fifo_pointer();
 	for (count = 0; count < bytesin; count++, din++) {
-		*(u8 *)din = read8(spibar + 0x0C);
+		*(uint8_t *)din = spi_read(SPI_REG_FIFO);
 	}
 
 	return 0;

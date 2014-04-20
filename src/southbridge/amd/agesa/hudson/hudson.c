@@ -29,6 +29,7 @@
 #include <cbmem.h>
 #include "hudson.h"
 #include "smbus.h"
+#include "smi.h"
 
 /* Offsets from ACPI_MMIO_BASE
  * This is defined by AGESA, but we don't include AGESA headers to avoid
@@ -129,7 +130,39 @@ unsigned long get_top_of_ram(void)
 }
 #endif
 
+static void hudson_init_acpi_ports(void)
+{
+	/* We use some of these ports in SMM regardless of whether or not
+	 * ACPI tables are generated. Enable these ports indiscriminately.
+	 */
+
+	pm_write16(0x60, ACPI_PM_EVT_BLK);
+	pm_write16(0x62, ACPI_PM1_CNT_BLK);
+	pm_write16(0x64, ACPI_PM_TMR_BLK);
+	pm_write16(0x68, ACPI_GPE0_BLK);
+	/* CpuControl is in \_PR.CPU0, 6 bytes */
+	pm_write16(0x66, ACPI_CPU_CONTROL);
+
+	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
+		pm_write16(0x6a, ACPI_SMI_CTL_PORT);
+		hudson_enable_acpi_cmd_smi();
+	} else {
+		pm_write16(0x6a, 0);
+	}
+
+	/* AcpiDecodeEnable, When set, SB uses the contents of the PM registers
+	 * at index 60-6B to decode ACPI I/O address. AcpiSmiEn & SmiCmdEn
+	 */
+	pm_write8(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2);
+}
+
+static void hudson_init(void *chip_info)
+{
+	hudson_init_acpi_ports();
+}
+
 struct chip_operations southbridge_amd_agesa_hudson_ops = {
 	CHIP_NAME("ATI HUDSON")
 	.enable_dev = hudson_enable,
+	.init = hudson_init
 };

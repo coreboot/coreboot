@@ -65,9 +65,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 	fadt->preferred_pm_profile = FADT_PM_PROFILE;
 	fadt->sci_int = 9;		/* HUDSON - IRQ 09 – ACPI SCI */
 
-	/* We write to this port further down; configure it first */
-	pm_write16(0x62, ACPI_PM1_CNT_BLK);
-
 	if (IS_ENABLED(CONFIG_HAVE_SMI_HANDLER)) {
 		fadt->smi_cmd = ACPI_SMI_CTL_PORT;
 		fadt->acpi_enable = ACPI_SMI_CMD_ENABLE;
@@ -75,7 +72,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 		fadt->s4bios_req = 0;	/* Not supported */
 		fadt->pstate_cnt = 0;	/* Not supported */
 		fadt->cst_cnt = 0;	/* Not supported */
-		hudson_enable_acpi_cmd_smi();
 		outl(0x0, ACPI_PM1_CNT_BLK);	/* clear SCI_EN */
 	} else {
 		fadt->smi_cmd = 0;	/* disable system management mode */
@@ -86,18 +82,6 @@ void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)
 		fadt->cst_cnt = 0x00;	/* unused if SMI_CMD = 0 */
 		outl(0x1, ACPI_PM1_CNT_BLK);	/* set SCI_EN */
 	}
-
-	pm_write16(0x60, ACPI_PM_EVT_BLK);
-	pm_write16(0x64, ACPI_PM_TMR_BLK);
-	pm_write16(0x68, ACPI_GPE0_BLK);
-	/* CpuControl is in \_PR.CPU0, 6 bytes */
-	pm_write16(0x66, ACPI_CPU_CONTROL);
-	pm_write16(0x6a, fadt->smi_cmd);
-
-	pm_write8(0x74, 1<<0 | 1<<1 | 1<<4 | 1<<2); /* AcpiDecodeEnable, When set, SB uses
-					* the contents of the PM registers at
-					* index 60-6B to decode ACPI I/O address.
-					* AcpiSmiEn & SmiCmdEn*/
 
 	fadt->pm1a_evt_blk = ACPI_PM_EVT_BLK;
 	fadt->pm1b_evt_blk = 0x0000;

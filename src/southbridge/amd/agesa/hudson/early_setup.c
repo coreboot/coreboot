@@ -126,7 +126,7 @@ int s3_load_nvram_early(int size, u32 *old_dword, int nvram_pos)
 #if CONFIG_HAVE_ACPI_RESUME
 int acpi_get_sleep_type(void)
 {
-	u16 tmp = inw(PM1_CNT_BLK_ADDRESS);
+	u16 tmp = inw(ACPI_PM1_CNT_BLK);
 	tmp = ((tmp & (7 << 10)) >> 10);
 	/* printk(BIOS_DEBUG, "SLP_TYP type was %x\n", tmp); */
 	return (int)tmp;

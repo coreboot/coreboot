@@ -40,22 +40,17 @@
 #define ACPI_GPE0_BLK		(HUDSON_ACPI_IO_BASE + 0x10) /* 8 bytes */
 #define ACPI_CPU_CONTROL	(HUDSON_ACPI_IO_BASE + 0x08) /* 6 bytes */
 
-#define REV_HUDSON_A11	0x11
-#define REV_HUDSON_A12	0x12
-
-#define PM1_EVT_BLK_ADDRESS                     0x800                           //      AcpiPm1EvtBlkAddr;
-#define PM1_CNT_BLK_ADDRESS                     0x804                           //      AcpiPm1CntBlkAddr;
-#define PM1_TMR_BLK_ADDRESS                     0x808                           //      AcpiPmTmrBlkAddr;
-#define CPU_CNT_BLK_ADDRESS                     0x810                           //      CpuControlBlkAddr;
-#define GPE0_BLK_ADDRESS                        0x820                           //  AcpiGpe0BlkAddr;
-#define SPIROM_BASE_ADDRESS_REGISTER    0xA0
-
 #define ACPI_SMI_CTL_PORT		0xb2
 #define ACPI_SMI_CMD_CST_CONTROL	0xde
 #define ACPI_SMI_CMD_PST_CONTROL	0xad
 #define ACPI_SMI_CMD_DISABLE		0xbe
 #define ACPI_SMI_CMD_ENABLE		0xef
 #define ACPI_SMI_CMD_S4_REQ		0xc0
+
+#define REV_HUDSON_A11	0x11
+#define REV_HUDSON_A12	0x12
+
+#define SPIROM_BASE_ADDRESS_REGISTER    0xA0
 
 #ifndef __SMM__
 

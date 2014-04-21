@@ -291,6 +291,34 @@ static int tegra_dc_dpaux_read_chunk(struct tegra_dc_dp_data *dp, u32 cmd,
 	return -1;
 }
 
+static int tegra_dc_dpaux_read(struct tegra_dc_dp_data *dp, u32 cmd, u32 addr,
+			u8 *data, u32 *size, u32 *aux_stat)
+{
+	u32 finished = 0;
+	u32 cur_size;
+	int ret = 0;
+
+	do {
+		cur_size = *size - finished;
+		if (cur_size > DP_AUX_MAX_BYTES)
+			cur_size = DP_AUX_MAX_BYTES;
+
+		ret = tegra_dc_dpaux_read_chunk(dp, cmd, addr,
+						data, &cur_size, aux_stat);
+		if (ret)
+			break;
+
+		/* cur_size should be the real size returned */
+		addr += cur_size;
+		data += cur_size;
+		finished += cur_size;
+
+	} while (*size > finished);
+
+	*size = finished;
+	return ret;
+}
+
 static int tegra_dc_dp_dpcd_read(struct tegra_dc_dp_data *dp, u32 cmd,
 				 u8 * data_ptr)
 {
@@ -413,7 +441,7 @@ static void tegra_dc_dp_dump_link_cfg(struct tegra_dc_dp_data *dp,
 		link_cfg->hblank_sym);
 	printk(BIOS_INFO, "           vblank_sym             %d\n",
 		link_cfg->vblank_sym);
-};
+}
 
 /* Calcuate if given cfg can meet the mode request. */
 /* Return true if mode is possible, false otherwise. */
@@ -585,7 +613,7 @@ static int tegra_dc_dp_calc_config(struct tegra_dc_dp_data *dp,
 	return 0;
 }
 
-static int tegra_dc_dp_init_link_cfg(
+static int tegra_dc_dp_init_max_link_cfg(
 			struct soc_nvidia_tegra124_config *config,
 			struct tegra_dc_dp_data *dp,
 			struct tegra_dc_dp_link_config *link_cfg)
@@ -593,13 +621,31 @@ static int tegra_dc_dp_init_link_cfg(
 	u8 dpcd_data;
 	int ret;
 
-	link_cfg->max_lane_count = config->lane_count;
-	link_cfg->support_enhanced_framing = config->enhanced_framing;
-	link_cfg->max_link_bw = config->link_bw;
+	CHECK_RET(tegra_dc_dp_dpcd_read(dp, NV_DPCD_MAX_LANE_COUNT,
+			&dpcd_data));
+	link_cfg->max_lane_count = dpcd_data & NV_DPCD_MAX_LANE_COUNT_MASK;
+
+	link_cfg->support_enhanced_framing =
+		(dpcd_data & NV_DPCD_MAX_LANE_COUNT_ENHANCED_FRAMING_YES) ?
+		1 : 0;
+
+	CHECK_RET(tegra_dc_dp_dpcd_read(dp, NV_DPCD_MAX_DOWNSPREAD,
+			&dpcd_data));
+	link_cfg->downspread = (dpcd_data & NV_DPCD_MAX_DOWNSPREAD_VAL_0_5_PCT)?
+				1 : 0;
+
+	CHECK_RET(tegra_dc_dp_dpcd_read(dp, NV_DPCD_MAX_LINK_BANDWIDTH,
+			&link_cfg->max_link_bw));
+
+	link_cfg->bits_per_pixel = config->panel_bits_per_pixel;
+
+	/*
+	 * Set to a high value for link training and attach.
+	 * Will be re-programmed when dp is enabled.
+	 */
 	link_cfg->drive_current = config->drive_current;
 	link_cfg->preemphasis = config->preemphasis;
 	link_cfg->postcursor = config->postcursor;
-	link_cfg->bits_per_pixel = config->panel_bits_per_pixel;
 
 	CHECK_RET(tegra_dc_dp_dpcd_read(dp, NV_DPCD_EDP_CONFIG_CAP,
 			&dpcd_data));
@@ -632,6 +678,240 @@ static int tegra_dc_dp_set_assr(struct tegra_dc_dp_data *dp, int ena)
 	/* Also reset the scrambler to 0xfffe */
 	tegra_dc_sor_set_internal_panel(&dp->sor, ena);
 	return 0;
+}
+
+static int tegra_dp_set_link_bandwidth(struct tegra_dc_dp_data *dp, u8 link_bw)
+{
+	tegra_dc_sor_set_link_bandwidth(&dp->sor, link_bw);
+
+	/* Sink side */
+	return tegra_dc_dp_dpcd_write(dp, NV_DPCD_LINK_BANDWIDTH_SET, link_bw);
+}
+
+static int tegra_dp_set_lane_count(struct tegra_dc_dp_data *dp,
+	const struct tegra_dc_dp_link_config *link_cfg)
+{
+	u8	dpcd_data;
+	int	ret;
+
+	/* check if panel support enhanched_framing */
+	dpcd_data = link_cfg->lane_count;
+	if (link_cfg->enhanced_framing)
+		dpcd_data |= NV_DPCD_LANE_COUNT_SET_ENHANCEDFRAMING_T;
+	CHECK_RET(tegra_dc_dp_dpcd_write(dp, NV_DPCD_LANE_COUNT_SET,
+			dpcd_data));
+
+	tegra_dc_sor_set_lane_count(&dp->sor, link_cfg->lane_count);
+
+	/* Also power down lanes that will not be used */
+	return 0;
+}
+
+static int tegra_dc_dp_link_trained(struct tegra_dc_dp_data *dp,
+	const struct tegra_dc_dp_link_config *cfg)
+{
+	u32 lane;
+	u8 mask;
+	u8 data;
+	int ret;
+
+	for (lane = 0; lane < cfg->lane_count; ++lane) {
+		CHECK_RET(tegra_dc_dp_dpcd_read(dp, (lane/2) ?
+				NV_DPCD_LANE2_3_STATUS : NV_DPCD_LANE0_1_STATUS,
+				&data));
+		mask = (lane & 1) ?
+			NV_DPCD_STATUS_LANEXPLUS1_CR_DONE_YES |
+			NV_DPCD_STATUS_LANEXPLUS1_CHN_EQ_DONE_YES |
+			NV_DPCD_STATUS_LANEXPLUS1_SYMBOL_LOCKED_YES :
+			NV_DPCD_STATUS_LANEX_CR_DONE_YES |
+			NV_DPCD_STATUS_LANEX_CHN_EQ_DONE_YES |
+			NV_DPCD_STATUS_LANEX_SYMBOL_LOCKED_YES;
+		if ((data & mask) != mask)
+			return -1;
+	}
+	return 0;
+}
+
+/*
+ * All link training functions are ported from kernel dc driver.
+ * See more details at drivers/video/tegra/dc/dp.c
+ */
+static int tegra_dc_dp_fast_link_training(struct tegra_dc_dp_data *dp,
+	const struct tegra_dc_dp_link_config *link_cfg)
+{
+	struct tegra_dc_sor_data *sor = &dp->sor;
+	u8	link_bw;
+	u8	lane_count;
+	u16	data16;
+	u32	data32;
+	u32	size;
+	u32	status;
+	int	j;
+	u32	mask = 0xffff >> ((4 - link_cfg->lane_count) * 4);
+
+	tegra_dc_sor_set_lane_parm(sor, link_cfg);
+	tegra_dc_dp_dpcd_write(dp, NV_DPCD_MAIN_LINK_CHANNEL_CODING_SET,
+		NV_DPCD_MAIN_LINK_CHANNEL_CODING_SET_ANSI_8B10B);
+
+	/* Send TP1 */
+	tegra_dc_sor_set_dp_linkctl(sor, 1, training_pattern_1, link_cfg);
+	tegra_dc_dp_dpcd_write(dp, NV_DPCD_TRAINING_PATTERN_SET,
+		NV_DPCD_TRAINING_PATTERN_SET_TPS_TP1);
+
+	for (j = 0; j < link_cfg->lane_count; ++j)
+		tegra_dc_dp_dpcd_write(dp, NV_DPCD_TRAINING_LANE0_SET + j,
+			0x24);
+	udelay(520);
+
+	size = sizeof(data16);
+	tegra_dc_dpaux_read(dp, DPAUX_DP_AUXCTL_CMD_AUXRD,
+		NV_DPCD_LANE0_1_STATUS, (u8 *)&data16, &size, &status);
+	status = mask & 0x1111;
+	if ((data16 & status) != status) {
+		printk(BIOS_ERR,
+			"dp: Link training error for TP1 (%#x)\n", data16);
+		return -EFAULT;
+	}
+
+	/* enable ASSR */
+	tegra_dc_dp_set_assr(dp, link_cfg->scramble_ena);
+	tegra_dc_sor_set_dp_linkctl(sor, 1, training_pattern_3, link_cfg);
+
+	tegra_dc_dp_dpcd_write(dp, NV_DPCD_TRAINING_PATTERN_SET,
+		link_cfg->link_bw == 20 ? 0x23 : 0x22);
+	for (j = 0; j < link_cfg->lane_count; ++j)
+		tegra_dc_dp_dpcd_write(dp, NV_DPCD_TRAINING_LANE0_SET + j,
+			0x24);
+	udelay(520);
+
+	size = sizeof(data32);
+	tegra_dc_dpaux_read(dp, DPAUX_DP_AUXCTL_CMD_AUXRD,
+		NV_DPCD_LANE0_1_STATUS, (u8 *)&data32, &size, &status);
+	if ((data32 & mask) != (0x7777 & mask)) {
+		printk(BIOS_ERR,
+			"dp: Link training error for TP2/3 (0x%x)\n", data32);
+		return -EFAULT;
+	}
+
+	tegra_dc_sor_set_dp_linkctl(sor, 1, training_pattern_disabled,
+				link_cfg);
+	tegra_dc_dp_dpcd_write(dp, NV_DPCD_TRAINING_PATTERN_SET, 0);
+
+	if (tegra_dc_dp_link_trained(dp, link_cfg)) {
+		tegra_dc_sor_read_link_config(&dp->sor, &link_bw,
+			&lane_count);
+		printk(BIOS_ERR,
+			"Fast link trainging failed, link bw %d, lane # %d\n",
+			link_bw, lane_count);
+		return -EFAULT;
+	}
+
+	printk(BIOS_INFO,
+		"Fast link trainging succeeded, link bw %d, lane %d\n",
+		link_cfg->link_bw, link_cfg->lane_count);
+
+	return 0;
+}
+
+static int tegra_dp_link_config(struct tegra_dc_dp_data *dp,
+	const struct tegra_dc_dp_link_config *link_cfg)
+{
+	u8	dpcd_data;
+	u8	link_bw;
+	u8	lane_count;
+	u32	retry;
+	int	ret;
+
+	if (link_cfg->lane_count == 0) {
+		printk(BIOS_ERR, "dp: error: lane count is 0. "
+				"Can not set link config.\n");
+		return -1;
+	}
+
+	/* Set power state if it is not in normal level */
+	CHECK_RET(tegra_dc_dp_dpcd_read(dp, NV_DPCD_SET_POWER, &dpcd_data));
+	if (dpcd_data == NV_DPCD_SET_POWER_VAL_D3_PWRDWN) {
+		dpcd_data = NV_DPCD_SET_POWER_VAL_D0_NORMAL;
+		retry = 3;	/* DP spec requires 3 retries */
+		do {
+			ret = tegra_dc_dp_dpcd_write(dp,
+				NV_DPCD_SET_POWER, dpcd_data);
+		} while ((--retry > 0) && ret);
+		if (ret) {
+			printk(BIOS_ERR,
+				"dp: Failed to set DP panel power\n");
+			return ret;
+		}
+	}
+
+	/* Enable ASSR if possible */
+	if (link_cfg->alt_scramber_reset_cap)
+		CHECK_RET(tegra_dc_dp_set_assr(dp, 1));
+
+	ret = tegra_dp_set_link_bandwidth(dp, link_cfg->link_bw);
+	if (ret) {
+		printk(BIOS_ERR, "dp: Failed to set link bandwidth\n");
+		return ret;
+	}
+	ret = tegra_dp_set_lane_count(dp, link_cfg);
+	if (ret) {
+		printk(BIOS_ERR, "dp: Failed to set lane count\n");
+		return ret;
+	}
+	tegra_dc_sor_set_dp_linkctl(&dp->sor, 1, training_pattern_none,
+					link_cfg);
+
+	/* Now do the fast link training for eDP */
+	ret = tegra_dc_dp_fast_link_training(dp, link_cfg);
+	if (ret) {
+		printk(BIOS_ERR, "dp: fast link training failed\n");
+		return ret;
+	}
+
+	/* Everything goes well, double check the link config */
+	/* TODO: record edc/c2 data for debugging */
+	tegra_dc_sor_read_link_config(&dp->sor, &link_bw, &lane_count);
+
+	if ((link_cfg->link_bw == link_bw) &&
+		(link_cfg->lane_count == lane_count))
+		return 0;
+	else
+		return -EFAULT;
+}
+
+static int tegra_dc_dp_explore_link_cfg(struct tegra_dc_dp_data *dp,
+	struct tegra_dc_dp_link_config *link_cfg,
+	const struct soc_nvidia_tegra124_config *config)
+{
+	struct tegra_dc_dp_link_config temp_cfg;
+
+	if (!config->pixel_clock || !config->xres || !config->yres) {
+		printk(BIOS_ERR,
+			"dp: error mode configuration");
+		return -EINVAL;
+	}
+	if (!link_cfg->max_link_bw || !link_cfg->max_lane_count) {
+		printk(BIOS_ERR,
+			"dp: error link configuration");
+		return -EINVAL;
+	}
+
+	link_cfg->is_valid = 0;
+
+	memcpy(&temp_cfg, link_cfg, sizeof(temp_cfg));
+
+	temp_cfg.link_bw = temp_cfg.max_link_bw;
+	temp_cfg.lane_count = temp_cfg.max_lane_count;
+
+	/*
+	 * set to max link config
+	 */
+	if ((!tegra_dc_dp_calc_config(dp, config, &temp_cfg)) &&
+		(!(tegra_dp_link_config(dp, &temp_cfg))))
+		/* the max link cfg is doable */
+		memcpy(link_cfg, &temp_cfg, sizeof(temp_cfg));
+
+	return link_cfg->is_valid ? 0 : -EFAULT;
 }
 
 static void tegra_dp_update_config(struct tegra_dc_dp_data *dp,
@@ -749,14 +1029,8 @@ void dp_enable(void * _dp)
 		goto error_enable;
 	}
 
-	if (tegra_dc_dp_init_link_cfg(config, dp, &dp->link_cfg)) {
+	if (tegra_dc_dp_init_max_link_cfg(config, dp, &dp->link_cfg)) {
 		printk(BIOS_ERR, "dp: failed to init link configuration\n");
-		goto error_enable;
-        }
-
-	/* enable ASSR */
-	if (tegra_dc_dp_set_assr(dp, dp->link_cfg.scramble_ena)) {
-		printk(BIOS_ERR, "dp: failed to enable ASSR\n");
 		goto error_enable;
         }
 
@@ -789,6 +1063,11 @@ void dp_enable(void * _dp)
 	if (tegra_dc_dp_dpcd_read(dp, NV_DPCD_REV, &dp->revision))
 		printk(BIOS_ERR,
 			"dp: failed to read the revision number from sink\n");
+
+	if (tegra_dc_dp_explore_link_cfg(dp, &dp->link_cfg, config)) {
+		printk(BIOS_ERR, "dp: error to configure link\n");
+		goto error_enable;
+	}
 
 	tegra_dc_sor_set_power_state(&dp->sor, 1);
 	tegra_dc_sor_attach(&dp->sor);

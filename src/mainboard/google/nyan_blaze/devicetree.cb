@@ -88,7 +88,7 @@ chip soc/nvidia/tegra124
 	register "link_bw" = "10"
 	# "10" is defined as SOR_LINK_SPEED_G2_7 in sor.h
 
-	register "drive_current" = "0x13131313"
-	register "preemphasis" = "0x00000000"
+	register "drive_current" = "0x40404040"
+	register "preemphasis" = "0x0f0f0f0f"
 	register "postcursor" = "0"
 end

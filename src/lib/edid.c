@@ -968,6 +968,7 @@ int decode_edid(unsigned char *edid, int size, struct edid *out)
 	    .has_valid_cvt = 1,
 	    .has_valid_dummy_block = 1,
 	    .has_valid_descriptor_ordering = 1,
+	    .has_valid_detailed_blocks = 1,
 	    .has_valid_descriptor_pad = 1,
 	    .has_valid_range_descriptor = 1,
 	    .has_valid_max_dotclock = 1,

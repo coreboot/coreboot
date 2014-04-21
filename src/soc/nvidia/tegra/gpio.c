@@ -29,7 +29,7 @@
 
 void __gpio_input(gpio_t gpio, u32 pull)
 {
-	u32 pinmux_config = PINMUX_INPUT_ENABLE | PINMUX_TRISTATE | pull;
+	u32 pinmux_config = PINMUX_INPUT_ENABLE | pull;
 
 	gpio_set_int_enable(gpio, 0);
 	gpio_set_out_enable(gpio, 0);

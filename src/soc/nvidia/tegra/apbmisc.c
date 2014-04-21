@@ -22,8 +22,14 @@
 
 #include "apbmisc.h"
 
+static struct apbmisc *misc = (struct apbmisc *)TEGRA_APB_MISC_BASE;
+
 void enable_jtag(void)
 {
-	struct apbmisc *misc = (struct apbmisc *)TEGRA_APB_MISC_BASE;
 	write32(PP_CONFIG_CTL_JTAG, &misc->pp_config_ctl);
+}
+
+void clamp_tristate_inputs(void)
+{
+	write32(PP_PINMUX_CLAMP_INPUTS, &misc->pp_pinmux_global);
 }

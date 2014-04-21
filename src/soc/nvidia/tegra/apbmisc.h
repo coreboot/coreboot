@@ -25,11 +25,17 @@
 struct apbmisc {
 	u32 reserved0[9];		/* ABP_MISC_PP_ offsets 00-20 */
 	u32 pp_config_ctl;		/* _CONFIG_CTL_0, offset 24 */
+	u32 reserved1[6];		/* APB_MISC_PP_ offsets 28-3C */
+	u32 pp_pinmux_global;		/* _PINMUX_GLOBAL_0, offset 40 */
 };
 
 #define PP_CONFIG_CTL_TBE		(1 << 7)
 #define PP_CONFIG_CTL_JTAG		(1 << 6)
 
+#define PP_PINMUX_CLAMP_INPUTS		(1 << 0)
+
+
 void enable_jtag(void);
+void clamp_tristate_inputs(void);
 
 #endif	/* __SOC_NVIDIA_TEGRA_APBMISC_H__ */

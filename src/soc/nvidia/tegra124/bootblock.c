@@ -31,6 +31,9 @@ void main(void)
 {
 	void *entry;
 
+	// enable pinmux clamp inputs
+	clamp_tristate_inputs();
+
 	// enable JTAG at the earliest stage
 	enable_jtag();
 
@@ -40,13 +43,11 @@ void main(void)
 	pinmux_set_config(PINMUX_KB_ROW9_INDEX, PINMUX_KB_ROW9_FUNC_UA3);
 	// Serial in, tristate_on.
 	pinmux_set_config(PINMUX_KB_ROW10_INDEX, PINMUX_KB_ROW10_FUNC_UA3 |
-						 PINMUX_TRISTATE |
 						 PINMUX_PULL_UP |
 						 PINMUX_INPUT_ENABLE);
 	// Mux some pins away from uart A.
 	pinmux_set_config(PINMUX_UART2_CTS_N_INDEX,
 			  PINMUX_UART2_CTS_N_FUNC_UB3 |
-			  PINMUX_TRISTATE |
 			  PINMUX_INPUT_ENABLE);
 	pinmux_set_config(PINMUX_UART2_RTS_N_INDEX,
 			  PINMUX_UART2_RTS_N_FUNC_UB3);
@@ -66,7 +67,6 @@ void main(void)
 			  PINMUX_CPU_PWR_REQ_FUNC_CPU);
 	pinmux_set_config(PINMUX_PWR_INT_N_INDEX,
 			  PINMUX_PWR_INT_N_FUNC_PMICINTR |
-			  PINMUX_TRISTATE |
 			  PINMUX_INPUT_ENABLE);
 
 	power_enable_cpu_rail();

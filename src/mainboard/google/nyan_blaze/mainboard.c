@@ -94,8 +94,6 @@ static void setup_pinmux(void)
 	// TODO(hungte) Revice pinmux setup, make nice little SoC functions for
 	// every single logical thing instead of dumping a wall of code below.
 	uint32_t pin_up = PINMUX_PULL_UP | PINMUX_INPUT_ENABLE,
-		 pin_up3 = (PINMUX_PULL_UP | PINMUX_INPUT_ENABLE |
-			    PINMUX_TRISTATE),
 		 pin_down = PINMUX_PULL_DOWN | PINMUX_INPUT_ENABLE,
 		 pin_none = PINMUX_PULL_NONE | PINMUX_INPUT_ENABLE;
 
@@ -113,7 +111,7 @@ static void setup_pinmux(void)
 	pinmux_set_config(PINMUX_SDMMC3_DAT3_INDEX,
 			  PINMUX_SDMMC3_DAT3_FUNC_SDMMC3 | pin_up);
 	pinmux_set_config(PINMUX_SDMMC3_CLK_LB_IN_INDEX,
-			  PINMUX_SDMMC3_CLK_LB_IN_FUNC_SDMMC3 | pin_up3);
+			  PINMUX_SDMMC3_CLK_LB_IN_FUNC_SDMMC3 | pin_up);
 	pinmux_set_config(PINMUX_SDMMC3_CLK_LB_OUT_INDEX,
 			  PINMUX_SDMMC3_CLK_LB_OUT_FUNC_SDMMC3 | pin_down);
 
@@ -155,8 +153,7 @@ static void setup_pinmux(void)
 
 	/* I2S1 */
 	pinmux_set_config(PINMUX_DAP2_DIN_INDEX,
-			  PINMUX_DAP2_DIN_FUNC_I2S1 | PINMUX_TRISTATE |
-			  PINMUX_INPUT_ENABLE);
+			  PINMUX_DAP2_DIN_FUNC_I2S1 | PINMUX_INPUT_ENABLE);
 	pinmux_set_config(PINMUX_DAP2_DOUT_INDEX,
 			  PINMUX_DAP2_DOUT_FUNC_I2S1 | PINMUX_INPUT_ENABLE);
 	pinmux_set_config(PINMUX_DAP2_FS_INDEX,
@@ -167,6 +164,10 @@ static void setup_pinmux(void)
 	/* PWM1 */
 	pinmux_set_config(PINMUX_GPIO_PH1_INDEX,
 			  PINMUX_GPIO_PH1_FUNC_PWM1 | PINMUX_PULL_NONE);
+
+	 /* DP HPD */
+	pinmux_set_config(PINMUX_DP_HPD_INDEX,
+			PINMUX_DP_HPD_FUNC_DP | PINMUX_INPUT_ENABLE);
 }
 
 static void setup_kernel_info(void)

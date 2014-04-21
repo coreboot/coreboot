@@ -19,9 +19,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_ITE_IT8721F_IT8721F_H
-#define SUPERIO_ITE_IT8721F_IT8721F_H
+#ifndef SUPERIO_ITE_IT8721F_H
+#define SUPERIO_ITE_IT8721F_H
 
+#include <device/pnp.h>
+#include <stdint.h>
+
+/* Logical Device Numbers (LDN). */
 #define IT8721F_FDC  0x00 /* Floppy */
 #define IT8721F_SP1  0x01 /* Com1 */
 #define IT8721F_SP2  0x02 /* Com2 */
@@ -32,10 +36,10 @@
 #define IT8721F_GPIO 0x07 /* GPIO */
 #define IT8721F_IR   0x0a /* Consumer IR */
 
-#if defined(__PRE_RAM__)
-void it8721f_24mhz_clkin(void);
-void it8721f_disable_reboot(void);
-void it8721f_enable_serial(device_t dev, u16 iobase);
-#endif
+#define IT8721F_UART_CLK_PREDIVIDE_48 0x00 /* default */
+#define IT8721F_UART_CLK_PREDIVIDE_24 0x01
 
-#endif
+void it8721f_conf_clkin(device_t dev, u8 predivide);
+void it8721f_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_ITE_IT8721F_H */

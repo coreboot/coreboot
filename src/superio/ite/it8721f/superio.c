@@ -67,8 +67,7 @@ static struct pnp_info pnp_dev_info[] = {
 
 static void enable_dev(struct device *dev)
 {
-	pnp_enable_devices(dev, &pnp_ops,
-		ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
+	pnp_enable_devices(dev, &pnp_ops, ARRAY_SIZE(pnp_dev_info), pnp_dev_info);
 }
 
 struct chip_operations superio_ite_it8721f_ops = {

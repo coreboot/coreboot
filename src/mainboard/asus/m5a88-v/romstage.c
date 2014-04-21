@@ -41,7 +41,7 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-#include "superio/ite/it8721f/early_serial.c"
+#include <superio/ite/it8721f/it8721f.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"

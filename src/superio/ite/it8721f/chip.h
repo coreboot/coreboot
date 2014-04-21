@@ -21,11 +21,10 @@
 #ifndef SUPERIO_ITE_IT8721F_CHIP_H
 #define SUPERIO_ITE_IT8721F_CHIP_H
 
-#include <device/device.h>
 #include <pc80/keyboard.h>
 
 struct superio_ite_it8721f_config {
 	struct pc_keyboard keyboard;
 };
 
-#endif
+#endif /* SUPERIO_ITE_IT8721F_CHIP_H */

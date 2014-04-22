@@ -30,6 +30,7 @@
 #include <console/console.h>
 #include <console/loglevel.h>
 #include <cpu/x86/mtrr.h>
+#include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "drivers/pc80/i8254.c"
@@ -45,8 +46,6 @@
 #define MSR_MTRR_VARIABLE_MASK6   0x020D
 #define MSR_PSTATE_CONTROL        0xC0010062
 
-void disable_cache_as_ram(void); /* cache_as_ram.inc */
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

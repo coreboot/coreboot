@@ -5,6 +5,7 @@
 #include <arch/stages.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/amd/car.h>
 #include "cbmem.h"
 #include "cpu/amd/car/disable_cache_as_ram.c"
 
@@ -75,8 +76,6 @@ static void vErrata343(void)
 #endif
 }
 
-void cache_as_ram_switch_stack(void *resume_backup_memory);
-
 void post_cache_as_ram(void)
 {
 	void *resume_backup_memory = NULL;
@@ -111,9 +110,6 @@ void post_cache_as_ram(void)
 	memcopy((void *)((CONFIG_RAMTOP)-CONFIG_DCACHE_RAM_SIZE), (void *)CONFIG_DCACHE_RAM_BASE, CONFIG_DCACHE_RAM_SIZE); //inline
 	cache_as_ram_switch_stack(resume_backup_memory);
 }
-
-void
-cache_as_ram_new_stack (void *resume_backup_memory);
 
 void
 cache_as_ram_new_stack (void *resume_backup_memory __attribute__ ((unused)))

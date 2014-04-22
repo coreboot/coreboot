@@ -26,6 +26,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <cpu/amd/agesa/s3_resume.h>
+#include "cpu/amd/car.h"
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci_def.h>
@@ -39,9 +40,6 @@
 #include <drivers/pc80/i8254.c>
 #include <drivers/pc80/i8259.c>
 #include <superio/ite/it8712f/early_serial.c>
-
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
-void disable_cache_as_ram(void);
 
 #define MMIO_NON_POSTED_START 0xfed00000
 #define MMIO_NON_POSTED_END   0xfedfffff

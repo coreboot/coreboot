@@ -30,6 +30,7 @@
 #include <console/console.h>
 #include <console/loglevel.h>
 #include <cpu/x86/mtrr.h>
+#include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/kbc1100/kbc1100_early_init.c"

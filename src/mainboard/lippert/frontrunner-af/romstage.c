@@ -29,6 +29,7 @@
 #include <console/console.h>
 #include <console/loglevel.h>
 #include <cpu/x86/mtrr.h>
+#include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/smscsuperio/early_serial.c"
@@ -42,8 +43,6 @@
 #include "cpu/amd/mtrr.h"
 #include "cpu/amd/agesa/s3_resume.h"
 
-void disable_cache_as_ram(void); /* cache_as_ram.inc */
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 

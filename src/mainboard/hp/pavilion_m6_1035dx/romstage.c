@@ -27,6 +27,7 @@
 #include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/x86/bist.h>
 #include <cpu/x86/lapic.h>
+#include <cpu/amd/car.h>
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <stdint.h>
@@ -35,10 +36,6 @@
 
 #include "src/drivers/pc80/i8254.c"
 #include "src/drivers/pc80/i8259.c"
-
-
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
-void disable_cache_as_ram(void);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

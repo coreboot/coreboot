@@ -28,6 +28,7 @@
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <console/loglevel.h>
+#include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "cpu/x86/lapic.h"
@@ -40,8 +41,6 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627UHG_SP1)
 
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
-void disable_cache_as_ram(void);
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

@@ -26,6 +26,7 @@
 #include <arch/stages.h>
 #include "cpu/x86/bist.h"
 #include "cpu/x86/lapic.h"
+#include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "northbridge/amd/agesa/family10/reset_test.h"
 #include <nb_cimx.h>
@@ -35,7 +36,6 @@
 #include "src/drivers/pc80/i8254.c"
 #include "src/drivers/pc80/i8259.c"
 
-extern void disable_cache_as_ram(void); /* cache_as_ram.inc */
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)
 #define DUMMY_DEV PNP_DEV(0x2e, 0)

@@ -38,6 +38,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cpu/amd/mtrr.h>
+#include <cpu/amd/car.h>
 #include <sb_cimx.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 #include <superio/fintek/common/fintek.h>
@@ -46,9 +47,6 @@
 /* FIXME: should not include .c files */
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
-
-void disable_cache_as_ram(void); /* cache_as_ram.inc */
-void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx);
 
 /* Ensure Super I/O config address (i.e., 0x2e or 0x4e) matches that of devicetree.cb */
 #define SERIAL_DEV PNP_DEV(0x2e, F71869AD_SP1)

@@ -24,7 +24,7 @@
 #include <device/pci_ids.h>
 #include <reg_script.h>
 
-#include <baytrail/hda_verb.h>
+#include <soc/intel/common/hda_verb.h>
 #include <baytrail/iomap.h>
 #include <baytrail/iosf.h>
 #include <baytrail/pci_devs.h>

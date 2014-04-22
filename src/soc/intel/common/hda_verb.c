@@ -22,7 +22,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <delay.h>
-#include <baytrail/hda_verb.h>
+#include "hda_verb.h"
 
 /**
  * Set bits in a register and wait for status

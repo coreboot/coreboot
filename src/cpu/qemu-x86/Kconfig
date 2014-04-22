@@ -19,3 +19,4 @@
 
 config CPU_QEMU_X86
 	bool
+	select ARCH_X86

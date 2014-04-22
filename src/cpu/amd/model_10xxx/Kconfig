@@ -1,5 +1,6 @@
 config CPU_AMD_MODEL_10XXX
 	bool
+	select ARCH_X86
 	select SSE
 	select SSE2
 	select MMCONF_SUPPORT_DEFAULT

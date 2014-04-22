@@ -2,7 +2,6 @@ if BOARD_AMD_MAHOGANY
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select ARCH_X86
 	select CPU_AMD_SOCKET_AM2
 	select DIMM_DDR2
 	select NORTHBRIDGE_AMD_AMDK8

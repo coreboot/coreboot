@@ -19,6 +19,7 @@
 
 config CPU_AMD_GEODE_GX2
 	bool
+	select ARCH_X86
 
 if CPU_AMD_GEODE_GX2
 

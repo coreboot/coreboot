@@ -1,16 +1,11 @@
 # Warning: This file is included whether or not the if is here.
 # The if controls how the evaluation occurs.
 # (See also src/Kconfig)
-if ARCH_ARMV7
 
 source src/cpu/allwinner/Kconfig
 source src/cpu/armltd/Kconfig
 source src/cpu/samsung/Kconfig
 source src/cpu/ti/Kconfig
-
-endif	# ARCH_ARM
-
-if ARCH_X86
 
 source src/cpu/amd/Kconfig
 source src/cpu/dmp/Kconfig
@@ -18,6 +13,8 @@ source src/cpu/intel/Kconfig
 source src/cpu/via/Kconfig
 source src/cpu/qemu-x86/Kconfig
 source src/cpu/x86/Kconfig
+
+if ARCH_X86
 
 config CACHE_AS_RAM
 	bool

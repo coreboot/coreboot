@@ -72,9 +72,6 @@ silent=
 # clang mode enabled by -sb option.
 scanbuild=false
 
-# stackprotect mode enabled by -ns option.
-stackprotect=false
-
 ARCH=`uname -m | sed -e s/i.86/i386/ -e s/sun4u/sparc64/ \
 	-e s/i86pc/i386/ \
 	-e s/arm.*/arm/ -e s/sa110/arm/ -e s/x86_64/amd64/ \
@@ -284,80 +281,12 @@ function build_target
 		return
 	fi
 
-	# default setting
-
-	CC="${CROSS_COMPILE}gcc"
-	CROSS_COMPILE=""
-	found_crosscompiler=false
-	if which $TARCH-elf-gcc 2>/dev/null >/dev/null; then
-		# i386-elf target needs --divide, for i386-linux, that's the default
-		if [ "$TARCH" = "i386" ]; then
-			CC="$CC -Wa,--divide"
-		fi
-		CROSS_COMPILE="$TARCH-elf-"
-		CC=gcc
-		CROSS_TEXT=", using $CROSS_COMPILE$CC"
-		found_crosscompiler=true
-	fi
-
  	HOSTCC='gcc'
 
 	printf "Building $VENDOR/$MAINBOARD; "
 	mkdir -p $TOP/$TARGET/${VENDOR}_${MAINBOARD} $TOP/$TARGET/abuild
 	XMLFILE=$TOP/$TARGET/abuild/${VENDOR}_${MAINBOARD}.xml
 
-	if [ "$ARCH" = "$TARCH" -o $found_crosscompiler = true ]; then
-		printf "$TARCH: ok$CROSS_TEXT\n"
-	else
-		# FIXME this is basically the same as above.
-		found_crosscompiler=false
-		if [ "$ARCH" == amd64 -a "$TARCH" == i386 ]; then
-			CC="gcc -m32"
-			found_crosscompiler=true
-		fi
-		if [ "$ARCH" == ppc64 -a "$TARCH" == ppc ]; then
-			CC="gcc -m32"
-			found_crosscompiler=true
-		fi
-		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ppc ];then
-			for prefix in powerpc-eabi- powerpc-linux- ppc_74xx- \
-			    powerpc-7450-linux-gnu- powerpc-elf-; do
-				if ${prefix}gcc --version > /dev/null 2> /dev/null ; then
-					found_crosscompiler=true
-					CROSS_COMPILE=$prefix
-				fi
-			done
-		fi
-		if [ "$found_crosscompiler" == "false" -a "$TARCH" == ARMV7 ];then
-			for prefix in armv7a-eabi- armv7-a-eabi- armv7a-cros-linux-gnueabi-; do
-				if ${prefix}gcc --version > /dev/null 2> /dev/null ; then
-					found_crosscompiler=true
-					CROSS_COMPILE=$prefix
-				fi
-			done
-		fi
-
-		# TBD: look for suitable cross compiler suite
-		# cross-$TARCH-gcc and cross-$TARCH-ld
-
-		# Check result:
-		if [ $found_crosscompiler == "false" ]; then
-			printf "$TARCH: skipped, we're $ARCH\n\n"
-			junit "<testcase classname='board' name='$TARCH/$VENDOR/$MAINBOARD' >"
-			junit " <failure type='NoCrossCompiler'>No cross-compiler for $TARCH found</failure>"
-			junit "</testcase>"
-
-			return 0
-		else
-			printf "$TARCH: ok, $ARCH using ${CROSS_COMPILE}gcc\n"
-		fi
-	fi
-
-	CC=${CROSS_COMPILE}$CC
-
-	if  [ "$stackprotect" = "true" ]; then
-		CC="$CC -fno-stack-protector"
-	fi
 
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	create_buildenv $VENDOR $MAINBOARD $CONFIG
@@ -457,7 +386,6 @@ function myhelp
 	printf "    [-T|--test]			  submit image(s) to automated test system\n"
 	printf "    [-c|--cpus <numcpus>]         build on <numcpus> at the same time\n"
 	printf "    [-s|--silent]                 omit compiler calls in logs\n"
-	printf "    [-ns|--nostackprotect]        use gcc -fno-stack-protector option\n"
 	printf "    [-sb|--scan-build]            use clang's static analyzer\n"
 	printf "    [-y|--ccache]                 use ccache\n"
 	printf "    [-C|--config]                 configure-only mode\n"
@@ -505,7 +433,7 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,nostackprotect,scan-build,ccache,blobs -o Vvhat:p:Tc:sJCl:rP:uyB -- "$@"` || exit 1
+	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs -o Vvhat:p:Tc:sJCl:rP:uyB -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
@@ -539,7 +467,6 @@ while true ; do
 			expr "$1" : '-\?[0-9]\+$' > /dev/null && test 0$1 -gt 1 && cpuconfig="on $1 cpus in parallel"
 			shift;;
 		-s|--silent)    shift; silent="-s";;
-		-ns|--nostackprotect) shift; stackprotect=true;;
 		-sb|--scan-build) shift
 			scanbuild=true
 			customizing="${customizing}, scan-build"

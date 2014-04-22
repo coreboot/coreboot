@@ -26,6 +26,7 @@ config CPU_AMD_AGESA
 	default y if CPU_AMD_AGESA_FAMILY15_TN
 	default y if CPU_AMD_AGESA_FAMILY16_KB
 	default n
+	select ARCH_X86
 	select TSC_SYNC_LFENCE
 	select UDELAY_LAPIC
 	select LAPIC_MONOTONIC_TIMER

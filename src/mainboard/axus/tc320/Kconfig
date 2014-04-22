@@ -20,7 +20,6 @@ if BOARD_AXUS_TC320
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select ARCH_X86
 	select CPU_AMD_GEODE_GX1
 	select NORTHBRIDGE_AMD_GX1
 	select SOUTHBRIDGE_AMD_CS5530

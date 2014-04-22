@@ -21,7 +21,6 @@ if BOARD_TI_BEAGLEBONE
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select ARCH_ARMV7
 	select CPU_TI_AM335X
 	select BOARD_ROMSIZE_KB_4096
 

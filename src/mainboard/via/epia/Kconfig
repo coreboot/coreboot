@@ -2,7 +2,6 @@ if BOARD_VIA_EPIA
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select ARCH_X86
 	select CPU_VIA_C3
 	select NORTHBRIDGE_VIA_VT8601
 	select SOUTHBRIDGE_VIA_VT8231

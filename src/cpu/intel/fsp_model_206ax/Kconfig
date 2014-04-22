@@ -28,6 +28,7 @@ if CPU_INTEL_FSP_MODEL_206AX || CPU_INTEL_FSP_MODEL_306AX
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
+	select ARCH_X86
 	select SMP
 	select SSE2
 	select UDELAY_LAPIC

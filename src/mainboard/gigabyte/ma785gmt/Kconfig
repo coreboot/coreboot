@@ -2,7 +2,6 @@ if BOARD_GIGABYTE_MA785GMT
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select ARCH_X86
 	select CPU_AMD_SOCKET_AM3
 	select DIMM_DDR3
 	select DIMM_REGISTERED

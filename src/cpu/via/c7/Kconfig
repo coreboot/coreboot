@@ -5,6 +5,7 @@ if CPU_VIA_C7
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
+	select ARCH_X86
 	select UDELAY_TSC
 	select MMX
 	select SSE2

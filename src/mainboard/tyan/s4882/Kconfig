@@ -2,7 +2,6 @@ if BOARD_TYAN_S4882
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select ARCH_X86
 	select CPU_AMD_SOCKET_940
 	select NORTHBRIDGE_AMD_AMDK8
 	select SOUTHBRIDGE_AMD_AMD8111

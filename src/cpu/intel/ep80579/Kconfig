@@ -1,4 +1,5 @@
 config CPU_INTEL_EP80579
 	bool
+	select ARCH_X86
 	select SSE
 	select SUPPORT_CPU_UCODE_IN_CBFS

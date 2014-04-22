@@ -20,7 +20,6 @@ if BOARD_WYSE_S50
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
-	select ARCH_X86
 	select CPU_AMD_GEODE_GX2
 	select NORTHBRIDGE_AMD_GX2
 	select SOUTHBRIDGE_AMD_CS5536

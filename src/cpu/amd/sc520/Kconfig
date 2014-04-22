@@ -1,2 +1,3 @@
 config CPU_AMD_SC520
 	bool
+	select ARCH_X86

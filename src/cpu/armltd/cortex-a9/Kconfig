@@ -1,6 +1,6 @@
 config CPU_ARMLTD_CORTEX_A9
-	depends on ARCH_ARMV7
 	bool
+	select ARCH_ARMV7
 	default n
 
 if CPU_ARMLTD_CORTEX_A9

@@ -21,7 +21,6 @@ if BOARD_AMD_TORPEDO
 
 config BOARD_SPECIFIC_OPTIONS # dummy
         def_bool y
-  select ARCH_X86
         select DIMM_DDR3
         select DIMM_UNREGISTERED
   select CPU_AMD_AGESA_FAMILY12

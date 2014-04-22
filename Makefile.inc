@@ -408,3 +408,160 @@ crossgcc-clean: clean-for-update
 
 tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/cbfstool/rmodtool $(objutil)/nvramtool/nvramtool $(objutil)/romcc/romcc $(objutil)/sconfig/sconfig
 
+###########################################################################
+# Common recipes for all stages
+###########################################################################
+
+$(objcbfs)/%.bin: $(objcbfs)/%.elf
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	$(OBJCOPY) -O binary $< $@
+
+$(objcbfs)/%.elf: $(objcbfs)/%.debug
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	cp $< $@.tmp
+	$(NM) -n $@.tmp | sort > $(basename $@).map
+	$(OBJCOPY) --strip-debug $@.tmp
+	$(OBJCOPY) --add-gnu-debuglink=$< $@.tmp
+	mv $@.tmp $@
+
+###########################################################################
+# Build the final rom image
+###########################################################################
+
+COREBOOT_ROM_DEPENDENCIES:=
+ifeq ($(CONFIG_PAYLOAD_ELF),y)
+COREBOOT_ROM_DEPENDENCIES+=$(CONFIG_PAYLOAD_FILE)
+endif
+ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
+COREBOOT_ROM_DEPENDENCIES+=seabios
+endif
+ifeq ($(CONFIG_PAYLOAD_FILO),y)
+COREBOOT_ROM_DEPENDENCIES+=filo
+endif
+ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
+COREBOOT_ROM_DEPENDENCIES+=grub2
+endif
+
+extract_nth=$(word $(1), $(subst |, ,$(2)))
+
+ifneq ($(CONFIG_UPDATE_IMAGE),y)
+prebuild-files = \
+	       $(foreach file,$(cbfs-files), \
+	       $(CBFSTOOL) $@.tmp \
+	       add$(if $(filter stage,$(call extract_nth,3,$(file))),-stage)$(if $(filter payload,$(call extract_nth,3,$(file))),-payload) \
+	       -f $(call extract_nth,1,$(file)) \
+	       -n $(call extract_nth,2,$(file)) $(if $(filter-out stage,$(call extract_nth,3,$(file))),-t $(call extract_nth,3,$(file))) \
+	       $(if $(call extract_nth,4,$(file)),-b $(call extract_nth,4,$(file))) &&)
+prebuilt-files = $(foreach file,$(cbfs-files), $(call extract_nth,1,$(file)))
+
+$(obj)/coreboot.pre1: $(objcbfs)/bootblock.bin $$(prebuilt-files) $(CBFSTOOL) $$(cpu_ucode_cbfs_file)
+	$(CBFSTOOL) $@.tmp create -s $(CONFIG_COREBOOT_ROMSIZE_KB)K \
+	-B $(objcbfs)/bootblock.bin -a 64 \
+	$(CBFSTOOL_PRE1_OPTS)
+	$(prebuild-files) true
+	$(call add-cpu-microcode-to-cbfs,$@.tmp)
+	mv $@.tmp $@
+else
+.PHONY: $(obj)/coreboot.pre1
+$(obj)/coreboot.pre1: $(CBFSTOOL)
+	mv $(obj)/coreboot.rom $@
+endif
+
+ifeq ($(CONFIG_PAYLOAD_LINUX),y)
+LINUX_ADDITIONAL_CONFIG:=
+ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_COMMAND_LINE))),)
+      LINUX_ADDITIONAL_CONFIG+=-C $(CONFIG_LINUX_COMMAND_LINE)
+endif
+ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD))),)
+      LINUX_ADDITIONAL_CONFIG+=-I $(CONFIG_LINUX_INITRD)
+endif
+endif
+
+ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
+REFCODE_BLOB=$(obj)/refcode.rmod
+$(REFCODE_BLOB): $(RMODTOOL)
+	$(RMODTOOL) -i $(CONFIG_REFCODE_BLOB_FILE) -o $@
+endif
+
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $$(VBOOT_STUB) $(REFCODE_BLOB)
+	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	cp $(obj)/coreboot.pre $@.tmp
+	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/ramstage.elf -n $(CONFIG_CBFS_PREFIX)/ramstage -c $(CBFS_COMPRESS_FLAG)
+ifeq ($(CONFIG_PAYLOAD_NONE),y)
+	@printf "    PAYLOAD    none (as specified by user)\n"
+endif
+ifeq ($(CONFIG_PAYLOAD_ELF),y)
+	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_PAYLOAD_LINUX),y)
+	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG) $(LINUX_ADDITIONAL_CONFIG)
+endif
+ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
+	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),)
+ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
+	@printf "    SeaBIOS    Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
+	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
+endif
+endif
+endif
+ifeq ($(CONFIG_PAYLOAD_FILO),y)
+	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
+	@printf "    PAYLOAD    GRUB2 (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
+	@printf "    PAYLOAD    Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
+	@printf "    CONFIG     $(DOTCONFIG)\n"
+	if [ -f $(DOTCONFIG) ]; then \
+	echo "# This image was built using git revision" `git rev-parse HEAD` > $(obj)/config.tmp ; \
+	sed -e '/^#/d' -e '/^ *$$/d' $(DOTCONFIG) >> $(obj)/config.tmp ; \
+	$(CBFSTOOL) $@.tmp add -f $(obj)/config.tmp -n config -t raw; rm -f $(obj)/config.tmp ; fi
+endif
+ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
+	$(CBFSTOOL) $@.tmp add-stage -f $(VBOOT_STUB) -n $(CONFIG_CBFS_PREFIX)/vboot -c $(CBFS_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_HAVE_REFCODE_BLOB),y)
+	$(CBFSTOOL) $@.tmp add-stage -f $(REFCODE_BLOB) -n $(CONFIG_CBFS_PREFIX)/refcode -c $(CBFS_COMPRESS_FLAG)
+endif
+ifeq ($(CONFIG_PXE_ROM),y)
+	$(CBFSTOOL) $@.tmp add -f $(CONFIG_PXE_ROM_FILE) -n pci$(CONFIG_PXE_ROM_ID).rom -t raw
+endif
+ifeq ($(CONFIG_CPU_INTEL_FIRMWARE_INTERFACE_TABLE),y)
+ifeq ($(CONFIG_CPU_MICROCODE_IN_CBFS),y)
+	@printf "    UPDATE-FIT \n"
+	$(CBFSTOOL) $@.tmp update-fit -n cpu_microcode_blob.bin -x $(CONFIG_CPU_INTEL_NUM_FIT_ENTRIES)
+endif
+endif
+	mv $@.tmp $@
+	@printf "    CBFSPRINT  $(subst $(obj)/,,$(@))\n\n"
+	$(CBFSTOOL) $@ print
+
+cbfs-files-$(CONFIG_BOOTSPLASH) += bootsplash.jpg
+bootsplash.jpg-file := $(call strip_quotes,$(CONFIG_BOOTSPLASH_FILE))
+bootsplash.jpg-type := bootsplash
+
+ifeq ($(CONFIG_ARCH_ARMV7),y)
+ROMSTAGE_ELF := romstage.elf
+endif
+ifeq ($(CONFIG_ARCH_X86),y)
+ROMSTAGE_ELF := romstage_xip.elf
+endif
+
+$(obj)/coreboot.pre: $(objcbfs)/$(ROMSTAGE_ELF) $(obj)/coreboot.pre1 $(CBFSTOOL)
+	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
+	cp $(obj)/coreboot.pre1 $@.tmp
+	$(CBFSTOOL) $@.tmp add-stage \
+		-f $(objcbfs)/$(ROMSTAGE_ELF) \
+		-n $(CONFIG_CBFS_PREFIX)/romstage -c none \
+		$(CBFSTOOL_PRE_OPTS)
+	mv $@.tmp $@

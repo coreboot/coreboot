@@ -35,15 +35,14 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "superio/ite/it8716f/early_serial.c"
-#include "superio/ite/it8716f/early_init.c"
+#include <superio/ite/it8716f/it8716f.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1)
-#define GPIO_DEV PNP_DEV(0x2e, IT8716F_GPIO)
+#define CLKIN_DEV PNP_DEV(0x2e, IT8716F_GPIO)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
@@ -106,7 +105,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         struct sys_info *sysinfo = &sysinfo_car;
         int needs_reset = 0;
         unsigned bsp_apicid = 0;
-	uint8_t tmp = 0;
 
         if (!cpu_init_detectedx && boot_cpu()) {
 		/* Nothing special needs to be done to find bus 0 */
@@ -118,6 +116,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
         if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
+#if 0
+	uint8_t tmp = 0;
 	pnp_enter_ext_func_mode(SERIAL_DEV);
 	/* The following line will set CLKIN to 24 MHz, external */
 	pnp_write_config(SERIAL_DEV, IT8716F_CONFIG_REG_CLOCKSEL, 0x11);
@@ -132,6 +132,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
  	it8716f_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	pnp_exit_ext_func_mode(SERIAL_DEV);
+#endif
+	it8716f_conf_clkin(CLKIN_DEV, IT8716F_UART_CLK_PREDIVIDE_48);
+	it8716f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
         setup_mb_resource_map();
 

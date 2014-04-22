@@ -37,14 +37,14 @@
 #include <spd.h>
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "superio/ite/it8716f/early_serial.c"
-#include "superio/ite/it8716f/early_init.c"
+#include <superio/ite/it8716f/it8716f.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
 #include "southbridge/nvidia/mcp55/early_ctrl.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8716F_SP1)
+#define CLKIN_DEV PNP_DEV(0x2e, IT8716F_GPIO)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) {}
 static inline void activate_spd_rom(const struct mem_controller *ctrl) {}
@@ -104,11 +104,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	/* FIXME: This should be part of the Super I/O code/config. */
-	pnp_enter_ext_func_mode(SERIAL_DEV);
-	pnp_write_config(SERIAL_DEV, 0x23, 0x01); /* CLKIN = 24MHz */
-	it8716f_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	pnp_exit_ext_func_mode(SERIAL_DEV);
+	it8716f_conf_clkin(CLKIN_DEV, IT8716F_UART_CLK_PREDIVIDE_24);
+	it8716f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	setup_mb_resource_map();
 	report_bist_failure(bist);

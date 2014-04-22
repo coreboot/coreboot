@@ -18,8 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_ITE_IT8716F_IT8716F_H
-#define SUPERIO_ITE_IT8716F_IT8716F_H
+#ifndef SUPERIO_ITE_IT8716F_H
+#define SUPERIO_ITE_IT8716F_H
+
+#include <device/pnp.h>
+#include <stdint.h>
 
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8716_2.asp */
 
@@ -36,15 +39,15 @@
 #define IT8716F_GAME 0x09 /* GAME port */
 #define IT8716F_IR   0x0a /* Consumer IR */
 
+#define IT8716F_UART_CLK_PREDIVIDE_48 0x00 /* default */
+#define IT8716F_UART_CLK_PREDIVIDE_24 0x01
+
+void it8716f_conf_clkin(device_t dev, u8 predivide);
+void it8716f_enable_serial(device_t dev, u16 iobase);
+
 #if CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
 /* Provided by mainboard, called by IT8716F superio.c. */
 void init_ec(u16 base);
 #endif
 
-#if defined(__PRE_RAM__)
-void it8716f_disable_dev(device_t dev);
-void it8716f_enable_dev(device_t dev, u16 iobase);
-void it8716f_enable_serial(device_t dev, u16 iobase);
-#endif
-
-#endif
+#endif /* SUPERIO_ITE_IT8716F_H */

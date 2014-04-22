@@ -21,7 +21,6 @@
 #ifndef SUPERIO_ITE_IT8716F_CHIP_H
 #define SUPERIO_ITE_IT8716F_CHIP_H
 
-#include <device/device.h>
 #include <pc80/keyboard.h>
 
 struct superio_ite_it8716f_config {
@@ -29,4 +28,4 @@ struct superio_ite_it8716f_config {
 	struct pc_keyboard keyboard;
 };
 
-#endif
+#endif /* SUPERIO_ITE_IT8716F_CHIP_H */

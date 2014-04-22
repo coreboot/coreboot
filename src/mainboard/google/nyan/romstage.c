@@ -213,6 +213,10 @@ static void __attribute__((noinline)) romstage(void)
 	configure_ec_spi_bus();
 	configure_tpm_i2c_bus();
 
+#if CONFIG_CONSOLE_CBMEM
+	cbmemc_reinit();
+#endif
+
 	vboot_verify_firmware(romstage_handoff_find_or_add());
 
 	timestamp_add(TS_START_COPYRAM, timestamp_get());
@@ -220,9 +224,6 @@ static void __attribute__((noinline)) romstage(void)
 				      "fallback/coreboot_ram");
 	timestamp_add(TS_END_COPYRAM, timestamp_get());
 
-#if CONFIG_CONSOLE_CBMEM
-	cbmemc_reinit();
-#endif
 	stage_exit(entry);
 }
 

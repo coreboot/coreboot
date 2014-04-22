@@ -31,8 +31,12 @@ int vboot_wants_oprom(void);
 void read_vbnv(uint8_t *vbnv_copy);
 void save_vbnv(const uint8_t *vbnv_copy);
 
+#if CONFIG_CHROMEOS
 /* functions implemented in vboot.c */
 void init_chromeos(int bootmode);
+#else
+static inline void init_chromeos(int bootmode) { }
+#endif /* CONFIG_CHROMEOS */
 
 struct romstage_handoff;
 

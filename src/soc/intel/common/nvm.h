@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _NVM_H_
-#define _NVM_H_
+#ifndef _COMMON_NVM_H_
+#define _COMMON_NVM_H_
 
 #include <stddef.h>
 
@@ -31,4 +31,4 @@ int nvm_erase(void *start, size_t size);
 /* Write data to NVM. Returns 0 on success < 0 on error.  */
 int nvm_write(void *start, const void *data, size_t size);
 
-#endif /* _NVM_H_ */
+#endif /* _COMMON_NVM_H_ */

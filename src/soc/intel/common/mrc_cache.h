@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _MRC_CACHE_H_
-#define _MRC_CACHE_H_
+#ifndef _COMMON_MRC_CACHE_H_
+#define _COMMON_MRC_CACHE_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -37,4 +37,5 @@ int mrc_cache_get_current(const struct mrc_saved_data **cache);
 
 /* Stash the resulting MRC data to be saved in non-volatile storage later. */
 int mrc_cache_stash_data(void *data, size_t size);
-#endif /* _MRC_CACHE_H_ */
+
+#endif /* _COMMON_MRC_CACHE_H_ */

@@ -1,0 +1,19 @@
+if HAVE_MRC
+
+config CACHE_MRC_SETTINGS
+	bool "Save cached MRC settings"
+	default n
+
+if CACHE_MRC_SETTINGS
+
+config MRC_SETTINGS_CACHE_BASE
+	hex
+	default 0xffb00000
+
+config MRC_SETTINGS_CACHE_SIZE
+	hex
+	default 0x10000
+
+endif # CACHE_MRC_SETTINGS
+
+endif # HAVE_MRC

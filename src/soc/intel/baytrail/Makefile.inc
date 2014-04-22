@@ -1,6 +1,7 @@
 subdirs-y += bootblock
 subdirs-y += microcode
 subdirs-y += romstage
+subdirs-y += ../common
 subdirs-y += ../../../cpu/x86/lapic
 subdirs-y += ../../../cpu/x86/mtrr
 subdirs-y += ../../../cpu/x86/smm
@@ -13,9 +14,6 @@ romstage-y += memmap.c
 ramstage-y += tsc_freq.c
 romstage-y += tsc_freq.c
 smm-y += tsc_freq.c
-ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += nvm.c
-ramstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
-romstage-$(CONFIG_CACHE_MRC_SETTINGS) += mrc_cache.c
 ramstage-y += spi.c
 smm-y += spi.c
 ramstage-y += chip.c

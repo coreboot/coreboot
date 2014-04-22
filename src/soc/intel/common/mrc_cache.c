@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>
 #endif
-#include <baytrail/mrc_cache.h>
+#include "mrc_cache.h"
 
 #define MRC_DATA_ALIGN           0x1000
 #define MRC_DATA_SIGNATURE       (('M'<<0)|('R'<<8)|('C'<<16)|('D'<<24))
@@ -117,6 +117,7 @@ static int __mrc_cache_get_current(const struct mrc_data_region *region,
 {
 	const struct mrc_saved_data *msd;
 	const struct mrc_saved_data *verified_cache;
+	int slot = 0;
 
 	msd = region->base;
 
@@ -126,12 +127,15 @@ static int __mrc_cache_get_current(const struct mrc_data_region *region,
 	       mrc_cache_valid(region, msd)) {
 		verified_cache = msd;
 		msd = next_cache_block(msd);
+		slot++;
 	}
 
 	if (verified_cache == NULL)
 		return -1;
 
 	*cache = verified_cache;
+	printk(BIOS_DEBUG, "MRC cache slot %d @ %p\n", slot-1, verified_cache);
+
 	return 0;
 }
 
@@ -146,7 +150,10 @@ int mrc_cache_get_current(const struct mrc_saved_data **cache)
 }
 
 #if defined(__PRE_RAM__)
-/* romstage code */
+
+/*
+ * romstage code
+ */
 
 /* Fill in mrc_saved_data structure with payload. */
 static void mrc_cache_fill(struct mrc_saved_data *cache, void *data,
@@ -186,9 +193,13 @@ int mrc_cache_stash_data(void *data, size_t size)
 }
 
 #else
-/* ramstage code */
+
+/*
+ * ramstage code
+ */
+
 #include <bootstate.h>
-#include <baytrail/nvm.h>
+#include "nvm.h"
 
 static int mrc_slot_valid(const struct mrc_data_region *region,
                           const struct mrc_saved_data *slot,

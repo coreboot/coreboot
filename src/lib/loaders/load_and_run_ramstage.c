@@ -36,7 +36,7 @@ static const struct ramstage_loader_ops *loaders[] = {
 	&cbfs_ramstage_loader,
 };
 
-static const char *ramstage_name = CONFIG_CBFS_PREFIX "/coreboot_ram";
+static const char *ramstage_name = CONFIG_CBFS_PREFIX "/ramstage";
 static const uint32_t ramstage_id = CBMEM_ID_RAMSTAGE;
 
 static void

@@ -36,7 +36,7 @@ static inline __attribute__((always_inline)) void disable_cache_as_ram(void)
 #if CONFIG_DCACHE_RAM_SIZE > 0x8000
 	wrmsr(MTRRfix4K_C0000_MSR, msr);
 #endif
-	/* disable fixed mtrr from now on, it will be enabled by coreboot_ram again*/
+	/* disable fixed mtrr from now on, it will be enabled by ramstage again*/
 
 	msr = rdmsr(SYSCFG_MSR);
 	msr.lo &= ~(SYSCFG_MSR_MtrrFixDramEn | SYSCFG_MSR_MtrrFixDramModEn);

@@ -331,7 +331,7 @@ clean-abuild:
 	rm -rf coreboot-builds
 
 clean-for-update-target:
-	rm -f $(obj)/coreboot_ram* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
+	rm -f $(obj)/ramstage* $(obj)/coreboot.romstage $(obj)/coreboot.pre* $(obj)/coreboot.bootblock $(obj)/coreboot.a
 	rm -rf $(obj)/bootblock* $(obj)/romstage* $(obj)/location.*
 	rm -f $(obj)/option_table.* $(obj)/crt0.S $(obj)/ldscript
 	rm -f $(obj)/mainboard/$(MAINBOARDDIR)/static.c $(obj)/mainboard/$(MAINBOARDDIR)/config.py $(obj)/mainboard/$(MAINBOARDDIR)/static.dot

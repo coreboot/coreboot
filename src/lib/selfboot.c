@@ -29,7 +29,7 @@
 #include <bootmem.h>
 #include <payload_loader.h>
 
-/* from coreboot_ram.ld: */
+/* from ramstage.ld: */
 extern unsigned char _ram_seg;
 extern unsigned char _eram_seg;
 
@@ -418,7 +418,7 @@ static int load_self_segments(
 				/* Zero the extra bytes */
 				memset(middle, 0, end - middle);
 			}
-			/* Copy the data that's outside the area that shadows coreboot_ram */
+			/* Copy the data that's outside the area that shadows ramstage */
 			printk(BIOS_DEBUG, "dest %p, end %p, bouncebuffer %lx\n", dest, end, bounce_buffer);
 			if ((unsigned long)end > bounce_buffer) {
 				if ((unsigned long)dest < bounce_buffer) {

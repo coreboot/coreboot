@@ -42,11 +42,11 @@ static const msrinit_t msr_table[] =
 
 	/* Pre-setup access to memory above 1Mb. Here we set up about 500Mb of memory.
 	 * It doesn't really matter in fact how much, however, because the only usage
-	 * of this extended memory will be to host the coreboot_ram stage at RAMBASE,
+	 * of this extended memory will be to host the ramstage stage at RAMBASE,
 	 * currently 1Mb.
 	 * These registers will be set to their correct value by the Northbridge init code.
 	 *
-	 * WARNING: if coreboot_ram could not be loaded, these registers are probably
+	 * WARNING: if ramstage could not be loaded, these registers are probably
 	 * incorrectly set here. You may comment the following two lines and set RAMBASE
 	 * to 0x4000 to revert to the previous behavior for LX-boards.
 	 */

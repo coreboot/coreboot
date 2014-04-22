@@ -23,7 +23,7 @@ void main(void)
 
 	console_init();
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
 
 	stage_exit(entry);
 }

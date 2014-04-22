@@ -87,7 +87,7 @@ void main(void)
 		a1x_set_cpu_clock(384);
 	}
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
 	printk(BIOS_INFO, "entry is 0x%p, leaving romstage.\n", entry);
 
 	stage_exit(entry);

@@ -99,10 +99,10 @@ $(REFCODE_BLOB): $(RMODTOOL)
 	$(RMODTOOL) -i $(CONFIG_REFCODE_BLOB_FILE) -o $@
 endif
 
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $$(VBOOT_STUB) $(REFCODE_BLOB)
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE) $$(VBOOT_STUB) $(REFCODE_BLOB)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
-	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/ramstage.elf -n $(CONFIG_CBFS_PREFIX)/ramstage -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    none (as specified by user)\n"
 endif
@@ -205,31 +205,31 @@ $(objcbfs)/%.elf: $(objcbfs)/%.debug
 	mv $@.tmp $@
 
 ################################################################################
-# Build the coreboot_ram (stage 2)
+# Build the ramstage (stage 2)
 
 ramstage-libs ?=
 
 ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
 
-$(eval $(call rmodule_link,$(objcbfs)/coreboot_ram.debug, $(objgenerated)/coreboot_ram.o, $(CONFIG_HEAP_SIZE)))
+$(eval $(call rmodule_link,$(objcbfs)/ramstage.debug, $(objgenerated)/ramstage.o, $(CONFIG_HEAP_SIZE)))
 
 # The rmodule_link defintion creates an elf file with .rmod extension.
-$(objcbfs)/coreboot_ram.elf: $(objcbfs)/coreboot_ram.debug.rmod
+$(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod
 	cp $< $@
 
 else
 
-$(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/x86/coreboot_ram.ld
+$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(src)/arch/x86/ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -m elf_i386 -o $@ -L$(obj) $< -T $(src)/arch/x86/coreboot_ram.ld
+	$(LD) -m elf_i386 -o $@ -L$(obj) $< -T $(src)/arch/x86/ramstage.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/coreboot_ram.ld $<
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/ramstage.ld $<
 endif
 
 endif
 
-$(objgenerated)/coreboot_ram.o: $$(ramstage-objs) $(LIBGCC_FILE_NAME) $$(ramstage-libs)
+$(objgenerated)/ramstage.o: $$(ramstage-objs) $(LIBGCC_FILE_NAME) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m elf_i386 -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(ramstage-objs) $(ramstage-libs) $(LIBGCC_FILE_NAME) --end-group

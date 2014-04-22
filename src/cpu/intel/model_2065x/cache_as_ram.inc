@@ -227,7 +227,7 @@ before_romstage:
 	post_code(0x38)
 
 	/* Enable Write Back and Speculative Reads for the first MB
-	 * and coreboot_ram.
+	 * and ramstage.
 	 */
 	movl	$MTRRphysBase_MSR(0), %ecx
 	movl	$(0x00000000 | MTRR_TYPE_WRBACK), %eax

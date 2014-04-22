@@ -65,10 +65,10 @@ $(obj)/coreboot.pre: $(CBFSTOOL)
 	mv $(obj)/coreboot.rom $@
 endif
 
-$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/coreboot_ram.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE)
+$(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $(call strip_quotes,$(COREBOOT_ROM_DEPENDENCIES)) $$(INTERMEDIATE)
 	@printf "    CBFS       $(subst $(obj)/,,$(@))\n"
 	cp $(obj)/coreboot.pre $@.tmp
-	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/coreboot_ram.elf -n $(CONFIG_CBFS_PREFIX)/coreboot_ram -c $(CBFS_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-stage -f $(objcbfs)/ramstage.elf -n $(CONFIG_CBFS_PREFIX)/ramstage -c $(CBFS_COMPRESS_FLAG)
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    none (as specified by user)\n"
 endif
@@ -117,17 +117,17 @@ $(stages_o): $(stages_c) $(obj)/config.h
 
 
 ################################################################################
-# Build the coreboot_ram (stage 2)
+# Build the ramstage (stage 2)
 
-$(objcbfs)/coreboot_ram.debug: $(objgenerated)/coreboot_ram.o $(src)/arch/armv7/coreboot_ram.ld
+$(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(src)/arch/armv7/ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -m armelf_linux_eabi -o $@ -L$(obj) $< -T $(src)/arch/armv7/coreboot_ram.ld
+	$(LD) -m armelf_linux_eabi -o $@ -L$(obj) $< -T $(src)/arch/armv7/ramstage.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/armv7/coreboot_ram.ld $<
+	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/armv7/ramstage.ld $<
 endif
 
-$(objgenerated)/coreboot_ram.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME)
+$(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) --end-group

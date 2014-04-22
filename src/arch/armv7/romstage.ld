@@ -16,7 +16,7 @@
 /*
  *	Written by Johan Rydberg, based on work by Daniel Kahlin.
  *      Rewritten by Eric Biederman
- *  2005.12 yhlu add coreboot_ram cross the vga font buffer handling
+ *  2005.12 yhlu add ramstage cross the vga font buffer handling
  */
 
 /* We use ELF as output format. So that we can debug the code in some form. */

@@ -26,6 +26,6 @@ that.
 Great use is:
 
 make
-./genprof /tmp/yourlog ;  gprof ../../build/coreboot_ram |  ./gprof2dot.py -e0 -n0 | dot -Tpng -o output.png
+./genprof /tmp/yourlog ;  gprof ../../build/ramstage |  ./gprof2dot.py -e0 -n0 | dot -Tpng -o output.png
 
 Which generates a PNG with a call graph.

@@ -252,20 +252,6 @@ void display_startup(device_t dev)
 		printk(BIOS_SPEW,"%s: lvds shutdown setting gpio %08x to %d\n",
 			__func__, config->lvds_shutdown_gpio, 0);
 	}
-	if (config->backlight_en_gpio){
-		gpio_output(config->backlight_en_gpio, 1);
-		printk(BIOS_SPEW,"%s: backlight enable setting gpio %08x to %d\n",
-			__func__, config->backlight_en_gpio, 1);
-	}
-
-	/* Set up Tegra PWM n (where n is specified in config->pwm) to drive the
-	 * panel backlight.
-	 */
-	printk(BIOS_SPEW, "%s: enable panel backlight pwm\n", __func__);
-	WRITEL(((1 << NV_PWM_CSR_ENABLE_SHIFT) |
-		(220 << NV_PWM_CSR_PULSE_WIDTH_SHIFT) | /* 220/256 */
-		0x02e), /* frequency divider */
-	       &pwm->pwm[config->pwm].csr);
 
 	if (framebuffer_size_mb == 0){
 		framebuffer_size_mb = ALIGN_UP(config->xres * config->yres *
@@ -312,6 +298,22 @@ void display_startup(device_t dev)
 			framebuffer_size_mb*MiB);
 
 	update_window(disp_ctrl, config);
+
+	/* Set up Tegra PWM n (where n is specified in config->pwm) to drive the
+	 * panel backlight.
+	 */
+	printk(BIOS_SPEW, "%s: enable panel backlight pwm\n", __func__);
+	WRITEL(((1 << NV_PWM_CSR_ENABLE_SHIFT) |
+		(220 << NV_PWM_CSR_PULSE_WIDTH_SHIFT) | /* 220/256 */
+		0x02e), /* frequency divider */
+	       &pwm->pwm[config->pwm].csr);
+
+	udelay(config->pwm_to_bl_delay_ms * 1000);
+	if (config->backlight_en_gpio){
+		gpio_output(config->backlight_en_gpio, 1);
+		printk(BIOS_SPEW,"%s: backlight enable setting gpio %08x to %d\n",
+			__func__, config->backlight_en_gpio, 1);
+	}
 
 	printk(BIOS_INFO, "%s: display init done.\n", __func__);
 

@@ -47,6 +47,7 @@ chip soc/nvidia/tegra124
 
 	# various panel delay time
 	register "vdd_delay_ms" = "200"
+	register "pwm_to_bl_delay_ms" = "10"
 	register "vdd_to_hpd_delay_ms" = "200"
 	register "hpd_unplug_min_us" = "2000"
 	register "hpd_plug_min_us" = "250"

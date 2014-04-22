@@ -35,6 +35,14 @@ config SBL_BLOB
 
 config BOOTBLOCK_BASE
 	hex "256K bytes left for TZBSP"
-	default 0x2a040000
+	default 0x40600000
+
+config STACK_TOP
+        hex
+        default 0x40600000
+
+config STACK_BOTTOM
+       hex
+       default 0x405fc000
 
 endif

@@ -1,6 +1,10 @@
 #include <arch/io.h>
 #include <delay.h>
 
+void init_timer(void)
+{
+}
+
 void udelay(unsigned usecs)
 {
 	int i;

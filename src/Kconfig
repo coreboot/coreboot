@@ -321,11 +321,6 @@ config HAVE_HARD_RESET
 	  This variable specifies whether a given board has a hard_reset
 	  function, no matter if it's provided by board code or chipset code.
 
-config HAVE_INIT_TIMER
-	bool
-	default n if UDELAY_IO
-	default y
-
 config HAVE_MONOTONIC_TIMER
 	def_bool n
 	help

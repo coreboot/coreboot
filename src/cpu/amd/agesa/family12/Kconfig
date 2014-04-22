@@ -57,8 +57,4 @@ config XIP_ROM_SIZE
 	hex
 	default 0x80000
 
-config HAVE_INIT_TIMER
-	bool
-	default y
-
 endif

@@ -57,10 +57,6 @@ config XIP_ROM_SIZE
 	hex
 	default 0x100000
 
-config HAVE_INIT_TIMER
-	bool
-	default y
-
 config HIGH_SCRATCH_MEMORY_SIZE
 	hex
 	# Assume the maximum size of stack as (0xA0000 - 0x30000 + 0x1000)

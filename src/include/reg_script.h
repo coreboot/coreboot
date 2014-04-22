@@ -179,11 +179,11 @@ struct reg_script {
 #define REG_IO_RMW32(reg_, mask_, value_) \
 	REG_SCRIPT_IO(RMW, 32, reg_, mask_, value_, 0)
 #define REG_IO_OR8(reg_, value_) \
-	REG_SCRIPT_IO_RMW8(_reg, 0xff, value)
+	REG_IO_RMW8(reg_, 0xff, value_)
 #define REG_IO_OR16(reg_, value_) \
-	REG_SCRIPT_IO_RMW16(_reg, 0xffff, value)
+	REG_IO_RMW16(reg_, 0xffff, value_)
 #define REG_IO_OR32(reg_, value_) \
-	REG_SCRIPT_IO_RMW32(_reg, 0xffffffff, value)
+	REG_IO_RMW32(reg_, 0xffffffff, value_)
 #define REG_IO_POLL8(reg_, mask_, value_, timeout_) \
 	REG_SCRIPT_IO(POLL, 8, reg_, mask_, value_, timeout_)
 #define REG_IO_POLL16(reg_, mask_, value_, timeout_) \

@@ -22,7 +22,6 @@
 #define SUPERIO_FINTEK_F71863FG_CHIP_H
 
 #include <pc80/keyboard.h>
-#include <device/device.h>
 
 struct superio_fintek_f71863fg_config {
 

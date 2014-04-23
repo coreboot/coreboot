@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_FINTEK_F71872_F71872_H
-#define SUPERIO_FINTEK_F71872_F71872_H
+#ifndef SUPERIO_FINTEK_F71872_H
+#define SUPERIO_FINTEK_F71872_H
 
 /* Logical Device Numbers (LDN). */
 #define F71872_FDC	0x00	/* Floppy */
@@ -34,4 +34,4 @@
 
 void f71872_enable_serial(device_t dev, u16 iobase);
 
-#endif /* SUPERIO_FINTEK_F71872_F71872_H */
+#endif /* SUPERIO_FINTEK_F71872_H */

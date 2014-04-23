@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_FINTEK_F71805F_F71805F_H
-#define SUPERIO_FINTEK_F71805F_F71805F_H
+#ifndef SUPERIO_FINTEK_F71805F_H
+#define SUPERIO_FINTEK_F71805F_H
 
 /*
  * Datasheet:
@@ -32,12 +32,12 @@
 /* Logical Device Numbers (LDN). */
 #define F71805F_FDC	0x00	/* Floppy */
 #define F71805F_SP1	0x01	/* UART1 */
-#define	F71805F_SP2	0x02	/* UART2 */
+#define F71805F_SP2	0x02	/* UART2 */
 #define F71805F_PP	0x03	/* Parallel port */
-#define	F71805F_HWM	0x04	/* Hardware monitor */
-#define	F71805F_GPIO	0x06	/* General Purpose I/O (GPIO) */
-#define	F71805F_PME	0x0a	/* Power Management Events (PME) */
+#define F71805F_HWM	0x04	/* Hardware monitor */
+#define F71805F_GPIO	0x06	/* General Purpose I/O (GPIO) */
+#define F71805F_PME	0x0a	/* Power Management Events (PME) */
 
 void f71805f_enable_serial(device_t dev, u16 iobase);
 
-#endif /* SUPERIO_FINTEK_F71805F_F71805F_H */
+#endif /* SUPERIO_FINTEK_F71805F_H */

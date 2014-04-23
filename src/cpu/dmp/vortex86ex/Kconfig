@@ -19,5 +19,7 @@
 
 config CPU_DMP_VORTEX86EX
 	bool
-	select ARCH_X86
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_RAMSTAGE_X86_32
 	select UDELAY_TSC

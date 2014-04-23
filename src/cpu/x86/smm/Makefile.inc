@@ -19,7 +19,11 @@
 
 ramstage-$(CONFIG_BACKUP_DEFAULT_SMM_REGION) += backup_default_smm.c
 
+$(eval $(call create_class_compiler,smm,x86_32))
+$(eval $(call create_class_compiler,smmstub,x86_32))
+
 ifeq ($(CONFIG_SMM_MODULES),y)
+
 smmstub-y += smm_stub.S
 
 smm-y += smm_module_handler.c
@@ -32,32 +36,32 @@ ramstage-srcs += $(obj)/cpu/x86/smm/smmstub
 # SMM Stub Module. The stub is used as a trampoline for relocation and normal
 # SMM handling.
 $(obj)/cpu/x86/smm/smmstub.o: $$(smmstub-objs)
-	$(CC) $(LDFLAGS) -nostdlib -r -o $@ $^
+	$(CC_smmstub) $(LDFLAGS) -nostdlib -r -o $@ $^
 
 # Link the SMM stub module with a 0-byte heap.
 $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/smmstub.o, 0))
 
 $(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf.rmod
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY_smmstub) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smmstub.ramstage.o: $(obj)/cpu/x86/smm/smmstub
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cd $(dir $@); $(OBJCOPY) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+	cd $(dir $@); $(OBJCOPY_smmstub) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
 
 # C-based SMM handler.
 
-$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME)
-	$(CC) $(LDFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME_smm)
+	$(CC_smm) $(LDFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME_smm) -Wl,--end-group
 
 
 $(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE)))
 
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf.rmod
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY_smm) -O binary $< $@
 
 $(obj)/cpu/x86/smm/smm.ramstage.o: $(obj)/cpu/x86/smm/smm
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cd $(dir $@); $(OBJCOPY) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+	cd $(dir $@); $(OBJCOPY_smm) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
 
 else # CONFIG_SMM_MODULES
 
@@ -79,18 +83,18 @@ endif
 
 smm-y += smihandler.c
 
-$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME)
-	$(CC) $(LDFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+$(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME_smm)
+	$(CC_smm) $(LDFLAGS) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME_smm) -Wl,--end-group
 
 $(obj)/cpu/x86/smm/smm_wrap: $(obj)/cpu/x86/smm/smm.o $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/ldoptions
-	$(CC) $(SMM_LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
-	$(NM) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
-	$(OBJCOPY) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
+	$(CC_smm) $(SMM_LDFLAGS) -nostdlib -nostartfiles -static -o $(obj)/cpu/x86/smm/smm.elf -T $(src)/cpu/x86/smm/$(SMM_LDSCRIPT) $(obj)/cpu/x86/smm/smm.o
+	$(NM_smm) -n $(obj)/cpu/x86/smm/smm.elf | sort > $(obj)/cpu/x86/smm/smm.map
+	$(OBJCOPY_smm) -O binary $(obj)/cpu/x86/smm/smm.elf $(obj)/cpu/x86/smm/smm
 
 # change to the target path because objcopy will use the path name in its
 # ELF symbol names.
 $(obj)/cpu/x86/smm/smm_wrap.ramstage.o: $(obj)/cpu/x86/smm/smm_wrap
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cd $(obj)/cpu/x86/smm; $(OBJCOPY) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.o
+	cd $(obj)/cpu/x86/smm; $(OBJCOPY_smm) -I binary smm -O elf32-i386 -B i386 smm_wrap.ramstage.o
 
 endif # CONFIG_SMM_MODULES

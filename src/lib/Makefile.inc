@@ -19,27 +19,10 @@
 subdirs-y += loaders
 
 bootblock-y += cbfs.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
-bootblock-y += memset.c
-endif
 bootblock-y += memchr.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
-bootblock-y += memcpy.c
-endif
 bootblock-y += memcmp.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
-bootblock-y += memmove.c
-endif
 
-ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
-romstage-y += memset.c
-rmodules-y += memset.c
-endif
 romstage-y += memchr.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
-romstage-y += memcpy.c
-rmodules-y += memcpy.c
-endif
 romstage-y += memcmp.c
 rmodules-y += memcmp.c
 romstage-y += cbfs.c
@@ -53,26 +36,14 @@ romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 endif
 
 romstage-y += compute_ip_checksum.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
-romstage-y += memmove.c
-endif
-romstage-$(CONFIG_ARCH_X86) += gcc.c
+romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += gcc.c
 
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
 ramstage-y += coreboot_table.c
 ramstage-y += bootmem.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
-ramstage-y += memset.c
-endif
 ramstage-y += memchr.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
-ramstage-y += memcpy.c
-endif
 ramstage-y += memcmp.c
-ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
-ramstage-y += memmove.c
-endif
 ramstage-y += malloc.c
 smm-$(CONFIG_SMM_TSEG) += malloc.c
 ramstage-y += delay.c
@@ -83,7 +54,7 @@ ramstage-y += cbfs.c
 ramstage-y += lzma.c
 #ramstage-y += lzmadecode.c
 ramstage-y += stack.c
-ramstage-$(CONFIG_ARCH_X86) += gcc.c
+ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
 ramstage-y += clog2.c
 romstage-y += clog2.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
@@ -114,15 +85,6 @@ ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += ramstage_cache.c
 
-ifneq ($(CONFIG_HAVE_ARCH_MEMSET),y)
-smm-y += memset.c
-endif
-ifneq ($(CONFIG_HAVE_ARCH_MEMCPY),y)
-smm-y += memcpy.c
-endif
-ifneq ($(CONFIG_HAVE_ARCH_MEMMOVE),y)
-smm-y += memmove.c
-endif
 smm-y += cbfs.c memcmp.c
 smm-y += gcc.c
 
@@ -146,8 +108,8 @@ RMODULE_LDFLAGS  := -nostartfiles -Wl,--emit-relocs -Wl,-z,defs -Wl,-Bsymbolic -
 # rmdoule is named $(1).rmod
 define rmodule_link
 $(strip $(1)): $(strip $(2)) $$(RMODULE_LDSCRIPT) $$(obj)/ldoptions $$(RMODTOOL)
-	$$(CC) $$(CFLAGS) $$(RMODULE_LDFLAGS) -Wl,--defsym=__heap_size=$(strip $(3)) -o $$@ -Wl,--start-group $(strip $(2)) $$(LIBGCC_FILE_NAME) -Wl,--end-group
-	$$(NM) -n $$@ > $$(basename $$@).map
+	$$(CC_rmodules) $$(CFLAGS_rmodules) $$(RMODULE_LDFLAGS) -Wl,--defsym=__heap_size=$(strip $(3)) -o $$@ -Wl,--start-group $(strip $(2)) $$(LIBGCC_FILE_NAME_rmodules) -Wl,--end-group
+	$$(NM_rmodules) -n $$@ > $$(basename $$@).map
 
 $(strip $(1)).rmod: $(strip $(1))
 	$$(RMODTOOL) -i $$^ -o $$@

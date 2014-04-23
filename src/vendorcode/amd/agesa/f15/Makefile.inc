@@ -529,5 +529,7 @@ AGESA_CFLAGS = -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 export AGESA_ROOT
 export AGESA_INC
 export AGESA_CFLAGS
-CC := $(CC) $(AGESA_INC) $(AGESA_CFLAGS)
-
+CC_bootblock := $(CC_bootblock) $(AGESA_INC) $(AGESA_CFLAGS)
+CC_romstage := $(CC_romstage) $(AGESA_INC) $(AGESA_CFLAGS)
+CC_ramstage := $(CC_ramstage) $(AGESA_INC) $(AGESA_CFLAGS)
+CC_x86_32 := $(CC_x86_32) $(AGESA_INC) $(AGESA_CFLAGS)

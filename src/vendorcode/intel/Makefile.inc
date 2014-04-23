@@ -23,5 +23,8 @@ FSP_SRC_FILES := $(wildcard src/vendorcode/intel/$(FSP_PATH)srx/*.c)
 FSP_C_INPUTS := $(foreach file, $(FSP_SRC_FILES), $(FSP_PATH)srx/$(notdir $(file)))
 ramstage-y += $(FSP_C_INPUTS)
 
-CC := $(CC) -Isrc/vendorcode/intel/$(FSP_PATH)include
+CC_bootblock := $(CC_bootblock) -Isrc/vendorcode/intel/$(FSP_PATH)include
+CC_romstage := $(CC_romstage) -Isrc/vendorcode/intel/$(FSP_PATH)include
+CC_ramstage := $(CC_ramstage) -Isrc/vendorcode/intel/$(FSP_PATH)include
+CC_x86_32 := $(CC_x86_32) -Isrc/vendorcode/intel/$(FSP_PATH)include
 endif

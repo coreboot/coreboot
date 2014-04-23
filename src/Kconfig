@@ -237,27 +237,8 @@ config ARCH_ARMV7
 	bool
 	default n
 
-# Warning: The file is included whether or not the if is here.
-# but the if controls how the evaluation occurs.
-if ARCH_X86
 source src/arch/x86/Kconfig
-endif
-
-if ARCH_ARMV7
 source src/arch/armv7/Kconfig
-endif
-
-config HAVE_ARCH_MEMSET
-	bool
-	default n
-
-config HAVE_ARCH_MEMCPY
-	bool
-	default n
-
-config HAVE_ARCH_MEMMOVE
-	bool
-	default n
 
 source src/vendorcode/Kconfig
 
@@ -1123,3 +1104,9 @@ config REG_SCRIPT
 	default n
 	help
 	  Internal option that controls whether we compile in register scripts.
+
+# Maximum reboot count
+# TODO: Improve description.
+config MAX_REBOOT_CNT
+	int
+	default 3

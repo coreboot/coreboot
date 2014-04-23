@@ -284,9 +284,6 @@ static void lb_strings(struct lb_header *header)
 		{ LB_TAG_COMPILE_BY,     coreboot_compile_by,     },
 		{ LB_TAG_COMPILE_HOST,   coreboot_compile_host,   },
 		{ LB_TAG_COMPILE_DOMAIN, coreboot_compile_domain, },
-		{ LB_TAG_COMPILER,       coreboot_compiler,       },
-		{ LB_TAG_LINKER,         coreboot_linker,         },
-		{ LB_TAG_ASSEMBLER,      coreboot_assembler,      },
 	};
 	unsigned int i;
 	for(i = 0; i < ARRAY_SIZE(strings); i++) {

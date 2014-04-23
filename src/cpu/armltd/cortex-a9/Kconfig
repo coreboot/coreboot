@@ -1,6 +1,8 @@
 config CPU_ARMLTD_CORTEX_A9
 	bool
-	select ARCH_ARMV7
+	select ARCH_BOOTBLOCK_ARMV7
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
 	default n
 
 if CPU_ARMLTD_CORTEX_A9

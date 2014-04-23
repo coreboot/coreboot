@@ -30,27 +30,26 @@ subdirs-y += lib/
 # ARM specific options
 ###############################################################################
 
+ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV7),y)
 CBFSTOOL_PRE1_OPTS = -m armv7 -b $(CONFIG_BOOTBLOCK_ROM_OFFSET) -H $(CONFIG_CBFS_HEADER_ROM_OFFSET) -o $(CONFIG_CBFS_ROM_OFFSET)
 CBFSTOOL_PRE_OPTS = -b 0
+endif
 
+ifeq ($(CONFIG_ARCH_ARMV7),y)
 stages_c = $(src)/arch/armv7/stages.c
 stages_o = $(obj)/arch/armv7/stages.o
 
 $(stages_o): $(stages_c) $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -I. $(INCLUDES) -c -o $@ $< -marm
+	$(CC_armv7) -I. $(INCLUDES) $(INCLUDES_armv7) -c -o $@ $< -marm
 
-CFLAGS += \
-	-ffixed-r8\
-	-march=armv7-a\
-	-marm\
-	-mno-unaligned-access\
-	-mthumb\
-	-mthumb-interwork
+endif # CONFIG_ARCH_ARMV7
 
 ###############################################################################
 # bootblock
 ###############################################################################
+
+ifeq ($(CONFIG_ARCH_BOOTBLOCK_ARMV7),y)
 
 bootblock-y += cache.c
 bootblock-y += eabi_compat.c
@@ -79,30 +78,34 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) $(bootblock-S-ccopts) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
+	$(CC_bootblock) $(bootblock-S-ccopts) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) $(bootblock-S-ccopts) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC_bootblock) $(bootblock-S-ccopts) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H) $(obj)/config.h
 	@printf "    CC      $(subst $(obj)/,,$(@))\n"
-	$(CC) $(bootblock-c-ccopts) $(INCLUDES) -MM \
+	$(CC_bootblock) $(bootblock-c-ccopts) $(INCLUDES) $(INCLUDES_bootblock) -MM \
 		-MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
-	$(CC) $(bootblock-c-ccopts) -c -S $(CFLAGS) -I. $(INCLUDES) $< -o $@
+	$(CC_bootblock) $(bootblock-c-ccopts) -c -S $(CFLAGS_bootblock) -I. $(INCLUDES) $(INCLUDES_bootblock) $< -o $@
 
 $(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld $$(bootblock-objs) $(stages) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -m armelf_linux_eabi -include $(obj)/config.h -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
+	$(LD_bootblock) -m armelf_linux_eabi -include $(obj)/config.h -static -o $@.tmp -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
-	$(CC) -nostdlib -nostartfiles -include $(obj)/config.h -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group $(objgenerated)/bootblock.o $(bootblock-objs) $(stages) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC_bootblock) -nostdlib -nostartfiles -include $(obj)/config.h -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld -Wl,--start-group $(objgenerated)/bootblock.o $(bootblock-objs) $(stages) $(LIBGCC_FILE_NAME_bootblock) -Wl,--end-group
 endif
+
+endif # CONFIG_ARCH_BOOTBLOCK_ARMV7
 
 ###############################################################################
 # romstage
 ###############################################################################
+
+ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV7),y)
 
 romstage-y += cache.c
 romstage-y += div0.c
@@ -127,9 +130,9 @@ crt0s += $(cpu_incs-y)
 $(objcbfs)/romstage.debug: $$(romstage-objs) $(stages_o) $(objgenerated)/romstage.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage.ld
+	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) $(romstage-objs) -T $(objgenerated)/romstage.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage.ld -Wl,--start-group $(romstage-objs) $(stages_o) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage.ld -Wl,--start-group $(romstage-objs) $(stages_o) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
 endif
 
 $(objgenerated)/romstage.ld: $$(ldscripts) $(obj)/ldoptions
@@ -144,19 +147,23 @@ $(objgenerated)/crt0.romstage.S: $$(crt0s)
 
 $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
+	$(CC_romstage) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
+	$(CC_romstage) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
-	$(CC) -MMD $(CFLAGS) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
+	$(CC_romstage) -MMD $(CFLAGS_romstage) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
+
+endif # CONFIG_ARCH_ROMSTAGE_ARMV7
 
 ###############################################################################
 # ramstage
 ###############################################################################
+
+ifeq ($(CONFIG_ARCH_RAMSTAGE_ARMV7),y)
 
 ramstage-y += exception.c
 ramstage-y += exception_asm.S
@@ -175,17 +182,17 @@ ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(src)/arch/armv7/ramstage.ld
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -m armelf_linux_eabi -o $@ -L$(obj) $< -T $(src)/arch/armv7/ramstage.ld
+	$(LD_ramstage) -m armelf_linux_eabi -o $@ -L$(obj) $< -T $(src)/arch/armv7/ramstage.ld
 else
-	$(CC) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/armv7/ramstage.ld $<
+	$(CC_ramstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/armv7/ramstage.ld $<
 endif
 
-$(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME)
+$(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME) --end-group
+	$(LD_ramstage) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) --end-group
 else
-	$(CC) $(CFLAGS) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME) -Wl,--end-group
+	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group
 endif
 
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)
@@ -211,3 +218,5 @@ endif
 ifeq ($(CONFIG_HAVE_BUS_CONFIG),y)
 ramstage-srcs += src/mainboard/$(MAINBOARDDIR)/get_bus_conf.c
 endif
+
+endif # CONFIG_ARCH_RAMSTAGE_ARMV7

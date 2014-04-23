@@ -15,8 +15,5 @@ extern const char coreboot_compile_time[];
 extern const char coreboot_compile_by[];
 extern const char coreboot_compile_host[];
 extern const char coreboot_compile_domain[];
-extern const char coreboot_compiler[];
-extern const char coreboot_linker[];
-extern const char coreboot_assembler[];
 
 #endif /* VERSION_H */

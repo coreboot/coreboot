@@ -16,6 +16,7 @@ ramstage-y	+= uart.c
 endif
 
 $(call add-class,omap-header)
+$(eval $(call create_class_compiler,omap-header,armv7))
 
 real-target: $(obj)/MLO
 
@@ -28,14 +29,14 @@ get_header_size= \
 
 $(obj)/omap-header.bin: $$(omap-header-objs) $$(header_ld) $(obj)/coreboot.rom
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC) -nostdlib -nostartfiles -static -include $(obj)/config.h \
+	$(CC_omap-header) -nostdlib -nostartfiles -static -include $(obj)/config.h \
 		-Wl,--defsym,header_load_size=$(strip \
 			$(call get_header_size,$(obj)/coreboot.rom, \
 				$(CONFIG_CBFS_PREFIX)/romstage \
 			) \
 		) \
 		-o $@.tmp $< -T $(header_ld)
-	$(OBJCOPY) --only-section=".header" -O binary $@.tmp $@
+	$(OBJCOPY_omap-header) --only-section=".header" -O binary $@.tmp $@
 
 $(obj)/MLO: $(obj)/coreboot.rom $(obj)/omap-header.bin
 	@printf "    HEADER     $(subst $(obj)/,,$(@))\n"

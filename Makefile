@@ -113,33 +113,7 @@ else
 
 include $(HAVE_DOTCONFIG)
 
-ARCHDIR-$(CONFIG_ARCH_ARMV7)   := armv7
-ARCHDIR-$(CONFIG_ARCH_X86)     := x86
-
-ARCH-y := $(ARCHDIR-y)
-
-# If architecture folder name is different from GCC binutils architecture name,
-# override here.
-ARCH-$(CONFIG_ARCH_ARMV7)   := armv7
-ARCH-$(CONFIG_ARCH_X86)     := i386
-
-ifneq ($(INNER_SCANBUILD),y)
-CC := $(CC_$(ARCH-y))
-endif
-CPP := $(CPP_$(ARCH-y))
-AS := $(AS_$(ARCH-y))
-LD := $(LD_$(ARCH-y))
-NM := $(NM_$(ARCH-y))
-OBJCOPY := $(OBJCOPY_$(ARCH-y))
-OBJDUMP := $(OBJDUMP_$(ARCH-y))
-READELF := $(READELF_$(ARCH-y))
-STRIP := $(STRIP_$(ARCH-y))
-AR := $(AR_$(ARCH-y))
-
-CFLAGS += $(CFLAGS_$(ARCH-y))
-
-LIBGCC_FILE_NAME := $(shell test -r `$(CC) -print-libgcc-file-name` && \
-		      $(CC) -print-libgcc-file-name)
+include toolchain.inc
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
@@ -264,7 +238,7 @@ ifn$(EMPTY)def $(1)-objs_$(2)_template
 de$(EMPTY)fine $(1)-objs_$(2)_template
 $(obj)/$$(1).$(1).o: src/$$(1).$(2) $(obj)/config.h $(4)
 	@printf "    CC         $$$$(subst $$$$(obj)/,,$$$$(@))\n"
-	$(CC) $(3) -MMD $$$$(CFLAGS) -c -o $$$$@ $$$$<
+	$(CC_$(1)) $(3) -MMD $$$$(CFLAGS_$(1)) -c -o $$$$@ $$$$<
 en$(EMPTY)def
 end$(EMPTY)if
 endef
@@ -285,7 +259,7 @@ printall:
 	@echo alldirs:=$(alldirs)
 	@echo allsrcs=$(allsrcs)
 	@echo DEPENDENCIES=$(DEPENDENCIES)
-	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME)
+	@echo LIBGCC_FILE_NAME=$(LIBGCC_FILE_NAME_$(class))
 	@$(foreach class,$(special-classes),echo $(class):='$($(class))'; )
 
 endif

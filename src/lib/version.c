@@ -25,16 +25,6 @@
 #error  COREBOOT_COMPILE_HOST not defined
 #endif
 
-#ifndef COREBOOT_COMPILER
-#error  COREBOOT_COMPILER not defined
-#endif
-#ifndef COREBOOT_LINKER
-#error  COREBOOT_LINKER not defined
-#endif
-#ifndef COREBOOT_ASSEMBLER
-#error  COREBOOT_ASSEMBLER not defined
-#endif
-
 #ifndef  COREBOOT_EXTRA_VERSION
 #define COREBOOT_EXTRA_VERSION ""
 #endif
@@ -50,7 +40,4 @@ const char coreboot_compile_time[]   = COREBOOT_COMPILE_TIME;
 const char coreboot_compile_by[]     = COREBOOT_COMPILE_BY;
 const char coreboot_compile_host[]   = COREBOOT_COMPILE_HOST;
 const char coreboot_compile_domain[] = COREBOOT_COMPILE_DOMAIN;
-const char coreboot_compiler[]       = COREBOOT_COMPILER;
-const char coreboot_linker[]         = COREBOOT_LINKER;
-const char coreboot_assembler[]      = COREBOOT_ASSEMBLER;
 

@@ -106,20 +106,12 @@ typedef struct {
 
 /* Board specific parameters */
 typedef struct {
-	unsigned int machid;
-	unsigned int ddr_size;
-	unsigned int uart_gsbi;
-	unsigned int uart_gsbi_base;
-	unsigned int uart_dm_base;
-	unsigned int clk_dummy;
 #if 0
-	uart_clk_mnd_t mnd_value;
 	unsigned int gmac_gpio_count;
 	gpio_func_data_t *gmac_gpio;
 	ipq_gmac_board_cfg_t gmac_cfg[IPQ_GMAC_NMACS];
 	flash_desc flashdesc;
 	spinorflash_params_t flash_param;
-	gpio_func_data_t dbg_uart_gpio[NO_OF_DBG_UART_GPIOS];
 #endif
 } __attribute__ ((__packed__)) board_ipq806x_params_t;
 
@@ -141,5 +133,5 @@ static inline int gmac_cfg_is_valid(ipq_gmac_board_cfg_t *cfg)
 #endif
 
 unsigned int get_board_index(unsigned machid);
-void ipq_configure_gpio(gpio_func_data_t *gpio, unsigned count);
+void ipq_configure_gpio(const gpio_func_data_t *gpio, unsigned count);
 #endif

@@ -32,14 +32,13 @@
 #ifndef __UART_DM_H__
 #define __UART_DM_H__
 
-#include <asm/io.h>
-#include "common.h"
+#define PERIPH_BLK_BLSP 0
+
 #define MSM_BOOT_UART_DM_EXTR_BITS(value, start_pos, end_pos) \
                                              ((value << (32 - end_pos))\
                                               >> (32 - (end_pos - start_pos)))
 
 
-extern void dsb(void);
 #define PACK_CHARS_INTO_WORDS(a, cnt, word)  {                                 \
                                                word = 0;                       \
                                                int j;                          \

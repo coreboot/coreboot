@@ -92,4 +92,12 @@ void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
 
 void gpio_io_config_set(gpio_t gpio, unsigned int out);
 void gpio_io_config_get(gpio_t gpio, unsigned int *in, unsigned int *out);
+
+/* Keep this to maintain backwards compatibility with the vendor API. */
+static inline void gpio_tlmm_config(unsigned int gpio, unsigned int func,
+				    unsigned int dir, unsigned int pull,
+				    unsigned int drvstr, unsigned int enable)
+{
+	gpio_tlmm_config_set(gpio, func, pull, drvstr, enable);
+}
 #endif // __SOC_QUALCOMM_IPQ806X_GPIO_H_

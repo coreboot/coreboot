@@ -19,8 +19,6 @@
 #ifndef __GSBI_H_
 #define __GSBI_H_
 
-#include <asm/io.h>
-
 /* GSBI Registers */
 #define GSBI_CTRL_REG(base)        ((base) + 0x0)
 

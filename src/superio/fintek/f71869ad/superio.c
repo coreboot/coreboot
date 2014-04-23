@@ -25,6 +25,7 @@
 #include <console/console.h>
 #include <stdlib.h>
 
+#include "fintek_internal.h"
 #include "chip.h"
 #include "f71869ad.h"
 
@@ -39,6 +40,9 @@ static void f71869ad_init(device_t dev)
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case F71869AD_KBC:
 		pc_keyboard_init(&conf->keyboard);
+		break;
+	case F71869AD_HWM:
+		f71869ad_multifunc_init(dev);
 		break;
 	}
 }

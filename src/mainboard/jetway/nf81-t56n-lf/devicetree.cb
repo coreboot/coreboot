@@ -56,6 +56,11 @@ chip northbridge/amd/agesa/family14/root_complex
 						device pci 14.2 on end # HDA	0x4383
 						device pci 14.3 on # LPC		0x439d
 							chip superio/fintek/f71869ad
+								register "multi_function_register_1" = "0x01"
+								register "multi_function_register_2" = "0x6f"
+								register "multi_function_register_3" = "0x24"
+								register "multi_function_register_4" = "0x00"
+								register "multi_function_register_5" = "0x60"
 # XXX: 4e is the default index port and .xy is the
 # LDN indexing the pnp_info array found in the superio.c
 # NB: Jetway board changes the default (0x4e) index port to (0x2e) by pin 124,

@@ -18,21 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_FINTEK_F71869AD_CHIP_H
-#define SUPERIO_FINTEK_F71869AD_CHIP_H
+#ifndef SUPERIO_FINTEK_F71869AD_INTERNAL_H
+#define SUPERIO_FINTEK_F71869AD_INTERNAL_H
 
-#include <pc80/keyboard.h>
-#include <stdint.h>
+#include <arch/io.h>
+#include <device/pnp.h>
 
-struct superio_fintek_f71869ad_config {
-	struct pc_keyboard keyboard;
+void f71869ad_multifunc_init(device_t dev);
 
-	/* Member variables are defined in devicetree.cb. */
-	uint8_t multi_function_register_1;
-	uint8_t multi_function_register_2;
-	uint8_t multi_function_register_3;
-	uint8_t multi_function_register_4;
-	uint8_t multi_function_register_5;
-};
-
-#endif /* SUPERIO_FINTEK_F71869AD_CHIP_H */
+#endif /* SUPERIO_FINTEK_F71869AD_INTERNAL_H */

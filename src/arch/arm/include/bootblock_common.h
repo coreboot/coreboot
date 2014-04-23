@@ -1,15 +1,27 @@
-#if CONFIG_CPU_HAS_BOOTBLOCK_INIT
-void bootblock_cpu_init(void);
-#else
-static void __attribute__((unused)) bootblock_cpu_init(void)
-{
-}
-#endif
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2014 Google Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
 
-#if CONFIG_MAINBOARD_HAS_BOOTBLOCK_INIT
+#ifndef __ARCH_BOOTBLOCK_COMMON_H
+#define __ARCH_BOOTBLOCK_COMMON_H
+
+/* These are defined as weak no-ops that can be overridden by mainboard/SoC. */
 void bootblock_mainboard_init(void);
-#else
-static void __attribute__((unused)) bootblock_mainboard_init(void)
-{
-}
-#endif
+void bootblock_soc_init(void);
+
+#endif	/* __ARCH_BOOTBLOCK_COMMON_H */

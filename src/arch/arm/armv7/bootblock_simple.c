@@ -28,12 +28,15 @@
 #include <halt.h>
 #include <smp/node.h>
 
+__attribute__((weak)) void bootblock_soc_init(void) { /* do nothing */ }
+__attribute__((weak)) void bootblock_mainboard_init(void) { /* do nothing */ }
+
 void main(void)
 {
 	const char *stage_name = "fallback/romstage";
 	void *entry;
 
-	bootblock_cpu_init();
+	bootblock_soc_init();
 	bootblock_mainboard_init();
 
 #if CONFIG_BOOTBLOCK_CONSOLE

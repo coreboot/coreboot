@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright 2013 Google Inc.
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,6 @@
 
 #include <bootblock_common.h>
 
-#include "clk.h"
-#include "wakeup.h"
-
 void bootblock_soc_init(void)
 {
-	/* kick off the multi-core timer.
-	 * We want to do this as early as we can.
-	 */
-	mct_start();
-
-	if (get_wakeup_state() == WAKEUP_DIRECT) {
-		wakeup();
-		/* Never returns. */
-	}
-
-	/* For most ARM systems, we have to initialize firmware media source
-	 * (ex, SPI, SD/MMC, or eMMC) now; but for Exynos platform, that is
-	 * already handled by iROM so there's no need to setup again.
-	 */
 }

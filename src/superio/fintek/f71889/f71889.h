@@ -34,6 +34,4 @@
 #define F71889_PME	0x0a	/* Power Management Events (PME) and ACPI */
 #define F71889_VREF	0x0b	/* Vref */
 
-void f71889_enable_serial(device_t dev, u16 iobase);
-
 #endif /* SUPERIO_FINTEK_F71889_H */

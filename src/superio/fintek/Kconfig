@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,17 +18,35 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+# Generic Fintek romstage driver - Just enough UART initialisation code for
+# romstage.
+config SUPERIO_FINTEK_COMMON_ROMSTAGE
+	bool
+
 config SUPERIO_FINTEK_F71805F
 	bool
+	select SUPERIO_FINTEK_COMMON_ROMSTAGE
+
 config SUPERIO_FINTEK_F71859
 	bool
+	select SUPERIO_FINTEK_COMMON_ROMSTAGE
+
 config SUPERIO_FINTEK_F71863FG
 	bool
+	select SUPERIO_FINTEK_COMMON_ROMSTAGE
+
 config SUPERIO_FINTEK_F71869AD
 	bool
+	select SUPERIO_FINTEK_COMMON_ROMSTAGE
+
 config SUPERIO_FINTEK_F71872
 	bool
+	select SUPERIO_FINTEK_COMMON_ROMSTAGE
+
 config SUPERIO_FINTEK_F71889
 	bool
+	select SUPERIO_FINTEK_COMMON_ROMSTAGE
+
 config SUPERIO_FINTEK_F81865F
 	bool
+	select SUPERIO_FINTEK_COMMON_ROMSTAGE

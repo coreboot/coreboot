@@ -42,6 +42,7 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
+#include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71863fg/f71863fg.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
@@ -102,7 +103,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_rs780_dev8();
 	sb7xx_51xx_lpc_init();
 
-	f71863fg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 

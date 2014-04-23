@@ -32,6 +32,4 @@
 #define F71869AD_BSEL   0x07	/* BSEL */
 #define F71869AD_PME    0x0a	/* Power Management Events (PME) and ACPI */
 
-void f71869ad_enable_serial(device_t dev, u16 iobase);
-
 #endif /* SUPERIO_FINTEK_F71869AD_H */

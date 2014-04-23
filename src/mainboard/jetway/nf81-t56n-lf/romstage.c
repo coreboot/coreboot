@@ -40,7 +40,8 @@
 #include <cpu/amd/mtrr.h>
 #include <sb_cimx.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
-#include "superio/fintek/f71869ad/f71869ad.h"
+#include <superio/fintek/common/fintek.h>
+#include <superio/fintek/f71869ad/f71869ad.h>
 
 /* FIXME: should not include .c files */
 #include "drivers/pc80/i8254.c"
@@ -75,7 +76,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 
 		post_code(0x31);
-		f71869ad_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 

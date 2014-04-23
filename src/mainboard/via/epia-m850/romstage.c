@@ -36,9 +36,10 @@
 
 #include "northbridge/via/vx900/early_vx900.h"
 #include "northbridge/via/vx900/raminit.h"
+#include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f81865f/f81865f.h>
 
-#define SERIAL_DEV PNP_DEV(0x4e, 0x10)
+#define SERIAL_DEV PNP_DEV(0x4e, F81865F_SP1)
 
 /* cache_as_ram.inc jumps to here. */
 void main(unsigned long bist)
@@ -52,7 +53,7 @@ void main(unsigned long bist)
 	vx900_enable_pci_config_space();
 
 	/* Serial console is easy to take care of */
-	f81865f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	print_debug("Console initialized. \n");
 

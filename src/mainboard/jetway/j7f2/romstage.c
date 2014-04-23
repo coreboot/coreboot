@@ -31,6 +31,7 @@
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "southbridge/via/vt8237r/early_smbus.c"
+#include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71805f/f71805f.h>
 #include <lib.h>
 #include <spd.h>
@@ -90,7 +91,7 @@ void main(unsigned long bist)
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
-	f71805f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	enable_smbus();

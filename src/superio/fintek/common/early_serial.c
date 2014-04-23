@@ -19,45 +19,49 @@
  */
 
 /*
- * Pre-RAM driver for the Fintek F71869AD Super I/O chip.
+ * A generic romstage (pre-ram) driver for Fintek variant Super I/O chips.
  *
- * Derived from p.34 in vendor data-sheet:
+ * The following is derived directly from the vendor Fintek's data-sheets:
  *
- * - default index port : 0x4E
- * - default data  port : 0x4F
+ * To toggle between `configuration mode` and `normal operation mode` as to
+ * manipulation the various LDN's in Fintek Super I/O's we are required to pass
+ * magic numbers `passwords keys`.
  *
- * - enable  configuration : 0x87
- * - disable configuration : 0xAA
+ *  FINTEK_ENTRY_KEY :=  enable  configuration : 0x87
+ *  FINTEK_EXIT_KEY  :=  disable configuration : 0xAA
+ *
+ * To modify a LDN's configuration register, we use the index port to select
+ * the index of the LDN and then writing to the data port to alter the
+ * parameters. A default index, data port pair is 0x4E, 0x4F respectively, a
+ * user modified pair is 0x2E, 0x2F respectively.
  *
  */
 
 #include <arch/io.h>
 #include <device/pnp.h>
-#include "f71869ad.h"
+#include <stdint.h>
+#include "fintek.h"
 
-/*
- * Enable configuration: pass entry key '0x87' into index port dev.
- */
+#define FINTEK_ENTRY_KEY 0x87
+#define FINTEK_EXIT_KEY 0xAA
+
+/* Enable configuration: pass entry key '0x87' into index port dev. */
 static void pnp_enter_conf_state(device_t dev)
 {
 	u16 port = dev >> 8;
-	outb(0x87, port);
-	outb(0x87, port);
+	outb(FINTEK_ENTRY_KEY, port);
+	outb(FINTEK_ENTRY_KEY, port);
 }
 
-/*
- * Disable configuration: pass exit key '0xAA' into index port dev.
- */
+/* Disable configuration: pass exit key '0xAA' into index port dev. */
 static void pnp_exit_conf_state(device_t dev)
 {
 	u16 port = dev >> 8;
-	outb(0xaa, port);
+	outb(FINTEK_EXIT_KEY, port);
 }
 
-/*
- * Bring up early serial debugging output before the RAM is initialized.
- */
-void f71869ad_enable_serial(device_t dev, u16 iobase)
+/* Bring up early serial debugging output before the RAM is initialized. */
+void fintek_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

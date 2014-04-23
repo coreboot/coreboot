@@ -35,6 +35,4 @@
 #define F81865F_GPIO	0x06	/* General Purpose I/O (GPIO) */
 #define F81865F_PME	0x0a	/* Power Management Events (PME) */
 
-void f81865f_enable_serial(device_t dev, u16 iobase);
-
 #endif /* SUPERIO_FINTEK_F81865_H */

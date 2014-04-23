@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2007 Corey Osgood <corey@slightlyhackish.com>
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,31 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* Pre-RAM driver for the Fintek F71863FG Super I/O chip. */
+#ifndef SUPERIO_FINTEK_COMMON_ROMSTAGE_H
+#define SUPERIO_FINTEK_COMMON_ROMSTAGE_H
 
 #include <arch/io.h>
-#include <device/pnp.h>
-#include "f71863fg.h"
+#include <stdint.h>
 
-static void pnp_enter_conf_state(device_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0x87, port);
-	outb(0x87, port);
-}
+void fintek_enable_serial(device_t dev, u16 iobase);
 
-static void pnp_exit_conf_state(device_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0xaa, port);
-}
-
-void f71863fg_enable_serial(device_t dev, u16 iobase)
-{
-	pnp_enter_conf_state(dev);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
-	pnp_set_enable(dev, 1);
-	pnp_exit_conf_state(dev);
-}
+#endif /* SUPERIO_FINTEK_COMMON_ROMSTAGE_H */

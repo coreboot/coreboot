@@ -17,6 +17,9 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+## include generic fintek pre-ram stage driver
+romstage-$(CONFIG_SUPERIO_FINTEK_COMMON_ROMSTAGE) += common/early_serial.c
+
 subdirs-y += f71805f
 subdirs-y += f71859
 subdirs-y += f71863fg

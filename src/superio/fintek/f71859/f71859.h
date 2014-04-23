@@ -24,6 +24,4 @@
 /* Logical Device Numbers (LDN). */
 #define F71859_SP1	0x03	/* UART1 */
 
-void f71859_enable_serial(device_t dev, u16 iobase);
-
 #endif /* SUPERIO_FINTEK_F71859_H */

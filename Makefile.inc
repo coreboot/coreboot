@@ -218,7 +218,7 @@ CPPFLAGS_common := -Isrc -Isrc/include -I$(obj)
 CPPFLAGS_common += -Isrc/device/oprom/include
 CPPFLAGS_common += -include $(src)/include/kconfig.h
 
-CFLAGS_common += -Os -pipe -g -nostdinc
+CFLAGS_common += -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow
@@ -226,6 +226,12 @@ ifeq ($(CONFIG_WARNINGS_ARE_ERRORS),y)
 CFLAGS_common += -Werror
 endif
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
+ifneq ($(GDB_DEBUG),)
+CFLAGS_common += -O0
+else
+CFLAGS_common += -Os
+endif
+
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
 		   $(objutil)/ifdfake $(objutil)/options $(objutil)/fletcher \

@@ -1,9 +1,12 @@
 config SOC_QC_IPQ806X
+	bool
+	default n
 	select ARCH_BOOTBLOCK_ARMV4
 	select ARCH_ROMSTAGE_ARMV7
 	select ARCH_RAMSTAGE_ARMV7
-	bool
-	default n
+	select ARM_LPAE
+	select BOOTBLOCK_CONSOLE
+	select HAVE_UART_SPECIAL
 
 if SOC_QC_IPQ806X
 
@@ -13,11 +16,11 @@ config BOOTBLOCK_ROM_OFFSET
 
 config CBFS_HEADER_ROM_OFFSET
 	hex "offset of master CBFS header in ROM"
-	default 0x221000
+	default 0x224000
 
 config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
-	default 0x221080
+	default 0x224080
 
 config MBN_ENCAPSULATION
 	depends on USE_BLOBS

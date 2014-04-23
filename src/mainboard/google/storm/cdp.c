@@ -1,25 +1,22 @@
 
 /* * Copyright (c) 2012 - 2013 The Linux Foundation. All rights reserved.* */
 
-#include <common.h>
-#include <linux/mtd/ipq_nand.h>
-#include <asm/arch-ipq806x/gpio.h>
-#include <asm/global_data.h>
-#include <asm/io.h>
-#include <asm/arch-ipq806x/clock.h>
-#include <asm/arch-ipq806x/ebi2.h>
-#include <asm/arch-ipq806x/smem.h>
-#include <asm/errno.h>
-#include "ipq806x_board_param.h"
-#include "ipq806x_cdp.h"
-#include <asm/arch-ipq806x/nss/msm_ipq806x_gmac.h>
-#include <asm/arch-ipq806x/timer.h>
-#include <nand.h>
-#include <phy.h>
+#include <types.h>
+#include <cdp.h>
+#include <gpio.h>
 
-DECLARE_GLOBAL_DATA_PTR;
+void ipq_configure_gpio(const gpio_func_data_t *gpio, unsigned count)
+{
+	int i;
 
+	for (i = 0; i < count; i++) {
+		gpio_tlmm_config(gpio->gpio, gpio->func, gpio->dir,
+				gpio->pull, gpio->drvstr, gpio->enable);
+		gpio++;
+	}
+}
 
+#if 0
 /* Watchdog bite time set to default reset value */
 #define RESET_WDT_BITE_TIME 0x31F3
 
@@ -354,17 +351,6 @@ int get_eth_mac_address(uchar *enetaddr, uint no_of_macs)
 	return ret;
 }
 
-void ipq_configure_gpio(gpio_func_data_t *gpio, uint count)
-{
-	int i;
-
-	for (i = 0; i < count; i++) {
-		gpio_tlmm_config(gpio->gpio, gpio->func, gpio->dir,
-				gpio->pull, gpio->drvstr, gpio->enable);
-		gpio++;
-	}
-}
-
 int board_eth_init(bd_t *bis)
 {
 	int status;
@@ -377,3 +363,4 @@ int board_eth_init(bd_t *bis)
 	status = ipq_gmac_init(gboard_param->gmac_cfg);
 	return status;
 }
+#endif

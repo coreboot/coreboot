@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <rules.h>
 #include <arch/io.h>
 #include <console/uart.h>
 #include <trace.h>
@@ -134,7 +135,7 @@ void uart_tx_flush(void)
 	uart8250_tx_flush(bases[0]);
 }
 
-#ifndef __PRE_RAM__
+#if ENV_RAMSTAGE
 void uart_fill_lb(void *data)
 {
 	struct lb_serial serial;

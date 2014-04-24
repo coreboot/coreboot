@@ -97,7 +97,7 @@ static void setup_pinmux(void)
 		 pin_down = PINMUX_PULL_DOWN | PINMUX_INPUT_ENABLE,
 		 pin_none = PINMUX_PULL_NONE | PINMUX_INPUT_ENABLE;
 
-	// MMC3
+	// MMC3 (sdcard reader)
 	pinmux_set_config(PINMUX_SDMMC3_CLK_INDEX,
 			  PINMUX_SDMMC3_CLK_FUNC_SDMMC3 | pin_none);
 	pinmux_set_config(PINMUX_SDMMC3_CMD_INDEX,
@@ -117,10 +117,11 @@ static void setup_pinmux(void)
 
 	// MMC3 Card Detect pin.
 	gpio_input_pullup(GPIO(V2));
-	// Enable MMC power.
-	gpio_output(GPIO(R0), 1);
+	// Disable SD card reader power so it can be reset even on warm boot.
+	// Payloads must enable power before accessing SD card slots.
+	gpio_output(GPIO(R0), 0);
 
-	// MMC4
+	// MMC4 (eMMC)
 	pinmux_set_config(PINMUX_SDMMC4_CLK_INDEX,
 			  PINMUX_SDMMC4_CLK_FUNC_SDMMC4 | pin_none);
 	pinmux_set_config(PINMUX_SDMMC4_CMD_INDEX,

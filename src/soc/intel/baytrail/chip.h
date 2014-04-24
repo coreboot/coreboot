@@ -78,6 +78,7 @@ struct soc_intel_baytrail_config {
 	uint16_t gpu_pipea_power_off_delay;
 	uint16_t gpu_pipea_light_off_delay;
 	uint16_t gpu_pipea_power_cycle_delay;
+	int gpu_pipea_pwm_freq_hz;
 
 	int gpu_pipeb_port_select;	/* Port select: 1=DP_B 2=DP_C */
 	uint16_t gpu_pipeb_power_on_delay;
@@ -85,6 +86,7 @@ struct soc_intel_baytrail_config {
 	uint16_t gpu_pipeb_power_off_delay;
 	uint16_t gpu_pipeb_light_off_delay;
 	uint16_t gpu_pipeb_power_cycle_delay;
+	int gpu_pipeb_pwm_freq_hz;
 };
 
 extern struct chip_operations soc_intel_baytrail_ops;

@@ -290,6 +290,27 @@ static void gfx_post_vbios_init(device_t dev)
 	gfx_run_script(dev, gfx_post_vbios_script);
 }
 
+static void set_backlight_pwm(device_t dev, uint32_t bklt_reg, int req_hz)
+{
+	int divider;
+	struct resource *res;
+
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+
+	if (res == NULL)
+		return;
+
+	/* Default to 200 Hz if nothing is set. */
+	if (req_hz == 0)
+		req_hz = 200;
+
+	/* Base clock is 25MHz */
+	divider = 25 * 1000 * 1000 / (16 * req_hz);
+
+	/* Do not set duty cycle (lower 16 bits). Just set the divider. */
+	write32(res->base + bklt_reg, divider << 16);
+}
+
 static void gfx_panel_setup(device_t dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
@@ -333,11 +354,15 @@ static void gfx_panel_setup(device_t dev)
 	if (config->gpu_pipea_port_select) {
 		printk(BIOS_INFO, "GFX: Initialize PIPEA\n");
 		reg_script_run_on_dev(dev, gfx_pipea_init);
+		set_backlight_pwm(dev, PIPEA_REG(BACKLIGHT_CTL),
+		                  config->gpu_pipea_pwm_freq_hz);
 	}
 
 	if (config->gpu_pipeb_port_select) {
 		printk(BIOS_INFO, "GFX: Initialize PIPEB\n");
 		reg_script_run_on_dev(dev, gfx_pipeb_init);
+		set_backlight_pwm(dev, PIPEB_REG(BACKLIGHT_CTL),
+		                  config->gpu_pipeb_pwm_freq_hz);
 	}
 }
 

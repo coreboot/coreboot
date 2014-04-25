@@ -7,9 +7,8 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 
-cpu_incs += $(src)/cpu/intel/fsp_model_206ax/cache_as_ram.inc
-
-CC_bootblock := $(CC_bootblock) -I$(CONFIG_MICROCODE_INCLUDE_PATH)
-CC_romstage := $(CC_romstage) -I$(CONFIG_MICROCODE_INCLUDE_PATH)
-CC_ramstage := $(CC_ramstage) -I$(CONFIG_MICROCODE_INCLUDE_PATH)
-CC_x86_32 := $(CC_x86_32) -I$(CONFIG_MICROCODE_INCLUDE_PATH)
+ifneq ($(CONFIG_MICROCODE_INCLUDE_PATH),)
+ifneq ($(wildcard $(shell realpath -L "$(top)/$(CONFIG_MICROCODE_INCLUDE_PATH)")),)
+INCLUDES += -I$(CONFIG_MICROCODE_INCLUDE_PATH)
+endif
+endif

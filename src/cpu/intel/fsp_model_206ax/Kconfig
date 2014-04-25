@@ -28,6 +28,7 @@ if CPU_INTEL_FSP_MODEL_206AX || CPU_INTEL_FSP_MODEL_306AX
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
+	select PLATFORM_USES_FSP
 	select ARCH_BOOTBLOCK_X86_32
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
@@ -69,27 +70,5 @@ config MICROCODE_INCLUDE_PATH
 	string "Location of the intel microcode patches"
 	default "../intel/cpu/ivybridge/microcode" if CPU_INTEL_FSP_MODEL_306AX
 	default "../intel/cpu/sandybridge/microcode" if CPU_INTEL_FSP_MODEL_206AX
-
-config FSP_IMAGE_ID_DWORD0
-	hex
-	default 0x2D325453 if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_I89XX
-	default 0x2D324343 if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_BD82X6X
-	  help
-	  The FSP Image ID is different for each platform's FSP and can be used to
-	  verify that the right FSP binary is loaded.
-	  For the ivybridge/89xx FSP, the Image Id will be "ST2-FSP\0",
-	  for ivybridge/bd82x6x FSPs, the Image Id will be "CC2-FSP\0",
-	  This dword holds the first 4 bytes of the string, as
-	  a hex value.
-
-config FSP_IMAGE_ID_DWORD1
-	hex
-	default 0x00505346
-	  help
-	  For the ivybridge/I89xx FSP, the Image Id will be "ST2-FSP\0",
-	  for ivybridge/bd82x6x FSPs, the Image Id will be "CC2-FSP\0",
-	  This dword holds the second 4 bytes of the string, as
-	  a hex value.  Since the strings use the same second dword,
-	  no additional logic is needed.
 
 endif

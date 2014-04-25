@@ -33,7 +33,7 @@
 #include <console/console.h>
 #include <reset.h>
 #include "superio/smsc/sio1007/chip.h"
-#include "northbridge/intel/fsp_sandybridge/fsp_util.h"
+#include <fsp_util.h>
 #include "northbridge/intel/fsp_sandybridge/northbridge.h"
 #include "northbridge/intel/fsp_sandybridge/raminit.h"
 #include "southbridge/intel/fsp_bd82x6x/pch.h"
@@ -42,6 +42,7 @@
 #include <arch/cpu.h>
 #include <cpu/x86/msr.h>
 #include "gpio.h"
+#include <arch/stages.h>
 
 static inline void reset_system(void)
 {
@@ -345,13 +346,9 @@ void romstage_main_continue(EFI_STATUS status, VOID *HobListPtr) {
 	cbmemc_reinit();
 #endif
 
-/*
- * FSP returns to this function instead of main, so we can't return back
- * to the cache_as_ram.inc. Just jump there to finish the ramstage loading.
- */
-	asm volatile (
-		"jmp	romstage_main_return\n"
-	);
+	/* Load the ramstage. */
+	copy_and_run();
+	while (1);
 }
 
 void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)

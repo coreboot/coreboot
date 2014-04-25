@@ -28,15 +28,6 @@ config NORTHBRIDGE_INTEL_FSP_IVYBRIDGE
 
 if NORTHBRIDGE_INTEL_FSP_IVYBRIDGE || NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE
 
-config HAVE_FSP_BIN
-	bool "Use Intel Firmware Support Package"
-	help
-	  Select this option to add an Intel FSP binary to
-	  the resulting coreboot image.
-
-	  Note: Without this binary, coreboot builds relying on the FSP
-	  will not boot
-
 config VGA_BIOS_ID
 	string
 	default "8086,0106"
@@ -46,32 +37,6 @@ config VGA_BIOS_ID
 	  PCI IDs will be remapped to load this rom:
 	  0x80860102, 0x8086010a, 0x80860112, 0x80860116
 	  0x80860122, 0x80860126, 0x80860166
-
-config DCACHE_RAM_BASE
-	hex
-	default 0xff7f0000
-
-config DCACHE_RAM_SIZE
-	hex
-	default 0x10000
-
-
-if HAVE_FSP_BIN
-
-config FSP_FILE
-	string "Intel FSP binary path and filename"
-	default "../intel/fsp/ivybridge_bd82x6x/FvFsp.bin" if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_BD82X6X
-	default "../intel/fsp/ivybridge_i89xx/FvFsp.bin" if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_I89XX
-	help
-	  The path and filename of the Intel FSP binary for this platform.
-
-config FSP_LOC
-	hex "Intel FSP Binary location in cbfs"
-	default 0xfff80000
-	help
-	  The location in cbfs that the FSP is located. This must match the
-	  value that is set in the FSP binary.  If the FSP needs to be moved,
-	  rebase the FSP with the Intel's BCT (tool).
 
 config CBFS_SIZE
 	hex "Size of CBFS filesystem in ROM"
@@ -84,35 +49,7 @@ config CBFS_SIZE
 	  This option specifies the maximum size of the CBFS portion in the
 	  firmware image.
 
-config ENABLE_FAST_BOOT
-	bool "Enable Fast Boot"
-	default y if CPU_INTEL_FSP_MODEL_306AX && SOUTHBRIDGE_INTEL_FSP_BD82X6X
-	help
-	  Enabling this feature will cause MRC data to be cached in NV storage
-	  which will speed up boot time on future reboots and/or power cycles.
-
-config MRC_CACHE_SIZE
-	hex "MRC Data Cache Size"
-	default 0x10000
-	depends on ENABLE_FAST_BOOT
-	help
-	  This is the amount of space in NV storage that is reserved for MRC data
-	  cache storage when using fast boot.
-
-config VIRTUAL_ROM_SIZE
-	hex "Virtual ROM Size"
-	default ROM_SIZE
-	depends on ENABLE_FAST_BOOT
-	help
-	  This is used to calculate the offset of the MRC data cache in NV
-	  Storage for "Fast Boot".  If in doubt, leave this set to the default
-	  which sets the virtual size equal to the ROM size.
-
-	  Example: Cougar Canyon 2 has 2 8 MB SPI ROMs.  When the SPI ROMs are
-	  loaded with a 4 MB coreboot image, the virtual ROM size is 8 MB.  When
-	  the SPI ROMs are loaded with an 8 MB coreboot image, the virtual ROM
-	  size is 16 MB.
-
-endif # HAVE_FSP_BIN
+# Ivybridge Specific FSP Kconfig
+source src/northbridge/intel/fsp_sandybridge/fsp/Kconfig
 
 endif # NORTHBRIDGE_INTEL_FSP_IVYBRIDGE || NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE

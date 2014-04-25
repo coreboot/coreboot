@@ -36,7 +36,7 @@
 #include <cbmem.h>
 #include "chip.h"
 #include "northbridge.h"
-#include "fsp_util.h"
+#include <fsp_util.h>
 
 static int bridge_revision_id = -1;
 static u8 finished_FSP_after_pci = 0;

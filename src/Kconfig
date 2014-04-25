@@ -256,6 +256,7 @@ comment "Embedded Controllers"
 source src/ec/Kconfig
 comment "SoC"
 source src/soc/Kconfig
+source src/drivers/intel/fsp/Kconfig
 
 endmenu
 

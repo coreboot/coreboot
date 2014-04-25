@@ -1,0 +1,143 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2014 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+if PLATFORM_USES_FSP
+
+comment "Intel FSP"
+
+config HAVE_FSP_BIN
+	bool "Use Intel Firmware Support Package"
+	help
+	  Select this option to add an Intel FSP binary to
+	  the resulting coreboot image.
+
+	  Note: Without this binary, coreboot builds relying on the FSP
+	  will not boot
+
+config DCACHE_RAM_BASE
+	hex
+	default 0xfef00000
+
+config DCACHE_RAM_SIZE
+	hex
+	default 0x4000
+
+if HAVE_FSP_BIN
+
+config FSP_FILE
+	string "Intel FSP binary path and filename"
+	help
+	  The path and filename of the Intel FSP binary for this platform.
+
+config FSP_LOC
+	hex "Intel FSP Binary location in CBFS"
+	help
+	  The location in CBFS that the FSP is located. This must match the
+	  value that is set in the FSP binary.  If the FSP needs to be moved,
+	  rebase the FSP with Intel's BCT (tool).
+
+config ENABLE_FSP_FAST_BOOT
+	bool "Enable Fast Boot"
+	default n
+	help
+	  Enabling this feature will force the MRC data to be cached in NV
+	  storage to be used for speeding up boot time on future reboots
+	  and/or power cycles.
+
+config ENABLE_MRC_CACHE
+	bool
+	default ENABLE_FSP_FAST_BOOT
+	help
+	  Enabling this feature will cause MRC data to be cached in NV storage.
+	  This can either be used for fast boot, or just because the FSP wants
+	  it to be saved.
+
+config MRC_CACHE_SIZE
+	hex "Fast Boot Data Cache Size"
+	default 0x10000
+	depends on ENABLE_MRC_CACHE
+	help
+	  This is the amount of space in NV storage that is reserved for the
+	  fast boot data cache storage.
+
+	  WARNING: Because this area will be erased and re-written, the size
+	  should be a full sector of the flash ROM chip and nothing else should
+	  be included in CBFS in any sector that the fast boot cache data is in.
+
+config OVERRIDE_CACHE_CACHE_LOC
+	bool
+	help
+	  Selected by the platform to set a new default location for the
+	  MRC/fast boot cache.
+
+config MRC_CACHE_LOC_OVERRIDE
+	hex
+	help
+	  Sets the override CBFS location of the MRC/fast boot cache.
+
+config MRC_CACHE_LOC
+	hex "Fast Boot Data Cache location in CBFS"
+	default MRC_CACHE_LOC_OVERRIDE if OVERRIDE_CACHE_CACHE_LOC
+	default 0xfff50000
+	depends on ENABLE_MRC_CACHE
+	help
+	  The location in CBFS for the MRC data to be cached.
+
+	  WARNING: This should be on a sector boundary of the BIOS ROM chip
+	  and nothing else should be included in that sector, or IT WILL BE
+	  ERASED.
+
+config VIRTUAL_ROM_SIZE
+	hex "Virtual ROM Size"
+	default ROM_SIZE
+	depends on ENABLE_MRC_CACHE
+	help
+	  This is used to calculate the offset of the MRC data cache in NV
+	  Storage for fast boot.  If in doubt, leave this set to the default
+	  which sets the virtual size equal to the ROM size.
+
+	  Example: Cougar Canyon 2 has two 8 MB SPI ROMs.  When the SPI ROMs are
+	  loaded with a 4 MB coreboot image, the virtual ROM size is 8 MB.  When
+	  the SPI ROMs are loaded with an 8 MB coreboot image, the virtual ROM
+	  size is 16 MB.
+
+endif #HAVE_FSP_BIN
+
+config CACHE_ROM_SIZE_OVERRIDE
+	hex "Cache ROM Size"
+	default CBFS_SIZE
+	help
+	  This is the size of the cachable area that is passed into the FSP in
+	  the early initialization.  Typically this should be the size of the CBFS
+	  area, but the size must be a power of 2 whereas the CBFS size does not
+	  have this limitation.
+
+config USE_GENERIC_FSP_CAR_INC
+	bool
+	default n
+	help
+	  The chipset can select this to use a generic cache_as_ram.inc file
+	  that should be good for all FSP based platforms.
+
+config FSP_USES_UPD
+	bool
+	default n
+	help
+	  If this FSP uses UPD/VPD data regions, select this in the chipset Kconfig.
+endif #PLATFORM_USES_FSP

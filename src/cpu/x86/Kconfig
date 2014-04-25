@@ -109,6 +109,13 @@ config X86_AMD_FIXED_MTRRS
 	  This option informs the MTRR code to use the RdMem and WrMem fields
 	  in the fixed MTRR MSRs.
 
+config PLATFORM_USES_FSP
+	bool
+	default n
+	help
+	  Selected for Intel processors/platform combinations that use the
+	  Intel Firmware Support Package (FSP) for initialization.
+
 config PARALLEL_MP
 	def_bool n
 	help

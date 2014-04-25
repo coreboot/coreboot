@@ -50,7 +50,7 @@ static struct as3722_init_reg init_list[] = {
 	{AS3722_LDO2, 0x10, 0},
 	{AS3722_LDO4, 0x00, 0},
 	{AS3722_LDO5, 0x00, 0},
-	{AS3722_LDO6, 0x3F, 0},
+	{AS3722_LDO6, 0x00, 0},
 	{AS3722_LDO7, 0x00, 0},
 	{AS3722_LDO9, 0x00, 0},
 	{AS3722_LDO10, 0x00, 0},
@@ -98,15 +98,6 @@ void pmic_init(unsigned bus)
 	 * regulator.
 	 */
 	pmic_write_reg(bus, 0x12, 0x10, 1);
-
-	/*
-	 * Bring up VDD_SDMMC via the AS3722 PMIC on the PWR I2C bus.
-	 * First set it to bypass 3.3V straight thru, then enable the regulator
-	 *
-	 * NOTE: We do this early because doing it later seems to hose the CPU
-	 * power rail/partition startup. Need to debug.
-	 */
-	pmic_write_reg(bus, 0x16, 0x3f, 1);
 
 	/*
 	 * Panel power GPIO O4. Set mode for GPIO4 (0x0c to 7), then set

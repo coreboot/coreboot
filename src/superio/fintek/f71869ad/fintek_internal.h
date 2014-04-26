@@ -25,5 +25,6 @@
 #include <device/pnp.h>
 
 void f71869ad_multifunc_init(device_t dev);
+void f71869ad_hwm_init(device_t dev);
 
 #endif /* SUPERIO_FINTEK_F71869AD_INTERNAL_H */

@@ -33,6 +33,17 @@ struct superio_fintek_f71869ad_config {
 	uint8_t multi_function_register_3;
 	uint8_t multi_function_register_4;
 	uint8_t multi_function_register_5;
+	/* HWM configuration registers */
+	uint8_t hwm_smbus_address;
+	uint8_t hwm_smbus_control_reg;
+	uint8_t hwm_fan_type_sel_reg;
+	uint8_t hwm_fan1_temp_adj_rate_reg;
+	uint8_t hwm_fan_mode_sel_reg;
+	uint8_t hwm_fan1_idx_rpm_mode;
+	uint8_t hwm_fan1_seg1_speed_count;
+	uint8_t hwm_fan1_seg2_speed_count;
+	uint8_t hwm_fan1_seg3_speed_count;
+	uint8_t hwm_fan1_temp_map_sel;
 };
 
 #endif /* SUPERIO_FINTEK_F71869AD_CHIP_H */

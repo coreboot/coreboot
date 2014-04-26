@@ -43,6 +43,7 @@ static void f71869ad_init(device_t dev)
 		break;
 	case F71869AD_HWM:
 		f71869ad_multifunc_init(dev);
+		f71869ad_hwm_init(dev);
 		break;
 	}
 }

@@ -21,8 +21,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* Used by it8712f_enable_serial(). */
+/* Used by ite_enable_serial(). */
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
+#define CLKIN_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 #include <stdint.h>
 #include <string.h>
@@ -33,7 +34,8 @@
 #include <pc80/mc146818rtc.h>
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "superio/ite/it8712f/early_serial.c"
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8712f/it8712f.h>
 #include <cpu/amd/model_fxx_rev.h>
 #include <console/console.h>
 #include "northbridge/amd/amdk8/incoherent_ht.c"
@@ -103,8 +105,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx);
 
-	it8712f_24mhz_clkin();
-	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	/* Halt if there was a built in self test failure */

@@ -41,6 +41,7 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
+#include <superio/ite/common/ite.h>
 #include <superio/ite/it8721f/it8721f.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
@@ -100,7 +101,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_rs780_dev8();
 	sb800_clk_output_48Mhz();
 
-	it8721f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	printk(BIOS_DEBUG, "\n");
 

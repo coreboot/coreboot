@@ -35,8 +35,12 @@
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
-#include "superio/ite/it8712f/early_serial.c"
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8712f/it8712f.h>
 #include "northbridge/amd/lx/raminit.h"
+
+#define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 int spd_read_byte(unsigned int device, unsigned int address)
 {
@@ -53,7 +57,6 @@ int spd_read_byte(unsigned int device, unsigned int address)
 #include "cpu/amd/geode_lx/msrinit.c"
 
 static const u16 sio_init_table[] = {	// hi=data, lo=index
-	0x0707,		// select LDN 7 (GPIO, SPI, watchdog, ...)
 	0x1E2C,		// disable ATXPG; VIN6,FAN4/5,VIN3 enabled, VIN7 internal
 	0x1423,		// don't delay PoWeROK1/2 - triggers 2nd reset
 	0x9072,		// watchdog triggers PWROK, counts seconds
@@ -76,13 +79,10 @@ static void mb_gpio_init(void)
 	int i;
 
 	/* Init Super I/O WDT, GPIOs. Done early, WDT init may trigger reset! */
-	it8712f_enter_conf();
 	for (i = 0; i < ARRAY_SIZE(sio_init_table); i++) {
-		u16 val = sio_init_table[i];
-		outb((u8)val, SIO_INDEX);
-		outb(val >> 8, SIO_DATA);
+		u16 reg = sio_init_table[i];
+		ite_reg_write(GPIO_DEV, (u8) reg, (reg >> 8));
 	}
-	it8712f_exit_conf();
 }
 
 void main(unsigned long bist)
@@ -101,7 +101,7 @@ void main(unsigned long bist)
 	 * Note: must do this AFTER the early_setup! It is counting on some
 	 * early MSR setup for CS5536.
 	 */
-	it8712f_enable_serial(0, CONFIG_TTYS0_BASE); // Does not use its 1st parameter
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	mb_gpio_init();
 	console_init();
 

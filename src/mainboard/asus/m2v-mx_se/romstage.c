@@ -38,7 +38,8 @@ unsigned int get_sbdn(unsigned bus);
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/ite/it8712f/early_serial.c"
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8712f/it8712f.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -127,7 +128,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset = 0;
 	struct sys_info *sysinfo = &sysinfo_car;
 
-	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
 	it8712f_enable_3vsbsw();
 	console_init();

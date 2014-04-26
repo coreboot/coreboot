@@ -30,13 +30,17 @@
 #include "northbridge/intel/i82810/raminit.h"
 #include "drivers/pc80/udelay_io.c"
 #include "cpu/x86/bist.h"
-#include "superio/ite/it8712f/early_serial.c"
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8712f/it8712f.h>
 #include <lib.h>
+
+#define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
+#define CLKIN_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 void main(unsigned long bist)
 {
-	it8712f_24mhz_clkin();
-	it8712f_enable_serial(0, CONFIG_TTYS0_BASE); // Does not use its 1st parameter
+	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	report_bist_failure(bist);
 	enable_smbus();

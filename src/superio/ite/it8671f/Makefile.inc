@@ -18,5 +18,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+romstage-$(CONFIG_SUPERIO_ITE_IT8671F) += early_serial.c
 ramstage-$(CONFIG_SUPERIO_ITE_IT8671F) += superio.c
-

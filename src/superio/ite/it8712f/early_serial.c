@@ -19,6 +19,8 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp.h>
+#include <stdint.h>
 #include "it8712f.h"
 
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
@@ -30,7 +32,6 @@
 #define IT8712F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
 #define IT8712F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
 #define IT8712F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
-#define IT8712F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8712F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
 #define IT8712F_CONFIG_REG_MFC       0x2a /* Multi-function control */
 #define IT8712F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
@@ -58,14 +59,6 @@ static void it8712f_exit_conf(void)
 	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CC, 0x02);
 }
 
-/* Select 24MHz CLKIN (48MHz is the default). */
-void it8712f_24mhz_clkin(void)
-{
-	it8712f_enter_conf();
-	it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CLOCKSEL, 0x1);
-	it8712f_exit_conf();
-}
-
 /*
  * We need to set enable 3VSBSW#, this was documented only in IT8712F_V0.9.2!
  *
@@ -86,32 +79,5 @@ void it8712f_kill_watchdog(void)
 {
 	it8712f_enter_conf();
 	it8712f_sio_write(IT8712F_GPIO, IT8712F_CONFIG_REG_WATCHDOG, 0x00);
-	it8712f_exit_conf();
-}
-
-/* Enable the serial port(s). */
-void it8712f_enable_serial(device_t dev, u16 iobase)
-{
-	/* (1) Enter the configuration state (MB PnP mode). */
-	it8712f_enter_conf();
-
-	/* (2) Modify the data of configuration registers. */
-
-	/*
-	 * Select the chip to configure (if there's more than one).
-	 * Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
-	 * If this register is not written, both chips are configured.
-	 */
-
-	/* it8712f_sio_write(0x00, IT8712F_CONFIG_REG_CONFIGSEL, 0x00); */
-
-	/* Enable serial port(s). */
-	it8712f_sio_write(IT8712F_SP1, 0x30, 0x1); /* Serial port 1 */
-	it8712f_sio_write(IT8712F_SP2, 0x30, 0x1); /* Serial port 2 */
-
-	/* Clear software suspend mode (clear bit 0). TODO: Needed? */
-	/* it8712f_sio_write(0x00, IT8712F_CONFIG_REG_SWSUSP, 0x00); */
-
-	/* (3) Exit the configuration state (MB PnP mode). */
 	it8712f_exit_conf();
 }

@@ -19,6 +19,8 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp.h>
+#include <stdint.h>
 #include "it8671f.h"
 
 /* The base address is 0x3f0, 0x3bd, or 0x370, depending on config bytes. */
@@ -87,7 +89,7 @@ void it8671f_48mhz_clkin(void)
 }
 
 /* Enable the serial port(s). */
-static void it8671f_enable_serial(device_t dev, u16 iobase)
+void it8671f_enable_serial(device_t dev, u16 iobase)
 {
 	it8671f_enter_conf();
 

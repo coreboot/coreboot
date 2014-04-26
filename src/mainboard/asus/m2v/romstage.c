@@ -38,7 +38,8 @@ unsigned int get_sbdn(unsigned bus);
 #include "lib/delay.c"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
-#include "superio/ite/it8712f/early_serial.c"
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8712f/it8712f.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -46,6 +47,7 @@ unsigned int get_sbdn(unsigned bus);
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 #define WATCHDOG_DEV PNP_DEV(0x2e, IT8712F_GPIO)
+#define CLKIN_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 #define IT8712F_GPIO_BASE		0x0a20
 
@@ -163,15 +165,13 @@ static void m2v_it8712f_gpio_init(void)
 	 * 0xc0=0x17, 0xc8=0x17 gpio port 1 select & output enable
 	 * 0xc4=0xc1, 0xcc=0xc1 gpio port 5 select & output enable
 	 */
-	it8712f_enter_conf();
 	giv = gpio_init_data;
 	while (giv->addr) {
 		printk(BIOS_SPEW, "it8712f gpio: %02x=%02x\n",
 				giv->addr, giv->val);
-		it8712f_sio_write(IT8712F_GPIO, giv->addr, giv->val);
+		ite_reg_write(IT8712F_GPIO, giv->addr, giv->val);
 		giv++;
 	}
-	it8712f_exit_conf();
 
 	printk(BIOS_INFO, "it8712f gpio: Setting DDR2 voltage to 1.80V\n");
 	/*
@@ -225,8 +225,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset = 0;
 	struct sys_info *sysinfo = &sysinfo_car;
 
-	it8712f_24mhz_clkin();
-	it8712f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	it8712f_kill_watchdog();
 	console_init();
 	enable_rom_decode();

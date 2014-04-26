@@ -36,15 +36,18 @@
 #include <southbridge/amd/agesa/hudson/smbus.h>
 #include <stdint.h>
 #include <string.h>
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8712f/it8712f.h>
 /* TODO: remove .c includes */
 #include <drivers/pc80/i8254.c>
 #include <drivers/pc80/i8259.c>
-#include <superio/ite/it8712f/early_serial.c>
 
 #define MMIO_NON_POSTED_START 0xfed00000
 #define MMIO_NON_POSTED_END   0xfedfffff
 #define SB_MMIO 0xFED80000
 #define SB_MMIO_MISC32(x) *(volatile u32 *)(SB_MMIO + 0xE00 + (x))
+
+#define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 
 static void sbxxx_enable_48mhzout(void)
 {
@@ -95,7 +98,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* enable SIO clock */
 		sbxxx_enable_48mhzout();
 		it8712f_kill_watchdog();
-		it8712f_enable_serial(0, CONFIG_TTYS0_BASE);
+		ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		it8712f_enable_3vsbsw();
 		console_init();
 

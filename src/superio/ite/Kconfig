@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,24 +18,45 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+# Generic ITE romstage driver - Just enough UART initialisation code for
+# romstage.
+config SUPERIO_ITE_COMMON_ROMSTAGE
+	bool
 
 config SUPERIO_ITE_IT8661F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8671F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8712F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8716F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
 	bool
 	depends on SUPERIO_ITE_IT8716F
 	default n
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8718F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8721F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8728F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE
+
 config SUPERIO_ITE_IT8772F
 	bool
+	select SUPERIO_ITE_COMMON_ROMSTAGE

@@ -37,6 +37,7 @@
 #include <spd.h>
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
+#include <superio/ite/common/ite.h>
 #include <superio/ite/it8716f/it8716f.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
@@ -104,8 +105,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	it8716f_conf_clkin(CLKIN_DEV, IT8716F_UART_CLK_PREDIVIDE_24);
-	it8716f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	setup_mb_resource_map();
 	report_bist_failure(bist);

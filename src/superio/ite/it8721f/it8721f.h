@@ -36,10 +36,4 @@
 #define IT8721F_GPIO 0x07 /* GPIO */
 #define IT8721F_IR   0x0a /* Consumer IR */
 
-#define IT8721F_UART_CLK_PREDIVIDE_48 0x00 /* default */
-#define IT8721F_UART_CLK_PREDIVIDE_24 0x01
-
-void it8721f_conf_clkin(device_t dev, u8 predivide);
-void it8721f_enable_serial(device_t dev, u16 iobase);
-
 #endif /* SUPERIO_ITE_IT8721F_H */

@@ -30,7 +30,6 @@
 #define IT8718F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
 #define IT8718F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
 #define IT8718F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
-#define IT8718F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define IT8718F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
 
 static void it8718f_sio_write(u8 ldn, u8 index, u8 value)
@@ -56,13 +55,6 @@ static void it8718f_exit_conf(void)
 	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CC, 0x02);
 }
 
-/* Select 24MHz CLKIN (48MHz default). */
-void it8718f_24mhz_clkin(void)
-{
-	it8718f_enter_conf();
-	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CLOCKSEL, 0x1);
-	it8718f_exit_conf();
-}
 
 /*
  * GIGABYTE uses a special Super I/O register to protect its Dual BIOS
@@ -73,32 +65,5 @@ void it8718f_disable_reboot(void)
 {
 	it8718f_enter_conf();
 	it8718f_sio_write(IT8718F_GPIO, 0xEF, 0x7E);
-	it8718f_exit_conf();
-}
-
-/* Enable the serial port(s). */
-void it8718f_enable_serial(device_t dev, u16 iobase)
-{
-	/* (1) Enter the configuration state (MB PnP mode). */
-	it8718f_enter_conf();
-
-	/* (2) Modify the data of configuration registers. */
-
-	/*
-	 * Select the chip to configure (if there's more than one).
-	 * Set bit 7 to select JP3=1, clear bit 7 to select JP3=0.
-	 * If this register is not written, both chips are configured.
-	 */
-
-	/* it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CONFIGSEL, 0x00); */
-
-	/* Enable serial port(s). */
-	it8718f_sio_write(IT8718F_SP1, 0x30, 0x1); /* Serial port 1 */
-	it8718f_sio_write(IT8718F_SP2, 0x30, 0x1); /* Serial port 2 */
-
-	/* Clear software suspend mode (clear bit 0). TODO: Needed? */
-	/* it8718f_sio_write(0x00, IT8718F_CONFIG_REG_SWSUSP, 0x00); */
-
-	/* (3) Exit the configuration state (MB PnP mode). */
 	it8718f_exit_conf();
 }

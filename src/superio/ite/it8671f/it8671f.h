@@ -18,8 +18,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_ITE_IT8671F_IT8671F_H
-#define SUPERIO_ITE_IT8671F_IT8671F_H
+#ifndef SUPERIO_ITE_IT8671F_H
+#define SUPERIO_ITE_IT8671F_H
+
+#include <arch/io.h>
+#include <stdint.h>
 
 /* Datasheet: Not available online, got it from ITE per request. */
 
@@ -30,4 +33,7 @@
 #define IT8671F_KBCK 0x05 /* PS/2 keyboard */
 #define IT8671F_KBCM 0x06 /* PS/2 mouse */
 
-#endif
+void it8671f_48mhz_clkin(void);
+void it8671f_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_ITE_IT8671F__H */

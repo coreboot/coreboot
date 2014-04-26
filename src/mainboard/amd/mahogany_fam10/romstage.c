@@ -41,7 +41,8 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-#include "superio/ite/it8718f/early_serial.c"
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8718f/it8718f.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"
@@ -49,6 +50,8 @@
 #include "southbridge/amd/sb700/smbus.h"
 #include "northbridge/amd/amdfam10/debug.c"
 #include <spd.h>
+
+#define SERIAL_DEV PNP_DEV(0x2e, IT8718F_SP1)
 
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
@@ -95,7 +98,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_rs780_dev8();
 	sb7xx_51xx_lpc_init();
 
-	it8718f_enable_serial(0, CONFIG_TTYS0_BASE);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 

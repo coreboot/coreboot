@@ -32,6 +32,7 @@
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "southbridge/via/vt8237r/early_smbus.c"
+#include <superio/ite/common/ite.h>
 #include <superio/ite/it8716f/it8716f.h>
 #include <spd.h>
 
@@ -59,7 +60,7 @@ void main(unsigned long bist)
 	/* Enable multifunction for northbridge. */
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
-	it8716f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	enable_smbus();
 	smbus_fixup(&ctrl);

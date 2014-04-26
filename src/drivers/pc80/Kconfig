@@ -8,7 +8,7 @@ config DRIVERS_PS2_KEYBOARD
 	  to the PS/2 port.
 
 	  Some payloads (eg, filo) require this option.  Other payloads
-	  (eg, SeaBIOS, Linux) do not require it.
+	  (eg, GRUB 2, SeaBIOS, Linux) do not require it.
 	  Initializing a PS/2 keyboard can take several hundred milliseconds.
 
 	  If you know you will only use a payload which does not require

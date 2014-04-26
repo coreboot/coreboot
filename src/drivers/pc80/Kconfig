@@ -2,7 +2,8 @@
 # reliably support PS/2 init themselves.
 config DRIVERS_PS2_KEYBOARD
 	bool "PS/2 keyboard init"
-	default y
+	default n if PAYLOAD_SEABIOS
+	default y if !PAYLOAD_SEABIOS
 	help
 	  Enable this option to initialize PS/2 keyboards found connected
 	  to the PS/2 port.

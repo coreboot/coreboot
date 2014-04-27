@@ -379,13 +379,14 @@ EOF
 		esac
 
 		echo "|- bgcolor=\"#$color\""
-		echo "| $vendor_nice"
-		echo -n "| [[Board:$vendor/$board|$board_nice]]"
+
 		if [ -z "$board_url" ]; then
-			echo
+			echo "| $vendor_nice"
 		else
-			echo " [$board_url vendor page]"
+			echo "| [$board_url $vendor_nice]"
 		fi
+		echo "| [[Board:$vendor/$board|$board_nice]]"
+
 		if [ -z "$lastgood" ]; then
 			echo "| style=\"background:red\" | Unknown"
 		else

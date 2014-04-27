@@ -35,9 +35,6 @@
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
 
-static int ec_in_rec_mode;
-static int ec_rec_flag_good;
-
 void fill_lb_gpios(struct lb_gpios *gpios)
 {
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
@@ -115,6 +112,8 @@ int get_recovery_mode_switch(void)
 #ifdef __PRE_RAM__
 	device_t dev = PCI_DEV(0, 0x1f, 0);
 #else
+	static int ec_in_rec_mode = 0;
+	static int ec_rec_flag_good = 0;
 	device_t dev = dev_find_slot(0, PCI_DEVFN(0x1f,0));
 #endif
 

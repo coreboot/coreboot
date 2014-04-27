@@ -38,6 +38,7 @@
 #include <cpu/x86/bist.h>
 #include <cpu/x86/msr.h>
 #include "gpio.h"
+#include <bootmode.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
 #endif
@@ -131,7 +132,8 @@ static void early_pch_init(void)
 static void early_ec_init(void)
 {
 	u8 ec_status = ec_read(EC_STATUS_REG);
-	int rec_mode = get_recovery_mode_switch();
+	int rec_mode = IS_ENABLED(CONFIG_BOOTMODE_STRAPS) &&
+		get_recovery_mode_switch();
 
 	if (((ec_status & 0x3) == EC_IN_RO_MODE) ||
 	    ((ec_status & 0x3) == EC_IN_RECOVERY_MODE)) {

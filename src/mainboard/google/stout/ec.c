@@ -19,7 +19,7 @@
 
 #include <arch/acpi.h>
 #include <arch/io.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <bootmode.h>
 #include <types.h>
 #include <console/console.h>
 #include <ec/quanta/it8518/ec.h>
@@ -43,7 +43,8 @@ void stout_ec_init(void)
 	/*
 	 *  Important: get_recovery_mode_switch() must be called in EC init.
 	 */
-	get_recovery_mode_switch();
+	if (IS_ENABLED(CONFIG_BOOTMODE_STRAPS))
+		get_recovery_mode_switch();
 
 	/* Unmute */
 	ec_kbc_write_cmd(EC_KBD_CMD_UNMUTE);

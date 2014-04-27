@@ -2,6 +2,7 @@
 ## This file is part of the coreboot project.
 ##
 ## Copyright (C) 2009 Ronald G. Minnich
+## Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -17,19 +18,39 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+# Generic Winbond romstage driver - Just enough UART initialisation code for
+# romstage.
+config SUPERIO_WINBOND_COMMON_ROMSTAGE
+	bool
+
 config SUPERIO_WINBOND_W83627DHG
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE
+
 config SUPERIO_WINBOND_W83627EHG
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE
+
 config SUPERIO_WINBOND_W83627HF
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE
+
 config SUPERIO_WINBOND_W83627THG
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE
+
 config SUPERIO_WINBOND_W83627UHG
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE
+
 config SUPERIO_WINBOND_W83697HF
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE
+
 config SUPERIO_WINBOND_W83977F
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE
+
 config SUPERIO_WINBOND_W83977TF
 	bool
+	select SUPERIO_WINBOND_COMMON_ROMSTAGE

@@ -32,7 +32,8 @@
 #include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "superio/winbond/w83627dhg/w83627dhg.h"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627dhg/w83627dhg.h>
 #include "cpu/x86/lapic.h"
 #include "drivers/pc80/i8254.c"
 #include "drivers/pc80/i8259.c"
@@ -69,7 +70,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 
 		post_code(0x31);
-		w83627dhg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 

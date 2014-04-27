@@ -32,7 +32,8 @@
 #include <nb_cimx.h>
 #include <sb_cimx.h>
 #include "superio/nuvoton/wpcm450/wpcm450.h"
-#include "superio/winbond/w83627dhg/w83627dhg.h"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627dhg/w83627dhg.h>
 #include "src/drivers/pc80/i8254.c"
 #include "src/drivers/pc80/i8259.c"
 
@@ -54,7 +55,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	sb7xx_51xx_enable_wideio(0, 0x1600); /* though UARTs are on the NUVOTON BMC */
 	w83627dhg_set_clksel_48(DUMMY_DEV);
-	w83627dhg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	sb7xx_51xx_disable_wideio(0);
 	post_code(0x34);
 

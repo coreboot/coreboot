@@ -34,7 +34,8 @@
 #include "src/drivers/pc80/i8254.c"
 #include "src/drivers/pc80/i8259.c"
 #include "superio/nuvoton/wpcm450/wpcm450.h"
-#include "superio/winbond/w83627dhg/w83627dhg.h"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627dhg/w83627dhg.h>
 
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627DHG_SP1)

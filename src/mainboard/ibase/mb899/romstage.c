@@ -27,11 +27,11 @@
 #include <cpu/x86/lapic.h>
 #include <lib.h>
 #include <cbmem.h>
+#include <superio/winbond/common/winbond.h>
 #include "superio/winbond/w83627ehg/w83627ehg.h"
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-#include <superio/winbond/w83627ehg/w83627ehg.h>
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"

@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_WINBOND_W83627EHG_W83627EHG_H
-#define SUPERIO_WINBOND_W83627EHG_W83627EHG_H
+#ifndef SUPERIO_WINBOND_W83627EHG_H
+#define SUPERIO_WINBOND_W83627EHG_H
 
 #define W83627EHG_FDC              0   /* Floppy */
 #define W83627EHG_PP               1   /* Parallel port */
@@ -57,10 +57,9 @@
 #if defined(__PRE_RAM__)
 void w83627ehg_enable_dev(device_t dev, u16 iobase);
 void w83627ehg_disable_dev(device_t dev);
-void w83627ehg_enable_serial(device_t dev, u16 iobase);
 #endif
 
 void pnp_enter_ext_func_mode(device_t dev);
 void pnp_exit_ext_func_mode(device_t dev);
 
-#endif /* SUPERIO_WINBOND_W83627EHG_W83627EHG_H */
+#endif /* SUPERIO_WINBOND_W83627EHG_H */

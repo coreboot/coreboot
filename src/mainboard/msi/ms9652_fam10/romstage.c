@@ -39,6 +39,7 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdfam10/reset_test.c"
+#include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdfam10/debug.c"
@@ -126,7 +127,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pnp_write_config(SERIAL_DEV, 0x24, (reg & 0xbf));
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	/* Halt if there was a built in self test failure */

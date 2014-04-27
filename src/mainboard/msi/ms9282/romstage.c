@@ -37,6 +37,7 @@
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/debug.c"
+#include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 #include "cpu/x86/bist.h"
 #include <spd.h>
@@ -139,7 +140,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
         }
 
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	/* Halt if there was a built in self test failure */

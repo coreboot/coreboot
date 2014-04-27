@@ -35,13 +35,3 @@ void pnp_exit_ext_func_mode(device_t dev)
 	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
-
-void w83627ehg_enable_serial(device_t dev, u16 iobase)
-{
-	pnp_enter_ext_func_mode(dev);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
-	pnp_set_enable(dev, 1);
-	pnp_exit_ext_func_mode(dev);
-}

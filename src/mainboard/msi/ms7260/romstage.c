@@ -37,6 +37,7 @@
 #include <spd.h>
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
+#include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
@@ -122,7 +123,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	pnp_enter_ext_func_mode(SERIAL_DEV);
 	/* Switch CLKSEL to 24MHz (default is 48MHz). Needed for serial! */
 	pnp_write_config(SERIAL_DEV, 0x24, 0);
-	w83627ehg_enable_dev(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	pnp_exit_ext_func_mode(SERIAL_DEV);
 
 	setup_mb_resource_map();

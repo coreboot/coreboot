@@ -38,6 +38,7 @@ unsigned int get_sbdn(unsigned bus);
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/early_ht.c"
+#include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "northbridge/amd/amdk8/debug.c" /* After vt8237r/early_smbus.c! */
@@ -153,7 +154,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct sys_info *sysinfo = &sysinfo_car;
 
 	sio_init();
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	enable_rom_decode();
 
@@ -165,11 +166,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Allow the HT devices to be found. */
 		enumerate_ht_chain();
 	}
-
-	sio_init();
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-	enable_rom_decode();
 
 	print_info("now booting... real_main\n");
 

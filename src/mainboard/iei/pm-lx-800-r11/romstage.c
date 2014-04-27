@@ -32,6 +32,7 @@
 #include <southbridge/amd/cs5536/cs5536.h>
 #include <southbridge/amd/cs5536/early_smbus.c>
 #include <southbridge/amd/cs5536/early_setup.c>
+#include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627ehg/w83627ehg.h>
 #include <northbridge/amd/lx/raminit.h>
 
@@ -63,7 +64,7 @@ void main(unsigned long bist)
 
 	cs5536_early_setup();
 
-	w83627ehg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	report_bist_failure(bist);

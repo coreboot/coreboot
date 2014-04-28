@@ -105,8 +105,9 @@ searchgnu()
 			fi
 		fi
 	done
-	# A workaround for XxxBSD, whose nongnu patch and tar also work.
-	if [ $UNAME = "FreeBSD" -o $UNAME = "NetBSD" ]; then
+	# A workaround for OSX 10.9 and some BSDs, whose nongnu
+	# patch and tar also work.
+	if [ $UNAME = "Darwin" -o $UNAME = "FreeBSD" -o $UNAME = "NetBSD" ]; then
 		if [ $1 != "make" ]; then
 			if test -x "`which $1 2>/dev/null`"; then
 				echo $1

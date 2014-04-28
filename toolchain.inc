@@ -56,8 +56,11 @@ COREBOOT_STANDARD_STAGES := bootblock romstage ramstage
 ARCHDIR-i386    := x86
 ARCHDIR-x86_32  := x86
 ARCHDIR-arm     := arm
+ARCHDIR-arm64   := arm64
 
 CFLAGS_arm      := -mno-unaligned-access -ffunction-sections -fdata-sections
+
+CFLAGS_arm64 := -ffunction-sections -fdata-sections
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\

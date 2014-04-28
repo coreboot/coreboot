@@ -1,0 +1,9 @@
+config ARCH_BOOTBLOCK_ARM_V8_64
+	def_bool n
+	select ARCH_BOOTBLOCK_ARM64
+config ARCH_ROMSTAGE_ARM_V8_64
+	def_bool n
+	select ARCH_ROMSTAGE_ARM64
+config ARCH_RAMSTAGE_ARM_V8_64
+	def_bool n
+	select ARCH_RAMSTAGE_ARM64

@@ -130,7 +130,7 @@ static struct {
 	uint32_t arch;
 	const char *name;
 } arch_names[] = {
-	{ CBFS_ARCHITECTURE_AARCH64, "aarch64" },
+	{ CBFS_ARCHITECTURE_AARCH64, "arm64" },
 	{ CBFS_ARCHITECTURE_ARM, "arm" },
 	{ CBFS_ARCHITECTURE_X86, "x86" },
 	{ CBFS_ARCHITECTURE_UNKNOWN, "unknown" }

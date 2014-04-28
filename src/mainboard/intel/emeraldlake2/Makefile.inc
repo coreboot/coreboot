@@ -17,17 +17,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-ramstage-y += ec.c
-
 romstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-$(CONFIG_CHROMEOS) += chromeos.c
-
-SPD_BIN = $(obj)/spd.bin
-
-# Include spd rom data
-$(SPD_BIN):
-	xxd -rg1 $(src)/mainboard/samsung/lumpy/spd.hex >| $@
-
-cbfs-files-y += spd.bin
-spd.bin-file := $(SPD_BIN)
-spd.bin-type := 0xab

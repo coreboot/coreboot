@@ -206,10 +206,18 @@ clear_stall (endpoint_t *ep)
 static int
 get_free_address (hci_t *controller)
 {
-	int i;
-	for (i = 1; i < 128; i++) {
-		if (controller->devices[i] == 0)
+	int i = controller->latest_address + 1;
+	for (; i != controller->latest_address; i++) {
+		if (i >= ARRAY_SIZE(controller->devices) || i < 1) {
+			usb_debug("WARNING: Device addresses for controller %#x"
+				  " wrapped around!\n", controller->reg_base);
+			i = 0;
+			continue;
+		}
+		if (controller->devices[i] == 0) {
+			controller->latest_address = i;
 			return i;
+		}
 	}
 	usb_debug ("no free address found\n");
 	return -1;		// no free address

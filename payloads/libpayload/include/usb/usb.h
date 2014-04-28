@@ -213,6 +213,7 @@ struct usbdev_hc {
 	u32 reg_base;
 	pcidev_t pcidev; // 0 if not used (eg on ARM)
 	hc_type type;
+	int latest_address;
 	usbdev_t *devices[128];	// dev 0 is root hub, 127 is last addressable
 
 	/* start():     Resume operation. */

@@ -24,9 +24,6 @@
 #include <stdint.h>
 #include <bootmode.h>
 
-/* functions implemented per mainboard: */
-int get_write_protect_state(void);
-
 /* functions implemented in vbnv.c: */
 int get_recovery_mode_from_vbnv(void);
 int vboot_wants_oprom(void);

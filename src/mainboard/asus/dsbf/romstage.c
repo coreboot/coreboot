@@ -29,7 +29,8 @@
 #include <lib.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-#include <superio/winbond/w83627hf/early_serial.c>
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include <northbridge/intel/i5000/raminit.h>
 #include "northbridge/intel/i3100/i3100.h"
 #include "southbridge/intel/i3100/i3100.h"
@@ -116,7 +117,7 @@ void main(unsigned long bist)
 
 	i5000_lpc_config();
 
-	w83627hf_enable_serial(PNP_DEV(0x2e, 2), 0x3f8);
+	winbond_enable_serial(PNP_DEV(0x2e, 2), 0x3f8);
 
 	console_init();
 

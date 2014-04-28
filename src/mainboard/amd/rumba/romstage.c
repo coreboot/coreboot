@@ -4,7 +4,8 @@
 #include <device/pnp_def.h>
 #include <arch/hlt.h>
 #include <console/console.h>
-#include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "cpu/x86/bist.h"
 #include "cpu/x86/msr.h"
 #include <cpu/amd/gx2def.h>
@@ -38,7 +39,7 @@ void main(unsigned long bist)
 
 	SystemPreInit();
 
-	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	cs5536_early_setup();

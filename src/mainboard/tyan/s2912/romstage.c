@@ -36,8 +36,8 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
-#include "superio/winbond/w83627hf/early_serial.c"
-#include "superio/winbond/w83627hf/early_init.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdk8/debug.c"
 #include "northbridge/amd/amdk8/setup_resource_map.c"
@@ -119,7 +119,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);
 
-	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	setup_mb_resource_map();
 
 	console_init();

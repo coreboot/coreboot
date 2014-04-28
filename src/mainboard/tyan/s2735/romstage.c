@@ -11,7 +11,8 @@
 #include "southbridge/intel/i82801ex/early_smbus.c"
 #include "northbridge/intel/e7501/raminit.h"
 #include "northbridge/intel/e7501/debug.c"
-#include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "cpu/x86/bist.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
@@ -47,8 +48,8 @@ void main(unsigned long bist)
 	if (bist == 0)
 		enable_lapic();
 
- 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        console_init();
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);

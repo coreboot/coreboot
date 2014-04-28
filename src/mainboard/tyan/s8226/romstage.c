@@ -31,7 +31,6 @@
 #include "northbridge/amd/agesa/family10/reset_test.h"
 #include <nb_cimx.h>
 #include <sb_cimx.h>
-#include "superio/nuvoton/wpcm450/wpcm450.h"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 #include "src/drivers/pc80/i8254.c"

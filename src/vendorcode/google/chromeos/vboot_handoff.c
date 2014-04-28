@@ -19,15 +19,11 @@
 
 #include <stddef.h>
 #include "chromeos.h"
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
-#include "vboot_handoff.h"
-#endif
 #include <boot/coreboot_tables.h>
 #include <cbmem.h>
 #include <console/console.h>
-
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
 #include <payload_loader.h>
+#include "vboot_handoff.h"
 
 int vboot_enable_developer(void)
 {
@@ -117,4 +113,3 @@ int vboot_get_handoff_info(void **addr, uint32_t *size)
 	*size = sizeof(*vboot_handoff);
 	return 0;
 }
-#endif

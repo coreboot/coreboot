@@ -17,8 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-romstage-y += chromeos.c
-ramstage-y += chromeos.c
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vbnv.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += vbnv.c
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += vboot.c
@@ -35,6 +33,8 @@ CFLAGS_common += -DMOCK_TPM=0
 endif
 
 ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
+romstage-y += vboot_handoff.c
+ramstage-y += vboot_handoff.c
 romstage-y += vboot_loader.c
 rmodules-y += vboot_wrapper.c
 

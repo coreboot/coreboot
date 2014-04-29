@@ -24,17 +24,18 @@ config SPI_FLASH
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash.
 
+if SPI_FLASH
+
 config SPI_FLASH_SMM
 	bool "SPI flash driver support in SMM"
 	default n
-	depends on SPI_FLASH && HAVE_SMI_HANDLER
+	depends on HAVE_SMI_HANDLER
 	help
 	  Select this option if you want SPI flash support in SMM.
 
 config SPI_FLASH_AMIC
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by AMIC.
@@ -42,7 +43,6 @@ config SPI_FLASH_AMIC
 config SPI_FLASH_EON
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by EON.
@@ -50,7 +50,6 @@ config SPI_FLASH_EON
 config SPI_FLASH_MACRONIX
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Macronix.
@@ -58,7 +57,6 @@ config SPI_FLASH_MACRONIX
 config SPI_FLASH_SPANSION
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Spansion.
@@ -66,7 +64,6 @@ config SPI_FLASH_SPANSION
 config SPI_FLASH_SST
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by SST.
@@ -74,7 +71,6 @@ config SPI_FLASH_SST
 config SPI_FLASH_STMICRO
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by ST MICRO.
@@ -82,7 +78,6 @@ config SPI_FLASH_STMICRO
 config SPI_FLASH_WINBOND
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Winbond.
@@ -90,7 +85,6 @@ config SPI_FLASH_WINBOND
 config SPI_FLASH_NO_FAST_READ
 	bool "Disable Fast Read command"
 	default n
-	depends on SPI_FLASH
 	help
 	  Select this option if your setup requires to avoid "fast read"s
 	  from the SPI flash parts.
@@ -98,7 +92,6 @@ config SPI_FLASH_NO_FAST_READ
 config SPI_FLASH_GIGADEVICE
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Gigadevice.
@@ -106,7 +99,8 @@ config SPI_FLASH_GIGADEVICE
 config SPI_FLASH_ADESTO
 	bool
 	default y
-	depends on SPI_FLASH
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Adesto Technologies.
+
+endif # SPI_FLASH

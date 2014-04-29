@@ -52,4 +52,8 @@ config EC_GOOGLE_CHROMEEC_I2C_BUS
 	hex
 	default 4
 
+config UART_FOR_CONSOLE
+	int
+	default 3
+
 endif # BOARD_GOOGLE_SNOW

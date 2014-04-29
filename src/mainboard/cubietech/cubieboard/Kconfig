@@ -27,4 +27,8 @@ config DRAM_SIZE_MB
 	int
 	default 1024
 
+config UART_FOR_CONSOLE
+	int
+	default 0
+
 endif # BOARD_CUBIETECH_CUBIEBOARD

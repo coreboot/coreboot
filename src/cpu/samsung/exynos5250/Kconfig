@@ -87,8 +87,4 @@ config SYS_SDRAM_BASE
 	hex
 	default 0x40000000
 
-config UART_FOR_CONSOLE
-	int
-	default 3
-
 endif

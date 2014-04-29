@@ -39,8 +39,8 @@
 #include "lib/delay.c"
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdfam10/reset_test.c"
-#include "superio/winbond/w83627hf/early_serial.c"
-#include "superio/winbond/w83627hf/early_init.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "cpu/x86/bist.h"
 #include "northbridge/amd/amdfam10/debug.c"
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
@@ -114,6 +114,20 @@ static const u8 spd_addr[] = {
 #define GPIO2_DEV PNP_DEV(0x2e, W83627HF_GPIO2)
 #define GPIO3_DEV PNP_DEV(0x2e, W83627HF_GPIO3)
 
+/* TODO: superio code should really not be in mainboard */
+static void pnp_enter_ext_func_mode(device_t dev)
+{
+	u16 port = dev >> 8;
+	outb(0x87, port);
+	outb(0x87, port);
+}
+
+static void pnp_exit_ext_func_mode(device_t dev)
+{
+	u16 port = dev >> 8;
+	outb(0xaa, port);
+}
+
 static void write_GPIO(void)
 {
 	pnp_enter_ext_func_mode(GPIO1_DEV);
@@ -172,8 +186,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
   post_code(0x32);
 
- 	w83627hf_set_clksel_48(DUMMY_DEV);
- 	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	w83627hf_set_clksel_48(DUMMY_DEV);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 	write_GPIO();

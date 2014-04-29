@@ -7,13 +7,13 @@
 #include <console/console.h>
 #include "southbridge/intel/i82801ex/early_smbus.c"
 #include "northbridge/intel/e7520/raminit.h"
-#include "superio/winbond/w83627hf/w83627hf.h"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "debug.c"
 #include "watchdog.c"
 #include "southbridge/intel/i82801ex/reset.c"
 #include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "northbridge/intel/e7520/memory_initialized.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>

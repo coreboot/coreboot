@@ -39,7 +39,8 @@
 static void cs5536_enable_smbus(void) { }
 
 #include "southbridge/amd/cs5536/early_setup.c"
-#include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 
 /* The part is a Hynix hy5du121622ctp-d43.
  *
@@ -121,7 +122,7 @@ void main(unsigned long bist)
 	 * It is counting on some early MSR setup for the CS5536.
 	 */
 	cs5536_disable_internal_uart();
-	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	/* Halt if there was a built in self test failure */

@@ -37,6 +37,18 @@ static void pnp_exit_ext_func_mode(device_t dev)
 	outb(0xaa, port);
 }
 
+/*
+ * FIXME: The following ROMCC boards are blocking the removal this superio's
+ * model specific w83627hf_enable_serial() symbol.
+ *
+ * mainboard/supermicro/x6dai_g
+ * mainboard/supermicro/x6dhe_g
+ * mainboard/supermicro/x6dhr_ig
+ * mainboard/supermicro/x6dhr_ig2
+ *
+ * XXX: ROMCC -  everything is inlined, no forwarding function prototypes
+ * declarations are accepted.
+ */
 void w83627hf_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);

@@ -9,13 +9,13 @@
 #include "lib/delay.c"
 #include "southbridge/intel/esb6300/early_smbus.c"
 #include "northbridge/intel/e7525/raminit.h"
-#include "superio/winbond/w83627hf/w83627hf.h"
 #include "cpu/x86/lapic/boot_cpu.c"
 #include "cpu/x86/mtrr/earlymtrr.c"
 #include "debug.c"
 #include "watchdog.c"
 #include "southbridge/intel/esb6300/reset.c"
 #include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "northbridge/intel/e7525/memory_initialized.c"
 #include "cpu/x86/bist.h"
 #include <spd.h>

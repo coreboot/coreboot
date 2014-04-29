@@ -2,8 +2,9 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2000 AG Electronics Ltd.
- * Copyright 2003-2004 Linux Networx
- * Copyright 2004 Tyan
+ * Copyright (C) 2003-2004 Linux Networx
+ * Copyright (C) 2004 Tyan
+ * Copyright (C) 2010 Win Enterprises (anishp@win-ent.com)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +22,34 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp.h>
 #include "w83627hf.h"
 
-void w83627hf_disable_dev(device_t dev)
+static void pnp_enter_ext_func_mode(device_t dev)
 {
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
+	u16 port = dev >> 8;
+	outb(0x87, port);
+	outb(0x87, port);
 }
 
-void w83627hf_enable_dev(device_t dev, u16 iobase)
+static void pnp_exit_ext_func_mode(device_t dev)
 {
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
-	pnp_set_enable(dev, 1);
+	u16 port = dev >> 8;
+	outb(0xaa, port);
+}
+
+/*
+ * We duplicate this function, for non-ROMCC boards, from early_serial.c to
+ * work around a limitation of ROMCC where we can no make early_serial.c into
+ * link-time symbols and #include early_serial.c.
+ */
+void w83627hf_set_clksel_48(device_t dev)
+{
+	u8 reg8;
+
+	pnp_enter_ext_func_mode(dev);
+	reg8 = pnp_read_config(dev, 0x24);
+	reg8 |= (1 << 6); /* Set CLKSEL (clock input on pin 1) to 48MHz. */
+	pnp_write_config(dev, 0x24, reg8);
+	pnp_exit_ext_func_mode(dev);
 }

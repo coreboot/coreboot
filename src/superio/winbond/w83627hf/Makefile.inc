@@ -20,5 +20,5 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+romstage-$(CONFIG_SUPERIO_WINBOND_W83627HF) += early_init.c
 ramstage-$(CONFIG_SUPERIO_WINBOND_W83627HF) += superio.c
-

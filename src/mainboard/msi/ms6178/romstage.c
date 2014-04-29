@@ -25,7 +25,8 @@
 #include <arch/hlt.h>
 #include <stdlib.h>
 #include <console/console.h>
-#include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "northbridge/intel/i82810/raminit.h"
 #include "cpu/x86/bist.h"
 #include "southbridge/intel/i82801ax/i82801ax.h"
@@ -38,7 +39,7 @@
 void main(unsigned long bist)
 {
 	w83627hf_set_clksel_48(DUMMY_DEV);
-	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 	enable_smbus();

@@ -41,7 +41,8 @@
 #include "northbridge/amd/amdfam10/reset_test.c"
 #include <console/loglevel.h>
 #include "cpu/x86/bist.h"
-#include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include <cpu/amd/mtrr.h>
 #include "northbridge/amd/amdfam10/setup_resource_map.c"
 #include "southbridge/amd/rs780/early_setup.c"
@@ -49,6 +50,8 @@
 #include <SBPLATFORM.h> /* SB OEM constants */
 #include <southbridge/amd/cimx/sb800/smbus.h>
 #include "northbridge/amd/amdfam10/debug.c"
+
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -100,7 +103,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb800_clk_output_48Mhz();
 
 	w83627hf_set_clksel_48(PNP_DEV(CONFIG_SIO_PORT, 0));
-	w83627hf_enable_serial(0, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();
 	printk(BIOS_DEBUG, "\n");

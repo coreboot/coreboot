@@ -34,7 +34,8 @@
 #include <spd.h>
 #include "southbridge/amd/cs5536/early_smbus.c"
 #include "southbridge/amd/cs5536/early_setup.c"
-#include "superio/winbond/w83627hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627hf/w83627hf.h>
 #include "northbridge/amd/lx/raminit.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
@@ -66,7 +67,7 @@ void main(unsigned long bist)
 	 * early MSR setup for CS5536.
 	 */
 	w83627hf_set_clksel_48(SERIAL_DEV);
-	w83627hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	/* Halt if there was a built in self test failure */

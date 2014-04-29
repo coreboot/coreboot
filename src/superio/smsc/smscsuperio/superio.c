@@ -41,7 +41,6 @@
 #include <console/console.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 
 /* The following Super I/O chips are currently supported by this driver: */
 #define LPC47M172	0x14
@@ -150,7 +149,6 @@ static const struct logical_devices {
  */
 static void smsc_init(device_t dev)
 {
-	struct superio_smsc_smscsuperio_config *conf = dev->chip_info;
 	int i, ld;
 
 	/* Do not initialize disabled devices. */
@@ -169,7 +167,7 @@ static void smsc_init(device_t dev)
 	/* A Super I/O was found, so initialize the respective device. */
 	ld = dev->path.pnp.device;
 	if (ld == logical_device_table[i].devs[LD_KBC]) {
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 	}
 }
 

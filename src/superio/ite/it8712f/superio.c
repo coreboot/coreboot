@@ -24,7 +24,6 @@
 #include <pc80/keyboard.h>
 #include <arch/io.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "it8712f.h"
 
 static void pnp_enter_ext_func_mode(device_t dev)
@@ -44,7 +43,6 @@ static void pnp_exit_ext_func_mode(device_t dev)
 
 static void it8712f_init(device_t dev)
 {
-	struct superio_ite_it8712f_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -58,7 +56,7 @@ static void it8712f_init(device_t dev)
 		break;
 	case IT8712F_KBCK:
 		set_kbc_ps2_mode();
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	case IT8712F_KBCM: /* TODO. */
 		break;

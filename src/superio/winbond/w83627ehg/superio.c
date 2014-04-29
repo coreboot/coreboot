@@ -30,7 +30,6 @@
 #include <pc80/keyboard.h>
 #include <pc80/mc146818rtc.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "w83627ehg.h"
 
 static void pnp_write_index(u16 port, u8 reg, u8 value)
@@ -95,7 +94,6 @@ static void init_hwm(u16 base)
 
 static void w83627ehg_init(device_t dev)
 {
-	struct superio_winbond_w83627ehg_config *conf = dev->chip_info;
 	struct resource *res0;
 
 	if (!dev->enabled)
@@ -103,7 +101,7 @@ static void w83627ehg_init(device_t dev)
 
 	switch(dev->path.pnp.device) {
 	case W83627EHG_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	case W83627EHG_HWM:
 		res0 = find_resource(dev, PNP_IDX_IO0);

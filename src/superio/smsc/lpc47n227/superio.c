@@ -28,7 +28,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
-#include "chip.h"
+#include <pc80/keyboard.h>
 #include "lpc47n227.h"
 
 /* Forward declarations. */
@@ -128,7 +128,6 @@ void lpc47n227_pnp_enable(device_t dev)
  */
 static void lpc47n227_init(device_t dev)
 {
-	struct superio_smsc_lpc47n227_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -136,7 +135,7 @@ static void lpc47n227_init(device_t dev)
 	switch (dev->path.pnp.device) {
 	case LPC47N227_KBDC:
 		printk(BIOS_DEBUG, "LPC47N227: Initializing keyboard.\n");
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

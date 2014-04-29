@@ -28,7 +28,6 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "sio1036.h"
 
 /* Forward declarations */
@@ -60,7 +59,6 @@ static void enable_dev(device_t dev)
 
 static void sio1036_init(device_t dev)
 {
-	struct superio_smsc_sio1036_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
 

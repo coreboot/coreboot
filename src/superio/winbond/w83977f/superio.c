@@ -26,19 +26,17 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "w83977f.h"
 
 static void w83977f_init(device_t dev)
 {
-	struct superio_winbond_w83977f_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
 	case W83977F_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

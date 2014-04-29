@@ -27,7 +27,6 @@
 #include <pc80/keyboard.h>
 #include <arch/io.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "it8716f.h"
 
 static void pnp_enter_ext_func_mode(device_t dev)
@@ -76,7 +75,6 @@ static void init_ec(u16 base)
 
 static void it8716f_init(device_t dev)
 {
-	struct superio_ite_it8716f_config *conf = dev->chip_info;
 	struct resource *res0;
 
 	if (!dev->enabled)
@@ -90,7 +88,7 @@ static void it8716f_init(device_t dev)
 		init_ec(res0->base + EC_INDEX_PORT);
 		break;
 	case IT8716F_KBCK:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

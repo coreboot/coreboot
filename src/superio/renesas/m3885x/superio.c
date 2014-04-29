@@ -25,20 +25,19 @@
 #include <string.h>
 #include <assert.h>
 #include <stdlib.h>
-#include "chip.h"
+#include <pc80/keyboard.h>
 
 void m3885_configure_multikey(void);
 
 static void m3885x_init(device_t dev)
 {
-	struct superio_renesas_m3885x_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
 
 	printk(BIOS_DEBUG, "Renesas M3885x: Initializing keyboard.\n");
 	set_kbc_ps2_mode();
-	pc_keyboard_init(&conf->keyboard);
+	pc_keyboard_init();
 	m3885_configure_multikey();
 }
 

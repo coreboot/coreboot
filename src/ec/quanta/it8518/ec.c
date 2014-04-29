@@ -162,14 +162,11 @@ void ec_it8518_enable_wake_events(void)
 #ifndef __SMM__
 static void it8518_init(device_t dev)
 {
-	struct ec_quanta_it8518_config *conf = dev->chip_info;
-
-
 	if (!dev->enabled)
 		return;
 
 	printk(BIOS_DEBUG, "Quanta IT8518: Initializing keyboard.\n");
-	pc_keyboard_init(&conf->keyboard);
+	pc_keyboard_init();
 }
 
 

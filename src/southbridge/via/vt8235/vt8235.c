@@ -16,7 +16,7 @@ static void keyboard_on(struct device *dev)
 	regval &= 0xfd;
 	pci_write_config8(dev, 0x51, regval);
 
-	pc_keyboard_init(0);
+	pc_keyboard_init();
 }
 
 #ifdef UNUSED_CODE

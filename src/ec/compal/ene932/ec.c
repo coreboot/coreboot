@@ -133,14 +133,11 @@ static u8 ec_io_read(u16 addr)
 #ifndef __SMM__
 static void ene932_init(device_t dev)
 {
-	struct ec_compal_ene932_config *conf = dev->chip_info;
-
-
 	if (!dev->enabled)
 		return;
 
 	printk(BIOS_DEBUG, "Compal ENE932: Initializing keyboard.\n");
-	pc_keyboard_init(&conf->keyboard);
+	pc_keyboard_init();
 
 }
 

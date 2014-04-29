@@ -28,7 +28,6 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "sch4037.h"
 
 /* Forward declarations */
@@ -61,7 +60,6 @@ static void enable_dev(device_t dev)
 
 static void sch4037_init(device_t dev)
 {
-	struct superio_smsc_sch4037_config *conf = dev->chip_info;
 	struct resource *res0, *res1;
 
 	if (!dev->enabled) {
@@ -73,7 +71,7 @@ static void sch4037_init(device_t dev)
 		case SCH4037_KBC:
 			res0 = find_resource(dev, PNP_IDX_IO0);
 			res1 = find_resource(dev, PNP_IDX_IO1);
-			pc_keyboard_init(&conf->keyboard);
+			pc_keyboard_init();
 			break;
 	}
 }

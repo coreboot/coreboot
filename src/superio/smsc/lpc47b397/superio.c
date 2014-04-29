@@ -29,7 +29,6 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "lpc47b397.h"
 
 static void pnp_write_index(u16 port, u8 reg, u8 value)
@@ -56,14 +55,13 @@ static void enable_hwm_smbus(device_t dev)
 
 static void lpc47b397_init(device_t dev)
 {
-	struct superio_smsc_lpc47b397_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
 	case LPC47B397_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

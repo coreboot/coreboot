@@ -161,7 +161,7 @@ static void mainboard_init(device_t dev)
 	/* This sneaked in here, because X201 SuperIO chip isn't really
 	   connected to anything and hence we don't init it.
 	 */
-	pc_keyboard_init(0);
+	pc_keyboard_init();
 
 	/* Enable expresscard hotplug events.  */
 	pci_write_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 2)),

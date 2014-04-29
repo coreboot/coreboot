@@ -141,13 +141,11 @@ static void ene_kb3940q_log_events(void)
 
 static void ene_kb3940q_init(device_t dev)
 {
-	struct ec_quanta_ene_kb3940q_config *conf = dev->chip_info;
-
 	if (!dev->enabled)
 		return;
 
 	printk(BIOS_DEBUG, "Quanta EnE KB3940Q: Initializing keyboard.\n");
-	pc_keyboard_init(&conf->keyboard);
+	pc_keyboard_init();
 
 	ene_kb3940q_log_events();
 }

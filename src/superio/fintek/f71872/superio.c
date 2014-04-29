@@ -24,12 +24,11 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <stdlib.h>
-#include "chip.h"
+#include <pc80/keyboard.h>
 #include "f71872.h"
 
 static void f71872_init(device_t dev)
 {
-	struct superio_fintek_f71872_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -37,7 +36,7 @@ static void f71872_init(device_t dev)
 	switch(dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case F71872_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

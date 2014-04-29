@@ -23,7 +23,7 @@
 #include <pc80/keyboard.h>
 #include <arch/io.h>
 #include <stdlib.h>
-#include "chip.h"
+#include "chip.h" /* FIXME */
 #include "it8772f.h"
 
 static void pnp_enter_ext_func_mode(device_t dev)
@@ -177,7 +177,7 @@ static void it8772f_init(device_t dev)
 	case IT8772F_KBCK:
 		if (!conf->skip_keyboard) {
 			set_kbc_ps2_mode();
-			pc_keyboard_init(&conf->keyboard);
+			pc_keyboard_init();
 		}
 		break;
 	case IT8772F_KBCM:

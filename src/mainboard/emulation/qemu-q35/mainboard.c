@@ -50,7 +50,7 @@ static void qemu_nb_init(device_t dev)
 	/* This sneaked in here, because Qemu does not
 	 * emulate a SuperIO chip
 	 */
-	pc_keyboard_init(0);
+	pc_keyboard_init();
 
 	/* setup IRQ routing for pci slots */
 	for (i = 0; i < 25; i++)

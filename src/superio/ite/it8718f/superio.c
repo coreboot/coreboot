@@ -22,12 +22,10 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "it8718f.h"
 
 static void init(device_t dev)
 {
-	struct superio_ite_it8718f_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -40,7 +38,7 @@ static void init(device_t dev)
 	case IT8718F_EC: /* TODO. */
 		break;
 	case IT8718F_KBCK:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	case IT8718F_KBCM: /* TODO. */
 		break;

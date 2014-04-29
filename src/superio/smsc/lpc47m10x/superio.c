@@ -31,7 +31,6 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "lpc47m10x.h"
 
 /* Forward declarations */
@@ -84,14 +83,13 @@ static void enable_dev(device_t dev)
  */
 static void lpc47m10x_init(device_t dev)
 {
-	struct superio_smsc_lpc47m10x_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
 	case LPC47M10X2_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

@@ -27,7 +27,8 @@
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
 #include <stdlib.h>
-#include "chip.h"
+#include <pc80/keyboard.h>
+#include "chip.h" /* FIXME */
 #include "w83697hf.h"
 
 static void hwmon_set_fan_divisor(unsigned int base, int num, unsigned int divisor) {

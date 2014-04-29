@@ -23,19 +23,17 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "pc87309.h"
 
 static void init(device_t dev)
 {
-	struct superio_nsc_pc87309_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
 
 	switch (dev->path.pnp.device) {
 	case PC87309_KBCK:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

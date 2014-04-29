@@ -22,12 +22,10 @@
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "fdc37m60x.h"
 
 static void init(device_t dev)
 {
-	struct superio_smsc_fdc37m60x_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -38,7 +36,7 @@ static void init(device_t dev)
 	case FDC37M60X_PP: /* TODO. */
 		break;
 	case FDC37M60X_KBCK:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	case FDC37M60X_AUX: /* TODO. */
 		break;

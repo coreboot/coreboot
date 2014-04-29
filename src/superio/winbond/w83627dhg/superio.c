@@ -23,7 +23,6 @@
 #include <superio/conf_mode.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "w83627dhg.h"
 
 static void w83627dhg_enable_UR2(device_t dev)
@@ -39,7 +38,6 @@ static void w83627dhg_enable_UR2(device_t dev)
 
 static void w83627dhg_init(device_t dev)
 {
-	struct superio_winbond_w83627dhg_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -49,7 +47,7 @@ static void w83627dhg_init(device_t dev)
 		w83627dhg_enable_UR2(dev);
 		break;
 	case W83627DHG_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

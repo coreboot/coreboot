@@ -169,7 +169,7 @@ static void mainboard_enable(device_t dev)
 
 	/* This sneaked in here, because EasyNote has no SuperIO chip.
 	 */
-	pc_keyboard_init(0);
+	pc_keyboard_init();
 	verb_setup();
 }
 

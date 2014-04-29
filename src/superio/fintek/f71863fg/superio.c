@@ -24,12 +24,11 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <stdlib.h>
-#include "chip.h"
+#include <pc80/keyboard.h>
 #include "f71863fg.h"
 
 static void f71863fg_init(device_t dev)
 {
-	struct superio_fintek_f71863fg_config *conf = dev->chip_info;
 	struct resource *res0;
 
 	if (!dev->enabled)
@@ -39,7 +38,7 @@ static void f71863fg_init(device_t dev)
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case F71863FG_KBC:
 		res0 = find_resource(dev, PNP_IDX_IO0);
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

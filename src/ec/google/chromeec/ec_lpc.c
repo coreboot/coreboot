@@ -138,11 +138,10 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 #ifndef __SMM__
 static void lpc_ec_init(device_t dev)
 {
-	struct ec_google_chromeec_config *conf = dev->chip_info;
-
 	if (!dev->enabled)
 		return;
-	pc_keyboard_init(&conf->keyboard);
+
+	pc_keyboard_init();
 	google_chromeec_init();
 }
 

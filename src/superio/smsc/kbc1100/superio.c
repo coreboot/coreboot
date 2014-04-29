@@ -28,7 +28,6 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "kbc1100.h"
 
 /* Forward declarations */
@@ -60,7 +59,6 @@ static void enable_dev(device_t dev)
 
 static void kbc1100_init(device_t dev)
 {
-  struct superio_smsc_kbc1100_config *conf = dev->chip_info;
   struct resource *res0, *res1;
 
 
@@ -74,7 +72,7 @@ static void kbc1100_init(device_t dev)
   case KBC1100_KBC:
     res0 = find_resource(dev, PNP_IDX_IO0);
     res1 = find_resource(dev, PNP_IDX_IO1);
-    pc_keyboard_init(&conf->keyboard);
+    pc_keyboard_init();
     break;
   }
 }

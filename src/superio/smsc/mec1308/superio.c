@@ -28,7 +28,6 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "mec1308.h"
 #if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
@@ -36,7 +35,6 @@
 
 static void mec1308_init(device_t dev)
 {
-	struct superio_smsc_mec1308_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -47,7 +45,7 @@ static void mec1308_init(device_t dev)
 		if (acpi_slp_type == 3)
 			return;
 #endif
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

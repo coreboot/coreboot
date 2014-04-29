@@ -27,7 +27,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <pc80/keyboard.h>
-#include "chip.h"
 #include "w83627uhg.h"
 
 /*
@@ -60,7 +59,6 @@ static void set_uart_clock_source(device_t dev, u8 uart_clock)
 
 static void w83627uhg_init(device_t dev)
 {
-	struct superio_winbond_w83627uhg_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -85,7 +83,7 @@ static void w83627uhg_init(device_t dev)
 		set_uart_clock_source(dev, 0);
 		break;
 	case W83627UHG_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

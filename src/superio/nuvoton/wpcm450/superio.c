@@ -25,19 +25,17 @@
 #include <string.h>
 #include <pc80/keyboard.h>
 #include <stdlib.h>
-#include "chip.h"
 #include "wpcm450.h"
 
 static void init(device_t dev)
 {
-	struct superio_nuvoton_wpcm450_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
 	case WPCM450_KBCK:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

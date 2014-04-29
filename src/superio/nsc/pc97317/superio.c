@@ -23,12 +23,12 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <stdlib.h>
-#include "chip.h"
+#include <pc80/keyboard.h>
+#include "chip.h" /* FIXME */
 #include "pc97317.h"
 
 static void init(device_t dev)
 {
-	struct superio_nsc_pc97317_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -39,7 +39,7 @@ static void init(device_t dev)
 		pnp_set_enable(dev, 0);		   /* Disable keyboard */
 		pnp_write_config(dev, 0xf0, 0x40); /* Set KBC clock to 8 MHz. */
 		pnp_set_enable(dev, 1);		   /* Enable keyboard */
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	default:
 		break;

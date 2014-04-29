@@ -24,12 +24,11 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <stdlib.h>
-#include "chip.h"
+#include <pc80/keyboard.h>
 #include "f81865f.h"
 
 static void f81865f_init(device_t dev)
 {
-	struct superio_fintek_f81865f_config *conf = dev->chip_info;
 
 	if (!dev->enabled)
 		return;
@@ -37,7 +36,7 @@ static void f81865f_init(device_t dev)
 	switch (dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
 	case F81865F_KBC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	}
 }

@@ -193,7 +193,7 @@ static u8 send_keyboard(u8 command)
 	return regval;
 }
 
-void pc_keyboard_init(struct pc_keyboard *keyboard)
+void pc_keyboard_init(void)
 {
 	u8 retries;
 	u8 regval;

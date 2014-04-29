@@ -26,8 +26,6 @@
 
 static void init(device_t dev)
 {
-	struct superio_smsc_fdc37n972_config *conf = dev->chip_info;
-
 	if (!dev->enabled)
 		return;
 
@@ -37,7 +35,7 @@ static void init(device_t dev)
 	case FDC37N972_PP: /* TODO. */
 		break;
 	case FDC37N972_KBDC:
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	// [..] The rest: TODO
 	}
@@ -67,4 +65,3 @@ struct chip_operations superio_smsc_fdc37n972_ops = {
 	CHIP_NAME("SMSC FDC37N972 Super I/O")
 	.enable_dev = enable_dev,
 };
-

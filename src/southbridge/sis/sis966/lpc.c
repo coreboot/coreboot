@@ -89,16 +89,16 @@ static void lpc_usb_legacy_init(device_t dev)
 
 static void lpc_init(device_t dev)
 {
-	 uint8_t byte;
-	 uint8_t byte_old;
-	 int on;
-	 int nmi_option;
+	uint8_t byte;
+	uint8_t byte_old;
+	int on;
+	int nmi_option;
 
-        printk(BIOS_DEBUG, "LPC_INIT -------->\n");
-        pc_keyboard_init(0);
+	printk(BIOS_DEBUG, "LPC_INIT -------->\n");
+	pc_keyboard_init();
 
-        lpc_usb_legacy_init(dev);
-	 lpc_common_init(dev);
+	lpc_usb_legacy_init(dev);
+	lpc_common_init(dev);
 
 	/* power after power fail */
 

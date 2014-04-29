@@ -289,7 +289,7 @@ static void cx700_lpc_init(struct device *dev)
 	isa_dma_init();
 
 	/* Initialize keyboard controller */
-	pc_keyboard_init(0);
+	pc_keyboard_init();
 }
 
 static struct device_operations cx700_lpc_ops = {

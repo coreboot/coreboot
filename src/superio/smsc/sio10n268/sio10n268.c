@@ -26,8 +26,6 @@
 
 static void init(device_t dev)
 {
-	struct superio_smsc_sio10n268_config *conf = dev->chip_info;
-
 	if (!dev->enabled)
 		return;
 
@@ -38,7 +36,7 @@ static void init(device_t dev)
 		break;
 	case SIO10N268_KBDC:
 		/* TODO: This is still hardcoded. */
-		pc_keyboard_init(&conf->keyboard);
+		pc_keyboard_init();
 		break;
 	// [..] The rest: TODO
 	}

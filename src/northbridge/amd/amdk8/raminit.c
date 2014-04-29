@@ -18,10 +18,6 @@
 #include <arch/early_variables.h>
 struct sys_info sysinfo_car CAR_GLOBAL;
 
-#if (CONFIG_RAMTOP & (CONFIG_RAMTOP -1)) != 0
-# error "CONFIG_RAMTOP must be a power of 2"
-#endif
-
 void setup_resource_map(const unsigned int *register_values, int max)
 {
 	int i;

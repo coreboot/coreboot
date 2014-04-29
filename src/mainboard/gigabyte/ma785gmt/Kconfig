@@ -61,16 +61,4 @@ config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_010000b6.h"
 
-config RAMTOP
-	hex
-	default 0x2000000
-
-config HEAP_SIZE
-	hex
-	default 0xc0000
-
-config RAMBASE
-	hex
-	default 0x200000
-
 endif # BOARD_GIGABYTE_MA785GMT

@@ -39,4 +39,13 @@ source src/northbridge/amd/agesa/family15tn/Kconfig
 source src/northbridge/amd/agesa/family16kb/Kconfig
 source src/northbridge/amd/agesa/00730F01/Kconfig
 
+# TODO: Reservation for heap seems excessive
+config HEAP_SIZE
+	hex
+	default 0xc0000
+
+config RAMTOP
+	hex
+	default 0x400000
+
 endif # NORTHBRIDGE_AMD_AGESA

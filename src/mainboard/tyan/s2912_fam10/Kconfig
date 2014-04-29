@@ -72,18 +72,6 @@ config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_01000095.h"
 
-config RAMBASE
-	hex
-	default 0x200000
-
-config RAMTOP
-	hex
-	default 0x1000000
-
-config HEAP_SIZE
-	hex
-	default 0xc0000
-
 config MCP55_PCI_E_X_0
 	int
 	default 1

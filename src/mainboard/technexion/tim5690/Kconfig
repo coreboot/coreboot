@@ -53,8 +53,4 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config HEAP_SIZE
-	hex
-	default 0x4000
-
 endif # BOARD_TECHNEXION_TIM5690

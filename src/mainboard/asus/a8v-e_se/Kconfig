@@ -53,10 +53,6 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 1
 
-config HEAP_SIZE
-	hex
-	default 0x40000
-
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20

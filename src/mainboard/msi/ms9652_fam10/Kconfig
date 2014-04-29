@@ -49,10 +49,6 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 
-config HEAP_SIZE
-	hex
-	default 0x20000
-
 config USE_OPTION_TABLE
 	bool
 	default n
@@ -60,10 +56,6 @@ config USE_OPTION_TABLE
 config MAINBOARD_PART_NUMBER
 	string
 	default "MS-9652"
-
-config RAMBASE
-	hex
-	default 0x200000
 
 config DEFAULT_CONSOLE_LOGLEVEL
 	int
@@ -96,10 +88,6 @@ config VAR_MTRR_HOLE
 config APIC_ID_OFFSET
 	hex
 	default 0x00
-
-config RAMTOP
-	hex
-	default 0x1000000
 
 config AMD_UCODE_PATCH_FILE
 	string

@@ -30,18 +30,6 @@ config DCACHE_RAM_SIZE
 	hex
 	default 0x0c000
 
-config RAMBASE
-	hex
-	default 0x200000
-
-config RAMTOP
-	hex
-	default 0x1000000
-
-config HEAP_SIZE
-	hex
-	default 0xff000
-
 config APIC_ID_OFFSET
 	hex
 	default 0x0

@@ -316,6 +316,11 @@ config TPM
 
 	  If unsure, say N.
 
+config RAMTOP
+	hex
+	default 0x200000
+	depends on ARCH_X86
+
 config HEAP_SIZE
 	hex
 	default 0x4000

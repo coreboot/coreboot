@@ -29,10 +29,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "KT690/mITX"
 
-config HEAP_SIZE
-	hex
-	default 0x8000
-
 config MAX_CPUS
 	int
 	default 2

@@ -30,10 +30,6 @@ config RAMBASE
 	hex
 	default 0x100000
 
-config RAMTOP
-	hex
-	default 0x200000
-
 config STACK_SIZE
 	hex
 	default 0x1000

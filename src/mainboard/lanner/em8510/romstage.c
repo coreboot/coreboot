@@ -34,6 +34,7 @@
 #include "southbridge/intel/i82801dx/i82801dx.h"
 #include "northbridge/intel/i855/raminit.h"
 #include "northbridge/intel/i855/debug.c"
+#include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627thg/w83627thg.h>
 #include "cpu/x86/bist.h"
 
@@ -56,8 +57,8 @@ void main(unsigned long bist)
 #endif
 	}
 
-        w83627thg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-        console_init();
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	console_init();
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);

@@ -15,9 +15,11 @@ source src/southbridge/amd/cimx/Kconfig
 source src/southbridge/amd/agesa/Kconfig
 source src/southbridge/amd/sr5650/Kconfig
 
-config SPI_FLASH
-	bool
-	default y if HAVE_ACPI_RESUME && CPU_AMD_AGESA
+if CPU_AMD_AGESA
+
 config AMD_SB_SPI_TX_LEN
 	int
 	default 4
+	depends on SPI_FLASH
+
+endif

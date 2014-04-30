@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <delay.h>
 #include <elog.h>
+#include <pc80/keyboard.h>
 #include "ec.h"
 #include "chip.h"
 

@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <device/pnp.h>
+#include <pc80/keyboard.h>
 #include "chip.h"
 #include "ec.h"
 #include "ec_commands.h"

@@ -22,6 +22,7 @@
 
 
 #include <console/console.h>
+#include <pc80/keyboard.h>
 
 #ifndef __PRE_RAM__
 #include <device/device.h>

@@ -21,12 +21,10 @@
 #define EC_GOOGLE_CHROMEEC_CHIP_H
 
 #include <device/device.h>
-#include <pc80/keyboard.h>
 
 extern struct chip_operations ec_google_chromeec_ops;
 
 struct ec_google_chromeec_config {
-	struct pc_keyboard keyboard;
 };
 
-#endif
+#endif /* EC_GOOGLE_CHROMEEC_CHIP_H */

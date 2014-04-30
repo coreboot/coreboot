@@ -23,13 +23,11 @@
 #define _EC_COMPAL_ENE932_CHIP_H
 
 #include <device/device.h>
-#include <pc80/keyboard.h>
 
 struct chip_operations;
 extern struct chip_operations ec_compal_ene932_ops;
 
 struct ec_compal_ene932_config {
-	struct pc_keyboard keyboard;
 };
 
 #endif /* _EC_COMPAL_ENE932_CHIP_H */

@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <pc80/keyboard.h>
 #include "ec.h"
 #include "chip.h"
 

@@ -23,13 +23,11 @@
 #define _EC_QUANTA_IT8518_CHIP_H
 
 #include <device/device.h>
-#include <pc80/keyboard.h>
 
 struct chip_operations;
 extern struct chip_operations ec_quanta_it8518_ops;
 
 struct ec_quanta_it8518_config {
-	struct pc_keyboard keyboard;
 };
 
 #endif /* _EC_QUANTA_IT8518_CHIP_H */

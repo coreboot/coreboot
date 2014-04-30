@@ -21,12 +21,9 @@
 #ifndef SUPERIO_FINTEK_F71869AD_CHIP_H
 #define SUPERIO_FINTEK_F71869AD_CHIP_H
 
-#include <pc80/keyboard.h>
 #include <stdint.h>
 
 struct superio_fintek_f71869ad_config {
-	struct pc_keyboard keyboard;
-
 	/* Member variables are defined in devicetree.cb. */
 	uint8_t multi_function_register_1;
 	uint8_t multi_function_register_2;

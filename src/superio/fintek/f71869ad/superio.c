@@ -24,6 +24,7 @@
 #include <superio/conf_mode.h>
 #include <console/console.h>
 #include <stdlib.h>
+#include <pc80/keyboard.h>
 
 #include "fintek_internal.h"
 #include "chip.h"

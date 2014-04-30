@@ -21,7 +21,6 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
-#include "chip.h"
 #include "fdc37n972.h"
 
 static void init(device_t dev)

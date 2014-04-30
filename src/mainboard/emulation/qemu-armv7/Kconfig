@@ -99,21 +99,8 @@ config STACK_SIZE
 	hex
 	default 0x0003ff00
 
-config XIP_ROM_SIZE
-	hex
-	default ROMSTAGE_SIZE
-
 config SYS_SDRAM_BASE
 	hex "SDRAM base address"
 	default 0x01000000
-
-config RAMBASE
-	hex
-	default SYS_SDRAM_BASE
-
-# according to stefan, this is RAMBASE + 1M.
-config RAMTOP
-	hex
-	default 0x01100000
 
 endif #  BOARD_EMULATION_QEMU_ARMV7

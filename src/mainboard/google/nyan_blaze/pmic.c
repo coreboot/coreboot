@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <console/console.h>
 #include <delay.h>
 #include <device/i2c.h>
 #include <stdint.h>
@@ -25,6 +26,7 @@
 
 #include "boardid.h"
 #include "pmic.h"
+#include "reset.h"
 
 enum {
 	AS3722_I2C_ADDR = 0x40
@@ -59,9 +61,15 @@ static struct as3722_init_reg init_list[] = {
 
 static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int do_delay)
 {
-	i2c_writeb(bus, AS3722_I2C_ADDR, reg, val);
-	if (do_delay)
-		udelay(500);
+	if (i2c_writeb(bus, AS3722_I2C_ADDR, reg, val)) {
+		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",
+			__func__, reg, val);
+		/* Reset the SoC on any PMIC write error */
+		cpu_reset();
+	} else {
+		if (do_delay)
+			udelay(500);
+	}
 }
 
 static void pmic_slam_defaults(unsigned bus)

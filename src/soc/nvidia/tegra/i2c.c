@@ -23,8 +23,35 @@
 #include <stdlib.h>
 #include <string.h>
 #include <soc/addressmap.h>
-
 #include "i2c.h"
+
+static void do_bus_clear(int bus)
+{
+	struct tegra_i2c_bus_info *info = &tegra_i2c_info[bus];
+	struct tegra_i2c_regs * const regs = info->base;
+	uint32_t bc;
+
+	// BUS CLEAR regs (from TRM):
+	// 1. Reset the I2C controller (already done)
+	// 2. Set the # of clock pulses required (using default of 9)
+	// 3. Select STOP condition (using default of 1 = STOP)
+	// 4. Set TERMINATE condition (1 = THRESHOLD)
+	bc = read32(&regs->bus_clear_config);
+	bc |= I2C_BUS_CLEAR_CONFIG_BC_TERMINATE_THRESHOLD;
+	write32(bc, &regs->bus_clear_config);
+	// 4.1 Set MSTR_CONFIG_LOAD and wait for clear
+	write32(I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE, &regs->config_load);
+	do {
+		printk(BIOS_DEBUG, "%s: wait for MSTR_CONFIG_LOAD to clear\n",
+			__func__);
+	} while (read32(&regs->config_load) & I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE);
+	// 5. Set ENABLE to start the bus clear op
+	write32(bc | I2C_BUS_CLEAR_CONFIG_BC_ENABLE, &regs->bus_clear_config);
+	do {
+		printk(BIOS_DEBUG, "%s: wait for bus clear completion\n",
+			__func__);
+	} while (read32(&regs->bus_clear_config) & I2C_BUS_CLEAR_CONFIG_BC_ENABLE);
+}
 
 static int tegra_i2c_send_recv(int bus, int read,
 			       uint32_t *headers, int header_words,
@@ -91,6 +118,11 @@ static int tegra_i2c_send_recv(int bus, int read,
 			       "%s: Lost arbitration.\n",
 			       __func__);
 			info->reset_func(info->reset_bit);
+
+			/* Use Tegra bus clear registers to unlock SDA */
+			do_bus_clear(bus);
+
+			/* Return w/error, let caller decide what to do */
 			return -1;
 		}
 	}

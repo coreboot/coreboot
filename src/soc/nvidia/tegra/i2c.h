@@ -110,6 +110,19 @@ enum {
 		0xf << I2C_FIFO_STATUS_RX_FIFO_FULL_CNT_SHIFT
 };
 
+enum {
+	I2C_BUS_CLEAR_CONFIG_BC_SCLK_THRESHOLD_SHIFT = 16,
+	I2C_BUS_CLEAR_CONFIG_BC_SCLK_THRESHOLD_MASK =
+		0x7f << I2C_BUS_CLEAR_CONFIG_BC_SCLK_THRESHOLD_SHIFT,
+	I2C_BUS_CLEAR_CONFIG_BC_STOP_COND_STOP = 0x1 << 2,
+	I2C_BUS_CLEAR_CONFIG_BC_TERMINATE_THRESHOLD = 0x1 << 1,
+	I2C_BUS_CLEAR_CONFIG_BC_ENABLE = 0x1 << 0,
+
+	I2C_BUS_CLEAR_STATUS_CLEARED = 0x1 << 0,
+
+	I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE = 0x1 << 0
+};
+
 struct tegra_i2c_bus_info {
 	void *base;
 	uint32_t reset_bit;
@@ -153,8 +166,8 @@ struct tegra_i2c_regs {
 	uint32_t slv_packet_status;
 	uint32_t bus_clear_config;
 	uint32_t bus_clear_status;
-	uint32_t spare;
+	uint32_t config_load;
 };
-check_member(tegra_i2c_regs, bus_clear_status, 0x88);
+check_member(tegra_i2c_regs, config_load, 0x8C);
 
 #endif	/* __SOC_NVIDIA_TEGRA_I2C_H__ */

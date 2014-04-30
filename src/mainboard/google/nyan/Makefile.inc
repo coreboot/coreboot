@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright 2013 Google Inc.
+## Copyright 2014 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ subdirs-y += bct
 bootblock-y += boardid.c
 bootblock-y += bootblock.c
 bootblock-y += pmic.c
+bootblock-y += reset.c
 
 romstage-y += romstage.c
 romstage-y += sdram_configs.c

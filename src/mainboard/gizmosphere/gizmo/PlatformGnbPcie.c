@@ -26,6 +26,8 @@
 #include "Filecode.h"
 #include "BiosCallOuts.h"
 
+#include <string.h>
+
 /*---------------------------------------------------------------------------------------*/
 /**
  *	OemCustomizeInitEarly
@@ -135,24 +137,9 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
 	AllocHeapParams.BufferPtr += sizeof(PortList);
 	BrazosPcieDdiPtr			=	(PCIe_DDI_DESCRIPTOR *) AllocHeapParams.BufferPtr;
 
-	LibAmdMemFill (BrazosPcieComplexListPtr,
-					 0,
-					 sizeof(Brazos),
-					 &InitEarly->StdHeader);
-
-	LibAmdMemFill (BrazosPciePortPtr,
-					 0,
-					 sizeof(PortList),
-					 &InitEarly->StdHeader);
-
-	LibAmdMemFill (BrazosPcieDdiPtr,
-					 0,
-					 sizeof(DdiList),
-					 &InitEarly->StdHeader);
-
-	LibAmdMemCopy	(BrazosPcieComplexListPtr, &Brazos, sizeof(Brazos), &InitEarly->StdHeader);
-	LibAmdMemCopy	(BrazosPciePortPtr, &PortList[0], sizeof(PortList), &InitEarly->StdHeader);
-	LibAmdMemCopy	(BrazosPcieDdiPtr, &DdiList[0], sizeof(DdiList), &InitEarly->StdHeader);
+	memcpy(BrazosPcieComplexListPtr, &Brazos, sizeof(Brazos));
+	memcpy(BrazosPciePortPtr, &PortList[0], sizeof(PortList));
+	memcpy(BrazosPcieDdiPtr, &DdiList[0], sizeof(DdiList));
 
 
 	((PCIe_COMPLEX_DESCRIPTOR*)BrazosPcieComplexListPtr)->PciePortList =	(PCIe_PORT_DESCRIPTOR*)BrazosPciePortPtr;

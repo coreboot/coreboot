@@ -60,7 +60,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "write protect",
 		     get_write_protect_state());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "recovery",
-		     get_recovery_mode_switch());
+		     recovery_mode_enabled());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "developer",
 		     get_developer_mode_switch());
 	fill_lb_gpio(gpio++, -1, ACTIVE_HIGH, "lid", get_lid_switch());
@@ -89,6 +89,18 @@ int get_recovery_mode_switch(void)
 
 	return !!(ec_events &
 		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
+#else
+	return 0;
+#endif
+}
+
+int clear_recovery_mode_switch(void)
+{
+#if CONFIG_EC_GOOGLE_CHROMEEC
+	const uint32_t kb_rec_mask =
+		EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY);
+	/* Unconditionally clear the EC recovery request. */
+	return google_chromeec_clear_events_b(kb_rec_mask);
 #else
 	return 0;
 #endif

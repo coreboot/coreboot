@@ -22,11 +22,8 @@
 #define SUPERIO_ITE_IT8772F_CHIP_H
 
 #include <device/device.h>
-#include <pc80/keyboard.h>
 
 struct superio_ite_it8772f_config {
-	struct pc_keyboard keyboard;
-
 	/* GPIO SimpleIO register values via devicetree.cb */
 	u8 gpio_set1;
 	u8 gpio_set2;
@@ -51,4 +48,4 @@ struct superio_ite_it8772f_config {
 	u8 fan3_enable;
 };
 
-#endif
+#endif /* SUPERIO_ITE_IT8772F_CHIP_H */

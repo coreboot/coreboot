@@ -24,7 +24,6 @@
 #include <device/pnp.h>
 #include <stdlib.h>
 #include <pc80/keyboard.h>
-#include "chip.h" /* FIXME */
 #include "pc97307.h"
 
 static void init(device_t dev)

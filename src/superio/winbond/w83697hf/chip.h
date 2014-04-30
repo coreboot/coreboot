@@ -27,4 +27,4 @@ struct superio_winbond_w83697hf_config {
 	unsigned int hwmon_fan2_divisor;
 };
 
-#endif
+#endif /* SUPERIO_WINBOND_W83697HF_CHIP_H */

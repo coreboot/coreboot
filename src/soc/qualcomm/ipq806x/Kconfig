@@ -17,11 +17,11 @@ config BOOTBLOCK_ROM_OFFSET
 
 config CBFS_HEADER_ROM_OFFSET
 	hex "offset of master CBFS header in ROM"
-	default 0x224000
+	default 0x228000
 
 config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
-	default 0x224080
+	default 0x228080
 
 config MBN_ENCAPSULATION
 	depends on USE_BLOBS
@@ -41,6 +41,15 @@ config BOOTBLOCK_BASE
 	hex "256K bytes left for TZBSP"
 	default 0x40600000
 
+config ROMSTAGE_BASE
+	hex
+	default 0x40608000
+
+config RAMSTAGE_BASE
+	hex
+	default 0x4060c000
+
+
 config STACK_TOP
 	hex
 	default 0x40600000
@@ -48,5 +57,13 @@ config STACK_TOP
 config STACK_BOTTOM
 	hex
 	default 0x405fc000
+
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x405e6000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00016000
 
 endif

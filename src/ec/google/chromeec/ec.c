@@ -93,9 +93,33 @@ static u32 google_chromeec_get_mask(u8 type)
 	return 0;
 }
 
+static int google_chromeec_set_mask(u8 type, u32 mask)
+{
+	struct ec_params_host_event_mask req;
+	struct ec_response_host_event_mask rsp;
+	struct chromeec_command cmd;
+
+	req.mask = mask;
+	cmd.cmd_code = type;
+	cmd.cmd_version = 0;
+	cmd.cmd_data_in = &req;
+	cmd.cmd_size_in = sizeof(req);
+	cmd.cmd_data_out = &rsp;
+	cmd.cmd_size_out = sizeof(rsp);
+
+	return google_chromeec_command(&cmd);
+}
+
 u32 google_chromeec_get_events_b(void)
 {
 	return google_chromeec_get_mask(EC_CMD_HOST_EVENT_GET_B);
+}
+
+int google_chromeec_clear_events_b(u32 mask)
+{
+	printk(BIOS_DEBUG, "Chrome EC: clear events_b mask to 0x%08x\n", mask);
+	return google_chromeec_set_mask(
+		EC_CMD_HOST_EVENT_CLEAR_B, mask);
 }
 
 #ifndef __SMM__
@@ -276,23 +300,6 @@ int google_chromeec_i2c_xfer(uint8_t chip, uint8_t addr, int alen,
 		memcpy(buffer, r->data, read_len);
 
 	return 0;
-}
-
-static int google_chromeec_set_mask(u8 type, u32 mask)
-{
-	struct ec_params_host_event_mask req;
-	struct ec_response_host_event_mask rsp;
-	struct chromeec_command cmd;
-
-	req.mask = mask;
-	cmd.cmd_code = type;
-	cmd.cmd_version = 0;
-	cmd.cmd_data_in = &req;
-	cmd.cmd_size_in = sizeof(req);
-	cmd.cmd_data_out = &rsp;
-	cmd.cmd_size_out = sizeof(rsp);
-
-	return google_chromeec_command(&cmd);
 }
 
 int google_chromeec_set_sci_mask(u32 mask)

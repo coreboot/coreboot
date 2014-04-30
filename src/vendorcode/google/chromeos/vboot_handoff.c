@@ -54,6 +54,12 @@ int vboot_enable_recovery(void)
 	return !!(vbho->init_params.out_flags & VB_INIT_OUT_ENABLE_RECOVERY);
 }
 
+int __attribute__((weak)) clear_recovery_mode_switch(void)
+{
+	// Can be implemented by a mainboard
+	return 0;
+}
+
 int vboot_skip_display_init(void)
 {
 	struct vboot_handoff *vbho;

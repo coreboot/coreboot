@@ -245,8 +245,10 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 	iflags = &vboot_handoff->init_params.flags;
 	if (get_developer_mode_switch())
 		*iflags |= VB_INIT_FLAG_DEV_SWITCH_ON;
-	if (get_recovery_mode_switch())
+	if (get_recovery_mode_switch()) {
+		clear_recovery_mode_switch();
 		*iflags |= VB_INIT_FLAG_REC_BUTTON_PRESSED;
+	}
 	if (get_write_protect_state())
 		*iflags |= VB_INIT_FLAG_WP_ENABLED;
 	if (vboot_get_sw_write_protect())

@@ -41,7 +41,7 @@ if CONSOLE_SERIAL
 	depends on HAVE_UART_SPECIAL
 
 config UART_FOR_CONSOLE
-	prompt "Index for UART port to use for console"
+	int "Index for UART port to use for console"
 	default 0
 
 # FIXME: Early programming in romstage is incorrect as we should

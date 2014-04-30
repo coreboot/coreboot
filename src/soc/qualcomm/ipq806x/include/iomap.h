@@ -36,6 +36,9 @@
 #ifndef __SOC_QUALCOMM_IPQ806X_IOMAP_H_
 #define __SOC_QUALCOMM_IPQ806X_IOMAP_H_
 
+#include <arch/io.h>
+#include <cdp.h>
+
 /* Typecast to allow integers being passed as address
    This needs to be included because vendor code is not compliant with our
    macros for read/write. Hence, special macros for readl_i and writel_i are
@@ -43,8 +46,8 @@
  */
 #define readl_i(a)           read32((const void *)(a))
 #define writel_i(v,a)        write32(v,(void *)a)
-#include <arch/io.h>
-#include <cdp.h>
+#define clrsetbits_le32_i(addr, clear, set)  \
+	clrsetbits_le32(((void *)(addr)), (clear), (set))
 
 #define MSM_CLK_CTL_BASE    0x00900000
 

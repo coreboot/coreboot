@@ -2,14 +2,13 @@
  * Copyright (c) 2012 The Linux Foundation. All rights reserved.
  */
 
-#include <common.h>
+#include <arch/io.h>
+#include <delay.h>
+#include <stdlib.h>
+#include <string.h>
 #include <spi.h>
-#include <malloc.h>
-#include <asm/io.h>
-#include <asm/errno.h>
-#include "ipq_spi.h"
-#include <asm/arch-ipq806x/gpio.h>
-#include <asm/arch-ipq806x/iomap.h>
+#include <gpio.h>
+#include <iomap.h>
 
 #define SUCCESS		0
 
@@ -27,6 +26,11 @@
 #define PULL_CONF_IDX		3
 #define DRV_STR_IDX		4
 #define GPIO_EN_IDX		5
+
+/* Arbitrarily assigned error code values */
+#define ETIMEDOUT -10
+#define EINVAL -11
+#define EIO -12
 
 #define GSBI_IDX_TO_GSBI(idx)   (idx + 5)
 
@@ -138,14 +142,14 @@ static unsigned int qup_apps_clk_state[NUM_PORTS] = {
 static int check_bit_state(uint32_t reg_addr, int bit_num, int val, int us_delay)
 {
 	unsigned int count = TIMEOUT_CNT;
-	unsigned int bit_val = ((readl(reg_addr) >> bit_num) & 0x01);
+	unsigned int bit_val = ((readl_i(reg_addr) >> bit_num) & 0x01);
 
 	while (bit_val != val) {
 		count--;
 		if (count == 0)
 			return -ETIMEDOUT;
 		udelay(us_delay);
-		bit_val = ((readl(reg_addr) >> bit_num) & 0x01);
+		bit_val = ((readl_i(reg_addr) >> bit_num) & 0x01);
 	}
 
 	return SUCCESS;
@@ -168,7 +172,8 @@ static int check_qup_state_valid(struct ipq_spi_slave *ds)
 static int config_spi_state(struct ipq_spi_slave *ds, unsigned int state)
 {
 	uint32_t val;
-	int ret = SUCCESS;
+	int ret;
+	uint32_t new_state;
 
 	ret = check_qup_state_valid(ds);
 	if (ret != SUCCESS)
@@ -176,32 +181,28 @@ static int config_spi_state(struct ipq_spi_slave *ds, unsigned int state)
 
 	switch (state) {
 	case SPI_RUN_STATE:
-		/* Set the state to RUN */
-		val = ((readl(ds->regs->qup_state) & ~QUP_STATE_MASK)
-					| QUP_STATE_RUN_STATE);
-		writel(val, ds->regs->qup_state);
-		ret = check_qup_state_valid(ds);
-		if (ret != SUCCESS)
-			return ret;
-		ds->core_state = SPI_CORE_RUNNING;
+		new_state = QUP_STATE_RUN_STATE;
 		break;
+
 	case SPI_RESET_STATE:
-		/* Set the state to RESET */
-		val = ((readl(ds->regs->qup_state) & ~QUP_STATE_MASK)
-					| QUP_STATE_RESET_STATE);
-		writel(val, ds->regs->qup_state);
-		ret = check_qup_state_valid(ds);
-		if (ret != SUCCESS)
-			return ret;
-		ds->core_state = SPI_CORE_RESET;
+		new_state = QUP_STATE_RESET_STATE;
 		break;
+
+	case SPI_PAUSE_STATE:
+		new_state = QUP_STATE_PAUSE_STATE;
+		break;
+
 	default:
-		printf("err: unsupported GSBI SPI state : %d\n", state);
-		ret = -EINVAL;
-		break;
+		printk(BIOS_ERR,
+		       "err: unsupported GSBI SPI state : %d\n", state);
+		return -EINVAL;
 	}
 
-	return ret;
+	/* Set the state as requested */
+	val = (readl_i(ds->regs->qup_state) & ~QUP_STATE_MASK)
+		| new_state;
+	writel_i(val, ds->regs->qup_state);
+	return check_qup_state_valid(ds);
 }
 
 /*
@@ -231,21 +232,22 @@ static void spi_set_mode(struct ipq_spi_slave *ds, unsigned int mode)
 		input_first_mode = 0;
 		break;
 	default:
-		printf("err : unsupported spi mode : %d\n", mode);
+		printk(BIOS_ERR,
+		       "err : unsupported spi mode : %d\n", mode);
 		return;
 	}
 
-	val = readl(ds->regs->spi_config);
+	val = readl_i(ds->regs->spi_config);
 	val |= input_first_mode;
-	writel(val, ds->regs->spi_config);
+	writel_i(val, ds->regs->spi_config);
 
-	val = readl(ds->regs->io_control);
+	val = readl_i(ds->regs->io_control);
 	if (clk_idle_state)
 		val |= SPI_IO_CONTROL_CLOCK_IDLE_HIGH;
 	else
 		val &= ~SPI_IO_CONTROL_CLOCK_IDLE_HIGH;
 
-	writel(val, ds->regs->io_control);
+	writel_i(val, ds->regs->io_control);
 }
 
 /*
@@ -253,9 +255,6 @@ static void spi_set_mode(struct ipq_spi_slave *ds, unsigned int mode)
  */
 static int check_hclk_state(unsigned int core_num, int enable)
 {
-	if (clk_is_dummy())
-		return 0;
-
 	return check_bit_state(CLK_HALT_CFPB_STATEB_REG,
 		hclk_state[core_num], enable, 5);
 }
@@ -265,9 +264,6 @@ static int check_hclk_state(unsigned int core_num, int enable)
  */
 static int check_qup_clk_state(unsigned int core_num, int enable)
 {
-	if (clk_is_dummy())
-		return 0;
-
 	return check_bit_state(CLK_HALT_CFPB_STATEB_REG,
 		qup_apps_clk_state[core_num], enable, 5);
 }
@@ -279,12 +275,12 @@ static void CS_change(int port_num, int cs_num, int enable)
 {
 	unsigned int cs_gpio = cs_gpio_array[port_num][cs_num];
 	uint32_t addr = GPIO_IN_OUT_ADDR(cs_gpio);
-	uint32_t val = readl(addr);
+	uint32_t val = readl_i(addr);
 
 	val &= (~(1 << GPIO_OUT));
 	if (!enable)
 		val |= (1 << GPIO_OUT);
-	writel(val, addr);
+	writel_i(val, addr);
 }
 
 /*
@@ -295,7 +291,7 @@ static void gsbi_pin_config(unsigned int port_num, int cs_num)
 	unsigned int gpio;
 	unsigned int i;
 	/* Hold the GSBIn (core_num) core in reset */
-	clrsetbits_le32(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(port_num)),
+	clrsetbits_le32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(port_num)),
 			GSBI1_RESET_MSK, GSBI1_RESET);
 
 	/*
@@ -336,76 +332,79 @@ static int gsbi_clock_init(struct ipq_spi_slave *ds)
 	int ret;
 
 	/* Hold the GSBIn (core_num) core in reset */
-	clrsetbits_le32(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
+	clrsetbits_le32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
 			GSBI1_RESET_MSK, GSBI1_RESET);
 
 	/* Disable GSBIn (core_num) QUP core clock branch */
-	clrsetbits_le32(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
 					QUP_CLK_BRANCH_DIS);
 
 	ret = check_qup_clk_state(ds->slave.bus, 1);
 	if (ret) {
-		printf("QUP Clock Halt For GSBI%d failed!\n", ds->slave.bus);
+		printk(BIOS_ERR,
+		       "QUP Clock Halt For GSBI%d failed!\n", ds->slave.bus);
 		return ret;
 	}
 
 	/* Disable M/N:D counter and hold M/N:D counter in reset */
-	clrsetbits_le32(ds->regs->qup_ns_reg, (MNCNTR_MSK | MNCNTR_RST_MSK),
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, (MNCNTR_MSK | MNCNTR_RST_MSK),
 					(MNCNTR_RST_ENA | MNCNTR_DIS));
 
 	/* Disable GSBIn (core_num) QUP core clock root */
-	clrsetbits_le32(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_DIS);
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_DIS);
 
-	clrsetbits_le32(ds->regs->qup_ns_reg, GSBIn_PLL_SRC_MSK,
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, GSBIn_PLL_SRC_MSK,
 					GSBIn_PLL_SRC_PLL8);
-	clrsetbits_le32(ds->regs->qup_ns_reg, GSBIn_PRE_DIV_SEL_MSK,
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, GSBIn_PRE_DIV_SEL_MSK,
 						(0 << GSBI_PRE_DIV_SEL_SHFT));
 
 	/* Program M/N:D values for GSBIn_QUP_APPS_CLK @50MHz */
-	clrsetbits_le32(ds->regs->qup_md_reg, GSBIn_M_VAL_MSK,
+	clrsetbits_le32_i(ds->regs->qup_md_reg, GSBIn_M_VAL_MSK,
 						(0x01 << GSBI_M_VAL_SHFT));
-	clrsetbits_le32(ds->regs->qup_md_reg, GSBIn_D_VAL_MSK,
+	clrsetbits_le32_i(ds->regs->qup_md_reg, GSBIn_D_VAL_MSK,
 						(0xF7 << GSBI_D_VAL_SHFT));
-	clrsetbits_le32(ds->regs->qup_ns_reg, GSBIn_N_VAL_MSK,
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, GSBIn_N_VAL_MSK,
 						(0xF8 << GSBI_N_VAL_SHFT));
 
 	/* Set MNCNTR_MODE = 0: Bypass mode */
-	clrsetbits_le32(ds->regs->qup_ns_reg, MNCNTR_MODE_MSK,
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, MNCNTR_MODE_MSK,
 					MNCNTR_MODE_DUAL_EDGE);
 
 	/* De-assert the M/N:D counter reset */
-	clrsetbits_le32(ds->regs->qup_ns_reg, MNCNTR_RST_MSK, MNCNTR_RST_DIS);
-	clrsetbits_le32(ds->regs->qup_ns_reg, MNCNTR_MSK, MNCNTR_EN);
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, MNCNTR_RST_MSK, MNCNTR_RST_DIS);
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, MNCNTR_MSK, MNCNTR_EN);
 
 	/*
 	 * Enable the GSBIn (core_num) QUP core clock root.
 	 * Keep MND counter disabled
 	 */
-	clrsetbits_le32(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_ENA);
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, CLK_ROOT_ENA_MSK, CLK_ROOT_ENA);
 
 	/* Enable GSBIn (core_num) QUP core clock branch */
-	clrsetbits_le32(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
+	clrsetbits_le32_i(ds->regs->qup_ns_reg, QUP_CLK_BRANCH_ENA_MSK,
 						QUP_CLK_BRANCH_ENA);
 
 	ret = check_qup_clk_state(ds->slave.bus, 0);
 	if (ret) {
-		printf("QUP Clock Enable For GSBI%d"
+		printk(BIOS_ERR,
+		       "QUP Clock Enable For GSBI%d"
 				" failed!\n", ds->slave.bus);
 		return ret;
 	}
 
 	/* Enable GSBIn (core_num) core clock branch */
-	clrsetbits_le32(GSBIn_HCLK_CTL_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
+	clrsetbits_le32_i(GSBIn_HCLK_CTL_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
 			GSBI_CLK_BRANCH_ENA_MSK, GSBI_CLK_BRANCH_ENA);
 
 	ret = check_hclk_state(ds->slave.bus, 0);
 	if (ret) {
-		printf("HCLK Enable For GSBI%d failed!\n", ds->slave.bus);
+		printk(BIOS_ERR,
+		       "HCLK Enable For GSBI%d failed!\n", ds->slave.bus);
 		return ret;
 	}
 
 	/* Release GSBIn (core_num) core from reset */
-	clrsetbits_le32(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
+	clrsetbits_le32_i(GSBIn_RESET_REG(GSBI_IDX_TO_GSBI(ds->slave.bus)),
 						GSBI1_RESET_MSK, 0);
 	udelay(50);
 
@@ -417,26 +416,87 @@ static int gsbi_clock_init(struct ipq_spi_slave *ds)
  */
 static void spi_reset(struct ipq_spi_slave *ds)
 {
-	writel(0x1, ds->regs->qup_sw_reset);
+	writel_i(0x1, ds->regs->qup_sw_reset);
 	udelay(5);
 }
 
+static const struct gsbi_spi spi_reg[] = {
+	/* GSBI5 registers for SPI interface */
+	{
+		GSBI5_SPI_CONFIG_REG,
+		GSBI5_SPI_IO_CONTROL_REG,
+		GSBI5_SPI_ERROR_FLAGS_REG,
+		GSBI5_SPI_ERROR_FLAGS_EN_REG,
+		GSBI5_GSBI_CTRL_REG_REG,
+		GSBI5_QUP_CONFIG_REG,
+		GSBI5_QUP_ERROR_FLAGS_REG,
+		GSBI5_QUP_ERROR_FLAGS_EN_REG,
+		GSBI5_QUP_OPERATIONAL_REG,
+		GSBI5_QUP_IO_MODES_REG,
+		GSBI5_QUP_STATE_REG,
+		GSBI5_QUP_INPUT_FIFOc_REG(0),
+		GSBI5_QUP_OUTPUT_FIFOc_REG(0),
+		GSBI5_QUP_MX_INPUT_COUNT_REG,
+		GSBI5_QUP_MX_OUTPUT_COUNT_REG,
+		GSBI5_QUP_SW_RESET_REG,
+		GSBIn_QUP_APPS_NS_REG(5),
+		GSBIn_QUP_APPS_MD_REG(5),
+	},
+	/* GSBI6 registers for SPI interface */
+	{
+		GSBI6_SPI_CONFIG_REG,
+		GSBI6_SPI_IO_CONTROL_REG,
+		GSBI6_SPI_ERROR_FLAGS_REG,
+		GSBI6_SPI_ERROR_FLAGS_EN_REG,
+		GSBI6_GSBI_CTRL_REG_REG,
+		GSBI6_QUP_CONFIG_REG,
+		GSBI6_QUP_ERROR_FLAGS_REG,
+		GSBI6_QUP_ERROR_FLAGS_EN_REG,
+		GSBI6_QUP_OPERATIONAL_REG,
+		GSBI6_QUP_IO_MODES_REG,
+		GSBI6_QUP_STATE_REG,
+		GSBI6_QUP_INPUT_FIFOc_REG(0),
+		GSBI6_QUP_OUTPUT_FIFOc_REG(0),
+		GSBI6_QUP_MX_INPUT_COUNT_REG,
+		GSBI6_QUP_MX_OUTPUT_COUNT_REG,
+		GSBI6_QUP_SW_RESET_REG,
+		GSBIn_QUP_APPS_NS_REG(6),
+		GSBIn_QUP_APPS_MD_REG(6),
+	},
+	/* GSBI7 registers for SPI interface */
+	{
+		GSBI7_SPI_CONFIG_REG,
+		GSBI7_SPI_IO_CONTROL_REG,
+		GSBI7_SPI_ERROR_FLAGS_REG,
+		GSBI7_SPI_ERROR_FLAGS_EN_REG,
+		GSBI7_GSBI_CTRL_REG_REG,
+		GSBI7_QUP_CONFIG_REG,
+		GSBI7_QUP_ERROR_FLAGS_REG,
+		GSBI7_QUP_ERROR_FLAGS_EN_REG,
+		GSBI7_QUP_OPERATIONAL_REG,
+		GSBI7_QUP_IO_MODES_REG,
+		GSBI7_QUP_STATE_REG,
+		GSBI7_QUP_INPUT_FIFOc_REG(0),
+		GSBI7_QUP_OUTPUT_FIFOc_REG(0),
+		GSBI7_QUP_MX_INPUT_COUNT_REG,
+		GSBI7_QUP_MX_OUTPUT_COUNT_REG,
+		GSBI7_QUP_SW_RESET_REG,
+		GSBIn_QUP_APPS_NS_REG(7),
+		GSBIn_QUP_APPS_MD_REG(7),
+	}
+};
+static struct ipq_spi_slave spi_slave_pool[2];
+
 void spi_init()
 {
-	/* do nothing */
-
+	/* just in case */
+	memset(spi_slave_pool, 0, sizeof(spi_slave_pool));
 }
 
-struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
-				unsigned int max_hz, unsigned int mode)
+struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs)
 {
-	struct ipq_spi_slave *ds;
-
-	ds = malloc(sizeof(struct ipq_spi_slave));
-	if (!ds) {
-		printf("SPI error: malloc of SPI structure failed\n");
-		return NULL;
-	}
+	struct ipq_spi_slave *ds = NULL;
+	int i;
 
 	/*
 	 * IPQ GSBI (Generic Serial Bus Interface) supports SPI Flash
@@ -447,42 +507,32 @@ struct spi_slave *spi_setup_slave(unsigned int bus, unsigned int cs,
 		|| ((bus == GSBI5_SPI) && (cs > 3))
 		|| ((bus == GSBI6_SPI) && (cs > 0))
 		|| ((bus == GSBI7_SPI) && (cs > 0))) {
-		printf("SPI error: unsupported bus %d "
+		printk(BIOS_ERR, "SPI error: unsupported bus %d "
 			"(Supported busses 0,1 and 2) or chipselect\n", bus);
-		goto err;
 	}
-	ds->slave.bus	= bus;
-	ds->slave.cs	= cs;
 
-	ds->regs	= &spi_reg[bus];
+	for (i = 0; i < ARRAY_SIZE(spi_slave_pool); i++) {
+		if (spi_slave_pool[i].allocated)
+			continue;
+		ds = spi_slave_pool + i;
+		ds->slave.bus	= bus;
+		ds->slave.cs	= cs;
+		ds->regs	= &spi_reg[bus];
 
-	/* TODO For different clock frequency */
-	if (max_hz > MSM_GSBI_MAX_FREQ) {
-		printf("SPI error: unsupported frequency %d Hz "
-			"Max frequency is %d Hz\n", max_hz, MSM_GSBI_MAX_FREQ);
-		goto err;
+		/*
+		 * TODO(vbendeb):
+		 * hardcoded frequency and mode - we might need to find a way
+		 * to configure this
+		 */
+		ds->freq = 10000000;
+		ds->mode = GSBI_SPI_MODE_0;
+		ds->allocated = 1;
+
+		return &ds->slave;
 	}
-	ds->freq = max_hz;
 
-	if (mode > GSBI_SPI_MODE_3) {
-		printf("SPI error: unsupported SPI mode %d\n", mode);
-		goto err;
-	}
-	ds->mode = mode;
-
-	return &ds->slave;
-
-err:
-	free(ds);
+	printk(BIOS_ERR, "SPI error: all %d pools busy\n", i);
 	return NULL;
-}
-
-void spi_free_slave(struct spi_slave *slave)
-{
-	struct ipq_spi_slave *ds = to_ipq_spi(slave);
-
-	if (ds != NULL)
-		free(ds);
 }
 
 /*
@@ -492,7 +542,8 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 {
 	int ret;
 
-	ds->initialized = 0;
+	if (ds->initialized)
+		return 0;
 
 	/* GSBI module configuration */
 	spi_reset(ds);
@@ -503,27 +554,27 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 		return ret;
 
 	/* Configure GSBI_CTRL register to set protocol_mode to SPI:011 */
-	clrsetbits_le32(ds->regs->gsbi_ctrl, PROTOCOL_CODE_MSK,
+	clrsetbits_le32_i(ds->regs->gsbi_ctrl, PROTOCOL_CODE_MSK,
 					PROTOCOL_CODE_SPI);
 
 	/*
 	 * Configure Mini core to SPI core with Input Output enabled,
 	 * SPI master, N = 8 bits
 	 */
-	clrsetbits_le32(ds->regs->qup_config, (QUP_CONFIG_MINI_CORE_MSK |
+	clrsetbits_le32_i(ds->regs->qup_config, (QUP_CONFIG_MINI_CORE_MSK |
 					       SPI_QUP_CONF_INPUT_MSK |
 					       SPI_QUP_CONF_OUTPUT_MSK |
 					       SPI_BIT_WORD_MSK),
 					      (QUP_CONFIG_MINI_CORE_SPI |
-					       SPI_QUP_CONF_INPUT_ENA |
-					       SPI_QUP_CONF_OUTPUT_ENA |
+					       SPI_QUP_CONF_NO_INPUT |
+					       SPI_QUP_CONF_NO_OUTPUT |
 					       SPI_8_BIT_WORD));
 
 	/*
 	 * Configure Input first SPI protocol,
 	 * SPI master mode and no loopback
 	 */
-	clrsetbits_le32(ds->regs->spi_config, (LOOP_BACK_MSK |
+	clrsetbits_le32_i(ds->regs->spi_config, (LOOP_BACK_MSK |
 					       SLAVE_OPERATION_MSK),
 					      (NO_LOOP_BACK |
 					       SLAVE_OPERATION));
@@ -534,7 +585,7 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	 * MX_CS_MODE = 0
 	 * NO_TRI_STATE = 1
 	 */
-	writel((CLK_ALWAYS_ON | MX_CS_MODE | NO_TRI_STATE),
+	writel_i((CLK_ALWAYS_ON | MX_CS_MODE | NO_TRI_STATE),
 				ds->regs->io_control);
 
 	/*
@@ -543,7 +594,7 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	 * INPUT_MODE = Block Mode
 	 * OUTPUT MODE = Block Mode
 	 */
-	clrsetbits_le32(ds->regs->qup_io_modes, (OUTPUT_BIT_SHIFT_MSK |
+	clrsetbits_le32_i(ds->regs->qup_io_modes, (OUTPUT_BIT_SHIFT_MSK |
 						 INPUT_BLOCK_MODE_MSK |
 						 OUTPUT_BLOCK_MODE_MSK),
 						(OUTPUT_BIT_SHIFT_EN |
@@ -553,8 +604,8 @@ static int spi_hw_init(struct ipq_spi_slave *ds)
 	spi_set_mode(ds, ds->mode);
 
 	/* Disable Error mask */
-	writel(0, ds->regs->error_flags_en);
-	writel(0, ds->regs->qup_error_flags_en);
+	writel_i(0, ds->regs->error_flags_en);
+	writel_i(0, ds->regs->qup_error_flags_en);
 
 	ds->initialized = 1;
 
@@ -565,6 +616,9 @@ int spi_claim_bus(struct spi_slave *slave)
 {
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 	unsigned int ret;
+
+	if (ds->initialized)
+		return SUCCESS;
 
 	/* GPIO Configuration for SPI port */
 	gsbi_pin_config(ds->slave.bus, ds->slave.cs);
@@ -590,335 +644,95 @@ void spi_release_bus(struct spi_slave *slave)
 	ds->initialized = 0;
 }
 
-/* Drain input fifo
- * If input fifo is not empty drain the input FIFO. When the
- * input fifo is drained make sure that the output fifo is also
- * empty and break when the input fifo is completely drained.
- */
-static void flush_fifos(struct ipq_spi_slave *ds)
+int spi_xfer(struct spi_slave *slave, const void *dout,
+	     unsigned out_bytes, void *din, unsigned in_bytes)
 {
-	unsigned int fifo_data;
-
-	while (1) {
-		if (readl(ds->regs->qup_operational) &
-			QUP_DATA_AVAILABLE_FOR_READ) {
-			fifo_data = readl(ds->regs->qup_input_fifo);
-		} else {
-			if (!(readl(ds->regs->qup_operational) &
-				QUP_OUTPUT_FIFO_NOT_EMPTY)) {
-				if (!(readl(ds->regs->qup_operational) &
-					QUP_DATA_AVAILABLE_FOR_READ))
-					break;
-			}
-		}
-	}
-
-	(void)fifo_data;
-}
-
-/*
- * Function to write data to OUTPUT FIFO
- */
-static void spi_write_byte(struct ipq_spi_slave *ds, unsigned char data)
-{
-	/* Wait for space in the FIFO */
-	while ((readl(ds->regs->qup_operational) & QUP_OUTPUT_FIFO_FULL))
-		udelay(1);
-
-	/* Write the byte of data */
-	writel(data, ds->regs->qup_output_fifo);
-}
-
-/*
- * Function to read data from Input FIFO
- */
-static unsigned char spi_read_byte(struct ipq_spi_slave *ds)
-{
-	/* Wait for Data in FIFO */
-	while (!(readl(ds->regs->qup_operational) &
-			QUP_DATA_AVAILABLE_FOR_READ)) {
-		udelay(1);
-	}
-
-	/* Read a byte of data */
-	return readl(ds->regs->qup_input_fifo) & 0xff;
-}
-
-/*
- * Function to check wheather Input or Output FIFO
- * has data to be serviced
- */
-static int check_fifo_status(uint32_t reg_addr)
-{
-	unsigned int count = TIMEOUT_CNT;
-	unsigned int status_flag;
-	unsigned int val;
-
-	do {
-		val = readl(reg_addr);
-		count--;
-		if (count == 0)
-			return -ETIMEDOUT;
-		status_flag = ((val & OUTPUT_SERVICE_FLAG) | (val & INPUT_SERVICE_FLAG));
-	} while (!status_flag);
-
-	return SUCCESS;
-}
-
-/*
- * Function to read bytes number of data from the Input FIFO
- */
-static int gsbi_spi_read(struct ipq_spi_slave *ds, u8 *data_buffer,
-				unsigned int bytes, unsigned long flags)
-{
-	uint32_t val;
-	unsigned int i;
-	unsigned int read_bytes = bytes;
-	unsigned int fifo_count;
-	int ret = SUCCESS;
-	int state_config;
-
-	if (flags & SPI_XFER_BEGIN) {
-		/* Assert chip select */
-		CS_change(ds->slave.bus, ds->slave.cs, CS_ASSERT);
-	}
-
-	/* Configure no of bytes to read */
-	state_config = config_spi_state(ds, SPI_RESET_STATE);
-	if (state_config)
-		return state_config;
-
-	writel(bytes, ds->regs->qup_mx_output_count);
-	writel(bytes, ds->regs->qup_mx_input_count);
-
-	state_config = config_spi_state(ds, SPI_RUN_STATE);
-	if (state_config)
-		return state_config;
-
-	while (read_bytes) {
-
-		ret = check_fifo_status(ds->regs->qup_operational);
-		if (ret != SUCCESS)
-			goto out;
-
-		val = readl(ds->regs->qup_operational);
-		if (val & INPUT_SERVICE_FLAG) {
-			/*
-			 * acknowledge to hw that software will
-			 * read input data
-			 */
-			val &= INPUT_SERVICE_FLAG;
-			writel(val, ds->regs->qup_operational);
-
-			fifo_count = ((read_bytes > SPI_INPUT_BLOCK_SIZE) ?
-					SPI_INPUT_BLOCK_SIZE : read_bytes);
-
-			for (i = 0; i < fifo_count; i++) {
-				*data_buffer = spi_read_byte(ds);
-				data_buffer++;
-				read_bytes--;
-			}
-		}
-
-		if (val & OUTPUT_SERVICE_FLAG) {
-			/*
-			 * acknowledge to hw that software will
-			 * write output data
-			 */
-			val &= OUTPUT_SERVICE_FLAG;
-			writel(val, ds->regs->qup_operational);
-
-			fifo_count = ((read_bytes > SPI_OUTPUT_BLOCK_SIZE) ?
-					SPI_OUTPUT_BLOCK_SIZE : read_bytes);
-
-			for (i = 0; i < fifo_count; i++) {
-				/*
-				 * Write dummy data byte for the device
-				 * to shift in actual data. Most of the SPI devices
-				 * accepts dummy data value as 0. In case of any
-				 * other value change DUMMY_DATA_VAL.
-				 */
-				spi_write_byte(ds, DUMMY_DATA_VAL);
-			}
-		}
-	}
-
-	if (flags & SPI_XFER_END) {
-		flush_fifos(ds);
-		goto out;
-	}
-
-	return ret;
-
-out:
-	/* Deassert CS */
-	CS_change(ds->slave.bus, ds->slave.cs, CS_DEASSERT);
-
-	/*
-	 * Put the SPI Core back in the Reset State
-	 * to end the transfer
-	 */
-	(void)config_spi_state(ds, SPI_RESET_STATE);
-
-	return ret;
-
-}
-
-/*
- * Function to write data to the Output FIFO
- */
-static int gsbi_spi_write(struct ipq_spi_slave *ds, const u8 *cmd_buffer,
-				unsigned int bytes, unsigned long flags)
-{
-	uint32_t val;
-	unsigned int i;
-	unsigned int write_len = bytes;
-	unsigned int read_len = bytes;
-	unsigned int fifo_count;
-	int ret = SUCCESS;
-	int state_config;
-
-	if (flags & SPI_XFER_BEGIN) {
-		/* Select the chip select */
-		CS_change(ds->slave.bus, ds->slave.cs, CS_ASSERT);
-	}
-
-	state_config = config_spi_state(ds, SPI_RESET_STATE);
-	if (state_config)
-		return state_config;
-
-	/* No of bytes to be written in Output FIFO */
-	writel(bytes, ds->regs->qup_mx_output_count);
-	writel(bytes, ds->regs->qup_mx_input_count);
-	state_config = config_spi_state(ds, SPI_RUN_STATE);
-	if (state_config)
-		return state_config;
-
-	/*
-	 * read_len considered to ensure that we read the dummy data for the
-	 * write we performed. This is needed to ensure with WR-RD transaction
-	 * to get the actual data on the subsequent read cycle that happens
-	 */
-	while (write_len || read_len) {
-
-		ret = check_fifo_status(ds->regs->qup_operational);
-		if (ret != SUCCESS)
-			goto out;
-
-		val = readl(ds->regs->qup_operational);
-		if (val & OUTPUT_SERVICE_FLAG) {
-			/*
-			 * acknowledge to hw that software will write
-			 * expected output data
-			 */
-			val &= OUTPUT_SERVICE_FLAG;
-			writel(val, ds->regs->qup_operational);
-
-			if (write_len > SPI_OUTPUT_BLOCK_SIZE)
-                                fifo_count = SPI_OUTPUT_BLOCK_SIZE;
-                        else
-                                fifo_count = write_len;
-
-			for (i = 0; i < fifo_count; i++) {
-				/* Write actual data to output FIFO */
-				spi_write_byte(ds, *cmd_buffer);
-				cmd_buffer++;
-				write_len--;
-			}
-		}
-		if (val & INPUT_SERVICE_FLAG) {
-			/*
-			 * acknowledge to hw that software
-			 * will read input data
-			 */
-			val &= INPUT_SERVICE_FLAG;
-			writel(val, ds->regs->qup_operational);
-
-			if (read_len > SPI_INPUT_BLOCK_SIZE)
-				fifo_count = SPI_INPUT_BLOCK_SIZE;
-			else
-				fifo_count = read_len;
-
-			for (i = 0; i < fifo_count; i++) {
-				/* Read dummy data for the data written */
-				(void)spi_read_byte(ds);
-
-				/* Decrement the write count after reading the dummy data
-				 * from the device. This is to make sure we read dummy data
-				 * before we write the data to fifo
-				 */
-				read_len--;
-			}
-		}
-	}
-
-	if (flags & SPI_XFER_END) {
-		flush_fifos(ds);
-		goto out;
-	}
-
-	return ret;
-
-out:
-	/* Deassert CS */
-	CS_change(ds->slave.bus, ds->slave.cs, CS_DEASSERT);
-
-	/*
-	 * Put the SPI Core back in the Reset State
-	 * to end the transfer
-	 */
-	(void)config_spi_state(ds, SPI_RESET_STATE);
-
-	return ret;
-}
-
-/*
- * This function is invoked with either tx_buf or rx_buf.
- * Calling this function with both null does a chip select change.
- */
-int spi_xfer(struct spi_slave *slave, unsigned int bitlen,
-		const void *dout, void *din, unsigned long flags)
-{
-	struct ipq_spi_slave *ds = to_ipq_spi(slave);
-	unsigned int len;
-	const u8 *txp = dout;
-	u8 *rxp = din;
 	int ret;
+	uint8_t* dbuf;
+	const uint8_t* dobuf;
+	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 
-	if (bitlen & 0x07) {
-		printf("err : Invalid bit length");
-		return -EINVAL;
+	/* Assert the chip select */
+	CS_change(ds->slave.bus, ds->slave.cs, CS_ASSERT);
+
+	ret = config_spi_state(ds, SPI_RESET_STATE);
+	if (ret)
+		goto out;
+
+	if (!out_bytes)
+		goto spi_receive;
+
+	/*
+	 * Let's do the write side of the transaction first. Enable output
+	 * FIFO.
+	 */
+	clrsetbits_le32_i(ds->regs->qup_config, SPI_QUP_CONF_OUTPUT_MSK,
+			  SPI_QUP_CONF_OUTPUT_ENA);
+
+	writel_i(out_bytes, ds->regs->qup_mx_output_count);
+
+	ret = config_spi_state(ds, SPI_RUN_STATE);
+	if (ret)
+		goto out;
+
+	dobuf = dout; /* Alias to make it possible to use pointer autoinc. */
+
+	while (out_bytes) {
+		if (readl_i(ds->regs->qup_operational) & QUP_OUTPUT_FIFO_FULL)
+			continue;
+
+		writel_i(*dobuf++, ds->regs->qup_output_fifo);
+		out_bytes--;
+
+		/* Wait for output FIFO to drain. */
+		if (!out_bytes)
+			while (readl_i(ds->regs->qup_operational) &
+			       QUP_OUTPUT_FIFO_NOT_EMPTY)
+				;
 	}
 
-	len = bitlen >> 3;
+	ret = config_spi_state(ds, SPI_RESET_STATE);
+	if (ret)
+		goto out;
 
-	if (dout != NULL) {
-		ret = gsbi_spi_write(ds, txp, len, flags);
-		if (ret != SUCCESS)
-			return ret;
+spi_receive:
+	if (!in_bytes) /* Nothing to read. */
+		goto out;
+
+	/* Enable input FIFO */
+	clrsetbits_le32_i(ds->regs->qup_config, SPI_QUP_CONF_INPUT_MSK,
+			  SPI_QUP_CONF_INPUT_ENA);
+
+	writel_i(in_bytes, ds->regs->qup_mx_input_count);
+	writel_i(in_bytes, ds->regs->qup_mx_output_count);
+
+	ret = config_spi_state(ds, SPI_RUN_STATE);
+	if (ret)
+		goto out;
+
+	/* Seed clocking */
+	writel_i(0xff, ds->regs->qup_output_fifo);
+	dbuf = din;  /* Alias for pointer autoincrement again. */
+	while (in_bytes) {
+		if (!(readl_i(ds->regs->qup_operational) &
+		      QUP_INPUT_FIFO_NOT_EMPTY))
+			continue;
+		/* Keep it clocking */
+		writel_i(0xff, ds->regs->qup_output_fifo);
+
+		*dbuf++ = readl_i(ds->regs->qup_input_fifo) & 0xff;
+		in_bytes--;
 	}
 
-	if (din != NULL)
-		return gsbi_spi_read(ds, rxp, len, flags);
+ out:
+	/* Deassert CS */
+	CS_change(ds->slave.bus, ds->slave.cs, CS_DEASSERT);
 
-	if ((din == NULL) && (dout == NULL))
-		/* To handle only when chip select change is needed */
-		ret = gsbi_spi_write(ds, NULL, 0, flags);
+	/*
+	 * Put the SPI Core back in the Reset State
+	 * to end the transfer
+	 */
+	(void)config_spi_state(ds, SPI_RESET_STATE);
 
 	return ret;
-}
-
-int spi_cs_is_valid(unsigned int bus, unsigned int cs)
-{
-	return 1;
-}
-
-void spi_cs_activate(struct spi_slave *slave)
-{
-
-}
-
-void spi_cs_deactivate(struct spi_slave *slave)
-{
-
 }

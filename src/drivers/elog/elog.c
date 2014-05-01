@@ -25,6 +25,8 @@
 #if CONFIG_ARCH_X86
 #include <pc80/mc146818rtc.h>
 #endif
+#include <bcd.h>
+#include <rtc.h>
 #include <smbios.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
@@ -637,20 +639,15 @@ int elog_init(void)
  */
 static void elog_fill_timestamp(struct event_header *event)
 {
-#if CONFIG_ARCH_X86
-	event->second = cmos_read(RTC_CLK_SECOND);
-	event->minute = cmos_read(RTC_CLK_MINUTE);
-	event->hour   = cmos_read(RTC_CLK_HOUR);
-	event->day    = cmos_read(RTC_CLK_DAYOFMONTH);
-	event->month  = cmos_read(RTC_CLK_MONTH);
-	event->year   = cmos_read(RTC_CLK_YEAR);
-#else
-	/*
-	 * FIXME: We need to abstract the CMOS stuff on non-x86 platforms.
-	 * Until then, use bogus data here to force the values to 0.
-	 */
-	event->month  = 0xff;
-#endif
+	struct rtc_time time;
+
+	rtc_get(&time);
+	event->second = bin2bcd(time.sec);
+	event->minute = bin2bcd(time.min);
+	event->hour = bin2bcd(time.hour);
+	event->day = bin2bcd(time.mday);
+	event->month = bin2bcd(time.mon);
+	event->year = bin2bcd(time.year) & 0xff;
 
 	/* Basic sanity check of expected ranges */
 	if (event->month > 0x12 || event->day > 0x31 || event->hour > 0x23 ||

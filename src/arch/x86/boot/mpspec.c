@@ -56,26 +56,26 @@ static unsigned char smp_compute_checksum(void *v, int len)
 
 static void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_physptr, unsigned int virtualwire)
 {
-        struct intel_mp_floating *mf;
-        void *v;
+	struct intel_mp_floating *mf;
+	void *v;
 
 	v = (void *)addr;
-        mf = v;
-        mf->mpf_signature[0] = '_';
-        mf->mpf_signature[1] = 'M';
-        mf->mpf_signature[2] = 'P';
-        mf->mpf_signature[3] = '_';
-        mf->mpf_physptr = mpf_physptr;
-        mf->mpf_length = 1;
-        mf->mpf_specification = 4;
-        mf->mpf_checksum = 0;
-        mf->mpf_feature1 = 0;
-        mf->mpf_feature2 = virtualwire?MP_FEATURE_VIRTUALWIRE:0;
-        mf->mpf_feature3 = 0;
-        mf->mpf_feature4 = 0;
-        mf->mpf_feature5 = 0;
-        mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
-        return v;
+	mf = v;
+	mf->mpf_signature[0] = '_';
+	mf->mpf_signature[1] = 'M';
+	mf->mpf_signature[2] = 'P';
+	mf->mpf_signature[3] = '_';
+	mf->mpf_physptr = mpf_physptr;
+	mf->mpf_length = 1;
+	mf->mpf_specification = 4;
+	mf->mpf_checksum = 0;
+	mf->mpf_feature1 = 0;
+	mf->mpf_feature2 = virtualwire?MP_FEATURE_VIRTUALWIRE:0;
+	mf->mpf_feature3 = 0;
+	mf->mpf_feature4 = 0;
+	mf->mpf_feature5 = 0;
+	mf->mpf_checksum = smp_compute_checksum(mf, mf->mpf_length*16);
+	return v;
 }
 
 void *smp_write_floating_table(unsigned long addr, unsigned int virtualwire)
@@ -149,28 +149,27 @@ void smp_write_processors(struct mp_config_table *mc)
 	cpu_feature_flags = result.edx;
 	/* order the output of the cpus to fix a bug in kernel 2.6.11 */
 	for(order_id = 0;order_id <256; order_id++) {
-	for(cpu = all_devices; cpu; cpu = cpu->next) {
-		unsigned long cpu_flag;
-		if ((cpu->path.type != DEVICE_PATH_APIC) ||
-			(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
-		{
-			continue;
+		for(cpu = all_devices; cpu; cpu = cpu->next) {
+			unsigned long cpu_flag;
+			if ((cpu->path.type != DEVICE_PATH_APIC) ||
+				(cpu->bus->dev->path.type != DEVICE_PATH_CPU_CLUSTER))
+				continue;
+
+			if (!cpu->enabled)
+				continue;
+
+			cpu_flag = MPC_CPU_ENABLED;
+
+			if (boot_apic_id == cpu->path.apic.apic_id)
+				cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
+
+			if(cpu->path.apic.apic_id == order_id) {
+				smp_write_processor(mc, cpu->path.apic.apic_id, apic_version,
+						cpu_flag, cpu_features, cpu_feature_flags
+				);
+				break;
+			}
 		}
-		if (!cpu->enabled) {
-			continue;
-		}
-		cpu_flag = MPC_CPU_ENABLED;
-		if (boot_apic_id == cpu->path.apic.apic_id) {
-			cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
-		}
-		if(cpu->path.apic.apic_id == order_id) {
-			smp_write_processor(mc,
-				cpu->path.apic.apic_id, apic_version,
-				cpu_flag, cpu_features, cpu_feature_flags
-			);
-			break;
-		}
-            }
 	}
 }
 
@@ -415,14 +414,14 @@ void *mptable_finalize(struct mp_config_table *mc)
 unsigned long __attribute__((weak)) write_smp_table(unsigned long addr)
 {
 	struct drivers_generic_ioapic_config *ioapic_config;
-        struct mp_config_table *mc;
+	struct mp_config_table *mc;
 	int isa_bus, pin, parentpin;
 	device_t dev, parent, oldparent;
 	void *tmp, *v;
 	int isaioapic = -1, have_fixed_entries;
 
 	v = smp_write_floating_table(addr, 0);
-        mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
+	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
 	mptable_init(mc, LOCAL_APIC_ADDR);
 

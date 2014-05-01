@@ -26,6 +26,7 @@
 
 #define EON_ID_EN25Q128		0x3018
 #define EON_ID_EN25Q64		0x3017
+#define EON_ID_EN25S64		0x3817
 
 struct eon_spi_flash_params {
 	u16 id;
@@ -63,6 +64,14 @@ static const struct eon_spi_flash_params eon_spi_flash_table[] = {
 		.sectors_per_block = 16,
 		.nr_sectors = 2048,
 		.name = "EN25Q64",
+	},
+	{
+		.id = EON_ID_EN25S64,
+		.page_size = 256,
+		.pages_per_sector = 16,
+		.sectors_per_block = 16,
+		.nr_sectors = 2048,
+		.name = "EN25S64",
 	},
 };
 

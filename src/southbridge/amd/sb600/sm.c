@@ -169,7 +169,7 @@ static void sm_init(device_t dev)
 	/* ab index */
 	pci_write_config32(dev, 0xF0, AB_INDX);
 	/* Initialize the real time clock */
-	rtc_init(0);
+	cmos_init(0);
 
 	/*3.4 Enabling IDE/PCIB Prefetch for Performance Enhancement */
 	abcfg_reg(0x10060, 9 << 17, 9 << 17);

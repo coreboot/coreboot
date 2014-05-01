@@ -172,8 +172,8 @@ static inline void cmos_write32(u8 offset, u32 value)
 #endif
 
 #if !defined(__ROMCC__)
-void rtc_init(int invalid);
-void rtc_check_update_cmos_date(u8 has_century);
+void cmos_init(int invalid);
+void cmos_check_update_date(u8 has_century);
 #if CONFIG_USE_OPTION_TABLE
 enum cb_err set_option(const char *name, void *val);
 enum cb_err get_option(void *dest, const char *name);

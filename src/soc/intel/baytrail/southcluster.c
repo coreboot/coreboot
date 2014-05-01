@@ -143,7 +143,7 @@ static void sc_rtc_init(void)
 		printk(BIOS_DEBUG, "RTC failure.\n");
 	}
 
-	rtc_init(rtc_fail);
+	cmos_init(rtc_fail);
 }
 
 /*

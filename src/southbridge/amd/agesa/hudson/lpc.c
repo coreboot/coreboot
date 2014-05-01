@@ -70,14 +70,14 @@ static void lpc_init(device_t dev)
 	byte |= 1 << 0 | 1 << 3;
 	pci_write_config8(dev, 0xBB, byte);
 
-	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
+	cmos_check_update_date(RTC_HAS_ALTCENTURY);
 
 	/* Initialize the real time clock.
-	 * The 0 argument tells rtc_init not to
+	 * The 0 argument tells cmos_init not to
 	 * update CMOS unless it is invalid.
-	 * 1 tells rtc_init to always initialize the CMOS.
+	 * 1 tells cmos_init to always initialize the CMOS.
 	 */
-	rtc_init(0);
+	cmos_init(0);
 }
 
 static void hudson_lpc_read_resources(device_t dev)

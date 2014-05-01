@@ -565,7 +565,7 @@ static void vt8237_common_init(struct device *dev)
 	setup_pm(dev);
 
 	/* Start the RTC. */
-	rtc_init(0);
+	cmos_init(0);
 }
 
 static void vt8237r_read_resources(device_t dev)

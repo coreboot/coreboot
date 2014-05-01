@@ -375,7 +375,7 @@ static void lpc_init(struct device *dev)
 	i3100_gpio_init(dev);
 
 	/* Initialize the real time clock */
-	rtc_init(0);
+	cmos_init(0);
 
 	/* Initialize isa dma */
 	isa_dma_init();

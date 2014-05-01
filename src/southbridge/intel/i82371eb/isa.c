@@ -64,7 +64,7 @@ static void isa_init(struct device *dev)
 	u32 reg32;
 
 	/* Initialize the real time clock (RTC). */
-	rtc_init(0);
+	cmos_init(0);
 
 	/*
 	 * Enable special cycles, needed for soft poweroff.

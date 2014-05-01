@@ -595,7 +595,7 @@ static void southbridge_init(struct device *dev)
 	pci_routing_fixup(dev);
 
 	fix_cmos_rtc_time();
-	rtc_init(0);
+	cmos_init(0);
 	/* Check keyboard controller ready. If timeout, reload firmware code
 	 * and try again.
 	 */

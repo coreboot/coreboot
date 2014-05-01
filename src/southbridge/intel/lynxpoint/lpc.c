@@ -301,7 +301,7 @@ static void pch_rtc_init(struct device *dev)
 	}
 	printk(BIOS_DEBUG, "rtc_failed = 0x%x\n", rtc_failed);
 
-	rtc_init(rtc_failed);
+	cmos_init(rtc_failed);
 }
 
 /* LynxPoint PCH Power Management init */

@@ -69,7 +69,7 @@ static void reset_rtc(void)
 		write32(DEFAULT_PBASE + GEN_PMCON1, gen_pmcon1 & ~RPS);
 	}
 
-	rtc_init(rtc_failed);
+	cmos_init(rtc_failed);
 }
 
 void rangeley_sb_early_initialization(void)

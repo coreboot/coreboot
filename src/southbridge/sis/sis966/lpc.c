@@ -148,7 +148,7 @@ static void lpc_init(device_t dev)
         }
 
         /* Initialize the real time clock */
-        rtc_init(0);
+        cmos_init(0);
 
         /* Initialize isa dma */
         isa_dma_init();

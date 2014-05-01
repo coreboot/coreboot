@@ -111,7 +111,7 @@ static void sm_init(device_t dev)
 	pm_iowrite(0xE2, (AB_INDX >> 16) & 0xFF);
 	pm_iowrite(0xE3, (AB_INDX >> 24) & 0xFF);
 	/* Initialize the real time clock */
-	rtc_init(0);
+	cmos_init(0);
 
 	byte = pm_ioread(0x8);
 	byte |= 1 << 2 | 1 << 4;

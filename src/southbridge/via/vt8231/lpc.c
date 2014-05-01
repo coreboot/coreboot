@@ -121,7 +121,7 @@ static void vt8231_init(struct device *dev)
 	//ethernet_fixup();
 
 	// Start the rtc
-	rtc_init(0);
+	cmos_init(0);
 }
 
 static void vt8231_read_resources(device_t dev)

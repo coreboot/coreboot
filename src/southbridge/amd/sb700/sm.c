@@ -197,7 +197,7 @@ static void sm_init(device_t dev)
 	/* ab index */
 	pci_write_config32(dev, 0xF0, AB_INDX);
 	/* Initialize the real time clock */
-	rtc_init(0);
+	cmos_init(0);
 
 	/* 4.3 Enabling Upstream DMA Access */
 	axcfg_reg(0x04, 1 << 2, 1 << 2);

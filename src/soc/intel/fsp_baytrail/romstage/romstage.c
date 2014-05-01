@@ -151,7 +151,7 @@ static void baytrail_rtc_init(void)
 		write32(DEFAULT_PBASE + GEN_PMCON1, gen_pmcon1 & ~RPS);
 	}
 
-	rtc_init(rtc_failed);
+	cmos_init(rtc_failed);
 }
 
 /* Entry from cache-as-ram.inc. */

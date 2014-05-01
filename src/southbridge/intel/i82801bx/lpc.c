@@ -205,7 +205,7 @@ static void i82801bx_rtc_init(struct device *dev)
 	}
 	reg32 = pci_read_config32(dev, GEN_STS);
 	rtc_failed |= reg32 & (1 << 2);
-	rtc_init(rtc_failed);
+	cmos_init(rtc_failed);
 
 	/* Enable access to the upper 128 byte bank of CMOS RAM. */
 	pci_write_config8(dev, RTC_CONF, 0x04);

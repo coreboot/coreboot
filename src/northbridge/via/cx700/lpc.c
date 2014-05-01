@@ -283,7 +283,7 @@ static void cx700_lpc_init(struct device *dev)
 	setup_i8259();
 
 	/* Start the Real Time Clock */
-	rtc_init(0);
+	cmos_init(0);
 
 	/* Initialize isa dma */
 	isa_dma_init();

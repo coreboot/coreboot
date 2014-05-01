@@ -102,14 +102,14 @@ static void lpc_init(device_t dev)
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - Start.\n");
 	/* SB Configure HPET base and enable bit */
 //-	hpetInit(sb_config, &(sb_config->BuildParameters));
-	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
+	cmos_check_update_date(RTC_HAS_ALTCENTURY);
 
 	/* Initialize the real time clock.
-	 * The 0 argument tells rtc_init not to
+	 * The 0 argument tells cmos_init not to
 	 * update CMOS unless it is invalid.
-	 * 1 tells rtc_init to always initialize the CMOS.
+	 * 1 tells cmos_init to always initialize the CMOS.
 	 */
-	rtc_init(0);
+	cmos_init(0);
 
 	setup_i8259(); /* Initialize i8259 pic */
 	setup_i8254(); /* Initialize i8254 timers */

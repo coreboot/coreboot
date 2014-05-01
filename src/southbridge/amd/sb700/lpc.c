@@ -90,7 +90,7 @@ static void lpc_init(device_t dev)
 	}
 #endif
 
-	rtc_check_update_cmos_date(RTC_HAS_ALTCENTURY);
+	cmos_check_update_date(RTC_HAS_ALTCENTURY);
 }
 
 void backup_top_of_ram(uint64_t ramtop)

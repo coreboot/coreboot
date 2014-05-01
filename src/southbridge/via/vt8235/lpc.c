@@ -209,7 +209,7 @@ static void vt8235_init(struct device *dev)
 	pci_write_config8(dev, 0x40, 0x54);
 
 	// Start the rtc
-	rtc_init(0);
+	cmos_init(0);
 }
 
 /* total kludge to get lxb to call our childrens set/enable functions - these are not called unless this

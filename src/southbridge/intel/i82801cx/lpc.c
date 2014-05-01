@@ -108,7 +108,7 @@ static void i82801cx_rtc_init(struct device *dev)
     dword = pci_read_config32(dev, GEN_STS);
     rtc_failed |= dword & (1 << 2);
 
-    rtc_init(rtc_failed);
+    cmos_init(rtc_failed);
 }
 
 

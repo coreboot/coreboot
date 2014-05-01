@@ -245,7 +245,7 @@ static void lpc_init(struct southbridge_amd_cs5536_config *sb)
 	msr.lo = RTC_MONA;
 	wrmsr(MDD_RTC_MONA_IND, msr);
 
-	rtc_init(0);
+	cmos_init(0);
 
 	isa_dma_init();
 }

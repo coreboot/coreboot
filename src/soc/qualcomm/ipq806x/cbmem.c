@@ -17,17 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
-#include <cbfs.h>
 #include <cbmem.h>
-#include <console/console.h>
 
-void main(void)
+void *cbmem_top(void)
 {
-	void *entry;
-
-	cbmem_initialize_empty();
-
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/coreboot_ram");
-	stage_exit(entry);
+	return (void *)(CONFIG_SYS_SDRAM_BASE + (CONFIG_DRAM_SIZE_MB << 20));
 }

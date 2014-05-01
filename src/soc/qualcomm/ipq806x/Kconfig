@@ -6,6 +6,7 @@ config SOC_QC_IPQ806X
 	select ARCH_RAMSTAGE_ARMV7
 	select ARM_LPAE
 	select BOOTBLOCK_CONSOLE
+	select DYNAMIC_CBMEM
 	select HAVE_UART_SPECIAL
 	select SPI_ATOMIC_SEQUENCING
 
@@ -49,6 +50,9 @@ config RAMSTAGE_BASE
 	hex
 	default 0x4060c000
 
+config SYS_SDRAM_BASE
+	hex
+	default 0x40000000
 
 config STACK_TOP
 	hex

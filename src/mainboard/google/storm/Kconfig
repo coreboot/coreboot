@@ -38,6 +38,6 @@ config MAINBOARD_PART_NUMBER
 
 config DRAM_SIZE_MB
 	int
-	default 2048
+	default 512
 
 endif # BOARD_GOOGLE_STORM

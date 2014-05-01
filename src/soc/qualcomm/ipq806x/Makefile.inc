@@ -29,7 +29,9 @@ romstage-y += gpio.c
 romstage-$(CONFIG_SPI_FLASH) += spi.c
 romstage-y += timer.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
+romstage-y += cbmem.c
 
+ramstage-y += cbmem.c
 ramstage-y += clock.c
 ramstage-y += gpio.c
 ramstage-$(CONFIG_SPI_FLASH) += spi.c

@@ -76,6 +76,11 @@ void udelay(unsigned usec)
 	} while (runcount < val);
 }
 
+void timer_monotonic_get(struct mono_time *mt)
+{
+	mono_time_set_usecs(mt, (readl(GPT_COUNT_VAL) * 1000) / GPT_FREQ_KHZ);
+}
+
 #if 0
 
 /*

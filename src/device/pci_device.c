@@ -23,6 +23,7 @@
  * Copyright 1997 -- 1999 Martin Mares <mj@atrey.karlin.mff.cuni.cz>
  */
 
+#include <kconfig.h>
 #include <console/console.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -663,6 +664,50 @@ void pci_dev_set_subsystem(struct device *dev, unsigned vendor, unsigned device)
 int oprom_is_loaded = 0;
 #endif
 
+#if CONFIG_VGA_ROM_RUN
+static int should_run_oprom(struct device *dev)
+{
+	static int should_run = -1;
+
+	if (should_run >= 0)
+		return should_run;
+
+#if CONFIG_CHROMEOS
+	/* In ChromeOS we want to boot blazingly fast. Therefore
+	 * we don't run (VGA) option ROMs, unless we have to print
+	 * something on the screen before the kernel is loaded.
+	 */
+	if (!developer_mode_enabled() && !recovery_mode_enabled() &&
+	    !vboot_wants_oprom()) {
+		printk(BIOS_DEBUG, "Not running VGA Option ROM\n");
+		should_run = 0;
+		return should_run;
+	}
+#endif
+	should_run = 1;
+
+	return should_run;
+}
+
+static int should_load_oprom(struct device *dev)
+{
+#if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
+	/* If S3_VGA_ROM_RUN is disabled, skip running VGA option
+	 * ROMs when coming out of an S3 resume.
+	 */
+	if ((acpi_slp_type == 3) &&
+		((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
+		return 0;
+#endif
+	if (IS_ENABLED(CONFIG_ALWAYS_LOAD_OPROM))
+		return 1;
+	if (should_run_oprom(dev))
+		return 1;
+
+	return 0;
+}
+#endif /* CONFIG_VGA_ROM_RUN */
+
 /** Default handler: only runs the relevant PCI BIOS. */
 void pci_dev_init(struct device *dev)
 {
@@ -673,26 +718,8 @@ void pci_dev_init(struct device *dev)
 	if (((dev->class >> 8) != PCI_CLASS_DISPLAY_VGA))
 		return;
 
-#if CONFIG_CHROMEOS
-	/* In ChromeOS we want to boot blazingly fast. Therefore
-	 * we don't run (VGA) option ROMs, unless we have to print
-	 * something on the screen before the kernel is loaded.
-	 */
-	if (!developer_mode_enabled() && !recovery_mode_enabled() &&
-	    !vboot_wants_oprom()) {
-		printk(BIOS_DEBUG, "Not loading VGA Option ROM\n");
+	if (!should_load_oprom(dev))
 		return;
-	}
-#endif
-
-#if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
-	/* If S3_VGA_ROM_RUN is disabled, skip running VGA option
-	 * ROMs when coming out of an S3 resume.
-	 */
-	if ((acpi_slp_type == 3) &&
-		((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
-		return;
-#endif
 
 	rom = pci_rom_probe(dev);
 	if (rom == NULL)
@@ -700,6 +727,9 @@ void pci_dev_init(struct device *dev)
 
 	ram = pci_rom_load(dev, rom);
 	if (ram == NULL)
+		return;
+
+	if (!should_run_oprom(dev))
 		return;
 
 	run_bios(dev, (unsigned long)ram);

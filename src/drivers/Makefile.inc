@@ -17,6 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+subdirs-y += ams
 subdirs-y += ati
 subdirs-y += dec
 subdirs-y += emulation

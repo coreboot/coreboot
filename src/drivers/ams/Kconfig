@@ -1,0 +1,11 @@
+config DRIVERS_AS3722_RTC
+	bool "AS3722 RTC support"
+	default n
+
+config DRIVERS_AS3722_RTC_BUS
+	int "AS3722 RTC bus"
+	depends on DRIVERS_AS3722_RTC
+
+config DRIVERS_AS3722_RTC_ADDR
+	hex "AS3722 RTC chip address"
+	depends on DRIVERS_AS3722_RTC

@@ -32,7 +32,7 @@
 #endif
 
 
-static void cmos_reset_date(u8 has_century)
+static void cmos_reset_date(void)
 {
 	/* Now setup a default date equals to the build date */
 	struct rtc_time time = {
@@ -45,7 +45,7 @@ static void cmos_reset_date(u8 has_century)
 			bcd2bin(coreboot_build_date.year),
 		.wday = bcd2bin(coreboot_build_date.weekday)
 	};
-	rtc_set(&time, has_century);
+	rtc_set(&time);
 }
 
 #if CONFIG_USE_OPTION_TABLE
@@ -123,7 +123,7 @@ void cmos_init(int invalid)
 			cmos_write(0, i);
 #endif
 		if (cmos_invalid)
-			cmos_reset_date(RTC_HAS_NO_ALTCENTURY);
+			cmos_reset_date();
 
 		printk(BIOS_WARNING, "RTC:%s%s%s%s\n",
 			invalid?" Clear requested":"",
@@ -325,12 +325,12 @@ enum cb_err set_option(const char *name, void *value)
  * hurts some OSes. Even if we don't set USE_OPTION_TABLE, we need
  * to make sure the date is valid.
  */
-void cmos_check_update_date(u8 has_century)
+void cmos_check_update_date()
 {
 	u8 year, century;
 
-	/* Note: Need to check if the hardware supports RTC_CLK_ALTCENTURY. */
-	century = has_century ? cmos_read(RTC_CLK_ALTCENTURY) : 0;
+	/* Assume hardware always supports RTC_CLK_ALTCENTURY. */
+	century = cmos_read(RTC_CLK_ALTCENTURY);
 	year = cmos_read(RTC_CLK_YEAR);
 
 	/*
@@ -339,25 +339,23 @@ void cmos_check_update_date(u8 has_century)
 	 * if the date is valid.
 	 */
 	if (century > 0x99 || year > 0x99) /* Invalid date */
-		cmos_reset_date(has_century);
+		cmos_reset_date();
 }
 
-int rtc_set(const struct rtc_time *time, u8 has_century)
-{
+int rtc_set(const struct rtc_time *time){
 	cmos_write(bin2bcd(time->sec), RTC_CLK_SECOND);
 	cmos_write(bin2bcd(time->min), RTC_CLK_MINUTE);
 	cmos_write(bin2bcd(time->hour), RTC_CLK_HOUR);
 	cmos_write(bin2bcd(time->mday), RTC_CLK_DAYOFMONTH);
 	cmos_write(bin2bcd(time->mon), RTC_CLK_MONTH);
 	cmos_write(bin2bcd(time->year % 100), RTC_CLK_YEAR);
-	if (has_century)
-		cmos_write(bin2bcd(time->year / 100),
-			   RTC_CLK_ALTCENTURY);
+	/* Same assumption as above: We always have RTC_CLK_ALTCENTURY */
+	cmos_write(bin2bcd(time->year / 100), RTC_CLK_ALTCENTURY);
 	cmos_write(bin2bcd(time->wday + 1), RTC_CLK_DAYOFWEEK);
 	return 0;
 }
 
-int rtc_get(struct rtc_time *time, u8 has_century)
+int rtc_get(struct rtc_time *time)
 {
 	time->sec = bcd2bin(cmos_read(RTC_CLK_SECOND));
 	time->min = bcd2bin(cmos_read(RTC_CLK_MINUTE));
@@ -365,10 +363,8 @@ int rtc_get(struct rtc_time *time, u8 has_century)
 	time->mday = bcd2bin(cmos_read(RTC_CLK_DAYOFMONTH));
 	time->mon = bcd2bin(cmos_read(RTC_CLK_MONTH));
 	time->year = bcd2bin(cmos_read(RTC_CLK_YEAR));
-	if (has_century)
-		time->year += bcd2bin(cmos_read(RTC_CLK_ALTCENTURY)) * 100;
-	else
-		time->year += 2000;
+	/* Same assumption as above: We always have RTC_CLK_ALTCENTURY */
+	time->year += bcd2bin(cmos_read(RTC_CLK_ALTCENTURY)) * 100;
 	time->wday = bcd2bin(cmos_read(RTC_CLK_DAYOFWEEK)) - 1;
 	return 0;
 }

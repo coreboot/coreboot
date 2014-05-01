@@ -94,9 +94,6 @@
 #define RTC_CLK_YEAR		9
 #define RTC_CLK_ALTCENTURY	0x32
 
-#define RTC_HAS_ALTCENTURY	1
-#define RTC_HAS_NO_ALTCENTURY	0
-
 /* On PCs, the checksum is built only over bytes 16..45 */
 #define PC_CKS_RANGE_START	16
 #define PC_CKS_RANGE_END	45
@@ -173,7 +170,7 @@ static inline void cmos_write32(u8 offset, u32 value)
 
 #if !defined(__ROMCC__)
 void cmos_init(int invalid);
-void cmos_check_update_date(u8 has_century);
+void cmos_check_update_date(void);
 #if CONFIG_USE_OPTION_TABLE
 enum cb_err set_option(const char *name, void *val);
 enum cb_err get_option(void *dest, const char *name);

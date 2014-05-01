@@ -31,7 +31,7 @@ struct rtc_time
 	int wday;
 };
 
-int rtc_set(const struct rtc_time *time, u8 has_century);
-int rtc_get(struct rtc_time *time, u8 has_century);
+int rtc_set(const struct rtc_time *time);
+int rtc_get(struct rtc_time *time);
 
 #endif /* _RTC_H_ */

@@ -132,7 +132,7 @@ static void lpc_init(device_t dev)
 {
 	printk(BIOS_DEBUG, "SB800 - Late.c - lpc_init - Start.\n");
 
-	cmos_check_update_date(RTC_HAS_ALTCENTURY);
+	cmos_check_update_date();
 
 	/* Initialize the real time clock.
 	 * The 0 argument tells cmos_init not to

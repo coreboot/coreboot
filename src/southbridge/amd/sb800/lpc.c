@@ -74,7 +74,7 @@ static void lpc_init(device_t dev)
 	byte |= 1 << 0 | 1 << 3;
 	pci_write_config8(dev, 0xBB, byte);
 
-	cmos_check_update_date(RTC_HAS_ALTCENTURY);
+	cmos_check_update_date();
 }
 
 static void sb800_lpc_read_resources(device_t dev)

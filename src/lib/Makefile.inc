@@ -19,6 +19,8 @@
 subdirs-y += loaders
 
 bootblock-y += cbfs.c cbfs_core.c
+bootblock-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
+
 bootblock-y += memchr.c
 bootblock-y += memcmp.c
 
@@ -29,6 +31,7 @@ $(foreach arch,$(ARCH_SUPPORTED),\
 
 romstage-$(CONFIG_I2C_TPM) += delay.c
 romstage-y += cbfs.c cbfs_core.c
+romstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 romstage-$(CONFIG_COMPRESS_RAMSTAGE) += lzma.c lzmadecode.c
 romstage-$(CONFIG_CACHE_AS_RAM) += ramtest.c
 
@@ -55,6 +58,7 @@ ramstage-y += delay.c
 ramstage-y += fallback_boot.c
 ramstage-y += compute_ip_checksum.c
 ramstage-y += cbfs.c cbfs_core.c
+ramstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 ramstage-y += lzma.c lzmadecode.c
 ramstage-y += stack.c
 ramstage-y += clog2.c

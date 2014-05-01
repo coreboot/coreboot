@@ -1,4 +1,27 @@
 # SPI flash driver interface
+
+ifeq ($(CONFIG_COMMON_CBFS_SPI_WRAPPER),y)
+bootblock-y += spi_flash.c
+bootblock-$(CONFIG_SPI_FLASH_EON) += eon.c
+bootblock-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
+bootblock-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c
+bootblock-$(CONFIG_SPI_FLASH_SPANSION) += spansion.c
+bootblock-$(CONFIG_SPI_FLASH_SST) += sst.c
+bootblock-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
+bootblock-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
+bootblock-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
+
+romstage-$(CONFIG_SPI_FLASH) += spi_flash.c
+romstage-$(CONFIG_SPI_FLASH_EON) += eon.c
+romstage-$(CONFIG_SPI_FLASH_GIGADEVICE) += gigadevice.c
+romstage-$(CONFIG_SPI_FLASH_MACRONIX) += macronix.c
+romstage-$(CONFIG_SPI_FLASH_SPANSION) += spansion.c
+romstage-$(CONFIG_SPI_FLASH_SST) += sst.c
+romstage-$(CONFIG_SPI_FLASH_STMICRO) += stmicro.c
+romstage-$(CONFIG_SPI_FLASH_WINBOND) += winbond.c
+romstage-$(CONFIG_SPI_FRAM_RAMTRON) += ramtron.c
+endif
+
 ramstage-$(CONFIG_SPI_FLASH) += spi_flash.c
 
 # drivers

@@ -59,70 +59,70 @@ config SPI_FLASH_NO_FAST_READ
 
 config SPI_FLASH_ADESTO
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Adesto Technologies.
 
 config SPI_FLASH_AMIC
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by AMIC.
 
 config SPI_FLASH_ATMEL
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Atmel.
 
 config SPI_FLASH_EON
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by EON.
 
 config SPI_FLASH_GIGADEVICE
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Gigadevice.
 
 config SPI_FLASH_MACRONIX
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Macronix.
 
 config SPI_FLASH_SPANSION
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Spansion.
 
 config SPI_FLASH_SST
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by SST.
 
 config SPI_FLASH_STMICRO
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by ST MICRO.
 
 config SPI_FLASH_WINBOND
 	bool
-	default y
+	default y if !COMMON_CBFS_SPI_WRAPPER
 	help
 	  Select this option if your chipset driver needs to store certain
 	  data in the SPI flash and your SPI flash is made by Winbond.

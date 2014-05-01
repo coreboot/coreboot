@@ -47,6 +47,14 @@ config CBFS_PREFIX
 	  Select the prefix to all files put into the image. It's "fallback"
 	  by default, "normal" is a common alternative.
 
+config COMMON_CBFS_SPI_WRAPPER
+	bool
+	default n
+	depends on SPI_FLASH
+	depends on !ARCH_X86
+	help
+	 Use common wrapper to interface CBFS to SPI bootrom.
+
 choice
 	prompt "Compiler to use"
 	default COMPILER_GCC

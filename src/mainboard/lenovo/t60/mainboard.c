@@ -46,7 +46,7 @@ int get_cst_entries(acpi_cstate_t **entries)
 	return ARRAY_SIZE(cst_entries);
 }
 
-static void mainboard_enable(device_t dev)
+static void mainboard_init(device_t dev)
 {
 	struct southbridge_intel_i82801gx_config *config;
 	device_t dev0, idedev;
@@ -76,6 +76,11 @@ static void mainboard_enable(device_t dev)
 	/* set dock status led */
 	ec_write(0x0c, 0x08);
 	ec_write(0x0c, inb(0x164c) & 8 ? 0x89 : 0x09);
+}
+
+static void mainboard_enable(device_t dev)
+{
+	dev->ops->init = mainboard_init;
 }
 
 struct chip_operations mainboard_ops = {

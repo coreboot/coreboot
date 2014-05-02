@@ -344,6 +344,23 @@ struct soc_gpio_config* mainboard_get_gpios(void);
 #define UART_TXD_PAD			83
 #define PCU_SMB_CLK_PAD			88
 #define PCU_SMB_DATA_PAD		90
+#define SOC_DDI1_VDDEN_PAD		16
+
+static inline unsigned int ncore_pconf0(int pad_num)
+{
+	return GPNCORE_PAD_BASE + pad_num * 16;
+}
+
+static inline void ncore_select_func(int pad, int func)
+{
+	uint32_t reg;
+	uint32_t pconf0_addr = ncore_pconf0(pad);
+
+	reg = read32(pconf0_addr);
+	reg &= ~0x7;
+	reg |= func & 0x7;
+	write32(pconf0_addr, reg);
+}
 
 static inline unsigned int score_pconf0(int pad_num)
 {

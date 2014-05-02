@@ -36,6 +36,8 @@
 #include <smbios.h>
 #include "ec.h"
 #include "onboard.h"
+#include <baytrail/gpio.h>
+#include <bootstate.h>
 
 void mainboard_suspend_resume(void)
 {
@@ -173,4 +175,13 @@ static void mainboard_enable(device_t dev)
 
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
+};
+
+static void edp_vdden_cb(void *unused)
+{
+	ncore_select_func(SOC_DDI1_VDDEN_PAD, PAD_FUNC2);
+}
+
+BOOT_STATE_INIT_ENTRIES(edp_vdden_bscb) = {
+	BOOT_STATE_INIT_ENTRY(BS_DEV_INIT, BS_ON_EXIT, edp_vdden_cb, NULL),
 };

@@ -33,7 +33,7 @@ static const struct soc_gpio_map gpncore_gpio_map[] = {
 	GPIO_FUNC2,	/* S0_NC06 - EDP_HPD_L */
 	GPIO_INPUT,	/* S0_NC07 - DDI1_DDCDATA - STRAP */
 	GPIO_NC,	/* S0_NC08 - NC */
-	GPIO_FUNC2,	/* S0_NC09 - SOC_DISP_ON_C */
+	GPIO_OUT_HIGH,	/* S0_NC09 - SOC_DISP_ON_C */
 	GPIO_FUNC2,	/* S0_NC10 - SOC_EDP_BLON_C */
 	GPIO_FUNC2,	/* S0_NC11 - SOC_DPST_PWM_C */
 	GPIO_NC,	/* S0_NC12 - NC */

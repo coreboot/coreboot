@@ -91,6 +91,4 @@ UINT32 agesawrapper_amds3laterestore (VOID);
 UINT32 agesawrapper_fchs3earlyrestore (VOID);
 UINT32 agesawrapper_fchs3laterestore (VOID);
 
-UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
-
 #endif

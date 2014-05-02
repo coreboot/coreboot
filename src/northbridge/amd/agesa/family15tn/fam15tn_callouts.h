@@ -39,6 +39,8 @@ typedef struct _BIOS_BUFFER_NODE {
   UINT32 NextNodeOffset;
 } BIOS_BUFFER_NODE;
 
+UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
+
 AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam15tn_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam15tn_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

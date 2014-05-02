@@ -27,6 +27,7 @@
 #include "dimmSpd.h"
 #include "fam15tn_callouts.h"
 #include <cbmem.h>
+#include <arch/acpi.h>
 
 #define AGESA_RUNTIME_SIZE 4096
 
@@ -48,6 +49,21 @@ static AGESA_STATUS alloc_cbmem(AGESA_BUFFER_PARAMS *AllocParams) {
 	AllocParams->BufferPointer = p + used;
 	used += AllocParams->BufferLength;
 	return AGESA_SUCCESS;
+}
+
+UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader)
+{
+	UINT32 heap = BIOS_HEAP_START_ADDRESS;
+
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Both romstage and ramstage has this S3 detect. */
+	if (acpi_get_sleep_type() == 3)
+		heap = (UINT32) cbmem_find(CBMEM_ID_RESUME_SCRATCH) +
+		 (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE);
+		  /* himem_heap_base + high_stack_size */
+#endif
+
+	return heap;
 }
 
 AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

@@ -41,8 +41,6 @@
 #include "FchPlatform.h"
 #include "Fch.h"
 #include <cpu/amd/agesa/s3_resume.h>
-#include <cbmem.h>
-#include <arch/acpi.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include "hudson.h"
@@ -246,23 +244,6 @@ agesawrapper_amdinitearly (
 	AmdReleaseStruct (&AmdParamStruct);
 
 	return (UINT32)status;
-}
-
-UINT32 GetHeapBase(
-	AMD_CONFIG_PARAMS *StdHeader
-	)
-{
-	UINT32 heap;
-
-#if CONFIG_HAVE_ACPI_RESUME
-	/* Both romstage and ramstage has this S3 detect. */
-	if (acpi_get_sleep_type() == 3)
-		heap = (UINT32)cbmem_find(CBMEM_ID_RESUME_SCRATCH) + (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE); /* base + high_stack_size */
-	else
-#endif
-		heap = BIOS_HEAP_START_ADDRESS; /* Low mem */
-
-	return heap;
 }
 
 UINT32

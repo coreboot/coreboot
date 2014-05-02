@@ -25,6 +25,23 @@
 #include "heapManager.h"
 #include <northbridge/amd/agesa/family15/dimmSpd.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
+#include <cbmem.h>
+
+UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader)
+{
+	UINT32 heap = BIOS_HEAP_START_ADDRESS;
+
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Both romstage and ramstage has this S3 detect. */
+	if (acpi_get_sleep_type() == 3)
+		heap = (UINT32) cbmem_find(CBMEM_ID_RESUME_SCRATCH) +
+		 (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE);
+		  /* himem_heap_base + high_stack_size */
+#endif
+
+	return heap;
+}
 
 AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -48,8 +65,8 @@ AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	AllocParams->BufferPointer = NULL;
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	if (BiosHeapBasePtr->StartOfAllocatedNodes == 0) {
 		/* First allocation */
@@ -171,10 +188,10 @@ AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	BIOS_HEAP_MANAGER  *BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS *AllocParams;
 
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
-
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
+
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	/* Find target node to deallocate in list of allocated nodes.
 	   Return AGESA_BOUNDS_CHK if the BufferHandle is not found
@@ -284,8 +301,8 @@ AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (UINT8 *) BIOS_HEAP_START_ADDRESS;
-	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BIOS_HEAP_START_ADDRESS;
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
 	AllocNodePtr = (BIOS_BUFFER_NODE *) (BiosHeapBaseAddr + AllocNodeOffset);

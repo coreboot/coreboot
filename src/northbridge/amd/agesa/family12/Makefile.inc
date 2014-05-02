@@ -18,8 +18,10 @@
 #
 
 romstage-y += fam12_callouts.c
+romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
 ramstage-y += fam12_callouts.c
+ramstage-y += dimmSpd.c
 
 ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += ssdt.asl

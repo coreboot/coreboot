@@ -19,7 +19,6 @@
 
 #include "agesawrapper.h"
 #include "amdlib.h"
-#include "dimmSpd.h"
 #include "BiosCallOuts.h"
 #include "Ids.h"
 #include "OptionsIds.h"
@@ -169,14 +168,6 @@ AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
     }
   }
   return AGESA_SUCCESS;
-}
-
-AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-  AGESA_STATUS Status;
-  Status = AmdMemoryReadSPD (Func, Data, (AGESA_READ_SPD_PARAMS *)ConfigPtr);
-
-  return Status;
 }
 
 /*  Call the host environment interface to provide a user hook opportunity. */

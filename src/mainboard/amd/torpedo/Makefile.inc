@@ -33,14 +33,12 @@ endif
 
 romstage-y += buildOpts.c
 romstage-y += agesawrapper.c
-romstage-y += dimmSpd.c
 romstage-y += BiosCallOuts.c
 romstage-y += PlatformGnbPcie.c
 romstage-y += gpio.c
 
 ramstage-y += buildOpts.c
 ramstage-y += agesawrapper.c
-ramstage-y += dimmSpd.c
 ramstage-y += BiosCallOuts.c
 ramstage-y += PlatformGnbPcie.c
 

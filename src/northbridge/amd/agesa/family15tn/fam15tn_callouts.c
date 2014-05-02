@@ -28,6 +28,7 @@
 #include "fam15tn_callouts.h"
 #include <cbmem.h>
 #include <arch/acpi.h>
+#include <string.h>
 
 #define AGESA_RUNTIME_SIZE 4096
 
@@ -64,6 +65,12 @@ UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader)
 #endif
 
 	return heap;
+}
+
+void EmptyHeap(void)
+{
+	void *BiosManagerPtr = (void *) GetHeapBase(NULL);
+	memset(BiosManagerPtr, 0, BIOS_HEAP_SIZE);
 }
 
 AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

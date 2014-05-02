@@ -40,6 +40,7 @@ typedef struct _BIOS_BUFFER_NODE {
 } BIOS_BUFFER_NODE;
 
 UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
+void EmptyHeap(void);
 
 AGESA_STATUS fam16kb_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam16kb_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

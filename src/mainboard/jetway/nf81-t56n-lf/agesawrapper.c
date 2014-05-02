@@ -182,10 +182,7 @@ AGESA_STATUS agesawrapper_amdinitearly(void)
 AGESA_STATUS agesawrapper_amdinitpost(void)
 {
 	AGESA_STATUS status;
-	uint16_t					i;
-	uint32_t					*HeadPtr;
 	AMD_INTERFACE_PARAMS	AmdParamStruct;
-	BIOS_HEAP_MANAGER		*BiosManagerPtr;
 
 	memset(&AmdParamStruct, 0, sizeof(AMD_INTERFACE_PARAMS));
 
@@ -202,15 +199,7 @@ AGESA_STATUS agesawrapper_amdinitpost(void)
 	AmdReleaseStruct (&AmdParamStruct);
 
 	/* Initialize heap space */
-	BiosManagerPtr = (BIOS_HEAP_MANAGER *)GetHeapBase(&AmdParamStruct.StdHeader);
-
-	HeadPtr = (uint32_t *) ((uint8_t *) BiosManagerPtr + sizeof (BIOS_HEAP_MANAGER));
-	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof (BIOS_HEAP_MANAGER)/4)); i++) {
-		*HeadPtr = 0x00000000;
-		HeadPtr++;
-	}
-	BiosManagerPtr->StartOfAllocatedNodes = 0;
-	BiosManagerPtr->StartOfFreedNodes = 0;
+	EmptyHeap();
 
 	return status;
 }

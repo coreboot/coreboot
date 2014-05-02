@@ -39,6 +39,7 @@ typedef struct _BIOS_BUFFER_NODE {
 } BIOS_BUFFER_NODE;
 
 UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
+void EmptyHeap(void);
 
 /* REQUIRED CALLOUTS
  * AGESA ADVANCED CALLOUTS - CPU

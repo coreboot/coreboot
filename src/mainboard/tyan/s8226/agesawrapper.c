@@ -296,11 +296,8 @@ UINT32 agesawrapper_amdinitearly(VOID)
 UINT32 agesawrapper_amdinitpost(VOID)
 {
 	AGESA_STATUS status;
-	UINT16 i;
-	UINT32 *HeadPtr;
 	AMD_INTERFACE_PARAMS  AmdParamStruct;
 	AMD_POST_PARAMS *PostParams;
-	BIOS_HEAP_MANAGER    *BiosManagerPtr;
 	UINT32 TscRateInMhz;
 	CPU_SPECIFIC_SERVICES *FamilySpecificServices;
 
@@ -328,15 +325,7 @@ UINT32 agesawrapper_amdinitpost(VOID)
 	AmdReleaseStruct(&AmdParamStruct);
 
 	/* Initialize heap space */
-	BiosManagerPtr = (BIOS_HEAP_MANAGER *)GetHeapBase(&AmdParamStruct.StdHeader);
-
-	HeadPtr = (UINT32 *) ((UINT8 *) BiosManagerPtr + sizeof(BIOS_HEAP_MANAGER));
-	for (i = 0; i < ((BIOS_HEAP_SIZE/4) - (sizeof(BIOS_HEAP_MANAGER)/4)); i++) {
-		*HeadPtr = 0x00000000;
-		HeadPtr++;
-	}
-	BiosManagerPtr->StartOfAllocatedNodes = 0;
-	BiosManagerPtr->StartOfFreedNodes = 0;
+	EmptyHeap();
 
 	GetCpuServicesOfCurrentCore ((CONST CPU_SPECIFIC_SERVICES **)&FamilySpecificServices, &AmdParamStruct.StdHeader);
 	FamilySpecificServices->GetTscRate (FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);

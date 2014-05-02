@@ -32,11 +32,12 @@
 typedef struct {
 	unsigned int blocksize;
 	unsigned int numblocks;
-	unsigned int protocol;
 	endpoint_t *bulk_in;
 	endpoint_t *bulk_out;
-	int usbdisk_created;
-	int ready;
+	u8 usbdisk_created;
+	s8 ready;
+	u8 lun;
+	u8 num_luns;
 	void *data; /* For use by consumers of libpayload. */
 } usbmsc_inst_t;
 

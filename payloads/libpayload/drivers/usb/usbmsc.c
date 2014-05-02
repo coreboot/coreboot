@@ -170,10 +170,10 @@ reset_transport (usbdev_t *dev)
 }
 
 /* device may stall this command, so beware! */
-static int
-get_max_luns (usbdev_t *dev)
+static void
+initialize_luns (usbdev_t *dev)
 {
-	unsigned char luns = 75;
+	usbmsc_inst_t *msc = MSC_INST (dev);
 	dev_req_t dr;
 	dr.bmRequestType = 0;
 	dr.data_dir = device_to_host;
@@ -185,23 +185,24 @@ get_max_luns (usbdev_t *dev)
 	dr.wValue = 0;
 	dr.wIndex = 0;
 	dr.wLength = 1;
-	if (dev->controller->control (dev, IN, sizeof (dr), &dr, 1, &luns) < 0)
-		luns = 0;	// assume only 1 lun if req fails
-	return luns;
+	if (dev->controller->control (dev, IN, sizeof (dr), &dr,
+			sizeof (msc->num_luns), &msc->num_luns) < 0)
+		msc->num_luns = 0;	/* assume only 1 lun if req fails */
+	msc->num_luns++;	/* Get Max LUN returns number of last LUN */
+	msc->lun = 0;
 }
 
 unsigned int tag;
-unsigned char lun = 0;
 
 static void
 wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
-	  int cmdlen)
+	  int cmdlen, u8 lun)
 {
 	memset (cbw, 0, sizeof (cbw_t));
 
 	cbw->dCBWSignature = cbw_signature;
 	cbw->dCBWTag = ++tag;
-	cbw->bCBWLUN = lun;	// static value per device
+	cbw->bCBWLUN = lun;
 
 	cbw->dCBWDataTransferLength = datalen;
 	cbw->bmCBWFlags = dir;
@@ -236,7 +237,7 @@ execute_command (usbdev_t *dev, cbw_direction dir, const u8 *cb, int cblen,
 	if ((cb[0] == 0x1b) && (cb[4] == 1)) {	//start command, always succeed
 		always_succeed = 1;
 	}
-	wrap_cbw (&cbw, buflen, dir, cb, cblen);
+	wrap_cbw (&cbw, buflen, dir, cb, cblen, MSC_INST (dev)->lun);
 	if (dev->controller->
 	    bulk (MSC_INST (dev)->bulk_out, sizeof (cbw), (u8 *) &cbw, 0) < 0) {
 		return reset_transport (dev);
@@ -623,7 +624,6 @@ usb_msc_init (usbdev_t *dev)
 	if (!dev->data)
 		fatal("Not enough memory for USB MSC device.\n");
 
-	MSC_INST (dev)->protocol = interface->bInterfaceSubClass;
 	MSC_INST (dev)->bulk_in = 0;
 	MSC_INST (dev)->bulk_out = 0;
 	MSC_INST (dev)->usbdisk_created = 0;
@@ -655,7 +655,8 @@ usb_msc_init (usbdev_t *dev)
 		MSC_INST (dev)->bulk_in->endpoint,
 		MSC_INST (dev)->bulk_out->endpoint);
 
-	usb_debug ("  has %d luns\n", get_max_luns (dev) + 1);
+	initialize_luns (dev);
+	usb_debug ("  has %d luns\n", MSC_INST (dev)->num_luns);
 
 	/* Test if unit is ready (nothing to do if it isn't). */
 	if (usb_msc_test_unit_ready (dev) != USB_MSC_READY)
@@ -668,16 +669,22 @@ usb_msc_init (usbdev_t *dev)
 static void
 usb_msc_poll (usbdev_t *dev)
 {
-	int prev_ready = MSC_INST (dev)->ready;
+	usbmsc_inst_t *msc = MSC_INST (dev);
+	int prev_ready = msc->ready;
 
 	if (usb_msc_test_unit_ready (dev) == USB_MSC_DETACHED)
 		return;
 
-	if (!prev_ready && MSC_INST (dev)->ready) {
-		usb_debug ("usb msc: not ready -> ready\n");
+	if (!prev_ready && msc->ready) {
+		usb_debug ("usb msc: not ready -> ready (lun %d)\n", msc->lun);
 		usb_msc_create_disk (dev);
-	} else if (prev_ready && !MSC_INST (dev)->ready) {
-		usb_debug ("usb msc: ready -> not ready\n");
+	} else if (prev_ready && !msc->ready) {
+		usb_debug ("usb msc: ready -> not ready (lun %d)\n", msc->lun);
 		usb_msc_remove_disk (dev);
+	} else if (!prev_ready && !msc->ready) {
+		u8 new_lun = (msc->lun + 1) % msc->num_luns;
+		usb_debug("usb msc: not ready (lun %d) -> lun %d\n", msc->lun,
+			  new_lun);
+		msc->lun = new_lun;
 	}
 }

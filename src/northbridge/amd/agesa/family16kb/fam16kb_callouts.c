@@ -26,6 +26,23 @@
 #include "cbfs.h"
 #include "dimmSpd.h"
 #include "fam16kb_callouts.h"
+#include <cbmem.h>
+#include <arch/acpi.h>
+
+UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader)
+{
+	UINT32 heap = BIOS_HEAP_START_ADDRESS;
+
+#if CONFIG_HAVE_ACPI_RESUME
+	/* Both romstage and ramstage has this S3 detect. */
+	if (acpi_get_sleep_type() == 3)
+		heap = (UINT32) cbmem_find(CBMEM_ID_RESUME_SCRATCH) +
+		 (CONFIG_HIGH_SCRATCH_MEMORY_SIZE - BIOS_HEAP_SIZE);
+		  /* himem_heap_base + high_stack_size */
+#endif
+
+	return heap;
+}
 
 AGESA_STATUS fam16kb_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {

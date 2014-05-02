@@ -205,7 +205,7 @@ wrap_cbw (cbw_t *cbw, int datalen, cbw_direction dir, const u8 *cmd,
 
 	cbw->dCBWDataTransferLength = datalen;
 	cbw->bmCBWFlags = dir;
-	memcpy (cbw->CBWCB, cmd, sizeof (cbw->CBWCB));
+	memcpy (cbw->CBWCB, cmd, cmdlen);
 	cbw->bCBWCBLength = cmdlen;
 }
 
@@ -290,7 +290,7 @@ typedef struct {
 	unsigned int block;	//2-5
 	unsigned char res2;	//6
 	unsigned short numblocks;	//7-8
-	unsigned char res3;	//9 - the block is 10 bytes long
+	unsigned char control;	//9 - the block is 10 bytes long
 } __attribute__ ((packed)) cmdblock_t;
 
 typedef struct {
@@ -298,8 +298,14 @@ typedef struct {
 	unsigned char res1;	//1
 	unsigned char res2;	//2
 	unsigned char res3;	//3
-	unsigned char lun;	//4
-	unsigned char res4;	//5
+	union {			//4
+		struct {
+			unsigned long start:1;  // for START STOP UNIT
+			unsigned long:7;
+		};
+		unsigned char length;		// for REQUEST SENSE
+	};
+	unsigned char control;	//5
 } __attribute__ ((packed)) cmdblock6_t;
 
 /**
@@ -409,9 +415,10 @@ request_sense (usbdev_t *dev)
 	cmdblock6_t cb;
 	memset (&cb, 0, sizeof (cb));
 	cb.command = 0x3;
+	cb.length = sizeof (buf);
 
 	return execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
-				sizeof (cb), buf, 19, 1);
+				sizeof (cb), buf, sizeof (buf), 1);
 }
 
 static int request_sense_no_media (usbdev_t *dev)
@@ -421,9 +428,10 @@ static int request_sense_no_media (usbdev_t *dev)
 	cmdblock6_t cb;
 	memset (&cb, 0, sizeof (cb));
 	cb.command = 0x3;
+	cb.length = sizeof (buf);
 
 	ret = execute_command (dev, cbw_direction_data_in, (u8 *) &cb,
-				sizeof (cb), buf, 19, 1);
+				sizeof (cb), buf, sizeof (buf), 1);
 
 	if (ret)
 		return ret;
@@ -458,7 +466,7 @@ spin_up (usbdev_t *dev)
 	cmdblock6_t cb;
 	memset (&cb, 0, sizeof (cb));
 	cb.command = 0x1b;
-	cb.lun = 1;
+	cb.start = 1;
 	return execute_command (dev, cbw_direction_data_out, (u8 *) &cb,
 				sizeof (cb), 0, 0, 0);
 }

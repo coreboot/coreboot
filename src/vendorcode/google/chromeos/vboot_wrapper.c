@@ -225,9 +225,13 @@ VbError_t VbExTpmOpen(void)
 VbError_t VbExTpmSendReceive(const uint8_t *request, uint32_t request_length,
                              uint8_t *response, uint32_t *response_length)
 {
-	if (gcontext->tis_sendrecv(request, request_length,
-	                           response, response_length))
+	size_t len = *response_length;
+	if (gcontext->tis_sendrecv(request, request_length, response, &len))
 		return VBERROR_UNKNOWN;
+	/* check 64->32bit overflow and (re)check response buffer overflow */
+	if (len > *response_length)
+		return VBERROR_UNKNOWN;
+	*response_length = len;
 	return VBERROR_SUCCESS;
 }
 

@@ -23,6 +23,7 @@
 #include <ec/google/chromeec/ec_commands.h>
 #include <string.h>
 #include <vendorcode/google/chromeos/chromeos.h>
+#include <bootmode.h>
 #include <cpu/samsung/exynos5420/cpu.h>
 #include <cpu/samsung/exynos5420/gpio.h>
 

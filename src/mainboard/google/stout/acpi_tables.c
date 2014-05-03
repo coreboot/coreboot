@@ -31,7 +31,7 @@
 #include <cpu/cpu.h>
 #include <cpu/x86/msr.h>
 #include <vendorcode/google/chromeos/gnvs.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <bootmode.h>
 #include <ec/quanta/it8518/ec.h>
 #include "ec.h"
 #include "onboard.h"

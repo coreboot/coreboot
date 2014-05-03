@@ -18,7 +18,7 @@
  */
 
 #include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <bootmode.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>

@@ -17,8 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-romstage-$(CONFIG_CHROMEOS) += chromeos.c
-ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+romstage-y += chromeos.c
+ramstage-y += chromeos.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += i915.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += graphics.c
 ramstage-$(CONFIG_MAINBOARD_DO_NATIVE_VGA_INIT) += intel_dp.c

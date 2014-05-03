@@ -202,9 +202,7 @@ void main(unsigned long bist)
 
 	console_init();
 
-#if CONFIG_CHROMEOS
 	init_bootmode_straps();
-#endif
 
 	/* Halt if there was a built in self test failure */
 	report_bist_failure(bist);

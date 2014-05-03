@@ -19,8 +19,8 @@
 
 ramstage-y += ec.c
 
-romstage-$(CONFIG_CHROMEOS) += chromeos.c
-ramstage-$(CONFIG_CHROMEOS) += chromeos.c
+romstage-y += chromeos.c
+ramstage-y += chromeos.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += mainboard_smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += ec.c

@@ -144,7 +144,6 @@ static void lb_framebuffer(struct lb_header *header)
 #endif
 }
 
-#if CONFIG_CHROMEOS
 void fill_lb_gpio(struct lb_gpio *gpio, int num,
 			 int polarity, const char *name, int value)
 {
@@ -156,6 +155,7 @@ void fill_lb_gpio(struct lb_gpio *gpio, int num,
 	strncpy((char *)gpio->name, name, GPIO_MAX_NAME_LENGTH);
 }
 
+#if CONFIG_CHROMEOS
 static void lb_gpios(struct lb_header *header)
 {
 	struct lb_gpios *gpios;

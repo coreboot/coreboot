@@ -67,9 +67,6 @@ static int spd_read_byte(u32 device, u32 address)
 #include "cpu/amd/model_10xxx/init_cpus.c"
 #include "northbridge/amd/amdfam10/early_ht.c"
 
-#define RC00  0
-#define RC01  1
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	struct sys_info *sysinfo = &sysinfo_car;

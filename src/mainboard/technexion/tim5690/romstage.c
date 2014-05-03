@@ -17,11 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#define RC0 (6<<8)
-#define RC1 (7<<8)
-
-#define SMBUS_HUB 0x71
-
 #include <stdint.h>
 #include <string.h>
 #include <device/pci_def.h>

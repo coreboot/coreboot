@@ -20,6 +20,8 @@
 #ifndef __BOOTMODE_H__
 #define __BOOTMODE_H__
 
+/* functions implemented per mainboard: */
+void init_bootmode_straps(void);
 int get_developer_mode_switch(void);
 int get_recovery_mode_switch(void);
 

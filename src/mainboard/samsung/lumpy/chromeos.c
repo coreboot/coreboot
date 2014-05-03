@@ -18,7 +18,7 @@
  */
 
 #include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
+#include <bootmode.h>
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -111,9 +111,9 @@ int get_recovery_mode_switch(void)
 	return (pci_read_config32(dev, SATA_SP) >> FLAG_REC_MODE) & 1;
 }
 
-#ifdef __PRE_RAM__
-void save_chromeos_gpios(void)
+void init_bootmode_straps(void)
 {
+#ifdef __PRE_RAM__
 	u16 gpio_base = pci_read_config32(PCH_LPC_DEV, GPIO_BASE) & 0xfffe;
 	u32 gp_lvl2 = inl(gpio_base + GP_LVL2);
 	u32 gp_lvl = inl(gpio_base + GP_LVL);
@@ -130,5 +130,5 @@ void save_chromeos_gpios(void)
 		flags |= (1 << FLAG_DEV_MODE);
 
 	pci_write_config32(PCI_DEV(0, 0x1f, 2), SATA_SP, flags);
-}
 #endif
+}

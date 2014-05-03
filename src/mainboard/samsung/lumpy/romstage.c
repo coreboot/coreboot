@@ -31,6 +31,7 @@
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
+#include <bootmode.h>
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit.h"
 #include "southbridge/intel/bd82x6x/pch.h"
@@ -202,7 +203,7 @@ void main(unsigned long bist)
 	console_init();
 
 #if CONFIG_CHROMEOS
-	save_chromeos_gpios();
+	init_bootmode_straps();
 #endif
 
 	/* Halt if there was a built in self test failure */

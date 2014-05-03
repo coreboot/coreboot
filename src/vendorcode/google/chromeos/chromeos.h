@@ -26,9 +26,6 @@
 
 /* functions implemented per mainboard: */
 int get_write_protect_state(void);
-#ifdef __PRE_RAM__
-void save_chromeos_gpios(void);
-#endif
 
 /* functions implemented in vbnv.c: */
 int get_recovery_mode_from_vbnv(void);

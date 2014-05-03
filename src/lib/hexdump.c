@@ -62,7 +62,7 @@ void hexdump(const void *memory, size_t length)
 	}
 }
 
-void hexdump32(char LEVEL, const void *d, int len)
+void hexdump32(char LEVEL, const void *d, size_t len)
 {
 	int count = 0;
 

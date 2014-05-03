@@ -52,6 +52,6 @@ extern unsigned char _estack[];
 
 /* Defined in src/lib/hexdump.c */
 void hexdump(const void *memory, size_t length);
-void hexdump32(char LEVEL, const void *d, int len);
+void hexdump32(char LEVEL, const void *d, size_t len);
 
 #endif /* __LIB_H__ */

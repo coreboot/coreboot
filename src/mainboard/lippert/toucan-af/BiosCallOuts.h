@@ -20,56 +20,11 @@
 #ifndef _BIOS_CALLOUT_H_
 #define _BIOS_CALLOUT_H_
 
-#include "Porting.h"
-#include "AGESA.h"
+#include <northbridge/amd/agesa/family14/fam14_callouts.h>
 #include "SB800.h"
 
-#define BIOS_HEAP_START_ADDRESS			0x10000 /* HEAP during cold boot */
-#define BIOS_HEAP_SIZE				0x20000
-#define BSP_STACK_BASE_ADDR			0x30000
-
-typedef struct _BIOS_HEAP_MANAGER {
-	//UINT32 AvailableSize;
-	UINT32 StartOfAllocatedNodes;
-	UINT32 StartOfFreedNodes;
-} BIOS_HEAP_MANAGER;
-
-typedef struct _BIOS_BUFFER_NODE {
-	UINT32 BufferHandle;
-	UINT32 BufferSize;
-	UINT32 NextNodeOffset;
-} BIOS_BUFFER_NODE;
-/*
- * CALLOUTS
- */
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-
-/* REQUIRED CALLOUTS
- * AGESA ADVANCED CALLOUTS - CPU
- */
-AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-
-/* AGESA ADVANCED CALLOUTS - MEMORY */
-AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
-
-/* BIOS DEFAULT RET */
-AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+/* CALLOUT Initialization */
+AGESA_STATUS GetBiosCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 /* FCH GPIO access helpers */
 #define FCH_IOMUX(gpio_nr) (*(u8*)(ACPI_MMIO_BASE+IOMUX_BASE+(gpio_nr)))

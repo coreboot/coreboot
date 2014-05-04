@@ -64,6 +64,4 @@ AGESA_STATUS agesawrapper_amds3laterestore(void);
 AGESA_STATUS agesawrapper_amdlaterunaptask(uint32_t, uint32_t, void *);
 void * agesawrapper_getlateinitptr(int);
 
-UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
-
 #endif /* _AGESAWRAPPER_H_ */

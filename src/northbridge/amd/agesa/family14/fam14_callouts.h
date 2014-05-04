@@ -39,6 +39,8 @@ typedef struct _BIOS_BUFFER_NODE {
 	UINT32 NextNodeOffset;
 } BIOS_BUFFER_NODE;
 
+UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
+
 /* REQUIRED CALLOUTS
  * AGESA ADVANCED CALLOUTS - CPU
  */
@@ -51,6 +53,7 @@ AGESA_STATUS BiosGetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 /* AGESA ADVANCED CALLOUTS - MEMORY */
 AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
+AGESA_STATUS BiosReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 /* BIOS DEFAULT RET */
 AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

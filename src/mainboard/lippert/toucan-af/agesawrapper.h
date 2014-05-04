@@ -90,6 +90,4 @@ UINT32 agesawrapper_amds3laterestore (void);
 UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 void *agesawrapper_getlateinitptr (int pick);
 
-UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
-
 #endif

@@ -383,8 +383,3 @@ AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 
 	return Status;
 }
-
-AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	return AGESA_UNSUPPORTED;
-}

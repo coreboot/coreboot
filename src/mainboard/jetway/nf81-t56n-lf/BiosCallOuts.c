@@ -33,13 +33,13 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_DO_RESET,			BiosReset },
 	{AGESA_LOCATE_BUFFER,			BiosLocateBuffer },
 	{AGESA_READ_SPD,			BiosReadSpd },
-	{AGESA_READ_SPD_RECOVERY,		BiosDefaultRet },
+	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			BiosRunFuncOnAp },
 	{AGESA_GNB_PCIE_SLOT_RESET,		BiosGnbPcieSlotReset },
 	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },
-	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	BiosHookBeforeDramInitRecovery },
-	{AGESA_HOOKBEFORE_DQS_TRAINING,		BiosHookBeforeDQSTraining },
-	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	BiosHookBeforeExitSelfRefresh },
+	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	agesa_NoopSuccess },
+	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
+	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
 };
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
@@ -65,30 +65,12 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 }
 
 /* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	return AGESA_SUCCESS;
-}
-
-/* Call the host environment interface to provide a user hook opportunity. */
 AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	/* Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
 	 * Make sure the right speed settings are selected.
 	 */
 	((MEM_DATA_STRUCT*)ConfigPtr)->ParameterListPtr->DDR3Voltage = VOLT1_5;
-	return AGESA_SUCCESS;
-}
-
-/* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	return AGESA_SUCCESS;
-}
-
-/* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
 	return AGESA_SUCCESS;
 }
 

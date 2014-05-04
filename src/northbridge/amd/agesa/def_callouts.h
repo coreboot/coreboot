@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2011,2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,22 +18,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _BIOS_CALLOUT_H_
-#define _BIOS_CALLOUT_H_
+#ifndef CALLOUTS_AMD_AGESA_H
+#define CALLOUTS_AMD_AGESA_H
 
-#include <northbridge/amd/agesa/def_callouts.h>
-#include <northbridge/amd/agesa/family14/fam14_callouts.h>
-#include "SB800.h"
+#include "Porting.h"
+#include "AGESA.h"
 
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
-/* FCH GPIO access helpers */
-#define FCH_IOMUX(gpio_nr) (*(u8*)(ACPI_MMIO_BASE+IOMUX_BASE+(gpio_nr)))
-#define FCH_GPIO(gpio_nr) (*(volatile u8*)(ACPI_MMIO_BASE+GPIO_BASE+(gpio_nr)))
-static inline u8 fch_gpio_state(unsigned int gpio_nr)
-{
-	return FCH_GPIO(gpio_nr) >> 7;
-}
+AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
-#endif //_BIOS_CALLOUT_H_
+#endif /* CALLOUTS_AMD_AGESA_H */

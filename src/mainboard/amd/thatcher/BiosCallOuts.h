@@ -20,6 +20,7 @@
 #ifndef _BIOS_CALLOUT_H_
 #define _BIOS_CALLOUT_H_
 
+#include <northbridge/amd/agesa/def_callouts.h>
 #include <northbridge/amd/agesa/family15tn/fam15tn_callouts.h>
 
 /* CALLOUT Initialization */

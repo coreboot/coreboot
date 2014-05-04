@@ -375,8 +375,3 @@ AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	Status = 0;
 	return Status;
 }
-
-AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	return AGESA_UNSUPPORTED;
-}

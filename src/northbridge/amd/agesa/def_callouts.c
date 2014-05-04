@@ -17,22 +17,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef _BIOS_CALLOUT_H_
-#define _BIOS_CALLOUT_H_
+#include "AGESA.h"
+#include "Ids.h"
+#include "def_callouts.h"
 
-#include <northbridge/amd/agesa/def_callouts.h>
-#include <northbridge/amd/agesa/family14/fam14_callouts.h>
-#include "SB800.h"
-
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-
-/* FCH GPIO access helpers */
-#define FCH_IOMUX(gpio_nr) (*(u8*)(ACPI_MMIO_BASE+IOMUX_BASE+(gpio_nr)))
-#define FCH_GPIO(gpio_nr) (*(volatile u8*)(ACPI_MMIO_BASE+GPIO_BASE+(gpio_nr)))
-static inline u8 fch_gpio_state(unsigned int gpio_nr)
+AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
-	return FCH_GPIO(gpio_nr) >> 7;
+	return AGESA_UNSUPPORTED;
 }
 
-#endif //_BIOS_CALLOUT_H_
+AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	return AGESA_SUCCESS;
+}
+
+AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	IDS_NV_ITEM *IdsPtr = ((IDS_CALLOUT_STRUCT *) ConfigPtr)->IdsNvPtr;
+	if (Data == IDS_CALLOUT_INIT)
+		IdsPtr[0].IdsNvValue = IdsPtr[0].IdsNvId = 0xffff;
+	return AGESA_SUCCESS;
+}

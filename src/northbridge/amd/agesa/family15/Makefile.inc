@@ -17,6 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+romstage-y += fam15_callouts.c
 romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
+ramstage-y += fam15_callouts.c

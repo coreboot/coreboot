@@ -42,8 +42,8 @@ enum {
 };
 
 typedef struct {
-	uint32_t CalloutName;
-	AGESA_STATUS (*CalloutPtr) (uint32_t Func, uint32_t Data, void* ConfigPtr);
+	UINT32 CalloutName;
+	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
 } BIOS_CALLOUT_STRUCT;
 
 
@@ -64,6 +64,6 @@ AGESA_STATUS agesawrapper_amds3laterestore(void);
 AGESA_STATUS agesawrapper_amdlaterunaptask(uint32_t, uint32_t, void *);
 void * agesawrapper_getlateinitptr(int);
 
-uint32_t GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
+UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
 
 #endif /* _AGESAWRAPPER_H_ */

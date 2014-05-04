@@ -77,7 +77,7 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	},
 };
 
-AGESA_STATUS GetBiosCallout (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	size_t i;
 	AGESA_STATUS CalloutStatus;
@@ -99,10 +99,10 @@ AGESA_STATUS GetBiosCallout (uint32_t Func, uint32_t Data, void *ConfigPtr)
 	return CalloutStatus;
 }
 
-AGESA_STATUS BiosAllocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosAllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	uint32_t              AvailableHeapSize;
-	uint8_t               *BiosHeapBaseAddr;
+	UINT8                 *BiosHeapBaseAddr;
 	uint32_t              CurrNodeOffset;
 	uint32_t              PrevNodeOffset;
 	uint32_t              FreedNodeOffset;
@@ -121,7 +121,7 @@ AGESA_STATUS BiosAllocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
 	AllocParams->BufferPointer = NULL;
 
 	AvailableHeapSize = BIOS_HEAP_SIZE - sizeof (BIOS_HEAP_MANAGER);
-	BiosHeapBaseAddr = (uint8_t *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	printk(BIOS_SPEW, "%s BiosHeapBaseAddr: %x\n", __func__, (u32) BiosHeapBaseAddr);
@@ -230,10 +230,10 @@ AGESA_STATUS BiosAllocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS BiosDeallocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosDeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 
-	uint8_t               *BiosHeapBaseAddr;
+	UINT8                 *BiosHeapBaseAddr;
 	uint32_t              AllocNodeOffset;
 	uint32_t              PrevNodeOffset;
 	uint32_t              NextNodeOffset;
@@ -248,7 +248,7 @@ AGESA_STATUS BiosDeallocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (uint8_t *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	/* Find target node to deallocate in list of allocated nodes.
@@ -349,17 +349,17 @@ AGESA_STATUS BiosDeallocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr
 	return AGESA_SUCCESS;
 }
 
-AGESA_STATUS BiosLocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	uint32_t				AllocNodeOffset;
-	uint8_t				*BiosHeapBaseAddr;
+	UINT8				*BiosHeapBaseAddr;
 	BIOS_BUFFER_NODE	*AllocNodePtr;
 	BIOS_HEAP_MANAGER	*BiosHeapBasePtr;
 	AGESA_BUFFER_PARAMS	*AllocParams;
 
 	AllocParams = (AGESA_BUFFER_PARAMS *) ConfigPtr;
 
-	BiosHeapBaseAddr = (uint8_t *) GetHeapBase(&(AllocParams->StdHeader));
+	BiosHeapBaseAddr = (UINT8 *) GetHeapBase(&(AllocParams->StdHeader));
 	BiosHeapBasePtr = (BIOS_HEAP_MANAGER *) BiosHeapBaseAddr;
 
 	AllocNodeOffset = BiosHeapBasePtr->StartOfAllocatedNodes;
@@ -383,7 +383,7 @@ AGESA_STATUS BiosLocateBuffer (uint32_t Func, uint32_t Data, void *ConfigPtr)
 
 }
 
-AGESA_STATUS BiosRunFuncOnAp (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS		Status;
 
@@ -391,7 +391,7 @@ AGESA_STATUS BiosRunFuncOnAp (uint32_t Func, uint32_t Data, void *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS BiosReset (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS		Status;
 	uint8_t			Value;
@@ -427,7 +427,7 @@ AGESA_STATUS BiosReset (uint32_t Func, uint32_t Data, void *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS BiosReadSpd (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 #ifdef __PRE_RAM__
@@ -439,19 +439,19 @@ AGESA_STATUS BiosReadSpd (uint32_t Func, uint32_t Data, void *ConfigPtr)
 	return Status;
 }
 
-AGESA_STATUS BiosDefaultRet (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosDefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	return AGESA_UNSUPPORTED;
 }
 
 /* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDQSTraining (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosHookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
 /* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	/* Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
 	 * Make sure the right speed settings are selected.
@@ -461,19 +461,19 @@ AGESA_STATUS BiosHookBeforeDramInit (uint32_t Func, uint32_t Data, void *ConfigP
 }
 
 /* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInitRecovery (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosHookBeforeDramInitRecovery (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
 /* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeExitSelfRefresh (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosHookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	return AGESA_SUCCESS;
 }
 
 /* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (uint32_t Func, uint32_t Data, void *ConfigPtr)
+AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	uint32_t 		FcnData;

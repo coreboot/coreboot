@@ -33,14 +33,14 @@ STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,          fam15tn_AllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,        fam15tn_DeallocateBuffer },
-	{AGESA_DO_RESET,                 fam15tn_Reset },
 	{AGESA_LOCATE_BUFFER,            fam15tn_LocateBuffer },
 	{AGESA_READ_SPD,                 fam15tn_ReadSpd },
-	{AGESA_READ_SPD_RECOVERY,        fam15tn_DefaultRet },
-	{AGESA_RUNFUNC_ONAP,             fam15tn_RunFuncOnAp },
-	{AGESA_GET_IDS_INIT_DATA,        fam15tn_GetIdsInitData },
-	{AGESA_HOOKBEFORE_DQS_TRAINING,  fam15tn_HookBeforeDQSTraining },
-	{AGESA_HOOKBEFORE_EXIT_SELF_REF, fam15tn_HookBeforeExitSelfRefresh },
+	{AGESA_DO_RESET,                 agesa_Reset },
+	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },
+	{AGESA_RUNFUNC_ONAP,             agesa_RunFuncOnAp },
+	{AGESA_GET_IDS_INIT_DATA,        agesa_EmptyIdsInitData },
+	{AGESA_HOOKBEFORE_DQS_TRAINING,  agesa_NoopSuccess },
+	{AGESA_HOOKBEFORE_EXIT_SELF_REF, agesa_NoopSuccess },
 	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
 	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
 };

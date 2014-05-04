@@ -45,12 +45,7 @@ void EmptyHeap(void);
 AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam15tn_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam15tn_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_GetIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_Reset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_HookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_HookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_DefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+
 AGESA_STATUS fam15tn_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 #endif /* CALLOUTS_AMD_AGESA_FAM15TN_H */

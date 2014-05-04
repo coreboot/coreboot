@@ -33,53 +33,18 @@
 
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
-	{AGESA_ALLOCATE_BUFFER,
-	 BiosAllocateBuffer
-	},
-
-	{AGESA_DEALLOCATE_BUFFER,
-	 BiosDeallocateBuffer
-	},
-
-	{AGESA_DO_RESET,
-	 BiosReset
-	},
-
-	{AGESA_LOCATE_BUFFER,
-	 BiosLocateBuffer
-	},
-
-	{AGESA_READ_SPD,
-	 BiosReadSpd_from_cbfs
-	},
-
-	{AGESA_READ_SPD_RECOVERY,
-	 BiosDefaultRet
-	},
-
-	{AGESA_RUNFUNC_ONAP,
-	 BiosRunFuncOnAp
-	},
-
-	{AGESA_GNB_PCIE_SLOT_RESET,
-	 BiosGnbPcieSlotReset
-	},
-
-	{AGESA_HOOKBEFORE_DRAM_INIT,
-	 BiosHookBeforeDramInit
-	},
-
-	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,
-	 BiosHookBeforeDramInitRecovery
-	},
-
-	{AGESA_HOOKBEFORE_DQS_TRAINING,
-	 BiosHookBeforeDQSTraining
-	},
-
-	{AGESA_HOOKBEFORE_EXIT_SELF_REF,
-	 BiosHookBeforeExitSelfRefresh
-	},
+	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
+	{AGESA_DEALLOCATE_BUFFER,		BiosDeallocateBuffer },
+	{AGESA_DO_RESET,			BiosReset },
+	{AGESA_LOCATE_BUFFER,			BiosLocateBuffer },
+	{AGESA_READ_SPD,			BiosReadSpd_from_cbfs },
+	{AGESA_READ_SPD_RECOVERY,		BiosDefaultRet },
+	{AGESA_RUNFUNC_ONAP,			BiosRunFuncOnAp },
+	{AGESA_GNB_PCIE_SLOT_RESET,		BiosGnbPcieSlotReset},
+	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },
+	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	BiosHookBeforeDramInitRecovery },
+	{AGESA_HOOKBEFORE_DQS_TRAINING,		BiosHookBeforeDQSTraining},
+	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	BiosHookBeforeExitSelfRefresh },
 };
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

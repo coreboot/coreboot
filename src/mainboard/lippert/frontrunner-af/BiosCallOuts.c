@@ -23,6 +23,11 @@
 #include "heapManager.h"
 #include <northbridge/amd/agesa/family14/dimmSpd.h>
 
+/* Should AGESA_GNB_PCIE_SLOT_RESET use agesa_NoopSuccess?
+ *
+ * Dedicated reset is not needed for the on-board Intel I210 GbE controller.
+ */
+
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
@@ -32,7 +37,7 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_READ_SPD,			BiosReadSpd },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			BiosRunFuncOnAp },
-	{AGESA_GNB_PCIE_SLOT_RESET,		BiosGnbPcieSlotReset },
+	{AGESA_GNB_PCIE_SLOT_RESET,		agesa_NoopUnsupported },
 	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },
 	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
@@ -84,11 +89,4 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	}
 
 	return AGESA_SUCCESS;
-}
-
-/* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	// Dedicated reset not needed for the on-board Intel I210 GbE controller.
-	return AGESA_UNSUPPORTED;
 }

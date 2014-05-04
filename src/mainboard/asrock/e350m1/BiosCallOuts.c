@@ -24,6 +24,12 @@
 #include "SB800.h"
 #include <northbridge/amd/agesa/family14/dimmSpd.h>
 
+/* Should AGESA_GNB_PCIE_SLOT_RESET use agesa_NoopSuccess?
+ *
+ * Board is known to have some issues with integrated NIC and
+ * might need implementation to drive some GPIOs.
+ */
+
 CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
@@ -36,7 +42,7 @@ CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
-	{AGESA_GNB_PCIE_SLOT_RESET,		BiosGnbPcieSlotReset },
+	{AGESA_GNB_PCIE_SLOT_RESET,		agesa_NoopUnsupported },
 };
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
@@ -144,10 +150,4 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
   // disable memory clear for boot time reduction
   MemData->ParameterListPtr->EnableMemClr = FALSE;
   return Status;
-}
-
-/* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-  return AGESA_UNSUPPORTED;
 }

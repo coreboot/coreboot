@@ -32,9 +32,9 @@
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
-	{AGESA_ALLOCATE_BUFFER,          fam16kb_AllocateBuffer },
-	{AGESA_DEALLOCATE_BUFFER,        fam16kb_DeallocateBuffer },
-	{AGESA_LOCATE_BUFFER,            fam16kb_LocateBuffer },
+	{AGESA_ALLOCATE_BUFFER,          agesa_AllocateBuffer },
+	{AGESA_DEALLOCATE_BUFFER,        agesa_DeallocateBuffer },
+	{AGESA_LOCATE_BUFFER,            agesa_LocateBuffer },
 	{AGESA_READ_SPD,                 fam16kb_ReadSpd },
 	{AGESA_DO_RESET,                 agesa_Reset },
 	{AGESA_READ_SPD_RECOVERY,        agesa_NoopUnsupported },

@@ -23,28 +23,6 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-#define BIOS_HEAP_START_ADDRESS  0x010000000
-#define BIOS_HEAP_SIZE				0x30000
-#define BSP_STACK_BASE_ADDR			0x30000
-
-
-typedef struct _BIOS_HEAP_MANAGER {
-  UINT32 StartOfAllocatedNodes;
-  UINT32 StartOfFreedNodes;
-} BIOS_HEAP_MANAGER;
-
-typedef struct _BIOS_BUFFER_NODE {
-  UINT32 BufferHandle;
-  UINT32 BufferSize;
-  UINT32 NextNodeOffset;
-} BIOS_BUFFER_NODE;
-
-UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
-void EmptyHeap(void);
-
-AGESA_STATUS fam15tn_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 AGESA_STATUS fam15tn_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 

@@ -25,6 +25,38 @@
 #include "Porting.h"
 #include "AGESA.h"
 
+#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
+
+#define BIOS_HEAP_START_ADDRESS 	0x010000000
+#define BIOS_HEAP_SIZE			0x30000
+#define BSP_STACK_BASE_ADDR		0x30000
+
+#else
+
+#define BIOS_HEAP_START_ADDRESS		0x10000 /* HEAP during cold boot */
+#define BIOS_HEAP_SIZE			0x20000
+#define BSP_STACK_BASE_ADDR		0x30000
+
+#endif
+
+typedef struct _BIOS_HEAP_MANAGER {
+	UINT32 StartOfAllocatedNodes;
+	UINT32 StartOfFreedNodes;
+} BIOS_HEAP_MANAGER;
+
+typedef struct _BIOS_BUFFER_NODE {
+	UINT32 BufferHandle;
+	UINT32 BufferSize;
+	UINT32 NextNodeOffset;
+} BIOS_BUFFER_NODE;
+
+UINT32 GetHeapBase(AMD_CONFIG_PARAMS *StdHeader);
+void EmptyHeap(void);
+
+
+AGESA_STATUS agesa_AllocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_DeallocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+AGESA_STATUS agesa_LocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_NoopSuccess (UINT32 Func, UINT32 Data, VOID *ConfigPtr);

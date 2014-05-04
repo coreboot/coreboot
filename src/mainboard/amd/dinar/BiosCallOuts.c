@@ -91,9 +91,9 @@ static AGESA_STATUS board_ReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
 
 const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
-	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
-	{AGESA_DEALLOCATE_BUFFER,		BiosDeallocateBuffer },
-	{AGESA_LOCATE_BUFFER,			BiosLocateBuffer},
+	{AGESA_ALLOCATE_BUFFER,			agesa_AllocateBuffer },
+	{AGESA_DEALLOCATE_BUFFER,		agesa_DeallocateBuffer },
+	{AGESA_LOCATE_BUFFER,			agesa_LocateBuffer},
 	{AGESA_DO_RESET,			agesa_Reset },
 	{AGESA_READ_SPD,			board_ReadSpd },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },

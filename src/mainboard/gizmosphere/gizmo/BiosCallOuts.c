@@ -35,8 +35,8 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,		BiosDeallocateBuffer },
-	{AGESA_DO_RESET,			BiosReset },
 	{AGESA_LOCATE_BUFFER,			BiosLocateBuffer },
+	{AGESA_DO_RESET,			agesa_Reset },
 	{AGESA_READ_SPD,			BiosReadSpd_from_cbfs },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			BiosRunFuncOnAp },

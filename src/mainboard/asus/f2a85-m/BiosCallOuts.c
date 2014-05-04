@@ -37,7 +37,7 @@ STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_HOOKBEFORE_DQS_TRAINING,  fam15tn_HookBeforeDQSTraining },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF, fam15tn_HookBeforeExitSelfRefresh },
 	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
-	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  fam15tn_HookGfxGetVbiosImage }
+	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
 };
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

@@ -21,6 +21,7 @@
 #include "amdlib.h"
 #include "Ids.h"
 #include "agesawrapper.h"
+#include <cbfs.h>
 #include "def_callouts.h"
 
 AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
@@ -85,3 +86,15 @@ AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return Status;
 }
 
+#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
+/* FIXME: we would like GFX disable for fam14 too for headless systems. */
+AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt)
+{
+	GFX_VBIOS_IMAGE_INFO  *pVbiosImageInfo = (GFX_VBIOS_IMAGE_INFO *)ConfigPrt;
+	pVbiosImageInfo->ImagePtr = cbfs_get_file_content(
+			CBFS_DEFAULT_MEDIA, "pci"CONFIG_VGA_BIOS_ID".rom",
+			CBFS_TYPE_OPTIONROM, NULL);
+	/* printk(BIOS_DEBUG, "IMGptr=%x\n", pVbiosImageInfo->ImagePtr); */
+	return pVbiosImageInfo->ImagePtr == NULL ? AGESA_WARNING : AGESA_SUCCESS;
+}
+#endif

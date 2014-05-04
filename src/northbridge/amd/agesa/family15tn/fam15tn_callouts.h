@@ -51,7 +51,6 @@ AGESA_STATUS fam15tn_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam15tn_HookBeforeDQSTraining (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam15tn_HookBeforeExitSelfRefresh (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS fam15tn_DefaultRet (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-AGESA_STATUS fam15tn_HookGfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt);
 AGESA_STATUS fam15tn_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 #endif /* CALLOUTS_AMD_AGESA_FAM15TN_H */

@@ -336,7 +336,7 @@ AGESA_STATUS BiosRunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS		Status;
 
-	Status = agesawrapper_amdlaterunaptask (Data, ConfigPtr);
+	Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
 	return Status;
 }
 

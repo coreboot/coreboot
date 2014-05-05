@@ -516,11 +516,7 @@ agesawrapper_amdinitlate (
   return (UINT32)Status;
 }
 
-UINT32
-agesawrapper_amdlaterunaptask (
-  UINT32 Data,
-  VOID *ConfigPtr
-  )
+UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
   AGESA_STATUS Status;
   AP_EXE_PARAMS ApExeParams;

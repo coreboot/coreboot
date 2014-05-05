@@ -467,7 +467,7 @@ UINT32 agesawrapper_amdinitlate(VOID)
  * @param[in] UINTN ApicIdOfCore,
  * @param[in] AP_EXE_PARAMS *LaunchApParams
  */
-UINT32 agesawrapper_amdlaterunaptask(UINT32 Data, VOID *ConfigPtr)
+UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	AMD_LATE_PARAMS AmdLateParams;

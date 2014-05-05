@@ -11,6 +11,7 @@ config CPU_SPECIFIC_OPTIONS
 	select ARCH_ROMSTAGE_X86_32
 	select ARCH_RAMSTAGE_X86_32
 	select ALT_CBFS_LOAD_PAYLOAD
+	select ALWAYS_LOAD_OPROM
 	select BACKUP_DEFAULT_SMM_REGION
 	select CACHE_MRC_BIN
 	select CACHE_MRC_SETTINGS
@@ -174,6 +175,23 @@ config MONOTONIC_TIMER_MSR
 	select HAVE_MONOTONIC_TIMER
 	help
 	  Provide a monotonic timer using the 24MHz MSR counter.
+
+config INTEL_PCH_UART_CONSOLE
+	bool "Use Serial IO UART for console"
+	default n
+	select HAVE_UART_MEMORY_MAPPED
+	select CONSOLE_SERIAL8250MEM
+	depends on !CONFIG_DRIVERS_OXFORD_OXPCIE
+
+config INTEL_PCH_UART_CONSOLE_NUMBER
+	hex "Serial IO UART number to use for console"
+	default "0x0"
+	depends on INTEL_PCH_UART_CONSOLE
+
+config TTYS0_BASE
+	hex
+	default 0xd6000000
+	depends on INTEL_PCH_UART_CONSOLE
 
 config EHCI_BAR
 	hex

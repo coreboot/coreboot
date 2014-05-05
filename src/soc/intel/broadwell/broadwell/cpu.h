@@ -36,6 +36,7 @@
 #define CPUID_HASWELL_HALO	0x40661
 #define CPUID_BROADWELL_C0	0x306d2
 #define CPUID_BROADWELL_D0	0x306d3
+#define CPUID_BROADWELL_E0	0x306d4
 
 /* CPU bus clock is fixed at 100MHz */
 #define CPU_BCLK		100

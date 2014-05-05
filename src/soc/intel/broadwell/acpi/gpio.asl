@@ -20,8 +20,16 @@
 Device (GPIO)
 {
 	// GPIO Controller
-	Name (_HID, "INT33C7")
-	Name (_CID, "INT33C7")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3437")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C7")
+	}
 	Name (_UID, 1)
 
 	Name (RBUF, ResourceTemplate()
@@ -39,8 +47,9 @@ Device (GPIO)
 			,            // ResourceSourceIndex
 			,            // ResourceSource
 			BAR0)
-		Interrupt (ResourceConsumer,
-			Level, ActiveHigh, Shared, , , ) {14}
+		// Disabled due to IRQ storm: http://crosbug.com/p/29548
+		//Interrupt (ResourceConsumer,
+		//	Level, ActiveHigh, Shared, , , ) {14}
 	})
 
 	Method (_CRS, 0, NotSerialized)

@@ -17,12 +17,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <arch/cpu.h>
 #include <stdlib.h>
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <broadwell/cpu.h>
 #include <broadwell/msr.h>
 #include <broadwell/romstage.h>
+
+u32 cpu_family_model(void)
+{
+	return cpuid_eax(1) & 0x0fff0ff0;
+}
 
 void set_max_freq(void)
 {

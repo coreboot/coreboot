@@ -22,6 +22,46 @@
 // Serial IO Device BAR0 and BAR1 is 4KB
 #define SIO_BAR_LEN 0x1000
 
+// Put SerialIO device in D0 state
+// Arg0 - BAR1 of device
+// Arg1 - Set if device is in ACPI mode
+Method (LPD0, 2, Serialized)
+{
+	// PCI mode devices will be handled by OS PCI bus driver
+	If (LEqual (Arg1, 0)) {
+		Return
+	}
+
+	OperationRegion (SPRT, SystemMemory, Add (Arg0, 0x84), 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	And (SPCS, 0xFFFFFFFC, SPCS)
+	Store (SPCS, Local0) // Read back after writing
+}
+
+// Put SerialIO device in D3 state
+// Arg0 - BAR1 of device
+// Arg1 - Set if device is in ACPI mode
+Method (LPD3, 2, Serialized)
+{
+	// PCI mode devices will be handled by OS PCI bus driver
+	If (LEqual (Arg1, 0)) {
+		Return
+	}
+
+	OperationRegion (SPRT, SystemMemory, Add (Arg0, 0x84), 4)
+	Field (SPRT, DWordAcc, NoLock, Preserve)
+	{
+		SPCS, 32
+	}
+
+	Or (SPCS, 0x3, SPCS)
+	Store (SPCS, Local0) // Read back after writing
+}
+
 // Serial IO Resource Consumption for BAR1
 Device (SIOR)
 {
@@ -152,10 +192,21 @@ Device (SDMA)
 Device (I2C0)
 {
 	// Serial IO I2C0 Controller
-	Name (_HID, "INT33C2")
-	Name (_CID, "INT33C2")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3432")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C2")
+	}
 	Name (_UID, 1)
 	Name (_ADR, 0x00150001)
+
+	Name (SSCN, Package () { 432, 507, 9 })
+	Name (FMCN, Package () { 72, 160, 9 })
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()
@@ -167,9 +218,8 @@ Device (I2C0)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x18, 4, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x19, 5, Width32Bit, DMA2) // Rx
+		FixedDMA (0x18, 4, Width32Bit, DMA1) // Tx
+		FixedDMA (0x19, 5, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -198,15 +248,36 @@ Device (I2C0)
 			Return (0xF)
 		}
 	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (\S1B1, \S1EN)
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (\S1B1, \S1EN)
+	}
 }
 
 Device (I2C1)
 {
 	// Serial IO I2C1 Controller
-	Name (_HID, "INT33C3")
-	Name (_CID, "INT33C3")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3433")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C3")
+	}
 	Name (_UID, 1)
 	Name (_ADR, 0x00150002)
+
+	Name (SSCN, Package () { 432, 507, 9 })
+	Name (FMCN, Package () { 72, 160, 9 })
 
 	// BAR0 is assigned during PCI enumeration and saved into NVS
 	Name (RBUF, ResourceTemplate ()
@@ -218,9 +289,8 @@ Device (I2C1)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x1A, 6, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x1B, 7, Width32Bit, DMA2) // Rx
+		FixedDMA (0x1A, 6, Width32Bit, DMA1) // Tx
+		FixedDMA (0x1B, 7, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -249,13 +319,31 @@ Device (I2C1)
 			Return (0xF)
 		}
 	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (\S2B1, \S2EN)
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (\S2B1, \S2EN)
+	}
 }
 
 Device (SPI0)
 {
 	// Serial IO SPI0 Controller
-	Name (_HID, "INT33C0")
-	Name (_CID, "INT33C0")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3430")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C0")
+	}
 	Name (_UID, 1)
 	Name (_ADR, 0x00150003)
 
@@ -287,13 +375,31 @@ Device (SPI0)
 			Return (0xF)
 		}
 	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (\S3B1, \S3EN)
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (\S3B1, \S3EN)
+	}
 }
 
 Device (SPI1)
 {
 	// Serial IO SPI1 Controller
-	Name (_HID, "INT33C1")
-	Name (_CID, "INT33C1")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3431")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C1")
+	}
 	Name (_UID, 1)
 	Name (_ADR, 0x00150004)
 
@@ -307,9 +413,8 @@ Device (SPI1)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x10, 0, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x11, 1, Width32Bit, DMA2) // Rx
+		FixedDMA (0x10, 0, Width32Bit, DMA1) // Tx
+		FixedDMA (0x11, 1, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -338,13 +443,31 @@ Device (SPI1)
 			Return (0xF)
 		}
 	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (\S4B1, \S4EN)
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (\S4B1, \S4EN)
+	}
 }
 
 Device (UAR0)
 {
 	// Serial IO UART0 Controller
-	Name (_HID, "INT33C4")
-	Name (_CID, "INT33C4")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3434")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C4")
+	}
 	Name (_UID, 1)
 	Name (_ADR, 0x00150005)
 
@@ -358,9 +481,8 @@ Device (UAR0)
 	// DMA channels are only used if Serial IO DMA controller is enabled
 	Name (DBUF, ResourceTemplate ()
 	{
-		// TODO: Need to update IASL to support FixedDMA
-		//FixedDMA (0x16, 2, Width32Bit, DMA1) // Tx
-		//FixedDMA (0x17, 3, Width32Bit, DMA2) // Rx
+		FixedDMA (0x16, 2, Width32Bit, DMA1) // Tx
+		FixedDMA (0x17, 3, Width32Bit, DMA2) // Rx
 	})
 
 	Method (_CRS, 0, NotSerialized)
@@ -389,13 +511,31 @@ Device (UAR0)
 			Return (0xF)
 		}
 	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (\S5B1, \S5EN)
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (\S5B1, \S5EN)
+	}
 }
 
 Device (UAR1)
 {
 	// Serial IO UART1 Controller
-	Name (_HID, "INT33C5")
-	Name (_CID, "INT33C5")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3435")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C5")
+	}
 	Name (_UID, 1)
 	Name (_ADR, 0x00150006)
 
@@ -427,12 +567,31 @@ Device (UAR1)
 			Return (0xF)
 		}
 	}
+
+	Method (_PS0, 0, Serialized)
+	{
+		^^LPD0 (\S6B1, \S6EN)
+	}
+
+	Method (_PS3, 0, Serialized)
+	{
+		^^LPD3 (\S6B1, \S6EN)
+	}
 }
 
 Device (SDIO)
 {
 	// Serial IO SDIO Controller
-	Name (_HID, "INT33C6")
+	Method (_HID)
+	{
+		If (\ISWP ()) {
+			// WildcatPoint
+			Return ("INT3436")
+		}
+
+		// LynxPoint-LP
+		Return ("INT33C6")
+	}
 	Name (_CID, "PNP0D40")
 	Name (_UID, 1)
 	Name (_ADR, 0x00170000)

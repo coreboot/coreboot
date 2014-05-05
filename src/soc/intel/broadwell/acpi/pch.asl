@@ -39,10 +39,28 @@ Scope (\)
 		, 5,
 		HPTE, 1,	// Address Enable
 	}
+
+	/*
+	 * Check PCH type
+	 * Return 1 if PCH is WildcatPoint
+	 * Return 0 if PCH is LynxPoint
+	 */
+	Method (ISWP)
+	{
+		And (\_SB.PCI0.LPCB.PDID, 0xfff0, Local0)
+		If (LEqual (Local0, 0x9cc0)) {
+			Return (1)
+		} Else {
+			Return (0)
+		}
+	}
 }
 
 // High Definition Audio (Azalia) 0:1b.0
 #include "hda.asl"
+
+// ADSP/SST 0:13.0
+#include "adsp.asl"
 
 // PCI Express Ports 0:1c.x
 #include "pcie.asl"

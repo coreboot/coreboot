@@ -33,11 +33,12 @@
 #define SIO_NVS_UART0		5
 #define SIO_NVS_UART1		6
 #define SIO_NVS_SDIO		7
+#define SIO_NVS_ADSP		8
 
 typedef struct {
-	u8	enable[8];
-	u32	bar0[8];
-	u32	bar1[8];
+	u8	enable[9];
+	u32	bar0[9];
+	u32	bar1[9];
 } __attribute__((packed)) device_nvs_t;
 
 #endif

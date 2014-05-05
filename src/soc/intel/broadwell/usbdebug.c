@@ -17,30 +17,35 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <stdint.h>
 #include <arch/io.h>
-#include <cbmem.h>
+#include <console/console.h>
+#include <usbdebug.h>
 #include <device/pci.h>
+#include <device/pci_def.h>
 #include <broadwell/pci_devs.h>
-#include <broadwell/systemagent.h>
 
-static unsigned long get_top_of_ram(void)
+void set_debug_port(unsigned int port)
 {
-	/*
-	 * Base of DPR is top of usable DRAM below 4GiB. The register has
-	 * 1 MiB alignment and reports the TOP of the range, the base
-	 * must be calculated from the size in MiB in bits 11:4.
-	 */
-	u32 dpr = pci_read_config32(SA_DEV_ROOT, DPR);
-	u32 tom = dpr & ~((1 << 20) - 1);
-
-	/* Subtract DMA Protected Range size if enabled */
-	if (dpr & DPR_EPM)
-		tom -= (dpr & DPR_SIZE_MASK) << 16;
-
-	return (unsigned long)tom;
+	/* Hardcoded to physical port 1 */
 }
 
-void *cbmem_top(void)
+void enable_usbdebug(unsigned int port)
 {
-	return (void *)get_top_of_ram();
+	u32 tmp32;
+
+	tmp32 = pci_read_config32(PCH_DEV_EHCI, PCI_VENDOR_ID);
+	if (tmp32 == 0xffffffff || tmp32 == 0)
+		return;
+
+	/* Set the EHCI BAR address. */
+	pci_write_config32(PCH_DEV_EHCI, EHCI_BAR_INDEX, CONFIG_EHCI_BAR);
+
+	/* Enable access to the EHCI memory space registers. */
+	pci_write_config8(PCH_DEV_EHCI, PCI_COMMAND, PCI_COMMAND_MEMORY);
+
+	/* Force ownership of the Debug Port to the EHCI controller. */
+	tmp32 = read32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET);
+	tmp32 |= (1 << 30);
+	write32(CONFIG_EHCI_BAR + CONFIG_EHCI_DEBUG_OFFSET, tmp32);
 }

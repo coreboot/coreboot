@@ -10,6 +10,7 @@ subdirs-y += ../../../cpu/intel/microcode
 subdirs-y += ../../../cpu/intel/turbo
 
 ramstage-y += acpi.c
+ramstage-y += adsp.c
 ramstage-y += chip.c
 ramstage-y += cpu.c
 ramstage-y += elog.c
@@ -61,6 +62,12 @@ smm-y      += tsc_freq.c
 ramstage-y += ehci.c
 ramstage-y += xhci.c
 smm-y      += xhci.c
+
+ifeq ($(CONFIG_USBDEBUG),y)
+ramstage-y += usbdebug.c
+romstage-y += usbdebug.c
+smm-y      += usbdebug.c
+endif
 
 INCLUDES += -Isrc/soc/intel/broadwell/
 

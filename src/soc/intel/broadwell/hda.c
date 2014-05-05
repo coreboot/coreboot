@@ -27,6 +27,7 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <soc/intel/common/hda_verb.h>
+#include <broadwell/pch.h>
 #include <broadwell/ramstage.h>
 #include <broadwell/rcba.h>
 
@@ -134,11 +135,35 @@ static void hda_init(struct device *dev)
 	}
 }
 
+static void hda_enable(struct device *dev)
+{
+	u32 reg32;
+
+	if (!dev->enabled) {
+		/* Route I/O buffers to ADSP function */
+		reg32 = pci_read_config32(dev, 0x42);
+		reg32 |= (1 << 7) | (1 << 6);
+		pci_write_config32(dev, 0x42, reg32);
+
+		printk(BIOS_INFO, "HDA disabled, I/O buffers routed to ADSP\n");
+
+		/* Ensure memory, io, and bus master are all disabled */
+		reg32 = pci_read_config32(dev, PCI_COMMAND);
+		reg32 &= ~(PCI_COMMAND_MASTER |
+			   PCI_COMMAND_MEMORY | PCI_COMMAND_IO);
+		pci_write_config32(dev, PCI_COMMAND, reg32);
+
+		/* Disable this device */
+		pch_disable_devfn(dev);
+	}
+}
+
 static struct device_operations hda_ops = {
 	.read_resources		= &pci_dev_read_resources,
 	.set_resources		= &pci_dev_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.init			= &hda_init,
+	.enable			= &hda_enable,
 	.ops_pci		= &broadwell_pci_ops,
 };
 

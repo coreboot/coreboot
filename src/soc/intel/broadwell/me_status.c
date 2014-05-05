@@ -26,6 +26,8 @@
 #include <broadwell/pci_devs.h>
 #include <broadwell/me.h>
 
+#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG)
+
 /* HFS1[3:0] Current Working State Values */
 static const char *me_cws_values[] = {
 	[ME_HFS_CWS_RESET]	= "Reset",
@@ -276,3 +278,4 @@ void intel_me_status(void)
 	}
 	printk(BIOS_DEBUG, "\n");
 }
+#endif

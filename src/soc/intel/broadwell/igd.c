@@ -472,6 +472,7 @@ static void igd_init(struct device *dev)
 {
 	int is_broadwell = !!(cpu_family_model() == BROADWELL_FAMILY_ULT);
 	u32 rp1_gfx_freq;
+	extern int oprom_is_loaded;
 
 	/* IGD needs to be Bus Master */
 	u32 reg32 = pci_read_config32(dev, PCI_COMMAND);
@@ -509,6 +510,18 @@ static void igd_init(struct device *dev)
 	} else {
 		igd_cdclk_init_haswell(dev);
 		reg_script_run_on_dev(dev, haswell_late_init_script);
+	}
+
+	if (!oprom_is_loaded) {
+		/*
+		 * Enable DDI-A if the Option ROM did not execute:
+		 *
+		 * bit 0: Display detected (RO)
+		 * bit 4: DDI A supports 4 lanes and DDI E is not used
+		 * bit 7: DDI buffer is idle
+		 */
+		gtt_write(DDI_BUF_CTL_A, DDI_BUF_IS_IDLE | DDI_A_4_LANES |
+			  DDI_INIT_DISPLAY_DETECTED);
 	}
 }
 

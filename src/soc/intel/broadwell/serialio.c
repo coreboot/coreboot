@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <broadwell/iobp.h>
 #include <broadwell/nvs.h>
+#include <broadwell/pci_devs.h>
 #include <broadwell/pch.h>
 #include <broadwell/ramstage.h>
 #include <broadwell/rcba.h>
@@ -34,11 +35,24 @@
 #include <chip.h>
 
 /* Set D3Hot Power State in ACPI mode */
-static void serialio_enable_d3hot(struct device *dev)
+static void serialio_enable_d3hot(struct resource *res)
 {
-	u32 reg32 = pci_read_config32(dev, PCH_PCS);
+	u32 reg32 = read32(res->base + PCH_PCS);
 	reg32 |= PCH_PCS_PS_D3HOT;
-	pci_write_config32(dev, PCH_PCS, reg32);
+	write32(res->base + PCH_PCS, reg32);
+}
+
+static int serialio_uart_is_debug(struct device *dev)
+{
+#if CONFIG_INTEL_PCH_UART_CONSOLE
+	switch (dev->path.pci.devfn) {
+	case PCH_DEVFN_UART0: /* UART0 */
+		return !!(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 0);
+	case PCH_DEVFN_UART1: /* UART1 */
+		return !!(CONFIG_INTEL_PCH_UART_CONSOLE_NUMBER == 1);
+	}
+#endif
+	return 0;
 }
 
 /* Enable clock in PCI mode */
@@ -182,55 +196,55 @@ static void serialio_init(struct device *dev)
 
 	if (!config->sio_acpi_mode)
 		serialio_enable_clock(bar0);
-	else if (dev->path.pci.devfn != PCI_DEVFN(21, 0))
-		serialio_enable_d3hot(dev); /* all but SDMA */
 
 	switch (dev->path.pci.devfn) {
-	case PCI_DEVFN(21, 0): /* SDMA */
+	case PCH_DEVFN_SDMA: /* SDMA */
 		sio_index = SIO_ID_SDMA;
 		serialio_init_once(config->sio_acpi_mode);
 		serialio_d21_mode(sio_index, SIO_PIN_INTB,
 				  config->sio_acpi_mode);
 		break;
-	case PCI_DEVFN(21, 1): /* I2C0 */
+	case PCH_DEVFN_I2C0: /* I2C0 */
 		sio_index = SIO_ID_I2C0;
 		serialio_d21_ltr(bar0);
 		serialio_i2c_voltage_sel(bar0, config->sio_i2c0_voltage);
 		serialio_d21_mode(sio_index, SIO_PIN_INTC,
 				  config->sio_acpi_mode);
 		break;
-	case PCI_DEVFN(21, 2): /* I2C1 */
+	case PCH_DEVFN_I2C1: /* I2C1 */
 		sio_index = SIO_ID_I2C1;
 		serialio_d21_ltr(bar0);
 		serialio_i2c_voltage_sel(bar0, config->sio_i2c1_voltage);
 		serialio_d21_mode(sio_index, SIO_PIN_INTC,
 				  config->sio_acpi_mode);
 		break;
-	case PCI_DEVFN(21, 3): /* SPI0 */
+	case PCH_DEVFN_SPI0: /* SPI0 */
 		sio_index = SIO_ID_SPI0;
 		serialio_d21_ltr(bar0);
 		serialio_d21_mode(sio_index, SIO_PIN_INTC,
 				  config->sio_acpi_mode);
 		break;
-	case PCI_DEVFN(21, 4): /* SPI1 */
+	case PCH_DEVFN_SPI1: /* SPI1 */
 		sio_index = SIO_ID_SPI1;
 		serialio_d21_ltr(bar0);
 		serialio_d21_mode(sio_index, SIO_PIN_INTC,
 				  config->sio_acpi_mode);
 		break;
-	case PCI_DEVFN(21, 5): /* UART0 */
+	case PCH_DEVFN_UART0: /* UART0 */
 		sio_index = SIO_ID_UART0;
-		serialio_d21_ltr(bar0);
+		if (!serialio_uart_is_debug(dev))
+			serialio_d21_ltr(bar0);
 		serialio_d21_mode(sio_index, SIO_PIN_INTD,
 				  config->sio_acpi_mode);
 		break;
-	case PCI_DEVFN(21, 6): /* UART1 */
+	case PCH_DEVFN_UART1: /* UART1 */
 		sio_index = SIO_ID_UART1;
-		serialio_d21_ltr(bar0);
+		if (!serialio_uart_is_debug(dev))
+			serialio_d21_ltr(bar0);
 		serialio_d21_mode(sio_index, SIO_PIN_INTD,
 				  config->sio_acpi_mode);
 		break;
-	case PCI_DEVFN(23, 0): /* SDIO */
+	case PCH_DEVFN_SDIO: /* SDIO */
 		sio_index = SIO_ID_SDIO;
 		serialio_d23_ltr(bar0);
 		serialio_d23_mode(config->sio_acpi_mode);
@@ -252,6 +266,14 @@ static void serialio_init(struct device *dev)
 		/* Save BAR0 and BAR1 to ACPI NVS */
 		gnvs->dev.bar0[sio_index] = (u32)bar0->base;
 		gnvs->dev.bar1[sio_index] = (u32)bar1->base;
+
+		/* Do not enable UART if it is used as debug port */
+		if (!serialio_uart_is_debug(dev))
+			gnvs->dev.enable[sio_index] = 1;
+
+		/* Put device in D3hot state via BAR1 */
+		if (dev->path.pci.devfn != PCH_DEVFN_SDMA)
+			serialio_enable_d3hot(bar1); /* all but SDMA */
 	}
 }
 

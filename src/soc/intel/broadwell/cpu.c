@@ -218,7 +218,7 @@ static void initialize_vr_config(void)
 	msr.hi &= 0xc0000000;
 	msr.hi |= (0x01 << (52 - 32)); /* PSI3 threshold -  1A. */
 	msr.hi |= (0x05 << (42 - 32)); /* PSI2 threshold -  5A. */
-	msr.hi |= (0x0f << (32 - 32)); /* PSI1 threshold - 15A. */
+	msr.hi |= (0x14 << (32 - 32)); /* PSI1 threshold - 20A. */
 	msr.hi |= (1 <<  (62 - 32)); /* Enable PSI4 */
 	/* Leave the max instantaneous current limit (12:0) to default. */
 	wrmsr(MSR_VR_CURRENT_CONFIG, msr);
@@ -387,6 +387,7 @@ static void configure_c_states(void)
 	msr_t msr;
 
 	msr = rdmsr(MSR_PMG_CST_CONFIG_CONTROL);
+	msr.lo |= (1 << 31);	// Timed MWAIT Enable
 	msr.lo |= (1 << 30);	// Package c-state Undemotion Enable
 	msr.lo |= (1 << 29);	// Package c-state Demotion Enable
 	msr.lo |= (1 << 28);	// C1 Auto Undemotion Enable
@@ -661,6 +662,7 @@ static struct cpu_device_id cpu_table[] = {
 	{ X86_VENDOR_INTEL, CPUID_HASWELL_ULT },
 	{ X86_VENDOR_INTEL, CPUID_BROADWELL_C0 },
 	{ X86_VENDOR_INTEL, CPUID_BROADWELL_D0 },
+	{ X86_VENDOR_INTEL, CPUID_BROADWELL_E0 },
 	{ 0, 0 },
 };
 

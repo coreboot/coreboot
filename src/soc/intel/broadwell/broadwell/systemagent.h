@@ -52,6 +52,10 @@
 #define  DEVEN_D1F1EN	(1 << 2)
 #define  DEVEN_D1F2EN	(1 << 1)
 #define  DEVEN_D0EN	(1 << 0)
+#define DPR		0x5c
+#define  DPR_EPM	(1 << 2)
+#define  DPR_PRS	(1 << 1)
+#define  DPR_SIZE_MASK	0xff0
 
 #define PAM0		0x80
 #define PAM1		0x81

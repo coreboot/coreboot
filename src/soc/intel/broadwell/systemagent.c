@@ -33,6 +33,7 @@
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <broadwell/cpu.h>
 #include <broadwell/iomap.h>
+#include <broadwell/pci_devs.h>
 #include <broadwell/ramstage.h>
 #include <broadwell/systemagent.h>
 
@@ -278,10 +279,24 @@ static void mc_add_dram_resources(device_t dev)
 	unsigned long index;
 	struct resource *resource;
 	uint64_t mc_values[NUM_MAP_ENTRIES];
+	unsigned long dpr_size = 0;
+	u32 dpr_reg;
 
 	/* Read in the MAP registers and report their values. */
 	mc_read_map_entries(dev, &mc_values[0]);
 	mc_report_map_entries(dev, &mc_values[0]);
+
+	/*
+	 * DMA Protected Range can be reserved below TSEG for PCODE patch
+	 * or TXT/BootGuard related data.  Rather than report a base address
+	 * the DPR register reports the TOP of the region, which is the same
+	 * as TSEG base.  The region size is reported in MiB in bits 11:4.
+	 */
+	dpr_reg = pci_read_config32(SA_DEV_ROOT, DPR);
+	if (dpr_reg & DPR_EPM) {
+		dpr_size = (dpr_reg & DPR_SIZE_MASK) << 16;
+		printk(BIOS_INFO, "DPR SIZE: 0x%lx\n", dpr_size);
+	}
 
 	/*
 	 * These are the host memory ranges that should be added:
@@ -320,14 +335,15 @@ static void mc_add_dram_resources(device_t dev)
 	size_k = (0xa0000 >> 10) - base_k;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* 0xc0000 -> TSEG */
+	/* 0xc0000 -> TSEG - DPR */
 	base_k = 0xc0000 >> 10;
 	size_k = (unsigned long)(mc_values[TSEG_REG] >> 10) - base_k;
+	size_k -= dpr_size >> 10;
 	ram_resource(dev, index++, base_k, size_k);
 
-	/* TSEG -> BGSM */
+	/* TSEG - DPR -> BGSM */
 	resource = new_resource(dev, index++);
-	resource->base = mc_values[TSEG_REG];
+	resource->base = mc_values[TSEG_REG] - dpr_size;
 	resource->size = mc_values[BGSM_REG] - resource->base;
 	resource->flags = IORESOURCE_MEM | IORESOURCE_FIXED |
 	                  IORESOURCE_STORED | IORESOURCE_RESERVE |

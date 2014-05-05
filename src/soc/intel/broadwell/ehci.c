@@ -26,6 +26,7 @@
 #include <usbdebug.h>
 #include <arch/io.h>
 #include <broadwell/ehci.h>
+#include <broadwell/pch.h>
 
 static void usb_ehci_set_subsystem(device_t dev, unsigned vendor, unsigned device)
 {
@@ -70,6 +71,14 @@ static void usb_ehci_set_resources(struct device *dev)
 #endif
 }
 
+static void ehci_enable(struct device *dev)
+{
+	if (CONFIG_USBDEBUG)
+		dev->enabled = 1;
+	else
+		pch_disable_devfn(dev);
+}
+
 static struct pci_operations ehci_ops_pci = {
 	.set_subsystem	= &usb_ehci_set_subsystem,
 };
@@ -79,6 +88,7 @@ static struct device_operations usb_ehci_ops = {
 	.set_resources		= &usb_ehci_set_resources,
 	.enable_resources	= &pci_dev_enable_resources,
 	.ops_pci		= &ehci_ops_pci,
+	.enable			= &ehci_enable,
 };
 
 static const unsigned short pci_device_ids[] = {

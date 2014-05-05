@@ -92,91 +92,88 @@ static void pch_enable_d3hot(device_t dev)
 void pch_disable_devfn(device_t dev)
 {
 	switch (dev->path.pci.devfn) {
-	case PCI_DEVFN(19, 0): /* Audio DSP */
+	case PCH_DEVFN_ADSP: /* Audio DSP */
 		RCBA32_OR(FD, PCH_DISABLE_ADSPD);
 		break;
-	case PCI_DEVFN(20, 0): /* XHCI */
+	case PCH_DEVFN_XHCI: /* XHCI */
 		RCBA32_OR(FD, PCH_DISABLE_XHCI);
 		break;
-	case PCI_DEVFN(21, 0): /* DMA */
+	case PCH_DEVFN_SDMA: /* DMA */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS0, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(21, 1): /* I2C0 */
+	case PCH_DEVFN_I2C0: /* I2C0 */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS1, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(21, 2): /* I2C1 */
+	case PCH_DEVFN_I2C1: /* I2C1 */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS2, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(21, 3): /* SPI0 */
+	case PCH_DEVFN_SPI0: /* SPI0 */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS3, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(21, 4): /* SPI1 */
+	case PCH_DEVFN_SPI1: /* SPI1 */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS4, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(21, 5): /* UART0 */
+	case PCH_DEVFN_UART0: /* UART0 */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS5, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(21, 6): /* UART1 */
+	case PCH_DEVFN_UART1: /* UART1 */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS6, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(22, 0): /* MEI #1 */
+	case PCH_DEVFN_ME: /* MEI #1 */
 		RCBA32_OR(FD2, PCH_DISABLE_MEI1);
 		break;
-	case PCI_DEVFN(22, 1): /* MEI #2 */
+	case PCH_DEVFN_ME_2: /* MEI #2 */
 		RCBA32_OR(FD2, PCH_DISABLE_MEI2);
 		break;
-	case PCI_DEVFN(22, 2): /* IDE-R */
+	case PCH_DEVFN_ME_IDER: /* IDE-R */
 		RCBA32_OR(FD2, PCH_DISABLE_IDER);
 		break;
-	case PCI_DEVFN(22, 3): /* KT */
+	case PCH_DEVFN_ME_KT: /* KT */
 		RCBA32_OR(FD2, PCH_DISABLE_KT);
 		break;
-	case PCI_DEVFN(23, 0): /* SDIO */
+	case PCH_DEVFN_SDIO: /* SDIO */
 		pch_enable_d3hot(dev);
 		pch_iobp_update(SIO_IOBP_FUNCDIS7, ~0UL, SIO_IOBP_FUNCDIS_DIS);
 		break;
-	case PCI_DEVFN(25, 0): /* Gigabit Ethernet */
+	case PCH_DEVFN_GBE: /* Gigabit Ethernet */
 		RCBA32_OR(BUC, PCH_DISABLE_GBE);
 		break;
-	case PCI_DEVFN(26, 0): /* EHCI #2 */
-		RCBA32_OR(FD, PCH_DISABLE_EHCI2);
-		break;
-	case PCI_DEVFN(27, 0): /* HD Audio Controller */
+	case PCH_DEVFN_HDA: /* HD Audio Controller */
 		RCBA32_OR(FD, PCH_DISABLE_HD_AUDIO);
 		break;
-	case PCI_DEVFN(28, 0): /* PCI Express Root Port 1 */
-	case PCI_DEVFN(28, 1): /* PCI Express Root Port 2 */
-	case PCI_DEVFN(28, 2): /* PCI Express Root Port 3 */
-	case PCI_DEVFN(28, 3): /* PCI Express Root Port 4 */
-	case PCI_DEVFN(28, 4): /* PCI Express Root Port 5 */
-	case PCI_DEVFN(28, 5): /* PCI Express Root Port 6 */
-	case PCI_DEVFN(28, 6): /* PCI Express Root Port 7 */
-	case PCI_DEVFN(28, 7): /* PCI Express Root Port 8 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 0): /* PCI Express Root Port 1 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 1): /* PCI Express Root Port 2 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 2): /* PCI Express Root Port 3 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 3): /* PCI Express Root Port 4 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 4): /* PCI Express Root Port 5 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 5): /* PCI Express Root Port 6 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 6): /* PCI Express Root Port 7 */
+	case PCI_DEVFN(PCH_DEV_SLOT_PCIE, 7): /* PCI Express Root Port 8 */
 		RCBA32_OR(FD, PCH_DISABLE_PCIE(PCI_FUNC(dev->path.pci.devfn)));
 		break;
-	case PCI_DEVFN(29, 0): /* EHCI #1 */
+	case PCH_DEVFN_EHCI: /* EHCI #1 */
 		RCBA32_OR(FD, PCH_DISABLE_EHCI1);
 		break;
-	case PCI_DEVFN(31, 0): /* LPC */
+	case PCH_DEVFN_LPC: /* LPC */
 		RCBA32_OR(FD, PCH_DISABLE_LPC);
 		break;
-	case PCI_DEVFN(31, 2): /* SATA #1 */
+	case PCH_DEVFN_SATA: /* SATA #1 */
 		RCBA32_OR(FD, PCH_DISABLE_SATA1);
 		break;
-	case PCI_DEVFN(31, 3): /* SMBUS */
+	case PCH_DEVFN_SMBUS: /* SMBUS */
 		RCBA32_OR(FD, PCH_DISABLE_SMBUS);
 		break;
-	case PCI_DEVFN(31, 5): /* SATA #2 */
+	case PCH_DEVFN_SATA2: /* SATA #2 */
 		RCBA32_OR(FD, PCH_DISABLE_SATA2);
 		break;
-	case PCI_DEVFN(31, 6): /* Thermal Subsystem */
+	case PCH_DEVFN_THERMAL: /* Thermal Subsystem */
 		RCBA32_OR(FD, PCH_DISABLE_THERMAL);
 		break;
 	}
@@ -186,9 +183,13 @@ void broadwell_pch_enable_dev(device_t dev)
 {
 	u32 reg32;
 
-	/* PCH PCIe Root Ports are handled in PCIe driver. */
-	if (PCI_SLOT(dev->path.pci.devfn) == PCH_DEV_SLOT_PCIE)
+	/* These devices need special enable/disable handling */
+	switch (PCI_SLOT(dev->path.pci.devfn)) {
+	case PCH_DEV_SLOT_PCIE:
+	case PCH_DEV_SLOT_EHCI:
+	case PCH_DEV_SLOT_HDA:
 		return;
+	}
 
 	if (!dev->enabled) {
 		printk(BIOS_DEBUG, "%s: Disabling device\n", dev_path(dev));

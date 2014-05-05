@@ -73,6 +73,9 @@ void * asmlinkage romstage_main(unsigned long bist,
 	/* Start console drivers */
 	console_init();
 
+	/* Get power state */
+	rp.power_state = fill_power_state();
+
 	/* Print useful platform information */
 	report_platform_info();
 
@@ -96,19 +99,16 @@ static inline void chromeos_init(int prev_sleep_state)
 /* Entry from the mainboard. */
 void romstage_common(struct romstage_params *params)
 {
-	struct chipset_power_state *ps;
 	struct romstage_handoff *handoff;
 
 	post_code(0x32);
 
 	mark_ts(params, timestamp_get());
 
-	/* Get power state */
-	ps = fill_power_state();
-	params->pei_data->boot_mode = ps->prev_sleep_state;
+	params->pei_data->boot_mode = params->power_state->prev_sleep_state;
 
 #if CONFIG_ELOG_BOOT_COUNT
-	if (ps->prev_sleep_state != SLEEP_STATE_S3)
+	if (params->power_state->prev_sleep_state != SLEEP_STATE_S3)
 		boot_count_increment();
 #endif
 
@@ -121,11 +121,12 @@ void romstage_common(struct romstage_params *params)
 
 	handoff = romstage_handoff_find_or_add();
 	if (handoff != NULL)
-		handoff->s3_resume = (ps->prev_sleep_state == SLEEP_STATE_S3);
+		handoff->s3_resume = (params->power_state->prev_sleep_state ==
+				      SLEEP_STATE_S3);
 	else
 		printk(BIOS_DEBUG, "Romstage handoff structure not added!\n");
 
-	chromeos_init(ps->prev_sleep_state);
+	chromeos_init(params->power_state->prev_sleep_state);
 
 	/* Save timestamp information. */
 	timestamp_init(params->ts.times[0]);

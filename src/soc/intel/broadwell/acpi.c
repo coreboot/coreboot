@@ -604,10 +604,5 @@ unsigned long acpi_madt_irq_overrides(unsigned long current)
 	irqovr = (void *)current;
 	current += acpi_create_madt_irqoverride(irqovr, 0, sci, sci, flags);
 
-	/* GPIO Controller */
-	irqovr = (void *)current;
-	flags = MP_IRQ_TRIGGER_LEVEL | MP_IRQ_POLARITY_HIGH;
-	current += acpi_create_madt_irqoverride(irqovr, 0, 14, 14, flags);
-
 	return current;
 }

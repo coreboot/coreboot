@@ -24,6 +24,21 @@
 #include <cbfs.h>
 #include "def_callouts.h"
 
+
+AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	UINTN i;
+
+	for (i = 0; i < BiosCalloutsLen; i++) {
+		if (BiosCallouts[i].CalloutName == Func)
+			break;
+	}
+	if(i >= BiosCalloutsLen)
+		return AGESA_UNSUPPORTED;
+
+	return BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
+}
+
 AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	return AGESA_UNSUPPORTED;

@@ -23,8 +23,6 @@
 #include <northbridge/amd/agesa/def_callouts.h>
 #include <northbridge/amd/agesa/family15tn/fam15tn_callouts.h>
 
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 /* FCH OEM Config*/
 AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr);

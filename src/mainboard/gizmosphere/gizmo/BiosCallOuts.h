@@ -24,7 +24,5 @@
 #include <northbridge/amd/agesa/def_callouts.h>
 #include <northbridge/amd/agesa/family14/fam14_callouts.h>
 
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 #endif //_BIOS_CALLOUT_H_

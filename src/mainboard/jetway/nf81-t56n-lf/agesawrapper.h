@@ -41,11 +41,6 @@ enum {
 	PICK_ALIB,		/**< SACPI SSDT table with ALIB implementation */
 };
 
-typedef struct {
-	UINT32 CalloutName;
-	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
-} BIOS_CALLOUT_STRUCT;
-
 
 AGESA_STATUS agesawrapper_amdinitreset(void);
 AGESA_STATUS agesawrapper_amdinitearly(void);

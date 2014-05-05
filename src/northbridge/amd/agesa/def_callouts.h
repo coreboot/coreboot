@@ -21,6 +21,7 @@
 #ifndef CALLOUTS_AMD_AGESA_H
 #define CALLOUTS_AMD_AGESA_H
 
+#include "agesawrapper.h"
 #include "Porting.h"
 #include "AGESA.h"
 
@@ -31,5 +32,15 @@ AGESA_STATUS agesa_EmptyIdsInitData (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_Reset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt);
+
+AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+
+typedef struct {
+	UINT32 CalloutName;
+	AGESA_STATUS (*CalloutPtr) (UINT32 Func, UINT32 Data, VOID* ConfigPtr);
+} BIOS_CALLOUT_STRUCT;
+
+extern const BIOS_CALLOUT_STRUCT BiosCallouts[];
+extern const int BiosCalloutsLen;
 
 #endif /* CALLOUTS_AMD_AGESA_H */

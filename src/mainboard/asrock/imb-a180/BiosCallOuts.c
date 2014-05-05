@@ -26,8 +26,9 @@
 #include "heapManager.h"
 #include "FchPlatform.h"
 #include "cbfs.h"
+#include <stdlib.h>
 
-STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
+const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,          fam16kb_AllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,        fam16kb_DeallocateBuffer },
@@ -42,26 +43,7 @@ STATIC CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_FCH_OEM_CALLOUT,          Fch_Oem_config },
 	{AGESA_GNB_GFX_GET_VBIOS_IMAGE,  agesa_GfxGetVbiosImage }
 };
-
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	UINTN i;
-	AGESA_STATUS CalloutStatus;
-	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
-
-	for (i = 0; i < CallOutCount; i++)
-	{
-		if (BiosCallouts[i].CalloutName == Func)
-			break;
-	}
-
-	if(i >= CallOutCount)
-		return AGESA_UNSUPPORTED;
-
-	CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
-
-	return CalloutStatus;
-}
+const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 /**
  * CODEC Initialization Table for Azalia HD Audio using Realtek ALC662 chip

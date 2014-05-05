@@ -24,8 +24,6 @@
 #include <northbridge/amd/agesa/family14/fam14_callouts.h>
 #include "SB800.h"
 
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 /* FCH GPIO access helpers */
 #define FCH_IOMUX(gpio_nr) (*(u8*)(ACPI_MMIO_BASE+IOMUX_BASE+(gpio_nr)))

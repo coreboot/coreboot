@@ -23,8 +23,6 @@
 #include <northbridge/amd/agesa/def_callouts.h>
 #include <northbridge/amd/agesa/family15/fam15_callouts.h>
 
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 #define SB_GPIO_REG02   2
 #define SB_GPIO_REG09   9

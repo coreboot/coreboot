@@ -23,8 +23,6 @@
 #include <northbridge/amd/agesa/def_callouts.h>
 #include <northbridge/amd/agesa/family12/fam12_callouts.h>
 
-/* CALLOUT Initialization */
-AGESA_STATUS GetBiosCallout(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 // These registers are not defined in cimx/SB900/Hudson-2.h
 #define SB_GPIO_REG02   2

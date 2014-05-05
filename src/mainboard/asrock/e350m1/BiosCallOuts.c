@@ -23,6 +23,7 @@
 #include "heapManager.h"
 #include "SB800.h"
 #include <northbridge/amd/agesa/family14/dimmSpd.h>
+#include <stdlib.h>
 
 /* Should AGESA_GNB_PCIE_SLOT_RESET use agesa_NoopSuccess?
  *
@@ -32,7 +33,7 @@
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
-CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
+const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,		BiosDeallocateBuffer },
@@ -46,30 +47,7 @@ CONST BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
 	{AGESA_GNB_PCIE_SLOT_RESET,		agesa_NoopUnsupported },
 };
-
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-  UINTN i;
-  AGESA_STATUS CalloutStatus;
-  UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
-
-  for (i = 0; i < CallOutCount; i++)
-  {
-    if (BiosCallouts[i].CalloutName == Func)
-    {
-      break;
-    }
-  }
-
-  if(i >= CallOutCount)
-  {
-    return AGESA_UNSUPPORTED;
-  }
-
-  CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
-
-  return CalloutStatus;
-}
+const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 /*  Call the host environment interface to provide a user hook opportunity. */
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

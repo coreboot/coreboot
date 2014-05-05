@@ -26,6 +26,7 @@
 #include "SB700.h"
 #include <northbridge/amd/agesa/family15/dimmSpd.h>
 #include "OEM.h"		/* SMBUS0_BASE_ADDRESS */
+#include <stdlib.h>
 
 #ifndef SB_GPIO_REG01
 #define SB_GPIO_REG01   1
@@ -88,7 +89,7 @@ static void restore_socket(void)
 
 static AGESA_STATUS board_ReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
 
-STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
+const BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,		BiosDeallocateBuffer },
@@ -104,30 +105,7 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
 };
-
-AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	UINTN i;
-	AGESA_STATUS CalloutStatus;
-	UINTN CallOutCount = sizeof (BiosCallouts) / sizeof (BiosCallouts [0]);
-
-	for (i = 0; i < CallOutCount; i++)
-	{
-		if (BiosCallouts[i].CalloutName == Func)
-		{
-			break;
-		}
-	}
-
-	if(i >= CallOutCount)
-	{
-		return AGESA_UNSUPPORTED;
-	}
-
-	CalloutStatus = BiosCallouts[i].CalloutPtr (Func, Data, ConfigPtr);
-
-	return CalloutStatus;
-}
+const int BiosCalloutsLen = ARRAY_SIZE(BiosCallouts);
 
 
 static AGESA_STATUS board_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

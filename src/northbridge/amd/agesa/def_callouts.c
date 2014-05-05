@@ -20,6 +20,7 @@
 #include "AGESA.h"
 #include "amdlib.h"
 #include "Ids.h"
+#include "agesawrapper.h"
 #include "def_callouts.h"
 
 AGESA_STATUS agesa_NoopUnsupported (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
@@ -75,3 +76,12 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	Status = 0;
 	return Status;
 }
+
+AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	AGESA_STATUS        Status;
+
+	Status = agesawrapper_amdlaterunaptask (Func, Data, ConfigPtr);
+	return Status;
+}
+

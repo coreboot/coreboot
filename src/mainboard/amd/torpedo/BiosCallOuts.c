@@ -45,7 +45,7 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_DO_RESET,			agesa_Reset },
 	{AGESA_READ_SPD,			BiosReadSpd },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
-	{AGESA_RUNFUNC_ONAP,			BiosRunFuncOnAp },
+	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GNB_PCIE_SLOT_RESET,		BiosGnbPcieSlotReset },
 	{AGESA_GET_IDS_INIT_DATA,		agesa_EmptyIdsInitData },
 	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },

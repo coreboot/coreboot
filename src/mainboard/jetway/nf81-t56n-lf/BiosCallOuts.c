@@ -26,6 +26,9 @@
 #include <vendorcode/amd/cimx/sb800/SB800.h>
 #include <stdint.h>
 
+static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
@@ -35,8 +38,8 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_READ_SPD,			BiosReadSpd },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
-	{AGESA_GNB_PCIE_SLOT_RESET,		BiosGnbPcieSlotReset },
-	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },
+	{AGESA_GNB_PCIE_SLOT_RESET,		board_GnbPcieSlotReset },
+	{AGESA_HOOKBEFORE_DRAM_INIT,		board_BeforeDramInit },
 	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
@@ -65,7 +68,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 }
 
 /* Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	/* Unlike e.g. AMD Inagua, Persimmon is unable to vary the RAM voltage.
 	 * Make sure the right speed settings are selected.
@@ -75,7 +78,7 @@ AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 }
 
 /* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_GnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	uint32_t 		FcnData;

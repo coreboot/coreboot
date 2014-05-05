@@ -79,13 +79,15 @@ static void restore_socket(UINT8 original_value)
 }
 #endif
 
+static AGESA_STATUS board_ReadSpd (UINT32 Func,UINT32 Data, VOID *ConfigPtr);
+
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
 	{AGESA_DEALLOCATE_BUFFER,		BiosDeallocateBuffer },
 	{AGESA_LOCATE_BUFFER,			BiosLocateBuffer },
 	{AGESA_DO_RESET,			agesa_Reset },
-	{AGESA_READ_SPD,			BiosReadSpd },
+	{AGESA_READ_SPD,			board_ReadSpd },
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GET_IDS_INIT_DATA,		agesa_EmptyIdsInitData },
@@ -115,7 +117,7 @@ AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	return CalloutStatus;
 }
 
-AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_ReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 #ifdef __PRE_RAM__

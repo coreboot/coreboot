@@ -31,6 +31,8 @@
 #define SPD_CRC_HI  127
 #define SPD_CRC_LO  126
 
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+
 STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 {
 	{AGESA_ALLOCATE_BUFFER,			BiosAllocateBuffer },
@@ -41,7 +43,7 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_READ_SPD_RECOVERY,		agesa_NoopUnsupported },
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GNB_PCIE_SLOT_RESET,		agesa_NoopSuccess },
-	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },
+	{AGESA_HOOKBEFORE_DRAM_INIT,		board_BeforeDramInit },
 	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
@@ -120,7 +122,7 @@ AGESA_STATUS BiosReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 }
 
 /*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	// Unlike AMD/Inagua, this board is unable to vary the RAM voltage.
 	// Make sure the right speed settings are selected.

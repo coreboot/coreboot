@@ -51,9 +51,5 @@ AGESA_STATUS BiosLocateBuffer (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 /* AGESA ADVANCED CALLOUTS - MEMORY */
 AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
 
-/*	Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
-/* PCIE slot reset control */
-AGESA_STATUS BiosGnbPcieSlotReset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 #endif /* CALLOUTS_AMD_AGESA_FAM12_H */

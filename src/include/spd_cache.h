@@ -1,12 +1,10 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
- * Copyright (C) 2013 Sage Electronic Engineering, LLC
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,13 +16,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef CALLOUTS_AMD_AGESA_FAM14_H
-#define CALLOUTS_AMD_AGESA_FAM14_H
+#ifndef _SPD_CACHE_H_
+#define _SPD_CACHE_H_
 
-#include "Porting.h"
-#include "AGESA.h"
+#include <stdint.h>
 
-/* AGESA ADVANCED CALLOUTS - MEMORY */
-AGESA_STATUS BiosReadSpd (UINT32 Func,UINT32	Data,VOID *ConfigPtr);
+#if IS_ENABLED(CONFIG_SPD_CACHE)
+int read_spd_from_cbfs(u8 *buf, int idx);
+#else
+static inline int read_spd_from_cbfs(u8 *buf, int idx) { return -1; }
+#endif
 
-#endif /* CALLOUTS_AMD_AGESA_FAM14_H */
+#endif

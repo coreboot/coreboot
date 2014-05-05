@@ -191,6 +191,10 @@ config MULTIPLE_VGA_ADAPTERS
 	bool
 	default n
 
+config SPD_CACHE
+	bool
+	default n
+
 config PCI
 	bool
 	default n

@@ -65,6 +65,8 @@ AGESA_STATUS agesa_Reset (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_RunFuncOnAp (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt);
 
+AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr);
+
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
 typedef struct {

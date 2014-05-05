@@ -29,7 +29,6 @@ romstage-y += buildOpts.c
 romstage-y += agesawrapper.c
 romstage-y += BiosCallOuts.c
 romstage-y += PlatformGnbPcie.c
-romstage-y += ../../../device/dram/ddr3.c
 
 ramstage-y += buildOpts.c
 ramstage-y += agesawrapper.c

@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <cbfs.h>
+#include <spd_cache.h>
+
 #include "AGESA.h"
 #include "amdlib.h"
 #include "Ids.h"
 #include "agesawrapper.h"
-#include <cbfs.h>
 #include "def_callouts.h"
-
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
@@ -113,3 +115,24 @@ AGESA_STATUS agesa_GfxGetVbiosImage(UINT32 Func, UINT32 FchData, VOID *ConfigPrt
 	return pVbiosImageInfo->ImagePtr == NULL ? AGESA_WARNING : AGESA_SUCCESS;
 }
 #endif
+
+AGESA_STATUS agesa_ReadSpd_from_cbfs(UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+{
+	AGESA_STATUS Status = AGESA_UNSUPPORTED;
+#ifdef __PRE_RAM__
+	AGESA_READ_SPD_PARAMS *info = ConfigPtr;
+	if (info->MemChannelId > 0)
+		return AGESA_UNSUPPORTED;
+	if (info->SocketId != 0)
+		return AGESA_UNSUPPORTED;
+	if (info->DimmId != 0)
+		return AGESA_UNSUPPORTED;
+
+	/* Read index 0, first SPD_SIZE bytes of spd.bin file. */
+	if (read_spd_from_cbfs((u8*)info->Buffer, 0) < 0)
+		die("No SPD data\n");
+
+	Status = AGESA_SUCCESS;
+#endif
+	return Status;
+}

@@ -19,3 +19,5 @@
 ##
 
 romstage-$(CONFIG_SUPERIO_ITE_IT8728F) += early_serial.c
+ramstage-$(CONFIG_SUPERIO_ITE_IT8728F) += it8728f_hwm.c
+ramstage-$(CONFIG_SUPERIO_ITE_IT8728F) += superio.c

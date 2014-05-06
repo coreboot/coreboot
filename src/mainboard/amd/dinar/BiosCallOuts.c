@@ -97,7 +97,7 @@ STATIC BIOS_CALLOUT_STRUCT BiosCallouts[] =
 	{AGESA_RUNFUNC_ONAP,			agesa_RunFuncOnAp },
 	{AGESA_GNB_PCIE_SLOT_RESET,		agesa_NoopSuccess },
 	{AGESA_GET_IDS_INIT_DATA,		agesa_EmptyIdsInitData },
-	{AGESA_HOOKBEFORE_DRAM_INIT,		BiosHookBeforeDramInit },
+	{AGESA_HOOKBEFORE_DRAM_INIT,		agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_DRAM_INIT_RECOVERY,	agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_DQS_TRAINING,		agesa_NoopSuccess },
 	{AGESA_HOOKBEFORE_EXIT_SELF_REF,	agesa_NoopSuccess },
@@ -144,33 +144,5 @@ AGESA_STATUS BiosReadSpd (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 	Status = AGESA_UNSUPPORTED;
 #endif
 
-	return Status;
-}
-
-/*  Call the host environment interface to provide a user hook opportunity. */
-AGESA_STATUS BiosHookBeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
-{
-	AGESA_STATUS      Status;
-	UINTN             FcnData;
-	MEM_DATA_STRUCT   *MemData;
-	UINT32            AcpiMmioAddr;
-	UINT32            GpioMmioAddr;
-	UINT8             Data8;
-	UINT16            Data16;
-
-	FcnData = Data;
-	MemData = ConfigPtr;
-
-	Status  = AGESA_SUCCESS;
-	/* Get SB MMIO Base (AcpiMmioAddr) */
-	WriteIo8 (0xCD6, 0x27);
-	Data8   = ReadIo8(0xCD7);
-	Data16  = Data8<<8;
-	WriteIo8 (0xCD6, 0x26);
-	Data8   = ReadIo8(0xCD7);
-	Data16  |= Data8;
-	AcpiMmioAddr = (UINT32)Data16 << 16;
-	GpioMmioAddr = AcpiMmioAddr + GPIO_BASE;
-	Status = AGESA_SUCCESS;
 	return Status;
 }

@@ -33,8 +33,6 @@
 #include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "drivers/pc80/i8254.c"
-#include "drivers/pc80/i8259.c"
 #include <cpu/x86/cache.h>
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
@@ -177,14 +175,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
 	}
 #endif
-
-	/* Initialize i8259 pic */
-	post_code(0x43);
-	setup_i8259 ();
-
-	/* Initialize i8254 timers */
-	post_code(0x44);
-	setup_i8254 ();
 
 	post_code(0x50);
 	copy_and_run();

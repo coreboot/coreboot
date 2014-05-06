@@ -34,8 +34,6 @@
 #include "cpu/x86/lapic.h"
 #include "southbridge/amd/agesa/hudson/hudson.h"
 #include "cpu/amd/agesa/s3_resume.h"
-#include "src/drivers/pc80/i8254.c"
-#include "src/drivers/pc80/i8259.c"
 #include "cbmem.h"
 #include "superio/winbond/w83627uhg/early_serial.c"
 
@@ -184,13 +182,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);
-	/* Initialize i8259 pic */
-	post_code(0x41);
-	setup_i8259 ();
-
-	/* Initialize i8254 timers */
-	post_code(0x42);
-	setup_i8254 ();
 
 	post_code(0x50);
 	copy_and_run();

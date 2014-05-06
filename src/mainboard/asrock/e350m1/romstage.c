@@ -35,8 +35,6 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627hf/w83627hf.h>
 #include "cpu/x86/lapic.h"
-#include "drivers/pc80/i8254.c"
-#include "drivers/pc80/i8259.c"
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
 
@@ -114,14 +112,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "error level: %x \n", val);
 	else
 		printk(BIOS_DEBUG, "passed.\n");
-
-	/* Initialize i8259 pic */
-	post_code(0x41);
-	setup_i8259();
-
-	/* Initialize i8254 timers */
-	post_code(0x42);
-	setup_i8254();
 
 	post_code(0x50);
 	copy_and_run();

@@ -31,8 +31,6 @@
 #include "northbridge/amd/agesa/family10/reset_test.h"
 #include <nb_cimx.h>
 #include <sb_cimx.h>
-#include "src/drivers/pc80/i8254.c"
-#include "src/drivers/pc80/i8259.c"
 #include "superio/nuvoton/wpcm450/wpcm450.h"
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
@@ -121,14 +119,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "agesawrapper_amdinitenv passed\n");
 
 	post_code(0x42);
-
-	/* Initialize i8259 pic */
-	post_code(0x41);
-	setup_i8259 ();
-
-	/* Initialize i8254 timers */
-	post_code(0x42);
-	setup_i8254 ();
 
 	post_code(0x50);
 	print_debug("Disabling cache as ram ");

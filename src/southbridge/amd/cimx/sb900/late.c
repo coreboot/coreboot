@@ -23,6 +23,8 @@
 #include <device/pci_ids.h>
 #include <device/smbus.h>	/* smbus_bus_operations */
 #include <pc80/mc146818rtc.h>
+#include <pc80/i8254.h>
+#include <pc80/i8259.h>
 #include <console/console.h>	/* printk */
 #include <device/pci_ehci.h>
 #include "lpc.h"		/* lpc_read_resources */
@@ -108,6 +110,9 @@ static void lpc_init(device_t dev)
 	 * 1 tells rtc_init to always initialize the CMOS.
 	 */
 	rtc_init(0);
+
+	setup_i8259(); /* Initialize i8259 pic */
+	setup_i8254(); /* Initialize i8254 timers */
 
 	printk(BIOS_DEBUG, "SB900 - Late.c - lpc_init - End.\n");
 }

@@ -32,8 +32,6 @@
 #include "superio/smsc/sch4037/sch4037_early_init.c"
 #include "superio/smsc/sio1036/sio1036_early_init.c"
 #include "cpu/x86/lapic.h"
-#include "drivers/pc80/i8254.c"
-#include "drivers/pc80/i8259.c"
 #include "nb_cimx.h"
 #include <sb_cimx.h>
 #include "Platform.h"
@@ -139,14 +137,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitenv passed\n");
 	}
 
-
-	/* Initialize i8259 pic */
-	post_code(0x41);
-	setup_i8259 ();
-
-	/* Initialize i8254 timers */
-	post_code(0x42);
-	setup_i8254 ();
 
 	post_code(0x43);
 	print_debug("Disabling cache as ram ");

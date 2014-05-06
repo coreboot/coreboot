@@ -38,9 +38,6 @@
 #include <string.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8712f/it8712f.h>
-/* TODO: remove .c includes */
-#include <drivers/pc80/i8254.c>
-#include <drivers/pc80/i8259.c>
 
 #define MMIO_NON_POSTED_START 0xfed00000
 #define MMIO_NON_POSTED_END   0xfedfffff
@@ -200,14 +197,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
 	}
 #endif
-
-	/* Initialize i8259 pic */
-	post_code(0x41);
-	setup_i8259 ();
-
-	/* Initialize i8254 timers */
-	post_code(0x42);
-	setup_i8254 ();
 
 	post_code(0x50);
 	copy_and_run();

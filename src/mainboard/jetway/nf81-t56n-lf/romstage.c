@@ -44,10 +44,6 @@
 #include <superio/fintek/common/fintek.h>
 #include <superio/fintek/f71869ad/f71869ad.h>
 
-/* FIXME: should not include .c files */
-#include "drivers/pc80/i8254.c"
-#include "drivers/pc80/i8259.c"
-
 /* Ensure Super I/O config address (i.e., 0x2e or 0x4e) matches that of devicetree.cb */
 #define SERIAL_DEV PNP_DEV(0x2e, F71869AD_SP1)
 
@@ -187,14 +183,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
 	}
 #endif /* CONFIG_HAVE_ACPI_RESUME */
-
-	/* Initialize i8259 pic */
-	post_code(0x43);
-	setup_i8259 ();
-
-	/* Initialize i8254 timers */
-	post_code(0x44);
-	setup_i8254 ();
 
 	post_code(0x50);
 	copy_and_run();

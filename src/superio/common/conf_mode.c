@@ -39,6 +39,25 @@ void pnp_exit_conf_mode_aa(device_t dev)
 	outb(0xaa, dev->path.pnp.port);
 }
 
+void pnp_enter_conf_mode_870155aa(device_t dev)
+{
+	outb(0x87, dev->path.pnp.port);
+	outb(0x01, dev->path.pnp.port);
+	outb(0x55, dev->path.pnp.port);
+
+	if (dev->path.pnp.port == 0x4e)
+		outb(0xaa, dev->path.pnp.port);
+	else
+		outb(0x55, dev->path.pnp.port);
+}
+
+void pnp_exit_conf_mode_0202(device_t dev)
+{
+	outb(0x02, dev->path.pnp.port);
+	outb(0x02, dev->path.pnp.port + 1);
+}
+
+
 const struct pnp_mode_ops pnp_conf_mode_55_aa = {
 	.enter_conf_mode = pnp_enter_conf_mode_55,
 	.exit_conf_mode  = pnp_exit_conf_mode_aa,
@@ -47,4 +66,9 @@ const struct pnp_mode_ops pnp_conf_mode_55_aa = {
 const struct pnp_mode_ops pnp_conf_mode_8787_aa = {
 	.enter_conf_mode = pnp_enter_conf_mode_8787,
 	.exit_conf_mode  = pnp_exit_conf_mode_aa,
+};
+
+const struct pnp_mode_ops pnp_conf_mode_870155_aa = {
+	.enter_conf_mode = pnp_enter_conf_mode_870155aa,
+	.exit_conf_mode  = pnp_exit_conf_mode_0202,
 };

@@ -24,3 +24,7 @@ romstage-$(CONFIG_PCI) += pci_early.c
 subdirs-y += oprom dram
 
 ramstage-$(CONFIG_VGA_ROM_RUN) += pci_rom.c
+
+bootblock-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
+romstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c
+ramstage-$(CONFIG_SOFTWARE_I2C) += software_i2c.c

@@ -180,7 +180,7 @@ static int i2c_transfer_segment(unsigned bus, unsigned chip, int restart,
 	return 0;
 }
 
-int i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 {
 	struct i2c_seg *seg = segments;
 

@@ -31,7 +31,39 @@ struct i2c_seg
 	int len;
 };
 
-int i2c_transfer(unsigned bus, struct i2c_seg *segments, int count);
+int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count);
+
+#define SOFTWARE_I2C_MAX_BUS 10		/* increase as necessary */
+
+struct software_i2c_ops {
+	void (*set_sda)(unsigned bus, int high);
+	void (*set_scl)(unsigned bus, int high);
+	int (*get_sda)(unsigned bus);
+	int (*get_scl)(unsigned bus);
+};
+
+extern struct software_i2c_ops *software_i2c[];
+
+int software_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count);
+void software_i2c_wedge_ack(unsigned bus, u8 chip);
+void software_i2c_wedge_read(unsigned bus, u8 chip, u8 reg, int bit_count);
+void software_i2c_wedge_write(unsigned bus, u8 chip, u8 reg, int bit_count);
+
+/*
+ * software_i2c is supposed to be a debug feature. It's usually not compiled in,
+ * but when it is it can be dynamically enabled at runtime for certain busses.
+ * Need this ugly stub to arbitrate since I2C device drivers hardcode
+ * 'i2c_transfer()' as their entry point.
+ */
+static inline int i2c_transfer(unsigned bus, struct i2c_seg *segments,
+			       int count)
+{
+	if (CONFIG_SOFTWARE_I2C)
+		if (bus < SOFTWARE_I2C_MAX_BUS && software_i2c[bus])
+			return software_i2c_transfer(bus, segments, count);
+
+	return platform_i2c_transfer(bus, segments, count);
+}
 
 /*
  * Read a raw chunk of data in one segment and one frame.

@@ -23,6 +23,8 @@
 #include <stdint.h>
 
 void i2c_init(unsigned bus);
+void tegra_software_i2c_init(unsigned bus);
+void tegra_software_i2c_disable(unsigned bus);
 
 enum {
 	/* Word 0 */

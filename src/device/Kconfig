@@ -376,6 +376,16 @@ config PXE_ROM_ID
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
 
+config SOFTWARE_I2C
+	bool "Enable I2C controller emulation in software"
+	default n
+	help
+	  This config option will enable code to override the i2c_transfer
+	  routine with a (simple) software emulation of the protocol. This may
+	  be useful for debugging or on platforms where a driver for the real
+	  I2C controller is not (yet) available. The platform code needs to
+	  provide bindings to manually toggle I2C lines.
+	  
 endmenu
 
 menu "Display"

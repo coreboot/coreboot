@@ -215,7 +215,7 @@ static int i2c_write(unsigned bus, unsigned chip, unsigned addr,
  * TODO: Rewite the i2c_transfer and supporting functions
  *
  */
-int i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 {
 	struct i2c_seg *seg = segments;
 

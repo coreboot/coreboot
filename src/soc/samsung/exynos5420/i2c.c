@@ -633,7 +633,7 @@ static int i2c_recv_buf(struct i2c_regs *regs, uint8_t *data, int len)
 	return 0;
 }
 
-int i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
+int platform_i2c_transfer(unsigned bus, struct i2c_seg *segments, int count)
 {
 	struct i2c_bus *i2c = &i2c_busses[bus];
 	if (i2c->is_highspeed)

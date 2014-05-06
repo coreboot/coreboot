@@ -85,3 +85,8 @@ void power_ungate_cpu(void)
 	// Ungate power to CPU0 in the fast cluster.
 	power_ungate_partition(POWER_PARTID_CE0);
 }
+
+int power_reset_status(void)
+{
+	return read32(&pmc->rst_status) & 0x7;
+}

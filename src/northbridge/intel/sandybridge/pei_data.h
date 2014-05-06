@@ -98,7 +98,7 @@ struct pei_data
 	 *  DESKTOP:
 	 *   < 0x080 = Setting 1 (front/back panel, <8in, lowest tx amplitude)
 	 *   < 0x130 = Setting 2 (back panel, 8-13in, higher tx amplitude)
-	 *   < 0x150 = Setting 3 (back panel, 13-15in, higest tx amplitude)
+	 *   < 0x150 = Setting 3 (back panel, 13-15in, highest tx amplitude)
 	 */
 	uint16_t usb_port_config[16][3];
 	/* See the usb3 struct above for details */

@@ -27,12 +27,14 @@
 #include <cbmem.h>
 #include <console/cbmem_console.h>
 #include <console/console.h>
+#include <mainboard/google/nyan/reset.h>
 #include <romstage_handoff.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include "sdram_configs.h"
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra124/chip.h>
 #include <soc/nvidia/tegra124/clk_rst.h>
+#include <soc/nvidia/tegra124/power.h>
 #include <soc/nvidia/tegra124/sdram.h>
 #include <soc/addressmap.h>
 #include <soc/clock.h>
@@ -180,6 +182,15 @@ static void __attribute__((noinline)) romstage(void)
 		mmu_config_range(dram_end, 4096 - dram_end, DCACHE_OFF);
 	mmu_disable_range(0, 1);
 	dcache_mmu_enable();
+
+	/*
+	 * A watchdog reset only resets part of the system so it ends up in
+	 * a funny state. If that happens, we need to reset the whole machine.
+	 */
+	if (power_reset_status() == POWER_RESET_WATCHDOG) {
+		printk(BIOS_INFO, "Watchdog reset detected, rebooting.\n");
+		cpu_reset();
+	}
 
 	/* For quality of the user experience, it's important to get
 	 * the video going ASAP. Because there are long delays in some

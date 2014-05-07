@@ -242,6 +242,32 @@ source src/arch/armv7/Kconfig
 
 source src/vendorcode/Kconfig
 
+choice
+	prompt "Bootblock behaviour"
+	default BOOTBLOCK_SIMPLE
+
+config BOOTBLOCK_SIMPLE
+	bool "Always load fallback"
+
+config BOOTBLOCK_NORMAL
+	bool "Switch to normal if CMOS says so"
+
+endchoice
+
+config BOOTBLOCK_SOURCE
+	string
+	default "bootblock_simple.c" if BOOTBLOCK_SIMPLE
+	default "bootblock_normal.c" if BOOTBLOCK_NORMAL
+
+config UPDATE_IMAGE
+	bool "Update existing coreboot.rom image"
+	default n
+	help
+	  If this option is enabled, no new coreboot.rom file
+	  is created. Instead it is expected that there already
+	  is a suitable file for further processing.
+	  The bootblock will not be modified.
+
 menu "Chipset"
 
 comment "CPU"

@@ -1,5 +1,3 @@
-menu "Architecture (armv7)"
-
 config ARCH_BOOTBLOCK_ARMV7
 	bool
 	default n
@@ -12,31 +10,3 @@ config ARCH_ROMSTAGE_ARMV7
 config ARCH_RAMSTAGE_ARMV7
 	bool
 	default n
-
-choice
-	prompt "Bootblock behaviour"
-	default ARM_BOOTBLOCK_SIMPLE
-
-config ARM_BOOTBLOCK_SIMPLE
-	bool "Always load fallback"
-
-config ARM_BOOTBLOCK_NORMAL
-	bool "Switch to normal if non-volatile memory says so"
-
-endchoice
-
-config BOOTBLOCK_SOURCE
-	string
-	default "bootblock_simple.c" if ARM_BOOTBLOCK_SIMPLE
-	default "bootblock_normal.c" if ARM_BOOTBLOCK_NORMAL
-
-config UPDATE_IMAGE
-	bool "Update existing coreboot.rom image"
-	default n
-	help
-	  If this option is enabled, no new coreboot.rom file
-	  is created. Instead it is expected that there already
-	  is a suitable file for further processing.
-	  The bootblock will not be modified.
-
-endmenu

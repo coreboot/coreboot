@@ -92,7 +92,6 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	if (!spd_file)
 		die("SPD data not found.");
 
-	/* Both channels are always present. */
 	spd_content = get_spd_pointer(CBFS_SUBHEADER(spd_file),
 	                              ntohl(spd_file->len) / SPD_SIZE,
 	                              &dual_channel);

@@ -66,14 +66,14 @@ STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
 INCLUDES_$(1) = -Isrc/arch/$(ARCHDIR-$(2))/include
 CFLAGS_$(1) = $$(CFLAGS_common) $$(INCLUDES_$(1)) $(CFLAGS_$(2))
-LIBGCC_FILE_NAME_$(1) = $(shell test -r `$(CC_$(2)) -print-libgcc-file-name` && \
+LIBGCC_FILE_NAME_$(1) = $(shell [ -r `$(CC_$(2)) -print-libgcc-file-name` ] && \
 	$(CC_$(2)) -print-libgcc-file-name)
 endef
 
 # initialize standard toolchain (CC,AS and others) for give stage
 # @1 : stage for which the toolchain is to be initialized
 init_standard_toolchain = \
-	$(eval stage_caps := $(shell tr '[:lower:]' '[:upper:]' <<< $(1))) \
+	$(eval stage_caps := $(shell printf "%s" $(1) | tr '[:lower:]' '[:upper:]' )) \
 	$(eval $(call set_stage_toolchain,$(stage_caps))) \
 	$(eval $(call create_class_compiler,$(1),$(ARCH-$(stage_caps)-y))) \
 	$(eval $(call set_stage_libgcc,$(1)))

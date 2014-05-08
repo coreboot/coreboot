@@ -10,6 +10,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MCP55_USE_NIC
 	select MCP55_USE_AZA
 	select SUPERIO_WINBOND_W83627HF
+	select PARALLEL_CPU_INIT
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
@@ -82,9 +83,5 @@ config IRQ_SLOT_COUNT
 config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_0100009f.h"
-
-config SERIAL_CPU_INIT
-	bool
-	default n
 
 endif # BOARD_SUPERMICRO_H8DMR_FAM10

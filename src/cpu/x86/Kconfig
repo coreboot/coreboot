@@ -1,6 +1,6 @@
-config SERIAL_CPU_INIT
+config PARALLEL_CPU_INIT
 	bool
-	default y
+	default n
 
 config UDELAY_IO
 	bool

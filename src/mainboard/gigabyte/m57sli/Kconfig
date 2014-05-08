@@ -10,6 +10,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select MCP55_USE_AZA
 	select SUPERIO_ITE_IT8716F
 	select SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL
+	select PARALLEL_CPU_INIT
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
@@ -67,10 +68,6 @@ config HT_CHAIN_UNITID_BASE
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-
-config SERIAL_CPU_INIT
-	bool
-	default n
 
 config IRQ_SLOT_COUNT
 	int

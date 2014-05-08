@@ -7,6 +7,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SOUTHBRIDGE_AMD_AMD8111
 	select SOUTHBRIDGE_AMD_AMD8131
 	select SUPERIO_WINBOND_W83627HF
+	select PARALLEL_CPU_INIT
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
@@ -48,10 +49,6 @@ config HT_CHAIN_END_UNITID_BASE
 config HT_CHAIN_UNITID_BASE
 	hex
 	default 0xa
-
-config SERIAL_CPU_INIT
-	bool
-	default n
 
 config IRQ_SLOT_COUNT
 	int

@@ -7,7 +7,7 @@
 #include <smp/spinlock.h>
 #include <assert.h>
 
-#if !CONFIG_SERIAL_CPU_INIT
+#if CONFIG_PARALLEL_CPU_INIT
 #error Intel hyper-threading requires serialized cpu init
 #endif
 

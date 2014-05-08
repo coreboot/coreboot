@@ -7,6 +7,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select NORTHBRIDGE_AMD_AMDK8
 	select SOUTHBRIDGE_SIS_SIS966
 	select SUPERIO_ITE_IT8716F
+	select PARALLEL_CPU_INIT
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
@@ -63,10 +64,6 @@ config HT_CHAIN_UNITID_BASE
 config HT_CHAIN_END_UNITID_BASE
 	hex
 	default 0x20
-
-config SERIAL_CPU_INIT
-	bool
-	default n
 
 config IRQ_SLOT_COUNT
 	int

@@ -82,8 +82,4 @@ config AMD_UCODE_PATCH_FILE
 	string
 	default "mc_patch_0100009f.h"
 
-config SERIAL_CPU_INIT
-	bool
-	default y
-
 endif # BOARD_SUPERMICRO_H8QME_FAM10

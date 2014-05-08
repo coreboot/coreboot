@@ -406,9 +406,9 @@ void stop_this_cpu(void)
 void asmlinkage secondary_cpu_init(unsigned int index)
 {
 	atomic_inc(&active_cpus);
-#if CONFIG_SERIAL_CPU_INIT
-	spin_lock(&start_cpu_lock);
-#endif
+
+	if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+		spin_lock(&start_cpu_lock);
 
 #ifdef __SSE3__
 	/*
@@ -421,9 +421,9 @@ void asmlinkage secondary_cpu_init(unsigned int index)
 	write_cr4(cr4_val);
 #endif
 	cpu_initialize(index);
-#if CONFIG_SERIAL_CPU_INIT
-	spin_unlock(&start_cpu_lock);
-#endif
+
+	if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+		spin_unlock(&start_cpu_lock);
 
 	atomic_dec(&active_cpus);
 
@@ -439,11 +439,9 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 		if (cpu->path.type != DEVICE_PATH_APIC) {
 			continue;
 		}
-	#if !CONFIG_SERIAL_CPU_INIT
-		if(cpu==bsp_cpu) {
+
+		if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT) && (cpu==bsp_cpu))
 			continue;
-		}
-	#endif
 
 		if (!cpu->enabled) {
 			continue;
@@ -458,9 +456,9 @@ static void start_other_cpus(struct bus *cpu_bus, device_t bsp_cpu)
 			printk(BIOS_ERR, "CPU 0x%02x would not start!\n",
 				cpu->path.apic.apic_id);
 		}
-#if CONFIG_SERIAL_CPU_INIT
-		udelay(10);
-#endif
+
+		if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+			udelay(10);
 	}
 
 }
@@ -538,19 +536,17 @@ void initialize_cpus(struct bus *cpu_bus)
 #endif
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-	#if !CONFIG_SERIAL_CPU_INIT
 	/* start all aps at first, so we can init ECC all together */
-	start_other_cpus(cpu_bus, info->cpu);
-	#endif
+	if (IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+		start_other_cpus(cpu_bus, info->cpu);
 #endif
 
 	/* Initialize the bootstrap processor */
 	cpu_initialize(0);
 
 #if CONFIG_SMP && CONFIG_MAX_CPUS > 1
-	#if CONFIG_SERIAL_CPU_INIT
-	start_other_cpus(cpu_bus, info->cpu);
-	#endif
+	if (!IS_ENABLED(CONFIG_PARALLEL_CPU_INIT))
+		start_other_cpus(cpu_bus, info->cpu);
 
 	/* Now wait the rest of the cpus stop*/
 	wait_other_cpus_stop(cpu_bus);

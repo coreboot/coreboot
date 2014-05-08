@@ -37,15 +37,12 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_LAPIC
 	select SMM_TSEG
 	select SUPPORT_CPU_UCODE_IN_CBFS if HAVE_FSP_BIN
+	select PARALLEL_CPU_INIT
 	select TSC_SYNC_MFENCE
 
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/intel/fsp_model_206ax/bootblock.c"
-
-config SERIAL_CPU_INIT
-	bool
-	default n
 
 config SMM_TSEG_SIZE
 	hex

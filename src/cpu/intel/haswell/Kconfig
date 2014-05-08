@@ -22,15 +22,12 @@ config CPU_SPECIFIC_OPTIONS
 	#select AP_IN_SIPI_WAIT
 	select TSC_SYNC_MFENCE
 	select CPU_INTEL_FIRMWARE_INTERFACE_TABLE
+	select PARALLEL_CPU_INIT
 	select PARALLEL_MP
 
 config BOOTBLOCK_CPU_INIT
 	string
 	default "cpu/intel/haswell/bootblock.c"
-
-config SERIAL_CPU_INIT
-	bool
-	default n
 
 config SMM_TSEG_SIZE
 	hex

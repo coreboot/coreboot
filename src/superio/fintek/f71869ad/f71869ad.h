@@ -29,7 +29,8 @@
 #define F71869AD_HWM    0x04	/* Hardware monitor */
 #define F71869AD_KBC    0x05	/* PS/2 keyboard and mouse */
 #define F71869AD_GPIO   0x06	/* General Purpose I/O (GPIO) */
-#define F71869AD_BSEL   0x07	/* BSEL */
+#define F71869AD_WDT    0x07	/* WDT */
+#define F71869AD_CIR    0x08	/* CIR */
 #define F71869AD_PME    0x0a	/* Power Management Events (PME) and ACPI */
 
 #endif /* SUPERIO_FINTEK_F71869AD_H */

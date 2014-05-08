@@ -104,8 +104,9 @@ static struct device_operations ops = {
  *					irq 0x72 = 12           # Mouse IRQ
  *				end
  *				device pnp 4e.06 off end    # GPIO
- *				device pnp 4e.07 on end     # BSEL
- *				device pnp 4e.0a off end    # PME
+ *				device pnp 4e.07 on end     # WDT
+ *				device pnp 4e.08 off end    # CIR
+ *				device pnp 4e.0a on end     # PME
  *			end # f71869ad
  *
  */
@@ -117,7 +118,8 @@ static struct pnp_info pnp_dev_info[] = {
 	{ &ops, F71869AD_HWM,  PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 	{ &ops, F71869AD_KBC,  PNP_IO0 | PNP_IRQ0 | PNP_IRQ1, {0x07ff, 0}, },
 	{ &ops, F71869AD_GPIO, },
-	{ &ops, F71869AD_BSEL,  PNP_IO0, {0x07f8, 0}, },
+	{ &ops, F71869AD_WDT, },
+	{ &ops, F71869AD_CIR,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, F71869AD_PME, },
 };
 

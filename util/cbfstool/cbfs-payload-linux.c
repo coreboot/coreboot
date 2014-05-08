@@ -67,8 +67,6 @@ static int bzp_init(struct bzpayload *bzp, comp_algo algo)
 	 */
 	bzp->num_segments = 1;
 
-	buffer_init(&bzp->trampoline, NULL, trampoline_start, trampoline_size);
-
 	bzp->algo = algo;
 	bzp->compress = compression_function(algo);
 	if (bzp->compress == NULL) {
@@ -101,6 +99,12 @@ static void bzp_add_segment(struct bzpayload *bzp, struct buffer *b, void *data,
 	bzp->num_segments++;
 }
 
+static int bzp_add_trampoline(struct bzpayload *bzp)
+{
+	bzp_add_segment(bzp, &bzp->trampoline, trampoline_start,
+	                trampoline_size);
+	return 0;
+}
 
 static int bzp_add_cmdline(struct bzpayload *bzp, char *cmdline)
 {
@@ -207,6 +211,9 @@ int parse_bzImage_to_payload(const struct buffer *input,
 	unsigned int setup_size = 4 * 512;
 
 	if (bzp_init(&bzp, algo) != 0)
+		return -1;
+
+	if (bzp_add_trampoline(&bzp) != 0)
 		return -1;
 
 	if (bzp_add_initrd(&bzp, initrd_name) != 0)

@@ -17,6 +17,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select ENABLE_APIC_EXT_ID
 	select AMDMCT
 	select QRANK_DIMM_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
 
 config MAINBOARD_DIR
 	string
@@ -85,9 +86,5 @@ config HEAP_SIZE
 config BOOTBLOCK_MAINBOARD_INIT
 	string
 	default "mainboard/hp/dl165_g6_fam10/bootblock.c"
-
-config MMCONF_SUPPORT_DEFAULT
-	bool
-	default y
 
 endif # BOARD_HP_DL165_G6_FAM10

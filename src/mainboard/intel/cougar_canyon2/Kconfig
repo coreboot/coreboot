@@ -14,6 +14,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select ENABLE_VMX
 	select EARLY_CBMEM_INIT
 	select BROKEN_CAR_MIGRATE
+	select VGA
 
 config MAINBOARD_DIR
 	string
@@ -46,10 +47,6 @@ config SMBIOS_SYSTEM_ENCLOSURE_TYPE
 config UDELAY_LAPIC_FIXED_FSB
 	int
 	default 100
-
-config VGA
-	bool
-	default y
 
 config VIRTUAL_ROM_SIZE
 	hex

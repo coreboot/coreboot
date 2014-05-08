@@ -49,10 +49,6 @@ config MAX_PHYSICAL_CPUS
 	int
 	default 2
 
-config LOGICAL_CPUS
-	bool
-	default y
-
 config HEAP_SIZE
 	hex
 	default 0x20000

@@ -121,7 +121,7 @@ include toolchain.inc
 
 ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-CC:=clang -m32 -mno-mmx -mno-sse
+CC:=clang -m32 -mno-mmx -mno-sse -no-integrated-as
 HOSTCC:=clang
 endif
 endif

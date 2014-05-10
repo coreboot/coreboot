@@ -1,3 +1,7 @@
 Board name: Chromebook Pixel
 Category: laptop
 Board URL: http://www.google.com/intl/en/chrome/devices/chromebooks.html#pixel
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n
+Flashrom support: y

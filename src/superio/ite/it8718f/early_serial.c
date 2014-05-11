@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2006 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,51 +19,15 @@
  */
 
 #include <arch/io.h>
+#include <superio/ite/common/ite.h>
 #include "it8718f.h"
-
-/* The base address is 0x2e or 0x4e, depending on config bytes. */
-#define SIO_BASE                     0x2e
-#define SIO_INDEX                    SIO_BASE
-#define SIO_DATA                     (SIO_BASE + 1)
-
-/* Global configuration registers. */
-#define IT8718F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
-#define IT8718F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
-#define IT8718F_CONFIG_REG_CONFIGSEL 0x22 /* Configuration Select. */
-#define IT8718F_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
-
-static void it8718f_sio_write(u8 ldn, u8 index, u8 value)
-{
-	outb(IT8718F_CONFIG_REG_LDN, SIO_BASE);
-	outb(ldn, SIO_DATA);
-	outb(index, SIO_BASE);
-	outb(value, SIO_DATA);
-}
-
-static void it8718f_enter_conf(void)
-{
-	u16 port = 0x2e; /* TODO: Don't hardcode! */
-
-	outb(0x87, port);
-	outb(0x01, port);
-	outb(0x55, port);
-	outb((port == 0x4e) ? 0xaa : 0x55, port);
-}
-
-static void it8718f_exit_conf(void)
-{
-	it8718f_sio_write(0x00, IT8718F_CONFIG_REG_CC, 0x02);
-}
-
 
 /*
  * GIGABYTE uses a special Super I/O register to protect its Dual BIOS
  * mechanism. It lives in the GPIO LDN. However, register 0xEF is not
  * mentioned in the IT8718F datasheet so just hardcode it to 0x7E for now.
  */
-void it8718f_disable_reboot(void)
+void it8718f_disable_reboot(device_t dev)
 {
-	it8718f_enter_conf();
-	it8718f_sio_write(IT8718F_GPIO, 0xEF, 0x7E);
-	it8718f_exit_conf();
+	ite_reg_write(dev, 0xEF, 0x7E);
 }

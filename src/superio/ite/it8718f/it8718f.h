@@ -21,6 +21,8 @@
 #ifndef SUPERIO_ITE_IT8718F_H
 #define SUPERIO_ITE_IT8718F_H
 
+#include <arch/io.h>
+
 /* Datasheet: http://www.ite.com.tw/product_info/PC/Brief-IT8718_2.asp */
 
 #define IT8718F_FDC  0x00 /* Floppy */
@@ -33,8 +35,6 @@
 #define IT8718F_GPIO 0x07 /* GPIO */
 #define IT8718F_IR   0x0a /* Consumer IR */
 
-#if defined(__PRE_RAM__)
-void it8718f_disable_reboot(void);
-#endif
+void it8718f_disable_reboot(device_t dev);
 
 #endif /* SUPERIO_ITE_IT8718F_H */

@@ -47,6 +47,7 @@
 #include "northbridge/amd/amdfam10/debug.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8718F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8718F_GPIO)
 
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
 
@@ -95,7 +96,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	sb7xx_51xx_lpc_init();
 
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	it8718f_disable_reboot();
+	it8718f_disable_reboot(GPIO_DEV);
 	console_init();
 
 //	dump_mem(CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE-0x200, CONFIG_DCACHE_RAM_BASE+CONFIG_DCACHE_RAM_SIZE);

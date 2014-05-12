@@ -168,7 +168,7 @@ static const struct soc_gpio_map gpssus_gpio_map[] = {
 	GPIO_FUNC6,	/* S502 - TOUCH_INT# - INT */
 	GPIO_FUNC6,	/* S503 - LTE_WAKE_L# - INT */
 	GPIO_NC,	/* S504 - SOC_JTAG2_TDO (NC/PU) */
-	GPIO_NC,	/* S505 - SUS_CLK_WLAN (NC) */
+	GPIO_FUNC1,	/* S505 - SUS_CLK_WLAN (NC) */
 	GPIO_INPUT_PU,	/* S506 - PCH_SPI_WP */
 	GPIO_ACPI_SMI,	/* S507 - SOC_KBC_SMI - INT */
 	GPIO_NC,	/* S508 - NC */

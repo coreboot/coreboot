@@ -220,6 +220,13 @@
 #define POST_JUMPING_TO_PAYLOAD			0xf3
 
 /**
+ * \brief TPM failure
+ *
+ * An error with the TPM, either unexepcted state or communications failure.
+ */
+#define POST_TPM_FAILURE			0xed
+
+/**
  * \brief Not supposed to get here
  *
  * A function that should not have returned, returned

@@ -233,6 +233,7 @@ static void init_vboot(int bootmode)
 
 #if !MOCK_TPM
 	printk(BIOS_ERR, "TPM: Error code 0x%x. Hard reset!\n", result);
+	post_code(POST_TPM_FAILURE);
 	hard_reset();
 #endif
 }

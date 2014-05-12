@@ -134,17 +134,6 @@ static void mc_read_resources(device_t dev)
 	ram_resource(dev, 3, 0, 640);
 	ram_resource(dev, 4, 768, ((tseg_base >> 10) - 768));
 
-	/* Using uma_resource() here would fail as base & size cannot
-	 * be used as-is for a single MTRR. This would cause excessive
-	 * use of MTRRs.
-	 *
-	 * Use of mmio_resource() instead does not create UC holes by using
-	 * MTRRs, but making these regions uncacheable is taken care of by
-	 * making sure they do not overlap with any ram_resource().
-	 *
-	 * The resources can be changed to use separate mmio_resource()
-	 * calls after MTRR code is able to merge them wisely.
-	 */
 	mmio_resource(dev, 5, tseg_base >> 10, CONFIG_SMM_TSEG_SIZE >> 10);
 
 	reg16 = pci_read_config16(dev_find_slot(0, PCI_DEVFN(0, 0)), D0F0_GGC);

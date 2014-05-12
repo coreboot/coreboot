@@ -211,10 +211,6 @@ void fixed_mem_resource(device_t dev, unsigned long index,
 
 /* It is the caller's responsibility to adjust regions such that ram_resource()
  * and mmio_resource() do not overlap.
- *
- * Current MTRR setup creates exclusive uncacheable holes for uma_resource()
- * only and these are allowed to overlap any ram_resource(). This approach
- * is used for all UMA except Intel Sandy/IvyBridge.
  */
 #define ram_resource(dev, idx, basek, sizek) \
 	fixed_mem_resource(dev, idx, basek, sizek, IORESOURCE_CACHEABLE)

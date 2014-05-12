@@ -236,6 +236,8 @@ u32 find_pci_tolm(struct bus *bus);
 
 ROMSTAGE_CONST struct device * dev_find_slot (unsigned int bus,
 						unsigned int devfn);
+ROMSTAGE_CONST struct device *dev_find_next_pci_device(
+						ROMSTAGE_CONST struct device *previous_dev);
 ROMSTAGE_CONST struct device * dev_find_slot_on_smbus (unsigned int bus,
 							unsigned int addr);
 

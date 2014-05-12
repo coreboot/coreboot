@@ -55,6 +55,30 @@ ROMSTAGE_CONST struct device *dev_find_slot(unsigned int bus,
 }
 
 /**
+ * Given a device pointer, find the next PCI device.
+ *
+ * @param previous_dev A pointer to a PCI device structure.
+ * @return Pointer to the next device structure (if found), 0 otherwise.
+ */
+ROMSTAGE_CONST struct device *dev_find_next_pci_device(
+		ROMSTAGE_CONST struct device *previous_dev)
+{
+	ROMSTAGE_CONST struct device *dev, *result;
+
+	if (previous_dev == NULL)
+		previous_dev = all_devices;
+
+	result = 0;
+	for (dev = previous_dev->next; dev; dev = dev->next) {
+		if (dev->path.type == DEVICE_PATH_PCI) {
+			result = dev;
+			break;
+		}
+	}
+	return result;
+}
+
+/**
  * Given an SMBus bus and a device number, find the device structure.
  *
  * @param bus The bus number.

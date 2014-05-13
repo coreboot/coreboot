@@ -76,6 +76,20 @@ static void ich7_enable_lpc(void)
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x90, 0x00000301);
 }
 
+/* TODO: superio code should really not be in mainboard */
+static void pnp_enter_func_mode(device_t dev)
+{
+	u16 port = dev >> 8;
+	outb(0x87, port);
+	outb(0x87, port);
+}
+
+static void pnp_exit_func_mode(device_t dev)
+{
+	u16 port = dev >> 8;
+	outb(0xaa, port);
+}
+
 /* This box has two superios, so enabling serial becomes slightly excessive.
  * We disable a lot of stuff to make sure that there are no conflicts between
  * the two. Also set up the GPIOs from the beginning. This is the "no schematic
@@ -86,7 +100,7 @@ static void early_superio_config_w83627thg(void)
 	device_t dev;
 
 	dev=PNP_DEV(0x2e, W83627THG_SP1);
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_func_mode(dev);
 
 	pnp_write_config(dev, 0x24, 0xc6); // PNPCSV
 
@@ -148,10 +162,10 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0xa00);
 	pnp_set_enable(dev, 1);
 
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_func_mode(dev);
 
 	dev=PNP_DEV(0x4e, W83627THG_SP1);
-	pnp_enter_ext_func_mode(dev);
+	pnp_enter_func_mode(dev);
 
 	pnp_set_logical_device(dev); // Set COM3 to sane non-conflicting values
 	pnp_set_enable(dev, 0);
@@ -180,7 +194,7 @@ static void early_superio_config_w83627thg(void)
 	pnp_set_iobase(dev, PNP_IDX_IO0, 0x00);
 	pnp_set_iobase(dev, PNP_IDX_IO1, 0x00);
 
-	pnp_exit_ext_func_mode(dev);
+	pnp_exit_func_mode(dev);
 }
 
 static void rcba_config(void)

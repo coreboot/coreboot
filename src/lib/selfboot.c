@@ -252,9 +252,10 @@ static int build_self_segment_list(
 			/* Clean up the values */
 			if (new->s_filesz > new->s_memsz)  {
 				new->s_filesz = new->s_memsz;
+				printk(BIOS_DEBUG,
+				       "  cleaned up filesize 0x%lx\n",
+				       new->s_filesz);
 			}
-			printk(BIOS_DEBUG, "  (cleaned up) New segment addr 0x%lx size 0x%lx offset 0x%lx filesize 0x%lx\n",
-				new->s_dstaddr, new->s_memsz, new->s_srcaddr, new->s_filesz);
 			break;
 
 		case PAYLOAD_SEGMENT_BSS:

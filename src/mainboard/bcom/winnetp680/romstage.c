@@ -33,7 +33,9 @@
 #include <lib.h>
 #include <spd.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
-#include "superio/winbond/w83697hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83697hf/w83697hf.h>
+
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 
 static inline int spd_read_byte(unsigned device, unsigned address)
@@ -85,7 +87,7 @@ void main(unsigned long bist)
 	pci_write_config8(ctrl.d0f0, 0x4f, 0x01);
 
 	w83697hf_set_clksel_48(SERIAL_DEV);
-	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	enable_smbus();

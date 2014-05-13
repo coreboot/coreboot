@@ -42,7 +42,8 @@
 #include "northbridge/via/vx800/raminit.h"
 #include "northbridge/via/vx800/raminit.c"
 #include "wakeup.h"
-#include "superio/winbond/w83697hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83697hf/w83697hf.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83697HF_SP1)
 #define DUMMY_DEV PNP_DEV(0x2e, 0)
@@ -385,7 +386,7 @@ void main(unsigned long bist)
 	pci_write_config8(PCI_DEV(0, 0, 0), 0x4f, 0x01);
 	/* EmbedComInit(); */
 	w83697hf_set_clksel_48(DUMMY_DEV);
-	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	/* enable_vx800_serial(); */
 
 	/*

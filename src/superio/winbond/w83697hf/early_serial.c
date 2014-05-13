@@ -19,6 +19,7 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_def.h>
 #include "w83697hf.h"
 
 static void pnp_enter_ext_func_mode(device_t dev)
@@ -45,7 +46,8 @@ void w83697hf_set_clksel_48(device_t dev)
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void w83697hf_enable_serial(device_t dev, u16 iobase)
+/* Depreciated, use winbond_enable_serial() */
+void w83697hf_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

@@ -18,8 +18,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_WINBOND_W83697HF_W83697HF_H
-#define SUPERIO_WINBOND_W83697HF_W83697HF_H
+#ifndef SUPERIO_WINBOND_W83697HF_H
+#define SUPERIO_WINBOND_W83697HF_H
+
+#include <arch/io.h>
 
 #define W83697HF_FDC            0    /* Floppy */
 #define W83697HF_PP             1    /* Parallel port */
@@ -33,4 +35,8 @@
 #define W83697HF_HWM            11   /* Hardware monitor */
 
 void w83697hf_set_clksel_48(device_t);
-#endif
+
+/* Depreciated, use winbond_enable_serial() */
+void w83697hf_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_WINBOND_W83697HF_H */

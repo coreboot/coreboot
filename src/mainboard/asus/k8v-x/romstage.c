@@ -38,7 +38,8 @@ unsigned int get_sbdn(unsigned bus);
 #include "cpu/x86/lapic.h"
 #include "northbridge/amd/amdk8/reset_test.c"
 #include "northbridge/amd/amdk8/early_ht.c"
-#include "superio/winbond/w83697hf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83697hf/w83697hf.h>
 #include "southbridge/via/vt8237r/early_smbus.c"
 #include "northbridge/amd/amdk8/debug.c" /* After vt8237r/early_smbus.c! */
 #include "cpu/x86/bist.h"
@@ -108,7 +109,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset = 0;
 	struct sys_info *sysinfo = &sysinfo_car;
 
-	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	enable_rom_decode();
 

@@ -68,14 +68,14 @@ int multiboot_module_redraw(WINDOW *win)
 
 static void parse_memory(struct multiboot_header *table)
 {
-        u8 *start = (u8 *) phys_to_virt(table->mmap_addr);
-        u8 *ptr = start;
+	u8 *start = (u8 *) phys_to_virt(table->mmap_addr);
+	u8 *ptr = start;
 	int i = 0;
 
 	cb_info.mem_count = 0;
 
-        while(ptr < (start + table->mmap_length)) {
-                struct multiboot_mmap *mmap = (struct multiboot_mmap *) ptr;
+	while(ptr < (start + table->mmap_length)) {
+		struct multiboot_mmap *mmap = (struct multiboot_mmap *) ptr;
 
 		cb_info.range[i].start = mmap->addr;
 		cb_info.range[i].size = mmap->length;
@@ -84,9 +84,9 @@ static void parse_memory(struct multiboot_header *table)
 		if (++cb_info.mem_count == MAX_MEMORY_COUNT)
 			return;
 
-                ptr += (mmap->size + sizeof(mmap->size));
+		ptr += (mmap->size + sizeof(mmap->size));
 		i++;
-        }
+	}
 }
 
 static void parse_header(unsigned long addr)
@@ -118,4 +118,4 @@ struct coreinfo_module multiboot_module = {
 struct coreinfo_module multiboot_module = {
 };
 
-#endif
+#endif /* CONFIG_MODULE_MULTIBOOT */

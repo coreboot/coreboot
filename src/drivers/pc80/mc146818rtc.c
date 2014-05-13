@@ -71,6 +71,7 @@ void rtc_init(int invalid)
 	unsigned char x;
 #endif
 
+#ifndef __PRE_RAM__
 #if CONFIG_HAVE_ACPI_RESUME
 	/*
 	 * Avoid clearing pending interrupts and resetting the RTC control
@@ -80,7 +81,8 @@ void rtc_init(int invalid)
 	 */
 	if (acpi_slp_type == 3)
 		return;
-#endif
+#endif /* CONFIG_HAVE_ACPI_RESUME */
+#endif /* __PRE_RAM__ */
 
 	printk(BIOS_DEBUG, "RTC Init\n");
 

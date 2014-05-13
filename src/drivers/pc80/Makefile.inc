@@ -1,3 +1,4 @@
+romstage-y += mc146818rtc.c
 ramstage-y += mc146818rtc.c
 ramstage-y += isa-dma.c
 ramstage-y += i8254.c

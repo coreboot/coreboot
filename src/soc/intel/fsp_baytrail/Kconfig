@@ -1,0 +1,162 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2011 The ChromiumOS Authors. All rights reserved.
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+config SOC_INTEL_FSP_BAYTRAIL
+	bool
+	help
+	  Bay Trail I part support using the Intel FSP.
+
+if SOC_INTEL_FSP_BAYTRAIL
+
+config CPU_SPECIFIC_OPTIONS
+	def_bool y
+	select ARCH_BOOTBLOCK_X86_32
+	select ARCH_ROMSTAGE_X86_32
+	select ARCH_RAMSTAGE_X86_32
+	select DYNAMIC_CBMEM
+	select HAVE_HARD_RESET
+	select MMCONF_SUPPORT
+	select MMCONF_SUPPORT_DEFAULT
+	select RELOCATABLE_MODULES
+	select PARALLEL_MP
+	select REG_SCRIPT
+	select SMP
+	select SPI_FLASH
+	select SSE2
+	select TSC_CONSTANT_RATE
+	select TSC_SYNC_MFENCE
+	select UDELAY_TSC
+	select SUPPORT_CPU_UCODE_IN_CBFS if INCLUDE_MICROCODE_IN_BUILD
+	select CPU_MICROCODE_ADDED_DURING_BUILD if INCLUDE_MICROCODE_IN_BUILD
+	select ROMSTAGE_RTC_INIT
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "soc/intel/fsp_baytrail/bootblock/bootblock.c"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0x80000000
+	help
+	  This is set by the FSP
+
+config MAX_CPUS
+	int
+	default 4
+
+config CPU_ADDR_BITS
+	int
+	default 36
+
+config SMM_TSEG_SIZE
+	hex
+	default 0x100000
+	help
+	  This is set by the FSP
+
+config SMM_RESERVED_SIZE
+	hex
+	default 0x100000
+
+config VGA_BIOS_ID
+	string
+	default "8086,0f31"
+	help
+	  This is the default PCI ID for the Bay Trail graphics
+	  devices.  This string names the vbios rom in cbfs.
+
+config INCLUDE_MICROCODE_IN_BUILD
+	bool "Build in microcode patch"
+	default n
+	help
+	  Enable if the microcode patch is available.  For the
+	  BayTrail - I processors, the filename should start with
+	  "M01".  Using a microcode patch for the incorrect BayTrail
+	  SKU will lead to unpredictable results.
+
+config MICROCODE_INCLUDE_PATH
+	string "Microcode Include path"
+	default "../intel/cpu/baytrail/microcode"
+	depends on SUPPORT_CPU_UCODE_IN_CBFS
+
+config CPU_MICROCODE_CBFS_LOC
+	hex
+	default 0xfff10040
+
+config CPU_MICROCODE_CBFS_LEN
+	hex
+	default 0xcc00
+	help
+	  This should be updated when the microcode patch changes.
+
+config CBFS_SIZE
+	hex
+	default 0x200000
+	help
+	  On Bay Trail systems the firmware image has to store a lot more
+	  than just coreboot, including:
+	   - a firmware descriptor
+	   - Intel Trusted Execution Engine firmware
+	  This option specifies the maximum size of the CBFS portion in the
+	  firmware image.
+
+config INCLUDE_ME
+	bool "Include the TXE"
+	default n
+	help
+	  Build the TXE and descriptor.bin into the ROM image.  If you want to use a
+	  descriptor.bin and TXE file from the previous ROM image, you may not want
+	  to build it in here.
+
+config ME_PATH
+	string
+	depends on INCLUDE_ME
+	help
+	  The path of the TXE and Descriptor files.
+
+config LOCK_MANAGEMENT_ENGINE
+	bool "Lock TXE section"
+	default n
+	depends on INCLUDE_ME
+	help
+	  The Intel Trusted Execution Engine supports preventing write accesses
+	  from the host to the Management Engine section in the firmware
+	  descriptor. If the ME section is locked, it can only be overwritten
+	  with an external SPI flash programmer. You will want this if you
+	  want to increase security of your ROM image once you are sure
+	  that the ME firmware is no longer going to change.
+
+	  If unsure, say N.
+
+config ENABLE_BUILTIN_COM1
+	bool "Enable built-in legacy Serial Port"
+	help
+	  The Baytrail SOC has one legacy serial port. Choose this option to
+	  configure the pads and enable it. This serial port can be used for
+	  the debug console.
+
+config VGA_BIOS_FILE
+	string
+	default "../intel/cpu/baytrail/vbios/Baytrail_I_36_2_2/Vga.dat" if VGA_BIOS
+
+## Baytrail Specific FSP Kconfig
+source src/soc/intel/fsp_baytrail/fsp/Kconfig
+
+endif	#SOC_INTEL_FSP_BAYTRAIL

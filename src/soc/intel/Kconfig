@@ -1,1 +1,2 @@
 source src/soc/intel/baytrail/Kconfig
+source src/soc/intel/fsp_baytrail/Kconfig

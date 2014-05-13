@@ -29,6 +29,8 @@
 #define ITE_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
 #define ITE_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
 #define ITE_CONFIG_REG_SWSUSP    0x24 /* Software Suspend, Flash I/F. */
+#define ITE_CONFIG_REG_MFC       0x2a /* multi function pin */
+#define ITE_CONFIG_REG_WATCHDOG  0x72 /* watchdog config */
 
 /* Helper procedure */
 static void ite_sio_write(device_t dev, u8 reg, u8 value)
@@ -82,5 +84,43 @@ void ite_enable_serial(device_t dev, u16 iobase)
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
 	pnp_set_enable(dev, 1);
+	pnp_exit_conf_state(dev);
+}
+
+/*
+ *
+ * LDN 7, reg 0x2a - needed for S3, or memory power will be cut off
+ * this was documented only in IT8712F_V0.9.2!
+ *
+ * Enable 3VSBSW#. (For System Suspend-to-RAM)
+ * 0: 3VSBSW# will be always inactive.
+ * 1: 3VSBSW# enabled. It will be (NOT SUSB#) NAND SUSC#.
+ *
+ * in romstage.c
+ * #define GPIO_DEV PNP_DEV(0x2e, ITE_GPIO)
+ * and pass: GPIO_DEV
+ */
+
+void ite_enable_3vsbsw(device_t dev)
+{
+	u8 tmp;
+	pnp_enter_conf_state(dev);
+	pnp_set_logical_device(dev);
+	tmp = pnp_read_config(dev, ITE_CONFIG_REG_MFC);
+	tmp |= 0x80;
+	pnp_write_config(dev, ITE_CONFIG_REG_MFC, tmp);
+	pnp_exit_conf_state(dev);
+}
+
+/*
+ * in romstage.c
+ * #define GPIO_DEV PNP_DEV(0x2e, ITE_GPIO)
+ * and pass: GPIO_DEV
+*/
+
+void ite_kill_watchdog(device_t dev)
+{
+	pnp_enter_conf_state(dev);
+	ite_sio_write(dev, ITE_CONFIG_REG_WATCHDOG, 0x00);
 	pnp_exit_conf_state(dev);
 }

@@ -32,5 +32,7 @@ void ite_enable_serial(device_t dev, u16 iobase);
 
 /* Some boards need to init wdt+gpio's very early */
 void ite_reg_write(device_t dev, u8 reg, u8 value);
+void ite_enable_3vsbsw(device_t dev);
+void ite_kill_watchdog(device_t dev);
 
 #endif /* SUPERIO_ITE_COMMON_ROMSTAGE_H */

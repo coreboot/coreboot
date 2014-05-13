@@ -379,6 +379,10 @@ Device (EC0)
 		/* When sensor ID returns 0xFF then no more events */
 		While (LNotEqual (Local0, EC_TEMP_SENSOR_NOT_PRESENT))
 		{
+			If (CondRefOf (\_SB.DPTF.TEVT, Local1)) {
+				\_SB.DPTF.TEVT (Local0)
+			}
+
 			/* Keep reaading sensor ID for event */
 			Store (^PATI, Local0)
 		}

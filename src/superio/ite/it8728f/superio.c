@@ -23,6 +23,7 @@
 #include <device/pnp.h>
 #include <superio/conf_mode.h>
 #include <console/console.h>
+#include <pc80/keyboard.h>
 #include <stdlib.h>
 
 #include "chip.h"
@@ -31,15 +32,17 @@
 
 static void it8728f_init(device_t dev)
 {
-	struct superio_ite_it8728f_config *conf = dev->chip_info;
-
 	if (!dev->enabled)
 		return;
 
 	switch(dev->path.pnp.device) {
 	/* TODO: Might potentially need code for HWM or FDC etc. */
-    case IT8728F_EC:
+	case IT8728F_EC:
 		it8728f_hwm_ec_init(dev);
+		break;
+	case IT8728F_KBCK:
+		set_kbc_ps2_mode();
+		pc_keyboard_init();
 		break;
 	}
 }
@@ -53,9 +56,16 @@ static struct device_operations ops = {
 	.ops_pnp_mode     = &pnp_conf_mode_870155_aa,
 };
 
-/* TODO: incomplete */
 static struct pnp_info pnp_dev_info[] = {
+	{ &ops, IT8728F_FDC, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ff8, 0}, },
+	{ &ops, IT8728F_SP1, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
+	{ &ops, IT8728F_SP2, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
+	{ &ops, IT8728F_PP, PNP_IO0 | PNP_IRQ0 | PNP_DRQ0, {0x0ffc, 0}, },
 	{ &ops, IT8728F_EC, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x0ff8, 0}, {0x0ff8, 4}, },
+	{ &ops, IT8728F_KBCK, PNP_IO0 | PNP_IO1 | PNP_IRQ0, {0x0fff, 0}, {0x0fff, 4}, },
+	{ &ops, IT8728F_KBCM, PNP_IRQ0, },
+	{ &ops, IT8728F_GPIO, PNP_IO0 | PNP_IO1 | PNP_IO2 | PNP_IRQ0, {0x0fff, 0}, {0x0ff8, 0}, {0x0ff8, 0}, },
+	{ &ops, IT8728F_IR, PNP_IO0 | PNP_IRQ0, {0x0ff8, 0}, },
 };
 
 static void enable_dev(device_t dev)

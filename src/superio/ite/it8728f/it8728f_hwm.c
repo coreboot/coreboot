@@ -23,13 +23,13 @@
 #include <device/device.h>
 #include <device/pnp.h>
 #include "chip.h"
-#include "ite_internal.h"
+#include "it8728f_internal.h"
 
 /*
  * FAN controller configuration register index's
  */
 #define HWM_MAIN_CTL_REG		 0x13	/* default 0x07 */
-#define HWM_CTL_REG				 0x14	/* default 0x40 */
+#define HWM_CTL_REG			 0x14	/* default 0x40 */
 #define HWM_FAN1_CTL_PWM		 0x15	/* default 0x00 */
 #define HWM_FAN2_CTL_PWM		 0x16	/* default 0x00 */
 #define HWM_FAN3_CTL_PWM		 0x17	/* default 0x00 */
@@ -50,7 +50,8 @@ void it8728f_hwm_ec_init(device_t dev)
 		printk(BIOS_WARNING, "Super I/O HWM: No HWM resource found.\n");
 		return;
 	}
-	u16 port = res->base;
+	/* I/O port for HWM is at base + 5 */
+	u16 port = res->base + 5;
 
 	printk(BIOS_INFO,
 		"ITE IT8728F Super I/O HWM: Initializing Hardware Monitor..\n");

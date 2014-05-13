@@ -37,14 +37,15 @@
 #include <stdint.h>
 #include <string.h>
 #include <superio/ite/common/ite.h>
-#include <superio/ite/it8712f/it8712f.h>
+#include <superio/ite/it8728f/it8728f.h>
 
 #define MMIO_NON_POSTED_START 0xfed00000
 #define MMIO_NON_POSTED_END   0xfedfffff
 #define SB_MMIO 0xFED80000
 #define SB_MMIO_MISC32(x) *(volatile u32 *)(SB_MMIO + 0xE00 + (x))
 
-#define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, IT8728F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8728F_GPIO)
 
 static void sbxxx_enable_48mhzout(void)
 {
@@ -80,11 +81,16 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 
-		/* enable SIO decode */
+		/* enable SIO LPC decode */
 		dev = PCI_DEV(0, 0x14, 3);
 		byte = pci_read_config8(dev, 0x48);
 		byte |= 3;		/* 2e, 2f */
 		pci_write_config8(dev, 0x48, byte);
+
+		/* enable serial decode */
+		byte = pci_read_config8(dev, 0x44);
+		byte |= (1 << 6);  /* 0x3f8 */
+		pci_write_config8(dev, 0x44, byte);
 
 		post_code(0x30);
 
@@ -94,9 +100,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		/* enable SIO clock */
 		sbxxx_enable_48mhzout();
-		it8712f_kill_watchdog();
+		ite_kill_watchdog(GPIO_DEV);
 		ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-		it8712f_enable_3vsbsw();
+		ite_enable_3vsbsw(GPIO_DEV);
 		console_init();
 
 		/* turn on secondary smbus at b20 */

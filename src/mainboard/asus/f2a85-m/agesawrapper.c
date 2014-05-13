@@ -132,8 +132,6 @@ agesawrapper_amdinitmmio (
 {
 	AGESA_STATUS                  Status;
 	UINT64                        MsrReg;
-	UINT32                        PciData;
-	PCI_ADDR                      PciAddress;
 	AMD_CONFIG_PARAMS             StdHeader;
 
 	/*
@@ -149,11 +147,6 @@ agesawrapper_amdinitmmio (
 	LibAmdMsrRead (0xC001001F, &MsrReg, &StdHeader);
 	MsrReg = MsrReg | 0x0000400000000000;
 	LibAmdMsrWrite (0xC001001F, &MsrReg, &StdHeader);
-
-	/* For serial port */
-	PciData = 0xFF03FFD5;
-	PciAddress.AddressValue = MAKE_SBDFO (0, 0, 0x14, 0x3, 0x44);
-	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	/* Set ROM cache onto WP to decrease post time */
 	MsrReg = (0x0100000000ull - CACHE_ROM_SIZE) | 5ull;

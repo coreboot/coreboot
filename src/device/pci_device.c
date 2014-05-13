@@ -12,6 +12,7 @@
  * (Written by Yinghai Lu <yhlu@tyan.com> for Tyan)
  * Copyright (C) 2005-2009 coresystems GmbH
  * (Written by Stefan Reinauer <stepan@coresystems.de> for coresystems GmbH)
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC.
  */
 
 /*
@@ -1301,6 +1302,156 @@ unsigned int pci_domain_scan_bus(device_t dev, unsigned int max)
 {
 	max = pci_scan_bus(dev->link_list, PCI_DEVFN(0, 0), 0xff, max);
 	return max;
+}
+
+/**
+ * Take an INT_PIN number (0, 1 - 4) and convert
+ * it to a string ("NO PIN", "PIN A" - "PIN D")
+ *
+ * @param pin PCI Interrupt Pin number (0, 1 - 4)
+ * @return A string corresponding to the pin number or "Invalid"
+ */
+const char *pin_to_str(int pin)
+{
+	const char *str[5] = {
+		"NO PIN",
+		"PIN A",
+		"PIN B",
+		"PIN C",
+		"PIN D",
+	};
+
+	if (pin >= 0 && pin <= 4)
+		return str[pin];
+	else
+		return "Invalid PIN, not 0 - 4";
+}
+
+/**
+ * Get the PCI INT_PIN swizzle for a device defined as:
+ *   pin_parent = (pin_child + devn_child) % 4 + 1
+ *   where PIN A = 1 ... PIN_D = 4
+ *
+ * Given a PCI device structure 'dev', find the interrupt pin
+ * that will be triggered on its parent bridge device when
+ * generating an interrupt.  For example: Device 1:3.2 may
+ * use INT_PIN A but will trigger PIN D on its parent bridge
+ * device.  In this case, this function will return 4 (PIN D).
+ *
+ * @param dev A PCI device structure to swizzle interrupt pins for
+ * @param *parent_bdg The PCI device structure for the bridge
+ *        device 'dev' is attached to
+ * @return The interrupt pin number (1 - 4) that 'dev' will
+ *         trigger when generating an interrupt
+ */
+static int swizzle_irq_pins(device_t dev, device_t *parent_bridge)
+{
+	device_t parent;	/* Our current device's parent device */
+	device_t child;		/* The child device of the parent */
+	uint8_t parent_bus = 0;		/* Parent Bus number */
+	uint16_t parent_devfn = 0;	/* Parent Device and Function number */
+	uint16_t child_devfn = 0;	/* Child Device and Function number */
+	uint8_t swizzled_pin = 0;	/* Pin swizzled across a bridge */
+
+	/* Start with PIN A = 0 ... D = 3 */
+	swizzled_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN) - 1;
+
+	/* While our current device has parent devices */
+	child = dev;
+	for (parent = child->bus->dev; parent; parent = parent->bus->dev) {
+		parent_bus = parent->bus->secondary;
+		parent_devfn = parent->path.pci.devfn;
+		child_devfn = child->path.pci.devfn;
+
+		/* Swizzle the INT_PIN for any bridges not on root bus */
+		swizzled_pin = (PCI_SLOT(child_devfn) + swizzled_pin) % 4;
+		printk(BIOS_SPEW, "\tWith INT_PIN swizzled to %s\n"
+			"\tAttached to bridge device %01X:%02Xh.%02Xh\n",
+			pin_to_str(swizzled_pin + 1), parent_bus,
+			PCI_SLOT(parent_devfn), PCI_FUNC(parent_devfn));
+
+		/* Continue until we find the root bus */
+		if (parent_bus > 0) {
+			/*
+			 * We will go on to the next parent so this parent
+			 * becomes the child
+			 */
+			child = parent;
+			continue;
+		} else {
+			/*
+			 *  Found the root bridge device,
+			 *  fill in the structure and exit
+			 */
+			*parent_bridge = parent;
+			break;
+		}
+	}
+
+	/* End with PIN A = 1 ... D = 4 */
+	return swizzled_pin + 1;
+}
+
+/**
+ * Given a device structure 'dev', find its interrupt pin
+ * and its parent bridge 'parent_bdg' device structure.
+ * If it is behind a bridge, it will return the interrupt
+ * pin number (1 - 4) of the parent bridge that the device
+ * interrupt pin has been swizzled to, otherwise it will
+ * return the interrupt pin that is programmed into the
+ * PCI config space of the target device.  If 'dev' is
+ * behind a bridge, it will fill in 'parent_bdg' with the
+ * device structure of the bridge it is behind, otherwise
+ * it will copy 'dev' into 'parent_bdg'.
+ *
+ * @param dev A PCI device structure to get interrupt pins for.
+ * @param *parent_bdg The PCI device structure for the bridge
+ *        device 'dev' is attached to.
+ * @return The interrupt pin number (1 - 4) that 'dev' will
+ *         trigger when generating an interrupt.
+ *         Errors: -1 is returned if the device is not enabled
+ *                 -2 is returned if a parent bridge could not be found.
+ */
+int get_pci_irq_pins(device_t dev, device_t *parent_bdg)
+{
+	uint8_t bus = 0;	/* The bus this device is on */
+	uint16_t devfn = 0;	/* This device's device and function numbers */
+	uint8_t int_pin = 0;	/* Interrupt pin used by the device */
+	uint8_t target_pin = 0;	/* Interrupt pin we want to assign an IRQ to */
+
+	/* Make sure this device is enabled */
+	if (!(dev->enabled && (dev->path.type == DEVICE_PATH_PCI)))
+		return -1;
+
+	bus = dev->bus->secondary;
+	devfn = dev->path.pci.devfn;
+
+	/* Get and validate the interrupt pin used. Only 1-4 are allowed */
+	int_pin = pci_read_config8(dev, PCI_INTERRUPT_PIN);
+	if (int_pin < 1 || int_pin > 4)
+		return -1;
+
+	printk(BIOS_SPEW, "PCI IRQ: Found device %01X:%02X.%02X using %s\n",
+		bus, PCI_SLOT(devfn), PCI_FUNC(devfn), pin_to_str(int_pin));
+
+	/* If this device is on a bridge, swizzle its INT_PIN */
+	if (bus) {
+		/* Swizzle its INT_PINs */
+		target_pin = swizzle_irq_pins(dev, parent_bdg);
+
+		/* Make sure the swizzle returned valid structures */
+		if (parent_bdg == NULL) {
+			printk(BIOS_WARNING,
+				"Warning: Could not find parent bridge for this device!\n");
+			return -2;
+		}
+	} else {	/* Device is not behind a bridge */
+		target_pin = int_pin;	/* Return its own interrupt pin */
+		*parent_bdg = dev;		/* Return its own structure */
+	}
+
+	/* Target pin is the interrupt pin we want to assign an IRQ to */
+	return target_pin;
 }
 
 #if CONFIG_PC80_SYSTEM

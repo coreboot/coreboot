@@ -35,7 +35,8 @@
 #include "southbridge/amd/agesa/hudson/hudson.h"
 #include "cpu/amd/agesa/s3_resume.h"
 #include "cbmem.h"
-#include "superio/winbond/w83627uhg/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83627uhg/w83627uhg.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627UHG_SP1)
 
@@ -80,9 +81,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		post_code(0x30);
 		post_code(0x31);
 
-		/* Set w83627uhg to 48MHz and enable w83627uhg */
-		w83627uhg_set_input_clk_sel(SERIAL_DEV, 0);
-		w83627uhg_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		/* w83627uhg has a default clk of 48MHz, p.9 of data-sheet */
+		winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 		console_init();
 	}

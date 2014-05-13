@@ -37,4 +37,4 @@
 #define W83627UHG_SP5			14  /* Com5 */
 #define W83627UHG_SP6			15  /* Com6 */
 
-#endif
+#endif /* SUPERIO_WINBOND_W83627UHG_W83627UHG_H */

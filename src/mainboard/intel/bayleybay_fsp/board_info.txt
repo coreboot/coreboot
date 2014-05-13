@@ -1,0 +1,4 @@
+Board name: Bayley Bay
+Category: eval
+ROM protocol: SPI
+ROM socketed: n

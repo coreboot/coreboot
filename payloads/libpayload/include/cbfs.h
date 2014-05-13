@@ -82,8 +82,7 @@ void *cbfs_simple_buffer_unmap(struct cbfs_simple_buffer *buffer,
 int run_address(void *f);
 
 /* Defined in src/lib/selfboot.c */
-struct lb_memory;
-int selfboot(struct lb_memory *mem, struct cbfs_payload *payload);
+void selfboot(void *entry);
 
 /* Defined in individual arch / board implementation. */
 int init_default_cbfs_media(struct cbfs_media *media);

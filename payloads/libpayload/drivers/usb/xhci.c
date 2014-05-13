@@ -168,7 +168,7 @@ xhci_init (unsigned long physical_bar)
 	controller->poll_intr_queue	= xhci_poll_intr_queue;
 	controller->pcidev		= 0;
 
-	controller->reg_base = (u32)physical_bar;
+	controller->reg_base = (uintptr_t)physical_bar;
 	controller->instance = xzalloc(sizeof(xhci_t));
 	xhci_t *const xhci = (xhci_t *)controller->instance;
 

@@ -41,6 +41,7 @@
 
 #define IN_MALLOC_C
 #include <libpayload.h>
+#include <stdint.h>
 
 struct memory_type {
 	void *start;
@@ -158,7 +159,7 @@ static void *alloc(int len, struct memory_type *type)
 
 		if (header & FLAG_FREE) {
 			if (len <= size) {
-				hdrtype_t volatile *nptr = (hdrtype_t volatile *)((int)ptr + HDRSIZE + len);
+				hdrtype_t volatile *nptr = (hdrtype_t volatile *)((uintptr_t)ptr + HDRSIZE + len);
 				int nsize = size - (HDRSIZE + len);
 
 				/* If there is still room in this block,
@@ -177,11 +178,11 @@ static void *alloc(int len, struct memory_type *type)
 					*ptr = USED_BLOCK(size);
 				}
 
-				return (void *)((int)ptr + HDRSIZE);
+				return (void *)((uintptr_t)ptr + HDRSIZE);
 			}
 		}
 
-		ptr = (hdrtype_t volatile *)((int)ptr + HDRSIZE + size);
+		ptr = (hdrtype_t volatile *)((uintptr_t)ptr + HDRSIZE + size);
 
 	} while (ptr < (hdrtype_t *) type->end);
 
@@ -353,7 +354,7 @@ static struct align_region_t *allocate_region(int alignment, int num_elements, s
 		free(new_region);
 		return NULL;
 	}
-	new_region->start_data = (void*)((u32)(new_region->start + num_elements + alignment - 1) & (~(alignment-1)));
+	new_region->start_data = (void*)((uintptr_t)(new_region->start + num_elements + alignment - 1) & (~(alignment-1)));
 	new_region->size = num_elements * alignment;
 	new_region->free = num_elements;
 	new_region->next = type->align_regions;

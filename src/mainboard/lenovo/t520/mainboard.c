@@ -158,7 +158,7 @@ static void mainboard_init(device_t dev)
 	RCBA32(0x38c4) = 0x00802005;
 	RCBA32(0x38c0) = 0x00000007;
 
-	pc_keyboard_init(0);
+	pc_keyboard_init();
 
 	/* Enable expresscard hotplug events.  */
 	pci_write_config32(dev_find_slot(0, PCI_DEVFN(0x1c, 2)),

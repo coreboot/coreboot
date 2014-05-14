@@ -169,6 +169,7 @@ arch_config_armv7() {
 	TBFDARCH="littlearm"
 	TCLIST="armv7a armv7-a"
 	TWIDTH="32"
+	TABI="eabi"
 }
 
 arch_config_aarch64() {
@@ -176,6 +177,7 @@ arch_config_aarch64() {
 	TBFDARCH="littleaarch64"
 	TCLIST="aarch64"
 	TWIDTH="64"
+	TABI="eabi"
 }
 
 arch_config_x86() {
@@ -183,6 +185,7 @@ arch_config_x86() {
 	TBFDARCH="i386"
 	TCLIST="i386 x86_64"
 	TWIDTH="32"
+	TABI="elf"
 }
 
 test_architecture() {
@@ -203,11 +206,9 @@ test_architecture() {
 	search="$(eval echo \$CROSS_COMPILE_$architecture 2>/dev/null)"
 	search="$search $CROSS_COMPILE"
 	for toolchain in $TCLIST; do
-		search="$search $XGCCPATH$toolchain-elf-"
-		search="$search $toolchain-elf-"
+		search="$search $XGCCPATH$toolchain-$TABI-"
+		search="$search $toolchain-$TABI-"
 		search="$search $toolchain-linux-gnu-"
-		search="$search $XGCCPATH$toolchain-eabi-"
-		search="$search $toolchain-eabi-"
 	done
 	echo "# $architecture TARCH_SEARCH=$search"
 

@@ -33,6 +33,12 @@ clean_up() {
 	fi
 }
 
+# Create temporary file(s).
+TMPFILE="$(mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz)"
+touch "$TMPFILE"
+trap clean_up EXIT
+
+
 program_exists() {
 	type "$1" >/dev/null 2>&1
 }
@@ -154,11 +160,6 @@ AR_${TARCH}:=${GCCPREFIX}ar
 
 EOF
 }
-
-# Create temporary file(s).
-TMPFILE="$(mktemp /tmp/temp.XXXX 2>/dev/null || echo /tmp/temp.78gOIUGz)"
-touch "$TMPFILE"
-trap clean_up EXIT
 
 # Architecture definition
 SUPPORTED_ARCHITECTURE="x86 armv7 aarch64"

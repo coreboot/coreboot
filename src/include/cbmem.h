@@ -73,11 +73,48 @@
 #define CBMEM_ID_RAM_OOPS	0x05430095
 #define CBMEM_ID_NONE		0x00000000
 #define CBMEM_ID_AGESA_RUNTIME	0x41474553
-#define CBMEM_ID_HOB_POINTER		0x484f4221
+#define CBMEM_ID_HOB_POINTER	0x484f4221
 
 #ifndef __ASSEMBLER__
 #include <stddef.h>
 #include <stdint.h>
+
+struct cbmem_id_to_name {
+	u32 id;
+	const char *name;
+};
+
+#define CBMEM_ID_TO_NAME_TABLE				 \
+	{ CBMEM_ID_FREESPACE,		"FREE SPACE " }, \
+	{ CBMEM_ID_GDT,			"GDT        " }, \
+	{ CBMEM_ID_ACPI,		"ACPI       " }, \
+	{ CBMEM_ID_CBTABLE,		"COREBOOT   " }, \
+	{ CBMEM_ID_PIRQ,		"IRQ TABLE  " }, \
+	{ CBMEM_ID_MPTABLE,		"SMP TABLE  " }, \
+	{ CBMEM_ID_RESUME,		"ACPI RESUME" }, \
+	{ CBMEM_ID_RESUME_SCRATCH,	"ACPISCRATCH" }, \
+	{ CBMEM_ID_ACPI_GNVS,		"ACPI GNVS  " }, \
+	{ CBMEM_ID_ACPI_GNVS_PTR,	"GNVS PTR   " }, \
+	{ CBMEM_ID_SMBIOS,		"SMBIOS     " }, \
+	{ CBMEM_ID_TIMESTAMP,		"TIME STAMP " }, \
+	{ CBMEM_ID_MRCDATA,		"MRC DATA   " }, \
+	{ CBMEM_ID_CONSOLE,		"CONSOLE    " }, \
+	{ CBMEM_ID_ELOG,		"ELOG       " }, \
+	{ CBMEM_ID_COVERAGE,		"COVERAGE   " }, \
+	{ CBMEM_ID_ROMSTAGE_INFO,	"ROMSTAGE   " }, \
+	{ CBMEM_ID_ROMSTAGE_RAM_STACK,	"ROMSTG STCK" }, \
+	{ CBMEM_ID_RAMSTAGE,		"RAMSTAGE   " }, \
+	{ CBMEM_ID_RAMSTAGE_CACHE,	"RAMSTAGE $ " }, \
+	{ CBMEM_ID_ROOT,		"CBMEM ROOT " }, \
+	{ CBMEM_ID_VBOOT_HANDOFF,	"VBOOT      " }, \
+	{ CBMEM_ID_CAR_GLOBALS,		"CAR GLOBALS" }, \
+	{ CBMEM_ID_AGESA_RUNTIME,	"AGESA RSVD " }, \
+	{ CBMEM_ID_EHCI_DEBUG,		"USBDEBUG   " }, \
+	{ CBMEM_ID_REFCODE,		"REFCODE    " }, \
+	{ CBMEM_ID_SMM_SAVE_SPACE,	"SMM BACKUP " }, \
+	{ CBMEM_ID_REFCODE_CACHE,	"REFCODE $  " }, \
+	{ CBMEM_ID_POWER_STATE,		"POWER STATE" }, \
+	{ CBMEM_ID_RAM_OOPS,		"RAMOOPS    " },
 
 struct cbmem_entry;
 

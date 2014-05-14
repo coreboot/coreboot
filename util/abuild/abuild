@@ -393,6 +393,7 @@ function myhelp
 	printf "    [-u|--update]                 update existing image\n"
 	printf "    [-P|--prefix <name>]          file name prefix in CBFS\n"
 	printf "    [-B|--blobs]                  Allow using binary files\n"
+	printf "    [-L|--clang]                  Use clang\n"
 	printf "    [cbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $ROOT)\n\n"
 }
@@ -433,7 +434,7 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs -o Vvhat:p:Tc:sJCl:rP:uyB -- "$@"` || exit 1
+	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang -o Vvhat:p:Tc:sJCl:rP:uyBL -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
@@ -493,6 +494,10 @@ while true ; do
 		-B|--blobs)	shift
 			customizing="${customizing}, blobs"
 			configoptions="${configoptions}CONFIG_USE_BLOBS=y\n"
+			;;
+		-L|--clang)	shift
+			customizing="${customizing}, clang"
+			configoptions="${configoptions}CONFIG_COMPILER_LLVM_CLANG=y\n"
 			;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;

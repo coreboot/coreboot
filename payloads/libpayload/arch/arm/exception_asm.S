@@ -45,25 +45,44 @@ exception_table:
 1:
 	mov	sp, $0
 	b	exception_common
+
+/* Undefined Instruction (CAREFUL: the PC offset is specific to thumb mode!) */
 2:
+	sub	lr, lr, $2
 	mov	sp, $1
 	b	exception_common
+
+/* Software Interrupt (no PC offset necessary) */
 3:
 	mov	sp, $2
 	b	exception_common
+
+/* Prefetch Abort */
 4:
+	sub	lr, lr, $4
 	mov	sp, $3
 	b	exception_common
+
+/* Data Abort */
 5:
+	sub	lr, lr, $8
 	mov	sp, $4
 	b	exception_common
+
+/* (not used) */
 6:
 	mov	sp, $5
 	b	exception_common
+
+/* Interrupt */
 7:
+	sub	lr, lr, $4
 	mov	sp, $6
 	b	exception_common
+
+/* Fast Interrupt */
 8:
+	sub	lr, lr, $4
 	mov	sp, $7
 	b	exception_common
 

@@ -81,6 +81,7 @@ static void print_regs(uint32_t *regs)
 void exception_undefined_instruction(uint32_t *regs)
 {
 	printk(BIOS_ERR, "exception _undefined_instruction\n");
+	regs[15] -= 2;	/* CAREFUL: specific to thumb mode (otherwise 4)! */
 	print_regs(regs);
 	dump_stack(regs[13], 512);
 	die("exception");
@@ -97,6 +98,7 @@ void exception_software_interrupt(uint32_t *regs)
 void exception_prefetch_abort(uint32_t *regs)
 {
 	printk(BIOS_ERR, "exception _prefetch_abort\n");
+	regs[15] -= 4;
 	print_regs(regs);
 	dump_stack(regs[13], 512);
 	die("exception");
@@ -105,6 +107,7 @@ void exception_prefetch_abort(uint32_t *regs)
 void exception_data_abort(uint32_t *regs)
 {
 	printk(BIOS_ERR, "exception _data_abort\n");
+	regs[15] -= 8;
 	print_regs(regs);
 	dump_stack(regs[13], 512);
 	die("exception");
@@ -121,6 +124,7 @@ void exception_not_used(uint32_t *regs)
 void exception_irq(uint32_t *regs)
 {
 	printk(BIOS_ERR, "exception _irq\n");
+	regs[15] -= 4;
 	print_regs(regs);
 	dump_stack(regs[13], 512);
 	die("exception");
@@ -129,6 +133,7 @@ void exception_irq(uint32_t *regs)
 void exception_fiq(uint32_t *regs)
 {
 	printk(BIOS_ERR, "exception _fiq\n");
+	regs[15] -= 4;
 	print_regs(regs);
 	dump_stack(regs[13], 512);
 	die("exception");

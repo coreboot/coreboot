@@ -20,6 +20,7 @@
 #
 
 TMPFILE=""
+XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
 
 die() {
 	echo "ERROR: $*" >&2
@@ -35,6 +36,32 @@ clean_up() {
 program_exists() {
 	type "$1" >/dev/null 2>&1
 }
+
+
+if [ "$(${XGCCPATH}/iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
+	IASL=${XGCCPATH}iasl
+elif [ "$(iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
+	IASL=iasl
+else
+	echo "no iasl found"
+	exit 1
+fi
+
+if program_exists gcc; then
+	HOSTCC=gcc
+elif program_exists cc; then
+	HOSTCC=cc
+else
+	echo "no host compiler found"
+	exit 1
+fi
+
+cat <<EOF
+# platform agnostic and host tools
+IASL:=${IASL}
+HOSTCC:=${HOSTCC}
+
+EOF
 
 testcc() {
 	local tmp_c="$TMPFILE.c"
@@ -163,8 +190,6 @@ arch_config_x86() {
 	TWIDTH="32"
 }
 
-XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
-
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURE; do
 	GCCPREFIX="invalid"
@@ -207,21 +232,3 @@ for architecture in $SUPPORTED_ARCHITECTURE; do
 	report_arch_toolchain
 done
 
-if [ "$(${XGCCPATH}/iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
-	IASL=${XGCCPATH}iasl
-else
-	IASL=iasl
-fi
-
-if program_exists gcc; then
-	HOSTCC=gcc
-else
-	HOSTCC=cc
-fi
-
-cat <<EOF
-IASL:=${IASL}
-
-# native toolchain
-HOSTCC:=${HOSTCC}
-EOF

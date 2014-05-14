@@ -142,34 +142,38 @@ trap clean_up EXIT
 # Architecture definition
 SUPPORTED_ARCHITECTURE="x86 armv7 aarch64"
 
-# ARM Architecture
-TARCH_armv7="armv7"
-TBFDARCH_armv7="littlearm"
-TCLIST_armv7="armv7a armv7-a"
-TWIDTH_armv7="32"
+arch_config_armv7() {
+	TARCH="armv7"
+	TBFDARCH="littlearm"
+	TCLIST="armv7a armv7-a"
+	TWIDTH="32"
+}
 
-# AARCH64 -- armv8
-TARCH_aarch64="aarch64"
-TBFDARCH_aarch64="littleaarch64"
-TCLIST_aarch64="aarch64"
-TWIDTH_aarch64="64"
+arch_config_aarch64() {
+	TARCH="aarch64"
+	TBFDARCH="littleaarch64"
+	TCLIST="aarch64"
+	TWIDTH="64"
+}
 
-# X86 Architecture
-TARCH_x86="i386"
-TBFDARCH_x86="i386"
-TCLIST_x86="i386 x86_64"
-TWIDTH_x86="32"
+arch_config_x86() {
+	TARCH="i386"
+	TBFDARCH="i386"
+	TCLIST="i386 x86_64"
+	TWIDTH="32"
+}
+
 XGCCPATH=${1:-"`pwd`/util/crossgcc/xgcc/bin/"}
 
 # This loops over all supported architectures.
 for architecture in $SUPPORTED_ARCHITECTURE; do
 	GCCPREFIX="invalid"
-	TARCH="$(eval echo \$TARCH_$architecture)"
-	TBFDARCH="$(eval echo \$TBFDARCH_$architecture)"
-	TCLIST="$(eval echo \$TCLIST_$architecture)"
-	TWIDTH="$(eval echo \$TWIDTH_$architecture)"
-	[ -z "$TARCH" -o -z "$TCLIST" -o -z "$TWIDTH" ] &&
-		die "Missing architecture definition for $architecture."
+	if type arch_config_$architecture > /dev/null; then
+		arch_config_$architecture
+	else
+		echo "no architecture definition for $architecture"
+		exit 1
+	fi
 
 	# To override toolchain, define CROSS_COMPILE_$arch or CROSS_COMPILE as
 	# environment variable.

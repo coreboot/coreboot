@@ -185,8 +185,9 @@ arch_config_x86() {
 	TWIDTH="32"
 }
 
-# This loops over all supported architectures.
-for architecture in $SUPPORTED_ARCHITECTURE; do
+test_architecture() {
+	architecture=$1
+
 	GCCPREFIX="invalid"
 	if type arch_config_$architecture > /dev/null; then
 		arch_config_$architecture
@@ -225,5 +226,10 @@ for architecture in $SUPPORTED_ARCHITECTURE; do
 
 	detect_special_flags "$architecture"
 	report_arch_toolchain
+}
+
+# This loops over all supported architectures.
+for architecture in $SUPPORTED_ARCHITECTURE; do
+	test_architecture $architecture
 done
 

@@ -65,16 +65,6 @@ Scope (\_SB)
 		})
 
 		Name (_PRW, Package() { BOARD_TRACKPAD_WAKE_GPIO, 0x3 })
-
-		Method (_DSW, 3, NotSerialized)
-		{
-			Store (BOARD_TRACKPAD_WAKE_GPIO, Local0)
-
-			If (LEqual (Arg0, 1)) {
-				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GWAK (Local0)
-			}
-		}
 	}
 
 	Device (TSCR)
@@ -98,19 +88,5 @@ Scope (\_SB)
 				BOARD_TOUCHSCREEN_I2C_ADDR
 			}
 		})
-
-#if 0 // Disabled until kernel driver is working
-		Name (_PRW, Package() { BOARD_TOUCHSCREEN_WAKE_GPIO, 0x3 })
-
-		Method (_DSW, 3, NotSerialized)
-		{
-			Store (BOARD_TOUCHSCREEN_WAKE_GPIO, Local0)
-
-			If (LEqual (Arg0, 1)) {
-				// Enable GPIO as wake source
-				\_SB.PCI0.LPCB.GWAK (Local0)
-			}
-		}
-#endif
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-Name (OIPG, Package() {
-	Package () { 0x0001, 0, 0xFFFFFFFF, "PCH-LP" }, // no recovery button
-	Package () { 0x0003, 1, 16, "PCH-LP" }, // firmware write protect
-})
+#ifndef MAINBOARD_SPD_H
+#define MAINBOARD_SPD_H
+
+#define SPD_LEN			256
+
+#define SPD_DRAM_TYPE		2
+#define  SPD_DRAM_DDR3		0x0b
+#define  SPD_DRAM_LPDDR3	0xf1
+#define SPD_DENSITY_BANKS	4
+#define SPD_ADDRESSING		5
+#define SPD_ORGANIZATION	7
+#define SPD_BUS_DEV_WIDTH	8
+#define SPD_PART_OFF		128
+#define  SPD_PART_LEN		18
+
+/* Samus board memory configuration GPIOs */
+#define SPD_GPIO_BIT0		67
+#define SPD_GPIO_BIT1		68
+#define SPD_GPIO_BIT2		69
+
+struct pei_data;
+void mainboard_fill_spd_data(struct pei_data *pei_data);
+
+#endif

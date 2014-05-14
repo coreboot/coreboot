@@ -32,15 +32,8 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
-#include <southbridge/intel/lynxpoint/pch.h>
 #include "ec.h"
 #include "onboard.h"
-
-void mainboard_suspend_resume(void)
-{
-	/* Call SMM finalize() handlers before resume */
-	outb(0xcb, 0xb2);
-}
 
 static void mainboard_init(device_t dev)
 {

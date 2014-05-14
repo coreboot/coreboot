@@ -21,16 +21,15 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <southbridge/intel/lynxpoint/lp_gpio.h>
-#include <southbridge/intel/lynxpoint/nvs.h>
-#include <southbridge/intel/lynxpoint/pch.h>
-#include <southbridge/intel/lynxpoint/me.h>
-#include <northbridge/intel/haswell/haswell.h>
-#include <cpu/intel/haswell/haswell.h>
+#include <broadwell/pm.h>
+#include <broadwell/smm.h>
 #include <elog.h>
-
-/* Include EC functions */
 #include <ec/google/chromeec/ec.h>
+#include <broadwell/gpio.h>
+#include <broadwell/iomap.h>
+#include <broadwell/nvs.h>
+#include <broadwell/pm.h>
+#include <broadwell/smm.h>
 #include "ec.h"
 
 /* GPIO46 controls the WLAN_DISABLE_L signal. */
@@ -74,9 +73,9 @@ static u8 mainboard_smi_ec(void)
 		printk(BIOS_DEBUG, "LID CLOSED, SHUTDOWN\n");
 
 		/* Go to S5 */
-		pm1_cnt = inl(get_pmbase() + PM1_CNT);
+		pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
 		pm1_cnt |= (0xf << 10);
-		outl(pm1_cnt, get_pmbase() + PM1_CNT);
+		outl(pm1_cnt, ACPI_BASE_ADDRESS + PM1_CNT);
 		break;
 	}
 
@@ -97,12 +96,12 @@ void mainboard_smi_sleep(u8 slp_typ)
 	/* Disable USB charging if required */
 	switch (slp_typ) {
 	case 3:
-		if (smm_get_gnvs()->s3u0 == 0)
+		if (smm_get_gnvs()->s3u0 == 0) {
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
-		if (smm_get_gnvs()->s3u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+		}
 
 		/* Prevent leak from standby rail to WLAN rail in S3. */
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
@@ -113,12 +112,12 @@ void mainboard_smi_sleep(u8 slp_typ)
 		google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
 		break;
 	case 5:
-		if (smm_get_gnvs()->s5u0 == 0)
+		if (smm_get_gnvs()->s5u0 == 0) {
 			google_chromeec_set_usb_charge_mode(
 				0, USB_CHARGE_MODE_DISABLED);
-		if (smm_get_gnvs()->s5u1 == 0)
 			google_chromeec_set_usb_charge_mode(
 				1, USB_CHARGE_MODE_DISABLED);
+		}
 
 		/* Prevent leak from standby rail to WLAN rail in S5. */
 		set_gpio(GPIO_WLAN_DISABLE_L, 0);
@@ -138,25 +137,9 @@ void mainboard_smi_sleep(u8 slp_typ)
 	while (google_chromeec_get_event() != 0);
 }
 
-#define APMC_FINALIZE 0xcb
-
-static int mainboard_finalized = 0;
-
 int mainboard_smi_apmc(u8 apmc)
 {
 	switch (apmc) {
-	case APMC_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-
-		intel_pch_finalize_smm();
-		intel_northbridge_haswell_finalize_smm();
-		intel_cpu_haswell_finalize_smm();
-
-		mainboard_finalized = 1;
-		break;
 	case APM_CNT_ACPI_ENABLE:
 		google_chromeec_set_smi_mask(0);
 		/* Clear all pending events */

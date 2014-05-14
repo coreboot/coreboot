@@ -22,12 +22,12 @@
 #include <arch/io.h>
 #include <device/device.h>
 #include <device/pci.h>
-#include <southbridge/intel/lynxpoint/pch.h>
-
-#if CONFIG_EC_GOOGLE_CHROMEEC
-#include "ec.h"
+#include <console/console.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 #include <ec/google/chromeec/ec.h>
-#endif
+#include <ec/google/chromeec/ec_commands.h>
+#include <broadwell/gpio.h>
+
 
 /* SPI Write protect is GPIO 16 */
 #define CROS_WP_GPIO	16
@@ -39,13 +39,9 @@
 
 static int get_lid_switch(void)
 {
-#if CONFIG_EC_GOOGLE_CHROMEEC
 	u8 ec_switches = inb(EC_LPC_ADDR_MEMMAP + EC_MEMMAP_SWITCHES);
 
 	return !!(ec_switches & EC_SWITCH_LID_OPEN);
-#else
-	return 0;
-#endif
 }
 
 void fill_lb_gpios(struct lb_gpios *gpios)

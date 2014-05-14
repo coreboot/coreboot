@@ -31,22 +31,21 @@ DefinitionBlock(
 {
 	// Some generic macros
 	#include "acpi/platform.asl"
-	#include "acpi/mainboard.asl"
 
 	// global NVS and variables
-	#include <southbridge/intel/lynxpoint/acpi/globalnvs.asl>
+	#include <soc/intel/broadwell/acpi/globalnvs.asl>
 
 	// General Purpose Events
 	//#include "acpi/gpe.asl"
 
 	// CPU
-	#include <cpu/intel/haswell/acpi/cpu.asl>
+	#include <soc/intel/broadwell/acpi/cpu.asl>
 
 	Scope (\_SB) {
 		Device (PCI0)
 		{
-			#include <northbridge/intel/haswell/acpi/haswell.asl>
-			#include <southbridge/intel/lynxpoint/acpi/pch.asl>
+			#include <soc/intel/broadwell/acpi/systemagent.asl>
+			#include <soc/intel/broadwell/acpi/pch.asl>
 		}
 	}
 
@@ -58,5 +57,8 @@ DefinitionBlock(
 	#include <vendorcode/google/chromeos/acpi/chromeos.asl>
 
 	// Chipset specific sleep states
-	#include <southbridge/intel/lynxpoint/acpi/sleepstates.asl>
+	#include <soc/intel/broadwell/acpi/sleepstates.asl>
+
+	// Mainboard specific
+	#include "acpi/mainboard.asl"
 }

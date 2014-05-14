@@ -125,22 +125,16 @@ detect_special_flags() {
 	testcc "$CC"   "$CFLAGS -fuse-ld=bfd" &&
 		CFLAGS="$CFLAGS -fuse-ld=bfd" && LINKER_SUFFIX='.bfd'
 
-	testcc "$CC"   "$CFLAGS -Wa,--divide" &&
-		CFLAGS="$CFLAGS -Wa,--divide"
 	testcc "$CC"   "$CFLAGS -fno-stack-protector"&&
 		CFLAGS="$CFLAGS -fno-stack-protector"
 	testcc "$CC"   "$CFLAGS -Wl,--build-id=none" &&
 		CFLAGS="$CFLAGS -Wl,--build-id=none"
 
 	case "$architecture" in
-	armv7 )
-		ARMFLAGS=""
-		testcc "$CC" "$CFLAGS $ARMFLAGS"&&CFLAGS="$CFLAGS $ARMFLAGS"
-			;;
-	aarch64 )
-		ARMFLAGS=""
-		testcc "$CC" "$CFLAGS $ARMFLAGS"&&CFLAGS="$CFLAGS $ARMFLAGS"
-			;;
+	x86)
+		testcc "$CC"   "$CFLAGS -Wa,--divide" &&
+			CFLAGS="$CFLAGS -Wa,--divide"
+		;;
 	esac
 }
 

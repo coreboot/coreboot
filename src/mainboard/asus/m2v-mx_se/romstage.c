@@ -46,7 +46,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
-#define WATCHDOG_DEV PNP_DEV(0x2e, IT8712F_GPIO)
+#define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 static void activate_spd_rom(const struct mem_controller *ctrl) { }
@@ -129,8 +129,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	struct sys_info *sysinfo = &sysinfo_car;
 
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	it8712f_kill_watchdog();
-	it8712f_enable_3vsbsw();
+	ite_kill_watchdog(GPIO_DEV);
+	ite_enable_3vsbsw(GPIO_DEV);
 	console_init();
 	enable_rom_decode();
 

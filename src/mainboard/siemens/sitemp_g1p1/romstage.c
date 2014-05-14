@@ -47,6 +47,7 @@
 #include "northbridge/amd/amdk8/debug.c" /* After sb600_early_setup.c! */
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 /* CAN'T BE REMOVED! crt0.S will use it. I don't know WHY!*/
 static void memreset(int controllers, const struct mem_controller *ctrl)
@@ -107,7 +108,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	check_cmos();  // rebooting in case of corrupted cmos !!!!!
 #endif
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	it8712f_kill_watchdog();
+	ite_kill_watchdog(GPIO_DEV);
 
 	console_init();
 #if defined(DUMP_CMOS_RAM) && (DUMP_CMOS_RAM == 1)

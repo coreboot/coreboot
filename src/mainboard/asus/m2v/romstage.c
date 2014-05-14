@@ -46,7 +46,7 @@ unsigned int get_sbdn(unsigned bus);
 #include <spd.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
-#define WATCHDOG_DEV PNP_DEV(0x2e, IT8712F_GPIO)
+#define GPIO_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 #define CLKIN_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
 #define IT8712F_GPIO_BASE		0x0a20
@@ -227,12 +227,12 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	it8712f_kill_watchdog();
+	ite_kill_watchdog(GPIO_DEV);
 	console_init();
 	enable_rom_decode();
 	m2v_bus_init();
 	m2v_it8712f_gpio_init();
-	it8712f_enable_3vsbsw();
+	ite_enable_3vsbsw(GPIO_DEV);
 
 	printk(BIOS_INFO, "now booting... \n");
 

@@ -147,7 +147,7 @@ GfxPowerPlayLocateTdp (
       DpmSclk = GfxFmCalculateClock (PpFuses->SclkDpmDid[Index], StdHeader);
       DeltaSclk = (DpmSclk > Sclk) ? (DpmSclk - Sclk) : (Sclk - DpmSclk);
       if (DeltaSclk < MinDeltaSclk) {
-        MinDeltaSclk = MinDeltaSclk;
+        MinDeltaSclk = DeltaSclk;
         DpmIndex = Index;
       }
     }

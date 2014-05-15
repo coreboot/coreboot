@@ -18,6 +18,7 @@
  */
 
 // Thermal Zone
+#include "../thermal.h"
 
 Scope (\_TZ)
 {
@@ -68,41 +69,41 @@ Scope (\_TZ)
 
 		Method (_AC0) {
 			If (LLessEqual (\FLVL, 0)) {
-				Return (CTOK (\F0OF))
+				Return (CTOK (FAN0_THRESHOLD_OFF))
 			} Else {
-				Return (CTOK (\F0ON))
+				Return (CTOK (FAN0_THRESHOLD_ON))
 			}
 		}
 
 		Method (_AC1) {
 			If (LLessEqual (\FLVL, 1)) {
-				Return (CTOK (\F1OF))
+				Return (CTOK (FAN1_THRESHOLD_OFF))
 			} Else {
-				Return (CTOK (\F1ON))
+				Return (CTOK (FAN1_THRESHOLD_ON))
 			}
 		}
 
 		Method (_AC2) {
 			If (LLessEqual (\FLVL, 2)) {
-				Return (CTOK (\F2OF))
+				Return (CTOK (FAN2_THRESHOLD_OFF))
 			} Else {
-				Return (CTOK (\F2ON))
+				Return (CTOK (FAN2_THRESHOLD_ON))
 			}
 		}
 
 		Method (_AC3) {
 			If (LLessEqual (\FLVL, 3)) {
-				Return (CTOK (\F3OF))
+				Return (CTOK (FAN3_THRESHOLD_OFF))
 			} Else {
-				Return (CTOK (\F3ON))
+				Return (CTOK (FAN3_THRESHOLD_ON))
 			}
 		}
 
 		Method (_AC4) {
 			If (LLessEqual (\FLVL, 4)) {
-				Return (CTOK (\F4OF))
+				Return (CTOK (FAN4_THRESHOLD_OFF))
 			} Else {
-				Return (CTOK (\F4ON))
+				Return (CTOK (FAN4_THRESHOLD_ON))
 			}
 		}
 

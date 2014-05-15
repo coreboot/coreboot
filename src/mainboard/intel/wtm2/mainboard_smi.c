@@ -20,11 +20,8 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <cpu/x86/smm.h>
-#include <southbridge/intel/lynxpoint/nvs.h>
-#include <southbridge/intel/lynxpoint/pch.h>
-#include <southbridge/intel/lynxpoint/me.h>
-#include <northbridge/intel/haswell/haswell.h>
-#include <cpu/intel/haswell/haswell.h>
+#include <broadwell/nvs.h>
+#include <broadwell/smm.h>
 
 int mainboard_io_trap_handler(int smif)
 {
@@ -45,27 +42,4 @@ int mainboard_io_trap_handler(int smif)
 	 */
 	//gnvs->smif = 0;
 	return 1;
-}
-
-#define APMC_FINALIZE 0xcb
-
-static int mainboard_finalized = 0;
-
-int mainboard_smi_apmc(u8 apmc)
-{
-	switch (apmc) {
-	case APMC_FINALIZE:
-		if (mainboard_finalized) {
-			printk(BIOS_DEBUG, "SMI#: Already finalized\n");
-			return 0;
-		}
-
-		intel_pch_finalize_smm();
-		intel_northbridge_haswell_finalize_smm();
-		intel_cpu_haswell_finalize_smm();
-
-		mainboard_finalized = 1;
-		break;
-	}
-	return 0;
 }

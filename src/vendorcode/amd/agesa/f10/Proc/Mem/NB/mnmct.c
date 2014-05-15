@@ -206,7 +206,7 @@ MemNSyncTargetSpeedNb (
           ASSERT ((NBPtr->ChannelPtr->TechType == DDR3_TECHNOLOGY) ?
             ((MEMORY_BUS_SPEED)ChnlTmgMod[1] >= DDR667_FREQUENCY) :
             ((MEMORY_BUS_SPEED)ChnlTmgMod[1] <= DDR1066_FREQUENCY));
-          MemClkFreq = ChnlTmgMod[1];
+          MemClkFreq = (MEMORY_BUS_SPEED) ChnlTmgMod[1];
         }
       }
 

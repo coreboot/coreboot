@@ -42,6 +42,8 @@ libc-y += selfboot.c
 # Will fall back to default_memXXX() in libc/memory.c if GPL not allowed.
 libc-$(CONFIG_LP_GPL) += memcpy.S memset.S memmove.S
 
+libgdb-y += gdb.c
+
 libcbfs-$(CONFIG_LP_CBFS) += dummy_media.c
 
 # Add other classes here when you put assembly files into them!

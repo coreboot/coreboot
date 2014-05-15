@@ -44,11 +44,12 @@ classes-$(CONFIG_LP_CURSES) += libcurses
 classes-$(CONFIG_LP_PDCURSES) += libmenu libform libpanel
 classes-$(CONFIG_LP_CBFS) += libcbfs
 classes-$(CONFIG_LP_LZMA) += liblzma
+classes-$(CONFIG_LP_REMOTEGDB) += libgdb
 libraries := $(classes-y)
 classes-y += head.o
 
 subdirs-y := arch/$(ARCHDIR-y)
-subdirs-y += crypto libc drivers libpci
+subdirs-y += crypto libc drivers libpci gdb
 subdirs-$(CONFIG_LP_CURSES) += curses
 subdirs-$(CONFIG_LP_CBFS) += libcbfs
 subdirs-$(CONFIG_LP_LZMA) += liblzma

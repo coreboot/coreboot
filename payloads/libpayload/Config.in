@@ -62,6 +62,13 @@ config DEVELOPER
 	  Prompt for developer options. These options are only interesting for
 	  libpayload developers.
 
+config REMOTEGDB
+	bool "Remote GDB stub"
+	default n
+	depends on GPL
+	help
+	  Enable Remote GDB debugging support.
+
 config CHROMEOS
 	bool "ChromeOS specific features"
 	default n

@@ -446,4 +446,9 @@ int getline(char *buffer, int len);
 /* Defined in arch/${ARCH}/selfboot.c */
 void selfboot(void *entry);
 
+/* Enter remote GDB mode. Will initialize connection if not already up. */
+void gdb_enter(void);
+/* Disconnect existing GDB connection if one exists. */
+void gdb_exit(s8 exit_status);
+
 #endif

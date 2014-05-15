@@ -57,7 +57,7 @@ CFLAGS =  $(EXTRA_CFLAGS) $(INCLUDES) -Os -pipe -nostdinc -ggdb3
 CFLAGS += -nostdlib -fno-builtin -ffreestanding -fomit-frame-pointer
 CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
-CFLAGS += -Wstrict-aliasing -Wshadow
+CFLAGS += -Wstrict-aliasing -Wshadow -Werror
 
 $(obj)/libpayload-config.h: $(KCONFIG_AUTOHEADER)
 	cmp $@ $< 2>/dev/null || cp $< $@

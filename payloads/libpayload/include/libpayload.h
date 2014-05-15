@@ -60,6 +60,9 @@
 #ifdef CONFIG_LP_LAR
 #include <lar.h>
 #endif
+#ifdef CONFIG_LP_CBFS
+#include <cbfs.h>
+#endif
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))

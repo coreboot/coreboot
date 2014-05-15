@@ -166,6 +166,7 @@ EOF
 		fi
 
 		if [ -f "$vendor_board_dir/board_info.txt" ]; then
+			vendor_2nd="$(sed -n "/^[[:space:]]*Vendor name:/ s,^[[:space:]]*Vendor name:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			board_nice="$(sed -n "/^[[:space:]]*Board name:/ s,^[[:space:]]*Board name:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			rom_package="$(sed -n "/^[[:space:]]*ROM package:/ s,^[[:space:]]*ROM package:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			rom_protocol="$(sed -n "/^[[:space:]]*ROM protocol:/ s,^[[:space:]]*ROM protocol:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
@@ -176,6 +177,7 @@ EOF
 			board_url="$(sed -n "/^[[:space:]]*Board URL:/ s,^[[:space:]]*Board URL:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 			clone_of="$(sed -n "/^[[:space:]]*Clone of:/ s,^[[:space:]]*Clone of:[[:space:]]*,,p" "$vendor_board_dir/board_info.txt")"
 		else
+			vendor_2nd=
 			board_nice=
 			rom_package=
 			rom_protocol=
@@ -385,6 +387,10 @@ EOF
 		else
 			echo "| [$board_url $vendor_nice]"
 		fi
+		if ! [ -z "$vendor_2nd" ]; then
+			echo "( $vendor_2nd )"
+		fi
+
 		echo "| [[Board:$vendor/$board|$board_nice]]"
 
 		if [ -z "$lastgood" ]; then

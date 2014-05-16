@@ -762,9 +762,11 @@ void tegra_dc_sor_attach(struct tegra_dc_sor_data *sor)
 	tegra_dc_sor_super_update(sor);
 
 	/* Enable dc */
+	reg_val = READL(&disp_ctrl->cmd.state_access);
+	WRITEL(reg_val | WRITE_MUX_ACTIVE, &disp_ctrl->cmd.state_access);
 	WRITEL(DISP_CTRL_MODE_C_DISPLAY, &disp_ctrl->cmd.disp_cmd);
 	WRITEL(SOR_ENABLE, &disp_ctrl->disp.disp_win_opt);
-	WRITEL(GENERAL_ACT_REQ, &disp_ctrl->cmd.state_ctrl);
+	WRITEL(reg_val, &disp_ctrl->cmd.state_access);
 
 	if (tegra_dc_sor_poll_register(sor, NV_SOR_TEST,
 			NV_SOR_TEST_ACT_HEAD_OPMODE_DEFAULT_MASK,

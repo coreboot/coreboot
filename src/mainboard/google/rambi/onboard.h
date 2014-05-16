@@ -22,6 +22,9 @@
 
 #include "irqroute.h"
 
+/* PCH wake signal from EC. */
+#define BOARD_PCH_WAKE_GPIO             ACPI_ENABLE_WAKE_SUS_GPIO(0)
+
 #define BOARD_TRACKPAD_NAME             "trackpad"
 #define BOARD_TRACKPAD_IRQ              GPIO_S0_DED_IRQ(TPAD_IRQ_OFFSET)
 #define BOARD_TRACKPAD_WAKE_GPIO        ACPI_ENABLE_WAKE_SUS_GPIO(1)

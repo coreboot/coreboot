@@ -133,6 +133,10 @@ static int dock_superio_init(void)
 	 */
 	dock_write_register(0x22, 0xa9);
 
+	/* enable serial port */
+	dock_write_register(0x07, PC87384_SP1);
+	dock_write_register(0x30, 0x01);
+
 	dock_write_register(0x07, PC87384_GPIO);
 	dock_write_register(0x60, 0x16);
 	dock_write_register(0x61, 0x20);

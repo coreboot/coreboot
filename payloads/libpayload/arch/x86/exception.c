@@ -32,22 +32,29 @@
 #include <libpayload.h>
 #include <stdint.h>
 
-uint8_t exception_stack[0x1000] __attribute__((aligned(8)));
-extern void *exception_stack_end;
-extern struct exception_handler_state *exception_handler_state_handoff;
+u32 exception_stack[0x400] __attribute__((aligned(8)));
 
-struct exception_handler_state
-{
-	struct exception_state regs;
-	u32 error_code;
-	u32 vector;
-} __attribute__((packed));
-
-struct exception_handler_info
-{
-	const char *name;
-	void (*error_code_printer)(u32 code);
-	exception_hook hook;
+static exception_hook hook;
+static const char *names[EXC_COUNT] = {
+	[EXC_DE]  = "Divide by Zero",
+	[EXC_DB]  = "Debug",
+	[EXC_NMI] = "Non-Maskable-Interrupt",
+	[EXC_BP]  = "Breakpoint",
+	[EXC_OF]  = "Overflow",
+	[EXC_BR]  = "Bound Range",
+	[EXC_UD]  = "Invalid Opcode",
+	[EXC_NM]  = "Device Not Available",
+	[EXC_DF]  = "Double Fault",
+	[EXC_TS]  = "Invalid TSS",
+	[EXC_NP]  = "Segment Not Present",
+	[EXC_SS]  = "Stack Fault",
+	[EXC_GP]  = "General Protection Fault",
+	[EXC_PF]  = "Page Fault",
+	[EXC_MF]  = "x87 Floating Point",
+	[EXC_AC]  = "Alignment Check",
+	[EXC_MC]  = "Machine Check",
+	[EXC_XF]  = "SIMD Floating Point",
+	[EXC_SX]  = "Security",
 };
 
 static void print_segment_error_code(u32 code)
@@ -93,36 +100,6 @@ static void print_raw_error_code(u32 code)
 	printf("%#x", code);
 }
 
-static struct exception_handler_info exceptions[EXC_COUNT] = {
-	[EXC_DE] =  { .name = "divide by zero" },
-	[EXC_DB] =  { .name = "debug" },
-	[EXC_NMI] =  { .name = "non-maskable-interrupt" },
-	[EXC_BP] =  { .name = "breakpoint" },
-	[EXC_OF] =  { .name = "overflow" },
-	[EXC_BR] =  { .name = "bound range" },
-	[EXC_UD] =  { .name = "invalid opcode" },
-	[EXC_NM] =  { .name = "device not available" },
-	[EXC_DF] =  { .name = "double fault",
-		      .error_code_printer = &print_raw_error_code },
-	[EXC_TS] = { .name = "invalid tss",
-		     .error_code_printer = &print_segment_error_code },
-	[EXC_NP] = { .name = "segment not present",
-		     .error_code_printer = &print_segment_error_code },
-	[EXC_SS] = { .name = "stack",
-		     .error_code_printer = &print_segment_error_code },
-	[EXC_GP] = { .name = "general protection",
-		     .error_code_printer = &print_segment_error_code },
-	[EXC_PF] = { .name = "page fault",
-		     .error_code_printer = &print_page_fault_error_code },
-	[EXC_MF] = { .name = "x87 floating point" },
-	[EXC_AC] = { .name = "alignment check",
-		     .error_code_printer = &print_raw_error_code },
-	[EXC_MC] = { .name = "machine check" },
-	[EXC_XF] = { .name = "SIMD floating point" },
-	[EXC_SX] = { .name = "security",
-		     .error_code_printer = &print_raw_error_code },
-};
-
 static void dump_stack(uintptr_t addr, size_t bytes)
 {
 	int i, j;
@@ -138,64 +115,70 @@ static void dump_stack(uintptr_t addr, size_t bytes)
 	}
 }
 
-static void dump_exception_state(struct exception_handler_state *state,
-				 struct exception_handler_info *info)
+static void dump_exception_state(void)
 {
-	if (info) {
-		printf("Exception %d (%s)\n", state->vector, info->name);
+	printf("%s Exception\n", names[exception_state->vector]);
 
-		if (info->error_code_printer) {
-			printf("Error code: ");
-			info->error_code_printer(state->error_code);
-			printf("\n");
-		}
-	} else {
-		printf("Unrecognized exception %d\n", state->vector);
+	printf("Error code: ");
+	switch (exception_state->vector) {
+	case EXC_PF:
+		print_page_fault_error_code(exception_state->error_code);
+		break;
+	case EXC_TS:
+	case EXC_NP:
+	case EXC_SS:
+	case EXC_GP:
+		print_segment_error_code(exception_state->error_code);
+		break;
+	case EXC_DF:
+	case EXC_AC:
+	case EXC_SX:
+		print_raw_error_code(exception_state->error_code);
+		break;
+	default:
+		printf("n/a");
+		break;
 	}
-	printf("EIP:    0x%08x\n", state->regs.eip);
-	printf("CS:     0x%04x\n", state->regs.cs);
-	printf("EFLAGS: 0x%08x\n", state->regs.eflags);
-	printf("EAX:    0x%08x\n", state->regs.eax);
-	printf("ECX:    0x%08x\n", state->regs.ecx);
-	printf("EDX:    0x%08x\n", state->regs.edx);
-	printf("EBX:    0x%08x\n", state->regs.ebx);
-	printf("ESP:    0x%08x\n", state->regs.esp);
-	printf("EBP:    0x%08x\n", state->regs.ebp);
-	printf("ESI:    0x%08x\n", state->regs.esi);
-	printf("EDI:    0x%08x\n", state->regs.edi);
-	printf("DS:     0x%04x\n", state->regs.ds);
-	printf("ES:     0x%04x\n", state->regs.es);
-	printf("SS:     0x%04x\n", state->regs.ss);
-	printf("FS:     0x%04x\n", state->regs.fs);
-	printf("GS:     0x%04x\n", state->regs.gs);
+	printf("\n");
+	printf("EIP:    0x%08x\n", exception_state->regs.eip);
+	printf("CS:     0x%04x\n", exception_state->regs.cs);
+	printf("EFLAGS: 0x%08x\n", exception_state->regs.eflags);
+	printf("EAX:    0x%08x\n", exception_state->regs.eax);
+	printf("ECX:    0x%08x\n", exception_state->regs.ecx);
+	printf("EDX:    0x%08x\n", exception_state->regs.edx);
+	printf("EBX:    0x%08x\n", exception_state->regs.ebx);
+	printf("ESP:    0x%08x\n", exception_state->regs.esp);
+	printf("EBP:    0x%08x\n", exception_state->regs.ebp);
+	printf("ESI:    0x%08x\n", exception_state->regs.esi);
+	printf("EDI:    0x%08x\n", exception_state->regs.edi);
+	printf("DS:     0x%04x\n", exception_state->regs.ds);
+	printf("ES:     0x%04x\n", exception_state->regs.es);
+	printf("SS:     0x%04x\n", exception_state->regs.ss);
+	printf("FS:     0x%04x\n", exception_state->regs.fs);
+	printf("GS:     0x%04x\n", exception_state->regs.gs);
 }
 
 void exception_dispatch(void)
 {
-	struct exception_handler_state *state =
-		exception_handler_state_handoff;
+	u32 vec = exception_state->vector;
+	die_if(vec >= EXC_COUNT || !names[vec], "Bad exception vector %u", vec);
 
-	struct exception_handler_info *info = NULL;
-	if (state->vector < EXC_COUNT)
-		info = &exceptions[state->vector];
+	if (hook && hook(vec))
+		return;
 
-	if (info && info->hook) {
-		info->hook(state->vector, &state->regs);
-	} else {
-		dump_exception_state(state, info);
-		dump_stack(state->regs.esp, 512);
-		halt();
-	}
+	dump_exception_state();
+	dump_stack(exception_state->regs.esp, 512);
+	halt();
 }
 
 void exception_init(void)
 {
-	exception_stack_end = exception_stack + sizeof(exception_stack);
+	exception_stack_end = exception_stack + ARRAY_SIZE(exception_stack);
 	exception_init_asm();
 }
 
-void exception_install_hook(int type, exception_hook hook)
+void exception_install_hook(exception_hook h)
 {
-	die_if(type >= EXC_COUNT, "Out of bound exception type %d.\n", type);
-	exceptions[type].hook = hook;
+	die_if(hook, "Implement support for a list of hooks if you need it.");
+	hook = h;
 }

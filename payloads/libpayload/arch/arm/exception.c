@@ -33,22 +33,17 @@
 #include <libpayload.h>
 #include <stdint.h>
 
-uint8_t exception_stack[0x1000] __attribute__((aligned(8)));
-extern void *exception_stack_end;
+u32 exception_stack[0x400] __attribute__((aligned(8)));
+struct exception_state exception_state;
 
-struct exception_handler_info
-{
-	const char *name;
-	exception_hook hook;
-};
-
-static struct exception_handler_info exceptions[EXC_COUNT] = {
-	[EXC_UNDEF]  = { "_undefined_instruction" },
-	[EXC_SWI]    = { "_software_interrupt" },
-	[EXC_PABORT] = { "_prefetch_abort" },
-	[EXC_DABORT] = { "_data_abort" },
-	[EXC_IRQ]    = { "_irq" },
-	[EXC_FIQ]    = { "_fiq" },
+static exception_hook hook;
+static const char *names[EXC_COUNT] = {
+	[EXC_UNDEF]  = "Undefined Instruction",
+	[EXC_SWI]    = "Software Interrupt",
+	[EXC_PABORT] = "Prefetch Abort",
+	[EXC_DABORT] = "Data Abort",
+	[EXC_IRQ]    = "Interrupt",
+	[EXC_FIQ]    = "Fast Interrupt",
 };
 
 static void dump_stack(uintptr_t addr, size_t bytes)
@@ -66,7 +61,7 @@ static void dump_stack(uintptr_t addr, size_t bytes)
 	}
 }
 
-static void print_regs(struct exception_state *state)
+static void print_regs(void)
 {
 	int i;
 
@@ -81,30 +76,21 @@ static void print_regs(struct exception_state *state)
 			printf("IP");
 		else
 			printf("R%d", i);
-		printf(" = 0x%08x\n", state->regs[i]);
+		printf(" = 0x%08x\n", exception_state.regs[i]);
 	}
-	printf("CPSR = 0x%08x\n", state->cpsr);
+	printf("CPSR = 0x%08x\n", exception_state.cpsr);
 }
 
-void exception_dispatch(struct exception_state *state, int idx);
-void exception_dispatch(struct exception_state *state, int idx)
+void exception_dispatch(u32 idx)
 {
-	if (idx >= EXC_COUNT) {
-		printf("Bad exception index %d.\n", idx);
-	} else {
-		struct exception_handler_info *info = &exceptions[idx];
-		if (info->hook) {
-			info->hook(idx, state);
-			return;
-		}
+	die_if(idx >= EXC_COUNT || !names[idx], "Bad exception index %u!", idx);
 
-		if (info->name)
-			printf("exception %s\n", info->name);
-		else
-			printf("exception _not_used.\n");
-	}
-	print_regs(state);
-	dump_stack(state->regs[13], 512);
+	if (hook && hook(idx))
+		return;
+
+	printf("%s Exception\n", names[idx]);
+	print_regs();
+	dump_stack(exception_state.regs[13], 512);
 	halt();
 }
 
@@ -119,11 +105,13 @@ void exception_init(void)
 
 	extern uint32_t exception_table[];
 	set_vbar((uintptr_t)exception_table);
-	exception_stack_end = exception_stack + sizeof(exception_stack);
+
+	exception_stack_end = exception_stack + ARRAY_SIZE(exception_stack);
+	exception_state_ptr = &exception_state;
 }
 
-void exception_install_hook(int type, exception_hook hook)
+void exception_install_hook(exception_hook h)
 {
-	die_if(type >= EXC_COUNT, "Out of bounds exception index %d.\n", type);
-	exceptions[type].hook = hook;
+	die_if(hook, "Implement support for a list of hooks if you need it.");
+	hook = h;
 }

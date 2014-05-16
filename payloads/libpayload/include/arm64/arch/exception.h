@@ -41,6 +41,8 @@ struct exception_state
 	uint64_t regs[31];
 } __attribute__((packed));
 
+extern struct exception_state *exception_state;
+
 enum {
 	EXC_INV = 0,
 	EXC_SYNC = 1,

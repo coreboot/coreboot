@@ -32,28 +32,37 @@
 
 #include <stdint.h>
 
-void exception_dispatch(void);
 void exception_init_asm(void);
+void exception_dispatch(void);
 
 struct exception_state
 {
-	uint32_t eax;
-	uint32_t ecx;
-	uint32_t edx;
-	uint32_t ebx;
-	uint32_t esp;
-	uint32_t ebp;
-	uint32_t esi;
-	uint32_t edi;
-	uint32_t eip;
-	uint32_t eflags;
-	uint32_t cs;
-	uint32_t ss;
-	uint32_t ds;
-	uint32_t es;
-	uint32_t fs;
-	uint32_t gs;
+	/* Careful: x86/gdb.c currently relies on the size and order of regs. */
+	struct {
+		u32 eax;
+		u32 ecx;
+		u32 edx;
+		u32 ebx;
+		u32 esp;
+		u32 ebp;
+		u32 esi;
+		u32 edi;
+		u32 eip;
+		u32 eflags;
+		u32 cs;
+		u32 ss;
+		u32 ds;
+		u32 es;
+		u32 fs;
+		u32 gs;
+	} regs;
+	u32 error_code;
+	u32 vector;
 } __attribute__((packed));
+extern struct exception_state *exception_state;
+
+extern u32 exception_stack[];
+extern u32 *exception_stack_end;
 
 enum {
 	EXC_DE = 0, /* Divide by zero */

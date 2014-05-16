@@ -32,9 +32,10 @@
 
 #include <arch/exception.h>
 
-typedef void (*exception_hook)(int type, struct exception_state *state);
+/* Return 1 if the exception was handled, 0 to proceed to the next handler. */
+typedef int (*exception_hook)(u32 type);
 
 void exception_init(void);
-void exception_install_hook(int type, exception_hook hook);
+void exception_install_hook(exception_hook h);
 
 #endif

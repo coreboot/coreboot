@@ -36,9 +36,10 @@ extern unsigned int test_exc;
 struct exception_handler_info
 {
 	const char *name;
-	exception_hook hook;
 };
 
+static exception_hook hook;
+struct exception_state *exception_state;
 static struct exception_handler_info exceptions[EXC_COUNT] = {
 	[EXC_INV]  = { "_invalid_exception" },
 	[EXC_SYNC] = { "_sync" },
@@ -61,14 +62,14 @@ static void print_regs(struct exception_state *state)
 void exception_dispatch(struct exception_state *state, int idx);
 void exception_dispatch(struct exception_state *state, int idx)
 {
+	exception_state = state;
+
 	if (idx >= EXC_COUNT) {
 		printf("Bad exception index %d.\n", idx);
 	} else {
 		struct exception_handler_info *info = &exceptions[idx];
-		if (info->hook) {
-			info->hook(idx, state);
+		if (hook && hook(idx))
 			return;
-		}
 
 		if (info->name)
 			printf("exception %s\n", info->name);
@@ -89,8 +90,8 @@ void exception_init(void)
 	set_vbar(exception_table);
 }
 
-void exception_install_hook(int type, exception_hook hook)
+void exception_install_hook(exception_hook h)
 {
-	die_if(type >= EXC_COUNT, "Out of bounds exception index %d.\n", type);
-	exceptions[type].hook = hook;
+	die_if(hook, "Implement support for a list of hooks if you need it.");
+	hook = h;
 }

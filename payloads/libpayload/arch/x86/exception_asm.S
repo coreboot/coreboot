@@ -31,8 +31,8 @@
 	.global exception_stack_end
 exception_stack_end:
 	.long 0
-	.global exception_handler_state_handoff
-exception_handler_state_handoff:
+	.global exception_state
+exception_state:
 	.long 0
 
 /* Some temporary variables which are used while saving exception state. */
@@ -138,11 +138,11 @@ exception_common:
 
 	/*
 	 * Call the C exception handler. It will find the exception state
-	 * using the exception_handler_state_handoff global pointer. Not
+	 * using the exception_state global pointer. Not
 	 * passing parameters means we don't have to worry about what ABI
 	 * is being used.
 	 */
-	mov	%esp, exception_handler_state_handoff
+	mov	%esp, exception_state
 	call	exception_dispatch
 
 	/*

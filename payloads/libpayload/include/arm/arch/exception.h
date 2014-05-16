@@ -32,13 +32,19 @@
 
 #include <stdint.h>
 
+void exception_dispatch(u32 idx);
 void set_vbar(uint32_t vbar);
 
 struct exception_state
 {
-	uint32_t cpsr;
-	uint32_t regs[16];
+	u32 regs[16];
+	u32 cpsr;
 } __attribute__((packed));
+extern struct exception_state exception_state;
+
+extern u32 exception_stack[];
+extern u32 *exception_stack_end;
+extern struct exception_state *exception_state_ptr;
 
 enum {
 	EXC_UNDEF = 1,

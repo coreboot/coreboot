@@ -43,71 +43,75 @@ exception_table:
 	b	8f
 
 1:
-	mov	sp, $0
+	mov	sp, #0
 	b	exception_common
 
 /* Undefined Instruction (CAREFUL: the PC offset is specific to thumb mode!) */
 2:
-	sub	lr, lr, $2
-	mov	sp, $1
+	sub	lr, lr, #2
+	mov	sp, #1
 	b	exception_common
 
 /* Software Interrupt (no PC offset necessary) */
 3:
-	mov	sp, $2
+	mov	sp, #2
 	b	exception_common
 
 /* Prefetch Abort */
 4:
-	sub	lr, lr, $4
-	mov	sp, $3
+	sub	lr, lr, #4
+	mov	sp, #3
 	b	exception_common
 
 /* Data Abort */
 5:
-	sub	lr, lr, $8
-	mov	sp, $4
+	sub	lr, lr, #8
+	mov	sp, #4
 	b	exception_common
 
 /* (not used) */
 6:
-	mov	sp, $5
+	mov	sp, #5
 	b	exception_common
 
 /* Interrupt */
 7:
-	sub	lr, lr, $4
-	mov	sp, $6
+	sub	lr, lr, #4
+	mov	sp, #6
 	b	exception_common
 
 /* Fast Interrupt */
 8:
-	sub	lr, lr, $4
-	mov	sp, $7
+	sub	lr, lr, #4
+	mov	sp, #7
 	b	exception_common
 
 exception_common:
 	str	sp, exception_idx
-	ldr	sp, exception_stack_end
-	push	{ lr }
-	stmfd	sp, { sp, lr }^
-	sub	sp, sp, $8
-	push	{ r0 - r12 }
+	ldr	sp, exception_state_ptr
+	stmia	sp!, { r0 - r12 }	/* Save regs from bottom to top */
+	stmia	sp, { sp, lr }^		/* Save banked SP/LR (no writeback) */
+	str	lr, [sp, #(4 * 2)]	/* Save PC to &regs[13] + 2 */
 	mrs	r0, SPSR
-	push	{ r0 }
-	mov	r0, sp
-	ldr	r1, exception_idx
+	str	r0, [sp, #(4 * 3)]	/* Save SPSR to &regs[13] + 3 */
+	ldr	sp, exception_stack_end	/* Point SP to the stack for C code */
+	ldr	r0, exception_idx
 	blx	exception_dispatch
-	pop	{ r0 }
-	msr	SPSR_cxsf, r0
-	pop	{ r0 - r12 }
-	add	sp, sp, $8
-	ldmfd	sp!, { pc }^
+	ldr	sp, exception_state_ptr
+	ldr	r0, [sp, #(4 * 16)]	/* Load SPSR from &regs[0] + 16... */
+	msr	SPSR_cxsf, r0		/* ...and get it out of the way */
+	ldmia	sp!, { r0 - r12 }	/* Restore regs from bottom to top */
+	ldmia	sp, { sp, lr }^		/* Restore SP/LR to banked location */
+	add	sp, sp, #8		/* Adjust SP (no writeback allowed) */
+	ldmia	sp!, { pc }^		/* Do exception return (mode switch) */
 
 
 	.align 2
 	.global exception_stack_end
 exception_stack_end:
+	.word 0
+	.global exception_state_ptr
+exception_state_ptr:
 	.word 0
 
 exception_idx:

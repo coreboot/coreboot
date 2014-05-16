@@ -135,7 +135,7 @@ static int update_display_mode(struct display_controller *disp_ctrl,
 	       &disp_ctrl->disp.disp_clk_ctrl);
 	printk(BIOS_DEBUG, "%s: PixelClock=%u, ShiftClockDiv=%u\n",
 	       __func__, config->pixel_clock, shift_clock_div);
-	return clock_display(config->pixel_clock * shift_clock_div * 2);
+	return 0;
 }
 
 static void update_window(struct display_controller *disp_ctrl,
@@ -277,6 +277,15 @@ void display_startup(device_t dev)
 	 * The panel_vdd is done in the romstage, so we need only
 	 * light things up here once we're sure it's all working.
 	 */
+
+	/* The plld is programmed with the assumption of the SHIFT_CLK_DIVIDER
+	 * and PIXEL_CLK_DIVIDER are zero (divide by 1). See the
+	 * update_display_mode() for detail.
+	 */
+	if (clock_display(config->pixel_clock * 2)) {
+		printk(BIOS_ERR, "dc: clock init failed\n");
+		return;
+	};
 
 	/* Init dc */
 	if (tegra_dc_init(disp_ctrl)) {

@@ -19,6 +19,7 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <delay.h>
 #include <device/i2c.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,7 @@ static void do_bus_clear(int bus)
 	struct tegra_i2c_bus_info *info = &tegra_i2c_info[bus];
 	struct tegra_i2c_regs * const regs = info->base;
 	uint32_t bc;
+	int i, timeout_ms = 10;
 
 	// BUS CLEAR regs (from TRM):
 	// 1. Reset the I2C controller (already done)
@@ -41,16 +43,20 @@ static void do_bus_clear(int bus)
 	write32(bc, &regs->bus_clear_config);
 	// 4.1 Set MSTR_CONFIG_LOAD and wait for clear
 	write32(I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE, &regs->config_load);
-	do {
+	for (i = 0; i < timeout_ms * 10 && (read32(&regs->config_load) &
+			I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE); i++) {
 		printk(BIOS_DEBUG, "%s: wait for MSTR_CONFIG_LOAD to clear\n",
 			__func__);
-	} while (read32(&regs->config_load) & I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE);
+		udelay(100);
+	}
 	// 5. Set ENABLE to start the bus clear op
 	write32(bc | I2C_BUS_CLEAR_CONFIG_BC_ENABLE, &regs->bus_clear_config);
-	do {
+	for (i = 0; i < timeout_ms * 10 && (read32(&regs->bus_clear_config) &
+			I2C_BUS_CLEAR_CONFIG_BC_ENABLE); i++) {
 		printk(BIOS_DEBUG, "%s: wait for bus clear completion\n",
 			__func__);
-	} while (read32(&regs->bus_clear_config) & I2C_BUS_CLEAR_CONFIG_BC_ENABLE);
+		udelay(100);
+	}
 }
 
 static int tegra_i2c_send_recv(int bus, int read,

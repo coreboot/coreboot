@@ -114,18 +114,6 @@ CC:=clang -m32 -mno-mmx -mno-sse -no-integrated-as
 HOSTCC:=clang
 endif
 
-ifeq ($(CONFIG_CCACHE),y)
-CCACHE:=$(word 1,$(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH)))))
-ifeq ($(CCACHE),)
-$(error ccache selected, but not found in PATH)
-endif
-CCACHE:=CCACHE_COMPILERCHECK=content CCACHE_BASEDIR=$(top) $(CCACHE)
-CC := $(CCACHE) $(CC)
-HOSTCC := $(CCACHE) $(HOSTCC)
-HOSTCXX := $(CCACHE) $(HOSTCXX)
-ROMCC_BIN := $(CCACHE) $(ROMCC_BIN)
-endif
-
 strip_quotes = $(subst ",,$(subst \",,$(1)))
 
 # The primary target needs to be here before we include the

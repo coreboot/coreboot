@@ -19,6 +19,24 @@
 
 ARCH_SUPPORTED := armv7 x86_32
 
+# ccache integration
+ifeq ($(CONFIG_CCACHE),y)
+
+CCACHE:=$(word 1,$(wildcard $(addsuffix /ccache,$(subst :, ,$(PATH)))))
+ifeq ($(CCACHE),)
+$(error ccache selected, but not found in PATH)
+endif
+
+export CCACHE_COMPILERCHECK=content
+export CCACHE_BASEDIR=$(top)
+
+$(foreach arch,$(ARCH_SUPPORTED), \
+	$(eval CC_$(arch):=$(CCACHE) $(CC_$(arch))))
+
+HOSTCC:=$(CCACHE) $(HOSTCC)
+HOSTCXX:=$(CCACHE) $(HOSTCXX)
+ROMCC=$(CCACHE) $(ROMCC_BIN)
+endif
 
 # scan-build integration
 ifneq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
@@ -28,7 +46,7 @@ export CCC_ANALYZER_ANALYSIS := -analyzer-opt-analyze-headers
 endif
 
 $(foreach arch,$(ARCH_SUPPORTED), \
-	$(eval CC_$(arch):=CCC_CC=$(CC_$(arch)) $(CC) ))
+	$(eval CC_$(arch):=CCC_CC="$(CC_$(arch))" $(CC) ))
 
 HOSTCC:=CCC_CC="$(HOSTCC)" $(CC)
 HOSTCXX:=CCC_CXX="$(HOSTCXX)" $(CXX)

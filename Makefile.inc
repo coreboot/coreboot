@@ -280,8 +280,11 @@ ifeq ($(_WINCHECK),Cygwin)
 	STACK=-Wl,--stack,16384000
 endif
 
-ROMCC:= $(objutil)/romcc/romcc
-$(ROMCC): $(top)/util/romcc/romcc.c
+# this allows ccache to prepend itself
+# (ccache handling happens first)
+ROMCC_BIN= $(objutil)/romcc/romcc
+ROMCC?=$(ROMCC_BIN)
+$(ROMCC_BIN): $(top)/util/romcc/romcc.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@)) (this may take a while)\n"
 	@# Note: Adding -O2 here might cause problems. For details see:
 	@# http://www.coreboot.org/pipermail/coreboot/2010-February/055825.html

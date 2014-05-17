@@ -135,7 +135,7 @@ CCACHE:=CCACHE_COMPILERCHECK=content CCACHE_BASEDIR=$(top) $(CCACHE)
 CC := $(CCACHE) $(CC)
 HOSTCC := $(CCACHE) $(HOSTCC)
 HOSTCXX := $(CCACHE) $(HOSTCXX)
-ROMCC := $(CCACHE) $(ROMCC)
+ROMCC_BIN := $(CCACHE) $(ROMCC_BIN)
 endif
 
 strip_quotes = $(subst ",,$(subst \",,$(1)))

@@ -17,10 +17,7 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-ARCH_SUPPORTED := ARMV7 X86_32
-
-ARCH_TO_TOOLCHAIN_X86_32 := x86_32
-ARCH_TO_TOOLCHAIN_ARMV7  := armv7
+ARCH_SUPPORTED := armv7 x86_32
 
 COREBOOT_STANDARD_STAGES := bootblock romstage ramstage
 
@@ -38,8 +35,8 @@ CFLAGS_armv7 = \
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\
-	$(eval CPPFLAGS_$(ARCH_TO_TOOLCHAIN_$(arch)) = \
-	-Isrc/arch/$(ARCHDIR-$(ARCH_TO_TOOLCHAIN_$(arch)))/include))
+	$(eval CPPFLAGS_$(arch) = \
+	-Isrc/arch/$(ARCHDIR-$(arch))/include))
 
 # set_stage_toolchain: Decides the toolchain to be used by every stage
 # E.g.: If bootblock is x86_32, it sets ARCH-BOOTBLOCK-y = x86_32, whereas
@@ -49,7 +46,7 @@ toolchain_to_dir = \
 # stages i.e. bootblock, romstage and ramstage, since it acts as the second
 # parameter to create_class_compiler below in init_standard_toolchain
 set_stage_toolchain= \
-	$(foreach arch,$(ARCH_SUPPORTED),$(eval ARCH-$(1)-$(CONFIG_ARCH_$(1)_$(arch)) := $(ARCH_TO_TOOLCHAIN_$(arch))))
+	$(foreach arch,$(ARCH_SUPPORTED),$(eval ARCH-$(1)-$($(shell echo CONFIG_ARCH_$(1)_$(arch) | tr '[:lower:]' '[:upper:]')) := $(arch)))
 
 # create_class_compiler: Used to create compiler tool set for
 # special classes
@@ -73,9 +70,8 @@ endef
 # initialize standard toolchain (CC,AS and others) for give stage
 # @1 : stage for which the toolchain is to be initialized
 init_standard_toolchain = \
-	$(eval stage_caps := $(shell printf "%s" $(1) | tr '[:lower:]' '[:upper:]' )) \
-	$(eval $(call set_stage_toolchain,$(stage_caps))) \
-	$(eval $(call create_class_compiler,$(1),$(ARCH-$(stage_caps)-y))) \
+	$(eval $(call set_stage_toolchain,$(1))) \
+	$(eval $(call create_class_compiler,$(1),$(ARCH-$(1)-y))) \
 	$(eval $(call set_stage_libgcc,$(1)))
 
 init_stages = \

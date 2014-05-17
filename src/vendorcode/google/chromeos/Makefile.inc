@@ -44,7 +44,7 @@ VB_LIB = $(obj)/external/vboot_reference/vboot_fw.a
 # up all components in one of the three stages of coreboot, vboot seems
 # most logical to fall under the romstage. Thus, all references to arch
 # and other compiler stuff for vboot is using the romstage arch.
-VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-ROMSTAGE-y))
+VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-romstage-y))
 VB_SOURCE := vboot_reference
 
 # Add the vboot include paths.

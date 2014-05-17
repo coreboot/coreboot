@@ -81,9 +81,6 @@ init_standard_toolchain = \
 init_stages = \
 	    $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(eval $(call init_standard_toolchain,$(stage))))
 
-# This mapping is created to have consistency with xcompile naming
-$(eval $(call create_class_compiler,x86_32,i386))
-
 $(eval $(call toolchain_to_dir))
 
 $(call init_stages)

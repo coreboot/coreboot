@@ -181,7 +181,7 @@ arch_config_aarch64() {
 }
 
 arch_config_x86() {
-	TARCH="i386"
+	TARCH="x86_32"
 	TBFDARCH="i386"
 	TCLIST="i386 x86_64"
 	TWIDTH="32"

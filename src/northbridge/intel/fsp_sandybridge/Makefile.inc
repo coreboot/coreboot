@@ -32,6 +32,6 @@ romstage-y += ../../../arch/x86/lib/walkcbfs.S
 smm-$(CONFIG_HAVE_SMI_HANDLER) += udelay.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 
-CPPFLAGS += -I$(src)/northbridge/intel/fsp_sandybridge/fsp
+CPPFLAGS_common += -I$(src)/northbridge/intel/fsp_sandybridge/fsp
 
 $(obj)/northbridge/intel/fsp_sandybridge/acpi.ramstage.o : $(obj)/build.h

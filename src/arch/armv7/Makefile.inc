@@ -155,7 +155,7 @@ $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/b
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
-	$(CC_romstage) -MMD $(CFLAGS_romstage) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
+	$(CC_romstage) -MMD $(CFLAGS_romstage) $(CPPFLAGS_romstage) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
 
 endif # CONFIG_ARCH_ROMSTAGE_ARMV7
 
@@ -192,7 +192,7 @@ $(objgenerated)/ramstage.o: $(stages_o) $$(ramstage-objs) $(LIBGCC_FILE_NAME_ram
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_ramstage) -m -m armelf_linux_eabi -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --wrap __uidiv --start-group $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) --end-group
 else
-	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group
+	$(CC_ramstage) $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) -nostdlib -r -o $@ -Wl,--start-group $(stages_o) $(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group
 endif
 
 ifeq ($(CONFIG_GENERATE_PIRQ_TABLE),y)

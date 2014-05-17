@@ -64,8 +64,8 @@ OBJCOPY_$(1) := $(OBJCOPY_$(2))
 OBJDUMP_$(1) := $(OBJDUMP_$(2))
 STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
-CPPFLAGS_$(1) = -Isrc/arch/$(ARCHDIR-$(2))/include
-CFLAGS_$(1) = $$(CFLAGS_common) $$(CPPFLAGS_$(1)) $(CFLAGS_$(2))
+CFLAGS_$(1) = $$(CFLAGS_common) $$(CFLAGS_$(2))
+CPPFLAGS_$(1) = $$(CPPFLAGS_common) $$(CPPFLAGS_$(2))
 LIBGCC_FILE_NAME_$(1) = $(shell [ -r `$(CC_$(2)) -print-libgcc-file-name` ] && \
 	$(CC_$(2)) -print-libgcc-file-name)
 endef

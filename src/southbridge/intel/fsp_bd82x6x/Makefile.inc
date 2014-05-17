@@ -70,4 +70,4 @@ endif
 
 PHONY += bd82x6x_add_me
 
-CPPFLAGS += -I$(src)/southbridge/intel/fsp_bd82x6x
+CPPFLAGS_common += -I$(src)/southbridge/intel/fsp_bd82x6x

@@ -48,7 +48,7 @@ VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-ROMSTAGE-y))
 VB_SOURCE := vboot_reference
 
 # Add the vboot include paths.
-CPPFLAGS += -I$(VB_SOURCE)/firmware/include
+CPPFLAGS_common += -I$(VB_SOURCE)/firmware/include
 
 VBOOT_STUB_ELF = $(obj)/vendorcode/google/chromeos/vbootstub.elf
 VBOOT_STUB = $(VBOOT_STUB_ELF).rmod

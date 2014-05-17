@@ -152,7 +152,7 @@ $(obj)/$(1).ramstage.o: src/$(1).asl $(obj)/config.h
 	$(CC_ramstage) -x assembler-with-cpp -E -MMD -MT $$(@) -D__ACPI__ -P -include $(src)/include/kconfig.h -I$(obj) -I$(src) -I$(src)/include -I$(src)/arch/$(ARCHDIR-$(ARCH-RAMSTAGE-y))/include -I$(src)/mainboard/$(MAINBOARDDIR) $$< -o $$(basename $$@).asl
 	cd $$(dir $$@); $(IASL) -p $$(notdir $$@) -tc $$(notdir $$(basename $$@)).asl
 	mv $$(basename $$@).hex $$(basename $$@).c
-	$(CC_ramstage) $$(CFLAGS_ramstage) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
+	$(CC_ramstage) $$(CFLAGS_ramstage) $$(CPPFLAGS_ramstage) $$(if $$(subst dsdt,,$$(basename $$(notdir $(1)))), -DAmlCode=AmlCode_$$(basename $$(notdir $(1)))) -c -o $$@ $$(basename $$@).c
 	# keep %.o: %.c rule from catching the temporary .c file after a make clean
 	mv $$(basename $$@).c $$(basename $$@).hex
 endef
@@ -214,11 +214,11 @@ ifneq ($(CONFIG_LOCALVERSION),"")
 COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 endif
 
-CPPFLAGS := -Isrc -Isrc/include -I$(obj)
-CPPFLAGS += -Isrc/device/oprom/include
-CPPFLAGS += -include $(src)/include/kconfig.h
+CPPFLAGS_common := -Isrc -Isrc/include -I$(obj)
+CPPFLAGS_common += -Isrc/device/oprom/include
+CPPFLAGS_common += -include $(src)/include/kconfig.h
 
-CFLAGS_common = $(CPPFLAGS) -Os -pipe -g -nostdinc
+CFLAGS_common = -Os -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow
@@ -314,15 +314,15 @@ $(objutil)/%.o: $(objutil)/%.c
 
 $(obj)/%.ramstage.o $(abspath $(obj))/%.ramstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_ramstage) -MMD $(CFLAGS_ramstage) -c -o $@ $<
+	$(CC_ramstage) -MMD $(CFLAGS_ramstage) $(CPPFLAGS_ramstage) -c -o $@ $<
 
 $(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) -MMD -D__PRE_RAM__ $(CFLAGS_romstage) -c -o $@ $<
+	$(CC_romstage) -MMD -D__PRE_RAM__ $(CFLAGS_romstage) $(CPPFLAGS_romstage) -c -o $@ $<
 
 $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) -MMD $(bootblock-c-ccopts) $(CFLAGS_bootblock) -c -o $@ $<
+	$(CC_bootblock) -MMD $(bootblock-c-ccopts) $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -c -o $@ $<
 
 #######################################################################
 # Clean up rules

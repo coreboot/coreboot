@@ -53,7 +53,7 @@ ramstage-$(CONFIG_ELOG) += elog.c
 # Remove as ramstage gets fleshed out
 ramstage-y += placeholders.c
 
-CPPFLAGS += -Isrc/soc/intel/baytrail/
+CPPFLAGS_common += -Isrc/soc/intel/baytrail/
 
 # Run an intermediate step when producing coreboot.rom
 # that adds additional components to the final firmware

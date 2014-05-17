@@ -30,18 +30,8 @@
 ## SUCH DAMAGE.
 ##
 
-ifeq ($(INNER_SCANBUILD),y)
-CC_real:=$(CC)
-endif
-
 $(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
 include .xcompile
-
-ifeq ($(INNER_SCANBUILD),y)
-CC:=$(CC_real)
-HOSTCC:=$(CC_real) --hostcc
-HOSTCXX:=$(CC_real) --hostcxx
-endif
 
 export top := $(CURDIR)
 export src := src
@@ -119,11 +109,9 @@ include $(HAVE_DOTCONFIG)
 
 include toolchain.inc
 
-ifneq ($(INNER_SCANBUILD),y)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 CC:=clang -m32 -mno-mmx -mno-sse -no-integrated-as
 HOSTCC:=clang
-endif
 endif
 
 ifeq ($(CONFIG_CCACHE),y)
@@ -143,25 +131,7 @@ strip_quotes = $(subst ",,$(subst \",,$(1)))
 # The primary target needs to be here before we include the
 # other files
 
-ifeq ($(INNER_SCANBUILD),y)
-CONFIG_SCANBUILD_ENABLE:=
-endif
-
-ifeq ($(CONFIG_SCANBUILD_ENABLE),y)
-ifneq ($(CONFIG_SCANBUILD_REPORT_LOCATION),)
-CONFIG_SCANBUILD_REPORT_LOCATION:=-o $(CONFIG_SCANBUILD_REPORT_LOCATION)
-endif
-real-all:
-	echo '#!/bin/sh' > .ccwrap
-	echo 'CC="$(CC)"' >> .ccwrap
-	echo 'if [ "$$1" = "--hostcc" ]; then shift; CC="$(HOSTCC)"; fi' >> .ccwrap
-	echo 'if [ "$$1" = "--hostcxx" ]; then shift; CC="$(HOSTCXX)"; fi' >> .ccwrap
-	echo 'eval $$CC $$*' >> .ccwrap
-	chmod +x .ccwrap
-	scan-build $(CONFIG_SCANBUILD_REPORT_LOCATION) -analyze-headers --use-cc=$(top)/.ccwrap --use-c++=$(top)/.ccwrap $(MAKE) INNER_SCANBUILD=y
-else
 real-all: real-target
-endif
 
 # must come rather early
 .SECONDEXPANSION:

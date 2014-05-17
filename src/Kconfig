@@ -80,29 +80,6 @@ config ANY_TOOLCHAIN
 	  we'll have to assume that they use their distro compiler by mistake.
 	  Make sure that using patched compilers is a conscious decision.
 
-config SCANBUILD_ENABLE
-	bool "Build with scan-build for static code analysis"
-	default n
-	help
-	  Changes the build process to use scan-build (a utility for
-	  running the clang static code analyzer from the command line).
-
-	  Requires the scan-build utility in your system $PATH.
-
-	  For details see http://clang-analyzer.llvm.org/scan-build.html.
-
-config SCANBUILD_REPORT_LOCATION
-	string "Directory for the scan-build report(s)"
-	default ""
-	depends on SCANBUILD_ENABLE
-	help
-	  Directory where the scan-build reports should be stored in. The
-	  reports are stored in subdirectories of the form 'yyyy-mm-dd-*'
-	  in the specified directory.
-
-	  If this setting is left empty, the coreboot top-level directory
-	  will be used to store the report subdirectories.
-
 config CCACHE
 	bool "Use ccache to speed up (re)compilation"
 	default n

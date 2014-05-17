@@ -238,7 +238,7 @@ function compile_target
 	CURR=$( pwd )
 	#stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	build_dir=$TARGET/${VENDOR}_${MAINBOARD}
-	eval $MAKE $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils \
+	eval $BUILDPREFIX $MAKE $silent DOTCONFIG=${build_dir}/config.build obj=${build_dir} objutil=$TARGET/sharedutils \
 		&> ${build_dir}/make.log
 	ret=$?
 	cp .xcompile ${build_dir}/xcompile.build
@@ -291,13 +291,16 @@ function build_target
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
 	create_buildenv $VENDOR $MAINBOARD $CONFIG
 	if [ $? -eq 0  -a  $configureonly -eq 0 ]; then
+		BUILDPREFIX=
 		if [ "$scanbuild" = "true" ]; then
-			rm -rf $TARGET/scan-build-results-tmp
+			scanbuild_out=$TARGET/${VENDOR}_${MAINBOARD}-scanbuild
+			rm -rf ${scanbuild_out}
+			BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
 		fi
 		compile_target $VENDOR $MAINBOARD
 		if [ "$scanbuild" = "true" ]; then
-			rm -rf $TARGET/${VENDOR}_${MAINBOARD}-scanbuild
-			mv `dirname $TARGET/scan-build-results-tmp/*/index.html` $TARGET/${VENDOR}_${MAINBOARD}-scanbuild
+			mv ${scanbuild_out}tmp/* ${scanbuild_out}
+			rmdir ${scanbuild_out}tmp
 		fi
 	fi
 	# Not calculated here because we still print it in compile_target
@@ -386,7 +389,6 @@ function myhelp
 	printf "    [-T|--test]			  submit image(s) to automated test system\n"
 	printf "    [-c|--cpus <numcpus>]         build on <numcpus> at the same time\n"
 	printf "    [-s|--silent]                 omit compiler calls in logs\n"
-	printf "    [-sb|--scan-build]            use clang's static analyzer\n"
 	printf "    [-y|--ccache]                 use ccache\n"
 	printf "    [-C|--config]                 configure-only mode\n"
 	printf "    [-l|--loglevel <num>]         set loglevel\n"
@@ -394,6 +396,7 @@ function myhelp
 	printf "    [-P|--prefix <name>]          file name prefix in CBFS\n"
 	printf "    [-B|--blobs]                  Allow using binary files\n"
 	printf "    [-L|--clang]                  Use clang\n"
+	printf "    [--scan-build]                use clang's static analyzer\n"
 	printf "    [cbroot]			  absolute path to coreboot sources\n"
 	printf "				  (defaults to $ROOT)\n\n"
 }
@@ -468,10 +471,9 @@ while true ; do
 			expr "$1" : '-\?[0-9]\+$' > /dev/null && test 0$1 -gt 1 && cpuconfig="on $1 cpus in parallel"
 			shift;;
 		-s|--silent)    shift; silent="-s";;
-		-sb|--scan-build) shift
+		--scan-build)   shift
 			scanbuild=true
 			customizing="${customizing}, scan-build"
-			configoptions="${configoptions}CONFIG_SCANBUILD_ENABLE=y\nCONFIG_SCANBUILD_REPORT_LOCATION=\"$TARGET/scan-build-results-tmp\""
 			;;
 		-y|--ccache)    shift
 			customizing="${customizing}, ccache"
@@ -546,7 +548,17 @@ build_all_targets()
 		echo "CONFIG_USE_BLOBS=y" > $TMPCFG
 	fi
 	$MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils allnoconfig
-	$MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools || exit 1
+	BUILDPREFIX=
+	if [ "$scanbuild" = "true" ]; then
+		scanbuild_out=$TARGET/sharedutils-scanbuild
+		rm -rf ${scanbuild_out}
+		BUILDPREFIX="scan-build -o ${scanbuild_out}tmp"
+	fi
+	$BUILDPREFIX $MAKE -j $cpus DOTCONFIG=$TMPCFG obj=$TARGET/temp objutil=$TARGET/sharedutils tools || exit 1
+	if [ "$scanbuild" = "true" ]; then
+		mv ${scanbuild_out}tmp/* ${scanbuild_out}
+		rmdir ${scanbuild_out}tmp
+	fi
 	rm -rf $TARGET/temp $TMPCFG
 	for VENDOR in $( vendors ); do
 		for MAINBOARD in $( mainboards $VENDOR ); do

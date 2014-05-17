@@ -19,6 +19,22 @@
 
 ARCH_SUPPORTED := armv7 x86_32
 
+
+# scan-build integration
+ifneq ($(CCC_ANALYZER_OUTPUT_FORMAT),)
+
+ifeq ($(CCC_ANALYZER_ANALYSIS),)
+export CCC_ANALYZER_ANALYSIS := -analyzer-opt-analyze-headers
+endif
+
+$(foreach arch,$(ARCH_SUPPORTED), \
+	$(eval CC_$(arch):=CCC_CC=$(CC_$(arch)) $(CC) ))
+
+HOSTCC:=CCC_CC="$(HOSTCC)" $(CC)
+HOSTCXX:=CCC_CXX="$(HOSTCXX)" $(CXX)
+ROMCC=CCC_CC="$(ROMCC_BIN)" $(CC)
+endif
+
 COREBOOT_STANDARD_STAGES := bootblock romstage ramstage
 
 ARCHDIR-i386    := x86

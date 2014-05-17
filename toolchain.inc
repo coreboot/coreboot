@@ -70,8 +70,7 @@ endef
 # @1 : stage for which the toolchain is to be initialized
 init_standard_toolchain = \
 	$(eval $(call set_stage_toolchain,$(1))) \
-	$(eval $(call create_class_compiler,$(1),$(ARCH-$(1)-y))) \
-	$(eval $(call set_stage_libgcc,$(1)))
+	$(eval $(call create_class_compiler,$(1),$(ARCH-$(1)-y)))
 
 init_stages = \
 	    $(foreach stage,$(COREBOOT_STANDARD_STAGES),$(eval $(call init_standard_toolchain,$(stage))))

@@ -63,8 +63,7 @@ STRIP_$(1) := $(STRIP_$(2))
 READELF_$(1) := $(READELF_$(2))
 CFLAGS_$(1) = $$(CFLAGS_common) $$(CFLAGS_$(2))
 CPPFLAGS_$(1) = $$(CPPFLAGS_common) $$(CPPFLAGS_$(2))
-LIBGCC_FILE_NAME_$(1) = $(shell [ -r `$(CC_$(2)) -print-libgcc-file-name` ] && \
-	$(CC_$(2)) -print-libgcc-file-name)
+LIBGCC_FILE_NAME_$(1) = $(wildcard $(shell $(CC_$(2)) -print-libgcc-file-name))
 endef
 
 # initialize standard toolchain (CC,AS and others) for give stage

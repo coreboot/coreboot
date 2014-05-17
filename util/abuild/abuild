@@ -113,7 +113,7 @@ function vendors
 {
 	# make this a function so we can easily select
 	# without breaking readability
-	ls -1 "$ROOT/src/mainboard" | grep -v Kconfig | grep -v Makefile
+	ls -1 $ROOT/src/mainboard/*/Kconfig 2>/dev/null | sed "s:^$ROOT/src/mainboard/\(.*\)/Kconfig$:\1:"
 }
 
 function mainboards
@@ -123,7 +123,7 @@ function mainboards
 
 	VENDOR=$1
 
-	ls -1 $ROOT/src/mainboard/$VENDOR | grep -v Kconfig
+	ls -1 $ROOT/src/mainboard/$VENDOR/*/Kconfig 2>/dev/null | sed "s:^$ROOT/src/mainboard/$VENDOR/\(.*\)/Kconfig$:\1:"
 }
 
 function architecture

@@ -41,7 +41,7 @@ stages_o = $(obj)/arch/armv7/stages.o
 
 $(stages_o): $(stages_c) $(obj)/config.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_armv7) -I. $(INCLUDES) $(INCLUDES_armv7) -c -o $@ $< -marm
+	$(CC_armv7) -I. $(CPPFLAGS) $(CPPFLAGS_armv7) -c -o $@ $< -marm
 
 endif # CONFIG_ARCH_ARMV7
 
@@ -86,10 +86,10 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 
 $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H) $(obj)/config.h
 	@printf "    CC      $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(bootblock-c-ccopts) $(INCLUDES) $(INCLUDES_bootblock) -MM \
+	$(CC_bootblock) $(bootblock-c-ccopts) $(CPPFLAGS) $(CPPFLAGS_bootblock) -MM \
 		-MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
-	$(CC_bootblock) $(bootblock-c-ccopts) -c -S $(CFLAGS_bootblock) -I. $(INCLUDES) $(INCLUDES_bootblock) $< -o $@
+	$(CC_bootblock) $(bootblock-c-ccopts) -c -S $(CFLAGS_bootblock) -I. $(CPPFLAGS) $(CPPFLAGS_bootblock) $< -o $@
 
 $(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld $$(bootblock-objs) $(stages) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

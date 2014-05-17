@@ -123,9 +123,9 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 
 $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(INCLUDES) $(INCLUDES_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
+	$(CC_bootblock) $(CPPFLAGS) $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
-	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(INCLUDES) $(INCLUDES_bootblock) $< -o $@
+	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS) $(CPPFLAGS_bootblock) $< -o $@
 
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -188,7 +188,7 @@ $(objcbfs)/romstage_%.elf: $(objcbfs)/romstage_%.debug
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	printf "    ROMCC      romstage.inc\n"
-	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(INCLUDES) $(INCLUDES_romstage) $< -o $@
+	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(CPPFLAGS) $(CPPFLAGS_romstage) $< -o $@
 else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
@@ -256,7 +256,7 @@ $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
 
 $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) $(INCLUDES) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
+	$(CC_romstage) $(CPPFLAGS) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 
 endif # CONFIG_ARCH_ROMSTAGE_X86_32
 

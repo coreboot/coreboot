@@ -214,12 +214,11 @@ ifneq ($(CONFIG_LOCALVERSION),"")
 COREBOOT_EXTRA_VERSION := -$(call strip_quotes,$(CONFIG_LOCALVERSION))
 endif
 
-INCLUDES := -Isrc -Isrc/include -I$(obj)
-INCLUDES += -Isrc/device/oprom/include
-# abspath is a workaround for romcc
-INCLUDES += -include $(src)/include/kconfig.h
+CPPFLAGS := -Isrc -Isrc/include -I$(obj)
+CPPFLAGS += -Isrc/device/oprom/include
+CPPFLAGS += -include $(src)/include/kconfig.h
 
-CFLAGS_common = $(INCLUDES) -Os -pipe -g -nostdinc
+CFLAGS_common = $(CPPFLAGS) -Os -pipe -g -nostdinc
 CFLAGS_common += -nostdlib -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS_common += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS_common += -Wstrict-aliasing -Wshadow

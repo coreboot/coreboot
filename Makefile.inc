@@ -482,12 +482,11 @@ $(obj)/coreboot.pre1: $(CBFSTOOL)
 endif
 
 ifeq ($(CONFIG_PAYLOAD_LINUX),y)
-LINUX_ADDITIONAL_CONFIG:=
 ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_COMMAND_LINE))),)
-      LINUX_ADDITIONAL_CONFIG+=-C $(CONFIG_LINUX_COMMAND_LINE)
+      ADDITIONAL_PAYLOAD_CONFIG+=-C $(CONFIG_LINUX_COMMAND_LINE)
 endif
 ifneq ($(strip $(call strip_quotes,$(CONFIG_LINUX_INITRD))),)
-      LINUX_ADDITIONAL_CONFIG+=-I $(CONFIG_LINUX_INITRD)
+      ADDITIONAL_PAYLOAD_CONFIG+=-I $(CONFIG_LINUX_INITRD)
 endif
 endif
 
@@ -504,35 +503,15 @@ $(obj)/coreboot.rom: $(obj)/coreboot.pre $(objcbfs)/ramstage.elf $(CBFSTOOL) $(c
 ifeq ($(CONFIG_PAYLOAD_NONE),y)
 	@printf "    PAYLOAD    none (as specified by user)\n"
 endif
-ifeq ($(CONFIG_PAYLOAD_ELF),y)
+ifneq ($(CONFIG_PAYLOAD_FILE),)
 	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
+	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG) $(ADDITIONAL_PAYLOAD_CONFIG)
 endif
-ifeq ($(CONFIG_PAYLOAD_LINUX),y)
-	@printf "    PAYLOAD    $(CONFIG_PAYLOAD_FILE) (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG) $(LINUX_ADDITIONAL_CONFIG)
-endif
-ifeq ($(CONFIG_PAYLOAD_SEABIOS),y)
-	@printf "    PAYLOAD    SeaBIOS (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),)
 ifneq ($(CONFIG_SEABIOS_PS2_TIMEOUT),0)
 	@printf "    SeaBIOS    Wait up to $(CONFIG_SEABIOS_PS2_TIMEOUT) ms for PS/2 keyboard controller initialization\n"
 	$(CBFSTOOL) $@.tmp add-int -i $(CONFIG_SEABIOS_PS2_TIMEOUT) -n etc/ps2-keyboard-spinup
 endif
-endif
-endif
-ifeq ($(CONFIG_PAYLOAD_FILO),y)
-	@printf "    PAYLOAD    FILO (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
-endif
-ifeq ($(CONFIG_PAYLOAD_GRUB2),y)
-	@printf "    PAYLOAD    GRUB2 (internal, compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
-endif
-ifeq ($(CONFIG_PAYLOAD_TIANOCORE),y)
-	@printf "    PAYLOAD    Tiano Core (compression: $(CBFS_PAYLOAD_COMPRESS_FLAG))\n"
-	$(CBFSTOOL) $@.tmp add-payload -f $(CONFIG_PAYLOAD_FILE) -n $(CONFIG_CBFS_PREFIX)/payload -c $(CBFS_PAYLOAD_COMPRESS_FLAG)
 endif
 ifeq ($(CONFIG_INCLUDE_CONFIG_FILE),y)
 	@printf "    CONFIG     $(DOTCONFIG)\n"

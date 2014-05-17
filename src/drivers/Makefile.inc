@@ -26,7 +26,6 @@ subdirs-y += intel
 subdirs-y += maxim
 subdirs-y += net
 subdirs-y += parade
-subdirs-y += realtek
 subdirs-y += sil
 subdirs-y += trident
 subdirs-$(CONFIG_DRIVERS_UART) += uart

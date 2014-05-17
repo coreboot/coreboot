@@ -31,7 +31,6 @@ source src/drivers/parade/Kconfig
 if PC80_SYSTEM
 source src/drivers/pc80/Kconfig
 endif
-source src/drivers/realtek/Kconfig
 source src/drivers/sil/Kconfig
 source src/drivers/spi/Kconfig
 source src/drivers/ti/Kconfig

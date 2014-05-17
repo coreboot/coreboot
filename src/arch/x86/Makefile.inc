@@ -28,7 +28,7 @@ subdirs-y += lib
 subdirs-y += smp
 
 ifeq ($(CONFIG_COMPILER_GCC),y)
-DISASSEMBLY=-Wa,-acdlns
+DISASSEMBLY=-Wa,-acdlns $(CFLAGS_x86_32)
 else
 DISASSEMBLY=
 endif

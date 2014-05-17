@@ -25,7 +25,7 @@ ARCHDIR-i386    := x86
 ARCHDIR-x86_32  := x86
 ARCHDIR-armv7   := armv7
 
-CFLAGS_armv7 = \
+CFLAGS_armv7 += \
 	-ffixed-r8\
 	-march=armv7-a\
 	-marm\
@@ -35,7 +35,7 @@ CFLAGS_armv7 = \
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\
-	$(eval CPPFLAGS_$(arch) = \
+	$(eval CPPFLAGS_$(arch) += \
 	-Isrc/arch/$(ARCHDIR-$(arch))/include))
 
 # set_stage_toolchain: Decides the toolchain to be used by every stage

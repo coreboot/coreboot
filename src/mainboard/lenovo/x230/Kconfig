@@ -3,7 +3,7 @@ if BOARD_LENOVO_X230
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select CPU_INTEL_SOCKET_RPGA989
-	select NORTHBRIDGE_INTEL_IVYBRIDGE
+	select NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE
 	select SOUTHBRIDGE_INTEL_C216
 	select EC_LENOVO_PMH7
 	select EC_LENOVO_H8
@@ -18,8 +18,8 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select SERIRQ_CONTINUOUS_MODE
 
 config HAVE_MRC_CACHE
-       bool
-       default n
+	bool
+	default y
 
 config HAVE_IFD_BIN
 	bool
@@ -41,10 +41,6 @@ config MMCONF_BASE_ADDRESS
 	hex
 	default 0xf0000000
 
-config CACHE_ROM_SIZE_OVERRIDE
-	hex
-	default 0x800000
-
 config IRQ_SLOT_COUNT
 	int
 	default 18
@@ -57,7 +53,7 @@ config USBDEBUG_HCD_INDEX
        int
        default 2
 
-config DRAM_GATE_GPIO
+config DRAM_RESET_GATE_GPIO
 	int
 	default 10
 

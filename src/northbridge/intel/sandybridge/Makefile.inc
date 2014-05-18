@@ -25,7 +25,10 @@ ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
 ramstage-y += mrccache.c
 
 romstage-y += ram_calc.c
-romstage-y += raminit.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += raminit.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += raminit.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += raminit_native.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += ../../../device/dram/ddr3.c
 romstage-y += mrccache.c
 romstage-y += early_init.c
 romstage-y += report_platform.c
@@ -48,7 +51,10 @@ $(obj)/mrc.cache: $(obj)/config.h
 
 cbfs-files-$(CONFIG_HAVE_MRC_CACHE) += mrc.cache
 mrc.cache-file := $(obj)/mrc.cache
-mrc.cache-position := 0xfffd0000
+mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) := 0xfffd0000
+mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) := 0xfffd0000
+mrc-cache-position-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) := 0xfffe0000
+mrc.cache-position := $(mrc-cache-position-y)
 mrc.cache-type := 0xac
 endif
 

@@ -37,6 +37,7 @@
  * @{
  */
 #define TCK_1066MHZ     240
+#define TCK_933MHZ	275
 #define TCK_800MHZ      320
 #define TCK_666MHZ      384
 #define TCK_533MHZ      480
@@ -137,6 +138,8 @@ typedef struct dimm_attr_st {
 	u16 cas_supported;
 	/* Flags extracted from SPD */
 	dimm_flags_t flags;
+	/* SDRAM width */
+	u8 width;
 	/* Number of ranks */
 	u8 ranks;
 	/* Number or row address bits */
@@ -158,6 +161,8 @@ typedef struct dimm_attr_st {
 	u32 tWTR;
 	u32 tRTP;
 	u32 tFAW;
+
+	u8 reference_card;
 } dimm_attr;
 
 /** Result of the SPD decoding process */

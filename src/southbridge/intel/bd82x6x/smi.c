@@ -29,10 +29,7 @@
 #include <cpu/x86/smm.h>
 #include <string.h>
 #include "pch.h"
-
-#if CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE
 #include "northbridge/intel/sandybridge/sandybridge.h"
-#endif
 
 extern unsigned char _binary_smm_start;
 extern unsigned char _binary_smm_end;

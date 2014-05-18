@@ -45,9 +45,13 @@ smm-$(CONFIG_SPI_FLASH_SMM) += ../common/spi.c
 ramstage-$(CONFIG_HAVE_SMI_HANDLER) += smi.c
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c me.c me_8.x.c finalize.c pch.c
 
-romstage-y += early_usb.c early_smbus.c early_me.c me_status.c gpio.c
+romstage-y += early_usb.c early_smbus.c me_status.c gpio.c
 romstage-y += reset.c
 romstage-y += early_spi.c early_pch.c
+
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE) += early_me.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE) += early_me.c
+romstage-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += early_thermal.c early_pch_native.c early_me_native.c
 
 ifeq ($(CONFIG_BUILD_WITH_FAKE_IFD),y)
 IFD_BIN_PATH := $(objgenerated)/ifdfake.bin

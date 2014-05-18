@@ -33,7 +33,7 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include "northbridge/intel/sandybridge/sandybridge.h"
-#include "northbridge/intel/sandybridge/raminit.h"
+#include "northbridge/intel/sandybridge/raminit_native.h"
 #include "southbridge/intel/bd82x6x/pch.h"
 #include "southbridge/intel/bd82x6x/gpio.h"
 #include <arch/cpu.h>
@@ -109,65 +109,57 @@ static void rcba_config(void)
 	RCBA32(BUC) = 0;
 }
 
+static void
+init_usb (void)
+{
+	const u32 rcba_dump[64] = {
+		/* 3500 */ 0x20000153, 0x20000153, 0x20000f57, 0x20000f57,
+		/* 3510 */ 0x20000f57, 0x20000f57, 0x20000153, 0x2000055b,
+		/* 3520 */ 0x20000153, 0x2000055b, 0x20000f57, 0x20000f57,
+		/* 3530 */ 0x20000f57, 0x20000f57, 0x00000000, 0x00000000,
+		/* 3540 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		/* 3550 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		/* 3560 */ 0x024c8001, 0x000024a3, 0x00040002, 0x01000050,
+		/* 3570 */ 0x02000772, 0x16000f9f, 0x1800ff4f, 0x0001d630,
+		/* 3580 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		/* 3590 */ 0x00000000, 0x00000000, 0x00000000, 0x00000040,
+		/* 35a0 */ 0x04000201, 0x00000200, 0x00000000, 0x00000000,
+		/* 35b0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		/* 35c0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		/* 35d0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		/* 35e0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+		/* 35f0 */ 0x00000000, 0x00000000, 0x00000000, 0x00000000,
+	};
+	int i;
+	/* Activate PMBAR.  */
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE, DEFAULT_PMBASE | 1);
+	pci_write_config32(PCI_DEV(0, 0x1f, 0), PMBASE + 4, 0);
+	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0x44 /* ACPI_CNTL */ , 0x80); /* Enable ACPI BAR */
+
+	/* Unlock registers.  */
+	outw (inw (DEFAULT_PMBASE | 0x003c) | 2, DEFAULT_PMBASE | 0x003c);
+
+	for (i = 0; i < 64; i++)
+		write32 (DEFAULT_RCBABASE | (0x3500 + 4 * i), rcba_dump[i]);
+
+	pcie_write_config32 (PCI_DEV (0, 0x14, 0), 0xe4, 0x00000000);
+
+	/* Relock registers.  */
+	outw (0x0000, DEFAULT_PMBASE | 0x003c);
+}
+
+
 void main(unsigned long bist)
 {
-	int boot_mode = 0;
-	int cbmem_was_initted;
+	int s3resume = 0;
 	u32 pm1_cnt;
 	u16 pm1_sts;
+	spd_raw_data spd[4];
 
 	if (MCHBAR16(SSKPD) == 0xCAFE) {
 		outb(0x6, 0xcf9);
 		hlt ();
 	}
-
-	struct pei_data pei_data = {
-		.pei_version = PEI_VERSION,
-		.mchbar = DEFAULT_MCHBAR,
-		.dmibar = DEFAULT_DMIBAR,
-		.epbar = DEFAULT_EPBAR,
-		.pciexbar = CONFIG_MMCONF_BASE_ADDRESS,
-		.smbusbar = SMBUS_IO_BASE,
-		.wdbbar = 0x4000000,
-		.wdbsize = 0x1000,
-		.hpet_address = CONFIG_HPET_ADDRESS,
-		.rcba = DEFAULT_RCBABASE,
-		.pmbase = DEFAULT_PMBASE,
-		.gpiobase = DEFAULT_GPIOBASE,
-		.thermalbase = 0xfed08000,
-		.system_type = 0, // 0 Mobile, 1 Desktop/Server
-		.tseg_size = CONFIG_SMM_TSEG_SIZE,
-		.spd_addresses = { 0xA0, 0x00,0xA2,0x00 },
-		.ts_addresses = { 0x00, 0x00, 0x00, 0x00 },
-		.ec_present = 1,
-		.gbe_enable = 1,
-		.ddr3lv_support = 0,
-		// 0 = leave channel enabled
-		// 1 = disable dimm 0 on channel
-		// 2 = disable dimm 1 on channel
-		// 3 = disable dimm 0+1 on channel
-		.dimm_channel0_disabled = 2,
-		.dimm_channel1_disabled = 2,
-		.max_ddr3_freq = 1600,
-		.usb_port_config = {
-			 /* enabled   usb oc pin    length */
-			{ 1, 0, 0x0080 }, /* P0 (left, fan side), OC 0 */
-			{ 1, 1, 0x0080 }, /* P1 (left touchpad side), OC 1 */
-			{ 1, 3, 0x0080 }, /* P2: dock, OC 3 */
-			{ 1, 0, 0x0040 }, /* P3: wwan, no OC */
-			{ 1, 0, 0x0080 }, /* P4: Wacom tablet on X230t, otherwise empty */
-			{ 1, 0, 0x0080 }, /* P5: Expresscard, no OC */
-			{ 0, 0, 0x0000 }, /* P6: Empty */
-			{ 1, 0, 0x0080 }, /* P7: dock, no OC */
-			{ 0, 0, 0x0000 }, /* P8: Empty */
-			{ 1, 5, 0x0080 }, /* P9: Right (EHCI debug), OC 5 */
-			{ 1, 0, 0x0040 }, /* P10: fingerprint reader, no OC */
-			{ 1, 0, 0x0040 }, /* P11: bluetooth, no OC. */
-			{ 1, 0, 0x0040 }, /* P12: wlan, no OC */
-			{ 1, 0, 0x0080 }, /* P13: webcam, no OC */
-		},
-		.ddr_refresh_rate_config = 2, /* Force double refresh rate */
-	};
 
 	timestamp_init(get_initial_timestamp());
 	timestamp_add_now(TS_START_ROMSTAGE);
@@ -182,6 +174,8 @@ void main(unsigned long bist)
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
 
 	setup_pch_gpios(&x230_gpio_map);
+
+	init_usb();
 
 	/* Initialize console device(s) */
 	console_init();
@@ -204,7 +198,7 @@ void main(unsigned long bist)
 	if ((pm1_sts & WAK_STS) && ((pm1_cnt >> 10) & 7) == 5) {
 		if (acpi_s3_resume_allowed()) {
 			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-			boot_mode = 2;
+			s3resume = 1;
 			/* Clear SLP_TYPE. This will break stage2 but
 			 * we care for that when we get there.
 			 */
@@ -218,31 +212,16 @@ void main(unsigned long bist)
 	/* Enable SPD ROMs and DDR-III DRAM */
 	enable_smbus();
 
-	/* Prepare USB controller early in S3 resume */
-	if (boot_mode == 2)
-		enable_usb_bar();
-
 	post_code(0x39);
 
 	post_code(0x3a);
-	pei_data.boot_mode = boot_mode;
 	timestamp_add_now(TS_BEFORE_INITRAM);
 
-	/* MRC.bin has a bug and sometimes halts (instead of reboot?).
-	 */
-	if (boot_mode != 2)
-	  {
-		  RCBA32(GCS) = RCBA32(GCS) & ~(1 << 5);	/* reset */
-		  outw((0 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* let timer go */
-	  }
+	memset (spd, 0, sizeof (spd));
+	read_spd (&spd[0], 0x50);
+	read_spd (&spd[2], 0x51);
 
-	sdram_initialize(&pei_data);
-
-	if (boot_mode != 2)
-	  {
-		  RCBA32(GCS) = RCBA32(GCS) | (1 << 5);	/* No reset */
-		  outw((1 << 11), DEFAULT_PMBASE | 0x60 | 0x08);	/* halt timer */
-	  }
+	init_dram_ddr3 (spd, 1, TCK_800MHZ, s3resume);
 
 	timestamp_add_now(TS_AFTER_INITRAM);
 	post_code(0x3c);
@@ -250,13 +229,7 @@ void main(unsigned long bist)
 	rcba_config();
 	post_code(0x3d);
 
-	quick_ram_check();
-	post_code(0x3e);
-
 	MCHBAR16(SSKPD) = 0xCAFE;
-	cbmem_was_initted = !cbmem_recovery(boot_mode==2);
-	if (boot_mode!=2)
-		save_mrc_data(&pei_data);
 
 #if CONFIG_HAVE_ACPI_RESUME
 	/* If there is no high memory area, we didn't boot before, so
@@ -266,18 +239,14 @@ void main(unsigned long bist)
 	*(u32 *)CBMEM_BOOT_MODE = 0;
 	*(u32 *)CBMEM_RESUME_BACKUP = 0;
 
-	if ((boot_mode == 2) && cbmem_was_initted) {
+	if (s3resume) {
 		void *resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 		if (resume_backup_memory) {
-			*(u32 *)CBMEM_BOOT_MODE = boot_mode;
+			*(u32 *)CBMEM_BOOT_MODE = 2;
 			*(u32 *)CBMEM_RESUME_BACKUP = (u32)resume_backup_memory;
 		}
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafed00d);
-	} else if (boot_mode == 2) {
-		/* Failed S3 resume, reset to come up cleanly */
-		outb(0x6, 0xcf9);
-		hlt();
 	} else {
 		pci_write_config32(PCI_DEV(0, 0x00, 0), SKPAD, 0xcafebabe);
 	}

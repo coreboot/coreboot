@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <kconfig.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -36,10 +37,42 @@ static void usb_ehci_init(struct device *dev)
 	RCBA32(0x35b0) = reg32;
 
 	printk(BIOS_DEBUG, "EHCI: Setting up controller.. ");
+
+	/* For others, done in MRC.  */
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE)
+	pci_write_config32(dev, 0x84, 0x930c8811);
+	pci_write_config32(dev, 0x88, 0x24000d30);
+	pci_write_config32(dev, 0xf4, 0x80408588);
+	pci_write_config32(dev, 0xf4, 0x80808588);
+	pci_write_config32(dev, 0xf4, 0x00808588);
+	pci_write_config32(dev, 0xfc, 0x205b1708);
+#endif
+
 	reg32 = pci_read_config32(dev, PCI_COMMAND);
 	reg32 |= PCI_COMMAND_MASTER;
 	//reg32 |= PCI_COMMAND_SERR;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
+
+	/* For others, done in MRC.  */
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE)
+	struct resource *res;
+	u8 access_cntl;
+
+	access_cntl = pci_read_config8(dev, 0x80);
+
+	/* Enable writes to protected registers. */
+	pci_write_config8(dev, 0x80, access_cntl | 1);
+
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	if (res) {
+		/* Number of ports and companion controllers.  */
+		reg32 = read32(res->base + 4);
+		write32(res->base + 4, (reg32 & 0xfff00000) | 3);
+	}
+
+	/* Restore protection. */
+	pci_write_config8(dev, 0x80, access_cntl);
+#endif
 
 	printk(BIOS_DEBUG, "done.\n");
 }

@@ -110,7 +110,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 {
 	int ret;
 	u16 crc, spd_crc;
-	u8 ftb_divisor, ftb_dividend, capacity_shift, bus_width, sdram_width;
+	u8 ftb_divisor, ftb_dividend, capacity_shift, bus_width;
 	u8 reg8;
 	u32 mtb;		/* medium time base */
 	unsigned int val, param;
@@ -209,8 +209,8 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		printram("  Invalid SDRAM width\n");
 		ret = SPD_STATUS_INVALID_FIELD;
 	}
-	sdram_width = (4 << val);
-	printram("  SDRAM width       : %u\n", sdram_width);
+	dimm->width = (4 << val);
+	printram("  SDRAM width       : %u\n", dimm->width);
 
 	/* Memory bus width */
 	reg8 = spd[8];
@@ -236,7 +236,7 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 	 * capacity_shift
 	 * The rest is the JEDEC formula */
 	dimm->size_mb = ((1 << (capacity_shift + (25 - 20))) * bus_width
-			 * dimm->ranks) / sdram_width;
+			 * dimm->ranks) / dimm->width;
 
 	/* Fine Timebase (FTB) Dividend/Divisor */
 	/* Dividend */
@@ -333,6 +333,9 @@ int spd_decode_ddr3(dimm_attr * dimm, spd_raw_data spd)
 		dimm->flags.pins_mirrored = 1;
 		printram("  DIMM Rank1 Address bits mirrored!!!\n");
 	}
+
+	dimm->reference_card = spd[62] & 0x1f;
+	printram("  DIMM Reference card %c\n", 'A' + dimm->reference_card);
 
 	return ret;
 }

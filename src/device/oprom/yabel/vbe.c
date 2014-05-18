@@ -45,6 +45,7 @@ u8 *vbe_info_buffer = 0;
 u8 *biosmem;
 u32 biosmem_size;
 
+#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 static inline u8
 vbe_prepare(void)
 {
@@ -63,7 +64,6 @@ vbe_prepare(void)
 	return 0;		// successfull init
 }
 
-#if CONFIG_FRAMEBUFFER_SET_VESA_MODE
 // VBE Function 00h
 static u8
 vbe_info(vbe_info_t * info)

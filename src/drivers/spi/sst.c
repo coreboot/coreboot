@@ -46,11 +46,6 @@ struct sst_spi_flash {
 	const struct sst_spi_flash_params *params;
 };
 
-static inline struct sst_spi_flash *to_sst_spi_flash(struct spi_flash *flash)
-{
-	return container_of(flash, struct sst_spi_flash, flash);
-}
-
 #define SST_SECTOR_SIZE (4 * 1024)
 static const struct sst_spi_flash_params sst_spi_flash_table[] = {
 	{

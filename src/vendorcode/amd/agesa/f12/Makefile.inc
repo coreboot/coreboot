@@ -78,11 +78,8 @@ AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/NB/LN
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Tech
 AGESA_INC += -I$(AGESA_ROOT)/Proc/Mem/Tech/DDR3
 
-AGESA_CFLAGS =-march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
+CFLAGS_x86_32 += -march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 
-export AGESA_ROOT := $(AGESA_ROOT)
 export AGESA_INC  := $(AGESA_INC)
-export AGESA_CFLAGS  := $(AGESA_CFLAGS)
 CPPFLAGS_x86_32 += $(AGESA_INC)
-CFLAGS_x86_32 += $(AGESA_CFLAGS)
 #######################################################################

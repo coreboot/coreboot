@@ -27,13 +27,10 @@
 #
 #*****************************************************************************
 
-# CIMX Root directory
-CIMX_ROOT = $(src)/vendorcode/amd/cimx
-
-SB_CIMX_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
-SB_CIMX_INC  += -I$(src)/southbridge/amd/cimx/sb700
-SB_CIMX_INC  += -I$(src)/include/cpu/amd/common
-SB_CIMX_INC  += -I$(CIMX_ROOT)/sb700
+CPPFLAGS_x86_32 += -I$(src)/mainboard/$(MAINBOARDDIR)
+CPPFLAGS_x86_32 += -I$(src)/southbridge/amd/cimx/sb700
+CPPFLAGS_x86_32 += -I$(src)/include/cpu/amd/common
+CPPFLAGS_x86_32 += -I$(src)/vendorcode/amd/cimx/sb700
 
 romstage-y += ACPILIB.c
 romstage-y += AMDLIB.c
@@ -67,11 +64,3 @@ ramstage-y += SBPOR.c
 ramstage-y += SMM.c
 ramstage-y += USB.c
 ramstage-y += LEGACY.c
-
-export CIMX_ROOT
-export SB_CIMX_INC
-export SB_CIMX_CFLAGS
-CPPFLAGS_x86_32 += $(SB_CIMX_INC)
-
-#######################################################################
-

@@ -17,13 +17,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-# CIMX Root directory
-CIMX_ROOT = $(src)/vendorcode/amd/cimx
-
-CIMX_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
-CIMX_INC  += -I$(src)/southbridge/amd/cimx/sb800
-CIMX_INC  += -I$(src)/include/cpu/amd/common
-CIMX_INC  += -I$(CIMX_ROOT)/sb800
+CPPFLAGS_x86_32 += -I$(src)/mainboard/$(MAINBOARDDIR)
+CPPFLAGS_x86_32 += -I$(src)/southbridge/amd/cimx/sb800
+CPPFLAGS_x86_32 += -I$(src)/include/cpu/amd/common
+CPPFLAGS_x86_32 += -I$(src)/vendorcode/amd/cimx/sb800
 
 romstage-y += ACPILIB.c
 romstage-y += AZALIA.c
@@ -74,12 +71,3 @@ ramstage-y += SMM.c
 ramstage-y += USB.c
 #ramstage-y += LEGACY.c
 #ramstage-y += SbModInf.c
-
-CIMX_CFLAGS =
-export CIMX_ROOT
-export CIMX_INC
-export CIMX_CFLAGS
-CPPFLAGS_x86_32 += $(CIMX_INC)
-
-#######################################################################
-

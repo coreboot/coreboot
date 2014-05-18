@@ -27,13 +27,10 @@
 #
 #*****************************************************************************
 
-# CIMX Root directory
-CIMX_ROOT = $(src)/vendorcode/amd/cimx
-
-NB_CIMX_INC  = -I$(src)/mainboard/$(MAINBOARDDIR)
-NB_CIMX_INC  += -I$(src)/northbridge/amd/cimx/rd890
-NB_CIMX_INC  += -I$(src)/include/cpu/amd/common
-NB_CIMX_INC  += -I$(CIMX_ROOT)/rd890
+CPPFLAGS_x86_32 += -I$(src)/mainboard/$(MAINBOARDDIR)
+CPPFLAGS_x86_32 += -I$(src)/northbridge/amd/cimx/rd890
+CPPFLAGS_x86_32 += -I$(src)/include/cpu/amd/common
+CPPFLAGS_x86_32 += -I$(src)/vendorcode/amd/cimx/rd890
 
 romstage-y += amdAcpiIvrs.c
 romstage-y += amdAcpiLib.c
@@ -108,14 +105,3 @@ ramstage-y += nbPowerOnReset.c
 #ramstage-y += nbRecovery.c
 #ramstage-y += nbRecoveryInitializer.c
 ramstage-y += nbMaskedMemoryInit32.S
-
-NB_CIMX_CFLAGS =
-export CIMX_ROOT
-export NB_CIMX_INC
-export NB_CIMX_CFLAGS
-
-CPPFLAGS_x86_32 += $(NB_CIMX_INC)
-CFLAGS_x86_32 += $(NB_CIMX_CFLAGS)
-
-#######################################################################
-

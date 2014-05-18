@@ -511,10 +511,8 @@ romstage-y += $(agesa_lib_src)
 ramstage-y += $(agesa_lib_src)
 
 ## AGESA need sse feature ##
-AGESA_CFLAGS = -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
+CFLAGS_x86_32 += -msse3 -fno-zero-initialized-in-bss -fno-strict-aliasing
 
 export AGESA_ROOT
 export AGESA_INC
-export AGESA_CFLAGS
 CPPFLAGS_x86_32 += $(AGESA_INC)
-CFLAGS_x86_32 += $(AGESA_CFLAGS)

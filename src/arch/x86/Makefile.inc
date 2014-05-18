@@ -256,7 +256,7 @@ $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
 
 $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) $(CPPFLAGS) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
+	$(CC_romstage) $(CPPFLAGS) $(CPPFLAGS_x86_32) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 
 endif # CONFIG_ARCH_ROMSTAGE_X86_32
 

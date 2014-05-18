@@ -82,8 +82,6 @@ AGESA_CFLAGS =-march=k8-sse3 -mtune=k8-sse3 -fno-zero-initialized-in-bss -fno-st
 export AGESA_ROOT := $(AGESA_ROOT)
 export AGESA_INC  := $(AGESA_INC)
 export AGESA_CFLAGS  := $(AGESA_CFLAGS)
-CC_bootblock := $(CC_bootblock) $(AGESA_INC) $(AGESA_CFLAGS)
-CC_romstage := $(CC_romstage) $(AGESA_INC) $(AGESA_CFLAGS)
-CC_ramstage := $(CC_ramstage) $(AGESA_INC) $(AGESA_CFLAGS)
-CC_x86_32 := $(CC_x86_32) $(AGESA_INC) $(AGESA_CFLAGS)
+CPPFLAGS_x86_32 += $(AGESA_INC)
+CFLAGS_x86_32 += $(AGESA_CFLAGS)
 #######################################################################

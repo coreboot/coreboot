@@ -82,10 +82,7 @@ CIMX_CFLAGS =
 export CIMX_ROOT
 export CIMX_INC
 export CIMX_CFLAGS
-CC_bootblock := $(CC_bootblock) $(CIMX_INC)
-CC_romstage := $(CC_romstage) $(CIMX_INC)
-CC_ramstage := $(CC_ramstage) $(CIMX_INC)
-CC_x86_32 := $(CC_x86_32) $(CIMX_INC)
+CPPFLAGS_x86_32 += $(CIMX_INC)
 
 #######################################################################
 

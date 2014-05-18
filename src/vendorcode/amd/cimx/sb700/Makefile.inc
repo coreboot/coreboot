@@ -68,14 +68,10 @@ ramstage-y += SMM.c
 ramstage-y += USB.c
 ramstage-y += LEGACY.c
 
-SB_CIMX_CFLAGS =
 export CIMX_ROOT
 export SB_CIMX_INC
 export SB_CIMX_CFLAGS
-CC_bootblock := $(CC_bootblock) $(SB_CIMX_INC)
-CC_romstage := $(CC_romstage) $(SB_CIMX_INC)
-CC_ramstage := $(CC_ramstage) $(SB_CIMX_INC)
-CC_x86_32 := $(CC_x86_32) $(SB_CIMX_INC)
+CPPFLAGS_x86_32 += $(SB_CIMX_INC)
 
 #######################################################################
 

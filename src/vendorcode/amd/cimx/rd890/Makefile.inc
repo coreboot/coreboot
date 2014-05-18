@@ -114,10 +114,8 @@ export CIMX_ROOT
 export NB_CIMX_INC
 export NB_CIMX_CFLAGS
 
-CC_bootblock := $(CC_bootblock) $(NB_CIMX_CFLAGS) $(NB_CIMX_INC)
-CC_romstage := $(CC_romstage) $(NB_CIMX_CFLAGS) $(NB_CIMX_INC)
-CC_ramstage := $(CC_ramstage) $(NB_CIMX_CFLAGS) $(NB_CIMX_INC)
-CC_x86_32 := $(CC_x86_32) $(NB_CIMX_CFLAGS) $(NB_CIMX_INC)
+CPPFLAGS_x86_32 += $(NB_CIMX_INC)
+CFLAGS_x86_32 += $(NB_CIMX_CFLAGS)
 
 #######################################################################
 

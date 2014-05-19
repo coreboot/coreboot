@@ -54,6 +54,7 @@ config FSP_LOC
 
 config ENABLE_FSP_FAST_BOOT
 	bool "Enable Fast Boot"
+	select ENABLE_MRC_CACHE
 	default n
 	help
 	  Enabling this feature will force the MRC data to be cached in NV
@@ -62,7 +63,7 @@ config ENABLE_FSP_FAST_BOOT
 
 config ENABLE_MRC_CACHE
 	bool
-	default ENABLE_FSP_FAST_BOOT
+	default n
 	help
 	  Enabling this feature will cause MRC data to be cached in NV storage.
 	  This can either be used for fast boot, or just because the FSP wants

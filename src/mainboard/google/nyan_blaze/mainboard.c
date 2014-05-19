@@ -213,7 +213,7 @@ static void mainboard_init(device_t dev)
 				 CLK_L_HOST1X | CLK_L_PWM,
 
 				 CLK_H_EMC | CLK_H_I2C2 | CLK_H_PMC |
-				 CLK_H_MEM | CLK_H_USB3,
+				 CLK_H_MEM | CLK_H_USB2 | CLK_H_USB3,
 
 				 CLK_U_CSITE | CLK_U_SDMMC3,
 
@@ -229,7 +229,7 @@ static void mainboard_init(device_t dev)
 				 CLK_X_AFC5);
 
 	usb_setup_utmip1();
-	/* USB2 is the camera, we don't need it in firmware */
+	usb_setup_utmip2();
 	usb_setup_utmip3();
 
 	setup_pinmux();

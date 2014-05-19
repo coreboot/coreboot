@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -9,10 +9,10 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
- *       its contributors may be used to endorse or promote products derived 
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -23,9 +23,9 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
- 
+
 #if defined (__GNUC__)
 
 /* I/O intrin functions.  */
@@ -58,7 +58,7 @@ static __inline__ __attribute__((always_inline)) unsigned short __inword(unsigne
 static __inline__ __attribute__((always_inline)) unsigned long __indword(unsigned short Port)
 {
   unsigned long value;
-    
+
   __asm__ __volatile__ (
     "in  %%dx, %%eax"
     : "=a" (value)
@@ -98,7 +98,7 @@ static __inline__ __attribute__((always_inline)) void __outdword(unsigned short 
 static __inline__ __attribute__((always_inline)) void __inbytestring(unsigned short Port,unsigned char *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
-    "cld ; rep ; insb " 
+    "cld ; rep ; insb "
     : "=D" (Buffer), "=c" (Count)
     : "d"(Port), "0"(Buffer), "1" (Count)
     );
@@ -107,7 +107,7 @@ static __inline__ __attribute__((always_inline)) void __inbytestring(unsigned sh
 static __inline__ __attribute__((always_inline)) void __inwordstring(unsigned short Port,unsigned short *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
-    "cld ; rep ; insw " 
+    "cld ; rep ; insw "
     : "=D" (Buffer), "=c" (Count)
     : "d"(Port), "0"(Buffer), "1" (Count)
     );
@@ -116,7 +116,7 @@ static __inline__ __attribute__((always_inline)) void __inwordstring(unsigned sh
 static __inline__ __attribute__((always_inline)) void __indwordstring(unsigned short Port,unsigned long *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
-    "cld ; rep ; insl " 
+    "cld ; rep ; insl "
     : "=D" (Buffer), "=c" (Count)
     : "d"(Port), "0"(Buffer), "1" (Count)
     );
@@ -125,7 +125,7 @@ static __inline__ __attribute__((always_inline)) void __indwordstring(unsigned s
 static __inline__ __attribute__((always_inline)) void __outbytestring(unsigned short Port,unsigned char *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
-    "cld ; rep ; outsb " 
+    "cld ; rep ; outsb "
     : "=S" (Buffer), "=c" (Count)
     : "d"(Port), "0"(Buffer), "1" (Count)
     );
@@ -134,7 +134,7 @@ static __inline__ __attribute__((always_inline)) void __outbytestring(unsigned s
 static __inline__ __attribute__((always_inline)) void __outwordstring(unsigned short Port,unsigned short *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
-    "cld ; rep ; outsw " 
+    "cld ; rep ; outsw "
     : "=S" (Buffer), "=c" (Count)
     : "d"(Port), "0"(Buffer), "1" (Count)
   );
@@ -143,7 +143,7 @@ static __inline__ __attribute__((always_inline)) void __outwordstring(unsigned s
 static __inline__ __attribute__((always_inline)) void __outdwordstring(unsigned short Port,unsigned long *Buffer,unsigned long Count)
 {
   __asm__ __volatile__ (
-   "cld ; rep ; outsl " 
+   "cld ; rep ; outsl "
    : "=S" (Buffer), "=c" (Count)
    : "d"(Port), "0"(Buffer), "1" (Count)
    );
@@ -153,52 +153,52 @@ static __inline__ __attribute__((always_inline)) unsigned long __readdr0(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%dr0, %[value]" 
+    "mov %%dr0, %[value]"
     : [value] "=a" (value)
     );
   return value;
 }
- 
+
 static __inline__ __attribute__((always_inline)) unsigned long __readdr1(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%dr1, %[value]" 
+    "mov %%dr1, %[value]"
     : [value] "=a" (value)
     );
   return value;
 }
- 
+
 static __inline__ __attribute__((always_inline)) unsigned long __readdr2(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%dr2, %[value]" 
+    "mov %%dr2, %[value]"
     : [value] "=a" (value)
     );
   return value;
 }
- 
+
 static __inline__ __attribute__((always_inline)) unsigned long __readdr3(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%dr3, %[value]" 
+    "mov %%dr3, %[value]"
     : [value] "=a" (value)
     );
   return value;
 }
- 
+
 static __inline__ __attribute__((always_inline)) unsigned long __readdr7(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%dr7, %[value]" 
+    "mov %%dr7, %[value]"
     : [value] "=a" (value)
     );
   return value;
 }
- 
+
 static __inline__ __attribute__((always_inline)) unsigned long __readdr(unsigned long reg)
 {
   switch (reg){
@@ -224,54 +224,54 @@ static __inline__ __attribute__((always_inline)) unsigned long __readdr(unsigned
 
     default:
       return -1;
-  }      
+  }
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writedr0(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%dr0"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writedr1(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%dr1"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writedr2(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%dr2"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writedr3(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%dr3"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writedr7(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%dr7"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writedr(unsigned long reg, unsigned long Data)
 {
   switch (reg){
@@ -297,14 +297,14 @@ static __inline__ __attribute__((always_inline)) void __writedr(unsigned long re
 
     default:
       ;
-  } 
+  }
 }
- 
+
 static __inline__ __attribute__((always_inline)) unsigned long __readcr0(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%cr0, %[value]" 
+    "mov %%cr0, %[value]"
     : [value] "=a" (value));
   return value;
 }
@@ -313,7 +313,7 @@ static __inline__ __attribute__((always_inline)) unsigned long __readcr2(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%cr2, %[value]" 
+    "mov %%cr2, %[value]"
     : [value] "=a" (value));
   return value;
 }
@@ -322,7 +322,7 @@ static __inline__ __attribute__((always_inline)) unsigned long __readcr3(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%cr3, %[value]" 
+    "mov %%cr3, %[value]"
     : [value] "=a" (value));
   return value;
 }
@@ -331,7 +331,7 @@ static __inline__ __attribute__((always_inline)) unsigned long __readcr4(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%cr4, %[value]" 
+    "mov %%cr4, %[value]"
     : [value] "=a" (value));
   return value;
 }
@@ -340,7 +340,7 @@ static __inline__ __attribute__((always_inline)) unsigned long __readcr8(void)
 {
   unsigned long value;
   __asm__ __volatile__ (
-    "mov %%cr8, %[value]" 
+    "mov %%cr8, %[value]"
     : [value] "=a" (value));
   return value;
 }
@@ -370,54 +370,54 @@ static __inline__ __attribute__((always_inline)) unsigned long __readcr(unsigned
 
     default:
       return -1;
-  }      
+  }
 }
 
 static __inline__ __attribute__((always_inline)) void __writecr0(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%cr0"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writecr2(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%cr2"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writecr3(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%cr3"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writecr4(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%cr4"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writecr8(unsigned long Data)
 {
   __asm__ __volatile__ (
     "mov %%eax, %%cr8"
-    : 
+    :
     : "a" (Data)
     );
 }
- 
+
 static __inline__ __attribute__((always_inline)) void __writecr(unsigned long reg, unsigned long Data)
 {
   switch (reg){
@@ -443,7 +443,7 @@ static __inline__ __attribute__((always_inline)) void __writecr(unsigned long re
 
     default:
       ;
-  } 
+  }
 }
 
 static __inline__ __attribute__((always_inline)) UINT64 __readmsr(UINT32 msr)
@@ -465,12 +465,12 @@ static __inline__ __attribute__((always_inline)) void __writemsr (UINT32 msr, UI
      : "c" (msr), "A" (Value)
      );
 }
- 
+
 static __inline__ __attribute__((always_inline)) UINT64 __rdtsc(void)
 {
   UINT64 retval;
   __asm__ __volatile__ (
-     "rdtsc" 
+     "rdtsc"
      : "=A" (retval));
   return retval;
 }
@@ -478,8 +478,8 @@ static __inline__ __attribute__((always_inline)) UINT64 __rdtsc(void)
 static __inline__ __attribute__((always_inline)) void __cpuid(int CPUInfo[], const int InfoType)
 {
    __asm__ __volatile__(
-     "cpuid" 
-     :"=a" (CPUInfo[0]), "=b" (CPUInfo[1]), "=c" (CPUInfo[2]), "=d" (CPUInfo[3]) 
+     "cpuid"
+     :"=a" (CPUInfo[0]), "=b" (CPUInfo[1]), "=c" (CPUInfo[2]), "=d" (CPUInfo[3])
      : "a" (InfoType)
      );
 }
@@ -608,15 +608,15 @@ static __inline__ __attribute__((always_inline)) void __movsb(unsigned char *des
   );
 }
 
-static __inline__ __attribute__((always_inline)) 
+static __inline__ __attribute__((always_inline))
 void debug_point ( unsigned short Port,  unsigned long Data )
 {
-   __outdword (Port, Data);     
+   __outdword (Port, Data);
    __asm__ __volatile__ (".word 0xfeeb");
 
 }
 
-static __inline__ __attribute__((always_inline)) 
+static __inline__ __attribute__((always_inline))
 void delay_point ( unsigned short Port, unsigned long Data, unsigned long delayTime )
 {
   UINTN  Index;

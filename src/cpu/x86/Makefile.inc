@@ -16,7 +16,7 @@ endif
 rmodules-$(CONFIG_PARALLEL_MP) += sipi_vector.S
 
 $(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules.o
-	$(CC_ramstage) $(LDFLAGS) -nostdlib -r -o $@ $^
+	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -r -o $@ $^
 
 $(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0))
 

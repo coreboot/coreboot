@@ -28,7 +28,7 @@ subdirs-y += lib
 subdirs-y += smp
 
 ifeq ($(CONFIG_COMPILER_GCC),y)
-DISASSEMBLY=-Wa,-acdlns $(CFLAGS_x86_32)
+DISASSEMBLY=-Wa,-acdlns
 else
 DISASSEMBLY=
 endif
@@ -115,7 +115,7 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC        $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
+	$(CC_bootblock) $(CFLAGS_x86_32) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
@@ -123,16 +123,16 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 
 $(objgenerated)/bootblock.inc: $(src)/arch/x86/init/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(objutil)/romcc/romcc $(OPTION_TABLE_H)
 	@printf "    ROMCC      $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(CPPFLAGS) $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
+	$(CC_bootblock) $(CPPFLAGS_bootblock) -MM -MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
-	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS) $(CPPFLAGS_bootblock) $< -o $@
+	$(ROMCC) -c -S $(bootblock_romccflags) -I. $(CPPFLAGS_bootblock) $< -o $@
 
 $(objcbfs)/bootblock.debug: $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_bootblock) -m elf_i386 -static -o $@ -L$(obj) $< -T $(objgenerated)/bootblock.ld
 else
-	$(CC_bootblock) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
+	$(CC_bootblock) $(CFLAGS_bootblock) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/bootblock.ld $<
 endif
 
 
@@ -188,12 +188,12 @@ $(objcbfs)/romstage_%.elf: $(objcbfs)/romstage_%.debug
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(objutil)/romcc/romcc $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	printf "    ROMCC      romstage.inc\n"
-	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(CPPFLAGS) $(CPPFLAGS_romstage) $< -o $@
+	$(ROMCC) -c -S $(ROMCCFLAGS) -D__PRE_RAM__ -I. $(CPPFLAGS_romstage) $< -o $@
 else
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc: $(src)/mainboard/$(MAINBOARDDIR)/romstage.c $(OPTION_TABLE_H) $(obj)/build.h $(obj)/config.h
 	@printf "    CC         romstage.inc\n"
-	$(CC_romstage) -MMD $(CFLAGS_romstage) $(CPPFLAGS_romstage) -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
+	$(CC_romstage) $(CPPFLAGS_romstage) $(CFLAGS_romstage) -MMD -D__PRE_RAM__ -I$(src) -I. -I$(obj) -c -S $< -o $@
 
 $(obj)/mainboard/$(MAINBOARDDIR)/romstage.inc: $(obj)/mainboard/$(MAINBOARDDIR)/romstage.pre.inc
 	@printf "    POST       romstage.inc\n"
@@ -211,7 +211,7 @@ $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) --end-group -T $(objgenerated)/romstage_null.ld
 else
-	$(CC_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
+	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
 endif
 	$(NM_romstage) $@ | grep -q " [DdBb] "; if [ $$? -eq 0 ]; then \
 		echo "Forbidden global variables in romstage:"; \
@@ -223,7 +223,7 @@ $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) --end-group -T $(objgenerated)/romstage_xip.ld
 else
-	$(CC_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
+	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
 endif
 
 $(objgenerated)/romstage_null.ld: $$(ldscripts) $(obj)/ldoptions
@@ -252,11 +252,11 @@ $(objgenerated)/crt0.romstage.S: $$(crt0s)
 
 $(objgenerated)/crt0.romstage.o: $(objgenerated)/crt0.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
+	$(CC_romstage) $(CFLAGS_x86_32) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/crt0.s: $(objgenerated)/crt0.romstage.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_romstage) $(CPPFLAGS) $(CPPFLAGS_x86_32) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
+	$(CC_romstage) $(CPPFLAGS_romstage) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/x86/include -I$(obj) -include $(obj)/config.h -include $(obj)/build.h -I. -I$(src) $< -o $@
 
 endif # CONFIG_ARCH_ROMSTAGE_X86_32
 
@@ -324,7 +324,7 @@ $(objcbfs)/ramstage.debug: $(objgenerated)/ramstage.o $(src)/arch/x86/ramstage.l
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 	$(LD_ramstage) -m elf_i386 -o $@ -L$(obj) $< -T $(src)/arch/x86/ramstage.ld
 else
-	$(CC_ramstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/ramstage.ld $<
+	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(src)/arch/x86/ramstage.ld $<
 endif
 
 endif

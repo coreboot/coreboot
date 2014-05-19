@@ -66,7 +66,7 @@ VBOOT_CFLAGS += $(patsubst -I%,-I../%,$(filter-out -include $(src)/include/kconf
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 $(VBOOT_STUB_DOTO): $(VBOOT_STUB_DEPS)
-	$(CC_romstage) $(LDFLAGS) -nostdlib -r -o $@ $^
+	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -r -o $@ $^
 
 # Link the vbootstub module with a 64KiB-byte heap.
 $(eval $(call rmodule_link,$(VBOOT_STUB_ELF), $(VBOOT_STUB_DOTO), 0x10000))

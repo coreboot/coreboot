@@ -8,7 +8,7 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += finalize.c
 cpu_microcode-$(CONFIG_CPU_MICROCODE_CBFS_GENERATE)  += microcode_blob.c
 
 ifneq ($(CONFIG_MICROCODE_INCLUDE_PATH),)
-ifneq ($(wildcard $(shell realpath -L "$(top)/$(CONFIG_MICROCODE_INCLUDE_PATH)")),)
+ifneq ($(wildcard $(shell readlink -f "$(top)/$(CONFIG_MICROCODE_INCLUDE_PATH)")),)
 CPPFLAGS_common += -I$(CONFIG_MICROCODE_INCLUDE_PATH)
 endif
 endif

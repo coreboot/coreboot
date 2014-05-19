@@ -1509,7 +1509,7 @@ static void vx900_dram_range(ramctr_timing * ctrl, rank_layout * ranks)
 
 		/* vvvvvvvvvv FIXME: Fix odd rank init vvvvvvvvvv */
 		if ((i & 1)) {
-			printk(BIOS_EMERG, "I cannot initialize rank %li\n", i);
+			printk(BIOS_EMERG, "I cannot initialize rank %zu\n", i);
 			print_emerg("I have to disable it\n");
 			continue;
 		}

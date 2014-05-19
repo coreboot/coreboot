@@ -144,7 +144,7 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 		start8 = pci_read_config8(mcu, 0x48 + i);
 		if (reg8 <= start8)
 			continue;
-		printk(BIOS_DEBUG, "Address %x falls on rank %ld\n", tolm, i);
+		printk(BIOS_DEBUG, "Address %x falls on rank %zu\n", tolm, i);
 		break;
 	}
 
@@ -153,12 +153,12 @@ static u64 vx900_remap_above_4g(device_t mcu, u32 tolm)
 		end = pci_read_config8(mcu, 0x40 + i);
 
 		if (end == 0) {
-			printk(BIOS_DEBUG, "Huh? rank %ld empty?\n", i);
+			printk(BIOS_DEBUG, "Huh? rank %zu empty?\n", i);
 			continue;
 		}
 
 		if (end < (tolm >> 26)) {
-			printk(BIOS_DEBUG, "Huh? rank %ld don't need remap?\n",
+			printk(BIOS_DEBUG, "Huh? rank %zu don't need remap?\n",
 			       i);
 			continue;
 		}

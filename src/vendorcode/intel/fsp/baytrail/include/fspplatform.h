@@ -75,11 +75,4 @@ GetLowMemorySize (
   uint32_t         *LowMemoryLength
   );
 
-void
-GetFspReservedMemoryFromGuid (  
-  uint32_t         *FspMemoryBase,
-  uint32_t         *FspMemoryLength,
-  EFI_GUID          FspReservedMemoryGuid
-  );
-
 #endif

@@ -89,7 +89,7 @@ void chipset_fsp_early_init(FSP_INIT_PARAMS *FspInitParams,
 
 #if IS_ENABLED(CONFIG_SOUTHBRIDGE_INTEL_FSP_I89XX)
 	/* Initialize the UPD Data */
-	GetUpdDefaultFromFsp (fsp_ptr, fsp_upd_data);/home/martin/extra/git/coreboot
+	GetUpdDefaultFromFsp (fsp_ptr, fsp_upd_data);
 	ConfigureDefaultUpdData(fsp_upd_data);
 #else
 	pFspRtBuffer->Platform.MemoryConfig = &MemoryConfig;

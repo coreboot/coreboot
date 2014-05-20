@@ -32,9 +32,9 @@
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-#include "northbridge/intel/i945/i945.h"
-#include "northbridge/intel/i945/raminit.h"
-#include "southbridge/intel/i82801gx/i82801gx.h"
+#include <northbridge/intel/i945/i945.h>
+#include <northbridge/intel/i945/raminit.h>
+#include <southbridge/intel/i82801gx/i82801gx.h>
 
 #define SERIAL_DEV PNP_DEV(0x4e, W83627EHG_SP1)
 #define DUMMY_DEV PNP_DEV(0x4e, 0)

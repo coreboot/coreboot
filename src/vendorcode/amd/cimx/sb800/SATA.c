@@ -568,7 +568,7 @@ sataDriveDetection (
   UINT8   dbPortNum;
   UINT8   dbVar0;
   UINT16   dwIoBase;
-  UINT16   dwVar0;
+  UINT32   dwVar0;
   if ( (pConfig->SataClass == NATIVE_IDE_MODE) || (pConfig->SataClass == LEGACY_IDE_MODE) || (pConfig->SataClass == IDE_TO_AHCI_MODE) ) {
     for ( dbPortNum = 0; dbPortNum < 4; dbPortNum++ ) {
       ReadMEM (*pBar5 + SB_SATA_BAR5_REG128 + dbPortNum * 0x80, AccWidthUint32, &ddVar0);

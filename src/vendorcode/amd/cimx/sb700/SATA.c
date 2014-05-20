@@ -238,7 +238,7 @@ void sataInitAfterPciEnum(AMDSBCFG* pConfig){
 void sataDriveDetection(AMDSBCFG* pConfig, UINT32 ddBar5){
 	UINT32	ddVar0;
 	UINT8	dbPortNum, dbVar0;
-	UINT16	dwIoBase, dwVar0;
+	UINT32	dwIoBase, dwVar0;
 
 	TRACE((DMSG_SB_TRACE, "CIMx - Entering sata drive detection procedure\n\n"));
 	TRACE((DMSG_SB_TRACE, "SATA BAR5 is %X \n", ddBar5));

@@ -94,21 +94,6 @@ unsigned int get_sbdn(unsigned bus)
 	return (dev >> 15) & 0x1f;
 }
 
-static void sio_init(void)
-{
-	u8 reg;
-
-	pnp_enter_ext_func_mode(SERIAL_DEV);
-	reg = pnp_read_config(SERIAL_DEV, 0x24);
-	/* 4 Mbit flash */
-	reg = (reg & ~0x30) | 0x20;
-	/* We have 24MHz input. */
-	reg &= ~0x40;
-	/* enable MEMW#, so flash can be written */
-	reg |= 0x08;
-	pnp_write_config(SERIAL_DEV, 0x24, reg);
-}
-
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	static const uint16_t spd_addr[] = {
@@ -123,7 +108,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	int needs_reset = 0;
 	struct sys_info *sysinfo = &sysinfo_car;
 
-	sio_init();
 	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	enable_rom_decode();
@@ -136,13 +120,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		/* Allow the HT devices to be found. */
 		enumerate_ht_chain();
 	}
-
-	// FIXME why is this executed again? --->
-	sio_init();
-	w83697hf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-	enable_rom_decode();
-	// <--- FIXME why is this executed again?
 
 	print_info("now booting... real_main\n");
 

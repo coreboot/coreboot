@@ -73,6 +73,9 @@ void video_get_rows_cols(unsigned int *rows, unsigned int *cols)
 
 static void video_console_fixup_cursor(void)
 {
+	if (!console)
+		return;
+
 	if (cursorx < 0)
 		cursorx = 0;
 
@@ -89,7 +92,7 @@ static void video_console_fixup_cursor(void)
 		cursory--;
 	}
 
-	if (console && console->set_cursor)
+	if (console->set_cursor)
 		console->set_cursor(cursorx, cursory);
 }
 
@@ -119,6 +122,9 @@ void video_console_putc(u8 row, u8 col, unsigned int ch)
 
 void video_console_putchar(unsigned int ch)
 {
+	if (!console)
+		return;
+
 	/* replace black-on-black with light-gray-on-black.
 	 * do it here, instead of in libc/console.c
 	 */
@@ -145,16 +151,11 @@ void video_console_putchar(unsigned int ch)
 		break;
 
 	case '\t':
-		while(cursorx % 8 && cursorx < console->columns) {
-			if (console)
-				console->putc(cursory, cursorx, (ch & 0xFF00) | ' ');
-
-			cursorx++;
-		}
+		while(cursorx % 8 && cursorx < console->columns)
+			console->putc(cursory, cursorx++, (ch & 0xFF00) | ' ');
 		break;
 	default:
-		if (console)
-			console->putc(cursory, cursorx++, ch);
+		console->putc(cursory, cursorx++, ch);
 		break;
 	}
 
@@ -167,7 +168,7 @@ void video_console_get_cursor(unsigned int *x, unsigned int *y, unsigned int *en
 	*y=0;
 	*en=0;
 
-	if (console->get_cursor)
+	if (console && console->get_cursor)
 		console->get_cursor(x, y, en);
 
 	*x = cursorx;
@@ -214,9 +215,10 @@ int video_init(void)
 
 int video_console_init(void)
 {
-	video_init();
-	if (console)
-		console_add_output_driver(&cons);
+	int ret = video_init();
+	if (ret)
+		return ret;
+	console_add_output_driver(&cons);
 	return 0;
 }
 

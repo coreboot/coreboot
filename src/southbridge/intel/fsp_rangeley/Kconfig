@@ -1,0 +1,72 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2011 Google Inc.
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+##
+
+config SOUTHBRIDGE_INTEL_FSP_RANGELEY
+	bool
+
+if SOUTHBRIDGE_INTEL_FSP_RANGELEY
+
+config SOUTH_BRIDGE_OPTIONS # dummy
+	def_bool y
+	select IOAPIC
+	select HAVE_HARD_RESET
+	select HAVE_USBDEBUG
+	select USE_WATCHDOG_ON_BOOT
+	select PCIEXP_ASPM
+	select PCIEXP_COMMON_CLOCK
+	select SPI_FLASH
+
+config EHCI_BAR
+	hex
+	default 0xfef00000
+
+config EHCI_DEBUG_OFFSET
+	hex
+	default 0xa0
+
+config SERIRQ_CONTINUOUS_MODE
+	bool
+	default n
+	help
+	  If you set this option to y, the serial IRQ machine will be
+	  operated in continuous mode.
+
+config HPET_MIN_TICKS
+	hex
+	default 0x80
+
+if HAVE_FSP_BIN
+
+config INCLUDE_ME
+	bool "Add Intel descriptor.bin file"
+	default n
+	help
+	  Include the descriptor.bin for rangeley.
+
+config ME_PATH
+	string "Path to descriptor.bin file"
+	depends on INCLUDE_ME
+	default "../intel/mainboard/intel/rangeley"
+	help
+	  The path of the descriptor.bin file.
+
+endif # HAVE_FSP_BIN
+
+endif

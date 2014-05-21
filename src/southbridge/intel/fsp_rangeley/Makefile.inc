@@ -1,0 +1,51 @@
+##
+## This file is part of the coreboot project.
+##
+## Copyright (C) 2010 Google Inc.
+## Copyright (C) 2013-2014 Sage Electronic Engineering, LLC.
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; version 2 of the License.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+##
+
+# Run an intermediate step when producing coreboot.rom
+# that adds additional components to the final firmware
+# image outside of CBFS
+
+ramstage-y += soc.c
+ramstage-y += lpc.c
+ramstage-y += sata.c
+ramstage-y += reset.c
+ramstage-y += watchdog.c
+ramstage-y += spi.c
+ramstage-y += smbus.c
+ramstage-$(CONFIG_GENERATE_ACPI_TABLES) += acpi.c
+
+romstage-y += early_usb.c early_smbus.c gpio.c reset.c early_spi.c early_init.c
+romstage-y += romstage.c
+
+romstage-$(CONFIG_USBDEBUG) += usb_debug.c
+ramstage-$(CONFIG_USBDEBUG) += usb_debug.c
+
+$(obj)/southbridge/intel/fsp_rangeley/early_init.romstage.o : $(obj)/build.h
+
+ifeq ($(CONFIG_INCLUDE_ME),y)
+INTERMEDIATE+=rangeley_add_descriptor
+
+rangeley_add_descriptor: $(obj)/coreboot.pre $(IFDTOOL)
+	printf "    DD         Adding Intel Firmware Descriptor\n"
+	dd if=$(call strip_quotes,$(CONFIG_ME_PATH))/descriptor.bin \
+		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
+endif
+
+PHONY += rangeley_add_descriptor

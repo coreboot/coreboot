@@ -19,3 +19,4 @@ subdirs-$(CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE) += sandybridge
 subdirs-$(CONFIG_NORTHBRIDGE_INTEL_HASWELL) += haswell
 subdirs-$(CONFIG_NORTHBRIDGE_INTEL_FSP_SANDYBRIDGE) += fsp_sandybridge
 subdirs-$(CONFIG_NORTHBRIDGE_INTEL_FSP_IVYBRIDGE) += fsp_sandybridge
+subdirs-$(CONFIG_NORTHBRIDGE_INTEL_FSP_RANGELEY) += fsp_rangeley

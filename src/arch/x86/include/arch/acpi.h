@@ -394,7 +394,7 @@ typedef struct acpi_fadt {
 #define ACPI_FADT_VGA_NOT_PRESENT	(1 << 2)
 #define ACPI_FADT_MSI_NOT_SUPPORTED	(1 << 3)
 #define ACPI_FADT_NO_PCIE_ASPM_CONTROL	(1 << 4)
-#define ACPI_FADT_LEGACY_FREE	0; /* No legacy devices (including 8042) */
+#define ACPI_FADT_LEGACY_FREE	0x00	/* No legacy devices (including 8042) */
 
 /* FADT Preferred Power Management Profile */
 enum acpi_preferred_pm_profiles {

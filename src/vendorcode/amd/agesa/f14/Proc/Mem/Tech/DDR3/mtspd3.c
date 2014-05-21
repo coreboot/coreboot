@@ -290,7 +290,7 @@ MemTDIMMPresence3 (
           // as a QR RDIMM with a rank Mux of x1 and therefore all four CS will be used. So an 8R LRDIMM will
           // be marked as a QR even if Rank multiplication allows it to use only 2 logical ranks.
           //
-          if (ChannelPtr->LrDimmPresent |= DimmMask) {
+          if ((ChannelPtr->LrDimmPresent & DimmMask) != 0) {
             //
             // LRDIMM Physical Ranks
             //
@@ -320,7 +320,7 @@ MemTDIMMPresence3 (
           //
           //  Double Addr bus load value for dual rank DIMMs (Unless LRDIMM)
           //
-          if ( ((ChannelPtr->LrDimmPresent |= DimmMask) == 0) && (Value8 == 2) ) {
+          if (((ChannelPtr->LrDimmPresent & DimmMask) == 0) && (Value8 == 2) ) {
             Devwidth = Devwidth << 1;
           }
           //

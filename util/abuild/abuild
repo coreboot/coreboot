@@ -277,7 +277,7 @@ function build_target
 	CONFIG=$3
 	TARCH=$( architecture $VENDOR $MAINBOARD )
 
-	if [ "`cat $TOP/$TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
+	if [ "`cat $TARGET/${VENDOR}_${MAINBOARD}/compile.status 2>/dev/null`" = "ok" -a \
 		"$buildall" = "false" ]; then
 		printf "Skipping $VENDOR/$MAINBOARD; (already successful)\n"
 		return
@@ -286,8 +286,9 @@ function build_target
  	HOSTCC='gcc'
 
 	printf "Building $VENDOR/$MAINBOARD; "
-	mkdir -p $TOP/$TARGET/${VENDOR}_${MAINBOARD} $TOP/$TARGET/abuild
-	XMLFILE=$TOP/$TARGET/abuild/${VENDOR}_${MAINBOARD}.xml
+	mkdir -p $TARGET/${VENDOR}_${MAINBOARD} $TARGET/abuild
+	ABSPATH=`cd $TARGET/abuild; pwd`
+	XMLFILE=$ABSPATH/${VENDOR}_${MAINBOARD}.xml
 
 
 	stime=`perl -e 'print time();' 2>/dev/null || date +%s`
@@ -398,6 +399,8 @@ function myhelp
 	printf "    [-P|--prefix <name>]          file name prefix in CBFS\n"
 	printf "    [-B|--blobs]                  Allow using binary files\n"
 	printf "    [-z|--clean]                  Remove build results when finished\n"
+	printf "    [-o|--outdir <path>]          store build results in path\n"
+	printf "				  (defaults to $TARGET)\n"
 	printf "    [-L|--clang]                  Use clang\n"
 	printf "    [--scan-build]                use clang's static analyzer\n"
 	printf "    [cbroot]			  absolute path to coreboot sources\n"
@@ -440,7 +443,7 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean -o Vvhat:p:Tc:sJCl:rP:uyBLz -- "$@"` || exit 1
+	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean,outdir: -o Vvhat:p:Tc:sJCl:rP:uyBLzo: -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
@@ -509,11 +512,19 @@ while true ; do
 			customizing="${customizing}, clean"
 			clean_work=true
 			;;
+		-o|--outdir)	shift
+			TARGET=$1; shift
+			;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;
 		*)		break;;
 	esac
 done
+
+if [ -z "$TARGET" -o "$TARGET" = "/" ]; then
+	echo "Please specify a valid, non-root build directory."
+	exit 1
+fi
 
 customizing=`echo $customizing |cut -c3-`
 if [ "$customizing" = "" ]; then

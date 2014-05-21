@@ -354,6 +354,9 @@ config TIMER_MCT
 config TIMER_TEGRA_1US
 	bool "Tegra 1us"
 
+config TIMER_IPQ806X
+	bool "Timer for ipq806x platforms"
+
 endchoice
 
 config TIMER_MCT_HZ
@@ -370,6 +373,21 @@ config TIMER_TEGRA_1US_ADDRESS
 	hex "Tegra u1s timer base address"
 	depends on TIMER_TEGRA_1US
 	default 0x60005010
+
+config IPQ806X_TIMER_FREQ
+	int "Hardware timer frequency"
+	default 32000
+	depends on TIMER_IPQ806X
+	help
+	  IPQ hardware presently provides a single timer running at 32KHz, a
+	  finer granulariry timer is available but is not yet enabled.
+
+config IPQ806X_TIMER_REG
+	hex "Timer register address"
+	default 0x0200A008
+	depends on TIMER_IPQ806X
+	help
+	  Address of the register to read a free running timer value.
 
 config USB
 	bool "USB Support"

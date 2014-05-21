@@ -254,18 +254,20 @@ function compile_target
 		junit "</system-out>"
 		printf "ok\n" > compile.status
 		printf "ok. (took ${duration}s)\n"
-		cd $CURR
-		return 0
 	else
+		ret=1
 		junit "<failure type='BuildFailed'>"
 		junitfile make.log
 		junit "</failure>"
 		printf "FAILED after ${duration}s!\nLog excerpt:\n"
 		tail -n $CONTEXT make.log 2> /dev/null || tail -$CONTEXT make.log
-		cd $CURR
 		failed=1
-		return 1
 	fi
+	cd $CURR
+	if [ $clean_work = "true" ]; then
+		rm -rf $TARGET/${VENDOR}_${MAINBOARD}
+	fi
+	return $ret
 }
 
 function build_target
@@ -395,6 +397,7 @@ function myhelp
 	printf "    [-u|--update]                 update existing image\n"
 	printf "    [-P|--prefix <name>]          file name prefix in CBFS\n"
 	printf "    [-B|--blobs]                  Allow using binary files\n"
+	printf "    [-z|--clean]                  Remove build results when finished\n"
 	printf "    [-L|--clang]                  Use clang\n"
 	printf "    [--scan-build]                use clang's static analyzer\n"
 	printf "    [cbroot]			  absolute path to coreboot sources\n"
@@ -437,7 +440,7 @@ cmdline="$* -c 1"
 getoptbrand="`getopt -V`"
 if [ "${getoptbrand:0:6}" == "getopt" ]; then
 	# Detected GNU getopt that supports long options.
-	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang -o Vvhat:p:Tc:sJCl:rP:uyBL -- "$@"` || exit 1
+	args=`getopt -l version,verbose,help,all,target:,payloads:,test,cpus:,silent,junit,config,loglevel:,remove,prefix:,update,scan-build,ccache,blobs,clang,clean -o Vvhat:p:Tc:sJCl:rP:uyBLz -- "$@"` || exit 1
 	eval set -- $args
 else
 	# Detected non-GNU getopt
@@ -450,6 +453,7 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+clean_work=false
 customizing=""
 configoptions=""
 while true ; do
@@ -500,6 +504,10 @@ while true ; do
 		-L|--clang)	shift
 			customizing="${customizing}, clang"
 			configoptions="${configoptions}CONFIG_COMPILER_LLVM_CLANG=y\n"
+			;;
+		-z|--clean)	shift
+			customizing="${customizing}, clean"
+			clean_work=true
 			;;
 		--)		shift; break;;
 		-*)		printf "Invalid option\n\n"; myhelp; exit 1;;

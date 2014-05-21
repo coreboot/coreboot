@@ -7,6 +7,7 @@
 #  (C) 2004 by Stefan Reinauer <stepan@openbios.org>
 #  (C) 2006-2010 by coresystems GmbH <info@coresystems.de>
 #  (C) 2013 Sage Electronic Engineering, LLC
+#  (C) 2014 Patrick Georgi <patrick@georgi-clan.de>
 #
 #  This file is subject to the terms and conditions of the GNU General
 #  Public License. See the file COPYING in the main directory of this
@@ -15,8 +16,8 @@
 
 #set -x # Turn echo on....
 
-ABUILD_DATE="May 31, 2013"
-ABUILD_VERSION="0.9.2"
+ABUILD_DATE="May 21, 2014"
+ABUILD_VERSION="0.9.3"
 
 TOP=$PWD
 

@@ -348,11 +348,11 @@ LibAmdBitScanReverse (
   IN       UINT32 value
 )
 {
-  UINTN Index;
+  UINT8 Index;
   for (Index = 31; Index >= 0; Index--){
-      if (value & (1 << Index)) break;
+      if (value & (1 << Index)) return Index;
   }
-  return (UINT8) Index;
+  return 0xFF;
 }
 
 UINT64

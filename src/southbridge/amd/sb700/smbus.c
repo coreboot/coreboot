@@ -66,12 +66,6 @@ void alink_ax_indx(u32 space, u32 axindc, u32 mask, u32 val)
 	outl(tmp, AB_DATA);
 }
 
-
-static inline void smbus_delay(void)
-{
-	outb(inb(0x80), 0x80);
-}
-
 static int smbus_wait_until_ready(u32 smbus_io_base)
 {
 	u32 loops;

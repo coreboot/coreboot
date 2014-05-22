@@ -209,7 +209,7 @@ romstage-libs ?=
 $(objcbfs)/romstage_null.debug: $$(romstage-objs) $(objgenerated)/romstage_null.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) --end-group -T $(objgenerated)/romstage_null.ld
+	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) --end-group -T $(objgenerated)/romstage_null.ld
 else
 	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_null.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
 endif
@@ -221,7 +221,7 @@ endif
 $(objcbfs)/romstage_xip.debug: $$(romstage-objs) $(objgenerated)/romstage_xip.ld $$(romstage-libs)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) --end-group -T $(objgenerated)/romstage_xip.ld
+	$(LD_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) --start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) --end-group -T $(objgenerated)/romstage_xip.ld
 else
 	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -nostartfiles -static -o $@ -L$(obj) -T $(objgenerated)/romstage_xip.ld -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(romstage-objs) $(romstage-libs) $(LIBGCC_FILE_NAME_romstage) -Wl,--end-group
 endif
@@ -332,7 +332,7 @@ endif
 $(objgenerated)/ramstage.o: $$(ramstage-objs) $(LIBGCC_FILE_NAME_ramstage) $$(ramstage-libs)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-	$(LD_ramstage) -m elf_i386 -r -o $@ --wrap __divdi3 --wrap __udivdi3 --wrap __moddi3 --wrap __umoddi3 --start-group $(ramstage-objs) $(ramstage-libs) $(LIBGCC_FILE_NAME_ramstage) --end-group
+	$(LD_ramstage) -m elf_i386 -r -o $@ --start-group $(ramstage-objs) $(ramstage-libs) $(LIBGCC_FILE_NAME_ramstage) --end-group
 else
 	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(ramstage-objs) $(ramstage-libs) $(LIBGCC_FILE_NAME_ramstage) -Wl,--end-group
 endif

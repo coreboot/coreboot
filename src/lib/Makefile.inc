@@ -36,7 +36,10 @@ romstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c
 endif
 
 romstage-y += compute_ip_checksum.c
+ifneq ($(CONFIG_COMPILER_LLVM_CLANG),y)
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += gcc.c
+ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
+endif
 
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c
@@ -54,7 +57,6 @@ ramstage-y += cbfs.c
 ramstage-y += lzma.c
 #ramstage-y += lzmadecode.c
 ramstage-y += stack.c
-ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
 ramstage-y += clog2.c
 romstage-y += clog2.c
 ramstage-$(CONFIG_CONSOLE_CBMEM) += cbmem_console.c

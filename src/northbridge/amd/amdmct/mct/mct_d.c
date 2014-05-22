@@ -1532,27 +1532,27 @@ static u8 AutoConfig_D(struct MCTStatStruc *pMCTstat,
 	DramConfigLo |= 1 << 4;					/* 75 Ohms ODT */
 	if (mctGet_NVbits(NV_MAX_DIMMS) == 8) {
 		if (pDCTstat->Speed == 3) {
-			if ((pDCTstat->MAdimms[dct] == 4))
+			if (pDCTstat->MAdimms[dct] == 4)
 				DramConfigLo |= 1 << 5;		/* 50 Ohms ODT */
 		} else if (pDCTstat->Speed == 4){
-			if ((pDCTstat->MAdimms[dct] != 1))
+			if (pDCTstat->MAdimms[dct] != 1)
 				DramConfigLo |= 1 << 5;		/* 50 Ohms ODT */
 		}
 	} else {
 		// FIXME: Skip for Ax versions
-		if ((pDCTstat->MAdimms[dct] == 4)) {
+		if (pDCTstat->MAdimms[dct] == 4) {
 			if ( pDCTstat->DimmQRPresent != 0) {
 				if ((pDCTstat->Speed == 3) || (pDCTstat->Speed == 4)) {
 					DramConfigLo |= 1 << 5;	/* 50 Ohms ODT */
 				}
-			} else if ((pDCTstat->MAdimms[dct] == 4)) {
+			} else if (pDCTstat->MAdimms[dct] == 4) {
 				if (pDCTstat->Speed == 4) {
 					if ( pDCTstat->DimmQRPresent != 0) {
 						DramConfigLo |= 1 << 5;	/* 50 Ohms ODT */
 					}
 				}
 			}
-		} else if ((pDCTstat->MAdimms[dct] == 2)) {
+		} else if (pDCTstat->MAdimms[dct] == 2) {
 			DramConfigLo |= 1 << 5;		/* 50 Ohms ODT */
 		}
 

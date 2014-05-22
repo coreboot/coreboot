@@ -3380,7 +3380,7 @@ static void mct_BeforeDramInit_Prod_D(struct MCTStatStruc *pMCTstat,
 	u32 dev = pDCTstat->dev_dct;
 
 	if (pDCTstat->LogicalCPUID & AMD_DR_Dx) {
-		if ((pDCTstat->Speed == 3))
+		if (pDCTstat->Speed == 3)
 			dword = 0x00000800;
 		else
 			dword = 0x00000000;

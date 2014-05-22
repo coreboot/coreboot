@@ -502,7 +502,7 @@ void prepareDimms(sMCTStruct *pMCTData, sDCTStruct *pDCTData, u8 dimm, BOOL wl)
 							}
 						}
 						else {	/* 1 or 4 Dimms per channel */
-							if ((pDCTData->MaxDimmsInstalled == 4))
+							if (pDCTData->MaxDimmsInstalled == 4)
 							{
 								tempW1 = 0x04;	/* Rtt_Nom=RZQ/4=60 Ohm */
 							}

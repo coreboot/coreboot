@@ -30,7 +30,7 @@ subdirs-y += smp
 ifeq ($(CONFIG_COMPILER_GCC),y)
 DISASSEMBLY=-Wa,-acdlns
 else
-DISASSEMBLY=
+DISASSEMBLY=-Wa,--divide
 endif
 
 OPTION_TABLE_H:=

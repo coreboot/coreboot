@@ -21,15 +21,23 @@ romstage-y += spd.c
 
 SPD_BIN = $(obj)/spd.bin
 
-# { GPIO69, GPIO68, GPIO67 }
-SPD_SOURCES  = empty            # 0: { 0, 0, 0 }
-SPD_SOURCES += elpida_4Gb       # 1: { 0, 0, 1 }
-SPD_SOURCES += empty            # 2: { 0, 1, 0 }
-SPD_SOURCES += elpida_8Gb       # 3: { 0, 1, 1 }
-SPD_SOURCES += empty            # 4: { 1, 0, 0 }
-SPD_SOURCES += samsung_8Gb      # 5: { 1, 0, 1 }
-SPD_SOURCES += samsung_4Gb      # 6: { 1, 1, 0 }
-SPD_SOURCES += empty            # 7: { 1, 1, 1 }
+# { GPIO66, GPIO69, GPIO68, GPIO67 }
+SPD_SOURCES  = empty            # 0b0000
+SPD_SOURCES += empty            # 0b0001
+SPD_SOURCES += empty            # 0b0010
+SPD_SOURCES += empty            # 0b0011
+SPD_SOURCES += empty            # 0b0100
+SPD_SOURCES += empty            # 0b0101
+SPD_SOURCES += samsung_4Gb      # 0b0110
+SPD_SOURCES += empty            # 0b0111
+SPD_SOURCES += hynix_4Gb        # 0b1000
+SPD_SOURCES += empty            # 0b1001
+SPD_SOURCES += samsung_8Gb      # 0b1010
+SPD_SOURCES += empty            # 0b1011
+SPD_SOURCES += hynix_8Gb        # 0b1100
+SPD_SOURCES += empty            # 0b1101
+SPD_SOURCES += empty            # 0b1110
+SPD_SOURCES += empty            # 0b1111
 
 SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/spd/$(f).spd.hex)
 

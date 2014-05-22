@@ -1,12 +1,11 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; version 2 of
- * the License.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,21 +14,17 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
- * MA 02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-
-#include <mainboard/google/samus/onboard.h>
 
 Scope (\_SB)
 {
 	Device (LID0)
 	{
-		Name(_HID, EisaId("PNP0C0D"))
-		Method(_LID, 0)
+		Name (_HID, EisaId("PNP0C0D"))
+		Method (_LID, 0)
 		{
-			Store (\_SB.PCI0.LPCB.EC0.LIDS, \LIDS)
-			Return (\LIDS)
+			Return (\_SB.PCI0.LPCB.EC0.LIDS)
 		}
 
 		// There is no GPIO for LID, the EC pulses WAKE# pin instead.
@@ -44,49 +39,149 @@ Scope (\_SB)
 
 	Device (TPAD)
 	{
-		Name (_ADR, 0x0)
-		Name (_UID, 1)
-
-		// Report as a Sleep Button device so Linux will
-		// automatically enable it as a wake source
 		Name (_HID, EisaId("PNP0C0E"))
-
-		Name (_CRS, ResourceTemplate()
-		{
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				BOARD_TRACKPAD_IRQ
-			}
-
-			VendorShort (ADDR)
-			{
-				BOARD_TRACKPAD_I2C_ADDR
-			}
-		})
-
-		Name (_PRW, Package() { BOARD_TRACKPAD_WAKE_GPIO, 0x3 })
+		Name (_UID, 1)
+		Name (_PRW, Package() { 13, 0x3 }) // GPIO13
 	}
 
 	Device (TSCR)
 	{
-		Name (_ADR, 0x0)
-		Name (_UID, 2)
-
-		// Report as a Sleep Button device so Linux will
-		// automatically enable it as a wake source
 		Name (_HID, EisaId("PNP0C0E"))
+		Name (_UID, 2)
+		Name (_PRW, Package() { 14, 0x3 }) // GPIO14
+	}
+}
+
+Scope (\_SB.PCI0.I2C0)
+{
+	Device (ATPB)
+	{
+		Name (_HID, "ATML0000")
+		Name (_DDN, "Atmel Touchpad Bootloader")
+		Name (_UID, 1)
+		Name (_S0W, 4)
+		Name (ISTP, 1) /* Touchpad */
 
 		Name (_CRS, ResourceTemplate()
 		{
-			Interrupt (ResourceConsumer, Edge, ActiveLow)
-			{
-				BOARD_TOUCHSCREEN_IRQ
-			}
+			I2cSerialBus (
+				0x25,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\\_SB.PCI0.I2C0",        // ResourceSource
+			)
 
-			VendorShort (ADDR)
-			{
-				BOARD_TOUCHSCREEN_I2C_ADDR
-			}
+			// GPIO13 is PIRQL
+			Interrupt (ResourceConsumer, Edge, ActiveLow) { 27 }
 		})
+
+		Method (_STA)
+		{
+			If (LEqual (\S1EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
+	}
+
+	Device (ATPA)
+	{
+		Name (_HID, "ATML0000")
+		Name (_DDN, "Atmel Touchpad")
+		Name (_UID, 2)
+		Name (_S0W, 4)
+		Name (ISTP, 1) /* Touchpad */
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x4b,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\\_SB.PCI0.I2C0",        // ResourceSource
+			)
+
+			// GPIO13 is PIRQL
+			Interrupt (ResourceConsumer, Edge, ActiveLow) { 27 }
+		})
+
+		Method (_STA)
+		{
+			If (LEqual (\S1EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
+	}
+}
+
+Scope (\_SB.PCI0.I2C1)
+{
+	Device (ATSB)
+	{
+		Name (_HID, "ATML0001")
+		Name (_DDN, "Atmel Touchscreen Bootloader")
+		Name (_UID, 4)
+		Name (_S0W, 4)
+		Name (ISTP, 0) /* TouchScreen */
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x25,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\\_SB.PCI0.I2C1",        // ResourceSource
+			)
+
+			// GPIO14 is PIRQM
+			Interrupt (ResourceConsumer, Edge, ActiveLow) { 28 }
+		})
+
+		Method (_STA)
+		{
+			If (LEqual (\S2EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
+	}
+
+	Device (ATSA)
+	{
+		Name (_HID, "ATML0001")
+		Name (_DDN, "Atmel Touchscreen")
+		Name (_UID, 5)
+		Name (_S0W, 4)
+		Name (ISTP, 0) /* TouchScreen */
+
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x4b,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\\_SB.PCI0.I2C1",        // ResourceSource
+			)
+
+			// GPIO14 is PIRQM
+			Interrupt (ResourceConsumer, Edge, ActiveLow) { 28 }
+		})
+
+		Method (_STA)
+		{
+			If (LEqual (\S2EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
 	}
 }

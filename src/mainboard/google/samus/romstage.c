@@ -2,7 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007-2010 coresystems GmbH
- * Copyright (C) 2013 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,18 +22,22 @@
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
+#include <broadwell/cpu.h>
 //#include <broadwell/gpio.h>
 #include <broadwell/pei_data.h>
 #include <broadwell/pei_wrapper.h>
 #include <broadwell/romstage.h>
 #include <mainboard/google/samus/spd/spd.h>
-#include "gpio.h"
+#include <mainboard/google/samus/gpio.h>
 
 void mainboard_romstage_entry(struct romstage_params *rp)
 {
 	struct pei_data pei_data;
 
 	post_code(0x32);
+
+	printk(BIOS_INFO, "MLB: board version %d\n",
+	       google_chromeec_get_board_version());
 
 	/* Ensure the EC is in the right mode for recovery */
 	google_chromeec_early_init();
@@ -46,6 +50,16 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	mainboard_fill_pei_data(&pei_data);
 	mainboard_fill_spd_data(&pei_data);
 	rp->pei_data = &pei_data;
+
+	/*
+	 * http://crosbug.com/p/29117
+	 * Limit Broadwell SKU to 1333MHz and disable channel 1
+	 */
+	if (cpu_family_model() == BROADWELL_FAMILY_ULT) {
+		pei_data.max_ddr3_freq = 1333;
+		pei_data.dimm_channel1_disabled = 3;
+		memset(pei_data.spd_data[1][0], 0, SPD_LEN);
+	}
 
 	romstage_common(rp);
 

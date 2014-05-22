@@ -36,6 +36,7 @@
 #define SPD_GPIO_BIT0		67
 #define SPD_GPIO_BIT1		68
 #define SPD_GPIO_BIT2		69
+#define SPD_GPIO_BIT3		66
 
 struct pei_data;
 void mainboard_fill_spd_data(struct pei_data *pei_data);

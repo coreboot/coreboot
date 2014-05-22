@@ -80,7 +80,7 @@ static void mainboard_print_spd_info(uint8_t spd[])
 /* Copy SPD data for on-board memory */
 void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
-	int spd_gpio[3];
+	int spd_gpio[4];
 	int spd_index;
 	int spd_file_len;
 	struct cbfs_file *spd_file;
@@ -88,11 +88,14 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	spd_gpio[0] = get_gpio(SPD_GPIO_BIT0);
 	spd_gpio[1] = get_gpio(SPD_GPIO_BIT1);
 	spd_gpio[2] = get_gpio(SPD_GPIO_BIT2);
+	spd_gpio[3] = get_gpio(SPD_GPIO_BIT3);
 
-	spd_index = spd_gpio[2] << 2 | spd_gpio[1] << 1 | spd_gpio[0];
+	spd_index = (spd_gpio[3] << 3) | (spd_gpio[2] << 2) |
+		(spd_gpio[1] << 1) | spd_gpio[0];
 
-	printk(BIOS_DEBUG, "SPD: index %d (GPIO%d=%d GPIO%d=%d GPIO%d=%d)\n",
-	       spd_index,
+	printk(BIOS_DEBUG, "SPD: index %d (GPIO%d=%d GPIO%d=%d "
+	       "GPIO%d=%d GPIO%d=%d)\n", spd_index,
+	       SPD_GPIO_BIT3, spd_gpio[3],
 	       SPD_GPIO_BIT2, spd_gpio[2],
 	       SPD_GPIO_BIT1, spd_gpio[1],
 	       SPD_GPIO_BIT0, spd_gpio[0]);

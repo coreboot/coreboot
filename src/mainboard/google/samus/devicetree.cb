@@ -43,16 +43,17 @@ chip soc/intel/broadwell
 	register "gpe0_en_4" = "0x00000000"
 
 	register "sata_port_map" = "0x1"
-	register "sio_acpi_mode" = "0"
+	register "sio_acpi_mode" = "1"
 
-	# Force enable ASPM for PCIe Port 1
-	register "pcie_port_force_aspm" = "0x01"
+	# Force enable ASPM for PCIe Port 3
+	register "pcie_port_force_aspm" = "0x04"
+	register "pcie_port_coalesce" = "1"
 
 	# Disable PCIe CLKOUT 1-5 and CLKOUT_XDP
-	register "icc_clock_disable" = "0x013e0000"
+	register "icc_clock_disable" = "0x013b0000"
 
 	# Enable S0ix
-	register "s0ix_enable" = "1"
+	register "s0ix_enable" = "0"
 
 	device cpu_cluster 0 on
 		device lapic 0 on end
@@ -77,9 +78,9 @@ chip soc/intel/broadwell
 		device pci 17.0 off end # SDIO
 		device pci 19.0 off end # GbE
 		device pci 1b.0 off end # High Definition Audio
-		device pci 1c.0 on  end # PCIe Port #1
+		device pci 1c.0 off end # PCIe Port #1
 		device pci 1c.1 off end # PCIe Port #2
-		device pci 1c.2 off end # PCIe Port #3
+		device pci 1c.2 on  end # PCIe Port #3
 		device pci 1c.3 off end # PCIe Port #4
 		device pci 1c.4 off end # PCIe Port #5
 		device pci 1c.5 off end # PCIe Port #6

@@ -24,8 +24,8 @@
 #include <broadwell/gpio.h>
 #include <broadwell/pei_data.h>
 #include <broadwell/romstage.h>
-#include "gpio.h"
-#include "spd.h"
+#include <mainboard/google/samus/gpio.h>
+#include <mainboard/google/samus/spd/spd.h>
 
 static void mainboard_print_spd_info(uint8_t spd[])
 {

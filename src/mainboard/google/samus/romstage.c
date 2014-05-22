@@ -26,7 +26,7 @@
 #include <broadwell/pei_data.h>
 #include <broadwell/pei_wrapper.h>
 #include <broadwell/romstage.h>
-#include "spd.h"
+#include <mainboard/google/samus/spd/spd.h>
 #include "gpio.h"
 
 void mainboard_romstage_entry(struct romstage_params *rp)

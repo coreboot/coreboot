@@ -17,6 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+subdirs-y += spd
+
 ramstage-$(CONFIG_EC_GOOGLE_CHROMEEC) += ec.c
 
 romstage-y += chromeos.c
@@ -26,32 +28,3 @@ smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
 
 romstage-y += pei_data.c
 ramstage-y += pei_data.c
-
-## DIMM SPD for on-board memory
-romstage-y += spd.c
-SPD_BIN = $(obj)/spd.bin
-
-# Order of names in SPD_SOURCES is important!
-# { GPIO69, GPIO68, GPIO67 }
-SPD_SOURCES  = empty            # 0: { 0, 0, 0 }
-SPD_SOURCES += elpida_4Gb       # 1: { 0, 0, 1 }
-SPD_SOURCES += empty            # 2: { 0, 1, 0 }
-SPD_SOURCES += elpida_8Gb       # 3: { 0, 1, 1 }
-SPD_SOURCES += empty            # 4: { 1, 0, 0 }
-SPD_SOURCES += samsung_8Gb      # 5: { 1, 0, 1 }
-SPD_SOURCES += samsung_4Gb      # 6: { 1, 1, 0 }
-SPD_SOURCES += empty            # 7: { 1, 1, 1 }
-
-SPD_DEPS := $(foreach f, $(SPD_SOURCES), src/mainboard/$(MAINBOARDDIR)/$(f).spd.hex)
-
-# Include spd rom data
-$(SPD_BIN): $(SPD_DEPS)
-	for f in $+; \
-	  do for c in $$(cat $$f | grep -v ^#); \
-	    do echo -e -n "\\x$$c"; \
-	  done; \
-	done > $@
-
-cbfs-files-y += spd.bin
-spd.bin-file := $(SPD_BIN)
-spd.bin-type := 0xab

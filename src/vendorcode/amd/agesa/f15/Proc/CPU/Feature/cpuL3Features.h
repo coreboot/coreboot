@@ -44,7 +44,7 @@
  */
 
 #ifndef _CPU_L3_FEATURES_H_
-#define _CPU_L3_FEATIRES_H_
+#define _CPU_L3_FEATURES_H_
 
 #include "Filecode.h"
 /*----------------------------------------------------------------------------------------

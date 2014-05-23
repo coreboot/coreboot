@@ -74,10 +74,3 @@ void it8712f_enable_3vsbsw(void)
 	it8712f_sio_write(IT8712F_GPIO, IT8712F_CONFIG_REG_MFC, 0x80);
 	it8712f_exit_conf();
 }
-
-void it8712f_kill_watchdog(void)
-{
-	it8712f_enter_conf();
-	it8712f_sio_write(IT8712F_GPIO, IT8712F_CONFIG_REG_WATCHDOG, 0x00);
-	it8712f_exit_conf();
-}

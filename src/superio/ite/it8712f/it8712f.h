@@ -35,7 +35,6 @@
 #define IT8712F_GAME 0x09 /* GAME port */
 #define IT8712F_IR   0x0a /* Consumer IR */
 
-void it8712f_kill_watchdog(void);
 void it8712f_enable_3vsbsw(void);
 
 #endif /* SUPERIO_ITE_IT8712F_H */

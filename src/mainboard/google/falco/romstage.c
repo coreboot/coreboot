@@ -108,34 +108,34 @@ static void copy_spd(struct pei_data *peid)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	struct pei_data pei_data = {
-		pei_version: PEI_VERSION,
-		mchbar: DEFAULT_MCHBAR,
-		dmibar: DEFAULT_DMIBAR,
-		epbar: DEFAULT_EPBAR,
-		pciexbar: DEFAULT_PCIEXBAR,
-		smbusbar: SMBUS_IO_BASE,
-		wdbbar: 0x4000000,
-		wdbsize: 0x1000,
-		hpet_address: HPET_ADDR,
-		rcba: DEFAULT_RCBA,
-		pmbase: DEFAULT_PMBASE,
-		gpiobase: DEFAULT_GPIOBASE,
-		temp_mmio_base: 0xfed08000,
-		system_type: 5, /* ULT */
-		tseg_size: CONFIG_SMM_TSEG_SIZE,
-		spd_addresses: { 0xff, 0x00, 0xff, 0x00 },
-		ec_present: 1,
+		.pei_version = PEI_VERSION,
+		.mchbar = DEFAULT_MCHBAR,
+		.dmibar = DEFAULT_DMIBAR,
+		.epbar = DEFAULT_EPBAR,
+		.pciexbar = DEFAULT_PCIEXBAR,
+		.smbusbar = SMBUS_IO_BASE,
+		.wdbbar = 0x4000000,
+		.wdbsize = 0x1000,
+		.hpet_address = HPET_ADDR,
+		.rcba = DEFAULT_RCBA,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.temp_mmio_base = 0xfed08000,
+		.system_type = 5, /* ULT */
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.spd_addresses = { 0xff, 0x00, 0xff, 0x00 },
+		.ec_present = 1,
 		// 0 = leave channel enabled
 		// 1 = disable dimm 0 on channel
 		// 2 = disable dimm 1 on channel
 		// 3 = disable dimm 0+1 on channel
-		dimm_channel0_disabled: 2,
-		dimm_channel1_disabled: 2,
+		.dimm_channel0_disabled = 2,
+		.dimm_channel1_disabled = 2,
 		// Enable 2x refresh mode
-		ddr_refresh_2x: 1,
-		max_ddr3_freq: 1600,
-		usb_xhci_on_resume: 1,
-		usb2_ports: {
+		.ddr_refresh_2x = 1,
+		.max_ddr3_freq = 1600,
+		.usb_xhci_on_resume = 1,
+		.usb2_ports = {
 			/* Length, Enable, OCn#, Location */
 			{ 0x0064, 1, 0,               /* P0: Port A, CN8 */
 			  USB_PORT_BACK_PANEL },
@@ -154,7 +154,7 @@ void mainboard_romstage_entry(unsigned long bist)
 			{ 0x0123, 1, 3,               /* P7: USB2 Port */
 			  USB_PORT_INTERNAL },
 		},
-		usb3_ports: {
+		.usb3_ports = {
 			/* Enable, OCn# */
 			{ 1, 0               }, /* P1; Port A, CN8 */
 			{ 1, 0               }, /* P2; Port B, CN9  */

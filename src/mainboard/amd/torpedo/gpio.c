@@ -255,7 +255,7 @@ gpioEarlyInit(
 			// WAIT POWER READY: GPIO28 (MXM_PWRGD)
 			//while (!(Mmio8 (GpioMmioAddr, SB_GPIO_REG28) && BIT7)){}
 			ReadMEM (GpioMmioAddr + SB_GPIO_REG28, AccWidthUint8, &Data8);
-			while (!(Data8 && BIT7))
+			while (!(Data8 & BIT7))
 			{
 				ReadMEM (GpioMmioAddr + SB_GPIO_REG28, AccWidthUint8, &Data8);
 			}

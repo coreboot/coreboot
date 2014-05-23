@@ -29,13 +29,31 @@
 
 #include <libpayload.h>
 
+/*
+ * TODO(vbendeb): reverted this hack once proper timer code is in place (see
+ * http://crosbug.com/p/28880 for details.
+ */
+#define MIN_TIMER_FREQ 1000000
+
 uint64_t timer_hz(void)
 {
-	return CONFIG_LP_IPQ806X_TIMER_FREQ;
+	return (CONFIG_LP_IPQ806X_TIMER_FREQ >= MIN_TIMER_FREQ) ?
+		CONFIG_LP_IPQ806X_TIMER_FREQ : MIN_TIMER_FREQ;
 }
 
 uint64_t timer_raw_value(void)
 {
-	return readl((void *)CONFIG_LP_IPQ806X_TIMER_REG);
+	uint64_t rawv = readl((void *)CONFIG_LP_IPQ806X_TIMER_REG);
+
+	/*
+	 * This is extremely crude, but it kicks in only for the case when the
+	 * timer clock frequency is below 1MHz, which should never be the case
+	 * on a properly configured system. The compiler will eliminate the
+	 * check as long as config value exceeds 1MHz.
+	 */
+	if (CONFIG_LP_IPQ806X_TIMER_FREQ < MIN_TIMER_FREQ)
+		rawv *= (MIN_TIMER_FREQ / CONFIG_LP_IPQ806X_TIMER_FREQ);
+
+	return rawv;
 }
 

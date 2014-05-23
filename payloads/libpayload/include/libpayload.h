@@ -60,9 +60,6 @@
 #ifdef CONFIG_LP_LAR
 #include <lar.h>
 #endif
-#ifdef CONFIG_LP_CBFS
-#include <cbfs.h>
-#endif
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
@@ -444,5 +441,8 @@ void delay(unsigned int n);
 char *readline(const char *prompt);
 int getline(char *buffer, int len);
 /** @} */
+
+/* Defined in arch/${ARCH}/selfboot.c */
+void selfboot(void *entry);
 
 #endif

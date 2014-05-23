@@ -473,7 +473,6 @@
 #define PCI_DEVFN(slot,func)	((((slot) & 0x1f) << 3) | ((func) & 0x07))
 #define PCI_SLOT(devfn)		(((devfn) >> 3) & 0x1f)
 #define PCI_FUNC(devfn)		((devfn) & 0x07)
-#define PCI_BDF(bus,dev,func)	((bus) << 16 | (dev) << 11 | (func) << 8)
 
 /* Translation from PCI_DEV() to devicetree bus and path.pci.devfn. */
 #define PCI_DEV2DEVFN(sdev)		(((sdev)>>12) & 0xff)

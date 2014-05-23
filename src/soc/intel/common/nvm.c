@@ -46,12 +46,6 @@ static int nvm_init(void)
 	return 0;
 }
 
-/* Convert memory mapped pointer to flash offset. */
-static inline uint32_t to_flash_offset(void *p)
-{
-	return CONFIG_ROM_SIZE + (uintptr_t)p;
-}
-
 int nvm_is_erased(const void *start, size_t size)
 {
 	const uint8_t *cur = start;
@@ -70,7 +64,7 @@ int nvm_erase(void *start, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	return flash->erase(flash, to_flash_offset(start), size);
+	return flash->erase(flash, to_flash_offset(flash, start), size);
 }
 
 /* Write data to NVM. Returns 0 on success < 0 on error.  */
@@ -78,5 +72,5 @@ int nvm_write(void *start, const void *data, size_t size)
 {
 	if (nvm_init() < 0)
 		return -1;
-	return flash->write(flash, to_flash_offset(start), size, data);
+	return flash->write(flash, to_flash_offset(flash, start), size, data);
 }

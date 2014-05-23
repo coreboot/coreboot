@@ -22,9 +22,6 @@
 #ifndef SUPERIO_ITE_IT8721F_H
 #define SUPERIO_ITE_IT8721F_H
 
-#include <device/pnp.h>
-#include <stdint.h>
-
 /* Logical Device Numbers (LDN). */
 #define IT8721F_FDC  0x00 /* Floppy */
 #define IT8721F_SP1  0x01 /* Com1 */

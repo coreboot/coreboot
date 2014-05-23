@@ -70,31 +70,31 @@ const struct rcba_config_instruction rcba_config[] = {
 void mainboard_romstage_entry(unsigned long bist)
 {
 	struct pei_data pei_data = {
-		pei_version: PEI_VERSION,
-		mchbar: DEFAULT_MCHBAR,
-		dmibar: DEFAULT_DMIBAR,
-		epbar: DEFAULT_EPBAR,
-		pciexbar: DEFAULT_PCIEXBAR,
-		smbusbar: SMBUS_IO_BASE,
-		wdbbar: 0x4000000,
-		wdbsize: 0x1000,
-		hpet_address: HPET_ADDR,
-		rcba: DEFAULT_RCBA,
-		pmbase: DEFAULT_PMBASE,
-		gpiobase: DEFAULT_GPIOBASE,
-		temp_mmio_base: 0xfed08000,
-		system_type: 0, // 0 Mobile, 1 Desktop/Server
-		tseg_size: CONFIG_SMM_TSEG_SIZE,
-		spd_addresses: { 0xa0, 0xa2, 0xa4, 0xa6 },
-		ec_present: 0,
+		.pei_version = PEI_VERSION,
+		.mchbar = DEFAULT_MCHBAR,
+		.dmibar = DEFAULT_DMIBAR,
+		.epbar = DEFAULT_EPBAR,
+		.pciexbar = DEFAULT_PCIEXBAR,
+		.smbusbar = SMBUS_IO_BASE,
+		.wdbbar = 0x4000000,
+		.wdbsize = 0x1000,
+		.hpet_address = HPET_ADDR,
+		.rcba = DEFAULT_RCBA,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.temp_mmio_base = 0xfed08000,
+		.system_type = 0, // 0 Mobile, 1 Desktop/Server
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.spd_addresses = { 0xa0, 0xa2, 0xa4, 0xa6 },
+		.ec_present = 0,
 		// 0 = leave channel enabled
 		// 1 = disable dimm 0 on channel
 		// 2 = disable dimm 1 on channel
 		// 3 = disable dimm 0+1 on channel
-		dimm_channel0_disabled: 0,
-		dimm_channel1_disabled: 0,
-		max_ddr3_freq: 1600,
-		usb2_ports: {
+		.dimm_channel0_disabled = 0,
+		.dimm_channel1_disabled = 0,
+		.max_ddr3_freq = 1600,
+		.usb2_ports = {
 			/* Length, Enable, OCn#, Location */
 			{ 0x0040, 1, 0, /* P0: Back USB3 port  (OC0) */
 			  USB_PORT_BACK_PANEL },
@@ -125,7 +125,7 @@ void mainboard_romstage_entry(unsigned long bist)
 			{ 0x0040, 1, 6, /* P13: USB/DP Jack (OC6) */
 			  USB_PORT_FRONT_PANEL },
 		},
-		usb3_ports: {
+		.usb3_ports = {
 			/* Enable, OCn# */
 			{ 1, 0 }, /* P1; */
 			{ 1, 0 }, /* P2; */

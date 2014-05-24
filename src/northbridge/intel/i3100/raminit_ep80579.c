@@ -503,8 +503,8 @@ static void sdram_set_spd_registers(const struct mem_controller *ctrl)
 static void set_on_dimm_termination_enable(const struct mem_controller *ctrl)
 {
 	u8 c1,c2;
-        u32 dimm,i;
-        u32 data32;
+	u32 dimm, i;
+	u32 data32 = 0;
 	u32 t4;
 
 	/* Set up northbridge values */

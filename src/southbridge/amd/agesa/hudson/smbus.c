@@ -24,11 +24,6 @@
 #include <stdint.h>
 #include "smbus.h"
 
-static inline void smbus_delay(void)
-{
-	outb(inb(0x80), 0x80);
-}
-
 static int smbus_wait_until_ready(u32 smbus_io_base)
 {
 	u32 loops;

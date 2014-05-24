@@ -78,18 +78,18 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(bootblock-S-ccopts) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
+	$(CC_bootblock) $(CPPFLAGS_bootblock) -Wa,-acdlns -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(bootblock-S-ccopts) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
+	$(CC_bootblock) $(CPPFLAGS_bootblock) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H) $(obj)/config.h
 	@printf "    CC      $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) $(bootblock-c-ccopts) $(CPPFLAGS_bootblock) -MM \
+	$(CC_bootblock) $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -MM \
 		-MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d
-	$(CC_bootblock) $(bootblock-c-ccopts) -c -S $(CFLAGS_bootblock) -I. $(CPPFLAGS_bootblock) $< -o $@
+	$(CC_bootblock) -c -S $(CFLAGS_bootblock) -I. $(CPPFLAGS_bootblock) $< -o $@
 
 $(objcbfs)/bootblock.debug:  $(objgenerated)/bootblock.o $(objgenerated)/bootblock.ld $$(bootblock-objs) $(stages) $(obj)/config.h
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"

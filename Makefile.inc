@@ -111,31 +111,27 @@ ramstage-postprocess=$(foreach d,$(sort $(dir $(1))), \
 	$(eval $(d)ramstage.o: $(call files-in-dir,$(d),$(1)); $$(LD_ramstage) -o $$@ -r $$^ ) \
 	$(eval ramstage-objs:=$(d)ramstage.o $(filter-out $(call files-in-dir,$(d),$(1)),$(ramstage-objs))))
 
-romstage-c-ccopts:=-D__PRE_RAM__
-romstage-S-ccopts:=-D__PRE_RAM__
+CPPFLAGS_romstage += -D__PRE_RAM__
 ifeq ($(CONFIG_TRACE),y)
-ramstage-c-ccopts:= -finstrument-functions
+CFLAGS_ramstage += -finstrument-functions
 endif
 ifeq ($(CONFIG_COVERAGE),y)
-ramstage-c-ccopts+=-fprofile-arcs -ftest-coverage
+CFLAGS_ramstage += -fprofile-arcs -ftest-coverage
 endif
 
 ifeq ($(CONFIG_USE_BLOBS),y)
 forgetthis:=$(shell git submodule update --init --checkout 3rdparty)
 endif
 
-bootblock-c-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
-bootblock-S-ccopts:=-D__BOOT_BLOCK__ -D__PRE_RAM__
+CPPFLAGS_bootblock += -D__BOOT_BLOCK__ -D__PRE_RAM__
 
-smmstub-c-ccopts:=-D__SMM__
-smmstub-S-ccopts:=-D__SMM__
-smm-c-ccopts:=-D__SMM__
-smm-S-ccopts:=-D__SMM__
+CPPFLAGS_smmstub += -D__SMM__
+CPPFLAGS_smm += -D__SMM__
 
 # SMM TSEG base is dynamic
 ifneq ($(CONFIG_SMM_MODULES),y)
 ifeq ($(CONFIG_SMM_TSEG),y)
-smm-c-ccopts += -fpic
+CFLAGS_smm += -fpic
 endif
 endif
 
@@ -325,7 +321,7 @@ $(obj)/%.romstage.o $(abspath $(obj))/%.romstage.o: $(obj)/%.c $(obj)/config.h $
 
 $(obj)/%.bootblock.o $(abspath $(obj))/%.bootblock.o: $(obj)/%.c $(obj)/config.h $(OPTION_TABLE_H)
 	@printf "    CC         $(subst $(obj)/,,$(@))\n"
-	$(CC_bootblock) -MMD $(bootblock-c-ccopts) $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -c -o $@ $<
+	$(CC_bootblock) -MMD $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -c -o $@ $<
 
 #######################################################################
 # Clean up rules

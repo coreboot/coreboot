@@ -1735,14 +1735,14 @@ static void sdram_set_timing_and_control(struct sys_info *sysinfo)
 	u32 temp_drt;
 	int i, page_size;
 
-	static const u8 const drt0_table[] = {
+	static const u8 drt0_table[] = {
 	  /* CL 3, 4, 5 */
 		3, 4, 5, 	/* FSB533/400, DDR533/400 */
 		4, 5, 6,	/* FSB667, DDR533/400 */
 		4, 5, 6,	/* FSB667, DDR667 */
 	};
 
-	static const u8 const cas_table[] = {
+	static const u8 cas_table[] = {
 		2, 1, 0, 3
 	};
 

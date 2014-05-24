@@ -104,6 +104,7 @@ static const uint32_t refresh_rate_map[] = {
 
 #define MAX_SPD_REFRESH_RATE ((sizeof(refresh_rate_map) / sizeof(uint32_t)) - 1)
 
+#ifdef VALIDATE_DIMM_COMPATIBILITY
 // SPD parameters that must match for dual-channel operation
 static const uint8_t dual_channel_parameters[] = {
 	SPD_MEMORY_TYPE,
@@ -114,6 +115,7 @@ static const uint8_t dual_channel_parameters[] = {
 	SPD_PRIMARY_SDRAM_WIDTH,
 	SPD_NUM_BANKS_PER_SDRAM
 };
+#endif /* VALIDATE_DIMM_COMPATIBILITY */
 
 	/* Comments here are remains of e7501 or even 855PM.
 	 * They might be partially (in)correct for e7505.
@@ -623,7 +625,7 @@ static uint8_t spd_get_supported_dimms(const struct mem_controller *ctrl)
 				break;
 			}
 		}
-#endif
+#endif /* VALIDATE_DIMM_COMPATIBILITY */
 
 		// Code around ROMCC bug in optimization of "if" statements
 #ifdef ROMCC_IF_BUG_FIXED

@@ -101,31 +101,31 @@ static void copy_spd(struct pei_data *peid)
 void mainboard_romstage_entry(unsigned long bist)
 {
 	struct pei_data pei_data = {
-		pei_version: PEI_VERSION,
-		mchbar: DEFAULT_MCHBAR,
-		dmibar: DEFAULT_DMIBAR,
-		epbar: DEFAULT_EPBAR,
-		pciexbar: DEFAULT_PCIEXBAR,
-		smbusbar: SMBUS_IO_BASE,
-		wdbbar: 0x4000000,
-		wdbsize: 0x1000,
-		hpet_address: HPET_ADDR,
-		rcba: DEFAULT_RCBA,
-		pmbase: DEFAULT_PMBASE,
-		gpiobase: DEFAULT_GPIOBASE,
-		temp_mmio_base: 0xfed08000,
-		system_type: 5, /* ULT */
-		tseg_size: CONFIG_SMM_TSEG_SIZE,
-		spd_addresses: { 0xff, 0x00, 0xff, 0x00 },
-		ec_present: 1,
+		.pei_version = PEI_VERSION,
+		.mchbar = DEFAULT_MCHBAR,
+		.dmibar = DEFAULT_DMIBAR,
+		.epbar = DEFAULT_EPBAR,
+		.pciexbar = DEFAULT_PCIEXBAR,
+		.smbusbar = SMBUS_IO_BASE,
+		.wdbbar = 0x4000000,
+		.wdbsize = 0x1000,
+		.hpet_address = HPET_ADDR,
+		.rcba = DEFAULT_RCBA,
+		.pmbase = DEFAULT_PMBASE,
+		.gpiobase = DEFAULT_GPIOBASE,
+		.temp_mmio_base = 0xfed08000,
+		.system_type = 5, /* ULT */
+		.tseg_size = CONFIG_SMM_TSEG_SIZE,
+		.spd_addresses = { 0xff, 0x00, 0xff, 0x00 },
+		.ec_present = 1,
 		// 0 = leave channel enabled
 		// 1 = disable dimm 0 on channel
 		// 2 = disable dimm 1 on channel
 		// 3 = disable dimm 0+1 on channel
-		dimm_channel0_disabled: 2,
-		dimm_channel1_disabled: 2,
-		max_ddr3_freq: 1600,
-		usb2_ports: {
+		.dimm_channel0_disabled = 2,
+		.dimm_channel1_disabled = 2,
+		.max_ddr3_freq = 1600,
+		.usb2_ports = {
 			/* Length, Enable, OCn#, Location */
 			/* P0: HOST PORT - J7 */
 			{ 0x0040, 1, 0,               USB_PORT_BACK_PANEL },
@@ -144,7 +144,7 @@ void mainboard_romstage_entry(unsigned long bist)
 			/* P7: BT */
 			{ 0x0040, 1, USB_OC_PIN_SKIP, USB_PORT_MINI_PCIE },
 		},
-		usb3_ports: {
+		.usb3_ports = {
 			/* Enable, OCn# */
 			{ 1, 0               }, /* P1: HOST PORT - J7 */
 			{ 1, 1               }, /* P2: HOST PORT - J6  */

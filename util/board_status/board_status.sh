@@ -145,6 +145,7 @@ tmpdir=$(mktemp -d)
 cbfstool_cmd="util/cbfstool/cbfstool"
 test_cmd $LOCAL "$cbfstool_cmd"
 $cbfstool_cmd build/coreboot.rom extract -n config -f ${tmpdir}/config.txt
+$cbfstool_cmd build/coreboot.rom print > ${tmpdir}/cbfs.txt
 mainboard_dir="$(grep CONFIG_MAINBOARD_DIR ${tmpdir}/config.txt | awk -F '"' '{ print $2 }')"
 vendor=$(echo "$mainboard_dir" | awk -F '/' '{ print $1 }')
 mainboard=$(echo "$mainboard_dir" | awk -F '/' '{ print $2 }')

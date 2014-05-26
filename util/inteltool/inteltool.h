@@ -154,7 +154,10 @@
 #define PCI_DEVICE_ID_INTEL_CORE_0TH_GEN	0xd132 /* Nehalem */
 #define PCI_DEVICE_ID_INTEL_CORE_1ST_GEN	0x0044 /* Westmere */
 #define PCI_DEVICE_ID_INTEL_CORE_2ND_GEN	0x0104 /* Sandy Bridge */
-#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN	0x0154 /* Ivy Bridge */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A	0x0150 /* Ivy Bridge */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_B	0x0154 /* Ivy Bridge */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C	0x0158 /* Ivy Bridge */
+#define PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D	0x015c /* Ivy Bridge */
 #define PCI_DEVICE_ID_INTEL_CORE_4TH_GEN	0x0c04 /* Haswell */
 
 #define ARRAY_SIZE(a) ((int)(sizeof(a) / sizeof((a)[0])))

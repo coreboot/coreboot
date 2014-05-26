@@ -251,7 +251,10 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN:
 		mch_registers = sandybridge_mch_registers;
 		size = ARRAY_SIZE(sandybridge_mch_registers);
-	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN: /* pretty printing not implemented yet */
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A: /* pretty printing not implemented yet */
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_B:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
 		mchbar_phys = pci_read_long(nb, 0x48);
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		mchbar_phys &= 0x0000007fffff8000UL; /* 38:15 */

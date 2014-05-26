@@ -18,7 +18,7 @@
  */
 
 #include "agesawrapper.h"
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "PlatformGnbPcieComplex.h"
 
 #define __SIMPLE_DEVICE__

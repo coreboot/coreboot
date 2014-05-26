@@ -25,7 +25,7 @@
 #include "amdlib.h"
 #include "Ids.h"
 #include "agesawrapper.h"
-#include "def_callouts.h"
+#include "BiosCallOuts.h"
 #include "dimmSpd.h"
 
 AGESA_STATUS GetBiosCallout (UINT32 Func, UINT32 Data, VOID *ConfigPtr)

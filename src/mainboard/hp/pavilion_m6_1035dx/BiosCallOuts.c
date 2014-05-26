@@ -18,7 +18,7 @@
  */
 
 #include "AGESA.h"
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "OptionsIds.h"
 
 #include <cbfs.h>

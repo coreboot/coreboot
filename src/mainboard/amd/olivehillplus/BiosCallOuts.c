@@ -19,7 +19,7 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "Ids.h"
 #include "OptionsIds.h"
 #include "heapManager.h"

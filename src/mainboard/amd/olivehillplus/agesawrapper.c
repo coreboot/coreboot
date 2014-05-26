@@ -22,7 +22,7 @@
 #include <config.h>
 #include <cpu/x86/mtrr.h>
 #include "agesawrapper.h"
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "cpuRegisters.h"
 #include "cpuCacheInit.h"
 #include "cpuApicUtilities.h"

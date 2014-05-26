@@ -22,7 +22,7 @@
 #include <device/pci.h>
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <cpu/amd/mtrr.h>
 #include <device/pci_def.h>
 #include <arch/acpi.h>

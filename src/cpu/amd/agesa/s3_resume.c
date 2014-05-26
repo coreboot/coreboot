@@ -31,7 +31,7 @@
 #include <arch/acpi.h>
 #include <string.h>
 #include "Porting.h"
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "s3_resume.h"
 
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */

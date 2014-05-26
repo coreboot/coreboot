@@ -1,7 +1,7 @@
 
 #include "AGESA.h"
 #include "amdlib.h"
-#include "northbridge/amd/agesa/def_callouts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include "heapManager.h"
 
 #include <cbmem.h>

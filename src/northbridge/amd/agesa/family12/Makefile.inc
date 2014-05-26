@@ -17,10 +17,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-romstage-y += fam12_callouts.c
 romstage-y += dimmSpd.c
 
 ramstage-y += northbridge.c
-ramstage-y += fam12_callouts.c
 
 ramstage-$(CONFIG_HAVE_ACPI_TABLES) += ssdt.asl

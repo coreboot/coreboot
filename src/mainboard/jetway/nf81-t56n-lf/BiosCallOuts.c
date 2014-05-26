@@ -18,7 +18,7 @@
  */
 
 #include "AGESA.h"
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 
 #include <Lib/amdlib.h>
 #include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>

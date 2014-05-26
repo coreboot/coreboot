@@ -27,7 +27,7 @@
 #include <southbridge/amd/amd_pci_util.h>
 #include <southbridge/amd/cimx/cimx_util.h>
 #include <arch/acpi.h>
-#include "BiosCallOuts.h"
+#include <northbridge/amd/agesa/BiosCallOuts.h>
 #include <cpu/amd/agesa/s3_resume.h>
 #include <cpu/amd/mtrr.h>
 #include "SBPLATFORM.h"

@@ -34,6 +34,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, LPC47B272_SP1)
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	lpc47b272_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

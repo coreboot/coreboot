@@ -35,6 +35,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	/* Set southbridge and Super I/O GPIOs. */

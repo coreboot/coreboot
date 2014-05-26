@@ -162,6 +162,7 @@ static void setup_sio_gpios(void)
 	outb(0xaa, port);
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

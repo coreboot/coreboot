@@ -86,6 +86,7 @@ static const struct mem_controller ctrl = {
 	.channel0 = { DIMM0 },
 };
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	/* Enable multifunction for northbridge. */

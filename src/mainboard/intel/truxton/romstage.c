@@ -51,6 +51,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 
 #define SERIAL_DEV PNP_DEV(0x4e, I3100_SP1)
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
 	msr_t msr;

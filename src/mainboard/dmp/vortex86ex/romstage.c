@@ -300,6 +300,7 @@ static void enable_l2_cache(void)
 	pci_write_config8(NB1, 0xe8, reg_nb_f1_e8);
 }
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
 	device_t dev;

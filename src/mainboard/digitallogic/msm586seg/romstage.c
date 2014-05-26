@@ -154,6 +154,7 @@ static inline void irqinit(void){
 #endif
 }
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
     volatile int i;

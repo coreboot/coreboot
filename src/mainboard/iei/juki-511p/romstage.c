@@ -32,6 +32,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977F_SP1)
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
 	w83977f_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

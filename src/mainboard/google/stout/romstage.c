@@ -154,6 +154,7 @@ static void early_ec_init(void)
 	}
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

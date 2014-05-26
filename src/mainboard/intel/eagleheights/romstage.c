@@ -120,6 +120,7 @@ static void early_config(void)
 	pci_write_config8(PCI_DEV(0, 0x1F, 2), SATA_MAP, (SATA_MODE_AHCI << 6) | (0 << 0));
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	/* int boot_mode = 0; */

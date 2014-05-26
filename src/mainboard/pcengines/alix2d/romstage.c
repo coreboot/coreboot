@@ -130,6 +130,7 @@ static void mb_gpio_init(void)
 	outl(1 << 11, GPIO_IO_BASE + GPIOH_OUTPUT_VALUE);       /* Led 3 disabled */
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {

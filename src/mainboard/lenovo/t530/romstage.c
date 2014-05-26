@@ -109,6 +109,7 @@ static void rcba_config(void)
 	RCBA32(BUC) = 0;
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

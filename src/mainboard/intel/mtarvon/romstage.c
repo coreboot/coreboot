@@ -51,6 +51,7 @@ static inline int spd_read_byte(u16 device, u8 address)
 #include "arch/x86/lib/stages.c"
 #endif
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	msr_t msr;

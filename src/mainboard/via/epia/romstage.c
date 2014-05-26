@@ -69,6 +69,7 @@ static void enable_shadow_ram(void)
 	pci_write_config8(dev, 0x63, shadowreg);
 }
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
 	if (bist == 0)

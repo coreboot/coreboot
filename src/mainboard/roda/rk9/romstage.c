@@ -120,6 +120,7 @@ static void default_superio_gpio_setup(void)
 	outb(0x10, 0x600 + 0xb + 4); /* GP40 - GP47 */
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	sysinfo_t sysinfo;

@@ -32,6 +32,7 @@
 
 #include "northbridge/amd/gx1/raminit.c"
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
 	w83977tf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

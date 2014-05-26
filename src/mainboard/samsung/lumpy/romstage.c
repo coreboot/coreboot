@@ -132,6 +132,7 @@ static void early_pch_init(void)
 	pci_write_config8(PCH_LPC_DEV, 0xa4, reg8);
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

@@ -30,6 +30,7 @@ int spd_read_byte(unsigned device, unsigned address)
 #include "cpu/amd/geode_lx/syspreinit.c"
 #include "cpu/amd/geode_lx/msrinit.c"
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 

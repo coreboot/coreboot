@@ -12,6 +12,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC97317_SP1)
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
 	pc97317_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

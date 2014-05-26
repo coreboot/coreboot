@@ -148,7 +148,7 @@ init_usb (void)
 	outw (0x0000, DEFAULT_PMBASE | 0x003c);
 }
 
-
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	int s3resume = 0;

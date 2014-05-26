@@ -38,6 +38,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "debug.c"
 #include "arch/x86/lib/stages.c"
 
+#include <cpu/intel/car.h>
 static void main(unsigned long bist)
 {
 	static const struct mem_controller mch[] = {

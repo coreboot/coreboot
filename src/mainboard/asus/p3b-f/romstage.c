@@ -74,6 +74,7 @@ static void disable_spd(void)
 	outb(0x67, PM_IO_BASE + 0x37);
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

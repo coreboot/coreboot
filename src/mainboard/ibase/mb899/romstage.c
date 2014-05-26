@@ -223,6 +223,7 @@ static void early_ich7_init(void)
 	RCBA32(0x2034) = reg32;
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	u32 reg32;

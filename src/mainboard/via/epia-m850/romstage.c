@@ -42,6 +42,7 @@
 #define SERIAL_DEV PNP_DEV(0x4e, F81865F_SP1)
 
 /* cache_as_ram.inc jumps to here. */
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	u32 tolm;

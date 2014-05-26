@@ -150,6 +150,7 @@ static void copy_spd(struct pei_data *peid)
 	       sizeof(peid->spd_data[0]));
 }
 
+#include <cpu/intel/car.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

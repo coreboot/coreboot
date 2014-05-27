@@ -58,10 +58,13 @@ ARCHDIR-x86_32  := x86
 ARCHDIR-arm     := arm
 ARCHDIR-arm64   := arm64
 ARCHDIR-riscv   := riscv
+ARCHDIR-mipsel  := mips
 
 CFLAGS_arm      := -mno-unaligned-access -ffunction-sections -fdata-sections
 
 CFLAGS_arm64 := -ffunction-sections -fdata-sections
+
+CFLAGS_mipsel   := -mips32r2 -G 0
 
 toolchain_to_dir = \
 	$(foreach arch,$(ARCH_SUPPORTED),\

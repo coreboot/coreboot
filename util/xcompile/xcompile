@@ -168,7 +168,7 @@ EOF
 }
 
 # Architecture definition
-SUPPORTED_ARCHITECTURE="x86 arm arm64 riscv"
+SUPPORTED_ARCHITECTURE="x86 arm arm64 riscv mipsel"
 
 arch_config_arm() {
 	TARCH="arm"
@@ -200,6 +200,14 @@ arch_config_x86() {
 	TARCH="x86_32"
 	TBFDARCH="i386"
 	TCLIST="i386 x86_64"
+	TWIDTH="32"
+	TABI="elf"
+}
+
+arch_config_mipsel() {
+	TARCH="mipsel"
+	TBFDARCH="littlemips"
+	TCLIST="mipsel"
 	TWIDTH="32"
 	TABI="elf"
 }

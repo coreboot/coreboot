@@ -34,13 +34,24 @@
  */
 ENTRY(_entry)
 
+	/* TODO: disable interrupts */
+
+	/* Clear BSS */
+	mov r12, #0
+	ldr r2, bss_boundaries
+	ldr r3, bss_boundaries + 4
+	cmp r2, r3
+	beq no_bss
+
+	sub r3, #4 /* Account for late condition check. */
+loop:
+	cmp r2, r3
+	str r12, [r2], #4
+	blt loop
+no_bss:
 	/* Save off the location of the coreboot tables */
 	ldr r1, 1f
 	str r0, [r1]
-
-	/* TODO: disable interrupts */
-
-	/* TODO: Clear BSS */
 
 	/* Setup new stack */
 	ldr sp, 2f
@@ -59,6 +70,9 @@ ENTRY(_entry)
 ENDPROC(_entry)
 
 .align 4
+bss_boundaries:
+	.word _edata
+	.word _end
 1:
 .word	cb_header_ptr
 2:

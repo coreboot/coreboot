@@ -38,15 +38,6 @@
                                              ((value << (32 - end_pos))\
                                               >> (32 - (end_pos - start_pos)))
 
-
-#define PACK_CHARS_INTO_WORDS(a, cnt, word)  {                                 \
-                                               word = 0;                       \
-                                               int j;                          \
-                                               for(j=0; j < (int)cnt; j++) { \
-                                                   word |= (a[j] & 0xff)<< (j * 8);\
-                                               }                               \
-                                              }
-
 extern void __udelay(unsigned long usec);
 
 

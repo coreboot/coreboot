@@ -192,108 +192,23 @@ msm_boot_uart_dm_read(unsigned int *data, int *count, int wait)
 }
 #endif
 
-/**
- * msm_boot_uart_replace_lr_with_cr - replaces "\n" with "\r\n"
- * @data_in:      characters to be converted
- * @num_of_chars: no. of characters
- * @data_out:     location where converted chars are stored
- *
- * Replace linefeed char "\n" with carriage return + linefeed
- * "\r\n". Currently keeping it simple than efficient.
- */
-static unsigned int
-msm_boot_uart_replace_lr_with_cr(unsigned char *data_in,
-                                 int num_of_chars,
-                                 char *data_out, int *num_of_chars_out)
+void uart_tx_byte(int idx, unsigned char data)
 {
-        int i = 0, j = 0;
-
-        if ((data_in == NULL) || (data_out == NULL) || (num_of_chars < 0))
-                return MSM_BOOT_UART_DM_E_INVAL;
-
-        for (i = 0, j = 0; i < num_of_chars; i++, j++) {
-                if (data_in[i] == '\n')
-                        data_out[j++] = '\r';
-
-                data_out[j] = data_in[i];
-        }
-
-        *num_of_chars_out = j;
-
-        return MSM_BOOT_UART_DM_E_SUCCESS;
-}
-
-/**
- * msm_boot_uart_dm_write - transmit data
- * @data:          data to transmit
- * @num_of_chars:  no. of bytes to transmit
- *
- * Writes the data to the TX FIFO. If no space is available blocks
- * till space becomes available.
- */
-static unsigned int
-msm_boot_uart_dm_write(unsigned char *data, unsigned int num_of_chars)
-{
-	unsigned int tx_word_count = 0;
-	unsigned int tx_char_left = 0, tx_char = 0;
-	unsigned int tx_word = 0;
-	int i = 0;
-	char *tx_data = NULL;
-	char new_data[1024];
 	unsigned int base = uart_board_param.uart_dm_base;
 
-        if ((data == NULL) || (num_of_chars <= 0))
-                return MSM_BOOT_UART_DM_E_INVAL;
+	/* Wait until transmit FIFO is empty. */
+	while (!(readl_i(MSM_BOOT_UART_DM_SR(base)) &
+		MSM_BOOT_UART_DM_SR_TXEMT))
+			udelay(1);
 
-        /* Replace line-feed (/n) with carriage-return + line-feed (/r/n) */
-        msm_boot_uart_replace_lr_with_cr(data, num_of_chars, new_data, &i);
+	/*
+	 * TX FIFO is ready to accept new character(s). First write number of
+	 * characters to be transmitted.
+	 */
+	writel_i(1, MSM_BOOT_UART_DM_NO_CHARS_FOR_TX(base));
 
-        tx_data = new_data;
-        num_of_chars = i;
-
-        /* Write to NO_CHARS_FOR_TX register number of characters
-        * to be transmitted. However, before writing TX_FIFO must
-        * be empty as indicated by TX_READY interrupt in IMR register
-        */
-        /* Check if transmit FIFO is empty.
-        * If not we'll wait for TX_READY interrupt. */
-
-        if (!(readl_i(MSM_BOOT_UART_DM_SR(base)) & MSM_BOOT_UART_DM_SR_TXEMT)) {
-                while (!(readl_i(MSM_BOOT_UART_DM_ISR(base)) &
-			 MSM_BOOT_UART_DM_TX_READY))
-                        udelay(1);
-        }
-
-        /* We are here. FIFO is ready to be written. */
-        /* Write number of characters to be written */
-        writel_i(num_of_chars, MSM_BOOT_UART_DM_NO_CHARS_FOR_TX(base));
-
-        /* Clear TX_READY interrupt */
-        writel_i(MSM_BOOT_UART_DM_GCMD_RES_TX_RDY_INT,
-		 MSM_BOOT_UART_DM_CR(base));
-
-        /* We use four-character word FIFO. So we need to divide data into
-        * four characters and write in UART_DM_TF register */
-        tx_word_count = (num_of_chars % 4) ? ((num_of_chars / 4) + 1) :
-                        (num_of_chars / 4);
-        tx_char_left = num_of_chars;
-
-        for (i = 0; i < (int)tx_word_count; i++) {
-                tx_char = (tx_char_left < 4) ? tx_char_left : 4;
-                PACK_CHARS_INTO_WORDS(tx_data, tx_char, tx_word);
-
-                /* Wait till TX FIFO has space */
-                while (!(readl_i(MSM_BOOT_UART_DM_SR(base)) &
-			 MSM_BOOT_UART_DM_SR_TXRDY))
-                        udelay(1);
-
-                /* TX FIFO has space. Write the chars */
-                writel_i(tx_word, MSM_BOOT_UART_DM_TF(base, 0));
-                tx_char_left = num_of_chars - (i + 1) * 4;
-                tx_data = tx_data + 4;
-        }
-
-        return MSM_BOOT_UART_DM_E_SUCCESS;
+	/* And now write the character(s) */
+	writel_i(data, MSM_BOOT_UART_DM_TF(base, 0));
 }
 
 /*
@@ -417,15 +332,6 @@ uint32_t uartmem_getbaseaddr(void)
 	return uart_board_param.uart_dm_base;
 }
 #endif
-
-/**
- * uart_tx_byte - transmits a character
- * @c: character to transmit
- */
-void uart_tx_byte(int idx, unsigned char c)
-{
-        msm_boot_uart_dm_write(&c, 1);
-}
 
 /**
  * uart_tx_flush - transmits a string of data

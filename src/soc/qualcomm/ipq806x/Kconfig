@@ -44,11 +44,11 @@ config BOOTBLOCK_BASE
 
 config ROMSTAGE_BASE
 	hex
-	default 0x40608000
+	default 0x40620000
 
 config RAMSTAGE_BASE
 	hex
-	default 0x4060c000
+	default 0x40640000
 
 config SYS_SDRAM_BASE
 	hex

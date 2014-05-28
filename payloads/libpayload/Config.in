@@ -178,6 +178,11 @@ config TEGRA_SERIAL_CONSOLE
 	depends on SERIAL_CONSOLE
 	default n
 
+config IPQ806X_SERIAL_CONSOLE
+	bool "IPQ806x SOC compatible serial port driver"
+	depends on SERIAL_CONSOLE
+	default n
+
 config PL011_SERIAL_CONSOLE
 	bool "PL011 compatible serial port driver"
 	depends on 8250_SERIAL_CONSOLE

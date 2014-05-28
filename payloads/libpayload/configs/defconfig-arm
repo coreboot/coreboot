@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Wed Dec 31 11:11:44 2014
+# Wed Dec 31 11:37:12 2014
 #
 
 #
@@ -38,6 +38,7 @@ CONFIG_LP_SERIAL_CONSOLE=y
 # CONFIG_LP_8250_SERIAL_CONSOLE is not set
 # CONFIG_LP_S5P_SERIAL_CONSOLE is not set
 # CONFIG_LP_TEGRA_SERIAL_CONSOLE is not set
+# CONFIG_LP_IPQ806X_SERIAL_CONSOLE is not set
 # CONFIG_LP_SERIAL_SET_SPEED is not set
 # CONFIG_LP_SERIAL_ACS_FALLBACK is not set
 CONFIG_LP_VIDEO_CONSOLE=y

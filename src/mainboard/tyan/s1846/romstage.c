@@ -30,7 +30,7 @@
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
-#include "superio/nsc/pc87309/early_serial.c"
+#include <superio/nsc/pc87309/pc87309.h>
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, PC87309_SP1)

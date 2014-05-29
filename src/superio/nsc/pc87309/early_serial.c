@@ -19,9 +19,10 @@
  */
 
 #include <arch/io.h>
+#include <device/pnp_def.h>
 #include "pc87309.h"
 
-static void pc87309_enable_serial(device_t dev, u16 iobase)
+void pc87309_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

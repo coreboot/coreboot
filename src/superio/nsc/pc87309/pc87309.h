@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_NSC_PC87309_PC87309_H
-#define SUPERIO_NSC_PC87309_PC87309_H
+#ifndef SUPERIO_NSC_PC87309_H
+#define SUPERIO_NSC_PC87309_H
 
 /* Datasheet: PC87309 SuperI/O Plug and Play Compatible Chip. */
 
@@ -31,4 +31,9 @@
 #define PC87309_KBCM 0x05	/* Mouse */
 #define PC87309_KBCK 0x06	/* Keyboard */
 
-#endif
+#include <arch/io.h>
+#include <stdint.h>
+
+void pc87309_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_NSC_PC87309_H */

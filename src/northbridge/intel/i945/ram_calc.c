@@ -30,7 +30,7 @@ unsigned long get_top_of_ram(void)
 
 	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & ((1 << 4) | (1 << 3))) {
 		/* IGD enabled, get top of Memory from BSM register */
-		tom = pci_read_config32(PCI_DEV(0,2,0), 0x5c);
+		tom = pci_read_config32(PCI_DEV(0,2,0), BSM);
 	} else {
 		tom = (pci_read_config8(PCI_DEV(0,0,0), TOLUD) & 0xf7) << 24;
 	}

@@ -97,7 +97,7 @@ static void pci_domain_set_resources(device_t dev)
 	printk(BIOS_DEBUG, "pci_tolm: 0x%x\n", pci_tolm);
 
 	printk(BIOS_SPEW, "Base of stolen memory: 0x%08x\n",
-		    pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), 0x5c));
+		    pci_read_config32(dev_find_slot(0, PCI_DEVFN(2, 0)), BSM));
 
 	tolud = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), 0x9c);
 	printk(BIOS_SPEW, "Top of Low Used DRAM: 0x%08x\n", tolud << 24);

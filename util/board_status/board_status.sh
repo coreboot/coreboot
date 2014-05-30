@@ -161,6 +161,7 @@ echo "Temporarily placing output in ${tmpdir}/${results}"
 mkdir -p "${tmpdir}/${results}"
 
 mv "${tmpdir}/config.txt" "${tmpdir}/${results}"
+mv "${tmpdir}/cbfs.txt" "${tmpdir}/${results}"
 
 touch ${tmpdir}/${results}/revision.txt
 printf "Local revision: %s\n" "$($getrevision -l)" >> ${tmpdir}/${results}/revision.txt

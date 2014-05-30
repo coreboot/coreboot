@@ -139,6 +139,8 @@ typedef volatile struct trb {
 	u32 control;
 } trb_t;
 
+#define TRB_MAX_TD_SIZE	0x1F			/* bits 21:17 of TD Size in TRB */
+
 #define EVENT_RING_SIZE 64
 typedef struct {
 	trb_t *ring;

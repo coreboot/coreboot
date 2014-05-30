@@ -541,7 +541,7 @@ xhci_enqueue_td(transfer_ring_t *const tr, const int ep, const size_t mps,
 		xhci_clear_trb(trb, tr->pcs);
 		trb->ptr_low = virt_to_phys(cur_start);
 		TRB_SET(TL, trb, cur_length);
-		TRB_SET(TDS, trb, packets);
+		TRB_SET(TDS, trb, MIN(TRB_MAX_TD_SIZE, packets));
 		TRB_SET(CH, trb, 1);
 
 		/* Check for first, data stage TRB */

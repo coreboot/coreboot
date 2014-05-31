@@ -25,6 +25,7 @@
 #include <device/device.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <string.h>
 #include <device/pci_def.h>
 #include <device/pci_ops.h>
 #include <device/pci_ids.h>
@@ -47,6 +48,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <smbios.h>
+#include <build.h>
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -87,6 +89,15 @@ static int int15_handler(void)
 	}
 }
 #endif
+
+const char *smbios_mainboard_bios_version(void)
+{
+	/* Satisfy thinkpad_acpi.  */
+	if (strlen(CONFIG_LOCALVERSION))
+		return "CBET4000 " CONFIG_LOCALVERSION;
+	else
+		return "CBET4000 " COREBOOT_VERSION;
+}
 
 const char *smbios_mainboard_version(void)
 {

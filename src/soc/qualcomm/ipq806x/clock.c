@@ -118,3 +118,29 @@ void nand_clock_config(void)
 	/* Wait for clock to stabilize. */
 	udelay(10);
 }
+
+/**
+ * usb_clock_config - configure USB controller clocks and reset the controller
+ */
+void usb_clock_config(void)
+{
+	/* Magic clock initialization numbers, nobody knows how they work... */
+	write32(0x10, USB30_MASTER_CLK_CTL_REG);
+	write32(0x10, USB30_1_MASTER_CLK_CTL_REG);
+	write32(0x500DF, USB30_MASTER_CLK_MD);
+	write32(0xE40942, USB30_MASTER_CLK_NS);
+	write32(0x100D7, USB30_MOC_UTMI_CLK_MD);
+	write32(0xD80942, USB30_MOC_UTMI_CLK_NS);
+	write32(0x10, USB30_MOC_UTMI_CLK_CTL);
+	write32(0x10, USB30_1_MOC_UTMI_CLK_CTL);
+
+	write32(1 << 5 |		/* assert port2 HS PHY async reset */
+		1 << 4 |		/* assert master async reset */
+		1 << 3 |		/* assert sleep async reset */
+		1 << 2 |		/* assert MOC UTMI async reset */
+		1 << 1 |		/* assert power-on async reset */
+		1 << 0 |		/* assert PHY async reset */
+		0, USB30_RESET);
+	udelay(5);
+	write32(0, USB30_RESET);	/* deassert all USB resets again */
+}

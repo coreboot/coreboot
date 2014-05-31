@@ -40,4 +40,12 @@ config DRAM_SIZE_MB
 	int
 	default 512
 
+config DRAM_DMA_START
+	hex
+	default 0x5a000000
+
+config DRAM_DMA_SIZE
+	hex
+	default 0x00200000
+
 endif # BOARD_GOOGLE_STORM

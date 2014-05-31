@@ -85,6 +85,14 @@
 #define GPIO_CONFIG_ADDR(x) (TLMM_BASE_ADDR + 0x1000 + (x)*0x10)
 #define GPIO_IN_OUT_ADDR(x) (TLMM_BASE_ADDR + 0x1004 + (x)*0x10)
 
+/* Yes, this is not a typo... host2 is actually mapped before host1. */
+#define USB_HOST2_XHCI_BASE	0x10000000
+#define USB_HOST2_DWC3_BASE	0x1000C100
+#define USB_HOST2_PHY_BASE	0x100F8800
+#define USB_HOST1_XHCI_BASE	0x11000000
+#define USB_HOST1_DWC3_BASE	0x1100C100
+#define USB_HOST1_PHY_BASE	0x110F8800
+
 #define GSBI_1			1
 #define GSBI_2			2
 #define GSBI_4			4

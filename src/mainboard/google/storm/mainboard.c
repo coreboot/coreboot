@@ -20,17 +20,25 @@
 #include <arch/cache.h>
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
-
-#define TO_MB(x)             ((x)>>20)
+#include <soc/qualcomm/ipq806x/include/clock.h>
+#include <soc/qualcomm/ipq806x/include/usb.h>
 
 /* convenient shorthand (in MB) */
-#define DRAM_START           TO_MB(CONFIG_SYS_SDRAM_BASE)
+#define DRAM_START           (CONFIG_SYS_SDRAM_BASE / MiB)
 #define DRAM_SIZE            (CONFIG_DRAM_SIZE_MB)
 #define DRAM_END             (DRAM_START + DRAM_SIZE)
 
 /* DMA memory for drivers */
-#define DMA_START            TO_MB(CONFIG_DRAM_DMA_START)
-#define DMA_SIZE             TO_MB(CONFIG_DRAM_DMA_SIZE)
+#define DMA_START            (CONFIG_DRAM_DMA_START / MiB)
+#define DMA_SIZE             (CONFIG_DRAM_DMA_SIZE / MiB)
+
+static void setup_usb(void)
+{
+	usb_clock_config();
+
+	setup_usb_host1();
+	setup_usb_host2();
+}
 
 static void setup_mmu(void)
 {
@@ -43,8 +51,7 @@ static void setup_mmu(void)
 	/* Map DRAM memory */
 	mmu_config_range(DRAM_START, DRAM_SIZE, DCACHE_WRITEBACK);
 	/* Map DMA memory */
-	if (DMA_SIZE)
-		mmu_config_range(DMA_START, DMA_SIZE, DCACHE_OFF);
+	mmu_config_range(DMA_START, DMA_SIZE, DCACHE_OFF);
 
 	mmu_disable_range(DRAM_END, 4096 - DRAM_END);
 
@@ -56,6 +63,7 @@ static void setup_mmu(void)
 static void mainboard_init(device_t dev)
 {
 	 setup_mmu();
+	 setup_usb();
 }
 
 static void mainboard_enable(device_t dev)
@@ -67,3 +75,14 @@ struct chip_operations mainboard_ops = {
 	.name	= "storm",
 	.enable_dev = mainboard_enable,
 };
+
+void lb_board(struct lb_header *header)
+{
+	struct lb_range *dma;
+
+	dma = (struct lb_range *)lb_new_record(header);
+	dma->tag = LB_TAB_DMA;
+	dma->size = sizeof(*dma);
+	dma->range_start = CONFIG_DRAM_DMA_START;
+	dma->range_size = CONFIG_DRAM_DMA_SIZE;
+}

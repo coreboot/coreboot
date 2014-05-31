@@ -63,6 +63,16 @@
 #define CFPB_SPLITTER_HCLK_CTL_REG          REG(0x026E0)
 #define EBI2_CLK_CTL_REG                    REG(0x03B00)
 
+#define USB30_MASTER_CLK_CTL_REG            REG(0x3b24)
+#define USB30_MASTER_CLK_MD                 REG(0x3b28)
+#define USB30_MASTER_CLK_NS                 REG(0x3b2c)
+#define USB30_1_MASTER_CLK_CTL_REG          REG(0x3b34)
+#define USB30_MOC_UTMI_CLK_MD               REG(0x3b40)
+#define USB30_MOC_UTMI_CLK_NS               REG(0x3b44)
+#define USB30_MOC_UTMI_CLK_CTL              REG(0x3b48)
+#define USB30_1_MOC_UTMI_CLK_CTL            REG(0x3b4c)
+#define USB30_RESET                         REG(0x3b50)
+
 #define ALWAYS_ON_CLK_BRANCH_ENA(i)         ((i) << 8)
 
 #define CLK_BRANCH_ENA_MASK                 0x00000010
@@ -182,5 +192,6 @@ void uart_pll_vote_clk_enable(unsigned int);
 void uart_clock_config(unsigned int gsbi_port, unsigned int m, unsigned int n,
 		unsigned int d, unsigned int clk_dummy);
 void nand_clock_config(void);
+void usb_clock_config(void);
 
 #endif  /*  __PLATFORM_IPQ860X_CLOCK_H_ */

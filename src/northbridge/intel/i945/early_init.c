@@ -248,7 +248,7 @@ static void i945_setup_egress_port(void)
 	}
 
 	/* Is internal graphics enabled? */
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 0x54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
 		MCHBAR32(MMARB1) |= (1 << 17);
 	}
 
@@ -431,7 +431,7 @@ static void i945_setup_dmi_rcrb(void)
 #endif
 	DMIBAR32(0x204) = reg32;
 
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), 0x54) & ((1 << 4) | (1 << 3))) {	/* DEVEN */
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
 		printk(BIOS_DEBUG, "Internal graphics: enabled\n");
 		DMIBAR32(0x200) |= (1 << 21);
 	} else {
@@ -649,10 +649,9 @@ static void i945_setup_pci_express_x16(void)
 		reg16 = (1 << 1);
 		pci_write_config16(PCI_DEV(0, 0x0, 0), 0x52, reg16);
 
-		/* DEVEN */
-		reg32 = pci_read_config32(PCI_DEV(0, 0x0, 0), 0x54);
-		reg32 &= ~((1 << 3) | (1 << 4));
-		pci_write_config32(PCI_DEV(0, 0x0, 0), 0x54, reg32);
+		reg32 = pci_read_config32(PCI_DEV(0, 0x0, 0), DEVEN);
+		reg32 &= ~(DEVEN_D2F0 | DEVEN_D2F1);
+		pci_write_config32(PCI_DEV(0, 0x0, 0), DEVEN, reg32);
 
 		/* Set VGA enable bit in PCIe bridge */
 		reg16 = pci_read_config16(PCI_DEV(0, 0x1, 0), 0x3e);

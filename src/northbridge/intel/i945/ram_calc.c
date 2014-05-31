@@ -28,7 +28,7 @@ unsigned long get_top_of_ram(void)
 {
 	u32 tom;
 
-	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & ((1 << 4) | (1 << 3))) {
+	if (pci_read_config8(PCI_DEV(0, 0x0, 0), DEVEN) & (DEVEN_D2F0 | DEVEN_D2F1)) {
 		/* IGD enabled, get top of Memory from BSM register */
 		tom = pci_read_config32(PCI_DEV(0,2,0), BSM);
 	} else {

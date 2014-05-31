@@ -36,18 +36,18 @@ unsigned long get_top_of_ram(void)
 	}
 
 	/* if TSEG enabled subtract size */
-	switch(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM)) {
+	switch(pci_read_config8(PCI_DEV(0, 0, 0), ESMRAM) & 0x07) {
 	case 0x01:
 		/* 1MB TSEG */
-		tom -= 0x10000;
+		tom -= 0x100000;
 		break;
 	case 0x03:
 		/* 2MB TSEG */
-		tom -= 0x20000;
+		tom -= 0x200000;
 		break;
 	case 0x05:
 		/* 8MB TSEG */
-		tom -= 0x80000;
+		tom -= 0x800000;
 		break;
 	default:
 		/* TSEG either disabled or invalid */

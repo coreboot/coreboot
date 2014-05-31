@@ -32,7 +32,7 @@
 #include <drivers/intel/gma/i915.h>
 #include <pc80/vga.h>
 #include <pc80/vga_io.h>
-
+#include <drivers/intel/gma/intel_bios.h>
 
 #include "chip.h"
 #include "nehalem.h"
@@ -1044,8 +1044,54 @@ static void intel_gma_init(const struct northbridge_intel_nehalem_config *info,
 #endif
 }
 
-#endif
+static size_t generate_vbt(const struct northbridge_intel_nehalem_config *conf,
+			   void *vbt)
+{
+	struct vbt_header *head = vbt;
+	struct bdb_header *bdb_head;
+	struct bdb_general_features *genfeat;
+	u8 *ptr;
 
+	memset(head, 0, sizeof (*head));
+
+	memcpy (head->signature, "$VBT IRONLAKE-MOBILE", 20);
+	head->version = 100;
+	head->header_size = sizeof (*head);
+	head->bdb_offset = sizeof (*head);
+
+	bdb_head = (struct bdb_header *) (head + 1);
+	memset(bdb_head, 0, sizeof (*bdb_head));
+	memcpy(bdb_head->signature, "BIOS_DATA_BLOCK ", 16);
+	bdb_head->version = 0xa8;
+	bdb_head->header_size = sizeof (*bdb_head);
+
+	ptr = (u8 *) (bdb_head + 1);
+
+	ptr[0] = BDB_GENERAL_FEATURES;
+	ptr[1] = sizeof (*genfeat);
+	ptr[2] = sizeof (*genfeat) >> 8;
+	ptr += 3;
+
+	genfeat = (struct bdb_general_features *) ptr;
+	memset(genfeat, 0, sizeof (*genfeat));
+	genfeat->panel_fitting = 3;
+	genfeat->flexaim = 1;
+	genfeat->download_ext_vbt = 1;
+	genfeat->enable_ssc = conf->gpu_use_spread_spectrum_clock;
+	genfeat->ssc_freq = !conf->gpu_link_frequency_270_mhz;
+	genfeat->rsvd10 = 0x4;
+	genfeat->legacy_monitor_detect = 1;
+	genfeat->int_crt_support = 1;
+	genfeat->dp_ssc_enb = 1;
+
+	ptr += sizeof (*genfeat);
+
+	bdb_head->bdb_size = ptr - (u8 *)bdb_head;
+	head->vbt_size = ptr - (u8 *)head;
+	head->vbt_checksum = 0;
+	return ptr - (u8 *)head;
+}
+#endif
 
 static void gma_func0_init(struct device *dev)
 {
@@ -1080,23 +1126,21 @@ static void gma_func0_init(struct device *dev)
 		intel_gma_init(conf, gtt_res->base, physbase, pio_res->base,
 			       lfb_res->base);
 	}
-#endif
 
 	/* Linux relies on VBT for panel info.  */
-	if (read16(0xc0000) != 0xaa55) {
-		optionrom_header_t *oh = (void *)0xc0000;
+	if (read16(PCI_VGA_RAM_IMAGE_START) != OPROM_SIGNATURE) {
+		optionrom_header_t *oh = (void *)PCI_VGA_RAM_IMAGE_START;
 		optionrom_pcir_t *pcir;
-		int sz;
+		size_t vbt_size;
+		size_t fake_oprom_size;
 
-		memset(oh->reserved, 0, 8192);
+		memset(oh, 0, 8192);
 
-		sz = (0x80 + sizeof(fake_vbt) + 511) / 512;
-		oh->signature = 0xaa55;
-		oh->size = sz;
+		oh->signature = OPROM_SIGNATURE;
 		oh->pcir_offset = 0x40;
 		oh->vbt_offset = 0x80;
 
-		pcir = (void *)0xc0040;
+		pcir = (void *)(PCI_VGA_RAM_IMAGE_START + 0x40);
 		pcir->signature = 0x52494350;	// PCIR
 		pcir->vendor = dev->vendor;
 		pcir->device = dev->device;
@@ -1105,11 +1149,14 @@ static void gma_func0_init(struct device *dev)
 		pcir->classcode[0] = dev->class >> 8;
 		pcir->classcode[1] = dev->class >> 16;
 		pcir->classcode[2] = dev->class >> 24;
-		pcir->imagelength = sz;
 		pcir->indicator = 0x80;
 
-		memcpy((void *)0xc0080, fake_vbt, sizeof(fake_vbt));
+		vbt_size = generate_vbt (conf, (void *)(PCI_VGA_RAM_IMAGE_START + 0x80));
+		fake_oprom_size = (0x80 + vbt_size + 511) / 512;
+		oh->size = fake_oprom_size;
+		pcir->imagelength = fake_oprom_size;
 	}
+#endif
 
 
 	/* Post VBIOS init */

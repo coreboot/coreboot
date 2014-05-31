@@ -18,4 +18,3 @@
 ##
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-ramstage-y += gma.c

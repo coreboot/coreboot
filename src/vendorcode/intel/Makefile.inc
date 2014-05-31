@@ -19,9 +19,9 @@
 
 ifneq ($(CONFIG_FSP_VENDORCODE_HEADER_PATH),)
 FSP_PATH := $(call strip_quotes,$(CONFIG_FSP_VENDORCODE_HEADER_PATH))
-FSP_SRC_FILES := $(wildcard src/vendorcode/intel/$(FSP_PATH)srx/*.c)
-FSP_C_INPUTS := $(foreach file, $(FSP_SRC_FILES), $(FSP_PATH)srx/$(notdir $(file)))
+FSP_SRC_FILES := $(wildcard src/vendorcode/intel/$(FSP_PATH)/srx/*.c)
+FSP_C_INPUTS := $(foreach file, $(FSP_SRC_FILES), $(FSP_PATH)/srx/$(notdir $(file)))
 ramstage-y += $(FSP_C_INPUTS)
 
-CFLAGS_x86_32 += -Isrc/vendorcode/intel/$(FSP_PATH)include
+CFLAGS_x86_32 += -Isrc/vendorcode/intel/$(FSP_PATH)/include
 endif

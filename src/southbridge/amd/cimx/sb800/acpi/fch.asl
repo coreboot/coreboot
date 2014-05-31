@@ -178,7 +178,7 @@ Method(_INI, 0) {
 	/* DBGO("\n") */
 
 	/* Determine the OS we're running on */
-	CkOT()
+	OSFL()
 
 	/* On older chips, clear PciExpWakeDisEn */
 	/*if (LLessEqual(\SBRI, 0x13)) {

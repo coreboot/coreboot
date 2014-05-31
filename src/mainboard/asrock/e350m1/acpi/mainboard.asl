@@ -30,30 +30,30 @@ Name(HPBA, 0xFED00000)	/* Base address of HPET table */
 Name(SSFG, 0x0D)	/* S1 support: bit 0, S2 Support: bit 1, etc. S0 & S5 assumed */
 
 /* Some global data */
-Name(OSTP, 3)	/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
+Name(OSVR, 3)	/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 Name(OSV, Ones)	/* Assume nothing */
 Name(PMOD, One)	/* Assume APIC */
 
 Scope(\_SB) {
-	Method(CkOT, 0){
+	Method(OSFL, 0){
 
-		if(LNotEqual(OSTP, Ones)) {Return(OSTP)}	/* OS version was already detected */
+		if(LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
 
 		if(CondRefOf(\_OSI,Local1))
 		{
-			Store(1, OSTP)					/* Assume some form of XP */
+			Store(1, OSVR)					/* Assume some form of XP */
 			if (\_OSI("Windows 2006"))		/* Vista */
 			{
-				Store(2, OSTP)
+				Store(2, OSVR)
 			}
 		} else {
 			If(WCMP(\_OS,"Linux")) {
-				Store(3, OSTP)				/* Linux */
+				Store(3, OSVR)				/* Linux */
 			} Else {
-				Store(4, OSTP)				/* Gotta be WinCE */
+				Store(4, OSVR)				/* Gotta be WinCE */
 			}
 		}
-		Return(OSTP)
+		Return(OSVR)
 	}
 }
 

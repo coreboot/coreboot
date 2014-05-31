@@ -122,7 +122,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "LXBIOS", "LXB-DSDT", 1)
 						0x0918,,,
 						, TypeStatic)  //0-CF7h
 				})
-				\_SB.OSTP ()
+				\_SB.OSVR ()
 				CreateDWordField (BUF0, 0x3E, VLEN)
 				CreateDWordField (BUF0, 0x36, VMAX)
 				CreateDWordField (BUF0, 0x32, VMIN)

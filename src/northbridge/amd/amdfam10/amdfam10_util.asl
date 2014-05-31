@@ -23,7 +23,7 @@ Scope (\_SB)
 {
 
 	Name (OSTB, Ones)
-	Method (OSTP, 0, NotSerialized)
+	Method (OSVR, 0, NotSerialized)
 	{
 		If (LEqual (^OSTB, Ones))
 		{

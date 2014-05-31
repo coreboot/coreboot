@@ -177,30 +177,30 @@ Method(_INI, 0) {
 	/* DBGO("\n") */
 
 	/* Determine the OS we're running on */
-	CkOT()
+	OSFL()
 
 	/* TODO: It is unstable. */
 	//#include "acpi/AmdImc.asl" /* Hudson IMC function */
 	//ITZE() /* enable IMC Fan Control*/
 } /* End Method(_SB._INI) */
 
-Method(CkOT, 0){
+Method(OSFL, 0){
 
-	if(LNotEqual(OSTP, Ones)) {Return(OSTP)}	/* OS version was already detected */
+	if(LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
 
 	if(CondRefOf(\_OSI,Local1))
 	{
-		Store(1, OSTP)					/* Assume some form of XP */
+		Store(1, OSVR)					/* Assume some form of XP */
 		if (\_OSI("Windows 2006"))		/* Vista */
 		{
-			Store(2, OSTP)
+			Store(2, OSVR)
 		}
 	} else {
 		If(WCMP(\_OS,"Linux")) {
-			Store(3, OSTP)				/* Linux */
+			Store(3, OSVR)				/* Linux */
 		} Else {
-			Store(4, OSTP)				/* Gotta be WinCE */
+			Store(4, OSVR)				/* Gotta be WinCE */
 		}
 	}
-	Return(OSTP)
+	Return(OSVR)
 }

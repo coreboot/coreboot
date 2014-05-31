@@ -55,7 +55,7 @@ DefinitionBlock (
 	Name(UOM9, 6)
 
 	/* Some global data */
-	Name(OSTP, 3)		/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
+	Name(OSVR, 3)		/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 	Name(OSV, Ones)	/* Assume nothing */
 	Name(PMOD, 0)	/* Default interrupt model is PIC */
 
@@ -458,23 +458,23 @@ DefinitionBlock (
 	}
 
 	Scope(\_SB) {
-		Method(CkOT, 0){
-			if(LNotEqual(OSTP, Ones)) {Return(OSTP)}	/* OS version was already detected */
+		Method(OSFL, 0){
+			if(LNotEqual(OSVR, Ones)) {Return(OSVR)}	/* OS version was already detected */
 			if(CondRefOf(\_OSI,Local1))
 			{
-				Store(1, OSTP)			/* Assume some form of XP */
+				Store(1, OSVR)			/* Assume some form of XP */
 				if (\_OSI("Windows 2006"))      /* Vista */
 				{
-					Store(2, OSTP)
+					Store(2, OSVR)
 				}
 			} else {
 				If(WCMP(\_OS,"Linux")) {
-					Store(3, OSTP)		/* Linux */
+					Store(3, OSVR)		/* Linux */
 				} Else {
-					Store(4, OSTP)		/* Gotta be WinCE */
+					Store(4, OSVR)		/* Gotta be WinCE */
 				}
 			}
-			Return(OSTP)
+			Return(OSVR)
 		}
 
 		Method(CIRQ, 0x00, NotSerialized){
@@ -1275,7 +1275,7 @@ DefinitionBlock (
 				}
 
 				Method(_INI) {
-					If(LEqual(OSTP,3)){   /* If we are running Linux */
+					If(LEqual(OSVR,3)){   /* If we are running Linux */
 						Store(zero, NSEN)
 						Store(one, NSDO)
 						Store(one, NSDI)
@@ -1594,7 +1594,7 @@ DefinitionBlock (
 				/* DBGO("\n") */
 
 				/* Determine the OS we're running on */
-				CkOT()
+				OSFL()
 				/* On older chips, clear PciExpWakeDisEn */
 				/*if (LLessEqual(\SBRI, 0x13)) {
 				 *    	Store(0,\PWDE)

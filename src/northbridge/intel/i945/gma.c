@@ -64,6 +64,7 @@ static void gma_func0_init(struct device *dev)
 	);
 
 	int i915lightup(u32 physbase, u32 iobase, u32 mmiobase, u32 gfx);
+	u32 uma_memory_base = pci_read_config32(dev, BSM) & ~((1 << 20) - 1);
 	int lightup_ok = i915lightup(uma_memory_base, iobase, mmiobase, graphics_base);
 	if (lightup_ok)
 		gfx_set_init_done(1);

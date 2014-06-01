@@ -17,7 +17,14 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+# Generic Nuvoton romstage driver - Just enough UART initialisation code for
+# romstage.
+config SUPERIO_NUVOTON_COMMON_ROMSTAGE
+	bool
+
 config SUPERIO_NUVOTON_WPCM450
 	bool
+
 config SUPERIO_NUVOTON_NCT5104D
 	bool
+	select SUPERIO_NUVOTON_COMMON_ROMSTAGE

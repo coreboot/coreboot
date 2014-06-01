@@ -17,5 +17,8 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 ##
 
+## include generic nuvoton pre-ram stage driver
+romstage-$(CONFIG_SUPERIO_NUVOTON_COMMON_ROMSTAGE) += common/early_serial.c
+
 subdirs-$(CONFIG_SUPERIO_NUVOTON_WPCM450) += wpcm450
 subdirs-$(CONFIG_SUPERIO_NUVOTON_NCT5104D) += nct5104d

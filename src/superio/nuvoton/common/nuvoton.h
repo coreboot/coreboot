@@ -1,7 +1,8 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
+ * Copyright (C) 2014 Felix Held <felix-coreboot@felixheld.de>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,32 +16,15 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef SUPERIO_NUVOTON_COMMON_ROMSTAGE_H
+#define SUPERIO_NUVOTON_COMMON_ROMSTAGE_H
+
 #include <arch/io.h>
-#include <device/pnp.h>
-#include "nct5104d.h"
+#include <stdint.h>
 
-static void pnp_enter_extended_mode(device_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0x87,port);
-	outb(0x87,port);
-}
+void nuvoton_enable_serial(device_t dev, u16 iobase);
 
-static void pnp_exit_extended_mode(device_t dev)
-{
-	u16 port = dev >> 8;
-	outb(0xaa,port);
-}
-
-void nct5104d_enable_serial(device_t dev, u16 iobase)
-{
-	pnp_enter_extended_mode(dev);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev,0);
-	pnp_set_iobase(dev,PNP_IDX_IO0, iobase);
-	pnp_set_enable(dev,1);
-	pnp_exit_extended_mode(dev);
-}
+#endif /* SUPERIO_NUVOTON_COMMON_ROMSTAGE_H */

@@ -18,9 +18,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_ITE_IT8772F_IT8772F_H
-#define SUPERIO_ITE_IT8772F_IT8772F_H
+#ifndef SUPERIO_ITE_IT8772F_H
+#define SUPERIO_ITE_IT8772F_H
 
+/* FIXME: SUPERIO include.c */
 #define IT8772F_BASE 0x2e
 
 #define IT8772F_FDC  0x00 /* Floppy disk controller */
@@ -107,11 +108,10 @@
 
 u8 it8772f_sio_read(u8 index);
 void it8772f_sio_write(u8 index, u8 value);
-void it8772f_enable_serial(device_t dev, u16 iobase);
-void it8772f_kill_watchdog(void);
 void it8772f_24mhz_clkin(void);
 void it8772f_enable_3vsbsw(void);
 void it8772f_ac_resume_southbridge(void);
 void it8772f_gpio_setup(int set, u8 func_select, u8 polarity, u8 pullup,
 			u8 output, u8 enable);
-#endif
+
+#endif /* SUPERIO_ITE_IT8772F_H */

@@ -31,7 +31,9 @@
 #include <cbmem.h>
 #include <console/console.h>
 #include <bootmode.h>
-#include "superio/ite/it8772f/it8772f.h"
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8772f/it8772f.h>
+/* FIXME: SUPERIO include.c */
 #include "superio/ite/it8772f/early_serial.c"
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit.h"
@@ -57,6 +59,9 @@
 #define CMOS_USB_RESET_DISABLE  (400 >> 3)
 #endif
 #define USB_RESET_DISABLE_MAGIC (0xdd) /* Disable if set to this */
+
+#define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
+#define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
 
 static void pch_enable_lpc(void)
 {
@@ -233,10 +238,9 @@ void main(unsigned long bist)
 	setup_sio_gpios();
 
 	/* Early SuperIO setup */
-	it8772f_kill_watchdog();
 	it8772f_ac_resume_southbridge();
-	it8772f_enable_serial(PNP_DEV(IT8772F_BASE, IT8772F_SP1),
-			      CONFIG_TTYS0_BASE);
+	ite_kill_watchdog(GPIO_DEV);
+	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 
 	init_bootmode_straps();

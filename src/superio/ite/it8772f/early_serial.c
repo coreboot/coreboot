@@ -22,6 +22,8 @@
 #include <device/pnp_def.h>
 #include "it8772f.h"
 
+/* NOTICE: This file is deprecated, use ite/common instead */
+
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
 #define SIO_BASE                     IT8772F_BASE
 #define SIO_INDEX                    SIO_BASE
@@ -82,25 +84,6 @@ void it8772f_enable_3vsbsw(void)
 	it8772f_enter_conf();
 	it8772f_sio_write(IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
 	it8772f_sio_write(IT8772F_CONFIG_REG_MFC, 0x80);
-	it8772f_exit_conf();
-}
-
-void it8772f_kill_watchdog(void)
-{
-	it8772f_enter_conf();
-	it8772f_sio_write(IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
-	it8772f_sio_write(IT8772F_CONFIG_REG_WATCHDOG, 0x00);
-	it8772f_exit_conf();
-}
-
-/* Enable the serial port(s). */
-void it8772f_enable_serial(device_t dev, u16 iobase)
-{
-	it8772f_enter_conf();
-	it8772f_sio_write(IT8772F_CONFIG_REG_LDN, dev & 0xff);
-	it8772f_sio_write(PNP_IDX_IO0, (iobase >> 8) & 0xff);
-	it8772f_sio_write(PNP_IDX_IO0+1, iobase & 0xff);
-	it8772f_sio_write(PNP_IDX_EN, 1);
 	it8772f_exit_conf();
 }
 

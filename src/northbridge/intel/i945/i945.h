@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __NORTHBRIDGE_INTEL_I945_I945_H__
-#define __NORTHBRIDGE_INTEL_I945_I945_H__ 1
+#ifndef NORTHBRIDGE_INTEL_I945_H
+#define NORTHBRIDGE_INTEL_I945_H
 
 /* Northbridge BARs */
 #define DEFAULT_PCIEXBAR	CONFIG_MMCONF_BASE_ADDRESS	/* 4 KB per PCIe device */
@@ -58,9 +58,10 @@
 #define  DEVEN_D1F0 (1 << 1)
 #define  DEVEN_D2F0 (1 << 3)
 #define  DEVEN_D2F1 (1 << 4)
+
 #ifndef BOARD_DEVEN
 #define BOARD_DEVEN ( DEVEN_D0F0 | DEVEN_D2F0 | DEVEN_D2F1 )
-#endif
+#endif /* BOARD_DEVEN */
 
 #define BSM		0x5c
 
@@ -360,5 +361,6 @@ void dump_pci_devices(void);
 void dump_spd_registers(void);
 void dump_mem(unsigned start, unsigned end);
 
-#endif
-#endif
+#endif /* __ACPI__ */
+
+#endif /* NORTHBRIDGE_INTEL_I945_H */

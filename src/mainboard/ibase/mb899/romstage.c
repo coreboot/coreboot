@@ -28,7 +28,7 @@
 #include <lib.h>
 #include <cbmem.h>
 #include <superio/winbond/common/winbond.h>
-#include "superio/winbond/w83627ehg/w83627ehg.h"
+#include <superio/winbond/w83627ehg/w83627ehg.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>

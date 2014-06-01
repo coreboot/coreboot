@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2008 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,30 +18,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <device/pci_def.h>
+#ifndef SUPERIO_SMSC_SMSCSUPERIO_H
+#define SUPERIO_SMSC_SMSCSUPERIO_H
+
 #include <arch/io.h>
-#include <device/pnp_def.h>
-#include <arch/hlt.h>
-#include <stdlib.h>
-#include <console/console.h>
-#include <superio/smsc/smscsuperio/smscsuperio.h>
-#include "northbridge/intel/i82810/raminit.h"
-#include "cpu/x86/bist.h"
-#include "southbridge/intel/i82801ax/i82801ax.h"
-#include "drivers/pc80/udelay_io.c"
-#include <lib.h>
+#include <stdint.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
+/* All known/supported SMSC Super I/Os have the same logical device IDs
+ * for the serial ports (COM1, COM2).
+ */
+#define SMSCSUPERIO_SP1 4	/* Com1 */
+#define SMSCSUPERIO_SP2 5	/* Com2 */
 
-void main(unsigned long bist)
-{
-	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-	console_init();
-	enable_smbus();
-	report_bist_failure(bist);
-	dump_spd_registers();
-	sdram_set_registers();
-	sdram_set_spd_registers();
-	sdram_enable();
-}
+void smscsuperio_enable_serial(device_t dev, u16 iobase);
+
+#endif /* SUPERIO_SMSC_SMSCSUPERIO_H */

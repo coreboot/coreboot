@@ -29,7 +29,7 @@
 #include "northbridge/intel/i82810/raminit.h"
 #include "drivers/pc80/udelay_io.c"
 #include "cpu/x86/bist.h"
-#include "superio/smsc/smscsuperio/early_serial.c"
+#include <superio/smsc/smscsuperio/smscsuperio.h>
 #include "gpio.c"
 #include <lib.h>
 

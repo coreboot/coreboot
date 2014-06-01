@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2007 Uwe Hermann <uwe@hermann-uwe.de>
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,12 +21,27 @@
 
 #include <arch/io.h>
 #include <device/pnp_def.h>
+#include <stdint.h>
 
-/* All known/supported SMSC Super I/Os have the same logical device IDs
- * for the serial ports (COM1, COM2).
- */
-#define SMSCSUPERIO_SP1 4	/* Com1 */
-#define SMSCSUPERIO_SP2 5	/* Com2 */
+#include "smscsuperio.h"
+
+#define SMSC_ENTRY_KEY 0x55
+#define SMSC_EXIT_KEY 0xAA
+
+/* Enable configuration: pass entry key '0x87' into index port dev. */
+static void pnp_enter_conf_state(device_t dev)
+{
+	u16 port = dev >> 8;
+	outb(SMSC_ENTRY_KEY, port);
+}
+
+/* Disable configuration: pass exit key '0xAA' into index port dev. */
+static void pnp_exit_conf_state(device_t dev)
+{
+	u16 port = dev >> 8;
+	outb(SMSC_EXIT_KEY, port);
+}
+
 
 /**
  * Enable the specified serial port.
@@ -33,14 +49,12 @@
  * @param dev The device to use.
  * @param iobase The I/O base of the serial port (usually 0x3f8/0x2f8).
  */
-static inline void smscsuperio_enable_serial(device_t dev, u16 iobase)
+void smscsuperio_enable_serial(device_t dev, u16 iobase)
 {
-	u16 port = dev >> 8;
-
-	outb(0x55, port);		/* Enter the configuration state. */
+	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
 	pnp_set_enable(dev, 1);
-	outb(0xaa, port);		/* Exit the configuration state. */
+	pnp_exit_conf_state(dev);
 }

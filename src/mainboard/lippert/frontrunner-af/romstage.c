@@ -32,7 +32,7 @@
 #include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "superio/smsc/smscsuperio/early_serial.c"
+#include <superio/smsc/smscsuperio/smscsuperio.h>
 #include "cpu/x86/lapic.h"
 #include <cpu/x86/cache.h>
 #include <sb_cimx.h>

@@ -27,7 +27,7 @@
 #include "drivers/pc80/udelay_io.c"
 #include <console/console.h>
 #include <lib.h>
-#include "superio/smsc/smscsuperio/early_serial.c"
+#include <superio/smsc/smscsuperio/smscsuperio.h>
 #include "northbridge/intel/i82830/raminit.h"
 #include "northbridge/intel/i82830/memory_initialized.c"
 #include "southbridge/intel/i82801dx/i82801dx.h"

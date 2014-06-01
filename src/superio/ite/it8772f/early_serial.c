@@ -25,16 +25,14 @@
 /* NOTICE: This file is deprecated, use ite/common instead */
 
 /* The base address is 0x2e or 0x4e, depending on config bytes. */
-#define SIO_BASE                     IT8772F_BASE
+/* FIXME: SUPERIO include.c */
+#define SIO_BASE                     0x2e
 #define SIO_INDEX                    SIO_BASE
 #define SIO_DATA                     (SIO_BASE + 1)
 
 /* Global configuration registers. */
 #define IT8772F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
 #define IT8772F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
-#define IT8772F_CONFIG_REG_CLOCKSEL  0x23 /* Clock Selection. */
-#define IT8772F_CONFIG_REG_MFC       0x2a /* Multi-function control */
-#define IT8772F_CONFIG_REG_WATCHDOG  0x72 /* Watchdog control. */
 
 u8 it8772f_sio_read(u8 index)
 {
@@ -61,30 +59,6 @@ static void it8772f_enter_conf(void)
 static void it8772f_exit_conf(void)
 {
 	it8772f_sio_write(IT8772F_CONFIG_REG_CC, 0x02);
-}
-
-/* Select 24MHz CLKIN (48MHz is the default). */
-void it8772f_24mhz_clkin(void)
-{
-	it8772f_enter_conf();
-	it8772f_sio_write(IT8772F_CONFIG_REG_LDN, 0x00);
-	it8772f_sio_write(IT8772F_CONFIG_REG_CLOCKSEL, 0x1);
-	it8772f_exit_conf();
-}
-
-/*
- * LDN 7, reg 0x2a - needed for S3, or memory power will be cut off.
- *
- * Enable 3VSBSW#. (For System Suspend-to-RAM)
- * 0: 3VSBSW# will be always inactive.
- * 1: 3VSBSW# enabled. It will be (NOT SUSB#) NAND SUSC#.
- */
-void it8772f_enable_3vsbsw(void)
-{
-	it8772f_enter_conf();
-	it8772f_sio_write(IT8772F_CONFIG_REG_LDN, IT8772F_GPIO);
-	it8772f_sio_write(IT8772F_CONFIG_REG_MFC, 0x80);
-	it8772f_exit_conf();
 }
 
 /* Set AC resume to be up to the Southbridge */

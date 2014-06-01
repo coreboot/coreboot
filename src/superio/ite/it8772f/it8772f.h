@@ -21,9 +21,6 @@
 #ifndef SUPERIO_ITE_IT8772F_H
 #define SUPERIO_ITE_IT8772F_H
 
-/* FIXME: SUPERIO include.c */
-#define IT8772F_BASE 0x2e
-
 #define IT8772F_FDC  0x00 /* Floppy disk controller */
 #define IT8772F_SP1  0x01 /* Com1 */
 #define IT8772F_EC   0x04 /* Environment controller */

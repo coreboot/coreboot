@@ -30,8 +30,9 @@
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
+#include <superio/winbond/common/winbond.h>
 /* FIXME: The ASUS P2B-F has a Winbond W83977EF, actually. */
-#include "superio/winbond/w83977tf/early_serial.c"
+#include <superio/winbond/w83977tf/w83977tf.h>
 #include <lib.h>
 
 /* FIXME: The ASUS P2B-F has a Winbond W83977EF, actually. */
@@ -44,8 +45,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 
 void main(unsigned long bist)
 {
-	/* FIXME: The ASUS P2B-F has a Winbond W83977EF, actually. */
-	w83977tf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	report_bist_failure(bist);
 

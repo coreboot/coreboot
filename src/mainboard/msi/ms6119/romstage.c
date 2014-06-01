@@ -30,7 +30,8 @@
 #include "drivers/pc80/udelay_io.c"
 #include "lib/delay.c"
 #include "cpu/x86/bist.h"
-#include "superio/winbond/w83977tf/early_serial.c"
+#include <superio/winbond/common/winbond.h>
+#include <superio/winbond/w83977tf/w83977tf.h>
 #include <lib.h>
 
 #define SERIAL_DEV PNP_DEV(0x3f0, W83977TF_SP1)
@@ -42,7 +43,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 
 void main(unsigned long bist)
 {
-	w83977tf_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
 	report_bist_failure(bist);
 

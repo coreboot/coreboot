@@ -63,8 +63,6 @@
 #define BOARD_DEVEN ( DEVEN_D0F0 | DEVEN_D2F0 | DEVEN_D2F1 )
 #endif /* BOARD_DEVEN */
 
-#define BSM		0x5c
-
 #define PAM0		0x90
 #define PAM1		0x91
 #define PAM2		0x92
@@ -89,6 +87,7 @@
 
 /* Device 0:2.0 PCI configuration space (Graphics Device) */
 
+#define BSM		0x5c
 #define GCFC		0xf0	/* Graphics Clock Frequency & Gating Control */
 
 

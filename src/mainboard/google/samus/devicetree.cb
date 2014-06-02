@@ -3,11 +3,11 @@ chip soc/intel/broadwell
 	# Enable eDP Hotplug with 6ms pulse
 	register "gpu_dp_d_hotplug" = "0x06"
 
-	# Disable DDI2 Hotplug
-	register "gpu_dp_c_hotplug" = "0x00"
-
 	# Enable DDI1 Hotplug with 6ms pulse
 	register "gpu_dp_b_hotplug" = "0x06"
+
+	# Enable DDI2 Hotplug with 6ms pulse
+	register "gpu_dp_c_hotplug" = "0x06"
 
 	# Set backlight PWM values for eDP
 	register "gpu_cpu_backlight" = "0x00000200"

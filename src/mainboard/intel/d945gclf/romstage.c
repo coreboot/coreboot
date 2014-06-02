@@ -28,16 +28,16 @@
 #include <lib.h>
 #include <arch/acpi.h>
 #include <cbmem.h>
-#include "superio/smsc/lpc47m15x/lpc47m15x.h"
+#include <superio/smsc/lpc47m15x/lpc47m15x.h>
 #include <pc80/mc146818rtc.h>
 #include <console/console.h>
 #include <cpu/x86/bist.h>
-#include "superio/smsc/lpc47m15x/early_serial.c"
 #include "northbridge/intel/i945/i945.h"
 #include "northbridge/intel/i945/raminit.h"
 #include "southbridge/intel/i82801gx/i82801gx.h"
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627THG_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, LPC47M15X_SP1)
+#define PME_DEV PNP_DEV(0x2e, LPC47M15X_PME)
 
 void setup_ich7_gpios(void)
 {
@@ -66,34 +66,6 @@ static void ich7_enable_lpc(void)
 	pci_write_config16(PCI_DEV(0, 0x1f, 0), 0x82, 0x140d);
 	// Enable SuperIO Power Management Events
 	pci_write_config32(PCI_DEV(0, 0x1f, 0), 0x84, 0x007c0681);
-}
-
-/* This box has two superios, so enabling serial becomes slightly excessive.
- * We disable a lot of stuff to make sure that there are no conflicts between
- * the two. Also set up the GPIOs from the beginning. This is the "no schematic
- * but safe anyways" method.
- */
-static void early_superio_config_lpc47m15x(void)
-{
-	device_t dev;
-
-	dev=PNP_DEV(0x2e, LPC47M15X_SP1);
-	pnp_enter_conf_state(dev);
-
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x3f8);
-	pnp_set_irq(dev, PNP_IDX_IRQ0, 4);
-	pnp_set_enable(dev, 1);
-
-	/* Enable SuperIO PM */
-	dev=PNP_DEV(0x2e, LPC47M15X_PME);
-	pnp_set_logical_device(dev);
-	pnp_set_enable(dev, 0);
-	pnp_set_iobase(dev, PNP_IDX_IO0, 0x680);
-	pnp_set_enable(dev, 1);
-
-	pnp_exit_conf_state(dev);
 }
 
 static void rcba_config(void)
@@ -194,7 +166,9 @@ void main(unsigned long bist)
 		enable_lapic();
 
 	ich7_enable_lpc();
-	early_superio_config_lpc47m15x();
+	/* Enable SuperIO PM */
+	lpc47m15x_enable_serial(PME_DEV, 0x680);
+	lpc47m15x_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE); /* 0x3f8 */
 
 	/* Set up the console */
 	console_init();

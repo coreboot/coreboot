@@ -20,6 +20,9 @@
 /* Pre-RAM driver for the SMSC LPC47M15X Super I/O chip */
 
 #include <arch/io.h>
+#include <device/pnp.h>
+#include <stdint.h>
+
 #include "lpc47m15x.h"
 
 static void pnp_enter_conf_state(device_t dev)
@@ -34,7 +37,7 @@ static void pnp_exit_conf_state(device_t dev)
 	outb(0xaa, port);
 }
 
-static inline void lpc47m15x_enable_serial(device_t dev, u16 iobase)
+void lpc47m15x_enable_serial(device_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

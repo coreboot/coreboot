@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,40 +21,44 @@
 /* Pre-RAM driver for the SMSC KBC1100 Super I/O chip */
 
 #include <arch/io.h>
+#include <device/pnp.h>
+#include <stdint.h>
+
 #include "kbc1100.h"
 
-static inline void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(device_t dev)
 {
-  unsigned port = dev>>8;
-  outb(0x55, port);
+	u16 port = dev >> 8;
+	outb(0x55, port);
 }
 
 static void pnp_exit_conf_state(device_t dev)
 {
-  unsigned port = dev>>8;
-  outb(0xaa, port);
+	u16 port = dev >> 8;
+	outb(0xaa, port);
 }
 
-static inline void kbc1100_early_init(unsigned port)
+void kbc1100_early_serial(device_t dev, u16 iobase)
+{
+	pnp_enter_conf_state(dev);
+	pnp_set_logical_device(dev);
+	pnp_set_enable(dev, 0);
+	pnp_set_iobase(dev, PNP_IDX_IO0, iobase);
+	pnp_set_enable(dev, 1);
+	pnp_exit_conf_state(dev);
+}
+
+void kbc1100_early_init(u16 port)
 {
   device_t dev;
   dev = PNP_DEV (port, KBC1100_KBC);
-
   pnp_enter_conf_state(dev);
 
   /* Serial IRQ enabled */
   outb(0x25, port);
   outb(0x04, port + 1);
 
-  /* Enable SMSC UART 0 */
-  dev = PNP_DEV (port, SMSCSUPERIO_SP1);
-  pnp_set_logical_device(dev);
-  pnp_set_enable(dev, 0);
-  pnp_set_iobase(dev, PNP_IDX_IO0, CONFIG_TTYS0_BASE);
-  pnp_set_enable(dev, 1);
-
   /* Enable keyboard */
-  dev = PNP_DEV (port, KBC1100_KBC);
   pnp_set_logical_device(dev);
   pnp_set_enable(dev, 0);
   pnp_set_iobase(dev, PNP_IDX_IO0, 0x60);
@@ -72,4 +77,3 @@ static inline void kbc1100_early_init(unsigned port)
   /* disable the 1s timer */
   outb(0xE7, 0x64);
 }
-

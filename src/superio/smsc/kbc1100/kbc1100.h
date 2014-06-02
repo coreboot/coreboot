@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Edward O'Callaghan <eocallaghan@alterapraxis.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +18,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef SUPERIO_SMSC_KBC1100_H
+#define SUPERIO_SMSC_KBC1100_H
+
+#include <arch/io.h>
+#include <stdint.h>
+
 #define KBC1100_PM1              1            /* PM1 */
 #define SMSCSUPERIO_SP1          4            /* Com1 */
 #define SMSCSUPERIO_SP2          5            /* Com2 */
@@ -29,4 +36,7 @@
 #define KBC1100_EC1              0x0D         /* EC Channel 1 */
 #define KBC1100_EC2              0x0E         /* EC Channel 2 */
 
+void kbc1100_early_serial(device_t dev, u16 iobase);
+void kbc1100_early_init(u16 port);
 
+#endif /* SUPERIO_SMSC_KBC1100_H */

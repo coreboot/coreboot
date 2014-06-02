@@ -30,13 +30,14 @@
 #include "cpu/amd/car.h"
 #include "agesawrapper.h"
 #include "cpu/x86/bist.h"
-#include "superio/smsc/kbc1100/kbc1100_early_init.c"
+#include <superio/smsc/kbc1100/kbc1100.h>
 #include "cpu/x86/lapic.h"
 #include "sb_cimx.h"
 #include "SbPlatform.h"
 #include <arch/cpu.h>
 #include "platform_cfg.h"
 
+#define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -57,7 +58,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		post_code(0x31);
 
-		kbc1100_early_init(CONFIG_SIO_PORT);
+		kbc1100_early_init(0x2e);
+		kbc1100_early_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 		post_code(0x32);
 		post_code(0x33);

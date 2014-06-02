@@ -17,4 +17,5 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
+romstage-$(CONFIG_SUPERIO_SMSC_KBC1100) += early_init.c
 ramstage-$(CONFIG_SUPERIO_SMSC_KBC1100) += superio.c

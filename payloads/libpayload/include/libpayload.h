@@ -282,6 +282,7 @@ struct console_output_driver {
 
 void console_add_output_driver(struct console_output_driver *out);
 void console_add_input_driver(struct console_input_driver *in);
+int console_remove_output_driver(void *function);
 
 #define havechar havekey
 /** @} */

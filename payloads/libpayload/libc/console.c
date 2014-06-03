@@ -48,6 +48,23 @@ void console_add_input_driver(struct console_input_driver *in)
 	console_in = in;
 }
 
+/*
+ * For when you really need to silence an output driver (e.g. to avoid ugly
+ * recursions). Takes the pointer of either of the two output functions, since
+ * the struct console_output_driver itself is often static and inaccessible.
+ */
+int console_remove_output_driver(void *function)
+{
+	struct console_output_driver **out;
+	for (out = &console_out; *out; out = &(*out)->next)
+		if ((*out)->putchar == function || (*out)->write == function) {
+			*out = (*out)->next;
+			return 1;
+		}
+
+	return 0;
+}
+
 void console_init(void)
 {
 #ifdef CONFIG_LP_VIDEO_CONSOLE

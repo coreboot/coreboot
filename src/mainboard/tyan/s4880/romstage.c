@@ -48,18 +48,6 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
         smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
-#if 0
-static inline void change_i2c_mux(unsigned device)
-{
-#define SMBUS_HUB 0x18
-        int ret;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
-        ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-        print_debug("change_i2c_mux 1 ret="); print_debug_hex32(ret); print_debug("\n");
-        ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
-        print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\n");
-}
-#endif
 
 static inline int spd_read_byte(unsigned device, unsigned address)
 {

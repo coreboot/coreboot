@@ -45,22 +45,6 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
         smbus_write_byte(SMBUS_HUB, 0x03, 0);
 }
 
-#if 0
-static inline void change_i2c_mux(unsigned device)
-{
-#define SMBUS_HUB 0x18
-        int ret, i;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
-        i=2;
-        do {
-                ret = smbus_write_byte(SMBUS_HUB, 0x01, device);
-                print_debug("change_i2c_mux 1 ret="); print_debug_hex32(ret); print_debug("\n");
-        } while ((ret!=0) && (i-->0));
-        ret = smbus_write_byte(SMBUS_HUB, 0x03, 0);
-        print_debug("change_i2c_mux 2 ret="); print_debug_hex32(ret); print_debug("\n");
-}
-#endif
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
         return smbus_read_byte(device, address);
@@ -207,13 +191,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		activate_spd_rom(&cpu[i]);
 		dump_smbus_registers();
 	}
-#endif
-
-#if 0
-        for(i=1;i<256;i<<=1) {
-                change_i2c_mux(i);
-                dump_smbus_registers();
-        }
 #endif
 
 	memreset_setup();

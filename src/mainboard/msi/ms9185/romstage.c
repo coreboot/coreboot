@@ -59,16 +59,6 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
         smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f );
 }
 
-#if 0
-static inline void change_i2c_mux(unsigned device)
-{
-#define SMBUS_SWITCH1 0x70
-#define SMBUS_SWITCH2 0x72
-        smbus_send_byte(SMBUS_SWITCH1, device & 0x0f);
-        smbus_send_byte(SMBUS_SWITCH2, (device >> 4) & 0x0f );
-}
-#endif
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
         return smbus_read_byte(device, address);
@@ -199,14 +189,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
                activate_spd_rom(sysinfo->ctrl+i);
                dump_smbus_registers();
        }
-#endif
-
-#if 0
-       int i;
-        for(i=1;i<256;i<<=1) {
-                change_i2c_mux(i);
-                dump_smbus_registers();
-        }
 #endif
 
        //do we need apci timer, tsc...., only debug need it for better output

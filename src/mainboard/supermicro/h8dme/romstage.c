@@ -84,30 +84,6 @@ static inline void activate_spd_rom(const struct mem_controller *ctrl)
 #endif
 }
 
-#if 0
-static int smbus_send_byte_one(unsigned device, unsigned char val)
-{
-	return do_smbus_send_byte(SMBUS1_IO_BASE, device, val);
-}
-
-static inline void change_i2c_mux(unsigned device)
-{
-#define SMBUS_SWITCH1 0x48
-#define SMBUS_SWITHC2 0x49
-	smbus_send_byte(SMBUS_SWITCH1, device & 0x0f);
-	smbus_send_byte_one(SMBUS_SWITCH2, (device >> 4) & 0x0f);
-	int ret;
-        print_debug("change_i2c_mux i="); print_debug_hex8(device); print_debug("\n");
-	dump_smbus_registers();
-        ret = smbus_send_byte(SMBUS_SWITCH1, device);
-        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
-	dump_smbus_registers();
-        ret = smbus_send_byte_one(SMBUS_SWITCH2, device);
-        print_debug("change_i2c_mux ret="); print_debug_hex32(ret); print_debug("\n");
-	dump_smbus_registers();
-}
-#endif
-
 static inline int spd_read_byte(unsigned device, unsigned address)
 {
 	return smbus_read_byte(device, address);

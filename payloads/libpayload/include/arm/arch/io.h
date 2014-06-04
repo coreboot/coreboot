@@ -73,4 +73,17 @@ static inline void writel(uint32_t _v, volatile void *_a)
 	dmb();
 }
 
+/*
+ * Handy bit manipulation macros, BE version will have to be added when/if
+ * needed.
+ */
+
+#ifdef CONFIG_LP_LITTLE_ENDIAN
+#define clrsetbits_le32(addr, clear, set) writel((readl(addr) & ~(clear)) |\
+						 (set), (addr))
+#define setbits_le32(addr, set) writel(readl(addr) | (set), (addr))
+#define clrbits_le32(addr, clear) writel(readl(addr) & ~(clear), (addr))
 #endif
+
+#endif
+

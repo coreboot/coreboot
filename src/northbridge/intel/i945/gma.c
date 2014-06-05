@@ -52,11 +52,19 @@
 static int gtt_setup(unsigned int mmiobase)
 {
 	unsigned long PGETBL_save;
+	unsigned long tom; // top of memory
 
-	PGETBL_save = read32(mmiobase + PGETBL_CTL) & ~PGETBL_ENABLED;
+	/*
+	 * The Video BIOS places the GTT right below top of memory.
+	 *
+	 * It is not documented in the Intel 945 datasheet, but the Intel
+	 * developers said that it is normally placed there.
+	 *
+	 * TODO: Add option to make the GTT size runtime configurable
+	*/
+	tom = pci_read_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), TOLUD) << 24;
+	PGETBL_save = tom - 256 * KiB;
 	PGETBL_save |= PGETBL_ENABLED;
-
-	PGETBL_save |= pci_read_config32(dev_find_slot(0, PCI_DEVFN(2,0)), 0x5c) & 0xfffff000;
 	PGETBL_save |= 2; /* set GTT to 256kb */
 
 	write32(mmiobase + GFX_FLSH_CNTL, 0);

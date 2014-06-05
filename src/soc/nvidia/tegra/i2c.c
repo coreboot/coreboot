@@ -112,12 +112,14 @@ static int tegra_i2c_send_recv(int bus, int read,
 			       "%s: The address was not acknowledged.\n",
 			       __func__);
 			info->reset_func(info->reset_bit);
+			i2c_init(bus);
 			return -1;
 		} else if (transfer_status & I2C_PKT_STATUS_NOACK_DATA) {
 			printk(BIOS_ERR,
 			       "%s: The data was not acknowledged.\n",
 			       __func__);
 			info->reset_func(info->reset_bit);
+			i2c_init(bus);
 			return -1;
 		} else if (transfer_status & I2C_PKT_STATUS_ARB_LOST) {
 			printk(BIOS_ERR,
@@ -127,6 +129,9 @@ static int tegra_i2c_send_recv(int bus, int read,
 
 			/* Use Tegra bus clear registers to unlock SDA */
 			do_bus_clear(bus);
+
+			/* re-init i2c controller */
+			i2c_init(bus);
 
 			/* Return w/error, let caller decide what to do */
 			return -1;

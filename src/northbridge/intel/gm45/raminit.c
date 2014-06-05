@@ -235,61 +235,62 @@ void enter_raminit_or_reset(void)
 
 /* For a detected DIMM, test the value of an SPD byte to
    match the expected value after masking some bits. */
-static int test_dimm(int dimm, int addr, int bitmask, int expected)
+static int test_dimm(sysinfo_t *const sysinfo,
+		     int dimm, int addr, int bitmask, int expected)
 {
-	return (smbus_read_byte(DIMM0 + dimm, addr) & bitmask) == expected;
+	return (smbus_read_byte(sysinfo->spd_map[dimm], addr) & bitmask) == expected;
 }
 
 /* This function dies if dimm is unsuitable for the chipset. */
-static void verify_ddr3_dimm(int dimm)
+static void verify_ddr3_dimm(sysinfo_t *const sysinfo, int dimm)
 {
-	if (!test_dimm(dimm, 3, 15, 3))
+	if (!test_dimm(sysinfo, dimm, 3, 15, 3))
 		die("Chipset only supports SO-DIMM\n");
 
-	if (!test_dimm(dimm, 8, 0x18, 0))
+	if (!test_dimm(sysinfo, dimm, 8, 0x18, 0))
 		die("Chipset doesn't support ECC RAM\n");
 
-	if (!test_dimm(dimm, 7, 0x38, 0) &&
-			!test_dimm(dimm, 7, 0x38, 8))
+	if (!test_dimm(sysinfo, dimm, 7, 0x38, 0) &&
+			!test_dimm(sysinfo, dimm, 7, 0x38, 8))
 		die("Chipset wants single or double sided DIMMs\n");
 
-	if (!test_dimm(dimm, 7, 7, 1) &&
-			!test_dimm(dimm, 7, 7, 2))
+	if (!test_dimm(sysinfo, dimm, 7, 7, 1) &&
+			!test_dimm(sysinfo, dimm, 7, 7, 2))
 		die("Chipset requires x8 or x16 width\n");
 
-	if (!test_dimm(dimm, 4, 0x0f, 0) &&
-			!test_dimm(dimm, 4, 0x0f, 1) &&
-			!test_dimm(dimm, 4, 0x0f, 2) &&
-			!test_dimm(dimm, 4, 0x0f, 3))
+	if (!test_dimm(sysinfo, dimm, 4, 0x0f, 0) &&
+			!test_dimm(sysinfo, dimm, 4, 0x0f, 1) &&
+			!test_dimm(sysinfo, dimm, 4, 0x0f, 2) &&
+			!test_dimm(sysinfo, dimm, 4, 0x0f, 3))
 		die("Chipset requires 256Mb, 512Mb, 1Gb or 2Gb chips.");
 
-	if (!test_dimm(dimm, 4, 0x70, 0))
+	if (!test_dimm(sysinfo, dimm, 4, 0x70, 0))
 		die("Chipset requires 8 banks on DDR3\n");
 
 	/* How to check if burst length is 8?
 	   Other values are not supported, are they even possible? */
 
-	if (!test_dimm(dimm, 10, 0xff, 1))
+	if (!test_dimm(sysinfo, dimm, 10, 0xff, 1))
 		die("Code assumes 1/8ns MTB\n");
 
-	if (!test_dimm(dimm, 11, 0xff, 8))
+	if (!test_dimm(sysinfo, dimm, 11, 0xff, 8))
 		die("Code assumes 1/8ns MTB\n");
 
-	if (!test_dimm(dimm, 62, 0x9f, 0) &&
-			!test_dimm(dimm, 62, 0x9f, 1) &&
-			!test_dimm(dimm, 62, 0x9f, 2) &&
-			!test_dimm(dimm, 62, 0x9f, 3) &&
-			!test_dimm(dimm, 62, 0x9f, 5))
+	if (!test_dimm(sysinfo, dimm, 62, 0x9f, 0) &&
+			!test_dimm(sysinfo, dimm, 62, 0x9f, 1) &&
+			!test_dimm(sysinfo, dimm, 62, 0x9f, 2) &&
+			!test_dimm(sysinfo, dimm, 62, 0x9f, 3) &&
+			!test_dimm(sysinfo, dimm, 62, 0x9f, 5))
 		die("Only raw card types A, B, C, D and F are supported.\n");
 }
 
 /* For every detected DIMM, test if it's suitable for the chipset. */
-static void verify_ddr3(int mask)
+static void verify_ddr3(sysinfo_t *const sysinfo, int mask)
 {
 	int cur = 0;
 	while (mask) {
 		if (mask & 1) {
-			verify_ddr3_dimm(cur);
+			verify_ddr3_dimm(sysinfo, cur);
 		}
 		mask >>= 1;
 		cur++;
@@ -321,14 +322,15 @@ typedef struct {
  * This function collects RAM characteristics from SPD, assuming that RAM
  * is generally within chipset's requirements, since verify_ddr3() passed.
  */
-static void collect_ddr3(spdinfo_t *const config)
+static void collect_ddr3(sysinfo_t *const sysinfo, spdinfo_t *const config)
 {
 	int mask = config->dimm_mask;
 	int cur = 0;
 	while (mask != 0) {
-		if (mask & 1) {
+		/* FIXME: support several dimms on same channel.  */
+		if ((mask & 1) && sysinfo->spd_map[2 * cur]) {
 			int tmp;
-			const int smb_addr = DIMM0 + cur*2;
+			const int smb_addr = sysinfo->spd_map[2 * cur];
 
 			config->channel[cur].rows = ((smbus_read_byte(smb_addr, 5) >> 3) & 7) + 12;
 			config->channel[cur].cols = (smbus_read_byte(smb_addr, 5) & 7) + 9;
@@ -358,7 +360,7 @@ static void collect_ddr3(spdinfo_t *const config)
 			config->channel[cur].raw_card = smbus_read_byte(smb_addr, 62) & 0x1f;
 		}
 		cur++;
-		mask >>= 2; /* Only every other address is used. */
+		mask >>= 2;
 	}
 }
 
@@ -590,17 +592,20 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 	spdinfo.dimm_mask = 0;
 	sysinfo->spd_type = 0;
 
-	/* at most 2 dimms, on even slots */
-	for (i = 0; i < 4; i += 2) {
-		const u8 spd = smbus_read_byte(DIMM0 + i, 2);
-		if ((spd == 7) || (spd == 8) || (spd == 0xb)) {
-			spdinfo.dimm_mask |= 1 << i;
-			if (sysinfo->spd_type && sysinfo->spd_type != spd) {
-				die("Multiple types of DIMM installed in the system, don't do that!\n");
+	for (i = 0; i < 4; i++)
+		if (sysinfo->spd_map[i]) {
+			const u8 spd = smbus_read_byte(sysinfo->spd_map[i], 2);
+			printk (BIOS_DEBUG, "%x:%x:%x\n",
+				i, sysinfo->spd_map[i],
+				spd);
+			if ((spd == 7) || (spd == 8) || (spd == 0xb)) {
+				spdinfo.dimm_mask |= 1 << i;
+				if (sysinfo->spd_type && sysinfo->spd_type != spd) {
+					die("Multiple types of DIMM installed in the system, don't do that!\n");
+				}
+				sysinfo->spd_type = spd;
 			}
-			sysinfo->spd_type = spd;
 		}
-	}
 	if (spdinfo.dimm_mask == 0) {
 		die("Could not find any DIMM.\n");
 	}
@@ -612,8 +617,8 @@ static void collect_dimm_config(sysinfo_t *const sysinfo)
 	if (sysinfo->spd_type == DDR2) {
 		die("DDR2 not supported at this time.\n");
 	} else if (sysinfo->spd_type == DDR3) {
-		verify_ddr3(spdinfo.dimm_mask);
-		collect_ddr3(&spdinfo);
+		verify_ddr3(sysinfo, spdinfo.dimm_mask);
+		collect_ddr3(sysinfo, &spdinfo);
 	} else {
 		die("Will never support DDR1.\n");
 	}

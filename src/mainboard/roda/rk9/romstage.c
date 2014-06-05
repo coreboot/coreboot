@@ -171,6 +171,10 @@ void main(unsigned long bist)
 	/* RAM initialization */
 	enter_raminit_or_reset();
 	get_gmch_info(&sysinfo);
+	sysinfo.spd_map[0] = 0x50;
+	sysinfo.spd_map[1] = 0;
+	sysinfo.spd_map[2] = 0x52;
+	sysinfo.spd_map[3] = 0;
 	raminit(&sysinfo, s3resume);
 
 	raminit_thermal(&sysinfo);

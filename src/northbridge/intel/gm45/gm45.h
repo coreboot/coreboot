@@ -143,6 +143,7 @@ typedef struct {
 	int		spd_type;
 	timings_t	selected_timings;
 	dimminfo_t	dimms[2];
+	u8		spd_map[4];
 } sysinfo_t;
 #define TOTAL_CHANNELS 2
 #define CHANNEL_IS_POPULATED(dimms, idx) (dimms[idx].card_type != 0)

@@ -943,7 +943,7 @@ void i945_late_initialization(int s3resume)
 
 	{
 		/* This will not work if TSEG is in place! */
-		u32 tom = pci_read_config32(PCI_DEV(0, 2, 0), 0x5c);
+		u32 tom = pci_read_config32(PCI_DEV(0, 2, 0), BSM);
 
 		printk(BIOS_DEBUG, "TOM: 0x%08x\n", tom);
 		ram_check(0x00000000, 0x000a0000);

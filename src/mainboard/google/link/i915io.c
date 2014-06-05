@@ -355,4 +355,4 @@ struct iodef iodefs[] = {
 	{I,},
 };
 
-int niodefs = sizeof (iodefs) / sizeof (iodefs[0]);
+int niodefs = ARRAY_SIZE(iodefs);

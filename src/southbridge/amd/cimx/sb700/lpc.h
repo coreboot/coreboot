@@ -21,7 +21,9 @@
 #define _SB700_LPC_H_
 
 
-#define SPIROM_BASE_ADDRESS	0xA0 /* SPI ROM base address */
+#define SPIROM_BASE_ADDRESS_REGISTER  0xA0
+#define SPI_ROM_ENABLE                0x02
+#define SPI_BASE_ADDRESS              0xFEC10000
 
 void lpc_read_resources(device_t dev);
 void lpc_set_resources(device_t dev);

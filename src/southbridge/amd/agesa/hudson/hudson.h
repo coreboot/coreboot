@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +51,9 @@
 #define REV_HUDSON_A11	0x11
 #define REV_HUDSON_A12	0x12
 
-#define SPIROM_BASE_ADDRESS_REGISTER    0xA0
+#define SPIROM_BASE_ADDRESS_REGISTER  0xA0
+#define SPI_ROM_ENABLE                0x02
+#define SPI_BASE_ADDRESS              0xFEC10000
 
 #ifndef __SMM__
 

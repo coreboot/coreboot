@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,8 +34,6 @@ void lpc_read_resources(device_t dev)
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);	/* We got one for APIC, or one more for TRAP */
 
-	pci_get_resource(dev, SPIROM_BASE_ADDRESS_REGISTER); /* SPI ROM base address */
-
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	res->base = 0;
@@ -47,6 +46,9 @@ void lpc_read_resources(device_t dev)
 	res->size = 0x00800000; /* 8 MB for flash */
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Add a memory resource for the SPI BAR. */
+	fixed_mem_resource(dev, 2, SPI_BASE_ADDRESS / 1024, 1, IORESOURCE_SUBTRACTIVE);
 
 	res = new_resource(dev, 3);
 	res->base = IO_APIC_ADDR;
@@ -64,8 +66,8 @@ void lpc_set_resources(struct device *dev)
 	printk(BIOS_DEBUG, "SB800 - Lpc.c - lpc_set_resources - Start.\n");
 
 	/* Special case. SPI Base Address. The SpiRomEnable should STAY set. */
-	res = find_resource(dev, SPIROM_BASE_ADDRESS_REGISTER);
-	res->base |= PCI_COMMAND_MEMORY;
+	res = find_resource(dev, 2);
+	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, res->base | SPI_ROM_ENABLE);
 
 	pci_dev_set_resources(dev);
 

@@ -87,8 +87,6 @@ static void hudson_lpc_read_resources(device_t dev)
 	/* Get the normal pci resources of this device */
 	pci_dev_read_resources(dev);	/* We got one for APIC, or one more for TRAP */
 
-	pci_get_resource(dev, 0xA0); /* SPI ROM base address */
-
 	/* Add an extra subtractive resource for both memory and I/O. */
 	res = new_resource(dev, IOINDEX_SUBTRACTIVE(0, 0));
 	res->base = 0;
@@ -101,6 +99,9 @@ static void hudson_lpc_read_resources(device_t dev)
 	res->size = 0x00800000; /* 8 MB for flash */
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+
+	/* Add a memory resource for the SPI BAR. */
+	fixed_mem_resource(dev, 2, SPI_BASE_ADDRESS / 1024, 1, IORESOURCE_SUBTRACTIVE);
 
 	res = new_resource(dev, 3); /* IOAPIC */
 	res->base = IO_APIC_ADDR;
@@ -115,12 +116,10 @@ static void hudson_lpc_set_resources(struct device *dev)
 	struct resource *res;
 
 	/* Special case. SPI Base Address. The SpiRomEnable should STAY set. */
-	res = find_resource(dev, SPIROM_BASE_ADDRESS_REGISTER);
-	res->base |= PCI_COMMAND_MEMORY;
+	res = find_resource(dev, 2);
+	pci_write_config32(dev, SPIROM_BASE_ADDRESS_REGISTER, res->base | SPI_ROM_ENABLE);
 
 	pci_dev_set_resources(dev);
-
-
 }
 
 /**

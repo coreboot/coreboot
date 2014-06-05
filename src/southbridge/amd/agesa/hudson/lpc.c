@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 #include <pc80/mc146818rtc.h>
 #include <pc80/isa-dma.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include "hudson.h"
 
 static void lpc_init(device_t dev)
@@ -100,10 +102,10 @@ static void hudson_lpc_read_resources(device_t dev)
 	res->flags = IORESOURCE_MEM | IORESOURCE_SUBTRACTIVE |
 		     IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
-	//res = new_resource(dev, 3); /* IOAPIC */
-	//res->base = 0xfec00000;
-	//res->size = 0x00001000;
-	//res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
+	res = new_resource(dev, 3); /* IOAPIC */
+	res->base = IO_APIC_ADDR;
+	res->size = 0x00001000;
+	res->flags = IORESOURCE_MEM | IORESOURCE_ASSIGNED | IORESOURCE_FIXED;
 
 	compact_resources(dev);
 }

@@ -3,6 +3,8 @@ if VENDOR_HP
 choice
 	prompt "Mainboard model"
 
+config BOARD_HP_ABM
+	bool "ABM"
 config BOARD_HP_DL145_G1
 	bool "ProLiant DL145 G1"
 config BOARD_HP_DL145_G3
@@ -17,6 +19,7 @@ config BOARD_HP_PAVILION_M6_1035DX
 
 endchoice
 
+source "src/mainboard/hp/abm/Kconfig"
 source "src/mainboard/hp/dl145_g1/Kconfig"
 source "src/mainboard/hp/dl145_g3/Kconfig"
 source "src/mainboard/hp/dl165_g6_fam10/Kconfig"

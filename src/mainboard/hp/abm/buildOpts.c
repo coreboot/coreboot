@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2013-2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,7 +77,7 @@
 #define BLDOPT_REMOVE_SRAT                     FALSE //TRUE
 #define BLDOPT_REMOVE_SLIT                     FALSE //TRUE
 #define BLDOPT_REMOVE_WHEA                     FALSE //TRUE
-#define	BLDOPT_REMOVE_CRAT			TRUE
+#define BLDOPT_REMOVE_CRAT                     TRUE
 #define BLDOPT_REMOVE_CDIT                     TRUE
 #define BLDOPT_REMOVE_DMI                      TRUE
 //#define BLDOPT_REMOVE_EARLY_SAMPLES            FALSE
@@ -153,7 +154,7 @@
 #define BLDCFG_HEAP_DRAM_ADDRESS                  0xB0000ul
 #define BLDCFG_1GB_ALIGN                          FALSE
 #define BLDCFG_UMA_ALIGNMENT                      UMA_4MB_ALIGNED
-#define BLDCFG_UMA_ALLOCATION_MODE                UMA_AUTO
+#define BLDCFG_UMA_ALLOCATION_MODE                UMA_NONE
 #define BLDCFG_PLATFORM_CSTATE_MODE               CStateModeDisabled
 #define BLDCFG_IOMMU_SUPPORT                      FALSE
 #define OPTION_GFX_INIT_SVIEW                     FALSE
@@ -344,11 +345,20 @@ CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 #define DFLT_FCH_GPP_PORT3_HOTPLUG          FALSE
 //#define BLDCFG_IR_PIN_CONTROL	0x33
 
-GPIO_CONTROL   imba180_gpio[] = {
-	{183, Function1, GpioIn | GpioOutEnB | PullUpB},
+GPIO_CONTROL   hp_abm_gpio[] = {
+	{ 45, Function2, GpioOutEnB | Sticky },                   // Signal input  APU_SD_LED
+	{ 49, Function2, PullUpB | PullDown | Sticky },           // Signal output APU_ABM_LED_UID
+	{ 50, Function2, PullUpB | PullDown | Sticky },           // Signal output APU_ABM_LED_HEALTH
+	{ 51, Function2, GpioOut | PullUpB | PullDown | Sticky }, // Signal output APU_ABM_LED_FAULT
+	{ 57, Function2, GpioOutEnB | Sticky },                   // Signal input  SATA_PRSNT_L
+	{ 58, Function2, GpioOutEnB | Sticky },                   // Signal  i/o   APU_HDMI_CEC
+	{ 64, Function2, GpioOutEnB | Sticky },                   // Signal input  SWC_APU_INT_L
+	{ 68, Function0, GpioOutEnB | Sticky },                   // Signal input  CNTRL1_PRSNT
+	{ 69, Function0, GpioOutEnB | Sticky },                   // Signal input  CNTRL2_PRSNT
+	{ 71, Function0, GpioOut | PullUpB | PullDown | Sticky }, // Signal output APU_PROCHOT_L_R
 	{-1}
 };
-//#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&imba180_gpio[0])
+#define BLDCFG_FCH_GPIO_CONTROL_LIST           (&hp_abm_gpio[0])
 
 // The following definitions specify the default values for various parameters in which there are
 // no clearly defined defaults to be used in the common file.  The values below are based on product
@@ -441,11 +451,11 @@ CONST PSO_ENTRY ROMDATA DefaultPlatformMemoryConfiguration[] = {
 		SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A, SEED_A,
 		SEED_A),
 
-  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, 2),
-  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, 1),
-  MOTHER_BOARD_LAYERS (LAYERS_4),
+  NUMBER_OF_DIMMS_SUPPORTED (ANY_SOCKET, ANY_CHANNEL, ONE_DIMM),
+  NUMBER_OF_CHANNELS_SUPPORTED (ANY_SOCKET, ONE_DIMM),
+  MOTHER_BOARD_LAYERS (LAYERS_6),
 
-  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00),
+  MEMCLK_DIS_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
   CKE_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08), /* TODO: bit2map, bit3map */
   ODT_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08),
   CS_TRI_MAP (ANY_SOCKET, ANY_CHANNEL, 0x01, 0x02, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00),

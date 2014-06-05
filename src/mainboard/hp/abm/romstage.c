@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2012 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
 #include <stdint.h>
@@ -31,29 +32,21 @@
 #include <console/loglevel.h>
 #include <cpu/amd/car.h>
 #include <northbridge/amd/agesa/agesawrapper.h>
-#include "cpu/x86/bist.h"
-#include "cpu/x86/lapic.h"
-#include "southbridge/amd/agesa/hudson/hudson.h"
-#include "cpu/amd/agesa/s3_resume.h"
-#include "cbmem.h"
-#include <superio/winbond/common/winbond.h>
-#include <superio/winbond/w83627uhg/w83627uhg.h>
+#include <cpu/x86/bist.h>
+#include <cpu/x86/lapic.h>
+#include <southbridge/amd/agesa/hudson/hudson.h>
+#include <cpu/amd/agesa/s3_resume.h>
+#include <cbmem.h>
+#include <superio/nuvoton/common/nuvoton.h>
+#include <superio/nuvoton/nct5104d/nct5104d.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627UHG_SP1)
-
+#define SERIAL_DEV PNP_DEV(0x4E, NCT5104D_SP4)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val, t32;
 	u32 *addr32;
 
-	/* In Hudson RRG, PMIOxD2[5:4] is "Drive strength control for
-	 *  LpcClk[1:0]".  To be consistent with Parmer, setting to 4mA
-	 *  even though the register is not documented in the Kabini BKDG.
-	 *  Otherwise the serial output is bad code.
-	 */
-	//outb(0xD2, 0xcd6);
-	//outb(0x00, 0xcd7);
 
 	amd_initmmio();
 
@@ -65,27 +58,28 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* Enable the AcpiMmio space */
 	outb(0x24, 0xcd6);
-	outb(0x1, 0xcd7);
+	outb(0x01, 0xcd7);
 
-	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 48MHz */
+	/* Set auxiliary output clock frequency on OSCOUT1 pin to be 25MHz */
+	/* Set auxiliary output clock frequency on OSCOUT2 pin to be 48MHz */
 	addr32 = (u32 *)0xfed80e28;
 	t32 = *addr32;
-	t32 &= 0xfff8ffff;
+	t32 &= 0xffc0ffff; // Clr bits [21:19] & [18:16]
+	t32 |= 0x00010000; // Set bit 16 for 25MHz
 	*addr32 = t32;
 
-	/* Enable Auxiliary Clock1, disable FCH 14 MHz OscClk */
+	/* Enable Auxiliary OSCOUT1/OSCOUT2 */
 	addr32 = (u32 *)0xfed80e40;
 	t32 = *addr32;
-	t32 &= 0xffffbffb;
+	t32 &= 0xffffff7b; // clear 2, 7
 	*addr32 = t32;
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
 		post_code(0x31);
 
-		/* w83627uhg has a default clk of 48MHz, p.9 of data-sheet */
-		winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
-
+		nct5104d_enable_uartd(SERIAL_DEV);
+		nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 
@@ -97,11 +91,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	val = cpuid_eax(1);
 	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
-
-	/* On Larne, after LpcClkDrvSth is set, it needs some time to be stable, because of the buffer ICS551M */
-	int i;
-	for(i = 0; i < 200000; i++)
-		val = inb(0xcd6);
 
 	post_code(0x37);
 	agesawrapper_amdinitreset();

@@ -1,7 +1,8 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2012-2014 Advanced Micro Devices, Inc.
+# Copyright (C) 2014 Sage Electronic Engineering, LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,29 +18,27 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-if BOARD_ASROCK_IMB_A180
+if BOARD_HP_ABM
 
 config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select CPU_AMD_AGESA_FAMILY16_KB
 	select NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
 	select SOUTHBRIDGE_AMD_AGESA_YANGTZE
-	select SUPERIO_WINBOND_W83627UHG
+	select SUPERIO_NUVOTON_NCT5104D
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
-	select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES
-	select BOARD_ROMSIZE_KB_4096
-	select GFXUMA
+	select BOARD_ROMSIZE_KB_8192
 
 config MAINBOARD_DIR
 	string
-	default asrock/imb-a180
+	default hp/abm
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "IMB-A180"
+	default "ABM"
 
 config HW_MEM_HOLE_SIZEK
 	hex
@@ -57,20 +56,8 @@ config IRQ_SLOT_COUNT
 	int
 	default 11
 
-config ONBOARD_VGA_IS_PRIMARY
-	bool
-	default y
-
 config HUDSON_LEGACY_FREE
 	bool
-	default y
+	default n
 
-# bit 1,0 - pin 0
-# bit 3,2 - pin 1
-# bit 5,4 - pin 2
-# bit 7,6 - pin 3
-config AZ_PIN
-	hex
-	default 0x2
-
-endif # BOARD_ASROCK_IMB_A180
+endif # BOARD_HP_ABM

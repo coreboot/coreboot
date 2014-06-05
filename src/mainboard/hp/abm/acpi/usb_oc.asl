@@ -41,7 +41,7 @@ Name(UOM9, 6)
 
 /* USB Overcurrent GPEs */
 
-#if 0 /* TODO: Update for imba180 */
+#if 0 /* TODO: Update */
 Method(UCOC, 0) {
 	Sleep(20)
 	Store(0x13,CMTI)

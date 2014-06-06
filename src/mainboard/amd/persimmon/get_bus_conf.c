@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <cpu/amd/amdfam14.h>
 #include "agesawrapper.h"
+#include <arch/ioapic.h>
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif
@@ -36,6 +37,7 @@
 u8 bus_isa;
 u8 bus_sb800[6];
 u32 apicid_sb800;
+u32 apicver_sb800;
 
 /*
 * Here you only need to set value in pci1234 for HT-IO that could be installed or not
@@ -138,7 +140,14 @@ void get_bus_conf(void)
 	/* I/O APICs:    APIC ID Version State   Address */
 	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
-	apicid_sb800 = apicid_base;
+
+	/*
+	 * By the time this function gets called, the IOAPIC registers
+	 * have been written so they can be read to get the correct
+	 * APIC ID and Version
+	 */
+	apicid_sb800 = (io_apic_read(IO_APIC_ADDR, 0x00) >> 24);
+	apicver_sb800 = (io_apic_read(IO_APIC_ADDR, 0x01) & 0xFF);
 
 #if CONFIG_AMD_SB_CIMX
 	sb_Late_Post();

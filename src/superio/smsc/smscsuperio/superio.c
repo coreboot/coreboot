@@ -231,11 +231,12 @@ static void enable_dev(device_t dev)
 	u8 test7;
 
 	if (first_time) {
+
+		pnp_enter_conf_mode_55(dev);
+
 		/* Read the device ID and revision of the Super I/O chip. */
-		pnp_enter_conf_mode(dev);
 		superio_id = pnp_read_config(dev, DEVICE_ID_REG);
 		superio_rev = pnp_read_config(dev, DEVICE_REV_REG);
-		pnp_exit_conf_mode(dev);
 
 		/* TODO: Error handling? */
 
@@ -257,6 +258,8 @@ static void enable_dev(device_t dev)
 			test7 |= (1 << 0);
 			pnp_write_config(dev, DEVICE_TEST7_REG, test7);
 		}
+
+		pnp_exit_conf_mode_aa(dev);
 	}
 
 	/* Find the correct Super I/O. */

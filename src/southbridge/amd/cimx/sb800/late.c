@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2011 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +22,7 @@
 #include <device/device.h>	/* device_t */
 #include <device/pci.h>		/* device_operations */
 #include <device/pci_ids.h>
+#include <bootstate.h>
 #include <arch/ioapic.h>
 #include <device/smbus.h>	/* smbus_bus_operations */
 #include <pc80/mc146818rtc.h>
@@ -36,6 +38,7 @@
 #include "sb_cimx.h"		/* AMD CIMX wrapper entries */
 #include "smbus.h"
 #include "fan.h"
+#include <southbridge/amd/cimx/cimx_util.h>
 
 /*implement in mainboard.c*/
 void set_pcie_reset(void);
@@ -330,6 +333,28 @@ void sb_After_Pci_Restore_Init(void)
 	sb_config->StdHeader.Func = SB_AFTER_PCI_RESTORE_INIT;
 	AmdSbDispatcher(sb_config);
 }
+
+/*
+ * Update the PCI devices with a valid IRQ number
+ * that is set in the mainboard PCI_IRQ structures.
+ */
+static void set_pci_irqs(void *unused)
+{
+	/* Write PCI_INTR regs 0xC00/0xC01 */
+	write_pci_int_table();
+
+	/* Write IRQs for all devicetree enabled devices */
+	write_pci_cfg_irqs();
+}
+
+/*
+ * Hook this function into the PCI state machine
+ * on entry into BS_DEV_ENABLE.
+ */
+BOOT_STATE_INIT_ENTRIES(pci_irq_update) = {
+	BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY,
+	                      set_pci_irqs, NULL),
+};
 
 /**
  * @brief SB Cimx entry point sbBeforePciInit wrapper

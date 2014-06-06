@@ -49,4 +49,11 @@ typedef unsigned int wint_t;
 #define ROMSTAGE_CONST
 #endif
 
+/* Work around non-writable data segment in execute-in-place romstage on x86. */
+#if defined(__PRE_RAM__) && CONFIG_ARCH_X86
+#define MAYBE_STATIC
+#else
+#define MAYBE_STATIC static
+#endif
+
 #endif /* STDDEF_H */

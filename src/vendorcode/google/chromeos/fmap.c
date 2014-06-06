@@ -92,10 +92,7 @@ const struct fmap_area *find_fmap_area(const struct fmap *fmap,
 
 int find_fmap_entry(const char name[], void **pointer)
 {
-#ifndef __PRE_RAM__
-	static
-#endif
-	const struct fmap *fmap = NULL;
+	MAYBE_STATIC const struct fmap *fmap = NULL;
 	const struct fmap_area *area;
 	void *base = NULL;
 

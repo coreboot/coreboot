@@ -15,16 +15,6 @@
 #include "lib_vpd.h"
 #include "vpd_tables.h"
 
-/*
- * Static variables are available in ramstage (all platforms), and romstage for
- * some platforms (ex, ARM, which uses SRAM).
- */
-#if defined(__PRE_RAM__) && CONFIG_ARCH_X86
-#define STATIC_VAR
-#else
-#define STATIC_VAR	static
-#endif
-
 /* Currently we only support Google VPD 2.0, which has a fixed offset. */
 enum {
 	GOOGLE_VPD_2_0_OFFSET = 0x600,
@@ -39,10 +29,10 @@ struct vpd_gets_arg {
 
 static int cros_vpd_load(uint8_t **vpd_address, int32_t *vpd_size)
 {
-	STATIC_VAR int cached = 0;
-	STATIC_VAR uint8_t *cached_address = NULL;
-	STATIC_VAR int32_t cached_size = 0;
-	STATIC_VAR int result = -1;
+	MAYBE_STATIC int cached = 0;
+	MAYBE_STATIC uint8_t *cached_address = NULL;
+	MAYBE_STATIC int32_t cached_size = 0;
+	MAYBE_STATIC int result = -1;
 	struct google_vpd_info info;
 	int32_t base;
 

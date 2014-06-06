@@ -24,12 +24,7 @@ unsigned long ulzma(unsigned char * src, unsigned char * dst)
 	int res;
 	CLzmaDecoderState state;
 	SizeT mallocneeds;
-#if !defined(__PRE_RAM__)
-	/* in ramstage, this can go in BSS */
-	static
-#endif
-	/* in pre-ram, it must go on the stack */
-	unsigned char scratchpad[15980];
+	MAYBE_STATIC unsigned char scratchpad[15980];
 	unsigned char *cp;
 
 	memcpy(properties, src, LZMA_PROPERTIES_SIZE);

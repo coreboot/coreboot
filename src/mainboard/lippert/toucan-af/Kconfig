@@ -30,9 +30,7 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	select HAVE_OPTION_TABLE
 	select HAVE_PIRQ_TABLE
 	select HAVE_MP_TABLE
-	# S3 doesn't work yet, heapManager.c:576 failed last time I tried,
-	# couldn't figure out why.  But s3_resume.c (look for "spi_flash_probe")
-	# erases 28 KB and writes 10 KB register dumps to SPI flash on every
+	# This erases 28 KB and writes 10 KB register dumps to SPI flash on every
 	# boot, wasting 3 s and causing wear!  Therefore disable S3 for now.
 	#select HAVE_ACPI_RESUME
 	select HAVE_ACPI_TABLES

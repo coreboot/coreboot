@@ -45,33 +45,6 @@
 
 static void memreset(int controllers, const struct mem_controller *ctrl) { }
 
-static inline void dump_smbus_registers(void)
-{
-	u32 device;
-
-	print_debug("\n");
-	for (device = 1; device < 0x80; device++) {
-		int j;
-		if (smbus_read_byte(device, 0) < 0)
-			continue;
-		printk(BIOS_DEBUG, "smbus: %02x", device);
-		for (j = 0; j < 256; j++) {
-			int status;
-			unsigned char byte;
-			status = smbus_read_byte(device, j);
-			if (status < 0) {
-				break;
-			}
-			if ((j & 0xf) == 0) {
-				printk(BIOS_DEBUG, "\n%02x: ", j);
-			}
-			byte = status & 0xff;
-			printk(BIOS_DEBUG, "%02x ", byte);
-		}
-		print_debug("\n");
-	}
-}
-
 static inline void activate_spd_rom(const struct mem_controller *ctrl)
 {
 #if 0
@@ -178,7 +151,9 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	print_debug("\n");
 
 	set_sysinfo_in_ram(0);	// in BSP so could hold all ap until sysinfo is in ram
-/*	dump_smbus_registers(); */
+#if CONFIG_DEBUG_SMBUS
+	dump_smbus_registers();
+#endif
 	setup_coherent_ht_domain();	// routing table and start other core0
 
 	wait_all_core0_started();

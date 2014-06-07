@@ -1715,7 +1715,6 @@ static void save_timings(struct raminfo *info)
 	printk (BIOS_SPEW, "[6e8] = %x\n", train.reg_6e8);
 
 	/* Save the MRC S3 restore data to cbmem */
-	cbmem_recovery(0);
 	mrcdata = cbmem_add
 	    (CBMEM_ID_MRCDATA, output_len + sizeof(struct mrc_data_container));
 
@@ -3869,6 +3868,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	struct raminfo info;
 	u8 x2ca8;
 	u16 deven;
+	int cbmem_wasnot_inited;
 
 	x2ca8 = read_mchbar8(0x2ca8);
 	deven = pcie_read_config16(NORTHBRIDGE, D0F0_DEVEN);
@@ -4973,7 +4973,22 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 #if REAL
 	udelay(1000);
 	dump_timings(&info);
+	cbmem_wasnot_inited = cbmem_recovery(s3resume);
+
 	if (!s3resume)
 		save_timings(&info);
+	if (s3resume && cbmem_wasnot_inited) {
+		u32 reg32;
+		printk(BIOS_ERR, "Failed S3 resume.\n");
+		ram_check(0x100000, 0x200000);
+
+		/* Clear SLP_TYPE.  */
+		reg32 = inl(DEFAULT_PMBASE + 0x04);
+		outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
+
+		/* Failed S3 resume, reset to come up cleanly */
+		outb(0xe, 0xcf9);
+		hlt();
+	}
 #endif
 }

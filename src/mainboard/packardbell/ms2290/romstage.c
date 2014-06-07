@@ -306,16 +306,6 @@ void main(unsigned long bist)
 	if (s3resume) {
 		void *resume_backup_memory;
 
-		/* For non-S3-resume, CBMEM is inited in raminit code.  */
-		if (cbmem_recovery(1)) {
-			printk(BIOS_ERR, "Failed S3 resume.\n");
-			ram_check(0x100000, 0x200000);
-
-			/* Failed S3 resume, reset to come up cleanly */
-			outb(0xe, 0xcf9);
-			hlt();
-		}
-
 		resume_backup_memory = cbmem_find(CBMEM_ID_RESUME);
 
 		/* copy 1MB - 64K to high tables ram_base to prevent memory corruption

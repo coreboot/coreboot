@@ -42,7 +42,7 @@
 /* See B3.6.2 of ARMv7 Architecture Reference Manual */
 /* TODO: Utilize the contiguous hint flag */
 #define ATTR_BASE (\
-	0ULL << 54 |	/* PN. 0:Not restricted */ \
+	0ULL << 54 |	/* XN. 0:Not restricted */ \
 	0ULL << 53 |	/* PXN. 0:Not restricted */ \
 	1 << 10 |	/* AF. 1:Accessed. This is to prevent access \
 	 	 	 * fault when accessed for the first time */ \
@@ -51,7 +51,8 @@
 	0 << 1 | 	/* block/table. 0:block entry */ \
 	1 << 0		/* validity. 1:valid */ \
 	)
-#define ATTR_NC		(ATTR_BASE | (MAIR_INDX_NC << 2))
+#define ATTR_NC		(ATTR_BASE | (MAIR_INDX_NC << 2) | \
+			(1ULL << 53) | (1ULL << 54))
 #define ATTR_WT		(ATTR_BASE | (MAIR_INDX_WT << 2))
 #define ATTR_WB		(ATTR_BASE | (MAIR_INDX_WB << 2))
 

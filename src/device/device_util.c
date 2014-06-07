@@ -462,7 +462,7 @@ struct resource *probe_resource(device_t dev, unsigned index)
  * See if a resource structure already exists for a given index and if not
  * allocate one.
  *
- * Then initialize the initialize the resource to default values.
+ * Then initialize the resource to default values.
  *
  * @param dev The device to find the resource on.
  * @param index The index of the resource on the device.

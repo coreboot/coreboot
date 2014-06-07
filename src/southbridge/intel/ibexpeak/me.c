@@ -377,125 +377,7 @@ static int mkhi_end_of_post(void)
 	printk(BIOS_INFO, "ME: END OF POST message successful\n");
 	return 0;
 }
-#endif
 
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__) && (CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE)
-/* Get ME firmware version */
-static int mkhi_get_fw_version(void)
-{
-	struct me_fw_version version;
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_GEN,
-		.command	= MKHI_GET_FW_VERSION,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-		.length		= sizeof(mkhi),
-	};
-
-	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, NULL, &version, sizeof(version)) < 0) {
-		printk(BIOS_ERR, "ME: GET FW VERSION message failed\n");
-		return -1;
-	}
-
-	printk(BIOS_INFO, "ME: Firmware Version %u.%u.%u.%u (code) "
-	       "%u.%u.%u.%u (recovery)\n",
-	       version.code_major, version.code_minor,
-	       version.code_build_number, version.code_hot_fix,
-	       version.recovery_major, version.recovery_minor,
-	       version.recovery_build_number, version.recovery_hot_fix);
-
-	return 0;
-}
-
-static inline void print_cap(const char *name, int state)
-{
-	printk(BIOS_DEBUG, "ME Capability: %-30s : %sabled\n",
-	       name, state ? "en" : "dis");
-}
-
-/* Get ME Firmware Capabilities */
-static int mkhi_get_fwcaps(void)
-{
-	u32 rule_id = 0;
-	struct me_fwcaps cap;
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_FWCAPS,
-		.command	= MKHI_FWCAPS_GET_RULE,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-		.length		= sizeof(mkhi) + sizeof(rule_id),
-	};
-
-	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap, sizeof(cap)) < 0) {
-		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
-		return -1;
-	}
-
-	print_cap("Full Network manageability", cap.caps_sku.full_net);
-	print_cap("Regular Network manageability", cap.caps_sku.std_net);
-	print_cap("Manageability", cap.caps_sku.manageability);
-	print_cap("Small business technology", cap.caps_sku.small_business);
-	print_cap("Level III manageability", cap.caps_sku.l3manageability);
-	print_cap("IntelR Anti-Theft (AT)", cap.caps_sku.intel_at);
-	print_cap("IntelR Capability Licensing Service (CLS)",
-		  cap.caps_sku.intel_cls);
-	print_cap("IntelR Power Sharing Technology (MPC)",
-		  cap.caps_sku.intel_mpc);
-	print_cap("ICC Over Clocking", cap.caps_sku.icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)", cap.caps_sku.pavp);
-	print_cap("IPV6", cap.caps_sku.ipv6);
-	print_cap("KVM Remote Control (KVM)", cap.caps_sku.kvm);
-	print_cap("Outbreak Containment Heuristic (OCH)", cap.caps_sku.och);
-	print_cap("Virtual LAN (VLAN)", cap.caps_sku.vlan);
-	print_cap("TLS", cap.caps_sku.tls);
-	print_cap("Wireless LAN (WLAN)", cap.caps_sku.wlan);
-
-	return 0;
-}
-#endif
-
-#if CONFIG_CHROMEOS && 0 /* DISABLED */
-/* Tell ME to issue a global reset */
-int mkhi_global_reset(void)
-{
-	struct me_global_reset reset = {
-		.request_origin	= GLOBAL_RESET_BIOS_POST,
-		.reset_type	= CBM_RR_GLOBAL_RESET,
-	};
-	struct mkhi_header mkhi = {
-		.group_id	= MKHI_GROUP_ID_CBM,
-		.command	= MKHI_GLOBAL_RESET,
-	};
-	struct mei_header mei = {
-		.is_complete	= 1,
-		.length		= sizeof(mkhi) + sizeof(reset),
-		.host_address	= MEI_HOST_ADDRESS,
-		.client_address	= MEI_ADDRESS_MKHI,
-	};
-
-	printk(BIOS_NOTICE, "ME: Requesting global reset\n");
-
-	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &reset, NULL, 0) < 0) {
-		/* No response means reset will happen shortly... */
-		hlt();
-	}
-
-	/* If the ME responded it rejected the reset request */
-	printk(BIOS_ERR, "ME: Global Reset failed\n");
-	return -1;
-}
-#endif
-
-#ifdef __SMM__
 static void intel_me7_finalize_smm(void)
 {
 	struct me_hfs hfs;
@@ -722,13 +604,6 @@ static void intel_me_init(device_t dev)
 		/* Prepare MEI MMIO interface */
 		if (intel_mei_setup(dev) < 0)
 			break;
-
-#if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && (CONFIG_NORTHBRIDGE_INTEL_SANDYBRIDGE || CONFIG_NORTHBRIDGE_INTEL_IVYBRIDGE)
-		/* Print ME firmware version */
-		mkhi_get_fw_version();
-		/* Print ME firmware capabilities */
-		mkhi_get_fwcaps();
-#endif
 
 		/*
 		 * Leave the ME unlocked in this path.

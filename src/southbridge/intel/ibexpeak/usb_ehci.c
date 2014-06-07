@@ -30,6 +30,8 @@
 static void usb_ehci_init(struct device *dev)
 {
 	u32 reg32;
+	struct resource *res;
+	u8 access_cntl;
 
 	/* Disable Wake on Disconnect in RMH */
 	reg32 = RCBA32(0x35b0);
@@ -49,6 +51,21 @@ static void usb_ehci_init(struct device *dev)
 	reg32 |= PCI_COMMAND_MASTER;
 	//reg32 |= PCI_COMMAND_SERR;
 	pci_write_config32(dev, PCI_COMMAND, reg32);
+
+	access_cntl = pci_read_config8(dev, 0x80);
+
+	/* Enable writes to protected registers. */
+	pci_write_config8(dev, 0x80, access_cntl | 1);
+
+	res = find_resource(dev, PCI_BASE_ADDRESS_0);
+	if (res) {
+		/* Number of ports and companion controllers.  */
+		reg32 = read32(res->base + 4);
+		write32(res->base + 4, (reg32 & 0xfff00000) | 2);
+	}
+
+	/* Restore protection. */
+	pci_write_config8(dev, 0x80, access_cntl);
 
 	printk(BIOS_DEBUG, "done.\n");
 }

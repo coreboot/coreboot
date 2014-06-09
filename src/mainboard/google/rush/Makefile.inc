@@ -17,6 +17,16 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
+# Add a handler for BCT config files
+$(call add-special-class,bct-cfg)
+bct-cfg-handler= $(eval $(obj)/generated/bct.cfg: $(1)$(2))
+
+$(obj)/generated/bct.cfg:
+	@printf "    CAT        $(subst $(obj)/,,$(@))\n"
+	cat $^ > $@
+
+subdirs-y += bct
+
 romstage-y += romstage.c
 
 ramstage-y += mainboard.c

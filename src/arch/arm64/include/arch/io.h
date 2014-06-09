@@ -1,137 +1,94 @@
 /*
- * Based on (linux) arch/arm/include/asm/io.h
+ * Originally imported from linux/include/asm-arm/io.h. This file has changed
+ * substantially since then.
  *
- * Copyright (C) 1996-2000 Russell King
- * Copyright (C) 2012 ARM Ltd.
- * Copyright 2013 Google, Inc.
+ *  Copyright 2013 Google Inc.
+ *  Copyright (C) 1996-2000 Russell King
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Modifications:
+ *  08-Apr-2013	G	Replaced several macros with inlines for type safety.
+ *  16-Sep-1996	RMK	Inlined the inx/outx functions & optimised for both
+ *			constant addresses and variable addresses.
+ *  04-Dec-1997	RMK	Moved a lot of this stuff to the new architecture
+ *			specific IO header files.
+ *  27-Mar-1999	PJB	Second parameter of memcpy_toio is const..
+ *  04-Apr-1999	PJB	Added check_signature.
+ *  12-Dec-1999	RMK	More cleanups
+ *  18-Jun-2000 RMK	Removed virt_to_* and friends definitions
  */
-#ifndef __ASM_ARM_IO_H
-#define __ASM_ARM_IO_H
+#ifndef __ASM_ARM64_IO_H
+#define __ASM_ARM64_IO_H
 
-#include <types.h>
 #include <arch/byteorder.h>
-#include <arch/barrier.h>
+#include <arch/arch_io.h>
+#include <stdint.h>
 
 /*
- * Generic IO read/write.  These perform native-endian accesses.
- */
-static inline void __raw_writeb(u8 val, volatile void *addr)
-{
-	asm volatile("strb %w0, [%1]" : : "r" (val), "r" (addr));
-}
-
-static inline void __raw_writew(u16 val, volatile void *addr)
-{
-	asm volatile("strh %w0, [%1]" : : "r" (val), "r" (addr));
-}
-
-static inline void __raw_writel(u32 val, volatile void *addr)
-{
-	asm volatile("str %w0, [%1]" : : "r" (val), "r" (addr));
-}
-
-static inline void __raw_writeq(u64 val, volatile void *addr)
-{
-	asm volatile("str %0, [%1]" : : "r" (val), "r" (addr));
-}
-
-static inline u8 __raw_readb(const volatile void *addr)
-{
-	u8 val;
-	asm volatile("ldrb %w0, [%1]" : "=r" (val) : "r" (addr));
-	return val;
-}
-
-static inline u16 __raw_readw(const volatile void *addr)
-{
-	u16 val;
-	asm volatile("ldrh %w0, [%1]" : "=r" (val) : "r" (addr));
-	return val;
-}
-
-static inline u32 __raw_readl(const volatile void *addr)
-{
-	u32 val;
-	asm volatile("ldr %w0, [%1]" : "=r" (val) : "r" (addr));
-	return val;
-}
-
-static inline u64 __raw_readq(const volatile void *addr)
-{
-	u64 val;
-	asm volatile("ldr %0, [%1]" : "=r" (val) : "r" (addr));
-	return val;
-}
-
-/* IO barriers */
-#define __iormb()		rmb()
-#define __iowmb()		wmb()
-
-#define mmiowb()		do { } while (0)
+ * FIXME: These are to avoid breaking existing ARM code. We should eventually
+ * re-factor all code to specify the data length intended.
+  */
+#define readb(a)	read8(a)
+#define writeb(v,a)	write8(v,a)
+#define readl(a)	read32(a)
+#define writel(v,a)	write32(v,a)
 
 /*
- * Relaxed I/O memory access primitives. These follow the Device memory
- * ordering rules but do not guarantee any ordering relative to Normal memory
- * accesses.
+ * Clear and set bits in one shot. These macros can be used to clear and
+ * set multiple bits in a register using a single call. These macros can
+ * also be used to set a multiple-bit bit pattern using a mask, by
+ * specifying the mask in the 'clear' parameter and the new bit pattern
+ * in the 'set' parameter.
  */
-#define readb_relaxed(c)	({ u8  __u = __raw_readb(c); __u; })
-#define readw_relaxed(c)	({ u16 __u = le16_to_cpu((__force __le16)__raw_readw(c)); __u; })
-#define readl_relaxed(c)	({ u32 __u = le32_to_cpu((__force __le32)__raw_readl(c)); __u; })
 
-#define writeb_relaxed(v,c)	((void)__raw_writeb((v),(c)))
-#define writew_relaxed(v,c)	((void)__raw_writew((__force u16)cpu_to_le16(v),(c)))
-#define writel_relaxed(v,c)	((void)__raw_writel((__force u32)cpu_to_le32(v),(c)))
+#define out_arch(type,endian,a,v)	write##type(cpu_to_##endian(v),a)
+#define in_arch(type,endian,a)		endian##_to_cpu(read##type(a))
 
-/*
- * I/O memory access primitives. Reads are ordered relative to any
- * following Normal memory access. Writes are ordered relative to any prior
- * Normal memory access.
- */
-#define readb(c)		({ u8  __v = readb_relaxed(c); __iormb(); __v; })
-#define readw(c)		({ u16 __v = readw_relaxed(c); __iormb(); __v; })
-#define readl(c)		({ u32 __v = readl_relaxed(c); __iormb(); __v; })
+#define out_le32(a,v)	out_arch(l,le32,a,v)
+#define out_le16(a,v)	out_arch(w,le16,a,v)
 
-#define writeb(v,c)		({ __iowmb(); writeb_relaxed((v),(c)); })
-#define writew(v,c)		({ __iowmb(); writew_relaxed((v),(c)); })
-#define writel(v,c)		({ __iowmb(); writel_relaxed((v),(c)); })
+#define in_le32(a)	in_arch(l,le32,a)
+#define in_le16(a)	in_arch(w,le16,a)
 
-#define inb_p(addr)	inb(addr)
-#define inw_p(addr)	inw(addr)
-#define inl_p(addr)	inl(addr)
+#define out_be32(a,v)	out_arch(l,be32,a,v)
+#define out_be16(a,v)	out_arch(w,be16,a,v)
 
-#define outb_p(x, addr)	outb((x), (addr))
-#define outw_p(x, addr)	outw((x), (addr))
-#define outl_p(x, addr)	outl((x), (addr))
+#define in_be32(a)	in_arch(l,be32,a)
+#define in_be16(a)	in_arch(w,be16,a)
 
-#define insb_p(port,to,len)	insb(port,to,len)
-#define insw_p(port,to,len)	insw(port,to,len)
-#define insl_p(port,to,len)	insl(port,to,len)
+#define out_8(a,v)	writeb(v,a)
+#define in_8(a)		readb(a)
 
-#define outsb_p(port,from,len)	outsb(port,from,len)
-#define outsw_p(port,from,len)	outsw(port,from,len)
-#define outsl_p(port,from,len)	outsl(port,from,len)
+#define clrbits(type, addr, clear) \
+	out_##type((addr), in_##type(addr) & ~(clear))
 
-/*
- * String version of I/O memory access operations.
- */
-extern void __memcpy_fromio(void *, const volatile void *, size_t);
-extern void __memcpy_toio(volatile void *, const void *, size_t);
-extern void __memset_io(volatile void *, int, size_t);
+#define setbits(type, addr, set) \
+	out_##type((addr), in_##type(addr) | (set))
 
-#define memset_io(c,v,l)	__memset_io((c),(v),(l))
-#define memcpy_fromio(a,c,l)	__memcpy_fromio((a),(c),(l))
-#define memcpy_toio(c,a,l)	__memcpy_toio((c),(a),(l))
+#define clrsetbits(type, addr, clear, set) \
+	out_##type((addr), (in_##type(addr) & ~(clear)) | (set))
 
-#endif	/* __ASM_ARM_IO_H */
+#define clrbits_be32(addr, clear) clrbits(be32, addr, clear)
+#define setbits_be32(addr, set) setbits(be32, addr, set)
+#define clrsetbits_be32(addr, clear, set) clrsetbits(be32, addr, clear, set)
+
+#define clrbits_le32(addr, clear) clrbits(le32, addr, clear)
+#define setbits_le32(addr, set) setbits(le32, addr, set)
+#define clrsetbits_le32(addr, clear, set) clrsetbits(le32, addr, clear, set)
+
+#define clrbits_be16(addr, clear) clrbits(be16, addr, clear)
+#define setbits_be16(addr, set) setbits(be16, addr, set)
+#define clrsetbits_be16(addr, clear, set) clrsetbits(be16, addr, clear, set)
+
+#define clrbits_le16(addr, clear) clrbits(le16, addr, clear)
+#define setbits_le16(addr, set) setbits(le16, addr, set)
+#define clrsetbits_le16(addr, clear, set) clrsetbits(le16, addr, clear, set)
+
+#define clrbits_8(addr, clear) clrbits(8, addr, clear)
+#define setbits_8(addr, set) setbits(8, addr, set)
+#define clrsetbits_8(addr, clear, set) clrsetbits(8, addr, clear, set)
+
+#endif	/* __ASM_ARM64_IO_H */

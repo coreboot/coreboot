@@ -1,13 +1,29 @@
+bootblock-y += bootblock.c
+bootblock-y += bootblock_asm.S
 bootblock-y += cbfs.c
 bootblock-y += timer.c
+bootblock-y += clock.c
+bootblock-y += ../tegra/gpio.c
+bootblock-y += ../tegra/pingroup.c
+bootblock-y += ../tegra/pinmux.c
+bootblock-y += ../tegra/apbmisc.c
+ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
+bootblock-$(CONFIG_DRIVERS_UART) += uart.c
+endif
 
 romstage-y += cbfs.c
 romstage-y += cbmem.c
 romstage-y += timer.c
+romstage-y += ../tegra/gpio.c
+romstage-y += ../tegra/pinmux.c
+romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ramstage-y += cbfs.c
 ramstage-y += cbmem.c
 ramstage-y += timer.c
+ramstage-y += ../tegra/gpio.c
+ramstage-y += ../tegra/pinmux.c
+ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 CPPFLAGS_common += -Isrc/soc/nvidia/tegra132/include/
 

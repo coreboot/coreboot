@@ -18,7 +18,12 @@
 #ifndef __SOC_NVIDIA_TEGRA132_CLOCK_H__
 #define __SOC_NVIDIA_TEGRA132_CLOCK_H__
 
+#include <arch/hlt.h>
+#include <arch/io.h>
+#include <console/console.h>
+#include <soc/nvidia/tegra132/clk_rst.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 enum {
 	CLK_L_CPU = 0x1 << 0,
@@ -174,6 +179,7 @@ enum {
 #define CLOCK_PLL_STABLE_DELAY_US 300
 
 #define IO_STABILIZATION_DELAY (2)
+
 /* Calculate clock fractional divider value from ref and target frequencies.
  * This is for a U7.1 format. This is not well written up in the book and
  * there have been some questions about this macro, so here we go.
@@ -195,7 +201,7 @@ enum {
  * and voila, upper 7 bits are (ref/freq-1), and lowest bit is h. Since you
  * will assign this to a u8, it gets nicely truncated for you.
  */
-#define CLK_DIVIDER(REF, FREQ)	((((REF) * 2) / (FREQ)) - 2)
+#define CLK_DIVIDER(REF, FREQ)	(div_round_up(((REF) * 2), (FREQ)) - 2)
 
 /* Calculate clock frequency value from reference and clock divider value
  * The discussion in the book is pretty lacking.
@@ -216,11 +222,23 @@ enum {
  */
 #define CLK_FREQUENCY(REF, REG)	(((REF) * 2) / ((REG) + 2))
 
+static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
+				  u32 div_mask, u32 src)
+{
+	// The I2C and UART divisors are 16 bit while all the others are 8 bit.
+	// The I2C clocks are handled by the specialized macro below, but the
+	// UART clocks aren't. Don't use this function on UART clocks.
+	if (div & ~div_mask) {
+		printk(BIOS_ERR, "%s clock divisor overflow!", name);
+		hlt();
+	}
+	clrsetbits_le32(reg, CLK_SOURCE_MASK | CLK_DIVISOR_MASK,
+			src << CLK_SOURCE_SHIFT | div);
+}
+
 #define clock_configure_irregular_source(device, src, freq, src_id) \
-	clrsetbits_le32(&clk_rst->clk_src_##device, \
-		CLK_SOURCE_MASK | CLK_DIVISOR_MASK, \
-		src_id << CLK_SOURCE_SHIFT | \
-		CLK_DIVIDER(TEGRA_##src##_KHZ, freq))
+	_clock_set_div(&clk_rst->clk_src_##device, #device, \
+		CLK_DIVIDER(TEGRA_##src##_KHZ, freq), 0xff, src_id)
 
 /* Warning: Some devices just use different bits for the same sources for no
  * apparent reason. *Always* double-check the TRM before trusting this macro. */
@@ -232,11 +250,12 @@ enum {
  * We can deal with those here and make it easier to select what the actual
  * bus frequency will be. The 0x19 value is the default divisor in the
  * clk_divisor register in the controller, and 8 is just a magic number in the
- * documentation. Multiplying by 2 compensates for the different format of the
- * divisor.
+ * documentation.
  */
 #define clock_configure_i2c_scl_freq(device, src, freq) \
-	clock_configure_source(device, src, (freq) * (0x19 + 1) * 8 * 2)
+	_clock_set_div(&clk_rst->clk_src_##device, #device, \
+		div_round_up(TEGRA_##src##_KHZ, (freq) * (0x19 + 1) * 8) - 1, \
+		0xffff, src)
 
 enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 	PLLP = 0,
@@ -259,6 +278,8 @@ enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 #define TEGRA_PLLU_KHZ   (960000)
 
 int clock_get_osc_khz(void);
+int clock_get_pll_input_khz(void);
+int clock_display(u32 frequency);
 void clock_early_uart(void);
 void clock_external_output(int clk_id);
 void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
@@ -267,6 +288,12 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 void clock_cpu0_config_and_reset(void * entry);
 void clock_halt_avp(void);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
+void clock_reset_l(u32 l);
+void clock_reset_h(u32 h);
+void clock_reset_u(u32 u);
+void clock_reset_v(u32 v);
+void clock_reset_w(u32 w);
+void clock_reset_x(u32 x);
 void clock_init(void);
 void clock_init_arm_generic_timer(void);
 void sor_clock_stop(void);

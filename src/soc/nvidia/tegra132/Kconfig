@@ -7,8 +7,20 @@ config SOC_NVIDIA_TEGRA132
 	select ARCH_RAMSTAGE_ARMV8_64
 	select ARM_LPAE
 	select DYNAMIC_CBMEM
+	select BOOTBLOCK_CONSOLE
+	select HAVE_UART_SPECIAL
+	select HAVE_UART_MEMORY_MAPPED
+	select ARM_BOOTBLOCK_CUSTOM
 
 if SOC_NVIDIA_TEGRA132
+
+config BOOTBLOCK_CPU_INIT
+	string
+	default "soc/nvidia/tegra132/bootblock.c"
+	help
+	  CPU/SoC-specific bootblock code. This is useful if the
+	  bootblock must load microcode or copy data from ROM before
+	  searching for the bootblock.
 
 config BOOTBLOCK_ROM_OFFSET
 	hex
@@ -21,5 +33,25 @@ config CBFS_HEADER_ROM_OFFSET
 config CBFS_ROM_OFFSET
 	hex "offset of CBFS data in ROM"
 	default 0x40080
+
+config BOOTBLOCK_BASE
+	hex
+	default 0x40020000
+
+config ROMSTAGE_BASE
+	hex
+	default 0x4002c000
+
+config RAMSTAGE_BASE
+	hex
+	default 0x80200000
+
+config STACK_TOP
+	hex
+	default 0x40020000
+
+config STACK_BOTTOM
+	hex
+	default 0x4001c000
 
 endif

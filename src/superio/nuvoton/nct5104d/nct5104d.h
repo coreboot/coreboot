@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef SUPERIO_NUVOTON_NCT5104D_NCT5104D_H
-#define SUPERIO_NUVOTON_NCT5104D_NCT5104D_H
+#ifndef SUPERIO_NUVOTON_NCT5104D_H
+#define SUPERIO_NUVOTON_NCT5104D_H
 
 /* Logical Device Numbers (LDN). */
 #define NCT5104D_FDC        0x00 /* FDC - not pinned out */
@@ -42,4 +42,6 @@
 #define NCT5104D_GPIO1 ((1 << 8) | NCT5104D_GPIO_V)
 #define NCT5104D_GPIO6 ((6 << 8) | NCT5104D_GPIO_V)
 
-#endif /* SUPERIO_NUVOTON_NCT5104D_NCT5104D_H */
+void nct5104d_enable_uartd(device_t dev);
+
+#endif /* SUPERIO_NUVOTON_NCT5104D_H */

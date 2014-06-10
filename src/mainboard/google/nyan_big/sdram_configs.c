@@ -21,27 +21,23 @@
 #include <soc/nvidia/tegra124/sdram.h>
 #include "sdram_configs.h"
 
-/*
- * Note for board bring up, we've temporarily filled SDRAM table with
- * hynix-2GB-204 configuration (except the hynix-4GB-204 entry for 0100).
- */
 static struct sdram_params sdram_configs[] = {
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0000 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0001 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0010 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0011 */
-#include "bct/sdram-hynix-4GB-204.inc"			/* ram_code = 0100 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0101 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0110 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 0111 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1000 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1001 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1010 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1011 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1100 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1101 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1110 */
-#include "bct/sdram-hynix-2GB-204.inc"			/* ram_code = 1111 */
+#include "bct/sdram-unused.inc"				/* ram_code = 0000 */
+#include "bct/sdram-hynix-2GB-792.inc"			/* ram_code = 0001 */
+#include "bct/sdram-unused.inc"				/* ram_code = 0010 */
+#include "bct/sdram-unused.inc"				/* ram_code = 0011 */
+#include "bct/sdram-hynix-4GB-792.inc"			/* ram_code = 0100 */
+#include "bct/sdram-unused.inc"				/* ram_code = 0101 */
+#include "bct/sdram-kingston-2GB-792.inc"		/* ram_code = 0110 */
+#include "bct/sdram-unused.inc"				/* ram_code = 0111 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1000 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1001 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1010 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1011 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1100 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1101 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1110 */
+#include "bct/sdram-unused.inc"				/* ram_code = 1111 */
 };
 
 const struct sdram_params *get_sdram_config()

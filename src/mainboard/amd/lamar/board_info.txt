@@ -1,0 +1,5 @@
+Board name: DB-FP3 (Lamar)
+Category: eval
+ROM package: SOIC-8
+ROM protocol: SPI
+ROM socketed: n

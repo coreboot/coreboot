@@ -1,0 +1,1 @@
+/* No SATA functionality */

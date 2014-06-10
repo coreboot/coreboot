@@ -90,12 +90,12 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 62: NATIVE: PCH_SUSCLK */
 	PCH_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
 	PCH_GPIO_OUT_LOW,       /* 64: NFC_FW_UPDATE */
-	PCH_GPIO_UNUSED,        /* 65: UNUSED */
-	PCH_GPIO_INPUT,         /* 66: RAM_ID3 */
+	PCH_GPIO_INPUT,         /* 65: RAM_ID3 */
+	PCH_GPIO_UNUSED,        /* 66: UNUSED (STRAP) */
 	PCH_GPIO_INPUT,         /* 67: RAM_ID0 */
 	PCH_GPIO_INPUT,         /* 68: RAM_ID1 */
 	PCH_GPIO_INPUT,         /* 69: RAM_ID2 */
-	PCH_GPIO_OUT_HIGH,      /* 70: LTE_POWER_ON */
+	PCH_GPIO_UNUSED,        /* 70: UNUSED */
 	PCH_GPIO_NATIVE,        /* 71: NATIVE: MODPHY_EN */
 	PCH_GPIO_UNUSED,        /* 72: UNUSED */
 	PCH_GPIO_UNUSED,        /* 73: UNUSED */

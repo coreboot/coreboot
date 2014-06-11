@@ -901,9 +901,11 @@ static int intel_me_read_mbp(me_bios_payload *mbp_data)
 			SET_UP_COPY(mfsintegrity);
 
 		default:
-			printk(BIOS_ERR, "ME: unknown mbp item id 0x%x!!!\n",
+			printk(BIOS_ERR, "ME: unknown mbp item id 0x%x! Skipping\n",
 			       mbp_item_id);
-			return -1;
+			while(copy_size--)
+				read_cb();
+			continue;
 		}
 
 		if (buffer_room != copy_size) {

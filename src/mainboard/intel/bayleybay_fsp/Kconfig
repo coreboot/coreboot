@@ -68,7 +68,7 @@ config FSP_FILE
 config MRC_CACHE_LOC_OVERRIDE
 	hex
 	default 0xfff80000
-	depends on ENABLE_FAST_BOOT
+	depends on ENABLE_FSP_FAST_BOOT
 
 config CBFS_SIZE
 	hex

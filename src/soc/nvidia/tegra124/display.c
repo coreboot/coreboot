@@ -221,6 +221,7 @@ void display_startup(device_t dev)
 	struct display_controller *disp_ctrl = (void *)config->display_controller;
 	struct pwm_controller 	*pwm = (void *)TEGRA_PWM_BASE;
 	struct tegra_dc		*dc = &dc_data;
+	u32 plld_rate;
 
 	/* init dc */
 	dc->base = (void *)TEGRA_ARM_DISPLAYA;
@@ -282,10 +283,14 @@ void display_startup(device_t dev)
 	 * and PIXEL_CLK_DIVIDER are zero (divide by 1). See the
 	 * update_display_mode() for detail.
 	 */
-	if (clock_display(config->pixel_clock * 2)) {
+	plld_rate = clock_display(config->pixel_clock * 2);
+	if (plld_rate == 0) {
 		printk(BIOS_ERR, "dc: clock init failed\n");
 		return;
-	};
+	} else if (plld_rate != config->pixel_clock * 2) {
+		printk(BIOS_WARNING, "dc: plld rounded to %u\n", plld_rate);
+		config->pixel_clock = plld_rate / 2;
+	}
 
 	/* Init dc */
 	if (tegra_dc_init(disp_ctrl)) {

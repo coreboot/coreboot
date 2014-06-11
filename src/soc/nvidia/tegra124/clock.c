@@ -295,8 +295,14 @@ static void graphics_pll(void)
 	 */
 }
 
-/* Init PLLD clock source. */
-int
+/*
+ * Init PLLD clock source.
+ *
+ * @frequency: the requested plld frequency
+ *
+ * Return the plld frequency if success, otherwise return 0.
+ */
+u32
 clock_display(u32 frequency)
 {
 	/**
@@ -314,7 +320,7 @@ clock_display(u32 frequency)
 	 */
 	struct pllpad_dividers plld = { 0 };
 	u32 ref = clock_get_pll_input_khz() * 1000, m, n, p = 0;
-	u32 cf, vco;
+	u32 cf, vco, rounded_rate = frequency;
 	u32 diff, best_diff;
 	const u32 max_m = 1 << 5, max_n = 1 << 10, max_p = 1 << 3,
 		  mhz = 1000 * 1000, min_vco = 500 * mhz, max_vco = 1000 * mhz,
@@ -326,7 +332,7 @@ clock_display(u32 frequency)
 	if (vco < min_vco || vco > max_vco) {
 		printk(BIOS_ERR, "%s: Cannot find out a supported VCO"
 			" for Frequency (%u).\n", __func__, frequency);
-		return -1;
+		return 0;
 	}
 
 	plld.p = p;
@@ -367,18 +373,19 @@ clock_display(u32 frequency)
 		plld.cpcon = 12;
 
 	if (best_diff) {
-		printk(BIOS_ERR, "%s: Failed to match output frequency %u, "
+		printk(BIOS_WARNING, "%s: Failed to match output frequency %u, "
 		       "best difference is %u.\n", __func__, frequency,
 		       best_diff);
+		rounded_rate = (ref / plld.m * plld.n) >> plld.p;
 	}
 
 	printk(BIOS_DEBUG, "%s: PLLD=%u ref=%u, m/n/p/cpcon=%u/%u/%u/%u\n",
-	       __func__, (ref / plld.m * plld.n) >> plld.p, ref, plld.m, plld.n,
-	       plld.p, plld.cpcon);
+	       __func__, rounded_rate, ref, plld.m, plld.n, plld.p, plld.cpcon);
 
 	init_pll(&clk_rst->plld_base, &clk_rst->plld_misc, plld,
 		 (PLLUD_MISC_LOCK_ENABLE | PLLD_MISC_CLK_ENABLE));
-	return 0;
+
+	return rounded_rate;
 }
 
 /* Initialize the UART and put it on CLK_M so we can use it during clock_init().

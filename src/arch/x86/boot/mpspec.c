@@ -89,7 +89,7 @@ static void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long
 	mf->mpf_specification = 4;
 	mf->mpf_checksum = 0;
 	mf->mpf_feature1 = 0;
-	mf->mpf_feature2 = virtualwire?MP_FEATURE_VIRTUALWIRE:0;
+	mf->mpf_feature2 = virtualwire?MP_FEATURE_PIC:MP_FEATURE_VIRTUALWIRE;
 	mf->mpf_feature3 = 0;
 	mf->mpf_feature4 = 0;
 	mf->mpf_feature5 = 0;

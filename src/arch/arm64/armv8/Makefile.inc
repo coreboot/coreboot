@@ -19,6 +19,8 @@
 ##
 ################################################################################
 
+subdirs-y += lib/
+
 armv8_flags = -march=armv8-a -I$(src)/arch/arm64/include/armv8/ -D__COREBOOT_ARM_ARCH__=8
 
 armv8_asm_flags = $(armv8_flags)

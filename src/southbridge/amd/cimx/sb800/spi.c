@@ -25,7 +25,7 @@
 #include <device/pci.h>
 #include <device/pci_ops.h>
 
-#if defined (CONFIG_SB800_IMC_FWM)
+#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
 #include "SBPLATFORM.h"
 #include <vendorcode/amd/cimx/sb800/ECfan.h>
 
@@ -98,7 +98,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	return 0;
 }
 
-#if defined (CONFIG_SB800_IMC_FWM)
+#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
 
 static void ImcSleep(void)
 {
@@ -130,7 +130,7 @@ static void ImcWakeup(void)
 
 int spi_claim_bus(struct spi_slave *slave)
 {
-#if defined (CONFIG_SB800_IMC_FWM)
+#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
 
 	if (slave->rw == SPI_WRITE_FLAG) {
 		bus_claimed++;
@@ -144,7 +144,7 @@ int spi_claim_bus(struct spi_slave *slave)
 
 void spi_release_bus(struct spi_slave *slave)
 {
-#if defined (CONFIG_SB800_IMC_FWM)
+#if IS_ENABLED (CONFIG_SB800_IMC_FWM)
 
 	if (slave->rw == SPI_WRITE_FLAG)  {
 		bus_claimed--;

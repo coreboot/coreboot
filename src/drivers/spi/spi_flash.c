@@ -16,6 +16,7 @@
 #include <cpu/x86/smm.h>
 #endif
 #include "spi_flash_internal.h"
+#include <timer.h>
 
 static void spi_flash_addr(u32 addr, u8 *cmd)
 {
@@ -106,27 +107,24 @@ int spi_flash_cmd_poll_bit(struct spi_flash *flash, unsigned long timeout,
 			   u8 cmd, u8 poll_bit)
 {
 	struct spi_slave *spi = flash->spi;
-	unsigned long timebase;
 	int ret;
 	u8 status;
+	struct mono_time current, end;
 
-	timebase = timeout;
+	timer_monotonic_get(&current);
+	end = current;
+	mono_time_add_msecs(&end, timeout);
+
 	do {
 		ret = spi_flash_cmd_read(spi, &cmd, 1, &status, 1);
 		if (ret)
 			return -1;
-
 		if ((status & poll_bit) == 0)
-			break;
+			return 0;
+		timer_monotonic_get(&current);
+	} while (!mono_time_after(&current, &end));
 
-		udelay(500);
-	} while (timebase--);
-
-	if ((status & poll_bit) == 0)
-		return 0;
-
-	/* Timed out */
-	printk(BIOS_DEBUG, "SF: time out!\n");
+	printk(BIOS_DEBUG, "SF: timeout at %ld msec\n",timeout);
 	return -1;
 }
 

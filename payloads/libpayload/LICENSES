@@ -34,8 +34,20 @@ BSD license:
 
 For some parts, which were taken from external projects, other (compatible)
 licenses may apply. Please check the individual source files for details,
-or see the section below for an overview of third-party code in libpayload.
+or see the section at the bottom of this file for an overview of third-party
+code in libpayload.
 
+Some parts of libpayload are licensed under the GNU General Public License
+(version 2). These parts are clearly separated by the CONFIG_GPL Kconfig
+option (default off), and will not be linked into the output payload unless
+that option has been chosen. The full text of that license is provided in the
+LICENSE_GPL file.
+
+(Please note that the coreboot project makes a best effort to keep licensing
+information up to date and accurate, but provides no legal guarantees to that
+regard. If you redistribute libpayload code in source or binary form, it is
+your liability to ensure that you conform to all legal requirements that this
+might entail.)
 
 Third-party Code and License Overview
 -------------------------------------
@@ -110,3 +122,12 @@ holders, and the exact license terms that apply.
   Original files: src/lib/libc/hash/sha1.c
   Current version we use: CVS revision 1.20 2005/08/08
 
+* arch/arm/mem*.S: GPLv2
+  Source: Linux, http://www.kernel.org
+  Original files: arch/arm/lib/mem*.S
+  Current version we use: 3.9 (418df63adac56841ef6b0f1fcf435bc64d4ed177)
+
+* arch/x86/string.c: LGPLv2.1, modified to GPLv2 under the terms of section 3
+  Source: GNU C Library (glibc), http://www.gnu.org/software/libc/libc.html
+  Original files: sysdeps/i386/memset.c
+  Current version we use: 2.14

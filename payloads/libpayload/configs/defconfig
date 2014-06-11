@@ -7,6 +7,7 @@
 #
 # Generic Options
 #
+# CONFIG_LP_GPL is not set
 # CONFIG_LP_EXPERIMENTAL is not set
 # CONFIG_LP_OBSOLETE is not set
 # CONFIG_LP_DEVELOPER is not set

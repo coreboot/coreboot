@@ -32,8 +32,11 @@ libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
 libc-y += exec.S virtual.c
 libc-y += selfboot.c
-libc-y += string.c
 libc-y += exception_asm.S exception.c
+
+# Will fall back to default_memXXX() in libc/memory.c if GPL not allowed.
+libc-$(CONFIG_LP_GPL) += string.c
+
 
 libcbfs-$(CONFIG_LP_CBFS) += rom_media.c
 

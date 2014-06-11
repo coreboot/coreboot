@@ -35,10 +35,13 @@ libc-y += eabi_compat.c
 libc-y += main.c sysinfo.c
 libc-y += timer.c coreboot.c util.S
 libc-y += virtual.c
-libc-y += memcpy.S memset.S memmove.S
 libc-y += exception_asm.S exception.c
 libc-y += cache.c cpu.S
 libc-y += selfboot.c
+
+# Will fall back to default_memXXX() in libc/memory.c if GPL not allowed.
+libc-$(CONFIG_LP_GPL) += memcpy.S memset.S memmove.S
+
 libcbfs-$(CONFIG_LP_CBFS) += dummy_media.c
 
 # Add other classes here when you put assembly files into them!

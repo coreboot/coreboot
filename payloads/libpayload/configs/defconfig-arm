@@ -1,12 +1,13 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Wed Dec 31 11:39:10 2014
+# Mon Jan  5 15:06:15 2015
 #
 
 #
 # Generic Options
 #
+# CONFIG_LP_GPL is not set
 # CONFIG_LP_EXPERIMENTAL is not set
 # CONFIG_LP_OBSOLETE is not set
 # CONFIG_LP_DEVELOPER is not set

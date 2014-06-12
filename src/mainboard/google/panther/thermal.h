@@ -46,7 +46,7 @@
 #define FAN0_PWM		0xff
 
 /* Temperature which OS will shutdown at */
-#define CRITICAL_TEMPERATURE	100
+#define CRITICAL_TEMPERATURE	98
 
 /* Temperature which OS will throttle CPU */
 #define PASSIVE_TEMPERATURE	90

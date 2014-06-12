@@ -154,7 +154,7 @@ config ENABLE_BUILTIN_COM1
 
 config VGA_BIOS_FILE
 	string
-	default "../intel/cpu/baytrail/vbios/Baytrail_I_36_2_2/Vga.dat" if VGA_BIOS
+	default "../intel/cpu/baytrail/vbios/Vga.dat" if VGA_BIOS
 
 ## Baytrail Specific FSP Kconfig
 source src/soc/intel/fsp_baytrail/fsp/Kconfig

@@ -17,15 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "AGESA.h"
-#include "amdlib.h"
-#include "Ids.h"
-#include "heapManager.h"
 #include "PlatformGnbPcieComplex.h"
-#include "Filecode.h"
 #include "BiosCallOuts.h"
 
 #include <string.h>
+#include <vendorcode/amd/agesa/f14/Proc/CPU/heapManager.h>
 
 #define FILECODE PROC_RECOVERY_MEM_NB_ON_MRNON_FILECODE
 

@@ -49,10 +49,6 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "Bayley Bay CRB"
 
-config MMCONF_BASE_ADDRESS
-	hex
-	default 0xe0000000
-
 config IRQ_SLOT_COUNT
 	int
 	default 18
@@ -64,10 +60,6 @@ config MAX_CPUS
 config CACHE_ROM_SIZE_OVERRIDE
 	hex
 	default 0x800000
-
-config FSP_LOC
-	hex
-	default 0xfffc0000
 
 config FSP_FILE
 	string

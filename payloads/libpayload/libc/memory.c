@@ -35,12 +35,22 @@
 
 static void *default_memset(void *s, int c, size_t n)
 {
-	char *os = s;
+	size_t i;
+	void *ret = s;
+	unsigned long w = c & 0xff;
 
-	while (n--)
-		*(os++) = c;
+	for (i = 1; i < sizeof(unsigned long); i <<= 1)
+		w = (w << (i * 8)) | w;
 
-	return s;
+	for (i = 0; i < n / sizeof(unsigned long); i++)
+		((unsigned long *)s)[i] = w;
+
+	s += i * sizeof(unsigned long);
+
+	for (i = 0; i < n % sizeof(unsigned long); i++)
+		((u8 *)s)[i] = (u8)c;
+
+	return ret;
 }
 
 void *memset(void *s, int c, size_t n)
@@ -48,18 +58,17 @@ void *memset(void *s, int c, size_t n)
 
 static void *default_memcpy(void *dst, const void *src, size_t n)
 {
-	int i;
+	size_t i;
 	void *ret = dst;
 
-	for(i = 0; i < n % sizeof(unsigned long); i++)
-		((unsigned char *) dst)[i] = ((unsigned char *) src)[i];
-
-	n -= i;
-	src += i;
-	dst += i;
-
 	for(i = 0; i < n / sizeof(unsigned long); i++)
-		((unsigned long *) dst)[i] = ((unsigned long *) src)[i];
+		((unsigned long *)dst)[i] = ((unsigned long *)src)[i];
+
+	src += i * sizeof(unsigned long);
+	dst += i * sizeof(unsigned long);
+
+	for(i = 0; i < n % sizeof(unsigned long); i++)
+		((u8 *)dst)[i] = ((u8 *)src)[i];
 
 	return ret;
 }
@@ -69,8 +78,7 @@ void *memcpy(void *dst, const void *src, size_t n)
 
 static void *default_memmove(void *dst, const void *src, size_t n)
 {
-	int i;
-	unsigned long offs;
+	size_t i, offs;
 
 	if (src > dst)
 		return memcpy(dst, src, n);
@@ -78,8 +86,7 @@ static void *default_memmove(void *dst, const void *src, size_t n)
 	offs = n - (n % sizeof(unsigned long));
 
 	for (i = (n % sizeof(unsigned long)) - 1; i >= 0; i--)
-		((unsigned char *)dst)[i + offs] =
-			((unsigned char *)src)[i + offs];
+		((u8 *)dst)[i + offs] = ((u8 *)src)[i + offs];
 
 	for (i = n / sizeof(unsigned long) - 1; i >= 0; i--)
 		((unsigned long *)dst)[i] = ((unsigned long *)src)[i];
@@ -95,17 +102,27 @@ void *memmove(void *dst, const void *src, size_t n)
  *
  * @param s1 Pointer to the first area to compare.
  * @param s2 Pointer to the second area to compare.
- * @param len Size of the first area in bytes (both must have the same length).
- * @return If len is 0, return zero. If the areas match, return zero.
- *         Otherwise return non-zero.
+ * @param n Size of the first area in bytes (both must have the same length).
+ * @return If n is 0, return zero. Otherwise, return a value less than, equal
+ * 	   to, or greater than zero if s1 is found less than, equal to, or
+ * 	   greater than s2 respectively.
  */
 
-static int default_memcmp(const void *s1, const void *s2, size_t len)
+static int default_memcmp(const void *s1, const void *s2, size_t n)
 {
-	for (; len && *(char *)s1++ == *(char *)s2++; len--) ;
-	return len;
+	size_t i;
+
+	for (i = 0; i < n / sizeof(unsigned long); i++)
+		if (((unsigned long *)s1)[i] != ((unsigned long *)s2)[i])
+			break;	/* fall through to find differing byte */
+
+	for (i *= sizeof(unsigned long); i < n; i++)
+		if (((u8 *)s1)[i] != ((u8 *)s2)[i])
+			return ((u8 *)s1)[i] - ((u8 *)s2)[i];
+
+	return 0;
 }
 
-int memcmp(const void *s1, const void *s2, size_t len)
+int memcmp(const void *s1, const void *s2, size_t n)
 	__attribute__((weak, alias("default_memcmp")));
 

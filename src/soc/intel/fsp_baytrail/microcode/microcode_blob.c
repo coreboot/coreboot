@@ -19,7 +19,8 @@
 
 unsigned microcode[] = {
 
-/* Size is 0xCC00 - update in Kconfig when the patch gets updated. */
+/* Size is 0x19800 - update in Kconfig when the patch gets updated. */
+#include "M0230672228.h"  // M0230672: Baytrail "Super SKU" B0/B1
 #include "M013067331E.h"  // M0130673: Baytrail I B2 / B3
 
 };

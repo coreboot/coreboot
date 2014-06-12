@@ -102,7 +102,7 @@ config CPU_MICROCODE_CBFS_LOC
 
 config CPU_MICROCODE_CBFS_LEN
 	hex
-	default 0xcc00
+	default 0x19800
 	help
 	  This should be updated when the microcode patch changes.
 

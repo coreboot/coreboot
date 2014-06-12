@@ -72,6 +72,6 @@ config CBFS_CACHE_SIZE
 
 config TTB_BUFFER
 	hex "memory address for page tables"
-	default 0x405c0000
+	default 0x2a05c000
 
 endif

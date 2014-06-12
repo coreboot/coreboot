@@ -17,22 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
- *----------------------------------------------------------------------------------------
- */
-
-
 #ifndef _GPIO_H_
 #define _GPIO_H_
 
 #include <stdint.h>
 #include <cbtypes.h>
 
-/*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
- *----------------------------------------------------------------------------------------
- */
 #define Mmio_Address( BaseAddr, Register ) \
 	( (UINTN)BaseAddr + \
 	  (UINTN)(Register) \
@@ -2310,20 +2300,5 @@ GEVENT_SETTINGS gevent_table[] =
 	{GEVENT_22_EVENTENABLE, GEVENT_22_SCITRIG, GEVENT_22_SCILEVEL, GEVENT_22_SMISCIEN, GEVENT_22_SCIS0EN, GEVENT_22_SCIMAP, GEVENT_22_SMITRIG, GEVENT_22_SMICONTROL},
 	{GEVENT_23_EVENTENABLE, GEVENT_23_SCITRIG, GEVENT_23_SCILEVEL, GEVENT_23_SMISCIEN, GEVENT_23_SCIS0EN, GEVENT_23_SCIMAP, GEVENT_23_SMITRIG, GEVENT_23_SMICONTROL},
 };
-
-/*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-/*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-/*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
- *---------------------------------------------------------------------------------------
- */
 
 #endif

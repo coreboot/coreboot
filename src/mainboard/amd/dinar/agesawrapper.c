@@ -17,11 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
- *----------------------------------------------------------------------------------------
- */
-
 #include <stdint.h>
 #include <string.h>
 #include <cpu/x86/mtrr.h>
@@ -41,11 +36,6 @@
 
 #define FILECODE UNASSIGNED_FILE_FILECODE
 
-/*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
- *----------------------------------------------------------------------------------------
- */
-
 /* ACPI table pointers returned by AmdInitLate */
 VOID *DmiTable    = NULL;
 VOID *AcpiPstate  = NULL;
@@ -56,26 +46,6 @@ VOID *AcpiWheaMce = NULL;
 VOID *AcpiWheaCmc = NULL;
 VOID *AcpiAlib    = NULL;
 
-
-/*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
- *----------------------------------------------------------------------------------------
- */
-
-/*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-/*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-/*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
- *---------------------------------------------------------------------------------------
- */
 extern VOID OemCustomizeInitEarly(IN  OUT AMD_EARLY_PARAMS *InitEarly);
 extern VOID OemCustomizeInitPost(IN  AMD_POST_PARAMS *InitPost);
 
@@ -355,7 +325,6 @@ agesawrapper_amdinitearly (
 
 	return (UINT32)status;
 }
-/*---------------------------------------------------------------------------------------*/
 /**
  *  OemCustomizeInitEarly
  *
@@ -370,7 +339,6 @@ agesawrapper_amdinitearly (
  *    @retval         VOID
  *
  **/
-/*---------------------------------------------------------------------------------------*/
 VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
 	//InitEarly->PlatformConfig.CoreLevelingMode = CORE_LEVEL_TWO;

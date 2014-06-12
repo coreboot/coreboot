@@ -17,11 +17,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/*----------------------------------------------------------------------------------------
- *                             M O D U L E S    U S E D
- *----------------------------------------------------------------------------------------
- */
-
 #ifndef _AGESAWRAPPER_H_
 #define _AGESAWRAPPER_H_
 
@@ -29,10 +24,6 @@
 #include "Porting.h"
 #include "AGESA.h"
 
-/*----------------------------------------------------------------------------------------
- *                   D E F I N I T I O N S    A N D    M A C R O S
- *----------------------------------------------------------------------------------------
- */
 /* Define AMD Ontario APPU SSID/SVID */
 #define AMD_APU_SVID    0x1022
 #define AMD_APU_SSID    0x1234
@@ -48,26 +39,6 @@ enum {
   PICK_ALIB,      /* SACPI SSDT table with ALIB implementation */
 };
 
-/*----------------------------------------------------------------------------------------
- *                  T Y P E D E F S     A N D     S T R U C T U  R E S
- *----------------------------------------------------------------------------------------
- */
-
-/*----------------------------------------------------------------------------------------
- *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-/*----------------------------------------------------------------------------------------
- *                          E X P O R T E D    F U N C T I O N S
- *----------------------------------------------------------------------------------------
- */
-
-/*---------------------------------------------------------------------------------------
- *                          L O C A L    F U N C T I O N S
- *---------------------------------------------------------------------------------------
- */
-
 UINT32 agesawrapper_amdinitreset (void);
 UINT32 agesawrapper_amdinitearly (void);
 UINT32 agesawrapper_amdinitenv (void);
@@ -82,4 +53,4 @@ UINT32 agesawrapper_amdinitmmio (void);
 UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 void *agesawrapper_getlateinitptr (int pick);
 
-#endif
+#endif /* _AGESAWRAPPER_H_ */

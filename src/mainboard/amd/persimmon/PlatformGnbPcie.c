@@ -29,7 +29,6 @@
 
 #define FILECODE PROC_RECOVERY_MEM_NB_ON_MRNON_FILECODE
 
-/*---------------------------------------------------------------------------------------*/
 /**
  *	OemCustomizeInitEarly
  *
@@ -44,7 +43,6 @@
  *	@retval		 VOID
  *
  **/
-/*---------------------------------------------------------------------------------------*/
 VOID
 OemCustomizeInitEarly (
 	IN	OUT AMD_EARLY_PARAMS	*InitEarly

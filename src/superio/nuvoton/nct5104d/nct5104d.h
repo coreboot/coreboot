@@ -22,6 +22,12 @@
 #ifndef SUPERIO_NUVOTON_NCT5104D_H
 #define SUPERIO_NUVOTON_NCT5104D_H
 
+/* SIO global configuration */
+#define IRQ_TYPE_SEL_CR10   0x10     /* UARTA,UARTB */
+#define IRQ_TYPE_SEL_CR11   0x11     /* SMI,UARTC,UARTD,WDTO */
+#define GLOBAL_OPTION_CR26  0x26
+#define CR26_LOCK_REG       (1 << 4) /* required to access CR10/CR11 */
+
 /* Logical Device Numbers (LDN). */
 #define NCT5104D_FDC        0x00 /* FDC - not pinned out */
 #define NCT5104D_SP1        0x02 /* UARTA */

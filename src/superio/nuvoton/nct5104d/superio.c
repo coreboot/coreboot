@@ -23,9 +23,69 @@
 #include <superio/conf_mode.h>
 #include <stdlib.h>
 #include "nct5104d.h"
+#include "chip.h"
 
 static void nct5104d_init(device_t dev)
 {
+	struct superio_nuvoton_nct5104d_config *conf = dev->chip_info;
+	u8 reg10, reg11, reg26;
+
+	if (!dev->enabled)
+		return;
+
+	pnp_enter_conf_mode(dev);
+
+	//Before accessing CR10 OR CR11 Bit 4 in CR26 must be set to 1
+	reg26 = pnp_read_config(dev, GLOBAL_OPTION_CR26);
+	reg26 |= CR26_LOCK_REG;
+	pnp_write_config(dev, GLOBAL_OPTION_CR26, reg26);
+
+	switch(dev->path.pnp.device) {
+	//SP1 (UARTA) IRQ type selection (1:level,0:edge) is controlled by CR 10, bit 5
+	case NCT5104D_SP1:
+		reg10 = pnp_read_config(dev, IRQ_TYPE_SEL_CR10);
+		if (conf->irq_trigger_type)
+			reg10 |= (1 << 5);
+		else
+			reg10 &= ~(1 << 5);
+		pnp_write_config(dev, IRQ_TYPE_SEL_CR10, reg10);
+		break;
+	//SP2 (UARTB) IRQ type selection (1:level,0:edge) is controlled by CR 10, bit 4
+	case NCT5104D_SP2:
+		reg10 = pnp_read_config(dev, IRQ_TYPE_SEL_CR10);
+		if (conf->irq_trigger_type)
+			reg10 |= (1 << 4);
+		else
+			reg10 &= ~(1 << 4);
+		pnp_write_config(dev, IRQ_TYPE_SEL_CR10, reg10);
+		break;
+	//SP3 (UARTC) IRQ type selection (1:level,0:edge) is controlled by CR 11, bit 5
+	case NCT5104D_SP3:
+		reg11 = pnp_read_config(dev,IRQ_TYPE_SEL_CR11);
+		if (conf->irq_trigger_type)
+			reg11 |= (1 << 5);
+		else
+			reg11 &= ~(1 << 5);
+		pnp_write_config(dev, IRQ_TYPE_SEL_CR11, reg11);
+		break;
+	//SP4 (UARTD) IRQ type selection (1:level,0:edge) is controlled by CR 11, bit 4
+	case NCT5104D_SP4:
+		reg11 = pnp_read_config(dev,IRQ_TYPE_SEL_CR11);
+		if (conf->irq_trigger_type)
+			reg11 |= (1 << 4);
+		else
+			reg11 &= ~(1 << 4);
+		pnp_write_config(dev, IRQ_TYPE_SEL_CR11, reg11);
+		break;
+	default:
+		break;
+	}
+
+	//Clear access control register
+	reg26 = pnp_read_config(dev, GLOBAL_OPTION_CR26);
+	reg26 &= ~CR26_LOCK_REG;
+	pnp_write_config(dev, GLOBAL_OPTION_CR26, reg26);
+	pnp_exit_conf_mode(dev);
 }
 
 static struct device_operations ops = {
@@ -38,13 +98,17 @@ static struct device_operations ops = {
 };
 
 static struct pnp_info pnp_dev_info[] = {
-	{ &ops, NCT5104D_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, NCT5104D_FDC,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, NCT5104D_SP1,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, NCT5104D_SP2,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, NCT5104D_SP3,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
+	{ &ops, NCT5104D_SP4,  PNP_IO0 | PNP_IRQ0, {0x07f8, 0}, },
 	{ &ops, NCT5104D_GPIO_WDT},
 	{ &ops, NCT5104D_GPIO_PP_OD},
 	{ &ops, NCT5104D_GPIO0},
 	{ &ops, NCT5104D_GPIO1},
 	{ &ops, NCT5104D_GPIO6},
+	{ &ops, NCT5104D_PORT80},
 };
 
 static void enable_dev(struct device *dev)

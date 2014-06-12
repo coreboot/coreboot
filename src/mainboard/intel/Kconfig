@@ -3,6 +3,8 @@ if VENDOR_INTEL
 choice
 	prompt "Mainboard model"
 
+config BOARD_INTEL_BAKERSPORT_FSP
+	bool "Bakersport FSP-based CRB"
 config BOARD_INTEL_BAYLEYBAY_FSP
 	bool "Bayley Bay FSP-based CRB"
 config BOARD_INTEL_COUGAR_CANYON2
@@ -34,6 +36,7 @@ config BOARD_INTEL_WTM2
 
 endchoice
 
+source "src/mainboard/intel/bakersport_fsp/Kconfig"
 source "src/mainboard/intel/bayleybay_fsp/Kconfig"
 source "src/mainboard/intel/cougar_canyon2/Kconfig"
 source "src/mainboard/intel/d810e2cb/Kconfig"

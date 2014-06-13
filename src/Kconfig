@@ -277,10 +277,15 @@ config ARCH_RISCV
 	default n
 	select ANY_TOOLCHAIN
 
+config ARCH_MIPS
+	bool
+	default n
+
 source src/arch/x86/Kconfig
 source src/arch/arm/Kconfig
 source src/arch/arm64/Kconfig
 source src/arch/riscv/Kconfig
+source src/arch/mips/Kconfig
 
 source src/vendorcode/Kconfig
 

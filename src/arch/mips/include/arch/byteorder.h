@@ -1,0 +1,48 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright (C) 2014 Imagination Technologies
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+#ifndef __MIPS_ARCH_BYTEORDER_H
+#define __MIPS_ARCH_BYTEORDER_H
+
+#include <stdint.h>
+#include <swab.h>
+
+#ifndef __ORDER_LITTLE_ENDIAN__
+#errror "What endian are you!?"
+#endif
+
+#define cpu_to_le64(x) ((uint64_t)(x))
+#define le64_to_cpu(x) ((uint64_t)(x))
+#define cpu_to_le32(x) ((uint32_t)(x))
+#define le32_to_cpu(x) ((uint32_t)(x))
+#define cpu_to_le16(x) ((uint16_t)(x))
+#define le16_to_cpu(x) ((uint16_t)(x))
+#define cpu_to_be64(x) swab64(x)
+#define be64_to_cpu(x) swab64(x)
+#define cpu_to_be32(x) swab32((x))
+#define be32_to_cpu(x) swab32((x))
+#define cpu_to_be16(x) swab16((x))
+#define be16_to_cpu(x) swab16((x))
+
+#define ntohll(x) be64_to_cpu(x)
+#define htonll(x) cpu_to_be64(x)
+#define ntohl(x)  be32_to_cpu(x)
+#define htonl(x)  cpu_to_be32(x)
+
+#endif /* __MIPS_ARCH_BYTEORDER_H */

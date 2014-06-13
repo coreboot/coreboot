@@ -265,10 +265,9 @@ else
 CFLAGS_common += -Os
 endif
 
-
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
 		   $(objutil)/ifdfake $(objutil)/options $(objutil)/fletcher \
-		   $(objutil)/cbootimage
+		   $(objutil)/cbootimage $(objutil)/bimgtool
 
 #######################################################################
 # generate build support files
@@ -332,6 +331,11 @@ $(FLETCHER): $(top)/util/fletcher/fletcher.c
 CBOOTIMAGE:=$(objutil)/cbootimage/cbootimage
 
 subdirs-y += util/nvidia
+
+BIMGTOOL:=$(objutil)/bimgtool/bimgtool
+$(BIMGTOOL): $(top)/util/bimgtool/bimgtool.c
+	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
+	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 
 #######################################################################
 # needed objects that every mainboard uses

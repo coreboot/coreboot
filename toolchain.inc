@@ -64,7 +64,8 @@ CFLAGS_arm      := -mno-unaligned-access -ffunction-sections -fdata-sections
 
 CFLAGS_arm64 := -ffunction-sections -fdata-sections
 
-CFLAGS_mipsel   := -mips32r2 -G 0  -ffunction-sections -fdata-sections
+CFLAGS_mipsel	:= -mips32r2 -G 0  -ffunction-sections -fdata-sections
+CFLAGS_mipsel	+= -mno-abicalls -fno-pic
 
 CFLAGS_x86_32 := -ffunction-sections -fdata-sections
 

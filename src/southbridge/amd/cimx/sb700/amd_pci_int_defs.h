@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
  * Copyright (C) 2014 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,39 +17,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include "cimx_util.h"
+#ifndef AMD_PCI_INT_DEFS_H
+#define AMD_PCI_INT_DEFS_H
 
-static void pmio_write_index(u16 port_base, u8 reg, u8 value)
-{
-	outb(reg, port_base);
-	outb(value, port_base + 1);
-}
+/*
+ * PIRQ and device routing - these define the index
+ * into the FCH PCI_INTR 0xC00/0xC01 interrupt
+ * routing table
+ */
+#define FCH_INT_TABLE_SIZE 0xD
+#define PIRQ_NC		0x1F	/* Not Used */
+#define PIRQ_A		0x00	/* INT A */
+#define PIRQ_B		0x01	/* INT B */
+#define PIRQ_C		0x02	/* INT C */
+#define PIRQ_D		0x03	/* INT D */
+#define PIRQ_ACPI	0x04	/* ACPI */
+#define PIRQ_SMBUS	0x05	/* SMBUS */
+/* Index 6, 7, 8 are all reserved */
+#define PIRQ_E		0x09	/* INT E */
+#define PIRQ_F		0x0A	/* INT F */
+#define PIRQ_G		0x0B	/* INT G */
+#define PIRQ_H		0x0C	/* INT H */
 
-static u8 pmio_read_index(u16 port_base, u8 reg)
-{
-	outb(reg, port_base);
-	return inb(port_base + 1);
-}
-
-void pm_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM_INDEX, reg, value);
-}
-
-u8 pm_ioread(u8 reg)
-{
-	return pmio_read_index(PM_INDEX, reg);
-}
-
-void pm2_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM2_INDEX, reg, value);
-}
-
-u8 pm2_ioread(u8 reg)
-{
-	return pmio_read_index(PM2_INDEX, reg);
-}
+#endif /* AMD_PCI_INT_DEFS_H */

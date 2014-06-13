@@ -16,3 +16,9 @@ subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += cimx
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += cimx
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) += agesa
 subdirs-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE) += agesa
+
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB700) += amd_pci_util.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB800) += amd_pci_util.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900) += amd_pci_util.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_HUDSON) += amd_pci_util.c
+ramstage-$(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE) += amd_pci_util.c

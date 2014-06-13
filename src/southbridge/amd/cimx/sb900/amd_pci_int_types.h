@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
  * Copyright (C) 2014 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,39 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include "cimx_util.h"
+#ifndef AMD_PCI_INT_TYPES_H
+#define AMD_PCI_INT_TYPES_H
 
-static void pmio_write_index(u16 port_base, u8 reg, u8 value)
-{
-	outb(reg, port_base);
-	outb(value, port_base + 1);
-}
+const char * intr_types[] = {
+	[0x00] = "INTA#\t", "INTB#\t", "INTC#\t", "INTD#\t", "INTE#\t", "INTF#\t", "INTG#\t", "INTH#\t",
+	[0x08] = "Misc\t", "Misc0\t", "Misc1\t", "Misc2\t", "Ser IRQ INTA", "Ser IRQ INTB", "Ser IRQ INTC", "Ser IRQ INTD",
+	[0x10] = "SCI\t", "SMBUS0\t", "ASF\t", "HDA\t", "FC\t\t", "GEC\t", "PerMon\t",
+	[0x20] = "IMC INT0\t", "IMC INT1\t", "IMC INT2\t", "IMC INT3\t", "IMC INT4\t", "IMC INT5\t",
+	[0x30] = "Dev18.0 INTA", "Dev18.2 INTB", "Dev19.0 INTA", "Dev19.2 INTB", "Dev22.0 INTA", "Dev22.2 INTB", "Dev20.5 INTC",
+	[0x40] = "IDE\t", "SATA\t",
+	[0x50] = "GPPInt0\t", "GPPInt1\t", "GPPInt2\t", "GPPInt3\t"
+};
 
-static u8 pmio_read_index(u16 port_base, u8 reg)
-{
-	outb(reg, port_base);
-	return inb(port_base + 1);
-}
-
-void pm_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM_INDEX, reg, value);
-}
-
-u8 pm_ioread(u8 reg)
-{
-	return pmio_read_index(PM_INDEX, reg);
-}
-
-void pm2_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM2_INDEX, reg, value);
-}
-
-u8 pm2_ioread(u8 reg)
-{
-	return pmio_read_index(PM2_INDEX, reg);
-}
+#endif /* AMD_PCI_INT_TYPES_H */

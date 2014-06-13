@@ -38,7 +38,7 @@
 #include "sb_cimx.h"		/* AMD CIMX wrapper entries */
 #include "smbus.h"
 #include "fan.h"
-#include <southbridge/amd/cimx/cimx_util.h>
+#include <southbridge/amd/amd_pci_util.h>
 
 /*implement in mainboard.c*/
 void set_pcie_reset(void);

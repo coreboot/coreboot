@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <cpu/x86/msr.h>
 #include <device/pci_def.h>
+#include <southbridge/amd/amd_pci_util.h>
 #include <southbridge/amd/cimx/cimx_util.h>
 #include <arch/acpi.h>
 #include "BiosCallOuts.h"

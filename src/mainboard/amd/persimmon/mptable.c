@@ -27,7 +27,7 @@
 #include <stdint.h>
 #include <cpu/amd/amdfam14.h>
 #include <SBPLATFORM.h>
-#include <southbridge/amd/cimx/cimx_util.h>
+#include <southbridge/amd/amd_pci_util.h>
 #include <drivers/generic/ioapic/chip.h>
 #include <arch/ioapic.h>
 

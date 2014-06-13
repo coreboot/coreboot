@@ -1,7 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2010 Advanced Micro Devices, Inc.
  * Copyright (C) 2014 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,39 +17,32 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <device/pci.h>
-#include <arch/io.h>
-#include "cimx_util.h"
+#ifndef AMD_PCI_UTIL_H
+#define AMD_PCI_UTIL_H
 
-static void pmio_write_index(u16 port_base, u8 reg, u8 value)
-{
-	outb(reg, port_base);
-	outb(value, port_base + 1);
-}
+#include <stdint.h>
+#include "amd_pci_int_defs.h"
 
-static u8 pmio_read_index(u16 port_base, u8 reg)
-{
-	outb(reg, port_base);
-	return inb(port_base + 1);
-}
+/* FCH index/data registers */
+#define PCI_INTR_INDEX	0xc00
+#define PCI_INTR_DATA	0xc01
 
-void pm_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM_INDEX, reg, value);
-}
+#ifndef __PRE_RAM__
 
-u8 pm_ioread(u8 reg)
-{
-	return pmio_read_index(PM_INDEX, reg);
-}
+struct pirq_struct {
+	u8 devfn;
+	u8 PIN[4];	/* PINA/B/C/D are index 0/1/2/3 */
+};
 
-void pm2_iowrite(u8 reg, u8 value)
-{
-	pmio_write_index(PM2_INDEX, reg, value);
-}
+extern const struct pirq_struct * pirq_data_ptr;
+extern u32 pirq_data_size;
+extern const u8 * intr_data_ptr;
+extern const u8 * picr_data_ptr;
 
-u8 pm2_ioread(u8 reg)
-{
-	return pmio_read_index(PM2_INDEX, reg);
-}
+u8 read_pci_int_idx(u8 index, int mode);
+void write_pci_int_idx(u8 index, int mode, u8 data);
+void write_pci_cfg_irqs(void);
+void write_pci_int_table (void);
+#endif /* __PRE_RAM */
+
+#endif /* AMD_PCI_UTIL_H */

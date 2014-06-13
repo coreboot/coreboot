@@ -2,6 +2,7 @@
  * This file is part of the coreboot project.
  *
  * Copyright (C) 2010 Advanced Micro Devices, Inc.
+ * Copyright (C) 2014 Sage Electronic Engineering, LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +24,34 @@
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include "hudson.h"
+#include <southbridge/amd/amd_pci_util.h>
+#include <bootstate.h>
 
 static void pci_init(struct device *dev)
 {
 }
+
+/*
+ * Update the PCI devices with a valid IRQ number
+ * that is set in the mainboard PCI_IRQ structures.
+ */
+static void set_pci_irqs(void *unused)
+{
+	/* Write PCI_INTR regs 0xC00/0xC01 */
+	write_pci_int_table();
+
+	/* Write IRQs for all devicetree enabled devices */
+	write_pci_cfg_irqs();
+}
+
+/*
+ * Hook this function into the PCI state machine
+ * on entry into BS_DEV_ENABLE.
+ */
+BOOT_STATE_INIT_ENTRIES(pci_irq_update) = {
+	BOOT_STATE_INIT_ENTRY(BS_DEV_ENABLE, BS_ON_ENTRY,
+	                      set_pci_irqs, NULL),
+};
 
 static struct pci_operations lops_pci = {
 	.set_subsystem = 0,

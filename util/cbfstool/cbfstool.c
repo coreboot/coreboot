@@ -590,7 +590,7 @@ static void usage(char *name)
 			"Updates the FIT table with microcode entries\n"
 	     "\n"
 	     "ARCHes:\n"
-	     "  arm64, arm, x86\n"
+	     "  arm64, arm, mips, x86\n"
 	     "TYPEs:\n", name, name
 	    );
 	print_supported_filetypes();

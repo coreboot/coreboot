@@ -20,5 +20,8 @@
 /* mainboard configuration */
 #include <mainboard/google/samus/ec.h>
 
+/* Enable EC backed ALS device in ACPI */
+#define EC_ENABLE_ALS_DEVICE
+
 /* ACPI code for EC functions */
 #include <ec/google/chromeec/acpi/ec.asl>

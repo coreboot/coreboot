@@ -15,6 +15,9 @@ config BOARD_EMULATION_QEMU_ARMV7
 config BOARD_EMULATION_QEMU_UCB_RISCV
 	bool "QEMU ucb riscv"
 
+config BOARD_EMULATION_IMGVP_DANUBE
+	bool "ImgTec Danube Virtual Platform"
+
 endchoice
 
 config BOARD_EMULATION_QEMU_X86
@@ -26,6 +29,7 @@ source "src/mainboard/emulation/qemu-i440fx/Kconfig"
 source "src/mainboard/emulation/qemu-q35/Kconfig"
 source "src/mainboard/emulation/qemu-armv7/Kconfig"
 source "src/mainboard/emulation/qemu-riscv/Kconfig"
+source "src/mainboard/emulation/imgvp-danube/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

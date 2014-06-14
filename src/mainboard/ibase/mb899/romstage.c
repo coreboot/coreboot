@@ -291,22 +291,6 @@ void main(unsigned long bist)
 	/* Initialize the internal PCIe links before we go into stage2 */
 	i945_late_initialization();
 
-#if !CONFIG_HAVE_ACPI_RESUME
-#if CONFIG_DEFAULT_CONSOLE_LOGLEVEL > 8
-#if CONFIG_DEBUG_RAM_SETUP
-	sdram_dump_mchbar_registers();
-#endif
-
-	{
-		/* This will not work if TSEG is in place! */
-		u32 tom = pci_read_config32(PCI_DEV(0,2,0), 0x5c);
-
-		printk(BIOS_DEBUG, "TOM: 0x%08x\n", tom);
-		ram_check(0x00000000, 0x000a0000);
-		//ram_check(0x00100000, tom);
-	}
-#endif
-#endif
 
 	quick_ram_check();
 

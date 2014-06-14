@@ -27,6 +27,7 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/tsc.h>
+#include <arch/acpi.h>
 #include <cbmem.h>
 #include <lib.h>
 #include <pc80/mc146818rtc.h>
@@ -155,16 +156,16 @@ void main(unsigned long bist)
 	/* Check for S3 resume. */
 	const u32 pm1_cnt = inl(DEFAULT_PMBASE + 0x04);
 	if (((pm1_cnt >> 10) & 7) == 5) {
-#if CONFIG_HAVE_ACPI_RESUME
-		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-		s3resume = 1;
-		/* Clear SLP_TYPE. This will break stage2 but
-		 * we care for that when we get there.
-		 */
-		outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + 0x04);
-#else
-		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-#endif
+		if (acpi_s3_resume_allowed()) {
+			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
+			s3resume = 1;
+			/* Clear SLP_TYPE. This will break stage2 but
+			 * we care for that when we get there.
+			 */
+			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + 0x04);
+		} else {
+			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
+		}
 	}
 
 	/* RAM initialization */

@@ -165,8 +165,6 @@ static void mch_domain_read_resources(device_t dev)
 		fixed_mem_resource(dev, 7, pcie_config_base >> 10,
 			pcie_config_size >> 10, IORESOURCE_RESERVE);
 	}
-
-	set_top_of_ram(tomk << 10);
 }
 
 static void mch_domain_set_resources(device_t dev)

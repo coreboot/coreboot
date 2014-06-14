@@ -164,8 +164,6 @@ static void mc_read_resources(device_t dev)
 	    bad_ram_resource(dev, 9, 0x1fc000000ULL >> 10, 0x004000000 >> 10);
 
 	add_fixed_resources(dev, 10);
-
-	set_top_of_ram(tseg_base);
 }
 
 static void mc_set_resources(device_t dev)

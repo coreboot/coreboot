@@ -251,8 +251,6 @@ static void pci_domain_set_resources(device_t dev)
 	add_fixed_resources(dev, 6);
 
 	assign_resources(dev->link_list);
-
-	set_top_of_ram(tomk * 1024);
 }
 
 	/* TODO We could determine how many PCIe busses we need in

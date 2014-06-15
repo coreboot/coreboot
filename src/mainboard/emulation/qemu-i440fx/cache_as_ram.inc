@@ -59,27 +59,6 @@ before_romstage:
 
 	post_code(0x30)
 
-#if CONFIG_HAVE_ACPI_RESUME
-	movl	CBMEM_BOOT_MODE, %eax
-	cmpl	$0x2, %eax // Resume?
-	jne	__acpi_resume_backup_done
-
-	/* copy 1MB - 64K to high tables ram_base to prevent memory corruption
-	 * through stage 2. We could keep stuff like stack and heap in high
-	 * tables memory completely, but that's a wonderful clean up task for
-	 * another day.
-	 */
-	cld
-	movl	$CONFIG_RAMBASE, %esi
-	movl	CBMEM_RESUME_BACKUP, %edi
-	movl	$HIGH_MEMORY_SAVE / 4, %ecx
-	rep	movsl
-
-__acpi_resume_backup_done:
-#endif
-
-	post_code(0x3d)
-
 __main:
 	post_code(POST_PREPARE_RAMSTAGE)
 	cld			/* Clear direction flag. */

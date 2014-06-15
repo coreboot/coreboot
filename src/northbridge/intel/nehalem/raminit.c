@@ -1687,7 +1687,6 @@ static void dump_timings(struct raminfo *info)
  */
 static void save_timings(struct raminfo *info)
 {
-#if CONFIG_EARLY_CBMEM_INIT
 	struct ram_training train;
 	struct mrc_data_container *mrcdata;
 	int output_len = ALIGN(sizeof(train), 16);
@@ -1722,22 +1721,23 @@ static void save_timings(struct raminfo *info)
 	mrcdata = cbmem_add
 	    (CBMEM_ID_MRCDATA, output_len + sizeof(struct mrc_data_container));
 
-	printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%u bytes)\n",
-	       &train, mrcdata, output_len);
+	if (mrcdata != NULL) {
+		printk(BIOS_DEBUG, "Relocate MRC DATA from %p to %p (%u bytes)\n",
+			&train, mrcdata, output_len);
 
-	mrcdata->mrc_signature = MRC_DATA_SIGNATURE;
-	mrcdata->mrc_data_size = output_len;
-	mrcdata->reserved = 0;
-	memcpy(mrcdata->mrc_data, &train, sizeof(train));
+		mrcdata->mrc_signature = MRC_DATA_SIGNATURE;
+		mrcdata->mrc_data_size = output_len;
+		mrcdata->reserved = 0;
+		memcpy(mrcdata->mrc_data, &train, sizeof(train));
 
-	/* Zero the unused space in aligned buffer. */
-	if (output_len > sizeof(train))
-		memset(mrcdata->mrc_data + sizeof(train), 0,
-		       output_len - sizeof(train));
+		/* Zero the unused space in aligned buffer. */
+		if (output_len > sizeof(train))
+			memset(mrcdata->mrc_data + sizeof(train), 0,
+				output_len - sizeof(train));
 
-	mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
-						    mrcdata->mrc_data_size);
-#endif
+		mrcdata->mrc_checksum = compute_ip_checksum(mrcdata->mrc_data,
+						mrcdata->mrc_data_size);
+	}
 }
 
 #if REAL

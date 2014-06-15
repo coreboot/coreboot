@@ -4979,12 +4979,3 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 		save_timings(&info);
 #endif
 }
-
-#if REAL
-unsigned long get_top_of_ram(void)
-{
-	/* Base of TSEG is top of usable DRAM */
-	u32 tom = pci_read_config32(PCI_DEV(0, 0, 0), TSEG);
-	return (unsigned long)tom;
-}
-#endif

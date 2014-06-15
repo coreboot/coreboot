@@ -72,7 +72,7 @@ typedef struct {
 	u8	s3u0; /* 0x35 - Enable USB0 in S3 */
 	u8	s3u1; /* 0x36 - Enable USB1 in S3 */
 	u8	s33g; /* 0x37 - Enable S3 in 3G */
-	u32	cmem; /* 0x38 - CBMEM TOC */
+	u32	obsolete_cmem; /* 0x38 - CBMEM TOC */
 	/* Integrated Graphics Device */
 	u8	igds; /* 0x3c - IGD state */
 	u8	tlst; /* 0x3d - Display Toggle List Pointer */

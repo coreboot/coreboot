@@ -56,7 +56,7 @@ typedef struct {
 	u8	rsvd2[8];
 
 	/* Base Addresses */
-	u32	cmem; /* 0x30 - CBMEM TOC */
+	u32	obsolete_cmem; /* 0x30 - CBMEM TOC */
 	u32	tolm; /* 0x34 - Top of Low Memory */
 	u32	cbmc; /* 0x38 - coreboot memconsole */
 	u8	rsvd3[196];

@@ -55,9 +55,6 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 
 	/* Enable DPTF */
 	gnvs->dpte = 0;
-
-	/* CBMEM TOC */
-	gnvs->cmem = 0;
 }
 
 unsigned long acpi_fill_madt(unsigned long current)

@@ -85,9 +85,6 @@ static void acpi_create_gnvs(global_nvs_t *gnvs)
 	gnvs->s5u0 = 1;
 	gnvs->s5u1 = 1;
 
-	/* CBMEM TOC */
-	gnvs->cmem = 0;
-
 	/* TPM Present */
 	gnvs->tpmp = 1;
 

@@ -50,7 +50,7 @@ typedef struct {
 	u8	s33g; /* 0x16 - Enable 3G in S3 */
 	u8	lids; /* 0x17 - LID State */
 	u8	pwrs; /* 0x18 - AC Power State */
-	u32	cmem; /* 0x19 - 0x1c - CBMEM TOC */
+	u32	obsolete_cmem; /* 0x19 - 0x1c - CBMEM TOC */
 	u32	cbmc; /* 0x1d - 0x20 - Coreboot Memory Console */
 	u32	pm1i; /* 0x21 - 0x24 - PM1 wake status bit */
 	u8	rsvd3[219];

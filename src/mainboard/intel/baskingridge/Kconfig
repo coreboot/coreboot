@@ -41,4 +41,8 @@ config HAVE_IFD_BIN
 	bool
 	default n
 
+config HAVE_ME_BIN
+	bool
+	default n
+
 endif # BOARD_INTEL_BASKING_RIDGE

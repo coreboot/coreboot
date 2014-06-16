@@ -37,4 +37,8 @@ config VGA_BIOS_FILE
 	string
 	default "pci8086,0166.rom"
 
+config HAVE_IFD_BIN
+	bool
+	default n
+
 endif # BOARD_INTEL_BASKING_RIDGE

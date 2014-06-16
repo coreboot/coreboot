@@ -85,11 +85,13 @@ endif
 	printf "    DD         Adding Intel Firmware Descriptor\n"
 	dd if=$(IFD_BIN_PATH) \
 		of=$(obj)/coreboot.pre conv=notrunc >/dev/null 2>&1
+ifeq ($(CONFIG_HAVE_ME_BIN),y)
 	printf "    IFDTOOL    me.bin -> coreboot.pre\n"
 	$(objutil)/ifdtool/ifdtool \
 		-i ME:$(CONFIG_ME_BIN_PATH) \
 		$(obj)/coreboot.pre
 	mv $(obj)/coreboot.pre.new $(obj)/coreboot.pre
+endif
 ifeq ($(CONFIG_LOCK_MANAGEMENT_ENGINE),y)
 	printf "    IFDTOOL    Locking Management Engine\n"
 	$(objutil)/ifdtool/ifdtool -l $(obj)/coreboot.pre

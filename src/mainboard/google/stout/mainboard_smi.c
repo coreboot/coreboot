@@ -26,9 +26,6 @@
 #include <northbridge/intel/sandybridge/sandybridge.h>
 #include <cpu/intel/model_206ax/model_206ax.h>
 
-/* Include romstage serial for SIO helper functions */
-#include <superio/ite/it8772f/early_serial.c>
-
 /* Include EC functions */
 #include <ec/quanta/it8518/ec.h>
 #include "ec.h"

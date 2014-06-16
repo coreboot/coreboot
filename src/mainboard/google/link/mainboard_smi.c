@@ -27,9 +27,6 @@
 #include <cpu/intel/model_206ax/model_206ax.h>
 #include <elog.h>
 
-/* Include romstage serial for SIO helper functions */
-#include <superio/ite/it8772f/early_serial.c>
-
 /* Include EC functions */
 #include <ec/google/chromeec/ec.h>
 #include "ec.h"

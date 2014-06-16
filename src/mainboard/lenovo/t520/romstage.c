@@ -29,6 +29,7 @@
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <pc80/mc146818rtc.h>
+#include <arch/acpi.h>
 #include <cbmem.h>
 #include <console/console.h>
 #include <northbridge/intel/sandybridge/sandybridge.h>
@@ -211,16 +212,16 @@ void main(unsigned long bist)
 	pm1_cnt = inl(DEFAULT_PMBASE + PM1_CNT);
 
 	if ((pm1_sts & WAK_STS) && ((pm1_cnt >> 10) & 7) == 5) {
-#if CONFIG_HAVE_ACPI_RESUME
-		printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-		boot_mode = 2;
-		/* Clear SLP_TYPE. This will break stage2 but
-		 * we care for that when we get there.
-		 */
-		outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + PM1_CNT);
-#else
-		printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
-#endif
+		if (acpi_s3_resume_allowed()) {
+			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
+			boot_mode = 2;
+			/* Clear SLP_TYPE. This will break stage2 but
+			 * we care for that when we get there.
+			 */
+			outl(pm1_cnt & ~(7 << 10), DEFAULT_PMBASE + PM1_CNT);
+		} else {
+			printk(BIOS_DEBUG, "Resume from S3 detected, but disabled.\n");
+		}
 	}
 
 	post_code(0x38);

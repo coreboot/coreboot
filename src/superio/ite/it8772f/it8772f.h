@@ -105,8 +105,6 @@
 
 u8 it8772f_sio_read(u8 index);
 void it8772f_sio_write(u8 index, u8 value);
-void it8772f_24mhz_clkin(void);
-void it8772f_enable_3vsbsw(void);
 void it8772f_ac_resume_southbridge(void);
 void it8772f_gpio_setup(int set, u8 func_select, u8 polarity, u8 pullup,
 			u8 output, u8 enable);

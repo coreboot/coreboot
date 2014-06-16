@@ -36,6 +36,7 @@
 #include <ec/acpi/ec.h>
 #include <delay.h>
 #include <timestamp.h>
+#include <arch/acpi.h>
 #include <cbmem.h>
 
 #include "arch/early_variables.h"
@@ -252,8 +253,13 @@ void main(unsigned long bist)
 			outl(reg32 & ~(7 << 10), DEFAULT_PMBASE + 0x04);
 			printk(BIOS_DEBUG, "Bad resume from S3 detected.\n");
 		} else {
-			printk(BIOS_DEBUG, "Resume from S3 detected.\n");
-			s3resume = 1;
+			if (acpi_s3_resume_allowed()) {
+				printk(BIOS_DEBUG, "Resume from S3 detected.\n");
+				s3resume = 1;
+			} else {
+				printk(BIOS_DEBUG,
+				       "Resume from S3 detected, but disabled.\n");
+			}
 		}
 	}
 

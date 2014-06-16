@@ -73,7 +73,7 @@ static unsigned char smp_compute_checksum(void *v, int len)
 	return checksum;
 }
 
-static void *smp_write_floating_table_physaddr(unsigned long addr, unsigned long mpf_physptr, unsigned int virtualwire)
+static void *smp_write_floating_table_physaddr(u32 addr, u32 mpf_physptr, unsigned int virtualwire)
 {
 	struct intel_mp_floating *mf;
 	void *v;
@@ -108,9 +108,10 @@ void *smp_next_mpc_entry(struct mp_config_table *mc)
 {
 	void *v;
 	v = (void *)(((char *)mc) + mc->mpc_length);
+
 	return v;
 }
-static void smp_add_mpc_entry(struct mp_config_table *mc, unsigned length)
+static void smp_add_mpc_entry(struct mp_config_table *mc, u16 length)
 {
 	mc->mpc_length += length;
 	mc->mpc_entry_count++;
@@ -120,6 +121,7 @@ void *smp_next_mpe_entry(struct mp_config_table *mc)
 {
 	void *v;
 	v = (void *)(((char *)mc) + mc->mpc_length + mc->mpe_length);
+
 	return v;
 }
 static void smp_add_mpe_entry(struct mp_config_table *mc, mpe_t mpe)
@@ -127,10 +129,14 @@ static void smp_add_mpe_entry(struct mp_config_table *mc, mpe_t mpe)
 	mc->mpe_length += mpe->mpe_length;
 }
 
+/*
+ * Type 0: Processor Entries:
+ * Entry Type, LAPIC ID, LAPIC Version, CPU Flags EN/BP,
+ * CPU Signature (Stepping, Model, Family), Feature Flags
+ */
 void smp_write_processor(struct mp_config_table *mc,
-	unsigned char apicid, unsigned char apicver,
-	unsigned char cpuflag, unsigned int cpufeature,
-	unsigned int featureflag)
+	u8 apicid, u8 apicver, u8 cpuflag,
+	u32 cpufeature, u32 featureflag)
 {
 	struct mpc_config_processor *mpc;
 	mpc = smp_next_mpc_entry(mc);
@@ -144,7 +150,8 @@ void smp_write_processor(struct mp_config_table *mc,
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 }
 
-/* If we assume a symmetric processor configuration we can
+/*
+ * If we assume a symmetric processor configuration we can
  * get all of the information we need to write the processor
  * entry from the bootstrap processor.
  * Plus I don't think linux really even cares.
@@ -183,8 +190,9 @@ void smp_write_processors(struct mp_config_table *mc)
 				cpu_flag = MPC_CPU_ENABLED | MPC_CPU_BOOTPROCESSOR;
 
 			if(cpu->path.apic.apic_id == order_id) {
-				smp_write_processor(mc, cpu->path.apic.apic_id, apic_version,
-						cpu_flag, cpu_features, cpu_feature_flags
+				smp_write_processor(mc,
+					cpu->path.apic.apic_id, apic_version,
+					cpu_flag, cpu_features, cpu_feature_flags
 				);
 				break;
 			}
@@ -192,8 +200,12 @@ void smp_write_processors(struct mp_config_table *mc)
 	}
 }
 
+/*
+ * Type 1: Bus Entries:
+ * Entry Type, Bus ID, Bus Type
+ */
 static void smp_write_bus(struct mp_config_table *mc,
-	unsigned char id, const char *bustype)
+	u8 id, const char *bustype)
 {
 	struct mpc_config_bus *mpc;
 	mpc = smp_next_mpc_entry(mc);
@@ -204,9 +216,13 @@ static void smp_write_bus(struct mp_config_table *mc,
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 }
 
+/*
+ * Type 2: I/O APIC Entries:
+ * Entry Type, APIC ID, Version,
+ * APIC Flags:EN, Address
+ */
 void smp_write_ioapic(struct mp_config_table *mc,
-	unsigned char id, unsigned char ver,
-	unsigned long apicaddr)
+	u8 id, u8 ver, u32 apicaddr)
 {
 	struct mpc_config_ioapic *mpc;
 	mpc = smp_next_mpc_entry(mc);
@@ -219,10 +235,15 @@ void smp_write_ioapic(struct mp_config_table *mc,
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 }
 
+/*
+ * Type 3: I/O Interrupt Table Entries:
+ * Entry Type, Int Type, Int Polarity, Int Level,
+ * Source Bus ID, Source Bus IRQ, Dest APIC ID, Dest PIN#
+ */
 void smp_write_intsrc(struct mp_config_table *mc,
-	unsigned char irqtype, unsigned short irqflag,
-	unsigned char srcbus, unsigned char srcbusirq,
-	unsigned char dstapic, unsigned char dstirq)
+	u8 irqtype, u16 irqflag,
+	u8 srcbus, u8 srcbusirq,
+	u8 dstapic, u8 dstirq)
 {
 	struct mpc_config_intsrc *mpc;
 	mpc = smp_next_mpc_entry(mc);
@@ -242,9 +263,27 @@ void smp_write_intsrc(struct mp_config_table *mc,
 #endif
 }
 
+/*
+ * Type 3: I/O Interrupt Table Entries for PCI Devices:
+ * This has the same fields as 'Type 3: I/O Interrupt Table Entries'
+ * but the Source Bus IRQ field has a slightly different
+ * definition:
+ * Bits 1-0: PIRQ pin: INT_A# = 0, INT_B# = 1, INT_C# = 2, INT_D# = 3
+ * Bits 2-6: Originating PCI Device Number (Not its parent bridge device number)
+ * Bit 7: Reserved
+ */
+void smp_write_pci_intsrc(struct mp_config_table *mc,
+	u8 irqtype, u8 srcbus, u8 dev, u8 pirq,
+	u8 dstapic, u8 dstirq)
+{
+	u8 srcbusirq = (dev << 2) | pirq;
+	printk(BIOS_SPEW, "\tPCI srcbusirq = 0x%x from dev = 0x%x and pirq = %x\n", srcbusirq, dev, pirq);
+	smp_write_intsrc(mc, irqtype, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, srcbus,
+			srcbusirq, dstapic, dstirq);
+}
+
 void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
-	unsigned char irqtype, unsigned short irqflag,
-	struct device *dev,
+	u8 irqtype, u16 irqflag, struct device *dev,
 	unsigned char dstapic, unsigned char *dstirq)
 {
 	struct device *child;
@@ -293,10 +332,16 @@ next:
 	}
 }
 
+/*
+ * Type 4: Local Interrupt Assignment Entries:
+ * Entry Type, Int Type, Int Polarity, Int Level,
+ * Source Bus ID, Source Bus IRQ, Dest LAPIC ID,
+ * Dest LAPIC LINTIN#
+ */
 void smp_write_lintsrc(struct mp_config_table *mc,
-	unsigned char irqtype, unsigned short irqflag,
-	unsigned char srcbusid, unsigned char srcbusirq,
-	unsigned char destapic, unsigned char destapiclint)
+	u8 irqtype, u16 irqflag,
+	u8 srcbusid, u8 srcbusirq,
+	u8 destapic, u8 destapiclint)
 {
 	struct mpc_config_lintsrc *mpc;
 	mpc = smp_next_mpc_entry(mc);
@@ -311,10 +356,15 @@ void smp_write_lintsrc(struct mp_config_table *mc,
 	smp_add_mpc_entry(mc, sizeof(*mpc));
 }
 
+/*
+ * Type 128: System Address Space Mapping Entries
+ * Entry Type, Entry Length, Bus ID, Address Type,
+ * Address Base Lo/Hi, Address Length Lo/Hi
+ */
 void smp_write_address_space(struct mp_config_table *mc,
-	unsigned char busid, unsigned char address_type,
-	unsigned int address_base_low, unsigned int address_base_high,
-	unsigned int address_length_low, unsigned int address_length_high)
+	u8 busid, u8 address_type,
+	u32 address_base_low, u32 address_base_high,
+	u32 address_length_low, u32 address_length_high)
 {
 	struct mp_exten_system_address_space *mpe;
 	mpe = smp_next_mpe_entry(mc);
@@ -330,10 +380,13 @@ void smp_write_address_space(struct mp_config_table *mc,
 	smp_add_mpe_entry(mc, (mpe_t)mpe);
 }
 
-
+/*
+ * Type 129: Bus Hierarchy Descriptor Entry
+ * Entry Type, Entry Length, Bus ID, Bus Info,
+ * Parent Bus ID
+ */
 void smp_write_bus_hierarchy(struct mp_config_table *mc,
-	unsigned char busid, unsigned char bus_info,
-	unsigned char parent_busid)
+	u8 busid, u8 bus_info, u8 parent_busid)
 {
 	struct mp_exten_bus_hierarchy *mpe;
 	mpe = smp_next_mpe_entry(mc);
@@ -346,9 +399,14 @@ void smp_write_bus_hierarchy(struct mp_config_table *mc,
 	smp_add_mpe_entry(mc, (mpe_t)mpe);
 }
 
+/*
+ * Type 130: Compatibility Bus Address Space Modifier Entry
+ * Entry Type, Entry Length, Bus ID, Address Modifier
+ * Predefined Range List
+ */
 void smp_write_compatibility_address_space(struct mp_config_table *mc,
-	unsigned char busid, unsigned char address_modifier,
-	unsigned int range_list)
+	u8 busid, u8 address_modifier,
+	u32 range_list)
 {
 	struct mp_exten_compatibility_address_space *mpe;
 	mpe = smp_next_mpe_entry(mc);

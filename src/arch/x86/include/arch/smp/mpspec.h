@@ -45,36 +45,36 @@
 
 struct intel_mp_floating
 {
-	char mpf_signature[4];		/* "_MP_" 			*/
-	unsigned long mpf_physptr;	/* Configuration table address	*/
-	unsigned char mpf_length;	/* Our length (paragraphs)	*/
-	unsigned char mpf_specification;/* Specification version	*/
-	unsigned char mpf_checksum;	/* Checksum (makes sum 0)	*/
-	unsigned char mpf_feature1;	/* Standard or configuration ? 	*/
-	unsigned char mpf_feature2;	/* Bit7 set for IMCR|PIC	*/
+	char mpf_signature[4];	/* "_MP_" */
+	u32 mpf_physptr;	/* Configuration table address */
+	u8 mpf_length;	/* Our length (paragraphs) */
+	u8 mpf_specification;/* Specification version */
+	u8 mpf_checksum;	/* Checksum (makes sum 0) */
+	u8 mpf_feature1;	/* Predefined or Unique configuration? */
+	u8 mpf_feature2;	/* Bit7 set for IMCR/PIC */
 #define MP_FEATURE_VIRTUALWIRE (0 << 7)
 #define MP_FEATURE_PIC         (1 << 7)
-	unsigned char mpf_feature3;	/* Unused (0)			*/
-	unsigned char mpf_feature4;	/* Unused (0)			*/
-	unsigned char mpf_feature5;	/* Unused (0)			*/
+	u8 mpf_feature3;	/* Unused (0) */
+	u8 mpf_feature4;	/* Unused (0) */
+	u8 mpf_feature5;	/* Unused (0) */
 } __attribute__((packed));
 
 struct mp_config_table
 {
 	char mpc_signature[4];
 #define MPC_SIGNATURE "PCMP"
-	unsigned short mpc_length;	/* Size of table */
-	char  mpc_spec;			/* 0x01 */
-	char  mpc_checksum;
+	u16 mpc_length;	/* Size of table */
+	u8 mpc_spec;			/* 0x01 */
+	u8 mpc_checksum;
 	char  mpc_oem[8];
 	char  mpc_productid[12];
-	unsigned long mpc_oemptr;	/* 0 if not present */
-	unsigned short mpc_oemsize;	/* 0 if not present */
-	unsigned short mpc_entry_count;
-	unsigned long mpc_lapic;	/* APIC address */
-	unsigned short mpe_length;	/* Extended Table size */
-	unsigned char mpe_checksum;	/* Extended Table checksum */
-	unsigned char reserved;
+	u32 mpc_oemptr;	/* 0 if not present */
+	u16 mpc_oemsize;	/* 0 if not present */
+	u16 mpc_entry_count;
+	u32 mpc_lapic;	/* APIC address */
+	u16 mpe_length;	/* Extended Table size */
+	u8 mpe_checksum;	/* Extended Table checksum */
+	u8 reserved;
 } __attribute__((packed));
 
 /* Followed by entries */
@@ -87,25 +87,25 @@ struct mp_config_table
 
 struct mpc_config_processor
 {
-	unsigned char mpc_type;
-	unsigned char mpc_apicid;	/* Local APIC number */
-	unsigned char mpc_apicver;	/* Its versions */
-	unsigned char mpc_cpuflag;
+	u8 mpc_type;
+	u8 mpc_apicid;	/* Local APIC number */
+	u8 mpc_apicver;	/* Its versions */
+	u8 mpc_cpuflag;
 #define MPC_CPU_ENABLED		1	/* Processor is available */
 #define MPC_CPU_BOOTPROCESSOR	2	/* Processor is the BP */
-	unsigned long mpc_cpufeature;
+	u32 mpc_cpufeature;
 #define MPC_CPU_STEPPING_MASK 0x0F
 #define MPC_CPU_MODEL_MASK	0xF0
 #define MPC_CPU_FAMILY_MASK	0xF00
-	unsigned long mpc_featureflag;	/* CPUID feature value */
-	unsigned long mpc_reserved[2];
+	u32 mpc_featureflag;	/* CPUID feature value */
+	u32 mpc_reserved[2];
 } __attribute__((packed));
 
 struct mpc_config_bus
 {
-	unsigned char mpc_type;
-	unsigned char mpc_busid;
-	unsigned char mpc_bustype[6];
+	u8 mpc_type;
+	u8 mpc_busid;
+	u8 mpc_bustype[6];
 } __attribute__((packed));
 
 #define BUSTYPE_EISA	"EISA"
@@ -118,23 +118,23 @@ struct mpc_config_bus
 
 struct mpc_config_ioapic
 {
-	unsigned char mpc_type;
-	unsigned char mpc_apicid;
-	unsigned char mpc_apicver;
-	unsigned char mpc_flags;
+	u8 mpc_type;
+	u8 mpc_apicid;
+	u8 mpc_apicver;
+	u8 mpc_flags;
 #define MPC_APIC_USABLE		0x01
-	unsigned long mpc_apicaddr;
+	u32 mpc_apicaddr;
 } __attribute__((packed));
 
 struct mpc_config_intsrc
 {
-	unsigned char mpc_type;
-	unsigned char mpc_irqtype;
-	unsigned short mpc_irqflag;
-	unsigned char mpc_srcbus;
-	unsigned char mpc_srcbusirq;
-	unsigned char mpc_dstapic;
-	unsigned char mpc_dstirq;
+	u8 mpc_type;
+	u8 mpc_irqtype;
+	u16 mpc_irqflag;
+	u8 mpc_srcbus;
+	u8 mpc_srcbusirq;
+	u8 mpc_dstapic;
+	u8 mpc_dstirq;
 } __attribute__((packed));
 
 enum mp_irq_source_types {
@@ -156,14 +156,14 @@ enum mp_irq_source_types {
 
 struct mpc_config_lintsrc
 {
-	unsigned char mpc_type;
-	unsigned char mpc_irqtype;
-	unsigned short mpc_irqflag;
-	unsigned char mpc_srcbusid;
-	unsigned char mpc_srcbusirq;
-	unsigned char mpc_destapic;
+	u8 mpc_type;
+	u8 mpc_irqtype;
+	u16 mpc_irqflag;
+	u8 mpc_srcbusid;
+	u8 mpc_srcbusirq;
+	u8 mpc_destapic;
 #define MP_APIC_ALL	0xFF
-	unsigned char mpc_destapiclint;
+	u8 mpc_destapiclint;
 } __attribute__((packed));
 
 /*
@@ -194,44 +194,44 @@ enum mp_bustype {
 #define	MPE_COMPATIBILITY_ADDRESS_SPACE	0x82
 
 struct mp_exten_config {
-	unsigned char mpe_type;
-	unsigned char mpe_length;
+	u8 mpe_type;
+	u8 mpe_length;
 } __attribute__((packed));
 
 typedef struct mp_exten_config *mpe_t;
 
 struct mp_exten_system_address_space {
-	unsigned char mpe_type;
-	unsigned char mpe_length;
-	unsigned char mpe_busid;
-	unsigned char mpe_address_type;
+	u8 mpe_type;
+	u8 mpe_length;
+	u8 mpe_busid;
+	u8 mpe_address_type;
 #define ADDRESS_TYPE_IO       0
 #define ADDRESS_TYPE_MEM      1
 #define ADDRESS_TYPE_PREFETCH 2
-	unsigned int  mpe_address_base_low;
-	unsigned int  mpe_address_base_high;
-	unsigned int  mpe_address_length_low;
-	unsigned int  mpe_address_length_high;
+	u32 mpe_address_base_low;
+	u32 mpe_address_base_high;
+	u32 mpe_address_length_low;
+	u32 mpe_address_length_high;
 } __attribute__((packed));
 
 struct mp_exten_bus_hierarchy {
-	unsigned char mpe_type;
-	unsigned char mpe_length;
-	unsigned char mpe_busid;
-	unsigned char mpe_bus_info;
+	u8 mpe_type;
+	u8 mpe_length;
+	u8 mpe_busid;
+	u8 mpe_bus_info;
 #define BUS_SUBTRACTIVE_DECODE 1
-	unsigned char mpe_parent_busid;
-	unsigned char reserved[3];
+	u8 mpe_parent_busid;
+	u8 reserved[3];
 } __attribute__((packed));
 
 struct mp_exten_compatibility_address_space {
-	unsigned char mpe_type;
-	unsigned char mpe_length;
-	unsigned char mpe_busid;
-	unsigned char mpe_address_modifier;
+	u8 mpe_type;
+	u8 mpe_length;
+	u8 mpe_busid;
+	u8 mpe_address_modifier;
 #define ADDRESS_RANGE_SUBTRACT 1
 #define ADDRESS_RANGE_ADD      0
-	unsigned int  mpe_range_list;
+	u32 mpe_range_list;
 #define RANGE_LIST_IO_ISA	0
 	/* X100 - X3FF
 	 * X500 - X7FF
@@ -251,40 +251,40 @@ struct mp_exten_compatibility_address_space {
 } __attribute__((packed));
 
 void mptable_init(struct mp_config_table *mc, u32 lapic_addr);
-
 void *smp_next_mpc_entry(struct mp_config_table *mc);
 void *smp_next_mpe_entry(struct mp_config_table *mc);
 
 void smp_write_processor(struct mp_config_table *mc,
-	unsigned char apicid, unsigned char apicver,
-	unsigned char cpuflag, unsigned int cpufeature,
-	unsigned int featureflag);
+	u8 apicid, u8 apicver,
+	u8 cpuflag, u32 cpufeature,
+	u32 featureflag);
 void smp_write_processors(struct mp_config_table *mc);
 void smp_write_ioapic(struct mp_config_table *mc,
-	unsigned char id, unsigned char ver,
-	unsigned long apicaddr);
+	u8 id, u8 ver, u32 apicaddr);
 void smp_write_intsrc(struct mp_config_table *mc,
-	unsigned char irqtype, unsigned short irqflag,
-	unsigned char srcbus, unsigned char srcbusirq,
-	unsigned char dstapic, unsigned char dstirq);
+	u8 irqtype, u16 irqflag, u8 srcbus, u8 srcbusirq,
+	u8 dstapic, u8 dstirq);
+void smp_write_pci_intsrc(struct mp_config_table *mc,
+	u8 irqtype, u8 srcbus, u8 dev, u8 pirq,
+	u8 dstapic, u8 dstirq);
 void smp_write_intsrc_pci_bridge(struct mp_config_table *mc,
-	unsigned char irqtype, unsigned short irqflag,
+	u8 irqtype, u16 irqflag,
 	struct device *dev,
 	unsigned char dstapic, unsigned char *dstirq);
 void smp_write_lintsrc(struct mp_config_table *mc,
-	unsigned char irqtype, unsigned short irqflag,
-	unsigned char srcbusid, unsigned char srcbusirq,
-	unsigned char destapic, unsigned char destapiclint);
+	u8 irqtype, u16 irqflag,
+	u8 srcbusid, u8 srcbusirq,
+	u8 destapic, u8 destapiclint);
 void smp_write_address_space(struct mp_config_table *mc,
-	unsigned char busid, unsigned char address_type,
-	unsigned int address_base_low, unsigned int address_base_high,
-	unsigned int address_length_low, unsigned int address_length_high);
+	u8 busid, u8 address_type,
+	u32 address_base_low, u32 address_base_high,
+	u32 address_length_low, u32 address_length_high);
 void smp_write_bus_hierarchy(struct mp_config_table *mc,
-	unsigned char busid, unsigned char bus_info,
-	unsigned char parent_busid);
+	u8 busid, u8 bus_info,
+	u8 parent_busid);
 void smp_write_compatibility_address_space(struct mp_config_table *mc,
-	unsigned char busid, unsigned char address_modifier,
-	unsigned int range_list);
+	u8 busid, u8 address_modifier,
+	u32 range_list);
 void *smp_write_floating_table(unsigned long addr, unsigned int virtualwire);
 unsigned long write_smp_table(unsigned long addr);
 

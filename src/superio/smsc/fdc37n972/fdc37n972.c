@@ -17,10 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdlib.h>
 #include <device/device.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
+#include <stdlib.h>
+
 #include "fdc37n972.h"
 
 static void init(device_t dev)

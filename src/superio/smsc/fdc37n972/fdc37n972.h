@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef SUPERIO_SMSC_FDC37N972_FDC37N972_H
-#define SUPERIO_SMSC_FDC37N972_FDC37N972_H
+#ifndef SUPERIO_SMSC_FDC37N972_H
+#define SUPERIO_SMSC_FDC37N972_H
 
 #define FDC37N972_FDC  0x00 /* Floppy */
 #define FDC37N972_PP   0x03 /* Parallel port */
@@ -29,4 +29,4 @@
 #define FDC37N972_EC   0x08 /* Environmental Controller */
 #define FDC37N972_MBX  0x09 /* Mailbox register */
 
-#endif
+#endif /* SUPERIO_SMSC_FDC37N972_H */

@@ -35,10 +35,6 @@ config MAX_CPUS
 	int
 	default 16
 
-config SIO_PORT
-	hex
-	default 0x164e
-
 config SMBIOS_SYSTEM_ENCLOSURE_TYPE
 	hex
 	default 0x09	# This is a mobile platform

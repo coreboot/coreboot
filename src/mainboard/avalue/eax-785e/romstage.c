@@ -52,6 +52,7 @@
 #include "northbridge/amd/amdfam10/debug.c"
 
 #define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+#define CLK_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 static void activate_spd_rom(const struct mem_controller *ctrl)
 {
@@ -102,7 +103,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	enable_rs780_dev8();
 	sb800_clk_output_48Mhz();
 
-	w83627hf_set_clksel_48(PNP_DEV(CONFIG_SIO_PORT, 0));
+	w83627hf_set_clksel_48(CLK_DEV);
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 	console_init();

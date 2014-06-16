@@ -72,13 +72,6 @@ config RAMBASE
 	hex
 	default 0x200000
 
-config SIO_PORT
-	hex
-	default 0x164E
-	help
-		though UARTs are on the NUVOTON BMC, port 0x164E
-		PS2 keyboard and mouse are on SUPERIO_WINBOND_W83627DHG, port 0x2E
-
 config DRIVERS_PS2_KEYBOARD
 	bool
 	default y

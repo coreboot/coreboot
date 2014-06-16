@@ -72,10 +72,6 @@ config RAMBASE
 	hex
 	default 0x200000
 
-config SIO_PORT
-	hex
-	default 0x2e
-
 config DRIVERS_PS2_KEYBOARD
 	bool
 	default y

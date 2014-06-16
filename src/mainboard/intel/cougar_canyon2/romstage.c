@@ -44,6 +44,8 @@
 #include "gpio.h"
 #include <arch/stages.h>
 
+#define SIO_PORT 0x164e
+
 static inline void reset_system(void)
 {
 	hard_reset();
@@ -69,7 +71,7 @@ static void pch_enable_lpc(void)
 	/* Map a range for the runtime registers to the LPC bus. */
 	pci_write_config32(dev, LPC_GEN2_DEC, 0xc0181);
 
-	if (sio1007_enable_uart_at(CONFIG_SIO_PORT)) {
+	if (sio1007_enable_uart_at(SIO_PORT)) {
 		pci_write_config16(dev, LPC_EN,
 				   lpc_config | COMA_LPC_EN);
 	}
@@ -77,7 +79,7 @@ static void pch_enable_lpc(void)
 
 static void setup_sio_gpios(void)
 {
-	const u16 port = CONFIG_SIO_PORT;
+	const u16 port = SIO_PORT;
 	const u16 runtime_port = 0x180;
 
 	/* Turn on configuration mode. */

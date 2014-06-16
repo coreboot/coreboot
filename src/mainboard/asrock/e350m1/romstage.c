@@ -39,7 +39,7 @@
 #include "SBPLATFORM.h"
 
 
-#define SERIAL_DEV PNP_DEV(CONFIG_SIO_PORT, W83627HF_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

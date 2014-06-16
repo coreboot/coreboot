@@ -35,6 +35,10 @@
 #include <superio/winbond/common/winbond.h>
 #include <superio/winbond/w83627dhg/w83627dhg.h>
 
+/* though UARTs are on the NUVOTON BMC, port 0x164E
+ * PS2 keyboard and mouse are on SUPERIO_WINBOND_W83627DHG, port 0x2E
+ */
+#define SIO_PORT 0x164e
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -49,7 +53,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	report_bist_failure(bist);
 
 	sb7xx_51xx_enable_wideio(0, 0x1600); /* though UARTs are on the NUVOTON BMC */
-	wpcm450_enable_dev(WPCM450_SP1, CONFIG_SIO_PORT, CONFIG_TTYS0_BASE);
+	wpcm450_enable_dev(WPCM450_SP1, SIO_PORT, CONFIG_TTYS0_BASE);
 	sb7xx_51xx_disable_wideio(0);
 	post_code(0x34);
 

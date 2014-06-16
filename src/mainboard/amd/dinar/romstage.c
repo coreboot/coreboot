@@ -37,8 +37,7 @@
 #include "Platform.h"
 #include <arch/cpu.h>
 
-#define SERIAL_DEV PNP_DEV(CONFIG_SIO_PORT, SMSCSUPERIO_SP1)
-
+#define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
 
 u32 agesawrapper_amdinitmmio (void);
 u32 agesawrapper_amdinitreset (void);
@@ -58,7 +57,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		post_code(0x30);
 
-		sch4037_early_init (CONFIG_SIO_PORT);
+		sch4037_early_init(0x2e);
 
 		/* Detect SMSC SIO1036 LPC Debug Card status */
 		if (detect_sio1036_chip(0x4E)) {

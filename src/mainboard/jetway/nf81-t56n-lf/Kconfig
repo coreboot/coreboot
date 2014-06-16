@@ -70,10 +70,6 @@ config RAMBASE
 	hex
 	default 0x200000
 
-config SIO_PORT
-	hex
-	default 0x4e
-
 config ONBOARD_VGA_IS_PRIMARY
 	bool
 	default y

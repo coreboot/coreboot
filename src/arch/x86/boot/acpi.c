@@ -756,17 +756,17 @@ extern unsigned int __wakeup_size;
 
 void acpi_jump_to_wakeup(void *vector)
 {
-#if CONFIG_RELOCATABLE_RAMSTAGE
 	u32 acpi_backup_memory = 0;
-#else
-	u32 acpi_backup_memory = (u32)cbmem_find(CBMEM_ID_RESUME);
 
-	if (!acpi_backup_memory) {
-		printk(BIOS_WARNING, "ACPI: Backup memory missing. "
-		       "No S3 resume.\n");
-		return;
+	if (HIGH_MEMORY_SAVE && acpi_s3_resume_allowed()) {
+		acpi_backup_memory = (u32)cbmem_find(CBMEM_ID_RESUME);
+
+		if (!acpi_backup_memory) {
+			printk(BIOS_WARNING, "ACPI: Backup memory missing. "
+				"No S3 resume.\n");
+			return;
+		}
 	}
-#endif
 
 #if CONFIG_SMP
 	// FIXME: This should go into the ACPI backup memory, too. No pork sausages.

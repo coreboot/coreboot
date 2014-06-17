@@ -584,4 +584,9 @@ void generate_cpu_entries(void);
 
 #endif	/* CONFIG_GENERATE_ACPI_TABLES */
 
+static inline int acpi_s3_resume_allowed(void)
+{
+	return IS_ENABLED(CONFIG_HAVE_ACPI_RESUME);
+}
+
 #endif  /* __ASM_ACPI_H */

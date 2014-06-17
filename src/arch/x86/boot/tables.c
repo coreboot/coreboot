@@ -192,19 +192,15 @@ void write_tables(void)
 
 	post_code(0x9e);
 
-#if CONFIG_HAVE_ACPI_RESUME
-/* Only add CBMEM_ID_RESUME when the ramstage isn't relocatable. */
-#if !CONFIG_RELOCATABLE_RAMSTAGE
 	/* Let's prepare the ACPI S3 Resume area now already, so we can rely on
 	 * it begin there during reboot time. We don't need the pointer, nor
 	 * the result right now. If it fails, ACPI resume will be disabled.
 	 */
-	cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
-#endif
-#if CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14 || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN || CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB
-	cbmem_add(CBMEM_ID_RESUME_SCRATCH, CONFIG_HIGH_SCRATCH_MEMORY_SIZE);
-#endif
-#endif
+	if (HIGH_MEMORY_SAVE && acpi_s3_resume_allowed())
+		cbmem_add(CBMEM_ID_RESUME, HIGH_MEMORY_SAVE);
+
+	if (HIGH_MEMORY_SCRATCH && acpi_s3_resume_allowed())
+		cbmem_add(CBMEM_ID_RESUME_SCRATCH, HIGH_MEMORY_SCRATCH);
 
 #define MAX_COREBOOT_TABLE_SIZE (32 * 1024)
 	post_code(0x9d);

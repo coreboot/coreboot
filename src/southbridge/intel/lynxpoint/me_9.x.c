@@ -478,12 +478,6 @@ void intel_me_mbp_clear(device_t dev)
 }
 
 #if (CONFIG_DEFAULT_CONSOLE_LOGLEVEL >= BIOS_DEBUG) && !defined(__SMM__)
-static inline void print_cap(const char *name, int state)
-{
-	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
-	       name, state ? " en" : "dis");
-}
-
 static void me_print_fw_version(mbp_fw_version_name *vers_name)
 {
 	if (!vers_name) {
@@ -496,7 +490,13 @@ static void me_print_fw_version(mbp_fw_version_name *vers_name)
 	       vers_name->hotfix_version, vers_name->build_version);
 }
 
-#if CONFIG_DEBUG_INTEL_ME
+#if IS_ENABLED (CONFIG_DEBUG_INTEL_ME)
+static inline void print_cap(const char *name, int state)
+{
+	printk(BIOS_DEBUG, "ME Capability: %-41s : %sabled\n",
+	       name, state ? " en" : "dis");
+}
+
 /* Get ME Firmware Capabilities */
 static int mkhi_get_fwcaps(mbp_mefwcaps *cap)
 {
@@ -535,7 +535,7 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
 	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
 	print_cap("ICC Over Clocking", cap->icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
+	print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
 	print_cap("IPV6", cap->ipv6);
 	print_cap("KVM Remote Control (KVM)", cap->kvm);
 	print_cap("Outbreak Containment Heuristic (OCH)", cap->och);
@@ -543,7 +543,7 @@ static void me_print_fwcaps(mbp_mefwcaps *cap)
 	print_cap("TLS", cap->tls);
 	print_cap("Wireless LAN (WLAN)", cap->wlan);
 }
-#endif
+#endif /* CONFIG_DEBUG_INTEL_ME */
 #endif
 
 #if CONFIG_CHROMEOS && 0 /* DISABLED */

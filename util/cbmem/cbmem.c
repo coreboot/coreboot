@@ -36,6 +36,7 @@
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
 #define MAP_BYTES (1024*1024)
+#define IS_ENABLED(x) (defined (x) && (x))
 
 #include "boot/coreboot_tables.h"
 

@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <inttypes.h>
 #include <getopt.h>
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -40,6 +41,7 @@
 
 #include "boot/coreboot_tables.h"
 
+typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
@@ -54,7 +56,7 @@ static int verbose = 0;
 #define debug(x...) if(verbose) printf(x)
 
 /* File handle used to access /dev/mem */
-static int fd;
+static int mem_fd;
 
 /*
  * calculate ip checksum (16 bit quantities) on a passed in buffer. In case
@@ -118,7 +120,7 @@ static void *map_memory_size(u64 physical, size_t size)
 	debug("Mapping %zuMB of physical memory at 0x%jx.\n",
 	      size_to_mib(size), (intmax_t)p);
 
-	v = mmap(NULL, size, PROT_READ, MAP_SHARED, fd, p);
+	v = mmap(NULL, size, PROT_READ, MAP_SHARED, mem_fd, p);
 
 	if (v == MAP_FAILED) {
 		fprintf(stderr, "Failed to mmap /dev/mem: %s\n",
@@ -823,6 +825,121 @@ static void print_usage(const char *name)
 	exit(1);
 }
 
+#ifdef __arm__
+static void dt_update_cells(const char *name, int *addr_cells_ptr,
+			    int *size_cells_ptr)
+{
+	if (*addr_cells_ptr >= 0 && *size_cells_ptr >= 0)
+		return;
+
+	int buffer;
+	size_t nlen = strlen(name);
+	char *prop = alloca(nlen + sizeof("/#address-cells"));
+	strcpy(prop, name);
+
+	if (*addr_cells_ptr < 0) {
+		strcpy(prop + nlen, "/#address-cells");
+		int fd = open(prop, O_RDONLY);
+		if (fd < 0 && errno != ENOENT) {
+			perror(prop);
+		} else if (fd >= 0) {
+			if (read(fd, &buffer, sizeof(int)) < 0)
+				perror(prop);
+			else
+				*addr_cells_ptr = ntohl(buffer);
+			close(fd);
+		}
+	}
+
+	if (*size_cells_ptr < 0) {
+		strcpy(prop + nlen, "/#size-cells");
+		int fd = open(prop, O_RDONLY);
+		if (fd < 0 && errno != ENOENT) {
+			perror(prop);
+		} else if (fd >= 0) {
+			if (read(fd, &buffer, sizeof(int)) < 0)
+				perror(prop);
+			else
+				*size_cells_ptr = ntohl(buffer);
+			close(fd);
+		}
+	}
+}
+
+static char *dt_find_compat(const char *parent, const char *compat,
+			    int *addr_cells_ptr, int *size_cells_ptr)
+{
+	char *ret = NULL;
+	struct dirent *entry;
+	DIR *dir;
+
+	if (!(dir = opendir(parent))) {
+		perror(parent);
+		return NULL;
+	}
+
+	/* Loop through all files in the directory (DT node). */
+	while ((entry = readdir(dir))) {
+		/* We only care about compatible props or subnodes. */
+		if (entry->d_name[0] == '.' || !((entry->d_type & DT_DIR) ||
+		    !strcmp(entry->d_name, "compatible")))
+			continue;
+
+		/* Assemble the file name (on the stack, for speed). */
+		size_t plen = strlen(parent);
+		char *name = alloca(plen + strlen(entry->d_name) + 2);
+
+		strcpy(name, parent);
+		name[plen] = '/';
+		strcpy(name + plen + 1, entry->d_name);
+
+		/* If it's a subnode, recurse. */
+		if (entry->d_type & DT_DIR) {
+			ret = dt_find_compat(name, compat, addr_cells_ptr,
+					     size_cells_ptr);
+
+			/* There is only one matching node to find, abort. */
+			if (ret) {
+				/* Gather cells values on the way up. */
+				dt_update_cells(parent, addr_cells_ptr,
+						size_cells_ptr);
+				break;
+			}
+			continue;
+		}
+
+		/* If it's a compatible string, see if it's the right one. */
+		int fd = open(name, O_RDONLY);
+		int clen = strlen(compat);
+		char *buffer = alloca(clen + 1);
+
+		if (fd < 0) {
+			perror(name);
+			continue;
+		}
+
+		if (read(fd, buffer, clen + 1) < 0) {
+			perror(name);
+			close(fd);
+			continue;
+		}
+		close(fd);
+
+		if (!strcmp(compat, buffer)) {
+			/* Initialize these to "unset" for the way up. */
+			*addr_cells_ptr = *size_cells_ptr = -1;
+
+			/* Can't leave string on the stack or we'll lose it! */
+			ret = strdup(parent);
+			break;
+		}
+	}
+
+	closedir(dir);
+	return ret;
+}
+#endif /* __arm__ */
+
 int main(int argc, char** argv)
 {
 	int print_defaults = 1;
@@ -883,33 +1000,57 @@ int main(int argc, char** argv)
 		}
 	}
 
-	fd = open("/dev/mem", O_RDONLY, 0);
-	if (fd < 0) {
+	mem_fd = open("/dev/mem", O_RDONLY, 0);
+	if (mem_fd < 0) {
 		fprintf(stderr, "Failed to gain memory access: %s\n",
 			strerror(errno));
 		return 1;
 	}
 
 #ifdef __arm__
-	int dt_fd;
-	uint32_t cbtable_base;
+	int addr_cells, size_cells;
+	char *coreboot_node = dt_find_compat("/proc/device-tree", "coreboot",
+					     &addr_cells, &size_cells);
 
-	dt_fd = open("/proc/device-tree/firmware/coreboot/coreboot-table",
-			O_RDONLY, 0);
-	if (dt_fd < 0) {
-		fprintf(stderr, "Failed to open device tree node: %s\n",
-			strerror(errno));
+	if (!coreboot_node) {
+		fprintf(stderr, "Could not find 'coreboot' compatible node!\n");
 		return 1;
 	}
 
-	if (read(dt_fd, &cbtable_base, 4) != 4) {
-		fprintf(stderr, "Failed to read device tree node: %s\n",
-			strerror(errno));
+	if (addr_cells < 0) {
+		fprintf(stderr, "Warning: no #address-cells node in tree!\n");
+		addr_cells = 1;
+	}
+
+	int nlen = strlen(coreboot_node);
+	char *reg = alloca(nlen + sizeof("/reg"));
+
+	strcpy(reg, coreboot_node);
+	strcpy(reg + nlen, "/reg");
+	free(coreboot_node);
+
+	int fd = open(reg, O_RDONLY);
+	if (fd < 0) {
+		perror(reg);
 		return 1;
 	}
-	close(dt_fd);
 
-	parse_cbtable(ntohl(cbtable_base));
+	int i;
+	u8 *baseaddr_buffer = alloca(addr_cells * 4);
+	if (read(fd, baseaddr_buffer, addr_cells * 4) < 0) {
+		perror(reg);
+		return 1;
+	}
+	close(fd);
+
+	/* No variable-length byte swap function anywhere in C... how sad. */
+	u64 baseaddr = 0;
+	for (i = 0; i < addr_cells * 4; i++) {
+		baseaddr <<= 8;
+		baseaddr |= baseaddr_buffer[i];
+	}
+
+	parse_cbtable(baseaddr);
 #else
 	int j;
 	static const int possible_base_addresses[] = { 0, 0xf0000 };
@@ -936,6 +1077,6 @@ int main(int argc, char** argv)
 	if (print_defaults || print_timestamps)
 		dump_timestamps();
 
-	close(fd);
+	close(mem_fd);
 	return 0;
 }

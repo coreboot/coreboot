@@ -41,4 +41,4 @@ enum {
 	MSG_BYTES		= EC_HOST_PARAM_SIZE + MSG_PROTO_BYTES,
 };
 
-#endif
+#endif /* _CROS_MESSAGE_H */

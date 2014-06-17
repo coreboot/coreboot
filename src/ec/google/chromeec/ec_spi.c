@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <spi-generic.h>
+
 #include "ec.h"
 #include "ec_commands.h"
 

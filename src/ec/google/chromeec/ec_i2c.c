@@ -23,6 +23,7 @@
 #include <device/i2c.h>
 #include <stdint.h>
 #include <string.h>
+
 #include "ec.h"
 #include "ec_commands.h"
 

@@ -20,14 +20,15 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <ec/acpi/ec.h>
 #include <device/pnp.h>
+#include <ec/acpi/ec.h>
+#include <kconfig.h>
 #include <stdlib.h>
+#include <string.h>
+#include <pc80/mc146818rtc.h>
+
 #include "h8.h"
 #include "chip.h"
-#include <pc80/mc146818rtc.h>
-#include <string.h>
-#include <kconfig.h>
 
 static void h8_bluetooth_enable(int on)
 {

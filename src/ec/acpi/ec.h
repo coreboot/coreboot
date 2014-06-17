@@ -49,5 +49,4 @@ void ec_set_bit(u8 addr, u8 bit);
 void ec_clr_bit(u8 addr, u8 bit);
 void ec_set_ports(u16 cmd_reg, u16 data_reg);
 
-#endif
-
+#endif /* _EC_ACPI_H */

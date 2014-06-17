@@ -124,4 +124,5 @@ void h8_mainboard_init_dock (void);
 
 #define H8_EVENT_FN_F5 0x64
 #define H8_EVENT_FN_F6 0x65
-#endif
+
+#endif /* EC_LENOVO_H8_H */

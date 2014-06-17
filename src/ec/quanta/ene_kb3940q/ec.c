@@ -21,14 +21,15 @@
 
 #ifndef __PRE_RAM__
 
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#include <stdlib.h>
 #include <delay.h>
 #include <elog.h>
+#include <stdlib.h>
 #include <pc80/keyboard.h>
+
 #include "ec.h"
 #include "chip.h"
 

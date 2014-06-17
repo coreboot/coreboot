@@ -24,12 +24,11 @@
 #include <delay.h>
 #include <arch/hlt.h>
 #include <reset.h>
-#ifndef __PRE_RAM__
 #include <elog.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "chip.h"
-#endif
 #include "ec.h"
 #include "ec_commands.h"
 

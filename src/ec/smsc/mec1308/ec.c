@@ -19,10 +19,11 @@
  * MA 02110-1301 USA
  */
 
+#include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
-#include <arch/io.h>
 #include <delay.h>
+
 #include "ec.h"
 #include "chip.h"
 

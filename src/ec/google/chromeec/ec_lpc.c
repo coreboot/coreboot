@@ -17,14 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <stdlib.h>
-
-#include <console/console.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <delay.h>
 #include <device/pnp.h>
 #include <pc80/keyboard.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 #include "chip.h"
 #include "ec.h"
 #include "ec_commands.h"

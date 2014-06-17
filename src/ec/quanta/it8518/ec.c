@@ -19,19 +19,14 @@
  * MA 02110-1301 USA
  */
 
-
-
+#include <arch/io.h>
 #include <console/console.h>
-#include <pc80/keyboard.h>
-
-#ifndef __PRE_RAM__
+#include <delay.h>
 #include <device/device.h>
 #include <device/pnp.h>
-#endif
-
+#include <pc80/keyboard.h>
 #include <stdlib.h>
-#include <arch/io.h>
-#include <delay.h>
+
 #include "ec.h"
 #include "chip.h"
 

@@ -6,9 +6,7 @@
 #include <device/pci_ops.h>
 #include <console/console.h>
 #include <delay.h>
-#if defined(CONFIG_PCI_OPTION_ROM_RUN_YABEL)&&CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <x86emu/x86emu.h>
-#endif
 #include <pc80/mc146818rtc.h>
 #include <arch/acpi.h>
 #include <arch/io.h>

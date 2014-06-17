@@ -24,10 +24,8 @@
 #include <x86emu/x86emu.h>
 #include "../x86emu/prim_ops.h"
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <device/pci.h>
 #include <device/pci_ops.h>
-#endif
 
 
 //setup to run the code at the address, that the Interrupt Vector points to...

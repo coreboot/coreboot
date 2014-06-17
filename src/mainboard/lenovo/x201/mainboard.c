@@ -40,10 +40,8 @@
 #include "dock.h"
 #include "hda_verb.h"
 #include <arch/x86/include/arch/acpigen.h>
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 #include <x86emu/regs.h>
 #include <arch/interrupt.h>
-#endif
 #include <pc80/keyboard.h>
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>

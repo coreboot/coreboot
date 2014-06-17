@@ -18,12 +18,9 @@
 #include "biosemu.h"
 #include "mem.h"
 #include "compat/time.h"
+#include <device/resource.h>
 
 #if !CONFIG_YABEL_DIRECTHW || !CONFIG_YABEL_DIRECTHW
-
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
-#include <device/resource.h>
-#endif
 
 // define a check for access to certain (virtual) memory regions (interrupt handlers, BIOS Data Area, ...)
 #if CONFIG_X86EMU_DEBUG

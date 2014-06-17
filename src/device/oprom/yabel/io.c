@@ -20,15 +20,12 @@
 #include <device/oprom/include/io.h>
 #include "io.h"
 
-#if CONFIG_PCI_OPTION_ROM_RUN_YABEL
 #include <device/pci.h>
 #include <device/pci_ops.h>
 #include <device/resource.h>
-#endif
 
-#if CONFIG_ARCH_X86
 #include <arch/io.h>
-#else
+
 // these are not used, only needed for linking,  must be overridden using X86emu_setupPioFuncs
 // with the functions and struct below
 void
@@ -75,10 +72,6 @@ inl(u16 port)
 	HALT_SYS();
 	return 0;
 }
-
-#ifndef CONFIG_PCI
-#endif
-#endif
 
 #if CONFIG_YABEL_DIRECTHW
 u8 my_inb(X86EMU_pioAddr addr)

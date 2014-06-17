@@ -811,7 +811,7 @@ void ironlake_edp_panel_on(struct intel_dp *intel_dp)
 	ironlake_wait_panel_power_cycle(intel_dp);
 
 	pp = ironlake_get_pp_control();
-	if ((intel_dp->gen == 5)) {
+	if (intel_dp->gen == 5) {
 		/* ILK workaround: disable reset around power sequence */
 		pp &= ~PANEL_POWER_RESET;
 		io_i915_write32(pp, PCH_PP_CONTROL);
@@ -827,7 +827,7 @@ void ironlake_edp_panel_on(struct intel_dp *intel_dp)
 
 	ironlake_wait_panel_on(intel_dp);
 
-	if ((intel_dp->gen == 5)) {
+	if (intel_dp->gen == 5) {
 		pp |= PANEL_POWER_RESET; /* restore panel reset bit */
 		io_i915_write32(pp, PCH_PP_CONTROL);
 		////POSTING_READ(PCH_PP_CONTROL);

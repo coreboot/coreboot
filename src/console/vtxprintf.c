@@ -4,9 +4,9 @@
  *  Copyright (C) 1991, 1992  Linus Torvalds
  */
 
-#include <string.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
+#include <string.h>
 
 #define call_tx(x) tx_byte(x, data)
 

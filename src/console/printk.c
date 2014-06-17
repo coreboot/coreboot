@@ -5,12 +5,12 @@
  *
  */
 
-#include <stddef.h>
-#include <smp/node.h>
-#include <smp/spinlock.h>
-#include <console/vtxprintf.h>
 #include <console/console.h>
 #include <console/streams.h>
+#include <console/vtxprintf.h>
+#include <smp/spinlock.h>
+#include <smp/node.h>
+#include <stddef.h>
 #include <trace.h>
 
 DECLARE_SPIN_LOCK(console_lock)
@@ -35,7 +35,7 @@ int do_printk(int msg_level, const char *fmt, ...)
 	if (!console_log_level(msg_level))
 		return 0;
 
-#if CONFIG_SQUELCH_EARLY_SMP && defined(__PRE_RAM__)
+#if IS_ENABLED (CONFIG_SQUELCH_EARLY_SMP) && defined(__PRE_RAM__)
 	if (!boot_cpu())
 		return 0;
 #endif
@@ -55,10 +55,10 @@ int do_printk(int msg_level, const char *fmt, ...)
 	return i;
 }
 
-#if CONFIG_CHROMEOS
+#if IS_ENABLED (CONFIG_CHROMEOS)
 void do_vtxprintf(const char *fmt, va_list args)
 {
 	vtxprintf(wrap_putchar, fmt, args, NULL);
 	console_tx_flush();
 }
-#endif
+#endif /* CONFIG_CHROMEOS */

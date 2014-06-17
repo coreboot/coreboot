@@ -17,14 +17,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <rules.h>
-#include <console/streams.h>
 #include <console/cbmem_console.h>
+#include <console/ne2k.h>
+#include <console/qemu_debugcon.h>
+#include <console/spkmodem.h>
+#include <console/streams.h>
 #include <console/uart.h>
 #include <console/usb.h>
-#include <console/ne2k.h>
-#include <console/spkmodem.h>
-#include <console/qemu_debugcon.h>
+#include <rules.h>
 
 void console_hw_init(void)
 {

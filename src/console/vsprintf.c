@@ -19,8 +19,8 @@
  * MA 02110-1301 USA
  */
 
-#include <string.h>
 #include <console/vtxprintf.h>
+#include <string.h>
 #include <trace.h>
 
 struct vsnprintf_context

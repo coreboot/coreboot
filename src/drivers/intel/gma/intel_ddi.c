@@ -123,7 +123,7 @@ static void intel_wait_ddi_buf_idle(int port)
 
 void intel_ddi_prepare_link_retrain(struct intel_dp *intel_dp, int port)
 {
-	int wait;
+	int wait = 0;
 	uint32_t val;
 
 	if (io_i915_read32(DP_TP_CTL(port)) & DP_TP_CTL_ENABLE) {

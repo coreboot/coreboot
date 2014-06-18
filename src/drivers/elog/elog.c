@@ -29,11 +29,12 @@
 #include <elog.h>
 #include "elog_internal.h"
 
-#if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>
-#elif CONFIG_ELOG_FLASH_BASE == 0
+
+#if CONFIG_ELOG_FLASH_BASE == 0
 #error "CONFIG_ELOG_FLASH_BASE is invalid"
 #endif
+
 #if CONFIG_ELOG_FULL_THRESHOLD >= CONFIG_ELOG_AREA_SIZE
 #error "CONFIG_ELOG_FULL_THRESHOLD is larger than CONFIG_ELOG_AREA_SIZE"
 #endif

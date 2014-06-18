@@ -622,6 +622,9 @@ int elog_init(void)
 		if (!acpi_is_wakeup_s3())
 #endif
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
+#else
+		/* If boot count is not implemented, fake it. */
+		elog_add_event_dword(ELOG_TYPE_BOOT, 0);
 #endif
 
 #if CONFIG_ARCH_X86

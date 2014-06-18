@@ -27,10 +27,7 @@ typedef enum {
 } S3_DATA_TYPE;
 
 void restore_mtrr(void);
-void s3_resume(void);
-void *backup_resume(void);
-void set_resume_cache(void);
-void move_stack_high_mem(void);
+void prepare_for_resume(void);
 
 u32 OemAgesaSaveS3Info (S3_DATA_TYPE S3DataType, u32 DataSize, void *Data);
 void OemAgesaGetS3Info (S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data);

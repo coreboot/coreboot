@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/mtrr.h>
+#include <cpu/amd/car.h>
 #include <cpu/amd/mtrr.h>
 #include <cpu/x86/cache.h>
 #include <cbmem.h>
@@ -142,7 +143,8 @@ void restore_mtrr(void)
 	wrmsr(SYS_CFG, msr_data);
 }
 
-void *backup_resume(void)
+#ifdef __PRE_RAM__
+static void *backup_resume(void)
 {
 	void *resume_backup_memory;
 
@@ -160,7 +162,7 @@ void *backup_resume(void)
 	return resume_backup_memory;
 }
 
-void move_stack_high_mem(void)
+static void move_stack_high_mem(void)
 {
 	void *high_stack;
 
@@ -173,6 +175,7 @@ void move_stack_high_mem(void)
 		      (high_stack - BSP_STACK_BASE_ADDR)
 		      :);
 }
+#endif
 
 #ifndef __PRE_RAM__
 static void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx)
@@ -306,7 +309,8 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 }
 #endif
 
-void set_resume_cache(void)
+#ifdef __PRE_RAM__
+static void set_resume_cache(void)
 {
 	msr_t msr;
 
@@ -331,14 +335,28 @@ void set_resume_cache(void)
 	enable_cache();
 }
 
-void s3_resume(void)
+void prepare_for_resume(void)
 {
-	int status;
+	printk(BIOS_DEBUG, "Find resume memory location\n");
+	void *resume_backup_memory = backup_resume();
 
-	printk(BIOS_DEBUG, "agesawrapper_amds3laterestore ");
-	status = agesawrapper_amds3laterestore();
-	if (status)
-		printk(BIOS_DEBUG, "error level: %x \n", (u32) status);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+	post_code(0x62);
+	printk(BIOS_DEBUG, "Move CAR stack.\n");
+	move_stack_high_mem();
+	printk(BIOS_DEBUG, "stack moved to: 0x%x\n", (u32) (resume_backup_memory + HIGH_MEMORY_SAVE));
+
+	post_code(0x63);
+	disable_cache_as_ram();
+	printk(BIOS_DEBUG, "CAR disabled.\n");
+	set_resume_cache();
+
+	/*
+	 * Copy the system memory that is in the ramstage area to the
+	 * reserved area.
+	 */
+	if (resume_backup_memory)
+		memcpy(resume_backup_memory, (void *)(CONFIG_RAMBASE), HIGH_MEMORY_SAVE);
+
+	printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
 }
+#endif

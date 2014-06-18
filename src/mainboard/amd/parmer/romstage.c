@@ -41,9 +41,6 @@
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-#if CONFIG_HAVE_ACPI_RESUME
-	void *resume_backup_memory;
-#endif
 	val = agesawrapper_amdinitmmio();
 
 	hudson_lpc_port80();
@@ -116,27 +113,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 			printk(BIOS_DEBUG, "passed.\n");
 
 		post_code(0x61);
-		printk(BIOS_DEBUG, "Find resume memory location\n");
-		resume_backup_memory = (void *)backup_resume();
-
-		post_code(0x62);
-		printk(BIOS_DEBUG, "Move CAR stack.\n");
-		move_stack_high_mem();
-		printk(BIOS_DEBUG, "stack moved to: 0x%x\n", (u32) (resume_backup_memory + HIGH_MEMORY_SAVE));
-
-		post_code(0x63);
-		disable_cache_as_ram();
-		printk(BIOS_DEBUG, "CAR disabled.\n");
-		set_resume_cache();
-
-		/*
-		 * Copy the system memory that is in the ramstage area to the
-		 * reserved area.
-		 */
-		if (resume_backup_memory)
-			memcpy(resume_backup_memory, (void *)(CONFIG_RAMBASE), HIGH_MEMORY_SAVE);
-
-		printk(BIOS_DEBUG, "System memory saved. OK to load ramstage.\n");
+		prepare_for_resume();
 	}
 #endif
 

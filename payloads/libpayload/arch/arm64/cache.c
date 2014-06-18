@@ -101,17 +101,17 @@ static void dcache_op_va(void const *addr, size_t len, enum dcache_op op)
 	isb();
 }
 
-void dcache_clean_by_va(void const *addr, size_t len)
+void dcache_clean_by_mva(void const *addr, size_t len)
 {
 	dcache_op_va(addr, len, OP_DCCVAC);
 }
 
-void dcache_clean_invalidate_by_va(void const *addr, size_t len)
+void dcache_clean_invalidate_by_mva(void const *addr, size_t len)
 {
 	dcache_op_va(addr, len, OP_DCCIVAC);
 }
 
-void dcache_invalidate_by_va(void const *addr, size_t len)
+void dcache_invalidate_by_mva(void const *addr, size_t len)
 {
 	dcache_op_va(addr, len, OP_DCIVAC);
 }

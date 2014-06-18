@@ -425,7 +425,6 @@ agesawrapper_amdlaterunaptask (
 	return (UINT32)Status;
 }
 
-#if CONFIG_HAVE_ACPI_RESUME
 
 UINT32 agesawrapper_amdinitresume(VOID)
 {
@@ -627,7 +626,6 @@ UINT32 agesawrapper_amdS3Save(VOID)
 }
 
 #endif  /* #ifndef __PRE_RAM__ */
-#endif  /* CONFIG_HAVE_ACPI_RESUME */
 
 UINT32
 agesawrapper_amdreadeventlog (

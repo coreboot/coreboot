@@ -118,9 +118,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	else
 		printk(BIOS_DEBUG, "passed.\n");
 
-#if CONFIG_HAVE_ACPI_RESUME
-	if (!acpi_is_wakeup_early()) { /* Check for S3 resume */
-#endif
+	int s3resume = acpi_is_wakeup_early() && acpi_s3_resume_allowed();
+	if (!s3resume) {
 		post_code(0x40);
 		printk(BIOS_DEBUG, "agesawrapper_amdinitpost ");
 		val = agesawrapper_amdinitpost ();
@@ -137,7 +136,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		else
 			printk(BIOS_DEBUG, "passed.\n");
 
-#if CONFIG_HAVE_ACPI_RESUME
 	} else { 			/* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");
 
@@ -159,7 +157,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		post_code(0x61);
 		prepare_for_resume();
 	}
-#endif /* CONFIG_HAVE_ACPI_RESUME */
 
 	post_code(0x50);
 	copy_and_run();

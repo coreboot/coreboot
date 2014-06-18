@@ -116,9 +116,8 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitearly\n");
 
-#if CONFIG_HAVE_ACPI_RESUME
-	if (!acpi_is_wakeup_early()) { /* Check for S3 resume */
-#endif
+	int s3resume = acpi_is_wakeup_early() && acpi_s3_resume_allowed();
+	if (!s3resume) {
 		post_code(0x40);
 		val = agesawrapper_amdinitpost ();
 		if(val) {
@@ -134,7 +133,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
 		/* TODO: Disable cache is not ok. */
 		disable_cache_as_ram();
-#if CONFIG_HAVE_ACPI_RESUME
 	} else { /* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");
 
@@ -156,7 +154,6 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		post_code(0x61);
 		prepare_for_resume();
 	}
-#endif
 
 	outb(0xEA, 0xCD6);
 	outb(0x1, 0xcd7);

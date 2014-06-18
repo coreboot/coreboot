@@ -394,7 +394,6 @@ AGESA_STATUS agesawrapper_amdinitlate(void)
 	return status;
 }
 
-#if CONFIG_HAVE_ACPI_RESUME
 AGESA_STATUS agesawrapper_amdinitresume(void)
 {
 	AGESA_STATUS status;
@@ -517,7 +516,6 @@ AGESA_STATUS agesawrapper_amdS3Save(void)
 	return status;
 }
 #endif	/* #ifndef __PRE_RAM__ */
-#endif	/* CONFIG_HAVE_ACPI_RESUME */
 
 AGESA_STATUS agesawrapper_amdlaterunaptask (
 	uint32_t Func,

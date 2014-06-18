@@ -22,8 +22,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
-#include <broadwell/cpu.h>
-//#include <broadwell/gpio.h>
+#include <broadwell/gpio.h>
 #include <broadwell/pei_data.h>
 #include <broadwell/pei_wrapper.h>
 #include <broadwell/romstage.h>
@@ -50,16 +49,6 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	mainboard_fill_pei_data(&pei_data);
 	mainboard_fill_spd_data(&pei_data);
 	rp->pei_data = &pei_data;
-
-	/*
-	 * http://crosbug.com/p/29117
-	 * Limit Broadwell SKU to 1333MHz and disable channel 1
-	 */
-	if (cpu_family_model() == BROADWELL_FAMILY_ULT) {
-		pei_data.max_ddr3_freq = 1333;
-		pei_data.dimm_channel1_disabled = 3;
-		memset(pei_data.spd_data[1][0], 0, SPD_LEN);
-	}
 
 	romstage_common(rp);
 

@@ -91,7 +91,7 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_NATIVE,        /* 63: NATIVE: PCH_SLP_S5_L */
 	PCH_GPIO_OUT_LOW,       /* 64: NFC_FW_UPDATE */
 	PCH_GPIO_INPUT,         /* 65: RAM_ID3 */
-	PCH_GPIO_UNUSED,        /* 66: UNUSED (STRAP) */
+	PCH_GPIO_INPUT,         /* 66: RAM_ID3_OLD (STRAP) */
 	PCH_GPIO_INPUT,         /* 67: RAM_ID0 */
 	PCH_GPIO_INPUT,         /* 68: RAM_ID1 */
 	PCH_GPIO_INPUT,         /* 69: RAM_ID2 */

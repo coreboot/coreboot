@@ -22,6 +22,10 @@
 
 #include <ec/google/chromeec/ec_commands.h>
 
+#define SAMUS_EC_BOARD_PROTO1_9 0
+#define SAMUS_EC_BOARD_PROTO2_A 1
+#define SAMUS_EC_BOARD_PROTO2_B 2
+
 #define EC_SCI_GPI  36   /* GPIO36 is EC_SCI# */
 #define EC_SMI_GPI  34   /* GPIO34 is EC_SMI# */
 

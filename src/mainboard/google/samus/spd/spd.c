@@ -24,6 +24,8 @@
 #include <broadwell/gpio.h>
 #include <broadwell/pei_data.h>
 #include <broadwell/romstage.h>
+#include <ec/google/chromeec/ec.h>
+#include <mainboard/google/samus/ec.h>
 #include <mainboard/google/samus/gpio.h>
 #include <mainboard/google/samus/spd/spd.h>
 
@@ -80,25 +82,33 @@ static void mainboard_print_spd_info(uint8_t spd[])
 /* Copy SPD data for on-board memory */
 void mainboard_fill_spd_data(struct pei_data *pei_data)
 {
+	int spd_bits[4] = {
+		SPD_GPIO_BIT0,
+		SPD_GPIO_BIT1,
+		SPD_GPIO_BIT2,
+		SPD_GPIO_BIT3
+	};
 	int spd_gpio[4];
 	int spd_index;
 	int spd_file_len;
 	struct cbfs_file *spd_file;
 
-	spd_gpio[0] = get_gpio(SPD_GPIO_BIT0);
-	spd_gpio[1] = get_gpio(SPD_GPIO_BIT1);
-	spd_gpio[2] = get_gpio(SPD_GPIO_BIT2);
-	spd_gpio[3] = get_gpio(SPD_GPIO_BIT3);
+	/* Proto2B boards use a different GPIO for SPD index bit 3 */
+	if (google_chromeec_get_board_version() <= SAMUS_EC_BOARD_PROTO2_A)
+		spd_bits[3] = SPD_GPIO_BIT3_OLD;
+
+	spd_gpio[0] = get_gpio(spd_bits[0]);
+	spd_gpio[1] = get_gpio(spd_bits[1]);
+	spd_gpio[2] = get_gpio(spd_bits[2]);
+	spd_gpio[3] = get_gpio(spd_bits[3]);
 
 	spd_index = (spd_gpio[3] << 3) | (spd_gpio[2] << 2) |
 		(spd_gpio[1] << 1) | spd_gpio[0];
 
 	printk(BIOS_DEBUG, "SPD: index %d (GPIO%d=%d GPIO%d=%d "
 	       "GPIO%d=%d GPIO%d=%d)\n", spd_index,
-	       SPD_GPIO_BIT3, spd_gpio[3],
-	       SPD_GPIO_BIT2, spd_gpio[2],
-	       SPD_GPIO_BIT1, spd_gpio[1],
-	       SPD_GPIO_BIT0, spd_gpio[0]);
+	       spd_bits[3], spd_gpio[3], spd_bits[2], spd_gpio[2],
+	       spd_bits[1], spd_gpio[1], spd_bits[0], spd_gpio[0]);
 
 	spd_file = cbfs_get_file(CBFS_DEFAULT_MEDIA, "spd.bin");
 	if (!spd_file)
@@ -119,6 +129,10 @@ void mainboard_fill_spd_data(struct pei_data *pei_data)
 	       ((char*)CBFS_SUBHEADER(spd_file)) + spd_index, SPD_LEN);
 	memcpy(pei_data->spd_data[1][0],
 	       ((char*)CBFS_SUBHEADER(spd_file)) + spd_index, SPD_LEN);
+
+	/* Make sure a valid SPD was found */
+	if (pei_data->spd_data[0][0][0] == 0)
+		die("Invalid SPD data.");
 
 	mainboard_print_spd_info(pei_data->spd_data[0][0]);
 }

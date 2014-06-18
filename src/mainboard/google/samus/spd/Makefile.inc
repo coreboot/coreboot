@@ -21,7 +21,7 @@ romstage-y += spd.c
 
 SPD_BIN = $(obj)/spd.bin
 
-# { GPIO66, GPIO69, GPIO68, GPIO67 }
+# { GPIO65, GPIO67, GPIO68, GPIO69 }
 SPD_SOURCES  = empty            # 0b0000
 SPD_SOURCES += empty            # 0b0001
 SPD_SOURCES += empty            # 0b0010

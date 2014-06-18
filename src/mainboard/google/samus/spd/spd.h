@@ -33,10 +33,11 @@
 #define  SPD_PART_LEN		18
 
 /* Samus board memory configuration GPIOs */
-#define SPD_GPIO_BIT0		67
+#define SPD_GPIO_BIT0		69
 #define SPD_GPIO_BIT1		68
-#define SPD_GPIO_BIT2		69
+#define SPD_GPIO_BIT2		67
 #define SPD_GPIO_BIT3		65
+#define SPD_GPIO_BIT3_OLD	66
 
 struct pei_data;
 void mainboard_fill_spd_data(struct pei_data *pei_data);

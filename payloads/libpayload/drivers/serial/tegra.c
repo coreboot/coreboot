@@ -99,7 +99,7 @@ void serial_init(void)
 	if (!lib_sysinfo.serial || !lib_sysinfo.serial->baseaddr)
 		return;
 
-	uart_regs = (struct tegra_uart *)lib_sysinfo.serial->baseaddr;
+	uart_regs = (struct tegra_uart *)(uintptr_t)lib_sysinfo.serial->baseaddr;
 }
 
 void serial_console_init(void)

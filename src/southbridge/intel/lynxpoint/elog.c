@@ -161,7 +161,7 @@ void pch_log_state(void)
 	/* ACPI Wake */
 	if (pm1_sts & (1 << 15))
 		elog_add_event_byte(ELOG_TYPE_ACPI_WAKE,
-				    acpi_slp_type == 3 ? 3 : 5);
+				    acpi_is_wakeup_s3() ? 3 : 5);
 
 	/*
 	 * Wake sources

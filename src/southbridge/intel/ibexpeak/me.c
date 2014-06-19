@@ -436,12 +436,9 @@ static me_bios_path intel_me_path(device_t dev)
 	struct me_hfs hfs;
 	struct me_gmes gmes;
 
-#if CONFIG_HAVE_ACPI_RESUME
 	/* S3 wake skips all MKHI messages */
-	if (acpi_slp_type == 3) {
+	if (acpi_is_wakeup_s3())
 		return ME_S3WAKE_BIOS_PATH;
-	}
-#endif
 
 	pci_read_dword_ptr(dev, &hfs, PCI_ME_HFS);
 	pci_read_dword_ptr(dev, &gmes, PCI_ME_GMES);

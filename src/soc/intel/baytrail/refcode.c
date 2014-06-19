@@ -29,15 +29,6 @@
 #include <baytrail/ramstage.h>
 #include <baytrail/efi_wrapper.h>
 
-static inline int is_s3_resume(void)
-{
-#if CONFIG_HAVE_ACPI_RESUME
-	return acpi_slp_type == 3;
-#else
-	return 0;
-#endif
-}
-
 static inline struct ramstage_cache *next_cache(struct ramstage_cache *c)
 {
 	return (struct ramstage_cache *)&c->program[c->size];
@@ -140,7 +131,7 @@ static efi_wrapper_entry_t load_reference_code(void)
 	};
 	int ret;
 
-	if (is_s3_resume()) {
+	if (acpi_is_wakeup_s3()) {
 		return load_refcode_from_cache();
 	}
 

@@ -29,7 +29,7 @@ void link_ec_init(void)
 	post_code(0xf0);
 
 	/* Restore SCI event mask on resume. */
-	if (acpi_slp_type == 3) {
+	if (acpi_is_wakeup_s3()) {
 		google_chromeec_log_events(LINK_EC_LOG_EVENTS |
 					   LINK_EC_S3_WAKE_EVENTS);
 

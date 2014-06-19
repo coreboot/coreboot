@@ -27,7 +27,7 @@ void lumpy_ec_init(void)
 {
 	printk(BIOS_DEBUG, "lumpy_ec_init\n");
 
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		return;
 
 	/*

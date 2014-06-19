@@ -143,7 +143,7 @@ static void ehci_init(device_t dev)
 	};
 
 	/* Don't reset controller in S3 resume path */
-	if (acpi_slp_type != 3)
+	if (!acpi_is_wakeup_s3())
 		reg_script_run_on_dev(dev, ehci_hc_reset);
 
 	/* Disable controller if ports are routed to XHCI */

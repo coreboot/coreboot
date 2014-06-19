@@ -394,11 +394,9 @@ static void usb_xhci_init(device_t dev)
 	reg32 |= (1 << 31);
 	pci_write_config32(dev, 0x40, reg32);
 
-#if CONFIG_HAVE_ACPI_RESUME
 	/* Enable ports that are disabled before returning to OS */
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		usb_xhci_enable_ports_usb3(dev);
-#endif
 }
 
 static void usb_xhci_set_subsystem(device_t dev, unsigned vendor,

@@ -569,7 +569,7 @@ void *acpi_find_wakeup_vector(void);
 void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
-int acpi_get_sleep_type(void);
+int __attribute__((weak)) acpi_get_sleep_type(void);
 #endif	/* IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) */
 
 /* northbridge/amd/amdfam10/amdfam10_acpi.c */

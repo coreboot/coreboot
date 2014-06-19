@@ -464,6 +464,11 @@ void main(void)
 
 	post_code(POST_CONSOLE_BOOT_MSG);
 
+	/* Handoff sleep type from romstage. */
+#if CONFIG_HAVE_ACPI_RESUME
+	acpi_is_wakeup();
+#endif
+
 	threads_initialize();
 
 	/* Schedule the static boot state entries. */

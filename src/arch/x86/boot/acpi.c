@@ -645,14 +645,26 @@ void acpi_resume(void *wake_vec)
 /* This is to be filled by SB code - startup value what was found. */
 u8 acpi_slp_type = 0;
 
+static void acpi_handoff_wakeup(void)
+{
+	static int once = 0;
+	if (once)
+		return;
+	if (acpi_get_sleep_type)
+		acpi_slp_type = acpi_get_sleep_type();
+	once = 1;
+}
+
 int acpi_is_wakeup(void)
 {
+	acpi_handoff_wakeup();
 	/* Both resume from S2 and resume from S3 restart at CPU reset */
 	return (acpi_slp_type == 3 || acpi_slp_type == 2);
 }
 
 int acpi_is_wakeup_s3(void)
 {
+	acpi_handoff_wakeup();
 	return (acpi_slp_type == 3);
 }
 

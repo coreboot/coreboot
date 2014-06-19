@@ -19,6 +19,7 @@
 
 #include <console/console.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <stdint.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -556,20 +557,15 @@ static void domain_read_resources(device_t dev)
 #endif
 }
 
-extern u8 acpi_slp_type;
-
 static void domain_enable_resources(device_t dev)
 {
 	u32 val;
-#if CONFIG_HAVE_ACPI_RESUME
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		agesawrapper_fchs3laterestore();
-#endif
 
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam16 - domain_enable_resources: AmdInitMid.\n");
-#if CONFIG_HAVE_ACPI_RESUME
-	if (acpi_slp_type != 3) {
+	if (!acpi_is_wakeup_s3()) {
 		printk(BIOS_DEBUG, "agesawrapper_amdinitmid ");
 		val = agesawrapper_amdinitmid ();
 		if (val)
@@ -577,14 +573,6 @@ static void domain_enable_resources(device_t dev)
 		else
 			printk(BIOS_DEBUG, "passed.\n");
 	}
-#else
-	printk(BIOS_DEBUG, "agesawrapper_amdinitmid ");
-	val = agesawrapper_amdinitmid ();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
-#endif
 
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }

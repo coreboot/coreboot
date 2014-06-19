@@ -36,6 +36,9 @@ static void agesawrapper_post_device(void *unused)
 		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
 	}
 
+	/* Preparation for write_tables(). */
+	get_bus_conf();
+
 	if (!acpi_s3_resume_allowed())
 		return;
 

@@ -131,8 +131,6 @@ unsigned long write_acpi_tables(unsigned long start)
 	acpi_header_t *ivrs;
 	acpi_hest_t *hest;
 
-	get_bus_conf(); /* it will get sblk, pci1234, hcdn, and sbdn */
-
 	/* Align ACPI tables to 16 bytes */
 	start = ALIGN(start, 16);
 	current = start;

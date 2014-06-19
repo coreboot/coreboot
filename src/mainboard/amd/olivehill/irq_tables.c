@@ -57,8 +57,6 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	u8 sum = 0;
 	int i;
 
-	get_bus_conf();		/* it will find out all bus num and apic that share with mptable.c and mptable.c and acpi_tables.c */
-
 	/* Align the table to be 16 byte aligned. */
 	addr += 15;
 	addr &= ~15;

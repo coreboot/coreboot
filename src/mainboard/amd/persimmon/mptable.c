@@ -56,9 +56,6 @@ static void *smp_write_config_table(void *v)
 	 */
 	smp_write_processors(mc);
 
-	/* Get Bus Configuration */
-	get_bus_conf();
-
 	/*
 	 * Type 1: Bus Entries:
 	 * Bus ID, Bus Type

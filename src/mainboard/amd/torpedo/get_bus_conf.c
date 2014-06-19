@@ -54,18 +54,10 @@ u32 bus_type[256];
 
 u32 sbdn_sb900;
 
-
-static u32 get_bus_conf_done = 0;
-
 void get_bus_conf(void)
 {
 	device_t dev;
 	int i, j;
-
-	if (get_bus_conf_done == 1)
-		return;		/* do it only once */
-
-	get_bus_conf_done = 1;
 
 	printk(BIOS_DEBUG, "Mainboard - %s - %s - Start.\n", __FILE__, __func__);
 

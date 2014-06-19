@@ -51,8 +51,6 @@ u32 pci1234x[] = {
 u32 bus_type[256];
 u32 sbdn_sb800;
 
-static u32 get_bus_conf_done = 0;
-
 void get_bus_conf(void)
 {
 	u32 apicid_base;
@@ -60,10 +58,6 @@ void get_bus_conf(void)
 	device_t dev;
 	int i, j;
 
-	if (get_bus_conf_done == 1)
-		return;	 /* do it only once */
-
-	get_bus_conf_done = 1;
 
 	sbdn_sb800 = 0;
 

@@ -32,9 +32,7 @@
 #include <cpu/x86/mtrr.h>
 #include <cpu/amd/amdfam16.h>
 #include <arch/acpi.h>
-#if CONFIG_HAVE_ACPI_RESUME
 #include <cpu/amd/agesa/s3_resume.h>
-#endif
 
 static void model_16_init(device_t dev)
 {
@@ -71,10 +69,8 @@ static void model_16_init(device_t dev)
 	msr.lo |= SYSCFG_MSR_MtrrFixDramEn;
 	wrmsr(SYSCFG_MSR, msr);
 
-#if CONFIG_HAVE_ACPI_RESUME
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup())
 		restore_mtrr();
-#endif
 
 	x86_mtrr_check();
 	x86_enable_cache();

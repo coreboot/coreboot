@@ -20,8 +20,6 @@
 #ifndef S3_RESUME_H
 #define S3_RESUME_H
 
-#if CONFIG_HAVE_ACPI_RESUME
-
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */
 #define S3_DATA_VOLATILE_SIZE	0x6000
 #define S3_DATA_MTRR_SIZE	0x1000
@@ -30,7 +28,8 @@
 #define S3_DATA_MTRR_POS	(CONFIG_S3_DATA_POS + S3_DATA_VOLATILE_SIZE)
 #define S3_DATA_NONVOLATILE_POS	(CONFIG_S3_DATA_POS + S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE)
 
-#if (S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
+	(S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
 #error "Please increase the value of S3_DATA_SIZE"
 #endif
 
@@ -52,8 +51,6 @@ void OemAgesaSaveMtrr (void);
 #ifndef __PRE_RAM__
 #include <spi_flash.h>
 void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx);
-#endif
-
 #endif
 
 #endif

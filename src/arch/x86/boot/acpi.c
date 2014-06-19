@@ -651,6 +651,11 @@ int acpi_is_wakeup(void)
 	return (acpi_slp_type == 3 || acpi_slp_type == 2);
 }
 
+int acpi_is_wakeup_s3(void)
+{
+	return (acpi_slp_type == 3);
+}
+
 void acpi_fail_wakeup(void)
 {
 	if (acpi_slp_type == 3 || acpi_slp_type == 2)

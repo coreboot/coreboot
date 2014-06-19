@@ -554,11 +554,12 @@ unsigned long acpi_fill_hest(acpi_hest_t *hest);
 
 void acpi_save_gnvs(u32 gnvs_address);
 
-#if CONFIG_HAVE_ACPI_RESUME
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 /* 0 = S0, 1 = S1 ...*/
 extern u8 acpi_slp_type;
 
 int acpi_is_wakeup(void);
+int acpi_is_wakeup_s3(void);
 void acpi_fail_wakeup(void);
 void acpi_resume(void *wake_vec);
 void __attribute__((weak)) mainboard_suspend_resume(void);
@@ -567,9 +568,7 @@ void *acpi_get_wakeup_rsdp(void);
 void acpi_jump_to_wakeup(void *wakeup_addr);
 
 int acpi_get_sleep_type(void);
-#else	/* CONFIG_HAVE_ACPI_RESUME */
-#define acpi_slp_type 0
-#endif	/* CONFIG_HAVE_ACPI_RESUME */
+#endif	/* IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) */
 
 /* northbridge/amd/amdfam10/amdfam10_acpi.c */
 unsigned long acpi_add_ssdt_pstates(acpi_rsdp_t *rsdp, unsigned long current);
@@ -580,7 +579,6 @@ void generate_cpu_entries(void);
 #else // CONFIG_GENERATE_ACPI_TABLES
 
 #define write_acpi_tables(start) (start)
-#define acpi_slp_type 0
 
 #endif	/* CONFIG_GENERATE_ACPI_TABLES */
 
@@ -588,5 +586,11 @@ static inline int acpi_s3_resume_allowed(void)
 {
 	return IS_ENABLED(CONFIG_HAVE_ACPI_RESUME);
 }
+
+#if !IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
+#define acpi_slp_type 0
+static inline int acpi_is_wakeup(void) { return 0; }
+static inline int acpi_is_wakeup_s3(void) { return 0; }
+#endif
 
 #endif  /* __ASM_ACPI_H */

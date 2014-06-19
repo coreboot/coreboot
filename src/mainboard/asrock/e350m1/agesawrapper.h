@@ -84,4 +84,5 @@ UINT32 agesawrapper_amdinitcpuio (void);
 UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 void *agesawrapper_getlateinitptr (int pick);
 
+static inline UINT32 agesawrapper_amdS3Save(void) { return 0; }
 #endif

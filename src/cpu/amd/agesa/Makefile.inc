@@ -31,6 +31,7 @@ cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc
 
 romstage-y += heapmanager.c
 ramstage-y += heapmanager.c
+ramstage-y += amd_late_init.c
 
 ifeq ($(CONFIG_HAVE_ACPI_RESUME), y)
 

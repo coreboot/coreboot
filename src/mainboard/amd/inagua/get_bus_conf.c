@@ -55,7 +55,6 @@ static u32 get_bus_conf_done = 0;
 void get_bus_conf(void)
 {
 	u32 apicid_base;
-	u32 status;
 
 	device_t dev;
 	int i, j;
@@ -64,26 +63,6 @@ void get_bus_conf(void)
 		return;   /* do it only once */
 
 	get_bus_conf_done = 1;
-
-	/*
-	 * This is the call to AmdInitLate.  It is really in the wrong place, conceptually,
-	 * but functionally within the coreboot model, this is the best place to make the
-	 * call.  The logically correct place to call AmdInitLate is after PCI scan is done,
-	 * after the decision about S3 resume is made, and before the system tables are
-	 * written into RAM.  The routine that is responsible for writing the tables is
-	 * "write_tables", called near the end of "main".  There is no platform
-	 * specific entry point between the S3 resume decision point and the call to
-	 * "write_tables", and the next platform specific entry points are the calls to
-	 * the ACPI table write functions.  The first of ose would seem to be the right
-	 * place, but other table write functions, e.g. the PIRQ table write function, are
-	 * called before the ACPI tables are written.  This routine is called at the beginning
-	 * of each of the write functions called prior to the ACPI write functions, so this
-	 * becomes the best place for this call.
-	 */
-	status = agesawrapper_amdinitlate();
-	if(status) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitlate failed: %x \n", status);
-	}
 
 	sbdn_sb800 = 0;
 

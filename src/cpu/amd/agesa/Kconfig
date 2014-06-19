@@ -66,6 +66,15 @@ config DCACHE_RAM_BASE
 config DCACHE_RAM_SIZE
 	hex
 	default 0x10000
+
+config S3_DATA_POS
+	hex
+	default 0xFFFF0000
+
+config S3_DATA_SIZE
+	int
+	default 32768
+
 endif # CPU_AMD_AGESA
 
 source src/cpu/amd/agesa/family10/Kconfig

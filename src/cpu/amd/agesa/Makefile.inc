@@ -25,6 +25,8 @@ subdirs-$(CONFIG_CPU_AMD_AGESA_FAMILY16_KB) += family16kb
 
 romstage-$(CONFIG_HAVE_ACPI_RESUME) += s3_resume.c
 ramstage-$(CONFIG_HAVE_ACPI_RESUME) += s3_resume.c
+ramstage-$(CONFIG_SPI_FLASH) += spi.c
+
 cpu_incs += $(src)/cpu/amd/agesa/cache_as_ram.inc
 
 romstage-y += heapmanager.c

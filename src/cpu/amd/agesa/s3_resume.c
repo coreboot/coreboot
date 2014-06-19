@@ -35,11 +35,6 @@
 #include "s3_resume.h"
 #include "agesawrapper.h"
 
-#ifndef __PRE_RAM__
-#include <spi-generic.h>
-#include <spi_flash.h>
-#endif
-
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */
 #define S3_DATA_VOLATILE_SIZE		0x6000
 #define S3_DATA_MTRR_SIZE		0x1000
@@ -85,7 +80,7 @@ void restore_mtrr(void)
 
 	u32 pos, size;
 	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
-	msrPtr = (UINT32 *)pos;
+	msrPtr = (UINT32 *)(pos + sizeof(UINT32));
 
 	disable_cache();
 
@@ -178,46 +173,24 @@ static void move_stack_high_mem(void)
 #endif
 
 #ifndef __PRE_RAM__
-static void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx)
+/* FIXME: Why store MTRR in SPI, just use CBMEM ? */
+static u8 mtrr_store[S3_DATA_MTRR_SIZE];
+
+static void write_mtrr(u8 **p_nvram_pos, unsigned idx)
 {
 	msr_t  msr_data;
 	msr_data = rdmsr(idx);
 
-#if CONFIG_AMD_SB_SPI_TX_LEN >= 8
-	flash->write(flash, *p_nvram_pos, 8, &msr_data);
-	*p_nvram_pos += 8;
-#else
-	flash->write(flash, *p_nvram_pos, 4, &msr_data.lo);
-	*p_nvram_pos += 4;
-	flash->write(flash, *p_nvram_pos, 4, &msr_data.hi);
-	*p_nvram_pos += 4;
-#endif
+	memcpy(*p_nvram_pos, &msr_data, sizeof(msr_data));
+	*p_nvram_pos += sizeof(msr_data);
 }
-#endif
 
 void OemAgesaSaveMtrr(void)
 {
-#ifndef __PRE_RAM__
 	msr_t  msr_data;
 	u32 i;
-	struct spi_flash *flash;
 
-	u32 pos, size;
-	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
-
-	spi_init();
-
-	flash = spi_flash_probe(0, 0, 0, 0);
-	if (!flash) {
-		printk(BIOS_DEBUG, "Could not find SPI device\n");
-		return;
-	}
-
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_claim_bus(flash->spi);
-
-	flash->erase(flash, pos, size);
-	u32 nvram_pos = pos;
+	u8 *nvram_pos = (u8 *) mtrr_store;
 
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr_data = rdmsr(SYS_CFG);
@@ -225,12 +198,12 @@ void OemAgesaSaveMtrr(void)
 	wrmsr(SYS_CFG, msr_data);
 
 	/* Fixed MTRRs */
-	write_mtrr(flash, &nvram_pos, 0x250);
-	write_mtrr(flash, &nvram_pos, 0x258);
-	write_mtrr(flash, &nvram_pos, 0x259);
+	write_mtrr(&nvram_pos, 0x250);
+	write_mtrr(&nvram_pos, 0x258);
+	write_mtrr(&nvram_pos, 0x259);
 
 	for (i = 0x268; i < 0x270; i++)
-		write_mtrr(flash, &nvram_pos, i);
+		write_mtrr(&nvram_pos, i);
 
 	/* Disable access to AMD RdDram and WrDram extension bits */
 	msr_data = rdmsr(SYS_CFG);
@@ -239,20 +212,32 @@ void OemAgesaSaveMtrr(void)
 
 	/* Variable MTRRs */
 	for (i = 0x200; i < 0x210; i++)
-		write_mtrr(flash, &nvram_pos, i);
+		write_mtrr(&nvram_pos, i);
 
 	/* SYS_CFG */
-	write_mtrr(flash, &nvram_pos, 0xC0010010);
+	write_mtrr(&nvram_pos, 0xC0010010);
 	/* TOM */
-	write_mtrr(flash, &nvram_pos, 0xC001001A);
+	write_mtrr(&nvram_pos, 0xC001001A);
 	/* TOM2 */
-	write_mtrr(flash, &nvram_pos, 0xC001001D);
+	write_mtrr(&nvram_pos, 0xC001001D);
 
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_release_bus(flash->spi);
-
+#if IS_ENABLED(CONFIG_SPI_FLASH)
+	u32 pos, size;
+	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
+	spi_SaveS3info(pos, size, mtrr_store, nvram_pos - (u8 *) mtrr_store);
 #endif
 }
+
+u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
+{
+#if IS_ENABLED(CONFIG_SPI_FLASH)
+	u32 pos, size;
+	get_s3nv_data(S3DataType, &pos, &size);
+	spi_SaveS3info(pos, size, Data, DataSize);
+#endif
+	return AGESA_SUCCESS;
+}
+#endif
 
 void OemAgesaGetS3Info(S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data)
 {
@@ -273,41 +258,6 @@ void OemAgesaGetS3Info(S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data)
 		*Data = dst;
 	}
 }
-
-#ifndef __PRE_RAM__
-u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
-{
-	struct spi_flash *flash;
-
-	u32 pos, size;
-	get_s3nv_data(S3DataType, &pos, &size);
-
-	spi_init();
-	flash = spi_flash_probe(0, 0, 0, 0);
-	if (!flash) {
-		printk(BIOS_DEBUG, "Could not find SPI device\n");
-		/* Dont make flow stop. */
-		return AGESA_SUCCESS;
-	}
-
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_claim_bus(flash->spi);
-
-	flash->erase(flash, pos, size);
-	flash->write(flash, pos, sizeof(DataSize), &DataSize);
-
-	u32 nvram_pos;
-	for (nvram_pos = 0; nvram_pos < DataSize - CONFIG_AMD_SB_SPI_TX_LEN; nvram_pos += CONFIG_AMD_SB_SPI_TX_LEN) {
-		flash->write(flash, nvram_pos + pos + 4, CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
-	}
-	flash->write(flash, nvram_pos + pos + 4, DataSize % CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
-
-	flash->spi->rw = SPI_WRITE_FLAG;
-	spi_release_bus(flash->spi);
-
-	return AGESA_SUCCESS;
-}
-#endif
 
 #ifdef __PRE_RAM__
 static void set_resume_cache(void)

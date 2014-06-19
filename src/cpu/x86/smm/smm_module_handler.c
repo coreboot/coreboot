@@ -22,6 +22,12 @@
 #include <cpu/x86/smm.h>
 #include <rmodule.h>
 
+#if CONFIG_SPI_FLASH_SMM
+#include <spi-generic.h>
+#endif
+
+static int do_driver_init = 1;
+
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
 /* SMI multiprocessing semaphore */
@@ -153,6 +159,14 @@ void asmlinkage smm_handler_start(void *arg)
 	console_init();
 
 	printk(BIOS_SPEW, "\nSMI# #%d\n", cpu);
+
+	/* Allow drivers to initialize variables in SMM context. */
+	if (do_driver_init) {
+#if CONFIG_SPI_FLASH_SMM
+		spi_init();
+#endif
+		do_driver_init = 0;
+	}
 
 	cpu_smi_handler();
 	northbridge_smi_handler();

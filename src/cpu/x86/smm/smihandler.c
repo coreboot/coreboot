@@ -24,6 +24,12 @@
 #include <cpu/x86/cache.h>
 #include <cpu/x86/smm.h>
 
+#if CONFIG_SPI_FLASH_SMM
+#include <spi-generic.h>
+#endif
+
+static int do_driver_init = 1;
+
 #if !CONFIG_SMM_TSEG /* TSEG handler locks in assembly */
 typedef enum { SMI_LOCKED, SMI_UNLOCKED } smi_semaphore;
 
@@ -182,6 +188,14 @@ void smi_handler(u32 smm_revision)
 		 * if we don't handle it anyways.
 		 */
 		return;
+	}
+
+	/* Allow drivers to initialize variables in SMM context. */
+	if (do_driver_init) {
+#if CONFIG_SPI_FLASH_SMM
+		spi_init();
+#endif
+		do_driver_init = 0;
 	}
 
 	/* Call chipset specific SMI handlers. */

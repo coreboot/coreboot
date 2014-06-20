@@ -8,10 +8,7 @@
 #include "option_table.h"
 #include <cbfs.h>
 #endif
-#if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
-#endif
-
 
 static void rtc_update_cmos_date(u8 has_century)
 {
@@ -72,16 +69,14 @@ void rtc_init(int invalid)
 #endif
 
 #ifndef __PRE_RAM__
-#if CONFIG_HAVE_ACPI_RESUME
 	/*
 	 * Avoid clearing pending interrupts and resetting the RTC control
 	 * register in the resume path because the Linux kernel relies on
 	 * this to know if it should restart the RTC timer queue if the wake
 	 * was due to the RTC alarm.
 	 */
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		return;
-#endif /* CONFIG_HAVE_ACPI_RESUME */
 #endif /* __PRE_RAM__ */
 
 	printk(BIOS_DEBUG, "RTC Init\n");

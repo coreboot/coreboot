@@ -6,6 +6,10 @@ ramstage-y += die.c
 smm-$(CONFIG_DEBUG_SMI) += init.c console.c vtxprintf.c printk.c
 smm-$(CONFIG_SMM_TSEG) += die.c
 
+verstage-y += vtxprintf.c
+verstage-y += console.c
+verstage-y += die.c
+
 romstage-y += vtxprintf.c printk.c
 romstage-y += init.c console.c
 romstage-y += post.c

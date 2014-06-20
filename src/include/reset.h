@@ -7,5 +7,6 @@ void hard_reset(void);
 #define hard_reset() do {} while(0)
 #endif
 void soft_reset(void);
+void cpu_reset(void);
 
 #endif

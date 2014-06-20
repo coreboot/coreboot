@@ -21,6 +21,14 @@ bootblock-$(CONFIG_CONSOLE_SERIAL) += uart.c
 endif
 
 verstage-y += verstage.c
+verstage-y += cbfs.c
+verstage-y += dma.c
+verstage-y += monotonic_timer.c
+verstage-y += spi.c
+verstage-y += timer.c
+verstage-$(CONFIG_CONSOLE_SERIAL_UART) += uart.c
+verstage-y += ../tegra/gpio.c
+verstage-y += ../tegra/pinmux.c
 
 romstage-y += cbfs.c
 romstage-y += cbmem.c

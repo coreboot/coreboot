@@ -46,7 +46,7 @@ struct romstage_handoff;
 
 /* TODO(shawnn): Remove these CONFIGs and define default weak functions
  * that can be overridden in the platform / MB code. */
-#if CONFIG_VBOOT_VERIFY_FIRMWARE
+#if CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE
 /*
  * This is a dual purpose routine. If dest is non-NULL the region at
  * offset_addr will be read into the area pointed to by dest.  If dest
@@ -67,7 +67,8 @@ static inline int vboot_get_handoff_info(void **addr, uint32_t *size)
 	return -1;
 }
 static inline int vboot_skip_display_init(void) { return 0; }
-#endif
+#endif /* CONFIG_VBOOT_VERIFY_FIRMWARE || CONFIG_VBOOT2_VERIFY_FIRMWARE */
+
 int vboot_get_sw_write_protect(void);
 
 #include "gnvs.h"
@@ -84,5 +85,9 @@ void chromeos_reserve_ram_oops(struct device *dev, int idx);
 static inline void chromeos_ram_oops_init(chromeos_acpi_t *chromeos) {}
 static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 #endif /* CONFIG_CHROMEOS_RAMOOPS */
+
+#if CONFIG_VBOOT2_VERIFY_FIRMWARE
+void select_firmware(void);
+#endif
 
 #endif

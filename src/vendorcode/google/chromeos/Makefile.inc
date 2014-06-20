@@ -95,7 +95,33 @@ $(VB_LIB):
 endif
 
 ifeq ($(CONFIG_VBOOT2_VERIFY_FIRMWARE),y)
+VB_SOURCE := vboot_reference
 VERSTAGE_LIB = $(obj)/vendorcode/google/chromeos/verstage.a
+
+INCLUDES += -I$(VB_SOURCE)/firmware/2lib/include
+INCLUDES += -I$(VB_SOURCE)/firmware/include
+verstage-y += vboot_main.c fmap.c chromeos.c
+
+VB_FIRMWARE_ARCH := $(ARCHDIR-$(ARCH-VERSTAGE-y))
+VB2_LIB = $(obj)/external/vboot_reference/vboot_fw2.a
+VBOOT_CFLAGS += $(patsubst -I%,-I$(top)/%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_verstage)))
+VBOOT_CFLAGS += $(verstage-c-ccopts)
+VBOOT_CFLAGS += -include $(top)/src/include/kconfig.h -Wno-missing-prototypes
+VBOOT_CFLAGS += -DVBOOT_DEBUG
+
+$(VB2_LIB): $(obj)/config.h
+	@printf "    MAKE       $(subst $(obj)/,,$(@))\n"
+	$(Q)FIRMWARE_ARCH=$(VB_FIRMWARE_ARCH) \
+	CC="$(CC_verstage)" \
+		CFLAGS="$(VBOOT_CFLAGS)" VBOOT2="y" \
+		make -C $(VB_SOURCE) \
+		BUILD=$(top)/$(dir $(VB2_LIB)) \
+		V=$(V) \
+		fwlib2
+	mv $@ $@.tmp
+	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
+	$(OBJCOPY_verstage) --prefix-symbols=verstage_ $@.tmp $@
+
 $(VERSTAGE_LIB): $$(verstage-objs)
 	@printf "    AR         $(subst $(obj)/,,$(@))\n"
 	$(AR_verstage) rc $@.tmp $(verstage-objs)

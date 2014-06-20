@@ -68,6 +68,18 @@ $(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(boo
 endif # CONFIG_ARCH_BOOTBLOCK_ARM
 
 ###############################################################################
+# verification stage
+###############################################################################
+
+verstage-y += early_console.c
+verstage-y += div0.c
+verstage-y += eabi_compat.c
+verstage-y += memset.S
+verstage-y += memcpy.S
+verstage-y += memmove.S
+verstage-y += stages.c
+
+###############################################################################
 # romstage
 ###############################################################################
 

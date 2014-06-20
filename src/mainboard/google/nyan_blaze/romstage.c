@@ -228,7 +228,11 @@ static void __attribute__((noinline)) romstage(void)
 	cbmemc_reinit();
 #endif
 
+#if CONFIG_VBOOT2_VERIFY_FIRMWARE
+	// vboot_create_handoff((void *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS);
+#else
 	vboot_verify_firmware(romstage_handoff_find_or_add());
+#endif
 
 	timestamp_add(TS_START_COPYRAM, timestamp_get());
 	void *entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,

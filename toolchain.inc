@@ -87,6 +87,7 @@ define create_class_compiler
 CC_$(1) := $(CC_$(2))
 LD_$(1) := $(LD_$(2))
 NM_$(1) := $(NM_$(2))
+AR_$(1) := $(AR_$(2))
 OBJCOPY_$(1) := $(OBJCOPY_$(2))
 OBJDUMP_$(1) := $(OBJDUMP_$(2))
 STRIP_$(1) := $(STRIP_$(2))

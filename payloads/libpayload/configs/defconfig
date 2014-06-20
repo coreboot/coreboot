@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # libpayload version: 0.2.0
-# Wed Dec 31 11:36:31 2014
+# Mon Jan  5 15:27:43 2015
 #
 
 #
@@ -17,8 +17,8 @@
 # Architecture Options
 #
 # CONFIG_LP_ARCH_ARM is not set
-# CONFIG_LP_ARCH_ARM64 is not set
 CONFIG_LP_ARCH_X86=y
+# CONFIG_LP_ARCH_ARM64 is not set
 # CONFIG_LP_MEMMAP_RAM_ONLY is not set
 # CONFIG_LP_MULTIBOOT is not set
 
@@ -41,6 +41,7 @@ CONFIG_LP_SERIAL_CONSOLE=y
 CONFIG_LP_8250_SERIAL_CONSOLE=y
 # CONFIG_LP_S5P_SERIAL_CONSOLE is not set
 # CONFIG_LP_TEGRA_SERIAL_CONSOLE is not set
+# CONFIG_LP_RK_SERIAL_CONSOLE is not set
 # CONFIG_LP_IPQ806X_SERIAL_CONSOLE is not set
 # CONFIG_LP_PL011_SERIAL_CONSOLE is not set
 CONFIG_LP_SERIAL_IOBASE=0x3f8

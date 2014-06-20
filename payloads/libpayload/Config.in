@@ -199,6 +199,11 @@ config TEGRA_SERIAL_CONSOLE
 	depends on SERIAL_CONSOLE
 	default n
 
+config RK_SERIAL_CONSOLE
+	bool "Rockchip SOC serial port driver"
+	depends on SERIAL_CONSOLE
+	default n
+
 config IPQ806X_SERIAL_CONSOLE
 	bool "IPQ806x SOC compatible serial port driver"
 	depends on SERIAL_CONSOLE
@@ -383,6 +388,8 @@ config TIMER_TEGRA_1US
 config TIMER_IPQ806X
 	bool "Timer for ipq806x platforms"
 
+config TIMER_RK
+	bool "Timer for Rockchip"
 endchoice
 
 config TIMER_MCT_HZ
@@ -394,6 +401,11 @@ config TIMER_MCT_ADDRESS
 	hex "Exynos MCT base address"
 	depends on TIMER_MCT
 	default 0x101c0000
+
+config TIMER_RK_ADDRESS
+	hex "Rockchip timer base address"
+	depends on TIMER_RK
+	default 0xff810020
 
 config TIMER_TEGRA_1US_ADDRESS
 	hex "Tegra u1s timer base address"

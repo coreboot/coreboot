@@ -1,6 +1,9 @@
+/* (c) 2005 Linux Networx GPL see COPYING for details */
+
 #ifndef DEVICE_CARDBUS_H
 #define DEVICE_CARDBUS_H
-/* (c) 2005 Linux Networx GPL see COPYING for details */
+
+#include <device/device.h>
 
 void cardbus_read_resources(device_t dev);
 void cardbus_enable_resources(device_t dev);

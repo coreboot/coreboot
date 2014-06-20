@@ -25,9 +25,7 @@
 #include <arch/io.h>
 #include <delay.h>
 #include <types.h>
-#if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
-#endif
 
 #define KBD_DATA	0x60
 #define KBD_COMMAND	0x64
@@ -202,10 +200,8 @@ void pc_keyboard_init(void)
 	if (!CONFIG_DRIVERS_PS2_KEYBOARD)
 		return;
 
-#if CONFIG_HAVE_ACPI_RESUME
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		return;
-#endif
 
 	printk(BIOS_DEBUG, "Keyboard init...\n");
 

@@ -29,9 +29,6 @@
 #include <pc80/keyboard.h>
 #include <stdlib.h>
 #include "mec1308.h"
-#if CONFIG_HAVE_ACPI_RESUME
-#include <arch/acpi.h>
-#endif
 
 static void mec1308_init(device_t dev)
 {
@@ -41,10 +38,6 @@ static void mec1308_init(device_t dev)
 
 	switch(dev->path.pnp.device) {
 	case MEC1308_KBC:
-#if CONFIG_HAVE_ACPI_RESUME
-		if (acpi_slp_type == 3)
-			return;
-#endif
 		pc_keyboard_init();
 		break;
 	}

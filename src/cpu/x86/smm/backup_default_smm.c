@@ -45,7 +45,7 @@ void *backup_default_smm_area(void)
 	}
 
 	/* Only back up the area on S3 resume. */
-	if (acpi_slp_type == 3) {
+	if (acpi_is_wakeup_s3()) {
 		memcpy(save_area, default_smm, SMM_DEFAULT_SIZE);
 		return save_area;
 	}

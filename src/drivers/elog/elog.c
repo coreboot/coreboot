@@ -607,7 +607,7 @@ int elog_init(void)
 
 #if !defined(__SMM__)
 	/* Log boot count event except in S3 resume */
-	if (CONFIG_ELOG_BOOT_COUNT && acpi_slp_type != 3)
+	if (CONFIG_ELOG_BOOT_COUNT && !acpi_is_wakeup_s3())
 		elog_add_event_dword(ELOG_TYPE_BOOT, boot_count_read());
 
 	/* Check and log POST codes from previous boot */

@@ -23,17 +23,13 @@
 #include <string.h>
 #include <arch/io.h>
 #include <arch/ebda.h>
-#if CONFIG_HAVE_ACPI_RESUME
 #include <arch/acpi.h>
-#endif
 
 void setup_ebda(u32 low_memory_size, u16 ebda_segment, u16 ebda_size)
 {
-#if CONFIG_HAVE_ACPI_RESUME
 	/* Skip in S3 resume path */
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		return;
-#endif
 
 	if (!low_memory_size || !ebda_segment || !ebda_size)
 		return;

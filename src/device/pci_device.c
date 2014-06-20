@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <arch/io.h>
+#include <arch/acpi.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
@@ -52,9 +53,6 @@
 #endif
 #if CONFIG_PC80_SYSTEM
 #include <pc80/i8259.h>
-#endif
-#if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
-#include <arch/acpi.h>
 #endif
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/chromeos.h>
@@ -687,14 +685,12 @@ static int should_run_oprom(struct device *dev)
 
 static int should_load_oprom(struct device *dev)
 {
-#if CONFIG_HAVE_ACPI_RESUME && !CONFIG_S3_VGA_ROM_RUN
 	/* If S3_VGA_ROM_RUN is disabled, skip running VGA option
 	 * ROMs when coming out of an S3 resume.
 	 */
-	if ((acpi_slp_type == 3) &&
+	if (!IS_ENABLED(CONFIG_S3_VGA_ROM_RUN) && acpi_is_wakeup_s3() &&
 		((dev->class >> 8) == PCI_CLASS_DISPLAY_VGA))
 		return 0;
-#endif
 	if (IS_ENABLED(CONFIG_ALWAYS_LOAD_OPROM))
 		return 1;
 	if (should_run_oprom(dev))

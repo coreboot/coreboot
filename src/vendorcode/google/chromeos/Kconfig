@@ -85,6 +85,14 @@ config VBOOT_VERIFY_FIRMWARE
 	  Enabling VBOOT_VERIFY_FIRMWARE will use vboot to verify the ramstage
 	  and boot loader.
 
+config VBOOT2_VERIFY_FIRMWARE
+  bool "Firmware Verification with vboot2"
+  default n
+  depends on CHROMEOS
+  help
+	  Enabling VBOOT2_VERIFY_FIRMWARE will use vboot2 to verify the romstage
+	  and boot loader.
+
 config EC_SOFTWARE_SYNC
 	bool "Enable EC software sync"
 	default n

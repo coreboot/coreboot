@@ -61,7 +61,7 @@ bootblock-y += memcpy.S
 bootblock-y += memmove.S
 bootblock-y += div0.c
 
-$(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(bootblock-objs)
+$(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(bootblock-objs) $$(VERSTAGE_LIB) 
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
 	$(LD_bootblock) --gc-sections -static -o $@ -L$(obj) --start-group $(bootblock-objs) --end-group -T $(src)/arch/arm/bootblock.ld
 

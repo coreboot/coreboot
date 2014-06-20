@@ -39,13 +39,52 @@
 #include <spi_flash.h>
 #endif
 
+/* The size needs to be 4k aligned, which is the sector size of most flashes. */
+#define S3_DATA_VOLATILE_SIZE		0x6000
+#define S3_DATA_MTRR_SIZE		0x1000
+#define S3_DATA_NONVOLATILE_SIZE	0x1000
+
+#if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME) && \
+	(S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE + S3_DATA_NONVOLATILE_SIZE) > CONFIG_S3_DATA_SIZE
+#error "Please increase the value of S3_DATA_SIZE"
+#endif
+
+static void get_s3nv_data(S3_DATA_TYPE S3DataType, u32 *pos, u32 *len)
+{
+	/* FIXME: Find file from CBFS. */
+	u32 s3_data = CONFIG_S3_DATA_POS;
+
+	switch (S3DataType) {
+	case S3DataTypeVolatile:
+		*pos = s3_data;
+		*len = S3_DATA_VOLATILE_SIZE;
+		break;
+	case S3DataTypeMTRR:
+		*pos = s3_data + S3_DATA_VOLATILE_SIZE;
+		*len = S3_DATA_MTRR_SIZE;
+		break;
+	case S3DataTypeNonVolatile:
+		*pos = s3_data + S3_DATA_VOLATILE_SIZE + S3_DATA_MTRR_SIZE;
+		*len = S3_DATA_NONVOLATILE_SIZE;
+		break;
+	default:
+		*pos = 0;
+		*len = 0;
+		break;
+	}
+}
+
 void restore_mtrr(void)
 {
 	u32 msr;
-	volatile UINT32 *msrPtr = (volatile UINT32 *)S3_DATA_MTRR_POS;
+	volatile UINT32 *msrPtr;
 	msr_t msr_data;
 
 	printk(BIOS_SPEW, "%s\n", __func__);
+
+	u32 pos, size;
+	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
+	msrPtr = (UINT32 *)pos;
 
 	disable_cache();
 
@@ -136,7 +175,7 @@ void move_stack_high_mem(void)
 }
 
 #ifndef __PRE_RAM__
-void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx)
+static void write_mtrr(struct spi_flash *flash, u32 *p_nvram_pos, unsigned idx)
 {
 	msr_t  msr_data;
 	msr_data = rdmsr(idx);
@@ -157,9 +196,11 @@ void OemAgesaSaveMtrr(void)
 {
 #ifndef __PRE_RAM__
 	msr_t  msr_data;
-	u32 nvram_pos = S3_DATA_MTRR_POS;
 	u32 i;
 	struct spi_flash *flash;
+
+	u32 pos, size;
+	get_s3nv_data(S3DataTypeMTRR, &pos, &size);
 
 	spi_init();
 
@@ -172,7 +213,8 @@ void OemAgesaSaveMtrr(void)
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_claim_bus(flash->spi);
 
-	flash->erase(flash, S3_DATA_MTRR_POS, S3_DATA_MTRR_SIZE);
+	flash->erase(flash, pos, size);
+	u32 nvram_pos = pos;
 
 	/* Enable access to AMD RdDram and WrDram extension bits */
 	msr_data = rdmsr(SYS_CFG);
@@ -212,31 +254,30 @@ void OemAgesaSaveMtrr(void)
 void OemAgesaGetS3Info(S3_DATA_TYPE S3DataType, u32 *DataSize, void **Data)
 {
 	AMD_CONFIG_PARAMS StdHeader;
+
+	u32 pos, size;
+	get_s3nv_data(S3DataType, &pos, &size);
+
 	if (S3DataType == S3DataTypeNonVolatile) {
-		*Data = (void *)S3_DATA_NONVOLATILE_POS;
-		*DataSize = *(UINTN *) (*Data);
-		*Data += 4;
-	} else {
-		*DataSize = *(UINTN *) S3_DATA_VOLATILE_POS;
-		*Data = (void *) GetHeapBase(&StdHeader);
-		memcpy((void *)(*Data), (void *)(S3_DATA_VOLATILE_POS + 4), *DataSize);
+		*DataSize = *(UINT32 *) pos;
+		*Data = (void *) (pos + sizeof(UINT32));
+	} else if (S3DataType == S3DataTypeVolatile) {
+		u32 len = *(UINT32 *) pos;
+		void *src = (void *) (pos + sizeof(UINT32));
+		void *dst = (void *) GetHeapBase(&StdHeader);
+		memcpy(dst, src, len);
+		*DataSize = len;
+		*Data = dst;
 	}
 }
 
 #ifndef __PRE_RAM__
 u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 {
-
-	u32 pos = S3_DATA_VOLATILE_POS;
-	u32 data;
-	u32 nvram_pos;
 	struct spi_flash *flash;
 
-	if (S3DataType == S3DataTypeNonVolatile) {
-		pos = S3_DATA_NONVOLATILE_POS;
-	} else {		/* S3DataTypeVolatile */
-		pos = S3_DATA_VOLATILE_POS;
-	}
+	u32 pos, size;
+	get_s3nv_data(S3DataType, &pos, &size);
 
 	spi_init();
 	flash = spi_flash_probe(0, 0, 0, 0);
@@ -249,17 +290,11 @@ u32 OemAgesaSaveS3Info(S3_DATA_TYPE S3DataType, u32 DataSize, void *Data)
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_claim_bus(flash->spi);
 
-	if (S3DataType == S3DataTypeNonVolatile) {
-		flash->erase(flash, S3_DATA_NONVOLATILE_POS, S3_DATA_NONVOLATILE_SIZE);
-	} else {
-		flash->erase(flash, S3_DATA_VOLATILE_POS, S3_DATA_VOLATILE_SIZE);
-	}
+	flash->erase(flash, pos, size);
+	flash->write(flash, pos, sizeof(DataSize), &DataSize);
 
-	nvram_pos = 0;
-	flash->write(flash, nvram_pos + pos, sizeof(DataSize), &DataSize);
-
+	u32 nvram_pos;
 	for (nvram_pos = 0; nvram_pos < DataSize - CONFIG_AMD_SB_SPI_TX_LEN; nvram_pos += CONFIG_AMD_SB_SPI_TX_LEN) {
-		data = *(u32 *) (Data + nvram_pos);
 		flash->write(flash, nvram_pos + pos + 4, CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));
 	}
 	flash->write(flash, nvram_pos + pos + 4, DataSize % CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(Data + nvram_pos));

@@ -498,14 +498,10 @@ static void sb800_enable(device_t dev)
 		/* call the CIMX entry at the last sb800 device,
 		 * so make sure the mainboard devicetree is complete
 		 */
-#if CONFIG_HAVE_ACPI_RESUME
-		if (acpi_slp_type != 3)
+		if (!acpi_is_wakeup_s3())
 			sb_Before_Pci_Init();
 		else
 			sb_Before_Pci_Restore_Init();
-#else
-		sb_Before_Pci_Init();
-#endif
 		break;
 
 	default:

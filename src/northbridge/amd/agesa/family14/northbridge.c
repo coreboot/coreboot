@@ -761,17 +761,12 @@ static void domain_enable_resources(device_t dev)
 	u32 val;
 
 #if CONFIG_AMD_SB_CIMX
-  #if CONFIG_HAVE_ACPI_RESUME
-	if (acpi_slp_type != 3) {
+	if (!acpi_is_wakeup_s3()) {
 		sb_After_Pci_Init();
 		sb_Mid_Post_Init();
 	} else {
 		sb_After_Pci_Restore_Init();
 	}
-  #else
-	sb_After_Pci_Init();
-	sb_Mid_Post_Init();
-  #endif
 #endif
 
 	/* Must be called after PCI enumeration and resource allocation */

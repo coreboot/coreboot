@@ -24,39 +24,25 @@
  * Copyright 1997 -- 1999 Martin Mares <mj@atrey.karlin.mff.cuni.cz>
  */
 
-#include <kconfig.h>
+#include <arch/acpi.h>
+#include <arch/io.h>
+#include <bootmode.h>
 #include <console/console.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <arch/io.h>
-#include <arch/acpi.h>
+#include <delay.h>
+#include <device/agp.h>
+#include <device/cardbus.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <bootmode.h>
-#include <delay.h>
-#if CONFIG_HYPERTRANSPORT_PLUGIN_SUPPORT
-#include <device/hypertransport.h>
-#endif
-#if CONFIG_PCIX_PLUGIN_SUPPORT
 #include <device/pcix.h>
-#endif
-#if CONFIG_PCIEXP_PLUGIN_SUPPORT
 #include <device/pciexp.h>
-#endif
-#if CONFIG_AGP_PLUGIN_SUPPORT
-#include <device/agp.h>
-#endif
-#if CONFIG_CARDBUS_PLUGIN_SUPPORT
-#include <device/cardbus.h>
-#endif
-#if CONFIG_PC80_SYSTEM
+#include <device/hypertransport.h>
 #include <pc80/i8259.h>
-#endif
-#if CONFIG_CHROMEOS
+#include <kconfig.h>
 #include <vendorcode/google/chromeos/chromeos.h>
-#endif
 
 u8 pci_moving_config8(struct device *dev, unsigned int reg)
 {

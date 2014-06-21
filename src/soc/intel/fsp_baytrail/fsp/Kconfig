@@ -30,12 +30,12 @@ config FSP_FILE
 	  The path and filename of the Intel FSP binary for this platform.
 
 config FSP_LOC
-	hex "Intel FSP Binary location in CBFS"
+	hex
 	default 0xfffc0000
 	help
 	  The location in CBFS that the FSP is located. This must match the
 	  value that is set in the FSP binary.  If the FSP needs to be moved,
-	  rebase the FSP with the Intel's BCT (tool).
+	  rebase the FSP with Intel's BCT (tool).
 
 	  The Bay Trail FSP is built with a preferred base address of
 	  0xFFFC0000.

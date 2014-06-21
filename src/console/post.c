@@ -20,15 +20,11 @@
  */
 
 #include <arch/io.h>
+#include <elog.h>
 #include <console/console.h>
-#if CONFIG_CMOS_POST
+#include <device/device.h>
 #include <pc80/mc146818rtc.h>
 #include <smp/spinlock.h>
-#endif
-#if CONFIG_CMOS_POST_EXTRA
-#include <device/device.h>
-#endif
-#include <elog.h>
 
 /* Write POST information */
 

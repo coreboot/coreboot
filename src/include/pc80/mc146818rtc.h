@@ -1,6 +1,7 @@
 #ifndef PC80_MC146818RTC_H
 #define PC80_MC146818RTC_H
 
+#include <arch/io.h>
 #include <types.h>
 
 #ifndef RTC_BASE_PORT
@@ -100,7 +101,6 @@
 #define PC_CKS_LOC		46
 
 #ifndef UTIL_BUILD_OPTION_TABLE
-#include <arch/io.h>
 static inline unsigned char cmos_read(unsigned char addr)
 {
 	int offs = 0;

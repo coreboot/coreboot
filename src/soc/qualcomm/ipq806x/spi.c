@@ -277,9 +277,9 @@ static void CS_change(int port_num, int cs_num, int enable)
 	uint32_t addr = GPIO_IN_OUT_ADDR(cs_gpio);
 	uint32_t val = readl_i(addr);
 
-	val &= (~(1 << GPIO_OUT));
+	val &= (~(1 << GPIO_OUTPUT));
 	if (!enable)
-		val |= (1 << GPIO_OUT);
+		val |= (1 << GPIO_OUTPUT);
 	writel_i(val, addr);
 }
 

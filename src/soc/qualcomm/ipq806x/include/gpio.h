@@ -35,6 +35,14 @@
 
 typedef unsigned int gpio_t;
 
+#define GPIO_FUNC_ENABLE			1
+#define GPIO_FUNC_DISABLE			0
+#define FUNC_SEL_1				1
+#define FUNC_SEL_3				3
+#define FUNC_SEL_GPIO				0
+#define GPIO_DRV_STR_10MA			0x4
+#define GPIO_DRV_STR_11MA			0x7
+
 /* GPIO TLMM: Direction */
 #define GPIO_INPUT      0
 #define GPIO_OUTPUT     1

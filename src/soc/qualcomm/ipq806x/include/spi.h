@@ -229,14 +229,6 @@
 #define GSBI7_SPI_MISO				7
 #define GSBI7_SPI_MOSI				6
 
-#define GPIO_FUNC_ENABLE			1
-#define GPIO_FUNC_DISABLE			0
-#define FUNC_SEL_1				1
-#define FUNC_SEL_3				3
-#define FUNC_SEL_GPIO				0
-#define GPIO_DRV_STR_10MA			0x4
-#define GPIO_DRV_STR_11MA			0x7
-#define GPIO_OUT				1
 #define MSM_GSBI_MAX_FREQ			51200000
 
 #define SPI_RESET_STATE				0

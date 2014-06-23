@@ -17,11 +17,15 @@ UPLOAD_RESULTS=0
 # if command should be run remoteley when a remote host is specified.
 LOCAL=0
 REMOTE=1
+FATAL=0
+NONFATAL=1
 
 # test a command
 #
 # $1: test command on remote host (0=no, 1=yes)
 # $2: command to test
+# $3: 0 ($FATAL) Exit with an error if the command fails
+#     1 ($NONFATAL) Don't exit on command test failure
 test_cmd()
 {
 	local rc
@@ -39,7 +43,11 @@ test_cmd()
 	fi
 
 	if [ $rc -eq 0 ]; then
-		return
+		return 0
+	fi
+
+	if [ $3 -eq 1 ]; then
+		return 1
 	fi
 
 	echo "$2 not found"

@@ -140,6 +140,14 @@ static const struct spansion_spi_flash_params spansion_spi_flash_table[] = {
 		.nr_sectors = 64,
 		.name = "S25FL032P",
 	},
+	{
+		.idcode1 = SPSN_ID_S25FL128P,
+		.idcode2 = SPSN_EXT_ID_S25FLXXS_64KB,
+		.page_size = 256,
+		.pages_per_sector = 256,
+		.nr_sectors = 256,
+		.name = "25FS128S",
+	},
 };
 
 static int spansion_write(struct spi_flash *flash,

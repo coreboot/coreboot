@@ -476,59 +476,6 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 
 void clock_cpu0_config_and_reset(void *entry)
 {
-	void * const evp_cpu_reset = (uint8_t *)TEGRA_EVP_BASE + 0x100;
-
-	write32(CONFIG_STACK_TOP, &maincpu_stack_pointer);
-	write32((uintptr_t)entry, &maincpu_entry_point);
-	write32((uintptr_t)&maincpu_setup, evp_cpu_reset);
-
-	/* Set active CPU cluster to G */
-	clrbits_le32(&flow->cluster_control, 1);
-
-	/* Set up cclk_brst and divider. */
-	write32((CRC_CCLK_BRST_POL_PLLX_OUT0 << 0) |
-		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 4) |
-		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 8) |
-		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 12) |
-		(CRC_CCLK_BRST_POL_CPU_STATE_RUN << 28),
-		&clk_rst->cclk_brst_pol);
-	write32(CRC_SUPER_CCLK_DIVIDER_SUPER_CDIV_ENB,
-		&clk_rst->super_cclk_div);
-
-	/* Enable the clocks for CPUs 0-3. */
-	uint32_t cpu_cmplx_clr = read32(&clk_rst->clk_cpu_cmplx_clr);
-	cpu_cmplx_clr |= CRC_CLK_CLR_CPU0_STP | CRC_CLK_CLR_CPU1_STP |
-			 CRC_CLK_CLR_CPU2_STP | CRC_CLK_CLR_CPU3_STP;
-	write32(cpu_cmplx_clr, &clk_rst->clk_cpu_cmplx_clr);
-
-	/* Enable other CPU related clocks. */
-	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_CPU);
-	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPUG);
-	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPULP);
-
-	/* Disable the reset on the non-CPU parts of the fast cluster. */
-	write32(CRC_RST_CPUG_CLR_NONCPU,
-		&clk_rst->rst_cpug_cmplx_clr);
-	/* Disable the various resets on the CPUs. */
-	write32(CRC_RST_CPUG_CLR_CPU0 | CRC_RST_CPUG_CLR_CPU1 |
-		CRC_RST_CPUG_CLR_CPU2 | CRC_RST_CPUG_CLR_CPU3 |
-		CRC_RST_CPUG_CLR_DBG0 | CRC_RST_CPUG_CLR_DBG1 |
-		CRC_RST_CPUG_CLR_DBG2 | CRC_RST_CPUG_CLR_DBG3 |
-		CRC_RST_CPUG_CLR_CORE0 | CRC_RST_CPUG_CLR_CORE1 |
-		CRC_RST_CPUG_CLR_CORE2 | CRC_RST_CPUG_CLR_CORE3 |
-		CRC_RST_CPUG_CLR_CX0 | CRC_RST_CPUG_CLR_CX1 |
-		CRC_RST_CPUG_CLR_CX2 | CRC_RST_CPUG_CLR_CX3 |
-		CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG,
-		&clk_rst->rst_cpug_cmplx_clr);
-
-	/* Disable the reset on the non-CPU parts of the slow cluster. */
-	write32(CRC_RST_CPULP_CLR_NONCPU,
-		&clk_rst->rst_cpulp_cmplx_clr);
-	/* Disable the various resets on the LP CPU.  */
-	write32(CRC_RST_CPULP_CLR_CPU0 | CRC_RST_CPULP_CLR_DBG0 |
-		CRC_RST_CPULP_CLR_CORE0 | CRC_RST_CPULP_CLR_CX0 |
-		CRC_RST_CPULP_CLR_L2 | CRC_RST_CPULP_CLR_PDBG,
-		&clk_rst->rst_cpulp_cmplx_clr);
 }
 
 void clock_halt_avp(void)

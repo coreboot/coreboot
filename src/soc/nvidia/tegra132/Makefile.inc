@@ -14,6 +14,7 @@ endif
 romstage-y += cbfs.c
 romstage-y += cbmem.c
 romstage-y += timer.c
+romstage-y += clock.c
 romstage-y += ../tegra/gpio.c
 romstage-y += ../tegra/pinmux.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
@@ -21,6 +22,7 @@ romstage-$(CONFIG_DRIVERS_UART) += uart.c
 ramstage-y += cbfs.c
 ramstage-y += cbmem.c
 ramstage-y += timer.c
+ramstage-y += clock.c
 ramstage-y += ../tegra/gpio.c
 ramstage-y += ../tegra/pinmux.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c

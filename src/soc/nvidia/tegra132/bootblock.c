@@ -56,4 +56,8 @@ void main(void)
 		exception_init();
 		printk(BIOS_INFO, "Tegra132: Bootblock here\n");
 	}
+
+	clock_init();
+
+	while(1);
 }

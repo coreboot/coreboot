@@ -1,6 +1,13 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
+/*
+ * NOTICE: Header is ROMCC tentative.
+ * This header is incompatible with ROMCC and its inclusion leads to 'odd'
+ * build failures.
+ */
+#if !defined(__ROMCC__)
+
 #include <stdint.h>
 #include <stddef.h>
 #include <rules.h>
@@ -242,5 +249,7 @@ ROMSTAGE_CONST struct device * dev_find_slot_on_smbus (unsigned int bus,
 							unsigned int addr);
 
 #endif
+
+#endif /* !defined(__ROMCC__) */
 
 #endif /* DEVICE_H */

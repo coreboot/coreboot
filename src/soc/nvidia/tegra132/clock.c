@@ -20,6 +20,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <stdlib.h>
+#include <arch/clock.h>
 #include "clk_rst.h"
 #include "flow.h"
 #include "maincpu.h"
@@ -180,12 +181,12 @@ int clock_get_pll_input_khz(void)
 void clock_init_arm_generic_timer(void)
 {
 	uint32_t freq = clock_get_osc_khz() * 1000;
-	// Set the cntfrq register.
-	__asm__ __volatile__("mcr p15, 0, %0, c14, c0, 0\n" :: "r"(freq));
+	/* Set the cntfrq register. */
+	set_cntfrq(freq);
 
-	// Record the system timer frequency.
+	/* Record the system timer frequency. */
 	write32(freq, &sysctr->cntfid0);
-	// Enable the system counter.
+	/* Enable the system counter. */
 	uint32_t cntcr = read32(&sysctr->cntcr);
 	cntcr |= SYSCTR_CNTCR_EN | SYSCTR_CNTCR_HDBG;
 	write32(cntcr, &sysctr->cntcr);
@@ -282,7 +283,7 @@ static void graphics_pll(void)
 	 * I don't want to find out in a few months
 	 * that it is needed.
 	 */
-	u32 scfg = (1<<28) | (1<<24) | (1<<22);
+	u32 scfg = (1 << 28) | (1 << 24) | (1 << 22);
 	writel(scfg, cfg);
 	init_pll(&clk_rst->plldp_base, &clk_rst->plldp_misc,
 		osc_table[osc].plldp, PLLDPD2_MISC_LOCK_ENABLE);
@@ -309,8 +310,9 @@ clock_display(u32 frequency)
 	 * iterate all possible values.  Note Tegra 124 supports 11 bits for n,
 	 * but our pll_fields has only 10 bits for n.
 	 *
-	 * Note values undershoot or overshoot target output frequency may not
-	 * work if the values are not in "safe" range by panel specification.
+	 * Note, values that undershoot or overshoot the target output frequency
+	 * may not work if the values are not in "safe" range by panel
+	 * specification.
 	 */
 	struct pllpad_dividers plld = { 0 };
 	u32 ref = clock_get_pll_input_khz() * 1000, m, n, p = 0;
@@ -366,11 +368,10 @@ clock_display(u32 frequency)
 	else
 		plld.cpcon = 12;
 
-	if (best_diff) {
+	if (best_diff)
 		printk(BIOS_ERR, "%s: Failed to match output frequency %u, "
 		       "best difference is %u.\n", __func__, frequency,
 		       best_diff);
-	}
 
 	printk(BIOS_DEBUG, "%s: PLLD=%u ref=%u, m/n/p/cpcon=%u/%u/%u/%u\n",
 	       __func__, (ref / plld.m * plld.n) >> plld.p, ref, plld.m, plld.n,
@@ -424,10 +425,10 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	u32 misc1 = ((setup << PLLM_MISC1_SETUP_SHIFT) |
 		     (ph45 << PLLM_MISC1_PD_LSHIFT_PH45_SHIFT) |
 		     (ph90 << PLLM_MISC1_PD_LSHIFT_PH90_SHIFT) |
-		     (ph135 << PLLM_MISC1_PD_LSHIFT_PH135_SHIFT)),
-	    misc2 = ((kvco << PLLM_MISC2_KVCO_SHIFT) |
-		     (kcp << PLLM_MISC2_KCP_SHIFT)),
-	    base;
+		     (ph135 << PLLM_MISC1_PD_LSHIFT_PH135_SHIFT));
+	u32 misc2 = ((kvco << PLLM_MISC2_KVCO_SHIFT) |
+		 (kcp << PLLM_MISC2_KCP_SHIFT));
+	u32 base;
 
 	if (same_freq)
 		emc_source |= CLK_SOURCE_EMC_MC_EMC_SAME_FREQ;
@@ -455,9 +456,9 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	/* stable_time is required, before we can start to check lock. */
 	udelay(stable_time);
 
-	while (!(readl(&clk_rst->pllm_base) & PLL_BASE_LOCK)) {
+	while (!(readl(&clk_rst->pllm_base) & PLL_BASE_LOCK))
 		udelay(1);
-	}
+
 	/*
 	 * After PLLM reports being locked, we have to delay 10us before
 	 * enabling PLLM_OUT.
@@ -484,7 +485,7 @@ void clock_cpu0_config_and_reset(void *entry)
 	/* Set active CPU cluster to G */
 	clrbits_le32(&flow->cluster_control, 1);
 
-	// Set up cclk_brst and divider.
+	/* Set up cclk_brst and divider. */
 	write32((CRC_CCLK_BRST_POL_PLLX_OUT0 << 0) |
 		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 4) |
 		(CRC_CCLK_BRST_POL_PLLX_OUT0 << 8) |
@@ -494,21 +495,21 @@ void clock_cpu0_config_and_reset(void *entry)
 	write32(CRC_SUPER_CCLK_DIVIDER_SUPER_CDIV_ENB,
 		&clk_rst->super_cclk_div);
 
-	// Enable the clocks for CPUs 0-3.
+	/* Enable the clocks for CPUs 0-3. */
 	uint32_t cpu_cmplx_clr = read32(&clk_rst->clk_cpu_cmplx_clr);
 	cpu_cmplx_clr |= CRC_CLK_CLR_CPU0_STP | CRC_CLK_CLR_CPU1_STP |
 			 CRC_CLK_CLR_CPU2_STP | CRC_CLK_CLR_CPU3_STP;
 	write32(cpu_cmplx_clr, &clk_rst->clk_cpu_cmplx_clr);
 
-	// Enable other CPU related clocks.
+	/* Enable other CPU related clocks. */
 	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_CPU);
 	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPUG);
 	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPULP);
 
-	// Disable the reset on the non-CPU parts of the fast cluster.
+	/* Disable the reset on the non-CPU parts of the fast cluster. */
 	write32(CRC_RST_CPUG_CLR_NONCPU,
 		&clk_rst->rst_cpug_cmplx_clr);
-	// Disable the various resets on the CPUs.
+	/* Disable the various resets on the CPUs. */
 	write32(CRC_RST_CPUG_CLR_CPU0 | CRC_RST_CPUG_CLR_CPU1 |
 		CRC_RST_CPUG_CLR_CPU2 | CRC_RST_CPUG_CLR_CPU3 |
 		CRC_RST_CPUG_CLR_DBG0 | CRC_RST_CPUG_CLR_DBG1 |
@@ -520,10 +521,10 @@ void clock_cpu0_config_and_reset(void *entry)
 		CRC_RST_CPUG_CLR_L2 | CRC_RST_CPUG_CLR_PDBG,
 		&clk_rst->rst_cpug_cmplx_clr);
 
-	// Disable the reset on the non-CPU parts of the slow cluster.
+	/* Disable the reset on the non-CPU parts of the slow cluster. */
 	write32(CRC_RST_CPULP_CLR_NONCPU,
 		&clk_rst->rst_cpulp_cmplx_clr);
-	// Disable the various resets on the LP CPU.
+	/* Disable the various resets on the LP CPU.  */
 	write32(CRC_RST_CPULP_CLR_CPU0 | CRC_RST_CPULP_CLR_DBG0 |
 		CRC_RST_CPULP_CLR_CORE0 | CRC_RST_CPULP_CLR_CX0 |
 		CRC_RST_CPULP_CLR_L2 | CRC_RST_CPULP_CLR_PDBG,
@@ -532,11 +533,10 @@ void clock_cpu0_config_and_reset(void *entry)
 
 void clock_halt_avp(void)
 {
-	for (;;) {
+	for (;;)
 		write32(FLOW_EVENT_JTAG | FLOW_EVENT_LIC_IRQ |
 			FLOW_EVENT_GIC_IRQ | FLOW_MODE_WAITEVENT,
 			&flow->halt_cop_events);
-	}
 }
 
 void clock_init(void)
@@ -601,22 +601,34 @@ void clock_init(void)
 
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
 {
-	if (l) writel(l, &clk_rst->clk_enb_l_set);
-	if (h) writel(h, &clk_rst->clk_enb_h_set);
-	if (u) writel(u, &clk_rst->clk_enb_u_set);
-	if (v) writel(v, &clk_rst->clk_enb_v_set);
-	if (w) writel(w, &clk_rst->clk_enb_w_set);
-	if (x) writel(x, &clk_rst->clk_enb_x_set);
+	if (l)
+		writel(l, &clk_rst->clk_enb_l_set);
+	if (h)
+		writel(h, &clk_rst->clk_enb_h_set);
+	if (u)
+		writel(u, &clk_rst->clk_enb_u_set);
+	if (v)
+		writel(v, &clk_rst->clk_enb_v_set);
+	if (w)
+		writel(w, &clk_rst->clk_enb_w_set);
+	if (x)
+		writel(x, &clk_rst->clk_enb_x_set);
 
 	/* Give clocks time to stabilize. */
 	udelay(IO_STABILIZATION_DELAY);
 
-	if (l) writel(l, &clk_rst->rst_dev_l_clr);
-	if (h) writel(h, &clk_rst->rst_dev_h_clr);
-	if (u) writel(u, &clk_rst->rst_dev_u_clr);
-	if (v) writel(v, &clk_rst->rst_dev_v_clr);
-	if (w) writel(w, &clk_rst->rst_dev_w_clr);
-	if (x) writel(x, &clk_rst->rst_dev_x_clr);
+	if (l)
+		writel(l, &clk_rst->rst_dev_l_clr);
+	if (h)
+		writel(h, &clk_rst->rst_dev_h_clr);
+	if (u)
+		writel(u, &clk_rst->rst_dev_u_clr);
+	if (v)
+		writel(v, &clk_rst->rst_dev_v_clr);
+	if (w)
+		writel(w, &clk_rst->rst_dev_w_clr);
+	if (x)
+		writel(x, &clk_rst->rst_dev_x_clr);
 }
 
 void clock_reset_l(u32 bit)

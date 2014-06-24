@@ -20,6 +20,7 @@
 #include <soc/addressmap.h>
 #include <soc/clock.h>
 #include <stdlib.h>
+#include <arch/clock.h>
 #include "clk_rst.h"
 #include "flow.h"
 #include "maincpu.h"
@@ -181,7 +182,7 @@ void clock_init_arm_generic_timer(void)
 {
 	uint32_t freq = clock_get_osc_khz() * 1000;
 	// Set the cntfrq register.
-	__asm__ __volatile__("mcr p15, 0, %0, c14, c0, 0\n" :: "r"(freq));
+	set_cntfrq(freq);
 
 	// Record the system timer frequency.
 	write32(freq, &sysctr->cntfid0);

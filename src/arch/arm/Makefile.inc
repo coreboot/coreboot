@@ -60,6 +60,7 @@ bootblock-y += memset.S
 bootblock-y += memcpy.S
 bootblock-y += memmove.S
 bootblock-y += div0.c
+bootblock-y += clock.c
 
 $(objcbfs)/bootblock.debug: $(src)/arch/arm/bootblock.ld $(obj)/ldoptions $$(bootblock-objs) $$(VERSTAGE_LIB)
 	@printf "    LINK       $(subst $(obj)/,,$(@))\n"
@@ -91,6 +92,7 @@ romstage-y += eabi_compat.c
 romstage-y += memset.S
 romstage-y += memcpy.S
 romstage-y += memmove.S
+romstage-y += clock.c
 
 VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm.o
 
@@ -115,6 +117,7 @@ ramstage-y += tables.c
 ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
+ramstage-y += clock.c
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
 $(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/arm/ramstage.ld $(obj)/ldoptions

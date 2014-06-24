@@ -59,4 +59,5 @@
 #define PPCB_T2GATE     0x01    /* Bit 0 */
 
 void setup_i8254(void);
-#endif
+
+#endif /* PC80_I8254_H */

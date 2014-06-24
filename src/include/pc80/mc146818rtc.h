@@ -1,6 +1,8 @@
 #ifndef PC80_MC146818RTC_H
 #define PC80_MC146818RTC_H
 
+#if CONFIG_ARCH_X86
+
 #include <arch/io.h>
 #include <types.h>
 
@@ -223,5 +225,7 @@ void cmos_post_log(void);
 #else
 static inline void cmos_post_log(void) {}
 #endif /* CONFIG_CMOS_POST */
+
+#endif /* CONFIG_ARCH_X86 */
 
 #endif /*  PC80_MC146818RTC_H */

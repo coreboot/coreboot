@@ -21,6 +21,7 @@
 #include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <soc/qualcomm/ipq806x/include/clock.h>
+#include <soc/qualcomm/ipq806x/include/gpio.h>
 #include <soc/qualcomm/ipq806x/include/usb.h>
 
 /* convenient shorthand (in MB) */
@@ -32,12 +33,15 @@
 #define DMA_START            (CONFIG_DRAM_DMA_START / MiB)
 #define DMA_SIZE             (CONFIG_DRAM_DMA_SIZE / MiB)
 
+#define USB_ENABLE_GPIO		51
+
 static void setup_usb(void)
 {
+	gpio_tlmm_config_set(USB_ENABLE_GPIO, FUNC_SEL_GPIO,
+			     GPIO_PULL_UP, GPIO_10MA, GPIO_ENABLE);
 	usb_clock_config();
 
 	setup_usb_host1();
-	setup_usb_host2();
 }
 
 static void setup_mmu(void)

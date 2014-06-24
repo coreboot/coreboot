@@ -778,17 +778,16 @@ int x86_mtrr_check(void)
 	msr_t msr;
 	printk(BIOS_DEBUG, "\nMTRR check\n");
 
-	msr = rdmsr(0x2ff);
-	msr.lo >>= 10;
+	msr = rdmsr(MTRRdefType_MSR);
 
 	printk(BIOS_DEBUG, "Fixed MTRRs   : ");
-	if (msr.lo & 0x01)
+	if (msr.lo & MTRRdefTypeFixEn)
 		printk(BIOS_DEBUG, "Enabled\n");
 	else
 		printk(BIOS_DEBUG, "Disabled\n");
 
 	printk(BIOS_DEBUG, "Variable MTRRs: ");
-	if (msr.lo & 0x02)
+	if (msr.lo & MTRRdefTypeEn)
 		printk(BIOS_DEBUG, "Enabled\n");
 	else
 		printk(BIOS_DEBUG, "Disabled\n");

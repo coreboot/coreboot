@@ -59,5 +59,7 @@ void main(void)
 
 	clock_init();
 
+	bootblock_mainboard_init();
+
 	while(1);
 }

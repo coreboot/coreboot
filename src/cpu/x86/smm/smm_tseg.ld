@@ -67,5 +67,7 @@ SECTIONS
 		*(.comment)
 		*(.note)
 		*(.note.*)
+		*(.eh_frame)
+		*(.debug_*)
 	}
 }

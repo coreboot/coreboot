@@ -24,12 +24,15 @@
 #include <console/console.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
+#include <arch/stages.h>
 
 #include "pinmux.h"
 #include "power.h"
 
 void main(void)
 {
+	void *entry;
+
 	// enable pinmux clamp inputs
 	clamp_tristate_inputs();
 
@@ -65,5 +68,14 @@ void main(void)
 
 	printk(BIOS_INFO, "T132 bootblock: Mainboard bootblock init done\n");
 
-	while(1);
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/romstage");
+
+	if (entry) {
+		printk(BIOS_INFO, "T132 bootblock: jumping to romstage\n");
+		stage_exit(entry);
+	} else {
+		printk(BIOS_INFO, "T132 bootblock: fallback/romstage not found\n");
+	}
+
+	hlt();
 }

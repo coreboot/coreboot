@@ -54,4 +54,12 @@ config STACK_BOTTOM
 	hex
 	default 0x4001c000
 
+config CBFS_CACHE_ADDRESS
+	hex "memory address to put CBFS cache data"
+	default 0x40006000
+
+config CBFS_CACHE_SIZE
+	hex "size of CBFS cache data"
+	default 0x00016000
+
 endif

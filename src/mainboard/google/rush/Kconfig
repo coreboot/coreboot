@@ -56,4 +56,20 @@ config RUSH_BCT_CFG_EMMC
 
 endchoice
 
+config BOOT_MEDIA_SPI_BUS
+	int "SPI bus with boot media ROM"
+	range 1 6
+	depends on RUSH_BCT_CFG_SPI
+	default 4
+	help
+	  Which SPI bus the boot media is connected to.
+
+config BOOT_MEDIA_SPI_CHIP_SELECT
+	int "Chip select for SPI boot media"
+	range 0 3
+	depends on RUSH_BCT_CFG_SPI
+	default 0
+	help
+	  Which chip select to use for boot media.
+
 endif # BOARD_GOOGLE_RUSH

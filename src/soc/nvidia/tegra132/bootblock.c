@@ -54,12 +54,16 @@ void main(void)
 	if (CONFIG_BOOTBLOCK_CONSOLE) {
 		console_init();
 		exception_init();
-		printk(BIOS_INFO, "Tegra132: Bootblock here\n");
+		printk(BIOS_INFO, "T132: Bootblock here\n");
 	}
 
 	clock_init();
 
+	printk(BIOS_INFO, "T132 bootblock: Clock init done\n");
+
 	bootblock_mainboard_init();
+
+	printk(BIOS_INFO, "T132 bootblock: Mainboard bootblock init done\n");
 
 	while(1);
 }

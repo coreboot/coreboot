@@ -519,9 +519,6 @@ void clock_init(void)
 	clrsetbits_le32(&pmc->osc_edpd_over, PMC_OSC_EDPD_OVER_XOFS_MASK,
 			OSC_DRIVE_STRENGTH << PMC_OSC_EDPD_OVER_XOFS_SHIFT);
 
-	/* Disable IDDQ for PLLX before we set it up (from U-Boot -- why?) */
-	clrbits_le32(&clk_rst->pllx_misc3, PLLX_IDDQ_MASK);
-
 	/* Set up PLLP_OUT(1|2|3|4) divisor to generate (9.6|48|102|204)MHz */
 	write32((CLK_DIVIDER(TEGRA_PLLP_KHZ, 9600) << PLL_OUT_RATIO_SHIFT |
 		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT1_SHIFT |
@@ -533,10 +530,6 @@ void clock_init(void)
 		(CLK_DIVIDER(TEGRA_PLLP_KHZ, 204000) << PLL_OUT_RATIO_SHIFT |
 		 PLL_OUT_OVR | PLL_OUT_CLKEN | PLL_OUT_RSTN) << PLL_OUT4_SHIFT,
 		&clk_rst->pllp_outb);
-
-	/* init pllx */
-	init_pll(&clk_rst->pllx_base, &clk_rst->pllx_misc,
-		osc_table[osc].pllx, PLLPAXS_MISC_LOCK_ENABLE);
 
 	/* init pllu */
 	init_pll(&clk_rst->pllu_base, &clk_rst->pllu_misc,

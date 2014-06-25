@@ -59,13 +59,13 @@
 
 
 /* dcache clean by virtual address to PoC */
-void dcache_clean_by_va(void const *addr, size_t len);
+void dcache_clean_by_mva(void const *addr, size_t len);
 
 /* dcache clean and invalidate by virtual address to PoC */
-void dcache_clean_invalidate_by_va(void const *addr, size_t len);
+void dcache_clean_invalidate_by_mva(void const *addr, size_t len);
 
 /* dcache invalidate by virtual address to PoC */
-void dcache_invalidate_by_va(void const *addr, size_t len);
+void dcache_invalidate_by_mva(void const *addr, size_t len);
 
 /* dcache invalidate all */
 void flush_dcache_all(void);

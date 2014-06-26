@@ -4148,7 +4148,7 @@ void raminit(const int s3resume, const u8 *spd_addrmap)
 	write_mchbar32(0x1af0, 0x1f020003);
 	gav(read_mchbar32(0x1af0));	// !!!!
 
-	if (((x2ca8 == 0))) {
+	if (x2ca8 == 0) {
 		write_mchbar8(0x2ca8, read_mchbar8(0x2ca8) | 1);	// guess
 	}
 

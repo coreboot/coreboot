@@ -164,63 +164,6 @@ static void enable_vmx(void)
 	wrmsr(IA32_FEATURE_CONTROL, msr);
 }
 
-/* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
-static const u8 power_limit_time_sec_to_msr[] = {
-	[0]   = 0x00,
-	[1]   = 0x0a,
-	[2]   = 0x0b,
-	[3]   = 0x4b,
-	[4]   = 0x0c,
-	[5]   = 0x2c,
-	[6]   = 0x4c,
-	[7]   = 0x6c,
-	[8]   = 0x0d,
-	[10]  = 0x2d,
-	[12]  = 0x4d,
-	[14]  = 0x6d,
-	[16]  = 0x0e,
-	[20]  = 0x2e,
-	[24]  = 0x4e,
-	[28]  = 0x6e,
-	[32]  = 0x0f,
-	[40]  = 0x2f,
-	[48]  = 0x4f,
-	[56]  = 0x6f,
-	[64]  = 0x10,
-	[80]  = 0x30,
-	[96]  = 0x50,
-	[112] = 0x70,
-	[128] = 0x11,
-};
-
-/* Convert POWER_LIMIT_1_TIME MSR value to seconds */
-static const u8 power_limit_time_msr_to_sec[] = {
-	[0x00] = 0,
-	[0x0a] = 1,
-	[0x0b] = 2,
-	[0x4b] = 3,
-	[0x0c] = 4,
-	[0x2c] = 5,
-	[0x4c] = 6,
-	[0x6c] = 7,
-	[0x0d] = 8,
-	[0x2d] = 10,
-	[0x4d] = 12,
-	[0x6d] = 14,
-	[0x0e] = 16,
-	[0x2e] = 20,
-	[0x4e] = 24,
-	[0x6e] = 28,
-	[0x0f] = 32,
-	[0x2f] = 40,
-	[0x4f] = 48,
-	[0x6f] = 56,
-	[0x10] = 64,
-	[0x30] = 80,
-	[0x50] = 96,
-	[0x70] = 112,
-	[0x11] = 128,
-};
 
 int cpu_config_tdp_levels(void)
 {

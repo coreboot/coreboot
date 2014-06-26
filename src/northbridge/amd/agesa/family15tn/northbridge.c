@@ -596,7 +596,10 @@ static struct hw_mem_hole_info get_hw_mem_hole_info(void)
 			break; // only one hole
 		}
 	}
-	//We need to double check if there is speical set on base reg and limit reg are not continous instead of hole, it will find out it's hole_startk
+
+	/* We need to double check if there is special set on base reg and limit reg
+	 * are not continuous instead of hole, it will find out its hole_startk.
+	 */
 	if (mem_hole.node_id == -1) {
 		resource_t limitk_pri = 0;
 		for (i=0; i<node_nums; i++) {

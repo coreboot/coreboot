@@ -20,10 +20,18 @@
 #include <arch/stages.h>
 #include <cbfs.h>
 #include <console/console.h>
+#include <arch/exception.h>
 
 void main(void)
 {
 	void *entry;
+
+	console_init();
+	exception_init();
+
+	printk(BIOS_INFO, "T132: romstage here\n");
+
+	while (1);
 
         entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
         stage_exit(entry);

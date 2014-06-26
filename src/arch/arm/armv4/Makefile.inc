@@ -49,6 +49,7 @@ ifeq ($(CONFIG_ARCH_ROMSTAGE_ARMV4),y)
 
 romstage-c-ccopts += $(armv4_flags)
 romstage-S-ccopts += $(armv4_flags)
+romstage-y += cache.c
 
 endif # CONFIG_ARCH_ROMSTAGE_ARMV4
 

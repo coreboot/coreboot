@@ -53,13 +53,13 @@
  * @brief bit[0-6] used to control USB
  *   0 - Disable
  *   1 - Enable
- *  Usb Ohci1 Contoller (Bus 0 Dev 18 Func0) is define at BIT0
- *  Usb Ehci1 Contoller (Bus 0 Dev 18 Func2) is define at BIT1
- *  Usb Ohci2 Contoller (Bus 0 Dev 19 Func0) is define at BIT2
- *  Usb Ehci2 Contoller (Bus 0 Dev 19 Func2) is define at BIT3
- *  Usb Ohci3 Contoller (Bus 0 Dev 22 Func0) is define at BIT4
- *  Usb Ehci3 Contoller (Bus 0 Dev 22 Func2) is define at BIT5
- *  Usb Ohci4 Contoller (Bus 0 Dev 20 Func5) is define at BIT6
+ *  Usb Ohci1 Controller (Bus 0 Dev 18 Func0) is define at BIT0
+ *  Usb Ehci1 Controller (Bus 0 Dev 18 Func2) is define at BIT1
+ *  Usb Ohci2 Controller (Bus 0 Dev 19 Func0) is define at BIT2
+ *  Usb Ehci2 Controller (Bus 0 Dev 19 Func2) is define at BIT3
+ *  Usb Ohci3 Controller (Bus 0 Dev 22 Func0) is define at BIT4
+ *  Usb Ehci3 Controller (Bus 0 Dev 22 Func2) is define at BIT5
+ *  Usb Ohci4 Controller (Bus 0 Dev 20 Func5) is define at BIT6
  */
 #define USB_CONFIG		0x3F
 

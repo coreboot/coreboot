@@ -272,25 +272,25 @@
 /**
  *   @section INCHIP_USB_CINFIG INCHIP_USB_CINFIG
  *
- * - Usb Ohci1 Contoller is define at BIT0
+ * - Usb Ohci1 Controller is define at BIT0
  *    0:Disable 1:Enable
  *                             (Bus 0 Dev 18 Func0)
- * - Usb Ehci1 Contoller is define at BIT1
+ * - Usb Ehci1 Controller is define at BIT1
  *    0:Disable 1:Enable
  *                             (Bus 0 Dev 18 Func2)
- * - Usb Ohci2 Contoller is define at BIT2
+ * - Usb Ohci2 Controller is define at BIT2
  *    0:Disable 1:Enable
  *                             (Bus 0 Dev 19 Func0)
- * - Usb Ehci2 Contoller is define at BIT3
+ * - Usb Ehci2 Controller is define at BIT3
  *    0:Disable 1:Enable
  *                             (Bus 0 Dev 19 Func2)
- * - Usb Ohci3 Contoller is define at BIT4
+ * - Usb Ohci3 Controller is define at BIT4
  *    0:Disable 1:Enable
  *                             (Bus 0 Dev 22 Func0)
- * - Usb Ehci3 Contoller is define at BIT5
+ * - Usb Ehci3 Controller is define at BIT5
  *    0:Disable 1:Enable
  *                             (Bus 0 Dev 22 Func2)
- * - Usb Ohci4 Contoller is define at BIT6
+ * - Usb Ohci4 Controller is define at BIT6
  *    0:Disable 1:Enable
  *                             (Bus 0 Dev 20 Func5)
  */

@@ -200,8 +200,8 @@
 
 /**
  * @def SB_GPP_UNHIDE_PORTS
- *    TRUE   - ports visable always, even port empty
- *    FALSE  - ports invisable if port empty
+ *    TRUE   - ports visible always, even port empty
+ *    FALSE  - ports invisible if port empty
  */
 #define SB_GPP_UNHIDE_PORTS		FALSE
 

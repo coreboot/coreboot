@@ -714,7 +714,7 @@ printk(BIOS_DEBUG, "adsr - 0xa0000 to 0xbffff resource.\n");
 			"adsr: mmio_basek=%08lx, basek=%08llx, limitk=%08llx\n",
 			 mmio_basek, basek, limitk);
 
-        /* split the region to accomodate pci memory space */
+        /* split the region to accommodate pci memory space */
         if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
             if (basek <= mmio_basek) {
                 unsigned pre_sizek;

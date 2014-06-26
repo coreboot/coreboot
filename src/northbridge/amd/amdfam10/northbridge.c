@@ -1029,7 +1029,7 @@ static void amdfam10_domain_set_resources(device_t dev)
 
 //		printk(BIOS_DEBUG, "node %d : mmio_basek=%08x, basek=%08x, limitk=%08x\n", i, mmio_basek, basek, limitk);
 
-		/* split the region to accomodate pci memory space */
+		/* split the region to accommodate pci memory space */
 		if ( (basek < 4*1024*1024 ) && (limitk > mmio_basek) ) {
 			if (basek <= mmio_basek) {
 				unsigned pre_sizek;

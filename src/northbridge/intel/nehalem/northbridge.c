@@ -59,7 +59,6 @@ int bridge_silicon_revision(void)
  * 0xe0000 - 0xfffff: SeaBIOS, if used, otherwise DMI
  */
 static const int legacy_hole_base_k = 0xa0000 / 1024;
-static const int legacy_hole_size_k = 384;
 
 static void add_fixed_resources(struct device *dev, int index)
 {

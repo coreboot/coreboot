@@ -29,6 +29,7 @@
 
 #include <stdlib.h>
 #include <spi_flash.h>
+
 #include "spi_flash_internal.h"
 
 /* M25Pxx-specific commands */

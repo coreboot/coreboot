@@ -24,6 +24,9 @@
 #ifndef CPU_X86_SMM_H
 #define CPU_X86_SMM_H
 
+#include <arch/cpu.h>
+#include <types.h>
+
 #define SMM_DEFAULT_BASE 0x30000
 #define SMM_DEFAULT_SIZE 0x10000
 
@@ -33,8 +36,6 @@
 #define SMM_ENTRY_OFFSET 0x8000
 #define SMM_SAVE_STATE_BEGIN(x) (SMM_ENTRY_OFFSET + (x))
 
-#include <arch/cpu.h>
-#include <types.h>
 typedef struct {
 	u16	es_selector;
 	u16	es_attributes;
@@ -581,4 +582,4 @@ int smm_load_module(void *smram, int size, struct smm_loader_params *params);
 void *backup_default_smm_area(void);
 void restore_default_smm_area(void *smm_save_area);
 
-#endif
+#endif /* CPU_X86_SMM_H */

@@ -14,6 +14,7 @@
 
 #include <stdlib.h>
 #include <spi_flash.h>
+
 #include "spi_flash_internal.h"
 
 #define CMD_SST_WREN		0x06	/* Write Enable */

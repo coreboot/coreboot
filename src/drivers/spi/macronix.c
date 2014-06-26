@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 #include <spi_flash.h>
+
 #include "spi_flash_internal.h"
 
 /* MX25xx-specific commands */

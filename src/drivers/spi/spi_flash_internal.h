@@ -4,6 +4,9 @@
  * Copyright (C) 2008 Atmel Corporation
  */
 
+#ifndef SPI_FLASH_INTERNAL_H
+#define SPI_FLASH_INTERNAL_H
+
 /* Common parameters -- kind of high, but they should only occur when there
  * is a problem (and well your system already is broken), so err on the side
  * of caution in case we're dealing with slower SPI buses and/or processors.
@@ -83,3 +86,5 @@ struct spi_flash *spi_flash_probe_gigadevice(struct spi_slave *spi,
 					     u8 *idcode);
 struct spi_flash *spi_flash_probe_adesto(struct spi_slave *spi, u8 *idcode);
 struct spi_flash *spi_fram_probe_ramtron(struct spi_slave *spi, u8 *idcode);
+
+#endif /* SPI_FLASH_INTERNAL_H */

@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <spi_flash.h>
+
 #include "spi_flash_internal.h"
 
 /* A25L-specific commands */

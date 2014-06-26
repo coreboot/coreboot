@@ -7,14 +7,13 @@
  * Licensed under the GPL-2 or later.
  */
 
+#include <cpu/x86/smm.h>
+#include <delay.h>
 #include <stdlib.h>
 #include <string.h>
 #include <spi-generic.h>
 #include <spi_flash.h>
-#include <delay.h>
-#ifdef __SMM__
-#include <cpu/x86/smm.h>
-#endif
+
 #include "spi_flash_internal.h"
 #include <timer.h>
 

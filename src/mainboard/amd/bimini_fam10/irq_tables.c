@@ -64,7 +64,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 	addr += 15;
 	addr &= ~15;
 
-	/* This table must be betweeen 0xf0000 & 0x100000 */
+	/* This table must be between 0xf0000 & 0x100000 */
 	printk(BIOS_INFO, "Writing IRQ routing tables to 0x%lx...", addr);
 
 	pirq = (void *)(addr);

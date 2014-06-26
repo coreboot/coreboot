@@ -194,7 +194,7 @@ unsigned long copy_pirq_routing_table(unsigned long addr, const struct irq_routi
 	/* Align the table to be 16 byte aligned. */
 	addr = ALIGN(addr, 16);
 
-	/* This table must be betweeen 0xf0000 & 0x100000 */
+	/* This table must be between 0xf0000 & 0x100000 */
 	printk(BIOS_INFO, "Copying Interrupt Routing Table to 0x%08lx... ", addr);
 	memcpy((void *)addr, routing_table, routing_table->size);
 	printk(BIOS_INFO, "done.\n");

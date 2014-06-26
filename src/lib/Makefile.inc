@@ -88,7 +88,7 @@ ramstage-$(CONFIG_REG_SCRIPT) += reg_script.c
 romstage-$(CONFIG_CACHE_RELOCATED_RAMSTAGE_OUTSIDE_CBMEM) += ramstage_cache.c
 
 smm-y += cbfs.c memcmp.c
-smm-y += gcc.c
+smm-$(CONFIG_COMPILER_GCC) += gcc.c
 
 $(obj)/lib/version.ramstage.o : $(obj)/build.h
 
@@ -118,4 +118,3 @@ $(strip $(1)).rmod: $(strip $(1))
 endef
 
 endif
-

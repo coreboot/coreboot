@@ -187,9 +187,9 @@ static inline enum cb_err get_option(void *dest __attribute__((unused)),
 				{ return CB_CMOS_OTABLE_DISABLED; }
 #define read_option_lowlevel(start, size, def) def
 #endif
-#else
+#else /* defined(__ROMCC__) */
 #include <drivers/pc80/mc146818rtc_early.c>
-#endif
+#endif /* !defined(__ROMCC__) */
 #define read_option(name, default) read_option_lowlevel(CMOS_VSTART_ ##name, CMOS_VLEN_ ##name, (default))
 
 #if CONFIG_CMOS_POST

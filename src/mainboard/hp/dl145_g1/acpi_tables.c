@@ -133,7 +133,7 @@ unsigned long acpi_fill_madt(unsigned long current)
 		/* 0: mean bus 0--->ISA */
 		/* 0: PIC 0 */
 		/* 2: APIC 2 */
-		/* 5 mean: 0101 --> Edige-triggered, Active high*/
+		/* 5 mean: 0101 --> Edge-triggered, Active high*/
 
 
 		/* create all subtables for processors */

@@ -1,5 +1,6 @@
-#include <cpu/x86/lapic/boot_cpu.c>
 #include <arch/cbfs.h>
+#include <cpu/x86/lapic/boot_cpu.c>
+#include <pc80/mc146818rtc.h>
 
 #ifdef CONFIG_BOOTBLOCK_CPU_INIT
 #include CONFIG_BOOTBLOCK_CPU_INIT
@@ -29,8 +30,6 @@ static void bootblock_mainboard_init(void)
 #endif
 
 #if CONFIG_USE_OPTION_TABLE
-#include <pc80/mc146818rtc.h>
-
 static void sanitize_cmos(void)
 {
 	if (cmos_error() || !cmos_chksum_valid()) {
@@ -48,8 +47,6 @@ static void sanitize_cmos(void)
 #endif
 
 #if CONFIG_CMOS_POST
-#include <pc80/mc146818rtc.h>
-
 static void cmos_post_init(void)
 {
 	u8 magic = CMOS_POST_BANK_0_MAGIC;

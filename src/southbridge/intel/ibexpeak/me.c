@@ -138,6 +138,7 @@ static inline void write_host_csr(struct mei_csr *csr)
 	mei_write_dword_ptr(csr, MEI_H_CSR);
 }
 
+#ifdef __SMM__
 static inline void read_me_csr(struct mei_csr *csr)
 {
 	mei_read_dword_ptr(csr, MEI_ME_CSR_HA);
@@ -353,7 +354,6 @@ static inline int mei_sendrecv(struct mei_header *mei, struct mkhi_header *mkhi,
 	return 0;
 }
 
-#ifdef __SMM__
 /* Send END OF POST message to the ME */
 static int mkhi_end_of_post(void)
 {

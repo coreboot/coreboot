@@ -43,6 +43,10 @@ config ROMSTAGE_BASE
 	hex
 	default 0x4002c000
 
+config SYS_SDRAM_BASE
+	hex
+	default 0x80000000
+
 config RAMSTAGE_BASE
 	hex
 	default 0x80200000

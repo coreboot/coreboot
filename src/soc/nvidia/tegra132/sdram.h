@@ -17,29 +17,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <arch/exception.h>
+#ifndef __SOC_NVIDIA_TEGRA132_SDRAM_H__
+#define __SOC_NVIDIA_TEGRA132_SDRAM_H__
 
-#include "sdram_configs.h"
-#include <soc/nvidia/tegra132/sdram.h>
+#include "sdram_param.h"
 
-void main(void)
-{
-	void *entry;
+uint32_t sdram_get_ram_code(void);
+void sdram_init(const struct sdram_params *param);
+int sdram_size_mb(void);
+uintptr_t sdram_max_addressable_mb(void);
 
-	console_init();
-	exception_init();
+/* Save params to PMC scratch registers for use by BootROM on LP0 resume. */
+void sdram_lp0_save_params(const struct sdram_params *sdram);
 
-	printk(BIOS_INFO, "T132: romstage here\n");
-
-	sdram_init(get_sdram_config());
-
-	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
-
-	while (1);
-
-        entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
-        stage_exit(entry);
-}
+#endif /* __SOC_NVIDIA_TEGRA132_SDRAM_H__ */

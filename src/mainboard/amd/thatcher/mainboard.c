@@ -51,16 +51,8 @@ static void mainboard_enable(device_t dev)
 	msr.lo &= ~(1 << 23);
 	wrmsr(0xC0011023, msr);
 
-	/*
-	 * The mainboard is the first place that we get control in ramstage. Check
-	 * for S3 resume and call the appropriate AGESA/CIMx resume functions.
-	 */
-#if CONFIG_HAVE_ACPI_RESUME
-	acpi_slp_type = acpi_get_sleep_type();
-	if (acpi_slp_type == 3)
+	if (acpi_is_wakeup_s3())
 		agesawrapper_fchs3earlyrestore();
-
-#endif
 }
 
 struct chip_operations mainboard_ops = {

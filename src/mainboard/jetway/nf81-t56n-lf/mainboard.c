@@ -157,14 +157,6 @@ static void mainboard_enable(device_t dev)
 {
 	printk(BIOS_INFO, "Mainboard " CONFIG_MAINBOARD_PART_NUMBER " Enable.\n");
 
-/*
- * The mainboard is the first place that we get control in ramstage. Check
- * for S3 resume and call the appropriate AGESA/CIMx resume functions.
- */
-#if CONFIG_HAVE_ACPI_RESUME
-	acpi_slp_type = acpi_get_sleep_type();
-#endif /* CONFIG_HAVE_ACPI_RESUME */
-
 	/* enable GPP CLK0 thru CLK3 (interleaved) */
 	/* disable GPP CLK4 thru SLT_GFX_CLK */
 	u8 *misc_mem_clk_cntrl = (u8 *)(ACPI_MMIO_BASE + MISC_BASE);

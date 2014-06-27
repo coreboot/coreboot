@@ -47,16 +47,10 @@ static void mainboard_enable(device_t dev)
 
 	hudson_configure_gevent_smi(EC_SMI_GEVENT, SMI_MODE_SMI, SMI_LVL_HIGH);
 	hudson_enable_smi_generation();
-	/*
-	 * The mainboard is the first place that we get control in ramstage. Check
-	 * for S3 resume and call the appropriate AGESA/CIMx resume functions.
-	 */
-#if CONFIG_HAVE_ACPI_RESUME
-	acpi_slp_type = acpi_get_sleep_type();
-	if (acpi_slp_type == 3)
+
+	if (acpi_is_wakeup_s3())
 		agesawrapper_fchs3earlyrestore();
 	else
-#endif
 		pavilion_cold_boot_init();
 
 }

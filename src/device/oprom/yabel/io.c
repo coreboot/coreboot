@@ -26,53 +26,6 @@
 
 #include <arch/io.h>
 
-// these are not used, only needed for linking,  must be overridden using X86emu_setupPioFuncs
-// with the functions and struct below
-void
-outb(u8 val, u16 port)
-{
-	printf("WARNING: outb not implemented!\n");
-	HALT_SYS();
-}
-
-void
-outw(u16 val, u16 port)
-{
-	printf("WARNING: outw not implemented!\n");
-	HALT_SYS();
-}
-
-void
-outl(u32 val, u16 port)
-{
-	printf("WARNING: outl not implemented!\n");
-	HALT_SYS();
-}
-
-u8
-inb(u16 port)
-{
-	printf("WARNING: inb not implemented!\n");
-	HALT_SYS();
-	return 0;
-}
-
-u16
-inw(u16 port)
-{
-	printf("WARNING: inw not implemented!\n");
-	HALT_SYS();
-	return 0;
-}
-
-u32
-inl(u16 port)
-{
-	printf("WARNING: inl not implemented!\n");
-	HALT_SYS();
-	return 0;
-}
-
 #if CONFIG_YABEL_DIRECTHW
 u8 my_inb(X86EMU_pioAddr addr)
 {

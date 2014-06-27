@@ -152,9 +152,6 @@ static unsigned msm_boot_uart_dm_read(void)
 		return IPQ_UART_DM_E_RX_NOT_READY;
 	}
 
-	/* Clear stale event. */
-	writel(IPQ_UART_DM_CMD_RES_STALE_INT, IPQ_UART_DM_CR(base));
-
 	/* Read UART_DM_RX_TOTAL_SNAP for actual number of bytes received */
 	if (total_rx_data == 0)
 		total_rx_data =  readl(IPQ_UART_DM_RX_TOTAL_SNAP(base));

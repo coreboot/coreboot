@@ -17,29 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <arch/exception.h>
+#ifndef __SOC_NVIDIA_TEGRA132_SDRAM_CONFIGS_H__
+#define __SOC_NVIDIA_TEGRA132_SDRAM_CONFIGS_H__
 
-#include "sdram_configs.h"
 #include <soc/nvidia/tegra132/sdram.h>
 
-void main(void)
-{
-	void *entry;
+/* Loads SDRAM configurations for current system. */
+const struct sdram_params *get_sdram_config(void);
 
-	console_init();
-	exception_init();
-
-	printk(BIOS_INFO, "T132: romstage here\n");
-
-	sdram_init(get_sdram_config());
-
-	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
-
-	while (1);
-
-        entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA, "fallback/ramstage");
-        stage_exit(entry);
-}
+#endif  /* __SOC_NVIDIA_TEGRA132_SDRAM_CONFIGS_H__ */

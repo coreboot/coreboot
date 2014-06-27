@@ -18,8 +18,7 @@
  */
 
 #include <console/console.h>
-#include <soc/nvidia/tegra132/sdram.h>
-#include "sdram_configs.h"
+#include <soc/sdram_configs.h>
 
 static struct sdram_params sdram_configs[] = {
 #include "bct/sdram-hynix-2GB-924.inc"			/* ram_code = 0000 */

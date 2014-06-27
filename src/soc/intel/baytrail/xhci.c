@@ -27,6 +27,8 @@
 
 #include <baytrail/iomap.h>
 #include <baytrail/iosf.h>
+#include <baytrail/lpc.h>
+#include <baytrail/pattrs.h>
 #include <baytrail/pci_devs.h>
 #include <baytrail/pmc.h>
 #include <baytrail/ramstage.h>
@@ -226,6 +228,13 @@ static void xhci_init(device_t dev)
 		reg_script_run_on_dev(dev, xhci_init_resume_script);
 	else
 		reg_script_run_on_dev(dev, xhci_init_boot_script);
+
+	/* C0 steppings change iCLK/USB PLL VCO settings from 5 to 7 */
+	if (pattrs_get()->stepping == STEP_C0) {
+		uint32_t reg =  iosf_ushphy_read(USHPHY_CDN_PLL_CONTROL);
+		reg |= 0x00700000;
+		iosf_ushphy_write(USHPHY_CDN_PLL_CONTROL, reg);
+	}
 
 	/* Finalize Initialization */
 	reg_script_run_on_dev(dev, xhci_hc_init);

@@ -23,8 +23,6 @@ rmodobj += common.o
 rmodobj += elfheaders.o
 rmodobj += xdr.o
 
-TOOLFLAGS= -g
-
 ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLFLAGS+=-mno-ms-bitfields
 endif
@@ -51,4 +49,3 @@ $(objutil)/cbfstool/cbfstool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstoo
 $(objutil)/cbfstool/rmodtool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))
-

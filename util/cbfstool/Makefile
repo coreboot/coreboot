@@ -6,7 +6,6 @@ CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wmissing-prototypes
 CFLAGS += -Wwrite-strings -Wredundant-decls -Wno-trigraphs
 CFLAGS += -Wstrict-aliasing -Werror
 CFLAGS += -Wshadow
-LDFLAGS += -g
 
 CBFSTOOL_BINARY:=$(obj)/cbfstool
 

@@ -224,6 +224,10 @@ struct cbfs_media {
 ssize_t cbfs_locate_file(struct cbfs_media *media, struct cbfs_file *file,
 				const char *name);
 
+/* Read count bytes at offset into dest. Return number of bytes read. */
+size_t cbfs_read(struct cbfs_media *media, void *dest, size_t offset,
+			size_t count);
+
 /* returns pointer to a file entry inside CBFS or NULL */
 struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name);
 

@@ -194,6 +194,22 @@ ssize_t cbfs_locate_file(struct cbfs_media *media, struct cbfs_file *file,
 	return -1;
 }
 
+size_t cbfs_read(struct cbfs_media *media, void *dest, size_t offset,
+			size_t count)
+{
+	struct cbfs_media default_media;
+	size_t nread;
+
+	if (init_media(&media, &default_media))
+		return 0;
+
+	media->open(media);
+	nread = media->read(media, dest, offset, count);
+	media->close(media);
+
+	return nread;
+}
+
 struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 {
 	struct cbfs_media default_media;

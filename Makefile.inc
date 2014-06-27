@@ -30,7 +30,7 @@ ifneq ($(NOCOMPILE),1)
 ifneq ($(CONFIG_ANY_TOOLCHAIN),y)
 _toolchain=$(shell $(CC_x86_32) -v 2>&1 |grep -q "gcc version .*coreboot toolchain" && echo coreboot)
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-_toolchain=coreboot
+_toolchain=$(shell $(CC_x86_32) -v 2>&1 |grep -q "clang version" && echo coreboot)
 endif
 ifneq ($(_toolchain),coreboot)
 $(error Please use the coreboot toolchain (or prove that your toolchain works))

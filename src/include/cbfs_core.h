@@ -217,6 +217,13 @@ struct cbfs_media {
 	int (*close)(struct cbfs_media *media);
 };
 
+/*
+ * Locate file by name and fill in cbfs_file in host byte order. Returns
+ * < 0 on error, else the offset of the file data.
+ */
+ssize_t cbfs_locate_file(struct cbfs_media *media, struct cbfs_file *file,
+				const char *name);
+
 /* returns pointer to a file entry inside CBFS or NULL */
 struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name);
 

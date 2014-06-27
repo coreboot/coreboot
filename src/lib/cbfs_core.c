@@ -93,25 +93,33 @@ const struct cbfs_header *cbfs_get_header(struct cbfs_media *media)
 	return header;
 }
 
+
+static int init_media(struct cbfs_media **media, struct cbfs_media *backing)
+{
+	if (*media == CBFS_DEFAULT_MEDIA) {
+		*media = backing;
+		if (init_default_cbfs_media(*media) != 0) {
+			ERROR("Failed to initialize default media.\n");
+			return -1;
+		}
+	}
+	return 0;
+}
+
 /* public API starts here*/
-struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
+ssize_t cbfs_locate_file(struct cbfs_media *media, struct cbfs_file *file,
+				const char *name)
 {
 	const char *file_name;
 	uint32_t offset, align, romsize, name_len;
 	const struct cbfs_header *header;
-	struct cbfs_file file, *file_ptr;
 	struct cbfs_media default_media;
 
-	if (media == CBFS_DEFAULT_MEDIA) {
-		media = &default_media;
-		if (init_default_cbfs_media(media) != 0) {
-			ERROR("Failed to initialize default media.\n");
-			return NULL;
-		}
-	}
+	if (init_media(&media, &default_media))
+		return -1;
 
 	if (CBFS_HEADER_INVALID_ADDRESS == (header = cbfs_get_header(media)))
-		return NULL;
+		return -1;
 
 	// Logical offset (for source media) of first file.
 	offset = ntohl(header->offset);
@@ -139,9 +147,9 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 
 	media->open(media);
 	while (offset < romsize &&
-	       media->read(media, &file, offset, sizeof(file)) == sizeof(file)) {
-		if (memcmp(CBFS_FILE_MAGIC, file.magic,
-			   sizeof(file.magic)) != 0) {
+	       media->read(media, file, offset, sizeof(*file)) == sizeof(*file)) {
+		if (memcmp(CBFS_FILE_MAGIC, file->magic,
+			   sizeof(file->magic)) != 0) {
 			uint32_t new_align = align;
 			if (offset % align)
 				new_align += align - (offset % align);
@@ -151,30 +159,25 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 			offset += new_align;
 			continue;
 		}
-		name_len = ntohl(file.offset) - sizeof(file);
+
+		file->len = ntohl(file->len);
+		file->type= ntohl(file->type);
+		file->offset = ntohl(file->offset);
+
+		name_len = file->offset - sizeof(*file);
 		DEBUG(" - load entry 0x%x file name (%d bytes)...\n", offset,
 		      name_len);
 
 		// load file name (arbitrary length).
 		file_name = (const char *)media->map(
-				media, offset + sizeof(file), name_len);
+				media, offset + sizeof(*file), name_len);
 		if (file_name == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
 			ERROR("ERROR: Failed to get filename: 0x%x.\n", offset);
 		} else if (strcmp(file_name, name) == 0) {
-			int file_offset = ntohl(file.offset),
-			    file_len = ntohl(file.len);
 			DEBUG("Found file (offset=0x%x, len=%d).\n",
-			    offset + file_offset, file_len);
+			    offset + file->offset, file->len);
 			media->unmap(media, file_name);
-			file_ptr = media->map(media, offset,
-					      file_offset + file_len);
-			media->close(media);
-			if (file_ptr == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
-				ERROR("ERROR: Mapping %s failed (insufficient "
-				      "buffer space?).\n", file_name);
-				return NULL;
-			}
-			return file_ptr;
+			return offset + file->offset;
 		} else {
 			DEBUG(" (unmatched file @0x%x: %s)\n", offset,
 			      file_name);
@@ -182,13 +185,40 @@ struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
 		}
 
 		// Move to next file.
-		offset += ntohl(file.len) + ntohl(file.offset);
+		offset += file->len + file->offset;
 		if (offset % align)
 			offset += align - (offset % align);
 	}
 	media->close(media);
 	LOG("WARNING: '%s' not found.\n", name);
-	return NULL;
+	return -1;
+}
+
+struct cbfs_file *cbfs_get_file(struct cbfs_media *media, const char *name)
+{
+	struct cbfs_media default_media;
+	struct cbfs_file file, *file_ptr;
+	ssize_t offset;
+
+	if (init_media(&media, &default_media))
+		return NULL;
+
+	offset = cbfs_locate_file(media, &file, name);
+	if (offset < 0)
+		return NULL;
+
+	/* Map both the metadata and the file contents. */
+	media->open(media);
+	offset -= file.offset;
+	file_ptr = media->map(media, offset, file.offset + file.len);
+	media->close(media);
+
+	if (file_ptr == CBFS_MEDIA_INVALID_MAP_ADDRESS) {
+		ERROR("ERROR: Mapping %s failed.\n", name);
+		return NULL;
+	}
+
+	return file_ptr;
 }
 
 void *cbfs_get_file_content(struct cbfs_media *media, const char *name,

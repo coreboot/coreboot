@@ -97,40 +97,68 @@ static int int15_handler(void)
 		X86_ECX |= 0x0000; /* TODO: Make this configurable in NVRAM? */
 		res = 1;
 		break;
-	case 0x5f70:
-		switch ((X86_ECX >> 8) & 0xff) {
-		case 0:
-			/* Get Mux */
+	case 0x5f40:
+		/*
+		 * Boot Panel Type Hook:
+		 *  BL(in): 00h = LFP, 01h = LFP2
+		 *  CL(out): panel type id in table: 1..16
+		 */
+		if (0 == (X86_EBX & 0xff)) {
 			X86_EAX &= 0xffff0000;
-			X86_EAX |= 0x005f;
-			X86_ECX &= 0xffff0000;
-			X86_ECX |= 0x0000;
+			X86_EAX |= 0x015f;
 			res = 1;
-			break;
-		case 1:
-			/* Set Mux */
+		} else if (1 == (X86_EBX & 0xff)) {
 			X86_EAX &= 0xffff0000;
-			X86_EAX |= 0x005f;
-			X86_ECX &= 0xffff0000;
-			X86_ECX |= 0x0000;
+			X86_EAX |= 0x015f;
 			res = 1;
-			break;
-		case 2:
-			/* Get SG/Non-SG mode */
-			X86_EAX &= 0xffff0000;
-			X86_EAX |= 0x005f;
-			X86_ECX &= 0xffff0000;
-			X86_ECX |= 0x0000;
-			res = 1;
-			break;
-		default:
-			/* Interrupt was not handled */
-			printk(BIOS_DEBUG, "Unknown INT15 5f70 function: 0x%02x\n",
-				((X86_ECX >> 8) & 0xff));
-			return 1;
+		} else {
+			printk(BIOS_DEBUG,
+			       "Unknown panel index %u "
+			       "in INT15 function %04x!\n",
+			       X86_EBX & 0xff, X86_EAX & 0xffff);
 		}
 		break;
-
+	case 0x5f52:
+		/*
+		 * Panel Color Depth:
+		 *  00h = 18 bit
+		 *  01h = 24 bit
+		 */
+		X86_EAX &= 0xffff0000;
+		X86_EAX |= 0x005f;
+		X86_ECX &= 0xffff0000;
+		X86_ECX |= 0x0001;
+		res = 1;
+		break;
+	case 0x5f14:
+		if ((X86_EBX & 0xffff) == 0x78f) {
+			/*
+			 * Get Miscellaneous Status Hook:
+			 *  bit 2: AC power active?
+			 *  bit 1: lid closed?
+			 *  bit 0: docked?
+			 */
+			X86_EAX &= 0xffff0000;
+			X86_EAX |= 0x015f;
+			res = 1;
+		} else {
+			printk(BIOS_DEBUG,
+			       "Unknown BX 0x%04x in INT15 function %04x!\n",
+			       X86_EBX & 0xffff, X86_EAX & 0xffff);
+		}
+		break;
+	case 0x5f49:
+		/*
+		 * Get Inverter Type and Polarity:
+		 *  EBX: backlight control brightness: 0..255
+		 *  ECX:
+		 *   0 = Enable PWM inverted, 2 = Enable PWM
+		 *   1 = Enable I2C inverted, 3 = Enable I2C
+		 */
+		X86_EAX &= 0xffff0000;
+		X86_EAX |= 0x015f;
+		res = 1;
+		break;
         default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n",
 		       X86_EAX & 0xffff);

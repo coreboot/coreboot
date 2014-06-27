@@ -419,6 +419,13 @@ static void config_tsc(void)
 	setbits32(TSC_CNTCR_ENABLE | TSC_CNTCR_HDBG, sysctr_cntcr_ptr);
 }
 
+static void enable_cpu_clocks(void)
+{
+	// Enable the CPU complex clock.
+	write32(CLK_ENB_CPU, clk_rst_clk_enb_l_set_ptr);
+	write32(CLK_ENB_CPUG | CLK_ENB_CPULP, clk_rst_clk_enb_v_set_ptr);
+}
+
 
 
 /* Function unit configuration. */
@@ -505,15 +512,15 @@ static void power_on_main_cpu(void)
 	 * Note that PMC_CPUPWRGOOD_TIMER is running at pclk.
 	 *
 	 * We need to reprogram PMC_CPUPWRGOOD_TIMER based on the current pclk
-	 * which is at 408Mhz (pclk = sclk = pllp_out0) after reset. Multiply
-	 * PMC_CPUPWRGOOD_TIMER by 408M / 32K.
+	 * which is at 204Mhz (pclk = sclk = pllp_out2) after BootROM. Multiply
+	 * PMC_CPUPWRGOOD_TIMER by 204M / 32K.
 	 *
 	 * Save the original PMC_CPUPWRGOOD_TIMER register which we need to
 	 * restore after the CPU is powered up.
 	 */
 	uint32_t orig_timer = read32(pmc_ctlr_cpupwrgood_timer_ptr);
 
-	write32(orig_timer * (408000000 / 32768),
+	write32(orig_timer * (204000000 / 32768),
 		pmc_ctlr_cpupwrgood_timer_ptr);
 
 	if (wakeup_on_lp()) {
@@ -524,10 +531,6 @@ static void power_on_main_cpu(void)
 		power_on_partition(PARTID_C0NC);
 		power_on_partition(PARTID_CE0);
 	}
-
-	// Give I/O signals time to stablize.
-	write32(20 | EVENT_MSEC | FLOW_MODE_STOP,
-		flow_ctlr_halt_cop_events_ptr);
 
 	// Restore the original PMC_CPUPWRGOOD_TIMER.
 	write32(orig_timer, pmc_ctlr_cpupwrgood_timer_ptr);
@@ -575,12 +578,6 @@ void lp0_resume(void)
 	ack_width |= 408 << CAR2PMC_CPU_ACK_WIDTH_SHIFT;
 	write32(ack_width, clk_rst_cpu_softrst_ctrl2_ptr);
 
-	// Enable the CPU complex clock.
-	write32(CLK_ENB_CPU, clk_rst_clk_enb_l_set_ptr);
-	write32(CLK_ENB_CPUG | CLK_ENB_CPULP, clk_rst_clk_enb_v_set_ptr);
-
-	clear_cpu_resets();
-
 	config_tsc();
 
 	// Disable VPR.
@@ -588,7 +585,11 @@ void lp0_resume(void)
 	write32(VIDEO_PROTECT_WRITE_ACCESS_DISABLE,
 		mc_video_protect_reg_ctrl_ptr);
 
+	enable_cpu_clocks();
+
 	power_on_main_cpu();
+
+	clear_cpu_resets();
 
 	// Halt the AVP.
 	while (1)

@@ -93,6 +93,7 @@ READELF_$(1) := $(READELF_$(2))
 CFLAGS_$(1) += $$(CFLAGS_common) $$(CFLAGS_$(2))
 CPPFLAGS_$(1) += $$(CPPFLAGS_common) $$(CPPFLAGS_$(2))
 LIBGCC_FILE_NAME_$(1) = $(wildcard $(shell $(CC_$(2)) $(CFLAGS_$(2)) -print-libgcc-file-name))
+LIBCLANG_RT_FILE_NAME_$(1) = $(shell $(CC_$(2)) $(CFLAGS_$(2)) -print-librt-file-name)
 endef
 
 # define_class: Allows defining any program as dynamic class and compiler tool

@@ -117,8 +117,10 @@ else
 include $(HAVE_DOTCONFIG)
 
 ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
-# FIXME: arm/aarch64 won't build right now
-CFLAGS_x86_32 = -no-integrated-as -Qunused-arguments -target i386-elf -m32
+# FIXME: armv7/aarch64 won't build right now
+# NOTE: clang puts compiler-rt under lib/linux/libclang_rt.builtins-i386.a
+# this means the triple is i386-linux-elf instead of i386-none-elf
+CFLAGS_x86_32 = -no-integrated-as -Qunused-arguments -target i386-linux-elf -m32
 CC_x86_32:=clang
 
 ifneq ($(CONFIG_MMX),y)

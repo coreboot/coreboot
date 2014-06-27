@@ -69,6 +69,9 @@ endif
 endif
 
 HOSTCC = gcc
+ifeq ($(CONFIG_COMPILER_LLVM_CLANG),y)
+HOSTCC := clang
+endif
 HOSTCXX = g++
 HOSTCFLAGS := -g
 HOSTCXXFLAGS := -g
@@ -126,8 +129,6 @@ CC_armv7:=clang
 
 CFLAGS_aarch64 = -no-integrated-as -Qunused-arguments -target aarch64-eabi -ccc-gcc-name $(CC_aarch64)
 CC_aarch64:=clang
-
-HOSTCC:=clang
 endif
 
 include toolchain.inc

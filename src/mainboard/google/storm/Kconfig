@@ -38,7 +38,7 @@ config MAINBOARD_PART_NUMBER
 
 config DRAM_SIZE_MB
 	int
-	default 512
+	default 1024
 
 config DRAM_DMA_START
 	hex

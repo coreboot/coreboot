@@ -61,7 +61,7 @@ void *map_2M_page(unsigned long page)
 	void *result;
 	int i;
 	index = cpu_index();
-	if ((index < 0) || (index >= CONFIG_MAX_CPUS)) {
+	if (index >= CONFIG_MAX_CPUS) {
 		return MAPPING_ERROR;
 	}
 	window = page >> 10;

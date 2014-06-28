@@ -47,7 +47,7 @@ static void nb_write_index(device_t dev, u32 index_reg, u32 index, u32 data)
 /* extension registers */
 u32 pci_ext_read_config32(device_t nb_dev, device_t dev, u32 reg)
 {
-	/*get BAR3 base address for nbcfg0x1c */
+	/* get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c) & ~0xF;
 	printk(BIOS_DEBUG, "addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
 		     dev->path.pci.devfn);
@@ -60,7 +60,7 @@ void pci_ext_write_config32(device_t nb_dev, device_t dev, u32 reg_pos, u32 mask
 {
 	u32 reg_old, reg;
 
-	/*get BAR3 base address for nbcfg0x1c */
+	/* get BAR3 base address for nbcfg0x1c */
 	u32 addr = pci_read_config32(nb_dev, 0x1c) & ~0xF;
 	/*printk(BIOS_DEBUG, "write: addr=%x,bus=%x,devfn=%x\n", addr, dev->bus->secondary,
 		     dev->path.pci.devfn);*/
@@ -191,12 +191,12 @@ void set_pcie_enable_bits(device_t dev, u32 reg_pos, u32 mask, u32 val)
 	}
 }
 
-/***********************************************************
-* To access bar3 we need to program PCI MMIO 7 in K8.
-* in_out:
-*	1: enable/enter k8 temp mmio base
-*	0: disable/restore
-***********************************************************/
+/*
+ * To access bar3 we need to program PCI MMIO 7 in K8.
+ * in_out:
+ *	1: enable/enter k8 temp mmio base
+ *	0: disable/restore
+ */
 void ProgK8TempMmioBase(u8 in_out, u32 pcie_base_add, u32 mmio_base_add)
 {
 	/* K8 Function1 is address map */
@@ -245,11 +245,11 @@ void PcieReleasePortTraining(device_t nb_dev, device_t dev, u32 port)
 	}
 }
 
-/********************************************************************************************************
-* Output:
-*	0: no device is present.
-*	1: device is present and is trained.
-********************************************************************************************************/
+/*
+ * Output:
+ *	0: no device is present.
+ *	1: device is present and is trained.
+ */
 u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 {
 	u16 count = 5000;
@@ -278,17 +278,13 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 			count = 0;
 			break;
 		case 0x10:
-			reg =
-			    pci_ext_read_config32(nb_dev, dev,
-						  PCIE_VC0_RESOURCE_STATUS);
+			reg = pci_ext_read_config32(nb_dev, dev, PCIE_VC0_RESOURCE_STATUS);
 			printk(BIOS_DEBUG, "PcieTrainPort reg=0x%x\n", reg);
 			/* check bit1 */
 			if (reg & VC_NEGOTIATION_PENDING) {	/* bit1=1 means the link needs to be re-trained. */
 				/* set bit8=1, bit0-2=bit4-6 */
 				u32 tmp;
-				reg =
-				    nbpcie_p_read_index(dev,
-							PCIE_LC_LINK_WIDTH);
+				reg = nbpcie_p_read_index(dev, PCIE_LC_LINK_WIDTH);
 				tmp = (reg >> 4) && 0x3;	/* get bit4-6 */
 				reg &= 0xfff8;	/* clear bit0-2 */
 				reg += tmp;	/* merge */
@@ -309,9 +305,9 @@ u8 PcieTrainPort(device_t nb_dev, device_t dev, u32 port)
 }
 
 /*
-* Compliant with CIM_33's ATINB_SetToms.
-* Set Top Of Memory below and above 4G.
-*/
+ * Compliant with CIM_33's ATINB_SetToms.
+ * Set Top Of Memory below and above 4G.
+ */
 void rs690_set_tom(device_t nb_dev)
 {
 	/* set TOM */

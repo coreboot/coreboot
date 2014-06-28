@@ -191,7 +191,7 @@ static u32 get_mmio_addr_index(u32 nodeid, u32 linkn)
 	u32 index;
 
 	for (index=0; index<64; index++) {
-		if ((sysconf.conf_mmio_addrx[index+8] == 0)) {
+		if (sysconf.conf_mmio_addrx[index+8] == 0) {
 			sysconf.conf_mmio_addr[index+8] = (nodeid & 0x3f) ;
 			sysconf.conf_mmio_addrx[index+8] = 1 | ((linkn & 0x7)<<4);
 			return index;

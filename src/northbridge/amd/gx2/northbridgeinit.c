@@ -660,7 +660,7 @@ void northbridge_init_early(void)
 
 	/* Now that the descriptor to memory is set up. */
 	/* The memory controller needs one read to synch its lines before it can be used. */
-	i = *(int *) 0;
+	i = *(volatile int *) 0;
 
 	GeodeLinkPriority();
 

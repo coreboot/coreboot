@@ -26,7 +26,7 @@ static const unsigned char NumColAddr[] = {
 	0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
 };
 
-static void hcf(void)
+static void __attribute__((noreturn)) hcf(void)
 {
 	printk(BIOS_EMERG, "DIE\n");
 	/* this guarantees we flush the UART fifos (if any) and also

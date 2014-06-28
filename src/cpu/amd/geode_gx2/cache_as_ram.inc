@@ -26,17 +26,17 @@
 #define	GX2_CACHEWAY_SIZE	(GX2_NUM_CACHELINES * GX2_CACHELINE_SIZE)
 #define	CR0_CD				0x40000000	/* bit 30 = Cache Disable */
 #define	CR0_NW				0x20000000	/* bit 29 = Not Write Through */
+
 #include <cpu/amd/gx2def.h>
 #include <cpu/x86/post_code.h>
-/***************************************************************************
-/**
-/**	DCacheSetup
-/**
-/**	Setup data cache for  use as RAM for a stack.
-/**
-/**	Max. size data cache =0x4000 (16KB)
-/**
-/***************************************************************************/
+
+/*
+ *	DCacheSetup
+ *
+ *	Setup data cache for use as RAM for a stack.
+ *
+ *	Max. size data cache =0x4000 (16KB)
+ */
 DCacheSetup:
 	/* Save the BIST result */
 	movl    %eax, %ebx
@@ -201,4 +201,3 @@ __main:
 	post_code(POST_DEAD_CODE)
 	hlt
 	jmp	.Lhlt
-

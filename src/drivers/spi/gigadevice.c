@@ -128,7 +128,7 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 	int ret;
 	u8 cmd[4];
 
-	page_size = min(1 << stm->params->l2_page_size, CONTROLLER_PAGE_LIMIT);
+	page_size = 1 << stm->params->l2_page_size;
 	byte_addr = offset % page_size;
 
 	flash->spi->rw = SPI_WRITE_FLAG;
@@ -141,6 +141,7 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
+		chunk_len = min(chunk_len, CONTROLLER_PAGE_LIMIT);
 
 		ret = spi_flash_cmd(flash->spi, CMD_GD25_WREN, NULL, 0);
 		if (ret < 0) {

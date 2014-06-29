@@ -122,7 +122,7 @@ static int winbond_write(struct spi_flash *flash,
 	int ret;
 	u8 cmd[4];
 
-	page_size = min(1 << stm->params->l2_page_size, CONTROLLER_PAGE_LIMIT);
+	page_size = 1 << stm->params->l2_page_size;
 	byte_addr = offset % page_size;
 
 	flash->spi->rw = SPI_WRITE_FLAG;
@@ -134,6 +134,7 @@ static int winbond_write(struct spi_flash *flash,
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
+		chunk_len = min(chunk_len, CONTROLLER_PAGE_LIMIT);
 
 		cmd[0] = CMD_W25_PP;
 		cmd[1] = (offset >> 16) & 0xff;

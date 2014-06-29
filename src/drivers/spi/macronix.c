@@ -131,7 +131,7 @@ static int macronix_write(struct spi_flash *flash,
 	int ret;
 	u8 cmd[4];
 
-	page_size = min(mcx->params->page_size, CONTROLLER_PAGE_LIMIT);
+	page_size = mcx->params->page_size;
 	byte_addr = offset % page_size;
 
 	flash->spi->rw = SPI_WRITE_FLAG;
@@ -144,6 +144,7 @@ static int macronix_write(struct spi_flash *flash,
 	ret = 0;
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
+		chunk_len = min(chunk_len, CONTROLLER_PAGE_LIMIT);
 
 		cmd[0] = CMD_MX25XX_PP;
 		cmd[1] = (offset >> 16) & 0xff;

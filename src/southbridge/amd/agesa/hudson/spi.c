@@ -42,6 +42,7 @@ static int bus_claimed = 0;
 #define SPI_REG_CNTRL11		0xd
  #define CNTRL11_FIFOPTR_MASK	0x07
 
+#define AMD_SB_SPI_TX_LEN	64
 
 static u32 spibar;
 
@@ -84,6 +85,11 @@ void spi_init(void)
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
 	spibar = pci_read_config32(dev, 0xA0) & ~0x1F;
+}
+
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return min(AMD_SB_SPI_TX_LEN - cmd_len, buf_len);
 }
 
 int spi_xfer(struct spi_slave *slave, const void *dout,

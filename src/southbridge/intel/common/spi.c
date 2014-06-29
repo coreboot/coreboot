@@ -550,6 +550,11 @@ static int spi_is_multichip (void)
 	return !!((cntlr.flmap0 >> 8) & 3);
 }
 
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return min(cntlr.databytes, buf_len);
+}
+
 int spi_xfer(struct spi_slave *slave, const void *dout,
 		unsigned int bytesout, void *din, unsigned int bytesin)
 {
@@ -639,7 +644,7 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	 */
 	if (trans.bytesout > cntlr.databytes) {
 		printk(BIOS_DEBUG, "ICH SPI: Too much to write. Does your SPI chip driver use"
-		     " CONTROLLER_PAGE_LIMIT?\n");
+		     " spi_crop_chunk()?\n");
 		return -1;
 	}
 

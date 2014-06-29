@@ -168,6 +168,8 @@ void spi_cs_deactivate(struct spi_slave *slave);
  */
 void spi_set_speed(struct spi_slave *slave, uint32_t hz);
 
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len);
+
 /*-----------------------------------------------------------------------
  * Write 8 bits, then read 8 bits.
  *   slave:	The SPI slave we're communicating with

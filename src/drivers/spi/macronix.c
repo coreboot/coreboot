@@ -144,13 +144,12 @@ static int macronix_write(struct spi_flash *flash,
 	ret = 0;
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = min(chunk_len, CONTROLLER_PAGE_LIMIT);
+		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
 
 		cmd[0] = CMD_MX25XX_PP;
 		cmd[1] = (offset >> 16) & 0xff;
 		cmd[2] = (offset >> 8) & 0xff;
 		cmd[3] = offset & 0xff;
-
 #if CONFIG_DEBUG_SPI_FLASH
 		printk(BIOS_SPEW, "PP: 0x%p => cmd = { 0x%02x 0x%02x%02x%02x }"
 		     " chunk_len = %zu\n",
@@ -163,7 +162,7 @@ static int macronix_write(struct spi_flash *flash,
 			break;
 		}
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, 4,
+		ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd),
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING, "SF: Macronix Page Program failed\n");

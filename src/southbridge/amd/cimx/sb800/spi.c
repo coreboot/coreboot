@@ -32,6 +32,8 @@
 static int bus_claimed = 0;
 #endif
 
+#define AMD_SB_SPI_TX_LEN	8
+
 static u32 spibar;
 
 static void reset_internal_fifo_pointer(void)
@@ -54,6 +56,11 @@ void spi_init()
 
 	dev = dev_find_slot(0, PCI_DEVFN(0x14, 3));
 	spibar = pci_read_config32(dev, 0xA0) & ~0x1F;
+}
+
+unsigned int spi_crop_chunk(unsigned int cmd_len, unsigned int buf_len)
+{
+	return min(AMD_SB_SPI_TX_LEN - cmd_len, buf_len);
 }
 
 int spi_xfer(struct spi_slave *slave, const void *dout,

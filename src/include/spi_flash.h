@@ -39,14 +39,6 @@
 	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
 	(type *)( (char *)__mptr - offsetof(type,member) );})
 
-#define CONFIG_ICH_SPI
-#ifdef CONFIG_ICH_SPI
-#define CONTROLLER_PAGE_LIMIT	64
-#else
-/* any number larger than 4K would do, actually */
-#define CONTROLLER_PAGE_LIMIT	((int)(~0U>>1))
-#endif
-
 struct spi_flash {
 	struct spi_slave *spi;
 

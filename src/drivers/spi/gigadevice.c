@@ -141,7 +141,7 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 
 	for (actual = 0; actual < len; actual += chunk_len) {
 		chunk_len = min(len - actual, page_size - byte_addr);
-		chunk_len = min(chunk_len, CONTROLLER_PAGE_LIMIT);
+		chunk_len = spi_crop_chunk(sizeof(cmd), chunk_len);
 
 		ret = spi_flash_cmd(flash->spi, CMD_GD25_WREN, NULL, 0);
 		if (ret < 0) {
@@ -161,7 +161,7 @@ static int gigadevice_write(struct spi_flash *flash, u32 offset,
 		       cmd[0], cmd[1], cmd[2], cmd[3], chunk_len);
 #endif
 
-		ret = spi_flash_cmd_write(flash->spi, cmd, 4,
+		ret = spi_flash_cmd_write(flash->spi, cmd, sizeof(cmd),
 					  buf + actual, chunk_len);
 		if (ret < 0) {
 			printk(BIOS_WARNING,

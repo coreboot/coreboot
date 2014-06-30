@@ -19,6 +19,7 @@ endif
 romstage-y += cbfs.c
 romstage-y += cbmem.c
 romstage-y += timer.c
+romstage-y += ccplex.c
 romstage-y += clock.c
 romstage-y += spi.c
 romstage-y += i2c.c

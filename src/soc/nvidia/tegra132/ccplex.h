@@ -17,33 +17,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <arch/exception.h>
+#ifndef __SOC_NVIDIA_TEGRA132_CCPLEX_H__
+#define __SOC_NVIDIA_TEGRA132_CCPLEX_H__
 
-#include <soc/sdram_configs.h>
-#include "sdram.h"
-#include "ccplex.h"
+#define MTS_LOAD_ADDRESS 0x82000000
 
-void main(void)
-{
-	void *entry;
+/* Loads the MTS microcode. Return 0 on success, < 0 on error. */
+int ccplex_load_mts(void);
 
-	console_init();
-	exception_init();
-
-	printk(BIOS_INFO, "T132: romstage here\n");
-
-	sdram_init(get_sdram_config());
-	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
-
-	ccplex_load_mts();
-	printk(BIOS_INFO, "T132 romstage: MTS loading done\n");
-
-	while (1);
-
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/ramstage");
-	stage_exit(entry);
-}
+#endif /* __SOC_NVIDIA_TEGRA132_CCPLEX_H__ */

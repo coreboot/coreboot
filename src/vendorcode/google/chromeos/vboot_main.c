@@ -31,6 +31,23 @@ struct vboot_region {
 	int32_t size;
 };
 
+static void locate_region(const char *name, struct vboot_region *region)
+{
+	region->size = find_fmap_entry(name, (void **)&region->offset_addr);
+	VBDEBUG("Located %s @%x\n", name, region->offset_addr);
+}
+
+static int is_slot_a(struct vb2_context *ctx)
+{
+	return !(ctx->flags & VB2_CONTEXT_FW_SLOT_B);
+}
+
+static int in_ro(void)
+{
+	/* TODO: Implement */
+	return 1;
+}
+
 /* exports */
 
 void vb2ex_printf(const char *func, const char *fmt, ...)
@@ -57,27 +74,29 @@ int vb2ex_read_resource(struct vb2_context *ctx,
 			void *buf,
 			uint32_t size)
 {
-	VBDEBUG("Reading resource\n");
-	return VB2_ERROR_UNKNOWN;
-}
+	struct vboot_region region;
 
-/* locals */
+	switch (index) {
+	case VB2_RES_GBB:
+		locate_region("GBB", &region);
+		break;
+	case VB2_RES_FW_VBLOCK:
+		if (is_slot_a(ctx))
+			locate_region("VBLOCK_A", &region);
+		else
+			locate_region("VBLOCK_B", &region);
+		break;
+	default:
+		return VB2_ERROR_EX_READ_RESOURCE_INDEX;
+	}
 
-static void locate_region(const char *name, struct vboot_region *region)
-{
-	region->size = find_fmap_entry(name, (void **)&region->offset_addr);
-	VBDEBUG("Located %s @%x\n", name, region->offset_addr);
-}
+	if (offset + size > region.size)
+		return VB2_ERROR_EX_READ_RESOURCE_SIZE;
 
-static int is_slot_a(struct vb2_context *ctx)
-{
-	return !(ctx->flags & VB2_CONTEXT_FW_SLOT_B);
-}
+	if (vboot_get_region(region.offset_addr + offset, size, buf) == NULL)
+		return VB2_ERROR_UNKNOWN;
 
-static int in_ro(void)
-{
-	/* TODO: Implement */
-	return 1;
+	return VB2_SUCCESS;
 }
 
 static void reboot(void)

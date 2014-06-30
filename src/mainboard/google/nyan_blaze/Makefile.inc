@@ -32,6 +32,7 @@ bootblock-y += bootblock.c
 bootblock-y += pmic.c
 bootblock-y += reset.c
 
+verstage-$(CONFIG_CHROMEOS) += chromeos.c
 verstage-y += reset.c
 
 romstage-y += reset.c

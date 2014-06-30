@@ -264,12 +264,12 @@ void __attribute__((noinline)) select_firmware(void)
 	 * invalid secdata and tell us what to do (=reboot). */
 	//antirollback_read_space_firmware(&ctx);
 
-	//if (get_developer_mode_switch())
-	//	ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
-	//if (get_recovery_mode_switch()) {
-	//	clear_recovery_mode_switch();
-	//	ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
-	//}
+	if (get_developer_mode_switch())
+		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;
+	if (get_recovery_mode_switch()) {
+		clear_recovery_mode_switch();
+		ctx.flags |= VB2_CONTEXT_FORCE_RECOVERY_MODE;
+	}
 
 	/* Do early init */
 	VBDEBUG("Phase 1\n");

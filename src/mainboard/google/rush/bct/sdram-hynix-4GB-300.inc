@@ -307,5 +307,5 @@
   .McMtsCarveoutBom                         = 0x78000000,
   .McMtsCarveoutAdrHi                       = 0x00000001,
   .McMtsCarveoutSizeMb                      = 0x00000080,
-  .McMtsCarveoutRegCtrl                     = 0x00000000,
+  .McMtsCarveoutRegCtrl                     = 0x00000001,
 },

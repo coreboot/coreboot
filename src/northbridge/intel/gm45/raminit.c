@@ -20,6 +20,7 @@
  */
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <arch/cpu.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
@@ -361,7 +362,6 @@ static void collect_ddr3(spdinfo_t *const config)
 	}
 }
 
-#define min(a, b) ((a) < (b))?(a):(b)
 #define ROUNDUP_DIV(val, by) (((val) + (by) - 1) / (by))
 #define ROUNDUP_DIV_THIS(val, by) val = ROUNDUP_DIV(val, by)
 static fsb_clock_t read_fsb_clock(void)

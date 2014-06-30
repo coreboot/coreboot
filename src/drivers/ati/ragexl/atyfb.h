@@ -6,8 +6,6 @@
 
 #define EINVAL -1
 
-#define max(x,y) (x>=y)?x:y
-
 #if CONFIG_CONSOLE_BTEXT
     /*
      *  Elements of the hardware specific atyfb_par structure

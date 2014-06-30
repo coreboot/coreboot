@@ -13,6 +13,9 @@
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
+#define min(a,b) MIN((a),(b))
+#define max(a,b) MAX((a),(b))
+
 #if !defined(__PRE_RAM__)
 void *memalign(size_t boundary, size_t size);
 void *malloc(size_t size);

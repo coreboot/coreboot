@@ -50,8 +50,6 @@
 	TPM_DEBUG("Write reg 0x%x with 0x%x\n", (reg_), (val_))
 #define printf(x...) printk(BIOS_ERR, x)
 
-#define min(a,b) MIN(a,b)
-#define max(a,b) MAX(a,b)
 #define readb(_a) (*(volatile unsigned char *) (_a))
 #define writeb(_v, _a) (*(volatile unsigned char *) (_a) = (_v))
 #define readl(_a) (*(volatile unsigned long *) (_a))

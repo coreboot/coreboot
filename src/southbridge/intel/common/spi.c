@@ -35,8 +35,6 @@
 
 #include <spi-generic.h>
 
-#define min(a, b) ((a)<(b)?(a):(b))
-
 #define HSFC_FCYCLE_OFF		1	/* 1-2: FLASH Cycle */
 #define HSFC_FCYCLE		(0x3 << HSFC_FCYCLE_OFF)
 #define HSFC_FDBC_OFF		8	/* 8-13: Flash Data Byte Count */

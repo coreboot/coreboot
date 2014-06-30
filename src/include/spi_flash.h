@@ -39,8 +39,6 @@
 	const typeof( ((type *)0)->member ) *__mptr = (ptr);	\
 	(type *)( (char *)__mptr - offsetof(type,member) );})
 
-#define min(a, b) ((a)<(b)?(a):(b))
-
 #define CONFIG_ICH_SPI
 #ifdef CONFIG_ICH_SPI
 #define CONTROLLER_PAGE_LIMIT	64

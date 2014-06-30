@@ -25,6 +25,7 @@
 #endif
 
 #if REAL
+#include <stdlib.h>
 #include <console/console.h>
 #include <string.h>
 #include <arch/hlt.h>
@@ -570,9 +571,6 @@ static int find_lowest_bit_set32(u32 val)
 			return i;
 	return -1;
 }
-
-#define max(a,b) (((a) > (b)) ? (a) : (b))
-#define min(a,b) (((a) < (b)) ? (a) : (b))
 
 enum {
 	DEVICE_TYPE = 2,

@@ -66,7 +66,7 @@ void enable_fixed_mtrr(void);
 void x86_setup_fixed_mtrrs(void);
 /* Set up fixed MTRRs but do not enable them. */
 void x86_setup_fixed_mtrrs_no_enable(void);
-int x86_mtrr_check(void);
+void x86_mtrr_check(void);
 #endif
 
 #if !defined(__ASSEMBLER__) && defined(__PRE_RAM__) && !defined(__ROMCC__)

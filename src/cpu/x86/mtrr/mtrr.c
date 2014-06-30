@@ -772,7 +772,7 @@ void x86_setup_mtrrs(void)
 	x86_setup_var_mtrrs(address_size, 1);
 }
 
-int x86_mtrr_check(void)
+void x86_mtrr_check(void)
 {
 	/* Only Pentium Pro and later have MTRR */
 	msr_t msr;
@@ -795,5 +795,4 @@ int x86_mtrr_check(void)
 	printk(BIOS_DEBUG, "\n");
 
 	post_code(0x93);
-	return ((int) msr.lo);
 }

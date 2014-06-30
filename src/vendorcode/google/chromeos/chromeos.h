@@ -88,6 +88,7 @@ static inline void chromeos_reserve_ram_oops(struct device *dev, int idx) {}
 
 #if CONFIG_VBOOT2_VERIFY_FIRMWARE
 void select_firmware(void);
+void vboot_create_handoff(void * vboot_workbuf);
 #endif
 
 #endif

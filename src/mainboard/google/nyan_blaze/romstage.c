@@ -200,7 +200,7 @@ static void __attribute__((noinline)) romstage(void)
 	configure_tpm_i2c_bus();
 
 #if CONFIG_VBOOT2_VERIFY_FIRMWARE
-	// vboot_create_handoff((void *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS);
+	vboot_create_handoff((void *)CONFIG_VBOOT_WORK_BUFFER_ADDRESS);
 #else
 	vboot_verify_firmware(romstage_handoff_find_or_add());
 #endif

@@ -20,6 +20,7 @@
 #define VBOOT_HANDOFF_H
 
 #include <vboot_api.h>
+#include <vboot_struct.h>
 
 /*
  * The vboot handoff structure keeps track of a maximum number of firmware

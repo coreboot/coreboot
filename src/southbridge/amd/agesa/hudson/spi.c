@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arch/io.h>
+#include <console/console.h>
 #include <spi-generic.h>
 #include <device/device.h>
 #include <device/pci.h>
@@ -101,6 +102,20 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	u8 count;
 
 	bytesout--;
+
+	/*
+	 * Check if this is a write command attempting to transfer more bytes
+	 * than the controller can handle. Iterations for writes are not
+	 * supported here because each SPI write command needs to be preceded
+	 * and followed by other SPI commands, and this sequence is controlled
+	 * by the SPI chip driver.
+	 */
+	if (bytesout > AMD_SB_SPI_TX_LEN) {
+		printk(BIOS_DEBUG, "FCH SPI: Too much to write. Does your SPI chip driver use"
+		     " spi_crop_chunk()?\n");
+		return -1;
+	}
+
 	readoffby1 = bytesout ? 0 : 1;
 
 #if CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE

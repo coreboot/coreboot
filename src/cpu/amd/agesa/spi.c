@@ -40,12 +40,7 @@ void spi_SaveS3info(u32 pos, u32 size, u8 *buf, u32 len)
 
 	flash->erase(flash, pos, size);
 	flash->write(flash, pos, sizeof(len), &len);
-
-	u32 nvram_pos;
-	for (nvram_pos = 0; nvram_pos < len - CONFIG_AMD_SB_SPI_TX_LEN; nvram_pos += CONFIG_AMD_SB_SPI_TX_LEN) {
-		flash->write(flash, nvram_pos + pos + 4, CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(buf + nvram_pos));
-	}
-	flash->write(flash, nvram_pos + pos + 4, len % CONFIG_AMD_SB_SPI_TX_LEN, (u8 *)(buf + nvram_pos));
+	flash->write(flash, pos + sizeof(len), len, buf);
 
 	flash->spi->rw = SPI_WRITE_FLAG;
 	spi_release_bus(flash->spi);

@@ -14,12 +14,3 @@ source src/southbridge/amd/sb800/Kconfig
 source src/southbridge/amd/cimx/Kconfig
 source src/southbridge/amd/agesa/Kconfig
 source src/southbridge/amd/sr5650/Kconfig
-
-if CPU_AMD_AGESA
-
-config AMD_SB_SPI_TX_LEN
-	int
-	default 4
-	depends on SPI_FLASH
-
-endif

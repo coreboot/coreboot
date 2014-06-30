@@ -45,7 +45,7 @@ struct device_operations {
 	void (*enable_resources)(device_t dev);
 	void (*init)(device_t dev);
 	void (*final)(device_t dev);
-	unsigned int (*scan_bus)(device_t bus, unsigned int max);
+	unsigned int (*scan_bus)(device_t bus, unsigned int _max);
 	void (*enable)(device_t dev);
 	void (*disable)(device_t dev);
 	void (*set_link)(device_t dev, unsigned int link);
@@ -58,6 +58,7 @@ struct device_operations {
 	const struct pci_bus_operations * (*ops_pci_bus)(device_t dev);
 	const struct pnp_mode_ops *ops_pnp_mode;
 };
+
 #endif /* ! __SIMPLE_DEVICE__ */
 
 
@@ -157,7 +158,7 @@ void dev_finalize_chips(void);
 
 /* Generic device helper functions */
 int reset_bus(struct bus *bus);
-unsigned int scan_bus(struct device *bus, unsigned int max);
+unsigned int scan_bus(struct device *bus, unsigned int _max);
 void assign_resources(struct bus *bus);
 void enumerate_static_device(void);
 void enumerate_static_devices(void);
@@ -211,8 +212,8 @@ void show_all_devs_resources(int debug_level, const char* msg);
 
 extern struct device_operations default_dev_ops_root;
 void pci_domain_read_resources(struct device *dev);
-unsigned int pci_domain_scan_bus(struct device *dev, unsigned int max);
-unsigned int scan_static_bus(device_t bus, unsigned int max);
+unsigned int pci_domain_scan_bus(struct device *dev, unsigned int _max);
+unsigned int scan_static_bus(device_t bus, unsigned int _max);
 
 void fixed_mem_resource(device_t dev, unsigned long index,
 		  unsigned long basek, unsigned long sizek, unsigned long type);

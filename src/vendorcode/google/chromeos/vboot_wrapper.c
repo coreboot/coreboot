@@ -43,8 +43,13 @@ static void vboot_wrapper(void *arg)
 	res = VbInit(context->cparams, &context->handoff->init_params);
 	VbExDebug("VbInit() returned 0x%08x\n", res);
 
-	if (res != VBERROR_SUCCESS)
+	if (res != VBERROR_SUCCESS) {
+		if(res == VBERROR_TPM_REBOOT_REQUIRED) {
+			VbExDebug("TPM Reboot Required. Proceeding reboot.\n");
+			gcontext->reset();
+		}
 		return;
+	}
 
 	VbExDebug("Calling VbSelectFirmware()\n");
 	res = VbSelectFirmware(context->cparams, context->fparams);

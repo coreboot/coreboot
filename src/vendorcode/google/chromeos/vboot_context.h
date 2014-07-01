@@ -57,6 +57,7 @@ struct vboot_context {
 	void (*log_msg)(const char *fmt, va_list args);
 	void (*fatal_error)(void);
 	void *(*get_region)(uintptr_t offset_addr, size_t size, void *dest);
+	void (*reset)(void);
 };
 
 #endif /* VBOOT_CONTEXT_H */

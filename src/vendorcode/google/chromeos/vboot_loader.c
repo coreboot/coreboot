@@ -229,6 +229,11 @@ static void vboot_clean_up(struct vboot_context *context)
 		cbmem_entry_remove(context->vblocks);
 }
 
+static void reset(void)
+{
+	hard_reset();
+}
+
 static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 {
 	VbCommonParams cparams;
@@ -298,6 +303,7 @@ static void vboot_invoke_wrapper(struct vboot_handoff *vboot_handoff)
 	context.log_msg = &log_msg;
 	context.fatal_error = &fatal_error;
 	context.get_region = &vboot_get_region;
+	context.reset = &reset;
 
 	vboot_run_stub(&context);
 

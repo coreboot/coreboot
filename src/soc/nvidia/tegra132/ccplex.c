@@ -21,11 +21,57 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <cbfs.h>
+#include <timer.h>
 #include <soc/addressmap.h>
+#include "clk_rst.h"
 #include "ccplex.h"
 #include "mc.h"
+#include "pmc.h"
 
+#define CLK_RST_REGS (void *)(uintptr_t)(TEGRA_CLK_RST_BASE)
+#define PMC_REGS (void *)(uintptr_t)(TEGRA_PMC_BASE)
 #define MTS_FILE_NAME "mts"
+
+static int ccplex_start(void)
+{
+	struct mono_time t1, t2;
+	const long timeout_us = 1500000;
+	long wait_time;
+	const uint32_t handshake_mask = 1;
+	const uint32_t cxreset1_mask = 1 << 21;
+	uint32_t reg;
+	struct tegra_pmc_regs * const pmc = PMC_REGS;
+	struct clk_rst_ctlr * const clk_rst = CLK_RST_REGS;
+
+	/* Set the handshake bit to be knocked down. */
+	write32(handshake_mask, &pmc->scratch118);
+
+	/* Assert nCXRSET[1] */
+	reg = read32(&clk_rst->rst_cpu_cmplx_set);
+	reg |= cxreset1_mask;
+	write32(reg, &clk_rst->rst_cpu_cmplx_set);
+
+	timer_monotonic_get(&t1);
+	while (1) {
+		reg = read32(&pmc->scratch118);
+		timer_monotonic_get(&t2);
+
+		wait_time = mono_time_diff_microseconds(&t1, &t2);
+
+		/* Wait for the bit to be knocked down. */
+		if ((reg & handshake_mask) != handshake_mask)
+			break;
+
+		if (wait_time >= timeout_us) {
+			printk(BIOS_DEBUG, "MTS handshake timeout.\n");
+			return -1;
+		}
+	}
+
+	printk(BIOS_DEBUG, "MTS handshake took %ld us.\n", wait_time);
+
+	return 0;
+}
 
 int ccplex_load_mts(void)
 {
@@ -57,5 +103,5 @@ int ccplex_load_mts(void)
 
 	printk(BIOS_DEBUG, "MTS: %zu bytes loaded @ %p\n", nread, mts);
 
-	return 0;
+	return ccplex_start();
 }

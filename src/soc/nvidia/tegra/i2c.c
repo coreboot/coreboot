@@ -37,9 +37,9 @@ static void do_bus_clear(int bus)
 	// 1. Reset the I2C controller (already done)
 	// 2. Set the # of clock pulses required (using default of 9)
 	// 3. Select STOP condition (using default of 1 = STOP)
-	// 4. Set TERMINATE condition (1 = THRESHOLD)
+	// 4. Set TERMINATE condition (1 = IMMEDIATE)
 	bc = read32(&regs->bus_clear_config);
-	bc |= I2C_BUS_CLEAR_CONFIG_BC_TERMINATE_THRESHOLD;
+	bc |= I2C_BUS_CLEAR_CONFIG_BC_TERMINATE_IMMEDIATE;
 	write32(bc, &regs->bus_clear_config);
 	// 4.1 Set MSTR_CONFIG_LOAD and wait for clear
 	write32(I2C_CONFIG_LOAD_MSTR_CONFIG_LOAD_ENABLE, &regs->config_load);

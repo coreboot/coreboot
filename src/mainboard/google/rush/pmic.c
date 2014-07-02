@@ -92,19 +92,13 @@ void pmic_init(unsigned bus)
 	/* Restore PMIC POR defaults, in case kernel changed 'em */
 	pmic_slam_defaults(bus);
 
-	/* First set VDD_CPU to 1.2V, then enable the VDD_CPU regulator. */
-	if (board_id() == 0)
-		pmic_write_reg(bus, 0x00, 0x3c, 1);
-	else
-		pmic_write_reg(bus, 0x00, 0x50, 1);
+	/* SDO0: Set VDD_CPU to 1.2V. */
+	pmic_write_reg(bus, 0x00, 0x50, 1);
 
-	/* First set VDD_GPU to 1.0V, then enable the VDD_GPU regulator. */
+	/* SDO6: Set VDD_GPU to 1.0V. */
 	pmic_write_reg(bus, 0x06, 0x28, 1);
 
-	/*
-	 * First set +1.2V_GEN_AVDD to 1.2V, then enable the +1.2V_GEN_AVDD
-	 * regulator.
-	 */
+	/* LDO2: Set +1.2V_GEN_AVDD to 1.2V */
 	pmic_write_reg(bus, 0x12, 0x10, 1);
 
 	/*
@@ -113,4 +107,6 @@ void pmic_init(unsigned bus)
 	 */
 	pmic_write_reg(bus, 0x0c, 0x07, 0);
 	pmic_write_reg(bus, 0x20, 0x10, 1);
+
+	printk(BIOS_DEBUG, "PMIC init done\n");
 }

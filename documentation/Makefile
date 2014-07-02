@@ -31,13 +31,13 @@ else ifneq ($(strip $(CONVERT)),)
 	convert $< $@
 endif
 
-CorebootPortingGuide.toc: $(FIGS) CorebootPortingGuide.tex
+CorebootPortingGuide.toc: $(FIGS) CorebootBuildingGuide.tex
 	# 2 times to make sure we have a current toc.
-	$(PDFLATEX) CorebootPortingGuide.tex
-	$(PDFLATEX) CorebootPortingGuide.tex
+	$(PDFLATEX) CorebootBuildingGuide.tex
+	$(PDFLATEX) CorebootBuildingGuide.tex
 
-CorebootPortingGuide.pdf: $(FIGS) CorebootPortingGuide.tex CorebootPortingGuide.toc
-	$(PDFLATEX) CorebootPortingGuide.tex
+CorebootPortingGuide.pdf: $(FIGS) CorebootBuildingGuide.tex CorebootPortingGuide.toc
+	$(PDFLATEX) CorebootBuildingGuide.tex
 
 Kconfig.pdf: Kconfig.tex mainboardkconfig.tex cpukconfig.tex socketfkconfig.tex
 	$(PDFLATEX) $<

@@ -7,7 +7,6 @@ config SOCKET_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select MMX
 	select SSE
-	select CACHE_AS_RAM
 
 config CACHE_MRC_BIN
 	bool

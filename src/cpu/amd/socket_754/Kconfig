@@ -6,7 +6,6 @@ if CPU_AMD_SOCKET_754
 config SOCKET_SPECIFIC_OPTIONS
 	def_bool y
 	select CPU_AMD_MODEL_FXX
-	select CACHE_AS_RAM
 	select X86_AMD_FIXED_MTRRS
 
 config CPU_ADDR_BITS

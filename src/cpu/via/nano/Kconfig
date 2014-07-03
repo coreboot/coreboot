@@ -30,7 +30,6 @@ config CPU_SPECIFIC_OPTIONS
 	select UDELAY_TSC
 	select MMX
 	select SSE2
-	select CACHE_AS_RAM
 	select SUPPORT_CPU_UCODE_IN_CBFS
 
 config DCACHE_RAM_BASE

@@ -27,7 +27,6 @@ if CPU_AMD_GEODE_GX2
 
 config CPU_SPECIFIC_OPTIONS
 	def_bool y
-	select CACHE_AS_RAM
 
 config DCACHE_RAM_BASE
 	hex

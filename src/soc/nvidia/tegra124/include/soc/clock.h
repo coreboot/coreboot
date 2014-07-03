@@ -277,6 +277,12 @@ enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 #define TEGRA_PLLD_KHZ   (925000)
 #define TEGRA_PLLU_KHZ   (960000)
 
+#define TEGRA_SCLK_KHZ   (300000)
+#define TEGRA_HCLK_RATIO 1
+#define TEGRA_HCLK_KHZ   (TEGRA_SCLK_KHZ / (1 + TEGRA_HCLK_RATIO))
+#define TEGRA_PCLK_RATIO 0
+#define TEGRA_PCLK_KHZ   (TEGRA_HCLK_KHZ / (1 + TEGRA_PCLK_RATIO))
+
 int clock_get_osc_khz(void);
 int clock_get_pll_input_khz(void);
 u32 clock_display(u32 frequency);
@@ -285,7 +291,8 @@ void clock_external_output(int clk_id);
 void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 		 u32 ph135, u32 kvco, u32 kcp, u32 stable_time, u32 emc_source,
 		 u32 same_freq);
-void clock_cpu0_config_and_reset(void * entry);
+void clock_cpu0_config(void * entry);
+void clock_cpu0_remove_reset(void);
 void clock_halt_avp(void);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
 void clock_reset_l(u32 l);

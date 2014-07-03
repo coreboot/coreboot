@@ -480,7 +480,7 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	udelay(IO_STABILIZATION_DELAY);
 }
 
-void clock_cpu0_config_and_reset(void *entry)
+void clock_cpu0_config(void *entry)
 {
 	void * const evp_cpu_reset = (uint8_t *)TEGRA_EVP_BASE + 0x100;
 
@@ -511,7 +511,10 @@ void clock_cpu0_config_and_reset(void *entry)
 	setbits_le32(&clk_rst->clk_out_enb_l, CLK_L_CPU);
 	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPUG);
 	setbits_le32(&clk_rst->clk_out_enb_v, CLK_V_CPULP);
+}
 
+void clock_cpu0_remove_reset(void)
+{
 	// Disable the reset on the non-CPU parts of the fast cluster.
 	write32(CRC_RST_CPUG_CLR_NONCPU,
 		&clk_rst->rst_cpug_cmplx_clr);
@@ -559,10 +562,12 @@ void clock_init(void)
 
 	/* Typical ratios are 1:2:2 or 1:2:3 sclk:hclk:pclk (See: APB DMA
 	 * features section in the TRM). */
-	write32(1 << HCLK_DIVISOR_SHIFT | 0 << PCLK_DIVISOR_SHIFT,
-		&clk_rst->clk_sys_rate);	/* pclk = hclk = sclk/2 */
-	write32(CLK_DIVIDER(TEGRA_PLLC_KHZ, 300000) << PLL_OUT_RATIO_SHIFT |
-		PLL_OUT_CLKEN | PLL_OUT_RSTN, &clk_rst->pllc_out);
+	write32(TEGRA_HCLK_RATIO << HCLK_DIVISOR_SHIFT |
+		TEGRA_PCLK_RATIO << PCLK_DIVISOR_SHIFT,
+		&clk_rst->clk_sys_rate);
+	write32(CLK_DIVIDER(TEGRA_PLLC_KHZ, TEGRA_SCLK_KHZ) <<
+		PLL_OUT_RATIO_SHIFT | PLL_OUT_CLKEN |
+		PLL_OUT_RSTN, &clk_rst->pllc_out);
 	write32(SCLK_SYS_STATE_RUN << SCLK_SYS_STATE_SHIFT |
 		SCLK_SOURCE_PLLC_OUT1 << SCLK_RUN_SHIFT,
 		&clk_rst->sclk_brst_pol);		/* sclk = 300 MHz */

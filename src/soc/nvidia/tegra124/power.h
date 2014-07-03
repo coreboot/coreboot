@@ -22,9 +22,7 @@
 
 // This function does not enable the external power to the rail, it enables
 // the rail itself internal to the SOC.
-void power_enable_cpu_rail(void);
-
-void power_ungate_cpu(void);
+void power_enable_and_ungate_cpu(void);
 
 // power_reset_status returns one of the following possible sources for the
 // most recent reset.

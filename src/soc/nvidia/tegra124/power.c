@@ -21,6 +21,7 @@
 #include <arch/io.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
+#include <soc/clock.h>
 
 #include "pmc.h"
 #include "power.h"
@@ -30,6 +31,11 @@ static struct tegra_pmc_regs * const pmc = (void *)TEGRA_PMC_BASE;
 static int partition_powered(int id)
 {
 	return read32(&pmc->pwrgate_status) & (0x1 << id);
+}
+
+static int partition_clamp_on(int id)
+{
+	return read32(&pmc->clamp_status) & (0x1 << id);
 }
 
 static void power_ungate_partition(uint32_t id)
@@ -51,34 +57,30 @@ static void power_ungate_partition(uint32_t id)
 		// Wait for the partition to be powered.
 		while (!partition_powered(id))
 			;
+
+		// Wait for clamp off.
+		while (partition_clamp_on(id))
+			;
 	}
 
 	printk(BIOS_INFO, "Ungated power partition %d.\n", id);
 }
 
-void power_enable_cpu_rail(void)
+void power_enable_and_ungate_cpu(void)
 {
-	// Set the power gate timer multiplier to 8 (why 8?).
-	uint32_t pwrgate_timer_mult = read32(&pmc->pwrgate_timer_mult);
-	pwrgate_timer_mult |= (0x3 << 0);
-
 	/*
-	 * From U-Boot:
-	 * Set CPUPWRGOOD_TIMER - APB clock is 1/2 of SCLK (102MHz),
-	 * set it for 5ms as per SysEng (102MHz/5mS = 510000).
+	 * Set CPUPWRGOOD_TIMER - APB clock is 1/2 of SCLK (150MHz),
+	 * set it for 5ms as per SysEng (5ms * PCLK_KHZ * 1000 / 1s).
 	 */
-	write32(510000, &pmc->cpupwrgood_timer);
-
-	power_ungate_partition(POWER_PARTID_CRAIL);
+	write32((TEGRA_PCLK_KHZ * 5), &pmc->cpupwrgood_timer);
 
 	uint32_t cntrl = read32(&pmc->cntrl);
 	cntrl &= ~PMC_CNTRL_CPUPWRREQ_POLARITY;
 	cntrl |= PMC_CNTRL_CPUPWRREQ_OE;
 	write32(cntrl, &pmc->cntrl);
-}
 
-void power_ungate_cpu(void)
-{
+	power_ungate_partition(POWER_PARTID_CRAIL);
+
 	// Ungate power to the non-core parts of the fast cluster.
 	power_ungate_partition(POWER_PARTID_C0NC);
 

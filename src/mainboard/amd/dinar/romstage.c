@@ -22,32 +22,22 @@
 #include <device/pci_def.h>
 #include <device/pci_ids.h>
 #include <arch/io.h>
+#include <arch/cpu.h>
 #include <arch/stages.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
 #include <console/console.h>
 #include <console/loglevel.h>
 #include "cpu/amd/car.h"
+#include "agesawrapper.h"
 #include "cpu/x86/bist.h"
 #include "superio/smsc/sch4037/sch4037_early_init.c"
 #include "superio/smsc/sio1036/sio1036_early_init.c"
 #include "cpu/x86/lapic.h"
 #include "nb_cimx.h"
 #include <sb_cimx.h>
-#include "Platform.h"
-#include <arch/cpu.h>
 
 #define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
-
-u32 agesawrapper_amdinitmmio (void);
-u32 agesawrapper_amdinitreset (void);
-u32 agesawrapper_amdinitearly (void);
-u32 agesawrapper_amdinitenv (void);
-u32 agesawrapper_amdinitlate (void);
-u32 agesawrapper_amdinitpost (void);
-u32 agesawrapper_amdinitmid (void);
-
-
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {

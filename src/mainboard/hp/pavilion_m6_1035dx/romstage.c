@@ -18,6 +18,7 @@
  */
 
 #include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 #include <arch/acpi.h>
 #include <arch/cpu.h>
@@ -38,7 +39,7 @@
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
 	u32 val;
-	val = agesawrapper_amdinitmmio();
+	AGESAWRAPPER(amdinitmmio);
 
 	hudson_lpc_port80();
 
@@ -59,53 +60,24 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
 	post_code(0x37);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitreset ");
-	val = agesawrapper_amdinitreset();
-	if(val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n", val);
-	}
-
+	AGESAWRAPPER(amdinitreset);
 	post_code(0x39);
 
-	val = agesawrapper_amdinitearly ();
-	if(val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n", val);
-	}
-	printk(BIOS_DEBUG, "Got past agesawrapper_amdinitearly\n");
-
+	AGESAWRAPPER(amdinitearly);
 	int s3resume = acpi_is_wakeup_early() && acpi_s3_resume_allowed();
 	if (!s3resume) {
 		post_code(0x40);
-		val = agesawrapper_amdinitpost ();
-		if(val) {
-			printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n", val);
-		}
-		printk(BIOS_DEBUG, "Got past agesawrapper_amdinitpost\n");
-
+		AGESAWRAPPER(amdinitpost);
 		post_code(0x41);
-		val = agesawrapper_amdinitenv ();
-		if(val) {
-			printk(BIOS_DEBUG, "agesawrapper_amdinitenv failed: %x \n", val);
-		}
-		printk(BIOS_DEBUG, "Got past agesawrapper_amdinitenv\n");
+		AGESAWRAPPER(amdinitenv);
 		disable_cache_as_ram();
 	} else {		/* S3 detect */
 		printk(BIOS_INFO, "S3 detected\n");
 
 		post_code(0x60);
-		printk(BIOS_DEBUG, "agesawrapper_amdinitresume ");
-		val = agesawrapper_amdinitresume();
-		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
-		else
-			printk(BIOS_DEBUG, "passed.\n");
+		AGESAWRAPPER(amdinitresume);
 
-		printk(BIOS_DEBUG, "agesawrapper_amds3laterestore ");
-		val = agesawrapper_amds3laterestore ();
-		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
-		else
-			printk(BIOS_DEBUG, "passed.\n");
+		AGESAWRAPPER(amds3laterestore);
 
 		post_code(0x61);
 		prepare_for_resume();

@@ -35,6 +35,7 @@
 #include <cpu/amd/mtrr.h>
 
 #include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "northbridge.h"
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
@@ -758,8 +759,6 @@ static void domain_set_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
-	u32 val;
-
 #if CONFIG_AMD_SB_CIMX
 	if (!acpi_is_wakeup_s3()) {
 		sb_After_Pci_Init();
@@ -772,14 +771,8 @@ static void domain_enable_resources(device_t dev)
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam14h - %s\n", __func__);
 
-	if (!acpi_is_wakeup_s3()) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitmid ");
-		val = agesawrapper_amdinitmid ();
-		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
-		else
-			printk(BIOS_DEBUG, "passed.\n");
-	}
+	if (!acpi_is_wakeup_s3())
+		AGESAWRAPPER(amdinitmid);
 
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }

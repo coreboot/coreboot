@@ -36,6 +36,7 @@
 #include "northbridge.h"
 #include "sb_cimx.h"
 #include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 
 //#define FX_DEVS NODE_NUMS
 #define FX_DEVS 1
@@ -766,15 +767,9 @@ printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
 
 static void domain_enable_resources(device_t dev)
 {
-//  u32 val;
   /* Must be called after PCI enumeration and resource allocation */
-//  printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - agesawrapper_amdinitmid - Start.\n",__func__);
   printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-//  val = agesawrapper_amdinitmid ();
-//  if(val) {
-//    printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
-//  }
-//  printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - agesawrapper_amdinitmid - End.\n",__func__);
+//  AGESAWRAPPER(amdinitmid);
   printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
@@ -810,8 +805,6 @@ static void cpu_bus_set_resources(device_t dev)
 
 static void cpu_bus_init(device_t dev)
 {
-    u32 val;
-
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     initialize_cpus(dev->link_list);
 
@@ -830,12 +823,7 @@ static void cpu_bus_init(device_t dev)
 #endif // #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
 
     /* Must be called after PCI enumeration and resource allocation */
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - agesawrapper_amdinitmid - Start.\n",__func__);
-    val = agesawrapper_amdinitmid ();
-    if(val) {
-        printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
-    }
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - agesawrapper_amdinitmid - End.\n",__func__);
+    AGESAWRAPPER(amdinitmid);
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 

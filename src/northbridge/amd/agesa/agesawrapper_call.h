@@ -1,8 +1,6 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2012 Advanced Micro Devices, Inc.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
@@ -17,32 +15,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/acpi.h>
-#include <bootstate.h>
+#ifndef _AGESAWRAPPER_CALL_H_
+#define _AGESAWRAPPER_CALL_H_
+
+#include <stdint.h>
 #include <console/console.h>
+#include "AGESA.h"
 
-#include "agesawrapper.h"
-#include <northbridge/amd/agesa/agesawrapper_call.h>
-
-void get_bus_conf(void);
-
-static void agesawrapper_post_device(void *unused)
+static inline u32 do_agesawrapper(AGESA_STATUS (*func)(void), const char *name)
 {
-	if (acpi_is_wakeup_s3())
-		return;
-
-	AGESAWRAPPER(amdinitlate);
-
-	/* Preparation for write_tables(). */
-	get_bus_conf();
-
-	if (!acpi_s3_resume_allowed())
-		return;
-
-	AGESAWRAPPER(amdS3Save);
+	AGESA_STATUS ret;
+	printk(BIOS_DEBUG, "agesawrapper_%s() entry\n", name);
+	ret = func();
+	printk(BIOS_DEBUG, "agesawrapper_%s() AGESA_STATUS = %x\n", name, ret);
+	return (u32)ret;
 }
 
-BOOT_STATE_INIT_ENTRIES(agesa_bscb) = {
-	BOOT_STATE_INIT_ENTRY(BS_POST_DEVICE, BS_ON_EXIT,
-	                      agesawrapper_post_device, NULL),
-};
+#define AGESAWRAPPER(func) do_agesawrapper(agesawrapper_ ## func, #func)
+
+#endif

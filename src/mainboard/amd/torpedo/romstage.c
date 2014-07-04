@@ -29,6 +29,7 @@
 #include <console/loglevel.h>
 #include "cpu/amd/car.h"
 #include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include <superio/smsc/kbc1100/kbc1100.h>
 #include "cpu/x86/lapic.h"
@@ -44,12 +45,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	u32 val;
 
 	post_code(0x35);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitmmio ");
-	val = agesawrapper_amdinitmmio();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+	AGESAWRAPPER(amdinitmmio);
 
 	if (!cpu_init_detectedx && boot_cpu()) {
 		post_code(0x30);
@@ -76,28 +72,13 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
 
 	post_code(0x36);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitreset ");
-	val = agesawrapper_amdinitreset();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+	AGESAWRAPPER(amdinitreset);
 
 	post_code(0x37);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitearly ");
-	val = agesawrapper_amdinitearly();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+	AGESAWRAPPER(amdinitearly);
 
 	post_code(0x38);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitpost ");
-	val = agesawrapper_amdinitpost();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+	AGESAWRAPPER(amdinitpost);
 
 	post_code(0x39);
 	printk(BIOS_DEBUG, "sb_before_pci_init ");
@@ -105,12 +86,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	printk(BIOS_DEBUG, "passed.\n");
 
 	post_code(0x40);
-	printk(BIOS_DEBUG, "agesawrapper_amdinitenv ");
-	val = agesawrapper_amdinitenv();
-	if (val)
-		printk(BIOS_DEBUG, "error level: %x \n", val);
-	else
-		printk(BIOS_DEBUG, "passed.\n");
+	AGESAWRAPPER(amdinitenv);
 
 	post_code(0x43);
 	copy_and_run();

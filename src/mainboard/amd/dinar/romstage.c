@@ -30,6 +30,7 @@
 #include <console/loglevel.h>
 #include "cpu/amd/car.h"
 #include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include "superio/smsc/sch4037/sch4037_early_init.c"
 #include "superio/smsc/sio1036/sio1036_early_init.c"
@@ -67,12 +68,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x32);
-	val = agesawrapper_amdinitmmio();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitmmio failed: %x \n", val);
-	} else {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitmmio passed\n");
-	}
+	AGESAWRAPPER(amdinitmmio);
 
 	/* Halt if there was a built in self test failure */
 	post_code(0x33);
@@ -89,20 +85,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	}
 
 	post_code(0x35);
-	val = agesawrapper_amdinitreset();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitreset failed: %x \n", val);
-	} else {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitreset passed\n");
-	}
+	AGESAWRAPPER(amdinitreset);
 
 	post_code(0x36);
-	val = agesawrapper_amdinitearly ();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitearly failed: %x \n", val);
-	} else {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitearly passed\n");
-	}
+	AGESAWRAPPER(amdinitearly);
 
 	post_code(0x37);
 	nb_Poweron_Init();
@@ -111,20 +97,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 
 	post_code(0x39);
-	val = agesawrapper_amdinitpost ();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitpost failed: %x \n", val);
-	} else {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitpost passed\n");
-	}
+	AGESAWRAPPER(amdinitpost);
 
 	post_code(0x40);
-	val = agesawrapper_amdinitenv ();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitenv failed: %x \n", val);
-	} else {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitenv passed\n");
-	}
+	AGESAWRAPPER(amdinitenv);
 
 
 	post_code(0x43);

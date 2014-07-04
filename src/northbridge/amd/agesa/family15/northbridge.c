@@ -40,6 +40,7 @@
 #include <cpu/amd/amdfam15.h>
 #include <cpuRegisters.h>
 #include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "northbridge.h"
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
@@ -588,13 +589,9 @@ static void domain_read_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
-	u32 val;
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam15 - %s: AmdInitMid.\n", __func__);
-	val = agesawrapper_amdinitmid();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
-	}
+	AGESAWRAPPER(amdinitmid);
 	printk(BIOS_DEBUG, "  Fam15 - leaving %s.\n", __func__);
 }
 

@@ -41,6 +41,7 @@
 #include <cpu/amd/amdfam16.h>
 #include <cpuRegisters.h>
 #include "agesawrapper.h"
+#include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "northbridge.h"
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
@@ -559,20 +560,12 @@ static void domain_read_resources(device_t dev)
 
 static void domain_enable_resources(device_t dev)
 {
-	u32 val;
 	if (acpi_is_wakeup_s3())
-		agesawrapper_fchs3laterestore();
+		AGESAWRAPPER(fchs3laterestore);
 
 	/* Must be called after PCI enumeration and resource allocation */
-	printk(BIOS_DEBUG, "\nFam16 - domain_enable_resources: AmdInitMid.\n");
-	if (!acpi_is_wakeup_s3()) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitmid ");
-		val = agesawrapper_amdinitmid ();
-		if (val)
-			printk(BIOS_DEBUG, "error level: %x \n", val);
-		else
-			printk(BIOS_DEBUG, "passed.\n");
-	}
+	if (!acpi_is_wakeup_s3())
+		AGESAWRAPPER(amdinitmid);
 
 	printk(BIOS_DEBUG, "  ader - leaving domain_enable_resources.\n");
 }

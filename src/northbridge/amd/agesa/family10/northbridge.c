@@ -831,13 +831,9 @@ static void amdfam10_domain_read_resources(device_t dev)
 
 static void amdfam10_domain_enable_resources(device_t dev)
 {
-	u32 val;
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam10 - %s: AmdInitMid.\n", __func__);
-	val = agesawrapper_amdinitmid();
-	if (val) {
-		printk(BIOS_DEBUG, "agesawrapper_amdinitmid failed: %x \n", val);
-	}
+	AGESAWRAPPER(amdinitmid);
 	printk(BIOS_DEBUG, "  ader - leaving %s.\n", __func__);
 }
 

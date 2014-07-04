@@ -305,7 +305,7 @@ xhci_pci_init (pcidev_t addr)
 	u32 reg_addr;
 	hci_t *controller;
 
-	reg_addr = (u32)phys_to_virt(pci_read_config32 (addr, 0x10) & ~0xf);
+	reg_addr = pci_read_config32 (addr, 0x10) & ~0xf;
 	if (pci_read_config32 (addr, 0x14) > 0) {
 		fatal("We don't do 64bit addressing.\n");
 	}

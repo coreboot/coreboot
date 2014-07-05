@@ -76,8 +76,7 @@ VOID *AcpiAlib		= NULL;
  *						L O C A L		F U N C T I O N S
  *------------------------------------------------------------------------------
  */
-UINT32
-agesawrapper_amdinitcpuio (
+AGESA_STATUS agesawrapper_amdinitcpuio (
 	VOID
 	)
 {
@@ -122,11 +121,10 @@ agesawrapper_amdinitcpuio (
 	PciData = 0x00000003;
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 	Status = AGESA_SUCCESS;
-	return (UINT32)Status;
+	return Status;
 }
 
-UINT32
-agesawrapper_amdinitmmio (
+AGESA_STATUS agesawrapper_amdinitmmio (
 	VOID
 	)
 {
@@ -172,11 +170,10 @@ agesawrapper_amdinitmmio (
 	LibAmdPciWrite(AccessWidth32, PciAddress, &PciData, &StdHeader);
 
 	Status = AGESA_SUCCESS;
-	return (UINT32)Status;
+	return Status;
 }
 
-UINT32
-agesawrapper_amdinitreset (
+AGESA_STATUS agesawrapper_amdinitreset (
 	VOID
 	)
 {
@@ -201,11 +198,10 @@ agesawrapper_amdinitreset (
 	status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
-	return (UINT32)status;
+	return status;
  }
 
-UINT32
-agesawrapper_amdinitearly (
+AGESA_STATUS agesawrapper_amdinitearly (
 	VOID
 	)
 {
@@ -230,11 +226,10 @@ agesawrapper_amdinitearly (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32
-agesawrapper_amdinitpost (
+AGESA_STATUS agesawrapper_amdinitpost (
 	VOID
 	)
 {
@@ -258,11 +253,10 @@ agesawrapper_amdinitpost (
 	/* Initialize heap space */
 	EmptyHeap();
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32
-agesawrapper_amdinitenv (
+AGESA_STATUS agesawrapper_amdinitenv (
 	VOID
 	)
 {
@@ -356,7 +350,7 @@ agesawrapper_amdinitenv (
 	LibAmdPciWrite (AccessWidth32, PciAddress, &PciValue, &AmdParamStruct.StdHeader);
 	AmdReleaseStruct (&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
 VOID *
@@ -384,8 +378,7 @@ agesawrapper_getlateinitptr (
 	}
 }
 
-UINT32
-agesawrapper_amdinitmid (
+AGESA_STATUS agesawrapper_amdinitmid (
 	VOID
 	)
 {
@@ -410,11 +403,10 @@ agesawrapper_amdinitmid (
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog();
 	AmdReleaseStruct (&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32
-agesawrapper_amdinitlate (
+AGESA_STATUS agesawrapper_amdinitlate (
 	VOID
 	)
 {
@@ -455,11 +447,10 @@ agesawrapper_amdinitlate (
 	 * AmdReleaseStruct (&AmdLateParams);
 	 */
 
-	return (UINT32)Status;
+	return Status;
 }
 
-UINT32
-agesawrapper_amdlaterunaptask (
+AGESA_STATUS agesawrapper_amdlaterunaptask (
 	UINT32 Func,
 	UINT32 Data,
 	VOID *ConfigPtr
@@ -483,11 +474,10 @@ agesawrapper_amdlaterunaptask (
 		ASSERT(Status == AGESA_SUCCESS);
 	}
 
-	return (UINT32)Status;
+	return Status;
 }
 
-UINT32
-agesawrapper_amdreadeventlog (
+AGESA_STATUS agesawrapper_amdreadeventlog (
 	VOID
 	)
 {
@@ -508,5 +498,5 @@ agesawrapper_amdreadeventlog (
 		Status = AmdReadEventLog (&AmdEventParams);
 	}
 
-	return (UINT32)Status;
+	return Status;
 }

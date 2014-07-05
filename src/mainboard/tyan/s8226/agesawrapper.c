@@ -78,7 +78,7 @@ VOID *AcpiAlib    = NULL;
  */
 extern VOID OemCustomizeInitEarly(IN  OUT AMD_EARLY_PARAMS *InitEarly);
 
-static UINT32 agesawrapper_amdinitcpuio(VOID)
+static AGESA_STATUS agesawrapper_amdinitcpuio(void)
 {
 	AGESA_STATUS		Status;
 	UINT32			PciData;
@@ -169,13 +169,10 @@ static UINT32 agesawrapper_amdinitcpuio(VOID)
 	}
 
 	Status = AGESA_SUCCESS;
-	return (UINT32)Status;
+	return Status;
 }
 
-UINT32
-agesawrapper_amdinitmmio (
-	VOID
-	)
+AGESA_STATUS agesawrapper_amdinitmmio(void)
 {
 	AGESA_STATUS                  Status;
 	UINT64                        MsrReg;
@@ -209,10 +206,10 @@ agesawrapper_amdinitmmio (
 	LibAmdMsrWrite (0x20D, &MsrReg, &StdHeader);
 
 	Status = AGESA_SUCCESS;
-	return (UINT32)Status;
+	return Status;
 }
 
-UINT32 agesawrapper_amdinitreset(VOID)
+UINT32 agesawrapper_amdinitreset(void)
 {
 	AGESA_STATUS status = AGESA_SUCCESS;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -238,7 +235,7 @@ UINT32 agesawrapper_amdinitreset(VOID)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	status = AmdCreateStruct(&AmdParamStruct);
 	if (status != AGESA_SUCCESS) {
-		return (UINT32)status;
+		return status;
 	}
 	AmdResetParams.HtConfig.Depth = 0;
 
@@ -251,10 +248,10 @@ UINT32 agesawrapper_amdinitreset(VOID)
 		agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct(&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32 agesawrapper_amdinitearly(VOID)
+AGESA_STATUS agesawrapper_amdinitearly(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -275,7 +272,7 @@ UINT32 agesawrapper_amdinitearly(VOID)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	status = AmdCreateStruct(&AmdParamStruct);
 	if (status != AGESA_SUCCESS) {
-		return (UINT32)status;
+		return status;
 	}
 
 	AmdEarlyParamsPtr = (AMD_EARLY_PARAMS *)AmdParamStruct.NewStructPtr;
@@ -290,10 +287,10 @@ UINT32 agesawrapper_amdinitearly(VOID)
 	printk(BIOS_DEBUG, "BSP Frequency: %uMHz\n", (unsigned int)TscRateInMhz);
 
 	AmdReleaseStruct(&AmdParamStruct);
-	return (UINT32)status;
+	return status;
 }
 
-UINT32 agesawrapper_amdinitpost(VOID)
+AGESA_STATUS agesawrapper_amdinitpost(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS  AmdParamStruct;
@@ -315,7 +312,7 @@ UINT32 agesawrapper_amdinitpost(VOID)
 
 	status = AmdCreateStruct(&AmdParamStruct);
 	if (status != AGESA_SUCCESS) {
-		return (UINT32)status;
+		return status;
 	}
 	PostParams = (AMD_POST_PARAMS *)AmdParamStruct.NewStructPtr;
 	status = AmdInitPost(PostParams);
@@ -331,10 +328,10 @@ UINT32 agesawrapper_amdinitpost(VOID)
 	FamilySpecificServices->GetTscRate (FamilySpecificServices, &TscRateInMhz, &AmdParamStruct.StdHeader);
 	printk(BIOS_DEBUG, "BSP Frequency: %uMHz\n", (unsigned int)TscRateInMhz);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32 agesawrapper_amdinitenv(VOID)
+AGESA_STATUS agesawrapper_amdinitenv(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -354,7 +351,7 @@ UINT32 agesawrapper_amdinitenv(VOID)
 
 	status = AmdCreateStruct(&AmdParamStruct);
 	if (status != AGESA_SUCCESS) {
-		return (UINT32)status;
+		return status;
 	}
 	EnvParams = (AMD_ENV_PARAMS *)AmdParamStruct.NewStructPtr;
 	status = AmdInitEnv(EnvParams);
@@ -362,7 +359,7 @@ UINT32 agesawrapper_amdinitenv(VOID)
 		agesawrapper_amdreadeventlog(EnvParams->StdHeader.HeapStatus);
 
 	AmdReleaseStruct(&AmdParamStruct);
-	return (UINT32)status;
+	return status;
 }
 
 VOID * agesawrapper_getlateinitptr(int pick)
@@ -392,7 +389,7 @@ VOID * agesawrapper_getlateinitptr(int pick)
 	return NULL;
 }
 
-UINT32 agesawrapper_amdinitmid(VOID)
+AGESA_STATUS agesawrapper_amdinitmid(void)
 {
 	AGESA_STATUS status;
 	AMD_INTERFACE_PARAMS AmdParamStruct;
@@ -414,17 +411,17 @@ UINT32 agesawrapper_amdinitmid(VOID)
 
 	status = AmdCreateStruct(&AmdParamStruct);
 	if (status != AGESA_SUCCESS) {
-		return (UINT32)status;
+		return status;
 	}
 	status = AmdInitMid((AMD_MID_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS)
 		agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);
 	AmdReleaseStruct(&AmdParamStruct);
 
-	return (UINT32)status;
+	return status;
 }
 
-UINT32 agesawrapper_amdinitlate(VOID)
+AGESA_STATUS agesawrapper_amdinitlate(void)
 {
 	AGESA_STATUS		Status;
 	AMD_INTERFACE_PARAMS	AmdParamStruct;
@@ -470,14 +467,14 @@ UINT32 agesawrapper_amdinitlate(VOID)
 	 * AmdReleaseStruct (&AmdLateParams);
 	 */
 
-	return (UINT32)Status;
+	return Status;
 }
 
 /**
  * @param[in] UINTN ApicIdOfCore,
  * @param[in] AP_EXE_PARAMS *LaunchApParams
  */
-UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
+AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 {
 	AGESA_STATUS Status;
 	AMD_LATE_PARAMS AmdLateParams;
@@ -500,7 +497,7 @@ UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, VOID *ConfigPtr)
 		ASSERT(Status <= AGESA_UNSUPPORTED);
 	}
 
-	return (UINT32)Status;
+	return Status;
 }
 
 /**
@@ -1162,7 +1159,7 @@ static void interpret_agesa_eventlog(EVENT_PARAMS *event)
 /**
  * @param  HeapStatus -the current HeapStatus
  */
-UINT32 agesawrapper_amdreadeventlog(UINT8 HeapStatus)
+AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 {
 	printk(BIOS_DEBUG, "enter in %s\n", __func__);
 	AGESA_STATUS Status;
@@ -1195,5 +1192,5 @@ UINT32 agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 	}
 
 	printk(BIOS_DEBUG, "exit %s \n", __func__);
-	return (UINT32)Status;
+	return Status;
 }

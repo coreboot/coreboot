@@ -68,22 +68,22 @@ enum {
  *---------------------------------------------------------------------------------------
  */
 
-UINT32 agesawrapper_amdinitreset (void);
-UINT32 agesawrapper_amdinitearly (void);
-UINT32 agesawrapper_amdinitenv (void);
-UINT32 agesawrapper_amdinitlate (void);
-UINT32 agesawrapper_amdinitpost (void);
-UINT32 agesawrapper_amdinitmid (void);
-UINT32 agesawrapper_amdreadeventlog (UINT8 HeapStatus);
-UINT32 agesawrapper_amdinitmmio (void);
-uint32_t agesawrapper_amdinitcpuio (void);
+AGESA_STATUS agesawrapper_amdinitreset(void);
+AGESA_STATUS agesawrapper_amdinitearly(void);
+AGESA_STATUS agesawrapper_amdinitenv(void);
+AGESA_STATUS agesawrapper_amdinitlate(void);
+AGESA_STATUS agesawrapper_amdinitpost(void);
+AGESA_STATUS agesawrapper_amdinitmid(void);
+AGESA_STATUS agesawrapper_amdreadeventlog (UINT8 HeapStatus);
+AGESA_STATUS agesawrapper_amdinitmmio(void);
+uint32_t agesawrapper_amdinitcpuio(void);
 void *agesawrapper_getlateinitptr (int pick);
-UINT32 agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, void *ConfigPtr);
-UINT32 agesawrapper_amdS3Save(VOID);
-UINT32 agesawrapper_amdinitresume(VOID);
-UINT32 agesawrapper_amds3laterestore (VOID);
+AGESA_STATUS agesawrapper_amdlaterunaptask (UINT32 Func, UINT32 Data, void *ConfigPtr);
+AGESA_STATUS agesawrapper_amdS3Save(void);
+AGESA_STATUS agesawrapper_amdinitresume(void);
+AGESA_STATUS agesawrapper_amds3laterestore(void);
 
-UINT32 agesawrapper_fchs3earlyrestore (VOID);
-UINT32 agesawrapper_fchs3laterestore (VOID);
+AGESA_STATUS agesawrapper_fchs3earlyrestore(void);
+AGESA_STATUS agesawrapper_fchs3laterestore(void);
 
 #endif

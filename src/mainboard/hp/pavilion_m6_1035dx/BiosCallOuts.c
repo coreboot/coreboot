@@ -190,10 +190,12 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 
 	if (StdHeader->Func == AMD_INIT_RESET) {
-		FCH_RESET_DATA_BLOCK *FchParams_reset =  (FCH_RESET_DATA_BLOCK *) FchData;
+		FCH_RESET_DATA_BLOCK *FchParams_reset = (FCH_RESET_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 		//FchParams_reset->EcChannel0 = TRUE; /* logical devicd 3 */
 		FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
+		FchParams_reset->FchReset.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
+		FchParams_reset->FchReset.Xhci1Enable = FALSE;
 	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
@@ -206,11 +208,7 @@ AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 		oem_fan_control(FchParams_env);
 
 		/* XHCI configuration */
-#if CONFIG_HUDSON_XHCI_ENABLE
-		FchParams_env->Usb.Xhci0Enable = TRUE;
-#else
-		FchParams_env->Usb.Xhci0Enable = FALSE;
-#endif
+		FchParams_env->Usb.Xhci0Enable = IS_ENABLED(CONFIG_HUDSON_XHCI_ENABLE);
 		FchParams_env->Usb.Xhci1Enable = FALSE;
 
 		/* sata configuration */

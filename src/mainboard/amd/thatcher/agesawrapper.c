@@ -165,8 +165,6 @@ AGESA_STATUS agesawrapper_amdinitreset(void)
 	AmdParamStruct.StdHeader.ImageBasePtr = 0;
 	AmdCreateStruct (&AmdParamStruct);
 	AmdResetParams.HtConfig.Depth = 0;
-	AmdResetParams.FchInterface.Xhci0Enable = FALSE;
-	AmdResetParams.FchInterface.Xhci1Enable = FALSE;
 
 	status = AmdInitReset ((AMD_RESET_PARAMS *)AmdParamStruct.NewStructPtr);
 	if (status != AGESA_SUCCESS) agesawrapper_amdreadeventlog(AmdParamStruct.StdHeader.HeapStatus);

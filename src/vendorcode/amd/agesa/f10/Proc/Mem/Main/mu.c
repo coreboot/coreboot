@@ -75,47 +75,47 @@
  *           P R O T O T Y P E S     O F     L O C A L     F U  N C T I O N S
  *----------------------------------------------------------------------------------------
  */
- 
-VOID 
+
+VOID
 MemUWriteCachelines (
   IN       UINT32 Address,
   IN       UINT8 Pattern[],
   IN       UINT16 ClCount
   );
- 
-VOID 
+
+VOID
 MemUReadCachelines (
   IN       UINT8 Buffer[],
   IN       UINT32 Address,
   IN       UINT16 ClCount
   );
- 
+
 VOID
 MemUDummyCLRead (
   IN       UINT32 Address
   );
- 
-VOID 
+
+VOID
 MemUMFenceInstr (
   VOID
   );
- 
+
 VOID
 MemUFlushPattern (
   IN       UINT32 Address,
   IN       UINT16 ClCount
   );
- 
+
 VOID
 AlignPointerTo16Byte (
   IN OUT   UINT8 **BufferPtrPtr
   );
- 
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
  */
- 
+
 /*---------------------------------------------------------------------------------------
  *                          L O C A L    F U N C T I O N S
  *---------------------------------------------------------------------------------------
@@ -125,7 +125,7 @@ AlignPointerTo16Byte (
 
 //----------------------------------------------------------------------------
 
-VOID 
+VOID
 MemUWriteCachelines (
   IN       UINT32 Address,
   IN       UINT8 Pattern[],
@@ -164,7 +164,7 @@ MemUWriteCachelines (
 //                 Address   - Physical address to be read
 //                 ClCount   - number of cachelines to be read
 
-VOID 
+VOID
 MemUReadCachelines (
   IN       UINT8 Buffer[],
   IN       UINT32 Address,
@@ -183,13 +183,13 @@ MemUReadCachelines (
 
 //----------------------------------------------------------------------------
 // MemUDummyCLRead:
-// 
+//
 //    Perform a single cache line read from a given physical address.
-// 
+//
 //              In: Address   - Physical address to be read
 //                  ClCount   - number of cachelines to be read
 
-//FUNC_ATTRIBUTE (noinline) 
+//FUNC_ATTRIBUTE (noinline)
 VOID
 MemUDummyCLRead (
   IN       UINT32 Address
@@ -201,7 +201,7 @@ MemUDummyCLRead (
 
 //----------------------------------------------------------------------------
 
-VOID 
+VOID
 MemUMFenceInstr (
   VOID
   )
@@ -211,13 +211,13 @@ MemUMFenceInstr (
 
 //----------------------------------------------------------------------------
 // MemUFlushPattern:
-// 
+//
 //  Flush a pattern of 72 bit times (per DQ) from cache.  This procedure is used
 //  to ensure cache miss on the next read training.
-// 
+//
 //              In: Address   - Physical address to be flushed
 //                  ClCount   - number of cachelines to be flushed
-//FUNC_ATTRIBUTE(noinline) 
+//FUNC_ATTRIBUTE(noinline)
 VOID
 MemUFlushPattern (
   IN       UINT32 Address,
@@ -238,7 +238,7 @@ MemUFlushPattern (
 
 //----------------------------------------------------------------------------
 
-//FUNC_ATTRIBUTE(noinline) 
+//FUNC_ATTRIBUTE(noinline)
 VOID
 AlignPointerTo16Byte (
   IN OUT   UINT8 **BufferPtrPtr

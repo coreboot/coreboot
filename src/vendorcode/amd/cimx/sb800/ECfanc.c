@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2011, Advanced Micro Devices, Inc.
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *     * Redistributions of source code must retain the above copyright
@@ -11,10 +11,10 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the names of 
- *       its contributors may be used to endorse or promote products derived 
+ *     * Neither the name of Advanced Micro Devices, Inc. nor the names of
+ *       its contributors may be used to endorse or promote products derived
  *       from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -25,7 +25,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * ***************************************************************************
  *
  */
@@ -186,18 +186,18 @@ SBIMCFanInitializeS3 (VOID)
 
         // Clear MSG_REG0 to receive acknowledge byte
         WriteECmsg (MSG_REG0, AccWidthUint8, &Value82);
-        
+
         // Set MSG_REG1
         //   0x02 -  Notify IMC that the system is waken from any sleep state
         WriteECmsg (MSG_REG1, AccWidthUint8, &Value83);
-        
+
         // Set timeout counter value to 00 which disables watchdog timer
         WriteECmsg (MSG_REG2, AccWidthUint8, &Value84);
-        
+
         // Write mailbox function number to kick off the command
-        //   0x98 -  IMC System Sleep and Wake Services        
+        //   0x98 -  IMC System Sleep and Wake Services
         WriteECmsg (MSG_SYS_TO_IMC, AccWidthUint8, &Value80);
-        
+
         // Read acknowledge byte to make sure function is executed properly
         WaitForEcLDN9MailboxCmdAck ();
     }

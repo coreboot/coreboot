@@ -724,7 +724,7 @@ static u8 *ehci_poll_intr_queue(void *const queue)
 }
 
 hci_t *
-ehci_init (void *bar)
+ehci_init (unsigned long physical_bar)
 {
 	int i;
 	hci_t *controller = new_controller ();
@@ -751,7 +751,7 @@ ehci_init (void *bar)
 	controller->create_intr_queue = ehci_create_intr_queue;
 	controller->destroy_intr_queue = ehci_destroy_intr_queue;
 	controller->poll_intr_queue = ehci_poll_intr_queue;
-	controller->reg_base = (u32)(unsigned long)bar;
+	controller->reg_base = (u32)physical_bar;
 	for (i = 0; i < 128; i++) {
 		controller->devices[i] = 0;
 	}
@@ -822,7 +822,7 @@ ehci_pci_init (pcidev_t addr)
 	/* default value for frame length adjust */
 	pci_write_config8(addr, FLADJ, FLADJ_framelength(60000));
 
-	controller = ehci_init((void *)(unsigned long)reg_base);
+	controller = ehci_init((unsigned long)reg_base);
 
 	return controller;
 }

@@ -160,13 +160,13 @@ static void usb_scan_pci_bus(int bus)
 static void usb_scan_memory(void)
 {
 #ifdef CONFIG_USB_XHCI
-	xhci_init((void *)(unsigned long)CONFIG_USB_XHCI_BASE_ADDRESS);
+	xhci_init(CONFIG_USB_XHCI_BASE_ADDRESS);
 #endif
 #ifdef CONFIG_USB_EHCI
-	ehci_init((void *)(unsigned long)CONFIG_USB_EHCI_BASE_ADDRESS);
+	ehci_init(CONFIG_USB_EHCI_BASE_ADDRESS);
 #endif
 #ifdef CONFIG_USB_OHCI
-	ohci_init((void *)(unsigned long)CONFIG_USB_OHCI_BASE_ADDRESS);
+	ohci_init(CONFIG_USB_OHCI_BASE_ADDRESS);
 #endif
 }
 #endif

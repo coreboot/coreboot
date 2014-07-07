@@ -34,7 +34,7 @@
 #include <usb/usb.h>
 
 hci_t *ehci_pci_init (pcidev_t addr);
-hci_t *ehci_init (void *bar);
+hci_t *ehci_init (unsigned long physical_bar);
 
 void ehci_rh_init (usbdev_t *dev);
 

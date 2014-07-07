@@ -167,7 +167,7 @@ static const char *direction[] = {
 #endif
 
 hci_t *
-ohci_init (void *bar)
+ohci_init (unsigned long physical_bar)
 {
 	int i;
 
@@ -201,7 +201,7 @@ ohci_init (void *bar)
 	init_device_entry (controller, 0);
 	OHCI_INST (controller)->roothub = controller->devices[0];
 
-	controller->reg_base = (u32)(unsigned long)bar;
+	controller->reg_base = (u32)physical_bar;
 	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(controller->reg_base);
 	usb_debug("OHCI Version %x.%x\n", (OHCI_INST (controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST (controller)->opreg->HcRevision & 0xf);
 
@@ -263,7 +263,7 @@ ohci_pci_init (pcidev_t addr)
 	 * OHCI mandates MMIO, so bit 0 is clear */
 	reg_base = pci_read_config32 (addr, 0x10) & 0xfffff000;
 
-	return ohci_init((void *)(unsigned long)reg_base);
+	return ohci_init((unsigned long)reg_base);
 }
 #endif
 

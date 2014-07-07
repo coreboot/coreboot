@@ -143,7 +143,7 @@ xhci_wait_ready(xhci_t *const xhci)
 }
 
 hci_t *
-xhci_init (const void *bar)
+xhci_init (unsigned long physical_bar)
 {
 	int i;
 
@@ -192,7 +192,7 @@ xhci_init (const void *bar)
 		goto _free_xhci;
 	}
 
-	controller->reg_base	= (u32)(unsigned long)bar;
+	controller->reg_base	= (u32)physical_bar;
 
 	xhci->capreg	= phys_to_virt(controller->reg_base);
 	xhci->opreg	= ((void *)xhci->capreg) + xhci->capreg->caplength;
@@ -310,7 +310,7 @@ xhci_pci_init (pcidev_t addr)
 		fatal("We don't do 64bit addressing.\n");
 	}
 
-	controller = xhci_init((void *)(unsigned long)reg_addr);
+	controller = xhci_init((unsigned long)reg_addr);
 	controller->pcidev = addr;
 
 	xhci_switch_ppt_ports(addr);

@@ -84,4 +84,3 @@ u32 pack_aux(u32 *src, int src_bytes);
 void unpack_aux(u32 src, u32 *dst, int dst_bytes);
 int intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 	u32 *recv, int recv_size);
-

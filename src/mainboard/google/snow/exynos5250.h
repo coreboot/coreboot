@@ -30,4 +30,3 @@
 #define VDD_LDO3_MV 1800	// 1.8V
 #define VDD_LDO5_MV 1800	// 1.8V
 #define VDD_LDO10_MV 1800	// 1.8V
-

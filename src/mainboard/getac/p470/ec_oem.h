@@ -50,4 +50,3 @@ int ec_oem_write(u8 addr, u8 data);
 int ec_dump_status(void);
 int ec_oem_dump_status(void);
 #endif
-

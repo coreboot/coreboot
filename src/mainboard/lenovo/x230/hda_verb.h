@@ -313,5 +313,3 @@ static const u32 mainboard_pc_beep_verbs[] = {
 
 static const u32 mainboard_pc_beep_verbs_size =
 	ARRAY_SIZE(mainboard_pc_beep_verbs);
-
-

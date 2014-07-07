@@ -97,4 +97,3 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x02171f03, // connector, left panel
 
 };
-

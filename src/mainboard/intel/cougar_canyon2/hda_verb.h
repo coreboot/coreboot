@@ -47,4 +47,3 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x30771e56,
 	0x30771f18
 };
-

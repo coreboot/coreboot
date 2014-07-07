@@ -35,4 +35,3 @@ struct mb_sysconf_t {
 };
 
 #endif
-

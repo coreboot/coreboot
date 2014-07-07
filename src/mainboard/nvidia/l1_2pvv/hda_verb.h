@@ -106,4 +106,3 @@ static u32 mainboard_cim_verb_data[] = {
 
 extern u32 *cim_verb_data;
 extern u32 cim_verb_data_size;
-

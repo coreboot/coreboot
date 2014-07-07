@@ -25,9 +25,6 @@
 #include <stdlib.h>
 #include "agesawrapper.h"
 #include <cpu/amd/amdfam10_sysconf.h>
-#if CONFIG_AMD_SB_CIMX
-#include <sb_cimx.h>
-#endif
 
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
@@ -108,8 +105,4 @@ void get_bus_conf(void)
 	/* I/O APICs:   APIC ID Version State   Address */
 	bus_isa = 10;
 
-#if CONFIG_AMD_SB_CIMX
-	sb_After_Pci_Init();
-	sb_Late_Post();
-#endif
 }

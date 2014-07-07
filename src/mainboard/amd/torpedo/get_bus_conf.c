@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <cpu/amd/amdfam12.h>
-#include "sb_cimx.h"
 #include "agesawrapper.h"
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
@@ -100,6 +99,5 @@ void get_bus_conf(void)
 	/* I/O APICs:   APIC ID Version State   Address */
 	bus_isa = 10;
 
-	sb_Late_Post();
 	printk(BIOS_DEBUG, "Mainboard - %s - %s - End.\n", __FILE__, __func__);
 }

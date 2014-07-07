@@ -26,9 +26,6 @@
 #include <cpu/amd/amdfam14.h>
 #include "agesawrapper.h"
 #include <arch/ioapic.h>
-#if CONFIG_AMD_SB_CIMX
-#include <sb_cimx.h>
-#endif
 
 
 /* Global variables for MB layouts and these will be shared by irqtable mptable
@@ -109,7 +106,4 @@ void get_bus_conf(void)
 	apicid_sb800 = (io_apic_read(IO_APIC_ADDR, 0x00) >> 24);
 	apicver_sb800 = (io_apic_read(IO_APIC_ADDR, 0x01) & 0xFF);
 
-#if CONFIG_AMD_SB_CIMX
-	sb_Late_Post();
-#endif
 }

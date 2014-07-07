@@ -28,9 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <southbridge/amd/cimx/sb800/sb_cimx.h>
-
-
 /**
  * Global variables for mainboard layouts. These are shared by irqtable,
  * mptable and acpi_tables where busnum is default.
@@ -110,7 +107,4 @@ void get_bus_conf(void)
 	apicid_sb800 = (io_apic_read(IO_APIC_ADDR, 0x00) >> 24);
 	apicver_sb800 = (io_apic_read(IO_APIC_ADDR, 0x01) & 0xFF);
 
-#if CONFIG_AMD_SB_CIMX
-	sb_Late_Post();
-#endif /* CONFIG_AMD_SB_CIMX */
 }

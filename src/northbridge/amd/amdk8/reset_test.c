@@ -84,4 +84,3 @@ static inline unsigned get_sbbusn(unsigned sblk)
 {
 	return node_link_to_bus(0, sblk);
 }
-

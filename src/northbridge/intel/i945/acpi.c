@@ -71,5 +71,3 @@ unsigned long acpi_fill_mcfg(unsigned long current)
 
 	return current;
 }
-
-

@@ -45,4 +45,3 @@ void gm45_early_init(void)
 	pci_write_config8(d0f0, D0F0_PAM(5), 0x33);
 	pci_write_config8(d0f0, D0F0_PAM(6), 0x33);
 }
-

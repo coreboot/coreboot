@@ -227,4 +227,3 @@ static void setup_io_resource_map(const u32 *register_values, u32 max)
 	}
 }
 #endif
-

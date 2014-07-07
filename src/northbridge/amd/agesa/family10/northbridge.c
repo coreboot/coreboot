@@ -1440,4 +1440,3 @@ struct chip_operations northbridge_amd_agesa_family10_root_complex_ops = {
 	CHIP_NAME("AMD FAM10 Root Complex")
 	.enable_dev = root_complex_enable_dev,
 };
-

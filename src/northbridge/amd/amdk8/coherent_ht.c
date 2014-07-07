@@ -1854,4 +1854,3 @@ static int setup_coherent_ht_domain(void)
 	return optimize_link_coherent_ht();
 #endif
 }
-

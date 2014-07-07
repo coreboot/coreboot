@@ -981,4 +981,3 @@ static void sdram_set_spd_registers(void)
 	/* Setup Initial Northbridge Registers */
 	northbridge_set_registers();
 }
-

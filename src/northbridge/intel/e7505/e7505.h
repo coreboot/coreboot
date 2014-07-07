@@ -82,4 +82,3 @@
 #define NERR_GLOBAL	0x44	/* Next global error register, 32 bits */
 #define DRAM_FERR	0x80	/* DRAM first error register, 8 bits */
 #define DRAM_NERR	0x82	/* DRAM next error register, 8 bits */
-

@@ -168,4 +168,3 @@ u8 get_sbbusn(u8 sblk)
 {
 	return node_link_to_bus(0, sblk);
 }
-

@@ -182,4 +182,3 @@ static void setup_mem_resource_map(const unsigned int *register_values, int max)
 	}
 }
 #endif
-

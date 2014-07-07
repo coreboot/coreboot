@@ -609,5 +609,3 @@ void amdHtInitialize(AMD_HTBLOCK *pBlock);
 
 
 #endif	 /* H3FINIT_H */
-
-

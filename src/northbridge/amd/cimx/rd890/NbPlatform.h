@@ -144,4 +144,3 @@
 #define CIMX_NBPCIE_MISC  0xFFFFFFFF
 
 #endif
-

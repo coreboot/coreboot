@@ -137,4 +137,3 @@ static const struct pci_driver haswell_minihd __pci_driver = {
 	.vendor	 = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
 };
-

@@ -165,4 +165,3 @@ typedef struct {
 } __attribute__((packed)) optionrom_vbt_t;
 
 #define VBT_SIGNATURE 0x54425624
-

@@ -38,4 +38,3 @@
 #define HC_POSSIBLE_NUM 32
 
 #endif
-

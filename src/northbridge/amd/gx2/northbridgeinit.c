@@ -675,4 +675,3 @@ void northbridge_init_early(void)
 	__asm__ __volatile__("FINIT\n");
 	printk(BIOS_DEBUG, "Exit %s\n", __func__);
 }
-

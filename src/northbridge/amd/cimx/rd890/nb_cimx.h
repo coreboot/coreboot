@@ -41,4 +41,3 @@ void nb_Pcie_Early_Init(void);
 void nb_Pcie_Late_Init(void);
 
 #endif//_RD890_EARLY_H_
-

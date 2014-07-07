@@ -143,5 +143,3 @@ void InterleaveBanks_D(struct MCTStatStruc *pMCTstat,
 	print_tx("InterleaveBanks_D: ErrCode ", pDCTstat->ErrCode);
 	print_t("InterleaveBanks_D: Done\n");
 }
-
-

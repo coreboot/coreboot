@@ -86,4 +86,3 @@
 #define DWTC    0xe0 /* DRAM Write Thermal Throttling Control (0x000..000). */
 #define DRTC    0xe8 /* DRAM Read Thermal Throttling Control (0x000..000). */
 #define BUFFC   0xf0 /* Buffer Control Register (0x0000). */
-

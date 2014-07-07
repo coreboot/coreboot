@@ -12,4 +12,3 @@ void dump_io_resources(unsigned port);
 void dump_mem(unsigned start, unsigned end);
 
 #endif
-

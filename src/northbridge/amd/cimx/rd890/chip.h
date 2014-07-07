@@ -32,4 +32,3 @@ struct northbridge_amd_cimx_rd890_config
 };
 
 #endif /* _CIMX_RD890_CHIP_H_ */
-

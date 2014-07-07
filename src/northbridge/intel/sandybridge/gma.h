@@ -170,4 +170,3 @@ struct northbridge_intel_sandybridge_config;
 
 int i915lightup(const struct northbridge_intel_sandybridge_config *info,
 		u32 physbase, u16 pio, u32 mmio, u32 lfb);
-

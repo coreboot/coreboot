@@ -335,4 +335,3 @@ void receive_enable_adjust(struct sys_info *sysinfo)
 		if (receive_enable_autoconfig(0x80, sysinfo))
 			return;
 }
-

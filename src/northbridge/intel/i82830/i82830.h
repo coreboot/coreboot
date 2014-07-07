@@ -49,4 +49,3 @@
 #define APBASE  0x10 /* Aperture Base Configuration (0x00000008) */
 #define APSIZE  0xb4 /* Apterture Size (0x00) */
 #define ATTBASE 0xb8 /* Aperture Translation Table Base (0x00000000) */
-

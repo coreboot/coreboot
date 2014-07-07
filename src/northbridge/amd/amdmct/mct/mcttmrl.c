@@ -409,5 +409,3 @@ u8 mct_GetStartMaxRdLat_D(struct MCTStatStruc *pMCTstat,
 
 	return val;
 }
-
-

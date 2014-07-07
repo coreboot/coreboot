@@ -70,4 +70,3 @@
 #define PAM4    0x5d
 #define PAM5    0x5e
 #define PAM6    0x5f
-

@@ -44,4 +44,3 @@ struct northbridge_intel_nehalem_config {
 	int gpu_link_frequency_270_mhz;
 	int gpu_lvds_num_lanes;
 };
-

@@ -80,4 +80,3 @@ static void fill_mem_ctrl(u32 controllers, struct mem_controller *ctrl_a, const 
 		}
 	}
 }
-

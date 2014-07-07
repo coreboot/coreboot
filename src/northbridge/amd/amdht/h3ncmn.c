@@ -2219,4 +2219,3 @@ void newNorthBridge(u8 node, cNorthBridge *nb)
 	/* Update the initial limited key to the real one, which may include other matching info */
 	nb->compatibleKey = makeKey(node);
 }
-

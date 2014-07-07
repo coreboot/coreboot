@@ -73,5 +73,3 @@ static void pci_write_config32_index_wait(device_t dev, u32 index_reg, u32 index
 }
 #endif
 #endif
-
-

@@ -248,4 +248,3 @@ struct mrc_data_container *find_current_mrc_cache(void)
 	//  0. compare MRC data to last mrc-cache block (exit if same)
 	return find_current_mrc_cache_local(cache_base, cache_size);
 }
-

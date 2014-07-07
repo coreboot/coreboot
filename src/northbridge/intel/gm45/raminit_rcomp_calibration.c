@@ -249,4 +249,3 @@ void raminit_rcomp_calibration(const stepping_t stepping) {
 		mchbar += 0x0040;
 	}
 }
-

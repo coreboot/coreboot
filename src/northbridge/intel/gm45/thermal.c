@@ -197,4 +197,3 @@ void raminit_thermal(const sysinfo_t *sysinfo)
 	tmp = MCHBAR32(0x11d4) & ~0x1f;
 	MCHBAR32(0x11d4) = tmp | 4;
 }
-

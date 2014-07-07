@@ -198,5 +198,3 @@ int init_igd_opregion(igd_opregion_t *opregion)
 
 	return 0;
 }
-
-

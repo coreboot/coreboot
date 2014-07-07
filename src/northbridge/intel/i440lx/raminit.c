@@ -451,4 +451,3 @@ static void sdram_enable(void)
 
 	PRINT_DEBUG("Northbridge following SDRAM init:\n");
 }
-

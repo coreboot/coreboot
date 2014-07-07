@@ -22,4 +22,3 @@ struct northbridge_intel_i3100_config
 	/* Interrupt line connect */
 	u16 intrline;
 };
-

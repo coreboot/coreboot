@@ -42,5 +42,3 @@
 #define DDRII_333	0x2
 #define DDRII_266	0x1
 #define DDRII_200	0x0
-
-

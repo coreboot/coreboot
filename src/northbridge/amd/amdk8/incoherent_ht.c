@@ -864,6 +864,3 @@ static int optimize_link_incoherent_ht(struct sys_info *sysinfo)
 
 }
 #endif
-
-
-

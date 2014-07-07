@@ -903,4 +903,3 @@ void i945_late_initialization(void)
 
 	i945_setup_root_complex_topology();
 }
-

@@ -39,4 +39,3 @@ struct northbridge_intel_sandybridge_config {
 	u32 gpu_cpu_backlight;	/* CPU Backlight PWM value */
 	u32 gpu_pch_backlight;	/* PCH Backlight PWM value */
 };
-

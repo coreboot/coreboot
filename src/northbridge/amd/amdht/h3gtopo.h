@@ -357,4 +357,3 @@ void getAmdTopolist(u8 ***p);
 
 
 #endif	 /* HTTOPO_H */
-

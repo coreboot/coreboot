@@ -152,4 +152,3 @@ static const struct pci_driver i945_gma_func1_driver __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x27a6,
 };
-

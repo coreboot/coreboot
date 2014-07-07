@@ -87,5 +87,3 @@ void graphics_init(void)
 	res = vrRead(wClassIndex);
 	printk(BIOS_DEBUG, "VRC_VG value: 0x%04x\n", res);
 }
-
-

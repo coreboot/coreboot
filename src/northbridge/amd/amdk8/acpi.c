@@ -307,4 +307,3 @@ void update_ssdtx(void *ssdtx, int i)
 	/* FIXME: need to update the GSI id in the ssdtx too */
 
 }
-

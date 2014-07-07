@@ -143,7 +143,3 @@ static void amd_ht_init(struct sys_info *sysinfo)
 
 
 }
-
-
-
-

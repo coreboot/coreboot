@@ -62,4 +62,3 @@ static inline const struct pattrs *pattrs_get(void)
 
 
 #endif /* _PATTRS_H_ */
-

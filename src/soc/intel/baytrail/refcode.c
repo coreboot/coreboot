@@ -183,4 +183,3 @@ void baytrail_run_reference_code(void)
 		return;
 	}
 }
-

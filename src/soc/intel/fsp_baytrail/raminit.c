@@ -45,4 +45,3 @@ unsigned long get_top_of_ram(void)
 
 	return (unsigned long) tom;
 }
-

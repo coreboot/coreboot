@@ -154,4 +154,3 @@ static const struct pci_driver nc_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = SOC_DEVID,
 };
-

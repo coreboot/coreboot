@@ -28,4 +28,3 @@
 # define SRC_CACHE_PREFETCH		(0x2 << 2)
 
 #endif /* _BAYTRAIL_SPI_H_ */
-

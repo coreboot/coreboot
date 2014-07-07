@@ -65,4 +65,3 @@ struct spi_config {
 int mainboard_get_spi_config(struct spi_config *cfg);
 
 #endif /* _BAYTRAIL_SPI_H_ */
-

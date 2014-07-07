@@ -394,4 +394,3 @@ void ramstage_cache_invalid(struct ramstage_cache *cache)
 	cold_reset();
 #endif
 }
-

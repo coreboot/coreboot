@@ -38,4 +38,3 @@ void tco_disable(void)
 	reg |= TCO_TMR_HALT;
 	outl(reg, ACPI_BASE_ADDRESS + TCO1_CNT);
 }
-

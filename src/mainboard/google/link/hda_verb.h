@@ -178,4 +178,4 @@ static const u32 mainboard_pc_beep_verbs[] = {
 	0x0143b013,			/* beep volume */
 };
 static const u32 mainboard_pc_beep_verbs_size =
-	sizeof(mainboard_pc_beep_verbs) / sizeof(mainboard_pc_beep_verbs[0]);
+	ARRAY_SIZE(mainboard_pc_beep_verbs);

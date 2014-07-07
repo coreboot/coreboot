@@ -136,4 +136,4 @@ static const u32 mainboard_pc_beep_verbs[] = {
 	0x00b37410,	/* unmute mixer nid 0xb beep input and set volume */
 };
 static const u32 mainboard_pc_beep_verbs_size =
-	sizeof(mainboard_pc_beep_verbs) / sizeof(mainboard_pc_beep_verbs[0]);
+	ARRAY_SIZE(mainboard_pc_beep_verbs);

@@ -101,4 +101,3 @@ ROMSTAGE_CONST struct device *dev_find_slot_on_smbus(unsigned int bus,
 	}
 	return result;
 }
-

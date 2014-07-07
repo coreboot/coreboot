@@ -68,4 +68,3 @@ void set_cpu_topology(device_t cpu, unsigned node, unsigned package, unsigned co
 	cpu->path.apic.core_id = core;
 	cpu->path.apic.thread_id = thread;
 }
-

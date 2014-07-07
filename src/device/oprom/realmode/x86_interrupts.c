@@ -232,4 +232,3 @@ int int1a_handler(void)
 
 	return retval;
 }
-

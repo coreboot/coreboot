@@ -2493,4 +2493,3 @@ void x86emu_cpuid(void)
         break;
     }
 }
-

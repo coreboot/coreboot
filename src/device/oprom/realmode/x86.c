@@ -512,4 +512,3 @@ int asmlinkage interrupt_handler(u32 intnumber,
 	 * but keep it around so its expectations are met */
 	return ret;
 }
-

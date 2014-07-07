@@ -404,7 +404,7 @@ crosstools-arm: clean-for-update
 crossgcc-clean: clean-for-update
 	$(MAKE) -C util/crossgcc clean
 
-tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/cbfstool/rmodtool $(objutil)/nvramtool/nvramtool $(objutil)/romcc/romcc $(objutil)/sconfig/sconfig
+tools: $(objutil)/kconfig/conf $(objutil)/cbfstool/cbfstool $(objutil)/cbfstool/rmodtool $(objutil)/nvramtool/nvramtool $(ROMCC_BIN) $(objutil)/sconfig/sconfig $(IFDTOOL) $(IFDFAKE)
 
 ###########################################################################
 # Common recipes for all stages

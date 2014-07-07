@@ -49,4 +49,3 @@ static void main(unsigned long bist)
 	/* duh. we're stuck */
 	asm volatile ("1:\n\thlt\n\tjmp 1b\n\t");
 }
-

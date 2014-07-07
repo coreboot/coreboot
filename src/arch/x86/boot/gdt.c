@@ -57,4 +57,3 @@ void move_gdt(void)
 	__asm__ __volatile__ ("lgdt %0\n\t" : : "m" (gdtarg));
 	printk(BIOS_DEBUG, "ok\n");
 }
-

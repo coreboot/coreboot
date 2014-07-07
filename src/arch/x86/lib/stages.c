@@ -23,4 +23,3 @@ static void skip_romstage(void)
 		"jmp	__main\n"
 	);
 }
-

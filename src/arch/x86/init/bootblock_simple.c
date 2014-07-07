@@ -20,4 +20,3 @@ static void main(unsigned long bist)
 	if (entry) call(entry, bist);
 	asm volatile ("1:\n\thlt\n\tjmp 1b\n\t");
 }
-

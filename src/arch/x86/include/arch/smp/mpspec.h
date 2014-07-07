@@ -294,4 +294,3 @@ void mptable_write_buses(struct mp_config_table *mc, int *max_pci_bus, int *isa_
 void *mptable_finalize(struct mp_config_table *mc);
 
 #endif
-

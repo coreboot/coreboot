@@ -293,4 +293,3 @@ void cpu_initialize(unsigned int index)
 
 	return;
 }
-

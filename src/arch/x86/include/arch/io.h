@@ -353,4 +353,3 @@ void pnp_set_drq(pnp_devfn_t dev, unsigned index, unsigned drq)
 #endif /* __SIMPLE_DEVICE__ */
 
 #endif
-

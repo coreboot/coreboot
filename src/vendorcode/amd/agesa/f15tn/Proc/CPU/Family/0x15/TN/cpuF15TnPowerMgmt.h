@@ -243,7 +243,8 @@ typedef struct {
 /// GMC to DCT Control 2 PCI Register
 typedef struct {
   UINT32 CpuElevPrioDis:1;           ///< Cpu elevate priority disable
-  UINT32 :31;                        ///< Reserved
+  UINT32 Reserved_30_1:30; ///<
+  UINT32 DisHalfNclkPwrGate:1; ///<
 } GMC_TO_DCT_CTL_2_REGISTER;
 
 

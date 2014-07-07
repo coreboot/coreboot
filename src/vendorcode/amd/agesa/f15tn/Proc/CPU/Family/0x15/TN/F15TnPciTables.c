@@ -85,6 +85,13 @@ Erratum687Workaround (
   IN       AMD_CONFIG_PARAMS *StdHeader
   );
 
+VOID
+STATIC
+Erratum712Workaround (
+  IN       UINT32              Data,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  );
+
 /*----------------------------------------------------------------------------------------
  *                          E X P O R T E D    F U N C T I O N S
  *----------------------------------------------------------------------------------------
@@ -726,6 +733,18 @@ STATIC CONST FAM_SPECIFIC_WORKAROUND_TYPE_ENTRY_INITIALIZER ROMDATA F15TnPciWork
       0x00000000,                           // data
     }}
   },
+  {
+    FamSpecificWorkaround,
+    {
+      (AMD_FAMILY_15_TN | 0x0000000000000800ull) ,                        // CpuFamily
+      AMD_F15_TN_ALL                        // CpuRevision
+    },
+    {AMD_PF_ALL},                           // platformFeatures
+    {{
+      Erratum712Workaround,                 // function call
+      0x00000000,                           // data
+    }}
+  },
 };
 
 
@@ -819,4 +838,37 @@ Erratum687Workaround (
     LibAmdPciWrite (AccessWidth32, PciAddress, (VOID *)&DctCfgSel, StdHeader);
   }
 }
+/*---------------------------------------------------------------------------------------*/
+/**
+ *  Workaround for Erratum #712 for TN processors.
+ *
+ *  AGESA should program D18F2x408_dct[1:0] bit 31 = 1b for all TN parts.
+ *
+ * @param[in]   Data         The table data value, for example to indicate which CPU and Platform types matched.
+ * @param[in]   StdHeader    Config handle for library and services.
+ *
+ */
+VOID
+STATIC
+Erratum712Workaround (
+  IN       UINT32              Data,
+  IN       AMD_CONFIG_PARAMS *StdHeader
+  )
+{
+  PCI_ADDR                  PciAddress;
+  GMC_TO_DCT_CTL_2_REGISTER GmcToDctCtrl2;
+  UINT32                    DctSelCnt;
+  DCT_CFG_SEL_REGISTER      DctCfgSel;
 
+  for (DctSelCnt = 0; DctSelCnt <= 1; DctSelCnt++) {
+    PciAddress.AddressValue = GMC_TO_DCT_CTL_2_PCI_ADDR;
+    LibAmdPciRead (AccessWidth32, PciAddress, (VOID *)&GmcToDctCtrl2, StdHeader);
+    GmcToDctCtrl2.DisHalfNclkPwrGate |= 1;
+    LibAmdPciWrite (AccessWidth32, PciAddress, (VOID *)&GmcToDctCtrl2, StdHeader);
+
+    PciAddress.AddressValue = DCT_CFG_SEL_REG_PCI_ADDR;
+    LibAmdPciRead (AccessWidth32, PciAddress, (VOID *)&DctCfgSel, StdHeader);
+    DctCfgSel.DctCfgSel = ~DctCfgSel.DctCfgSel;
+    LibAmdPciWrite (AccessWidth32, PciAddress, (VOID *)&DctCfgSel, StdHeader);
+  }
+}

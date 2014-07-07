@@ -142,4 +142,3 @@ void sb700_cimx_config(AMDSBCFG *sb_config)
 #endif //!__PRE_RAM__
 	printk(BIOS_DEBUG, "SB700 - Cfg.c - %s - End.\n", __func__);
 }
-

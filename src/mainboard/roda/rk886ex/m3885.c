@@ -413,4 +413,3 @@ u8 m3885_gpio(u8 value)
 	return 0;
 #endif
 }
-

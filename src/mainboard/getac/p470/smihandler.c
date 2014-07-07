@@ -199,4 +199,3 @@ void mainboard_smi_gpi(u32 gpi_sts)
 		printk(BIOS_DEBUG, "EC SMI source: %02x\n", source);
 	}
 }
-

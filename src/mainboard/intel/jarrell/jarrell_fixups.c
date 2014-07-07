@@ -114,4 +114,3 @@ static void mainboard_set_e7520_leds(void)
 
 	return;
 }
-

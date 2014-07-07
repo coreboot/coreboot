@@ -119,4 +119,3 @@ void get_bus_conf(void)
 #endif
 	m->apicid_mcp55 = apicid_base+0;
 }
-

@@ -358,4 +358,3 @@ void romstage_fsp_rt_buffer_callback(FSP_INIT_RT_BUFFER *FspRtBuffer)
 	/* No overrides needed */
 	return;
 }
-

@@ -1187,4 +1187,3 @@ UINT32 agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 	printk(BIOS_DEBUG, "exit %s \n", __func__);
 	return (UINT32)Status;
 }
-

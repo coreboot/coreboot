@@ -85,5 +85,3 @@ void graphics_register_reset(u32 aux_ctl, u32 aux_data, int verbose)
 	/* end not yet documented. */
 	io_i915_write32(0x10000000,SDEISR+0x30);
 }
-
-

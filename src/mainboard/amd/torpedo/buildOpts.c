@@ -383,5 +383,3 @@ UINT8 SizeOfTableLN = sizeof (AGESA_MEM_TABLE_LN) / sizeof (AGESA_MEM_TABLE_LN[0
 //  /* platform code to read an SPD...  */
 //  return Status;
 //}
-
-

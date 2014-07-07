@@ -171,4 +171,3 @@ OemCustomizeInitEarly (
   InitEarly->GnbConfig.PcieComplexList = LlanoPcieComplexListPtr;
   InitEarly->GnbConfig.PsppPolicy      = 0;
 }
-

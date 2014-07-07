@@ -60,4 +60,3 @@ static void main(void)
 	/* Route Cseg, Dseg, Eseg and Fseg to RAM */
 	pci_write_config32(PCI_DEV(0,0,0), 0x84, 0x3ffffff0);
 }
-

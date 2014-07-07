@@ -466,5 +466,3 @@ CONST UINT8 SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABL
 //	/* platform code to read an SPD...	*/
 //	return Status;
 //}
-
-

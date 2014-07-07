@@ -112,4 +112,3 @@ int get_recovery_mode_switch(void)
 	/* Recovery: GPIO22, active low */
 	return !((gp_lvl >> 22) & 1);
 }
-

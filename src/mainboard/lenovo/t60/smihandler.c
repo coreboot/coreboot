@@ -195,4 +195,3 @@ int mainboard_smi_apmc(u8 data)
 	}
 	return 0;
 }
-

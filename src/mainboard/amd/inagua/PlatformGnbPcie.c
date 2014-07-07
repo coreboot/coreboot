@@ -140,4 +140,3 @@ OemCustomizeInitEarly (
 	InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr;
 	InitEarly->GnbConfig.PsppPolicy      = 0;
 }
-

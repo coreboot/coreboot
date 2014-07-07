@@ -124,4 +124,3 @@ int get_write_protect_state(void)
 {
 	return 0;
 }
-

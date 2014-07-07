@@ -47,4 +47,3 @@ VOID OemCustomizeInitEarly(IN OUT AMD_EARLY_PARAMS *InitEarly)
 {
 	//InitEarly->PlatformConfig.CoreLevelingMode = CORE_LEVEL_TWO;
 }
-

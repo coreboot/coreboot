@@ -271,4 +271,3 @@ void rd890_cimx_config(AMD_NB_CONFIG_BLOCK *pConfig, NB_CONFIG *nbConfig, HT_CON
 	}
 #endif
 }
-

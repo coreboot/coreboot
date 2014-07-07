@@ -134,4 +134,3 @@ unsigned long write_acpi_tables(unsigned long start)
 	printk(BIOS_INFO, "ACPI: done.\n");
 	return current;
 }
-

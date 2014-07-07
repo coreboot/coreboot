@@ -53,4 +53,3 @@ u32 vt8237_ide_80pin_detect(struct device *dev)
 
 	return res;
 }
-

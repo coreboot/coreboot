@@ -40,4 +40,3 @@ unsigned long write_pirq_routing_table(unsigned long addr)
 {
 	return copy_pirq_routing_table(addr, &intel_irq_routing_table);
 }
-

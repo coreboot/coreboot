@@ -551,5 +551,3 @@ UINT8 SizeOfTableHy = sizeof (AGESA_MEM_TABLE_HY) / sizeof (AGESA_MEM_TABLE_HY[0
 //  /* platform code to read an SPD...  */
 //  return Status;
 //}
-
-

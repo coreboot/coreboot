@@ -262,4 +262,3 @@ void runio(struct intel_dp *dp)
 	io_i915_write32(0x00000000,DEIIR);
 	io_i915_write32(0x00001800,0x4f044);
 }
-

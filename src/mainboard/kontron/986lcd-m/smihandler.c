@@ -47,5 +47,3 @@ int mainboard_io_trap_handler(int smif)
 	//gnvs->smif = 0;
 	return 1;
 }
-
-

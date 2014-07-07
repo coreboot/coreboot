@@ -96,4 +96,3 @@ static void disable_watchdogs(void)
 //	disable_jarell_frb3();
 	print_debug("Watchdogs disabled\n");
 }
-

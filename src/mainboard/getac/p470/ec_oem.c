@@ -127,4 +127,3 @@ int ec_oem_dump_status(void)
 
 	return ec_sc;
 }
-

@@ -164,4 +164,3 @@ intel_dp_aux_ch(u32 ch_ctl, u32 ch_data, u32 *send, int send_bytes,
 
 	return recv_bytes;
 }
-

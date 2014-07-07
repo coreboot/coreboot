@@ -99,4 +99,3 @@ int get_write_protect_state(void)
 	/* WP is enabled when the pin is reading high. */
 	return ssus_get_gpio(WP_STATUS_PAD);
 }
-

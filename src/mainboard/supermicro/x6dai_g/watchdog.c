@@ -39,4 +39,3 @@ static void disable_watchdogs(void)
 	disable_esb6300_watchdog();
 	print_debug("Watchdogs disabled\n");
 }
-

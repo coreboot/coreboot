@@ -150,4 +150,3 @@ PCIe_COMPLEX_DESCRIPTOR Brazos = {
   InitEarly->GnbConfig.PcieComplexList = BrazosPcieComplexListPtr;
   InitEarly->GnbConfig.PsppPolicy      = 0;
 }
-

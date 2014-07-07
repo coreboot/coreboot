@@ -207,4 +207,3 @@ void main(unsigned long bist)
 #endif
 	printk(BIOS_SPEW, "exit main()\n");
 }
-

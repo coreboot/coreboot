@@ -68,4 +68,3 @@ static const struct pci_driver ti_pci7xx1 __pci_driver = {
 	.vendor	= 0x104c,
 	.device	= 0x8031,
 };
-

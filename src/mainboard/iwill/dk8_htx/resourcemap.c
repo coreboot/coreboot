@@ -261,4 +261,3 @@ static void setup_mb_resource_map(void)
 	max = ARRAY_SIZE(register_values);
 	setup_resource_map(register_values, max);
 }
-

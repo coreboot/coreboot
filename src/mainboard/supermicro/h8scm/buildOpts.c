@@ -517,4 +517,3 @@ UINT8 AGESA_MEM_TABLE_HY[][sizeof (MEM_TABLE_ALIAS)] =
 	NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
 };
 UINT8 SizeOfTableHy = sizeof (AGESA_MEM_TABLE_HY) / sizeof (AGESA_MEM_TABLE_HY[0]);
-

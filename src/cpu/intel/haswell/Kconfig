@@ -34,6 +34,10 @@ config SMM_TSEG_SIZE
 	hex
 	default 0x800000
 
+config ENABLE_VMX
+	bool "Enable VMX for virtualization"
+	default n
+
 config IED_REGION_SIZE
 	hex
 	default 0x400000

@@ -150,6 +150,47 @@ static acpi_cstate_t cstate_map[NUM_C_STATES] = {
 	},
 };
 
+static void enable_vmx(void)
+{
+	struct cpuid_result regs;
+	msr_t msr;
+	int enable = IS_ENABLED(CONFIG_ENABLE_VMX);
+
+	regs = cpuid(1);
+	/* Check that the VMX is supported before reading or writing the MSR. */
+	if (!((regs.ecx & CPUID_VMX) || (regs.ecx & CPUID_SMX)))
+		return;
+
+	msr = rdmsr(IA32_FEATURE_CONTROL);
+
+	if (msr.lo & (1 << 0)) {
+		printk(BIOS_ERR, "VMX is locked, so %s will do nothing\n", __func__);
+		/* VMX locked. If we set it again we get an illegal
+		 * instruction
+		 */
+		return;
+	}
+
+	/* The IA32_FEATURE_CONTROL MSR may initialize with random values.
+	 * It must be cleared regardless of VMX config setting.
+	 */
+	msr.hi = msr.lo = 0;
+
+	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
+
+	if (enable) {
+		msr.lo |= (1 << 2);
+		if (regs.ecx & CPUID_SMX)
+			msr.lo |= (1 << 1);
+	}
+
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+
+	msr.lo |= (1 << 0); /* Set lock bit */
+
+	wrmsr(IA32_FEATURE_CONTROL, msr);
+}
+
 /* Convert time in seconds to POWER_LIMIT_1_TIME MSR value */
 static const u8 power_limit_time_sec_to_msr[] = {
 	[0]   = 0x00,
@@ -702,6 +743,9 @@ static void haswell_init(device_t cpu)
 	/* Enable the local cpu apics */
 	enable_lapic_tpr();
 	setup_lapic();
+
+	/* Enable virtualization if Kconfig option is set */
+	enable_vmx();
 
 	/* Configure C States */
 	configure_c_states();

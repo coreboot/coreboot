@@ -24,4 +24,3 @@
 #define MEC1308_KBC   7
 #define MEC1308_EC0   8
 #define MEC1308_MBX   9
-

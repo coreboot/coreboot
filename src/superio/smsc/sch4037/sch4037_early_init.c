@@ -66,4 +66,3 @@ static inline void sch4037_early_init(unsigned port)
 
 	pnp_exit_conf_state(dev);
 }
-

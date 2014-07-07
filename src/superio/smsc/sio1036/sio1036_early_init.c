@@ -98,4 +98,3 @@ static inline void sio1036_early_init(unsigned port)
 
 	sio1036_exit_conf_state(dev);
 }
-

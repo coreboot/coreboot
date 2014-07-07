@@ -22,4 +22,3 @@
 #define UART_POWER_DOWN		(1 << 7)
 #define LPT_POWER_DOWN		(1 << 2)
 #define IR_OUPUT_MUX		(1 << 6)
-

@@ -73,4 +73,3 @@ static void sio1036_init(device_t dev)
 			break;
 	}
 }
-

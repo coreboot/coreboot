@@ -65,7 +65,7 @@ chip northbridge/amd/agesa/family15tn/root_complex
 						register hwm_main_ctl_register = "0x33"
 						register hwm_adc_temp_chan_en_reg = "0x38"
 						register hwm_fan1_ctl_pwm = "0x00"
-						register hwm_fan2_ctl_pwm = "0x80"
+						register hwm_fan2_ctl_pwm = "0x00"
 						register hwm_fan3_ctl_pwm = "0x00"
 
 						device pnp 2e.0 off #  Floppy

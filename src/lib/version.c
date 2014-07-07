@@ -40,4 +40,3 @@ const char coreboot_compile_time[]   = COREBOOT_COMPILE_TIME;
 const char coreboot_compile_by[]     = COREBOOT_COMPILE_BY;
 const char coreboot_compile_host[]   = COREBOOT_COMPILE_HOST;
 const char coreboot_compile_domain[] = COREBOOT_COMPILE_DOMAIN;
-

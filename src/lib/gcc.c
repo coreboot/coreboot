@@ -37,4 +37,3 @@ WRAP_LIBGCC_CALL(long long, __divdi3)
 WRAP_LIBGCC_CALL(unsigned long long, __udivdi3)
 WRAP_LIBGCC_CALL(long long, __moddi3)
 WRAP_LIBGCC_CALL(unsigned long long, __umoddi3)
-

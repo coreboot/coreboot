@@ -312,9 +312,11 @@ xhci_pci_init (pcidev_t addr)
 	}
 
 	controller = xhci_init((unsigned long)reg_addr);
-	controller->pcidev = addr;
+	if (controller) {
+		controller->pcidev = addr;
 
-	xhci_switch_ppt_ports(addr);
+		xhci_switch_ppt_ports(addr);
+	}
 
 	return controller;
 }

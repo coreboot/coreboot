@@ -40,9 +40,6 @@ static void agesawrapper_post_device(void *unused)
 	/* Preparation for write_tables(). */
 	get_bus_conf();
 
-#if CONFIG_AMD_SB_CIMX && CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15
-	sb_After_Pci_Init();
-#endif
 #if CONFIG_AMD_SB_CIMX
 	sb_Late_Post();
 #endif

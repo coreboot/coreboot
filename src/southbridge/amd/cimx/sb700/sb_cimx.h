@@ -34,7 +34,6 @@
 void sb_Poweron_Init(void);
 void sb_Before_Pci_Init(void);
 void sb_After_Pci_Init(void);
-void sb_Mid_Post_Init(void);
 void sb_Late_Post(void);
 
 void sb7xx_51xx_enable_wideio(u8 wio_index, u16 base);

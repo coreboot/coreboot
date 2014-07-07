@@ -42,6 +42,7 @@
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "northbridge.h"
+#include "sb_cimx.h"
 
 #define MAX_NODE_NUMS (MAX_NODES * MAX_DIES)
 
@@ -591,6 +592,10 @@ static void domain_enable_resources(device_t dev)
 {
 	/* Must be called after PCI enumeration and resource allocation */
 	printk(BIOS_DEBUG, "\nFam15 - %s: AmdInitMid.\n", __func__);
+
+#if CONFIG_AMD_SB_CIMX
+	sb_After_Pci_Init();
+#endif
 	AGESAWRAPPER(amdinitmid);
 	printk(BIOS_DEBUG, "  Fam15 - leaving %s.\n", __func__);
 }

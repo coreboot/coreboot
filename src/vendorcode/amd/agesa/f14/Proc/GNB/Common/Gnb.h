@@ -46,6 +46,7 @@
 #ifndef _GNB_H_
 #define _GNB_H_
 
+#include <stdlib.h>
 
 #define GNB_DEADLOOP() \
 { \
@@ -67,14 +68,6 @@
   #else
     #define  GNB_DEBUG_CODE(Code)
   #endif
-#endif
-
-#ifndef MIN
-#define MIN(x, y) (((x) > (y))? (y):(x))
-#endif
-
-#ifndef MAX
-#define MAX(x, y) (((x) > (y))? (x):(y))
 #endif
 
 #define OFF 0

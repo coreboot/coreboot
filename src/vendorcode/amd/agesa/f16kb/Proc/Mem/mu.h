@@ -60,36 +60,7 @@
   #define PSO_ENTRY UINT8
 #endif
 
-//
-// Maximum value macro
-//
-#ifndef MAX
-  #define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
-#endif
-//
-// Minimum Value macro
-//
-#ifndef MIN
-  #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-#endif
-//
-// Absolute Value Macro
-//
-#ifndef ABS
-  #define ABS(X) (((X) < 0) ? (-(X)) : (X))
-#endif
-//
-// Taking ceiling of (a / b)
-//
-#ifndef CEIL_DIV
-  #define CEIL_DIV(a, b)  (((a) + (b) - 1) / (b))
-#endif
-//
-// Check if value x is a power of 2 or not
-//
-#ifndef IS_POWER_OF_2
-  #define IS_POWER_OF_2(x)  (((x) & ((x) - 1)) == 0)
-#endif
+#include <stdlib.h>
 //
 // Find offset of a member variable in a struct
 //

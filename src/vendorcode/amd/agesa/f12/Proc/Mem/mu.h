@@ -60,24 +60,7 @@
   #define PSO_ENTRY UINT8
 #endif
 
-//
-// Maximum value macro
-//
-#ifndef MAX
-#define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
-#endif
-//
-// Minimum Value macro
-//
-#ifndef MIN
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-#endif
-//
-// Absolute Value Macro
-//
-#define ABS(X) (((X) < 0) ? (-(X)) : (X))
-
-
+#include <stdlib.h>
 
 /*----------------------------------------------------------------------------
  *                         TYPEDEFS, STRUCTURES, ENUMS

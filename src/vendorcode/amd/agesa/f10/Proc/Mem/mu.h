@@ -60,7 +60,7 @@
   #define PSO_ENTRY UINT8
 #endif
 
-#define MAX(X, Y) (((X) < (Y)) ? (Y) : (X))
+#include <stdlib.h>
 
 /*----------------------------------------------------------------------------
  *                         TYPEDEFS, STRUCTURES, ENUMS

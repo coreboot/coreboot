@@ -226,7 +226,7 @@ static void print_hob_mem_attributes(void *Hobptr) {
 	printk(BIOS_SPEW, "  Memory type %s (0x%x)\n",
 			Hobmemtypenames[(u32)Hobmemtype], (u32) Hobmemtype);
 	printk(BIOS_SPEW, "  at location 0x%0lx with length 0x%0lx\n",
-			(long unsigned int)Hobmemaddr, (long unsigned int)Hobmemlength);
+			(unsigned long)Hobmemaddr, (unsigned long)Hobmemlength);
 }
 
 static void print_hob_resource_attributes(void *Hobptr) {
@@ -263,7 +263,7 @@ static void print_hob_resource_attributes(void *Hobptr) {
 	printk(BIOS_SPEW, "  Resource %s (0x%0x) has attributes 0x%0x\n",
 			Hobrestypestr, Hobrestype, Hobresattr);
 	printk(BIOS_SPEW, "  at location 0x%0lx with length 0x%0lx\n",
-			(long unsigned int)Hobresaddr, (long unsigned int)Hobreslength);
+			(unsigned long)Hobresaddr, (unsigned long)Hobreslength);
 }
 
 static const char * get_hob_type_string(void *Hobptr) {

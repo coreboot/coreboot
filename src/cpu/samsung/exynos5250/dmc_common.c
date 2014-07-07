@@ -180,4 +180,3 @@ void dmc_config_memory(struct mem_timings *mem, struct exynos5_dmc *dmc)
 	writel(DMC_MEMBASECONFIG0_VAL, &dmc->membaseconfig0);
 	writel(DMC_MEMBASECONFIG1_VAL, &dmc->membaseconfig1);
 }
-

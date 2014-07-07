@@ -115,4 +115,3 @@ unsigned get_apicid_base(unsigned ioapic_num)
 
 	return apicid_base;
 }
-

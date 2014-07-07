@@ -903,4 +903,3 @@ int exynos_init_dp(struct edp_device_info *edp_info)
 
 	return ret;
 }
-

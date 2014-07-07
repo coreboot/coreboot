@@ -448,4 +448,3 @@ void clock_init_dp_clock(void)
 	/* We run DP at 267 Mhz */
 	setbits_le32(&clk->div_disp1_0, CLK_DIV_DISP1_0_FIMD1);
 }
-

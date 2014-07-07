@@ -60,5 +60,3 @@ static void msr_init(void)
 	for (i = 0; i < ARRAY_SIZE(msr_table); i++)
 		wrmsr(msr_table[i].index, msr_table[i].msr);
 }
-
-

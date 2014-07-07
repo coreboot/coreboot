@@ -49,4 +49,3 @@ void udelay(unsigned usec)
 	while (mono_time_before(&current, &end))
 		timer_monotonic_get(&current);
 }
-

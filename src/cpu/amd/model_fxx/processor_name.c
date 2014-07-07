@@ -437,4 +437,3 @@ int init_processor_name(void)
 
 	return 0;
 }
-

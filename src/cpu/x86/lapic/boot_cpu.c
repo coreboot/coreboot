@@ -11,4 +11,3 @@ int boot_cpu(void)
 	return bsp;
 }
 #endif
-

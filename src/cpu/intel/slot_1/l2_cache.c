@@ -807,4 +807,3 @@ out:
 	printk(BIOS_INFO, "done.\n");
 	return result;
 }
-

@@ -889,4 +889,3 @@ int amd_model_fxx_generate_powernow(u32 pcontrol_blk, u8 plen, u8 onlyBSP)
 	acpigen_patch_len(lens - 1);
 	return lens;
 }
-

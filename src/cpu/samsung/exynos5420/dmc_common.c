@@ -171,4 +171,3 @@ void dmc_config_prech(struct mem_timings *mem, struct exynos5_dmc *dmc)
 		}
 	}
 }
-

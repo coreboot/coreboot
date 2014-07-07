@@ -78,4 +78,3 @@ struct node_core_id get_node_core_id_x(void)
 {
 	return get_node_core_id(read_nb_cfg_54());
 }
-

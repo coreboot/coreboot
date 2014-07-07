@@ -20,4 +20,3 @@
 unsigned microcode[] = {
 #include "microcode_blob.h"
 };
-

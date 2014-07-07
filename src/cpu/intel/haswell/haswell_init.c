@@ -826,4 +826,3 @@ static const struct cpu_driver driver __cpu_driver = {
 	.id_table = cpu_table,
 	.cstates  = cstate_map,
 };
-

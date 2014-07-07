@@ -25,4 +25,3 @@ void *cbmem_top(void)
 {
 	return (void *)(get_fb_base_kb() * KiB);
 }
-

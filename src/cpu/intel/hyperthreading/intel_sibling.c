@@ -94,4 +94,3 @@ void intel_sibling_init(device_t cpu)
 			new->path.apic.apic_id);
 	}
 }
-

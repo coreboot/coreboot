@@ -62,5 +62,3 @@ static inline void start_other_cores(void)
 	}
 
 }
-
-

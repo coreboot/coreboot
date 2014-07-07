@@ -476,4 +476,3 @@ void smm_lock(void)
 	pci_write_config8(dev_find_slot(0, PCI_DEVFN(0, 0)), SMRAM,
 			D_LCK | G_SMRAME | C_BASE_SEG);
 }
-

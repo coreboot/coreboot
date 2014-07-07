@@ -614,4 +614,3 @@ void smm_initiate_relocation(void)
 	smm_initiate_relocation_parallel();
 	spin_unlock(&smm_relocation_lock);
 }
-

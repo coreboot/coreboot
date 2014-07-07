@@ -184,4 +184,3 @@ GetTempRamStack (
     *DataSize =  GET_GUID_HOB_DATA_SIZE (GuidHobHdr);
   }
 }
-

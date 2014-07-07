@@ -17,34 +17,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <arch/exception.h>
+#include <arch/asm.h>
+#include "stack.S"
 
-#include <soc/sdram_configs.h>
-#include "sdram.h"
-#include "ccplex.h"
+        .section ".text", "ax", %progbits
 
-void romstage(void);
-void romstage(void)
-{
-	void *entry;
+ENTRY(main)
+	stack_init stack=.Stack size=.Stack_size seed=0 func=romstage
+ENDPROC(main)
 
-	console_init();
-	exception_init();
+/* we do it this way because it's a 32-bit constant and
+ * in some cases too far away to be loaded as just an offset
+ * from IP
+ */
+.align 2
+.Stack:
+	.word CONFIG_ROMSTAGE_STACK_TOP
+.align 2
+.Stack_size:
+	.word CONFIG_ROMSTAGE_STACK_TOP - CONFIG_ROMSTAGE_STACK_BOTTOM
 
-	printk(BIOS_INFO, "T132: romstage here\n");
-
-	sdram_init(get_sdram_config());
-	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
-
-	ccplex_load_mts();
-	printk(BIOS_INFO, "T132 romstage: MTS loading done\n");
-
-	while (1);
-
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/ramstage");
-	stage_exit(entry);
-}

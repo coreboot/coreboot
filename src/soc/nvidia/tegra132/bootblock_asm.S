@@ -31,6 +31,8 @@
 
 #include <arch/asm.h>
 
+#include "stack.S"
+
 ENTRY(_start)
 	/*
 	 * Set the cpu to System mode with IRQ and FIQ disabled. Prefetch/Data
@@ -40,40 +42,7 @@ ENTRY(_start)
 	 */
 	msr	cpsr_cxf, #0xdf
 
-	/*
-	 * Initialize the stack to a known value. This is used to check for
-	 * stack overflow later in the boot process.
-	 */
-	ldr	r0, .Stack
-	ldr	r1, .Stack_size
-	sub	r0, r0, r1
-	ldr	r1, .Stack
-	ldr	r2, =0xdeadbeef
-init_stack_loop:
-	str	r2, [r0]
-	add	r0, #4
-	cmp	r0, r1
-	bne	init_stack_loop
-
-/* Set stackpointer in internal RAM to call bootblock main() */
-call_bootblock:
-	ldr	sp, .Stack /* Set up stack pointer */
-	ldr	r0,=0x00000000
-	 /*
-	  * The current design of cpu_info places the
-	  * struct at the top of the stack. The number of
-	  * words pushed must be at least as large as that
-	  * struct.
-	  */
-	push	{r0-r2}
-	bic	sp, sp, #7 /* 8-byte alignment for ABI compliance */
-	/*
-	 * Use "bl" instead of "b" even though we do not intend to return.
-	 * "bl" gets compiled to "blx" if we're transitioning from ARM to
-	 * Thumb. However, "b" will not and GCC may attempt to create a
-	 * wrapper which is currently broken.
-	 */
-	bl	main
+	stack_init stack=.Stack size=.Stack_size seed=1 func=main
 ENDPROC(_start)
 
 /* we do it this way because it's a 32-bit constant and
@@ -82,8 +51,8 @@ ENDPROC(_start)
  */
 .align 2
 .Stack:
-	.word CONFIG_STACK_TOP
+	.word CONFIG_BOOTBLOCK_STACK_TOP
 .align 2
 /* create this size the same way we do in ramstage.ld: top-bottom */
 .Stack_size:
-	.word CONFIG_STACK_TOP - CONFIG_STACK_BOTTOM
+	.word CONFIG_BOOTBLOCK_STACK_TOP - CONFIG_BOOTBLOCK_STACK_BOTTOM

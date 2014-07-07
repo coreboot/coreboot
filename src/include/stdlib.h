@@ -12,6 +12,9 @@
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
+#define ABS(a) (((a) < 0) ? (-(a)) : (a))
+#define CEIL_DIV(a, b)  (((a) + (b) - 1) / (b))
+#define IS_POWER_OF_2(x)  (((x) & ((x) - 1)) == 0)
 
 #define min(a,b) MIN((a),(b))
 #define max(a,b) MAX((a),(b))

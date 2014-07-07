@@ -107,4 +107,3 @@ struct ringbuffer {
  *  c-basic-offset: 8
  * End:
  */
-

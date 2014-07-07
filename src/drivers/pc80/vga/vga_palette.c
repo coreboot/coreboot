@@ -273,4 +273,3 @@ default_vga_palette[0x100] = {
         { 0x0B, 0x0C, 0x20},
         /* Pad with NULL */
 };
-

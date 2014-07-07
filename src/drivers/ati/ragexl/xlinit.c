@@ -1516,5 +1516,3 @@ static const struct pci_driver ati_ragexl_graph_driver __pci_driver = {
         .vendor = PCI_VENDOR_ID_ATI,
         .device = PCI_DEVICE_ID_ATI_215XL,
 };
-
-

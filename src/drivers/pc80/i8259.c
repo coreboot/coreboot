@@ -140,5 +140,3 @@ void i8259_configure_irq_trigger(int int_num, int is_level_triggered)
 	}
 #endif
 }
-
-

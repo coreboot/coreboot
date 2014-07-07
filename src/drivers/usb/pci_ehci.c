@@ -113,4 +113,3 @@ unsigned long pci_ehci_base_regs(pci_devfn_t sdev)
 #endif
 	return base + HC_LENGTH(read32(base));
 }
-

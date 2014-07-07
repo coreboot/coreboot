@@ -11,4 +11,3 @@ void udelay(unsigned usecs)
 	for(i = 0; i < usecs; i++)
 		inb(0x80);
 }
-

@@ -262,5 +262,3 @@ int intel_dp_get_lane_count(struct intel_dp *intel_dp,
 
 int intel_dp_get_lane_align_status(struct intel_dp *intel_dp,
 				   u8 *recv);
-
-

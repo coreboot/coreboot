@@ -1025,4 +1025,3 @@ static const struct pci_driver trident_blade3d_driver __pci_driver = {
         .vendor = 0x1023,
         .device = 0x9880,
 };
-

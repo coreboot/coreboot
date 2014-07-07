@@ -99,4 +99,3 @@ struct usb_debug_descriptor {
 };
 
 #endif
-

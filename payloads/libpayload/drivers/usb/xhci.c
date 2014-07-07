@@ -169,6 +169,7 @@ xhci_init (unsigned long physical_bar)
 	controller->create_intr_queue	= xhci_create_intr_queue;
 	controller->destroy_intr_queue	= xhci_destroy_intr_queue;
 	controller->poll_intr_queue	= xhci_poll_intr_queue;
+	controller->pcidev		= 0;
 	for (i = 0; i < 128; ++i) {
 		controller->devices[i] = NULL;
 	}

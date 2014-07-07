@@ -46,4 +46,3 @@ static const struct pci_driver usb_driver_3 __pci_driver = {
         .vendor = PCI_VENDOR_ID_INTEL,
         .device = PCI_DEVICE_ID_INTEL_82801CA_USB3,
 };
-

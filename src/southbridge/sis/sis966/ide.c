@@ -191,4 +191,3 @@ static const struct pci_driver ide_driver __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_SIS,
 	.device	= PCI_DEVICE_ID_SIS_SIS966_IDE,
 };
-

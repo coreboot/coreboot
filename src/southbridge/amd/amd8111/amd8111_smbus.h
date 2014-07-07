@@ -323,5 +323,3 @@ static int do_smbus_block_write(unsigned smbus_io_base, unsigned device, unsigne
 	}
 	return 0;
 }
-
-

@@ -12,4 +12,3 @@
 #define STRP_HPCAP	0x0002		// Hot-plug capable (Hx_SLOT zero/nonzero)
 
 #define ACNF_SYNCPH	0x0010		// PCI(-X) input clock is synchronous to hub input clock
-

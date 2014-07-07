@@ -41,4 +41,3 @@ static const struct pci_driver northbridge_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_VIA,
 	.device = PCI_DEVICE_ID_VIA_82C586_2,
 };
-

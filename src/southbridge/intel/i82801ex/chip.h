@@ -32,4 +32,3 @@ struct southbridge_intel_i82801ex_config
 };
 
 #endif /* I82801EX_CHIP_H */
-

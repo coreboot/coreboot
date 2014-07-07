@@ -65,4 +65,3 @@ static const struct pci_driver pci_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_AMD,
 	.device = PCI_DEVICE_ID_AMD_8111_PCI,
 };
-

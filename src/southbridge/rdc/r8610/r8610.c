@@ -115,4 +115,3 @@ static const struct pci_driver lpc_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_RDC,
 	.device = PCI_DEVICE_ID_RDC_R8610_SB,
 };
-

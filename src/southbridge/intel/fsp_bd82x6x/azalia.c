@@ -372,4 +372,3 @@ static const struct pci_driver pch_azalia __pci_driver = {
 	.vendor	 = PCI_VENDOR_ID_INTEL,
 	.devices = pci_device_ids,
 };
-

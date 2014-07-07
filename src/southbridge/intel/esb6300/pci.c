@@ -34,4 +34,3 @@ static const struct pci_driver pci_driver __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_6300ESB_PCI,
 };
-

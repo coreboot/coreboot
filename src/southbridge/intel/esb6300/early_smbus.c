@@ -95,4 +95,3 @@ static int smbus_write_block(unsigned device, unsigned length, unsigned cmd,
 	return 0;
 }
 #endif
-

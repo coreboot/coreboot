@@ -102,4 +102,3 @@ static int do_smbus_read_byte(unsigned smbus_io_base, unsigned device, unsigned 
 	}
 	return byte;
 }
-

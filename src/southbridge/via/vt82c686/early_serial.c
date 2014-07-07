@@ -89,4 +89,3 @@ static void vt82c686_enable_serial(device_t dev, unsigned iobase)
 	reg = pci_read_config8(sbdev, 0x85);
 	pci_write_config8(sbdev, 0x85, reg & 0xfd);	/* Clear bit 1. */
 }
-

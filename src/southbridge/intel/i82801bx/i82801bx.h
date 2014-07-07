@@ -119,4 +119,3 @@ int smbus_read_byte(u8 device, u8 address);
 #define SMBUS_TIMEOUT		(10 * 1000 * 100)
 
 #endif				/* SOUTHBRIDGE_INTEL_I82801BX_I82801BX_H */
-

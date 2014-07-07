@@ -53,4 +53,3 @@ PCI_DEVICE_ID_VIA_82C686_4	0x3057 // Function 4, Power Management
 PCI_DEVICE_ID_VIA_82C686_5	0x3058 // Function 5, AC'97 Codec
 PCI_DEVICE_ID_VIA_82C686_6	0x3068 // Function 6, MC'97 Codec
 */
-

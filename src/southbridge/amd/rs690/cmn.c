@@ -324,4 +324,3 @@ void rs690_set_tom(device_t nb_dev)
 	nbmc_write_index(nb_dev, 0x1e, 0x38000000);
 #endif
 }
-

@@ -638,4 +638,3 @@ static int smbus_read_byte(u32 device, u32 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
-

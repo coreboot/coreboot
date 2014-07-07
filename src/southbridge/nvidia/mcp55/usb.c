@@ -43,4 +43,3 @@ static const struct pci_driver usb_driver __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_NVIDIA,
 	.device	= PCI_DEVICE_ID_NVIDIA_MCP55_USB,
 };
-

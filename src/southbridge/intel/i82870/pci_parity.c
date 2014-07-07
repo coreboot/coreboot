@@ -21,5 +21,3 @@ void p64h2_pci_parity_enable(void)
 
         return;
 }
-
-

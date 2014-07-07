@@ -193,4 +193,3 @@ err:
 	outb(0x0, smbus_io_base + SMB_STS);
 	return 0xFF;
 }
-

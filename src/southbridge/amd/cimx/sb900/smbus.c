@@ -262,4 +262,3 @@ void alink_ax_indx(u32 space /*c or p? */ , u32 axindc, u32 mask, u32 val)
 	outl(0, AB_INDX);
     printk(BIOS_INFO, "SB900 - Smbus.c - alink_ax_indx - End.\n");
 }
-

@@ -97,4 +97,3 @@ static int do_smbus_read_byte(unsigned smbus_base, unsigned device, unsigned add
 	}
 	return byte;
 }
-

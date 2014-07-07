@@ -213,4 +213,3 @@ s16 smbus_quick_read(u8 device)
 {
 	return (smbus_rw_byte((device << 1) | 1, 0, 0, QUICK_RW));
 }
-

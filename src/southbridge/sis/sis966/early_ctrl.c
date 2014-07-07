@@ -57,4 +57,3 @@ void soft_reset(void)
 	outb(0x06, 0x0cf9);
 
 }
-

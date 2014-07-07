@@ -57,4 +57,3 @@ int smbus_read_byte(u8 device, u8 address)
 {
 	return do_smbus_read_byte(SMBUS_IO_BASE, device, address);
 }
-

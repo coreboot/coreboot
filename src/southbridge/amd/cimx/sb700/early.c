@@ -93,4 +93,3 @@ void sb7xx_51xx_disable_wideio(u8 wio_index)
 	reg8 &= ~(1 << 2);
 	pci_write_config8(dev, 0x48, reg8);
 }
-

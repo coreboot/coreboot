@@ -43,4 +43,3 @@ typedef struct {
 	u8	pcp1; /* 0x2b - PDC CPU/CORE 1 */
 	u8	ppcm; /* 0x2c - Max. PPC state */
 } __attribute__((packed)) global_nvs_t;
-

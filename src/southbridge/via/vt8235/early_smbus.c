@@ -246,4 +246,3 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 
 
 #endif
-

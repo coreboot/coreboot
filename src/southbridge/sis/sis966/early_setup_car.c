@@ -60,4 +60,3 @@ void sis966_early_pcie_setup(unsigned busnx, unsigned devnx, unsigned anactrl_io
 //	need to wait 100ms
 	mdelay(100);
 }
-

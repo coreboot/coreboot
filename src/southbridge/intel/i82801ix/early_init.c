@@ -61,4 +61,3 @@ void i82801ix_early_init(void)
 	/* TODO: Check power state bits in GEN_PMCON_2 (D31F0 0xa2)
 	         before they get cleared. */
 }
-

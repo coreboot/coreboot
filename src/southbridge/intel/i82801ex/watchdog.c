@@ -26,4 +26,3 @@ void watchdog_off(void)
         outw(0x0002, base + 0x06);
         printk(BIOS_DEBUG, "Watchdog ICH5 disabled\n");
 }
-

@@ -281,5 +281,3 @@ static const struct pci_driver i82801db_ac97_modem __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= PCI_DEVICE_ID_INTEL_82801DB_AC97_MODEM,
 };
-
-

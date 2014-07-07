@@ -87,4 +87,3 @@ void    TraceCode ( UINT32 Level, UINT32 Code);
 #define DMSG_SB_TRACE   0x02
 
 #endif  //#ifndef _AMD_SB_CIMx_PLATFORM_H_
-

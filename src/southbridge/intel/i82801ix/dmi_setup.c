@@ -143,4 +143,3 @@ void i82801ix_dmi_poll_vc1(void)
 	else
 		printk(BIOS_DEBUG, "done.\n");
 }
-

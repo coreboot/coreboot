@@ -26,4 +26,3 @@ struct southbridge_intel_esb6300_config
 	unsigned int  pirq_a_d;
 	unsigned int  pirq_e_h;
 };
-

@@ -307,5 +307,3 @@ if (sb_chip->imc_tempin3_enabled) {
 
 	return;
 }
-
-

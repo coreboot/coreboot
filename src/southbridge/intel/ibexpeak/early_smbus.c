@@ -74,4 +74,3 @@ int smbus_block_write(unsigned device, unsigned cmd, u8 bytes, const u8 *buf)
 {
 	return do_smbus_block_write(SMBUS_IO_BASE, device, cmd, bytes, buf);
 }
-

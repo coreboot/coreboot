@@ -302,5 +302,3 @@ void SbPowerOnInit_Config(AMDSBCFG *sb_config)
 
     printk(BIOS_INFO, "SB900 - Cfg.c - SbPowerOnInit_Config - End.\n");
 }
-
-

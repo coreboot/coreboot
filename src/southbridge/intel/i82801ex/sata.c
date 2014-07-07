@@ -57,4 +57,3 @@ static const struct pci_driver sata_driver_nr __pci_driver = {
 	.vendor = PCI_VENDOR_ID_INTEL,
 	.device = PCI_DEVICE_ID_INTEL_82801EB_SATA,
 };
-

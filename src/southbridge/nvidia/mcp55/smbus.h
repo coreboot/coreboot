@@ -174,4 +174,3 @@ static int do_smbus_write_byte(unsigned smbus_io_base, unsigned device, unsigned
 	}
 	return 0;
 }
-

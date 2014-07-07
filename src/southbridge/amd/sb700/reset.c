@@ -66,4 +66,3 @@ void soft_reset(void)
 	/* link reset */
 	outb(0x06, 0x0cf9);
 }
-

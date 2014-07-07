@@ -740,4 +740,3 @@ int smbus_write_byte(unsigned device, unsigned address, unsigned char val)
 {
 	return do_smbus_write_byte(SMBUS0_IO_BASE, device, address, val);
 }
-

@@ -67,4 +67,3 @@ void pch_config_rcba(const struct rcba_config_instruction *rcba_config)
 		rc++;
 	}
 }
-

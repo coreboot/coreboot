@@ -51,4 +51,3 @@ static void bootblock_southbridge_init(void)
 #endif
         enable_spi_prefetch();
 }
-

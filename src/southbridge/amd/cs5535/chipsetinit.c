@@ -354,4 +354,3 @@ chipsetinit(void)
 		}
 	}
 }
-

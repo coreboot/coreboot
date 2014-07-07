@@ -57,4 +57,3 @@ void hard_reset(void)
 	outb((0 <<3)|(0<<2)|(1<<1), 0xcf9);
 	outb((0 <<3)|(1<<2)|(1<<1), 0xcf9);
 }
-

@@ -325,4 +325,3 @@ static const struct pci_driver i82801ix_azalia __pci_driver = {
 	.vendor	= PCI_VENDOR_ID_INTEL,
 	.device	= 0x293e,
 };
-

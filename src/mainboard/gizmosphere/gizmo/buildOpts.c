@@ -34,6 +34,8 @@
  * @e \$Revision: 23714 $	 @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
+#include <stdlib.h>
+
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 
@@ -451,7 +453,7 @@ CONST UINT8 AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
  // TABLE END
 	NBACCESS (MTEnd, 0,	0, 0, 0, 0),			// End of Table
 };
-CONST UINT8 SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABLE_ON[0]);
+CONST UINT8 SizeOfTableON = ARRAY_SIZE(AGESA_MEM_TABLE_ON);
 
 /* ***************************************************************************
  *	 Optional User code to be included into the AGESA build

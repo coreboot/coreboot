@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <stdlib.h>
+
 #include "AGESA.h"
 #include "CommonReturns.h"
 #include "AdvancedApi.h"
@@ -612,4 +614,4 @@ UINT8 AGESA_MEM_TABLE_HY[][sizeof (MEM_TABLE_ALIAS)] =
 	// TABLE END
 	NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
 };
-UINT8 SizeOfTableHy = sizeof (AGESA_MEM_TABLE_HY) / sizeof (AGESA_MEM_TABLE_HY[0]);
+UINT8 SizeOfTableHy = ARRAY_SIZE(AGESA_MEM_TABLE_HY);

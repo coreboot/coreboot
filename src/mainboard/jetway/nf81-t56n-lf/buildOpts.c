@@ -33,6 +33,8 @@
  * @e \$Revision: 23714 $	 @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
+#include <stdlib.h>
+
 #include <vendorcode/amd/agesa/f14/AGESA.h>
 
 /* Include the files that instantiate the configuration definitions. */
@@ -342,4 +344,4 @@ const uint8_t AGESA_MEM_TABLE_ON[][sizeof (MEM_TABLE_ALIAS)] =
 {
 	NBACCESS (MTEnd, 0,	0, 0, 0, 0), /* End of Table */
 };
-const uint8_t SizeOfTableON = sizeof (AGESA_MEM_TABLE_ON) / sizeof (AGESA_MEM_TABLE_ON[0]);
+const uint8_t SizeOfTableON = ARRAY_SIZE(AGESA_MEM_TABLE_ON);

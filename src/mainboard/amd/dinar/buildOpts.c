@@ -32,6 +32,7 @@
  * @e sub-project:  Core
  * @e \$Revision: 6049 $   @e \$Date: 2008-05-14 01:58:02 -0500 (Wed, 14 May 2008) $
  */
+#include <stdlib.h>
 #include  "AGESA.h"
 #include  "CommonReturns.h"
 #include "Filecode.h"
@@ -523,7 +524,7 @@ UINT8 AGESA_MEM_TABLE_HY[][sizeof(MEM_TABLE_ALIAS)] =
 	// TABLE END
 	NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
 };
-UINT8 SizeOfTableHy = sizeof (AGESA_MEM_TABLE_HY) / sizeof (AGESA_MEM_TABLE_HY[0]);
+UINT8 SizeOfTableHy = ARRAY_SIZE(AGESA_MEM_TABLE_HY);
 /* ***************************************************************************
  *   Optional User code to be included into the AGESA build
  *    These may be 32-bit call-out routines...

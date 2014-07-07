@@ -33,6 +33,8 @@
  * @e \$Revision: 23714 $   @e \$Date: 2009-12-09 17:28:37 -0600 (Wed, 09 Dec 2009) $
  */
 
+#include <stdlib.h>
+
 #include <vendorcode/amd/agesa/f15tn/AGESA.h>
 
 /*  Include the files that instantiate the configuration definitions.  */
@@ -492,7 +494,7 @@ UINT8 AGESA_MEM_TABLE_TN[][sizeof (MEM_TABLE_ALIAS)] =
  // TABLE END
   NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
 };
-UINT8 SizeOfTableTN = sizeof (AGESA_MEM_TABLE_TN) / sizeof (AGESA_MEM_TABLE_TN[0]);
+UINT8 SizeOfTableTN = ARRAY_SIZE(AGESA_MEM_TABLE_TN);
 
 /* ***************************************************************************
  *   Optional User code to be included into the AGESA build

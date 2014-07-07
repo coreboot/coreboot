@@ -32,6 +32,8 @@
  * @e sub-project:  Core
  * @e \$Revision: 6049 $   @e \$Date: 2008-05-14 01:58:02 -0500 (Wed, 14 May 2008) $
  */
+
+#include <stdlib.h>
 #include  "AGESA.h"
 #include  "CommonReturns.h"
 #include "Filecode.h"
@@ -368,7 +370,7 @@ UINT8 AGESA_MEM_TABLE_LN[][sizeof (MEM_TABLE_ALIAS)] =
  // TABLE END
   NBACCESS (MTEnd, 0,  0, 0, 0, 0),      // End of Table
 };
-UINT8 SizeOfTableLN = sizeof (AGESA_MEM_TABLE_LN) / sizeof (AGESA_MEM_TABLE_LN[0]);
+UINT8 SizeOfTableLN = ARRAY_SIZE(AGESA_MEM_TABLE_LN);
 
 /* ***************************************************************************
  *   Optional User code to be included into the AGESA build

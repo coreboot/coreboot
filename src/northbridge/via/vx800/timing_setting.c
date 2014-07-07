@@ -117,8 +117,7 @@ void SetTrp(DRAM_SYS_ATTR * DramAttr)
 		/*Calculate clock,this value should be 2T,3T,4T,5T */
 	}
 	Tmp =
-	    (u16) ((Max * 100 + ((DramAttr->DramCyc) << 2) -
-		    1) / ((DramAttr->DramCyc) << 2));
+	    (u16) CEIL_DIV(Max * 100, (DramAttr->DramCyc) << 2);
 	PRINT_DEBUG_MEM("Trp = ");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
 	PRINT_DEBUG_MEM("\r");
@@ -168,8 +167,7 @@ void SetTrcd(DRAM_SYS_ATTR * DramAttr)
 	}
 	/*Calculate clock,this value should be 2T,3T,4T,5T */
 	Tmp =
-	    (u16) ((Max * 100 + ((DramAttr->DramCyc) << 2) -
-		    1) / ((DramAttr->DramCyc) << 2));
+	    (u16) CEIL_DIV(Max * 100, (DramAttr->DramCyc) << 2);
 	PRINT_DEBUG_MEM("Trcd =");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
 	PRINT_DEBUG_MEM("\r");
@@ -213,7 +211,7 @@ void SetTras(DRAM_SYS_ATTR * DramAttr)
 	}
 
 	/*Calculate clock,value range 5T-20T */
-	Tmp = (u16) ((Max * 100 + DramAttr->DramCyc - 1) / (DramAttr->DramCyc));
+	Tmp = (u16) CEIL_DIV((Max * 100), DramAttr->DramCyc);
 	PRINT_DEBUG_MEM("Tras =");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
 	PRINT_DEBUG_MEM("\r");
@@ -288,7 +286,7 @@ void SetTrfc(DRAM_SYS_ATTR * DramAttr)
 	}
 
 	/*Calculate clock,value range 8T-71T */
-	Tmp = (u16) ((Max + DramAttr->DramCyc - 1) / (DramAttr->DramCyc));
+	Tmp = (u16) CEIL_DIV(Max, DramAttr->DramCyc);
 	PRINT_DEBUG_MEM("Trfc = ");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
 	PRINT_DEBUG_MEM("\r");
@@ -334,8 +332,7 @@ void SetTrrd(DRAM_SYS_ATTR * DramAttr)
 
 	/*Calculate clock,this value should be 2T,3T,4T,5T */
 	Tmp =
-	    (u16) ((Max * 100 + ((DramAttr->DramCyc) << 2) -
-		    1) / ((DramAttr->DramCyc) << 2));
+	    (u16) CEIL_DIV(Max * 100, (DramAttr->DramCyc) << 2);
 	PRINT_DEBUG_MEM("Trrd =");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
 	PRINT_DEBUG_MEM("\r");
@@ -378,7 +375,7 @@ void SetTwr(DRAM_SYS_ATTR * DramAttr)
 		}
 	}
 	/*Calculate clock */
-	Tmp = (u16) ((Max * 100 + ((DramAttr->DramCyc) << 2) - 1) / ((DramAttr->DramCyc) << 2));	//this value should be 2T,3T,4T,5T
+	Tmp = (u16) CEIL_DIV((Max * 100), ((DramAttr->DramCyc) << 2));	//this value should be 2T,3T,4T,5T
 	PRINT_DEBUG_MEM("Twr = ");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
 	PRINT_DEBUG_MEM("\r");
@@ -421,7 +418,7 @@ void SetTwtr(DRAM_SYS_ATTR * DramAttr)
 		}
 	}
 	/*Calculate clock */
-	Tmp = (u16) ((Max * 100 + ((DramAttr->DramCyc) << 2) - 1) / ((DramAttr->DramCyc) << 2));	//this value should be 2T or 3T
+	Tmp = (u16) CEIL_DIV((Max * 100), ((DramAttr->DramCyc) << 2));	//this value should be 2T or 3T
 
 	PRINT_DEBUG_MEM("Twtr =");
 	PRINT_DEBUG_MEM_HEX16(Tmp);
@@ -463,7 +460,7 @@ void SetTrtp(DRAM_SYS_ATTR * DramAttr)
 		}
 	}
 	/*Calculate clock */
-	Tmp = (u16) ((Max * 100 + ((DramAttr->DramCyc) << 2) - 1) / ((DramAttr->DramCyc) << 2));	//this value should be 2T or 3T
+	Tmp = (u16) CEIL_DIV((Max * 100), ((DramAttr->DramCyc) << 2));	//this value should be 2T or 3T
 
 	PRINT_DEBUG_MEM("Trtp =");
 	PRINT_DEBUG_MEM_HEX16(Tmp);

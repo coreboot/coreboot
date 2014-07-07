@@ -140,7 +140,7 @@ static void exynos_displayport_init(device_t dev, u32 lcdbase,
 	dcache_clean_invalidate_by_mva(lower, upper - lower);
 	mmu_config_range(lower / MiB, (upper - lower) / MiB, DCACHE_OFF);
 
-	mmio_resource(dev, 1, lcdbase/KiB, (fb_size + KiB - 1)/KiB);
+	mmio_resource(dev, 1, lcdbase/KiB, CEIL_DIV(fb_size, KiB));
 }
 
 static void tps65090_thru_ec_fet_disable(int index)
@@ -160,7 +160,7 @@ static void cpu_enable(device_t dev)
 	u32 lcdbase = get_fb_base_kb() * KiB;
 
 	ram_resource(dev, 0, RAM_BASE_KB, RAM_SIZE_KB - FB_SIZE_KB);
-	mmio_resource(dev, 1, lcdbase / KiB, (fb_size + KiB - 1) / KiB);
+	mmio_resource(dev, 1, lcdbase / KiB, CEIL_DIV(fb_size, KiB));
 
 	/*
 	 * Disable LCD FETs before we do anything with the display.

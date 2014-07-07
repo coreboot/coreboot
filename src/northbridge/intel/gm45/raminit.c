@@ -362,7 +362,7 @@ static void collect_ddr3(spdinfo_t *const config)
 	}
 }
 
-#define ROUNDUP_DIV(val, by) (((val) + (by) - 1) / (by))
+#define ROUNDUP_DIV(val, by) CEIL_DIV(val, by)
 #define ROUNDUP_DIV_THIS(val, by) val = ROUNDUP_DIV(val, by)
 static fsb_clock_t read_fsb_clock(void)
 {

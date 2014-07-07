@@ -40,11 +40,6 @@ static struct st_epll_con_val epll_div[] = {
 	{ 180633600, 0, 45, 3, 1, 10381 }
 };
 
-static inline unsigned long div_round_up(unsigned int n, unsigned int d)
-{
-	return (n + d - 1) / d;
-}
-
 /* exynos5: return pll clock frequency */
 unsigned long get_pll_clk(int pllreg)
 {
@@ -346,7 +341,7 @@ int clock_set_dwmci(enum periph_id peripheral)
 	if (!sclk) {
 		return -1;
 	}
-	div = div_round_up(sclk, freq);
+	div = CEIL_DIV(sclk, freq);
 	set_mmc_clk(device_index, div);
 	return 0;
 }

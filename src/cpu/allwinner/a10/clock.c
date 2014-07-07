@@ -159,11 +159,6 @@ static const struct {
 	{ PLL1_CFG(20, 4, 1, 0), 1944 },
 };
 
-static inline u32 div_ceil(u32 a, u32 b)
-{
-	return (a + b - 1) / b;
-}
-
 static void cpu_clk_src_switch(u32 clksel_bits)
 {
 	u32 reg32;
@@ -241,8 +236,8 @@ void a1x_set_cpu_clock(u16 cpu_clk_mhz)
 	 * will always be in spec, as long as AHB is in spec, although the max
 	 * AHB0 clock we can get is 125 MHz
 	 */
-	axi = div_ceil(actual_mhz, 450);	/* Max 450 MHz */
-	ahb = div_ceil(actual_mhz/axi, 250);	/* Max 250 MHz */
+	axi = CEIL_DIV(actual_mhz, 450);	/* Max 450 MHz */
+	ahb = CEIL_DIV(actual_mhz/axi, 250);	/* Max 250 MHz */
 	apb0 = 2;				/* Max 150 MHz */
 
 	ahb_exp = log2_ceil(ahb);

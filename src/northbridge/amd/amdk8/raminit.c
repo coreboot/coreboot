@@ -1712,7 +1712,7 @@ static int update_dimm_Trc(const struct mem_controller *ctrl, const struct mem_p
 	if ((value == 0) || (value == 0xff)) {
 		value = param->tRC;
 	}
-	clocks = ((value << 1) + param->divisor - 1)/param->divisor;
+	clocks = CEIL_DIV((value << 1), param->divisor);
 	if (clocks < DTL_TRC_MIN) {
 		clocks = DTL_TRC_MIN;
 	}
@@ -1741,7 +1741,7 @@ static int update_dimm_Trfc(const struct mem_controller *ctrl, const struct mem_
 	if ((value == 0) || (value == 0xff)) {
 		value = param->tRFC;
 	}
-	clocks = ((value << 1) + param->divisor - 1)/param->divisor;
+	clocks = CEIL_DIV((value << 1), param->divisor);
 	if (clocks < DTL_TRFC_MIN) {
 		clocks = DTL_TRFC_MIN;
 	}
@@ -1767,7 +1767,7 @@ static int update_dimm_Trcd(const struct mem_controller *ctrl, const struct mem_
 	int value;
 	value = spd_read_byte(ctrl->channel0[i], 29);
 	if (value < 0) return -1;
-	clocks = (value + (param->divisor << 1) -1)/(param->divisor << 1);
+	clocks = CEIL_DIV(value, (param->divisor << 1));
 	if (clocks < DTL_TRCD_MIN) {
 		clocks = DTL_TRCD_MIN;
 	}
@@ -1792,7 +1792,7 @@ static int update_dimm_Trrd(const struct mem_controller *ctrl, const struct mem_
 	int value;
 	value = spd_read_byte(ctrl->channel0[i], 28);
 	if (value < 0) return -1;
-	clocks = (value + (param->divisor << 1) -1)/(param->divisor << 1);
+	clocks = CEIL_DIV(value, (param->divisor << 1));
 	if (clocks < DTL_TRRD_MIN) {
 		clocks = DTL_TRRD_MIN;
 	}
@@ -1817,7 +1817,7 @@ static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_
 	int value;
 	value = spd_read_byte(ctrl->channel0[i], 30);
 	if (value < 0) return -1;
-	clocks = ((value << 1) + param->divisor - 1)/param->divisor;
+	clocks = CEIL_DIV((value << 1), param->divisor);
 	if (clocks < DTL_TRAS_MIN) {
 		clocks = DTL_TRAS_MIN;
 	}
@@ -1842,7 +1842,7 @@ static int update_dimm_Trp(const struct mem_controller *ctrl, const struct mem_p
 	int value;
 	value = spd_read_byte(ctrl->channel0[i], 27);
 	if (value < 0) return -1;
-	clocks = (value + (param->divisor << 1) - 1)/(param->divisor << 1);
+	clocks = CEIL_DIV(value, (param->divisor << 1));
 	if (clocks < DTL_TRP_MIN) {
 		clocks = DTL_TRP_MIN;
 	}

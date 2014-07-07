@@ -1973,7 +1973,7 @@ static int get_dimm_Trc_clocks(u32 spd_device, const struct mem_param *param)
 	value *= 10;
 	printk_raminit("update_dimm_Trc: tRC final value = %i\n", value);
 
-	clocks = (value + param->divisor - 1)/param->divisor;
+	clocks = CEIL_DIV(value, param->divisor);
 	printk_raminit("update_dimm_Trc: clocks = %i\n", clocks);
 
 	if (clocks < DTL_TRC_MIN) {
@@ -2069,7 +2069,7 @@ static int update_dimm_TT_1_4(const struct mem_controller *ctrl, const struct me
 	value = spd_read_byte(spd_device, SPD_TT); //already in 1/4 ns
 	if (value < 0) return -1;
 	value *=10;
-	clocks = (value + param->divisor -1)/param->divisor;
+	clocks = CEIL_DIV(value, param->divisor);
 	if (clocks < TT_MIN) {
 		clocks = TT_MIN;
 	}
@@ -2123,7 +2123,7 @@ static int update_dimm_Tras(const struct mem_controller *ctrl, const struct mem_
 	value *= 10;
 	printk_raminit("update_dimm_Tras:  1 value= %08x\n", value);
 
-	clocks = (value  + param->divisor - 1)/param->divisor;
+	clocks = CEIL_DIV(value, param->divisor);
 	printk_raminit("update_dimm_Tras: divisor= %08x\n", param->divisor);
 	printk_raminit("update_dimm_Tras: clocks= %08x\n", clocks);
 	if (clocks < DTL_TRAS_MIN) {

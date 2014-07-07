@@ -335,7 +335,7 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 		val = spd_read_byte(ctrl->channel0[i], SPD_MIN_ACT_TO_ACT_AUTO_REFRESH);
 		val <<= 2; /* convert to 1/4 ns */
 		val += byte40rem[(val1 >> 4) & 0x7];
-		val = (val + ci - 1) / ci + 1; /* convert to cycles */
+		val = CEIL_DIV(val, ci) + 1; /* convert to cycles */
 		if (trc < val)
 			trc = val;
 		val = spd_read_byte(ctrl->channel0[i], SPD_MIN_AUTO_REFRESH_TO_ACT);
@@ -343,7 +343,7 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 		if (val1 & 0x01)
 			val += 1024;
 		val += byte40rem[(val1 >> 1) & 0x7];
-		val = (val + ci - 1) / ci; /* convert to cycles */
+		val = CEIL_DIV(val, ci); /* convert to cycles */
 		if (trfc < val)
 			trfc = val;
 	}
@@ -360,15 +360,15 @@ static u32 spd_set_drt_attributes(const struct mem_controller *ctrl,
 			continue;
 		val = spd_read_byte(ctrl->channel0[i], SPD_MIN_ACTIVE_TO_PRECHARGE_DELAY);
 		val <<= 2; /* convert to 1/4 ns */
-		val = (val + ci - 1) / ci; /* convert to cycles */
+		val = CEIL_DIV(val, ci); /* convert to cycles */
 		if (tras < val)
 			tras = val;
 		val = spd_read_byte(ctrl->channel0[i], SPD_INT_READ_TO_PRECHARGE_DELAY);
-		val = (val + ci - 1) / ci; /* convert to cycles */
+		val = CEIL_DIV(val, ci); /* convert to cycles */
 		if (trtp < val)
 			trtp = val;
 		val = spd_read_byte(ctrl->channel0[i], SPD_INT_WRITE_TO_READ_DELAY);
-		val = (val + ci - 1) / ci; /* convert to cycles */
+		val = CEIL_DIV(val, ci); /* convert to cycles */
 		if (twtr < val)
 			twtr = val;
 	}

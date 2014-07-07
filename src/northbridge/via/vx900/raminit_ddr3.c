@@ -575,7 +575,7 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 	printram("Selected DRAM frequency: %u MHz\n", val32);
 
 	/* Find CAS and CWL latencies */
-	val = (ctrl->tAA + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tAA, ctrl->tCK);
 	printram("Minimum  CAS latency   : %uT\n", val);
 	/* Find lowest supported CAS latency that satisfies the minimum value */
 	while (!((ctrl->cas_supported >> (val - 4)) & 1)
@@ -594,30 +594,30 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 	pci_write_config8(MCU, 0xc0, reg8);
 
 	/* Find tRCD */
-	val = (ctrl->tRCD + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tRCD, ctrl->tCK);
 	printram("Selected tRCD          : %uT\n", val);
 	reg8 = ((val - 4) & 0x7) << 4;
 	/* Find tRP */
-	val = (ctrl->tRP + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tRP, ctrl->tCK);
 	printram("Selected tRP           : %uT\n", val);
 	reg8 |= ((val - 4) & 0x7);
 	pci_write_config8(MCU, 0xc1, reg8);
 
 	/* Find tRAS */
-	val = (ctrl->tRAS + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tRAS, ctrl->tCK);
 	printram("Selected tRAS          : %uT\n", val);
 	reg8 = ((val - 15) & 0x7) << 4;
 	/* Find tWR */
-	ctrl->WR = (ctrl->tWR + ctrl->tCK - 1) / ctrl->tCK;
+	ctrl->WR = CEIL_DIV(ctrl->tWR, ctrl->tCK);
 	printram("Selected tWR           : %uT\n", ctrl->WR);
 	reg8 |= ((ctrl->WR - 4) & 0x7);
 	pci_write_config8(MCU, 0xc2, reg8);
 
 	/* Find tFAW */
-	tFAW = (ctrl->tFAW + ctrl->tCK - 1) / ctrl->tCK;
+	tFAW = CEIL_DIV(ctrl->tFAW, ctrl->tCK);
 	printram("Selected tFAW          : %uT\n", tFAW);
 	/* Find tRRD */
-	tRRD = (ctrl->tRRD + ctrl->tCK - 1) / ctrl->tCK;
+	tRRD = CEIL_DIV(ctrl->tRRD, ctrl->tCK);
 	printram("Selected tRRD          : %uT\n", tRRD);
 	val = tFAW - 4 * tRRD;	/* number of cycles above 4*tRRD */
 	reg8 = ((val - 0) & 0x7) << 4;
@@ -625,11 +625,11 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 	pci_write_config8(MCU, 0xc3, reg8);
 
 	/* Find tRTP */
-	val = (ctrl->tRTP + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tRTP, ctrl->tCK);
 	printram("Selected tRTP          : %uT\n", val);
 	reg8 = ((val & 0x3) << 4);
 	/* Find tWTR */
-	val = (ctrl->tWTR + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tWTR, ctrl->tCK);
 	printram("Selected tWTR          : %uT\n", val);
 	reg8 |= ((val - 2) & 0x7);
 	pci_mod_config8(MCU, 0xc4, 0x3f, reg8);
@@ -642,7 +642,7 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 	 *     Since we previously set RxC4[7]
 	 */
 	reg8 = pci_read_config8(MCU, 0xc5);
-	val = (ctrl->tRFC + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tRFC, ctrl->tCK);
 	printram("Minimum  tRFC          : %uT\n", val);
 	if (val < 30) {
 		val = 0;
@@ -655,7 +655,7 @@ static void vx900_dram_timing(ramctr_timing * ctrl)
 	pci_write_config8(MCU, 0xc5, reg8);
 
 	/* Where does this go??? */
-	val = (ctrl->tRC + ctrl->tCK - 1) / ctrl->tCK;
+	val = CEIL_DIV(ctrl->tRC, ctrl->tCK);
 	printram("Required tRC           : %uT\n", val);
 }
 

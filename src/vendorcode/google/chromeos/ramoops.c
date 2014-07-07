@@ -96,4 +96,3 @@ void chromeos_ram_oops_init(chromeos_acpi_t *chromeos)
 	set_global_chromeos_pointer(chromeos);
 	reserve_ram_oops_dynamic(chromeos);
 }
-

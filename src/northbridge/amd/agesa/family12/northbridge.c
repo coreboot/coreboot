@@ -767,10 +767,16 @@ printk(BIOS_DEBUG, "  adsr - leaving this lovely routine.\n");
 
 static void domain_enable_resources(device_t dev)
 {
-  /* Must be called after PCI enumeration and resource allocation */
-  printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
-//  AGESAWRAPPER(amdinitmid);
-  printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
+	printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
+
+	/* Must be called after PCI enumeration and resource allocation */
+#if CONFIG_AMD_SB_CIMX
+	sb_After_Pci_Init();
+	sb_Mid_Post_Init();
+#endif
+
+	AGESAWRAPPER(amdinitmid);
+	printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 
 
@@ -807,23 +813,6 @@ static void cpu_bus_init(device_t dev)
 {
     printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - Start.\n",__func__);
     initialize_cpus(dev->link_list);
-
-#if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
-    /* Must be called after PCI enumeration and resource allocation */
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - sb_After_Pci_Init - Start.\n",__func__);
-    sb_After_Pci_Init ();
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - sb_After_Pci_Init - End.\n",__func__);
-#endif // #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
-
-#if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
-    /* Must be called after PCI enumeration and resource allocation */
-    printk(BIOS_DEBUG, "\nFam12h - northbridge.c - %s - sb_Mid_Post_Init - Start.\n",__func__);
-    sb_Mid_Post_Init ();
-    printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - sb_Mid_Post_Init - End.\n",__func__);
-#endif // #if CONFIG_SOUTHBRIDGE_AMD_CIMX_SB900
-
-    /* Must be called after PCI enumeration and resource allocation */
-    AGESAWRAPPER(amdinitmid);
     printk(BIOS_DEBUG, "Fam12h - northbridge.c - %s - End.\n",__func__);
 }
 

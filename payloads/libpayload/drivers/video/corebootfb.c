@@ -62,11 +62,11 @@ static const u32 vga_colors[] = {
 };
 
 /* Addresses for the various components */
-static struct cb_framebuffer *fbinfo;
+static unsigned long fbinfo;
 static unsigned long fbaddr;
 static unsigned long chars;
 
-#define FI (fbinfo)
+#define FI ((struct cb_framebuffer *) phys_to_virt(fbinfo))
 #define FB ((unsigned char *) phys_to_virt(fbaddr))
 #define CHARS ((unsigned short *) phys_to_virt(chars))
 
@@ -232,15 +232,18 @@ static int corebootfb_init(void)
 	if (lib_sysinfo.framebuffer == NULL)
 		return -1;
 
-	fbinfo = lib_sysinfo.framebuffer;
+	/* We might have been called before relocation (like FILO does). So
+	   just keep the physical address which won't break on relocation. */
+	fbinfo = virt_to_phys(lib_sysinfo.framebuffer);
 
 	fbaddr = FI->physical_address;
 
 	coreboot_video_console.columns = FI->x_resolution / FONT_WIDTH;
 	coreboot_video_console.rows = FI->y_resolution / FONT_HEIGHT;
 
-	chars = (unsigned long) malloc(coreboot_video_console.rows *
-			coreboot_video_console.columns * 2);
+	/* See setting of fbinfo above. */
+	chars = virt_to_phys(malloc(coreboot_video_console.rows *
+				    coreboot_video_console.columns * 2));
 
 	// clear boot splash screen if there is one.
 	corebootfb_clear();

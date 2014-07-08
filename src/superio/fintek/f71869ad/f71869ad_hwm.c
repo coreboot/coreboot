@@ -64,7 +64,7 @@ static void pnp_write_index(u16 port, u8 reg, u8 value)
 /* note: multifunc registers need to be tweaked before here */
 void f71869ad_hwm_init(device_t dev)
 {
-	struct superio_fintek_f71869ad_config *conf = dev->chip_info;
+	const struct superio_fintek_f71869ad_config *conf = dev->chip_info;
 	struct resource *res = find_resource(dev, PNP_IDX_IO0);
 
 	if (!res) {

@@ -32,7 +32,7 @@
 
 void f71869ad_multifunc_init(device_t dev)
 {
-	struct superio_fintek_f71869ad_config *conf = dev->chip_info;
+	const struct superio_fintek_f71869ad_config *conf = dev->chip_info;
 
 	pnp_enter_conf_mode(dev);
 

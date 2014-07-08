@@ -372,7 +372,7 @@ static void model_206ax_init(device_t cpu)
 	enable_lapic_tpr();
 	setup_lapic();
 
-	/* Enable virtualization if enabled in CMOS */
+	/* Enable virtualization if Kconfig option is set */
 	enable_vmx();
 
 	/* Configure Enhanced SpeedStep and Thermal Sensors */

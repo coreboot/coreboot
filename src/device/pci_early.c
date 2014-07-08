@@ -25,8 +25,7 @@
 #include <delay.h>
 
 #ifdef __PRE_RAM__
-
-unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last)
+unsigned pci_find_next_capability(pci_devfn_t dev, unsigned cap, unsigned last)
 {
 	unsigned pos = 0;
 	u16 status;
@@ -69,11 +68,11 @@ unsigned pci_find_next_capability(device_t dev, unsigned cap, unsigned last)
 	return 0;
 }
 
-unsigned pci_find_capability(device_t dev, unsigned cap)
+unsigned pci_find_capability(pci_devfn_t dev, unsigned cap)
 {
 	return pci_find_next_capability(dev, cap, 0);
 }
-#endif
+#endif /* __PRE_RAM__ */
 
 
 #if CONFIG_EARLY_PCI_BRIDGE

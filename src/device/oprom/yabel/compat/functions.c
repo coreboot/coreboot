@@ -33,8 +33,11 @@ u8* vmem = (u8 *) (16*1024*1024); /* default to 16MB */
 u8* vmem = NULL;
 #endif
 
+extern u8 *biosmem;
+
 void run_bios(struct device * dev, unsigned long addr)
 {
+	biosmem = vmem;
 
 	biosemu(vmem, VMEM_SIZE, dev, addr);
 

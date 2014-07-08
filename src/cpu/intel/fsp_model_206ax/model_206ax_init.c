@@ -40,7 +40,7 @@ static void enable_vmx(void)
 {
 	struct cpuid_result regs;
 	msr_t msr;
-	int enable = CONFIG_ENABLE_VMX;
+	int enable = IS_ENABLED(CONFIG_ENABLE_VMX);
 
 	regs = cpuid(1);
 	/* Check that the VMX is supported before reading or writing the MSR. */

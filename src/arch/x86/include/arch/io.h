@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <rules.h>
 
+/* FIXME: Sources for romstage still use device_t. */
+/* Use pci_devfn_t or pnp_devfn_t instead */
+typedef u32 pci_devfn_t;
+typedef u32 pnp_devfn_t;
+
 /*
  * This file contains the definitions for the x86 IO instructions
  * inb/inw/inl/outb/outw/outl and the "string versions" of the same
@@ -218,10 +223,8 @@ static inline int log2f(int value)
 #define PNP_DEV(PORT, FUNC) (((PORT) << 8) | (FUNC))
 
 /* FIXME: Sources for romstage still use device_t. */
+/* Use pci_devfn_t or pnp_devfn_t instead */
 typedef u32 device_t;
-
-typedef u32 pci_devfn_t;
-typedef u32 pnp_devfn_t;
 
 /* FIXME: We need to make the coreboot to run at 64bit mode, So when read/write memory above 4G,
  * We don't need to set %fs, and %gs anymore

@@ -1148,7 +1148,7 @@ u32 map_oprom_vendev(u32 vendev)
 	case 0x100299A0:	/* AMD Radeon HD 7520G (Trinity)  */
 	case 0x100299A2:	/* AMD Radeon HD 7420G (Trinity)  */
 	case 0x100299A4:	/* AMD Radeon HD 7400G (Trinity)  */
-		new_vendev=0x10029900;
+		new_vendev=0x10029901;
 		break;
 	}
 

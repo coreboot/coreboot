@@ -115,7 +115,7 @@
 
 #include <arch/io.h>
 
-void w83627hf_set_clksel_48(device_t dev);
-void w83627hf_enable_serial(device_t dev, u16 iobase);
+void w83627hf_set_clksel_48(pnp_devfn_t dev);
+void w83627hf_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_WINBOND_W83627HF_H */

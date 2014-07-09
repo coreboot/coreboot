@@ -21,7 +21,7 @@
 #include <arch/io.h>
 #include "i3100.h"
 
-static void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 
@@ -29,7 +29,7 @@ static void pnp_enter_ext_func_mode(device_t dev)
 	outb(0x86, port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 
@@ -38,14 +38,14 @@ static void pnp_exit_ext_func_mode(device_t dev)
 }
 
 /* Enable device interrupts, set UART_CLK predivide. */
-static void i3100_configure_uart_clk(device_t dev, u8 predivide)
+static void i3100_configure_uart_clk(pnp_devfn_t dev, u8 predivide)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_write_config(dev, I3100_SIW_CONFIGURATION, (predivide << 2) | 1);
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void i3100_enable_serial(device_t dev, u16 iobase)
+static void i3100_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

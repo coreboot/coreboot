@@ -34,9 +34,9 @@
 #define W83627THG_ACPI            10
 #define W83627THG_HWM             11   /* Hardware monitor */
 
-void pnp_enter_ext_func_mode(device_t dev);
-void pnp_exit_ext_func_mode(device_t dev);
+void pnp_enter_ext_func_mode(pnp_devfn_t dev);
+void pnp_exit_ext_func_mode(pnp_devfn_t dev);
 
-void w83627thg_set_clksel_48(device_t dev);
+void w83627thg_set_clksel_48(pnp_devfn_t dev);
 
 #endif /* SUPERIO_WINBOND_W83627THG_W83627THG_H */

@@ -24,6 +24,6 @@
 #include <arch/io.h>
 #include <stdint.h>
 
-void fintek_enable_serial(device_t dev, u16 iobase);
+void fintek_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_FINTEK_COMMON_ROMSTAGE_H */

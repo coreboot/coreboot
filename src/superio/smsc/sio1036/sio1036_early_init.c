@@ -24,13 +24,13 @@
 
 #include "sio1036.h"
 
-static inline void sio1036_enter_conf_state(device_t dev)
+static inline void sio1036_enter_conf_state(pnp_devfn_t dev)
 {
 	unsigned port = dev >> 8;
 	outb(0x55, port);
 }
 
-static inline void sio1036_exit_conf_state(device_t dev)
+static inline void sio1036_exit_conf_state(pnp_devfn_t dev)
 {
 	unsigned port = dev >> 8;
 	outb(0xaa, port);
@@ -39,7 +39,7 @@ static inline void sio1036_exit_conf_state(device_t dev)
 /* Detect SMSC SIO1036 LPC Debug Card status */
 static u8 detect_sio1036_chip(unsigned port)
 {
-	device_t dev = PNP_DEV(port, SIO1036_SP1);
+	pnp_devfn_t dev = PNP_DEV(port, SIO1036_SP1);
 	unsigned data;
 
 	sio1036_enter_conf_state (dev);
@@ -56,7 +56,7 @@ static u8 detect_sio1036_chip(unsigned port)
 	};
 }
 
-void sio1036_enable_serial(device_t dev, u16 iobase)
+void sio1036_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	unsigned port = dev >> 8;
 

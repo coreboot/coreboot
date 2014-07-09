@@ -52,6 +52,6 @@ static const u8 init_values[] = {
 	0xe8, 0x74, 0x3a, 0x9d, /**/ 0xce, 0xe7, 0x73, 0x39,
 };
 
-void it8661f_enable_serial(device_t dev, u16 iobase);
+void it8661f_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_ITE_IT8661F_H */

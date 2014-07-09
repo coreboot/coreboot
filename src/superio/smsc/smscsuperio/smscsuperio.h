@@ -30,6 +30,6 @@
 #define SMSCSUPERIO_SP1 4	/* Com1 */
 #define SMSCSUPERIO_SP2 5	/* Com2 */
 
-void smscsuperio_enable_serial(device_t dev, u16 iobase);
+void smscsuperio_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_SMSC_SMSCSUPERIO_H */

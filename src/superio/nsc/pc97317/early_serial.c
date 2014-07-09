@@ -25,7 +25,7 @@
 #define PM_BASE 0xe8
 
 /* The PC97317 needs clocks to be set up before the serial port will operate. */
-static void pc97317_enable_serial(device_t dev, u16 iobase)
+static void pc97317_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	/* Set base address of power management unit. */
 	pnp_set_logical_device(PM_DEV);

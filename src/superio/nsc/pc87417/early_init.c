@@ -23,13 +23,13 @@
 #include <arch/io.h>
 #include "pc87417.h"
 
-static void pc87417_disable_dev(device_t dev)
+static void pc87417_disable_dev(pnp_devfn_t dev)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
 }
 
-static void pc87417_enable_dev(device_t dev, u16 iobase)
+static void pc87417_enable_dev(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
@@ -37,7 +37,7 @@ static void pc87417_enable_dev(device_t dev, u16 iobase)
 	pnp_set_enable(dev, 1);
 }
 
-static void xbus_cfg(device_t dev)
+static void xbus_cfg(pnp_devfn_t dev)
 {
 	u8 i, data;
 	u16 xbus_index;

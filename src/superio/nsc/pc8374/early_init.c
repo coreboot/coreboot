@@ -46,7 +46,7 @@ static void pc8374_enable(u16 iobase, u8 *init)
 	}
 }
 
-static void pc8374_enable_dev(device_t dev, u16 iobase)
+static void pc8374_enable_dev(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);

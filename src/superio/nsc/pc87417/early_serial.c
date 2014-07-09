@@ -23,7 +23,7 @@
 #include <arch/io.h>
 #include "pc87417.h"
 
-void pc87417_enable_serial(device_t dev, u16 iobase)
+void pc87417_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 0);
@@ -31,7 +31,7 @@ void pc87417_enable_serial(device_t dev, u16 iobase)
 	pnp_set_enable(dev, 1);
 }
 
-void pc87417_enable_dev(device_t dev)
+void pc87417_enable_dev(pnp_devfn_t dev)
 {
 	pnp_set_logical_device(dev);
 	pnp_set_enable(dev, 1);

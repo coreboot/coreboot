@@ -106,10 +106,10 @@
 #include <arch/io.h>
 #include <stdint.h>
 
-u8 it8772f_sio_read(device_t dev, u8 reg);
-void it8772f_sio_write(device_t dev, u8 reg, u8 value);
-void it8772f_ac_resume_southbridge(device_t dev);
-void it8772f_gpio_setup(device_t dev, int set, u8 select, u8 polarity,
+u8 it8772f_sio_read(pnp_devfn_t dev, u8 reg);
+void it8772f_sio_write(pnp_devfn_t dev, u8 reg, u8 value);
+void it8772f_ac_resume_southbridge(pnp_devfn_t dev);
+void it8772f_gpio_setup(pnp_devfn_t dev, int set, u8 select, u8 polarity,
 			u8 pullup, u8 output, u8 enable);
 
 /* FIXME: should be static so will be removed later.. */
@@ -117,7 +117,7 @@ void it8772f_gpio_setup(device_t dev, int set, u8 select, u8 polarity,
 #define IT8772F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
 #define IT8772F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
 
-void it8772f_enter_conf(device_t dev);
-void it8772f_exit_conf(device_t dev);
+void it8772f_enter_conf(pnp_devfn_t dev);
+void it8772f_exit_conf(pnp_devfn_t dev);
 
 #endif /* SUPERIO_ITE_IT8772F_H */

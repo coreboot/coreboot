@@ -26,8 +26,8 @@
 /* NOTICE: This file is deprecated, use ite/common instead */
 
 /* RAMstage equiv */
-/* u8 pnp_read_config(device_t dev, u8 reg) */
-u8 it8772f_sio_read(device_t dev, u8 reg)
+/* u8 pnp_read_config(pnp_devfn_t dev, u8 reg) */
+u8 it8772f_sio_read(pnp_devfn_t dev, u8 reg)
 {
 	u16 port = dev >> 8;
 
@@ -36,8 +36,8 @@ u8 it8772f_sio_read(device_t dev, u8 reg)
 }
 
 /* RAMstage equiv */
-/* void pnp_write_config(device_t dev, u8 reg, u8 value) */
-void it8772f_sio_write(device_t dev, u8 reg, u8 value)
+/* void pnp_write_config(pnp_devfn_t dev, u8 reg, u8 value) */
+void it8772f_sio_write(pnp_devfn_t dev, u8 reg, u8 value)
 {
 	u16 port = dev >> 8;
 
@@ -45,7 +45,7 @@ void it8772f_sio_write(device_t dev, u8 reg, u8 value)
 	outb(value, port + 1);
 }
 
-void it8772f_enter_conf(device_t dev)
+void it8772f_enter_conf(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 
@@ -55,13 +55,13 @@ void it8772f_enter_conf(device_t dev)
 	outb((port == 0x4e) ? 0xaa : 0x55, port);
 }
 
-void it8772f_exit_conf(device_t dev)
+void it8772f_exit_conf(pnp_devfn_t dev)
 {
 	it8772f_sio_write(dev, IT8772F_CONFIG_REG_CC, 0x02);
 }
 
 /* Set AC resume to be up to the Southbridge */
-void it8772f_ac_resume_southbridge(device_t dev)
+void it8772f_ac_resume_southbridge(pnp_devfn_t dev)
 {
 	it8772f_enter_conf(dev);
 	it8772f_sio_write(dev, IT8772F_CONFIG_REG_LDN, IT8772F_EC);
@@ -70,7 +70,7 @@ void it8772f_ac_resume_southbridge(device_t dev)
 }
 
 /* Configure a set of GPIOs */
-void it8772f_gpio_setup(device_t dev, int set, u8 select, u8 polarity,
+void it8772f_gpio_setup(pnp_devfn_t dev, int set, u8 select, u8 polarity,
 			u8 pullup, u8 output, u8 enable)
 {
 	set--; /* Set 1 is offset 0 */

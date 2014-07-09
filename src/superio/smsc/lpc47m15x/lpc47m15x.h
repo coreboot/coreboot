@@ -34,6 +34,6 @@
 #include <arch/io.h>
 #include <stdint.h>
 
-void lpc47m15x_enable_serial(device_t dev, u16 iobase);
+void lpc47m15x_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_SMSC_LPC47M15X_H */

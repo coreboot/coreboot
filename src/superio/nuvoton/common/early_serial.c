@@ -49,7 +49,7 @@
 
 /* Enable configuration: pass entry key '0x87' into index port dev
  * two times. */
-static void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(NUVOTON_ENTRY_KEY, port);
@@ -57,14 +57,14 @@ static void pnp_enter_conf_state(device_t dev)
 }
 
 /* Disable configuration: pass exit key '0xAA' into index port dev. */
-static void pnp_exit_conf_state(device_t dev)
+static void pnp_exit_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(NUVOTON_EXIT_KEY, port);
 }
 
 /* Bring up early serial debugging output before the RAM is initialized. */
-void nuvoton_enable_serial(device_t dev, u16 iobase)
+void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);

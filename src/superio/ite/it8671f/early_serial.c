@@ -89,7 +89,7 @@ void it8671f_48mhz_clkin(void)
 }
 
 /* Enable the serial port(s). */
-void it8671f_enable_serial(device_t dev, u16 iobase)
+void it8671f_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	it8671f_enter_conf();
 

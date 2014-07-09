@@ -27,7 +27,7 @@
  * mechanism. It lives in the GPIO LDN. However, register 0xEF is not
  * mentioned in the IT8718F datasheet so just hardcode it to 0x7E for now.
  */
-void it8718f_disable_reboot(device_t dev)
+void it8718f_disable_reboot(pnp_devfn_t dev)
 {
 	ite_reg_write(dev, 0xEF, 0x7E);
 }

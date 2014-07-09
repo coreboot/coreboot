@@ -26,20 +26,20 @@
 #include "pilot.h"
 
 /* Pilot uses 0x5A/0xA5 pattern to actiavte deactivate config access. */
-void pnp_enter_ext_func_mode(device_t dev)
+void pnp_enter_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x5A, port);
 }
 
-void pnp_exit_ext_func_mode(device_t dev)
+void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xA5, port);
 }
 
 /* Serial config is a fairly standard procedure. */
-void pilot_enable_serial(device_t dev, u16 iobase)
+void pilot_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);
@@ -48,7 +48,7 @@ void pilot_enable_serial(device_t dev, u16 iobase)
 	pnp_exit_ext_func_mode(dev);
 }
 
-void pilot_disable_serial(device_t dev)
+void pilot_disable_serial(pnp_devfn_t dev)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

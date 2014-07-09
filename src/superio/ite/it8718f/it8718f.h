@@ -35,6 +35,6 @@
 #define IT8718F_GPIO 0x07 /* GPIO */
 #define IT8718F_IR   0x0a /* Consumer IR */
 
-void it8718f_disable_reboot(device_t dev);
+void it8718f_disable_reboot(pnp_devfn_t dev);
 
 #endif /* SUPERIO_ITE_IT8718F_H */

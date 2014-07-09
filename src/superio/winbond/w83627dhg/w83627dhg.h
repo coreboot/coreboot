@@ -52,9 +52,9 @@
 
 /* Note: There is no GPIO1 on the W83627DHG as per datasheet. */
 
-void pnp_enter_ext_func_mode(device_t dev);
-void pnp_exit_ext_func_mode(device_t dev);
-void w83627dhg_enable_i2c(device_t dev);
-void w83627dhg_set_clksel_48(device_t dev);
+void pnp_enter_ext_func_mode(pnp_devfn_t dev);
+void pnp_exit_ext_func_mode(pnp_devfn_t dev);
+void w83627dhg_enable_i2c(pnp_devfn_t dev);
+void w83627dhg_set_clksel_48(pnp_devfn_t dev);
 
 #endif /* SUPERIO_WINBOND_W83627DHG_H */

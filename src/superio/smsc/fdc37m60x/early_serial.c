@@ -46,7 +46,7 @@ static void fdc37m60x_sio_write(uint8_t ldn, u8 index, u8 value)
 }
 
 /* Enable the peripheral devices on the FDC37M60X Super I/O chip. */
-static void fdc37m60x_enable_serial(device_t dev, u16 iobase)
+static void fdc37m60x_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	/* (1) Enter the configuration state. */
 	outb(0x55, FDC37M60X_CONFIGURATION_PORT);

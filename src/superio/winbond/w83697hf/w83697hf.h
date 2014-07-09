@@ -34,9 +34,9 @@
 #define W83697HF_ACPI           10   /* ACPI */
 #define W83697HF_HWM            11   /* Hardware monitor */
 
-void w83697hf_set_clksel_48(device_t);
+void w83697hf_set_clksel_48(pnp_devfn_t);
 
 /* Depreciated, use winbond_enable_serial() */
-void w83697hf_enable_serial(device_t dev, u16 iobase);
+void w83697hf_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_WINBOND_W83697HF_H */

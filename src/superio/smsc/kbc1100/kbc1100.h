@@ -36,7 +36,7 @@
 #define KBC1100_EC1              0x0D         /* EC Channel 1 */
 #define KBC1100_EC2              0x0E         /* EC Channel 2 */
 
-void kbc1100_early_serial(device_t dev, u16 iobase);
+void kbc1100_early_serial(pnp_devfn_t dev, u16 iobase);
 void kbc1100_early_init(u16 port);
 
 #endif /* SUPERIO_SMSC_KBC1100_H */

@@ -26,19 +26,19 @@
 
 #include "kbc1100.h"
 
-static void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x55, port);
 }
 
-static void pnp_exit_conf_state(device_t dev)
+static void pnp_exit_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
-void kbc1100_early_serial(device_t dev, u16 iobase)
+void kbc1100_early_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
@@ -50,7 +50,7 @@ void kbc1100_early_serial(device_t dev, u16 iobase)
 
 void kbc1100_early_init(u16 port)
 {
-  device_t dev;
+  pnp_devfn_t dev;
   dev = PNP_DEV (port, KBC1100_KBC);
   pnp_enter_conf_state(dev);
 

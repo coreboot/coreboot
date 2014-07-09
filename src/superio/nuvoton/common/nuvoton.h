@@ -25,6 +25,6 @@
 #include <arch/io.h>
 #include <stdint.h>
 
-void nuvoton_enable_serial(device_t dev, u16 iobase);
+void nuvoton_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_NUVOTON_COMMON_ROMSTAGE_H */

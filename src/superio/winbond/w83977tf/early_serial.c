@@ -23,20 +23,20 @@
 #include <arch/io.h>
 #include "w83977tf.h"
 
-static void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0x87, port);
 	outb(0x87, port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 	outb(0xaa, port);
 }
 
-static void w83977tf_enable_serial(device_t dev, u16 iobase)
+static void w83977tf_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

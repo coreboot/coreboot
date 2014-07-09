@@ -54,7 +54,7 @@
 #define W83627EHG_GPIO4	((2 << 8) | W83627EHG_GPIO_SUSLED_V)
 #define W83627EHG_GPIO5	((3 << 8) | W83627EHG_GPIO_SUSLED_V)
 
-void pnp_enter_ext_func_mode(device_t dev);
-void pnp_exit_ext_func_mode(device_t dev);
+void pnp_enter_ext_func_mode(pnp_devfn_t dev);
+void pnp_exit_ext_func_mode(pnp_devfn_t dev);
 
 #endif /* SUPERIO_WINBOND_W83627EHG_H */

@@ -33,14 +33,14 @@
 #define ITE_CONFIG_REG_WATCHDOG  0x72 /* watchdog config */
 
 /* Helper procedure */
-static void ite_sio_write(device_t dev, u8 reg, u8 value)
+static void ite_sio_write(pnp_devfn_t dev, u8 reg, u8 value)
 {
 	pnp_set_logical_device(dev);
 	pnp_write_config(dev, reg, value);
 }
 
 /* Enable configuration */
-static void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(pnp_devfn_t dev)
 {
 	u16 port = dev >> 8;
 
@@ -51,12 +51,12 @@ static void pnp_enter_conf_state(device_t dev)
 }
 
 /* Disable configuration */
-static void pnp_exit_conf_state(device_t dev)
+static void pnp_exit_conf_state(pnp_devfn_t dev)
 {
 	ite_sio_write(dev, ITE_CONFIG_REG_CC, 0x02);
 }
 
-void ite_reg_write(device_t dev, u8 reg, u8 value)
+void ite_reg_write(pnp_devfn_t dev, u8 reg, u8 value)
 {
 	pnp_enter_conf_state(dev);
 	ite_sio_write(dev, reg, value);
@@ -71,13 +71,13 @@ void ite_reg_write(device_t dev, u8 reg, u8 value)
  * ITE_UART_CLK_PREDIVIDE_24
  * ITE_UART_CLK_PREDIVIDE_48 (default)
  */
-void ite_conf_clkin(device_t dev, u8 predivide)
+void ite_conf_clkin(pnp_devfn_t dev, u8 predivide)
 {
 	ite_reg_write(dev, ITE_CONFIG_REG_CLOCKSEL, (0x1 & predivide));
 }
 
 /* Bring up early serial debugging output before the RAM is initialized. */
-void ite_enable_serial(device_t dev, u16 iobase)
+void ite_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_conf_state(dev);
 	pnp_set_logical_device(dev);
@@ -101,7 +101,7 @@ void ite_enable_serial(device_t dev, u16 iobase)
  * and pass: GPIO_DEV
  */
 
-void ite_enable_3vsbsw(device_t dev)
+void ite_enable_3vsbsw(pnp_devfn_t dev)
 {
 	u8 tmp;
 	pnp_enter_conf_state(dev);
@@ -118,7 +118,7 @@ void ite_enable_3vsbsw(device_t dev)
  * and pass: GPIO_DEV
 */
 
-void ite_kill_watchdog(device_t dev)
+void ite_kill_watchdog(pnp_devfn_t dev)
 {
 	pnp_enter_conf_state(dev);
 	ite_sio_write(dev, ITE_CONFIG_REG_WATCHDOG, 0x00);

@@ -115,8 +115,8 @@
 #define PC87417_XWBCNF		0x16
 
 #if defined(__PRE_RAM__)
-void pc87417_enable_serial(device_t dev, u16 iobase);
-void pc87417_enable_dev(device_t dev);
+void pc87417_enable_serial(pnp_devfn_t dev, u16 iobase);
+void pc87417_enable_dev(pnp_devfn_t dev);
 #endif
 
 #endif

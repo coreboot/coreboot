@@ -29,6 +29,6 @@
 #include <arch/io.h>
 #include <stdint.h>
 
-void sio1036_enable_serial(device_t dev, u16 iobase);
+void sio1036_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_SMSC_1306_H */

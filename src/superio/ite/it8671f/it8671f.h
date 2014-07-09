@@ -34,6 +34,6 @@
 #define IT8671F_KBCM 0x06 /* PS/2 mouse */
 
 void it8671f_48mhz_clkin(void);
-void it8671f_enable_serial(device_t dev, u16 iobase);
+void it8671f_enable_serial(pnp_devfn_t dev, u16 iobase);
 
 #endif /* SUPERIO_ITE_IT8671F__H */

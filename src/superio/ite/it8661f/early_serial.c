@@ -26,7 +26,7 @@
 /* Base address 0x3f0: 0x86 0x80 0x55 0x55. */
 /* Base address 0x3bd: 0x86 0x80 0x55 0xaa. */
 /* Base address 0x370: 0x86 0x80 0xaa 0x55. */
-static void pnp_enter_ext_func_mode(device_t dev)
+static void pnp_enter_ext_func_mode(pnp_devfn_t dev)
 {
 	int i;
 	u16 port = dev >> 8;
@@ -42,7 +42,7 @@ static void pnp_enter_ext_func_mode(device_t dev)
 		outb(init_values[i], port);
 }
 
-static void pnp_exit_ext_func_mode(device_t dev)
+static void pnp_exit_ext_func_mode(pnp_devfn_t dev)
 {
 	pnp_write_config(dev, IT8661F_REG_CC, (1 << 1));
 }
@@ -55,21 +55,21 @@ static void pnp_exit_ext_func_mode(device_t dev)
  *
  * Bits: FDC (0), Com1 (1), Com2 (2), PP (3), IR (4). Bits 5-7 are reserved.
  */
-static void it8661f_enable_logical_devices(device_t dev)
+static void it8661f_enable_logical_devices(pnp_devfn_t dev)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_write_config(dev, IT8661F_REG_LDE, 0x1f);
 	pnp_exit_ext_func_mode(dev);
 }
 
-static void it8661f_set_clkin(device_t dev, u8 clkin)
+static void it8661f_set_clkin(pnp_devfn_t dev, u8 clkin)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_write_config(dev, IT8661F_REG_SWSUSP, (clkin << 1));
 	pnp_exit_ext_func_mode(dev);
 }
 
-void it8661f_enable_serial(device_t dev, u16 iobase)
+void it8661f_enable_serial(pnp_devfn_t dev, u16 iobase)
 {
 	pnp_enter_ext_func_mode(dev);
 	pnp_set_logical_device(dev);

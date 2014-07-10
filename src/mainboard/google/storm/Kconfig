@@ -28,16 +28,22 @@ config BOARD_SPECIFIC_OPTIONS
 	select SPI_FLASH
 	select SPI_FLASH_SPANSION
 
+config BOARD_VARIANT_AP148
+	bool "pick this to build an image for ap148"
+	default n
+
 config MAINBOARD_DIR
 	string
 	default google/storm
 
 config MAINBOARD_PART_NUMBER
 	string
+	default "AP148" if BOARD_VARIANT_AP148
 	default "Storm"
 
 config DRAM_SIZE_MB
 	int
+	default 512 if BOARD_VARIANT_AP148
 	default 1024
 
 config DRAM_DMA_START

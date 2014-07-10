@@ -80,13 +80,13 @@ static const CODEC_TBL_LIST CodecTableList[] =
  */
 AGESA_STATUS Fch_Oem_config(UINT32 Func, UINT32 FchData, VOID *ConfigPtr)
 {
-	FCH_RESET_DATA_BLOCK *FchParams = (FCH_RESET_DATA_BLOCK *)FchData;
+	AMD_CONFIG_PARAMS *StdHeader = ConfigPtr;
 
-	if (FchParams->StdHeader->Func == AMD_INIT_RESET) {
+	if (StdHeader->Func == AMD_INIT_RESET) {
 		FCH_RESET_DATA_BLOCK *FchParams_reset =  (FCH_RESET_DATA_BLOCK *) FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT RESET ");
 		FchParams_reset->LegacyFree = IS_ENABLED(CONFIG_HUDSON_LEGACY_FREE);
-	} else if (FchParams->StdHeader->Func == AMD_INIT_ENV) {
+	} else if (StdHeader->Func == AMD_INIT_ENV) {
 		FCH_DATA_BLOCK *FchParams_env = (FCH_DATA_BLOCK *)FchData;
 		printk(BIOS_DEBUG, "Fch OEM config in INIT ENV ");
 

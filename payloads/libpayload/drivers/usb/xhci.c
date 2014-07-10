@@ -193,13 +193,11 @@ xhci_init (unsigned long physical_bar)
 		goto _free_xhci;
 	}
 
-	controller->reg_base	= (u32)physical_bar;
-
-	xhci->capreg	= phys_to_virt(controller->reg_base);
+	xhci->capreg	= phys_to_virt(physical_bar);
 	xhci->opreg	= ((void *)xhci->capreg) + xhci->capreg->caplength;
 	xhci->hcrreg	= ((void *)xhci->capreg) + xhci->capreg->rtsoff;
 	xhci->dbreg	= ((void *)xhci->capreg) + xhci->capreg->dboff;
-	xhci_debug("regbase: 0x%"PRIx32"\n", controller->reg_base);
+	xhci_debug("regbase: 0x%"PRIx32"\n", physical_bar);
 	xhci_debug("caplen:  0x%"PRIx32"\n", xhci->capreg->caplength);
 	xhci_debug("rtsoff:  0x%"PRIx32"\n", xhci->capreg->rtsoff);
 	xhci_debug("dboff:   0x%"PRIx32"\n", xhci->capreg->dboff);

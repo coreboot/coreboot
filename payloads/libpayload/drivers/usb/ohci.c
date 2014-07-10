@@ -201,8 +201,7 @@ ohci_init (unsigned long physical_bar)
 	init_device_entry (controller, 0);
 	OHCI_INST (controller)->roothub = controller->devices[0];
 
-	controller->reg_base = (u32)physical_bar;
-	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(controller->reg_base);
+	OHCI_INST (controller)->opreg = (opreg_t*)phys_to_virt(physical_bar);
 	usb_debug("OHCI Version %x.%x\n", (OHCI_INST (controller)->opreg->HcRevision >> 4) & 0xf, OHCI_INST (controller)->opreg->HcRevision & 0xf);
 
 	if ((OHCI_INST (controller)->opreg->HcControl & HostControllerFunctionalStateMask) == USBReset) {

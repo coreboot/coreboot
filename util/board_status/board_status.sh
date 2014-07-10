@@ -24,7 +24,8 @@ NONFATAL=1
 
 # test a command
 #
-# $1: test command on remote host (0=no, 1=yes)
+# $1: 0 ($LOCAL) to run command locally,
+#     1 ($REMOTE) to run remotely if remote host defined
 # $2: command to test
 # $3: 0 ($FATAL) Exit with an error if the command fails
 #     1 ($NONFATAL) Don't exit on command test failure
@@ -37,7 +38,7 @@ test_cmd()
 	fi
 
 	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
-		ssh root@${REMOTE_HOST} which "$2" >/dev/null
+		ssh root@${REMOTE_HOST} which "$2" > /dev/null
 		rc=$?
 	else
 		which "$2" >/dev/null
@@ -79,7 +80,8 @@ _cmd()
 
 # run a command
 #
-# $1: 0 to run command locally, 1 to run remotely if remote host defined
+# $1: 0 ($LOCAL) to run command locally,
+#     1 ($REMOTE) to run remotely if remote host defined
 # $2: command
 # $3: filename to direct output of command into
 cmd()
@@ -97,7 +99,8 @@ cmd()
 
 # run a command where failure is considered to be non-fatal
 #
-# $1: 0 to run command locally, 1 to run remotely if remote host defined
+# $1: 0 ($LOCAL) to run command locally,
+#     1 ($REMOTE) to run remotely if remote host defined
 # $2: command
 # $3: filename to direct output of command into
 cmd_nonfatal()
@@ -253,7 +256,7 @@ cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 #
 # Finish up.
 #
-coreboot_dir=`pwd`
+coreboot_dir=$(pwd)
 if [ $UPLOAD_RESULTS -eq 1 ]; then
 	# extract username from ssh://<username>@review.coreboot.org/blah
 	username=$(git config --get remote.origin.url | sed 's/ssh\:\/\///' | sed 's/@.*//')

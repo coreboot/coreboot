@@ -3,6 +3,7 @@
 # This file is part of the coreboot project.
 #
 # Copyright (C) 2013 Google Inc.
+# Copyright (C) 2014 Sage Electronic Engineering, LLC.
 #
 
 EXIT_SUCCESS=0
@@ -12,6 +13,7 @@ EXIT_FAILURE=1
 REMOTE_HOST=""
 CLOBBER_OUTPUT=0
 UPLOAD_RESULTS=0
+SERIAL_PORT_SPEED=115200
 
 # Used to specify whether a command should always be run locally or
 # if command should be run remoteley when a remote host is specified.
@@ -110,6 +112,50 @@ cmd_nonfatal()
 	rm -f "$3"	# don't leave an empty file
 }
 
+# read from a serial port device
+#
+# $1: serial device to read from
+# $2: serial port speed
+# $3: filename to direct output of command into
+get_serial_bootlog () {
+
+	if [ ! -c "$1" ]; then
+		echo "$1 is not a valid serial device"
+		exit $EXIT_FAILURE
+	fi
+
+	# make the text more noticible
+	test_cmd $LOCAL "tput" $NONFATAL
+	tput_not_available=$?
+	if [ $tput_not_available -eq 0 ]; then
+		tput bold
+		tput setaf 10 # set bright green
+	fi
+
+	echo
+	echo "Waiting to receive boot log from $1"
+	echo "Press [Enter] when the boot is complete and the"
+	echo "system is ready for ssh to get the dmesg log."
+
+	if [ $tput_not_available -eq 0 ]; then
+		tput sgr0
+	fi
+
+	# set up the serial port
+	cmd $LOCAL "stty -F $1 $2 cs8 -cstopb"
+
+	# read from the serial port - user must press enter when complete
+	test_cmd $LOCAL "tee"
+	cat "$SERIAL_DEVICE" | tee "$3" &
+	PID=$!
+
+	read
+	kill "$PID" 2>/dev/null &
+
+	# remove the binary zero value that gets inserted into the file.
+	sed -i 's/\x00//' "$3"
+}
+
 show_help() {
 	echo "Usage:
 	${0} <option>
@@ -121,12 +167,16 @@ Options
         Clobber temporary output when finished. Useful for debugging.
     -r  <host>
         Obtain machine information from remote host (using ssh).
+    -s  </dev/xxx>
+        Obtain boot log via serial device.
+    -S  <speed>
+        Set the port speed for the serial device (Default is 115200).
     -u
         Upload results to coreboot.org.
 "
 }
 
-while getopts "Chr:u" opt; do
+while getopts "Chr:s:S:u" opt; do
 	case "$opt" in
 		h)
 			show_help
@@ -137,6 +187,12 @@ while getopts "Chr:u" opt; do
 			;;
 		r)
 			REMOTE_HOST="$OPTARG"
+			;;
+		s)
+			SERIAL_DEVICE="$OPTARG"
+			;;
+		S)
+			SERIAL_PORT_SPEED="$OPTARG"
 			;;
 		u)
 			UPLOAD_RESULTS=1
@@ -184,9 +240,13 @@ printf "Upstream revision: %s\n" $($getrevision -u) >> ${tmpdir}/${results}/revi
 printf "Upstream URL: %s\n" $($getrevision -U)>> ${tmpdir}/${results}/revision.txt
 printf "Timestamp: %s\n" "$timestamp" >> ${tmpdir}/${results}/revision.txt
 
-test_cmd $REMOTE "cbmem"
-cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
-cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+if [ -z "$SERIAL_DEVICE" ]; then
+	test_cmd $REMOTE "cbmem"
+	cmd $REMOTE "cbmem -c" "${tmpdir}/${results}/coreboot_console.txt"
+	cmd_nonfatal $REMOTE "cbmem -t" "${tmpdir}/${results}/coreboot_timestamps.txt"
+else
+	get_serial_bootlog "$SERIAL_DEVICE" "$SERIAL_PORT_SPEED" "${tmpdir}/${results}/coreboot_console.txt"
+fi
 
 cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 

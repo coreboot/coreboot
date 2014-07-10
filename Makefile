@@ -30,7 +30,9 @@
 ## SUCH DAMAGE.
 ##
 
-$(if $(wildcard .xcompile),,$(eval $(shell bash util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
+.xcompile: util/xcompile/xcompile
+	A=`mktemp $@.XXXXXX`; $< $(XGCCPATH) > $$A && mv $$A $@ 2> /dev/null
+
 include .xcompile
 
 export top := $(CURDIR)
@@ -271,4 +273,4 @@ clean-cscope:
 distclean: clean
 	rm -f .config .config.old ..config.tmp .kconfig.d .tmpconfig* .ccwrap .xcompile
 
-.PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy .xcompile
+.PHONY: $(PHONY) clean clean-for-update clean-cscope cscope distclean doxygen doxy

@@ -28,14 +28,14 @@ PHDRS
 	to_load PT_LOAD;
 }
 
-ENTRY(_start)
+ENTRY(stage_entry)
 TARGET(binary)
 SECTIONS
 {
 	. = CONFIG_BOOTBLOCK_BASE;
 
 	.bootblock . : {
-		*(.text._start);
+		*(.text.stage_entry);
 		KEEP(*(.id));
 		*(.text);
 		*(.text.*);
@@ -48,6 +48,10 @@ SECTIONS
 		*(.sbss);
 		*(.sbss.*);
 	} : to_load = 0xff
+
+	/* arm64 chipsets need to define CONFIG_BOOTBLOCK_STACK_(TOP|BOTTOM) */
+	_stack = CONFIG_BOOTBLOCK_STACK_BOTTOM;
+	_estack = CONFIG_BOOTBLOCK_STACK_TOP;
 
 	preram_cbmem_console = CONFIG_CONSOLE_PRERAM_BUFFER_BASE;
 

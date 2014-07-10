@@ -39,7 +39,7 @@ SECTIONS
 	.text : {
 		_text = .;
 		_start = .;
-		*(.text.stage_entry.aarch64);
+		*(.text.stage_entry);
 		*(.text);
 		*(.text.*);
 		. = ALIGN(16);
@@ -116,8 +116,9 @@ SECTIONS
         }
         _eheap = .;
 
-	_stack = CONFIG_STACK_BOTTOM;
-	_estack = CONFIG_STACK_TOP;
+	/* arm64 chipsets need to define CONFIG_RAMSTAGE_STACK_(TOP|BOTTOM) */
+	_stack = CONFIG_RAMSTAGE_STACK_BOTTOM;
+	_estack = CONFIG_RAMSTAGE_STACK_TOP;
 
 	/* The ram segment. This includes all memory used by the memory
 	 * resident copy of coreboot, except the tables that are produced on

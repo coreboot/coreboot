@@ -42,7 +42,7 @@ SECTIONS
 
 	.romtext . : {
 		_start = .;
-		*(.text.stage_entry.aarch64);
+		*(.text.stage_entry);
 		*(.text.startup);
 		*(.text);
 		*(.text.*);
@@ -75,6 +75,10 @@ SECTIONS
 	}
 
 	_end = .;
+
+	/* arm64 chipsets need to define CONFIG_ROMSTAGE_STACK_(TOP|BOTTOM) */
+	_stack = CONFIG_ROMSTAGE_STACK_BOTTOM;
+	_estack = CONFIG_ROMSTAGE_STACK_TOP;
 
 	preram_cbmem_console = CONFIG_CONSOLE_PRERAM_BUFFER_BASE;
 

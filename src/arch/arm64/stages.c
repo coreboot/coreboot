@@ -31,11 +31,6 @@
 #include <arch/stages.h>
 #include <arch/cache.h>
 
-void stage_entry(void)
-{
-	main();
-}
-
 /* we had marked 'doit' as 'noreturn'.
  * There is no apparent harm in leaving it as something we can return from, and in the one
  * case where we call a payload, the payload is allowed to return.

@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 The ChromiumOS Authors
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,41 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __ARCH_STAGES_H
-#define __ARCH_STAGES_H
 
-extern void main(void);
+#include <arch/asm.h>
 
-void stage_entry(void);
-void stage_exit(void *);
-void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size);
+ENTRY(arm64_el3_startup)
+	mov	x0, xzr
+	msr	SCTLR_EL3, x0
+	msr	SCR_EL3, x0
+	/* Have stack pointer use SP_EL0. */
+	msr	SPSel, #0
+	isb
 
-#endif
+	/* Load up the stack if non-zero. */
+	ldr	x0, .stack
+	cmp	x0, #0
+	b.eq	1f
+	mov	sp, x0
+	1:
+
+	ldr	x1, .entry
+	br	x1
+
+	.align 4
+	/*
+	 * By default branch to main() and initialize the stack according
+	 * to the Kconfig option for cpu0. However, this code can be relocated
+	 * and reused to start up secondary cpus.
+	 */
+	.stack:
+		.quad _estack
+	.entry:
+		.quad main
+ENDPROC(arm64_el3_startup)
+.global arm64_el3_startup_end
+arm64_el3_startup_end:
+
+ENTRY(stage_entry)
+	b	arm64_el3_startup
+ENDPROC(stage_entry)

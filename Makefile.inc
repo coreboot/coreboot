@@ -57,7 +57,7 @@ export objgenerated := $(obj)/generated
 #######################################################################
 # root rule to resolve if in build mode (ie. configuration exists)
 real-target: $(obj)/config.h coreboot
-coreboot: build-dirs $(obj)/coreboot.rom
+coreboot: build-dirs $(obj)/coreboot.rom $(obj)/cbfstool $(obj)/rmodtool
 
 #######################################################################
 # our phony targets
@@ -258,13 +258,13 @@ build-dirs:
 
 #######################################################################
 # Build the tools
-CBFSTOOL:=$(obj)/cbfstool
-RMODTOOL:=$(obj)/rmodtool
+CBFSTOOL:=$(objutil)/cbfstool/cbfstool
+RMODTOOL:=$(objutil)/cbfstool/rmodtool
 
-$(CBFSTOOL): $(objutil)/cbfstool/cbfstool
+$(obj)/cbfstool: $(CBFSTOOL)
 	cp $< $@
 
-$(RMODTOOL): $(objutil)/cbfstool/rmodtool
+$(obj)/rmodtool: $(RMODTOOL)
 	cp $< $@
 
 _WINCHECK=$(shell uname -o 2> /dev/null)

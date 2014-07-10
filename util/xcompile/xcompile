@@ -145,6 +145,7 @@ detect_special_flags() {
 report_arch_toolchain() {
 	cat <<EOF
 # elf${TWIDTH}-${TBFDARCH} toolchain (${GCCPREFIX}gcc)
+ARCH_SUPPORTED+=${TARCH}
 CC_${TARCH}:=${GCCPREFIX}gcc
 CFLAGS_${TARCH}:=${CFLAGS}
 CPP_${TARCH}:=${GCCPREFIX}cpp

@@ -17,8 +17,6 @@
 ## Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 ##
 
-ARCH_SUPPORTED := armv7 x86_32
-
 # ccache integration
 ifeq ($(CONFIG_CCACHE),y)
 

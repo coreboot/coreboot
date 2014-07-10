@@ -60,10 +60,16 @@ _cmd()
 		return $EXIT_FAILURE
 	fi
 
-	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
-		ssh root@${REMOTE_HOST} "$2" > "${3}" 2>&1
+	if [ -n "$3" ]; then
+		pipe_location="${3}"
 	else
-		$2 > "${3}" 2>&1
+		pipe_location="/dev/null"
+	fi
+
+	if [ "$1" -eq "$REMOTE" ] && [ -n "$REMOTE_HOST" ]; then
+		ssh root@${REMOTE_HOST} "$2" > "$pipe_location" 2>&1
+	else
+		$2 > "$pipe_location" 2>&1
 	fi
 
 	return $?

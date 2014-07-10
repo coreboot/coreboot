@@ -27,6 +27,7 @@ romstage-y += i2c.c
 romstage-y += dma.c
 romstage-y += monotonic_timer.c
 romstage-y += romstage.c
+romstage-y += power.c
 romstage-y += sdram.c
 romstage-y += sdram_lp0.c
 romstage-y += ../tegra/gpio.c

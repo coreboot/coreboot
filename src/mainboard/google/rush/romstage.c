@@ -17,38 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <arch/stages.h>
-#include <cbfs.h>
-#include <console/console.h>
-#include <arch/exception.h>
+#include <soc/romstage.h>
 
-#include <soc/sdram_configs.h>
-#include "sdram.h"
-#include "ccplex.h"
-
-void romstage(void);
-void romstage(void)
+void mainboard_configure_pmc(void)
 {
-	void *entry;
+}
 
-	console_init();
-	exception_init();
-
-	printk(BIOS_INFO, "T132: romstage here\n");
-
-	sdram_init(get_sdram_config());
-	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
-
-	ccplex_cpu_prepare();
-	printk(BIOS_INFO, "T132 romstage: cpu prepare done\n");
-
-	ccplex_load_mts();
-	printk(BIOS_INFO, "T132 romstage: MTS loading done\n");
-
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/ramstage");
-
-	ccplex_cpu_start(entry);
-
-	while (1);
+void mainboard_enable_vdd_cpu(void)
+{
+	/* VDD_CPU is already enabled in bootblock. */
 }

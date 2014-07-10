@@ -20,10 +20,8 @@
 #ifndef __SOC_NVIDIA_TEGRA132_POWER_H__
 #define __SOC_NVIDIA_TEGRA132_POWER_H__
 
-// This function does not enable the external power to the rail, it enables
-// the rail itself internal to the SOC.
-void power_enable_cpu_rail(void);
+#include "pmc.h"
 
-void power_ungate_cpu(void);
+void power_ungate_partition(uint32_t id);
 
 #endif	/* __SOC_NVIDIA_TEGRA132_POWER_H__ */

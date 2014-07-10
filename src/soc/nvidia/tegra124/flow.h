@@ -35,8 +35,14 @@ struct flow_ctlr {
 	u32 cpu_pwr_csr;	/* offset 0x38 */
 	u32 mpid;		/* offset 0x3c */
 	u32 ram_repair;		/* offset 0x40 */
+	u32 flow_dbg_sel;	/* offset 0x44 */
+	u32 flow_dbg_cnt0;	/* offset 0x48 */
+	u32 flow_dbg_cnt1;	/* offset 0x4c */
+	u32 flow_dbg_qual;	/* offset 0x50 */
+	u32 flow_ctlr_spare;	/* offset 0x54 */
+	u32 ram_repair_cluster1;/* offset 0x58 */
 };
-check_member(flow_ctlr, ram_repair, 0x40);
+check_member(flow_ctlr, ram_repair_cluster1, 0x58);
 
 enum {
 	FLOW_MODE_SHIFT = 29,
@@ -74,6 +80,12 @@ enum {
 	FLOW_EVENT_X32K = 1 << 26,
 	FLOW_EVENT_SCLK = 1 << 27,
 	FLOW_EVENT_JTAG = 1 << 28
+};
+
+/* RAM_REPAIR, 0x40, 0x58 */
+enum {
+	RAM_REPAIR_REQ = 0x1 << 0,
+	RAM_REPAIR_STS = 0x1 << 1,
 };
 
 #endif	/*  _TEGRA124_FLOW_H_ */

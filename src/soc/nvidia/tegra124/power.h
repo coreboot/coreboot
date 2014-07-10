@@ -35,4 +35,6 @@ enum {
 };
 int power_reset_status(void);
 
+void ram_repair(void);
+
 #endif	/* __SOC_NVIDIA_TEGRA124_POWER_H__ */

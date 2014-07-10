@@ -25,8 +25,10 @@
 
 #include "pmc.h"
 #include "power.h"
+#include "flow.h"
 
 static struct tegra_pmc_regs * const pmc = (void *)TEGRA_PMC_BASE;
+static struct flow_ctlr * const flow = (void *)TEGRA_FLOW_BASE;
 
 static int partition_powered(int id)
 {
@@ -91,4 +93,18 @@ void power_enable_and_ungate_cpu(void)
 int power_reset_status(void)
 {
 	return read32(&pmc->rst_status) & 0x7;
+}
+
+void ram_repair(void)
+{
+	// Request RAM repair for cluster 0
+	setbits_le32(&flow->ram_repair, RAM_REPAIR_REQ);
+	// Poll for completion
+	while (!(read32(&flow->ram_repair) & RAM_REPAIR_STS))
+		;
+	// Request RAM repair for cluster 1
+	setbits_le32(&flow->ram_repair_cluster1, RAM_REPAIR_REQ);
+	// Poll for completion
+	while (!(read32(&flow->ram_repair_cluster1) & RAM_REPAIR_STS))
+		;
 }

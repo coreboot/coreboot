@@ -32,7 +32,7 @@ PHDRS
 
 SECTIONS
 {
-	. = CONFIG_SYS_SDRAM_BASE;
+	. = CONFIG_RAMSTAGE_BASE;
 	/* First we place the code and read only data (typically const declared).
 	 * This could theoretically be placed in rom.
 	 */
@@ -56,11 +56,11 @@ SECTIONS
 
 	.rodata : {
 		_rodata = .;
-		. = ALIGN(4);
+		. = ALIGN(16);
 		console_drivers = .;
 		KEEP(*(.rodata.console_drivers));
 		econsole_drivers = . ;
-		. = ALIGN(4);
+		. = ALIGN(16);
 		pci_drivers = . ;
 		KEEP(*(.rodata.pci_driver));
 		epci_drivers = . ;
@@ -75,7 +75,7 @@ SECTIONS
 		/* kevinh/Ispiri - Added an align, because the objcopy tool
 		 * incorrectly converts sections that are not long word aligned.
 		 */
-		 . = ALIGN(4);
+		 . = ALIGN(16);
 
 		_erodata = .;
 	}
@@ -100,6 +100,7 @@ SECTIONS
 		*(.bss)
 		*(.sbss)
 		*(COMMON)
+		. = ALIGN(16);
 	}
 	_ebss = .;
 	_end = .;
@@ -108,13 +109,13 @@ SECTIONS
 	 * this line.
 	 */
 
-        _heap = .;
-        .heap . : {
-                /* Reserve CONFIG_HEAP_SIZE bytes for the heap */
-                . = CONFIG_HEAP_SIZE ;
-                . = ALIGN(4);
-        }
-        _eheap = .;
+	_heap = .;
+	.heap . : {
+		/* Reserve CONFIG_HEAP_SIZE bytes for the heap */
+		. = CONFIG_HEAP_SIZE ;
+		. = ALIGN(16);
+	}
+	_eheap = .;
 
 	/* arm64 chipsets need to define CONFIG_RAMSTAGE_STACK_(TOP|BOTTOM) */
 	_stack = CONFIG_RAMSTAGE_STACK_BOTTOM;

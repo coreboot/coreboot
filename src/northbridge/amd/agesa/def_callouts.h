@@ -21,7 +21,6 @@
 #ifndef CALLOUTS_AMD_AGESA_H
 #define CALLOUTS_AMD_AGESA_H
 
-#include "agesawrapper.h"
 #include "Porting.h"
 #include "AGESA.h"
 

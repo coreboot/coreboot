@@ -33,7 +33,6 @@
 #include "Porting.h"
 #include "BiosCallOuts.h"
 #include "s3_resume.h"
-#include "agesawrapper.h"
 
 /* The size needs to be 4k aligned, which is the sector size of most flashes. */
 #define S3_DATA_VOLATILE_SIZE		0x6000

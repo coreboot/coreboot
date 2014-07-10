@@ -1,5 +1,5 @@
 
-#include "agesawrapper.h"
+#include "AGESA.h"
 #include "amdlib.h"
 #include "northbridge/amd/agesa/def_callouts.h"
 #include "heapManager.h"

@@ -17,6 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include "agesawrapper.h"
+
 #include <console/console.h>
 #include <string.h>
 #include <arch/acpi.h>
@@ -25,11 +27,8 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
-#include "agesawrapper.h"
 #include <cpu/amd/mtrr.h>
 #include <cpu/amd/amdfam15.h>
-
-#include "agesawrapper.h"
 
 extern const unsigned char AmlCode[];
 

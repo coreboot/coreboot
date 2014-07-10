@@ -18,7 +18,7 @@
  */
 
 #include <device/azalia.h>
-#include "agesawrapper.h"
+#include "AGESA.h"
 #include "amdlib.h"
 #include "BiosCallOuts.h"
 #include "Ids.h"

@@ -204,5 +204,5 @@ u64 timer_us(u64 base)
 		}
 	}
 
-	return timer_raw_value() / (hz / 1000000) - base;
+	return (1000000 * timer_raw_value()) / hz - base;
 }

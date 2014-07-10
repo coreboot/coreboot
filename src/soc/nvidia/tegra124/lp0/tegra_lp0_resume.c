@@ -193,6 +193,14 @@ enum {
 	FLOW_CLUSTER_ACTIVE_LP = 0x1 << 0
 };
 
+static uint32_t *flow_ctlr_ram_repair_ptr =
+	(void *)(FLOW_CTLR_BASE + 0x40);
+static uint32_t *flow_ctlr_ram_repair_cluster1_ptr =
+	(void *)(FLOW_CTLR_BASE + 0x58);
+enum {
+	RAM_REPAIR_REQ = 0x1 << 0,
+	RAM_REPAIR_STS = 0x1 << 1,
+};
 
 
 /* Power management controller registers. */
@@ -483,6 +491,24 @@ static void clear_cpu_resets(void)
 
 
 
+/* RAM repair */
+
+void ram_repair(void)
+{
+	// Request Cluster0 RAM repair.
+	setbits32(RAM_REPAIR_REQ, flow_ctlr_ram_repair_ptr);
+	// Poll for Cluster0 RAM repair status.
+	while (!(read32(flow_ctlr_ram_repair_ptr) & RAM_REPAIR_STS))
+		;
+
+	// Request Cluster1 RAM repair.
+	setbits32(RAM_REPAIR_REQ, flow_ctlr_ram_repair_cluster1_ptr);
+	// Poll for Cluster1 RAM repair status.
+	while (!(read32(flow_ctlr_ram_repair_cluster1_ptr) & RAM_REPAIR_STS))
+		;
+}
+
+
 /* Power. */
 
 static void power_on_partition(unsigned id)
@@ -588,6 +614,9 @@ void lp0_resume(void)
 	enable_cpu_clocks();
 
 	power_on_main_cpu();
+
+	// Perform ram repair after cpu is powered on.
+	ram_repair();
 
 	clear_cpu_resets();
 

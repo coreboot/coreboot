@@ -18,9 +18,15 @@
  */
 
 #include <cbmem.h>
+#include <soc/display.h>
+#include <soc/addressmap.h>
+
+#define MTS_SIZE_MB 128
 
 void *cbmem_top(void)
 {
-/* TODO: update with real cbmem_top function. */
-	return NULL;
+	/* FIXME(adurbin): use carveout registers properly. */
+	const uintptr_t reserve = FB_SIZE_MB + MTS_SIZE_MB;
+
+	return (void *)((sdram_max_addressable_mb() - reserve) << 20UL);
 }

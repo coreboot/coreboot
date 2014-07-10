@@ -17,6 +17,7 @@ bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
 
 romstage-y += romstage_asm.S
+romstage-y += addressmap.c
 romstage-y += cbfs.c
 romstage-y += cbmem.c
 romstage-y += timer.c
@@ -35,6 +36,7 @@ romstage-y += ../tegra/i2c.c
 romstage-y += ../tegra/pinmux.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
+ramstage-y += addressmap.c
 ramstage-y += cbfs.c
 ramstage-y += cbmem.c
 ramstage-y += timer.c

@@ -83,4 +83,8 @@ config CBFS_CACHE_SIZE
 	hex "size of CBFS cache data"
 	default 0x00016000
 
+config CONSOLE_PRERAM_BUFFER_BASE
+	hex "memory address of the CBMEM console buffer"
+	default 0x40004020
+
 endif

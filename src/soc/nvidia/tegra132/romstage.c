@@ -19,6 +19,8 @@
 
 #include <arch/stages.h>
 #include <cbfs.h>
+#include <cbmem.h>
+#include <console/cbmem_console.h>
 #include <console/console.h>
 #include <arch/exception.h>
 
@@ -39,6 +41,8 @@ void romstage(void)
 	sdram_init(get_sdram_config());
 	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
 
+	cbmem_initialize();
+
 	ccplex_cpu_prepare();
 	printk(BIOS_INFO, "T132 romstage: cpu prepare done\n");
 
@@ -47,6 +51,8 @@ void romstage(void)
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 				CONFIG_CBFS_PREFIX "/ramstage");
+
+	cbmemc_reinit();
 
 	ccplex_cpu_start(entry);
 

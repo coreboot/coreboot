@@ -24,8 +24,6 @@
 
 uint32_t sdram_get_ram_code(void);
 void sdram_init(const struct sdram_params *param);
-int sdram_size_mb(void);
-uintptr_t sdram_max_addressable_mb(void);
 
 /* Save params to PMC scratch registers for use by BootROM on LP0 resume. */
 void sdram_lp0_save_params(const struct sdram_params *sdram);

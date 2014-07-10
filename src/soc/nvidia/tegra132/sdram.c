@@ -619,29 +619,3 @@ uint32_t sdram_get_ram_code(void)
 		 PMC_STRAPPING_OPT_A_RAM_CODE_MASK) >>
 		PMC_STRAPPING_OPT_A_RAM_CODE_SHIFT);
 }
-
-/* returns total amount of DRAM (in MB) from memory controller registers */
-int sdram_size_mb(void)
-{
-	struct tegra_mc_regs *mc = (struct tegra_mc_regs *)TEGRA_MC_BASE;
-	static int total_size = 0;
-
-	if (total_size)
-		return total_size;
-
-	/*
-	 * This obtains memory size from the External Memory Aperture
-	 * Configuration register. Nvidia confirmed that it is safe to assume
-	 * this value represents the total physical DRAM size.
-	 */
-	total_size = (read32(&mc->emem_cfg) >>
-			MC_EMEM_CFG_SIZE_MB_SHIFT) & MC_EMEM_CFG_SIZE_MB_MASK;
-
-	printk(BIOS_DEBUG, "%s: Total SDRAM (MB): %u\n", __func__, total_size);
-	return total_size;
-}
-
-uintptr_t sdram_max_addressable_mb(void)
-{
-	return MIN((CONFIG_SYS_SDRAM_BASE/MiB) + sdram_size_mb(), 4096);
-}

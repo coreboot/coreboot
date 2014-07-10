@@ -22,6 +22,7 @@
 #define __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_ADDRESS_MAP_H__
 
 #include <stddef.h>
+#include <stdint.h>
 
 enum {
 	TEGRA_SRAM_BASE = 0x40000000,
@@ -79,5 +80,8 @@ enum {
 enum {
 	TEGRA_I2C_BASE_COUNT = 6,
 };
+
+int sdram_size_mb(void);
+uintptr_t sdram_max_addressable_mb(void);
 
 #endif /* __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_ADDRESS_MAP_H__ */

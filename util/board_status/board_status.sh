@@ -152,7 +152,7 @@ fi
 
 # Results will be placed in a temporary location until we're ready to upload.
 # If the user does not wish to upload, results will remain in /tmp.
-tmpdir=$(mktemp -d)
+tmpdir=$(mktemp -d --tmpdir coreboot_board_status.XXXXXXXX)
 
 # Obtain board and revision info to form the directory structure:
 # <vendor>/<board>/<revision>/<timestamp>
@@ -229,6 +229,9 @@ cd "$coreboot_dir"
 
 if [ $CLOBBER_OUTPUT -eq 1 ]; then
 	rm -rf ${tmpdir}
+else
+	echo
+	echo "output files are in ${tmpdir}/${results}"
 fi
 
 exit $EXIT_SUCCESS

@@ -17,7 +17,7 @@ ramstage-$(CONFIG_USBDEBUG) += enable_usbdebug.c
 romstage-y += early_setup.c
 
 ramstage-$(CONFIG_SPI_FLASH) += spi.c
-ramstage-$(CONFIG_HAVE_ACPI_RESUME) += resume.c
+ramstage-y += resume.c
 
 romstage-y += imc.c
 ramstage-y += imc.c

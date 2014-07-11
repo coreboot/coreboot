@@ -81,7 +81,32 @@ enum {
 	TEGRA_I2C_BASE_COUNT = 6,
 };
 
+/* Return total size of DRAM memory configured on the platform. */
 int sdram_size_mb(void);
-uintptr_t sdram_max_addressable_mb(void);
+
+enum {
+	ADDRESS_SPACE_32_BIT = 32,
+	ADDRESS_SPACE_64_BIT = 64,
+};
+
+/*
+ * Return the address range of memory for provided address width. The base
+ * and end parameters in 1MiB units with end being exclusive to the range.
+ */
+void memory_range_by_bits(int bits, uintptr_t *base_mib, uintptr_t *end_mib);
+
+enum {
+	CARVEOUT_TZ,
+	CARVEOUT_SEC,
+	CARVEOUT_MTS,
+	CARVEOUT_VPR,
+	CARVEOUT_NUM,
+};
+
+/* Provided the careout id, obtain the base and size in 1MiB units. */
+void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib);
+
+/* Return pointer and size in 1MiB units. */
+uintptr_t framebuffer_attributes(size_t *size_mib);
 
 #endif /* __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_ADDRESS_MAP_H__ */

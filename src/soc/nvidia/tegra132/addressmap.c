@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <console/console.h>
 #include <soc/addressmap.h>
+#include <soc/display.h>
 #include "mc.h"
 #include "sdram.h"
 
@@ -46,7 +47,100 @@ int sdram_size_mb(void)
 	return total_size;
 }
 
-uintptr_t sdram_max_addressable_mb(void)
+static void carveout_from_regs(uintptr_t *base_mib, size_t *size_mib,
+				uint32_t bom, uint32_t bom_hi, uint32_t size)
 {
-	return MIN((CONFIG_SYS_SDRAM_BASE/MiB) + sdram_size_mb(), 4096);
+
+	/* All size regs of carveouts are in MiB. */
+	if (size == 0)
+		return;
+
+	*size_mib = size;
+	bom >>= 20;
+	bom |= bom_hi >> (32 - 20);
+
+	*base_mib = bom;
+}
+
+void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib)
+{
+	*base_mib = 0;
+	*size_mib = 0;
+	struct tegra_mc_regs * const mc = (struct tegra_mc_regs *)TEGRA_MC_BASE;
+
+	switch (id) {
+	case CARVEOUT_TZ:
+		break;
+	case CARVEOUT_SEC:
+		carveout_from_regs(base_mib, size_mib,
+					read32(&mc->sec_carveout_bom),
+					read32(&mc->sec_carveout_adr_hi),
+					read32(&mc->sec_carveout_size_mb));
+		break;
+	case CARVEOUT_MTS:
+		carveout_from_regs(base_mib, size_mib,
+					read32(&mc->mts_carveout_bom),
+					read32(&mc->mts_carveout_adr_hi),
+					read32(&mc->mts_carveout_size_mb));
+		break;
+	case CARVEOUT_VPR:
+		carveout_from_regs(base_mib, size_mib,
+					read32(&mc->video_protect_bom),
+					read32(&mc->video_protect_bom_adr_hi),
+					read32(&mc->video_protect_size_mb));
+		break;
+	default:
+		break;
+	}
+}
+
+void memory_range_by_bits(int bits, uintptr_t *base_mib, uintptr_t *end_mib)
+{
+	uintptr_t base;
+	uintptr_t end;
+	int i;
+
+	base = CONFIG_SYS_SDRAM_BASE / MiB;
+	end = base + sdram_size_mb();
+
+	if (bits == ADDRESS_SPACE_32_BIT)
+		end = MIN(end, 4096);
+
+	for (i = 0; i < CARVEOUT_NUM; i++) {
+		uintptr_t carveout_base;
+		size_t carveout_size;
+
+		carveout_range(i, &carveout_base, &carveout_size);
+
+		if (carveout_size == 0)
+			continue;
+
+		/* Bypass carveouts out of requested range. */
+		if (carveout_base >= end)
+			continue;
+
+		/*
+		 * This is crude, but the assumption is that carveouts live
+		 * at the upper range of physical memory. Therefore, update
+		 * the end address to be equal to the base of the carveout.
+		 */
+		end = carveout_base;
+	}
+
+	*base_mib = base;
+	*end_mib = end;
+}
+
+uintptr_t framebuffer_attributes(size_t *size_mib)
+{
+	uintptr_t begin;
+	uintptr_t end;
+
+	/* Place the framebuffer just below the 32-bit addressable limit. */
+	memory_range_by_bits(ADDRESS_SPACE_32_BIT, &begin, &end);
+
+	*size_mib = FB_SIZE_MB;
+	end -= *size_mib;
+
+	return end;
 }

@@ -57,7 +57,7 @@ DefinitionBlock (
 	/* Some global data */
 	Name(OSTP, 3)		/* Assume nothing. WinXp = 1, Vista = 2, Linux = 3, WinCE = 4 */
 	Name(OSV, Ones)	/* Assume nothing */
-	Name(PMOD, One)	/* Assume APIC */
+	Name(PMOD, 0)	/* Default interrupt model is PIC */
 
 	/*
 	 * Processor Object

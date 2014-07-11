@@ -24,6 +24,9 @@
 #define IO_APIC_INTERRUPTS 24
 
 #ifndef __ACPI__
+
+#include <stdint.h>
+
 #define ALL		(0xff << 24)
 #define NONE		(0)
 #define DISABLED	(1 << 16)

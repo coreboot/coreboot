@@ -117,6 +117,36 @@ Scope (\_SB.PCI0.I2C0)
 			}
 		}
 	}
+
+	Device (CODC)
+	{
+		/*
+		 * TODO(kane): Need official HID.
+		 *
+		 */
+		Name (_HID, "RT5677CE")
+		Name (_DDN, "RT5667 Codec")
+		Name (_UID, 1)
+		Name (_CRS, ResourceTemplate()
+		{
+			I2cSerialBus (
+				0x2c,                     // SlaveAddress
+				ControllerInitiated,      // SlaveMode
+				400000,                   // ConnectionSpeed
+				AddressingMode7Bit,       // AddressingMode
+				"\\_SB.PCI0.I2C0",             // ResourceSource
+			)
+			Interrupt (ResourceConsumer, Edge, ActiveLow){ 30 }
+		})
+		Method (_STA)
+		{
+			If (LEqual (\S1EN, 1)) {
+				Return (0xF)
+			} Else {
+				Return (0x0)
+			}
+		}
+	}
 }
 
 Scope (\_SB.PCI0.I2C1)

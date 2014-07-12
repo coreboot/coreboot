@@ -448,6 +448,15 @@ DefinitionBlock (
 
 	#include "acpi/routing.asl"
 
+	Method(_PIC, 0x01, NotSerialized)
+	{
+		If (Arg0)
+		{
+			\_SB.CIRQ()
+		}
+		Store(Arg0, PMOD)
+	}
+
 	Scope(\_SB) {
 		Method(CkOT, 0){
 			if(LNotEqual(OSTP, Ones)) {Return(OSTP)}	/* OS version was already detected */
@@ -468,14 +477,6 @@ DefinitionBlock (
 			Return(OSTP)
 		}
 
-		Method(_PIC, 0x01, NotSerialized)
-		{
-			If (Arg0)
-			{
-				\_SB.CIRQ()
-			}
-			Store(Arg0, PMOD)
-		}
 		Method(CIRQ, 0x00, NotSerialized){
 			Store(0, PINA)
 			Store(0, PINB)

@@ -392,11 +392,10 @@ static int mkhi_get_fwcaps(mefwcaps_sku *cap)
 	};
 
 	/* Send request and wait for response */
-	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg))
-	    < 0) {
+	if (mei_sendrecv(&mei, &mkhi, &rule_id, &cap_msg, sizeof(cap_msg)) < 0) {
 		printk(BIOS_ERR, "ME: GET FWCAPS message failed\n");
 		return -1;
-        }
+	}
 	*cap = cap_msg.caps_sku;
 	return 0;
 }
@@ -420,7 +419,7 @@ static void me_print_fwcaps(mbp_fw_caps *caps_section)
 	print_cap("IntelR Capability Licensing Service (CLS)", cap->intel_cls);
 	print_cap("IntelR Power Sharing Technology (MPC)", cap->intel_mpc);
 	print_cap("ICC Over Clocking", cap->icc_over_clocking);
-        print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
+	print_cap("Protected Audio Video Path (PAVP)", cap->pavp);
 	print_cap("IPV6", cap->ipv6);
 	print_cap("KVM Remote Control (KVM)", cap->kvm);
 	print_cap("Outbreak Containment Heuristic (OCH)", cap->och);

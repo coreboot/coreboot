@@ -22,7 +22,6 @@
 #include <arch/exception.h>
 #include <arch/io.h>
 #include <arch/stages.h>
-#include <device/device.h>
 #include <cbfs.h>
 #include <cbmem.h>
 #include <console/console.h>
@@ -188,25 +187,6 @@ static void __attribute__((noinline)) romstage(void)
 	if (power_reset_status() == POWER_RESET_WATCHDOG) {
 		printk(BIOS_INFO, "Watchdog reset detected, rebooting.\n");
 		cpu_reset();
-	}
-
-	/* For quality of the user experience, it's important to get
-	 * the video going ASAP. Because there are long delays in some
-	 * of the powerup steps, we do some very early setup here in
-	 * romstage. The only thing setup_display does is manage
-	 * 4 GPIOs, under control of the config struct members.
-	 * In general, it is safe to enable panel power, and disable
-	 * anything related to the backlight. If we get something wrong,
-	 * we can easily fix it in ramstage by further GPIO manipulation,
-	 * so we feel it is ok to do some setting at this point.
-	 */
-
-	const struct device *soc = dev_find_slot(DEVICE_PATH_CPU_CLUSTER, 0);
-	printk(BIOS_SPEW, "s%s: soc is %p\n", __func__, soc);
-	if (soc && soc->chip_info) {
-		const struct soc_nvidia_tegra124_config *config =
-			soc->chip_info;
-		setup_display((struct soc_nvidia_tegra124_config *)config);
 	}
 
 	cbmem_initialize_empty();

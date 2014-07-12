@@ -116,10 +116,6 @@ config ME_BIN_PATH
 	depends on HAVE_ME_BIN
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/me.bin"
 
-config IFD_BIN_PATH
-	string "Path to intel firmware descriptor"
-	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
-
 config ME_MBP_CLEAR_LATE
 	bool "Defer wait for ME MBP Cleared"
 	default y

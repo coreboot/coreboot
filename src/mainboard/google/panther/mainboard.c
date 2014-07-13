@@ -18,25 +18,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-#include <string.h>
 #include <smbios.h>
-#include <device/device.h>
-#include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
-#include <x86emu/x86emu.h>
-#endif
-#include <pc80/mc146818rtc.h>
+#include <string.h>
+#include <types.h>
 #include <arch/acpi.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <console/console.h>
+#include <device/device.h>
+#include <device/device.h>
+#include <device/pci_def.h>
+#include <device/pci_ops.h>
+#include <pc80/mc146818rtc.h>
+#include <southbridge/intel/lynxpoint/pch.h>
+#include <x86emu/x86emu.h>
 #include "hda_verb.h"
 #include "onboard.h"
-#include <southbridge/intel/lynxpoint/pch.h>
+
 
 void mainboard_suspend_resume(void)
 {
@@ -50,7 +49,7 @@ static int int15_handler(void)
 	int res = 0;
 
 	printk(BIOS_DEBUG, "%s: AX=%04x BX=%04x CX=%04x DX=%04x\n",
-	       __func__, X86_AX, X86_BX, X86_CX, X86_DX);
+		__func__, X86_AX, X86_BX, X86_CX, X86_DX);
 
 	switch (X86_AX) {
 	case 0x5f34:
@@ -116,19 +115,19 @@ static int int15_handler(void)
 		default:
 			/* Interrupt was not handled */
 			printk(BIOS_DEBUG,
-			       "Unknown INT15 5f70 function: 0x%02x\n",
+				"Unknown INT15 5f70 function: 0x%02x\n",
 				((X86_CX >> 8) & 0xff));
 			break;
 		}
 		break;
 
-        default:
+	default:
 		printk(BIOS_DEBUG, "Unknown INT15 function %04x!\n", X86_AX);
 		break;
 	}
 	return res;
 }
-#endif
+#endif /* CONFIG_VGA_ROM_RUN */
 
 /* Audio Setup */
 
@@ -167,4 +166,3 @@ static void mainboard_enable(device_t dev)
 struct chip_operations mainboard_ops = {
 	.enable_dev = mainboard_enable,
 };
-

@@ -18,19 +18,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <cbfs.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <cbfs.h>
 #include <console/console.h>
 #include <cpu/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/haswell.h>
 #include <northbridge/intel/haswell/raminit.h>
-#include <southbridge/intel/lynxpoint/pch.h>
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
+#include <southbridge/intel/lynxpoint/pch.h>
+#include <superio/ite/common/ite.h>
+#include <superio/ite/it8772f/it8772f.h>
 #include "gpio.h"
-#include "superio/ite/it8772f/it8772f.h"
-#include "superio/ite/common/ite.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)

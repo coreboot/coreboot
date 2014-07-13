@@ -17,6 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef HDA_VERB_H
+#define HDA_VERB_H
+
+#include <stdlib.h>
+
 static const u32 mainboard_cim_verb_data[] = {
 	/* coreboot specific header */
 	0x10ec0283,	// Codec Vendor / Device ID: Realtek ALC283
@@ -109,4 +114,6 @@ static const u32 mainboard_pc_beep_verbs[] = {
 };
 
 static const u32 mainboard_pc_beep_verbs_size =
-	sizeof(mainboard_pc_beep_verbs) / sizeof(mainboard_pc_beep_verbs[0]);
+	ARRAY_SIZE(mainboard_pc_beep_verbs);
+
+#endif /* HDA_VERB_H */

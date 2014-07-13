@@ -17,18 +17,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
+#include <cbfs.h>
 #include <string.h>
+#include <types.h>
 #include <arch/io.h>
 #include <console/console.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/bd82x6x/pch.h>
-#if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/fmap.h>
-#else
-#include <cbfs.h>
-#endif
 #include "onboard.h"
 
 static unsigned int search(char *p, char *a, unsigned int lengthp,
@@ -142,11 +139,11 @@ void lan_init(void)
 	u16 io_base = 0;
 	struct device *ethernet_dev = NULL;
 
-	#if CONFIG_CHROMEOS
+#if CONFIG_CHROMEOS
 	char **vpd_region_ptr = NULL;
 	search_length = find_fmap_entry("RO_VPD", (void **)vpd_region_ptr);
 	search_address = (unsigned long)(*vpd_region_ptr);
-	#else
+#else
 	void *vpd_file = cbfs_get_file_content(CBFS_DEFAULT_MEDIA, "vpd.bin",
 					       CBFS_TYPE_RAW, &search_length);
 	if (vpd_file) {
@@ -155,7 +152,7 @@ void lan_init(void)
 		search_length = -1;
 		search_address = 0;
 	}
-	#endif
+#endif
 
 	/* Get NIC's IO base address */
 	ethernet_dev = dev_find_device(PANTHER_NIC_VENDOR_ID,

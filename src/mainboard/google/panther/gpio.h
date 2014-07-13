@@ -17,8 +17,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef FALCO_GPIO_H
-#define FALCO_GPIO_H
+#ifndef PANTHER_GPIO_H
+#define PANTHER_GPIO_H
 
 struct pch_lp_gpio_map;
 
@@ -121,4 +121,4 @@ const struct pch_lp_gpio_map mainboard_gpio_map[] = {
 	LP_GPIO_END
 };
 
-#endif
+#endif /* PANTHER_GPIO_H */

@@ -17,30 +17,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-#include <string.h>
 #include <cbmem.h>
-#include <console/console.h>
+#include <string.h>
+#include <types.h>
 #include <arch/acpi.h>
-#include <arch/ioapic.h>
 #include <arch/acpigen.h>
+#include <arch/ioapic.h>
 #include <arch/smp/mpspec.h>
+#include <console/console.h>
+#include <cpu/cpu.h>
+#include <cpu/x86/msr.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
-#include <cpu/cpu.h>
-#include <cpu/x86/msr.h>
-#include <vendorcode/google/chromeos/gnvs.h>
 #include <ec/google/chromeec/ec.h>
+#include <southbridge/intel/lynxpoint/nvs.h>
+#include <southbridge/intel/lynxpoint/pch.h>
+#include <vendorcode/google/chromeos/gnvs.h>
+#include "thermal.h"
 
 extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
-
-#include <southbridge/intel/lynxpoint/pch.h>
-#include <southbridge/intel/lynxpoint/nvs.h>
-#include "thermal.h"
 
 static void acpi_update_thermal_table(global_nvs_t *gnvs)
 {

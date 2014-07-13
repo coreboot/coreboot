@@ -18,9 +18,9 @@
  */
 
 #include <string.h>
-#include <device/pci.h>
 #include <arch/acpi.h>
 #include <cpu/x86/smm.h>
+#include <device/pci.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 
 void acpi_create_fadt(acpi_fadt_t * fadt, acpi_facs_t * facs, void *dsdt)

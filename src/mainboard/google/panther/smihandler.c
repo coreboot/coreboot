@@ -20,12 +20,12 @@
 
 #include <arch/io.h>
 #include <console/console.h>
+#include <cpu/intel/haswell/haswell.h>
 #include <cpu/x86/smm.h>
+#include <northbridge/intel/haswell/haswell.h>
+#include <southbridge/intel/lynxpoint/me.h>
 #include <southbridge/intel/lynxpoint/nvs.h>
 #include <southbridge/intel/lynxpoint/pch.h>
-#include <southbridge/intel/lynxpoint/me.h>
-#include <northbridge/intel/haswell/haswell.h>
-#include <cpu/intel/haswell/haswell.h>
 #include <elog.h>
 
 /* GPIO46 controls the WLAN_DISABLE_L signal. */
@@ -49,80 +49,7 @@ int mainboard_io_trap_handler(int smif)
 	 * For now, we force the return value to 0 and log all traps to
 	 * see what's going on.
 	 */
-	//gnvs->smif = 0;
 	return 1;
-}
-
-#if 0
-static u8 mainboard_smi_ec(void)
-{
-	u8 cmd = 0;// google_chromeec_get_event();
-
-#if CONFIG_ELOG_GSMI
-	/* Log this event */
-	if (cmd)
-		elog_add_event_byte(ELOG_TYPE_EC_EVENT, cmd);
-#endif
-
-	return cmd;
-}
-#endif
-
-/* gpi_sts is GPIO 47:32 */
-void mainboard_smi_gpi(u32 gpi_sts)
-{
-#if 0
-	if (gpi_sts & (1 << (EC_SMI_GPI - 32))) {
-		/* Process all pending events */
-		while (mainboard_smi_ec() != 0);
-	}
-#endif
-}
-
-void mainboard_smi_sleep(u8 slp_typ)
-{
-	/* Disable USB charging if required */
-	switch (slp_typ) {
-	case 3:
-		//if (smm_get_gnvs()->s3u0 == 0)
-		//	google_chromeec_set_usb_charge_mode(
-		//		0, USB_CHARGE_MODE_DISABLED);
-		//if (smm_get_gnvs()->s3u1 == 0)
-		//	google_chromeec_set_usb_charge_mode(
-		//		1, USB_CHARGE_MODE_DISABLED);
-
-		/* Prevent leak from standby rail to WLAN rail in S3. */
-		//set_gpio(GPIO_WLAN_DISABLE_L, 0);
-		/* Disable LTE */
-		//set_gpio(GPIO_LTE_DISABLE_L, 0);
-
-		/* Enable wake events */
-		//google_chromeec_set_wake_mask(MAINBOARD_EC_S3_WAKE_EVENTS);
-		break;
-	case 5:
-		//if (smm_get_gnvs()->s5u0 == 0)
-		//	google_chromeec_set_usb_charge_mode(
-		//		0, USB_CHARGE_MODE_DISABLED);
-		//if (smm_get_gnvs()->s5u1 == 0)
-		//	google_chromeec_set_usb_charge_mode(
-		//		1, USB_CHARGE_MODE_DISABLED);
-
-		/* Prevent leak from standby rail to WLAN rail in S5. */
-		//set_gpio(GPIO_WLAN_DISABLE_L, 0);
-		/* Disable LTE */
-		//set_gpio(GPIO_LTE_DISABLE_L, 0);
-
-		/* Enable wake events */
-		//google_chromeec_set_wake_mask(MAINBOARD_EC_S5_WAKE_EVENTS);
-		break;
-	}
-
-	/* Disable SCI and SMI events */
-	//google_chromeec_set_smi_mask(0);
-	//google_chromeec_set_sci_mask(0);
-
-	/* Clear pending events that may trigger immediate wake */
-	//while (google_chromeec_get_event() != 0);
 }
 
 #define APMC_FINALIZE 0xcb
@@ -144,17 +71,7 @@ int mainboard_smi_apmc(u8 apmc)
 
 		mainboard_finalized = 1;
 		break;
-	case APM_CNT_ACPI_ENABLE:
-		//google_chromeec_set_smi_mask(0);
-		/* Clear all pending events */
-		//while (google_chromeec_get_event() != 0);
-		//google_chromeec_set_sci_mask(MAINBOARD_EC_SCI_EVENTS);
-		break;
-	case APM_CNT_ACPI_DISABLE:
-		//google_chromeec_set_sci_mask(0);
-		/* Clear all pending events */
-		//while (google_chromeec_get_event() != 0);
-		//google_chromeec_set_smi_mask(MAINBOARD_EC_SMI_EVENTS);;
+	default:
 		break;
 	}
 	return 0;

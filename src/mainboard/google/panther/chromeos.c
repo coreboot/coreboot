@@ -18,11 +18,12 @@
  */
 
 #include <string.h>
-#include <vendorcode/google/chromeos/chromeos.h>
 #include <arch/io.h>
+#include <boot/coreboot_tables.h>
 #include <device/device.h>
 #include <device/pci.h>
 #include <southbridge/intel/lynxpoint/pch.h>
+#include <vendorcode/google/chromeos/chromeos.h>
 
 #define GPIO_SPI_WP	58
 #define GPIO_REC_MODE	12
@@ -31,13 +32,11 @@
 #define FLAG_REC_MODE	1
 #define FLAG_DEV_MODE	2
 
-#ifndef __PRE_RAM__
-#include <boot/coreboot_tables.h>
-
 #define GPIO_COUNT	6
 #define ACTIVE_LOW	0
 #define ACTIVE_HIGH	1
 
+#ifndef __PRE_RAM__
 static void fill_lb_gpio(struct lb_gpio *gpio, int num,
 			 int polarity, const char *name, int force)
 {

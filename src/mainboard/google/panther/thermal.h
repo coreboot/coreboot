@@ -54,4 +54,4 @@
 /* Tj_max value for calculating PECI CPU temperature */
 #define MAX_TEMPERATURE		100
 
-#endif
+#endif /* THERMAL_H */

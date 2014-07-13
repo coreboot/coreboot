@@ -1,10 +1,6 @@
 #ifndef __MAINBOARD_ONBOARD_H
 #define __MAINBOARD_ONBOARD_H
 
-#ifndef __ACPI__
-void lan_init(void);
-#endif
-
 /* defines for programming the MAC address */
 #define PANTHER_NIC_VENDOR_ID		0x10EC
 #define PANTHER_NIC_DEVICE_ID		0x8168
@@ -18,4 +14,8 @@ void lan_init(void);
 /* WLAN wake is GPIO 10 */
 #define PANTHER_WLAN_WAKE_GPIO		10
 
+#ifndef __ACPI__
+void lan_init(void);
 #endif
+
+#endif /* __MAINBOARD_ONBOARD_H */

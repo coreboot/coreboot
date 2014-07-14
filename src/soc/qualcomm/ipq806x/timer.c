@@ -1,8 +1,5 @@
 /*
- * Copyright (c) 2012 - 2013 The Linux Foundation. All rights reserved.
- * Source : APQ8064 LK boot
- *
- * Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+ * Copyright (c) 2011 - 2014 The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,103 +33,67 @@
 #include <ipq_timer.h>
 #include <timer.h>
 
-#define GPT_FREQ_KHZ    32
-#define GPT_FREQ	(GPT_FREQ_KHZ * 1000)	/* 32 KHz */
+/*
+ * DGT runs at 25 MHz / 4, or 6.25 ticks per microsecond
+ */
+#define DGT_MHZ_NUM	25
+#define DGT_MHZ_DEN	4
+
+#define TIMER_TICKS(us) ((DGT_MHZ_NUM*(us) + (DGT_MHZ_DEN - 1)) / DGT_MHZ_DEN)
+#define TIMER_USECS(ticks) (DGT_MHZ_DEN*(ticks) / DGT_MHZ_NUM)
+
+/* Clock divider values for the timer. */
+#define DGT_CLK_DIV_1	0
+#define DGT_CLK_DIV_2	1
+#define DGT_CLK_DIV_3	2
+#define DGT_CLK_DIV_4	3
 
 /**
  * init_timer - initialize timer
  */
 void init_timer(void)
 {
-	writel(0, GPT_ENABLE);
-	writel(GPT_ENABLE_EN, GPT_ENABLE);
+	/* disable timer */
+	writel_i(0, DGT_ENABLE);
+
+	/* DGT uses TCXO source which is 25MHz.
+	 * The timer should run at 1/4th the frequency of TCXO
+	 * according to clock plan.
+	 * Set clock divider to 4.
+	 */
+	writel_i(DGT_CLK_DIV_4, DGT_CLK_CTL);
+
+	/* Enable timer */
+	writel_i(0, DGT_CLEAR);
+	writel_i(DGT_ENABLE_EN, DGT_ENABLE);
 }
 
 /**
  * udelay -  generates micro second delay.
  * @param usec: delay duration in microseconds
- *
- * With 32KHz clock, minimum possible delay is 31.25 Micro seconds and
- * its multiples. In Rumi GPT clock is 32 KHz
  */
 void udelay(unsigned usec)
 {
-	unsigned val;
-	unsigned now, last;
-	unsigned runcount;
+	uint32_t now;
+	uint32_t last;
+	uint32_t ticks;
+	uint32_t curr_ticks = 0;
 
-	usec = (usec + GPT_FREQ_KHZ - 1) / GPT_FREQ_KHZ;
-	last = readl(GPT_COUNT_VAL);
-	runcount = last;
-	val = usec + last;
+	/* Calculate number of ticks required. */
+	ticks = TIMER_TICKS(usec);
 
-	do {
-		now = readl(GPT_COUNT_VAL);
-		if (last > now)
-			runcount += ((GPT_FREQ - last) + now);
-		else
-			runcount += (now - last);
+	/* Obtain the current timer value. */
+	last = readl_i(DGT_COUNT_VAL);
+
+	/* Loop until the right number of ticks. */
+	while (curr_ticks < ticks) {
+		now = readl_i(DGT_COUNT_VAL);
+		curr_ticks += now - last;
 		last = now;
-	} while (runcount < val);
+	}
 }
 
 void timer_monotonic_get(struct mono_time *mt)
 {
-	mono_time_set_usecs(mt, (readl(GPT_COUNT_VAL) * 1000) / GPT_FREQ_KHZ);
+	mono_time_set_usecs(mt, TIMER_USECS(readl_i(DGT_COUNT_VAL)));
 }
-
-#if 0
-
-/*
- * TODO(vbendeb) clean it up later.
- * Compile out the below code but leave it for now in case it will become
- * necessary later in order to make the platform fully functional.
- */
-static unsigned long timestamp;
-static unsigned long lastinc;
-
-inline ulong gpt_to_sys_freq(unsigned int gpt)
-{
-	/*
-	 * get_timer() expects the timer increments to be in terms
-	 * of CONFIG_SYS_HZ. Convert GPT timer values to CONFIG_SYS_HZ
-	 * units.
-	 */
-	return (((ulong)gpt) / (GPT_FREQ / CONFIG_SYS_HZ));
-}
-
-/**
- * get_timer_masked - returns current ticks
- *
- * Returns the current timer ticks, since boot.
- */
-ulong get_timer_masked(void)
-{
-	ulong now = gpt_to_sys_freq(readl(GPT_COUNT_VAL));
-
-	if (lastinc <= now) {	/* normal mode (non roll) */
-		/* normal mode */
-		timestamp += now - lastinc;
-		/* move stamp forward with absolute diff ticks */
-	} else {		/* we have overflow of the count down timer */
-		timestamp += now + (TIMER_LOAD_VAL - lastinc);
-	}
-
-	lastinc = now;
-
-	return timestamp;
-}
-
-unsigned long long get_ticks(void)
-{
-	return readl(GPT_COUNT_VAL);
-}
-
-/*
- * Return the number of timer ticks per second.
- */
-ulong get_tbclk(void)
-{
-        return GPT_FREQ;
-}
-#endif

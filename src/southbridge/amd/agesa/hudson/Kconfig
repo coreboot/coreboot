@@ -224,11 +224,6 @@ config HUDSON_LEGACY_FREE
 endif # SOUTHBRIDGE_AMD_AGESA_HUDSON || SOUTHBRIDGE_AMD_AGESA_YANGTZE
 
 if SOUTHBRIDGE_AMD_AGESA_YANGTZE
-	config AMD_SB_SPI_TX_LEN
-		int
-		default 64
-		depends on SPI_FLASH
-
 	config AZ_PIN
 		hex
 		default 0xaa

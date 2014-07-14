@@ -43,7 +43,11 @@ static int bus_claimed = 0;
 #define SPI_REG_CNTRL11		0xd
  #define CNTRL11_FIFOPTR_MASK	0x07
 
+#if IS_ENABLED(CONFIG_SOUTHBRIDGE_AMD_AGESA_YANGTZE)
 #define AMD_SB_SPI_TX_LEN	64
+#else
+#define AMD_SB_SPI_TX_LEN	8
+#endif
 
 static u32 spibar;
 

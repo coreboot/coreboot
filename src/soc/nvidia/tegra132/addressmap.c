@@ -23,6 +23,7 @@
 #include <console/console.h>
 #include <soc/addressmap.h>
 #include <soc/display.h>
+#include <soc/id.h>
 #include "mc.h"
 #include "sdram.h"
 
@@ -70,6 +71,13 @@ void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib)
 
 	switch (id) {
 	case CARVEOUT_TZ:
+		/* AVP does not have access to the TZ carveout registers. */
+		if (context_avp())
+			return;
+		carveout_from_regs(base_mib, size_mib,
+					read32(&mc->security_cfg0),
+					0,
+					read32(&mc->security_cfg1));
 		break;
 	case CARVEOUT_SEC:
 		carveout_from_regs(base_mib, size_mib,

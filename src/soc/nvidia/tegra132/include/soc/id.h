@@ -17,24 +17,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <cbmem.h>
+#ifndef __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_ID_H__
+#define __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_ID_H__
+
+
+#include <arch/io.h>
 #include <soc/addressmap.h>
 
-void *cbmem_top(void)
+static inline int context_avp(void)
 {
-	static uintptr_t addr;
-	size_t fb_size;
+	const uint32_t avp_id = 0xaaaaaaaa;
+	void * const uptag = (void *)(uintptr_t)TEGRA_PG_UP_BASE;
 
-	/*
-	 * FIXME(adurbin): The TZ registers are not accessible to the AVP.
-	 * Therefore, if there is a TZ carveout then it needs to be handled
-	 * here while executing on the AVP in order to properly place the
-	 * CBMEM region.
-	 */
-
-	/* CBMEM starts downwards from the framebuffer. */
-	if (addr == 0)
-		addr = framebuffer_attributes(&fb_size);
-
-	return (void *)(addr << 20UL);
+	return read32(uptag) == avp_id;
 }
+
+#endif /* define __SOC_NVIDIA_TEGRA132_INCLUDE_SOC_ID_H__ */

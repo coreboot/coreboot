@@ -42,7 +42,9 @@ struct tegra_mc_regs {
 	uint32_t emem_adr_cfg_bank_mask_0;	/* 0x64 */
 	uint32_t emem_adr_cfg_bank_mask_1;	/* 0x68 */
 	uint32_t emem_adr_cfg_bank_mask_2;	/* 0x6c */
-	uint32_t rsvd_0x70[8];			/* 0x70 */
+	uint32_t security_cfg0;			/* 0x70 */
+	uint32_t security_cfg1;			/* 0x74 */
+	uint32_t rsvd_0x78[6];			/* 0x78 */
 	uint32_t emem_arb_cfg;			/* 0x90 */
 	uint32_t emem_arb_outstanding_req;	/* 0x94 */
 	uint32_t emem_arb_timing_rcd;		/* 0x98 */

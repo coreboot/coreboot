@@ -30,11 +30,11 @@
 #include <southbridge/intel/lynxpoint/lp_gpio.h>
 #include "gpio.h"
 #include "superio/ite/it8772f/it8772f.h"
-#include "superio/ite/it8772f/early_serial.c"
 #include "superio/ite/common/ite.h"
 
 #define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
+#define DUMMY_DEV PNP_DEV(0x2e, 0)
 
 
 const struct rcba_config_instruction rcba_config[] = {
@@ -145,7 +145,7 @@ void mainboard_romstage_entry(unsigned long bist)
 
 	/* Early SuperIO setup */
 	ite_kill_watchdog(GPIO_DEV);
-	it8772f_ac_resume_southbridge();
+	it8772f_ac_resume_southbridge(DUMMY_DEV);
 	pch_enable_lpc();
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 

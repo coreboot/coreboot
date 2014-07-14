@@ -103,10 +103,21 @@
 #define GPIO_REG_ENABLE(x)   (0xc0 + (x))
 #define GPIO_REG_OUTPUT(x)   (0xc8 + (x))
 
-u8 it8772f_sio_read(u8 index);
-void it8772f_sio_write(u8 index, u8 value);
-void it8772f_ac_resume_southbridge(void);
-void it8772f_gpio_setup(int set, u8 func_select, u8 polarity, u8 pullup,
-			u8 output, u8 enable);
+#include <arch/io.h>
+#include <stdint.h>
+
+u8 it8772f_sio_read(device_t dev, u8 reg);
+void it8772f_sio_write(device_t dev, u8 reg, u8 value);
+void it8772f_ac_resume_southbridge(device_t dev);
+void it8772f_gpio_setup(device_t dev, int set, u8 select, u8 polarity,
+			u8 pullup, u8 output, u8 enable);
+
+/* FIXME: should be static so will be removed later.. */
+/* Global configuration registers. */
+#define IT8772F_CONFIG_REG_CC        0x02 /* Configure Control (write-only). */
+#define IT8772F_CONFIG_REG_LDN       0x07 /* Logical Device Number. */
+
+void it8772f_enter_conf(device_t dev);
+void it8772f_exit_conf(device_t dev);
 
 #endif /* SUPERIO_ITE_IT8772F_H */

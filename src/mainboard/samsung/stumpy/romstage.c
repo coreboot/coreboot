@@ -34,8 +34,6 @@
 #include <bootmode.h>
 #include <superio/ite/common/ite.h>
 #include <superio/ite/it8772f/it8772f.h>
-/* FIXME: SUPERIO include.c */
-#include "superio/ite/it8772f/early_serial.c"
 #include "northbridge/intel/sandybridge/sandybridge.h"
 #include "northbridge/intel/sandybridge/raminit.h"
 #include "southbridge/intel/bd82x6x/pch.h"
@@ -61,6 +59,7 @@
 #endif
 #define USB_RESET_DISABLE_MAGIC (0xdd) /* Disable if set to this */
 
+#define DUMMY_DEV PNP_DEV(0x2e, 0)
 #define SERIAL_DEV PNP_DEV(0x2e, IT8772F_SP1)
 #define GPIO_DEV PNP_DEV(0x2e, IT8772F_GPIO)
 
@@ -148,29 +147,29 @@ static void setup_sio_gpios(void)
 	 * GPIO10 as USBPWRON12#
 	 * GPIO12 as USBPWRON13#
 	 */
-	it8772f_gpio_setup(1, 0x05, 0x05, 0x00, 0x05, 0x05);
+	it8772f_gpio_setup(DUMMY_DEV, 1, 0x05, 0x05, 0x00, 0x05, 0x05);
 
 	/*
 	 * GPIO22 as wake SCI#
 	 */
-	it8772f_gpio_setup(2, 0x04, 0x04, 0x00, 0x04, 0x04);
+	it8772f_gpio_setup(DUMMY_DEV, 2, 0x04, 0x04, 0x00, 0x04, 0x04);
 
 	/*
 	 * GPIO32 as EXTSMI#
 	 */
-	it8772f_gpio_setup(3, 0x04, 0x04, 0x00, 0x04, 0x04);
+	it8772f_gpio_setup(DUMMY_DEV, 3, 0x04, 0x04, 0x00, 0x04, 0x04);
 
 	/*
 	 * GPIO45 as LED_POWER#
 	 */
-	it8772f_gpio_setup(4, 0x20, 0x20, 0x20, 0x20, 0x20);
+	it8772f_gpio_setup(DUMMY_DEV, 4, 0x20, 0x20, 0x20, 0x20, 0x20);
 
 	/*
 	 * GPIO51 as USBPWRON8#
 	 * GPIO52 as USBPWRON1#
 	 */
-	it8772f_gpio_setup(5, 0x06, 0x06, 0x00, 0x06, 0x06);
-	it8772f_gpio_setup(6, 0x00, 0x00, 0x00, 0x00, 0x00);
+	it8772f_gpio_setup(DUMMY_DEV, 5, 0x06, 0x06, 0x00, 0x06, 0x06);
+	it8772f_gpio_setup(DUMMY_DEV, 6, 0x00, 0x00, 0x00, 0x00, 0x00);
 }
 
 void main(unsigned long bist)
@@ -239,7 +238,7 @@ void main(unsigned long bist)
 	setup_sio_gpios();
 
 	/* Early SuperIO setup */
-	it8772f_ac_resume_southbridge();
+	it8772f_ac_resume_southbridge(DUMMY_DEV);
 	ite_kill_watchdog(GPIO_DEV);
 	ite_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();

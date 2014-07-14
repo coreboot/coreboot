@@ -21,9 +21,17 @@
 #include <arch/asm.h>
 
 ENTRY(arm64_el3_startup)
-	mov	x0, xzr
+	/* Set all bits in SCTLR_EL3 to 0 except RES1 and RES0 */
+	mrs     x0, SCTLR_EL3
+	ldr     x1, .SCTLR_MASK
+	and     x0, x0, x1
 	msr	SCTLR_EL3, x0
-	msr	SCR_EL3, x0
+	/* Set all bits in SCR_EL3 to 0 except RES1 and RES0 */
+	mrs     x0, SCR_EL3
+	ldr     x1, .SCR_MASK
+	and     x0, x0, x1
+	msr     SCR_EL3, x0
+
 	/* Have stack pointer use SP_EL0. */
 	msr	SPSel, #0
 	isb
@@ -38,6 +46,12 @@ ENTRY(arm64_el3_startup)
 	ldr	x1, .entry
 	br	x1
 
+	.align 4
+	.SCTLR_MASK:
+		.quad 0x0FFFFEFF0
+
+	.SCR_MASK:
+		.quad 0x0FFFFC070
 	.align 4
 	/*
 	 * By default branch to main() and initialize the stack according

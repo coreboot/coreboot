@@ -49,8 +49,7 @@ if [ "$(${XGCCPATH}/iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 elif [ "$(iasl 2>/dev/null | grep -c ACPI)" -gt 0 ]; then
 	IASL=iasl
 else
-	echo "no iasl found"
-	exit 1
+	die "no iasl found"
 fi
 
 if program_exists gcc; then
@@ -58,8 +57,7 @@ if program_exists gcc; then
 elif program_exists cc; then
 	HOSTCC=cc
 else
-	echo "no host compiler found"
-	exit 1
+	die "no host compiler found"
 fi
 
 cat <<EOF
@@ -196,8 +194,7 @@ test_architecture() {
 	if type arch_config_$architecture > /dev/null; then
 		arch_config_$architecture
 	else
-		echo "no architecture definition for $architecture"
-		exit 1
+		die "no architecture definition for $architecture"
 	fi
 
 	# To override toolchain, define CROSS_COMPILE_$arch or CROSS_COMPILE as

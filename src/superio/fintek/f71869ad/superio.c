@@ -57,7 +57,7 @@ static struct device_operations ops = {
 };
 
 /*
- * io_info contains the mask 0x07f8. Given 16 register, each 8 bits wide of a
+ * io_info contains the mask 0x07f8. Given 8 register, each 8 bits wide of a
  * logical device we need a mask of the following form:
  *
  *  MSB                 LSB

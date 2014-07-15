@@ -25,6 +25,7 @@
 #include <broadwell/gpio.h>
 #include <broadwell/pei_data.h>
 #include <broadwell/pei_wrapper.h>
+#include <broadwell/pm.h>
 #include <broadwell/romstage.h>
 #include <mainboard/google/samus/spd/spd.h>
 #include <mainboard/google/samus/gpio.h>
@@ -33,7 +34,10 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 {
 	struct pei_data pei_data;
 
-	post_code(0x32);
+	post_code(0x31);
+
+	if (rp->power_state->prev_sleep_state != SLEEP_STATE_S3)
+		google_chromeec_kbbacklight(100);
 
 	printk(BIOS_INFO, "MLB: board version %d\n",
 	       google_chromeec_get_board_version());

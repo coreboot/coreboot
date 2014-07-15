@@ -57,6 +57,8 @@ bootblock-y += div0.c
 bootblock-y += id.S
 $(obj)/arch/arm64/id.bootblock.o: $(obj)/build.h
 
+bootblock-y += c_entry.c
+bootblock-y += stage_entry.S
 bootblock-y += stages.c
 bootblock-y += eabi_compat.c
 bootblock-y += ../../lib/memset.c
@@ -77,6 +79,8 @@ endif # CONFIG_ARCH_BOOTBLOCK_ARM64
 
 ifeq ($(CONFIG_ARCH_ROMSTAGE_ARM64),y)
 
+romstage-y += c_entry.c
+romstage-y += stage_entry.S
 romstage-y += stages.c
 romstage-y += div0.c
 romstage-y += eabi_compat.c
@@ -100,6 +104,7 @@ endif # CONFIG_ARCH_ROMSTAGE_ARM64
 
 ifeq ($(CONFIG_ARCH_RAMSTAGE_ARM64),y)
 
+ramstage-y += c_entry.c
 ramstage-y += stages.c
 ramstage-y += div0.c
 ramstage-y += cpu.c

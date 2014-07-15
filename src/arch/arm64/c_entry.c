@@ -1,7 +1,7 @@
 /*
  * This file is part of the coreboot project.
  *
- * Copyright (C) 2013 The ChromiumOS Authors
+ * Copyright 2014 Google Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,21 +17,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __ARCH_STAGES_H
-#define __ARCH_STAGES_H
+#include <arch/stages.h>
 
-extern void main(void);
+void __attribute__((weak)) arm64_soc_init(void)
+{
+	/* Default weak implementation does nothing. */
+}
 
-void stage_entry(void);
-void stage_exit(void *);
-void jmp_to_elf_entry(void *entry, unsigned long buffer, unsigned long size);
-
-/* C entry point for all arm64 stages. */
-void arm64_init(void);
-
-/* This function is called upon initial entry of each stage. It is called prior
- * to main(). That means all of the common infrastructure will most likely not
- * be available to be used (such as console). */
-void arm64_soc_init(void);
-
-#endif
+void arm64_init(void)
+{
+	arm64_soc_init();
+	main();
+}

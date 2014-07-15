@@ -61,7 +61,7 @@ ENTRY(arm64_el3_startup)
 	.stack:
 		.quad _estack
 	.entry:
-		.quad main
+		.quad arm64_init
 ENDPROC(arm64_el3_startup)
 .global arm64_el3_startup_end
 arm64_el3_startup_end:

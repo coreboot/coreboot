@@ -17,10 +17,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "microcode-M7240651_00000018.h" /* Haswell ULT C0 or D0 */
+#include "microcode-M7240651_0000001C.h" /* Haswell ULT C0 or D0 */
 #include "microcode-MF2306D2_FFFF0009.h" /* Broadwell C0 */
-#include "microcode-MC0306D3_FFFF000F.h" /* Broadwell D0 */
-#include "microcode-MC0306D4_00000009.h" /* Broadwell E0 */
+#include "microcode-MC0306D3_FFFF0010.h" /* Broadwell D0 */
+#include "microcode-MC0306D4_0000000D.h" /* Broadwell E0 */
 
 	/*  Dummy terminator  */
         0x0, 0x0, 0x0, 0x0,

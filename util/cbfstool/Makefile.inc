@@ -27,9 +27,6 @@ ifeq ($(shell uname -s | cut -c-7 2>/dev/null), MINGW32)
 TOOLFLAGS+=-mno-ms-bitfields
 endif
 
-$(objutil)/cbfstool:
-	mkdir -p $@
-
 $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
@@ -42,10 +39,10 @@ $(objutil)/cbfstool/%.o: $(top)/util/cbfstool/lzma/C/%.c
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@))\n"
 	$(HOSTCC) $(TOOLFLAGS) $(HOSTCFLAGS) -c -o $@ $<
 
-$(objutil)/cbfstool/cbfstool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
+$(objutil)/cbfstool/cbfstool: $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(cbfsobj))
 
-$(objutil)/cbfstool/rmodtool: $(objutil)/cbfstool $(addprefix $(objutil)/cbfstool/,$(rmodobj))
+$(objutil)/cbfstool/rmodtool: $(addprefix $(objutil)/cbfstool/,$(rmodobj))
 	printf "    HOSTCC     $(subst $(objutil)/,,$(@)) (link)\n"
 	$(HOSTCC) $(TOOLFLAGS) -o $@ $(addprefix $(objutil)/cbfstool/,$(rmodobj))

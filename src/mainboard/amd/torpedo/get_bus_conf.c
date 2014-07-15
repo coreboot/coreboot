@@ -29,7 +29,6 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
-u8 bus_isa;
 u8 bus_sb900[6];
 
 /*
@@ -71,8 +70,6 @@ void get_bus_conf(void)
 
 	if (dev) {
 		bus_sb900[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-		bus_isa++;
 	}
 
 	for (i = 0; i < 4; i++) {
@@ -81,13 +78,8 @@ void get_bus_conf(void)
 		if (dev) {
 			bus_sb900[2 + i] =
 			    pci_read_config8(dev, PCI_SECONDARY_BUS);
-			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			bus_isa++;
 		}
 	}
-
-	/* I/O APICs:   APIC ID Version State   Address */
-	bus_isa = 10;
 
 	printk(BIOS_DEBUG, "Mainboard - %s - %s - End.\n", __FILE__, __func__);
 }

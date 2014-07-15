@@ -30,7 +30,6 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
 * and acpi_tables busnum is default.
 */
-u8 bus_isa;
 u8 bus_sb800[6];
 u32 apicid_sb800;
 
@@ -68,23 +67,17 @@ void get_bus_conf(void)
 
   if (dev) {
     bus_sb800[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-
-    bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-    bus_isa++;
   }
 
   for (i = 0; i < 4; i++) {
     dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, i));
     if (dev) {
       bus_sb800[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-      bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-      bus_isa++;
     }
   }
 
 
   /* I/O APICs:   APIC ID Version State   Address */
-  bus_isa = 10;
   apicid_base = CONFIG_MAX_CPUS;
   apicid_sb800 = apicid_base;
 

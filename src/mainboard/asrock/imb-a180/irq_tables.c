@@ -43,7 +43,6 @@ static void write_pirq_info(struct irq_info *pirq_info, u8 bus, u8 devfn,
 	pirq_info->rfu = rfu;
 }
 
-extern u8 bus_isa;
 extern u8 bus_yangtze[6];
 extern unsigned long sbdn_yangtze;
 

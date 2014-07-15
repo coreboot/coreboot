@@ -32,7 +32,6 @@
 /* Global variables for MB layouts and these will be shared by irqtable mptable
  * and acpi_tables busnum is default.
  */
-u8 bus_isa;
 u8 bus_yangtze[6];
 u32 apicid_yangtze;
 
@@ -80,22 +79,16 @@ void get_bus_conf(void)
 
 	if (dev) {
 		bus_yangtze[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-
-		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-		bus_isa++;
 	}
 
 	for (i = 0; i < 4; i++) {
 		dev = dev_find_slot(bus_yangtze[0], PCI_DEVFN(sbdn_yangtze + 0x14, i));
 		if (dev) {
 			bus_yangtze[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-			bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
-			bus_isa++;
 		}
 	}
 
 	/* I/O APICs:   APIC ID Version State   Address */
-	bus_isa = 10;
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_yangtze = apicid_base;
 

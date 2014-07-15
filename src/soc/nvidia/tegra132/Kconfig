@@ -87,4 +87,10 @@ config CONSOLE_PRERAM_BUFFER_BASE
 	hex "memory address of the CBMEM console buffer"
 	default 0x40004020
 
+config MTS_DIRECTORY
+	string "Directory where MTS microcode files are located"
+	default "3rdparty/cpu/nvidia/tegra132/current/prod"
+	help
+	  Path to directory where MTS microcode files are located.
+
 endif

@@ -74,7 +74,8 @@ $(obj)/generated/bct.bin: $(obj)/generated/bct.cfg $(CBOOTIMAGE)
 
 BCT_BIN = $(obj)/generated/bct.bin
 BCT_WRAPPER = $(obj)/generated/bct.wrapper
-PREBOOT_MTS_FILE = 3rdparty/cpu/nvidia/tegra132/current/prod/preboot_cr.bin
+MTS_DIR = $(CONFIG_MTS_DIRECTORY)
+PREBOOT_MTS_FILE = $(MTS_DIR)/preboot_cr.bin
 $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BCT_BIN) $(CBOOTIMAGE)
 	echo "Version    = 1;" > $(BCT_WRAPPER)
 	echo "Redundancy = 1;" >> $(BCT_WRAPPER)
@@ -84,3 +85,10 @@ $(objcbfs)/bootblock.bin: $(objcbfs)/bootblock.raw.bin $(BCT_BIN) $(CBOOTIMAGE)
 	echo "BootLoader = $<,$(CONFIG_BOOTBLOCK_BASE),$(CONFIG_BOOTBLOCK_BASE),Complete;" >> $(BCT_WRAPPER)
 	@printf "    CBOOTIMAGE $(subst $(obj)/,,$(@))\n"
 	$(CBOOTIMAGE) $(CBOOTIMAGE_OPTS) $(BCT_WRAPPER) $@
+
+# MTS microcode
+MTS_FILE = $(MTS_DIR)/mts_cr.bin
+MTS_FILE_CBFS = mts
+cbfs-files-y += $(MTS_FILE_CBFS)
+$(MTS_FILE_CBFS)-file := $(MTS_FILE)
+$(MTS_FILE_CBFS)-type := 0x50

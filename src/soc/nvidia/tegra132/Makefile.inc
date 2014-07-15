@@ -41,6 +41,7 @@ ramstage-y += cbfs.c
 ramstage-y += cbmem.c
 ramstage-y += timer.c
 ramstage-y += clock.c
+ramstage-y += soc.c
 ramstage-y += spi.c
 ramstage-y += i2c.c
 ramstage-y += dma.c

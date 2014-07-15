@@ -28,7 +28,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/amdfam10_sysconf.h>
 
-extern u8 bus_sr5650[14];
 extern u8 bus_sp5100[2];
 extern u32 sbdn_sr5650;
 extern u32 sbdn_sp5100;
@@ -143,17 +142,6 @@ static void *smp_write_config_table(void *v)
 
 	/* SATA */
 	PCI_INT(0x0, 0x11, 0x0, 0x16); //6, INTG
-
-	/* on board NIC & Slot PCIE.  */
-	/* configuration B doesnt need dev 5,6,7 */
-	/*
-	 * PCI_INT(bus_sr5650[0x5], 0x0, 0x0, 0x11);
-	 * PCI_INT(bus_sr5650[0x6], 0x0, 0x0, 0x12);
-	 * PCI_INT(bus_sr5650[0x7], 0x0, 0x0, 0x13);
-	 */
-
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, 0, (((13)<<2)|(0)), apicid_sr5650, 28); /* dev d */
-	//smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, bus_sr5650[13], (((0)<<2)|(1)), apicid_sr5650, 0); /* card behind dev13 */
 
 	/* PCI slots */
 	/* PCI_SLOT 0. */

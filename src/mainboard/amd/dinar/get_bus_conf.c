@@ -31,7 +31,6 @@
  * and acpi_tables busnum is default.
  */
 u8 bus_sb700[2];
-u8 bus_rd890[14];
 
 /*
  * Here you only need to set value in pci1234 for HT-IO that could be installed or not
@@ -51,7 +50,6 @@ u32 hcdnx[] = {
 };
 
 u32 sbdn_sb700;
-u32 sbdn_rd890;
 
 void get_bus_conf(void)
 {
@@ -65,13 +63,9 @@ void get_bus_conf(void)
 	for (i = 0; i < ARRAY_SIZE(bus_sb700); i++) {
 		bus_sb700[i] = 0;
 	}
-	for (i = 0; i < ARRAY_SIZE(bus_rd890); i++) {
-		bus_rd890[i] = 0;
-	}
 
 
-	bus_rd890[0] = (pci1234x[0] >> 16) & 0xff;
-	bus_sb700[0] = bus_rd890[0];
+	bus_sb700[0] = (pci1234x[0] >> 16) & 0xff;
 
 	/* sb700 */
 	dev = dev_find_slot(bus_sb700[0], PCI_DEVFN(sbdn_sb700 + 0x14, 4));
@@ -80,14 +74,6 @@ void get_bus_conf(void)
 
 	if (dev) {
 		bus_sb700[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-	}
-
-	/* rd890 */
-	for (i = 1; i < ARRAY_SIZE(bus_rd890); i++) {
-		dev = dev_find_slot(bus_rd890[0], PCI_DEVFN(sbdn_rd890 + i, 0));
-		if (dev) {
-			bus_rd890[i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
-		}
 	}
 
 	printk(BIOS_DEBUG, "Mainboard - Get_bus_conf.c - get_bus_conf - End.\n");

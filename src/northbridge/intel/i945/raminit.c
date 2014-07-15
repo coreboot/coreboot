@@ -1989,7 +1989,7 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 #define VOLTAGE_1_05	0x00
 #define VOLTAGE_1_50	0x01
 
-	printk(BIOS_DEBUG, "Setting Graphics Frequency... \n");
+	printk(BIOS_DEBUG, "Setting Graphics Frequency...\n");
 
 	printk(BIOS_DEBUG, "FSB: %d MHz ", sysinfo->fsb_frequency);
 

@@ -22,6 +22,7 @@
 #include <console/console.h>
 #include <string.h>
 #include <ec/google/chromeec/ec.h>
+#include <broadwell/cpu.h>
 #include <broadwell/gpio.h>
 #include <broadwell/pei_data.h>
 #include <broadwell/pei_wrapper.h>
@@ -54,6 +55,15 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	mainboard_fill_spd_data(&pei_data);
 	rp->pei_data = &pei_data;
 
+	/*
+	 * Disable use of PEI saved data to work around memory issues.
+	 */
+	if (cpu_family_model() == BROADWELL_FAMILY_ULT) {
+		pei_data.disable_self_refresh = 1;
+		pei_data.disable_saved_data = 1;
+	}
+
+	/* Initalize memory */
 	romstage_common(rp);
 
 	/*

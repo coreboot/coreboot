@@ -147,6 +147,14 @@ uintptr_t framebuffer_attributes(size_t *size_mib)
 	/* Place the framebuffer just below the 32-bit addressable limit. */
 	memory_range_by_bits(ADDRESS_SPACE_32_BIT, &begin, &end);
 
+	/*
+	 * Need to take into account that the Trust Zone region is not able to
+	 * be read by the AVP. The Trust Zone region will live just below the
+	 * rest of the carveout regions.
+	 */
+	if (context_avp())
+		end -= CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB;
+
 	*size_mib = FB_SIZE_MB;
 	end -= *size_mib;
 

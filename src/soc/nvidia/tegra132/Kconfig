@@ -93,4 +93,10 @@ config MTS_DIRECTORY
 	help
 	  Path to directory where MTS microcode files are located.
 
+config TRUSTZONE_CARVEOUT_SIZE_MB
+	hex "Size of Trust Zone region"
+	default 0x1
+	help
+	  Size of Trust Zone area in MiB to reserve in memory map.
+
 endif

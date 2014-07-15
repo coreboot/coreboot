@@ -38,7 +38,7 @@ void arm64_soc_init(void)
 	 * Therefore configure the region early. Also, the TZ region can only
 	 * live in 32-bit space.
 	 */
-	memory_range_by_bits(ADDRESS_SPACE_32_BIT, &base, &end);
+	memory_in_range_below_4gb(&base, &end);
 
 	/* Place the TZ area just below current carveout regions. */
 	end -= tz_size_mib;

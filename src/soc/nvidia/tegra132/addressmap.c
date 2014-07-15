@@ -102,7 +102,7 @@ void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib)
 	}
 }
 
-void memory_range_by_bits(int bits, uintptr_t *base_mib, uintptr_t *end_mib)
+static void memory_in_range(uintptr_t *base_mib, uintptr_t *end_mib)
 {
 	uintptr_t base;
 	uintptr_t end;
@@ -111,11 +111,21 @@ void memory_range_by_bits(int bits, uintptr_t *base_mib, uintptr_t *end_mib)
 	base = CONFIG_SYS_SDRAM_BASE / MiB;
 	end = base + sdram_size_mb();
 
-	if (bits == ADDRESS_SPACE_32_BIT)
-		end = MIN(end, 4096);
+	/* Requested limits out of range. */
+	if (*end_mib <= base || *base_mib >= end) {
+		*end_mib = *base_mib = 0;
+		return;
+	}
+
+	/* Clip region to passed in limits. */
+	if (*end_mib < end)
+		end = *end_mib;
+	if (*base_mib > base)
+		base = *base_mib;
 
 	for (i = 0; i < CARVEOUT_NUM; i++) {
 		uintptr_t carveout_base;
+		uintptr_t carveout_end;
 		size_t carveout_size;
 
 		carveout_range(i, &carveout_base, &carveout_size);
@@ -123,8 +133,10 @@ void memory_range_by_bits(int bits, uintptr_t *base_mib, uintptr_t *end_mib)
 		if (carveout_size == 0)
 			continue;
 
+		carveout_end = carveout_base + carveout_size;
+
 		/* Bypass carveouts out of requested range. */
-		if (carveout_base >= end)
+		if (carveout_base >= end || carveout_end <= base)
 			continue;
 
 		/*
@@ -139,13 +151,27 @@ void memory_range_by_bits(int bits, uintptr_t *base_mib, uintptr_t *end_mib)
 	*end_mib = end;
 }
 
+void memory_in_range_below_4gb(uintptr_t *base_mib, uintptr_t *end_mib)
+{
+	*base_mib = 0;
+	*end_mib = 4096;
+	memory_in_range(base_mib, end_mib);
+}
+
+void memory_in_range_above_4gb(uintptr_t *base_mib, uintptr_t *end_mib)
+{
+	*base_mib = 4096;
+	*end_mib = ~0UL;
+	memory_in_range(base_mib, end_mib);
+}
+
 uintptr_t framebuffer_attributes(size_t *size_mib)
 {
 	uintptr_t begin;
 	uintptr_t end;
 
 	/* Place the framebuffer just below the 32-bit addressable limit. */
-	memory_range_by_bits(ADDRESS_SPACE_32_BIT, &begin, &end);
+	memory_in_range_below_4gb(&begin, &end);
 
 	/*
 	 * Need to take into account that the Trust Zone region is not able to

@@ -84,16 +84,9 @@ enum {
 /* Return total size of DRAM memory configured on the platform. */
 int sdram_size_mb(void);
 
-enum {
-	ADDRESS_SPACE_32_BIT = 32,
-	ADDRESS_SPACE_64_BIT = 64,
-};
-
-/*
- * Return the address range of memory for provided address width. The base
- * and end parameters in 1MiB units with end being exclusive to the range.
- */
-void memory_range_by_bits(int bits, uintptr_t *base_mib, uintptr_t *end_mib);
+/* Find memory below and above 4GiB boundary repsectively. All units 1MiB. */
+void memory_in_range_below_4gb(uintptr_t *base_mib, uintptr_t *end_mib);
+void memory_in_range_above_4gb(uintptr_t *base_mib, uintptr_t *end_mib);
 
 enum {
 	CARVEOUT_TZ,

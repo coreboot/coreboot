@@ -42,7 +42,6 @@ u32 pci1234x[] = {
 	0x0000ff0,
 };
 
-u32 bus_type[256];
 u32 sbdn_yangtze;
 
 void get_bus_conf(void)
@@ -51,7 +50,7 @@ void get_bus_conf(void)
 	u32 value;
 
 	device_t dev;
-	int i, j;
+	int i;
 
 	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */
 	pci_write_config32(dev, 0xF8, 0);
@@ -67,11 +66,6 @@ void get_bus_conf(void)
 
 	memset(bus_yangtze, 0, sizeof(bus_yangtze));
 
-	for (i = 0; i < 256; i++) {
-		bus_type[i] = 0; /* default ISA bus. */
-	}
-
-	bus_type[0] = 1;  /* pci */
 
 	//  bus_yangtze[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 	bus_yangtze[0] = (pci1234x[0] >> 16) & 0xff;
@@ -84,8 +78,6 @@ void get_bus_conf(void)
 
 		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
-		for (j = bus_yangtze[1]; j < bus_isa; j++)
-			bus_type[j] = 1;
 	}
 
 	for (i = 0; i < 4; i++) {
@@ -96,8 +88,6 @@ void get_bus_conf(void)
 			bus_isa++;
 		}
 	}
-	for (j = bus_yangtze[2]; j < bus_isa; j++)
-		bus_type[j] = 1;
 
 	/* I/O APICs:   APIC ID Version State   Address */
 	bus_isa = 10;

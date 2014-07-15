@@ -30,7 +30,6 @@ extern int bus_isa;
 extern u8 bus_rs780[11];
 extern u8 bus_sb800[6];
 extern u32 apicid_sb800;
-extern u32 bus_type[256];
 extern u32 sbdn_rs780;
 extern u32 sbdn_sb800;
 

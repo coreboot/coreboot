@@ -51,15 +51,13 @@ u32 hcdnx[] = {
 	0x20202020,
 };
 
-u32 bus_type[256];
-
 u32 sbdn_sb700;
 u32 sbdn_rd890;
 
 void get_bus_conf(void)
 {
 	device_t dev;
-	int i, j;
+	int i;
 
 	printk(BIOS_DEBUG, "Mainboard - Get_bus_conf.c - get_bus_conf - Start.\n");
 
@@ -72,12 +70,6 @@ void get_bus_conf(void)
 		bus_rd890[i] = 0;
 	}
 
-	for (i = 0; i < 256; i++) {
-		bus_type[i] = 0; /* default ISA bus. */
-	}
-
-
-	bus_type[0] = 1;  /* pci */
 
 	bus_rd890[0] = (pci1234x[0] >> 16) & 0xff;
 	bus_sb700[0] = bus_rd890[0];
@@ -92,8 +84,6 @@ void get_bus_conf(void)
 
 		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
-		for (j = bus_sb700[1]; j < bus_isa; j++)
-			bus_type[j] = 1;
 	}
 
 	/* rd890 */
@@ -104,7 +94,6 @@ void get_bus_conf(void)
 			if(255 != bus_rd890[i]) {
 				bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 				bus_isa++;
-				bus_type[bus_rd890[i]] = 1; /* PCI bus. */
 			}
 		}
 	}

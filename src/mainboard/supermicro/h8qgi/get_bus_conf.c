@@ -35,7 +35,6 @@ u8 bus_sp5100[2];
 u8 bus_sr5650[14];
 
 
-u32 bus_type[256];
 
 u32 sbdn_sr5650;
 u32 sbdn_sp5100;
@@ -43,7 +42,7 @@ u32 sbdn_sp5100;
 void get_bus_conf(void)
 {
 	device_t dev;
-	int i, j;
+	int i;
 
 	sbdn_sp5100 = 0;
 
@@ -54,11 +53,6 @@ void get_bus_conf(void)
 		bus_sr5650[i] = 0;
 	}
 
-	for (i = 0; i < 256; i++) {
-		bus_type[i] = 0; /* default ISA bus. */
-	}
-
-	bus_type[0] = 1;  /* pci */
 
 	bus_sr5650[0] = 0;
 	bus_sp5100[0] = bus_sr5650[0];
@@ -71,8 +65,6 @@ void get_bus_conf(void)
 
 		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
-		for (j = bus_sp5100[1]; j < bus_isa; j++)
-			bus_type[j] = 1;
 	}
 
 	/* sr5650 */
@@ -83,7 +75,6 @@ void get_bus_conf(void)
 			if(255 != bus_sr5650[i]) {
 				bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 				bus_isa++;
-				bus_type[bus_sr5650[i]] = 1; /* PCI bus. */
 			}
 		}
 	}
@@ -97,8 +88,6 @@ void get_bus_conf(void)
 			bus_isa++;
 		}
 	}
-	for (j = bus_sp5100[2]; j < bus_isa; j++)
-		bus_type[j] = 1;
 */
 
 

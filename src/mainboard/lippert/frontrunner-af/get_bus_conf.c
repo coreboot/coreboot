@@ -43,7 +43,6 @@ u32 pci1234x[] = {
 	0x0000ff0,
 };
 
-u32 bus_type[256];
 u32 sbdn_sb800;
 
 
@@ -52,17 +51,12 @@ void get_bus_conf(void)
 	u32 apicid_base;
 
 	device_t dev;
-	int i, j;
+	int i;
 
 	sbdn_sb800 = 0;
 
 	memset(bus_sb800, 0, sizeof(bus_sb800));
 
-	for (i = 0; i < 256; i++) {
-		bus_type[i] = 0; /* default ISA bus. */
-	}
-
-	bus_type[0] = 1;	/* pci */
 
 //	bus_sb800[0] = (sysconf.pci1234[0] >> 16) & 0xff;
 	bus_sb800[0] = (pci1234x[0] >> 16) & 0xff;
@@ -75,8 +69,6 @@ void get_bus_conf(void)
 
 		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
-		for (j = bus_sb800[1]; j < bus_isa; j++)
-			bus_type[j] = 1;
 	}
 
 	for (i = 0; i < 4; i++) {
@@ -87,10 +79,6 @@ void get_bus_conf(void)
 			bus_isa++;
 		}
 	}
-
-	for (j = bus_sb800[2]; j < bus_isa; j++)
-		bus_type[j] = 1;
-
 
 	/* I/O APICs:    APIC ID Version State   Address */
 	bus_isa = 10;

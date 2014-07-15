@@ -30,7 +30,6 @@
 
 extern u8 bus_rd890[14];
 extern u8 bus_sb700[2];
-extern u32 bus_type[256];
 extern u32 sbdn_rd890;
 extern u32 sbdn_sb700;
 

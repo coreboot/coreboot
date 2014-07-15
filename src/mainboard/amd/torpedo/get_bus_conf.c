@@ -49,14 +49,13 @@ u32 hcdnx[] = {
 	0x20202020,
 };
 
-u32 bus_type[256];
 
 u32 sbdn_sb900;
 
 void get_bus_conf(void)
 {
 	device_t dev;
-	int i, j;
+	int i;
 
 	printk(BIOS_DEBUG, "Mainboard - %s - %s - Start.\n", __FILE__, __func__);
 
@@ -64,11 +63,6 @@ void get_bus_conf(void)
 
 	memset(bus_sb900, 0, sizeof(bus_sb900));
 
-	for (i = 0; i < 256; i++) {
-		bus_type[i] = 0;	/* default ISA bus. */
-	}
-
-	bus_type[0] = 1;	/* pci */
 
 	bus_sb900[0] = (pci1234x[0] >> 16) & 0xff;
 
@@ -79,8 +73,6 @@ void get_bus_conf(void)
 		bus_sb900[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		bus_isa = pci_read_config8(dev, PCI_SUBORDINATE_BUS);
 		bus_isa++;
-		for (j = bus_sb900[1]; j < bus_isa; j++)
-			bus_type[j] = 1;
 	}
 
 	for (i = 0; i < 4; i++) {
@@ -93,8 +85,6 @@ void get_bus_conf(void)
 			bus_isa++;
 		}
 	}
-	for (j = bus_sb900[2]; j < bus_isa; j++)
-		bus_type[j] = 1;
 
 	/* I/O APICs:   APIC ID Version State   Address */
 	bus_isa = 10;

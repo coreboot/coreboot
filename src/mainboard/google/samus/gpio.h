@@ -23,6 +23,7 @@
 #include <broadwell/gpio.h>
 
 #define SAMUS_GPIO_PP3300_AUTOBAHN_EN	23
+#define SAMUS_GPIO_SSD_RESET_L		47
 
 static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 0: UNUSED */
@@ -72,7 +73,7 @@ static const struct gpio_config mainboard_gpio_config[] = {
 	PCH_GPIO_UNUSED,        /* 44: UNUSED */
 	PCH_GPIO_PIRQ,          /* 45: DSP_INT (PIRQN) */
 	PCH_GPIO_PIRQ,          /* 46: HOTWORD_DET_L (PIRQO) */
-	PCH_GPIO_OUT_HIGH,      /* 47: SSD_RESET_L */
+	PCH_GPIO_OUT_LOW,       /* 47: SSD_RESET_L */
 	PCH_GPIO_UNUSED,        /* 48: UNUSED */
 	PCH_GPIO_UNUSED,        /* 49: UNUSED */
 	PCH_GPIO_UNUSED,        /* 50: UNUSED */

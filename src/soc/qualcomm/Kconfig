@@ -1,1 +1,9 @@
 source src/soc/qualcomm/ipq806x/Kconfig
+
+config CBFS_SIZE
+	hex "Size of CBFS filesystem in ROM"
+	default ROM_SIZE
+	help
+	  CBFS size needs to match the size of memory allocated to the
+	  coreboot blob elsewhere in the system. Make sure this config option
+	  is fine tuned in the board config file.

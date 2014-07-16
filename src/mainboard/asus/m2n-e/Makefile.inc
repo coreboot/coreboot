@@ -19,4 +19,3 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_ITE_IT8716F_OVERRIDE_FANCTL) += fanctl.c
-

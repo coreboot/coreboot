@@ -22,4 +22,3 @@ ramstage-$(CONFIG_CHROMEOS) += chromeos.c
 ramstage-y += lan.c
 
 smm-$(CONFIG_HAVE_SMI_HANDLER) += smihandler.c
-

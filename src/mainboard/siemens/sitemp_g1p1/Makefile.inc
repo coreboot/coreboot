@@ -20,4 +20,3 @@
 ##
 
 ramstage-$(CONFIG_PCI_OPTION_ROM_RUN_REALMODE) += int15_func.c
-

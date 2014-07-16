@@ -38,4 +38,3 @@ NB_CIMX_ROOT ?= $(CIMX_PREFIX)/rd890
 SB_CIMX_ROOT ?= $(CIMX_PREFIX)/sb700
 
 subdirs-y += ../../../../$(AGESA_ROOT)
-

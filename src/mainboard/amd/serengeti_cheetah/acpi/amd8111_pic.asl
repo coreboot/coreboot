@@ -356,5 +356,3 @@
                     Or (\_SB.PCI0.SBC3.PIDC, Local1, \_SB.PCI0.SBC3.PIDC)
                 }
             }
-
-

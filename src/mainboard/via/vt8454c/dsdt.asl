@@ -338,4 +338,3 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CX700 ", "COREBOOT", 0x00000001)
 		} // End of PCI0
 	} // End of _SB
 } // End of Definition Block
-

@@ -351,4 +351,3 @@ DefinitionBlock ("dsdt.aml", "DSDT", 1, "CBT-V2", "CBT-DSDT", 1)
 	} // End of _SB
 
 } // End of Definition Block
-

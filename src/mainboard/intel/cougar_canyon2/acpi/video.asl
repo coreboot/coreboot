@@ -18,4 +18,3 @@
  */
 
 /* There are no mainboard video ACPI features. */
-

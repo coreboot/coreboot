@@ -65,4 +65,3 @@ DefinitionBlock ("SSDT3.aml", "SSDT", 1, "AMD-K8", "AMDACPI", 100925440)
     }
 
 }
-

@@ -22,4 +22,3 @@ Name(OIPG, Package() {
 	Package() { 0x002, 1, 0xFF, "PantherPoint" }, // developer button
 	Package() { 0x003, 0,   70, "PantherPoint" }, // firmware write protect
 })
-

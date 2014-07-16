@@ -111,4 +111,3 @@ Method (SMBR, 3, NotSerialized) {
 
 	Return (Local0)
 }
-

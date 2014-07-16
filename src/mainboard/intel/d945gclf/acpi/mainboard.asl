@@ -32,4 +32,3 @@ Device (PWRB)
 	// Wake
 	Name(_PRW, Package(){0x1d, 0x04})
 }
-

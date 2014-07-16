@@ -195,4 +195,3 @@ Name(APS8, Package(){
 	Package(){0x0000FFFF, 2, 0, 18 },
 	Package(){0x0000FFFF, 3, 0, 18 },
 })
-

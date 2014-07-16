@@ -71,4 +71,3 @@ Method(_WAK,1)
 	/* Not implemented.  */
 	Return(Package(){0,0})
 }
-

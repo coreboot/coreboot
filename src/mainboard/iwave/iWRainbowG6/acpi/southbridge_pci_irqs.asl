@@ -100,4 +100,3 @@ If (PICM) {
 		Package() { 0x0009ffff, 3, \_SB.PCI0.LPCB.LNKE, 0},
 	})
 }
-

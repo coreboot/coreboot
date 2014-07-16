@@ -92,4 +92,3 @@ Method (\_WAK, 1, NotSerialized)
 
 	Return ( Package() { 0x0, 0x0 } )
 }
-

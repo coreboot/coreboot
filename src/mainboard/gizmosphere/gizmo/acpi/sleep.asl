@@ -119,4 +119,3 @@ Method(\_WAK, 1) {
 	*/
 	Return(WKST)
 } /* End Method(\_WAK) */
-

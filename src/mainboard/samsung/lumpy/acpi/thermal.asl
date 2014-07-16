@@ -143,4 +143,3 @@ Scope (\_TZ)
 		Name (_AL4, Package () { \_SB.PCI0.LPCB.EC0.FAN4 })
 	}
 }
-

@@ -42,4 +42,3 @@ Method(BRTN,1,Serialized)
 {
 	// TODO (no displays defined yet)
 }
-

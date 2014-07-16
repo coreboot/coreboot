@@ -43,4 +43,3 @@ Device (SIO1)
 		// missing: _SRS, _PS0, _PS3
 	}
 }
-

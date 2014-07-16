@@ -93,5 +93,3 @@ Device(P64A)
 
 	#include "acpi/scsi.asl"
 }
-
-

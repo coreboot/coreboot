@@ -229,4 +229,3 @@ Device (ADP1)
 		Return (_SB)
 	}
 }
-

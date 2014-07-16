@@ -1036,5 +1036,3 @@ DefinitionBlock ("DSDT", "DSDT", 1, "EAGLE", "COREBOOT", 0x0000001)
 		}
 	}
 }
-
-

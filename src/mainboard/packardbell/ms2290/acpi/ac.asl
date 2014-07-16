@@ -47,4 +47,3 @@ Method(_Q51, 0, NotSerialized)
 {
 	Notify (AC, 0x80)
 }
-

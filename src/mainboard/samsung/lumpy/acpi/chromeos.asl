@@ -22,4 +22,3 @@ Name(OIPG, Package() {
 	Package() { 0x002, 1, 17, "CougarPoint" }, // developer switch
 	Package() { 0x003, 1, 24, "CougarPoint" }, // firmware write protect
 })
-

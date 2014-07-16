@@ -130,4 +130,3 @@ Method (GTF, 4, Serialized)
     Concatenate (Local1, Local2, Local6)
     Return (Local6)
 }
-

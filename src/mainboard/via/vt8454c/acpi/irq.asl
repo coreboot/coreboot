@@ -139,5 +139,3 @@ Name (APIC, Package () {
 	Package () { 0x0012FFFF, 0x02, LNKD, 0x00 },
 	Package () { 0x0012FFFF, 0x03, LNKD, 0x00 },
 })
-
-

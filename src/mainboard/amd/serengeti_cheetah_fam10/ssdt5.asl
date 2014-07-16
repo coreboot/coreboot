@@ -81,4 +81,3 @@ DefinitionBlock ("SSDT5.aml", "SSDT", 1, "AMD-FAM10", "AMDACPI", 100925440)
 	}
 
 }
-

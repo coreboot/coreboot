@@ -254,4 +254,3 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "CORE  ", "COREBOOT", 1)
 	} // End of _SB
 
 } // End of Definition Block
-

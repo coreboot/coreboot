@@ -60,4 +60,3 @@ Device (SCS1)
 		And (\_SB.PCI0.HLIB.P64A.SCS1.IDW, 0xFE, \_SB.PCI0.HLIB.P64A.SCS1.IDW)
 	}
 #endif
-

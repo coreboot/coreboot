@@ -112,4 +112,3 @@ Scope(\_SB.PCI0)
 #include "acpi/power.asl"
 
 }
-

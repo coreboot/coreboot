@@ -80,4 +80,3 @@ Scope(\_GPE) {	/* Start Scope GPE */
 
 /* Contains the GPEs for USB overcurrent */
 #include "usb_oc.asl"
-

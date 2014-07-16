@@ -38,4 +38,3 @@ If (PICM) {
 		Package() { 0x0005ffff, 4, \_SB.PCI0.LPCB.LNKD, 0}, // Really 4??
 	})
 }
-

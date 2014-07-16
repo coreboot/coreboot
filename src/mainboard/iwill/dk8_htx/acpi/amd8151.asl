@@ -26,4 +26,3 @@
                     Else { Return (APIC) }
                 }
             }
-

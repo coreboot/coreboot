@@ -78,4 +78,3 @@ Scope (\_TZ)
 // The EC does all fan control. There is no Active Cooling Fan control (_ACx).
 	}
 }
-

@@ -180,4 +180,3 @@ Method (MLED, 1, NotSerialized)
 		Store (0x03, LED1)
 	}
 }
-

@@ -209,4 +209,3 @@ DefinitionBlock ("DSDT.aml", "DSDT", 1, "AMD-K8", "AMDACPI", 100925440)
     #include "northbridge/amd/amdk8/util.asl"
 
 }
-

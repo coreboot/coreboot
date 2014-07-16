@@ -20,4 +20,3 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_NSC_PC87427) += superio.c
-

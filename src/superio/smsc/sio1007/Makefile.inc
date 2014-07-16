@@ -18,4 +18,3 @@
 ##
 
 romstage-$(CONFIG_SUPERIO_SMSC_SIO1007) += early_serial.c
-

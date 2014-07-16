@@ -23,4 +23,3 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_SMSC_LPC47M10X) += superio.c
-

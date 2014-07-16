@@ -18,4 +18,3 @@
 #
 
 ramstage-$(CONFIG_SUPERIO_SMSC_SIO1036) += superio.c
-

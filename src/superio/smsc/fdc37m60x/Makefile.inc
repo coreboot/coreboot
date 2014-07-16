@@ -19,4 +19,3 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_SMSC_FDC37M60X) += superio.c
-

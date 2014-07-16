@@ -19,4 +19,3 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_VIA_VT1211) += vt1211.c
-

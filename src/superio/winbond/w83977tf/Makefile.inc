@@ -21,4 +21,3 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_WINBOND_W83977TF) += superio.c
-

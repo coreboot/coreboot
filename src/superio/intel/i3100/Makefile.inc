@@ -19,4 +19,3 @@
 ##
 
 ramstage-$(CONFIG_SUPERIO_INTEL_I3100) += superio.c
-

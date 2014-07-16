@@ -19,4 +19,3 @@
 
 ramstage-y += chipset_fsp_util.c
 romstage-y += chipset_fsp_util.c
-

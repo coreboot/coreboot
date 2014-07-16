@@ -51,4 +51,3 @@ Device (EHC1)
 		Device (PRT4) { Name (_ADR, 4) } // USB Port 3
 	}
 }
-

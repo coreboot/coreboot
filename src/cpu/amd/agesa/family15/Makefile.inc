@@ -27,4 +27,3 @@ subdirs-y += ../../../x86/smm
 
 ramstage-y += chip_name.c
 ramstage-y += model_15_init.c
-

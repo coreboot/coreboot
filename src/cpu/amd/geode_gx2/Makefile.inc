@@ -12,4 +12,3 @@ cbfs-files-$(CONFIG_GEODE_VSA_FILE) += vsa
 vsa-file = $(call strip_quotes,$(CONFIG_VSA_FILENAME)):vsa
 vsa-type = stage
 vsa-required = VSA binary (binary and MASM source code available in coreboot/3rdparty repository)
-

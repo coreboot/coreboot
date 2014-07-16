@@ -28,4 +28,3 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 
 cpu_incs += $(src)/cpu/intel/car/cache_as_ram.inc
-

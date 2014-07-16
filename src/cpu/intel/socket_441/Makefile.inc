@@ -8,4 +8,3 @@ subdirs-y += ../../x86/smm
 subdirs-y += ../microcode
 subdirs-y += ../hyperthreading
 subdirs-y += ../speedstep
-

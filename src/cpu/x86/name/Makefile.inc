@@ -18,4 +18,3 @@
 ##
 
 ramstage-y += name.c
-

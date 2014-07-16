@@ -38,9 +38,13 @@ void romstage(void)
 
 	printk(BIOS_INFO, "T132: romstage here\n");
 
+#if CONFIG_BOOTROM_SDRAM_INIT
+	printk(BIOS_INFO, "T132 romstage: SDRAM init done by BootROM, RAMCODE = %d\n",
+		sdram_get_ram_code());
+#else
 	sdram_init(get_sdram_config());
 	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
-
+#endif
 	cbmem_initialize();
 
 	ccplex_cpu_prepare();

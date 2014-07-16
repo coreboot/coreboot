@@ -99,4 +99,10 @@ config TRUSTZONE_CARVEOUT_SIZE_MB
 	help
 	  Size of Trust Zone area in MiB to reserve in memory map.
 
+config BOOTROM_SDRAM_INIT
+	bool "SoC BootROM does SDRAM init with full BCT"
+	default n
+	help
+	  Use during Ryu LPDDR3 bringup
+
 endif

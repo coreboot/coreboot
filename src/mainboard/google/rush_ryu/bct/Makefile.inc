@@ -1,7 +1,7 @@
 ##
 ## This file is part of the coreboot project.
 ##
-## Copyright 2013 Google Inc.
+## Copyright 2014 Google Inc.
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@ bct-cfg-$(CONFIG_RUSH_RYU_BCT_CFG_EMMC) += emmc.cfg
 bct-cfg-$(CONFIG_RUSH_RYU_BCT_CFG_SPI) += spi.cfg
 bct-cfg-y += odmdata.cfg
 bct-cfg-y += jtag.cfg
+#NOTE: When full LPDDR3 SDRAM config is done in bootblock, remove this
+bct-cfg-$(CONFIG_BOOTROM_SDRAM_INIT) += sdram-ryu-4GB-528-Micron-full.cfg
 
 # Note when SDRAM config (sdram-*.cfg) files are changed, we have to regenerate
 # the include files (sdram-*.inc) by running "./cfg2inc.sh sdram-*.cfg".

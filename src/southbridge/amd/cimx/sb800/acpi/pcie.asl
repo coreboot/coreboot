@@ -518,4 +518,3 @@ Scope(\_SB) {
 		} /* End Device(INTH)   */
 
 	}   /* End Scope(_SB)  */
-

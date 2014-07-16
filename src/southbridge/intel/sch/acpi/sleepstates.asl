@@ -24,4 +24,3 @@ Name(\_S1, Package(4){0x1,0x0,0,0})
 Name(\_S3, Package(4){0x5,0x0,0,0})
 Name(\_S4, Package(4){0x6,0x0,0,0})
 Name(\_S5, Package(4){0x7,0x0,0,0})
-

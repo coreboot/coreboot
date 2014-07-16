@@ -53,4 +53,3 @@ Device(UEH1) {
 	Name(_ADR, 0x00140005)
 	Name(_PRW, Package() {0x0B, 3})
 } /* end UEH1 */
-

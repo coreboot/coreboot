@@ -38,4 +38,3 @@ Device (HDEF)
 		}
 	}
 }
-

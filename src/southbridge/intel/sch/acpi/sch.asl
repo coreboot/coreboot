@@ -161,5 +161,3 @@ Scope(\)
 
 // SMBus
 #include "smbus.asl"
-
-

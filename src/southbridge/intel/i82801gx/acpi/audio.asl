@@ -33,4 +33,3 @@ Device (HDEF)
 		4   // Can wake from S4 state.
 	})
 }
-

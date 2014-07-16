@@ -36,4 +36,3 @@ Device (MODM)
 
 	Name (_PRW, Package(){ 5, 4 })
 }
-

@@ -82,4 +82,3 @@ Device(LIBR) {
 	} /* End Device(_SB.PCI0.LpcIsaBr.COPR) */
 	#include "acpi/superio.asl"
 } /* end LIBR */
-

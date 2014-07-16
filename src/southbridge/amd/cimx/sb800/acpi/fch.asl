@@ -371,4 +371,3 @@ Scope(\_SB) {
 		Name(_STA, 0x0B)	/* sata is invisible */
 	}
 } /* End Scope(_SB)  */
-

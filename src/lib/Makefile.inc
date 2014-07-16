@@ -33,7 +33,6 @@ verstage-$(CONFIG_COMMON_CBFS_SPI_WRAPPER) += cbfs_spi.c
 verstage-y += tlcl.c
 verstage-$(CONFIG_GENERIC_UDELAY) += timer.c
 
-
 romstage-y += memchr.c
 romstage-y += memcmp.c
 $(foreach arch,$(ARCH_SUPPORTED),\

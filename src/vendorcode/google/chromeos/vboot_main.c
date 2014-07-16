@@ -1,10 +1,14 @@
 #include <2api.h>
 #include <2struct.h>
+#include <antirollback.h>
+#include <arch/exception.h>
 #include <arch/stages.h>
 #include <cbfs.h>
 #include <console/console.h>
 #include <console/vtxprintf.h>
 #include <reset.h>
+#include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <string.h>
 
 #include "chromeos.h"
@@ -64,8 +68,12 @@ void vb2ex_printf(const char *func, const char *fmt, ...)
 
 int vb2ex_tpm_clear_owner(struct vb2_context *ctx)
 {
-	VBDEBUG("Clearing owner\n");
-	return VB2_ERROR_UNKNOWN;
+	uint32_t rv;
+	VBDEBUG("Clearing TPM owner\n");
+	rv = tpm_clear_and_reenable();
+	if (rv)
+		return VB2_ERROR_EX_TPM_CLEAR_OWNER;
+	return VB2_SUCCESS;
 }
 
 int vb2ex_read_resource(struct vb2_context *ctx,
@@ -222,6 +230,54 @@ static void enter_stage(struct cbfs_stage *stage)
 	stage_exit((void *)(uintptr_t)stage->entry);
 }
 
+enum {
+	L2CTLR_ECC_PARITY = 0x1 << 21,
+	L2CTLR_TAG_RAM_LATENCY_MASK = 0x7 << 6,
+	L2CTLR_TAG_RAM_LATENCY_CYCLES_3 = 2 << 6,
+	L2CTLR_DATA_RAM_LATENCY_MASK = 0x7 << 0,
+	L2CTLR_DATA_RAM_LATENCY_CYCLES_3  = 2 << 0
+};
+
+enum {
+	L2ACTLR_FORCE_L2_LOGIC_CLOCK_ENABLE_ACTIVE = 0x1 << 27,
+	L2ACTLR_ENABLE_HAZARD_DETECT_TIMEOUT = 0x1 << 7,
+	L2ACTLR_DISABLE_CLEAN_EVICT_PUSH_EXTERNAL = 0x1 << 3
+};
+
+/* Configures L2 Control Register to use 3 cycles for DATA/TAG RAM latency. */
+static void configure_l2ctlr(void)
+{
+   uint32_t val;
+
+   val = read_l2ctlr();
+   val &= ~(L2CTLR_DATA_RAM_LATENCY_MASK | L2CTLR_TAG_RAM_LATENCY_MASK);
+   val |= (L2CTLR_DATA_RAM_LATENCY_CYCLES_3 | L2CTLR_TAG_RAM_LATENCY_CYCLES_3 |
+	   L2CTLR_ECC_PARITY);
+   write_l2ctlr(val);
+}
+
+/* Configures L2 Auxiliary Control Register for Cortex A15. */
+static void configure_l2actlr(void)
+{
+   uint32_t val;
+
+   val = read_l2actlr();
+   val |= (L2ACTLR_DISABLE_CLEAN_EVICT_PUSH_EXTERNAL |
+	   L2ACTLR_ENABLE_HAZARD_DETECT_TIMEOUT |
+	   L2ACTLR_FORCE_L2_LOGIC_CLOCK_ENABLE_ACTIVE);
+   write_l2actlr(val);
+}
+
+static void enable_cache(void)
+{
+	mmu_init();
+	mmu_config_range(0, CONFIG_SYS_SDRAM_BASE >> 20, DCACHE_OFF);
+	mmu_config_range(0x40000000 >> 20, 2, DCACHE_WRITEBACK);
+	mmu_disable_range(0, 1);
+	VBDEBUG("Enabling cache\n");
+	dcache_mmu_enable();
+}
+
 /**
  * Save non-volatile and/or secure data if needed.
  */
@@ -229,16 +285,24 @@ static void save_if_needed(struct vb2_context *ctx)
 {
 	if (ctx->flags & VB2_CONTEXT_NVDATA_CHANGED) {
 		VBDEBUG("Saving nvdata\n");
-		//save_vbnv(ctx->nvdata);
+		save_vbnv(ctx->nvdata);
 		ctx->flags &= ~VB2_CONTEXT_NVDATA_CHANGED;
 	}
 	if (ctx->flags & VB2_CONTEXT_SECDATA_CHANGED) {
 		VBDEBUG("Saving secdata\n");
-		//antirollback_write_space_firmware(ctx);
+		antirollback_write_space_firmware(ctx);
 		ctx->flags &= ~VB2_CONTEXT_SECDATA_CHANGED;
 	}
 }
 
+/**
+ * Load and verify the next stage from RW image and jump to it
+ *
+ * If validation fails, it exits to romstage for recovery or reboots.
+ *
+ * TODO: Avoid loading a stage twice (once in hash_body & again in load_stage).
+ * when per-stage verification is ready.
+ */
 void __attribute__((noinline)) select_firmware(void)
 {
 	struct vb2_context ctx;
@@ -248,7 +312,12 @@ void __attribute__((noinline)) select_firmware(void)
 	struct cbfs_stage *stage;
 	int rv;
 
+	/* Do minimum to enable cache and run vboot at full speed */
+	configure_l2ctlr();
+	configure_l2actlr();
 	console_init();
+	exception_init();
+	enable_cache();
 
 	/* Set up context */
 	memset(&ctx, 0, sizeof(ctx));
@@ -257,12 +326,12 @@ void __attribute__((noinline)) select_firmware(void)
 	memset(ctx.workbuf, 0, ctx.workbuf_size);
 
 	/* Read nvdata from a non-volatile storage */
-	//read_vbnv(ctx.nvdata);
+	read_vbnv(ctx.nvdata);
 
 	/* Read secdata from TPM. Initialize TPM if secdata not found. We don't
 	 * check the return value here because vb2api_fw_phase1 will catch
 	 * invalid secdata and tell us what to do (=reboot). */
-	//antirollback_read_space_firmware(&ctx);
+	antirollback_read_space_firmware(&ctx);
 
 	if (get_developer_mode_switch())
 		ctx.flags |= VB2_CONTEXT_FORCE_DEVELOPER_MODE;

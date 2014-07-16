@@ -28,7 +28,10 @@ verstage-y += spi.c
 verstage-y += timer.c
 verstage-$(CONFIG_DRIVERS_UART) += uart.c
 verstage-y += ../tegra/gpio.c
+verstage-y += ../tegra/i2c.c
 verstage-y += ../tegra/pinmux.c
+verstage-y += clock.c
+verstage-y += i2c.c
 
 romstage-y += cbfs.c
 romstage-y += cbmem.c

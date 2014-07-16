@@ -343,4 +343,3 @@ DefinitionBlock ("SSDT.aml", "SSDT", 1, "AMD-FAM12H", "AMD-ACPI", 0x1000)
 
 	}
 }
-

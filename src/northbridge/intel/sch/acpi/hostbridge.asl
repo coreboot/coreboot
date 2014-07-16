@@ -237,5 +237,3 @@ Method (_CRS, 0, Serialized)
 
 /* IRQ assignment is mainboard specific. Get it from mainboard ACPI code */
 #include "acpi/northbridge_pci_irqs.asl"
-
-

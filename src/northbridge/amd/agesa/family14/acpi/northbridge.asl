@@ -126,5 +126,3 @@ Device(PE23) {
 		Return (PE3)				/* PIC Mode */
 	} /* end _PRT */
 } /* end PE23 */
-
-

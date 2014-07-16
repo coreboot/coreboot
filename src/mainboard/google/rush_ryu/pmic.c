@@ -23,45 +23,31 @@
 #include <device/i2c.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#include "boardid.h"
 #include "pmic.h"
 #include "reset.h"
 
+/* A44/Ryu has a TI 65913 PMIC on bus 4 (PWR_I2C) */
+
 enum {
-	AS3722_I2C_ADDR = 0x40
+	TI65913_I2C_ADDR = 0x58
 };
 
-struct as3722_init_reg {
+struct ti65913_init_reg {
 	u8 reg;
 	u8 val;
 	u8 delay;
 };
 
-static struct as3722_init_reg init_list[] = {
-	{AS3722_SDO0, 0x3C, 1},
-	{AS3722_SDO1, 0x32, 0},
-	{AS3722_LDO3, 0x59, 0},
-	{AS3722_SDO2, 0x3C, 0},
-	{AS3722_SDO3, 0x00, 0},
-	{AS3722_SDO4, 0x00, 0},
-	{AS3722_SDO5, 0x50, 0},
-	{AS3722_SDO6, 0x28, 1},
-	{AS3722_LDO0, 0x8A, 0},
-	{AS3722_LDO1, 0x00, 0},
-	{AS3722_LDO2, 0x10, 0},
-	{AS3722_LDO4, 0x00, 0},
-	{AS3722_LDO5, 0x00, 0},
-	{AS3722_LDO6, 0x00, 0},
-	{AS3722_LDO7, 0x00, 0},
-	{AS3722_LDO9, 0x00, 0},
-	{AS3722_LDO10, 0x00, 0},
-	{AS3722_LDO11, 0x00, 1},
+static struct ti65913_init_reg init_list[] = {
+//TODO(twarren@nvidia.com): Add slams back to defaults
+//	{TI65913_SMPS12_CTRL, 0x01, 0},
+//	{TI65913_SMPS12_VOLTAGE, 0x38, 0},
+//etc.
 };
 
 static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay)
 {
-	if (i2c_writeb(bus, AS3722_I2C_ADDR, reg, val)) {
+	if (i2c_writeb(bus, TI65913_I2C_ADDR, reg, val)) {
 		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",
 			__func__, reg, val);
 		/* Reset the SoC on any PMIC write error */
@@ -75,38 +61,23 @@ static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int delay)
 static void pmic_slam_defaults(unsigned bus)
 {
 	int i;
+
 	for (i = 0; i < ARRAY_SIZE(init_list); i++) {
-		struct as3722_init_reg *reg = &init_list[i];
+		struct ti65913_init_reg *reg = &init_list[i];
 		pmic_write_reg(bus, reg->reg, reg->val, reg->delay);
 	}
 }
 
 void pmic_init(unsigned bus)
 {
-	/*
-	 * Don't need to set up VDD_CORE - already done - by OTP
-	 * Don't write SDCONTROL - it's already 0x7F, i.e. all SDs enabled.
-	 * Don't write LDCONTROL - it's already 0xFF, i.e. all LDOs enabled.
-	 */
+	/* Don't need to set up VDD_CORE - already done - by EC ?? */
 
 	/* Restore PMIC POR defaults, in case kernel changed 'em */
 	pmic_slam_defaults(bus);
 
-	/* SDO0: Set VDD_CPU to 1.2V. */
-	pmic_write_reg(bus, 0x00, 0x50, 1);
-
-	/* SDO6: Set VDD_GPU to 1.0V. */
-	pmic_write_reg(bus, 0x06, 0x28, 1);
-
-	/* LDO2: Set +1.2V_GEN_AVDD to 1.2V */
-	pmic_write_reg(bus, 0x12, 0x10, 1);
-
-	/*
-	 * Panel power GPIO O4. Set mode for GPIO4 (0x0c to 7), then set
-	 * the value (register 0x20 bit 4)
-	 */
-	pmic_write_reg(bus, 0x0c, 0x07, 0);
-	pmic_write_reg(bus, 0x20, 0x10, 1);
+	/* A44: Set VDD_CPU to 1.0V. */
+	pmic_write_reg(bus, TI65913_SMPS12_CTRL, 0x01, 1);
+	pmic_write_reg(bus, TI65913_SMPS12_VOLTAGE, 0x38, 0);
 
 	printk(BIOS_DEBUG, "PMIC init done\n");
 }

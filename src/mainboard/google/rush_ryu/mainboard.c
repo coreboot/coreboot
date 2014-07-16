@@ -30,6 +30,6 @@ static void mainboard_enable(device_t dev)
 }
 
 struct chip_operations mainboard_ops = {
-        .name   = "rush",
+        .name   = "rush_ryu",
         .enable_dev = mainboard_enable,
 };

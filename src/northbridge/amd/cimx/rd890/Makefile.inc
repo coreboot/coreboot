@@ -22,4 +22,3 @@
 romstage-y += early.c
 
 ramstage-y += late.c
-

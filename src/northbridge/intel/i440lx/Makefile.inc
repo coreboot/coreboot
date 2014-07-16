@@ -19,4 +19,3 @@
 ##
 
 ramstage-y += northbridge.c
-

@@ -21,4 +21,3 @@
 ramstage-y += northbridge.c
 ramstage-y += agp.c
 ramstage-y += vga.c
-

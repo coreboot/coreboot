@@ -31,4 +31,3 @@ ramstage-y += reset.c
 ramstage-y += watchdog.c
 
 romstage-y += early_smbus.c
-

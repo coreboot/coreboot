@@ -18,4 +18,3 @@
 ##
 
 ramstage-y += pcixx12.c
-

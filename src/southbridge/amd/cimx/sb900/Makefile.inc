@@ -32,5 +32,3 @@ ramstage-y += reset.c
 
 ramstage-y   += smbus.c
 ramstage-y   += lpc.c
-
-

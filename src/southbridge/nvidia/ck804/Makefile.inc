@@ -21,4 +21,3 @@ romstage-y += early_smbus.c
 
 chipset_bootblock_inc += $(src)/southbridge/nvidia/ck804/romstrap.inc
 chipset_bootblock_lds += $(src)/southbridge/nvidia/ck804/romstrap.lds
-

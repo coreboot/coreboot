@@ -19,4 +19,3 @@
 
 ramstage-y += cardbus.c
 ramstage-y += firewire.c
-

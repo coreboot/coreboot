@@ -46,16 +46,17 @@ void tlb_invalidate_all(void)
 
 unsigned int dcache_line_bytes(void)
 {
-	uint32_t ccsidr;
+	uint32_t ctr_el0;
 	static unsigned int line_bytes = 0;
 
 	if (line_bytes)
 		return line_bytes;
 
-	ccsidr = raw_read_ccsidr_el1();
-	/* [2:0] - Indicates (Log2(number of words in cache line)) - 4 */
-	line_bytes = 1 << ((ccsidr & 0x7) + 4);	/* words per line */
-	line_bytes *= sizeof(uint32_t);	/* bytes per word */
+	ctr_el0 = raw_read_ctr_el0();
+	/* [19:16] - Indicates (Log2(number of words in cache line) */
+	line_bytes = 1 << ((ctr_el0 >> 16) & 0xf);
+	/* Bytes in a word (32-bit) */
+	line_bytes *= sizeof(uint32_t);
 
 	return line_bytes;
 }

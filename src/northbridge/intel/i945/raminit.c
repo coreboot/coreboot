@@ -1521,7 +1521,7 @@ static int sdram_program_row_boundaries(struct sys_info *sysinfo)
 	int i;
 	int cum0, cum1, tolud, tom;
 
-	printk(BIOS_DEBUG, "Setting RAM size... \n");
+	printk(BIOS_DEBUG, "Setting RAM size...\n");
 
 	cum0 = 0;
 	for(i = 0; i < 2 * DIMM_SOCKETS; i++) {

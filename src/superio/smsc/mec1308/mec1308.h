@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef SUPERIO_SMSC_MEC1308_H
+#define SUPERIO_SMSC_MEC1308_H
+
 #define MEC1308_PM1   1
 #define MEC1308_EC1   2
 #define MEC1308_EC2   3
@@ -24,3 +27,5 @@
 #define MEC1308_KBC   7
 #define MEC1308_EC0   8
 #define MEC1308_MBX   9
+
+#endif /* SUPERIO_SMSC_MEC1308_H */

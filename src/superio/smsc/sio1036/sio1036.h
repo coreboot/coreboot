@@ -17,8 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef SUPERIO_SMSC_SIO1306_H
+#define SUPERIO_SMSC_SIO1306_H
+
 #define SIO1036_SP1		0 /* Com1 */
 
 #define UART_POWER_DOWN		(1 << 7)
 #define LPT_POWER_DOWN		(1 << 2)
 #define IR_OUPUT_MUX		(1 << 6)
+
+#endif /* SUPERIO_SMSC_1306_H */

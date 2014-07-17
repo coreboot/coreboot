@@ -22,6 +22,7 @@ chip soc/intel/baytrail
 	register "usb2_per_port_rcomp_hs_pullup2" = "0x01004015"
 	register "usb2_per_port_lane3" = "0x00049a09"
 	register "usb2_per_port_rcomp_hs_pullup3" = "0x0300401d"
+	register "usb2_comp_bg" = "0x4700"
 
 	# LPE audio codec settings
 	register "lpe_codec_clk_freq" = "25" # 25MHz clock

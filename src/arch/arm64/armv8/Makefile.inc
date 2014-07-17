@@ -69,6 +69,7 @@ ramstage-y += cache.c
 ramstage-y += cpu.S
 ramstage-y += exception.c
 ramstage-y += exception_asm.S
+ramstage-y += mmu.c
 
 ramstage-c-ccopts += $(armv8_flags)
 ramstage-S-ccopts += $(armv8_asm_flags)

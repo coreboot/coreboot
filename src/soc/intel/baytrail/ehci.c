@@ -96,7 +96,8 @@ static void usb2_phy_init(device_t dev)
 	struct soc_intel_baytrail_config *config = dev->chip_info;
 	struct reg_script usb2_phy_script[] = {
 		/* USB3PHYInit() */
-		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_COMPBG, 0x4700),
+		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_COMPBG,
+			       config->usb2_comp_bg),
 		/* Per port phy settings, set in devicetree.cb */
 		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_PER_PORT_LANE0,
 			       config->usb2_per_port_lane0),

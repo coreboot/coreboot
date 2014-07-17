@@ -16,8 +16,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <endian.h>
 #include <gdb.h>
 #include <libpayload.h>
+
+/* MMIO word size is not standardized, but *usually* 32 (even on ARM64) */
+typedef u32 mmio_word_t;
 
 static const int timeout_us = 100 * 1000;
 static const char output_overrun[] = "GDB output buffer overrun (try "
@@ -55,7 +59,7 @@ void gdb_transport_teardown(void)
 
 /* Hex digit character <-> number conversion (illegal chars undefined!). */
 
-static s8 from_hex(unsigned char c)
+static u8 from_hex(unsigned char c)
 {
 	static const s8 values[] = {
 		-1, 10, 11, 12, 13, 14, 15, -1,
@@ -74,30 +78,43 @@ static char to_hex(u8 v)
 	return digits[v & 0xf];
 }
 
-/* Message encode/decode functions */
+/* Message encode/decode functions (must access whole aligned words for MMIO) */
 
 void gdb_message_encode_bytes(struct gdb_message *message, const void *data,
 			      int length)
 {
-	const u8 *bytes = data;
 	die_if(message->used + length * 2 > message->size, output_overrun);
+	const mmio_word_t *aligned =
+		(mmio_word_t *)ALIGN_DOWN((uintptr_t)data, sizeof(*aligned));
+	mmio_word_t word = be32toh(readl(aligned++));
 	while (length--) {
-		message->buf[message->used++] = to_hex(*bytes >> 4);
-		message->buf[message->used++] = to_hex(*bytes & 0xf);
-		bytes++;
+		u8 byte = (word >> ((((void *)aligned - data) - 1) * 8));
+		message->buf[message->used++] = to_hex(byte >> 4);
+		message->buf[message->used++] = to_hex(byte & 0xf);
+		if (length && ++data == (void *)aligned)
+			word = be32toh(readl(aligned++));
 	}
 }
 
 void gdb_message_decode_bytes(const struct gdb_message *message, int offset,
 			      void *data, int length)
 {
-	u8 *bytes = data;
 	die_if(offset + 2 * length > message->used, "Decode overrun in GDB "
 		"message: %.*s", message->used, message->buf);
+	mmio_word_t *aligned =
+		(mmio_word_t *)ALIGN_DOWN((uintptr_t)data, sizeof(*aligned));
+	int shift = ((void *)(aligned + 1) - data) * 8;
+	mmio_word_t word = be32toh(readl(aligned)) >> shift;
 	while (length--) {
-		*bytes = from_hex(message->buf[offset++]) << 4;
-		*bytes += from_hex(message->buf[offset++]);
-		bytes++;
+		word <<= 8;
+		word |= from_hex(message->buf[offset++]) << 4;
+		word |= from_hex(message->buf[offset++]);
+		if (++data - (void *)aligned == sizeof(*aligned))
+			writel(htobe32(word), aligned++);
+	}
+	if (data != (void *)aligned) {
+		shift = ((void *)(aligned + 1) - data) * 8;
+		clrsetbits_be32(aligned, ~((1 << shift) - 1), word << shift);
 	}
 }
 

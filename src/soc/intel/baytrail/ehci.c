@@ -94,10 +94,12 @@ static const struct reg_script ehci_hc_reset[] = {
 static void usb2_phy_init(device_t dev)
 {
 	struct soc_intel_baytrail_config *config = dev->chip_info;
+	u32 usb2_comp_bg = (config->usb2_comp_bg == 0 ?
+			    0x4700 : config->usb2_comp_bg);
 	struct reg_script usb2_phy_script[] = {
 		/* USB3PHYInit() */
 		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_COMPBG,
-			       config->usb2_comp_bg),
+			       usb2_comp_bg),
 		/* Per port phy settings, set in devicetree.cb */
 		REG_IOSF_WRITE(IOSF_PORT_USBPHY, USBPHY_PER_PORT_LANE0,
 			       config->usb2_per_port_lane0),

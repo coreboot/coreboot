@@ -21,6 +21,7 @@
 #include <arch/stages.h>
 #include <soc/addressmap.h>
 #include "mc.h"
+#include "mmu_operations.h"
 
 void arm64_soc_init(void)
 {
@@ -44,4 +45,6 @@ void arm64_soc_init(void)
 	end -= tz_size_mib;
 	write32(end << 20, &mc->security_cfg0);
 	write32(tz_size_mib, &mc->security_cfg1);
+
+	tegra132_mmu_init();
 }

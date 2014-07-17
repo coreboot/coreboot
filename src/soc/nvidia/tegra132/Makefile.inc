@@ -50,6 +50,7 @@ ramstage-y += ../tegra/gpio.c
 ramstage-y += ../tegra/i2c.c
 ramstage-y += ../tegra/pinmux.c
 ramstage-y += ramstage.c
+ramstage-y += mmu_operations.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 CPPFLAGS_common += -Isrc/soc/nvidia/tegra132/include/

@@ -316,6 +316,8 @@ config VGA_BIOS_ID
 	  the "0x" prefix) and 3230 specifies the PCI device ID of the
 	  video card (also in hex, without "0x" prefix).
 
+	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
+
 config INTEL_MBI
 	bool "Add an MBI image"
 	depends on NORTHBRIDGE_INTEL_I82830
@@ -538,6 +540,7 @@ config PXE_ROM_ID
 	  network card (also in hex, without "0x" prefix).
 
 	  Under GNU/Linux you can run `lspci -nn` to list the IDs of your PCI devices.
+
 endmenu
 
 config SUBSYSTEM_VENDOR_ID

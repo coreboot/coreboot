@@ -34,22 +34,22 @@
 #include <stdint.h>
 #include <arch/cache.h>
 
-static inline uint8_t readb(volatile void *_a)
+static inline uint8_t readb(volatile const void *_a)
 {
 	dmb();
-	return *(volatile uint8_t *)_a;
+	return *(volatile const uint8_t *)_a;
 }
 
-static inline uint16_t readw(volatile void *_a)
+static inline uint16_t readw(volatile const void *_a)
 {
 	dmb();
-	return *(volatile uint16_t *)_a;
+	return *(volatile const uint16_t *)_a;
 }
 
-static inline uint32_t readl(volatile void *_a)
+static inline uint32_t readl(volatile const void *_a)
 {
 	dmb();
-	return *(volatile uint32_t *)_a;
+	return *(volatile const uint32_t *)_a;
 }
 
 static inline void writeb(uint8_t _v, volatile void *_a)
@@ -72,18 +72,6 @@ static inline void writel(uint32_t _v, volatile void *_a)
 	*(volatile uint32_t *)_a = _v;
 	dmb();
 }
-
-/*
- * Handy bit manipulation macros, BE version will have to be added when/if
- * needed.
- */
-
-#ifdef CONFIG_LP_LITTLE_ENDIAN
-#define clrsetbits_le32(addr, clear, set) writel((readl(addr) & ~(clear)) |\
-						 (set), (addr))
-#define setbits_le32(addr, set) writel(readl(addr) | (set), (addr))
-#define clrbits_le32(addr, clear) writel(readl(addr) & ~(clear), (addr))
-#endif
 
 #endif
 

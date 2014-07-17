@@ -34,22 +34,22 @@
 #include <stdint.h>
 #include <arch/cache.h>
 
-static inline uint8_t readb(volatile void *_a)
+static inline uint8_t readb(volatile const void *_a)
 {
 	dmb();
-	return *(volatile uint8_t *)_a;
+	return *(volatile const uint8_t *)_a;
 }
 
-static inline uint16_t readw(volatile void *_a)
+static inline uint16_t readw(volatile const void *_a)
 {
 	dmb();
-	return *(volatile uint16_t *)_a;
+	return *(volatile const uint16_t *)_a;
 }
 
-static inline uint32_t readl(volatile void *_a)
+static inline uint32_t readl(volatile const void *_a)
 {
 	dmb();
-	return *(volatile uint32_t *)_a;
+	return *(volatile const uint32_t *)_a;
 }
 
 static inline void writeb(uint8_t _v, volatile void *_a)

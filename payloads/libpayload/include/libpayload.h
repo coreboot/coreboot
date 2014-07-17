@@ -46,6 +46,7 @@
 #include <libpayload-config.h>
 #include <ctype.h>
 #include <die.h>
+#include <endian.h>
 #include <ipchksum.h>
 #include <stddef.h>
 #include <stdio.h>

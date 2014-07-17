@@ -31,9 +31,9 @@
 #ifndef _ARCH_IO_H
 #define _ARCH_IO_H
 
-#define readb(_a) (*(volatile unsigned char *) (_a))
-#define readw(_a) (*(volatile unsigned short *) (_a))
-#define readl(_a) (*(volatile unsigned long *) (_a))
+#define readb(_a) (*(volatile const unsigned char *) (_a))
+#define readw(_a) (*(volatile const unsigned short *) (_a))
+#define readl(_a) (*(volatile const unsigned long *) (_a))
 
 #define writeb(_v, _a) (*(volatile unsigned char *) (_a) = (_v))
 #define writew(_v, _a) (*(volatile unsigned short *) (_a) = (_v))

@@ -75,6 +75,9 @@ static inline void range_entry_update_tag(struct range_entry *r,
 #define memranges_each_entry(r, ranges) \
 	for (r = (ranges)->entries; r != NULL; r = r->next)
 
+/* Initialize memranges structure */
+void memranges_init_empty(struct memranges *ranges);
+
 /* Initialize and fill a memranges structure according to the
  * mask and match type for all memory resources. Tag each entry with the
  * specified type. */

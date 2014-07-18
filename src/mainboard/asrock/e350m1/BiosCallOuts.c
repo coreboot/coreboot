@@ -24,11 +24,6 @@
 #include "SB800.h"
 #include <stdlib.h>
 
-/* Should AGESA_GNB_PCIE_SLOT_RESET use agesa_NoopSuccess?
- *
- * Board is known to have some issues with integrated NIC and
- * might need implementation to drive some GPIOs.
- */
 
 static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *ConfigPtr);
 
@@ -100,6 +95,9 @@ static AGESA_STATUS board_BeforeDramInit (UINT32 Func, UINT32 Data, VOID *Config
   TempData8 |= Data8;
   Write64Mem8(GpioMmioAddr+SB_GPIO_REG179, TempData8);
 
+  /* this seems to be just copy-pasted from the AMD reference boards and needs
+   * some investigation
+   */
   switch(MemData->ParameterListPtr->DDR3Voltage){
     case VOLT1_35:
       Data8 =  Read64Mem8 (GpioMmioAddr+SB_GPIO_REG178);

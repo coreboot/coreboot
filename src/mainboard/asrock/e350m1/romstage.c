@@ -33,14 +33,14 @@
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
-#include <superio/winbond/common/winbond.h>
-#include <superio/winbond/w83627hf/w83627hf.h>
+#include <superio/nuvoton/common/nuvoton.h>
+#include <superio/nuvoton/nct5572d/nct5572d.h>
 #include "cpu/x86/lapic.h"
 #include <sb_cimx.h>
 #include "SBPLATFORM.h"
 
 
-#define SERIAL_DEV PNP_DEV(0x2e, W83627HF_SP1)
+#define SERIAL_DEV PNP_DEV(0x2e, NCT5572D_SP1)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -61,7 +61,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 		sb_Poweron_Init();
 
 		post_code(0x31);
-		winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
+		nuvoton_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 		console_init();
 	}
 

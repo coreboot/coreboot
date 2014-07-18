@@ -54,22 +54,15 @@ chip northbridge/amd/agesa/family14/root_complex
 					end # SM
 					device pci 14.1 on end # IDE	0x439c
 					device pci 14.2 on end # HDA	0x4383
-					device pci 14.3 on # LPC		0x439d
-						chip superio/winbond/w83627hf
-							device pnp 2e.0 off #  Floppy
-								io 0x60 = 0x3f0
-								irq 0x70 = 6
-								drq 0x74 = 2
-							end
-							device pnp 2e.1 off #  Parallel Port
-								io 0x60 = 0x378
-								irq 0x70 = 7
-							end
+					device pci 14.3 on # LPC
+						chip superio/nuvoton/nct5572d
+							device pnp 2e.0 off end #  FDC; not externally available on the NCT5572D, but on the die
+							device pnp 2e.1 off end #  LPT1; same as FDC
 							device pnp 2e.2 on #  Com1
 								io 0x60 = 0x3f8
 								irq 0x70 = 4
 							end
-							device pnp 2e.3 off #  Com2
+							device pnp 2e.3 off #  IR
 								io 0x60 = 0x2f8
 								irq 0x70 = 3
 							end
@@ -81,19 +74,24 @@ chip northbridge/amd/agesa/family14/root_complex
 							end
 							device pnp 2e.6 off #  CIR
 								io 0x60 = 0x100
+								irq 0x70 = 0
 							end
-							device pnp 2e.7 off #  GAME_MIDI_GIPO1
-								io 0x60 = 0x220
-								io 0x62 = 0x300
-								irq 0x70 = 9
-							end
-							device pnp 2e.8 off end #  GPIO2
-							device pnp 2e.9 off end #  GPIO3
+							device pnp 2e.7 off end #  GIPO689
+							device pnp 2e.8 off end #  WDT
+							device pnp 2e.9 off end #  GPIO235
 							device pnp 2e.a on end #  ACPI
 							device pnp 2e.b on #  HW Monitor
 								io 0x60 = 0x290
+								io 0x62 = 0x0000 #  SB-TSI currently not implemented
 								irq 0x70 = 5
 							end
+							device pnp 2e.c off end #  PECI
+							device pnp 2e.d off end #  SUSLED
+							device pnp 2e.e off #  CIRWKUP
+								io 0x60 = 0x0000
+								irq 0x70 = 0
+							end
+							device pnp 2e.f off end #  GPIO_PP_OD
 						end
 					end #LPC
 					device pci 14.4 on end # PCIB 0x4384, NOTE: PCI interface pins shared with GPIO {GPIO 35:0}

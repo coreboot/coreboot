@@ -30,6 +30,10 @@
 ## SUCH DAMAGE.
 ##
 
+# in addition to the dependency below, create the file if it doesn't exist
+# to silence stupid warnings about a file that would be generated anyway.
+$(if $(wildcard .xcompile),,$(eval $(shell util/xcompile/xcompile $(XGCCPATH) > .xcompile)))
+
 .xcompile: util/xcompile/xcompile
 	A=`mktemp $@.XXXXXX`; $< $(XGCCPATH) > $$A && mv $$A $@ 2> /dev/null
 

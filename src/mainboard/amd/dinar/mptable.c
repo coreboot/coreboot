@@ -29,8 +29,6 @@
 #include <cpu/amd/amdfam15.h>
 
 extern u8 bus_sb700[2];
-extern u32 sbdn_sb700;
-
 
 static void *smp_write_config_table(void *v)
 {
@@ -60,8 +58,7 @@ static void *smp_write_config_table(void *v)
 		apicid_sb700 = CONFIG_MAX_CPUS + 1;
 	apicid_rd890 = apicid_sb700 + 1;
 
-	//bus_sb700[0], TODO: why bus_sb700[0] use same value of bus_rd890[0] assigned by get_pci1234(), instead of 0.
-	dev = dev_find_slot(0, PCI_DEVFN(sbdn_sb700 + 0x14, 0));
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	if (dev) {
 		/* Set sb700 IOAPIC ID */
 		dword = pci_read_config32(dev, 0x74) & 0xfffffff0;

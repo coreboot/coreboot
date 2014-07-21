@@ -31,26 +31,6 @@
 */
 u8 bus_sb900[6];
 
-/*
-* Here you only need to set value in pci1234 for HT-IO that could be installed or not
-* You may need to preset pci1234 for HTIO board,
-* please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-*/
-u32 pci1234x[] = {
-	0x0000ff0,
-};
-
-/*
-* HT Chain device num, actually it is unit id base of every ht device in chain,
-* assume every chain only have 4 ht device at most
-*/
-u32 hcdnx[] = {
-	0x20202020,
-};
-
-
-u32 sbdn_sb900;
-
 void get_bus_conf(void)
 {
 	device_t dev;
@@ -58,23 +38,21 @@ void get_bus_conf(void)
 
 	printk(BIOS_DEBUG, "Mainboard - %s - %s - Start.\n", __FILE__, __func__);
 
-	sbdn_sb900 = 0;
 
 	memset(bus_sb900, 0, sizeof(bus_sb900));
 
 
-	bus_sb900[0] = (pci1234x[0] >> 16) & 0xff;
 
 	/* sb900 */
-	dev = dev_find_slot(bus_sb900[0], PCI_DEVFN(sbdn_sb900 + 0x14, 4));
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
 
 	if (dev) {
 		bus_sb900[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	}
 
 	for (i = 0; i < 4; i++) {
-		dev = dev_find_slot(bus_sb900[0],
-				  PCI_DEVFN(sbdn_sb900 + 0x14, i));
+		dev = dev_find_slot(0,
+				  PCI_DEVFN(0x14, i));
 		if (dev) {
 			bus_sb900[2 + i] =
 			    pci_read_config8(dev, PCI_SECONDARY_BUS);

@@ -30,7 +30,6 @@
  * and acpi_tables busnum is default.
  */
 u8 bus_sp5100[2];
-u32 sbdn_sp5100;
 
 void get_bus_conf(void);
 
@@ -39,7 +38,6 @@ void get_bus_conf(void)
 	device_t dev;
 	int i;
 
-	sbdn_sp5100 = 0;
 
 	for (i = 0; i < 0; i++) {
 		bus_sp5100[i] = 0;
@@ -48,7 +46,7 @@ void get_bus_conf(void)
 	bus_sp5100[0] = 0;
 
 	/* sp5100 */
-	dev = dev_find_slot(bus_sp5100[0], PCI_DEVFN(sbdn_sp5100 + 0x14, 4));
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
 
 	if (dev) {
 		bus_sp5100[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);

@@ -32,25 +32,6 @@
  */
 u8 bus_sb700[2];
 
-/*
- * Here you only need to set value in pci1234 for HT-IO that could be installed or not
- * You may need to preset pci1234 for HTIO board,
- * please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
- */
-u32 pci1234x[] = {
-	0x0000ff0,
-};
-
-/*
- * HT Chain device num, actually it is unit id base of every ht device in chain,
- * assume every chain only have 4 ht device at most
- */
-u32 hcdnx[] = {
-	0x20202020,
-};
-
-u32 sbdn_sb700;
-
 void get_bus_conf(void)
 {
 	device_t dev;
@@ -58,17 +39,14 @@ void get_bus_conf(void)
 
 	printk(BIOS_DEBUG, "Mainboard - Get_bus_conf.c - get_bus_conf - Start.\n");
 
-	sbdn_sb700 = 0;
 
 	for (i = 0; i < ARRAY_SIZE(bus_sb700); i++) {
 		bus_sb700[i] = 0;
 	}
 
 
-	bus_sb700[0] = (pci1234x[0] >> 16) & 0xff;
-
 	/* sb700 */
-	dev = dev_find_slot(bus_sb700[0], PCI_DEVFN(sbdn_sb700 + 0x14, 4));
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
 
 
 

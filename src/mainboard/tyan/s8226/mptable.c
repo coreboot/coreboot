@@ -29,8 +29,6 @@
 #include <cpu/amd/amdfam10_sysconf.h>
 
 extern u8 bus_sp5100[2];
-extern u32 sbdn_sr5650;
-extern u32 sbdn_sp5100;
 
 static void *smp_write_config_table(void *v)
 {
@@ -60,7 +58,7 @@ static void *smp_write_config_table(void *v)
 		apicid_sp5100 = CONFIG_MAX_CPUS + 1;
 	apicid_sr5650 = apicid_sp5100 + 1;
 
-	dev = dev_find_slot(0, PCI_DEVFN(sbdn_sp5100 + 0x14, 0));
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 0));
 	if (dev) {
 		/* Set SP5100 IOAPIC ID */
 		dword = pci_read_config32(dev, 0x74) & 0xfffffff0;

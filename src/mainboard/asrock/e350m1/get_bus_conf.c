@@ -33,16 +33,6 @@
 u8 bus_sb800[6];
 u32 apicid_sb800;
 
-/*
-* Here you only need to set value in pci1234 for HT-IO that could be installed or not
-* You may need to preset pci1234 for HTIO board,
-* please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
-*/
-u32 pci1234x[] = {
-  0x0000ff0,
-};
-
-u32 sbdn_sb800;
 
 void get_bus_conf(void)
 {
@@ -52,22 +42,19 @@ void get_bus_conf(void)
   int i;
 
 
-  sbdn_sb800 = 0;
 
   memset(bus_sb800, 0, sizeof(bus_sb800));
 
-//  bus_sb800[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-  bus_sb800[0] = (pci1234x[0] >> 16) & 0xff;
 
   /* sb800 */
-  dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, 4));
+  dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
 
   if (dev) {
     bus_sb800[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
   }
 
   for (i = 0; i < 4; i++) {
-    dev = dev_find_slot(bus_sb800[0], PCI_DEVFN(sbdn_sb800 + 0x14, i));
+    dev = dev_find_slot(0, PCI_DEVFN(0x14, i));
     if (dev) {
       bus_sb800[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
     }

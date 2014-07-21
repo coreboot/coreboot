@@ -35,17 +35,6 @@
 u8 bus_yangtze[6];
 u32 apicid_yangtze;
 
-/*
- * Here you only need to set value in pci1234 for HT-IO that could be installed or not
- * You may need to preset pci1234 for HTIO board,
- * please refer to src/northbridge/amd/amdk8/get_sblk_pci1234.c for detail
- */
-u32 pci1234x[] = {
-	0x0000ff0,
-};
-
-u32 sbdn_yangtze;
-
 
 void get_bus_conf(void)
 {
@@ -66,23 +55,20 @@ void get_bus_conf(void)
 	value &= ~(1 << 11);
 	pci_write_config32(dev, 0x60, value);
 
-	sbdn_yangtze = 0;
 
 	memset(bus_yangtze, 0, sizeof(bus_yangtze));
 
 
-	//  bus_yangtze[0] = (sysconf.pci1234[0] >> 16) & 0xff;
-	bus_yangtze[0] = (pci1234x[0] >> 16) & 0xff;
 
 	/* yangtze */
-	dev = dev_find_slot(bus_yangtze[0], PCI_DEVFN(sbdn_yangtze + 0x14, 4));
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
 
 	if (dev) {
 		bus_yangtze[1] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 	}
 
 	for (i = 0; i < 4; i++) {
-		dev = dev_find_slot(bus_yangtze[0], PCI_DEVFN(sbdn_yangtze + 0x14, i));
+		dev = dev_find_slot(0, PCI_DEVFN(0x14, i));
 		if (dev) {
 			bus_yangtze[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		}

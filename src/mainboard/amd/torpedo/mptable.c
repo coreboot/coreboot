@@ -33,7 +33,6 @@
 extern u8 bus_sb900[6];
 
 
-extern u32 sbdn_sb900;
 u32 apicid_sb900;
 
 u8 picr_data[] = {

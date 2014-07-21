@@ -30,7 +30,6 @@
 #define IO_APIC_ID    CONFIG_MAX_CPUS
 extern u8 bus_hudson[6];
 
-extern u32 sbdn_hudson;
 extern u32 apicid_hudson;
 
 u8 picr_data[] = {

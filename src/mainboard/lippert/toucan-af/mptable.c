@@ -31,7 +31,6 @@ extern u8 bus_sb800[6];
 
 extern u32 apicid_sb800;
 
-extern u32 sbdn_sb800;
 
 u8 intr_data[] = {
 	[0x00] = 0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17, /* INTA# - INTH# */

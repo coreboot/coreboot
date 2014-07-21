@@ -31,7 +31,6 @@
 #define IO_APIC_ID    CONFIG_MAX_CPUS
 extern u8 bus_yangtze[6];
 
-extern u32 sbdn_yangtze;
 extern u32 apicid_yangtze;
 
 u8 picr_data[0x54] = {

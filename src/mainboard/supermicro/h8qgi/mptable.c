@@ -32,12 +32,11 @@ extern u8 bus_sr5650[14];
 extern u8 bus_sp5100[2];
 extern u32 sbdn_sr5650;
 extern u32 sbdn_sp5100;
-extern int bus_isa;
-
 
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
+	int bus_isa;
 	u32 apicid_sp5100;
 	u32 apicid_sr5650;
 	device_t dev;

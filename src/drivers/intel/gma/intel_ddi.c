@@ -186,7 +186,7 @@ u32 intel_ddi_calc_transcoder_flags(u32 pipe_bpp,
 		temp |= TRANS_DDI_BPC_12;
 		break;
 	default:
-		printk(BIOS_ERR, "Invalid pipe_bpp: %d, *** Initialization will not succeed *** \n", pipe_bpp);
+		printk(BIOS_ERR, "Invalid pipe_bpp: %d, *** Initialization will not succeed ***\n", pipe_bpp);
 	}
 
 	if (port == PORT_A) {

@@ -1687,7 +1687,7 @@ intel_dp_complete_link_train(struct intel_dp *intel_dp)
 
 		/* Try 5 times, then try clock recovery if that fails */
 		if (tries > 5) {
-			printk(BIOS_SPEW, "%s: tries > 5,recovering. \n",
+			printk(BIOS_SPEW, "%s: tries > 5,recovering.\n",
 			       __func__);
 			intel_dp_link_down(intel_dp);
 			intel_dp_start_link_train(intel_dp);

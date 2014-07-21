@@ -217,7 +217,7 @@ static void w83795_init(w83795_fan_mode_t mode, u8 dts_src)
 	/* Temperature ReadOut */
 	for (i = 0; i < 9; i++) {
 		val = w83795_read(W83795_REG_DTS(i));
-		printk(BIOS_DEBUG, "DTS%x ReadOut=%x \n", i, val);
+		printk(BIOS_DEBUG, "DTS%x ReadOut=%x\n", i, val);
 	}
 }
 

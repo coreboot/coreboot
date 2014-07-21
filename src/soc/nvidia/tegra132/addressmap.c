@@ -27,6 +27,9 @@
 #include "mc.h"
 #include "sdram.h"
 
+static uintptr_t tz_base_mib;
+static const size_t tz_size_mib = CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB;
+
 /* returns total amount of DRAM (in MB) from memory controller registers */
 int sdram_size_mb(void)
 {
@@ -71,13 +74,8 @@ void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib)
 
 	switch (id) {
 	case CARVEOUT_TZ:
-		/* AVP does not have access to the TZ carveout registers. */
-		if (context_avp())
-			return;
-		carveout_from_regs(base_mib, size_mib,
-					read32(&mc->security_cfg0),
-					0,
-					read32(&mc->security_cfg1));
+		*base_mib = tz_base_mib;
+		*size_mib = tz_size_mib;
 		break;
 	case CARVEOUT_SEC:
 		carveout_from_regs(base_mib, size_mib,
@@ -102,7 +100,8 @@ void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib)
 	}
 }
 
-static void memory_in_range(uintptr_t *base_mib, uintptr_t *end_mib)
+static void memory_in_range(uintptr_t *base_mib, uintptr_t *end_mib,
+				int ignore_tz)
 {
 	uintptr_t base;
 	uintptr_t end;
@@ -127,6 +126,9 @@ static void memory_in_range(uintptr_t *base_mib, uintptr_t *end_mib)
 		uintptr_t carveout_base;
 		uintptr_t carveout_end;
 		size_t carveout_size;
+
+		if (i == CARVEOUT_TZ && ignore_tz)
+			continue;
 
 		carveout_range(i, &carveout_base, &carveout_size);
 
@@ -155,14 +157,14 @@ void memory_in_range_below_4gb(uintptr_t *base_mib, uintptr_t *end_mib)
 {
 	*base_mib = 0;
 	*end_mib = 4096;
-	memory_in_range(base_mib, end_mib);
+	memory_in_range(base_mib, end_mib, 0);
 }
 
 void memory_in_range_above_4gb(uintptr_t *base_mib, uintptr_t *end_mib)
 {
 	*base_mib = 4096;
 	*end_mib = ~0UL;
-	memory_in_range(base_mib, end_mib);
+	memory_in_range(base_mib, end_mib, 0);
 }
 
 uintptr_t framebuffer_attributes(size_t *size_mib)
@@ -173,16 +175,33 @@ uintptr_t framebuffer_attributes(size_t *size_mib)
 	/* Place the framebuffer just below the 32-bit addressable limit. */
 	memory_in_range_below_4gb(&begin, &end);
 
-	/*
-	 * Need to take into account that the Trust Zone region is not able to
-	 * be read by the AVP. The Trust Zone region will live just below the
-	 * rest of the carveout regions.
-	 */
-	if (context_avp())
-		end -= CONFIG_TRUSTZONE_CARVEOUT_SIZE_MB;
-
 	*size_mib = FB_SIZE_MB;
 	end -= *size_mib;
 
 	return end;
+}
+
+void trustzone_region_init(void)
+{
+	struct tegra_mc_regs * const mc = (void *)(uintptr_t)TEGRA_MC_BASE;
+	uintptr_t end = 4096;
+
+	/* Already has been initialized. */
+	if (tz_size_mib != 0 && tz_base_mib != 0)
+		return;
+
+	/*
+	 * Get memory layout below 4GiB ignoring the TZ carveout because
+	 * that's the one to initialize.
+	 */
+	memory_in_range(&tz_base_mib, &end, 1);
+	tz_base_mib = end - tz_size_mib;
+
+	/* AVP cannot set the TZ registers proper as it is always non-secure. */
+	if (context_avp())
+		return;
+
+	/* Set the carveout region. */
+	write32(tz_base_mib << 20, &mc->security_cfg0);
+	write32(tz_size_mib, &mc->security_cfg1);
 }

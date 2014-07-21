@@ -99,6 +99,15 @@ enum {
 /* Provided the careout id, obtain the base and size in 1MiB units. */
 void carveout_range(int id, uintptr_t *base_mib, size_t *size_mib);
 
+/*
+ * There are complications accessing the Trust Zone carveout region. The
+ * AVP cannot access these registers and the CPU can't access this register
+ * as a non-secure access. When the page tables live in non-secure memory
+ * these registers cannot be accessed either. Thus, this function handles
+ * both the AVP case and non-secured access case by keeping global state.
+ */
+void trustzone_region_init(void);
+
 /* Return pointer and size in 1MiB units. */
 uintptr_t framebuffer_attributes(size_t *size_mib);
 

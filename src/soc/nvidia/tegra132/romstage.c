@@ -24,6 +24,7 @@
 #include <console/console.h>
 #include <arch/exception.h>
 
+#include <soc/addressmap.h>
 #include <soc/sdram_configs.h>
 #include "sdram.h"
 #include "ccplex.h"
@@ -45,6 +46,16 @@ void romstage(void)
 	sdram_init(get_sdram_config());
 	printk(BIOS_INFO, "T132 romstage: sdram_init done\n");
 #endif
+
+	/*
+	 * Trust Zone needs to be initialized after the DRAM initialization
+	 * because carveout registers are programmed during DRAM init.
+	 * cbmem_initialize() is dependent on the Trust Zone region
+	 * initalization because CBMEM lives right below the Trust Zone which
+	 * needs to be properly identified.
+	 */
+	trustzone_region_init();
+
 	cbmem_initialize();
 
 	ccplex_cpu_prepare();

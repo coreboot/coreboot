@@ -34,8 +34,8 @@
  */
 
 #include <stdlib.h>
-#include  "AGESA.h"
-#include  "CommonReturns.h"
+#include "AGESA.h"
+#include "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 

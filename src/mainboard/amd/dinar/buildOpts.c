@@ -33,8 +33,8 @@
  * @e \$Revision: 6049 $   @e \$Date: 2008-05-14 01:58:02 -0500 (Wed, 14 May 2008) $
  */
 #include <stdlib.h>
-#include  "AGESA.h"
-#include  "CommonReturns.h"
+#include "AGESA.h"
+#include "CommonReturns.h"
 #include "Filecode.h"
 #define FILECODE PLATFORM_SPECIFIC_OPTIONS_FILECODE
 //#define OPTION_HW_DQS_REC_EN_TRAINING TRUE

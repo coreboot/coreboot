@@ -117,7 +117,7 @@ static void enable_mainboard_devices(void)
 	pci_write_config8(dev, 0x5b, 0x01);
 #endif
 
-	print_debug("In enable_mainboard_devices \n");
+	print_debug("In enable_mainboard_devices\n");
 
 	/* Enable P2P Bridge Header for external PCI bus. */
 	dev = pci_locate_device(PCI_ID(0x1106, 0xa353), 0);
@@ -634,7 +634,7 @@ void main(unsigned long bist)
 		);
 #endif
 		/* This can have function call, because no variable used before this. */
-		print_debug("Copy memory to high memory to protect s3 wakeup vector code \n");
+		print_debug("Copy memory to high memory to protect s3 wakeup vector code\n");
 		memcpy((unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 -
 				 0x100000), (unsigned char *)0, 0xa0000);
 		memcpy((unsigned char *)((*(u32 *) WAKE_MEM_INFO) - 64 * 1024 -

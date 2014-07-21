@@ -98,13 +98,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         }
 
 //pci bridge
-        printk(BIOS_DEBUG, "setting Onboard AMD Southbridge \n");
+        printk(BIOS_DEBUG, "setting Onboard AMD Southbridge\n");
         static const unsigned char slotIrqs_1_4[4] = { 3, 5, 10, 11 };
         pci_assign_irqs(m->bus_8111_0, sysconf.sbdn+1, slotIrqs_1_4);
 	write_pirq_info(pirq_info, m->bus_8111_0, ((sysconf.sbdn+1)<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++; slot_num++;
 
-        printk(BIOS_DEBUG, "setting Onboard AMD USB \n");
+        printk(BIOS_DEBUG, "setting Onboard AMD USB\n");
         static const unsigned char slotIrqs_8111_1_0[4] = { 0, 0, 0, 11};
         pci_assign_irqs(m->bus_8111_1, 0, slotIrqs_8111_1_0);
         write_pirq_info(pirq_info, m->bus_8111_1,0, 0, 0, 0, 0, 0, 0, 0x4, 0xdef8, 0, 0);

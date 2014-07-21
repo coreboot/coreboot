@@ -101,7 +101,7 @@ void main(unsigned long bist)
 	print_debug_hex32(msr.hi);
 	print_debug(":");
 	print_debug_hex32(msr.lo);
-	print_debug(" \n");
+	print_debug("\n");
 
 	msr = rdmsr(MC_CF1017_DATA);
 	print_debug("MC_CF1017_DATA: ");
@@ -110,7 +110,7 @@ void main(unsigned long bist)
 	print_debug_hex32(msr.hi);
 	print_debug(":");
 	print_debug_hex32(msr.lo);
-	print_debug(" \n");
+	print_debug("\n");
 
 	msr = rdmsr(MC_CF8F_DATA);
 	print_debug("MC_CF8F_DATA: ");
@@ -120,6 +120,6 @@ void main(unsigned long bist)
 	print_debug(":");
 	print_debug_hex32(msr.lo);
 	msr = rdmsr(MC_CF8F_DATA);
-	print_debug(" \n");
+	print_debug("\n");
 #endif
 }

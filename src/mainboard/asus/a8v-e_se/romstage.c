@@ -64,7 +64,7 @@ void soft_reset(void)
 	uint8_t tmp;
 
 	set_bios_reset();
-	print_debug("soft reset \n");
+	print_debug("soft reset\n");
 
 	/* PCI reset */
 	tmp = pci_read_config8(PCI_DEV(0, 0x11, 0), 0x4f);

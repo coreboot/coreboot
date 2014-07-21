@@ -217,7 +217,7 @@ static void reboot_if_hotswap(void)
 	printk(BIOS_DEBUG, "Looking for bad PCIX MHz input\n");
 	dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x02,0));
 	if (!dev)
-		printk(BIOS_DEBUG, "Couldn't find %02x:02.0 \n", bus_chain_0);
+		printk(BIOS_DEBUG, "Couldn't find %02x:02.0\n", bus_chain_0);
 	else {
 		data = pci_read_config32(dev, 0xa0);
 		if(!(((data>>16)&0x03)==0x03)) {
@@ -228,7 +228,7 @@ static void reboot_if_hotswap(void)
 	printk(BIOS_DEBUG, "Looking for bad Hot Swap Enable\n");
 	dev = dev_find_slot(bus_chain_0, PCI_DEVFN(0x01,0));
 	if (!dev)
-		printk(BIOS_DEBUG, "Couldn't find %02x:01.0 \n", bus_chain_0);
+		printk(BIOS_DEBUG, "Couldn't find %02x:01.0\n", bus_chain_0);
 	else {
 		data = pci_read_config32(dev, 0x48);
 		if(data & 0x0c) {

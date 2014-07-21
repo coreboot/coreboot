@@ -251,7 +251,7 @@ CONST AP_MTRR_SETTINGS ROMDATA TrinityApMtrrSettingsList[] =
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &TrinityApMtrrSettingsList
 
-//#include  "VirgoInstall.h"
+//#include "VirgoInstall.h"
 
 /*  Include the files that instantiate the configuration definitions.  */
 #include "cpuRegisters.h"

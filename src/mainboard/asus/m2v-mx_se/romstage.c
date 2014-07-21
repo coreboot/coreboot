@@ -91,7 +91,7 @@ void soft_reset(void)
 	uint8_t tmp;
 
 	set_bios_reset();
-	print_debug("soft reset \n");
+	print_debug("soft reset\n");
 
 	/* PCI reset */
 	tmp = pci_read_config8(PCI_DEV(0, 0x11, 0), 0x4f);
@@ -134,7 +134,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	console_init();
 	enable_rom_decode();
 
-	printk(BIOS_INFO, "now booting... \n");
+	printk(BIOS_INFO, "now booting...\n");
 
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);

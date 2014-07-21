@@ -1007,7 +1007,7 @@ static void agesa_critical(EVENT_PARAMS *event)
 			break;
 
 		case HT_EVENT_COH_PROCESSOR_TYPE_MIX:
-			printk(BIOS_DEBUG, "Socket %x Link %x TotalSockets %x, HT_EVENT_COH_PROCESSOR_TYPE_MIX \n",
+			printk(BIOS_DEBUG, "Socket %x Link %x TotalSockets %x, HT_EVENT_COH_PROCESSOR_TYPE_MIX\n",
 					(unsigned int)event->DataParam1,
 					(unsigned int)event->DataParam2,
 					(unsigned int)event->DataParam3);
@@ -1191,6 +1191,6 @@ AGESA_STATUS agesawrapper_amdreadeventlog(UINT8 HeapStatus)
 		Status = AmdReadEventLog(&AmdEventParams);
 	}
 
-	printk(BIOS_DEBUG, "exit %s \n", __func__);
+	printk(BIOS_DEBUG, "exit %s\n", __func__);
 	return Status;
 }

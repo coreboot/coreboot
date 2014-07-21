@@ -197,13 +197,13 @@ unsigned long write_pirq_routing_table(unsigned long addr)
                 }
         }
 
-        printk(BIOS_DEBUG, "setting Onboard AMD Southbridge \n");
+        printk(BIOS_DEBUG, "setting Onboard AMD Southbridge\n");
         static const unsigned char slotIrqs_1_4[4] = { 5, 9, 11, 10 };
         pci_assign_irqs(bus_chain_0, 4, slotIrqs_1_4);
         write_pirq_info(pirq_info, bus_chain_0,(4<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0, 0);
 	pirq_info++; slot_num++;
 
-        printk(BIOS_DEBUG, "setting Onboard AMD USB \n");
+        printk(BIOS_DEBUG, "setting Onboard AMD USB\n");
         static const unsigned char slotIrqs_8111_1_0[4] = { 0, 0, 0, 10 };
         pci_assign_irqs(bus_8111_1, 0, slotIrqs_8111_1_0);
         write_pirq_info(pirq_info, bus_8111_1,0, 0, 0, 0, 0, 0, 0, 0x4, 0xdef8, 0, 0);
@@ -239,7 +239,7 @@ unsigned long write_pirq_routing_table(unsigned long addr)
         write_pirq_info(pirq_info, bus_8131_1,(2<<3)|0, 0x3, 0xdef8, 0x4, 0xdef8, 0x1, 0xdef8, 0x2, 0xdef8, 0x4, 0);
 	pirq_info++; slot_num++;
 
-        printk(BIOS_DEBUG, "setting Slot 5 \n");
+        printk(BIOS_DEBUG, "setting Slot 5\n");
         static const unsigned char slotIrqs_8111_1_4[4] = { 5, 9, 11, 10 };
         pci_assign_irqs(bus_8111_1, 4, slotIrqs_8111_1_4);
         write_pirq_info(pirq_info, bus_8111_1,(4<<3)|0, 0x1, 0xdef8, 0x2, 0xdef8, 0x3, 0xdef8, 0x4, 0xdef8, 0x5, 0);

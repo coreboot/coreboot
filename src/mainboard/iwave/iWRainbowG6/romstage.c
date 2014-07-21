@@ -291,7 +291,7 @@ static void sch_shadow_CMC(void)
 
 	/* FIXME: proper dest, proper src, and wbinvd, too */
 	memcpy((void *)CMC_SHADOW, (void *)0xfffd0000, 64 * 1024);
-	// __asm__ volatile ("wbinvd \n"
+	// __asm__ volatile ("wbinvd\n"
 	//);
 	printk(BIOS_DEBUG, "copy done ");
 	memcpy((void *)0x3f5f0000, (void *)0x3faf0000, 64 * 1024);

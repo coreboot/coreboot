@@ -115,10 +115,10 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	// Load MPB
 	val = cpuid_eax(1);
-	printk(BIOS_DEBUG, "BSP Family_Model: %08x \n", val);
+	printk(BIOS_DEBUG, "BSP Family_Model: %08x\n", val);
 	printk(BIOS_DEBUG, "*sysinfo range: [%p,%p]\n",sysinfo,sysinfo+1);
-	printk(BIOS_DEBUG, "bsp_apicid = %02x \n", bsp_apicid);
-	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx \n", cpu_init_detectedx);
+	printk(BIOS_DEBUG, "bsp_apicid = %02x\n", bsp_apicid);
+	printk(BIOS_DEBUG, "cpu_init_detectedx = %08lx\n", cpu_init_detectedx);
 
 	/* Setup sysinfo defaults */
 	set_sysinfo_in_ram(0);
@@ -163,7 +163,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 #if CONFIG_SET_FIDVID
 	msr = rdmsr(0xc0010071);
-	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "\nBegin FIDVID MSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 	post_code(0x39);
 
 	if (!warm_reset_detect(0)) {			// BSP is node 0
@@ -176,7 +176,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 	/* show final fid and vid */
 	msr=rdmsr(0xc0010071);
-	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x \n", msr.hi, msr.lo);
+	printk(BIOS_DEBUG, "End FIDVIDMSR 0xc0010071 0x%08x 0x%08x\n", msr.hi, msr.lo);
 #endif
 
 	rs780_htinit();

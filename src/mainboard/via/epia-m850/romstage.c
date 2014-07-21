@@ -55,7 +55,7 @@ void main(unsigned long bist)
 	/* Serial console is easy to take care of */
 	fintek_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 	console_init();
-	print_debug("Console initialized. \n");
+	print_debug("Console initialized.\n");
 
 	vx900_cpu_bus_interface_setup();
 

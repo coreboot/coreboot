@@ -124,7 +124,7 @@ static void *smp_write_config_table(void *v)
 	printk(BIOS_DEBUG, "MPTABLE_SATA: bus_id:%d irq:%d apic_id:%d pin:%d\n",m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0xb);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_1, (0x0e<<2)|0, m->apicid_bcm5785[0], 0xb);
 	//USB
-	printk(BIOS_DEBUG, "sysconf.sbdn: %d on bus: %x \n",sysconf.sbdn, m->bus_bcm5785_0);
+	printk(BIOS_DEBUG, "sysconf.sbdn: %d on bus: %x\n",sysconf.sbdn, m->bus_bcm5785_0);
 	smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, m->bus_bcm5785_0, (0x03<<2)|0, m->apicid_bcm5785[0], 0xa);
 
 	//VGA

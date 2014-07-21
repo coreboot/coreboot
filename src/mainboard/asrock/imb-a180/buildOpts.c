@@ -250,7 +250,7 @@ CONST AP_MTRR_SETTINGS ROMDATA KabiniApMtrrSettingsList[] =
 
 #define BLDCFG_AP_MTRR_SETTINGS_LIST &KabiniApMtrrSettingsList
 
-//#include  "KeralaInstall.h"
+//#include "KeralaInstall.h"
 
 /*  Include the files that instantiate the configuration definitions.  */
 #include "cpuRegisters.h"

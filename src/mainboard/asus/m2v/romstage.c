@@ -234,7 +234,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 	m2v_it8712f_gpio_init();
 	ite_enable_3vsbsw(GPIO_DEV);
 
-	printk(BIOS_INFO, "now booting... \n");
+	printk(BIOS_INFO, "now booting...\n");
 
 	if (bist == 0)
 		bsp_apicid = init_cpus(cpu_init_detectedx, sysinfo);

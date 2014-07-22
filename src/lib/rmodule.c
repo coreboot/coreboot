@@ -152,17 +152,17 @@ static int rmodule_relocate(const struct rmodule *module)
 	reloc = module->relocations;
 	num_relocations = rmodule_number_relocations(module);
 
-	printk(BIOS_DEBUG, "Processing %zu relocs. Offset value of 0x%08x\n",
-	       num_relocations, adjustment);
+	printk(BIOS_DEBUG, "Processing %zu relocs. Offset value of 0x%08lx\n",
+	       num_relocations, (unsigned long)adjustment);
 
 	while (num_relocations > 0) {
 		uintptr_t *adjust_loc;
 
 		/* If the adjustment location is non-NULL adjust it. */
 		adjust_loc = rmodule_load_addr(module, *reloc);
-		printk(PK_ADJ_LEVEL, "Adjusting %p: 0x%08x -> 0x%08x\n",
-			       adjust_loc, *adjust_loc,
-			       *adjust_loc + adjustment);
+		printk(PK_ADJ_LEVEL, "Adjusting %p: 0x%08lx -> 0x%08lx\n",
+		       adjust_loc, (unsigned long) *adjust_loc,
+		       (unsigned long) *adjust_loc + adjustment);
 			*adjust_loc += adjustment;
 
 		reloc++;

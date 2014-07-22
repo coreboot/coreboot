@@ -43,6 +43,20 @@ static void agesawrapper_post_device(void *unused)
 	/* Preparation for write_tables(). */
 	get_bus_conf();
 
+#if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY_16KB)
+	device_t dev;
+	u32 value;
+	dev = dev_find_slot(0, PCI_DEVFN(0, 0)); /* clear IoapicSbFeatureEn */
+	pci_write_config32(dev, 0xF8, 0);
+	pci_write_config32(dev, 0xFC, 5); /* TODO: move it to dsdt.asl */
+
+	/* disable No Snoop */
+	dev = dev_find_slot(0, PCI_DEVFN(1, 1));
+	value = pci_read_config32(dev, 0x60);
+	value &= ~(1 << 11);
+	pci_write_config32(dev, 0x60, value);
+#endif
+
 #if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
 	/* AMD AGESA does not enable thermal zone, so we enable it here. */
 	enable_imc_thermal_zone();

@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef  _AMD_SBPLATFORM_H_
-#define  _AMD_SBPLATFORM_H_
+#ifndef _AMD_SBPLATFORM_H_
+#define _AMD_SBPLATFORM_H_
 
 #include <stddef.h>
 
@@ -107,48 +107,48 @@ typedef union _PCI_ADDR {
  *  FusionMsgCMultiCore    CIMx take over   User (Setup Option) User (Setup Option)               Disable
  *   FusionMsgCStage       CIMx take over   User (Setup Option) User (Setup Option)               Disable
  */
-#define SB_CIMx_PARAMETER  0x02
+#define SB_CIMx_PARAMETER		0x02
 
 // Generic
-#define cimSpreadSpectrumDefault        TRUE
+#define cimSpreadSpectrumDefault	TRUE
 #define cimSpreadSpectrumTypeDefault	0x00      // Normal
-#define cimHpetTimerDefault             TRUE
-#define cimHpetMsiDisDefault            FALSE     // Enable
-#define cimIrConfigDefault              0x00      // Disable
-#define cimSpiFastReadEnableDefault     0x00      // Disable
-#define cimSpiFastReadSpeedDefault      0x00      // NULL
+#define cimHpetTimerDefault		TRUE
+#define cimHpetMsiDisDefault		FALSE     // Enable
+#define cimIrConfigDefault		0x00      // Disable
+#define cimSpiFastReadEnableDefault	0x00      // Disable
+#define cimSpiFastReadSpeedDefault	0x00      // NULL
 // GPP/AB Controller
-#define cimNbSbGen2Default              TRUE
-#define cimAlinkPhyPllPowerDownDefault  TRUE
-#define cimResetCpuOnSyncFloodDefault   TRUE
-#define cimGppGen2Default               FALSE
-#define cimGppMemWrImproveDefault       TRUE
-#define cimGppPortAspmDefault           FALSE
-#define cimGppLaneReversalDefault       FALSE
-#define cimGppPhyPllPowerDownDefault    TRUE
+#define cimNbSbGen2Default		TRUE
+#define cimAlinkPhyPllPowerDownDefault	TRUE
+#define cimResetCpuOnSyncFloodDefault	TRUE
+#define cimGppGen2Default		FALSE
+#define cimGppMemWrImproveDefault	TRUE
+#define cimGppPortAspmDefault		FALSE
+#define cimGppLaneReversalDefault	FALSE
+#define cimGppPhyPllPowerDownDefault	TRUE
 // USB Controller
-#define cimUsbPhyPowerDownDefault       FALSE
+#define cimUsbPhyPowerDownDefault	FALSE
 // GEC Controller
-#define cimSBGecDebugBusDefault         FALSE
-#define cimSBGecPwrDefault              0x03
+#define cimSBGecDebugBusDefault		FALSE
+#define cimSBGecPwrDefault		0x03
 // Sata Controller
-#define cimSataSetMaxGen2Default        0x00
-#define cimSATARefClkSelDefault         0x10
-#define cimSATARefDivSelDefault         0x80
-#define cimSataAggrLinkPmCapDefault     TRUE
-#define cimSataPortMultCapDefault       TRUE
-#define cimSataPscCapDefault            0x00      // Enable
-#define cimSataSscCapDefault            0x00      // Enable
-#define cimSataFisBasedSwitchingDefault FALSE
-#define cimSataCccSupportDefault        FALSE
-#define cimSataClkAutoOffDefault        FALSE
-#define cimNativepciesupportDefault     FALSE
+#define cimSataSetMaxGen2Default	0x00
+#define cimSATARefClkSelDefault		0x10
+#define cimSATARefDivSelDefault		0x80
+#define cimSataAggrLinkPmCapDefault	TRUE
+#define cimSataPortMultCapDefault	TRUE
+#define cimSataPscCapDefault		0x00      // Enable
+#define cimSataSscCapDefault		0x00      // Enable
+#define cimSataFisBasedSwitchingDefault	FALSE
+#define cimSataCccSupportDefault	FALSE
+#define cimSataClkAutoOffDefault	FALSE
+#define cimNativepciesupportDefault	FALSE
 // Fusion Related
-#define cimAcDcMsgDefault               FALSE
-#define cimTimerTickTrackDefault        FALSE
-#define cimClockInterruptTagDefault     FALSE
-#define cimOhciTrafficHandingDefault    FALSE
-#define cimEhciTrafficHandingDefault    FALSE
-#define cimFusionMsgCMultiCoreDefault   FALSE
-#define cimFusionMsgCStageDefault       FALSE
+#define cimAcDcMsgDefault		FALSE
+#define cimTimerTickTrackDefault	FALSE
+#define cimClockInterruptTagDefault	FALSE
+#define cimOhciTrafficHandingDefault	FALSE
+#define cimEhciTrafficHandingDefault	FALSE
+#define cimFusionMsgCMultiCoreDefault	FALSE
+#define cimFusionMsgCStageDefault	FALSE
 #endif // _AMD_SBPLATFORM_H_

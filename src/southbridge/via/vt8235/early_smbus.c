@@ -1,18 +1,18 @@
-#define SMBUS_IO_BASE 0xf00
+#define SMBUS_IO_BASE	0xf00
 
-#define SMBHSTSTAT 0x0
-#define SMBSLVSTAT 0x1
-#define SMBHSTCTL  0x2
-#define SMBHSTCMD  0x3
-#define SMBXMITADD 0x4
-#define SMBHSTDAT0 0x5
-#define SMBHSTDAT1 0x6
-#define SMBBLKDAT  0x7
-#define SMBSLVCTL  0x8
-#define SMBTRNSADD 0x9
-#define SMBSLVDATA 0xa
-#define SMLINK_PIN_CTL 0xe
-#define SMBUS_PIN_CTL  0xf
+#define SMBHSTSTAT	0x0
+#define SMBSLVSTAT	0x1
+#define SMBHSTCTL	0x2
+#define SMBHSTCMD	0x3
+#define SMBXMITADD	0x4
+#define SMBHSTDAT0	0x5
+#define SMBHSTDAT1	0x6
+#define SMBBLKDAT	0x7
+#define SMBSLVCTL	0x8
+#define SMBTRNSADD	0x9
+#define SMBSLVDATA	0xa
+#define SMLINK_PIN_CTL	0xe
+#define SMBUS_PIN_CTL	0xf
 
 /* Define register settings */
 #define HOST_RESET 0xff
@@ -21,8 +21,8 @@
 
 #define SMBUS_TIMEOUT (100*1000*10)
 
-#define  I2C_TRANS_CMD          0x40
-#define  CLOCK_SLAVE_ADDRESS    0x69
+#define I2C_TRANS_CMD		0x40
+#define CLOCK_SLAVE_ADDRESS	0x69
 
 static void enable_smbus(void)
 {
@@ -243,6 +243,5 @@ int smbus_read_byte(unsigned device, unsigned address, unsigned char *result)
 	*result = byte;
 	return host_status_register != 0x02;
 }
-
 
 #endif

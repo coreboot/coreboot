@@ -31,17 +31,12 @@
 #include <sb_cimx.h>
 #endif
 
-void get_bus_conf(void);
-
 static void agesawrapper_post_device(void *unused)
 {
 	if (acpi_is_wakeup_s3())
 		return;
 
 	AGESAWRAPPER(amdinitlate);
-
-	/* Preparation for write_tables(). */
-	get_bus_conf();
 
 #if IS_ENABLED(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY_16KB)
 	device_t dev;

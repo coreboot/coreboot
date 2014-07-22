@@ -19,19 +19,19 @@
 
 
 #define SERVER		0
-#define DESKTOP	1
+#define DESKTOP		1
 //#define MOBILE	2
 #define REV_F		0
 #define REV_DR		1
-#define REV_FDR	2
+#define REV_FDR		2
 
 
 /*----------------------------------------------------------------------------
 COMMENT OUT ALL BUT 1
 ----------------------------------------------------------------------------*/
-//#define    BUILD_VERSION   REV_F	  /*BIOS supports rev F only*/
-//#define    BUILD_VERSION   REV_DR	  /*BIOS supports rev 10 only*/
-//#define    BUILD_VERSION   REV_FDR	  /*BIOS supports both rev F and 10*/
+//#define BUILD_VERSION   REV_F		/*BIOS supports rev F only*/
+//#define BUILD_VERSION   REV_DR	/*BIOS supports rev 10 only*/
+//#define BUILD_VERSION   REV_FDR	/*BIOS supports both rev F and 10*/
 
 /*----------------------------------------------------------------------------
 COMMENT OUT ALL BUT 1

@@ -294,6 +294,6 @@
 
 #define TSC_FREQ_SEL_MASK (1 << TSC_FREQ_SEL_SHIFT)
 
-#define  WAIT_PSTATE_TIMEOUT 80000000  /* 0.1 s , unit : 1.25 ns */
+#define WAIT_PSTATE_TIMEOUT 80000000  /* 0.1 s , unit : 1.25 ns */
 
 #endif

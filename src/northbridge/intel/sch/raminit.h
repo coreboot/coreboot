@@ -25,51 +25,51 @@
  **/
 #define BIT(x)                        (1<<x)
 
-#define   EBP_TRP_MASK               (BIT(1) | BIT(0))
-#define   TRP_LOW                    3h
-#define   TRP_HIGH                   5h
-#define   EBP_TRP_OFFSET             0           /* Start of TRP field in EBP*/
-#define   EBP_TRCD_MASK              (BIT(3) | BIT(2))
-#define   TRCD_LOW                   3h
-#define   TRCD_HIGH                  5h
-#define   EBP_TRCD_OFFSET            2           /* Start of TRCD field in EBP*/
-#define   EBP_TCL_MASK               (BIT(5) | BIT(4))
-#define   TCL_LOW                    3           /* Minimum supported CL*/
-#define   TCL_HIGH                   5           /* Maximum supported CL*/
-#define   EBP_TCL_OFFSET             4           /* EBP bit( )for CL mask*/
-#define   EBP_DDR2_CL_5_0            BIT(5)        /* CL 5.0 = 10b*/
-#define   EBP_DDR2_CL_4_0            BIT(4)        /* CL 4.0 = 01b*/
-#define   EBP_DDR2_CL_3_0            00h         /* CL 3.0 = 00b*/
-#define   EBP_FREQ_MASK              (BIT(10)| BIT(9))
-#define   EBP_FREQ_OFFSET            9           /* EBP bit( )for frequency mask*/
-#define   EBP_FREQ_400               0           /* 400MHz EBP[10:9] = 00b*/
-#define   EBP_FREQ_533               BIT(9)        /* 533MHz EBP[10:9] = 01b*/
-#define   EBP_REFRESH_MASK           (BIT(12)| BIT(11))
-#define   EBP_REFRESH_OFFSET         11          /* Bit offset of refresh field*/
-#define   EBP_REF_DIS                00h         /* Mask for refresh disabled*/
-#define   EBP_REF_128CLK             BIT(11)       /* Mask for 128 clks referesh rate*/
-#define   EBP_REF_3_9                BIT(12)       /* Mask for 3.9us refresh rate*/
-#define   EBP_REF_7_8                (BIT(12)| BIT(11))/* Mask for 7.8us refresh rate*/
-#define   EBP_WIDTH_MASK             BIT(15)
-#define   EBP_WIDTH_OFFSET           15          /* Bit offset of EBP width field*/
-#define   EBP_SOCKET_X16             BIT(15)       /* Bit mask of x8/x16 bit*/
-#define   EBP_DENSITY_MASK           (BIT(17)| BIT(16))
-#define   EBP_DENSITY_OFFSET         16
-#define   EBP_DENSITY_512            BIT(16)       /* 512Mbit density*/
-#define   EBP_DENSITY_1024           BIT(17)       /* 1024Mbit density*/
-#define   EBP_DENSITY_2048           (BIT(17)| BIT(16))/* 2048Mbit density*/
-#define   EBP_RANKS_MASK             BIT(18)
-#define   EBP_RANKS_OFFSET           18
-#define   EBP_RANKS                  BIT(18)       /* Bit offset of # of ranks bit*/
-#define   EBP_PACKAGE_TYPE             BIT(19)       /* Package type (stacked or not)*/
-#define   EBP_2X_MASK                  BIT(20)
-#define   EBP_2X_OFFSET              20          /* Bit offset of ebp 2x refresh field*/
-#define   EBP_2X_AUTO_REFRESH        BIT(20)       /* Bit mask of 2x refresh field*/
-#define   EBP_DRAM_PARM_MASK           BIT(21)
-#define   EBP_DRAM_PARM_OFFSET       21
-#define   EBP_DRAM_PARM_SPD          0           /* Use SPD to get DRAM parameters*/
-#define   EBP_DRAM_PARM_CMC          BIT(21)       /* DRAM parameters in CMC binary*/
-#define   EBP_BOOT_PATH                BIT(31)
+#define EBP_TRP_MASK               (BIT(1) | BIT(0))
+#define TRP_LOW                    3h
+#define TRP_HIGH                   5h
+#define EBP_TRP_OFFSET             0           /* Start of TRP field in EBP*/
+#define EBP_TRCD_MASK              (BIT(3) | BIT(2))
+#define TRCD_LOW                   3h
+#define TRCD_HIGH                  5h
+#define EBP_TRCD_OFFSET            2           /* Start of TRCD field in EBP*/
+#define EBP_TCL_MASK               (BIT(5) | BIT(4))
+#define TCL_LOW                    3           /* Minimum supported CL*/
+#define TCL_HIGH                   5           /* Maximum supported CL*/
+#define EBP_TCL_OFFSET             4           /* EBP bit( )for CL mask*/
+#define EBP_DDR2_CL_5_0            BIT(5)        /* CL 5.0 = 10b*/
+#define EBP_DDR2_CL_4_0            BIT(4)        /* CL 4.0 = 01b*/
+#define EBP_DDR2_CL_3_0            00h         /* CL 3.0 = 00b*/
+#define EBP_FREQ_MASK              (BIT(10)| BIT(9))
+#define EBP_FREQ_OFFSET            9           /* EBP bit( )for frequency mask*/
+#define EBP_FREQ_400               0           /* 400MHz EBP[10:9] = 00b*/
+#define EBP_FREQ_533               BIT(9)        /* 533MHz EBP[10:9] = 01b*/
+#define EBP_REFRESH_MASK           (BIT(12)| BIT(11))
+#define EBP_REFRESH_OFFSET         11          /* Bit offset of refresh field*/
+#define EBP_REF_DIS                00h         /* Mask for refresh disabled*/
+#define EBP_REF_128CLK             BIT(11)       /* Mask for 128 clks referesh rate*/
+#define EBP_REF_3_9                BIT(12)       /* Mask for 3.9us refresh rate*/
+#define EBP_REF_7_8                (BIT(12)| BIT(11))/* Mask for 7.8us refresh rate*/
+#define EBP_WIDTH_MASK             BIT(15)
+#define EBP_WIDTH_OFFSET           15          /* Bit offset of EBP width field*/
+#define EBP_SOCKET_X16             BIT(15)       /* Bit mask of x8/x16 bit*/
+#define EBP_DENSITY_MASK           (BIT(17)| BIT(16))
+#define EBP_DENSITY_OFFSET         16
+#define EBP_DENSITY_512            BIT(16)       /* 512Mbit density*/
+#define EBP_DENSITY_1024           BIT(17)       /* 1024Mbit density*/
+#define EBP_DENSITY_2048           (BIT(17)| BIT(16))/* 2048Mbit density*/
+#define EBP_RANKS_MASK             BIT(18)
+#define EBP_RANKS_OFFSET           18
+#define EBP_RANKS                  BIT(18)       /* Bit offset of # of ranks bit*/
+#define EBP_PACKAGE_TYPE             BIT(19)       /* Package type (stacked or not)*/
+#define EBP_2X_MASK                  BIT(20)
+#define EBP_2X_OFFSET              20          /* Bit offset of ebp 2x refresh field*/
+#define EBP_2X_AUTO_REFRESH        BIT(20)       /* Bit mask of 2x refresh field*/
+#define EBP_DRAM_PARM_MASK           BIT(21)
+#define EBP_DRAM_PARM_OFFSET       21
+#define EBP_DRAM_PARM_SPD          0           /* Use SPD to get DRAM parameters*/
+#define EBP_DRAM_PARM_CMC          BIT(21)       /* DRAM parameters in CMC binary*/
+#define EBP_BOOT_PATH                BIT(31)
 
 
 
@@ -105,35 +105,35 @@
 
 /* SCH Message Ports and Registers*/
 
-#define  SCH_MSG_DUNIT_PORT            0x1          /* DRAM unit port                        */
-#define  SCH_MSG_DUNIT_REG_DRP         0x0          /* DRAM Rank Population and Interface    */
-#define  DRP_FIELDS                    0xFF         /* Pertinent fields in DRP               */
-#define  DRP_RANK0_OFFSET              3            /* Rank 0 enable offset                  */
-#define  DRP_RANK1_OFFSET              7            /* Rank 1 enable offset                  */
-#define  DRP_DENSITY0_OFFSET           1            /* Density offset - Rank 0               */
-#define  DRP_DENSITY1_OFFSET           5            /* Density offset - Rank 1               */
-#define  DRP_WIDTH0_OFFSET             0            /* Width offset - Rank 0                 */
-#define  DRP_WIDTH1_OFFSET             4            /* Width offset - Rank 1                 */
-#define  DRP_CKE_DIS                   (BIT(14)| BIT(13))  /* CKE disable bits for both ranks       */
-#define  DRP_CKE_DIS0                  BIT(13)        /* CKE disable bit - Rank 0              */
-#define  DRP_CKE_DIS1                  BIT(14)        /* CKE disable bit - Rank 1              */
-#define  DRP_SCK_DIS                   (BIT(11)| BIT(10))  /* SCK/SCKB disable bits                 */
-#define  DRP_SCK_DIS1                  BIT(11)        /* SCK[1]/SCKB[1] disable                */
-#define  DRP_SCK_DIS0                  BIT(10)        /* SCK[0]/SCKB[0] disable                */
-#define  SCH_MSG_DUNIT_REG_DTR         0x01          /* DRAM Timing Register                  */
-#define  DTR_FIELDS                    0x3F          /* Pertinent fields in DTR               */
-#define  DTR_TCL_OFFSET                4            /* CAS latency offset                    */
-#define  DTR_TRCD_OFFSET               2            /* RAS CAS Delay Offset                  */
-#define  DTR_TRP_OFFSET                0            /* RAS Precharge Delay Offset            */
-#define  SCH_MSG_DUNIT_REG_DCO         0x2          /* DRAM Control Register                 */
-#define  DCO_FIELDS                    0xF          /* Pertinent fields in DCO               */
-#define  DCO_REFRESH_OFFSET            2            /* Refresh Rate Field Offset             */
-#define  DCO_FREQ_OFFSET               0            /* DRAM Frequency Field Offset           */
-#define  DCO_IC                        BIT(7)         /* Initialization complete bit           */
-#define  SCH_MSG_PUNIT_PORT            04h          /* Punit Port                            */
-#define  SCH_MSG_PUNIT_REG_PCR         71h          /* Punit Control Register                */
-#define  SCH_MSG_TEST_PORT             05h          /* Test port                             */
-#define  SCH_MSG_TEST_REG_MSR          03h          /* Mode and Status Register              */
+#define SCH_MSG_DUNIT_PORT            0x1          /* DRAM unit port                        */
+#define SCH_MSG_DUNIT_REG_DRP         0x0          /* DRAM Rank Population and Interface    */
+#define DRP_FIELDS                    0xFF         /* Pertinent fields in DRP               */
+#define DRP_RANK0_OFFSET              3            /* Rank 0 enable offset                  */
+#define DRP_RANK1_OFFSET              7            /* Rank 1 enable offset                  */
+#define DRP_DENSITY0_OFFSET           1            /* Density offset - Rank 0               */
+#define DRP_DENSITY1_OFFSET           5            /* Density offset - Rank 1               */
+#define DRP_WIDTH0_OFFSET             0            /* Width offset - Rank 0                 */
+#define DRP_WIDTH1_OFFSET             4            /* Width offset - Rank 1                 */
+#define DRP_CKE_DIS                   (BIT(14)| BIT(13))  /* CKE disable bits for both ranks       */
+#define DRP_CKE_DIS0                  BIT(13)        /* CKE disable bit - Rank 0              */
+#define DRP_CKE_DIS1                  BIT(14)        /* CKE disable bit - Rank 1              */
+#define DRP_SCK_DIS                   (BIT(11)| BIT(10))  /* SCK/SCKB disable bits                 */
+#define DRP_SCK_DIS1                  BIT(11)        /* SCK[1]/SCKB[1] disable                */
+#define DRP_SCK_DIS0                  BIT(10)        /* SCK[0]/SCKB[0] disable                */
+#define SCH_MSG_DUNIT_REG_DTR         0x01          /* DRAM Timing Register                  */
+#define DTR_FIELDS                    0x3F          /* Pertinent fields in DTR               */
+#define DTR_TCL_OFFSET                4            /* CAS latency offset                    */
+#define DTR_TRCD_OFFSET               2            /* RAS CAS Delay Offset                  */
+#define DTR_TRP_OFFSET                0            /* RAS Precharge Delay Offset            */
+#define SCH_MSG_DUNIT_REG_DCO         0x2          /* DRAM Control Register                 */
+#define DCO_FIELDS                    0xF          /* Pertinent fields in DCO               */
+#define DCO_REFRESH_OFFSET            2            /* Refresh Rate Field Offset             */
+#define DCO_FREQ_OFFSET               0            /* DRAM Frequency Field Offset           */
+#define DCO_IC                        BIT(7)         /* Initialization complete bit           */
+#define SCH_MSG_PUNIT_PORT            04h          /* Punit Port                            */
+#define SCH_MSG_PUNIT_REG_PCR         71h          /* Punit Control Register                */
+#define SCH_MSG_TEST_PORT             05h          /* Test port                             */
+#define SCH_MSG_TEST_REG_MSR          03h          /* Mode and Status Register              */
 
 
 /* Jedec initialization mapping into the MDR address field for DRAM init messages*/

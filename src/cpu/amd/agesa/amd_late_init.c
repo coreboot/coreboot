@@ -24,6 +24,9 @@
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+#include <southbridge/amd/agesa/hudson/imc.h>
+#endif
 #if CONFIG_AMD_SB_CIMX
 #include <sb_cimx.h>
 #endif
@@ -39,6 +42,11 @@ static void agesawrapper_post_device(void *unused)
 
 	/* Preparation for write_tables(). */
 	get_bus_conf();
+
+#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
+	/* AMD AGESA does not enable thermal zone, so we enable it here. */
+	enable_imc_thermal_zone();
+#endif
 
 #if CONFIG_AMD_SB_CIMX
 	sb_Late_Post();

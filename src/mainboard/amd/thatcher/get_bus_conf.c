@@ -65,9 +65,4 @@ void get_bus_conf(void)
 	/* I/O APICs:   APIC ID Version State   Address */
 	apicid_base = CONFIG_MAX_CPUS;
 	apicid_hudson = apicid_base;
-
-#if IS_ENABLED(CONFIG_HUDSON_IMC_FWM)
-	/* AMD AGESA does not enable thermal zone, so we enable it here. */
-	enable_imc_thermal_zone();
-#endif
 }

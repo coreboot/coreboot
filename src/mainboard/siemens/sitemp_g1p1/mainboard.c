@@ -152,11 +152,11 @@
 #define SMBUS_IO_BASE 0x1000
 #define ADT7475_ADDRESS 0x2E
 
-#define   D_OPEN	(1 << 6)
-#define   D_CLS		(1 << 5)
-#define   D_LCK		(1 << 4)
-#define   G_SMRAME	(1 << 3)
-#define   A_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0)) // 0x2: SMM space at 640KB-768KB
+#define D_OPEN	(1 << 6)
+#define D_CLS		(1 << 5)
+#define D_LCK		(1 << 4)
+#define G_SMRAME	(1 << 3)
+#define A_BASE_SEG	((0 << 2) | (1 << 1) | (0 << 0)) // 0x2: SMM space at 640KB-768KB
 
 extern int do_smbus_read_byte(u32 smbus_io_base, u32 device, u32 address);
 extern int do_smbus_write_byte(u32 smbus_io_base, u32 device, u32 address, u8 val);

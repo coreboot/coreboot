@@ -115,6 +115,10 @@ ramstage-y += ../../lib/memset.c
 ramstage-y += ../../lib/memcpy.c
 ramstage-y += ../../lib/memmove.c
 ramstage-y += stage_entry.S
+rmodules_arm64-y += ../../lib/memset.c
+rmodules_arm64-y += ../../lib/memcpy.c
+rmodules_arm64-y += ../../lib/memmove.c
+rmodules_arm64-y += eabi_compat.c
 ramstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)

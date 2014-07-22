@@ -48,6 +48,9 @@ ramstage-y += dp.c dp_lowlevel.c fimd.c
 ramstage-y += usb.c
 ramstage-y += cbmem.c
 
+rmodules_$(ARCH-romstage-y)-y += monotonic_timer.c
+rmodules_$(ARCH-romstage-y)-y += mct.c
+
 $(objcbfs)/bootblock.raw.elf: $(objcbfs)/bootblock.elf
 	cp $< $@
 

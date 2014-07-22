@@ -118,6 +118,10 @@ ramstage-y += memset.S
 ramstage-y += memcpy.S
 ramstage-y += memmove.S
 ramstage-y += clock.c
+rmodules_arm-y += memset.S
+rmodules_arm-y += memcpy.S
+rmodules_arm-y += memmove.S
+rmodules_arm-y += eabi_compat.c
 ramstage-srcs += $(wildcard src/mainboard/$(MAINBOARDDIR)/mainboard.c)
 
 $(objcbfs)/ramstage.debug: $$(ramstage-objs) $(src)/arch/arm/ramstage.ld $(obj)/ldoptions

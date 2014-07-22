@@ -93,6 +93,6 @@ ramstage-c-ccopts += $(armv7_flags)
 ramstage-S-ccopts += $(armv7_asm_flags)
 
 # All rmodule code is armv7 if ramstage is armv7.
-rmodules-c-ccopts += $(armv7_flags)
-rmodules-S-ccopts += $(armv7_asm_flags)
+rmodules_arm-c-ccopts += $(armv7_flags)
+rmodules_arm-S-ccopts += $(armv7_asm_flags)
 endif # CONFIG_ARCH_RAMSTAGE_ARMV7

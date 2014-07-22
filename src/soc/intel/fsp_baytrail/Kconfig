@@ -78,7 +78,7 @@ config VGA_BIOS_ID
 	default "8086,0f31"
 	help
 	  This is the default PCI ID for the Bay Trail graphics
-	  devices.  This string names the vbios rom in cbfs.
+	  devices.  This string names the vbios ROM in cbfs.
 
 config INCLUDE_MICROCODE_IN_BUILD
 	bool "Build in microcode patch"

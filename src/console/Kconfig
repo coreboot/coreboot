@@ -147,7 +147,7 @@ config CONSOLE_NE2K_DST_IP
 	string "Destination IP of logging system"
 	default "10.0.1.27"
 	help
-	  This is IP adress of the system running for example
+	  This is IP address of the system running for example
 	  netcat command to dump the packets.
 
 config CONSOLE_NE2K_SRC_IP
@@ -336,7 +336,7 @@ config POST_IO_PORT
 	default 0x80
 	help
 	  POST codes on x86 are typically written to the LPC bus on port
-	  0x80. However, it may be desireable to change the port number
+	  0x80. However, it may be desirable to change the port number
 	  depending on the presence of coprocessors/microcontrollers or if the
 	  platform does not support IO in the conventional x86 manner.
 

@@ -74,11 +74,11 @@ config ALWAYS_LOAD_OPROM
 	def_bool n
 	depends on VGA_ROM_RUN
 	help
-	  Always load option roms if any are found. The decision to run
-	  the rom is still determined at runtime, but the distinction
+	  Always load option ROMs if any are found. The decision to run
+	  the ROM is still determined at runtime, but the distinction
 	  between loading and not running comes into play for CHROMEOS.
 
-	  An example where this is required is that VBT (video bios tables)
+	  An example where this is required is that VBT (Video BIOS Tables)
 	  are needed for the kernel's display driver to know how a piece of
 	  hardware is configured to be used.
 
@@ -493,8 +493,11 @@ config BOOTSPLASH
 	bool
 	depends on FRAMEBUFFER_SET_VESA_MODE
 	help
-	  This option shows a graphical bootsplash screen. The grapics are
+	  This option shows a graphical bootsplash screen. The graphics are
 	  loaded from the CBFS file bootsplash.jpg.
+
+	  You will be able to specify the location and file name of the
+	  image later.
 
 config BOOTSPLASH_FILE
 	string "Bootsplash path and filename"
@@ -503,6 +506,7 @@ config BOOTSPLASH_FILE
 	help
 	  The path and filename of the file to use as graphical bootsplash
 	  screen. The file format has to be jpg.
+
 endmenu
 
 menu "PXE ROM"

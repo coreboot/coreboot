@@ -126,7 +126,7 @@ config PARALLEL_MP
 config BACKUP_DEFAULT_SMM_REGION
 	def_bool n
 	help
-	 The cpu support will select this option if the default SMM region
+	 The CPU support will select this option if the default SMM region
 	 needs to be backed up for suspend/resume purposes.
 
 config MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING
@@ -135,5 +135,5 @@ config MIRROR_PAYLOAD_TO_RAM_BEFORE_LOADING
 	  On certain platforms a boot speed gain can be realized if mirroring
 	  the payload data stored in non-volatile storage. On x86 systems the
 	  payload would typically live in a memory-mapped SPI part. Copying
-	  the SPI contents to ram before performing the load can speed up
+	  the SPI contents to RAM before performing the load can speed up
 	  the boot process.

@@ -148,7 +148,7 @@ config DCACHE_RAM_ROMSTAGE_STACK_SIZE
 	default 0x800
 	help
 	  The amount of anticipated stack usage from the data cache
-	  during pre-ram rom stage execution.
+	  during pre-RAM ROM stage execution.
 
 config RESET_ON_INVALID_RAMSTAGE_CACHE
 	bool "Reset the system on S3 wake when ramstage cache invalid."

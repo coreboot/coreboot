@@ -98,7 +98,7 @@ config HUDSON_FWM
 if HUDSON_FWM
 
 config HUDSON_FWM_POSITION
-        hex "Hudson Firmware rom Position"
+        hex "Hudson Firmware ROM Position"
         default 0xFFF20000 if BOARD_ROMSIZE_KB_1024
         default 0xFFE20000 if BOARD_ROMSIZE_KB_2048
         default 0xFFC20000 if BOARD_ROMSIZE_KB_4096
@@ -160,6 +160,7 @@ config HUDSON_SATA_IDE2AHCI7804
 	bool "IDE to AHCI7804"
 	help
 	  AHCI ROM Required, and AMD driver required in the OS.
+
 endchoice
 
 config HUDSON_SATA_MODE
@@ -212,7 +213,7 @@ config RAID_MISC_ROM_POSITION
 	help
 	  The RAID ROM requires that the MISC ROM is located between the range
 	  0xFFF0_0000 to 0xFFF0_FFFF. Also, it must 1K bytes aligned.
-	  The CONFIG_ROM_SIZE must larger than 0x100000.
+	  The CONFIG_ROM_SIZE must be larger than 0x100000.
 endif # HUDSON_SATA_RAID
 
 config HUDSON_LEGACY_FREE

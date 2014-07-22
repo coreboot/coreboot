@@ -46,10 +46,10 @@ config XIP_ROM_SIZE
 	default 0x100000
 	help
 	  Overwride the default write through caching size as 1M Bytes.
-	  On some AMD paltform, one socket support 2 or more kinds of
-	  processor family, compiling several cpu families agesa code
+	  On some AMD platforms, one socket supports 2 or more kinds of
+	  processor family, compiling several CPU families agesa code
 	  will increase the romstage size.
-	  In order to execute romstage in place on the flash rom,
+	  In order to execute romstage in place on the flash ROM,
 	  more space is required to be set as write through caching.
 
 config UDELAY_LAPIC_FIXED_FSB

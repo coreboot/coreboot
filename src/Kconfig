@@ -124,7 +124,7 @@ config INCLUDE_CONFIG_FILE
 	  in the (CBFS) ROM image. This is useful if you want to know which
 	  options were used to build a specific coreboot.rom image.
 
-	  Saying Y here will increase the image size by 2-3kB.
+	  Saying Y here will increase the image size by 2-3KB.
 
 	  You can use the following command to easily list the options:
 
@@ -143,7 +143,7 @@ config INCLUDE_CONFIG_FILE
 	    Name                           Offset     Type         Size
 	    cmos_layout.bin                0x0        cmos layout  1159
 	    fallback/romstage              0x4c0      stage        339756
-	    fallback/ramstage          0x53440    stage        186664
+	    fallback/ramstage              0x53440    stage        186664
 	    fallback/payload               0x80dc0    payload      51526
 	    config                         0x8d740    raw          3324
 	    (empty)                        0x8e480    null         3610440
@@ -395,7 +395,7 @@ config RELOCATABLE_MODULES
 	default n
 	help
 	 If RELOCATABLE_MODULES is selected then support is enabled for
-	 building relocatable modules in the ram stage. Those modules can be
+	 building relocatable modules in the RAM stage. Those modules can be
 	 loaded anywhere and all the relocations are handled automatically.
 
 config RELOCATABLE_RAMSTAGE
@@ -602,6 +602,7 @@ config SEABIOS_MASTER
 	bool "master"
 	help
 	  Newest SeaBIOS version
+
 endchoice
 
 config SEABIOS_PS2_TIMEOUT
@@ -634,6 +635,7 @@ config GRUB2_MASTER
 	bool "HEAD"
 	help
 	  Newest GRUB2 version
+
 endchoice
 
 choice
@@ -645,10 +647,12 @@ config FILO_STABLE
 	bool "0.6.0"
 	help
 	  Stable FILO version
+
 config FILO_MASTER
 	bool "HEAD"
 	help
 	  Newest FILO version
+
 endchoice
 
 config PAYLOAD_FILE

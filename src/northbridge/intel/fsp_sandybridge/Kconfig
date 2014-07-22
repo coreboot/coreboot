@@ -33,8 +33,8 @@ config VGA_BIOS_ID
 	default "8086,0106"
 	help
 	  This is the default PCI ID for the sandybridge/ivybridge graphics
-	  devices.  This string names the vbios rom in cbfs.  The following
-	  PCI IDs will be remapped to load this rom:
+	  devices.  This string names the vbios ROM in cbfs.  The following
+	  PCI IDs will be remapped to load this ROM:
 	  0x80860102, 0x8086010a, 0x80860112, 0x80860116
 	  0x80860122, 0x80860126, 0x80860166
 

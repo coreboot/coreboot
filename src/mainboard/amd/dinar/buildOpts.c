@@ -42,15 +42,15 @@
  * coreboot enable -Wundef option, so we should make sure we have all contanstand defined
  */
 /* MEMORY_BUS_SPEED */
-#define  DDR400_FREQUENCY		200	///< DDR 400
-#define  DDR533_FREQUENCY		266	///< DDR 533
-#define  DDR667_FREQUENCY		333	///< DDR 667
-#define  DDR800_FREQUENCY		400	///< DDR 800
-#define  DDR1066_FREQUENCY		533	///< DDR 1066
-#define  DDR1333_FREQUENCY		667	///< DDR 1333
-#define  DDR1600_FREQUENCY		800	///< DDR 1600
-#define  DDR1866_FREQUENCY		933	///< DDR 1866
-#define  UNSUPPORTED_DDR_FREQUENCY	934	///< Highest limit of DDR frequency
+#define DDR400_FREQUENCY		200	///< DDR 400
+#define DDR533_FREQUENCY		266	///< DDR 533
+#define DDR667_FREQUENCY		333	///< DDR 667
+#define DDR800_FREQUENCY		400	///< DDR 800
+#define DDR1066_FREQUENCY		533	///< DDR 1066
+#define DDR1333_FREQUENCY		667	///< DDR 1333
+#define DDR1600_FREQUENCY		800	///< DDR 1600
+#define DDR1866_FREQUENCY		933	///< DDR 1866
+#define UNSUPPORTED_DDR_FREQUENCY	934	///< Highest limit of DDR frequency
 
 /* QUANDRANK_TYPE */
 #define QUADRANK_REGISTERED		0	///< Quadrank registered DIMM

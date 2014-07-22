@@ -145,7 +145,7 @@ out_recv:
 
 	rc = chip->vendor.recv(chip, (uint8_t *) buf, TPM_BUFSIZE);
 	if (rc < 0)
-		printk(BIOS_DEBUG, "tpm_transmit: tpm_recv: error %zd\n", rc);
+		printk(BIOS_DEBUG, "tpm_transmit: tpm_recv: error %d\n", rc);
 out:
 	return rc;
 }

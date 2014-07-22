@@ -178,7 +178,7 @@ static int iic_tpm_write_generic(uint8_t addr, uint8_t *buffer, size_t len,
 	int count;
 
 	if (len > TPM_BUFSIZE) {
-		printk(BIOS_DEBUG, "%s: Length %d is too large\n", __func__, len);
+		printk(BIOS_DEBUG, "%s: Length %zd is too large\n", __func__, len);
 		return -1;
 	}
 

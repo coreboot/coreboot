@@ -21,15 +21,13 @@
 #include <arch/smp/mpspec.h>
 #include <device/pci.h>
 #include <arch/io.h>
+#include <arch/ioapic.h>
 #include <string.h>
 #include <stdint.h>
 #include <cpu/amd/amdfam15.h>
 #include <arch/cpu.h>
 #include <cpu/x86/lapic.h>
 #include "southbridge/amd/agesa/hudson/hudson.h" /* pm_ioread() */
-
-#define IO_APIC_ID    CONFIG_MAX_CPUS
-extern u32 apicid_yangtze;
 
 u8 picr_data[0x54] = {
 	0x03,0x04,0x05,0x07,0x0B,0x0A,0x1F,0x1F,0xFA,0xF1,0x00,0x00,0x1F,0x1F,0x1F,0x1F,
@@ -70,8 +68,15 @@ static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	int bus_isa;
-	u32 dword;
 	u8 byte;
+
+	/*
+	 * By the time this function gets called, the IOAPIC registers
+	 * have been written so they can be read to get the correct
+	 * APIC ID and Version
+	 */
+	u8 ioapic_id = (io_apic_read(IO_APIC_ADDR, 0x00) >> 24);
+	u8 ioapic_ver = (io_apic_read(IO_APIC_ADDR, 0x01) & 0xFF);
 
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
 
@@ -87,19 +92,9 @@ static void *smp_write_config_table(void *v)
 	my_smp_write_bus(mc, bus_isa, "ISA   ");
 
 	/* I/O APICs:   APIC ID Version State   Address */
+	smp_write_ioapic(mc, ioapic_id, ioapic_ver, IO_APIC_ADDR);
 
-	dword = 0;
-	dword = pm_read8(0x34) & 0xF0;
-	dword |= (pm_read8(0x35) & 0xFF) << 8;
-	dword |= (pm_read8(0x36) & 0xFF) << 16;
-	dword |= (pm_read8(0x37) & 0xFF) << 24;
-	/* Set IO APIC ID onto IO_APIC_ID */
-	write32 (dword, 0x00);
-	write32 (dword + 0x10, IO_APIC_ID << 24);
-	apicid_yangtze = IO_APIC_ID;
-	smp_write_ioapic(mc, apicid_yangtze, 0x21, dword);
-
-	smp_write_ioapic(mc, apicid_yangtze+1, 0x21, 0xFEC20000);
+	smp_write_ioapic(mc, ioapic_id+1, 0x21, 0xFEC20000);
 	/* PIC IRQ routine */
 	for (byte = 0x0; byte < sizeof(picr_data); byte ++) {
 		outb(byte, 0xC00);
@@ -153,13 +148,13 @@ static void *smp_write_config_table(void *v)
 	/* I/O Ints:    Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 #define IO_LOCAL_INT(type, intr, apicid, pin)				\
 	smp_write_lintsrc(mc, (type), MP_IRQ_TRIGGER_EDGE | MP_IRQ_POLARITY_HIGH, bus_isa, (intr), (apicid), (pin));
-	mptable_add_isa_interrupts(mc, bus_isa, apicid_yangtze, 0);
+	mptable_add_isa_interrupts(mc, bus_isa, ioapic_id, 0);
 
 	/* PCI interrupts are level triggered, and are
 	 * associated with a specific bus/device/function tuple.
 	 */
 #define PCI_INT(bus, dev, int_sign, pin)				\
-        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), apicid_yangtze, (pin))
+        smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), ioapic_id, (pin))
 
 	/* Internal VGA */
 	PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);

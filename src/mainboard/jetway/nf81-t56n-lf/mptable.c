@@ -33,13 +33,19 @@
 #include <southbridge/amd/amd_pci_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
-extern u32 apicid_sb800;
-extern u32 apicver_sb800;
 
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
 	int bus_isa;
+
+	/*
+	 * By the time this function gets called, the IOAPIC registers
+	 * have been written so they can be read to get the correct
+	 * APIC ID and Version
+	 */
+	u8 ioapic_id = (io_apic_read(IO_APIC_ADDR, 0x00) >> 24);
+	u8 ioapic_ver = (io_apic_read(IO_APIC_ADDR, 0x01) & 0xFF);
 
 	/* Intialize the MP_Table */
 	mc = (void *)(((char *)v) + SMP_FLOATING_TABLE_LEN);
@@ -64,20 +70,20 @@ static void *smp_write_config_table(void *v)
 	 * Type 2: I/O APICs:
 	 * APIC ID, Version, APIC Flags:EN, Address
 	 */
-	smp_write_ioapic(mc, apicid_sb800, apicver_sb800, IO_APIC_ADDR);
+	smp_write_ioapic(mc, ioapic_id, ioapic_ver, IO_APIC_ADDR);
 
 	/*
 	 * Type 3: I/O Interrupt Table Entries:
 	 * Int Type, Int Polarity, Int Level, Source Bus ID,
 	 * Source Bus IRQ, Dest APIC ID, Dest PIN#
 	 */
-	mptable_add_isa_interrupts(mc, bus_isa, apicid_sb800, 0);
+	mptable_add_isa_interrupts(mc, bus_isa, ioapic_id, 0);
 
 	/* PCI interrupts are level triggered, and are
 	 * associated with a specific bus/device/function tuple.
 	 */
 #define PCI_INT(bus, dev, fn, pin) \
-		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), apicid_sb800, (pin))
+		smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(fn)), ioapic_id, (pin))
 
 	/* APU Internal Graphic Device */
 	PCI_INT(0x0, 0x01, 0x0, intr_data_ptr[PIRQ_C]);

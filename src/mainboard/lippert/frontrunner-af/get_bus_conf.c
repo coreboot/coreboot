@@ -31,13 +31,9 @@
 * and acpi_tables busnum is default.
 */
 u8 bus_sb800[6];
-u32 apicid_sb800;
-
 
 void get_bus_conf(void)
 {
-	u32 apicid_base;
-
 	device_t dev;
 	int i;
 
@@ -59,9 +55,5 @@ void get_bus_conf(void)
 			bus_sb800[2 + i] = pci_read_config8(dev, PCI_SECONDARY_BUS);
 		}
 	}
-
-	/* I/O APICs:    APIC ID Version State   Address */
-	apicid_base = CONFIG_MAX_CPUS;
-	apicid_sb800 = apicid_base;
 
 }

@@ -32,14 +32,9 @@
 * and acpi_tables busnum is default.
 */
 u8 bus_sb800[6];
-u32 apicid_sb800;
-u32 apicver_sb800;
-
 
 void get_bus_conf(void)
 {
-	u32 apicid_base;
-
 	device_t dev;
 	int i;
 
@@ -63,15 +58,5 @@ void get_bus_conf(void)
 	}
 
 
-	/* I/O APICs:    APIC ID Version State   Address */
-	apicid_base = CONFIG_MAX_CPUS;
-
-	/*
-	 * By the time this function gets called, the IOAPIC registers
-	 * have been written so they can be read to get the correct
-	 * APIC ID and Version
-	 */
-	apicid_sb800 = (io_apic_read(IO_APIC_ADDR, 0x00) >> 24);
-	apicver_sb800 = (io_apic_read(IO_APIC_ADDR, 0x01) & 0xFF);
 
 }

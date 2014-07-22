@@ -530,10 +530,24 @@ static void tegra_spi_dma_start(struct tegra_spi_channel *spi)
 	 */
 	setbits_le32(&spi->regs->trans_status, SPI_STATUS_RDY);
 
-	if (spi->dma_out)
+	/*
+	 * The DMA triggers have units of packets. As each packet is currently
+	 * 1 byte the triggers need to be set to 4 packets (0b01) to match
+	 * the AHB 32-bit (4 byte) tranfser. Otherwise the FIFO errors can
+	 * occur.
+	 */
+	if (spi->dma_out) {
+		clrsetbits_le32(&spi->regs->dma_ctl,
+			SPI_DMA_CTL_TX_TRIG_MASK << SPI_DMA_CTL_TX_TRIG_SHIFT,
+			1 << SPI_DMA_CTL_TX_TRIG_SHIFT);
 		setbits_le32(&spi->regs->command1, SPI_CMD1_TX_EN);
-	if (spi->dma_in)
+	}
+	if (spi->dma_in) {
+		clrsetbits_le32(&spi->regs->dma_ctl,
+			SPI_DMA_CTL_RX_TRIG_MASK << SPI_DMA_CTL_RX_TRIG_SHIFT,
+			1 << SPI_DMA_CTL_RX_TRIG_SHIFT);
 		setbits_le32(&spi->regs->command1, SPI_CMD1_RX_EN);
+	}
 
 	/*
 	 * To avoid underrun conditions, enable APB DMA before SPI DMA for

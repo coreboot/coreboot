@@ -33,10 +33,8 @@
 #include <southbridge/amd/amd_pci_util.h>
 #include <southbridge/amd/cimx/sb800/SBPLATFORM.h>
 
-extern u8 bus_sb800[6];
 extern u32 apicid_sb800;
 extern u32 apicver_sb800;
-
 
 static void *smp_write_config_table(void *v)
 {
@@ -112,11 +110,15 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0x2, 0x0, 0x0, intr_data_ptr[PIRQ_E]);	/* Use INTE */
 
 	/* PCI slots */
-	/* PCI_SLOT 0 */
-	PCI_INT(bus_sb800[1], 0x5, 0x0, intr_data_ptr[PIRQ_E]);	/* INTA -> INTE */
-	PCI_INT(bus_sb800[1], 0x5, 0x1, intr_data_ptr[PIRQ_F]);	/* INTB -> INTF */
-	PCI_INT(bus_sb800[1], 0x5, 0x2, intr_data_ptr[PIRQ_G]);	/* INTC -> INTG */
-	PCI_INT(bus_sb800[1], 0x5, 0x3, intr_data_ptr[PIRQ_H]);	/* INTD -> INTH */
+	device_t dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
+	if (dev && dev->enabled) {
+		u8 bus_pci = dev->link_list->secondary;
+		/* PCI_SLOT 0 */
+		PCI_INT(bus_pci, 0x5, 0x0, intr_data_ptr[PIRQ_E]);	/* INTA -> INTE */
+		PCI_INT(bus_pci, 0x5, 0x1, intr_data_ptr[PIRQ_F]);	/* INTB -> INTF */
+		PCI_INT(bus_pci, 0x5, 0x2, intr_data_ptr[PIRQ_G]);	/* INTC -> INTG */
+		PCI_INT(bus_pci, 0x5, 0x3, intr_data_ptr[PIRQ_H]);	/* INTD -> INTH */
+	}
 
 	/* On-board Realtek NIC 2. (PCIe PortA) */
 	PCI_INT(0x0, 0x15, 0x0, intr_data_ptr[PIRQ_E]);	/* INTA -> INTE */

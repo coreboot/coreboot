@@ -28,8 +28,6 @@
 #include <cpu/x86/lapic.h>
 #include <cpu/amd/amdfam15.h>
 
-extern u8 bus_sb700[2];
-
 static void *smp_write_config_table(void *v)
 {
 	struct mp_config_table *mc;
@@ -126,24 +124,28 @@ static void *smp_write_config_table(void *v)
 	PCI_INT(0x0, 0x11, 0x0, 0x16); //6, INTG
 
 	/* PCI slots */
-	/* PCI_SLOT 0. */
-	PCI_INT(bus_sb700[1], 0x5, 0x0, 0x14);
-	PCI_INT(bus_sb700[1], 0x5, 0x1, 0x15);
-	PCI_INT(bus_sb700[1], 0x5, 0x2, 0x16);
-	PCI_INT(bus_sb700[1], 0x5, 0x3, 0x17);
+	dev = dev_find_slot(0, PCI_DEVFN(0x14, 4));
+	if (dev && dev->enabled) {
+		u8 bus_pci = dev->link_list->secondary;
 
-	/* PCI_SLOT 1. */
-	PCI_INT(bus_sb700[1], 0x6, 0x0, 0x15);
-	PCI_INT(bus_sb700[1], 0x6, 0x1, 0x16);
-	PCI_INT(bus_sb700[1], 0x6, 0x2, 0x17);
-	PCI_INT(bus_sb700[1], 0x6, 0x3, 0x14);
+		/* PCI_SLOT 0. */
+		PCI_INT(bus_pci, 0x5, 0x0, 0x14);
+		PCI_INT(bus_pci, 0x5, 0x1, 0x15);
+		PCI_INT(bus_pci, 0x5, 0x2, 0x16);
+		PCI_INT(bus_pci, 0x5, 0x3, 0x17);
 
-	/* PCI_SLOT 2. */
-	PCI_INT(bus_sb700[1], 0x7, 0x0, 0x16);
-	PCI_INT(bus_sb700[1], 0x7, 0x1, 0x17);
-	PCI_INT(bus_sb700[1], 0x7, 0x2, 0x14);
-	PCI_INT(bus_sb700[1], 0x7, 0x3, 0x15);
+		/* PCI_SLOT 1. */
+		PCI_INT(bus_pci, 0x6, 0x0, 0x15);
+		PCI_INT(bus_pci, 0x6, 0x1, 0x16);
+		PCI_INT(bus_pci, 0x6, 0x2, 0x17);
+		PCI_INT(bus_pci, 0x6, 0x3, 0x14);
 
+		/* PCI_SLOT 2. */
+		PCI_INT(bus_pci, 0x7, 0x0, 0x16);
+		PCI_INT(bus_pci, 0x7, 0x1, 0x17);
+		PCI_INT(bus_pci, 0x7, 0x2, 0x14);
+		PCI_INT(bus_pci, 0x7, 0x3, 0x15);
+	}
 
 	/*Local Ints:   Type    Polarity    Trigger     Bus ID   IRQ    APIC ID PIN# */
 	IO_LOCAL_INT(mp_ExtINT, 0, MP_APIC_ALL, 0x0);

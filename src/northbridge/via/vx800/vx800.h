@@ -18,7 +18,7 @@
  */
 
 #ifndef VX800_H
-#define  VX800_H 1
+#define VX800_H 1
 
 #ifndef __PRE_RAM__
 #include <device/device.h>

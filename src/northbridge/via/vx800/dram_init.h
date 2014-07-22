@@ -32,8 +32,8 @@
 // UMA size
 #define 	UMASIZE  M64
 
-#define  ENABLE_CHC   0		//CHC enable, how ever, this CHC,used some reg define in CHB
-#define  ENABLE_CHB   0		//CHB enable , CHB is VX800's, VX855 no this CHB.
+#define ENABLE_CHC   0		//CHC enable, how ever, this CHC,used some reg define in CHB
+#define ENABLE_CHB   0		//CHB enable , CHB is VX800's, VX855 no this CHB.
 //Dram Freq
 #define DIMMFREQ_800	400
 #define DIMMFREQ_667	333
@@ -45,14 +45,14 @@
 #define DIMMFREQ_200	100
 
 //Dram Type
-#define  RAMTYPE_FPMDRAM   1
-#define  RAMTYPE_EDO       2
-#define  RAMTYPE_PipelinedNibble 3
-#define  RAMTYPE_SDRAM     4
-#define  RAMTYPE_ROM       5
-#define  RAMTYPE_SGRAMDDR  6
-#define  RAMTYPE_SDRAMDDR  7
-#define  RAMTYPE_SDRAMDDR2 8
+#define RAMTYPE_FPMDRAM   1
+#define RAMTYPE_EDO       2
+#define RAMTYPE_PipelinedNibble 3
+#define RAMTYPE_SDRAM     4
+#define RAMTYPE_ROM       5
+#define RAMTYPE_SGRAMDDR  6
+#define RAMTYPE_SDRAMDDR  7
+#define RAMTYPE_SDRAMDDR2 8
 
 /* CAS latency constant */
 #define CASLAN_15         15
@@ -66,13 +66,13 @@
 #define CASLAN_NULL     00
 
 //Burst length
-#define  BURSTLENGTH8    8
-#define  BURSTLENGTH4    4
+#define BURSTLENGTH8    8
+#define BURSTLENGTH4    4
 
 //Data Width
-//#define  DATAWIDTHX16    16
-//#define  DATAWIDTHX8       8
-//#define  DATAWIDTHX4       4
+//#define DATAWIDTHX16    16
+//#define DATAWIDTHX8       8
+//#define DATAWIDTHX4       4
 
 #define SPD_MEMORY_TYPE              2	/*Memory type FPM,EDO,SDRAM,DDR,DDR2 */
 #define SPD_SDRAM_ROW_ADDR           3	/*Number of row addresses on this assembly */
@@ -107,15 +107,15 @@
 #define SPC_SDRAM_TRC				 41	/*minimum active to active/refresh time */
 #define SPD_SDRAM_TRFC               42	/*minimum refresh to active / refresh command period */
 
-#define  SPD_DATA_SIZE 44
+#define SPD_DATA_SIZE 44
 //Dram cofig are
 /*the most number of socket*/
-#define  MAX_RAM_SLOTS  2
+#define MAX_RAM_SLOTS  2
 
 #define MAX_SOCKETS MAX_RAM_SLOTS
-#define  MAX_DIMMS     MAX_SOCKETS	/*every sockets can plug one DIMM */
+#define MAX_DIMMS     MAX_SOCKETS	/*every sockets can plug one DIMM */
 /*the most number of RANKs on a DIMM*/
-#define  MAX_RANKS  MAX_SOCKETS*2
+#define MAX_RANKS  MAX_SOCKETS*2
 
 struct mem_controller {
 	u8 channel0[MAX_DIMMS];

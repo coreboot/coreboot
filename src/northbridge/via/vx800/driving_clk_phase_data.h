@@ -31,7 +31,7 @@
 //extern u8 DDR2_CSA_Driving_Table_x16[4];
 //extern u8 DDR2_CSB_Driving_Table_x16[2];
 
-#define  MA_Table   3
+#define MA_Table   3
 //extern u8 DDR2_MAA_Driving_Table[MA_Table][4];
 //extern u8 DDR2_MAB_Driving_Table[MA_Table][2];
 

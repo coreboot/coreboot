@@ -122,7 +122,7 @@ int find_fmap_entry(const char name[], void **pointer)
 #endif
 	}
 
-	*pointer = (void*) ((u32)base + area->offset);
+	*pointer = (void*) ((uintptr_t)base + area->offset);
 	printk(BIOS_DEBUG, "FMAP: %s at %p (offset %x)\n",
 	       name, *pointer, area->offset);
 	return area->size;

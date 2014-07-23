@@ -29,6 +29,8 @@
 #include "sdram.h"
 #include "ccplex.h"
 
+#include <soc/clock.h>
+
 void romstage(void);
 void romstage(void)
 {
@@ -71,5 +73,5 @@ void romstage(void)
 
 	ccplex_cpu_start(entry);
 
-	while (1);
+	clock_halt_avp();
 }

@@ -57,6 +57,7 @@ ifeq ($(CONFIG_COMPILER_GCC),y)
 romstage-$(CONFIG_ARCH_ROMSTAGE_X86_32) += gcc.c
 ramstage-$(CONFIG_ARCH_RAMSTAGE_X86_32) += gcc.c
 endif
+romstage-$(CONFIG_TERTIARY_BOARD_ID) += tristate_gpios.c
 
 ramstage-y += hardwaremain.c
 ramstage-y += selfboot.c

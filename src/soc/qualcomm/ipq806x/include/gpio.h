@@ -33,7 +33,7 @@
 #ifndef __SOC_QUALCOMM_IPQ806X_GPIO_H_
 #define __SOC_QUALCOMM_IPQ806X_GPIO_H_
 
-typedef unsigned int gpio_t;
+#include <gpiolib.h>
 
 #define GPIO_FUNC_ENABLE			1
 #define GPIO_FUNC_DISABLE			0

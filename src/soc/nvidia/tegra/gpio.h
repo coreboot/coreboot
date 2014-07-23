@@ -21,11 +21,9 @@
 #define __SOC_NVIDIA_TEGRA_GPIO_H__
 
 #include <stdint.h>
+#include <gpiolib.h>
 
 #include "pinmux.h"
-
-/* Wrapper type for GPIOs. Always use GPIO() macro to generate. */
-typedef u32 gpio_t;
 
 #define GPIO_PINMUX_SHIFT 16
 #define GPIO(name) ((gpio_t)(GPIO_##name##_INDEX | \
@@ -46,21 +44,6 @@ static inline void gpio_output_open_drain(gpio_t gpio, int value)
 	__gpio_output(gpio, value, PINMUX_OPEN_DRAIN);
 }
 
-static inline void gpio_input(gpio_t gpio)
-{
-	__gpio_input(gpio, PINMUX_PULL_NONE);
-}
-
-static inline void gpio_input_pulldown(gpio_t gpio)
-{
-	__gpio_input(gpio, PINMUX_PULL_DOWN);
-}
-
-static inline void gpio_input_pullup(gpio_t gpio)
-{
-	__gpio_input(gpio, PINMUX_PULL_UP);
-}
-
 /* Functions to modify specific GPIO control values. */
 
 enum gpio_mode {
@@ -77,11 +60,7 @@ int gpio_get_lock(gpio_t gpio);
 void gpio_set_out_enable(gpio_t gpio, int enable);
 int gpio_get_out_enable(gpio_t gpio);
 
-void gpio_set_out_value(gpio_t gpio, int value);
 int gpio_get_out_value(gpio_t gpio);
-
-int gpio_get_in_value(gpio_t gpio);
-int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int value[]);
 
 int gpio_get_int_status(gpio_t gpio);
 

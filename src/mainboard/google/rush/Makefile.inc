@@ -35,5 +35,7 @@ bootblock-y += reset.c
 romstage-y += reset.c
 romstage-y += romstage.c
 romstage-y += sdram_configs.c
+romstage-$(CONFIG_CHROMEOS) += chromeos.c
 
 ramstage-y += mainboard.c
+ramstage-$(CONFIG_CHROMEOS) += chromeos.c

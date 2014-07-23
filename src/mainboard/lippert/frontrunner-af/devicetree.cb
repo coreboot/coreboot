@@ -19,7 +19,7 @@
 chip northbridge/amd/agesa/family14/root_complex
 	device cpu_cluster 0 on
 			chip cpu/amd/agesa/family14
-			  device lapic 0 on end
+				device lapic 0 on end
 			end
 	end
 	device domain 0 on

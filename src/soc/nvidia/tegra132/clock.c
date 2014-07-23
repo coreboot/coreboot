@@ -474,10 +474,6 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	udelay(IO_STABILIZATION_DELAY);
 }
 
-void clock_cpu0_config_and_reset(void *entry)
-{
-}
-
 void clock_halt_avp(void)
 {
 	for (;;)

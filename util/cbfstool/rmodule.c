@@ -88,9 +88,10 @@ static int valid_reloc_arm(struct rmod_context *ctx, Elf64_Rela *rel)
 
 	type = ELF64_R_TYPE(rel->r_info);
 
-	/* Only these 3 relocations are expected to be found. */
+	/* Only these 6 relocations are expected to be found. */
 	return (type == R_ARM_ABS32 || type == R_ARM_THM_PC22 ||
-                type == R_ARM_THM_JUMP24);
+                type == R_ARM_THM_JUMP24 || type == R_ARM_V4BX ||
+		type == R_ARM_CALL || type == R_ARM_JUMP24);
 }
 
 static int should_emit_arm(struct rmod_context *ctx, Elf64_Rela *rel)

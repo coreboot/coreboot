@@ -89,6 +89,11 @@ romstage-y += ../../lib/memcpy.c
 romstage-y += ../../lib/memmove.c
 romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 
+rmodules_arm64-y += ../../lib/memset.c
+rmodules_arm64-y += ../../lib/memcpy.c
+rmodules_arm64-y += ../../lib/memmove.c
+rmodules_arm64-y += eabi_compat.c
+
 # Build the romstage
 VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm64.o
 

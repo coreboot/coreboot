@@ -93,6 +93,10 @@ romstage-y += memset.S
 romstage-y += memcpy.S
 romstage-y += memmove.S
 romstage-y += clock.c
+rmodules_arm-y += memset.S
+rmodules_arm-y += memcpy.S
+rmodules_arm-y += memmove.S
+rmodules_arm-y += eabi_compat.c
 
 VBOOT_STUB_DEPS += $(obj)/arch/arm/eabi_compat.rmodules_arm.o
 

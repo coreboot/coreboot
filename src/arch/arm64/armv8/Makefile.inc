@@ -58,6 +58,9 @@ romstage-y += exception_asm.S
 romstage-c-ccopts += $(armv8_flags)
 romstage-S-ccopts += $(armv8_asm_flags)
 
+rmodules_arm64-c-ccopts += $(armv8_flags)
+rmodules_arm64-S-ccopts += $(armv8_asm_flags)
+
 endif
 
 ################################################################################

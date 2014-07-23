@@ -74,6 +74,9 @@ romstage-$(CONFIG_COLLECT_TIMESTAMPS) += timestamp.c
 romstage-c-ccopts += $(armv7_flags)
 romstage-S-ccopts += $(armv7_asm_flags)
 
+rmodules_arm-c-ccopts += $(armv7_flags)
+rmodules_arm-S-ccopts += $(armv7_asm_flags)
+
 endif # CONFIG_ARCH_ROMSTAGE_ARMV7
 
 ###############################################################################

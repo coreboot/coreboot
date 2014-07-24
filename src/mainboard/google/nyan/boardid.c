@@ -20,7 +20,7 @@
 #include <console/console.h>
 #include <soc/nvidia/tegra124/gpio.h>
 
-#include "boardid.h"
+#include <boardid.h>
 
 uint8_t board_id(void)
 {

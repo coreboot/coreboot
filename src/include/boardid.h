@@ -17,11 +17,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __MAINBOARD_GOOGLE_NYAN_BLAZE_BOARDID_H__
-#define __MAINBOARD_GOOGLE_NYAN_BLAZE_BOARDID_H__
+#ifndef __INCLUDE_BOARDID_H__
+#define __INCLUDE_BOARDID_H__
 
 #include <stdint.h>
 
 uint8_t board_id(void);
 
-#endif /* __MAINBOARD_GOOGLE_NYAN_BLAZE_BOARDID_H__ */
+#endif /* __INCLUDE_BOARDID_H__ */

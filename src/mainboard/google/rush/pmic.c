@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "boardid.h"
+#include <boardid.h>
 #include "pmic.h"
 #include "reset.h"
 

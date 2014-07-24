@@ -20,10 +20,13 @@
 #include <arch/stages.h>
 #include <soc/addressmap.h>
 #include "mmu_operations.h"
+#include <soc/clock.h>
 
 void arm64_soc_init(void)
 {
 	trustzone_region_init();
 
 	tegra132_mmu_init();
+
+	clock_cpu0_config();
 }

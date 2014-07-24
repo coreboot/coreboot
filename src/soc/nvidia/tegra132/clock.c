@@ -22,12 +22,14 @@
 #include <stdlib.h>
 #include <arch/clock.h>
 #include "clk_rst.h"
+#include "clst_clk.h"
 #include "flow.h"
 #include "maincpu.h"
 #include "pmc.h"
 #include "sysctr.h"
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
+static struct clst_clk_ctlr *clst_clk = (void *)TEGRA_CLUSTER_CLOCK_BASE;
 static struct flow_ctlr *flow = (void *)TEGRA_FLOW_BASE;
 static struct tegra_pmc_regs *pmc = (void *)TEGRA_PMC_BASE;
 static struct sysctr_regs *sysctr = (void *)TEGRA_SYSCTR0_BASE;
@@ -472,6 +474,45 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 	clock_enable_clear_reset(0, CLK_H_MEM | CLK_H_EMC, 0, 0, 0, 0);
 	writel(emc_source, &clk_rst->clk_src_emc);
 	udelay(IO_STABILIZATION_DELAY);
+}
+
+void clock_cpu0_config(void)
+{
+	u32 reg;
+	u32 osc = clock_get_osc_bits();
+	u32 timeout = 0;
+
+	/* disable IDDQ */
+	reg = readl(&clst_clk->pllx_misc3);
+	reg &= ~PLLX_IDDQ;
+	writel(reg, &clst_clk->pllx_misc3);
+
+	/* init pllx */
+	init_pll(&clst_clk->pllx_base, &clst_clk->pllx_misc,
+		osc_table[osc].pllx, PLLPAXS_MISC_LOCK_ENABLE);
+
+	/*
+	 * Change CPU clock source to PLLX_OUT0_LJ
+	 * when above pllx programming has taken effect.
+	 */
+	do {
+		if (readl(&clst_clk->misc_ctrl) & CLK_SWITCH_MATCH) {
+			write32((CC_CCLK_BRST_POL_PLLX_OUT0_LJ << 28),
+				&clst_clk->cclk_brst_pol);
+			break;
+		}
+
+		/* wait and try again */
+		if (timeout >= CLK_SWITCH_TIMEOUT_US) {
+			printk(BIOS_ERR, "%s: PLLX programming timeout. "
+				"Switching cpu clock has falied.\n",
+				__func__);
+			break;
+		}
+		udelay(10);
+		timeout += 10;
+
+	} while (1);
 }
 
 void clock_halt_avp(void)

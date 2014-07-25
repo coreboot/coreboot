@@ -38,6 +38,10 @@ static void soc_read_resources(device_t dev)
 		reserved_ram_resource(dev, index++, begin * KiB, size * KiB);
 	}
 
+	reserved_ram_resource(dev, index++, CONFIG_TTB_BUFFER / KiB,
+			      CONFIG_TTB_SIZE / KiB);
+
+
 	/*
 	 * TODO: Frame buffer needs to handled as a carveout from the below_4G
 	 * uintptr_t framebuffer_begin = framebuffer_attributes(&framebuffer_size);

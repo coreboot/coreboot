@@ -19,6 +19,10 @@
 
 #include <soc/romstage.h>
 
+void mainboard_init_tpm_i2c(void)
+{
+}
+
 void mainboard_configure_pmc(void)
 {
 }

@@ -73,6 +73,7 @@ VBOOT_STUB_DEPS += $(VB_LIB)
 # vboot_reference can get to coreboot's include files.
 VBOOT_CFLAGS += $(patsubst -I%,-I../%,$(filter-out -include $(src)/include/kconfig.h, $(CFLAGS_romstage)))
 VBOOT_CFLAGS += -DVBOOT_DEBUG
+VBOOT_CFLAGS += $(rmodules_$(ARCH-ROMSTAGE-y)-c-ccopts)
 
 $(VBOOT_STUB_DOTO): $(VBOOT_STUB_DEPS)
 	$(CC_rmodules_$(ARCH-romstage-y)) $(CFLAGS_rmodules_$(ARCH-romstage-y)) -nostdlib -r -o $@ $^

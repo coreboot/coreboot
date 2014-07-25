@@ -34,6 +34,11 @@
 
 #define GSBI_IDX_TO_GSBI(idx)   (idx + 5)
 
+
+/* MX_INPUT_COUNT and MX_OUTPUT_COUNT are 16-bits. Zero has a special meaning
+ * (count function disabled) and does not hold significance in the count. */
+#define MAX_PACKET_COUNT	((64 * KiB) - 1)
+
 /*
  * TLMM Configuration for SPI NOR
  * gsbi_pin_conf[bus_num][GPIO_NUM, FUNC_SEL, I/O,
@@ -644,12 +649,66 @@ void spi_release_bus(struct spi_slave *slave)
 	ds->initialized = 0;
 }
 
+static int spi_xfer_tx_packet(struct ipq_spi_slave *ds,
+		const uint8_t *dout, unsigned out_bytes)
+{
+	int ret;
+
+	writel_i(out_bytes, ds->regs->qup_mx_output_count);
+
+	ret = config_spi_state(ds, SPI_RUN_STATE);
+	if (ret)
+		return ret;
+
+	while (out_bytes) {
+		if (readl_i(ds->regs->qup_operational) & QUP_OUTPUT_FIFO_FULL)
+			continue;
+
+		writel_i(*dout++, ds->regs->qup_output_fifo);
+		out_bytes--;
+
+		/* Wait for output FIFO to drain. */
+		if (!out_bytes)
+			while (readl_i(ds->regs->qup_operational) &
+			       QUP_OUTPUT_FIFO_NOT_EMPTY)
+				;
+	}
+
+	return config_spi_state(ds, SPI_RESET_STATE);
+}
+
+static int spi_xfer_rx_packet(struct ipq_spi_slave *ds,
+		uint8_t *din, unsigned in_bytes)
+{
+	int ret;
+
+	writel_i(in_bytes, ds->regs->qup_mx_input_count);
+	writel_i(in_bytes, ds->regs->qup_mx_output_count);
+
+	ret = config_spi_state(ds, SPI_RUN_STATE);
+	if (ret)
+		return ret;
+
+	/* Seed clocking */
+	writel_i(0xff, ds->regs->qup_output_fifo);
+	while (in_bytes) {
+		if (!(readl_i(ds->regs->qup_operational) &
+		      QUP_INPUT_FIFO_NOT_EMPTY))
+			continue;
+		/* Keep it clocking */
+		writel_i(0xff, ds->regs->qup_output_fifo);
+
+		*din++ = readl_i(ds->regs->qup_input_fifo) & 0xff;
+		in_bytes--;
+	}
+
+	return config_spi_state(ds, SPI_RESET_STATE);
+}
+
 int spi_xfer(struct spi_slave *slave, const void *dout,
 	     unsigned out_bytes, void *din, unsigned in_bytes)
 {
 	int ret;
-	uint8_t* dbuf;
-	const uint8_t* dobuf;
 	struct ipq_spi_slave *ds = to_ipq_spi(slave);
 
 	/* Assert the chip select */
@@ -669,29 +728,17 @@ int spi_xfer(struct spi_slave *slave, const void *dout,
 	clrsetbits_le32_i(ds->regs->qup_config, SPI_QUP_CONF_OUTPUT_MSK,
 			  SPI_QUP_CONF_OUTPUT_ENA);
 
-	writel_i(out_bytes, ds->regs->qup_mx_output_count);
-
-	ret = config_spi_state(ds, SPI_RUN_STATE);
-	if (ret)
-		goto out;
-
-	dobuf = dout; /* Alias to make it possible to use pointer autoinc. */
-
 	while (out_bytes) {
-		if (readl_i(ds->regs->qup_operational) & QUP_OUTPUT_FIFO_FULL)
-			continue;
+		unsigned todo = MIN(out_bytes, MAX_PACKET_COUNT);
 
-		writel_i(*dobuf++, ds->regs->qup_output_fifo);
-		out_bytes--;
+		ret = spi_xfer_tx_packet(ds, dout, todo);
+		if (ret)
+			break;
 
-		/* Wait for output FIFO to drain. */
-		if (!out_bytes)
-			while (readl_i(ds->regs->qup_operational) &
-			       QUP_OUTPUT_FIFO_NOT_EMPTY)
-				;
+		out_bytes -= todo;
+		dout += todo;
 	}
 
-	ret = config_spi_state(ds, SPI_RESET_STATE);
 	if (ret)
 		goto out;
 
@@ -703,28 +750,18 @@ spi_receive:
 	clrsetbits_le32_i(ds->regs->qup_config, SPI_QUP_CONF_INPUT_MSK,
 			  SPI_QUP_CONF_INPUT_ENA);
 
-	writel_i(in_bytes, ds->regs->qup_mx_input_count);
-	writel_i(in_bytes, ds->regs->qup_mx_output_count);
-
-	ret = config_spi_state(ds, SPI_RUN_STATE);
-	if (ret)
-		goto out;
-
-	/* Seed clocking */
-	writel_i(0xff, ds->regs->qup_output_fifo);
-	dbuf = din;  /* Alias for pointer autoincrement again. */
 	while (in_bytes) {
-		if (!(readl_i(ds->regs->qup_operational) &
-		      QUP_INPUT_FIFO_NOT_EMPTY))
-			continue;
-		/* Keep it clocking */
-		writel_i(0xff, ds->regs->qup_output_fifo);
+		unsigned todo = MIN(in_bytes, MAX_PACKET_COUNT);
 
-		*dbuf++ = readl_i(ds->regs->qup_input_fifo) & 0xff;
-		in_bytes--;
+		ret = spi_xfer_rx_packet(ds, din, todo);
+		if (ret)
+			break;
+
+		in_bytes -= todo;
+		din += todo;
 	}
 
- out:
+out:
 	/* Deassert CS */
 	CS_change(ds->slave.bus, ds->slave.cs, CS_DEASSERT);
 

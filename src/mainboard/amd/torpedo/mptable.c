@@ -159,12 +159,8 @@ static void *smp_write_config_table(void *v)
   /* PCI interrupts are level triggered, and are
    * associated with a specific bus/device/function tuple.
    */
-#if !CONFIG_GENERATE_ACPI_TABLES
 #define PCI_INT(bus, dev, int_sign, pin) \
         smp_write_intsrc(mc, mp_INT, MP_IRQ_TRIGGER_LEVEL|MP_IRQ_POLARITY_LOW, (bus), (((dev)<<2)|(int_sign)), apicid_sb900, (pin))
-#else
-#define PCI_INT(bus, dev, fn, pin)
-#endif
 
   /* Internal VGA */
   PCI_INT(0x0, 0x01, 0x0, intr_data[0x02]);

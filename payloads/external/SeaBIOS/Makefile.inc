@@ -25,7 +25,12 @@ checkout: fetch
 config: checkout
 	echo "    CONFIG     SeaBIOS $(TAG-y)"
 	echo "CONFIG_COREBOOT=y" > $(OUT)/seabios/.config
+ifeq ($(CONFIG_CONSOLE_SERIAL),y)
 	echo "CONFIG_DEBUG_SERIAL=y" >> $(OUT)/seabios/.config
+	echo "CONFIG_DEBUG_SERIAL_PORT=$(CONFIG_TTYS0_BASE)" >> $(OUT)/seabios/.config
+else
+	echo "# CONFIG_DEBUG_SERIAL is not set" >> $(OUT)/seabios/.config
+endif
 ifneq ($(CONFIG_SEABIOS_THREAD_OPTIONROMS),y)
 	echo "# CONFIG_THREAD_OPTIONROMS is not set" >> $(OUT)/seabios/.config
 endif

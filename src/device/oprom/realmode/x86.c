@@ -270,7 +270,6 @@ void vbe_set_graphics(void)
 	vbe_set_mode(&mode_info);
 #if CONFIG_BOOTSPLASH
 	struct jpeg_decdata *decdata;
-	decdata = malloc(sizeof(*decdata));
 	unsigned char *jpeg = cbfs_get_file_content(CBFS_DEFAULT_MEDIA,
 						    "bootsplash.jpg",
 						    CBFS_TYPE_BOOTSPLASH,
@@ -279,6 +278,7 @@ void vbe_set_graphics(void)
 		printk(BIOS_DEBUG, "VBE: No bootsplash found.\n");
 		return;
 	}
+	decdata = malloc(sizeof(*decdata));
 	int ret = 0;
 	ret = jpeg_decode(jpeg, framebuffer, 1024, 768, 16, decdata);
 #endif

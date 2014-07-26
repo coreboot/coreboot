@@ -494,7 +494,7 @@ static void fix_cmos_rtc_time(void)
 	/* Convert RTC from BCD format to binary. */
 	u8 bin_rtc[7];
 	int i;
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < 7; i++) {
 		bin_rtc[i] = bcd2dec(rtc[i]);
 	}
 

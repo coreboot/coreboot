@@ -64,8 +64,8 @@
 #define GPIO_16MA       7
 
 /* GPIO TLMM: Status */
-#define GPIO_ENABLE     0
-#define GPIO_DISABLE    1
+#define GPIO_DISABLE    0
+#define GPIO_ENABLE     1
 
 /* GPIO MAX Valid # */
 #define GPIO_MAX_NUM  68
@@ -99,7 +99,6 @@ void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
 			  unsigned int *enable);
 
 void gpio_io_config_set(gpio_t gpio, unsigned int out);
-void gpio_io_config_get(gpio_t gpio, unsigned int *in, unsigned int *out);
 
 /* Keep this to maintain backwards compatibility with the vendor API. */
 static inline void gpio_tlmm_config(unsigned int gpio, unsigned int func,

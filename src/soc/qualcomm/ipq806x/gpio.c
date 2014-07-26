@@ -50,20 +50,20 @@ static inline int gpio_not_valid(gpio_t gpio)
 Function description: configure GPIO functinality
 Arguments :
 gpio_t gpio - Gpio number
-unsigned int func - Functionality number
-unsigned int pull - pull up/down, no pull range(0-3)
-unsigned int drvstr - range (0 - 7)-> (2- 16)MA steps of 2
-unsigned int enable - 1 - Disable, 2- Enable.
+unsigned func - Functionality number
+unsigned pull - pull up/down, no pull range(0-3)
+unsigned drvstr - range (0 - 7)-> (2- 16)MA steps of 2
+unsigned enable - 0 Disable, 1 - Enable.
 
 Return : None
 *******************************************************/
 
 
-void gpio_tlmm_config_set(gpio_t gpio, unsigned int func,
-			  unsigned int pull, unsigned int drvstr,
-			  unsigned int enable)
+void gpio_tlmm_config_set(gpio_t gpio, unsigned func,
+			  unsigned pull, unsigned drvstr,
+			  unsigned enable)
 {
-        unsigned int val = 0;
+        unsigned val = 0;
 
 	if (gpio_not_valid(gpio))
 		return;
@@ -72,33 +72,33 @@ void gpio_tlmm_config_set(gpio_t gpio, unsigned int func,
         val |= (func & GPIO_CFG_FUNC_MASK) << GPIO_CFG_FUNC_SHIFT;
         val |= (drvstr & GPIO_CFG_DRV_MASK) << GPIO_CFG_DRV_SHIFT;
         val |= (enable & GPIO_CFG_OE_MASK) << GPIO_CFG_OE_SHIFT;
-        unsigned int *addr = (unsigned int *)GPIO_CONFIG_ADDR(gpio);
-        writel(val, addr);
+
+        writel(val, GPIO_CONFIG_ADDR(gpio));
 }
 
 /*******************************************************
 Function description: Get GPIO configuration
 Arguments :
 gpio_t gpio - Gpio number
-unsigned int *func - Functionality number
-unsigned int *pull - pull up/down, no pull range(0-3)
-unsigned int *drvstr - range (0 - 7)-> (2- 16)MA steps of 2
-unsigned int *enable - 1 - Disable, 2- Enable.
+unsigned *func - Functionality number
+unsigned *pull - pull up/down, no pull range(0-3)
+unsigned *drvstr - range (0 - 7)-> (2- 16)MA steps of 2
+unsigned *enable - 0 - Disable, 1- Enable.
 
 Return : None
 *******************************************************/
 
 
-void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
-			  unsigned int *pull, unsigned int *drvstr,
-			  unsigned int *enable)
+void gpio_tlmm_config_get(gpio_t gpio, unsigned *func,
+			  unsigned *pull, unsigned *drvstr,
+			  unsigned *enable)
 {
-        unsigned int val;
+        unsigned val;
+        void *addr = GPIO_CONFIG_ADDR(gpio);
 
 	if (gpio_not_valid(gpio))
 		return;
 
-        unsigned int *addr = (unsigned int *)GPIO_CONFIG_ADDR(gpio);
 	val = readl(addr);
 
 	*pull = (val >> GPIO_CFG_PULL_SHIFT) & GPIO_CFG_PULL_MASK;
@@ -108,52 +108,47 @@ void gpio_tlmm_config_get(gpio_t gpio, unsigned int *func,
 }
 
 /*******************************************************
-Function description: configure GPIO IO functinality
-Arguments :
-gpio_t gpio - Gpio number
-unsigned int out - Controls value of GPIO output
-
-Return : None
-*******************************************************/
-
-void gpio_io_config_set(gpio_t gpio, unsigned int out)
-{
-        unsigned int val;
-
-	if (gpio_not_valid(gpio))
-		return;
-
-	unsigned int *addr = (unsigned int *)GPIO_CONFIG_ADDR(gpio);
-
-	val = readl(addr);
-	if (out)
-		val |= (1 << GPIO_IO_OUT_SHIFT);
-	else
-		val &= (~(1 << GPIO_IO_OUT_SHIFT));
-
-	writel(val,addr);
-}
-
-/*******************************************************
 Function description: get GPIO IO functinality details
 Arguments :
 gpio_t gpio - Gpio number
-unsigned int *in - Value of GPIO input
-unsigned int *out - Value of GPIO output
+unsigned *in - Value of GPIO input
+unsigned *out - Value of GPIO output
 
 Return : None
 *******************************************************/
-
-void gpio_io_config_get(gpio_t gpio, unsigned int *in, unsigned int *out)
+int gpio_get_in_value(gpio_t gpio)
 {
-        unsigned int val;
+	if (gpio_not_valid(gpio))
+		return -1;
 
+
+	return (readl(GPIO_IN_OUT_ADDR(gpio)) >> GPIO_IO_IN_SHIFT) &
+		GPIO_IO_IN_MASK;
+}
+
+void gpio_set_out_value(gpio_t gpio, int value)
+{
 	if (gpio_not_valid(gpio))
 		return;
 
-	unsigned int *addr = (unsigned int *)GPIO_CONFIG_ADDR(gpio);
-
-	val = readl(addr);
-	*in = (val >> GPIO_IO_IN_SHIFT)  & GPIO_IO_IN_MASK;
-	*out = (val >> GPIO_IO_OUT_SHIFT) & GPIO_IO_OUT_MASK;
+	writel((value & 1) << GPIO_IO_OUT_SHIFT, GPIO_IN_OUT_ADDR(gpio));
 }
+
+void gpio_input_pulldown(gpio_t gpio)
+{
+	gpio_tlmm_config_set(gpio, GPIO_FUNC_DISABLE,
+			     GPIO_PULL_DOWN, GPIO_2MA, GPIO_DISABLE);
+}
+
+void gpio_input_pullup(gpio_t gpio)
+{
+	gpio_tlmm_config_set(gpio, GPIO_FUNC_DISABLE,
+			     GPIO_PULL_UP, GPIO_2MA, GPIO_DISABLE);
+}
+
+void gpio_input(gpio_t gpio)
+{
+	gpio_tlmm_config_set(gpio, GPIO_FUNC_DISABLE,
+			     GPIO_NO_PULL, GPIO_2MA, GPIO_DISABLE);
+}
+

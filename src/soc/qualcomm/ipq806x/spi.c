@@ -279,13 +279,13 @@ static int check_qup_clk_state(unsigned int core_num, int enable)
 static void CS_change(int port_num, int cs_num, int enable)
 {
 	unsigned int cs_gpio = cs_gpio_array[port_num][cs_num];
-	uint32_t addr = GPIO_IN_OUT_ADDR(cs_gpio);
+	void *addr = GPIO_IN_OUT_ADDR(cs_gpio);
 	uint32_t val = readl_i(addr);
 
 	val &= (~(1 << GPIO_OUTPUT));
 	if (!enable)
 		val |= (1 << GPIO_OUTPUT);
-	writel_i(val, addr);
+	writel(val, addr);
 }
 
 /*

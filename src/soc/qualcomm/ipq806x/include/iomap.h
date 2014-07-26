@@ -81,9 +81,9 @@
 #define DGT_CLEAR            DGT_REG(0x000C)
 #define DGT_CLK_CTL          DGT_REG(0x0010)
 
-#define TLMM_BASE_ADDR      0x00800000
+#define TLMM_BASE_ADDR      ((char *)0x00800000)
 #define GPIO_CONFIG_ADDR(x) (TLMM_BASE_ADDR + 0x1000 + (x)*0x10)
-#define GPIO_IN_OUT_ADDR(x) (TLMM_BASE_ADDR + 0x1004 + (x)*0x10)
+#define GPIO_IN_OUT_ADDR(x) (GPIO_CONFIG_ADDR(x) + 4)
 
 /* Yes, this is not a typo... host2 is actually mapped before host1. */
 #define USB_HOST2_XHCI_BASE	0x10000000

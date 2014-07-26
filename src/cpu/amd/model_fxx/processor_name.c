@@ -235,6 +235,7 @@ int init_processor_name(void)
 		case 0x30052:
 			processor_name_string =
 			    "AMD Sempron(tm) Processor RR50p";
+			break;
 		case 0x30064:
 		case 0x30068:
 			processor_name_string =

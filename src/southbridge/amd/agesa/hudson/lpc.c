@@ -230,6 +230,7 @@ static void hudson_lpc_enable_childrens_resources(device_t dev)
 					case 0x480:
 						set_x |= (1 << 17);
 						rsize = 0x40;
+						break;
 					case 0x500:
 						set_x |= (1 << 18);
 						rsize = 0x40;

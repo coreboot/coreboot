@@ -719,7 +719,6 @@ void vbe_set_graphics(void)
 	DEBUG_PRINTF_VBE("FRAMEBUFFER: 0x%p\n", framebuffer);
 
 	struct jpeg_decdata *decdata;
-	decdata = malloc(sizeof(*decdata));
 
 	/* Switching Intel IGD to 1MB video memory will break this. Who
 	 * cares. */
@@ -736,6 +735,7 @@ void vbe_set_graphics(void)
 	DEBUG_PRINTF_VBE("Splash at %p ...\n", jpeg);
 	dump(jpeg, 64);
 
+	decdata = malloc(sizeof(*decdata));
 	int ret = 0;
 	DEBUG_PRINTF_VBE("Decompressing boot splash screen...\n");
 	ret = jpeg_decode(jpeg, framebuffer, 1024, 768, 16, decdata);

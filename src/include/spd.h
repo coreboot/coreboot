@@ -237,4 +237,12 @@ enum spd_memory_type {
 #define RC62 62
 #define RC63 63
 
+#define SPD_UNDEFINED 0
+#define SPD_RDIMM 1
+#define SPD_UDIMM 2
+#define SPD_SODIMM 3
+#define SPD_MICRO_DIMM 4
+#define SPD_MINI_RDIMM 5
+#define SPD_MINI_UDIMM 6
+
 #endif

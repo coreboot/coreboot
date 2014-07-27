@@ -30,6 +30,9 @@
 #include <cbfs_core.h>
 #include <arch/byteorder.h>
 #include <elog.h>
+#include <memory_info.h>
+#include <spd.h>
+#include <cbmem.h>
 #if CONFIG_CHROMEOS
 #include <vendorcode/google/chromeos/gnvs.h>
 #endif
@@ -116,6 +119,97 @@ static int smbios_processor_name(char *start)
 		}
 	}
 	return smbios_add_string(start, tmp);
+}
+
+/* this function will fill the corresponding manufacturer */
+static void fill_dimm_manufacturer(uint16_t mod_id, struct smbios_type17 *t)
+{
+	switch (mod_id) {
+		case 0xad80:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Hynix/Hyundai");
+			break;
+		case 0xce80:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Samsung");
+			break;
+		case 0xfe02:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Elpida");
+			break;
+		default:
+			t->manufacturer = smbios_add_string(t->eos,
+							    "Unknown");
+			break;
+	}
+}
+
+static int create_smbios_type17_for_dimm(struct dimm_info *dimm,
+					 unsigned long *current, int *handle)
+{
+	struct smbios_type17 *t = (struct smbios_type17 *)*current;
+	uint8_t length;
+	char locator[40];
+
+	memset(t, 0, sizeof(struct smbios_type17));
+	t->memory_type = dimm->ddr_type;
+	t->clock_speed = dimm->ddr_frequency;
+	t->speed = dimm->ddr_frequency;
+	t->type = SMBIOS_MEMORY_DEVICE;
+	t->size = dimm->dimm_size;
+	t->data_width = 8 * (1 << (dimm->bus_width & 0x7));
+	t->total_width = t->data_width + 8 * ((dimm->bus_width & 0x18) >> 3);
+
+	switch (dimm->mod_type) {
+		case SPD_RDIMM:
+		case SPD_MINI_RDIMM:
+			t->form_factor = MEMORY_FORMFACTOR_RIMM;
+			break;
+		case SPD_UDIMM:
+		case SPD_MICRO_DIMM:
+		case SPD_MINI_UDIMM:
+			t->form_factor = MEMORY_FORMFACTOR_DIMM;
+			break;
+		case SPD_SODIMM:
+			t->form_factor = MEMORY_FORMFACTOR_SODIMM;
+			break;
+		default:
+			t->form_factor = MEMORY_FORMFACTOR_UNKNOWN;
+			break;
+	}
+
+	fill_dimm_manufacturer(dimm->mod_id, t);
+	/* put '\0' in the end of data */
+	length = sizeof(dimm->serial);
+	dimm->serial[length - 1] = '\0';
+	if (dimm->serial[0] == 0)
+		t->serial_number = smbios_add_string(t->eos, "None");
+	else
+		t->serial_number = smbios_add_string(t->eos,
+						   (const char *)dimm->serial);
+
+	snprintf(locator, sizeof(locator), "Channel-%d-DIMM-%d",
+		dimm->channel_num, dimm->dimm_num);
+	t->device_locator = smbios_add_string(t->eos, locator);
+
+	snprintf(locator, sizeof(locator), "BANK %d", dimm->bank_locator);
+	t->bank_locator = smbios_add_string(t->eos, locator);
+
+	/* put '\0' in the end of data */
+	length = sizeof(dimm->module_part_number);
+	dimm->module_part_number[length - 1] = '\0';
+	t->part_number = smbios_add_string(t->eos,
+				      (const char *)dimm->module_part_number);
+
+	/* Synchronous = 1 */
+	t->type_detail = 0x0080;
+	/* no handle for error information */
+	t->memory_error_information_handle = 0xFFFE;
+	t->attributes = dimm->rank_per_dimm;
+	t->handle = *handle;
+	*handle += 1;
+	t->length = sizeof(struct smbios_type17) - 2;
+	return t->length + smbios_string_table_len(t->eos);
 }
 
 const char *__attribute__((weak)) smbios_mainboard_bios_version(void)
@@ -327,6 +421,26 @@ static int smbios_write_type11(unsigned long *current, int *handle)
 	return len;
 }
 
+static int smbios_write_type17(unsigned long *current, int *handle)
+{
+	int len = sizeof(struct smbios_type17);
+	int i;
+
+	struct memory_info *meminfo;
+	meminfo = cbmem_find(CBMEM_ID_MEMINFO);
+	if (meminfo == NULL)
+		return 0;	/* can't find mem info in cbmem */
+
+	printk(BIOS_INFO, "Create SMBIOS type 17\n");
+	for (i = 0; i < meminfo->dimm_cnt && i < ARRAY_SIZE(meminfo->dimm); i++) {
+		struct dimm_info *dimm;
+		dimm = &meminfo->dimm[i];
+		len = create_smbios_type17_for_dimm(dimm, current, handle);
+		*current += len;
+	}
+	return meminfo->dimm_cnt * len;
+}
+
 static int smbios_write_type32(unsigned long *current, int handle)
 {
 	struct smbios_type32 *t = (struct smbios_type32 *)*current;
@@ -416,6 +530,7 @@ unsigned long smbios_write_tables(unsigned long current)
 #if CONFIG_ELOG
 	len += elog_smbios_write_type15(&current, handle++);
 #endif
+	len += smbios_write_type17(&current, &handle);
 	len += smbios_write_type32(&current, handle++);
 
 	len += smbios_walk_device_tree(all_devices, &handle, &current);

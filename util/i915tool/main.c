@@ -227,13 +227,13 @@ int main(int argc, char *argv[])
 		bios_image = malloc(8*1048576);
 		fd = fopen(argv[0], "r");
 		amt = fread(bios_image, 65536, 128, fd);
+		fclose(fd);
 		if (amt < 1) {
 			free(bios_image);
 		} else {
 			i915->bios_bin = bios_image;
 			i915->dev_private->opregion.vbt = bios_image;
 			bios_image_size = amt * 65536;
-			fclose(fd);
 		}
 	}
 	/* get the base address for the mmio indirection registers -- BAR 2 */

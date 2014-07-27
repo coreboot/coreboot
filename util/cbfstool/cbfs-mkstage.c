@@ -134,6 +134,7 @@ int parse_elf_to_stage(const struct buffer *input, struct buffer *output,
 			ERROR("Underflow copying out the segment."
 			      "File has %zu bytes left, segment end is %zu\n",
 			      input->size, (size_t)(phdr[i].p_offset + phdr[i].p_filesz));
+			free(buffer);
 			return -1;
 		}
 		memcpy(buffer + (l_start - data_start),

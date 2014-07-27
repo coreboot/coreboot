@@ -333,7 +333,7 @@ static void ddr_ram_setup(void)
 			}
 		}
 		if( b & 0x04 ){     // DDR mandatory CAS 2
-			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_3RD) <= bank ){ // we can manage max Mhz at CAS 2
+			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_3RD) <= bank ){ // we can manage max MHz at CAS 2
 				//print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
@@ -342,7 +342,7 @@ static void ddr_ram_setup(void)
 		//print_debug("\nStarting at CAS 2.5");
 		c = 0x20;          // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
-			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_2ND) <= bank){ // we can manage max Mhz at CAS 2
+			if( smbus_read_byte(DIMM0, SPD_SDRAM_CYCLE_TIME_2ND) <= bank){ // we can manage max MHz at CAS 2
 				//print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}

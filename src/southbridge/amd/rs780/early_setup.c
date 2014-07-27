@@ -186,20 +186,20 @@ static u8 get_nb_rev(device_t nb_dev)
  *****************************************/
 static const u8 rs780_ibias[] = {
 	/* 1, 3 are reserved. */
-	[0x0] = 0x4C,		/* 200Mhz HyperTransport 1 only */
-	[0x2] = 0x4C,		/* 400Mhz HyperTransport 1 only */
-	[0x4] = 0xB6,		/* 600Mhz HyperTransport 1 only */
-	[0x5] = 0x4C,		/* 800Mhz HyperTransport 1 only */
-	[0x6] = 0x9D,		/* 1Ghz   HyperTransport 1 only */
+	[0x0] = 0x4C,		/* 200MHz HyperTransport 1 only */
+	[0x2] = 0x4C,		/* 400MHz HyperTransport 1 only */
+	[0x4] = 0xB6,		/* 600MHz HyperTransport 1 only */
+	[0x5] = 0x4C,		/* 800MHz HyperTransport 1 only */
+	[0x6] = 0x9D,		/* 1GHz   HyperTransport 1 only */
 	/* HT3 for Family 10 */
-	[0x7] = 0xB6,		/* 1.2Ghz HyperTransport 3 only */
-	[0x8] = 0x2B,		/* 1.4Ghz HyperTransport 3 only */
-	[0x9] = 0x4C,		/* 1.6Ghz HyperTransport 3 only */
-	[0xa] = 0x6C,		/* 1.8Ghz HyperTransport 3 only */
-	[0xb] = 0x9D,		/* 2.0Ghz HyperTransport 3 only */
-	[0xc] = 0xAD,		/* 2.2Ghz HyperTransport 3 only */
-	[0xd] = 0xB6,		/* 2.4Ghz HyperTransport 3 only */
-	[0xe] = 0xC6,		/* 2.6Ghz HyperTransport 3 only */
+	[0x7] = 0xB6,		/* 1.2GHz HyperTransport 3 only */
+	[0x8] = 0x2B,		/* 1.4GHz HyperTransport 3 only */
+	[0x9] = 0x4C,		/* 1.6GHz HyperTransport 3 only */
+	[0xa] = 0x6C,		/* 1.8GHz HyperTransport 3 only */
+	[0xb] = 0x9D,		/* 2.0GHz HyperTransport 3 only */
+	[0xc] = 0xAD,		/* 2.2GHz HyperTransport 3 only */
+	[0xd] = 0xB6,		/* 2.4GHz HyperTransport 3 only */
+	[0xe] = 0xC6,		/* 2.6GHz HyperTransport 3 only */
 };
 
 static void rs780_htinit(void)

@@ -265,14 +265,14 @@ void SetUMARam(void)
 	outb(0x68, 0x03c4);
 	outb(VgaPortVal, 0x03c5);
 
-	//  ECLK Selection (00:166Mhz, 01:185Mhz, 10:250Mhz, 11:275Mhz)
+	//  ECLK Selection (00:166MHz, 01:185MHz, 10:250MHz, 11:275MHz)
 	// set 3C5.5A[0]=1, address maps to secondary resgiters
 	outb(0x5a, 0x03c4);
 	ByteVal = inb(0x03c5);
 	ByteVal |= 0x01;
 	outb(ByteVal, 0x03c5);
 
-	// Set 3D5.4C[7:6] (00:166Mhz, 01:185Mhz, 10:250Mhz, 11:275Mhz)
+	// Set 3D5.4C[7:6] (00:166MHz, 01:185MHz, 10:250MHz, 11:275MHz)
 	outb(0x4c, 0x03d4);
 	ByteVal = inb(0x03d5);
 	ByteVal = (ByteVal & 0x3F) | 0x80;

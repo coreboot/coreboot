@@ -1276,7 +1276,7 @@ static void configure_e7501_dram_timing(const struct mem_controller *ctrl,
 
 	/* Trd */
 
-	/* Set to a 7 clock read delay. This is for 133Mhz
+	/* Set to a 7 clock read delay. This is for 133MHz
 	 *  with a CAS latency of 2.5  if 2.0 a 6 clock
 	 *  delay is good  */
 

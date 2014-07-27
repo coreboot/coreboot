@@ -741,7 +741,7 @@ void procConifg(sMCTStruct *pMCTData,sDCTStruct *pDCTData, u8 dimm, u8 pass)
 				pDCTData->WLGrossDelay[MAX_BYTE_LANES*dimm+ByteLane] << 5;
 			/* SeedTotalPreScaling = (the total delay value in F2x[1, 0]9C_x[4A:30] from pass 1 of write levelization
 			   training) - RegisterDelay. */
-			/* MemClkFreq: 3: 400Mhz; 4: 533Mhz; 5: 667Mhz; 6: 800Mhz */
+			/* MemClkFreq: 3: 400MHz; 4: 533MHz; 5: 667MHz; 6: 800MHz */
 			SeedTotal = (u16) (RegisterDelay + ((((u32) SeedTotal - RegisterDelay) *
 							     freq_tab[MemClkFreq-3]) / 400));
 			Seed_Gross = (SeedTotal & 0x20) != 0 ? 1 : 2;

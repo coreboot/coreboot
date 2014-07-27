@@ -248,7 +248,7 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 * 5. MCi_STS from shutdown/warm reset recorded (if desired) prior to entry
 	 * 6. All var MTRRs reset to zero
 	 * 7. State of NB_CFG.DisDatMsk set properly on all CPUs
-	 * 8. All CPUs at 2Ghz Speed (unless DQS training is not installed).
+	 * 8. All CPUs at 2GHz Speed (unless DQS training is not installed).
 	 * 9. All cHT links at max Speed/Width (unless DQS training is not installed).
 	 *
 	 *
@@ -258,13 +258,13 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 * j CL(j)       k   F(k)
 	 * --------------------------
 	 * 0 2.0         -   -
-	 * 1 3.0         1   200 Mhz
-	 * 2 4.0         2   266 Mhz
-	 * 3 5.0         3   333 Mhz
-	 * 4 6.0         4   400 Mhz
-	 * 5 7.0         5   533 Mhz
-	 * 6 8.0         6   667 Mhz
-	 * 7 9.0         7   800 Mhz
+	 * 1 3.0         1   200 MHz
+	 * 2 4.0         2   266 MHz
+	 * 3 5.0         3   333 MHz
+	 * 4 6.0         4   400 MHz
+	 * 5 7.0         5   533 MHz
+	 * 6 8.0         6   667 MHz
+	 * 7 9.0         7   800 MHz
 	 */
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
@@ -487,9 +487,9 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 				 * when 400, 533, 667, it will support dimm0/1/2/3,
 				 * and set conf for dimm0, hw will copy to dimm1/2/3
 				 * set for dimm1, hw will copy to dimm3
-				 * Rev A/B only support DIMM0/1 when 800Mhz and above
+				 * Rev A/B only support DIMM0/1 when 800MHz and above
 				 *   + 0x100 to next dimm
-				 * Rev C support DIMM0/1/2/3 when 800Mhz and above
+				 * Rev C support DIMM0/1/2/3 when 800MHz and above
 				 *   + 0x100 to next dimm
 				*/
 				for (DIMM = 0; DIMM < 4; DIMM++) {

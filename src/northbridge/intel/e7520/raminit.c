@@ -439,12 +439,12 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		} else {
 			drt |= (2<<22);
 		}
-		/* Docs say use 55 for all 200Mhz */
+		/* Docs say use 55 for all 200MHz */
 		drt |= (0x055<<24);
 	}
-	else if(value <= 0x60) { /* 167 Mhz */
+	else if(value <= 0x60) { /* 167 MHz */
 		/* according to new documentation CAS latency is 00
-		 * for bits 3:2 for all 167 Mhz
+		 * for bits 3:2 for all 167 MHz
 		drt |= ((index&3)<<2); */  /* set CAS latency */
 		if((index&0x0ff00)<=0x03000) {
 			drt |= (1<<8);  /* Trp RAS Precharg */
@@ -484,10 +484,10 @@ static int spd_set_drt_attributes(const struct mem_controller *ctrl,
 		} else {
 			drt |= (2<<22);
 		}
-		/* Docs state to use 99 for all 167 Mhz */
+		/* Docs state to use 99 for all 167 MHz */
 		drt |= (0x099<<24);
 	}
-	else if(value <= 0x75) { /* 133 Mhz */
+	else if(value <= 0x75) { /* 133 MHz */
 		drt |= ((index&3)<<2);  /* set CAS latency */
 		if((index&0x0ff00)<=0x03c00) {
 			drt |= (1<<8);  /* Trp RAS Precharg */

@@ -290,7 +290,7 @@ void mct_BeforeDramInit_D(struct DCTStatStruc *pDCTstat, u32 dct)
 	tmp = pDCTstat->LogicalCPUID;
 	if ((tmp == AMD_DR_A0A) || (tmp == AMD_DR_A1B) || (tmp == AMD_DR_A2)) {
 		Speed = pDCTstat->Speed;
-		/* MemClkFreq = 333MHz or 533Mhz */
+		/* MemClkFreq = 333MHz or 533MHz */
 		if((Speed == 3) || (Speed == 2)) {
 			if(pDCTstat->GangedMode) {
 				ch_start = 0;

@@ -203,7 +203,7 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 *     entry
 	 * 6. All var MTRRs reset to zero
 	 * 7. State of NB_CFG.DisDatMsk set properly on all CPUs
-	 * 8. All CPUs at 2Ghz Speed (unless DQS training is not installed).
+	 * 8. All CPUs at 2GHz Speed (unless DQS training is not installed).
 	 * 9. All cHT links at max Speed/Width (unless DQS training is not
 	 *     installed).
 	 *
@@ -212,11 +212,11 @@ static void mctAutoInitMCT_D(struct MCTStatStruc *pMCTstat,
 	 * j CL(j)       k   F(k)
 	 * --------------------------
 	 * 0 2.0         -   -
-	 * 1 3.0         1   200 Mhz
-	 * 2 4.0         2   266 Mhz
-	 * 3 5.0         3   333 Mhz
-	 * 4 6.0         4   400 Mhz
-	 * 5 7.0         5   533 Mhz
+	 * 1 3.0         1   200 MHz
+	 * 2 4.0         2   266 MHz
+	 * 3 5.0         3   333 MHz
+	 * 4 6.0         4   400 MHz
+	 * 5 7.0         5   533 MHz
 	 */
 	u8 Node, NodesWmem;
 	u32 node_sys_base;
@@ -437,9 +437,9 @@ static void LoadDQSSigTmgRegs_D(struct MCTStatStruc *pMCTstat,
 				 * when 400, 533, 667, it will support dimm0/1/2/3,
 				 * and set conf for dimm0, hw will copy to dimm1/2/3
 				 * set for dimm1, hw will copy to dimm3
-				 * Rev A/B only support DIMM0/1 when 800Mhz and above
+				 * Rev A/B only support DIMM0/1 when 800MHz and above
 				 *   + 0x100 to next dimm
-				 * Rev C support DIMM0/1/2/3 when 800Mhz and above
+				 * Rev C support DIMM0/1/2/3 when 800MHz and above
 				 *   + 0x100 to next dimm
 				*/
 				for (DIMM = 0; DIMM < 2; DIMM++) {
@@ -3615,7 +3615,7 @@ static void mct_BeforeDramInit_Prod_D(struct MCTStatStruc *pMCTstat,
 	u32 dev = pDCTstat->dev_dct;
 
 	// FIXME: skip for Ax
-	if ((pDCTstat->Speed == 3) || ( pDCTstat->Speed == 2)) { // MemClkFreq = 667MHz or 533Mhz
+	if ((pDCTstat->Speed == 3) || ( pDCTstat->Speed == 2)) { // MemClkFreq = 667MHz or 533MHz
 		for (i=0; i < 2; i++) {
 			reg_off = 0x100 * i;
 			Set_NB32(dev,  0x98 + reg_off, 0x0D000030);
@@ -3630,7 +3630,7 @@ static void mct_AdjustDelayRange_D(struct MCTStatStruc *pMCTstat,
 			struct DCTStatStruc *pDCTstat, u8 *dqs_pos)
 {
 	// FIXME: Skip for Ax
-	if ((pDCTstat->Speed == 3) || ( pDCTstat->Speed == 2)) { // MemClkFreq = 667MHz or 533Mhz
+	if ((pDCTstat->Speed == 3) || ( pDCTstat->Speed == 2)) { // MemClkFreq = 667MHz or 533MHz
 		*dqs_pos = 32;
 	}
 }

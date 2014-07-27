@@ -219,10 +219,10 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 		else
 			step = ((fid_cur / 2) - (fid_new / 2)) * 2;
 
-		/* If 200Mhz step OR past 3200 max table value */
+		/* If 200MHz step OR past 3200 max table value */
 		if ((step == 2) || (fid_new >= 0x18 || fid_cur >= 0x18)) {
 
-			printk(BIOS_DEBUG, "200MHZ step ");
+			printk(BIOS_DEBUG, "200MHz step ");
 
 			/* Step +/- 200MHz at a time */
 			if (fid_cur < fid_new)
@@ -230,7 +230,7 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 			else
 				fid_temp = fid_cur - 2;
 
-		} else if (step > 2) {	/* If more than a 200Mhz step */
+		} else if (step > 2) {	/* If more than a 200MHz step */
 			int temp;
 
 			/* look it up in the table */
@@ -246,15 +246,15 @@ static u32 set_fidvid(unsigned apicid, unsigned fidvid, int showmessage)
 			else
 				break;	/* table error */
 
-		} else {	/* step < 2 (100MHZ) */
-			printk(BIOS_DEBUG, "100MHZ step ");
+		} else {	/* step < 2 (100MHz) */
+			printk(BIOS_DEBUG, "100MHz step ");
 
 			/* The table adjust in 200MHz increments. If requested,
 			 * do the 100MHz increment if the CPU supports it.*/
 			if (cpuid_edx(0x80000007) & (1 << 6)) {
 				fid_temp = fid_cur + 1;
 			} else {
-				/* 100 MHZ not supported. Get out of the loop */
+				/* 100 MHz not supported. Get out of the loop */
 				printk(BIOS_DEBUG, "is not supported.\n");
 				break;
 			}

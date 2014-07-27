@@ -334,7 +334,7 @@ static void chrome9hd_enable(device_t dev)
 {
 	device_t mcu = dev_find_device(PCI_VENDOR_ID_VIA,
 				       PCI_DEVICE_ID_VIA_VX900_MEMCTRL, 0);
-	/* FIXME: here? -=- ACLK 250Mhz */
+	/* FIXME: here? -=- ACLK 250MHz */
 	pci_mod_config8(mcu, 0xbb, 0, 0x01);
 }
 

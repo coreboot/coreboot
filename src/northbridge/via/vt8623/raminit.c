@@ -21,12 +21,12 @@
 /*
   Automatically detect and set up ddr dram on the CLE266 chipset.
   Assumes DDR memory, though chipset also supports SDRAM
-  Assumes at least 266Mhz memory as no attempt is made to clock
+  Assumes at least 266MHz memory as no attempt is made to clock
   the chipset down if slower memory is installed.
   So far tested on:
-	256 Mb 266Mhz 1 Bank (i.e. single sided)
-	256 Mb 266Mhz 2 Bank (i.e. double sided)
-	512 Mb 266Mhz 2 Bank (i.e. double sided)
+	256 Mb 266MHz 1 Bank (i.e. single sided)
+	256 Mb 266MHz 2 Bank (i.e. double sided)
+	512 Mb 266MHz 2 Bank (i.e. double sided)
 */
 /* ported and enhanced from assembler level code in coreboot v1 */
 
@@ -199,13 +199,13 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		c = 0x30;
 		/* see if we can better it */
 		if( b & 0x08 ){     // DDR mandatory CAS 2.5
-			if( smbus_read_byte(DIMM0,23) <= 0x75 ){ // we can manage 133Mhz at CAS 2.5
+			if( smbus_read_byte(DIMM0,23) <= 0x75 ){ // we can manage 133MHz at CAS 2.5
 				print_debug("\nWe can do CAS 2.5");
 				c = 0x20;
 			}
 		}
 		if( b & 0x04 ){     // DDR mandatory CAS 2
-			if( smbus_read_byte(DIMM0,25) <= 0x75 ){ // we can manage 133Mhz at CAS 2
+			if( smbus_read_byte(DIMM0,25) <= 0x75 ){ // we can manage 133MHz at CAS 2
 				print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
@@ -214,7 +214,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 		print_debug("\nStarting at CAS 2.5");
 		c = 0x20;          // assume CAS 2.5
 		if( b & 0x04){      // Should always happen
-			if( smbus_read_byte(DIMM0,23) <= 0x75){ // we can manage 133Mhz at CAS 2
+			if( smbus_read_byte(DIMM0,23) <= 0x75){ // we can manage 133MHz at CAS 2
 				print_debug("\nWe can do CAS 2");
 				c = 0x10;
 			}
@@ -308,7 +308,7 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 /*
     CPU Frequency  Device 0 Offset 54
 
-    CPU Frequency          54[7,6]  bootstraps at 0xc0 (133Mhz)
+    CPU Frequency          54[7,6]  bootstraps at 0xc0 (133MHz)
     DRAM burst length = 8  54[5]
 */
 	pci_write_config8(north,0x54,0xe0);
@@ -567,10 +567,10 @@ static void ddr_ram_setup(const struct mem_controller *ctrl)
 
     Rx69 (DRAM freq)  Rx58 (chip tech)  Rx6a
 
-    133Mhz            64/128Mb          0x86
-    133Mhz            256/512Mb         0x43
-    100Mhz            64/128Mb          0x65
-    100Mhz            256/512Mb         0x32
+    133MHz            64/128Mb          0x86
+    133MHz            256/512Mb         0x43
+    100MHz            64/128Mb          0x65
+    100MHz            256/512Mb         0x32
 */
 
 	b = pci_read_config8(north,0x58);

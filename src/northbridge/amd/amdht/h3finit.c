@@ -1518,7 +1518,7 @@ static void hammerSublinkFixup(sMainData *pDat)
 				{
 					if ((loFreq != 5) &&  /* { 9, 5} 1600MHz /  800MHz 2:1 */
 						(loFreq != 2) &&  /* { 9, 2} 1600MHz /  400MHz 4:1 */
-						(loFreq != 0) )   /* { 9, 0} 1600MHz /  200Mhz 8:1 */
+						(loFreq != 0) )   /* { 9, 0} 1600MHz /  200MHz 8:1 */
 						downgrade = TRUE;
 				}
 				else if (hiFreq == 7)

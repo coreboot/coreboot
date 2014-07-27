@@ -284,14 +284,14 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 *	   111 = reserved
 	 * [ 7: 7] Reserved
 	 * [12: 8] Tref (Refresh Rate)
-	 *	   00000 = 100Mhz 4K rows
-	 *	   00001 = 133Mhz 4K rows
-	 *	   00010 = 166Mhz 4K rows
-	 *	   00011 = 200Mhz 4K rows
-	 *	   01000 = 100Mhz 8K/16K rows
-	 *	   01001 = 133Mhz 8K/16K rows
-	 *	   01010 = 166Mhz 8K/16K rows
-	 *	   01011 = 200Mhz 8K/16K rows
+	 *	   00000 = 100MHz 4K rows
+	 *	   00001 = 133MHz 4K rows
+	 *	   00010 = 166MHz 4K rows
+	 *	   00011 = 200MHz 4K rows
+	 *	   01000 = 100MHz 8K/16K rows
+	 *	   01001 = 133MHz 8K/16K rows
+	 *	   01010 = 166MHz 8K/16K rows
+	 *	   01011 = 200MHz 8K/16K rows
 	 * [19:13] Reserved
 	 * [22:20] Twcl (Write CAS Latency)
 	 *	   000 = 1 Mem clock after CAS# (Unbuffered Dimms)
@@ -414,12 +414,12 @@ static void sdram_set_registers(const struct mem_controller *ctrl)
 	 *	   0 = Use Idle Cycle Limit
 	 *	   1 = Generate a dynamic Idle cycle limit
 	 * [22:20] DRAM MEMCLK Frequency
-	 *	   000 = 100Mhz
+	 *	   000 = 100MHz
 	 *	   001 = reserved
-	 *	   010 = 133Mhz
+	 *	   010 = 133MHz
 	 *	   011 = reserved
 	 *	   100 = reserved
-	 *	   101 = 166Mhz
+	 *	   101 = 166MHz
 	 *	   110 = reserved
 	 *	   111 = reserved
 	 * [24:23] Reserved

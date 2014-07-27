@@ -295,7 +295,7 @@ static uint16_t read_freq_cap(device_t dev, uint8_t pos)
 
 	id = pci_read_config32(dev, 0);
 
-	/* AMD K8 Unsupported 1Ghz? */
+	/* AMD K8 Unsupported 1GHz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
 		freq_cap &= ~(1 << HT_FREQ_1000Mhz);
 	}

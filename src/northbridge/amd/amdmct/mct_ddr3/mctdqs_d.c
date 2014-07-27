@@ -668,8 +668,8 @@ static void StoreDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
 	/* When 400, 533, 667, it will support dimm0/1/2/3,
 	 * and set conf for dimm0, hw will copy to dimm1/2/3
 	 * set for dimm1, hw will copy to dimm3
-	 * Rev A/B only support DIMM0/1 when 800Mhz and above + 0x100 to next dimm
-	 * Rev C support DIMM0/1/2/3 when 800Mhz and above  + 0x100 to next dimm
+	 * Rev A/B only support DIMM0/1 when 800MHz and above + 0x100 to next dimm
+	 * Rev C support DIMM0/1/2/3 when 800MHz and above  + 0x100 to next dimm
 	 */
 
 	/* FindDQSDatDimmVal_D is not required since we use an array */
@@ -709,8 +709,8 @@ static void GetDQSDatStrucVal_D(struct MCTStatStruc *pMCTstat,
 	/* When 400, 533, 667, it will support dimm0/1/2/3,
 	 * and set conf for dimm0, hw will copy to dimm1/2/3
 	 * set for dimm1, hw will copy to dimm3
-	 * Rev A/B only support DIMM0/1 when 800Mhz and above + 0x100 to next dimm
-	 * Rev C support DIMM0/1/2/3 when 800Mhz and above  + 0x100 to next dimm
+	 * Rev A/B only support DIMM0/1 when 800MHz and above + 0x100 to next dimm
+	 * Rev C support DIMM0/1/2/3 when 800MHz and above  + 0x100 to next dimm
 	 */
 
 	/* FindDQSDatDimmVal_D is not required since we use an array */

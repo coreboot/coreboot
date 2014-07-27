@@ -2028,10 +2028,10 @@ static void sdram_program_graphics_frequency(struct sys_info *sysinfo)
 
 	printk(BIOS_DEBUG, "Render: ");
 	switch (freq) {
-	case CRCLK_166MHz: printk(BIOS_DEBUG, "166Mhz"); break;
-	case CRCLK_200MHz: printk(BIOS_DEBUG, "200Mhz"); break;
-	case CRCLK_250MHz: printk(BIOS_DEBUG, "250Mhz"); break;
-	case CRCLK_400MHz: printk(BIOS_DEBUG, "400Mhz"); break;
+	case CRCLK_166MHz: printk(BIOS_DEBUG, "166MHz"); break;
+	case CRCLK_200MHz: printk(BIOS_DEBUG, "200MHz"); break;
+	case CRCLK_250MHz: printk(BIOS_DEBUG, "250MHz"); break;
+	case CRCLK_400MHz: printk(BIOS_DEBUG, "400MHz"); break;
 	}
 
 	if (i945_silicon_revision() == 0) {

@@ -1384,7 +1384,7 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 			ASSERT((temp >= HT_FREQUENCY_600M && temp <= HT_FREQUENCY_2600M)
 				|| (temp == HT_FREQUENCY_200M) || (temp == HT_FREQUENCY_400M));
 			AmdPCIWriteBits(linkBase + HTHOST_FREQ_REV_REG, 11, 8, &temp);
-			if (temp > HT_FREQUENCY_1000M) /*  Gen1 = 200Mhz -> 1000MHz, Gen3 = 1200MHz -> 2600MHz */
+			if (temp > HT_FREQUENCY_1000M) /*  Gen1 = 200MHz -> 1000MHz, Gen3 = 1200MHz -> 2600MHz */
 			{
 				/* Enable  for Gen3 frequencies */
 				temp = 1;
@@ -1420,7 +1420,7 @@ static void setLinkData(sMainData *pDat, cNorthBridge *nb)
 
 			/* Handle additional HT3 frequency requirements, if needed,
 			 * or clear them if switching down to ht1 on a warm reset.
-			 * Gen1 = 200Mhz -> 1000MHz, Gen3 = 1200MHz -> 2600MHz
+			 * Gen1 = 200MHz -> 1000MHz, Gen3 = 1200MHz -> 2600MHz
 			 *
 			 * Even though we assert if debugging, we need to check that the capability was found
 			 * always, since this is an unknown hardware device, also we are taking

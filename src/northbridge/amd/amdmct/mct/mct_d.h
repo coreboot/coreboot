@@ -35,8 +35,8 @@
 
 #define J_MIN		0		/* j loop constraint. 1=CL 2.0 T*/
 #define J_MAX		5		/* j loop constraint. 5=CL 7.0 T*/
-#define K_MIN		1		/* k loop constraint. 1=200 Mhz*/
-#define K_MAX		5		/* k loop constraint. 5=533 Mhz*/
+#define K_MIN		1		/* k loop constraint. 1=200 MHz*/
+#define K_MAX		5		/* k loop constraint. 5=533 MHz*/
 #define CL_DEF		2		/* Default value for failsafe operation. 2=CL 4.0 T*/
 #define T_DEF		1		/* Default value for failsafe operation. 1=5ns (cycle time)*/
 
@@ -325,11 +325,11 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u8 DATAload[2];		/*Number of ranks loading CH A DATA*/
 		/* Number of ranks loading CH B DATA*/
 	u8 DIMMAutoSpeed;	/*Max valid Mfg. Speed of DIMMs
-		1=200Mhz
-		2=266Mhz
-		3=333Mhz
-		4=400Mhz
-		5=533Mhz*/
+		1=200MHz
+		2=266MHz
+		3=333MHz
+		4=400MHz
+		5=533MHz*/
 	u8 DIMMCASL;		/* Min valid Mfg. CL bitfield
 		0=2.0
 		1=3.0
@@ -345,10 +345,10 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u16 DIMMTrrd;		/* Minimax Trrd*40 (ns) of DIMMs*/
 	u16 DIMMTwtr;		/* Minimax Twtr*40 (ns) of DIMMs*/
 	u8 Speed;		/* Bus Speed (to set Controller)
-		1=200Mhz
-		2=266Mhz
-		3=333Mhz
-		4=400Mhz */
+		1=200MHz
+		2=266MHz
+		3=333MHz
+		4=400MHz */
 	u8 CASL;		/* CAS latency DCT setting
 		0=2.0
 		1=3.0
@@ -378,10 +378,10 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u32 DCTHoleBase;	/* If not zero, BASE[39:8] (system address) of dram hole for HW remapping.  Dram hole exists on this Node's DCTs. */
 	u32 DCTSysLimit;	/* LIMIT[39:8] (system address) of this Node's DCTs */
 	u16 PresetmaxFreq;	/* Maximum OEM defined DDR frequency
-		200=200Mhz (DDR400)
-		266=266Mhz (DDR533)
-		333=333Mhz (DDR667)
-		400=400Mhz (DDR800) */
+		200=200MHz (DDR400)
+		266=266MHz (DDR533)
+		333=333MHz (DDR667)
+		400=400MHz (DDR800) */
 	u8 _2Tmode;		/* 1T or 2T CMD mode (slow access mode)
 		1=1T
 		2=2T */
@@ -476,9 +476,9 @@ struct DCTStatStruc {		/* A per Node structure*/
 	u8 WrDatGrossH;
 	u8 DqsRcvEnGrossL;
 	// NOTE: Not used - u8 NodeSpeed		/* Bus Speed (to set Controller)
-		/* 1=200Mhz */
-		/* 2=266Mhz */
-		/* 3=333Mhz */
+		/* 1=200MHz */
+		/* 2=266MHz */
+		/* 3=333MHz */
 	// NOTE: Not used - u8 NodeCASL		/* CAS latency DCT setting
 		/* 0=2.0 */
 		/* 1=3.0 */
@@ -574,10 +574,10 @@ struct DCTStatStruc {		/* A per Node structure*/
 #define NV_MAX_NODES		1	/* Number of Nodes/Sockets (4-bits)*/
 #define NV_MAX_DIMMS		2	/* Number of DIMM slots for the specified Node ID (4-bits)*/
 #define NV_MAX_MEMCLK		3	/* Maximum platform demonstrated Memclock (10-bits)
-					    200=200Mhz (DDR400)
-					    266=266Mhz (DDR533)
-					    333=333Mhz (DDR667)
-					    400=400Mhz (DDR800)*/
+					    200=200MHz (DDR400)
+					    266=266MHz (DDR533)
+					    333=333MHz (DDR667)
+					    400=400MHz (DDR800)*/
 #define NV_ECC_CAP		4	/* Bus ECC capable (1-bits)
 					    0=Platform not capable
 					    1=Platform is capable*/
@@ -599,10 +599,10 @@ struct DCTStatStruc {		/* A per Node structure*/
 					    1=Auto, user limit provided in NV_MemCkVal
 					    2=Manual, user value provided in NV_MemCkVal*/
 #define NV_MemCkVal		11	/* Memory Clock Value (2-bits)
-					    0=200Mhz
-					    1=266Mhz
-					    2=333Mhz
-					    3=400Mhz*/
+					    0=200MHz
+					    1=266MHz
+					    2=333MHz
+					    3=400MHz*/
 
 /*Dram Configuration*/
 #define NV_BankIntlv		20	/* Dram Bank (chip-select) Interleaving (1-bits)

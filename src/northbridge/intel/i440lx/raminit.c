@@ -416,7 +416,7 @@ static void sdram_enable(void)
 	/* 0. Wait until power/voltages and clocks are stable (200us). */
 	udelay(200);
 
-	/* 1. Apply NOP. Wait 200 clock cycles (clock might be 60 or 66 Mhz). */
+	/* 1. Apply NOP. Wait 200 clock cycles (clock might be 60 or 66 MHz). */
 	PRINT_DEBUG("RAM Enable 1: Apply NOP\n");
 	do_ram_command(RAM_COMMAND_NOP);
 	udelay(200);

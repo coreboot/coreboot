@@ -135,7 +135,7 @@ static uint16_t ht_read_freq_cap(device_t dev, uint8_t pos)
 		return freq_cap;
 	}
 
-	/* AMD K8 Unsupported 1Ghz? */
+	/* AMD K8 Unsupported 1GHz? */
 	if (id == (PCI_VENDOR_ID_AMD | (0x1100 << 16))) {
 	#if CONFIG_K8_HT_FREQ_1G_SUPPORT
 		#if !CONFIG_K8_REV_F_SUPPORT

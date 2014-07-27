@@ -196,7 +196,7 @@ static void checkDDRMax(void)
 		spd_byte0 = spd_byte1;
 	}
 
-	/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
+	/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 	speed = 20000 / (((spd_byte0 >> 4) * 10) + (spd_byte0 & 0x0F));
 
 	/* current speed > max speed? */
@@ -253,14 +253,14 @@ static u8 getcasmap(u32 dimm, u16 glspeed)
 		/* IF -.5 timing is supported, check -.5 timing > GeodeLink */
 		spd_byte = spd_read_byte(dimm, SPD_SDRAM_CYCLE_TIME_2ND);
 		if (spd_byte != 0) {
-			/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
+			/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 			dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 			if (dimm_speed >= glspeed) {
 				casmap_shift = 1; /* -.5 is a shift of 1 */
 				/* IF -1 timing is supported, check -1 timing > GeodeLink */
 				spd_byte = spd_read_byte(dimm, SPD_SDRAM_CYCLE_TIME_3RD);
 				if (spd_byte != 0) {
-					/* Turn SPD ns time into MHZ. Check what the asm does to this math. */
+					/* Turn SPD ns time into MHz. Check what the asm does to this math. */
 					dimm_speed = 20000 / (((spd_byte >> 4) * 10) + (spd_byte & 0x0F));
 					if (dimm_speed >= glspeed) {
 						casmap_shift = 2; /* -1 is a shift of 2 */
@@ -353,7 +353,7 @@ static void set_latencies(void)
 		spd_byte0 = spd_byte1;
 	}
 
-	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
+	/* (ns/(1/MHz) = (us*MHz)/1000 = clocks/1000 = clocks) */
 	spd_byte1 = (spd_byte0 * memspeed) / 1000;
 	if (((spd_byte0 * memspeed) % 1000)) {
 		++spd_byte1;
@@ -373,7 +373,7 @@ static void set_latencies(void)
 		spd_byte0 = spd_byte1;
 	}
 
-	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
+	/* (ns/(1/MHz) = (us*MHz)/1000 = clocks/1000 = clocks) */
 	spd_byte1 = ((spd_byte0 >> 2) * memspeed) / 1000;
 	if ((((spd_byte0 >> 2) * memspeed) % 1000)) {
 		++spd_byte1;
@@ -393,7 +393,7 @@ static void set_latencies(void)
 		spd_byte0 = spd_byte1;
 	}
 
-	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
+	/* (ns/(1/MHz) = (us*MHz)/1000 = clocks/1000 = clocks) */
 	spd_byte1 = ((spd_byte0 >> 2) * memspeed) / 1000;
 	if ((((spd_byte0 >> 2) * memspeed) % 1000)) {
 		++spd_byte1;
@@ -413,7 +413,7 @@ static void set_latencies(void)
 		spd_byte0 = spd_byte1;
 	}
 
-	/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
+	/* (ns/(1/MHz) = (us*MHz)/1000 = clocks/1000 = clocks) */
 	spd_byte1 = ((spd_byte0 >> 2) * memspeed) / 1000;
 	if ((((spd_byte0 >> 2) * memspeed) % 1000)) {
 		++spd_byte1;
@@ -446,7 +446,7 @@ static void set_latencies(void)
 	}
 
 	if (spd_byte0) {
-		/* (ns/(1/MHz) = (us*MHZ)/1000 = clocks/1000 = clocks) */
+		/* (ns/(1/MHz) = (us*MHz)/1000 = clocks/1000 = clocks) */
 		spd_byte1 = (spd_byte0 * memspeed) / 1000;
 		if (((spd_byte0 * memspeed) % 1000)) {
 			++spd_byte1;
@@ -460,7 +460,7 @@ static void set_latencies(void)
 	msr.lo |= dimm_setting;
 	wrmsr(MC_CF1017_DATA, msr);
 
-	/* tWTR: Set tWTR to 2 for 400MHz and above GLBUS (200Mhz mem) other wise it stay default(1) */
+	/* tWTR: Set tWTR to 2 for 400MHz and above GLBUS (200MHz mem) other wise it stay default(1) */
 	if (memspeed > 198) {
 		msr = rdmsr(MC_CF1017_DATA);
 		msr.lo &= ~(0x7 << CF1017_LOWER_WR_TO_RD_SHIFT);
@@ -672,7 +672,7 @@ void sdram_enable(int controllers, const struct mem_controller *ctrl)
 	msr.lo &= ~(CF07_LOWER_PROG_DRAM_SET | CF07_LOWER_LOAD_MODE_DLL_RESET);
 	wrmsr(msrnum, msr);
 
-	/* 2us delay (200 clocks @ 200Mhz). We probably really don't need this but.... better safe. */
+	/* 2us delay (200 clocks @ 200MHz). We probably really don't need this but.... better safe. */
 	/* Wait 2 PORT61 ticks. between 15us and 30us */
 	/* This would be endless if the timer is stuck. */
 	while ((inb(0x61))) ;	/* find the first edge */

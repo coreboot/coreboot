@@ -156,8 +156,8 @@
 #define PAD_VAL_DEFAULT		PAD_VAL_INPUT
 
 /* Configure GPIOs as MMIO by default */
-#define GPIO_INPUT_PU_10K \
-	{ .pad_conf0 = PAD_PU_10K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT, \
+#define GPIO_INPUT_PU_10K(_func) \
+	{ .pad_conf0 = PAD_FUNC##_func | PAD_PU_10K | PAD_PULL_UP | PAD_CONFIG0_DEFAULT, \
 	  .pad_conf1 = PAD_CONFIG1_DEFAULT, \
 	  .pad_val   = PAD_VAL_INPUT, \
 	  .use_sel   = GPIO_USE_MMIO, \
@@ -265,9 +265,10 @@
 /* Common default GPIO settings */
 #define GPIO_INPUT 	GPIO_INPUT_NOPU
 #define GPIO_INPUT_LEGACY	GPIO_INPUT_LEGACY_NOPU
-#define GPIO_INPUT_PU	GPIO_INPUT_PU_10K
+#define GPIO_INPUT_PU	GPIO_INPUT_PU_10K(0)
 #define GPIO_INPUT_PD 	GPIO_INPUT_PD_10K
-#define GPIO_NC		GPIO_INPUT_PU_10K
+#define GPIO_NC			GPIO_INPUT_PU_10K(0)
+#define GPIO_NC1		GPIO_INPUT_PU_10K(1)
 #define GPIO_DEFAULT 	GPIO_FUNC0
 
 /* 16 DirectIRQs per supported bank */

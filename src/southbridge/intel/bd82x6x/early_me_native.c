@@ -138,7 +138,7 @@ int intel_early_me_init_done(u8 status)
 	u32 meDID;
 
 	hfs = (pci_read_config32(PCI_DEV(0, 0x16, 0), PCI_ME_HFS) & 0xff000) >> 12;
-	      
+
 	opmode = (hfs & 0xf0) >> 4;
 	errorcode = hfs & 0xf;
 
@@ -167,7 +167,7 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME:  Current state   : 0x%x\n", (me_fws2 & 0xff0000) >> 16);
 	printk(BIOS_NOTICE, "ME:  Current PM event: 0x%x\n", (me_fws2 & 0xf000000) >> 24);
 	printk(BIOS_NOTICE, "ME:  Progress code   : 0x%x\n", (me_fws2 & 0xf0000000) >> 28);
-	
+
 	// Poll cpu replaced for 50ms
 	millisec = 0;
 	while ((((me_fws2 & 0x100) >> 8) == 0) && millisec < 50) {
@@ -178,7 +178,7 @@ int intel_early_me_init_done(u8 status)
 	if (millisec >= 50 || ((me_fws2 & 0x100) >> 8) == 0x0) {
 		printk(BIOS_NOTICE, "Waited long enough, or CPU was not replaced, continue...\n");
 	} else if ((me_fws2 & 0x100) == 0x100) {
-		if ((me_fws2 & 0x80) == 0x80) {		
+		if ((me_fws2 & 0x80) == 0x80) {
 			printk(BIOS_NOTICE, "CPU was replaced & warm reset required...\n");
 			reg16 = pcie_read_config16(PCI_DEV(0, 31, 0), 0xa2) & ~0x80;
 			pcie_write_config16(PCI_DEV(0, 31, 0), 0xa2, reg16);
@@ -230,7 +230,7 @@ int intel_early_me_init_done(u8 status)
 	printk(BIOS_NOTICE, "ME:  Current PM event: 0x%x\n", (me_fws2 & 0xf000000) >> 24);
 	printk(BIOS_NOTICE, "ME:  Progress code   : 0x%x\n", (me_fws2 & 0xf0000000) >> 28);
 
-	
+
 	/* Return the requested BIOS action */
 	printk(BIOS_NOTICE, "ME: Requested BIOS Action: %s\n",
 		me_ack_values[(hfs & 0xe) >> 1]);

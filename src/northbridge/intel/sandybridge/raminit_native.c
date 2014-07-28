@@ -299,7 +299,7 @@ static void dram_find_spds_ddr3(spd_raw_data * spd, dimm_info * dimm,
 		} else
 			ctrl->ref_card_offset[channel] = 0;
 	}
-	
+
 	if (!dimms)
 		die("No DIMMs were found");
 }
@@ -1888,7 +1888,7 @@ static void read_training(ramctr_timing * ctrl)
 				ctrl->timings[channel][slotrank].lanes[lane].
 				    timA -= 0x40;
 				upperA[lane] -= 0x40;
-		
+
 			}
 		} else if (some_high) {
 			ctrl->timings[channel][slotrank].val_4024++;
@@ -2760,7 +2760,7 @@ static void command_training(ramctr_timing * ctrl)
 	}
 
 	if (!try_reg_4004_b30(ctrl, 0) && !try_reg_4004_b30(ctrl, 2))
-		die("c320c discovery failed");		
+		die("c320c discovery failed");
 
 	FOR_ALL_POPULATED_CHANNELS {
 		program_timings(ctrl, channel);
@@ -3155,7 +3155,7 @@ static void discover_edges_write(ramctr_timing * ctrl)
 		discover_edges_write_real(ctrl, channel, slotrank,
 					  rising_edges[channel][slotrank]);
 	}
-	
+
 	write32(DEFAULT_MCHBAR + 0x4eb0, 0);
 
 	FOR_ALL_CHANNELS FOR_ALL_POPULATED_RANKS FOR_ALL_LANES {

@@ -254,6 +254,14 @@ struct lb_x86_rom_mtrr {
 	uint32_t index;
 };
 
+#define LB_TAG_BOARD_ID		0x0025
+struct lb_board_id {
+	uint32_t tag;
+	uint32_t size;
+	/* Board ID as retrieved from the board revision GPIOs. */
+	uint32_t board_id;
+};
+
 /* The following structures are for the cmos definitions table */
 #define LB_TAG_CMOS_OPTION_TABLE 200
 /* cmos header record */

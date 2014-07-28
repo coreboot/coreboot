@@ -1122,6 +1122,14 @@ config DEBUG_COVERAGE
 	  If enabled, the code coverage hooks in coreboot will output some
 	  information about the coverage data that is dumped.
 
+config BOARD_ID_SUPPORT
+	bool "Discover board ID and store it in coreboot table"
+	default n
+	help
+	  If enabled, coreboot discovers the board id of the hardware it is
+	  running on and reports it through the coreboot table to the rest of
+	  the system.
+
 config TERTIARY_BOARD_ID
 	bool "Interpret board ID GPIOs as tertiary inputs"
 	default n

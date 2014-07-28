@@ -26,6 +26,7 @@
 #include <boot/coreboot_tables.h>
 #include <string.h>
 #include <version.h>
+#include <boardid.h>
 #include <device/device.h>
 #include <stdlib.h>
 #include <cbfs.h>
@@ -211,6 +212,19 @@ static void lb_vboot_handoff(struct lb_header *header)
 static inline void lb_vboot_handoff(struct lb_header *header) {}
 #endif /* CONFIG_VBOOT_VERIFY_FIRMWARE */
 #endif /* CONFIG_CHROMEOS */
+
+static void lb_board_id(struct lb_header *header)
+{
+#if CONFIG_BOARD_ID_SUPPORT
+	struct lb_board_id  *bid;
+
+	bid = (struct lb_board_id *)lb_new_record(header);
+
+	bid->tag = LB_TAG_BOARD_ID;
+	bid->size = sizeof(*bid);
+	bid->board_id = board_id();
+#endif
+}
 
 static void add_cbmem_pointers(struct lb_header *header)
 {
@@ -432,6 +446,10 @@ unsigned long write_coreboot_table(
 	/* pass along the vboot_handoff address. */
 	lb_vboot_handoff(head);
 #endif
+
+	/* Add board ID if available */
+	lb_board_id(head);
+
 	add_cbmem_pointers(head);
 
 	/* Add board-specific table entries, if any. */

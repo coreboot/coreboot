@@ -1,7 +1,8 @@
 Scope(\_TZ)
 {
-#if defined (CONFIG_BOARD_LENOVO_X201) && CONFIG_BOARD_LENOVO_X201
-	Name (MEBT, 0)
+#if defined (EC_LENOVO_H8_ME_WORKAROUND)
+	Name (MEB1, 0)
+	Name (MEB2, 0)
 #endif
 
 	Method(C2K, 1, NotSerialized)
@@ -24,12 +25,12 @@ Scope(\_TZ)
 			Return (C2K(127))
 		}
 		Method(_TMP) {
-#if defined (CONFIG_BOARD_LENOVO_X201) && CONFIG_BOARD_LENOVO_X201
+#if defined (EC_LENOVO_H8_ME_WORKAROUND)
 		        /* Avoid tripping alarm if ME isn't booted at all yet */
-		        If (LAnd (LNot (MEBT), LEqual (\_SB.PCI0.LPCB.EC.TMP0, 128))) {
+		        If (LAnd (LNot (MEB1), LEqual (\_SB.PCI0.LPCB.EC.TMP0, 128))) {
                             Return (C2K(40))
                         }
-			Store (1, MEBT)
+			Store (1, MEB1)
 #endif
 			Return (C2K(\_SB.PCI0.LPCB.EC.TMP0))
 		}
@@ -46,6 +47,13 @@ Scope(\_TZ)
 		}
 
 		Method(_TMP) {
+#if defined (EC_LENOVO_H8_ME_WORKAROUND)
+		        /* Avoid tripping alarm if ME isn't booted at all yet */
+		        If (LAnd (LNot (MEB2), LEqual (\_SB.PCI0.LPCB.EC.TMP1, 128))) {
+                            Return (C2K(40))
+                        }
+			Store (1, MEB2)
+#endif
 			Return (C2K(\_SB.PCI0.LPCB.EC.TMP1))
 		}
 	}

@@ -24,6 +24,7 @@
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.LCD0.DECB
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 #define RP03_IS_EXPRESSCARD 1
+#define EC_LENOVO_H8_ME_WORKAROUND 1
 
 DefinitionBlock(
 	"dsdt.aml",

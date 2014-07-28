@@ -46,6 +46,7 @@
 void raminit(struct pei_data *pei_data)
 {
 	const struct mrc_saved_data *cache;
+	struct memory_info* mem_info;
 	pei_wrapper_entry_t entry;
 	int ret;
 
@@ -124,4 +125,9 @@ void raminit(struct pei_data *pei_data)
 	if (pei_data->data_to_save != NULL && pei_data->data_to_save_size > 0)
 		mrc_cache_stash_data(pei_data->data_to_save,
 				     pei_data->data_to_save_size);
+
+	printk(BIOS_DEBUG, "create cbmem for dimm information\n");
+	mem_info = cbmem_add(CBMEM_ID_MEMINFO, sizeof(struct memory_info));
+	memcpy(mem_info, &pei_data->meminfo, sizeof(struct memory_info));
+
 }

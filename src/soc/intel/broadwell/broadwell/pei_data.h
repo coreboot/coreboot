@@ -30,6 +30,7 @@
 #define PEI_DATA_H
 
 #include <types.h>
+#include <memory_info.h>
 
 #define PEI_VERSION 21
 
@@ -177,6 +178,7 @@ struct pei_data
 	/* Data from MRC that should be saved to flash */
 	void *data_to_save;
 	int data_to_save_size;
+	struct memory_info meminfo;
 } __attribute__((packed));
 
 typedef struct pei_data PEI_DATA;

@@ -17,6 +17,8 @@ config BOARD_INTEL_EMERALDLAKE2
 	bool "Emerald Lake 2 CRB"
 config BOARD_INTEL_JARRELL
 	bool "Jarrell (SE7520JR2)"
+config BOARD_INTEL_MINNOWMAX
+	bool "Minnow Max"
 config BOARD_INTEL_MOHONPEAK
 	bool "Mohon Peak CRB"
 config BOARD_INTEL_MTARVON
@@ -40,6 +42,7 @@ source "src/mainboard/intel/eagleheights/Kconfig"
 source "src/mainboard/intel/emeraldlake2/Kconfig"
 source "src/mainboard/intel/baskingridge/Kconfig"
 source "src/mainboard/intel/jarrell/Kconfig"
+source "src/mainboard/intel/minnowmax/Kconfig"
 source "src/mainboard/intel/mohonpeak/Kconfig"
 source "src/mainboard/intel/mtarvon/Kconfig"
 source "src/mainboard/intel/truxton/Kconfig"

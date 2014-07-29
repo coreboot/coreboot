@@ -14,4 +14,4 @@ config MAINBOARD_VENDOR
 
 source "src/mainboard/linutop/linutop1/Kconfig"
 
-endif
+endif # VENDOR_LINUTOP

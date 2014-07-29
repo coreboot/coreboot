@@ -16,4 +16,4 @@ endif # VENDOR_ARTECGROUP
 
 if VENDOR_ARTECGROUP || VENDOR_LINUTOP
 source "src/mainboard/artecgroup/dbe61/Kconfig"
-endif
+endif # VENDOR_ARTECGROUP || VENDOR_LINUTOP

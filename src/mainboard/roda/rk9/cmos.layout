@@ -85,7 +85,8 @@ entries
 #400          8       r       0        unused
 
 # coreboot config options: southbridge
-#408          8       r       0        unused
+408           1       e       9        sata_mode
+#409          7       r       0        unused
 
 # coreboot config options: bootloader
 416         512       s       0        boot_devices
@@ -133,6 +134,8 @@ enumerations
 7     2     Keep
 8     0     No
 8     1     Yes
+9     0     AHCI
+9     1     Compatible
 
 # -----------------------------------------------------------------
 checksums

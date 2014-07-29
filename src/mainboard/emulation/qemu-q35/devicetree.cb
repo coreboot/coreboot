@@ -7,8 +7,6 @@ chip mainboard/emulation/qemu-q35
 	device domain 0 on
 		device pci 0.0 on end		# northbridge (q35)
 		chip southbridge/intel/i82801ix
-			register "sata_ahci" = "1"
-
 			# present unconditionally
 			device pci 1f.0 on end	# LPC
 			device pci 1f.2 on end	# SATA

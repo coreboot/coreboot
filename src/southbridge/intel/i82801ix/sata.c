@@ -25,6 +25,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include "i82801ix.h"
+#include <pc80/mc146818rtc.h>
 
 typedef struct southbridge_intel_i82801ix_config config_t;
 
@@ -149,6 +150,7 @@ static void sata_init(struct device *const dev)
 
 	const u16 devid = pci_read_config16(dev, PCI_DEVICE_ID);
 	const int is_mobile = (devid == 0x2928) || (devid == 0x2929);
+	u8 sata_mode;
 
 	printk(BIOS_DEBUG, "i82801ix_sata: initializing...\n");
 
@@ -157,6 +159,10 @@ static void sata_init(struct device *const dev)
 				 "device not in devicetree.cb!\n");
 		return;
 	}
+
+	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
+		/* Default to AHCI */
+		sata_mode = 0;
 
 	/*
 	 * TODO: In contrast to ICH7 and PCH code we don't set
@@ -171,13 +177,11 @@ static void sata_init(struct device *const dev)
 			PCI_COMMAND_MASTER |
 			PCI_COMMAND_MEMORY | /* read-only in IDE modes */
 			PCI_COMMAND_IO);
-	if (!config->sata_ahci)
+	if (sata_mode != 0)
 		/* No AHCI: clear AHCI base */
 		pci_write_config32(dev, PCI_BASE_ADDRESS_5, 0x00000000);
 
-	if (config->ide_legacy_combined) {
-		printk(BIOS_DEBUG, "SATA controller in combined mode.\n");
-	} else if (config->sata_ahci) {
+	if (sata_mode == 0) {
 		printk(BIOS_DEBUG, "SATA controller in AHCI mode.\n");
 	} else {
 		printk(BIOS_DEBUG, "SATA controller in native mode.\n");
@@ -193,7 +197,7 @@ static void sata_init(struct device *const dev)
 	/* Port enable. For AHCI, it's managed in memory mapped space. */
 	reg16 = pci_read_config16(dev, 0x92);
 	reg16 &= ~0x3f;
-	reg16 |= (1 << 15) | (config->sata_ahci ? 0x3f : config->sata_port_map);
+	reg16 |= (1 << 15) | ((sata_mode == 0) ? 0x3f : config->sata_port_map);
 	pci_write_config16(dev, 0x92, reg16);
 
 	/* SATA clock settings */
@@ -218,7 +222,7 @@ static void sata_init(struct device *const dev)
 		}
 	}
 
-	if (config->sata_ahci)
+	if (sata_mode == 0)
 		sata_enable_ahci_mmap(dev, config->sata_port_map, is_mobile);
 
 	sata_program_indexed(dev, is_mobile);
@@ -230,15 +234,20 @@ static void sata_enable(device_t dev)
 	const config_t *const config = dev->chip_info;
 
 	u16 map = 0;
+	u8 sata_mode;
 
 	if (!config)
 		return;
+
+	if (get_option(&sata_mode, "sata_mode") != CB_SUCCESS)
+		/* Default to AHCI */
+		sata_mode = 0;
 
 	/*
 	 * Set SATA controller mode early so the resource allocator can
 	 * properly assign IO/Memory resources for the controller.
 	 */
-	if (config->sata_ahci)
+	if (sata_mode == 0)
 		map = 0x0040 | 0x0020; /* SATA mode + all ports on D31:F2 */
 
 	map |= (config->sata_port_map ^ 0x3f) << 8;

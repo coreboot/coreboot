@@ -70,8 +70,6 @@ struct southbridge_intel_i82801ix_config {
 	uint16_t alt_gp_smi_en;
 
 	/* IDE configuration */
-	uint32_t ide_legacy_combined;
-	uint32_t sata_ahci; /* If enabled, keep bit 2 of sata_enabled unset. */
 	uint8_t sata_port_map : 6;
 	int sata_clock_request : 1;
 	int sata_traffic_monitor : 1;

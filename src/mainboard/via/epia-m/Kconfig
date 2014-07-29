@@ -23,10 +23,10 @@ config MAINBOARD_PART_NUMBER
 	string
 	default "EPIA-M"
 
-endif
+endif # BOARD_VIA_EPIA_M
 
 config IRQ_SLOT_COUNT
 	int
 	default 5
 
-endif # BOARD_VIA_EPIA_M
+endif # BOARD_VIA_EPIA_M || BOARD_VIA_EPIA_MII || BOARD_VIA_EPIA_ML

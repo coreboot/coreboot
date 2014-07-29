@@ -38,10 +38,10 @@ if BOARD_IEI_JUKI_511P
 config MAINBOARD_PART_NUMBER
 	string
 	default "JUKI-511P"
-endif
+endif # BOARD_IEI_JUKI_511P
 
 config IRQ_SLOT_COUNT
 	int
 	default 2
 
-endif # BOARD_IEI_JUKI_511P
+endif # BOARD_IEI_JUKI_511P || BOARD_IEI_ROCKY_512

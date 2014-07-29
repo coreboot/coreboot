@@ -44,7 +44,6 @@
 
 /* FIXME: no ECC support.  */
 /* FIXME: no support for 3-channel chipsets.  */
-/* FIXME: no S3.  */
 
 #define BASEFREQ 133
 #define tDLLK 512

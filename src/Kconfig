@@ -1133,6 +1133,7 @@ config BOARD_ID_SUPPORT
 config TERTIARY_BOARD_ID
 	bool "Interpret board ID GPIOs as tertiary inputs"
 	default n
+	depends on BOARD_ID_SUPPORT
 	help
 	  Consider each GPIO as being in one of three states: pulled down (0),
 	  pulled up (1), or not connected (2)

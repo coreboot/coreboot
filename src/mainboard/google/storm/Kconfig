@@ -22,11 +22,13 @@ if BOARD_GOOGLE_STORM
 config BOARD_SPECIFIC_OPTIONS
 	def_bool y
 	select SOC_QC_IPQ806X
+	select BOARD_ID_SUPPORT
 	select BOARD_ROMSIZE_KB_4096
 	select COMMON_CBFS_SPI_WRAPPER
 	select MAINBOARD_HAS_BOOTBLOCK_INIT
 	select SPI_FLASH
 	select SPI_FLASH_SPANSION
+	select TERTIARY_BOARD_ID
 
 config BOARD_VARIANT_AP148
 	bool "pick this to build an image for ap148"

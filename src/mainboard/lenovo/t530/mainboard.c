@@ -39,6 +39,7 @@
 #include <device/pci.h>
 #include <cbfs.h>
 #include <pc80/keyboard.h>
+#include <ec/lenovo/h8/h8.h>
 
 void mainboard_suspend_resume(void)
 {
@@ -184,8 +185,6 @@ static void mainboard_enable(device_t dev)
 #endif
 	verb_setup();
 }
-
-void h8_mainboard_init_dock (void);
 
 void h8_mainboard_init_dock (void)
 {

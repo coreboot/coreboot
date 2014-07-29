@@ -23,6 +23,9 @@
 
 #include <arch/io.h>
 #include <arch/registers.h>
+#include <cpu/amd/lxdef.h>
+#include <cpu/amd/vr.h>
+#include <cbfs.h>
 #include <console/console.h>
 #include <arch/interrupt.h>
 #include <cbfs.h>
@@ -350,9 +353,6 @@ void run_bios(struct device *dev, unsigned long addr)
 }
 
 #if CONFIG_GEODE_VSA
-#include <cpu/amd/lxdef.h>
-#include <cpu/amd/vr.h>
-#include <cbfs.h>
 
 #define VSA2_BUFFER		0x60000
 #define VSA2_ENTRY_POINT	0x60020

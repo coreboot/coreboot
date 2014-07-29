@@ -19,6 +19,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef INTERRUPT_H
+#define INTERRUPT_H
+
 #include "registers.h"
 
 /* setup interrupt handlers for mainboard */
@@ -29,3 +32,5 @@ extern void mainboard_interrupt_handlers(int intXX, int (*intXX_func)(void));
 #else
 static inline void mainboard_interrupt_handlers(int intXX, int (*intXX_func)(void)) { }
 #endif
+
+#endif /* INTERRUPT_H */

@@ -20,8 +20,17 @@
 #include <cbfs.h>
 #include <string.h>
 #include <console/console.h>
+#include "soc/rockchip/rk3288/spi.h"
 
 int init_default_cbfs_media(struct cbfs_media *media)
 {
-	return 0;
+#if defined(__BOOT_BLOCK__)
+	return initialize_rockchip_spi_cbfs_media(media,
+		(void *)CONFIG_CBFS_SRAM_CACHE_ADDRESS,
+		CONFIG_CBFS_SRAM_CACHE_SIZE);
+#else
+	return initialize_rockchip_spi_cbfs_media(media,
+		(void *)CONFIG_CBFS_DRAM_CACHE_ADDRESS,
+		CONFIG_CBFS_DRAM_CACHE_SIZE);
+#endif
 }

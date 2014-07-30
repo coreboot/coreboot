@@ -31,10 +31,10 @@ bootblock-y += spi.c
 romstage-y += cbmem.c
 romstage-y += timer.c
 romstage-y += monotonic_timer.c
-romstage-y += media.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 romstage-y += clock.c
 romstage-y += spi.c
+romstage-y += media.c
 
 ramstage-y += cbmem.c
 ramstage-y += timer.c

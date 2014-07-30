@@ -141,6 +141,12 @@ static void cb_parse_acpi_gnvs(unsigned char *ptr, struct sysinfo_t *info)
 	info->acpi_gnvs = phys_to_virt(cbmem->cbmem_tab);
 }
 
+static void cb_parse_board_id(unsigned char *ptr, struct sysinfo_t *info)
+{
+	struct cb_board_id *const cbbid = (struct cb_board_id *)ptr;
+	info->board_id = cbbid->board_id;
+}
+
 #ifdef CONFIG_LP_NVRAM
 static void cb_parse_optiontable(void *ptr, struct sysinfo_t *info)
 {
@@ -205,6 +211,12 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 		return -1;
 
 	info->header = header;
+
+	/*
+	 * Valid board IDs are small numbers, preset this to an invalid value
+	 * for the case when firmware does not supply the board ID.
+	 */
+	info->board_id = ~0;
 
 	/* Now, walk the tables. */
 	ptr += header->header_bytes;
@@ -299,6 +311,9 @@ static int cb_parse_header(void *addr, int len, struct sysinfo_t *info)
 			break;
 		case CB_TAG_X86_ROM_MTRR:
 			cb_parse_x86_rom_var_mtrr(ptr, info);
+			break;
+		case CB_TAG_BOARD_ID:
+			cb_parse_board_id(ptr, info);
 			break;
 		}
 

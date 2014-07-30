@@ -108,6 +108,7 @@ struct sysinfo_t {
 	void	*cbmem_cons;
 	void	*mrc_cache;
 	void	*acpi_gnvs;
+	u32	board_id;
 };
 
 extern struct sysinfo_t lib_sysinfo;

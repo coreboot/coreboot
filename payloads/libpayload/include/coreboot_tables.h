@@ -205,6 +205,14 @@ struct cb_cbmem_tab {
 	uint64_t cbmem_tab;
 };
 
+#define CB_TAG_BOARD_ID		0x0025
+struct cb_board_id {
+	uint32_t tag;
+	uint32_t size;
+	/* Board ID as retrieved from the board revision GPIOs. */
+	uint32_t board_id;
+};
+
 #define CB_TAG_X86_ROM_MTRR	0x0021
 struct cb_x86_rom_mtrr {
 	uint32_t tag;

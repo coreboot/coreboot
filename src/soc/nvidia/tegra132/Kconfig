@@ -41,7 +41,7 @@ config BOOTBLOCK_BASE
 
 config ROMSTAGE_BASE
 	hex
-	default 0x4002c000
+	default 0x40025000
 
 config SYS_SDRAM_BASE
 	hex

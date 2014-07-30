@@ -52,4 +52,4 @@ int int12_handler(void);
 int int16_handler(void);
 int int1a_handler(void);
 
-#endif
+#endif /* __DEVICE_OPROM_REALMODE_X86_H__ */

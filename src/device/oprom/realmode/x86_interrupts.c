@@ -19,16 +19,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
+#include <arch/io.h>
+#include <arch/registers.h>
+#include <console/console.h>
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
 #include <string.h>
-#include <console/console.h>
-#include <arch/io.h>
-#include <arch/registers.h>
-#include "x86.h"
+
 /* we use x86emu's register file representation */
 #include <x86emu/regs.h>
+
+#include "x86.h"
 
 // errors go in AH. Just set these up so that word assigns
 // will work. KISS.

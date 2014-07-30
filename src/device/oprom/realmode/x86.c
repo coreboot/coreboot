@@ -18,26 +18,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-#include <device/pci.h>
-#include <string.h>
-
 #include <arch/io.h>
+#include <arch/interrupt.h>
 #include <arch/registers.h>
-#include <cpu/amd/lxdef.h>
-#include <cpu/amd/vr.h>
+#include <boot/coreboot_tables.h>
 #include <cbfs.h>
 #include <console/console.h>
-#include <arch/interrupt.h>
-#include <cbfs.h>
+#include <cpu/amd/lxdef.h>
+#include <cpu/amd/vr.h>
 #include <delay.h>
-#include <pc80/i8259.h>
-#include "x86.h"
-#include <vbe.h>
+#include <device/pci.h>
+#include <device/pci_ids.h>
 #include <lib/jpeg.h>
+#include <pc80/i8259.h>
+#include <string.h>
+#include <vbe.h>
+
 /* we use x86emu's register file representation */
 #include <x86emu/regs.h>
-#include <boot/coreboot_tables.h>
-#include <device/pci_ids.h>
+
+#include "x86.h"
 
 /* The following symbols cannot be used directly. They need to be fixed up
  * to point to the correct address location after the code has been copied

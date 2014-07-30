@@ -296,7 +296,7 @@ config CMOS_POST_EXTRA
 	  This will enable extra logging of work that happens between post
 	  codes into CMOS for debug.  This uses an additional 8 bytes of CMOS.
 
-config POST_IO
+config CONSOLE_POST
 	bool "Show POST codes on the debug console"
 	depends on !NO_POST
 	default n

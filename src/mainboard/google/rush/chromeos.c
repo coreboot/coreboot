@@ -40,7 +40,7 @@ void fill_lb_gpios(struct lb_gpios *gpios)
 	/* Recovery: active high */
 	gpios->gpios[count].port = -1;
 	gpios->gpios[count].polarity = ACTIVE_HIGH;
-	gpios->gpios[count].value = 1;
+	gpios->gpios[count].value = get_recovery_mode_switch();
 	strncpy((char *)gpios->gpios[count].name, "recovery",
 		GPIO_MAX_NAME_LENGTH);
 	count++;
@@ -81,7 +81,11 @@ int get_developer_mode_switch(void)
 
 int get_recovery_mode_switch(void)
 {
-	return 0;
+	uint32_t ec_events;
+
+	ec_events = google_chromeec_get_events_b();
+	return !!(ec_events &
+		  EC_HOST_EVENT_MASK(EC_HOST_EVENT_KEYBOARD_RECOVERY));
 }
 
 int get_write_protect_state(void)

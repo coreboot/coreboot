@@ -23,6 +23,7 @@
 #include <soc/clock.h>
 #include <soc/nvidia/tegra132/gpio.h>
 #include <soc/nvidia/tegra132/clk_rst.h>
+#include <soc/nvidia/tegra132/spi.h>
 #include <soc/addressmap.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
@@ -84,11 +85,19 @@ static void init_mmc(void)
 
 }
 
+static void setup_ec_spi(void)
+{
+	struct tegra_spi_channel *spi;
+
+	spi = tegra_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
+}
+
 static void mainboard_init(device_t dev)
 {
 	clock_enable_clear_reset(CLK_L_SDMMC4, 0, CLK_U_SDMMC3, 0, 0, 0);
 
 	init_mmc();
+	setup_ec_spi();
 }
 
 static void mainboard_enable(device_t dev)

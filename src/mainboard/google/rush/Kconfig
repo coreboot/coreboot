@@ -23,6 +23,10 @@ config BOARD_SPECIFIC_OPTIONS # dummy
 	def_bool y
 	select BOARD_ID_SUPPORT
 	select CHROMEOS
+	select EC_GOOGLE_CHROMEEC
+	select EC_GOOGLE_CHROMEEC_SPI
+	select EC_SOFTWARE_SYNC
+	select SPI_FLASH
 	select SOC_NVIDIA_TEGRA132
 	select MAINBOARD_HAS_BOOTBLOCK_INIT
 	select VIRTUAL_DEV_SWITCH
@@ -86,5 +90,9 @@ config DRIVER_TPM_I2C_BUS
 config DRIVER_TPM_I2C_ADDR
 	hex
 	default 0x20
+
+config EC_GOOGLE_CHROMEEC_SPI_BUS
+	hex
+	default 1
 
 endif # BOARD_GOOGLE_RUSH

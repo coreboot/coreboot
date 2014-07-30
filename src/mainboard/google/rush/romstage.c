@@ -51,6 +51,35 @@ void mainboard_init_tpm_i2c(void)
 	configure_tpm_i2c_bus();
 }
 
+void mainboard_init_ec_spi(void)
+{
+	clock_enable_clear_reset(0, CLK_H_SBC1, 0, 0, 0, 0);
+
+	// SPI1 MOSI
+	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 MISO
+	pinmux_set_config(PINMUX_ULPI_DIR_INDEX, PINMUX_ULPI_DIR_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 SCLK
+	pinmux_set_config(PINMUX_ULPI_NXT_INDEX, PINMUX_ULPI_NXT_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+	// SPI1 CS0
+	pinmux_set_config(PINMUX_ULPI_STP_INDEX, PINMUX_ULPI_STP_FUNC_SPI1 |
+						 PINMUX_PULL_NONE |
+						 PINMUX_INPUT_ENABLE);
+
+	clock_configure_source(sbc1, CLK_M, 500);
+}
+
+void mainboard_init_ec_i2c(void)
+{
+	/* Empty - Rush uses SPI to communicate with the EC */
+}
+
 void mainboard_configure_pmc(void)
 {
 }

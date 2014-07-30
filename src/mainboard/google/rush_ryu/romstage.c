@@ -17,10 +17,60 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#include <soc/addressmap.h>
+#include <soc/clock.h>
+#include <soc/nvidia/tegra/i2c.h>
+#include <soc/nvidia/tegra132/pinmux.h>
+#include <soc/nvidia/tegra132/gpio.h>
 #include <soc/romstage.h>
+
+static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
+
+static void configure_tpm_i2c_bus(void)
+{
+	clock_configure_i2c_scl_freq(i2c3, PLLP, 19);
+	i2c_init(2);
+}
+
+static void configure_ec_i2c_bus(void)
+{
+	clock_configure_i2c_scl_freq(i2c2, PLLP, 100);
+	i2c_init(1);
+}
 
 void mainboard_init_tpm_i2c(void)
 {
+	clock_enable_clear_reset(0, 0, CLK_U_I2C3, 0, 0, 0);
+
+	gpio_output(GPIO(I5), 1);
+
+	/* I2C3 (cam) clock */
+	pinmux_set_config(PINMUX_CAM_I2C_SCL_INDEX,
+			  PINMUX_CAM_I2C_SCL_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
+	/* I2C3 (cam) data */
+	pinmux_set_config(PINMUX_CAM_I2C_SDA_INDEX,
+			  PINMUX_CAM_I2C_SDA_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
+
+	configure_tpm_i2c_bus();
+}
+
+void mainboard_init_ec_spi(void)
+{
+	/* Empty - Ryu uses I2C to communicate with the EC */
+}
+
+void mainboard_init_ec_i2c(void)
+{
+	clock_enable_clear_reset(0, CLK_H_I2C2, 0, 0, 0, 0);
+
+	/* I2C2 (GEN2) clock */
+	pinmux_set_config(PINMUX_GEN2_I2C_SCL_INDEX,
+			  PINMUX_GEN2_I2C_SCL_FUNC_I2C2 | PINMUX_INPUT_ENABLE);
+	/* I2C2 (GEN2) data */
+	pinmux_set_config(PINMUX_GEN2_I2C_SDA_INDEX,
+			  PINMUX_GEN2_I2C_SDA_FUNC_I2C2 | PINMUX_INPUT_ENABLE);
+
+	configure_ec_i2c_bus();
 }
 
 void mainboard_configure_pmc(void)

@@ -68,6 +68,8 @@ void romstage(void)
 	printk(BIOS_INFO, "T132 romstage: MTS loading done\n");
 
 	mainboard_init_tpm_i2c();
+	mainboard_init_ec_spi();
+	mainboard_init_ec_i2c();
 
 	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
 				CONFIG_CBFS_PREFIX "/ramstage");

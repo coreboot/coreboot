@@ -65,9 +65,9 @@ static void enable_vmx(void)
 	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
 
 	if (enable) {
-			msr.lo |= (1 << 2);
-			if (regs.ecx & CPUID_SMX)
-				msr.lo |= (1 << 1);
+		msr.lo |= (1 << 2);
+		if (regs.ecx & CPUID_SMX)
+			msr.lo |= (1 << 1);
 	}
 
 	wrmsr(IA32_FEATURE_CONTROL, msr);

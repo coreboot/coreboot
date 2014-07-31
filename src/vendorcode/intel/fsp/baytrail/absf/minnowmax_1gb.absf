@@ -1,0 +1,328 @@
+//
+// This file contains an 'Intel Peripheral Driver' and is
+// licensed for Intel CPUs and chipsets under the terms of your
+// license agreement with Intel or your vendor.  This file must not
+// be modified by end users or could render the generated boot loader
+// inoperable.
+//
+// @file
+// Boot Setting File for Platform: Bayley Bay Platform
+//
+// Copyright (c) 2010-2013 Intel Corporation. All rights reserved
+// This software and associated documentation (if any) is furnished
+// under a license and may only be used or copied in accordance
+// with the terms of the license. Except as permitted by such
+// license, no part of this software or documentation may be
+// reproduced, stored in a retrieval system, or transmitted in any
+// form or by any means without the express written consent of
+// Intel Corporation.
+//
+//
+
+
+GlobalDataDef
+  SKUID = 0 $_AS_BUILT_ = 0x01 , "DEFAULT"
+EndGlobalData
+
+StructDef
+
+    Find "VLV2UPDR"
+    Skip 24 bytes
+    $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitTsegSize        2 bytes $_AS_BUILT_ = 0x1, 0x0 $_DEFAULT_ = 0x0001
+    $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitMmioSize        2 bytes $_AS_BUILT_ = 0x0, 0x8 $_DEFAULT_ = 0x0800
+    $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitSPDAddr1        1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_  = 0xA0
+    $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitSPDAddr2        1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_  = 0xA2
+    $gPlatformFspPkgTokenSpaceGuid_PcdeMMCBootMode           1 byte $_AS_BUILT_ = 0x3 $_DEFAULT_  = 2
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableSdio             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableSdcard           1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableHsuart0          1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_  = 0
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableHsuart1          1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableSpi              1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableLan              1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableSata             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdSataMode               1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableAzalia           1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_  = 0
+    $gPlatformFspPkgTokenSpaceGuid_AzaliaConfigPtr           4 bytes $_AS_BUILT_ = 0x0, 0x0, 0x0, 0x0 $_DEFAULT_  = 0
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableXhci             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableLpe              1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdLpssSioEnablePciMode   1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableDma0             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableDma1             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C0             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C1             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C2             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C3             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C4             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C5             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C6             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnablePwm0             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnablePwm1             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_  = 1
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableHsi              1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_  = 0
+    $gPlatformFspPkgTokenSpaceGuid_PcdIgdDvmt50PreAlloc      1 byte $_AS_BUILT_ = 0x2 $_DEFAULT_  = 2
+    $gPlatformFspPkgTokenSpaceGuid_PcdApertureSize           1 byte $_AS_BUILT_ = 0x2 $_DEFAULT_  = 2
+    $gPlatformFspPkgTokenSpaceGuid_PcdGttSize                1 byte $_AS_BUILT_ = 0x2 $_DEFAULT_  = 2
+    $gPlatformFspPkgTokenSpaceGuid_ISPEnable                 1 bytes $_AS_BUILT_ = 0x0 $_DEFAULT_ = 0
+
+    Find "VLYVIEW1"
+    $gPlatformFspPkgTokenSpaceGuid_PcdImageRevision          4 bytes $_AS_BUILT_ = 0x2, 0x3, 0x0, 0x0 $_DEFAULT_ = 0x00000302
+    Skip 24 bytes
+    $gPlatformFspPkgTokenSpaceGuid_PcdPlatformType           1 byte $_AS_BUILT_ = 0x2 $_DEFAULT_  = 2
+    $gPlatformFspPkgTokenSpaceGuid_PcdEnableSecureBoot       1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_  = 2
+
+    $DIMM_MemDown             1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_ = 0
+    $DRAM_Speed               1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_ = 2
+    $DRAM_Type                1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_ = 1
+    $Rank_En_0_0              1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_ = 1
+    $Rank_En_1_0              1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_ = 0
+    $DIMM_DWidth_0_0          1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_ = 0
+    $DIMM_Density_0_0         1 byte $_AS_BUILT_ = 0x1 $_DEFAULT_ = 1
+    $DIMM_BusWidth_0_0        1 byte $_AS_BUILT_ = 0x3 $_DEFAULT_ = 3
+    $DIMM_Sides_0_0           1 byte $_AS_BUILT_ = 0x0 $_DEFAULT_ = 0
+    $tCL                      1 byte $_AS_BUILT_ = 0x7 $_DEFAULT_ = 9
+    $tRP_tRCD                 1 byte $_AS_BUILT_ = 0x7 $_DEFAULT_ = 9
+    $tWR                      1 byte $_AS_BUILT_ = 0x8 $_DEFAULT_ = 10
+    $tWTR                     1 byte $_AS_BUILT_ = 0x4 $_DEFAULT_ = 5
+    $tRRD                     1 byte $_AS_BUILT_ = 0x6 $_DEFAULT_ = 4
+    $tRTP                     1 byte $_AS_BUILT_ = 0x4 $_DEFAULT_ = 5
+    $tFAW                     1 byte $_AS_BUILT_ = 0x14 $_DEFAULT_ = 20
+
+EndStruct
+
+List &DRAMSPEED
+    Selection 0x0 , "800 MHz"
+    Selection 0x1 , "1066 MHz"
+    Selection 0x2 , "1333 MHz"
+    Selection 0x3 , "1600 MHz"
+EndList
+
+List &DRAMTYPE
+    Selection 0x0 , "DDR3"
+    Selection 0x1 , "DDR3L"
+    Selection 0x2 , "DDR3U"
+    //Selection 0x3 , "LPDDR2"
+    Selection 0x4 , "LPDDR2"
+    Selection 0x5 , "LPDDR3"
+    Selection 0x6 , "DDR4"
+EndList
+
+List &DIMMDWIDTH
+    Selection 0x0 , "x8"
+    Selection 0x1 , "x16"
+    Selection 0x2 , "x32"
+EndList
+
+List &DIMMDENSITY
+    Selection 0x0 , "1 Gbit"
+    Selection 0x1 , "2 Gbit"
+    Selection 0x2 , "4 Gbit"
+    Selection 0x3 , "8 Gbit"
+EndList
+
+List &DIMMBUSWIDTH
+    Selection 0x0 , "8 bits"
+    Selection 0x1 , "16 bits"
+    Selection 0x2 , "32 bits"
+    Selection 0x3 , "64 bits"
+EndList
+
+List &RANKPERDIMM
+    Selection 0x1 , "2 Ranks"
+    Selection 0x0 , "1 Rank"
+EndList
+
+List &SATA_MODE
+    Selection 0x1 , "AHCI"
+    Selection 0x0 , "IDE"
+EndList
+
+List &EMMC_MODES
+    Selection 0x0 , "Disabled"
+    Selection 0x1 , "Auto"
+    Selection 0x2 , "eMMC 4.1"
+    Selection 0x3 , "eMMC 4.5"
+EndList
+
+List &EN_DIS
+    Selection 0x1 , "Enabled"
+    Selection 0x0 , "Disabled"
+EndList
+
+List &EN_DIS_AUTO
+    Selection 0x2 , "Auto"
+    Selection 0x1 , "Enabled"
+    Selection 0x0 , "Disabled"
+EndList
+
+List &MMIO_SIZES
+    Selection 0x400, "1.0 GB"
+    Selection 0x600, "1.5 GB"
+    Selection 0x800, "2.0 GB"
+EndList
+
+List &TSEG_SIZES
+    Selection 0x01, "1 MB"
+    Selection 0x02, "2 MB"
+    Selection 0x04, "4 MB"
+    Selection 0x08, "8 MB"
+EndList
+
+List &IGDPREALLOC_SIZES
+    Selection 0x01, "32 MB"
+    Selection 0x02, "64 MB"
+    Selection 0x03, "96 MB"
+    Selection 0x04, "128 MB"
+    Selection 0x05, "160 MB"
+    Selection 0x06, "192 MB"
+    Selection 0x07, "224 MB"
+    Selection 0x08, "256 MB"
+    Selection 0x09, "288 MB"
+    Selection 0x0A, "320 MB"
+    Selection 0x0B, "352 MB"
+    Selection 0x0C, "384 MB"
+    Selection 0x0D, "416 MB"
+    Selection 0x0E, "448 MB"
+    Selection 0x0F, "480 MB"
+    Selection 0x10, "512 MB"
+EndList
+
+List &APERTURE_SIZES
+    Selection 0x1 , "128 MB"
+    Selection 0x2 , "256 MB"
+    Selection 0x3 , "512 MB"
+EndList
+
+List &GTT_SIZES
+    Selection 0x1 , "1 MB"
+    Selection 0x2 , "2 MB"
+EndList
+
+List &PCI_ACPI
+    Selection 0x2 , "ACPI Mode"
+    Selection 0x1 , "PCI Mode"
+    Selection 0x0 , "Disabled"
+EndList
+
+List &PLATFORM_TYPE
+    Selection 0x2 , "BayleyBay Platform Type"
+    Selection 0x3 , "BakerSport Platform (ECC) Type"
+EndList
+
+BeginInfoBlock
+  PPVer "1.0"
+  Description "MinnowMax"
+
+EndInfoBlock
+
+Page "Platform"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdPlatformType, "Platform Type", &PLATFORM_TYPE,
+                Help "Select Platform Type."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableSecureBoot, "Enable Secure Boot", &EN_DIS_AUTO,
+                Help "Enable/disable secure boot. Auto by default."
+EndPage
+
+Page "North Complex"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitTsegSize, "Tseg Size", &TSEG_SIZES,
+				Help "Size of memory reserved for SMRAM, in MB."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitMmioSize, "Mmio Size", &MMIO_SIZES,
+                Help "Size of memory address space reserved for MMIO (Memory Mapped I/O), in GB."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdIgdDvmt50PreAlloc, "Internal Graphics Pre-allocated Memory ", &IGDPREALLOC_SIZES,
+                Help "Size of memory preallocated for internal graphics"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdApertureSize, "Aperture Size", &APERTURE_SIZES,
+                Help "Select the Aperture Size"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdGttSize, "GTT Size", &GTT_SIZES,
+                Help "Select the GTT Size"
+    EditNum $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitSPDAddr1, "DIMM 0 SPD SMBus Address", HEX,
+                Help "Address of DIMM 0. 8 bits"
+    EditNum $gPlatformFspPkgTokenSpaceGuid_PcdMrcInitSPDAddr2, "DIMM 1 SPD SMBus Address", HEX,
+                Help "Address of DIMM 1. 8 bits"
+EndPage
+
+Page "Memory Down"
+    Combo $DIMM_MemDown, "Enable Memory Down", &EN_DIS,
+                Help "Enable = Memory Down, Disable = DIMM"
+    Combo $DRAM_Speed, "DRAM Speed", &DRAMSPEED,
+                Help "DRAM Speed"
+    Combo $DRAM_Type, "DRAM Type", &DRAMTYPE,
+                Help "DRAM Type"
+    Combo $Rank_En_0_0, "DIMM 0 Enable", &EN_DIS,
+                Help "Please populate DIMM slot 0 if only one DIMM is supported."
+    Combo $Rank_En_1_0, "DIMM 1 Enable", &EN_DIS,
+                Help "DIMM 1 has to be identical to DIMM 0."
+    Combo $DIMM_DWidth_0_0, "DIMM_DWidth", &DIMMDWIDTH,
+                Help "DRAM device data width."
+    Combo $DIMM_Density_0_0, "DIMM_Density", &DIMMDENSITY,
+                Help "DRAM device data density."
+    Combo $DIMM_BusWidth_0_0, "DIMM_BusWidth", &DIMMBUSWIDTH,
+                Help "DIMM Bus Width."
+    Combo $DIMM_Sides_0_0, "DIMM_Sides", &RANKPERDIMM,
+                Help "Ranks Per DIMM. "
+    EditNum $tCL, "tCL", DEC,
+                Help "tCL"
+    EditNum $tRP_tRCD, "tRP_tRCD", DEC,
+                Help "tRP and tRCD in DRAM clk - 5:12.5ns, 6:15ns, etc."
+    EditNum $tWR, "tWR", DEC,
+                Help "tWR in DRAM clk"
+    EditNum $tWTR, "tWTR", DEC,
+                Help "tWTR in DRAM clk"
+    EditNum $tRRD, "tRRD", DEC,
+                Help "tRRD in DRAM clk"
+    EditNum $tRTP, "tRTP", DEC,
+                Help "tRTP in DRAM clk"
+    EditNum $tFAW, "tFAW", DEC,
+                Help "tFAW in DRAM clk"
+EndPage
+
+Page "South Complex"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdSataMode, "Select SATA Mode", &SATA_MODE,
+                Help "Select SATA boot mode. AHCI by default."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableXhci, "Enable XHCI", &EN_DIS,
+                Help "Enable/disable XHCI. If enabled, all EHCI ports will be routed to XHCI and EHCI will be disabled."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdeMMCBootMode, "eMMC Boot Mode", &EMMC_MODES,
+                Help "Select EMMC Mode."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableSdio, "Enable SDIO", &EN_DIS,
+                Help "Enable/disable SDIO."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableSdcard, "Enable SD Card", &EN_DIS,
+                Help "Enable/disable the SD Card."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableHsuart0, "Enable HSUART0", &EN_DIS,
+                Help "Enable/disable HSUART0."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableHsuart1, "Enable HSUART1", &EN_DIS,
+                Help "Enable/disable HSUART1."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableSpi, "Enable SPI", &EN_DIS,
+                Help "Enable/disable SPI."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableLan, "Enable LAN", &EN_DIS,
+                Help "Enable/disable LAN."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableAzalia, "Enable Azalia", &EN_DIS_AUTO,
+                Help "Enable/disable Azalia. Auto by default."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableSata, "Enable SATA", &EN_DIS,
+                Help "Enable/disable SATA."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableLpe, "Enable LPE", &PCI_ACPI,
+                Help "Choose LPE Mode"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdLpssSioEnablePciMode, "Enable PCI mode for LPSS SIO devices", &EN_DIS,
+                Help "Enable PCI Mode for LPSS SIO devices. If disabled, LPSS SIO devices will run in ACPI mode."
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableDma0, "Enable DMA0", &EN_DIS,
+                Help "Enable/disable DMA0"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableDma1, "Enable DMA1", &EN_DIS,
+                Help "Enable/disable DMA1"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C0, "Enable I2C0", &EN_DIS,
+                Help "Enable/disable I2C0"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C1, "Enable I2C1", &EN_DIS,
+                Help "Enable/disable I2C1"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C2, "Enable I2C2", &EN_DIS,
+                Help "Enable/disable I2C2"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C3, "Enable I2C3", &EN_DIS,
+                Help "Enable/disable I2C3"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C4, "Enable I2C4", &EN_DIS,
+                Help "Enable/disable I2C4"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C5, "Enable I2C5", &EN_DIS,
+                Help "Enable/disable I2C5"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableI2C6, "Enable I2C6", &EN_DIS,
+                Help "Enable/disable I2C6"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnablePwm0, "Enable PWM0", &EN_DIS,
+                Help "Enable/disable PWM0"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnablePwm1, "Enable PWM1", &EN_DIS,
+                Help "Enable/disable PWM1"
+    Combo $gPlatformFspPkgTokenSpaceGuid_PcdEnableHsi, "Enable HSI", &EN_DIS,
+                Help "Enable/disable HSI"
+    Combo $gPlatformFspPkgTokenSpaceGuid_ISPEnable, "Enable ISP", &EN_DIS,
+                Help "Enable/disable ISP."
+EndPage

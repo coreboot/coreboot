@@ -20,6 +20,29 @@
 
 #include <arch/asm.h>
 
+ENTRY(seed_stack)
+	/*
+	 * Initialize the stack to a known value. This is used to check for
+	 * stack overflow later in the boot process.
+	 */
+	ldr	x0, .stack_bottom
+	ldr	x1, .stack_top
+	ldr	x2, =0xdeadbeefdeadbeef
+	ldr	x3, =0x8
+
+init_stack_loop:
+	str	x2, [x0]
+	add	x0, x0, x3
+	cmp	x0, x1
+	bne	init_stack_loop
+
+load_stack:
+	b	arm64_init
+	.align	4
+	.stack_bottom:
+		.quad _stack
+ENDPROC(seed_stack)
+
 ENTRY(arm64_el3_startup)
 	/* Set all bits in SCTLR_EL3 to 0 except RES1 and RES0 */
 	mrs     x0, SCTLR_EL3
@@ -37,7 +60,7 @@ ENTRY(arm64_el3_startup)
 	isb
 
 	/* Load up the stack if non-zero. */
-	ldr	x0, .stack
+	ldr	x0, .stack_top
 	cmp	x0, #0
 	b.eq	1f
 	mov	sp, x0
@@ -58,10 +81,10 @@ ENTRY(arm64_el3_startup)
 	 * to the Kconfig option for cpu0. However, this code can be relocated
 	 * and reused to start up secondary cpus.
 	 */
-	.stack:
+	.stack_top:
 		.quad _estack
 	.entry:
-		.quad arm64_init
+		.quad seed_stack
 ENDPROC(arm64_el3_startup)
 .global arm64_el3_startup_end
 arm64_el3_startup_end:

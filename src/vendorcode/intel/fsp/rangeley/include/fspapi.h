@@ -31,6 +31,8 @@ are permitted provided that the following conditions are met:
 #ifndef _FSP_API_H_
 #define _FSP_API_H_
 
+#include <fsptypes.h>
+
 #pragma pack(1)
 
 typedef VOID (* CONTINUATION_PROC)(EFI_STATUS Status, VOID *HobListPtr);
@@ -62,4 +64,4 @@ typedef struct {
 typedef FSP_STATUS (FSPAPI *FSP_FSP_INIT)    (FSP_INIT_PARAMS     *FspInitParamPtr);
 typedef FSP_STATUS (FSPAPI *FSP_NOTFY_PHASE) (NOTIFY_PHASE_PARAMS *NotifyPhaseParamPtr);
 
-#endif
+#endif /* _FSP_API_H_ */

@@ -31,6 +31,8 @@ are permitted provided that the following conditions are met:
 #ifndef __PI_FIRMWAREVOLUME_H__
 #define __PI_FIRMWAREVOLUME_H__
 
+#include <fsptypes.h>
+
 ///
 /// EFI_FV_FILE_ATTRIBUTES
 ///

@@ -31,6 +31,8 @@ are permitted provided that the following conditions are met:
 #ifndef __PI_HOB_H__
 #define __PI_HOB_H__
 
+#include <fsptypes.h>
+
 //
 // HobType of EFI_HOB_GENERIC_HEADER.
 //

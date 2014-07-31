@@ -28,9 +28,10 @@ are permitted provided that the following conditions are met:
 
 **/
 
-
 #ifndef __PI_FIRMWARE_FILE_H__
 #define __PI_FIRMWARE_FILE_H__
+
+#include <fsptypes.h>
 
 #pragma pack(1)
 ///

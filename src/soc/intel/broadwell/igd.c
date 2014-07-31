@@ -148,8 +148,7 @@ static const struct reg_script broadwell_early_init_script[] = {
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa250, 0x000000ff),
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa25c, 0x00000010),
 
-	/* GFXPAUSE settings */
-	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa000, 0x00030020),
+	/* GFXPAUSE settings (set based on stepping) */
 
 	/* ECO Settings */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa180, 0x45200000),
@@ -166,6 +165,9 @@ static const struct reg_script broadwell_early_init_script[] = {
 
 	/* Video Frequency Request */
 	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0xa00c, 0x08000000),
+
+	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0x138158, 0x00000009),
+	REG_RES_WRITE32(PCI_BASE_ADDRESS_0, 0x13815c, 0x0000000d),
 
 	/*
 	 * RC6 Settings
@@ -489,6 +491,14 @@ static void igd_init(struct device *dev)
 	/* Early init steps */
 	if (is_broadwell) {
 		reg_script_run_on_dev(dev, broadwell_early_init_script);
+
+		/* Set GFXPAUSE based on stepping */
+		if (cpu_stepping() <= (CPUID_BROADWELL_E0 & 0xf) &&
+		    systemagent_revision() <= 9) {
+			gtt_write(0xa000, 0x300ff);
+		} else {
+			gtt_write(0xa000, 0x30020);
+		}
 	} else {
 		reg_script_run_on_dev(dev, haswell_early_init_script);
 	}

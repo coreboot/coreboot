@@ -122,4 +122,7 @@
 /* Data is passed through bits 31:0 of the data register. */
 #define BIOS_MAILBOX_DATA			0x5da0
 
+/* System Agent identification */
+u8 systemagent_revision(void);
+
 #endif

@@ -36,6 +36,11 @@
 #include <broadwell/ramstage.h>
 #include <broadwell/systemagent.h>
 
+u8 systemagent_revision(void)
+{
+	return pci_read_config8(SA_DEV_ROOT, PCI_REVISION_ID);
+}
+
 static int get_pcie_bar(device_t dev, unsigned int index, u32 *base, u32 *len)
 {
 	u32 pciexbar_reg;

@@ -69,12 +69,22 @@ static void adsp_init(struct device *dev)
 
 	/* Set D3 Power Gating Enable in D19:F0:A0 based on PCH type */
 	tmp32 = pci_read_config32(dev, ADSP_PCI_VDRTCTL0);
-	if (pch_is_wpt()) {
-		tmp32 &= ~ADSP_VDRTCTL0_D3PGD_WPT;
-		tmp32 &= ~ADSP_VDRTCTL0_D3SRAMPGD_WPT;
+	if (config->adsp_d3_pg_disable) {
+		if (pch_is_wpt()) {
+			tmp32 |= ADSP_VDRTCTL0_D3PGD_WPT;
+			tmp32 |= ADSP_VDRTCTL0_D3SRAMPGD_WPT;
+		} else {
+			tmp32 |= ADSP_VDRTCTL0_D3PGD_LPT;
+			tmp32 |= ADSP_VDRTCTL0_D3SRAMPGD_LPT;
+		}
 	} else {
-		tmp32 &= ~ADSP_VDRTCTL0_D3PGD_LPT;
-		tmp32 &= ~ADSP_VDRTCTL0_D3SRAMPGD_LPT;
+		if (pch_is_wpt()) {
+			tmp32 &= ~ADSP_VDRTCTL0_D3PGD_WPT;
+			tmp32 &= ~ADSP_VDRTCTL0_D3SRAMPGD_WPT;
+		} else {
+			tmp32 &= ~ADSP_VDRTCTL0_D3PGD_LPT;
+			tmp32 &= ~ADSP_VDRTCTL0_D3SRAMPGD_LPT;
+		}
 	}
 	pci_write_config32(dev, ADSP_PCI_VDRTCTL0, tmp32);
 

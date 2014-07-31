@@ -84,6 +84,9 @@ struct soc_intel_broadwell_config {
 	uint8_t sio_i2c0_voltage;
 	uint8_t sio_i2c1_voltage;
 
+	/* Disable ADSP power gating in D3 */
+	uint8_t adsp_d3_pg_disable;
+
 	/*
 	 * Clock Disable Map:
 	 * [21:16] = CLKOUT_PCIE# 5-0

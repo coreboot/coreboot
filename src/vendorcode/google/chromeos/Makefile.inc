@@ -36,7 +36,7 @@ ifeq ($(CONFIG_VBOOT_VERIFY_FIRMWARE),y)
 romstage-y += vboot_handoff.c
 ramstage-y += vboot_handoff.c
 romstage-y += vboot_loader.c
-rmodules-y += vboot_wrapper.c
+rmodules_$(ARCH-romstage-y)-y += vboot_wrapper.c
 
 VB_LIB = $(obj)/external/vboot_reference/vboot_fw.a
 # Currently, vboot comes into picture only during the romstage, thus
@@ -55,10 +55,10 @@ VBOOT_STUB = $(VBOOT_STUB_ELF).rmod
 VBOOT_STUB_DOTO = $(VBOOT_STUB_ELF:.elf=.o)
 
 # Dependency for the vboot rmodules. Ordering matters.
-VBOOT_STUB_DEPS += $(obj)/vendorcode/google/chromeos/vboot_wrapper.rmodules.o
-VBOOT_STUB_DEPS += $(obj)/lib/memcmp.rmodules.o
-VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memset.rmodules.o
-VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memcpy.rmodules.o
+VBOOT_STUB_DEPS += $(obj)/vendorcode/google/chromeos/vboot_wrapper.rmodules_$(ARCH-romstage-y).o
+VBOOT_STUB_DEPS += $(obj)/lib/memcmp.rmodules_$(ARCH-romstage-y).o
+VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memset.rmodules_$(ARCH-romstage-y).o
+VBOOT_STUB_DEPS += $(obj)/arch/x86/lib/memcpy.rmodules_$(ARCH-romstage-y).o
 VBOOT_STUB_DEPS += $(VB_LIB)
 # Remove the '-include' option since that will break vboot's build and ensure
 # vboot_reference can get to coreboot's include files.
@@ -66,10 +66,10 @@ VBOOT_CFLAGS += $(patsubst -I%,-I../%,$(filter-out -include $(src)/include/kconf
 VBOOT_CFLAGS += -DVBOOT_DEBUG
 
 $(VBOOT_STUB_DOTO): $(VBOOT_STUB_DEPS)
-	$(CC_romstage) $(CFLAGS_romstage) -nostdlib -r -o $@ $^
+	$(CC_rmodules_$(ARCH-romstage-y)) $(CFLAGS_rmodules_$(ARCH-romstage-y)) -nostdlib -r -o $@ $^
 
 # Link the vbootstub module with a 64KiB-byte heap.
-$(eval $(call rmodule_link,$(VBOOT_STUB_ELF), $(VBOOT_STUB_DOTO), 0x10000))
+$(eval $(call rmodule_link,$(VBOOT_STUB_ELF), $(VBOOT_STUB_DOTO), 0x10000,$(ARCH-romstage-y)))
 
 # Build vboot library without the default includes from coreboot proper.
 $(VB_LIB):

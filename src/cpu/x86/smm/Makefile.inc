@@ -39,7 +39,7 @@ $(obj)/cpu/x86/smm/smmstub.o: $$(smmstub-objs)
 	$(CC_smmstub) $(CFLAGS_smmstub) -nostdlib -r -o $@ $^
 
 # Link the SMM stub module with a 0-byte heap.
-$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/smmstub.o, 0))
+$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smmstub.elf, $(obj)/cpu/x86/smm/smmstub.o, 0,x86_32))
 
 $(obj)/cpu/x86/smm/smmstub: $(obj)/cpu/x86/smm/smmstub.elf.rmod
 	$(OBJCOPY_smmstub) -O binary $< $@
@@ -54,7 +54,7 @@ $(obj)/cpu/x86/smm/smm.o: $$(smm-objs) $(LIBGCC_FILE_NAME_smm)
 	$(CC_smm) $(CFLAGS_smm) -nostdlib -r -o $@ -Wl,--wrap,__divdi3 -Wl,--wrap,__udivdi3 -Wl,--wrap,__moddi3 -Wl,--wrap,__umoddi3 -Wl,--start-group $(smm-objs) $(LIBGCC_FILE_NAME_smm) -Wl,--end-group
 
 
-$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE)))
+$(eval $(call rmodule_link,$(obj)/cpu/x86/smm/smm.elf, $(obj)/cpu/x86/smm/smm.o, $(CONFIG_SMM_MODULE_HEAP_SIZE),x86_32))
 
 $(obj)/cpu/x86/smm/smm: $(obj)/cpu/x86/smm/smm.elf.rmod
 	$(OBJCOPY_smm) -O binary $< $@

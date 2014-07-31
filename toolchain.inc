@@ -98,6 +98,18 @@ CPPFLAGS_$(1) += $$(CPPFLAGS_common) $$(CPPFLAGS_$(2))
 LIBGCC_FILE_NAME_$(1) = $(wildcard $(shell $(CC_$(2)) $(CFLAGS_$(2)) -print-libgcc-file-name))
 endef
 
+# define_class: Allows defining any program as dynamic class and compiler tool
+# set for the same based on the architecture for which the program is to be
+# compiled
+# @1: program (class name)
+# @2: architecture for which the program needs to be compiled
+# IMP: Ensure that define_class is called before any .c or .S files are added to
+# the class of the program. Check subdirs-y for order of subdirectory inclusions
+define define_class
+classes-y += $(1)
+$(eval $(call create_class_compiler,$(1),$(2)))
+endef
+
 # initialize standard toolchain (CC,AS and others) for give stage
 # @1 : stage for which the toolchain is to be initialized
 init_standard_toolchain = \

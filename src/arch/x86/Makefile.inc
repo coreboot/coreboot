@@ -308,10 +308,9 @@ endif
 
 ramstage-libs ?=
 
-$(eval $(call create_class_compiler,rmodules,x86_32))
 ifeq ($(CONFIG_RELOCATABLE_RAMSTAGE),y)
 
-$(eval $(call rmodule_link,$(objcbfs)/ramstage.debug, $(objgenerated)/ramstage.o, $(CONFIG_HEAP_SIZE)))
+$(eval $(call rmodule_link,$(objcbfs)/ramstage.debug, $(objgenerated)/ramstage.o, $(CONFIG_HEAP_SIZE),x86_32))
 
 # The rmodule_link defintion creates an elf file with .rmod extension.
 $(objcbfs)/ramstage.elf: $(objcbfs)/ramstage.debug.rmod

@@ -75,7 +75,11 @@ subdirs-y += site-local
 
 #######################################################################
 # Add source classes and their build options
-classes-y := ramstage romstage bootblock smm smmstub cpu_microcode rmodules
+classes-y := ramstage romstage bootblock smm smmstub cpu_microcode
+
+# Add dynamic classes for rmodules
+$(foreach supported_arch,$(ARCH_SUPPORTED), \
+	    $(eval $(call define_class,rmodules_$(supported_arch),$(supported_arch))))
 
 #######################################################################
 # Helper functions for ramstage postprocess

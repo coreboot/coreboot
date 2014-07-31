@@ -13,16 +13,16 @@ SIPI_DOTO=$(SIPI_ELF:.elf=.o)
 ifeq ($(CONFIG_PARALLEL_MP),y)
 ramstage-srcs += $(SIPI_BIN)
 endif
-rmodules-$(CONFIG_PARALLEL_MP) += sipi_vector.S
+rmodules_$(ARCH-ramstage-y)-$(CONFIG_PARALLEL_MP) += sipi_vector.S
 
-$(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules.o
-	$(CC_ramstage) $(CFLAGS_ramstage) -nostdlib -r -o $@ $^
+$(SIPI_DOTO): $(dir $(SIPI_ELF))sipi_vector.rmodules_$(ARCH-ramstage-y).o
+	$(CC_rmodules_$(ARCH-ramstage-y)) $(CFLAGS_rmodules_$(ARCH-ramstage-y)) -nostdlib -r -o $@ $^
 
-$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0))
+$(eval $(call rmodule_link,$(SIPI_ELF), $(SIPI_ELF:.elf=.o), 0,x86_32))
 
 $(SIPI_BIN): $(SIPI_RMOD)
 	$(OBJCOPY_ramstage) -O binary $< $@
 
 $(SIPI_BIN).ramstage.o: $(SIPI_BIN)
 	@printf "    OBJCOPY    $(subst $(obj)/,,$(@))\n"
-	cd $(dir $@); $(OBJCOPY_ramstage) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)
+	cd $(dir $@); $(OBJCOPY_rmodules_$(ARCH-ramstage-y)) -I binary $(notdir $<) -O elf32-i386 -B i386 $(notdir $@)

@@ -17,14 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <console/console.h>
-#include <arch/cache.h>
-#include <bootblock_common.h>
-#include "timer.h"
-#include "clock.h"
+#ifndef __SOC_ROCKCHIP_RK3288_CLOCK_H__
+#define __SOC_ROCKCHIP_RK3288_CLOCK_H__
 
-static void bootblock_cpu_init(void)
-{
-	rk3288_init_timer();
-	rkclk_init();
-}
+#include "addressmap.h"
+
+void rkclk_init(void);
+void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy);
+
+#endif	/* __SOC_ROCKCHIP_RK3288_CLOCK_H__ */
+

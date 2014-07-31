@@ -25,15 +25,18 @@ bootblock-y += media.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
+bootblock-y += clock.c
 
 romstage-y += cbmem.c
 romstage-y += timer.c
 romstage-y += monotonic_timer.c
 romstage-y += media.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
+romstage-y += clock.c
 
 ramstage-y += cbmem.c
 ramstage-y += timer.c
 ramstage-y += monotonic_timer.c
+ramstage-y += clock.c
 ramstage-y += media.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c

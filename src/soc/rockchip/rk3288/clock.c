@@ -1,0 +1,265 @@
+/*
+ * This file is part of the coreboot project.
+ *
+ * Copyright 2014 Rockchip Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; version 2 of the License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
+ */
+
+#include <assert.h>
+#include <stdlib.h>
+#include <arch/io.h>
+#include <stdint.h>
+#include <console/console.h>
+#include <delay.h>
+#include "clock.h"
+#include "grf.h"
+#include "addressmap.h"
+#include "cpu.h"
+
+struct pll_div {
+	u32	nr;
+	u32	nf;
+	u32	no;
+};
+
+struct rk3288_cru_reg {
+	u32 cru_apll_con[4];
+	u32 cru_dpll_con[4];
+	u32 cru_cpll_con[4];
+	u32 cru_gpll_con[4];
+	u32 cru_npll_con[4];
+	u32 cru_mode_con;
+	u32 reserved0[3];
+	u32 cru_clksel_con[43];
+	u32 reserved1[21];
+	u32 cru_clkgate_con[19];
+	u32 reserved2;
+	u32 cru_glb_srst_fst_value;
+	u32 cru_glb_srst_snd_value;
+	u32 cru_softrst_con[12];
+	u32 cru_misc_con;
+	u32 cru_glb_cnt_th;
+	u32 cru_glb_rst_con;
+	u32 reserved3;
+	u32 cru_glb_rst_st;
+	u32 reserved4;
+	u32 cru_sdmmc_con[2];
+	u32 cru_sdio0_con[2];
+	u32 cru_sdio1_con[2];
+	u32 cru_emmc_con[2];
+};
+check_member(rk3288_cru_reg, cru_emmc_con[1], 0x021c);
+
+static struct rk3288_cru_reg * const cru_ptr = (void *)CRU_BASE;
+
+/* apll = 816MHz, gpll = 594MHz, cpll = 384MHz, dpll = 300MHz */
+static const struct pll_div apll_init_cfg = {.nr = 1, .nf = 68, .no = 2};
+static const struct pll_div gpll_init_cfg = {.nr = 2, .nf = 198, .no = 4};
+static const struct pll_div cpll_init_cfg = {.nr = 2, .nf = 128, .no = 4};
+static const struct pll_div dpll_init_cfg = {.nr = 1, .nf = 50, .no = 4};
+
+/*******************PLL CON0 BITS***************************/
+#define PLL_OD_MSK	(0x0F)
+
+#define PLL_NR_MSK	(0x3F << 8)
+#define PLL_NR_SHIFT	(8)
+
+/*******************PLL CON1 BITS***************************/
+#define PLL_NF_MSK	(0x1FFF)
+
+/*******************PLL CON2 BITS***************************/
+#define PLL_BWADJ_MSK	(0x0FFF)
+
+/*******************PLL CON3 BITS***************************/
+#define PLL_RESET_MSK	(1 << 5)
+#define PLL_RESET	(1 << 5)
+#define PLL_RESET_RESUME	(0 << 5)
+
+/*******************CLKSEL0 BITS***************************/
+/* core clk pll sel: amr or general */
+#define CORE_SEL_PLL_MSK	(1 << 15)
+#define CORE_SEL_APLL	(0 << 15)
+#define CORE_SEL_GPLL	(1 << 15)
+
+/* a12 core clock div: clk_core = clk_src / (div_con + 1) */
+#define A12_DIV_SHIFT	(8)
+#define A12_DIV_MSK	(0x1F << 8)
+
+/* mp core axi clock div: clk = clk_src / (div_con + 1) */
+#define MP_DIV_SHIFT	(4)
+#define MP_DIV_MSK	(0xF << 4)
+
+/* m0 core axi clock div: clk = clk_src / (div_con + 1) */
+#define M0_DIV_MSK	(0xF)
+
+/*******************CLKSEL10 BITS***************************/
+/* peripheral bus clk pll sel: codec or general */
+#define PERI_SEL_PLL_MSK	(1 << 15)
+#define PERI_SEL_CPLL	(0 << 15)
+#define PERI_SEL_GPLL	(1 << 15)
+
+/* peripheral bus pclk div:
+ * aclk_bus: pclk_bus = 1:1 or 2:1 or 4:1 or 8:1
+ */
+#define PERI_PCLK_DIV_SHIFT	(12)
+#define PERI_PCLK_DIV_MSK	(0x7 << 12)
+
+/* peripheral bus hclk div:
+ * aclk_bus: hclk_bus = 1:1 or 2:1 or 4:1
+ */
+#define PERI_HCLK_DIV_SHIFT	(8)
+#define PERI_HCLK_DIV_MSK	(0x3 << 8)
+
+/* peripheral bus aclk div:
+ * aclk_periph =
+ * periph_clk_src / (peri_aclk_div_con + 1)
+ */
+#define PERI_ACLK_DIV_MSK	(0x1F)
+
+/*******************CLKSEL37 BITS***************************/
+#define L2_DIV_MSK	(0x7)
+
+#define ATCLK_DIV_MSK	(0x1F << 4)
+#define ATCLK_DIV_SHIFT	(4)
+
+#define PCLK_DBG_DIV_MSK	(0x1F << 9)
+#define PCLK_DBG_DIV_SHIFT	(9)
+
+#define APLL_MODE_MSK	(0x3)
+#define APLL_MODE_SLOW	(0)
+#define APLL_MODE_NORM	(1)
+
+#define DPLL_MODE_MSK	(0x3 << 4)
+#define DPLL_MODE_SLOW	(0 << 4)
+#define DPLL_MODE_NORM	(1 << 4)
+
+#define CPLL_MODE_MSK	(0x3 << 8)
+#define CPLL_MODE_SLOW	(0 << 8)
+#define CPLL_MODE_NORM	(1 << 8)
+
+#define GPLL_MODE_MSK	(0x3 << 12)
+#define GPLL_MODE_SLOW	(0 << 12)
+#define GPLL_MODE_NORM	(1 << 12)
+
+#define SOCSTS_DPLL_LOCK	(1 << 5)
+#define SOCSTS_APLL_LOCK	(1 << 6)
+#define SOCSTS_CPLL_LOCK	(1 << 7)
+#define SOCSTS_GPLL_LOCK	(1 << 8)
+
+static int rkclk_set_pll(u32 *pll_con, const struct pll_div *pll_div_cfg)
+{
+	/* enter rest */
+	writel(RK_SETBITS(PLL_RESET, PLL_RESET_MSK), &pll_con[3]);
+
+	writel(RK_SETBITS((pll_div_cfg->nr - 1) << PLL_NR_SHIFT, PLL_NR_MSK)
+		| RK_SETBITS((pll_div_cfg->no - 1), PLL_OD_MSK), &pll_con[0]);
+
+	writel(RK_SETBITS((pll_div_cfg->nf - 1), PLL_NF_MSK),
+		&pll_con[1]);
+
+	writel(RK_SETBITS(((pll_div_cfg->nf >> 1) - 1), PLL_BWADJ_MSK),
+		&pll_con[2]);
+
+	udelay(10);
+
+	/* return form rest */
+	writel(RK_SETBITS(PLL_RESET_RESUME, PLL_RESET_MSK), &pll_con[3]);
+
+	return 0;
+}
+
+void rkclk_init(void)
+{
+	/* pll enter slow-mode */
+	writel(RK_SETBITS(APLL_MODE_SLOW, APLL_MODE_MSK)
+		| RK_SETBITS(GPLL_MODE_SLOW, GPLL_MODE_MSK)
+		| RK_SETBITS(CPLL_MODE_SLOW, CPLL_MODE_MSK)
+		| RK_SETBITS(DPLL_MODE_SLOW, DPLL_MODE_MSK),
+		&cru_ptr->cru_mode_con);
+
+	/* init pll */
+	rkclk_set_pll(&cru_ptr->cru_apll_con[0], &apll_init_cfg);
+	rkclk_set_pll(&cru_ptr->cru_gpll_con[0], &gpll_init_cfg);
+	rkclk_set_pll(&cru_ptr->cru_cpll_con[0], &cpll_init_cfg);
+	rkclk_set_pll(&cru_ptr->cru_dpll_con[0], &dpll_init_cfg);
+
+	/* waiting for pll lock */
+	while (1) {
+		if ((readl(&rk3288_grf->soc_status[1])
+			& (SOCSTS_APLL_LOCK | SOCSTS_CPLL_LOCK
+			   | SOCSTS_DPLL_LOCK | SOCSTS_GPLL_LOCK))
+			== (SOCSTS_APLL_LOCK | SOCSTS_CPLL_LOCK
+			   | SOCSTS_GPLL_LOCK | SOCSTS_DPLL_LOCK))
+			break;
+		udelay(1);
+	}
+
+	/*
+	 * core clock pll source selection and
+	 * set up dependent divisors for MPAXI/M0AXI and ARM clocks.
+	 * core clock select apll, apll clk = 816MHz
+	 * arm clk = 816MHz, mpclk = 204MHz, m0clk = 408MHz
+	 */
+	writel(RK_SETBITS(CORE_SEL_APLL, CORE_SEL_PLL_MSK)
+		| RK_SETBITS(0 << A12_DIV_SHIFT, A12_DIV_MSK)
+		| RK_SETBITS(3 << MP_DIV_SHIFT, MP_DIV_MSK)
+		| RK_SETBITS(1, M0_DIV_MSK),
+		&cru_ptr->cru_clksel_con[0]);
+
+	/*
+	 * set up dependent divisors for L2RAM/ATCLK and PCLK clocks.
+	 * l2ramclk = 408MHz, atclk = 204MHz, pclk_dbg = 204MHz
+	 */
+	writel(RK_SETBITS(1, L2_DIV_MSK)
+		| RK_SETBITS((3 << ATCLK_DIV_SHIFT), ATCLK_DIV_MSK)
+		| RK_SETBITS((3 << PCLK_DBG_DIV_SHIFT), PCLK_DBG_DIV_MSK),
+		&cru_ptr->cru_clksel_con[37]);
+
+	/*
+	 * peri clock pll source selection and
+	 * set up dependent divisors for PCLK/HCLK and ACLK clocks.
+	 * peri clock select gpll, gpll clk = 594MHz
+	 * aclk = 148.5MHz, hclk = 148.5Mhz, pclk = 74.25MHz
+	 */
+	writel(RK_SETBITS(PERI_SEL_GPLL, PERI_SEL_PLL_MSK)
+		| RK_SETBITS(1 << PERI_PCLK_DIV_SHIFT, PERI_PCLK_DIV_MSK)
+		| RK_SETBITS(0 << PERI_HCLK_DIV_SHIFT, PERI_HCLK_DIV_MSK)
+		| RK_SETBITS(3, PERI_ACLK_DIV_MSK),
+		&cru_ptr->cru_clksel_con[10]);
+
+	/* PLL enter normal-mode */
+	writel(RK_SETBITS(APLL_MODE_NORM, APLL_MODE_MSK)
+		| RK_SETBITS(GPLL_MODE_NORM, GPLL_MODE_MSK)
+		| RK_SETBITS(CPLL_MODE_NORM, CPLL_MODE_MSK)
+		| RK_SETBITS(DPLL_MODE_NORM, DPLL_MODE_MSK),
+		&cru_ptr->cru_mode_con);
+
+}
+
+void rkclk_ddr_reset(u32 ch, u32 ctl, u32 phy)
+{
+	u32 phy_ctl_srstn_shift = 4 + 5 * ch;
+	u32 ctl_psrstn_shift = 3 + 5 * ch;
+	u32 ctl_srstn_shift = 2 + 5 * ch;
+	u32 phy_psrstn_shift = 1 + 5 * ch;
+	u32 phy_srstn_shift = 5 * ch;
+
+	writel(RK_SETBITS(phy << phy_ctl_srstn_shift, 1 << phy_ctl_srstn_shift)
+		| RK_SETBITS(ctl << ctl_psrstn_shift, 1 << ctl_psrstn_shift)
+		| RK_SETBITS(ctl << ctl_srstn_shift, 1 << ctl_srstn_shift)
+		| RK_SETBITS(phy << phy_psrstn_shift, 1 << phy_psrstn_shift)
+		| RK_SETBITS(phy << phy_srstn_shift, 1 << phy_srstn_shift),
+		&cru_ptr->cru_softrst_con[10]);
+}

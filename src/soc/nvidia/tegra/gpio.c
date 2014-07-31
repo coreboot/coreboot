@@ -47,37 +47,6 @@ void __gpio_output(gpio_t gpio, int value, u32 od)
 	pinmux_set_config(gpio >> GPIO_PINMUX_SHIFT, PINMUX_PULL_NONE | od);
 }
 
-enum {
-	GPIO_GPIOS_PER_PORT = 8,
-	GPIO_PORTS_PER_BANK = 4,
-	GPIO_BANKS = 8,
-
-	GPIO_GPIOS_PER_BANK = GPIO_GPIOS_PER_PORT * GPIO_PORTS_PER_BANK,
-	GPIO_GPIOS = GPIO_BANKS * GPIO_GPIOS_PER_BANK
-};
-
-struct gpio_bank {
-	// Values
-	u32 config[GPIO_PORTS_PER_BANK];
-	u32 out_enable[GPIO_PORTS_PER_BANK];
-	u32 out_value[GPIO_PORTS_PER_BANK];
-	u32 in_value[GPIO_PORTS_PER_BANK];
-	u32 int_status[GPIO_PORTS_PER_BANK];
-	u32 int_enable[GPIO_PORTS_PER_BANK];
-	u32 int_level[GPIO_PORTS_PER_BANK];
-	u32 int_clear[GPIO_PORTS_PER_BANK];
-
-	// Masks
-	u32 config_mask[GPIO_PORTS_PER_BANK];
-	u32 out_enable_mask[GPIO_PORTS_PER_BANK];
-	u32 out_value_mask[GPIO_PORTS_PER_BANK];
-	u32 in_value_mask[GPIO_PORTS_PER_BANK];
-	u32 int_status_mask[GPIO_PORTS_PER_BANK];
-	u32 int_enable_mask[GPIO_PORTS_PER_BANK];
-	u32 int_level_mask[GPIO_PORTS_PER_BANK];
-	u32 int_clear_mask[GPIO_PORTS_PER_BANK];
-};
-
 static const struct gpio_bank *gpio_banks = (void *)TEGRA_GPIO_BASE;
 
 static u32 gpio_read_port(int index, size_t offset)

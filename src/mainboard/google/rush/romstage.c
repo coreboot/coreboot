@@ -21,64 +21,44 @@
 
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
-#include <soc/nvidia/tegra132/pinmux.h>
-#include <soc/nvidia/tegra132/gpio.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 
-static void configure_tpm_i2c_bus(void)
+static const struct pad_config padcfgs[] = {
+	/* SOC_WARM_RESET_L */
+	PAD_CFG_GPIO_OUT1(GPIO_PI5, PINMUX_PULL_UP),
+	/* TPM I2C */
+	PAD_CFG_SFIO(CAM_I2C_SCL, PINMUX_INPUT_ENABLE, I2C3),
+	PAD_CFG_SFIO(CAM_I2C_SDA, PINMUX_INPUT_ENABLE, I2C3),
+	/* EC on SPI1: mosi, miso, clk, cs */
+	PAD_CFG_SFIO(ULPI_CLK, PINMUX_INPUT_ENABLE, SPI1),
+	PAD_CFG_SFIO(ULPI_DIR, PINMUX_INPUT_ENABLE, SPI1),
+	PAD_CFG_SFIO(ULPI_NXT, PINMUX_INPUT_ENABLE, SPI1),
+	PAD_CFG_SFIO(ULPI_STP, PINMUX_INPUT_ENABLE, SPI1),
+};
+
+static void configure_clocks(void)
 {
-	clock_configure_i2c_scl_freq(i2c3, PLLP, 19);
-
-	i2c_init(2);
-}
-
-static void mainboard_init_tpm_i2c(void)
-{
-	clock_enable_clear_reset(0, 0, CLK_U_I2C3, 0, 0, 0);
-
-	gpio_output(GPIO(I5), 1);
-
-	// I2C3 (cam) clock.
-	pinmux_set_config(PINMUX_CAM_I2C_SCL_INDEX,
-			  PINMUX_CAM_I2C_SCL_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
-	// I2C3 (cam) data.
-	pinmux_set_config(PINMUX_CAM_I2C_SDA_INDEX,
-			  PINMUX_CAM_I2C_SDA_FUNC_I2C3 | PINMUX_INPUT_ENABLE);
-
-
-	configure_tpm_i2c_bus();
-}
-
-static void mainboard_init_ec_spi(void)
-{
+	/* EC on SPI1 controller. */
 	clock_enable_clear_reset(0, CLK_H_SBC1, 0, 0, 0, 0);
-
-	// SPI1 MOSI
-	pinmux_set_config(PINMUX_ULPI_CLK_INDEX, PINMUX_ULPI_CLK_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 MISO
-	pinmux_set_config(PINMUX_ULPI_DIR_INDEX, PINMUX_ULPI_DIR_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 SCLK
-	pinmux_set_config(PINMUX_ULPI_NXT_INDEX, PINMUX_ULPI_NXT_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-	// SPI1 CS0
-	pinmux_set_config(PINMUX_ULPI_STP_INDEX, PINMUX_ULPI_STP_FUNC_SPI1 |
-						 PINMUX_PULL_NONE |
-						 PINMUX_INPUT_ENABLE);
-
 	clock_configure_source(sbc1, CLK_M, 500);
+
+	/* TPM on I2C3 controller */
+	clock_enable_clear_reset(0, 0, CLK_U_I2C3, 0, 0, 0);
+	clock_configure_i2c_scl_freq(i2c3, PLLP, 19);
 }
 
 void romstage_mainboard_init(void)
 {
-	mainboard_init_tpm_i2c();
-	mainboard_init_ec_spi();
+	configure_clocks();
+
+	/* Bring up controller interfaces for ramstage loading. */
+	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
+
+	/* TPM I2C bus */
+	i2c_init(2);
 }
 
 void mainboard_configure_pmc(void)

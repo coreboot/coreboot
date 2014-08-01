@@ -26,8 +26,6 @@
 #include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra132/clk_rst.h>
-#include <soc/nvidia/tegra132/gpio.h>
-#include <soc/nvidia/tegra132/pinmux.h>
 #include <soc/nvidia/tegra132/spi.h>	/* FIXME: move back to soc code? */
 
 #include "pmic.h"
@@ -67,6 +65,20 @@ static void set_clock_sources(void)
 	clock_configure_source(sbc4, PLLP, 33333);
 }
 
+static const struct pad_config padcfgs[] = {
+	/* Board build id bits 1:0 */
+	PAD_CFG_GPIO_INPUT(KB_COL4, PINMUX_PULL_NONE),
+	PAD_CFG_GPIO_INPUT(KB_COL3, PINMUX_PULL_NONE),
+	/* PMIC i2C bus */
+	PAD_CFG_SFIO(PWR_I2C_SCL, PINMUX_INPUT_ENABLE, I2CPMU),
+	PAD_CFG_SFIO(PWR_I2C_SDA, PINMUX_INPUT_ENABLE, I2CPMU),
+	/* SPI fLash: mosi, miso, clk, cs0  */
+	PAD_CFG_SFIO(GPIO_PG6, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SPI4),
+	PAD_CFG_SFIO(GPIO_PG7, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SPI4),
+	PAD_CFG_SFIO(GPIO_PG5, PINMUX_INPUT_ENABLE, SPI4),
+	PAD_CFG_SFIO(GPIO_PI3, PINMUX_INPUT_ENABLE, SPI4),
+};
+
 void bootblock_mainboard_init(void)
 {
 	set_clock_sources();
@@ -75,35 +87,11 @@ void bootblock_mainboard_init(void)
 				 CLK_H_I2C5 | CLK_H_APBDMA,
 				 0, CLK_V_MSELECT, 0, 0);
 
-	// Board ID GPIOs, bits 0-3.
-	gpio_input(GPIO(Q3));
-	gpio_input(GPIO(T1));
-	gpio_input(GPIO(X1));
-	gpio_input(GPIO(X4));
+	/* Set up the pads required to load romstage. */
+	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
 
-	// I2C5 (PMU) clock.
-	pinmux_set_config(PINMUX_PWR_I2C_SCL_INDEX,
-			  PINMUX_PWR_I2C_SCL_FUNC_I2CPMU | PINMUX_INPUT_ENABLE);
-	// I2C5 (PMU) data.
-	pinmux_set_config(PINMUX_PWR_I2C_SDA_INDEX,
-			  PINMUX_PWR_I2C_SDA_FUNC_I2CPMU | PINMUX_INPUT_ENABLE);
 	i2c_init(4);
 	pmic_init(4);
-
-	/* SPI4 data out (MOSI) */
-	pinmux_set_config(PINMUX_GPIO_PG6_INDEX,
-			  PINMUX_GPIO_PG6_FUNC_SPI4 | PINMUX_INPUT_ENABLE |
-			  PINMUX_PULL_UP);
-	/* SPI4 data in (MISO) */
-	pinmux_set_config(PINMUX_GPIO_PG7_INDEX,
-			  PINMUX_GPIO_PG7_FUNC_SPI4 | PINMUX_INPUT_ENABLE |
-			  PINMUX_PULL_UP);
-	/* SPI4 clock */
-	pinmux_set_config(PINMUX_GPIO_PG5_INDEX,
-			  PINMUX_GPIO_PG5_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
-	/* SPI4 chip select 0 */
-	pinmux_set_config(PINMUX_GPIO_PI3_INDEX,
-			  PINMUX_GPIO_PI3_FUNC_SPI4 | PINMUX_INPUT_ENABLE);
 
 	tegra_spi_init(4);
 }

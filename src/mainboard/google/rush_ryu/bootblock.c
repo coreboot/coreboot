@@ -18,11 +18,12 @@
  */
 
 #include <arch/io.h>
-#include <bootblock_common.h>
 #include <console/console.h>
 #include <device/i2c.h>
 #include <soc/addressmap.h>
+#include <soc/bootblock.h>
 #include <soc/clock.h>
+#include <soc/padconfig.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra132/clk_rst.h>
 #include <soc/nvidia/tegra132/gpio.h>
@@ -32,6 +33,24 @@
 #include "pmic.h"
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
+
+static const struct pad_config uart_console_pads[] = {
+	/* Hard coded pad usage for UARTA. */
+	PAD_CFG_SFIO(KB_ROW9, 0, UA3),
+	PAD_CFG_SFIO(KB_ROW10, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UA3),
+	/*
+	 * Disable UART2 pads as they are default connected to UARTA controller.
+	 */
+	PAD_CFG_UNUSED(UART2_RXD),
+	PAD_CFG_UNUSED(UART2_TXD),
+	PAD_CFG_UNUSED(UART2_RTS_N),
+	PAD_CFG_UNUSED(UART2_CTS_N),
+};
+
+void bootblock_mainboard_early_init(void)
+{
+	soc_configure_pads(uart_console_pads, ARRAY_SIZE(uart_console_pads));
+}
 
 static void set_clock_sources(void)
 {

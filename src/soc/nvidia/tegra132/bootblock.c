@@ -22,25 +22,16 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <soc/bootblock.h>
 #include <soc/clock.h>
-#include <soc/padconfig.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 
-#include "pinmux.h"
 #include "power.h"
 
-static const struct pad_config uart_console_pads[] = {
-	/* Hard coded pad usage for UARTA. */
-	PAD_CFG_SFIO(KB_ROW9, 0, UA3),
-	PAD_CFG_SFIO(KB_ROW10, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UA3),
-	/*
-	 * Disable UART2 pads as they are default connected to UARTA controller.
-	 */
-	PAD_CFG_UNUSED(UART2_RXD),
-	PAD_CFG_UNUSED(UART2_TXD),
-	PAD_CFG_UNUSED(UART2_RTS_N),
-	PAD_CFG_UNUSED(UART2_CTS_N),
-};
+void __attribute__((weak)) bootblock_mainboard_early_init(void)
+{
+	/* Empty default implementation. */
+}
 
 void main(void)
 {
@@ -52,7 +43,7 @@ void main(void)
 
 	clock_early_uart();
 
-	soc_configure_pads(uart_console_pads, ARRAY_SIZE(uart_console_pads));
+	bootblock_mainboard_early_init();
 
 	if (CONFIG_BOOTBLOCK_CONSOLE) {
 		console_init();

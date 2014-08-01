@@ -20,10 +20,10 @@
 #ifndef __SOC_NVIDIA_TEGRA132_SOC_ROMSTAGE_H__
 #define __SOC_NVIDIA_TEGRA132_SOC_ROMSTAGE_H__
 
+void romstage(void);
+void romstage_mainboard_init(void);
+
 void mainboard_configure_pmc(void);
 void mainboard_enable_vdd_cpu(void);
-void mainboard_init_tpm_i2c(void);
-void mainboard_init_ec_spi(void);
-void mainboard_init_ec_i2c(void);
 
 #endif /* __SOC_NVIDIA_TEGRA132_SOC_ROMSTAGE_H__ */

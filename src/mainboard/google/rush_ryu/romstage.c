@@ -38,7 +38,7 @@ static void configure_ec_i2c_bus(void)
 	i2c_init(1);
 }
 
-void mainboard_init_tpm_i2c(void)
+static void mainboard_init_tpm_i2c(void)
 {
 	clock_enable_clear_reset(0, 0, CLK_U_I2C3, 0, 0, 0);
 
@@ -54,12 +54,7 @@ void mainboard_init_tpm_i2c(void)
 	configure_tpm_i2c_bus();
 }
 
-void mainboard_init_ec_spi(void)
-{
-	/* Empty - Ryu uses I2C to communicate with the EC */
-}
-
-void mainboard_init_ec_i2c(void)
+static void mainboard_init_ec_i2c(void)
 {
 	clock_enable_clear_reset(0, CLK_H_I2C2, 0, 0, 0, 0);
 
@@ -71,6 +66,12 @@ void mainboard_init_ec_i2c(void)
 			  PINMUX_GEN2_I2C_SDA_FUNC_I2C2 | PINMUX_INPUT_ENABLE);
 
 	configure_ec_i2c_bus();
+}
+
+void romstage_mainboard_init(void)
+{
+	mainboard_init_tpm_i2c();
+	mainboard_init_ec_i2c();
 }
 
 void mainboard_configure_pmc(void)

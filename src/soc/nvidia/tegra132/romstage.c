@@ -32,7 +32,25 @@
 #include <soc/clock.h>
 #include <soc/romstage.h>
 
-void romstage(void);
+void __attribute__((weak)) romstage_mainboard_init(void)
+{
+	/* Default empty implementation. */
+}
+
+static void *load_ramstage(void)
+{
+	void *entry;
+	/*
+	 * This platform does not need to cache a loaded ramstage nor do we
+	 * go down this path on resume. Therefore, no romstage_handoff is
+	 * required.
+	 */
+	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
+				CONFIG_CBFS_PREFIX "/ramstage");
+
+	return entry;
+}
+
 void romstage(void)
 {
 	void *entry;
@@ -67,12 +85,14 @@ void romstage(void)
 	ccplex_load_mts();
 	printk(BIOS_INFO, "T132 romstage: MTS loading done\n");
 
-	mainboard_init_tpm_i2c();
-	mainboard_init_ec_spi();
-	mainboard_init_ec_i2c();
+	romstage_mainboard_init();
 
-	entry = cbfs_load_stage(CBFS_DEFAULT_MEDIA,
-				CONFIG_CBFS_PREFIX "/ramstage");
+	entry = load_ramstage();
+
+	if (entry == NULL) {
+		printk(BIOS_INFO, "T132 romstage: error loading ramstage\n");
+		clock_halt_avp();
+	}
 
 	cbmemc_reinit();
 

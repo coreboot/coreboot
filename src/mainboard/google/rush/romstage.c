@@ -34,7 +34,7 @@ static void configure_tpm_i2c_bus(void)
 	i2c_init(2);
 }
 
-void mainboard_init_tpm_i2c(void)
+static void mainboard_init_tpm_i2c(void)
 {
 	clock_enable_clear_reset(0, 0, CLK_U_I2C3, 0, 0, 0);
 
@@ -51,7 +51,7 @@ void mainboard_init_tpm_i2c(void)
 	configure_tpm_i2c_bus();
 }
 
-void mainboard_init_ec_spi(void)
+static void mainboard_init_ec_spi(void)
 {
 	clock_enable_clear_reset(0, CLK_H_SBC1, 0, 0, 0, 0);
 
@@ -75,9 +75,10 @@ void mainboard_init_ec_spi(void)
 	clock_configure_source(sbc1, CLK_M, 500);
 }
 
-void mainboard_init_ec_i2c(void)
+void romstage_mainboard_init(void)
 {
-	/* Empty - Rush uses SPI to communicate with the EC */
+	mainboard_init_tpm_i2c();
+	mainboard_init_ec_spi();
 }
 
 void mainboard_configure_pmc(void)

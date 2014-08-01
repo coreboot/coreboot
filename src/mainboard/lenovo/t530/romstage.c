@@ -183,16 +183,16 @@ void main(unsigned long bist)
 	pci_write_config8(PCH_LPC_DEV, GPIO_CNTL, 0x10);
 
 //	setup_pch_gpios(&t530_gpio_map);
-	outl(0x3962a5ff, DEFAULT_GPIOBASE);
-	outl(0x8ebf6aff, DEFAULT_GPIOBASE + 4);
-	outl(0x66917ebb, DEFAULT_GPIOBASE + 0xc);
-	outl(0x00002002, DEFAULT_GPIOBASE + 0x2c);
-	outl(0x02ff08fe, DEFAULT_GPIOBASE + 0x30);
-	outl(0x1f47f7fd, DEFAULT_GPIOBASE + 0x34);
-	outl(0xffbeff43, DEFAULT_GPIOBASE + 0x38);
-	outl(0x000000ff, DEFAULT_GPIOBASE + 0x40);
-	outl(0x00000fff, DEFAULT_GPIOBASE + 0x44);
-	outl(0x00000f4f, DEFAULT_GPIOBASE + 0x48);
+	outl(0x3962a5ff, DEFAULT_GPIOBASE + GPIO_USE_SEL);
+	outl(0x8ebf6aff, DEFAULT_GPIOBASE + GP_IO_SEL);
+	outl(0x66917ebb, DEFAULT_GPIOBASE + GP_LVL);
+	outl(0x00002002, DEFAULT_GPIOBASE + GPI_INV);
+	outl(0x02ff08fe, DEFAULT_GPIOBASE + GPIO_USE_SEL2);
+	outl(0x1f47f7fd, DEFAULT_GPIOBASE + GP_IO_SEL2);
+	outl(0xffbeff43, DEFAULT_GPIOBASE + GP_LVL2);
+	outl(0x000000ff, DEFAULT_GPIOBASE + GPIO_USE_SEL3);
+	outl(0x00000fff, DEFAULT_GPIOBASE + GP_IO_SEL3);
+	outl(0x00000f4f, DEFAULT_GPIOBASE + GP_LVL3);
 
 	/* Initialize console device(s) */
 	console_init();

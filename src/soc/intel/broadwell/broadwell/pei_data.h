@@ -124,6 +124,8 @@ struct pei_data
 	int max_ddr3_freq;
 	/* Disable self refresh */
 	int disable_self_refresh;
+	/* Disable cmd power/CKEPD */
+	int disable_cmd_pwr;
 
 	/* USB port configuration */
 	struct usb2_port_setting usb2_ports[MAX_USB2_PORTS];

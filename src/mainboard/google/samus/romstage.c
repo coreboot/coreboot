@@ -59,8 +59,7 @@ void mainboard_romstage_entry(struct romstage_params *rp)
 	 * Disable use of PEI saved data to work around memory issues.
 	 */
 	if (cpu_family_model() == BROADWELL_FAMILY_ULT) {
-		pei_data.disable_self_refresh = 1;
-		pei_data.disable_saved_data = 1;
+		pei_data.disable_cmd_pwr = 1;
 	}
 
 	/* Initalize memory */

@@ -113,5 +113,19 @@ struct sysinfo_t {
 
 extern struct sysinfo_t lib_sysinfo;
 
+/*
+ * Check if this is an architecture specific coreboot table record and process
+ * it, if it is. Return 1 if record type was recognized, 0 otherwise.
+ */
+int cb_parse_arch_specific(struct cb_record *rec, struct sysinfo_t *info);
+
+/*
+ * Check if the region in range addr..addr+len contains a 16 byte aligned
+ * coreboot table. If it does - process the table filling up the sysinfo
+ * structure with information from the table. Return 0 on success and -1 on
+ * failure.
+ */
+int cb_parse_header(void *addr, int len, struct sysinfo_t *info);
+
 #endif
 

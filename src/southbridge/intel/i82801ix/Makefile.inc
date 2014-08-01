@@ -26,6 +26,7 @@ ramstage-y += usb_ehci.c
 ramstage-y += sata.c
 ramstage-y += hdaudio.c
 ramstage-y += thermal.c
+ramstage-y += smbus.c
 
 ramstage-y += ../i82801gx/reset.c
 ramstage-y += ../i82801gx/watchdog.c

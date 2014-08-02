@@ -91,7 +91,11 @@ entries
 # coreboot config options: bootloader
 #Used by ChromeOS:
 416        128       r        0        vbnv
-#544        440       r       0        unused
+
+# coreboot config options: northbridge
+544         3        e      11        gfx_uma_size
+
+#547        437       r       0        unused
 
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
@@ -134,6 +138,14 @@ enumerations
 7     2     Keep
 8     0     AHCI
 8     1     Compatible
+11    0     32M
+11    1     64M
+11    2	    96M
+11    3	    128M
+11    4	    160M
+11    5	    192M
+11    6	    224M
+
 # -----------------------------------------------------------------
 checksums
 

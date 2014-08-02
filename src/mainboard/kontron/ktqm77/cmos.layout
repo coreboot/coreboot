@@ -80,7 +80,9 @@ entries
 
 # coreboot config options: cpu
 400          1       e       2        hyper_threading
-#401          7       r       0        unused
+401         3        e      12        gfx_uma_size
+
+#404          4       r       0        unused
 
 # coreboot config options: southbridge
 408          1       e       1        nmi
@@ -165,6 +167,14 @@ enumerations
 10    4     LM75@9e
 11    0     AHCI
 11    1     Compatible
+12    0     32M
+12    1     64M
+12    2	    96M
+12    3	    128M
+12    4	    160M
+12    5	    192M
+12    6	    224M
+
 # -----------------------------------------------------------------
 checksums
 

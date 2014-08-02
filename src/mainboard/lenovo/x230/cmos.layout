@@ -100,8 +100,11 @@ entries
 
 # coreboot config options: cpu
 424          1       e       2        hyper_threading
+#425        7       r       0        unused
 
-#425        559       r       0        unused
+# coreboot config options: northbridge
+432         3        e      11        gfx_uma_size
+#435        549       r       0        unused
 
 # SandyBridge MRC Scrambler Seed values
 896         32        r       0        mrc_scrambler_seed
@@ -150,6 +153,14 @@ enumerations
 10    1     Keyboard only
 10    2	    Thinklight only
 10    3	    None
+11    0     32M
+11    1     64M
+11    2	    96M
+11    3	    128M
+11    4	    160M
+11    5	    192M
+11    6	    224M
+
 # -----------------------------------------------------------------
 checksums
 

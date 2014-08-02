@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <elog.h>
+#include <pc80/mc146818rtc.h>
 #include "sandybridge.h"
 
 static void sandybridge_setup_bars(void)
@@ -83,6 +84,7 @@ static void sandybridge_setup_graphics(void)
 	u32 reg32;
 	u16 reg16;
 	u8 reg8;
+	u8 gfxsize;
 
 	reg16 = pci_read_config16(PCI_DEV(0,2,0), PCI_DEVICE_ID);
 	switch (reg16) {
@@ -103,10 +105,13 @@ static void sandybridge_setup_graphics(void)
 
 	printk(BIOS_DEBUG, "Initializing Graphics...\n");
 
-	/* Setup IGD memory by setting GGC[7:3] = 1 for 32MB */
+	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
+		/* Setup IGD memory by setting GGC[7:3] = 1 for 32MB */
+		gfxsize = 0;
+	}
 	reg16 = pci_read_config16(PCI_DEV(0,0,0), GGC);
 	reg16 &= ~0x00f8;
-	reg16 |= 1 << 3;
+	reg16 |= (gfxsize + 1) << 3;
 	/* Program GTT memory by setting GGC[9:8] = 2MB */
 	reg16 &= ~0x0300;
 	reg16 |= 2 << 8;

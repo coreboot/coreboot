@@ -57,7 +57,7 @@ void setup_lapic(void)
 
 	printk(BIOS_DEBUG, " apic_id: 0x%02lx ", lapicid());
 
-#else /* !NEED_LLAPIC */
+#else /* !NEED_LAPIC */
 	/* Only Pentium Pro and later have those MSR stuff */
 	msr_t msr;
 

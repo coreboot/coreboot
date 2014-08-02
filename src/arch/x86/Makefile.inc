@@ -114,7 +114,7 @@ $(objgenerated)/bootblock_inc.S: $$(bootblock_inc)
 	printf '$(foreach crt0,$(bootblock_inc),#include "$(crt0)"\n)' > $@
 
 $(objgenerated)/bootblock.o: $(objgenerated)/bootblock.s
-	@printf "    CC        $(subst $(obj)/,,$(@))\n"
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) $(CFLAGS_x86_32) $(DISASSEMBLY) -c -o $@ $<  > $(basename $@).disasm
 
 $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(obj)/build.h

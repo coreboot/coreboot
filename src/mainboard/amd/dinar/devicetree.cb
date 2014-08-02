@@ -85,7 +85,7 @@ chip northbridge/amd/agesa/family15/root_complex
 							irq 0x70 = 1	# PS/2 keyboard interrupt
 							irq 0x72 = 12	# PS/2 mouse interrupt
 						end
-					end #SIO SMSC307
+					end #SIO SMSC SCH4037
 				end #LPC
 				device pci 14.4 on end # PCI bridge, 0x4384
 					device pci 14.5 on end # USB 3

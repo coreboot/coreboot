@@ -33,12 +33,12 @@
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
 #include "superio/smsc/sch4037/sch4037_early_init.c"
-#include "superio/smsc/sio1036/sio1036_early_init.c"
+#include <superio/smsc/sio1036/sio1036.h>
 #include "cpu/x86/lapic.h"
 #include "nb_cimx.h"
 #include <sb_cimx.h>
 
-#define SERIAL_DEV PNP_DEV(0x2e, SMSCSUPERIO_SP1)
+#define SERIAL_DEV PNP_DEV(0x4e, SIO1036_SP1)
 
 void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 {
@@ -50,11 +50,7 @@ void cache_as_ram_main(unsigned long bist, unsigned long cpu_init_detectedx)
 
 		sch4037_early_init(0x2e);
 
-		/* Detect SMSC SIO1036 LPC Debug Card status */
-		if (detect_sio1036_chip(0x4E)) {
-			/* Found SMSC SIO1036 LPC Debug Card */
-			sio1036_early_init(0x4E);
-		}
+		sio1036_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);
 
 		post_code(0x31);
 		console_init();

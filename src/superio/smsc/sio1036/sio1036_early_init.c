@@ -20,50 +20,49 @@
 /* Pre-RAM driver for the SMSC KBC1100 Super I/O chip */
 
 #include <arch/io.h>
+#include <stdint.h>
+
 #include "sio1036.h"
 
-#ifndef CONFIG_TTYS0_BASE
-#define CONFIG_TTYS0_BASE 0x3F8
-#endif
 static inline void sio1036_enter_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	unsigned port = dev >> 8;
 	outb(0x55, port);
 }
 
 static inline void sio1036_exit_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	unsigned port = dev >> 8;
 	outb(0xaa, port);
 }
 
+/* Detect SMSC SIO1036 LPC Debug Card status */
 static u8 detect_sio1036_chip(unsigned port)
 {
-	device_t dev;
-	dev = PNP_DEV (port, SIO1036_SP1);
+	device_t dev = PNP_DEV(port, SIO1036_SP1);
 	unsigned data;
+
 	sio1036_enter_conf_state (dev);
 	data = pnp_read_config (dev, 0x0D);
 	sio1036_exit_conf_state(dev);
-	/* detect smsc sio1036 chip */
+
+	/* Detect SMSC SIO1036 chip */
 	if (data == 0x82) {
 		/* Found SMSC SIO1036 chip */
 		return 0;
 	}
 	else {
-		return -1;
+		return 1;
 	};
 }
 
-static inline void sio1036_early_init(unsigned port)
+void sio1036_enable_serial(device_t dev, u16 iobase)
 {
-	device_t dev;
-	dev = PNP_DEV (port, SIO1036_SP1);
+	unsigned port = dev >> 8;
 
-	if (detect_sio1036_chip(port) != 0) {
-		/* Not found SMSC SIO1036 */
+	if (detect_sio1036_chip(port) != 0)
 		return;
-	}
+
 	sio1036_enter_conf_state (dev);
 
 	/* Enable SMSC UART 0 */
@@ -91,7 +90,7 @@ static inline void sio1036_early_init(unsigned port)
 
 	/* Enable SMSC UART 0 */
 	/*Set base io address */
-	pnp_write_config (dev, 0x25, (u8)((u16)CONFIG_TTYS0_BASE >> 2));
+	pnp_write_config (dev, 0x25, (u8)(iobase >> 2));
 
 	/* Set UART IRQ onto 0x04 */
 	pnp_write_config (dev, 0x28, 0x04);

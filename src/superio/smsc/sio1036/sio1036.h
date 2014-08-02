@@ -26,4 +26,9 @@
 #define LPT_POWER_DOWN		(1 << 2)
 #define IR_OUPUT_MUX		(1 << 6)
 
+#include <arch/io.h>
+#include <stdint.h>
+
+void sio1036_enable_serial(device_t dev, u16 iobase);
+
 #endif /* SUPERIO_SMSC_1306_H */

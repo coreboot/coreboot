@@ -3796,6 +3796,8 @@ static void dmi_setup(void)
 void chipset_init(const int s3resume)
 {
 	u8 x2ca8;
+	u16 ggc;
+	u8 gfxsize;
 
 	x2ca8 = read_mchbar8(0x2ca8);
 	if ((x2ca8 & 1) || (x2ca8 == 8 && !s3resume)) {
@@ -3825,13 +3827,15 @@ void chipset_init(const int s3resume)
 	write_mchbar16(0x1170, 0xb880);
 	read_mchbar8(0x1210);
 	write_mchbar8(0x1210, 0x84);
-	pcie_read_config8(NORTHBRIDGE, D0F0_GGC);	// = 0x52
-	pcie_write_config8(NORTHBRIDGE, D0F0_GGC, 0x2);
-	pcie_read_config8(NORTHBRIDGE, D0F0_GGC);	// = 0x2
-	pcie_write_config8(NORTHBRIDGE, D0F0_GGC, 0x52);
-	pcie_read_config16(NORTHBRIDGE, D0F0_GGC);	// = 0xb52
 
-	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, 0xb52);
+	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
+		/* 0 for 32MB */
+		gfxsize = 0;
+	}
+
+	ggc = 0xb00 | ((gfxsize + 5) << 4);
+
+	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, ggc | 2);
 
 	u16 deven;
 	deven = pcie_read_config16(NORTHBRIDGE, D0F0_DEVEN);	// = 0x3
@@ -3854,9 +3858,7 @@ void chipset_init(const int s3resume)
 	read_mchbar32(0x30);
 	write_mchbar32(0x30, 0x40);
 
-	pcie_read_config8(SOUTHBRIDGE, 0x8);	// = 0x6
-	pcie_read_config16(NORTHBRIDGE, D0F0_GGC);	// = 0xb52
-	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, 0xb50);
+	pcie_write_config16(NORTHBRIDGE, D0F0_GGC, ggc);
 	gav(read32(DEFAULT_RCBA | 0x3428));
 	write32(DEFAULT_RCBA | 0x3428, 0x1d);
 }

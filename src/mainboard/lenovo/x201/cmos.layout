@@ -97,7 +97,13 @@ entries
 419         1       e       1        power_management_beeps
 420         1       e       1        low_battery_beep
 421         1       e       9        sata_mode
-#422        562     r       0        unused
+
+#422        2       r       0        unused
+
+# coreboot config options: northbridge
+424         3       e       10       gfx_uma_size
+
+#427        557     r       0        unused
 
 # coreboot config options: check sums
 984         16       h       0        check_sum
@@ -138,6 +144,13 @@ enumerations
 8     1     Primary
 9     0     AHCI
 9     1     Compatible
+10    0     32M
+10    1     48M
+10    2     64M
+10    3     128M
+10    5     96M
+10    6     160M
+
 # -----------------------------------------------------------------
 checksums
 

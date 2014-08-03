@@ -195,6 +195,7 @@ struct device *new_chip(struct device *parent, struct device *bus, char *path) {
 	parent->latestchild = new_chip;
 	if (!parent->children)
 		parent->children = new_chip;
+	free(chip_h);
 	return new_chip;
 }
 
@@ -225,7 +226,7 @@ struct device *new_device(struct device *parent, struct device *busdev, const in
 	new_d->bustype = bus;
 
 	char *tmp;
-	new_d->path_a = strtol(strdup(devnum), &tmp, 16);
+	new_d->path_a = strtol(devnum, &tmp, 16);
 	if (*tmp == '.') {
 		tmp++;
 		new_d->path_b = strtol(tmp, NULL, 16);

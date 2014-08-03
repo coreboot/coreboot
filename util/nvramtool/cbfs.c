@@ -144,6 +144,7 @@ void open_cbfs(const char *filename)
 	}
 	cbfs_mapped = mmap(NULL, cbfs_stat.st_size, PROT_READ | PROT_WRITE,
 			MAP_SHARED, cbfs_fd, 0);
+	close(cbfs_fd);
 	if (cbfs_mapped == MAP_FAILED) {
 		printf("Couldn't map '%s'\n", filename);
 		exit(-1);

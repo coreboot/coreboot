@@ -463,8 +463,8 @@ void set_power_limits(u8 power_limit_1_time)
 	unsigned tdp, min_power, max_power, max_time;
 	u8 power_limit_1_val;
 
-	if (power_limit_1_time > ARRAY_SIZE(power_limit_time_sec_to_msr))
-		power_limit_1_time = 28;
+	if (power_limit_1_time >= ARRAY_SIZE(power_limit_time_sec_to_msr))
+		power_limit_1_time = ARRAY_SIZE(power_limit_time_sec_to_msr) - 1;
 
 	if (!(msr.lo & PLATFORM_INFO_SET_TDP))
 		return;

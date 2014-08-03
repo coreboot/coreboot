@@ -570,7 +570,10 @@ int main(int argc, char** argv) {
 		scan_mode = STATIC_MODE;
 		outputc=malloc(strlen(outputdir)+20);
 		sprintf(outputc, "%s/static.c", outputdir);
-	} else if ((argc == 5) && (argv[3][0] == '-') && (argv[3][2] == 0)) {
+	} else if (argc == 5) {
+		if ((argv[3][0] != '-') || (argv[3][2] == 0)) {
+			usage();
+		}
 
 		switch (argv[3][1]) {
 		case 's':

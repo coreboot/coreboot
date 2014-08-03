@@ -370,7 +370,7 @@ void DrivingDCLK(DRAM_SYS_ATTR * DramAttr)
 	else if (DIMMFREQ_667 == DramAttr->DramFreq)
 		FreqId = 2;
 	else if (DIMMFREQ_800 == DramAttr->DramFreq)
-		FreqId = 4;
+		FreqId = 3;
 	else
 		FreqId = 0;
 

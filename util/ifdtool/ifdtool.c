@@ -552,7 +552,8 @@ static void write_image(char *filename, char *image, int size)
 	char new_filename[FILENAME_MAX]; // allow long file names
 	int new_fd;
 
-	strncpy(new_filename, filename, FILENAME_MAX);
+	// - 5: leave room for ".new\0"
+	strncpy(new_filename, filename, FILENAME_MAX - 5);
 	strncat(new_filename, ".new", FILENAME_MAX - strlen(filename));
 
 	printf("Writing new image to %s\n", new_filename);

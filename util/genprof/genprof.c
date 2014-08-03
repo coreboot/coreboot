@@ -46,17 +46,21 @@ int main(int argc, char* argv[])
 	uint8_t tag;
 	uint16_t hit;
 
-	if ( argc < 2 )
-	{
+	if (argc != 2) {
 		fprintf(stderr, "Please specify the coreboot trace log as parameter\n");
 		return 1;
 	}
 
 	f = fopen(argv[1], "r");
-	fo = fopen("gmon.out", "w+");
+	if (f == NULL) {
+		perror("Unable to open the input file");
+		return 1;
+	}
 
-	if ((f == NULL) || (fo == NULL)) {
-		fprintf(stderr, "Unable to manipulate with the input file\n");
+	fo = fopen("gmon.out", "w+");
+	if (fo == NULL) {
+		perror("Unable to open the output file");
+		fclose(f);
 		return 1;
 	}
 
@@ -104,5 +108,7 @@ int main(int argc, char* argv[])
 	}
 
 	fclose(fo);
+	fclose(f);
+
 	return 0;
 }

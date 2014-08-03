@@ -122,10 +122,13 @@ void sb800_cimx_config(AMDSBCFG *sb_config)
 	sb_config->SpreadSpectrum = SPREAD_SPECTRUM;
 	sb_config->PciClks = PCI_CLOCK_CTRL;
 	sb_config->HpetTimer = HPET_TIMER;
+	sb_config->SbSpiSpeedSupport = 1;
 
 	/* USB */
 	sb_config->USBMODE.UsbModeReg = USB_CONFIG;
 	sb_config->SbUsbPll = 0;
+	/* CG PLL multiplier for USB Rx 1.1 mode (0=disable, 1=enable) */
+	sb_config->UsbRxMode = 1;
 
 	/* SATA */
 	sb_config->SataClass = SATA_MODE;

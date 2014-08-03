@@ -540,6 +540,10 @@ static void write_regions(char *image, int size)
 			region_fd = open(region_filename(i),
 					 O_WRONLY | O_CREAT | O_TRUNC,
 					 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+			if (region_fd < 0) {
+				perror("Error while trying to open file");
+				exit(EXIT_FAILURE);
+			}
 			if (write(region_fd, image + region.base, region.size) != region.size)
 				perror("Error while writing");
 			close(region_fd);
@@ -562,6 +566,10 @@ static void write_image(char *filename, char *image, int size)
 	new_fd = open(new_filename,
 			 O_WRONLY | O_CREAT | O_TRUNC,
 			 S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	if (new_fd < 0) {
+		perror("Error while trying to open file");
+		exit(EXIT_FAILURE);
+	}
 	if (write(new_fd, image, size) != size)
 		perror("Error while writing");
 	close(new_fd);

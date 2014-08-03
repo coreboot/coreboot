@@ -135,8 +135,9 @@ chip northbridge/intel/nehalem
 			end
 
 			device pci 1c.0 on end # PCIe Port #1
+			device pci 1c.1 on end # PCIe Port #2 (wwan)
 			device pci 1c.3 on end # PCIe Port #4 (Expresscard)
-			device pci 1c.4 on end # PCIe Port #4 (wlan)
+			device pci 1c.4 on end # PCIe Port #5 (wlan)
 
 			device pci 1d.0 on # USB2 EHCI
 				subsystemid 0x17aa 0x2163

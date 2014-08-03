@@ -140,7 +140,7 @@ int init_igd_opregion(igd_opregion_t *opregion)
 	// FIXME if IGD is disabled, we should exit here.
 
 	memcpy(&opregion->header.signature, IGD_OPREGION_SIGNATURE,
-		sizeof(IGD_OPREGION_SIGNATURE));
+		sizeof(opregion->header.signature));
 
 	/* 8kb */
 	opregion->header.size = sizeof(igd_opregion_t) / 1024;

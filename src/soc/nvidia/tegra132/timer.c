@@ -28,4 +28,18 @@ void init_timer(void)
 
 void udelay(unsigned usec)
 {
+	struct mono_time current, end;
+
+	if (!thread_yield_microseconds(usec))
+		return;
+
+	/*
+	 * As the hardware clock granularity is in microseconds pad the
+	 * requested delay by one to get at least >= requested usec delay.
+	 */
+	timer_monotonic_get(&end);
+	mono_time_add_usecs(&end, usec + 1);
+	do {
+		timer_monotonic_get(&current);
+	} while (mono_time_before(&current, &end));
 }

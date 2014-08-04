@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/addressmap.h>
+#include <soc/nvidia/tegra/apbmisc.h>
 
 static void soc_read_resources(device_t dev)
 {
@@ -79,7 +80,20 @@ static void enable_tegra132_dev(device_t dev)
 	dev->ops = &soc_ops;
 }
 
+static void tegra132_init(void *chip_info)
+{
+	struct tegra_revision rev;
+
+	tegra_revision_info(&rev);
+
+	printk(BIOS_INFO, "chip %x rev %02x.%x\n",
+		rev.chip_id, rev.major, rev.minor);
+
+	printk(BIOS_INFO, "MTS build %08x\n", raw_read_aidr_el1());
+}
+
 struct chip_operations soc_nvidia_tegra132_ops = {
 	CHIP_NAME("SOC Nvidia Tegra132")
+	.init = tegra132_init,
 	.enable_dev = enable_tegra132_dev,
 };

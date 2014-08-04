@@ -34,8 +34,19 @@ struct apbmisc {
 
 #define PP_PINMUX_CLAMP_INPUTS		(1 << 0)
 
+enum {
+	MISC_GP_HIDREV = 0x804
+};
+
+struct tegra_revision {
+	int hid_fam;
+	int chip_id;
+	int major;
+	int minor;
+};
 
 void enable_jtag(void);
 void clamp_tristate_inputs(void);
+void tegra_revision_info(struct tegra_revision *id);
 
 #endif	/* __SOC_NVIDIA_TEGRA_APBMISC_H__ */

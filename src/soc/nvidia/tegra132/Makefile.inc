@@ -49,6 +49,7 @@ ramstage-y += i2c.c
 ramstage-y += dma.c
 ramstage-y += monotonic_timer.c
 ramstage-y += padconfig.c
+ramstage-y += ../tegra/apbmisc.c
 ramstage-y += ../tegra/gpio.c
 ramstage-y += ../tegra/i2c.c
 ramstage-y += ../tegra/pinmux.c

@@ -431,7 +431,6 @@ static void pass1(FILE *fil, struct device *ptr)
 		if (ptr->rescnt > 0) {
 			fprintf(fil, "\t.resource_list = &%s_res[0],\n", ptr->name);
 		}
-		int link = 0;
 		if (ptr->children || ptr->multidev)
 			fprintf(fil, "\t.link_list = &%s_links[0],\n", ptr->name);
 		else

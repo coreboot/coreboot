@@ -90,7 +90,7 @@ static inline int gpio_index_to_bank(int index)
 
 static inline int gpio_index_to_port(int index)
 {
-	return (index % GPIO_GPIOS_PER_BANK) / GPIO_PORTS_PER_BANK;
+	return (index % GPIO_GPIOS_PER_BANK) / GPIO_GPIOS_PER_PORT;
 }
 
 static inline int gpio_to_bit(int index)

@@ -37,7 +37,7 @@ struct pad_config {
 
 #define PAD_CFG_GPIO_INPUT(ball_, pinmux_flgs_)		\
 	{						\
-		.pinmux_flags = pinmux_flgs_,		\
+		.pinmux_flags = pinmux_flgs_ | PINMUX_INPUT_ENABLE,	\
 		.gpio_index = PAD_TO_GPIO_##ball_,	\
 		.pinmux_index = PINMUX_##ball_##_INDEX,	\
 		.sfio = 0,				\

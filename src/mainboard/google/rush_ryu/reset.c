@@ -18,12 +18,11 @@
  */
 
 #include <arch/io.h>
+#include <reset.h>
 #include <soc/nvidia/tegra132/gpio.h>
 
-#include "reset.h"
-
-void cpu_reset(void)
+void hard_reset(void)
 {
-        gpio_output(GPIO(I5), 0);
-        while(1);
+	gpio_output(GPIO(I5), 0);
+	while(1);
 }

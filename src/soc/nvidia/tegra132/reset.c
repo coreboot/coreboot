@@ -17,9 +17,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef __MAINBOARD_GOOGLE_RUSH_BOOTBLOCK_H__
-#define __MAINBOARD_GOOGLE_RUSH_BOOTBLOCK_H__
+#include <reset.h>
 
-void cpu_reset(void);
-
-#endif /* __MAINBOARD_GOOGLE_RUSH_BOOTBLOCK_H__ */
+/*
+ * Promote cpu_reset() to a hard_reset(). A shallower reset can be added,
+ * if needed, at a later time.
+ */
+void cpu_reset(void)
+{
+	hard_reset();
+}

@@ -595,34 +595,40 @@ static int cbfs_print_stage_info(struct cbfs_stage *stage, FILE* fp)
 	return 0;
 }
 
-static int cbfs_print_payload_segment_info(struct cbfs_payload_segment *payload,
+/* Return 1 when segment is of type PAYLOAD_SEGMENT_ENTRY. */
+static int cbfs_print_payload_segment_info(struct cbfs_payload_segment *seg_be,
 					   FILE *fp)
 {
-	switch(payload->type) {
+	struct cbfs_payload_segment payload;
+
+	xdr_get_seg(&payload, seg_be);
+
+	switch(payload.type) {
 		case PAYLOAD_SEGMENT_CODE:
 		case PAYLOAD_SEGMENT_DATA:
 			fprintf(fp, "    %s (%s compression, offset: 0x%x, "
 				"load: 0x%" PRIx64 ", length: %d/%d)\n",
-				(payload->type == PAYLOAD_SEGMENT_CODE ?
+				(payload.type == PAYLOAD_SEGMENT_CODE ?
 				 "code " : "data"),
 				lookup_name_by_type(types_cbfs_compression,
-						    ntohl(payload->compression),
+						    payload.compression,
 						    "(unknown)"),
-				ntohl(payload->offset),
-				ntohll(payload->load_addr),
-				ntohl(payload->len), ntohl(payload->mem_len));
+				payload.offset,
+				payload.load_addr,
+				payload.len, payload.mem_len);
 			break;
 
 		case PAYLOAD_SEGMENT_ENTRY:
 			fprintf(fp, "    entry (0x%" PRIx64 ")\n",
-				ntohll(payload->load_addr));
+				payload.load_addr);
+			return 1;
 			break;
 
 		case PAYLOAD_SEGMENT_BSS:
 			fprintf(fp, "    BSS (address 0x%016" PRIx64 ", "
 				"length 0x%x)\n",
-				ntohll(payload->load_addr),
-				ntohl(payload->len));
+				payload.load_addr,
+				payload.len);
 			break;
 
 		case PAYLOAD_SEGMENT_PARAMS:
@@ -632,14 +638,14 @@ static int cbfs_print_payload_segment_info(struct cbfs_payload_segment *payload,
 		default:
 			fprintf(fp, "   0x%x (%s compression, offset: 0x%x, "
 				"load: 0x%" PRIx64 ", length: %d/%d\n",
-				payload->type,
+				payload.type,
 				lookup_name_by_type(types_cbfs_compression,
-						    payload->compression,
+						    payload.compression,
 						    "(unknown)"),
-				ntohl(payload->offset),
-				ntohll(payload->load_addr),
-				ntohl(payload->len),
-				ntohl(payload->mem_len));
+				payload.offset,
+				payload.load_addr,
+				payload.len,
+				payload.mem_len);
 			break;
 	}
 	return 0;
@@ -685,11 +691,11 @@ int cbfs_print_entry_info(struct cbfs_image *image, struct cbfs_file *entry,
 			payload  = (struct cbfs_payload_segment *)
 					CBFS_SUBHEADER(entry);
 			while (payload) {
-				cbfs_print_payload_segment_info(payload, fp);
-				if (payload->type == PAYLOAD_SEGMENT_ENTRY)
+				/* Stop when PAYLOAD_SEGMENT_ENTRY seen. */
+				if (cbfs_print_payload_segment_info(payload,
+									fp))
 					break;
-				else
-					payload ++;
+				payload ++;
 			}
 			break;
 		default:

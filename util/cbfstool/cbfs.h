@@ -131,5 +131,7 @@ void cbfs_file_get_header(struct buffer *buf, struct cbfs_file *file);
 /* cbfs-mkpayload.c */
 void xdr_segs(struct buffer *output,
 	      struct cbfs_payload_segment *segs, int nseg);
+void xdr_get_seg(struct cbfs_payload_segment *out,
+		struct cbfs_payload_segment *in);
 
 #endif

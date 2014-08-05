@@ -50,6 +50,23 @@ void xdr_segs(struct buffer *output,
 		xdr_be.put32(&outheader, segs[i].mem_len);
 	}
 }
+
+void xdr_get_seg(struct cbfs_payload_segment *out,
+		struct cbfs_payload_segment *in)
+{
+	struct buffer inheader;
+
+	inheader.data = (void *)in;
+	inheader.size = sizeof(*in);
+
+	out->type = xdr_be.get32(&inheader);
+	out->compression = xdr_be.get32(&inheader);
+	out->offset = xdr_be.get32(&inheader);
+	out->load_addr = xdr_be.get64(&inheader);
+	out->len = xdr_be.get32(&inheader);
+	out->mem_len = xdr_be.get32(&inheader);
+}
+
 int parse_elf_to_payload(const struct buffer *input,
 			 struct buffer *output, uint32_t arch, comp_algo algo)
 {

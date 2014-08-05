@@ -34,6 +34,8 @@ static const struct pad_config padcfgs[] = {
 	/* EC on I2C2 */
 	PAD_CFG_SFIO(GEN2_I2C_SCL, PINMUX_INPUT_ENABLE, I2C2),
 	PAD_CFG_SFIO(GEN2_I2C_SDA, PINMUX_INPUT_ENABLE, I2C2),
+	/* WP_L */
+	PAD_CFG_GPIO_INPUT(KB_ROW1, PINMUX_PULL_NONE),
 };
 
 static void configure_clocks(void)

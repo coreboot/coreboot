@@ -43,11 +43,11 @@ static void configure_clocks(void)
 {
 	/* EC on SPI1 controller. */
 	clock_enable_clear_reset(0, CLK_H_SBC1, 0, 0, 0, 0);
-	clock_configure_source(sbc1, CLK_M, 500);
+	clock_configure_source(sbc1, CLK_M, 3000);
 
 	/* TPM on I2C3 controller */
 	clock_enable_clear_reset(0, 0, CLK_U_I2C3, 0, 0, 0);
-	clock_configure_i2c_scl_freq(i2c3, PLLP, 19);
+	clock_configure_i2c_scl_freq(i2c3, PLLP, 400);
 }
 
 void romstage_mainboard_init(void)

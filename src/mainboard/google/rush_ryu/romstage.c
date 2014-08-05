@@ -40,7 +40,7 @@ static void configure_clocks(void)
 {
 	/* TPM on I2C3 */
 	clock_enable_clear_reset(0, 0, CLK_U_I2C3, 0, 0, 0);
-	clock_configure_i2c_scl_freq(i2c3, PLLP, 19);
+	clock_configure_i2c_scl_freq(i2c3, PLLP, 400);
 
 	/* EC on I2C2 */
 	clock_enable_clear_reset(0, CLK_H_I2C2, 0, 0, 0, 0);

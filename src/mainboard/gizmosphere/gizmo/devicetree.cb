@@ -50,10 +50,11 @@ chip northbridge/amd/agesa/family14/root_complex
 				device pci 14.3 on end # LPC	0x439d
 				device pci 14.4 on end # PCIB 0x4384, NOTE: this device must always be enabled or removed
 				device pci 14.5 off end # USB 2
-				device pci 15.0 on end # PCIe PortA # PCIe x4 slot off of high speed edge connector
+				device pci 15.0 on end # PCIe PortA # PCIe x1 to high speed edge connector
+				device pci 15.1 on end # PCIe PortB # PCIe x1 to high speed edge connector
 				device pci 16.0 off end # OHCI USB3
 				device pci 16.2 off end # EHCI USB3
-				register "gpp_configuration" = "0" #4:0:0:0
+				register "gpp_configuration" = "4" # GPP_CFGMODE_X1111
 				register "boot_switch_sata_ide" = "0" # 0: boot from SATA. 1: IDE
 			end	#southbridge/amd/cimx/sb800
 			device pci 18.0 on end

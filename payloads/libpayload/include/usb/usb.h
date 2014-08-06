@@ -207,7 +207,7 @@ struct usbdev {
 	void (*poll) (usbdev_t *dev);
 };
 
-typedef enum { OHCI = 0, UHCI = 1, EHCI = 2, XHCI = 3} hc_type;
+typedef enum { OHCI = 0, UHCI = 1, EHCI = 2, XHCI = 3, DWC2 = 4} hc_type;
 
 struct usbdev_hc {
 	hci_t *next;

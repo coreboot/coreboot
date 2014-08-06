@@ -34,6 +34,7 @@
 #include "ohci.h"
 #include "ehci.h"
 #include "xhci.h"
+#include "dwc2.h"
 #include <usb/usbdisk.h>
 
 #ifdef CONFIG_LP_USB_PCI
@@ -181,6 +182,10 @@ hci_t *usb_add_mmio_hc(hc_type type, void *bar)
 #ifdef CONFIG_LP_USB_EHCI
 	case EHCI:
 		return ehci_init((unsigned long)bar);
+#endif
+#ifdef CONFIG_LP_USB_DWC2
+	case DWC2:
+		return dwc2_init(bar);
 #endif
 #ifdef CONFIG_LP_USB_XHCI
 	case XHCI:

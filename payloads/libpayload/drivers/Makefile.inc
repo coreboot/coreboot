@@ -100,6 +100,8 @@ libc-$(CONFIG_LP_USB_XHCI) += usb/xhci_commands.c
 libc-$(CONFIG_LP_USB_XHCI) += usb/xhci_rh.c
 libc-$(CONFIG_LP_USB_HID) += usb/usbhid.c
 libc-$(CONFIG_LP_USB_MSC) += usb/usbmsc.c
+libc-$(CONFIG_LP_USB_DWC2) += usb/dwc2.c
+libc-$(CONFIG_LP_USB_DWC2) += usb/dwc2_rh.c
 
 # used by both USB HID and keyboard
 libc-y += hid.c

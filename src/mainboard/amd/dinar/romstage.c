@@ -32,7 +32,7 @@
 #include "agesawrapper.h"
 #include <northbridge/amd/agesa/agesawrapper_call.h>
 #include "cpu/x86/bist.h"
-#include "superio/smsc/sch4037/sch4037_early_init.c"
+#include <superio/smsc/sch4037/sch4037.h>
 #include <superio/smsc/sio1036/sio1036.h>
 #include "cpu/x86/lapic.h"
 #include "nb_cimx.h"

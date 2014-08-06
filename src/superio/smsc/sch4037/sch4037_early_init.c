@@ -19,21 +19,24 @@
 
 
 #include <arch/io.h>
+#include <device/pnp.h>
+#include <stdint.h>
+
 #include "sch4037.h"
 
-static inline void pnp_enter_conf_state(device_t dev)
+static void pnp_enter_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	unsigned port = dev >> 8;
 	outb(0x55, port);
 }
 
 static void pnp_exit_conf_state(device_t dev)
 {
-	unsigned port = dev>>8;
+	unsigned port = dev >> 8;
 	outb(0xaa, port);
 }
 
-static inline void sch4037_early_init(unsigned port)
+void sch4037_early_init(unsigned port)
 {
 	device_t dev;
 

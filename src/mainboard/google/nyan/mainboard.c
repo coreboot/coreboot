@@ -29,7 +29,7 @@
 #include <soc/nvidia/tegra124/mc.h>
 #include <soc/nvidia/tegra124/pmc.h>
 #include <soc/nvidia/tegra124/spi.h>
-#include <soc/nvidia/tegra124/usb.h>
+#include <soc/nvidia/tegra/usb.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
@@ -232,9 +232,9 @@ static void mainboard_init(device_t dev)
 				 CLK_X_AFC2 | CLK_X_AFC3 | CLK_X_AFC4 |
 				 CLK_X_AFC5);
 
-	usb_setup_utmip1();
+	usb_setup_utmip((void*)TEGRA_USBD_BASE);
 	/* USB2 is the camera, we don't need it in firmware */
-	usb_setup_utmip3();
+	usb_setup_utmip((void*)TEGRA_USB3_BASE);
 
 	setup_pinmux();
 

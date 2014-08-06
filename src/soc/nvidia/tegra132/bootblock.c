@@ -22,6 +22,7 @@
 #include <bootblock_common.h>
 #include <console/console.h>
 #include <program_loading.h>
+#include <soc/addressmap.h>
 #include <soc/bootblock.h>
 #include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
@@ -33,6 +34,8 @@ void __attribute__((weak)) bootblock_mainboard_early_init(void)
 	/* Empty default implementation. */
 }
 
+static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
+
 void main(void)
 {
 	// enable pinmux clamp inputs
@@ -42,6 +45,14 @@ void main(void)
 	enable_jtag();
 
 	clock_early_uart();
+
+	/* Configure mselect clock. */
+	clock_configure_source(mselect, PLLP, 102000);
+
+	/* Enable AVP cache, timer, APB dma, and mselect blocks.  */
+	clock_enable_clear_reset(CLK_L_CACHE2 | CLK_L_TMR,
+				 CLK_H_APBDMA,
+				 0, CLK_V_MSELECT, 0, 0);
 
 	bootblock_mainboard_early_init();
 

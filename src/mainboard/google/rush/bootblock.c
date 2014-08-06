@@ -33,8 +33,8 @@
 static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 
 static const struct pad_config uart_console_pads[] = {
-	/* Hard coded pad usage for UARTA. */
-	PAD_CFG_SFIO(KB_ROW9, 0, UA3),
+	/* UARTA: tx and rx. */
+	PAD_CFG_SFIO(KB_ROW9, PINMUX_PULL_NONE, UA3),
 	PAD_CFG_SFIO(KB_ROW10, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, UA3),
 	/*
 	 * Disable UART2 pads as they are default connected to UARTA controller.
@@ -71,8 +71,6 @@ static void set_clock_sources(void)
 	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
 	writel(PLLP << CLK_SOURCE_SHIFT, &clk_rst->clk_src_uarta);
 
-	clock_configure_source(mselect, PLLP, 102000);
-
 	/* The PMIC is on I2C5 and can run at 400 KHz. */
 	clock_configure_i2c_scl_freq(i2c5, PLLP, 400);
 
@@ -85,9 +83,8 @@ void bootblock_mainboard_init(void)
 {
 	set_clock_sources();
 
-	clock_enable_clear_reset(CLK_L_CACHE2 | CLK_L_TMR,
-				 CLK_H_I2C5 | CLK_H_APBDMA,
-				 0, CLK_V_MSELECT, 0, 0);
+	/* Enable PMIC I2C controller. */
+	clock_enable_clear_reset(0, CLK_H_I2C5, 0, 0, 0, 0);
 
 	/* Set up the pads required to load romstage. */
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));

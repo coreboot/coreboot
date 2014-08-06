@@ -62,6 +62,7 @@ ramstage-y += ../tegra/pinmux.c
 ramstage-y += ramstage.c
 ramstage-y += mmu_operations.c
 ramstage-$(CONFIG_DRIVERS_UART) += uart.c
+ramstage-y += ../tegra/usb.c
 
 modules_arm-y += monotonic_timer.c
 VBOOT_STUB_DEPS += $(obj)/soc/nvidia/tegra132/monotonic_timer.rmodules_arm.o

@@ -28,6 +28,7 @@
 #include <soc/addressmap.h>
 #include <soc/padconfig.h>
 #include <soc/funitcfg.h>
+#include <soc/nvidia/tegra/usb.h>
 
 static const struct pad_config sdmmc3_pad[] = {
 	/* MMC3(SDCARD) */
@@ -60,6 +61,13 @@ static const struct pad_config sdmmc4_pad[] = {
 	PAD_CFG_SFIO(SDMMC4_DAT7, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SDMMC4),
 };
 
+static const struct pad_config padcfgs[] = {
+	/* We pull the USB VBUS signals up but keep them as inputs since the
+	 * voltage source likes to drive them low on overcurrent conditions */
+	PAD_CFG_GPIO_INPUT(USB_VBUS_EN0, PINMUX_PULL_UP),
+	PAD_CFG_GPIO_INPUT(USB_VBUS_EN1, PINMUX_PULL_UP),
+};
+
 static const struct funit_cfg funitcfgs[] = {
 	FUNIT_CFG(SDMMC3, PLLP, 48000, sdmmc3_pad, ARRAY_SIZE(sdmmc3_pad)),
 	FUNIT_CFG(SDMMC4, PLLP, 48000, sdmmc4_pad, ARRAY_SIZE(sdmmc4_pad)),
@@ -72,11 +80,21 @@ static void setup_ec_spi(void)
 	spi = tegra_spi_init(CONFIG_EC_GOOGLE_CHROMEEC_SPI_BUS);
 }
 
+static void setup_usb(void)
+{
+	clock_enable_clear_reset(CLK_L_USBD, CLK_H_USB3, 0, 0, 0, 0);
+
+	usb_setup_utmip((void *)TEGRA_USBD_BASE);
+	usb_setup_utmip((void *)TEGRA_USB3_BASE);
+}
+
 static void mainboard_init(device_t dev)
 {
+	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
 	soc_configure_funits(funitcfgs, ARRAY_SIZE(funitcfgs));
 
 	setup_ec_spi();
+	setup_usb();
 }
 
 static void mainboard_enable(device_t dev)

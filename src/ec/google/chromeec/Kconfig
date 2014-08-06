@@ -19,6 +19,13 @@ config EC_GOOGLE_CHROMEEC_I2C_CHIP
 	hex
 	default 0x1e
 
+config EC_GOOGLE_CHROMEEC_I2C_PROTO3
+	depends on EC_GOOGLE_CHROMEEC_I2C
+	bool
+	default n
+	help
+	  Use only proto3 for i2c EC communication.
+
 config EC_GOOGLE_CHROMEEC_LPC
         depends on EC_GOOGLE_CHROMEEC && ARCH_X86  # Needs Plug-and-play.
 	def_bool y

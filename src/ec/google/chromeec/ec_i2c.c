@@ -27,6 +27,111 @@
 #include "ec.h"
 #include "ec_commands.h"
 
+#if IS_ENABLED(CONFIG_EC_GOOGLE_CHROMEEC_I2C_PROTO3)
+
+#define PROTO3_FRAMING_BYTES sizeof(uint32_t)
+/* Just use the LPC host packet size to size the buffer. */
+#define PROTO3_MAX_PACKET_SIZE 268
+
+struct proto3_i2c_buf {
+	uint8_t framing_bytes[PROTO3_FRAMING_BYTES];
+	uint8_t data[PROTO3_MAX_PACKET_SIZE];
+} __attribute__((aligned(sizeof(uint32_t))));
+
+static struct proto3_i2c_buf req_buf;
+static struct proto3_i2c_buf resp_buf;
+
+enum {
+	CMD_INDEX,
+	RESP_INDEX,
+	SEGS_PER_CMD,
+};
+
+struct i2c_ec {
+	int bus;
+	struct i2c_seg segs[SEGS_PER_CMD];
+};
+
+static struct i2c_ec ec_dev = {
+	.bus = CONFIG_EC_GOOGLE_CHROMEEC_I2C_BUS,
+	.segs[CMD_INDEX] = {
+		.read = 0,
+		.chip = CONFIG_EC_GOOGLE_CHROMEEC_I2C_CHIP,
+		/* Framing byte to be transferred prior to request. */
+		.buf = &req_buf.framing_bytes[3],
+	},
+	.segs[RESP_INDEX] = {
+		.read = 1,
+		.chip = CONFIG_EC_GOOGLE_CHROMEEC_I2C_CHIP,
+		/* return code and total length before full response. */
+		.buf = &resp_buf.framing_bytes[2],
+	},
+};
+
+void *crosec_get_buffer(size_t size, int req)
+{
+	struct proto3_i2c_buf *ib;
+
+	if (size > PROTO3_MAX_PACKET_SIZE) {
+		printk(BIOS_DEBUG, "Proto v3 buffer request too large: %zu!\n",
+			size);
+		return NULL;
+	}
+
+	if (req)
+		ib = &req_buf;
+	else
+		ib = &resp_buf;
+
+	return &ib->data[0];
+}
+
+static int crosec_i2c_io(size_t req_size, size_t resp_size, void *context)
+{
+	struct i2c_ec *ec = context;
+	uint8_t ret_code;
+	size_t resp_len;
+
+	if (req_size > PROTO3_MAX_PACKET_SIZE ||
+		resp_size > PROTO3_MAX_PACKET_SIZE)
+		return -1;
+
+	/* Place the framing byte and set size accordingly. */
+	ec->segs[CMD_INDEX].len = req_size + 1;
+	ec->segs[CMD_INDEX].buf[0] = EC_COMMAND_PROTOCOL_3;
+	/* Return code and length returned prior to packet data. */
+	ec->segs[RESP_INDEX].len = resp_size + 2;
+
+	if (i2c_transfer(ec->bus, ec->segs, ARRAY_SIZE(ec->segs)) != 0) {
+		printk(BIOS_ERR, "%s: Cannot complete read from i2c-%d:%#x\n",
+		       __func__, ec->bus, ec->segs[0].chip);
+		return -1;
+	}
+
+	ret_code = ec->segs[RESP_INDEX].buf[0];
+	resp_len = ec->segs[RESP_INDEX].buf[1];
+
+	if (ret_code != 0) {
+		printk(BIOS_ERR, "EC command returned 0x%x\n", ret_code);
+		return -1;
+	}
+
+	if (resp_len > resp_size) {
+		printk(BIOS_ERR, "Response length mismatch %zu vs %zu\n",
+			resp_len, resp_size);
+		return -1;
+	}
+
+	return 0;
+}
+
+int google_chromeec_command(struct chromeec_command *cec_command)
+{
+	return crosec_command_proto(cec_command, crosec_i2c_io, &ec_dev);
+}
+
+#else /* CONFIG_EC_GOOGLE_CHROMEEC_I2C_PROTO3 */
+
 /* Command (host->device) format for I2C:
  *  uint8_t version, cmd, len, data[len], checksum;
  *
@@ -150,6 +255,8 @@ int google_chromeec_command(struct chromeec_command *cec_command)
 	memcpy(cec_command->cmd_data_out, resp.data, resp.length);
 	return 0;
 }
+
+#endif /* CONFIG_EC_GOOGLE_CHROMEEC_I2C_PROTO3 */
 
 #ifndef __PRE_RAM__
 u8 google_chromeec_get_event(void)

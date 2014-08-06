@@ -27,6 +27,11 @@
 #include "ec_message.h"
 
 /* Common utilities */
+void * __attribute__((weak)) crosec_get_buffer(size_t size, int req)
+{
+	printk(BIOS_DEBUG, "crosec_get_buffer() implementation required.\n");
+	return NULL;
+}
 
 /* Dumps EC command / response data into debug output.
  *
@@ -208,23 +213,27 @@ static int send_command_proto3(struct chromeec_command *cec_command,
 {
 	int out_bytes, in_bytes;
 	int rv;
-	struct ec_command_v3 cmd = { {0}, };
-	struct ec_response_v3 resp = { {0}, };
+	struct ec_command_v3 *cmd;
+	struct ec_response_v3 *resp;
+
+	if ((cmd = crosec_get_buffer(sizeof(*cmd), 1)) == NULL)
+		return -EC_RES_ERROR;
+	if ((resp = crosec_get_buffer(sizeof(*resp), 0)) == NULL)
+		return -EC_RES_ERROR;
 
 	/* Create request packet */
-	out_bytes = create_proto3_request(cec_command, &cmd);
+	out_bytes = create_proto3_request(cec_command, cmd);
 	if (out_bytes < 0) {
 		return out_bytes;
 	}
 
 	/* Prepare response buffer */
-	in_bytes = prepare_proto3_response_buffer(cec_command, &resp);
+	in_bytes = prepare_proto3_response_buffer(cec_command, resp);
 	if (in_bytes < 0) {
 		return in_bytes;
 	}
 
-	rv = crosec_io((uint8_t *)&cmd, out_bytes, (uint8_t *)&resp, in_bytes,
-		       context);
+	rv = crosec_io(out_bytes, in_bytes, context);
 	if (rv != 0) {
 		printk(BIOS_ERR, "%s: failed to complete I/O: Err = %#x.",
 		       __func__, rv >= 0 ? rv : -rv);
@@ -232,7 +241,7 @@ static int send_command_proto3(struct chromeec_command *cec_command,
 	}
 
 	/* Process the response */
-	return handle_proto3_response(&resp, cec_command);
+	return handle_proto3_response(resp, cec_command);
 }
 
 static int crosec_command_proto_v3(struct chromeec_command *cec_command,

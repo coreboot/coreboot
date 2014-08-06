@@ -69,10 +69,23 @@ struct chromeec_command {
 				   * actual received size out */
 };
 
-/* internal standard implementation for EC command protocols. */
-typedef int (*crosec_io_t)(uint8_t *write_bytes, size_t write_size,
-			   uint8_t *read_bytes, size_t read_size,
-			   void *context);
+/*
+ * There are transport level constraints for sending protov3 packets. Because
+ * of this provide a way for the generic protocol layer to request buffers
+ * so that there is zero copying being done through the layers.
+ *
+ * Request the buffer provided the size. If 'req' is non-zero then the
+ * buffer requested is for EC requests. Otherwise it's for responses. Return
+ * non-NULL on success, NULL on error.
+ */
+void *crosec_get_buffer(size_t size, int req);
+
+/*
+ * The lower level transport works on the buffers handed out to the
+ * upper level. Therefore, only the size of the request and response
+ * are required.
+ */
+typedef int (*crosec_io_t)(size_t req_size, size_t resp_size, void *context);
 int crosec_command_proto(struct chromeec_command *cec_command,
 			 crosec_io_t crosec_io, void *context);
 

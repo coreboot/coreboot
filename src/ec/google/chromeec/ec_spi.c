@@ -25,15 +25,32 @@
 
 static const uint8_t EcFramingByte = 0xec;
 
-static int crosec_spi_io(uint8_t *write_bytes, size_t write_size,
-			 uint8_t *read_bytes, size_t read_size,
-			 void *context)
+#define PROTO3_MAX_PACKET_SIZE 268
+
+static uint8_t req_buf[PROTO3_MAX_PACKET_SIZE];
+static uint8_t resp_buf[PROTO3_MAX_PACKET_SIZE];
+
+void *crosec_get_buffer(size_t size, int req)
+{
+	if (size > PROTO3_MAX_PACKET_SIZE) {
+		printk(BIOS_DEBUG, "Proto v3 buffer request too large: %zu!\n",
+			size);
+		return NULL;
+	}
+
+	if (req)
+		return req_buf;
+	else
+		return resp_buf;
+}
+
+static int crosec_spi_io(size_t req_size, size_t resp_size, void *context)
 {
 	struct spi_slave *slave = (struct spi_slave *)context;
 
 	spi_claim_bus(slave);
 
-	if (spi_xfer(slave, write_bytes, write_size, NULL, 0)) {
+	if (spi_xfer(slave, req_buf, req_size, NULL, 0)) {
 		printk(BIOS_ERR, "%s: Failed to send request.\n", __func__);
 		spi_release_bus(slave);
 		return -1;
@@ -64,7 +81,7 @@ static int crosec_spi_io(uint8_t *write_bytes, size_t write_size,
 		}
 	}
 
-	if (spi_xfer(slave, NULL, 0, read_bytes, read_size)) {
+	if (spi_xfer(slave, NULL, 0, resp_buf, resp_size)) {
 		printk(BIOS_ERR, "%s: Failed to receive response.\n", __func__);
 		spi_release_bus(slave);
 		return -1;

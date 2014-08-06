@@ -194,7 +194,7 @@ int google_chromeec_vbnv_context(int is_read, uint8_t *data, int len)
 	cec_cmd.cmd_data_in = &cmd_vbnvcontext;
 	cec_cmd.cmd_data_out = &rsp_vbnvcontext;
 	cec_cmd.cmd_size_in = sizeof(cmd_vbnvcontext);
-	cec_cmd.cmd_size_out = sizeof(rsp_vbnvcontext);
+	cec_cmd.cmd_size_out = is_read ? sizeof(rsp_vbnvcontext) : 0;
 
 	cmd_vbnvcontext.op = is_read ? EC_VBNV_CONTEXT_OP_READ :
 					EC_VBNV_CONTEXT_OP_WRITE;

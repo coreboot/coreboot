@@ -32,7 +32,7 @@ typedef unsigned gpio_t;
  * included multiplied by 3^gpio_num, resulting in a true tertiary value.
  *
  */
-int gpio_board_id(gpio_t gpio[], int num_gpio, int tertiary);
+int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary);
 
 /*
  * The following functions are not provided by the common library, but must be

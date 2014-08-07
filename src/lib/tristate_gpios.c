@@ -20,7 +20,7 @@
 #include <delay.h>
 #include <gpiolib.h>
 
-int gpio_board_id(gpio_t gpio[], int num_gpio, int tertiary)
+int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary)
 {
 	/*
 	 * GPIOs which are tied to stronger external pull up or pull down

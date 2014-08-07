@@ -25,8 +25,9 @@
 /*
  * Storm boards dedicate to the board ID three GPIOs in tertiary mode: 29, 30
  * and 68. On proto0 GPIO68 is used and tied low, so it reads as 'zero' by
- * gpio_board_id(), whereas the other two pins are not connected and read as
- * 'two'. This results in gpio_board_id() returning 8 on proto0.
+ * gpio_get_in_tristate_values(), whereas the other two pins are not connected
+ * and read as 'two'. This results in gpio_get_in_tristate_values() returning
+ * 8 on proto0.
  *
  * Three tertitiary signals could represent 27 different values. To make
  * calculated board ID value continuous and starting at zero, offset the
@@ -42,7 +43,8 @@ uint8_t board_id(void)
 	gpio_t hw_rev_gpios[] = {68, 30, 29};
 	int offset = 19;
 
-	bid = gpio_board_id(hw_rev_gpios, ARRAY_SIZE(hw_rev_gpios), 1);
+	bid = gpio_get_in_tristate_values(hw_rev_gpios,
+					  ARRAY_SIZE(hw_rev_gpios), 1);
 	bid = (bid + offset) % 27;
 	printk(BIOS_INFO, "Board ID %d\n", bid);
 

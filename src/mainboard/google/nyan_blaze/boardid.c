@@ -30,7 +30,7 @@ uint8_t board_id(void)
 	if (id < 0) {
 		gpio_t gpio[] = {GPIO(Q3), GPIO(T1), GPIO(X1), GPIO(X4)};
 
-		id = gpio_board_id(gpio, ARRAY_SIZE(gpio), 0);
+		id = gpio_get_in_tristate_values(gpio, ARRAY_SIZE(gpio), 0);
 
 		printk(BIOS_SPEW, "Board TRISTATE ID: %#x.\n", id);
 	}

@@ -18,10 +18,12 @@
  */
 
 #include <arch/cache.h>
+#include <boardid.h>
 #include <boot/coreboot_tables.h>
 #include <console/console.h>
-#include <device/device.h>
 #include <delay.h>
+#include <device/device.h>
+#include <gpiolib.h>
 #include <string.h>
 
 #include <soc/qualcomm/ipq806x/include/clock.h>
@@ -71,10 +73,29 @@ static void setup_mmu(void)
 	dcache_mmu_enable();
 }
 
+#define TPM_RESET_GPIO 22
+static void setup_tpm(void)
+{
+	if (board_id() != 0)
+		return; /* Only proto0 have TPM reset connected to GPIO22 */
+
+	gpio_tlmm_config_set(TPM_RESET_GPIO, FUNC_SEL_GPIO, GPIO_PULL_UP,
+			     GPIO_4MA, GPIO_ENABLE);
+	/*
+	 * Generate a reset pulse. The spec calls for 80 us minimum, let's
+	 * make it twice as long. If the output was driven low originally, the
+	 * reset pulse will be even longer.
+	 */
+	gpio_set_out_value(TPM_RESET_GPIO, 0);
+	udelay(160);
+	gpio_set_out_value(TPM_RESET_GPIO, 1);
+}
+
 static void mainboard_init(device_t dev)
 {
 	 setup_mmu();
 	 setup_usb();
+	 setup_tpm();
 }
 
 static void mainboard_enable(device_t dev)

@@ -173,3 +173,23 @@ int mainboard_smi_apmc(u8 data)
 	}
 	return 0;
 }
+
+void mainboard_smi_sleep(u8 slp_typ)
+{
+	if (slp_typ == 3) {
+		u8 ec_wake = ec_read(0x32);
+		/* If EC wake events are enabled, enable wake on EC WAKE GPE.  */
+		if (ec_wake & 0x14) {
+			u32 gpe_rout;
+			u16 pmbase = pci_read_config16(PCI_DEV(0, 0x1f, 0), 0x40) & 0xfffc;
+
+			/* Enable EC WAKE GPE.  */
+			outl(inl(pmbase + GPE0_EN) | (1 << 29), pmbase + GPE0_EN);
+			gpe_rout = pci_read_config32(PCI_DEV(0, 0x1f, 0), GPIO_ROUT);
+			/* Redirect EC WAKE GPE to SCI.  */
+			gpe_rout &= ~(3 << 26);
+			gpe_rout |= (2 << 26);
+			pci_write_config32(PCI_DEV(0, 0x1f, 0), GPIO_ROUT, gpe_rout);
+		}
+	}
+}

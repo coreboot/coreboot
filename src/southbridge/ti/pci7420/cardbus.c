@@ -90,11 +90,11 @@ static void pci7420_cardbus_read_resources(device_t dev)
 
 static void pci7420_cardbus_set_resources(device_t dev)
 {
-	printk(BIOS_DEBUG, "%s In set resources \n",dev_path(dev));
+	printk(BIOS_DEBUG, "%s In set resources\n",dev_path(dev));
 
 	pci_dev_set_resources(dev);
 
-	printk(BIOS_DEBUG, "%s done set resources \n",dev_path(dev));
+	printk(BIOS_DEBUG, "%s done set resources\n",dev_path(dev));
 }
 
 static struct device_operations ti_pci7420_ops = {

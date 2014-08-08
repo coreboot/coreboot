@@ -211,9 +211,10 @@ static void sata_init(struct device *dev)
 	sir_write(dev, 0x70, 0x3f00bf1f);
 	sir_write(dev, 0x54, 0xcf000f0f);
 	sir_write(dev, 0x58, 0x00190000);
+	RCBA32_AND_OR(0x333c, 0xffcfffff, 0x00c00000);
 
 	reg32 = pci_read_config32(dev, 0x300);
-	reg32 |= (1 << 17) | (1 << 16);
+	reg32 |= (1 << 17) | (1 << 16) | (1 << 19);
 	reg32 |= (1 << 31) | (1 << 30) | (1 << 29);
 	pci_write_config32(dev, 0x300, reg32);
 }

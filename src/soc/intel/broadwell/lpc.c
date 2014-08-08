@@ -205,7 +205,7 @@ static const struct reg_script pch_misc_init_script[] = {
 	/* Enable BIOS updates outside of SMM */
 	REG_PCI_RMW8(0xdc, ~(1 << 5), 0),
 	/* Clear status bits to prevent unexpected wake */
-	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x3310, 0x00000031),
+	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x3310, 0x0000002f),
 	REG_MMIO_RMW32(RCBA_BASE_ADDRESS + 0x3f02, ~0x0000000f, 0),
 	/* Setup SERIRQ, enable continuous mode */
 	REG_PCI_OR8(SERIRQ_CNTL, (1 << 7) | (1 << 6)),
@@ -256,6 +256,7 @@ static const struct reg_script pch_pm_init_script[] = {
 	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + 0x33b4, 0x00007001),
 	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + 0x3350, 0x022ddfff),
 	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + 0x3354, 0x00000001),
+	/* Power Optimizer */
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x33d4, 0x08000000),
 	REG_MMIO_OR32(RCBA_BASE_ADDRESS + 0x33c8, 0x08000080),
 	REG_MMIO_WRITE32(RCBA_BASE_ADDRESS + 0x2b10, 0x0000883c),
@@ -306,17 +307,42 @@ static void pch_enable_mphy(void)
 	pch_iobp_update(0xCF000000, data_and, data_or);
 }
 
+static void pch_init_deep_sx(struct device *dev)
+{
+	config_t *config = dev->chip_info;
+
+	if (config->deep_sx_enable_ac) {
+		RCBA32_OR(DEEP_S3_POL, DEEP_S3_EN_AC);
+		RCBA32_OR(DEEP_S5_POL, DEEP_S5_EN_AC);
+	}
+
+	if (config->deep_sx_enable_dc) {
+		RCBA32_OR(DEEP_S3_POL, DEEP_S3_EN_DC);
+		RCBA32_OR(DEEP_S5_POL, DEEP_S5_EN_DC);
+	}
+
+	if (config->deep_sx_enable_ac || config->deep_sx_enable_dc)
+		RCBA32_OR(DEEP_SX_CONFIG,
+			  DEEP_SX_WAKE_PIN_EN | DEEP_SX_GP27_PIN_EN);
+}
+
 /* Power Management init */
 static void pch_pm_init(struct device *dev)
 {
 	printk(BIOS_DEBUG, "PCH PM init\n");
 
+	pch_init_deep_sx(dev);
+
 	pch_enable_mphy();
 
 	reg_script_run_on_dev(dev, pch_pm_init_script);
 
-	if (pch_is_wpt())
+	if (pch_is_wpt()) {
 		RCBA32_OR(0x33e0, (1 << 4) | (1 << 1));
+		RCBA32_OR(0x2b1c, (1 << 22) | (1 << 14) | (1 << 13));
+		RCBA32(0x33e4) = 0x16bf0002;
+		RCBA32_OR(0x33e4, 0x1);
+	}
 
 	pch_iobp_update(0xCA000000, ~0UL, 0x00000009);
 
@@ -352,10 +378,10 @@ static void pch_cg_init(device_t dev)
 	 * RCBA + 0x2614[30:28] = 0x0
 	 * RCBA + 0x2614[26] = 1 (IF 0:2.0@0x08 >= 0x0b)
 	 */
-	RCBA32_AND_OR(0x2614, 0x8bffffff, 0x0a206500);
+	RCBA32_AND_OR(0x2614, ~0x64ff0000, 0x0a206500);
 
 	/* Check for 0:2.0@0x08 >= 0x0b */
-	if (pci_read_config8(SA_DEV_IGD, 0x8) >= 0x0b)
+	if (pch_is_wpt() || pci_read_config8(SA_DEV_IGD, 0x8) >= 0x0b)
 		RCBA32_OR(0x2614, (1 << 26));
 
 	RCBA32_OR(0x900, 0x0000031f);
@@ -367,13 +393,18 @@ static void pch_cg_init(device_t dev)
 		reg32 |= (1 << 29); // LPC Dynamic
 	reg32 |= (1 << 31); // LP LPC
 	reg32 |= (1 << 30); // LP BLA
+	if (RCBA32(0x3454) & (1 << 4))
+		reg32 &= ~(1 << 29);
+	else
+		reg32 |= (1 << 29);
 	reg32 |= (1 << 28); // GPIO Dynamic
 	reg32 |= (1 << 27); // HPET Dynamic
 	reg32 |= (1 << 26); // Generic Platform Event Clock
 	if (RCBA32(BUC) & PCH_DISABLE_GBE)
 		reg32 |= (1 << 23); // GbE Static
+	if (RCBA32(FD) & PCH_DISABLE_HD_AUDIO)
+		reg32 |= (1 << 21); // HDA Static
 	reg32 |= (1 << 22); // HDA Dynamic
-	reg32 |= (1 << 16); // PCI Dynamic
 	RCBA32(CG) = reg32;
 
 	/* PCH-LP LPC */
@@ -381,9 +412,6 @@ static void pch_cg_init(device_t dev)
 		RCBA32_AND_OR(0x3434, ~0x1f, 0x17);
 	else
 		RCBA32_OR(0x3434, 0x7);
-
-	/* SATA */
-	RCBA32_AND_OR(0x333c, 0xffcfffff, 0x00c00000);
 
 	/* SPI */
 	RCBA32_OR(0x38c0, 0x3c07);

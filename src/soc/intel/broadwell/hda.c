@@ -79,10 +79,6 @@ static void hda_pch_init(struct device *dev, u8 *base)
 		pci_write_config32(dev, 0x120, reg32);
 	}
 
-	reg8 = pci_read_config8(dev, 0x43);
-	reg8 &= ~(1 << 6);
-	pci_write_config8(dev, 0x43, reg8);
-
 	/* Additional programming steps */
 	reg32 = pci_read_config32(dev, 0xc4);
 	reg32 |= (1 << 24);
@@ -138,12 +134,17 @@ static void hda_init(struct device *dev)
 static void hda_enable(struct device *dev)
 {
 	u32 reg32;
+	u8 reg8;
+
+	reg8 = pci_read_config8(dev, 0x43);
+	reg8 |= 0x6f;
+	pci_write_config8(dev, 0x43, reg8);
 
 	if (!dev->enabled) {
 		/* Route I/O buffers to ADSP function */
-		reg32 = pci_read_config32(dev, 0x42);
-		reg32 |= (1 << 7) | (1 << 6);
-		pci_write_config32(dev, 0x42, reg32);
+		reg8 = pci_read_config8(dev, 0x42);
+		reg8 |= (1 << 7) | (1 << 6);
+		pci_write_config8(dev, 0x42, reg8);
 
 		printk(BIOS_INFO, "HDA disabled, I/O buffers routed to ADSP\n");
 

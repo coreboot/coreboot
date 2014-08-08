@@ -122,6 +122,16 @@
 #define D19IR		0x3168	/* 16bit */
 #define ACPIIRQEN	0x31e0	/* 32bit */
 #define OIC		0x31fe	/* 16bit */
+#define DEEP_S3_POL	0x3328	/* 32bit */
+#define  DEEP_S3_EN_AC		(1 << 0)
+#define  DEEP_S3_EN_DC		(1 << 1)
+#define DEEP_S5_POL	0x3330	/* 32bit */
+#define  DEEP_S5_EN_AC		(1 << 14)
+#define  DEEP_S5_EN_DC		(1 << 15)
+#define DEEP_SX_CONFIG	0x3334	/* 32bit */
+#define  DEEP_SX_WAKE_PIN_EN	(1 << 2)
+#define  DEEP_SX_ACPRESENT_PD	(1 << 1)
+#define  DEEP_SX_GP27_PIN_EN	(1 << 0)
 #define PMSYNC_CONFIG	0x33c4	/* 32bit */
 #define PMSYNC_CONFIG2	0x33cc	/* 32bit */
 #define SOFT_RESET_CTRL 0x38f4

@@ -226,6 +226,9 @@ static void pcie_enable_clock_gating(void)
 		/* Configure shared resource clock gating. */
 		if (rp == 1 || rp == 5 || rp == 6)
 			pcie_update_cfg8(dev, 0xe1, 0xc3, 0x3c);
+
+		/* CLKREQ# VR Idle Enable */
+		RCBA32_OR(0x2b1c, (1 << (16 + i)));
 	}
 
 	if (!enabled_ports)

@@ -36,12 +36,12 @@ Device (ADSP)
 	{
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00100000, BAR0)
 		Memory32Fixed (ReadWrite, 0x00000000, 0x00001000, BAR1)
-		Interrupt (ResourceConsumer, Level, ActiveLow, Shared, , , ) {3}
+		Interrupt (ResourceConsumer, Level, ActiveLow, Exclusive, , , ) {3}
 	})
 
 	Method (_CRS, 0, NotSerialized)
 	{
-		// Update BAR0 address and length if set in NVS
+		// Update BAR address and length if set in NVS
 		If (LNotEqual (\S8B0, Zero)) {
 			CreateDwordField (^RBUF, ^BAR0._BAS, B8A0)
 			CreateDwordField (^RBUF, ^BAR1._BAS, B8A1)
@@ -59,5 +59,15 @@ Device (ADSP)
 		} Else {
 			Return (0xF)
 		}
+	}
+
+	Device (I2S0)
+	{
+		Name (_ADR, 0)
+	}
+
+	Device (I2S1)
+	{
+		Name (_ADR, 1)
 	}
 }

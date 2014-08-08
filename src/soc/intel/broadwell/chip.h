@@ -129,6 +129,10 @@ struct soc_intel_broadwell_config {
 	/* Enable S0iX support */
 	int s0ix_enable;
 
+	/* Deep SX enable */
+	int deep_sx_enable_ac;
+	int deep_sx_enable_dc;
+
 	/* TCC activation offset */
 	int tcc_offset;
 };

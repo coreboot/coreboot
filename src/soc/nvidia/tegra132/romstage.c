@@ -77,7 +77,12 @@ void romstage(void)
 	 */
 	trustzone_region_init();
 
-	cbmem_initialize();
+	/*
+	 * When romstage is running it's always on the reboot path -- never a
+	 * resume path where cbmem recovery is required. Therefore, always
+	 * initialize the cbmem area to be empty.
+	 */
+	cbmem_initialize_empty();
 
 	ccplex_cpu_prepare();
 	printk(BIOS_INFO, "T132 romstage: cpu prepare done\n");

@@ -31,6 +31,10 @@ typedef unsigned gpio_t;
  * bit fields, each representing one GPIO value, or a number where each GPIO is
  * included multiplied by 3^gpio_num, resulting in a true tertiary value.
  *
+ * gpio[]: pin positions to read. little-endian (less significant value first).
+ * num_gpio: number of pins to read.
+ * tertiary: 1: pins are interpreted as a quad coded tertiary.
+ *           0: pins are interpreted as a set of two bit fields.
  */
 int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary);
 

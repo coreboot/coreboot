@@ -62,7 +62,7 @@ int gpio_get_in_tristate_values(gpio_t gpio[], int num_gpio, int tertiary)
 	 *  1: pull up
 	 *  2: floating
 	 */
-	for (index = 0; index < num_gpio; ++index) {
+	for (index = num_gpio - 1; index >= 0; --index) {
 		if (tertiary)
 			id *= 3;
 		else

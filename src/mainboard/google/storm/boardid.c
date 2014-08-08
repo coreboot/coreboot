@@ -40,7 +40,7 @@
 uint8_t board_id(void)
 {
 	uint8_t bid;
-	gpio_t hw_rev_gpios[] = {68, 30, 29};
+	gpio_t hw_rev_gpios[] = {29, 30, 68};
 	int offset = 19;
 
 	bid = gpio_get_in_tristate_values(hw_rev_gpios,

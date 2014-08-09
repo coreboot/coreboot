@@ -149,7 +149,8 @@ static void configure_p_states(const char stepping, const char cores)
 		(lapic && lapic->chip_info) ? lapic->chip_info : NULL;
 
 	msr = rdmsr(MSR_EXTENDED_CONFIG);
-	if (conf->slfm && (msr.lo & (1 << 27))) /* Super LFM supported? */
+	/* Super LFM supported? */
+	if (conf && conf->slfm && (msr.lo & (1 << 27)))
 		msr.lo |= (1 << 28); /* Enable Super LFM. */
 	wrmsr(MSR_EXTENDED_CONFIG, msr);
 

@@ -905,7 +905,7 @@ parse_extension(struct edid *out, unsigned char *x)
 	case 0x50: printk(BIOS_SPEW, "LS extension block\n"); break;
 	case 0x60: printk(BIOS_SPEW, "DPVL extension block\n"); break;
 	case 0xF0: printk(BIOS_SPEW, "Block map\n"); break;
-	case 0xFF: printk(BIOS_SPEW, "Manufacturer-specific extension block\n");
+	case 0xFF: printk(BIOS_SPEW, "Manufacturer-specific extension block\n"); break;
 	default:
 		printk(BIOS_SPEW, "Unknown extension block\n");
 		break;

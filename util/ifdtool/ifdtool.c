@@ -761,7 +761,7 @@ void new_layout(char *filename, char *image, int size, char *layout_fname)
 	while (!feof(romlayout)) {
 		char *tstr1, *tstr2;
 
-		if (2 != fscanf(romlayout, "%s %s\n", tempstr,
+		if (2 != fscanf(romlayout, "%255s %255s\n", tempstr,
 					layout_region_name))
 			continue;
 

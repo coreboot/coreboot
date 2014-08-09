@@ -24,6 +24,7 @@
 #include <soc/bootblock.h>
 #include <soc/clock.h>
 #include <soc/padconfig.h>
+#include <soc/funitcfg.h>
 #include <soc/nvidia/tegra/i2c.h>
 #include <soc/nvidia/tegra132/clk_rst.h>
 #include <soc/nvidia/tegra132/spi.h>	/* FIXME: move back to soc code? */
@@ -51,14 +52,25 @@ static const struct pad_config padcfgs[] = {
 	PAD_CFG_GPIO_INPUT(GPIO_X1_AUD, PINMUX_PULL_NONE),
 	PAD_CFG_GPIO_INPUT(KB_ROW17, PINMUX_PULL_NONE),
 	PAD_CFG_GPIO_INPUT(KB_COL3, PINMUX_PULL_NONE),
+};
+
+static const struct pad_config i2cpad[] = {
 	/* PMIC i2C bus */
 	PAD_CFG_SFIO(PWR_I2C_SCL, PINMUX_INPUT_ENABLE, I2CPMU),
 	PAD_CFG_SFIO(PWR_I2C_SDA, PINMUX_INPUT_ENABLE, I2CPMU),
+};
+
+static const struct pad_config spipad[] = {
 	/* SPI fLash: mosi, miso, clk, cs0  */
 	PAD_CFG_SFIO(GPIO_PG6, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SPI4),
 	PAD_CFG_SFIO(GPIO_PG7, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SPI4),
 	PAD_CFG_SFIO(GPIO_PG5, PINMUX_INPUT_ENABLE, SPI4),
 	PAD_CFG_SFIO(GPIO_PI3, PINMUX_INPUT_ENABLE, SPI4),
+};
+
+static const struct funit_cfg funitcfgs[] = {
+	FUNIT_CFG(I2C5, PLLP, 400, i2cpad, ARRAY_SIZE(i2cpad)),
+	FUNIT_CFG(SBC4, PLLP, 33333, spipad, ARRAY_SIZE(spipad)),
 };
 
 void bootblock_mainboard_early_init(void)
@@ -70,24 +82,15 @@ static void set_clock_sources(void)
 {
 	/* UARTA gets PLLP, deactivate CLK_UART_DIV_OVERRIDE */
 	writel(PLLP << CLK_SOURCE_SHIFT, &clk_rst->clk_src_uarta);
-
-	/* The PMIC is on I2C5 and can run at 400 KHz. */
-	clock_configure_i2c_scl_freq(i2c5, PLLP, 400);
-
-	/* TODO: We should be able to set this to 50MHz, but that did not seem
-	 * reliable. */
-	clock_configure_source(sbc4, PLLP, 33333);
 }
 
 void bootblock_mainboard_init(void)
 {
 	set_clock_sources();
 
-	/* Enable PMIC I2C controller. */
-	clock_enable_clear_reset(0, CLK_H_I2C5, 0, 0, 0, 0);
-
 	/* Set up the pads required to load romstage. */
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
+	soc_configure_funits(funitcfgs, ARRAY_SIZE(funitcfgs));
 
 	i2c_init(4);
 	pmic_init(4);

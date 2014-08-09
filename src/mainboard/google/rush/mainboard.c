@@ -25,10 +25,9 @@
 #include <soc/nvidia/tegra132/spi.h>
 #include <soc/addressmap.h>
 #include <soc/padconfig.h>
+#include <soc/funitcfg.h>
 
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
-
-static const struct pad_config padcfgs[] = {
+static const struct pad_config sdmmc3_pad[] = {
 	/* MMC3(SDCARD) */
 	PAD_CFG_SFIO(SDMMC3_CLK, PINMUX_INPUT_ENABLE, SDMMC3),
 	PAD_CFG_SFIO(SDMMC3_CMD, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SDMMC3),
@@ -43,6 +42,9 @@ static const struct pad_config padcfgs[] = {
 	/* Disable SD card reader power so it can be reset even on warm boot.
 	   Payloads must enable power before accessing SD card slots. */
 	PAD_CFG_GPIO_OUT0(KB_ROW0, PINMUX_PULL_NONE),
+};
+
+static const struct pad_config sdmmc4_pad[] = {
 	/* MMC4 (eMMC) */
 	PAD_CFG_SFIO(SDMMC4_CLK, PINMUX_INPUT_ENABLE, SDMMC4),
 	PAD_CFG_SFIO(SDMMC4_CMD, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SDMMC4),
@@ -56,13 +58,10 @@ static const struct pad_config padcfgs[] = {
 	PAD_CFG_SFIO(SDMMC4_DAT7, PINMUX_INPUT_ENABLE | PINMUX_PULL_UP, SDMMC4),
 };
 
-static void configure_clocks(void)
-{
-	/* MMC */
-	clock_enable_clear_reset(CLK_L_SDMMC4, 0, CLK_U_SDMMC3, 0, 0, 0);
-	clock_configure_source(sdmmc3, PLLP, 48000);
-	clock_configure_source(sdmmc4, PLLP, 48000);
-}
+static const struct funit_cfg funitcfgs[] = {
+	FUNIT_CFG(SDMMC3, PLLP, 48000, sdmmc3_pad, ARRAY_SIZE(sdmmc3_pad)),
+	FUNIT_CFG(SDMMC4, PLLP, 48000, sdmmc4_pad, ARRAY_SIZE(sdmmc4_pad)),
+};
 
 static void setup_ec_spi(void)
 {
@@ -73,9 +72,7 @@ static void setup_ec_spi(void)
 
 static void mainboard_init(device_t dev)
 {
-	configure_clocks();
-
-	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
+	soc_configure_funits(funitcfgs, ARRAY_SIZE(funitcfgs));
 
 	setup_ec_spi();
 }

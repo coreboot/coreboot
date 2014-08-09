@@ -25,15 +25,14 @@
 #define	LX_CACHEWAY_SIZE	(LX_NUM_CACHELINES * LX_CACHELINE_SIZE)
 #define	CR0_CD				0x40000000	/* bit 30 = Cache Disable */
 #define	CR0_NW				0x20000000	/* bit 29 = Not Write Through */
+
 #include <cpu/amd/lxdef.h>
 #include <cpu/x86/post_code.h>
-/***************************************************************************
+
 /**
-/**	DCacheSetup
-/**
-/**	Setup data cache for  use as RAM for a stack.
-/**
-/***************************************************************************/
+ *	DCacheSetup
+ *	Setup data cache for  use as RAM for a stack.
+ */
 DCacheSetup:
 	/* Save the BIST result */
 	movl    %eax, %ebx

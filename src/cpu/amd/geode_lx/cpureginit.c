@@ -20,14 +20,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/**************************************************************************
-;*
-;*	SetDelayControl
-;*
-;*************************************************************************/
+/* SetDelayControl */
 #include "cpu/x86/msr.h"
-
-
 
 
 /**
@@ -38,8 +32,6 @@ static const msrinit_t delay_msr_table[] = {
 	{CPU_BC_MSS_ARRAY_CTL1, {.hi = 0x00000000, .lo = 0x1068334D}},
 	{CPU_BC_MSS_ARRAY_CTL2, {.hi = 0x00000106, .lo = 0x83104104}},
 };
-
-
 
 static const struct delay_controls {
 	u8 dimms;
@@ -171,9 +163,7 @@ static void SetDelayControl(u8 dimm0, u8 dimm1, int terminated)
 	wrmsr(GLCP_DELAY_CONTROLS, msr);
 }
 
-/* ***************************************************************************/
-/* *	cpuRegInit*/
-/* ***************************************************************************/
+/* cpuRegInit */
 void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 {
 	int msrnum;

@@ -20,15 +20,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-/* ***************************************************************************/
-/* **/
-/* *	StartTimer1*/
-/* **/
-/* *	Entry: none*/
-/* *	Exit: Starts Timer 1 for port 61 use*/
-/* *	Destroys: Al,*/
-/* **/
-/* ***************************************************************************/
+/**
+ *	StartTimer1
+ *
+ *	Entry: none
+ *	Exit: Starts Timer 1 for port 61 use
+ *	Destroys: Al,
+ */
 static void StartTimer1(void)
 {
 	outb(0x56, 0x43);

@@ -671,6 +671,7 @@ int main(int argc, char **argv)
 				if (tolower(suffix[0])=='m') {
 					param.size *= 1024 * 1024;
 				}
+				break;
 			case 'B':
 				param.bootblock = optarg;
 				break;

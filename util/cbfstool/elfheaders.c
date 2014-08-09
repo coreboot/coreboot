@@ -281,8 +281,10 @@ phdr_read(const struct buffer *in, struct parsed_elf *pelf,
 
 		/* Ensure the contents are valid within the elf file. */
 		if (check_size(in, phdr[i].p_offset, phdr[i].p_filesz,
-	                  "segment contents"))
+	                  "segment contents")) {
+			free(phdr);
 			return -1;
+		}
 	}
 
 	pelf->phdr = phdr;
@@ -422,6 +424,7 @@ static int strtab_read(const struct buffer *in, struct parsed_elf *pelf)
 		buffer_splice(b, in, shdr->sh_offset, shdr->sh_size);
 		if (check_size(in, shdr->sh_offset, buffer_size(b), "strtab")) {
 			ERROR("STRTAB section not within bounds: %d\n", i);
+			free(b);
 			return -1;
 		}
 		pelf->strtabs[i] = b;

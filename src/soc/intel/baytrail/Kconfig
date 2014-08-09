@@ -239,4 +239,21 @@ config IFD_BIN_PATH
 	depends on !BUILD_WITH_FAKE_IFD
 	default "3rdparty/mainboard/$(MAINBOARDDIR)/descriptor.bin"
 
+config HAVE_REFCODE_BLOB
+	depends on ARCH_X86
+	bool "An external reference code blob should be put into cbfs."
+	default n
+	help
+	 The reference code blob will be placed into cbfs.
+
+if HAVE_REFCODE_BLOB
+
+config REFCODE_BLOB_FILE
+	string "Path and filename to reference code blob."
+	default "refcode.elf"
+	help
+	 The path and filename to the file to be added to cbfs.
+
+endif # HAVE_REFCODE_BLOB
+
 endif

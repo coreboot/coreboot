@@ -95,7 +95,7 @@ int prepare_cmos_write(const cmos_entry_t * e, const char value_str[],
 	const cmos_enum_t *q;
 	unsigned long long out;
 	const char *p;
-	char *memory;
+	char *memory = NULL;
 	int negative, result, found_one;
 
 	if ((result = prepare_cmos_op_common(e)) != OK)
@@ -155,8 +155,10 @@ int prepare_cmos_write(const cmos_entry_t * e, const char value_str[],
 		BUG();
 	}
 
-	if ((e->length < (8 * sizeof(*value))) && (out >= (1ull << e->length)))
+	if ((e->length < (8 * sizeof(*value))) && (out >= (1ull << e->length))) {
+		if (memory) free(memory);
 		return CMOS_OP_VALUE_TOO_WIDE;
+	}
 
 	*value = out;
 	return OK;

@@ -125,12 +125,15 @@ unsigned long long cmos_read(const cmos_entry_t * e)
 	result = 0;
 
 	if (e->config == CMOS_ENTRY_STRING) {
-		char *newstring = calloc(1, (length + 7) / 8);
+		int strsz = (length + 7) / 8;
+		char *newstring = alloca(strsz);
 		unsigned usize = (8 * sizeof(unsigned long long));
 
 		if (!newstring) {
 			out_of_memory();
 		}
+
+		memset(newstring, 0, strsz);
 
 		for (next_bit = 0, bits_left = length;
 		     bits_left; next_bit += nr_bits, bits_left -= nr_bits) {

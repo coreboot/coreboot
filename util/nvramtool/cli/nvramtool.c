@@ -163,8 +163,8 @@ int main(int argc, char *argv[])
 		}
 
 		if (fd_stat.st_size < CMOS_SIZE) {
-			lseek(fd, CMOS_SIZE - 1, SEEK_SET);
-			if (write(fd, "\0", 1) != 1) {
+			if ((lseek(fd, CMOS_SIZE - 1, SEEK_SET) == -1) ||
+			    (write(fd, "\0", 1) != 1)) {
 				fprintf(stderr, "Unable to extended '%s' to its full size.\n",
 						nvramtool_op_modifiers[NVRAMTOOL_MOD_USE_CMOS_FILE].param);
 				exit(1);

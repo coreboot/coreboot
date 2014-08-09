@@ -236,9 +236,14 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
 			src << CLK_SOURCE_SHIFT | div);
 }
 
+#define get_i2c_clk_div(src,freq) (div_round_up(src, (freq) * (0x19 + 1) * 8) - 1)
+#define get_clk_div(src,freq)     CLK_DIVIDER(src,freq)
+#define CLK_DIV_MASK              0xff
+#define CLK_DIV_MASK_I2C          0xffff
+
 #define clock_configure_irregular_source(device, src, freq, src_id) \
 	_clock_set_div(&clk_rst->clk_src_##device, #device, \
-		CLK_DIVIDER(TEGRA_##src##_KHZ, freq), 0xff, src_id)
+		       get_clk_div(TEGRA_##src##_KHZ, freq), CLK_DIV_MASK, src_id)
 
 /* Warning: Some devices just use different bits for the same sources for no
  * apparent reason. *Always* double-check the TRM before trusting this macro. */
@@ -254,8 +259,8 @@ static inline void _clock_set_div(u32 *reg, const char *name, u32 div,
  */
 #define clock_configure_i2c_scl_freq(device, src, freq) \
 	_clock_set_div(&clk_rst->clk_src_##device, #device, \
-		div_round_up(TEGRA_##src##_KHZ, (freq) * (0x19 + 1) * 8) - 1, \
-		0xffff, src)
+		       get_i2c_clk_div(TEGRA_##src##_KHZ, freq),	\
+		       CLK_DIV_MASK_I2C, src)
 
 enum clock_source {  /* Careful: Not true for all sources, always check TRM! */
 	PLLP = 0,
@@ -288,6 +293,7 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 void clock_cpu0_config(void);
 void clock_halt_avp(void);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
+void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg, u32* rst_dev_clr_reg);
 void clock_reset_l(u32 l);
 void clock_reset_h(u32 h);
 void clock_reset_u(u32 u);

@@ -576,6 +576,14 @@ void clock_init(void)
 	graphics_pll();
 }
 
+void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg,
+				  u32 *rst_dev_clr_reg)
+{
+	writel(val, clk_enb_set_reg);
+	udelay(IO_STABILIZATION_DELAY);
+	writel(val, rst_dev_clr_reg);
+}
+
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x)
 {
 	if (l)

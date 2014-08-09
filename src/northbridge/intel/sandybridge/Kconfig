@@ -79,6 +79,7 @@ config DCACHE_RAM_MRC_VAR_SIZE
 
 config HAVE_MRC
 	bool "Add a System Agent binary"
+	depends on !NORTHBRIDGE_INTEL_IVYBRIDGE_NATIVE
 	help
 	  Select this option to add a System Agent binary to
 	  the resulting coreboot image.

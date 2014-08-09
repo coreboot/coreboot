@@ -18,17 +18,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+
+/*
+ * This file intentionally gets included multiple times, to set pic and apic
+ * modes, so should not have guard statements added.
+ */
+
 /*
  * This file will use arch/x86/acpi/irqroute.asl and mainboard/irqroute.h
  * to generate the ACPI IRQ routing for the mainboard being compiled.
  * This method uses #defines in irqroute.h along with the macros contained
  * in this file to generate an IRQ routing for each PCI device in the system.
  */
+
 #undef PCI_DEV_PIRQ_ROUTES
 #undef ACPI_DEV_IRQ
 #undef PCI_DEV_PIRQ_ROUTE
 #undef PIRQ_PIC_ROUTES
 #undef PIRQ_PIC
+#undef IRQROUTE_H
 
 #if defined(PIC_MODE)
 

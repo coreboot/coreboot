@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef IRQROUTE_H
+#define IRQROUTE_H
+
 #include <soc/intel/fsp_baytrail/baytrail/irq.h>
 #include <soc/intel/fsp_baytrail/baytrail/pci_devs.h>
 
@@ -70,3 +73,5 @@
 	PIRQ_PIC(F, 12), \
 	PIRQ_PIC(G, 14), \
 	PIRQ_PIC(H, 15)
+
+#endif /* IRQROUTE_H */

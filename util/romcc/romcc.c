@@ -10797,8 +10797,8 @@ static struct triple *integer_constant(struct compile_state *state)
 	errno = 0;
 	decimal = (tk->val.str[0] != '0');
 	val = strtoul(tk->val.str, &end, 0);
-	if ((val > ULONG_T_MAX) || ((val == ULONG_MAX) && (errno == ERANGE))) {
-		error(state, 0, "Integer constant to large");
+	if (errno == ERANGE) {
+		error(state, 0, "Integer constant out of range");
 	}
 	u = l = 0;
 	if ((*end == 'u') || (*end == 'U')) {

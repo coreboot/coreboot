@@ -40,4 +40,4 @@ struct southbridge_amd_cs5536_config {
 	unsigned int unwanted_vpci[MAX_UNWANTED_VPCI];	/* the following allow you to disable unwanted virtualized PCI devices */
 };
 
-#endif				/* _SOUTHBRIDGE_AMD_CS5536 */
+#endif /* _SOUTHBRIDGE_AMD_CS5536 */

@@ -33,4 +33,4 @@ unsigned char do_smbus_read_byte(unsigned smbus_io_base,
 					unsigned char device,
 					unsigned char address);
 
-#endif				/* _CS5536_SMBUS_H */
+#endif /* _CS5536_SMBUS_H */

@@ -451,4 +451,4 @@ void chipsetinit(void);
 #endif
 #endif
 
-#endif				/* _CS5536_H */
+#endif /* _CS5536_H */

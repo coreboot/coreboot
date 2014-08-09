@@ -611,7 +611,7 @@ static void set_one_param(const char name[], const char value[])
 	unsigned long long n;
 
 	if (is_checksum_name(name) || (e = find_cmos_entry(name)) == NULL) {
-		fprintf(stderr, "%s: CMOS parameter %s not found.", prog_name,
+		fprintf(stderr, "%s: CMOS parameter %s not found.\n", prog_name,
 			name);
 		exit(1);
 	}

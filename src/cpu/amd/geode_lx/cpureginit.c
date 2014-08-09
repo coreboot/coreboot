@@ -163,7 +163,6 @@ static void SetDelayControl(u8 dimm0, u8 dimm1, int terminated)
 	wrmsr(GLCP_DELAY_CONTROLS, msr);
 }
 
-/* cpuRegInit */
 void cpuRegInit(int debug_clock_disable, u8 dimm0, u8 dimm1, int terminated)
 {
 	int msrnum;

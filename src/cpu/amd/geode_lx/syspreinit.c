@@ -35,7 +35,6 @@ static void StartTimer1(void)
 
 void SystemPreInit(void)
 {
-
 	/* they want a jump ... */
 #if !CONFIG_CACHE_AS_RAM
 	__asm__ __volatile__("jmp .+2\ninvd\njmp .+2\n");

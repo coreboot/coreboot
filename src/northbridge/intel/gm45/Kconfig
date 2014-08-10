@@ -34,4 +34,8 @@ config BOOTBLOCK_NORTHBRIDGE_INIT
 	string
 	default "northbridge/intel/gm45/bootblock.c"
 
+config VGA_BIOS_ID
+	string
+	default "8086,2a42"
+
 endif

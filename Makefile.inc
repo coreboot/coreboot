@@ -368,7 +368,7 @@ lint lint-stable:
 		fi; \
 		echo ========; \
 	done; \
-	test $$FAILED -eq 0 || { echo "ERROR: $$FAILED test(s) failed." &&  exit 1; }; \
+	test $$FAILED -eq 0 || { echo "ERROR: $$FAILED test(s) failed."; rm -f $$LINTLOG && exit 1; }; \
 	rm -f $$LINTLOG
 
 gitconfig:

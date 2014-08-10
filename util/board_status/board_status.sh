@@ -262,14 +262,14 @@ cmd $REMOTE dmesg "${tmpdir}/${results}/kernel_log.txt"
 coreboot_dir=$(pwd)
 if [ $UPLOAD_RESULTS -eq 1 ]; then
 	# extract username from ssh://<username>@review.coreboot.org/blah
-	username=$(git config --get remote.origin.url | sed 's/ssh\:\/\///' | sed 's/@.*//')
+	bsrepo=$(git config --get remote.origin.url | sed "s,\(.*\)/coreboot,\1/board-status,")
 
 	cd "util/board_status/"
 	if [ ! -e "board-status" ]; then
 		# FIXME: the board-status directory might get big over time.
 		# Is there a way we can push the results without fetching the
 		# whole repo?
-		git clone "ssh://${username}@review.coreboot.org:29418/board-status"
+		git clone $bsrepo
 		if [ $? -ne 0 ]; then
 			"Error cloning board-status repo, aborting."
 			exit $EXIT_FAILURE

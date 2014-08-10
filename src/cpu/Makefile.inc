@@ -48,7 +48,7 @@ $(obj)/cpu_microcode_blob.o: $$(cpu_microcode-objs)
 # We have a lot of useless data in the large blob, and we are only interested in
 # the data section, so we only copy that part to the final microcode file
 $(obj)/cpu_microcode_blob.bin: $(obj)/cpu_microcode_blob.o
-	@printf "  MICROCODE    $(subst $(obj)/,,$(@))\n"
+	@printf "    MICROCODE  $(subst $(obj)/,,$(@))\n"
 	$(OBJCOPY_cpu_microcode) -j .data -O binary $< $@
 
 ifeq ($(cbfs_include_ucode),y)

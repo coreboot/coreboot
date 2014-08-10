@@ -86,7 +86,7 @@ $(objgenerated)/bootblock.s: $(objgenerated)/bootblock_inc.S $(obj)/config.h $(o
 	$(CC_bootblock) $(CPPFLAGS_bootblock) -MMD -x assembler-with-cpp -E -I$(src)/include -I$(src)/arch/armv7/include -I$(obj) -include $(obj)/build.h -include $(obj)/config.h -I. -I$(src) $< -o $@
 
 $(objgenerated)/bootblock.inc: $(src)/arch/armv7/$(subst ",,$(CONFIG_BOOTBLOCK_SOURCE)) $(bootblock_custom) $(OPTION_TABLE_H) $(obj)/config.h
-	@printf "    CC      $(subst $(obj)/,,$(@))\n"
+	@printf "    CC         $(subst $(obj)/,,$(@))\n"
 	$(CC_bootblock) $(CFLAGS_bootblock) $(CPPFLAGS_bootblock) -MM \
 		-MT$(objgenerated)/bootblock.inc \
 		$< > $(objgenerated)/bootblock.inc.d

@@ -65,6 +65,7 @@ util/cbmem/.dependencies
 util/cbmem/cbmem
 util/dumpmmcr/dumpmmcr
 util/ectool/ectool
+util/genprof/genprof
 util/getpir/getpir
 util/ifdtool/ifdtool
 util/ifdfake/ifdfake
@@ -82,8 +83,10 @@ util/optionlist/Options.wiki
 util/romcc/romcc
 util/romcc/tests/fail_test*.S
 util/romcc/tests/*.S-O2-mmmx
+util/runfw/googlesnow
 util/superiotool/superiotool
 util/vgabios/testbios
+util/viatool/viatool
 
 documentation/*.aux
 documentation/*.idx

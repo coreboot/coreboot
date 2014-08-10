@@ -99,6 +99,9 @@
 #define D31F0_LPC_IODEC		0x80
 #define D31F0_LPC_EN		0x82
 #define D31F0_GEN1_DEC		0x84
+#define D31F0_GEN2_DEC		0x88
+#define D31F0_GEN3_DEC		0x8c
+#define D31F0_GEN4_DEC		0x90
 #define D31F0_GEN_PMCON_1	0xa0
 #define D31F0_GEN_PMCON_3	0xa4
 #define D31F0_C5_EXIT_TIMING	0xa8

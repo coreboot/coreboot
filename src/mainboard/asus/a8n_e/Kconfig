@@ -32,10 +32,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x0
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 2
-
 if BOARD_ASUS_A8N_E
 config MAINBOARD_PART_NUMBER
 	string

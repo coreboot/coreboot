@@ -46,10 +46,6 @@ config APIC_ID_OFFSET
 	hex
 	default 0x0
 
-config SB_HT_CHAIN_ON_BUS0
-	int
-	default 2
-
 config MAINBOARD_PART_NUMBER
 	string
 	default "H8QME-2+ (Fam10)"

@@ -23,6 +23,22 @@ Device (GFX0)
 {
 	Name (_ADR, 0x00020000)
 
+	OperationRegion (GFXC, PCI_Config, 0x00, 0x0100)
+	Field (GFXC, DWordAcc, NoLock, Preserve)
+	{
+		Offset (0x10),
+		BAR0, 64
+        }
+
+	OperationRegion (GFRG, SystemMemory, And (BAR0, 0xfffffffffffffff0), 0x400000)
+	Field (GFRG, DWordAcc, NoLock, Preserve)
+	{
+		Offset (0x61250),
+			CR1, 32,
+			BCLV, 16,
+			BCLM, 16,
+	}
+
 	/* Display Output Switching */
 	Method (_DOS, 1)
 	{

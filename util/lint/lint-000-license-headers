@@ -20,16 +20,5 @@
 # DESCR: Check that all files in src/ and util/ have valid license headers
 
 LC_ALL=C export LC_ALL
-find src util -name .svn -type d -prune -o \
-	-name README -prune -o \
-	-name LICENSE -prune -o \
-	-name TODO -prune -o \
-	-name COPYING -prune -o \
-	-name microcode-\*.h -prune -o \
-	-name \*.[18] -prune -o \
-	-name romcc -type d -prune -o \
-	-name crossgcc -type d -prune -o \
-	-name vendorcode -type d -prune -o \
-	-type f -exec \
-		grep -L "51 Franklin St, Fifth Floor, Boston" {} + | \
+grep -L "51 Franklin St, Fifth Floor, Boston" `git ls-files src util |egrep -v "(^3rdparty|^src/vendorcode/|^util/kconfig/|^util/romcc/tests|\<COPYING\>|\<LICENSE\>|\<README\>|_shipped$|\.patch$|/microcode-[^/]*.h$)"` | \
 	sed -e "s,^.*$,File & has no valid GPL header.,"

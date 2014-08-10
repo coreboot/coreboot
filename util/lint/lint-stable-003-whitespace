@@ -19,25 +19,6 @@
 # DESCR: Check for superfluous whitespace in the tree
 
 LC_ALL=C export LC_ALL
-find src util -name .svn -type d -prune -o \
-	-type f -perm /111 -prune -o \
-	-name .git -type d -prune -o \
-	-name README -prune -o \
-	-name LICENSE -prune -o \
-	-name TODO -prune -o \
-	-name COPYING -prune -o \
-	-name \*.txt -prune -o \
-	-name \*.exe -prune -o \
-	-name \*.o -prune -o \
-	-name microcode-\*.h -prune -o \
-	-name \*.?_shipped -prune -o \
-	-name \*.[18] -prune -o \
-	-name \*~ -prune -o \
-	-name kconfig -type d -prune -o \
-	-name romcc -type d -prune -o \
-	-name crossgcc -type d -prune -o \
-	-name vendorcode -type d -prune -o \
-	-type f -exec \
-		grep -l "[[:space:]][[:space:]]*$" {} + | \
+grep -l "[[:space:]][[:space:]]*$" `git ls-files src util |egrep -v "(^3rdparty|^src/vendorcode/|^util/kconfig/|\<COPYING\>|\<LICENSE\>|\<README\>|_shipped$|\.patch$)"` | \
 	sed -e "s,^.*$,File & has lines ending with whitespace.,"
 

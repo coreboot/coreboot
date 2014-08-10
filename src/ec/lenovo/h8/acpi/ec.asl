@@ -20,7 +20,6 @@
  * MA 02110-1301 USA
  */
 
-#include "smi.h"
 Device(EC)
 {
 	Name (_HID, EISAID("PNP0C09"))

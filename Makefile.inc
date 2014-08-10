@@ -228,7 +228,7 @@ endif
 CFLAGS_common += -fno-common -ffreestanding -fno-builtin -fomit-frame-pointer
 
 additional-dirs := $(objutil)/cbfstool $(objutil)/romcc $(objutil)/ifdtool \
-		   $(objutil)/ifdfake $(objutil)/options
+		   $(objutil)/ifdfake $(objutil)/options $(objutil)/fletcher
 
 #######################################################################
 # generate build support files
@@ -297,6 +297,11 @@ $(IFDTOOL): $(top)/util/ifdtool/ifdtool.c
 
 IFDFAKE:=$(objutil)/ifdfake/ifdfake
 $(IFDFAKE): $(top)/util/ifdfake/ifdfake.c
+	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
+	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
+
+FLETCHER:=$(objutil)/fletcher/fletcher
+$(FLETCHER): $(top)/util/fletcher/fletcher.c
 	@printf "    HOSTCC     $(subst $(obj)/,,$(@))\n"
 	$(HOSTCC) $(HOSTCFLAGS) -o $@ $<
 

@@ -49,7 +49,7 @@ test_cmd()
 		return 0
 	fi
 
-	if [ $3 -eq 1 ]; then
+	if [ "$3" = "1" ]; then
 		return 1
 	fi
 

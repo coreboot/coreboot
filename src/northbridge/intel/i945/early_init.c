@@ -588,7 +588,7 @@ static void i945_setup_pci_express_x16(void)
 	/* Wait for training to succeed */
 	printk(BIOS_DEBUG, "PCIe link training ...");
 	timeout = 0x7ffff;
-	while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
+	while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS) >> 16) & 3) != 3)  && --timeout) ;
 
 	reg32 = pci_read_config32(PCI_DEV(0x0a, 0x0, 0), 0);
 	if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
@@ -599,10 +599,10 @@ static void i945_setup_pci_express_x16(void)
 
 		printk(BIOS_DEBUG, "Restrain PCIe port to x1\n");
 
-		reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x214);
+		reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS);
 		reg32 &= ~(0xf << 1);
 		reg32 |=1;
-		pci_write_config32(PCI_DEV(0, 0x01, 0), 0x214, reg32);
+		pci_write_config32(PCI_DEV(0, 0x01, 0), PEGSTS, reg32);
 
 		reg16 = pci_read_config16(PCI_DEV(0, 0x01, 0), 0x3e);
 
@@ -613,7 +613,7 @@ static void i945_setup_pci_express_x16(void)
 
 		printk(BIOS_DEBUG, "PCIe link training ...");
 		timeout = 0x7ffff;
-		while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), 0x214) >> 16) & 4) != 3)  && --timeout) ;
+		while ((((pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS) >> 16) & 3) != 3)  && --timeout) ;
 
 		reg32 = pci_read_config32(PCI_DEV(0xa, 0x00, 0), 0);
 		if (reg32 != 0x00000000 && reg32 != 0xffffffff) {
@@ -787,7 +787,7 @@ disable_pciexpress_x16_link:
 
 	printk(BIOS_DEBUG, "Wait for link to enter detect state... ");
 	timeout = 0x7fffff;
-	for (reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), 0x214);
+	for (reg32 = pci_read_config32(PCI_DEV(0, 0x01, 0), PEGSTS);
 	     (reg32 & 0x000f0000) && --timeout;) ;
 	if (!timeout)
 		printk(BIOS_DEBUG, "timeout!\n");

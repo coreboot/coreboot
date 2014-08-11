@@ -110,4 +110,4 @@ int cpu_config_tdp_levels(void);
 #endif
 #endif
 
-#endif
+#endif /* _CPU_INTEL_MODEL_406DX_H */

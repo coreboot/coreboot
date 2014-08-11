@@ -22,19 +22,13 @@
  */
 
 #include <console/console.h>
-#include <device/device.h>
 #include <device/pci.h>
-#include <string.h>
-#include <arch/acpi.h>
 #include <cpu/cpu.h>
 #include <cpu/x86/mtrr.h>
 #include <cpu/x86/msr.h>
 #include <cpu/x86/lapic.h>
-#include <cpu/intel/speedstep.h>
-#include <cpu/intel/turbo.h>
 #include <cpu/x86/cache.h>
 #include <cpu/x86/name.h>
-#include <pc80/mc146818rtc.h>
 #include "model_406dx.h"
 #include "chip.h"
 
@@ -42,7 +36,7 @@ static void enable_vmx(void)
 {
 	struct cpuid_result regs;
 	msr_t msr;
-	int enable = CONFIG_ENABLE_VMX;
+	int enable = IS_ENABLED(CONFIG_ENABLE_VMX);
 
 	regs = cpuid(1);
 	/* Check that the VMX is supported before reading or writing the MSR. */
@@ -67,9 +61,9 @@ static void enable_vmx(void)
 	printk(BIOS_DEBUG, "%s VMX\n", enable ? "Enabling" : "Disabling");
 
 	if (enable) {
-			msr.lo |= (1 << 2);
-			if (regs.ecx & CPUID_SMX)
-				msr.lo |= (1 << 1);
+		msr.lo |= (1 << 2);
+		if (regs.ecx & CPUID_SMX)
+			msr.lo |= (1 << 1);
 	}
 
 	wrmsr(IA32_FEATURE_CONTROL, msr);
@@ -93,9 +87,9 @@ static void configure_misc(void)
 	msr_t msr;
 
 	msr = rdmsr(IA32_MISC_ENABLE);
-	msr.lo |= (1 << 0);	  /* Fast String enable */
-	msr.lo |= (1 << 3); 	  /* TM1/TM2/EMTTM enable */
-	msr.lo |= (1 << 16);	  /* Enhanced SpeedStep Enable */
+	msr.lo |= (1 << 0);	/* Fast String enable */
+	msr.lo |= (1 << 3);	/* TM1/TM2/EMTTM enable */
+	msr.lo |= (1 << 16);	/* Enhanced SpeedStep Enable */
 	wrmsr(IA32_MISC_ENABLE, msr);
 
 	/* Disable Thermal interrupts */

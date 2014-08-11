@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+#ifndef IRQROUTE_H
+#define IRQROUTE_H
+
 #include <southbridge/intel/fsp_rangeley/irq.h>
 #include <southbridge/intel/fsp_rangeley/pci_devs.h>
 
@@ -66,3 +69,5 @@
 	PIRQ_PIC(F, 15), \
 	PIRQ_PIC(G, 14), \
 	PIRQ_PIC(H, 15)
+
+#endif /* IRQROUTE_H */

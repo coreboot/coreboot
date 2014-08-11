@@ -70,6 +70,30 @@ Scope (\_SB)
 	}
 }
 
+/*
+ * WLAN connected to Root Port 3, becomes Root Port 1 after coalesce
+ */
+Scope (\_SB.PCI0.RP01)
+{
+	Device (WLAN)
+	{
+		Name (_ADR, 0x00000000)
+
+		/* GPIO10 is PCH_WLAN_WAKE_L */
+		Name (GPIO, 10)
+
+		Name (_PRW, Package() { GPIO, 3 })
+
+		Method (_DSW, 3, NotSerialized)
+		{
+			If (LEqual (Arg0, 1)) {
+				// Enable GPIO as wake source
+				\_SB.PCI0.LPCB.GPIO.GWAK (^GPIO)
+			}
+		}
+	}
+}
+
 Scope (\_SB.PCI0.I2C0)
 {
 	Device (ATPB)

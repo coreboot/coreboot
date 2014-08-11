@@ -91,8 +91,9 @@ static void pch_log_power_and_resets(struct chipset_power_state *ps)
 	if (ps->gen_pmcon2 & PWROK_FLR)
 		elog_add_event(ELOG_TYPE_PWROK_FAIL);
 
-	/* Second TCO Timeout */
-	if (ps->tco2_sts & TCO2_STS_SECOND_TO)
+	/* TCO Timeout */
+	if (ps->prev_sleep_state != 3 &&
+	    ps->tco2_sts & TCO2_STS_SECOND_TO)
 		elog_add_event(ELOG_TYPE_TCO_RESET);
 
 	/* Power Button Override */

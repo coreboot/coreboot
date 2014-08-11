@@ -84,7 +84,8 @@ static void dump_power_state(struct chipset_power_state *ps)
 	printk(BIOS_DEBUG, "PM1_STS:   %04x\n", ps->pm1_sts);
 	printk(BIOS_DEBUG, "PM1_EN:    %04x\n", ps->pm1_en);
 	printk(BIOS_DEBUG, "PM1_CNT:   %08x\n", ps->pm1_cnt);
-	printk(BIOS_DEBUG, "TCO_STS:   %08x %08x\n", ps->tco1_sts, ps->tco2_sts);
+	printk(BIOS_DEBUG, "TCO_STS:   %04x %04x\n",
+	       ps->tco1_sts, ps->tco2_sts);
 
 	printk(BIOS_DEBUG, "GPE0_STS:  %08x %08x %08x %08x\n",
 	       ps->gpe0_sts[0], ps->gpe0_sts[1],
@@ -108,8 +109,8 @@ struct chipset_power_state *fill_power_state(void)
 	ps->pm1_sts = inw(ACPI_BASE_ADDRESS + PM1_STS);
 	ps->pm1_en = inw(ACPI_BASE_ADDRESS + PM1_EN);
 	ps->pm1_cnt = inl(ACPI_BASE_ADDRESS + PM1_CNT);
-	ps->tco1_sts = inl(ACPI_BASE_ADDRESS + TCO1_STS);
-	ps->tco2_sts = inl(ACPI_BASE_ADDRESS + TCO2_STS);
+	ps->tco1_sts = inw(ACPI_BASE_ADDRESS + TCO1_STS);
+	ps->tco2_sts = inw(ACPI_BASE_ADDRESS + TCO2_STS);
 	ps->gpe0_sts[0] = inl(ACPI_BASE_ADDRESS + GPE0_STS(0));
 	ps->gpe0_sts[1] = inl(ACPI_BASE_ADDRESS + GPE0_STS(1));
 	ps->gpe0_sts[2] = inl(ACPI_BASE_ADDRESS + GPE0_STS(2));

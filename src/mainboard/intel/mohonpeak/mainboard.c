@@ -18,22 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <types.h>
-#include <string.h>
 #include <device/device.h>
-#include <device/device.h>
-#include <device/pci_def.h>
-#include <device/pci_ops.h>
-#include <console/console.h>
-#if CONFIG_VGA_ROM_RUN
-#include <x86emu/x86emu.h>
-#endif
-#include <pc80/mc146818rtc.h>
-#include <arch/acpi.h>
-#include <arch/io.h>
-#include <arch/interrupt.h>
-#include <boot/coreboot_tables.h>
-#include <southbridge/intel/fsp_rangeley/soc.h>
 
 /*
  * mainboard_enable is executed as first thing after enumerate_buses().

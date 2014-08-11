@@ -30,14 +30,13 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <cpu/x86/msr.h>
-#include "northbridge/intel/fsp_rangeley/northbridge.h"
+#include <southbridge/intel/fsp_rangeley/nvs.h>
+#include <northbridge/intel/fsp_rangeley/northbridge.h>
 
 extern const unsigned char AmlCode[];
 #if CONFIG_HAVE_ACPI_SLIC
 unsigned long acpi_create_slic(unsigned long current);
 #endif
-
-#include "southbridge/intel/fsp_rangeley/nvs.h"
 
 static global_nvs_t *gnvs_;
 

@@ -19,36 +19,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include <stdint.h>
-#include <string.h>
-#include <lib.h>
-#include <timestamp.h>
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <device/pnp_def.h>
 #include <cpu/x86/lapic.h>
-#include <pc80/mc146818rtc.h>
-#include <cbmem.h>
-#include <console/console.h>
 #include <drivers/intel/fsp/fsp_util.h>
-#include <northbridge/intel/fsp_rangeley/northbridge.h>
 #include <southbridge/intel/fsp_rangeley/soc.h>
 #include <southbridge/intel/fsp_rangeley/gpio.h>
 #include <southbridge/intel/fsp_rangeley/romstage.h>
 #include <arch/cpu.h>
-#include <cpu/x86/msr.h>
 #include "gpio.h"
 
 static void interrupt_routing_config(void)
 {
-    u32 ilb_base = pci_read_config32(SOC_LPC_DEV, IBASE) & ~0xf;
+	u32 ilb_base = pci_read_config32(SOC_LPC_DEV, IBASE) & ~0xf;
 
-    /*
-     * Initialize Interrupt Routings for each device in ilb_base_address.
-     * IR01 map to PCIe device 0x01 ... IR31 to device 0x1F.
-     * PIRQ_A maps to IRQ 16 ... PIRQ_H maps tp IRQ 23.
-     * This should match devicetree and the ACPI IRQ routing/
-     */
+	/*
+	* Initialize Interrupt Routings for each device in ilb_base_address.
+	* IR01 map to PCIe device 0x01 ... IR31 to device 0x1F.
+	* PIRQ_A maps to IRQ 16 ... PIRQ_H maps tp IRQ 23.
+	* This should match devicetree and the ACPI IRQ routing/
+	*/
 	write32(ilb_base + ILB_ACTL, 0x0000);  /* ACTL bit 2:0 SCIS IRQ9 */
 	write16(ilb_base + ILB_IR01, 0x3210);  /* IR01h IR(ABCD) - PIRQ(ABCD) */
 	write16(ilb_base + ILB_IR02, 0x3210);  /* IR02h IR(ABCD) - PIRQ(ABCD) */

@@ -94,6 +94,6 @@ config UART_FOR_CONSOLE
 	int
 	default 1
 	help
-	  The Mohon Peak board uses com2 (2f8) for the serial console.
+	  The Mohon Peak board uses COM2 (2f8) for the serial console.
 
 endif # BOARD_INTEL_MOHONPEAK

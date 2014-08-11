@@ -20,7 +20,7 @@
 #ifndef MOHONPEAK_GPIO_H
 #define MOHONPEAK_GPIO_H
 
-#include "southbridge/intel/fsp_rangeley/gpio.h"
+#include <southbridge/intel/fsp_rangeley/gpio.h>
 
 /* Core GPIO */
 const struct soc_gpio soc_gpio_mode = {
@@ -175,4 +175,4 @@ const struct soc_gpio_map gpio_map = {
 	},
 };
 
-#endif
+#endif /* MOHONPEAK_GPIO_H */

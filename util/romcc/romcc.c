@@ -223,6 +223,14 @@ static int exists(const char *dirname, const char *filename)
 	return does_exist;
 }
 
+static off_t get_file_size(FILE *f)
+{
+	struct stat s;
+	int fd = fileno(f);
+	if (fd == -1) return -1;
+	if (fstat(fd, &s) == -1) return -1;
+	return s.st_size;
+}
 
 static char *slurp_file(const char *dirname, const char *filename, off_t *r_size)
 {
@@ -246,9 +254,10 @@ static char *slurp_file(const char *dirname, const char *filename, off_t *r_size
 		die("Cannot open '%s' : %s\n",
 			filename, strerror(errno));
 	}
-	fseek(file, 0, SEEK_END);
-	size = ftell(file);
-	fseek(file, 0, SEEK_SET);
+	size = get_file_size(file);
+	if (size == -1) {
+		die("Could not fetch size of '%s': %s\n", filename, strerror(errno));
+	}
 	*r_size = size +1;
 	buf = xmalloc(size +2, filename);
 	buf[size] = '\n'; /* Make certain the file is newline terminated */

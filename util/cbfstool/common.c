@@ -22,6 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <libgen.h>
 #include "common.h"
 #include "cbfs.h"
@@ -40,6 +43,14 @@ int is_big_endian(void)
 	return 0;
 }
 
+static off_t get_file_size(FILE *f)
+{
+	struct stat s;
+	int fd = fileno(f);
+	if (fd == -1) return -1;
+	if (fstat(fd, &s) == -1) return -1;
+	return s.st_size;
+}
 /* Buffer and file I/O */
 
 int buffer_create(struct buffer *buffer, size_t size, const char *name) {
@@ -59,10 +70,13 @@ int buffer_from_file(struct buffer *buffer, const char *filename) {
 		perror(filename);
 		return -1;
 	}
-	fseek(fp, 0, SEEK_END);
-	buffer->size = ftell(fp);
+	buffer->size = get_file_size(fp);
+	if (buffer->size == -1) {
+		fprintf(stderr, "could not determine size of %s\n", filename);
+		fclose(fp);
+		return -1;
+	}
 	buffer->name = strdup(filename);
-	rewind(fp);
 	buffer->data = (char *)malloc(buffer->size);
 	assert(buffer->data);
 	if (fread(buffer->data, 1, buffer->size, fp) != buffer->size) {

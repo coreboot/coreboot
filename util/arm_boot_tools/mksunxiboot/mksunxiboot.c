@@ -11,6 +11,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <errno.h>
 
 /* boot head definition from sun4i boot code */
@@ -108,12 +111,11 @@ static void fill_header(struct boot_file_head *hdr, size_t load_size)
 
 static long int fsize(FILE *file)
 {
-	long int size;
-
-	fseek(file, 0L, SEEK_END);
-	size = ftell(file);
-	fseek(file, 0L, SEEK_SET);
-	return size;
+	struct stat s;
+	int fd = fileno(file);
+	if (fd == -1) return -1;
+	if (fstat(fd, &s) == -1) return -1;
+	return s.st_size;
 }
 
 int main(int argc, char *argv[])
@@ -145,6 +147,10 @@ int main(int argc, char *argv[])
 
 	/* Get input file size */
 	file_size = fsize(fd_in);
+	if (file_size == -1) {
+		fprintf(stderr, "can't determine file size\n");
+		return EXIT_FAILURE;
+	}
 	if ((file_data = malloc(file_size)) == NULL) {
 		fprintf(stderr, "Cannot allocate memory\n");
 		return EXIT_FAILURE;

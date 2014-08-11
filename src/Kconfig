@@ -681,7 +681,7 @@ config PAYLOAD_FILE
 
 config PAYLOAD_FILE
 	depends on PAYLOAD_SEABIOS
-	default "$(obj)/seabios/out/bios.bin.elf"
+	default "payloads/external/SeaBIOS/seabios/out/bios.bin.elf"
 
 config PAYLOAD_FILE
 	depends on PAYLOAD_FILO

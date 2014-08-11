@@ -326,7 +326,7 @@ void generate_cpu_entries(void)
 	printk(BIOS_DEBUG, "Found %d CPU(s) with %d core(s) each.\n",
 	       numcpus, cores_per_package);
 
-	for (cpuID=1; cpuID <=numcpus; cpuID++) {
+	for (cpuID = 1; cpuID <= numcpus; cpuID++) {
 		for (coreID=1; coreID<=cores_per_package; coreID++) {
 			if (coreID>1) {
 				pcontrol_blk = 0;

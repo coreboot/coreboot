@@ -57,6 +57,17 @@ static void enable_rom_caching(void)
 	wrmsr(MTRRdefType_MSR, msr);
 }
 
+static void bootblock_mdelay(int ms)
+{
+	u32 target = ms * 24 * 1000;
+	msr_t current;
+	msr_t start = rdmsr(MSR_COUNTER_24_MHZ);
+
+	do {
+		current = rdmsr(MSR_COUNTER_24_MHZ);
+	} while ((current.lo - start.lo) < target);
+}
+
 static void set_flex_ratio_to_tdp_nominal(void)
 {
 	msr_t flex_ratio, msr;
@@ -96,6 +107,9 @@ static void set_flex_ratio_to_tdp_nominal(void)
 
 	/* Set soft reset control to use register value */
 	RCBA32_OR(SOFT_RESET_CTRL, 1);
+
+	/* Delay before reset to avoid potential TPM lockout */
+	bootblock_mdelay(30);
 
 	/* Issue warm reset, will be "CPU only" due to soft reset data */
 	outb(0x0, 0xcf9);

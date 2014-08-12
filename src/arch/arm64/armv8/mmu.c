@@ -67,8 +67,16 @@ static uint64_t get_block_attr(unsigned long tag)
 	attr = (tag & MA_NS)? BLOCK_NS : 0;
 	attr |= (tag & MA_RO)? BLOCK_AP_RO : BLOCK_AP_RW;
 	attr |= BLOCK_ACCESS;
-	attr |= (tag & MA_MEM)? (BLOCK_INDEX_MEM_NORMAL << BLOCK_INDEX_SHIFT) :
-		(BLOCK_INDEX_MEM_DEV_NGNRNE << BLOCK_INDEX_SHIFT);
+
+	if (tag & MA_MEM) {
+		if (tag & MA_MEM_NC)
+			attr |= BLOCK_INDEX_MEM_NORMAL_NC << BLOCK_INDEX_SHIFT;
+		else
+			attr |= BLOCK_INDEX_MEM_NORMAL << BLOCK_INDEX_SHIFT;
+	} else {
+		attr |= BLOCK_INDEX_MEM_DEV_NGNRNE << BLOCK_INDEX_SHIFT;
+	}
+
 
 	return attr;
 }

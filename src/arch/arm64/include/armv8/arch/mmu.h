@@ -47,6 +47,9 @@
 #define MA_RO                      (1 << 2)
 #define MA_RW                      (0 << 2)
 
+/* Non-cacheable memory. */
+#define MA_MEM_NC                  (1 << 3)
+
 /* Descriptor attributes */
 
 #define INVALID_DESC               0x0

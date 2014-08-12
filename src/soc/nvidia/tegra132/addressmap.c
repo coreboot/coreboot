@@ -61,7 +61,7 @@ static void carveout_from_regs(uintptr_t *base_mib, size_t *size_mib,
 
 	*size_mib = size;
 	bom >>= 20;
-	bom |= bom_hi >> (32 - 20);
+	bom |= bom_hi << (32 - 20);
 
 	*base_mib = bom;
 }

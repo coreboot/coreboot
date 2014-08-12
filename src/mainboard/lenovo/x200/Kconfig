@@ -1,0 +1,53 @@
+if BOARD_LENOVO_X200
+
+config BOARD_SPECIFIC_OPTIONS # dummy
+	def_bool y
+	select CPU_INTEL_SOCKET_BGA956
+	select NORTHBRIDGE_INTEL_GM45
+	select SOUTHBRIDGE_INTEL_I82801IX
+	select EC_LENOVO_PMH7
+	select EC_LENOVO_H8
+	select DRIVERS_ICS_954309
+	select BOARD_ROMSIZE_KB_8192
+	select DRIVERS_GENERIC_IOAPIC
+	select HAVE_MP_TABLE
+	select HAVE_ACPI_TABLES
+	select EC_ACPI
+	select EARLY_CBMEM_INIT
+	select HAVE_OPTION_TABLE
+	select HAVE_CMOS_DEFAULT
+	select HAVE_ACPI_RESUME
+
+config MAINBOARD_DIR
+	string
+	default lenovo/x200
+
+config MAINBOARD_PART_NUMBER
+	string
+	default "7458CY9"
+
+config MAINBOARD_VERSION
+	string
+	default "ThinkPad X200 / X200s / X200t"
+
+config MAINBOARD_VENDOR
+	string
+	default "LENOVO"
+
+config MMCONF_BASE_ADDRESS
+	hex
+	default 0xf0000000
+
+config USBDEBUG_HCD_INDEX
+	int
+	default 2
+
+config IRQ_SLOT_COUNT
+	int
+	default 18
+
+config MAX_CPUS
+	int
+	default 2
+
+endif # BOARD_LENOVO_X200

@@ -12,6 +12,11 @@ config BOARD_LENOVO_X60
 	    ThinkPad X60s (Model 1702, 1703)
 	    ThinkPad X60  (Model 1709)
 
+config BOARD_LENOVO_X200
+	bool "ThinkPad X200"
+	help
+	  Lenovo X200 laptop. Consult wiki for details.
+
 config BOARD_LENOVO_X201
 	bool "ThinkPad X201 / X201s / X201t"
 	help
@@ -43,6 +48,7 @@ config BOARD_LENOVO_T60
 endchoice
 
 source "src/mainboard/lenovo/x60/Kconfig"
+source "src/mainboard/lenovo/x200/Kconfig"
 source "src/mainboard/lenovo/x201/Kconfig"
 source "src/mainboard/lenovo/x230/Kconfig"
 source "src/mainboard/lenovo/t520/Kconfig"

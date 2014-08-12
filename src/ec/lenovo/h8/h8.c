@@ -63,6 +63,15 @@ static void h8_wwan_enable(int on)
 		ec_clr_bit(0x3a, 6);
 }
 
+/* Controls radio-off pin in UWB MiniPCIe slot.  */
+static void h8_uwb_enable(int on)
+{
+	if (on)
+		ec_set_bit(0x31, 2);
+	else
+		ec_clr_bit(0x31, 2);
+}
+
 static void h8_fn_ctrl_swap(int on)
 {
 	if (on)
@@ -238,6 +247,13 @@ static void h8_enable(device_t dev)
 		val = 1;
 
 	h8_wwan_enable(val);
+
+	if (conf->has_uwb) {
+		if (get_option(&val, "uwb") != CB_SUCCESS)
+			val = 1;
+
+		h8_uwb_enable(val);
+	}
 
 	if (get_option(&val, "fn_ctrl_swap") != CB_SUCCESS)
 		val = 0;

@@ -44,39 +44,44 @@ static void print_memranges(struct memranges *mmap_ranges)
 
 }
 
-static void tegra132_memrange_init(void)
+static void tegra132_memrange_init(struct memranges *map)
 {
 	uint64_t start,end;
+	const unsigned long devmem = MA_DEV | MA_NS | MA_RW;
+	const unsigned long cachedmem = MA_MEM | MA_NS | MA_RW;
 
-	memranges_init_empty(&t132_mmap_ranges);
+	memranges_init_empty(map);
 
 	memory_in_range_below_4gb(&start,&end);
 
 	/* Device memory below DRAM */
-	memranges_insert(&t132_mmap_ranges, 0, start * MiB, MA_DEV | MA_NS |
-			 MA_RW);
+	memranges_insert(map, 0, start * MiB, devmem);
 
 	/* DRAM */
-	memranges_insert(&t132_mmap_ranges, start * MiB, (end-start) * MiB,
-			 MA_MEM | MA_NS | MA_RW);
+	memranges_insert(map, start * MiB, (end-start) * MiB, cachedmem);
 
 	memory_in_range_above_4gb(&start,&end);
 
-	memranges_insert(&t132_mmap_ranges, start * MiB, (end-start) * MiB,
-			 MA_MEM | MA_NS | MA_RW);
+	memranges_insert(map, start * MiB, (end-start) * MiB, cachedmem);
 
 	/* SRAM */
-	memranges_insert(&t132_mmap_ranges, TEGRA_SRAM_BASE, TEGRA_SRAM_SIZE,
-			 MA_MEM | MA_NS | MA_RW);
+	memranges_insert(map, TEGRA_SRAM_BASE, TEGRA_SRAM_SIZE, cachedmem);
+}
 
-	print_memranges(&t132_mmap_ranges);
+void __attribute__((weak)) mainboard_add_memory_ranges(struct memranges *map)
+{
+	/* Don't add any ranges by default. */
 }
 
 void tegra132_mmu_init(void)
 {
 	uint64_t *ttb_buffer = (uint64_t*)CONFIG_TTB_BUFFER;
 	uint64_t ttb_size = (uint64_t)CONFIG_TTB_SIZE;
-	tegra132_memrange_init();
-	mmu_init(&t132_mmap_ranges,ttb_buffer,ttb_size);
+	struct memranges *map = &t132_mmap_ranges;
+
+	tegra132_memrange_init(map);
+	mainboard_add_memory_ranges(map);
+	print_memranges(map);
+	mmu_init(map,ttb_buffer,ttb_size);
 	mmu_enable((uint64_t)ttb_buffer);
 }

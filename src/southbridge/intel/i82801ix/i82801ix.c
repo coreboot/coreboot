@@ -234,23 +234,6 @@ static void i82801ix_init(void *chip_info)
 	outw(0x0008, DEFAULT_TCOBASE + 0x12); /* Set higher timer value. */
 #endif
 	outw(0x0000, DEFAULT_TCOBASE + 0x00); /* Update timer. */
-
-#if CONFIG_HAVE_ACPI_RESUME
-	switch (pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)), /*D0F0_SKPD*/0xdc)) {
-	case SKPAD_NORMAL_BOOT_MAGIC:
-		printk(BIOS_DEBUG, "Normal boot.\n");
-		acpi_slp_type=0;
-		break;
-	case SKPAD_ACPI_S3_MAGIC:
-		printk(BIOS_DEBUG, "S3 Resume.\n");
-		acpi_slp_type=3;
-		break;
-	default:
-		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
-		acpi_slp_type=0;
-		break;
-	}
-#endif
 }
 
 struct chip_operations southbridge_intel_i82801ix_ops = {

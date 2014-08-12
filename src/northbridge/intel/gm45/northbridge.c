@@ -32,6 +32,7 @@
 #include <cbmem.h>
 #include "chip.h"
 #include "gm45.h"
+#include "arch/acpi.h"
 
 /* Reserve everything between A segment and 1MB:
  *
@@ -228,6 +229,23 @@ static void enable_dev(device_t dev)
 	} else if (dev->path.type == DEVICE_PATH_CPU_CLUSTER) {
 		dev->ops = &cpu_bus_ops;
 	}
+
+#if CONFIG_HAVE_ACPI_RESUME
+	switch (pci_read_config32(dev_find_slot(0, PCI_DEVFN(0, 0)), /*D0F0_SKPD*/0xdc)) {
+	case SKPAD_NORMAL_BOOT_MAGIC:
+		printk(BIOS_DEBUG, "Normal boot.\n");
+		acpi_slp_type=0;
+		break;
+	case SKPAD_ACPI_S3_MAGIC:
+		printk(BIOS_DEBUG, "S3 Resume.\n");
+		acpi_slp_type=3;
+		break;
+	default:
+		printk(BIOS_DEBUG, "Unknown boot method, assuming normal.\n");
+		acpi_slp_type=0;
+		break;
+	}
+#endif
 }
 
 static void gm45_init(void *const chip_info)

@@ -1211,7 +1211,8 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 
 	/* Calculate memory mapping, all values in MB. */
 	const unsigned int MMIOstart = 0x0c00; /* 3GB, makes MTRR configuration small. */
-	const unsigned int ME_SIZE = 0;
+	const int me_active = pci_read_config8(PCI_DEV(0, 3, 0), PCI_CLASS_REVISION) != 0xff;
+	const unsigned int ME_SIZE = prejedec || !me_active ? 0 : 32;
 	const unsigned int usedMEsize = (total_mb[0] != total_mb[1]) ? ME_SIZE : 2 * ME_SIZE;
 	const unsigned int claimCapable =
 		!(pci_read_config32(PCI_DEV(0, 0, 0), D0F0_CAPID0 + 4) & (1 << (47 - 32)));
@@ -1267,8 +1268,9 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 			  "TOLUD = %5uMB\n"
 			  "TOUUD = %5uMB\n"
 			  "REMAP:\t base  = %5uMB\n"
-				"\t limit = %5uMB\n",
-			  TOM, TOLUD, TOUUD, REMAPbase, REMAPlimit);
+				"\t limit = %5uMB\n"
+	                  "usedMEsize: %dMB\n",
+			  TOM, TOLUD, TOUUD, REMAPbase, REMAPlimit, usedMEsize);
 }
 static void prejedec_memory_map(const dimminfo_t *const dimms, channel_mode_t mode)
 {

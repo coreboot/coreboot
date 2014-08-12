@@ -408,7 +408,7 @@ void get_gmch_info(sysinfo_t *);
 void raminit(sysinfo_t *, int s3resume);
 void raminit_thermal(const sysinfo_t *);
 void init_igd(const sysinfo_t *, int no_igd, int no_peg);
-void init_pm(const sysinfo_t *);
+void init_pm(const sysinfo_t *, int do_freq_scaling_cfg);
 
 int raminit_read_vco_index(void);
 u32 raminit_get_rank_addr(unsigned int channel, unsigned int rank);

@@ -179,7 +179,7 @@ void main(unsigned long bist)
 
 	raminit_thermal(&sysinfo);
 	init_igd(&sysinfo, 0, 1); /* Enable IGD, disable PEG. */
-	init_pm(&sysinfo);
+	init_pm(&sysinfo, 1);
 
 	i82801ix_dmi_setup();
 	gm45_late_init(sysinfo.stepping);

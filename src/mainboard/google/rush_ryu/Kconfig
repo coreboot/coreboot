@@ -91,4 +91,12 @@ config EC_GOOGLE_CHROMEEC_I2C_BUS
 	hex
 	default 1
 
+config DRAM_DMA_START
+	hex
+	default 0xc0000000
+
+config DRAM_DMA_SIZE
+	hex
+	default 0x00200000
+
 endif # BOARD_GOOGLE_RUSH_RYU

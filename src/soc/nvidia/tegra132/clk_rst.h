@@ -16,6 +16,8 @@
 
 #ifndef _TEGRA132_CLK_RST_H_
 #define _TEGRA132_CLK_RST_H_
+#include <stdint.h>
+#include <stddef.h>
 
 /* Clock/Reset Controller (CLK_RST_CONTROLLER_) regs */
 struct  __attribute__ ((__packed__)) clk_rst_ctlr {

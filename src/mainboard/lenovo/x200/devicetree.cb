@@ -156,7 +156,7 @@ chip northbridge/intel/gm45
 					end
 
 					register "config0" = "0xa6"
-					register "config1" = "0x05"
+					register "config1" = "0x04"
 					register "config2" = "0xa0"
 					register "config3" = "0x01"
 

@@ -207,6 +207,9 @@ void main(unsigned long bist)
 
 		/* Magic for S3 resume */
 		pci_write_config32(PCI_DEV(0, 0, 0), D0F0_SKPD, SKPAD_ACPI_S3_MAGIC);
+	} else {
+		/* Magic for S3 resume */
+		pci_write_config32(PCI_DEV(0, 0, 0), D0F0_SKPD, SKPAD_NORMAL_BOOT_MAGIC);
 	}
 #endif
 	printk(BIOS_SPEW, "exit main()\n");

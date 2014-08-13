@@ -82,6 +82,8 @@ static const struct funit_cfg_data funit_data[] =  {
 	FUNIT_DATA(SDMMC3, sdmmc3, U),
 	FUNIT_DATA(SDMMC4, sdmmc4, L),
 };
+_Static_assert(ARRAY_SIZE(funit_data) == FUNIT_INDEX_MAX,
+		"funit_cfg_data array not filled out!");
 
 static inline uint32_t get_clk_src_freq(uint32_t clk_src)
 {

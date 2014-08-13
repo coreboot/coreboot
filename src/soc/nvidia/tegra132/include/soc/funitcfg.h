@@ -28,7 +28,6 @@
 #define FUNIT_INDEX(_name)  FUNIT_##_name
 
 enum {
-	FUNIT_NONE = 0,
 	FUNIT_INDEX(SBC1),
 	FUNIT_INDEX(SBC4),
 	FUNIT_INDEX(I2C2),

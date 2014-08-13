@@ -24,10 +24,9 @@
 
 #include <soc/addressmap.h>
 #include <soc/clock.h>
+#include <soc/funitcfg.h>
 #include <soc/padconfig.h>
 #include <soc/nvidia/tegra132/clk_rst.h>
-
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
 
 static const struct pad_config mmcpads[] = {
 	/* MMC4 (eMMC) */
@@ -43,17 +42,14 @@ static const struct pad_config mmcpads[] = {
 	PAD_CFG_SFIO(SDMMC4_DAT7, PINMUX_INPUT_ENABLE|PINMUX_PULL_UP, SDMMC4),
 };
 
-static void init_mmc(void)
-{
-	clock_enable_clear_reset(CLK_L_SDMMC4, 0, 0, 0, 0, 0);
-	clock_configure_source(sdmmc4, PLLP, 48000);
-
-	soc_configure_pads(mmcpads, ARRAY_SIZE(mmcpads));
-}
+static const struct funit_cfg funits[] = {
+	/* MMC on SDMMC4 controller at 48MHz. */
+	FUNIT_CFG(SDMMC4, PLLP, 48000, mmcpads, ARRAY_SIZE(mmcpads)),
+};
 
 static void mainboard_init(device_t dev)
 {
-	init_mmc();
+	soc_configure_funits(funits, ARRAY_SIZE(funits));
 }
 
 static void mainboard_enable(device_t dev)

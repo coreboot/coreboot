@@ -100,18 +100,39 @@ static inline uint32_t get_clk_src_freq(uint32_t clk_src)
 	return freq;
 }
 
-void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
+static void configure_clock(const struct funit_cfg * const entry,
+				const struct funit_cfg_data * const funit)
 {
-	size_t i;
 	const char *funit_i2c = "i2c";
 	uint32_t clk_div;
 	uint32_t clk_div_mask;
+	uint32_t clk_src_freq;
+
+	clk_src_freq = get_clk_src_freq(entry->clk_src_id);
+
+	if (strncmp(funit->name, funit_i2c, strlen(funit_i2c)) == 0) {
+		/* I2C funit */
+		clk_div = get_i2c_clk_div(clk_src_freq,
+					entry->clk_dev_freq_khz);
+		clk_div_mask = CLK_DIV_MASK_I2C;
+	} else {
+		/* Non I2C */
+		clk_div = get_clk_div(clk_src_freq, entry->clk_dev_freq_khz);
+		clk_div_mask = CLK_DIV_MASK;
+	}
+
+	_clock_set_div(funit->clk_src_reg, funit->name, clk_div,
+			clk_div_mask, entry->clk_src_id);
+}
+
+void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
+{
+	size_t i;
 
 	for (i = 0; i < num; i++) {
 		const struct funit_cfg * const entry = &entries[i];
 		const struct funit_cfg_data *funit;
 		const struct clk_dev_control *dev_control;
-		uint32_t clk_src_freq;
 
 		if (entry->funit_index >= FUNIT_INDEX_MAX) {
 			printk(BIOS_ERR, "Error: Index out of bounds\n");
@@ -121,22 +142,7 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 		funit = &funit_data[entry->funit_index];
 		dev_control = funit->dev_control;
 
-		clk_src_freq = get_clk_src_freq(entry->clk_src_id);
-
-		if (strncmp(funit->name,funit_i2c,strlen(funit_i2c)) == 0) {
-			/* I2C funit */
-			clk_div = get_i2c_clk_div(clk_src_freq,
-						  entry->clk_dev_freq_khz);
-			clk_div_mask = CLK_DIV_MASK_I2C;
-		} else {
-			/* Non I2C */
-			clk_div = get_clk_div(clk_src_freq,
-						entry->clk_dev_freq_khz);
-			clk_div_mask = CLK_DIV_MASK;
-		}
-
-		_clock_set_div(funit->clk_src_reg, funit->name, clk_div,
-				clk_div_mask, entry->clk_src_id);
+		configure_clock(entry, funit);
 
 		clock_grp_enable_clear_reset(funit->clk_enb_val,
 						dev_control->clk_enb_set,

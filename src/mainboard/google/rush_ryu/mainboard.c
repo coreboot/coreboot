@@ -45,6 +45,7 @@ static const struct pad_config mmcpads[] = {
 static const struct funit_cfg funits[] = {
 	/* MMC on SDMMC4 controller at 48MHz. */
 	FUNIT_CFG(SDMMC4, PLLP, 48000, mmcpads, ARRAY_SIZE(mmcpads)),
+	FUNIT_CFG_USB(USBD),
 };
 
 static void mainboard_init(device_t dev)

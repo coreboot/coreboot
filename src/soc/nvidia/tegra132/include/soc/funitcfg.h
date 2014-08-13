@@ -35,6 +35,9 @@ enum {
 	FUNIT_INDEX(I2C5),
 	FUNIT_INDEX(SDMMC3),
 	FUNIT_INDEX(SDMMC4),
+	FUNIT_INDEX(USBD),
+	FUNIT_INDEX(USB2),
+	FUNIT_INDEX(USB3),
 	FUNIT_INDEX_MAX,
 };
 
@@ -53,6 +56,13 @@ struct funit_cfg {
 		.clk_dev_freq_khz = _clk_freq,				\
 		.pad_cfg = _cfg,					\
 		.pad_cfg_size = _cfg_size,				\
+	}
+
+#define FUNIT_CFG_USB(_funit)						\
+	{								\
+		.funit_index = FUNIT_INDEX(_funit),			\
+		.pad_cfg = NULL,					\
+		.pad_cfg_size = 0,					\
 	}
 
 /*

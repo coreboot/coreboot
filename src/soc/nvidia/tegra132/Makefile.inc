@@ -15,6 +15,7 @@ bootblock-y += ../tegra/i2c.c
 bootblock-y += ../tegra/pingroup.c
 bootblock-y += ../tegra/pinmux.c
 bootblock-y += ../tegra/apbmisc.c
+bootblock-y += ../tegra/usb.c
 ifeq ($(CONFIG_BOOTBLOCK_CONSOLE),y)
 bootblock-$(CONFIG_DRIVERS_UART) += uart.c
 endif
@@ -40,6 +41,7 @@ romstage-y += sdram_lp0.c
 romstage-y += ../tegra/gpio.c
 romstage-y += ../tegra/i2c.c
 romstage-y += ../tegra/pinmux.c
+romstage-y += ../tegra/usb.c
 romstage-$(CONFIG_DRIVERS_UART) += uart.c
 
 ramstage-y += addressmap.c

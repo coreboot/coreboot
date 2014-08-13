@@ -23,6 +23,7 @@
 #include <soc/clock.h>
 #include <soc/padconfig.h>
 #include <string.h>
+#include <soc/nvidia/tegra/usb.h>
 
 struct clk_dev_control {
 	uint32_t *clk_enb_set;
@@ -73,6 +74,14 @@ static const struct clk_dev_control clk_data_arr[] = {
 		.clk_enb_val = CLK_##clk_set_##_##funit_,		\
 	}
 
+#define FUNIT_DATA_USB(funit_, clk_set_)				\
+	[FUNIT_INDEX(funit_)] = {					\
+		.name = STRINGIFY(funit_),				\
+		.ctlr_base = (void *)(uintptr_t)TEGRA_##funit_##_BASE,	\
+		.dev_control = &clk_data_arr[CLK_##clk_set_##_SET],	\
+		.clk_enb_val = CLK_##clk_set_##_##funit_,		\
+	}
+
 static const struct funit_cfg_data funit_data[] =  {
 	FUNIT_DATA(SBC1, sbc1, H),
 	FUNIT_DATA(SBC4, sbc4, U),
@@ -81,6 +90,9 @@ static const struct funit_cfg_data funit_data[] =  {
 	FUNIT_DATA(I2C5, i2c5, H),
 	FUNIT_DATA(SDMMC3, sdmmc3, U),
 	FUNIT_DATA(SDMMC4, sdmmc4, L),
+	FUNIT_DATA_USB(USBD, L),
+	FUNIT_DATA_USB(USB2, H),
+	FUNIT_DATA_USB(USB3, H),
 };
 _Static_assert(ARRAY_SIZE(funit_data) == FUNIT_INDEX_MAX,
 		"funit_cfg_data array not filled out!");
@@ -129,6 +141,11 @@ static void configure_clock(const struct funit_cfg * const entry,
 			clk_div_mask, entry->clk_src_id);
 }
 
+static inline int is_usb(uint32_t idx)
+{
+	return (idx == FUNIT_USBD || idx == FUNIT_USB2 || idx == FUNIT_USB3);
+}
+
 void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 {
 	size_t i;
@@ -137,6 +154,7 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 		const struct funit_cfg * const entry = &entries[i];
 		const struct funit_cfg_data *funit;
 		const struct clk_dev_control *dev_control;
+		int funit_usb = is_usb(entry->funit_index);
 
 		if (entry->funit_index >= FUNIT_INDEX_MAX) {
 			printk(BIOS_ERR, "Error: Index out of bounds\n");
@@ -146,11 +164,16 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 		funit = &funit_data[entry->funit_index];
 		dev_control = funit->dev_control;
 
-		configure_clock(entry, funit);
+		/* USB controllers have a fixed clock source. */
+		if (!funit_usb)
+			configure_clock(entry, funit);
 
 		clock_grp_enable_clear_reset(funit->clk_enb_val,
 						dev_control->clk_enb_set,
 						dev_control->rst_dev_clr);
+
+		if (funit_usb)
+			usb_setup_utmip(funit->ctlr_base);
 
 		soc_configure_pads(entry->pad_cfg,entry->pad_cfg_size);
 	}

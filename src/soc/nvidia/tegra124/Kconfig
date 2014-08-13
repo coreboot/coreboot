@@ -1,5 +1,7 @@
 config SOC_NVIDIA_TEGRA124
-	depends on ARCH_ARMV7
+	select ARCH_BOOTBLOCK_ARMV7
+	select ARCH_ROMSTAGE_ARMV7
+	select ARCH_RAMSTAGE_ARMV7
 	bool
 	default n
 

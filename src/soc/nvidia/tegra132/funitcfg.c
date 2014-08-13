@@ -24,15 +24,15 @@
 #include <soc/padconfig.h>
 #include <string.h>
 
-struct clk_set_data {
-	size_t clk_enb_set_offset;
-	size_t rst_dev_clr_offset;
+struct clk_dev_control {
+	uint32_t *clk_enb_set;
+	uint32_t *rst_dev_clr;
 };
 
 struct funit_cfg_data {
 	const char *name;
-	size_t clk_src_offset;
-	uint8_t clk_data_index;
+	uint32_t *clk_src_reg;
+	const struct clk_dev_control * const dev_control;
 	uint32_t clk_enb_val;
 };
 
@@ -45,45 +45,40 @@ enum {
 	CLK_X_SET = 5,
 };
 
-#define CLK_SET_OFFSETS(x)						\
-	{								\
-	offsetof(struct clk_rst_ctlr, clk_enb_##x##_set),		\
-	offsetof(struct clk_rst_ctlr, rst_dev_##x##_clr)		\
+#define CLK_RST_REG(field_) \
+	&(((struct clk_rst_ctlr *)TEGRA_CLK_RST_BASE)->field_)
+
+#define CLK_SET_REGS(x)					\
+	{						\
+		CLK_RST_REG(clk_enb_##x##_set),		\
+		CLK_RST_REG(rst_dev_##x##_clr),		\
 	}
 
-static const struct clk_set_data clk_data_arr[] = {
-	[CLK_L_SET] = CLK_SET_OFFSETS(l),
-	[CLK_H_SET] = CLK_SET_OFFSETS(h),
-	[CLK_U_SET] = CLK_SET_OFFSETS(u),
-	[CLK_V_SET] = CLK_SET_OFFSETS(v),
-	[CLK_W_SET] = CLK_SET_OFFSETS(w),
-	[CLK_X_SET] = CLK_SET_OFFSETS(x),
+static const struct clk_dev_control clk_data_arr[] = {
+	[CLK_L_SET] = CLK_SET_REGS(l),
+	[CLK_H_SET] = CLK_SET_REGS(h),
+	[CLK_U_SET] = CLK_SET_REGS(u),
+	[CLK_V_SET] = CLK_SET_REGS(v),
+	[CLK_W_SET] = CLK_SET_REGS(w),
+	[CLK_X_SET] = CLK_SET_REGS(x),
 };
 
-static struct clk_rst_ctlr *clk_rst = (void *)TEGRA_CLK_RST_BASE;
+#define FUNIT_DATA(funit_, loname_, clk_set_)				\
+	[FUNIT_INDEX(funit_)] = {					\
+		.name = STRINGIFY(loname_),				\
+		.clk_src_reg = CLK_RST_REG(clk_src_##loname_),		\
+		.dev_control = &clk_data_arr[CLK_##clk_set_##_SET],	\
+		.clk_enb_val = CLK_##clk_set_##_##funit_,		\
+	}
 
 static const struct funit_cfg_data funit_data[] =  {
-	[FUNIT_SBC1] = {"sbc1", offsetof(struct clk_rst_ctlr, clk_src_sbc1),
-			CLK_H_SET,
-			CLK_H_SBC1},
-	[FUNIT_SBC4] = {"sbc4", offsetof(struct clk_rst_ctlr, clk_src_sbc4),
-			CLK_U_SET,
-			CLK_U_SBC4},
-	[FUNIT_I2C2] = {"i2c2", offsetof(struct clk_rst_ctlr, clk_src_i2c2),
-			CLK_H_SET,
-			CLK_H_I2C2},
-	[FUNIT_I2C3] = {"i2c3", offsetof(struct clk_rst_ctlr, clk_src_i2c3),
-			CLK_U_SET,
-			CLK_U_I2C3},
-	[FUNIT_I2C5] = {"i2c5", offsetof(struct clk_rst_ctlr, clk_src_i2c5),
-			CLK_H_SET,
-			CLK_H_I2C5},
-	[FUNIT_SDMMC3] = {"sdmmc3", offsetof(struct clk_rst_ctlr, clk_src_sdmmc3),
-			  CLK_U_SET,
-			  CLK_U_SDMMC3},
-	[FUNIT_SDMMC4] = {"sdmmc4", offsetof(struct clk_rst_ctlr, clk_src_sdmmc4),
-			  CLK_L_SET,
-			  CLK_L_SDMMC4},
+	FUNIT_DATA(SBC1, sbc1, H),
+	FUNIT_DATA(SBC4, sbc4, U),
+	FUNIT_DATA(I2C2, i2c2, H),
+	FUNIT_DATA(I2C3, i2c3, U),
+	FUNIT_DATA(I2C5, i2c5, H),
+	FUNIT_DATA(SDMMC3, sdmmc3, U),
+	FUNIT_DATA(SDMMC4, sdmmc4, L),
 };
 
 static inline uint32_t get_clk_src_freq(uint32_t clk_src)
@@ -112,13 +107,10 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 	uint32_t clk_div;
 	uint32_t clk_div_mask;
 
-
 	for (i = 0; i < num; i++) {
-		uint8_t *rst_base = (uint8_t*)clk_rst;
 		const struct funit_cfg * const entry = &entries[i];
 		const struct funit_cfg_data *funit;
-		const struct clk_set_data *clk_data;
-		uint32_t *clk_src_reg, *clk_enb_set_reg, *rst_dev_clr_reg;
+		const struct clk_dev_control *dev_control;
 		uint32_t clk_src_freq;
 
 		if (entry->funit_index >= FUNIT_INDEX_MAX) {
@@ -127,13 +119,7 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 		}
 
 		funit = &funit_data[entry->funit_index];
-		clk_data = &clk_data_arr[funit->clk_data_index];
-
-		clk_src_reg = (uint32_t*)(rst_base + funit->clk_src_offset);
-		clk_enb_set_reg = (uint32_t*)(rst_base
-					      + clk_data->clk_enb_set_offset);
-		rst_dev_clr_reg = (uint32_t*)(rst_base
-					      + clk_data->rst_dev_clr_offset);
+		dev_control = funit->dev_control;
 
 		clk_src_freq = get_clk_src_freq(entry->clk_src_id);
 
@@ -144,16 +130,17 @@ void soc_configure_funits(const struct funit_cfg * const entries, size_t num)
 			clk_div_mask = CLK_DIV_MASK_I2C;
 		} else {
 			/* Non I2C */
-			clk_div = get_clk_div(clk_src_freq,entry->clk_dev_freq_khz);
+			clk_div = get_clk_div(clk_src_freq,
+						entry->clk_dev_freq_khz);
 			clk_div_mask = CLK_DIV_MASK;
 		}
 
-		_clock_set_div(clk_src_reg,funit->name,clk_div,
-			       clk_div_mask,entry->clk_src_id);
+		_clock_set_div(funit->clk_src_reg, funit->name, clk_div,
+				clk_div_mask, entry->clk_src_id);
 
 		clock_grp_enable_clear_reset(funit->clk_enb_val,
-					     clk_enb_set_reg,
-					     rst_dev_clr_reg);
+						dev_control->clk_enb_set,
+						dev_control->rst_dev_clr);
 
 		soc_configure_pads(entry->pad_cfg,entry->pad_cfg_size);
 	}

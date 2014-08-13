@@ -31,6 +31,7 @@ struct clk_dev_control {
 
 struct funit_cfg_data {
 	const char *name;
+	void *ctlr_base;
 	uint32_t *clk_src_reg;
 	const struct clk_dev_control * const dev_control;
 	uint32_t clk_enb_val;
@@ -66,6 +67,7 @@ static const struct clk_dev_control clk_data_arr[] = {
 #define FUNIT_DATA(funit_, loname_, clk_set_)				\
 	[FUNIT_INDEX(funit_)] = {					\
 		.name = STRINGIFY(loname_),				\
+		.ctlr_base = (void *)(uintptr_t)TEGRA_##funit_##_BASE,	\
 		.clk_src_reg = CLK_RST_REG(clk_src_##loname_),		\
 		.dev_control = &clk_data_arr[CLK_##clk_set_##_SET],	\
 		.clk_enb_val = CLK_##clk_set_##_##funit_,		\

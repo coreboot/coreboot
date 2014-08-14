@@ -492,7 +492,7 @@ static int clock_calc_best_scalar(unsigned int main_scaler_bits,
 
 int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 {
-	int main;
+	int main_scalar;
 	unsigned int fine;
 
 	switch (periph_id) {
@@ -501,13 +501,13 @@ int clock_set_rate(enum periph_id periph_id, unsigned int rate)
 	case PERIPH_ID_SPI2:
 	case PERIPH_ID_SPI3:
 	case PERIPH_ID_SPI4:
-		main = clock_calc_best_scalar(4, 8, 400000000, rate, &fine);
-		if (main < 0) {
+		main_scalar = clock_calc_best_scalar(4, 8, 400000000, rate, &fine);
+		if (main_scalar < 0) {
 			printk(BIOS_DEBUG, "%s: Cannot set clock rate for periph %d",
 					__func__, periph_id);
 			return -1;
 		}
-		clock_ll_set_ratio(periph_id, main - 1);
+		clock_ll_set_ratio(periph_id, main_scalar - 1);
 		clock_ll_set_pre_ratio(periph_id, fine - 1);
 		break;
 	default:

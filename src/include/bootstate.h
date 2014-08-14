@@ -19,6 +19,8 @@
 #ifndef BOOTSTATE_H
 #define BOOTSTATE_H
 
+#if !defined(__SMM__) && !defined(__PRE_RAM__)
+
 #include <string.h>
 
 /* Control debugging of the boot state machine. */
@@ -188,4 +190,5 @@ struct boot_state_init_entry {
 		.bscb = BOOT_STATE_CALLBACK_INIT(func_, arg_),	\
 	}
 
+#endif
 #endif /* BOOTSTATE_H */

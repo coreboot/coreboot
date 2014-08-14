@@ -113,7 +113,7 @@ static void rcba_config(void)
 	RCBA32(FD) = reg32;
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

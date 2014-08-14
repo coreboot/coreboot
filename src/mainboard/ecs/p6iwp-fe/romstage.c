@@ -37,7 +37,7 @@
 #define SERIAL_DEV PNP_DEV(0x2e, IT8712F_SP1)
 #define CLKIN_DEV PNP_DEV(0x2e, IT8712F_GPIO)
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	ite_conf_clkin(CLKIN_DEV, ITE_UART_CLK_PREDIVIDE_24);

@@ -48,7 +48,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/i855/raminit.c"
 #include "northbridge/intel/i855/reset_test.c"
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	if (bist == 0) {

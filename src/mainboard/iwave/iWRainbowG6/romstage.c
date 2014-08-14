@@ -332,7 +332,7 @@ static void poulsbo_setup_Stage2Regs(void)
 	printk(BIOS_DEBUG, " done.\n");
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

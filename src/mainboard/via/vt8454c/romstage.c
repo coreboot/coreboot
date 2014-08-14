@@ -83,7 +83,7 @@ static void enable_shadow_ram(const struct mem_controller *ctrl)
 	pci_write_config8(PCI_DEV(0, 0, 3), 0x83, shadowreg);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	/* Set statically so it should work with cx700 as well */

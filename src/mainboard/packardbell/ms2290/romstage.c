@@ -198,7 +198,7 @@ static inline u16 read_acpi16(u32 addr)
 	return inw(DEFAULT_PMBASE | addr);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	u32 reg32;

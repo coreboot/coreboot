@@ -136,7 +136,7 @@ static void hard_reset(void)
 	while (1) ;
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 static void main(unsigned long bist)
 {
 	volatile int i;

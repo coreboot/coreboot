@@ -373,7 +373,7 @@ static void EmbedComInit(void)
 #endif
 
 /* cache_as_ram.inc jumps to here. */
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	u16 boot_mode;

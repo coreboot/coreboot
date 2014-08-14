@@ -37,7 +37,7 @@
 /* TODO: It's a PC87364 actually! */
 #define SERIAL_DEV PNP_DEV(0x2e, PC87360_SP1)
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	/* TODO: It's a PC87364 actually! */

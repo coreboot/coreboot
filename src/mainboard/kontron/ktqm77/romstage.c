@@ -159,7 +159,7 @@ static void superio_gpio_config(void)
 	pnp_exit_ext_func_mode(dev);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

@@ -111,7 +111,7 @@ int mainboard_set_fbd_clock(int speed)
 	}
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	if (bist == 0)

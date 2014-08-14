@@ -172,7 +172,7 @@ static void setup_sio_gpios(void)
 	it8772f_gpio_setup(DUMMY_DEV, 6, 0x00, 0x00, 0x00, 0x00, 0x00);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	int boot_mode = 0;

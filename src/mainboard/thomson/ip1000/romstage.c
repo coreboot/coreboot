@@ -92,7 +92,7 @@ static void mb_early_setup(void)
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), ACPI_CNTL, 0x10);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	if (bist == 0) {

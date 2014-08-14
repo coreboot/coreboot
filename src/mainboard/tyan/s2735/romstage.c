@@ -34,7 +34,7 @@ static inline int spd_read_byte(unsigned device, unsigned address)
 #include "northbridge/intel/e7501/reset_test.c"
 #include "lib/generic_sdram.c"
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	static const struct mem_controller memctrl[] = {

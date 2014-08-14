@@ -43,7 +43,7 @@ int spd_read_byte(unsigned int device, unsigned int address)
 	return smbus_read_byte(device, address);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	winbond_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

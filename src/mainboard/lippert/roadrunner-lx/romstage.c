@@ -85,7 +85,7 @@ static void mb_gpio_init(void)
 	}
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 

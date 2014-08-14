@@ -215,7 +215,7 @@ static void set_fsb_frequency(void)
 	smbus_block_write(0x69, 0, 5, block);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	u32 reg32;

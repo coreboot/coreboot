@@ -55,7 +55,7 @@ static const struct mem_controller ctrl = {
 	.channel0 = { DIMM0 }, /* TODO: CN700 currently only supports 1 DIMM. */
 };
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	/* Enable multifunction for northbridge. */

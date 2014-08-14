@@ -34,7 +34,7 @@
 
 #include "../qemu-i440fx/memory.c"
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	int cbmem_was_initted;

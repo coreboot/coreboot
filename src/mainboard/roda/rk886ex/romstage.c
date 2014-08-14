@@ -251,7 +251,7 @@ static void init_artec_dongle(void)
 	outb(0xf4, 0x88);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	u32 reg32;

@@ -101,7 +101,7 @@ static void enable_shadow_ram(void)
 	pci_write_config8(ctrl.d0f3, 0x82, shadowreg);
 }
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 static void main(unsigned long bist)
 {
 	unsigned long x;

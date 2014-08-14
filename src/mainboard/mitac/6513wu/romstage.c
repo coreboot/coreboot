@@ -35,7 +35,7 @@
 
 #define SERIAL_DEV PNP_DEV(0x4e, SMSCSUPERIO_SP1)
 
-#include <cpu/intel/car.h>
+#include <cpu/intel/romstage.h>
 void main(unsigned long bist)
 {
 	smscsuperio_enable_serial(SERIAL_DEV, CONFIG_TTYS0_BASE);

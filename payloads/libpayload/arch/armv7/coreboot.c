@@ -110,7 +110,7 @@ static void cb_parse_vdat(unsigned char *ptr, struct sysinfo_t *info)
 
 static void cb_parse_dma(unsigned char *ptr)
 {
-	struct cb_range *dma = (struct cb_range *)ptr;
+	struct lb_range *dma = (struct lb_range *)ptr;
 	init_dma_memory(phys_to_virt(dma->range_start), dma->range_size);
 }
 

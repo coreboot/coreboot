@@ -22,6 +22,7 @@ subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY14) += family14
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15) += family15
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY15_TN) += family15tn
 subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_FAMILY16_KB) += family16kb
+subdirs-$(CONFIG_NORTHBRIDGE_AMD_AGESA_00730F01) += 00730F01
 
 romstage-y += def_callouts.c
 ramstage-y += def_callouts.c

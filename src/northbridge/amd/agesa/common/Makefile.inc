@@ -1,7 +1,7 @@
 #
 # This file is part of the coreboot project.
 #
-# Copyright (C) 2011 - 2012 Advanced Micro Devices, Inc.
+# Copyright (C) 2014 Sage Electronic Engineering, LLC
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,26 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #
 
-config NORTHBRIDGE_AMD_AGESA
-        bool
-        default CPU_AMD_AGESA
+romstage-y += ../../../../device/dram/ddr3.c
+romstage-y += common.c
 
-if NORTHBRIDGE_AMD_AGESA
-
-config CONSOLE_VGA_MULTI
-	bool
-	default n
-
-config S3_VGA_ROM_RUN
-	bool
-	default n
-
-source src/northbridge/amd/agesa/family10/Kconfig
-source src/northbridge/amd/agesa/family12/Kconfig
-source src/northbridge/amd/agesa/family14/Kconfig
-source src/northbridge/amd/agesa/family15/Kconfig
-source src/northbridge/amd/agesa/family15tn/Kconfig
-source src/northbridge/amd/agesa/family16kb/Kconfig
-source src/northbridge/amd/agesa/00730F01/Kconfig
-
-endif # NORTHBRIDGE_AMD_AGESA
+ramstage-y += common.c

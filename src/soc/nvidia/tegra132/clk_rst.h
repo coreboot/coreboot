@@ -273,7 +273,7 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 spare_reg0;			/* _SPARE_REG0,             0x55c */
 	u32 _rsv32[4];                  /*                    0x560-0x56c */
 	u32 plld2_ss_cfg;               /* _PLLD2_SS_CFG            0x570 */
-	u32 _rsv32_1[7];			/*                      0x574-58c */
+	u32 _rsv32_1[7];		/*                      0x574-58c */
 	u32 plldp_base;			/* _PLLDP_BASE,             0x590 */
 	u32 plldp_misc;			/* _PLLDP_MISC,             0x594 */
 	u32 plldp_ss_cfg;		/* _PLLDP_SS_CFG,           0x598 */
@@ -296,8 +296,10 @@ struct  __attribute__ ((__packed__)) clk_rst_ctlr {
 	u32 clk_src_amx0;		/* _CLK_SOURCE_AMX0         0x63c */
 	u32 clk_src_emc_latency;	/* _CLK_SOURCE_EMC_LATENCY  0x640 */
 	u32 clk_src_soc_therm;		/* _CLK_SOURCE_SOC_THERM    0x644 */
+	u32 _rsv33[5];			/*                      0x648-658 */
+	u32 clk_src_i2c6;		/* _CLK_SOURCE_I2C6,        0x65c */
 };
-check_member(clk_rst_ctlr, clk_src_soc_therm, 0x644);
+check_member(clk_rst_ctlr, clk_src_i2c6, 0x65C);
 
 #define TEGRA_DEV_L			0
 #define TEGRA_DEV_H			1

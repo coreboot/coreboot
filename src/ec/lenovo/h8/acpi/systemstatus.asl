@@ -45,7 +45,7 @@ Scope (\_SI)
 		If (LEqual (Arg0, 2)) {
 			/* waking state */
 
-			/* power LED om */
+			/* power LED on */
 			\_SB.PCI0.LPCB.EC.LED(0x80)
 			/* suspend LED blinking */
 			\_SB.PCI0.LPCB.EC.LED(0xc7)

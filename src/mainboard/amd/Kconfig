@@ -43,6 +43,8 @@ config BOARD_AMD_THATCHER
 	bool "Thatcher"
 config BOARD_AMD_OLIVEHILL
 	bool "Olive Hill"
+config BOARD_AMD_OLIVEHILLPLUS
+	bool "Olive Hill Plus"
 endchoice
 
 source "src/mainboard/amd/db800/Kconfig"
@@ -65,6 +67,7 @@ source "src/mainboard/amd/union_station/Kconfig"
 source "src/mainboard/amd/parmer/Kconfig"
 source "src/mainboard/amd/thatcher/Kconfig"
 source "src/mainboard/amd/olivehill/Kconfig"
+source "src/mainboard/amd/olivehillplus/Kconfig"
 
 config MAINBOARD_VENDOR
 	string

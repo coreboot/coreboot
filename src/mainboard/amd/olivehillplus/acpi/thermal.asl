@@ -1,0 +1,1 @@
+/* No thermal zone functionality */

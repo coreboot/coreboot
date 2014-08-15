@@ -23,6 +23,7 @@
 #include <arch/io.h>
 #include <vendorcode/google/chromeos/chromeos.h>
 #include <soc/addressmap.h>
+#include <soc/clock.h>
 #include <soc/nvidia/tegra/apbmisc.h>
 
 static void soc_read_resources(device_t dev)
@@ -61,6 +62,7 @@ static void soc_read_resources(device_t dev)
 static void soc_init(device_t dev)
 {
 	printk(BIOS_INFO, "CPU: Tegra132\n");
+	clock_init_arm_generic_timer();
 }
 
 static void soc_noop(device_t dev)

@@ -315,7 +315,7 @@ EOF
 					INTEL_HASWELL)
 						cpu_nice="Intel® 4th Gen (Haswell) Core i3/i5/i7"
 						socket_nice="Socket RPGA989";;
-					INTEL_IVYBRIDGE|INTEL_FSP_IVYBRIDGE)
+					INTEL_IVYBRIDGE_NATIVE|INTEL_IVYBRIDGE|INTEL_FSP_IVYBRIDGE)
 						cpu_nice="Intel® 3rd Gen (Ivybridge) Core i3/i5/i7"
 						socket_nice="Socket RPGA989";;
 					INTEL_SANDYBRIDGE)

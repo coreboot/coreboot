@@ -160,7 +160,7 @@ static const CODEC_TBL_LIST CodecTableList[] =
 static void oem_fan_control(FCH_DATA_BLOCK *FchParams)
 {
 	FCH_HWM_FAN_CTR oem_factl[5] = {
-		/*temperatuer input, fan mode, frequency, low_duty, med_duty, multiplier, lowtemp, medtemp, hightemp, LinearRange, LinearHoldCount */
+		/* temperature input, fan mode, frequency, low_duty, med_duty, multiplier, lowtemp, medtemp, hightemp, LinearRange, LinearHoldCount */
 		/* imb_a180 FanOUT0 Fan header J32 */
 		{FAN_INPUT_INTERNAL_DIODE, (FAN_STEPMODE | FAN_POLARITY_HIGH), FREQ_100HZ, 40, 60,  0, 40, 65, 85, 0, 0},
 		/* imb_a180 FanOUT1 Fan header J31*/

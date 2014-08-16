@@ -29,7 +29,7 @@
 
 #include "addressmap.h"
 #include "grf.h"
-#include "cpu.h"
+#include "soc.h"
 #define RETRY_COUNT	3
 /* 100000us = 100ms */
 #define I2C_TIMEOUT_US	100000

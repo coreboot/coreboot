@@ -20,7 +20,7 @@
 #include <console/console.h>
 #include <arch/io.h>
 #include <stdlib.h>
-#include "cpu.h"
+#include "soc.h"
 #include "gpio.h"
 #include "pmu.h"
 

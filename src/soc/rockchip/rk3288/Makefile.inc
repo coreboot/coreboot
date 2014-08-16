@@ -41,6 +41,7 @@ romstage-y += spi.c
 romstage-y += media.c
 romstage-y += sdram.c
 
+ramstage-y += soc.c
 ramstage-y += cbmem.c
 ramstage-y += timer.c
 ramstage-y += monotonic_timer.c

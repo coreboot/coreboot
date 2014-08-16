@@ -26,7 +26,7 @@
 #include "clock.h"
 #include "grf.h"
 #include "addressmap.h"
-#include "cpu.h"
+#include "soc.h"
 
 struct pll_div {
 	u32	nr;

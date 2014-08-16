@@ -25,7 +25,7 @@
 #include "clock.h"
 #include "sdram.h"
 #include "grf.h"
-#include "cpu.h"
+#include "soc.h"
 #include "pmu.h"
 
 struct rk3288_ddr_pctl_regs {

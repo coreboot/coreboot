@@ -22,7 +22,7 @@
 
 #include <types.h>
 #include "addressmap.h"
-#include "cpu.h"
+#include "soc.h"
 
 struct rk3288_grf_gpio_lh {
 	u32 l;

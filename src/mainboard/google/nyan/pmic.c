@@ -26,7 +26,7 @@
 
 #include <boardid.h>
 #include "pmic.h"
-#include "reset.h"
+#include <reset.h>
 
 enum {
 	AS3722_I2C_ADDR = 0x40
@@ -65,7 +65,7 @@ static void pmic_write_reg(unsigned bus, uint8_t reg, uint8_t val, int do_delay)
 		printk(BIOS_ERR, "%s: reg = 0x%02X, value = 0x%02X failed!\n",
 			__func__, reg, val);
 		/* Reset the SoC on any PMIC write error */
-		cpu_reset();
+		hard_reset();
 	} else {
 		if (do_delay)
 			udelay(500);

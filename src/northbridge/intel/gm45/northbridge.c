@@ -78,7 +78,7 @@ static int decode_pcie_bar(u32 *const base, u32 *const len)
 static void mch_domain_read_resources(device_t dev)
 {
 	u64 tom, touud;
-	u32 tomk, tolud, uma_sizek = 0;
+	u32 tomk, tolud, uma_sizek = 0, usable_tomk;
 	u32 pcie_config_base, pcie_config_size;
 
 	/* Total Memory 2GB example:
@@ -137,12 +137,16 @@ static void mch_domain_read_resources(device_t dev)
 		uma_sizek = gms_sizek + gsm_sizek;
 	}
 
-	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", tomk >> 10);
+	usable_tomk = ALIGN_DOWN(tomk, 64 << 10);
+	if (tomk - usable_tomk > (16 << 10))
+		usable_tomk = tomk;
+
+	printk(BIOS_INFO, "Available memory below 4GB: %uM\n", usable_tomk >> 10);
 
 	/* Report the memory regions */
 	ram_resource(dev, 3, 0, legacy_hole_base_k);
 	ram_resource(dev, 4, legacy_hole_base_k + legacy_hole_size_k,
-	     (tomk - (legacy_hole_base_k + legacy_hole_size_k)));
+		     (usable_tomk - (legacy_hole_base_k + legacy_hole_size_k)));
 
 	/*
 	 * If >= 4GB installed then memory from TOLUD to 4GB

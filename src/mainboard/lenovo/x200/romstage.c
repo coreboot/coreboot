@@ -126,13 +126,14 @@ void main(unsigned long bist)
 
 	/* RAM initialization */
 	enter_raminit_or_reset();
+	memset(&sysinfo, 0, sizeof(sysinfo));
 	sysinfo.spd_map[0] = 0x50;
 	sysinfo.spd_map[2] = 0x51;
+	sysinfo.enable_igd = 1;
+	sysinfo.enable_peg = 0;
 	get_gmch_info(&sysinfo);
 	raminit(&sysinfo, s3resume);
 
-	raminit_thermal(&sysinfo);
-	init_igd(&sysinfo, 0, 1); /* Enable IGD, disable PEG. */
 	const u32 deven = pci_read_config32(MCH_DEV, D0F0_DEVEN);
 	/* Disable D4F0 (unknown signal controller). */
 	pci_write_config32(MCH_DEV, D0F0_DEVEN, deven & ~0x4000);

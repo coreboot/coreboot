@@ -171,15 +171,16 @@ void main(unsigned long bist)
 
 	/* RAM initialization */
 	enter_raminit_or_reset();
+	memset(&sysinfo, 0, sizeof(sysinfo));
 	get_gmch_info(&sysinfo);
 	sysinfo.spd_map[0] = 0x50;
 	sysinfo.spd_map[1] = 0;
 	sysinfo.spd_map[2] = 0x52;
 	sysinfo.spd_map[3] = 0;
+	sysinfo.enable_igd = 1;
+	sysinfo.enable_peg = 0;
 	raminit(&sysinfo, s3resume);
 
-	raminit_thermal(&sysinfo);
-	init_igd(&sysinfo, 0, 1); /* Enable IGD, disable PEG. */
 	init_pm(&sysinfo, 1);
 
 	i82801ix_dmi_setup();

@@ -139,6 +139,9 @@ typedef struct {
 	fsb_clock_t	max_fsb;
 	int		max_fsb_mhz;
 	int		max_render_mhz;
+	int		enable_igd;
+	int		enable_peg;
+	u16		ggc;
 
 	int		spd_type;
 	timings_t	selected_timings;
@@ -407,8 +410,9 @@ void enter_raminit_or_reset(void);
 void get_gmch_info(sysinfo_t *);
 void raminit(sysinfo_t *, int s3resume);
 void raminit_thermal(const sysinfo_t *);
-void init_igd(const sysinfo_t *, int no_igd, int no_peg);
+void init_igd(const sysinfo_t *const);
 void init_pm(const sysinfo_t *, int do_freq_scaling_cfg);
+void igd_compute_ggc(sysinfo_t *const sysinfo);
 
 int raminit_read_vco_index(void);
 u32 raminit_get_rank_addr(unsigned int channel, unsigned int rank);

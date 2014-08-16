@@ -41,7 +41,6 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 
 	u16 reg16;
 	u32 reg32;
-	u8 gfxsize;
 
 	printk(BIOS_DEBUG, "Enabling IGD.\n");
 
@@ -61,20 +60,9 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 	reg16 |= display_clock_from_f0_and_vco[f0_12][vco];
 	pci_write_config16(igd_dev, 0xcc, reg16);
 
-	/* Graphics Stolen Memory: 2MB GTT (0x0300) when VT-d disabled,
-	                           2MB GTT + 2MB shadow GTT (0x0b00) else. */
-	const u32 capid = pci_read_config32(mch_dev, D0F0_CAPID0 + 4);
 	reg16 = pci_read_config16(mch_dev, D0F0_GGC);
-
-	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
-		/* 0 for 32MB */
-		gfxsize = 0;
-	}
-
 	reg16 &= 0xf00f;
-	reg16 |= 0x0300 | ((gfxsize + 5) << 4);
-	if (!(capid & (1 << (48 - 32))))
-		reg16 |= 0x0800;
+	reg16 |= sysinfo->ggc;
 	pci_write_config16(mch_dev, D0F0_GGC, reg16);
 
 	if ((sysinfo->gfx_type != GMCH_GL40) &&
@@ -146,14 +134,35 @@ static void disable_igd(const sysinfo_t *const sysinfo)
 	}
 }
 
-void init_igd(const sysinfo_t *const sysinfo,
-	      const int no_igd, const int no_peg)
+void init_igd(const sysinfo_t *const sysinfo)
 {
 	const device_t mch_dev	= PCI_DEV(0, 0, 0);
 
 	const u8 capid = pci_read_config8(mch_dev, D0F0_CAPID0 + 4);
-	if (no_igd || (capid & (1 << (33 - 32))))
+	if (!sysinfo->enable_igd || (capid & (1 << (33 - 32))))
 		disable_igd(sysinfo);
 	else
-		enable_igd(sysinfo, no_peg);
+		enable_igd(sysinfo, !sysinfo->enable_peg);
+}
+
+void igd_compute_ggc(sysinfo_t *const sysinfo)
+{
+	const device_t mch_dev	= PCI_DEV(0, 0, 0);
+
+	const u32 capid = pci_read_config32(mch_dev, D0F0_CAPID0 + 4);
+	if (!sysinfo->enable_igd || (capid & (1 << (33 - 32))))
+		sysinfo->ggc = 0x0002;
+	else {
+		u8 gfxsize;
+
+		/* Graphics Stolen Memory: 2MB GTT (0x0300) when VT-d disabled,
+		   2MB GTT + 2MB shadow GTT (0x0b00) else. */
+		if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
+			/* 0 for 32MB */
+			gfxsize = 0;
+		}
+		sysinfo->ggc = 0x0300 | ((gfxsize + 5) << 4);
+		if (!(capid & (1 << (48 - 32))))
+			sysinfo->ggc |= 0x0800;
+	}
 }

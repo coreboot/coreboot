@@ -1163,7 +1163,7 @@ static void vc1_program_timings(const fsb_clock_t fsb)
 }
 
 /* @prejedec if not zero, set rank size to 128MB and page size to 4KB. */
-static void program_memory_map(const dimminfo_t *const dimms, const channel_mode_t mode, const int prejedec)
+static void program_memory_map(const dimminfo_t *const dimms, const channel_mode_t mode, const int prejedec, u16 ggc)
 {
 	int ch, r;
 
@@ -1210,7 +1210,29 @@ static void program_memory_map(const dimminfo_t *const dimms, const channel_mode
 	}
 
 	/* Calculate memory mapping, all values in MB. */
-	const unsigned int MMIOstart = 0x0c00; /* 3GB, makes MTRR configuration small. */
+
+	u32 uma_sizem = 0;
+	if (!prejedec) {
+		if (!(ggc & 2)) {
+			printk(BIOS_DEBUG, "IGD decoded, subtracting ");
+
+			/* Graphics memory */
+			const u32 gms_sizek = decode_igd_memory_size((ggc >> 4) & 0xf);
+			printk(BIOS_DEBUG, "%uM UMA", gms_sizek >> 10);
+
+			/* GTT Graphics Stolen Memory Size (GGMS) */
+			const u32 gsm_sizek = decode_igd_gtt_size((ggc >> 8) & 0xf);
+			printk(BIOS_DEBUG, " and %uM GTT\n", gsm_sizek >> 10);
+
+			uma_sizem = (gms_sizek + gsm_sizek) >> 10;
+			/* Further reduce MTRR usage if it costs use less than
+			   16 MiB.  */
+			if (ALIGN_UP(uma_sizem, 64) - uma_sizem <= 16)
+				uma_sizem = ALIGN_UP(uma_sizem, 64);
+		}
+	}
+
+	const unsigned int MMIOstart = 0x0c00 + uma_sizem; /* 3GB, makes MTRR configuration small. */
 	const int me_active = pci_read_config8(PCI_DEV(0, 3, 0), PCI_CLASS_REVISION) != 0xff;
 	const unsigned int ME_SIZE = prejedec || !me_active ? 0 : 32;
 	const unsigned int usedMEsize = (total_mb[0] != total_mb[1]) ? ME_SIZE : 2 * ME_SIZE;
@@ -1278,7 +1300,7 @@ static void prejedec_memory_map(const dimminfo_t *const dimms, channel_mode_t mo
 	if (CHANNEL_MODE_DUAL_INTERLEAVED == mode)
 		mode = CHANNEL_MODE_DUAL_ASYNC;
 
-	program_memory_map(dimms, mode, 1);
+	program_memory_map(dimms, mode, 1, 0);
 	MCHBAR32(DCC_MCHBAR) |= DCC_NO_CHANXOR;
 }
 
@@ -1773,8 +1795,10 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 		raminit_write_training(timings->mem_clock, dimms, s3resume);
 	}
 
+	igd_compute_ggc(sysinfo);
+
 	/* Program final memory map (with real values). */
-	program_memory_map(dimms, timings->channel_mode, 0);
+	program_memory_map(dimms, timings->channel_mode, 0, sysinfo->ggc);
 
 	/* Some last optimizations. */
 	dram_optimizations(timings, dimms);
@@ -1782,4 +1806,7 @@ void raminit(sysinfo_t *const sysinfo, const int s3resume)
 	/* Mark raminit beeing finished. :-) */
 	u8 tmp8 = pci_read_config8(PCI_DEV(0, 0x1f, 0), 0xa2) & ~(1 << 7);
 	pci_write_config8(PCI_DEV(0, 0x1f, 0), 0xa2, tmp8);
+
+	raminit_thermal(sysinfo);
+	init_igd(sysinfo);
 }

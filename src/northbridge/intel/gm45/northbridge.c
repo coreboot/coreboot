@@ -34,14 +34,12 @@
 #include "gm45.h"
 #include "arch/acpi.h"
 
-/* Reserve everything between A segment and 1MB:
+/* Reserve segments A and B:
  *
  * 0xa0000 - 0xbffff: legacy VGA
- * 0xc0000 - 0xcffff: VGA OPROM (needed by kernel)
- * 0xe0000 - 0xfffff: SeaBIOS, if used, otherwise DMI
  */
 static const int legacy_hole_base_k = 0xa0000 / 1024;
-static const int legacy_hole_size_k = 384;
+static const int legacy_hole_size_k = 128;
 
 static int decode_pcie_bar(u32 *const base, u32 *const len)
 {

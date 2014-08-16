@@ -43,6 +43,8 @@ u32 decode_igd_memory_size(const u32 gms)
 		return  16 << 10;
 	case 5:
 		return  32 << 10;
+	case 6:
+		return  48 << 10;
 	case 7:
 		return  64 << 10;
 	case 8:

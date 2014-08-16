@@ -330,8 +330,15 @@ EOF
 				cpu_nice="Intel® Atom™ 230";
 				socket_nice="Socket 441";;
 			INTEL_SOCKET_BGA956)
-				cpu_nice="Intel® Pentium® M";
-				socket_nice="BGA956";;
+				case $northbridge in
+				    INTEL_GM45)
+					cpu_nice="Intel® Core 2 Duo (Penryn)"
+					socket_nice="Socket P";;
+				    *)
+					cpu_nice="Intel® Pentium® M";
+					socket_nice="BGA956";;
+				esac
+				;;
 			INTEL_SOCKET_FC_PGA370)
 				cpu_nice="Intel® Pentium® III / Celeron®";
 				socket_nice="Socket 370"

@@ -24,6 +24,7 @@
 #include <arch/io.h>
 #include <device/pci_def.h>
 #include <console/console.h>
+#include <pc80/mc146818rtc.h>
 
 #include "gm45.h"
 
@@ -40,6 +41,7 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 
 	u16 reg16;
 	u32 reg32;
+	u8 gfxsize;
 
 	printk(BIOS_DEBUG, "Enabling IGD.\n");
 
@@ -61,12 +63,16 @@ static void enable_igd(const sysinfo_t *const sysinfo, const int no_peg)
 
 	/* Graphics Stolen Memory: 2MB GTT (0x0300) when VT-d disabled,
 	                           2MB GTT + 2MB shadow GTT (0x0b00) else. */
-	/* Graphics Mode Select: 32MB framebuffer (0x0050) */
-	/* TODO: We could switch to 64MB (0x0070), config flag? */
 	const u32 capid = pci_read_config32(mch_dev, D0F0_CAPID0 + 4);
 	reg16 = pci_read_config16(mch_dev, D0F0_GGC);
+
+	if (get_option(&gfxsize, "gfx_uma_size") != CB_SUCCESS) {
+		/* 0 for 32MB */
+		gfxsize = 0;
+	}
+
 	reg16 &= 0xf00f;
-	reg16 |= 0x0350;
+	reg16 |= 0x0300 | ((gfxsize + 5) << 4);
 	if (!(capid & (1 << (48 - 32))))
 		reg16 |= 0x0800;
 	pci_write_config16(mch_dev, D0F0_GGC, reg16);

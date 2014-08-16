@@ -133,15 +133,6 @@ chip northbridge/intel/gm45
 				ioapic_irq 2 INTA 0x10
 			end
 			device pci 1e.0 on # PCI
-				device pci 03.0 on # TI Cardbus
-					ioapic_irq 2 INTA 0x10
-				end
-				device pci 03.1 on # TI Cardbus
-					ioapic_irq 2 INTB 0x11
-				end
-				device pci 03.2 off end # TI FireWire OHC
-				device pci 03.3 off end # unconnected FlashMedia
-				device pci 03.4 off end # unconnected SD-Card
 				subsystemid 0x17aa 0x20f4
 			end
 			device pci 1f.0 on # LPC bridge

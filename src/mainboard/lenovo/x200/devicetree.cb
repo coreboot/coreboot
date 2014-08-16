@@ -1,4 +1,10 @@
 chip northbridge/intel/gm45
+
+	register "gpu_use_spread_spectrum_clock" = "1"
+	register "gpu_lvds_dual_channel" = "0"
+	register "gpu_link_frequency_270_mhz" = "1"
+	register "gpu_lvds_num_lanes" = "4"
+
 	device cpu_cluster 0 on
 		chip cpu/intel/socket_BGA956
 			device lapic 0 on end

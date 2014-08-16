@@ -29,6 +29,8 @@ config NORTHBRIDGE_SPECIFIC_OPTIONS # dummy
 	select MMCONF_SUPPORT_DEFAULT
 	select DYNAMIC_CBMEM
 	select IOMMU
+	select VGA
+	select INTEL_EDID
 
 config BOOTBLOCK_NORTHBRIDGE_INIT
 	string

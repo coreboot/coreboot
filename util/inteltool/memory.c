@@ -214,6 +214,7 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 		mchbar_phys = pci_read_long(nb, 0x48);
 		mchbar_phys |= ((uint64_t)pci_read_long(nb, 0x4c)) << 32;
 		mchbar_phys &= 0x0000007fffff8000UL; /* 38:15 */
+		size = 32768;
 		break;
 	default:
 		printf("Error: Dumping MCHBAR on this northbridge is not (yet) supported.\n");
@@ -240,9 +241,19 @@ int print_mchbar(struct pci_dev *nb, struct pci_access *pacc)
 			printf("0x%04x: 0x%08"PRIx32"\n", i, *(uint32_t *)(mchbar+i));
 	}
 
-	if (nb->device_id == PCI_DEVICE_ID_INTEL_CORE_1ST_GEN) {
+	switch (nb->device_id)
+	{
+	case PCI_DEVICE_ID_INTEL_CORE_1ST_GEN:
 		printf ("clock_speed_index = %x\n", read_500 (0,0x609, 6) >> 1);
 		dump_timings ();
+		break;
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_A:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_B:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_C:
+	case PCI_DEVICE_ID_INTEL_CORE_3RD_GEN_D:
+	case PCI_DEVICE_ID_INTEL_CORE_2ND_GEN:
+		ivybridge_dump_timings();
+		break;
 	}
 	unmap_physical((void *)mchbar, size);
 	return 0;

@@ -1,2 +1,6 @@
 Category: mini
 Board URL: http://www.asrock.com/ipc/overview.asp?Model=IMB-A180
+ROM package: DIP8
+ROM protocol: SPI
+ROM socketed: y
+Flashrom support: y

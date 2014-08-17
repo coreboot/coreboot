@@ -38,6 +38,7 @@
 #include <southbridge/intel/lynxpoint/pch.h>
 #include "ec.h"
 #include "onboard.h"
+#include <device/azalia_device.h>
 
 void mainboard_suspend_resume(void)
 {
@@ -132,11 +133,6 @@ static int int15_handler(void)
 #endif
 
 /* Audio Setup */
-
-extern const u32 * cim_verb_data;
-extern u32 cim_verb_data_size;
-extern const u32 * pc_beep_verbs;
-extern u32 pc_beep_verbs_size;
 
 static void verb_setup(void)
 {

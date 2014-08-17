@@ -26,7 +26,7 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
-
+#include <device/azalia_device.h>
 #include "superio_hwm.h"
 
 #if CONFIG_VGA_ROM_RUN
@@ -66,9 +66,6 @@ static int int15_handler(void)
 #endif
 
 /* Audio Setup */
-
-extern u32 * cim_verb_data;
-extern u32 cim_verb_data_size;
 
 static void verb_setup(void)
 {

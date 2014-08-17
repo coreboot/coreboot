@@ -44,6 +44,7 @@
 #include <cpu/x86/lapic.h>
 #include <device/pci.h>
 #include <smbios.h>
+#include <device/azalia_device.h>
 
 static acpi_cstate_t cst_entries[] = {
 	{1, 1, 1000, {0x7f, 1, 2, {0}, 1, 0}},
@@ -86,9 +87,6 @@ static int int15_handler(void)
 #endif
 
 /* Audio Setup */
-
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;
 
 static void verb_setup(void)
 {

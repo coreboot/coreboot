@@ -26,6 +26,7 @@
 #include <pc80/mc146818rtc.h>
 #include <arch/io.h>
 #include <arch/interrupt.h>
+#include <device/azalia_device.h>
 
 #define BOOT_DISPLAY_DEFAULT	0
 #define BOOT_DISPLAY_CRT	(1 << 0)
@@ -205,9 +206,6 @@ static void hwm_setup(void)
 }
 
 /* Audio Setup */
-
-extern u32 * cim_verb_data;
-extern u32 cim_verb_data_size;
 
 static void verb_setup(void)
 {

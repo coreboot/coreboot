@@ -41,8 +41,6 @@ static const u32 mainboard_cim_verb_data[] = {
 	PIN_CFG(0x1c, 0x40f001f0),
 	PIN_CFG(0x1d, 0x90a601f0)
 };
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;
 
 static const u32 mainboard_pc_beep_verbs[] = {
 	0x00170500,	/* power up codec */
@@ -54,5 +52,3 @@ static const u32 mainboard_pc_beep_verbs[] = {
 	0x00c3b015,	/* set lout1 output volume -15dB */
 	0x0143b000,	/* unmute speakers */
 };
-extern const u32 * pc_beep_verbs;
-extern u32 pc_beep_verbs_size;

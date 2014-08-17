@@ -102,6 +102,3 @@ static const u32 mainboard_cim_verb_data[] = {
 	0x01f71e11,
 	0x01f71f41,
 };
-
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;

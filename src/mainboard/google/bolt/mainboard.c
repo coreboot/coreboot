@@ -34,6 +34,7 @@
 #include <arch/io.h>
 #include <arch/interrupt.h>
 #include <boot/coreboot_tables.h>
+#include <device/azalia_device.h>
 #include "hda_verb.h"
 #include <southbridge/intel/lynxpoint/pch.h>
 #include "ec.h"
@@ -132,9 +133,6 @@ static int int15_handler(void)
 #endif
 
 /* Audio Setup */
-
-extern const u32 * cim_verb_data;
-extern u32 cim_verb_data_size;
 
 static void verb_setup(void)
 {

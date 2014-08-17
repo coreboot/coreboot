@@ -35,6 +35,7 @@
 #include <ec/lenovo/h8/h8.h>
 #include <northbridge/intel/nehalem/nehalem.h>
 #include <southbridge/intel/bd82x6x/pch.h>
+#include <device/azalia_device.h>
 
 #include <pc80/mc146818rtc.h>
 #include "dock.h"
@@ -103,9 +104,6 @@ const char *smbios_mainboard_version(void)
 }
 
 /* Audio Setup */
-
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;
 
 static void verb_setup(void)
 {

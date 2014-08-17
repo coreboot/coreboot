@@ -33,6 +33,7 @@
 #include <boot/coreboot_tables.h>
 #include "hda_verb.h"
 #include <southbridge/intel/fsp_bd82x6x/pch.h>
+#include <device/azalia_device.h>
 
 #if IS_ENABLED(CONFIG_HAVE_ACPI_RESUME)
 void mainboard_suspend_resume(void)
@@ -141,9 +142,6 @@ static int int15_handler(void)
 #endif
 
 /* Audio Setup */
-
-extern const u32 * cim_verb_data;
-extern u32 cim_verb_data_size;
 
 static void verb_setup(void)
 {

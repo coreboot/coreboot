@@ -29,6 +29,7 @@
 #endif
 #include <pc80/keyboard.h>
 #include <ec/acpi/ec.h>
+#include <device/azalia_device.h>
 #include "hda_verb.h"
 
 #if CONFIG_GENERATE_ACPI_TABLES

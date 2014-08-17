@@ -33,6 +33,7 @@
 #include <pc80/mc146818rtc.h>
 #include <southbridge/intel/lynxpoint/pch.h>
 #include <x86emu/x86emu.h>
+#include <device/azalia_device.h>
 #include "hda_verb.h"
 #include "onboard.h"
 
@@ -130,11 +131,6 @@ static int int15_handler(void)
 #endif /* CONFIG_VGA_ROM_RUN */
 
 /* Audio Setup */
-
-extern const u32 * cim_verb_data;
-extern u32 cim_verb_data_size;
-extern const u32 * pc_beep_verbs;
-extern u32 pc_beep_verbs_size;
 
 static void verb_setup(void)
 {

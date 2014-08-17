@@ -25,4 +25,9 @@
 void azalia_audio_init(struct device *dev);
 extern struct device_operations default_azalia_audio_ops;
 
+extern const u32 *cim_verb_data;
+extern u32 cim_verb_data_size;
+extern const u32 *pc_beep_verbs;
+extern u32 pc_beep_verbs_size;
+
 #endif /* DEVICE_AZALIA_H */

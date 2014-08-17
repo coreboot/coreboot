@@ -89,6 +89,3 @@ static u32 mainboard_cim_verb_data[] = {
 	/* BTL Gain */
 	0x017F417, /* Gain = 16.79dB */
 };
-
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;

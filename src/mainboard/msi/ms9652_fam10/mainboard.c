@@ -24,6 +24,7 @@
 #include <device/pci.h>
 #include <device/pci_ids.h>
 #include <device/pci_ops.h>
+#include <device/azalia_device.h>
 // #include "hda_verb.h"
 
 static void verb_setup(void)

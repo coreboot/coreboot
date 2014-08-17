@@ -35,6 +35,7 @@
 #include <ec/lenovo/pmh7/pmh7.h>
 #include <ec/acpi/ec.h>
 #include <ec/lenovo/h8/h8.h>
+#include <device/azalia_device.h>
 
 #include "hda_verb.h"
 

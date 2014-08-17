@@ -34,11 +34,9 @@
 #include <arch/x86/include/arch/acpigen.h>
 #include <smbios.h>
 #include <x86emu/x86emu.h>
+#include <device/azalia_device.h>
 #include "hda_verb.h"
 #define PANEL INT15_5F35_CL_DISPLAY_DEFAULT
-
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;
 
 #if CONFIG_PCI_OPTION_ROM_RUN_YABEL || CONFIG_PCI_OPTION_ROM_RUN_REALMODE
 static int int15_handler(void)

@@ -19,6 +19,7 @@
  */
 
 #include <device/device.h>
+#include <device/azalia_device.h>
 
 #if 0
 #include "hda_verb.h"

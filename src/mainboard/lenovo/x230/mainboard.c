@@ -41,6 +41,7 @@
 #include <pc80/keyboard.h>
 #include <ec/lenovo/h8/h8.h>
 #include <build.h>
+#include <device/azalia_device.h>
 
 void mainboard_suspend_resume(void)
 {
@@ -148,11 +149,6 @@ const char *smbios_mainboard_version(void)
 }
 
 /* Audio Setup */
-
-extern const u32 *cim_verb_data;
-extern u32 cim_verb_data_size;
-extern const u32 *pc_beep_verbs;
-extern u32 pc_beep_verbs_size;
 
 static void verb_setup(void)
 {

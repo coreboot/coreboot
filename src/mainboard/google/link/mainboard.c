@@ -40,6 +40,7 @@
 #include <smbios.h>
 #include <device/pci.h>
 #include <ec/google/chromeec/ec.h>
+#include <device/azalia_device.h>
 
 /* placeholder for evenual link post. Not sure what we'll
  * do but it will look nice
@@ -149,11 +150,6 @@ static int int15_handler(void)
 #endif
 
 /* Audio Setup */
-
-extern const u32 * cim_verb_data;
-extern u32 cim_verb_data_size;
-extern const u32 * pc_beep_verbs;
-extern u32 pc_beep_verbs_size;
 
 static void verb_setup(void)
 {

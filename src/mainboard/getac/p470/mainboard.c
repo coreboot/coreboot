@@ -24,6 +24,8 @@
 #include <device/pci_def.h>
 #include <arch/io.h>
 #include <delay.h>
+#include <device/azalia_device.h>
+
 #include "hda_verb.h"
 
 #include "ec_oem.c"

@@ -67,16 +67,9 @@ static int int15_handler(void)
 }
 #endif
 
-static acpi_cstate_t cst_entries[] = {
-	{ 1,  1, 1000, { 0x7f, 1, 2, { 0 }, 0, 0 } },
-	{ 2,  1,  500, { 0x7f, 1, 2, { 0 }, 0x10, 0 } },
-	{ 2, 55,  100, { 0x7f, 1, 2, { 0 }, 0x31, 0 } },
-};
-
 int get_cst_entries(acpi_cstate_t **entries)
 {
-	*entries = cst_entries;
-	return ARRAY_SIZE(cst_entries);
+	return 0;
 }
 
 static void mainboard_init(device_t dev)

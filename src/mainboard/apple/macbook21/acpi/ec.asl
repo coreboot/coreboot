@@ -101,6 +101,20 @@ Device(EC)
 		{
 			return(LIDS)
 		}
+
+		Method(_PRW, 0, NotSerialized)
+		{
+			Return (Package() { 0x1d, 0x03 })
+		}
+
+		Method(_PSW, 1, NotSerialized)
+		{
+			if (Arg0) {
+				Store(1, WKLD)
+			} else {
+				Store(0, WKLD)
+			}
+		}
 	}
 
 	Device(AC)

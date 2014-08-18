@@ -33,11 +33,13 @@ Scope (\_SB)
 		{
 			if (Arg0) {
 			   /* connect dock */
+			   Store (1, \GP28)
 			   Store (1, \_SB.PCI0.LPCB.EC.DKR1)
 			   Store (1, \_SB.PCI0.LPCB.EC.DKR2)
 			   Store (1, \_SB.PCI0.LPCB.EC.DKR3)
 			} else {
 			   /* disconnect dock */
+			   Store (0, \GP28)
 			   Store (0, \_SB.PCI0.LPCB.EC.DKR1)
 			   Store (0, \_SB.PCI0.LPCB.EC.DKR2)
 			   Store (0, \_SB.PCI0.LPCB.EC.DKR3)

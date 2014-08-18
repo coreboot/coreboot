@@ -46,6 +46,8 @@ static const struct funit_cfg funits[] = {
 	FUNIT_CFG(I2C3, PLLP, 400, tpm_pads, ARRAY_SIZE(tpm_pads)),
 	/* EC on I2C2 - pulled to 3.3V @ 100kHz */
 	FUNIT_CFG(I2C2, PLLP, 100, ec_i2c_pads, ARRAY_SIZE(ec_i2c_pads)),
+	/* I2C6 for audio, temp sensor, etc. */
+	FUNIT_CFG(I2C6, PLLP, 400, NULL, 0),
 };
 
 void romstage_mainboard_init(void)
@@ -53,11 +55,14 @@ void romstage_mainboard_init(void)
 	/* Bring up controller interfaces for ramstage loading. */
 	soc_configure_funits(funits, ARRAY_SIZE(funits));
 	soc_configure_pads(padcfgs, ARRAY_SIZE(padcfgs));
+	soc_configure_i2c6pad();
 
 	/* TPM */
 	i2c_init(2);
 	/* EC */
 	i2c_init(1);
+	/* I2C6 bus (audio, etc.) */
+	i2c_init(5);
 }
 
 void mainboard_configure_pmc(void)

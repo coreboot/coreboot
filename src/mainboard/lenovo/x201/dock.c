@@ -67,5 +67,5 @@ int dock_present(void)
 	u16 gpiobase = pci_read_config16(PCH_LPC_DEV, GPIO_BASE) & 0xfffc;
 	u8 st = inb(gpiobase + 0x0c);
 
-	return !((st >> 3) & 1);
+	return ((st >> 3) & 7) != 7;
 }

@@ -146,6 +146,7 @@ enum {
 	CLK_W_CEC = 0x1 << 8,
 	CLK_W_XUSB_PADCTL = 0x1 << 14,
 	CLK_W_ENTROPY = 0x1 << 21,
+	CLK_W_DP2 = 0x1 << 24,
 	CLK_W_AMX0 = 0x1 << 25,
 	CLK_W_ADX0 = 0x1 << 26,
 	CLK_W_DVFS = 0x1 << 27,

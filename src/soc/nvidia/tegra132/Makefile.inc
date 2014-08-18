@@ -30,6 +30,7 @@ romstage-y += clock.c
 romstage-y += reset.c
 romstage-y += spi.c
 romstage-y += i2c.c
+romstage-y += i2c6.c
 romstage-y += dma.c
 romstage-y += monotonic_timer.c
 romstage-y += padconfig.c

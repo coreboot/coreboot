@@ -292,6 +292,8 @@ void clock_sdram(u32 m, u32 n, u32 p, u32 setup, u32 ph45, u32 ph90,
 		 u32 same_freq);
 void clock_cpu0_config(void);
 void clock_halt_avp(void);
+void clock_enable(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
+void clock_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
 void clock_enable_clear_reset(u32 l, u32 h, u32 u, u32 v, u32 w, u32 x);
 void clock_grp_enable_clear_reset(u32 val, u32* clk_enb_set_reg, u32* rst_dev_clr_reg);
 void clock_reset_l(u32 l);

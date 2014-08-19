@@ -47,8 +47,11 @@ static void print_memranges(struct memranges *mmap_ranges)
 static void tegra132_memrange_init(struct memranges *map)
 {
 	uint64_t start,end;
-	const unsigned long devmem = MA_DEV | MA_NS | MA_RW;
+	const unsigned long devmem = MA_DEV | MA_S | MA_RW;
 	const unsigned long cachedmem = MA_MEM | MA_NS | MA_RW;
+	const unsigned long secure_mem = MA_MEM | MA_S | MA_RW;
+	uintptr_t tz_base_mib;
+	size_t tz_size_mib;
 
 	memranges_init_empty(map);
 
@@ -66,6 +69,10 @@ static void tegra132_memrange_init(struct memranges *map)
 
 	/* SRAM */
 	memranges_insert(map, TEGRA_SRAM_BASE, TEGRA_SRAM_SIZE, cachedmem);
+
+	/* Add TZ carveout. */
+	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
+	memranges_insert(map, tz_base_mib * MiB, tz_size_mib * MiB, secure_mem);
 }
 
 void __attribute__((weak)) mainboard_add_memory_ranges(struct memranges *map)
@@ -75,13 +82,17 @@ void __attribute__((weak)) mainboard_add_memory_ranges(struct memranges *map)
 
 void tegra132_mmu_init(void)
 {
-	uint64_t *ttb_buffer = (uint64_t*)CONFIG_TTB_BUFFER;
-	uint64_t ttb_size = (uint64_t)CONFIG_TTB_SIZE;
+	uintptr_t tz_base_mib;
+	size_t tz_size_mib;
 	struct memranges *map = &t132_mmap_ranges;
 
 	tegra132_memrange_init(map);
 	mainboard_add_memory_ranges(map);
 	print_memranges(map);
-	mmu_init(map,ttb_buffer,ttb_size);
-	mmu_enable((uint64_t)ttb_buffer);
+	/* Place page tables at the base of the trust zone region. */
+	carveout_range(CARVEOUT_TZ, &tz_base_mib, &tz_size_mib);
+	tz_base_mib *= MiB;
+	tz_size_mib *= MiB;
+	mmu_init(map, (void *)tz_base_mib, tz_size_mib);
+	mmu_enable(tz_base_mib);
 }

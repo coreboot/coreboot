@@ -2,6 +2,6 @@ if BOARD_APPLE_MACBOOK11
 
 config MAINBOARD_PART_NUMBER
 	string
-	default "MacBook2,1"
+	default "MacBook1,1"
 
 endif

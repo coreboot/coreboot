@@ -60,19 +60,8 @@ static void sata_init(struct device *dev)
 	pci_write_config8(dev, PCI_INTERRUPT_LINE, 0x0a);
 
 	/* Set timings */
-	pci_write_config16(dev, IDE_TIM_PRI, IDE_DECODE_ENABLE |
-			   IDE_ISP_3_CLOCKS | IDE_RCT_1_CLOCKS |
-			   IDE_PPE0 | IDE_IE0 | IDE_TIME0);
-	pci_write_config16(dev, IDE_TIM_SEC, IDE_DECODE_ENABLE |
-			   IDE_ISP_5_CLOCKS | IDE_RCT_4_CLOCKS);
-
-	/* Sync DMA */
-	pci_write_config16(dev, IDE_SDMA_CNT, IDE_PSDE0);
-	pci_write_config16(dev, IDE_SDMA_TIM, 0x0001);
-
-	/* Set IDE I/O Configuration */
-	reg32 = SIG_MODE_PRI_NORMAL | FAST_PCB1 | FAST_PCB0 | PCB1 | PCB0;
-	pci_write_config32(dev, IDE_CONFIG, reg32);
+	pci_write_config16(dev, IDE_TIM_PRI, IDE_DECODE_ENABLE);
+	pci_write_config16(dev, IDE_TIM_SEC, IDE_DECODE_ENABLE);
 
 	/* for AHCI, Port Enable is managed in memory mapped space */
 	reg16 = pci_read_config16(dev, 0x92);
@@ -82,7 +71,7 @@ static void sata_init(struct device *dev)
 	udelay(2);
 
 	/* Setup register 98h */
-	reg32 = pci_read_config16(dev, 0x98);
+	reg32 = pci_read_config32(dev, 0x98);
 	reg32 &= ~((1 << 31) | (1 << 30));
 	reg32 |= 1 << 23;
 	reg32 |= 1 << 24; /* Enable MPHY Dynamic Power Gating */
@@ -212,6 +201,11 @@ static void sata_init(struct device *dev)
 	reg32 |= (1 << 17) | (1 << 16) | (1 << 19);
 	reg32 |= (1 << 31) | (1 << 30) | (1 << 29);
 	pci_write_config32(dev, 0x300, reg32);
+
+	/* Register Lock */
+	reg32 = pci_read_config32(dev, 0x9c);
+	reg32 |= (1 << 31);
+	pci_write_config32(dev, 0x9c, reg32);
 }
 
 /*

@@ -54,6 +54,7 @@ ramstage-y += soc.c
 ramstage-y += spi.c
 ramstage-y += i2c.c
 ramstage-y += dma.c
+ramstage-y += gic.c
 ramstage-y += monotonic_timer.c
 ramstage-y += padconfig.c
 ramstage-y += funitcfg.c

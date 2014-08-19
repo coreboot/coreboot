@@ -104,8 +104,6 @@ static int intel_gma_init(struct northbridge_intel_i945_config *conf,
 	u32 uma_size;
 	u16 reg16;
 
-	pphysbase += 0x20000;
-
 	printk(BIOS_SPEW,
 	       "i915lightup: graphics %p mmio %08x addrport %04x physbase %08x\n",
 	       (void *)pgfx, pmmio, piobase, pphysbase);

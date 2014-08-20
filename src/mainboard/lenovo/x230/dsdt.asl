@@ -25,6 +25,7 @@
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 #define RP03_IS_EXPRESSCARD 1
 #define EC_LENOVO_H8_ME_WORKAROUND 1
+#define HAVE_LCD_SCREEN 1
 
 DefinitionBlock(
 	"dsdt.aml",
@@ -54,8 +55,6 @@ DefinitionBlock(
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 		}
 	}
-
-	#include "acpi/video.asl"
 
 	/* Chipset specific sleep states */
 	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>

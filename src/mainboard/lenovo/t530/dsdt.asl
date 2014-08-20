@@ -24,6 +24,7 @@
 #define BRIGHTNESS_DOWN \_SB.PCI0.GFX0.LCD0.DECB
 #define ACPI_VIDEO_DEVICE \_SB.PCI0.GFX0
 #define RP03_IS_EXPRESSCARD 1
+#define HAVE_LCD_SCREEN 1
 
 DefinitionBlock(
 	"dsdt.aml",
@@ -53,8 +54,6 @@ DefinitionBlock(
 			#include <southbridge/intel/bd82x6x/acpi/pch.asl>
 		}
 	}
-
-	#include "acpi/video.asl"
 
 	/* Chipset specific sleep states */
 	#include <southbridge/intel/bd82x6x/acpi/sleepstates.asl>
